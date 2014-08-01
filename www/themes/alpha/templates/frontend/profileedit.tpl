@@ -3,9 +3,9 @@
 	<div class="error"><strong style="color:#B22222">ERROR: {$error}</strong></div>
 {/if}
 <form class="form-group" action="profileedit?action=submit" method="post">
-	<fieldset>
-		<legend>User Details</legend>
-		<table class="table table-condensed input">
+<fieldset>
+	<legend>User Details</legend>
+	<table class="table table-condensed input">
 		<colgroup>
 			<col style="width: 150px;">
 		</colgroup>
@@ -35,11 +35,11 @@
 			<th>Site Api/Rss Key:</th>
 			<td>{$user.rsstoken}<br/><a class="confirm_action" href="?action=newapikey">Generate</a></td>
 		</tr>
-		</table>
-	</fieldset>
-	<fieldset>
-		<legend>Site Preferences</legend>
-		<table class="table table-condensed input">
+	</table>
+</fieldset>
+<fieldset>
+	<legend>Site Preferences</legend>
+	<table class="table table-condensed input">
 		<colgroup>
 			<col style="width: 150px;">
 		</colgroup>
@@ -72,13 +72,13 @@
 				<span class="help-block">Browse music covers. Only shows music with known lookup info.</span>
 			</td>
 		</tr>
-			<tr>
-				<th>View Game Page:</th>
-				<td>
-					<input id="gameview" name="gameview" value="1" type="checkbox" {if $user.gameview=="1"}checked="checked"{/if}>
-					<span class="help-block">Browse game covers. Only shows games with known lookup info.</span>
-				</td>
-			</tr>
+		<tr>
+			<th>View Game Page:</th>
+			<td>
+				<input id="gameview" name="gameview" value="1" type="checkbox" {if $user.gameview=="1"}checked="checked"{/if}>
+				<span class="help-block">Browse game covers. Only shows games with known lookup info.</span>
+			</td>
+		</tr>
 		<tr>
 			<th>View Console Page:</th>
 			<td>
@@ -100,63 +100,63 @@
 				<span class="help-block">Use Ctrl and click to exclude multiple categories.</span>
 			</td>
 		</tr>
+	</table>
+</fieldset>
+{if $page->settings->getSetting('sabintegrationtype') != 1}
+	<fieldset>
+		<legend>Queue Type</legend>
+		<table class="table table-condensed input">
+			<colgroup>
+				<col style="width: 150px;">
+			</colgroup>
+			<tr>
+				<th>Queue type:</th>
+				<td>
+					{html_options id="queuetypeids" name='queuetypeids' values=$queuetypeids output=$queuetypes selected=$user.queuetype}
+					<span class="help-block">Pick the type of queue you wish to use, once you save your profile, the page will reload, the box will appear and you can fill out the details.</span>
+				</td>
+			</tr>
 		</table>
 	</fieldset>
-	{if $page->settings->getSetting('sabintegrationtype') != 1}
-		<fieldset>
-			<legend>Queue Type</legend>
-			<table class="table table-condensed input">
-				<colgroup>
-					<col style="width: 150px;">
-				</colgroup>
-				<tr>
-					<th>Queue type:</th>
-					<td>
-						{html_options id="queuetypeids" name='queuetypeids' values=$queuetypeids output=$queuetypes selected=$user.queuetype}
-						<span class="help-block">Pick the type of queue you wish to use, once you save your profile, the page will reload, the box will appear and you can fill out the details.</span>
-					</td>
-				</tr>
-			</table>
-		</fieldset>
-	{/if}
-	{if $user.queuetype == 2 && ($page->settings->getSetting('sabintegrationtype') == 0 || $page->settings->getSetting('sabintegrationtype') == 2)}
-		<fieldset>
-			<legend>NZBGet Integration</legend>
-			<table class="table table-condensed input">
-				<colgroup>
-					<col style="width: 150px;">
-				</colgroup>
-				<tr>
-					<th><label for="nzbgeturl">NZBGet Url:</label></th>
-					<td>
-						<input id="nzbgeturl" class="form-control" name="nzbgeturl" type="text" value="{$user.nzbgeturl}" />
-						<span class="help-block">The url of the NZBGet installation, for example: http://127.0.0.1:6789/</span>
-					</td>
-				</tr>
+{/if}
+{if $user.queuetype == 2 && ($page->settings->getSetting('sabintegrationtype') == 0 || $page->settings->getSetting('sabintegrationtype') == 2)}
+	<fieldset>
+		<legend>NZBGet Integration</legend>
+		<table class="table table-condensed input">
+			<colgroup>
+				<col style="width: 150px;">
+			</colgroup>
+			<tr>
+				<th><label for="nzbgeturl">NZBGet Url:</label></th>
+				<td>
+					<input id="nzbgeturl" class="form-control" name="nzbgeturl" type="text" value="{$user.nzbgeturl}" />
+					<span class="help-block">The url of the NZBGet installation, for example: http://127.0.0.1:6789/</span>
+				</td>
+			</tr>
 
-				<tr>
-					<th><label for="nzbgetusername">NZBGet Username:</label></th>
-					<td>
-						<input id="nzbgetusername" class="form-control" name="nzbgetusername" type="text" value="{$user.nzbgetusername}" />
-						<span class="help-block">The user name for the NZBGet installation.</span>
-					</td>
-				</tr>
+			<tr>
+				<th><label for="nzbgetusername">NZBGet Username:</label></th>
+				<td>
+					<input id="nzbgetusername" class="form-control" name="nzbgetusername" type="text" value="{$user.nzbgetusername}" />
+					<span class="help-block">The user name for the NZBGet installation.</span>
+				</td>
+			</tr>
 
-				<tr>
-					<th><label for="nzbgetpassword">NZBGet Password:</label></th>
-					<td>
-						<input id="nzbgetpassword" class="form-control" name="nzbgetpassword" type="text" value="{$user.nzbgetpassword}" />
-						<span class="help-block">The password for the NZBGet installation.</span>
-					</td>
-				</tr>
+			<tr>
+				<th><label for="nzbgetpassword">NZBGet Password:</label></th>
+				<td>
+					<input id="nzbgetpassword" class="form-control" name="nzbgetpassword" type="text" value="{$user.nzbgetpassword}" />
+					<span class="help-block">The password for the NZBGet installation.</span>
+				</td>
+			</tr>
 
-			</table>
-		</fieldset>
-	{/if}
-	{if $user.queuetype == 1 && $page->settings->getSetting('sabintegrationtype') == 2}
-		<fieldset>
-			<legend>SABnzbd Integration</legend>
-			<table class="table table-condensed input">
+		</table>
+	</fieldset>
+{/if}
+{if $user.queuetype == 1 && $page->settings->getSetting('sabintegrationtype') == 2}
+	<fieldset>
+		<legend>SABnzbd Integration</legend>
+		<table class="table table-condensed input">
 			<colgroup>
 				<col style="width: 150px;">
 			</colgroup>
@@ -198,12 +198,12 @@
 					<span class="help-block">Where to store the SAB setting.<br />&bull; <b>Cookie</b> will store the setting in your browsers coookies and will only work when using your current browser.<br/>&bull; <b>Site</b> will store the setting in your user account enabling it to work no matter where you are logged in from.<br /><span class="warning"><b>Please Note:</b></span> You should only store your full SAB api key with sites you trust.</span>
 				</td>
 			</tr>
-			</table>
-		</fieldset>
-	{/if}
-	<fieldset>
-		<legend>CouchPotato Integration</legend>
-		<table class="table table-condensed input">
+		</table>
+	</fieldset>
+{/if}
+<fieldset>
+	<legend>CouchPotato Integration</legend>
+	<table class="table table-condensed input">
 		<tr>
 			<th><label for="cp_url">CouchPotato Url:</label></th>
 			<td>
@@ -219,7 +219,7 @@
 				<span class="help-block">The CouchPotato api key. Used for 'Send To CouchPotato'.</span>
 			</td>
 		</tr>
-		</table>
-	</fieldset>
-	<input type="submit" value="Save Profile" />
+	</table>
+</fieldset>
+<input type="submit" value="Save Profile" />
 </form>

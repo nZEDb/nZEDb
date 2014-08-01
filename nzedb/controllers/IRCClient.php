@@ -149,7 +149,7 @@ class IRCClient
 
 	/**
 	 * How many times we've tried to reconnect to IRC.
-	 * @var int
+	 * @var int|string
 	 * @access protected
 	 */
 	protected $_currentRetries = 0;
@@ -265,7 +265,7 @@ class IRCClient
 				return false;
 			}
 
-			if (!is_numeric($port)) {
+			if (!is_numeric($port) || is_double($port)) {
 				echo 'ERROR: IRC port must be a number!' . PHP_EOL;
 				return false;
 			}
@@ -342,6 +342,7 @@ class IRCClient
 		while(true) {
 			$this->_readSocket();
 
+			$matches = array();
 			// We got pinged, reply with a pong.
 			if (preg_match('/^PING\s*:(.+?)$/', $this->_buffer, $matches)) {
 				$this->_pong($matches[1]);

@@ -86,6 +86,17 @@ while ($runVar['counts']['iterations'] > 0) {
 		: "{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/binaries_safe_threaded.py"
 	);
 
+	switch ((int) $runVar['settings']['backfill']) {
+		case 1:
+			$runVar['scripts']['backfill'] = "{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/backfill.php";
+			break;
+		case 2:
+			$runVar['scripts']['backfill'] = "{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_threaded.py group";
+			break;
+		case 4:
+			$runVar['scripts']['backfill'] = "{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_safe_threaded.py";
+	}
+
 	//get usenet connection counts
 	$runVar['conncounts'] = $tOut->getConnectionsCounts($runVar);
 
@@ -236,7 +247,7 @@ while ($runVar['counts']['iterations'] > 0) {
 					} else if (strpos($tbl, 'partrepair_') !== false) {
 						$run = $pdo->queryOneRow($cntsql, $tRun->rand_bool($runVar['counts']['iterations']));
 						if (isset($run['count']) && is_numeric($run['count'])) {
-							$runVar['counts']['now']['parterpair_table'] += $run['count'];
+							$runVar['counts']['now']['partrepair_table'] += $run['count'];
 						}
 					}
 				}
@@ -348,6 +359,9 @@ while ($runVar['counts']['iterations'] > 0) {
 		//run sharing regardless of sequential setting
 		$tRun->runPane('sharing', $runVar);
 
+		//update tv and theaters
+		$runVar['timers']['timer4'] = $tRun->runPane('updatetv', $runVar);
+
 		//run these if complete sequential not set
 		if ($runVar['constants']['sequential'] != 2) {
 
@@ -365,9 +379,6 @@ while ($runVar['counts']['iterations'] > 0) {
 
 			//run postprocess_releases non amazon
 			$tRun->runPane('nonamazon', $runVar);
-
-			//update tv and theaters
-			$runVar['timers']['timer4'] = $tRun->runPane('updatetv', $runVar);
 		}
 
 	} else  if ($runVar['settings']['is_running'] === '0') {

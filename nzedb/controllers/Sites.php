@@ -152,7 +152,7 @@ class Sites
 		$sql .= 'ORDER BY setting';
 
 		$result = $this->_db->queryArray($sql);
-		if ($result !== false) {
+		if ($result instanceof Traversable) {
 			foreach($result as $row) {
 				$results[$row['setting']] = $row['value'];
 			}

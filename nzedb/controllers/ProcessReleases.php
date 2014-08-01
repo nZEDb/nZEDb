@@ -50,6 +50,36 @@ class ProcessReleases
 	public $processRequestIDs;
 
 	/**
+	 * @var bool
+	 */
+	public $echoCLI;
+
+	/**
+	 * @var nzedb\db\Settings
+	 */
+	public $pdo;
+
+	/**
+	 * @var ConsoleTools
+	 */
+	public $consoleTools;
+
+	/**
+	 * @var NZB
+	 */
+	public $nzb;
+
+	/**
+	 * @var ReleaseCleaning
+	 */
+	public $releaseCleaning;
+
+	/**
+	 * @var Releases
+	 */
+	public $releases;
+
+	/**
 	 * @param array $options Class instances / Echo to cli ?
 	 */
 	public function __construct(array $options = array())
@@ -1121,7 +1151,7 @@ class ProcessReleases
 		$category = new Category(['Settings' => $this->pdo]);
 		$genres = new Genres(['Settings' => $this->pdo]);
 		$passwordDeleted = $duplicateDeleted = $retentionDeleted = $completionDeleted = $disabledCategoryDeleted = 0;
-		$disabledGenreDeleted = $miscRetentionDeleted = $categoryMinSizeDeleted = 0;
+		$disabledGenreDeleted = $miscRetentionDeleted = $miscHashedDeleted = $categoryMinSizeDeleted = 0;
 
 		// Delete old releases and finished collections.
 		if ($this->echoCLI) {
@@ -1296,6 +1326,26 @@ class ProcessReleases
 			}
 		}
 
+		// Misc hashed.
+		if ($this->pdo->getSetting('mischashedretentionhours') > 0) {
+			$releases = $this->pdo->queryDirect(
+				sprintf('
+					SELECT guid
+					FROM releases
+					WHERE categoryid = %d
+					AND adddate <= NOW() - INTERVAL %d HOUR',
+					CATEGORY::CAT_MISC,
+					$this->pdo->getSetting('mischashedretentionhours')
+				)
+			);
+			if ($releases !== false && $releases->rowCount() > 0) {
+				foreach ($releases as $release) {
+					$this->releases->deleteSingle($release['guid'], $this->nzb);
+					$miscHashedDeleted++;
+				}
+			}
+		}
+
 		if ($this->echoCLI) {
 			$this->pdo->log->doEcho(
 				$this->pdo->log->primary(
@@ -1314,6 +1364,8 @@ class ProcessReleases
 					' from disabled music genres, ' .
 					number_format($miscRetentionDeleted) .
 					' from misc->other' .
+					number_format($miscHashedDeleted) .
+					' from misc->hashed' .
 					($this->completion > 0
 						? ', ' . number_format($completionDeleted) . ' under ' . $this->completion . '% completion.'
 						: '.'
@@ -1323,7 +1375,8 @@ class ProcessReleases
 
 			$totalDeleted = (
 				$retentionDeleted + $passwordDeleted + $duplicateDeleted + $disabledCategoryDeleted +
-				$disabledGenreDeleted + $miscRetentionDeleted + $completionDeleted + $categoryMinSizeDeleted
+				$disabledGenreDeleted + $miscRetentionDeleted + $miscHashedDeleted + $completionDeleted +
+				$categoryMinSizeDeleted
 			);
 			if ($totalDeleted > 0) {
 				$this->pdo->log->doEcho(

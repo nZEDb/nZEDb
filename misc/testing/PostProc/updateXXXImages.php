@@ -53,19 +53,23 @@ foreach ($itr as $filePath) {
 }
 
 $qry = $pdo->queryDirect("SELECT id FROM xxxinfo WHERE cover = 1");
-foreach ($qry as $rows) {
-    if (!is_file($path2covers . $rows['id'] . '-cover.jpg')) {
-		$pdo->queryDirect("UPDATE xxxinfo SET cover = 0 WHERE cover = 1 AND id = " . $rows['id']);
-        echo $pdo->log->info($path2covers . $rows['id'] . "-cover.jpg does not exist.");
-		$deleted++;
+if ($qry instanceof Traversable) {
+	foreach ($qry as $rows) {
+		if (!is_file($path2covers . $rows['id'] . '-cover.jpg')) {
+			$pdo->queryDirect("UPDATE xxxinfo SET cover = 0 WHERE cover = 1 AND id = " . $rows['id']);
+			echo $pdo->log->info($path2covers . $rows['id'] . "-cover.jpg does not exist.");
+			$deleted++;
+		}
 	}
 }
 $qry1 = $pdo->queryDirect("SELECT id FROM xxxinfo WHERE backdrop = 1");
-foreach ($qry1 as $rows) {
-    if (!is_file($path2covers . $rows['id'] . '-backdrop.jpg')) {
-        $pdo->queryDirect("UPDATE xxxinfo SET backdrop = 0 WHERE backdrop = 1 AND id = " . $rows['id']);
-        echo $pdo->log->info($path2covers . $rows['id'] . "-backdrop.jpg does not exist.");
-		$deleted++;
+if ($qry1 instanceof Traversable) {
+	foreach ($qry1 as $rows) {
+		if (!is_file($path2covers . $rows['id'] . '-backdrop.jpg')) {
+			$pdo->queryDirect("UPDATE xxxinfo SET backdrop = 0 WHERE backdrop = 1 AND id = " . $rows['id']);
+			echo $pdo->log->info($path2covers . $rows['id'] . "-backdrop.jpg does not exist.");
+			$deleted++;
+		}
 	}
 }
 echo $pdo->log->header($covers . " covers set.");

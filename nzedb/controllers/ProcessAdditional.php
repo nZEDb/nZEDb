@@ -146,6 +146,111 @@ Class ProcessAdditional
 	protected $_supportFileRegex;
 
 	/**
+	 * @var bool
+	 */
+	protected $_echoCLI;
+
+	/**
+	 * @var NNTP
+	 */
+	protected $_nntp;
+
+	/**
+	 * @var ReleaseFiles
+	 */
+	protected $_releaseFiles;
+
+	/**
+	 * @var Categorize
+	 */
+	protected $_categorize;
+
+	/**
+	 * @var NameFixer
+	 */
+	protected $_nameFixer;
+
+	/**
+	 * @var ReleaseExtra
+	 */
+	protected $_releaseExtra;
+
+	/**
+	 * @var ReleaseImage
+	 */
+	protected $_releaseImage;
+
+	/**
+	 * @var Nfo
+	 */
+	protected $_nfo;
+
+	/**
+	 * @var bool
+	 */
+	protected $_extractUsingRarInfo;
+
+	/**
+	 * @var bool
+	 */
+	protected $_alternateNNTP;
+
+	/**
+	 * @var int
+	 */
+	protected $_ffMPEGDuration;
+
+	/**
+	 * @var bool
+	 */
+	protected $_addPAR2Files;
+
+	/**
+	 * @var bool
+	 */
+	protected $_processVideo;
+
+	/**
+	 * @var bool
+	 */
+	protected $_processJPGSample;
+
+	/**
+	 * @var bool
+	 */
+	protected $_processAudioSample;
+
+	/**
+	 * @var bool
+	 */
+	protected $_processMediaInfo;
+
+	/**
+	 * @var bool
+	 */
+	protected $_processAudioInfo;
+
+	/**
+	 * @var bool
+	 */
+	protected $_processPasswords;
+
+	/**
+	 * @var string
+	 */
+	protected $_audioFileRegex;
+
+	/**
+	 * @var string
+	 */
+	protected $_ignoreBookRegex;
+
+	/**
+	 * @var string
+	 */
+	protected $_videoFileRegex;
+
+	/**
 	 * @param array $options Class instances / echo to cli.
 	 */
 	public function __construct(array $options = array())
@@ -234,12 +339,12 @@ Class ProcessAdditional
 
 		// Maximum size of releases in GB.
 		$this->_maxSize =
-			($this->pdo->getSetting('maxsizetopostprocess') != '') ? (int)$this->pdo->getSetting('maxsizetopostprocess') : 100;
+			(string)($this->pdo->getSetting('maxsizetopostprocess') != '') ? $this->pdo->getSetting('maxsizetopostprocess') : 100;
 		$this->_maxSize = ($this->_maxSize === 0 ? '' : 'AND r.size < ' . ($this->_maxSize * 1073741824));
 
 		// Minimum size of releases in MB.
 		$this->_minSize =
-			($this->pdo->getSetting('minsizetopostprocess') != '') ? (int)$this->pdo->getSetting('minsizetopostprocess') : 1;
+			(string)($this->pdo->getSetting('minsizetopostprocess') != '') ? $this->pdo->getSetting('minsizetopostprocess') : 1;
 		$this->_minSize = ($this->_minSize === 0 ? '' : 'AND r.size > ' . ($this->_minSize * 1048576));
 
 		// Use the alternate NNTP provider for downloading Message-ID's ?
@@ -321,7 +426,7 @@ Class ProcessAdditional
 	protected function _setMainTempPath(&$groupID = '', &$guidChar)
 	{
 		// Set up the temporary files folder location.
-		$this->_mainTmpPath = $this->pdo->getSetting('tmpunrarpath');
+		$this->_mainTmpPath = (string)$this->pdo->getSetting('tmpunrarpath');
 
 		// Check if it ends with a dir separator.
 		if (!preg_match('/[\/\\\\]$/', $this->_mainTmpPath)) {
@@ -902,6 +1007,7 @@ Class ProcessAdditional
 					break;
 				}
 
+				$fileName = array();
 				if (preg_match('/[^\/\\\\]*\.[a-zA-Z0-9]*$/', $file['name'], $fileName)) {
 					$fileName = $fileName[0];
 				} else {
@@ -1006,16 +1112,18 @@ Class ProcessAdditional
 			// Get all the compressed files in the temp folder.
 			$files = $this->_getTempDirectoryContents('/.*\.([rz]\d{2,}|rar|zipx?|0{0,2}1)($|[^a-z0-9])/i');
 
-			foreach ($files as $file) {
+			if ($files instanceof Traversable) {
+				foreach ($files as $file) {
 
-				// Check if the file exists.
-				if (is_file($file[0])) {
-					$rarData = @file_get_contents($file[0]);
-					if ($rarData !== false) {
-						$this->_processCompressedData($rarData);
-						$foundCompressedFile = true;
+					// Check if the file exists.
+					if (is_file($file[0])) {
+						$rarData = @file_get_contents($file[0]);
+						if ($rarData !== false) {
+							$this->_processCompressedData($rarData);
+							$foundCompressedFile = true;
+						}
+						@unlink($file[0]);
 					}
-					@unlink($file[0]);
 				}
 			}
 

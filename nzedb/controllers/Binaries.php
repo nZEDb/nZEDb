@@ -610,7 +610,7 @@ class Binaries
 			}
 
 			// If set we are running in partRepair mode.
-			if ($partRepair === true) {
+			if ($partRepair === true && !is_null($missingParts)) {
 				if (!in_array($header['Number'], $missingParts)) {
 					// If article isn't one that is missing skip it.
 					continue;
@@ -1403,6 +1403,7 @@ class Binaries
 	public function isBlackListed($msg, $groupName)
 	{
 		$this->retrieveBlackList();
+		$field = array();
 		$field[self::BLACKLIST_FIELD_SUBJECT]   = $msg['Subject'];
 		$field[self::BLACKLIST_FIELD_FROM]      = $msg['From'];
 		$field[self::BLACKLIST_FIELD_MESSAGEID] = $msg['Message-ID'];

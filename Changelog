@@ -6,6 +6,15 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-08-01 DariusIII
+        * Upd: Codec spam removal update
+2014-08-01 bart39
+	* Fix: UpdateTV for tmux complete sequential.
+	* Fix: Display issues for long titles on predb alpha theme.
+	* Fix: Typo in gamesorter.php causing undefined variable error.
+	* Add: CollectionsCleaning Regex additions.
+	* Fix: offset for groupfixrelnames predbft.
+	* Add: Misc>Hashed Retention Hours #1437
 2014-08-01 tasky
 	* Chg: Scrutinizer recommendations.
 	* Fix: Wrong resource type / __construct fixed
@@ -15,6 +24,8 @@ New updates are grouped by person, at the top of the file.
 	* Chg: More scrutinize recommendations.
 	* Rem: Remove unused variables.
 	* Fix: Wrong var types.
+	* Fix: Type/doc issues.
+	* Chg: Initiate non-initiated arrays, add comments to empty catch blocks.
 2014-08-01 ruhllatio
 	* Mrg: tasky's XXX changes PR #1440
 	* Mrg: dev-tmuxrevamp into dev (please make sure tmux is restarted)
@@ -24,6 +35,7 @@ New updates are grouped by person, at the top of the file.
 	* Chg: Backfill 'All' setting in tmux now runs the multiprocessing script with quantity you set
 		group still runs a more worthless python script, Safe still runs the most worthless python script
 	* Fix: Same fix for basicsequential (tell tmux not to kill the pane every loop and respawn)
+	* Fix: backfill and partrepair counts in tmux
 2014-07-31 ruhllatio
 	* Mrg: tasky's XXX changes PR #1436
 2014-07-31 kevin

@@ -15,6 +15,46 @@ class Music
 	public $pdo;
 
 	/**
+	 * @var bool
+	 */
+	public $echooutput;
+
+	/**
+	 * @var array|bool|string
+	 */
+	public $pubkey;
+
+	/**
+	 * @var array|bool|string
+	 */
+	public $privkey;
+
+	/**
+	 * @var array|bool|string
+	 */
+	public $asstag;
+
+	/**
+	 * @var array|bool|int|string
+	 */
+	public $musicqty;
+
+	/**
+	 * @var array|bool|int|string
+	 */
+	public $sleeptime;
+
+	/**
+	 * @var string
+	 */
+	public $imgSavePath;
+
+	/**
+	 * @var string
+	 */
+	public $renamed;
+
+	/**
 	 * @param array $options Class instances/ echo to CLI.
 	 */
 	public function __construct(array $options = array())
@@ -370,7 +410,10 @@ class Music
 			$amaz = $this->fetchAmazonProperties($title);
 		} else if ($amazdata != null) {
 			$amaz = $amazdata;
+		} else {
+			$amaz = false;
 		}
+
 		if (!$amaz) {
 			return false;
 		}
@@ -536,6 +579,7 @@ class Music
 		try {
 			$result = $obj->searchProducts($title, AmazonProductAPI::MUSIC, "TITLE");
 		} catch (Exception $e) {
+			// Empty because we try another method.
 		}
 
 		// Try MP3 category.
@@ -544,6 +588,7 @@ class Music
 			try {
 				$result = $obj->searchProducts($title, AmazonProductAPI::MP3, "TITLE");
 			} catch (Exception $e) {
+				// Empty because we try another method.
 			}
 		}
 
@@ -553,6 +598,7 @@ class Music
 			try {
 				$result = $obj->searchProducts($title, AmazonProductAPI::DIGITALMUS, "TITLE");
 			} catch (Exception $e) {
+				// Empty because we try another method.
 			}
 		}
 
@@ -562,6 +608,7 @@ class Music
 			try {
 				$result = $obj->searchProducts($title, AmazonProductAPI::MUSICTRACKS, "TITLE");
 			} catch (Exception $e) {
+				// Empty because we exhausted all possibilities.
 			}
 		}
 
@@ -577,7 +624,7 @@ class Music
 		$res = $pdo->queryDirect(sprintf('SELECT searchname, id FROM releases '
 				. 'WHERE musicinfoid IS NULL AND nzbstatus = 1 %s AND categoryid IN (3010, 3040, 3050) '
 				. 'ORDER BY postdate DESC LIMIT %d', $this->renamed, $this->musicqty));
-		if ($res->rowCount() > 0) {
+		if ($res instanceof Traversable && $res->rowCount() > 0) {
 			if ($this->echooutput) {
 				$this->pdo->log->doEcho(
 					$this->pdo->log->header("Processing " . $res->rowCount() .' music release(s).'

@@ -241,7 +241,7 @@ class Users
 					invites, invitedby, userseed, firstname, lastname)
 				VALUES (%s, %s, LOWER(%s), %d, NOW(), %s, MD5(%s), %d, %s, MD5(%s), %s, %s)",
 				$this->pdo->escapeString($userName),
-				$this->pdo->escapeString($password),
+				$this->pdo->escapeString((string)$password),
 				$this->pdo->escapeString($email),
 				$role,
 				$this->pdo->escapeString(($this->pdo->getSetting('storeuserips') == 1 ? $host : '')),
@@ -416,7 +416,7 @@ class Users
 		$this->pdo->queryExec(
 			sprintf(
 				"UPDATE users SET password = %s, userseed = MD5(%s) WHERE id = %d",
-				$this->pdo->escapeString($password),
+				$this->pdo->escapeString((string)$password),
 				$this->pdo->escapeString($this->pdo->uuid()),
 				$userID
 			)
@@ -796,7 +796,7 @@ class Users
 				$this->pdo->queryExec(
 					sprintf(
 						'UPDATE users SET password = %s WHERE id = %d',
-						$this->pdo->escapeString($hash),
+						$this->pdo->escapeString((string)$hash),
 						$userID
 					)
 				);

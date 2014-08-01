@@ -66,7 +66,7 @@ class BasePage
 	{
 		$this->https = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? true : false);
 
-		session_set_cookie_params(0, '/', '', ($this->https === true ? '1' : '0'), 'true');
+		session_set_cookie_params(0, '/', '', $this->https, true);
 		@session_start();
 
 		if (nZEDb_FLOOD_CHECK) {

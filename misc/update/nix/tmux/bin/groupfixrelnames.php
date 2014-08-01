@@ -184,10 +184,10 @@ if (!isset($argv[1])) {
 							LIMIT %s
 							OFFSET %s',
 							$maxperrun,
-							$thread * $maxperrun
+							$thread * $maxperrun - $maxperrun
 						)
 			);
-			if ($pres !== false) {
+			if ($pres instanceof Traversable) {
 				foreach ($pres as $pre) {
 					$namefixer->done = $namefixer->matched = false;
 					$ftmatched = $searched = 0;

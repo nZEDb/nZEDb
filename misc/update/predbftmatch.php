@@ -25,6 +25,7 @@ if (isset($argv[3]) && is_numeric($argv[3])) {
 	$offset = " OFFSET " . $argv[3];
 }
 
+$titles = false;
 //Selects all PreDB Titles to Match Against
 if (isset($argv[1]) && $argv[1] === "all") {
 	$titles = $pdo->queryDirect("SELECT id AS preid, title, source, searched FROM predb
@@ -49,33 +50,34 @@ if (isset($argv[2]) && $argv[2] === "show") {
 	$show = 0;
 }
 
-$total = $titles->rowCount();
-
+$total = ($titles === false ? 0 : $titles->rowCount());
 if ($total > 1) {
 
 	echo $pdo->log->header("\nMatching " . number_format($total) . " PreDB titles against release name or searchname.\n"
 			   . "'.' = No Match Found, '*' = Bad Match Parameters (Flood)\n\n");
 	sleep(2);
 
-	foreach ($titles as $row) {
-		$matched = 0;
-		$searched = 0;
-		$matched = $namefixer->matchPredbFT($row, 1, 1, true, $show);
-		//echo "Pre Title " . $row['title'] . " is translated to search string: ";
-		//echo $pdo->log->header($matched);
-		if ($matched > 0) {
-			$searched = 1;
-			$counted++;
-		} elseif ($matched < 0) {
-			$searched = -6;
-			echo "*";
-		} else {
-			$searched = $row['searched'] - 1;
-			echo ".";
-		}
-		$pdo->queryExec(sprintf("UPDATE predb SET searched = %d WHERE id = %d", $searched, $row['preid']));
-		if (!isset($argv[2]) || $argv[2] !== 'show') {
-			$consoletools->overWritePrimary("Renamed Releases: [" . number_format($counted) . "] " . $consoletools->percentString(++$counter, $total));
+	if ($total instanceof Traversable) {
+		foreach ($titles as $row) {
+			$matched = 0;
+			$searched = 0;
+			$matched = $namefixer->matchPredbFT($row, 1, 1, true, $show);
+			//echo "Pre Title " . $row['title'] . " is translated to search string: ";
+			//echo $pdo->log->header($matched);
+			if ($matched > 0) {
+				$searched = 1;
+				$counted++;
+			} elseif ($matched < 0) {
+				$searched = -6;
+				echo "*";
+			} else {
+				$searched = $row['searched'] - 1;
+				echo ".";
+			}
+			$pdo->queryExec(sprintf("UPDATE predb SET searched = %d WHERE id = %d", $searched, $row['preid']));
+			if (!isset($argv[2]) || $argv[2] !== 'show') {
+				$consoletools->overWritePrimary("Renamed Releases: [" . number_format($counted) . "] " . $consoletools->percentString(++$counter, $total));
+			}
 		}
 	}
 	if ($total > 0) {

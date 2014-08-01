@@ -1143,8 +1143,8 @@ class NNTP extends Net_NNTP_Client
 	protected function _initiateYEncSettings()
 	{
 		// Check if the user wants to use yyDecode or the simple_php_yenc_decode extension.
-		$this->_yyDecoderPath  = ($this->pdo->getSetting('yydecoderpath') != '') ? $this->pdo->getSetting('yydecoderpath') : false;
-		if (strpos($this->_yyDecoderPath, 'simple_php_yenc_decode') !== false) {
+		$this->_yyDecoderPath  = ($this->pdo->getSetting('yydecoderpath') != '') ? (string)$this->pdo->getSetting('yydecoderpath') : false;
+		if (strpos((string)$this->_yyDecoderPath, 'simple_php_yenc_decode') !== false) {
 			if (extension_loaded('simple_php_yenc_decode')) {
 				$this->_yEncExtension = true;
 			} else {

@@ -39,7 +39,7 @@ class IRCScraper extends IRCClient
 
 	/**
 	 * Array of old pre info.
-	 * @var array
+	 * @var array|bool
 	 * @access protected
 	 */
 	protected $_oldPre;
@@ -194,11 +194,11 @@ class IRCScraper extends IRCClient
 				return;
 			}
 
-			if ($this->_categoryIgnoreRegex !== false && preg_match($this->_categoryIgnoreRegex, $matches['category'])) {
+			if ($this->_categoryIgnoreRegex !== false && preg_match((string)$this->_categoryIgnoreRegex, $matches['category'])) {
 				return;
 			}
 
-			if ($this->_titleIgnoreRegex !== false && preg_match($this->_titleIgnoreRegex, $matches['title'])) {
+			if ($this->_titleIgnoreRegex !== false && preg_match((string)$this->_titleIgnoreRegex, $matches['title'])) {
 				return;
 			}
 
