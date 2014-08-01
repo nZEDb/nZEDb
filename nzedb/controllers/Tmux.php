@@ -387,17 +387,12 @@ class Tmux
 	public function proc_query($qry, $bookreqids, $request_hours, $db_name)
 	{
 
-		$this->qry = $qry;
-		$this->bookreqids = $bookreqids;
-		$this->request_hours = $request_hours;
-		$this->db_name = $db_name;
-
 		$proc1 = "SELECT
 				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 5000 AND 5999 AND rageid = -1) AS processtvrage,
 				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 2000 AND 2999 AND imdbid IS NULL) AS processmovies,
 				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid IN (3010, 3040, 3050) AND musicinfoid IS NULL) AS processmusic,
 				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 1000 AND 1999 AND consoleinfoid IS NULL) AS processconsole,
-				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid IN (" . $this->bookreqids . ") AND bookinfoid IS NULL) AS processbooks,
+				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid IN (" . bookreqids . ") AND bookinfoid IS NULL) AS processbooks,
 				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid = 4050 AND gamesinfo_id = 0) AS processgames,
 				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 6000 AND 6040 AND xxxinfo_id = 0) AS processxxx,
 				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND nfostatus BETWEEN -8 AND -1) AS processnfo";
@@ -409,7 +404,7 @@ class Tmux
 		$proc3 = "SELECT
 				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND isrequestid = 1 AND preid = 0 AND reqidstatus = 0) +
 				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND isrequestid = 1 AND preid = 0 AND reqidstatus = -1) +
-				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND isrequestid = 1 AND preid = 0 AND reqidstatus = -3 AND adddate > NOW() - INTERVAL " . $this->request_hours . " HOUR) AS requestid_inprogress,
+				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND isrequestid = 1 AND preid = 0 AND reqidstatus = -3 AND adddate > NOW() - INTERVAL " . request_hours . " HOUR) AS requestid_inprogress,
 				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND isrequestid = 1 AND reqidstatus = 1) AS requestid_matched,
 				(SELECT COUNT(*) FROM releases WHERE preid > 0) AS predb_matched,
 				(SELECT COUNT(DISTINCT(preid)) FROM releases WHERE preid > 0) AS distinct_predb_matched";
@@ -424,7 +419,7 @@ class Tmux
 				(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (now() - INTERVAL backfill_target DAY) < first_record_postdate) AS backfill_groups_days,
 				(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (now() - INTERVAL datediff(curdate(),
 					(SELECT VALUE FROM settings WHERE setting = 'safebackfilldate')) DAY) < first_record_postdate) AS backfill_groups_date",
-				$this->pdo->escapeString($this->db_name)
+				$this->pdo->escapeString(db_name)
 		);
 		$splitpg = "SELECT
 				(SELECT COUNT(*) FROM predb WHERE id IS NOT NULL) AS predb,
@@ -447,7 +442,7 @@ class Tmux
 				(SELECT extract(epoch FROM predate) FROM predb ORDER BY predate DESC LIMIT 1) AS newestpre,
 				(SELECT extract(epoch FROM adddate) FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC LIMIT 1) AS newestrelease";
 
-		switch ((int) $this->qry) {
+		switch ((int) qry) {
 			case 1:
 				return $proc1;
 			case 2:
