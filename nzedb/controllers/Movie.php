@@ -116,7 +116,7 @@ class Movie
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 		$this->releaseImage = ($options['ReleaseImage'] instanceof ReleaseImage ? $options['ReleaseImage'] : new ReleaseImage($this->pdo));
 
-		$this->imdbLanguage = ($this->pdo->getSetting('imdblanguage') != '') ? $this->pdo->getSetting('imdblanguage') : 'en';
+		$this->imdbLanguage = ($this->pdo->getSetting('imdblanguage') != '') ? (string)$this->pdo->getSetting('imdblanguage') : 'en';
 
 		$this->tmdb = ($options['TMDb'] instanceof TMDb ? $options['TMDb'] : new TMDb($this->pdo->getSetting('tmdbkey'), $this->imdbLanguage));
 
@@ -878,7 +878,6 @@ class Movie
 	 */
 	protected function fetchIMDBProperties($imdbId)
 	{
-		$matches = $hit = $results = '';
 		$imdb_regex = array(
 			'title' => '/<title>(.*?)\s?\(.*?<\/title>/i',
 			'tagline' => '/taglines:<\/h4>\s([^<]+)/i',
@@ -893,7 +892,6 @@ class Movie
 			'language' => '/<a href="\/language\/.+\'url\'>(.+)<\/a>/i',
 			'type' => '/<meta property=\'og\:type\' content=\"(.+)\" \/>/i'
 		);
-
 
 		$buffer =
 			nzedb\utility\getUrl(

@@ -1015,8 +1015,8 @@ class Releases
 			$catsrch = $this->categorySQL($cat);
 		} else {
 			$catsrch = '';
-			if ($cat != '-1') {
-				$catsrch = sprintf(' AND (r.categoryid = %d) ', $cat);
+			if ($cat[0] != '-1') {
+				$catsrch = sprintf(' AND (r.categoryid = %d) ', $cat[0]);
 			}
 		}
 

@@ -149,7 +149,7 @@ class IRCClient
 
 	/**
 	 * How many times we've tried to reconnect to IRC.
-	 * @var int
+	 * @var int|string
 	 * @access protected
 	 */
 	protected $_currentRetries = 0;
@@ -265,7 +265,7 @@ class IRCClient
 				return false;
 			}
 
-			if (!is_numeric($port)) {
+			if (!is_numeric($port) || is_double($port)) {
 				echo 'ERROR: IRC port must be a number!' . PHP_EOL;
 				return false;
 			}

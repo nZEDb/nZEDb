@@ -421,7 +421,7 @@ class Console
 		/**
 		echo("Matched: Title Percentage: $titlepercent% between " . strtolower($gameInfo['title']) . " and " . strtolower($con['title']) . ".\n");
 		echo("Matched: Platform Percentage: $platformpercent% \n");
-		**/
+		 **/
 
 		// If the Title is less than 80% Platform must be 100% unless it is XBLA.
 		if ($titlepercent < 70) {
@@ -656,13 +656,11 @@ class Console
 
 	function parseTitle($releasename)
 	{
-		$matches = '';
 		$releasename = preg_replace('/\sMulti\d?\s/i', '', $releasename);
-		$result = array();
+		$result = $title = array();
 
 		// Get name of the game from name of release.
-		preg_match('/^(.+((abgx360EFNet|EFNet\sFULL|FULL\sabgxEFNet|abgx\sFULL|abgxbox360EFNet)\s|illuminatenboard\sorg|Place2(hom|us)e.net|united-forums? co uk|\(\d+\)))?(?P<title>.*?)[\.\-_ \:](v\.?\d\.\d|PAL|NTSC|EUR|USA|JP|ASIA|JAP|JPN|AUS|MULTI(\.?\d{1,2})?|PATCHED|FULLDVD|DVD5|DVD9|DVDRIP|PROPER|REPACK|RETAIL|DEMO|DISTRIBUTION|REGIONFREE|[\. ]RF[\. ]?|READ\.?NFO|NFOFIX|PSX(2PSP)?|PS[2-4]|PSP|PSVITA|WIIU|WII|X\-?BOX|XBLA|X360|3DS|NDS|N64|NGC)/i', $releasename, $matches);
-		if (isset($matches['title'])) {
+		if (preg_match('/^(.+((abgx360EFNet|EFNet\sFULL|FULL\sabgxEFNet|abgx\sFULL|abgxbox360EFNet)\s|illuminatenboard\sorg|Place2(hom|us)e.net|united-forums? co uk|\(\d+\)))?(?P<title>.*?)[\.\-_ \:](v\.?\d\.\d|PAL|NTSC|EUR|USA|JP|ASIA|JAP|JPN|AUS|MULTI(\.?\d{1,2})?|PATCHED|FULLDVD|DVD5|DVD9|DVDRIP|PROPER|REPACK|RETAIL|DEMO|DISTRIBUTION|REGIONFREE|[\. ]RF[\. ]?|READ\.?NFO|NFOFIX|PSX(2PSP)?|PS[2-4]|PSP|PSVITA|WIIU|WII|X\-?BOX|XBLA|X360|3DS|NDS|N64|NGC)/i', $releasename, $matches)) {
 			$title = $matches['title'];
 			// Replace dots, underscores, or brackets with spaces.
 			$result['title'] = preg_replace('/(\.|_|\%20|\[|\])/', ' ', $title);
@@ -681,9 +679,8 @@ class Console
 			}
 		}
 
-		//get the platform of the release
-		preg_match('/[\.\-_ ](?P<platform>XBLA|WiiWARE|N64|SNES|NES|PS[2-4]|PS 3|PSX(2PSP)?|PSP|WIIU|WII|XBOX360|XBOXONE|X\-?BOX|X360|3DS|NDS|N?GC)/i', $releasename, $matches);
-		if (isset($matches['platform'])) {
+		// Get the platform of the release.
+		if (preg_match('/[\.\-_ ](?P<platform>XBLA|WiiWARE|N64|SNES|NES|PS[2-4]|PS 3|PSX(2PSP)?|PSP|WIIU|WII|XBOX360|XBOXONE|X\-?BOX|X360|3DS|NDS|N?GC)/i', $releasename, $matches)) {
 			$platform = $matches['platform'];
 			if (preg_match('/^N?GC$/i', $platform)) {
 				$platform = 'NGC';
@@ -691,7 +688,7 @@ class Console
 			if (preg_match('/^PSX2PSP$/i', $platform)) {
 				$platform = 'PSX';
 			}
-			if (preg_match('/^(XBLA)$/i', $platform)) {
+			if (!empty($title) && preg_match('/^(XBLA)$/i', $platform)) {
 				if (preg_match('/DLC/i', $title)) {
 					$platform = str_replace('XBLA', 'XBOX360', $platform); // baseline single quote
 				}

@@ -13,15 +13,24 @@ Class Cache
 	/**
 	 * Store data on the cache server.
 	 *
-	 * @param string $key        Key we can use to retrieve the data.
-	 * @param string $data       Data to store on the cache server.
-	 * @param int    $expiration Time before the data expires on the cache server.
+	 * @param string       $key        Key we can use to retrieve the data.
+	 * @param string|array $data       Data to store on the cache server.
+	 * @param int          $expiration Time before the data expires on the cache server.
 	 *
 	 * @return bool Success/Failure.
 	 * @access public
 	 */
 	public function set($key, $data, $expiration)
 	{
+		switch (nZEDb_CACHE_TYPE) {
+			case Cache::TYPE_REDIS:
+				$data = ($this->IgBinarySupport ? igbinary_serialize($data) : serialize($data));
+				break;
+			case Cache::TYPE_MEMCACHED:
+				break;
+			default:
+				return false;
+		}
 		if ($this->connected === true && $this->ping() === true) {
 			return $this->server->set($key, $data, $expiration);
 		}
@@ -39,7 +48,16 @@ Class Cache
 	public function get($key)
 	{
 		if ($this->connected === true && $this->ping() === true) {
-			return $this->server->get($key);
+			switch (nZEDb_CACHE_TYPE) {
+				case Cache::TYPE_REDIS:
+					$data = $this->server->get($key);
+					return ($this->IgBinarySupport ? igbinary_unserialize($data) : unserialize($data));
+					break;
+				case Cache::TYPE_MEMCACHED:
+					return $this->server->get($key);
+				default:
+					return false;
+			}
 		}
 		return false;
 	}
@@ -141,6 +159,12 @@ Class Cache
 	 * @var bool
 	 */
 	private $isRedis = true;
+
+	/**
+	 * Does the user have igBinary support and wants to use it?
+	 * @var bool
+	 */
+	private $IgBinarySupport = false;
 
 	/**
 	 * Verify the user's cache settings, try to connect to the cache server.
@@ -290,6 +314,7 @@ Class Cache
 		switch(nZEDb_CACHE_SERIALIZER) {
 			case Cache::SERIALIZER_IGBINARY:
 				if (extension_loaded('igbinary')) {
+					$this->IgBinarySupport = true;
 					if ($this->isRedis === true) {
 						return \Redis::SERIALIZER_IGBINARY;
 					} else {
