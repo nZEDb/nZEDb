@@ -104,7 +104,7 @@ class Backfill
 		}
 
 		$this->_compressedHeaders = ($this->pdo->getSetting('compressedheaders') == 1 ? true : false);
-		$this->_safeBackFillDate = ($this->pdo->getSetting('safebackfilldate') != '') ? $this->pdo->getSetting('safebackfilldate') : '2008-08-14';
+		$this->_safeBackFillDate = ($this->pdo->getSetting('safebackfilldate') != '') ? (string)$this->pdo->getSetting('safebackfilldate') : '2008-08-14';
 		$this->_safePartRepair = ($this->pdo->getSetting('safepartrepair') == 1 ? 'update' : 'backfill');
 		$this->_tablePerGroup = ($this->pdo->getSetting('tablepergroup') == 1 ? true : false);
 	}

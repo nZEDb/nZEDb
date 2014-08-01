@@ -67,7 +67,6 @@ function test_regex($name, $group, $argv)
 			$line3 = preg_replace('/\' \. \$this->e0 \. \'/', $e0, $line1);
 			$line2 = preg_replace('/\' \. \$this->e1/', $e1 . '\'', $line3);
 			$line = preg_replace('/\' \. \$this->e2/', $e2 . '\'', $line2);
-			$matchName = $match = $match1 = '';
 			if (preg_match('/public function (.+)\(\)/', $line, $matchName)) {
 				$groupName = $matchName[1];
 			} else if (preg_match('/if \(preg_match\(\'(.+)\', \$this->subject\, \$match\)\)/', $line, $match)) {
