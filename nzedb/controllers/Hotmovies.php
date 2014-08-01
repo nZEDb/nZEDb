@@ -42,11 +42,11 @@ class Hotmovies
 
 	// Sets the URl to retrieve in _gethmurl
 	protected $getlink = null;
-	protected $response = array();
+	protected $response = null;
 	protected $res = array();
 	protected $html;
 
-	public function __construct($echooutput = true)
+	public function __construct()
 	{
 		$this->html = new simple_html_dom();
 

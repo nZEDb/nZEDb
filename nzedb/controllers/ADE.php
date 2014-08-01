@@ -38,11 +38,12 @@ class ADE
 	protected $trailers = "/trailers";
 
 	protected $url = null;
-	protected $response = array();
+	protected $response = null;
 	protected $res = array();
 	protected $tmprsp = null;
 	protected $html;
 	protected $edithtml;
+	protected $ch;
 
 	public function __construct()
 	{
@@ -318,26 +319,25 @@ class ADE
 	 */
 	private function _getadeurl($trailing = null)
 	{
-		$ch = null;
 		if (isset($trailing)) {
-			$ch = curl_init(self::ADE . $trailing);
+			$this->ch = curl_init(self::ADE . $trailing);
 		}
 		if (isset($this->directlink)) {
-			$ch = curl_init($this->directlink);
+			$this->ch = curl_init($this->directlink);
 			$this->directlink = null;
 		}
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_HEADER, 0);
-		curl_setopt($ch, CURLOPT_VERBOSE, 0);
-		curl_setopt($ch, CURLOPT_USERAGENT, "Firefox/2.0.0.1");
-		curl_setopt($ch, CURLOPT_FAILONERROR, 1);
-		$this->response = curl_exec($ch);
+		curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($this->ch, CURLOPT_HEADER, 0);
+		curl_setopt($this->ch, CURLOPT_VERBOSE, 0);
+		curl_setopt($this->ch, CURLOPT_USERAGENT, "Firefox/2.0.0.1");
+		curl_setopt($this->ch, CURLOPT_FAILONERROR, 1);
+		$this->response = curl_exec($this->ch);
 		if (!$this->response) {
-			curl_close($ch);
+			curl_close($this->ch);
 
 			return false;
 		}
-		curl_close($ch);
+		curl_close($this->ch);
 		return true;
 	}
 
