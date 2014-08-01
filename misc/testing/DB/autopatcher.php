@@ -7,21 +7,10 @@ $pdo = new Settings();
 $DIR = nZEDb_MISC;
 $smarty = new Smarty;
 $dbname = DB_NAME;
-$restart = "false";
 $cli = new ColorCLI();
 
 if (isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "safe")) {
-	$tmux = new Tmux();
-	$running = $tmux->get()->running;
-	$delay = $tmux->get()->monitor_delay;
-
-	if ($running == "1") {
-		$pdo->queryExec("UPDATE tmux SET value = '0' WHERE setting = 'RUNNING'");
-		$sleep = $delay;
-		echo $cli->header("Stopping tmux scripts and waiting $sleep seconds for all panes to shutdown.");
-		sleep($sleep);
-		$restart = "true";
-	}
+	$restart = (new Tmux())->isRunning();
 
 	system("cd $DIR && git pull");
 
@@ -44,7 +33,7 @@ if (isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "safe")) {
 		echo $cli->header("You should clear your smarty template cache at: " . SMARTY_DIR . "templates_c");
 	}
 
-	if ($restart == "true") {
+	if ($restart) {
 		echo $cli->header("Starting tmux scripts.");
 		$pdo->queryExec("UPDATE tmux SET value = '1' WHERE setting = 'RUNNING'");
 	}
