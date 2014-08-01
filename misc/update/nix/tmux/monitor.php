@@ -15,9 +15,6 @@ $tmux = $tRun->get('niceness');
 $tmux_niceness = (isset($tmux->niceness) ? $tmux->niceness : 2);
 
 $runVar['constants'] = $pdo->queryOneRow($tRun->getConstantSettings());
-$runVar['constants']['pre_lim'] = '';
-$runVar['constants']['book_reqids'] = (!empty($runVar['constants']['book_reqids']) ?
-	$runVar['constants']['book_reqids'] : Category::CAT_PARENT_BOOKS);
 
 $PHP = ($tRun->command_exist("php5") ? 'php5' : 'php');
 $PYTHON = ($tRun->command_exist("python3") ? 'python3 -OOu' : 'python -OOu');
@@ -70,11 +67,14 @@ while ($runVar['counts']['iterations'] > 0) {
 	$runVar['settings'] = $pdo->queryOneRow($tRun->getMonitorSettings(), false);
 	$runVar['timers']['query']['tmux_time'] = (time() - $timer01);
 
+	$runVar['settings']['book_reqids'] = (!empty($runVar['settings']['book_reqids'])
+		? $runVar['settings']['book_reqids'] : Category::CAT_PARENT_BOOKS);
+
 	//get usenet connection info
 	$runVar['connections'] = $tOut->getConnectionsInfo($runVar);
 
 	$runVar['modsettings']['clean'] = ($runVar['settings']['post_non'] == 2 ? ' clean ' : ' ');
-	$runVar['constants']['pre_lim'] = ($runVar['counts']['iterations'] == 1 ? '7' : '');
+	$runVar['constants']['pre_lim'] = ($runVar['counts']['iterations'] > 1 ? '7' : '');
 
 	//assign scripts
 	$runVar['scripts']['releases'] = ($runVar['constants']['tablepergroup'] == 0
@@ -100,11 +100,11 @@ while ($runVar['counts']['iterations'] > 0) {
 		$timer02 = time();
 
 		if ($dbtype == 'mysql') {
-			$splitqry = $tRun->proc_query(4, $runVar['constants']['book_reqids'], $runVar['constants']['request_hours'], $db_name);
-			$newOldqry = $tRun->proc_query(6, $runVar['constants']['book_reqids'], $runVar['constants']['request_hours'], $db_name);
+			$splitqry = $tRun->proc_query(4, $runVar['settings']['book_reqids'], $runVar['settings']['request_hours'], $db_name);
+			$newOldqry = $tRun->proc_query(6, $runVar['settings']['book_reqids'], $runVar['settings']['request_hours'], $db_name);
 		} else {
-			$splitqry = $tRun->proc_query(5, $runVar['constants']['book_reqids'], $runVar['constants']['request_hours'], $db_name);
-			$newOldqry = $tRun->proc_query(7, $runVar['constants']['book_reqids'], $runVar['constants']['request_hours'], $db_name);
+			$splitqry = $tRun->proc_query(5, $runVar['settings']['book_reqids'], $runVar['settings']['request_hours'], $db_name);
+			$newOldqry = $tRun->proc_query(7, $runVar['settings']['book_reqids'], $runVar['settings']['request_hours'], $db_name);
 		}
 
 		$splitres = $pdo->queryOneRow($splitqry, false);
@@ -157,17 +157,17 @@ while ($runVar['counts']['iterations'] > 0) {
 		$runVar['timers']['query']['init1_time'] = (time() - $timer01);
 
 		$timer04 = time();
-		$proc1res = $pdo->queryOneRow($tRun->proc_query(1, $runVar['constants']['book_reqids'], $runVar['constants']['request_hours'], $db_name), $tRun->rand_bool($runVar['counts']['iterations']));
+		$proc1res = $pdo->queryOneRow($tRun->proc_query(1, $runVar['settings']['book_reqids'], $runVar['settings']['request_hours'], $db_name), $tRun->rand_bool($runVar['counts']['iterations']));
 		$runVar['timers']['query']['proc1_time'] = (time() - $timer04);
 		$runVar['timers']['query']['proc11_time'] = (time() - $timer01);
 
 		$timer05 = time();
-		$proc2res = $pdo->queryOneRow($tRun->proc_query(2, $runVar['constants']['book_reqids'], $runVar['constants']['request_hours'], $db_name), $tRun->rand_bool($runVar['counts']['iterations']));
+		$proc2res = $pdo->queryOneRow($tRun->proc_query(2, $runVar['settings']['book_reqids'], $runVar['settings']['request_hours'], $db_name), $tRun->rand_bool($runVar['counts']['iterations']));
 		$runVar['timers']['query']['proc2_time'] = (time() - $timer05);
 		$runVar['timers']['query']['proc21_time'] = (time() - $timer01);
 
 		$timer06 = time();
-		$proc3res = $pdo->queryOneRow($tRun->proc_query(3, $runVar['constants']['book_reqids'], $runVar['constants']['request_hours'], $db_name), $tRun->rand_bool($runVar['counts']['iterations']));
+		$proc3res = $pdo->queryOneRow($tRun->proc_query(3, $runVar['settings']['book_reqids'], $runVar['settings']['request_hours'], $db_name), $tRun->rand_bool($runVar['counts']['iterations']));
 		$runVar['timers']['query']['proc3_time'] = (time() - $timer06);
 		$runVar['timers']['query']['proc31_time'] = (time() - $timer01);
 
@@ -293,11 +293,8 @@ while ($runVar['counts']['iterations'] > 0) {
 			$runVar['counts']['diff'][$key] = number_format($proc - $runVar['counts']['start'][$key]);
 
 			//calculate percentages -- if user has no releases, set 0 for each key or this will fail on divide by zero
-			if ($runVar['counts']['now']['releases'] != 0) {
-				$runVar['counts']['percent'][$key] = sprintf("%02s", floor(($proc / $runVar['counts']['now']['releases']) * 100));
-			} else {
-				$runVar['counts']['percent'][$key] = 0;
-			}
+			$runVar['counts']['percent'][$key] = ($runVar['counts']['now']['releases'] > 0
+				? sprintf("%02s", floor(($proc / $runVar['counts']['now']['releases']) * 100)) : 0);
 		}
 
 		$runVar['counts']['now']['total_work'] += $runVar['counts']['now']['work'];
@@ -308,7 +305,7 @@ while ($runVar['counts']['iterations'] > 0) {
 		}
 
 		// Set diff total work count
-		$runVar['counts']['diff']['total_work'] = $runVar['counts']['now']['total_work'] - $runVar['counts']['start']['total_work'];
+		$runVar['counts']['diff']['total_work'] = number_format($runVar['counts']['now']['total_work'] - $runVar['counts']['start']['total_work']);
 	}
 
 	//set kill switches
@@ -322,19 +319,16 @@ while ($runVar['counts']['iterations'] > 0) {
 	);
 
 	//begin update display with screen clear
-	passthru('clear');
+	exec('clear');
 
 	//display monitor header
 	$tOut->displayOutput(1, $runVar);
 
-	if ($runVar['settings']['monitor'] > 0) {
-		//display monitor body
-		$tOut->displayOutput(2, $runVar);
-	}
+	//display monitor body
+	($runVar['settings']['monitor'] > 0 ? $tOut->displayOutput(2, $runVar) : '');
 
-	if ($runVar['settings']['show_query'] == 1) {
-		$tOut->displayOutput(3, $runVar);
-	}
+	//display query block
+	($runVar['settings']['show_query'] == 1 ? $tOut->displayOutput(3, $runVar) : '');
 
 	//begin pane run execution
 	if ($runVar['settings']['is_running'] == 1) {
@@ -368,7 +362,6 @@ while ($runVar['counts']['iterations'] > 0) {
 
 			//run postprocess_releases additional
 			$runVar['timers']['timer3'] = $tRun->runPane('ppadditional', $runVar);
-			var_dump($runVar['timers']['timer3']);
 
 			//run postprocess_releases non amazon
 			$tRun->runPane('nonamazon', $runVar);

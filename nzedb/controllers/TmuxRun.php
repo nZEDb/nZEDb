@@ -353,30 +353,31 @@ class TmuxRun extends Tmux
 	{
 		//run postprocess_releases additional
 		switch (true) {
-			case $runVar['settings']['post'] == 1 && ($runVar['counts']['now']['work'] + $runVar['counts']['now']['apps'] + $runVar['counts']['now']['processxxx']) > 0:
+			case ($runVar['settings']['post'] == 1) && ($runVar['counts']['now']['work'] > 0):
 				$log = $this->writelog($runVar['panes']['two'][0]);
 				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:2.0 'echo \"\033[38;5;${color}m\"; \
 						{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/postprocess.php add $log; date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['post_timer']}' 2>&1 1> /dev/null"
 				);
-				$runVar['timers']['timer3'] = time() - $runVar['timers']['timer3'];
+				$runVar['timers']['timer3'] = time();
 				break;
-			case $runVar['settings']['post'] == 2 && $runVar['counts']['now']['processnfo'] > 0:
+			case ($runVar['settings']['post'] == 2) && ($runVar['counts']['now']['processnfo'] > 0):
 				$log = $this->writelog($runVar['panes']['two'][0]);
 				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:2.0 ' \
 						{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/postprocess.php nfo $log; date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['post_timer']}' 2>&1 1> /dev/null"
 				);
-				$runVar['timers']['timer3'] = time() - $runVar['timers']['timer3'];
+				$runVar['timers']['timer3'] = time();
 				break;
-			case $runVar['settings']['post'] == 3 && ($runVar['counts']['now']['processnfo'] > 0 || $runVar['counts']['now']['work'] + $runVar['counts']['now']['apps'] + $runVar['counts']['now']['processxxx'] > 0):
+			case ($runVar['settings']['post'] == 3) && (($runVar['counts']['now']['processnfo'] > 0) || ($runVar['counts']['now']['work'] > 0)):
 				//run postprocess_releases additional
 				$log = $this->writelog($runVar['panes']['two'][0]);
 				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:2.0 ' \
 						{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/postprocess.php add $log; \
-						{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/postprocess.php nfo $log; date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['post_timer']}' 2>&1 1> /dev/null"
+						{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/postprocess.php nfo $log; \
+						date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['post_timer']}' 2>&1 1> /dev/null"
 				);
-				$runVar['timers']['timer3'] = time() - $runVar['timers']['timer3'];
+				$runVar['timers']['timer3'] = time();
 				break;
-			case $runVar['settings']['post'] != 0 && ($runVar['counts']['now']['processnfo'] == 0) && ($runVar['counts']['now']['work'] + $runVar['counts']['now']['apps'] + $runVar['counts']['now']['processxxx'] == 0):
+			case ($runVar['settings']['post'] != 0) && ($runVar['counts']['now']['processnfo'] == 0) && ($runVar['counts']['now']['work'] == 0):
 				$color = $this->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
 				shell_exec("tmux respawnp -k -t{$runVar['constants']['tmux_session']}:2.0 'echo \"\033[38;5;${color}m\n{$runVar['panes']['two'][0]} has been disabled/terminated by No Misc/Nfo to process\"'");
 				break;
@@ -451,11 +452,13 @@ class TmuxRun extends Tmux
 	protected function _runUpdateTv($runVar)
 	{
 		switch (true) {
-			case $runVar['settings']['update_tv'] == 1 && (time() - $runVar['timers']['timer4'] >= $runVar['settings']['tv_timer'] || $runVar['counts']['iterations'] == 1):
+			case ($runVar['settings']['update_tv'] == 1 && (time() - $runVar['timers']['timer4'] >= $runVar['settings']['tv_timer'])) || ($runVar['counts']['iterations'] == 1):
 				$log = $this->writelog($runVar['panes']['one'][3]);
 				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:1.2 ' \
-						{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/update_theaters.php $log; {$runVar['commands']['_phpn']} {$runVar['paths']['misc']}testing/PostProc/populate_tvrage.php true $log; \
-						{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/update_tvschedule.php $log; {$runVar['commands']['_phpn']} {$runVar['paths']['misc']}testing/PostProc/updateTvRage.php $log; date +\"%D %T\"' 2>&1 1> /dev/null"
+						{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/update_theaters.php $log; \
+						{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}testing/PostProc/populate_tvrage.php true $log; \
+						{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/update_tvschedule.php $log; \
+						{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}testing/PostProc/updateTvRage.php $log; date +\"%D %T\"' 2>&1 1> /dev/null"
 				);
 				$runVar['timers']['timer4'] = time();
 				break;
@@ -476,8 +479,10 @@ class TmuxRun extends Tmux
 		if (($runVar['settings']['update_tv'] == 1) && ((time() - $runVar['timers']['timer4'] >= $runVar['settings']['tv_timer']) || ($runVar['counts']['iterations'] == 1))) {
 			$log = $this->writelog($runVar['panes']['one'][0]);
 			shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:1.0 ' \
-					{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/update_theaters.php $log; {$runVar['commands']['_phpn']} {$runVar['paths']['misc']}testing/PostProc/populate_tvrage.php true $log; \
-                                               {$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/update_tvschedule.php $log; {$runVar['commands']['_phpn']} {$runVar['paths']['misc']}testing/PostProc/updateTvRage.php $log; date +\"%D %T\"' 2>&1 1> /dev/null"
+				{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/update_theaters.php $log; \
+				{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}testing/PostProc/populate_tvrage.php true $log; \
+				{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/update_tvschedule.php $log; \
+				{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}testing/PostProc/updateTvRage.php $log; date +\"%D %T\"' 2>&1 1> /dev/null"
 			);
 			$runVar['timers']['timer4'] = time();
 

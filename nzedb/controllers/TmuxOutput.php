@@ -333,7 +333,7 @@ class TmuxOutput extends Tmux
 			sprintf(
 				"%s(%s)",
 				number_format($runVar['counts']['now']['total_work']),
-				number_format($runVar['counts']['diff']['total_work'])
+				$runVar['counts']['diff']['total_work']
 			),
 			sprintf(
 				"%s(%s)",
