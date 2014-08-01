@@ -52,8 +52,8 @@ class Categorize extends Category
 	 * Then work out which category is applicable for either a group or a binary.
 	 * Returns Category::CAT_MISC if no category is appropriate.
 	 *
-	 * @param string     $releaseName The name to parse.
-	 * @param string|int $groupID     The groupID.
+	 * @param string $releaseName The name to parse.
+	 * @param int    $groupID     The groupID.
 	 *
 	 * @return int The categoryID.
 	 */
