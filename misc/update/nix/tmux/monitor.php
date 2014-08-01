@@ -16,7 +16,8 @@ $tmux_niceness = (isset($tmux->niceness) ? $tmux->niceness : 2);
 
 $runVar['constants'] = $pdo->queryOneRow($tRun->getConstantSettings());
 $runVar['constants']['pre_lim'] = '';
-$runVar['constants']['book_reqids'] = (isset($runVar['constants']['book_reqids']) ? $runVar['constants']['book_reqids'] : Category::CAT_PARENT_BOOKS);
+$runVar['constants']['book_reqids'] = (!empty($runVar['constants']['book_reqids']) ?
+	$runVar['constants']['book_reqids'] : Category::CAT_PARENT_BOOKS);
 
 $PHP = ($tRun->command_exist("php5") ? 'php5' : 'php');
 $PYTHON = ($tRun->command_exist("python3") ? 'python3 -OOu' : 'python -OOu');
