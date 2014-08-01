@@ -35,7 +35,7 @@ class ReleaseImage
 	 *
 	 * @var string
 	 */
-	public $moveimgSavePath;
+	public $movieImgSavePath;
 
 	/**
 	 * Path to save video ogv files.
@@ -58,7 +58,7 @@ class ReleaseImage
 		$this->audSavePath    = nZEDb_COVERS . 'audiosample' . DS; // releases    guid
 		$this->imgSavePath    = nZEDb_COVERS . 'preview'     . DS; // releases    guid
 		$this->jpgSavePath    = nZEDb_COVERS . 'sample'      . DS; // releases    guid
-		$this->movimgSavePath = nZEDb_COVERS . 'movies'      . DS; // releases    imdbid
+		$this->movieImgSavePath = nZEDb_COVERS . 'movies'      . DS; // releases    imdbid
 		$this->vidSavePath    = nZEDb_COVERS . 'video'       . DS; // releases    guid
 
 		/* For reference. *

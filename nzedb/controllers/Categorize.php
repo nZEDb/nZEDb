@@ -31,7 +31,7 @@ class Categorize extends Category
 
 	/**
 	 * Group ID of the releasename we are sorting through.
-	 * @var int
+	 * @var int|string
 	 */
 	protected $groupID;
 
@@ -53,7 +53,7 @@ class Categorize extends Category
 	 * Returns Category::CAT_MISC if no category is appropriate.
 	 *
 	 * @param string     $releaseName The name to parse.
-	 * @param string|int $groupID     The groupID.
+	 * @param int|string $groupID     The groupID.
 	 *
 	 * @return int The categoryID.
 	 */
@@ -1021,6 +1021,7 @@ class Categorize extends Category
 			$this->tmpCat = Category::CAT_GAME_XBOXONE;
 			return true;
 		}
+		return false;
 	}
 
 	public function isGameXBOX()

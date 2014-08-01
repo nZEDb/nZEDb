@@ -14,6 +14,7 @@ class Users
 	const ERR_SIGNUP_UNAMEINUSE = -4;
 	const ERR_SIGNUP_EMAILINUSE = -5;
 	const ERR_SIGNUP_BADINVITECODE = -6;
+	const FAILURE = 0;
 	const SUCCESS = 1;
 
 	const ROLE_GUEST = 0;
@@ -39,6 +40,11 @@ class Users
 	 * @var nzedb\db\Settings
 	 */
 	public $pdo;
+
+	/**
+	 * @var int
+	 */
+	public $password_hash_cost;
 
 	/**
 	 * @param array $options Class instances.
@@ -225,13 +231,17 @@ class Users
 	 */
 	public function add($userName, $firstName, $lastName, $password, $email, $role, $host, $invites = Users::DEFAULT_INVITES, $invitedBy = 0)
 	{
+		$password = $this->hashPassword($password);
+		if (!$password) {
+			return false;
+		}
 		return $this->pdo->queryInsert(
 			sprintf("
 				INSERT INTO users (username, password, email, role, createddate, host, rsstoken,
 					invites, invitedby, userseed, firstname, lastname)
 				VALUES (%s, %s, LOWER(%s), %d, NOW(), %s, MD5(%s), %d, %s, MD5(%s), %s, %s)",
 				$this->pdo->escapeString($userName),
-				$this->pdo->escapeString($this->hashPassword($password)),
+				$this->pdo->escapeString($password),
 				$this->pdo->escapeString($email),
 				$role,
 				$this->pdo->escapeString(($this->pdo->getSetting('storeuserips') == 1 ? $host : '')),
@@ -399,10 +409,14 @@ class Users
 	 */
 	public function updatePassword($userID, $password)
 	{
+		$password = $this->hashPassword($password);
+		if (!$password) {
+			return Users::FAILURE;
+		}
 		$this->pdo->queryExec(
 			sprintf(
 				"UPDATE users SET password = %s, userseed = MD5(%s) WHERE id = %d",
-				$this->pdo->escapeString($this->hashPassword($password)),
+				$this->pdo->escapeString($password),
 				$this->pdo->escapeString($this->pdo->uuid()),
 				$userID
 			)

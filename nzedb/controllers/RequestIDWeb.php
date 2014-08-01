@@ -19,6 +19,11 @@ class RequestIDWeb extends RequestID
 	protected $_preDbID = false;
 
 	/**
+	 * @var int
+	 */
+	protected $_request_hours;
+
+	/**
 	 * Construct.
 	 *
 	 * @param array $options Class instances / Echo to cli?
@@ -52,7 +57,7 @@ class RequestIDWeb extends RequestID
 				self::REQID_NOLL,
 				self::REQID_NONE,
 				$this->_request_hours,
-				(empty($this->groupID) ? '' : ('AND r.group_id = ' . $this->_groupID)),
+				(empty($this->_groupID) ? '' : ('AND r.group_id = ' . $this->_groupID)),
 				$this->_getReqIdGroups(),
 				($this->_maxTime === '' ? '' : sprintf(' AND r.adddate > NOW() - INTERVAL %d HOUR', $this->_maxTime)),
 				$this->_limit

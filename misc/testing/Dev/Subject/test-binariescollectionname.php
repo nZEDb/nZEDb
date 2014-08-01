@@ -11,8 +11,8 @@ else
 	{
 		$groups = new Groups();
 		$grouplist = $groups->getActive();
-		$nntp = new NNTP(['Settings' => $group->pdo]);
-		$binaries = new Binaries(['NNTP' => $nntp, 'Groups' => $groups, 'Settings' => $group->pdo]);
+		$nntp = new NNTP(['Settings' => $groups->pdo]);
+		$binaries = new Binaries(['NNTP' => $nntp, 'Groups' => $groups, 'Settings' => $groups->pdo]);
 		foreach ($grouplist as $group)
 		{
 			if ($nntp->doConnect() !== true) {
@@ -35,7 +35,7 @@ else
 }
 
 /**
- * @param string $group
+ * @param array $group
  * @param Binaries $binaries
  *
  * @return bool

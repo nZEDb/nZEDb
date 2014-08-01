@@ -58,7 +58,7 @@ $releases = $pdo->queryDirect(
 	)
 );
 
-if ($releases !== false) {
+if ($releases instanceof Traversable) {
 
 	$nntp->doConnect();
 

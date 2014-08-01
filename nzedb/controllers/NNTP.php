@@ -980,7 +980,7 @@ class NNTP extends Net_NNTP_Client
 	 */
 	public function decodeYEnc($string)
 	{
-		$encoded = $crc = '';
+		$crc = '';
 		// Extract the yEnc string itself.
 		if (preg_match("/=ybegin.*size=([^ $]+).*\\r\\n(.*)\\r\\n=yend.*size=([^ $\\r\\n]+)(.*)/ims", $string, $encoded)) {
 			if (preg_match('/crc32=([^ $\\r\\n]+)/ims', $encoded[4], $trailer)) {
@@ -991,6 +991,7 @@ class NNTP extends Net_NNTP_Client
 			$encoded     = $encoded[2];
 
 		} else {
+			$encoded = '';
 			return false;
 		}
 

@@ -56,6 +56,11 @@ class PostProcess
 	protected $nameFixer;
 
 	/**
+	 * @var Par2Info
+	 */
+	protected $_par2Info;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param array $options Pass in class instances.

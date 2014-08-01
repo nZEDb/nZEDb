@@ -62,19 +62,21 @@ if ($groups === false) {
 				)
 				WHERE c.filecheck = 3 AND c.filesize = 0";
 
-	foreach ($groups as $group) {
-		echo 'Fixing group ' . $group['id'] . PHP_EOL;
-		$pdo->queryExec(sprintf($query1, 'collections_' . $group['id']), true);
-		$pdo->queryExec(sprintf($query1, 'partrepair_' . $group['id']), true);
-		$pdo->queryExec(sprintf($query2, $group['id']), true);
-		$pdo->queryExec(sprintf($query3, $group['id'], $group['id']), true);
-		foreach ($query4 as $singleQuery) {
-			$pdo->queryExec(sprintf($singleQuery, $group['id']), true);
+	if ($groups instanceof Traversable) {
+		foreach ($groups as $group) {
+			echo 'Fixing group ' . $group['id'] . PHP_EOL;
+			$pdo->queryExec(sprintf($query1, 'collections_' . $group['id']), true);
+			$pdo->queryExec(sprintf($query1, 'partrepair_' . $group['id']), true);
+			$pdo->queryExec(sprintf($query2, $group['id']), true);
+			$pdo->queryExec(sprintf($query3, $group['id'], $group['id']), true);
+			foreach ($query4 as $singleQuery) {
+				$pdo->queryExec(sprintf($singleQuery, $group['id']), true);
+			}
+			$pdo->queryExec(sprintf($query5, $group['id'], $group['id']), true);
+			$pdo->queryExec(sprintf($query6, $group['id'], $group['id'], $group['id'], $group['id']), true);
+			$pdo->queryExec(sprintf($query7, $group['id'], $group['id']), true);
+			echo 'Finished fixing group ' . $group['id'] . PHP_EOL;
 		}
-		$pdo->queryExec(sprintf($query5, $group['id'], $group['id']), true);
-		$pdo->queryExec(sprintf($query6, $group['id'], $group['id'], $group['id'], $group['id']), true);
-		$pdo->queryExec(sprintf($query7, $group['id'], $group['id']), true);
-		echo 'Finished fixing group ' . $group['id'] . PHP_EOL;
+		echo 'All done!' . PHP_EOL;
 	}
-	echo 'All done!' . PHP_EOL;
 }
