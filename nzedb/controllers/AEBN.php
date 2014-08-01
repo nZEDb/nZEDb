@@ -35,6 +35,11 @@ class AEBN
 	// IF a search name matched.
 	protected $searchfound = false;
 
+	protected $whichsite = array();
+	protected $response = array();
+	protected $res = array();
+	protected $html;
+
 	/**
 	 * Sets the variables that used throughout the class
 	 *
@@ -42,8 +47,6 @@ class AEBN
 	public function __construct()
 	{
 		$this->whichsite = array("straight" => self::AEBNSURL, "gay" => self::AEBNGURL);
-		$this->response = array();
-		$this->res = array();
 		$this->html = new simple_html_dom();
 		if (isset($this->cookie)) {
 			@$this->_geturl();

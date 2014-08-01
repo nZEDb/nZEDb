@@ -24,6 +24,7 @@ class Games
 	{
 		$defaults = [
 			'Echo'     => false,
+			'ColorCLI' => null,
 			'Settings' => null,
 		];
 		$options += $defaults;
@@ -474,7 +475,7 @@ class Games
 			foreach ($tmpGenre as $tg) {
 				$genreMatch = $this->matchBrowseNode(ucwords($tg));
 				if ($genreMatch !== false) {
-					$genreName = $genreMatch;
+					$genreName = (string)$genreMatch;
 					break;
 				}
 			}
@@ -793,7 +794,7 @@ class Games
 	}
 
 	/**
-	 * Not in use for future additions.
+	 * See if genre name exists
 	 *
 	 * @param $nodeName
 	 *

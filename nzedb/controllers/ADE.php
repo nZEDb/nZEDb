@@ -37,12 +37,15 @@ class ADE
 	protected $reviews = "/reviews";
 	protected $trailers = "/trailers";
 
+	protected $url = null;
+	protected $response = array();
+	protected $res = array();
+	protected $tmprsp = null;
+	protected $html;
+	protected $edithtml;
+
 	public function __construct()
 	{
-		$this->url = null;
-		$this->response = array();
-		$this->res = array();
-		$this->tmprsp = null;
 		$this->html = new simple_html_dom();
 		$this->edithtml = new simple_html_dom();
 	}
@@ -187,6 +190,7 @@ class ADE
 	 */
 	public function _genres()
 	{
+		$categories = null;
 		$this->tmprsp = str_ireplace("Section Categories", "scat", $this->response);
 		$this->edithtml->load($this->tmprsp);
 		if($ret = $this->edithtml->find("div[class=scat]", 0)){
@@ -314,6 +318,7 @@ class ADE
 	 */
 	private function _getadeurl($trailing = null)
 	{
+		$ch = null;
 		if (isset($trailing)) {
 			$ch = curl_init(self::ADE . $trailing);
 		}
