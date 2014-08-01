@@ -184,7 +184,7 @@ if (!isset($argv[1])) {
 							LIMIT %s
 							OFFSET %s',
 							$maxperrun,
-							$thread * $maxperrun
+							$thread * $maxperrun - $maxperrun
 						)
 			);
 			if ($pres instanceof Traversable) {

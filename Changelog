@@ -12,7 +12,8 @@ New updates are grouped by person, at the top of the file.
 	* Fix: UpdateTV for tmux complete sequential.
 	* Fix: Display issues for long titles on predb alpha theme.
 	* Fix: Typo in gamesorter.php causing undefined variable error.
-	* Add: CollectionSCleaning Regex additions.
+	* Add: CollectionsCleaning Regex additions.
+	* Fix: offset for groupfixrelnames predbft.
 2014-08-01 tasky
 	* Chg: Scrutinizer recommendations.
 	* Fix: Wrong resource type / __construct fixed
