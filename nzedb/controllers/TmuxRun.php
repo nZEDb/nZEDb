@@ -107,6 +107,8 @@ class TmuxRun extends Tmux
 					case 'sharing':
 						$this->_runSharing(($runVar['constants']['nntpproxy'] == 1 ? 4 : 3), $runVar);
 						break;
+					case 'updatetv':
+						return $this->_runUpdateTvFull($runVar);
 				}
 				break;
 		}

@@ -359,6 +359,9 @@ while ($runVar['counts']['iterations'] > 0) {
 		//run sharing regardless of sequential setting
 		$tRun->runPane('sharing', $runVar);
 
+		//update tv and theaters
+		$runVar['timers']['timer4'] = $tRun->runPane('updatetv', $runVar);
+
 		//run these if complete sequential not set
 		if ($runVar['constants']['sequential'] != 2) {
 
@@ -376,9 +379,6 @@ while ($runVar['counts']['iterations'] > 0) {
 
 			//run postprocess_releases non amazon
 			$tRun->runPane('nonamazon', $runVar);
-
-			//update tv and theaters
-			$runVar['timers']['timer4'] = $tRun->runPane('updatetv', $runVar);
 		}
 
 	} else  if ($runVar['settings']['is_running'] === '0') {
