@@ -492,6 +492,13 @@
 				</td>
 			</tr>
 			<tr>
+				<td style="width:180px;"><label for="mischashedretentionhours">Misc->Hashed Retention Hours:</label></td>
+				<td>
+					<input class="short" id="mischashedretentionhours" name="mischashedretentionhours" type="text" value="{$site->mischashedretentionhours}"/>
+					<div class="hint">The number of hours releases categorized as Misc->Hashed will be retained. Set to 0 to disable.</div>
+				</td>
+			</tr>
+			<tr>
 				<td style="width:180px;"><label for="releasecompletion">Release Completion:</label></td>
 				<td>
 					<input class="short" id="releasecompletion" name="releasecompletion" type="text"  value="{$site->releasecompletion}"/>

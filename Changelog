@@ -14,6 +14,7 @@ New updates are grouped by person, at the top of the file.
 	* Fix: Typo in gamesorter.php causing undefined variable error.
 	* Add: CollectionsCleaning Regex additions.
 	* Fix: offset for groupfixrelnames predbft.
+	* Add: Misc>Hashed Retention Hours #1437
 2014-08-01 tasky
 	* Chg: Scrutinizer recommendations.
 	* Fix: Wrong resource type / __construct fixed
