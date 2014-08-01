@@ -28,7 +28,7 @@ class Nfo
 
 	/**
 	 * Max NFO size to process.
-	 * @var string
+	 * @var string|int
 	 * @access private
 	 */
 	private $maxsize;
