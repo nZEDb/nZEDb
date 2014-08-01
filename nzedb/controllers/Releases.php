@@ -1098,6 +1098,7 @@ class Releases
 		}
 
 		if ($orderby == '') {
+			$order = array();
 			$order[0] = 'postdate ';
 			$order[1] = 'desc ';
 		} else {

@@ -1403,6 +1403,7 @@ class Binaries
 	public function isBlackListed($msg, $groupName)
 	{
 		$this->retrieveBlackList();
+		$field = array();
 		$field[self::BLACKLIST_FIELD_SUBJECT]   = $msg['Subject'];
 		$field[self::BLACKLIST_FIELD_FROM]      = $msg['From'];
 		$field[self::BLACKLIST_FIELD_MESSAGEID] = $msg['Message-ID'];

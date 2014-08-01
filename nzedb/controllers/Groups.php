@@ -624,6 +624,7 @@ class Groups
 			return $this->cbppTableNames[$groupKey];
 		}
 
+		$tables = array();
 		$tables['cname']  = 'collections';
 		$tables['bname']  = 'binaries';
 		$tables['pname']  = 'parts';

@@ -536,6 +536,7 @@ class Music
 		try {
 			$result = $obj->searchProducts($title, AmazonProductAPI::MUSIC, "TITLE");
 		} catch (Exception $e) {
+			// Empty because we try another method.
 		}
 
 		// Try MP3 category.
@@ -544,6 +545,7 @@ class Music
 			try {
 				$result = $obj->searchProducts($title, AmazonProductAPI::MP3, "TITLE");
 			} catch (Exception $e) {
+				// Empty because we try another method.
 			}
 		}
 
@@ -553,6 +555,7 @@ class Music
 			try {
 				$result = $obj->searchProducts($title, AmazonProductAPI::DIGITALMUS, "TITLE");
 			} catch (Exception $e) {
+				// Empty because we try another method.
 			}
 		}
 
@@ -562,6 +565,7 @@ class Music
 			try {
 				$result = $obj->searchProducts($title, AmazonProductAPI::MUSICTRACKS, "TITLE");
 			} catch (Exception $e) {
+				// Empty because we exhausted all possibilities.
 			}
 		}
 

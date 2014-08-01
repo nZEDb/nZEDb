@@ -730,6 +730,7 @@ class Games
 			$matches)
 		) {
 			// Replace dots, underscores, or brackets with spaces.
+			$result = array();
 			$result['title'] = str_replace(' RF ', ' ', preg_replace('/(\.|_|\%20|\[|\])/', ' ', $matches['title']));
 			// Needed to add code to handle DLC Properly.
 			if (stripos($result['title'], 'dlc') !== false) {
