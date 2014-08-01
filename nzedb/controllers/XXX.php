@@ -43,6 +43,12 @@ class XXX
 
 	protected $currentRelID;
 
+	protected $movieqty;
+
+	protected $showPasswords;
+
+	protected $cookie;
+
 	/**
 	 * @param array $options Echo to cli / Class instances.
 	 */
@@ -387,14 +393,14 @@ class XXX
 		$iafd = new IAFD();
 		$iafd->searchterm = $xxxmovie;
 		if($iafd->findme() !== false){
-		switch($iafd->classfound){
+		switch($iafd->classused){
 			case "ade":
 				$mov = new ADE();
 				$mov->directlink = $iafd->directurl;
 				$res = $mov->getdirect();
 				$res['title'] = $iafd->title;
-				$res['directurl'] = $iafd->directurl;
-				$this->whichclass = $iafd->classfound;
+				$res['directurl'] = (string)$iafd->directurl;
+				$this->whichclass = $iafd->classused;
 				$this->pdo->log->doEcho($this->pdo->log->primary("Fetching XXX info from IAFD: Adult DVD Empire"));
 				break;
 			case "hm":
@@ -402,8 +408,8 @@ class XXX
 				$mov->directlink = $iafd->directurl;
 				$res = $mov->getdirect();
 				$res['title'] = $iafd->title;
-				$res['directurl'] = $iafd->directurl;
-				$this->whichclass = $iafd->classfound;
+				$res['directurl'] = (string)$iafd->directurl;
+				$this->whichclass = $iafd->classused;
 				$this->pdo->log->doEcho($this->pdo->log->primary("Fetching XXX info from IAFD: Hot Movies"));
 				break;
 			default:
@@ -616,7 +622,7 @@ class XXX
 					$this->currentRelID = $arr['id'];
 
 					$movieName = $this->currentTitle;
-
+					$idcheck = null;
 					if ($this->echooutput) {
 						$this->pdo->log->doEcho($this->pdo->log->primaryOver("Looking up: ") . $this->pdo->log->headerOver($movieName), true);
 						$idcheck = $this->updateXXXInfo($movieName);
@@ -666,7 +672,7 @@ class XXX
 			if ($name !== '') {
 
 				// Replace any foreign words
-				$name = preg_replace('/(brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|latin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish)/i', ' ', $name);
+				$name = preg_replace('/(brazilian|chinese|croatian|danish|deutsch|dutch|english|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|latin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish)/i', ' ', $name);
 				// If we still have any of the words in $followingList, remove them.
 				$name = preg_replace('/' . $followingList . '/i', ' ', $name);
 				// Remove periods, underscored, anything between parenthesis.
