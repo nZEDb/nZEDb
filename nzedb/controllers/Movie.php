@@ -152,7 +152,7 @@ class Movie
 	/**
 	 * Get info for multiple IMDB id's.
 	 *
-	 * @param string $imdbIDs
+	 * @param array $imdbIDs
 	 *
 	 * @return array
 	 */
