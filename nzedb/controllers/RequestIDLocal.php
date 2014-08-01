@@ -100,7 +100,7 @@ class RequestIDLocal extends RequestID
 	protected function _getNewTitle()
 	{
 		if ($this->_requestID === -2) {
-			return $this->_multiLookup($this->_release['groupname'], $this->_release['name']);
+			return $this->_multiLookup();
 		}
 
 		$check = $this->pdo->queryDirect(

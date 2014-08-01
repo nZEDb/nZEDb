@@ -150,7 +150,7 @@ class NNTP extends Net_NNTP_Client
 			$this->doQuit();
 		}
 
-		$ret = $ret2 = $connected = $sslEnabled = $cError = $aError = false;
+		$ret = $connected = $cError = $aError = false;
 
 		// Set variables to connect based on if we are using the alternate provider or not.
 		if (!$alternate) {
@@ -991,7 +991,6 @@ class NNTP extends Net_NNTP_Client
 			$encoded     = $encoded[2];
 
 		} else {
-			$encoded = '';
 			return false;
 		}
 

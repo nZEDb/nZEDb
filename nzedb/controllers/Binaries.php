@@ -368,8 +368,8 @@ class Binaries
 						' Leaving ' . number_format($leaveOver) .
 						" for next pass.\nServer oldest: " . number_format($groupNNTP['first']) .
 						' Server newest: ' . number_format($groupNNTP['last']) .
-						' Local newest: ' . number_format($groupMySQL['last_record']), true
-					)
+						' Local newest: ' . number_format($groupMySQL['last_record'])
+					), true
 				);
 			}
 

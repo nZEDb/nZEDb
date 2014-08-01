@@ -316,9 +316,8 @@ class DB extends \PDO
 	 * @param string     $method   The method where the error occured.
 	 * @param int        $severity The severity of the error.
 	 * @param bool       $exit     Exit or not?
-	 * @param \Exception $e        Previous exception object.
 	 */
-	protected function echoError ($error, $method, $severity, $exit = false, $e = null)
+	protected function echoError($error, $method, $severity, $exit = false)
 	{
 		if ($this->_debug) {
 			$this->debugging->start($method, $error, $severity);
@@ -575,7 +574,7 @@ class DB extends \PDO
 				}
 
 			} else if (!$silent) {
-				$this->echoError($e->getMessage(), 'Exec', 4, false, $e);
+				$this->echoError($e->getMessage(), 'Exec', 4, false);
 
 				if ($this->_debug) {
 					$this->debugging->start("Exec", $query, 6);
@@ -711,7 +710,7 @@ class DB extends \PDO
 				}
 
 			} else {
-				$this->echoError($e->getMessage(), 'queryDirect', 4, false, $e);
+				$this->echoError($e->getMessage(), 'queryDirect', 4, false);
 				if ($this->_debug) {
 					$this->debugging->start("queryDirect", $query, 6);
 				}

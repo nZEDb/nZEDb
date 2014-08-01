@@ -209,6 +209,7 @@ class Tmux
 					(%1\$s 'monitor_delay') AS monitor,
 					(%1\$s 'binaries') AS binaries_run,
 					(%1\$s 'backfill') AS backfill,
+					(%1\$s 'backfill_qty') AS backfill_qty,
 					(%1\$s 'import') AS import,
 					(%1\$s 'nzbs') AS nzbs,
 					(%1\$s 'post') AS post,

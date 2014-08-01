@@ -1121,7 +1121,7 @@ class ProcessReleases
 		$category = new Category(['Settings' => $this->pdo]);
 		$genres = new Genres(['Settings' => $this->pdo]);
 		$passwordDeleted = $duplicateDeleted = $retentionDeleted = $completionDeleted = $disabledCategoryDeleted = 0;
-		$disabledGenreDeleted = $miscRetentionDeleted = $totalDeleted = $categoryMinSizeDeleted = 0;
+		$disabledGenreDeleted = $miscRetentionDeleted = $categoryMinSizeDeleted = 0;
 
 		// Delete old releases and finished collections.
 		if ($this->echoCLI) {

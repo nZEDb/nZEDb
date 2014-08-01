@@ -10,11 +10,16 @@ New updates are grouped by person, at the top of the file.
 	* ---: Test scrutinizer.
 	* Chg: More changes for scrutinizer.
 	* Chg: More scrutinize recommendations.
+	* Rem: Remove unused variables.
 2014-08-01 ruhllatio
 	* Mrg: tasky's XXX changes PR #1440
 	* Mrg: dev-tmuxrevamp into dev (please make sure tmux is restarted)
 	* Fix: Fix typo in tmux monitor output for USP connections
 	* Fix: 'apps' undefined indexes -- remove a few scrutinized breaks
+	* Fix: Backfill disappearing like JB every tmux non sequential loop
+	* Chg: Backfill 'All' setting in tmux now runs the multiprocessing script with quantity you set
+		group still runs a more worthless python script, Safe still runs the most worthless python script
+	* Fix: Same fix for basicsequential (tell tmux not to kill the pane every loop and respawn)
 2014-07-31 ruhllatio
 	* Mrg: tasky's XXX changes PR #1436
 2014-07-31 kevin

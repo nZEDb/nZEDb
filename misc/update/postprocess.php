@@ -111,7 +111,6 @@ switch ($argv[1]) {
 		$postProcess->processMusic();
 		break;
 	case 'pre':
-		$postProcess->processPredb($nntp);
 		break;
 	case 'sharing':
 		$postProcess->processSharing($nntp);

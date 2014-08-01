@@ -70,7 +70,6 @@ function create_guids($live, $delete = false)
 					}
 
 					asort($binary_names);
-					$segment = "";
 					foreach ($nzbfile->file as $file) {
 						if ($file["subject"] == $binary_names[0]) {
 							$segment = $file->segments->segment;

@@ -334,7 +334,7 @@ while ($runVar['counts']['iterations'] > 0) {
 	if ($runVar['settings']['is_running'] === '1') {
 
 		//run main updating function(s)
-		$runVar['timers']['timer5'] = $tRun->runPane('main', $runVar);
+		$tRun->runPane('main', $runVar);
 
 		//run nzb-import
 		$tRun->runPane('import', $runVar);
