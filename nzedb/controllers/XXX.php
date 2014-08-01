@@ -651,9 +651,6 @@ class XXX
 	 */
 	protected function parseXXXSearchName($releaseName)
 	{
-		// Check if it's foreign ?
-		$cat = new Categorize(['Settings' => $this->pdo]);
-		if (!$cat->isMovieForeign($releaseName)) {
 			$name = '';
 			$followingList = '[^\w]((2160|1080|480|720)(p|i)|AC3D|Directors([^\w]CUT)?|DD5\.1|(DVD|BD|BR)(Rip)?|BluRay|divx|HDTV|iNTERNAL|LiMiTED|(Real\.)?Proper|RE(pack|Rip)|Sub\.?(fix|pack)|Unrated|WEB-DL|(x|H)[-._ ]?264|xvid|[Dd][Ii][Ss][Cc](\d+|\s*\d+|\.\d+)|XXX|BTS|DirFix|Trailer|WEBRiP|NFO|BONUS|(19|20)\d\d)[^\w]';
 
@@ -684,11 +681,11 @@ class XXX
 					}
 					$this->currentTitle = $name;
 					return true;
-				}else{
+				} else {
 					$this->pdo->log->doEcho(".", false);
 				}
 			}
-		}
+
 		return false;
 	}
 
