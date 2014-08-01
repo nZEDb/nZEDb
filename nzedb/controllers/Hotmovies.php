@@ -46,7 +46,7 @@ class Hotmovies
 	protected $res = array();
 	protected $html;
 
-	public function __construct($echooutput = true)
+	public function __construct()
 	{
 		$this->html = new simple_html_dom();
 
