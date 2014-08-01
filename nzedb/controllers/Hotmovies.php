@@ -42,11 +42,12 @@ class Hotmovies
 
 	// Sets the URl to retrieve in _gethmurl
 	protected $getlink = null;
+	protected $response = array();
+	protected $res = array();
+	protected $html;
 
 	public function __construct($echooutput = true)
 	{
-		$this->response = array();
-		$this->res = array();
 		$this->html = new simple_html_dom();
 
 		// Set a cookie to override +18 warning.
@@ -172,6 +173,7 @@ class Hotmovies
 	 */
 	public function _genres()
 	{
+		$genres = array();
 		if ($ret = $this->html->find('div.categories',0)) {
 			foreach ($ret->find('a') as $e) {
 				if(stristr($e->title,"->")){

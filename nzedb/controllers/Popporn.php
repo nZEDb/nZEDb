@@ -39,10 +39,12 @@ class Popporn
 	// Sets the directurl for the template and returns it in the array
 	protected $directurl = null;
 
+	protected $response = array();
+	protected $res = array();
+	protected $html;
+
 	public function __construct()
 	{
-		$this->response = array();
-		$this->res = array();
 		$this->html = new simple_html_dom();
 		if (isset($this->cookie)) {
 			@$this->_getpopurl();
@@ -193,6 +195,7 @@ class Popporn
 	{
 		$cast = false;
 		$director = false;
+		$er = array();
 		if ($ret = $this->html->find('div#lside', 0)) {
 			foreach ($ret->find("text") as $e) {
 				$e = trim($e->innertext);
@@ -238,6 +241,7 @@ class Popporn
 	 */
 	public function _genres()
 	{
+		$genres = array();
 		if ($ret = $this->html->find('div[id=thekeywords], p[class=keywords]', 1)) {
 			foreach ($ret->find('a') as $e) {
 				$genres[] = trim($e->plaintext);

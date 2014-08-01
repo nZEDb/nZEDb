@@ -6,7 +6,7 @@ class IAFD {
 
 	public $searchterm = null;
 	public $cookie = null;
-	public $classfound = false;
+	public $classused = null;
 	public $directurl = null;
 	public $title = null;
 
@@ -19,11 +19,12 @@ class IAFD {
 	protected $dosearch = false;
 	protected $dvdfound = false;
 	protected $getredirect = null;
+	protected $response = array();
+	protected $res = array();
+	protected $html;
 
 	public function __construct()
 	{
-		$this->response = array();
-		$this->res = array();
 		$this->html = new simple_html_dom();
 		if (isset($this->cookie)) {
 			@$this->_geturl();
@@ -52,18 +53,18 @@ class IAFD {
 							foreach ($h4->find("a") as $alink) {
 								$compare = trim($alink->innertext);
 								if ($compare === self::ADE && !empty($compare)) {
-									$this->classfound = "ade";
+									$this->classused = "ade";
 									$this->getredirect = self::IAFDURL . trim($alink->href);
 									$this->directurl = $this->_geturl();
-									$this->directurl = preg_replace("/\?(.*)/", "", $this->directurl);
+									$this->directurl = preg_replace('/\?(.*)/', '', $this->directurl);
 									$this->dvdfound = false;
 									break;
 								}
 								if ($compare === self::HM && !empty($compare)) {
-									$this->classfound = "hm";
+									$this->classused = "hm";
 									$this->getredirect = self::IAFDURL . trim($alink->href);
 									$this->directurl = $this->_geturl();
-									$this->directurl = preg_replace("/\?(.*)/", "", $this->directurl);
+									$this->directurl = preg_replace('/\?(.*)/', '', $this->directurl);
 									$this->dvdfound = false;
 									break;
 							}
@@ -72,7 +73,7 @@ class IAFD {
 		}
 		}
 	}
-			if (!isset($this->classfound)) {
+			if (!isset($this->classused)) {
 				return false;
 			} else {
 				return true;
@@ -91,6 +92,8 @@ class IAFD {
 		if ($this->_geturl() === false) {
 			return false;
 		} else {
+			$firsttitle = null;
+			$secondtitle = null;
 			if($ret = $this->html->find("div#moviedata, h2, dt", 0)){
 			if($ret->find("h2",0)){
 				$firsttitle = $ret->find("h2",0)->innertext;
@@ -127,7 +130,7 @@ class IAFD {
 		}
 
 	}
-	private function _geturl($usepost = false)
+	private function _geturl()
 	{
 		if ($this->dosearch === true) {
 			$ch = curl_init(self::IAFDSEARCHURL . urlencode($this->searchterm));
@@ -139,11 +142,6 @@ class IAFD {
 			}
 		}
 
-		if ($usepost === true) {
-			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-			curl_setopt($ch, CURLOPT_POST, 1);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $this->postparams);
-		}
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_HEADER, 0);
 		curl_setopt($ch, CURLOPT_VERBOSE, 0);
