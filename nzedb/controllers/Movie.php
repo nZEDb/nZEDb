@@ -152,7 +152,7 @@ class Movie
 	/**
 	 * Get info for multiple IMDB id's.
 	 *
-	 * @param string $imdbIDs
+	 * @param array $imdbIDs
 	 *
 	 * @return array
 	 */
@@ -764,6 +764,7 @@ class Movie
 			if ($buffer !== false) {
 				$art = @simplexml_load_string($buffer);
 				if ($art !== false) {
+					$ret = array();
 					if (isset($art->movie->moviebackgrounds->moviebackground[0]['url'])) {
 						$ret['backdrop'] = $art->movie->moviebackgrounds->moviebackground[0]['url'];
 					} else if (isset($art->movie->moviethumbs->moviethumb[0]['url'])) {

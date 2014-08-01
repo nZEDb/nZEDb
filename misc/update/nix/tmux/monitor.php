@@ -331,7 +331,7 @@ while ($runVar['counts']['iterations'] > 0) {
 	($runVar['settings']['show_query'] == 1 ? $tOut->displayOutput(3, $runVar) : '');
 
 	//begin pane run execution
-	if ($runVar['settings']['is_running'] == 1) {
+	if ($runVar['settings']['is_running'] === '1') {
 
 		//run main updating function(s)
 		$runVar['timers']['timer5'] = $tRun->runPane('main', $runVar);
@@ -370,7 +370,7 @@ while ($runVar['counts']['iterations'] > 0) {
 			$runVar['timers']['timer4'] = $tRun->runPane('updatetv', $runVar);
 		}
 
-	} else  if ($runVar['settings']['is_running'] == 0) {
+	} else  if ($runVar['settings']['is_running'] === '0') {
 		$tRun->runPane('notrunning', $runVar);
 	}
 

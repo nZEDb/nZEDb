@@ -55,7 +55,7 @@ Class Sharing
 
 	/**
 	 * Array containing site settings.
-	 * @var array
+	 * @var array|bool
 	 * @access protected
 	 */
 	protected $siteSettings = array();

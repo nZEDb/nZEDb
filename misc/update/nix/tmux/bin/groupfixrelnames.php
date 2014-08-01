@@ -33,7 +33,7 @@ if (!isset($argv[1])) {
 								$maxperrun
 							)
 			);
-			if ($releases !== false) {
+			if ($releases instanceof Traversable) {
 				foreach ($releases as $release) {
 					if (preg_match('/^=newz\[NZB\]=\w+/', $release['textstring'])) {
 						$namefixer->done = $namefixer->matched = false;
@@ -66,7 +66,7 @@ if (!isset($argv[1])) {
 								$maxperrun
 							)
 			);
-			if ($releases !== false) {
+			if ($releases instanceof Traversable) {
 				foreach ($releases as $release) {
 					$namefixer->done = $namefixer->matched = false;
 					if ($namefixer->checkName($release, true, 'Filenames, ', 1, 1) !== true) {
@@ -93,7 +93,7 @@ if (!isset($argv[1])) {
 								$maxperrun
 							)
 			);
-			if ($releases !== false) {
+			if ($releases instanceof Traversable) {
 				foreach ($releases as $release) {
 					if (preg_match('/[a-fA-F0-9]{32,40}/i', $release['name'], $matches)) {
 						$namefixer->matchPredbHash($matches[0], $release, 1, 1, true, 1);
@@ -121,7 +121,7 @@ if (!isset($argv[1])) {
 								$maxperrun
 							)
 			);
-			if ($releases !== false) {
+			if ($releases instanceof Traversable) {
 				$nntp = new NNTP(['Settings' => $pdo]);
 				if (($pdo->getSetting('alternate_nntp') == '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
 					exit($pdo->log->error("Unable to connect to usenet."));
@@ -157,7 +157,7 @@ if (!isset($argv[1])) {
 								$maxperrun
 							)
 			);
-			if ($releases !== false) {
+			if ($releases instanceof Traversable) {
 				$nntp = new NNTP(['Settings' => $pdo]);
 				if (($pdo->getSetting('alternate_nntp') == '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
 					exit($pdo->log->error("Unable to connect to usenet."));

@@ -141,6 +141,12 @@ class Binaries
 	protected $_blackListEmpty = false;
 
 	/**
+	 * Max tries to download headers.
+	 * @var int
+	 */
+	protected $_partRepairMaxTries;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param array $options Class instances / echo to CLI?
@@ -479,11 +485,11 @@ class Binaries
 	/**
 	 * Loop over range of wanted headers, insert headers into DB.
 	 *
-	 * @param array  $groupMySQL   The group info from mysql.
-	 * @param int    $first        The oldest wanted header.
-	 * @param int    $last         The newest wanted header.
-	 * @param string $type         Is this partrepair or update or backfill?
-	 * @param null   $missingParts If we are running in partrepair, the list of missing article numbers.
+	 * @param array      $groupMySQL   The group info from mysql.
+	 * @param int        $first        The oldest wanted header.
+	 * @param int        $last         The newest wanted header.
+	 * @param string     $type         Is this partrepair or update or backfill?
+	 * @param null|array $missingParts If we are running in partrepair, the list of missing article numbers.
 	 *
 	 * @return array Empty on failure.
 	 */

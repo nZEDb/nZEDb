@@ -12,6 +12,11 @@ class ConsoleTools
 	public $cli;
 
 	/**
+	 * @var int
+	 */
+	public $lastMessageLength;
+
+	/**
 	 * Construct.
 	 */
 	public function __construct(array $options = array())
