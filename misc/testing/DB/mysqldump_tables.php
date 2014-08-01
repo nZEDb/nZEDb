@@ -12,11 +12,10 @@ if ($pdo->dbSystem() === "pgsql") {
 }
 
 $exportopts = "";
-$mysqlplatform = "";
 
 //determine mysql platform Percona or Other
 if($pdo->dbSystem() === "mysql") {
-	$mysqlplatform = exec('mysqladmin version | grep "Percona"', $mysqlplatform);
+	$mysqlplatform = exec('mysqladmin version | grep "Percona"');
 	if (strlen($mysqlplatform) > 0) {
 		//Percona only has --innodb-optimize-keys
 		$exportopts = "--opt --innodb-optimize-keys --complete-insert --skip-quick";

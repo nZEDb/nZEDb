@@ -122,7 +122,6 @@ function preName($argv, $argc)
 				}
 			}
 			if ($cleanName != '') {
-				$match = '';
 				if (preg_match('/alt\.binaries\.e\-?book(\.[a-z]+)?/', $groupname)) {
 					if (preg_match('/^[0-9]{1,6}-[0-9]{1,6}-[0-9]{1,6}$/', $cleanName, $match)) {
 						$rf = new ReleaseFiles($pdo);
@@ -217,41 +216,27 @@ function preName($argv, $argc)
 	}
 	$timestart = TIME();
 	if (isset($argv[1]) && is_numeric($argv[1])) {
-		$relcount = categorizeRelease("searchname", "WHERE (iscategorized = 0 OR categoryID = 7010) AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
+		$relcount = catRelease("searchname", "WHERE (iscategorized = 0 OR categoryID = 7010) AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
 	} else if (isset($argv[2]) && preg_match('/\([\d, ]+\)/', $argv[2]) && $full === true) {
-		$relcount = categorizeRelease("searchname", str_replace(" AND", "WHERE", $where) . " AND iscategorized = 0 ", true);
+		$relcount = catRelease("searchname", str_replace(" AND", "WHERE", $where) . " AND iscategorized = 0 ", true);
 	} else if (isset($argv[2]) && preg_match('/\([\d, ]+\)/', $argv[2]) && $all === true) {
-		$relcount = categorizeRelease("searchname", str_replace(" AND", "WHERE", $where), true);
+		$relcount = catRelease("searchname", str_replace(" AND", "WHERE", $where), true);
 	} else if (isset($argv[2]) && is_numeric($argv[2]) && $argv[1] == "full") {
-		$relcount = categorizeRelease("searchname", str_replace(" AND", "WHERE", $where) . " AND iscategorized = 0 ", true);
+		$relcount = catRelease("searchname", str_replace(" AND", "WHERE", $where) . " AND iscategorized = 0 ", true);
 	} else if (isset($argv[2]) && is_numeric($argv[2]) && $argv[1] == "all") {
-		$relcount = categorizeRelease("searchname", str_replace(" AND", "WHERE", $where), true);
+		$relcount = catRelease("searchname", str_replace(" AND", "WHERE", $where), true);
 	} else if (isset($argv[1]) && $argv[1] == "full") {
-		$relcount = categorizeRelease("searchname", "WHERE categoryID = 7010 OR iscategorized = 0", true);
+		$relcount = catRelease("searchname", "WHERE categoryID = 7010 OR iscategorized = 0", true);
 	} else if (isset($argv[1]) && $argv[1] == "all") {
-		$relcount = categorizeRelease("searchname", "", true);
+		$relcount = catRelease("searchname", "", true);
 	} else if (isset($argv[1]) && $argv[1] == "preid") {
-		$relcount = categorizeRelease("searchname", "WHERE preid = 0 AND nzbstatus = 1", true);
+		$relcount = catRelease("searchname", "WHERE preid = 0 AND nzbstatus = 1", true);
 	} else {
-		$relcount = categorizeRelease("searchname", "WHERE (iscategorized = 0 OR categoryID = 7010) AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
+		$relcount = catRelease("searchname", "WHERE (iscategorized = 0 OR categoryID = 7010) AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
 	}
 	$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 	$time = $consoletools->convertTime(TIME() - $timestart);
 	echo $pdo->log->header("Finished categorizing " . number_format($relcount) . " releases in " . $time . " seconds, using the usenet subject.\n");
-	/*
-	  if (isset($argv[1]) && $argv[1] !== "all") {
-	  echo $pdo->log->header("Categorizing all non-categorized releases in other->misc using searchname. This can take a while, be patient.");
-	  $timestart1 = TIME();
-	  if (isset($argv[2]) && is_numeric($argv[2])) {
-	  $relcount = categorizeRelease("name", str_replace(" AND", "WHERE", $where), true);
-	  } else {
-	  $relcount = categorizeRelease("searchname", "WHERE (iscategorized = 0 OR categoryID = 7010) AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
-	  }
-	  $consoletools1 = new ConsoleTools();
-	  $time1 = $consoletools1->convertTime(TIME() - $timestart1);
-	  echo $pdo->log->header("Finished categorizing " . number_format($relcount) . " releases in " . $time1 . " seconds, using the searchname.\n");
-	  }
-	 */
 	resetSearchnames();
 }
 
@@ -281,7 +266,7 @@ function resetSearchnames()
 // Categorizes releases.
 // $type = name or searchname
 // Returns the quantity of categorized releases.
-function categorizeRelease($type, $where, $echooutput = false)
+function catRelease($type, $where, $echooutput = false)
 {
 	global $pdo;
 	$cat = new Categorize(['Settings' => $pdo]);

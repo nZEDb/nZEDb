@@ -111,7 +111,7 @@ class Binaries
 	/**
 	 * Should we show dropped yEnc to CLI?
 	 *
-	 * @var int
+	 * @var bool
 	 */
 	protected $_showDroppedYEncParts;
 
