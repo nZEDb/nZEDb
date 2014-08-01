@@ -234,12 +234,12 @@ Class ProcessAdditional
 
 		// Maximum size of releases in GB.
 		$this->_maxSize =
-			($this->pdo->getSetting('maxsizetopostprocess') != '') ? (int)$this->pdo->getSetting('maxsizetopostprocess') : 100;
+			(string)($this->pdo->getSetting('maxsizetopostprocess') != '') ? $this->pdo->getSetting('maxsizetopostprocess') : 100;
 		$this->_maxSize = ($this->_maxSize === 0 ? '' : 'AND r.size < ' . ($this->_maxSize * 1073741824));
 
 		// Minimum size of releases in MB.
 		$this->_minSize =
-			($this->pdo->getSetting('minsizetopostprocess') != '') ? (int)$this->pdo->getSetting('minsizetopostprocess') : 1;
+			(string)($this->pdo->getSetting('minsizetopostprocess') != '') ? $this->pdo->getSetting('minsizetopostprocess') : 1;
 		$this->_minSize = ($this->_minSize === 0 ? '' : 'AND r.size > ' . ($this->_minSize * 1048576));
 
 		// Use the alternate NNTP provider for downloading Message-ID's ?
@@ -321,7 +321,7 @@ Class ProcessAdditional
 	protected function _setMainTempPath(&$groupID = '', &$guidChar)
 	{
 		// Set up the temporary files folder location.
-		$this->_mainTmpPath = $this->pdo->getSetting('tmpunrarpath');
+		$this->_mainTmpPath = (string)$this->pdo->getSetting('tmpunrarpath');
 
 		// Check if it ends with a dir separator.
 		if (!preg_match('/[\/\\\\]$/', $this->_mainTmpPath)) {
@@ -902,6 +902,7 @@ Class ProcessAdditional
 					break;
 				}
 
+				$fileName = array();
 				if (preg_match('/[^\/\\\\]*\.[a-zA-Z0-9]*$/', $file['name'], $fileName)) {
 					$fileName = $fileName[0];
 				} else {

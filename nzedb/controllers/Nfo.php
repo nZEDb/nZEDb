@@ -109,9 +109,9 @@ class Nfo
 		$this->maxsize = ($this->maxsize > 0 ? ('AND size < ' . ($this->maxsize * 1073741824)) : '');
 		$this->minsize = ($this->pdo->getSetting('minsizetoprocessnfo') != '') ? (int)$this->pdo->getSetting('minsizetoprocessnfo') : 100;
 		$this->minsize = ($this->minsize > 0 ? ('AND size > ' . ($this->minsize * 1048576)) : '');
-		$this->maxRetries = ($this->pdo->getSetting('maxnforetries') >= 0 ? -($this->pdo->getSetting('maxnforetries') + 1) : self::NFO_UNPROC);
+		$this->maxRetries = (int)($this->pdo->getSetting('maxnforetries') >= 0 ? -((int)$this->pdo->getSetting('maxnforetries') + 1) : self::NFO_UNPROC);
 		$this->maxRetries = ($this->maxRetries < -8 ? -8 : $this->maxRetries);
-		$this->tmpPath = $this->pdo->getSetting('tmpunrarpath');
+		$this->tmpPath = (string)$this->pdo->getSetting('tmpunrarpath');
 		if (!preg_match('/[\/\\\\]$/', $this->tmpPath)) {
 			$this->tmpPath .= DS;
 		}

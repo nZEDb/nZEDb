@@ -9,7 +9,7 @@ $AniDB = new AniDB(['Settings' => $page->settings]);
 if (isset($_GET["id"]) && ctype_digit($_GET['id'])) {
 
 	# force the category to 5070 as it should be for anime, as $catarray was NULL and we know the category for sure for anime
-	$release = $Releases->searchbyAnidbId($_GET["id"], '', 0, 1000, "", "5070", -1);
+	$release = $Releases->searchbyAnidbId($_GET["id"], '', 0, 1000, "", array("5070"), -1);
 	$AniDBAPIArray = $AniDB->getAnimeInfo($_GET['id']);
 	if (!$release && !$AniDBAPIArray) {
 		$page->show404();

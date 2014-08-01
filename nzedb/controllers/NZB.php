@@ -91,7 +91,7 @@ class NZB
 		$this->tablePerGroup = ($this->pdo->getSetting('tablepergroup') == 0 ? false : true);
 		$nzbSplitLevel = $this->pdo->getSetting('nzbsplitlevel');
 		$this->nzbSplitLevel = (empty($nzbSplitLevel) ? 1 : $nzbSplitLevel);
-		$this->siteNzbPath = $this->pdo->getSetting('nzbpath');
+		$this->siteNzbPath = (string)$this->pdo->getSetting('nzbpath');
 		if (substr($this->siteNzbPath, -1) !== DS) {
 			$this->siteNzbPath .= DS;
 		}
