@@ -36,8 +36,7 @@ class TmuxRun extends Tmux
 						$this->_runNZBImport($runVar);
 						break;
 					case 'main':
-						$this->_runMainNon($runVar);
-						break;
+						return $this->_runMainNon($runVar);
 					case 'nonamazon':
 						$this->_runNonAmazon($runVar);
 						break;
@@ -304,8 +303,9 @@ class TmuxRun extends Tmux
 
 		} else if (($runVar['settings']['backfill'] != 0) && ($runVar['killswitch']['coll'] == false) && ($runVar['killswitch']['pp'] == false) && (time() - $runVar['timers']['timer5'] >= 4800)) {
 			$log = $this->writelog($runVar['panes']['zero'][3]);
-			shell_exec("tmux respawnp -k -t{$runVar['constants']['tmux_session']}:0.3 ' \
-					{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_threaded.py all $log; date +\"%D %T\"; {$runVar['commands']['_sleep']} $backsleep' 2>&1 1> /dev/null"
+			shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.3 ' \
+					{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/nix/multiprocessing/backfill.php {$runVar['settings']['backfill_qty']} $log; \
+					date +\"%D %T\"; {$runVar['commands']['_sleep']} $backsleep' 2>&1 1> /dev/null"
 			);
 			$runVar['timers']['timer5'] = time();
 

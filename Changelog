@@ -15,6 +15,9 @@ New updates are grouped by person, at the top of the file.
 	* Mrg: dev-tmuxrevamp into dev (please make sure tmux is restarted)
 	* Fix: Fix typo in tmux monitor output for USP connections
 	* Fix: 'apps' undefined indexes -- remove a few scrutinized breaks
+	* Fix: Backfill disappearing like JB every tmux non sequential loop
+	* Chg: Backfill 'All' setting in tmux now runs the multiprocessing script with quantity you set
+		group still runs a more worthless python script, Safe still runs the most worthless python script
 2014-07-31 ruhllatio
 	* Mrg: tasky's XXX changes PR #1436
 2014-07-31 kevin
