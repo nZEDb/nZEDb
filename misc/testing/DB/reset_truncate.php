@@ -23,19 +23,11 @@ if (isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "drop")) {
 	$tablepergroup = (!empty($tpg)) ? $tpg : 0;
 
 	if ($tablepergroup == 1) {
-		if ($pdo->dbSystem() === 'mysql') {
-			$sql = 'SHOW table status';
-		} else {
-			$sql = "SELECT relname FROM pg_class WHERE relname !~ '^(pg_|sql_)' AND relkind = 'r'";
-		}
+		$sql = 'SHOW table status';
 
 		$tables = $pdo->query($sql);
 		foreach ($tables as $row) {
-			if ($pdo->dbSystem() === 'mysql') {
-				$tbl = $row['name'];
-			} else {
-				$tbl = $row['relname'];
-			}
+			$tbl = $row['name'];
 			if (preg_match('/collections_\d+/', $tbl) || preg_match('/binaries_\d+/', $tbl) || preg_match('/parts_\d+/', $tbl) || preg_match('/partrepair_\d+/', $tbl) || preg_match('/\d+_collections/', $tbl) || preg_match('/\d+_binaries/', $tbl) || preg_match('/\d+_parts/', $tbl) || preg_match('/\d+_partrepair_\d+/', $tbl)) {
 				if ($argv[1] == "drop") {
 					$rel = $pdo->queryDirect(sprintf('DROP TABLE %s', $tbl));

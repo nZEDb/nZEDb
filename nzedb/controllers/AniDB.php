@@ -59,18 +59,12 @@ class AniDB
 	public function getanidbID($title)
 	{
 		$pdo = $this->pdo;
-		$anidbID = "";
-		if ($pdo->dbSystem() === 'mysql') {
-			$query = sprintf('SELECT anidbid as anidbid FROM animetitles WHERE title REGEXP %s LIMIT 1', $pdo->escapeString('^' . $title . '$'));
-			$anidbID = $pdo->queryOneRow($query);
+		$query = sprintf('SELECT anidbid as anidbid FROM animetitles WHERE title REGEXP %s LIMIT 1', $pdo->escapeString('^' . $title . '$'));
+		$anidbID = $pdo->queryOneRow($query);
 
-			// if the first query failed try it again using like as we have a change for a match
-			if ($anidbID == False) {
-				$query = sprintf('SELECT anidbid as anidbid FROM animetitles WHERE title LIKE %s LIMIT 1', $pdo->escapeString('%' . $title . '%'));
-				$anidbID = $pdo->queryOneRow($query);
-			}
-		} else {
-			$query = sprintf('SELECT anidbid as anidbid FROM animetitles WHERE title ~ %s LIMIT 1', $pdo->escapeString('^' . $title . '$'));
+		// if the first query failed try it again using like as we have a change for a match
+		if ($anidbID == False) {
+			$query = sprintf('SELECT anidbid as anidbid FROM animetitles WHERE title LIKE %s LIMIT 1', $pdo->escapeString('%' . $title . '%'));
 			$anidbID = $pdo->queryOneRow($query);
 		}
 
@@ -81,13 +75,8 @@ class AniDB
 	{
 		$pdo = $this->pdo;
 
-		if ($pdo->dbSystem() === 'mysql') {
-			$regex = 'REGEXP';
-			$like = 'LIKE';
-		} else {
-			$regex = '~';
-			$like = 'ILIKE';
-		}
+		$regex = 'REGEXP';
+		$like = 'LIKE';
 
 		$rsql = '';
 		if ($letter != '') {
@@ -115,10 +104,7 @@ class AniDB
 
 		$rsql = '';
 		if ($animetitle != '') {
-			if ($pdo->dbSystem() === 'mysql')
-				$rsql = sprintf('AND anidb.title LIKE %s', $pdo->escapeString('%' . $animetitle . '%'));
-			else
-				$rsql = sprintf('AND anidb.title ILIKE %s', $pdo->escapeString('%' . $animetitle . '%'));
+			$rsql = sprintf('AND anidb.title LIKE %s', $pdo->escapeString('%' . $animetitle . '%'));
 		}
 
 		return $pdo->query(sprintf('SELECT anidbid, title, description FROM anidb WHERE 1=1 %s ORDER BY anidbid ASC' . $limit, $rsql));
@@ -130,10 +116,7 @@ class AniDB
 
 		$rsql = '';
 		if ($animetitle != '') {
-			if ($pdo->dbSystem() === 'mysql')
-				$rsql .= sprintf('AND anidb.title LIKE %s', $pdo->escapeString('%' . $animetitle . '%'));
-			else
-				$rsql .= sprintf('AND anidb.title ILIKE %s', $pdo->escapeString('%' . $animetitle . '%'));
+			$rsql .= sprintf('AND anidb.title LIKE %s', $pdo->escapeString('%' . $animetitle . '%'));
 		}
 
 		$res = $pdo->queryOneRow(sprintf('SELECT COUNT(anidbid) AS num FROM anidb WHERE 1=1 %s', $rsql));

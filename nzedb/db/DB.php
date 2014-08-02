@@ -7,7 +7,7 @@ use \nzedb\libraries\CacheException;
 //use nzedb\controllers\ColorCLI;
 
 /**
- * Class for handling connection to database (MySQL or PostgreSQL) using PDO.
+ * Class for handling connection to MySQL database using PDO.
  *
  * The class extends PDO, thereby exposing all of PDO's functionality directly
  * without the need to wrap each and every method here.
@@ -333,7 +333,7 @@ class DB extends \PDO
 	}
 
 	/**
-	 * @return string mysql or pgsql.
+	 * @return string mysql.
 	 */
 	public function DbSystem()
 	{
@@ -492,16 +492,9 @@ class DB extends \PDO
 				$run->execute();
 				return $run;
 			} else {
-				if ($this->dbSystem === 'mysql') {
-					$ins = self::$pdo->prepare($query);
-					$ins->execute();
-					return self::$pdo->lastInsertId();
-				} else {
-					$p = self::$pdo->prepare($query . ' RETURNING id');
-					$p->execute();
-					$r = $p->fetch(\PDO::FETCH_ASSOC);
-					return $r['id'];
-				}
+				$ins = self::$pdo->prepare($query);
+				$ins->execute();
+				return self::$pdo->lastInsertId();
 			}
 
 		} catch (\PDOException $e) {
@@ -618,7 +611,7 @@ class DB extends \PDO
 
 		$result = $this->queryArray($query);
 
-		if ($cache === true && $this->cacheEnabled === true) {
+		if ($result !== false && $cache === true && $this->cacheEnabled === true) {
 			$this->cacheServer->set($this->cacheServer->createKey($query), $result, $cacheExpiry);
 		}
 
@@ -786,7 +779,7 @@ class DB extends \PDO
 	}
 
 	/**
-	 * Optimises/repairs tables on mysql. Vacuum/analyze on postgresql.
+	 * Optimises/repairs tables on mysql.
 	 *
 	 * @param bool   $admin
 	 * @param string $type  'true'    Force optimize of all tables.
@@ -810,7 +803,7 @@ class DB extends \PDO
 		}
 
 		$optimised = 0;
-		if ($tableArray !== false && $tableArray->rowCount() > 0) {
+		if ($tableArray instanceof \Traversable) {
 
 			$tableNames = '';
 			foreach ($tableArray as $table) {
@@ -828,7 +821,7 @@ class DB extends \PDO
 				$this->queryExec('OPTIMIZE LOCAL TABLE ' . $tableNames);
 				$this->logOptimize($admin, 'OPTIMIZE', $tableNames);
 
-				if ($myIsamTables !== false && $myIsamTables->rowCount() > 0) {
+				if ($myIsamTables instanceof \Traversable) {
 					$tableNames = '';
 					foreach ($myIsamTables as $table) {
 						$tableNames .= $table['name'] . ',';
@@ -929,9 +922,8 @@ class DB extends \PDO
 	}
 
 	/**
-	 * Get a string for MySQL or PgSql with a column name in between
-	 * MySQL: UNIX_TIMESTAMP(column_name) AS outputName
-	 * PgSQL: EXTRACT('EPOCH' FROM column_name)::INT AS outputName;
+	 * Get a string for MySQL with a column name in between
+	 * ie: UNIX_TIMESTAMP(column_name) AS outputName
 	 *
 	 * @param string $column     The datetime column.
 	 * @param string $outputName The name to store the SQL data into. (the word after AS)

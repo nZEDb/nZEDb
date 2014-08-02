@@ -16,7 +16,7 @@ switch($action) {
 		} else {
 			$RR = new ReleaseRemover(['Browser' => true, 'Settings' => $page->settings]);
 			$succeeded = $RR->removeByCriteria($values);
-			if (substr($succeeded, 0, 7) === 'Success') {
+			if (is_string($succeeded) && substr($succeeded, 0, 7) === 'Success') {
 				$page->smarty->assign('done', $succeeded);
 			} else {
 				$page->smarty->assign('error', $succeeded);

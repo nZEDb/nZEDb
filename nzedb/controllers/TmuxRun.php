@@ -10,7 +10,7 @@ use nzedb\db\Settings;
 class TmuxRun extends Tmux
 {
 	/**
-	 * @param $pdo Class instances
+	 * @param Settings $pdo
 	 */
 	public function __construct(Settings $pdo = null)
 	{
@@ -48,7 +48,8 @@ class TmuxRun extends Tmux
 					case 'removecrap':
 						return $this->_runRemoveCrap($runVar);
 					case 'scraper':
-						return $this->_runIRCScraper(3, $runVar);
+						$this->_runIRCScraper(3, $runVar);
+						return true;
 					case 'sharing':
 						$this->_runSharing(($runVar['constants']['nntpproxy'] == 1 ? 5 : 4), $runVar);
 						break;
@@ -83,7 +84,8 @@ class TmuxRun extends Tmux
 					case 'removecrap':
 						return $this->_runRemoveCrap($runVar);
 					case 'scraper':
-						return $this->_runIRCScraper(3, $runVar);
+						$this->_runIRCScraper(3, $runVar);
+						return true;
 					case 'sharing':
 						$this->_runSharing(($runVar['constants']['nntpproxy'] == 1 ? 5 : 4), $runVar);
 						break;
@@ -103,7 +105,8 @@ class TmuxRun extends Tmux
 						$this->_notRunningFull($runVar);
 						break;
 					case 'scraper':
-						return $this->_runIRCScraper(2, $runVar);
+						$this->_runIRCScraper(2, $runVar);
+						return true;
 					case 'sharing':
 						$this->_runSharing(($runVar['constants']['nntpproxy'] == 1 ? 4 : 3), $runVar);
 						break;
@@ -112,6 +115,7 @@ class TmuxRun extends Tmux
 				}
 				break;
 		}
+		return false;
 	}
 
 	protected function _runDehash($runVar)
@@ -268,7 +272,7 @@ class TmuxRun extends Tmux
 	protected function _runNonUpdateBinaries($runVar)
 	{
 		//run update_binaries
-		$color = $this->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
+		//$color = $this->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
 		if (($runVar['settings']['binaries_run'] != 0) && ($runVar['killswitch']['coll'] == false) && ($runVar['killswitch']['pp'] == false)) {
 			$log = $this->writelog($runVar['panes']['zero'][2]);
 			shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
@@ -351,6 +355,8 @@ class TmuxRun extends Tmux
 			case 2:
 				$useFilenames = 'true';
 				break;
+			default:
+				$useFilenames = 'false';
 		}
 
 		if (($runVar['settings']['import'] != 0) && ($runVar['killswitch']['pp'] == false)) {
@@ -376,6 +382,7 @@ class TmuxRun extends Tmux
 		switch (true) {
 			case ($runVar['settings']['post'] == 1) && ($runVar['counts']['now']['work'] > 0):
 				$log = $this->writelog($runVar['panes']['two'][0]);
+				$color = $this->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
 				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:2.0 'echo \"\033[38;5;${color}m\"; \
 						{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/postprocess.php add $log; date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['post_timer']}' 2>&1 1> /dev/null"
 				);
@@ -534,74 +541,83 @@ class TmuxRun extends Tmux
 		$log = $this->writelog($runVar['panes']['zero'][2]);
 		if (($runVar['killswitch']['coll'] == false) && ($runVar['killswitch']['pp'] == false) && (time() - $runVar['timers']['timer5'] <= 4800)) {
 
-			$date = 'date +\"%D %T\"';
-			$sleep = sprintf('
-						%s %s',
-						$runVar['commands']['_sleep'],
-						$runVar['settings']['seq_timer']
+			$date = 'date +"%Y-%m-%d %T";';
+			$sleep = sprintf(
+				'%s %s;',
+				$runVar['commands']['_sleep'],
+				$runVar['settings']['seq_timer']
 			);
 
 			switch ($runVar['settings']['binaries_run']) {
 				case 0:
-					$binaries = 'echo \"\nbinaries has been disabled/terminated by Binaries\"';
+					$binaries = 'echo "\nbinaries has been disabled/terminated by Binaries"';
 					break;
 				case 1:
 				case 2:
-					$binaries = sprintf('
-								%s %s',
-								$runVar['scripts']['binaries'],
-								$log
+					$binaries = sprintf(
+						'%s %s;',
+						$runVar['scripts']['binaries'],
+						$log
 					);
+					break;
+				default:
+					$binaries = '';
 			}
 
 			switch ($runVar['settings']['backfill']) {
 				case 0:
-					$releases = 'echo \"\nbackfill has been disabled/terminated by Backfill\"';
+					$backfill = 'echo "backfill is disabled in settings";';
 					break;
 				case 1:
-					$backfill = sprintf('
-								%s %s %s',
-								$runVar['scripts']['backfill'],
-								$runVar['settings']['backfill_qty'],
-								$log
+					$backfill = sprintf(
+						'%s %s %s;',
+						$runVar['scripts']['backfill'],
+						$runVar['settings']['backfill_qty'],
+						$log
 					);
 					break;
 				case 2:
-					$backfill = sprintf('
-								%s %s %s',
-								$runVar['scripts']['backfill'],
-								'group',
-								$log
+					$backfill = sprintf(
+						'%s %s %s;',
+						$runVar['scripts']['backfill'],
+						'group',
+						$log
 					);
 					break;
 				case 4:
-					$backfill = sprintf('
-								%s %s',
-								$runVar['scripts']['backfill'],
-								$log
+					$backfill = sprintf(
+						'%s %s;',
+						$runVar['scripts']['backfill'],
+						$log
 					);
+					break;
+				default:
+					$backfill = '';
 			}
 
 			switch ($runVar['settings']['releases_run']) {
 				case 0:
-					$releases = 'echo \"\nreleases have been disabled/terminated by Releases\"';
+					$releases = 'echo "\nreleases have been disabled/terminated by Releases"';
 					break;
 				case 1:
 				case 2:
-					$releases = sprintf('
-								%s %s',
-								$runVar['scripts']['releases'],
-								$log
+					$releases = sprintf(
+						'%s %s;',
+						$runVar['scripts']['releases'],
+						$log
 					);
+					break;
+				default:
+					$releases = '';
 			}
 
-			shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 '$binaries; $backfill; $releases; $date; $sleep;' 2>&1 1> /dev/null");
+			shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 '$binaries $backfill $releases $date $sleep' 2>&1 1> /dev/null");
 
 		} else if (($runVar['killswitch']['coll'] == false) && ($runVar['killswitch']['pp'] == false) && (time() - $runVar['timers']['timer5'] >= 4800)) {
 			//run backfill all once and resets the timer
 			if ($runVar['settings']['backfill'] != 0) {
 				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
-					{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/python/backfill_threaded.py all $log; \
+					{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_threaded.py all $log; \
 					date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
 				);
 				$runVar['timers']['timer5'] = time();

@@ -147,11 +147,7 @@ class Books
 		}
 
 		if ($maxage > 0) {
-			if ($pdo->dbSystem() === 'mysql') {
-				$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
-			} else if ($pdo->dbSystem() === 'pgsql') {
-				$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
-			}
+			$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
 		} else {
 			$maxage = '';
 		}
@@ -210,11 +206,7 @@ class Books
 
 		$maxage = '';
 		if ($maxage > 0) {
-			if ($pdo->dbSystem() === 'mysql') {
-				$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
-			} else if ($pdo->dbSystem() === 'pgsql') {
-				$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
-			}
+			$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
 		}
 
 		$exccatlist = '';
@@ -223,33 +215,29 @@ class Books
 		}
 
 		$order = $this->getBookOrder($orderby);
-		if ($this->pdo->dbSystem() === 'mysql') {
-			$sql = sprintf(
-				"SELECT GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id, "
-				. "GROUP_CONCAT(r.rarinnerfilecount ORDER BY r.postdate DESC SEPARATOR ',') as grp_rarinnerfilecount, "
-				. "GROUP_CONCAT(r.haspreview ORDER BY r.postdate DESC SEPARATOR ',') AS grp_haspreview, "
-				. "GROUP_CONCAT(r.passwordstatus ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_password, "
-				. "GROUP_CONCAT(r.guid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_guid, "
-				. "GROUP_CONCAT(rn.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid, "
-				. "GROUP_CONCAT(groups.name ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grpname, "
-				. "GROUP_CONCAT(r.searchname ORDER BY r.postdate DESC SEPARATOR '#') AS grp_release_name, "
-				. "GROUP_CONCAT(r.postdate ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_postdate, "
-				. "GROUP_CONCAT(r.size ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_size, "
-				. "GROUP_CONCAT(r.totalpart ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_totalparts, "
-				. "GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments, "
-				. "GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs, "
-				. "boo.*, r.bookinfoid, groups.name AS group_name, rn.id as nfoid FROM releases r "
-				. "LEFT OUTER JOIN groups ON groups.id = r.group_id "
-				. "LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id "
-				. "INNER JOIN bookinfo boo ON boo.id = r.bookinfoid "
-				. "WHERE r.nzbstatus = 1 AND boo.cover = 1 AND boo.title != '' AND "
-				. "r.passwordstatus <= (SELECT value FROM settings WHERE setting='showpasswordedrelease') AND %s %s %s %s "
-				. "GROUP BY boo.id ORDER BY %s %s" . $limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]
-			);
-		} else {
-			$rel = new Releases(['Settings' => $this->pdo]);
-			$sql = sprintf("SELECT STRING_AGG(r.id::text, ',' ORDER BY r.postdate DESC) AS grp_release_id, STRING_AGG(r.rarinnerfilecount::text, ',' ORDER BY r.postdate DESC) as grp_rarinnerfilecount, STRING_AGG(r.haspreview::text, ',' ORDER BY r.postdate DESC) AS grp_haspreview, STRING_AGG(r.passwordstatus::text, ',' ORDER BY r.postdate) AS grp_release_password, STRING_AGG(r.guid, ',' ORDER BY r.postdate DESC) AS grp_release_guid, STRING_AGG(rn.id::text, ',' ORDER BY r.postdate DESC) AS grp_release_nfoid, STRING_AGG(groups.name, ',' ORDER BY r.postdate DESC) AS grp_release_grpname, STRING_AGG(r.searchname, '#' ORDER BY r.postdate) AS grp_release_name, STRING_AGG(r.postdate::text, ',' ORDER BY r.postdate DESC) AS grp_release_postdate, STRING_AGG(r.size::text, ',' ORDER BY r.postdate DESC) AS grp_release_size, STRING_AGG(r.totalpart::text, ',' ORDER BY r.postdate DESC) AS grp_release_totalparts, STRING_AGG(r.comments::text, ',' ORDER BY r.postdate DESC) AS grp_release_comments, STRING_AGG(r.grabs::text, ',' ORDER BY r.postdate DESC) AS grp_release_grabs, m.*, groups.name AS group_name, rn.id as nfoid FROM releases r LEFT OUTER JOIN groups ON groups.id = r.group_id INNER JOIN movieinfo m ON m.imdbid = r.imdbid and m.title != '' LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL WHERE r.nzbstatus = 1 AND r.passwordstatus <= %s AND %s %s %s %s GROUP BY m.imdbid, m.id, groups.name, rn.id ORDER BY %s %s" . $limit, $rel->showPasswords(), $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]);
-		}
+		$sql = sprintf(
+			"SELECT GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id, "
+			. "GROUP_CONCAT(r.rarinnerfilecount ORDER BY r.postdate DESC SEPARATOR ',') as grp_rarinnerfilecount, "
+			. "GROUP_CONCAT(r.haspreview ORDER BY r.postdate DESC SEPARATOR ',') AS grp_haspreview, "
+			. "GROUP_CONCAT(r.passwordstatus ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_password, "
+			. "GROUP_CONCAT(r.guid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_guid, "
+			. "GROUP_CONCAT(rn.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid, "
+			. "GROUP_CONCAT(groups.name ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grpname, "
+			. "GROUP_CONCAT(r.searchname ORDER BY r.postdate DESC SEPARATOR '#') AS grp_release_name, "
+			. "GROUP_CONCAT(r.postdate ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_postdate, "
+			. "GROUP_CONCAT(r.size ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_size, "
+			. "GROUP_CONCAT(r.totalpart ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_totalparts, "
+			. "GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments, "
+			. "GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs, "
+			. "boo.*, r.bookinfoid, groups.name AS group_name, rn.id as nfoid FROM releases r "
+			. "LEFT OUTER JOIN groups ON groups.id = r.group_id "
+			. "LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id "
+			. "INNER JOIN bookinfo boo ON boo.id = r.bookinfoid "
+			. "WHERE r.nzbstatus = 1 AND boo.cover = 1 AND boo.title != '' AND "
+			. "r.passwordstatus <= (SELECT value FROM settings WHERE setting='showpasswordedrelease') AND %s %s %s %s "
+			. "GROUP BY boo.id ORDER BY %s %s" . $limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]
+		);
+
 		return $this->pdo->queryDirect($sql);
 	}
 
@@ -313,11 +301,7 @@ class Books
 	public function getBrowseBy()
 	{
 		$pdo = $this->pdo;
-
-		$like = 'ILIKE';
-		if ($pdo->dbSystem() === 'mysql') {
-			$like = 'LIKE';
-		}
+		$like = 'LIKE';
 
 		$browseby = ' ';
 		$browsebyArr = $this->getBrowseByOptions();
@@ -382,7 +366,7 @@ class Books
 	protected function processBookReleasesHelper($res, $categoryID)
 	{
 		$pdo = $this->pdo;
-		if ($res->rowCount() > 0) {
+		if ($res instanceof Traversable && $res->rowCount() > 0) {
 			if ($this->echooutput) {
 				$this->pdo->log->doEcho($this->pdo->log->header("\nProcessing " . $res->rowCount() . ' book release(s) for category ID ' . $categoryID));
 			}

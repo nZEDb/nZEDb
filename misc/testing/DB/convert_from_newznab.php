@@ -4,9 +4,6 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 use nzedb\db\Settings;
 
 $pdo = new Settings();
-if ($pdo->dbSystem() === "pgsql") {
-	exit("Currently this only works for mysql.\n");
-}
 
 function runQuery($pdo, $sql, $runQueries)
 {

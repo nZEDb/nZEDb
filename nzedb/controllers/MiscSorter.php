@@ -745,10 +745,8 @@ class MiscSorter
 		if ($id != 0)
 			$this->idarr = $id;
 
-		if ($this->pdo->dbSystem() === "mysql")
-			$uc = "UNCOMPRESS(releasenfo.nfo)";
-		else if ($this->pdo->dbSystem() === "pgsql")
-			$uc = "releasenfo.nfo";
+
+		$uc = "UNCOMPRESS(releasenfo.nfo)";
 		$res = $this->pdo->query(sprintf("SELECT {$uc} AS nfo, releases.id, releases.guid, releases.fromname, releases.name, releases.searchname, groups.name AS gname, releases.group_id FROM releasenfo INNER JOIN releases ON releasenfo.releaseid = releases.id INNER JOIN groups ON releases.group_id = groups.id WHERE releases.id IN (%s)", $this->idarr));
 		if (strlen($this->idarr) > 0 && count($res) > 0) {
 			foreach ($res as $row) {
@@ -832,10 +830,8 @@ class MiscSorter
 				if ($rel !== false)
 					continue;
 
-				if ($this->pdo->dbSystem() === "mysql")
-					$uc = "UNCOMPRESS(releasenfo.nfo)";
-				else if ($this->pdo->dbSystem() === "pgsql")
-					$uc = "releasenfo.nfo";
+
+				$uc = "UNCOMPRESS(releasenfo.nfo)";
 				$query = "SELECT releasenfo.releaseid, {$uc} AS nfo FROM releasenfo WHERE releasenfo.releaseid = " . $row['id'];
 				$rel = $this->pdo->queryOneRow($query);
 

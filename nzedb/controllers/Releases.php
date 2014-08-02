@@ -101,8 +101,7 @@ class Releases
 
 		$maxagesql = (
 		$maxage > 0
-			? " AND postdate > NOW() - INTERVAL " .
-			($this->pdo->dbSystem() === 'mysql' ? $maxage . ' DAY ' : "'" . $maxage . " DAYS' ")
+			? " AND postdate > NOW() - INTERVAL " . $maxage . ' DAY '
 			: ''
 		);
 
@@ -154,8 +153,7 @@ class Releases
 		$grpsql = $exccatlist = '';
 		$maxagesql = (
 		$maxage > 0
-			? " AND postdate > NOW() - INTERVAL " .
-			($this->pdo->dbSystem() === 'mysql' ? $maxage . ' DAY ' : "'" . $maxage . " DAYS' ")
+			? " AND postdate > NOW() - INTERVAL " . $maxage . ' DAY '
 			: ''
 		);
 
@@ -351,15 +349,7 @@ class Releases
 	 */
 	public function getEarliestUsenetPostDate()
 	{
-		$row = $this->pdo->queryOneRow(
-						sprintf(
-							"SELECT %s AS postdate FROM releases",
-							($this->pdo->dbSystem() === 'mysql'
-								? "DATE_FORMAT(min(postdate), '%d/%m/%Y')"
-								: "to_char(min(postdate), 'dd/mm/yyyy')"
-							)
-						)
-		);
+		$row = $this->pdo->queryOneRow("SELECT DATE_FORMAT(min(postdate), '%d/%m/%Y') AS postdate FROM releases LIMIT 1");
 
 		return ($row === false ? '01/01/2014' : $row['postdate']);
 	}
@@ -371,15 +361,7 @@ class Releases
 	 */
 	public function getLatestUsenetPostDate()
 	{
-		$row = $this->pdo->queryOneRow(
-						sprintf(
-							"SELECT %s AS postdate FROM releases",
-							($this->pdo->dbSystem() === 'mysql'
-								? "DATE_FORMAT(max(postdate), '%d/%m/%Y')"
-								: "to_char(max(postdate), 'dd/mm/yyyy')"
-							)
-						)
-		);
+		$row = $this->pdo->queryOneRow("SELECT DATE_FORMAT(max(postdate), '%d/%m/%Y') AS postdate FROM releases LIMIT 1");
 
 		return ($row === false ? '01/01/2014' : $row['postdate']);
 	}
@@ -423,11 +405,7 @@ class Releases
 	 */
 	public function getRss($cat, $num, $uid = 0, $rageid, $anidbid, $airdate = -1)
 	{
-		if ($this->pdo->dbSystem() === 'mysql') {
-			$limit = ' LIMIT 0,' . ($num > 100 ? 100 : $num);
-		} else {
-			$limit = ' LIMIT ' . ($num > 100 ? 100 : $num) . ' OFFSET 0';
-		}
+		$limit = ' LIMIT 0,' . ($num > 100 ? 100 : $num);
 
 		$catsrch = $cartsrch = '';
 		if (count($cat) > 0) {
@@ -459,13 +437,7 @@ class Releases
 
 		$rage = ($rageid > -1) ? sprintf(' AND r.rageid = %d ', $rageid) : '';
 		$anidb = ($anidbid > -1) ? sprintf(' AND r.anidbid = %d ', $anidbid) : '';
-		if ($this->pdo->dbSystem() === 'mysql') {
-			$airdate = ($airdate >
-				-1) ? sprintf(' AND r.tvairdate >= DATE_SUB(CURDATE(), INTERVAL %d DAY) ', $airdate) : '';
-		} else {
-			$airdate = ($airdate >
-				-1) ? sprintf(" AND r.tvairdate >= (CURDATE() - INTERVAL '%d DAYS') ", $airdate) : '';
-		}
+		$airdate = ($airdate > -1) ? sprintf(' AND r.tvairdate >= DATE_SUB(CURDATE(), INTERVAL %d DAY) ', $airdate) : '';
 
 		return $this->pdo->query(
 					sprintf(
@@ -519,13 +491,7 @@ class Releases
 		}
 
 		$usql = $this->uSQL($this->pdo->query(sprintf('SELECT rageid, categoryid FROM userseries WHERE userid = %d', $uid), true), 'rageid');
-		if ($this->pdo->dbSystem() === 'mysql') {
-			$airdate = ($airdate >
-				-1) ? sprintf(' AND r.tvairdate >= DATE_SUB(CURDATE(), INTERVAL %d DAY) ', $airdate) : '';
-		} else {
-			$airdate = ($airdate >
-				-1) ? sprintf(" AND r.tvairdate >= (CURDATE() - INTERVAL '%d DAYS') ", $airdate) : '';
-		}
+		$airdate = ($airdate > -1) ? sprintf(' AND r.tvairdate >= DATE_SUB(CURDATE(), INTERVAL %d DAY) ', $airdate) : '';
 		$limit = ' LIMIT ' . ($num > 100 ? 100 : $num) . ' OFFSET 0';
 
 		return $this->pdo->query(
@@ -620,11 +586,7 @@ class Releases
 		$usql = $this->uSQL($usershows, 'rageid');
 
 		if ($maxage > 0) {
-			if ($this->pdo->dbSystem() === 'mysql') {
-				$maxagesql = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
-			} else {
-				$maxagesql = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
-			}
+			$maxagesql = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
 		}
 
 		$order = $this->getBrowseOrder($orderby);
@@ -668,11 +630,7 @@ class Releases
 		$usql = $this->uSQL($usershows, 'rageid');
 
 		if ($maxage > 0) {
-			if ($this->pdo->dbSystem() === 'mysql') {
-				$maxagesql = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
-			} else {
-				$maxagesql = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
-			}
+			$maxagesql = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
 		}
 
 		$res = $this->pdo->queryOneRow(
@@ -943,10 +901,7 @@ class Releases
 			}
 			if ($searchwords === '') {
 				$words = explode(' ', $search);
-				$like = 'ILIKE';
-				if ($this->pdo->dbSystem() === 'mysql') {
-					$like = 'LIKE';
-				}
+				$like = 'LIKE';
 				foreach ($words as $word) {
 					if ($word != '') {
 						$word = trim(rtrim(trim($word), '-'));
@@ -1031,27 +986,15 @@ class Releases
 			' AND r.categoryid NOT IN (' . implode(',', $excludedcats) . ')' : '');
 
 		if ($daysnew != '-1') {
-			if ($this->pdo->dbSystem() === 'mysql') {
-				$daysnewsql = sprintf(' AND r.postdate < (NOW() - INTERVAL %d DAY) ', $daysnew);
-			} else {
-				$daysnewsql = sprintf(" AND r.postdate < NOW() - INTERVAL '%d DAYS' ", $daysnew);
-			}
+			$daysnewsql = sprintf(' AND r.postdate < (NOW() - INTERVAL %d DAY) ', $daysnew);
 		}
 
 		if ($daysold != '-1') {
-			if ($this->pdo->dbSystem() === 'mysql') {
-				$daysoldsql = sprintf(' AND r.postdate > (NOW() - INTERVAL %d DAY) ', $daysold);
-			} else {
-				$daysoldsql = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $daysold);
-			}
+			$daysoldsql = sprintf(' AND r.postdate > (NOW() - INTERVAL %d DAY) ', $daysold);
 		}
 
 		if ($maxage > 0) {
-			if ($this->pdo->dbSystem() === 'mysql') {
-				$maxagesql = sprintf(' AND r.postdate > (NOW() - INTERVAL %d DAY) ', $maxage);
-			} else {
-				$maxagesql = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
-			}
+			$maxagesql = sprintf(' AND r.postdate > (NOW() - INTERVAL %d DAY) ', $maxage);
 		}
 
 		if ($groupname != '-1') {
@@ -1158,10 +1101,7 @@ class Releases
 				$episode = sprintf('E%02d', $episode);
 			}
 
-			$like = 'ILIKE';
-			if ($this->pdo->dbSystem() === 'mysql') {
-				$like = 'LIKE';
-			}
+			$like = 'LIKE';
 			$episode = sprintf(' AND r.episode %s %s', $like, $this->pdo->escapeString('%' . $episode . '%'));
 		}
 
@@ -1172,11 +1112,7 @@ class Releases
 		$catsrch = $this->categorySQL($cat);
 
 		if ($maxage > 0) {
-			if ($this->pdo->dbSystem() === 'mysql') {
-				$maxagesql = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
-			} else {
-				$maxagesql = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
-			}
+			$maxagesql = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
 		}
 		$sql = sprintf("
 					SELECT r.*, concat(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids,
@@ -1222,10 +1158,7 @@ class Releases
 	{
 		$anidbID = ($anidbID > -1) ? sprintf(' AND anidbid = %d ', $anidbID) : '';
 
-		$like = 'ILIKE';
-		if ($this->pdo->dbSystem() === 'mysql') {
-			$like = 'LIKE';
-		}
+		$like = 'LIKE';
 
 		is_numeric($epno) ? $epno = sprintf(
 			" AND r.episode %s '%s' ", $like, $this->pdo->escapeString(
@@ -1241,11 +1174,7 @@ class Releases
 
 		$maxagesql = '';
 		if ($maxage > 0) {
-			if ($this->pdo->dbSystem() === 'mysql') {
-				$maxagesql = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
-			} else {
-				$maxagesql = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
-			}
+			$maxagesql = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
 		}
 
 		$sql = sprintf("
@@ -1297,11 +1226,7 @@ class Releases
 		$catsrch = $this->categorySQL($cat);
 
 		if ($maxage > 0) {
-			if ($this->pdo->dbSystem() === 'mysql') {
-				$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
-			} else {
-				$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS ", $maxage);
-			}
+			$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
 		} else {
 			$maxage = '';
 		}
@@ -1375,6 +1300,11 @@ class Releases
 		return implode(' ', $firstwords);
 	}
 
+	/**
+	 * @param string $guid
+	 *
+	 * @return array|bool
+	 */
 	public function getByGuid($guid)
 	{
 		if (is_array($guid)) {
@@ -1493,11 +1423,7 @@ class Releases
 
 	public function getReleaseNfo($id, $incnfo = true)
 	{
-		if ($this->pdo->dbSystem() === 'mysql') {
-			$uc = 'UNCOMPRESS(nfo)';
-		} else {
-			$uc = 'nfo';
-		}
+		$uc = 'UNCOMPRESS(nfo)';
 		$selnfo = ($incnfo) ? ", {$uc} AS nfo" : '';
 
 		return $this->pdo->queryOneRow(
@@ -1526,11 +1452,7 @@ class Releases
 
 	public function getRecentlyAdded()
 	{
-		if ($this->pdo->dbSystem() === 'mysql') {
-			return $this->pdo->query("SELECT CONCAT(cp.title, ' > ', category.title) AS title, COUNT(*) AS count FROM category INNER JOIN category cp on cp.id = category.parentid INNER JOIN releases r ON r.categoryid = category.id WHERE r.adddate > NOW() - INTERVAL 1 WEEK GROUP BY concat(cp.title, ' > ', category.title) ORDER BY COUNT(*) DESC");
-		} else {
-			return $this->pdo->query("SELECT CONCAT(cp.title, ' > ', category.title) AS title, COUNT(*) AS count FROM category INNER JOIN category cp on cp.id = category.parentid INNER JOIN releases r ON r.categoryid = category.id WHERE r.adddate > NOW() - INTERVAL '1 WEEK' GROUP BY concat(cp.title, ' > ', category.title) ORDER BY COUNT(*) DESC");
-		}
+		return $this->pdo->query("SELECT CONCAT(cp.title, ' > ', category.title) AS title, COUNT(*) AS count FROM category INNER JOIN category cp on cp.id = category.parentid INNER JOIN releases r ON r.categoryid = category.id WHERE r.adddate > NOW() - INTERVAL 1 WEEK GROUP BY concat(cp.title, ' > ', category.title) ORDER BY COUNT(*) DESC");
 	}
 
 	/**

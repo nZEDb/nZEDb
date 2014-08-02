@@ -19,10 +19,10 @@
  * @copyright 2014 nZEDb
  */
 
-if (!isset($argv[1]) || !in_array($argv[1], ['1', '2'])) {
+if (!isset($argv[1]) || !in_array($argv[1], ['1'])) {
 	exit(
-	'Options: (enter a number, it\'s not recommended to rerun the same fix)' . PHP_EOL .
-	'1: 2014-07-28: Add unique key to binaryhash to be able to do multiple updates in 1 statement.' . PHP_EOL
+		'Options: (enter a number, it\'s not recommended to rerun the same fix)' . PHP_EOL .
+		'1: 2014-07-28: Add unique key to binaryhash to be able to do multiple updates in 1 statement.' . PHP_EOL
 	);
 }
 

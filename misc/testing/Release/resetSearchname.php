@@ -107,7 +107,7 @@ if (isset($argv[1]) && $argv[1] == "full") {
 	}
 } else {
 	exit($pdo->log->error("\nThis script runs the subject names through namecleaner to create a clean search name, it also recategorizes and runs the releases through namefixer.\n"
-			. "php $argv[0] full              ...: To run this, recategorize and refix release names on all releases.\n"
-			. "php $argv[0] limited           ...: To run this on releases that have not had their names fixed, then categorizing them.\n"
-			. "php $argv[0] reset             ...: To just reset searchnames.\n"));
+			. "php resetSearchname.php full              ...: To run this, recategorize and refix release names on all releases.\n"
+			. "php resetSearchname.php limited           ...: To run this on releases that have not had their names fixed, then categorizing them.\n"
+			. "php resetSearchname.php reset             ...: To just reset searchnames.\n"));
 }

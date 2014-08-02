@@ -356,14 +356,9 @@ class Nfo
 				$fetchedBinary = $nzbContents->getNFOfromNZB($arr['guid'], $arr['id'], $arr['group_id'], $groups->getByNameByID($arr['group_id']));
 				if ($fetchedBinary !== false) {
 					// Insert nfo into database.
-					$cp = $nc = null;
-					if ($this->pdo->dbSystem() === 'mysql') {
-						$cp = 'COMPRESS(%s)';
-						$nc = $this->pdo->escapeString($fetchedBinary);
-					} else if ($this->pdo->dbSystem() === 'pgsql') {
-						$cp = '%s';
-						$nc = $this->pdo->escapeString(utf8_encode($fetchedBinary));
-					}
+					$cp = 'COMPRESS(%s)';
+					$nc = $this->pdo->escapeString($fetchedBinary);
+
 					$ckreleaseid = $this->pdo->queryOneRow(sprintf('SELECT id FROM releasenfo WHERE releaseid = %d', $arr['id']));
 					if (!isset($ckreleaseid['id'])) {
 						$this->pdo->queryInsert(sprintf('INSERT INTO releasenfo (nfo, releaseid) VALUES (' . $cp . ', %d)', $nc, $arr['id']));

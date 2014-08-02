@@ -44,27 +44,20 @@ if (isset($argv[1])) {
 	}
 
 	$tablecnt = 0;
-	if ($pdo->dbSystem() === 'mysql') {
-		$alltables = $pdo->query('SHOW TABLE STATUS WHERE Data_free / Data_length > 0.005');
-		$tablecnt = count($alltables);
-		foreach ($alltables as $table) {
-			if ($table['name'] != 'predb') {
-				echo $pdo->log->primary('Optimizing table: ' . $table['name']);
-				if (strtolower($table['engine']) == 'myisam') {
-					$pdo->queryDirect('REPAIR TABLE `' . $table['name'] . '`');
-				}
-				$pdo->queryDirect('OPTIMIZE TABLE `' . $table['name'] . '`');
+
+	$alltables = $pdo->query('SHOW TABLE STATUS WHERE Data_free / Data_length > 0.005');
+	$tablecnt = count($alltables);
+	foreach ($alltables as $table) {
+		if ($table['name'] != 'predb') {
+			echo $pdo->log->primary('Optimizing table: ' . $table['name']);
+			if (strtolower($table['engine']) == 'myisam') {
+				$pdo->queryDirect('REPAIR TABLE `' . $table['name'] . '`');
 			}
-		}
-		$pdo->queryDirect('FLUSH TABLES');
-	} else if ($pdo->dbSystem() === 'pgsql') {
-		$alltables = $pdo->query('SELECT table_name AS name FROM information_schema.tables WHERE table_schema = \'public\'');
-		$tablecnt = count($alltables);
-		foreach ($alltables as $table) {
-			echo $pdo->log->primary('Vacuuming table: ' . $table['name']);
-			$pdo->query('VACUUM (ANALYZE) ' . $table['name']);
+			$pdo->queryDirect('OPTIMIZE TABLE `' . $table['name'] . '`');
 		}
 	}
+	$pdo->queryDirect('FLUSH TABLES');
+
 	if ($restart == 'true' && $argv[1] == 'true') {
 		echo $pdo->log->info("Starting tmux scripts");
 		$pdo->queryExec('update tmux set value = \'1\' where setting = \'RUNNING\'');

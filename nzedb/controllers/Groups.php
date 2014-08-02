@@ -160,8 +160,7 @@ class Groups
 				($groupname !== ''
 					?
 					sprintf(
-						"AND groups.name %s %s ",
-						($this->pdo->dbSystem() === 'mysql' ? 'LIKE' : 'ILIKE'),
+						"AND groups.name LIKE %s ",
 						$this->pdo->escapeString("%".$groupname."%")
 					)
 					: ''
@@ -187,8 +186,7 @@ class Groups
 				($groupname !== ''
 					?
 					sprintf(
-						"AND groups.name %s %s ",
-							($this->pdo->dbSystem() === 'mysql' ? 'LIKE' : 'ILIKE'),
+						"AND groups.name LIKE %s ",
 							$this->pdo->escapeString("%".$groupname."%")
 					)
 					: ''
@@ -214,9 +212,8 @@ class Groups
 				($groupname !== ''
 					?
 					sprintf(
-						"AND groups.name %s %s ",
-							($this->pdo->dbSystem() === 'mysql' ? 'LIKE' : 'ILIKE'),
-							$this->pdo->escapeString("%".$groupname."%")
+						"AND groups.name LIKE %s ",
+						$this->pdo->escapeString("%".$groupname."%")
 					)
 					: ''
 				)
@@ -249,9 +246,8 @@ class Groups
 				($groupname !== ''
 					?
 					sprintf(
-						"AND groups.name %s %s ",
-							($this->pdo->dbSystem() === 'mysql' ? 'LIKE' : 'ILIKE'),
-							$this->pdo->escapeString("%".$groupname."%")
+						"AND groups.name LIKE %s ",
+						$this->pdo->escapeString("%".$groupname."%")
 					)
 					: ''
 				)
@@ -284,9 +280,8 @@ class Groups
 				($groupname !== ''
 					?
 					sprintf(
-						"AND groups.name %s %s ",
-							($this->pdo->dbSystem() === 'mysql' ? 'LIKE' : 'ILIKE'),
-							$this->pdo->escapeString("%".$groupname."%")
+						"AND groups.name LIKE %s ",
+						$this->pdo->escapeString("%".$groupname."%")
 					)
 					: ''
 				)
@@ -318,9 +313,8 @@ class Groups
 				ORDER BY groups.name " . ($start === false ? '' : " LIMIT ".$num." OFFSET ".$start),
 				($groupname !== ''
 					? sprintf(
-						"AND groups.name %s %s ",
-							($this->pdo->dbSystem() === 'mysql' ? 'LIKE' : 'ILIKE'),
-							$this->pdo->escapeString("%".$groupname."%")
+						"AND groups.name LIKE %s ",
+						$this->pdo->escapeString("%".$groupname."%")
 					)
 					: ''
 				)
