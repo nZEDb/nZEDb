@@ -556,6 +556,7 @@ class TmuxRun extends Tmux
 
 			switch ($runVar['settings']['backfill']) {
 				case 0:
+					$backfill = '';
 					$releases = 'echo \"\nbackfill has been disabled/terminated by Backfill\"';
 					break;
 				case 1:
