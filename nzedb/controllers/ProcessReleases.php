@@ -1334,7 +1334,7 @@ class ProcessReleases
 					FROM releases
 					WHERE categoryid = %d
 					AND adddate <= NOW() - INTERVAL %d HOUR',
-					CATEGORY::CAT_MISC,
+					CATEGORY::CAT_OTHER_HASHED,
 					$this->pdo->getSetting('mischashedretentionhours')
 				)
 			);
