@@ -1375,6 +1375,11 @@ class Releases
 		return implode(' ', $firstwords);
 	}
 
+	/**
+	 * @param string $guid
+	 *
+	 * @return array|bool
+	 */
 	public function getByGuid($guid)
 	{
 		if (is_array($guid)) {

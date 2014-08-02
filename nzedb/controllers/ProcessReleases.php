@@ -199,7 +199,7 @@ class ProcessReleases
 
 		//Print amount of added releases and time it took.
 		if ($this->echoCLI && $this->tablePerGroup === false) {
-			$countID = $this->pdo->queryOneRow('SELECT COUNT(id) FROM collections ' . (!empty($groupID) ? ' WHERE group_id = ' . $groupID : ''));
+			$countID = $this->pdo->queryOneRow('SELECT COUNT(id) AS count FROM collections ' . (!empty($groupID) ? ' WHERE group_id = ' . $groupID : ''));
 			$this->pdo->log->doEcho(
 				$this->pdo->log->primary(
 					'Completed adding ' .
@@ -207,7 +207,7 @@ class ProcessReleases
 					' releases in ' .
 					$this->consoleTools->convertTime(number_format(microtime(true) - $processReleases, 2)) .
 					'. ' .
-					number_format(array_shift($countID)) .
+					number_format(($countID === false ? 0 : $countID['count'])) .
 					' collections waiting to be created (still incomplete or in queue for creation)'
 				), true
 			);
@@ -245,10 +245,8 @@ class ProcessReleases
 		$cat = new Categorize(['Settings' => $this->pdo]);
 		$categorized = $total = 0;
 		$releases = $this->pdo->queryDirect(sprintf('SELECT id, %s, group_id FROM releases %s', $type, $where));
-		if ($releases !== false) {
+		if ($releases instanceof Traversable) {
 			$total = $releases->rowCount();
-		}
-		if ($total > 0) {
 			foreach ($releases as $release) {
 				$catId = $cat->determineCategory($release[$type], $release['group_id']);
 				$this->pdo->queryExec(
@@ -513,7 +511,7 @@ class ProcessReleases
 			echo $this->pdo->log->primary($collections->rowCount() . " Collections ready to be converted to releases.");
 		}
 
-		if ($collections !== false && $collections->rowCount() > 0) {
+		if ($collections instanceof Traversable) {
 			$preDB = new PreDb(['Echo' => $this->echoCLI, 'Settings' => $this->pdo]);
 
 			$insertQuery = (
@@ -680,12 +678,10 @@ class ProcessReleases
 			)
 		);
 
-		$total = $deleted = $nzbCount = 0;
-		if ($releases !== false) {
-			$total = $releases->rowCount();
-		}
+		$deleted = $nzbCount = 0;
 
-		if ($total > 0) {
+		if ($releases instanceof Traversable) {
+			$total = $releases->rowCount();
 			// Init vars for writing the NZB's.
 			$this->nzb->initiateForWrite($groupID);
 			foreach ($releases as $release) {
@@ -979,7 +975,7 @@ class ProcessReleases
 				$group['cname'], $group['bname'], $this->minMaxQueryFormulator($group['cname'], 10000)
 			)
 		);
-		if ($collectionIDs !== false) {
+		if ($collectionIDs instanceof Traversable) {
 			foreach ($collectionIDs as $collectionID) {
 				$deleted++;
 				$this->pdo->queryExec(sprintf('DELETE FROM %s WHERE id = %d', $group['cname'], $collectionID['id']));
@@ -1009,7 +1005,7 @@ class ProcessReleases
 			)
 		);
 
-		if ($collections !== false && $collections->rowCount() > 0) {
+		if ($collections instanceof Traversable) {
 			foreach($collections as $collection) {
 				$deleted++;
 				$this->pdo->queryExec(
@@ -1078,7 +1074,7 @@ class ProcessReleases
 					$minSizeSetting
 				)
 			);
-			if ($releases !== false && $releases->rowCount() > 0) {
+			if ($releases instanceof Traversable) {
 				foreach ($releases as $release) {
 					$this->releases->deleteSingle($release['guid'], $this->nzb);
 					$minSizeDeleted++;
@@ -1096,7 +1092,7 @@ class ProcessReleases
 						$maxSizeSetting
 					)
 				);
-				if ($releases !== false && $releases->rowCount() > 0) {
+				if ($releases instanceof Traversable) {
 					foreach ($releases as $release) {
 						$this->releases->deleteSingle($release['guid'], $this->nzb);
 						$maxSizeDeleted++;
@@ -1117,7 +1113,7 @@ class ProcessReleases
 					$minFilesSetting
 				)
 			);
-			if ($releases !== false && $releases->rowCount() > 0) {
+			if ($releases instanceof Traversable) {
 				foreach ($releases as $release) {
 					$this->releases->deleteSingle($release['guid'], $this->nzb);
 					$minFilesDeleted++;
@@ -1166,7 +1162,7 @@ class ProcessReleases
 					$this->pdo->getSetting('releaseretentiondays')
 				)
 			);
-			if ($releases !== false && $releases->rowCount() > 0) {
+			if ($releases instanceof Traversable) {
 				foreach ($releases as $release) {
 					$this->releases->deleteSingle($release['guid'], $this->nzb);
 					$retentionDeleted++;
@@ -1182,7 +1178,7 @@ class ProcessReleases
 					Releases::PASSWD_RAR
 				)
 			);
-			if ($releases !== false && $releases->rowCount() > 0) {
+			if ($releases instanceof Traversable) {
 				foreach ($releases as $release) {
 					$this->releases->deleteSingle($release['guid'], $this->nzb);
 					$passwordDeleted++;
@@ -1198,7 +1194,7 @@ class ProcessReleases
 					Releases::PASSWD_POTENTIAL
 				)
 			);
-			if ($releases !== false && $releases->rowCount() > 0) {
+			if ($releases instanceof Traversable) {
 				foreach ($releases as $release) {
 					$this->releases->deleteSingle($release['guid'], $this->nzb);
 					$passwordDeleted++;
@@ -1216,10 +1212,8 @@ class ProcessReleases
 					)
 				);
 				$total = 0;
-				if ($releases !== false) {
+				if ($releases instanceof Traversable) {
 					$total = $releases->rowCount();
-				}
-				if ($total > 0) {
 					foreach ($releases as $release) {
 						$this->releases->deleteSingle($release['guid'], $this->nzb);
 						$duplicateDeleted++;
@@ -1232,7 +1226,7 @@ class ProcessReleases
 			$releases = $this->pdo->queryDirect(
 				sprintf('SELECT guid FROM releases WHERE completion < %d AND completion > 0', $this->completion)
 			);
-			if ($releases !== false && $releases->rowCount() > 0) {
+			if ($releases instanceof Traversable) {
 				foreach ($releases as $release) {
 					$this->releases->deleteSingle($release['guid'], $this->nzb);
 					$completionDeleted++;
@@ -1247,7 +1241,7 @@ class ProcessReleases
 				$releases = $this->pdo->queryDirect(
 					sprintf('SELECT guid FROM releases WHERE categoryid = %d', $disabledCategory['id'])
 				);
-				if ($releases !== false && $releases->rowCount() > 0) {
+				if ($releases instanceof Traversable) {
 					foreach ($releases as $release) {
 						$disabledCategoryDeleted++;
 						$this->releases->deleteSingle($release['guid'], $this->nzb);
@@ -1265,21 +1259,25 @@ class ProcessReleases
 			WHERE c.parentid IS NOT NULL'
 		);
 
-		foreach ($categories as $category) {
-			if ($category['minsize'] > 0) {
-				$releases = $this->pdo->queryDirect(
-					sprintf('
-						SELECT r.guid
-						FROM releases r
-						WHERE r.categoryid = %d
-						AND r.size < %d',
-						$category['id'],
-						$category['minsize']
-					)
-				);
-				foreach ($releases as $release) {
-					$this->releases->deleteSingle($release['guid'], $this->nzb);
-					$categoryMinSizeDeleted++;
+		if ($categories instanceof Traversable) {
+			foreach ($categories as $category) {
+				if ($category['minsize'] > 0) {
+					$releases = $this->pdo->queryDirect(
+						sprintf('
+							SELECT r.guid
+							FROM releases r
+							WHERE r.categoryid = %d
+							AND r.size < %d',
+							$category['id'],
+							$category['minsize']
+						)
+					);
+					if ($releases instanceof Traversable) {
+						foreach ($releases as $release) {
+							$this->releases->deleteSingle($release['guid'], $this->nzb);
+							$categoryMinSizeDeleted++;
+						}
+					}
 				}
 			}
 		}
@@ -1297,7 +1295,7 @@ class ProcessReleases
 						$genre['id']
 					)
 				);
-				if ($releases !== false && $releases->rowCount() > 0) {
+				if ($releases instanceof Traversable) {
 					foreach ($releases as $release) {
 						$disabledGenreDeleted++;
 						$this->releases->deleteSingle($release['guid'], $this->nzb);
@@ -1318,7 +1316,7 @@ class ProcessReleases
 					$this->pdo->getSetting('miscotherretentionhours')
 				)
 			);
-			if ($releases !== false && $releases->rowCount() > 0) {
+			if ($releases instanceof Traversable) {
 				foreach ($releases as $release) {
 					$this->releases->deleteSingle($release['guid'], $this->nzb);
 					$miscRetentionDeleted++;
@@ -1338,7 +1336,7 @@ class ProcessReleases
 					$this->pdo->getSetting('mischashedretentionhours')
 				)
 			);
-			if ($releases !== false && $releases->rowCount() > 0) {
+			if ($releases instanceof Traversable) {
 				foreach ($releases as $release) {
 					$this->releases->deleteSingle($release['guid'], $this->nzb);
 					$miscHashedDeleted++;

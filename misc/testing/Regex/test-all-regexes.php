@@ -71,6 +71,7 @@ function test_regex($name, $group, $argv)
 				$groupName = $matchName[1];
 			} else if (preg_match('/if \(preg_match\(\'(.+)\', \$this->subject\, \$match\)\)/', $line, $match)) {
 				$regex = $match[1];
+				$match1 = array();
 				if (preg_match($regex, $test_str, $match1)) {
 					if ($groupName != '') {
 						print_str('header', "Group regex => " . $groupName, $argv);
@@ -111,6 +112,7 @@ function test_regex($name, $group, $argv)
 			$line = preg_replace('/\' \. \$this->e2/', $e12 . '\'', $line2);
 			if (preg_match('/if \(preg_match\(\'(.+)\', \$this->subject\, \$match\)\)/', $line, $match) || preg_match('/if \(preg_match\(\'(.+)\', \$subject\, \$match\)\)/', $line, $match)) {
 				$regex = $match[1];
+				$match1 = array();
 				if (preg_match($regex, $test_str1, $match1)) {
 					if ($groupName != '') {
 						print_str('header', "Group regex => " . $groupName1, $argv);

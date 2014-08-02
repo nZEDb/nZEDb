@@ -618,7 +618,7 @@ class DB extends \PDO
 
 		$result = $this->queryArray($query);
 
-		if ($cache === true && $this->cacheEnabled === true) {
+		if ($result !== false && $cache === true && $this->cacheEnabled === true) {
 			$this->cacheServer->set($this->cacheServer->createKey($query), $result, $cacheExpiry);
 		}
 
@@ -810,7 +810,7 @@ class DB extends \PDO
 		}
 
 		$optimised = 0;
-		if ($tableArray !== false && $tableArray->rowCount() > 0) {
+		if ($tableArray instanceof \Traversable) {
 
 			$tableNames = '';
 			foreach ($tableArray as $table) {
@@ -828,7 +828,7 @@ class DB extends \PDO
 				$this->queryExec('OPTIMIZE LOCAL TABLE ' . $tableNames);
 				$this->logOptimize($admin, 'OPTIMIZE', $tableNames);
 
-				if ($myIsamTables !== false && $myIsamTables->rowCount() > 0) {
+				if ($myIsamTables instanceof \Traversable) {
 					$tableNames = '';
 					foreach ($myIsamTables as $table) {
 						$tableNames .= $table['name'] . ',';

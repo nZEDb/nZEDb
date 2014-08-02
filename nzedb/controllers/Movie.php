@@ -296,84 +296,42 @@ class Movie
 	public function getMovieRange($cat, $start, $num, $orderBy, $maxAge = -1, $excludedCats = array())
 	{
 		$order = $this->getMovieOrder($orderBy);
-		if ($this->pdo->dbSystem() === 'mysql') {
-			$sql = sprintf("
-				SELECT
-				GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id,
-				GROUP_CONCAT(r.rarinnerfilecount ORDER BY r.postdate DESC SEPARATOR ',') as grp_rarinnerfilecount,
-				GROUP_CONCAT(r.haspreview ORDER BY r.postdate DESC SEPARATOR ',') AS grp_haspreview,
-				GROUP_CONCAT(r.passwordstatus ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_password,
-				GROUP_CONCAT(r.guid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_guid,
-				GROUP_CONCAT(rn.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid,
-				GROUP_CONCAT(groups.name ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grpname,
-				GROUP_CONCAT(r.searchname ORDER BY r.postdate DESC SEPARATOR '#') AS grp_release_name,
-				GROUP_CONCAT(r.postdate ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_postdate,
-				GROUP_CONCAT(r.size ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_size,
-				GROUP_CONCAT(r.totalpart ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_totalparts,
-				GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments,
-				GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs,
-				m.*, groups.name AS group_name, rn.id as nfoid FROM releases r
-				LEFT OUTER JOIN groups ON groups.id = r.group_id
-				LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id
-				INNER JOIN movieinfo m ON m.imdbid = r.imdbid
-				WHERE r.nzbstatus = 1 AND r.imdbid != '0000000'
-				AND m.cover = 1
-				AND m.title != ''
-				AND r.passwordstatus <= %d AND %s %s %s %s
-				GROUP BY m.imdbid ORDER BY %s %s %s",
-				$this->showPasswords,
-				$this->getBrowseBy(),
-				$this->formCategorySearchSQL($cat),
-				($maxAge > 0
-					? 'AND r.postdate > NOW() - INTERVAL ' . $maxAge . 'DAY '
-					: ''
-				),
-				(count($excludedCats) > 0 ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : ''),
-				$order[0],
-				$order[1],
-				($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
-			);
-		} else {
-			$sql = sprintf("
-				SELECT STRING_AGG(r.id::text, ',' ORDER BY r.postdate DESC) AS grp_release_id,
-				STRING_AGG(r.rarinnerfilecount::text, ',' ORDER BY r.postdate DESC) as grp_rarinnerfilecount,
-				STRING_AGG(r.haspreview::text, ',' ORDER BY r.postdate DESC) AS grp_haspreview,
-				STRING_AGG(r.passwordstatus::text, ',' ORDER BY r.postdate) AS grp_release_password,
-				STRING_AGG(r.guid, ',' ORDER BY r.postdate DESC) AS grp_release_guid,
-				STRING_AGG(rn.id::text, ',' ORDER BY r.postdate DESC) AS grp_release_nfoid,
-				STRING_AGG(groups.name, ',' ORDER BY r.postdate DESC) AS grp_release_grpname,
-				STRING_AGG(r.searchname, '#' ORDER BY r.postdate) AS grp_release_name,
-				STRING_AGG(r.postdate::text, ',' ORDER BY r.postdate DESC) AS grp_release_postdate,
-				STRING_AGG(r.size::text, ',' ORDER BY r.postdate DESC) AS grp_release_size,
-				STRING_AGG(r.totalpart::text, ',' ORDER BY r.postdate DESC) AS grp_release_totalparts,
-				STRING_AGG(r.comments::text, ',' ORDER BY r.postdate DESC) AS grp_release_comments,
-				STRING_AGG(r.grabs::text, ',' ORDER BY r.postdate DESC) AS grp_release_grabs,
-				m.*, groups.name AS group_name,
-				rn.id as nfoid
-				FROM releases r
-				LEFT OUTER JOIN groups ON groups.id = r.group_id
-				INNER JOIN movieinfo m ON m.imdbid = r.imdbid AND m.title != ''
-				LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
-				WHERE r.nzbstatus = 1
-				AND r.imdbid != '0000000'
-				AND r.passwordstatus <= %s
-				AND %s %s %s %s
-				GROUP BY m.imdbid, m.id, groups.name, rn.id
-				ORDER BY %s %s %s",
-				$this->showPasswords,
-				$this->getBrowseBy(),
-				$this->formCategorySearchSQL($cat),
-				($maxAge > 0
-					?
-					'AND r.postdate > NOW() - INTERVAL ' .  "'" . $maxAge . "DAYS' "
-					: ''
-				),
-				(count($excludedCats) > 0 ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : ''),
-				$order[0],
-				$order[1],
-				($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
-			);
-		}
+		$sql = sprintf("
+			SELECT
+			GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id,
+			GROUP_CONCAT(r.rarinnerfilecount ORDER BY r.postdate DESC SEPARATOR ',') as grp_rarinnerfilecount,
+			GROUP_CONCAT(r.haspreview ORDER BY r.postdate DESC SEPARATOR ',') AS grp_haspreview,
+			GROUP_CONCAT(r.passwordstatus ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_password,
+			GROUP_CONCAT(r.guid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_guid,
+			GROUP_CONCAT(rn.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid,
+			GROUP_CONCAT(groups.name ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grpname,
+			GROUP_CONCAT(r.searchname ORDER BY r.postdate DESC SEPARATOR '#') AS grp_release_name,
+			GROUP_CONCAT(r.postdate ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_postdate,
+			GROUP_CONCAT(r.size ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_size,
+			GROUP_CONCAT(r.totalpart ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_totalparts,
+			GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments,
+			GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs,
+			m.*, groups.name AS group_name, rn.id as nfoid FROM releases r
+			LEFT OUTER JOIN groups ON groups.id = r.group_id
+			LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id
+			INNER JOIN movieinfo m ON m.imdbid = r.imdbid
+			WHERE r.nzbstatus = 1 AND r.imdbid != '0000000'
+			AND m.cover = 1
+			AND m.title != ''
+			AND r.passwordstatus <= %d AND %s %s %s %s
+			GROUP BY m.imdbid ORDER BY %s %s %s",
+			$this->showPasswords,
+			$this->getBrowseBy(),
+			$this->formCategorySearchSQL($cat),
+			($maxAge > 0
+				? 'AND r.postdate > NOW() - INTERVAL ' . $maxAge . 'DAY '
+				: ''
+			),
+			(count($excludedCats) > 0 ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : ''),
+			$order[0],
+			$order[1],
+			($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
+		);
 		return $this->pdo->queryDirect($sql);
 	}
 

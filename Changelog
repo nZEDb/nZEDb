@@ -11,6 +11,7 @@ New updates are grouped by person, at the top of the file.
 	* Fix: RequestIDLocal not showing renaming results when specifying true to show renames
 2014-08-02 kevin
 	* Chg: Attempt to reduce dupe parts on "safe" scripts when user cancels the script by updating the groups table with time/article number every range.
+	* Fix: Various recommendations by scrutinizer.
 2014-08-02 niel
 	* Fix: Remove escaping causing problems in tmux.
 	* Chg: Alter date output to use international format in main tmux pain.
