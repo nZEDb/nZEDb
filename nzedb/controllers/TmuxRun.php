@@ -351,6 +351,8 @@ class TmuxRun extends Tmux
 			case 2:
 				$useFilenames = 'true';
 				break;
+			default:
+				$useFilenames = 'false';
 		}
 
 		if (($runVar['settings']['import'] != 0) && ($runVar['killswitch']['pp'] == false)) {
@@ -376,6 +378,7 @@ class TmuxRun extends Tmux
 		switch (true) {
 			case ($runVar['settings']['post'] == 1) && ($runVar['counts']['now']['work'] > 0):
 				$log = $this->writelog($runVar['panes']['two'][0]);
+				$color = $this->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
 				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:2.0 'echo \"\033[38;5;${color}m\"; \
 						{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/postprocess.php add $log; date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['post_timer']}' 2>&1 1> /dev/null"
 				);
@@ -536,7 +539,7 @@ class TmuxRun extends Tmux
 
 			$date = 'date +"%Y-%m-d %T";';
 			$sleep = sprintf(
-				'%s %s',
+				'%s %s;',
 				$runVar['commands']['_sleep'],
 				$runVar['settings']['seq_timer']
 			);
@@ -548,10 +551,13 @@ class TmuxRun extends Tmux
 				case 1:
 				case 2:
 					$binaries = sprintf(
-						'%s %s',
+						'%s %s;',
 						$runVar['scripts']['binaries'],
 						$log
 					);
+					break;
+				default:
+					$binaries = '';
 			}
 
 			switch ($runVar['settings']['backfill']) {
@@ -560,7 +566,7 @@ class TmuxRun extends Tmux
 					break;
 				case 1:
 					$backfill = sprintf(
-						'%s %s %s',
+						'%s %s %s;',
 						$runVar['scripts']['backfill'],
 						$runVar['settings']['backfill_qty'],
 						$log
@@ -568,7 +574,7 @@ class TmuxRun extends Tmux
 					break;
 				case 2:
 					$backfill = sprintf(
-						'%s %s %s',
+						'%s %s %s;',
 						$runVar['scripts']['backfill'],
 						'group',
 						$log
@@ -576,10 +582,13 @@ class TmuxRun extends Tmux
 					break;
 				case 4:
 					$backfill = sprintf(
-						'%s %s',
+						'%s %s;',
 						$runVar['scripts']['backfill'],
 						$log
 					);
+					break;
+				default:
+					$backfill = '';
 			}
 
 			switch ($runVar['settings']['releases_run']) {
@@ -589,10 +598,13 @@ class TmuxRun extends Tmux
 				case 1:
 				case 2:
 					$releases = sprintf(
-						'%s %s',
+						'%s %s;',
 						$runVar['scripts']['releases'],
 						$log
 					);
+					break;
+				default:
+					$releases = '';
 			}
 
 			shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 '$binaries $backfill $releases $date $sleep' 2>&1 1> /dev/null");
@@ -601,7 +613,7 @@ class TmuxRun extends Tmux
 			//run backfill all once and resets the timer
 			if ($runVar['settings']['backfill'] != 0) {
 				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
-					{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/python/backfill_threaded.py all $log; \
+					{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_threaded.py all $log; \
 					date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
 				);
 				$runVar['timers']['timer5'] = time();
