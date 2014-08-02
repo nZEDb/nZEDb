@@ -536,7 +536,7 @@ class TmuxRun extends Tmux
 
 			$date = 'date +\"%D %T\";';
 			$sleep = sprintf(
-				'%s %s',
+				'%s %s;',
 				$runVar['commands']['_sleep'],
 				$runVar['settings']['seq_timer']
 			);
@@ -548,10 +548,13 @@ class TmuxRun extends Tmux
 				case 1:
 				case 2:
 					$binaries = sprintf(
-						'%s %s',
+						'%s %s;',
 						$runVar['scripts']['binaries'],
 						$log
 					);
+					break;
+				default:
+					$binaries = '';
 			}
 
 			switch ($runVar['settings']['backfill']) {
@@ -561,7 +564,7 @@ class TmuxRun extends Tmux
 					break;
 				case 1:
 					$backfill = sprintf(
-						'%s %s %s',
+						'%s %s %s;',
 						$runVar['scripts']['backfill'],
 						$runVar['settings']['backfill_qty'],
 						$log
@@ -569,7 +572,7 @@ class TmuxRun extends Tmux
 					break;
 				case 2:
 					$backfill = sprintf(
-						'%s %s %s',
+						'%s %s %s;',
 						$runVar['scripts']['backfill'],
 						'group',
 						$log
@@ -577,10 +580,13 @@ class TmuxRun extends Tmux
 					break;
 				case 4:
 					$backfill = sprintf(
-						'%s %s',
+						'%s %s;',
 						$runVar['scripts']['backfill'],
 						$log
 					);
+					break;
+				default:
+					$backfill = '';
 			}
 
 			switch ($runVar['settings']['releases_run']) {
@@ -590,16 +596,14 @@ class TmuxRun extends Tmux
 				case 1:
 				case 2:
 					$releases = sprintf(
-						'%s %s',
+						'%s %s;',
 						$runVar['scripts']['releases'],
 						$log
 					);
+					break;
+				default:
+					$releases = '';
 			}
-
-			$backfill .= empty($backfill) ?: ';';
-			$binaries .= empty($binaries) ? : ';';
-			$releases .= empty($releases) ? : ';';
-			$sleep .= empty($sleep) ? : ';';
 
 			shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 '$binaries $backfill $releases $date $sleep' 2>&1 1> /dev/null");
 
@@ -607,7 +611,7 @@ class TmuxRun extends Tmux
 			//run backfill all once and resets the timer
 			if ($runVar['settings']['backfill'] != 0) {
 				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
-					{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/python/backfill_threaded.py all $log; \
+					{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_threaded.py all $log; \
 					date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
 				);
 				$runVar['timers']['timer5'] = time();
