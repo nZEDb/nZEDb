@@ -6,6 +6,9 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-08-02 ruhllatio
+	* Fix: RequestIDLocal Single Alt was looking for the groupname from the groupname, not the groupname from the usenet name
+	* Fix: RequestIDLocal not showing renaming results when specifying true to show renames
 2014-08-02 kevin
 	* Chg: Attempt to reduce dupe parts on "safe" scripts when user cancels the script by updating the groups table with time/article number every range.
 2014-08-02 niel
