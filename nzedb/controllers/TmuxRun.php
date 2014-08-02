@@ -534,11 +534,11 @@ class TmuxRun extends Tmux
 		$log = $this->writelog($runVar['panes']['zero'][2]);
 		if (($runVar['killswitch']['coll'] == false) && ($runVar['killswitch']['pp'] == false) && (time() - $runVar['timers']['timer5'] <= 4800)) {
 
-			$date = 'date +\"%D %T\"';
-			$sleep = sprintf('
-						%s %s',
-						$runVar['commands']['_sleep'],
-						$runVar['settings']['seq_timer']
+			$date = 'date +\"%D %T\";';
+			$sleep = sprintf(
+				'%s %s',
+				$runVar['commands']['_sleep'],
+				$runVar['settings']['seq_timer']
 			);
 
 			switch ($runVar['settings']['binaries_run']) {
@@ -547,10 +547,10 @@ class TmuxRun extends Tmux
 					break;
 				case 1:
 				case 2:
-					$binaries = sprintf('
-								%s %s',
-								$runVar['scripts']['binaries'],
-								$log
+					$binaries = sprintf(
+						'%s %s',
+						$runVar['scripts']['binaries'],
+						$log
 					);
 			}
 
@@ -560,26 +560,26 @@ class TmuxRun extends Tmux
 					$releases = 'echo \"\nbackfill has been disabled/terminated by Backfill\"';
 					break;
 				case 1:
-					$backfill = sprintf('
-								%s %s %s',
-								$runVar['scripts']['backfill'],
-								$runVar['settings']['backfill_qty'],
-								$log
+					$backfill = sprintf(
+						'%s %s %s',
+						$runVar['scripts']['backfill'],
+						$runVar['settings']['backfill_qty'],
+						$log
 					);
 					break;
 				case 2:
-					$backfill = sprintf('
-								%s %s %s',
-								$runVar['scripts']['backfill'],
-								'group',
-								$log
+					$backfill = sprintf(
+						'%s %s %s',
+						$runVar['scripts']['backfill'],
+						'group',
+						$log
 					);
 					break;
 				case 4:
-					$backfill = sprintf('
-								%s %s',
-								$runVar['scripts']['backfill'],
-								$log
+					$backfill = sprintf(
+						'%s %s',
+						$runVar['scripts']['backfill'],
+						$log
 					);
 			}
 
@@ -589,14 +589,19 @@ class TmuxRun extends Tmux
 					break;
 				case 1:
 				case 2:
-					$releases = sprintf('
-								%s %s',
-								$runVar['scripts']['releases'],
-								$log
+					$releases = sprintf(
+						'%s %s',
+						$runVar['scripts']['releases'],
+						$log
 					);
 			}
 
-			shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 '$binaries; $backfill; $releases; $date; $sleep;' 2>&1 1> /dev/null");
+			$backfill .= empty($backfill) ?: ';';
+			$binaries .= empty($binaries) ? : ';';
+			$releases .= empty($releases) ? : ';';
+			$sleep .= empty($sleep) ? : ';';
+
+			shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 '$binaries $backfill $releases $date $sleep' 2>&1 1> /dev/null");
 
 		} else if (($runVar['killswitch']['coll'] == false) && ($runVar['killswitch']['pp'] == false) && (time() - $runVar['timers']['timer5'] >= 4800)) {
 			//run backfill all once and resets the timer
