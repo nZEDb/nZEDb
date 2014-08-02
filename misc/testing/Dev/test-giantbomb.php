@@ -29,7 +29,7 @@ try {
 			}
 		}
 	}
-} catch (GiantBombException $e) {
+} catch (Exception $e) {
 	$result = false;
 }
 

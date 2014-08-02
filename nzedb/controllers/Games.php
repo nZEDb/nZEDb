@@ -659,7 +659,7 @@ class Games
 					return false;
 				}
 			}
-		} catch (GiantBombException $e) {
+		} catch (Exception $e) {
 			$result = false;
 		}
 
@@ -684,7 +684,7 @@ class Games
 			);
 			$result = json_decode(json_encode($obj->game($gameid, $fields)), true);
 			$result = $result['results'];
-		} catch (GiantBombException $e) {
+		} catch (Exception $e) {
 			$result = false;
 		}
 
