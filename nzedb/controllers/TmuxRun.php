@@ -537,7 +537,7 @@ class TmuxRun extends Tmux
 		$log = $this->writelog($runVar['panes']['zero'][2]);
 		if (($runVar['killswitch']['coll'] == false) && ($runVar['killswitch']['pp'] == false) && (time() - $runVar['timers']['timer5'] <= 4800)) {
 
-			$date = 'date +"%Y-%m-d %T";';
+			$date = 'date +"%Y-%m-%d %T";';
 			$sleep = sprintf(
 				'%s %s;',
 				$runVar['commands']['_sleep'],
