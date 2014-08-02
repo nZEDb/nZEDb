@@ -82,7 +82,7 @@ while ($runVar['counts']['iterations'] > 0) {
 		: "{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/releases.php"
 	);
 
-	switch($runVar['scripts']['binaries']) {
+	switch($runVar['scripts']['binaries_run']) {
 		case 1:
 			$runVar['scripts']['binaries'] = "{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/binaries.php 0";
 			break;
