@@ -89,6 +89,8 @@ while ($runVar['counts']['iterations'] > 0) {
 		case 2:
 			$runVar['scripts']['binaries'] = "{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/binaries_safe_threaded.py";
 			break;
+		default:
+			$runVar['scripts']['binaries'] = 0;
 	}
 
 	switch ((int) $runVar['settings']['backfill']) {
