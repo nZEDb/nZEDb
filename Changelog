@@ -7,7 +7,7 @@ New updates are grouped by person, at the top of the file.
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-08-01 DariusIII
-        * Upd: Codec spam removal update
+	* Upd: Codec spam removal update
 2014-08-01 bart39
 	* Fix: UpdateTV for tmux complete sequential.
 	* Fix: Display issues for long titles on predb alpha theme.
@@ -15,6 +15,8 @@ New updates are grouped by person, at the top of the file.
 	* Add: CollectionsCleaning Regex additions.
 	* Fix: offset for groupfixrelnames predbft.
 	* Add: Misc>Hashed Retention Hours #1437
+	* Fix: Categorize byGroup a.b.sounds.flac #1432, run php /misc/testing/Dev/recategorize.php all to fix
+	* Fix: Categorize HDTV Bluray, run php /misc/testing/Dev/recategorize.php all to fix
 2014-08-01 tasky
 	* Chg: Scrutinizer recommendations.
 	* Fix: Wrong resource type / __construct fixed
