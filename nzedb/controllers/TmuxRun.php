@@ -351,6 +351,8 @@ class TmuxRun extends Tmux
 			case 2:
 				$useFilenames = 'true';
 				break;
+			default:
+				$useFilenames = 'false';
 		}
 
 		if (($runVar['settings']['import'] != 0) && ($runVar['killswitch']['pp'] == false)) {
@@ -376,6 +378,7 @@ class TmuxRun extends Tmux
 		switch (true) {
 			case ($runVar['settings']['post'] == 1) && ($runVar['counts']['now']['work'] > 0):
 				$log = $this->writelog($runVar['panes']['two'][0]);
+				$color = $this->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
 				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:2.0 'echo \"\033[38;5;${color}m\"; \
 						{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/postprocess.php add $log; date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['post_timer']}' 2>&1 1> /dev/null"
 				);
