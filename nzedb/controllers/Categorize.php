@@ -371,11 +371,15 @@ class Categorize extends Category
 				case $group === 'alt.binaries.pro-wrestling':
 					$this->tmpCat = Category::CAT_TV_SPORT;
 					break;
-				case preg_match('/alt\.binaries\.sounds\.(flac(\.jazz)|jpop|lossless(\.[a-z0-9]+)?)|alt\.binaries\.(cd\.lossless|music\.flac)/i', $group):
-					if ($this->categorizeForeign && $this->isMusicForeign()) {
-						break;
+				case preg_match('/alt\.binaries\.sounds\.(flac(\.jazz)?|jpop|lossless(\.[a-z0-9]+)?)|alt\.binaries\.(cd\.lossless|music\.flac)/i', $group):
+					switch (true) {
+						case $this->categorizeForeign && $this->isMusicForeign():
+						case $this->isMusic():
+							break;
+						default:
+							$this->tmpCat = Category::CAT_MUSIC_LOSSLESS;
+							break;
 					}
-					$this->tmpCat = Category::CAT_MUSIC_LOSSLESS;
 					break;
 				case $group === 'alt.binaries.sounds.whitburn.pop':
 					switch (true) {
@@ -545,7 +549,7 @@ class Categorize extends Category
 
 	public function isHDTV()
 	{
-		if (preg_match('/1080(i|p)|720p/i', $this->releaseName)) {
+		if (preg_match('/1080(i|p)|720p|bluray/i', $this->releaseName)) {
 			$this->tmpCat = Category::CAT_TV_HD;
 			return true;
 		}
