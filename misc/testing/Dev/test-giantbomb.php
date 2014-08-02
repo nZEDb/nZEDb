@@ -7,9 +7,11 @@ require_once nZEDb_LIBS . 'GiantBombAPI.php';
 $giantbombkey = (new \nzedb\db\Settings())->getSetting('giantbombkey');
 $cli = new ColorCLI();
 $obj = new GiantBomb($giantbombkey, $resp = "json");
+
 $searchgame = "South Park The Stick of Truth";
 $resultsfound = 0;
 
+$e = null;
 try {
 	$fields = array(
 		"deck", "description", "original_game_rating", "api_detail_url", "image", "genres", "name",
