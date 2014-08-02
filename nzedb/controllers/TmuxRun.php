@@ -534,7 +534,7 @@ class TmuxRun extends Tmux
 		$log = $this->writelog($runVar['panes']['zero'][2]);
 		if (($runVar['killswitch']['coll'] == false) && ($runVar['killswitch']['pp'] == false) && (time() - $runVar['timers']['timer5'] <= 4800)) {
 
-			$date = 'date +\"%D %T\";';
+			$date = 'date +"%Y-%m-d %T";';
 			$sleep = sprintf(
 				'%s %s',
 				$runVar['commands']['_sleep'],
@@ -543,7 +543,7 @@ class TmuxRun extends Tmux
 
 			switch ($runVar['settings']['binaries_run']) {
 				case 0:
-					$binaries = 'echo \"\nbinaries has been disabled/terminated by Binaries\"';
+					$binaries = 'echo "\nbinaries has been disabled/terminated by Binaries"';
 					break;
 				case 1:
 				case 2:
@@ -556,8 +556,7 @@ class TmuxRun extends Tmux
 
 			switch ($runVar['settings']['backfill']) {
 				case 0:
-					$backfill = '';
-					$releases = 'echo \"\nbackfill has been disabled/terminated by Backfill\"';
+					$backfill = 'echo "backfill is disabled in settings";';
 					break;
 				case 1:
 					$backfill = sprintf(
@@ -585,7 +584,7 @@ class TmuxRun extends Tmux
 
 			switch ($runVar['settings']['releases_run']) {
 				case 0:
-					$releases = 'echo \"\nreleases have been disabled/terminated by Releases\"';
+					$releases = 'echo "\nreleases have been disabled/terminated by Releases"';
 					break;
 				case 1:
 				case 2:
@@ -595,11 +594,6 @@ class TmuxRun extends Tmux
 						$log
 					);
 			}
-
-			$backfill .= empty($backfill) ?: ';';
-			$binaries .= empty($binaries) ? : ';';
-			$releases .= empty($releases) ? : ';';
-			$sleep .= empty($sleep) ? : ';';
 
 			shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 '$binaries $backfill $releases $date $sleep' 2>&1 1> /dev/null");
 
