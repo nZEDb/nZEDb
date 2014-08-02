@@ -180,7 +180,7 @@ while ($runVar['counts']['iterations'] > 0) {
 			$runVar['counts']['now']['collections_table'] = $runVar['counts']['now']['binaries_table'] = 0;
 			$runVar['counts']['now']['parts_table'] = $runVar['counts']['now']['parterpair_table'] = 0;
 
-			if (count($tables) > 0) {
+			if ($tables instanceof Traversable) {
 				foreach ($tables as $row) {
 					$cntsql = '';
 
@@ -315,10 +315,14 @@ while ($runVar['counts']['iterations'] > 0) {
 	$tOut->displayOutput(1, $runVar);
 
 	//display monitor body
-	($runVar['settings']['monitor'] > 0 ? $tOut->displayOutput(2, $runVar) : '');
+	if ($runVar['settings']['monitor'] > 0) {
+		$tOut->displayOutput(2, $runVar);
+	}
 
 	//display query block
-	($runVar['settings']['show_query'] == 1 ? $tOut->displayOutput(3, $runVar) : '');
+	if ($runVar['settings']['show_query'] == 1) {
+		$tOut->displayOutput(3, $runVar);
+	}
 
 	//begin pane run execution
 	if ($runVar['settings']['is_running'] === '1') {
