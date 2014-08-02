@@ -21,7 +21,8 @@ New updates are grouped by person, at the top of the file.
 	* Chg: Alter date output to use international format in main tmux pain.
 2014-08-02 bart39
 	* Fix: _python not _php.
-	* Fix: Tmux basic sequential undefined variables
+	* Fix: Tmux basic sequential undefined variables.
+	* Fix: XXX Search filter for non Alpha Themes
 2014-08-01 DariusIII
 	* Upd: Codec spam removal update
 2014-08-01 bart39
