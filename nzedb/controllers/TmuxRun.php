@@ -10,7 +10,7 @@ use nzedb\db\Settings;
 class TmuxRun extends Tmux
 {
 	/**
-	 * @param $pdo Class instances
+	 * @param Settings $pdo
 	 */
 	public function __construct(Settings $pdo = null)
 	{
@@ -48,7 +48,8 @@ class TmuxRun extends Tmux
 					case 'removecrap':
 						return $this->_runRemoveCrap($runVar);
 					case 'scraper':
-						return $this->_runIRCScraper(3, $runVar);
+						$this->_runIRCScraper(3, $runVar);
+						return true;
 					case 'sharing':
 						$this->_runSharing(($runVar['constants']['nntpproxy'] == 1 ? 5 : 4), $runVar);
 						break;
@@ -83,7 +84,8 @@ class TmuxRun extends Tmux
 					case 'removecrap':
 						return $this->_runRemoveCrap($runVar);
 					case 'scraper':
-						return $this->_runIRCScraper(3, $runVar);
+						$this->_runIRCScraper(3, $runVar);
+						return true;
 					case 'sharing':
 						$this->_runSharing(($runVar['constants']['nntpproxy'] == 1 ? 5 : 4), $runVar);
 						break;
@@ -103,7 +105,8 @@ class TmuxRun extends Tmux
 						$this->_notRunningFull($runVar);
 						break;
 					case 'scraper':
-						return $this->_runIRCScraper(2, $runVar);
+						$this->_runIRCScraper(2, $runVar);
+						return true;
 					case 'sharing':
 						$this->_runSharing(($runVar['constants']['nntpproxy'] == 1 ? 4 : 3), $runVar);
 						break;
@@ -112,6 +115,7 @@ class TmuxRun extends Tmux
 				}
 				break;
 		}
+		return false;
 	}
 
 	protected function _runDehash($runVar)
@@ -268,7 +272,7 @@ class TmuxRun extends Tmux
 	protected function _runNonUpdateBinaries($runVar)
 	{
 		//run update_binaries
-		$color = $this->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
+		//$color = $this->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
 		if (($runVar['settings']['binaries_run'] != 0) && ($runVar['killswitch']['coll'] == false) && ($runVar['killswitch']['pp'] == false)) {
 			$log = $this->writelog($runVar['panes']['zero'][2]);
 			shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \

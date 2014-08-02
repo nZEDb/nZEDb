@@ -81,10 +81,15 @@ while ($runVar['counts']['iterations'] > 0) {
 		? "{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/update_releases.php 1 false"
 		: "{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/releases.php"
 	);
-	$runVar['scripts']['binaries'] = ($runVar['settings']['binaries_run'] < 2
-		? "{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/binaries.php 0"
-		: "{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/binaries_safe_threaded.py"
-	);
+
+	switch($runVar['scripts']['binaries']) {
+		case 1:
+			$runVar['scripts']['binaries'] = "{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/binaries.php 0";
+			break;
+		case 2:
+			$runVar['scripts']['binaries'] = "{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/binaries_safe_threaded.py";
+			break;
+	}
 
 	switch ((int) $runVar['settings']['backfill']) {
 		case 1:

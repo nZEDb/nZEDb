@@ -14,6 +14,7 @@ New updates are grouped by person, at the top of the file.
 	* Fix: Various recommendations by scrutinizer.
 	* Cln: Cleanup.
 	* Fix: Issues in ReleaseRemover.php
+	* Fix: Possible fix for binaries issue in tmux.
 2014-08-02 niel
 	* Fix: Remove escaping causing problems in tmux.
 	* Chg: Alter date output to use international format in main tmux pain.

@@ -11,7 +11,7 @@ class TmuxOutput extends Tmux
 {
 
 	/**
-	 * @param $pdo Class instances
+	 * @param Settings $pdo
 	 */
 	public function __construct(Settings $pdo = null)
 	{
@@ -140,7 +140,6 @@ class TmuxOutput extends Tmux
 
 	protected function _displayPaths($runVar)
 	{
-		$monitor_path = $monitor_path_a = $monitor_path_b = "";
 		$masks = $this->_getColorsMasks($runVar['settings']['compressed']);
 
 		// assign timers from tmux table
