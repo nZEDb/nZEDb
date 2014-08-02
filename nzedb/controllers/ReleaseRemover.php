@@ -396,7 +396,7 @@ class ReleaseRemover
 			AND r.iscategorized = 1
 			AND r.rarinnerfilecount = 0
 			AND r.categoryid NOT IN (%d)
-			AND r.searchname %s '^[a-zA-Z0-9]{0,5}$'
+			AND r.searchname REGEXP '^[a-zA-Z0-9]{0,5}$'
 			%s",
 			Category::CAT_MISC, $this->crapTime
 		);
@@ -499,7 +499,7 @@ class ReleaseRemover
 		$this->query = sprintf(
 			"SELECT r.guid, r.searchname
 			FROM releases r
-			WHERE r.searchname %s %s
+			WHERE r.searchname LIKE %s
 			AND r.searchname NOT LIKE %s
 			AND r.searchname NOT LIKE %s
 			AND r.searchname NOT LIKE %s
