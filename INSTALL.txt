@@ -39,6 +39,7 @@ REQUIREMENTS
 
 		(optional extensions)
 			Memcached (caching query results) (Memcached, not the memcache extension).
+			simple_php_yenc_decode (https://github.com/kevinlekiller/simple_php_yenc_decode) for decoding yEnc faster.
 
 	Database:
 		MySQL 5.5+
@@ -66,6 +67,10 @@ REQUIREMENTS
 	Deep rar password inspection
 		unrar version 3.9 or higher
 		7zip
+
+	Misc applications
+		timeout (from gnu core-utils) For killing hanging processes.
+		file (from http://darwinsys.com/file/) For finding information on file data.
 
 	Thumbnailing and media info (if feep rar inspection is enabled)
 		ffmpeg or avconv

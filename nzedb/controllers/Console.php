@@ -199,15 +199,6 @@ class Console
 			$catsrch .= "1=2 )";
 		}
 
-		$maxage = '';
-		if ($maxage > 0) {
-			if ($this->pdo->dbSystem() === 'mysql') {
-				$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
-			} else if ($this->pdo->dbSystem() === 'pgsql') {
-				$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
-			}
-		}
-
 		$exccatlist = "";
 		if (count($excludedcats) > 0) {
 			$exccatlist = " AND r.categoryid NOT IN (" . implode(",", $excludedcats) . ")";
@@ -234,9 +225,9 @@ class Console
 				. "LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id "
 				. "INNER JOIN consoleinfo con ON con.id = r.consoleinfoid "
 				. "WHERE r.nzbstatus = 1 AND con.cover = 1 AND con.title != '' AND "
-				. "r.passwordstatus <= (SELECT value FROM settings WHERE setting='showpasswordedrelease') AND %s %s %s
+				. "r.passwordstatus <= (SELECT value FROM settings WHERE setting='showpasswordedrelease') AND %s %s
 				%s "
-				. "GROUP BY con.id ORDER BY %s %s" . $limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]
+				. "GROUP BY con.id ORDER BY %s %s" . $limit, $browseby, $catsrch, $exccatlist, $order[0], $order[1]
 			)
 		);
 	}
@@ -290,10 +281,7 @@ class Console
 	{
 		$browseby = ' ';
 		$browsebyArr = $this->getBrowseByOptions();
-		$like = 'ILIKE';
-		if ($this->pdo->dbSystem() === 'mysql') {
-			$like = 'LIKE';
-		}
+		$like = 'LIKE';
 		foreach ($browsebyArr as $bbk => $bbv) {
 			if (isset($_REQUEST[$bbk]) && !empty($_REQUEST[$bbk])) {
 				$bbs = stripslashes($_REQUEST[$bbk]);

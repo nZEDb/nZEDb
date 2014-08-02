@@ -130,39 +130,22 @@ while ($runVar['counts']['iterations'] > 0) {
 		$runVar['timers']['query']['split1_time'] = (time() - $timer01);
 
 		$timer03 = time();
-		if ($pdo->dbSystem() === 'mysql') {
-			//This is subpartition compatible -- loops through all partitions and adds their total row counts instead of doing a slow query count
-			$partitions = $pdo->queryDirect(
-							sprintf("
-								SELECT SUM(TABLE_ROWS) AS count, PARTITION_NAME AS category
-								FROM INFORMATION_SCHEMA.PARTITIONS
-								WHERE TABLE_NAME = 'releases'
-								AND TABLE_SCHEMA = %s
-								GROUP BY PARTITION_NAME",
-								$pdo->escapeString($db_name)
-							)
-			);
-			foreach ($partitions as $partition) {
-				$runVar['counts']['now'][$partition['category']] = $partition['count'];
-			}
-			unset($partitions);
-		} else {
-			$initquery = $pdo->queryDirect($catcntqry, false);
-			$catParentPart = array(
-						Category::CAT_PARENT_GAME  => 'console',
-						Category::CAT_PARENT_MOVIE => 'movies',
-						Category::CAT_PARENT_MUSIC => 'audio',
-						Category::CAT_PARENT_PC    => 'pc',
-						Category::CAT_PARENT_TV    => 'tv',
-						Category::CAT_PARENT_XXX   => 'xxx',
-						Category::CAT_PARENT_MISC  => 'misc',
-						Category::CAT_PARENT_BOOKS => 'books'
-			);
-			foreach ($initquery as $parent => $count) {
-				$runVar['counts']['now'][$catParentPart[$parent]] = $count;
-			}
-			unset($initquery);
+
+		//This is subpartition compatible -- loops through all partitions and adds their total row counts instead of doing a slow query count
+		$partitions = $pdo->queryDirect(
+			sprintf("
+				SELECT SUM(TABLE_ROWS) AS count, PARTITION_NAME AS category
+				FROM INFORMATION_SCHEMA.PARTITIONS
+				WHERE TABLE_NAME = 'releases'
+				AND TABLE_SCHEMA = %s
+				GROUP BY PARTITION_NAME",
+				$pdo->escapeString($db_name)
+			)
+		);
+		foreach ($partitions as $partition) {
+			$runVar['counts']['now'][$partition['category']] = $partition['count'];
 		}
+		unset($partitions);
 
 		$runVar['timers']['query']['init_time'] = (time() - $timer03);
 		$runVar['timers']['query']['init1_time'] = (time() - $timer01);
@@ -184,11 +167,8 @@ while ($runVar['counts']['iterations'] > 0) {
 
 		$timer07 = time();
 		if ($runVar['constants']['tablepergroup'] == 1) {
-			if ($pdo->dbSystem() === 'mysql') {
-				$sql = 'SHOW TABLE STATUS';
-			} else {
-				$sql = "SELECT relname FROM pg_class WHERE relname !~ '^(pg_|sql_)' AND relkind = 'r'";
-			}
+			$sql = 'SHOW TABLE STATUS';
+
 			$tables = $pdo->queryDirect($sql);
 			$age = time();
 
@@ -198,24 +178,18 @@ while ($runVar['counts']['iterations'] > 0) {
 			if (count($tables) > 0) {
 				foreach ($tables as $row) {
 					$cntsql = '';
-					if ($pdo->dbSystem() === 'mysql') {
-						$tbl = $row['name'];
-						$stamp = 'UNIX_TIMESTAMP(MIN(dateadded))';
-						$orderlim = '';
-						$cntsql = sprintf('
-								SELECT TABLE_ROWS AS count
-								FROM INFORMATION_SCHEMA.TABLES
-								WHERE TABLE_NAME = %s
-								AND TABLE_SCHEMA = %s',
-								$pdo->escapeString($tbl),
-								$pdo->escapeString($db_name)
-						);
-					} else {
-						$tbl = $row['relname'];
-						$stamp = 'extract(epoch FROM dateadded)';
-						$orderlim = 'ORDER BY dateadded ASC LIMIT 1';
-						$cntsql = 'SELECT COUNT(*) AS count FROM ' . $tbl;
-					}
+
+					$tbl = $row['name'];
+					$stamp = 'UNIX_TIMESTAMP(MIN(dateadded))';
+					$orderlim = '';
+					$cntsql = sprintf('
+							SELECT TABLE_ROWS AS count
+							FROM INFORMATION_SCHEMA.TABLES
+							WHERE TABLE_NAME = %s
+							AND TABLE_SCHEMA = %s',
+							$pdo->escapeString($tbl),
+							$pdo->escapeString($db_name)
+					);
 
 					if (strpos($tbl, 'collections_') !== false) {
 						$run = $pdo->queryOneRow($cntsql, $tRun->rand_bool($runVar['counts']['iterations']));

@@ -7,23 +7,18 @@ use nzedb\db\Settings;
 
 $pdo = new Settings();
 
-if ($pdo->dbSystem() === "pgsql") {
-	exit($pdo->log->error("\nThis script is only for mysql.\n"));
-}
-
 $exportopts = "";
 
 //determine mysql platform Percona or Other
-if($pdo->dbSystem() === "mysql") {
-	$mysqlplatform = exec('mysqladmin version | grep "Percona"');
-	if (strlen($mysqlplatform) > 0) {
-		//Percona only has --innodb-optimize-keys
-		$exportopts = "--opt --innodb-optimize-keys --complete-insert --skip-quick";
-	} else {
-		//generic (or unknown) instance of MySQL
-		$exportopts = "--opt --complete-insert --skip-quick";
-	}
+$mysqlplatform = exec('mysqladmin version | grep "Percona"');
+if (strlen($mysqlplatform) > 0) {
+	//Percona only has --innodb-optimize-keys
+	$exportopts = "--opt --innodb-optimize-keys --complete-insert --skip-quick";
+} else {
+	//generic (or unknown) instance of MySQL
+	$exportopts = "--opt --complete-insert --skip-quick";
 }
+
 
 function newname($filename)
 {
@@ -67,10 +62,8 @@ if (DB_SOCKET != '') {
 	$use = "-P$dbport";
 }
 
-if($pdo->dbSystem() === "mysql") {
-	//generate defaults file used to store database login information so it is not in cleartext in ps command for mysqldump
-	builddefaultsfile();
-}
+//generate defaults file used to store database login information so it is not in cleartext in ps command for mysqldump
+builddefaultsfile();
 
 if((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "dump") && (isset($argv[3]) && file_exists($argv[3]))) {
 	$filename = $argv[3]."/".$dbname.".gz";

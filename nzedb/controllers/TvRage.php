@@ -79,7 +79,7 @@ class TvRage
 	public function getByTitle($title)
 	{
 		// Set string to differentiate between mysql and PG for string replacement matching operations
-		$string = ($this->pdo->dbSystem() === 'mysql' ? '"\'"' :  "E'\''");
+		$string = '"\'"';
 
 		// Check if we already have an entry for this show.
 		$res = $this->pdo->queryOneRow(sprintf("SELECT rageid FROM tvrage WHERE LOWER(releasetitle) = LOWER(%s)", $this->pdo->escapeString($title)));
@@ -172,56 +172,21 @@ class TvRage
 			$ckid = $this->pdo->queryOneRow('SELECT id FROM tvrage WHERE releasetitle = ' . $this->pdo->escapeString($releasename));
 		}
 
-		if ($this->pdo->dbSystem() === 'mysql') {
-			if (!isset($ckid['id'])) {
-				$this->pdo->queryExec(sprintf('INSERT INTO tvrage (rageid, releasetitle, description, genre, country, createddate, imgdata) VALUES (%s, %s, %s, %s, %s, NOW(), %s)', $rageid, $this->pdo->escapeString($releasename), $this->pdo->escapeString(substr($desc, 0, 10000)), $this->pdo->escapeString(substr($genre, 0, 64)), $this->pdo->escapeString($country), $this->pdo->escapeString($imgbytes)));
-			} else {
-				$this->pdo->queryExec(sprintf('UPDATE tvrage SET releasetitle = %s, description = %s, genre = %s, country = %s, createddate = NOW(), imgdata = %s WHERE id = %d', $this->pdo->escapeString($releasename), $this->pdo->escapeString(substr($desc, 0, 10000)), $this->pdo->escapeString(substr($genre, 0, 64)), $this->pdo->escapeString($country), $this->pdo->escapeString($imgbytes), $ckid['id']));
-			}
+		if (!isset($ckid['id'])) {
+			$this->pdo->queryExec(sprintf('INSERT INTO tvrage (rageid, releasetitle, description, genre, country, createddate, imgdata) VALUES (%s, %s, %s, %s, %s, NOW(), %s)', $rageid, $this->pdo->escapeString($releasename), $this->pdo->escapeString(substr($desc, 0, 10000)), $this->pdo->escapeString(substr($genre, 0, 64)), $this->pdo->escapeString($country), $this->pdo->escapeString($imgbytes)));
 		} else {
-			if (!isset($ckid['id'])) {
-				$id = $this->pdo->queryInsert(sprintf('INSERT INTO tvrage (rageid, releasetitle, description, genre, country, createddate) VALUES (%d, %s, %s, %s, %s, NOW())', $rageid, $this->pdo->escapeString($releasename), $this->pdo->escapeString(substr($desc, 0, 10000)), $this->pdo->escapeString(substr($genre, 0, 64)), $this->pdo->escapeString($country)));
-			} else {
-				$id = $ckid['id'];
-				$this->pdo->queryExec(sprintf('UPDATE tvrage SET releasetitle = %s, description = %s, genre = %s, country = %s, createddate = NOW() WHERE id = %d', $this->pdo->escapeString($releasename), $this->pdo->escapeString(substr($desc, 0, 10000)), $this->pdo->escapeString(substr($genre, 0, 64)), $this->pdo->escapeString($country), $id));
-			}
-			if ($imgbytes != '') {
-				$path = nZEDb_COVERS . 'tvrage' . DS . $id . '.jpg';
-				if (file_exists($path)) {
-					unlink($path);
-				}
-				$check = file_put_contents($path, $imgbytes);
-				if ($check !== false) {
-					$this->pdo->queryExec("UPDATE tvrage SET imgdata = 'x' WHERE id = " . $id);
-					chmod($path, 0755);
-				}
-			}
+			$this->pdo->queryExec(sprintf('UPDATE tvrage SET releasetitle = %s, description = %s, genre = %s, country = %s, createddate = NOW(), imgdata = %s WHERE id = %d', $this->pdo->escapeString($releasename), $this->pdo->escapeString(substr($desc, 0, 10000)), $this->pdo->escapeString(substr($genre, 0, 64)), $this->pdo->escapeString($country), $this->pdo->escapeString($imgbytes), $ckid['id']));
 		}
 	}
 
 	public function update($id, $rageid, $releasename, $desc, $genre, $country, $imgbytes)
 	{
 		$country = $this->countryCode($country);
-		if ($this->pdo->dbSystem() === 'mysql') {
-			if ($imgbytes != '') {
-				$imgbytes = ', imgdata = ' . $this->pdo->escapeString($imgbytes);
-			}
-
-			$this->pdo->queryExec(sprintf('UPDATE tvrage SET rageid = %d, releasetitle = %s, description = %s, genre = %s, country = %s %s WHERE id = %d', $rageid, $this->pdo->escapeString($releasename), $this->pdo->escapeString(substr($desc, 0, 10000)), $this->pdo->escapeString($genre), $this->pdo->escapeString($country), $imgbytes, $id));
-		} else {
-			$this->pdo->queryExec(sprintf('UPDATE tvrage SET rageid = %d, releasetitle = %s, description = %s, genre = %s, country = %s WHERE id = %d', $rageid, $this->pdo->escapeString($releasename), $this->pdo->escapeString(substr($desc, 0, 10000)), $this->pdo->escapeString($genre), $this->pdo->escapeString($country), $id));
-			if ($imgbytes != '') {
-				$path = nZEDb_COVERS . 'tvrage' . DS . $id . '.jpg';
-				if (file_exists($path)) {
-					unlink($path);
-				}
-				$check = file_put_contents($path, $imgbytes);
-				if ($check !== false) {
-					$this->pdo->queryExec("UPDATE tvrage SET imgdata = 'x' WHERE id = " . $id);
-					chmod($path, 0755);
-				}
-			}
+		if ($imgbytes != '') {
+			$imgbytes = ', imgdata = ' . $this->pdo->escapeString($imgbytes);
 		}
+
+		$this->pdo->queryExec(sprintf('UPDATE tvrage SET rageid = %d, releasetitle = %s, description = %s, genre = %s, country = %s %s WHERE id = %d', $rageid, $this->pdo->escapeString($releasename), $this->pdo->escapeString(substr($desc, 0, 10000)), $this->pdo->escapeString($genre), $this->pdo->escapeString($country), $imgbytes, $id));
 	}
 
 	public function delete($id)
@@ -319,11 +284,7 @@ class TvRage
 
 		$rsql = '';
 		if ($ragename != "") {
-			$like = 'ILIKE';
-			if ($this->pdo->dbSystem() === 'mysql') {
-				$like = 'LIKE';
-			}
-			$rsql .= sprintf("AND tvrage.releasetitle %s %s ", $like, $this->pdo->escapeString("%" . $ragename . "%"));
+			$rsql .= sprintf("AND tvrage.releasetitle LIKE %s ", $this->pdo->escapeString("%" . $ragename . "%"));
 		}
 
 		return $this->pdo->query(sprintf("SELECT id, rageid, releasetitle, description, createddate FROM tvrage WHERE 1=1 %s ORDER BY rageid ASC" . $limit, $rsql));
@@ -333,11 +294,7 @@ class TvRage
 	{
 		$rsql = '';
 		if ($ragename != "") {
-			$like = 'ILIKE';
-			if ($this->pdo->dbSystem() === 'mysql') {
-				$like = 'LIKE';
-			}
-			$rsql .= sprintf("AND tvrage.releasetitle %s %s ", $like, $this->pdo->escapeString("%" . $ragename . "%"));
+			$rsql .= sprintf("AND tvrage.releasetitle LIKE %s ", $this->pdo->escapeString("%" . $ragename . "%"));
 		}
 
 		$res = $this->pdo->queryOneRow(sprintf("SELECT COUNT(id) AS num FROM tvrage WHERE 1=1 %s", $rsql));
@@ -361,52 +318,29 @@ class TvRage
 				$letter = '[0-9]';
 			}
 
-			if ($this->pdo->dbSystem() === "mysql") {
-				$rsql .= sprintf("AND tvrage.releasetitle REGEXP %s", $this->pdo->escapeString('^' . $letter));
-			} else {
-				$rsql .= sprintf("AND tvrage.releasetitle ~ %s", $this->pdo->escapeString('^' . $letter));
-			}
+			$rsql .= sprintf("AND tvrage.releasetitle REGEXP %s", $this->pdo->escapeString('^' . $letter));
 		}
 		$tsql = '';
 		if ($ragename != '') {
 			$tsql .= sprintf("AND tvrage.releasetitle LIKE %s", $this->pdo->escapeString("%" . $ragename . "%"));
 		}
 
-		if ($this->pdo->dbSystem() === 'mysql') {
-			return $this->pdo->query(
-						sprintf("
-							SELECT tvrage.id, tvrage.rageid, tvrage.releasetitle, tvrage.genre, tvrage.country, tvrage.createddate, tvrage.prevdate, tvrage.nextdate,
-								userseries.id AS userseriesid
-							FROM tvrage
-							LEFT OUTER JOIN userseries ON userseries.userid = %d
-								AND userseries.rageid = tvrage.rageid
-							WHERE tvrage.rageid IN (SELECT DISTINCT rageid FROM releases WHERE categoryid BETWEEN 5000 AND 5999 AND rageid > 0)
-							AND tvrage.rageid > 0 %s %s
-							GROUP BY tvrage.rageid
-							ORDER BY tvrage.releasetitle ASC",
-							$uid,
-							$rsql,
-							$tsql
-						)
-			);
-		} else {
-			return $this->pdo->query(
-						sprintf("
-							SELECT tvrage.id, tvrage.rageid, tvrage.releasetitle, tvrage.genre, tvrage.country, tvrage.createddate, tvrage.prevdate, tvrage.nextdate,
-								userseries.id AS userseriesid
-							FROM tvrage
-							LEFT OUTER JOIN userseries ON userseries.userid = %d
-								AND userseries.rageid = tvrage.rageid
-							WHERE tvrage.rageid IN (SELECT DISTINCT rageid FROM releases WHERE categoryid BETWEEN 5000 AND 5999 AND rageid > 0)
-							AND tvrage.rageid > 0 %s %s
-							GROUP BY tvrage.rageid, tvrage.id, userseries.id
-							ORDER BY tvrage.releasetitle ASC",
-							$uid,
-							$rsql,
-							$tsql
-						)
-			);
-		}
+		return $this->pdo->query(
+			sprintf("
+				SELECT tvrage.id, tvrage.rageid, tvrage.releasetitle, tvrage.genre, tvrage.country, tvrage.createddate, tvrage.prevdate, tvrage.nextdate,
+					userseries.id AS userseriesid
+				FROM tvrage
+				LEFT OUTER JOIN userseries ON userseries.userid = %d
+					AND userseries.rageid = tvrage.rageid
+				WHERE tvrage.rageid IN (SELECT DISTINCT rageid FROM releases WHERE categoryid BETWEEN 5000 AND 5999 AND rageid > 0)
+				AND tvrage.rageid > 0 %s %s
+				GROUP BY tvrage.rageid
+				ORDER BY tvrage.releasetitle ASC",
+				$uid,
+				$rsql,
+				$tsql
+			)
+		);
 	}
 
 	public function updateSchedule()
@@ -449,16 +383,7 @@ class TvRage
 
 							// Only stick current shows and new shows in there.
 							if (in_array($currShowId, $showarray)) {
-								if ($this->pdo->dbSystem() === 'mysql') {
-									$this->pdo->queryExec(sprintf("INSERT INTO tvrageepisodes (rageid, showtitle, fullep, airdate, link, eptitle) VALUES (%d, %s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE airdate = %s, link = %s ,eptitle = %s, showtitle = %s", $sShow->sid, $this->pdo->escapeString($currShowName), $this->pdo->escapeString($sShow->ep), $this->pdo->escapeString(date("Y-m-d H:i:s", $day_time)), $this->pdo->escapeString($sShow->link), $this->pdo->escapeString($sShow->title), $this->pdo->escapeString(date("Y-m-d H:i:s", $day_time)), $this->pdo->escapeString($sShow->link), $this->pdo->escapeString($sShow->title), $this->pdo->escapeString($currShowName)));
-								} else if ($this->pdo->dbSystem() === 'pgsql') {
-									$check = $this->pdo->queryOneRow(sprintf('SELECT id FROM tvrageepisodes WHERE rageid = %d', $sShow->sid));
-									if ($check === false) {
-										$this->pdo->queryExec(sprintf("INSERT INTO tvrageepisodes (rageid, showtitle, fullep, airdate, link, eptitle) VALUES (%d, %s, %s, %s, %s, %s)", $sShow->sid, $this->pdo->escapeString($currShowName), $this->pdo->escapeString($sShow->ep), $this->pdo->escapeString(date("Y-m-d H:i:s", $day_time)), $this->pdo->escapeString($sShow->link), $this->pdo->escapeString($sShow->title)));
-									} else {
-										$this->pdo->queryExec(sprintf('UPDATE tvrageepisodes SET showtitle = %s, fullep = %s, airdate = %s, link = %s, eptitle = %s WHERE id = %d', $this->pdo->escapeString($currShowName), $this->pdo->escapeString($sShow->ep), $this->pdo->escapeString(date("Y-m-d H:i:s", $day_time)), $this->pdo->escapeString($sShow->link), $this->pdo->escapeString($sShow->title), $check['id']));
-									}
-								}
+								$this->pdo->queryExec(sprintf("INSERT INTO tvrageepisodes (rageid, showtitle, fullep, airdate, link, eptitle) VALUES (%d, %s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE airdate = %s, link = %s ,eptitle = %s, showtitle = %s", $sShow->sid, $this->pdo->escapeString($currShowName), $this->pdo->escapeString($sShow->ep), $this->pdo->escapeString(date("Y-m-d H:i:s", $day_time)), $this->pdo->escapeString($sShow->link), $this->pdo->escapeString($sShow->title), $this->pdo->escapeString(date("Y-m-d H:i:s", $day_time)), $this->pdo->escapeString($sShow->link), $this->pdo->escapeString($sShow->title), $this->pdo->escapeString($currShowName)));
 							}
 						}
 					}

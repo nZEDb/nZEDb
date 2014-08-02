@@ -265,15 +265,7 @@ class Movie
 				$this->showPasswords,
 				$this->getBrowseBy(),
 				$catSearch,
-				($maxAge > 0
-					?
-					'AND r.postdate > NOW() - INTERVAL ' .
-					($this->pdo->dbSystem() === 'mysql'
-						? $maxAge . 'DAY '
-						: "'" . $maxAge . "DAYS' "
-					)
-					: ''
-				),
+				($maxAge > 0 ? 'AND r.postdate > NOW() - INTERVAL ' . $maxAge . ' DAY' : ''),
 				(count($excludedCats) > 0 ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : '')
 			)
 		);
@@ -629,99 +621,46 @@ class Movie
 		$mov['type']    = html_entity_decode(ucwords(preg_replace('/[\.\_]/', ' ', $mov['type'])), ENT_QUOTES, 'UTF-8');
 
 		$mov['title'] = str_replace(array('/', '\\'), '', $mov['title']);
-		if ($this->pdo->dbSystem() === 'mysql') {
-			$movieID = $this->pdo->queryInsert(
-				sprintf("
-					INSERT INTO movieinfo
-						(imdbid, tmdbid, title, rating, tagline, plot, year, genre, type,
-						director, actors, language, cover, backdrop, createddate, updateddate)
-					VALUES
-						(%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW())
-					ON DUPLICATE KEY UPDATE
-						imdbid = %d, tmdbid = %s, title = %s, rating = %s, tagline = %s, plot = %s, year = %s, genre = %s,
-						type = %s, director = %s, actors = %s, language = %s, cover = %d, backdrop = %d, updateddate = NOW()",
-					$mov['imdb_id'],
-					$mov['tmdb_id'],
-					$this->pdo->escapeString($mov['title']),
-					$this->pdo->escapeString($mov['rating']),
-					$this->pdo->escapeString($mov['tagline']),
-					$this->pdo->escapeString($mov['plot']),
-					$this->pdo->escapeString($mov['year']),
-					$this->pdo->escapeString(substr($mov['genre'], 0, 64)),
-					$this->pdo->escapeString($mov['type']),
-					$this->pdo->escapeString($mov['director']),
-					$this->pdo->escapeString($mov['actors']),
-					$this->pdo->escapeString(substr($mov['language'], 0, 64)),
-					$mov['cover'],
-					$mov['backdrop'],
-					$mov['imdb_id'],
-					$mov['tmdb_id'],
-					$this->pdo->escapeString($mov['title']),
-					$this->pdo->escapeString($mov['rating']),
-					$this->pdo->escapeString($mov['tagline']),
-					$this->pdo->escapeString($mov['plot']),
-					$this->pdo->escapeString($mov['year']),
-					$this->pdo->escapeString(substr($mov['genre'], 0, 64)),
-					$this->pdo->escapeString($mov['type']),
-					$this->pdo->escapeString($mov['director']),
-					$this->pdo->escapeString($mov['actors']),
-					$this->pdo->escapeString(substr($mov['language'], 0, 64)),
-					$mov['cover'],
-					$mov['backdrop']
-				)
-			);
-		} else if ($this->pdo->dbSystem() === 'pgsql') {
-			$ckID = $this->pdo->queryOneRow(sprintf('SELECT id FROM movieinfo WHERE imdbid = %d', $mov['imdb_id']));
-			if ($ckID === false) {
-				$movieID = $this->pdo->queryInsert(
-					sprintf("
-						INSERT INTO movieinfo
-							(imdbid, tmdbid, title, rating, tagline, plot, year, genre, type,
-							director, actors, language, cover, backdrop, createddate, updateddate)
-						VALUES
-							(%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW())",
-						$mov['imdb_id'],
-						$mov['tmdb_id'],
-						$this->pdo->escapeString($mov['title']),
-						$this->pdo->escapeString($mov['rating']),
-						$this->pdo->escapeString($mov['tagline']),
-						$this->pdo->escapeString($mov['plot']),
-						$this->pdo->escapeString($mov['year']),
-						$this->pdo->escapeString($mov['genre']),
-						$this->pdo->escapeString($mov['type']),
-						$this->pdo->escapeString($mov['director']),
-						$this->pdo->escapeString($mov['actors']),
-						$this->pdo->escapeString($mov['language']),
-						$mov['cover'],
-						$mov['backdrop']
-					)
-				);
-			} else {
-				$movieID = $ckID['id'];
-				$this->pdo->queryExec(
-					sprintf('
-						UPDATE movieinfo SET
-							tmdbid = %d, title = %s, rating = %s, tagline = %s, plot = %s, year = %s,
-							genre = %s, type = %s, director = %s, actors = %s, language = %s, cover = %d,
-							backdrop = %d, updateddate = NOW()
-						WHERE id = %d',
-						$mov['tmdb_id'],
-						$this->pdo->escapeString($mov['title']),
-						$this->pdo->escapeString($mov['rating']),
-						$this->pdo->escapeString($mov['tagline']),
-						$this->pdo->escapeString($mov['plot']),
-						$this->pdo->escapeString($mov['year']),
-						$this->pdo->escapeString($mov['genre']),
-						$this->pdo->escapeString($mov['type']),
-						$this->pdo->escapeString($mov['director']),
-						$this->pdo->escapeString($mov['actors']),
-						$this->pdo->escapeString($mov['language']),
-						$mov['cover'],
-						$mov['backdrop'],
-						$movieID)
-				);
-			}
-		}
+		$movieID = $this->pdo->queryInsert(
+			sprintf("
+				INSERT INTO movieinfo
+					(imdbid, tmdbid, title, rating, tagline, plot, year, genre, type,
+					director, actors, language, cover, backdrop, createddate, updateddate)
+				VALUES
+					(%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW())
+				ON DUPLICATE KEY UPDATE
+					imdbid = %d, tmdbid = %s, title = %s, rating = %s, tagline = %s, plot = %s, year = %s, genre = %s,
+					type = %s, director = %s, actors = %s, language = %s, cover = %d, backdrop = %d, updateddate = NOW()",
+				$mov['imdb_id'],
+				$mov['tmdb_id'],
+				$this->pdo->escapeString($mov['title']),
+				$this->pdo->escapeString($mov['rating']),
+				$this->pdo->escapeString($mov['tagline']),
+				$this->pdo->escapeString($mov['plot']),
+				$this->pdo->escapeString($mov['year']),
+				$this->pdo->escapeString(substr($mov['genre'], 0, 64)),
+				$this->pdo->escapeString($mov['type']),
+				$this->pdo->escapeString($mov['director']),
+				$this->pdo->escapeString($mov['actors']),
+				$this->pdo->escapeString(substr($mov['language'], 0, 64)),
+				$mov['cover'],
+				$mov['backdrop'],
+				$mov['imdb_id'],
+				$mov['tmdb_id'],
+				$this->pdo->escapeString($mov['title']),
+				$this->pdo->escapeString($mov['rating']),
+				$this->pdo->escapeString($mov['tagline']),
+				$this->pdo->escapeString($mov['plot']),
+				$this->pdo->escapeString($mov['year']),
+				$this->pdo->escapeString(substr($mov['genre'], 0, 64)),
+				$this->pdo->escapeString($mov['type']),
+				$this->pdo->escapeString($mov['director']),
+				$this->pdo->escapeString($mov['actors']),
+				$this->pdo->escapeString(substr($mov['language'], 0, 64)),
+				$mov['cover'],
+				$mov['backdrop']
+			)
+		);
 
 		if ($this->echooutput && $this->service !== '') {
 			$this->pdo->log->doEcho(
@@ -1526,54 +1465,17 @@ class Movie
 	 */
 	protected function updateInsUpcoming($source, $type, $info)
 	{
-		if ($this->pdo->dbSystem() === 'mysql') {
-			return $this->pdo->queryExec(
-				sprintf("
-					INSERT INTO upcoming (source, typeid, info, updateddate)
-					VALUES (%s, %d, %s, NOW())
-					ON DUPLICATE KEY UPDATE info = %s",
-					$this->pdo->escapeString($source),
-					$type,
-					$this->pdo->escapeString($info),
-					$this->pdo->escapeString($info)
-				)
-			);
-		} else {
-			$ckId = $this->pdo->queryOneRow(
-				sprintf('
-					SELECT id FROM upcoming
-					WHERE source = %s
-					AND typeid = %d
-					AND info = %s',
-					$this->pdo->escapeString($source),
-					$type,
-					$this->pdo->escapeString($info)
-				)
-			);
-			if ($ckId === false) {
-				return $this->pdo->queryExec(
-					sprintf("
-						INSERT INTO upcoming (source, typeid, info, updateddate)
-						VALUES (%s, %d, %s, NOW())",
-						$this->pdo->escapeString($source),
-						$type,
-						$this->pdo->escapeString($info)
-					)
-				);
-			} else {
-				return $this->pdo->queryExec(
-					sprintf('
-						UPDATE upcoming
-						SET source = %s, typeid = %s, info = %s, updateddate = NOW()
-						WHERE id = %d',
-						$this->pdo->escapeString($source),
-						$type,
-						$this->pdo->escapeString($info),
-						$ckId['id']
-					)
-				);
-			}
-		}
+		return $this->pdo->queryExec(
+			sprintf("
+				INSERT INTO upcoming (source, typeid, info, updateddate)
+				VALUES (%s, %d, %s, NOW())
+				ON DUPLICATE KEY UPDATE info = %s",
+				$this->pdo->escapeString($source),
+				$type,
+				$this->pdo->escapeString($info),
+				$this->pdo->escapeString($info)
+			)
+		);
 	}
 
 	/**
