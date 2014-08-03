@@ -72,6 +72,6 @@ foreach ($groups as $group) {
 		'SUCCESS! Updated group (' . $group['name'] . ')\'s first article number to (' .
 		$articleNumber . ') dated (' . date('r', $articleDate) . ').' . PHP_EOL .
 		'The previous first article number was: (' . $group['first_record'] . ')' .
-		(empty($group['first_record_postdate']) ? '.' : ' dated (' . date('r', $group['first_record_postdate']) . ').') .
+		(empty($group['first_record_postdate']) ? '.' : ' dated (' . date('r', strtotime($group['first_record_postdate'])) . ').') .
 		PHP_EOL;
 }
