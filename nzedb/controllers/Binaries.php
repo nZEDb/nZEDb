@@ -20,7 +20,7 @@ class Binaries
 	 *
 	 * @var array
 	 */
-	public $blackList = array();
+	public $blackList = [];
 
 	/**
 	 * How many headers do we download per loop?
@@ -151,7 +151,7 @@ class Binaries
 	 *
 	 * @param array $options Class instances / echo to CLI?
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		$defaults = [
 			'Echo'                => true,
@@ -188,7 +188,7 @@ class Binaries
 		$this->_showDroppedYEncParts = ($this->_pdo->getSetting('showdroppedyencparts') == 1 ? true : false);
 		$this->_tablePerGroup = ($this->_pdo->getSetting('tablepergroup') == 1 ? true : false);
 
-		$this->blackList = array();
+		$this->blackList = [];
 		$this->_blackListLoaded = false;
 	}
 
@@ -501,7 +501,7 @@ class Binaries
 		// Check if MySQL tables exist, create if they do not, get their names at the same time.
 		$tableNames = $this->_groups->getCBPTableNames($this->_tablePerGroup, $groupMySQL['id']);
 
-		$returnArray = array();
+		$returnArray = [];
 
 		$partRepair = ($type === 'partrepair');
 		$addToPartRepair = ($type === 'update' && $this->_partRepair);
@@ -590,7 +590,7 @@ class Binaries
 			}
 		}
 
-		$headersRepaired = $articles = $rangeNotReceived = $collectionIDs = $binariesUpdate = $headersReceived = $headersNotInserted = array();
+		$headersRepaired = $articles = $rangeNotReceived = $collectionIDs = $binariesUpdate = $headersReceived = $headersNotInserted = [];
 		$notYEnc = $headersBlackListed = 0;
 
 		$partsQuery = $partsCheck = sprintf('INSERT INTO %s (binaryid, number, messageid, partnumber, size, collection_id) VALUES ', $tableNames['pname']);
@@ -881,7 +881,7 @@ class Binaries
 	 */
 	protected function _rollbackAddToPartRepair(array $headers)
 	{
-		$headersNotInserted = array();
+		$headersNotInserted = [];
 		foreach ($headers as $header) {
 			foreach ($header as $file) {
 				$headersNotInserted[] = $file['Parts']['number'];
@@ -927,30 +927,30 @@ class Binaries
 			}
 
 			// Loop through each part to group into continuous ranges with a maximum range of messagebuffer/4.
-			$ranges = $partList = array();
+			$ranges = $partList = [];
 			$firstPart = $lastNum = $missingParts[0]['numberid'];
 
 			foreach ($missingParts as $part) {
 				if (($part['numberid'] - $firstPart) > ($this->messageBuffer / 4)) {
 
-					$ranges[] = array(
+					$ranges[] = [
 						'partfrom' => $firstPart,
 						'partto'   => $lastNum,
 						'partlist' => $partList
-					);
+					];
 
 					$firstPart = $part['numberid'];
-					$partList = array();
+					$partList = [];
 				}
 				$partList[] = $part['numberid'];
 				$lastNum = $part['numberid'];
 			}
 
-			$ranges[] = array(
+			$ranges[] = [
 				'partfrom' => $firstPart,
 				'partto'   => $lastNum,
 				'partlist' => $partList
-			);
+			];
 
 			// Download missing parts in ranges.
 			foreach ($ranges as $range) {
@@ -1132,188 +1132,91 @@ class Binaries
 	 */
 	public function daytopost($days, $data)
 	{
-		if ($this->_debug) {
-			$this->_debugging->start("daytopost", 'Finding article for ' . $data['group'] . ' ' . $days . " days back.", 5);
-		}
-
-		// The date we want.
-		$goaldate =
-			//current unix time (ex. 1395699114)
-			time()
-			//minus
-			-
-			// 86400 (seconds in a day) times days wanted. (ie 1395699114 - 2592000 (30days)) = 1393107114
-			(86400 * $days);
-
-		// The total number of articles in this group.
-		$totalnumberofarticles = $data['last'] - $data['first'];
-
-		// The newest article in the group.
-		$upperbound = $data['last'];
-		// The oldest article in the group.
-		$lowerbound = $data['first'];
-
-		if ($this->_debug) {
-			$this->_debugging->start(
-				"daytopost",
-				'Total Articles: (' .
-				number_format($totalnumberofarticles) .
-				') Newest: (' .
-				number_format($upperbound) .
-				') Oldest: (' .
-				number_format($lowerbound) .
-				") Goal: (" .
-				date('r', $goaldate)
-				.')',
-				5);
-		}
+		$goalTime =          // The time we want =
+			time()           // current unix time (ex. 1395699114)
+			-                // minus
+			(86400 * $days); // 86400 (seconds in a day) times days wanted. (ie 1395699114 - 2592000 (30days)) = 1393107114
 
 		// The servers oldest date.
 		$firstDate = $this->postdate($data['first'], $data);
+		if ($goalTime < $firstDate) {
+			// If the date we want is older than the oldest date in the group return the groups oldest article.
+			return $data['first'];
+		}
+
 		// The servers newest date.
 		$lastDate = $this->postdate($data['last'], $data);
-
-		// If the date we want is older than the oldest date in the group return the groups oldest article.
-		if ($goaldate < $firstDate) {
-			$this->log(
-				"Backfill target of $days day(s) is older than the first article stored on your news server.\nStarting from the first available article (" .
-				date('r', $firstDate) . ' or ' .
-				$this->daysOld($firstDate) . " days).",
-				'daytopost',
-				Debugging::DEBUG_WARNING,
-				'warning'
-			);
-			return $data['first'];
-
+		if ($goalTime > $lastDate) {
 			// If the date we want is newer than the groups newest date, return the groups newest article.
-		} else if ($goaldate > $lastDate) {
-			$this->log(
-				'Backfill target of ' .
-				$days .
-				" day(s) is newer than the last article stored on your news server.\nTo backfill this group you need to set Backfill Days to at least " .
-				ceil($this->daysOld($lastDate) + 1) .
-				' days (' .
-				date('r', $lastDate - 86400) .
-				").",
-				'daytopost',
-				Debugging::DEBUG_ERROR,
-				'error'
-			);
 			return $data['last'];
 		}
 
-		if ($this->_debug) {
-			$this->_debugging->start("daytopost",
-				'Searching for postdate. Goal: ' .
-				'(' .
-				date('r',  $goaldate) .
-				') Firstdate: ' .
-				'(' .
-				((is_int($firstDate)) ? date('r', $firstDate) : 'n/a') .
-				')' .
-				' Lastdate: ' .
-				'(' .
-				date('r', $lastDate) .
-				')',
-				5);
-		}
+		$totalArticles = (int)($lastDate - $firstDate);
 
-		// Half of total groups articles.
-		$interval = floor(($upperbound - $lowerbound) * 0.5);
-		$dateofnextone = $lastDate;
-
-		if ($this->_debug) {
-			$this->_debugging->start(
-				"daytopost",
-				'First Post: ' .
-				number_format($data['first']) .
-				' Last Post: ' .
-				number_format($data['last']) .
-				' Posts Available: ' .
-				number_format($interval * 2),
-				5);
-		}
-
-		$firstTries = $middleTries = $endTries = 0;
-		$done = false;
-		// Loop until wanted days is bigger than found days.
-		while (!$done) {
-
-			// Keep going half way from oldest to newest article, trying to get a date until we have a date newer than the goal.
-			$tmpDate =$this->postdate(($upperbound - $interval), $data);
-			if (round($tmpDate) >= $goaldate || $firstTries++ >= 30) {
-
-				// Now we found a date newer than the goal, so try going back older (in smaller steps) until we get closer to the target date.
-				while (true) {
-					$interval = ceil(($interval * 1.08));
-					if ($this->_debug) {
-						$this->_debugging->start(
-							"daytopost",
-							'Increased interval to: (' .
-							number_format($interval) .
-							') articles, article ' .
-							($upperbound - $interval),
-							5);
-					}
-
-					$tmpDate =$this->postdate(($upperbound - $interval), $data);
-
-					// Go newer again, in even smaller steps.
-					if (round($tmpDate) <= $goaldate || $middleTries++ >= 20) {
-						while (true) {
-							$interval = ceil(($interval / 1.008));
-							if ($this->_debug) {
-								$this->_debugging->start(
-									"daytopost",
-									'Increased interval to: (' .
-									number_format($interval) .
-									') articles, article ' .
-									($upperbound - $interval),
-									5);
-							}
-
-							$tmpDate =$this->postdate(($upperbound - $interval), $data);
-							if (round($tmpDate) >= $goaldate || $endTries++ > 10) {
-								$dateofnextone = $tmpDate;
-								$upperbound = ($upperbound - $interval);
-								$done = true;
-								break;
-							}
-						}
-					}
-					if ($done) {
-						break;
-					}
-				}
-			} else {
-				$interval = ceil(($interval / 2));
-				if ($this->_debug) {
-					$this->_debugging->start(
-						"daytopost",
-						'Reduced interval to: (' .
-						number_format($interval) .
-						') articles, article ' .
-						($upperbound - $interval),
-						5);
-				}
-			}
-		}
-
-		if ($this->_debug) {
-			$this->_debugging->start(
-				"daytopost",
-				'Determined to be article: ' .
-				number_format($upperbound) .
-				' which is ' .
-				$this->daysOld($dateofnextone) .
-				' days old (' .
-				date('r', $dateofnextone) .
-				')',
-				Debugging::DEBUG_INFO
+		if ($this->_echoCLI) {
+			$this->_colorCLI->doEcho(
+				$this->_colorCLI->primary(
+					'Searching for an approximate article number for group ' . $data['group'] . ' ' . $days . ' days back.'
+				)
 			);
 		}
 
-		return $upperbound;
+		switch (true) {
+			case $totalArticles < 1000000:
+				$matchPercentage = 1.0100;
+				break;
+			case $totalArticles < 10000000:
+				$matchPercentage = 1.0070;
+
+				break;
+			case $totalArticles < 100000000:
+				$matchPercentage = 1.0030;
+				break;
+			case $totalArticles < 500000000:
+				$matchPercentage = 1.0010;
+				break;
+			case $totalArticles < 1000000000:
+				$matchPercentage = 1.0008;
+				break;
+			default:
+				$matchPercentage = 1.0005;
+				break;
+		}
+
+		$wantedArticle = ($data['last'] * (($goalTime - $firstDate) / ($totalArticles)));
+		$articleTime = 0;
+		$percent = 1.01;
+		for ($i = 0; $i < 100; $i++) {
+			$wantedArticle = (int)$wantedArticle;
+
+			if ($wantedArticle <= $data['first'] || $wantedArticle >= $data['last']) {
+				break;
+			}
+
+			$articleTime = $this->postdate($wantedArticle, $data);
+			if ($articleTime >= ($goalTime / $matchPercentage) && $articleTime <= ($goalTime * $matchPercentage)) {
+				break;
+			}
+
+			if ($articleTime > $goalTime) {
+				$wantedArticle /= $percent;
+			} else if ($articleTime < $goalTime) {
+				$wantedArticle *= $percent;
+			}
+			$percent -= 0.001;
+		}
+
+		$wantedArticle = (int)$wantedArticle;
+		if ($this->_echoCLI) {
+			$this->_colorCLI->doEcho(
+				$this->_colorCLI->primary(
+					 'Found article #' . $wantedArticle . ' which has a date of ' . date('r', $articleTime) .
+					', vs wanted date of ' . date('r', $goalTime) . '.'
+				)
+			);
+		}
+
+		return $wantedArticle;
 	}
 
 	/**
@@ -1392,7 +1295,7 @@ class Binaries
 	public function isBlackListed($msg, $groupName)
 	{
 		$this->retrieveBlackList();
-		$field = array();
+		$field = [];
 		$field[self::BLACKLIST_FIELD_SUBJECT]   = $msg['Subject'];
 		$field[self::BLACKLIST_FIELD_FROM]      = $msg['From'];
 		$field[self::BLACKLIST_FIELD_MESSAGEID] = $msg['Message-ID'];

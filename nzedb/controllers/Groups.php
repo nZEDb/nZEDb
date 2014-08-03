@@ -14,7 +14,7 @@ class Groups
 	 *
 	 * @param array $options Class instances.
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		$defaults = [
 			'Settings' => null
@@ -545,7 +545,7 @@ class Groups
 
 			$regFilter = '/' . $groupList . '/i';
 
-			$ret = array();
+			$ret = [];
 
 			foreach($groups AS $group) {
 				if (preg_match($regFilter, $group['group']) > 0) {
@@ -559,7 +559,7 @@ class Groups
 								$this->pdo->escapeString($group['group']), $active, $backfill
 							)
 						);
-						$ret[] = array ('group' => $group['group'], 'msg' => 'Created');
+						$ret[] = ['group' => $group['group'], 'msg' => 'Created'];
 					}
 				}
 			}
@@ -618,7 +618,7 @@ class Groups
 			return $this->cbppTableNames[$groupKey];
 		}
 
-		$tables = array();
+		$tables = [];
 		$tables['cname']  = 'collections';
 		$tables['bname']  = 'binaries';
 		$tables['pname']  = 'parts';
