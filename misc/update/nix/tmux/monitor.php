@@ -261,7 +261,7 @@ while ($runVar['counts']['iterations'] > 0) {
 				$runVar['counts']['now'][$proc1key] = $proc1;
 			}
 		} else {
-			errorOnSQL();
+			errorOnSQL($pdo);
 		}
 
 		if (is_array($proc2res)) {
@@ -269,14 +269,14 @@ while ($runVar['counts']['iterations'] > 0) {
 				$runVar['counts']['now'][$proc2key] = $proc2;
 			}
 		} else {
-			errorOnSQL();
+			errorOnSQL($pdo);
 		}
 		if (is_array($proc3res)) {
 			foreach ($proc3res AS $proc3key => $proc3) {
 				$runVar['counts']['now'][$proc3key] = $proc3;
 			}
 		} else {
-			errorOnSQL();
+			errorOnSQL($pdo);
 		}
 
 		// now that we have merged our query data we can unset these to free up memory
@@ -394,7 +394,7 @@ while ($runVar['counts']['iterations'] > 0) {
 	sleep(10);
 }
 
-function errorOnSQL()
+function errorOnSQL($pdo)
 {
 	echo $pdo->log->error(PHP_EOL . "Monitor encountered severe errors retrieving process data from MySQL.  Please diagnose and try running again." . PHP_EOL);
 	exit;

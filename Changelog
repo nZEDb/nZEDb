@@ -10,6 +10,7 @@ New updates are grouped by person, at the top of the file.
 	* Fix: Bombing releaseRemover query for SCR
 	* Fix: Bugs according to scrutinizer
 	* Chg: Rework USP connection count gathering to have less paths...
+	* Fix: Pass PDO to SQL error function in tmux
 2014-08-03 kevin
 	* Chg: Various changes to postdate method.
 	* Fix: Fixes for get_range.
