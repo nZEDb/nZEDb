@@ -6,8 +6,18 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-08-03 ruhllatio
+	* Fix: Bombing releaseRemover query for SCR
+	* Fix: Bugs according to scrutinizer
+	* Chg: Rework USP connection count gathering to have less paths...
+	* Fix: Pass PDO to SQL error function in tmux
 2014-08-03 kevin
 	* Chg: Various changes to postdate method.
+	* Fix: Fixes for get_range.
+	* Chg: Various changes to daytopost method.
+	* Fix: Fix for set_backfill_start.php if user resets but does not run update_binaries.php
+	* Fix: Convert unixtime to date in set_backfill_start.php
+	* Fix: Few more issues in set_backfill_start.php
 2014-08-02 ruhllatio
 	* Fix: RequestIDLocal Single Alt was looking for the groupname from the groupname, not the groupname from the usenet name
 	* Fix: RequestIDLocal not showing renaming results when specifying true to show renames

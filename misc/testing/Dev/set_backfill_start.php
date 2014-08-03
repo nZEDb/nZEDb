@@ -49,7 +49,7 @@ foreach ($groups as $group) {
 	}
 
 	$articleNumber = (int)$binaries->daytopost(round(((time() - $postDate['postdate']) / 86400)), $groupNNTP);
-	if ($articleNumber >= $group['last_record']) {
+	if ($group['last_record'] != 0 && $articleNumber >= $group['last_record']) {
 		echo 'ERROR! Could not determine the article number for this date: (' .
 			$postDate['postdate'] . ') on group (' . $group['name'] . ')' . PHP_EOL;
 		continue;
@@ -63,15 +63,15 @@ foreach ($groups as $group) {
 			SET first_record = %d, first_record_postdate = %s
 			WHERE id = %d',
 			$articleNumber,
-			$pdo->escapeString($postDate['postdate']),
+			$pdo->from_unixtime($articleDate),
 			$group['id']
 		)
 	);
 
 	echo
-		'SUCCESS! Updated group (' . $group['name'] .
-		')\'s first article number to (' . $articleNumber . ') dated (' . date('r', $articleDate) . ').' .
-		PHP_EOL .
-		'The previous first article number was: (' . $group['first_record'] . ') dated (' .
-		date('r', $postDate['postdate']) . ').' . PHP_EOL;
+		'SUCCESS! Updated group (' . $group['name'] . ')\'s first article number to (' .
+		$articleNumber . ') dated (' . date('r', $articleDate) . ').' . PHP_EOL .
+		'The previous first article number was: (' . $group['first_record'] . ')' .
+		(empty($group['first_record_postdate']) ? '.' : ' dated (' . date('r', strtotime($group['first_record_postdate'])) . ').') .
+		PHP_EOL;
 }

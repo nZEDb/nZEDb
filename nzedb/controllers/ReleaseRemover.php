@@ -646,7 +646,7 @@ class ReleaseRemover
 			"SELECT r.guid, r.searchname
 			FROM releases r
 			LEFT JOIN releasefiles rf on rf.releaseid = r.id
-			WHERE (rf.name REGEXP '[.]scr[$ \"]' OR r.name REGEXP '[.]scr[$ \"]'
+			WHERE (rf.name REGEXP '[.]scr[$ \"]' OR r.name REGEXP '[.]scr[$ \"]')
 			%s",
 			$this->crapTime
 		);

@@ -47,7 +47,7 @@ switch ($options[1]) {
 
 	/* Get a range of article headers for a group.
 	 *
-	 * $options[2] => (string) Backfill/Binaries
+	 * $options[2] => (string) backfill/binaries
 	 * $options[3] => (string) Group name.
 	 * $options[4] => (int)    First article number in range.
 	 * $options[5] => (int)    Last article number in range.
@@ -64,13 +64,16 @@ switch ($options[1]) {
 			}
 		}
 		$binaries = new Binaries(['NNTP' => $nntp, 'Settings' => $pdo, 'Groups' => $groups]);
-		$return = $binaries->scan($groupMySQL, $options[5], $options[4], ($pdo->getSetting('safepartrepair') == 1 ? 'update' : 'backfill'));
+		$return = $binaries->scan($groupMySQL, $options[4], $options[5], ($pdo->getSetting('safepartrepair') == 1 ? 'update' : 'backfill'));
 		if (empty($return)) {
 			exit();
 		}
-		$columns= array();
+		$columns = [];
 		switch ($options[2]) {
-			case 'Binaries':
+			case 'binaries':
+				if ($return['lastArticleNumber'] <= $groupMySQL['last_record']){
+					exit();
+				}
 				$columns[1] = sprintf(
 					'last_record_postdate = %s',
 					$pdo->from_unixtime(
@@ -78,8 +81,18 @@ switch ($options[1]) {
 					)
 				);
 				$columns[2] = sprintf('last_record = %s', $return['lastArticleNumber']);
+				$query = sprintf(
+					'UPDATE groups SET %s, %s, last_updated = NOW() WHERE id = %d AND last_record < %s',
+					$columns[1],
+					$columns[2],
+					$groupMySQL['id'],
+					$return['lastArticleNumber']
+				);
 				break;
-			case 'Backfill':
+			case 'backfill':
+				if ($return['firstArticleNumber'] >= $groupMySQL['first_record']){
+					exit();
+				}
 				$columns[1] = sprintf(
 					'first_record_postdate = %s',
 					$pdo->from_unixtime(
@@ -87,18 +100,18 @@ switch ($options[1]) {
 					)
 				);
 				$columns[2] = sprintf('first_record = %s', $return['firstArticleNumber']);
+				$query = sprintf(
+					'UPDATE groups SET %s, %s, last_updated = NOW() WHERE id = %d AND first_record > %s',
+					$columns[1],
+					$columns[2],
+					$groupMySQL['id'],
+					$return['firstArticleNumber']
+				);
 				break;
 			default:
 				exit();
 		}
-		$pdo->queryExec(
-			sprintf(
-				'UPDATE groups SET %s, %s, last_updated = NOW() WHERE id = %d',
-				$columns[1],
-				$columns[2],
-				$groupMySQL['id']
-			)
-		);
+		$pdo->queryExec($query);
 		break;
 
 	/* Do part repair for a group.
