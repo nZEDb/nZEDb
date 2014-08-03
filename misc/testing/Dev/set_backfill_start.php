@@ -49,7 +49,7 @@ foreach ($groups as $group) {
 	}
 
 	$articleNumber = (int)$binaries->daytopost(round(((time() - $postDate['postdate']) / 86400)), $groupNNTP);
-	if ($articleNumber >= $group['last_record']) {
+	if ($group['last_record'] != 0 && $articleNumber >= $group['last_record']) {
 		echo 'ERROR! Could not determine the article number for this date: (' .
 			$postDate['postdate'] . ') on group (' . $group['name'] . ')' . PHP_EOL;
 		continue;
