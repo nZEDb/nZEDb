@@ -8,6 +8,7 @@ New updates are grouped by person, at the top of the file.
 
 2014-08-03 kevin
 	* Chg: Various changes to postdate method.
+	* Fix: Fixes for get_range.
 2014-08-02 ruhllatio
 	* Fix: RequestIDLocal Single Alt was looking for the groupname from the groupname, not the groupname from the usenet name
 	* Fix: RequestIDLocal not showing renaming results when specifying true to show renames
