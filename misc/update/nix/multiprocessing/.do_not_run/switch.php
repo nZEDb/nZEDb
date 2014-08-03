@@ -111,7 +111,7 @@ switch ($options[1]) {
 			default:
 				exit();
 		}
-		$pdo->queryExec(sprintf($query));
+		$pdo->queryExec($query);
 		break;
 
 	/* Do part repair for a group.
