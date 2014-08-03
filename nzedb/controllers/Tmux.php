@@ -57,21 +57,21 @@ class Tmux
 		return $this->rows2Object($rows);
 	}
 
-	public function getConnectionsInfo($runVar)
+	public function getConnectionsInfo($constants)
 	{
 		$runVar['connections']['port_a'] = $runVar['connections']['host_a'] = $runVar['connections']['ip_a'] = false;
 
-		if ($runVar['constants']['nntpproxy'] == 0) {
+		if ($constants['nntpproxy'] == 0) {
 			$runVar['connections']['port'] = NNTP_PORT;
 			$runVar['connections']['host'] = NNTP_SERVER;
 			$runVar['connections']['ip'] = gethostbyname($runVar['connections']['host']);
-			if ($runVar['constants']['alternate_nntp'] === '1') {
+			if ($constants['alternate_nntp'] === '1') {
 				$runVar['connections']['port_a'] = NNTP_PORT_A;
 				$runVar['connections']['host_a'] = NNTP_SERVER_A;
 				$runVar['connections']['ip_a'] = gethostbyname($runVar['connections']['host_a']);
 			}
 		} else {
-			$filename = $runVar['paths']['misc'] . "update/python/lib/nntpproxy.conf";
+			$filename = nZEDb_MISC . "update/python/lib/nntpproxy.conf";
 			$fp = fopen($filename, "r") or die("Couldn't open $filename");
 			while (!feof($fp)) {
 				$line = fgets($fp);
@@ -83,7 +83,7 @@ class Tmux
 					break;
 				}
 			}
-			if ($runVar['constants']['alternate_nntp']) {
+			if ($constants['alternate_nntp']) {
 				$filename = $runVar['paths']['misc'] . "update/python/lib/nntpproxy_a.conf";
 				$fp = fopen($filename, "r") or die("Couldn't open $filename");
 				while (!feof($fp)) {
@@ -98,80 +98,70 @@ class Tmux
 				}
 			}
 			$runVar['connections']['ip'] = gethostbyname($runVar['connections']['host']);
-			if ($runVar['constants']['alternate_nntp'] === '1') {
+			if ($constants['alternate_nntp'] === '1') {
 				$runVar['connections']['ip_a'] = gethostbyname($runVar['connections']['host_a']);
 			}
 		}
 		return $runVar['connections'];
 	}
 
-	public function getConnectionsCounts($runVar)
+	public function getUSPConnections($which, $connections)
 	{
-		$runVar['conncounts']['primary']['active'] = $runVar['conncounts']['primary']['total'] =
-		$runVar['conncounts']['alternate']['active'] = $runVar['conncounts']['alternate']['total'] = 0;
 
-		$runVar['conncounts']['primary']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $runVar['connections']['ip'] . ":" . $runVar['connections']['port'] . " | grep -c ESTAB"));
-		$runVar['conncounts']['primary']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $runVar['connections']['ip'] . ":" . $runVar['connections']['port']));
-		if ($runVar['constants']['alternate_nntp'] === '1') {
-			$runVar['conncounts']['alternate']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $runVar['connections']['ip_a'] . ":" . $runVar['connections']['port_a'] . " | grep -c ESTAB"));
-			$runVar['conncounts']['alternate']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $runVar['connections']['ip_a'] . ":" . $runVar['connections']['port_a']));
+		switch ($which) {
+			case 'primary':
+					$ip = 'ip';
+					$port = 'port';
+					break;
+			case 'alternate':
+					$ip = 'ip_a';
+					$port = 'port_a';
+					break;
 		}
-		if ($runVar['conncounts']['primary']['active'] == 0 && $runVar['conncounts']['primary']['total'] == 0
-					&& $runVar['conncounts']['alternate']['active'] == 0 && $runVar['conncounts']['alternate']['total'] == 0
-						&& $runVar['connections']['port'] != $runVar['connections']['port_a']) {
-				$runVar['conncounts']['primary']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $runVar['connections']['ip'] . ":https | grep -c ESTAB"));
-				$runVar['conncounts']['primary']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $runVar['connections']['ip'] . ":https"));
-				if ($runVar['constants']['alternate_nntp'] === '1') {
-					$runVar['conncounts']['alternate']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $runVar['connections']['ip_a'] . ":https | grep -c ESTAB"));
-					$runVar['conncounts']['alternate']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $runVar['connections']['ip_a'] . ":https"));
-				}
+
+		$runVar['conncounts'][$which]['active'] = $runVar['conncounts'][$which]['total'] = 0;
+
+		$runVar['conncounts'][$which]['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $connections[$ip] . ":" . $connections[$port] . " | grep -c ESTAB"));
+		$runVar['conncounts'][$which]['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $connections[$ip] . ":" . $connections[$port]));
+
+		if ($runVar['conncounts'][$which]['active'] == 0 && $runVar['conncounts'][$which]['total'] == 0) {
+				$runVar['conncounts'][$which]['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $connections[$ip] . ":https | grep -c ESTAB"));
+				$runVar['conncounts'][$which]['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $connections[$ip] . ":https"));
 		}
-		if ($runVar['conncounts']['primary']['active'] == 0 && $runVar['conncounts']['primary']['total'] == 0
-					&& $runVar['conncounts']['alternate']['active'] == 0 && $runVar['conncounts']['alternate']['total'] == 0
-						&& $runVar['connections']['port'] != $runVar['connections']['port_a']) {
-			$runVar['conncounts']['primary']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $runVar['connections']['port'] . " | grep -c ESTAB"));
-			$runVar['conncounts']['primary']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $runVar['connections']['port']));
-			if ($runVar['constants']['alternate_nntp'] === '1') {
-				$runVar['conncounts']['alternate']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $runVar['connections']['port_a'] . " | grep -c ESTAB"));
-				$runVar['conncounts']['alternate']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $runVar['connections']['port_a']));
-			}
+		if ($runVar['conncounts'][$which]['active'] == 0 && $runVar['conncounts'][$which]['total'] == 0) {
+			$runVar['conncounts'][$which]['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $connections[$port] . " | grep -c ESTAB"));
+			$runVar['conncounts'][$which]['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $connections[$port]));
 		}
-		if ($runVar['conncounts']['primary']['active'] == 0 && $runVar['conncounts']['primary']['total'] == 0
-					&& $runVar['conncounts']['alternate']['active'] == 0 && $runVar['conncounts']['alternate']['total'] == 0
-						&& $runVar['connections']['port'] != $runVar['connections']['port_a']) {
-			$runVar['conncounts']['primary']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $runVar['connections']['ip'] . " | grep -c ESTAB"));
-			$runVar['conncounts']['primary']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $runVar['connections']['ip']));
-			if ($runVar['constants']['alternate_nntp'] === '1') {
-				$runVar['conncounts']['alternate']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $runVar['connections']['ip'] . " | grep -c ESTAB"));
-				$runVar['conncounts']['alternate']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $runVar['connections']['ip']));
-			}
+		if ($runVar['conncounts'][$which]['active'] == 0 && $runVar['conncounts'][$which]['total'] == 0) {
+			$runVar['conncounts'][$which]['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $connections[$ip] . " | grep -c ESTAB"));
+			$runVar['conncounts'][$which]['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $connections[$ip]));
 		}
 		return ($runVar['conncounts']);
 	}
 
-	public function getListOfPanes($runVar)
+	public function getListOfPanes($constants)
 	{
-		switch ($runVar['constants']['sequential']) {
+		switch ($constants['sequential']) {
 			case 0:
-				$panes_win_1 = shell_exec("echo `tmux list-panes -t {$runVar['constants']['tmux_session']}:0 -F '#{pane_title}'`");
+				$panes_win_1 = shell_exec("echo `tmux list-panes -t {$constants['tmux_session']}:0 -F '#{pane_title}'`");
 				$runVar['panes']['zero'] = str_replace("\n", '', explode(" ", $panes_win_1));
-				$panes_win_2 = shell_exec("echo `tmux list-panes -t {$runVar['constants']['tmux_session']}:1 -F '#{pane_title}'`");
+				$panes_win_2 = shell_exec("echo `tmux list-panes -t {$constants['tmux_session']}:1 -F '#{pane_title}'`");
 				$runVar['panes']['one'] = str_replace("\n", '', explode(" ", $panes_win_2));
-				$panes_win_3 = shell_exec("echo `tmux list-panes -t {$runVar['constants']['tmux_session']}:2 -F '#{pane_title}'`");
+				$panes_win_3 = shell_exec("echo `tmux list-panes -t {$constants['tmux_session']}:2 -F '#{pane_title}'`");
 				$runVar['panes']['two'] = str_replace("\n", '', explode(" ", $panes_win_3));
 				break;
 			case 1:
-				$panes_win_1 = shell_exec("echo `tmux list-panes -t {$runVar['constants']['tmux_session']}:0 -F '#{pane_title}'`");
+				$panes_win_1 = shell_exec("echo `tmux list-panes -t {$constants['tmux_session']}:0 -F '#{pane_title}'`");
 				$runVar['panes']['zero'] = str_replace("\n", '', explode(" ", $panes_win_1));
-				$panes_win_2 = shell_exec("echo `tmux list-panes -t {$runVar['constants']['tmux_session']}:1 -F '#{pane_title}'`");
+				$panes_win_2 = shell_exec("echo `tmux list-panes -t {$constants['tmux_session']}:1 -F '#{pane_title}'`");
 				$runVar['panes']['one'] = str_replace("\n", '', explode(" ", $panes_win_2));
-				$panes_win_3 = shell_exec("echo `tmux list-panes -t {$runVar['constants']['tmux_session']}:2 -F '#{pane_title}'`");
+				$panes_win_3 = shell_exec("echo `tmux list-panes -t {$constants['tmux_session']}:2 -F '#{pane_title}'`");
 				$runVar['panes']['two'] = str_replace("\n", '', explode(" ", $panes_win_3));
 				break;
 			case 2:
-				$panes_win_1 = shell_exec("echo `tmux list-panes -t {$runVar['constants']['tmux_session']}:0 -F '#{pane_title}'`");
+				$panes_win_1 = shell_exec("echo `tmux list-panes -t {$constants['tmux_session']}:0 -F '#{pane_title}'`");
 				$runVar['panes']['zero'] = str_replace("\n", '', explode(" ", $panes_win_1));
-				$panes_win_2 = shell_exec("echo `tmux list-panes -t {$runVar['constants']['tmux_session']}:1 -F '#{pane_title}'`");
+				$panes_win_2 = shell_exec("echo `tmux list-panes -t {$constants['tmux_session']}:1 -F '#{pane_title}'`");
 				$runVar['panes']['one'] = str_replace("\n", '', explode(" ", $panes_win_2));
 				break;
 		}
