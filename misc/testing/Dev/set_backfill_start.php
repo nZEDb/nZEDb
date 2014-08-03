@@ -63,7 +63,7 @@ foreach ($groups as $group) {
 			SET first_record = %d, first_record_postdate = %s
 			WHERE id = %d',
 			$articleNumber,
-			$pdo->escapeString($postDate['postdate']),
+			$pdo->from_unixtime($postDate['postdate']),
 			$group['id']
 		)
 	);
