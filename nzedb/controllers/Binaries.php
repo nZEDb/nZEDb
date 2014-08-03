@@ -1023,19 +1023,18 @@ class Binaries
 	}
 
 	/**
-	 * Returns a single timestamp from a local article number.
-	 * If the article is missing, you can pass $old as true to return false (then use the last known date).
+	 * Returns unix time for an article number.
 	 *
-	 * @param int    $post      The article number to download.
+	 * @param int    $post      The article number to get the time from.
 	 * @param array  $groupData Usenet group info from NNTP selectGroup method.
 	 *
 	 * @return bool|int
 	 */
-	public function postdate($post, $groupData)
+	public function postdate($post, array $groupData)
 	{
 		// Set table names
 		$groupID = $this->_groups->getIDByName($groupData['group']);
-		$group = array();
+		$group = [];
 		if ($groupID !== '') {
 			$group = $this->_groups->getCBPTableNames($this->_tablePerGroup, $groupID);
 		}
@@ -1044,80 +1043,69 @@ class Binaries
 
 		$attempts = $date = 0;
 		do {
-			$attempts++;
-
-			// Download a single article.
-			$header = $this->_nntp->getXOVER($currentPost . "-" . $currentPost);
-
-			// Check if the article is missing, if it is, retry downloading it.
-			if (!$this->_nntp->isError($header)) {
-
-				// Check if the date is set.
-				if (isset($header[0]['Date']) && strlen($header[0]['Date']) > 0) {
-					$date = $header[0]['Date'];
-					break;
-				}
-			} else {
-				$local = false;
-				if ($groupID !== '') {
-					// Try to get locally.
-					$local = $this->_pdo->queryOneRow(
-						'SELECT c.date AS date FROM ' .
-						$group['cname'] .
-						' c, ' .
-						$group['bname'] .
-						' b, ' .
-						$group['pname'] .
-						' p WHERE c.id = b.collectionid AND b.id = p.binaryid AND c.group_id = ' .
-						$groupID .
-						' AND p.number = ' .
-						$currentPost .
-						' LIMIT 1'
-					);
-				}
-
-				// If the row exists return.
+			// Try to get the article date locally first.
+			if ($groupID !== '') {
+				// Try to get locally.
+				$local = $this->_pdo->queryOneRow(
+					sprintf('
+						SELECT c.date AS date
+						FROM %s c, %s p
+						WHERE c.id = p.collection_id
+						AND c.group_id = %s
+						AND p.number = %s LIMIT 1',
+						$group['cname'],
+						$group['pname'],
+						$groupID,
+						$currentPost
+					)
+				);
 				if ($local !== false) {
 					$date = $local['date'];
 					break;
 				}
 			}
 
-			// Increment $currentPost if closer to oldest post.
-			$minPossible = ($currentPost - $groupData['first']);
-			if ($minPossible <= 1) {
-				// If we hit the minimum, try to decrement instead.
-				$maxPossible = ($groupData['last'] - $currentPost);
-				if ($maxPossible <= 1) {
-					break;
-				} else {
-					// Change current post to 0.5 to 2.5% lower.
-					$currentPost = round($currentPost / (mt_rand(1005, 1025) / 1000), 0 , PHP_ROUND_HALF_UP);
-					if ($currentPost <= $groupData['first']) {
-						break;
-					}
-				}
-			} else {
-				// Change current post to 0.5 to 2.5% higher.
-				$currentPost += round((mt_rand(1005, 1025) / 1000) * $currentPost, 0 , PHP_ROUND_HALF_UP);
-				if ($currentPost >= $groupData['last']) {
+			// If we could not find it locally, try usenet.
+			$header = $this->_nntp->getXOVER($currentPost);
+			if (!$this->_nntp->isError($header)) {
+				// Check if the date is set.
+				if (isset($header[0]['Date']) && strlen($header[0]['Date']) > 0) {
+					$date = $header[0]['Date'];
 					break;
 				}
 			}
+
+			// Try to get a different article number.
+			if (abs($currentPost - $groupData['first']) > abs($groupData['last'] - $currentPost)) {
+				$tempPost = round($currentPost / (mt_rand(1005, 1012) / 1000), 0, PHP_ROUND_HALF_UP);
+				if ($tempPost < $groupData['first']) {
+					$tempPost = $groupData['first'];
+				}
+			} else {
+				$tempPost = round((mt_rand(1005, 1012) / 1000) * $currentPost, 0, PHP_ROUND_HALF_UP);
+				if ($tempPost > $groupData['last']) {
+					$tempPost = $groupData['last'];
+				}
+			}
+			// If we got the same article number as last time, give up.
+			if ($tempPost === $currentPost) {
+				break;
+			}
+			$currentPost = $tempPost;
 
 			if ($this->_debug) {
 				$this->_colorCLI->doEcho($this->_colorCLI->debug('Postdate retried ' . $attempts . " time(s)."));
 			}
-		} while ($attempts <= 20);
+		} while ($attempts++ <= 20);
 
 		// If we didn't get a date, set it to now.
-		if ($date === 0) {
-			$date = Date('r');
+		if (!$date) {
+			$date = time();
+		} else {
+			$date = strtotime($date);
 		}
 
-		$date = strtotime($date);
-
-		if ($this->_debug && $date !== false) {
+		if ($this->_debug) {
 			$this->_debugging->start(
 				"postdate",
 				'Article (' .
@@ -1127,7 +1115,8 @@ class Binaries
 				') (' .
 				$this->daysOld($date) .
 				" days old)",
-				5);
+				5
+			);
 		}
 
 		return $date;
