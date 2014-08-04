@@ -57,6 +57,8 @@ class Games
 	 */
 	public $maxhitrequest;
 
+
+	protected $resultsfound = 0;
 	/**
 	 * @param array $options Class instances / Echo to cli.
 	 */
@@ -381,16 +383,17 @@ class Games
 		$ri = new ReleaseImage($this->pdo);
 
 		$con = array();
-		$ggameid = $this->fetchgiantbombgameid($gameInfo['title']);
+		$gb = $this->fetchgiantbombid($gameInfo['title']);
 		if($this->maxhitrequest === true){
 		return false;
 		}
-		$gb = $this->fetchGiantBombArray($ggameid);
-		$gb = $gb['results'];
 		if (!is_array($gb)) {
 			return false;
 		}
-
+		// http://www.giantbomb.com/the-legend-of-heroes-trails-in-the-sky/3030-5104/
+		preg_match('/\/\d+\-(?<asin>\d+)\//',$gb['api_detail_url'],$matches);
+		$ggameid = (string)$matches['asin'];
+		$gb = $this->fetchGiantBombArray($ggameid);
 		// Load genres.
 		$defaultGenres = $gen->getGenres(Genres::GAME_TYPE);
 		$genreassoc = array();
@@ -618,6 +621,53 @@ class Games
 	/**
 	 * Get Giantbomb search results
 	 *
+	 * @param string $title
+	 *
+	 * @return bool|mixed Array if no result False
+	 */
+
+	public function fetchgiantbombid($title = '')
+	{
+		$obj = new GiantBomb($this->pubkey);
+		try {
+			$fields = array(
+			    "api_detail_url", "name"
+			);
+			$result = json_decode(json_encode($obj->search($title, $fields, 10, 1 ,array("game"))), true);
+			// We hit the maximum request.
+			if (empty($result)) {
+				$this->maxhitrequest = true;
+				return false;
+			}
+			if (!is_array($result['results']) || (int)$result['number_of_total_results'] === 0) {
+				$result = false;
+			} else {
+				$this->resultsfound = count($result['results']) - 1;
+				if ($this->resultsfound !== 0) {
+					for ($i = 0; $i <= $this->resultsfound; $i++) {
+						similar_text($result['results'][$i]['name'], $title, $p);
+						if ($p > 77) {
+							$result = $result['results'][$i];
+							break;
+						}
+						if ($i === $this->resultsfound) {
+							return false;
+						}
+					}
+
+				} else {
+					return false;
+				}
+			}
+		} catch (Exception $e) {
+			$result = false;
+		}
+
+		return $result;
+	}
+	/**
+	 * Get Giantbomb search results
+	 *
 	 * @param $gameid
 	 *
 	 * @return bool|mixed Json Array if no result False
@@ -633,35 +683,7 @@ class Games
 				"site_detail_url"
 			);
 			$result = json_decode(json_encode($obj->game($gameid, $fields)), true);
-		} catch (Exception $e) {
-			$result = false;
-		}
-
-		return $result;
-	}
-
-	/**
-	 * Retrieve Giantbomb game ID for api requests
-	 *
-	 * @param $title
-	 *
-	 * @return bool|mixed - Json Array if game was found false if nothing
-	 */
-	public function fetchgiantbombgameid($title)
-	{
-		$obj = new GiantBomb($this->pubkey);
-		try {
-			$result = json_decode(json_encode($obj->search($title, '', 1)), true);
-			// We hit the maximum request.
-			if(empty($result)){
-			$this->maxhitrequest = true;
-			$result = false;
-			}
-			if (!is_array($result['results']) || (int) $result['number_of_total_results'] === 0) {
-				$result = false;
-			} else {
-				$result = $result['results'][0]['id'];
-			}
+			$result = $result['results'];
 		} catch (Exception $e) {
 			$result = false;
 		}
@@ -736,7 +758,7 @@ class Games
 					}
 				}
 
-				// Sleep to not flood amazon.
+				// Sleep to not flood giantbomb.
 				$diff = floor((microtime(true) - $startTime) * 1000000);
 				if ($this->sleeptime * 1000 - $diff > 0 && $usedgb === true) {
 					usleep($this->sleeptime * 1000 - $diff);
@@ -763,7 +785,7 @@ class Games
 			'/^(.+((EFNet|EFNet\sFULL|FULL\sabgxEFNet|abgx\sFULL|abgxbox360EFNet)\s|illuminatenboard\sorg|' .
 			'Place2(hom|us)e.net|united-forums? co uk|\(\d+\)))?(?P<title>.*?)[\.\-_ \:](v\.?\d\.\d|RIP|ADDON|' .
 			'EUR|USA|JP|ASIA|JAP|JPN|AUS|MULTI(\.?\d{1,2})?|PATCHED|FULLDVD|DVD5|DVD9|DVDRIP|\(GAMES\)\s*\(C\)|PROPER|REPACK|RETAIL|' .
-			'DEMO|DISTRIBUTION|BETA|REGIONFREE|READ\.?NFO|NFOFIX|Update|' .
+			'DEMO|DISTRIBUTION|BETA|REGIONFREE|READ\.?NFO|NFOFIX|Update|BWClone|' .
 			// Group names, like Reloaded, CPY, Razor1911, etc
 			'[a-z0-9]{2,}$)/i',
 			preg_replace('/\sMulti\d?\s/i', '', $releasename),
@@ -772,6 +794,8 @@ class Games
 			// Replace dots, underscores, or brackets with spaces.
 			$result = array();
 			$result['title'] = str_replace(' RF ', ' ', preg_replace('/(\.|_|\%20|\[|\])/', ' ', $matches['title']));
+			// Replace any foreign words
+			$result['title'] = preg_replace('/(brazilian|chinese|croatian|danish|deutsch|dutch|english|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|latin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish)/i', '', $result['title']);
 			// Needed to add code to handle DLC Properly.
 			if (stripos($result['title'], 'dlc') !== false) {
 				$result['dlc'] = '1';
