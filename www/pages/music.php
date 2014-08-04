@@ -30,7 +30,7 @@ $ordering = $music->getMusicOrdering();
 $orderby = isset($_REQUEST['ob']) && in_array($_REQUEST['ob'], $ordering) ? $_REQUEST['ob'] : '';
 
 $results = $musics = array();
-$results = $music->getMusicRange($catarray, $offset, ITEMS_PER_COVER_PAGE, $orderby, -1, $page->userdata['categoryexclusions']);
+$results = $music->getMusicRange($catarray, $offset, ITEMS_PER_COVER_PAGE, $orderby, $page->userdata['categoryexclusions']);
 foreach ($results as $result) {
 	//$result['genre'] = $music->makeFieldLinks($result, 'genre');
 	$musics[] = $result;

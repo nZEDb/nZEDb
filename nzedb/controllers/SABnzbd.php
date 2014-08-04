@@ -9,25 +9,25 @@ class SABnzbd
 {
 	/**
 	 * URL to the SAB server.
-	 * @var string
+	 * @var string|Array|bool
 	 */
 	public $url = '';
 
 	/**
 	 * The SAB API key.
-	 * @var string
+	 * @var string|Array|bool
 	 */
 	public $apikey = '';
 
 	/**
 	 * Download priority of the sent NZB file.
-	 * @var string
+	 * @var string|Array|bool
 	 */
 	public $priority = '';
 
 	/**
 	 * Type of SAB API key (full/nzb).
-	 * @var string
+	 * @var string|Array|bool
 	 */
 	public $apikeytype = '';
 

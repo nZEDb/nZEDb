@@ -6,10 +6,9 @@ use nzedb\db\Settings;
 $pdo = new Settings();
 $tablepergroup = $pdo->getSetting('tablepergroup');
 $tablepergroup = (isset($tablepergroup)) ? $tablepergroup : 0;
-$c = new ColorCLI();
 
 //reset collections dateadded to now
-echo $c->header("Resetting expired collections and nzbs dateadded to now. This could take a minute or two. Really.");
+echo $pdo->log->header("Resetting expired collections and nzbs dateadded to now. This could take a minute or two. Really.");
 if ($tablepergroup == 1) {
 	$sql = 'SHOW tables';
 	$tables = $pdo->query($sql);
@@ -21,9 +20,9 @@ if ($tablepergroup == 1) {
 			$ran += $run->rowCount();
 		}
 	}
-	echo $c->primary(number_format($ran) . " collections reset.");
+	echo $pdo->log->primary(number_format($ran) . " collections reset.");
 } else {
 	$run = $pdo->queryExec('update collections set dateadded = now()');
-	echo $c->primary(number_format($run->rowCount()) . " collections reset.");
+	echo $pdo->log->primary(number_format($run->rowCount()) . " collections reset.");
 }
 sleep(2);

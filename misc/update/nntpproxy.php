@@ -9,7 +9,6 @@ $pdo = new Settings();
 $t = new Tmux();
 $tmux = $t->get();
 $powerline = (isset($tmux->powerline)) ? $tmux->powerline : 0;
-$c = new ColorCLI();
 
 $tmux_session = 'NNTPProxy';
 
@@ -23,10 +22,10 @@ $nntpproxy = $pdo->getSetting('nntpproxy');
 if ($nntpproxy === '0') {
 	exit();
 } else {
-	$modules = array("nntp", "socketpool");
+	$modules = array("socketpool");
 	foreach ($modules as &$value) {
 		if (!python_module_exist($value)) {
-			exit($c->error("NNTP Proxy requires " . $value . " python module but it's not installed. Aborting."));
+			exit($pdo->log->error("NNTP Proxy requires " . $value . " python module but it's not installed. Aborting."));
 		}
 	}
 }

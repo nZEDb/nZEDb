@@ -5,24 +5,22 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 use nzedb\db\Settings;
 
 $pdo = new Settings();
-$c = new ColorCLI();
-$movie = new XXX(['Echo' => true, 'ColorCLI' => $c, 'Settings' => $pdo]);
 
+$movie = new XXX(['Echo' => true, 'Settings' => $pdo]);
 
 $movies = $pdo->queryDirect("SELECT id FROM xxxinfo WHERE cover = 0");
-if ($movies->rowCount() > 0) {
-	echo $c->primary("Updating " . number_format($movies->rowCount()) . " movie covers.");
-}
+if ($movies instanceof Traversable) {
+	echo $pdo->log->primary("Updating " . number_format($movies->rowCount()) . " movie covers.");
+	foreach ($movies as $mov) {
+		$starttime = microtime(true);
+		$mov = $movie->updateXXXInfo($mov['id']);
 
-foreach ($movies as $mov) {
-	$starttime = microtime(true);
-	$mov = $movie->updateXXXInfo($mov['id']);
-
-	// sleep so that it's not ddos' the site
-	$diff = floor((microtime(true) - $starttime) * 1000000);
-	if (333333 - $diff > 0) {
-		echo "\nsleeping\n";
-		usleep(333333 - $diff);
+		// sleep so that it's not ddos' the site
+		$diff = floor((microtime(true) - $starttime) * 1000000);
+		if (333333 - $diff > 0) {
+			echo "\nsleeping\n";
+			usleep(333333 - $diff);
+		}
 	}
+	echo "\n";
 }
-echo "\n";

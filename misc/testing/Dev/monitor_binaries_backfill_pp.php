@@ -3,10 +3,10 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 
 use nzedb\db\Settings;
 
-$c = new ColorCLI();
+$pdo = new Settings();
 
 if ($argc !== 3 || !is_numeric($argv[1]) || !is_numeric($argv[2])) {
-	exit($c->error("\nThis script monirtors both the threaded and unthreaded update_binaries and backfill scripts.\n"
+	exit($pdo->log->error("\nThis script monirtors both the threaded and unthreaded update_binaries and backfill scripts.\n"
 		. "This will also kill any medianinfo/ffmpeg process running longer than 60 seconds."
 		. "The first argument is the time in minutes to allow before killing.\n"
 		. "The second argument is the time in seconds to sleep between each check.\n"
@@ -16,7 +16,6 @@ if ($argc !== 3 || !is_numeric($argv[1]) || !is_numeric($argv[2])) {
 } else {
 	// Set reset timer
 	$time1 = TIME();
-	$pdo = new Settings();
 	$check = '';
 	$killtime = $argv[1];
 	$sleep = $argv[2];
@@ -31,6 +30,7 @@ if ($argc !== 3 || !is_numeric($argv[1]) || !is_numeric($argv[2])) {
 
 		$counted = $threads = 0;
 		passthru('clear');
+		$output = array();
 		exec('ps --no-header -eo pid,user,etime,command | grep $USER | grep "update_groups\|update_binaries.php\|backfill_all\|backfill.php\|backfill_interval\|safe_pull" | grep -v monitor_binaries_backfill.php | grep -v grep', $output);
 		if (isset($output[0]) && strlen($output[0]) > 8) {
 			foreach ($output as $line) {
@@ -41,21 +41,21 @@ if ($argc !== 3 || !is_numeric($argv[1]) || !is_numeric($argv[2])) {
 					// Disable compressed headers
 					$pdo->queryExec("UPDATE settings SET value = 0 WHERE setting = 'compressedheaders'");
 					// kill pid
-					echo $c->alternate("PID: $line1[0] USER: $line1[1] TIME: $time[0] CMD: $line");
+					echo $pdo->log->alternate("PID: $line1[0] USER: $line1[1] TIME: $time[0] CMD: $line");
 					usleep(10000);
 					exec("kill " . $line1[0] . " 2>&1 1> /dev/null");
 					// reset good timer
 					$time1 = TIME();
 				} else {
-					echo $c->primary("PID: $line1[0] USER: $line1[1] TIME: $time[0] CMD: $line");
+					echo $pdo->log->primary("PID: $line1[0] USER: $line1[1] TIME: $time[0] CMD: $line");
 				}
 			}
 		} else {
-			echo $c->header("update_binaries or backfill does not appear to be running");
+			echo $pdo->log->header("update_binaries or backfill does not appear to be running");
 			$time1 = TIME();
 		}
 
-		echo $c->header("Monitoring ${threads} threads.");
+		echo $pdo->log->header("Monitoring ${threads} threads.");
 
 		// re-enable compressed haders if good running 10 min
 		if (TIME() - $time1 > ($killtime + 300)) {
@@ -64,6 +64,5 @@ if ($argc !== 3 || !is_numeric($argv[1]) || !is_numeric($argv[2])) {
 		}
 
 		passthru("php misc/update/nix/tmux/bin/showsleep.php $sleep");
-		$output = '';
 	}
 }

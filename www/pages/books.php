@@ -29,7 +29,7 @@ $ordering = $book->getBookOrdering();
 $orderby = isset($_REQUEST["ob"]) && in_array($_REQUEST['ob'], $ordering) ? $_REQUEST["ob"] : '';
 
 $results = $books = array();
-$results = $book->getBookRange($catarray, $offset, ITEMS_PER_COVER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"]);
+$results = $book->getBookRange($catarray, $offset, ITEMS_PER_COVER_PAGE, $orderby, $page->userdata["categoryexclusions"]);
 
 $maxwords = 50;
 foreach ($results as $result) {

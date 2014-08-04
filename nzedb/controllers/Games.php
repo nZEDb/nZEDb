@@ -18,21 +18,60 @@ class Games
 	public $pdo;
 
 	/**
+	 * @var bool
+	 */
+	public $echooutput;
+
+	/**
+	 * @var array|bool|string
+	 */
+	public $pubkey;
+
+	/**
+	 * @var array|bool|int|string
+	 */
+	public $gameqty;
+
+	/**
+	 * @var array|bool|int|string
+	 */
+	public $sleeptime;
+
+	/**
+	 * @var string
+	 */
+	public $imgSavePath;
+
+	/**
+	 * @var string
+	 */
+	public $renamed;
+
+	/**
+	 * @var int
+	 */
+	public $matchpercent;
+
+	/**
+	 * @var bool
+	 */
+	public $maxhitrequest;
+
+	/**
 	 * @param array $options Class instances / Echo to cli.
 	 */
 	public function __construct(array $options = array())
 	{
-		$defOptions = [
+		$defaults = [
 			'Echo'     => false,
 			'ColorCLI' => null,
 			'Settings' => null,
 		];
-		$defOptions = array_replace($defOptions, $options);
+		$options += $defaults;
 
-		$this->echooutput = ($defOptions['Echo'] && nZEDb_ECHOCLI);
+		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
 
-		$this->pdo = ($defOptions['Settings'] instanceof Settings ? $defOptions['Settings'] : new Settings());
-		$this->c = ($defOptions['ColorCLI'] instanceof ColorCLI ? $defOptions['ColorCLI'] : new ColorCLI());
+		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 
 		$this->pubkey = $this->pdo->getSetting('giantbombkey');
 		$this->gameqty = ($this->pdo->getSetting('maxgamesprocessed') != '') ? $this->pdo->getSetting('maxgamesprocessed') : 150;
@@ -467,7 +506,6 @@ class Games
 			$con['review'] = trim(strip_tags((string)$gb['description']));
 		}
 
-		$genreKey = -1;
 		$genreName = '';
 
 		if (empty($genreName) && isset($gb['genres'][0]['name'])) {
@@ -477,7 +515,7 @@ class Games
 			foreach ($tmpGenre as $tg) {
 				$genreMatch = $this->matchBrowseNode(ucwords($tg));
 				if ($genreMatch !== false) {
-					$genreName = $genreMatch;
+					$genreName = (string)$genreMatch;
 					break;
 				}
 			}
@@ -556,20 +594,20 @@ class Games
 
 		if ($gamesId) {
 			if ($this->echooutput) {
-				$this->c->doEcho(
-					$this->c->header("Added/updated game: ") .
-					$this->c->alternateOver("   Title:    ") .
-					$this->c->primary($con['title']) .
-					$this->c->alternateOver("   Platform: ") .
-					$this->c->primary($con['platform'])
+				$this->pdo->log->doEcho(
+					$this->pdo->log->header("Added/updated game: ") .
+					$this->pdo->log->alternateOver("   Title:    ") .
+					$this->pdo->log->primary($con['title']) .
+					$this->pdo->log->alternateOver("   Platform: ") .
+					$this->pdo->log->primary($con['platform'])
 				);
 			}
 			$con['cover'] = $ri->saveImage($gamesId, $con['coverurl'], $this->imgSavePath, 250, 250);
 		} else {
 			if ($this->echooutput) {
-				$this->c->doEcho(
-					$this->c->headerOver("Nothing to update: ") .
-					$this->c->primary($con['title'] . " (" . $con['platform'] . ')' )
+				$this->pdo->log->doEcho(
+					$this->pdo->log->headerOver("Nothing to update: ") .
+					$this->pdo->log->primary($con['title'] . " (" . $con['platform'] . ')' )
 				);
 			}
 		}
@@ -647,9 +685,9 @@ class Games
 			)
 		);
 
-		if ($res !== false && $res->rowCount() > 0) {
+		if ($res instanceof Traversable && $res->rowCount() > 0) {
 			if ($this->echooutput) {
-				$this->c->doEcho($this->c->header("Processing " . $res->rowCount() . ' games release(s).'));
+				$this->pdo->log->doEcho($this->pdo->log->header("Processing " . $res->rowCount() . ' games release(s).'));
 			}
 
 			foreach ($res as $arr) {
@@ -662,9 +700,9 @@ class Games
 				if ($gameInfo !== false) {
 
 					if ($this->echooutput) {
-						$this->c->doEcho(
-							$this->c->headerOver('Looking up: ') .
-							$this->c->primary($gameInfo['title'] . ' (' . $gameInfo['platform'] . ')' )
+						$this->pdo->log->doEcho(
+							$this->pdo->log->headerOver('Looking up: ') .
+							$this->pdo->log->primary($gameInfo['title'] . ' (' . $gameInfo['platform'] . ')' )
 						);
 					}
 
@@ -706,7 +744,7 @@ class Games
 			}
 		} else {
 			if ($this->echooutput) {
-				$this->c->doEcho($this->c->header('No games releases to process.'));
+				$this->pdo->log->doEcho($this->pdo->log->header('No games releases to process.'));
 			}
 		}
 	}
@@ -732,6 +770,7 @@ class Games
 			$matches)
 		) {
 			// Replace dots, underscores, or brackets with spaces.
+			$result = array();
 			$result['title'] = str_replace(' RF ', ' ', preg_replace('/(\.|_|\%20|\[|\])/', ' ', $matches['title']));
 			// Needed to add code to handle DLC Properly.
 			if (stripos($result['title'], 'dlc') !== false) {
@@ -796,7 +835,7 @@ class Games
 	}
 
 	/**
-	 * Not in use for future additions.
+	 * See if genre name exists
 	 *
 	 * @param $nodeName
 	 *

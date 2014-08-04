@@ -16,12 +16,12 @@ class Groups
 	 */
 	public function __construct(array $options = array())
 	{
-		$defOptions = [
+		$defaults = [
 			'Settings' => null
 		];
-		$defOptions = array_replace($defOptions, $options);
+		$options += $defaults;
 
-		$this->pdo = ($defOptions['Settings'] instanceof Settings ? $defOptions['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 	}
 
 	/**
@@ -515,7 +515,7 @@ class Groups
 			sprintf("SELECT guid FROM releases %s", ($id === false ? '' : 'WHERE group_id = ' . $id))
 		);
 
-		if ($releaseArray !== false) {
+		if ($releaseArray instanceof Traversable) {
 			$releases = new Releases(['Settings' => $this->pdo, 'Groups' => $this]);
 			$nzb = new NZB($this->pdo);
 			foreach ($releaseArray as $release) {
@@ -602,6 +602,11 @@ class Groups
 	}
 
 	/**
+	 * @var array
+	 */
+	private $cbppTableNames;
+
+	/**
 	 * Get the names of the collections/binaries/parts/part repair tables.
 	 * If TPG is on, try to create new tables for the group_id, if we fail, log the error and exit.
 	 *
@@ -612,10 +617,18 @@ class Groups
 	 */
 	public function getCBPTableNames($tpgSetting, $groupID)
 	{
-		$group['cname']  = 'collections';
-		$group['bname']  = 'binaries';
-		$group['pname']  = 'parts';
-		$group['prname'] = 'partrepair';
+		$groupKey = ($groupID . '_' . (int) $tpgSetting);
+
+		// Check if buffered and return. Prevents re-querying MySQL when TPG is on.
+		if (isset($this->cbppTableNames[$groupKey])) {
+			return $this->cbppTableNames[$groupKey];
+		}
+
+		$tables = array();
+		$tables['cname']  = 'collections';
+		$tables['bname']  = 'binaries';
+		$tables['pname']  = 'parts';
+		$tables['prname'] = 'partrepair';
 
 		if ($tpgSetting === true) {
 			if ($groupID == '') {
@@ -627,12 +640,16 @@ class Groups
 			}
 
 			$groupEnding = '_' . $groupID;
-			$group['cname']  .= $groupEnding;
-			$group['bname']  .= $groupEnding;
-			$group['pname']  .= $groupEnding;
-			$group['prname'] .= $groupEnding;
+			$tables['cname']  .= $groupEnding;
+			$tables['bname']  .= $groupEnding;
+			$tables['pname']  .= $groupEnding;
+			$tables['prname'] .= $groupEnding;
 		}
-		return $group;
+
+		// Buffer.
+		$this->cbppTableNames[$groupKey] = $tables;
+
+		return $tables;
 	}
 
 	/**
@@ -645,7 +662,7 @@ class Groups
 	public function createNewTPGTables($groupID)
 	{
 		foreach (['collections', 'binaries', 'parts', 'partrepair'] as $tableName) {
-			if ($statement = $this->pdo->queryExec(sprintf('SELECT * FROM %s_%s LIMIT 1', $tableName, $groupID), true) === false) {
+			if ($this->pdo->queryExec(sprintf('SELECT * FROM %s_%s LIMIT 1', $tableName, $groupID), true) === false) {
 				if ($this->pdo->queryExec(sprintf('CREATE TABLE %s_%s LIKE %s', $tableName, $groupID, $tableName), true) === false) {
 					return false;
 				} else {

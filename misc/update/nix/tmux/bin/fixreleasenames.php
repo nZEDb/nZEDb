@@ -3,12 +3,12 @@ require_once dirname(__FILE__) . '/../../../config.php';
 
 use nzedb\db\Settings;
 
-$c = new ColorCLI();
+$pdo = new Settings();
+
 if (!isset($argv[1])) {
-	exit($c->error("This script is not intended to be run manually, it is called from fixreleasenames_threaded.py."));
+	exit($pdo->log->error("This script is not intended to be run manually, it is called from fixreleasenames_threaded.py."));
 } else if (isset($argv[1])) {
-	$pdo = new Settings();
-	$namefixer = new NameFixer(['Settings' => $pdo, 'ColorCLI' => $c]);
+	$namefixer = new NameFixer(['Settings' => $pdo]);
 	$pieces = explode(' ', $argv[1]);
 	if (isset($pieces[1]) && $pieces[0] == 'nfo') {
 		$release = $pieces[1];
@@ -53,9 +53,9 @@ if (!isset($argv[1])) {
 		}
 	} else if (isset($pieces[1]) && $pieces[0] == 'par2') {
 		//echo PHP_EOL . microtime();
-		$nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $c]);
+		$nntp = new NNTP(['Settings' => $pdo]);
 		if (($pdo->getSetting('alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
-			exit($c->error("Unable to connect to usenet."));
+			exit($pdo->log->error("Unable to connect to usenet."));
 		}
 
 		$relID = $pieces[1];
@@ -64,8 +64,8 @@ if (!isset($argv[1])) {
 		$nzbcontents = new NZBContents(
 			array(
 				'Echo' => true, 'NNTP' => $nntp, 'Settings' => $pdo,
-				'Nfo' => new Nfo(['Settings' => $pdo, 'ColorCLI' => $c, 'Echo' => true]),
-				'PostProcess' => new PostProcess(['Settings' => $pdo, 'NameFixer' => $namefixer, 'ColorCLI' => $c])
+				'Nfo' => new Nfo(['Settings' => $pdo, 'Echo' => true]),
+				'PostProcess' => new PostProcess(['Settings' => $pdo, 'NameFixer' => $namefixer])
 			)
 		);
 		//echo " " . microtime();
@@ -76,9 +76,9 @@ if (!isset($argv[1])) {
 		}
 
 	} else if (isset($pieces[1]) && $pieces[0] == 'miscsorter') {
-		$nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $c]);
+		$nntp = new NNTP(['Settings' => $pdo]);
 		if (($pdo->getSetting('alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
-			exit($c->error("Unable to connect to usenet."));
+			exit($pdo->log->error("Unable to connect to usenet."));
 		}
 
 		$sorter = new MiscSorter(true);

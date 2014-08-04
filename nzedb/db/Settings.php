@@ -54,7 +54,7 @@ class Settings extends DB
 		$this->table = ($result === false) ? 'settings' : 'site';
 		$this->setCovers();
 
-		return self::$_pdo;
+		return self::$pdo;
 	}
 
 	/**
@@ -79,6 +79,7 @@ class Settings extends DB
 	 */
 	public function getSetting($options = array())
 	{
+		// todo: think about making this static so it can be accessed without instantiating.
 		if (!is_array($options)) {
 			$options = $this->_dottedToArray($options);
 			if (isset($options['setting']) && isset($this->settings[$options['setting']])) {
@@ -143,7 +144,7 @@ class Settings extends DB
 			}
 		}
 
-		$where    = $result = false;
+		$result = false;
 		$defaults = [
 			'section'    => null,
 			'subsection' => null,
@@ -169,7 +170,7 @@ class Settings extends DB
 				$sql    = sprintf("UPDATE settings SET value = '%s' WHERE %s",
 								  $options['value'],
 								  $where);
-				$result = self::$_pdo->query($sql);
+				$result = self::$pdo->query($sql);
 			}
 		}
 
@@ -250,7 +251,6 @@ class Settings extends DB
 
 	protected function _getFromSettings($options)
 	{
-		$result = array();
 		$sql     = 'SELECT value FROM settings ';
 		$where   = $options['section'] . $options['subsection'] . $options['name']; // Can't use expression in empty() < PHP 5.5
 		if (!empty($where)) {

@@ -1,9 +1,5 @@
 <?php
 
-require_once nZEDb_LIBS . 'adultdvdempire.php';
-require_once nZEDb_LIBS . 'popporn.php';
-require_once nZEDb_LIBS . 'hotmovies.php';
-
 use nzedb\db\Settings;
 use nzedb\utility;
 
@@ -47,6 +43,12 @@ class XXX
 
 	protected $currentRelID;
 
+	protected $movieqty;
+
+	protected $showPasswords;
+
+	protected $cookie;
+
 	/**
 	 * @param array $options Echo to cli / Class instances.
 	 */
@@ -54,26 +56,24 @@ class XXX
 	{
 		$defaults = [
 			'Echo'         => false,
-			'ColorCLI'     => null,
 			'ReleaseImage' => null,
 			'Settings'     => null,
 		];
-		$defaults = array_replace($defaults, $options);
+		$options += $defaults;
 
-		$this->c = ($defaults['ColorCLI'] instanceof ColorCLI ? $defaults['ColorCLI'] : new ColorCLI());
-		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
-		$this->releaseImage = ($defaults['ReleaseImage'] instanceof ReleaseImage ? $defaults['ReleaseImage'] : new ReleaseImage($this->pdo));
+		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] :	new Settings());
+		$this->releaseImage = ($options['ReleaseImage'] instanceof ReleaseImage ? $options['ReleaseImage'] : new ReleaseImage($this->pdo));
 
 		$this->movieqty = ($this->pdo->getSetting('maxxxxprocessed') != '') ? $this->pdo->getSetting('maxxxxprocessed') : 100;
 		$this->showPasswords = ($this->pdo->getSetting('showpasswordedrelease') != '') ? $this->pdo->getSetting('showpasswordedrelease') : 0;
 		$this->debug = nZEDb_DEBUG;
-		$this->echooutput = ($defaults['Echo'] && nZEDb_ECHOCLI);
+		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
 		$this->imgSavePath = nZEDb_COVERS . 'xxx' . DS;
 		$this->cookie = nZEDb_TMP . 'xxx.cookie';
 
 		if (nZEDb_DEBUG || nZEDb_LOGGING) {
 			$this->debug = true;
-			$this->debugging = new Debugging(['Class' => 'XXX', 'ColorCLI' => $this->c]);
+			$this->debugging = new Debugging(['Class' => 'XXX', 'ColorCLI' => $this->pdo->log]);
 		}
 	}
 
@@ -248,7 +248,7 @@ class XXX
 				}
 			}
 			$catSearch .= '1=2)';
-		}
+	}
 		return $catSearch;
 	}
 
@@ -389,32 +389,74 @@ class XXX
 
 		$res = false;
 		$this->whichclass = '';
-		// Check Adultdvdempire for xxx info.
-		$mov = new adultdvdempire();
-		$mov->searchterm = $xxxmovie;
-		$res = $mov->search();
-		$this->whichclass = "ade";
+
+		$iafd = new IAFD();
+		$iafd->searchterm = $xxxmovie;
+		if($iafd->findme() !== false){
+		switch($iafd->classused){
+			case "ade":
+				$mov = new ADE();
+				$mov->directlink = $iafd->directurl;
+				$res = $mov->getdirect();
+				$res['title'] = $iafd->title;
+				$res['directurl'] = (string)$iafd->directurl;
+				$this->whichclass = $iafd->classused;
+				$this->pdo->log->doEcho($this->pdo->log->primary("Fetching XXX info from IAFD: Adult DVD Empire"));
+				break;
+			case "hm":
+				$mov = new Hotmovies();
+				$mov->directlink = $iafd->directurl;
+				$res = $mov->getdirect();
+				$res['title'] = $iafd->title;
+				$res['directurl'] = (string)$iafd->directurl;
+				$this->whichclass = $iafd->classused;
+				$this->pdo->log->doEcho($this->pdo->log->primary("Fetching XXX info from IAFD: Hot Movies"));
+				break;
+			default:
+				$res = false;
+
+		}
+		}else{
+		$res = false;
+		}
+
+		if ($res === false) {
+			$this->whichclass = "aebn";
+			$mov = new AEBN();
+			$mov->cookie = $this->cookie;
+			$mov->searchterm = $xxxmovie;
+			$res = $mov->search();
+		if($res === false){
+			$this->whichclass = "ade";
+			$mov = new ADE();
+			$mov->searchterm = $xxxmovie;
+			$res = $mov->search();
+		}
+
 		if ($res === false) {
 			$this->whichclass = "hm";
-			// IF no result from Adultdvdempire check hotmovies
-			$mov = new hotmovies();
+			$mov = new Hotmovies();
 			$mov->cookie = $this->cookie;
 			$mov->searchterm = $xxxmovie;
 			$res = $mov->search();
 		}
+
 		if($res === false){
 			$this->whichclass = "pop";
-			// IF no result from Adultdvdempire and hotmovies check popporn
-			$mov = new popporn();
+			$mov = new Popporn();
 			$mov->cookie = $this->cookie;
 			$mov->searchterm = $xxxmovie;
 			$res = $mov->search();
 		}
+
 		// If a result is true getall information.
 		if ($res !== false) {
 			if ($this->echooutput) {
 				$fromstr = null;
 				switch($this->whichclass){
+					case "aebn":
+					$fromstr = "AEBN";
+						break;
 					case "ade":
 					$fromstr = "Adult DVD Empire";
 						break;
@@ -428,14 +470,14 @@ class XXX
 						$fromstr = null;
 
 				}
-				$this->c->doEcho($this->c->primary("Fetching XXX info from: " . $fromstr ));
+				$this->pdo->log->doEcho($this->pdo->log->primary("Fetching XXX info from: " . $fromstr ));
 			}
 			$res = $mov->_getall();
 		} else {
 			// Nothing was found, go ahead and set to -2 :(
 			return false;
 		}
-
+	}
 		$mov = array();
 
 		$mov['trailers'] = (isset($res['trailers'])) ? serialize($res['trailers']) : '';
@@ -535,9 +577,9 @@ class XXX
 			$xxxID=$check['id'];
 		}
 		if ($this->echooutput) {
-			$this->c->doEcho(
-				$this->c->headerOver(($xxxID !== false ? 'Added/updated movie: ' : 'Nothing to update for xxx movie: ')) .
-				$this->c->primary($mov['title'])
+			$this->pdo->log->doEcho(
+				$this->pdo->log->headerOver(($xxxID !== false ? 'Added/updated movie: ' : 'Nothing to update for xxx movie: ')) .
+				$this->pdo->log->primary($mov['title'])
 			);
 		}
 		return $xxxID;
@@ -558,7 +600,6 @@ class XXX
 					WHERE r.nzbstatus = 1
 					AND r.xxxinfo_id = 0
 					AND r.categoryid BETWEEN 6000 AND 6040
-					AND r.isrenamed = 1
 					LIMIT %d",
 					$this->movieqty
 				)
@@ -567,7 +608,7 @@ class XXX
 
 		if ($movieCount > 0) {
 			if ($this->echooutput && $movieCount > 1) {
-				$this->c->doEcho($this->c->header("Processing " . $movieCount . " XXX releases."));
+				$this->pdo->log->doEcho($this->pdo->log->header("Processing " . $movieCount . " XXX releases."));
 			}
 
 			// Loop over releases.
@@ -581,14 +622,15 @@ class XXX
 					$this->currentRelID = $arr['id'];
 
 					$movieName = $this->currentTitle;
-
+					$idcheck = null;
 					if ($this->echooutput) {
-						$this->c->doEcho($this->c->primaryOver("Looking up: ") . $this->c->headerOver($movieName), true);
+						$this->pdo->log->doEcho($this->pdo->log->primaryOver("Looking up: ") . $this->pdo->log->headerOver($movieName), true);
 						$idcheck = $this->updateXXXInfo($movieName);
 					}
 					if($idcheck == false){
 						// No Release was found, set to -2 so we don't parse again.
 						$this->pdo->queryExec(sprintf('UPDATE releases SET xxxinfo_id = %d WHERE id = %d', -2, $arr['id']));
+						$this->pdo->log->doEcho(".", true);
 						continue;
 					}else{
 						// Release Found, set xxxinfo_id
@@ -601,7 +643,7 @@ class XXX
 			}
 		} else {
 			if ($this->echooutput) {
-				$this->c->doEcho($this->c->header('No xxx releases to process.'));
+				$this->pdo->log->doEcho($this->pdo->log->header('No xxx releases to process.'));
 			}
 		}
 	}
@@ -615,11 +657,8 @@ class XXX
 	 */
 	protected function parseXXXSearchName($releaseName)
 	{
-		// Check if it's foreign ?
-		$cat = new Categorize(['Settings' => $this->pdo]);
-		if (!$cat->isMovieForeign($releaseName)) {
 			$name = '';
-			$followingList = '[^\w]((2160|1080|480|720)(p|i)|AC3D|Directors([^\w]CUT)?|DD5\.1|(DVD|BD|BR)(Rip)?|BluRay|divx|HDTV|iNTERNAL|LiMiTED|(Real\.)?Proper|RE(pack|Rip)|Sub\.?(fix|pack)|Unrated|WEB-DL|(x|H)[-._ ]?264|xvid|XXX|BTS|DirFix|Disc|Trailer|WEBRiP|NFO)[^\w]';
+			$followingList = '[^\w]((2160|1080|480|720)(p|i)|AC3D|Directors([^\w]CUT)?|DD5\.1|(DVD|BD|BR)(Rip)?|BluRay|divx|HDTV|iNTERNAL|LiMiTED|(Real\.)?Proper|RE(pack|Rip)|Sub\.?(fix|pack)|Unrated|WEB-DL|(x|H)[-._ ]?264|xvid|[Dd][Ii][Ss][Cc](\d+|\s*\d+|\.\d+)|XXX|BTS|DirFix|Trailer|WEBRiP|NFO|BONUS|(19|20)\d\d)[^\w]';
 
 			/* Initial scan of getting a name.
 			 * [\w. -]+ Gets 0-9a-z. - characters, most scene movie titles contain these chars.
@@ -632,22 +671,27 @@ class XXX
 			// Check if we got something.
 			if ($name !== '') {
 
+				// Replace any foreign words
+				$name = preg_replace('/(brazilian|chinese|croatian|danish|deutsch|dutch|english|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|latin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish)/i', ' ', $name);
 				// If we still have any of the words in $followingList, remove them.
 				$name = preg_replace('/' . $followingList . '/i', ' ', $name);
 				// Remove periods, underscored, anything between parenthesis.
 				$name = preg_replace('/\(.*?\)|[._]/i', ' ', $name);
 				// Finally remove multiple spaces and trim leading spaces.
 				$name = trim(preg_replace('/\s{2,}/', ' ', $name));
-					// Check if the name is long enough and not just numbers and not file (d) of (d).
-				if (strlen($name) > 5 && !preg_match('/^\d+$/', $name) && !preg_match('/(- File \d+ of \d+|\d+.\d+.\d+)/',$name)) {
+
+				// Check if the name is long enough and not just numbers and not file (d) of (d) and does not contain Episodes and any dated 00.00.00 which are site rips..
+				if (strlen($name) > 5 && !preg_match('/^\d+$/', $name) && !preg_match('/(- File \d+ of \d+|\d+.\d+.\d+)/',$name) && !preg_match('/(E\d+)/',$name) && !preg_match('/\d\d\.\d\d.\d\d/', $name)) {
 					if ($this->debug && $this->echooutput) {
-						$this->c->doEcho("DB name: {$releaseName}", true);
+						$this->pdo->log->doEcho("DB name: {$releaseName}", true);
 					}
 					$this->currentTitle = $name;
 					return true;
+				} else {
+					$this->pdo->log->doEcho(".", false);
 				}
 			}
-		}
+
 		return false;
 	}
 

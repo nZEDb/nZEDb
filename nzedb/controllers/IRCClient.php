@@ -16,7 +16,7 @@ class IRCClient
 
 	/**
 	 * Port number IRC server.
-	 * @var int
+	 * @var int|string
 	 * @access protected
 	 */
 	protected $_remote_port = 6667;
@@ -52,28 +52,28 @@ class IRCClient
 
 	/**
 	 * Time in seconds to timeout on connect.
-	 * @var int
+	 * @var int|string
 	 * @access protected
 	 */
 	protected $_remote_connection_timeout = 30;
 
 	/**
 	 * Time in seconds before we timeout when sending/receiving a command.
-	 * @var int
+	 * @var int|string
 	 * @access protected
 	 */
 	protected $_socket_timeout = 180;
 
 	/**
 	 * How many times to retry when connecting to IRC.
-	 * @var int
+	 * @var int|string
 	 * @access protected
 	 */
 	protected $_reconnectRetries = 3;
 
 	/**
 	 * Seconds to delay when reconnecting fails.
-	 * @var int
+	 * @var int|string
 	 * @access protected
 	 */
 	protected $_reconnectDelay = 5;
@@ -128,7 +128,7 @@ class IRCClient
 
 	/**
 	 * Password when we log in.
-	 * @var string
+	 * @var string|null
 	 * @access protected
 	 */
 	protected $_password;
@@ -149,7 +149,7 @@ class IRCClient
 
 	/**
 	 * How many times we've tried to reconnect to IRC.
-	 * @var int
+	 * @var int|string
 	 * @access protected
 	 */
 	protected $_currentRetries = 0;
@@ -181,13 +181,13 @@ class IRCClient
 	 * The default is fine, it will ping the server if the server does not ping us
 	 * within this time to keep the connection alive.
 	 *
-	 * @param int $timeout Seconds.
+	 * @param int|string $timeout Seconds.
 	 *
 	 * @access public
 	 */
 	public function setSocketTimeout($timeout)
 	{
-		if (!is_numeric($timeout)) {
+		if (!is_numeric($timeout) || is_double($timeout)) {
 			echo 'ERROR: IRC socket timeout must be a number!' . PHP_EOL;
 		} else {
 			$this->_socket_timeout = $timeout;
@@ -197,13 +197,13 @@ class IRCClient
 	/**
 	 * Amount of time to wait before giving up when connecting.
 	 *
-	 * @param int $timeout Seconds.
+	 * @param int|string $timeout Seconds.
 	 *
 	 * @access public
 	 */
 	public function setConnectionTimeout($timeout)
 	{
-		if (!is_numeric($timeout)) {
+		if (!is_numeric($timeout) || is_double($timeout)) {
 			echo 'ERROR: IRC connection timeout must be a number!' . PHP_EOL;
 		} else {
 			$this->_remote_connection_timeout = $timeout;
@@ -219,7 +219,7 @@ class IRCClient
 	 */
 	public function setConnectionRetries($retries)
 	{
-		if (!is_numeric($retries)) {
+		if (!is_numeric($retries) || is_double($retries)) {
 			echo 'ERROR: IRC connection retries must be a number!' . PHP_EOL;
 		} else {
 			$this->_reconnectRetries = $retries;
@@ -235,7 +235,7 @@ class IRCClient
 	 */
 	public function setReConnectDelay($delay)
 	{
-		if (!is_numeric($delay)) {
+		if (!is_numeric($delay) || is_double($delay)) {
 			echo 'ERROR: IRC reconnect delay must be a number!' . PHP_EOL;
 		} else {
 			$this->_reconnectDelay = $delay;
@@ -245,9 +245,9 @@ class IRCClient
 	/**
 	 * Connect to a IRC server.
 	 *
-	 * @param string $hostname Host name of the IRC server (can be a IP or a name).
-	 * @param int    $port     Port number of the IRC server.
-	 * @param bool   $tls      Use encryption for the socket transport? (make sure the port is right).
+	 * @param string     $hostname Host name of the IRC server (can be a IP or a name).
+	 * @param int|string $port     Port number of the IRC server.
+	 * @param bool       $tls      Use encryption for the socket transport? (make sure the port is right).
 	 *
 	 * @return bool
 	 *
@@ -265,7 +265,7 @@ class IRCClient
 				return false;
 			}
 
-			if (!is_numeric($port)) {
+			if (!is_numeric($port) || is_double($port)) {
 				echo 'ERROR: IRC port must be a number!' . PHP_EOL;
 				return false;
 			}
@@ -300,10 +300,10 @@ class IRCClient
 	/**
 	 * Log in to a IRC server.
 	 *
-	 * @param string $nickName The nick name - visible in the channel.
-	 * @param string $userName The user name - visible in the host name.
-	 * @param string $realName The real name - visible in the WhoIs.
-	 * @param null   $password The password  - some servers require a password.
+	 * @param string      $nickName The nick name - visible in the channel.
+	 * @param string      $userName The user name - visible in the host name.
+	 * @param string      $realName The real name - visible in the WhoIs.
+	 * @param null|string $password The password  - some servers require a password.
 	 *
 	 * @return bool
 	 *
@@ -342,6 +342,7 @@ class IRCClient
 		while(true) {
 			$this->_readSocket();
 
+			$matches = array();
 			// We got pinged, reply with a pong.
 			if (preg_match('/^PING\s*:(.+?)$/', $this->_buffer, $matches)) {
 				$this->_pong($matches[1]);

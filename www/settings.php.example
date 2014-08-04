@@ -46,9 +46,9 @@ define('nZEDb_FLOOD_MAX_REQUESTS_PER_SECOND', 5);
  * of server resources.
  * To find a good number for your server, run the misc/testing/Dev/find_password_hash_cost.php script.
  *
- * @default 10
+ * @default 11
  */
-define('nZEDb_PASSWORD_HASH_COST', 10);
+define('nZEDb_PASSWORD_HASH_COST', 11);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////// CLI Settings //////////////////////////////////////////////////////////
@@ -211,7 +211,7 @@ define('nZEDb_LOGFATAL', false);
 define('nZEDb_LOGQUERIES', false);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////// Various Settings ////////////////////////////////////////////////////////
+//////////////////////////////////////////////// SQL Settings //////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
  * Strip white space (space, carriage return, new line, tab, etc) from queries before sending to MySQL.
@@ -220,3 +220,13 @@ define('nZEDb_LOGQUERIES', false);
  * @default false
  */
 define('nZEDb_QUERY_STRIP_WHITESPACE', false);
+
+/**
+ * Use transactions when doing certain SQL jobs.
+ * This has advantages and disadvantages.
+ * If there's a problem during a transaction, MySQL can revert the row inserts which is beneficial.
+ * Transactions can cause deadlocks however if you are trying to insert into the same table from another process.
+ * @note If all your tables are MyISAM you can set this to false, as MyISAM does not support transactions.
+ * @default true
+ */
+define('nZEDb_USE_SQL_TRANSACTIONS', true);

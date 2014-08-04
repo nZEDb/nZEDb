@@ -6,17 +6,16 @@ use nzedb\db\Settings;
 //	This script can dump all tables or just collections/binaries/parts/partrepair/groups.
 
 $pdo = new Settings();
-$c = new ColorCLI();
+
 if ($pdo->dbSystem() === "pgsql") {
-	exit($c->error("\nThis script is only for mysql.\n"));
+	exit($pdo->log->error("\nThis script is only for mysql.\n"));
 }
 
 $exportopts = "";
-$mysqlplatform = "";
 
 //determine mysql platform Percona or Other
 if($pdo->dbSystem() === "mysql") {
-	$mysqlplatform = exec('mysqladmin version | grep "Percona"', $mysqlplatform);
+	$mysqlplatform = exec('mysqladmin version | grep "Percona"');
 	if (strlen($mysqlplatform) > 0) {
 		//Percona only has --innodb-optimize-keys
 		$exportopts = "--opt --innodb-optimize-keys --complete-insert --skip-quick";
@@ -75,7 +74,7 @@ if($pdo->dbSystem() === "mysql") {
 
 if((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "dump") && (isset($argv[3]) && file_exists($argv[3]))) {
 	$filename = $argv[3]."/".$dbname.".gz";
-	echo $c->header("Dumping $dbname.");
+	echo $pdo->log->header("Dumping $dbname.");
 	if (file_exists($filename)) {
 		newname($filename);
 	}
@@ -84,7 +83,7 @@ if((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "dum
 } else if((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "restore") && (isset($argv[3]) && file_exists($argv[3]))) {
 	$filename = $argv[3]."/".$dbname.".gz";
 	if (file_exists($filename)) {
-		echo $c->header("Restoring $dbname.");
+		echo $pdo->log->header("Restoring $dbname.");
 		$command = "zcat < $filename | mysql --defaults-file=mysql-defaults.txt -h$dbhost $use $dbname";
 		$pdo->queryExec("SET FOREIGN_KEY_CHECKS=0");
 		system($command);
@@ -96,7 +95,7 @@ if((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "dum
 	foreach($tables as $row) {
 		$tbl = $row['tables_in_'.DB_NAME];
 		$filename = $argv[3]."/".$tbl.".gz";
-		echo $c->header("Dumping $tbl.");
+		echo $pdo->log->header("Dumping $tbl.");
 		if (file_exists($filename)) {
 			newname($filename);
 		}
@@ -111,7 +110,7 @@ if((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "dum
 		$tbl = $row['tables_in_'.DB_NAME];
 		$filename = $argv[3]."/".$tbl.".gz";
 		if (file_exists($filename)) {
-			echo $c->header("Restoring $tbl.");
+			echo $pdo->log->header("Restoring $tbl.");
 			$command = "zcat < $filename | mysql --defaults-file=mysql-defaults.txt -h$dbhost $use $dbname";
 			system($command);
 		}
@@ -121,7 +120,7 @@ if((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "dum
 	$arr = array("parts", "binaries", "collections", "partrepair", "groups");
 	foreach ($arr as &$tbl) {
 		$filename = $argv[3]."/".$tbl.".gz";
-		echo $c->header("Dumping $tbl..");
+		echo $pdo->log->header("Dumping $tbl..");
 		if (file_exists($filename)) {
 			newname($filename);
 		}
@@ -134,7 +133,7 @@ if((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "dum
 	foreach ($arr as &$tbl) {
 		$filename = $argv[3]."/".$tbl.".gz";
 		if (file_exists($filename)) {
-			echo $c->header("Restoring $tbl.");
+			echo $pdo->log->header("Restoring $tbl.");
 			$command = "zcat < $filename | mysql --defaults-file=mysql-defaults.txt -h$dbhost $use $dbname";
 			system($command);
 		}
@@ -146,7 +145,7 @@ if((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "dum
 	foreach($tables as $row) {
 		$tbl = $row['tables_in_'.DB_NAME];
 		$filename = $argv[3].$tbl.".csv";
-		echo $c->header("Dumping $tbl.");
+		echo $pdo->log->header("Dumping $tbl.");
 		if (file_exists($filename)) {
 			newname($filename);
 		}
@@ -160,14 +159,14 @@ if((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "dum
 		$tbl = $row['tables_in_'.DB_NAME];
 		$filename = $argv[3].$tbl.".csv";
 		if (file_exists($filename)) {
-			echo $c->header("Restoring $tbl.");
+			echo $pdo->log->header("Restoring $tbl.");
 			$pdo->queryExec(sprintf("LOAD DATA INFILE %s INTO TABLE %s", $pdo->escapeString($filename), $tbl));
 		}
 	}
 	$pdo->queryExec("SET FOREIGN_KEY_CHECKS=1");
 } else {
 	passthru("clear");
-	echo $c->error("\nThis script can dump/restore all tables, compressed or OUTFILE/INFILE, or just collections/binaries/parts.\n\n"
+	echo $pdo->log->error("\nThis script can dump/restore all tables, compressed or OUTFILE/INFILE, or just collections/binaries/parts.\n\n"
 	. "**Single File\n"
 	. "php $argv[0] db dump /path/to/save/to              ...: To dump the database.\n"
 	. "php $argv[0] db restore /path/to/restore/from      ...: To restore the database.\n\n"

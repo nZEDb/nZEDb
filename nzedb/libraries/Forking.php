@@ -291,7 +291,7 @@ class Forking extends \fork_daemon
 
 			$groups = $this->pdo->queryDirect('SELECT id FROM groups WHERE (active = 1 OR backfill = 1)');
 
-			if ($groups->rowCount() > 0) {
+			if ($groups instanceof \Traversable) {
 				foreach($groups as $group) {
 					if ($this->pdo->queryOneRow(sprintf('SELECT id FROM collections_%d  LIMIT 1',$group['id'])) !== false) {
 						$this->work[] = array('id' => $group['id']);
@@ -362,10 +362,10 @@ class Forking extends \fork_daemon
 	private function checkProcessAdditional()
 	{
 		$this->ppAddMinSize =
-			($this->pdo->getSetting('minsizetopostprocess') != '') ? (int)$this->pdo->getSetting('minsizetopostprocess') : 1;
+			(string)($this->pdo->getSetting('minsizetopostprocess') != '') ? $this->pdo->getSetting('minsizetopostprocess') : 1;
 		$this->ppAddMinSize = ($this->ppAddMinSize === 0 ? '' : 'AND r.size > ' . ($this->ppAddMinSize * 1048576));
 		$this->ppAddMaxSize =
-			($this->pdo->getSetting('maxsizetopostprocess') != '') ? (int)$this->pdo->getSetting('maxsizetopostprocess') : 100;
+			(string)($this->pdo->getSetting('maxsizetopostprocess') != '') ? $this->pdo->getSetting('maxsizetopostprocess') : 100;
 		$this->ppAddMaxSize = ($this->ppAddMaxSize === 0 ? '' : 'AND r.size < ' . ($this->ppAddMaxSize * 1073741824));
 		return (
 			$this->pdo->queryOneRow(
@@ -426,9 +426,9 @@ class Forking extends \fork_daemon
 	private function checkProcessNfo()
 	{
 		if ($this->pdo->getSetting('lookupnfo') == 1) {
-			$this->nfoMaxSize = ($this->pdo->getSetting('maxsizetoprocessnfo') != '') ? (int)$this->pdo->getSetting('maxsizetoprocessnfo') : 100;
+			$this->nfoMaxSize = (string)($this->pdo->getSetting('maxsizetoprocessnfo') != '') ? $this->pdo->getSetting('maxsizetoprocessnfo') : 100;
 			$this->nfoMaxSize = ($this->nfoMaxSize > 0 ? ('AND size < ' . ($this->nfoMaxSize * 1073741824)) : '');
-			$this->nfoMinSize = ($this->pdo->getSetting('minsizetoprocessnfo') != '') ? (int)$this->pdo->getSetting('minsizetoprocessnfo') : 100;
+			$this->nfoMinSize = (string)($this->pdo->getSetting('minsizetoprocessnfo') != '') ? $this->pdo->getSetting('minsizetoprocessnfo') : 100;
 			$this->nfoMinSize = ($this->nfoMinSize > 0 ? ('AND size > ' . ($this->nfoMinSize * 1048576)) : '');
 			$this->maxNfoRetries = ($this->pdo->getSetting('maxnforetries') >= 0 ? -($this->pdo->getSetting('maxnforetries') + 1) : \Nfo::NFO_UNPROC);
 			$this->maxNfoRetries = ($this->maxNfoRetries < -8 ? -8 : $this->maxNfoRetries);
@@ -715,8 +715,8 @@ class Forking extends \fork_daemon
 						$maxProcesses = 16;
 					}
 			}
-			$this->maxProcesses = $maxProcesses;
-			$this->max_children_set($maxProcesses);
+			$this->maxProcesses = (int)$maxProcesses;
+			$this->max_children_set($this->maxProcesses);
 		} else {
 			$this->max_children_set(1);
 		}
@@ -810,7 +810,7 @@ class Forking extends \fork_daemon
 	/**
 	 * @var \nzedb\db\Settings
 	 */
-	private $pdo;
+	public $pdo;
 
 	/**
 	 * @var bool

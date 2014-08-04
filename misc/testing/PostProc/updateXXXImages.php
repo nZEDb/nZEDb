@@ -5,10 +5,9 @@ use nzedb\db\Settings;
 
 $pdo = new Settings();
 $covers = $updated = $deleted = 0;
-$c = new ColorCLI();
 
 if ($argc == 1 || $argv[1] != 'true') {
-	exit($c->error("\nThis script will check all images in covers/xxx and compare to db->xxxinfo.\nTo run:\nphp $argv[0] true\n"));
+	exit($pdo->log->error("\nThis script will check all images in covers/xxx and compare to db->xxxinfo.\nTo run:\nphp $argv[0] true\n"));
 }
 
 $row = $pdo->queryOneRow("SELECT value FROM settings WHERE setting = 'coverspath'");
@@ -31,7 +30,7 @@ foreach ($itr as $filePath) {
 			} else {
 				$run = $pdo->queryDirect("SELECT id FROM xxxinfo WHERE id = " . $match[1]);
 				if ($run->rowCount() == 0) {
-					echo $c->info($filePath . " not found in db.");
+					echo $pdo->log->info($filePath . " not found in db.");
 				}
 			}
 		}
@@ -46,7 +45,7 @@ foreach ($itr as $filePath) {
 			} else {
 				$run = $pdo->queryDirect("SELECT id FROM xxxinfo WHERE id = " . $match1[1]);
 				if ($run->rowCount() == 0) {
-					echo $c->info($filePath . " not found in db.");
+					echo $pdo->log->info($filePath . " not found in db.");
 				}
 			}
 		}
@@ -54,21 +53,25 @@ foreach ($itr as $filePath) {
 }
 
 $qry = $pdo->queryDirect("SELECT id FROM xxxinfo WHERE cover = 1");
-foreach ($qry as $rows) {
-    if (!is_file($path2covers . $rows['id'] . '-cover.jpg')) {
-		$pdo->queryDirect("UPDATE xxxinfo SET cover = 0 WHERE cover = 1 AND id = " . $rows['id']);
-        echo $c->info($path2covers . $rows['id'] . "-cover.jpg does not exist.");
-		$deleted++;
+if ($qry instanceof Traversable) {
+	foreach ($qry as $rows) {
+		if (!is_file($path2covers . $rows['id'] . '-cover.jpg')) {
+			$pdo->queryDirect("UPDATE xxxinfo SET cover = 0 WHERE cover = 1 AND id = " . $rows['id']);
+			echo $pdo->log->info($path2covers . $rows['id'] . "-cover.jpg does not exist.");
+			$deleted++;
+		}
 	}
 }
 $qry1 = $pdo->queryDirect("SELECT id FROM xxxinfo WHERE backdrop = 1");
-foreach ($qry1 as $rows) {
-    if (!is_file($path2covers . $rows['id'] . '-backdrop.jpg')) {
-        $pdo->queryDirect("UPDATE xxxinfo SET backdrop = 0 WHERE backdrop = 1 AND id = " . $rows['id']);
-        echo $c->info($path2covers . $rows['id'] . "-backdrop.jpg does not exist.");
-		$deleted++;
+if ($qry1 instanceof Traversable) {
+	foreach ($qry1 as $rows) {
+		if (!is_file($path2covers . $rows['id'] . '-backdrop.jpg')) {
+			$pdo->queryDirect("UPDATE xxxinfo SET backdrop = 0 WHERE backdrop = 1 AND id = " . $rows['id']);
+			echo $pdo->log->info($path2covers . $rows['id'] . "-backdrop.jpg does not exist.");
+			$deleted++;
+		}
 	}
 }
-echo $c->header($covers . " covers set.");
-echo $c->header($updated . " backdrops set.");
-echo $c->header($deleted . " movies unset.");
+echo $pdo->log->header($covers . " covers set.");
+echo $pdo->log->header($updated . " backdrops set.");
+echo $pdo->log->header($deleted . " movies unset.");

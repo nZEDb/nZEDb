@@ -6,6 +6,11 @@ use nzedb\utility;
 class ReleaseExtra
 {
 	/**
+	 * @var nzedb\db\Settings
+	 */
+	public $pdo;
+
+	/**
 	 * @param nzedb\db\Settings $settings
 	 */
 	public function __construct($settings = null)
@@ -99,9 +104,8 @@ class ReleaseExtra
 						if (isset($track['Overall_bit_rate'])) {
 							$overallbitrate = $track['Overall_bit_rate'];
 						}
-						$gendata = $track;
 					} else if ($track['@attributes']['type'] == 'Video') {
-						$videoduration = $videoformat = $videocodec = $videowidth = $videoheight = $videoaspect = $videoframerate = $videolibrary = $gendata = $viddata = $audiodata = '';
+						$videoduration = $videoformat = $videocodec = $videowidth = $videoheight = $videoaspect = $videoframerate = $videolibrary = '';
 						if (isset($track['Duration'])) {
 							$videoduration = $track['Duration'];
 						}
@@ -126,7 +130,6 @@ class ReleaseExtra
 						if (isset($track['Writing_library'])) {
 							$videolibrary = $track['Writing_library'];
 						}
-						$viddata = $track;
 						$this->addVideo($releaseID, $containerformat, $overallbitrate, $videoduration, $videoformat, $videocodec, $videowidth, $videoheight, $videoaspect, $videoframerate, $videolibrary);
 					} else if ($track['@attributes']['type'] == 'Audio') {
 						$audioID = 1;
@@ -161,7 +164,6 @@ class ReleaseExtra
 						if (isset($track['Title'])) {
 							$audiotitle = $track['Title'];
 						}
-						$audiodata = $track;
 						$this->addAudio($releaseID, $audioID, $audioformat, $audiomode, $audiobitratemode, $audiobitrate, $audiochannels, $audiosamplerate, $audiolibrary, $audiolanguage, $audiotitle);
 					} else if ($track['@attributes']['type'] == 'Text') {
 						$subsID = 1;

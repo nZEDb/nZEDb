@@ -157,7 +157,7 @@ if (isset($_REQUEST["searchadvr"]) && !isset($_REQUEST["id"]) && !isset($_REQUES
 		if ($_REQUEST["searchadvcat"] == "") {
 			$searchCat = -1;
 		}
-		$results = $releases->search($searchSearchName, $searchUsenetName, $searchPoster, $searchGroups, $searchCat, $searchSizeFrom, $searchSizeTo, $searchHasNFO, $searchHascomments, $searchdaysnew, $searchdaysold, $offset, ITEMS_PER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"], "advanced");
+		$results = $releases->search($searchSearchName, $searchUsenetName, $searchPoster, $searchGroups, array($searchCat), $searchSizeFrom, $searchSizeTo, $searchHasNFO, $searchHascomments, $searchdaysnew, $searchdaysold, $offset, ITEMS_PER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"], "advanced");
 	}
 
 	$page->smarty->assign('lastvisit', $page->userdata['lastlogin']);

@@ -15,20 +15,59 @@ class Music
 	public $pdo;
 
 	/**
+	 * @var bool
+	 */
+	public $echooutput;
+
+	/**
+	 * @var array|bool|string
+	 */
+	public $pubkey;
+
+	/**
+	 * @var array|bool|string
+	 */
+	public $privkey;
+
+	/**
+	 * @var array|bool|string
+	 */
+	public $asstag;
+
+	/**
+	 * @var array|bool|int|string
+	 */
+	public $musicqty;
+
+	/**
+	 * @var array|bool|int|string
+	 */
+	public $sleeptime;
+
+	/**
+	 * @var string
+	 */
+	public $imgSavePath;
+
+	/**
+	 * @var string
+	 */
+	public $renamed;
+
+	/**
 	 * @param array $options Class instances/ echo to CLI.
 	 */
 	public function __construct(array $options = array())
 	{
 		$defaults = [
 			'Echo'     => false,
-			'ColorCLI' => null,
 			'Settings' => null,
 		];
-		$defaults = array_replace($defaults, $options);
+		$options += $defaults;
 
-		$this->echooutput = ($defaults['Echo'] && nZEDb_ECHOCLI);
+		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
 
-		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 		$this->pubkey = $this->pdo->getSetting('amazonpubkey');
 		$this->privkey = $this->pdo->getSetting('amazonprivkey');
 		$this->asstag = $this->pdo->getSetting('amazonassociatetag');
@@ -39,7 +78,6 @@ class Music
 		if ($this->pdo->getSetting('lookupmusic') == 2) {
 			$this->renamed = 'AND isrenamed = 1';
 		}
-		$this->c = ($defaults['ColorCLI'] instanceof ColorCLI ? $defaults['ColorCLI'] : new ColorCLI());
 	}
 
 	/**
@@ -155,12 +193,11 @@ class Music
 	 * @param       $start
 	 * @param       $num
 	 * @param       $orderby
-	 * @param       $maxage
 	 * @param array $excludedcats
 	 *
 	 * @return array
 	 */
-	public function getMusicRange($cat, $start, $num, $orderby, $maxage = -1, $excludedcats = array())
+	public function getMusicRange($cat, $start, $num, $orderby, $excludedcats = array())
 	{
 		$pdo = $this->pdo;
 
@@ -373,7 +410,10 @@ class Music
 			$amaz = $this->fetchAmazonProperties($title);
 		} else if ($amazdata != null) {
 			$amaz = $amazdata;
+		} else {
+			$amaz = false;
 		}
+
 		if (!$amaz) {
 			return false;
 		}
@@ -492,19 +532,14 @@ class Music
 
 		if ($musicId) {
 			if ($this->echooutput) {
-				if ($mus["artist"] == "") {
-					$artist = "";
-				} else {
-					$artist = "Artist: " . $mus['artist'] . ", Album: ";
-				}
-				$this->c->doEcho(
-					$this->c->header("\nAdded/updated album: ") .
-					$this->c->alternateOver("   Artist: ") .
-					$this->c->primary($mus['artist']) .
-					$this->c->alternateOver("   Title:  ") .
-					$this->c->primary($mus['title']) .
-					$this->c->alternateOver("   Year:   ") .
-					$this->c->primary($mus['year'])
+				$this->pdo->log->doEcho(
+					$this->pdo->log->header("\nAdded/updated album: ") .
+					$this->pdo->log->alternateOver("   Artist: ") .
+					$this->pdo->log->primary($mus['artist']) .
+					$this->pdo->log->alternateOver("   Title:  ") .
+					$this->pdo->log->primary($mus['title']) .
+					$this->pdo->log->alternateOver("   Year:   ") .
+					$this->pdo->log->primary($mus['year'])
 				);
 			}
 			$mus['cover'] = $ri->saveImage($musicId, $mus['coverurl'], $this->imgSavePath, 250, 250);
@@ -515,9 +550,9 @@ class Music
 				} else {
 					$artist = "Artist: " . $mus['artist'] . ", Album: ";
 				}
-				$this->c->doEcho(
-					$this->c->headerOver("Nothing to update: ") .
-					$this->c->primaryOver(
+				$this->pdo->log->doEcho(
+					$this->pdo->log->headerOver("Nothing to update: ") .
+					$this->pdo->log->primaryOver(
 						$artist .
 						$mus['title'] .
 						" (" .
@@ -544,6 +579,7 @@ class Music
 		try {
 			$result = $obj->searchProducts($title, AmazonProductAPI::MUSIC, "TITLE");
 		} catch (Exception $e) {
+			// Empty because we try another method.
 		}
 
 		// Try MP3 category.
@@ -552,6 +588,7 @@ class Music
 			try {
 				$result = $obj->searchProducts($title, AmazonProductAPI::MP3, "TITLE");
 			} catch (Exception $e) {
+				// Empty because we try another method.
 			}
 		}
 
@@ -561,6 +598,7 @@ class Music
 			try {
 				$result = $obj->searchProducts($title, AmazonProductAPI::DIGITALMUS, "TITLE");
 			} catch (Exception $e) {
+				// Empty because we try another method.
 			}
 		}
 
@@ -570,6 +608,7 @@ class Music
 			try {
 				$result = $obj->searchProducts($title, AmazonProductAPI::MUSICTRACKS, "TITLE");
 			} catch (Exception $e) {
+				// Empty because we exhausted all possibilities.
 			}
 		}
 
@@ -585,10 +624,10 @@ class Music
 		$res = $pdo->queryDirect(sprintf('SELECT searchname, id FROM releases '
 				. 'WHERE musicinfoid IS NULL AND nzbstatus = 1 %s AND categoryid IN (3010, 3040, 3050) '
 				. 'ORDER BY postdate DESC LIMIT %d', $this->renamed, $this->musicqty));
-		if ($res->rowCount() > 0) {
+		if ($res instanceof Traversable && $res->rowCount() > 0) {
 			if ($this->echooutput) {
-				$this->c->doEcho(
-					$this->c->header("Processing " . $res->rowCount() .' music release(s).'
+				$this->pdo->log->doEcho(
+					$this->pdo->log->header("Processing " . $res->rowCount() .' music release(s).'
 					)
 				);
 			}
@@ -601,7 +640,7 @@ class Music
 					$newname = $album["name"] . ' (' . $album["year"] . ')';
 
 					if ($this->echooutput) {
-						$this->c->doEcho($this->c->headerOver('Looking up: ') . $this->c->primary($newname));
+						$this->pdo->log->doEcho($this->pdo->log->headerOver('Looking up: ') . $this->pdo->log->primary($newname));
 					}
 
 					// Do a local lookup first
@@ -638,7 +677,7 @@ class Music
 
 		} else {
 			if ($this->echooutput) {
-				$this->c->doEcho($this->c->header('No music releases to process.'));
+				$this->pdo->log->doEcho($this->pdo->log->header('No music releases to process.'));
 			}
 		}
 	}
@@ -650,7 +689,6 @@ class Music
 	 */
 	public function parseArtist($releasename)
 	{
-		$name = '';
 		if (preg_match('/(.+?)(\d{1,2} \d{1,2} )?\(?(19\d{2}|20[0-1][0-9])\b/', $releasename, $name)) {
 			$result = array();
 			$result["year"] = $name[3];
@@ -663,20 +701,7 @@ class Music
 			$f = preg_replace('/ (\d{1,2} \d{1,2} )?(CD(A|EP|M|R|S)?|QEDCD|SBD) /i', ' ', $e);
 			$g = str_replace(array('_', '-'), ' ', $f);
 			$h = trim(preg_replace('/\s\s+/', ' ', $g));
-			$newname = trim(preg_Replace('/ [a-z]{2}$| [a-z]{3} \d{2,}$|\d{5,} \d{5,}$|-WEB$/i', '', $h));
-
-			/*var_dump($releasename);
-			var_dump($name[1]);
-			var_dump($a);
-			var_dump($b);
-			var_dump($c);
-			var_dump($d);
-			var_dump($e);
-			var_dump($f);
-			var_dump($g);
-			var_dump($h);
-			var_dump($newname);
-			//exit();*/
+			$newname = trim(preg_replace('/ [a-z]{2}$| [a-z]{3} \d{2,}$|\d{5,} \d{5,}$|-WEB$/i', '', $h));
 
 			if (!preg_match('/^[a-z0-9]+$/i', $newname) && strlen($newname) > 10) {
 				$result["name"] = $newname;

@@ -15,12 +15,77 @@ class ProcessReleases
 	const FILE_COMPLETE   = 1; // We have all the parts for the file (binaries table partcheck column).
 
 	/**
+	 * @var Groups
+	 */
+	public $groups;
+
+	/**
+	 * @var bool
+	 */
+	public $tablePerGroup;
+
+	/**
+	 * @var int
+	 */
+	public $collectionDelayTime;
+
+	/**
+	 * @var int
+	 */
+	public $crossPostTime;
+
+	/**
+	 * @var int
+	 */
+	public $releaseCreationLimit;
+
+	/**
+	 * @var int
+	 */
+	public $completion;
+
+	/**
+	 * @var int
+	 */
+	public $processRequestIDs;
+
+	/**
+	 * @var bool
+	 */
+	public $echoCLI;
+
+	/**
+	 * @var nzedb\db\Settings
+	 */
+	public $pdo;
+
+	/**
+	 * @var ConsoleTools
+	 */
+	public $consoleTools;
+
+	/**
+	 * @var NZB
+	 */
+	public $nzb;
+
+	/**
+	 * @var ReleaseCleaning
+	 */
+	public $releaseCleaning;
+
+	/**
+	 * @var Releases
+	 */
+	public $releases;
+
+	/**
 	 * @param array $options Class instances / Echo to cli ?
 	 */
-	public function __construct(array $options = array()) {
+	public function __construct(array $options = array())
+	{
 		$defaults = [
 			'Echo'            => true,
-			'ColorCLI'        => null,
 			'ConsoleTools'    => null,
 			'Groups'          => null,
 			'NZB'             => null,
@@ -28,17 +93,16 @@ class ProcessReleases
 			'Releases'        => null,
 			'Settings'        => null,
 		];
-		$defaults =array_replace($defaults, $options);
+		$options += $defaults;
 
-		$this->echoCLI = ($defaults['Echo'] && nZEDb_ECHOCLI);
+		$this->echoCLI = ($options['Echo'] && nZEDb_ECHOCLI);
 
-		$this->pdo = ($defaults['Settings'] instanceof \nzedb\db\Settings ? $defaults['Settings'] : new nzedb\db\Settings());
-		$this->colorCLI = ($defaults['ColorCLI'] instanceof ColorCLI ? $defaults['ColorCLI'] : new ColorCLI());
-		$this->consoleTools = ($defaults['ConsoleTools'] instanceof ConsoleTools ? $defaults['ConsoleTools'] : new ConsoleTools(['ColorCLI' => $this->colorCLI]));
-		$this->groups = ($defaults['Groups'] instanceof Groups ? $defaults['Groups'] : new Groups(['Settings' => $this->pdo]));
-		$this->nzb = ($defaults['NZB'] instanceof NZB ? $defaults['NZB'] : new NZB($this->pdo));
-		$this->releaseCleaning = ($defaults['ReleaseCleaning'] instanceof ReleaseCleaning ? $defaults['ReleaseCleaning'] : new ReleaseCleaning($this->pdo));
-		$this->releases = ($defaults['Releases'] instanceof Releases ? $defaults['Releases'] : new Releases(['Settings' => $this->pdo, 'Groups' => $this->groups]));
+		$this->pdo = ($options['Settings'] instanceof \nzedb\db\Settings ? $options['Settings'] : new nzedb\db\Settings());
+		$this->consoleTools = ($options['ConsoleTools'] instanceof ConsoleTools ? $options['ConsoleTools'] : new ConsoleTools(['ColorCLI' => $this->pdo->log]));
+		$this->groups = ($options['Groups'] instanceof Groups ? $options['Groups'] : new Groups(['Settings' => $this->pdo]));
+		$this->nzb = ($options['NZB'] instanceof NZB ? $options['NZB'] : new NZB($this->pdo));
+		$this->releaseCleaning = ($options['ReleaseCleaning'] instanceof ReleaseCleaning ? $options['ReleaseCleaning'] : new ReleaseCleaning($this->pdo));
+		$this->releases = ($options['Releases'] instanceof Releases ? $options['Releases'] : new Releases(['Settings' => $this->pdo, 'Groups' => $this->groups]));
 
 		$this->tablePerGroup = ($this->pdo->getSetting('tablepergroup') == 0 ? false : true);
 		$this->collectionDelayTime = ($this->pdo->getSetting('delaytime')!= '' ? (int)$this->pdo->getSetting('delaytime') : 2);
@@ -48,7 +112,7 @@ class ProcessReleases
 		$this->processRequestIDs = (int)$this->pdo->getSetting('lookup_reqids');
 		if ($this->completion > 100) {
 			$this->completion = 100;
-			echo $this->colorCLI->error(PHP_EOL . 'You have an invalid setting for completion. It must be lower than 100.');
+			echo $this->pdo->log->error(PHP_EOL . 'You have an invalid setting for completion. It must be lower than 100.');
 		}
 	}
 
@@ -75,12 +139,12 @@ class ProcessReleases
 
 		$processReleases = microtime(true);
 		if ($this->echoCLI) {
-			$this->colorCLI->doEcho($this->colorCLI->header("Starting release update process (" . date('Y-m-d H:i:s') . ")"), true);
+			$this->pdo->log->doEcho($this->pdo->log->header("Starting release update process (" . date('Y-m-d H:i:s') . ")"), true);
 		}
 
 		if (!file_exists($this->pdo->getSetting('nzbpath'))) {
 			if ($this->echoCLI) {
-				$this->colorCLI->doEcho($this->colorCLI->error('Bad or missing nzb directory - ' . $this->pdo->getSetting('nzbpath')), true);
+				$this->pdo->log->doEcho($this->pdo->log->error('Bad or missing nzb directory - ' . $this->pdo->getSetting('nzbpath')), true);
 			}
 
 			return 0;
@@ -108,12 +172,12 @@ class ProcessReleases
 			} else if ($this->processRequestIDs === 2) {
 				$requestIDTime = time();
 				if ($this->echoCLI) {
-					$this->colorCLI->doEcho($this->colorCLI->header("Process Releases -> Request ID Threaded lookup."));
+					$this->pdo->log->doEcho($this->pdo->log->header("Process Releases -> Request ID Threaded lookup."));
 				}
 				passthru("$PYTHON ${DIR}update/python/requestid_threaded.py");
 				if ($this->echoCLI) {
-					$this->colorCLI->doEcho(
-						$this->colorCLI->primary(
+					$this->pdo->log->doEcho(
+						$this->pdo->log->primary(
 							"\nReleases updated in " .
 							$this->consoleTools->convertTime(time() - $requestIDTime)
 						)
@@ -136,8 +200,8 @@ class ProcessReleases
 		//Print amount of added releases and time it took.
 		if ($this->echoCLI && $this->tablePerGroup === false) {
 			$countID = $this->pdo->queryOneRow('SELECT COUNT(id) FROM collections ' . (!empty($groupID) ? ' WHERE group_id = ' . $groupID : ''));
-			$this->colorCLI->doEcho(
-				$this->colorCLI->primary(
+			$this->pdo->log->doEcho(
+				$this->pdo->log->primary(
 					'Completed adding ' .
 					number_format($totalReleasesAdded) .
 					' releases in ' .
@@ -217,7 +281,7 @@ class ProcessReleases
 		$group = $this->groups->getCBPTableNames($this->tablePerGroup, $groupID);
 
 		if ($this->echoCLI) {
-			$this->colorCLI->doEcho($this->colorCLI->header("Process Releases -> Attempting to find complete collections."));
+			$this->pdo->log->doEcho($this->pdo->log->header("Process Releases -> Attempting to find complete collections."));
 		}
 
 		$where = (!empty($groupID) ? ' AND c.group_id = ' . $groupID . ' ' : ' ');
@@ -238,8 +302,8 @@ class ProcessReleases
 					$where
 				)
 			);
-			$this->colorCLI->doEcho(
-				$this->colorCLI->primary(
+			$this->pdo->log->doEcho(
+				$this->pdo->log->primary(
 					($count === false ? 0 : $count['complete']) . ' collections were found to be complete. Time: ' .
 					$this->consoleTools->convertTime(time() - $startTime)
 				), true
@@ -262,7 +326,7 @@ class ProcessReleases
 		$group = $this->groups->getCBPTableNames($this->tablePerGroup, $groupID);
 
 		if ($this->echoCLI) {
-			$this->colorCLI->doEcho($this->colorCLI->header("Process Releases -> Calculating collection sizes (in bytes)."));
+			$this->pdo->log->doEcho($this->pdo->log->header("Process Releases -> Calculating collection sizes (in bytes)."));
 		}
 
 		// Get the total size in bytes of the collection for collections where filecheck = 2.
@@ -281,12 +345,12 @@ class ProcessReleases
 			)
 		);
 		if ($checked !== false && $this->echoCLI) {
-			$this->colorCLI->doEcho(
-				$this->colorCLI->primary(
+			$this->pdo->log->doEcho(
+				$this->pdo->log->primary(
 					$checked->rowCount() . " collections set to filecheck = 3(size calculated)"
 				)
 			);
-			$this->colorCLI->doEcho($this->colorCLI->primary($this->consoleTools->convertTime(time() - $startTime)), true);
+			$this->pdo->log->doEcho($this->pdo->log->primary($this->consoleTools->convertTime(time() - $startTime)), true);
 		}
 	}
 
@@ -304,8 +368,8 @@ class ProcessReleases
 		$group = $this->groups->getCBPTableNames($this->tablePerGroup, $groupID);
 
 		if ($this->echoCLI) {
-			$this->colorCLI->doEcho(
-				$this->colorCLI->header(
+			$this->pdo->log->doEcho(
+				$this->pdo->log->header(
 					"Process Releases -> Delete collections smaller/larger than minimum size/file count from group/site setting."
 				)
 			);
@@ -394,8 +458,8 @@ class ProcessReleases
 		}
 
 		if ($this->echoCLI) {
-			$this->colorCLI->doEcho(
-				$this->colorCLI->primary(
+			$this->pdo->log->doEcho(
+				$this->pdo->log->primary(
 					'Deleted ' . ($minSizeDeleted + $maxSizeDeleted + $minFilesDeleted) . ' collections: ' . PHP_EOL .
 					$minSizeDeleted . ' smaller than, ' .
 					$maxSizeDeleted . ' bigger than, ' .
@@ -423,7 +487,7 @@ class ProcessReleases
 		$returnCount = $duplicate = 0;
 
 		if ($this->echoCLI) {
-			$this->colorCLI->doEcho($this->colorCLI->header("Process Releases -> Create releases from complete collections."));
+			$this->pdo->log->doEcho($this->pdo->log->header("Process Releases -> Create releases from complete collections."));
 		}
 
 		$this->pdo->ping(true);
@@ -446,11 +510,11 @@ class ProcessReleases
 		);
 
 		if ($this->echoCLI && $collections !== false) {
-			echo $this->colorCLI->primary($collections->rowCount() . " Collections ready to be converted to releases.");
+			echo $this->pdo->log->primary($collections->rowCount() . " Collections ready to be converted to releases.");
 		}
 
 		if ($collections !== false && $collections->rowCount() > 0) {
-			$preDB = new PreDb(['Echo' => $this->echoCLI, 'ColorCLI' => $this->colorCLI, 'Settings' => $this->pdo]);
+			$preDB = new PreDb(['Echo' => $this->echoCLI, 'Settings' => $this->pdo]);
 
 			$insertQuery = (
 				"INSERT INTO releases (%s %s %s name, searchname, totalpart, group_id, adddate, guid, rageid,
@@ -572,8 +636,8 @@ class ProcessReleases
 		}
 
 		if ($this->echoCLI) {
-			$this->colorCLI->doEcho(
-				$this->colorCLI->primary(
+			$this->pdo->log->doEcho(
+				$this->pdo->log->primary(
 					PHP_EOL .
 					number_format($returnCount) .
 					' Releases added and ' .
@@ -601,7 +665,7 @@ class ProcessReleases
 		$group = $this->groups->getCBPTableNames($this->tablePerGroup, $groupID);
 
 		if ($this->echoCLI) {
-			$this->colorCLI->doEcho($this->colorCLI->header("Process Releases -> Create the NZB, delete collections/binaries/parts."));
+			$this->pdo->log->doEcho($this->pdo->log->header("Process Releases -> Create the NZB, delete collections/binaries/parts."));
 		}
 
 		$releases = $this->pdo->queryDirect(
@@ -629,7 +693,7 @@ class ProcessReleases
 				if ($this->nzb->writeNZBforReleaseId($release['id'], $release['guid'], $release['name'], $release['title']) === true) {
 					$nzbCount++;
 					if ($this->echoCLI) {
-						echo $this->colorCLI->primaryOver("Creating NZBs:\t" . $nzbCount . '/' . $total . "\r");
+						echo $this->pdo->log->primaryOver("Creating NZBs:\t" . $nzbCount . '/' . $total . "\r");
 					}
 				}
 			}
@@ -639,8 +703,8 @@ class ProcessReleases
 
 		if ($nzbCount > 0) {
 			if ($this->echoCLI) {
-				$this->colorCLI->doEcho(
-					$this->colorCLI->primary(
+				$this->pdo->log->doEcho(
+					$this->pdo->log->primary(
 						PHP_EOL . 'Deleting collections/binaries/parts, be patient.'
 					)
 				);
@@ -665,11 +729,11 @@ class ProcessReleases
 		$deleteEnd = time();
 
 		if ($this->echoCLI) {
-			$this->colorCLI->doEcho(
-				$this->colorCLI->primary(
+			$this->pdo->log->doEcho(
+				$this->pdo->log->primary(
 					number_format($nzbCount) . ' NZBs created in ' . ($nzbEnd - $startTime) . ' seconds.' . PHP_EOL .
 					'Deleted ' . number_format($deleted) . ' collections in ' . ($deleteEnd - $nzbEnd) . ' seconds.' . PHP_EOL .
-					'Total time: ' . $this->colorCLI->primary($this->consoleTools->convertTime(time() - $startTime))
+					'Total time: ' . $this->pdo->log->primary($this->consoleTools->convertTime(time() - $startTime))
 				)
 			);
 		}
@@ -695,8 +759,8 @@ class ProcessReleases
 
 		$startTime = time();
 		if ($this->echoCLI) {
-			$this->colorCLI->doEcho(
-				$this->colorCLI->header(
+			$this->pdo->log->doEcho(
+				$this->pdo->log->header(
 					sprintf(
 						"Process Releases -> Request ID %s lookup -- limit %s",
 						($local === true ? 'local' : 'web'),
@@ -709,21 +773,21 @@ class ProcessReleases
 		if ($local === true) {
 			$foundRequestIDs = (
 				new RequestIDLocal(
-					['Echo' => $this->echoCLI, 'ColorCLI' => $this->colorCLI, 'ConsoleTools' => $this->consoleTools,
+					['Echo' => $this->echoCLI, 'ConsoleTools' => $this->consoleTools,
 					 'Groups' => $this->groups, 'Settings' => $this->pdo]
 				)
 			)->lookupRequestIDs(['GroupID' => $groupID, 'limit' => $limit, 'time' => 168]);
 		} else {
 			$foundRequestIDs = (
 				new RequestIDWeb(
-					['Echo' => $this->echoCLI, 'ColorCLI' => $this->colorCLI, 'ConsoleTools' => $this->consoleTools,
+					['Echo' => $this->echoCLI, 'ConsoleTools' => $this->consoleTools,
 					 'Groups' => $this->groups, 'Settings' => $this->pdo]
 				)
 			)->lookupRequestIDs(['GroupID' => $groupID, 'limit' => $limit, 'time' => 168]);
 		}
 		if ($this->echoCLI) {
-			$this->colorCLI->doEcho(
-				$this->colorCLI->primary(
+			$this->pdo->log->doEcho(
+				$this->pdo->log->primary(
 					number_format($foundRequestIDs) .
 					' releases updated in ' .
 					$this->consoleTools->convertTime(time() - $startTime)
@@ -745,7 +809,7 @@ class ProcessReleases
 	{
 		$startTime = time();
 		if ($this->echoCLI) {
-			echo $this->colorCLI->header("Process Releases -> Categorize releases.");
+			echo $this->pdo->log->header("Process Releases -> Categorize releases.");
 		}
 		switch ((int)$categorize) {
 			case 2:
@@ -763,7 +827,7 @@ class ProcessReleases
 		);
 
 		if ($this->echoCLI) {
-			$this->colorCLI->doEcho($this->colorCLI->primary($this->consoleTools->convertTime(time() - $startTime)), true);
+			$this->pdo->log->doEcho($this->pdo->log->primary($this->consoleTools->convertTime(time() - $startTime)), true);
 		}
 	}
 
@@ -779,11 +843,11 @@ class ProcessReleases
 	public function postProcessReleases($postProcess, &$nntp)
 	{
 		if ($postProcess == 1) {
-			(new PostProcess(['Echo' => $this->echoCLI, 'Settings' => $this->pdo, 'Groups' => $this->groups, 'ColorCLI' => $this->colorCLI]))->processAll($nntp);
+			(new PostProcess(['Echo' => $this->echoCLI, 'Settings' => $this->pdo, 'Groups' => $this->groups]))->processAll($nntp);
 		} else {
 			if ($this->echoCLI) {
-				$this->colorCLI->doEcho(
-					$this->colorCLI->info(
+				$this->pdo->log->doEcho(
+					$this->pdo->log->info(
 						"\nPost-processing is not running inside the Process Releases class.\n" .
 						"If you are using tmux or screen they might have their own scripts running Post-processing."
 					)
@@ -809,8 +873,8 @@ class ProcessReleases
 
 		if ($this->echoCLI) {
 			echo (
-				$this->colorCLI->header("Process Releases -> Delete finished collections." . PHP_EOL) .
-				$this->colorCLI->primary('Deleting old collections/binaries/parts.')
+				$this->pdo->log->header("Process Releases -> Delete finished collections." . PHP_EOL) .
+				$this->pdo->log->primary('Deleting old collections/binaries/parts.')
 			);
 		}
 
@@ -831,7 +895,7 @@ class ProcessReleases
 		$firstQuery = time();
 
 		if ($this->echoCLI) {
-			echo $this->colorCLI->primary(
+			echo $this->pdo->log->primary(
 				'Finished deleting ' . $deleted . ' old collections/binaries/parts in ' .
 				($firstQuery - $startTime) . ' seconds.' . PHP_EOL .
 				'Deleting binaries/parts with no collections.'
@@ -854,7 +918,7 @@ class ProcessReleases
 		$secondQuery = time();
 
 		if ($this->echoCLI) {
-			echo $this->colorCLI->primary(
+			echo $this->pdo->log->primary(
 				'Finished deleting ' . $deleted . ' binaries/parts with no collections in ' .
 				($secondQuery - $firstQuery) . ' seconds.' . PHP_EOL .
 				'Deleting parts with no binaries.'
@@ -878,7 +942,7 @@ class ProcessReleases
 		$thirdQuery = time();
 
 		if ($this->echoCLI) {
-			echo $this->colorCLI->primary(
+			echo $this->pdo->log->primary(
 				'Finished deleting ' . $deleted . ' parts with no binaries in ' .
 				($thirdQuery - $secondQuery) . ' seconds.' . PHP_EOL .
 				'Deleting binaries with no collections.'
@@ -900,7 +964,7 @@ class ProcessReleases
 		$fourthQuery = time();
 
 		if ($this->echoCLI) {
-			echo $this->colorCLI->primary(
+			echo $this->pdo->log->primary(
 				'Finished deleting ' . $deleted . ' binaries with no collections in ' .
 				($fourthQuery - $thirdQuery) . ' seconds.' . PHP_EOL .
 				'Deleting collections with no binaries.'
@@ -925,7 +989,7 @@ class ProcessReleases
 		$fifthQuery = time();
 
 		if ($this->echoCLI) {
-			echo $this->colorCLI->primary(
+			echo $this->pdo->log->primary(
 				'Finished deleting ' . $deleted . ' collections with no binaries in ' .
 				($fifthQuery - $fourthQuery) . ' seconds.' . PHP_EOL .
 				'Deleting collections that were missed after NZB creation.'
@@ -959,8 +1023,8 @@ class ProcessReleases
 		}
 
 		if ($this->echoCLI) {
-			$this->colorCLI->doEcho(
-				$this->colorCLI->primary(
+			$this->pdo->log->doEcho(
+				$this->pdo->log->primary(
 					'Finished deleting ' . $deleted . ' collections missed after NZB creation in ' .
 					(time() - $fifthQuery) . ' seconds.' . PHP_EOL .
 					'Removed ' .
@@ -987,7 +1051,7 @@ class ProcessReleases
 		$minSizeDeleted = $maxSizeDeleted = $minFilesDeleted = 0;
 
 		if ($this->echoCLI) {
-			echo $this->colorCLI->header("Process Releases -> Delete releases smaller/larger than minimum size/file count from group/site setting.");
+			echo $this->pdo->log->header("Process Releases -> Delete releases smaller/larger than minimum size/file count from group/site setting.");
 		}
 
 		if ($groupID == '') {
@@ -1062,8 +1126,8 @@ class ProcessReleases
 		}
 
 		if ($this->echoCLI) {
-			$this->colorCLI->doEcho(
-				$this->colorCLI->primary(
+			$this->pdo->log->doEcho(
+				$this->pdo->log->primary(
 					'Deleted ' . ($minSizeDeleted + $maxSizeDeleted + $minFilesDeleted) .
 					' releases: ' . PHP_EOL .
 					$minSizeDeleted . ' smaller than, ' . $maxSizeDeleted . ' bigger than, ' . $minFilesDeleted .
@@ -1087,11 +1151,11 @@ class ProcessReleases
 		$category = new Category(['Settings' => $this->pdo]);
 		$genres = new Genres(['Settings' => $this->pdo]);
 		$passwordDeleted = $duplicateDeleted = $retentionDeleted = $completionDeleted = $disabledCategoryDeleted = 0;
-		$disabledGenreDeleted = $miscRetentionDeleted = $totalDeleted = $categoryMinSizeDeleted = 0;
+		$disabledGenreDeleted = $miscRetentionDeleted = $miscHashedDeleted = $categoryMinSizeDeleted = 0;
 
 		// Delete old releases and finished collections.
 		if ($this->echoCLI) {
-			$this->colorCLI->doEcho($this->colorCLI->header("Process Releases -> Delete old releases and passworded releases."));
+			$this->pdo->log->doEcho($this->pdo->log->header("Process Releases -> Delete old releases and passworded releases."));
 		}
 
 		// Releases past retention.
@@ -1250,7 +1314,7 @@ class ProcessReleases
 					FROM releases
 					WHERE categoryid = %d
 					AND adddate <= NOW() - INTERVAL %d HOUR',
-					CATEGORY::CAT_MISC,
+					Category::CAT_MISC,
 					$this->pdo->getSetting('miscotherretentionhours')
 				)
 			);
@@ -1262,9 +1326,29 @@ class ProcessReleases
 			}
 		}
 
+		// Misc hashed.
+		if ($this->pdo->getSetting('mischashedretentionhours') > 0) {
+			$releases = $this->pdo->queryDirect(
+				sprintf('
+					SELECT guid
+					FROM releases
+					WHERE categoryid = %d
+					AND adddate <= NOW() - INTERVAL %d HOUR',
+					Category::CAT_OTHER_HASHED,
+					$this->pdo->getSetting('mischashedretentionhours')
+				)
+			);
+			if ($releases !== false && $releases->rowCount() > 0) {
+				foreach ($releases as $release) {
+					$this->releases->deleteSingle($release['guid'], $this->nzb);
+					$miscHashedDeleted++;
+				}
+			}
+		}
+
 		if ($this->echoCLI) {
-			$this->colorCLI->doEcho(
-				$this->colorCLI->primary(
+			$this->pdo->log->doEcho(
+				$this->pdo->log->primary(
 					'Removed releases: ' .
 					number_format($retentionDeleted) .
 					' past retention, ' .
@@ -1280,6 +1364,8 @@ class ProcessReleases
 					' from disabled music genres, ' .
 					number_format($miscRetentionDeleted) .
 					' from misc->other' .
+					number_format($miscHashedDeleted) .
+					' from misc->hashed' .
 					($this->completion > 0
 						? ', ' . number_format($completionDeleted) . ' under ' . $this->completion . '% completion.'
 						: '.'
@@ -1289,11 +1375,12 @@ class ProcessReleases
 
 			$totalDeleted = (
 				$retentionDeleted + $passwordDeleted + $duplicateDeleted + $disabledCategoryDeleted +
-				$disabledGenreDeleted + $miscRetentionDeleted + $completionDeleted + $categoryMinSizeDeleted
+				$disabledGenreDeleted + $miscRetentionDeleted + $miscHashedDeleted + $completionDeleted +
+				$categoryMinSizeDeleted
 			);
 			if ($totalDeleted > 0) {
-				$this->colorCLI->doEcho(
-					$this->colorCLI->primary(
+				$this->pdo->log->doEcho(
+					$this->pdo->log->primary(
 						"Removed " . number_format($totalDeleted) . ' releases in ' .
 						$this->consoleTools->convertTime(time() - $startTime)
 					)

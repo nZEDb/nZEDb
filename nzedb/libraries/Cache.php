@@ -13,9 +13,9 @@ Class Cache
 	/**
 	 * Store data on the cache server.
 	 *
-	 * @param string $key        Key we can use to retrieve the data.
-	 * @param string $data       Data to store on the cache server.
-	 * @param int    $expiration Time before the data expires on the cache server.
+	 * @param string       $key        Key we can use to retrieve the data.
+	 * @param string|array $data       Data to store on the cache server.
+	 * @param int          $expiration Time before the data expires on the cache server.
 	 *
 	 * @return bool Success/Failure.
 	 * @access public
@@ -23,7 +23,11 @@ Class Cache
 	public function set($key, $data, $expiration)
 	{
 		if ($this->connected === true && $this->ping() === true) {
-			return $this->server->set($key, $data, $expiration);
+			return $this->server->set(
+				$key,
+				($this->isRedis ? ($this->IgBinarySupport ? igbinary_serialize($data) : serialize($data)) : $data),
+				$expiration
+			);
 		}
 		return false;
 	}
@@ -39,7 +43,8 @@ Class Cache
 	public function get($key)
 	{
 		if ($this->connected === true && $this->ping() === true) {
-			return $this->server->get($key);
+			$data = $this->server->get($key);
+			return ($this->isRedis ? ($this->IgBinarySupport ? igbinary_unserialize($data) : unserialize($data)) : $data);
 		}
 		return false;
 	}
@@ -141,6 +146,12 @@ Class Cache
 	 * @var bool
 	 */
 	private $isRedis = true;
+
+	/**
+	 * Does the user have igBinary support and wants to use it?
+	 * @var bool
+	 */
+	private $IgBinarySupport = false;
 
 	/**
 	 * Verify the user's cache settings, try to connect to the cache server.
@@ -290,6 +301,7 @@ Class Cache
 		switch(nZEDb_CACHE_SERIALIZER) {
 			case Cache::SERIALIZER_IGBINARY:
 				if (extension_loaded('igbinary')) {
+					$this->IgBinarySupport = true;
 					if ($this->isRedis === true) {
 						return \Redis::SERIALIZER_IGBINARY;
 					} else {

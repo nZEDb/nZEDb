@@ -28,10 +28,24 @@ class Nfo
 
 	/**
 	 * Max NFO size to process.
-	 * @var string
+	 * @var string|int
 	 * @access private
 	 */
 	private $maxsize;
+
+	/**
+	 * Max amount of times to retry to download a Nfo.
+	 * @var string|int
+	 * @access private
+	 */
+	private $maxRetries;
+
+	/**
+	 * Min NFO size to process.
+	 * @var string|int
+	 * @access private
+	 */
+	private $minsize;
 
 	/**
 	 * Path to temporarily store files.
@@ -39,13 +53,6 @@ class Nfo
 	 * @access private
 	 */
 	private $tmpPath;
-
-	/**
-	 * Instance of class ColorCLI
-	 * @var ColorCLI
-	 * @access private
-	 */
-	private $c;
 
 	/**
 	 * Primary color for console text output.
@@ -91,22 +98,20 @@ class Nfo
 	{
 		$defaults = [
 			'Echo'     => false,
-			'ColorCLI' => null,
 			'Settings' => null,
 		];
-		$defaults = array_replace($defaults, $options);
+		$options += $defaults;
 
-		$this->echo = ($defaults['Echo'] && nZEDb_ECHOCLI);
-		$this->c = ($defaults['ColorCLI'] instanceof ColorCLI ? $defaults['ColorCLI'] : new ColorCLI());
-		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
+		$this->echo = ($options['Echo'] && nZEDb_ECHOCLI);
+		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 		$this->nzbs = ($this->pdo->getSetting('maxnfoprocessed') != '') ? (int)$this->pdo->getSetting('maxnfoprocessed') : 100;
 		$this->maxsize = ($this->pdo->getSetting('maxsizetoprocessnfo') != '') ? (int)$this->pdo->getSetting('maxsizetoprocessnfo') : 100;
 		$this->maxsize = ($this->maxsize > 0 ? ('AND size < ' . ($this->maxsize * 1073741824)) : '');
 		$this->minsize = ($this->pdo->getSetting('minsizetoprocessnfo') != '') ? (int)$this->pdo->getSetting('minsizetoprocessnfo') : 100;
 		$this->minsize = ($this->minsize > 0 ? ('AND size > ' . ($this->minsize * 1048576)) : '');
-		$this->maxRetries = ($this->pdo->getSetting('maxnforetries') >= 0 ? -($this->pdo->getSetting('maxnforetries') + 1) : self::NFO_UNPROC);
+		$this->maxRetries = (int)($this->pdo->getSetting('maxnforetries') >= 0 ? -((int)$this->pdo->getSetting('maxnforetries') + 1) : self::NFO_UNPROC);
 		$this->maxRetries = ($this->maxRetries < -8 ? -8 : $this->maxRetries);
-		$this->tmpPath = $this->pdo->getSetting('tmpunrarpath');
+		$this->tmpPath = (string)$this->pdo->getSetting('tmpunrarpath');
 		if (!preg_match('/[\/\\\\]$/', $this->tmpPath)) {
 			$this->tmpPath .= DS;
 		}
@@ -243,7 +248,7 @@ class Nfo
 						'NNTP' => $nntp,
 						'Nfo'  => $this,
 						'Settings'   => $this->pdo,
-						'PostProcess'   => new PostProcess(['Echo' => $this->echo, 'Settings' => $this->pdo, 'Nfo' => $this, 'ColorCLI' => $this->c])
+						'PostProcess'   => new PostProcess(['Echo' => $this->echo, 'Settings' => $this->pdo, 'Nfo' => $this])
 					)
 				);
 				$nzbContents->parseNZB($release['guid'], $release['id'], $release['group_id']);
@@ -294,8 +299,8 @@ class Nfo
 		$nfoCount = count($res);
 
 		if ($nfoCount > 0) {
-			$this->c->doEcho(
-				$this->c->primary(
+			$this->pdo->log->doEcho(
+				$this->pdo->log->primary(
 					PHP_EOL .
 					($guidChar === '' ? '' : '[' . $guidChar . '] ') .
 					($groupID === '' ? '' : '[' . $groupID . '] ') .
@@ -307,7 +312,6 @@ class Nfo
 
 			if ($this->echo) {
 				// Get count of releases per nfo status
-				$outString = PHP_EOL . 'Available to process';
 				$nfoStats = $this->pdo->queryDirect(
 					sprintf('
 						SELECT nfostatus AS status, COUNT(*) AS count
@@ -326,11 +330,12 @@ class Nfo
 						$this->maxsize
 					)
 				);
-				if ($nfoStats !== false && $nfoStats->rowCount() > 0) {
+				if ($nfoStats instanceof Traversable) {
+					$outString = PHP_EOL . 'Available to process';
 					foreach ($nfoStats as $row) {
 						$outString .= ', ' . $row['status'] . ' = ' . number_format($row['count']);
 					}
-					$this->c->doEcho($this->c->header($outString . '.'));
+					$this->pdo->log->doEcho($this->pdo->log->header($outString . '.'));
 				}
 			}
 
@@ -341,11 +346,11 @@ class Nfo
 					'NNTP' => $nntp,
 					'Nfo' => $this,
 					'Settings' => $this->pdo,
-					'PostProcess' => new PostProcess(['Echo' => $this->echo, 'Nfo' => $this, 'Settings' => $this->pdo, 'ColorCLI' => $this->c])
+					'PostProcess' => new PostProcess(['Echo' => $this->echo, 'Nfo' => $this, 'Settings' => $this->pdo])
 				)
 			);
-			$movie = new Movie(['Echo' => $this->echo, 'Settings' => $this->pdo, 'ColorCLI' => $this->c]);
-			$tvRage = new TvRage(['Echo' => $this->echo, 'Settings' => $this->pdo, 'ColorCLI' => $this->c]);
+			$movie = new Movie(['Echo' => $this->echo, 'Settings' => $this->pdo]);
+			$tvRage = new TvRage(['Echo' => $this->echo, 'Settings' => $this->pdo]);
 
 			foreach ($res as $arr) {
 				$fetchedBinary = $nzbContents->getNFOfromNZB($arr['guid'], $arr['id'], $arr['group_id'], $groups->getByNameByID($arr['group_id']));
@@ -397,7 +402,7 @@ class Nfo
 			)
 		);
 
-		if ($releases !== false && $releases->rowCount() > 0) {
+		if ($releases instanceof Traversable) {
 			foreach ($releases as $release) {
 				$this->pdo->queryExec(
 					sprintf('DELETE FROM releasenfo WHERE nfo IS NULL AND releaseid = %d', $release['id'])
@@ -421,7 +426,7 @@ class Nfo
 				echo PHP_EOL;
 			}
 			if ($ret > 0) {
-				$this->c->doEcho($ret . ' NFO file(s) found/processed.', true);
+				$this->pdo->log->doEcho($ret . ' NFO file(s) found/processed.', true);
 			}
 		}
 		return $ret;

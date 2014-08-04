@@ -14,6 +14,7 @@ class Users
 	const ERR_SIGNUP_UNAMEINUSE = -4;
 	const ERR_SIGNUP_EMAILINUSE = -5;
 	const ERR_SIGNUP_BADINVITECODE = -6;
+	const FAILURE = 0;
 	const SUCCESS = 1;
 
 	const ROLE_GUEST = 0;
@@ -41,6 +42,11 @@ class Users
 	public $pdo;
 
 	/**
+	 * @var int
+	 */
+	public $password_hash_cost;
+
+	/**
 	 * @param array $options Class instances.
 	 */
 	public function __construct(array $options = array())
@@ -48,15 +54,15 @@ class Users
 		$defaults = [
 			'Settings' => null,
 		];
-		$defaults = array_replace($defaults, $options);
+		$options += $defaults;
 
-		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 
 		// password_hash functions are available on PHP 5.5.0 or higher, use password_compat for forward compatibility on older versions.
 		if (!version_compare(PHP_VERSION, '5.5.0', '>=')) {
 			require_once(nZEDb_LIBS . 'password_compat' . DS . 'lib' . DS . 'password.php');
 		}
-		$this->password_hash_cost = (defined('nZEDb_PASSWORD_HASH_COST') ? nZEDb_PASSWORD_HASH_COST : 10);
+		$this->password_hash_cost = (defined('nZEDb_PASSWORD_HASH_COST') ? nZEDb_PASSWORD_HASH_COST : 11);
 	}
 
 	/**
@@ -225,13 +231,17 @@ class Users
 	 */
 	public function add($userName, $firstName, $lastName, $password, $email, $role, $host, $invites = Users::DEFAULT_INVITES, $invitedBy = 0)
 	{
+		$password = $this->hashPassword($password);
+		if (!$password) {
+			return false;
+		}
 		return $this->pdo->queryInsert(
 			sprintf("
 				INSERT INTO users (username, password, email, role, createddate, host, rsstoken,
 					invites, invitedby, userseed, firstname, lastname)
 				VALUES (%s, %s, LOWER(%s), %d, NOW(), %s, MD5(%s), %d, %s, MD5(%s), %s, %s)",
 				$this->pdo->escapeString($userName),
-				$this->pdo->escapeString($this->hashPassword($password)),
+				$this->pdo->escapeString((string)$password),
 				$this->pdo->escapeString($email),
 				$role,
 				$this->pdo->escapeString(($this->pdo->getSetting('storeuserips') == 1 ? $host : '')),
@@ -399,10 +409,14 @@ class Users
 	 */
 	public function updatePassword($userID, $password)
 	{
+		$password = $this->hashPassword($password);
+		if (!$password) {
+			return Users::FAILURE;
+		}
 		$this->pdo->queryExec(
 			sprintf(
 				"UPDATE users SET password = %s, userseed = MD5(%s) WHERE id = %d",
-				$this->pdo->escapeString($this->hashPassword($password)),
+				$this->pdo->escapeString((string)$password),
 				$this->pdo->escapeString($this->pdo->uuid()),
 				$userID
 			)
@@ -782,7 +796,7 @@ class Users
 				$this->pdo->queryExec(
 					sprintf(
 						'UPDATE users SET password = %s WHERE id = %d',
-						$this->pdo->escapeString($hash),
+						$this->pdo->escapeString((string)$hash),
 						$userID
 					)
 				);

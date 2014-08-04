@@ -5,10 +5,9 @@ use nzedb\db\Settings;
 
 $pdo = new Settings();
 $covers = $updated = $deleted = 0;
-$c = new ColorCLI();
 
 if ($argc == 1 || $argv[1] != 'true') {
-    exit($c->error("\nThis script will check all images in covers/console and compare to db->consoleinfo.\nTo run:\nphp $argv[0] true\n"));
+    exit($pdo->log->error("\nThis script will check all images in covers/console and compare to db->consoleinfo.\nTo run:\nphp $argv[0] true\n"));
 }
 
 $row = $pdo->queryOneRow("SELECT value FROM settings WHERE setting = 'coverspath'");
@@ -31,7 +30,7 @@ foreach ($itr as $filePath) {
             } else {
                 $run = $pdo->queryDirect("SELECT id FROM consoleinfo WHERE id = " . $match[1]);
                 if ($run->rowCount() == 0) {
-                    echo $c->info($filePath . " not found in db.");
+                    echo $pdo->log->info($filePath . " not found in db.");
                 }
             }
         }
@@ -39,12 +38,14 @@ foreach ($itr as $filePath) {
 }
 
 $qry = $pdo->queryDirect("SELECT id FROM consoleinfo WHERE cover = 1");
-foreach ($qry as $rows) {
-    if (!is_file($path2covers . $rows['id'] . '.jpg')) {
-        $pdo->queryDirect("UPDATE consoleinfo SET cover = 0 WHERE cover = 1 AND id = " . $rows['id']);
-        echo $c->info($path2covers . $rows['id'] . ".jpg does not exist.");
-        $deleted++;
-    }
+if ($qry instanceof Traversable) {
+	foreach ($qry as $rows) {
+		if (!is_file($path2covers . $rows['id'] . '.jpg')) {
+			$pdo->queryDirect("UPDATE consoleinfo SET cover = 0 WHERE cover = 1 AND id = " . $rows['id']);
+			echo $pdo->log->info($path2covers . $rows['id'] . ".jpg does not exist.");
+			$deleted++;
+		}
+	}
 }
-echo $c->header($covers . " covers set.");
-echo $c->header($deleted . " consoles unset.");
+echo $pdo->log->header($covers . " covers set.");
+echo $pdo->log->header($deleted . " consoles unset.");

@@ -44,6 +44,7 @@ $consoleTools->overWrite("Processed $iFilesProcessed nzbs in " . relativeTime($t
 
 function relativeTime ($_time)
 {
+	$d = array();
 	$d[0] = array(1, "sec");
 	$d[1] = array(60, "min");
 	$d[2] = array(3600, "hr");

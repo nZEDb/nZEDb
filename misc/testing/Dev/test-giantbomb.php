@@ -5,8 +5,10 @@ require_once nZEDb_LIBS . 'GiantBombAPI.php';
 // Test if your giantbomb key is working.
 
 $giantbombkey = (new \nzedb\db\Settings())->getSetting('giantbombkey');
-$c = new ColorCLI();
+$cli = new ColorCLI();
 $obj = new GiantBomb($giantbombkey, $resp = "json");
+
+$e = null;
 
 try {
 	$result = $obj->search("South Park The Stick Of Truth", '', 1);
@@ -24,8 +26,8 @@ try {
 
 if ($result !== false) {
 	print_r($result);
-	exit($c->header("\nLooks like it is working alright."));
+	exit($cli->header("\nLooks like it is working alright."));
 } else {
 	print_r($e);
-	exit($c->error("\nThere was a problem attemtping to query amazon. Maybe your keys or wrong, or you are being throttled.\n"));
+	exit($cli->error("\nThere was a problem attemtping to query amazon. Maybe your keys or wrong, or you are being throttled.\n"));
 }

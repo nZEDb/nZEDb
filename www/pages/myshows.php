@@ -48,7 +48,7 @@ switch ($action) {
 			}
 		} else {
 			$cat = new Category(['Settings' => $page->settings]);
-			$tmpcats = $cat->getChildren(Category::CAT_PARENT_TV, true, $page->userdata["categoryexclusions"]);
+			$tmpcats = $cat->getChildren(Category::CAT_PARENT_TV);
 			$categories = array();
 			foreach ($tmpcats as $c) {
 				$categories[$c['id']] = $c['title'];
@@ -86,7 +86,7 @@ switch ($action) {
 		} else {
 			$cat = new Category(['Settings' => $page->settings]);
 
-			$tmpcats = $cat->getChildren(Category::CAT_PARENT_TV, true, $page->userdata["categoryexclusions"]);
+			$tmpcats = $cat->getChildren(Category::CAT_PARENT_TV);
 			$categories = array();
 			foreach ($tmpcats as $c) {
 				$categories[$c['id']] = $c['title'];
@@ -154,7 +154,7 @@ switch ($action) {
 		$page->meta_description = "Manage Your Shows";
 
 		$cat = new Category(['Settings' => $page->settings]);
-		$tmpcats = $cat->getChildren(Category::CAT_PARENT_TV, true, $page->userdata["categoryexclusions"]);
+		$tmpcats = $cat->getChildren(Category::CAT_PARENT_TV);
 		$categories = array();
 		foreach ($tmpcats as $c) {
 			$categories[$c['id']] = $c['title'];

@@ -1,7 +1,7 @@
 <?php
 require_once dirname(__FILE__) . '/config.php';
 
-$c = new ColorCLI();
+$pdo = new \nzedb\db\Settings();
 
 /**
   Array with possible arguments for run and
@@ -33,7 +33,7 @@ $bool = array(
 
 if (!isset($argv[1]) || !in_array($argv[1], $args) || !isset($argv[2]) || !in_array($argv[2], $bool)) {
 	exit(
-		$c->error(
+		$pdo->log->error(
 			"\nIncorrect arguments.\n"
 				. "The second argument (true/false) determines wether to echo or not.\n\n"
 				. "php postprocess.php all true         ...: Does all the types of post processing.\n"
@@ -55,18 +55,15 @@ if (!isset($argv[1]) || !in_array($argv[1], $args) || !isset($argv[2]) || !in_ar
 	);
 }
 
-$pdo = new \nzedb\db\Settings();
-
-$proxy = (int)$pdo->getSetting('nntpproxy');
-
+$nntp = null;
 if ($args[$argv[1]] === true) {
-	$nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $c]);
+	$nntp = new NNTP(['Settings' => $pdo]);
 	if (($pdo->getSetting('alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
-		exit($c->error("Unable to connect to usenet." . PHP_EOL));
+		exit($pdo->log->error("Unable to connect to usenet." . PHP_EOL));
 	}
 }
 
-$postProcess = new PostProcess(['Settings' => $pdo, 'Echo' => ($argv[2] === 'true' ? true : false), 'ColorCLI' => $c]);
+$postProcess = new PostProcess(['Settings' => $pdo, 'Echo' => ($argv[2] === 'true' ? true : false)]);
 
 $charArray = ['a','b','c','d','e','f','0','1','2','3','4','5','6','7','8','9'];
 
@@ -115,7 +112,6 @@ switch ($argv[1]) {
 		$postProcess->processMusic();
 		break;
 	case 'pre':
-		$postProcess->processPredb($nntp);
 		break;
 	case 'sharing':
 		$postProcess->processSharing($nntp);

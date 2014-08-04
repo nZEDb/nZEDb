@@ -27,6 +27,11 @@ class NNTPTest extends NNTP
 class NNTPDebug
 {
 	/**
+	 * @var ColorCLI
+	 */
+	public $color;
+
+	/**
 	 * Construct.
 	 */
 	public function __construct($debug = false)
@@ -119,7 +124,7 @@ $groups = $db->queryDirect('SELECT name FROM groups WHERE active = 1');
 
 $activeGroups = array();
 
-if ($groups !== false) {
+if ($groups instanceof Traversable) {
 	foreach($groups as $group) {
 		if (isset($groupList[$group['name']])) {
 			$activeGroups[$group['name']] = $groupList[$group['name']];

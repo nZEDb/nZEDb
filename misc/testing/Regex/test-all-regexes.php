@@ -1,10 +1,10 @@
 <?php
+require_once dirname(__FILE__) . '/../../../www/config.php';
 
-if (!isset($argv[1])) {
+if ($argc == 1) {
 	exit("This script will test a string(release name), single quoted, against all regexes in NameCleaning.php. To test a string run:\nphp test_all_regexes.php '[Samurai.Warriors.3.PROPER.USA.Wii-CLANDESTiNE-Scrubbed-xeroxmalf]-[#a.b.g.w@efnet]-[www.abgx.net]-[001/176] - \"Samurai.Warriors.3.PROPER.USA.Wii-CLANDESTiNE-Scrubbed-xeroxmalf.par2\" yEnc'\n");
 }
 
-require_once dirname(__FILE__) . '/../../../www/config.php';
 
 passthru('clear');
 if ($argv[1] == 'file' && isset($argv[2]) && file_exists($argv[2])) {
@@ -23,6 +23,7 @@ if ($argv[1] == 'file' && isset($argv[2]) && file_exists($argv[2])) {
 } else if ($argv[1] == 'file') {
 	exit("The file $argv[1] does not exist or and invalid file was specified.\n");
 }
+
 if (isset($argv[2]) && is_numeric($argv[2]) && $argv[1] != 'file') {
 	$groups = new Groups();
 	$group = $groups->getByNameByID($argv[2]);
@@ -30,16 +31,17 @@ if (isset($argv[2]) && is_numeric($argv[2]) && $argv[1] != 'file') {
 } else if ($argv[1] != 'file') {
 	test_regex($argv[1], null, $argv);
 }
+
 function print_str($type, $str, $argv)
 {
 	if ($argv[1] != 'file') {
-		$c = new ColorCLI();
+		$cli = new ColorCLI();
 		if ($type == "primary") {
-			echo $c->primary($str);
+			echo $cli->primary($str);
 		} else if ($type == "alternate") {
-			echo $c->alternate($str);
+			echo $cli->alternate($str);
 		} else {
-			echo $c->header($str);
+			echo $cli->header($str);
 		}
 	} else {
 		echo $str . "\n";
@@ -65,7 +67,6 @@ function test_regex($name, $group, $argv)
 			$line3 = preg_replace('/\' \. \$this->e0 \. \'/', $e0, $line1);
 			$line2 = preg_replace('/\' \. \$this->e1/', $e1 . '\'', $line3);
 			$line = preg_replace('/\' \. \$this->e2/', $e2 . '\'', $line2);
-			$matchName = $match = $match1 = '';
 			if (preg_match('/public function (.+)\(\)/', $line, $matchName)) {
 				$groupName = $matchName[1];
 			} else if (preg_match('/if \(preg_match\(\'(.+)\', \$this->subject\, \$match\)\)/', $line, $match)) {

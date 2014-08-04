@@ -2,12 +2,16 @@
 
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
+if (!isset($argv[1])) {
+	exit();
+}
+
 $group = $argv[1];
 //$cleaner = new CollectionsCleaning();
 $nntp = new NNTP();
-$c = new ColorCLI();
+$cli = new ColorCLI();
 if ($nntp->doConnect() !== true) {
-	exit($c->error("Unable to connect to usenet."));
+	exit($cli->error("Unable to connect to usenet."));
 }
 
 $number = 1000000;

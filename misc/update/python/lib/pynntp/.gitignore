@@ -1,0 +1,12 @@
+# temp files
+~*
+.*.swp
+
+# python compiled
+*.pyc
+
+# setuptools stuff
+build/
+dist/
+MANIFEST
+pynntp.egg-info/

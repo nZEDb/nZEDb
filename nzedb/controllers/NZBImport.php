@@ -36,10 +36,10 @@ class NZBImport
 	 * @var int
 	 * @access protected
 	 */
-	protected $crossPost;
+	protected $crossPostt;
 
 	/**
-	 * @var Category
+	 * @var Categorize
 	 * @access protected
 	 */
 	protected $category;
@@ -73,6 +73,16 @@ class NZBImport
 	protected $relGuid;
 
 	/**
+	 * @var bool
+	 */
+	public $echoCLI;
+
+	/**
+	 * @var NZB
+	 */
+	public $nzb;
+
+	/**
 	 * Construct.
 	 *
 	 * @param array $options Class instances / various options.
@@ -90,17 +100,17 @@ class NZBImport
 			'ReleaseCleaning'  => null,
 			'Settings'         => null,
 		];
-		$defaults = array_replace($defaults, $options);
+		$options += $defaults;
 
-		$this->echoCLI = (!$this->browser && nZEDb_ECHOCLI && $defaults['Echo']);
-		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
-		$this->binaries = ($defaults['Binaries'] instanceof Binaries ? $defaults['Binaries'] : new Binaries(['Settings' => $this->pdo, 'Echo' => $this->echoCLI]));
-		$this->category = ($defaults['Categorize'] instanceof Categorize ? $defaults['Categorize'] : new Categorize(['Settings' => $this->pdo]));
-		$this->nzb = ($defaults['NZB'] instanceof NZB ? $defaults['NZB'] : new NZB($this->pdo));
-		$this->releaseCleaner = ($defaults['ReleaseCleaning'] instanceof ReleaseCleaning ? $defaults['ReleaseCleaning'] : new ReleaseCleaning($this->pdo));
+		$this->echoCLI = (!$this->browser && nZEDb_ECHOCLI && $options['Echo']);
+		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->binaries = ($options['Binaries'] instanceof Binaries ? $options['Binaries'] : new Binaries(['Settings' => $this->pdo, 'Echo' => $this->echoCLI]));
+		$this->category = ($options['Categorize'] instanceof Categorize ? $options['Categorize'] : new Categorize(['Settings' => $this->pdo]));
+		$this->nzb = ($options['NZB'] instanceof NZB ? $options['NZB'] : new NZB($this->pdo));
+		$this->releaseCleaner = ($options['ReleaseCleaning'] instanceof ReleaseCleaning ? $options['ReleaseCleaning'] : new ReleaseCleaning($this->pdo));
 
 		$this->crossPostt = ($this->pdo->getSetting('crossposttime') != '') ? $this->pdo->getSetting('crossposttime') : 2;
-		$this->browser = $defaults['Browser'];
+		$this->browser = $options['Browser'];
 		$this->retVal = '';
 	}
 
