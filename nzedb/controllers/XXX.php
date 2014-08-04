@@ -2,6 +2,7 @@
 
 require_once nZEDb_LIBS . 'adultdvdempire.php';
 require_once nZEDb_LIBS . 'popporn.php';
+require_once nZEDb_LIBS . 'hotmovies.php';
 
 use nzedb\db\Settings;
 use nzedb\utility;
@@ -11,6 +12,9 @@ use nzedb\utility;
  */
 class XXX
 {
+	/**
+	 * @var nzedb\db\Settings
+	 */
 	public $pdo;
 
 	/**
@@ -44,23 +48,32 @@ class XXX
 	protected $currentRelID;
 
 	/**
-	 * @param bool $echoOutput
+	 * @param array $options Echo to cli / Class instances.
 	 */
-	public function __construct($echoOutput = false)
+	public function __construct(array $options = array())
 	{
-		$this->c = new ColorCLI();
-		$this->pdo = new Settings();
-		$this->releaseImage = new ReleaseImage($this->pdo);
+		$defaults = [
+			'Echo'         => false,
+			'ColorCLI'     => null,
+			'ReleaseImage' => null,
+			'Settings'     => null,
+		];
+		$defaults = array_replace($defaults, $options);
+
+		$this->c = ($defaults['ColorCLI'] instanceof ColorCLI ? $defaults['ColorCLI'] : new ColorCLI());
+		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
+		$this->releaseImage = ($defaults['ReleaseImage'] instanceof ReleaseImage ? $defaults['ReleaseImage'] : new ReleaseImage($this->pdo));
+
 		$this->movieqty = ($this->pdo->getSetting('maxxxxprocessed') != '') ? $this->pdo->getSetting('maxxxxprocessed') : 100;
 		$this->showPasswords = ($this->pdo->getSetting('showpasswordedrelease') != '') ? $this->pdo->getSetting('showpasswordedrelease') : 0;
 		$this->debug = nZEDb_DEBUG;
-		$this->echooutput = ($echoOutput && nZEDb_ECHOCLI);
+		$this->echooutput = ($defaults['Echo'] && nZEDb_ECHOCLI);
 		$this->imgSavePath = nZEDb_COVERS . 'xxx' . DS;
 		$this->cookie = nZEDb_TMP . 'xxx.cookie';
 
 		if (nZEDb_DEBUG || nZEDb_LOGGING) {
 			$this->debug = true;
-			$this->debugging = new Debugging('XXX');
+			$this->debugging = new Debugging(['Class' => 'XXX', 'ColorCLI' => $this->c]);
 		}
 	}
 
@@ -73,7 +86,7 @@ class XXX
 	 */
 	public function getXXXInfo($xxxid)
 	{
-		return $this->pdo->queryOneRow(sprintf("SELECT * FROM xxxinfo WHERE id = %d", $xxxid));
+		return $this->pdo->queryOneRow(sprintf("SELECT *, UNCOMPRESS(plot) AS plot FROM xxxinfo WHERE id = %d", $xxxid));
 	}
 
 	/**
@@ -88,7 +101,8 @@ class XXX
 	{
 		return $this->pdo->query(
 			sprintf('
-				SELECT *
+				SELECT *,
+				UNCOMPRESS(plot) AS plot
 				FROM xxxinfo
 				ORDER BY createddate DESC %s',
 				($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
@@ -158,88 +172,47 @@ class XXX
 	 * @param       $maxAge
 	 * @param array $excludedCats
 	 *
-	 * @return bool
+	 * @return array
 	 */
 	public function getXXXRange($cat, $start, $num, $orderBy, $maxAge = -1, $excludedCats = array())
 	{
 		$order = $this->getXXXOrder($orderBy);
-		if ($this->pdo->dbSystem() === 'mysql') {
-			$sql = sprintf("
-				SELECT
-				GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id,
-				GROUP_CONCAT(r.rarinnerfilecount ORDER BY r.postdate DESC SEPARATOR ',') as grp_rarinnerfilecount,
-				GROUP_CONCAT(r.haspreview ORDER BY r.postdate DESC SEPARATOR ',') AS grp_haspreview,
-				GROUP_CONCAT(r.passwordstatus ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_password,
-				GROUP_CONCAT(r.guid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_guid,
-				GROUP_CONCAT(rn.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid,
-				GROUP_CONCAT(groups.name ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grpname,
-				GROUP_CONCAT(r.searchname ORDER BY r.postdate DESC SEPARATOR '#') AS grp_release_name,
-				GROUP_CONCAT(r.postdate ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_postdate,
-				GROUP_CONCAT(r.size ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_size,
-				GROUP_CONCAT(r.totalpart ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_totalparts,
-				GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments,
-				GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs,
-				m.*, groups.name AS group_name, rn.id as nfoid FROM releases r
-				LEFT OUTER JOIN groups ON groups.id = r.group_id
-				LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id
-				INNER JOIN xxxinfo m ON m.id = r.xxxinfo_id
-				WHERE r.nzbstatus = 1
-				AND m.cover = 1
-				AND m.title != ''
-				AND r.passwordstatus <= %d AND %s %s %s %s
-				GROUP BY m.id ORDER BY %s %s %s",
-				$this->showPasswords,
-				$this->getBrowseBy(),
-				$this->formCategorySearchSQL($cat),
-				($maxAge > 0
-					? 'AND r.postdate > NOW() - INTERVAL ' . $maxAge . 'DAY '
-					: ''
-				),
-				(count($excludedCats) > 0 ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : ''),
-				$order[0],
-				$order[1],
-				($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
-			);
-		} else {
-			$sql = sprintf("
-				SELECT STRING_AGG(r.id::text, ',' ORDER BY r.postdate DESC) AS grp_release_id,
-				STRING_AGG(r.rarinnerfilecount::text, ',' ORDER BY r.postdate DESC) as grp_rarinnerfilecount,
-				STRING_AGG(r.haspreview::text, ',' ORDER BY r.postdate DESC) AS grp_haspreview,
-				STRING_AGG(r.passwordstatus::text, ',' ORDER BY r.postdate) AS grp_release_password,
-				STRING_AGG(r.guid, ',' ORDER BY r.postdate DESC) AS grp_release_guid,
-				STRING_AGG(rn.id::text, ',' ORDER BY r.postdate DESC) AS grp_release_nfoid,
-				STRING_AGG(groups.name, ',' ORDER BY r.postdate DESC) AS grp_release_grpname,
-				STRING_AGG(r.searchname, '#' ORDER BY r.postdate) AS grp_release_name,
-				STRING_AGG(r.postdate::text, ',' ORDER BY r.postdate DESC) AS grp_release_postdate,
-				STRING_AGG(r.size::text, ',' ORDER BY r.postdate DESC) AS grp_release_size,
-				STRING_AGG(r.totalpart::text, ',' ORDER BY r.postdate DESC) AS grp_release_totalparts,
-				STRING_AGG(r.comments::text, ',' ORDER BY r.postdate DESC) AS grp_release_comments,
-				STRING_AGG(r.grabs::text, ',' ORDER BY r.postdate DESC) AS grp_release_grabs,
-				m.*, groups.name AS group_name,
-				rn.id as nfoid
-				FROM releases r
-				LEFT OUTER JOIN groups ON groups.id = r.group_id
-				INNER JOIN xxxinfo m ON m.id = r.xxxinfo_id AND m.title != ''
-				LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
-				WHERE r.nzbstatus = 1
-				AND r.passwordstatus <= %s
-				AND %s %s %s %s
-				GROUP BY m.id, groups.name, rn.id
-				ORDER BY %s %s %s",
-				$this->showPasswords,
-				$this->getBrowseBy(),
-				$this->formCategorySearchSQL($cat),
-				($maxAge > 0
-					?
-					'AND r.postdate > NOW() - INTERVAL ' .  "'" . $maxAge . "DAYS' "
-					: ''
-				),
-				(count($excludedCats) > 0 ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : ''),
-				$order[0],
-				$order[1],
-				($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
-			);
-		}
+		$sql = sprintf("
+			SELECT
+			GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id,
+			GROUP_CONCAT(r.rarinnerfilecount ORDER BY r.postdate DESC SEPARATOR ',') as grp_rarinnerfilecount,
+			GROUP_CONCAT(r.haspreview ORDER BY r.postdate DESC SEPARATOR ',') AS grp_haspreview,
+			GROUP_CONCAT(r.passwordstatus ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_password,
+			GROUP_CONCAT(r.guid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_guid,
+			GROUP_CONCAT(rn.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid,
+			GROUP_CONCAT(groups.name ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grpname,
+			GROUP_CONCAT(r.searchname ORDER BY r.postdate DESC SEPARATOR '#') AS grp_release_name,
+			GROUP_CONCAT(r.postdate ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_postdate,
+			GROUP_CONCAT(r.size ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_size,
+			GROUP_CONCAT(r.totalpart ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_totalparts,
+			GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments,
+			GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs,
+			m.*, UNCOMPRESS(m.plot) AS plot, groups.name AS group_name, rn.id as nfoid FROM releases r
+			LEFT OUTER JOIN groups ON groups.id = r.group_id
+			LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id
+			INNER JOIN xxxinfo m ON m.id = r.xxxinfo_id
+			WHERE r.nzbstatus = 1
+			AND m.cover = 1
+			AND m.title != ''
+			AND r.passwordstatus <= %d AND %s %s %s %s
+			GROUP BY m.id ORDER BY %s %s %s",
+			$this->showPasswords,
+			$this->getBrowseBy(),
+			$this->formCategorySearchSQL($cat),
+			($maxAge > 0
+				? 'AND r.postdate > NOW() - INTERVAL ' . $maxAge . 'DAY '
+				: ''
+			),
+			(count($excludedCats) > 0 ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : ''),
+			$order[0],
+			$order[1],
+			($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
+		);
 		return $this->pdo->query($sql);
 	}
 
@@ -255,7 +228,7 @@ class XXX
 		$catSearch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
 			$catSearch = '(';
-			$Category = new Category();
+			$Category = new Category(['Settings' => $this->pdo]);
 			foreach ($cat as $category) {
 				if ($category != -1) {
 
@@ -318,14 +291,18 @@ class XXX
 	protected function getBrowseBy()
 	{
 		$browseBy = ' ';
-		$browseByArr = array('title', 'director', 'actors', 'genre');
+		$browseByArr = array('title', 'director', 'actors', 'genre', 'id');
 		foreach ($browseByArr as $bb) {
 			if (isset($_REQUEST[$bb]) && !empty($_REQUEST[$bb])) {
 				$bbv = stripslashes($_REQUEST[$bb]);
-				if($bb == "genre"){
-				$bbv = $this->getgenreid($bbv);
+				if ($bb == "genre") {
+					$bbv = $this->getgenreid($bbv);
 				}
+				if ($bb == 'id') {
+					$browseBy .= 'm.' . $bb . '=' . $bbv . ' AND ';
+				} else {
 					$browseBy .= 'm.' . $bb . ' LIKE (' . $this->pdo->escapeString('%' . $bbv . '%') . ') AND ';
+				}
 			}
 		}
 		return $browseBy;
@@ -418,8 +395,16 @@ class XXX
 		$res = $mov->search();
 		$this->whichclass = "ade";
 		if ($res === false) {
+			$this->whichclass = "hm";
+			// IF no result from Adultdvdempire check hotmovies
+			$mov = new hotmovies();
+			$mov->cookie = $this->cookie;
+			$mov->searchterm = $xxxmovie;
+			$res = $mov->search();
+		}
+		if($res === false){
 			$this->whichclass = "pop";
-			// IF no result from Adultdvdempire check popporn
+			// IF no result from Adultdvdempire and hotmovies check popporn
 			$mov = new popporn();
 			$mov->cookie = $this->cookie;
 			$mov->searchterm = $xxxmovie;
@@ -428,10 +413,26 @@ class XXX
 		// If a result is true getall information.
 		if ($res !== false) {
 			if ($this->echooutput) {
-				$this->c->doEcho($this->c->primary("Fetching XXX info for: " . $xxxmovie));
+				$fromstr = null;
+				switch($this->whichclass){
+					case "ade":
+					$fromstr = "Adult DVD Empire";
+						break;
+					case "pop":
+					$fromstr = "PopPorn";
+						break;
+					case "hm":
+					$fromstr = "Hot Movies";
+						break;
+					default:
+						$fromstr = null;
+
+				}
+				$this->c->doEcho($this->c->primary("Fetching XXX info from: " . $fromstr ));
 			}
 			$res = $mov->_getall();
 		} else {
+			// Nothing was found, go ahead and set to -2 :(
 			return false;
 		}
 
@@ -461,9 +462,9 @@ class XXX
 					INSERT INTO xxxinfo
 						(title, tagline, plot, genre, director, actors, extras, productinfo, trailers, directurl, classused, cover, backdrop, createddate, updateddate)
 					VALUES
-						(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW())
+						(%s, %s, COMPRESS(%s), %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW())
 					ON DUPLICATE KEY UPDATE
-						title = %s, tagline = %s, plot = %s, genre = %s, director = %s, actors = %s, extras = %s, productinfo = %s, trailers = %s, directurl = %s, classused = %s, cover = %d, backdrop = %d, updateddate = NOW()",
+						title = %s, tagline = %s, plot = COMPRESS(%s), genre = %s, director = %s, actors = %s, extras = %s, productinfo = %s, trailers = %s, directurl = %s, classused = %s, cover = %d, backdrop = %d, updateddate = NOW()",
 					$this->pdo->escapeString($mov['title']),
 					$this->pdo->escapeString($mov['tagline']),
 					$this->pdo->escapeString($mov['plot']),
@@ -498,7 +499,7 @@ class XXX
 						INSERT INTO xxxinfo
 							(title, tagline, plot, genre, director, actors, extras, productinfo, trailers, directurl, classused, cover, backdrop, createddate, updateddate)
 						VALUES
-							(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW())",
+							(%s, %s, COMPRESS(%s), %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW())",
 						$this->pdo->escapeString($mov['title']),
 						$this->pdo->escapeString($mov['tagline']),
 						$this->pdo->escapeString($mov['plot']),
@@ -598,6 +599,10 @@ class XXX
 
 				}
 			}
+		} else {
+			if ($this->echooutput) {
+				$this->c->doEcho($this->c->header('No xxx releases to process.'));
+			}
 		}
 	}
 
@@ -611,10 +616,10 @@ class XXX
 	protected function parseXXXSearchName($releaseName)
 	{
 		// Check if it's foreign ?
-		$cat = new Categorize();
+		$cat = new Categorize(['Settings' => $this->pdo]);
 		if (!$cat->isMovieForeign($releaseName)) {
 			$name = '';
-			$followingList = '[^\w]((1080|480|720)p|AC3D|Directors([^\w]CUT)?|DD5\.1|(DVD|BD|BR)(Rip)?|BluRay|divx|HDTV|iNTERNAL|LiMiTED|(Real\.)?Proper|RE(pack|Rip)|Sub\.?(fix|pack)|Unrated|WEB-DL|(x|H)[-._ ]?264|xvid|XXX|BTS)[^\w]';
+			$followingList = '[^\w]((2160|1080|480|720)(p|i)|AC3D|Directors([^\w]CUT)?|DD5\.1|(DVD|BD|BR)(Rip)?|BluRay|divx|HDTV|iNTERNAL|LiMiTED|(Real\.)?Proper|RE(pack|Rip)|Sub\.?(fix|pack)|Unrated|WEB-DL|(x|H)[-._ ]?264|xvid|XXX|BTS|DirFix|Disc|Trailer|WEBRiP|NFO)[^\w]';
 
 			/* Initial scan of getting a name.
 			 * [\w. -]+ Gets 0-9a-z. - characters, most scene movie titles contain these chars.

@@ -6,12 +6,12 @@ use nzedb\db\Settings;
 $start = TIME();
 $pdo = new Settings();
 $c = new ColorCLI();
-$consoleTools = new ConsoleTools();
+$consoleTools = new ConsoleTools(['ColorCLI' => $c]);
 
 $nntpProxy = $pdo->getSetting('nntpproxy');
 
 // Create the connection here and pass
-$nntp = new NNTP();
+$nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $c]);
 if ($nntp->doConnect() !== true) {
 	exit($c->error("Unable to connect to usenet."));
 }

@@ -1,21 +1,21 @@
 <?php
-if (!$users->isLoggedIn()) {
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
-$um = new UserMovies();
+$um = new UserMovies(['Settings' => $page->settings]);
 if (isset($_REQUEST["del"])) {
-	$um->delMovie($users->currentUserId(), $_REQUEST["del"]);
+	$um->delMovie($page->users->currentUserId(), $_REQUEST["del"]);
 }
 
-$cat = new Category();
+$cat = new Category(['Settings' => $page->settings]);
 $tmpcats = $cat->getChildren(Category::CAT_PARENT_MOVIE, true, $page->userdata["categoryexclusions"]);
 $categories = array();
 foreach ($tmpcats as $c) {
 	$categories[$c['id']] = $c['title'];
 }
 
-$movies = $um->getMovies($users->currentUserId());
+$movies = $um->getMovies($page->users->currentUserId());
 $results = array();
 foreach ($movies as $mov => $m) {
 	$movcats = explode('|', $m['categoryid']);

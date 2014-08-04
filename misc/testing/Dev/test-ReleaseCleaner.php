@@ -47,7 +47,7 @@ if (count($releases) === 0) {
 	exit('No releases found in your database for group ' . $argv[1] . PHP_EOL);
 }
 
-$RC = new ReleaseCleaning();
+$RC = new ReleaseCleaning($pdo);
 
 foreach($releases as $release) {
 	$newName = $RC->releaseCleaner($release['name'], $release['fromname'], $release['size'], $argv[1]);

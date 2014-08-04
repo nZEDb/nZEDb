@@ -31,7 +31,7 @@
 				{/foreach}
 				</ul>
 			</li>
-			{elseif $parentcat.id == 2000 && $userdata.movieview=="1" && $site->lookupimdb=="1"}
+			{elseif $parentcat.id == 2000 && $userdata.movieview=="1" && $site->lookupimdb > "0"}
 			<li><a title="Browse {$parentcat.title}" href="{$smarty.const.WWW_TOP}/movies">{$parentcat.title}</a>
 				<ul>
 				{foreach from=$parentcat.subcatlist item=subcat}

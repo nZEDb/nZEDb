@@ -48,7 +48,7 @@ function reCategorize($argv)
 	} else {
 		$chgcount = categorizeRelease($update, "", true);
 	}
-	$consoletools = new ConsoleTools();
+	$consoletools = new ConsoleTools(['ColorCLI' => $c]);
 	$time = $consoletools->convertTime(TIME() - $timestart);
 	if ($update === true) {
 		echo $c->header("Finished re-categorizing " . number_format($chgcount) . " releases in " . $time . " , 	using the searchname.\n");
@@ -63,10 +63,10 @@ function reCategorize($argv)
 function categorizeRelease($update = true, $where, $echooutput = false)
 {
 	$pdo = new Settings();
-	$cat = new Categorize();
-	$consoletools = new consoleTools();
-	$relcount = $chgcount = 0;
+	$cat = new Categorize(['Settings' => $pdo]);
 	$c = new ColorCLI();
+	$consoletools = new consoleTools(['ColorCLI' => $c]);
+	$relcount = $chgcount = 0;
 	echo $c->primary("SELECT id, searchname, group_id, categoryid FROM releases " . $where);
 	$resrel = $pdo->queryDirect("SELECT id, searchname, group_id, categoryid FROM releases " . $where);
 	$total = $resrel->rowCount();
@@ -88,9 +88,10 @@ function categorizeRelease($update = true, $where, $echooutput = false)
 								imdbid = NULL,
 								musicinfoid = NULL,
 								consoleinfoid = NULL,
-								gamesinfo_id = NULL,
+								gamesinfo_id = 0,
 								bookinfoid = NULL,
 								anidbid = NULL,
+								xxxinfo_id = 0,
 								categoryid = %d
 							WHERE id = %d",
 							$catId,

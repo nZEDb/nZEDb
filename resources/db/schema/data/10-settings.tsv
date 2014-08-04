@@ -41,14 +41,18 @@ section,subsection,name,value,hint,setting
 		maxmusicprocessed	150	The maximum amount of music to process with amazon per run. This does not use an NNTP connection.	maxmusicprocessed
 		maxnestedlevels	3	How many levels deep to go into nested rar/zip files.	maxnestedlevels
 		maxnfoprocessed	100	The maximum amount of NFO files to process per run. This uses an NNTP connection, 1 per thread. This does not query Amazon.	maxnfoprocessed
+		maxnforetries	5	How many times to retry when a NFO fails to download. If set to 0, we will not retry. The max is 7.	maxnforetries
 		maxnzbsprocessed	1000	The maximum amount of NZB files to create on stage 5 in update_releases.	maxnzbsprocessed
 		maxpartrepair	15000	The maximum amount of articles to attempt to repair at a time. If you notice that you are getting a lot of parts into the partrepair table, it is possible that you USP is not keeping up with the requests. Try to reduce the threads to safe scripts, stop using safe scripts or stop using nntpproxy until improves. Ar least until the cause can be determined.	maxpartrepair
 		maxpartsprocessed	3	If a part fails to download while post processing, this will retry up to the amount you set, then give up.	maxpartsprocessed
 		maxrageprocessed	75	The maximum amount of TV shows to process with TVRage per run. This does not use an NNTP connection or query Amazon.	maxrageprocessed
 		maxsizetoformrelease	0	The maximum total size in bytes to make a release. If set to 0, then ignored. Only deletes during release creation.	maxsizetoformrelease
 		maxsizetopostprocess	100	The maximum size in gigabytes to post process (additional) a release. If set to 0, then ignored.	maxsizetopostprocess
+		maxsizetoprocessnfo	100	The maximum size in gigabytes of a release to process it for NFOs. If set to 0, then ignored.	maxsizetoprocessnfo
 		minsizetopostprocess	1	The minimum size in megabytes to post process (additional) a release. If set to 0, then ignored.	minsizetopostprocess
+		minsizetoprocessnfo	1	The minimum size in megabytes of a release to process it for NFOs. If set to 0, then ignored.	minsizetoprocessnfo
 		miscotherretentionhours	0	The number of hours releases categorized as Misc->Other will be retained. Set to 0 to disable.	miscotherretentionhours
+		nfothreads	1	The number of threads for nfo postprocessing. The max is 16, if you set anything higher it will use 16.	nfothreads
 		newgroupdaystoscan	1	Days	newgroupdaystoscan
 		newgroupmsgstoscan	100000	Posts	newgroupmsgstoscan
 		newgroupscanmethod	0	Scan back X (posts/days) for each new group? Use backfill to scan further.	newgroupscanmethod
@@ -73,8 +77,8 @@ section,subsection,name,value,hint,setting
 		releasecompletion	0	The minimum completion % to keep a release. Set to 0 to disable.	releasecompletion
 		releaseretentiondays	0	!!THIS IS NOT HEADER RETENTION!! The number of days releases will be retained for use throughout site. Set to 0 to disable.	releaseretentiondays
 		releasesthreads	1	The number of threads for update_releases. This is only for tablepergroup.	releasesthreads
-		releasethreads	1		releasethreads
 		replacenzbs	0	NZBs that are crossposted, instead of deleting, replace with the nzb grabbed.(This is not necessary, was added before I understood how crossposted nzbs work).	replacenzbs
+		reqidthreads	1	The number of threads for local request id processing.	reqidthreads
 		request_hours	1	The maximum hours after a release is added to recheck for a Request ID match.	request_hours
 		request_url	http://reqid.nzedb.com/index.php	Optional URL to lookup Request IDs.	request_url
 		safebackfilldate	2012-06-24	The target date for safe backfill. Format: YYYY-MM-DD	safebackfilldate
@@ -86,6 +90,7 @@ section,subsection,name,value,hint,setting
 		sqlpatch	0		sqlpatch
 		storeuserips	0	Whether to store the users ip address when they signup or login.	storeuserips
 		tablepergroup	0	This uses separate tables for collections, binaries and parts for each group.<br />This requires you to run convert_to_tpg.php or reset_truncate.php.<br />This requires that you also run releases_threaded.py.<br />Run: show variables like '%open%f	tablepergroup
+		timeoutseconds	0	How much time to wait for unrar/7zip/mediainfo/ffmpeg/avconv before killing it, set to 0 to disable. 60 is a good value. Requires the GNU Timeout path to be set.	timeoutseconds
 		tmpunrarpath		The path to where unrar puts files. WARNING: This directory will have its contents deleted.<br/>Use forward slashes in windows c:/temp/path/stuff/will/be/unpacked/to	tmpunrarpath
 	release	minfilestoformrelease	1	The minimum number of files to make a release. i.e. if set to two, then releases which only contain one file will not be created.	minfilestoformrelease
 	release	minsizetoformrelease	0	The minimum total size in bytes to make a release. If set to 0, then ignored. Only deletes during release creation.	minsizetoformrelease
@@ -104,6 +109,7 @@ apps		7zippath		The path to the 7za (7zip command line in windows) binary, used 
 apps		ffmpegpath		The path to the ffmpeg or avconv binary. Used for making thumbnails and video/audio previews. Use empty path to disable thumbnailing. Use forward slashes in windows c:/path/to/ffmpeg.exe	ffmpegpath
 apps		mediainfopath		The path to the mediainfo binary. Used for deep file media analysis. Use empty path to disable mediainfo checks Use forward slashes in windows c:/path/to/mediainfo.exe	mediainfopath
 apps		unrarpath		The path to an unrar binary, used in deep password detection and media info grabbing. Use forward slashes in windows c:/path/to/unrar.exe	unrarpath
+apps		timeoutpath		The path to the timeout binary. This is used to limit the amount of time unrar/7zip/mediainfo/ffmpeg/avconv can run. You can the time limit in the process additional section. You can leave this empty to disable this. Use forward slashes in windows c:/path/to/timeout.exe	timeoutpath
 apps		yydecoderpath		Path to yydecode, this will decode yEnc articles. On ubuntu/debian you can get yydecode in the getdeb repository. Compiling yydecode from source is easy/fast also. Use forward slashes in windows c:/path/to/yydecode.exe	yydecoderpath
 apps	sabnzbplus	apikey		The Api key of the SAB installation. Can be the full api key or the nzb api key (as of SAB 0.6)	sabapikey
 apps	sabnzbplus	apikeytype	1	Select the type of api key you entered in the above setting	sabapikeytype

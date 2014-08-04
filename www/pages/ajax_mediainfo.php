@@ -1,5 +1,5 @@
 <?php
-if (!$users->isLoggedIn()) {
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
@@ -7,7 +7,7 @@ if (!isset($_REQUEST['id'])) {
 	$page->show404();
 }
 
-$re = new ReleaseExtra();
+$re = new ReleaseExtra($page->settings);
 $redata = $re->getBriefByGuid($_REQUEST['id']);
 
 if (!$redata) {

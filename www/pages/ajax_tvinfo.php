@@ -1,5 +1,5 @@
 <?php
-if (!$users->isLoggedIn()) {
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
@@ -7,7 +7,7 @@ if (!isset($_REQUEST["id"])) {
 	$page->show404();
 }
 
-$r = new Releases();
+$r = new Releases(['Settings' => $page->settings]);
 $rel = $r->getByGuid($_REQUEST["id"]);
 
 if (!$rel) {
@@ -23,7 +23,7 @@ if (!$rel) {
 
 
 	if ($rel["rageid"] > 0) {
-		$t = new TvRage();
+		$t = new TvRage(['Settings' => $page->settings]);
 		$rage = $t->getByRageID($rel["rageid"]);
 		if (count($rage) > 0) {
 			if ($rage[0]["imgdata"] != "") {

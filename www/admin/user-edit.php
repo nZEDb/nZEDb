@@ -1,31 +1,26 @@
 <?php
 require_once './config.php';
 
-
 $page = new AdminPage();
-$users = new Users();
 $id = 0;
 
 // Set the current action.
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
 
 // Get the user roles.
-$userroles = $users->getRoles();
+$userroles = $page->users->getRoles();
 $roles = array();
 $defaultrole = Users::ROLE_USER;
 $defaultinvites = Users::DEFAULT_INVITES;
-foreach ($userroles as $r)
-{
+foreach ($userroles as $r) {
 	$roles[$r['id']] = $r['name'];
-	if ($r['isdefault'] == 1)
-	{
+	if ($r['isdefault'] == 1) {
 		$defaultrole = $r['id'];
 		$defaultinvites = $r['defaultinvites'];
 	}
 }
 
-switch($action)
-{
+switch($action) {
 	case 'add':
 		$user = array();
 		$user["role"] = $defaultrole;
@@ -40,30 +35,26 @@ switch($action)
 		break;
 
 	case 'submit':
-		if ($_POST["id"] == "")
-		{
+		if ($_POST["id"] == "") {
 			$invites = $defaultinvites;
-			foreach($userroles as $role)
-			{
-				if ($role['id'] == $_POST['role'])
+			foreach($userroles as $role) {
+				if ($role['id'] == $_POST['role']) {
 					$invites = $role['defaultinvites'];
+				}
 			}
-			$ret = $users->signup($_POST["username"], $_POST["firstname"], $_POST["lastname"], $_POST["password"], $_POST["email"], '', 	$_POST["role"], $invites, "", true);
-		}
-		else
-		{
-			$ret = $users->update($_POST["id"], $_POST["username"], $_POST["firstname"], $_POST["lastname"], $_POST["email"], $_POST["grabs"], $_POST["role"], $_POST["invites"], (isset($_POST['movieview']) ? "1" : "0"), (isset($_POST['xxxview']) ? "1" : "0"), (isset($_POST['musicview']) ? "1" : "0"), (isset($_POST['consoleview']) ? "1" : "0"),
+			$ret = $page->users->signUp($_POST["username"], $_POST["firstname"], $_POST["lastname"], $_POST["password"], $_POST["email"], '', 	$_POST["role"], $invites, "", true);
+		} else {
+			$ret = $page->users->update($_POST["id"], $_POST["username"], $_POST["firstname"], $_POST["lastname"], $_POST["email"], $_POST["grabs"], $_POST["role"], $_POST["invites"], (isset($_POST['movieview']) ? "1" : "0"), (isset($_POST['xxxview']) ? "1" : "0"), (isset($_POST['musicview']) ? "1" : "0"), (isset($_POST['consoleview']) ? "1" : "0"),
 				(isset($_POST['gameview']) ? "1" : "0"), (isset($_POST['bookview']) ? "1" : "0"));
-			if ($_POST['password'] != "")
-					$users->updatePassword($_POST["id"], $_POST['password']);
+			if ($_POST['password'] != "") {
+				$page->users->updatePassword($_POST["id"], $_POST['password']);
+			}
 		}
 
-		if ($ret >= 0)
+		if ($ret >= 0) {
 			header("Location:".WWW_TOP."/user-list.php");
-		else
-		{
-			switch ($ret)
-			{
+		} else {
+			switch ($ret) {
 				case Users::ERR_SIGNUP_BADUNAME:
 					$page->smarty->assign('error', "Bad username. Try a better one.");
 					break;
@@ -105,11 +96,10 @@ switch($action)
 
 	case 'view':
 	default:
-		if (isset($_GET["id"]))
-		{
+		if (isset($_GET["id"])) {
 			$page->title = "User Edit";
 			$id = $_GET["id"];
-			$user = $users->getByID($id);
+			$user = $page->users->getByID($id);
 			$page->smarty->assign('user', $user);
 		}
 		break;
@@ -123,5 +113,3 @@ $page->smarty->assign('role_names', $roles);
 
 $page->content = $page->smarty->fetch('user-edit.tpl');
 $page->render();
-
-?>

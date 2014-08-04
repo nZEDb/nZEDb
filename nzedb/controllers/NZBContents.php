@@ -65,26 +65,41 @@ Class NZBContents
 	 *
 	 * @param array $options
 	 *     array(
-	 *         'echo'  => bool        ; To echo to CLI or not.
-	 *         'nntp'  => NNTP        ; Class NNTP.
-	 *         'nfo'   => Nfo         ; Class Nfo.
-	 *         'db'    => DB          ; Class nzedb\db\DB.
-	 *         'pp'    => PostProcess ; Class PostProcess.
+	 *         'Echo'        => bool        ; To echo to CLI or not.
+	 *         'NNTP'        => NNTP        ; Class NNTP.
+	 *         'Nfo'         => Nfo         ; Class Nfo.
+	 *         'NZB'         => NZB         ; Class NZB.
+	 *         'Settings'    => DB          ; Class nzedb\db\Settings.
+	 *         'PostProcess' => PostProcess ; Class PostProcess.
 	 *     )
 	 *
 	 * @access public
 	 */
-	public function __construct($options)
+	public function __construct(array $options = array())
 	{
-		$this->pdo  = $options['db'];
-		$this->nntp = $options['nntp'];
-		$this->nfo  = $options['nfo'];
-		$this->pp   = $options['pp'];
+		$defaults = [
+			'Echo'        => false,
+			'NNTP'        => null,
+			'Nfo'         => null,
+			'NZB'         => null,
+			'Settings'    => null,
+			'PostProcess' => null,
+		];
+		$defaults = array_replace($defaults, $options);
 
-		$this->echooutput = ($options['echo'] && nZEDb_ECHOCLI);
+		$this->echooutput = ($defaults['Echo'] && nZEDb_ECHOCLI);
+		$this->pdo = ($defaults['Settings'] instanceof \nzedb\db\Settings ? $defaults['Settings'] : new \nzedb\db\Settings());
+		$this->nntp = ($defaults['NNTP'] instanceof NNTP ? $defaults['NNTP'] : new NNTP(['Echo' => $this->echooutput, 'Settings' => $this->pdo]));
+		$this->nfo = ($defaults['Nfo'] instanceof Nfo ? $defaults['Nfo'] : new Nfo(['Echo' => $this->echooutput, 'Settings' => $this->pdo]));
+		$this->pp = (
+			$defaults['PostProcess'] instanceof PostProcess
+				? $defaults['PostProcess']
+				: new PostProcess(['Echo' => $this->echooutput, 'Nfo' => $this->nfo, 'Settings' => $this->pdo])
+		);
+		$this->nzb = ($defaults['NZB'] instanceof NZB ? $defaults['NZB'] : new NZB($this->pdo));
+
 		$this->lookuppar2 = ($this->pdo->getSetting('lookuppar2') == 1 ? true : false);
 		$this->alternateNNTP = ($this->pdo->getSetting('alternate_nntp') == 1 ? true : false);
-		$this->nzb  = new NZB($this->pdo);
 	}
 
 	/**
@@ -124,14 +139,14 @@ Class NZBContents
 				if ($this->echooutput) {
 					echo '-';
 				}
-				$this->pdo->queryExec(sprintf('UPDATE releases SET nfostatus = 0 WHERE id = %d', $relID));
+				$this->pdo->queryExec(sprintf('UPDATE releases SET nfostatus = %d WHERE id = %d', Nfo::NFO_NONFO, $relID));
 				$fetchedBinary = false;
 			}
 		} else {
 			if ($this->echooutput) {
 				echo '-';
 			}
-			$this->pdo->queryExec(sprintf('UPDATE releases SET nfostatus = 0 WHERE id = %d', $relID));
+			$this->pdo->queryExec(sprintf('UPDATE releases SET nfostatus = %d WHERE id = %d', Nfo::NFO_NONFO, $relID));
 		}
 
 		return $fetchedBinary;
@@ -269,8 +284,8 @@ Class NZBContents
 			return false;
 		}
 
-		$nzbPath = 'compress.zlib://' . $nzbPath;
-		if (!$nzbPath) {
+		$nzbContents = nzedb\utility\Utility::unzipGzipFile($nzbPath);
+		if (!$nzbContents) {
 			if ($this->echooutput) {
 				echo
 					PHP_EOL .
@@ -284,7 +299,7 @@ Class NZBContents
 			return false;
 		}
 
-		$nzbFile = @simplexml_load_file($nzbPath);
+		$nzbFile = @simplexml_load_string($nzbContents);
 		if (!$nzbFile) {
 			if ($this->echooutput) {
 				echo PHP_EOL . "Unable to load NZB: $guid appears to be an invalid NZB, skipping." . PHP_EOL;

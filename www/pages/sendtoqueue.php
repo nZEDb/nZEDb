@@ -1,5 +1,5 @@
 <?php
-if (!$users->isLoggedIn()) {
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
@@ -7,7 +7,7 @@ if (empty($_GET["id"])) {
 	$page->show404();
 }
 
-$user = $users->getById($users->currentUserId());
+$user = $page->users->getById($page->users->currentUserId());
 if ($user['queuetype'] != 2) {
 
 	$sab = new SABnzbd($page);

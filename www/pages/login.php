@@ -4,21 +4,20 @@ if ($page->isPostBack()) {
 		$page->smarty->assign('error', "Please enter your username and password.");
 	} else {
 		$page->smarty->assign('username', $_POST["username"]);
-		$users = new Users();
-		$logging = new Logging();
-		$res = $users->getByUsername($_POST["username"]);
-		$dis = $users->isDisabled($_POST["username"]);
+		$logging = new Logging(['Settings' => $page->settings]);
+		$res = $page->users->getByUsername($_POST["username"]);
+		$dis = $page->users->isDisabled($_POST["username"]);
 
 		if (!$res) {
-			$res = $users->getByEmail($_POST["username"]);
+			$res = $page->users->getByEmail($_POST["username"]);
 		}
 
 		if ($res) {
 			if ($dis) {
 				$page->smarty->assign('error', "Your account has been disabled.");
-			} else if ($users->checkPassword($_POST["password"], $res["password"])) {
+			} else if ($page->users->checkPassword($_POST["password"], $res["password"], $res['id'])) {
 				$rememberMe = (isset($_POST['rememberme']) && $_POST['rememberme'] == 'on') ? 1 : 0;
-				$users->login($res["id"], $_SERVER['REMOTE_ADDR'], $rememberMe);
+				$page->users->login($res["id"], $_SERVER['REMOTE_ADDR'], $rememberMe);
 
 				if (isset($_POST["redirect"]) && $_POST["redirect"] != "") {
 					header("Location: " . $_POST["redirect"]);

@@ -3,13 +3,13 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 
 use nzedb\db\Settings;
 
-$nntp = new NNTP();
+$pdo = new Settings();
+$nntp = new NNTP(['Settings' => $pdo]);
 if ($nntp->doConnect() !== true) {
 	exit();
 }
 $data = $nntp->getGroups();
 
-$pdo = new Settings();
 $res = $pdo->query("SELECT name FROM groups ORDER BY name");
 
 foreach ($data as $newgroup)

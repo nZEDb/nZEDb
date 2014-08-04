@@ -1,5 +1,7 @@
 <?php
 /**
+ * You can make this page accessible publicly by changing the nZEDb_PREINFO_OPEN setting in www/settings.php
+ *
  * This page prints an XML (or JSON, see extras) on the browser with predb data based on criteria.
  *
  * NOTE: By default only 1 result is returned, see the Extras for returning more than 1 result.
@@ -125,14 +127,13 @@
  *              )
  */
 
-// You can make this page accessible by all (even people without an API key) by setting this to false :
-if (true) {
-	if (!$users->isLoggedIn()) {
+if (nZEDb_PREINFO_OPEN) {
+	if (!$page->users->isLoggedIn()) {
 		if (!isset($_GET['apikey'])) {
 			apiError('Missing parameter (apikey)', 200);
 		}
 
-		if (!$users->getByRssToken($_GET['apikey'])) {
+		if (!$page->users->getByRssToken($_GET['apikey'])) {
 			apiError('Incorrect user credentials (api key is wrong)', 100);
 		}
 	}

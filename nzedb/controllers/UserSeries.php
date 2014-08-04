@@ -2,54 +2,158 @@
 
 use nzedb\db\Settings;
 
+/**
+ * Class UserSeries
+ *
+ * Sets and Gets data from and to the DB "userseries" table and the "my shows" web-page.
+ */
 class UserSeries
 {
-	function __construct()
+	/**
+	 * @var nzedb\db\Settings
+	 */
+	public $pdo;
+
+	/**
+	 * @param array $options Class instances.
+	 */
+	public function __construct(array $options = array())
 	{
-		$this->pdo = new Settings();
+		$defaults = [
+			'Settings' => null,
+		];
+		$defaults = array_replace($defaults, $options);
+
+		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
 	}
 
-	public function addShow($uid, $rageid, $catid=array())
+	/**
+	 * When a user wants to add a show to "my shows" insert it into the user series table.
+	 *
+	 * @param int   $uID    ID of user.
+	 * @param int   $rageID Rage ID of tv show.
+	 * @param array $catID  List of category ID's
+	 *
+	 * @return bool|int
+	 */
+	public function addShow($uID, $rageID, $catID = array())
 	{
-		$pdo = $this->pdo;
-		$catid = (!empty($catid)) ? $pdo->escapeString(implode('|', $catid)) : "NULL";
-		return $pdo->queryInsert(sprintf("INSERT INTO userseries (userid, rageid, categoryid, createddate) VALUES (%d, %d, %s, NOW())", $uid, $rageid, $catid));
+		return $this->pdo->queryInsert(
+			sprintf(
+				"INSERT INTO userseries (userid, rageid, categoryid, createddate) VALUES (%d, %d, %s, NOW())",
+				$uID,
+				$rageID,
+				(!empty($catID) ? $this->pdo->escapeString(implode('|', $catID)) : "NULL")
+			)
+		);
 	}
 
-	public function getShows($uid)
+	/**
+	 * Get all the user's "my shows".
+	 *
+	 * @param int $uID ID of user.
+	 *
+	 * @return array
+	 */
+	public function getShows($uID)
 	{
-		$pdo = $this->pdo;
-		return $pdo->query(sprintf("SELECT userseries.*, tvrage.releasetitle FROM userseries INNER JOIN tvrage ON tvrage.rageid = userseries.rageid WHERE userid = %d ORDER BY tvrage.releasetitle ASC", $uid));
+		return $this->pdo->query(
+			sprintf("
+				SELECT userseries.*, tvrage.releasetitle
+				FROM userseries
+				INNER JOIN tvrage ON tvrage.rageid = userseries.rageid
+				WHERE userid = %d
+				ORDER BY tvrage.releasetitle ASC",
+				$uID
+			)
+		);
 	}
 
-	public function delShow($uid, $rageid)
+	/**
+	 * Delete a tv show from the user's "my shows".
+	 *
+	 * @param int $uID    ID of user.
+	 * @param int $rageID ID of tv show.
+	 */
+	public function delShow($uID, $rageID)
 	{
-		$pdo = $this->pdo;
-		$pdo->queryExec(sprintf("DELETE FROM userseries WHERE userid = %d AND rageid = %d", $uid, $rageid));
+		$this->pdo->queryExec(
+			sprintf(
+				"DELETE FROM userseries WHERE userid = %d AND rageid = %d",
+				$uID,
+				$rageID
+			)
+		);
 	}
 
-	public function getShow($uid, $rageid)
+	/**
+	 * Get tv show information for a user.
+	 *
+	 * @param int $uID    ID of the user.
+	 * @param int $rageID ID of the TV show.
+	 *
+	 * @return array|bool
+	 */
+	public function getShow($uID, $rageID)
 	{
-		$pdo = $this->pdo;
-		return $pdo->queryOneRow(sprintf("SELECT userseries.*, tvr.releasetitle FROM userseries LEFT OUTER JOIN tvrage tvr ON tvr.rageid = userseries.rageid WHERE userseries.userid = %d AND userseries.rageid = %d", $uid, $rageid));
+		return $this->pdo->queryOneRow(
+			sprintf("
+				SELECT userseries.*, tvr.releasetitle
+				FROM userseries
+				LEFT OUTER JOIN tvrage tvr ON tvr.rageid = userseries.rageid
+				WHERE userseries.userid = %d
+				AND userseries.rageid = %d",
+				$uID,
+				$rageID
+			)
+		);
 	}
 
-	public function delShowForUser($uid)
+	/**
+	 * Delete all shows from the user's "my shows".
+	 *
+	 * @param int $uID ID of the user.
+	 */
+	public function delShowForUser($uID)
 	{
-		$pdo = $this->pdo;
-		$pdo->queryExec(sprintf("DELETE FROM userseries WHERE userid = %d", $uid));
+		$this->pdo->queryExec(
+			sprintf(
+				"DELETE FROM userseries WHERE userid = %d",
+				$uID
+			)
+		);
 	}
 
-	public function delShowForSeries($sid)
+	/**
+	 * Delete TV shows from all user's "my shows" that match a TV id.
+	 *
+	 * @param int $rageID The ID of the TV show.
+	 */
+	public function delShowForSeries($rageID)
 	{
-		$pdo = $this->pdo;
-		$pdo->queryExec(sprintf("DELETE FROM userseries WHERE rageid = %d", $rid));
+		$this->pdo->queryExec(
+			sprintf(
+				"DELETE FROM userseries WHERE rageid = %d",
+				$rageID
+			)
+		);
 	}
 
-	public function updateShow($uid, $rageid, $catid=array())
+	/**
+	 * Update a TV show category ID for a user's "my show" TV show.
+	 * @param int   $uID    ID of the user.
+	 * @param int   $rageID ID of the TV show.
+	 * @param array $catID  List of category ID's.
+	 */
+	public function updateShow($uID, $rageID, $catID = array())
 	{
-		$pdo = $this->pdo;
-		$catid = (!empty($catid)) ? $pdo->escapeString(implode('|', $catid)) : "NULL";
-		$pdo->queryExec(sprintf("UPDATE userseries SET categoryid = %s WHERE userid = %d AND rageid = %d", $catid, $uid, $rageid));
+		$this->pdo->queryExec(
+			sprintf(
+				"UPDATE userseries SET categoryid = %s WHERE userid = %d AND rageid = %d",
+				(!empty($catID) ? $this->pdo->escapeString(implode('|', $catID)) : "NULL"),
+				$uID,
+				$rageID
+			)
+		);
 	}
 }

@@ -1,9 +1,9 @@
 <?php
-if (!$users->isLoggedIn()) {
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
-$movie = new Movie();
+$movie = new Movie(['Settings' => $page->settings]);
 
 if (isset($_GET["id"]) && ctype_digit($_GET["id"])) {
 	$mov = $movie->getMovieInfo($_GET['id']);

@@ -25,13 +25,13 @@ class MiscSorter
 		$this->qty = 100;
 		$this->DEBUGGING = nZEDb_DEBUG;
 
-		$this->pdo = new Settings();
-		$this->category = new Categorize($this->echooutput);
-		$this->movie = new Movie($this->echooutput);
-		$this->nfolib = new Nfo($this->echooutput);
-		$this->nc = new ReleaseCleaning();
-		$this->groups = new Groups();
 		$this->c = new ColorCLI();
+		$this->pdo = new Settings();
+		$this->category = new Categorize(['Settings' => $this->pdo]);
+		$this->movie = new Movie(['Echo' => $this->echooutput, 'ColorCLI' => $this->c, 'Settings' => $this->pdo]);
+		$this->nfolib = new Nfo(['Echo' => $this->echooutput, 'Settings' => $this->pdo, 'ColorCLI' => $this->c]);
+		$this->nc = new ReleaseCleaning($this->pdo);
+		$this->groups = new Groups(['Settings' => $this->pdo]);
 
 		//$res = $this->pdo->queryExec("SET NAMES 'utf8'");
 		//$res = $this->pdo->queryExec("SET CHARACTER SET 'utf8'");
@@ -189,7 +189,7 @@ class MiscSorter
 		if ($debug == '')
 			$debug = $this->DEBUGGING;
 		$n = "\n";
-		$groups = new Groups();
+		$groups = $this->groups;
 
 		$release = $this->pdo->query("SELECT r.searchname as searchname, categoryid as cat, g.name as name FROM releases r INNER JOIN groups g ON r.group_id = g.id WHERE r.id = {$id}");
 		$oldcatname = $this->category->getNameByID($release[0]['cat']);
@@ -389,7 +389,7 @@ class MiscSorter
 				$query = "SELECT id FROM bookinfo WHERE asin = '" . (string) $amaz->Items->Item->ASIN . "'";
 				$rel = $this->pdo->query($query);
 				if (count($rel) == 0) {
-					$book = new Books($this->echooutput);
+					$book = new Books(['Echo' => $this->echooutput, 'ColorCLI' => $this->c, 'Settings' => $this->pdo]);
 					$bookId = $book->updateBookInfo('', $amaz);
 					unset($book);
 				} else {
@@ -417,9 +417,9 @@ class MiscSorter
 				$query = "SELECT * FROM musicinfo WHERE asin = '" . (string) $amaz->Items->Item->ASIN . "'";
 				$rel = $this->pdo->query($query);
 				if (count($rel) == 0) {
-					$music = new Music();
+					//$music = new Music();
 					//$musicId = $music->updateMusicInfo('', '', $amaz)
-					unset($music);
+					//unset($music);
 				} else
 					$musicId = $rel[0]['id'];
 
@@ -453,12 +453,12 @@ class MiscSorter
 			return false;
 		}
 
-		$nzb1 = new NZB();
+		$nzb1 = new NZB($this->pdo);
 		$nzbpath = $nzb1->NZBPath($guid);
 		$nzb = array();
 
 		if ($nzbpath !== false) {
-			$xmlObj = @simplexml_load_file('compress.zlib://' . $nzbpath);
+			$xmlObj = @simplexml_load_file(nzedb\utility\Utility::unzipGzipFile($nzbpath));
 			if ($xmlObj && strtolower($xmlObj->getName()) == 'nzb') {
 				foreach ($xmlObj->file as $file) {
 					$nzbfile = array();

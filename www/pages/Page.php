@@ -3,7 +3,7 @@
 
 class Page extends BasePage
 {
-	function __construct()
+	public function __construct()
 	{
 		parent::__construct();
 
@@ -12,8 +12,8 @@ class Page extends BasePage
 			$role = $this->userdata["role"];
 		}
 
-		$content = new Contents();
-		$menu = new Menu();
+		$content = new Contents(['Settings' => $this->settings]);
+		$menu = new Menu($this->settings);
 		$this->smarty->assign('menulist', $menu->get($role, $this->serverurl));
 		$this->smarty->assign('usefulcontentlist', $content->getForMenuByTypeAndRole(Contents::TYPEUSEFUL, $role));
 		$this->smarty->assign('articlecontentlist', $content->getForMenuByTypeAndRole(Contents::TYPEARTICLE, $role));
@@ -22,7 +22,7 @@ class Page extends BasePage
 		$this->smarty->assign('useful_menu', $this->smarty->fetch('usefullinksmenu.tpl'));
 		$this->smarty->assign('article_menu', $this->smarty->fetch('articlesmenu.tpl'));
 
-		$category = new Category();
+		$category = new Category(['Settings' => $content->pdo]);
 		if ($this->userdata != null) {
 			$parentcatlist = $category->getForMenu($this->userdata["categoryexclusions"]);
 		} else {
@@ -59,6 +59,8 @@ class Page extends BasePage
 
 		if (isset($_REQUEST["t"])) {
 			$this->smarty->assign('header_menu_cat', $_REQUEST["t"]);
+		} else {
+			$this->smarty->assign('header_menu_cat', '');
 		}
 		$header_menu = $this->smarty->fetch('headermenu.tpl');
 		$this->smarty->assign('header_menu', $header_menu);
@@ -72,4 +74,3 @@ class Page extends BasePage
 		parent::render();
 	}
 }
-?>

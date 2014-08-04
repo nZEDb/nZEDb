@@ -60,15 +60,6 @@ function writelog($pane)
 	}
 }
 
-//remove folders from tmpunrar
-if ($pdo->getSetting('tmpunrarpath') != '') {
-	$tmpunrar = $pdo->getSetting('tmpunrarpath');
-	if ((count(glob("$tmpunrar/*", GLOB_ONLYDIR))) > 0) {
-		echo $c->info("Removing dead folders from " . $tmpunrar);
-		exec("rm -r " . $tmpunrar . "/*");
-	}
-}
-
 function command_exist($cmd)
 {
 	$returnVal = exec("which $cmd 2>/dev/null");

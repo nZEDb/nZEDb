@@ -13,8 +13,8 @@ use nzedb\db\Settings;
 $debug = false;
 $pdo = new Settings();
 $c = new ColorCLI();
-$groups = new Groups();
-$consoletools = new ConsoleTools();
+$groups = new Groups(['Settings' => $pdo]);
+$consoletools = new ConsoleTools(['ColorCLI' => $c]);
 $DoPartRepair = ($pdo->getSetting('partrepair') == '0') ? false : true;
 
 if ((!isset($argv[1])) || $argv[1] != 'true') {

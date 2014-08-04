@@ -37,6 +37,12 @@ class SABnzbd
 	public $integrated = self::INTEGRATION_TYPE_NONE;
 
 	/**
+	 * Is sab integrated into the site or not.
+	 * @var bool
+	 */
+	public $integratedBool = false;
+
+	/**
 	 * ID of the current user, to send to SAB when downloading a NZB.
 	 * @var string
 	 */
@@ -102,6 +108,15 @@ class SABnzbd
 					$this->apikeytype = $page->userdata['sabapikeytype'];
 				}
 				$this->integrated = self::INTEGRATION_TYPE_USER;
+				switch((int)$page->userdata['queuetype']) {
+					case 1:
+					case 2:
+						$this->integratedBool = true;
+						break;
+					default:
+						$this->integratedBool = false;
+						break;
+				}
 				break;
 
 			case self::INTEGRATION_TYPE_SITEWIDE:
@@ -112,10 +127,15 @@ class SABnzbd
 					$this->apikeytype = $page->settings->getSetting('sabapikeytype');
 				}
 				$this->integrated = self::INTEGRATION_TYPE_SITEWIDE;
+				$this->integratedBool = true;
 				break;
 
 			case self::INTEGRATION_TYPE_NONE:
 				$this->integrated = self::INTEGRATION_TYPE_NONE;
+				// This is for nzbget.
+				if ($page->userdata['queuetype'] == 2) {
+					$this->integratedBool = true;
+				}
 				break;
 		}
 	}

@@ -1,10 +1,10 @@
 <?php
-if (!$users->isLoggedIn()) {
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
-$Releases = new Releases;
-$AniDB = new AniDB;
+$Releases = new Releases(['Settings' => $page->settings]);
+$AniDB = new AniDB(['Settings' => $page->settings]);
 
 if (isset($_GET["id"]) && ctype_digit($_GET['id'])) {
 

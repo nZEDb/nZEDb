@@ -1,24 +1,22 @@
 <?php
 
-use nzedb\db\Settings;
-
-if (!$users->isLoggedIn()) {
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
-$us = new UserSeries();
+$us = new UserSeries(['Settings' => $page->settings]);
 
 $action = isset($_REQUEST['id']) ? $_REQUEST['id'] : '';
 $rid = isset($_REQUEST['subpage']) ? $_REQUEST['subpage'] : '';
 
 switch ($action) {
 	case 'delete':
-		$show = $us->getShow($users->currentUserId(), $rid);
+		$show = $us->getShow($page->users->currentUserId(), $rid);
 
 		if (!$show) {
 			$page->show404('Not subscribed');
 		} else {
-			$us->delShow($users->currentUserId(), $rid);
+			$us->delShow($page->users->currentUserId(), $rid);
 		}
 
 		if (isset($_REQUEST['from'])) {
@@ -29,13 +27,12 @@ switch ($action) {
 		break;
 	case 'add':
 	case 'doadd':
-		$show = $us->getShow($users->currentUserId(), $rid);
+		$show = $us->getShow($page->users->currentUserId(), $rid);
 
 		if ($show) {
 			$page->show404('Already subscribed');
 		} else {
-			$pdo = new Settings();
-			$show = $pdo->queryOneRow(sprintf("SELECT releasetitle FROM tvrage WHERE rageid = %d", $rid));
+			$show = $us->pdo->queryOneRow(sprintf("SELECT releasetitle FROM tvrage WHERE rageid = %d", $rid));
 			if (!$show) {
 				$page->show404('Seriously?');
 			}
@@ -43,14 +40,14 @@ switch ($action) {
 
 		if ($action == 'doadd') {
 			$category = (isset($_REQUEST['category']) && is_array($_REQUEST['category']) && !empty($_REQUEST['category'])) ? $_REQUEST['category'] : array();
-			$us->addShow($users->currentUserId(), $rid, $category);
+			$us->addShow($page->users->currentUserId(), $rid, $category);
 			if (isset($_REQUEST['from'])) {
 				header("Location:" . $_REQUEST['from']);
 			} else {
 				header("Location:" . WWW_TOP . "/myshows");
 			}
 		} else {
-			$cat = new Category();
+			$cat = new Category(['Settings' => $page->settings]);
 			$tmpcats = $cat->getChildren(Category::CAT_PARENT_TV, true, $page->userdata["categoryexclusions"]);
 			$categories = array();
 			foreach ($tmpcats as $c) {
@@ -72,7 +69,7 @@ switch ($action) {
 		break;
 	case 'edit':
 	case 'doedit':
-		$show = $us->getShow($users->currentUserId(), $rid);
+		$show = $us->getShow($page->users->currentUserId(), $rid);
 
 		if (!$show) {
 			$page->show404();
@@ -80,14 +77,14 @@ switch ($action) {
 
 		if ($action == 'doedit') {
 			$category = (isset($_REQUEST['category']) && is_array($_REQUEST['category']) && !empty($_REQUEST['category'])) ? $_REQUEST['category'] : array();
-			$us->updateShow($users->currentUserId(), $rid, $category);
+			$us->updateShow($page->users->currentUserId(), $rid, $category);
 			if (isset($_REQUEST['from'])) {
 				header("Location:" . WWW_TOP . $_REQUEST['from']);
 			} else {
 				header("Location:" . WWW_TOP . "/myshows");
 			}
 		} else {
-			$cat = new Category();
+			$cat = new Category(['Settings' => $page->settings]);
 
 			$tmpcats = $cat->getChildren(Category::CAT_PARENT_TV, true, $page->userdata["categoryexclusions"]);
 			$categories = array();
@@ -115,9 +112,9 @@ switch ($action) {
 		$page->meta_keywords = "search,add,to,cart,nzb,description,details";
 		$page->meta_description = "Browse Your Shows";
 
-		$shows = $us->getShows($users->currentUserId());
+		$shows = $us->getShows($page->users->currentUserId());
 
-		$releases = new Releases();
+		$releases = new Releases(['Settings' => $page->settings]);
 		$browsecount = $releases->getShowsCount($shows, -1, $page->userdata["categoryexclusions"]);
 
 		$offset = (isset($_REQUEST["offset"]) && ctype_digit($_REQUEST['offset'])) ? $_REQUEST["offset"] : 0;
@@ -156,14 +153,14 @@ switch ($action) {
 		$page->meta_keywords = "search,add,to,cart,nzb,description,details";
 		$page->meta_description = "Manage Your Shows";
 
-		$cat = new Category();
+		$cat = new Category(['Settings' => $page->settings]);
 		$tmpcats = $cat->getChildren(Category::CAT_PARENT_TV, true, $page->userdata["categoryexclusions"]);
 		$categories = array();
 		foreach ($tmpcats as $c) {
 			$categories[$c['id']] = $c['title'];
 		}
 
-		$shows = $us->getShows($users->currentUserId());
+		$shows = $us->getShows($page->users->currentUserId());
 		$results = array();
 		foreach ($shows as $showk => $show) {
 			$showcats = explode('|', $show['categoryid']);

@@ -1,15 +1,15 @@
 <?php
 require_once './config.php';
 
-
 $page = new AdminPage();
-$tvrage = new TvRage();
+$tvrage = new TvRage(['Settings' => $page->settings]);
 
 $page->title = "TV Rage List";
 
 $tname = "";
-if (isset($_REQUEST['ragename']) && !empty($_REQUEST['ragename']))
+if (isset($_REQUEST['ragename']) && !empty($_REQUEST['ragename'])) {
 	$tname = $_REQUEST['ragename'];
+}
 
 $ragecount = $tvrage->getCount($tname);
 
@@ -30,5 +30,3 @@ $page->smarty->assign('tvragelist',$tvragelist);
 
 $page->content = $page->smarty->fetch('rage-list.tpl');
 $page->render();
-
-?>

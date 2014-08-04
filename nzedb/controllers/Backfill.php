@@ -86,19 +86,31 @@ class Backfill
 	/**
 	 * Constructor.
 	 *
-	 * @param NNTP $nntp Class instance of NNTP.
-	 * @param bool $echo Echo to cli?
+	 * @param array $options Class instances / Echo to cli?
 	 */
-	public function __construct($nntp = null, $echo = true)
+	public function __construct(array $options = array())
 	{
-		$this->_nntp = $nntp;
-		$this->_echoCLI = ($echo && nZEDb_ECHOCLI);
-		$this->_colorCLI = new ColorCLI();
-		$this->_pdo = new nzedb\db\Settings();
-		$this->_groups = new Groups($this->_pdo);
+		$defOptions = [
+			'Echo'     => true,
+			'ColorCLI' => null,
+			'Groups'   => null,
+			'NNTP'     => null,
+			'Settings' => null
+		];
+		$defOptions = array_replace($defOptions, $options);
+
+		$this->_echoCLI = ($defOptions['Echo'] && nZEDb_ECHOCLI);
+
+		$this->_colorCLI = ($defOptions['ColorCLI'] instanceof ColorCLI ? $defOptions['ColorCLI'] : new ColorCLI());
+		$this->_pdo = ($defOptions['Settings'] instanceof \nzedb\db\Settings ? $defOptions['Settings'] : new \nzedb\db\Settings());
+		$this->_groups = ($defOptions['Groups'] instanceof Groups ? $defOptions['Groups'] : new Groups(['Settings' => $this->_pdo]));
+		$this->_nntp = ($defOptions['NNTP'] instanceof NNTP
+			? $defOptions['NNTP'] : new NNTP(['Settings' => $this->_pdo, 'Echo' => $this->_echoCLI, 'ColorCLI' => $this->_colorCLI])
+		);
+
 		$this->_debug = (nZEDb_LOGGING || nZEDb_DEBUG);
 		if ($this->_debug) {
-			$this->_debugging = new Debugging('Backfill');
+			$this->_debugging = new Debugging(['Class' => 'Backfill', 'ColorCLI' => $this->_colorCLI]);
 		}
 
 		$this->_compressedHeaders = ($this->_pdo->getSetting('compressedheaders') == 1 ? true : false);
@@ -151,7 +163,7 @@ class Backfill
 				$this->_colorCLI->doEcho($this->_colorCLI->header($dMessage), true);
 			}
 
-			$this->_binaries = new Binaries($this->_nntp, $this->_echoCLI, $this);
+			$this->_binaries = new Binaries(['NNTP' => $this->_nntp, 'Echo' => $this->_echoCLI, 'Backfill' => $this, 'ColorCLI' => $this->_colorCLI, 'Settings' => $this->_pdo, 'Groups' => $this->_groups]);
 
 			if ($articles !== '' && !is_numeric($articles)) {
 				$articles = 20000;
@@ -728,7 +740,7 @@ class Backfill
 	 */
 	public function getRange($group, $first, $last, $threads)
 	{
-		$binaries = new Binaries($this->_nntp, $this->_echoCLI, $this);
+		$binaries = new Binaries(['NNTP' => $this->_nntp, 'Echo' => $this->_echoCLI, 'Backfill' => $this, 'ColorCLI' => $this->_colorCLI, 'Settings' => $this->_pdo, 'Groups' => $this->_groups]);
 		$groupArr = $this->_groups->getByName($group);
 
 		if ($this->_echoCLI) {
@@ -764,13 +776,15 @@ class Backfill
 	}
 
 	/**
+	 * Set the oldest/newest article number / date after backfill or binaries when using threaded scripts.
+	 *
 	 * @param string $group
-	 * @param int $first
-	 * @param int $type
+	 * @param int    $articleNumber
+	 * @param int    $type
 	 *
 	 * @return void
 	 */
-	public function getFinal($group, $first, $type)
+	public function getFinal($group, $articleNumber, $type)
 	{
 		$groupArr = $this->_groups->getByName($group);
 
@@ -783,17 +797,24 @@ class Backfill
 			}
 		}
 
-		if ($type == 'Backfill') {
-			$postsdate = $this->postdate($first, $data);
+		if ($type === 'Backfill') {
+			$this->_pdo->queryExec(
+				sprintf(
+					'UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = NOW() WHERE id = %d',
+					$this->_pdo->from_unixtime($this->postdate($articleNumber, $data)),
+					$this->_pdo->escapeString($articleNumber),
+					$groupArr['id']
+				)
+			);
 		} else {
-			$postsdate = $this->postdate($first, $data);
-		}
-		$postsdate = $this->_pdo->from_unixtime($postsdate);
-
-		if ($type == 'Backfill') {
-			$this->_pdo->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = NOW() WHERE id = %d', $postsdate, $this->_pdo->escapeString($first), $groupArr['id']));
-		} else {
-			$this->_pdo->queryExec(sprintf('UPDATE groups SET last_record_postdate = %s, last_record = %s, last_updated = NOW() WHERE id = %d', $postsdate, $this->_pdo->escapeString($first), $groupArr['id']));
+			$this->_pdo->queryExec(
+				sprintf(
+					'UPDATE groups SET last_record_postdate = %s, last_record = %s, last_updated = NOW() WHERE id = %d',
+					$this->_pdo->from_unixtime($this->postdate($articleNumber, $data)),
+					$this->_pdo->escapeString($articleNumber),
+					$groupArr['id']
+				)
+			);
 		}
 
 		if ($this->_echoCLI) {

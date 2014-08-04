@@ -3,6 +3,9 @@
 use nzedb\db\Settings;
 use nzedb\utility;
 
+/**
+ * Class TvRage
+ */
 class TvRage
 {
 	const APIKEY = '7FwjZ8loweFcOhHfnU3E';
@@ -28,27 +31,58 @@ class TvRage
 	public $xmlEpisodeInfoUrl;
 	public $xmlFullScheduleUrl  = 'http://services.tvrage.com/feeds/fullschedule.php?country=';
 
-	function __construct($echooutput = false)
+	/**
+	 * @param array $options Class instances / Echo to CLI.
+	 */
+	public function __construct(array $options = array())
 	{
-		$this->pdo = new Settings();
+		$defaults = [
+			'Echo'     => false,
+			'ColorCLI' => null,
+			'Settings' => null,
+		];
+		$defaults = array_replace($defaults, $options);
+
+		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
 		$this->rageqty = ($this->pdo->getSetting('maxrageprocessed') != '') ? $this->pdo->getSetting('maxrageprocessed') : 75;
-		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
-		$this->c = new ColorCLI();
+		$this->echooutput = ($defaults['Echo'] && nZEDb_ECHOCLI);
+		$this->c = ($defaults['ColorCLI'] instanceof ColorCLI ? $defaults['ColorCLI'] : new ColorCLI());
 
 		$this->xmlEpisodeInfoUrl =
 			"http://services.tvrage.com/myfeeds/episodeinfo.php?key=" . TvRage::APIKEY;
 	}
 
+	/**
+	 * Get rage info for a ID.
+	 *
+	 * @param int $id
+	 *
+	 * @return array|bool
+	 */
 	public function getByID($id)
 	{
 		return $this->pdo->queryOneRow(sprintf("SELECT * FROM tvrage WHERE id = %d", $id));
 	}
 
+	/**
+	 * Get rage info for a rage ID.
+	 *
+	 * @param int $id
+	 *
+	 * @return array
+	 */
 	public function getByRageID($id)
 	{
 		return $this->pdo->query(sprintf("SELECT * FROM tvrage WHERE rageid = %d", $id));
 	}
 
+	/**
+	 * Get rage info for a title.
+	 *
+	 * @param $title
+	 *
+	 * @return bool
+	 */
 	public function getByTitle($title)
 	{
 		// Set string to differentiate between mysql and PG for string replacement matching operations
@@ -98,24 +132,35 @@ class TvRage
 
 		// If there was not an exact title match, look for title with missing chars
 		// example release name :Zorro 1990, tvrage name Zorro (1990)
+		// Only search if the title contains more than one word to prevent incorrect matches
 		$pieces = explode(' ', $title);
-		$title4 = '%';
-		foreach ($pieces as $piece) {
-			$title4 .= str_replace(array("'", "!"), "", $piece) . '%';
-		}
-		$res = $this->pdo->queryOneRow(sprintf("SELECT rageid FROM tvrage WHERE replace(replace(releasetitle, %s, ''), '!', '') LIKE %s", $string ,$this->pdo->escapeString($title4)));
-		if (isset($res['rageid'])) {
-			return $res['rageid'];
+		if (count($pieces) > 1) {
+			$title4 = '%';
+			foreach ($pieces as $piece) {
+				$title4 .= str_replace(array("'", "!"), "", $piece) . '%';
+			}
+			$res = $this->pdo->queryOneRow(sprintf("SELECT rageid FROM tvrage WHERE replace(replace(releasetitle, %s, ''), '!', '') LIKE %s", $string, $this->pdo->escapeString($title4)));
+			if (isset($res['rageid'])) {
+				return $res['rageid'];
+			}
 		}
 
 		return false;
 	}
 
+	/**
+	 * Get a country code for a country name.
+	 *
+	 * @param string $country
+	 *
+	 * @return mixed
+	 */
 	public function countryCode($country)
 	{
 		if (!is_array($country) && strlen($country) > 2) {
-			$code = $this->pdo->queryOneRow('SELECT code FROM countries WHERE LOWER(name) = LOWER('
-										   . $this->pdo->escapeString($country) . ')');
+			$code = $this->pdo->queryOneRow(
+				'SELECT code FROM countries WHERE LOWER(name) = LOWER(' . $this->pdo->escapeString($country) . ')'
+			);
 			if (isset($code['code'])) {
 				return $code['code'];
 			}
@@ -672,20 +717,34 @@ class TvRage
 		$this->add($rageid, $show['cleanname'], $desc, $genre, $country, $imgbytes);
 	}
 
-	public function processTvReleases($releaseToWork = '', $lookupTvRage = true, $local = false)
+	public function processTvReleases($groupID = '', $guidChar = '', $lookupTvRage = 1, $local = false)
 	{
 		$ret = 0;
-		$trakt = new TraktTv();
+		if ($lookupTvRage == 0) {
+			return $ret;
+		}
+		$trakt = new TraktTv(['Settings' => $this->pdo]);
 
 		// Get all releases without a rageid which are in a tv category.
-		if ($releaseToWork == '') {
-			$res = $this->pdo->query(sprintf("SELECT r.searchname, r.id FROM releases r WHERE r.nzbstatus = 1 AND r.rageid = -1 AND r.size > 1048576 AND r.categoryid BETWEEN 5000 AND 5999 ORDER BY r.postdate DESC LIMIT %d", $this->rageqty));
-			$tvcount = count($res);
-		} else {
-			$pieces = explode("           =+=            ", $releaseToWork);
-			$res = array(array('searchname' => $pieces[0], 'id' => $pieces[1]));
-			$tvcount = 1;
-		}
+
+		$res = $this->pdo->query(
+			sprintf("
+				SELECT r.searchname, r.id
+				FROM releases r
+				WHERE r.nzbstatus = 1
+				AND r.rageid = -1
+				AND r.size > 1048576
+				AND r.categoryid BETWEEN 5000 AND 5999
+				%s %s %s
+				ORDER BY r.postdate DESC
+				LIMIT %d",
+				($groupID === '' ? '' : 'AND r.group_id = ' . $groupID),
+				($guidChar === '' ? '' : 'AND r.guid ' . $this->pdo->likeString($guidChar, false, true)),
+				($lookupTvRage == 2 ? 'AND r.isrenamed = 1' : ''),
+				$this->rageqty
+			)
+		);
+		$tvcount = count($res);
 
 		if ($this->echooutput && $tvcount > 1) {
 			echo $this->c->header("Processing TV for " . $tvcount . " release(s).");

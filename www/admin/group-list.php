@@ -1,13 +1,13 @@
 <?php
 require_once './config.php';
 
-
 $page = new AdminPage();
-$groups = new Groups();
+$groups = new Groups(['Settings' => $page->settings]);
 
 $gname = "";
-if (isset($_REQUEST['groupname']) && !empty($_REQUEST['groupname']))
+if (isset($_REQUEST['groupname']) && !empty($_REQUEST['groupname'])) {
 	$gname = $_REQUEST['groupname'];
+}
 
 $groupcount = $groups->getCount($gname);
 
@@ -32,5 +32,3 @@ $page->title = "Group List";
 
 $page->content = $page->smarty->fetch('group-list.tpl');
 $page->render();
-
-?>

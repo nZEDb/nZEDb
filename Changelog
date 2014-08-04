@@ -9,8 +9,191 @@ New updates are grouped by person, at the top of the file.
 
 2014-07-28 niel
 	* New: Merged and tagged v0.3.9 to master branch
+2014-07-27 bart39
+	* Chg: Don't display Releases that have not been processed by PP Additional (passwordstatus -1 to -6) if show passwords is set to not display potentially passworded. #1302
+2014-07-27 tasky
+	* Fix: Popporn kept returning false #1425
+2014-07-27 ruhllatio
+	* Fix: local lookup query WHEREs were backwards sprintf'd
+	* Fix: forgot a LIKE
+	* Fix: Monitor not reflecting newestpre time despite having plenty of new Pres
+2014-07-27 kevin
+	* Fix: warningOver method on ColorCLI.
+	* Fix: Missing max part repair not being used in a query.
+	* Chg: Maximum failed part downloads setting to not divide by 5, this will speed up post process additional.
+	* Fix: The logic for calculating failed/downloaded rar parts.
+	* Fix: Typo in nfo query.
+	* Chg: Check if maxsizetopostprocess is 0 in nfo, ignore if so.
+	* Add: Min / Max release size setting to process NFOs.
+	* Chg: Move NZB decompression to a central location.
+	* Chg: Remove timeout for avconv also, will look into alternatives.
+	* Chg: Get timeout to work on avconv/ffmpeg, needed the --foreground option.
+	* Add: Max NFO download retries setting.
+	* Add: Query limiters to Forking to prevent spawning of processes needlessly.
+	* Add: password_compat library recommended by php.net for php versions prior to 5.5 to replace our usage of crypt without a salt, which will make passwords more secure for our users still on php 5.4
+2014-07-26 ruhllatio
+	* Merge Tasky's PR #1424 - updating changelog to reflect
+2014-07-26 tasky
+	* Add: Add Game/XXX Info to nzb details: First Stage.
+	* Add: Hot Movies Icon and Fix layout
+2014-07-26 bart39
+	* Fix: Remove 'See full summary »' from the end of imdb movie plot #1420
+2014-07-26 kevin
+	* Fix: #1421
+	* Add: Settings to settings.php for temporarily blocking site access to those sending too many requests.
+	* Chg: Show 404 page when page is missing.
+	* Chg: Move all tmpunrar deletions to ProcessAdditional to try to avoid external issues.
+	* Chg: Automatically use the new password_hash function if php version is 5.5 or higher, which is more secure than crypt and avoids warnings in PHP 5.6 for empty salt in crypt.
+	* ---: If you are running PHP 5.5 or higher, run the misc/testing/dev/find_password_hash_cost.php script and set the number it gives in settings.php nZEDb_PASSWORD_HASH_COST to make the password algorithm stronger.
+	* Chg: Automatically rehash user passwords if needed.
+	* Add: Support for GNU Timeout, to kill unrar/ffmpeg/etc after set time (you can set the time / path to timeout in site edit, on linux it should be /usr/bin/timeout)
+	* Chg: Move safe_pull.php into switch.php
+	* Add: Renamed option to multiprocess/postprocess.php movie/tv
+	* Add: PHP multi-processing import script.
+	* Chg: Do not use timeout for ffmpeg, it stalls, avconv however does not stall with timeout, change the time command for avcong/ffmpeg's changes.
+2014-07-25 ruhllatio
+	* Fix: match_prefiles not honoring CLI arg limit
+	* Chg: Monitor now using proper PDO for work queries
+	* Chg: Removed tons of nasty if/then/else statements that weren't needed
+	* Fix: unkown $c assignment causing script failure in monitor
+	* Fix: undefined index errors in monitor.php
+2014-07-25 kevin
+	* Chg: Re-use class instances in various places.
+	* Add: PHPDOC to Users.
+	* Chg: Re-use class instances when creating Users/UserSeries/XXX.
+	* Chg: Add PHPDOC to UserMovies and make it re-use Settings instances.
+	* Chg: TvRage to re-use class instances.
+	* Chg: Pass ColorCLI to PostProcess to pass to it's instanciated classes.
+	* Chg: Re-use Settings for TraktTv.
+	* Fix: Wrong BasePage var name usage.
+	* Chg: Re-use class instances on ReleaseRemover.
+	* Chg: Re-use class instances in various other places.
+	* Chg: Use BasePage's settings for many of the instanciations.
+	* Chg: Re-use class instances on Namefixer.
+	* Chg: Re-use class instances on Movie.
+	* Chg: Re-use BasePage's nzedb\db\Settings instance in as many www/admin files as possible to speed up page loads.
+	* Chg: BasePage, save a DB call by re-using the Settings instance for smarty, speeds up execution of all web-pages.
+	* Chg: Store and re-use the Users instance in BasePage instead of destroying it and later recreating another instance in index.php
+	* Add: Setting to settings.php for opening preinfo to the public.
+2014-07-24 ruhllatio
+	* Chg: Case a few if/elseif run ons in NameFixer -- more to do
+	* Fix: #1408 Issue with HDTS not being categorized properly
+2014-07-24 bart39
+	* Chg: use ColorCli for ProcessAdditional / NameFixer
+	* Chg: Reset gamesinfo_id and xxinfo_id when recategorizing
+	* Fix: Only use "like" matching when looking up release titles against existing tvrage shows if the name is more than one word
+	* Add: use ColorCli for Forking
+	NB: Run php /misc/testing/DB/reset_postprocessing.php tv true to attempt to fix these.
+2014-07-24 kevin
+	* Chg: Re-use class instances in Binaries.
+2014-07-23 bart39
+	* Fix: undefined variable
+2014-07-23 taskym
+	* Add: Hot Movies Scraper
+	* Add: Process Hotmovies, Chg: Fetch XXX Info from scraper used
+	* Chg: Alter xxxinfo_id back to 0 for hotmovies processing
+	* Add: Echo if no xxx releases to process
+	* Fix: constants style
+	* Fix: SQL -- xxxinfo_id
+2014-07-23 ruhllatio
+	* Chg: Move ReqIDLocal class to controllers, begin to add options to thread by Guid
+	* Chg: Remove needless concats from TMUX sql queries.
+	* Chg: match_prefiles revamp and class script
+	* Chg: match_prefiles has now moved to /misc/update and options have changed.
+	* Chg: Remove old match_prefiles from /misc/testing/Dev
+	* Fix: backfill_threaded script being called by php in monitor instead of python
+2014-07-23 niel
+	* Fix: Changing case on self::ADE.
+	* Fix: Code style violations
+2014-07-23 kevin
+	* Chg: Make monitor use the old backfill, since they are not compatible yet.
+	* Chg: Re-use some class instances when initiating NNTP / Sharing, saves memory/CPU.
+	* Chg: Re-use class instances when initiating Backfill.
+	* Chg: Rename update_all to update_per_group for conistency.
+	* Chg: Re-use class instancess win initiating ProcessReleases.
+	* Fix: Issues in ReqIDLocal
+	* Chg: Move RequestID Local and Web into their own classes.
+2014-07-22 bart39
+	* Fix: Another fix for PredbFT matching issue with preid being blanked out after match.
+	* Fix: MultiProcessing nfo fix
+	* Chg: ProcessAdditional - only rename audio from mediainfo if not already predb matched.
+	* Fix: typo in /update/postprocess.php
+2014-07-22 ruhllatio
+	* Fix: Attempt to fix strange PreDBFT name matching... also fix issue with preid being blanked out after match
+	* Chg: Monitor.php now uses PHP forking for threaded operations (if you're using safe scripts, these will still be python)
+	* Chg: Switched majority of if/then/else logic to switch/case.
+	* Chg: groupFixReleaseNames is now using guid thread separation like the other threaded scripts
+2014-07-22 kevin
+	* Add: Option to multiprocessing settings to change the way child process text is displayed (none, realtime, serially).
+	* Add: Setting for NFO threads.
+	* Add: More verbose to multi-processing.
+	* Chg: Make forking use tmux/bin/update-releases.php when TPG is on.
+	* Chg: Move some of the bin/ scripts into a central script.
+	* Add: php version of update_threaded.py
+	* Add: php multiprocess requestID, fix the python one at the same time.
+	* Chg: Re-use more class instances, save memory and process time.
+	* Fix: Use update_db.php on autopatcher/tmux optimize/patchDB
+	* Chg: Move postprocess_new.php into switch.php
 2014-07-21 niel
 	* New: Merged and tagged v0.3.8 to master branch
+2014-07-21 ruhllatio
+	* Fix: NNTP being called in update_releases threaded removed -- much faster per thread
+2014-07-21 kevin
+	* Chg: Add options to multiprocessing postprocess.
+	* Chg: Change multiprocessing postprocess to check if there's work first.
+	* Add: Settings file for multiprocessing.
+	* Add: Option to limit how much new headers to download on update_binaries.
+	* Chg: Only enable header compression if we use a method that requires it, saves time when using the instance for something that will never use it.
+	* Add: Option to disable text output from child processes on multiprocessing scripts.
+	* Chg: Change cached query in browse to use nZEDb_CACHE_EXPIRY_MEDIUM.
+	* Fix: Query in NFO (the between was reversed).
+	* Chg: Change multiprocessing/threading scripts to do nfo/ppadd/movie/tv by guid first letter, gives better workload.
+	* Add: Renamed only processing option for movies/tv.
+	* Fix: Reverse like string %.
+2014-07-20 kevin
+	* Add: Multi processing scripts for binaries/backfill/postprocess/releases, written in PHP.
+2014-07-20 ruhllatio
+	* Fix: PreDB join timer logic in Tmux now runs full once and last week thereafter properly
+	* Add: ishashed to gfRn md5 work queries
+	* Chg: Revert decrypt_hashes all script to look outside category 7020 (Misc->Hashed)
+	* Chg: Improve NFO Proc count query and output
+2014-07-19 ruhllatio
+	* Chg: groupfixreleasenames var fixes and change to use categoryid instead of group_id
+	* Fix: groupID placement for PAR2 in gfrn / refactor pieces / fix whitespace
+	* Chg: add slower count logic to gfRn to be more exact on which categories to attempt
+	* Fix: last undefined in gfRn
+	* Chg: Remove postprocess_old_threaded from monitor as Amazon cannot make use of threaded ops and is a waste of overhead
+	* Chg: Revamp postprocess.php so it isn't complete shit
+	* Chg: Tweak some settings for gfRn
+	* Chg: Set Tmux Amazon to use Tmux php single thread script instead due to tmpunrar clearing in main postprocess.php
+2014-07-19 kevin
+	* Fix: Hard-coded 15 workers in update_threaded.py
+	* Chg: Various changes to process additional / nfo for python scripts.
+	* Chg: Create temp dir if not exists and set up perms for threaded scripts - processadditional.
+	* Chg: Change python postprocess_threaded.py to do tv and movie by groupID instead (in line with Bart/Ruhllatio's changes)
+	* Chg: Call processAdditional directly, saving a DB instance in postprocess.
+	* Add: Logic to attempt to detect string size overflow in NNTP, preventing some rare fatal errors.
+	* ---: Merge tasky's PR.
+2014-07-19 bart39
+	* Add: XXX to reset_postprocessing.
+	* Fix: Undefined variable in groupfixrelnames
+	* Chg: Various changes to process additional / nfo for python scripts.
+2014-07-19 taskym
+	* Fix: Better Matching (gamesorter)
+	* Add: Maximum Requests (Games)
+2014-07-18 ruhllatio
+	* Fix: MySQL memory leaks from cache limit errors in PreDB FT
+	* Chg: Remove NNTP from Tmux PreDB / set checkPre tmux to run full once then for past week with large DB supported query
+	* Add: fixReleaseNames by Group that beats the pants off the old one (testing mode)
+	* Chg: Clean a few queries up in new group fix release names
+	* Chg: Don't start NNTP for fRN Groups par2/miscsorter if SQL doesn't return any releases
+	* Chg: Monitor.php now uses groupfixRelNames instead of the old fixReleasesNames (reset your thread/max per thread settings)
+2014-07-18 kevin
+	* Fix: Missing UNCOMPRESS for plot on xxxinfo.
+	* Add: Customizable part-repair max tries.
+	* Add: (by Mike1) Query to tpg_fixes.php for getting size from parts into collections.
+2014-07-17 taskym
+	* Chg: Plot to Blob, Compress plot, Fix: Selecting title
 2014-07-17 niel
 	* Chg: Modifying DB::queryArray() to make it more efficient.
 2014-07-17 ruhllatio

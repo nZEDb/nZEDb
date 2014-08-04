@@ -1,9 +1,9 @@
 <?php
-if (!$users->isLoggedIn()) {
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
-$movie = new XXX();
+$movie = new XXX(['Settings' => $page->settings]);
 
 if (isset($_GET["id"]) && ctype_digit($_GET["id"])) {
 	$mov = $movie->getXXXInfo($_GET['id']);
@@ -14,9 +14,7 @@ if (isset($_GET["id"]) && ctype_digit($_GET["id"])) {
 	$mov['actors'] = $movie->makeFieldLinks($mov, 'actors');
 	$mov['genre'] = $movie->makeFieldLinks($mov, 'genre');
 	$mov['director'] = $movie->makeFieldLinks($mov, 'director');
-	if (isset($mov['trailers'])) {
-		$mov['trailers'] = $movie->insertswf($mov['classused'], $mov['trailers']);
-	}
+
 	$page->smarty->assign('movie', $mov);
 
 	$page->title = "Info for " . $mov['title'];

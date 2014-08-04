@@ -2,14 +2,13 @@
 
 use nzedb\utility;
 
-if (!$users->isLoggedIn()) {
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
-$releases = new Releases();
+$releases = new Releases(['Settings' => $page->settings]);
 
-if (isset($_GET["id"]))
-{
+if (isset($_GET["id"])) {
 	$rel = $releases->getByGuid($_GET["id"]);
 
 	if (!$rel) {
@@ -28,8 +27,7 @@ if (isset($_GET["id"]))
 	$page->meta_description = "View Nfo File";
 
 	$modal = false;
-	if (isset($_GET['modal']))
-	{
+	if (isset($_GET['modal'])) {
 		$modal = true;
 		$page->smarty->assign('modal', true);
 	}

@@ -360,6 +360,18 @@
 					</div>
 				</td>
 			</tr>
+			<tr>
+				<td style="width:180px;"><label for="timeoutpath">GNU Timeout Path:</label></td>
+				<td>
+					<input id="timeoutpath" class="long" name="timeoutpath" type="text" value="{$site->timeoutpath}"/>
+					<div class="hint">The path to the <a href="http://linux.die.net/man/1/timeout">timeout</a> binary.
+						This is used to limit the amount of time unrar/7zip/mediainfo/ffmpeg/avconv can run.
+						You can the time limit in the process additional section.
+						You can leave this empty to disable this.
+						<br/>Use forward slashes in windows <span style="font-family:courier;">c:/path/to/timeout.exe</span>
+					</div>
+				</td>
+			</tr>
 		</table>
 	</fieldset>
 
@@ -459,7 +471,9 @@
 				<td>
 					{html_options style="width:180px;" id="showpasswordedrelease" name='showpasswordedrelease' values=$passworded_ids output=$passworded_names selected=$site->showpasswordedrelease}
 					<div class="hint">Whether to show passworded or potentially passworded releases in browse, search, api and rss
-						feeds. Potentially passworded means releases which contain .cab or .ace files which are typically password protected.
+						feeds. Potentially passworded means releases which contain .cab or .ace files which are
+						typically password protected and will also exclude anything not processed by PostProcess
+						Additional.
 					</div>
 				</td>
 			</tr>
@@ -574,33 +588,10 @@
 				</td>
 			</tr>
 			<tr>
-				<td style="width:180px;"><label for="lookupnfo">Lookup NFO:</label></td>
-				<td>
-					{html_radios id="lookupnfo" name='lookupnfo' values=$yesno_ids output=$yesno_names selected=$site->lookupnfo separator='<br />'}
-					<div class="hint">Whether to attempt to retrieve an nfo file from usenet when processing binaries.<br/>
-						<strong>NOTE: disabling nfo lookups will disable movie lookups.</strong>
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<td style="width:180px;"><label for="lookuptvrage">Lookup TV Rage:</label></td>
-				<td>
-					{html_radios id="lookuptvrage" name='lookuptvrage' values=$yesno_ids output=$yesno_names selected=$site->lookuptvrage separator='<br />'}
-					<div class="hint">Whether to attempt to lookup tv rage ids on the web when processing binaries.</div>
-				</td>
-			</tr>
-			<tr>
-				<td style="width:180px;"><label for="lookupimdb">Lookup Movies:</label></td>
-				<td>
-					{html_radios id="lookupimdb" name='lookupimdb' values=$yesno_ids output=$yesno_names selected=$site->lookupimdb separator='<br />'}
-					<div class="hint">Whether to attempt to lookup film information from IMDB or TheMovieDB when processing binaries.</div>
-				</td>
-			</tr>
-						<tr>
 				<td style="width:180px;"><label for="lookupxxx">Lookup XXX:</label></td>
 				<td>
 					{html_radios id="lookupxxx" name='lookupxxx' values=$yesno_ids output=$yesno_names selected=$site->lookupxxx separator='<br />'}
-					<div class="hint">Whether to attempt to lookup film information from ADE or Popporn when processing binaries.</div>
+					<div class="hint">Whether to attempt to lookup film information from ADE or Popporn.</div>
 				</td>
 			</tr>
 			<tr>
@@ -608,28 +599,42 @@
 				<td style="width:180px;"><label for="lookupanidb">Lookup AniDB:</label></td>
 				<td>
 					{html_radios id="lookupanidb" name='lookupanidb' values=$yesno_ids output=$yesno_names selected=$site->lookupanidb separator='<br />'}
-					<div class="hint">Whether to attempt to lookup anime information from AniDB when processing binaries. Currently it is not recommend to enable this.</div>
+					<div class="hint">Whether to attempt to lookup anime information from AniDB. Currently it is not recommend to enable this.</div>
 				</td>
 			</tr>
 			<tr>
 				<td style="width:180px;"><label for="lookupmusic">Lookup Music:</label></td>
 				<td>
 					{html_options style="width:180px;" id="lookupmusic" name='lookupmusic' values=$lookupmusic_ids output=$lookupmusic_names selected=$site->lookupmusic}
-					<div class="hint">Whether to attempt to lookup music information from Amazon when processing binaries.</div>
+					<div class="hint">Whether to attempt to lookup music information from Amazon.</div>
 				</td>
 			</tr>
 			<tr>
 				<td style="width:180px;"><label for="lookupgames">Lookup Games:</label></td>
 				<td>
 					{html_options style="width:180px;" id="lookupgames" name='lookupgames' values=$lookupgames_ids output=$lookupgames_names selected=$site->lookupgames}
-					<div class="hint">Whether to attempt to lookup game information from Amazon when processing binaries.</div>
+					<div class="hint">Whether to attempt to lookup game information from Amazon.</div>
 				</td>
 			</tr>
 			<tr>
 				<td style="width:180px;"><label for="lookupbooks">Lookup Books:</label></td>
 				<td>
 					{html_options style="width:180px;" id="lookupbooks" name='lookupbooks' values=$lookupbooks_ids output=$lookupbooks_names selected=$site->lookupbooks}
-					<div class="hint">Whether to attempt to lookup book information from Amazon when processing binaries.</div>
+					<div class="hint">Whether to attempt to lookup book information from Amazon.</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="lookupimdb">Lookup Movies:</label></td>
+				<td>
+					{html_options style="width:180px;" id="lookupimdb" name='lookupimdb' values=$lookupmovies_ids output=$lookupmovies_names selected=$site->lookupimdb}
+					<div class="hint">Whether to attempt to lookup film information from IMDB or TheMovieDB.</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="lookuptvrage">Lookup Movies:</label></td>
+				<td>
+					{html_options style="width:180px;" id="lookuptvrage" name='lookuptvrage' values=$lookuptv_ids output=$lookuptv_names selected=$site->lookuptvrage}
+					<div class="hint">Whether to attempt to lookup tv rage ids on the web.</div>
 				</td>
 			</tr>
 			<tr>
@@ -637,15 +642,6 @@
 				<td>
 					{html_options_multiple id="book_reqids" name='book_reqids' values=$book_reqids_ids output=$book_reqids_names selected=$book_reqids_selected}
 					<div class="hint">Categories of Books to lookup information for (only work if Lookup Books is set to yes).</div>
-				</td>
-			</tr>
-			<tr>
-				<td style="width:180px;"><label for="maxnfoprocessed">Maximum NFO files per run:</label></td>
-				<td>
-					<input class="short" id="maxnfoprocessed" name="maxnfoprocessed" type="text" value="{$site->maxnfoprocessed}"/>
-					<div class="hint">The maximum amount of NFO files to process per run. This uses NNTP an connection, 1
-						per thread. This does not query Amazon.
-					</div>
 				</td>
 			</tr>
 			<tr>
@@ -719,6 +715,51 @@
 	</fieldset>
 
 	<fieldset>
+	<legend>NFO Processing Settings</legend>
+		<table class="input">
+			<tr>
+				<td style="width:180px;"><label for="lookupnfo">Lookup NFO:</label></td>
+				<td>
+					{html_radios id="lookupnfo" name='lookupnfo' values=$yesno_ids output=$yesno_names selected=$site->lookupnfo separator='<br />'}
+					<div class="hint">Whether to attempt to retrieve an nfo file from usenet.<br/>
+						<strong>NOTE: disabling nfo lookups will disable movie lookups.</strong>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="maxnfoprocessed">Maximum NFO files per run:</label></td>
+				<td>
+					<input class="short" id="maxnfoprocessed" name="maxnfoprocessed" type="text" value="{$site->maxnfoprocessed}"/>
+					<div class="hint">The maximum amount of NFO files to process per run. This uses NNTP an connection, 1
+						per thread. This does not query Amazon.
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="maxsizetoprocessnfo">Maximum Release Size to process NFOs:</label></td>
+				<td>
+					<input class="short" id="maxsizetoprocessnfo" name="maxsizetoprocessnfo" type="text" value="{$site->maxsizetoprocessnfo}"/>
+					<div class="hint">The maximum size in gigabytes of a release to process it for NFOs. If set to 0, then ignored.</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="minsizetoprocessnfo">Minimum Release Size to process NFOs:</label></td>
+				<td>
+					<input class="short" id="minsizetoprocessnfo" name="minsizetoprocessnfo" type="text" value="{$site->minsizetoprocessnfo}"/>
+					<div class="hint">The minimum size in megabytes of a release to process it for NFOs. If set to 0, then ignored.</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="maxnforetries">Maximum amount of times to redownload a NFO:</label></td>
+				<td>
+					<input class="short" id="maxnforetries" name="maxnforetries" type="text" value="{$site->maxnforetries}"/>
+					<div class="hint">How many times to retry when a NFO fails to download. If set to 0, we will not retry. The max is 7.</div>
+				</td>
+			</tr>
+		</table>
+	</fieldset>
+
+	<fieldset>
 	<legend>Post Process Additional Settings - Rar/ZIP file processing</legend>
 		<table class="input">
 			<tr>
@@ -779,6 +820,14 @@
 				</td>
 			</tr>
 			<tr>
+				<td style="width:180px;"><label for="timeoutseconds">Time in seconds to kill unrar/7zip/mediainfo/ffmpeg/avconv:</label></td>
+				<td>
+					<input class="short" id="timeoutseconds" name="timeoutseconds" type="text" value="{$site->timeoutseconds}"/>
+					<div class="hint">How much time to wait for unrar/7zip/mediainfo/ffmpeg/avconv before killing it, set to 0 to disable.
+						60 is a good value. Requires the GNU Timeout path to be set.</div>
+				</td>
+			</tr>
+			<tr>
 				<td style="width:180px;"><label for="maxaddprocessed">Maximum add PP per run:</label></td>
 				<td>
 					<input class="short" id="maxaddprocessed" name="maxaddprocessed" type="text" value="{$site->maxaddprocessed}"/>
@@ -800,7 +849,7 @@
 				<td style="width:180px;"><label for="passchkattempts">Maximum failed part downloads:</label></td>
 				<td>
 					<input class="short" id="passchkattempts" name="passchkattempts" type="text" value="{$site->passchkattempts}"/>
-					<div class="hint">How many times to download a different when failing and article fails to download for a RAR/ZIP, this is multiplied by 5, so if you set it to 1, we will retry 5 times.</div>
+					<div class="hint">How many times to download a different when failing and article fails to download for a RAR/ZIP. The minimum is 1.</div>
 				</td>
 			</tr>
 			<tr>
@@ -909,6 +958,21 @@
 				</td>
 			</tr>
 			<tr>
+				<td style="width:180px;"><label for="delaytime">Delay Time Check:</label></td>
+				<td>
+					<input class="short" id="delaytime" name="delaytime" type="text" value="{$site->delaytime}"/>
+					<div class="hint">The time in hours to wait, since last activity, before releases without parts counts
+						in the subject are are created<br \> Setting this below 2 hours could create incomplete releases..
+					</div>
+				</td>
+			</tr>
+		</table>
+	</fieldset>
+
+	<fieldset>
+		<legend>Part Repair Settings</legend>
+		<table class="input">
+			<tr>
 				<td style="width:180px;"><label for="partrepair">Part Repair:</label></td>
 				<td>
 					{html_radios id="partrepair" name='partrepair' values=$yesno_ids output=$yesno_names selected=$site->partrepair separator='<br />'}
@@ -935,12 +999,10 @@
 				</td>
 			</tr>
 			<tr>
-				<td style="width:180px;"><label for="delaytime">Delay Time Check:</label></td>
+				<td style="width:180px;"><label for="partrepairmaxtries">Maximum repair per run:</label></td>
 				<td>
-					<input class="short" id="delaytime" name="delaytime" type="text" value="{$site->delaytime}"/>
-					<div class="hint">The time in hours to wait, since last activity, before releases without parts counts
-						in the subject are are created<br \> Setting this below 2 hours could create incomplete releases..
-					</div>
+					<input class="short" id="partrepairmaxtries" name="partrepairmaxtries" type="text" value="{$site->partrepairmaxtries}"/>
+					<div class="hint">Maximum amount of times to try part repair.</div>
 				</td>
 			</tr>
 		</table>
@@ -1027,7 +1089,25 @@
 				<td>
 					<input class="short" id="postthreads" name="postthreads" type="text" value="{$site->postthreads}"/>
 					<div class="hint">The number of threads for additional postprocessing. This includes deep rar
-						inspection, preview and sample creation and nfo processing.
+						inspection, preview and sample creation processing.
+						The max is 16, if you set anything higher it will use 16.
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="nfothreads">NFO Threads:</label></td>
+				<td>
+					<input class="short" id="nfothreads" name="nfothreads" type="text" value="{$site->nfothreads}"/>
+					<div class="hint">The number of threads for nfo postprocessing.
+						The max is 16, if you set anything higher it will use 16.
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="reqidthreads">Request ID Threads:</label></td>
+				<td>
+					<input class="short" id="reqidthreads" name="reqidthreads" type="text" value="{$site->reqidthreads}"/>
+					<div class="hint">The number of threads for local Request ID processing.
 					</div>
 				</td>
 			</tr>
@@ -1036,7 +1116,7 @@
 				<td>
 					<input class="short" id="postthreadsnon" name="postthreadsnon" type="text" value="{$site->postthreadsnon}"/>
 					<div class="hint">The number of threads for non-amazon postprocessing. This includes movies, anime and
-						tv lookups.
+						tv lookups. The max is 16, if you set anything higher it will use 16.
 					</div>
 				</td>
 			</tr>

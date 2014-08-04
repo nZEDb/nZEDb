@@ -9,16 +9,26 @@ use nzedb\db\Settings;
  */
 class Music
 {
+	/**
+	 * @var nzedb\db\Settings
+	 */
 	public $pdo;
 
 	/**
-	 * @param bool $echooutput
+	 * @param array $options Class instances/ echo to CLI.
 	 */
-	function __construct($echooutput = false)
+	public function __construct(array $options = array())
 	{
-		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
+		$defaults = [
+			'Echo'     => false,
+			'ColorCLI' => null,
+			'Settings' => null,
+		];
+		$defaults = array_replace($defaults, $options);
 
-		$this->pdo = new Settings();
+		$this->echooutput = ($defaults['Echo'] && nZEDb_ECHOCLI);
+
+		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
 		$this->pubkey = $this->pdo->getSetting('amazonpubkey');
 		$this->privkey = $this->pdo->getSetting('amazonprivkey');
 		$this->asstag = $this->pdo->getSetting('amazonassociatetag');
@@ -29,7 +39,7 @@ class Music
 		if ($this->pdo->getSetting('lookupmusic') == 2) {
 			$this->renamed = 'AND isrenamed = 1';
 		}
-		$this->c = new ColorCLI();
+		$this->c = ($defaults['ColorCLI'] instanceof ColorCLI ? $defaults['ColorCLI'] : new ColorCLI());
 	}
 
 	/**
@@ -51,12 +61,7 @@ class Music
 	 */
 	public function getMusicInfoByName($artist, $album)
 	{
-		$pdo = $this->pdo;
-		$like = 'ILIKE';
-		if ($pdo->dbSystem() === 'mysql') {
-			$like = 'LIKE';
-		}
-		return $pdo->queryOneRow(sprintf("SELECT * FROM musicinfo WHERE title LIKE %s AND artist %s %s", $pdo->escapeString("%" . $artist . "%"), $like, $pdo->escapeString("%" . $album . "%")));
+		return $this->pdo->queryOneRow(sprintf("SELECT * FROM musicinfo WHERE title %s AND artist %s", $this->pdo->likeString($album, true, true), $this->pdo->likeString($artist, true, true)));
 	}
 
 	/**
@@ -104,7 +109,7 @@ class Music
 		$catsrch = "";
 		if (count($cat) > 0 && $cat[0] != -1) {
 			$catsrch = " (";
-			$categ = new Category();
+			$categ = new Category(['Settings' => $this->pdo]);
 			foreach ($cat as $category) {
 				if ($category != -1) {
 					if ($categ->isParent($category)) {
@@ -170,7 +175,7 @@ class Music
 		$catsrch = "";
 		if (count($cat) > 0 && $cat[0] != -1) {
 			$catsrch = " (";
-			$categ = new Category();
+			$categ = new Category(['Settings' => $this->pdo]);
 			foreach ($cat as $category) {
 				if ($category != -1) {
 					if ($categ->isParent($category)) {
@@ -359,7 +364,7 @@ class Music
 	public function updateMusicInfo($title, $year, $amazdata = null)
 	{
 		$pdo = $this->pdo;
-		$gen = new Genres();
+		$gen = new Genres(['Settings' => $this->pdo]);
 		$ri = new ReleaseImage($this->pdo);
 		$titlepercent = 0;
 
@@ -574,7 +579,7 @@ class Music
 	/**
 	 *
 	 */
-	public function processMusicReleases()
+	public function processMusicReleases($local = false)
 	{
 		$pdo = $this->pdo;
 		$res = $pdo->queryDirect(sprintf('SELECT searchname, id FROM releases '
@@ -602,7 +607,7 @@ class Music
 					// Do a local lookup first
 					$musicCheck = $this->getMusicInfoByName('', $album["name"]);
 
-					if ($musicCheck === false) {
+					if ($musicCheck === false && $local === false) {
 						$albumId = $this->updateMusicInfo($album["name"], $album['year']);
 						$usedAmazon = true;
 						if ($albumId === false) {

@@ -1,0 +1,14 @@
+{
+    "name": "barracudanetworks/forkdaemon-php",
+    "type": "library",
+    "description": "A library to make setup and management of forking daemons in PHP easy.",
+    "keywords": ["forking", "daemons", "php"],
+    "homepage": "https://github.com/barracudanetworks/forkdaemon-php",
+    "license": "MIT",
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "autoload": {
+        "files": [ "fork_daemon.php" ]
+    }
+}
