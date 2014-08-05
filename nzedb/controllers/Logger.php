@@ -117,18 +117,18 @@ class Logger
 	private $logPath;
 
 	/**
-	 * Base name of the log file.
+	 * Current name of the log file.
 	 * @var string
 	 * @access private
 	 */
-	private $defaultLogName;
+	private $currentLogName;
 
 	/**
-	 * Default folder to store log files.
+	 * Current folder to store log files.
 	 * @var string
 	 * @access private
 	 */
-	private $defaultLogFolder;
+	private $currentLogFolder;
 
 	/**
 	 * Show memory usage in log/cli out?
@@ -161,7 +161,9 @@ class Logger
 	/**
 	 * Constructor.
 	 *
-	 * @param array $options (Optional) Class instances & (Optional) Log file path / name.
+	 * @param array $options (Optional) Class instances.
+	 *                       (Optional) Folder to store log files in.
+	 *                       (Optional) Filename of log, must be alphanumeric (a-z 0-9) and contain no file extensions.
 	 *
 	 * @access public
 	 * @throws DebuggingException
@@ -174,7 +176,7 @@ class Logger
 
 		$defaults = [
 			'ColorCLI'    => null,
-			'LogFilePath' => '',
+			'LogFolder'   => '',
 			'LogFileName' => ''
 		];
 		$options += $defaults;
@@ -184,18 +186,20 @@ class Logger
 		$this->getSettings();
 
 		$logFilePath = (
-			!empty($options['LogFilePath'])
-				? $options['LogFilePath']
-				: $this->defaultLogFolder
+			!empty($options['LogFolder'])
+				? $options['LogFolder']
+				: $this->currentLogFolder
 		);
+		$this->currentLogFolder = $logFilePath;
 
 		$logFileName = (
 		!empty($options['LogFileName'])
 			? $options['LogFileName']
-			: $this->defaultLogName
+			: $this->currentLogName
 		) . '.log';
+		$this->currentLogName = $logFileName;
 
-		$this->setLogFile($logFilePath, $logFileName);
+		$this->setLogFile();
 
 		$this->outputCLI = (strtolower(PHP_SAPI) === 'cli');
 		$this->isWindows = (strtolower(substr(PHP_OS, 0, 3)) === 'win');
@@ -225,9 +229,6 @@ class Logger
 	 *               4 Notice   - User errors - the user did not enable any groups for example.
 	 *               5 Info     - General info, like we logged in to usenet for example.
 	 *               6 Query    - Failed SQL queries. (the full query).
-	 *               Anything else causes the script to return void.
-	 *
-	 * @return void
 	 *
 	 * @access public
 	 */
@@ -248,7 +249,7 @@ class Logger
 		$this->method = $method;
 		$this->logMessage = $message;
 
-		$this->formLogMessage($method, $message);
+		$this->formLogMessage();
 		$this->echoMessage();
 		$this->logMessage();
 	}
@@ -349,33 +350,17 @@ class Logger
 	}
 
 	/**
-	 * Sets the path and name for the log file.
+	 * Changes the location of the log file.
 	 *
-	 * @param string $path Folder location to store the log file.
-	 * @param string $name Name of the log file.
-	 *
-	 * @throws DebuggingException
+	 * @param string $folder   Folder where the log should be stored.
+	 * @param string $fileName Name of the file (must be alphanumeric and contain no file extensions).
+	 * @access public
 	 */
-	public function setLogFile($path, $name)
+	public function changeLogFileLocation($folder, $fileName)
 	{
-		// Only run this if nZEDb_LOGGING is on.
-		if (!nZEDb_LOGGING) {
-			return;
-		}
-
-		$this->closeFile();
-
-		if (!is_dir($path)) {
-			$this->createFolder($path);
-		}
-
-		$this->logPath = $path . $name;
-		$this->initiateLog();
-
-		// Check if we need to rotate the log if it exceeds max size..
-		$this->rotateLog();
-
-		$this->openFile();
+		$this->currentLogFolder = $folder;
+		$this->currentLogName = $fileName;
+		$this->setLogFile();
 	}
 
 	/**
@@ -399,6 +384,35 @@ class Logger
 	}
 
 	/**
+	 * Sets the path and name for the log file.
+	 *
+	 * @throws DebuggingException
+	 * @access private
+	 */
+	private function setLogFile()
+	{
+		// Only run this if nZEDb_LOGGING is on.
+		if (!nZEDb_LOGGING) {
+			return;
+		}
+
+		$this->closeFile();
+
+		$this->logPath = $this->currentLogFolder . $this->currentLogName;
+
+		if (!is_dir($this->currentLogFolder)) {
+			$this->createFolder();
+		}
+
+		$this->initiateLog();
+
+		// Check if we need to rotate the log if it exceeds max size..
+		$this->rotateLog();
+
+		$this->openFile();
+	}
+
+	/**
 	 * Get/set all settings.
 	 * @access private
 	 */
@@ -408,16 +422,13 @@ class Logger
 		$this->maxLogs = ($this->maxLogs < 1 ? 20 : $this->maxLogs);
 		$this->maxLogSize = (defined('nZEDb_LOGGING_MAX_SIZE') ? nZEDb_LOGGING_MAX_SIZE : 30);
 		$this->maxLogSize = ($this->maxLogSize < 1 ? 30 : $this->maxLogSize);
-		$this->defaultLogName = (defined('nZEDb_LOGGING_LOG_NAME') ? nZEDb_LOGGING_LOG_NAME : 'nzedb');
-		$this->defaultLogName = (ctype_alnum($this->defaultLogName) ? $this->defaultLogName : 'nzedb');
-		$this->defaultLogFolder = (defined('nZEDb_LOGGING_LOG_FOLDER') && is_dir(nZEDb_LOGGING_LOG_FOLDER) ? nZEDb_LOGGING_LOG_FOLDER : nZEDb_LOGS);
 		$this->showMemoryUsage = (bool)(defined('nZEDb_LOGGING_LOG_MEMORY_USAGE') ? nZEDb_LOGGING_LOG_MEMORY_USAGE : true);
 		$this->showCPULoad = (bool)(defined('nZEDb_LOGGING_LOG_CPU_LOAD') ? nZEDb_LOGGING_LOG_CPU_LOAD : true);
 		$this->showRunningTime = (bool)(defined('nZEDb_LOGGING_LOG_RUNNING_TIME') ? nZEDb_LOGGING_LOG_RUNNING_TIME : true);
 		$this->showResourceUsage = (bool)(defined('nZEDb_LOGGING_LOG_RESOURCE_USAGE') ? nZEDb_LOGGING_LOG_RESOURCE_USAGE : false);
 		$paths = self::getDefaultLogPaths();
-		$this->defaultLogName = $paths['LogName'];
-		$this->defaultLogFolder = $paths['LogFolder'];
+		$this->currentLogName = $paths['LogName'];
+		$this->currentLogFolder = $paths['LogFolder'];
 	}
 
 	/**
@@ -468,7 +479,7 @@ class Logger
 
 		// If another process deleted the file, try to re-open it.
 		if (!is_file($this->logPath)) {
-			$this->setLogFile($this->defaultLogFolder, $this->defaultLogName);
+			$this->setLogFile();
 		}
 
 		@fwrite($this->resource, $this->logMessage . PHP_EOL);
@@ -493,22 +504,20 @@ class Logger
 	}
 
 	/**
-	 * Check if a log folder exists, if not create it.
-	 *
-	 * @param string $path Path to folder.
+	 * Check if the log folder exists, if not create it.
 	 *
 	 * @access private
 	 * @throws DebuggingException
 	 */
-	private function createFolder($path)
+	private function createFolder()
 	{
 		// Check if the log folder exists, create it if not.
-		if (!is_dir($path)) {
+		if (!is_dir($this->currentLogFolder)) {
 			$old = umask(0777);
-			if (!mkdir($path)) {
-				throw new DebuggingException('Unable to create log file folder ' . $path);
+			if (!mkdir($this->currentLogFolder)) {
+				throw new DebuggingException('Unable to create log file folder ' . $this->currentLogFolder);
 			}
-			chmod($path, 0777);
+			chmod($this->currentLogFolder, 0777);
 			umask($old);
 		}
 	}

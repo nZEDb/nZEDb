@@ -191,6 +191,7 @@ define('nZEDb_LOGGING_LOG_FOLDER', nZEDb_LOGS);
 
 /**
  * The name of the log file.
+ * Must be alphanumeric (a-z 0-9) and contain no file extensions.
  * @default 'nzedb'
  */
 define('nZEDb_LOGGING_LOG_NAME', 'nzedb');

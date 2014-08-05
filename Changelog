@@ -22,6 +22,7 @@ New updates are grouped by person, at the top of the file.
 	* Chg: Use constants everywhere for logging severity.
 	* Fix: Issue where alternate usp can be used for headers. #1456
 	* Add: Static function to Nfo to simplify get query options.
+	* Chg: Remove obsolete stuff in Logger and simplify the set folder method.
 2014-08-04 bart39
 	* Mrg: tasky's GiantBomb search changes PR #1449
 2014-08-04 ruhllatio
