@@ -426,7 +426,7 @@ class DB extends \PDO
 		}
 		if ($this->_debug) {
 			$this->echoError($error, 'queryInsert', 4);
-			$this->debugging->log('\nzedb\db\DB', "queryInsert", $query, 6);
+			$this->debugging->log('\nzedb\db\DB', "queryInsert", $query, \Logger::LOG_SQL);
 		}
 		return false;
 	}
@@ -471,7 +471,7 @@ class DB extends \PDO
 		}
 		if ($silent === false && $this->_debug) {
 			$this->echoError($error, 'queryExec', 4);
-			$this->debugging->log('\nzedb\db\DB', "queryExec", $query, 6);
+			$this->debugging->log('\nzedb\db\DB', "queryExec", $query, \Logger::LOG_SQL);
 		}
 		return false;
 	}
@@ -570,7 +570,7 @@ class DB extends \PDO
 				$this->echoError($e->getMessage(), 'Exec', 4, false);
 
 				if ($this->_debug) {
-					$this->debugging->log('\nzedb\db\DB', "Exec", $query, 6);
+					$this->debugging->log('\nzedb\db\DB', "Exec", $query, \Logger::LOG_SQL);
 				}
 			}
 
@@ -705,7 +705,7 @@ class DB extends \PDO
 			} else {
 				$this->echoError($e->getMessage(), 'queryDirect', 4, false);
 				if ($this->_debug) {
-					$this->debugging->log('\nzedb\db\DB', "queryDirect", $query, 6);
+					$this->debugging->log('\nzedb\db\DB', "queryDirect", $query, \Logger::LOG_SQL);
 				}
 				$result = false;
 			}
@@ -867,7 +867,7 @@ class DB extends \PDO
 
 		}
 		if ($this->_debug) {
-			$this->debugging->log('\nzedb\db\DB', 'optimise', $message, 5);
+			$this->debugging->log('\nzedb\db\DB', 'optimise', $message, \Logger::LOG_INFO);
 		}
 	}
 
@@ -1007,7 +1007,7 @@ class DB extends \PDO
 			$PDOstatement = self::$pdo->prepare($query, $options);
 		} catch (\PDOException $e) {
 			if ($this->_debug) {
-				$this->debugging->log('\nzedb\db\DB', "Prepare", $e->getMessage(), 5);
+				$this->debugging->log('\nzedb\db\DB', "Prepare", $e->getMessage(), \Logger::LOG_INFO);
 			}
 			echo $this->log->error("\n" . $e->getMessage());
 			$PDOstatement = false;
@@ -1030,7 +1030,7 @@ class DB extends \PDO
 				$result = self::$pdo->getAttribute($attribute);
 			} catch (\PDOException $e) {
 				if ($this->_debug) {
-					$this->debugging->log('\nzedb\db\DB', "getAttribute", $e->getMessage(), 5);
+					$this->debugging->log('\nzedb\db\DB', "getAttribute", $e->getMessage(), \Logger::LOG_INFO);
 				}
 				echo $this->log->error("\n" . $e->getMessage());
 				$result = false;

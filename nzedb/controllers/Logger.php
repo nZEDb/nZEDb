@@ -159,12 +159,6 @@ class Logger
 	private $showResourceUsage;
 
 	/**
-	 * Time we last rotated the logs.
-	 * @var int
-	 */
-	private $rotateCheckTime = 0;
-
-	/**
 	 * Constructor.
 	 *
 	 * @param array $options (Optional) Class instances & (Optional) Log file path / name.
@@ -544,7 +538,6 @@ class Logger
 	 */
 	private function rotateLog()
 	{
-		$this->rotateCheckTime = time();
 		// Check if we need to rotate the log if it exceeds max size..
 		$logSize = filesize($this->logPath);
 		if ($logSize === false) {

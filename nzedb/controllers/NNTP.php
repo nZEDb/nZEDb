@@ -1426,7 +1426,7 @@ class NNTP extends Net_NNTP_Client
 			// If there was an error selecting the group, return PEAR error object.
 			if ($this->isError($summary)) {
 				if ($this->_debugBool) {
-					$this->_debugging->log('NNTP', "getMessage", $summary->getMessage(), 3);
+					$this->_debugging->log('NNTP', "getMessage", $summary->getMessage(), Logger::LOG_WARNING);
 				}
 				return $summary;
 			}

@@ -146,7 +146,7 @@ class Backfill
 				($this->_compressedHeaders ? 'Yes' : 'No')
 			);
 			if ($this->_debug) {
-				$this->_debugging->log('Backfill', "backfillAllGroups", $dMessage, 5);
+				$this->_debugging->log('Backfill', "backfillAllGroups", $dMessage, Logger::LOG_INFO);
 			}
 
 			if ($this->_echoCLI) {
@@ -166,7 +166,7 @@ class Backfill
 				if ($groupName === '') {
 					$dMessage = "Starting group " . $counter . ' of ' . $groupCount;
 					if ($this->_debug) {
-						$this->_debugging->log('Backfill', "backfillAllGroups", $dMessage, 5);
+						$this->_debugging->log('Backfill', "backfillAllGroups", $dMessage, Logger::LOG_INFO);
 					}
 
 					if ($this->_echoCLI) {
@@ -179,7 +179,7 @@ class Backfill
 
 			$dMessage = 'Backfilling completed in ' . number_format(microtime(true) - $allTime, 2) . " seconds.";
 			if ($this->_debug) {
-				$this->_debugging->log('Backfill', "backfillAllGroups", $dMessage, 5);
+				$this->_debugging->log('Backfill', "backfillAllGroups", $dMessage, Logger::LOG_INFO);
 			}
 
 			if ($this->_echoCLI) {
@@ -188,7 +188,7 @@ class Backfill
 		} else {
 			$dMessage = "No groups specified. Ensure groups are added to nZEDb's database for updating.";
 			if ($this->_debug) {
-				$this->_debugging->log('Backfill', "backfillAllGroups", $dMessage, 1);
+				$this->_debugging->log('Backfill', "backfillAllGroups", $dMessage, Logger::LOG_FATAL);
 			}
 
 			if ($this->_echoCLI) {
@@ -219,7 +219,7 @@ class Backfill
 				$groupName .
 				". Otherwise the group is dead, you must disable it.";
 			if ($this->_debug) {
-				$this->_debugging->log('Backfill', "backfillGroup", $dMessage, 2);
+				$this->_debugging->log('Backfill', "backfillGroup", $dMessage, Logger::LOG_ERROR);
 			}
 
 			if ($this->_echoCLI) {
@@ -264,7 +264,7 @@ class Backfill
 				$groupName .
 				", skipping it, consider disabling backfill on it.";
 			if ($this->_debug) {
-				$this->_debugging->log('Backfill', "backfillGroup", $dMessage, 4);
+				$this->_debugging->log('Backfill', "backfillGroup", $dMessage, Logger::LOG_NOTICE);
 			}
 
 			if ($this->_echoCLI) {
@@ -393,7 +393,7 @@ class Backfill
 				$this->_safeBackFillDate .
 				", or you have not enabled them to be backfilled in the groups page.\n";
 			if ($this->_debug) {
-				$this->_debugging->log('Backfill', "safeBackfill", $dMessage, 1);
+				$this->_debugging->log('Backfill', "safeBackfill", $dMessage, Logger::LOG_FATAL);
 			}
 			exit($dMessage);
 		} else {
