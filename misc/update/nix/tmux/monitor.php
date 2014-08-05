@@ -325,21 +325,7 @@ while ($runVar['counts']['iterations'] > 0) {
 		: false
 	);
 
-	//begin update display with screen clear
-	passthru('clear');
-
-	//display monitor header
-	$tOut->displayOutput(1, $runVar);
-
-	//display monitor body
-	if ($runVar['settings']['monitor'] > 0) {
-		$tOut->displayOutput(2, $runVar);
-	}
-
-	//display query block
-	if ($runVar['settings']['show_query'] == 1) {
-		$tOut->displayOutput(3, $runVar);
-	}
+	$tOut->updateMonitorPane($runVar);
 
 	//begin pane run execution
 	if ($runVar['settings']['is_running'] === '1') {

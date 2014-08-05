@@ -287,6 +287,22 @@ Class Sharing
 				echo '(Sharing) Matched ' . $found . ' comments.' . PHP_EOL;
 			}
 		}
+
+		// Update first time seen.
+		$siteTimes = $this->pdo->queryDirect(
+			'SELECT createddate, siteid FROM releasecomment WHERE createddate > \'2005-01-01\' GROUP BY siteid ORDER BY createddate ASC'
+		);
+		if ($siteTimes instanceof Traversable && $siteTimes->rowCount()) {
+			foreach ($siteTimes as $site) {
+				$this->pdo->queryExec(
+					sprintf(
+						'UPDATE sharing_sites SET first_time = %s WHERE site_guid = %s',
+						$this->pdo->escapeString($site['createddate']),
+						$this->pdo->escapeString($site['siteid'])
+					)
+				);
+			}
+		}
 	}
 
 	/**
@@ -308,10 +324,13 @@ Class Sharing
 		if ($this->siteSettings['last_article'] == 0) {
 			// If the user picked to start from the oldest, get the oldest.
 			if ($this->siteSettings['start_position'] === true) {
-				$this->siteSettings['last_article'] = $ourOldest = (string)($group['first']);
+				$this->siteSettings['last_article'] = $ourOldest = $group['first'];
 			// Else get the newest.
 			} else {
-				$this->siteSettings['last_article'] = $ourOldest = (string)($group['last'] - 1000);
+				$this->siteSettings['last_article'] = $ourOldest = (string)($group['last'] - $this->siteSettings['max_download']);
+				if ($ourOldest < $group['first']) {
+					$this->siteSettings['last_article'] = $ourOldest = $group['first'];
+				}
 			}
 		} else {
 			$ourOldest = (string)($this->siteSettings['last_article'] + 1);
