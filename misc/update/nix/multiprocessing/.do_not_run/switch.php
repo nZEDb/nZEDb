@@ -318,7 +318,7 @@ function collectionCheck(&$pdo, $groupID)
  */
 function &nntp(&$pdo, $alternate = false)
 {
-	$nntp = new NNTP();
+	$nntp = new NNTP(['Settings' => $pdo]);
 	if (($alternate && $pdo->getSetting('alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
 		exit("ERROR: Unable to connect to usenet." . PHP_EOL);
 	}
