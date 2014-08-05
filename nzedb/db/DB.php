@@ -133,7 +133,7 @@ class DB extends \PDO
 
 		$this->_debug = (nZEDb_DEBUG || nZEDb_LOGGING);
 		if ($this->_debug) {
-			$this->debugging = new \Debugging(['Class' => 'DB', 'ColorCLI' => $this->log]);
+			$this->debugging = new \Logger(['ColorCLI' => $this->log]);
 		}
 
 
@@ -320,7 +320,7 @@ class DB extends \PDO
 	protected function echoError($error, $method, $severity, $exit = false)
 	{
 		if ($this->_debug) {
-			$this->debugging->start($method, $error, $severity);
+			$this->debugging->log('\nzedb\db\DB', $method, $error, $severity);
 
 			echo(
 				($this->cli ? $this->log->error($error) . PHP_EOL : '<div class="error">' . $error . '</div>')
@@ -426,7 +426,7 @@ class DB extends \PDO
 		}
 		if ($this->_debug) {
 			$this->echoError($error, 'queryInsert', 4);
-			$this->debugging->start("queryInsert", $query, 6);
+			$this->debugging->log('\nzedb\db\DB', "queryInsert", $query, 6);
 		}
 		return false;
 	}
@@ -471,7 +471,7 @@ class DB extends \PDO
 		}
 		if ($silent === false && $this->_debug) {
 			$this->echoError($error, 'queryExec', 4);
-			$this->debugging->start("queryExec", $query, 6);
+			$this->debugging->log('\nzedb\db\DB', "queryExec", $query, 6);
 		}
 		return false;
 	}
@@ -570,7 +570,7 @@ class DB extends \PDO
 				$this->echoError($e->getMessage(), 'Exec', 4, false);
 
 				if ($this->_debug) {
-					$this->debugging->start("Exec", $query, 6);
+					$this->debugging->log('\nzedb\db\DB', "Exec", $query, 6);
 				}
 			}
 
@@ -705,7 +705,7 @@ class DB extends \PDO
 			} else {
 				$this->echoError($e->getMessage(), 'queryDirect', 4, false);
 				if ($this->_debug) {
-					$this->debugging->start("queryDirect", $query, 6);
+					$this->debugging->log('\nzedb\db\DB', "queryDirect", $query, 6);
 				}
 				$result = false;
 			}
@@ -867,7 +867,7 @@ class DB extends \PDO
 
 		}
 		if ($this->_debug) {
-			$this->debugging->start('optimise', $message, 5);
+			$this->debugging->log('\nzedb\db\DB', 'optimise', $message, 5);
 		}
 	}
 
@@ -1007,7 +1007,7 @@ class DB extends \PDO
 			$PDOstatement = self::$pdo->prepare($query, $options);
 		} catch (\PDOException $e) {
 			if ($this->_debug) {
-				$this->debugging->start("Prepare", $e->getMessage(), 5);
+				$this->debugging->log('\nzedb\db\DB', "Prepare", $e->getMessage(), 5);
 			}
 			echo $this->log->error("\n" . $e->getMessage());
 			$PDOstatement = false;
@@ -1030,7 +1030,7 @@ class DB extends \PDO
 				$result = self::$pdo->getAttribute($attribute);
 			} catch (\PDOException $e) {
 				if ($this->_debug) {
-					$this->debugging->start("getAttribute", $e->getMessage(), 5);
+					$this->debugging->log('\nzedb\db\DB', "getAttribute", $e->getMessage(), 5);
 				}
 				echo $this->log->error("\n" . $e->getMessage());
 				$result = false;

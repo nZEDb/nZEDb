@@ -38,7 +38,7 @@ class Movie
 	protected $currentRelID = '';
 
 	/**
-	 * @var Debugging
+	 * @var Logger
 	 */
 	protected $debugging;
 
@@ -133,10 +133,11 @@ class Movie
 	/**
 	 * @param array $options Class instances / Echo to CLI.
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		$defaults = [
 			'Echo'         => false,
+			'Logger'    => null,
 			'ReleaseImage' => null,
 			'Settings'     => null,
 			'TMDb'         => null,
@@ -163,7 +164,7 @@ class Movie
 
 		if (nZEDb_DEBUG || nZEDb_LOGGING) {
 			$this->debug = true;
-			$this->debugging = new Debugging(['Class' => 'Movie', 'ColorCLI' => $this->pdo->log]);
+			$this->debugging = ($options['Logger'] instanceof Logger ? $options['Logger'] : new Logger(['ColorCLI' => $this->pdo->log]));
 		}
 	}
 
@@ -749,7 +750,8 @@ class Movie
 			similar_text($this->currentTitle, $ret['title'], $percent);
 			if ($percent < 40) {
 				if ($this->debug) {
-					$this->debugging->start(
+					$this->debugging->log(
+						'Movie',
 						'fetchTmdbProperties',
 						'Found (' .
 						$ret['title'] .
@@ -855,7 +857,8 @@ class Movie
 				similar_text($this->currentTitle, $ret['title'], $percent);
 				if ($percent < 40) {
 					if ($this->debug) {
-						$this->debugging->start(
+						$this->debugging->log(
+							'Movie',
 							'fetchImdbProperties',
 							'Found (' .
 							$ret['title'] .
