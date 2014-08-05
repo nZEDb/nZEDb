@@ -311,7 +311,7 @@ Class Sharing
 				$this->siteSettings['last_article'] = $ourOldest = $group['first'];
 			// Else get the newest.
 			} else {
-				$this->siteSettings['last_article'] = $ourOldest = (string)($group['last'] - $this->siteSettings['max_pull']);
+				$this->siteSettings['last_article'] = $ourOldest = (string)($group['last'] - $this->siteSettings['max_downloads']);
 				if ($ourOldest < $group['first']) {
 					$this->siteSettings['last_article'] = $ourOldest = $group['first'];
 				}
