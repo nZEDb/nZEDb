@@ -172,7 +172,7 @@ def main(args):
 	#now load some arbitrary jobs into the queue
 	for i in range(0, int(geteach)):
 		time.sleep(.03)
-		my_queue.put("get_range  backfill  %s  %s  %s  %s" % (datas[0], datas[1] - i * maxmssgs - 1, datas[1] - i * maxmssgs - maxmssgs, i+1))
+		my_queue.put("get_range  backfill  %s  %s  %s  %s" % (datas[0], datas[1] - i * maxmssgs - maxmssgs, datas[1] - i * maxmssgs - 1, i+1))
 
 	my_queue.join()
 

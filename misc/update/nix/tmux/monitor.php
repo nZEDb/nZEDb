@@ -30,7 +30,7 @@ $runVar['commands']['_sleep'] = "{$runVar['commands']['_phpn']} {$runVar['paths'
 $tRun->runPane('scraper', $runVar);
 
 //get list of panes by name
-$runVar['panes'] = $tRun->getListOfPanes($runVar);
+$runVar['panes'] = $tRun->getListOfPanes($runVar['constants']);
 
 //totals per category in db, results by parentID
 $catcntqry = "SELECT c.parentid AS parentid, COUNT(r.id) AS count FROM category c, releases r WHERE r.categoryid = c.id GROUP BY c.parentid";
@@ -46,7 +46,7 @@ $runVar['timers']['query']['tpg1_time'] = 0;
 
 // Analyze tables
 printf($pdo->log->info("\nAnalyzing your tables to refresh your indexes."));
-$pdo->optimise(true, 'analyze');
+$pdo->optimise(false, 'analyze', false, ['releases']);
 passthru('clear');
 
 $runVar['settings']['monitor'] = 0;
@@ -71,7 +71,7 @@ while ($runVar['counts']['iterations'] > 0) {
 		? $runVar['settings']['book_reqids'] : Category::CAT_PARENT_BOOKS);
 
 	//get usenet connection info
-	$runVar['connections'] = $tOut->getConnectionsInfo($runVar);
+	$runVar['connections'] = $tOut->getConnectionsInfo($runVar['constants']);
 
 	$runVar['modsettings']['clean'] = ($runVar['settings']['post_non'] == 2 ? ' clean ' : ' ');
 	$runVar['constants']['pre_lim'] = ($runVar['counts']['iterations'] > 1 ? '7' : '');
@@ -105,7 +105,12 @@ while ($runVar['counts']['iterations'] > 0) {
 	}
 
 	//get usenet connection counts
-	$runVar['conncounts'] = $tOut->getConnectionsCounts($runVar);
+	unset ($runVar['conncounts']);
+	$runVar['conncounts'] = $tOut->getUSPConnections('primary', $runVar['connections']);
+
+	if ($runVar['constants']['alternate_nntp'] == 1) {
+		$runVar['conncounts'] += $tOut->getUSPConnections('alternate', $runVar['connections']);
+	}
 
 	//run queries only after time exceeded, these queries can take awhile
 	if ($runVar['counts']['iterations'] == 1 || (time() - $runVar['timers']['timer2'] >= $runVar['settings']['monitor'] && $runVar['settings']['is_running'] == 1)) {
@@ -117,20 +122,19 @@ while ($runVar['counts']['iterations'] > 0) {
 		echo $pdo->log->info("\nThe numbers(queries) above are currently being refreshed. \nNo pane(script) can be (re)started until these have completed.\n");
 		$timer02 = time();
 
-		if ($dbtype == 'mysql') {
-			$splitqry = $tRun->proc_query(4, $runVar['settings']['book_reqids'], $runVar['settings']['request_hours'], $db_name);
-			$newOldqry = $tRun->proc_query(6, $runVar['settings']['book_reqids'], $runVar['settings']['request_hours'], $db_name);
-		} else {
-			$splitqry = $tRun->proc_query(5, $runVar['settings']['book_reqids'], $runVar['settings']['request_hours'], $db_name);
-			$newOldqry = $tRun->proc_query(7, $runVar['settings']['book_reqids'], $runVar['settings']['request_hours'], $db_name);
-		}
+		$splitqry = $newOldqry = '';
+
+		$splitqry = $tRun->proc_query(4, $runVar['settings']['book_reqids'], $runVar['settings']['request_hours'], $db_name);
+		$newOldqry = $tRun->proc_query(6, $runVar['settings']['book_reqids'], $runVar['settings']['request_hours'], $db_name);
 
 		$splitres = $pdo->queryOneRow($splitqry, false);
 		$runVar['timers']['newOld'] = $pdo->queryOneRow($newOldqry, false);
 
 		//assign split query results to main var
-		foreach ($splitres AS $splitkey => $split) {
-			$runVar['counts']['now'][$splitkey] = $split;
+		if (is_array($splitres)) {
+			foreach ($splitres AS $splitkey => $split) {
+				$runVar['counts']['now'][$splitkey] = $split;
+			}
 		}
 
 		$runVar['timers']['query']['split_time'] = (time() - $timer02);
@@ -158,17 +162,20 @@ while ($runVar['counts']['iterations'] > 0) {
 		$runVar['timers']['query']['init1_time'] = (time() - $timer01);
 
 		$timer04 = time();
-		$proc1res = $pdo->queryOneRow($tRun->proc_query(1, $runVar['settings']['book_reqids'], $runVar['settings']['request_hours'], $db_name), $tRun->rand_bool($runVar['counts']['iterations']));
+		$proc1qry = $tRun->proc_query(1, $runVar['settings']['book_reqids'], $runVar['settings']['request_hours'], $db_name);
+		$proc1res = $pdo->queryOneRow(($proc1qry !== false ? $proc1qry : ''), $tRun->rand_bool($runVar['counts']['iterations']));
 		$runVar['timers']['query']['proc1_time'] = (time() - $timer04);
 		$runVar['timers']['query']['proc11_time'] = (time() - $timer01);
 
 		$timer05 = time();
-		$proc2res = $pdo->queryOneRow($tRun->proc_query(2, $runVar['settings']['book_reqids'], $runVar['settings']['request_hours'], $db_name), $tRun->rand_bool($runVar['counts']['iterations']));
+		$proc2qry = $tRun->proc_query(2, $runVar['settings']['book_reqids'], $runVar['settings']['request_hours'], $db_name);
+		$proc2res = $pdo->queryOneRow(($proc2qry !== false ? $proc2qry : ''), $tRun->rand_bool($runVar['counts']['iterations']));
 		$runVar['timers']['query']['proc2_time'] = (time() - $timer05);
 		$runVar['timers']['query']['proc21_time'] = (time() - $timer01);
 
 		$timer06 = time();
-		$proc3res = $pdo->queryOneRow($tRun->proc_query(3, $runVar['settings']['book_reqids'], $runVar['settings']['request_hours'], $db_name), $tRun->rand_bool($runVar['counts']['iterations']));
+		$proc3qry = $tRun->proc_query(3, $runVar['settings']['book_reqids'], $runVar['settings']['request_hours'], $db_name);
+		$proc3res = $pdo->queryOneRow(($proc3qry !== false ? $proc3qry : ''), $tRun->rand_bool($runVar['counts']['iterations']));
 		$runVar['timers']['query']['proc3_time'] = (time() - $timer06);
 		$runVar['timers']['query']['proc31_time'] = (time() - $timer01);
 
@@ -243,20 +250,28 @@ while ($runVar['counts']['iterations'] > 0) {
 		}
 		$runVar['timers']['timer2'] = time();
 
-		if (($proc1res == false) || ($proc2res == false) || ($proc3res == false) || ($splitres == false) || ($runVar['timers']['newOld'] == false)) {
-			echo $pdo->log->error(PHP_EOL . "Monitor encountered severe errors retrieving process data from MySQL.  Please diagnose and try running again." . PHP_EOL);
-			exit;
+		//assign postprocess values from $proc
+		if (is_array($proc1res)) {
+			foreach ($proc1res AS $proc1key => $proc1) {
+				$runVar['counts']['now'][$proc1key] = $proc1;
+			}
+		} else {
+			errorOnSQL($pdo);
 		}
 
-		//assign postprocess values from $proc
-		foreach ($proc1res AS $proc1key => $proc1) {
-			$runVar['counts']['now'][$proc1key] = $proc1;
+		if (is_array($proc2res)) {
+			foreach ($proc2res AS $proc2key => $proc2) {
+				$runVar['counts']['now'][$proc2key] = $proc2;
+			}
+		} else {
+			errorOnSQL($pdo);
 		}
-		foreach ($proc2res AS $proc2key => $proc2) {
-			$runVar['counts']['now'][$proc2key] = $proc2;
-		}
-		foreach ($proc3res AS $proc3key => $proc3) {
-			$runVar['counts']['now'][$proc3key] = $proc3;
+		if (is_array($proc3res)) {
+			foreach ($proc3res AS $proc3key => $proc3) {
+				$runVar['counts']['now'][$proc3key] = $proc3;
+			}
+		} else {
+			errorOnSQL($pdo);
 		}
 
 		// now that we have merged our query data we can unset these to free up memory
@@ -310,21 +325,7 @@ while ($runVar['counts']['iterations'] > 0) {
 		: false
 	);
 
-	//begin update display with screen clear
-	passthru('clear');
-
-	//display monitor header
-	$tOut->displayOutput(1, $runVar);
-
-	//display monitor body
-	if ($runVar['settings']['monitor'] > 0) {
-		$tOut->displayOutput(2, $runVar);
-	}
-
-	//display query block
-	if ($runVar['settings']['show_query'] == 1) {
-		$tOut->displayOutput(3, $runVar);
-	}
+	$tOut->updateMonitorPane($runVar);
 
 	//begin pane run execution
 	if ($runVar['settings']['is_running'] === '1') {
@@ -345,7 +346,7 @@ while ($runVar['counts']['iterations'] > 0) {
 		$tRun->runPane('sharing', $runVar);
 
 		//update tv and theaters
-		$runVar['timers']['timer4'] = $tRun->runPane('updatetv', $runVar);
+		$tRun->runPane('updatetv', $runVar);
 
 		//run these if complete sequential not set
 		if ($runVar['constants']['sequential'] != 2) {
@@ -357,10 +358,10 @@ while ($runVar['counts']['iterations'] > 0) {
 			$tRun->runPane('dehash', $runVar);
 
 			// Remove crap releases.
-			$runVar['modsettings']['fc'] = $tRun->runPane('removecrap', $runVar);
+			$tRun->runPane('removecrap', $runVar);
 
 			//run postprocess_releases additional
-			$runVar['timers']['timer3'] = $tRun->runPane('ppadditional', $runVar);
+			$tRun->runPane('ppadditional', $runVar);
 
 			//run postprocess_releases non amazon
 			$tRun->runPane('nonamazon', $runVar);
@@ -372,4 +373,10 @@ while ($runVar['counts']['iterations'] > 0) {
 
 	$runVar['counts']['iterations']++;
 	sleep(10);
+}
+
+function errorOnSQL($pdo)
+{
+	echo $pdo->log->error(PHP_EOL . "Monitor encountered severe errors retrieving process data from MySQL.  Please diagnose and try running again." . PHP_EOL);
+	exit;
 }

@@ -109,9 +109,9 @@ def main():
 				remaining = count - geteach * maxmssgs
 				for loop in range(int(geteach)):
 					run += 1
-					my_queue.put("get_range  binaries  %s  %s  %s  %s" % (group[0], group[1] + loop * maxmssgs + maxmssgs, group[1] + loop * maxmssgs + 1, run))
+					my_queue.put("get_range  binaries  %s  %s  %s  %s" % (group[0], group[1] + loop * maxmssgs + 1, group[1] + loop * maxmssgs + maxmssgs, run))
 				run += 1
-				my_queue.put("get_range  binaries  %s  %s  %s  %s" % (group[0], group[1] + (loop + 1) * maxmssgs + remaining + 1, group[1] + (loop + 1) * maxmssgs + 1, run))
+				my_queue.put("get_range  binaries  %s  %s  %s  %s" % (group[0], group[1] + (loop + 1) * maxmssgs + 1, group[1] + (loop + 1) * maxmssgs + remaining + 1, run))
 				groups.append(group[0])
 				finals.append(int(group[2]))
 

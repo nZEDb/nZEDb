@@ -80,7 +80,7 @@ class Backfill
 	 *
 	 * @param array $options Class instances / Echo to cli?
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		$defaults = [
 			'Echo'     => true,
@@ -120,11 +120,11 @@ class Backfill
 	 */
 	public function backfillAllGroups($groupName = '', $articles ='', $type = '')
 	{
-		$res = array();
+		$res = [];
 		if ($groupName !== '') {
 			$grp = $this->_groups->getByName($groupName);
 			if ($grp) {
-				$res = array($grp);
+				$res = [$grp];
 			}
 		} else {
 			if ($type === 'normal' || $type === '') {

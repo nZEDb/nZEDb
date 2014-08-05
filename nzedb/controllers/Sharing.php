@@ -58,7 +58,7 @@ Class Sharing
 	 * @var array|bool
 	 * @access protected
 	 */
-	protected $siteSettings = array();
+	protected $siteSettings = [];
 
 	/**
 	 * Group to work in.
@@ -74,7 +74,7 @@ Class Sharing
 	 *
 	 * @access public
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		$defaults= [
 			'Settings' => null,
@@ -223,13 +223,13 @@ Class Sharing
 				self::group,
 				('(_nZEDb_)' . $this->siteSettings['site_name'] . '_' . $this->siteSettings['site_guid'] . ' - [1/1] "' . $sid . '" yEnc (1/1)'),
 				json_encode(
-					array(
+					[
 						'USER'  => ($this->siteSettings['hide_users'] ? 'ANON' : $row['username']),
 						'TIME'  => $row['unix_time'],
 						'SID'   => $sid,
 						'RID'   => $row['nzb_guid'],
 						'BODY'  => $row['text']
-					)
+					]
 				),
 				'<anon@anon.com>'
 			);
@@ -287,6 +287,22 @@ Class Sharing
 				echo '(Sharing) Matched ' . $found . ' comments.' . PHP_EOL;
 			}
 		}
+
+		// Update first time seen.
+		$siteTimes = $this->pdo->queryDirect(
+			'SELECT createddate, siteid FROM releasecomment WHERE createddate > \'2005-01-01\' GROUP BY siteid ORDER BY createddate ASC'
+		);
+		if ($siteTimes instanceof Traversable && $siteTimes->rowCount()) {
+			foreach ($siteTimes as $site) {
+				$this->pdo->queryExec(
+					sprintf(
+						'UPDATE sharing_sites SET first_time = %s WHERE site_guid = %s',
+						$this->pdo->escapeString($site['createddate']),
+						$this->pdo->escapeString($site['siteid'])
+					)
+				);
+			}
+		}
 	}
 
 	/**
@@ -308,10 +324,13 @@ Class Sharing
 		if ($this->siteSettings['last_article'] == 0) {
 			// If the user picked to start from the oldest, get the oldest.
 			if ($this->siteSettings['start_position'] === true) {
-				$this->siteSettings['last_article'] = $ourOldest = (string)($group['first']);
+				$this->siteSettings['last_article'] = $ourOldest = $group['first'];
 			// Else get the newest.
 			} else {
-				$this->siteSettings['last_article'] = $ourOldest = (string)($group['last'] - 1000);
+				$this->siteSettings['last_article'] = $ourOldest = (string)($group['last'] - $this->siteSettings['max_download']);
+				if ($ourOldest < $group['first']) {
+					$this->siteSettings['last_article'] = $ourOldest = $group['first'];
+				}
 			}
 		} else {
 			$ourOldest = (string)($this->siteSettings['last_article'] + 1);
@@ -335,7 +354,7 @@ Class Sharing
 		}
 
 		// Get the wanted aritcles
-		$headers = $this->nntp->getXOVER($ourOldest . '-' . $newest);
+		$headers = $this->nntp->getOverview($ourOldest . '-' . $newest, true, false);
 
 		// Check if we received nothing or there was an error.
 		if ($this->nntp->isError($headers) || count($headers) === 0) {
@@ -359,7 +378,7 @@ Class Sharing
 				break;
 			}
 
-			$matches = array();
+			$matches = [];
 			//(_nZEDb_)nZEDb_533f16e46a5091.73152965_3d12d7c1169d468aaf50d5541ef02cc88f3ede10 - [1/1] "92ba694cebc4fbbd0d9ccabc8604c71b23af1131" (1/1) yEnc
 			if ($header['From'] === '<anon@anon.com>' &&
 				preg_match('/^\(_nZEDb_\)(?P<site>.+?)_(?P<guid>[a-f0-9]{40}) - \[1\/1\] "(?P<sid>[a-f0-9]{40})" yEnc \(1\/1\)$/i', $header['Subject'], $matches)) {
