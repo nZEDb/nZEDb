@@ -606,8 +606,6 @@ class Logger
 
 		// Delete all the logs left in the array.
 		array_map('unlink', $logs);
-
-		return;
 	}
 
 	/**
