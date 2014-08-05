@@ -91,7 +91,7 @@ class NNTP extends Net_NNTP_Client
 	 *
 	 * @access public
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		$defaults = [
 			'Echo'     => true,
@@ -140,8 +140,6 @@ class NNTP extends Net_NNTP_Client
 		if (// Don't reconnect to usenet if:
 			// We are already connected to usenet. AND
 			parent::_isConnected() &&
-			// (If compression is wanted and on,                    OR    Compression is not wanted and off.)          AND
-			(($compression && $this->_compressionEnabled)           || (!$compression && !$this->_compressionEnabled)) &&
 			// (Alternate is wanted, AND current server is alt,     OR    Alternate is not wanted AND current is main.)
 			(($alternate && $this->_currentServer === NNTP_SERVER_A) || (!$alternate && $this->_currentServer === NNTP_SERVER))
 		) {
@@ -462,7 +460,7 @@ class NNTP extends Net_NNTP_Client
 			$this->_overviewFormatCache = $overview;
 		}
 		// Add the "Number" key.
-		$overview = array_merge(array('Number' => false), $overview);
+		$overview = array_merge(['Number' => false], $overview);
 
 		// Iterator used for selecting the header elements to insert into the overview format array.
 		$iterator = 0;
@@ -694,7 +692,7 @@ class NNTP extends Net_NNTP_Client
 		$ret = $article;
 		// Make sure the article is an array and has more than 1 element.
 		if (count($article) > 0) {
-			$ret = array();
+			$ret = [];
 			$body = '';
 			$emptyLine = false;
 			foreach ($article as $line) {
@@ -776,7 +774,7 @@ class NNTP extends Net_NNTP_Client
 
 		$ret = $header;
 		if (count($header) > 0) {
-			$ret = array();
+			$ret = [];
 			// Use the line types of the header as array keys (From, Subject, etc).
 			foreach ($header as $line) {
 				if (preg_match('/([A-Z-]+?): (.*)/i', $line, $matches)) {
