@@ -853,7 +853,7 @@ class Binaries
 		}
 
 		$currentMicroTime = microtime(true);
-		if ($this->_echoCLI && $partRepair === false) {
+		if ($this->_echoCLI) {
 			$this->_colorCLI->doEcho(
 				$this->_colorCLI->alternateOver($timeHeaders . 's') .
 				$this->_colorCLI->primaryOver(' to download articles, ') .
