@@ -40,7 +40,7 @@ class Binaries
 	protected $_collectionsCleaning;
 
 	/**
-	 * @var Debugging
+	 * @var Logger
 	 */
 	protected $_debugging;
 
@@ -157,6 +157,7 @@ class Binaries
 			'Echo'                => true,
 			'CollectionsCleaning' => null,
 			'ColorCLI'            => null,
+			'Logger'           => null,
 			'Groups'              => null,
 			'NNTP'                => null,
 			'Settings'            => null,
@@ -174,7 +175,7 @@ class Binaries
 		$this->_debug = (nZEDb_DEBUG || nZEDb_LOGGING);
 
 		if ($this->_debug) {
-			$this->_debugging = new Debugging(['Class' => 'Binaries', 'ColorCLI' => $this->_colorCLI]);
+			$this->_debugging = ($options['Logger'] instanceof Logger ? $options['Logger'] : new Logger(['ColorCLI' => $this->_colorCLI]));
 		}
 
 		$this->messageBuffer = ($this->_pdo->getSetting('maxmssgs') != '') ? $this->_pdo->getSetting('maxmssgs') : 20000;
@@ -211,7 +212,7 @@ class Binaries
 			$this->log(
 				'Updating: ' . $groupCount . ' group(s) - Using compression? ' . ($this->_compressedHeaders ? 'Yes' : 'No'),
 				'updateAllGroups',
-				Debugging::DEBUG_INFO,
+				Logger::LOG_INFO,
 				'header'
 			);
 
@@ -220,7 +221,7 @@ class Binaries
 				$this->log(
 					'Starting group ' . $counter . ' of ' . $groupCount,
 					'updateAllGroups',
-					Debugging::DEBUG_INFO,
+					Logger::LOG_INFO,
 					'header'
 				);
 				$this->updateGroup($group, $maxHeaders);
@@ -230,14 +231,14 @@ class Binaries
 			$this->log(
 				'Updating completed in ' . number_format(microtime(true) - $allTime, 2) . ' seconds.',
 				'updateAllGroups',
-				Debugging::DEBUG_INFO,
+				Logger::LOG_INFO,
 				'primary'
 			);
 		} else {
 			$this->log(
 				'No groups specified. Ensure groups are added to nZEDb\'s database for updating.',
 				'updateAllGroups',
-				Debugging::DEBUG_NOTICE,
+				Logger::LOG_NOTICE,
 				'warning'
 			);
 		}
@@ -545,7 +546,7 @@ class Binaries
 				$this->log(
 					"Code {$headers->code}: {$headers->message}\nSkipping group: ${$groupMySQL['name']}",
 					'scan',
-					Debugging::DEBUG_WARNING,
+					Logger::LOG_WARNING,
 					'error'
 				);
 				return $returnArray;
@@ -827,7 +828,7 @@ class Binaries
 				$this->log(
 					$notInsertedCount . ' articles failed to insert!',
 					'scan',
-					Debugging::DEBUG_WARNING,
+					Logger::LOG_WARNING,
 					'warning'
 				);
 			}
@@ -1106,7 +1107,8 @@ class Binaries
 		}
 
 		if ($this->_debug) {
-			$this->_debugging->start(
+			$this->_debugging->log(
+				'Binaries',
 				"postdate",
 				'Article (' .
 				$post .
@@ -1115,7 +1117,7 @@ class Binaries
 				') (' .
 				$this->daysOld($date) .
 				" days old)",
-				5
+				Logger::LOG_INFO
 			);
 		}
 
@@ -1446,7 +1448,7 @@ class Binaries
 	 *
 	 * @param string $message Message to log.
 	 * @param string $method  Method that called this.
-	 * @param int    $level   Debugging severity level constant.
+	 * @param int    $level   Logger severity level constant.
 	 * @param string $color   ColorCLI method name.
 	 */
 	private function log($message, $method, $level, $color)
@@ -1458,7 +1460,7 @@ class Binaries
 		}
 
 		if ($this->_debug) {
-			$this->_debugging->start($method, $message, $level);
+			$this->_debugging->log('Binaries', $method, $message, $level);
 		}
 	}
 

@@ -170,6 +170,56 @@ define('nZEDb_LOGGING', false);
  */
 define('nZEDb_LOGAUTOLOADER', false);
 
+/**
+ * How many log files to keep in the log folder.
+ * @default 20
+ */
+define('nZEDb_LOGGING_MAX_LOGS', 20);
+
+/**
+ * How large can the log files be in MegaBytes before we create a new one? The old files are compressed.
+ * @default 30
+ */
+define('nZEDb_LOGGING_MAX_SIZE', 30);
+
+/**
+ * The folder to put the log files in. Put quotes, example : '/var/log/nZEDb.log'
+ * The default is in nzedb root folder /resources/logs/
+ * @default nZEDb_LOGS
+ */
+define('nZEDb_LOGGING_LOG_FOLDER', nZEDb_LOGS);
+
+/**
+ * The name of the log file.
+ * Must be alphanumeric (a-z 0-9) and contain no file extensions.
+ * @default 'nzedb'
+ */
+define('nZEDb_LOGGING_LOG_NAME', 'nzedb');
+
+/**
+ * Display memory usage in log file and debug message output?
+ * @default true
+ */
+define('nZEDb_LOGGING_LOG_MEMORY_USAGE', true);
+
+/**
+ * Display CPU load in log file and debug message output?
+ * @default true
+ */
+define('nZEDb_LOGGING_LOG_CPU_LOAD', true);
+
+/**
+ * Display running time in log file and debug message output?
+ * @default true
+ */
+define('nZEDb_LOGGING_LOG_RUNNING_TIME', true);
+
+/**
+ * Display resource usage in log file and debug message output?
+ * @default false
+ */
+define('nZEDb_LOGGING_LOG_RESOURCE_USAGE', false);
+
 /*********************************************************************************
  * The following options require either nZEDb_DEBUG OR nZEDb_LOGGING to be true: *
  *********************************************************************************/

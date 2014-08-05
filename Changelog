@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-08-05 bart39
+	* Fix: unknown column in where clause
 2014-08-05 niel
 	* Chg: Optimised TmuxOutput to improve monitor pane updates.
 2014-08-05 kevin
@@ -16,6 +18,11 @@ New updates are grouped by person, at the top of the file.
 	* Chg: Change doConnect logic based on recent compression on demand changes.
 	* Chg: Use max downloads setting on sharing when starting without backfill.
 	* Chg: Sharing, set the actual first seen date.
+	* Chg: Much better logging performance, and many more user changeable settings in settings.php (copy from settings.php.example).
+	* Chg: Use constants everywhere for logging severity.
+	* Fix: Issue where alternate usp can be used for headers. #1456
+	* Add: Static function to Nfo to simplify get query options.
+	* Chg: Remove obsolete stuff in Logger and simplify the set folder method.
 2014-08-04 bart39
 	* Mrg: tasky's GiantBomb search changes PR #1449
 2014-08-04 ruhllatio

@@ -9,7 +9,8 @@ $type = isset($_GET['t']) ? $_GET['t'] : 'all';
 $page->smarty->assign('type', $type);
 $offset = isset($_GET['offset']) ? $_GET['offset'] : 0;
 
-$logPath = nZEDb_LOGS . Debugging::debugLogName . Debugging::logFileExtension;
+$logPath = Logger::getDefaultLogPaths();
+$logPath = $logPath['LogPath'];
 
 $regex = false;
 
