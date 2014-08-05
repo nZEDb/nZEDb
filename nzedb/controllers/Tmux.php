@@ -24,7 +24,7 @@ class Tmux
 		$pdo = $this->pdo;
 		$tmux = $this->row2Object($form);
 
-		$sql = $sqlKeys = array();
+		$sql = $sqlKeys = [];
 		foreach ($form as $settingK => $settingV) {
 			if (is_array($settingV)) {
 				$settingV = implode(', ', $settingV);
@@ -109,14 +109,15 @@ class Tmux
 	{
 
 		switch ($which) {
-			case 'primary':
-					$ip = 'ip';
-					$port = 'port';
-					break;
 			case 'alternate':
 					$ip = 'ip_a';
 					$port = 'port_a';
 					break;
+			case 'primary':
+			default:
+				$ip = 'ip';
+				$port = 'port';
+				break;
 		}
 
 		$runVar['conncounts'][$which]['active'] = $runVar['conncounts'][$which]['total'] = 0;
@@ -141,31 +142,32 @@ class Tmux
 
 	public function getListOfPanes($constants)
 	{
+		$panes = ['zero' => '', 'one' => '', 'two' => ''];
 		switch ($constants['sequential']) {
 			case 0:
 				$panes_win_1 = shell_exec("echo `tmux list-panes -t {$constants['tmux_session']}:0 -F '#{pane_title}'`");
-				$runVar['panes']['zero'] = str_replace("\n", '', explode(" ", $panes_win_1));
+				$panes['zero'] = str_replace("\n", '', explode(" ", $panes_win_1));
 				$panes_win_2 = shell_exec("echo `tmux list-panes -t {$constants['tmux_session']}:1 -F '#{pane_title}'`");
-				$runVar['panes']['one'] = str_replace("\n", '', explode(" ", $panes_win_2));
+				$panes['one'] = str_replace("\n", '', explode(" ", $panes_win_2));
 				$panes_win_3 = shell_exec("echo `tmux list-panes -t {$constants['tmux_session']}:2 -F '#{pane_title}'`");
-				$runVar['panes']['two'] = str_replace("\n", '', explode(" ", $panes_win_3));
+				$panes['two'] = str_replace("\n", '', explode(" ", $panes_win_3));
 				break;
 			case 1:
 				$panes_win_1 = shell_exec("echo `tmux list-panes -t {$constants['tmux_session']}:0 -F '#{pane_title}'`");
-				$runVar['panes']['zero'] = str_replace("\n", '', explode(" ", $panes_win_1));
+				$panes['zero'] = str_replace("\n", '', explode(" ", $panes_win_1));
 				$panes_win_2 = shell_exec("echo `tmux list-panes -t {$constants['tmux_session']}:1 -F '#{pane_title}'`");
-				$runVar['panes']['one'] = str_replace("\n", '', explode(" ", $panes_win_2));
+				$panes['one'] = str_replace("\n", '', explode(" ", $panes_win_2));
 				$panes_win_3 = shell_exec("echo `tmux list-panes -t {$constants['tmux_session']}:2 -F '#{pane_title}'`");
-				$runVar['panes']['two'] = str_replace("\n", '', explode(" ", $panes_win_3));
+				$panes['two'] = str_replace("\n", '', explode(" ", $panes_win_3));
 				break;
 			case 2:
 				$panes_win_1 = shell_exec("echo `tmux list-panes -t {$constants['tmux_session']}:0 -F '#{pane_title}'`");
-				$runVar['panes']['zero'] = str_replace("\n", '', explode(" ", $panes_win_1));
+				$panes['zero'] = str_replace("\n", '', explode(" ", $panes_win_1));
 				$panes_win_2 = shell_exec("echo `tmux list-panes -t {$constants['tmux_session']}:1 -F '#{pane_title}'`");
-				$runVar['panes']['one'] = str_replace("\n", '', explode(" ", $panes_win_2));
+				$panes['one'] = str_replace("\n", '', explode(" ", $panes_win_2));
 				break;
 		}
-		return ($runVar['panes']);
+		return $panes;
 	}
 
 	public function getConstantSettings()
@@ -295,7 +297,7 @@ class Tmux
 
 	public function decodeSize($bytes)
 	{
-		$types = array('B', 'KB', 'MB', 'GB', 'TB');
+		$types = ['B', 'KB', 'MB', 'GB', 'TB'];
 		for ($i = 0; $bytes >= 1024 && $i < (count($types) - 1); $bytes /= 1024, $i++);
 		return (round($bytes, 2) . " " . $types[$i]);
 	}
@@ -332,8 +334,7 @@ class Tmux
 	// Returns random bool, weighted by $chance
 	public function rand_bool($loop, $chance = 60)
 	{
-		$t = new Tmux();
-		$tmux = $t->get();
+		$tmux = $this->get();
 		$usecache = (isset($tmux->usecache)) ? $tmux->usecache : 0;
 		if ($loop == 1 || $usecache == 0) {
 			return false;
@@ -344,16 +345,16 @@ class Tmux
 
 	public function relativeTime($_time)
 	{
-		$d[0] = array(1, "sec");
-		$d[1] = array(60, "min");
-		$d[2] = array(3600, "hr");
-		$d[3] = array(86400, "day");
-		$d[4] = array(31104000, "yr");
+		$d[0] = [1, "sec"];
+		$d[1] = [60, "min"];
+		$d[2] = [3600, "hr"];
+		$d[3] = [86400, "day"];
+		$d[4] = [31104000, "yr"];
 
-		$w = array();
+		$w = [];
 
-		$return = "";
-		$now = TIME();
+		$return = '';
+		$now = time();
 		$diff = ($now - ($_time >= $now ? $_time - 1 : $_time));
 		$secondsLeft = $diff;
 
@@ -361,11 +362,9 @@ class Tmux
 			$w[$i] = intval($secondsLeft / $d[$i][0]);
 			$secondsLeft -= ($w[$i] * $d[$i][0]);
 			if ($w[$i] != 0) {
-				//$return.= abs($w[$i]). " " . $d[$i][1] . (($w[$i]>1)?'s':'') ." ";
 				$return .= $w[$i] . " " . $d[$i][1] . (($w[$i] > 1) ? 's' : '') . " ";
 			}
 		}
-		//$return .= ($diff>0)?"ago":"left";
 		return $return;
 	}
 
@@ -377,77 +376,60 @@ class Tmux
 
 	public function proc_query($qry, $bookreqids, $request_hours, $db_name)
 	{
-
-		$proc1 = "SELECT
-				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 5000 AND 5999 AND rageid = -1) AS processtvrage,
-				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 2000 AND 2999 AND imdbid IS NULL) AS processmovies,
-				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid IN (3010, 3040, 3050) AND musicinfoid IS NULL) AS processmusic,
-				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 1000 AND 1999 AND consoleinfoid IS NULL) AS processconsole,
-				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid IN (" . $bookreqids . ") AND bookinfoid IS NULL) AS processbooks,
-				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid = 4050 AND gamesinfo_id = 0) AS processgames,
-				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 6000 AND 6040 AND xxxinfo_id = 0) AS processxxx,
-				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND nfostatus BETWEEN -8 AND -1) AS processnfo";
-		$proc2 = "SELECT
-				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND nfostatus = 1) AS nfo,
-				(SELECT COUNT(*) FROM releases r INNER JOIN category c ON c.id = r.categoryid WHERE r.nzbstatus = 1 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS work,
-				(SELECT COUNT(*) FROM groups WHERE active = 1) AS active_groups,
-				(SELECT COUNT(*) FROM groups WHERE name IS NOT NULL) AS all_groups";
-		$proc3 = "SELECT
-				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND isrequestid = 1 AND preid = 0 AND reqidstatus = 0) +
-				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND isrequestid = 1 AND preid = 0 AND reqidstatus = -1) +
-				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND isrequestid = 1 AND preid = 0 AND reqidstatus = -3 AND adddate > NOW() - INTERVAL " . $request_hours . " HOUR) AS requestid_inprogress,
-				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND isrequestid = 1 AND reqidstatus = 1) AS requestid_matched,
-				(SELECT COUNT(*) FROM releases WHERE preid > 0) AS predb_matched,
-				(SELECT COUNT(DISTINCT(preid)) FROM releases WHERE preid > 0) AS distinct_predb_matched";
-		$splitmy = sprintf("
-				SELECT
-				(SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE table_name = 'predb' AND TABLE_SCHEMA = %1\$s) AS predb,
-				(SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE table_name = 'partrepair' AND TABLE_SCHEMA = %1\$s) AS partrepair_table,
-				(SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE table_name = 'parts' AND TABLE_SCHEMA = %1\$s) AS parts_table,
-				(SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE table_name = 'binaries' AND TABLE_SCHEMA = %1\$s) AS binaries_table,
-				(SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE table_name = 'collections' AND TABLE_SCHEMA = %1\$s) AS collections_table,
-				(SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE table_name = 'releases' AND TABLE_SCHEMA = %1\$s) AS releases,
-				(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (now() - INTERVAL backfill_target DAY) < first_record_postdate) AS backfill_groups_days,
-				(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (now() - INTERVAL datediff(curdate(),
-					(SELECT VALUE FROM settings WHERE setting = 'safebackfilldate')) DAY) < first_record_postdate) AS backfill_groups_date",
-				$this->pdo->escapeString($db_name)
-		);
-		$splitpg = "SELECT
-				(SELECT COUNT(*) FROM predb WHERE id IS NOT NULL) AS predb,
-				(SELECT COUNT(*) FROM partrepair WHERE attempts < 5) AS partrepair_table,
-				(SELECT COUNT(*) FROM parts WHERE id IS NOT NULL) AS parts_table,
-				(SELECT COUNT(*) FROM binaries WHERE collectionid IS NOT NULL) AS binaries_table,
-				(SELECT COUNT(*) FROM collections WHERE collectionhash IS NOT NULL) AS collections_table,
-				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1) AS releases,
-				(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (current_timestamp - backfill_target * interval '1 days') < first_record_postdate) AS backfill_groups_days,
-				(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (current_timestamp - (date(current_date::date) -
-					date((SELECT value FROM settings WHERE setting = 'safebackfilldate')::date)) * interval '1 days') < first_record_postdate) AS backfill_groups_date";
-		$newoldmy = "SELECT
-				(SELECT searchname FROM releases ORDER BY adddate DESC LIMIT 1) AS newestrelname,
-				(SELECT UNIX_TIMESTAMP(MIN(dateadded)) FROM collections) AS oldestcollection,
-				(SELECT UNIX_TIMESTAMP(MAX(predate)) FROM predb) AS newestpre,
-				(SELECT UNIX_TIMESTAMP(MAX(adddate)) FROM releases) AS newestrelease";
-		$newoldpg = "SELECT
-				(SELECT searchname FROM releases ORDER BY adddate DESC LIMIT 1) AS newestrelname,
-				(SELECT extract(epoch FROM dateadded) FROM collections ORDER BY dateadded ASC LIMIT 1) AS oldestcollection,
-				(SELECT extract(epoch FROM predate) FROM predb ORDER BY predate DESC LIMIT 1) AS newestpre,
-				(SELECT extract(epoch FROM adddate) FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC LIMIT 1) AS newestrelease";
-
 		switch ((int) $qry) {
 			case 1:
-				return $proc1;
+				return sprintf("SELECT
+					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 5000 AND 5999 AND rageid = -1) AS processtvrage,
+					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 2000 AND 2999 AND imdbid IS NULL) AS processmovies,
+					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid IN (3010, 3040, 3050) AND musicinfoid IS NULL) AS processmusic,
+					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 1000 AND 1999 AND consoleinfoid IS NULL) AS processconsole,
+					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid IN (%s) AND bookinfoid IS NULL) AS processbooks,
+					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid = 4050 AND gamesinfo_id = 0) AS processgames,
+					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 6000 AND 6040 AND xxxinfo_id = 0) AS processxxx,
+					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND nfostatus BETWEEN -8 AND -1) AS processnfo", $bookreqids);
 			case 2:
-				return $proc2;
+				return "SELECT
+					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND nfostatus = 1) AS nfo,
+					(SELECT COUNT(*) FROM releases r
+						INNER JOIN category c ON c.id = r.categoryid
+						WHERE r.nzbstatus = 1
+						AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0
+					) AS work,
+					(SELECT COUNT(*) FROM groups WHERE active = 1) AS active_groups,
+					(SELECT COUNT(*) FROM groups WHERE name IS NOT NULL) AS all_groups";
 			case 3:
-				return $proc3;
+				return sprintf("SELECT
+					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND isrequestid = 1 AND preid = 0 AND reqidstatus = 0) +
+					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND isrequestid = 1 AND preid = 0 AND reqidstatus = -1) +
+					(SELECT COUNT(*) FROM releases
+						WHERE nzbstatus = 1
+						AND isrequestid = 1 AND preid = 0 AND reqidstatus = -3 AND adddate > NOW() - INTERVAL %s HOUR
+					) AS requestid_inprogress,
+					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND isrequestid = 1 AND reqidstatus = 1) AS requestid_matched,
+					(SELECT COUNT(*) FROM releases WHERE preid > 0) AS predb_matched,
+					(SELECT COUNT(DISTINCT(preid)) FROM releases WHERE preid > 0) AS distinct_predb_matched", $request_hours);
 			case 4:
-				return $splitmy;
-			case 5:
-				return $splitpg;
+				return sprintf("
+					SELECT
+					(SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE table_name = 'predb' AND TABLE_SCHEMA = %1\$s) AS predb,
+					(SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE table_name = 'partrepair' AND TABLE_SCHEMA = %1\$s) AS partrepair_table,
+					(SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE table_name = 'parts' AND TABLE_SCHEMA = %1\$s) AS parts_table,
+					(SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE table_name = 'binaries' AND TABLE_SCHEMA = %1\$s) AS binaries_table,
+					(SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE table_name = 'collections' AND TABLE_SCHEMA = %1\$s) AS collections_table,
+					(SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE table_name = 'releases' AND TABLE_SCHEMA = %1\$s) AS releases,
+					(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1
+						AND (now() - INTERVAL backfill_target DAY) < first_record_postdate
+					) AS backfill_groups_days,
+					(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (now() - INTERVAL datediff(curdate(),
+					(SELECT VALUE FROM settings WHERE setting = 'safebackfilldate')) DAY) < first_record_postdate) AS backfill_groups_date",
+					$this->pdo->escapeString($db_name)
+				);
 			case 6:
-				return $newoldmy;
-			case 7:
-				return $newoldpg;
+				return "SELECT
+					(SELECT searchname FROM releases ORDER BY adddate DESC LIMIT 1) AS newestrelname,
+					(SELECT UNIX_TIMESTAMP(MIN(dateadded)) FROM collections) AS oldestcollection,
+					(SELECT UNIX_TIMESTAMP(MAX(predate)) FROM predb) AS newestpre,
+					(SELECT UNIX_TIMESTAMP(MAX(adddate)) FROM releases) AS newestrelease";
 			default:
 				return false;
 		}

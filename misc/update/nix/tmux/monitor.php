@@ -124,13 +124,8 @@ while ($runVar['counts']['iterations'] > 0) {
 
 		$splitqry = $newOldqry = '';
 
-		if ($dbtype == 'mysql') {
-			$splitqry = $tRun->proc_query(4, $runVar['settings']['book_reqids'], $runVar['settings']['request_hours'], $db_name);
-			$newOldqry = $tRun->proc_query(6, $runVar['settings']['book_reqids'], $runVar['settings']['request_hours'], $db_name);
-		} else {
-			$splitqry = $tRun->proc_query(5, $runVar['settings']['book_reqids'], $runVar['settings']['request_hours'], $db_name);
-			$newOldqry = $tRun->proc_query(7, $runVar['settings']['book_reqids'], $runVar['settings']['request_hours'], $db_name);
-		}
+		$splitqry = $tRun->proc_query(4, $runVar['settings']['book_reqids'], $runVar['settings']['request_hours'], $db_name);
+		$newOldqry = $tRun->proc_query(6, $runVar['settings']['book_reqids'], $runVar['settings']['request_hours'], $db_name);
 
 		$splitres = $pdo->queryOneRow($splitqry, false);
 		$runVar['timers']['newOld'] = $pdo->queryOneRow($newOldqry, false);

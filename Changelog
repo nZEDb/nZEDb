@@ -8,6 +8,7 @@ New updates are grouped by person, at the top of the file.
 
 2014-08-05 kevin
 	* Chg: Pass all $runVar params by reference, hopefully fixing all timer issues in Tmux scripts.
+	* Chg: Minor changes to Tmux.php
 2014-08-04 bart39
 	* Mrg: tasky's GiantBomb search changes PR #1449
 2014-08-04 ruhllatio
