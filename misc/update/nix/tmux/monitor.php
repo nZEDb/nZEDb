@@ -46,7 +46,7 @@ $runVar['timers']['query']['tpg1_time'] = 0;
 
 // Analyze tables
 printf($pdo->log->info("\nAnalyzing your tables to refresh your indexes."));
-$pdo->optimise(true, 'analyze');
+$pdo->optimise(false, 'analyze', false, ['releases']);
 passthru('clear');
 
 $runVar['settings']['monitor'] = 0;
