@@ -185,19 +185,17 @@ class Logger
 
 		$this->getSettings();
 
-		$logFilePath = (
+		$this->currentLogFolder = (
 			!empty($options['LogFolder'])
 				? $options['LogFolder']
 				: $this->currentLogFolder
 		);
-		$this->currentLogFolder = $logFilePath;
 
-		$logFileName = (
-		!empty($options['LogFileName'])
-			? $options['LogFileName']
-			: $this->currentLogName
+		$this->currentLogName = (
+			!empty($options['LogFileName'])
+				? $options['LogFileName']
+				: $this->currentLogName
 		) . '.log';
-		$this->currentLogName = $logFileName;
 
 		$this->setLogFile();
 
