@@ -781,29 +781,41 @@ class DB extends \PDO
 	/**
 	 * Optimises/repairs tables on mysql.
 	 *
-	 * @param bool   $admin
-	 * @param string $type  'true'    Force optimize of all tables.
-	 *                      'full'    Force optimize of all tables.
-	 *                      'all'     Optimise tables with 5% or more free space.
-	 *                      'run'     Optimise tables with 5% or more free space.
-	 *                      'analyze' Analyze tables to rebuild statistics.
+	 * @param bool   $admin    If we are on web, don't echo.
+	 * @param string $type     'full' | '' Force optimize of all tables.
+	 *                         'space'     Optimise tables with 5% or more free space.
+	 *                         'analyze'   Analyze tables to rebuild statistics.
+	 * @param bool  $local     Only analyze local tables. Good if running replication.
+	 * @param array $tableList (optional) Names of tables to analyze.
 	 *
 	 * @return int Quantity optimized/analyzed
 	 */
-	public function optimise($admin = false, $type = '')
+	public function optimise($admin = false, $type = '', $local = false, $tableList = [])
 	{
-		$tableArray = $myIsamTables = false;
+		$tableAnd = '';
+		if (count($tableList)) {
+			foreach ($tableList as $tableName) {
+				$tableAnd .= ($this->escapeString($tableName) . ',');
+			}
+			$tableAnd = (' AND Name IN (' . rtrim($tableAnd, ',') . ')');
+		}
 
-		if ($type === 'true' || $type === 'full' || $type === 'analyze') {
-			$tableArray = $this->queryDirect('SHOW TABLE STATUS ');
-			$myIsamTables = $this->queryDirect("SHOW TABLE STATUS WHERE ENGINE LIKE 'myisam'");
-		} else if ($type === 'all' || $type === 'run') {
-			$tableArray = $this->queryDirect('SHOW TABLE STATUS WHERE Data_free / Data_length > 0.005');
-			$myIsamTables = $this->queryDirect("SHOW TABLE STATUS WHERE ENGINE LIKE 'myisam' AND Data_free / Data_length > 0.005");
+		switch ($type) {
+			case 'space':
+				$tableArray = $this->queryDirect('SHOW TABLE STATUS WHERE Data_free / Data_length > 0.005' . $tableAnd);
+				$myIsamTables = $this->queryDirect("SHOW TABLE STATUS WHERE ENGINE LIKE 'myisam' AND Data_free / Data_length > 0.005" . $tableAnd);
+				break;
+			case 'analyze':
+			case '':
+			case 'full':
+			default:
+				$tableArray = $this->queryDirect('SHOW TABLE STATUS WHERE 1=1' . $tableAnd);
+				$myIsamTables = $this->queryDirect("SHOW TABLE STATUS WHERE ENGINE LIKE 'myisam'" . $tableAnd);
+				break;
 		}
 
 		$optimised = 0;
-		if ($tableArray instanceof \Traversable) {
+		if ($tableArray instanceof \Traversable && $tableArray->rowCount()) {
 
 			$tableNames = '';
 			foreach ($tableArray as $table) {
@@ -811,26 +823,25 @@ class DB extends \PDO
 			}
 			$tableNames = rtrim($tableNames, ',');
 
+			$local = ($local ? 'LOCAL' : '');
 			if ($type === 'analyze') {
-
-				$this->queryExec('ANALYZE LOCAL TABLE ' . $tableNames);
+				$this->queryExec(sprintf('ANALYZE %s TABLE %s', $local, $tableNames));
 				$this->logOptimize($admin, 'ANALYZE', $tableNames);
-
 			} else {
 
-				$this->queryExec('OPTIMIZE LOCAL TABLE ' . $tableNames);
+				$this->queryExec(sprintf('OPTIMIZE %s TABLE %s', $local, $tableNames));
 				$this->logOptimize($admin, 'OPTIMIZE', $tableNames);
 
-				if ($myIsamTables instanceof \Traversable) {
+				if ($myIsamTables instanceof \Traversable && $myIsamTables->rowCount()) {
 					$tableNames = '';
 					foreach ($myIsamTables as $table) {
 						$tableNames .= $table['name'] . ',';
 					}
-					$this->queryExec('REPAIR LOCAL TABLE ' . rtrim($tableNames, ','));
+					$tableNames = rtrim($tableNames, ',');
+					$this->queryExec(sprintf('REPAIR %s TABLE %s', $local, $tableNames));
 					$this->logOptimize($admin, 'REPAIR', $tableNames);
 				}
-
-				$this->queryExec('FLUSH TABLES');
+				$this->queryExec(sprintf('FLUSH %s TABLES', $local));
 			}
 			$optimised = $tableArray->rowCount();
 		}
@@ -850,13 +861,13 @@ class DB extends \PDO
 	 */
 	private function logOptimize($web, $type, $tables)
 	{
-		$message = $type . ' table: ' . $tables;
+		$message = $type . ' (' . $tables . ')';
 		if ($web === false) {
 			echo $this->log->primary($message);
 
 		}
 		if ($this->_debug) {
-			$this->debugging->start("optimise", $message, 5);
+			$this->debugging->start('optimise', $message, 5);
 		}
 	}
 
