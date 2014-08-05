@@ -17,7 +17,7 @@ if (isset($argv[1]) && in_array($argv[1], ['space', 'analyze', 'full'])) {
 	} else if ($tableCount > 0) {
 		exit($pdo->log->header("Optimized {$tableCount} MySQL tables successfully." . PHP_EOL));
 	} else {
-		exit($pdo->log->notice("No MySQL tables to optimize."));
+		exit($pdo->log->notice('No MySQL tables to optimize.' . PHP_EOL));
 	}
 } else {
 	exit($pdo->log->error(
