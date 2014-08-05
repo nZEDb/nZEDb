@@ -566,7 +566,7 @@ class Logger
 	private function compressLog()
 	{
 		$handle = @fopen($this->logPath, 'rb');
-		$zipHandle = @gzopen(str_replace(['.txt, .log'], '', $this->logPath) . '.' . time() . '.gz', 'w6');
+		$zipHandle = @gzopen(str_replace('.log', '', $this->logPath) . '.' . time() . '.gz', 'w6');
 		if (!$handle || !$zipHandle) {
 			return;
 		}
