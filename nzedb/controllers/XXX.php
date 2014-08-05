@@ -27,7 +27,7 @@ class XXX
 	protected $currentTitle = '';
 
 	/**
-	 * @var Debugging
+	 * @var Logger
 	 */
 	protected $debugging;
 
@@ -73,7 +73,7 @@ class XXX
 
 		if (nZEDb_DEBUG || nZEDb_LOGGING) {
 			$this->debug = true;
-			$this->debugging = new Debugging(['Class' => 'XXX', 'ColorCLI' => $this->pdo->log]);
+			$this->debugging = new Logger(['ColorCLI' => $this->pdo->log]);
 		}
 	}
 
