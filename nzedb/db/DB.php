@@ -832,7 +832,7 @@ class DB extends \PDO
 				$this->queryExec(sprintf('OPTIMIZE %s TABLE %s', $local, $tableNames));
 				$this->logOptimize($admin, 'OPTIMIZE', $tableNames);
 
-				if ($myIsamTables instanceof \Traversable) {
+				if ($myIsamTables instanceof \Traversable && $myIsamTables->rowCount()) {
 					$tableNames = '';
 					foreach ($myIsamTables as $table) {
 						$tableNames .= $table['name'] . ',';
