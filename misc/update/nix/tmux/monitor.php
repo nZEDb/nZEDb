@@ -365,7 +365,7 @@ while ($runVar['counts']['iterations'] > 0) {
 		$tRun->runPane('sharing', $runVar);
 
 		//update tv and theaters
-		$runVar['timers']['timer4'] = $tRun->runPane('updatetv', $runVar);
+		$tRun->runPane('updatetv', $runVar);
 
 		//run these if complete sequential not set
 		if ($runVar['constants']['sequential'] != 2) {
@@ -377,10 +377,10 @@ while ($runVar['counts']['iterations'] > 0) {
 			$tRun->runPane('dehash', $runVar);
 
 			// Remove crap releases.
-			$runVar['modsettings']['fc'] = $tRun->runPane('removecrap', $runVar);
+			$tRun->runPane('removecrap', $runVar);
 
 			//run postprocess_releases additional
-			$runVar['timers']['timer3'] = $tRun->runPane('ppadditional', $runVar);
+			$tRun->runPane('ppadditional', $runVar);
 
 			//run postprocess_releases non amazon
 			$tRun->runPane('nonamazon', $runVar);
