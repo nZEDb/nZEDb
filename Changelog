@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-08-05 bart39
+	* Fix: unknown column in where clause
 2014-08-05 niel
 	* Chg: Optimised TmuxOutput to improve monitor pane updates.
 2014-08-05 kevin

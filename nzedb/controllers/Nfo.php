@@ -404,7 +404,7 @@ class Nfo
 		// Set releases with no NFO.
 		$this->pdo->queryExec(
 			sprintf(
-				'UPDATE releases SET nfostatus = %d WHERE nfostatus < %d %s %s',
+				'UPDATE releases r SET r.nfostatus = %d WHERE r.nfostatus < %d %s %s',
 				self::NFO_FAILED,
 				$this->maxRetries,
 				$groupIDQuery,
