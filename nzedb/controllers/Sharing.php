@@ -308,10 +308,13 @@ Class Sharing
 		if ($this->siteSettings['last_article'] == 0) {
 			// If the user picked to start from the oldest, get the oldest.
 			if ($this->siteSettings['start_position'] === true) {
-				$this->siteSettings['last_article'] = $ourOldest = (string)($group['first']);
+				$this->siteSettings['last_article'] = $ourOldest = $group['first'];
 			// Else get the newest.
 			} else {
-				$this->siteSettings['last_article'] = $ourOldest = (string)($group['last'] - 1000);
+				$this->siteSettings['last_article'] = $ourOldest = (string)($group['last'] - $this->siteSettings['max_pull']);
+				if ($ourOldest < $group['first']) {
+					$this->siteSettings['last_article'] = $ourOldest = $group['first'];
+				}
 			}
 		} else {
 			$ourOldest = (string)($this->siteSettings['last_article'] + 1);

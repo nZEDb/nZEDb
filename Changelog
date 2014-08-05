@@ -12,6 +12,7 @@ New updates are grouped by person, at the top of the file.
 	* Chg: Monitor to only analyze releases.
 	* Add: More options to optimise method (specifying table name / running on local tables only).
 	* Chg: Change doConnect logic based on recent compression on demand changes.
+	* Chg: Use max downloads setting on sharing when starting without backfill.
 2014-08-04 bart39
 	* Mrg: tasky's GiantBomb search changes PR #1449
 2014-08-04 ruhllatio
