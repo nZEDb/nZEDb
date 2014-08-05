@@ -229,10 +229,7 @@ switch ($options[1]) {
 			$pdo = new \nzedb\db\Settings();
 
 			// Create the connection here and pass, this is for post processing, so check for alternate.
-			$nntp = new NNTP(['Settings' => $pdo]);
-			if (($pdo->getSetting('alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
-				exit('Unable to connect to usenet.');
-			}
+			$nntp = nntp($pdo, true);
 
 			if ($options[1] === 'pp_nfo') {
 				(new Nfo(['Echo' => true, 'Settings' => $pdo]))->processNfoFiles($nntp, '', $options[2]);
@@ -315,13 +312,14 @@ function collectionCheck(&$pdo, $groupID)
  * Connect to usenet, return NNTP object.
  *
  * @param \nzedb\db\Settings $pdo
+ * @param bool               $alternate Use alternate NNTP provider.
  *
  * @return NNTP
  */
-function &nntp(&$pdo)
+function &nntp(&$pdo, $alternate = false)
 {
 	$nntp = new NNTP();
-	if (($pdo->getSetting('alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
+	if (($alternate && $pdo->getSetting('alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
 		exit("ERROR: Unable to connect to usenet." . PHP_EOL);
 	}
 

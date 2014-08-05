@@ -18,6 +18,7 @@ New updates are grouped by person, at the top of the file.
 	* Chg: Sharing, set the actual first seen date.
 	* Chg: Much better logging performance, and many more user changeable settings in settings.php (copy from settings.php.example).
 	* Chg: Use constants everywhere for logging severity.
+	* Fix: Issue where alternate usp can be used for headers. #1456
 2014-08-04 bart39
 	* Mrg: tasky's GiantBomb search changes PR #1449
 2014-08-04 ruhllatio
