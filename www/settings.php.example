@@ -46,9 +46,23 @@ define('nZEDb_FLOOD_MAX_REQUESTS_PER_SECOND', 5);
  * of server resources.
  * To find a good number for your server, run the misc/testing/Dev/find_password_hash_cost.php script.
  *
+ * @note It is not recommended to set this under 11.
+ *
  * @default 11
  */
 define('nZEDb_PASSWORD_HASH_COST', 11);
+
+/**
+ * The type of search system to use on the site.
+ *
+ * 0 = The default system, which uses fulltext indexing (very fast but search results can be unexpected).
+ * 1 = The old search system from newznab classic (much slower but produces better search results).
+ * 2 = Not currently implemented, will use sphinx real time indexes (should give good search results, but
+ *     speed in between both of the above methods).
+ *
+ * @default 0
+ */
+define('nZEDb_RELEASE_SEARCH_TYPE', 0);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////// CLI Settings //////////////////////////////////////////////////////////
@@ -97,13 +111,13 @@ define('nZEDb_CACHE_TYPE', 0);
 define(
 	'nZEDb_CACHE_HOSTS',
 	serialize(
-		array(
-			'Server1' => array(
+		[
+			'Server1' => [
 				'host'   => '127.0.0.1',
 				'port'   => 11211,
 				'weight' => 0
-			),
-		)
+			],
+		]
 	)
 );
 
