@@ -166,7 +166,7 @@ class Logger
 	 *                       (Optional) Filename of log, must be alphanumeric (a-z 0-9) and contain no file extensions.
 	 *
 	 * @access public
-	 * @throws DebuggingException
+	 * @throws LoggerException
 	 */
 	public function __construct(array $options = [])
 	{
@@ -384,7 +384,7 @@ class Logger
 	/**
 	 * Sets the path and name for the log file.
 	 *
-	 * @throws DebuggingException
+	 * @throws LoggerException
 	 * @access private
 	 */
 	private function setLogFile()
@@ -445,7 +445,7 @@ class Logger
 	/**
 	 * Opens the log file.
 	 *
-	 * @throws DebuggingException
+	 * @throws LoggerException
 	 */
 	private function openFile()
 	{
@@ -453,7 +453,7 @@ class Logger
 			$this->resource = @fopen($this->logPath, 'ab');
 
 			if (!$this->resource) {
-				throw new DebuggingException('Unable to open log file ' . $this->logPath);
+				throw new LoggerException('Unable to open log file ' . $this->logPath);
 			}
 		}
 	}
@@ -505,7 +505,7 @@ class Logger
 	 * Check if the log folder exists, if not create it.
 	 *
 	 * @access private
-	 * @throws DebuggingException
+	 * @throws LoggerException
 	 */
 	private function createFolder()
 	{
@@ -513,7 +513,7 @@ class Logger
 		if (!is_dir($this->currentLogFolder)) {
 			$old = umask(0777);
 			if (!mkdir($this->currentLogFolder)) {
-				throw new DebuggingException('Unable to create log file folder ' . $this->currentLogFolder);
+				throw new LoggerException('Unable to create log file folder ' . $this->currentLogFolder);
 			}
 			chmod($this->currentLogFolder, 0777);
 			umask($old);
@@ -524,7 +524,7 @@ class Logger
 	 * Initiate a log file.
 	 *
 	 * @access private
-	 * @throws DebuggingException
+	 * @throws LoggerException
 	 */
 	private function initiateLog()
 	{
@@ -533,7 +533,7 @@ class Logger
 					$this->logPath,
 					'[' . $this->getDate() . '] [INIT]   [Initiating new log file.]' . PHP_EOL)
 			) {
-				throw new DebuggingException('Unable to create new log file ' . $this->logPath);
+				throw new LoggerException('Unable to create new log file ' . $this->logPath);
 			}
 		}
 	}
@@ -756,4 +756,4 @@ class Logger
 
 }
 
-class DebuggingException extends Exception {}
+class LoggerException extends Exception {}

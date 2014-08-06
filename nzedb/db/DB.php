@@ -85,11 +85,11 @@ class DB extends \PDO
 	 * Constructor. Sets up all necessary properties. Instantiates a PDO object
 	 * if needed, otherwise returns the current one.
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		$this->cli = Utility::isCLI();
 
-		$defaults = array(
+		$defaults = [
 			'checkVersion'	=> false,
 			'createDb'		=> false, // create dbname if it does not exist?
 			'ct'			=> new \ConsoleTools(),
@@ -102,7 +102,7 @@ class DB extends \PDO
 			'dbuser' 		=> defined('DB_USER') ? DB_USER : '',
 			'log'			=> new \ColorCLI(),
 			'persist'		=> false,
-		);
+		];
 		$options += $defaults;
 		if (!$this->cli) {
 			$options['log'] = null;
@@ -133,7 +133,11 @@ class DB extends \PDO
 
 		$this->_debug = (nZEDb_DEBUG || nZEDb_LOGGING);
 		if ($this->_debug) {
-			$this->debugging = new \Logger(['ColorCLI' => $this->log]);
+			try {
+				$this->debugging = new \Logger(['ColorCLI' => $this->log]);
+			} catch (\LoggerException $error) {
+				$this->_debug = false;
+			}
 		}
 
 
@@ -249,8 +253,8 @@ class DB extends \PDO
 		}
 		$dsn .= ';charset=utf8';
 
-		$options = array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION, \PDO::ATTR_TIMEOUT => 180,
-						 \PDO::ATTR_PERSISTENT => $this->opts['persist']);
+		$options = [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION, \PDO::ATTR_TIMEOUT => 180,
+						 \PDO::ATTR_PERSISTENT => $this->opts['persist']];
 		if ($this->dbSystem === 'mysql') {
 			$options[\PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES utf8";
 			$options[\PDO::MYSQL_ATTR_LOCAL_INFILE] = true;
@@ -505,7 +509,7 @@ class DB extends \PDO
 				$e->errorInfo[1] == 1205 ||
 				$e->getMessage() == 'SQLSTATE[40001]: Serialization failure: 1213 Deadlock found when trying to get lock; try restarting transaction'
 			) {
-				return array('deadlock' => true, 'message' => $e->getMessage());
+				return ['deadlock' => true, 'message' => $e->getMessage()];
 			}
 
 			// Check if we lost connection to MySQL.
@@ -520,7 +524,7 @@ class DB extends \PDO
 				}
 			}
 
-			return array ('deadlock' => false, 'message' => $e->getMessage());
+			return ['deadlock' => false, 'message' => $e->getMessage()];
 		}
 	}
 
@@ -615,7 +619,7 @@ class DB extends \PDO
 			$this->cacheServer->set($this->cacheServer->createKey($query), $result, $cacheExpiry);
 		}
 
-		return ($result === false) ? array() : $result;
+		return ($result === false) ? [] : $result;
 	}
 
 	/**
@@ -1001,7 +1005,7 @@ class DB extends \PDO
 	 *
 	 * @link http://www.php.net/pdo.prepare.php
 	 */
-	public function Prepare($query, $options = array())
+	public function Prepare($query, $options = [])
 	{
 		try {
 			$PDOstatement = self::$pdo->prepare($query, $options);
