@@ -10,6 +10,7 @@ New updates are grouped by person, at the top of the file.
 2014-08-06 kevin
 	* Chg: Rename DebuggingException to LoggerException to match base class name.
 	* Chg: Clean up of Releases class after the move to ProcessReleases.
+	* Add: Setting to use the old search. Copy from www/settings.php.example to www/settings.php
 2014-08-05 tasky
 	* Fix: id supposed to be title #1457
 2014-08-05 bart39

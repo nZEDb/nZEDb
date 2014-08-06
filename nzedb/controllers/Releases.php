@@ -31,6 +31,11 @@ class Releases
 	public $updategrabs;
 
 	/**
+	 * @var ReleaseSearch
+	 */
+	public $releaseSearch;
+
+	/**
 	 * @var array $options Class instances.
 	 */
 	public function __construct(array $options = [])
@@ -44,6 +49,7 @@ class Releases
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 		$this->groups = ($options['Groups'] instanceof Groups ? $options['Groups'] : new Groups(['Settings' => $this->pdo]));
 		$this->updategrabs = ($this->pdo->getSetting('grabstatus') == '0' ? false : true);
+		$this->releaseSearch = new ReleaseSearch($this->pdo);
 	}
 
 	/**
@@ -766,62 +772,6 @@ class Releases
 	}
 
 	/**
-	 * Creates part of a query for searches based on the type of search.
-	 *
-	 * @param string $search
-	 * @param string $type
-	 *
-	 * @return string
-	 */
-	public function searchSQL($search, $type)
-	{
-		// If the query starts with a ^ or ! it indicates the search is looking for items which start with the term
-		// still do the fulltext match, but mandate that all items returned must start with the provided word.
-		$words = explode(' ', $search);
-
-		//only used to get a count of words
-		$searchWords = $searchSQL = '';
-		$wordCount = 0;
-
-		if (count($words) > 0) {
-			if ($type === 'name' || $type === 'searchname') {
-				//at least 1 term needs to be mandatory
-				if (!preg_match('/[+!^]/', $search)) {
-					$search = '+' . $search;
-					$words = explode(' ', $search);
-				}
-				foreach ($words as $word) {
-					$word = str_replace("'", "\\'", str_replace(['!', '^'], '+', trim($word, "-\n\t\r\0\x0B ")));
-
-					if ($word !== '' && $word !== '-' && strlen($word) >= 2) {
-						$searchWords .= sprintf('%s ', $word);
-					}
-				}
-				$searchWords = trim($searchWords);
-				$searchSQL .= sprintf(" AND MATCH(rs.name, rs.searchname) AGAINST('%s' IN BOOLEAN MODE)", $searchWords);
-			}
-			if ($searchWords === '') {
-				$words = explode(' ', $search);
-				foreach ($words as $word) {
-					if ($word != '') {
-						$word = trim($word, "-\n\t\r\0\x0B ");
-						if ($wordCount == 0 && (strpos($word, '^') === 0)) {
-							$searchSQL .= sprintf(' AND r.%s %s', $type, $this->pdo->likeString(substr($word, 1), false));
-						} else if (substr($word, 0, 2) == '--') {
-							$searchSQL .= sprintf(' AND r.%s NOT %s', $type, $this->pdo->likeString(substr($word, 2)));
-						} else {
-							$searchSQL .= sprintf(' AND r.%s %s', $type, $this->pdo->likeString($word));
-						}
-
-						$wordCount++;
-					}
-				}
-			}
-		}
-		return $searchSQL;
-	}
-
-	/**
 	 * Creates part of a query for searches requiring the categoryID's.
 	 *
 	 * @param array $categories
@@ -902,7 +852,7 @@ class Releases
 			groups.name AS group_name, rn.id AS nfoid,
 			re.releaseid AS reid, cp.id AS categoryparentid
 			FROM releases r
-			INNER JOIN releasesearch rs on rs.releaseid = r.id
+			%s
 			LEFT OUTER JOIN releasevideo re ON re.releaseid = r.id
 			LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id
 			INNER JOIN groups ON groups.id = r.group_id
@@ -911,11 +861,12 @@ class Releases
 			WHERE r.passwordstatus <= %d %s %s %s %s %s %s %s %s %s %s %s %s %s) r
 			ORDER BY r.%s %s
 			LIMIT %d OFFSET %d",
+			$this->releaseSearch->getFullTextJoinString(),
 			$this->showPasswords(),
-			($searchName != -1 ? $this->searchSQL($searchName, 'searchname') : ''),
-			($usenetName != -1 ? $this->searchSQL($usenetName, 'name') : ''),
+			($searchName != -1 ? $this->releaseSearch->getSearchSQL('searchname', $searchName) : ''),
+			($usenetName != -1 ? $this->releaseSearch->getSearchSQL('name', $usenetName) : ''),
 			($maxAge > 0 ? sprintf(' AND r.postdate > (NOW() - INTERVAL %d DAY) ', $maxAge) : ''),
-			($posterName != '-1' ? $this->searchSQL($posterName, 'fromname') : ''),
+			($posterName != '-1' ? $this->releaseSearch->getSearchSQL('fromname', $posterName, true) : ''),
 			($groupName != -1 ? sprintf(' AND r.group_id = %d ', $this->groups->getIDByName($groupName)) : ''),
 			(in_array($sizeFrom, $sizeRange) ? ' AND r.size > ' . (string)(104857600 * (int)$sizeFrom) . ' ' : ''),
 			(in_array($sizeTo, $sizeRange) ? ' AND r.size < ' . (string)(104857600 * (int)$sizeTo) . ' ' : ''),
@@ -951,7 +902,8 @@ class Releases
 		$wherePosition = strpos($query, 'WHERE');
 		$totalCount = $this->pdo->queryOneRow(
 			sprintf(
-				'SELECT COUNT(r.id) AS total FROM releases r INNER JOIN releasesearch rs ON rs.releaseid = r.id %s',
+				'SELECT COUNT(r.id) AS total FROM releases r %s %s',
+				$this->releaseSearch->getFullTextJoinString(),
 				substr($query, $wherePosition, strrpos($query, ($orderBy ? 'ORDER BY' : ')')) - $wherePosition)
 			)
 		);
@@ -976,9 +928,9 @@ class Releases
 			"SELECT r.*, concat(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids,
 				groups.name AS group_name, rn.id AS nfoid, re.releaseid AS reid
 			FROM releases r
+			%s
 			INNER JOIN category c ON c.id = r.categoryid
 			INNER JOIN groups ON groups.id = r.group_id
-			INNER JOIN releasesearch rs on rs.releaseid = r.id
 			LEFT OUTER JOIN releasevideo re ON re.releaseid = r.id
 			LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
 			INNER JOIN category cp ON cp.id = c.parentid
@@ -988,11 +940,12 @@ class Releases
 			ORDER BY postdate DESC
 			LIMIT %d
 			OFFSET %d",
+			$this->releaseSearch->getFullTextJoinString(),
 			$this->showPasswords(),
 			($rageId != -1 ? sprintf(' AND rageid = %d ', $rageId) : ''),
 			($series != '' ? sprintf(' AND UPPER(r.season) = UPPER(%s)', $this->pdo->escapeString(((is_numeric($series) && strlen($series) != 4) ? sprintf('S%02d', $series) : $series))) : ''),
 			($episode != '' ? sprintf(' AND r.episode %s', $this->pdo->likeString((is_numeric($episode) ? sprintf('E%02d', $episode) : $episode))) : ''),
-			($name !== '' ? $this->searchSQL($name, 'searchname') : ''),
+			($name !== '' ? $this->releaseSearch->getSearchSQL('searchname', $name) : ''),
 			$this->categorySQL($cat),
 			($maxAge > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxAge) : ''),
 			$limit,
@@ -1024,17 +977,18 @@ class Releases
 			"SELECT r.*, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids,
 				groups.name AS group_name, rn.id AS nfoid
 			FROM releases r
-			INNER JOIN releasesearch rs on rs.releaseid = r.id
+			%s
 			INNER JOIN category c ON c.id = r.categoryid
 			INNER JOIN groups ON groups.id = r.group_id
 			LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
 			INNER JOIN category cp ON cp.id = c.parentid
 			WHERE r.passwordstatus <= %d %s %s %s %s %s
 			ORDER BY postdate DESC LIMIT %d OFFSET %d",
+			$this->releaseSearch->getFullTextJoinString(),
 			$this->showPasswords(),
 			($aniDbID > -1 ? sprintf(' AND anidbid = %d ', $aniDbID) : ''),
 			(is_numeric($episodeNumber) ? sprintf(" AND r.episode '%s' ", $this->pdo->likeString($episodeNumber)) : ''),
-			($name !== '' ? $this->searchSQL($name, 'searchname') : ''),
+			($name !== '' ? $this->releaseSearch->getSearchSQL('searchname', $name) : ''),
 			$this->categorySQL($cat),
 			($maxAge > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxAge) : ''),
 			$limit,
@@ -1065,9 +1019,9 @@ class Releases
 				CONCAT(cp.id, ',', c.id) AS category_ids,
 				g.name AS group_name, rn.id AS nfoid
 			FROM releases r
+			%s
 			INNER JOIN groups g ON g.id = r.group_id
 			INNER JOIN category c ON c.id = r.categoryid
-			INNER JOIN releasesearch rs ON rs.releaseid = r.id
 			LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
 			INNER JOIN category cp ON cp.id = c.parentid
 			WHERE r.categoryid BETWEEN 2000 AND 2999
@@ -1076,8 +1030,9 @@ class Releases
 			%s %s %s %s
 			ORDER BY postdate DESC
 			LIMIT %d OFFSET %d",
+			$this->releaseSearch->getFullTextJoinString(),
 			$this->showPasswords(),
-			($name !== '' ? $this->searchSQL($name, 'searchname') : ''),
+			($name !== '' ? $this->releaseSearch->getSearchSQL('searchname', $name) : ''),
 			(($imDbId != '-1' && is_numeric($imDbId)) ? sprintf(' AND imdbid = %d ', str_pad($imDbId, 7, '0', STR_PAD_LEFT)) : ''),
 			$this->categorySQL($cat),
 			($maxAge > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxAge) : ''),
@@ -1383,7 +1338,7 @@ class Releases
 		);
 	}
 
-		/**
+	/**
 	 * Get all newest xxx with covers for poster wall.
 	 *
 	 * @return array
