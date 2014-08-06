@@ -1117,7 +1117,7 @@ class Binaries
 				') (' .
 				$this->daysOld($date) .
 				" days old)",
-				5
+				Logger::LOG_INFO
 			);
 		}
 

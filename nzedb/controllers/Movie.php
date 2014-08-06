@@ -759,7 +759,7 @@ class Movie
 						$percent .
 						'% similar to (' .
 						$this->currentTitle . ')',
-						5
+						Logger::LOG_INFO
 					);
 				}
 				return false;
@@ -866,7 +866,7 @@ class Movie
 							$percent .
 							'% similar to (' .
 							$this->currentTitle . ')',
-							5
+							Logger::LOG_INFO
 						);
 					}
 					return false;
