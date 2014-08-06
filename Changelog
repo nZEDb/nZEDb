@@ -3,9 +3,9 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
-***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
-***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-08-06 niel
+	* Chg: Tmux - Reordered output in monitor pane.
 2014-08-06 kevin
 	* Chg: Rename DebuggingException to LoggerException to match base class name.
 	* Chg: Clean up of Releases class after the move to ProcessReleases.
