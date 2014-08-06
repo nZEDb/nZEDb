@@ -6,6 +6,7 @@ New updates are grouped by person, at the top of the file.
 
 2014-08-06 niel
 	* Chg: Tmux - Reordered output in monitor pane.
+	* New: Setting to specify date formatting in shell scripts. Defaults to YYYY-MM-DD HH:MM:SS.
 2014-08-06 kevin
 	* Chg: Rename DebuggingException to LoggerException to match base class name.
 	* Chg: Clean up of Releases class after the move to ProcessReleases.
