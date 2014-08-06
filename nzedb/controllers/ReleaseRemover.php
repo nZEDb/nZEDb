@@ -111,13 +111,14 @@ class ReleaseRemover
 	 *
 	 * @param array $options Class instances / various options.
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		$defaults = [
 			'Browser'      => false, // Are we coming from the web script.
 			'ConsoleTools' => null,
 			'Echo'         => true, // Echo to CLI?
 			'NZB'          => null,
+			'ReleaseImage' => null,
 			'Releases'     => null,
 			'Settings'     => null,
 		];
@@ -127,6 +128,7 @@ class ReleaseRemover
 		$this->consoleTools = ($options['ConsoleTools'] instanceof ConsoleTools ? $options['ConsoleTools'] : new ConsoleTools(['ColorCLI' => $this->pdo->log]));
 		$this->releases = ($options['Releases'] instanceof Releases ? $options['Releases'] : new Releases(['Settings' => $this->pdo]));
 		$this->nzb = ($options['NZB'] instanceof NZB ? $options['NZB'] : new NZB($this->pdo));
+		$this->releaseImage = ($options['ReleaseImage'] instanceof ReleaseImage ? $options['ReleaseImage'] : new ReleaseImage($this->pdo));
 
 		$this->query = '';
 		$this->error = '';
@@ -966,7 +968,7 @@ class ReleaseRemover
 		$deletedCount = 0;
 		foreach ($this->result as $release) {
 			if ($this->delete) {
-				$this->releases->deleteSingle($release['guid'], $this->nzb);
+				$this->releases->deleteSingle($release['guid'], $this->nzb, $this->releaseImage);
 				if ($this->echoCLI) {
 					echo $this->pdo->log->primary('Deleting: ' . $this->method . ': ' . $release['searchname']);
 				}

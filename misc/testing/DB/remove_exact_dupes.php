@@ -50,7 +50,7 @@ do {
 					}
 				}
 			}
-			if ($releases->deleteSingle($rowrel['guid'], $nzb) !== false) {
+			if ($releases->deleteSingle($rowrel['guid'], $nzb, $ri) !== false) {
 				$consoleTools->overWritePrimary('Deleted: ' . number_format(++$count) . " Duplicate Releases");
 			}
 		}
