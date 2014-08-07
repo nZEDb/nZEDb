@@ -35,6 +35,12 @@ class NameFixer
 	protected $_totalReleases;
 
 	/**
+	 * The cleaned filename we want to match
+	 * @var string
+	 */
+	protected $_fileName;
+
+	/**
 	 * @var nzedb\db\Settings
 	 */
 	public $pdo;
@@ -563,10 +569,10 @@ class NameFixer
 		return $matching;
 	}
 
-	public function getPreFileNames($args)
+	public function getPreFileNames($args = array())
 	{
 		$timestart = time();
-		$total = $counter = $counted = 0;
+		$counter = $counted = 0;
 		$limit = $orderby = '';
 		$show = (isset($args[2]) && $args[2] === 'show') ? 1 : 0;
 
@@ -685,7 +691,7 @@ class NameFixer
 				case preg_match('/^\d{2}-/', $this->_fileName):
 					$this->_fileName = preg_replace('/^\d{2}-/', '', $this->_fileName);
 			}
-			return $this->_fileName;
+			return trim($this->_fileName);
 		}
 		return false;
 	}

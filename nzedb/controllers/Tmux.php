@@ -406,8 +406,8 @@ class Tmux
 						AND isrequestid = 1 AND preid = 0 AND reqidstatus = -3 AND adddate > NOW() - INTERVAL %s HOUR
 					) AS requestid_inprogress,
 					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND isrequestid = 1 AND reqidstatus = 1) AS requestid_matched,
-					(SELECT COUNT(*) FROM releases WHERE preid > 0) AS predb_matched,
-					(SELECT COUNT(DISTINCT(preid)) FROM releases WHERE preid > 0) AS distinct_predb_matched", $request_hours);
+					(SELECT COUNT(*) FROM releases WHERE preid > 0 AND searchname IS NOT NULL) AS predb_matched,
+					(SELECT COUNT(DISTINCT(preid)) FROM releases WHERE preid > 0 AND searchname IS NOT NULL) AS distinct_predb_matched", $request_hours);
 			case 4:
 				return sprintf("
 					SELECT
