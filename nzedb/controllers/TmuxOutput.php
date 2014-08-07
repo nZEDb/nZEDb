@@ -197,8 +197,22 @@ class TmuxOutput extends Tmux
 		$buffer = $this->_getTableCounts();
 		$buffer .= $this->_getPaths();
 
-		$buffer .= sprintf($this->tmpMasks[3], "Category", "In Process", "In Database");
+		$buffer .= sprintf($this->tmpMasks[3], "PPA Lists", "Unmatched", "Matched");
 		$buffer .= $this->_getSeparator();
+
+		$buffer .= sprintf($this->tmpMasks[4],
+						   "NFO's",
+						   sprintf(
+							   "%s(%s)",
+							   number_format($this->runVar['counts']['now']['processnfo']),
+							   $this->runVar['counts']['diff']['processnfo']
+						   ),
+						   sprintf(
+							   "%s(%d%%)",
+							   number_format($this->runVar['counts']['now']['nfo']),
+							   $this->runVar['counts']['percent']['nfo']
+						   )
+		);
 		$buffer .= sprintf($this->tmpMasks[4],
 						   "predb",
 						   sprintf(
@@ -226,17 +240,35 @@ class TmuxOutput extends Tmux
 							   $this->runVar['counts']['percent']['requestid_matched']
 						   )
 		);
+
+		$buffer .= PHP_EOL;
+		$buffer .= sprintf($this->tmpMasks[3], "Category", "In Process", "In Database");
+		$buffer .= $this->_getSeparator();
+
 		$buffer .= sprintf($this->tmpMasks[4],
-						   "NFO's",
+						   "Audio",
 						   sprintf(
 							   "%s(%s)",
-							   number_format($this->runVar['counts']['now']['processnfo']),
-							   $this->runVar['counts']['diff']['processnfo']
+							   number_format($this->runVar['counts']['now']['processmusic']),
+							   $this->runVar['counts']['diff']['processmusic']
 						   ),
 						   sprintf(
 							   "%s(%d%%)",
-							   number_format($this->runVar['counts']['now']['nfo']),
-							   $this->runVar['counts']['percent']['nfo']
+							   number_format($this->runVar['counts']['now']['audio']),
+							   $this->runVar['counts']['percent']['audio']
+						   )
+		);
+		$buffer .= sprintf($this->tmpMasks[4],
+						   "Books",
+						   sprintf(
+							   "%s(%s)",
+							   number_format($this->runVar['counts']['now']['processbooks']),
+							   $this->runVar['counts']['diff']['processbooks']
+						   ),
+						   sprintf(
+							   "%s(%d%%)",
+							   number_format($this->runVar['counts']['now']['books']),
+							   $this->runVar['counts']['percent']['books']
 						   )
 		);
 		$buffer .= sprintf($this->tmpMasks[4],
@@ -253,6 +285,19 @@ class TmuxOutput extends Tmux
 						   )
 		);
 		$buffer .= sprintf($this->tmpMasks[4],
+						   "Misc",
+						   sprintf(
+							   "%s(%s)",
+							   number_format($this->runVar['counts']['now']['work']),
+							   $this->runVar['counts']['diff']['work']
+						   ),
+						   sprintf(
+							   "%s(%d%%)",
+							   number_format($this->runVar['counts']['now']['misc']),
+							   $this->runVar['counts']['percent']['misc']
+						   )
+		);
+		$buffer .= sprintf($this->tmpMasks[4],
 						   "Movie",
 						   sprintf(
 							   "%s(%s)",
@@ -263,19 +308,6 @@ class TmuxOutput extends Tmux
 							   "%s(%d%%)",
 							   number_format($this->runVar['counts']['now']['movies']),
 							   $this->runVar['counts']['percent']['movies']
-						   )
-		);
-		$buffer .= sprintf($this->tmpMasks[4],
-						   "Audio",
-						   sprintf(
-							   "%s(%s)",
-							   number_format($this->runVar['counts']['now']['processmusic']),
-							   $this->runVar['counts']['diff']['processmusic']
-						   ),
-						   sprintf(
-							   "%s(%d%%)",
-							   number_format($this->runVar['counts']['now']['audio']),
-							   $this->runVar['counts']['percent']['audio']
 						   )
 		);
 		$buffer .= sprintf($this->tmpMasks[4],
@@ -317,32 +349,9 @@ class TmuxOutput extends Tmux
 							   $this->runVar['counts']['percent']['xxx']
 						   )
 		);
-		$buffer .= sprintf($this->tmpMasks[4],
-						   "Misc",
-						   sprintf(
-							   "%s(%s)",
-							   number_format($this->runVar['counts']['now']['work']),
-							   $this->runVar['counts']['diff']['work']
-						   ),
-						   sprintf(
-							   "%s(%d%%)",
-							   number_format($this->runVar['counts']['now']['misc']),
-							   $this->runVar['counts']['percent']['misc']
-						   )
-		);
-		$buffer .= sprintf($this->tmpMasks[4],
-						   "Books",
-						   sprintf(
-							   "%s(%s)",
-							   number_format($this->runVar['counts']['now']['processbooks']),
-							   $this->runVar['counts']['diff']['processbooks']
-						   ),
-						   sprintf(
-							   "%s(%d%%)",
-							   number_format($this->runVar['counts']['now']['books']),
-							   $this->runVar['counts']['percent']['books']
-						   )
-		);
+
+		$buffer .= $this->_getSeparator();
+
 		$buffer .= sprintf($this->tmpMasks[4],
 						   "Total",
 						   sprintf(

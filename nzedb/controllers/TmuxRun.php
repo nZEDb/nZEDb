@@ -9,12 +9,22 @@ use nzedb\db\Settings;
  */
 class TmuxRun extends Tmux
 {
+	protected $_dateFormat;
+
 	/**
 	 * @param Settings $pdo
 	 */
 	public function __construct(Settings $pdo = null)
 	{
 		parent::__construct($pdo);
+		$dateFormat = $this->pdo->getSetting(
+				   [
+					   'section'    => 'shell',
+					   'subsection' => 'date',
+					   'name'       => 'format'
+				   ]);
+		$this->_dateFormat = empty($dateFormat) ? '%Y-%m-%d %T' : $dateFormat;
+
 	}
 
 	// main switch for running tmux panes
@@ -133,14 +143,14 @@ class TmuxRun extends Tmux
 				$log = $this->writelog($runVar['panes']['one'][3]);
 				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:1.3 ' \
 					{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/decrypt_hashes.php 1000 $log; \
-					date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['dehash_timer']}' 2>&1 1> /dev/null"
+					date +\"{$this->_dateFormat}\"; {$runVar['commands']['_sleep']} {$runVar['settings']['dehash_timer']}' 2>&1 1> /dev/null"
 				);
 				break;
 			case 2:
 				$log = $this->writelog($runVar['panes']['one'][3]);
 				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:1.3 ' \
 					{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/tmux/bin/postprocess_pre.php {$runVar['constants']['pre_lim']} $log; \
-					date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['dehash_timer']}' 2>&1 1> /dev/null"
+					date +\"{$this->_dateFormat}\"; {$runVar['commands']['_sleep']} {$runVar['settings']['dehash_timer']}' 2>&1 1> /dev/null"
 				);
 				break;
 			case 3:
@@ -148,7 +158,7 @@ class TmuxRun extends Tmux
 				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:1.3 ' \
 					{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/tmux/bin/postprocess_pre.php {$runVar['constants']['pre_lim']} $log; \
 					{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/decrypt_hashes.php 1000 $log; \
-					date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['dehash_timer']}' 2>&1 1> /dev/null"
+					date +\"{$this->_dateFormat}\"; {$runVar['commands']['_sleep']} {$runVar['settings']['dehash_timer']}' 2>&1 1> /dev/null"
 				);
 				break;
 			default:
@@ -168,7 +178,7 @@ class TmuxRun extends Tmux
 					{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/groupfixrelnames_threaded.py nfo $log; \
 					{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/groupfixrelnames_threaded.py par2 $log; \
 					{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/groupfixrelnames_threaded.py miscsorter $log; \
-					{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/groupfixrelnames_threaded.py predbft $log; date +\"%D %T\"; \
+					{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/groupfixrelnames_threaded.py predbft $log; date +\"{$this->_dateFormat}\"; \
 					{$runVar['commands']['_sleep']} {$runVar['settings']['fix_timer']}' 2>&1 1> /dev/null"
 				);
 				break;
@@ -189,7 +199,7 @@ class TmuxRun extends Tmux
 
 				$log = $this->writelog($runVar['panes']['two'][2]);
 				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:2.2 ' \
-						{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/postprocess.php amazon true $log; date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['post_timer_amazon']}' 2>&1 1> /dev/null"
+						{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/postprocess.php amazon true $log; date +\"{$this->_dateFormat}\"; {$runVar['commands']['_sleep']} {$runVar['settings']['post_timer_amazon']}' 2>&1 1> /dev/null"
 				);
 				break;
 			case $runVar['settings']['post_amazon'] == 1 && $runVar['settings']['processbooks'] == 0
@@ -225,7 +235,7 @@ class TmuxRun extends Tmux
 				$log = $this->writelog($runVar['panes']['one'][1]);
 				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:1.1 ' \
 						{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/postprocess.php amazon true $log; \
-						date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['post_timer_amazon']}' 2>&1 1> /dev/null"
+						date +\"{$this->_dateFormat}\"; {$runVar['commands']['_sleep']} {$runVar['settings']['post_timer_amazon']}' 2>&1 1> /dev/null"
 				);
 				break;
 			case ($runVar['settings']['post_amazon'] == 1) && ($runVar['settings']['processbooks'] == 0)
@@ -262,7 +272,7 @@ class TmuxRun extends Tmux
 				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:2.1 ' \
 						{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/postprocess.php tv {$runVar['modsettings']['clean']} $log; \
 						{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/postprocess.php mov {$runVar['modsettings']['clean']} $log; \
-						date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['post_timer_non']}' 2>&1 1> /dev/null"
+						date +\"{$this->_dateFormat}\"; {$runVar['commands']['_sleep']} {$runVar['settings']['post_timer_non']}' 2>&1 1> /dev/null"
 				);
 				break;
 			case $runVar['settings']['post_non'] != 0 && $runVar['counts']['now']['processmovies'] == 0 && $runVar['counts']['now']['processtvrage'] == 0:
@@ -284,7 +294,7 @@ class TmuxRun extends Tmux
 		if (($runVar['settings']['binaries_run'] != 0) && ($runVar['killswitch']['coll'] == false) && ($runVar['killswitch']['pp'] == false)) {
 			$log = $this->writelog($runVar['panes']['zero'][2]);
 			shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
-					{$runVar['scripts']['binaries']} $log; date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['bins_timer']}' 2>&1 1> /dev/null"
+					{$runVar['scripts']['binaries']} $log; date +\"{$this->_dateFormat}\"; {$runVar['commands']['_sleep']} {$runVar['settings']['bins_timer']}' 2>&1 1> /dev/null"
 			);
 		} else if (($runVar['killswitch']['coll'] == true) || ($runVar['killswitch']['pp'] == true)) {
 			$color = $this->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
@@ -311,7 +321,7 @@ class TmuxRun extends Tmux
 					$log = $this->writelog($runVar['panes']['zero'][3]);
 					shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.3 ' \
 						{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/backfill.php {$runVar['settings']['backfill_qty']} $log; \
-							date +\"%D %T\"; {$runVar['commands']['_sleep']} $backsleep' 2>&1 1> /dev/null"
+							date +\"{$this->_dateFormat}\"; {$runVar['commands']['_sleep']} $backsleep' 2>&1 1> /dev/null"
 					);
 					$runVar['timers']['timer5'] = time();
 					break;
@@ -319,14 +329,14 @@ class TmuxRun extends Tmux
 					$log = $this->writelog($runVar['panes']['zero'][3]);
 					shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.3 ' \
 						{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_threaded.py group $log; \
-							date +\"%D %T\"; {$runVar['commands']['_sleep']} $backsleep' 2>&1 1> /dev/null"
+							date +\"{$this->_dateFormat}\"; {$runVar['commands']['_sleep']} $backsleep' 2>&1 1> /dev/null"
 					);
 					break;
 				case 4:
 					$log = $this->writelog($runVar['panes']['zero'][3]);
 					shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.3 ' \
 						{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_safe_threaded.py $log; \
-							date +\"%D %T\"; {$runVar['commands']['_sleep']} $backsleep' 2>&1 1> /dev/null"
+							date +\"{$this->_dateFormat}\"; {$runVar['commands']['_sleep']} $backsleep' 2>&1 1> /dev/null"
 					);
 			}
 
@@ -345,7 +355,7 @@ class TmuxRun extends Tmux
 		if ($runVar['settings']['releases_run'] != 0) {
 			$log = $this->writelog($runVar['panes']['zero'][4]);
 			shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.4 ' \
-					{$runVar['scripts']['releases']} $log; date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['rel_timer']}' 2>&1 1> /dev/null"
+					{$runVar['scripts']['releases']} $log; date +\"{$this->_dateFormat}\"; {$runVar['commands']['_sleep']} {$runVar['settings']['rel_timer']}' 2>&1 1> /dev/null"
 			);
 		} else {
 			$color = $this->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
@@ -370,7 +380,7 @@ class TmuxRun extends Tmux
 			$log = $this->writelog($runVar['panes']['zero'][1]);
 			shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.1 ' \
 				{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/nix/multiprocessing/import.php {$runVar['settings']['nzbs']} {$runVar['settings']['nzbthreads']} true {$useFilenames} false $log; \
-				date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['import_timer']}' 2>&1 1> /dev/null"
+				date +\"{$this->_dateFormat}\"; {$runVar['commands']['_sleep']} {$runVar['settings']['import_timer']}' 2>&1 1> /dev/null"
 			);
 
 		} else if ($runVar['killswitch']['pp'] == true) {
@@ -391,14 +401,14 @@ class TmuxRun extends Tmux
 				$log = $this->writelog($runVar['panes']['two'][0]);
 				$color = $this->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
 				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:2.0 'echo \"\033[38;5;${color}m\"; \
-						{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/postprocess.php add $log; date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['post_timer']}' 2>&1 1> /dev/null"
+						{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/postprocess.php add $log; date +\"{$this->_dateFormat}\"; {$runVar['commands']['_sleep']} {$runVar['settings']['post_timer']}' 2>&1 1> /dev/null"
 				);
 				$runVar['timers']['timer3'] = time();
 				break;
 			case ($runVar['settings']['post'] == 2) && ($runVar['counts']['now']['processnfo'] > 0):
 				$log = $this->writelog($runVar['panes']['two'][0]);
 				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:2.0 ' \
-						{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/postprocess.php nfo $log; date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['post_timer']}' 2>&1 1> /dev/null"
+						{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/postprocess.php nfo $log; date +\"{$this->_dateFormat}\"; {$runVar['commands']['_sleep']} {$runVar['settings']['post_timer']}' 2>&1 1> /dev/null"
 				);
 				$runVar['timers']['timer3'] = time();
 				break;
@@ -408,7 +418,7 @@ class TmuxRun extends Tmux
 				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:2.0 ' \
 						{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/postprocess.php add $log; \
 						{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/postprocess.php nfo $log; \
-						date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['post_timer']}' 2>&1 1> /dev/null"
+						date +\"{$this->_dateFormat}\"; {$runVar['commands']['_sleep']} {$runVar['settings']['post_timer']}' 2>&1 1> /dev/null"
 				);
 				$runVar['timers']['timer3'] = time();
 				break;
@@ -432,7 +442,7 @@ class TmuxRun extends Tmux
 				$log = $this->writelog($runVar['panes']['one'][1]);
 				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:1.1 ' \
 						{$runVar['commands']['_php']} {$runVar['paths']['misc']}testing/Release/removeCrapReleases.php true 2 $log; \
-						date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['crap_timer']}' 2>&1 1> /dev/null"
+						date +\"{$this->_dateFormat}\"; {$runVar['commands']['_sleep']} {$runVar['settings']['crap_timer']}' 2>&1 1> /dev/null"
 				);
 				break;
 			// The user has specified custom types.
@@ -459,7 +469,7 @@ class TmuxRun extends Tmux
 							echo \"Running removeCrapReleases for {$runVar['modsettings']['fix_crap'][$runVar['modsettings']['fc']['num']]}\"; \
 							{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}testing/Release/removeCrapReleases.php true \
 							{$runVar['modsettings']['fc']['time']} {$runVar['modsettings']['fix_crap'][$runVar['modsettings']['fc']['num']]} $log; \
-							date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['crap_timer']}' 2>&1 1> /dev/null"
+							date +\"{$this->_dateFormat}\"; {$runVar['commands']['_sleep']} {$runVar['settings']['crap_timer']}' 2>&1 1> /dev/null"
 						);
 
 						// Increment so we know which type to run next.
@@ -490,7 +500,7 @@ class TmuxRun extends Tmux
 						{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/update_theaters.php $log; \
 						{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}testing/PostProc/populate_tvrage.php true $log; \
 						{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/update_tvschedule.php $log; \
-						{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}testing/PostProc/updateTvRage.php $log; date +\"%D %T\"' 2>&1 1> /dev/null"
+						{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}testing/PostProc/updateTvRage.php $log; date +\"{$this->_dateFormat}\"' 2>&1 1> /dev/null"
 				);
 				$runVar['timers']['timer4'] = time();
 				break;
@@ -515,7 +525,7 @@ class TmuxRun extends Tmux
 				{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/update_theaters.php $log; \
 				{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}testing/PostProc/populate_tvrage.php true $log; \
 				{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/update_tvschedule.php $log; \
-				{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}testing/PostProc/updateTvRage.php $log; date +\"%D %T\"' 2>&1 1> /dev/null"
+				{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}testing/PostProc/updateTvRage.php $log; date +\"{$this->_dateFormat}\"' 2>&1 1> /dev/null"
 			);
 			$runVar['timers']['timer4'] = time();
 
@@ -621,7 +631,7 @@ class TmuxRun extends Tmux
 			if ($runVar['settings']['backfill'] != 0) {
 				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
 					{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_threaded.py all $log; \
-					date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
+					date +\"{$this->_dateFormat}\"; {$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
 				);
 				$runVar['timers']['timer5'] = time();
 			}
@@ -631,7 +641,7 @@ class TmuxRun extends Tmux
 			$color = $this->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
 			shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 'echo \"\033[38;5;${color}m\"; \
 				echo \"\nbinaries and backfill has been disabled/terminated by Exceeding Limits\"; \
-				{$runVar['scripts']['releases']} $log; date +\"%D %T\"; echo \"\nbinaries and backfill has been disabled/terminated by Exceeding Limits\"; \
+				{$runVar['scripts']['releases']} $log; date +\"{$this->_dateFormat}\"; echo \"\nbinaries and backfill has been disabled/terminated by Exceeding Limits\"; \
 				{$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
 			);
 
@@ -645,7 +655,7 @@ class TmuxRun extends Tmux
 	{
 		$log = $this->writelog($runVar['panes']['zero'][2]);
 		shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
-				{$runVar['paths']['misc']}update/nix/screen/sequential/user_threaded.sh true $log; date +\"%D %T\"' 2>&1 1> /dev/null"
+				{$runVar['paths']['misc']}update/nix/screen/sequential/user_threaded.sh true $log; date +\"{$this->_dateFormat}\"' 2>&1 1> /dev/null"
 		);
 	}
 

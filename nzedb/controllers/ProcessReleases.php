@@ -80,9 +80,14 @@ class ProcessReleases
 	public $releases;
 
 	/**
+	 * @var ReleaseImage
+	 */
+	public $releaseImage;
+
+	/**
 	 * @param array $options Class instances / Echo to cli ?
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		$defaults = [
 			'Echo'            => true,
@@ -90,6 +95,7 @@ class ProcessReleases
 			'Groups'          => null,
 			'NZB'             => null,
 			'ReleaseCleaning' => null,
+			'ReleaseImage'    => null,
 			'Releases'        => null,
 			'Settings'        => null,
 		];
@@ -103,6 +109,7 @@ class ProcessReleases
 		$this->nzb = ($options['NZB'] instanceof NZB ? $options['NZB'] : new NZB($this->pdo));
 		$this->releaseCleaning = ($options['ReleaseCleaning'] instanceof ReleaseCleaning ? $options['ReleaseCleaning'] : new ReleaseCleaning($this->pdo));
 		$this->releases = ($options['Releases'] instanceof Releases ? $options['Releases'] : new Releases(['Settings' => $this->pdo, 'Groups' => $this->groups]));
+		$this->releaseImage = ($options['ReleaseImage'] instanceof ReleaseImage ? $options['ReleaseImage'] : new ReleaseImage($this->pdo));
 
 		$this->tablePerGroup = ($this->pdo->getSetting('tablepergroup') == 0 ? false : true);
 		$this->collectionDelayTime = ($this->pdo->getSetting('delaytime')!= '' ? (int)$this->pdo->getSetting('delaytime') : 2);
@@ -245,7 +252,7 @@ class ProcessReleases
 		$cat = new Categorize(['Settings' => $this->pdo]);
 		$categorized = $total = 0;
 		$releases = $this->pdo->queryDirect(sprintf('SELECT id, %s, group_id FROM releases %s', $type, $where));
-		if ($releases instanceof Traversable) {
+		if ($releases && $releases->rowCount()) {
 			$total = $releases->rowCount();
 			foreach ($releases as $release) {
 				$catId = $cat->determineCategory($release[$type], $release['group_id']);
@@ -376,7 +383,7 @@ class ProcessReleases
 		if ($groupID == '') {
 			$groupIDs = $this->groups->getActiveIDs();
 		} else {
-			$groupIDs = array(array('id' => $groupID));
+			$groupIDs = [['id' => $groupID]];
 		}
 
 		$minSizeDeleted = $maxSizeDeleted = $minFilesDeleted = 0;
@@ -526,7 +533,7 @@ class ProcessReleases
 
 				$cleanRelName = $this->pdo->escapeString(
 					utf8_encode(
-						str_replace(array('#', '@', '$', '%', '^', '§', '¨', '©', 'Ö'), '', $collection['subject'])
+						str_replace(['#', '@', '$', '%', '^', '§', '¨', '©', 'Ö'], '', $collection['subject'])
 					)
 				);
 				$fromName = $this->pdo->escapeString(
@@ -680,7 +687,7 @@ class ProcessReleases
 
 		$deleted = $nzbCount = 0;
 
-		if ($releases instanceof Traversable) {
+		if ($releases && $releases->rowCount()) {
 			$total = $releases->rowCount();
 			// Init vars for writing the NZB's.
 			$this->nzb->initiateForWrite($groupID);
@@ -1053,7 +1060,7 @@ class ProcessReleases
 		if ($groupID == '') {
 			$groupIDs = $this->groups->getActiveIDs();
 		} else {
-			$groupIDs = array(array('id' => $groupID));
+			$groupIDs = [['id' => $groupID]];
 		}
 
 		$maxSizeSetting = $this->pdo->getSetting('maxsizetoformrelease');
@@ -1076,7 +1083,7 @@ class ProcessReleases
 			);
 			if ($releases instanceof Traversable) {
 				foreach ($releases as $release) {
-					$this->releases->deleteSingle($release['guid'], $this->nzb);
+					$this->releases->deleteSingle($release['guid'], $this->nzb, $this->releaseImage);
 					$minSizeDeleted++;
 				}
 			}
@@ -1094,7 +1101,7 @@ class ProcessReleases
 				);
 				if ($releases instanceof Traversable) {
 					foreach ($releases as $release) {
-						$this->releases->deleteSingle($release['guid'], $this->nzb);
+						$this->releases->deleteSingle($release['guid'], $this->nzb, $this->releaseImage);
 						$maxSizeDeleted++;
 					}
 				}
@@ -1115,7 +1122,7 @@ class ProcessReleases
 			);
 			if ($releases instanceof Traversable) {
 				foreach ($releases as $release) {
-					$this->releases->deleteSingle($release['guid'], $this->nzb);
+					$this->releases->deleteSingle($release['guid'], $this->nzb, $this->releaseImage);
 					$minFilesDeleted++;
 				}
 			}
@@ -1164,7 +1171,7 @@ class ProcessReleases
 			);
 			if ($releases instanceof Traversable) {
 				foreach ($releases as $release) {
-					$this->releases->deleteSingle($release['guid'], $this->nzb);
+					$this->releases->deleteSingle($release['guid'], $this->nzb, $this->releaseImage);
 					$retentionDeleted++;
 				}
 			}
@@ -1180,7 +1187,7 @@ class ProcessReleases
 			);
 			if ($releases instanceof Traversable) {
 				foreach ($releases as $release) {
-					$this->releases->deleteSingle($release['guid'], $this->nzb);
+					$this->releases->deleteSingle($release['guid'], $this->nzb, $this->releaseImage);
 					$passwordDeleted++;
 				}
 			}
@@ -1196,7 +1203,7 @@ class ProcessReleases
 			);
 			if ($releases instanceof Traversable) {
 				foreach ($releases as $release) {
-					$this->releases->deleteSingle($release['guid'], $this->nzb);
+					$this->releases->deleteSingle($release['guid'], $this->nzb, $this->releaseImage);
 					$passwordDeleted++;
 				}
 			}
@@ -1212,10 +1219,10 @@ class ProcessReleases
 					)
 				);
 				$total = 0;
-				if ($releases instanceof Traversable) {
+				if ($releases && $releases->rowCount()) {
 					$total = $releases->rowCount();
 					foreach ($releases as $release) {
-						$this->releases->deleteSingle($release['guid'], $this->nzb);
+						$this->releases->deleteSingle($release['guid'], $this->nzb, $this->releaseImage);
 						$duplicateDeleted++;
 					}
 				}
@@ -1228,7 +1235,7 @@ class ProcessReleases
 			);
 			if ($releases instanceof Traversable) {
 				foreach ($releases as $release) {
-					$this->releases->deleteSingle($release['guid'], $this->nzb);
+					$this->releases->deleteSingle($release['guid'], $this->nzb, $this->releaseImage);
 					$completionDeleted++;
 				}
 			}
@@ -1244,7 +1251,7 @@ class ProcessReleases
 				if ($releases instanceof Traversable) {
 					foreach ($releases as $release) {
 						$disabledCategoryDeleted++;
-						$this->releases->deleteSingle($release['guid'], $this->nzb);
+						$this->releases->deleteSingle($release['guid'], $this->nzb, $this->releaseImage);
 					}
 				}
 			}
@@ -1274,7 +1281,7 @@ class ProcessReleases
 					);
 					if ($releases instanceof Traversable) {
 						foreach ($releases as $release) {
-							$this->releases->deleteSingle($release['guid'], $this->nzb);
+							$this->releases->deleteSingle($release['guid'], $this->nzb, $this->releaseImage);
 							$categoryMinSizeDeleted++;
 						}
 					}
@@ -1298,7 +1305,7 @@ class ProcessReleases
 				if ($releases instanceof Traversable) {
 					foreach ($releases as $release) {
 						$disabledGenreDeleted++;
-						$this->releases->deleteSingle($release['guid'], $this->nzb);
+						$this->releases->deleteSingle($release['guid'], $this->nzb, $this->releaseImage);
 					}
 				}
 			}
@@ -1318,7 +1325,7 @@ class ProcessReleases
 			);
 			if ($releases instanceof Traversable) {
 				foreach ($releases as $release) {
-					$this->releases->deleteSingle($release['guid'], $this->nzb);
+					$this->releases->deleteSingle($release['guid'], $this->nzb, $this->releaseImage);
 					$miscRetentionDeleted++;
 				}
 			}
@@ -1338,7 +1345,7 @@ class ProcessReleases
 			);
 			if ($releases instanceof Traversable) {
 				foreach ($releases as $release) {
-					$this->releases->deleteSingle($release['guid'], $this->nzb);
+					$this->releases->deleteSingle($release['guid'], $this->nzb, $this->releaseImage);
 					$miscHashedDeleted++;
 				}
 			}
