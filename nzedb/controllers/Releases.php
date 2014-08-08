@@ -672,6 +672,9 @@ class Releases
 		// Delete images.
 		$releaseImage->delete($guid);
 
+		// Delete from sphinx.
+		$this->sphinxSearch->deleteRelease($guid, $this->pdo);
+
 		// Delete from DB.
 		$this->pdo->queryExec(
 			sprintf('
@@ -689,9 +692,6 @@ class Releases
 				$this->pdo->escapeString($guid)
 			)
 		);
-
-		// Delete from sphinx.
-		$this->sphinxSearch->deleteRelease($guid);
 	}
 
 	/**

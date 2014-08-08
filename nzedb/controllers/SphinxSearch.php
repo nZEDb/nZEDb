@@ -56,12 +56,27 @@ class SphinxSearch
 
 	/**
 	 * Delete release from Sphinx RT table.
-	 * @param $GUID
+	 * @param string $GUID release GUID
+	 * @param nzedb\db\Settings $pdo
 	 */
-	public function deleteRelease($GUID)
+	public function deleteRelease($GUID, nzedb\db\Settings $pdo)
 	{
 		if (!is_null($this->sphinxQL)) {
-			$this->sphinxQL->queryExec(sprintf('DELETE FROM releases_rt WHERE guid = %s', $this->sphinxQL->escapeString($GUID)));
+			$releaseID = $pdo->queryOneRow(sprintf('SELECT id FROM releases WHERE guid = %s', $pdo->escapeString($GUID)));
+			if ($releaseID !== false) {
+				$this->sphinxQL->queryExec(sprintf('DELETE FROM releases_rt WHERE id = %s', $releaseID['id']));
+			}
+		}
+	}
+
+	/**
+	 * Truncate a RT index.
+	 * @param string $indexName
+	 */
+	public function truncateRTIndex($indexName)
+	{
+		if (!is_null($this->sphinxQL)) {
+			$this->sphinxQL->queryExec(sprintf('TRUNCATE RTINDEX %s', $indexName));
 		}
 	}
 }
