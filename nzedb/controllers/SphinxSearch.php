@@ -56,15 +56,23 @@ class SphinxSearch
 
 	/**
 	 * Delete release from Sphinx RT table.
-	 * @param string $GUID release GUID
+	 * @param array $identifiers ['g' => Release GUID(mandatory), 'id => ReleaseID(optional, pass false)]
 	 * @param nzedb\db\Settings $pdo
 	 */
-	public function deleteRelease($GUID, nzedb\db\Settings $pdo)
+	public function deleteRelease($identifiers, nzedb\db\Settings $pdo)
 	{
 		if (!is_null($this->sphinxQL)) {
-			$releaseID = $pdo->queryOneRow(sprintf('SELECT id FROM releases WHERE guid = %s', $pdo->escapeString($GUID)));
-			if ($releaseID !== false) {
-				$this->sphinxQL->queryExec(sprintf('DELETE FROM releases_rt WHERE id = %s', $releaseID['id']));
+			var_dump($identifiers);
+			if ($identifiers['i'] === false) {
+				$identifiers['i'] = $pdo->queryOneRow(
+					sprintf('SELECT id FROM releases WHERE guid = %s', $pdo->escapeString($identifiers['g']))
+				);
+				if ($identifiers['i'] !== false) {
+					$identifiers['i'] = $identifiers['i']['id'];
+				}
+			}
+			if ($identifiers['i'] !== false) {
+				$this->sphinxQL->queryExec(sprintf('DELETE FROM releases_rt WHERE id = %s', $identifiers['i']));
 			}
 		}
 	}

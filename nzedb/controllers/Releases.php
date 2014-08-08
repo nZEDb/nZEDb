@@ -643,13 +643,13 @@ class Releases
 
 		foreach ($list as $identifier) {
 			if ($isGUID) {
-				$this->deleteSingle($identifier, $nzb, $releaseImage);
+				$this->deleteSingle(['g' => $identifier, 'i' => false], $nzb, $releaseImage);
 			} else {
 				$release = $this->pdo->queryOneRow(sprintf('SELECT guid FROM releases WHERE id = %d', $identifier));
 				if ($release === false) {
 					continue;
 				}
-				$this->deleteSingle($release['guid'], $nzb, $releaseImage);
+				$this->deleteSingle(['g' => $release['guid'], 'i' => false], $nzb, $releaseImage);
 			}
 		}
 	}
@@ -657,23 +657,23 @@ class Releases
 	/**
 	 * Deletes a single release by GUID, and all the corresponding files.
 	 *
-	 * @param string       $guid Release GUID.
+	 * @param array        $identifiers ['g' => Release GUID(mandatory), 'id => ReleaseID(optional, pass false)]
 	 * @param NZB          $nzb
 	 * @param ReleaseImage $releaseImage
 	 */
-	public function deleteSingle($guid, $nzb, $releaseImage)
+	public function deleteSingle($identifiers, $nzb, $releaseImage)
 	{
 		// Delete NZB from disk.
-		$nzbPath = $nzb->NZBPath($guid);
+		$nzbPath = $nzb->NZBPath($identifiers);
 		if ($nzbPath) {
 			@unlink($nzbPath);
 		}
 
 		// Delete images.
-		$releaseImage->delete($guid);
+		$releaseImage->delete($identifiers['g']);
 
 		// Delete from sphinx.
-		$this->sphinxSearch->deleteRelease($guid, $this->pdo);
+		$this->sphinxSearch->deleteRelease($identifiers, $this->pdo);
 
 		// Delete from DB.
 		$this->pdo->queryExec(
@@ -689,7 +689,7 @@ class Releases
 				LEFT OUTER JOIN releasevideo rv ON rv.releaseid = r.id
 				LEFT OUTER JOIN releaseextrafull re ON re.releaseid = r.id
 				WHERE r.guid = %s',
-				$this->pdo->escapeString($guid)
+				$this->pdo->escapeString($identifiers['g'])
 			)
 		);
 	}

@@ -17,11 +17,11 @@ if (isset($argv[1]) && $argv[1] == "true") {
 	$relsdeleted = 0;
 	if (count($catlist > 0)) {
 		foreach ($catlist as $cat) {
-			$rels = $pdo->query(sprintf("SELECT guid FROM releases WHERE categoryid = %d", $cat['id']));
+			$rels = $pdo->query(sprintf("SELECT id, guid FROM releases WHERE categoryid = %d", $cat['id']));
 			if (count($rels)) {
 				foreach ($rels as $rel) {
 					$relsdeleted++;
-					$releases->deleteSingle($rel['guid'], $nzb, $releaseImage);
+					$releases->deleteSingle(['g' => $rel['guid'], 'i' => $rel['id']], $nzb, $releaseImage);
 				}
 			}
 		}

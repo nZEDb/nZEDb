@@ -27,7 +27,7 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete")) {
 				if ($res === false) {
 					if ($argv[1] === "delete") {
 						@copy($filePath, nZEDb_ROOT . "pooped/" . $guid[1] . ".nzb.gz");
-						$releases->deleteSingle($guid[1], $nzb, $releaseImage);
+						$releases->deleteSingle(['g' => $guid[1], 'i' => false], $nzb, $releaseImage);
 						$deleted++;
 					}
 				} else if (isset($res)) {
@@ -56,7 +56,7 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete")) {
 			if (!file_exists($nzbpath)) {
 				if ($argv[1] === "delete") {
 					@copy($nzbpath, nZEDb_ROOT . "pooped/" . $row["guid"] . ".nzb.gz");
-					$releases->deleteSingle($row['guid'], $nzb, $releaseImage);
+					$releases->deleteSingle(['g' => $row['guid'], 'i' => $row['id']], $nzb, $releaseImage);
 				}
 				$deleted++;
 			} else if (file_exists($nzbpath) && isset($row)) {
