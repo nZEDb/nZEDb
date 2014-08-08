@@ -29,4 +29,8 @@ sprintf(
 $argv[1], $argv[2]
 );
 
-$success = $pdo->queryExec($query);
+if ($pdo->queryExec($query)) {
+	echo 'The releases_se table was successfully created!' . PHP_EOL;
+} else {
+	echo 'ERROR: An error occurred during the creation of the releases_se table, you can turn on logging/debugging in settings.php to view this error.' . PHP_EOL;
+}

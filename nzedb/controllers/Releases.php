@@ -900,6 +900,17 @@ class Releases
 			$orderBy = $this->getBrowseOrder($orderBy);
 		}
 
+		$searchOptions = [];
+		if ($searchName != -1) {
+			$searchOptions['searchname'] = $searchName;
+		}
+		if ($usenetName != -1) {
+			$searchOptions['name'] = $usenetName;
+		}
+		if ($posterName != -1) {
+			$searchOptions['fromname'] = $posterName;
+		}
+
 		$sql = sprintf(
 			"SELECT * FROM (SELECT r.*, CONCAT(cp.title, ' > ', c.title) AS category_name,
 			CONCAT(cp.id, ',', c.id) AS category_ids,
@@ -912,15 +923,12 @@ class Releases
 			INNER JOIN groups ON groups.id = r.group_id
 			INNER JOIN category c ON c.id = r.categoryid
 			INNER JOIN category cp ON cp.id = c.parentid
-			WHERE r.passwordstatus <= %d %s %s %s %s %s %s %s %s %s %s %s %s %s) r
+			WHERE r.passwordstatus <= %d %s %s %s %s %s %s %s %s %s %s %s) r
 			ORDER BY r.%s %s
 			LIMIT %d OFFSET %d",
 			$this->releaseSearch->getFullTextJoinString(),
 			$this->showPasswords(),
-			($searchName != -1 ? $this->releaseSearch->getSearchSQL('searchname', $searchName) : ''),
-			($usenetName != -1 ? $this->releaseSearch->getSearchSQL('name', $usenetName) : ''),
 			($maxAge > 0 ? sprintf(' AND r.postdate > (NOW() - INTERVAL %d DAY) ', $maxAge) : ''),
-			($posterName != '-1' ? $this->releaseSearch->getSearchSQL('fromname', $posterName, true) : ''),
 			($groupName != -1 ? sprintf(' AND r.group_id = %d ', $this->groups->getIDByName($groupName)) : ''),
 			(in_array($sizeFrom, $sizeRange) ? ' AND r.size > ' . (string)(104857600 * (int)$sizeFrom) . ' ' : ''),
 			(in_array($sizeTo, $sizeRange) ? ' AND r.size < ' . (string)(104857600 * (int)$sizeTo) . ' ' : ''),
@@ -930,6 +938,7 @@ class Releases
 			($daysNew != -1 ? sprintf(' AND r.postdate < (NOW() - INTERVAL %d DAY) ', $daysNew) : ''),
 			($daysOld != -1 ? sprintf(' AND r.postdate > (NOW() - INTERVAL %d DAY) ', $daysOld) : ''),
 			(count($excludedCats) > 0 ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : ''),
+			(count($searchOptions) > 0 ? $this->releaseSearch->getSearchSQL($searchOptions) : ''),
 			$orderBy[0],
 			$orderBy[1],
 			$limit,
@@ -999,7 +1008,7 @@ class Releases
 			($rageId != -1 ? sprintf(' AND rageid = %d ', $rageId) : ''),
 			($series != '' ? sprintf(' AND UPPER(r.season) = UPPER(%s)', $this->pdo->escapeString(((is_numeric($series) && strlen($series) != 4) ? sprintf('S%02d', $series) : $series))) : ''),
 			($episode != '' ? sprintf(' AND r.episode %s', $this->pdo->likeString((is_numeric($episode) ? sprintf('E%02d', $episode) : $episode))) : ''),
-			($name !== '' ? $this->releaseSearch->getSearchSQL('searchname', $name) : ''),
+			($name !== '' ? $this->releaseSearch->getSearchSQL(['searchname' => $name]) : ''),
 			$this->categorySQL($cat),
 			($maxAge > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxAge) : ''),
 			$limit,
@@ -1042,7 +1051,7 @@ class Releases
 			$this->showPasswords(),
 			($aniDbID > -1 ? sprintf(' AND anidbid = %d ', $aniDbID) : ''),
 			(is_numeric($episodeNumber) ? sprintf(" AND r.episode '%s' ", $this->pdo->likeString($episodeNumber)) : ''),
-			($name !== '' ? $this->releaseSearch->getSearchSQL('searchname', $name) : ''),
+			($name !== '' ? $this->releaseSearch->getSearchSQL(['searchname' => $name]) : ''),
 			$this->categorySQL($cat),
 			($maxAge > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxAge) : ''),
 			$limit,
@@ -1086,7 +1095,7 @@ class Releases
 			LIMIT %d OFFSET %d",
 			$this->releaseSearch->getFullTextJoinString(),
 			$this->showPasswords(),
-			($name !== '' ? $this->releaseSearch->getSearchSQL('searchname', $name) : ''),
+			($name !== '' ? $this->releaseSearch->getSearchSQL(['searchname' => $name]) : ''),
 			(($imDbId != '-1' && is_numeric($imDbId)) ? sprintf(' AND imdbid = %d ', str_pad($imDbId, 7, '0', STR_PAD_LEFT)) : ''),
 			$this->categorySQL($cat),
 			($maxAge > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxAge) : ''),

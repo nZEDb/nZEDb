@@ -12,16 +12,10 @@ class ReleaseSearch
 	public $pdo;
 
 	/**
-	 * The string of words to search.
-	 * @var string
+	 * Array where keys are the column name, and value is the search string.
+	 * @var array
 	 */
-	private $searchString;
-
-	/**
-	 * Name of the column. ie name | searchname | fromname | etc.
-	 * @var string
-	 */
-	private $columnName;
+	private $searchOptions;
 
 	/**
 	 * Sets the string to join the releases table to the release search table if using full text.
@@ -57,16 +51,14 @@ class ReleaseSearch
 	/**
 	 * Create part of a SQL query for searching releases.
 	 *
-	 * @param string $columnName   Name of the column. ie name | searchname | fromname | etc.
-	 * @param string $searchString The string of words to search.
-	 * @param bool   $forceLike    Force a "like" search on the column.
+	 * @param array $options   Array where keys are the column name, and value is the search string.
+	 * @param bool  $forceLike Force a "like" search on the column.
 	 *
 	 * @return string
 	 */
-	public function getSearchSQL($columnName, $searchString, $forceLike = false)
+	public function getSearchSQL($options = [], $forceLike = false)
 	{
-		$this->columnName = $columnName;
-		$this->searchString = $searchString;
+		$this->searchOptions = $options;
 
 		if ($forceLike) {
 			return $this->likeSQL();
@@ -103,24 +95,30 @@ class ReleaseSearch
 	 */
 	private function fullTextSQL()
 	{
-		$searchWords = '';
+		$return = '';
+		foreach ($this->searchOptions as $columnName => $searchString) {
+			$searchWords = '';
 
-		// At least 1 search term needs to be mandatory.
-		$words = explode(' ', (!preg_match('/[+!^]/', $this->searchString) ? '+' : '') . $this->searchString);
-		foreach ($words as $word) {
-			$word = str_replace("'", "\\'", str_replace(['!', '^'], '+', trim($word, "-\n\t\r\0\x0B ")));
+			// At least 1 search term needs to be mandatory.
+			$words = explode(' ', (!preg_match('/[+!^]/', $searchString) ? '+' : '') . $searchString);
+			foreach ($words as $word) {
+				$word = str_replace("'", "\\'", str_replace(['!', '^'], '+', trim($word, "\n\t\r\0\x0B- ")));
 
-			if ($word !== '' && $word !== '-' && strlen($word) > 1) {
-				$searchWords .= ($word . ' ');
+				if ($word !== '' && $word !== '-' && strlen($word) > 1) {
+					$searchWords .= ($word . ' ');
+				}
 			}
-		}
+			$searchWords = trim($searchWords);
+			if ($searchWords !== '') {
+				$return .= sprintf(" AND MATCH(rs.%s) AGAINST('%s' IN BOOLEAN MODE)", $columnName, $searchWords);
+			}
 
-		$searchWords = trim($searchWords);
+		}
 		// If we didn't get anything, try the LIKE method.
-		if ($searchWords === '') {
+		if ($return === '') {
 			return ($this->likeSQL());
 		} else {
-			return sprintf(" AND MATCH(rs.%s) AGAINST('%s' IN BOOLEAN MODE)", $this->columnName, $searchWords);
+			return $return;
 		}
 	}
 
@@ -131,23 +129,25 @@ class ReleaseSearch
 	 */
 	private function likeSQL()
 	{
-		$searchSQL = '';
-		$wordCount = 0;
-		$words = explode(' ', $this->searchString);
-		foreach ($words as $word) {
-			if ($word != '') {
-				$word = trim($word, "-\n\t\r\0\x0B ");
-				if ($wordCount == 0 && (strpos($word, '^') === 0)) {
-					$searchSQL .= sprintf(' AND r.%s %s', $this->columnName, $this->pdo->likeString(substr($word, 1), false));
-				} else if (substr($word, 0, 2) == '--') {
-					$searchSQL .= sprintf(' AND r.%s NOT %s', $this->columnName, $this->pdo->likeString(substr($word, 2)));
-				} else {
-					$searchSQL .= sprintf(' AND r.%s %s', $this->columnName, $this->pdo->likeString($word));
+		$return = '';
+		foreach ($this->searchOptions as $columnName => $searchString) {
+			$wordCount = 0;
+			$words = explode(' ', $searchString);
+			foreach ($words as $word) {
+				if ($word != '') {
+					$word = trim($word, "-\n\t\r\0\x0B ");
+					if ($wordCount == 0 && (strpos($word, '^') === 0)) {
+						$return .= sprintf(' AND r.%s %s', $columnName, $this->pdo->likeString(substr($word, 1), false));
+					} else if (substr($word, 0, 2) == '--') {
+						$return .= sprintf(' AND r.%s NOT %s', $columnName, $this->pdo->likeString(substr($word, 2)));
+					} else {
+						$return .= sprintf(' AND r.%s %s', $columnName, $this->pdo->likeString($word));
+					}
+					$wordCount++;
 				}
-				$wordCount++;
 			}
 		}
-		return $searchSQL;
+		return $return;
 	}
 
 	/**
@@ -157,21 +157,26 @@ class ReleaseSearch
 	 */
 	private function sphinxSQL()
 	{
-		$searchWords = '';
-		$words = explode(' ', $this->searchString);
-		foreach ($words as $word) {
-			$word = str_replace("'", "\\'", trim($word, "\n\t\r\0\x0B "));
+		$return = '';
+		foreach ($this->searchOptions as $columnName => $searchString) {
+			$searchWords = '';
+			$words = explode(' ', $searchString);
+			foreach ($words as $word) {
+				$word = str_replace("'", "\\'", trim($word, "\n\t\r\0\x0B "));
 
-			if ($word !== '') {
-				$searchWords .= ($word . ' ');
+				if ($word !== '') {
+					$searchWords .= ($word . ' ');
+				}
+			}
+			$searchWords = rtrim($searchWords, "\n\t\r\0\x0B ");
+			if ($searchWords !== '') {
+				$return .= sprintf("@%s %s ", $columnName, $searchWords);
 			}
 		}
-		$searchWords = rtrim($searchWords, "\n\t\r\0\x0B ");
-
-		if ($searchWords === '') {
+		if ($return === '') {
 			return $this->likeSQL();
 		} else {
-			return sprintf(" AND rse.query = '@%s %s;mode=extended'", $this->columnName, $searchWords);
+			return sprintf(" AND rse.query = '%s;mode=extended'", trim($return));
 		}
 	}
 }
