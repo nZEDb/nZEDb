@@ -42,12 +42,14 @@ class SphinxSearch
 	{
 		if (!is_null($this->sphinxQL) && $parameters['id']) {
 			$this->sphinxQL->queryExec(
-				'REPLACE INTO releases_rt (id, guid, name, searchname, fromname) VALUES (%d, %s %s, %s, %s)',
-				$parameters['id'],
-				$parameters['guid'],
-				$parameters['name'],
-				$parameters['searchname'],
-				$parameters['fromname']
+				sprintf(
+					'REPLACE INTO releases_rt (id, guid, name, searchname, fromname) VALUES (%s, %s, %s, %s, %s)',
+					$parameters['id'],
+					$parameters['guid'],
+					$parameters['name'],
+					$parameters['searchname'],
+					$parameters['fromname']
+				)
 			);
 		}
 	}
