@@ -87,4 +87,15 @@ class SphinxSearch
 			$this->sphinxQL->queryExec(sprintf('TRUNCATE RTINDEX %s', $indexName));
 		}
 	}
+
+	/**
+	 * Optimize a RT index.
+	 * @param string $indexName
+	 */
+	public function optimizeRTIndex($indexName)
+	{
+		if (!is_null($this->sphinxQL)) {
+			$this->sphinxQL->queryExec(sprintf('OPTIMIZE INDEX %s', $indexName));
+		}
+	}
 }

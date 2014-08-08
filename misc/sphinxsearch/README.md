@@ -82,3 +82,9 @@ In this folder there is a create_releases_table.php file, run the file using you
 In this folder there is a populate_release_index.php file, run the file and wait until it is complete.
 
 You are now done with this guide, sphinx search should work. The index will populate itself from now on, you do not need to rerun this script unless you disable sphinx.
+
+## _Misc_:
+
+Optimizing: You can optimize the rt index(es) by running optimize.php
+
+Read about the benefits/drawbacks of optimizing here: http://sphinxsearch.com/docs/current.html#sphinxql-optimize-index
