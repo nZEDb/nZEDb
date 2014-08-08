@@ -36,6 +36,11 @@ class Releases
 	public $releaseSearch;
 
 	/**
+	 * @var SphinxSearch
+	 */
+	public $sphinxSearch;
+
+	/**
 	 * @var array $options Class instances.
 	 */
 	public function __construct(array $options = [])
@@ -49,7 +54,53 @@ class Releases
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 		$this->groups = ($options['Groups'] instanceof Groups ? $options['Groups'] : new Groups(['Settings' => $this->pdo]));
 		$this->updategrabs = ($this->pdo->getSetting('grabstatus') == '0' ? false : true);
-		$this->releaseSearch = new ReleaseSearch($this->pdo);
+		$this->passwordStatus = ($this->pdo->getSetting('checkpasswordedrar') == 1 ? -1 : 0);
+		$this->sphinxSearch = new SphinxSearch();
+		$this->releaseSearch = new ReleaseSearch($this->pdo, $this->sphinxSearch);
+	}
+
+	/**
+	 * Insert a single release returning the ID on success or false on failure.
+	 *
+	 * @param array $parameters Insert parameters, must be escaped if string.
+	 *
+	 * @return bool|int
+	 */
+	public function insertRelease(array $parameters = [])
+	{
+		$parameters['id'] = $this->pdo->queryInsert(
+			sprintf(
+				"INSERT INTO releases
+					(name, searchname, totalpart, group_id, adddate, guid, rageid, postdate, fromname,
+					size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus,
+					isrenamed, iscategorized, reqidstatus, preid)
+				 VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, 1, %d, 1, %d, %d)",
+				$parameters['name'],
+				$parameters['searchname'],
+				$parameters['totalpart'],
+				$parameters['group_id'],
+				$parameters['guid'],
+				$parameters['postdate'],
+				$parameters['fromname'],
+				$parameters['size'],
+				$this->passwordStatus,
+				$parameters['categoryid'],
+				$parameters['isrenamed'],
+				$parameters['reqidstatus'],
+				$parameters['preid']
+			)
+		);
+		$this->sphinxSearch->insertRelease($parameters);
+		return $parameters['id'];
+	}
+
+	/**
+	 * Create a GUID for a release.
+	 * @return string
+	 */
+	public function createGUID()
+	{
+		return sha1(uniqid('', true) . mt_rand());
 	}
 
 	/**
@@ -638,6 +689,9 @@ class Releases
 				$this->pdo->escapeString($guid)
 			)
 		);
+
+		// Delete from sphinx.
+		$this->sphinxSearch->deleteRelease($guid);
 	}
 
 	/**

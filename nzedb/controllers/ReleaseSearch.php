@@ -42,7 +42,9 @@ class ReleaseSearch
 			case self::LIKE:
 				$this->fullTextJoinString = '';
 				break;
-			case self::SPHINX: // Set sphinx as fulltext for now.
+			case self::SPHINX:
+				$this->fullTextJoinString = 'INNER JOIN releases_se rse ON rse.id = r.id';
+				break;
 			case self::FULLTEXT:
 			default:
 			$this->fullTextJoinString = 'INNER JOIN releasesearch rs on rs.releaseid = r.id';
@@ -74,7 +76,9 @@ class ReleaseSearch
 			case self::LIKE:
 				$SQL = $this->likeSQL();
 				break;
-			case self::SPHINX: // Set sphinx as fulltext for now.
+			case self::SPHINX:
+				$SQL = $this->sphinxSQL();
+				break;
 			case self::FULLTEXT:
 			default:
 				$SQL = $this->fullTextSQL();
@@ -106,8 +110,8 @@ class ReleaseSearch
 		foreach ($words as $word) {
 			$word = str_replace("'", "\\'", str_replace(['!', '^'], '+', trim($word, "-\n\t\r\0\x0B ")));
 
-			if ($word !== '' && $word !== '-' && strlen($word) >= 2) {
-				$searchWords .= sprintf('%s ', $word);
+			if ($word !== '' && $word !== '-' && strlen($word) > 1) {
+				$searchWords .= ($word . ' ');
 			}
 		}
 
@@ -144,5 +148,30 @@ class ReleaseSearch
 			}
 		}
 		return $searchSQL;
+	}
+
+	/**
+	 * Create SQL sub-query using sphinx full text search.
+	 *
+	 * @return string
+	 */
+	private function sphinxSQL()
+	{
+		$searchWords = '';
+		$words = explode(' ', $this->searchString);
+		foreach ($words as $word) {
+			$word = str_replace("'", "\\'", trim($word, "\n\t\r\0\x0B "));
+
+			if ($word !== '') {
+				$searchWords .= ($word . ' ');
+			}
+		}
+		$searchWords = rtrim($searchWords, "\n\t\r\0\x0B ");
+
+		if ($searchWords === '') {
+			return $this->likeSQL();
+		} else {
+			return sprintf(" AND rse.query = '@%s %s;mode=extended'", $this->columnName, $searchWords);
+		}
 	}
 }

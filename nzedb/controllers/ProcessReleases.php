@@ -521,14 +521,6 @@ class ProcessReleases
 		if ($collections instanceof Traversable) {
 			$preDB = new PreDb(['Echo' => $this->echoCLI, 'Settings' => $this->pdo]);
 
-			$insertQuery = (
-				"INSERT INTO releases (%s %s %s name, searchname, totalpart, group_id, adddate, guid, rageid,
-					postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, iscategorized)
-				VALUES (%s %s %s %s, %s, %d, %d, NOW(), sha1('%s'), -1, %s, %s, %s, " .
-				($this->pdo->getSetting('checkpasswordedrar') == 1 ? -1 : 0) .
-				', -1, %d, -1, 1)'
-			);
-
 			foreach ($collections as $collection) {
 
 				$cleanRelName = $this->pdo->escapeString(
@@ -583,26 +575,21 @@ class ProcessReleases
 						}
 					}
 
-					// Insert the release.
-					$releaseID = $this->pdo->queryInsert(
-						sprintf(
-							$insertQuery,
-							($properName === true ? 'isrenamed, ' : ''),
-							($preID === false ? '' : 'preid, '),
-							($isReqID === true ? 'reqidstatus, ' : ''),
-							($properName === true ? '1, ' : ''),
-							($preID === false ? '' : $preID . ', '),
-							($isReqID === true ? '1, ' : ''),
-							$cleanRelName,
-							$this->pdo->escapeString(utf8_encode($cleanedName)),
-							$collection['totalfiles'],
-							$collection['group_id'],
-							(uniqid('', true) . mt_rand()),
-							$this->pdo->escapeString($collection['date']),
-							$fromName,
-							$collection['filesize'],
-							$categorize->determineCategory($cleanedName, $collection['group_id'])
-						)
+					$releaseID = $this->releases->insertRelease(
+						[
+							'name' => $cleanRelName,
+							'searchname' => $this->pdo->escapeString(utf8_encode($cleanedName)),
+							'totalpart' => $collection['totalfiles'],
+							'group_id' => $collection['group_id'],
+							'guid' => $this->releases->createGUID($cleanRelName),
+							'postdate' => $this->pdo->escapeString($collection['date']),
+							'fromname' => $fromName,
+							'size' => $collection['filesize'],
+							'categoryid' => $categorize->determineCategory($cleanedName, $collection['group_id']),
+							'isrenamed' => ($properName === true ? 1 : 0),
+							'reqidstatus' => ($isReqID === true ? 1 : 0),
+							'preid' => ($preID === false ? 0 : $preID)
+						]
 					);
 
 					if ($releaseID !== false) {

@@ -57,12 +57,39 @@ define('nZEDb_PASSWORD_HASH_COST', 11);
  *
  * 0 = The default system, which uses fulltext indexing (very fast but search results can be unexpected).
  * 1 = The old search system from newznab classic (much slower but produces better search results).
- * 2 = Not currently implemented, will use sphinx real time indexes (should give good search results, but
- *     speed in between both of the above methods).
+ * 2 = Search using sphinx real time index, see misc/sphinxsearch/README.md for installation details.
  *
  * @default 0
  */
 define('nZEDb_RELEASE_SEARCH_TYPE', 0);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////// Sphinx Settings ////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * This is the hostname to use when connecting to the SphinxQL server,
+ * note that using localhost / 127.0.0.1 has caused me issues and only 0 has work on a local server.
+ *
+ * @note See misc/sphinxsearch/README.md for installation details.
+ *
+ * @default '0'
+ */
+define('nZEDb_SPHINXQL_HOST_NAME', '0');
+
+/**
+ * This is the port to the SphinxQL server.
+ *
+ * @default 9306
+ */
+define('nZEDb_SPHINXQL_PORT', 9306);
+
+/**
+ * This is the (optional) location to the SphinxQL server socket file, if you set the "listen" setting to a sock file.
+ *
+ * @default ''
+ */
+define('nZEDb_SPHINXQL_SOCK_FILE', '');
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////// CLI Settings //////////////////////////////////////////////////////////

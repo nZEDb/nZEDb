@@ -54,7 +54,7 @@ class Settings extends DB
 		$this->table = ($result === false) ? 'settings' : 'site';
 		$this->setCovers();
 
-		return self::$pdo;
+		return $this->pdo;
 	}
 
 	/**
