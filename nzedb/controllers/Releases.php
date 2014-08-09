@@ -665,7 +665,7 @@ class Releases
 	public function deleteSingle($identifiers, $nzb, $releaseImage)
 	{
 		// Delete NZB from disk.
-		$nzbPath = $nzb->NZBPath($identifiers);
+		$nzbPath = $nzb->NZBPath($identifiers['g']);
 		if ($nzbPath) {
 			@unlink($nzbPath);
 		}
