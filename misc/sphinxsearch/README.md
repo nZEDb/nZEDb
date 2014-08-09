@@ -3,11 +3,11 @@
 
 ## _Installation_:
 
-Forewarning: Your MySQL server requires the SphinxSE plugin, this should be pre-installed on MariaDB.
+_Forewarning: Your MySQL server requires the SphinxSE plugin, this should be pre-installed on MariaDB._
 
-For MySQL or Percona, you might have to compile them. Please make sure you have this before continuing as this is required.
+_For MySQL or Percona, you might have to compile them. Please make sure you have this before continuing as this is required._
 
-You can type SHOW ENGINES; in a MySQL client to verify that SPHINX is supported.
+_You can type SHOW ENGINES; in a MySQL client to verify that SPHINX is supported._
 
 Head to http://sphinxsearch.com/downloads/release/, download the latest version for your operating system.
 
@@ -48,8 +48,6 @@ Assuming you are on ubuntu:
 `sudo mkdir -p /var/lib/sphinxsearch/data/`
 
 `sudo mkdir -p /var/log/sphinxsearch/`
-
-`sudo mkdir -p /var/run/sphinxsearch/`
 
 ## _Start the sphinx service_:
 Assuming you are on ubuntu:
