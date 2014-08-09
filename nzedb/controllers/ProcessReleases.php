@@ -1079,7 +1079,7 @@ class ProcessReleases
 			if ($maxSizeSetting > 0) {
 				$releases = $this->pdo->queryDirect(
 					sprintf('
-						SELECT guid
+						SELECT id, guid
 						FROM releases
 						WHERE group_id = %d
 						AND size > %d',
@@ -1097,7 +1097,7 @@ class ProcessReleases
 
 			$releases = $this->pdo->queryDirect(
 				sprintf("
-					SELECT r.guid
+					SELECT r.id, r.guid
 					FROM releases r
 					INNER JOIN groups g ON g.id = r.group_id
 					WHERE r.group_id = %d
@@ -1169,7 +1169,7 @@ class ProcessReleases
 		if ($this->pdo->getSetting('deletepasswordedrelease') == 1) {
 			$releases = $this->pdo->queryDirect(
 				sprintf(
-					'SELECT guid FROM releases WHERE passwordstatus = %d',
+					'SELECT id, guid FROM releases WHERE passwordstatus = %d',
 					Releases::PASSWD_RAR
 				)
 			);
@@ -1185,7 +1185,7 @@ class ProcessReleases
 		if ($this->pdo->getSetting('deletepossiblerelease') == 1) {
 			$releases = $this->pdo->queryDirect(
 				sprintf(
-					'SELECT guid FROM releases WHERE passwordstatus = %d',
+					'SELECT id, guid FROM releases WHERE passwordstatus = %d',
 					Releases::PASSWD_POTENTIAL
 				)
 			);
@@ -1202,7 +1202,7 @@ class ProcessReleases
 			do {
 				$releases = $this->pdo->queryDirect(
 					sprintf(
-						'SELECT guid FROM releases WHERE adddate > (NOW() - INTERVAL %d HOUR) GROUP BY name HAVING COUNT(name) > 1',
+						'SELECT id, guid FROM releases WHERE adddate > (NOW() - INTERVAL %d HOUR) GROUP BY name HAVING COUNT(name) > 1',
 						$this->crossPostTime
 					)
 				);
@@ -1219,7 +1219,7 @@ class ProcessReleases
 
 		if ($this->completion > 0) {
 			$releases = $this->pdo->queryDirect(
-				sprintf('SELECT guid FROM releases WHERE completion < %d AND completion > 0', $this->completion)
+				sprintf('SELECT id, guid FROM releases WHERE completion < %d AND completion > 0', $this->completion)
 			);
 			if ($releases instanceof Traversable) {
 				foreach ($releases as $release) {
@@ -1234,7 +1234,7 @@ class ProcessReleases
 		if (count($disabledCategories) > 0) {
 			foreach ($disabledCategories as $disabledCategory) {
 				$releases = $this->pdo->queryDirect(
-					sprintf('SELECT guid FROM releases WHERE categoryid = %d', $disabledCategory['id'])
+					sprintf('SELECT id, guid FROM releases WHERE categoryid = %d', $disabledCategory['id'])
 				);
 				if ($releases instanceof Traversable) {
 					foreach ($releases as $release) {
@@ -1259,7 +1259,7 @@ class ProcessReleases
 				if ($category['minsize'] > 0) {
 					$releases = $this->pdo->queryDirect(
 						sprintf('
-							SELECT r.guid
+							SELECT r.id, r.guid
 							FROM releases r
 							WHERE r.categoryid = %d
 							AND r.size < %d',
@@ -1283,7 +1283,7 @@ class ProcessReleases
 			foreach ($genrelist as $genre) {
 				$releases = $this->pdo->queryDirect(
 					sprintf('
-						SELECT guid
+						SELECT id, guid
 						FROM releases
 						INNER JOIN (SELECT id AS mid FROM musicinfo WHERE musicinfo.genreid = %d) mi
 						ON musicinfoid = mid',
@@ -1303,7 +1303,7 @@ class ProcessReleases
 		if ($this->pdo->getSetting('miscotherretentionhours') > 0) {
 			$releases = $this->pdo->queryDirect(
 				sprintf('
-					SELECT guid
+					SELECT id, guid
 					FROM releases
 					WHERE categoryid = %d
 					AND adddate <= NOW() - INTERVAL %d HOUR',
@@ -1323,7 +1323,7 @@ class ProcessReleases
 		if ($this->pdo->getSetting('mischashedretentionhours') > 0) {
 			$releases = $this->pdo->queryDirect(
 				sprintf('
-					SELECT guid
+					SELECT id, guid
 					FROM releases
 					WHERE categoryid = %d
 					AND adddate <= NOW() - INTERVAL %d HOUR',
