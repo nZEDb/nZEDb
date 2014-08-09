@@ -144,4 +144,10 @@ In this case, 5.6.19-67.0 would be the installed version and 5.6.19-67.0-618.tru
 
 The final argument for build.sh is optional.  It just marks the iteration of compilation for the plugin if you want multiple.
 
-This script, once completed should have installed the plugin and activated it, as well as left you a nice debian package for your environment should you need to reinstall in the _pkg directory.
+This script, once completed should leave a deb package in the _pkg directory.  You can install it with:
+
+`dpkg -i file.deb`
+
+This will copy the plugin to the correct directory and activate it in MySQL.  You can verify it is active by issuing:
+
+`SHOW PLUGINS';` OR `SHOW ENGINES;` to see that Sphinx is installed and active.
