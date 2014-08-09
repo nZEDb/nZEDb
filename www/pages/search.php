@@ -230,7 +230,7 @@ Putting ^ at the start will limit searches to releases that start with that word
 Putting $ at the end will limit searches to releases that end with that word.<br />
 Putting a * after a word will do a partial word search. ie: fish* will match fishing.<br />
 If your search is only words seperated by spaces, all those words will be mandatory, the order of the words is not important.<br />
-You can enclose words using paranthesis. ie: (^game*|^dex*)s03* (x264<&lt;nogrp$)<br />
+You can enclose words using paranthesis. ie: (^game*|^dex*)s03*(x264<&lt;nogrp$)<br />
 You can combine some of these rules, but not all.<br />';
 		break;
 }
