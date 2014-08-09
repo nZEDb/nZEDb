@@ -14,7 +14,9 @@ Head to http://sphinxsearch.com/downloads/release/, download the latest version 
 Assuming you are on ubuntu, you would:
 
 `sudo add-apt-repository https://launchpad.net/~builds/+archive/ubuntu/sphinxsearch-rel21`
+
 `sudo apt-get update`
+
 `sudo apt-get install sphinxsearch`
 
 ## _Configuration_:
