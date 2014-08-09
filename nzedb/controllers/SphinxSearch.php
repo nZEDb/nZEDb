@@ -86,7 +86,7 @@ class SphinxSearch
 	public function updateReleaseSearchName($releaseID, $searchName)
 	{
 		if (!is_null($this->sphinxQL)) {
-			$old = $this->sphinxQL->queryOneRow(sprintf('SELECT * FROM sphinx_rt WHERE id = %s', $releaseID));
+			$old = $this->sphinxQL->queryOneRow(sprintf('SELECT * FROM releases_rt WHERE id = %s', $releaseID));
 			if ($old !== false) {
 				$this->insertRelease(
 					[
