@@ -17,6 +17,8 @@ $crosspostt = $pdo->getSetting('crossposttime');
 $crosspostt = (!empty($crosspostt)) ? $crosspostt : 2;
 $releasecleaning = new ReleaseCleaning($pdo);
 $categorize = new Categorize(['Settings' => $pdo]);
+$nzb = new NZB($pdo);
+$releases = new Releases(['Settings' => $pdo]);
 $nzbsperhour = $nzbSkipped = $maxtoprocess = 0;
 
 if (isset($argv[2]) && is_numeric($argv[2])) {
@@ -34,7 +36,7 @@ if (isset($argv[3]) && is_numeric($argv[3])) {
 	$maxtoprocess = $argv[3];
 }
 
-$filestoprocess = Array();
+$filestoprocess = [];
 
 if (substr($path, strlen($path) - 1) != '/') {
 	$path = $path . "/";
@@ -48,10 +50,10 @@ function relativeTime($_time)
 	$d[3] = array(86400, "day");
 	$d[4] = array(31104000, "yr");
 
-	$w = array();
+	$w = [];
 
 	$return = "";
-	$now = TIME();
+	$now = time();
 	$diff = ($now - $_time);
 	$secondsLeft = $diff;
 
@@ -70,13 +72,13 @@ foreach ($groups as $group) {
 	$siteGroups[$group["name"]] = $group["id"];
 }
 
-$data = array();
+$data = [];
 
 if (!isset($groups) || count($groups) == 0) {
 	echo "No groups specified.\n";
 } else {
 	$nzbCount = 0;
-	$time = TIME();
+	$time = time();
 
 	//iterate over all nzb files in all folders and subfolders
 	if (!file_exists($path)) {
@@ -111,7 +113,7 @@ if (!isset($groups) || count($groups) == 0) {
 			continue;
 		}
 
-		$postdate = $postername = $firstname = array();
+		$postdate = $postername = $firstname = [];
 		$totalFiles = $i = $totalsize = 0;
 
 		foreach ($xml->file as $file) {
@@ -134,7 +136,7 @@ if (!isset($groups) || count($groups) == 0) {
 			$msg = array("Subject" => $subject, "From" => $fromname, "Message-ID" => "");
 
 			// Groups.
-			$groupArr = array();
+			$groupArr = [];
 			foreach ($file->groups->group as $group) {
 				$group = (string) $group;
 				if (array_key_exists($group, $siteGroups)) {
@@ -170,8 +172,7 @@ if (!isset($groups) || count($groups) == 0) {
 		if ($importfailed) {
 			@unlink($nzbFile);
 		} else {
-			$relguid = sha1(uniqid('', true) . mt_rand());
-			$nzb = new NZB($pdo);
+			$relguid = $releases->createGUID();
 			$propername = true;
 			$relid = false;
 			if ($usenzbname === true) {
@@ -204,11 +205,23 @@ if (!isset($groups) || count($groups) == 0) {
 			// Look for match on name, poster and size
 			$dupecheck = $pdo->queryOneRow(sprintf('SELECT id, guid FROM releases WHERE name = %s AND fromname = %s AND size BETWEEN %s AND %s', $pdo->escapeString($subject), $pdo->escapeString($poster), $pdo->escapeString($minsize), $pdo->escapeString($maxsize)));
 			if ($dupecheck === false) {
-				if ($propername === true && $importfailed === false) {
-					$relid = $pdo->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, group_id, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, isrenamed, iscategorized) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, 1, 1, 1)", $pdo->escapeString($subject), $pdo->escapeString($cleanName), $totalFiles, $groupID, $pdo->escapeString($relguid), $pdo->escapeString($posteddate), $pdo->escapeString($poster), $pdo->escapeString($totalsize), ($pdo->getSetting('checkpasswordedrar') == "1" ? -1 : 0), $category));
-				} else {
-					$relid = $pdo->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, group_id, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, isrenamed, iscategorized) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, 1, 1, 1)", $pdo->escapeString($subject), $pdo->escapeString($cleanName), $totalFiles, $groupID, $pdo->escapeString($relguid), $pdo->escapeString($posteddate), $pdo->escapeString($poster), $pdo->escapeString($totalsize), ($pdo->getSetting('checkpasswordedrar') == "1" ? -1 : 0), $category));
-				}
+				$relid = $releases->insertRelease(
+					[
+						'name' => $pdo->escapeString($subject),
+						'searchname' => $pdo->escapeString($cleanName),
+						'totalpart' => $totalFiles,
+						'group_id' => $groupID,
+						'guid' => $pdo->escapeString($relguid),
+						'postdate' => $pdo->escapeString($posteddate),
+						'fromname' => $pdo->escapeString($poster),
+						'size' => $pdo->escapeString($totalsize),
+						'categoryid' => $category,
+						'isrenamed' => 1,
+						'reqidstatus' => 0,
+						'preid' => 0,
+						'nzbstatus' => NZB::NZB_ADDED
+					]
+				);
 			}
 
 			if ($relid === false || $dupecheck === false) {

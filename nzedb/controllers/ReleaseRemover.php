@@ -337,7 +337,7 @@ class ReleaseRemover
 	{
 		$this->method = 'Gibberish';
 		$this->query = sprintf(
-			"SELECT r.guid, r.searchname
+			"SELECT r.guid, r.searchname, r.id
 			FROM releases r
 			WHERE r.nfostatus = 0
 			AND r.iscategorized = 1
@@ -365,7 +365,7 @@ class ReleaseRemover
 	{
 		$this->method = 'Hashed';
 		$this->query = sprintf(
-			"SELECT r.guid, r.searchname
+			"SELECT r.guid, r.searchname, r.id
 			FROM releases r
 			WHERE r.nfostatus = 0
 			AND r.iscategorized = 1
@@ -392,7 +392,7 @@ class ReleaseRemover
 	{
 		$this->method = 'Short';
 		$this->query = sprintf(
-			"SELECT r.guid, r.searchname
+			"SELECT r.guid, r.searchname, r.id
 			FROM releases r
 			WHERE r.nfostatus = 0
 			AND r.iscategorized = 1
@@ -419,7 +419,7 @@ class ReleaseRemover
 	{
 		$this->method = 'Executable';
 		$this->query = sprintf(
-			"SELECT r.guid, r.searchname
+			"SELECT r.guid, r.searchname, r.id
 			FROM releases r
 			INNER JOIN releasefiles rf ON rf.releaseid = r.id
 			WHERE r.searchname NOT LIKE %s
@@ -451,7 +451,7 @@ class ReleaseRemover
 	{
 		$this->method = 'Install.bin';
 		$this->query = sprintf(
-			"SELECT r.guid, r.searchname
+			"SELECT r.guid, r.searchname, r.id
 			FROM releases r
 			INNER JOIN releasefiles rf ON rf.releaseid = r.id
 			WHERE rf.name LIKE %s %s",
@@ -475,7 +475,7 @@ class ReleaseRemover
 	{
 		$this->method = 'Password.url';
 		$this->query = sprintf(
-			"SELECT r.guid, r.searchname
+			"SELECT r.guid, r.searchname, r.id
 			FROM releases r
 			INNER JOIN releasefiles rf ON rf.releaseid = r.id
 			WHERE rf.name LIKE %s %s",
@@ -499,7 +499,7 @@ class ReleaseRemover
 	{
 		$this->method = 'Passworded';
 		$this->query = sprintf(
-			"SELECT r.guid, r.searchname
+			"SELECT r.guid, r.searchname, r.id
 			FROM releases r
 			WHERE r.searchname LIKE %s
 			AND r.searchname NOT LIKE %s
@@ -546,7 +546,7 @@ class ReleaseRemover
 	{
 		$this->method = 'Size';
 		$this->query = sprintf(
-			"SELECT r.guid, r.searchname
+			"SELECT r.guid, r.searchname, r.id
 			FROM releases r
 			WHERE r.totalpart = 1
 			AND r.size < 2097152
@@ -581,7 +581,7 @@ class ReleaseRemover
 	{
 		$this->method = 'Huge';
 		$this->query = sprintf(
-			"SELECT r.guid, r.searchname
+			"SELECT r.guid, r.searchname, r.id
 			FROM releases r
 			WHERE r.totalpart = 1
 			AND r.size > 209715200 %s",
@@ -604,7 +604,7 @@ class ReleaseRemover
 	{
 		$this->method = 'Sample';
 		$this->query = sprintf(
-			"SELECT r.guid, r.searchname
+			"SELECT r.guid, r.searchname, r.id
 			FROM releases r
 			WHERE r.totalpart > 1
 			AND r.size < 40000000
@@ -645,7 +645,7 @@ class ReleaseRemover
 	{
 		$this->method = '.scr';
 		$this->query = sprintf(
-			"SELECT r.guid, r.searchname
+			"SELECT r.guid, r.searchname, r.id
 			FROM releases r
 			LEFT JOIN releasefiles rf on rf.releaseid = r.id
 			WHERE (rf.name REGEXP '[.]scr[$ \"]' OR r.name REGEXP '[.]scr[$ \"]')
@@ -827,7 +827,7 @@ class ReleaseRemover
 				);
 
 				$this->query = sprintf(
-					"SELECT r.guid, r.searchname
+					"SELECT r.guid, r.searchname, r.id
 					FROM releasesearch rs LEFT JOIN releases r ON rs.releaseid = r.id %s %s %s", $regexSQL, $groupID, $this->crapTime
 				);
 
@@ -901,7 +901,7 @@ class ReleaseRemover
 
 				$this->method = 'Blacklist ' . $regex['id'];
 				$this->query = sprintf(
-					"SELECT r.guid, r.searchname
+					"SELECT r.guid, r.searchname, r.id
 					FROM releases r %s %s %s", $regexSQL, $groupID, $this->crapTime
 				);
 
@@ -948,7 +948,7 @@ class ReleaseRemover
 			WHERE %s rf.name LIKE '%s' OR rf.name LIKE '%s' OR rf.name LIKE '%s'", $categories, $codec, $iferror, $ifnotplaying
 		);
 		$this->query = sprintf(
-			"SELECT r.guid, r.searchname FROM releases
+			"SELECT r.guid, r.searchname, r.id FROM releases
 			r INNER JOIN releasefiles rf ON (rf.releaseid = r.id)
 			WHERE %s %s %s %s %s", $categories, $regex, $this->crapTime, $codeclike, $this->crapTime
 		);
@@ -968,7 +968,7 @@ class ReleaseRemover
 		$deletedCount = 0;
 		foreach ($this->result as $release) {
 			if ($this->delete) {
-				$this->releases->deleteSingle($release['guid'], $this->nzb, $this->releaseImage);
+				$this->releases->deleteSingle(['g' => $release['guid'], 'i' => $release['id']], $this->nzb, $this->releaseImage);
 				if ($this->echoCLI) {
 					echo $this->pdo->log->primary('Deleting: ' . $this->method . ': ' . $release['searchname']);
 				}

@@ -57,6 +57,7 @@ class NameFixer
 			'Groups'       => null,
 			'Utility'      => null,
 			'Settings'     => null,
+			'SphinxSearch' => null,
 		];
 		$options += $defaults;
 
@@ -72,6 +73,7 @@ class NameFixer
 		$this->category = ($options['Categorize'] instanceof Categorize ? $options['Categorize'] : new Categorize(['Settings' => $this->pdo]));
 		$this->utility = ($options['Utility'] instanceof Utility ? $options['Utility'] :new Utility());
 		$this->_groups = ($options['Groups'] instanceof Groups ? $options['Groups'] : new Groups(['Settings' => $this->pdo]));
+		$this->sphinx = ($options['SphinxSearch'] instanceof SphinxSearch ? $options['SphinxSearch'] : new SphinxSearch());
 	}
 
 	/**
@@ -449,6 +451,7 @@ class NameFixer
 								$status = "isrenamed = 1, iscategorized = 1,";
 								break;
 						}
+						$newTitle = $this->pdo->escapeString(substr($newName, 0, 255));
 						$this->pdo->queryExec(
 							sprintf('
 								UPDATE releases
@@ -458,13 +461,15 @@ class NameFixer
 									searchname = %s, %s categoryid = %d
 								WHERE id = %d',
 								$preId,
-								$this->pdo->escapeString(substr($newName, 0, 255)),
+								$newTitle,
 								$status,
 								$determinedCategory,
 								$release['releaseid']
 							)
 						);
+						$this->sphinx->updateReleaseSearchName($release['releaseid'], $newTitle);
 					} else {
+						$newTitle = $this->pdo->escapeString(substr($newName, 0, 255));
 						$this->pdo->queryExec(
 							sprintf('
 								UPDATE releases
@@ -474,11 +479,12 @@ class NameFixer
 									searchname = %s, iscategorized = 1, categoryid = %d
 								WHERE id = %d',
 								$preId,
-								$this->pdo->escapeString(substr($newName, 0, 255)),
+								$newTitle,
 								$determinedCategory,
 								$release['releaseid']
 							)
 						);
+						$this->sphinx->updateReleaseSearchName($release['releaseid'], $newTitle);
 					}
 				}
 			}

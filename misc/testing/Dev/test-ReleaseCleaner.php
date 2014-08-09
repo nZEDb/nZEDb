@@ -48,6 +48,7 @@ if (count($releases) === 0) {
 }
 
 $RC = new ReleaseCleaning($pdo);
+$sphinx = new SphinxSearch();
 
 foreach($releases as $release) {
 	$newName = $RC->releaseCleaner($release['name'], $release['fromname'], $release['size'], $argv[1]);
@@ -59,7 +60,9 @@ foreach($releases as $release) {
 		echo 'New name: ' . $newName . PHP_EOL . PHP_EOL;
 
 		if ($rename === true) {
-			$pdo->queryExec(sprintf('UPDATE releases SET searchname = %s WHERE id = %d', $pdo->escapeString($newName), $release['id']));
+			$newName = $pdo->escapeString($newName);
+			$pdo->queryExec(sprintf('UPDATE releases SET searchname = %s WHERE id = %d', $newName, $release['id']));
+			$sphinx->updateReleaseSearchName($release['id'], $newName);
 		}
 	}
 }

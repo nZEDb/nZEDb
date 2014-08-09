@@ -253,7 +253,7 @@ Class ProcessAdditional
 	/**
 	 * @param array $options Class instances / echo to cli.
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		$defaults = [
 			'Echo'         => false,
@@ -267,6 +267,7 @@ Class ProcessAdditional
 			'ReleaseFiles' => null,
 			'ReleaseImage' => null,
 			'Settings'     => null,
+			'SphinxSearch' => null,
 		];
 		$options += $defaults;
 
@@ -286,6 +287,7 @@ Class ProcessAdditional
 		$this->_releaseImage = ($options['ReleaseImage'] instanceof ReleaseImage ? $options['ReleaseImage'] : new ReleaseImage($this->pdo));
 		$this->_par2Info = new Par2Info();
 		$this->_nfo = ($options['Nfo'] instanceof Nfo ? $options['Nfo'] : new Nfo(['Echo' => $this->_echoCLI, 'Settings' => $this->pdo]));
+		$this->sphinx = ($options['SphinxSearch'] instanceof SphinxSearch ? $options['SphinxSearch'] : new SphinxSearch());
 
 		$this->_innerFileBlacklist = ($this->pdo->getSetting('innerfileblacklist') == '' ? false : $this->pdo->getSetting('innerfileblacklist'));
 		$this->_maxNestedLevels = ($this->pdo->getSetting('maxnestedlevels') == 0 ? 3 : $this->pdo->getSetting('maxnestedlevels'));
@@ -1656,6 +1658,7 @@ Class ProcessAdditional
 										$newCat = $this->_categorize->determineCategory($newName, $rQuery['group_id']);
 									}
 
+									$newTitle = $this->pdo->escapeString(substr($newName, 0, 255));
 									// Update the search name.
 									$this->pdo->queryExec(
 										sprintf(
@@ -1663,11 +1666,12 @@ Class ProcessAdditional
 											UPDATE releases
 											SET searchname = %s, categoryid = %d, iscategorized = 1, isrenamed = 1, proc_pp = 1
 											WHERE id = %d',
-											$this->pdo->escapeString(substr($newName, 0, 255)),
+											$newTitle,
 											$newCat,
 											$this->_release['id']
 										)
 									);
+									$this->sphinx->updateReleaseSearchName($this->_release['id'], $newTitle);
 
 									// Echo the changed name.
 									if ($this->_echoCLI) {
@@ -2239,6 +2243,7 @@ Class ProcessAdditional
 					// Get a new category ID.
 					$newCategory = $this->_categorize->determineCategory($newName, $this->_release['group_id']);
 
+					$newTitle = $this->pdo->escapeString(substr($newName, 0, 255));
 					// Update the release with the data.
 					$this->pdo->queryExec(
 						sprintf(
@@ -2249,11 +2254,12 @@ Class ProcessAdditional
 								consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, preid = 0,
 								searchname = %s, isrenamed = 1, iscategorized = 1, proc_files = 1, categoryid = %d
 							WHERE id = %d',
-							$this->pdo->escapeString(substr($newName, 0, 255)),
+							$newTitle,
 							$newCategory,
 							$this->_release['id']
 						)
 					);
+					$this->sphinx->updateReleaseSearchName($this->_release['id'], $newTitle);
 
 					// Echo the changed name to CLI.
 					if ($this->_echoCLI) {

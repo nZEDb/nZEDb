@@ -89,7 +89,7 @@ class NZBImport
 	 *
 	 * @access public
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		$defaults = [
 			'Browser'          => false, // Was this started from the browser?
@@ -98,6 +98,7 @@ class NZBImport
 			'Categorize'       => null,
 			'NZB'              => null,
 			'ReleaseCleaning'  => null,
+			'Releases'         => null,
 			'Settings'         => null,
 		];
 		$options += $defaults;
@@ -108,6 +109,7 @@ class NZBImport
 		$this->category = ($options['Categorize'] instanceof Categorize ? $options['Categorize'] : new Categorize(['Settings' => $this->pdo]));
 		$this->nzb = ($options['NZB'] instanceof NZB ? $options['NZB'] : new NZB($this->pdo));
 		$this->releaseCleaner = ($options['ReleaseCleaning'] instanceof ReleaseCleaning ? $options['ReleaseCleaning'] : new ReleaseCleaning($this->pdo));
+		$this->releases = ($options['Releases'] instanceof Releases ? $options['Releases'] : new Releases(['settings' => $this->pdo]));
 
 		$this->crossPostt = ($this->pdo->getSetting('crossposttime') != '') ? $this->pdo->getSetting('crossposttime') : 2;
 		$this->browser = $options['Browser'];
@@ -179,7 +181,7 @@ class NZBImport
 				if ($inserted) {
 
 					// Try to copy the NZB to the NZB folder.
-					$path = $this->nzb->getNZBPath($this->relGuid, $this->pdo->getSetting('nzbsplitlevel'), true);
+					$path = $this->nzb->getNZBPath($this->relGuid, 0, true);
 
 					// Try to compress the NZB file in the NZB folder.
 					$fp = gzopen ($path, 'w5');
@@ -346,7 +348,7 @@ class NZBImport
 	protected function insertNZB($nzbDetails)
 	{
 		// Make up a GUID for the release.
-		$this->relGuid = sha1(uniqid('', true) . mt_rand());
+		$this->relGuid = $this->releases->createGUID();
 
 		// Remove part count from subject.
 		$partLess = preg_replace('/(\(\d+\/\d+\))*$/', 'yEnc', $nzbDetails['subject']);
@@ -367,37 +369,39 @@ class NZBImport
 			}
 		}
 
+		$escapedSubject = $this->pdo->escapeString($subject);
+		$escapedFromName = $this->pdo->escapeString($nzbDetails['from']);
+
 		// Look for a duplicate on name, poster and size.
 		$dupeCheck = $this->pdo->queryOneRow(
 			sprintf(
 				'SELECT id FROM releases WHERE name = %s AND fromname = %s AND size BETWEEN %s AND %s',
-				$this->pdo->escapeString($subject),
-				$this->pdo->escapeString($nzbDetails['from']),
+				$escapedSubject,
+				$escapedFromName,
 				$this->pdo->escapeString($nzbDetails['totalSize'] * 0.99),
 				$this->pdo->escapeString($nzbDetails['totalSize'] * 1.01)
 			)
 		);
 
 		if ($dupeCheck === false) {
+			$escapedSearchName = $this->pdo->escapeString($cleanName);
 			// Insert the release into the DB.
-			$relID = $this->pdo->queryInsert(
-				sprintf(
-					"INSERT INTO releases
-						(name, searchname, totalpart, group_id, adddate, guid, rageid, postdate, fromname,
-						size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, isrenamed, iscategorized)
-					 VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, 1, %d, 1)",
-					$this->pdo->escapeString($subject),
-					$this->pdo->escapeString($cleanName),
-					$nzbDetails['totalFiles'],
-					$nzbDetails['group_id'],
-					$this->pdo->escapeString($this->relGuid),
-					$this->pdo->escapeString($nzbDetails['postDate']),
-					$this->pdo->escapeString($nzbDetails['from']),
-					$this->pdo->escapeString($nzbDetails['totalSize']),
-					($this->pdo->getSetting('checkpasswordedrar') == "1" ? -1 : 0),
-					$this->category->determineCategory($cleanName, $nzbDetails['group_id']),
-					$renamed
-				)
+			$relID = $this->releases->insertRelease(
+				[
+					'name' => $escapedSubject,
+					'searchname' => $escapedSearchName,
+					'totalpart' => $nzbDetails['totalFiles'],
+					'group_id' => $nzbDetails['group_id'],
+					'guid' => $this->pdo->escapeString($this->relGuid),
+					'postdate' => $this->pdo->escapeString($nzbDetails['postDate']),
+					'fromname' => $escapedFromName,
+					'size' => $this->pdo->escapeString($nzbDetails['totalSize']),
+					'categoryid' => $this->category->determineCategory($cleanName, $nzbDetails['group_id']),
+					'isrenamed' => $renamed,
+					'reqidstatus' => 0,
+					'preid' => 0,
+					'nzbstatus' => NZB::NZB_ADDED
+				]
 			);
 		} else {
 			//$this->echoOut('This release is already in our DB so skipping: ' . $subject);
@@ -418,7 +422,7 @@ class NZBImport
 	 */
 	protected function getAllGroups()
 	{
-		$this->allGroups = array();
+		$this->allGroups = [];
 		$groups = $this->pdo->query("SELECT id, name FROM groups");
 		foreach ($groups as $group) {
 			$this->allGroups[$group["name"]] = $group["id"];
