@@ -3,6 +3,8 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
+2014-08-09 ruhllatio
+	* Mrg: kevinlekiller's dev-sphinx into dev (RTFM -> misc/sphinxsearch/README.md) for info
 2014-08-08 ruhllatio
 	* Chg: NFO Update query performance is poor with new Guid CHAR query addendum
 2014-08-07 ruhllatio
