@@ -74,7 +74,7 @@ class Releases
 					(name, searchname, totalpart, group_id, adddate, guid, rageid, postdate, fromname,
 					size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus,
 					isrenamed, iscategorized, reqidstatus, preid)
-				 VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, 1, %d, 1, %d, %d)",
+				 VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, 1, %d, %d, %d, %d)",
 				$parameters['name'],
 				$parameters['searchname'],
 				$parameters['totalpart'],
@@ -86,6 +86,7 @@ class Releases
 				$this->passwordStatus,
 				$parameters['categoryid'],
 				$parameters['isrenamed'],
+				$parameters['nzbstatus'],
 				$parameters['reqidstatus'],
 				$parameters['preid']
 			)

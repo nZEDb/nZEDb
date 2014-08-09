@@ -219,6 +219,7 @@ if (!isset($groups) || count($groups) == 0) {
 						'isrenamed' => 1,
 						'reqidstatus' => 0,
 						'preid' => 0,
+						'nzbstatus' => NZB::NZB_ADDED
 					]
 				);
 			}

@@ -588,7 +588,8 @@ class ProcessReleases
 							'categoryid' => $categorize->determineCategory($cleanedName, $collection['group_id']),
 							'isrenamed' => ($properName === true ? 1 : 0),
 							'reqidstatus' => ($isReqID === true ? 1 : 0),
-							'preid' => ($preID === false ? 0 : $preID)
+							'preid' => ($preID === false ? 0 : $preID),
+							'nzbstatus' => NZB::NZB_NONE
 						]
 					);
 
