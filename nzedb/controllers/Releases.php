@@ -85,8 +85,8 @@ class Releases
 				$parameters['size'],
 				$this->passwordStatus,
 				$parameters['categoryid'],
-				$parameters['isrenamed'],
 				$parameters['nzbstatus'],
+				$parameters['isrenamed'],
 				$parameters['reqidstatus'],
 				$parameters['preid']
 			)
