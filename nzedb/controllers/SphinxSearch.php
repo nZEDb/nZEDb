@@ -93,7 +93,7 @@ class SphinxSearch
 						'id' => $releaseID,
 						'guid' => $this->sphinxQL->escapeString($old['guid']),
 						'name' => $this->sphinxQL->escapeString($old['name']),
-						'searchname' => $this->sphinxQL->escapeString($searchName),
+						'searchname' => $searchName,
 						'fromname' => $this->sphinxQL->escapeString($old['fromname'])
 					]
 				);
