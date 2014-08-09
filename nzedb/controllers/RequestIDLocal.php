@@ -254,6 +254,7 @@ class RequestIDLocal extends RequestID
 	{
 		$determinedCat = $this->category->determineCategory($this->_newTitle['title'], $this->_release['gid']);
 		if ($determinedCat == $this->_release['categoryid']) {
+			$newTitle = $this->pdo->escapeString($this->_newTitle['title']);
 			$this->pdo->queryExec(
 				sprintf('
 					UPDATE releases
@@ -261,11 +262,13 @@ class RequestIDLocal extends RequestID
 					WHERE id = %d',
 					$this->_newTitle['id'],
 					self::REQID_FOUND,
-					$this->pdo->escapeString($this->_newTitle['title']),
+					$newTitle,
 					$this->_release['id']
 				)
 			);
+			$this->sphinx->updateReleaseSearchName($this->_release['id'], $newTitle);
 		} else {
+			$newTitle = $this->pdo->escapeString($this->_newTitle['title']);
 			$this->pdo->queryExec(
 				sprintf('
 					UPDATE releases SET
@@ -276,11 +279,12 @@ class RequestIDLocal extends RequestID
 					WHERE id = %d',
 					$this->_newTitle['id'],
 					self::REQID_FOUND,
-					$this->pdo->escapeString($this->_newTitle['title']),
+					$newTitle,
 					$determinedCat,
 					$this->_release['id']
 				)
 			);
+			$this->sphinx->updateReleaseSearchName($this->_release['id'], $newTitle);
 		}
 
 		if ($this->_release['name'] !== $this->_newTitle['title'] && $this->_show == 1) {

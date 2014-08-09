@@ -78,6 +78,25 @@ class SphinxSearch
 	}
 
 	/**
+	 * Update the search name of a release.
+	 *
+	 * @param int $releaseID
+	 * @param string $searchName
+	 */
+	public function updateReleaseSearchName($releaseID, $searchName)
+	{
+		if (!is_null($this->sphinxQL)) {
+			$this->sphinxQL->queryExec(
+				sprintf(
+					'UPDATE releases_rt SET searchname = %s WHERE id = %s',
+					$searchName,
+					$releaseID
+				)
+			);
+		}
+	}
+
+	/**
 	 * Truncate a RT index.
 	 * @param string $indexName
 	 */

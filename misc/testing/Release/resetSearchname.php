@@ -6,6 +6,7 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 use nzedb\db\Settings;
 
 $pdo = new Settings();
+$sphinx = new SphinxSearch();
 
 $show = 2;
 if (isset($argv[2]) && $argv[2] === 'show') {
@@ -26,7 +27,9 @@ if (isset($argv[1]) && $argv[1] == "full") {
 			if (is_array($newname)) {
 				$newname = $newname['cleansubject'];
 			}
-			$pdo->queryExec(sprintf("UPDATE releases SET searchname = %s WHERE id = %d", $pdo->escapeString($newname), $row['id']));
+			$newname = $pdo->escapeString($newname);
+			$pdo->queryExec(sprintf("UPDATE releases SET searchname = %s WHERE id = %d", $newname, $row['id']));
+			$sphinx->updateReleaseSearchName($newname, $row['id']);
 			$done++;
 			$consoletools->overWritePrimary("Renaming:" . $consoletools->percentString($done, count($res)));
 		}
@@ -62,7 +65,9 @@ if (isset($argv[1]) && $argv[1] == "full") {
 			if (is_array($newname)) {
 				$newname = $newname['cleansubject'];
 			}
-			$pdo->queryExec(sprintf("UPDATE releases SET searchname = %s WHERE id = %d", $pdo->escapeString($newname), $row['id']));
+			$newname = $pdo->escapeString($newname);
+			$pdo->queryExec(sprintf("UPDATE releases SET searchname = %s WHERE id = %d", $newname, $row['id']));
+			$sphinx->updateReleaseSearchName($newname, $row['id']);
 			$done++;
 			$consoletools->overWritePrimary("Renaming:" . $consoletools->percentString($done, count($res)));
 		}
@@ -98,7 +103,9 @@ if (isset($argv[1]) && $argv[1] == "full") {
 			if (is_array($newname)) {
 				$newname = $newname['cleansubject'];
 			}
-			$pdo->queryExec(sprintf("UPDATE releases SET searchname = %s where id = %d", $pdo->escapeString($newname), $row['id']));
+			$newname = $pdo->escapeString($newname);
+			$pdo->queryExec(sprintf("UPDATE releases SET searchname = %s where id = %d", $newname, $row['id']));
+			$sphinx->updateReleaseSearchName($newname, $row['id']);
 			$done++;
 			$consoletools->overWritePrimary("Renaming:" . $consoletools->percentString($done, count($res)));
 		}

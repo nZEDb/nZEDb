@@ -62,6 +62,8 @@ if ($releases instanceof Traversable) {
 
 	$nntp->doConnect();
 
+	$sphinx = new SphinxSearch();
+
 	foreach($releases as $release) {
 
 		// Clear old files.
@@ -181,6 +183,7 @@ if ($releases instanceof Traversable) {
 			)
 		);
 
+		$newName = $pdo->escapeString(substr($newName, 0, 255));
 		$pdo->queryExec(
 			sprintf('
 				UPDATE releases
@@ -189,10 +192,11 @@ if ($releases instanceof Traversable) {
 						consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, preid = 0,
 						searchname = %s, isrenamed = 1, iscategorized = 1, proc_files = 1, categoryid = %d
 					WHERE id = %d',
-				$pdo->escapeString(substr($newName, 0, 255)),
+				$newName,
 				$determinedCat,
 				$release['id']
 			)
 		);
+		$sphinx->updateReleaseSearchName($release['id'], $newName);
 	}
 }
