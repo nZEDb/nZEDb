@@ -62,7 +62,6 @@ class SphinxSearch
 	public function deleteRelease($identifiers, nzedb\db\Settings $pdo)
 	{
 		if (!is_null($this->sphinxQL)) {
-			var_dump($identifiers);
 			if ($identifiers['i'] === false) {
 				$identifiers['i'] = $pdo->queryOneRow(
 					sprintf('SELECT id FROM releases WHERE guid = %s', $pdo->escapeString($identifiers['g']))
