@@ -43,6 +43,7 @@ function releases_rt()
 			);
 			if ($i === 1000 || $i >= $total) {
 				$sphinx->sphinxQL->queryExec($string . rtrim($tempString, ','));
+				$tempString = '';
 				$total -= $i;
 				$i = 0;
 				echo '.';
