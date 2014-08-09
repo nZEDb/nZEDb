@@ -9,14 +9,14 @@
 /**
  * How many releases to show per page in list view.
  *
- * @default 50
+ * @default '50'
  */
 define('ITEMS_PER_PAGE', '50');
 
 /**
  * How many releases to show per page in cover view.
  *
- * @default 20
+ * @default '20'
  */
 define('ITEMS_PER_COVER_PAGE', '20');
 
