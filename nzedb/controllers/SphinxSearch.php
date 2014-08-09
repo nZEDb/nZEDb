@@ -86,13 +86,18 @@ class SphinxSearch
 	public function updateReleaseSearchName($releaseID, $searchName)
 	{
 		if (!is_null($this->sphinxQL)) {
-			$this->sphinxQL->queryExec(
-				sprintf(
-					'UPDATE releases_rt SET searchname = %s WHERE id = %s',
-					$searchName,
-					$releaseID
-				)
-			);
+			$old = $this->sphinxQL->queryOneRow(sprintf('SELECT * FROM sphinx_rt WHERE id = %s', $releaseID));
+			if ($old !== false) {
+				$this->insertRelease(
+					[
+						'id' => $releaseID,
+						'guid' => $this->sphinxQL->escapeString($old['guid']),
+						'name' => $this->sphinxQL->escapeString($old['name']),
+						'searchname' => $this->sphinxQL->escapeString($searchName),
+						'fromname' => $this->sphinxQL->escapeString($old['fromname'])
+					]
+				);
+			}
 		}
 	}
 
