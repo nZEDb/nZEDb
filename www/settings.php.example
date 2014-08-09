@@ -77,8 +77,8 @@ define('nZEDb_RELEASE_SEARCH_TYPE', 0);
 
 /**
  * This is the hostname to use when connecting to the SphinxQL server,
- * note that using localhost / 127.0.0.1 has caused me issues and only 0 has work on a local server.
  *
+ * @note Using localhost / 127.0.0.1 has caused me issues and only 0 worked on my local server.
  * @note See misc/sphinxsearch/README.md for installation details.
  * @default '0'
  */
