@@ -228,6 +228,7 @@ Putting - or ! in front of a word makes that word excluded. Do not add a space b
 Quoting all the words using " will look for an exact match.<br />
 Putting ^ at the start will limit searches to releases that start with that word.<br />
 Putting $ at the end will limit searches to releases that end with that word.<br />
+Putting a * after a word will do a partial word search. ie: fish* will match fishing.<br />
 If your search is only words seperated by spaces, all those words will be mandatory, the order of the words is not important.<br />
 You can combine some of these rules, but not all.<br />';
 		break;
