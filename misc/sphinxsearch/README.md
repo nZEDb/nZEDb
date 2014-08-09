@@ -5,7 +5,7 @@
 
 _Forewarning: Your MySQL server requires the SphinxSE plugin, this should be pre-installed on MariaDB._
 
-_For MySQL or Percona, you might have to compile them. Please make sure you have this before continuing as this is required.  Please see the end of this file for instructions on compiling the Percona plugin._
+_For MySQL or Percona, you might have to compile them (see bottom of this readme for a compile guide). Please make sure you have this before continuing as this is required.  Please see the end of this file for instructions on compiling the Percona plugin._
 
 _You can type SHOW ENGINES; in a MySQL client to verify that SPHINX is supported._
 
