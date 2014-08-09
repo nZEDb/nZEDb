@@ -11,12 +11,11 @@ _You can type SHOW ENGINES; in a MySQL client to verify that SPHINX is supported
 
 Head to http://sphinxsearch.com/downloads/release/, download the latest version for your operating system.
 
-Assuming you are on ubuntu 14.04 x64, you would:
+Assuming you are on ubuntu, you would:
 
-`wget http://sphinxsearch.com/files/sphinxsearch_2.1.9-release-0ubuntu11~trusty_amd64.deb`
-and:
-
-`sudo dpkg -i sphinxsearch_2.1.9-release-0ubuntu11~trusty_amd64.deb`
+`sudo add-apt-repository https://launchpad.net/~builds/+archive/ubuntu/sphinxsearch-rel21`
+`sudo apt-get update`
+`sudo apt-get install sphinxsearch`
 
 ## _Configuration_:
 #####Replace the default sphinx.conf file with our included sphinx.conf file:
@@ -32,7 +31,7 @@ Assuming you are on ubuntu:
 ##### Edit the sphinx.conf file:
 Everything should be good by default for linux, but you can get better performance by changing some settings. Specifically the rt_mem_limit and mem_limit settings, setting those to 2048M if you have the RAM will make a difference.
 
-Read the sphinx manual for detailed information on various settings to get the best performance for your server: http://sphinxsearch.com/docs/2.1.9/conf-reference.html
+Read the sphinx manual for detailed information on various settings to get the best performance for your server: http://sphinxsearch.com/docs/current.html#conf-reference
 
 Assuming you are on ubuntu:
 
