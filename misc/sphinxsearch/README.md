@@ -84,11 +84,11 @@ You are now done with this guide, sphinx search should work. The index will popu
 
 ## _Misc_:
 
-Optimizing: You can optimize the rt index(es) by running optimize.php
+##### Optimizing: You can optimize the rt index(es) by running optimize.php
 
 Read about the benefits/drawbacks of optimizing here: http://sphinxsearch.com/docs/current.html#sphinxql-optimize-index
 
-## _Compiling SphinxSE Plugin for Percona_:
+##### Compiling SphinxSE Plugin for Percona:
 
 Please STOP mysql during the build process.
 
