@@ -224,8 +224,8 @@ All words must be separated by spaces.
 Do not seperate words using . or _ or -, sphinx will match a space against those automatically.<br />
 Putting | between words makes any of those words optional. You must add spaces between the | and the words.<br />
 Putting << between words makes the word on the left have to be before the word on the right.  You must add spaces between the << and the words.<br />
-Putting - or ! in front of a word makes that word optional. Do not add a space between the - or ! and the word.<br />
-Quoting the all the words using " will look for an exact match.<br />
+Putting - or ! in front of a word makes that word excluded. Do not add a space between the - or ! and the word.<br />
+Quoting all the words using " will look for an exact match.<br />
 Putting ^ at the start will limit searches to releases that start with that word.<br />
 Putting $ at the end will limit searches to releases that end with that word.<br />
 If your search is only words seperated by spaces, all those words will be mandatory, the order of the words is not important.<br />
