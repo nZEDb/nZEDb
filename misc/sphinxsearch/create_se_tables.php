@@ -11,9 +11,10 @@ if (!isset($argv[1]) || !isset($argv[2]) || !is_numeric($argv[2])) {
 
 $pdo = new nzedb\db\DB();
 
-$pdo->queryExec('DROP TABLE IF EXISTS releases_se');
+$sphinxConnection = sprintf('%s:%d', $argv[1], $argv[2]);
 
-$query =
+$tables = [];
+$tables['releases_se'] =
 sprintf(
 "CREATE TABLE releases_se
 (
@@ -25,12 +26,13 @@ sprintf(
 	searchname  VARCHAR(255) NOT NULL DEFAULT '',
 	fromname    VARCHAR(255) NULL,
 	INDEX(query)
-) ENGINE=SPHINX CONNECTION=\"sphinx://%s:%d/releases_rt\"",
-$argv[1], $argv[2]
+) ENGINE=SPHINX CONNECTION=\"sphinx://%s/releases_rt\"",
+$sphinxConnection
 );
 
-if ($pdo->queryExec($query)) {
-	echo 'The releases_se table was successfully created!' . PHP_EOL;
-} else {
-	echo 'ERROR: An error occurred during the creation of the releases_se table, you can turn on logging/debugging in settings.php to view this error.' . PHP_EOL;
+foreach ($tables as $table => $query) {
+	$pdo->queryExec(sprintf('DROP TABLE IF EXISTS %s', $table));
+	$pdo->queryExec($query);
 }
+
+echo 'All done! If you messed up your sphinx connection info, you can rerun this script.' . PHP_EOL;
