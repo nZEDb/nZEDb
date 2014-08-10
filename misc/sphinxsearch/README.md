@@ -13,7 +13,7 @@ Head to http://sphinxsearch.com/downloads/release/, download the latest version 
 
 Assuming you are on ubuntu, you would:
 
-`sudo add-apt-repository https://launchpad.net/~builds/+archive/ubuntu/sphinxsearch-rel21`
+`sudo add-apt-repository ppa:builds/sphinxsearch-rel21`
 
 `sudo apt-get update`
 
@@ -43,8 +43,6 @@ Assuming you are on ubuntu:
 Create the folders you specified in sphinx.conf
 
 Assuming you are on ubuntu:
-
-`sudo mkdir -p /var/lib/sphinxsearch/`
 
 `sudo mkdir -p /var/lib/sphinxsearch/data/`
 
