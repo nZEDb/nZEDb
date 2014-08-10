@@ -927,7 +927,7 @@ class Releases
 			($daysNew != -1 ? sprintf(' AND r.postdate < (NOW() - INTERVAL %d DAY) ', $daysNew) : ''),
 			($daysOld != -1 ? sprintf(' AND r.postdate > (NOW() - INTERVAL %d DAY) ', $daysOld) : ''),
 			(count($excludedCats) > 0 ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : ''),
-			(count($searchOptions) > 0 ? $this->releaseSearch->getSearchSQL($searchOptions, $limit, $offset) : '')
+			(count($searchOptions) > 0 ? $this->releaseSearch->getSearchSQL($searchOptions) : '')
 		);
 
 		$sql = sprintf(
