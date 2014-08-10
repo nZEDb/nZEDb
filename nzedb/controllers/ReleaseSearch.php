@@ -177,7 +177,7 @@ class ReleaseSearch
 			return $this->likeSQL();
 		} else {
 			return sprintf(
-				" AND rse.query = '%s;limit=10000;sort=relevance;mode=extended'",
+				" AND rse.query = '%s;limit=10000;maxmatches=10000;sort=relevance;mode=extended'",
 				trim($return)
 			);
 		}
