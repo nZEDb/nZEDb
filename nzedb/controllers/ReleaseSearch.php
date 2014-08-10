@@ -176,7 +176,7 @@ class ReleaseSearch
 		if ($return === '') {
 			return $this->likeSQL();
 		} else {
-			return sprintf(" AND rse.query = '%s;mode=extended'", trim($return));
+			return sprintf(" AND rse.query = '%s;limit=1000;sort=relevance;mode=extended'", trim($return));
 		}
 	}
 }
