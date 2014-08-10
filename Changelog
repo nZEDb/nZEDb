@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 2014-08-10 kevin
 	* Chg: Cleanup of DbUpdate / put win checks for step2 failures.
 	* Fix: Issues in Settings.php
+	* Fix: Pager count issue.
+	* Chg: YOU MUST SET max_matches TO 10000 IN sphinx.conf IF YOU ARE RUNNING SPHINX AND RESTART SPHINX.
 2014-08-10 ruhllatio
 	* Add: PreDB FT match will now use Sphinx if it is available (Ridiculously fast compared to MySQL FTS)
 	* Fix: Codec query disjointed return in ReleaseRemover

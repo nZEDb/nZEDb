@@ -49,16 +49,32 @@ class ReleaseSearch
 	}
 
 	/**
+	 * Used for sphinx, to limit the results.
+	 * @var bool
+	 */
+	private $limit;
+
+	/**
+	 * Used for sphinx, to offset the limited results.
+	 * @var bool
+	 */
+	private $offset;
+
+	/**
 	 * Create part of a SQL query for searching releases.
 	 *
 	 * @param array $options   Array where keys are the column name, and value is the search string.
+	 * @param bool  $limit     Used for sphinx, to limit the results.
+	 * @param bool  $offset    Used for sphinx, to offset the limited results.
 	 * @param bool  $forceLike Force a "like" search on the column.
 	 *
 	 * @return string
 	 */
-	public function getSearchSQL($options = [], $forceLike = false)
+	public function getSearchSQL($options = [], $limit = false, $offset = false, $forceLike = false)
 	{
 		$this->searchOptions = $options;
+		$this->limit = $limit;
+		$this->offset = $offset;
 
 		if ($forceLike) {
 			return $this->likeSQL();
@@ -176,7 +192,10 @@ class ReleaseSearch
 		if ($return === '') {
 			return $this->likeSQL();
 		} else {
-			return sprintf(" AND rse.query = '%s;limit=1000;sort=relevance;mode=extended'", trim($return));
+			return sprintf(
+				" AND rse.query = '%s;limit=10000;sort=relevance;mode=extended'",
+				trim($return)
+			);
 		}
 	}
 }
