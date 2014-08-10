@@ -3,6 +3,8 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
+2014-08-10 kevin
+	* Chg: Cleanup of DbUpdate / put win checks for step2 failures.
 2014-08-10 ruhllatio
 	* Add: PreDB FT match will now use Sphinx if it is available (Ridiculously fast compared to MySQL FTS)
 	* Fix: Codec query disjointed return in ReleaseRemover
