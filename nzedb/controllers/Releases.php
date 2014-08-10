@@ -931,7 +931,7 @@ class Releases
 		);
 
 		$sql = sprintf(
-			"SELECT * FROM (
+			"SELECT SQL_CALC_FOUND_ROWS * FROM (
 				SELECT r.*, CONCAT(cp.title, ' > ', c.title) AS category_name,
 				CONCAT(cp.id, ',', c.id) AS category_ids,
 				groups.name AS group_name, rn.id AS nfoid,
@@ -953,29 +953,8 @@ class Releases
 			$offset
 		);
 		$releases = $this->pdo->query($sql);
-		// Get total count for pager.
-		if (count($releases)) {
-			$releases[0]['_totalrows'] = $this->getPagerCount($innerSql);
-		}
+		$releases[0]['_totalrows'] = $this->pdo->get_Found_Rows();
 		return $releases;
-	}
-
-	/**
-	 * Get total count of releases for pager.
-	 *
-	 * @param string $query
-	 *
-	 * @return int
-	 */
-	private function getPagerCount($query)
-	{
-		$totalCount = $this->pdo->queryOneRow(
-			sprintf(
-				'SELECT COUNT(r.id) AS total FROM releases r %s',
-				$query
-			)
-		);
-		return ($totalCount === false ? 0 : $totalCount['total']);
 	}
 
 	/**
@@ -1007,7 +986,7 @@ class Releases
 			($maxAge > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxAge) : '')
 		);
 		$sql = sprintf(
-			"SELECT r.*,
+			"SELECT SQL_CALC_FOUND_ROWS r.*,
 				concat(cp.title, ' > ', c.title) AS category_name,
 				CONCAT(cp.id, ',', c.id) AS category_ids,
 				groups.name AS group_name,
@@ -1027,11 +1006,7 @@ class Releases
 			$offset
 		);
 		$releases = $this->pdo->query($sql);
-		// Get total count for pager.
-		if (count($releases)) {
-			$releases[0]['_totalrows'] = $this->getPagerCount($baseSql);
-		}
-
+		$releases[0]['_totalrows'] = $this->pdo->get_Found_Rows();
 		return $releases;
 	}
 
@@ -1060,7 +1035,7 @@ class Releases
 			($maxAge > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxAge) : '')
 		);
 		$sql = sprintf(
-			"SELECT r.*,
+			"SELECT SQL_CALC_FOUND_ROWS r.*,
 				CONCAT(cp.title, ' > ', c.title) AS category_name,
 				CONCAT(cp.id, ',', c.id) AS category_ids,
 				groups.name AS group_name,
@@ -1078,10 +1053,7 @@ class Releases
 			$offset
 		);
 		$releases = $this->pdo->query($sql);
-		// Get total count for pager.
-		if (count($releases)) {
-			$releases[0]['_totalrows'] = $this->getPagerCount($baseSql);
-		}
+		$releases[0]['_totalrows'] = $this->pdo->get_Found_Rows();
 		return $releases;
 	}
 
@@ -1111,7 +1083,7 @@ class Releases
 			($maxAge > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxAge) : '')
 		);
 		$sql = sprintf(
-			"SELECT r.*,
+			"SELECT SQL_CALC_FOUND_ROWS r.*,
 				concat(cp.title, ' > ', c.title) AS category_name,
 				CONCAT(cp.id, ',', c.id) AS category_ids,
 				g.name AS group_name,
@@ -1129,9 +1101,7 @@ class Releases
 			$offset
 		);
 		$releases = $this->pdo->query($sql);
-		if (count($releases) > 0) {
-			$releases[0]['_totalrows'] = $this->getPagerCount($baseSql);
-		}
+		$releases[0]['_totalrows'] = $this->pdo->get_Found_Rows();
 		return $releases;
 	}
 

@@ -855,6 +855,18 @@ class DB extends \PDO
 	}
 
 	/**
+	 * Get the amount of found rows after running a SELECT SQL_CALC_FOUND_ROWS query.
+	 *
+	 * @return int
+	 * @access public
+	 */
+	public function get_Found_Rows()
+	{
+		$totalCount = $this->queryOneRow('SELECT FOUND_ROWS() AS total');
+		return ($totalCount === false ? 0 : $totalCount['total']);
+	}
+
+	/**
 	 * Log/echo repaired/optimized/analyzed tables.
 	 *
 	 * @param bool   $web    If we are on web, don't echo.
