@@ -81,20 +81,21 @@ class Utility
 		$options += $defaults;
 
 		$files = array();
-		$dir = new \DirectoryIterator($options['path']);
-		foreach ($dir as $fileinfo) {
-			$file = $fileinfo->getFilename();
+		$iterator = new \FilesystemIterator($options['path'],
+										\FilesystemIterator::KEY_AS_PATHNAME |
+										\FilesystemIterator::SKIP_DOTS |
+										\FilesystemIterator::UNIX_PATHS);
+		foreach ($iterator as $fileinfo) {
+			$file = $iterator->key();
 			switch (true) {
-				case $fileinfo->isDot():
-					break;
 				case !$options['dir'] && $fileinfo->isDir():
 					break;
 				case !empty($options['ext']) && $fileinfo->getExtension() != $options['ext'];
 					break;
-				case !preg_match($options['regex'], str_replace('\\', '/', $file)):
+				case !preg_match($options['regex'], $file):
 					break;
 				default:
-					$files[] = $fileinfo->getPathname();
+					$files[] = $file;
 				}
 		}
 		return $files;
