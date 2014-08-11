@@ -9,7 +9,7 @@ use nzedb\db\Settings;
  */
 class ReleaseRemover
 {
-	/**NION
+	/**
 	 * @var nzedb\db\Settings
 	 */
 	protected $pdo;
@@ -764,7 +764,7 @@ class ReleaseRemover
 					}
 
 					$ftMatch = (nZEDb_RELEASE_SEARCH_TYPE == ReleaseSearch::SPHINX
-								? sprintf('rse.query = "@(name,searchname) %s;limit=10000;maxmatches=10000;mode=any" AND', str_replace(' ', '|', str_replace('"', '', $regexMatch)))
+								? sprintf('rse.query = "@(name,searchname) %s;limit=10000;maxmatches=10000;mode=any" AND', str_replace('|', ' ', str_replace('"', '', $regexMatch)))
 								: sprintf("MATCH (rs.name, rs.searchname) AGAINST ('%s') AND", str_replace('|', ' ', $regexMatch))
 					);
 				}
