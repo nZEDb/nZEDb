@@ -255,7 +255,7 @@ class NZB
 	{
 		$nzbPath = '';
 
-		for ($i = 0; $i < $levelsToSplit; $i++) {
+		for ($i = 0; $i < $levelsToSplit && $i < 32; $i++) {
 			$nzbPath .= substr($releaseGuid, $i, 1) . DS;
 		}
 
@@ -279,7 +279,7 @@ class NZB
 	 *
 	 * @access public
 	 */
-	public function getNZBPath($releaseGuid, $levelsToSplit=0, $createIfNotExist = false)
+	public function getNZBPath($releaseGuid, $levelsToSplit = 0, $createIfNotExist = false)
 	{
 		if ($levelsToSplit === 0) {
 			$levelsToSplit = $this->nzbSplitLevel;
@@ -301,7 +301,7 @@ class NZB
 	public function NZBPath($releaseGuid)
 	{
 		$nzbFile = $this->getNZBPath($releaseGuid);
-		return !is_file($nzbFile) ? false : $nzbFile;
+		return (is_file($nzbFile) ? $nzbFile : false);
 	}
 
 	/**

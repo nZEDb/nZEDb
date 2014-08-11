@@ -3,17 +3,86 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
-***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
-***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-08-10 kevin
+	* Chg: Cleanup of DbUpdate / put win checks for step2 failures.
+	* Fix: Issues in Settings.php
+	* Fix: Pager count issue.
+	* Chg: YOU MUST SET max_matches TO 10000 IN sphinx.conf IF YOU ARE RUNNING SPHINX AND RESTART SPHINX.
+	* Chg: Simplify pager count in releases by using SQL_CALC_FOUND_ROWS.
+2014-08-10 ruhllatio
+	* Add: PreDB FT match will now use Sphinx if it is available (Ridiculously fast compared to MySQL FTS)
+	* Fix: Codec query disjointed return in ReleaseRemover
+	* Chg: Greatly improve Sphinx search results
+	* Add: RemoveCrap no time limit can now use Sphinx instead of MySQL FTS (you will need to update your sphinx.conf).
+2014-08-10 niel
+	* Fix: Change repository reference and remove unneeded command.
+2014-08-09 ruhllatio
+	* Mrg: kevinlekiller's dev-sphinx into dev (RTFM -> misc/sphinxsearch/README.md) for info
+2014-08-08 ruhllatio
+	* Chg: NFO Update query performance is poor with new Guid CHAR query addendum
+2014-08-07 ruhllatio
+	* Chg: Tmux - make PreDB counter queries more compatible for bigger release databases
+	* Chg: Re-work match_prefiles content in NameFixer to (hopefully) fix more scrutinizer issues
+2014-08-06 niel
+	* Chg: Tmux - Reordered output in monitor pane.
+	* New: Setting to specify date formatting in shell scripts. Defaults to YYYY-MM-DD HH:MM:SS.
+2014-08-06 kevin
+	* Chg: Rename DebuggingException to LoggerException to match base class name.
+	* Chg: Clean up of Releases class after the move to ProcessReleases.
+	* Add: Setting to use the old search. Copy from www/settings.php.example to www/settings.php
+2014-08-05 tasky
+	* Fix: id supposed to be title #1457
+2014-08-05 bart39
+	* Fix: unknown column in where clause
+2014-08-05 niel
+	* Chg: Optimised TmuxOutput to improve monitor pane updates.
 2014-08-05 kevin
 	* Chg: Pass all $runVar params by reference, hopefully fixing all timer issues in Tmux scripts.
+	* Chg: Minor changes to Tmux.php
+	* Chg: Monitor to only analyze releases.
+	* Add: More options to optimise method (specifying table name / running on local tables only).
+	* Chg: Change doConnect logic based on recent compression on demand changes.
+	* Chg: Use max downloads setting on sharing when starting without backfill.
+	* Chg: Sharing, set the actual first seen date.
+	* Chg: Much better logging performance, and many more user changeable settings in settings.php (copy from settings.php.example).
+	* Chg: Use constants everywhere for logging severity.
+	* Fix: Issue where alternate usp can be used for headers. #1456
+	* Add: Static function to Nfo to simplify get query options.
+	* Chg: Remove obsolete stuff in Logger and simplify the set folder method.
+2014-08-04 bart39
+	* Mrg: tasky's GiantBomb search changes PR #1449
+2014-08-04 ruhllatio
+	* Chg: Re-work Match prefiles functions per scrutinizer recommendations
+2014-08-03 ruhllatio
+	* Fix: Bombing releaseRemover query for SCR
+	* Fix: Bugs according to scrutinizer
+	* Chg: Rework USP connection count gathering to have less paths...
+	* Fix: Pass PDO to SQL error function in tmux
+2014-08-03 kevin
+	* Chg: Various changes to postdate method.
+	* Fix: Fixes for get_range.
+	* Chg: Various changes to daytopost method.
+	* Fix: Fix for set_backfill_start.php if user resets but does not run update_binaries.php
+	* Fix: Convert unixtime to date in set_backfill_start.php
+	* Fix: Few more issues in set_backfill_start.php
+2014-08-02 ruhllatio
+	* Fix: RequestIDLocal Single Alt was looking for the groupname from the groupname, not the groupname from the usenet name
+	* Fix: RequestIDLocal not showing renaming results when specifying true to show renames
+	* Fix: typo for binaries_run should be 'settings' not 'scripts'
+2014-08-02 kevin
+	* Chg: Attempt to reduce dupe parts on "safe" scripts when user cancels the script by updating the groups table with time/article number every range.
+	* Fix: Various recommendations by scrutinizer.
+	* Cln: Cleanup.
+	* Fix: Issues in ReleaseRemover.php
+	* Fix: Possible fix for binaries issue in tmux.
 2014-08-02 niel
 	* Fix: Remove escaping causing problems in tmux.
 	* Chg: Alter date output to use international format in main tmux pain.
 2014-08-02 bart39
 	* Fix: _python not _php.
-	* Fix: Tmux basic sequential undefined variables
+	* Fix: Tmux basic sequential undefined variables.
+	* Fix: XXX Search filter for non Alpha Themes
 2014-08-01 DariusIII
 	* Upd: Codec spam removal update
 2014-08-01 bart39

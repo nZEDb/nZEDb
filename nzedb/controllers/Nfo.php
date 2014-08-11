@@ -55,27 +55,6 @@ class Nfo
 	private $tmpPath;
 
 	/**
-	 * Primary color for console text output.
-	 * @var string
-	 * @access private
-	 */
-	private $primary = 'Green';
-
-	/**
-	 * Color for warnings on console text output.
-	 * @var string
-	 * @access private
-	 */
-	private $warning = 'Red';
-
-	/**
-	 * Color for headers(?) on console text output.
-	 * @var string
-	 * @access private
-	 */
-	private $header = 'Yellow';
-
-	/**
 	 * Echo to cli?
 	 * @var bool
 	 * @access protected
@@ -94,7 +73,7 @@ class Nfo
 	 *
 	 * @access public
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		$defaults = [
 			'Echo'     => false,
@@ -243,19 +222,47 @@ class Nfo
 
 			if ($release['completion'] == 0) {
 				$nzbContents = new NZBContents(
-					array(
+					[
 						'Echo' => $this->echo,
 						'NNTP' => $nntp,
 						'Nfo'  => $this,
 						'Settings'   => $this->pdo,
 						'PostProcess'   => new PostProcess(['Echo' => $this->echo, 'Settings' => $this->pdo, 'Nfo' => $this])
-					)
+					]
 				);
 				$nzbContents->parseNZB($release['guid'], $release['id'], $release['group_id']);
 			}
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Get a string like this:
+	 * "AND r.nzbstatus = 1 AND r.nfostatus BETWEEN -8 AND -1 AND r.size < 1073741824 AND r.size > 1048576"
+	 * To use in a query.
+	 *
+	 * @param Settings $pdo
+	 *
+	 * @return string
+	 * @access public
+	 * @static
+	 */
+	static public function NfoQueryString(Settings &$pdo)
+	{
+		$maxSize = $pdo->getSetting('maxsizetoprocessnfo');
+		$minSize = $pdo->getSetting('minsizetoprocessnfo');
+		$maxRetries = (int)($pdo->getSetting('maxnforetries') >= 0 ? -((int)$pdo->getSetting('maxnforetries') + 1) : self::NFO_UNPROC);
+		return (
+			sprintf(
+				'AND r.nzbstatus = %d AND r.nfostatus BETWEEN %d AND %d %s %s',
+				NZB::NZB_ADDED,
+				($maxRetries < -8 ? -8 : $maxRetries),
+				self::NFO_UNPROC,
+				(($maxSize != '' && $maxSize > 0) ? ('AND r.size < ' . ($maxSize * 1073741824)) : ''),
+				(($minSize != '' && $minSize > 0) ? ('AND r.size > ' . ($minSize * 1048576)) : '')
+			)
+		);
 	}
 
 	/**
@@ -274,23 +281,18 @@ class Nfo
 	public function processNfoFiles($nntp, $groupID = '', $guidChar = '', $processImdb = 1, $processTvrage = 1)
 	{
 		$ret = 0;
-		$guidCharQuery = ($guidChar === '' ? '' : 'AND guid ' . $this->pdo->likeString($guidChar, false, true));
-		$groupIDQuery = ($groupID === '' ? '' : 'AND group_id = ' . $groupID);
+		$guidCharQuery = ($guidChar === '' ? '' : 'AND r.guid ' . $this->pdo->likeString($guidChar, false, true));
+		$groupIDQuery = ($groupID === '' ? '' : 'AND r.group_id = ' . $groupID);
+		$optionsQuery = self::NfoQueryString($this->pdo);
 
 		$res = $this->pdo->query(
 			sprintf('
-				SELECT id, guid, group_id, name
-				FROM releases
-				WHERE nzbstatus = %d
-				AND nfostatus BETWEEN %d AND %d
-				%s %s %s %s
-				ORDER BY nfostatus ASC, postdate DESC
+				SELECT r.id, r.guid, r.group_id, r.name
+				FROM releases r
+				WHERE 1=1 %s %s %s
+				ORDER BY r.nfostatus ASC, r.postdate DESC
 				LIMIT %d',
-				NZB::NZB_ADDED,
-				$this->maxRetries,
-				self::NFO_UNPROC,
-				$this->maxsize,
-				$this->minsize,
+				$optionsQuery,
 				$guidCharQuery,
 				$groupIDQuery,
 				$this->nzbs
@@ -314,20 +316,14 @@ class Nfo
 				// Get count of releases per nfo status
 				$nfoStats = $this->pdo->queryDirect(
 					sprintf('
-						SELECT nfostatus AS status, COUNT(*) AS count
-						FROM releases
-						WHERE nfostatus BETWEEN %d AND %d
-						AND nzbstatus = %d
-						%s %s %s %s
-						GROUP BY nfostatus
-						ORDER BY nfostatus ASC',
-						$this->maxRetries,
-						self::NFO_UNPROC,
-						NZB::NZB_ADDED,
+						SELECT r.nfostatus AS status, COUNT(*) AS count
+						FROM releases r
+						WHERE 1=1 %s %s %s
+						GROUP BY r.nfostatus
+						ORDER BY r.nfostatus ASC',
+						$optionsQuery,
 						$guidCharQuery,
-						$groupIDQuery,
-						$this->minsize,
-						$this->maxsize
+						$groupIDQuery
 					)
 				);
 				if ($nfoStats instanceof Traversable) {
@@ -341,13 +337,13 @@ class Nfo
 
 			$groups = new Groups(['Settings' => $this->pdo]);
 			$nzbContents = new NZBContents(
-				array(
+				[
 					'Echo' => $this->echo,
 					'NNTP' => $nntp,
 					'Nfo' => $this,
 					'Settings' => $this->pdo,
 					'PostProcess' => new PostProcess(['Echo' => $this->echo, 'Nfo' => $this, 'Settings' => $this->pdo])
-				)
+				]
 			);
 			$movie = new Movie(['Echo' => $this->echo, 'Settings' => $this->pdo]);
 			$tvRage = new TvRage(['Echo' => $this->echo, 'Settings' => $this->pdo]);
@@ -356,14 +352,9 @@ class Nfo
 				$fetchedBinary = $nzbContents->getNFOfromNZB($arr['guid'], $arr['id'], $arr['group_id'], $groups->getByNameByID($arr['group_id']));
 				if ($fetchedBinary !== false) {
 					// Insert nfo into database.
-					$cp = $nc = null;
-					if ($this->pdo->dbSystem() === 'mysql') {
-						$cp = 'COMPRESS(%s)';
-						$nc = $this->pdo->escapeString($fetchedBinary);
-					} else if ($this->pdo->dbSystem() === 'pgsql') {
-						$cp = '%s';
-						$nc = $this->pdo->escapeString(utf8_encode($fetchedBinary));
-					}
+					$cp = 'COMPRESS(%s)';
+					$nc = $this->pdo->escapeString($fetchedBinary);
+
 					$ckreleaseid = $this->pdo->queryOneRow(sprintf('SELECT id FROM releasenfo WHERE releaseid = %d', $arr['id']));
 					if (!isset($ckreleaseid['id'])) {
 						$this->pdo->queryInsert(sprintf('INSERT INTO releasenfo (nfo, releaseid) VALUES (' . $cp . ', %d)', $nc, $arr['id']));
@@ -412,9 +403,13 @@ class Nfo
 
 		// Set releases with no NFO.
 		$this->pdo->queryExec(
-			sprintf(
-				'UPDATE releases SET nfostatus = %d WHERE nfostatus < %d %s %s',
+			sprintf('
+				UPDATE releases r
+				SET r.nfostatus = %d
+				WHERE r.nzbstatus = %d
+				AND r.nfostatus < %d %s %s',
 				self::NFO_FAILED,
+				NZB::NZB_ADDED,
 				$this->maxRetries,
 				$groupIDQuery,
 				$guidCharQuery

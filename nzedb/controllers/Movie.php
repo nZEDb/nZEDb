@@ -38,7 +38,7 @@ class Movie
 	protected $currentRelID = '';
 
 	/**
-	 * @var Debugging
+	 * @var Logger
 	 */
 	protected $debugging;
 
@@ -133,10 +133,11 @@ class Movie
 	/**
 	 * @param array $options Class instances / Echo to CLI.
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		$defaults = [
 			'Echo'         => false,
+			'Logger'    => null,
 			'ReleaseImage' => null,
 			'Settings'     => null,
 			'TMDb'         => null,
@@ -163,7 +164,7 @@ class Movie
 
 		if (nZEDb_DEBUG || nZEDb_LOGGING) {
 			$this->debug = true;
-			$this->debugging = new Debugging(['Class' => 'Movie', 'ColorCLI' => $this->pdo->log]);
+			$this->debugging = ($options['Logger'] instanceof Logger ? $options['Logger'] : new Logger(['ColorCLI' => $this->pdo->log]));
 		}
 	}
 
@@ -265,15 +266,7 @@ class Movie
 				$this->showPasswords,
 				$this->getBrowseBy(),
 				$catSearch,
-				($maxAge > 0
-					?
-					'AND r.postdate > NOW() - INTERVAL ' .
-					($this->pdo->dbSystem() === 'mysql'
-						? $maxAge . 'DAY '
-						: "'" . $maxAge . "DAYS' "
-					)
-					: ''
-				),
+				($maxAge > 0 ? 'AND r.postdate > NOW() - INTERVAL ' . $maxAge . ' DAY' : ''),
 				(count($excludedCats) > 0 ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : '')
 			)
 		);
@@ -296,84 +289,42 @@ class Movie
 	public function getMovieRange($cat, $start, $num, $orderBy, $maxAge = -1, $excludedCats = array())
 	{
 		$order = $this->getMovieOrder($orderBy);
-		if ($this->pdo->dbSystem() === 'mysql') {
-			$sql = sprintf("
-				SELECT
-				GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id,
-				GROUP_CONCAT(r.rarinnerfilecount ORDER BY r.postdate DESC SEPARATOR ',') as grp_rarinnerfilecount,
-				GROUP_CONCAT(r.haspreview ORDER BY r.postdate DESC SEPARATOR ',') AS grp_haspreview,
-				GROUP_CONCAT(r.passwordstatus ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_password,
-				GROUP_CONCAT(r.guid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_guid,
-				GROUP_CONCAT(rn.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid,
-				GROUP_CONCAT(groups.name ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grpname,
-				GROUP_CONCAT(r.searchname ORDER BY r.postdate DESC SEPARATOR '#') AS grp_release_name,
-				GROUP_CONCAT(r.postdate ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_postdate,
-				GROUP_CONCAT(r.size ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_size,
-				GROUP_CONCAT(r.totalpart ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_totalparts,
-				GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments,
-				GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs,
-				m.*, groups.name AS group_name, rn.id as nfoid FROM releases r
-				LEFT OUTER JOIN groups ON groups.id = r.group_id
-				LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id
-				INNER JOIN movieinfo m ON m.imdbid = r.imdbid
-				WHERE r.nzbstatus = 1 AND r.imdbid != '0000000'
-				AND m.cover = 1
-				AND m.title != ''
-				AND r.passwordstatus <= %d AND %s %s %s %s
-				GROUP BY m.imdbid ORDER BY %s %s %s",
-				$this->showPasswords,
-				$this->getBrowseBy(),
-				$this->formCategorySearchSQL($cat),
-				($maxAge > 0
-					? 'AND r.postdate > NOW() - INTERVAL ' . $maxAge . 'DAY '
-					: ''
-				),
-				(count($excludedCats) > 0 ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : ''),
-				$order[0],
-				$order[1],
-				($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
-			);
-		} else {
-			$sql = sprintf("
-				SELECT STRING_AGG(r.id::text, ',' ORDER BY r.postdate DESC) AS grp_release_id,
-				STRING_AGG(r.rarinnerfilecount::text, ',' ORDER BY r.postdate DESC) as grp_rarinnerfilecount,
-				STRING_AGG(r.haspreview::text, ',' ORDER BY r.postdate DESC) AS grp_haspreview,
-				STRING_AGG(r.passwordstatus::text, ',' ORDER BY r.postdate) AS grp_release_password,
-				STRING_AGG(r.guid, ',' ORDER BY r.postdate DESC) AS grp_release_guid,
-				STRING_AGG(rn.id::text, ',' ORDER BY r.postdate DESC) AS grp_release_nfoid,
-				STRING_AGG(groups.name, ',' ORDER BY r.postdate DESC) AS grp_release_grpname,
-				STRING_AGG(r.searchname, '#' ORDER BY r.postdate) AS grp_release_name,
-				STRING_AGG(r.postdate::text, ',' ORDER BY r.postdate DESC) AS grp_release_postdate,
-				STRING_AGG(r.size::text, ',' ORDER BY r.postdate DESC) AS grp_release_size,
-				STRING_AGG(r.totalpart::text, ',' ORDER BY r.postdate DESC) AS grp_release_totalparts,
-				STRING_AGG(r.comments::text, ',' ORDER BY r.postdate DESC) AS grp_release_comments,
-				STRING_AGG(r.grabs::text, ',' ORDER BY r.postdate DESC) AS grp_release_grabs,
-				m.*, groups.name AS group_name,
-				rn.id as nfoid
-				FROM releases r
-				LEFT OUTER JOIN groups ON groups.id = r.group_id
-				INNER JOIN movieinfo m ON m.imdbid = r.imdbid AND m.title != ''
-				LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
-				WHERE r.nzbstatus = 1
-				AND r.imdbid != '0000000'
-				AND r.passwordstatus <= %s
-				AND %s %s %s %s
-				GROUP BY m.imdbid, m.id, groups.name, rn.id
-				ORDER BY %s %s %s",
-				$this->showPasswords,
-				$this->getBrowseBy(),
-				$this->formCategorySearchSQL($cat),
-				($maxAge > 0
-					?
-					'AND r.postdate > NOW() - INTERVAL ' .  "'" . $maxAge . "DAYS' "
-					: ''
-				),
-				(count($excludedCats) > 0 ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : ''),
-				$order[0],
-				$order[1],
-				($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
-			);
-		}
+		$sql = sprintf("
+			SELECT
+			GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id,
+			GROUP_CONCAT(r.rarinnerfilecount ORDER BY r.postdate DESC SEPARATOR ',') as grp_rarinnerfilecount,
+			GROUP_CONCAT(r.haspreview ORDER BY r.postdate DESC SEPARATOR ',') AS grp_haspreview,
+			GROUP_CONCAT(r.passwordstatus ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_password,
+			GROUP_CONCAT(r.guid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_guid,
+			GROUP_CONCAT(rn.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid,
+			GROUP_CONCAT(groups.name ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grpname,
+			GROUP_CONCAT(r.searchname ORDER BY r.postdate DESC SEPARATOR '#') AS grp_release_name,
+			GROUP_CONCAT(r.postdate ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_postdate,
+			GROUP_CONCAT(r.size ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_size,
+			GROUP_CONCAT(r.totalpart ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_totalparts,
+			GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments,
+			GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs,
+			m.*, groups.name AS group_name, rn.id as nfoid FROM releases r
+			LEFT OUTER JOIN groups ON groups.id = r.group_id
+			LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id
+			INNER JOIN movieinfo m ON m.imdbid = r.imdbid
+			WHERE r.nzbstatus = 1 AND r.imdbid != '0000000'
+			AND m.cover = 1
+			AND m.title != ''
+			AND r.passwordstatus <= %d AND %s %s %s %s
+			GROUP BY m.imdbid ORDER BY %s %s %s",
+			$this->showPasswords,
+			$this->getBrowseBy(),
+			$this->formCategorySearchSQL($cat),
+			($maxAge > 0
+				? 'AND r.postdate > NOW() - INTERVAL ' . $maxAge . 'DAY '
+				: ''
+			),
+			(count($excludedCats) > 0 ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : ''),
+			$order[0],
+			$order[1],
+			($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
+		);
 		return $this->pdo->queryDirect($sql);
 	}
 
@@ -671,99 +622,46 @@ class Movie
 		$mov['type']    = html_entity_decode(ucwords(preg_replace('/[\.\_]/', ' ', $mov['type'])), ENT_QUOTES, 'UTF-8');
 
 		$mov['title'] = str_replace(array('/', '\\'), '', $mov['title']);
-		if ($this->pdo->dbSystem() === 'mysql') {
-			$movieID = $this->pdo->queryInsert(
-				sprintf("
-					INSERT INTO movieinfo
-						(imdbid, tmdbid, title, rating, tagline, plot, year, genre, type,
-						director, actors, language, cover, backdrop, createddate, updateddate)
-					VALUES
-						(%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW())
-					ON DUPLICATE KEY UPDATE
-						imdbid = %d, tmdbid = %s, title = %s, rating = %s, tagline = %s, plot = %s, year = %s, genre = %s,
-						type = %s, director = %s, actors = %s, language = %s, cover = %d, backdrop = %d, updateddate = NOW()",
-					$mov['imdb_id'],
-					$mov['tmdb_id'],
-					$this->pdo->escapeString($mov['title']),
-					$this->pdo->escapeString($mov['rating']),
-					$this->pdo->escapeString($mov['tagline']),
-					$this->pdo->escapeString($mov['plot']),
-					$this->pdo->escapeString($mov['year']),
-					$this->pdo->escapeString(substr($mov['genre'], 0, 64)),
-					$this->pdo->escapeString($mov['type']),
-					$this->pdo->escapeString($mov['director']),
-					$this->pdo->escapeString($mov['actors']),
-					$this->pdo->escapeString(substr($mov['language'], 0, 64)),
-					$mov['cover'],
-					$mov['backdrop'],
-					$mov['imdb_id'],
-					$mov['tmdb_id'],
-					$this->pdo->escapeString($mov['title']),
-					$this->pdo->escapeString($mov['rating']),
-					$this->pdo->escapeString($mov['tagline']),
-					$this->pdo->escapeString($mov['plot']),
-					$this->pdo->escapeString($mov['year']),
-					$this->pdo->escapeString(substr($mov['genre'], 0, 64)),
-					$this->pdo->escapeString($mov['type']),
-					$this->pdo->escapeString($mov['director']),
-					$this->pdo->escapeString($mov['actors']),
-					$this->pdo->escapeString(substr($mov['language'], 0, 64)),
-					$mov['cover'],
-					$mov['backdrop']
-				)
-			);
-		} else if ($this->pdo->dbSystem() === 'pgsql') {
-			$ckID = $this->pdo->queryOneRow(sprintf('SELECT id FROM movieinfo WHERE imdbid = %d', $mov['imdb_id']));
-			if ($ckID === false) {
-				$movieID = $this->pdo->queryInsert(
-					sprintf("
-						INSERT INTO movieinfo
-							(imdbid, tmdbid, title, rating, tagline, plot, year, genre, type,
-							director, actors, language, cover, backdrop, createddate, updateddate)
-						VALUES
-							(%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW())",
-						$mov['imdb_id'],
-						$mov['tmdb_id'],
-						$this->pdo->escapeString($mov['title']),
-						$this->pdo->escapeString($mov['rating']),
-						$this->pdo->escapeString($mov['tagline']),
-						$this->pdo->escapeString($mov['plot']),
-						$this->pdo->escapeString($mov['year']),
-						$this->pdo->escapeString($mov['genre']),
-						$this->pdo->escapeString($mov['type']),
-						$this->pdo->escapeString($mov['director']),
-						$this->pdo->escapeString($mov['actors']),
-						$this->pdo->escapeString($mov['language']),
-						$mov['cover'],
-						$mov['backdrop']
-					)
-				);
-			} else {
-				$movieID = $ckID['id'];
-				$this->pdo->queryExec(
-					sprintf('
-						UPDATE movieinfo SET
-							tmdbid = %d, title = %s, rating = %s, tagline = %s, plot = %s, year = %s,
-							genre = %s, type = %s, director = %s, actors = %s, language = %s, cover = %d,
-							backdrop = %d, updateddate = NOW()
-						WHERE id = %d',
-						$mov['tmdb_id'],
-						$this->pdo->escapeString($mov['title']),
-						$this->pdo->escapeString($mov['rating']),
-						$this->pdo->escapeString($mov['tagline']),
-						$this->pdo->escapeString($mov['plot']),
-						$this->pdo->escapeString($mov['year']),
-						$this->pdo->escapeString($mov['genre']),
-						$this->pdo->escapeString($mov['type']),
-						$this->pdo->escapeString($mov['director']),
-						$this->pdo->escapeString($mov['actors']),
-						$this->pdo->escapeString($mov['language']),
-						$mov['cover'],
-						$mov['backdrop'],
-						$movieID)
-				);
-			}
-		}
+		$movieID = $this->pdo->queryInsert(
+			sprintf("
+				INSERT INTO movieinfo
+					(imdbid, tmdbid, title, rating, tagline, plot, year, genre, type,
+					director, actors, language, cover, backdrop, createddate, updateddate)
+				VALUES
+					(%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW())
+				ON DUPLICATE KEY UPDATE
+					imdbid = %d, tmdbid = %s, title = %s, rating = %s, tagline = %s, plot = %s, year = %s, genre = %s,
+					type = %s, director = %s, actors = %s, language = %s, cover = %d, backdrop = %d, updateddate = NOW()",
+				$mov['imdb_id'],
+				$mov['tmdb_id'],
+				$this->pdo->escapeString($mov['title']),
+				$this->pdo->escapeString($mov['rating']),
+				$this->pdo->escapeString($mov['tagline']),
+				$this->pdo->escapeString($mov['plot']),
+				$this->pdo->escapeString($mov['year']),
+				$this->pdo->escapeString(substr($mov['genre'], 0, 64)),
+				$this->pdo->escapeString($mov['type']),
+				$this->pdo->escapeString($mov['director']),
+				$this->pdo->escapeString($mov['actors']),
+				$this->pdo->escapeString(substr($mov['language'], 0, 64)),
+				$mov['cover'],
+				$mov['backdrop'],
+				$mov['imdb_id'],
+				$mov['tmdb_id'],
+				$this->pdo->escapeString($mov['title']),
+				$this->pdo->escapeString($mov['rating']),
+				$this->pdo->escapeString($mov['tagline']),
+				$this->pdo->escapeString($mov['plot']),
+				$this->pdo->escapeString($mov['year']),
+				$this->pdo->escapeString(substr($mov['genre'], 0, 64)),
+				$this->pdo->escapeString($mov['type']),
+				$this->pdo->escapeString($mov['director']),
+				$this->pdo->escapeString($mov['actors']),
+				$this->pdo->escapeString(substr($mov['language'], 0, 64)),
+				$mov['cover'],
+				$mov['backdrop']
+			)
+		);
 
 		if ($this->echooutput && $this->service !== '') {
 			$this->pdo->log->doEcho(
@@ -852,7 +750,8 @@ class Movie
 			similar_text($this->currentTitle, $ret['title'], $percent);
 			if ($percent < 40) {
 				if ($this->debug) {
-					$this->debugging->start(
+					$this->debugging->log(
+						'Movie',
 						'fetchTmdbProperties',
 						'Found (' .
 						$ret['title'] .
@@ -860,7 +759,7 @@ class Movie
 						$percent .
 						'% similar to (' .
 						$this->currentTitle . ')',
-						5
+						Logger::LOG_INFO
 					);
 				}
 				return false;
@@ -958,7 +857,8 @@ class Movie
 				similar_text($this->currentTitle, $ret['title'], $percent);
 				if ($percent < 40) {
 					if ($this->debug) {
-						$this->debugging->start(
+						$this->debugging->log(
+							'Movie',
 							'fetchImdbProperties',
 							'Found (' .
 							$ret['title'] .
@@ -966,7 +866,7 @@ class Movie
 							$percent .
 							'% similar to (' .
 							$this->currentTitle . ')',
-							5
+							Logger::LOG_INFO
 						);
 					}
 					return false;
@@ -1568,54 +1468,17 @@ class Movie
 	 */
 	protected function updateInsUpcoming($source, $type, $info)
 	{
-		if ($this->pdo->dbSystem() === 'mysql') {
-			return $this->pdo->queryExec(
-				sprintf("
-					INSERT INTO upcoming (source, typeid, info, updateddate)
-					VALUES (%s, %d, %s, NOW())
-					ON DUPLICATE KEY UPDATE info = %s",
-					$this->pdo->escapeString($source),
-					$type,
-					$this->pdo->escapeString($info),
-					$this->pdo->escapeString($info)
-				)
-			);
-		} else {
-			$ckId = $this->pdo->queryOneRow(
-				sprintf('
-					SELECT id FROM upcoming
-					WHERE source = %s
-					AND typeid = %d
-					AND info = %s',
-					$this->pdo->escapeString($source),
-					$type,
-					$this->pdo->escapeString($info)
-				)
-			);
-			if ($ckId === false) {
-				return $this->pdo->queryExec(
-					sprintf("
-						INSERT INTO upcoming (source, typeid, info, updateddate)
-						VALUES (%s, %d, %s, NOW())",
-						$this->pdo->escapeString($source),
-						$type,
-						$this->pdo->escapeString($info)
-					)
-				);
-			} else {
-				return $this->pdo->queryExec(
-					sprintf('
-						UPDATE upcoming
-						SET source = %s, typeid = %s, info = %s, updateddate = NOW()
-						WHERE id = %d',
-						$this->pdo->escapeString($source),
-						$type,
-						$this->pdo->escapeString($info),
-						$ckId['id']
-					)
-				);
-			}
-		}
+		return $this->pdo->queryExec(
+			sprintf("
+				INSERT INTO upcoming (source, typeid, info, updateddate)
+				VALUES (%s, %d, %s, NOW())
+				ON DUPLICATE KEY UPDATE info = %s",
+				$this->pdo->escapeString($source),
+				$type,
+				$this->pdo->escapeString($info),
+				$this->pdo->escapeString($info)
+			)
+		);
 	}
 
 	/**

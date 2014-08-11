@@ -15,15 +15,7 @@
 </div>
 <br>
 <center>
-	{if !$fulltext}
-		Standard Search: Include ^ to indicate search must start with term, -- to exclude words.<br>
-	{else}
-		Full Text Search:
-		A leading exclamation point(! in place of +) indicates that this word must be present in each row that is returned.<br>
-		A leading minus sign indicates that this word must not be present in any of the rows that are returned.<br>
-		By default (when neither + nor - is specified) the word is optional, but the rows that contain it are rated higher.<br>
-		See <a target="_blank" href='http://dev.mysql.com/doc/refman/5.0/en/fulltext-boolean.html'>docs</a> for more operators.
-	{/if}
+	{$search_description}
 </center>
 <form method="get" action="{$smarty.const.WWW_TOP}/search">
 	<div id="sbasic" style="text-align:center;{if $sadvanced} display:none;"{/if}">

@@ -5,7 +5,6 @@ use nzedb\db\Settings;
 
 // TODO Set these somewhere else?
 $minMySQLVersion = 5.5;
-$minPgSQLVersion = 9.3;
 
 $page = new InstallPage();
 $page->title = "Database Setup";
@@ -21,7 +20,7 @@ if (!$cfg->isInitialized()) {
  * Check if the database exists.
  *
  * @param string $dbName The name of the database to be checked.
- * @param string $dbType Is it mysql or pgsql?
+ * @param string $dbType mysql
  * @param PDO $pdo Class PDO instance.
  *
  * @return bool
@@ -83,8 +82,8 @@ if ($page->isPostBack()) {
 	$cfg->error = false;
 
 	// Check if user selected right DB type.
-	if (!in_array($cfg->DB_SYSTEM, array('mysql', 'pgsql'))) {
-		$cfg->emessage = 'Invalid database system. Must be: mysql or pgsql ; Not: ' . $cfg->DB_SYSTEM;
+	if (!in_array($cfg->DB_SYSTEM, array('mysql'))) {
+		$cfg->emessage = 'Invalid database system. Must be: mysql ; Not: ' . $cfg->DB_SYSTEM;
 		$cfg->error = true;
 	} else {
 		// Connect to the SQL server.
@@ -121,12 +120,11 @@ if ($page->isPostBack()) {
 			}
 		}
 
-		// Check if the MySQL or PgSQL versions are correct.
+		// Check if the MySQL version is correct.
 		$goodVersion = false;
 		if (!$cfg->error) {
-			$minVersion = ($cfg->DB_SYSTEM === 'mysql') ? $minMySQLVersion : $minPgSQLVersion;
 			try {
-				$goodVersion = $pdo->isDbVersionAtLeast($minVersion);
+				$goodVersion = $pdo->isDbVersionAtLeast($minMySQLVersion);
 			} catch (\PDOException $e) {
 				$goodVersion   = false;
 				$cfg->error    = true;
@@ -139,7 +137,7 @@ if ($page->isPostBack()) {
 					'You are using an unsupported version of ' .
 					$cfg->DB_SYSTEM .
 					' the minimum allowed version is ' .
-					($cfg->DB_SYSTEM === 'mysql' ? $minMySQLVersion : $minPgSQLVersion);
+					$minMySQLVersion;
 			}
 		}
 	}

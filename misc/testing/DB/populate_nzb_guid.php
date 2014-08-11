@@ -38,6 +38,7 @@ function create_guids($live, $delete = false)
 		echo $pdo->log->header("Creating nzb_guids for " . number_format($total) . " releases.");
 		$releases = new Releases(['Settings' => $pdo]);
 		$nzb = new NZB($pdo);
+		$releaseImage = new ReleaseImage($pdo);
 		$reccnt = 0;
 		if ($relrecs instanceof Traversable) {
 			foreach ($relrecs as $relrec) {
@@ -51,7 +52,7 @@ function create_guids($live, $delete = false)
 					if (!$nzbfile) {
 						if (isset($delete) && $delete == 'delete') {
 							//echo "\n".$nzb->NZBPath($relrec['guid'])." is not a valid xml, deleting release.\n";
-							$releases->deleteSingle($relrec['guid'], $nzb);
+							$releases->deleteSingle(['g' => $relrec['guid'], 'i' => $relrec['id']], $nzb, $releaseImage);
 							$deleted++;
 						}
 						continue;
@@ -63,7 +64,7 @@ function create_guids($live, $delete = false)
 					if (count($binary_names) == 0) {
 						if (isset($delete) && $delete == 'delete') {
 							//echo "\n".$nzb->NZBPath($relrec['guid'])." has no binaries, deleting release.\n";
-							$releases->deleteSingle($relrec['guid'], $nzb);
+							$releases->deleteSingle(['g' => $relrec['guid'], 'i' => $relrec['id']], $nzb, $releaseImage);
 							$deleted++;
 						}
 						continue;
@@ -84,7 +85,7 @@ function create_guids($live, $delete = false)
 				} else {
 					if (isset($delete) && $delete == 'delete') {
 						//echo $pdo->log->primary($nzb->NZBPath($relrec['guid']) . " does not have an nzb, deleting.");
-						$releases->deleteSingle($relrec['guid'], $nzb);
+						$releases->deleteSingle(['g' => $relrec['guid'], 'i' => $relrec['id']], $nzb, $releaseImage);
 					}
 				}
 			}

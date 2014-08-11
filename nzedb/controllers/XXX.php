@@ -27,7 +27,7 @@ class XXX
 	protected $currentTitle = '';
 
 	/**
-	 * @var Debugging
+	 * @var Logger
 	 */
 	protected $debugging;
 
@@ -73,7 +73,7 @@ class XXX
 
 		if (nZEDb_DEBUG || nZEDb_LOGGING) {
 			$this->debug = true;
-			$this->debugging = new Debugging(['Class' => 'XXX', 'ColorCLI' => $this->pdo->log]);
+			$this->debugging = new Logger(['ColorCLI' => $this->pdo->log]);
 		}
 	}
 
@@ -148,12 +148,7 @@ class XXX
 				$this->getBrowseBy(),
 				$catSearch,
 				($maxAge > 0
-					?
-					'AND r.postdate > NOW() - INTERVAL ' .
-					($this->pdo->dbSystem() === 'mysql'
-						? $maxAge . 'DAY '
-						: "'" . $maxAge . "DAYS' "
-					)
+					? 'AND r.postdate > NOW() - INTERVAL ' . $maxAge . 'DAY '
 					: ''
 				),
 				(count($excludedCats) > 0 ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : '')
@@ -498,66 +493,42 @@ class XXX
 		$check = $this->pdo->queryOneRow(sprintf('SELECT id FROM xxxinfo WHERE title = %s',	$this->pdo->escapeString($mov['title'])));
 		$xxxID=null;
 		if($check === false){
-		if ($this->pdo->dbSystem() === 'mysql') {
-			$xxxID = $this->pdo->queryInsert(
-				sprintf("
-					INSERT INTO xxxinfo
-						(title, tagline, plot, genre, director, actors, extras, productinfo, trailers, directurl, classused, cover, backdrop, createddate, updateddate)
-					VALUES
-						(%s, %s, COMPRESS(%s), %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW())
-					ON DUPLICATE KEY UPDATE
-						title = %s, tagline = %s, plot = COMPRESS(%s), genre = %s, director = %s, actors = %s, extras = %s, productinfo = %s, trailers = %s, directurl = %s, classused = %s, cover = %d, backdrop = %d, updateddate = NOW()",
-					$this->pdo->escapeString($mov['title']),
-					$this->pdo->escapeString($mov['tagline']),
-					$this->pdo->escapeString($mov['plot']),
-					$this->pdo->escapeString(substr($mov['genre'], 0, 64)),
-					$this->pdo->escapeString($mov['director']),
-					$this->pdo->escapeString($mov['actors']),
-					$this->pdo->escapeString($mov['extras']),
-					$this->pdo->escapeString($mov['productinfo']),
-					$this->pdo->escapeString($mov['trailers']),
-					$this->pdo->escapeString($mov['directurl']),
-					$this->pdo->escapeString($mov['classused']),
-					0,
-					0,
-					$this->pdo->escapeString($mov['title']),
-					$this->pdo->escapeString($mov['tagline']),
-					$this->pdo->escapeString($mov['plot']),
-					$this->pdo->escapeString(substr($mov['genre'], 0, 64)),
-					$this->pdo->escapeString($mov['director']),
-					$this->pdo->escapeString($mov['actors']),
-					$this->pdo->escapeString($mov['extras']),
-					$this->pdo->escapeString($mov['productinfo']),
-					$this->pdo->escapeString($mov['trailers']),
-					$this->pdo->escapeString($mov['directurl']),
-					$this->pdo->escapeString($mov['classused']),
-					0,
-					0
-				)
-			);
-		} else if ($this->pdo->dbSystem() === 'pgsql') {
-				$xxxID = $this->pdo->queryInsert(
-					sprintf("
-						INSERT INTO xxxinfo
-							(title, tagline, plot, genre, director, actors, extras, productinfo, trailers, directurl, classused, cover, backdrop, createddate, updateddate)
-						VALUES
-							(%s, %s, COMPRESS(%s), %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW())",
-						$this->pdo->escapeString($mov['title']),
-						$this->pdo->escapeString($mov['tagline']),
-						$this->pdo->escapeString($mov['plot']),
-						$this->pdo->escapeString($mov['genre']),
-						$this->pdo->escapeString($mov['director']),
-						$this->pdo->escapeString($mov['actors']),
-						$this->pdo->escapeString($mov['extras']),
-						$this->pdo->escapeString($mov['productinfo']),
-						$this->pdo->escapeString($mov['trailers']),
-						$this->pdo->escapeString($mov['directurl']),
-						$this->pdo->escapeString($mov['classused']),
-						0,
-						0
-					)
-				);
-			}
+		$xxxID = $this->pdo->queryInsert(
+			sprintf("
+				INSERT INTO xxxinfo
+					(title, tagline, plot, genre, director, actors, extras, productinfo, trailers, directurl, classused, cover, backdrop, createddate, updateddate)
+				VALUES
+					(%s, %s, COMPRESS(%s), %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW())
+				ON DUPLICATE KEY UPDATE
+					title = %s, tagline = %s, plot = COMPRESS(%s), genre = %s, director = %s, actors = %s, extras = %s, productinfo = %s, trailers = %s, directurl = %s, classused = %s, cover = %d, backdrop = %d, updateddate = NOW()",
+				$this->pdo->escapeString($mov['title']),
+				$this->pdo->escapeString($mov['tagline']),
+				$this->pdo->escapeString($mov['plot']),
+				$this->pdo->escapeString(substr($mov['genre'], 0, 64)),
+				$this->pdo->escapeString($mov['director']),
+				$this->pdo->escapeString($mov['actors']),
+				$this->pdo->escapeString($mov['extras']),
+				$this->pdo->escapeString($mov['productinfo']),
+				$this->pdo->escapeString($mov['trailers']),
+				$this->pdo->escapeString($mov['directurl']),
+				$this->pdo->escapeString($mov['classused']),
+				0,
+				0,
+				$this->pdo->escapeString($mov['title']),
+				$this->pdo->escapeString($mov['tagline']),
+				$this->pdo->escapeString($mov['plot']),
+				$this->pdo->escapeString(substr($mov['genre'], 0, 64)),
+				$this->pdo->escapeString($mov['director']),
+				$this->pdo->escapeString($mov['actors']),
+				$this->pdo->escapeString($mov['extras']),
+				$this->pdo->escapeString($mov['productinfo']),
+				$this->pdo->escapeString($mov['trailers']),
+				$this->pdo->escapeString($mov['directurl']),
+				$this->pdo->escapeString($mov['classused']),
+				0,
+				0
+			)
+		);
 		if($xxxID !== false){
 
 			// BoxCover.

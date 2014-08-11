@@ -204,7 +204,7 @@ switch ($function) {
 			$relData[] = $data;
 		}
 
-		printOutput($relData, $outputXML, $page, $offset);
+		printOutput($relData, $outputXML, $page, offset());
 		break;
 
 	// Capabilities request.

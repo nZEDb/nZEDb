@@ -7,9 +7,6 @@ $cli = new ColorCLI();
 
 $pdo = new Settings(['checkVersion' => true]);
 $ftinnodb = $pdo->isDbVersionAtLeast('5.6');
-if ($pdo->dbSystem() === "pgsql") {
-	exit($cli->error("\nCurrently only for mysql."));
-}
 
 if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 	$tbl = $argv[1];

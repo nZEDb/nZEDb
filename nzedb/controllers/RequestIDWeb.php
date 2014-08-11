@@ -278,6 +278,7 @@ class RequestIDWeb extends RequestID
 	protected function _updateRelease()
 	{
 		$determinedCategory = $this->category->determineCategory($this->_newTitle['title'], $this->_release['group_id']);
+		$newTitle = $this->pdo->escapeString($this->_newTitle['title']);
 		$this->pdo->queryExec(
 			sprintf('
 				UPDATE releases
@@ -287,12 +288,13 @@ class RequestIDWeb extends RequestID
 				preid = %d
 				WHERE id = %d',
 				self::REQID_FOUND,
-				$this->pdo->escapeString($this->_newTitle['title']),
+				$newTitle,
 				$determinedCategory,
 				$this->_preDbID,
 				$this->_release['id']
 			)
 		);
+		$this->sphinx->updateReleaseSearchName($this->_release['id'], $newTitle);
 
 		if ($this->echoOutput) {
 			NameFixer::echoChangedReleaseName(array(

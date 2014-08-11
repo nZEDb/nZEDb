@@ -75,14 +75,14 @@ class Forking extends \fork_daemon
 	 *
 	 * @throws ForkingException
 	 */
-	public function processWorkType($type, array $options = array())
+	public function processWorkType($type, array $options = [])
 	{
 		// Set/reset some variables.
 		$startTime = microtime(true);
 		$this->workType = $type;
 		$this->workTypeOptions = $options;
 		$this->processAdditional = $this->processNFO = $this->processTV = $this->processMovies = $this->tablePerGroup = $this->ppRenamedOnly = false;
-		$this->work = array();
+		$this->work = [];
 
 		// Init Settings here, as forking causes errors when it's destroyed.
 		$this->pdo = new \nzedb\db\Settings();
@@ -294,7 +294,7 @@ class Forking extends \fork_daemon
 			if ($groups instanceof \Traversable) {
 				foreach($groups as $group) {
 					if ($this->pdo->queryOneRow(sprintf('SELECT id FROM collections_%d  LIMIT 1',$group['id'])) !== false) {
-						$this->work[] = array('id' => $group['id']);
+						$this->work[] = ['id' => $group['id']];
 					}
 				}
 			}
@@ -415,9 +415,7 @@ class Forking extends \fork_daemon
 		return $maxProcesses;
 	}
 
-	private $maxNfoRetries = -1;
-	private $nfoMaxSize = '';
-	private $nfoMinSize = '';
+	private $nfoQueryString = '';
 
 	/**
 	 * Check if we should process NFO's.
@@ -426,21 +424,12 @@ class Forking extends \fork_daemon
 	private function checkProcessNfo()
 	{
 		if ($this->pdo->getSetting('lookupnfo') == 1) {
-			$this->nfoMaxSize = (string)($this->pdo->getSetting('maxsizetoprocessnfo') != '') ? $this->pdo->getSetting('maxsizetoprocessnfo') : 100;
-			$this->nfoMaxSize = ($this->nfoMaxSize > 0 ? ('AND size < ' . ($this->nfoMaxSize * 1073741824)) : '');
-			$this->nfoMinSize = (string)($this->pdo->getSetting('minsizetoprocessnfo') != '') ? $this->pdo->getSetting('minsizetoprocessnfo') : 100;
-			$this->nfoMinSize = ($this->nfoMinSize > 0 ? ('AND size > ' . ($this->nfoMinSize * 1048576)) : '');
-			$this->maxNfoRetries = ($this->pdo->getSetting('maxnforetries') >= 0 ? -($this->pdo->getSetting('maxnforetries') + 1) : \Nfo::NFO_UNPROC);
-			$this->maxNfoRetries = ($this->maxNfoRetries < -8 ? -8 : $this->maxNfoRetries);
+			$this->nfoQueryString = \Nfo::NfoQueryString($this->pdo);
 			return (
 				$this->pdo->queryOneRow(
 					sprintf(
-						'SELECT id FROM releases WHERE nzbstatus = %d AND nfostatus BETWEEN %d AND %d %s %s LIMIT 1',
-						\NZB::NZB_ADDED,
-						$this->maxNfoRetries,
-						\Nfo::NFO_UNPROC,
-						$this->nfoMaxSize,
-						$this->nfoMinSize
+						'SELECT r.id FROM releases r WHERE 1=1 %s LIMIT 1',
+						$this->nfoQueryString
 					)
 				) === false ? false : true
 			);
@@ -456,18 +445,12 @@ class Forking extends \fork_daemon
 			$this->register_child_run([0 => $this, 1 => 'postProcessChildWorker']);
 			$this->work = $this->pdo->query(
 				sprintf('
-					SELECT LEFT(guid, 1) AS id
-					FROM releases
-					WHERE nzbstatus = %d
-					AND nfostatus BETWEEN %d AND %d
-					%s %s
-					GROUP BY LEFT(guid, 1)
+					SELECT LEFT(r.guid, 1) AS id
+					FROM releases r
+					WHERE 1=1 %s
+					GROUP BY LEFT(r.guid, 1)
 					LIMIT 16',
-					\NZB::NZB_ADDED,
-					$this->maxNfoRetries,
-					\Nfo::NFO_UNPROC,
-					$this->nfoMaxSize,
-					$this->nfoMinSize
+					$this->nfoQueryString
 				)
 			);
 			$maxProcesses = $this->pdo->getSetting('nfothreads');
@@ -775,7 +758,7 @@ class Forking extends \fork_daemon
 	 * Work to work on.
 	 * @var array
 	 */
-	private $work = array();
+	private $work = [];
 
 	/**
 	 * How much work do we have to do?
@@ -793,7 +776,7 @@ class Forking extends \fork_daemon
 	 * List of passed in options for the current work type.
 	 * @var array
 	 */
-	private $workTypeOptions = array();
+	private $workTypeOptions = [];
 
 	/**
 	 * Max amount of child processes to do work at a time.

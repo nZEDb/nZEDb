@@ -27,13 +27,9 @@ if ($argv[2] === 'near') {
 }
 
 if ($crosspostt != 0) {
-	if ($pdo->dbSystem() === 'mysql') {
-		$query = sprintf('SELECT max(id) AS id, guid FROM releases WHERE adddate > (NOW() - INTERVAL %d HOUR) GROUP BY name, fromname, group_id,' . $size . 'HAVING COUNT(*) > 1', $crosspostt);
-	} else {
-		$query = sprintf("SELECT max(id) AS id, guid FROM releases WHERE adddate > (NOW() - INTERVAL '%d HOURS') GROUP BY name, fromname, group_id," . $size . "HAVING COUNT(name) > 1", $crosspostt);
-	}
+	$query = sprintf('SELECT max(id) AS id, id AS idx, guid FROM releases WHERE adddate > (NOW() - INTERVAL %d HOUR) GROUP BY name, fromname, group_id,' . $size . 'HAVING COUNT(*) > 1', $crosspostt);
 } else {
-	$query = sprintf('SELECT max(id) AS id, guid FROM releases GROUP BY name, fromname, group_id,' . $size . 'HAVING COUNT(*) > 1');
+	$query = sprintf('SELECT max(id) AS id, id AS idx, guid FROM releases GROUP BY name, fromname, group_id,' . $size . 'HAVING COUNT(*) > 1');
 }
 
 do {
@@ -54,7 +50,7 @@ do {
 					}
 				}
 			}
-			if ($releases->deleteSingle($rowrel['guid'], $nzb) !== false) {
+			if ($releases->deleteSingle(['g' => $rowrel['guid'], 'i' => $rowrel['idx']], $nzb, $ri) !== false) {
 				$consoleTools->overWritePrimary('Deleted: ' . number_format(++$count) . " Duplicate Releases");
 			}
 		}

@@ -12,14 +12,16 @@ if (isset($argv[1]) && $argv[1] == "true") {
 	$releases = new Releases(['Settings' => $pdo]);
 	$category = new Category(['Settings' => $pdo]);
 	$nzb = new NZB($pdo);
+	$releaseImage = new ReleaseImage($pdo);
 	$catlist = $category->getDisabledIDs();
 	$relsdeleted = 0;
 	if (count($catlist > 0)) {
 		foreach ($catlist as $cat) {
-			if ($rels = $pdo->query(sprintf("SELECT guid FROM releases WHERE categoryid = %d", $cat['id']))) {
+			$rels = $pdo->query(sprintf("SELECT id, guid FROM releases WHERE categoryid = %d", $cat['id']));
+			if (count($rels)) {
 				foreach ($rels as $rel) {
 					$relsdeleted++;
-					$releases->deleteSingle($rel['guid'], $nzb);
+					$releases->deleteSingle(['g' => $rel['guid'], 'i' => $rel['id']], $nzb, $releaseImage);
 				}
 			}
 		}

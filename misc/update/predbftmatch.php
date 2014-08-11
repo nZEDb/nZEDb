@@ -57,7 +57,7 @@ if ($total > 1) {
 			   . "'.' = No Match Found, '*' = Bad Match Parameters (Flood)\n\n");
 	sleep(2);
 
-	if ($total instanceof Traversable) {
+	if ($titles instanceof Traversable) {
 		foreach ($titles as $row) {
 			$matched = 0;
 			$searched = 0;

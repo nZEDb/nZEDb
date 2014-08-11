@@ -199,31 +199,31 @@ class RequestIDLocal extends RequestID
 	protected function _singleAltLookup()
 	{
 		switch (true) {
-			case $this->_release['groupname'] == 'alt.binaries.etc':
+			case $this->_release['name'] == 'alt.binaries.etc':
 				$groupName = 'alt.binaries.teevee';
 				break;
-			case strpos($this->_release['groupname'], 'teevee') !== false:
+			case strpos($this->_release['name'], 'teevee') !== false:
 				$groupName = 'alt.binaries.teevee';
 				break;
-			case strpos($this->_release['groupname'], 'moovee') !== false:
+			case strpos($this->_release['name'], 'moovee') !== false:
 				$groupName = 'alt.binaries.moovee';
 				break;
-			case strpos($this->_release['groupname'], 'erotica') !== false:
+			case strpos($this->_release['name'], 'erotica') !== false:
 				$groupName = 'alt.binaries.erotica';
 				break;
-			case strpos($this->_release['groupname'], 'foreign') !== false:
+			case strpos($this->_release['name'], 'foreign') !== false:
 				$groupName = 'alt.binaries.mom';
 				break;
-			case strpos($this->_release['groupname'], 'inner-sanctum') !== false:
+			case strpos($this->_release['name'], 'inner-sanctum') !== false:
 				$groupName = 'alt.binaries.inner-sanctum';
 				break;
-			case strpos($this->_release['groupname'], 'sounds.flac') !== false:
+			case strpos($this->_release['name'], 'sounds.flac') !== false:
 				$groupName = 'alt.binaries.sounds.flac';
 				break;
-			case strpos($this->_release['groupname'], 'scnzb') !== false:
+			case strpos($this->_release['name'], 'scnzb') !== false:
 				$groupName = 'alt.binaries.boneless';
 				break;
-			case strpos($this->_release['groupname'], 'hdtv.x264') !== false:
+			case strpos($this->_release['name'], 'hdtv.x264') !== false:
 				$groupName = 'alt.binaries.hdtv.x264';
 				break;
 			default:
@@ -254,6 +254,7 @@ class RequestIDLocal extends RequestID
 	{
 		$determinedCat = $this->category->determineCategory($this->_newTitle['title'], $this->_release['gid']);
 		if ($determinedCat == $this->_release['categoryid']) {
+			$newTitle = $this->pdo->escapeString($this->_newTitle['title']);
 			$this->pdo->queryExec(
 				sprintf('
 					UPDATE releases
@@ -261,11 +262,13 @@ class RequestIDLocal extends RequestID
 					WHERE id = %d',
 					$this->_newTitle['id'],
 					self::REQID_FOUND,
-					$this->pdo->escapeString($this->_newTitle['title']),
+					$newTitle,
 					$this->_release['id']
 				)
 			);
+			$this->sphinx->updateReleaseSearchName($this->_release['id'], $newTitle);
 		} else {
+			$newTitle = $this->pdo->escapeString($this->_newTitle['title']);
 			$this->pdo->queryExec(
 				sprintf('
 					UPDATE releases SET
@@ -276,14 +279,15 @@ class RequestIDLocal extends RequestID
 					WHERE id = %d',
 					$this->_newTitle['id'],
 					self::REQID_FOUND,
-					$this->pdo->escapeString($this->_newTitle['title']),
+					$newTitle,
 					$determinedCat,
 					$this->_release['id']
 				)
 			);
+			$this->sphinx->updateReleaseSearchName($this->_release['id'], $newTitle);
 		}
 
-		if ($this->_release['name'] !== $this->_newTitle['title'] && $this->_show === 1) {
+		if ($this->_release['name'] !== $this->_newTitle['title'] && $this->_show == 1) {
 			NameFixer::echoChangedReleaseName(
 				array(
 					'new_name'     => $this->_newTitle['title'],

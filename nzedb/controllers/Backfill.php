@@ -24,7 +24,7 @@ class Backfill
 	/**
 	 * Instance of class debugging.
 	 *
-	 * @var Debugging
+	 * @var Logger
 	 */
 	protected $_debugging;
 
@@ -80,13 +80,14 @@ class Backfill
 	 *
 	 * @param array $options Class instances / Echo to cli?
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		$defaults = [
-			'Echo'     => true,
-			'Groups'   => null,
-			'NNTP'     => null,
-			'Settings' => null
+			'Echo'      => true,
+			'Logger' => null,
+			'Groups'    => null,
+			'NNTP'      => null,
+			'Settings'  => null
 		];
 		$options += $defaults;
 
@@ -100,7 +101,7 @@ class Backfill
 
 		$this->_debug = (nZEDb_LOGGING || nZEDb_DEBUG);
 		if ($this->_debug) {
-			$this->_debugging = new Debugging(['Class' => 'Backfill', 'ColorCLI' => $this->pdo->log]);
+			$this->_debugging = ($options['Logger'] instanceof Logger ? $options['Logger'] : new Logger(['ColorCLI' => $this->pdo->log]));
 		}
 
 		$this->_compressedHeaders = ($this->pdo->getSetting('compressedheaders') == 1 ? true : false);
@@ -120,11 +121,11 @@ class Backfill
 	 */
 	public function backfillAllGroups($groupName = '', $articles ='', $type = '')
 	{
-		$res = array();
+		$res = [];
 		if ($groupName !== '') {
 			$grp = $this->_groups->getByName($groupName);
 			if ($grp) {
-				$res = array($grp);
+				$res = [$grp];
 			}
 		} else {
 			if ($type === 'normal' || $type === '') {
@@ -145,7 +146,7 @@ class Backfill
 				($this->_compressedHeaders ? 'Yes' : 'No')
 			);
 			if ($this->_debug) {
-				$this->_debugging->start("backfillAllGroups", $dMessage, 5);
+				$this->_debugging->log('Backfill', "backfillAllGroups", $dMessage, Logger::LOG_INFO);
 			}
 
 			if ($this->_echoCLI) {
@@ -165,7 +166,7 @@ class Backfill
 				if ($groupName === '') {
 					$dMessage = "Starting group " . $counter . ' of ' . $groupCount;
 					if ($this->_debug) {
-						$this->_debugging->start("backfillAllGroups", $dMessage, 5);
+						$this->_debugging->log('Backfill', "backfillAllGroups", $dMessage, Logger::LOG_INFO);
 					}
 
 					if ($this->_echoCLI) {
@@ -178,7 +179,7 @@ class Backfill
 
 			$dMessage = 'Backfilling completed in ' . number_format(microtime(true) - $allTime, 2) . " seconds.";
 			if ($this->_debug) {
-				$this->_debugging->start("backfillAllGroups", $dMessage, 5);
+				$this->_debugging->log('Backfill', "backfillAllGroups", $dMessage, Logger::LOG_INFO);
 			}
 
 			if ($this->_echoCLI) {
@@ -187,7 +188,7 @@ class Backfill
 		} else {
 			$dMessage = "No groups specified. Ensure groups are added to nZEDb's database for updating.";
 			if ($this->_debug) {
-				$this->_debugging->start("backfillAllGroups", $dMessage, 1);
+				$this->_debugging->log('Backfill', "backfillAllGroups", $dMessage, Logger::LOG_FATAL);
 			}
 
 			if ($this->_echoCLI) {
@@ -218,7 +219,7 @@ class Backfill
 				$groupName .
 				". Otherwise the group is dead, you must disable it.";
 			if ($this->_debug) {
-				$this->_debugging->start("backfillGroup", $dMessage, 2);
+				$this->_debugging->log('Backfill', "backfillGroup", $dMessage, Logger::LOG_ERROR);
 			}
 
 			if ($this->_echoCLI) {
@@ -263,7 +264,7 @@ class Backfill
 				$groupName .
 				", skipping it, consider disabling backfill on it.";
 			if ($this->_debug) {
-				$this->_debugging->start("backfillGroup", $dMessage, 4);
+				$this->_debugging->log('Backfill', "backfillGroup", $dMessage, Logger::LOG_NOTICE);
 			}
 
 			if ($this->_echoCLI) {
@@ -392,7 +393,7 @@ class Backfill
 				$this->_safeBackFillDate .
 				", or you have not enabled them to be backfilled in the groups page.\n";
 			if ($this->_debug) {
-				$this->_debugging->start("safeBackfill", $dMessage, 1);
+				$this->_debugging->log('Backfill', "safeBackfill", $dMessage, Logger::LOG_FATAL);
 			}
 			exit($dMessage);
 		} else {
