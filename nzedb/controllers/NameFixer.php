@@ -57,6 +57,7 @@ class NameFixer
 			'Groups'       => null,
 			'Utility'      => null,
 			'Settings'     => null,
+			'SphinxSearch' => null,
 		];
 		$options += $defaults;
 
@@ -72,6 +73,7 @@ class NameFixer
 		$this->category = ($options['Categorize'] instanceof Categorize ? $options['Categorize'] : new Categorize(['Settings' => $this->pdo]));
 		$this->utility = ($options['Utility'] instanceof Utility ? $options['Utility'] :new Utility());
 		$this->_groups = ($options['Groups'] instanceof Groups ? $options['Groups'] : new Groups(['Settings' => $this->pdo]));
+		$this->sphinx = ($options['SphinxSearch'] instanceof SphinxSearch ? $options['SphinxSearch'] : new SphinxSearch());
 	}
 
 	/**
@@ -449,6 +451,7 @@ class NameFixer
 								$status = "isrenamed = 1, iscategorized = 1,";
 								break;
 						}
+						$newTitle = $this->pdo->escapeString(substr($newName, 0, 255));
 						$this->pdo->queryExec(
 							sprintf('
 								UPDATE releases
@@ -458,13 +461,15 @@ class NameFixer
 									searchname = %s, %s categoryid = %d
 								WHERE id = %d',
 								$preId,
-								$this->pdo->escapeString(substr($newName, 0, 255)),
+								$newTitle,
 								$status,
 								$determinedCategory,
 								$release['releaseid']
 							)
 						);
+						$this->sphinx->updateReleaseSearchName($release['releaseid'], $newTitle);
 					} else {
+						$newTitle = $this->pdo->escapeString(substr($newName, 0, 255));
 						$this->pdo->queryExec(
 							sprintf('
 								UPDATE releases
@@ -474,11 +479,12 @@ class NameFixer
 									searchname = %s, iscategorized = 1, categoryid = %d
 								WHERE id = %d',
 								$preId,
-								$this->pdo->escapeString(substr($newName, 0, 255)),
+								$newTitle,
 								$determinedCategory,
 								$release['releaseid']
 							)
 						);
+						$this->sphinx->updateReleaseSearchName($release['releaseid'], $newTitle);
 					}
 				}
 			}
@@ -531,22 +537,19 @@ class NameFixer
 	{
 		$matching = $total = 0;
 
-		//Remove all non-printable chars from PreDB title
-		preg_match_all('#[a-zA-Z0-9]{3,}#', $pre['title'], $matches, PREG_PATTERN_ORDER);
-		$titlematch = '+' . implode(' +', $matches[0]);
+		$join = $this->_preFTsearchQuery($pre['title']);
 
 		//Find release matches with fulltext and then identify exact matches with cleaned LIKE string
 		$res = $this->pdo->queryDirect(
 						sprintf("
-							SELECT rs.releaseid AS releaseid, rs.name, rs.searchname,
+							SELECT r.id AS releaseid, r.name, r.searchname,
 								r.group_id, r.categoryid
-							FROM releasesearch rs
-							INNER JOIN releases r ON rs.releaseid = r.id
-							WHERE MATCH (rs.name, rs.searchname) AGAINST ('%1\$s' IN BOOLEAN MODE)
-							AND r.preid = 0
+							FROM releases r
+							%1\$s
 							AND (r.name %2\$s OR r.searchname %2\$s)
+							AND r.preid = 0
 							LIMIT 21",
-							$titlematch,
+							$join,
 							$this->pdo->likeString($pre['title'], true, true)
 						)
 		);
@@ -556,17 +559,53 @@ class NameFixer
 		}
 
 		// Run if row count is positive, but do not run if row count exceeds 10 (as this is likely a failed title match)
-		if ($total > 0 && $total <= 10) {
+		if ($total > 0 && $total <= 15) {
 			foreach ($res as $row) {
 					if ($pre['title'] !== $row['searchname']) {
 						$this->updateRelease($row, $pre['title'], $method = "Title Match source: " . $pre['source'], $echo, "PreDB FT Exact, ", $namestatus, $show, $pre['preid']);
 						$matching++;
+					} else {
+						$this->pdo->queryExec(
+									sprintf('
+										UPDATE releases
+										SET preid = %d
+										WHERE id = %d',
+										$pre['preid'],
+										$row['id']
+									)
+						);
 					}
 			}
-		} elseif ($total >= 11) {
+		} elseif ($total >= 16) {
 			$matching = -1;
 		}
 		return $matching;
+	}
+
+	protected function _preFTsearchQuery($preTitle)
+	{
+		switch (nZEDb_RELEASE_SEARCH_TYPE) {
+			case ReleaseSearch::SPHINX:
+				$titlematch = SphinxSearch::escapeString($preTitle);
+				$join = sprintf(
+						'INNER JOIN releases_se rse ON rse.id = r.id
+						WHERE rse.query = "@(name,searchname) %s;mode=extended"',
+						$titlematch
+				);
+				break;
+			case ReleaseSearch::FULLTEXT:
+			default:
+				//Remove all non-printable chars from PreDB title
+				preg_match_all('#[a-zA-Z0-9]{3,}#', $preTitle, $matches, PREG_PATTERN_ORDER);
+				$titlematch = '+' . implode(' +', $matches[0]);
+				$join = sprintf(
+						"INNER JOIN releasesearch rs ON rs.releaseid = r.id
+						WHERE MATCH (rs.name, rs.searchname) AGAINST ('%s' IN BOOLEAN MODE)",
+						$titlematch
+				);
+				break;
+		}
+		return $join;
 	}
 
 	public function getPreFileNames($args = array())

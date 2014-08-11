@@ -15,21 +15,7 @@
 </div>
 <br>
 <center>
-	{if !$fulltext}
-		Standard Search: Include ^ to indicate search must start with term, -- to exclude words.</center><br>
-	{else}
-		<table class="searchinfo">
-			<tr>
-				<td><b>Full Text Search:</b></td><td>A leading exclamation point(! in place of +) indicates that this word must be present in each row that is returned.
-					A leading minus sign indicates that this word must not be present in any of the rows that are returned.
-					By default (when neither ! nor - is specified) the word is optional, but the rows that contain it are rated higher.
-					A trailing asterisk means the word continues beyond what you have entered, words match if they begin with the word preceding the * operator.
-					Not all operators will work. Rows are not sorted by rating.
-					See the <a target="_blank" href='http://dev.mysql.com/doc/refman/5.0/en/fulltext-boolean.html'>docs</a> for more operators.
-				</td>
-			</tr>
-		</table>
-	{/if}
+	{$search_description}
 </center>
 <form method="get" action="{$smarty.const.WWW_TOP}/search">
 	<div id="sbasic" style="text-align:center;{if $sadvanced} display:none;"{/if}">

@@ -28,7 +28,12 @@ $consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 $pdo->queryExec("UPDATE groups SET first_record = 0, first_record_postdate = NULL, last_record = 0, last_record_postdate = NULL, last_updated = NULL");
 echo $pdo->log->primary("Reseting all groups completed.");
 
-$arr = array("tvrage", "releasenfo", "releasecomment", 'sharing', 'sharing_sites', "usercart", "usermovies", "userseries", "movieinfo", "musicinfo", "releasefiles", "releaseaudio", "releasesubs", "releasevideo", "releaseextrafull", "parts", "partrepair", "binaries", "collections", "releases");
+$arr = [
+		"tvrage", "releasenfo", "releasecomment", 'sharing', 'sharing_sites',
+		"usercart", "usermovies", "userseries", "movieinfo", "musicinfo", "releasefiles",
+		"releaseaudio", "releasesubs", "releasevideo", "releaseextrafull", "parts",
+		"partrepair", "binaries", "collections", "releases"
+];
 foreach ($arr as &$value) {
 	$rel = $pdo->queryExec("TRUNCATE TABLE $value");
 	if ($rel !== false)
@@ -47,6 +52,8 @@ foreach ($tables as $row) {
 			echo $pdo->log->primary("Dropping ${tbl} completed.");
 	}
 }
+
+(new SphinxSearch())->truncateRTIndex('releases_rt');
 
 $pdo->optimise(false, 'full');
 

@@ -52,7 +52,7 @@ function create_guids($live, $delete = false)
 					if (!$nzbfile) {
 						if (isset($delete) && $delete == 'delete') {
 							//echo "\n".$nzb->NZBPath($relrec['guid'])." is not a valid xml, deleting release.\n";
-							$releases->deleteSingle($relrec['guid'], $nzb, $releaseImage);
+							$releases->deleteSingle(['g' => $relrec['guid'], 'i' => $relrec['id']], $nzb, $releaseImage);
 							$deleted++;
 						}
 						continue;
@@ -64,7 +64,7 @@ function create_guids($live, $delete = false)
 					if (count($binary_names) == 0) {
 						if (isset($delete) && $delete == 'delete') {
 							//echo "\n".$nzb->NZBPath($relrec['guid'])." has no binaries, deleting release.\n";
-							$releases->deleteSingle($relrec['guid'], $nzb, $releaseImage);
+							$releases->deleteSingle(['g' => $relrec['guid'], 'i' => $relrec['id']], $nzb, $releaseImage);
 							$deleted++;
 						}
 						continue;
@@ -85,7 +85,7 @@ function create_guids($live, $delete = false)
 				} else {
 					if (isset($delete) && $delete == 'delete') {
 						//echo $pdo->log->primary($nzb->NZBPath($relrec['guid']) . " does not have an nzb, deleting.");
-						$releases->deleteSingle($relrec['guid'], $nzb, $releaseImage);
+						$releases->deleteSingle(['g' => $relrec['guid'], 'i' => $relrec['id']], $nzb, $releaseImage);
 					}
 				}
 			}

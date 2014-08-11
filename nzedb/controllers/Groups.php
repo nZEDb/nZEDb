@@ -506,7 +506,7 @@ class Groups
 		}
 
 		$releaseArray = $this->pdo->queryDirect(
-			sprintf("SELECT guid FROM releases %s", ($id === false ? '' : 'WHERE group_id = ' . $id))
+			sprintf("SELECT id, guid FROM releases %s", ($id === false ? '' : 'WHERE group_id = ' . $id))
 		);
 
 		if ($releaseArray instanceof Traversable) {
@@ -514,7 +514,7 @@ class Groups
 			$nzb = new NZB($this->pdo);
 			$releaseImage = new ReleaseImage($this->pdo);
 			foreach ($releaseArray as $release) {
-				$releases->deleteSingle($release['guid'], $nzb, $releaseImage);
+				$releases->deleteSingle(['g' => $release['guid'], 'i' => $release['id']], $nzb, $releaseImage);
 			}
 		}
 	}

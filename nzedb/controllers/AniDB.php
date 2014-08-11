@@ -273,6 +273,7 @@ class AniDB
 				$this->pdo->log->doEcho('Processing ' . count($results) . " anime releases.", true);
 			}
 
+			$sphinx = new SphinxSearch();
 			foreach ($results as $arr) {
 
 				// clean up the release name to ensure we get a good chance at getting a valid filename
@@ -288,8 +289,10 @@ class AniDB
 				// get anidb number for the title of the naime
 				$anidbID = $this->getanidbID($cleanFilename['title']);
 				if (!$anidbID) {
+					$newTitle = $pdo->escapeString($getReleaseName['title']);
 					// no anidb ID found so set what we know and exit
-					$pdo->queryExec(sprintf('UPDATE releases SET searchname = %s, anidbid = %d, rageid = %d WHERE id = %d', $pdo->escapeString($getReleaseName['title']), -1, -2, $arr['id']));
+					$pdo->queryExec(sprintf('UPDATE releases SET searchname = %s, anidbid = %d, rageid = %d WHERE id = %d', $newTitle, -1, -2, $arr['id']));
+					$sphinx->updateReleaseSearchName($newTitle, $arr['id']);
 					continue;
 				}
 
@@ -326,11 +329,15 @@ class AniDB
 					}
 
 					// lastly update the information, we also want a better readable name, AKA search name so we can use the title we cleaned
-					$pdo->queryExec(sprintf('UPDATE releases SET searchname = %s, episode = %s, tvtitle = %s, tvairdate = %s, anidbid = %d, rageid = %d WHERE id = %d', $pdo->escapeString($getReleaseName['title']), $pdo->escapeString($cleanFilename['epno']), $pdo->escapeString($tvtitle), $pdo->escapeString($airdate), $AniDBAPIArray['anidbid'], -2, $arr['id']));
+					$newTitle = $pdo->escapeString($getReleaseName['title']);
+					$pdo->queryExec(sprintf('UPDATE releases SET searchname = %s, episode = %s, tvtitle = %s, tvairdate = %s, anidbid = %d, rageid = %d WHERE id = %d', $newTitle, $pdo->escapeString($cleanFilename['epno']), $pdo->escapeString($tvtitle), $pdo->escapeString($airdate), $AniDBAPIArray['anidbid'], -2, $arr['id']));
+					$sphinx->updateReleaseSearchName($newTitle, $arr['id']);
 				}
 				else {
 					// if the anime was not found, just simply update the search name
-					$pdo->queryExec(sprintf('UPDATE releases SET searchname = %s, anidbid = %d WHERE id = %d', $pdo->escapeString($getReleaseName['title']), $AniDBAPIArray['anidbid'], $arr['id']));
+					$newTitle = $pdo->escapeString($getReleaseName['title']);
+					$sphinx->updateReleaseSearchName($newTitle, $arr['id']);
+					$pdo->queryExec(sprintf('UPDATE releases SET searchname = %s, anidbid = %d WHERE id = %d', $newTitle, $AniDBAPIArray['anidbid'], $arr['id']));
 				}
 			} // foreach
 

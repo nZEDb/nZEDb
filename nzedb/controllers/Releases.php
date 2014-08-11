@@ -36,6 +36,11 @@ class Releases
 	public $releaseSearch;
 
 	/**
+	 * @var SphinxSearch
+	 */
+	public $sphinxSearch;
+
+	/**
 	 * @var array $options Class instances.
 	 */
 	public function __construct(array $options = [])
@@ -49,7 +54,54 @@ class Releases
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 		$this->groups = ($options['Groups'] instanceof Groups ? $options['Groups'] : new Groups(['Settings' => $this->pdo]));
 		$this->updategrabs = ($this->pdo->getSetting('grabstatus') == '0' ? false : true);
-		$this->releaseSearch = new ReleaseSearch($this->pdo);
+		$this->passwordStatus = ($this->pdo->getSetting('checkpasswordedrar') == 1 ? -1 : 0);
+		$this->sphinxSearch = new SphinxSearch();
+		$this->releaseSearch = new ReleaseSearch($this->pdo, $this->sphinxSearch);
+	}
+
+	/**
+	 * Insert a single release returning the ID on success or false on failure.
+	 *
+	 * @param array $parameters Insert parameters, must be escaped if string.
+	 *
+	 * @return bool|int
+	 */
+	public function insertRelease(array $parameters = [])
+	{
+		$parameters['id'] = $this->pdo->queryInsert(
+			sprintf(
+				"INSERT INTO releases
+					(name, searchname, totalpart, group_id, adddate, guid, rageid, postdate, fromname,
+					size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus,
+					isrenamed, iscategorized, reqidstatus, preid)
+				 VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, %d, %d, 1, %d, %d)",
+				$parameters['name'],
+				$parameters['searchname'],
+				$parameters['totalpart'],
+				$parameters['group_id'],
+				$parameters['guid'],
+				$parameters['postdate'],
+				$parameters['fromname'],
+				$parameters['size'],
+				$this->passwordStatus,
+				$parameters['categoryid'],
+				$parameters['nzbstatus'],
+				$parameters['isrenamed'],
+				$parameters['reqidstatus'],
+				$parameters['preid']
+			)
+		);
+		$this->sphinxSearch->insertRelease($parameters);
+		return $parameters['id'];
+	}
+
+	/**
+	 * Create a GUID for a release.
+	 * @return string
+	 */
+	public function createGUID()
+	{
+		return sha1(uniqid('', true) . mt_rand());
 	}
 
 	/**
@@ -592,13 +644,13 @@ class Releases
 
 		foreach ($list as $identifier) {
 			if ($isGUID) {
-				$this->deleteSingle($identifier, $nzb, $releaseImage);
+				$this->deleteSingle(['g' => $identifier, 'i' => false], $nzb, $releaseImage);
 			} else {
 				$release = $this->pdo->queryOneRow(sprintf('SELECT guid FROM releases WHERE id = %d', $identifier));
 				if ($release === false) {
 					continue;
 				}
-				$this->deleteSingle($release['guid'], $nzb, $releaseImage);
+				$this->deleteSingle(['g' => $release['guid'], 'i' => false], $nzb, $releaseImage);
 			}
 		}
 	}
@@ -606,20 +658,23 @@ class Releases
 	/**
 	 * Deletes a single release by GUID, and all the corresponding files.
 	 *
-	 * @param string       $guid Release GUID.
+	 * @param array        $identifiers ['g' => Release GUID(mandatory), 'id => ReleaseID(optional, pass false)]
 	 * @param NZB          $nzb
 	 * @param ReleaseImage $releaseImage
 	 */
-	public function deleteSingle($guid, $nzb, $releaseImage)
+	public function deleteSingle($identifiers, $nzb, $releaseImage)
 	{
 		// Delete NZB from disk.
-		$nzbPath = $nzb->NZBPath($guid);
+		$nzbPath = $nzb->NZBPath($identifiers['g']);
 		if ($nzbPath) {
 			@unlink($nzbPath);
 		}
 
 		// Delete images.
-		$releaseImage->delete($guid);
+		$releaseImage->delete($identifiers['g']);
+
+		// Delete from sphinx.
+		$this->sphinxSearch->deleteRelease($identifiers, $this->pdo);
 
 		// Delete from DB.
 		$this->pdo->queryExec(
@@ -635,7 +690,7 @@ class Releases
 				LEFT OUTER JOIN releasevideo rv ON rv.releaseid = r.id
 				LEFT OUTER JOIN releaseextrafull re ON re.releaseid = r.id
 				WHERE r.guid = %s',
-				$this->pdo->escapeString($guid)
+				$this->pdo->escapeString($identifiers['g'])
 			)
 		);
 	}
@@ -846,27 +901,23 @@ class Releases
 			$orderBy = $this->getBrowseOrder($orderBy);
 		}
 
-		$sql = sprintf(
-			"SELECT * FROM (SELECT r.*, CONCAT(cp.title, ' > ', c.title) AS category_name,
-			CONCAT(cp.id, ',', c.id) AS category_ids,
-			groups.name AS group_name, rn.id AS nfoid,
-			re.releaseid AS reid, cp.id AS categoryparentid
-			FROM releases r
-			%s
-			LEFT OUTER JOIN releasevideo re ON re.releaseid = r.id
-			LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id
-			INNER JOIN groups ON groups.id = r.group_id
-			INNER JOIN category c ON c.id = r.categoryid
-			INNER JOIN category cp ON cp.id = c.parentid
-			WHERE r.passwordstatus <= %d %s %s %s %s %s %s %s %s %s %s %s %s %s) r
-			ORDER BY r.%s %s
-			LIMIT %d OFFSET %d",
+		$searchOptions = [];
+		if ($searchName != -1) {
+			$searchOptions['searchname'] = $searchName;
+		}
+		if ($usenetName != -1) {
+			$searchOptions['name'] = $usenetName;
+		}
+		if ($posterName != -1) {
+			$searchOptions['fromname'] = $posterName;
+		}
+
+		$innerSql = sprintf(
+			"%s
+			WHERE r.passwordstatus <= %d %s %s %s %s %s %s %s %s %s %s %s",
 			$this->releaseSearch->getFullTextJoinString(),
 			$this->showPasswords(),
-			($searchName != -1 ? $this->releaseSearch->getSearchSQL('searchname', $searchName) : ''),
-			($usenetName != -1 ? $this->releaseSearch->getSearchSQL('name', $usenetName) : ''),
 			($maxAge > 0 ? sprintf(' AND r.postdate > (NOW() - INTERVAL %d DAY) ', $maxAge) : ''),
-			($posterName != '-1' ? $this->releaseSearch->getSearchSQL('fromname', $posterName, true) : ''),
 			($groupName != -1 ? sprintf(' AND r.group_id = %d ', $this->groups->getIDByName($groupName)) : ''),
 			(in_array($sizeFrom, $sizeRange) ? ' AND r.size > ' . (string)(104857600 * (int)$sizeFrom) . ' ' : ''),
 			(in_array($sizeTo, $sizeRange) ? ' AND r.size < ' . (string)(104857600 * (int)$sizeTo) . ' ' : ''),
@@ -876,38 +927,34 @@ class Releases
 			($daysNew != -1 ? sprintf(' AND r.postdate < (NOW() - INTERVAL %d DAY) ', $daysNew) : ''),
 			($daysOld != -1 ? sprintf(' AND r.postdate > (NOW() - INTERVAL %d DAY) ', $daysOld) : ''),
 			(count($excludedCats) > 0 ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : ''),
+			(count($searchOptions) > 0 ? $this->releaseSearch->getSearchSQL($searchOptions) : '')
+		);
+
+		$sql = sprintf(
+			"SELECT SQL_CALC_FOUND_ROWS * FROM (
+				SELECT r.*, CONCAT(cp.title, ' > ', c.title) AS category_name,
+				CONCAT(cp.id, ',', c.id) AS category_ids,
+				groups.name AS group_name, rn.id AS nfoid,
+				re.releaseid AS reid, cp.id AS categoryparentid
+				FROM releases r
+				LEFT OUTER JOIN releasevideo re ON re.releaseid = r.id
+				LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id
+				INNER JOIN groups ON groups.id = r.group_id
+				INNER JOIN category c ON c.id = r.categoryid
+				INNER JOIN category cp ON cp.id = c.parentid
+				%s
+			) r
+			ORDER BY r.%s %s
+			LIMIT %d OFFSET %d",
+			$innerSql,
 			$orderBy[0],
 			$orderBy[1],
 			$limit,
 			$offset
 		);
 		$releases = $this->pdo->query($sql);
-		// Get total count for pager.
-		if (count($releases)) {
-			$releases[0]['_totalrows'] = $this->getPagerCount($sql);
-		}
+		$releases[0]['_totalrows'] = $this->pdo->get_Found_Rows();
 		return $releases;
-	}
-
-	/**
-	 * Get total count of releases for pager.
-	 *
-	 * @param string $query
-	 * @param bool   $orderBy
-	 *
-	 * @return int
-	 */
-	private function getPagerCount($query, $orderBy = false)
-	{
-		$wherePosition = strpos($query, 'WHERE');
-		$totalCount = $this->pdo->queryOneRow(
-			sprintf(
-				'SELECT COUNT(r.id) AS total FROM releases r %s %s',
-				$this->releaseSearch->getFullTextJoinString(),
-				substr($query, $wherePosition, strrpos($query, ($orderBy ? 'ORDER BY' : ')')) - $wherePosition)
-			)
-		);
-		return ($totalCount === false ? 0 : $totalCount['total']);
 	}
 
 	/**
@@ -924,39 +971,42 @@ class Releases
 	 */
 	public function searchbyRageId($rageId, $series = '', $episode = '', $offset = 0, $limit = 100, $name = '', $cat = [-1], $maxAge = -1)
 	{
-		$sql = sprintf(
-			"SELECT r.*, concat(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids,
-				groups.name AS group_name, rn.id AS nfoid, re.releaseid AS reid
-			FROM releases r
-			%s
-			INNER JOIN category c ON c.id = r.categoryid
-			INNER JOIN groups ON groups.id = r.group_id
-			LEFT OUTER JOIN releasevideo re ON re.releaseid = r.id
-			LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
-			INNER JOIN category cp ON cp.id = c.parentid
+		$baseSql = sprintf(
+			"%s
 			WHERE r.categoryid BETWEEN 5000 AND 5999
 			AND nzbstatus = 1
-			AND r.passwordstatus <= %d %s %s %s %s %s %s
-			ORDER BY postdate DESC
-			LIMIT %d
-			OFFSET %d",
+			AND r.passwordstatus <= %d %s %s %s %s %s %s",
 			$this->releaseSearch->getFullTextJoinString(),
 			$this->showPasswords(),
 			($rageId != -1 ? sprintf(' AND rageid = %d ', $rageId) : ''),
 			($series != '' ? sprintf(' AND UPPER(r.season) = UPPER(%s)', $this->pdo->escapeString(((is_numeric($series) && strlen($series) != 4) ? sprintf('S%02d', $series) : $series))) : ''),
 			($episode != '' ? sprintf(' AND r.episode %s', $this->pdo->likeString((is_numeric($episode) ? sprintf('E%02d', $episode) : $episode))) : ''),
-			($name !== '' ? $this->releaseSearch->getSearchSQL('searchname', $name) : ''),
+			($name !== '' ? $this->releaseSearch->getSearchSQL(['searchname' => $name]) : ''),
 			$this->categorySQL($cat),
-			($maxAge > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxAge) : ''),
+			($maxAge > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxAge) : '')
+		);
+		$sql = sprintf(
+			"SELECT SQL_CALC_FOUND_ROWS r.*,
+				concat(cp.title, ' > ', c.title) AS category_name,
+				CONCAT(cp.id, ',', c.id) AS category_ids,
+				groups.name AS group_name,
+				rn.id AS nfoid,
+				re.releaseid AS reid
+			FROM releases r
+			INNER JOIN category c ON c.id = r.categoryid
+			INNER JOIN groups ON groups.id = r.group_id
+			LEFT OUTER JOIN releasevideo re ON re.releaseid = r.id
+			LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
+			INNER JOIN category cp ON cp.id = c.parentid
+			%s
+			ORDER BY postdate DESC
+			LIMIT %d OFFSET %d",
+			$baseSql,
 			$limit,
 			$offset
 		);
 		$releases = $this->pdo->query($sql);
-		// Get total count for pager.
-		if (count($releases)) {
-			$releases[0]['_totalrows'] = $this->getPagerCount($sql, true);
-		}
-
+		$releases[0]['_totalrows'] = $this->pdo->get_Found_Rows();
 		return $releases;
 	}
 
@@ -973,32 +1023,37 @@ class Releases
 	 */
 	public function searchbyAnidbId($aniDbID, $episodeNumber = '', $offset = 0, $limit = 100, $name = '', $cat = [-1], $maxAge = -1)
 	{
-		$sql = sprintf(
-			"SELECT r.*, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids,
-				groups.name AS group_name, rn.id AS nfoid
-			FROM releases r
-			%s
-			INNER JOIN category c ON c.id = r.categoryid
-			INNER JOIN groups ON groups.id = r.group_id
-			LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
-			INNER JOIN category cp ON cp.id = c.parentid
-			WHERE r.passwordstatus <= %d %s %s %s %s %s
-			ORDER BY postdate DESC LIMIT %d OFFSET %d",
+		$baseSql = sprintf(
+			"%s
+			WHERE r.passwordstatus <= %d %s %s %s %s %s",
 			$this->releaseSearch->getFullTextJoinString(),
 			$this->showPasswords(),
 			($aniDbID > -1 ? sprintf(' AND anidbid = %d ', $aniDbID) : ''),
 			(is_numeric($episodeNumber) ? sprintf(" AND r.episode '%s' ", $this->pdo->likeString($episodeNumber)) : ''),
-			($name !== '' ? $this->releaseSearch->getSearchSQL('searchname', $name) : ''),
+			($name !== '' ? $this->releaseSearch->getSearchSQL(['searchname' => $name]) : ''),
 			$this->categorySQL($cat),
-			($maxAge > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxAge) : ''),
+			($maxAge > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxAge) : '')
+		);
+		$sql = sprintf(
+			"SELECT SQL_CALC_FOUND_ROWS r.*,
+				CONCAT(cp.title, ' > ', c.title) AS category_name,
+				CONCAT(cp.id, ',', c.id) AS category_ids,
+				groups.name AS group_name,
+				rn.id AS nfoid
+			FROM releases r
+			INNER JOIN category c ON c.id = r.categoryid
+			INNER JOIN groups ON groups.id = r.group_id
+			LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
+			INNER JOIN category cp ON cp.id = c.parentid
+			%s
+			ORDER BY postdate DESC
+			LIMIT %d OFFSET %d",
+			$baseSql,
 			$limit,
 			$offset
 		);
 		$releases = $this->pdo->query($sql);
-		// Get total count for pager.
-		if (count($releases)) {
-			$releases[0]['_totalrows'] = $this->getPagerCount($sql, true);
-		}
+		$releases[0]['_totalrows'] = $this->pdo->get_Found_Rows();
 		return $releases;
 	}
 
@@ -1014,35 +1069,39 @@ class Releases
 	 */
 	public function searchbyImdbId($imDbId, $offset = 0, $limit = 100, $name = '', $cat = [-1], $maxAge = -1)
 	{
+		$baseSql = sprintf(
+			"%s
+			WHERE r.categoryid BETWEEN 2000 AND 2999
+			AND nzbstatus = 1
+			AND r.passwordstatus <= %d
+			%s %s %s %s",
+			$this->releaseSearch->getFullTextJoinString(),
+			$this->showPasswords(),
+			($name !== '' ? $this->releaseSearch->getSearchSQL(['searchname' => $name]) : ''),
+			(($imDbId != '-1' && is_numeric($imDbId)) ? sprintf(' AND imdbid = %d ', str_pad($imDbId, 7, '0', STR_PAD_LEFT)) : ''),
+			$this->categorySQL($cat),
+			($maxAge > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxAge) : '')
+		);
 		$sql = sprintf(
-			"SELECT r.*, concat(cp.title, ' > ', c.title) AS category_name,
+			"SELECT SQL_CALC_FOUND_ROWS r.*,
+				concat(cp.title, ' > ', c.title) AS category_name,
 				CONCAT(cp.id, ',', c.id) AS category_ids,
-				g.name AS group_name, rn.id AS nfoid
+				g.name AS group_name,
+				rn.id AS nfoid
 			FROM releases r
-			%s
 			INNER JOIN groups g ON g.id = r.group_id
 			INNER JOIN category c ON c.id = r.categoryid
 			LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
 			INNER JOIN category cp ON cp.id = c.parentid
-			WHERE r.categoryid BETWEEN 2000 AND 2999
-			AND nzbstatus = 1
-			AND r.passwordstatus <= %d
-			%s %s %s %s
+			%s
 			ORDER BY postdate DESC
 			LIMIT %d OFFSET %d",
-			$this->releaseSearch->getFullTextJoinString(),
-			$this->showPasswords(),
-			($name !== '' ? $this->releaseSearch->getSearchSQL('searchname', $name) : ''),
-			(($imDbId != '-1' && is_numeric($imDbId)) ? sprintf(' AND imdbid = %d ', str_pad($imDbId, 7, '0', STR_PAD_LEFT)) : ''),
-			$this->categorySQL($cat),
-			($maxAge > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxAge) : ''),
+			$baseSql,
 			$limit,
 			$offset
 		);
 		$releases = $this->pdo->query($sql);
-		if (count($releases) > 0) {
-			$releases[0]['_totalrows'] = $this->getPagerCount($sql, true);
-		}
+		$releases[0]['_totalrows'] = $this->pdo->get_Found_Rows();
 		return $releases;
 	}
 

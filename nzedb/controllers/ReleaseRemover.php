@@ -9,7 +9,7 @@ use nzedb\db\Settings;
  */
 class ReleaseRemover
 {
-	/**
+	/**NION
 	 * @var nzedb\db\Settings
 	 */
 	protected $pdo;
@@ -337,7 +337,7 @@ class ReleaseRemover
 	{
 		$this->method = 'Gibberish';
 		$this->query = sprintf(
-			"SELECT r.guid, r.searchname
+			"SELECT r.guid, r.searchname, r.id
 			FROM releases r
 			WHERE r.nfostatus = 0
 			AND r.iscategorized = 1
@@ -365,7 +365,7 @@ class ReleaseRemover
 	{
 		$this->method = 'Hashed';
 		$this->query = sprintf(
-			"SELECT r.guid, r.searchname
+			"SELECT r.guid, r.searchname, r.id
 			FROM releases r
 			WHERE r.nfostatus = 0
 			AND r.iscategorized = 1
@@ -392,7 +392,7 @@ class ReleaseRemover
 	{
 		$this->method = 'Short';
 		$this->query = sprintf(
-			"SELECT r.guid, r.searchname
+			"SELECT r.guid, r.searchname, r.id
 			FROM releases r
 			WHERE r.nfostatus = 0
 			AND r.iscategorized = 1
@@ -419,7 +419,7 @@ class ReleaseRemover
 	{
 		$this->method = 'Executable';
 		$this->query = sprintf(
-			"SELECT r.guid, r.searchname
+			"SELECT r.guid, r.searchname, r.id
 			FROM releases r
 			INNER JOIN releasefiles rf ON rf.releaseid = r.id
 			WHERE r.searchname NOT LIKE %s
@@ -451,7 +451,7 @@ class ReleaseRemover
 	{
 		$this->method = 'Install.bin';
 		$this->query = sprintf(
-			"SELECT r.guid, r.searchname
+			"SELECT r.guid, r.searchname, r.id
 			FROM releases r
 			INNER JOIN releasefiles rf ON rf.releaseid = r.id
 			WHERE rf.name LIKE %s %s",
@@ -475,7 +475,7 @@ class ReleaseRemover
 	{
 		$this->method = 'Password.url';
 		$this->query = sprintf(
-			"SELECT r.guid, r.searchname
+			"SELECT r.guid, r.searchname, r.id
 			FROM releases r
 			INNER JOIN releasefiles rf ON rf.releaseid = r.id
 			WHERE rf.name LIKE %s %s",
@@ -499,7 +499,7 @@ class ReleaseRemover
 	{
 		$this->method = 'Passworded';
 		$this->query = sprintf(
-			"SELECT r.guid, r.searchname
+			"SELECT r.guid, r.searchname, r.id
 			FROM releases r
 			WHERE r.searchname LIKE %s
 			AND r.searchname NOT LIKE %s
@@ -546,7 +546,7 @@ class ReleaseRemover
 	{
 		$this->method = 'Size';
 		$this->query = sprintf(
-			"SELECT r.guid, r.searchname
+			"SELECT r.guid, r.searchname, r.id
 			FROM releases r
 			WHERE r.totalpart = 1
 			AND r.size < 2097152
@@ -581,7 +581,7 @@ class ReleaseRemover
 	{
 		$this->method = 'Huge';
 		$this->query = sprintf(
-			"SELECT r.guid, r.searchname
+			"SELECT r.guid, r.searchname, r.id
 			FROM releases r
 			WHERE r.totalpart = 1
 			AND r.size > 209715200 %s",
@@ -604,7 +604,7 @@ class ReleaseRemover
 	{
 		$this->method = 'Sample';
 		$this->query = sprintf(
-			"SELECT r.guid, r.searchname
+			"SELECT r.guid, r.searchname, r.id
 			FROM releases r
 			WHERE r.totalpart > 1
 			AND r.size < 40000000
@@ -645,7 +645,7 @@ class ReleaseRemover
 	{
 		$this->method = '.scr';
 		$this->query = sprintf(
-			"SELECT r.guid, r.searchname
+			"SELECT r.guid, r.searchname, r.id
 			FROM releases r
 			LEFT JOIN releasefiles rf on rf.releaseid = r.id
 			WHERE (rf.name REGEXP '[.]scr[$ \"]' OR r.name REGEXP '[.]scr[$ \"]')
@@ -691,86 +691,87 @@ class ReleaseRemover
 				$regexSQL = $ftMatch = $regexMatch = $opTypeName = '';
 				$dbRegex = $this->pdo->escapeString($regex['regex']);
 
-				// Match Regex beginning for long running foreign search
-				if ($this->crapTime === '' && substr($dbRegex, 2, 17) === 'brazilian|chinese') {
-					// Find first brazilian instance position in Regex, then find first closing parenthesis.
-					// Then substitute all pipes (|) with spaces for FT search and insert into query
-					$forBegin = strpos($dbRegex, 'brazilian');
-					$regexMatch = str_replace('|', ' ', substr($dbRegex, $forBegin, strpos($dbRegex, ')') - $forBegin));
-					$ftMatch = sprintf("MATCH (rs.name, rs.searchname) AGAINST (%s) AND", $this->pdo->escapeString($regexMatch));
-				} else if ($this->crapTime === '' && substr($dbRegex, 7, 11) === 'bl|cz|de|es') {
-					// Find first bl|cz instance position in Regex, then find first closing parenthesis.
-					// Then substitute all pipes (|) with quotation marks for FT search (quotes ignore min counts) and insert into query
-					$forBegin = strpos($dbRegex, 'bl|cz');
-					$regexMatch = str_replace('|', '" "', substr($dbRegex, $forBegin, strpos($dbRegex, ')') - $forBegin));
-					$ftMatch = sprintf("MATCH (rs.name, rs.searchname) AGAINST ('\"%s\"') AND", $regexMatch);
-				} else if ($this->crapTime === '' && substr($dbRegex, 8, 5) === '19|20') {
-					// Find first bl|cz instance position in Regex, then find last closing parenthesis as this is reversed.
-					// Then substitute all pipes (|) with quotation marks for FT search (quotes ignore min counts) and insert into query
-					$forBegin = strpos($dbRegex, 'bl|cz');
-					$regexMatch = str_replace('|', '" "', substr($dbRegex, $forBegin, strrpos($dbRegex, ')') - $forBegin));
-					$ftMatch = sprintf("MATCH (rs.name, rs.searchname) AGAINST ('\"%s\"') AND", $regexMatch);
-				} else if ($this->crapTime === '' && substr($dbRegex, 7, 14) === 'chinese.subbed') {
-					// Find first brazilian instance position in Regex, then find first closing parenthesis.
-					// Then substitute all pipes (|) with spaces for FT search and insert into query
-					$forBegin = strpos($dbRegex, 'chinese');
-					$regexMatch =
-						str_replace('nl  subed bed s', 'nlsubs nlsubbed nlsubed',
-							str_replace('?', '',
-								str_replace('.', ' ',
-									str_replace('|', ' ',
-										str_replace('-', '',
-											str_replace('(', '',
-												str_replace(')', '',
-													substr($dbRegex, $forBegin,
-														strrpos($dbRegex, ')') - $forBegin
-													)
-												)
+				if ($this->crapTime === '') {
+
+					// Match Regex beginning for long running foreign search
+					if (substr($dbRegex, 2, 17) === 'brazilian|chinese') {
+						// Find first brazilian instance position in Regex, then find first closing parenthesis.
+						// Then substitute all pipes (|) with spaces for FT search and insert into query
+						$forBegin = strpos($dbRegex, 'brazilian');
+						$regexMatch =
+							substr($dbRegex, $forBegin,
+								strpos($dbRegex, ')') - $forBegin
+							);
+					} else if (substr($dbRegex, 7, 11) === 'bl|cz|de|es') {
+						// Find first bl|cz instance position in Regex, then find first closing parenthesis.
+						$forBegin = strpos($dbRegex, 'bl|cz');
+						$regexMatch = '"' .
+							str_replace('|', '" "',
+								substr($dbRegex, $forBegin, strpos($dbRegex, ')') - $forBegin)
+							) . '"';
+					} else if (substr($dbRegex, 8, 5) === '19|20') {
+						// Find first bl|cz instance position in Regex, then find last closing parenthesis as this is reversed.
+						$forBegin = strpos($dbRegex, 'bl|cz');
+						$regexMatch = '"' .
+							str_replace('|', '" "',
+								substr($dbRegex, $forBegin, strrpos($dbRegex, ')') - $forBegin)
+							) . '"';
+					} else if (substr($dbRegex, 7, 14) === 'chinese.subbed') {
+						// Find first brazilian instance position in Regex, then find first closing parenthesis.
+						$forBegin = strpos($dbRegex, 'chinese');
+						$regexMatch =
+							str_replace('nl  subed|bed|s', 'nlsubs|nlsubbed|nlsubed',
+								str_replace('?', '',
+									str_replace('.', ' ',
+										str_replace(array('-', '(', ')'), '',
+											substr($dbRegex, $forBegin,
+												strrpos($dbRegex, ')') - $forBegin
 											)
 										)
 									)
 								)
-							)
-						);
-					$ftMatch = sprintf("MATCH (rs.name, rs.searchname) AGAINST (%s) AND", $this->pdo->escapeString($regexMatch));
-				} else if ($this->crapTime === '' && substr($dbRegex, 8, 2) === '4u') {
-					// Find first 4u\.nl instance position in Regex, then find first closing parenthesis.
-					// Then substitute all pipes (|) with quotation marks for FT search (quotes ignore min counts) and insert into query
-					$forBegin = strpos($dbRegex, '4u');
-					$regexMatch = str_replace('|', ' ', str_replace('nov[ a]+rip', 'nova', str_replace('4u.nl', '"4u" "nl"', substr($dbRegex, $forBegin, strpos($dbRegex, ')') - $forBegin))));
-					$ftMatch = sprintf("MATCH (rs.name, rs.searchname) AGAINST (%s) AND", $this->pdo->escapeString($regexMatch));
-				} else if ($this->crapTime === '' && substr($dbRegex, 8, 5) === 'bd|dl') {
-					// Find first bd|dl instance position in Regex, then find last closing parenthesis as this is reversed.
-					// Then substitute all pipes (|) with quotation marks for FT search (quotes ignore min counts) and insert into query
-					$forBegin = strpos($dbRegex, 'bd|dl');
-					$regexMatch = str_replace('\\', '', str_replace(']', '', str_replace('[', '', str_replace('|', ' ',
-									str_replace('bd|dl)mux', 'bdmux dlmux', substr($dbRegex, $forBegin, strrpos($dbRegex, ')') - $forBegin))
+							);
+					} else if (substr($dbRegex, 8, 2) === '4u') {
+						// Find first 4u\.nl instance position in Regex, then find first closing parenthesis.
+						$forBegin = strpos($dbRegex, '4u');
+						$regexMatch =
+							str_replace('nov[ a]+rip', 'nova',
+								str_replace('4u.nl', '"4u" "nl"',
+									substr($dbRegex, $forBegin, strpos($dbRegex, ')') - $forBegin)
 								)
-							)
-						)
+							);
+					} else if (substr($dbRegex, 8, 5) === 'bd|dl') {
+						// Find first bd|dl instance position in Regex, then find last closing parenthesis as this is reversed.
+						$forBegin = strpos($dbRegex, 'bd|dl');
+						$regexMatch =
+							str_replace(array('\\',']','['), '',
+								str_replace('bd|dl)mux', 'bdmux|dlmux',
+									substr($dbRegex, $forBegin,
+										strrpos($dbRegex, ')') - $forBegin
+									)
+								)
+							);
+					} else if (substr($dbRegex, 7, 9) === 'imageset|') {
+						// Find first imageset| instance position in Regex, then find last closing parenthesis.
+						$forBegin = strpos($dbRegex, 'imageset');
+						$regexMatch = substr($dbRegex, $forBegin, strpos($dbRegex, ')') - $forBegin);
+					} else if (substr($dbRegex, 1, 9) === 'hdnectar|') {
+						// Find first hdnectar| instance position in Regex.
+						$regexMatch = str_replace('\'', '', $dbRegex);
+					} else if (substr($dbRegex, 1, 10) === 'Passworded') {
+						// Find first Passworded instance position in Regex, then find last closing parenthesis.
+						$regexMatch = str_replace('\'', '', $dbRegex);
+					}
+
+					$ftMatch = (nZEDb_RELEASE_SEARCH_TYPE == ReleaseSearch::SPHINX
+								? sprintf('rse.query = "@(name,searchname) %s;limit=10000;maxmatches=10000;mode=any" AND', str_replace(' ', '|', str_replace('"', '', $regexMatch)))
+								: sprintf("MATCH (rs.name, rs.searchname) AGAINST ('%s') AND", str_replace('|', ' ', $regexMatch))
 					);
-					$ftMatch = sprintf("MATCH (rs.name, rs.searchname) AGAINST ('\"%s\"') AND", $regexMatch);
-				} else if ($this->crapTime === '' && substr($dbRegex, 7, 9) === 'imageset|') {
-					// Find first imageset| instance position in Regex, then find last closing parenthesis.
-					// Then substitute all pipes (|) with quotation marks for FT search (quotes exclude min counts) and insert into query
-					$forBegin = strpos($dbRegex, 'imageset');
-					$regexMatch = str_replace('|', ' ', substr($dbRegex, $forBegin, strpos($dbRegex, ')') - $forBegin));
-					$ftMatch = sprintf("MATCH (rs.name, rs.searchname) AGAINST (%s) AND", $this->pdo->escapeString($regexMatch));
-				} else if ($this->crapTime === '' && substr($dbRegex, 1, 9) === 'hdnectar|') {
-					// Find first hdnectar| instance position in Regex.
-					// Then substitute all pipes (|) with quotation marks for FT search (quotes exclude min counts) and insert into query
-					$regexMatch = str_replace('|', ' ', $dbRegex);
-					$ftMatch = sprintf("MATCH (rs.name, rs.searchname) AGAINST (%s) AND", $regexMatch);
-				} else if ($this->crapTime === '' && substr($dbRegex, 1, 10) === 'Passworded') {
-					// Find first Passworded instance position in Regex, then find last closing parenthesis.
-					// Then substitute all pipes (|) with quotation marks for FT search (quotes exclude min counts) and insert into query
-					$regexMatch = str_replace('|', ' ', $dbRegex);
-					$ftMatch = sprintf("MATCH (rs.name, rs.searchname) AGAINST (%s) AND", $regexMatch);
 				}
 
 				switch ((int)$regex['msgcol']) {
 					case Binaries::BLACKLIST_FIELD_SUBJECT:
-						$regexSQL = sprintf("WHERE %s (rs.name REGEXP %s OR rs.searchname REGEXP %s)", $ftMatch, $dbRegex, $dbRegex);
+						$regexSQL = sprintf("WHERE %s (r.name REGEXP %s OR r.searchname REGEXP %s)", $ftMatch, $dbRegex, $dbRegex);
 						$opTypeName = "Subject";
 						break;
 					case Binaries::BLACKLIST_FIELD_FROM:
@@ -809,10 +810,10 @@ class ReleaseRemover
 
 					$groupID = ' AND r.group_id in (' . $groupIDs . ') ';
 				}
-				$this->method = 'Blacklist ' . $regex['id'];
+				$this->method = 'Blacklist [' . $regex['id'] . ']';
 
 				// Check if using FT Match and declare for echo
-				if ($ftMatch !== '') {
+				if ($ftMatch !== '' && $opTypeName == "Subject") {
 					$blType = "FULLTEXT match with REGEXP";
 					$ftUsing = 'Using (' . $regexMatch . ') as interesting words.' . PHP_EOL;
 				} else {
@@ -826,9 +827,15 @@ class ReleaseRemover
 					)
 				);
 
-				$this->query = sprintf(
-					"SELECT r.guid, r.searchname
-					FROM releasesearch rs LEFT JOIN releases r ON rs.releaseid = r.id %s %s %s", $regexSQL, $groupID, $this->crapTime
+				$join = (nZEDb_RELEASE_SEARCH_TYPE == ReleaseSearch::SPHINX ? "INNER JOIN releases_se rse ON rse.id = r.id" : "INNER JOIN releasesearch rs ON rs.releaseid = r.id");
+
+				$this->query = sprintf("
+							SELECT r.guid, r.searchname, r.id
+							FROM releases r %s %s %s %s",
+							$join,
+							$regexSQL,
+							$groupID,
+							$this->crapTime
 				);
 
 				if ($this->checkSelectQuery() === false) {
@@ -901,7 +908,7 @@ class ReleaseRemover
 
 				$this->method = 'Blacklist ' . $regex['id'];
 				$this->query = sprintf(
-					"SELECT r.guid, r.searchname
+					"SELECT r.guid, r.searchname, r.id
 					FROM releases r %s %s %s", $regexSQL, $groupID, $this->crapTime
 				);
 
@@ -943,12 +950,12 @@ class ReleaseRemover
 			Category::CAT_XXX_XVID,
 			Category::CAT_XXX_OTHER
 		);
-		$codeclike = sprintf("UNION SELECT r.guid, r.searchname FROM releases r
+		$codeclike = sprintf("UNION SELECT r.guid, r.searchname, r.id FROM releases r
 			LEFT JOIN releasefiles rf ON r.id = rf.releaseid
 			WHERE %s rf.name LIKE '%s' OR rf.name LIKE '%s' OR rf.name LIKE '%s'", $categories, $codec, $iferror, $ifnotplaying
 		);
 		$this->query = sprintf(
-			"SELECT r.guid, r.searchname FROM releases
+			"SELECT r.guid, r.searchname, r.id FROM releases
 			r INNER JOIN releasefiles rf ON (rf.releaseid = r.id)
 			WHERE %s %s %s %s %s", $categories, $regex, $this->crapTime, $codeclike, $this->crapTime
 		);
@@ -968,7 +975,7 @@ class ReleaseRemover
 		$deletedCount = 0;
 		foreach ($this->result as $release) {
 			if ($this->delete) {
-				$this->releases->deleteSingle($release['guid'], $this->nzb, $this->releaseImage);
+				$this->releases->deleteSingle(['g' => $release['guid'], 'i' => $release['id']], $this->nzb, $this->releaseImage);
 				if ($this->echoCLI) {
 					echo $this->pdo->log->primary('Deleting: ' . $this->method . ': ' . $release['searchname']);
 				}
