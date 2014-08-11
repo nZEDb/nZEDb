@@ -296,6 +296,7 @@ class NZBImport
 				// Check if this NZB is blacklisted.
 				if ($this->binaries->isBlacklisted($msg, $group)) {
 					$isBlackListed = true;
+					break;
 				}
 			}
 
