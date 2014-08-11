@@ -9,7 +9,12 @@ class InstallPage
 	public $content = '';
 	public $head = '';
 	public $page_template = '';
-	public $smarty = '';
+
+	/**
+	 * @var Smarty
+	 */
+	public $smarty;
+
 	public $error = false;
 
 	public function  __construct()

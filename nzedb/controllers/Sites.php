@@ -38,9 +38,9 @@ class Sites
 		$defaults = [
 			'Settings' => null,
 		];
-		$defaults = array_replace($defaults, $options);
+		$options += $defaults;
 
-		$this->_db = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
+		$this->_db = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 
 		if (defined('nZEDb_VERSIONS')) {
 			try {
@@ -152,7 +152,7 @@ class Sites
 		$sql .= 'ORDER BY setting';
 
 		$result = $this->_db->queryArray($sql);
-		if ($result !== false) {
+		if ($result instanceof Traversable) {
 			foreach($result as $row) {
 				$results[$row['setting']] = $row['value'];
 			}

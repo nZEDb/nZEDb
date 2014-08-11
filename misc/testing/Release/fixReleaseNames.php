@@ -11,10 +11,9 @@
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
 $n = "\n";
-$c = new ColorCLI();
 $pdo = new nzedb\db\Settings();
-$namefixer = new NameFixer(['ColorCLI' => $c, 'Settings' => $pdo]);
-$predb = new PreDb(['Echo' => true, 'Settings' => $pdo, 'ColorCLI' => $c]);
+$namefixer = new NameFixer(['Settings' => $pdo]);
+$predb = new PreDb(['Echo' => true, 'Settings' => $pdo]);
 
 if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4])) {
 	$update = ($argv[2] == "true") ? 1 : 2;
@@ -31,10 +30,11 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4])) {
 		$show = 1;
 	}
 
+	$nntp = null;
 	if ($argv[1] == 7 || $argv[1] == 8) {
-		$nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $c]);
+		$nntp = new NNTP(['Settings' => $pdo]);
 		if (($pdo->getSetting('alternate_nntp') == '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
-			echo $c->error("Unable to connect to usenet.\n");
+			echo $pdo->log->error("Unable to connect to usenet.\n");
 			return;
 		}
 	}
@@ -65,11 +65,11 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4])) {
 			$namefixer->fixNamesWithPar2(2, $update, $other, $setStatus, $show, $nntp);
 			break;
 		default :
-			exit($c->error("\nERROR: Wrong argument, type php $argv[0] to see a list of valid arguments." . $n));
+			exit($pdo->log->error("\nERROR: Wrong argument, type php $argv[0] to see a list of valid arguments." . $n));
 			break;
 	}
 } else {
-	exit($c->error("\nYou must supply 4 arguments.\n"
+	exit($pdo->log->error("\nYou must supply 4 arguments.\n"
 			. "The 2nd argument, false, will display the results, but not change the name, type true to have the names changed.\n"
 			. "The 3rd argument, other, will only do against other categories, to do against all categories use all, or preid to process all not matched to predb.\n"
 			. "The 4th argument, yes, will set the release as checked, so the next time you run it will not be processed, to not set as checked type no.\n"

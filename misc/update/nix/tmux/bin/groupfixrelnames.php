@@ -3,14 +3,13 @@ require_once dirname(__FILE__) . '/../../../config.php';
 
 use nzedb\db\Settings;
 
-$c = new ColorCLI();
+$pdo = new Settings();
+
 if (!isset($argv[1])) {
-	exit($c->error("This script is not intended to be run manually, it is called from groupfixrelnames_threaded.py."));
+	exit($pdo->log->error("This script is not intended to be run manually, it is called from groupfixrelnames_threaded.py."));
 } else if (isset($argv[1])) {
-	$pdo = new Settings();
-	$namefixer = new NameFixer(['Settings' => $pdo, 'ColorCLI' => $c]);
+	$namefixer = new NameFixer(['Settings' => $pdo]);
 	$pieces = explode(' ', $argv[1]);
-	$proxy = $pdo->getSetting('nntpproxy');
 	$guidChar = $pieces[1];
 	$maxperrun = $pieces[2];
 	$thread = $pieces[3];
@@ -34,7 +33,7 @@ if (!isset($argv[1])) {
 								$maxperrun
 							)
 			);
-			if ($releases !== false) {
+			if ($releases instanceof Traversable) {
 				foreach ($releases as $release) {
 					if (preg_match('/^=newz\[NZB\]=\w+/', $release['textstring'])) {
 						$namefixer->done = $namefixer->matched = false;
@@ -67,7 +66,7 @@ if (!isset($argv[1])) {
 								$maxperrun
 							)
 			);
-			if ($releases !== false) {
+			if ($releases instanceof Traversable) {
 				foreach ($releases as $release) {
 					$namefixer->done = $namefixer->matched = false;
 					if ($namefixer->checkName($release, true, 'Filenames, ', 1, 1) !== true) {
@@ -94,7 +93,7 @@ if (!isset($argv[1])) {
 								$maxperrun
 							)
 			);
-			if ($releases !== false) {
+			if ($releases instanceof Traversable) {
 				foreach ($releases as $release) {
 					if (preg_match('/[a-fA-F0-9]{32,40}/i', $release['name'], $matches)) {
 						$namefixer->matchPredbHash($matches[0], $release, 1, 1, true, 1);
@@ -122,17 +121,17 @@ if (!isset($argv[1])) {
 								$maxperrun
 							)
 			);
-			if ($releases !== false) {
-				$nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $c]);
+			if ($releases instanceof Traversable) {
+				$nntp = new NNTP(['Settings' => $pdo]);
 				if (($pdo->getSetting('alternate_nntp') == '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
-					exit($c->error("Unable to connect to usenet."));
+					exit($pdo->log->error("Unable to connect to usenet."));
 				}
 
-				$Nfo = new Nfo(['Settings' => $pdo, 'Echo' => true, 'ColorCLI' => $c]);
+				$Nfo = new Nfo(['Settings' => $pdo, 'Echo' => true]);
 				$nzbcontents = new NZBContents(
 					array(
 						'Echo' => true, 'NNTP' => $nntp, 'Nfo' => $Nfo, 'Settings' => $pdo,
-						'PostProcess' => new PostProcess(['Settings' => $pdo, 'Nfo' => $Nfo, 'NameFixer' => $namefixer, 'ColorCLI' => $c])
+						'PostProcess' => new PostProcess(['Settings' => $pdo, 'Nfo' => $Nfo, 'NameFixer' => $namefixer])
 					)
 				);
 				foreach ($releases as $release) {
@@ -158,13 +157,10 @@ if (!isset($argv[1])) {
 								$maxperrun
 							)
 			);
-			if ($releases !== false) {
-				$nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $c]);
+			if ($releases instanceof Traversable) {
+				$nntp = new NNTP(['Settings' => $pdo]);
 				if (($pdo->getSetting('alternate_nntp') == '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
-					exit($c->error("Unable to connect to usenet."));
-				}
-				if ($proxy == "1") {
-					usleep(500000);
+					exit($pdo->log->error("Unable to connect to usenet."));
 				}
 				$sorter = new MiscSorter(true);
 				foreach ($releases as $release) {
@@ -173,9 +169,6 @@ if (!isset($argv[1])) {
 						$pdo->queryExec(sprintf('UPDATE releases SET proc_sorter = 1 WHERE id = %d', $release['releaseid']));
 						echo '.';
 					}
-				}
-				if ($proxy != "1") {
-					$nntp->doQuit();
 				}
 			}
 			break;
@@ -191,10 +184,10 @@ if (!isset($argv[1])) {
 							LIMIT %s
 							OFFSET %s',
 							$maxperrun,
-							$thread * $maxperrun
+							$thread * $maxperrun - $maxperrun
 						)
 			);
-			if ($pres !== false) {
+			if ($pres instanceof Traversable) {
 				foreach ($pres as $pre) {
 					$namefixer->done = $namefixer->matched = false;
 					$ftmatched = $searched = 0;

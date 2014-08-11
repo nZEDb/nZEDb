@@ -6,12 +6,12 @@ $n = PHP_EOL;
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
 // ColorCLI class.
-$c = new ColorCLI();
+$cli = new ColorCLI();
 
 // Print arguments/usage.
 $totalArgs = count($argv);
 if ($totalArgs < 2) {
-	exit($c->info($n .
+	exit($cli->info($n .
 		'This deletes releases based on a list of criteria you pass.' . $n .
 		'Usage:' . $n . $n.
 		'List of supported criteria:' . $n .
@@ -40,6 +40,6 @@ if ($totalArgs < 2) {
 	));
 }
 
-$RR = new ReleaseRemover(['ColorCLI' => $c]);
+$RR = new ReleaseRemover();
 // Remove argv[0] and send the array.
 $RR->removeByCriteria(array_slice($argv, 1, $totalArgs-1));

@@ -191,9 +191,8 @@
 					loop(backfill_safe_threaded.py). <br \>
 					example: you have Backfill Threads = 10, Backfill Quantity = 20k, Max Messages = 5k: you will run 10
 					threads, queue of 40 and download 200k headers.<br/>
-					Interval - Backfills the number of groups (set in tmux), by backfill days (set in admin-view
-					groups), completely.<br/>
-					All - Backfills the number of groups (set in tmux), by Backfill Quantity (set in tmux), up to
+					All - Backfills all enabled groups using the multiprocessing script by the number of articles (set in tmux)</br>
+					Group - Backfills the number of groups (set in tmux), by Backfill Quantity (set in tmux), up to
 					backfill days (set in admin-view groups)<br/>
 					These settings are all per loop and does not use backfill date. Approximately every 80 minutes,
 					every activated backfill group will be backfilled (5k headers). This is to allow incomplete

@@ -22,9 +22,9 @@ class UserSeries
 		$defaults = [
 			'Settings' => null,
 		];
-		$defaults = array_replace($defaults, $options);
+		$options += $defaults;
 
-		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 	}
 
 	/**

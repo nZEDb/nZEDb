@@ -3,19 +3,18 @@ require dirname(__FILE__) . '/../../../www/config.php';
 
 use nzedb\db\Settings;
 
-$c = new ColorCLI();
+$pdo = new Settings();
 
 if (isset($argv[1]) && $argv[1] === "true") {
-	getOddGames($c);
+	getOddGames($pdo->log);
 } else {
-	exit($c->error("\nThis script attempts to recategorize 150 games each run in 0day and ISO that have a match on giantbomb.\n"
+	exit($pdo->log->error("\nThis script attempts to recategorize 150 games each run in 0day and ISO that have a match on giantbomb.\n"
 					. "php $argv[0] true       ...:recategorize 0day/ISO games.\n"));
 }
 
-function getOddGames($c)
+function getOddGames()
 {
-	global $c;
-	$pdo = new Settings();
+	global $pdo;
 	$res = $pdo->query('
 				SELECT searchname, id, categoryid
 				FROM releases
@@ -26,8 +25,8 @@ function getOddGames($c)
 	);
 
 	if ($res !== false) {
-				$c->doEcho($c->header("Processing... 150 release(s)."));
-			$gen = new Games(['Echo' => true, 'Settings' => $pdo, 'ColorCLI' => $c]);
+				$pdo->log->doEcho($pdo->log->header("Processing... 150 release(s)."));
+			$gen = new Games(['Echo' => true, 'Settings' => $pdo]);
 
 			//Match on 78% title
 			$gen->matchpercent = 78;
@@ -36,9 +35,9 @@ function getOddGames($c)
 				$usedgb = true;
 				$gameInfo = $gen->parseTitle($arr['searchname']);
 				if ($gameInfo !== false) {
-						$c->doEcho(
-							$c->headerOver('Looking up: ') .
-							$c->primary($gameInfo['title'] . ' (' . $gameInfo['platform'] . ')' )
+						$pdo->log->doEcho(
+							$pdo->log->headerOver('Looking up: ') .
+							$pdo->log->primary($gameInfo['title'] . ' (' . $gameInfo['platform'] . ')' )
 						);
 
 					// Check for existing games entry.
@@ -74,6 +73,6 @@ function getOddGames($c)
 				}
 			}
 		} else {
-				$c->doEcho($c->header('No games in 0day/ISO to process.'));
+				$pdo->log->doEcho($pdo->log->header('No games in 0day/ISO to process.'));
 		}
 	}

@@ -7,8 +7,30 @@
  */
 class CollectionsCleaning
 {
+	/**
+	 * @var string
+	 */
 	public $subject = '';
+
+	/**
+	 * @var string
+	 */
 	public $groupName = '';
+
+	/**
+	 * @var string
+	 */
+	public $e0;
+
+	/**
+	 * @var string
+	 */
+	public $e1;
+
+	/**
+	 * @var string
+	 */
+	public $e2;
 
 	/**
 	 *
@@ -698,6 +720,9 @@ class CollectionsCleaning
 			return $match[1] . $match[2];
 		} //Outlast.Whistleblower-RELOADED - [014/119] - "rld-outwhistle.part001.rar" yEnc
 		if (preg_match('/^([\w. -]{8,}) - \[\d+\/(\d+\])[- ]{0,3}".+?' . $this->e1, $this->subject, $match)) {
+			return $match[1] . $match[2];
+		} //Charlies.Angels.2000.iNTERNAL.DVDRip.XviD-Vmr.part44.rar [46/66] - "Charlies.Angels.2000.iNTERNAL.DVDRip.XviD-Vmr.part44.rar" yEnc
+		if (preg_match('/^.+\[\d+\/(\d+\]) - "(.+?)' . $this->e1, $this->subject, $match)) {
 			return $match[1] . $match[2];
 		}
 		return $this->generic();
@@ -1760,6 +1785,12 @@ class CollectionsCleaning
 		//[02/29] - "Fox Sports 1 on 1 - Tom Brady 720p HDTV DD5.1 MPEG2-DON.part01.rar" yEnc
 		if (preg_match('/^(\[ TrollHD \] - )?[\[\(][-_ ]{0,3}\d+\/(\d+[-_ ]{0,3}[\)\]]) - "(.+?) MPEG2-(DON|TrollHD)\..+?" yEnc$/', $this->subject, $match)) {
 			return $match[2] . $match[3];
+		} //Covert.Affairs.S05E06.Embassy.Row.1080p.WEB-DL.DD5.1.H.264-NTb.vol093+82.par2 - [41/42] - "Covert.Affairs.S05E06.Embassy.Row.1080p.WEB-DL.DD5.1.H.264-NTb.vol093+82.par2" yEnc
+		if (preg_match('/.* - \[\d+\/(\d+\]) - "(.+?)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}").+?yEnc$/', $this->subject, $match)) {
+			return $match[1] . $match[2];
+		} //"bhuhirawniowrj3io2o34.vol061+4.par2" yEnc
+		if (preg_match('/.*"(.+?)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}(\.txt)?").+?yEnc$/', $this->subject, $match)) {
+			return $match[1];
 		}
 		return $this->generic();
 	}
@@ -2021,7 +2052,7 @@ class CollectionsCleaning
 		return $this->generic();
 	}
 
-	public function movies()
+	protected function movies()
 	{
 		//Underworld.Evolution.2006.480p.BDRip.XviD.AC3-AsA - [000/143] - "asa.nzb" yEnc
 		if (preg_match('/^([a-z].+) - \[\d+\/(\d+\])[ _-]{0,3}("|#34;).+("|#34;) yEnc$/i', $this->subject, $match)) {
@@ -2551,14 +2582,13 @@ class CollectionsCleaning
 	}
 
 	// a.b.sounds.mp3.electronic
-	public function sounds_mp3_electronic()
+	protected function sounds_mp3_electronic()
 	{
 		//(03/10) "Washing Machines - Planet-E CH-Basel Ultimate Hardcore - 4.9.1993.vol00+01.PAR2" - 232.39 MB - yEnc
 		if (preg_match('/^\(\d+\/(\d+\))[ -]{0,3}"([\w. &()\[\]\'-]{8,}?\b.?)' . $this->e2, $this->subject, $match)) {
 			return $match[1] . $match[2];
 		} //(2/7) "Cosmic Baby live at Energy 1995.vol00+01.PAR2" - 0 B - yEnc
-		if (preg_match('/^\(\d+\/(\d+\))[ -]{0,3}"([\w. &()\[\]\'-]{8,}?\b.?)' . $this->e0 . '[- ]{0,3}\d+ [bB][- ]{0,
-		3}yEnc$/', $this->subject, $match)) {
+		if (preg_match('/^\(\d+\/(\d+\))[ -]{0,3}"([\w. &()\[\]\'-]{8,}?\b.?)' . $this->e0 . '[- ]{0,3}\d+ [bB][- ]{0,3}yEnc$/', $this->subject, $match)) {
 			return $match[1] . $match[2];
 		} //[0sk]-[2002-12-06]-[idm]-[vinyl]-[4/5]-[Maps_And_Diagrams_-_Ti_Sta_Bene_Marone-(cact_001)-Vinyl-2002]--cact 001.sfv  yEnc
 		if (preg_match('/^\[0sk\]-\[\d+-\d+-\d+\]-\[.+\]-\[.+\]-\[\d+\/(\d+\])-\[([\w. &()\[\]\'-]{8,})\]--.+? yEnc$/', $this->subject, $match)) {

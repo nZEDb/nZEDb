@@ -21,6 +21,16 @@ class Releases
 	public $pdo;
 
 	/**
+	 * @var Groups
+	 */
+	public $groups;
+
+	/**
+	 * @var bool
+	 */
+	public $updategrabs;
+
+	/**
 	 * @var array $options Class instances.
 	 */
 	public function __construct(array $options = array())
@@ -29,9 +39,10 @@ class Releases
 			'Settings' => null,
 			'Groups'   => null
 		];
-		$defaults = array_replace($defaults, $options);
-		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
-		$this->groups = ($defaults['Groups'] instanceof Groups ? $defaults['Groups'] : new Groups(['Settings' => $this->pdo]));
+		$options += $defaults;
+
+		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->groups = ($options['Groups'] instanceof Groups ? $options['Groups'] : new Groups(['Settings' => $this->pdo]));
 		$this->updategrabs = ($this->pdo->getSetting('grabstatus') == '0' ? false : true);
 	}
 
@@ -202,21 +213,18 @@ class Releases
 		if ($res === false) {
 			return $passwordStatus;
 		}
+
 		switch (true) {
 			case $res['value'] == 0:
 				return $passwordStatus;
-				break;
 			case $res['value'] == 1:
 				$passwordStatus = sprintf('<= %d', Releases::PASSWD_POTENTIAL);
 				return $passwordStatus;
-				break;
-			case $res['value'] == 1:
+			case $res['value'] == 10:
 				$passwordStatus = sprintf('<= %d', Releases::PASSWD_RAR);
 				return $passwordStatus;
-				break;
 			default:
 				return $passwordStatus;
-				break;
 		}
 	}
 
@@ -1007,12 +1015,12 @@ class Releases
 			$catsrch = $this->categorySQL($cat);
 		} else {
 			$catsrch = '';
-			if ($cat != '-1') {
-				$catsrch = sprintf(' AND (r.categoryid = %d) ', $cat);
+			if ($cat[0] != '-1') {
+				$catsrch = sprintf(' AND (r.categoryid = %d) ', $cat[0]);
 			}
 		}
 
-		$daysnewsql = $daysoldsql = $maxagesql = $groupIDsql = $parentcatsql = '';
+		$daysnewsql = $daysoldsql = $maxagesql = $groupIDsql = '';
 
 		$searchnamesql = ($searchname != '-1' ? $this->searchSQL($searchname, 'searchname') : '');
 		$usenetnamesql = ($usenetname != '-1' ? $this->searchSQL($usenetname, 'name') : '');
@@ -1090,6 +1098,7 @@ class Releases
 		}
 
 		if ($orderby == '') {
+			$order = array();
 			$order[0] = 'postdate ';
 			$order[1] = 'desc ';
 		} else {

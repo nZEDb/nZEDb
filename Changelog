@@ -7,10 +7,85 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-08-05 kevin
+	* Chg: Pass all $runVar params by reference, hopefully fixing all timer issues in Tmux scripts.
 2014-08-04 niel
 	* New: Merged and tagged v0.3.10 to master branch.
+2014-08-02 niel
+	* Fix: Remove escaping causing problems in tmux.
+	* Chg: Alter date output to use international format in main tmux pain.
+2014-08-02 bart39
+	* Fix: _python not _php.
+	* Fix: Tmux basic sequential undefined variables
+2014-08-01 DariusIII
+	* Upd: Codec spam removal update
+2014-08-01 bart39
+	* Fix: UpdateTV for tmux complete sequential.
+	* Fix: Display issues for long titles on predb alpha theme.
+	* Fix: Typo in gamesorter.php causing undefined variable error.
+	* Add: CollectionsCleaning Regex additions.
+	* Fix: offset for groupfixrelnames predbft.
+	* Add: Misc>Hashed Retention Hours #1437
+	* Fix: Categorize byGroup a.b.sounds.flac #1432, run php /misc/testing/Dev/recategorize.php all to fix
+	* Fix: Categorize HDTV Bluray, run php /misc/testing/Dev/recategorize.php all to fix
+2014-08-01 tasky
+	* Chg: Scrutinizer recommendations.
+	* Fix: Wrong resource type / __construct fixed
+2014-08-01 kevin
+	* ---: Test scrutinizer.
+	* Chg: More changes for scrutinizer.
+	* Chg: More scrutinize recommendations.
+	* Rem: Remove unused variables.
+	* Fix: Wrong var types.
+	* Fix: Type/doc issues.
+	* Chg: Initiate non-initiated arrays, add comments to empty catch blocks.
+2014-08-01 ruhllatio
+	* Mrg: tasky's XXX changes PR #1440
+	* Mrg: dev-tmuxrevamp into dev (please make sure tmux is restarted)
+	* Fix: Fix typo in tmux monitor output for USP connections
+	* Fix: 'apps' undefined indexes -- remove a few scrutinized breaks
+	* Fix: Backfill disappearing like JB every tmux non sequential loop
+	* Chg: Backfill 'All' setting in tmux now runs the multiprocessing script with quantity you set
+		group still runs a more worthless python script, Safe still runs the most worthless python script
+	* Fix: Same fix for basicsequential (tell tmux not to kill the pane every loop and respawn)
+	* Fix: backfill and partrepair counts in tmux
+2014-07-31 ruhllatio
+	* Mrg: tasky's XXX changes PR #1436
+2014-07-31 kevin
+	* Chg: Update pynntp to 0.8.4, fix bugs in nnptp proxy (body was never returning anything, exceptions were not catched when server would return errors, nntp errors were not returned, causing weird behavior in net_nntp).
+2014-07-31 niel
+	* Fix: Typoes in .../misc/testing/DB/convert_to_tpg.php causing undefined variable error.
+2014-07-30 niel
+	* Chg: Standardising all usage of ColorCLI class to either $cli, $pdo->log, or $this->pdo->log depending on context.
+		This reduces duplicated instances (and therefore RAM) and time taken to instantiate additional copies.
+2014-07-30 kevin
+	* Fix: Fix issue where multiple scripts running on the same group could overwrite the binaries table "currentparts" count causing long release creation time because of invalid count.
+	* Add: For users on PHP 5.5.0 or higher, set the CLI process name in ProcessAdditional to the releaseid so you can know which release is causing the issue.
+	* Chg: Set full path to file to be easier to track for previous add.
+	* Chg: Save a select query in binaries scan by changing the insert query.
+	* Chg: Speed up process time of headers by doing the sha1 only once.
+2014-07-29 kevin
+	* Chg: Add ignore to latest patch for those with duplicates.
+	* Fix: Issue where avconv returns single digit time vs ffmpeg's double digit time format, pad the string adding the missing 0's to mimic ffmpeg's output.
+	* Chg: Speed up article inserts even more.
+	* Fix: Put check to see if we downloaded 1 article header or not when inserting into binaries table.
+	* Fix: Part repair issue in Binaries.
+	* Fix: Check for empty parts query.
+	* Chg: Raise default min password_hash cost to 11. As noted previously, you should run the script to figure out a decent cost for your system. 10 is not recommended anymore by the PHP developper.
+	* Chg: Modify find_password_hash_cost.php to accept a time target argument. Recommended values are between 0.2 and 0.5 seconds.
+	* Rem: Remove the forced require on multiprocessing settings.php as we do defined checks on all the vars anyways and all the settings are optional.
+	* Chg: Extract the extension from the video file when getting time, as ffmpeg has issues on some videos when using the wrong extension.
+	* Chg: More changes to getVideoTime to increases chances of non black previews.
 2014-07-28 niel
 	* New: Merged and tagged v0.3.9 to master branch
+2014-07-28 kevin
+	* Chg: Another massive boost to header insert speed.
+	* ---: With these changes, if you have not followed INSTALL.txt which says to change the MySQL max_allowed_packet to 16M (or more) you might have issues, be warned.
+	* ---: !!!!READ THIS!!!!: TPG users MUST run nzedb\build\_runonce\tpg_more_fixes.php
+	* Add: Debug message to binaries to show amount of bytes sent to MySQL when inserting parts.
+	* Add: Option to settings.php to disable SQL transactions. Update your settings.php file!
+2014-07-28 taskym
+	* Add: Added IAFD, less memory usage, regex update #1431
 2014-07-27 bart39
 	* Chg: Don't display Releases that have not been processed by PP Additional (passwordstatus -1 to -6) if show passwords is set to not display potentially passworded. #1302
 2014-07-27 tasky

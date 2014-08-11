@@ -33,7 +33,7 @@ class NZBGet
 
 	/**
 	 * Full URL (containing password/username/etc).
-	 * @var string
+	 * @var string|bool
 	 * @access protected
 	 */
 	protected $fullURL = '';

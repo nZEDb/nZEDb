@@ -492,6 +492,13 @@
 				</td>
 			</tr>
 			<tr>
+				<td style="width:180px;"><label for="mischashedretentionhours">Misc->Hashed Retention Hours:</label></td>
+				<td>
+					<input class="short" id="mischashedretentionhours" name="mischashedretentionhours" type="text" value="{$site->mischashedretentionhours}"/>
+					<div class="hint">The number of hours releases categorized as Misc->Hashed will be retained. Set to 0 to disable.</div>
+				</td>
+			</tr>
+			<tr>
 				<td style="width:180px;"><label for="releasecompletion">Release Completion:</label></td>
 				<td>
 					<input class="short" id="releasecompletion" name="releasecompletion" type="text"  value="{$site->releasecompletion}"/>
@@ -934,13 +941,13 @@
 				<td style="width:180px;"><label for="nntpproxy">Use NNTP Proxy:</label></td>
 				<td>
 					{html_radios id="nntpproxy" name='nntpproxy' values=$yesno_ids output=$yesno_names selected=$site->nntpproxy separator='<br />'}
-					<div class="hint"><strong>It is no longer recommended to use this, it is left here for people still using it.</strong>
-						Using the NNTP Proxy for nZEDb can improve performance of nZEDb dramatically. It uses
+					<div class="hint">
+						<strong>nntpproxy does not support the POST usenet command which is required for uploading usenet comments when using sharing.</strong>
+						Using the NNTP Proxy for nZEDb can improve performance of nZEDb. It uses
 						connection pooling which not only give more control over the number of connections to use but also
 						reduces time for connection setup/teardown. The proxy also takes care of compressed headers for you.
-						To use this featrure you will need to install pynntp (sudo pip install pynntp or sudo easy_install
-						pynntp) and socketpool (sudo pip install socketpool or sudo easy_install socketpool) (ensure python2
-						is default) and edit the configuration file (nntpproxy.conf and nntpproxy_a.conf) in the
+						To use this featrure you will need to install socketpool (sudo pip install socketpool or sudo easy_install socketpool)
+						(ensure python2 is default) and edit the configuration file (nntpproxy.conf and nntpproxy_a.conf) in the
 						update_scripts/python_scripts/lib (copy sample) directory and finally edit your www/config.php file
 						to use the proxy (username and password are ignored by the proxy - make then anything you like - the
 						proxy doesn't use ssl either). Make sure you turn off the use compressed headers option here in site

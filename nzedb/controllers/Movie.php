@@ -101,26 +101,54 @@ class Movie
 	protected $imdbLanguage;
 
 	/**
+	 * @var array|bool|string
+	 */
+	public $fanartapikey;
+
+	/**
+	 * @var bool
+	 */
+	public $imdburl;
+
+	/**
+	 * @var array|bool|int|string
+	 */
+	public $movieqty;
+
+	/**
+	 * @var bool
+	 */
+	public $echooutput;
+
+	/**
+	 * @var string
+	 */
+	public $imgSavePath;
+
+	/**
+	 * @var string
+	 */
+	public $service;
+
+	/**
 	 * @param array $options Class instances / Echo to CLI.
 	 */
 	public function __construct(array $options = array())
 	{
 		$defaults = [
 			'Echo'         => false,
-			'ColorCLI'     => null,
 			'ReleaseImage' => null,
 			'Settings'     => null,
 			'TMDb'         => null,
 		];
-		$defaults = array_replace($defaults, $options);
+		$options += $defaults;
 
-		$this->c = ($defaults['ColorCLI'] instanceof ColorCLI ? $defaults['ColorCLI'] : new ColorCLI());
-		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
-		$this->releaseImage = ($defaults['ReleaseImage'] instanceof ReleaseImage ? $defaults['ReleaseImage'] : new ReleaseImage($this->pdo));
+		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->releaseImage = ($options['ReleaseImage'] instanceof ReleaseImage ? $options['ReleaseImage'] : new ReleaseImage($this->pdo));
 
-		$this->imdbLanguage = ($this->pdo->getSetting('imdblanguage') != '') ? $this->pdo->getSetting('imdblanguage') : 'en';
+		$this->imdbLanguage = ($this->pdo->getSetting('imdblanguage') != '') ? (string)$this->pdo->getSetting('imdblanguage') : 'en';
 
-		$this->tmdb = ($defaults['TMDb'] instanceof TMDb ? $defaults['TMDb'] : new TMDb($this->pdo->getSetting('tmdbkey'), $this->imdbLanguage));
+		$this->tmdb = ($options['TMDb'] instanceof \TMDb ? $options['TMDb'] : new \TMDb($this->pdo->getSetting('tmdbkey'), $this->imdbLanguage));
 
 		$this->fanartapikey = $this->pdo->getSetting('fanarttvkey');
 		$this->imdburl = ($this->pdo->getSetting('imdburl') == 0 ? false : true);
@@ -129,13 +157,13 @@ class Movie
 		$this->showPasswords = ($this->pdo->getSetting('showpasswordedrelease') != '') ? $this->pdo->getSetting('showpasswordedrelease') : 0;
 
 		$this->debug = nZEDb_DEBUG;
-		$this->echooutput = ($defaults['Echo'] && nZEDb_ECHOCLI);
+		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
 		$this->imgSavePath = nZEDb_COVERS . 'movies' . DS;
 		$this->service = '';
 
 		if (nZEDb_DEBUG || nZEDb_LOGGING) {
 			$this->debug = true;
-			$this->debugging = new Debugging(['Class' => 'Movie', 'ColorCLI' => $this->c]);
+			$this->debugging = new Debugging(['Class' => 'Movie', 'ColorCLI' => $this->pdo->log]);
 		}
 	}
 
@@ -154,7 +182,7 @@ class Movie
 	/**
 	 * Get info for multiple IMDB id's.
 	 *
-	 * @param string $imdbIDs
+	 * @param array $imdbIDs
 	 *
 	 * @return array
 	 */
@@ -562,7 +590,7 @@ class Movie
 	public function updateMovieInfo($imdbId)
 	{
 		if ($this->echooutput && $this->service !== '') {
-			$this->c->doEcho($this->c->primary("Fetching IMDB info from TMDB using IMDB ID: " . $imdbId));
+			$this->pdo->log->doEcho($this->pdo->log->primary("Fetching IMDB info from TMDB using IMDB ID: " . $imdbId));
 		}
 
 		// Check TMDB for IMDB info.
@@ -738,9 +766,9 @@ class Movie
 		}
 
 		if ($this->echooutput && $this->service !== '') {
-			$this->c->doEcho(
-				$this->c->headerOver(($movieID !== 0 ? 'Added/updated movie: ' : 'Nothing to update for movie: ')) .
-				$this->c->primary($mov['title'] .
+			$this->pdo->log->doEcho(
+				$this->pdo->log->headerOver(($movieID !== 0 ? 'Added/updated movie: ' : 'Nothing to update for movie: ')) .
+				$this->pdo->log->primary($mov['title'] .
 					' (' .
 					$mov['year'] .
 					') - ' .
@@ -766,6 +794,7 @@ class Movie
 			if ($buffer !== false) {
 				$art = @simplexml_load_string($buffer);
 				if ($art !== false) {
+					$ret = array();
 					if (isset($art->movie->moviebackgrounds->moviebackground[0]['url'])) {
 						$ret['backdrop'] = $art->movie->moviebackgrounds->moviebackground[0]['url'];
 					} else if (isset($art->movie->moviethumbs->moviethumb[0]['url'])) {
@@ -783,7 +812,7 @@ class Movie
 							$ret['title'] = $art->movie['name'];
 						}
 						if ($this->echooutput) {
-							$this->c->doEcho($this->c->alternateOver("Fanart Found ") . $this->c->headerOver($ret['title']));
+							$this->pdo->log->doEcho($this->pdo->log->alternateOver("Fanart Found ") . $this->pdo->log->headerOver($ret['title']));
 						}
 						return $ret;
 					}
@@ -867,7 +896,7 @@ class Movie
 			$ret['backdrop'] = "http://image.tmdb.org/t/p/original" . $tmdbLookup['backdrop_path'];
 		}
 		if ($this->echooutput) {
-			$this->c->doEcho($this->c->primaryOver("TMDb Found ") . $this->c->headerOver($ret['title']), true);
+			$this->pdo->log->doEcho($this->pdo->log->primaryOver("TMDb Found ") . $this->pdo->log->headerOver($ret['title']), true);
 		}
 		return $ret;
 	}
@@ -879,7 +908,6 @@ class Movie
 	 */
 	protected function fetchIMDBProperties($imdbId)
 	{
-		$matches = $match = $hit = $results = '';
 		$imdb_regex = array(
 			'title' => '/<title>(.*?)\s?\(.*?<\/title>/i',
 			'tagline' => '/taglines:<\/h4>\s([^<]+)/i',
@@ -894,7 +922,6 @@ class Movie
 			'language' => '/<a href="\/language\/.+\'url\'>(.+)<\/a>/i',
 			'type' => '/<meta property=\'og\:type\' content=\"(.+)\" \/>/i'
 		);
-
 
 		$buffer =
 			nzedb\utility\getUrl(
@@ -917,6 +944,7 @@ class Movie
 				}
 			}
 
+			$matches = array();
 			foreach ($imdb_regex_multi as $field => $regex) {
 				if (preg_match_all($regex, $buffer, $matches)) {
 					$match2 = $matches[1];
@@ -959,7 +987,7 @@ class Movie
 				}
 			}
 			if ($this->echooutput && isset($ret['title'])) {
-				$this->c->doEcho($this->c->headerOver("IMDb Found ") . $this->c->primaryOver($ret['title']), true);
+				$this->pdo->log->doEcho($this->pdo->log->headerOver("IMDb Found ") . $this->pdo->log->primaryOver($ret['title']), true);
 			}
 			return $ret;
 		}
@@ -986,7 +1014,7 @@ class Movie
 		if ($imdbID !== false) {
 			$this->service = $service;
 			if ($this->echooutput && $this->service !== '') {
-				$this->c->doEcho($this->c->headerOver($service . ' found IMDBid: ') . $this->c->primary('tt' . $imdbID));
+				$this->pdo->log->doEcho($this->pdo->log->headerOver($service . ' found IMDBid: ') . $this->pdo->log->primary('tt' . $imdbID));
 			}
 
 			$this->pdo->queryExec(sprintf('UPDATE releases SET imdbid = %s WHERE id = %d', $this->pdo->escapeString($imdbID), $id));
@@ -1038,7 +1066,7 @@ class Movie
 
 		if ($movieCount > 0) {
 			if ($this->echooutput && $movieCount > 1) {
-				$this->c->doEcho($this->c->header("Processing " . $movieCount . " movie releases."));
+				$this->pdo->log->doEcho($this->pdo->log->header("Processing " . $movieCount . " movie releases."));
 			}
 
 			// Loop over releases.
@@ -1058,11 +1086,11 @@ class Movie
 					}
 
 					if ($this->echooutput) {
-						$this->c->doEcho($this->c->primaryOver("Looking up: ") . $this->c->headerOver($movieName), true);
+						$this->pdo->log->doEcho($this->pdo->log->primaryOver("Looking up: ") . $this->pdo->log->headerOver($movieName), true);
 					}
 
 					// Check local DB.
-					$getIMDBid = $this->localIMDBsearch($this->currentTitle, $this->currentYear);
+					$getIMDBid = $this->localIMDBsearch();
 
 					if ($getIMDBid !== false) {
 						$imdbID = $this->doMovieUpdate('tt' . $getIMDBid, 'Local DB', $arr['id']);
@@ -1332,46 +1360,42 @@ class Movie
 	 */
 	protected function parseMovieSearchName($releaseName)
 	{
-		// Check if it's foreign ?
-		$cat = new Categorize(['Settings' => $this->pdo]);
-		if (!$cat->isMovieForeign($releaseName)) {
-			$name = $year = '';
-			$followingList = '[^\w]((1080|480|720)p|AC3D|Directors([^\w]CUT)?|DD5\.1|(DVD|BD|BR)(Rip)?|BluRay|divx|HDTV|iNTERNAL|LiMiTED|(Real\.)?Proper|RE(pack|Rip)|Sub\.?(fix|pack)|Unrated|WEB-DL|(x|H)[-._ ]?264|xvid)[^\w]';
+		$name = $year = '';
+		$followingList = '[^\w]((1080|480|720)p|AC3D|Directors([^\w]CUT)?|DD5\.1|(DVD|BD|BR)(Rip)?|BluRay|divx|HDTV|iNTERNAL|LiMiTED|(Real\.)?Proper|RE(pack|Rip)|Sub\.?(fix|pack)|Unrated|WEB-DL|(x|H)[-._ ]?264|xvid)[^\w]';
 
-			/* Initial scan of getting a year/name.
-			 * [\w. -]+ Gets 0-9a-z. - characters, most scene movie titles contain these chars.
-			 * ie: [61420]-[FULL]-[a.b.foreignEFNet]-[ Coraline.2009.DUTCH.INTERNAL.1080p.BluRay.x264-VeDeTT ]-[21/85] - "vedett-coralien-1080p.r04" yEnc
-			 * Then we look up the year, (19|20)\d\d, so $matches[1] would be Coraline $matches[2] 2009
-			 */
-			if (preg_match('/(?P<name>[\w. -]+)[^\w](?P<year>(19|20)\d\d)/i', $releaseName, $matches)) {
-				$name = $matches['name'];
-				$year = $matches['year'];
+		/* Initial scan of getting a year/name.
+		 * [\w. -]+ Gets 0-9a-z. - characters, most scene movie titles contain these chars.
+		 * ie: [61420]-[FULL]-[a.b.foreignEFNet]-[ Coraline.2009.DUTCH.INTERNAL.1080p.BluRay.x264-VeDeTT ]-[21/85] - "vedett-coralien-1080p.r04" yEnc
+		 * Then we look up the year, (19|20)\d\d, so $matches[1] would be Coraline $matches[2] 2009
+		 */
+		if (preg_match('/(?P<name>[\w. -]+)[^\w](?P<year>(19|20)\d\d)/i', $releaseName, $matches)) {
+			$name = $matches['name'];
+			$year = $matches['year'];
 
-			/* If we didn't find a year, try to get a name anyways.
-			 * Try to look for a title before the $followingList and after anything but a-z0-9 two times or more (-[ for example)
-			 */
-			} else if (preg_match('/([^\w]{2,})?(?P<name>[\w .-]+?)' . $followingList . '/i', $releaseName, $matches)) {
-				$name = $matches['name'];
-			}
+		/* If we didn't find a year, try to get a name anyways.
+		 * Try to look for a title before the $followingList and after anything but a-z0-9 two times or more (-[ for example)
+		 */
+		} else if (preg_match('/([^\w]{2,})?(?P<name>[\w .-]+?)' . $followingList . '/i', $releaseName, $matches)) {
+			$name = $matches['name'];
+		}
 
-			// Check if we got something.
-			if ($name !== '') {
+		// Check if we got something.
+		if ($name !== '') {
 
-				// If we still have any of the words in $followingList, remove them.
-				$name = preg_replace('/' . $followingList . '/i', ' ', $name);
-				// Remove periods, underscored, anything between parenthesis.
-				$name = preg_replace('/\(.*?\)|[._]/i', ' ', $name);
-				// Finally remove multiple spaces and trim leading spaces.
-				$name = trim(preg_replace('/\s{2,}/', ' ', $name));
-					// Check if the name is long enough and not just numbers.
-				if (strlen($name) > 4 && !preg_match('/^\d+$/', $name)) {
-					if ($this->debug && $this->echooutput) {
-						$this->c->doEcho("DB name: {$releaseName}", true);
-					}
-					$this->currentTitle = $name;
-					$this->currentYear  = ($year === '' ? false : $year);
-					return true;
+			// If we still have any of the words in $followingList, remove them.
+			$name = preg_replace('/' . $followingList . '/i', ' ', $name);
+			// Remove periods, underscored, anything between parenthesis.
+			$name = preg_replace('/\(.*?\)|[._]/i', ' ', $name);
+			// Finally remove multiple spaces and trim leading spaces.
+			$name = trim(preg_replace('/\s{2,}/', ' ', $name));
+				// Check if the name is long enough and not just numbers.
+			if (strlen($name) > 4 && !preg_match('/^\d+$/', $name)) {
+				if ($this->debug && $this->echooutput) {
+					$this->pdo->log->doEcho("DB name: {$releaseName}", true);
 				}
+				$this->currentTitle = $name;
+				$this->currentYear  = ($year === '' ? false : $year);
+				return true;
 			}
 		}
 		return false;
@@ -1405,7 +1429,7 @@ class Movie
 	public function updateUpcoming()
 	{
 		if ($this->echooutput) {
-			$this->c->doEcho($this->c->header('Updating movie schedule using rotten tomatoes.'));
+			$this->pdo->log->doEcho($this->pdo->log->header('Updating movie schedule using rotten tomatoes.'));
 		}
 
 		$trKey = $this->pdo->getSetting('rottentomatokey');
@@ -1420,17 +1444,17 @@ class Movie
 				$test = @json_decode($retBo);
 				if (!$test || $retBo === "") {
 					if ($this->echooutput) {
-						exit($this->c->error("\nUnable to fetch from Rotten Tomatoes, verify your API Key\n"));
+						exit($this->pdo->log->error("\nUnable to fetch from Rotten Tomatoes, verify your API Key\n"));
 					}
 				}
 			}
 			if ($test) {
 				$cnt1 = $this->updateInsUpcoming('rottentomato', Movie::SRC_BOXOFFICE, $retBo);
 				if ($this->echooutput && $cnt1 !== false) {
-					$this->c->doEcho($this->c->header("Added/updated movies to the box office list."));
+					$this->pdo->log->doEcho($this->pdo->log->header("Added/updated movies to the box office list."));
 				} else {
 					if ($this->echooutput) {
-						$this->c->doEcho($this->c->primary("No new updates for box office list."));
+						$this->pdo->log->doEcho($this->pdo->log->primary("No new updates for box office list."));
 					}
 				}
 			}
@@ -1443,17 +1467,17 @@ class Movie
 				$test = @json_decode($retTh);
 				if (!$test || $retTh === "") {
 					if ($this->echooutput) {
-						exit($this->c->error("\nUnable to fetch from Rotten Tomatoes, verify your API Key\n"));
+						exit($this->pdo->log->error("\nUnable to fetch from Rotten Tomatoes, verify your API Key\n"));
 					}
 				}
 			}
 			if ($test) {
 				$cnt2 = $this->updateInsUpcoming('rottentomato', Movie::SRC_INTHEATRE, $retTh);
 				if ($this->echooutput && $cnt2 !== false) {
-					echo $this->c->header("Added/updated movies to the theaters list.");
+					echo $this->pdo->log->header("Added/updated movies to the theaters list.");
 				} else {
 					if ($this->echooutput) {
-						$this->c->doEcho($this->c->primary("No new updates for theaters list."));
+						$this->pdo->log->doEcho($this->pdo->log->primary("No new updates for theaters list."));
 					}
 				}
 			}
@@ -1466,17 +1490,17 @@ class Movie
 				$test = @json_decode($retOp);
 				if (!$test || $retOp === '') {
 					if ($this->echooutput) {
-						exit($this->c->error("\nUnable to fetch from Rotten Tomatoes, verify your API Key\n"));
+						exit($this->pdo->log->error("\nUnable to fetch from Rotten Tomatoes, verify your API Key\n"));
 					}
 				}
 			}
 			if ($test) {
 				$cnt3 = $this->updateInsUpcoming('rottentomato', Movie::SRC_OPENING, $retOp);
 				if ($this->echooutput && $cnt3 !== false) {
-					$this->c->doEcho($this->c->header("Added/updated movies to the opening list."));
+					$this->pdo->log->doEcho($this->pdo->log->header("Added/updated movies to the opening list."));
 				} else {
 					if ($this->echooutput) {
-						$this->c->doEcho($this->c->primary("No new updates for upcoming list."));
+						$this->pdo->log->doEcho($this->pdo->log->primary("No new updates for upcoming list."));
 					}
 				}
 			}
@@ -1489,17 +1513,17 @@ class Movie
 				$test = @json_decode($retUp);
 				if (!$test || $retUp === "") {
 					if ($this->echooutput) {
-						exit($this->c->error("\nUnable to fetch from Rotten Tomatoes, verify your API Key\n"));
+						exit($this->pdo->log->error("\nUnable to fetch from Rotten Tomatoes, verify your API Key\n"));
 					}
 				}
 			}
 			if ($test) {
 				$cnt4 = $this->updateInsUpcoming('rottentomato', Movie::SRC_UPCOMING, $retUp);
 				if ($this->echooutput && $cnt4 !== false) {
-					$this->c->doEcho($this->c->header("Added/updated movies to the upcoming list."));
+					$this->pdo->log->doEcho($this->pdo->log->header("Added/updated movies to the upcoming list."));
 				} else {
 					if ($this->echooutput) {
-						$this->c->doEcho($this->c->primary("No new updates for upcoming list."));
+						$this->pdo->log->doEcho($this->pdo->log->primary("No new updates for upcoming list."));
 					}
 				}
 			}
@@ -1512,23 +1536,23 @@ class Movie
 				$test = @json_decode($retDr);
 				if (!$test || $retDr === "") {
 					if ($this->echooutput) {
-						exit($this->c->error("\nUnable to fetch from Rotten Tomatoes, verify your API Key\n"));
+						exit($this->pdo->log->error("\nUnable to fetch from Rotten Tomatoes, verify your API Key\n"));
 					}
 				}
 			}
 			if ($test) {
 				$cnt5 = $this->updateInsUpcoming('rottentomato', Movie::SRC_DVD, $retDr);
 				if ($this->echooutput && $cnt5 !== false) {
-					$this->c->doEcho($this->c->header("Added/updated movies to the DVD list."));
+					$this->pdo->log->doEcho($this->pdo->log->header("Added/updated movies to the DVD list."));
 				} else {
 					if ($this->echooutput) {
-						$this->c->doEcho($this->c->primary("No new updates for upcoming list."));
+						$this->pdo->log->doEcho($this->pdo->log->primary("No new updates for upcoming list."));
 					}
 				}
 			}
 
 			if ($this->echooutput) {
-				$this->c->doEcho($this->c->header("Updated successfully."));
+				$this->pdo->log->doEcho($this->pdo->log->header("Updated successfully."));
 			}
 		}
 	}

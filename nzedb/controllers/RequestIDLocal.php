@@ -67,26 +67,28 @@ class RequestIDLocal extends RequestID
 	protected function _processReleases()
 	{
 		$renamed = $checked = 0;
-		foreach ($this->_releases as $this->_release) {
-			$this->_requestID = $this->_siftReqId();
+		if ($this->_releases instanceof Traversable) {
+			foreach ($this->_releases as $this->_release) {
+				$this->_requestID = $this->_siftReqId();
 
-			// Do a local lookup using multiple possible methods
-			$this->_newTitle = $this->_getNewTitle();
+				// Do a local lookup using multiple possible methods
+				$this->_newTitle = $this->_getNewTitle();
 
-			if ($this->_newTitle !== false && isset($this->_newTitle['title'])) {
-				$this->_updateRelease();
-				$renamed++;
-			} else {
-				$this->_requestIdNotFound($this->_release['id'], ($this->_release['reqidstatus'] == self::REQID_UPROC ? self::REQID_NOLL : self::REQID_NONE));
+				if ($this->_newTitle !== false && isset($this->_newTitle['title'])) {
+					$this->_updateRelease();
+					$renamed++;
+				} else {
+					$this->_requestIdNotFound($this->_release['id'], ($this->_release['reqidstatus'] == self::REQID_UPROC ? self::REQID_NOLL : self::REQID_NONE));
+				}
+
+				if ($this->echoOutput && $this->_show === 0) {
+					$this->consoleTools->overWritePrimary(
+						"Checked Releases: [" . number_format($checked) . "] " .
+						$this->consoleTools->percentString(++$checked, $this->_totalReleases)
+					);
+				}
+
 			}
-
-			if ($this->echoOutput && $this->_show === 0) {
-				$this->consoleTools->overWritePrimary(
-					"Checked Releases: [" . number_format($checked) . "] " .
-					$this->consoleTools->percentString(++$checked, $this->_totalReleases)
-				);
-			}
-
 		}
 
 		return $renamed;
@@ -100,7 +102,7 @@ class RequestIDLocal extends RequestID
 	protected function _getNewTitle()
 	{
 		if ($this->_requestID === -2) {
-			return $this->_multiLookup($this->_release['groupname'], $this->_release['name']);
+			return $this->_multiLookup();
 		}
 
 		$check = $this->pdo->queryDirect(
@@ -111,7 +113,7 @@ class RequestIDLocal extends RequestID
 			)
 		);
 
-		if ($check !== false) {
+		if ($check instanceof Traversable) {
 			if ($check->rowCount() == 1) {
 				foreach ($check as $row) {
 					if (preg_match('/s\d+/i', $row['title']) && !preg_match('/s\d+e\d+/i', $row['title'])) {
@@ -156,6 +158,7 @@ class RequestIDLocal extends RequestID
 				'(avi|jpg|nzb|m3u|mkv|par2|part\d+|nfo|sample|sfv|rar|r?\d{1,3}|\d+|zip)*)\s*\".*/i'
 		;
 
+		$matches = array();
 		switch (true) {
 			case preg_match($regex1, $this->_release['name'], $matches):
 			case preg_match($regex2, $this->_release['name'], $matches):

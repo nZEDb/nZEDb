@@ -31,16 +31,14 @@ if (empty($unrarPath)) {
 	exit ('The site setting for the unrar path must not be empty!' . PHP_EOL);
 }
 
-$c = new ColorCLI();
-
-$nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $c]);
-$nfo = new Nfo(['Echo' => true, 'ColorCLI' => $c, 'Settings' => $pdo]);
+$nntp = new NNTP(['Settings' => $pdo]);
+$nfo = new Nfo(['Echo' => true, 'Settings' => $pdo]);
 $nzbContents= new NZBContents(
 	array(
 		'Settings' => $pdo,
 		'Echo' => true,
 		'Nfo' => $nfo,
-		'PostProcess' => new PostProcess(['Settings' => $pdo, 'Nfo' => $nfo, 'ColorCLI' => $c]),
+		'PostProcess' => new PostProcess(['Settings' => $pdo, 'Nfo' => $nfo]),
 		'NNTP' => $nntp
 	)
 );
@@ -60,7 +58,7 @@ $releases = $pdo->queryDirect(
 	)
 );
 
-if ($releases !== false) {
+if ($releases instanceof Traversable) {
 
 	$nntp->doConnect();
 
@@ -197,5 +195,4 @@ if ($releases !== false) {
 			)
 		);
 	}
-	$nntp->doQuit();
 }

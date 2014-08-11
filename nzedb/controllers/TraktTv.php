@@ -20,9 +20,9 @@ Class TraktTv
 		$defaults = [
 			'Settings' => null,
 		];
-		$defaults = array_replace($defaults, $options);
+		$options += $defaults;
 
-		$settings = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
+		$settings = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 		$this->APIKEY = $settings->getSetting('trakttvkey');
 	}
 

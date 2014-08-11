@@ -31,10 +31,7 @@ Class PreDb
 	 */
 	protected $pdo;
 
-	/**
-	 * @var ColorCLI
-	 */
-	protected $c;
+	private $dateLimit;
 
 	/**
 	 * @param array $options
@@ -43,17 +40,13 @@ Class PreDb
 	{
 		$defaults = [
 			'Echo'     => false,
-			'ColorCLI' => null,
 			'Settings' => null,
 		];
-		$defaults = array_replace($defaults, $options);
+		$options += $defaults;
 
-		$this->echooutput = ($defaults['Echo'] && nZEDb_ECHOCLI);
-		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
-		$this->c = ($defaults['ColorCLI'] instanceof ColorCLI ? $defaults['ColorCLI'] : new ColorCLI());
+		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
+		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 	}
-
-	private $dateLimit;
 
 	/**
 	 * Attempts to match PreDB titles to releases.
@@ -62,15 +55,14 @@ Class PreDb
 	 */
 	public function checkPre($dateLimit = false)
 	{
-
 		$this->dateLimit = $dateLimit;
 
-		$consoleTools = new ConsoleTools(['ColorCLI' => $this->c]);
+		$consoleTools = new ConsoleTools(['ColorCLI' => $this->pdo->log]);
 		$updated = 0;
 		$datesql = '';
 
 		if ($this->echooutput) {
-			echo $this->c->header('Querying DB for release search names not matched with PreDB titles.');
+			echo $this->pdo->log->header('Querying DB for release search names not matched with PreDB titles.');
 		}
 
 		if ($this->dateLimit !== false && is_numeric($this->dateLimit)) {
@@ -88,11 +80,10 @@ Class PreDb
 		);
 
 		if ($res !== false) {
-
 			$total = $res->rowCount();
-			echo $this->c->primary(number_format($total) . ' releases to match.');
+			echo $this->pdo->log->primary(number_format($total) . ' releases to match.');
 
-			if ($total > 0) {
+			if ($res instanceof Traversable) {
 				foreach ($res as $row) {
 					$this->pdo->queryExec(
 						sprintf('UPDATE releases SET preid = %d WHERE id = %d', $row['preid'], $row['releaseid'])
@@ -110,7 +101,7 @@ Class PreDb
 			}
 
 			if ($this->echooutput) {
-				echo $this->c->header(
+				echo $this->pdo->log->header(
 					'Matched ' . number_format(($updated > 0) ? $updated : 0) . ' PreDB titles to release search names.'
 				);
 			}
@@ -169,10 +160,9 @@ Class PreDb
 	 */
 	public function parseTitles($time, $echo, $cats, $namestatus, $show)
 	{
-		$namefixer = new NameFixer(['Echo' => $this->echooutput, 'ConsoleTools' => $this->c, 'Settings' => $this->pdo]);
-		$consoletools = new ConsoleTools(['ColorCLI' => $this->c]);
+		$namefixer = new NameFixer(['Echo' => $this->echooutput, 'ConsoleTools' => $this->pdo->log, 'Settings' => $this->pdo]);
+		$consoletools = new ConsoleTools(['ColorCLI' => $this->pdo->log]);
 		$updated = $checked = 0;
-		$matches = '';
 
 		$tq = '';
 		if ($time == 1) {
@@ -188,7 +178,7 @@ Class PreDb
 			if ($time == 1) {
 				$te = ' in the past 3 hours';
 			}
-			echo $this->c->header('Fixing search names' . $te . " using the predb hash.");
+			echo $this->pdo->log->header('Fixing search names' . $te . " using the predb hash.");
 		}
 		$regex = "AND (r.ishashed = 1 OR rf.ishashed = 1)";
 
@@ -206,8 +196,8 @@ Class PreDb
 
 		$res = $this->pdo->queryDirect($query);
 		$total = $res->rowCount();
-		echo $this->c->primary(number_format($total) . " releases to process.");
-		if ($total > 0) {
+		echo $this->pdo->log->primary(number_format($total) . " releases to process.");
+		if ($res instanceof Traversable) {
 			foreach ($res as $row) {
 				if (preg_match('/[a-fA-F0-9]{32,40}/i', $row['name'], $matches)) {
 					$updated = $updated + $namefixer->matchPredbHash($matches[0], $row, $echo, $namestatus, $this->echooutput, $show);
@@ -220,9 +210,9 @@ Class PreDb
 			}
 		}
 		if ($echo == 1) {
-			echo $this->c->header("\n" . $updated . " releases have had their names changed out of: " . number_format($checked) . " files.");
+			echo $this->pdo->log->header("\n" . $updated . " releases have had their names changed out of: " . number_format($checked) . " files.");
 		} else {
-			echo $this->c->header("\n" . $updated . " releases could have their names changed. " . number_format($checked) . " files were checked.");
+			echo $this->pdo->log->header("\n" . $updated . " releases could have their names changed. " . number_format($checked) . " files were checked.");
 		}
 
 		return $updated;

@@ -8,16 +8,17 @@ $pdo = new nzedb\db\Settings();
 $pubkey = $pdo->getSetting('amazonpubkey');
 $privkey = $pdo->getSetting('amazonprivkey');
 $asstag = $pdo->getSetting('amazonassociatetag');
-$c = new ColorCLI();
 $obj = new AmazonProductAPI($pubkey, $privkey, $asstag);
+
+$e = null;
 
 try{$result = $obj->searchProducts("Adriana Koulias The Seal", AmazonProductAPI::BOOKS, "TITLE");}
 catch(Exception $e){$result = false;}
 
 if ($result !== false) {
 	print_r($result);
-	exit($c->header("\nLooks like it is working alright."));
+	exit($pdo->log->header("\nLooks like it is working alright."));
 } else {
 	print_r($e);
-	exit($c->error("\nThere was a problem attemtping to query amazon. Maybe your keys or wrong, or you are being throttled.\n"));
+	exit($pdo->log->error("\nThere was a problem attemtping to query amazon. Maybe your keys or wrong, or you are being throttled.\n"));
 }

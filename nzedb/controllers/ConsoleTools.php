@@ -9,19 +9,24 @@ class ConsoleTools
 	/**
 	 * @var ColorCLI
 	 */
-	public $c;
+	public $cli;
+
+	/**
+	 * @var int
+	 */
+	public $lastMessageLength;
 
 	/**
 	 * Construct.
 	 */
 	public function __construct(array $options = array())
 	{
-		$defOptions = [
+		$defaults = [
 			'ColorCLI' => null
 		];
-		$defOptions = array_replace($defOptions, $options);
+		$options += $defaults;
 
-		$this->c = ($defOptions['ColorCLI'] instanceof ColorCLI ? $defOptions['ColorCLI'] : new ColorCLI());
+		$this->cli = ($options['ColorCLI'] instanceof ColorCLI ? $options['ColorCLI'] : new ColorCLI());
 
 		$this->lastMessageLength = 0;
 	}
@@ -40,7 +45,7 @@ class ConsoleTools
 		echo str_repeat(chr(8), $this->lastMessageLength);
 
 		$this->lastMessageLength = strlen($message);
-		echo $this->c->headerOver($message);
+		echo $this->cli->headerOver($message);
 	}
 
 	/**
@@ -58,7 +63,7 @@ class ConsoleTools
 		echo str_repeat(chr(8), $this->lastMessageLength);
 
 		$this->lastMessageLength = strlen($message);
-		echo $this->c->primaryOver($message);
+		echo $this->cli->primaryOver($message);
 	}
 
 	/**

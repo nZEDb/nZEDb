@@ -55,7 +55,7 @@ Class Sharing
 
 	/**
 	 * Array containing site settings.
-	 * @var array
+	 * @var array|bool
 	 * @access protected
 	 */
 	protected $siteSettings = array();
@@ -80,9 +80,9 @@ Class Sharing
 			'Settings' => null,
 			'NNTP'     => null,
 		];
-		$defaults = array_replace($defaults, $options);
+		$options += $defaults;
 
-		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 
 		// Get all sharing info from DB.
 		$check = $this->pdo->queryOneRow('SELECT * FROM sharing');
@@ -97,7 +97,7 @@ Class Sharing
 			return;
 		}
 
-		$this->nntp = ($defaults['NNTP'] instanceof NNTP ? $defaults['NNTP'] : new NNTP(['Settings' => $this->pdo]));
+		$this->nntp = ($options['NNTP'] instanceof NNTP ? $options['NNTP'] : new NNTP(['Settings' => $this->pdo]));
 
 		// Cache sharing settings.
 		$this->siteSettings = $check;
@@ -359,6 +359,7 @@ Class Sharing
 				break;
 			}
 
+			$matches = array();
 			//(_nZEDb_)nZEDb_533f16e46a5091.73152965_3d12d7c1169d468aaf50d5541ef02cc88f3ede10 - [1/1] "92ba694cebc4fbbd0d9ccabc8604c71b23af1131" (1/1) yEnc
 			if ($header['From'] === '<anon@anon.com>' &&
 				preg_match('/^\(_nZEDb_\)(?P<site>.+?)_(?P<guid>[a-f0-9]{40}) - \[1\/1\] "(?P<sid>[a-f0-9]{40})" yEnc \(1\/1\)$/i', $header['Subject'], $matches)) {

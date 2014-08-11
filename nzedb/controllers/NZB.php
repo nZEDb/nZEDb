@@ -91,7 +91,7 @@ class NZB
 		$this->tablePerGroup = ($this->pdo->getSetting('tablepergroup') == 0 ? false : true);
 		$nzbSplitLevel = $this->pdo->getSetting('nzbsplitlevel');
 		$this->nzbSplitLevel = (empty($nzbSplitLevel) ? 1 : $nzbSplitLevel);
-		$this->siteNzbPath = $this->pdo->getSetting('nzbpath');
+		$this->siteNzbPath = (string)$this->pdo->getSetting('nzbpath');
 		if (substr($this->siteNzbPath, -1) !== DS) {
 			$this->siteNzbPath .= DS;
 		}
@@ -175,38 +175,48 @@ class NZB
 
 			$collections = $this->pdo->queryDirect($this->_collectionsQuery . $relID);
 
-			foreach ($collections as $collection) {
-				$poster = htmlspecialchars($collection['fromname'], ENT_QUOTES, 'utf-8');
-				$binaries = $this->pdo->queryDirect(sprintf($this->_binariesQuery, $collection['id']));
+			if ($collections instanceof Traversable) {
 
-				foreach ($binaries as $binary) {
+				foreach ($collections as $collection) {
+					$poster = htmlspecialchars($collection['fromname'], ENT_QUOTES, 'utf-8');
+					$binaries = $this->pdo->queryDirect(sprintf($this->_binariesQuery, $collection['id']));
 
-					$parts = $this->pdo->queryDirect(sprintf($this->_partsQuery, $binary['id']));
+					if ($binaries instanceof Traversable) {
 
-					// Buffer segment writes, increases performance.
-					$string = '';
+						foreach ($binaries as $binary) {
 
-					foreach ($parts as $part) {
-						if ($nzb_guid === '') {
-							$nzb_guid = $part['messageid'];
+							// Buffer segment writes, increases performance.
+							$string = '';
+
+							$parts = $this->pdo->queryDirect(sprintf($this->_partsQuery, $binary['id']));
+
+							if ($parts instanceof Traversable) {
+
+								foreach ($parts as $part) {
+									if ($nzb_guid === '') {
+										$nzb_guid = $part['messageid'];
+									}
+									$string .= (
+										'  <segment bytes="' . $part['size']
+										. '" number="' . $part['partnumber'] . '">'
+										. htmlspecialchars($part['messageid'], ENT_QUOTES, 'utf-8')
+										. "</segment>\n"
+									);
+								}
+							}
+
+							gzwrite($fp,
+								'<file poster="' . $poster .
+								'" date="' . $collection['udate'] .
+								'" subject="' . htmlspecialchars($binary['name'], ENT_QUOTES, 'utf-8') .
+								' (1/' . $binary['totalparts'] . ")\">\n <groups>\n  <group>" . $collection['groupname'] .
+								"</group>\n </groups>\n <segments>\n" . $string . " </segments>\n</file>\n"
+							);
 						}
-						$string .= (
-							'  <segment bytes="' . $part['size']
-							. '" number="' . $part['partnumber'] . '">'
-							. htmlspecialchars($part['messageid'], ENT_QUOTES, 'utf-8')
-							. "</segment>\n"
-						);
 					}
-
-					gzwrite($fp,
-						'<file poster="' . $poster .
-						'" date="' . $collection['udate'] .
-						'" subject="' . htmlspecialchars($binary['name'], ENT_QUOTES, 'utf-8') .
-						' (1/' . $binary['totalparts'] . ")\">\n <groups>\n  <group>" . $collection['groupname'] .
-						"</group>\n </groups>\n <segments>\n" . $string . " </segments>\n</file>\n"
-					);
 				}
 			}
+
 			gzwrite($fp, '</nzb>');
 			gzclose($fp);
 

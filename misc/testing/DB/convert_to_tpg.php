@@ -12,13 +12,12 @@ use nzedb\db\Settings;
  */
 $debug = false;
 $pdo = new Settings();
-$c = new ColorCLI();
 $groups = new Groups(['Settings' => $pdo]);
-$consoletools = new ConsoleTools(['ColorCLI' => $c]);
+$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 $DoPartRepair = ($pdo->getSetting('partrepair') == '0') ? false : true;
 
 if ((!isset($argv[1])) || $argv[1] != 'true') {
-	exit($c->error("\nMandatory argument missing\n\n"
+	exit($pdo->log->error("\nMandatory argument missing\n\n"
 			. "This script will allow you to move from single collections/binaries/parts tables to TPG without having to run reset_truncate.\n"
 			. "Please STOP all update scripts before running this script.\n\n"
 			. "Use the following options to run:\n"
@@ -39,7 +38,7 @@ echo "Creating new collections, binaries, and parts tables for each active group
 
 foreach ($actgroups as $group) {
 	if ($groups->createNewTPGTables($group['id']) === false) {
-		exit($c->error("There is a problem creating new parts/files tables for group ${group['name']}."));
+		exit($pdo->log->error("There is a problem creating new parts/files tables for group ${group['name']}."));
 	}
 	$consoletools->overWrite("Tables Created: " . $consoletools->percentString($gdone * 3, $newtables));
 	$gdone++;
@@ -51,64 +50,64 @@ echo "\nNew tables created, moving data from old tables to new tables.\nThis wil
 while ($cdone < $clen['total']) {
 	// Only load 1000 collections per loop to not overload memory.
 	$collections = $pdo->queryAssoc('select * from collections limit ' . $cdone . ',1000;');
-	foreach ($collections as $collection) {
-		/* foreach ($collection as $ckey => $cval)
-		  {
-		  //if (is_int($ckey))
-		  //unset($collection[$ckey]);
-		  if ($ckey != 'group_id')
-		  $collection[$ckey] = $pdo->escapeString($cval);
-		  } */
-		$collection['subject'] = $pdo->escapeString($collection['subject']);
-		$collection['fromname'] = $pdo->escapeString($collection['fromname']);
-		$collection['date'] = $pdo->escapeString($collection['date']);
-		$collection['collectionhash'] = $pdo->escapeString($collection['collectionhash']);
-		$collection['dateadded'] = $pdo->escapeString($collection['dateadded']);
-		$collection['xref'] = $pdo->escapeString($collection['xref']);
-		$collection['releaseid'] = $pdo->escapeString($collection['releaseid']);
-		$oldcid = array_shift($collection);
-		if ($debug) {
-			echo "\n\nCollection insert:\n";
-			print_r($collection);
-			echo sprintf("\nINSERT INTO collections_%d (subject, fromname, date, xref, totalfiles, group_id, collectionhash, dateadded, filecheck, filesize, releaseid) VALUES (%s)\n\n", $collection['group_id'], implode(', ', $collection));
-		}
-		$newcid = array('collectionid' => $pdo->queryInsert(sprintf('INSERT INTO collections_%d (subject, fromname, date, xref, totalfiles, group_id, collectionhash, dateadded, filecheck, filesize, releaseid) VALUES (%s);', $collection['group_id'], implode(', ', $collection))));
-		$consoletools->overWrite('Collections Completed: ' . $consoletools->percentString($ccount, $clen['total']));
 
-		//Get binaries and split to correct group tables.
-		$binaries = $pdo->queryAssoc('SELECT * FROM binaries WHERE collectionID = ' . $oldcid . ';');
-		foreach ($binaries as $binary) {
-			$binary['name'] = $pdo->escapeString($binary['name']);
-			$binary['binaryhash'] = $pdo->escapeString($binary['binaryhash']);
-			$oldbid = array_shift($binary);
-			$binarynew = array_replace($binary, $newcid);
+	if ($collections instanceof Traversable) {
+		foreach ($collections as $collection) {
+			$collection['subject'] = $pdo->escapeString($collection['subject']);
+			$collection['fromname'] = $pdo->escapeString($collection['fromname']);
+			$collection['date'] = $pdo->escapeString($collection['date']);
+			$collection['collectionhash'] = $pdo->escapeString($collection['collectionhash']);
+			$collection['dateadded'] = $pdo->escapeString($collection['dateadded']);
+			$collection['xref'] = $pdo->escapeString($collection['xref']);
+			$collection['releaseid'] = $pdo->escapeString($collection['releaseid']);
+			$oldcid = array_shift($collection);
 			if ($debug) {
-				echo "\n\nBinary insert:\n";
-				print_r($binarynew);
-				echo sprintf("\nINSERT INTO binaries_%d (name, collectionid, filenumber, totalparts, currentparts, binaryhash, partcheck, partsize) VALUES (%s)\n\n", $collection['group_id'], implode(', ', $binarynew));
+				echo "\n\nCollection insert:\n";
+				print_r($collection);
+				echo sprintf("\nINSERT INTO collections_%d (subject, fromname, date, xref, totalfiles, group_id, collectionhash, dateadded, filecheck, filesize, releaseid) VALUES (%s)\n\n", $collection['group_id'], implode(', ', $collection));
 			}
-			$newbid = array('binaryid' => $pdo->queryInsert(sprintf('INSERT INTO binaries_%d (name, collectionid, filenumber, totalparts, currentparts, binaryhash, partcheck, partsize) VALUES (%s);', $collection['group_id'], implode(', ', $binarynew))));
+			$newcid = array('collectionid' => $pdo->queryInsert(sprintf('INSERT INTO collections_%d (subject, fromname, date, xref, totalfiles, group_id, collectionhash, dateadded, filecheck, filesize, releaseid) VALUES (%s);', $collection['group_id'], implode(', ', $collection))));
+			$consoletools->overWrite('Collections Completed: ' . $consoletools->percentString($ccount, $clen['total']));
 
+			//Get binaries and split to correct group tables.
+			$binaries = $pdo->queryAssoc('SELECT * FROM binaries WHERE collectionID = ' . $oldcid . ';');
 
-			//Get parts and split to correct group tables.
-			$parts = $pdo->queryAssoc('SELECT * FROM parts WHERE binaryID = ' . $oldbid . ';');
-			$firstpart = true;
-			$partsnew = '';
-			foreach ($parts as $part) {
-				$oldpid = array_shift($part);
-				$partnew = array_replace($part, $newbid);
+			if ($binaries instanceof Traversable) {
+				foreach ($binaries as $binary) {
+					$binary['name'] = $pdo->escapeString($binary['name']);
+					$binary['binaryhash'] = $pdo->escapeString($binary['binaryhash']);
+					$oldbid = array_shift($binary);
+					$binarynew = array_replace($binary, $newcid);
+					if ($debug) {
+						echo "\n\nBinary insert:\n";
+						print_r($binarynew);
+						echo sprintf("\nINSERT INTO binaries_%d (name, collectionid, filenumber, totalparts, currentparts, binaryhash, partcheck, partsize) VALUES (%s)\n\n", $collection['group_id'], implode(', ', $binarynew));
+					}
+					$newbid = array('binaryid' => $pdo->queryInsert(sprintf('INSERT INTO binaries_%d (name, collectionid, filenumber, totalparts, currentparts, binaryhash, partcheck, partsize) VALUES (%s);', $collection['group_id'], implode(', ', $binarynew))));
 
-				$partsnew .= '(\'' . implode('\', \'', $partnew) . '\'), ';
+					//Get parts and split to correct group tables.
+					$parts = $pdo->queryAssoc('SELECT * FROM parts WHERE binaryID = ' . $oldbid . ';');
+					if ($parts instanceof Traversable) {
+						$firstpart = true;
+						$partsnew = '';
+						foreach ($parts as $part) {
+							$oldpid = array_shift($part);
+							$partnew = array_replace($part, $newbid);
+
+							$partsnew .= '(\'' . implode('\', \'', $partnew) . '\'), ';
+						}
+						$partsnew = substr($partsnew, 0, -2);
+						if ($debug) {
+							echo "\n\nParts insert:\n";
+							echo sprintf("\nINSERT INTO parts_%d (binaryid, messageid, number, partnumber, size, collection_id) VALUES %s;\n\n", $collection['group_id'], $partsnew);
+						}
+						$sql = sprintf('INSERT INTO parts_%d (binaryid, messageid, number, partnumber, size, collection_id) VALUES %s;', $collection['group_id'], $partsnew);
+						$pdo->queryExec($sql);
+					}
+				}
 			}
-			$partsnew = substr($partsnew, 0, -2);
-			if ($debug) {
-				echo "\n\nParts insert:\n";
-				echo sprintf("\nINSERT INTO parts_%d (binaryid, messageid, number, partnumber, size, collection_id) VALUES %s;\n\n", $collection['group_id'], $partsnew);
-			}
-			$sql = sprintf('INSERT INTO parts_%d (binaryid, messageid, number, partnumber, size, collection_id) VALUES %s;', $collection['group_id'], $partsnew);
-			$pdo->queryExec($sql);
+			$ccount++;
 		}
-		$ccount++;
 	}
 	$cdone += 1000;
 }
@@ -122,18 +121,20 @@ if ($DoPartRepair === true) {
 		while ($pdone < $plen['total']) {
 			// Only load 10000 partrepair records per loop to not overload memory.
 			$partrepairs = $pdo->queryAssoc(sprintf('select * from partrepair where group_id = %d limit %d, 10000;', $group['id'], $pdone));
-			foreach ($partrepairs as $partrepair) {
-				$partrepair['numberid'] = $pdo->escapeString($partrepair['numberid']);
-				$partrepair['group_id'] = $pdo->escapeString($partrepair['group_id']);
-				$partrepair['attempts'] = $pdo->escapeString($partrepair['attempts']);
-				if ($debug) {
-					echo "\n\nPart Repair insert:\n";
-					print_r($partrepair);
-					echo sprintf("\nINSERT INTO partrepair_%d (numberid, group_id, attempts) VALUES (%s, %s, %s)\n\n", $group['id'], $partrepair['numberid'], $partrepair['group_id'], $partrepair['attempts']);
+			if ($partrepairs instanceof Traversable) {
+				foreach ($partrepairs as $partrepair) {
+					$partrepair['numberid'] = $pdo->escapeString($partrepair['numberid']);
+					$partrepair['group_id'] = $pdo->escapeString($partrepair['group_id']);
+					$partrepair['attempts'] = $pdo->escapeString($partrepair['attempts']);
+					if ($debug) {
+						echo "\n\nPart Repair insert:\n";
+						print_r($partrepair);
+						echo sprintf("\nINSERT INTO partrepair_%d (numberid, group_id, attempts) VALUES (%s, %s, %s)\n\n", $group['id'], $partrepair['numberid'], $partrepair['group_id'], $partrepair['attempts']);
+					}
+					$pdo->queryExec(sprintf('INSERT INTO partrepair_%d (numberid, group_id, attempts) VALUES (%s, %s, %s);', $group['id'], $partrepair['numberid'], $partrepair['group_id'], $partrepair['attempts']));
+					$consoletools->overWrite('Part Repairs Completed for ' . $group['name'] . ':' . $consoletools->percentString($pcount, $plen['total']));
+					$pcount++;
 				}
-				$pdo->queryExec(sprintf('INSERT INTO partrepair_%d (numberid, group_id, attempts) VALUES (%s, %s, %s);', $group['id'], $partrepair['numberid'], $partrepair['group_id'], $partrepair['attempts']));
-				$consoletools->overWrite('Part Repairs Completed for ' . $group['name'] . ':' . $consoletools->percentString($pcount, $plen['total']));
-				$pcount++;
 			}
 			$pdone += 10000;
 		}

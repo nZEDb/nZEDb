@@ -3,9 +3,10 @@ require_once dirname(__FILE__) . '/config.php';
 
 use nzedb\db\Settings;
 
-$c = new ColorCLI();
+$pdo = new Settings();
+
 if (!isset($argv[1]) || ($argv[1] != "all" && $argv[1] != "full" && !is_numeric($argv[1]))) {
-	exit($c->error(
+	exit($pdo->log->error(
 		"\nThis script tries to match hashes of the releases.name or releases.searchname to predb hashes.\n"
 		. "To display the changes, use 'show' as the second argument.\n\n"
 		. "php decrypt_hashes.php 1000		...: to limit to 1000 sorted by newest postdate.\n"
@@ -14,18 +15,17 @@ if (!isset($argv[1]) || ($argv[1] != "all" && $argv[1] != "full" && !is_numeric(
 	));
 }
 
-echo $c->header("\nDecrypt Hashes (${argv[1]}) Started at " . date('g:i:s'));
-echo $c->primary("Matching predb hashes to hash(releases.name or releases.searchname)");
+echo $pdo->log->header("\nDecrypt Hashes (${argv[1]}) Started at " . date('g:i:s'));
+echo $pdo->log->primary("Matching predb hashes to hash(releases.name or releases.searchname)");
 
-preName($argv);
+getPreName($argv);
 
-function preName($argv)
+function getPreName($argv)
 {
-	global $c;
+	global $pdo;
 	$timestart = time();
-	$pdo = new Settings();
-	$consoletools = new ConsoleTools(['ColorCLI' => $c]);
-	$namefixer = new NameFixer(['Settings' => $pdo, 'ColorCLI' => $c, 'ConsoleTools' => $consoletools]);
+	$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
+	$namefixer = new NameFixer(['Settings' => $pdo, 'ConsoleTools' => $consoletools]);
 
 	$res = false;
 	if (isset($argv[1]) && $argv[1] === "all") {
@@ -42,7 +42,7 @@ function preName($argv)
 	}
 	$show = (!isset($argv[2]) || $argv[2] !== 'show') ? 0 : 1;
 	if ($total > 0) {
-		echo $c->header("\n" . number_format($total) . ' releases to process.');
+		echo $pdo->log->header("\n" . number_format($total) . ' releases to process.');
 		sleep(2);
 
 		foreach ($res as $row) {
@@ -64,8 +64,8 @@ function preName($argv)
 		}
 	}
 	if ($total > 0) {
-		echo $c->header("\nRenamed " . $counted . " releases in " . $consoletools->convertTime(TIME() - $timestart) . ".");
+		echo $pdo->log->header("\nRenamed " . $counted . " releases in " . $consoletools->convertTime(TIME() - $timestart) . ".");
 	} else {
-		echo $c->info("\nNothing to do.");
+		echo $pdo->log->info("\nNothing to do.");
 	}
 }
