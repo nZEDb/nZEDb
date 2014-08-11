@@ -311,9 +311,9 @@ class NZBImport
 
 			} else {
 				if ($isBlackListed) {
-					$errorMessage = "Subject is blacklisted: " . utf8_encode(trim($firstName[$totalFiles]));
+					$errorMessage = "Subject is blacklisted: " . utf8_encode(trim($firstName));
 				} else {
-					$errorMessage = "No group found for " . $firstName[$totalFiles] . " (one of " . implode(', ', $groupArr) . " are missing";
+					$errorMessage = "No group found for " . $firstName . " (one of " . implode(', ', $groupArr) . " are missing";
 				}
 				$this->echoOut($errorMessage);
 
