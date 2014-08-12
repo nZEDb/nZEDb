@@ -3,6 +3,11 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
+2014-08-11 ruhllatio
+	* Chg: Standardize some of MiscSorter... remove needless NNTP, replace some preg with string ops
+	* Fix: Typo onion in ReleaseRemover
+	* Fix: API calls broken due to unconditional sphinxSE join (if you are using Sphinx) without an actual query
+	* Chg: Revert work query change for MiscSorter
 2014-08-10 kevin
 	* Chg: Cleanup of DbUpdate / put win checks for step2 failures.
 	* Fix: Issues in Settings.php
