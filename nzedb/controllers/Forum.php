@@ -38,7 +38,7 @@ class Forum
 
 		return $this->pdo->queryInsert(
 			sprintf("
-				INSERT INTO forumpost (forumid, parentid, userid, subject, message, locked, sticky, replies, createddate, updateddate)
+				INSERT INTO forumpost (forumid, parentid, user_id, subject, message, locked, sticky, replies, createddate, updateddate)
 				VALUES (1, %d, %d, %s, %s, %d, %d, %d, NOW(), NOW())",
 				$parentid, $userid, $this->pdo->escapeString($subject), $this->pdo->escapeString($message), $locked, $sticky, $replies
 			)
@@ -49,7 +49,7 @@ class Forum
 	{
 		return $this->pdo->queryOneRow(
 			sprintf(
-				"SELECT forumpost.*, users.username FROM forumpost LEFT OUTER JOIN users ON users.id = forumpost.userid WHERE forumpost.id = %d",
+				"SELECT forumpost.*, users.username FROM forumpost LEFT OUTER JOIN users ON users.id = forumpost.user_id WHERE forumpost.id = %d",
 				$parent
 			)
 		);
@@ -61,7 +61,7 @@ class Forum
 			sprintf("
 				SELECT forumpost.*, users.username
 				FROM forumpost
-				LEFT OUTER JOIN users ON users.id = forumpost.userid
+				LEFT OUTER JOIN users ON users.id = forumpost.user_id
 				WHERE forumpost.id = %d OR parentid = %d
 				ORDER BY createddate ASC
 				LIMIT 250",
@@ -88,7 +88,7 @@ class Forum
 			sprintf("
 				SELECT forumpost.*, users.username
 				FROM forumpost
-				LEFT OUTER JOIN users ON users.id = forumpost.userid
+				LEFT OUTER JOIN users ON users.id = forumpost.user_id
 				WHERE parentid = 0
 				ORDER BY updateddate DESC %s",
 				($start === false ? '' : (" LIMIT " . $num . " OFFSET " . $start))
@@ -115,12 +115,12 @@ class Forum
 
 	public function deleteUser($id)
 	{
-		$this->pdo->queryExec(sprintf("DELETE FROM forumpost WHERE userid = %d", $id));
+		$this->pdo->queryExec(sprintf("DELETE FROM forumpost WHERE user_id = %d", $id));
 	}
 
 	public function getCountForUser($uid)
 	{
-		$res = $this->pdo->queryOneRow(sprintf("SELECT COUNT(id) AS num FROM forumpost WHERE userid = %d", $uid));
+		$res = $this->pdo->queryOneRow(sprintf("SELECT COUNT(id) AS num FROM forumpost WHERE user_id = %d", $uid));
 		return ($res === false ? 0 :$res["num"]);
 	}
 
@@ -130,8 +130,8 @@ class Forum
 			sprintf("
 				SELECT forumpost.*, users.username
 				FROM forumpost
-				LEFT OUTER JOIN users ON users.id = forumpost.userid
-				WHERE userid = %d
+				LEFT OUTER JOIN users ON users.id = forumpost.user_id
+				WHERE user_id = %d
 				ORDER BY forumpost.createddate DESC %s",
 				($start === false ? '' : (" LIMIT " . $num . " OFFSET " . $start)),
 				$uid
