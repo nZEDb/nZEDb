@@ -976,7 +976,7 @@ class Releases
 			WHERE r.categoryid BETWEEN 5000 AND 5999
 			AND nzbstatus = 1
 			AND r.passwordstatus <= %d %s %s %s %s %s %s",
-			$this->releaseSearch->getFullTextJoinString(),
+			($name !== '' ? $this->releaseSearch->getFullTextJoinString() : ''),
 			$this->showPasswords(),
 			($rageId != -1 ? sprintf(' AND rageid = %d ', $rageId) : ''),
 			($series != '' ? sprintf(' AND UPPER(r.season) = UPPER(%s)', $this->pdo->escapeString(((is_numeric($series) && strlen($series) != 4) ? sprintf('S%02d', $series) : $series))) : ''),
@@ -1026,7 +1026,7 @@ class Releases
 		$baseSql = sprintf(
 			"%s
 			WHERE r.passwordstatus <= %d %s %s %s %s %s",
-			$this->releaseSearch->getFullTextJoinString(),
+			($name !== '' ? $this->releaseSearch->getFullTextJoinString() : ''),
 			$this->showPasswords(),
 			($aniDbID > -1 ? sprintf(' AND anidbid = %d ', $aniDbID) : ''),
 			(is_numeric($episodeNumber) ? sprintf(" AND r.episode '%s' ", $this->pdo->likeString($episodeNumber)) : ''),
@@ -1075,7 +1075,7 @@ class Releases
 			AND nzbstatus = 1
 			AND r.passwordstatus <= %d
 			%s %s %s %s",
-			$this->releaseSearch->getFullTextJoinString(),
+			($name !== '' ? $this->releaseSearch->getFullTextJoinString() : ''),
 			$this->showPasswords(),
 			($name !== '' ? $this->releaseSearch->getSearchSQL(['searchname' => $name]) : ''),
 			(($imDbId != '-1' && is_numeric($imDbId)) ? sprintf(' AND imdbid = %d ', str_pad($imDbId, 7, '0', STR_PAD_LEFT)) : ''),
