@@ -8,6 +8,7 @@ New updates are grouped by person, at the top of the file.
 2014-08-12 ruhllatio
 	* Fix: undefined index error in MiscSorter and SQL query syntax error
 	* Add: script to optimize nZEDb moving to/from Sphinx (reclaims space from releasesearch that is unused with Sphinx).
+	* Fix: Forgot to remove limit in insert for testing
 2014-08-11 ruhllatio
 	* Chg: Standardize some of MiscSorter... remove needless NNTP, replace some preg with string ops
 	* Fix: Typo onion in ReleaseRemover

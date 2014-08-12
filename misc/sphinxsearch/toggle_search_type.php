@@ -81,7 +81,7 @@ function revertToStandard($pdo)
 
 	echo $pdo->log->info('Populating the releasearch table with initial data. (Slow)' . PHP_EOL);
 	$pdo->queryInsert('INSERT INTO releasesearch (releaseid, guid, name, searchname)
-				SELECT id, guid, name, searchname FROM releases LIMIT 1');
+				SELECT id, guid, name, searchname FROM releases');
 
 	echo $pdo->log->info('Adding the auto-population triggers. (Quick)' . PHP_EOL);
 
