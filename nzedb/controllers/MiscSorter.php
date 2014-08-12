@@ -171,11 +171,11 @@ class MiscSorter
 		if ($release !== false) {
 			if ($name !== '' && $name !== $release['searchname']) {
 				(new NameFixer(['Settings' => $this->pdo]))->updateRelease($release, $name, $type, 1, "sorter ", 1, 1);
-			} else if ($cat !== $releases['categoryid']) {
+			} else if ($cat !== $release['categoryid']) {
 				$this->pdo->queryExec(
 							sprintf('
 								UPDATE releases
-								SET categoryid = %d, iscategorized = 1
+								SET categoryid = %d, iscategorized = 1,
 									proc_sorter = %d
 								WHERE id = %d',
 								$cat,
