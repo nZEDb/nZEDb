@@ -37,14 +37,35 @@ class Genres
 	private function getListQuery($type='', $activeonly=false)
 	{
 		if (!empty($type))
-			$typesql = sprintf(" AND genres.type = %d", $type);
+			$typesql = sprintf(" AND g.type = %d", $type);
 		else
 			$typesql = '';
 
-		if ($activeonly)
-			$sql = sprintf("SELECT genres.* FROM genres INNER JOIN (SELECT DISTINCT genreid FROM musicinfo) x ON x.genreid = genres.id %s UNION SELECT genres.*  FROM genres INNER JOIN (SELECT DISTINCT genreid FROM consoleinfo) x ON x.genreid = genres.id %s UNION SELECT genres.*  FROM genres INNER JOIN (SELECT DISTINCT genreid FROM gamesinfo) x ON x.genreid = genres.id %s ORDER BY title", $typesql, $typesql, $typesql);
-		else
-			$sql = sprintf("SELECT genres.* FROM genres WHERE 1 %s ORDER BY title", $typesql);
+		if ($activeonly) {
+			$sql = sprintf("
+						SELECT g.*
+						FROM genres g
+						INNER JOIN
+							(SELECT DISTINCT genre_id FROM musicinfo) x
+							ON x.genre_id = g.id %1\$s
+						UNION
+						SELECT g.*
+						FROM genres g
+						INNER JOIN
+							(SELECT DISTINCT genre_id FROM consoleinfo) x
+							ON x.genre_id = g.id %1\$s
+						UNION
+						SELECT g.*
+						FROM genres g
+						INNER JOIN
+							(SELECT DISTINCT genre_id FROM gamesinfo) x
+							ON x.genre_id = g.id %1\$s
+							ORDER BY title",
+						$typesql
+			);
+		} else {
+			$sql = sprintf("SELECT g.* FROM genres g WHERE 1 %s ORDER BY g.title", $typesql);
+		}
 
 		return $sql;
 	}
@@ -59,14 +80,33 @@ class Genres
 	public function getCount($type='', $activeonly=false)
 	{
 		if (!empty($type))
-			$typesql = sprintf(" AND genres.type = %d", $type);
+			$typesql = sprintf(" AND g.type = %d", $type);
 		else
 			$typesql = '';
 
 		if ($activeonly)
-			$sql = sprintf("SELECT COUNT(*) AS num FROM genres INNER JOIN (SELECT DISTINCT genreid FROM musicinfo) x ON x.genreid = genres.id %s UNION SELECT COUNT(*) AS num FROM genres INNER JOIN (SELECT DISTINCT genreid FROM consoleinfo) y ON y.genreid = genres.id %s", $typesql, $typesql);
+			$sql = sprintf("
+						SELECT COUNT(*) AS num
+						FROM genres g
+						INNER JOIN
+							(SELECT DISTINCT genre_id FROM musicinfo) x
+							ON x.genre_id = g.id %1\$s
+						+
+						SELECT COUNT(*) AS num
+						FROM genres g
+						INNER JOIN
+							(SELECT DISTINCT genre_id FROM consoleinfo) y
+							ON y.genre_id = g.id %1\$s
+						+
+						SELECT COUNT(*) AS num
+						FROM genres g
+						INNER JOIN
+							(SELECT DISTINCT genre_id FROM gamesinfo) x
+							ON x.genre_id = g.id %1\$s",
+						$typesql
+			);
 		else
-			$sql = sprintf("SELECT COUNT(*) AS num FROM genres WHERE 1 %s ORDER BY title", $typesql);
+			$sql = sprintf("SELECT COUNT(g.id) AS num FROM genres g WHERE 1 %s ORDER BY g.title", $typesql);
 
 		$res = $this->pdo->queryOneRow($sql);
 		return $res["num"];

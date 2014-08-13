@@ -94,7 +94,7 @@ class Games
 			sprintf("
 				SELECT gamesinfo.*, genres.title AS genres
 				FROM gamesinfo
-				LEFT OUTER JOIN genres ON genres.id = gamesinfo.genreid
+				LEFT OUTER JOIN genres ON genres.id = gamesinfo.genre_id
 				WHERE gamesinfo.id = %d",
 				$id
 			)
@@ -271,7 +271,7 @@ class Games
 				$orderfield = 'con.releasedate';
 				break;
 			case 'genre':
-				$orderfield = 'con.genreID';
+				$orderfield = 'con.genre_id';
 				break;
 			case 'size':
 				$orderfield = 'r.size';
@@ -303,7 +303,7 @@ class Games
 
 	public function getBrowseByOptions()
 	{
-		return array('platform' => 'platform', 'title' => 'title', 'genre' => 'genreID', 'year' => 'year');
+		return array('platform' => 'platform', 'title' => 'title', 'genre' => 'genre_id', 'year' => 'year');
 	}
 
 	public function getBrowseBy()
@@ -353,7 +353,7 @@ class Games
 				UPDATE gamesinfo
 				SET
 					title = %s, asin = %s, url = %s, salesrank = %s, platform = %s, publisher = %s,
-					releasedate= %s,esrb = %s, cover = %d, genreid = %d, updateddate = NOW()
+					releasedate= %s,esrb = %s, cover = %d, genre_id = %d, updateddate = NOW()
 				WHERE id = %d",
 				$this->pdo->escapeString($title),
 				$this->pdo->escapeString($asin),
@@ -557,7 +557,7 @@ class Games
 			$gamesId = $this->pdo->queryInsert(
 				sprintf("
 					INSERT INTO gamesinfo
-						(title, asin, url, platform, publisher, genreid, esrb, releasedate, review, cover, createddate, updateddate)
+						(title, asin, url, platform, publisher, genre_id, esrb, releasedate, review, cover, createddate, updateddate)
 					VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %d, NOW(), NOW())",
 					$this->pdo->escapeString($con['title']),
 					$this->pdo->escapeString($con['asin']),
@@ -577,7 +577,7 @@ class Games
 				sprintf('
 					UPDATE gamesinfo
 					SET
-						title = %s, asin = %s, url = %s, platform = %s, publisher = %s, genreid = %s,
+						title = %s, asin = %s, url = %s, platform = %s, publisher = %s, genre_id = %s,
 						esrb = %s, releasedate = %s, review = %s, cover = %s, updateddate = NOW()
 					WHERE id = %d',
 					$this->pdo->escapeString($con['title']),
