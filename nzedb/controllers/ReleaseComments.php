@@ -76,7 +76,7 @@ class ReleaseComments
 
 		$comid = $this->pdo->queryInsert(
 			sprintf("
-				INSERT INTO releasecomment (releaseid, text, userid, createddate, host, username)
+				INSERT INTO releasecomment (releaseid, text, user_id, createddate, host, username)
 				VALUES (%d, %s, %d, NOW(), %s, %s)",
 				$id,
 				$this->pdo->escapeString($text),
@@ -122,7 +122,7 @@ class ReleaseComments
 			sprintf("
 				SELECT COUNT(id) AS num
 				FROM releasecomment
-				WHERE userid = %d",
+				WHERE user_id = %d",
 				$uid
 			)
 		);
@@ -140,7 +140,7 @@ class ReleaseComments
 			sprintf("
 				SELECT releasecomment.*
 				FROM releasecomment
-				WHERE userid = %d
+				WHERE user_id = %d
 				ORDER BY releasecomment.createddate DESC %s",
 				$uid,
 				$limit
