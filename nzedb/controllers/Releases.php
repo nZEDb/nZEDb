@@ -468,7 +468,7 @@ class Releases
 				LEFT OUTER JOIN musicinfo mu ON mu.id = r.musicinfoid
 				LEFT OUTER JOIN genres mug ON mug.id = mu.genre_id
 				LEFT OUTER JOIN consoleinfo co ON co.id = r.consoleinfoid
-				LEFT OUTER JOIN genres cog ON cog.id = co.genreid %s
+				LEFT OUTER JOIN genres cog ON cog.id = co.genre_id %s
 				WHERE r.passwordstatus <= %d %s %s %s %s ORDER BY postdate DESC %s",
 				$cartSearch,
 				$this->showPasswords(),

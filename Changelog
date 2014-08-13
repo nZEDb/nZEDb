@@ -5,6 +5,7 @@ New updates are grouped by person, at the top of the file.
 
 2014-08-13 niel
 	* Fix: Another missed userid to user_id.
+	* Fix: Some more genreid to genre_id changes.
 2014-08-13 ruhllatio
 	* Fix: a metric ton of genreid columns that weren't changed to genre_id (ahem archer})
 	* Fix: More genreid's in Genres.php that didn't get changed
