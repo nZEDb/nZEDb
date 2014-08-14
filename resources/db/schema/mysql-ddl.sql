@@ -263,7 +263,7 @@ CREATE TABLE         releasecomment (
   nzb_guid    VARCHAR(32)      NOT NULL DEFAULT '',
   PRIMARY KEY                       (id),
   INDEX ix_releasecomment_releaseid (releaseid),
-  INDEX ix_releasecomment_user_id    (user_id)
+  INDEX ix_releasecomment_userid    (user_id)
 )
   ENGINE          = MYISAM
   DEFAULT CHARSET = utf8
@@ -394,7 +394,7 @@ CREATE TABLE         forumpost (
   updateddate DATETIME            NOT NULL,
   PRIMARY KEY     (id),
   KEY parentid    (parentid),
-  KEY user_id      (user_id),
+  KEY userid      (user_id),
   KEY createddate (createddate),
   KEY updateddate (updateddate)
 )
@@ -634,7 +634,7 @@ CREATE TABLE         userseries (
   categoryid  VARCHAR(64)      NULL DEFAULT NULL,
   createddate DATETIME         NOT NULL,
   PRIMARY KEY                (id),
-  INDEX ix_userseries_user_id (user_id, rageid)
+  INDEX ix_userseries_userid (user_id, rageid)
 )
   ENGINE          = MYISAM
   DEFAULT CHARSET = utf8
@@ -650,7 +650,7 @@ CREATE TABLE         usermovies (
   categoryid  VARCHAR(64)                    NULL DEFAULT NULL,
   createddate DATETIME                       NOT NULL,
   PRIMARY KEY                (id),
-  INDEX ix_usermovies_user_id (user_id, imdbid)
+  INDEX ix_usermovies_userid (user_id, imdbid)
 )
   ENGINE          = MYISAM
   DEFAULT CHARSET = utf8
@@ -700,7 +700,7 @@ CREATE TABLE         userrequests (
   request   VARCHAR(255)     NOT NULL,
   timestamp DATETIME         NOT NULL,
   PRIMARY KEY   (id),
-  KEY user_id    (user_id),
+  KEY userid    (user_id),
   KEY timestamp (timestamp)
 )
   ENGINE          = MYISAM
@@ -715,7 +715,7 @@ CREATE TABLE         userdownloads (
   user_id    INT(16)          NOT NULL,
   timestamp DATETIME         NOT NULL,
   PRIMARY KEY   (id),
-  KEY user_id    (user_id),
+  KEY userid    (user_id),
   KEY timestamp (timestamp)
 )
   ENGINE          = MYISAM
