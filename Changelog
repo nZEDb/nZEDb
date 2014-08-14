@@ -3,6 +3,9 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
+2014-08-14 bart39
+	* Fix: Add mischashedretentionhours to 10-settings.tsv for new installs.
+	* Fix: Change query column to VARCHAR(1024)
 2014-08-13 niel
 	* Fix: Another missed userid to user_id.
 	* Fix: Some more genreid to genre_id changes.
