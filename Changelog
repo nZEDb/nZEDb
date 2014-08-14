@@ -9,6 +9,7 @@ New updates are grouped by person, at the top of the file.
 2014-08-13 ruhllatio
 	* Fix: a metric ton of genreid columns that weren't changed to genre_id (ahem archer})
 	* Fix: More genreid's in Genres.php that didn't get changed
+	* Chg: Optimize various TV Show and Movie RSS queries to leverage partitioning
 2014-08-12 niel
 	* Chg: Converting usa of 'userid' to 'user_id'.
 	* Chg: Converting use of 'genreid' to 'genre_id'.
