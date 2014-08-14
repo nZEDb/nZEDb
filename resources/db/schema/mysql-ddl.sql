@@ -857,7 +857,7 @@ CREATE TABLE         gamesinfo (
   cover       TINYINT(1) UNSIGNED NOT NULL DEFAULT '0',
   backdrop    TINYINT(1) UNSIGNED NOT NULL DEFAULT '0',
   trailer     VARCHAR(1000)       NOT NULL DEFAULT '0',
-  classused   VARCHAR(10)         NULL DEFAULT NULL ,
+  classused   VARCHAR(10)         NOT NULL DEFAULT 'steam' ,
   createddate DATETIME            NOT NULL,
   updateddate DATETIME            NOT NULL,
   PRIMARY KEY                    (id),
