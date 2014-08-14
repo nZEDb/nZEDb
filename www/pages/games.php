@@ -23,15 +23,15 @@ $catarray[] = $category;
 $page->smarty->assign('catlist', $ctmp);
 $page->smarty->assign('category', $category);
 
-$browsecount = $games->getgamesCount($catarray, -1, $page->userdata["categoryexclusions"]);
+$browsecount = $games->getGamesCount($catarray, -1, $page->userdata["categoryexclusions"]);
 
 $offset = (isset($_REQUEST["offset"]) && ctype_digit($_REQUEST['offset'])) ? $_REQUEST["offset"] : 0;
-$ordering = $games->getgamesOrdering();
+$ordering = $games->getGamesOrdering();
 
 $orderby = isset($_REQUEST["ob"]) && in_array($_REQUEST['ob'], $ordering) ? $_REQUEST["ob"] : '';
 
 $results = $games2 = array();
-$results = $games->getgamesRange($catarray, $offset, ITEMS_PER_COVER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"]);
+$results = $games->getGamesRange($catarray, $offset, ITEMS_PER_COVER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"]);
 $maxwords = 50;
 foreach ($results as $result) {
 	if (!empty($result['review'])) {

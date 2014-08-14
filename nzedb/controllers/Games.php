@@ -35,7 +35,7 @@ class Games
 	/**
 	 * @var array|bool|int|string
 	 */
-	public $sleeptime;
+	public $sleepTime;
 
 	/**
 	 * @var string
@@ -50,12 +50,12 @@ class Games
 	/**
 	 * @var int
 	 */
-	public $matchpercent;
+	public $matchPercent;
 
 	/**
 	 * @var bool
 	 */
-	public $maxhitrequest;
+	public $maxHitRequest;
 
 	/**
 	 * @var string
@@ -65,27 +65,27 @@ class Games
 	/**
 	 * @var object
 	 */
-	protected $getgame;
+	protected $_getGame;
 
 	/**
 	 * @var int
 	 */
-	protected $resultsfound = 0;
+	protected $_resultsFound = 0;
 
 	/**
 	 * @var array
 	 */
-	protected $gameresults;
+	protected $_gameResults;
 
 	/**
 	 * @var string
 	 */
-	protected $classused;
+	protected $_classUsed;
 
 	/**
 	 * @var int
 	 */
-	protected $gameid;
+	protected $_gameID;
 
 	/**
 	 * @param array $options Class instances / Echo to cli.
@@ -105,11 +105,11 @@ class Games
 
 		$this->pubkey = $this->pdo->getSetting('giantbombkey');
 		$this->gameqty = ($this->pdo->getSetting('maxgamesprocessed') != '') ? $this->pdo->getSetting('maxgamesprocessed') : 150;
-		$this->sleeptime = ($this->pdo->getSetting('amazonsleep') != '') ? $this->pdo->getSetting('amazonsleep') : 1000;
+		$this->sleepTime = ($this->pdo->getSetting('amazonsleep') != '') ? $this->pdo->getSetting('amazonsleep') : 1000;
 		$this->imgSavePath = nZEDb_COVERS . 'games' . DS;
 		$this->renamed = '';
-		$this->matchpercent = 60;
-		$this->maxhitrequest = false;
+		$this->matchPercent = 60;
+		$this->maxHitRequest = false;
 		$this->cookie = nZEDb_TMP . 'xxx.cookie';
 		if ($this->pdo->getSetting('lookupgames') == 2) {
 			$this->renamed = 'AND isrenamed = 1';
@@ -117,7 +117,7 @@ class Games
 		//$this->cleangames = ($this->pdo->getSetting('lookupgames') == 2) ? 'AND isrenamed = 1' : '';
 	}
 
-	public function getgamesinfo($id)
+	public function getGamesInfo($id)
 	{
 		return $this->pdo->queryOneRow(
 			sprintf("
@@ -130,7 +130,7 @@ class Games
 		);
 	}
 
-	public function getgamesinfoByName($title)
+	public function getGamesInfoByName($title)
 	{
 		return $this->pdo->queryOneRow(
 			sprintf("
@@ -158,7 +158,7 @@ class Games
 		return ($res === false ? 0 : $res["num"]);
 	}
 
-	public function getgamesCount($cat, $maxage = -1, $excludedcats = array())
+	public function getGamesCount($cat, $maxage = -1, $excludedcats = array())
 	{
 		$catsrch = "";
 		if (count($cat) > 0 && $cat[0] != -1) {
@@ -204,7 +204,7 @@ class Games
 		return ($res === false ? 0 : $res["num"]);
 	}
 
-	public function getgamesRange($cat, $start, $num, $orderby, $maxage = -1, $excludedcats = array())
+	public function getGamesRange($cat, $start, $num, $orderby, $maxage = -1, $excludedcats = array())
 	{
 		$browseby = $this->getBrowseBy();
 
@@ -248,7 +248,7 @@ class Games
 			$exccatlist = " AND r.categoryid NOT IN (" . implode(",", $excludedcats) . ")";
 		}
 
-		$order = $this->getgamesOrder($orderby);
+		$order = $this->getGamesOrder($orderby);
 
 		return $this->pdo->query(
 			sprintf(
@@ -283,7 +283,7 @@ class Games
 		);
 	}
 
-	public function getgamesOrder($orderby)
+	public function getGamesOrder($orderby)
 	{
 		$order = ($orderby == '') ? 'r.postdate' : $orderby;
 		$orderArr = explode("_", $order);
@@ -316,7 +316,7 @@ class Games
 		return array($orderfield, $ordersort);
 	}
 
-	public function getgamesOrdering()
+	public function getGamesOrdering()
 	{
 		return array(
 			'title_asc', 'title_desc', 'posted_asc', 'posted_desc', 'size_asc', 'size_desc',
@@ -401,7 +401,7 @@ class Games
 	 *
 	 * @return bool
 	 */
-	public function updategamesinfo($gameInfo)
+	public function updateGamesInfo($gameInfo)
 	{
 		$gen = new Genres(['Settings' => $this->pdo]);
 		$ri = new ReleaseImage($this->pdo);
@@ -411,55 +411,55 @@ class Games
 		// Process Steam first before giantbomb
 		// Steam has more details
 
-		$this->getgame = new Steam();
-		$this->classused = "steam";
-		$this->getgame->cookie = $this->cookie;
-		$this->getgame->searchterm = $gameInfo['title'];
-		if($this->getgame->search() !== false){
-			$this->gameresults = $this->getgame->_getall();
+		$this->_getGame = new Steam();
+		$this->_classUsed = "steam";
+		$this->_getGame->cookie = $this->cookie;
+		$this->_getGame->searchTerm = $gameInfo['title'];
+		if($this->_getGame->search() !== false){
+			$this->_gameResults = $this->_getGame->getAll();
 		}else{
 			return false;
 		}
-		if (!is_array($this->gameresults)) {
-			$this->gameresults = $this->fetchgiantbombid($gameInfo['title']);
-			if ($this->maxhitrequest === true) {
+		if (!is_array($this->_gameResults)) {
+			$this->_gameResults = $this->fetchGiantBombID($gameInfo['title']);
+			if ($this->maxHitRequest === true) {
 				return false;
 			}
 
 		}
 
-		if (!empty($this->gameresults)) {
+		if (!empty($this->_gameResults)) {
 
-			switch ($this->classused) {
+			switch ($this->_classUsed) {
 
 				case "gb":
-					$con['coverurl'] = (string)$this->gameresults['image']['super_url'];
-					$con['title'] = (string)$this->gameresults['name'];
-					$con['asin'] = $this->gameid;
-					$con['url'] = (string)$this->gameresults['site_detail_url'];
-					if (is_array($this->gameresults['publishers'])) {
-						while (list($key) = each($this->gameresults['publishers'])) {
+					$con['coverurl'] = (string)$this->_gameResults['image']['super_url'];
+					$con['title'] = (string)$this->_gameResults['name'];
+					$con['asin'] = $this->_gameID;
+					$con['url'] = (string)$this->_gameResults['site_detail_url'];
+					if (is_array($this->_gameResults['publishers'])) {
+						while (list($key) = each($this->_gameResults['publishers'])) {
 							if ($key == 0) {
-								$con['publisher'] = (string)$this->gameresults['publishers'][$key]['name'];
+								$con['publisher'] = (string)$this->_gameResults['publishers'][$key]['name'];
 							}
 						}
 					} else {
 						$con['publisher'] = "Unknown";
 					}
 
-					if (is_array($this->gameresults['original_game_rating'])) {
-						$con['esrb'] = (string)$this->gameresults['original_game_rating'][0]['name'];
+					if (is_array($this->_gameResults['original_game_rating'])) {
+						$con['esrb'] = (string)$this->_gameResults['original_game_rating'][0]['name'];
 					} else {
-						$con['esrb'] = (string)$this->gameresults['original_game_rating']['name'];
+						$con['esrb'] = (string)$this->_gameResults['original_game_rating']['name'];
 					}
-					$con['releasedate'] = $this->pdo->escapeString((string)$this->gameresults['original_release_date']);
+					$con['releasedate'] = $this->pdo->escapeString((string)$this->_gameResults['original_release_date']);
 
-					if (isset($this->gameresults['description'])) {
-						$con['review'] = trim(strip_tags((string)$this->gameresults['description']));
+					if (isset($this->_gameResults['description'])) {
+						$con['review'] = trim(strip_tags((string)$this->_gameResults['description']));
 					}
 					$genreName = '';
-					if (empty($genreName) && isset($this->gameresults['genres'][0]['name'])) {
-						$a = (string)$this->gameresults['genres'][0]['name'];
+					if (empty($genreName) && isset($this->_gameResults['genres'][0]['name'])) {
+						$a = (string)$this->_gameResults['genres'][0]['name'];
 						$b = str_replace('-', ' ', $a);
 						$tmpGenre = explode(',', $b);
 						foreach ($tmpGenre as $tg) {
@@ -472,41 +472,41 @@ class Games
 					}
 					break;
 				case "steam":
-					if (isset($this->gameresults['cover'])) {
-						$con['coverurl'] = (string)$this->gameresults['cover'];
+					if (isset($this->_gameResults['cover'])) {
+						$con['coverurl'] = (string)$this->_gameResults['cover'];
 					}
-					if (isset($this->gameresults['backdrop'])) {
-						$con['backdropurl'] = (string)$this->gameresults['backdrop'];
+					if (isset($this->_gameResults['backdrop'])) {
+						$con['backdropurl'] = (string)$this->_gameResults['backdrop'];
 					}
-					$con['title'] = (string)$this->gameresults['title'];
-					$con['asin'] = $this->gameresults['steamgameid'];
-					$con['url'] = (string)$this->gameresults['directurl'];
-					if (isset($this->gameresults['gamedetails']['Publisher'])) {
-						$con['publisher'] = (string)$this->gameresults['gamedetails']['Publisher'];
+					$con['title'] = (string)$this->_gameResults['title'];
+					$con['asin'] = $this->_gameResults['steamgameid'];
+					$con['url'] = (string)$this->_gameResults['directurl'];
+					if (isset($this->_gameResults['gamedetails']['Publisher'])) {
+						$con['publisher'] = (string)$this->_gameResults['gamedetails']['Publisher'];
 					} else {
 						$con['publisher'] = "Unknown";
 					}
 
-					if (isset($this->gameresults['rating'])) {
-						$con['esrb'] = (string)$this->gameresults['rating'];
+					if (isset($this->_gameResults['rating'])) {
+						$con['esrb'] = (string)$this->_gameResults['rating'];
 					} else {
 						$con['esrb'] = "Not Rated";
 					}
-					if (isset($this->gameresults['gamedetails']['Release Date'])) {
+					if (isset($this->_gameResults['gamedetails']['Release Date'])) {
 						$date = DateTime::createFromFormat('j M Y',
-														   $this->gameresults['gamedetails']['Release Date']);
+														   $this->_gameResults['gamedetails']['Release Date']);
 						$con['releasedate'] = $this->pdo->escapeString((string)$date->format('Y-m-d'));
 					}
-					if (isset($this->gameresults['description'])) {
-						$con['review'] = trim(strip_tags((string)$this->gameresults['description']));
+					if (isset($this->_gameResults['description'])) {
+						$con['review'] = trim(strip_tags((string)$this->_gameResults['description']));
 					}
 
-					if(isset($this->gameresults['trailer'])){
-						$con['trailer'] = (string)$this->gameresults['trailer'];
+					if(isset($this->_gameResults['trailer'])){
+						$con['trailer'] = (string)$this->_gameResults['trailer'];
 					}
 					$genreName = '';
-					if (empty($genreName) && isset($this->gameresults['gamedetails']['Genre'])) {
-						$a = (string)$this->gameresults['gamedetails']['Genre'];
+					if (empty($genreName) && isset($this->_gameResults['gamedetails']['Genre'])) {
+						$a = (string)$this->_gameResults['gamedetails']['Genre'];
 						$b = str_replace('-', ' ', $a);
 						$tmpGenre = explode(',', $b);
 						foreach ($tmpGenre as $tg) {
@@ -558,7 +558,7 @@ class Games
 			$con['releasedate'] = 'null';
 		}
 
-		$con['classused'] = $this->classused;
+		$con['classused'] = $this->_classUsed;
 
 		if (empty($genreName)) {
 			$genreName = 'Unknown';
@@ -667,7 +667,7 @@ class Games
 	 * @return bool|mixed Array if no result False
 	 */
 
-	public function fetchgiantbombid($title = '')
+	public function fetchGiantBombID($title = '')
 	{
 		$obj = new GiantBomb($this->pubkey);
 		try {
@@ -677,25 +677,25 @@ class Games
 			$result = json_decode(json_encode($obj->search($title, $fields, 10, 1 ,array("game"))), true);
 			// We hit the maximum request.
 			if (empty($result)) {
-				$this->maxhitrequest = true;
+				$this->maxHitRequest = true;
 				return false;
 			}
 			if (!is_array($result['results']) || (int)$result['number_of_total_results'] === 0) {
 				$result = false;
 			} else {
-				$this->resultsfound = count($result['results']) - 1;
-				if ($this->resultsfound !== 0) {
-					for ($i = 0; $i <= $this->resultsfound; $i++) {
+				$this->_resultsFound = count($result['results']) - 1;
+				if ($this->_resultsFound !== 0) {
+					for ($i = 0; $i <= $this->_resultsFound; $i++) {
 						similar_text($result['results'][$i]['name'], $title, $p);
 						if ($p > 77) {
 							$result = $result['results'][$i];
 							preg_match('/\/\d+\-(?<asin>\d+)\//', $result['api_detail_url'], $matches);
-							$this->gameid = (string)$matches['asin'];
+							$this->_gameID = (string)$matches['asin'];
 							$result = $this->fetchGiantBombArray();
-							$this->classused = "gb";
+							$this->_classUsed = "gb";
 							break;
 						}
-						if ($i === $this->resultsfound) {
+						if ($i === $this->_resultsFound) {
 							return false;
 						}
 					}
@@ -725,7 +725,7 @@ class Games
 				"name", "publishers", "original_release_date", "reviews",
 				"site_detail_url"
 			);
-			$result = json_decode(json_encode($obj->game($this->gameid, $fields)), true);
+			$result = json_decode(json_encode($obj->game($this->_gameID, $fields)), true);
 			$result = $result['results'];
 		} catch (Exception $e) {
 			$result = false;
@@ -758,7 +758,7 @@ class Games
 			foreach ($res as $arr) {
 
 				// Reset maxhitrequest
-				$this->maxhitrequest = false;
+				$this->maxHitRequest = false;
 				$startTime = microtime(true);
 				$usedgb = false;
 				$gameInfo = $this->parseTitle($arr['searchname']);
@@ -781,7 +781,7 @@ class Games
 							$gameId = -2;
 
 						// Leave gamesinfo_id 0 to parse again
-						if($this->maxhitrequest === true){
+						if($this->maxHitRequest === true){
 							$gameId = 0;
 						}
 						}
@@ -803,8 +803,8 @@ class Games
 
 				// Sleep to not flood giantbomb.
 				$diff = floor((microtime(true) - $startTime) * 1000000);
-				if ($this->sleeptime * 1000 - $diff > 0 && $usedgb === true) {
-					usleep($this->sleeptime * 1000 - $diff);
+				if ($this->sleepTime * 1000 - $diff > 0 && $usedgb === true) {
+					usleep($this->sleepTime * 1000 - $diff);
 				}
 			}
 		} else {
