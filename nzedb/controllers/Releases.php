@@ -420,6 +420,9 @@ class Releases
 	public function getRss($cat, $offset, $userID = 0, $rageID, $aniDbID, $airDate = -1)
 	{
 		$catSearch = $cartSearch = '';
+
+		$catLimit = "AND r.categoryid BETWEEN 5000 AND 5999";
+
 		if (count($cat)) {
 			if ($cat[0] == -2) {
 				$cartSearch = sprintf(' INNER JOIN usercart ON usercart.user_id = %d AND usercart.releaseid = r.id ', $userID);
@@ -466,15 +469,15 @@ class Releases
 				INNER JOIN groups g ON g.id = r.group_id
 				LEFT OUTER JOIN movieinfo m ON m.imdbid = r.imdbid AND m.title != ''
 				LEFT OUTER JOIN musicinfo mu ON mu.id = r.musicinfoid
-				LEFT OUTER JOIN genres mug ON mug.id = mu.genreid
+				LEFT OUTER JOIN genres mug ON mug.id = mu.genre_id
 				LEFT OUTER JOIN consoleinfo co ON co.id = r.consoleinfoid
-				LEFT OUTER JOIN genres cog ON cog.id = co.genreid %s
+				LEFT OUTER JOIN genres cog ON cog.id = co.genre_id %s
 				WHERE r.passwordstatus <= %d %s %s %s %s ORDER BY postdate DESC %s",
 				$cartSearch,
 				$this->showPasswords(),
 				$catSearch,
-				($rageID > -1 ? sprintf(' AND r.rageid = %d ', $rageID) : ''),
-				($aniDbID > -1 ? sprintf(' AND r.anidbid = %d ', $aniDbID) : ''),
+				($rageID > -1 ? sprintf(' AND r.rageid = %d %s ', $rageID, ($catSearch == '' ? $catLimit : '')) : ''),
+				($aniDbID > -1 ? sprintf(' AND r.anidbid = %d %s ', $aniDbID, ($catSearch == '' ? $catLimit : '')) : ''),
 				($airDate > -1 ? sprintf(' AND r.tvairdate >= DATE_SUB(CURDATE(), INTERVAL %d DAY) ', $airDate) : ''),
 				(' LIMIT 0,' . ($offset > 100 ? 100 : $offset))
 			)
@@ -505,6 +508,7 @@ class Releases
 				INNER JOIN groups g ON g.id = r.group_id
 				LEFT OUTER JOIN tvrage tvr ON tvr.rageid = r.rageid
 				WHERE %s %s %s
+				AND r.categoryid BETWEEN 5000 AND 5999
 				AND r.passwordstatus <= %d
 				ORDER BY postdate DESC %s",
 				$this->uSQL($this->pdo->query(sprintf('SELECT rageid, categoryid FROM userseries WHERE user_id = %d', $userID), true), 'rageid'),
@@ -539,6 +543,7 @@ class Releases
 				INNER JOIN groups g ON g.id = r.group_id
 				LEFT OUTER JOIN movieinfo mi ON mi.imdbid = r.imdbid
 				WHERE %s %s
+				AND r.categoryid BETWEEN 2000 AND 2999
 				AND r.passwordstatus <= %d
 				ORDER BY postdate DESC %s",
 				$this->uSQL($this->pdo->query(sprintf('SELECT imdbid, categoryid FROM usermovies WHERE user_id = %d', $userID), true), 'imdbid'),
@@ -576,6 +581,7 @@ class Releases
 				INNER JOIN category c ON c.id = r.categoryid
 				INNER JOIN category cp ON cp.id = c.parentid
 				WHERE %s %s
+				AND r.categoryid BETWEEN 5000 AND 5999
 				AND r.passwordstatus <= %d %s
 				ORDER BY %s %s %s",
 				$this->uSQL($userShows, 'rageid'),
@@ -605,6 +611,7 @@ class Releases
 				'SELECT COUNT(r.id) AS num
 				FROM releases r
 				WHERE %s %s
+				AND r.categoryid BETWEEN 5000 AND 5999
 				AND r.passwordstatus <= %d %s',
 				$this->uSQL($userShows, 'rageid'),
 				(count($excludedCats) ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : ''),

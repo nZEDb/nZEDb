@@ -88,7 +88,7 @@ class Console
 	{
 		return $this->pdo->queryOneRow(
 			sprintf(
-				"SELECT consoleinfo.*, genres.title AS genres FROM consoleinfo LEFT OUTER JOIN genres ON genres.id = consoleinfo.genreid WHERE consoleinfo.id = %d ",
+				"SELECT consoleinfo.*, genres.title AS genres FROM consoleinfo LEFT OUTER JOIN genres ON genres.id = consoleinfo.genre_id WHERE consoleinfo.id = %d ",
 				$id
 			)
 		);
@@ -247,7 +247,7 @@ class Console
 				$orderfield = 'con.releasedate';
 				break;
 			case 'genre':
-				$orderfield = 'con.genreID';
+				$orderfield = 'con.genre_id';
 				break;
 			case 'size':
 				$orderfield = 'r.size';
@@ -274,7 +274,7 @@ class Console
 
 	public function getBrowseByOptions()
 	{
-		return array('platform' => 'platform', 'title' => 'title', 'genre' => 'genreID');
+		return array('platform' => 'platform', 'title' => 'title', 'genre' => 'genre_id');
 	}
 
 	public function getBrowseBy()
@@ -314,7 +314,7 @@ class Console
 				UPDATE consoleinfo
 				SET
 					title = %s, asin = %s, url = %s, salesrank = %s, platform = %s, publisher = %s,
-					releasedate= %s, esrb = %s, cover = %d, genreid = %d, updateddate = NOW()
+					releasedate= %s, esrb = %s, cover = %d, genre_id = %d, updateddate = NOW()
 				WHERE id = %d",
 				$this->pdo->escapeString($title), $this->pdo->escapeString($asin), $this->pdo->escapeString($url),
 				$salesrank, $this->pdo->escapeString($platform), $this->pdo->escapeString($publisher),
@@ -546,7 +546,7 @@ class Console
 		if ($check === false) {
 			$consoleId = $this->pdo->queryInsert(
 				sprintf(
-					"INSERT INTO consoleinfo (title, asin, url, salesrank, platform, publisher, genreid, esrb, releasedate, review, cover, createddate, updateddate)
+					"INSERT INTO consoleinfo (title, asin, url, salesrank, platform, publisher, genre_id, esrb, releasedate, review, cover, createddate, updateddate)
 					VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, NOW(), NOW())",
 					$this->pdo->escapeString($con['title']),
 					$this->pdo->escapeString($con['asin']),
@@ -565,7 +565,7 @@ class Console
 			$consoleId = $check['id'];
 			$this->pdo->queryExec(
 				sprintf(
-					'UPDATE consoleinfo SET title = %s, asin = %s, url = %s, salesrank = %s, platform = %s, publisher = %s, genreid = %s, esrb = %s, releasedate = %s,
+					'UPDATE consoleinfo SET title = %s, asin = %s, url = %s, salesrank = %s, platform = %s, publisher = %s, genre_id = %s, esrb = %s, releasedate = %s,
 					review = %s, cover = %s, updateddate = NOW() WHERE id = %d',
 					$this->pdo->escapeString($con['title']),
 					$this->pdo->escapeString($con['asin']),
