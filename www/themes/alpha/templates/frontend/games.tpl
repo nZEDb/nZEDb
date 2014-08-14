@@ -95,14 +95,6 @@
 									title="Find game on Gamespot"
 								><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/gamespot.png"></a>
 							</div>
-							<hr>
-							<div class="container">
-								<a
-									class="label label-info"
-									href="{$smarty.const.WWW_TOP}/games?platform={$result.platform}"
-									title="View similar nzbs"
-								>Similar</a>
-							</div>
 						</div>
 					</td>
 					<td colspan="8" class="left" id="guid{$result.guid}">

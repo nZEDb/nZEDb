@@ -47,8 +47,6 @@ foreach ($results as $result) {
 	}
 	$games2[] = $result;
 }
-$platform = (isset($_REQUEST['platform']) && !empty($_REQUEST['platform'])) ? stripslashes($_REQUEST['platform']) : '';
-$page->smarty->assign('platform', $platform);
 
 $title = (isset($_REQUEST['title']) && !empty($_REQUEST['title'])) ? stripslashes($_REQUEST['title']) : '';
 $page->smarty->assign('title', $title);
