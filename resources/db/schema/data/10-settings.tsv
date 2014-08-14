@@ -36,7 +36,7 @@ section,subsection,name,value,hint,setting
 		maxbooksprocessed	300	The maximum amount of books to process with amazon per run. This does not use an NNTP connection	maxbooksprocessed
 		maxgamesprocessed	150	The maximum amount of games to process with amazon per run. This does not use an NNTP connection.	maxgamesprocessed
 		maximdbprocessed	100	The maximum amount of movies to process with IMDB per run. This does not use an NNTP connection or query Amazon.	maximdbprocessed
-		maxxxxprocessed		100	The maximum amount of xxx to process with ADE and Popporn per run. This does not use an NNTP connection or query Amazon.	maxxxxprocessed
+		maxxxxprocessed	100	The maximum amount of xxx to process with ADE and Popporn per run. This does not use an NNTP connection or query Amazon.	maxxxxprocessed
 		maxmssgs	20000	The maximum number of messages to fetch at a time from the server. Only raise this if you have php set right and lots of RAM.	maxmssgs
 		maxmusicprocessed	150	The maximum amount of music to process with amazon per run. This does not use an NNTP connection.	maxmusicprocessed
 		maxnestedlevels	3	How many levels deep to go into nested rar/zip files.	maxnestedlevels
