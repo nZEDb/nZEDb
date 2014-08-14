@@ -772,10 +772,10 @@ class Games
 					}
 
 					// Check for existing games entry.
-					$gameCheck = $this->getgamesinfoByName($gameInfo['title']);
+					$gameCheck = $this->getGamesInfoByName($gameInfo['title']);
 
 					if ($gameCheck === false) {
-						$gameId = $this->updategamesinfo($gameInfo);
+						$gameId = $this->updateGamesInfo($gameInfo);
 						$usedgb = true;
 						if ($gameId === false) {
 							$gameId = -2;
