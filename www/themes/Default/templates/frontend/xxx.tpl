@@ -78,7 +78,7 @@
 							target="_blank"
 							href="{$smarty.const.WWW_TOP}/xxx/?id={$result.id}"
 							name="name{$result.id}"
-							title="View movie info"
+							title="View XXX info"
 							class="modal_xxx thumbnail" rel="viewxxx"
 						><img
 								class="shadow" style="margin: 3px 0;"
@@ -152,7 +152,7 @@
 					<h2>
 						<a
 							title="{$result.title|stripslashes|escape:"htmlall"}"
-							href="{$smarty.const.WWW_TOP}/xxx?imdb={$result.id}">{$result.title|stripslashes|escape:"htmlall"}
+							href="{$smarty.const.WWW_TOP}/xxx?id={$result.id}">{$result.title|stripslashes|escape:"htmlall"}
 						</a>
 						</h2>
 					{if $result.tagline != ''}
