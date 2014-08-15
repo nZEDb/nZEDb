@@ -83,7 +83,7 @@ class Games
 	protected $_classUsed;
 
 	/**
-	 * @var int
+	 * @var string
 	 */
 	protected $_gameID;
 
@@ -420,7 +420,7 @@ class Games
 		}else{
 			return false;
 		}
-		if (!is_array($this->_gameResults)) {
+		if (!isset($this->_gameResults)) {
 			$this->_gameResults = $this->fetchGiantBombID($gameInfo['title']);
 			if ($this->maxHitRequest === true) {
 				return false;
@@ -789,7 +789,6 @@ class Games
 					} else {
 						$gameId = $gameCheck['id'];
 					}
-					//$gameId = null;
 					// Update release.
 					$this->pdo->queryExec(sprintf('UPDATE releases SET gamesinfo_id = %d WHERE id = %d', $gameId, $arr['id']));
 				} else {
