@@ -17,24 +17,24 @@ Class Steam
 	const CDNURL = "http://cdn.akamai.steamstatic.com/steam/apps/";
 
 	/**
-	 * @var null
+	 * @var string
 	 */
-	public $searchTerm = null;
+	public $searchTerm = '';
 
 	/**
-	 * @var null
+	 * @var string
 	 */
-	public $cookie = null;
+	public $cookie = '';
 
 	/**
-	 * @var null
+	 * @var string
 	 */
-	protected $_title = null;
+	protected $_title = '';
 
 	/**
-	 * @var null
+	 * @var string
 	 */
-	protected $_directURL = null;
+	protected $_directURL = '';
 
 	/**
 	 * @var
@@ -92,9 +92,14 @@ Class Steam
 	protected $_lastAgeCheck = false;
 
 	/**
-	 * @var null
+	 * @var string
 	 */
-	protected $_indirectURL = null;
+	protected $_indirectURL = '';
+
+	/**
+	 * @var bool
+	 */
+	protected $_ageCheckSet = false;
 
 	public function __construct()
 	{
@@ -360,7 +365,8 @@ Class Steam
 	private function ageCheck()
 	{
 		if (isset($this->cookie)) {
-			if ($this->extractCookies(file_get_contents($this->cookie)) === false) {
+			$this->extractCookies(file_get_contents($this->cookie));
+				if($this->_ageCheckSet === false) {
 				$this->_postParams = array(
 					"snr" => "1_agecheck_agecheck__age-gate",
 					"ageDay" => "1",
@@ -448,9 +454,9 @@ Class Steam
 			}
 		}
 		if ($this->_birthTime === true && $this->_lastAgeCheck === true) {
-			return true;
+			$this->_ageCheckSet = true;
 		} else {
-			return false;
+			$this->_ageCheckSet = false;
 		}
 	}
 }
