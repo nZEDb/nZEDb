@@ -446,7 +446,7 @@ CREATE TABLE         xxxinfo (
   productinfo TEXT                           DEFAULT NULL,
   trailers    TEXT                           DEFAULT NULL,
   directurl   VARCHAR(2000)                  NOT NULL,
-  classused   VARCHAR(3)                     NOT NULL,
+  classused   VARCHAR(4)                     NOT NULL DEFAULT 'ade',
   cover       TINYINT(1) UNSIGNED            NOT NULL DEFAULT '0',
   backdrop    TINYINT(1) UNSIGNED            NOT NULL DEFAULT '0',
   createddate DATETIME                       NOT NULL,
