@@ -217,7 +217,6 @@ Class Steam
 	{
 			if ($this->_ret = $this->_html->find("div.details_block", 0)) {
 				foreach ($this->_ret->find("br") as $b) {
-					$ret2 = null;
 					$this->_ret = rtrim($b->next_sibling()->innertext, ":");
 					$ret2 = trim($b->next_sibling()->next_sibling()->innertext);
 					if ($this->_ret !== "Languages") {
