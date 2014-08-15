@@ -17,14 +17,14 @@ Class Steam
 	const CDNURL = "http://cdn.akamai.steamstatic.com/steam/apps/";
 
 	/**
-	 * @var string
+	 * @var
 	 */
-	public $searchTerm = '';
+	public $searchTerm;
 
 	/**
-	 * @var string
+	 * @var
 	 */
-	public $cookie = '';
+	public $cookie;
 
 	/**
 	 * @var string

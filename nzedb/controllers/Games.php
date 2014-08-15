@@ -417,18 +417,19 @@ class Games
 		$this->_getGame->searchTerm = $gameInfo['title'];
 		if($this->_getGame->search() !== false){
 			$this->_gameResults = $this->_getGame->getAll();
-		}else{
-			return false;
 		}
-		if (!isset($this->_gameResults)) {
-			$this->_gameResults = $this->fetchGiantBombID($gameInfo['title']);
+		if (!is_array($this->_gameResults)) {
+			$this->_gameResults = (array)$this->fetchGiantBombID($gameInfo['title']);
 			if ($this->maxHitRequest === true) {
 				return false;
 			}
 
 		}
+		if(!is_array($this->_gameResults)){
+			return false;
+		}
 
-		if (!empty($this->_gameResults)) {
+		if (count($this->_gameResults) > 1) {
 
 			switch ($this->_classUsed) {
 
@@ -533,18 +534,17 @@ class Games
 		}
 
 		// Prepare database values.
-
-		if ($con['coverurl'] != "") {
+		if (isset($con['coverurl'])) {
 			$con['cover'] = 1;
 		} else {
 			$con['cover'] = 0;
 		}
-		if ($con['backdropurl'] != "") {
+		if (isset($con['backdropurl'])) {
 			$con['backdrop'] = 1;
 		} else {
 			$con['backdrop'] = 0;
 		}
-		if (empty($con['trailer'])) {
+		if (!isset($con['trailer'])) {
 			$con['trailer'] = 0;
 		}
 		if (empty($con['title'])) {
@@ -557,7 +557,9 @@ class Games
 		if ($con['releasedate'] == "''") {
 			$con['releasedate'] = 'null';
 		}
-
+		if(!isset($con['review'])){
+		$con['review'] = 'No Review';
+		}
 		$con['classused'] = $this->_classUsed;
 
 		if (empty($genreName)) {
@@ -827,7 +829,7 @@ class Games
 			'/^(.+((EFNet|EFNet\sFULL|FULL\sabgxEFNet|abgx\sFULL|abgxbox360EFNet)\s|illuminatenboard\sorg|' .
 			'Place2(hom|us)e.net|united-forums? co uk|\(\d+\)))?(?P<title>.*?)[\.\-_ \:](v\.?\d\.\d|RIP|ADDON|' .
 			'EUR|USA|JP|ASIA|JAP|JPN|AUS|MULTI(\.?\d{1,2})?|PATCHED|FULLDVD|DVD5|DVD9|DVDRIP|\(GAMES\)\s*\(C\)|PROPER|REPACK|RETAIL|' .
-			'DEMO|DISTRIBUTION|BETA|REGIONFREE|READ\.?NFO|NFOFIX|Update|BWClone|CRACKED|Remastered|Fix|LINUX|x86|x64|Windows|' .
+			'DEMO|DISTRIBUTION|BETA|REGIONFREE|READ\.?NFO|NFOFIX|Update|BWClone|CRACKED|Remastered|Fix|LINUX|x86|x64|Windows|Steam|Dox|No\.Intro|' .
 			// Group names, like Reloaded, CPY, Razor1911, etc
 			'[a-z0-9]{2,}$)/i',
 			preg_replace('/\sMulti\d?\s/i', '', $releasename),
@@ -835,7 +837,7 @@ class Games
 		) {
 			// Replace dots, underscores, colons, or brackets with spaces.
 			$result = array();
-			$result['title'] = str_replace(' RF ', ' ', preg_replace('/(\:|\.|_|\%20|\[|\])/', ' ', $matches['title']));
+			$result['title'] = str_replace(' RF ', ' ', preg_replace('/(\-|\:|\.|_|\%20|\[|\])/', ' ', $matches['title']));
 			// Replace any foreign words
 			$result['title'] = preg_replace('/(brazilian|chinese|croatian|danish|deutsch|dutch|english|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|latin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish)/i', '', $result['title']);
 			// Needed to add code to handle DLC Properly.
