@@ -388,7 +388,7 @@ Class Steam
 	 *
 	 * @return bool
 	 */
-	private function _getURL($fetchURL = null, $usePost = false)
+	private function _getURL($fetchURL, $usePost = false)
 	{
 		if (isset($fetchURL)) {
 			$this->_ch = curl_init($fetchURL);
