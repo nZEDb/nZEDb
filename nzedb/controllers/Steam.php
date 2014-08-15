@@ -298,8 +298,8 @@ Class Steam
 									preg_match('/\/app\/(?<id>\d+)\//', $result->href, $matches);
 									$this->_steamGameID = $matches['id'];
 									$this->_directURL = self::GAMEURL . $this->_steamGameID . '/';
-									@$this->_getURL($result->href);
-									@$this->ageCheck();
+									$this->_getURL($result->href);
+									$this->ageCheck();
 									break;
 								} else {
 									return false;
@@ -373,11 +373,11 @@ Class Steam
 					"ageYear" => "1966"
 				);
 				// Do twice so steam can set a birthtime/lastagecheckage cookie value
-				@$this->_getURL(self::AGECHECKURL . $this->_steamGameID . '/', true);
-				@$this->_getURL(self::AGECHECKURL . $this->_steamGameID . '/', true);
+				$this->_getURL(self::AGECHECKURL . $this->_steamGameID . '/', true);
+				$this->_getURL(self::AGECHECKURL . $this->_steamGameID . '/', true);
 			}
 		}
-		@$this->_getURL(self::GAMEURL . $this->_steamGameID . '/');
+		$this->_getURL(self::GAMEURL . $this->_steamGameID . '/');
 	}
 
 	/**
