@@ -42,7 +42,7 @@ if (isset($_GET['t'])) {
 }
 
 $uid = $apiKey = '';
-$catExclusions = array();
+$catExclusions = [];
 $maxRequests = 0;
 // Page is accessible only by the apikey, or logged in users.
 if ($page->users->isLoggedIn()) {
@@ -143,7 +143,8 @@ switch ($function) {
 			$maxAge
 		);
 
-		printOutput(addLanguage($relData, $page->settings), $outputXML, $page, $offset);
+		addLanguage($relData, $page->settings);
+		printOutput($relData, $outputXML, $page, $offset);
 		break;
 
 	// Search movie releases.
@@ -163,7 +164,8 @@ switch ($function) {
 			$maxAge
 		);
 
-		printOutput(addLanguage($relData, $page->settings), $outputXML, $page, $offset);
+		addLanguage($relData, $page->settings);
+		printOutput($relData, $outputXML, $page, $offset);
 		break;
 
 	// Get NZB.
@@ -199,7 +201,7 @@ switch ($function) {
 		$page->users->addApiRequest($uid, $_SERVER['REQUEST_URI']);
 		$data = $releases->getByGuid($_GET['id']);
 
-		$relData = array();
+		$relData = [];
 		if ($data) {
 			$relData[] = $data;
 		}
@@ -219,7 +221,7 @@ switch ($function) {
 	case 'r':
 		verifyEmptyParameter('email');
 
-		if (!in_array((int)$page->settings->getSetting('registerstatus'), array(Settings::REGISTER_STATUS_OPEN, Settings::REGISTER_STATUS_API_ONLY))) {
+		if (!in_array((int)$page->settings->getSetting('registerstatus'), [Settings::REGISTER_STATUS_OPEN, Settings::REGISTER_STATUS_API_ONLY])) {
 			showApiError(104);
 		}
 
@@ -422,21 +424,20 @@ function verifyEmptyParameter($parameter)
 
 /**
  * Add language from media info XML to release search names.
- * @param array $releaseData
+ * @param array             $releases
  * @param nzedb\db\Settings $settings
  * @return array
  */
-function addLanguage($releaseData, $settings)
+function addLanguage(&$releases, Settings $settings)
 {
-	$returnData = array();
-	foreach ($releaseData as $release) {
-		$audios = $settings->query(sprintf('SELECT * FROM releaseaudio WHERE releaseid = %d', $release['id']));
-		foreach ($audios as $audio) {
-			if ($audio['audiolanguage'] != '') {
-				$release['searchname'] = ($release['searchname'] . ' ' . $audio['audiolanguage']);
+	if ($releases && count($releases)) {
+		foreach ($releases as $key => $release) {
+			if (isset($release['id'])) {
+				$language = $settings->queryOneRow(sprintf('SELECT audiolanguage FROM releaseaudio WHERE releaseid = %d', $release['id']));
+				if ($language !== false) {
+					$releases[$key]['searchname'] = $releases[$key]['searchname'] . ' ' . $language['audiolanguage'];
+				}
 			}
 		}
-		$returnData[] = $release;
 	}
-	return $returnData;
 }

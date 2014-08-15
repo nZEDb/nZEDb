@@ -960,7 +960,9 @@ class Releases
 			$offset
 		);
 		$releases = $this->pdo->query($sql);
-		$releases[0]['_totalrows'] = $this->pdo->get_Found_Rows();
+		if ($releases && count($releases)) {
+			$releases[0]['_totalrows'] = $this->pdo->get_Found_Rows();
+		}
 		return $releases;
 	}
 
