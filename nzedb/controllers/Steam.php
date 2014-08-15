@@ -37,7 +37,7 @@ Class Steam
 	protected $_directURL = null;
 
 	/**
-	 * @var object
+	 * @var
 	 */
 	protected $_ch;
 
@@ -47,22 +47,22 @@ Class Steam
 	protected $_totalResults = 0;
 
 	/**
-	 * @var object
+	 * @var
 	 */
 	protected $_ret;
 
 	/**
-	 * @var object simple_html_dom
+	 * @var simple_html_dom
 	 */
 	protected $_html;
 
 	/**
-	 * @var string
+	 * @var
 	 */
 	protected $_edithtml;
 
 	/**
-	 * @var string
+	 * @var
 	 */
 	protected $_response;
 
