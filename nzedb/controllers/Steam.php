@@ -16,22 +16,84 @@ Class Steam
 	const GAMEURL = "http://store.steampowered.com/app/";
 	const CDNURL = "http://cdn.akamai.steamstatic.com/steam/apps/";
 
+	/**
+	 * @var null
+	 */
 	public $searchTerm = null;
+
+	/**
+	 * @var null
+	 */
 	public $cookie = null;
 
+	/**
+	 * @var null
+	 */
 	protected $_title = null;
+
+	/**
+	 * @var null
+	 */
 	protected $_directURL = null;
+
+	/**
+	 * @var object
+	 */
 	protected $_ch;
+
+	/**
+	 * @var int
+	 */
 	protected $_totalResults = 0;
+
+	/**
+	 * @var object
+	 */
 	protected $_ret;
+
+	/**
+	 * @var object simple_html_dom
+	 */
 	protected $_html;
+
+	/**
+	 * @var string
+	 */
 	protected $_edithtml;
+
+	/**
+	 * @var string
+	 */
 	protected $_response;
+
+	/**
+	 * @var
+	 */
 	protected $_steamGameID;
+
+	/**
+	 * @var array
+	 */
 	protected $_postParams = array();
+
+	/**
+	 * @var array
+	 */
 	protected $_res = array();
+
+	/**
+	 * @var bool
+	 */
 	protected $_birthTime = false;
+
+	/**
+	 * @var bool
+	 */
 	protected $_lastAgeCheck = false;
+
+	/**
+	 * @var null
+	 */
 	protected $_indirectURL = null;
 
 	public function __construct()
@@ -43,8 +105,9 @@ Class Steam
 		}
 	}
 
-	/*
-	 * Remove from memory if they weren't removed
+	/**
+	 *
+	 * Remove from memory
 	 *
 	 */
 	public function __destruct()
@@ -54,6 +117,11 @@ Class Steam
 		unset($this->_response);
 	}
 
+	/**
+	 * Game Description Snippet
+	 *
+	 * @return array
+	 */
 	public function gameDescription()
 	{
 			if ($this->_ret = $this->_html->find("div.game_description_snippet", 0)) {
@@ -63,6 +131,11 @@ Class Steam
 		return $this->_res;
 	}
 
+	/**
+	 * Game System Requirements - Minimum and Recommended
+	 *
+	 * @return array
+	 */
 	public function gameRequirements()
 	{
 			if ($this->_ret = $this->_html->find("div#game_area_sys_req_leftCol", 0)) {
@@ -88,6 +161,11 @@ Class Steam
 			return $this->_res;
 	}
 
+	/**
+	 * Gets the metacritic Rating
+	 *
+	 * @return array
+	 */
 	public function rating()
 	{
 		if (isset($this->_response) && isset($this->_title)) {
@@ -99,6 +177,11 @@ Class Steam
 		return $this->_res;
 	}
 
+	/**
+	 * Gets the (cover and backdrop image)
+	 *
+	 * @return array
+	 */
 	public function images()
 	{
 		if (isset($this->_response) && isset($this->_title)) {
@@ -120,11 +203,16 @@ Class Steam
 		return $this->_res;
 	}
 
+	/**
+	 * Get Details of the game (Studio,Release Date, Developer)
+	 *
+	 * @return array
+	 */
 	public function details()
 	{
-			$ret2 = null;
 			if ($this->_ret = $this->_html->find("div.details_block", 0)) {
 				foreach ($this->_ret->find("br") as $b) {
+					$ret2 = null;
 					$this->_ret = rtrim($b->next_sibling()->innertext, ":");
 					$ret2 = trim($b->next_sibling()->next_sibling()->innertext);
 					if ($this->_ret !== "Languages") {
@@ -146,6 +234,11 @@ Class Steam
 			return $this->_res;
 	}
 
+	/**
+	 * Gets the Video for the game
+	 *
+	 * @return array
+	 */
 	public function trailer()
 	{
 			if (preg_match('/store.steampowered.com\/video\//', $this->_response)) {
@@ -168,6 +261,11 @@ Class Steam
 		return $this->_res;
 	}
 
+	/**
+	 * Searches for a game for a 90% match
+	 *
+	 * @return bool
+	 */
 	public function search()
 	{
 		if (!isset($this->searchTerm)) {
@@ -220,9 +318,8 @@ Class Steam
 		return false;
 	}
 
-
-		/*
-	 * Gets all Information.
+	/**
+	 * Gets all Information for the game.
 	 *
 	 * @return array
 	 */
@@ -257,9 +354,8 @@ Class Steam
 	}
 
 	/**
-	 * Do a agecheck Verification.
-	 * If cookie has the lastagecheckage and birthtime values load game url
-
+	 * Sets agecheck, retreive agecheck cookie information
+	 *
 	 */
 	private function ageCheck()
 	{
@@ -279,6 +375,14 @@ Class Steam
 		@$this->_getURL(self::GAMEURL . $this->_steamGameID . '/');
 	}
 
+	/**
+	 * Gets Raw Html
+	 *
+	 * @param null $fetchURL
+	 * @param bool $usePost
+	 *
+	 * @return bool
+	 */
 	private function _getURL($fetchURL = null, $usePost = false)
 	{
 		if (isset($fetchURL)) {
