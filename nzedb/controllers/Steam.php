@@ -422,8 +422,6 @@ Class Steam
 	 */
 	private function extractCookies($string)
 	{
-		$cookies = array();
-
 		$lines = explode("\n", $string);
 
 		// iterate over lines
@@ -454,7 +452,5 @@ Class Steam
 		} else {
 			return false;
 		}
-
-		return false;
 	}
 }
