@@ -3,6 +3,11 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
+2014-08-15 bart39
+	* Fix: API Issues.
+	* Fix: Only add row count to release query if releases found.
+	* Add: a.b.nl regex.
+	* Add: Ignore pictureset for PC categorization.
 2014-08-14 bart39
 	* Fix: Add mischashedretentionhours to 10-settings.tsv for new installs.
 	* Fix: Change query column to VARCHAR(1024)

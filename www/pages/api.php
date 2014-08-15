@@ -430,13 +430,22 @@ function addLanguage($releaseData, $settings)
 {
 	$returnData = array();
 	foreach ($releaseData as $release) {
-		$audios = $settings->query(sprintf('SELECT * FROM releaseaudio WHERE releaseid = %d', $release['id']));
-		foreach ($audios as $audio) {
-			if ($audio['audiolanguage'] != '') {
-				$release['searchname'] = ($release['searchname'] . ' ' . $audio['audiolanguage']);
-			}
+		$id = false;
+		if (isset($release['id'])) {
+			$id = $release['id'];
+		} else if (isset($release['rid'])) {
+			$id = $release['rid'];
 		}
-		$returnData[] = $release;
+		if ($id !== false) {
+			$audios = $settings->query(sprintf('SELECT * FROM releaseaudio WHERE releaseid = %d', $id));
+			foreach ($audios as $audio) {
+				if ($audio['audiolanguage'] != '') {
+					$release['searchname'] = ($release['searchname'] . ' ' . $audio['audiolanguage']);
+				}
+			}
+			$returnData[] = $release;
+
+		}
+		return $returnData;
 	}
-	return $returnData;
 }
