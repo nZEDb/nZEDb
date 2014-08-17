@@ -50,4 +50,9 @@ class GamesScraper extends \nzedb\net\http\Scraper
 			@$this->_getURL(self::STEAMURL);
 		}
 	}
+
+	protected function _getURL()
+	{
+
+	}
 }

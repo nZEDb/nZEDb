@@ -25,21 +25,21 @@ abstract class Scraper
 	/**
 	 * @var
 	 */
-	private $searchTerm;
+	protected $_searchTerm;
 
 	/**
 	 * String to hold any cookie sent by the site.
 	 *
 	 * @var string
 	 */
-	private $siteCookie;
+	protected $_siteCookie;
 
 	/**
 	 * Title to search for?
 	 *
 	 * @var string
 	 */
-	private $title = '';
+	protected $_title = '';
 
 	public function __construct()
 	{
