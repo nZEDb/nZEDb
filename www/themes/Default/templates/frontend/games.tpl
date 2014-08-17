@@ -57,11 +57,6 @@
 								alt=""/></a><a title="Sort Ascending" href="{$orderbytitle_asc}"><img
 								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt=""/></a>
 				</th>
-				<th>platform<br/><a title="Sort Descending" href="{$orderbyplatform_desc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif"
-								alt=""/></a><a title="Sort Ascending" href="{$orderbyplatform_asc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt=""/></a>
-				</th>
 				<th>genre<br/><a title="Sort Descending" href="{$orderbygenre_desc}"><img
 								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif"
 								alt=""/></a><a title="Sort Ascending" href="{$orderbygenre_asc}"><img
@@ -125,8 +120,7 @@
 					</td>
 					<td colspan="8" class="left" id="guid{$result.guid}">
 						<h2><a class="title" title="View details"
-							   href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.title|stripslashes|escape:"htmlall"}
-								- {$result.platform|escape:"htmlall"}</a></h2>
+							   href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.title|stripslashes|escape:"htmlall"}</a></h2>
 						{if $result.genre != ""}<b>Genre:</b>{$result.genre}<br/>{/if}
 						{if $result.esrb != ""}<b>Rating:</b>{$result.esrb}<br/>{/if}
 						{if $result.publisher != ""}<b>Publisher:</b>{$result.publisher}<br/>{/if}

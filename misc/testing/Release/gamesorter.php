@@ -29,7 +29,7 @@ function getOddGames()
 			$gen = new Games(['Echo' => true, 'Settings' => $pdo]);
 
 			//Match on 78% title
-			$gen->matchpercent = 78;
+			$gen->matchPercentage = 78;
 			foreach ($res as $arr) {
 				$startTime = microtime(true);
 				$usedgb = true;
@@ -37,19 +37,19 @@ function getOddGames()
 				if ($gameInfo !== false) {
 						$pdo->log->doEcho(
 							$pdo->log->headerOver('Looking up: ') .
-							$pdo->log->primary($gameInfo['title'] . ' (' . $gameInfo['platform'] . ')' )
+							$pdo->log->primary($gameInfo['title'])
 						);
 
 					// Check for existing games entry.
-					$gameCheck = $gen->getgamesinfoByName($gameInfo['title'], $gameInfo['platform']);
+					$gameCheck = $gen->getGamesInfoByName($gameInfo['title']);
 					if ($gameCheck === false) {
-						$gameId = $gen->updategamesinfo($gameInfo);
+						$gameId = $gen->updateGamesInfo($gameInfo);
 						$usedgb = true;
 						if ($gameId === false) {
 							$gameId = -2;
 
 							//If result is empty then set gamesinfo_id back to 0 so we can parse it at a later time.
-							if ($gen->maxhitrequest === true) {
+							if ($gen->maxHitRequest === true) {
 								$gameId = 0;
 							}
 						}
@@ -68,8 +68,8 @@ function getOddGames()
 				}
 				// Sleep so not to flood giantbomb.
 				$diff = floor((microtime(true) - $startTime) * 1000000);
-				if ($gen->sleeptime * 1000 - $diff > 0 && $usedgb === true) {
-					usleep($gen->sleeptime * 1000 - $diff);
+				if ($gen->sleepTime * 1000 - $diff > 0 && $usedgb === true) {
+					usleep($gen->sleepTime * 1000 - $diff);
 				}
 			}
 		} else {
