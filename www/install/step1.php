@@ -141,7 +141,7 @@ if (!$cfg->pearCheck) {
 }
 
 $cfg->schemaCheck = false;
-if (is_readable($cfg->DB_DIR . 'mysql-ddl.sql') && is_readable($cfg->DB_DIR . 'pgsql-ddl.sql')) {
+if (is_readable($cfg->DB_DIR . 'mysql-ddl.sql')) {
 	$cfg->schemaCheck = true;
 }
 if ($cfg->schemaCheck === false) {

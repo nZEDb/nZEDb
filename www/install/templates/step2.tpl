@@ -8,8 +8,6 @@
 <p>We need some information about your database, please provide the following information</p>
 <p>Note: If your database already exists, <u>it will be overwritten</u> with this version. If not it will be created. For the database system, use mysql, default port is 3306.</p>
 
-{*<p>(postgresql) <u>Currently postgresql is locked out as we work on making it compatible with nZEDb.</u> You will need to manually create an empty database, see install.txt for instructions. For the database system, use pgsql, default port is 5432.</p>*}
-{*<p>(postgresql) <u>YOU MUST CREATE (empty or not, it gets overwritten) DATABASE BEFORE STARTING.</u> See install.txt</p>*}
 <form action="?" method="post">
 	<div style="padding-top:20px; text-align:center;">
 			{if $cfg->error}

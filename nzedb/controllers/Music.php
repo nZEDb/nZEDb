@@ -169,11 +169,7 @@ class Music
 		}
 
 		if ($maxage > 0) {
-			if ($pdo->dbSystem() === 'mysql') {
-				$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
-			} else if ($pdo->dbSystem() === 'pgsql') {
-				$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
-			}
+			$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
 		} else {
 			$maxage = '';
 		}
@@ -233,15 +229,6 @@ class Music
 			$catsrch .= "1=2 )";
 		}
 
-		$maxage = '';
-		if ($maxage > 0) {
-			if ($pdo->dbSystem() === 'mysql') {
-				$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
-			} else if ($pdo->dbSystem() === 'pgsql') {
-				$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
-			}
-		}
-
 		$exccatlist = "";
 		if (count($excludedcats) > 0) {
 			$exccatlist = " AND r.categoryid NOT IN (" . implode(",", $excludedcats) . ")";
@@ -266,8 +253,8 @@ class Music
 					. "LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id "
 					. "INNER JOIN musicinfo m ON m.id = r.musicinfoid "
 					. "WHERE r.nzbstatus = 1 AND m.cover = 1 AND m.title != '' AND "
-					. "r.passwordstatus <= (SELECT value FROM settings WHERE setting='showpasswordedrelease') AND %s %s %s %s "
-					. "GROUP BY m.id ORDER BY %s %s" . $limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]));
+					. "r.passwordstatus <= (SELECT value FROM settings WHERE setting='showpasswordedrelease') AND %s %s %s "
+					. "GROUP BY m.id ORDER BY %s %s" . $limit, $browseby, $catsrch, $exccatlist, $order[0], $order[1]));
 	}
 
 	/**
@@ -330,10 +317,7 @@ class Music
 	{
 		$pdo = new Settings();
 
-		$like = ' ILIKE(';
-		if ($pdo->dbSystem() === 'mysql') {
-			$like = ' LIKE(';
-		}
+		$like = ' LIKE(';
 
 		$browseby = ' ';
 		$browsebyArr = $this->getBrowseByOptions();

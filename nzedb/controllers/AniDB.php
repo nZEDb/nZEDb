@@ -59,18 +59,12 @@ class AniDB
 	public function getanidbID($title)
 	{
 		$pdo = $this->pdo;
-		$anidbID = "";
-		if ($pdo->dbSystem() === 'mysql') {
-			$query = sprintf('SELECT anidbid as anidbid FROM animetitles WHERE title REGEXP %s LIMIT 1', $pdo->escapeString('^' . $title . '$'));
-			$anidbID = $pdo->queryOneRow($query);
+		$query = sprintf('SELECT anidbid as anidbid FROM animetitles WHERE title REGEXP %s LIMIT 1', $pdo->escapeString('^' . $title . '$'));
+		$anidbID = $pdo->queryOneRow($query);
 
-			// if the first query failed try it again using like as we have a change for a match
-			if ($anidbID == False) {
-				$query = sprintf('SELECT anidbid as anidbid FROM animetitles WHERE title LIKE %s LIMIT 1', $pdo->escapeString('%' . $title . '%'));
-				$anidbID = $pdo->queryOneRow($query);
-			}
-		} else {
-			$query = sprintf('SELECT anidbid as anidbid FROM animetitles WHERE title ~ %s LIMIT 1', $pdo->escapeString('^' . $title . '$'));
+		// if the first query failed try it again using like as we have a change for a match
+		if ($anidbID == False) {
+			$query = sprintf('SELECT anidbid as anidbid FROM animetitles WHERE title LIKE %s LIMIT 1', $pdo->escapeString('%' . $title . '%'));
 			$anidbID = $pdo->queryOneRow($query);
 		}
 
@@ -81,13 +75,8 @@ class AniDB
 	{
 		$pdo = $this->pdo;
 
-		if ($pdo->dbSystem() === 'mysql') {
-			$regex = 'REGEXP';
-			$like = 'LIKE';
-		} else {
-			$regex = '~';
-			$like = 'ILIKE';
-		}
+		$regex = 'REGEXP';
+		$like = 'LIKE';
 
 		$rsql = '';
 		if ($letter != '') {
@@ -115,10 +104,7 @@ class AniDB
 
 		$rsql = '';
 		if ($animetitle != '') {
-			if ($pdo->dbSystem() === 'mysql')
-				$rsql = sprintf('AND anidb.title LIKE %s', $pdo->escapeString('%' . $animetitle . '%'));
-			else
-				$rsql = sprintf('AND anidb.title ILIKE %s', $pdo->escapeString('%' . $animetitle . '%'));
+			$rsql = sprintf('AND anidb.title LIKE %s', $pdo->escapeString('%' . $animetitle . '%'));
 		}
 
 		return $pdo->query(sprintf('SELECT anidbid, title, description FROM anidb WHERE 1=1 %s ORDER BY anidbid ASC' . $limit, $rsql));
@@ -130,10 +116,7 @@ class AniDB
 
 		$rsql = '';
 		if ($animetitle != '') {
-			if ($pdo->dbSystem() === 'mysql')
-				$rsql .= sprintf('AND anidb.title LIKE %s', $pdo->escapeString('%' . $animetitle . '%'));
-			else
-				$rsql .= sprintf('AND anidb.title ILIKE %s', $pdo->escapeString('%' . $animetitle . '%'));
+			$rsql .= sprintf('AND anidb.title LIKE %s', $pdo->escapeString('%' . $animetitle . '%'));
 		}
 
 		$res = $pdo->queryOneRow(sprintf('SELECT COUNT(anidbid) AS num FROM anidb WHERE 1=1 %s', $rsql));
@@ -290,6 +273,7 @@ class AniDB
 				$this->pdo->log->doEcho('Processing ' . count($results) . " anime releases.", true);
 			}
 
+			$sphinx = new SphinxSearch();
 			foreach ($results as $arr) {
 
 				// clean up the release name to ensure we get a good chance at getting a valid filename
@@ -305,8 +289,10 @@ class AniDB
 				// get anidb number for the title of the naime
 				$anidbID = $this->getanidbID($cleanFilename['title']);
 				if (!$anidbID) {
+					$newTitle = $pdo->escapeString($getReleaseName['title']);
 					// no anidb ID found so set what we know and exit
-					$pdo->queryExec(sprintf('UPDATE releases SET searchname = %s, anidbid = %d, rageid = %d WHERE id = %d', $pdo->escapeString($getReleaseName['title']), -1, -2, $arr['id']));
+					$pdo->queryExec(sprintf('UPDATE releases SET searchname = %s, anidbid = %d, rageid = %d WHERE id = %d', $newTitle, -1, -2, $arr['id']));
+					$sphinx->updateReleaseSearchName($newTitle, $arr['id']);
 					continue;
 				}
 
@@ -343,11 +329,15 @@ class AniDB
 					}
 
 					// lastly update the information, we also want a better readable name, AKA search name so we can use the title we cleaned
-					$pdo->queryExec(sprintf('UPDATE releases SET searchname = %s, episode = %s, tvtitle = %s, tvairdate = %s, anidbid = %d, rageid = %d WHERE id = %d', $pdo->escapeString($getReleaseName['title']), $pdo->escapeString($cleanFilename['epno']), $pdo->escapeString($tvtitle), $pdo->escapeString($airdate), $AniDBAPIArray['anidbid'], -2, $arr['id']));
+					$newTitle = $pdo->escapeString($getReleaseName['title']);
+					$pdo->queryExec(sprintf('UPDATE releases SET searchname = %s, episode = %s, tvtitle = %s, tvairdate = %s, anidbid = %d, rageid = %d WHERE id = %d', $newTitle, $pdo->escapeString($cleanFilename['epno']), $pdo->escapeString($tvtitle), $pdo->escapeString($airdate), $AniDBAPIArray['anidbid'], -2, $arr['id']));
+					$sphinx->updateReleaseSearchName($newTitle, $arr['id']);
 				}
 				else {
 					// if the anime was not found, just simply update the search name
-					$pdo->queryExec(sprintf('UPDATE releases SET searchname = %s, anidbid = %d WHERE id = %d', $pdo->escapeString($getReleaseName['title']), $AniDBAPIArray['anidbid'], $arr['id']));
+					$newTitle = $pdo->escapeString($getReleaseName['title']);
+					$sphinx->updateReleaseSearchName($newTitle, $arr['id']);
+					$pdo->queryExec(sprintf('UPDATE releases SET searchname = %s, anidbid = %d WHERE id = %d', $newTitle, $AniDBAPIArray['anidbid'], $arr['id']));
 				}
 			} // foreach
 

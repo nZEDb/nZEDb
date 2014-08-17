@@ -36,13 +36,15 @@ $orderby = isset($_REQUEST['ob']) && in_array($_REQUEST['ob'], $ordering) ? $_RE
 
 $results = $movies = array();
 $results = $movie->getMovieRange($catarray, $offset, ITEMS_PER_COVER_PAGE, $orderby, -1, $page->userdata['categoryexclusions']);
-foreach ($results as $result) {
-	$result['genre'] = $movie->makeFieldLinks($result, 'genre');
-	$result['actors'] = $movie->makeFieldLinks($result, 'actors');
-	$result['director'] = $movie->makeFieldLinks($result, 'director');
-	$result['languages'] = explode(", ", $result['language']);
+if ($results instanceof Traversable) {
+	foreach ($results as $result) {
+		$result['genre'] = $movie->makeFieldLinks($result, 'genre');
+		$result['actors'] = $movie->makeFieldLinks($result, 'actors');
+		$result['director'] = $movie->makeFieldLinks($result, 'director');
+		$result['languages'] = explode(", ", $result['language']);
 
-	$movies[] = $result;
+		$movies[] = $result;
+	}
 }
 
 $title = (isset($_REQUEST['title']) && !empty($_REQUEST['title'])) ? stripslashes($_REQUEST['title']) : '';

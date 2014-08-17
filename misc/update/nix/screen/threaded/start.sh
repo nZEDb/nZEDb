@@ -61,7 +61,7 @@ do
 	then
 		LASTOPTIMIZE1=`date +%s`
 		echo "Optimizing DB..."
-		$PHP ${NZEDB_PATH}/optimise_db.php run
+		$PHP ${NZEDB_PATH}/optimise_db.php space
 	fi
 
 	DIFF=$(($CURRTIME-$LASTOPTIMIZE2))

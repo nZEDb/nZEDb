@@ -14,7 +14,7 @@ class Groups
 	 *
 	 * @param array $options Class instances.
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		$defaults = [
 			'Settings' => null
@@ -160,8 +160,7 @@ class Groups
 				($groupname !== ''
 					?
 					sprintf(
-						"AND groups.name %s %s ",
-						($this->pdo->dbSystem() === 'mysql' ? 'LIKE' : 'ILIKE'),
+						"AND groups.name LIKE %s ",
 						$this->pdo->escapeString("%".$groupname."%")
 					)
 					: ''
@@ -187,8 +186,7 @@ class Groups
 				($groupname !== ''
 					?
 					sprintf(
-						"AND groups.name %s %s ",
-							($this->pdo->dbSystem() === 'mysql' ? 'LIKE' : 'ILIKE'),
+						"AND groups.name LIKE %s ",
 							$this->pdo->escapeString("%".$groupname."%")
 					)
 					: ''
@@ -214,9 +212,8 @@ class Groups
 				($groupname !== ''
 					?
 					sprintf(
-						"AND groups.name %s %s ",
-							($this->pdo->dbSystem() === 'mysql' ? 'LIKE' : 'ILIKE'),
-							$this->pdo->escapeString("%".$groupname."%")
+						"AND groups.name LIKE %s ",
+						$this->pdo->escapeString("%".$groupname."%")
 					)
 					: ''
 				)
@@ -249,9 +246,8 @@ class Groups
 				($groupname !== ''
 					?
 					sprintf(
-						"AND groups.name %s %s ",
-							($this->pdo->dbSystem() === 'mysql' ? 'LIKE' : 'ILIKE'),
-							$this->pdo->escapeString("%".$groupname."%")
+						"AND groups.name LIKE %s ",
+						$this->pdo->escapeString("%".$groupname."%")
 					)
 					: ''
 				)
@@ -284,9 +280,8 @@ class Groups
 				($groupname !== ''
 					?
 					sprintf(
-						"AND groups.name %s %s ",
-							($this->pdo->dbSystem() === 'mysql' ? 'LIKE' : 'ILIKE'),
-							$this->pdo->escapeString("%".$groupname."%")
+						"AND groups.name LIKE %s ",
+						$this->pdo->escapeString("%".$groupname."%")
 					)
 					: ''
 				)
@@ -318,9 +313,8 @@ class Groups
 				ORDER BY groups.name " . ($start === false ? '' : " LIMIT ".$num." OFFSET ".$start),
 				($groupname !== ''
 					? sprintf(
-						"AND groups.name %s %s ",
-							($this->pdo->dbSystem() === 'mysql' ? 'LIKE' : 'ILIKE'),
-							$this->pdo->escapeString("%".$groupname."%")
+						"AND groups.name LIKE %s ",
+						$this->pdo->escapeString("%".$groupname."%")
 					)
 					: ''
 				)
@@ -512,14 +506,15 @@ class Groups
 		}
 
 		$releaseArray = $this->pdo->queryDirect(
-			sprintf("SELECT guid FROM releases %s", ($id === false ? '' : 'WHERE group_id = ' . $id))
+			sprintf("SELECT id, guid FROM releases %s", ($id === false ? '' : 'WHERE group_id = ' . $id))
 		);
 
 		if ($releaseArray instanceof Traversable) {
 			$releases = new Releases(['Settings' => $this->pdo, 'Groups' => $this]);
 			$nzb = new NZB($this->pdo);
+			$releaseImage = new ReleaseImage($this->pdo);
 			foreach ($releaseArray as $release) {
-				$releases->deleteSingle($release['guid'], $nzb);
+				$releases->deleteSingle(['g' => $release['guid'], 'i' => $release['id']], $nzb, $releaseImage);
 			}
 		}
 	}
@@ -551,7 +546,7 @@ class Groups
 
 			$regFilter = '/' . $groupList . '/i';
 
-			$ret = array();
+			$ret = [];
 
 			foreach($groups AS $group) {
 				if (preg_match($regFilter, $group['group']) > 0) {
@@ -565,7 +560,7 @@ class Groups
 								$this->pdo->escapeString($group['group']), $active, $backfill
 							)
 						);
-						$ret[] = array ('group' => $group['group'], 'msg' => 'Created');
+						$ret[] = ['group' => $group['group'], 'msg' => 'Created'];
 					}
 				}
 			}
@@ -624,7 +619,7 @@ class Groups
 			return $this->cbppTableNames[$groupKey];
 		}
 
-		$tables = array();
+		$tables = [];
 		$tables['cname']  = 'collections';
 		$tables['bname']  = 'binaries';
 		$tables['pname']  = 'parts';

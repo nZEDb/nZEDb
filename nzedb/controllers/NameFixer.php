@@ -35,6 +35,12 @@ class NameFixer
 	protected $_totalReleases;
 
 	/**
+	 * The cleaned filename we want to match
+	 * @var string
+	 */
+	protected $_fileName;
+
+	/**
 	 * @var nzedb\db\Settings
 	 */
 	public $pdo;
@@ -51,6 +57,7 @@ class NameFixer
 			'Groups'       => null,
 			'Utility'      => null,
 			'Settings'     => null,
+			'SphinxSearch' => null,
 		];
 		$options += $defaults;
 
@@ -66,6 +73,7 @@ class NameFixer
 		$this->category = ($options['Categorize'] instanceof Categorize ? $options['Categorize'] : new Categorize(['Settings' => $this->pdo]));
 		$this->utility = ($options['Utility'] instanceof Utility ? $options['Utility'] :new Utility());
 		$this->_groups = ($options['Groups'] instanceof Groups ? $options['Groups'] : new Groups(['Settings' => $this->pdo]));
+		$this->sphinx = ($options['SphinxSearch'] instanceof SphinxSearch ? $options['SphinxSearch'] : new SphinxSearch());
 	}
 
 	/**
@@ -443,6 +451,7 @@ class NameFixer
 								$status = "isrenamed = 1, iscategorized = 1,";
 								break;
 						}
+						$newTitle = $this->pdo->escapeString(substr($newName, 0, 255));
 						$this->pdo->queryExec(
 							sprintf('
 								UPDATE releases
@@ -452,13 +461,15 @@ class NameFixer
 									searchname = %s, %s categoryid = %d
 								WHERE id = %d',
 								$preId,
-								$this->pdo->escapeString(substr($newName, 0, 255)),
+								$newTitle,
 								$status,
 								$determinedCategory,
 								$release['releaseid']
 							)
 						);
+						$this->sphinx->updateReleaseSearchName($release['releaseid'], $newTitle);
 					} else {
+						$newTitle = $this->pdo->escapeString(substr($newName, 0, 255));
 						$this->pdo->queryExec(
 							sprintf('
 								UPDATE releases
@@ -468,11 +479,12 @@ class NameFixer
 									searchname = %s, iscategorized = 1, categoryid = %d
 								WHERE id = %d',
 								$preId,
-								$this->pdo->escapeString(substr($newName, 0, 255)),
+								$newTitle,
 								$determinedCategory,
 								$release['releaseid']
 							)
 						);
+						$this->sphinx->updateReleaseSearchName($release['releaseid'], $newTitle);
 					}
 				}
 			}
@@ -525,22 +537,19 @@ class NameFixer
 	{
 		$matching = $total = 0;
 
-		//Remove all non-printable chars from PreDB title
-		preg_match_all('#[a-zA-Z0-9]{3,}#', $pre['title'], $matches, PREG_PATTERN_ORDER);
-		$titlematch = '+' . implode(' +', $matches[0]);
+		$join = $this->_preFTsearchQuery($pre['title']);
 
 		//Find release matches with fulltext and then identify exact matches with cleaned LIKE string
 		$res = $this->pdo->queryDirect(
 						sprintf("
-							SELECT rs.releaseid AS releaseid, rs.name, rs.searchname,
+							SELECT r.id AS releaseid, r.name, r.searchname,
 								r.group_id, r.categoryid
-							FROM releasesearch rs
-							INNER JOIN releases r ON rs.releaseid = r.id
-							WHERE MATCH (rs.name, rs.searchname) AGAINST ('%1\$s' IN BOOLEAN MODE)
-							AND r.preid = 0
+							FROM releases r
+							%1\$s
 							AND (r.name %2\$s OR r.searchname %2\$s)
+							AND r.preid = 0
 							LIMIT 21",
-							$titlematch,
+							$join,
 							$this->pdo->likeString($pre['title'], true, true)
 						)
 		);
@@ -550,23 +559,59 @@ class NameFixer
 		}
 
 		// Run if row count is positive, but do not run if row count exceeds 10 (as this is likely a failed title match)
-		if ($total > 0 && $total <= 10) {
+		if ($total > 0 && $total <= 15) {
 			foreach ($res as $row) {
 					if ($pre['title'] !== $row['searchname']) {
 						$this->updateRelease($row, $pre['title'], $method = "Title Match source: " . $pre['source'], $echo, "PreDB FT Exact, ", $namestatus, $show, $pre['preid']);
 						$matching++;
+					} else {
+						$this->pdo->queryExec(
+									sprintf('
+										UPDATE releases
+										SET preid = %d
+										WHERE id = %d',
+										$pre['preid'],
+										$row['id']
+									)
+						);
 					}
 			}
-		} elseif ($total >= 11) {
+		} elseif ($total >= 16) {
 			$matching = -1;
 		}
 		return $matching;
 	}
 
-	public function getPreFileNames($args)
+	protected function _preFTsearchQuery($preTitle)
+	{
+		switch (nZEDb_RELEASE_SEARCH_TYPE) {
+			case ReleaseSearch::SPHINX:
+				$titlematch = SphinxSearch::escapeString($preTitle);
+				$join = sprintf(
+						'INNER JOIN releases_se rse ON rse.id = r.id
+						WHERE rse.query = "@(name,searchname) %s;mode=extended"',
+						$titlematch
+				);
+				break;
+			case ReleaseSearch::FULLTEXT:
+			default:
+				//Remove all non-printable chars from PreDB title
+				preg_match_all('#[a-zA-Z0-9]{3,}#', $preTitle, $matches, PREG_PATTERN_ORDER);
+				$titlematch = '+' . implode(' +', $matches[0]);
+				$join = sprintf(
+						"INNER JOIN releasesearch rs ON rs.releaseid = r.id
+						WHERE MATCH (rs.name, rs.searchname) AGAINST ('%s' IN BOOLEAN MODE)",
+						$titlematch
+				);
+				break;
+		}
+		return $join;
+	}
+
+	public function getPreFileNames($args = array())
 	{
 		$timestart = time();
-		$total = $counter = $counted = 0;
+		$counter = $counted = 0;
 		$limit = $orderby = '';
 		$show = (isset($args[2]) && $args[2] === 'show') ? 1 : 0;
 
@@ -578,114 +623,114 @@ class NameFixer
 		echo $this->pdo->log->header("\nMatch PreFiles (${args[1]}) Started at " . date('g:i:s'));
 		echo $this->pdo->log->primary("Matching predb filename to cleaned releasefiles.name.\n");
 
-		$qry =	sprintf('
-				SELECT r.id AS releaseid, r.name, r.searchname, r.group_id, r.categoryid,
-					rf.name AS filename
-				FROM releases r
-				INNER JOIN releasefiles rf ON r.id = rf.releaseid
-				AND rf.name IS NOT NULL
-				WHERE r.preid = 0
-				GROUP BY r.id
-				%s %s',
-				$orderby,
-				$limit
+		$query = $this->pdo->queryDirect(
+						sprintf('
+							SELECT r.id AS releaseid, r.name, r.searchname, r.group_id, r.categoryid,
+								rf.name AS filename
+							FROM releases r
+							INNER JOIN releasefiles rf ON r.id = rf.releaseid
+							AND rf.name IS NOT NULL
+							WHERE r.preid = 0
+							GROUP BY r.id
+							%s %s',
+							$orderby,
+							$limit
+						)
 		);
 
-		$query = $this->pdo->queryDirect($qry);
-
 		if ($query !== false){
+
 			$total = $query->rowCount();
-		}
 
-		if ($total > 0) {
+			if ($total > 0) {
 
-			echo $this->pdo->log->header("\n" . number_format($total) . ' releases to process.');
+				echo $this->pdo->log->header("\n" . number_format($total) . ' releases to process.');
 
-			foreach ($query as $row) {
-				$success = 0;
-				$success = $this->matchPredbFiles($row, 1, 1, true, $show);
-				if ($success === 1) {
-					$counted++;
+				foreach ($query as $row) {
+					$success = $this->matchPredbFiles($row, 1, 1, true, $show);
+					if ($success === 1) {
+						$counted++;
+					}
+					if ($show === 0) {
+						$this->consoletools->overWritePrimary("Renamed Releases: [" . number_format($counted) . "] " . $this->consoletools->percentString(++$counter, $total));
+					}
 				}
-				if ($show === 0) {
-					$this->consoletools->overWritePrimary("Renamed Releases: [" . number_format($counted) . "] " . $this->consoletools->percentString(++$counter, $total));
-				}
+				echo $this->pdo->log->header("\nRenamed " . number_format($counted) . " releases in " . $this->consoletools->convertTime(TIME() - $timestart) . ".");
+			} else {
+				echo $this->pdo->log->info("\nNothing to do.");
 			}
-			echo $this->pdo->log->header("\nRenamed " . number_format($counted) . " releases in " . $this->consoletools->convertTime(TIME() - $timestart) . ".");
-		} else {
-			echo $this->pdo->log->info("\nNothing to do.");
 		}
 	}
 
 	// Match a release filename to a PreDB filename or title.
 	public function matchPredbFiles($release, $echo, $namestatus, $echooutput, $show)
 	{
-		$matching = $total = 0;
-		$fileName = $this->_cleanMatchFiles($release['filename']);
-		$res = false;
+		$matching = 0;
+		$this->_fileName = $this->_cleanMatchFiles($release['filename']);
+		$pre = false;
 
-		if ($fileName !== false){
-			$res = $this->pdo->queryDirect(
+		if ($this->_fileName !== false && $this->_fileName !== '') {
+			$pre = $this->pdo->queryOneRow(
 						sprintf('
 							SELECT id AS preid, title, source
 							FROM predb
 							WHERE filename = %s
 							OR title = %1$s',
-							$this->pdo->escapeString($fileName)
+							$this->pdo->escapeString($this->_fileName)
 						)
 			);
 		}
 
-		if ($res !== false) {
-			$total = $res->rowCount();
-		}
-
-		if ($total > 0) {
-			foreach ($res as $pre) {
-				if ($pre['title'] !== $release['searchname']) {
-						$this->updateRelease($release, $pre['title'], $method = "file matched source: " . $pre['source'], $echo, "PreDB file match, ", $namestatus, $show, $pre['preid']);
-						$matching++;
-				}
+		if ($pre !== false) {
+			if ($pre['title'] !== $release['searchname']) {
+				$this->updateRelease($release, $pre['title'], $method = "file matched source: " . $pre['source'], $echo, "PreDB file match, ", $namestatus, $show, $pre['preid']);
+			} else {
+				$this->pdo->queryExec(
+							sprintf('
+								UPDATE releases
+								SET preid = %d
+								WHERE id = %d',
+								$pre['preid'],
+								$release['releaseid']
+							)
+				);
 			}
+			$matching++;
 		}
 		return $matching;
 	}
 
 	// Cleans file names for PreDB Match
-	protected function _cleanMatchFiles($fileName)
+	protected function _cleanMatchFiles($fileName = '')
 	{
-		$this->fileName = $fileName;
 
 		// first strip all non-printing chars  from filename
-		$this->fileName = $this->utility->stripNonPrintingChars($this->fileName);
+		$this->_fileName = $this->utility->stripNonPrintingChars($fileName);
 
-		if (strlen($this->fileName) !== false && strlen($this->fileName) > 0 && strpos($this->fileName, '.') !== 0) {
+		if (strlen($this->_fileName) !== false && strlen($this->_fileName) > 0 && strpos($this->_fileName, '.') !== 0) {
 			switch (true) {
-				case strpos($this->fileName, '.') !== false:
+				case strpos($this->_fileName, '.') !== false:
 					//some filenames start with a period that ends up creating bad matches so we don't process them
-					$this->fileName = $this->utility->cutStringUsingLast('.', $this->fileName, "left", false);
+					$this->_fileName = $this->utility->cutStringUsingLast('.', $this->_fileName, "left", false);
 					continue;
 				//if filename has a .part001, send it back to the function to cut the next period
-				case preg_match('/\.part\d+$/', $this->fileName):
-					$this->fileName = $this->utility->cutStringUsingLast('.', $this->fileName, "left", false);
+				case preg_match('/\.part\d+$/', $this->_fileName):
+					$this->_fileName = $this->utility->cutStringUsingLast('.', $this->_fileName, "left", false);
 					continue;
 				//if filename has a .vol001, send it back to the function to cut the next period
-				case preg_match('/\.vol\d+(\+\d+)?$/', $this->fileName):
-					$this->fileName = $this->utility->cutStringUsingLast('.', $this->fileName, "left", false);
+				case preg_match('/\.vol\d+(\+\d+)?$/', $this->_fileName):
+					$this->_fileName = $this->utility->cutStringUsingLast('.', $this->_fileName, "left", false);
 					continue;
 				//if filename contains a slash, cut the string and keep string to the right of the last slash to remove dir
-				case strpos($this->fileName, '\\') !== false:
-					$this->fileName = $this->utility->cutStringUsingLast('\\', $this->fileName, "right", false);
+				case strpos($this->_fileName, '\\') !== false:
+					$this->_fileName = $this->utility->cutStringUsingLast('\\', $this->_fileName, "right", false);
 					continue;
 				// A lot of obscured releases have one NFO file properly named with a track number (Audio) at the front of it
 				// This will strip out the track and match it to its pre title
-				case preg_match('/^\d{2}-/', $this->fileName):
-					$this->fileName = preg_replace('/^\d{2}-/', '', $this->fileName);
-					break;
-				default:
-					break;
+				case preg_match('/^\d{2}-/', $this->_fileName):
+					$this->_fileName = preg_replace('/^\d{2}-/', '', $this->_fileName);
 			}
-			return trim($this->fileName);
+			return trim($this->_fileName);
 		}
 		return false;
 	}
@@ -696,7 +741,6 @@ class NameFixer
 		$pdo = $this->pdo;
 		$matching = 0;
 		$this->matched = false;
-		$row = false;
 
 		// Determine MD5 or SHA1
 		if (strlen($hash) === 40) {

@@ -109,17 +109,13 @@ def main():
 				remaining = count - geteach * maxmssgs
 				for loop in range(int(geteach)):
 					run += 1
-					my_queue.put("get_range  %s  %s  %s  %s" % (group[0], group[1] + loop * maxmssgs + maxmssgs, group[1] + loop * maxmssgs + 1, run))
+					my_queue.put("get_range  binaries  %s  %s  %s  %s" % (group[0], group[1] + loop * maxmssgs + 1, group[1] + loop * maxmssgs + maxmssgs, run))
 				run += 1
-				my_queue.put("get_range  %s  %s  %s  %s" % (group[0], group[1] + (loop + 1) * maxmssgs + remaining + 1, group[1] + (loop + 1) * maxmssgs + 1, run))
+				my_queue.put("get_range  binaries  %s  %s  %s  %s" % (group[0], group[1] + (loop + 1) * maxmssgs + 1, group[1] + (loop + 1) * maxmssgs + remaining + 1, run))
 				groups.append(group[0])
 				finals.append(int(group[2]))
 
 	my_queue.join()
-
-	for group in list(zip(groups, finals)):
-		final = ("{}  {}  Binaries".format(group[0], group[1]))
-		subprocess.call(["php", pathname+"/../nix/multiprocessing/.do_not_run/switch.php", "python  get_final  "+str(final)])
 
 	print(bcolors.HEADER + "\nBinaries Safe Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 	print(bcolors.HEADER + "Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))) + bcolors.ENDC)

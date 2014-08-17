@@ -45,73 +45,73 @@ switch ($options[1]) {
 		(new Backfill(['NNTP' => $nntp, 'Settings' => $pdo], true))->backfillAllGroups($options[2], 10000, 'normal');
 		break;
 
-	/* Update the last or first article number / date.
-	 *
-	 * $options[2] => (string) Group name.
-	 * $options[3] => (int)    Article number.
-	 * $options[4] => (string) Type: Binaries or Backfill
-	 */
-	case 'get_final':
-		$columns = array();
-		switch ($options[4]) {
-			case 'Binaries':
-				$columns[1] = 'last_record_postdate';
-				$columns[2] = 'last_record';
-				break;
-			case 'Backfill':
-				$columns[1] = 'first_record_postdate';
-				$columns[2] = 'first_record';
-				break;
-			default:
-				exit();
-		}
-		$pdo = new \nzedb\db\Settings();
-		$groups = new Groups(['Settings' => $pdo]);
-		$groupID = $groups->getIDByName($options[2]);
-		$groupNames = $groups->getCBPTableNames(($pdo->getSetting('tablepergroup') == 1), $groupID);
-
-		$articleDate = $pdo->queryOneRow(
-			sprintf(
-				'SELECT UNIX_TIMESTAMP(c.dateadded) AS utime FROM %s c INNER JOIN %s p ON p.collection_id = c.id WHERE p.id = %d',
-				$groupNames['cname'],
-				$groupNames['pname'],
-				$options[3]
-			)
-		);
-
-		if ($articleDate === false) {
-			exit();
-		}
-
-		$pdo->queryExec(
-			sprintf(
-				'UPDATE groups SET %s = %s, %s = %s, last_updated = NOW() WHERE id = %d',
-				$columns[1], $pdo->from_unixtime($articleDate['utime']),
-				$columns[2], $options[3],
-				$groupID
-			)
-		);
-		echo 'Safe threaded ' . $options[4] .' completed for ' . $options[2] . '.' . PHP_EOL;
-		break;
-
 	/* Get a range of article headers for a group.
 	 *
-	 * $options[2] => (string) Group name.
-	 * $options[3] => (int)    First article number in range.
-	 * $options[4] => (int)    Last article number in range.
-	 * $options[5] => (int)    Number of threads.
+	 * $options[2] => (string) backfill/binaries
+	 * $options[3] => (string) Group name.
+	 * $options[4] => (int)    First article number in range.
+	 * $options[5] => (int)    Last article number in range.
+	 * $options[6] => (int)    Number of threads.
 	 */
 	case 'get_range':
 		$pdo = new \nzedb\db\Settings();
 		$nntp = nntp($pdo);
 		$groups = new Groups(['Settings' => $pdo]);
-		$groupMySQL = $groups->getByName($options[2]);
+		$groupMySQL = $groups->getByName($options[3]);
 		if ($nntp->isError($nntp->selectGroup($groupMySQL['name']))) {
 			if ($nntp->isError($nntp->dataError($nntp, $groupMySQL['name']))) {
 				return;
 			}
 		}
-		(new Binaries(['NNTP' => $nntp, 'Settings' => $pdo, 'Groups' => $groups]))->scan($groupMySQL, $options[4], $options[3], ($pdo->getSetting('safepartrepair') == 1 ? 'update' : 'backfill'));
+		$binaries = new Binaries(['NNTP' => $nntp, 'Settings' => $pdo, 'Groups' => $groups]);
+		$return = $binaries->scan($groupMySQL, $options[4], $options[5], ($pdo->getSetting('safepartrepair') == 1 ? 'update' : 'backfill'));
+		if (empty($return)) {
+			exit();
+		}
+		$columns = [];
+		switch ($options[2]) {
+			case 'binaries':
+				if ($return['lastArticleNumber'] <= $groupMySQL['last_record']){
+					exit();
+				}
+				$columns[1] = sprintf(
+					'last_record_postdate = %s',
+					$pdo->from_unixtime(
+						(is_numeric($return['lastArticleDate']) ? $return['lastArticleDate'] : strtotime($return['lastArticleDate']))
+					)
+				);
+				$columns[2] = sprintf('last_record = %s', $return['lastArticleNumber']);
+				$query = sprintf(
+					'UPDATE groups SET %s, %s, last_updated = NOW() WHERE id = %d AND last_record < %s',
+					$columns[1],
+					$columns[2],
+					$groupMySQL['id'],
+					$return['lastArticleNumber']
+				);
+				break;
+			case 'backfill':
+				if ($return['firstArticleNumber'] >= $groupMySQL['first_record']){
+					exit();
+				}
+				$columns[1] = sprintf(
+					'first_record_postdate = %s',
+					$pdo->from_unixtime(
+						(is_numeric($return['firstArticleDate']) ? $return['firstArticleDate'] : strtotime($return['firstArticleDate']))
+					)
+				);
+				$columns[2] = sprintf('first_record = %s', $return['firstArticleNumber']);
+				$query = sprintf(
+					'UPDATE groups SET %s, %s, last_updated = NOW() WHERE id = %d AND first_record > %s',
+					$columns[1],
+					$columns[2],
+					$groupMySQL['id'],
+					$return['firstArticleNumber']
+				);
+				break;
+			default:
+				exit();
+		}
+		$pdo->queryExec($query);
 		break;
 
 	/* Do part repair for a group.
@@ -229,10 +229,7 @@ switch ($options[1]) {
 			$pdo = new \nzedb\db\Settings();
 
 			// Create the connection here and pass, this is for post processing, so check for alternate.
-			$nntp = new NNTP(['Settings' => $pdo]);
-			if (($pdo->getSetting('alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
-				exit('Unable to connect to usenet.');
-			}
+			$nntp = nntp($pdo, true);
 
 			if ($options[1] === 'pp_nfo') {
 				(new Nfo(['Echo' => true, 'Settings' => $pdo]))->processNfoFiles($nntp, '', $options[2]);
@@ -315,13 +312,14 @@ function collectionCheck(&$pdo, $groupID)
  * Connect to usenet, return NNTP object.
  *
  * @param \nzedb\db\Settings $pdo
+ * @param bool               $alternate Use alternate NNTP provider.
  *
  * @return NNTP
  */
-function &nntp(&$pdo)
+function &nntp(&$pdo, $alternate = false)
 {
-	$nntp = new NNTP();
-	if (($pdo->getSetting('alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
+	$nntp = new NNTP(['Settings' => $pdo]);
+	if (($alternate && $pdo->getSetting('alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
 		exit("ERROR: Unable to connect to usenet." . PHP_EOL);
 	}
 

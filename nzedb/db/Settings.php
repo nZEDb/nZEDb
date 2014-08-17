@@ -21,8 +21,7 @@
 namespace nzedb\db;
 
 if (!defined('nZEDb_INSTALLER')) {
-	require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR .
-				 'config.php';
+	require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php';
 }
 
 use nzedb\utility\Utility;
@@ -47,14 +46,14 @@ class Settings extends DB
 
 	private $settings;
 
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		parent::__construct($options);
 		$result         = parent::exec("describe site", true);
 		$this->table = ($result === false) ? 'settings' : 'site';
 		$this->setCovers();
 
-		return self::$pdo;
+		return $this->pdo;
 	}
 
 	/**
@@ -77,7 +76,7 @@ class Settings extends DB
 	 *
 	 * @return string|array|bool
 	 */
-	public function getSetting($options = array())
+	public function getSetting($options = [])
 	{
 		// todo: think about making this static so it can be accessed without instantiating.
 		if (!is_array($options)) {
@@ -87,11 +86,11 @@ class Settings extends DB
 			}
 		}
 
-		$defaults = array(
+		$defaults = [
 			'section'    => '',
 			'subsection' => '',
 			'name'       => null,
-		);
+		];
 		$options += $defaults;
 
 		if ($this->table == 'settings') {
@@ -170,7 +169,7 @@ class Settings extends DB
 				$sql    = sprintf("UPDATE settings SET value = '%s' WHERE %s",
 								  $options['value'],
 								  $where);
-				$result = self::$pdo->query($sql);
+				$result = $this->pdo->query($sql);
 			}
 		}
 
@@ -187,7 +186,7 @@ class Settings extends DB
 		$error = $this->_validate($form);
 
 		if ($error === null) {
-			$sql = $sqlKeys = array();
+			$sql = $sqlKeys = [];
 			foreach ($form as $settingK => $settingV) {
 				$sql[]     = sprintf("WHEN %s THEN %s",
 									 $this->escapeString($settingK),
@@ -220,7 +219,7 @@ class Settings extends DB
 
 	protected function _dottedToArray($setting)
 	{
-		$result = array();
+		$result = [];
 		if (is_string($setting)) {
 			$parts = explode('.', $setting);
 			switch (count($parts)) {
@@ -323,11 +322,6 @@ class Settings extends DB
  * Putting procedural stuff inside class scripts like this is BAD. Do not use this as an excuse to do more.
  * This is a temporary measure until a proper frontend for cli stuff can be implemented with li3.
  */
-if (Utility::isCLI()) {
-	if (isset($argc) && $argc > 1) {
-		$settings = new Settings();
-		echo $settings->getSetting($argv[1]);
-	}
+if (Utility::isCLI() && isset($argv[1])) {
+	echo (new Settings())->getSetting($argv[1]);
 }
-
-?>

@@ -26,12 +26,12 @@ use nzedb\utility\Utility;
 class DbUpdate
 {
 	/**
-	 * @var object    Instance variable for DB object.
+	 * @var \nzedb\db\Settings    Instance variable for DB object.
 	 */
 	public $pdo;
 
 	/**
-	 * @var nzedb\utility\Git instance
+	 * @var \nzedb\utility\Git instance
 	 */
 	public $git;
 
@@ -60,12 +60,12 @@ class DbUpdate
 
 	public function __construct(array $options = [])
 	{
-		$defaults = array(
+		$defaults = [
 			'backup'	=> true,
-			'db'		=> new \nzedb\db\Settings(),
+			'db'		=> new Settings(),
 			'git'		=> new \nzedb\utility\Git(),
 			'logger'	=> new \ColorCLI(),
-		);
+		];
 		$options += $defaults;
 		unset($defaults);
 
@@ -77,9 +77,9 @@ class DbUpdate
 		if (is_a($this->pdo,
 				 'Settings')
 		) { // If $pdo is an instance of Settings, reuse it to save resources.
-			$this->settings =& $this->pdo;
+			$this->settings = &$this->pdo;
 		} else {
-			$this->settings = new \nzedb\db\Settings();
+			$this->settings = new Settings();
 		}
 
 		$this->_DbSystem = strtolower($this->pdo->dbSystem());
@@ -87,16 +87,15 @@ class DbUpdate
 
 	public function loadTables(array $options = [])
 	{
-		$defaults	= array(
+		$defaults	= [
 			'ext'	=> 'tsv',
-			'files'	=> array(),
+			'files'	=> [],
 			'path'	=> nZEDb_RES . 'db' . DS . 'schema' . DS . 'data',
-			'regex'	=> '#^' . Utility::PATH_REGEX . "(?P<order>\d+)-(?<table>\w+)\.tsv$#",
-		);
+			'regex'	=> '#^' . Utility::PATH_REGEX . '(?P<order>\d+)-(?<table>\w+)\.tsv$#',
+		];
 		$options += $defaults;
 
-		$files = empty($options['files']) ? \nzedb\utility\Utility::getDirFiles($options) :
-			$options['files'];
+		$files = empty($options['files']) ? Utility::getDirFiles($options) : $options['files'];
 		natsort($files);
 		$sql = 'LOAD DATA INFILE "%s" IGNORE INTO TABLE `%s` FIELDS TERMINATED BY "\t" OPTIONALLY ENCLOSED BY "\"" IGNORE 1 LINES (%s)';
 		foreach ($files as $file) {
@@ -117,6 +116,9 @@ class DbUpdate
 						$fields = trim($line);
 
 						echo "Inserting data into table: '$table'\n";
+						if (Utility::isWin()) {
+							$file = str_replace("\\", '\/', $file);
+						}
 						$this->pdo->exec(sprintf($sql, $file, $table, $fields));
 					} else {
 						exit("Failed to open file: '$file'\n");
@@ -139,15 +141,15 @@ class DbUpdate
 	 * than one table, consider splitting into multiple patches using different patch modifier
 	 * numbers to order them. i.e. +1~settings.sql, +2~predb.sql, etc.
 	 */
-	public function newPatches(array $options = array())
+	public function newPatches(array $options = [])
 	{
-		$defaults = array(
+		$defaults = [
 			'data'	=> nZEDb_RES . 'db' . DS . 'schema' . DS . 'data' . DS,
 			'ext'	=> 'sql',
 			'path'	=> nZEDb_RES . 'db' . DS . 'patches' . DS . $this->_DbSystem,
 			'regex'	=> '#^' . Utility::PATH_REGEX . '\+(?P<order>\d+)~(?P<table>\w+)\.sql$#',
 			'safe'	=> true,
-		);
+		];
 		$options += $defaults;
 
 		$this->processPatches(['safe' => $options['safe']]); // Make sure we are completely up to date!
@@ -184,13 +186,13 @@ class DbUpdate
 	public function processPatches(array $options = [])
 	{
 		$patched	= 0;
-		$defaults	= array(
+		$defaults	= [
 			'data'	=> nZEDb_RES . 'db' . DS . 'schema' . DS . 'data' . DS,
 			'ext'	=> 'sql',
 			'path'	=> nZEDb_RES . 'db' . DS . 'patches' . DS . $this->_DbSystem,
 			'regex'	=> '#^' . Utility::PATH_REGEX . '(?P<patch>\d{4})~(?P<table>\w+)\.sql$#',
 			'safe'	=> true,
-		);
+		];
 		$options += $defaults;
 
 		$currentVersion = $this->settings->getSetting(['setting' => 'sqlpatch']);
@@ -198,7 +200,7 @@ class DbUpdate
 			exit("Bad sqlpatch value: '$currentVersion'\n");
 		}
 
-		$files = empty($options['files']) ? \nzedb\utility\Utility::getDirFiles($options) :
+		$files = empty($options['files']) ? Utility::getDirFiles($options) :
 			$options['files'];
 
 		if (count($files)) {
@@ -214,9 +216,9 @@ class DbUpdate
 				if (preg_match($options['regex'], str_replace('\\', '/', $file), $matches)) {
 					$patch    = (integer)$matches['patch'];
 					$setPatch = true;
-				} else if (preg_match("/UPDATE `?site`? SET `?value`? = '?(?P<patch>\d+)'? WHERE `?setting`? = 'sqlpatch'/i",
-									  $patch,
-									  $matches)
+				} else if (preg_match('/UPDATE `?site`? SET `?value`? = \'?(?P<patch>\d+)\'? WHERE `?setting`? = \'sqlpatch\'/i',
+									$patch,
+									$matches)
 				) {
 					$patch = (integer)$matches['patch'];
 				} else {
@@ -247,23 +249,23 @@ class DbUpdate
 
 	public function processSQLFile(array $options = [])
 	{
-		$defaults = array(
+		$defaults = [
 			'filepath' => nZEDb_RES . 'db' . DS . 'schema' . DS . $this->_DbSystem . '-ddl.sql',
-		);
+		];
 		$options += $defaults;
 
 		$sql = file_get_contents($options['filepath']);
-		$sql = str_replace(array('DELIMITER $$', 'DELIMITER ;', '$$'), '', $sql);
+		$sql = str_replace(['DELIMITER $$', 'DELIMITER ;', '$$'], '', $sql);
 		$this->pdo->exec($sql);
 	}
 
 	public function splitSQL($file, array $options = [])
 	{
-		$defaults = array(
+		$defaults = [
 			'data'		=> null,
 			'delimiter'	=> ';',
 			'local'		=> null,
-		);
+		];
 		$options += $defaults;
 
 		if (!empty($options['vars'])) {
@@ -276,7 +278,7 @@ class DbUpdate
 			$file = fopen($file, 'r');
 
 			if (is_resource($file)) {
-				$query = array();
+				$query = [];
 
 				while (!feof($file)) {
 					$query[] = fgets($file);
@@ -309,9 +311,9 @@ class DbUpdate
 							);
 
 							if (
-								in_array($e->errorInfo[1], array(1091, 1060, 1061, 1071, 1146)) ||
+								in_array($e->errorInfo[1], [1091, 1060, 1061, 1071, 1146]) ||
 								in_array($e->errorInfo[0],
-										 array(23505, 42701, 42703, '42P07', '42P16'))
+										[23505, 42701, 42703, '42P07', '42P16'])
 							) {
 								if ($e->errorInfo[1] == 1060) {
 									echo $this->log->warning(
@@ -329,15 +331,11 @@ class DbUpdate
 										$this->pdo->exec($query);
 										echo $this->log->alternateOver('SUCCESS: ') .
 											 $this->log->primary($query);
-									} catch (PDOException $e) {
-										exit($this->log->error(
-													   "$query Failed {" . $e->errorInfo[1] .
-													   "}\n\t" . $e->errorInfo[2]));
+									} catch (\PDOException $e) {
+										exit($this->log->error("$query Failed {" . $e->errorInfo[1] . "}\n\t" . $e->errorInfo[2]));
 									}
 								} else {
-									exit($this->log->error(
-												   "$query Failed {" . $e->errorInfo[1] . "}\n\t" .
-												   $e->errorInfo[2]));
+									exit($this->log->error("$query Failed {" . $e->errorInfo[1] . "}\n\t" . $e->errorInfo[2]));
 								}
 							}
 						}
@@ -349,26 +347,27 @@ class DbUpdate
 					}
 
 					if (is_string($query) === true) {
-						$query = array();
+						$query = [];
 					}
 				}
 			}
 		}
 	}
 
-	public function updateSchemaData(array $options = array())
+	public function updateSchemaData(array $options = [])
 	{
 		$changed	= false;
-		$default	= array(
+		$default	= [
 			'file'	=> '10-settings.tsv',
 			'path'	=> 'resources' . DS . 'db' . DS . 'schema' . DS . 'data' . DS,
 			'regex'	=> '#^(?P<section>.*)\t(?P<subsection>.*)\t(?P<name>.*)\t(?P<value>.*)\t(?P<hint>.*)\t(?P<setting>.*)$#',
 			'value'	=> function (array $matches) {
 					return "{$matches['section']}\t{$matches['subsection']}\t{$matches['name']}\t{$matches['value']}\t{$matches['hint']}\t{$matches['setting']}";
 				} // WARNING: leaving this empty will blank not remove lines.
-		);
+		];
 		$options += $default;
 
+		$file = [];
 		$filespec = Utility::trailingSlash($options['path']) . $options['path'];
 		if (file_exists($filespec) && ($file = file($filespec, FILE_IGNORE_NEW_LINES))) {
 			$count = count($file);
@@ -396,6 +395,8 @@ class DbUpdate
 			}
 		}
 	}
+
+	public $backedup;
 
 	protected function _backupDb()
 	{
