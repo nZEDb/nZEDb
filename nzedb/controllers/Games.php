@@ -99,12 +99,12 @@ class Games
 		];
 		$options += $defaults;
 
-		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
+		$this->echoOutput = ($options['Echo'] && nZEDb_ECHOCLI);
 
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 
 		$this->publicKey = $this->pdo->getSetting('giantbombkey');
-		$this->gameqty = ($this->pdo->getSetting('maxgamesprocessed') != '') ? $this->pdo->getSetting('maxgamesprocessed') : 150;
+		$this->gameQty = ($this->pdo->getSetting('maxgamesprocessed') != '') ? $this->pdo->getSetting('maxgamesprocessed') : 150;
 		$this->sleepTime = ($this->pdo->getSetting('amazonsleep') != '') ? $this->pdo->getSetting('amazonsleep') : 1000;
 		$this->imgSavePath = nZEDb_COVERS . 'games' . DS;
 		$this->renamed = '';
@@ -376,9 +376,8 @@ class Games
 		$this->pdo->queryExec(
 			sprintf("
 				UPDATE gamesinfo
-				SET
-					title = %s, asin = %s, url = %s, salesrank = %s, publisher = %s,
-					releasedate= %s,esrb = %s, cover = %d, genre_id = %d, updateddate = NOW()
+				SET title = %s, asin = %s, url = %s, salesrank = %s, publisher = %s,
+					releasedate = %s, esrb = %s, cover = %d, genre_id = %d, updateddate = NOW()
 				WHERE id = %d",
 				$this->pdo->escapeString($title),
 				$this->pdo->escapeString($asin),
@@ -410,7 +409,7 @@ class Games
 
 		// Process Steam first before giantbomb
 		// Steam has more details
-
+		$this->_gameResults = [];
 		$this->_getGame = new Steam();
 		$this->_classUsed = "steam";
 		$this->_getGame->cookie = $this->cookie;
@@ -476,12 +475,15 @@ class Games
 					if (isset($this->_gameResults['cover'])) {
 						$con['coverurl'] = (string)$this->_gameResults['cover'];
 					}
+
 					if (isset($this->_gameResults['backdrop'])) {
 						$con['backdropurl'] = (string)$this->_gameResults['backdrop'];
 					}
+
 					$con['title'] = (string)$this->_gameResults['title'];
 					$con['asin'] = $this->_gameResults['steamgameid'];
 					$con['url'] = (string)$this->_gameResults['directurl'];
+
 					if (isset($this->_gameResults['gamedetails']['Publisher'])) {
 						$con['publisher'] = (string)$this->_gameResults['gamedetails']['Publisher'];
 					} else {
@@ -493,11 +495,13 @@ class Games
 					} else {
 						$con['esrb'] = "Not Rated";
 					}
-					if (isset($this->_gameResults['gamedetails']['Release Date'])) {
+
+					if (!empty($this->_gameResults['gamedetails']['Release Date'])) {
 						$date = DateTime::createFromFormat('j M Y',
-														   $this->_gameResults['gamedetails']['Release Date']);
+									$this->_gameResults['gamedetails']['Release Date']);
 						$con['releasedate'] = $this->pdo->escapeString((string)$date->format('Y-m-d'));
 					}
+
 					if (isset($this->_gameResults['description'])) {
 						$con['review'] = trim(strip_tags((string)$this->_gameResults['description']));
 					}
@@ -505,6 +509,7 @@ class Games
 					if(isset($this->_gameResults['trailer'])){
 						$con['trailer'] = (string)$this->_gameResults['trailer'];
 					}
+
 					$genreName = '';
 					if (empty($genreName) && isset($this->_gameResults['gamedetails']['Genre'])) {
 						$a = (string)$this->_gameResults['gamedetails']['Genre'];
@@ -638,7 +643,7 @@ class Games
 		}
 
 		if ($gamesId) {
-			if ($this->echooutput) {
+			if ($this->echoOutput) {
 				$this->pdo->log->doEcho(
 					$this->pdo->log->header("Added/updated game: ") .
 					$this->pdo->log->alternateOver("   Title:    ") .
@@ -650,7 +655,7 @@ class Games
 			$con['backdrop'] = $ri->saveImage($gamesId . '-backdrop', $con['backdropurl'], $this->imgSavePath, 1920, 1024);
 			}
 		} else {
-			if ($this->echooutput) {
+			if ($this->echoOutput) {
 				$this->pdo->log->doEcho(
 					$this->pdo->log->headerOver("Nothing to update: ") .
 					$this->pdo->log->primary($con['title'] . ' (PC)' )
@@ -748,12 +753,12 @@ class Games
 				ORDER BY postdate DESC
 				LIMIT %d',
 				$this->renamed,
-				$this->gameqty
+				$this->gameQty
 			)
 		);
 
 		if ($res instanceof Traversable && $res->rowCount() > 0) {
-			if ($this->echooutput) {
+			if ($this->echoOutput) {
 				$this->pdo->log->doEcho($this->pdo->log->header("Processing " . $res->rowCount() . ' games release(s).'));
 			}
 
@@ -766,7 +771,7 @@ class Games
 				$gameInfo = $this->parseTitle($arr['searchname']);
 				if ($gameInfo !== false) {
 
-					if ($this->echooutput) {
+					if ($this->echoOutput) {
 						$this->pdo->log->doEcho(
 							$this->pdo->log->headerOver('Looking up: ') .
 							$this->pdo->log->primary($gameInfo['title'] . ' (PC)' )
@@ -797,7 +802,7 @@ class Games
 					// Could not parse release title.
 					$this->pdo->queryExec(sprintf('UPDATE releases SET gamesinfo_id = %d WHERE id = %d', -2, $arr['id']));
 
-					if ($this->echooutput) {
+					if ($this->echoOutput) {
 						echo '.';
 					}
 				}
@@ -809,7 +814,7 @@ class Games
 				}
 			}
 		} else {
-			if ($this->echooutput) {
+			if ($this->echoOutput) {
 				$this->pdo->log->doEcho($this->pdo->log->header('No games releases to process.'));
 			}
 		}
