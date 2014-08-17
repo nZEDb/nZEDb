@@ -76,27 +76,67 @@
 					<div class="movcover">
 						<a
 							target="_blank"
-							href="{$smarty.const.WWW_TOP}/xxx/?imdb={$result.id}"
+							href="{$smarty.const.WWW_TOP}/xxx/?id={$result.id}"
 							name="name{$result.id}"
-							title="View movie info"
-							class="modal_imdb thumbnail" rel="movie"
+							title="View XXX info"
+							class="modal_xxx thumbnail" rel="viewxxx"
 						><img
 								class="shadow" style="margin: 3px 0;"
 								src="{$smarty.const.WWW_TOP}/covers/xxx/{if $result.cover == 1}{$result.id}-cover.jpg{else}no-cover.jpg{/if}"
 								width="160" border="0" alt="{$result.title|escape:"htmlall"}"
 						></a>
-						<div class="relextra" style="margin-top:5px;">
+												<div class="relextra" style="margin-top:5px;">
+							{if $result.classused == "ade"}
+								<a
+									target="_blank"
+									href="{$site->dereferrer_link}{$result.directurl}"
+									name="viewade{$result.title}"
+									title="View AdultdvdEmpire page"
+									><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/ade.png"></a>
+								{else}
+								<a
+									target="_blank"
+									href="{$site->dereferrer_link}http://www.adultdvdempire.com/dvd/search?q={$result.title}"
+									name="viewade{$result.title}"
+									title="Search AdultdvdEmpire page"
+									><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/ade.png"></a>
+							{/if}
+							{if $result.classused == "hm"}
+								<a
+									target="_blank"
+									href="{$site->dereferrer_link}{$result.directurl}"
+									name="viewhm{$result.title}"
+									title="View Hot Movies page"
+									><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/hotmovies.png"></a>
+							{else}
+								<a
+									target="_blank"
+									href="{$site->dereferrer_link}http://www.hotmovies.com/search.php?words={$result.title}&complete=on&search_in=video_title"
+									name="viewhm{$result.title}"
+									title="Search Hot Movies page"
+									><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/hotmovies.png"></a>
+							{/if}
+							{if $result.classused == "pop"}
 							<a
 								target="_blank"
-								href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.id}/"
-								name="xxx{$result.id}"
-								title="View imdb page"><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/imdb.png"></a>
+								href="{$site->dereferrer_link}{$result.directurl}"
+								name="viewpop{$result.id}"
+								title="View Popporn page"
+								><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/popporn.png"></a>
+							{else}
 							<a
 								target="_blank"
-								href="{$site->dereferrer_link}http://trakt.tv/search/imdb?q=tt{$result.id}/"
-								name="trakt{$result.id}"
-								title="View trakt page"
-							><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/trakt.png"></a>
+								href="{$site->dereferrer_link}http://www.popporn.com/results/index.cfm?v=4&g=0&searchtext={$result.title}"
+								name="viewpop{$result.id}"
+								title="Search Popporn page"
+							><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/popporn.png"></a>
+							{/if}
+							<a
+								target="_blank"
+								href="{$site->dereferrer_link}http://www.iafd.com/results.asp?searchtype=title&searchstring={$result.title}"
+								name="viewiafd{$result.title}"
+								title="Search Internet Adult Film Database"
+								><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/iafd.png"></a>
 						</div>
 						<hr>
 						<div>
@@ -112,7 +152,7 @@
 					<h2>
 						<a
 							title="{$result.title|stripslashes|escape:"htmlall"}"
-							href="{$smarty.const.WWW_TOP}/xxx?imdb={$result.id}">{$result.title|stripslashes|escape:"htmlall"}
+							href="{$smarty.const.WWW_TOP}/xxx?id={$result.id}">{$result.title|stripslashes|escape:"htmlall"}
 						</a>
 						</h2>
 					{if $result.tagline != ''}
