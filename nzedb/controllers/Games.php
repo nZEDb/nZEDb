@@ -48,14 +48,14 @@ class Games
 	public $pubkey;
 
 	/**
-	 * @var array|bool|int|string
-	 */
-	public $sleeptime;
-
-	/**
 	 * @var string
 	 */
 	public $renamed;
+
+	/**
+	 * @var array|bool|int|string
+	 */
+	public $sleeptime;
 
 	protected $resultsfound = 0;
 	/**
