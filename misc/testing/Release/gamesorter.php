@@ -29,7 +29,7 @@ function getOddGames()
 			$gen = new Games(['Echo' => true, 'Settings' => $pdo]);
 
 			//Match on 78% title
-			$gen->matchPercent = 78;
+			$gen->matchPercentage = 78;
 			foreach ($res as $arr) {
 				$startTime = microtime(true);
 				$usedgb = true;

@@ -6,56 +6,11 @@ use nzedb\db\Settings;
 
 class Games
 {
-	const REQID_NONE = -3; // The Request ID was not found locally or via web lookup.
-	const REQID_ZERO = -2; // The Request ID was 0.
-	const REQID_NOLL = -1; // Request ID was not found via local lookup.
-	const CONS_UPROC = 0; // Release has not been processed.
-	const REQID_FOUND = 1; // Request ID found and release was updated.
-
-	/**
-	 * @var nzedb\db\Settings
-	 */
-	public $pdo;
-
-	/**
-	 * @var bool
-	 */
-	public $echooutput;
-
-	/**
-	 * @var array|bool|string
-	 */
-	public $pubkey;
-
-	/**
-	 * @var array|bool|int|string
-	 */
-	public $gameqty;
-
-	/**
-	 * @var array|bool|int|string
-	 */
-	public $sleepTime;
-
-	/**
-	 * @var string
-	 */
-	public $imgSavePath;
-
-	/**
-	 * @var string
-	 */
-	public $renamed;
-
-	/**
-	 * @var int
-	 */
-	public $matchPercent;
-
-	/**
-	 * @var bool
-	 */
-	public $maxHitRequest;
+	const REQID_FOUND 		= 1; // Request ID found and release was updated.
+	const REQID_NO_LOCAL	= -1; // Request ID was not found via local lookup.
+	const REQID_NONE		= -3; // The Request ID was not found locally or via web lookup.
+	const REQID_UNPROCESSED	= 0; // Release has not been processed.
+	const REQID_ZERO		= -2; // The Request ID was 0.
 
 	/**
 	 * @var string
@@ -63,19 +18,49 @@ class Games
 	public $cookie;
 
 	/**
-	 * @var object
+	 * @var bool
 	 */
-	protected $_getGame;
+	public $echoOutput;
+
+	/**
+	 * @var array|bool|int|string
+	 */
+	public $gameQty;
+
+	/**
+	 * @var string
+	 */
+	public $imgSavePath;
 
 	/**
 	 * @var int
 	 */
-	protected $_resultsFound = 0;
+	public $matchPercentage;
 
 	/**
-	 * @var array
+	 * @var bool
 	 */
-	protected $_gameResults;
+	public $maxHitRequest;
+
+	/**
+	 * @var nzedb\db\Settings
+	 */
+	public $pdo;
+
+	/**
+	 * @var array|bool|string
+	 */
+	public $publicKey;
+
+	/**
+	 * @var string
+	 */
+	public $renamed;
+
+	/**
+	 * @var array|bool|int|string
+	 */
+	public $sleepTime;
 
 	/**
 	 * @var string
@@ -86,6 +71,21 @@ class Games
 	 * @var string
 	 */
 	protected $_gameID;
+
+	/**
+	 * @var array
+	 */
+	protected $_gameResults;
+
+	/**
+	 * @var object
+	 */
+	protected $_getGame;
+
+	/**
+	 * @var int
+	 */
+	protected $_resultsFound = 0;
 
 	/**
 	 * @param array $options Class instances / Echo to cli.
@@ -103,12 +103,12 @@ class Games
 
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 
-		$this->pubkey = $this->pdo->getSetting('giantbombkey');
+		$this->publicKey = $this->pdo->getSetting('giantbombkey');
 		$this->gameqty = ($this->pdo->getSetting('maxgamesprocessed') != '') ? $this->pdo->getSetting('maxgamesprocessed') : 150;
 		$this->sleepTime = ($this->pdo->getSetting('amazonsleep') != '') ? $this->pdo->getSetting('amazonsleep') : 1000;
 		$this->imgSavePath = nZEDb_COVERS . 'games' . DS;
 		$this->renamed = '';
-		$this->matchPercent = 60;
+		$this->matchPercentage = 60;
 		$this->maxHitRequest = false;
 		$this->cookie = nZEDb_TMP . 'xxx.cookie';
 		if ($this->pdo->getSetting('lookupgames') == 2) {
@@ -671,7 +671,7 @@ class Games
 
 	public function fetchGiantBombID($title = '')
 	{
-		$obj = new GiantBomb($this->pubkey);
+		$obj = new GiantBomb($this->publicKey);
 		try {
 			$fields = array(
 			    "api_detail_url", "name"
@@ -720,7 +720,7 @@ class Games
 	 */
 	public function fetchGiantBombArray()
 	{
-		$obj = new GiantBomb($this->pubkey);
+		$obj = new GiantBomb($this->publicKey);
 		try {
 			$fields = array(
 				"deck", "description", "original_game_rating", "api_detail_url", "image", "genres",

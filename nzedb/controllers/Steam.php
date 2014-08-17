@@ -14,17 +14,17 @@ Class Steam
 	/**
 	 * @var
 	 */
-	public $searchTerm;
+	public $cookie;
 
 	/**
 	 * @var
 	 */
-	public $cookie;
+	public $searchTerm;
 
 	/**
-	 * @var string
+	 * @var bool
 	 */
-	protected $_title = '';
+	protected $_ageCheckSet = false;
 
 	/**
 	 * @var string
@@ -32,19 +32,19 @@ Class Steam
 	protected $_directURL = '';
 
 	/**
+	 * @var bool
+	 */
+	protected $_birthTime = false;
+
+	/**
 	 * @var
 	 */
 	protected $_ch;
 
 	/**
-	 * @var int
-	 */
-	protected $_totalResults = 0;
-
-	/**
 	 * @var
 	 */
-	protected $_ret;
+	protected $_editHtml;
 
 	/**
 	 * @var simple_html_dom
@@ -52,19 +52,14 @@ Class Steam
 	protected $_html;
 
 	/**
-	 * @var
+	 * @var string
 	 */
-	protected $_edithtml;
+	protected $_indirectURL = '';
 
 	/**
-	 * @var
+	 * @var bool
 	 */
-	protected $_response;
-
-	/**
-	 * @var
-	 */
-	protected $_steamGameID;
+	protected $_lastAgeCheck = false;
 
 	/**
 	 * @var array
@@ -77,29 +72,34 @@ Class Steam
 	protected $_res = array();
 
 	/**
-	 * @var bool
+	 * @var
 	 */
-	protected $_birthTime = false;
+	protected $_response;
 
 	/**
-	 * @var bool
+	 * @var
 	 */
-	protected $_lastAgeCheck = false;
+	protected $_ret;
+
+	/**
+	 * @var
+	 */
+	protected $_steamGameID;
 
 	/**
 	 * @var string
 	 */
-	protected $_indirectURL = '';
+	protected $_title = '';
 
 	/**
-	 * @var bool
+	 * @var int
 	 */
-	protected $_ageCheckSet = false;
+	protected $_totalResults = 0;
 
 	public function __construct()
 	{
 		$this->_html = new simple_html_dom();
-		$this->_edithtml = new simple_html_dom();
+		$this->_editHtml = new simple_html_dom();
 		if (isset($this->cookie)) {
 			@$this->_getURL(self::STEAMURL);
 		}
@@ -113,7 +113,7 @@ Class Steam
 	public function __destruct()
 	{
 		$this->_html->clear();
-		$this->_edithtml->clear();
+		$this->_editHtml->clear();
 		unset($this->_response);
 	}
 
