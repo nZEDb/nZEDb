@@ -13,19 +13,9 @@ class Games
 	const REQID_FOUND = 1; // Request ID found and release was updated.
 
 	/**
-	 * @var nzedb\db\Settings
-	 */
-	public $pdo;
-
-	/**
 	 * @var bool
 	 */
 	public $echooutput;
-
-	/**
-	 * @var array|bool|string
-	 */
-	public $pubkey;
 
 	/**
 	 * @var array|bool|int|string
@@ -33,19 +23,9 @@ class Games
 	public $gameqty;
 
 	/**
-	 * @var array|bool|int|string
-	 */
-	public $sleeptime;
-
-	/**
 	 * @var string
 	 */
 	public $imgSavePath;
-
-	/**
-	 * @var string
-	 */
-	public $renamed;
 
 	/**
 	 * @var int
@@ -57,6 +37,25 @@ class Games
 	 */
 	public $maxhitrequest;
 
+	/**
+	 * @var nzedb\db\Settings
+	 */
+	public $pdo;
+
+	/**
+	 * @var array|bool|string
+	 */
+	public $pubkey;
+
+	/**
+	 * @var array|bool|int|string
+	 */
+	public $sleeptime;
+
+	/**
+	 * @var string
+	 */
+	public $renamed;
 
 	protected $resultsfound = 0;
 	/**
