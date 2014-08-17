@@ -568,7 +568,7 @@
 				<td>
 					<input id="nzbsplitlevel" class="short" name="nzbsplitlevel" type="text" value="{$site->nzbsplitlevel}"/>
 					<div class="hint">Levels deep to store the nzb Files.
-						<br /><strong>If you change this you must run the misc\testing\DB\nzb-reorg.php script!</strong>
+						<br /><strong>If you change this you must run the misc/testing/DB/nzb-reorg.php script!</strong>
 					</div>
 				</td>
 			</tr>
