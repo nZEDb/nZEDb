@@ -101,7 +101,7 @@ Class Steam
 		$this->_html = new simple_html_dom();
 		$this->_edithtml = new simple_html_dom();
 		if (isset($this->cookie)) {
-			@_getURL(self::STEAMURL);
+			@$this->_getURL(self::STEAMURL);
 		}
 	}
 
@@ -251,7 +251,7 @@ Class Steam
 				}
 			}else{
 			if(preg_match('/movie480.webm\?t\=(?<videoidentifier>\d+)/', $this->_response, $matches)){
-				$this->_res['trailer'] = self::CDNURL . $this->steamgameid . '/movie480.webm?t=' . trim($matches['videoidentifier'],'"');
+				$this->_res['trailer'] = self::CDNURL . $this->_steamGameID . '/movie480.webm?t=' . trim($matches['videoidentifier'],'"');
 			}
 			}
 
