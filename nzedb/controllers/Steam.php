@@ -2,13 +2,8 @@
 
 require_once nZEDb_LIBS . 'simple_html_dom.php';
 
-/**
- * @property mixed steamgameid
- */
 Class Steam
 {
-
-	#http://store.steampowered.com/search/?snr=1_7_7_151_12&term=ghost%20ship&category1=998&os=win&sort_order=ASC&page=1
 
 	const STEAMURL = "http://store.steampowered.com";
 	const STEAMVARS = "/search/?category1=998&os=win&sort_order=ASC&page=1&term=";
