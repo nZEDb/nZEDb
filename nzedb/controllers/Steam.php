@@ -219,8 +219,6 @@ Class Steam
 							preg_match('/(?<releasedate>[0-9]{1,2}\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+[0-9]{4})/i', $this->_response, $matches);
 							if(isset($matches['releasedate'])){
 							$ret2 = $matches['releasedate'];
-							}else{
-								$ret2 = "Unknown";
 							}
 						}
 						$this->_res['gamedetails'][$this->_ret] = $ret2;
