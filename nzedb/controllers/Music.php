@@ -88,7 +88,7 @@ class Music
 	public function getMusicInfo($id)
 	{
 		$pdo = $this->pdo;
-		return $pdo->queryOneRow(sprintf("SELECT musicinfo.*, genres.title AS genres FROM musicinfo LEFT OUTER JOIN genres ON genres.id = musicinfo.genreid WHERE musicinfo.id = %d ", $id));
+		return $pdo->queryOneRow(sprintf("SELECT musicinfo.*, genres.title AS genres FROM musicinfo LEFT OUTER JOIN genres ON genres.id = musicinfo.genre_id WHERE musicinfo.id = %d ", $id));
 	}
 
 	/**
@@ -283,7 +283,7 @@ class Music
 				$orderfield = 'm.year';
 				break;
 			case 'genre':
-				$orderfield = 'm.genreid';
+				$orderfield = 'm.genre_id';
 				break;
 			case 'posted':
 			default:
@@ -307,7 +307,7 @@ class Music
 	 */
 	public function getBrowseByOptions()
 	{
-		return array('artist' => 'artist', 'title' => 'title', 'genre' => 'genreid', 'year' => 'year');
+		return array('artist' => 'artist', 'title' => 'title', 'genre' => 'genre_id', 'year' => 'year');
 	}
 
 	/**
@@ -372,7 +372,7 @@ class Music
 	public function update($id, $title, $asin, $url, $salesrank, $artist, $publisher, $releasedate, $year, $tracks, $cover, $genreID)
 	{
 		$pdo = $this->pdo;
-		$pdo->queryExec(sprintf("UPDATE musicinfo SET title = %s, asin = %s, url = %s, salesrank = %s, artist = %s, publisher = %s, releasedate = %s, year = %s, tracks = %s, cover = %d, genreid = %d, updateddate = NOW() WHERE id = %d", $pdo->escapeString($title), $pdo->escapeString($asin), $pdo->escapeString($url), $salesrank, $pdo->escapeString($artist), $pdo->escapeString($publisher), $pdo->escapeString($releasedate), $pdo->escapeString($year), $pdo->escapeString($tracks), $cover, $genreID, $id));
+		$pdo->queryExec(sprintf("UPDATE musicinfo SET title = %s, asin = %s, url = %s, salesrank = %s, artist = %s, publisher = %s, releasedate = %s, year = %s, tracks = %s, cover = %d, genre_id = %d, updateddate = NOW() WHERE id = %d", $pdo->escapeString($title), $pdo->escapeString($asin), $pdo->escapeString($url), $salesrank, $pdo->escapeString($artist), $pdo->escapeString($publisher), $pdo->escapeString($releasedate), $pdo->escapeString($year), $pdo->escapeString($tracks), $cover, $genreID, $id));
 	}
 
 	/**
@@ -505,12 +505,12 @@ class Music
 		$check = $pdo->queryOneRow(sprintf('SELECT id FROM musicinfo WHERE asin = %s', $pdo->escapeString($mus['asin'])));
 		if ($check === false) {
 			$musicId = $pdo->queryInsert(sprintf("INSERT INTO musicinfo (title, asin, url, salesrank, artist, publisher, "
-					. "releasedate, review, year, genreid, tracks, cover, createddate, updateddate) VALUES "
+					. "releasedate, review, year, genre_id, tracks, cover, createddate, updateddate) VALUES "
 					. "(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, now(), now())", $pdo->escapeString($mus['title']), $pdo->escapeString($mus['asin']), $pdo->escapeString($mus['url']), $mus['salesrank'], $pdo->escapeString($mus['artist']), $pdo->escapeString($mus['publisher']), $mus['releasedate'], $pdo->escapeString($mus['review']), $pdo->escapeString($mus['year']), ($mus['musicgenreid'] == -1 ? "null" : $mus['musicgenreid']), $pdo->escapeString($mus['tracks']), $mus['cover']));
 		} else {
 			$musicId = $check['id'];
 			$pdo->queryExec(sprintf('UPDATE musicinfo SET title = %s, asin = %s, url = %s, salesrank = %s, artist = %s, '
-					. 'publisher = %s, releasedate = %s, review = %s, year = %s, genreid = %s, tracks = %s, cover = %s, '
+					. 'publisher = %s, releasedate = %s, review = %s, year = %s, genre_id = %s, tracks = %s, cover = %s, '
 					. 'updateddate = NOW() WHERE id = %d', $pdo->escapeString($mus['title']), $pdo->escapeString($mus['asin']), $pdo->escapeString($mus['url']), $mus['salesrank'], $pdo->escapeString($mus['artist']), $pdo->escapeString($mus['publisher']), $mus['releasedate'], $pdo->escapeString($mus['review']), $pdo->escapeString($mus['year']), ($mus['musicgenreid'] == -1 ? "null" : $mus['musicgenreid']), $pdo->escapeString($mus['tracks']), $mus['cover'], $musicId));
 		}
 
@@ -682,7 +682,7 @@ class Music
 			$c = preg_replace('/ (\d{1,2} \d{1,2} )?([A-Z])( ?$)|\(?[0-9]{8,}\)?| (CABLE|FREEWEB|LINE|MAG|MCD|YMRSMILES)|\(([a-z]{2,}[0-9]{2,}|ost)\)|-web-/', ' ', $b);
 			$d = preg_replace('/VA( |-)/', 'Various Artists ', $c);
 			$e = preg_replace('/ (\d{1,2} \d{1,2} )?(DAB|DE|DVBC|EP|FIX|IT|Jap|NL|PL|(Pure )?FM|SSL|VLS) /i', ' ', $d);
-			$f = preg_replace('/ (\d{1,2} \d{1,2} )?(CD(A|EP|M|R|S)?|QEDCD|SBD) /i', ' ', $e);
+			$f = preg_replace('/ (\d{1,2} \d{1,2} )?(CABLE|CD(A|EP|M|R|S)?|QEDCD|SAT|SBD) /i', ' ', $e);
 			$g = str_replace(array('_', '-'), ' ', $f);
 			$h = trim(preg_replace('/\s\s+/', ' ', $g));
 			$newname = trim(preg_replace('/ [a-z]{2}$| [a-z]{3} \d{2,}$|\d{5,} \d{5,}$|-WEB$/i', '', $h));

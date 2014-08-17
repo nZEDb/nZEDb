@@ -169,7 +169,7 @@ convertTable($pdo,
 			 $nZEDB_schema,
 			 "forumpost",
 			 "INSERT INTO " . $nZEDB_schema .
-			 ".forumpost (forumid, parentid, userid, subject, message, locked, sticky, replies, createddate, updateddate) " .
+			 ".forumpost (forumid, parentid, user_id, subject, message, locked, sticky, replies, createddate, updateddate) " .
 			 "SELECT forumID, parentID, userID, subject, message, locked, sticky, replies, createddate, updateddate FROM " .
 			 $nn_schema . ".forumpost",
 			 $runQueries);
@@ -232,7 +232,7 @@ convertTable($pdo,
 			 $nZEDB_schema,
 			 "releasecomment",
 			 "INSERT INTO " . $nZEDB_schema .
-			 ".releasecomment (createddate, host, id, releaseid, text, userid) " .
+			 ".releasecomment (createddate, host, id, releaseid, text, user_id) " .
 			 "SELECT createddate, host, ID, releaseID, text, userID FROM " . $nn_schema .
 			 ".releasecomment",
 			 $runQueries);
@@ -344,7 +344,7 @@ convertTable($pdo,
 convertTable($pdo,
 			 $nZEDB_schema,
 			 "usercart",
-			 "INSERT INTO " . $nZEDB_schema . ".usercart (userid, releaseid, createddate) " .
+			 "INSERT INTO " . $nZEDB_schema . ".usercart (user_id, releaseid, createddate) " .
 			 "SELECT userID, releaseID, createddate FROM " . $nn_schema . ".usercart",
 			 $runQueries);
 
@@ -352,21 +352,21 @@ convertTable($pdo,
 convertTable($pdo,
 			 $nZEDB_schema,
 			 "userdownloads",
-			 "INSERT INTO " . $nZEDB_schema . ".userdownloads (id, timestamp, userid) " .
+			 "INSERT INTO " . $nZEDB_schema . ".userdownloads (id, timestamp, user_id) " .
 			 "SELECT ID, timestamp, userID FROM " . $nn_schema . ".userdownloads",
 			 $runQueries);
 
 convertTable($pdo,
 			 $nZEDB_schema,
 			 "userexcat",
-			 "INSERT INTO " . $nZEDB_schema . ".userexcat (userid, categoryid, createddate) " .
+			 "INSERT INTO " . $nZEDB_schema . ".userexcat (user_id, categoryid, createddate) " .
 			 "SELECT userID, categoryID, createddate FROM " . $nn_schema . ".userexcat",
 			 $runQueries);
 
 convertTable($pdo,
 			 $nZEDB_schema,
 			 "userinvite",
-			 "INSERT INTO " . $nZEDB_schema . ".userinvite (guid, userid, createddate) " .
+			 "INSERT INTO " . $nZEDB_schema . ".userinvite (guid, user_id, createddate) " .
 			 "SELECT guid, userID, createddate FROM " . $nn_schema . ".userinvite",
 			 $runQueries);
 
@@ -374,7 +374,7 @@ convertTable($pdo,
 			 $nZEDB_schema,
 			 "usermovies",
 			 "INSERT INTO " . $nZEDB_schema .
-			 ".usermovies (userid, imdbid, categoryid, createddate) " .
+			 ".usermovies (user_id, imdbid, categoryid, createddate) " .
 			 "SELECT userID, imdbID, categoryID, createddate FROM " . $nn_schema . ".usermovies",
 			 $runQueries);
 
@@ -382,7 +382,7 @@ convertTable($pdo,
 convertTable($pdo,
 			 $nZEDB_schema,
 			 "userrequests",
-			 "INSERT INTO " . $nZEDB_schema . ".userrequests (id, request, timestamp, userid) " .
+			 "INSERT INTO " . $nZEDB_schema . ".userrequests (id, request, timestamp, user_id) " .
 			 "SELECT ID, request, timestamp, userID FROM " . $nn_schema . ".userrequests",
 			 $runQueries);
 
@@ -410,7 +410,7 @@ convertTable($pdo,
 			 $nZEDB_schema,
 			 "userseries",
 			 "INSERT INTO " . $nZEDB_schema .
-			 ".userseries (userid, rageid, categoryid, createddate) " .
+			 ".userseries (user_id, rageid, categoryid, createddate) " .
 			 "SELECT userID, rageID, categoryID, createddate FROM " . $nn_schema . ".userseries",
 			 $runQueries);
 

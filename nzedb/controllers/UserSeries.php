@@ -40,7 +40,7 @@ class UserSeries
 	{
 		return $this->pdo->queryInsert(
 			sprintf(
-				"INSERT INTO userseries (userid, rageid, categoryid, createddate) VALUES (%d, %d, %s, NOW())",
+				"INSERT INTO userseries (user_id, rageid, categoryid, createddate) VALUES (%d, %d, %s, NOW())",
 				$uID,
 				$rageID,
 				(!empty($catID) ? $this->pdo->escapeString(implode('|', $catID)) : "NULL")
@@ -62,7 +62,7 @@ class UserSeries
 				SELECT userseries.*, tvrage.releasetitle
 				FROM userseries
 				INNER JOIN tvrage ON tvrage.rageid = userseries.rageid
-				WHERE userid = %d
+				WHERE user_id = %d
 				ORDER BY tvrage.releasetitle ASC",
 				$uID
 			)
@@ -79,7 +79,7 @@ class UserSeries
 	{
 		$this->pdo->queryExec(
 			sprintf(
-				"DELETE FROM userseries WHERE userid = %d AND rageid = %d",
+				"DELETE FROM userseries WHERE user_id = %d AND rageid = %d",
 				$uID,
 				$rageID
 			)
@@ -101,7 +101,7 @@ class UserSeries
 				SELECT userseries.*, tvr.releasetitle
 				FROM userseries
 				LEFT OUTER JOIN tvrage tvr ON tvr.rageid = userseries.rageid
-				WHERE userseries.userid = %d
+				WHERE userseries.user_id = %d
 				AND userseries.rageid = %d",
 				$uID,
 				$rageID
@@ -118,7 +118,7 @@ class UserSeries
 	{
 		$this->pdo->queryExec(
 			sprintf(
-				"DELETE FROM userseries WHERE userid = %d",
+				"DELETE FROM userseries WHERE user_id = %d",
 				$uID
 			)
 		);
@@ -149,7 +149,7 @@ class UserSeries
 	{
 		$this->pdo->queryExec(
 			sprintf(
-				"UPDATE userseries SET categoryid = %s WHERE userid = %d AND rageid = %d",
+				"UPDATE userseries SET categoryid = %s WHERE user_id = %d AND rageid = %d",
 				(!empty($catID) ? $this->pdo->escapeString(implode('|', $catID)) : "NULL"),
 				$uID,
 				$rageID

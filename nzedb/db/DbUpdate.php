@@ -60,26 +60,26 @@ class DbUpdate
 
 	public function __construct(array $options = [])
 	{
-		$defaults = [
-			'backup'	=> true,
-			'db'		=> new Settings(),
-			'git'		=> new \nzedb\utility\Git(),
-			'logger'	=> new \ColorCLI(),
-		];
+		$defaults = array(
+			'backup' => true,
+			'db'     => null,
+			'git'    => new \nzedb\utility\Git(),
+			'logger' => new \ColorCLI(),
+		);
 		$options += $defaults;
 		unset($defaults);
 
-		$this->backup	= $options['backup'];
-		$this->pdo		= $options['db'];
-		$this->git		= $options['git'];
-		$this->log		= $options['logger'];
+		$this->backup = $options['backup'];
+		$this->pdo    = (is_a($options['db'], '\nzedb\db\Settings')
+			? $options['db'] : new \nzedb\db\Settings());
+		$this->git    = $options['git'];
+		$this->log    = $options['logger'];
 
-		if (is_a($this->pdo,
-				 'Settings')
-		) { // If $pdo is an instance of Settings, reuse it to save resources.
-			$this->settings = &$this->pdo;
+		if (is_a($this->pdo, '\nzedb\db\Settings')) {
+			// If $pdo is an instance of Settings, reuse it to save resources.
+			$this->settings =& $this->pdo;
 		} else {
-			$this->settings = new Settings();
+			$this->settings = new \nzedb\db\Settings();
 		}
 
 		$this->_DbSystem = strtolower($this->pdo->dbSystem());

@@ -677,7 +677,7 @@ class Categorize extends Category
 	public function isPC()
 	{
 		switch (true) {
-			case preg_match('/s\d{1,3}[-._ ]?[ed]\d{1,3}([ex]\d{1,3}|[-.\w ])|[^a-z0-9](FLAC|Imageset|MP3|Nintendo|PDTV|PS[23P]|SWE6RUS|UMD(RIP)?|WII|x264|XBOX(360|DVD|ONE)?|XXX)[^a-z0-9]/i', $this->releaseName):
+			case preg_match('/s\d{1,3}[-._ ]?[ed]\d{1,3}([ex]\d{1,3}|[-.\w ])|[^a-z0-9](FLAC|Imageset|PICTURESET|MP3|Nintendo|PDTV|PS[23P]|SWE6RUS|UMD(RIP)?|WII|x264|XBOX(360|DVD|ONE)?|XXX)[^a-z0-9]/i', $this->releaseName):
 				return false;
 			case $this->isPhone():
 			case $this->isMac():
@@ -752,7 +752,7 @@ class Categorize extends Category
 	public function isXxx()
 	{
 		switch (true) {
-			case !preg_match('/\bXXX\b|(a\.b\.erotica|ClubSeventeen|Cum(ming|shot)|Err?oticax?|Porn(o|lation)?|Imageset|JAV Uncensored|lesb(ians?|os?)|mastur(bation|e?bate)|My_Stepfather_Made_Me|nympho?|OLDER ANGELS|pictures\.erotica\.anime|sexontv|slut|Squirt|SWE6RUS|Transsexual|whore)/i', $this->releaseName):
+			case !preg_match('/\bXXX\b|(a\.b\.erotica|ClubSeventeen|Cum(ming|shot)|Err?oticax?|Porn(o|lation)?|Imageset|PICTURESET|JAV Uncensored|lesb(ians?|os?)|mastur(bation|e?bate)|My_Stepfather_Made_Me|nympho?|OLDER ANGELS|pictures\.erotica\.anime|sexontv|slut|Squirt|SWE6RUS|Transsexual|whore)/i', $this->releaseName):
 				return false;
 			case $this->isXxxPack():
 			case $this->isXxx264():
@@ -806,7 +806,7 @@ class Categorize extends Category
 
 	public function isXxxImageset()
 	{
-		if (preg_match('/IMAGESET|ABPEA/i', $this->releaseName)) {
+		if (preg_match('/IMAGESET|PICTURESET|ABPEA/i', $this->releaseName)) {
 			$this->tmpCat = Category::CAT_XXX_IMAGESET;
 			return true;
 		}

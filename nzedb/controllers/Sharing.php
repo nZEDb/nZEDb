@@ -172,7 +172,7 @@ Class Sharing
 			sprintf(
 				'SELECT rc.text, rc.id, %s, u.username, r.nzb_guid
 				FROM releasecomment rc
-				INNER JOIN users u ON rc.userid = u.id
+				INNER JOIN users u ON rc.user_id = u.id
 				INNER JOIN releases r on rc.releaseid = r.id
 				WHERE rc.shared = 0 LIMIT %d',
 				$this->pdo->unix_timestamp_column('rc.createddate'),
@@ -520,7 +520,7 @@ Class Sharing
 		if ($this->pdo->queryExec(
 			sprintf('
 				INSERT INTO releasecomment
-				(text, createddate, shareid, nzb_guid, siteid, username, userid, releaseid, shared, host)
+				(text, createddate, shareid, nzb_guid, siteid, username, user_id, releaseid, shared, host)
 				VALUES (%s, %s, %s, %s, %s, %s, 0, 0, 2, "")',
 				$this->pdo->escapeString($body['BODY']),
 				$this->pdo->from_unixtime(($body['TIME'] > time() ? time() : $body['TIME'])),
