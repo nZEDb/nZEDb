@@ -23,26 +23,50 @@ namespace nzedb\net\http;
 abstract class Scraper
 {
 	/**
-	 * @var
+	 * If a directlink is given, store here.
+	 *
+	 * @var string
 	 */
-	protected $_searchTerm;
+	protected $directLink = null;
+
+	/**
+	 * @var \libs\simple_html_dom
+	 */
+	protected $html;
+
+	/**
+	 * @var string
+	 */
+	protected $searchTerm;
 
 	/**
 	 * String to hold any cookie sent by the site.
 	 *
 	 * @var string
 	 */
-	protected $_siteCookie;
+	protected $siteCookie;
 
 	/**
 	 * Title to search for?
 	 *
 	 * @var string
 	 */
-	protected $_title = '';
+	protected $title = '';
+
+	/**
+	 * ID of the target item.
+	 *
+	 * @var int|string
+	 */
+	private $targetID;
 
 	public function __construct()
 	{
+	}
+
+	protected function _getID()
+	{
+		return $this->targetID;
 	}
 
 	abstract protected function _getURL();
@@ -55,5 +79,10 @@ abstract class Scraper
 		}
 
 		return $result;
+	}
+
+	protected function _setID($value)
+	{
+		$this->targetID = $value;
 	}
 }

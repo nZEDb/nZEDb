@@ -25,30 +25,30 @@ require_once nZEDb_LIBS . 'simple_html_dom.php';
 class GamesScraper extends \nzedb\net\http\Scraper
 {
 	/**
+	 * If a directlink is given retrieve and parse
+	 *
+	 * @var string
+	 */
+	protected  $directLink = null;
+
+	/**
+	 * Simple HTML DOM object of returned page.
+	 *
+	 * @var \libs\simple_html_dom
+	 */
+	public $html;
+
+	/**
 	 * Path to save any fetched images (covers, posters, etc.)
 	 *
 	 * @var string
 	 */
 	public $imgSavePath;
 
-
-	/**
-	 * @var \libs\simple_html_dom
-	 */
-	protected $_html;
-
-	/**
-	 * @var
-	 */
-	protected $_gameID;
-
 	public function __construct()
 	{
 		$this->_html     = new simple_html_dom();
 		$this->_editHtml = new simple_html_dom();
-		if (isset($this->cookie)) {
-			@$this->_getURL(self::STEAMURL);
-		}
 	}
 
 	protected function _getURL()
