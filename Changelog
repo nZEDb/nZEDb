@@ -3,6 +3,8 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
+2014-08-18 bart39
+	* Fix: Typo.
 2014-08-15 kevin
 	* Chg: Speed up addLanguage api function.
 2014-08-15 bart39
