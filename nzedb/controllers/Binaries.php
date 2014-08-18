@@ -628,7 +628,7 @@ class Binaries
 					$matches[1] .= ' yEnc';
 				}
 			} else {
-				if ($this->_showDroppedYEncParts === true && strpos($header['subject'], '"Usenet Index Post') !== 0) {
+				if ($this->_showDroppedYEncParts === true && strpos($header['Subject'], '"Usenet Index Post') !== 0) {
 					file_put_contents(
 						nZEDb_LOGS . 'not_yenc' . $groupMySQL['name'] . '.dropped.log',
 						$header['Subject'] . PHP_EOL, FILE_APPEND
