@@ -10,7 +10,7 @@ class Utility
 	/**
 	 *  Regex for detecting multi-platform path. Use it where needed so it can be updated in one location as required characters get added.
 	 */
-	const PATH_REGEX = '(?P<drive>[A-Za-z]:|)(?P<path>[(?:\\|/)\w-]+|)';
+	const PATH_REGEX = '(?P<drive>[A-Za-z]:|)(?P<path>[\\/\w .-]+|)';
 
 	/**
 	 * Replace all white space chars for a single space.

@@ -3,11 +3,11 @@
 	<versions>
 		<sql>
 			<db>280</db>
-			<file>274</file>
+			<file>280</file>
 		</sql>
 		<git>
 			<tag>0.3.8</tag>
-			<commit>9321</commit>
+			<commit>9322</commit>
 			<hooks>
 				<precommit>9</precommit>
 				<!-- this is the version of the pre-commit file in githooks NOT the files it calls -->
