@@ -638,7 +638,7 @@
 				</td>
 			</tr>
 			<tr>
-				<td style="width:180px;"><label for="lookuptvrage">Lookup Movies:</label></td>
+				<td style="width:180px;"><label for="lookuptvrage">Lookup TV:</label></td>
 				<td>
 					{html_options style="width:180px;" id="lookuptvrage" name='lookuptvrage' values=$lookuptv_ids output=$lookuptv_names selected=$site->lookuptvrage}
 					<div class="hint">Whether to attempt to lookup tv rage ids on the web.</div>
