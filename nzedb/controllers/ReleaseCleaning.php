@@ -54,9 +54,9 @@ class ReleaseCleaning
 	public function __construct($settings = null)
 	{
 		// Extensions.
-		$this->e0 = '([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|")';
-		$this->e1 = $this->e0 . '[- ]{0,3}yEnc$/';
-		$this->e2 = $this->e0 . '[- ]{0,3}\d+[.,]\d+ [kKmMgG][bB][- ]{0,3}yEnc$/';
+		$this->e0 = CollectionsCleaning::regexFileExtensionString;
+		$this->e1 = CollectionsCleaning::regexFileExtensionString . CollectionsCleaning::regexEndString;
+		$this->e2 = CollectionsCleaning::regexFileExtensionString . CollectionsCleaning::regexSizeString . CollectionsCleaning::regexEndString;
 		$this->pdo = ($settings instanceof Settings ? $settings : new Settings());
 	}
 
@@ -1820,7 +1820,7 @@ class ReleaseCleaning
 	public function ebook_magazines()
 	{
 		// [Top.Gear.South.Africa-February.2014] - "Top.Gear.South.Africa-February.2014.pdf.vol00+1.par2" yEnc  - 809.32 KB
-		if (preg_match('/(\[.*\])/', $this->subject, $match)) {
+		if (preg_match('/^\[(.+?)\] - ".+?" yEnc$/', $this->subject, $match)) {
 			return $match[1];
 		}
 		return array("cleansubject" => $this->releaseCleanerHelper($this->subject), "properlynamed" => false);
