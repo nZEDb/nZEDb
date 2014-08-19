@@ -77,7 +77,7 @@ if (!is_null($queue)) {
 	}
 }
 
-$page->smarty->assign(array('queueType' => $queueType, 'error' => $error, 'user', $users));
+$page->smarty->assign(['queueType' => $queueType, 'error' => $error, 'user', $userData]);
 $page->title = "Your $queueType Download Queue";
 $page->meta_title = "View $queueType Queue";
 $page->meta_keywords = "view," . strtolower($queueType) .",queue";

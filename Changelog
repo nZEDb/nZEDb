@@ -9,6 +9,7 @@ New updates are grouped by person, at the top of the file.
 	* Fix: Issues identified by Scrutinizer
 2014-08-19 kevin
 	* Add: Regex support for alt.binaries.e-book.magazines
+	* Fix: Wrong array used in queue.php, reported/solution by user gaz_az.
 2014-08-18 bart39
 	* Fix: Typo.
 	* Fix: Typo in site edit.
