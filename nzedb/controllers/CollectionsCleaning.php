@@ -33,14 +33,36 @@ class CollectionsCleaning
 	public $e2;
 
 	/**
+	 * Used for matching file extension endings in article subjects.
+	 * @const
+	 * @string
+	 */
+	const regexFileExtensionString = '([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|")';
+
+	/**
+	 * Used for matching endings in article subjects.
+	 * @const
+	 * @string
+	 */
+	const regexEndString = '[- ]{0,3}yEnc$/';
+
+	/**
+	 * Used for matching size strings in article subjects.
+	 * @example ' - 365.15 KB - '
+	 * @const
+	 * @string
+	 */
+	const regexSizeString = '[- ]{0,3}\d+([.,]\d+)? [kKmMgG][bB][- ]{0,3}';
+
+	/**
 	 *
 	 */
 	public function __construct()
 	{
 		// Extensions.
-		$this->e0 = '([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|")';
-		$this->e1 = $this->e0 . '[- ]{0,3}yEnc$/';
-		$this->e2 = $this->e0 . '[- ]{0,3}\d+[.,]\d+ [kKmMgG][bB][- ]{0,3}yEnc$/';
+		$this->e0 = self::regexFileExtensionString;
+		$this->e1 = self::regexFileExtensionString . self::regexEndString;
+		$this->e2 = self::regexFileExtensionString . self::regexSizeString . self::regexEndString;
 	}
 
 	/**
@@ -1455,7 +1477,7 @@ class CollectionsCleaning
 	{
 		// e-book.magazines has really only header we care about in the form
 		// [Top.Gear.South.Africa-February.2014] - "Top.Gear.South.Africa-February.2014.pdf.vol00+1.par2" yEnc  - 809.32 KB
-		if (preg_match('/(\[.*\])/', $this->subject, $match)) {
+		if (preg_match('/^(\[.+?\] - ").+?" yEnc$/', $this->subject, $match)) {
 			return $match[1];
 		}
 		return $this->generic();
