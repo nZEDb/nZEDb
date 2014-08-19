@@ -3,6 +3,9 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
+2014-08-19 ruhllatio
+	* Chg: Revamp MiscSorter
+	* Add: Categorization support by group for a.b.cd.images.sega-saturn
 2014-08-19 kevin
 	* Add: Regex support for alt.binaries.e-book.magazines
 2014-08-18 bart39

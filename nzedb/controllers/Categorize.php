@@ -217,6 +217,7 @@ class Categorize extends Category
 					}
 					$this->tmpCat = Category::CAT_XXX_OTHER;
 					break;
+				case $group == 'alt.binaries.cd.image.sega-saturn':
 				case $group === 'alt.binaries.gamecube':
 					$this->tmpCat = Category::CAT_GAME_OTHER;
 					break;

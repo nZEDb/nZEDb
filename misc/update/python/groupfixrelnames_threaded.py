@@ -37,9 +37,11 @@ limit = 0
 join = ""
 where = ""
 datelimit = "AND DATEDIFF(NOW(), r.adddate) <= 7"
-groupby = "GROUP BY LEFT(r.guid, 1)"
-orderby = "ORDER BY LEFT(r.guid, 1) ASC"
+groupby = "GROUP BY guidchar"
+orderby = "ORDER BY guidchar ASC"
 rowlimit = "LIMIT 16"
+extrawhere = "AND r.preid = 0 AND r.nzbstatus = 1"
+select = "DISTINCT LEFT(r.guid, 1) AS guidchar, COUNT(*) AS count"
 
 cur[0].execute("SELECT value FROM settings WHERE setting = 'fixnamethreads'")
 run_threads = cur[0].fetchone()
@@ -62,12 +64,13 @@ elif sys.argv[1] == "filename":
 elif sys.argv[1] == "par2":
 	where = "r.proc_par2 = 0"
 elif sys.argv[1] == "miscsorter":
-	where = "r.nfostatus = 1 AND r.proc_sorter = 0 AND r.isrenamed = 0"
+	where = "r.nfostatus = 1 AND r.proc_nfo = 1 AND r.proc_sorter = 0 AND r.isrenamed = 0"
 elif sys.argv[1] == "predbft":
+	extrawhere = ""
 	where = "1=1"
 	rowlimit = "LIMIT %s" % (threads)
 
-cur[0].execute("SELECT DISTINCT LEFT(r.guid, 1), COUNT(*) AS count FROM releases r %s WHERE %s AND r.preid = 0 AND r.nzbstatus = 1 %s %s %s %s" % (join, where, datelimit, groupby, orderby, rowlimit))
+cur[0].execute("SELECT %s FROM releases r %s WHERE %s %s %s %s %s" % (select, join, where, extrawhere, groupby, orderby, rowlimit))
 datas = cur[0].fetchall()
 
 guids = int(len(datas))
