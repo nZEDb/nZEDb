@@ -568,7 +568,7 @@
 				<td>
 					<input id="nzbsplitlevel" class="short" name="nzbsplitlevel" type="text" value="{$site->nzbsplitlevel}"/>
 					<div class="hint">Levels deep to store the nzb Files.
-						<br /><strong>If you change this you must run the misc\testing\DB\nzb-reorg.php script!</strong>
+						<br /><strong>If you change this you must run the misc/testing/DB/nzb-reorg.php script!</strong>
 					</div>
 				</td>
 			</tr>
@@ -638,7 +638,7 @@
 				</td>
 			</tr>
 			<tr>
-				<td style="width:180px;"><label for="lookuptvrage">Lookup Movies:</label></td>
+				<td style="width:180px;"><label for="lookuptvrage">Lookup TV:</label></td>
 				<td>
 					{html_options style="width:180px;" id="lookuptvrage" name='lookuptvrage' values=$lookuptv_ids output=$lookuptv_names selected=$site->lookuptvrage}
 					<div class="hint">Whether to attempt to lookup tv rage ids on the web.</div>
