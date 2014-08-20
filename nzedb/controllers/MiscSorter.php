@@ -357,9 +357,10 @@ class MiscSorter
 			unset($s, $amaz, $amazon);
 		}
 
-		if (!is_null($amaz) && isset($amaz->Items->Item)) {
+		if (isset($amaz) && isset($amaz->Items->Item)) {
 			$type = $amaz->Items->Item->ItemAttributes->ProductGroup;
 			switch ($type) {
+				case 'Audible':
 				case 'Book':
 				case 'eBooks':
 					$ok = $this->_doAmazonBooks($amaz, $id);
@@ -438,7 +439,7 @@ class MiscSorter
 		$new = (string) $amaz->Items->Item->ItemAttributes->Title;
 		$new = $new . " (" . substr((string) $amaz->Items->Item->ItemAttributes->ReleaseDate, 0, 4) . ")";
 		$name = $this->moviename($nfo, 0, $new);
-		return $this->dodbupdate($id, $name);
+		return $this->dodbupdate($id, $name, null, 'amazonMov');
 	}
 
 	private function _doAmazonVG($amaz = array(), $id = 0)
@@ -595,7 +596,7 @@ class MiscSorter
 				$artist[1] = $artist[3];
 			}
 			if (isset($title[1]) && isset($artist[1])) {
-				return $this->dodbupdate($row['id'], $this->cleanname($artist[1] . " - " . $title[1]));
+				return $this->dodbupdate($row['id'], $this->cleanname($artist[1] . " - " . $title[1]), null, 'audioNFO');
 			}
 		}
 		return false;
@@ -623,7 +624,7 @@ class MiscSorter
 			$pos = $this->nfopos($this->_cleanStrForPos($nfo), $this->_cleanStrForPos($matches[1] . " - " . $matches[2]));
 			if ($pos !== false && $pos < 0.4 && !preg_match('/\:\d\d$/', $matches[2]) && strlen($matches[1]) < 48 && strlen($matches[2]) < 48
 				&& strpos('title', $matches[1]) === false && strpos('title', $matches[2]) === false) {
-				return $this->dodbupdate($row['id'], Category::CAT_MUSIC_AUDIOBOOK, $this->cleanname($matches[1] . " - " . $matches[2]));
+				return $this->dodbupdate($row['id'], $this->cleanname($matches[1] . " - " . $matches[2]), null, 'bookNFO');
 			}
 		}
 		return false;
