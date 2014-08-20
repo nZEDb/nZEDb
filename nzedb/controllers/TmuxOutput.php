@@ -276,7 +276,7 @@ class TmuxOutput extends Tmux
 						   sprintf(
 							   "%s(%s)",
 							   number_format($this->runVar['counts']['now']['processconsole']),
-							   $this->runVar['counts']['diff']['processgames']
+							   $this->runVar['counts']['diff']['processconsole']
 						   ),
 						   sprintf(
 							   "%s(%d%%)",
