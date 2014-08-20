@@ -12,6 +12,9 @@ class MiscSorter
 	const PROC_SORTER_NONE = 0;	//Release has not been run through MiscSorter before
 	const PROC_SORTER_DONE = 1;	//Release has been processed by MiscSorter
 
+	private $qty;
+	private $echooutput;
+	private $DEBUGGING;
 	private $pdo;
 	private $category;
 	private $movie;
@@ -19,15 +22,10 @@ class MiscSorter
 
 	/**
 	 * @param bool $echooutput
+	 * @param object $pdo
 	 */
 	public function __construct($echooutput = false, &$pdo = null)
 	{
-		$this->qualities = array('(:?..)?tv', '480[ip]?', '640[ip]?', '720[ip]?', '1080[ip]?', 'ac3', 'audio_ts', 'avi', 'bd[\- ]?rip', 'bd25', 'bd50',
-			'bdmv', 'blu ?ray', 'br[\- ]?disk', 'br[\- ]?rip', 'cam', 'cam[\- ]?rip', 'dc', 'directors.?cut', 'divx\d?', 'dts', 'dvd', 'dvd[\- ]?r',
-			'dvd[\- ]?rip', 'dvd[\- ]?scr', 'extended', 'hd', 'hd[\- ]?tv', 'h264', 'hd[\- ]?cam', 'hd[\- ]?ts', 'iso', 'm2ts', 'mkv', 'mpeg(:?\-\d)?',
-			'mpg', 'ntsc', 'pal', 'proper', 'ppv', 'ppv[\- ]?rip', 'r\d{1}', 'repack', 'repacked', 'scr', 'screener', 'tc', 'telecine', 'telesync', 'ts',
-			'tv[\- ]?rip', 'unrated', 'vhs( ?rip)', 'video_ts', 'video ts', 'x264', 'xvid', 'web[\- ]?rip');
-
 		$this->echooutput = (nZEDb_ECHOCLI && $echooutput);
 		$this->qty = 100;
 		$this->DEBUGGING = nZEDb_DEBUG;
@@ -36,32 +34,26 @@ class MiscSorter
 
 		$this->category = new Categorize(['Settings' => $this->pdo]);
 		$this->movie = new Movie(['Echo' => $this->echooutput, 'Settings' => $this->pdo]);
-		$this->releasecleaner = new ReleaseCleaning($this->pdo);
-
-		$this->cat = Category::CAT_PARENT_MISC;
 	}
 
 	// Main function that determines which operation(s) should be run based on the releases NFO file
 	public function nfosorter($category = 0, $id = 0)
 	{
-		$this->idarr = ($id != 0 ? sprintf('AND r.id = %d', $id) : '');
-
-		$this->cat = ($category = 0 ? sprintf('AND r.categoryid = %d', $this->cat) : sprintf('AND r.categoryid = %d', $category));
+		$idarr = ($id != 0 ? sprintf('AND r.id = %d', $id) : '');
+		$cat = ($category = 0 ? sprintf('AND r.categoryid = %d', Category::CAT_MISC) : sprintf('AND r.categoryid = %d', $category));
 
 		$res = $this->pdo->queryDirect(
 						sprintf("
 							SELECT UNCOMPRESS(rn.nfo) AS nfo,
-								r.id, r.guid, r.fromname, r.name,
-								r.searchname, r.group_id, r.categoryid,
-								g.name AS gname
+								r.id, r.name, r.searchname
 							FROM releasenfo rn
 							INNER JOIN releases r ON rn.releaseid = r.id
 							INNER JOIN groups g ON r.group_id = g.id
 							WHERE rn.nfo IS NOT NULL
 							AND r.proc_sorter = %d
-							AND r.preid < 1 %s",
+							AND r.preid = 0 %s",
 							self::PROC_SORTER_NONE,
-							($this->idarr = '' ? $this->cat : $this->idarr)
+							($idarr = '' ? $cat : $idarr)
 						)
 		);
 
@@ -194,12 +186,14 @@ class MiscSorter
 		return $r;
 	}
 
+	/**
+	 * This function cleans the release name before updating
+	 *
+	 * @param string $name
+	 * @return string $name
+	 */
 	private function cleanname($name)
 	{
-		if (is_array($name)) {
-			return $name;
-		}
-
 		do {
 			$original = $name;
 			$name = preg_replace("/[\{\[\(]\d+[ \.\-\/]+\d+[\]\}\)]/iU", " ", $name);
@@ -214,7 +208,7 @@ class MiscSorter
 		return mb_strimwidth($name, 0, 255);
 	}
 
-	private function dodbupdate($id = 0, $name = '', $typeid = 0, $type = '', $debug = '')
+	private function dodbupdate($id = 0, $name = '', $typeid = 0, $type = '')
 	{
 		$nameChanged = false;
 
@@ -228,14 +222,14 @@ class MiscSorter
 						)
 		);
 
-		if ($release !== false && $name !== '' && $name !== $release['searchname'] && strlen($name) >= 10) {
+		if ($release !== false && is_array($release) && $name !== '' && $name !== $release['searchname'] && strlen($name) >= 10) {
 			(new NameFixer(['Settings' => $this->pdo]))->updateRelease($release, $name, $type, 1, "sorter ", 1, 1);
 			$nameChanged = true;
 		} else {
 			$this->_setProcSorter(self::PROC_SORTER_DONE, $id);
 		}
 
-		if ($type !== '' && $type !== 'app') {
+		if ($type !== '' && in_array($type, ['bookinfoid', 'consoleinfoid', 'imdbid', 'musicinfoid'])) {
 				$this->pdo->queryExec(
 							sprintf('
 								UPDATE releases
@@ -253,6 +247,7 @@ class MiscSorter
 	private function doOS($nfo = '', $id = 0)
 	{
 		$ok = false;
+		$tmp = array();
 
 		$nfo = preg_replace("/[^\x09-\x80]|\?/", "", $nfo);
 		$nfo = preg_replace("/[\x01-\x09\x0e-\x20]/", " ", $nfo);
@@ -271,9 +266,7 @@ class MiscSorter
 			if (preg_match('/^(.+)(\(c\)|\xA9)/i', $set[1], $tmp)) {
 				$set[1] = $tmp[1];
 			}
-			if (preg_match('/(another)? *(fine)? *release/i', $set[1])) {
-				$set = null;
-			} else if (strlen($set[1]) < 128) {
+			if (strlen($set[1]) < 128 && !preg_match('/(another)? *(fine)? *release/i', $set[1])) {
 				$ok = $this->dodbupdate($id, $this->cleanname($set[1]), null, "app");
 			}
 		}
@@ -293,21 +286,14 @@ class MiscSorter
 
 	private function moviename($nfo = '', $imdb = 0, $name = '')
 	{
-		$qual = array();
+		$qual = '';
 		$tmp = array();
 
-		// This tries to stripos match Video qualities from a class defined array
-		foreach ($this->qualities as $quality) {
-			if (stripos($nfo, $quality) !== false) {
-				$qual = $quality;
-				break;
-			}
-		}
+		$qual = $this->_getVideoQuality($nfo);
 
 		//Clean up the name
 		$name = preg_replace("/[a-f0-9]{10,}/i", " ", $name);
 		$name = str_replace("\\", " ", $name);
-		$name = $this->releasecleaner->fixerCleaner($name);
 
 		$name1 = str_replace(["  ", "--", "\_\_"], " ", trim($name));
 
@@ -315,8 +301,8 @@ class MiscSorter
 			$movie = $this->movie->getMovieInfo($imdb);
 			if ($movie !== false) {
 				$name2 = '';
-				$word = $movie['title'] . " " . $movie['year'];
-				$tmp[] = preg_split('/' . $word . '/i', $name1);
+				$word = "/" . $movie['title'] . " " . $movie['year'] . "/i";
+				$tmp[] = preg_split($word, $name1);
 				if ($tmp instanceof Traversable) {
 					foreach ($tmp as $t) {
 						$name2 .= " " . $t[1];
@@ -326,8 +312,24 @@ class MiscSorter
 			}
 		}
 
-		$retName = (isset($movie) && isset($qual) ? $movie['title'] . " (" . $movie['year'] . ") " . $name1 . " " . $qual . "_" : $name1 . "_");
+		$retName = (isset($movie) && $qual !== false ? $movie['title'] . "." . $movie['year'] . "." . $name1 . "." . $qual : $name1);
 		return trim($retName);
+	}
+
+	private function _getVideoQuality($nfo = '')
+	{
+		$qualities = array('(:?..)?tv', '480[ip]?', '640[ip]?', '720[ip]?', '1080[ip]?', 'ac3', 'audio_ts', 'avi', 'bd[\- ]?rip', 'bd25', 'bd50',
+			'bdmv', 'blu ?ray', 'br[\- ]?disk', 'br[\- ]?rip', 'cam', 'cam[\- ]?rip', 'dc', 'directors.?cut', 'divx\d?', 'dts', 'dvd', 'dvd[\- ]?r',
+			'dvd[\- ]?rip', 'dvd[\- ]?scr', 'extended', 'hd', 'hd[\- ]?tv', 'h264', 'hd[\- ]?cam', 'hd[\- ]?ts', 'iso', 'm2ts', 'mkv', 'mpeg(:?\-\d)?',
+			'mpg', 'ntsc', 'pal', 'proper', 'ppv', 'ppv[\- ]?rip', 'r\d{1}', 'repack', 'repacked', 'scr', 'screener', 'tc', 'telecine', 'telesync', 'ts',
+			'tv[\- ]?rip', 'unrated', 'vhs( ?rip)?', 'video_ts', 'video ts', 'x264', 'xvid', 'web[\- ]?rip');
+
+		foreach ($qualities as $quality) {
+			if (stripos($nfo, $quality) !== false) {
+				return $quality;
+			}
+		}
+		return false;
 	}
 
 	private function doAmazon($name = '', $id = 0, $nfo = "", $q, $region = 'com', $case = false, $row = '')
@@ -345,6 +347,9 @@ class MiscSorter
 					break;
 				case 'isbn':
 					$amaz = $amazon->searchProducts(trim($q), '', "ISBN");
+					break;
+				default:
+					$amaz = false;
 			}
 
 		} catch (Exception $e) {
@@ -352,7 +357,7 @@ class MiscSorter
 			unset($s, $amaz, $amazon);
 		}
 
-		if (isset($amaz->Items->Item)) {
+		if (!is_null($amaz) && isset($amaz->Items->Item)) {
 			$type = $amaz->Items->Item->ItemAttributes->ProductGroup;
 			switch ($type) {
 				case 'Book':
@@ -389,8 +394,7 @@ class MiscSorter
 			$audiobook = true;
 		}
 		$new = (string) $amaz->Items->Item->ItemAttributes->Author;
-		$new = $new . " - " . (string) $amaz->Items->Item->ItemAttributes->Title;
-		$name = $this->releasecleaner->fixerCleaner($new);
+		$name = $new . " - " . (string) $amaz->Items->Item->ItemAttributes->Title;
 
 		$rel = $this->_doAmazonLocal('bookinfo', (string) $amaz->Items->Item->ASIN);
 
@@ -416,8 +420,7 @@ class MiscSorter
 		if ($new != '') {
 			$new .= " - ";
 		}
-		$new = $new . (string) $amaz->Items->Item->ItemAttributes->Title;
-		$name = $this->releasecleaner->fixerCleaner($new);
+		$name = $new . (string) $amaz->Items->Item->ItemAttributes->Title;
 
 		$rel = $this->_doAmazonLocal('musicinfo', (string) $amaz->Items->Item->ASIN);
 
@@ -434,8 +437,7 @@ class MiscSorter
 	{
 		$new = (string) $amaz->Items->Item->ItemAttributes->Title;
 		$new = $new . " (" . substr((string) $amaz->Items->Item->ItemAttributes->ReleaseDate, 0, 4) . ")";
-		$new = $this->moviename($nfo, 0, $new);
-		$name = $this->releasecleaner->fixerCleaner($new);
+		$name = $this->moviename($nfo, 0, $new);
 		return $this->dodbupdate($id, $name);
 	}
 
