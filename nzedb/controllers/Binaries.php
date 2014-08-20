@@ -175,7 +175,11 @@ class Binaries
 		$this->_debug = (nZEDb_DEBUG || nZEDb_LOGGING);
 
 		if ($this->_debug) {
-			$this->_debugging = ($options['Logger'] instanceof Logger ? $options['Logger'] : new Logger(['ColorCLI' => $this->_colorCLI]));
+			try {
+				$this->_debugging = ($options['Logger'] instanceof Logger ? $options['Logger'] : new Logger(['ColorCLI' => $this->_colorCLI]));
+			} catch (\LoggerException $error) {
+				$this->_debug = false;
+			}
 		}
 
 		$this->messageBuffer = ($this->_pdo->getSetting('maxmssgs') != '') ? $this->_pdo->getSetting('maxmssgs') : 20000;
