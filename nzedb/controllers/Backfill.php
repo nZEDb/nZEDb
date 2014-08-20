@@ -101,7 +101,11 @@ class Backfill
 
 		$this->_debug = (nZEDb_LOGGING || nZEDb_DEBUG);
 		if ($this->_debug) {
-			$this->_debugging = ($options['Logger'] instanceof Logger ? $options['Logger'] : new Logger(['ColorCLI' => $this->pdo->log]));
+			try {
+				$this->_debugging = ($options['Logger'] instanceof Logger ? $options['Logger'] : new Logger(['ColorCLI' => $this->pdo->log]));
+			} catch (\LoggerException $error) {
+				$this->_debug = false;
+			}
 		}
 
 		$this->_compressedHeaders = ($this->pdo->getSetting('compressedheaders') == 1 ? true : false);

@@ -164,7 +164,11 @@ class Movie
 
 		if (nZEDb_DEBUG || nZEDb_LOGGING) {
 			$this->debug = true;
-			$this->debugging = ($options['Logger'] instanceof Logger ? $options['Logger'] : new Logger(['ColorCLI' => $this->pdo->log]));
+			try {
+				$this->debugging = new \Logger();
+			} catch (\LoggerException $error) {
+				$this->_debug = false;
+			}
 		}
 	}
 

@@ -3,12 +3,17 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
+2014-08-20 kevin
+	* Add: Script to verify the important folder permisions.
+	* Chg: Make cover path checking optional, in case user has not run install yet in verify_permissions script.
+	* Chg: Catch Logger exceptions, solves blank pages for those with improper permissions on resources/logs folder/files.
 2014-08-19 ruhllatio
 	* Chg: Revamp MiscSorter
 	* Add: Categorization support by group for a.b.cd.images.sega-saturn
 	* Fix: Issues identified by Scrutinizer
 2014-08-19 kevin
 	* Add: Regex support for alt.binaries.e-book.magazines
+	* Fix: Wrong array used in queue.php, reported/solution by user gaz_az.
 2014-08-18 bart39
 	* Fix: Typo.
 	* Fix: Typo in site edit.

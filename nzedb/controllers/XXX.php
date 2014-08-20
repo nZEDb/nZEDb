@@ -73,7 +73,11 @@ class XXX
 
 		if (nZEDb_DEBUG || nZEDb_LOGGING) {
 			$this->debug = true;
-			$this->debugging = new Logger(['ColorCLI' => $this->pdo->log]);
+			try {
+				$this->debugging = new \Logger();
+			} catch (\LoggerException $error) {
+				$this->_debug = false;
+			}
 		}
 	}
 
