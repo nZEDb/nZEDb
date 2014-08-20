@@ -11,7 +11,12 @@ if (!isset($argv[1]) || $argv[1] !== 'yes') {
 	);
 }
 
-require(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php');
+$www_path = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR;
+if (is_file($www_path . 'config.php')) {
+	require($www_path . 'config.php');
+} else {
+	require($www_path . 'automated.config.php');
+}
 
 define('R',   1); define('W',   2); define('E',   4);
 
@@ -24,9 +29,6 @@ foreach (explode(DS, nZEDb_ROOT) as $folder) {
 		executable($string);
 	}
 }
-
-// Set up covers paths.
-$ri = new ReleaseImage();
 
 // List of folders to check with required permissions.
 $folders = [
@@ -44,11 +46,6 @@ $folders = [
 	nZEDb_TMP . DS . 'unrar' . DS . 'u4e'                      => [R, W],
 	nZEDb_TMP . DS . 'yEnc'                                    => [R, W],
 	nZEDb_VERSIONS                                             => [R],
-	$ri->audSavePath                                           => [R, W],
-	$ri->imgSavePath                                           => [R, W],
-	$ri->jpgSavePath                                           => [R, W],
-	$ri->movieImgSavePath                                      => [R, W],
-	$ri->vidSavePath                                           => [R, W],
 ];
 
 // Add nzb folders.
@@ -61,6 +58,19 @@ foreach ([0,1,2,3,4,5,6,7,8,9,'a','b','c','d','e','f'] as $identifier) {
 foreach (['anime','audio','audiosample','book','console','games','movies','music','preview','sample','tvrage','video','xxx'] as $identifier) {
 	$nzbFolder = nZEDb_RES . 'covers' . DS . $identifier . DS;
 	$folders[$nzbFolder] = [R, W];
+}
+
+// Set up covers paths.
+if (defined('DB_PASSWORD') && DB_PASSWORD != '') {
+	$ri = new ReleaseImage();
+
+	$folders[$ri->audSavePath]      = [R, W];
+	$folders[$ri->imgSavePath]      = [R, W];
+	$folders[$ri->jpgSavePath]      = [R, W];
+	$folders[$ri->movieImgSavePath] = [R, W];
+	$folders[$ri->vidSavePath]      = [R, W];
+} else {
+	echo 'Skipping cover folders check, as you have not set up a database yet. You can rerun this script after running install.' . PHP_EOL;
 }
 
 // Check folders.
