@@ -11,6 +11,7 @@ New updates are grouped by person, at the top of the file.
 	* Chg: Add function to NameFixer to update single columns in releases table
 	* Fix: A few errors in MiscSorter due to unhandled Amazon returns
 	* Chg: Optimize NameFixer more and fix more scrutinizer bugs
+	* Fix: 2 Regex compilation errors in NameFixer
 2014-08-20 kevin
 	* Add: Script to verify the important folder permisions.
 	* Chg: Make cover path checking optional, in case user has not run install yet in verify_permissions script.
