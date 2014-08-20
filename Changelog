@@ -5,6 +5,8 @@ No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
 
+2014-08-19 niel
+	* Fix: Manually updated versions.
 2014-08-18 niel
 	* New: Merged and tagged v0.3.12 to master branch.
 2014-08-11 niel
