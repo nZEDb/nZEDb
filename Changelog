@@ -14,6 +14,7 @@ New updates are grouped by person, at the top of the file.
 	* Fix: Typo in RottenTomato function
 	* Chg: Behavior of updateSingleColumn in NameFixer
 	* Fix: A few bugs in various scripts
+	* Chg: Revamp console post processing and improve matching
 2014-08-20 ruhllatio
 	* Chg: More optimizations to MiscSorter
 	* Fix: test_misc_sorter script errors due to removed functions
