@@ -47,6 +47,12 @@ class NameFixer
 	public $done;
 
 	/**
+	 * Whether or not to echo info to CLI
+	 * @var bool
+	 */
+	public $echooutput;
+
+	/**
 	 * Total releases we are working on.
 	 * @var int
 	 */
@@ -137,6 +143,7 @@ class NameFixer
 		$this->timeall = ' AND rel.adddate > (NOW() - INTERVAL 6 HOUR) GROUP BY rel.id ORDER BY postdate DESC';
 		$this->fullother = ' AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050) GROUP BY rel.id';
 		$this->fullall = '';
+		$this->_fileName = '';
 		$this->done = $this->matched = false;
 		$this->consoletools = ($options['ConsoleTools'] instanceof ConsoleTools ? $options['ConsoleTools'] :new ConsoleTools(['ColorCLI' => $this->pdo->log]));
 		$this->category = ($options['Categorize'] instanceof Categorize ? $options['Categorize'] : new Categorize(['Settings' => $this->pdo]));
@@ -186,9 +193,10 @@ class NameFixer
 		}
 
 		$releases = $this->_getReleases($time, $cats, $query);
-		if ($releases !== false) {
 
+		if ($releases instanceof Traversable && $releases !== false) {
 			$total = $releases->rowCount();
+
 			if ($total > 0) {
 				$this->_totalReleases = $total;
 				echo $this->pdo->log->primary(number_format($total) . ' releases to process.');
@@ -266,7 +274,7 @@ class NameFixer
 		}
 
 		$releases = $this->_getReleases($time, $cats, $query);
-		if ($releases !== false) {
+		if ($releases instanceof Traversable && $releases !== false) {
 
 			$total = $releases->rowCount();
 			if ($total > 0) {
@@ -323,7 +331,8 @@ class NameFixer
 		}
 
 		$releases = $this->_getReleases($time, $cats, $query);
-		if ($releases !== false) {
+
+		if ($releases instanceof Traversable && $releases !== false) {
 
 			$total = $releases->rowCount();
 			if ($total > 0) {
@@ -758,7 +767,7 @@ class NameFixer
 		$this->_fileName = $this->_cleanMatchFiles($release['filename']);
 		$pre = false;
 
-		if ($this->_fileName !== false && $this->_fileName !== '') {
+		if ($this->_fileName !== '') {
 			$pre = $this->pdo->queryOneRow(
 						sprintf('
 							SELECT id AS preid, title, source
@@ -770,7 +779,7 @@ class NameFixer
 			);
 		}
 
-		if ($pre !== false) {
+		if (isset($pre) && $pre !== false) {
 			if ($pre['title'] !== $release['searchname']) {
 				$this->updateRelease($release, $pre['title'], $method = "file matched source: " . $pre['source'], $echo, "PreDB file match, ", $namestatus, $show, $pre['preid']);
 			} else {
@@ -818,7 +827,6 @@ class NameFixer
 			}
 			return trim($this->_fileName);
 		}
-		return false;
 	}
 
 	// Match a Hash from the predb to a release.
@@ -1119,7 +1127,7 @@ class NameFixer
 					}
 					$releasename = $releasename . "." . $result['lang'];
 				}
-				if (preg_match('/(frame size|(video )?res(olution)?|video).*?(?P<res>272|336|480|494|528|608|\(?640|688|704|720x480|810|816|820|1 ?080|1280( @)?|1 ?920(x1080)?/i', $release["textstring"], $result)) {
+				if (preg_match('/(frame size|(video )?res(olution)?|video).*?(?P<res>272|336|480|494|528|608|\(?640|688|704|720x480|810|816|820|1 ?080|1280( \@)?|1 ?920(x1080)?/i', $release["textstring"], $result)) {
 
 					switch ($result['res']) {
 						case '272':
@@ -1153,7 +1161,7 @@ class NameFixer
 
 					$releasename = $releasename . "." . $result['res'];
 				}
-				else if (preg_match('/(largeur|width).*?(?P<res>(\(?640|688|704|720|1280( @)?|1 ?920)/i', $release["textstring"], $result)) {
+				else if (preg_match('/(largeur|width).*?(?P<res>(\(?640|688|704|720|1280( \@)?|1 ?920)/i', $release["textstring"], $result)) {
 
 					switch ($result['res']) {
 						case '640':
@@ -1267,7 +1275,7 @@ class NameFixer
 		if ($this->done === false && $this->relid !== $release["releaseid"]) {
 
 			if (preg_match('/ALiAS|BAT-TEAM|FAiRLiGHT|Game Type|Glamoury|HI2U|iTWINS|JAGUAR|(LARGE|MEDIUM)ISO|MAZE|nERv|PROPHET|PROFiT|PROCYON|RELOADED|REVOLVER|ROGUE|ViTALiTY/i', $release["textstring"])) {
-				$result = array();
+
 				if (preg_match('/\w[\w.+&*\/\()\',;: -]+\(c\)[-\w.\',;& ]+\w/i', $release["textstring"], $result)) {
 					$releasename = str_replace(array("(c)", "(C)"), "(GAMES) (c)", $result['0']);
 					$this->updateRelease($release, $releasename, $method = "nfoCheck: PC Games (c)", $echo, $type, $namestatus, $show);
@@ -1282,7 +1290,6 @@ class NameFixer
 	//  Misc.
 	public function nfoCheckMisc($release, $echo, $type, $namestatus, $show)
 	{
-		$result = array();
 
 		if ($this->done === false && $this->relid !== $release["releaseid"]) {
 
