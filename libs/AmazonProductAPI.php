@@ -188,15 +188,31 @@ class AmazonProductAPI
 				break;
 
 			case "TITLE" :
-				$parameters =
-					array(
-						"Operation"     => "ItemSearch",
-						//"Title"       => $search,
-						"Keywords"      => $search,
-						"Sort"          => "relevancerank",
-						"SearchIndex"   => $category,
-						"ResponseGroup" => "Large"
-					);
+				switch($category)
+				{
+					case "MUSICTRACKS" :
+						$parameters =
+							array(
+								"Operation"     => "ItemSearch",
+								//"Title"       => $search,
+								"Keywords"      => $search,
+								"Sort"          => "titlerank",
+								"SearchIndex"   => $category,
+								"ResponseGroup" => "Large"
+							);
+						break;
+					default :
+						$parameters =
+							array(
+								"Operation"     => "ItemSearch",
+								//"Title"       => $search,
+								"Keywords"      => $search,
+								"Sort"          => "relevancerank",
+								"SearchIndex"   => $category,
+								"ResponseGroup" => "Large"
+							);
+						break;
+				}
 				break;
 
 			case "TITLE2" :
@@ -314,7 +330,7 @@ class AmazonProductAPI
 		// Check if there's an error.
 		if (isset($response->Error)) {
 			// Check if we are throttled.
-			if ($this->searchProducts && strpos(strtolower($response->Error->Message), 'throttle') !== false && $this->tries <= self::maxTries) {
+			if ($this->searchProducts && strpos(strtolower($response->Error->Message), 'slower rate') !== false && $this->tries <= self::maxTries) {
 
 				// Sleep to let the throttle wear off.
 				sleep($this->currentSleepTime);
