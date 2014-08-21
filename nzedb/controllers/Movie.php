@@ -1332,15 +1332,9 @@ class Movie
 	 */
 	public function updateUpcoming()
 	{
-		if ($this->echooutput) {
-			$this->pdo->log->doEcho($this->pdo->log->header('Updating movie schedule using rotten tomatoes.'));
-		}
+		$this->pdo->log->doEcho($this->pdo->log->header('Updating movie schedule using rotten tomatoes.'));
 
-		$trKey = $this->pdo->getSetting('rottentomatokey');
-
-		if ($trKey != '') {
-			$rt = new RottenTomato($trKey);
-		}
+		$rt = new RottenTomato($this->pdo->getSetting('rottentomatokey'));
 
 		if ($rt instanceof RottenTomato) {
 
@@ -1355,7 +1349,7 @@ class Movie
 			}
 
 		} else {
-			$this->pdo->log->doEcho($this->pdo->log->header("Error retrieving your RottenTomato API Key. Exiting..."));
+			$this->pdo->log->doEcho($this->pdo->log->header("Error retrieving your RottenTomato API Key. Exiting..." . PHP_EOL));
 		}
 	}
 
@@ -1387,18 +1381,23 @@ class Movie
 				case 'dvd':
 					$data = $rt->getDVDReleases();
 					$update = Movie::SRC_DVD;
+					break;
+				default:
+					$data = false;
+					$update = 0;
 			}
 
-			$test = @json_decode($data);
-
-			if (isset($test) && $data !== '') {
-				$count = 2;
-				$check = true;
+			if ($data !== false && $data !== '') {
+				$test = @json_decode($data);
+				if (isset($test)) {
+					$count = 2;
+					$check = true;
+				}
 			}
 
 		} while ($count < 2);
 
-		if ($check = true) {
+		if ($check === true) {
 
 			$success = $this->updateInsUpcoming('rottentomato', $update, $data);
 
@@ -1411,7 +1410,7 @@ class Movie
 			}
 
 		} else {
-			exit($this->pdo->log->error("\nUnable to fetch from Rotten Tomatoes, verify your API Key\n"));
+			exit(PHP_EOL . $this->pdo->log->error("Unable to fetch from Rotten Tomatoes, verify your API Key." . PHP_EOL));
 		}
 	}
 
