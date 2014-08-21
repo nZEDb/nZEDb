@@ -933,7 +933,7 @@ class NameFixer
 	**/
 	private function _updateSingleColumn($column = '', $status = 0, $id = 0)
 	{
-		if ($column !== '' && $status !== 0 && $id !== 0) {
+		if ($column !== '' && $id !== 0) {
 			$this->pdo->queryExec(
 						sprintf('
 							UPDATE releases
@@ -944,8 +944,6 @@ class NameFixer
 							$id
 						)
 			);
-		} else {
-			echo PHP_EOL . "Error updating column -- not enough information passed to update function." . PHP_EOL;
 		}
 	}
 
