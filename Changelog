@@ -4,7 +4,8 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
-
+2014-08-21 niel
+    * Fix: Cherry-pick commit e5e49153 to master to fix the 'driver not found' issue in install Step 2.
 2014-08-19 niel
 	* Fix: Manually updated versions.
 2014-08-18 niel
