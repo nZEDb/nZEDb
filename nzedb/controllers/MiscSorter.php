@@ -358,6 +358,7 @@ class MiscSorter
 		}
 
 		if (isset($amaz) && isset($amaz->Items->Item)) {
+			sleep(2);
 			$type = $amaz->Items->Item->ItemAttributes->ProductGroup;
 			switch ($type) {
 				case 'Audible':
