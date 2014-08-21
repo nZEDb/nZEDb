@@ -3,6 +3,12 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
+2014-08-21 bart39
+	* Fix: Amazon throttling dues to api error message change.
+	* Fix: Wrong sort method for musictrack category via amazon lookup.
+	* Add: Regex additions for ReleaseCleaning.
+	* Fix: invalid GiantBomb link in alpha theme.
+	* Fix: Error resetting games post processing.
 2014-08-21 ruhllatio
 	* Chg: Re-work RottenTomato update function to remove duplication
 	* Fix: Typo in RottenTomato function

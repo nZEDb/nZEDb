@@ -743,6 +743,9 @@ class ReleaseCleaning
 		//4Etmo7uBeuTW[047/106] - "006dEbPcea29U6K.part046.rar" yEnc
 		if (preg_match('/^([a-zA-Z0-9]+)\[\d+\/\d+\] - "[a-zA-Z0-9]+\..+?" yEnc$/', $this->subject, $match)) {
 			return $match[1];
+		} //(PC-ISO) ( Trials.Fusion.Riders.of.the.Rustlands-SKIDROW ) [10/40] - "sr-tfrotr.part01.rar" yEnc
+		if (preg_match('/^\(PC-ISO\)[-_ ]{0,3}\( ([\w.,& ()\[\]\'\`-]{8,}?\b) \) \[\d+\/\d+\][-_ ]{0,3}".+?' . $this->e1, $this->subject, $match)) {
+			return $match[1];
 		} //( Overlord II RELOADED ) - [013/112] - "rld-olii.part001.rar" yEnc
 		if (preg_match('/^\( ([\w. -]{8,}) \)[-_ ]{0,3}\[\d+\/(\d+\]) - ".+?' . $this->e1, $this->subject, $match)) {
 			return $match[1];
@@ -1803,6 +1806,9 @@ class ReleaseCleaning
 			return $match[1];
 		} //New eBooks 20 Aug 2012 - File 001 of 409 - yEnc
 		if (preg_match('/^([\w.,& ()\[\]\'\`-]{8,}?)[- ]{0,3}File \d+ of \d+[- ]{0,3}yEnc$/', $this->subject, $match)) {
+			return $match[1];
+		} //Re: Request  - 05 L. E. Modesitt - Princeps.mobi [5/7] -  yEnc
+		if (preg_match('/^Re: Request[- ]{0,4}\d+[- ]{0,3}([\w.,& ()\[\]\'\`-]{8,}?\b.?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[- ]{0,3}\[\d+\/\d+\][- ]{0,4}yEnc$/', $this->subject, $match)) {
 			return $match[1];
 		}
 		return array("cleansubject" => $this->releaseCleanerHelper($this->subject), "properlynamed" => false);

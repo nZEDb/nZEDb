@@ -94,7 +94,7 @@ if (isset($argv[1]) && ($argv[1] === "games" || $argv[1] === "all")) {
 	$concount = 0;
 	if ($qry instanceof Traversable) {
 		foreach ($qry as $releases) {
-			$pdo->queryExec("UPDATE releases SET gamesinfo_id = NULL WHERE id = " . $releases['id']);
+			$pdo->queryExec("UPDATE releases SET gamesinfo_id = 0 WHERE id = " . $releases['id']);
 			$consoletools->overWritePrimary("Resetting Games Releases:  " .	$consoletools->percentString(++$concount, $total));
 		}
 		echo $pdo->log->header("\n" . number_format($concount) . " gameinfo_ID's reset.");
