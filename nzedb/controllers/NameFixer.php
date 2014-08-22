@@ -1125,7 +1125,7 @@ class NameFixer
 					}
 					$releasename = $releasename . "." . $result['lang'];
 				}
-				if (preg_match('/(frame size|(video )?res(olution)?|video).*?(?P<res>272|336|480|494|528|608|\(?640|688|704|720x480|810|816|820|1 ?080|1280( \@)?|1 ?920(x1080)?/i', $release["textstring"], $result)) {
+				if (preg_match('/(frame size|(video )?res(olution)?|video).*?(?P<res>(272|336|480|494|528|608|\(?640|688|704|720x480|810|816|820|1 ?080|1280( \@)?|1 ?920(x1080)?))/i', $release["textstring"], $result)) {
 
 					switch ($result['res']) {
 						case '272':
@@ -1159,7 +1159,7 @@ class NameFixer
 
 					$releasename = $releasename . "." . $result['res'];
 				}
-				else if (preg_match('/(largeur|width).*?(?P<res>(\(?640|688|704|720|1280( \@)?|1 ?920)/i', $release["textstring"], $result)) {
+				else if (preg_match('/(largeur|width).*?(?P<res>(\(?640|688|704|720|1280( \@)?|1 ?920))/i', $release["textstring"], $result)) {
 
 					switch ($result['res']) {
 						case '640':

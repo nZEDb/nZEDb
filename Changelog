@@ -9,6 +9,7 @@ New updates are grouped by person, at the top of the file.
 	* Add: Regex additions for ReleaseCleaning.
 	* Fix: invalid GiantBomb link in alpha theme.
 	* Fix: Error resetting games post processing.
+	* Fix: NameFixer typo's.
 2014-08-21 ruhllatio
 	* Chg: Re-work RottenTomato update function to remove duplication
 	* Fix: Typo in RottenTomato function
