@@ -144,28 +144,9 @@ class Music
 
 		$browseby = $this->getBrowseBy();
 
-		$catsrch = "";
+		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
-			$catsrch = " (";
-			$categ = new Category(['Settings' => $this->pdo]);
-			foreach ($cat as $category) {
-				if ($category != -1) {
-					if ($categ->isParent($category)) {
-						$children = $categ->getChildren($category);
-						$chlist = "-99";
-						foreach ($children as $child) {
-							$chlist .= ", " . $child["id"];
-						}
-
-						if ($chlist != "-99") {
-							$catsrch .= " r.categoryid IN (" . $chlist . ") OR ";
-						}
-					} else {
-						$catsrch .= sprintf(" r.categoryid = %d OR ", $category);
-					}
-				}
-			}
-			$catsrch .= "1=2 )";
+			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
 		}
 
 		if ($maxage > 0) {
@@ -205,28 +186,9 @@ class Music
 			$limit = " LIMIT " . $num . " OFFSET " . $start;
 		}
 
-		$catsrch = "";
+		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
-			$catsrch = " (";
-			$categ = new Category(['Settings' => $this->pdo]);
-			foreach ($cat as $category) {
-				if ($category != -1) {
-					if ($categ->isParent($category)) {
-						$children = $categ->getChildren($category);
-						$chlist = "-99";
-						foreach ($children as $child) {
-							$chlist .= ", " . $child["id"];
-						}
-
-						if ($chlist != "-99") {
-							$catsrch .= " r.categoryid IN (" . $chlist . ") OR ";
-						}
-					} else {
-						$catsrch .= sprintf(" r.categoryid = %d OR ", $category);
-					}
-				}
-			}
-			$catsrch .= "1=2 )";
+			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
 		}
 
 		$exccatlist = "";
