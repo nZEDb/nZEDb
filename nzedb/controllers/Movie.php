@@ -254,7 +254,10 @@ class Movie
 	 */
 	public function getMovieCount($cat, $maxAge = -1, $excludedCats = array())
 	{
-		$catSearch = $this->formCategorySearchSQL($cat);
+		$catsrch = '';
+		if (count($cat) > 0 && $cat[0] != -1) {
+			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
+		}
 
 		$res = $this->pdo->queryOneRow(
 			sprintf("
@@ -269,7 +272,7 @@ class Movie
 				AND %s %s %s %s ",
 				$this->showPasswords,
 				$this->getBrowseBy(),
-				$catSearch,
+				$catsrch,
 				($maxAge > 0 ? 'AND r.postdate > NOW() - INTERVAL ' . $maxAge . ' DAY' : ''),
 				(count($excludedCats) > 0 ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : '')
 			)
@@ -292,6 +295,11 @@ class Movie
 	 */
 	public function getMovieRange($cat, $start, $num, $orderBy, $maxAge = -1, $excludedCats = array())
 	{
+		$catsrch = '';
+		if (count($cat) > 0 && $cat[0] != -1) {
+			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
+		}
+
 		$order = $this->getMovieOrder($orderBy);
 		$sql = sprintf("
 			SELECT
@@ -319,7 +327,7 @@ class Movie
 			GROUP BY m.imdbid ORDER BY %s %s %s",
 			$this->showPasswords,
 			$this->getBrowseBy(),
-			$this->formCategorySearchSQL($cat),
+			$catsrch,
 			($maxAge > 0
 				? 'AND r.postdate > NOW() - INTERVAL ' . $maxAge . 'DAY '
 				: ''
@@ -330,42 +338,6 @@ class Movie
 			($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
 		);
 		return $this->pdo->queryDirect($sql);
-	}
-
-	/**
-	 * Form category search SQL.
-	 *
-	 * @param $cat
-	 *
-	 * @return string
-	 */
-	protected function formCategorySearchSQL($cat)
-	{
-		$catSearch = '';
-		if (count($cat) > 0 && $cat[0] != -1) {
-			$catSearch = '(';
-			$Category = new Category(['Settings' => $this->pdo]);
-			foreach ($cat as $category) {
-				if ($category != -1) {
-
-					if ($Category->isParent($category)) {
-						$children = $Category->getChildren($category);
-						$chList = '-99';
-						foreach ($children as $child) {
-							$chList .= ', ' . $child['id'];
-						}
-
-						if ($chList != '-99') {
-							$catSearch .= ' r.categoryid IN (' . $chList . ') OR ';
-						}
-					} else {
-						$catSearch .= sprintf(' r.categoryid = %d OR ', $category);
-					}
-				}
-			}
-			$catSearch .= '1=2)';
-		}
-		return $catSearch;
 	}
 
 	/**
@@ -423,7 +395,7 @@ class Movie
 				if ($bb === 'imdb') {
 					$browseBy .= 'm.' . $bb . 'id = ' . $bbv . ' AND ';
 				} else {
-					$browseBy .= 'm.' . $bb . ' LIKE (' . $this->pdo->escapeString('%' . $bbv . '%') . ') AND ';
+					$browseby .= 'm.' . $bb . ' ' . $this->pdo->likeString($bbv, true, true) . ' AND ';
 				}
 			}
 		}
