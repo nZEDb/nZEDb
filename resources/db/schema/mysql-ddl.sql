@@ -451,8 +451,8 @@ CREATE TABLE         xxxinfo (
   backdrop    TINYINT(1) UNSIGNED            NOT NULL DEFAULT '0',
   createddate DATETIME                       NOT NULL,
   updateddate DATETIME                       NOT NULL,
-  PRIMARY KEY                      (id),
-  INDEX        ix_xxxinfo_title  (title)
+  PRIMARY KEY                   (id),
+  UNIQUE INDEX ix_xxxinfo_title (title)
 )
   ENGINE          = MYISAM
   DEFAULT CHARSET = utf8
