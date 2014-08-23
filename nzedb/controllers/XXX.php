@@ -272,7 +272,7 @@ class XXX
 				if ($bb == 'id') {
 					$browseBy .= 'xxx.' . $bb . '=' . $bbv . ' AND ';
 				} else {
-					$browseby .= 'xxx.' . $bb . ' ' . $this->pdo->likeString($bbv, true, true) . ' AND ';
+					$browseBy .= 'xxx.' . $bb . ' ' . $this->pdo->likeString($bbv, true, true) . ' AND ';
 				}
 			}
 		}

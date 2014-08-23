@@ -5,6 +5,7 @@ New updates are grouped by person, at the top of the file.
 
 2014-08-23 ruhllatio
 	* Fix: Bug where memcached sockets will not work with nZEDb because the port was defaulting and it needed to be 0 in offset 1
+	* Fix: browseby errors in Movie and XXX
 2014-08-23 kevin
 	* Fix: Bug in settings.tsv, extra tab character in mischashedretentionhours causing new installs to have empty value.
 	* Fix: Add missing 'Maximum repair tries:' to settings.tsv and fix typo in site edit.
