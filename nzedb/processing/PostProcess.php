@@ -1,6 +1,8 @@
 <?php
 require_once nZEDb_LIBS . 'rarinfo/par2info.php';
 
+namespace \nzedb\processing;
+
 use nzedb\utility;
 
 class PostProcess
@@ -70,7 +72,7 @@ class PostProcess
 	{
 		$defaults = [
 			'Echo'         => true,
-			'Logger'    => null,
+			'Logger'       => null,
 			'Groups'       => null,
 			'NameFixer'    => null,
 			'Nfo'          => null,

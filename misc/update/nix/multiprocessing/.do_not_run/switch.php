@@ -1,5 +1,7 @@
 <?php
 
+use \nzedb\processing\PostProcess;
+
 if (!isset($argv[1])) {
 	exit("This script is not intended to be run manually." . PHP_EOL);
 }
