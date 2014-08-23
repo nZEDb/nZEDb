@@ -4,6 +4,8 @@ No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
 2014-08-22 kevin
+	* Fix: Bug in settings.tsv, extra tab character in mischashedretentionhours causing new installs to have empty value.
+2014-08-22 kevin
 	* Fix: Double number format in Binaries echo.
 2014-08-22 ruhllatio
 	* Chg: Move largely duplicated catSrch code to Category->getCategorySearch
