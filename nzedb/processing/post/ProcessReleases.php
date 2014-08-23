@@ -1,5 +1,5 @@
 <?php
-namespace \nzedb\processing\post;
+namespace nzedb\processing\post;
 
 use \nzedb\processing\PostProcess;
 
