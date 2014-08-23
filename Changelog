@@ -3,12 +3,20 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
+2014-08-22 kevin
+	* Fix: Double number format in Binaries echo.
+2014-08-22 ruhllatio
+	* Chg: Move largely duplicated catSrch code to Category->getCategorySearch
+	* Chg: Remove dead $pdo's and switch all to $this->pdo
+	* Chg: Movies.php now uses getCategorySearch as well instead of its own function
+	* Chg: Clean up XXX Post proc some - set unique index on xxxinfo.title removing dupes and remove ODKU
 2014-08-21 bart39
 	* Fix: Amazon throttling dues to api error message change.
 	* Fix: Wrong sort method for musictrack category via amazon lookup.
 	* Add: Regex additions for ReleaseCleaning.
 	* Fix: invalid GiantBomb link in alpha theme.
 	* Fix: Error resetting games post processing.
+	* Fix: NameFixer typo's.
 2014-08-21 ruhllatio
 	* Chg: Re-work RottenTomato update function to remove duplication
 	* Fix: Typo in RottenTomato function

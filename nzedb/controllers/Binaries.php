@@ -873,7 +873,7 @@ class Binaries
 				$this->_colorCLI->primaryOver(' to download articles, ') .
 				$this->_colorCLI->alternateOver($timeCleaning . 's') .
 				$this->_colorCLI->primaryOver(' to process collections, ') .
-				$this->_colorCLI->alternateOver(number_format($timeInsert, 2) . 's') .
+				$this->_colorCLI->alternateOver($timeInsert . 's') .
 				$this->_colorCLI->primaryOver(' to insert binaries/parts, ') .
 				$this->_colorCLI->alternateOver(number_format($currentMicroTime - $startPR, 2) . 's') .
 				$this->_colorCLI->primaryOver(' for part repair, ') .
