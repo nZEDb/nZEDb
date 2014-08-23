@@ -395,7 +395,7 @@ class Movie
 				if ($bb === 'imdb') {
 					$browseBy .= 'm.' . $bb . 'id = ' . $bbv . ' AND ';
 				} else {
-					$browseby .= 'm.' . $bb . ' ' . $this->pdo->likeString($bbv, true, true) . ' AND ';
+					$browseBy .= 'm.' . $bb . ' ' . $this->pdo->likeString($bbv, true, true) . ' AND ';
 				}
 			}
 		}

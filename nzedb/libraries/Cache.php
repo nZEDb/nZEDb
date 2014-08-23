@@ -264,7 +264,7 @@ Class Cache
 					$this->connected = true;
 				}
 			} else {
-				if ($this->server->addServers(array(array(nZEDb_CACHE_SOCKET_FILE))) === false) {
+				if ($this->server->addServers(array(array(nZEDb_CACHE_SOCKET_FILE, 'port' => 0))) === false) {
 					throw new CacheException('Error connecting to the Memcached server!');
 				} else {
 					$this->connected = true;
