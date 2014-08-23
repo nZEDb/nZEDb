@@ -1006,7 +1006,7 @@
 				</td>
 			</tr>
 			<tr>
-				<td style="width:180px;"><label for="partrepairmaxtries">Maximum repair per run:</label></td>
+				<td style="width:180px;"><label for="partrepairmaxtries">Maximum repair tries:</label></td>
 				<td>
 					<input class="short" id="partrepairmaxtries" name="partrepairmaxtries" type="text" value="{$site->partrepairmaxtries}"/>
 					<div class="hint">Maximum amount of times to try part repair.</div>

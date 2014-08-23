@@ -3,6 +3,9 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
+2014-08-23 kevin
+	* Fix: Bug in settings.tsv, extra tab character in mischashedretentionhours causing new installs to have empty value.
+	* Fix: Add missing 'Maximum repair tries:' to settings.tsv and fix typo in site edit.
 2014-08-22 kevin
 	* Fix: Double number format in Binaries echo.
 2014-08-22 ruhllatio
