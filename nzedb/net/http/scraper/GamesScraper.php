@@ -25,13 +25,6 @@ require_once nZEDb_LIBS . 'simple_html_dom.php';
 class GamesScraper extends \nzedb\net\http\Scraper
 {
 	/**
-	 * If a directlink is given retrieve and parse
-	 *
-	 * @var string
-	 */
-	protected  $directLink = null;
-
-	/**
 	 * Simple HTML DOM object of returned page.
 	 *
 	 * @var \libs\simple_html_dom
