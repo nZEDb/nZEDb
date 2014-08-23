@@ -58,7 +58,7 @@ abstract class Scraper
 	 *
 	 * @var int|string
 	 */
-	private $targetID;
+	private $itemID;
 
 	public function __construct()
 	{
@@ -66,7 +66,7 @@ abstract class Scraper
 
 	protected function _getID()
 	{
-		return $this->targetID;
+		return $this->itemID;
 	}
 
 	abstract protected function _getURL();
@@ -83,6 +83,6 @@ abstract class Scraper
 
 	protected function _setID($value)
 	{
-		$this->targetID = $value;
+		$this->itemID = $value;
 	}
 }
