@@ -45,4 +45,9 @@ class Steam extends GamesScraper
 	 * @var int
 	 */
 	protected $_totalResults;
+
+	public function __construct()
+	{
+		parent::__construct();
+	}
 }
