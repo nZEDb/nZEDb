@@ -27,12 +27,33 @@ abstract class Scraper
 	 *
 	 * @var string
 	 */
-	protected $directLink = null;
+
+	/**
+	 * Store any cookie returned by the site.
+	 *
+	 * @var string
+	 */
+	public $cookie;
+
+	/**
+	 * @var resource
+	 */
+	protected $_curlHandle;
+
+
+	protected $_directURL = null;
 
 	/**
 	 * @var \libs\simple_html_dom
 	 */
-	protected $html;
+	protected $_dom;
+
+	/**
+	 * Raw HTML as returned by curl.
+	 *
+	 * @var string
+	 */
+	protected $_html;
 
 	/**
 	 * @var string
@@ -60,6 +81,13 @@ abstract class Scraper
 	 */
 	private $itemID;
 
+	/**
+	 * Name of the item we're trying to discover ;-)
+	 *
+	 * @var
+	 */
+	private $itemName;
+
 	public function __construct()
 	{
 	}
@@ -69,13 +97,19 @@ abstract class Scraper
 		return $this->itemID;
 	}
 
-	abstract protected function _getURL();
+	/**
+	 * Handle initial connection to site using curl.
+	 */
+	protected function _getURL($url, $post = false)
+	{
+		//TODO reuse Utility getURL
+	}
 
 	protected function _search()
 	{
 		$result = $this->_getURL();
 		if ($result !== false) {
-			//do stuff with result
+			//do stuff with result which is Site specific
 		}
 
 		return $result;
