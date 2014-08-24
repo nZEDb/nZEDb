@@ -23,24 +23,37 @@ namespace nzedb\net\http;
 abstract class Scraper
 {
 	/**
-	 * If a directlink is given, store here.
+	 * PSR-3 compliant Logger object eventually, ColorCLI for now.
 	 *
-	 * @var string
+	 * @var \ColorCLI
 	 */
+	public $log;
 
 	/**
-	 * Store any cookie returned by the site.
+	 * Base URL for target site
 	 *
 	 * @var string
 	 */
-	public $cookie;
+	protected $_baseURL;
 
 	/**
 	 * @var resource
 	 */
 	protected $_curlHandle;
 
+	/**
+	 * Data structure containing all collected info. Methods to populate/retrieve this data will be
+	 * category specific (i.e. Books, Games, etc).
+	 *
+	 * @var array
+	 */
+	protected $_data;
 
+	/**
+	 * If a direct link to the item is given, store here.
+	 *
+	 * @var string
+	 */
 	protected $_directURL = null;
 
 	/**
@@ -56,45 +69,63 @@ abstract class Scraper
 	protected $_html;
 
 	/**
+	 * Path to save any fetched images (covers, posters, etc.)
+	 *
 	 * @var string
 	 */
-	protected $searchTerm;
+	protected $_coversPath;
+
+	/**
+	 * @var string
+	 */
+	protected $_searchTerm;
 
 	/**
 	 * String to hold any cookie sent by the site.
 	 *
 	 * @var string
 	 */
-	protected $siteCookie;
+	protected $_siteCookie;
 
 	/**
-	 * Title to search for?
-	 *
-	 * @var string
-	 */
-	protected $title = '';
-
-	/**
-	 * ID of the target item.
+	 * ID we're trying to discover.
 	 *
 	 * @var int|string
 	 */
 	private $itemID;
 
 	/**
-	 * Name of the item we're trying to discover ;-)
+	 * Name we're trying to discover ;-)
 	 *
 	 * @var
 	 */
 	private $itemName;
 
-	public function __construct()
+	public function __construct(array $options = [])
 	{
+		$defaults = [
+			'baseURL'	=> null,
+			'db'		=> null,
+			'log'		=> null,
+		];
+		$options += $defaults;
+
+		if (empty($options['baseURL'])) {
+			throw new \InvalidArgumentException("Web page scrapers must have a base url");
+		}
+
+		$options['log'] = ($options['log'] instanceof \ColorCLI) ? $options['log'] : new \ColorCLI();
+
 	}
 
 	protected function _getID()
 	{
 		return $this->itemID;
+	}
+
+	protected function _getName()
+	{
+		return $this->itemName;
 	}
 
 	/**
@@ -118,5 +149,10 @@ abstract class Scraper
 	protected function _setID($value)
 	{
 		$this->itemID = $value;
+	}
+
+	protected function _setName($value)
+	{
+		$this->itemName = $value;
 	}
 }
