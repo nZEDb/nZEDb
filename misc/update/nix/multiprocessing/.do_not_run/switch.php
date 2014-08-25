@@ -139,7 +139,7 @@ switch ($options[1]) {
 	// $options[2] => (string)groupCount, number of groups terminated by _ | (int)groupID, group to work on
 	case 'releases':
 		$pdo = new \nzedb\db\Settings();
-		$releases = new \ProcessReleases(['Settings' => $pdo]);
+		$releases = new \nzedb\processing\post\ProcessReleases(['Settings' => $pdo]);
 
 		//Runs function that are per group
 		if (is_numeric($options[2])) {
@@ -217,7 +217,7 @@ switch ($options[1]) {
 			processReleases(new \ProcessReleases(['Settings' => $pdo]), $options[2]);
 
 			// Post process the releases.
-			(new \ProcessAdditional(['Echo' => true, 'NNTP' => $nntp, 'Settings' => $pdo]))->start($options[2]);
+			(new \nzedb\processing\post\ProcessAdditional(['Echo' => true, 'NNTP' => $nntp, 'Settings' => $pdo]))->start($options[2]);
 			(new \Nfo(['Echo' => true, 'Settings' => $pdo]))->processNfoFiles($nntp, $options[2]);
 
 		}
