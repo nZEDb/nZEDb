@@ -156,10 +156,9 @@
 						{if $game.esrb != ""}<strong>ESRB:</strong> {$game.esrb|escape:"htmlall"}<br>{/if}
 						{if $game.genres != ""}<strong>Genre:</strong> {$game.genres|escape:"htmlall"}<br>{/if}
 						{if $game.publisher != ""}<strong>Publisher:</strong> {$game.publisher|escape:"htmlall"}<br>{/if}
-						{if $game.platform != ""}<strong>Platform:</strong> {$game.platform|escape:"htmlall"}<br>{/if}
 						{if $game.releasedate != ""}<strong>Released:</strong> {$game.releasedate|date_format}{/if}
 						<div style="margin-top:10px;">
-							<span class="label label-default"><a target="_blank" href="{$site->dereferrer_link}{$game.url}/" title="View game at Giantbomb">Giantbomb</a></span>
+							<span class="label label-default"><a target="_blank" href="{$site->dereferrer_link}{$game.url}" title="View game at Giantbomb">Giantbomb</a></span>
 						</div>
 					</td>
 				</tr>

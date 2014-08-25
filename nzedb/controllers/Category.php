@@ -119,6 +119,39 @@ class Category
 	}
 
 	/**
+	 * Parse category search constraints
+	 *
+	 * @param array $cat
+	 *
+	 * @return string $catsrch
+	 */
+	public function getCategorySearch($cat = array())
+	{
+		$catsrch = ' (';
+
+		foreach ($cat as $category) {
+
+			$chlist = '-99';
+
+			if ($category != -1 && $this->isParent($category)) {
+				$children = $this->getChildren($category);
+
+				foreach ($children as $child) {
+					$chlist .= ', ' . $child['id'];
+				}
+			}
+
+			if ($chlist != '-99') {
+				$catsrch .= ' r.categoryid IN (' . $chlist . ') OR ';
+			} else {
+				$catsrch .= sprintf(' r.categoryid = %d OR ', $category);
+			}
+			$catsrch .= '1=2 )';
+		}
+		return $catsrch;
+	}
+
+	/**
 	 * Check if category is parent.
 	 *
 	 * @param $cid

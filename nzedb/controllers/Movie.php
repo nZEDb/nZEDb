@@ -164,7 +164,11 @@ class Movie
 
 		if (nZEDb_DEBUG || nZEDb_LOGGING) {
 			$this->debug = true;
-			$this->debugging = ($options['Logger'] instanceof Logger ? $options['Logger'] : new Logger(['ColorCLI' => $this->pdo->log]));
+			try {
+				$this->debugging = new \Logger();
+			} catch (\LoggerException $error) {
+				$this->_debug = false;
+			}
 		}
 	}
 
@@ -250,7 +254,10 @@ class Movie
 	 */
 	public function getMovieCount($cat, $maxAge = -1, $excludedCats = array())
 	{
-		$catSearch = $this->formCategorySearchSQL($cat);
+		$catsrch = '';
+		if (count($cat) > 0 && $cat[0] != -1) {
+			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
+		}
 
 		$res = $this->pdo->queryOneRow(
 			sprintf("
@@ -265,7 +272,7 @@ class Movie
 				AND %s %s %s %s ",
 				$this->showPasswords,
 				$this->getBrowseBy(),
-				$catSearch,
+				$catsrch,
 				($maxAge > 0 ? 'AND r.postdate > NOW() - INTERVAL ' . $maxAge . ' DAY' : ''),
 				(count($excludedCats) > 0 ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : '')
 			)
@@ -288,6 +295,11 @@ class Movie
 	 */
 	public function getMovieRange($cat, $start, $num, $orderBy, $maxAge = -1, $excludedCats = array())
 	{
+		$catsrch = '';
+		if (count($cat) > 0 && $cat[0] != -1) {
+			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
+		}
+
 		$order = $this->getMovieOrder($orderBy);
 		$sql = sprintf("
 			SELECT
@@ -315,7 +327,7 @@ class Movie
 			GROUP BY m.imdbid ORDER BY %s %s %s",
 			$this->showPasswords,
 			$this->getBrowseBy(),
-			$this->formCategorySearchSQL($cat),
+			$catsrch,
 			($maxAge > 0
 				? 'AND r.postdate > NOW() - INTERVAL ' . $maxAge . 'DAY '
 				: ''
@@ -326,42 +338,6 @@ class Movie
 			($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
 		);
 		return $this->pdo->queryDirect($sql);
-	}
-
-	/**
-	 * Form category search SQL.
-	 *
-	 * @param $cat
-	 *
-	 * @return string
-	 */
-	protected function formCategorySearchSQL($cat)
-	{
-		$catSearch = '';
-		if (count($cat) > 0 && $cat[0] != -1) {
-			$catSearch = '(';
-			$Category = new Category(['Settings' => $this->pdo]);
-			foreach ($cat as $category) {
-				if ($category != -1) {
-
-					if ($Category->isParent($category)) {
-						$children = $Category->getChildren($category);
-						$chList = '-99';
-						foreach ($children as $child) {
-							$chList .= ', ' . $child['id'];
-						}
-
-						if ($chList != '-99') {
-							$catSearch .= ' r.categoryid IN (' . $chList . ') OR ';
-						}
-					} else {
-						$catSearch .= sprintf(' r.categoryid = %d OR ', $category);
-					}
-				}
-			}
-			$catSearch .= '1=2)';
-		}
-		return $catSearch;
 	}
 
 	/**
@@ -419,7 +395,7 @@ class Movie
 				if ($bb === 'imdb') {
 					$browseBy .= 'm.' . $bb . 'id = ' . $bbv . ' AND ';
 				} else {
-					$browseBy .= 'm.' . $bb . ' LIKE (' . $this->pdo->escapeString('%' . $bbv . '%') . ') AND ';
+					$browseBy .= 'm.' . $bb . ' ' . $this->pdo->likeString($bbv, true, true) . ' AND ';
 				}
 			}
 		}
@@ -1328,132 +1304,85 @@ class Movie
 	 */
 	public function updateUpcoming()
 	{
-		if ($this->echooutput) {
-			$this->pdo->log->doEcho($this->pdo->log->header('Updating movie schedule using rotten tomatoes.'));
-		}
+		$this->pdo->log->doEcho($this->pdo->log->header('Updating movie schedule using rotten tomatoes.'));
 
-		$trKey = $this->pdo->getSetting('rottentomatokey');
-		if ($trKey != '') {
-			$rt = new RottenTomato($trKey);
+		$rt = new RottenTomato($this->pdo->getSetting('rottentomatokey'));
 
-			$retBo = $rt->getBoxOffice();
-			$test = @json_decode($retBo);
-			if (!$test || $retBo === "") {
-				sleep(1);
-				$retBo = $rt->getBoxOffice();
-				$test = @json_decode($retBo);
-				if (!$test || $retBo === "") {
-					if ($this->echooutput) {
-						exit($this->pdo->log->error("\nUnable to fetch from Rotten Tomatoes, verify your API Key\n"));
-					}
-				}
-			}
-			if ($test) {
-				$cnt1 = $this->updateInsUpcoming('rottentomato', Movie::SRC_BOXOFFICE, $retBo);
-				if ($this->echooutput && $cnt1 !== false) {
-					$this->pdo->log->doEcho($this->pdo->log->header("Added/updated movies to the box office list."));
-				} else {
-					if ($this->echooutput) {
-						$this->pdo->log->doEcho($this->pdo->log->primary("No new updates for box office list."));
-					}
-				}
-			}
+		if ($rt instanceof RottenTomato) {
 
-			$retTh = $rt->getInTheaters();
-			$test = @json_decode($retTh);
-			if (!$test || $retTh === "") {
-				sleep(1);
-				$retTh = $rt->getInTheaters();
-				$test = @json_decode($retTh);
-				if (!$test || $retTh === "") {
-					if ($this->echooutput) {
-						exit($this->pdo->log->error("\nUnable to fetch from Rotten Tomatoes, verify your API Key\n"));
-					}
-				}
-			}
-			if ($test) {
-				$cnt2 = $this->updateInsUpcoming('rottentomato', Movie::SRC_INTHEATRE, $retTh);
-				if ($this->echooutput && $cnt2 !== false) {
-					echo $this->pdo->log->header("Added/updated movies to the theaters list.");
-				} else {
-					if ($this->echooutput) {
-						$this->pdo->log->doEcho($this->pdo->log->primary("No new updates for theaters list."));
-					}
-				}
-			}
-
-			$retOp = $rt->getOpening();
-			$test = @json_decode($retOp);
-			if (!$test || $retOp === '') {
-				sleep(1);
-				$retOp = $rt->getOpening();
-				$test = @json_decode($retOp);
-				if (!$test || $retOp === '') {
-					if ($this->echooutput) {
-						exit($this->pdo->log->error("\nUnable to fetch from Rotten Tomatoes, verify your API Key\n"));
-					}
-				}
-			}
-			if ($test) {
-				$cnt3 = $this->updateInsUpcoming('rottentomato', Movie::SRC_OPENING, $retOp);
-				if ($this->echooutput && $cnt3 !== false) {
-					$this->pdo->log->doEcho($this->pdo->log->header("Added/updated movies to the opening list."));
-				} else {
-					if ($this->echooutput) {
-						$this->pdo->log->doEcho($this->pdo->log->primary("No new updates for upcoming list."));
-					}
-				}
-			}
-
-			$retUp = $rt->getUpcoming();
-			$test = @json_decode($retUp);
-			if (!$test || $retUp === "") {
-				sleep(1);
-				$retUp = $rt->getUpcoming();
-				$test = @json_decode($retUp);
-				if (!$test || $retUp === "") {
-					if ($this->echooutput) {
-						exit($this->pdo->log->error("\nUnable to fetch from Rotten Tomatoes, verify your API Key\n"));
-					}
-				}
-			}
-			if ($test) {
-				$cnt4 = $this->updateInsUpcoming('rottentomato', Movie::SRC_UPCOMING, $retUp);
-				if ($this->echooutput && $cnt4 !== false) {
-					$this->pdo->log->doEcho($this->pdo->log->header("Added/updated movies to the upcoming list."));
-				} else {
-					if ($this->echooutput) {
-						$this->pdo->log->doEcho($this->pdo->log->primary("No new updates for upcoming list."));
-					}
-				}
-			}
-
-			$retDr = $rt->getDVDReleases();
-			$test = @json_decode($retDr);
-			if (!$test || $retDr === "") {
-				sleep(1);
-				$retDr = $rt->getDVDReleases();
-				$test = @json_decode($retDr);
-				if (!$test || $retDr === "") {
-					if ($this->echooutput) {
-						exit($this->pdo->log->error("\nUnable to fetch from Rotten Tomatoes, verify your API Key\n"));
-					}
-				}
-			}
-			if ($test) {
-				$cnt5 = $this->updateInsUpcoming('rottentomato', Movie::SRC_DVD, $retDr);
-				if ($this->echooutput && $cnt5 !== false) {
-					$this->pdo->log->doEcho($this->pdo->log->header("Added/updated movies to the DVD list."));
-				} else {
-					if ($this->echooutput) {
-						$this->pdo->log->doEcho($this->pdo->log->primary("No new updates for upcoming list."));
-					}
-				}
-			}
+			$this->_getRTData('boxoffice', $rt);
+			$this->_getRTData('theaters', $rt);
+			$this->_getRTData('opening', $rt);
+			$this->_getRTData('upcoming', $rt);
+			$this->_getRTData('dvd', $rt);
 
 			if ($this->echooutput) {
 				$this->pdo->log->doEcho($this->pdo->log->header("Updated successfully."));
 			}
+
+		} else {
+			$this->pdo->log->doEcho($this->pdo->log->header("Error retrieving your RottenTomato API Key. Exiting..." . PHP_EOL));
+		}
+	}
+
+	protected function _getRTData($operation = '', $rt)
+	{
+		$count = 0;
+		$check = false;
+
+		do {
+			$count++;
+
+			switch ($operation) {
+				case 'boxoffice':
+					$data = $rt->getBoxOffice();
+					$update = Movie::SRC_BOXOFFICE;
+					break;
+				case 'theaters':
+					$data = $rt->getInTheaters();
+					$update = Movie::SRC_INTHEATRE;
+					break;
+				case 'opening':
+					$data = $rt->getOpening();
+					$update = Movie::SRC_OPENING;
+					break;
+				case 'upcoming':
+					$data = $rt->getUpcoming();
+					$update = Movie::SRC_UPCOMING;
+					break;
+				case 'dvd':
+					$data = $rt->getDVDReleases();
+					$update = Movie::SRC_DVD;
+					break;
+				default:
+					$data = false;
+					$update = 0;
+			}
+
+			if ($data !== false && $data !== '') {
+				$test = @json_decode($data);
+				if (isset($test)) {
+					$count = 2;
+					$check = true;
+				}
+			}
+
+		} while ($count < 2);
+
+		if ($check === true) {
+
+			$success = $this->updateInsUpcoming('rottentomato', $update, $data);
+
+			if ($this->echooutput) {
+				if ($success !== false) {
+					$this->pdo->log->doEcho($this->pdo->log->header(sprintf("Added/updated movies to the %s list.", $operation)));
+				} else {
+					$this->pdo->log->doEcho($this->pdo->log->primary(sprintf("No new updates for %s list.", $operation)));
+				}
+			}
+
+		} else {
+			exit(PHP_EOL . $this->pdo->log->error("Unable to fetch from Rotten Tomatoes, verify your API Key." . PHP_EOL));
 		}
 	}
 

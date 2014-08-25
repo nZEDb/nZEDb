@@ -96,7 +96,7 @@ switch ($argv[1]) {
 	case 'book':
 		$postProcess->processBooks();
 		break;
-	case 'consoles':
+	case 'console':
 		$postProcess->processConsoles();
 		break;
 	case 'games':

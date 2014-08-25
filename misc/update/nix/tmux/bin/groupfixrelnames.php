@@ -161,10 +161,6 @@ if (!isset($argv[1])) {
 				$sorter = new MiscSorter(true, $pdo);
 				foreach ($releases as $release) {
 					$res = $sorter->nfosorter(null, $release['releaseid']);
-					if ($res != true) {
-						$pdo->queryExec(sprintf('UPDATE releases SET proc_sorter = 1 WHERE id = %d', $release['releaseid']));
-						echo '.';
-					}
 				}
 			}
 			break;
