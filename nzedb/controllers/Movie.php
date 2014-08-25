@@ -537,8 +537,8 @@ class Movie
 		$mov['cover'] = $mov['backdrop'] = $movieID = 0;
 		$mov['type'] = $mov['director'] = $mov['actors'] = $mov['language'] = '';
 
-		$mov['imdb_id'] = $imdbId;
-		$mov['tmdb_id'] = (!isset($tmdb['tmdb_id']) || $tmdb['tmdb_id'] == '') ? 'NULL' : $tmdb['tmdb_id'];
+		$mov['imdbid'] = $imdbId;
+		$mov['tmdbid'] = (!isset($tmdb['tmdbid']) || $tmdb['tmdbid'] == '') ? 'NULL' : $tmdb['tmdbid'];
 
 		// Prefer FanArt.tv cover over TMDB. And TMDB over IMDB.
 		if ($this->checkVariable($fanart['cover'])) {
@@ -608,8 +608,8 @@ class Movie
 				ON DUPLICATE KEY UPDATE
 					imdbid = %d, tmdbid = %s, title = %s, rating = %s, tagline = %s, plot = %s, year = %s, genre = %s,
 					type = %s, director = %s, actors = %s, language = %s, cover = %d, backdrop = %d, updateddate = NOW()",
-				$mov['imdb_id'],
-				$mov['tmdb_id'],
+				$mov['imdbid'],
+				$mov['tmdbid'],
 				$this->pdo->escapeString($mov['title']),
 				$this->pdo->escapeString($mov['rating']),
 				$this->pdo->escapeString($mov['tagline']),
@@ -622,8 +622,8 @@ class Movie
 				$this->pdo->escapeString(substr($mov['language'], 0, 64)),
 				$mov['cover'],
 				$mov['backdrop'],
-				$mov['imdb_id'],
-				$mov['tmdb_id'],
+				$mov['imdbid'],
+				$mov['tmdbid'],
 				$this->pdo->escapeString($mov['title']),
 				$this->pdo->escapeString($mov['rating']),
 				$this->pdo->escapeString($mov['tagline']),
@@ -646,7 +646,7 @@ class Movie
 					' (' .
 					$mov['year'] .
 					') - ' .
-					$mov['imdb_id']
+					$mov['imdbid']
 				)
 			);
 		}
@@ -742,9 +742,9 @@ class Movie
 			}
 		}
 
-		$ret['tmdb_id'] = $tmdbLookup['id'];
-		$ImdbID = str_replace('tt', '', $tmdbLookup['imdb_id']);
-		$ret['imdb_id'] = $ImdbID;
+		$ret['tmdbid'] = $tmdbLookup['id'];
+		$ImdbID = str_replace('tt', '', $tmdbLookup['imdbid']);
+		$ret['imdbid'] = $ImdbID;
 		if (isset($tmdbLookup['vote_average'])) {
 			$ret['rating'] = ($tmdbLookup['vote_average'] == 0) ? '' : $tmdbLookup['vote_average'];
 		}
