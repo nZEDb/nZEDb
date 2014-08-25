@@ -269,7 +269,7 @@ class Console
 		return implode(', ', $newArr);
 	}
 
-	public function update($id, $title, $asin, $url, $salesrank, $platform, $publisher, $releasedate, $esrb, $cover, $genreID, $review = null)
+	public function update($id, $title, $asin, $url, $salesrank, $platform, $publisher, $releasedate, $esrb, $cover, $genreID, $review = 'review')
 	{
 		$this->pdo->queryExec(
 			sprintf("
@@ -288,7 +288,7 @@ class Console
 				$this->pdo->escapeString($esrb),
 				$cover,
 				$genreID,
-				(is_null($review) ? $review : $this->pdo->escapeString(substr($review, 0, 3000))),
+				($review = 'review' ? $review : $this->pdo->escapeString(substr($review, 0, 3000))),
 				$id
 			)
 		);
@@ -623,7 +623,7 @@ class Console
 					($con['consolegenreID'] == -1 ? "null" : $con['consolegenreID']),
 					$this->pdo->escapeString($con['esrb']),
 					$con['releasedate'],
-					$this->pdo->escapeString(substr($con['review'], 0, 3000)),
+					(isset($con['review']) ? $this->pdo->escapeString(substr($con['review'], 0, 3000)) : ''),
 					$con['cover']
 				)
 			);
@@ -638,7 +638,7 @@ class Console
 			$this->update(
 						$consoleId, $con['title'], $con['asin'], $con['url'], $con['salesrank'],
 						$con['platform'], $con['publisher'], $con['releasedate'], $con['esrb'],
-						$con['cover'], $con['consolegenreID'], $con['review']
+						$con['cover'], $con['consolegenreID'], (isset($con['review']) ? $con['review'] : '')
 			);
 
 		}
