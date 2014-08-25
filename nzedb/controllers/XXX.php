@@ -443,7 +443,7 @@ class XXX
 				$res = $mov->_getall();
 			} else {
 				// Nothing was found, go ahead and set to -2
-				return false;
+				return -2;
 			}
 		}
 
