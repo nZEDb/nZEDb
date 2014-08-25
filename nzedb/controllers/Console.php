@@ -269,7 +269,7 @@ class Console
 		return implode(', ', $newArr);
 	}
 
-	public function update($id, $title, $asin, $url, $salesrank, $platform, $publisher, $releasedate, $esrb, $cover, $genreID, $review = null)
+	public function update($id, $title, $asin, $url, $salesrank, $platform, $publisher, $releasedate, $esrb, $cover, $genreID, $review = 'review')
 	{
 		$this->pdo->queryExec(
 			sprintf("
@@ -288,7 +288,7 @@ class Console
 				$this->pdo->escapeString($esrb),
 				$cover,
 				$genreID,
-				(is_null($review) ? $review : $this->pdo->escapeString(substr($review, 0, 3000))),
+				($review = 'review' ? $review : $this->pdo->escapeString(substr($review, 0, 3000))),
 				$id
 			)
 		);
