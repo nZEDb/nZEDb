@@ -623,7 +623,7 @@ class Console
 					($con['consolegenreID'] == -1 ? "null" : $con['consolegenreID']),
 					$this->pdo->escapeString($con['esrb']),
 					$con['releasedate'],
-					$this->pdo->escapeString(substr($con['review'], 0, 3000)),
+					(isset($con['review']) ? $this->pdo->escapeString(substr($con['review'], 0, 3000)) : ''),
 					$con['cover']
 				)
 			);
@@ -638,7 +638,7 @@ class Console
 			$this->update(
 						$consoleId, $con['title'], $con['asin'], $con['url'], $con['salesrank'],
 						$con['platform'], $con['publisher'], $con['releasedate'], $con['esrb'],
-						$con['cover'], $con['consolegenreID'], $con['review']
+						$con['cover'], $con['consolegenreID'], (isset($con['review']) ? $con['review'] : '')
 			);
 
 		}
