@@ -4,14 +4,48 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
+
+2014-08-25 niel
+	* New: Merged and tagged v0.3.13 to master branch.
 2014-08-21 niel
     * Fix: Cherry-pick commit e5e49153 to master to fix the 'driver not found' issue in install Step 2.
 2014-08-19 niel
 	* Fix: Manually updated versions.
 2014-08-18 niel
 	* New: Merged and tagged v0.3.12 to master branch.
+2014-08-18 bart39
+	* Fix: Typo.
+2014-08-15 kevin
+	* Chg: Speed up addLanguage api function.
+2014-08-15 bart39
+	* Fix: API Issues.
+	* Fix: Only add row count to release query if releases found.
+	* Add: a.b.nl regex.
+	* Add: Ignore pictureset for PC categorization.
+2014-08-14 bart39
+	* Fix: Add mischashedretentionhours to 10-settings.tsv for new installs.
+	* Fix: Change query column to VARCHAR(1024)
+2014-08-13 niel
+	* Fix: Another missed userid to user_id.
+	* Fix: Some more genreid to genre_id changes.
+2014-08-13 ruhllatio
+	* Fix: a metric ton of genreid columns that weren't changed to genre_id (ahem archer})
+	* Fix: More genreid's in Genres.php that didn't get changed
+	* Chg: Optimize various TV Show and Movie RSS queries to leverage partitioning
+2014-08-12 niel
+	* Chg: Converting usa of 'userid' to 'user_id'.
+	* Chg: Converting use of 'genreid' to 'genre_id'.
+2014-08-12 ruhllatio
+	* Fix: undefined index error in MiscSorter and SQL query syntax error
+	* Add: script to optimize nZEDb moving to/from Sphinx (reclaims space from releasesearch that is unused with Sphinx).
+	* Fix: Forgot to remove limit in insert for testing
 2014-08-11 niel
 	* New: Merged and tagged v0.3.11 to master branch.
+2014-08-11 ruhllatio
+	* Chg: Standardize some of MiscSorter... remove needless NNTP, replace some preg with string ops
+	* Fix: Typo onion in ReleaseRemover
+	* Fix: API calls broken due to unconditional sphinxSE join (if you are using Sphinx) without an actual query
+	* Chg: Revert work query change for MiscSorter
 2014-08-10 kevin
 	* Chg: Cleanup of DbUpdate / put win checks for step2 failures.
 	* Fix: Issues in Settings.php

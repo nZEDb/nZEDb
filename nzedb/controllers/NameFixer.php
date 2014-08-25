@@ -418,7 +418,7 @@ class NameFixer
 						$this->pdo->log->primary($type . $method) .
 						$this->pdo->log->headerOver("ReleaseID: ") .
 						$this->pdo->log->primary($release["releaseid"]);
-					if (isset($release['filename']) && $release['filename'] != ""){
+					if (isset($release['filename']) && $release['filename'] != "") {
 						echo
 							$this->pdo->log->headerOver("Filename:  ") .
 							$this->pdo->log->primary($release["filename"]);
@@ -449,6 +449,9 @@ class NameFixer
 								break;
 							case "PreDB FT Exact, ":
 								$status = "isrenamed = 1, iscategorized = 1,";
+								break;
+							case "sorter ":
+								$status = "isrenamed = 1, iscategorized = 1, proc_sorter = 1,";
 								break;
 						}
 						$newTitle = $this->pdo->escapeString(substr($newName, 0, 255));

@@ -20,7 +20,7 @@ sprintf(
 (
 	id          BIGINT UNSIGNED NOT NULL,
 	weight      INTEGER NOT NULL,
-	query       VARCHAR(3072) NOT NULL,
+	query       VARCHAR(1024) NOT NULL,
 	guid        VARCHAR(40) NOT NULL,
 	name        VARCHAR(255) NOT NULL DEFAULT '',
 	searchname  VARCHAR(255) NOT NULL DEFAULT '',

@@ -113,7 +113,7 @@
 					<h4>{$result.artist}{" - "}{$result.title}</h4>
 					{if $result.genre != ""}
 						<b>Genre:</b>
-						<a href="{$smarty.const.WWW_TOP}/music/?genre={$result.genreid}">{$result.genre|escape:"htmlall"}</a>
+						<a href="{$smarty.const.WWW_TOP}/music/?genre={$result.genre_id}">{$result.genre|escape:"htmlall"}</a>
 						<br>
 					{/if}
 					{if $result.publisher != ""}

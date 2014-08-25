@@ -3239,6 +3239,9 @@ class ReleaseCleaning
 		} //Batman.Arkham-Origins.Initiation-RELOADED - [006/296] - "r.vol010+08.PAR2" yEnc
 		if (preg_match('/^([\w. &()-]{8,}?\b)[- ]{0,3}\[\d+\/(\d+\])[- ]{0,3}".+?' . $this->e1, $this->subject, $match)) {
 			return $match[1];
+		} //(PC-ISO) ( Trials.Fusion.Riders.of.the.Rustlands-SKIDROW ) [10/40] - "sr-tfrotr.part01.rar" yEnc
+		if (preg_match('/^\(PC-ISO\)[-_ ]{0,3}\( ([\w.,& ()\[\]\'\`-]{8,}?\b) \) \[\d+\/\d+\][-_ ]{0,3}".+?' . $this->e1, $this->subject, $match)) {
+			return $match[1];
 		}
 		return array("cleansubject" => $this->releaseCleanerHelper($this->subject), "properlynamed" => false);
 	}
