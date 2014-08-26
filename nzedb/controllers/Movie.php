@@ -321,7 +321,6 @@ class Movie
 			LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id
 			INNER JOIN movieinfo m ON m.imdbid = r.imdbid
 			WHERE r.nzbstatus = 1 AND r.imdbid != '0000000'
-			AND m.cover = 1
 			AND m.title != ''
 			AND r.passwordstatus <= %d AND %s %s %s %s
 			GROUP BY m.imdbid ORDER BY %s %s %s",
