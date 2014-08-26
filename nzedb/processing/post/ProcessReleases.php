@@ -1173,7 +1173,7 @@ class ProcessReleases
 			$releases = $this->pdo->queryDirect(
 				sprintf(
 					'SELECT id, guid FROM releases WHERE passwordstatus = %d',
-					Releases::PASSWD_RAR
+					\Releases::PASSWD_RAR
 				)
 			);
 			if ($releases instanceof \Traversable) {

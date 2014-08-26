@@ -312,15 +312,15 @@ class PostProcess
 		if (!in_array(
 			(int)$query['categoryid'],
 			array(
-				Category::CAT_BOOKS_OTHER,
-				Category::CAT_GAME_OTHER,
-				Category::CAT_MOVIE_OTHER,
-				Category::CAT_MUSIC_OTHER,
-				Category::CAT_PC_PHONE_OTHER,
-				Category::CAT_TV_OTHER,
-				Category::CAT_OTHER_HASHED,
-				Category::CAT_XXX_OTHER,
-				Category::CAT_MISC
+				\Category::CAT_BOOKS_OTHER,
+				\Category::CAT_GAME_OTHER,
+				\Category::CAT_MOVIE_OTHER,
+				\Category::CAT_MUSIC_OTHER,
+				\Category::CAT_PC_PHONE_OTHER,
+				\Category::CAT_TV_OTHER,
+				\Category::CAT_OTHER_HASHED,
+				\Category::CAT_XXX_OTHER,
+				\Category::CAT_MISC
 			)
 		)
 		) {
