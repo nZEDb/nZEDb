@@ -1679,7 +1679,7 @@ Class ProcessAdditional
 
 									// Echo the changed name.
 									if ($this->_echoCLI) {
-										NameFixer::echoChangedReleaseName(
+										\NameFixer::echoChangedReleaseName(
 											array(
 												'new_name' => $newName,
 												'old_name' => $rQuery['searchname'],
