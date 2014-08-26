@@ -233,7 +233,7 @@ class Games
 				. "LEFT OUTER JOIN groups ON groups.id = r.group_id "
 				. "LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id "
 				. "INNER JOIN gamesinfo con ON con.id = r.gamesinfo_id "
-				. "WHERE r.nzbstatus = 1 AND con.cover = 1 AND con.title != '' AND "
+				. "WHERE r.nzbstatus = 1 AND con.title != '' AND "
 				. "r.passwordstatus <= (SELECT value FROM settings WHERE setting='showpasswordedrelease') AND %s %s %s %s "
 				. "GROUP BY con.id ORDER BY %s %s" . $limit,
 				$browseby,
