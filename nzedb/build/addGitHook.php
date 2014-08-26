@@ -45,9 +45,9 @@ if (preg_match('/^(?P<key>#version=)(?P<value>.*)$/', $file[1], $match)) {
 	$current = $match['value'];
 }
 
-$out = new ColorCLI();
+$out = new \ColorCLI();
 
-$versions = new nzedb\utility\Versions();
+$versions = new \nzedb\utility\Versions();
 $version = $versions->getGitHookPrecommit();
 if ($version > $current) {
 	copy($source, $target);
