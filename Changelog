@@ -12,6 +12,9 @@ New updates are grouped by person, at the top of the file.
 	* Fix: Issue #1472 Console Processing Errors
 	* Chg: Rework queries for gfRn to support new indexing scheme (coming)
 	* Chg: A few Tmux query changes to reduce monitor loop times (will complement the index changes)
+	* Fix: Attempt to fix consoleinfoid not being set in some instances
+	* Chg: Optimize browse queries for large release databases by forcing a straight join on Groups table
+	* Fix: missing PostProc namespace in update_releases.php
 2014-08-25 bart39
 	* Fix: Update XXX releases correctly for no match.
 2014-08-25 niel
