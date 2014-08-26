@@ -3,6 +3,8 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
+2014-08-26 ruhllatio
+	* Fix: Bad path issue in Tmux NNTP Proxy alternate NNTP
 2014-08-25 bart39
 	* Fix: Update XXX releases correctly for no match.
 2014-08-25 niel

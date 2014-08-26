@@ -84,7 +84,7 @@ class Tmux
 				}
 			}
 			if ($constants['alternate_nntp']) {
-				$filename = $runVar['paths']['misc'] . "update/python/lib/nntpproxy_a.conf";
+				$filename = nZEDb_MISC . "update/python/lib/nntpproxy_a.conf";
 				$fp = fopen($filename, "r") or die("Couldn't open $filename");
 				while (!feof($fp)) {
 					$line = fgets($fp);
