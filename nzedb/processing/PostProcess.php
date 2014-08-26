@@ -312,15 +312,15 @@ class PostProcess
 		if (!in_array(
 			(int)$query['categoryid'],
 			array(
-				Category::CAT_BOOKS_OTHER,
-				Category::CAT_GAME_OTHER,
-				Category::CAT_MOVIE_OTHER,
-				Category::CAT_MUSIC_OTHER,
-				Category::CAT_PC_PHONE_OTHER,
-				Category::CAT_TV_OTHER,
-				Category::CAT_OTHER_HASHED,
-				Category::CAT_XXX_OTHER,
-				Category::CAT_MISC
+				\Category::CAT_BOOKS_OTHER,
+				\Category::CAT_GAME_OTHER,
+				\Category::CAT_MOVIE_OTHER,
+				\Category::CAT_MUSIC_OTHER,
+				\Category::CAT_PC_PHONE_OTHER,
+				\Category::CAT_TV_OTHER,
+				\Category::CAT_OTHER_HASHED,
+				\Category::CAT_XXX_OTHER,
+				\Category::CAT_MISC
 			)
 		)
 		) {
@@ -392,7 +392,7 @@ class PostProcess
 
 			// If we found some files.
 			if ($filesAdded > 0) {
-				$this->debugging->log('PostProcess', 'parsePAR2', 'Added ' . $filesAdded . ' releasefiles from PAR2 for ' . $query['searchname'], Logger::LOG_INFO);
+				$this->debugging->log('PostProcess', 'parsePAR2', 'Added ' . $filesAdded . ' releasefiles from PAR2 for ' . $query['searchname'], \Logger::LOG_INFO);
 
 				// Update the file count with the new file count + old file count.
 				$this->pdo->queryExec(

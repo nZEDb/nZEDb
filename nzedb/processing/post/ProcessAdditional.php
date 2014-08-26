@@ -931,12 +931,12 @@ Class ProcessAdditional
 		if (!empty($this->_archiveInfo->isEncrypted) || (isset($dataSummary['is_encrypted']) && $dataSummary['is_encrypted'] != 0)) {
 			$this->_debug('ArchiveInfo: Compressed file has a password.');
 			$this->_releaseHasPassword = true;
-			$this->_passwordStatus[] = Releases::PASSWD_RAR;
+			$this->_passwordStatus[] = \Releases::PASSWD_RAR;
 			return false;
 		}
 
 		switch ($dataSummary['main_type']) {
-			case ArchiveInfo::TYPE_RAR:
+			case \ArchiveInfo::TYPE_RAR:
 				if ($this->_echoCLI) {
 					$this->_echo('r', 'primaryOver', false);
 				}
@@ -952,7 +952,7 @@ Class ProcessAdditional
 					unlink($fileName);
 				}
 				break;
-			case ArchiveInfo::TYPE_ZIP:
+			case \ArchiveInfo::TYPE_ZIP:
 				if ($this->_echoCLI) {
 					$this->_echo('z', 'primaryOver', false);
 				}
@@ -1003,13 +1003,13 @@ Class ProcessAdditional
 
 				if ($file['pass'] == true) {
 					$this->_releaseHasPassword = true;
-					$this->_passwordStatus[] = Releases::PASSWD_RAR;
+					$this->_passwordStatus[] = \Releases::PASSWD_RAR;
 					break;
 				}
 
 				if ($this->_innerFileBlacklist !== false && preg_match($this->_innerFileBlacklist, $file['name'])) {
 					$this->_releaseHasPassword = true;
-					$this->_passwordStatus[] = Releases::PASSWD_POTENTIAL;
+					$this->_passwordStatus[] = \Releases::PASSWD_POTENTIAL;
 					break;
 				}
 
@@ -1118,7 +1118,7 @@ Class ProcessAdditional
 			// Get all the compressed files in the temp folder.
 			$files = $this->_getTempDirectoryContents('/.*\.([rz]\d{2,}|rar|zipx?|0{0,2}1)($|[^a-z0-9])/i');
 
-			if ($files instanceof Traversable) {
+			if ($files instanceof \Traversable) {
 				foreach ($files as $file) {
 
 					// Check if the file exists.
@@ -1145,7 +1145,7 @@ Class ProcessAdditional
 
 		// Get all the remaining files in the temp dir.
 		$files = $this->_getTempDirectoryContents();
-		if ($files instanceof Traversable) {
+		if ($files instanceof \Traversable) {
 
 			foreach ($files as $file) {
 				$file = (string)$file;
@@ -1563,7 +1563,7 @@ Class ProcessAdditional
 						new \RecursiveDirectoryIterator($path)
 					),
 					$pattern,
-					RecursiveRegexIterator::GET_MATCH
+					\RecursiveRegexIterator::GET_MATCH
 				);
 			} else {
 				return new \RecursiveIteratorIterator(
@@ -1607,14 +1607,14 @@ Class ProcessAdditional
 			)
 		);
 
-		$musicParent = (string)Category::CAT_PARENT_MUSIC;
+		$musicParent = (string)\Category::CAT_PARENT_MUSIC;
 		if ($rQuery === false || !preg_match(
 				sprintf(
 					'/%d\d{3}|%d|%d|%d/',
 					$musicParent[0],
-					Category::CAT_MISC,
-					Category::CAT_MOVIE_OTHER,
-					Category::CAT_TV_OTHER
+					\Category::CAT_MISC,
+					\Category::CAT_MOVIE_OTHER,
+					\Category::CAT_TV_OTHER
 				),
 				$rQuery['id']
 			)
@@ -1655,9 +1655,9 @@ Class ProcessAdditional
 
 									// Get the category or try to determine it.
 									if ($ext === 'MP3') {
-										$newCat = Category::CAT_MUSIC_MP3;
+										$newCat = \Category::CAT_MUSIC_MP3;
 									} else if ($ext === 'FLAC') {
-										$newCat = Category::CAT_MUSIC_LOSSLESS;
+										$newCat = \Category::CAT_MUSIC_LOSSLESS;
 									} else {
 										$newCat = $this->_categorize->determineCategory($newName, $rQuery['group_id']);
 									}
@@ -2108,15 +2108,15 @@ Class ProcessAdditional
 			in_array(
 				((int)$this->_release['categoryid']),
 				array(
-					Category::CAT_BOOKS_OTHER,
-					Category::CAT_GAME_OTHER,
-					Category::CAT_MOVIE_OTHER,
-					Category::CAT_MUSIC_OTHER,
-					Category::CAT_PC_PHONE_OTHER,
-					Category::CAT_TV_OTHER,
-					Category::CAT_OTHER_HASHED,
-					Category::CAT_XXX_OTHER,
-					Category::CAT_MISC
+					\Category::CAT_BOOKS_OTHER,
+					\Category::CAT_GAME_OTHER,
+					\Category::CAT_MOVIE_OTHER,
+					\Category::CAT_MUSIC_OTHER,
+					\Category::CAT_PC_PHONE_OTHER,
+					\Category::CAT_TV_OTHER,
+					\Category::CAT_OTHER_HASHED,
+					\Category::CAT_XXX_OTHER,
+					\Category::CAT_MISC
 				)
 			)
 		) {
@@ -2267,7 +2267,7 @@ Class ProcessAdditional
 
 					// Echo the changed name to CLI.
 					if ($this->_echoCLI) {
-						NameFixer::echoChangedReleaseName(
+						\NameFixer::echoChangedReleaseName(
 							array(
 								'new_name' => $newName,
 								'old_name' => $this->_release['searchname'],
@@ -2485,7 +2485,7 @@ Class ProcessAdditional
 		$this->_foundSample = (($this->_release['disablepreview'] == 1) ? true : false);
 		$this->_foundPAR2Info = false;
 
-		$this->_passwordStatus = array(Releases::PASSWD_NONE);
+		$this->_passwordStatus = array(\Releases::PASSWD_NONE);
 		$this->_releaseHasPassword = false;
 
 		$this->_releaseGroupName = $this->_groups->getByNameByID($this->_release['group_id']);
