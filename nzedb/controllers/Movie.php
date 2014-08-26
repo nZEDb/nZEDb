@@ -794,7 +794,7 @@ class Movie
 
 		$imdb_regex_multi = array(
 			'genre' => '/href="\/genre\/(.*?)\?/i',
-			'language' => '/<a href="\/language\/.+\'url\'>(.+)<\/a>/i',
+			'language' => '/<a href="\/language\/.+?\'url\'>(.+?)<\/a>/s',
 			'type' => '/<meta property=\'og\:type\' content=\"(.+)\" \/>/i'
 		);
 
@@ -850,14 +850,14 @@ class Movie
 			}
 
 			// Actors.
-			if (preg_match('/<table class="cast_list">(.+)<\/table>/s', $buffer, $hit)) {
-				if (preg_match_all('/<a.*?href="\/name\/(nm\d{1,8})\/.+"name">(.+)<\/span>/i', $hit[0], $results, PREG_PATTERN_ORDER)) {
-					$ret['actors'] = $results[2];
+			if (preg_match('/<table class="cast_list">(.+?)<\/table>/s', $buffer, $hit)) {
+				if (preg_match_all('/<span class="itemprop" itemprop="name">\s*(.+?)\s*<\/span>/i', $hit[0], $results, PREG_PATTERN_ORDER)) {
+					$ret['actors'] = $results[1];
 				}
 			}
 
 			// Directors.
-			if (preg_match('/Directors?:([\s]+)?<\/h4>(.+)<\/div>/sU', $buffer, $hit)) {
+			if (preg_match('/itemprop="directors?".+?<\/div>/s', $buffer, $hit)) {
 				if (preg_match_all('/"name">(.*?)<\/span>/is', $hit[0], $results, PREG_PATTERN_ORDER)) {
 					$ret['director'] = $results[1];
 				}
