@@ -608,7 +608,7 @@ class Console
 					$this->pdo->escapeString($con['publisher']),
 					($con['consolegenreID'] == -1 ? "null" : $con['consolegenreID']),
 					$this->pdo->escapeString($con['esrb']),
-					$this->pdo->escapeString($con['releasedate']),
+					(isset($con['releasedate']) ? $this->pdo->escapeString($con['releasedate']) : 'NULL'),
 					(isset($con['review']) ? $this->pdo->escapeString(substr($con['review'], 0, 3000)) : 'NULL'),
 					$con['cover']
 				)

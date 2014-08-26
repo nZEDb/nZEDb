@@ -5,7 +5,8 @@ New updates are grouped by person, at the top of the file.
 
 2014-08-26 bart39
 	* Fix: Actor / Director / Language info from IMDB.
-	* Fix: Display XXX / Music / Movie / Games releases in cover view without a cover.
+	* Fix: Display XXX / Music / Movie releases in cover view without a cover.
+	* Fix: Console error for null releasedate.
 2014-08-26 niel
 	* Chg: Moved PostProcessing scripts into the new nzedb\processing namespace.
 2014-08-26 ruhllatio
