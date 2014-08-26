@@ -553,9 +553,7 @@ class Games
 			sprintf('
 				SELECT id
 				FROM gamesinfo
-				WHERE title = %s
-				AND asin = %s',
-				$this->pdo->escapeString($con['title']),
+				WHERE asin = %s',
 				$this->pdo->escapeString($con['asin'])
 			)
 		);
