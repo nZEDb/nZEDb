@@ -1,7 +1,11 @@
 <?php
+namespace nzedb\processing\post;
+
 require_once nZEDb_LIBS . 'rarinfo/archiveinfo.php';
 require_once nZEDb_LIBS . 'rarinfo/par2info.php';
+
 use nzedb\db\Settings;
+
 Class ProcessAdditional
 {
 	/**
@@ -275,19 +279,19 @@ Class ProcessAdditional
 		$this->_echoDebug = nZEDb_DEBUG;
 
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
-		$this->_nntp = ($options['NNTP'] instanceof NNTP ? $options['NNTP'] : new NNTP(['Echo' => $this->_echoCLI, 'Settings' => $this->pdo]));
+		$this->_nntp = ($options['NNTP'] instanceof NNTP ? $options['NNTP'] : new \NNTP(['Echo' => $this->_echoCLI, 'Settings' => $this->pdo]));
 
-		$this->_nzb = ($options['NZB'] instanceof NZB ? $options['NZB'] : new NZB($this->pdo));
-		$this->_groups = ($options['Groups'] instanceof Groups ? $options['Groups'] : new Groups(['Settings' => $this->pdo]));
-		$this->_archiveInfo = new ArchiveInfo();
-		$this->_releaseFiles = ($options['ReleaseFiles'] instanceof ReleaseFiles ? $options['ReleaseFiles'] : new ReleaseFiles($this->pdo));
-		$this->_categorize = ($options['Categorize'] instanceof Categorize ? $options['Categorize'] : new Categorize(['Settings' => $this->pdo]));
-		$this->_nameFixer = ($options['NameFixer'] instanceof NameFixer ? $options['NameFixer'] : new NameFixer(['Echo' =>$this->_echoCLI, 'Groups' => $this->_groups, 'Settings' => $this->pdo, 'Categorize' => $this->_categorize]));
-		$this->_releaseExtra = ($options['ReleaseExtra'] instanceof ReleaseExtra ? $options['ReleaseExtra'] : new ReleaseExtra($this->pdo));
-		$this->_releaseImage = ($options['ReleaseImage'] instanceof ReleaseImage ? $options['ReleaseImage'] : new ReleaseImage($this->pdo));
-		$this->_par2Info = new Par2Info();
-		$this->_nfo = ($options['Nfo'] instanceof Nfo ? $options['Nfo'] : new Nfo(['Echo' => $this->_echoCLI, 'Settings' => $this->pdo]));
-		$this->sphinx = ($options['SphinxSearch'] instanceof SphinxSearch ? $options['SphinxSearch'] : new SphinxSearch());
+		$this->_nzb = ($options['NZB'] instanceof NZB ? $options['NZB'] : new \NZB($this->pdo));
+		$this->_groups = ($options['Groups'] instanceof Groups ? $options['Groups'] : new \Groups(['Settings' => $this->pdo]));
+		$this->_archiveInfo = new \ArchiveInfo();
+		$this->_releaseFiles = ($options['ReleaseFiles'] instanceof ReleaseFiles ? $options['ReleaseFiles'] : new \ReleaseFiles($this->pdo));
+		$this->_categorize = ($options['Categorize'] instanceof Categorize ? $options['Categorize'] : new \Categorize(['Settings' => $this->pdo]));
+		$this->_nameFixer = ($options['NameFixer'] instanceof NameFixer ? $options['NameFixer'] : new \NameFixer(['Echo' =>$this->_echoCLI, 'Groups' => $this->_groups, 'Settings' => $this->pdo, 'Categorize' => $this->_categorize]));
+		$this->_releaseExtra = ($options['ReleaseExtra'] instanceof ReleaseExtra ? $options['ReleaseExtra'] : new \ReleaseExtra($this->pdo));
+		$this->_releaseImage = ($options['ReleaseImage'] instanceof ReleaseImage ? $options['ReleaseImage'] : new \ReleaseImage($this->pdo));
+		$this->_par2Info = new \Par2Info();
+		$this->_nfo = ($options['Nfo'] instanceof Nfo ? $options['Nfo'] : new \Nfo(['Echo' => $this->_echoCLI, 'Settings' => $this->pdo]));
+		$this->sphinx = ($options['SphinxSearch'] instanceof SphinxSearch ? $options['SphinxSearch'] : new \SphinxSearch());
 
 		$this->_innerFileBlacklist = ($this->pdo->getSetting('innerfileblacklist') == '' ? false : $this->pdo->getSetting('innerfileblacklist'));
 		$this->_maxNestedLevels = ($this->pdo->getSetting('maxnestedlevels') == 0 ? 3 : $this->pdo->getSetting('maxnestedlevels'));
@@ -299,16 +303,16 @@ Class ProcessAdditional
 		// Pass the binary extractors to ArchiveInfo.
 		$clients = array();
 		if ($this->pdo->getSetting('unrarpath') != '') {
-			$clients += array(ArchiveInfo::TYPE_RAR => $this->pdo->getSetting('unrarpath'));
+			$clients += array(\ArchiveInfo::TYPE_RAR => $this->pdo->getSetting('unrarpath'));
 			$this->_unrarPath = $this->pdo->getSetting('unrarpath');
 		}
 		if ($this->pdo->getSetting('zippath') != '') {
-			$clients += array(ArchiveInfo::TYPE_ZIP => $this->pdo->getSetting('zippath'));
+			$clients += array(\ArchiveInfo::TYPE_ZIP => $this->pdo->getSetting('zippath'));
 			$this->_7zipPath = $this->pdo->getSetting('zippath');
 		}
 		$this->_archiveInfo->setExternalClients($clients);
 
-		$this->_hasGNUFile = (nzedb\utility\Utility::hasCommand('file') === true ? true : false);
+		$this->_hasGNUFile = (\nzedb\utility\Utility::hasCommand('file') === true ? true : false);
 
 		$this->_killString = '"';
 		if ($this->pdo->getSetting('timeoutpath') != '' && $this->pdo->getSetting('timeoutseconds') > 0) {
@@ -450,7 +454,7 @@ Class ProcessAdditional
 		}
 
 		if (!is_dir($this->_mainTmpPath)) {
-			throw new ProcessAdditionalException('Could create the tmpunrar folder (' . $this->_mainTmpPath . ')');
+			throw new \ProcessAdditionalException('Could create the tmpunrar folder (' . $this->_mainTmpPath . ')');
 		}
 
 		$this->_clearMainTmpPath();
@@ -694,7 +698,7 @@ Class ProcessAdditional
 			return false;
 		}
 
-		$nzbContents = nzedb\utility\Utility::unzipGzipFile($nzbPath);
+		$nzbContents = \nzedb\utility\Utility::unzipGzipFile($nzbPath);
 
 		// Get a list of files in the nzb.
 		$this->_nzbContents = $this->_nzb->nzbFileList($nzbContents);
@@ -713,7 +717,7 @@ Class ProcessAdditional
 		}
 
 		// Sort the files inside the NZB.
-		usort($this->_nzbContents, 'ProcessAdditional::_sortNZB');
+		usort($this->_nzbContents, ['\nzedb\processing\post\ProcessAdditional', '_sortNZB']);
 
 		return true;
 	}
@@ -940,7 +944,7 @@ Class ProcessAdditional
 				if ($this->_extractUsingRarInfo === false && $this->_unrarPath !== false) {
 					$fileName = $this->tmpPath . uniqid() . '.rar';
 					file_put_contents($fileName, $compressedData);
-					nzedb\utility\runCmd(
+					\nzedb\utility\runCmd(
 						$this->_killString . $this->_unrarPath .
 						'" e -ai -ep -c- -id -inul -kb -or -p- -r -y "' .
 						$fileName . '" "' . $this->tmpPath . 'unrar/"'
@@ -956,7 +960,7 @@ Class ProcessAdditional
 				if ($this->_extractUsingRarInfo === false && $this->_7zipPath !== false) {
 					$fileName = $this->tmpPath . uniqid() . '.zip';
 					file_put_contents($fileName, $compressedData);
-					nzedb\utility\runCmd(
+					\nzedb\utility\runCmd(
 						$this->_killString . $this->_7zipPath . '" x "' .
 						$fileName . '" -bd -y -o"' . $this->tmpPath . 'unzip/"'
 					);
@@ -1554,16 +1558,16 @@ Class ProcessAdditional
 		}
 		try {
 			if ($pattern !== '') {
-				return new RegexIterator(
-					new RecursiveIteratorIterator(
-						new RecursiveDirectoryIterator($path)
+				return new \RegexIterator(
+					new \RecursiveIteratorIterator(
+						new \RecursiveDirectoryIterator($path)
 					),
 					$pattern,
 					RecursiveRegexIterator::GET_MATCH
 				);
 			} else {
-				return new RecursiveIteratorIterator(
-					new RecursiveDirectoryIterator($path)
+				return new \RecursiveIteratorIterator(
+					new \RecursiveDirectoryIterator($path)
 				);
 			}
 		} catch (exception $e) {
@@ -1624,13 +1628,13 @@ Class ProcessAdditional
 			if ($retVal === false) {
 
 				// Get the media info for the file.
-				$xmlArray = nzedb\utility\runCmd(
+				$xmlArray = \nzedb\utility\runCmd(
 					$this->_killString . $this->pdo->getSetting('mediainfopath') . '" --Output=XML "' . $fileLocation . '"'
 				);
 				if (is_array($xmlArray)) {
 
 					// Convert to array.
-					$arrXml = nzedb\utility\objectsIntoArray(@simplexml_load_string(implode("\n", $xmlArray)));
+					$arrXml = \nzedb\utility\objectsIntoArray(@simplexml_load_string(implode("\n", $xmlArray)));
 
 					if (isset($arrXml['File']['track'])) {
 
@@ -1711,7 +1715,7 @@ Class ProcessAdditional
 				$audioFileName = ($this->_release['guid'] . '.ogg');
 
 				// Create an audio sample.
-				nzedb\utility\runCmd(
+				\nzedb\utility\runCmd(
 					$this->_killString .
 					$this->pdo->getSetting('ffmpegpath') .
 					'" -t 30 -i "' .
@@ -1814,7 +1818,7 @@ Class ProcessAdditional
 
 		$tmpVideo = ($this->tmpPath . uniqid() . $extension);
 		// Get the real duration of the file.
-		$time = nzedb\utility\runCmd(
+		$time = \nzedb\utility\runCmd(
 			$this->_killString .
 			$this->pdo->getSetting('ffmpegpath') .
 			'" -i "' . $videoLocation .
@@ -1860,7 +1864,7 @@ Class ProcessAdditional
 			$time = $this->getVideoTime($fileLocation);
 
 			// Create the image.
-			nzedb\utility\runCmd(
+			\nzedb\utility\runCmd(
 				$this->_killString .
 				$this->pdo->getSetting('ffmpegpath') .
 				'" -i "' .
@@ -1951,7 +1955,7 @@ Class ProcessAdditional
 					}
 
 					// Try to get the sample (from the end instead of the start).
-					nzedb\utility\runCmd(
+					\nzedb\utility\runCmd(
 						$this->_killString .
 						$this->pdo->getSetting('ffmpegpath') .
 						'" -i "' .
@@ -1968,7 +1972,7 @@ Class ProcessAdditional
 
 			if ($newMethod === false) {
 				// If longer than 60 or we could not get the video length, run the old way.
-				nzedb\utility\runCmd(
+				\nzedb\utility\runCmd(
 					$this->_killString .
 					$this->pdo->getSetting('ffmpegpath') .
 					'" -i "' .
@@ -2043,7 +2047,7 @@ Class ProcessAdditional
 		if (is_file($fileLocation)) {
 
 			// Run media info on it.
-			$xmlArray = nzedb\utility\runCmd(
+			$xmlArray = \nzedb\utility\runCmd(
 				$this->_killString . $this->pdo->getSetting('mediainfopath') . '" --Output=XML "' . $fileLocation . '"'
 			);
 
@@ -2535,4 +2539,4 @@ Class ProcessAdditional
 	}
 }
 
-class ProcessAdditionalException extends Exception { }
+class ProcessAdditionalException extends \Exception { }

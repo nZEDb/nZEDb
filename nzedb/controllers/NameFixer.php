@@ -1,6 +1,7 @@
 <?php
 
 use nzedb\db\Settings;
+use \nzedb\processing\PostProcess;
 use nzedb\utility\Utility;
 
 /**

@@ -1,6 +1,8 @@
 <?php
 namespace nzedb\libraries;
 
+use \nzedb\processing\PostProcess;
+
 require_once(nZEDb_LIBS . 'forkdaemon-php' . DS . 'fork_daemon.php');
 
 /**

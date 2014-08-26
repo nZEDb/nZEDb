@@ -2,6 +2,7 @@
 require_once dirname(__FILE__) . '/../../../config.php';
 
 use nzedb\db\Settings;
+use \nzedb\processing\PostProcess;
 
 $pdo = new Settings();
 

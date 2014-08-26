@@ -1,6 +1,8 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
+use \nzedb\processing\PostProcess;
+
 $pdo = new nzedb\db\Settings();
 
 $tmpPath = $pdo->getSetting('tmpunrarpath');
