@@ -183,7 +183,7 @@ class Console
 				. "LEFT OUTER JOIN groups ON groups.id = r.group_id "
 				. "LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id "
 				. "INNER JOIN consoleinfo con ON con.id = r.consoleinfoid "
-				. "WHERE r.nzbstatus = 1 AND con.cover = 1 AND con.title != '' AND "
+				. "WHERE r.nzbstatus = 1 AND con.title != '' AND "
 				. "r.passwordstatus <= (SELECT value FROM settings WHERE setting='showpasswordedrelease') AND %s %s
 				%s "
 				. "GROUP BY con.id ORDER BY %s %s" . $limit, $browseby, $catsrch, $exccatlist, $order[0], $order[1]
@@ -424,9 +424,9 @@ class Console
 
 		$con['publisher'] = (string)$amaz->Items->Item->ItemAttributes->Publisher;
 		$con['esrb'] = (string)$amaz->Items->Item->ItemAttributes->ESRBAgeRating;
-		$con['releasedate'] = $this->pdo->escapeString((string)$amaz->Items->Item->ItemAttributes->ReleaseDate);
+		$con['releasedate'] = (string)$amaz->Items->Item->ItemAttributes->ReleaseDate;
 
-		if ($con['releasedate'] == "''") {
+		if (empty($con['releasedate'])) {
 			$con['releasedate'] = 'null';
 		}
 
@@ -608,7 +608,7 @@ class Console
 					$this->pdo->escapeString($con['publisher']),
 					($con['consolegenreID'] == -1 ? "null" : $con['consolegenreID']),
 					$this->pdo->escapeString($con['esrb']),
-					$con['releasedate'],
+					$this->pdo->escapeString($con['releasedate']),
 					(isset($con['review']) ? $this->pdo->escapeString(substr($con['review'], 0, 3000)) : 'NULL'),
 					$con['cover']
 				)
