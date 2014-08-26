@@ -3,6 +3,9 @@ require_once dirname(__FILE__) . '/config.php';
 
 $pdo = new \nzedb\db\Settings();
 
+use \nzedb\processing\post\ProcessReleases;
+
+
 if (isset($argv[2]) && $argv[2] === 'true') {
 	// Create the connection here and pass
 	$nntp = new NNTP(['Settings' => $pdo]);
