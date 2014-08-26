@@ -449,15 +449,13 @@ class Console
 			$amazGenresObj = simplexml_load_string($amazGenresXml);
 			$amazGenres = $amazGenresObj->xpath("//Name");
 
-			if ($amazGenres instanceof Traversable) {
-				foreach ($amazGenres as $amazGenre) {
-					$currName = trim($amazGenre[0]);
-					if (empty($genreName)) {
-						$genreMatch = $this->matchBrowseNode($currName);
-						if ($genreMatch !== false) {
-							$genreName = $genreMatch;
-							break;
-						}
+			foreach ($amazGenres as $amazGenre) {
+				$currName = trim($amazGenre[0]);
+				if (empty($genreName)) {
+					$genreMatch = $this->matchBrowseNode($currName);
+					if ($genreMatch !== false) {
+						$genreName = $genreMatch;
+						break;
 					}
 				}
 			}
@@ -467,6 +465,7 @@ class Console
 			$a = (string)$amaz->Items->Item->ItemAttributes->Genre;
 			$b = str_replace('-', ' ', $a);
 			$tmpGenre = explode(' ', $b);
+
 			foreach ($tmpGenre as $tg) {
 				$genreMatch = $this->matchBrowseNode(ucwords($tg));
 				if ($genreMatch !== false) {
@@ -510,10 +509,8 @@ class Console
 
 		$defaultGenres = $gen->getGenres(Genres::CONSOLE_TYPE);
 		$genreassoc = array();
-		if ($defaultGenres instanceof Traversable) {
-			foreach ($defaultGenres as $dg) {
-				$genreassoc[$dg['id']] = strtolower($dg['title']);
-			}
+		foreach ($defaultGenres as $dg) {
+			$genreassoc[$dg['id']] = strtolower($dg['title']);
 		}
 		return $genreassoc;
 	}
@@ -620,9 +617,7 @@ class Console
 		} else {
 			$consoleId = $check['id'];
 
-			if(!file_exists($this->imgSavePath . $consoleId . ".jpg") && $con['cover'] == 1) {
-				$con['cover'] = $ri->saveImage($consoleId, $con['coverurl'], $this->imgSavePath, 250, 250);
-			}
+			$con['cover'] = $ri->saveImage($consoleId, $con['coverurl'], $this->imgSavePath, 250, 250);
 
 			$this->update(
 						$consoleId, $con['title'], $con['asin'], $con['url'], $con['salesrank'],

@@ -18,6 +18,7 @@ New updates are grouped by person, at the top of the file.
 	* Fix: Genre's populating Unknown for console processing
 	* Add: Patch to update releases with bad Console genre data
 	* Rem: Bad patch +1 file
+	* Fix: Pretty sure console Genre is good to go this time
 2014-08-25 bart39
 	* Fix: Update XXX releases correctly for no match.
 2014-08-25 niel
