@@ -1090,7 +1090,7 @@ class ProcessReleases
 						$maxSizeSetting
 					)
 				);
-				if ($releases instanceof Traversable) {
+				if ($releases instanceof \Traversable) {
 					foreach ($releases as $release) {
 						$this->releases->deleteSingle(['g' => $release['guid'], 'i' => $release['id']], $this->nzb, $this->releaseImage);
 						$maxSizeDeleted++;
@@ -1310,7 +1310,7 @@ class ProcessReleases
 					FROM releases
 					WHERE categoryid = %d
 					AND adddate <= NOW() - INTERVAL %d HOUR',
-					Category::CAT_MISC,
+					\Category::CAT_MISC,
 					$this->pdo->getSetting('miscotherretentionhours')
 				)
 			);
@@ -1330,7 +1330,7 @@ class ProcessReleases
 					FROM releases
 					WHERE categoryid = %d
 					AND adddate <= NOW() - INTERVAL %d HOUR',
-					Category::CAT_OTHER_HASHED,
+					\Category::CAT_OTHER_HASHED,
 					$this->pdo->getSetting('mischashedretentionhours')
 				)
 			);
