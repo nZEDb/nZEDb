@@ -1003,13 +1003,13 @@ Class ProcessAdditional
 
 				if ($file['pass'] == true) {
 					$this->_releaseHasPassword = true;
-					$this->_passwordStatus[] = Releases::PASSWD_RAR;
+					$this->_passwordStatus[] = \Releases::PASSWD_RAR;
 					break;
 				}
 
 				if ($this->_innerFileBlacklist !== false && preg_match($this->_innerFileBlacklist, $file['name'])) {
 					$this->_releaseHasPassword = true;
-					$this->_passwordStatus[] = Releases::PASSWD_POTENTIAL;
+					$this->_passwordStatus[] = \Releases::PASSWD_POTENTIAL;
 					break;
 				}
 
