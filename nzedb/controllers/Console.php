@@ -6,11 +6,8 @@ use nzedb\db\Settings;
 
 class Console
 {
-	const REQID_NONE   = -3; // The Request ID was not found locally or via web lookup.
-	const REQID_ZERO   = -2; // The Request ID was 0.
-	const REQID_NOLL   = -1; // Request ID was not found via local lookup.
-	const CONS_UPROC  =   0; // Release has not been processed.
-	const REQID_FOUND  =  1; // Request ID found and release was updated.
+	const CONS_UPROC = 0; // Release has not been processed.
+	const CONS_NTFND = -2;
 
 	/**
 	 * @var nzedb\db\Settings
@@ -296,9 +293,12 @@ class Console
 
 	public function updateConsoleInfo($gameInfo)
 	{
+		$consoleId = self::CONS_NTFND;
+
 		$amaz = $this->fetchAmazonProperties($gameInfo['title'], $gameInfo['node']);
 
 		if ($amaz) {
+
 			$gameInfo['platform'] = $this->_replacePlatform($gameInfo['platform']);
 
 			$con = $this->_setConBeforeMatch($amaz, $gameInfo);
@@ -326,7 +326,7 @@ class Console
 				$consoleId = $this->_updateConsoleTable($con);
 
 				if ($this->echooutput) {
-					if ($consoleId) {
+					if ($consoleId !== -2) {
 						$this->pdo->log->doEcho(
 							$this->pdo->log->header("Added/updated game: ") .
 							$this->pdo->log->alternateOver("   Title:    ") .
@@ -336,10 +336,9 @@ class Console
 						);
 					}
 				}
-				return $consoleId;
 			}
 		}
-		return false;
+		return $consoleId;
 	}
 
 	protected function _matchConToGameInfo($gameInfo = array(), $con = array())
@@ -348,12 +347,6 @@ class Console
 
 		// This actual compares the two strings and outputs a percentage value.
 		$titlepercent = $platformpercent = '';
-
-		//Remove format tags from release title for match
-		$gameInfo['title'] = trim(preg_replace('/PAL|MULTI(\d)?|NTSC-?J?|\(JAPAN\)/i', '', $gameInfo['title']));
-
-		//Remove disc tags from release title for match
-		$gameInfo['title'] = trim(preg_replace('/Dis[ck] \d.*$/i', '', $gameInfo['title']));
 
 		//Remove import tags from console title for match
 		$con['title'] = trim(preg_replace('/(\[|\().{2,} import(\]|\))$/i', '', $con['title']));
@@ -449,40 +442,36 @@ class Console
 
 		$genreName = '';
 
-		if (is_array($amaz) && isset($amaz->Items->Item->BrowseNodes) || isset($amaz->Items->Item->ItemAttributes->Genre)) {
-			if (isset($amaz->Items->Item->BrowseNodes)) {
-				//had issues getting this out of the browsenodes obj
-				//workaround is to get the xml and load that into its own obj
-				$amazGenresXml = $amaz->Items->Item->BrowseNodes->asXml();
-				$amazGenresObj = simplexml_load_string($amazGenresXml);
-				$amazGenres = $amazGenresObj->xpath("//Name");
+		if (isset($amaz->Items->Item->BrowseNodes)) {
+			//had issues getting this out of the browsenodes obj
+			//workaround is to get the xml and load that into its own obj
+			$amazGenresXml = $amaz->Items->Item->BrowseNodes->asXml();
+			$amazGenresObj = simplexml_load_string($amazGenresXml);
+			$amazGenres = $amazGenresObj->xpath("//Name");
 
-				if ($amazGenres instanceof Traversable) {
-					foreach ($amazGenres as $amazGenre) {
-						$currName = trim($amazGenre[0]);
-						if (empty($genreName)) {
-							$genreMatch = $this->matchBrowseNode($currName);
-							if ($genreMatch !== false) {
-								$genreName = $genreMatch;
-								break;
-							}
-						}
-					}
-				}
-			}
-
-			if (empty($genreName) && isset($amaz->Items->Item->ItemAttributes->Genre)) {
-				$a = (string)$amaz->Items->Item->ItemAttributes->Genre;
-				$b = str_replace('-', ' ', $a);
-				$tmpGenre = explode(' ', $b);
-				if ($tmpGenre instanceof Traversable) {
-					foreach ($tmpGenre as $tg) {
-						$genreMatch = $this->matchBrowseNode(ucwords($tg));
+			if ($amazGenres instanceof Traversable) {
+				foreach ($amazGenres as $amazGenre) {
+					$currName = trim($amazGenre[0]);
+					if (empty($genreName)) {
+						$genreMatch = $this->matchBrowseNode($currName);
 						if ($genreMatch !== false) {
 							$genreName = $genreMatch;
 							break;
 						}
 					}
+				}
+			}
+		}
+
+		if ($genreName == '' && isset($amaz->Items->Item->ItemAttributes->Genre)) {
+			$a = (string)$amaz->Items->Item->ItemAttributes->Genre;
+			$b = str_replace('-', ' ', $a);
+			$tmpGenre = explode(' ', $b);
+			foreach ($tmpGenre as $tg) {
+				$genreMatch = $this->matchBrowseNode(ucwords($tg));
+				if ($genreMatch !== false) {
+					$genreName = $genreMatch;
+					break;
 				}
 			}
 		}
@@ -640,7 +629,6 @@ class Console
 						$con['platform'], $con['publisher'], $con['releasedate'], $con['esrb'],
 						$con['cover'], $con['consolegenreID'], (isset($con['review']) ? $con['review'] : null)
 			);
-
 		}
 		return $consoleId;
 	}
@@ -682,6 +670,7 @@ class Console
 			foreach ($res as $arr) {
 				$startTime = microtime(true);
 				$usedAmazon = false;
+				$gameId = self::CONS_NTFND;
 				$gameInfo = $this->parseTitle($arr['searchname']);
 
 				if ($gameInfo !== false) {
@@ -698,26 +687,34 @@ class Console
 
 					// Check for existing console entry.
 					$gameCheck = $this->getConsoleInfoByName($gameInfo['title'], $gameInfo['platform']);
+
 					if ($gameCheck === false) {
 						$gameId = $this->updateConsoleInfo($gameInfo);
 						$usedAmazon = true;
-					}
-					if ($gameId === false) {
-						$gameId = -2;
 					} else {
+						if ($this->echooutput) {
+							$this->pdo->log->doEcho(
+									$this->pdo->log->headerOver("Found Local: ") .
+									"{$gameCheck['title']} - {$gameCheck['platform']}"
+							);
+						}
 						$gameId = $gameCheck['id'];
 					}
 
-					// Update release.
-					$this->pdo->queryExec(sprintf('UPDATE releases SET consoleinfoid = %d WHERE id = %d', $gameId, $arr['id']));
-				} else {
-
-					// Could not parse release title.
-					$this->pdo->queryExec(sprintf('UPDATE releases SET consoleinfoid = %d WHERE id = %d', -2, $arr['id']));
-						if ($this->echooutput) {
-							echo '.';
-						}
+				} elseif ($this->echooutput) {
+					echo '.';
 				}
+
+				// Update release.
+				$this->pdo->queryExec(
+							sprintf('
+								UPDATE releases
+								SET consoleinfoid = %d
+								WHERE id = %d',
+								$gameId,
+								$arr['id']
+							)
+				);
 
 				// Sleep to not flood amazon.
 				$diff = floor((microtime(true) - $startTime) * 1000000);
@@ -725,6 +722,7 @@ class Console
 					usleep($this->sleeptime * 1000 - $diff);
 				}
 			}
+
 		} else if ($this->echooutput) {
 			$this->pdo->log->doEcho($this->pdo->log->header('No console releases to process.'));
 		}
@@ -742,6 +740,10 @@ class Console
 			// Replace dots, underscores, or brackets with spaces.
 			$result['title'] = str_replace(['.','_','%20', '[', ']'], ' ', $title);
 			$result['title'] = str_replace([' RF ', '.RF.', '-RF-', '_RF_'], ' ', $result['title']);
+			//Remove format tags from release title for match
+			$result['title'] = trim(preg_replace('/PAL|MULTI(\d)?|NTSC-?J?|\(JAPAN\)/i', '', $result['title']));
+			//Remove disc tags from release title for match
+			$result['title'] = trim(preg_replace('/Dis[ck] \d.*$/i', '', $result['title']));
 
 			// Needed to add code to handle DLC Properly.
 			if (stripos('dlc', $result['title']) !== false) {
