@@ -1612,9 +1612,9 @@ Class ProcessAdditional
 				sprintf(
 					'/%d\d{3}|%d|%d|%d/',
 					$musicParent[0],
-					Category::CAT_MISC,
-					Category::CAT_MOVIE_OTHER,
-					Category::CAT_TV_OTHER
+					\Category::CAT_MISC,
+					\Category::CAT_MOVIE_OTHER,
+					\Category::CAT_TV_OTHER
 				),
 				$rQuery['id']
 			)
@@ -1655,9 +1655,9 @@ Class ProcessAdditional
 
 									// Get the category or try to determine it.
 									if ($ext === 'MP3') {
-										$newCat = Category::CAT_MUSIC_MP3;
+										$newCat = \Category::CAT_MUSIC_MP3;
 									} else if ($ext === 'FLAC') {
-										$newCat = Category::CAT_MUSIC_LOSSLESS;
+										$newCat = \Category::CAT_MUSIC_LOSSLESS;
 									} else {
 										$newCat = $this->_categorize->determineCategory($newName, $rQuery['group_id']);
 									}
@@ -2108,15 +2108,15 @@ Class ProcessAdditional
 			in_array(
 				((int)$this->_release['categoryid']),
 				array(
-					Category::CAT_BOOKS_OTHER,
-					Category::CAT_GAME_OTHER,
-					Category::CAT_MOVIE_OTHER,
-					Category::CAT_MUSIC_OTHER,
-					Category::CAT_PC_PHONE_OTHER,
-					Category::CAT_TV_OTHER,
-					Category::CAT_OTHER_HASHED,
-					Category::CAT_XXX_OTHER,
-					Category::CAT_MISC
+					\Category::CAT_BOOKS_OTHER,
+					\Category::CAT_GAME_OTHER,
+					\Category::CAT_MOVIE_OTHER,
+					\Category::CAT_MUSIC_OTHER,
+					\Category::CAT_PC_PHONE_OTHER,
+					\Category::CAT_TV_OTHER,
+					\Category::CAT_OTHER_HASHED,
+					\Category::CAT_XXX_OTHER,
+					\Category::CAT_MISC
 				)
 			)
 		) {
