@@ -442,40 +442,36 @@ class Console
 
 		$genreName = '';
 
-		if (is_array($amaz) && isset($amaz->Items->Item->BrowseNodes) || isset($amaz->Items->Item->ItemAttributes->Genre)) {
-			if (isset($amaz->Items->Item->BrowseNodes)) {
-				//had issues getting this out of the browsenodes obj
-				//workaround is to get the xml and load that into its own obj
-				$amazGenresXml = $amaz->Items->Item->BrowseNodes->asXml();
-				$amazGenresObj = simplexml_load_string($amazGenresXml);
-				$amazGenres = $amazGenresObj->xpath("//Name");
+		if (isset($amaz->Items->Item->BrowseNodes)) {
+			//had issues getting this out of the browsenodes obj
+			//workaround is to get the xml and load that into its own obj
+			$amazGenresXml = $amaz->Items->Item->BrowseNodes->asXml();
+			$amazGenresObj = simplexml_load_string($amazGenresXml);
+			$amazGenres = $amazGenresObj->xpath("//Name");
 
-				if ($amazGenres instanceof Traversable) {
-					foreach ($amazGenres as $amazGenre) {
-						$currName = trim($amazGenre[0]);
-						if (empty($genreName)) {
-							$genreMatch = $this->matchBrowseNode($currName);
-							if ($genreMatch !== false) {
-								$genreName = $genreMatch;
-								break;
-							}
-						}
-					}
-				}
-			}
-
-			if (empty($genreName) && isset($amaz->Items->Item->ItemAttributes->Genre)) {
-				$a = (string)$amaz->Items->Item->ItemAttributes->Genre;
-				$b = str_replace('-', ' ', $a);
-				$tmpGenre = explode(' ', $b);
-				if ($tmpGenre instanceof Traversable) {
-					foreach ($tmpGenre as $tg) {
-						$genreMatch = $this->matchBrowseNode(ucwords($tg));
+			if ($amazGenres instanceof Traversable) {
+				foreach ($amazGenres as $amazGenre) {
+					$currName = trim($amazGenre[0]);
+					if (empty($genreName)) {
+						$genreMatch = $this->matchBrowseNode($currName);
 						if ($genreMatch !== false) {
 							$genreName = $genreMatch;
 							break;
 						}
 					}
+				}
+			}
+		}
+
+		if ($genreName == '' && isset($amaz->Items->Item->ItemAttributes->Genre)) {
+			$a = (string)$amaz->Items->Item->ItemAttributes->Genre;
+			$b = str_replace('-', ' ', $a);
+			$tmpGenre = explode(' ', $b);
+			foreach ($tmpGenre as $tg) {
+				$genreMatch = $this->matchBrowseNode(ucwords($tg));
+				if ($genreMatch !== false) {
+					$genreName = $genreMatch;
+					break;
 				}
 			}
 		}
