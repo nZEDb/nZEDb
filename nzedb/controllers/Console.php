@@ -332,7 +332,9 @@ class Console
 							$this->pdo->log->alternateOver("   Title:    ") .
 							$this->pdo->log->primary($con['title']) .
 							$this->pdo->log->alternateOver("   Platform: ") .
-							$this->pdo->log->primary($con['platform'])
+							$this->pdo->log->primary($con['platform']) .
+							$this->pdo->log->alternateOver("   Genre: ") .
+							$this->pdo->log->primary($con['consolegenre'])
 						);
 					}
 				}
@@ -419,15 +421,19 @@ class Console
 
 		$con['salesrank'] = (string)$amaz->Items->Item->SalesRank;
 		if ($con['salesrank'] == "") {
-			$con['salesrank'] = 'null';
+			$con['salesrank'] = "null";
 		}
 
 		$con['publisher'] = (string)$amaz->Items->Item->ItemAttributes->Publisher;
 		$con['esrb'] = (string)$amaz->Items->Item->ItemAttributes->ESRBAgeRating;
 		$con['releasedate'] = (string)$amaz->Items->Item->ItemAttributes->ReleaseDate;
 
-		if (empty($con['releasedate'])) {
-			$con['releasedate'] = 'null';
+		if(!isset($con['releasedate'])){
+			$con['releasedate'] = "";
+		}
+
+		if ($con['releasedate'] == "''") {
+			$con['releasedate'] = "";
 		}
 
 		$con['review'] = "";
@@ -608,8 +614,8 @@ class Console
 					$this->pdo->escapeString($con['publisher']),
 					($con['consolegenreID'] == -1 ? "null" : $con['consolegenreID']),
 					$this->pdo->escapeString($con['esrb']),
-					$this->pdo->escapeString($con['releasedate']),
-					(isset($con['review']) ? $this->pdo->escapeString(substr($con['review'], 0, 3000)) : 'NULL'),
+					($con['releasedate'] != "" ? $this->pdo->escapeString($con['releasedate']) : "null"),
+					$this->pdo->escapeString(substr($con['review'], 0, 3000)),
 					$con['cover']
 				)
 			);
@@ -690,7 +696,8 @@ class Console
 						if ($this->echooutput) {
 							$this->pdo->log->doEcho(
 									$this->pdo->log->headerOver("Found Local: ") .
-									"{$gameCheck['title']} - {$gameCheck['platform']}"
+									$this->pdo->log->primary("{$gameCheck['title']} - {$gameCheck['platform']}") .
+									PHP_EOL
 							);
 						}
 						$gameId = $gameCheck['id'];
@@ -862,25 +869,73 @@ class Console
 
 		//music nodes above mp3 download nodes
 		switch ($nodeName) {
+			case 'Action_shooter':
+			case 'Action_Games':
+			case 'Action_games':
+				$str = 'Action';
+				break;
+			case 'Action/Adventure':
+			case 'Action\Adventure':
+			case 'Adventure_games':
+				$str = 'Adventure';
+				break;
+			case 'Boxing_games':
+			case 'Sports_games':
+				$str = 'Sports';
+				break;
+			case 'Fantasy_action_games':
+				$str = 'Fantasy';
+				break;
+			case 'Fighting_action_games':
+				$str = 'Fighting';
+				break;
+			case 'Flying_simulation_games':
+				$str = 'Flying';
+				break;
+			case 'Horror_action_games':
+				$str = 'Horror';
+				break;
+			case 'Kids & Family':
+				$str = 'Family';
+				break;
+			case 'Role_playing_games':
+				$str = 'Role-Playing';
+				break;
+			case 'Shooter_action_games':
+				$str = 'Shooter';
+				break;
+			case 'Singing_games':
+				$str = 'Music';
+				break;
 			case 'Action':
 			case 'Adventure':
 			case 'Arcade':
 			case 'Board Games':
 			case 'Cards':
 			case 'Casino':
+			case 'Collections':
+			case 'Family':
+			case 'Fantasy':
+			case 'Fighting':
 			case 'Flying':
+			case 'Horror':
+			case 'Music':
 			case 'Puzzle':
 			case 'Racing':
 			case 'Rhythm':
 			case 'Role-Playing':
 			case 'Simulation':
+			case 'Shooter':
+			case 'Shooting':
 			case 'Sports':
 			case 'Strategy':
 			case 'Trivia':
 				$str = $nodeName;
 				break;
 		}
+
 		return ($str != '') ? $str : false;
 	}
+
 
 }

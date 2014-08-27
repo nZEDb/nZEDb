@@ -233,7 +233,7 @@ class Games
 				. "LEFT OUTER JOIN groups ON groups.id = r.group_id "
 				. "LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id "
 				. "INNER JOIN gamesinfo con ON con.id = r.gamesinfo_id "
-				. "WHERE r.nzbstatus = 1 AND con.cover = 1 AND con.title != '' AND "
+				. "WHERE r.nzbstatus = 1 AND con.title != '' AND "
 				. "r.passwordstatus <= (SELECT value FROM settings WHERE setting='showpasswordedrelease') AND %s %s %s %s "
 				. "GROUP BY con.id ORDER BY %s %s" . $limit,
 				$browseby,
@@ -519,11 +519,11 @@ class Games
 			$con['title'] = $gameInfo['title'];
 		}
 		if(!isset($con['releasedate'])){
-		$con['releasedate'] = 'null';
+		$con['releasedate'] = "";
 		}
 
 		if ($con['releasedate'] == "''") {
-			$con['releasedate'] = 'null';
+			$con['releasedate'] = "";
 		}
 		if(!isset($con['review'])){
 		$con['review'] = 'No Review';
@@ -569,7 +569,7 @@ class Games
 					$this->pdo->escapeString($con['publisher']),
 					($con['gamesgenreID'] == -1 ? "null" : $con['gamesgenreID']),
 					$this->pdo->escapeString($con['esrb']),
-					$con['releasedate'],
+					($con['releasedate'] != "" ? $this->pdo->escapeString($con['releasedate']) : "null"),
 					$this->pdo->escapeString(substr($con['review'], 0, 3000)),
 					$con['cover'],
 					$con['backdrop'],
@@ -592,7 +592,7 @@ class Games
 					$this->pdo->escapeString($con['publisher']),
 					($con['gamesgenreID'] == -1 ? "null" : $con['gamesgenreID']),
 					$this->pdo->escapeString($con['esrb']),
-					$con['releasedate'],
+					($con['releasedate'] != "" ? $this->pdo->escapeString($con['releasedate']) : "null"),
 					$this->pdo->escapeString(substr($con['review'], 0, 3000)),
 					$con['cover'],
 					$con['backdrop'],
