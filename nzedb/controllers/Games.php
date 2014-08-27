@@ -519,11 +519,11 @@ class Games
 			$con['title'] = $gameInfo['title'];
 		}
 		if(!isset($con['releasedate'])){
-		$con['releasedate'] = 'null';
+		$con['releasedate'] = "null";
 		}
 
 		if ($con['releasedate'] == "''") {
-			$con['releasedate'] = 'null';
+			$con['releasedate'] = "null";
 		}
 		if(!isset($con['review'])){
 		$con['review'] = 'No Review';

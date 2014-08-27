@@ -419,7 +419,7 @@ class Console
 
 		$con['salesrank'] = (string)$amaz->Items->Item->SalesRank;
 		if ($con['salesrank'] == "") {
-			$con['salesrank'] = 'null';
+			$con['salesrank'] = "null";
 		}
 
 		$con['publisher'] = (string)$amaz->Items->Item->ItemAttributes->Publisher;
@@ -427,7 +427,7 @@ class Console
 		$con['releasedate'] = (string)$amaz->Items->Item->ItemAttributes->ReleaseDate;
 
 		if (empty($con['releasedate'])) {
-			$con['releasedate'] = 'null';
+			$con['releasedate'] = "null";
 		}
 
 		$con['review'] = "";
@@ -608,8 +608,8 @@ class Console
 					$this->pdo->escapeString($con['publisher']),
 					($con['consolegenreID'] == -1 ? "null" : $con['consolegenreID']),
 					$this->pdo->escapeString($con['esrb']),
-					(isset($con['releasedate']) ? $this->pdo->escapeString($con['releasedate']) : 'NULL'),
-					(isset($con['review']) ? $this->pdo->escapeString(substr($con['review'], 0, 3000)) : 'NULL'),
+					$this->pdo->escapeString($con['releasedate']),
+					$this->pdo->escapeString(substr($con['review'], 0, 3000)),
 					$con['cover']
 				)
 			);
