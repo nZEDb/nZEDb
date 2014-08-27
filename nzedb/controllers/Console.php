@@ -426,8 +426,12 @@ class Console
 		$con['esrb'] = (string)$amaz->Items->Item->ItemAttributes->ESRBAgeRating;
 		$con['releasedate'] = (string)$amaz->Items->Item->ItemAttributes->ReleaseDate;
 
-		if (empty($con['releasedate'])) {
-			$con['releasedate'] = "null";
+		if(!isset($con['releasedate'])){
+			$con['releasedate'] = "";
+		}
+
+		if ($con['releasedate'] == "''") {
+			$con['releasedate'] = "";
 		}
 
 		$con['review'] = "";
@@ -608,7 +612,7 @@ class Console
 					$this->pdo->escapeString($con['publisher']),
 					($con['consolegenreID'] == -1 ? "null" : $con['consolegenreID']),
 					$this->pdo->escapeString($con['esrb']),
-					$this->pdo->escapeString($con['releasedate']),
+					($con['releasedate'] != "" ? $this->pdo->escapeString($con['releasedate']) : "null"),
 					$this->pdo->escapeString(substr($con['review'], 0, 3000)),
 					$con['cover']
 				)
