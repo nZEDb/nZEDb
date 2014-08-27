@@ -1086,7 +1086,7 @@ Class ProcessAdditional
 					) {
 						$this->_debug('Codec spam found, setting release to potentially passworded.' . PHP_EOL);
 						$this->_releaseHasPassword = true;
-						$this->_passwordStatus[] = Releases::PASSWD_POTENTIAL;
+						$this->_passwordStatus[] = \Releases::PASSWD_POTENTIAL;
 					} //Run a PreDB filename check on insert to try and match the release
 					else if (strpos($file['name'], '.') != 0 && strlen($file['name']) > 0) {
 						$this->_release['filename'] = $file['name'];
