@@ -24,6 +24,7 @@ New updates are grouped by person, at the top of the file.
 	* Fix: Weird releasedate escaping in Console causing SQL errors in some cases
 	* Chg: Disable cover = 1 setting for console
 	* Chg: Improved Genre detection for Console - additional output showing genre on match (still lots of Unknowns because Amazon blows)
+	* Chg: Change a couple genre entries
 2014-08-25 bart39
 	* Fix: Update XXX releases correctly for no match.
 2014-08-25 niel

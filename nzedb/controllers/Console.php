@@ -880,6 +880,7 @@ class Console
 				$str = 'Adventure';
 				break;
 			case 'Boxing_games':
+			case 'Sports_games':
 				$str = 'Sports';
 				break;
 			case 'Fantasy_action_games':
@@ -898,16 +899,13 @@ class Console
 				$str = 'Family';
 				break;
 			case 'Role_playing_games':
-				$str = 'Adventure';
+				$str = 'Role-Playing';
 				break;
 			case 'Shooter_action_games':
 				$str = 'Shooter';
 				break;
 			case 'Singing_games':
 				$str = 'Music';
-				break;
-			case 'Sports_games':
-				$str = 'Sports';
 				break;
 			case 'Action':
 			case 'Adventure':
