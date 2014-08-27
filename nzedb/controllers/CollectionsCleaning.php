@@ -345,6 +345,7 @@ class CollectionsCleaning
 		if (preg_match('/^((blazedazer_.+?) \[)\d+\/\d+\] - ".+?" yEnc$/', $this->subject, $match)) {
 			return $match[1];
 		}
+
 		return $this->generic();
 	}
 
@@ -2277,6 +2278,10 @@ class CollectionsCleaning
 	{
 		//High School DxD New 01 (480p|.avi|xvid|mp3) ~bY Hatsuyuki [01/18] - "[Hatsuyuki]_High_School_DxD_New_01_[848x480][76B2BB8C].avi.001" yEnc
 		if (preg_match('/(.+? \((360|480|720|1080)p\|.+? ~bY .+? \[)\d+\/\d+\] - ".+?\[[A-F0-9]+\].+?' . $this->e1, $this->subject, $match)) {
+			return $match[1];
+		}
+		//[Hatsuyuki]_Seirei_Tsukai_no_Blade_Dance_-_03_[720p] [E18FCA59] [01/18]
+		if (preg_match('/\[[a-z0-9-]+\][\w_-]+_\d+_\[\d{3,4}[ip]\]\s\[[A-F0-9]{8}\]\s\[\d+\/\d+\].*/i', $this->subject, $match)) {
 			return $match[1];
 		}
 		return $this->generic();
