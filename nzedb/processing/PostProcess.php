@@ -14,42 +14,9 @@ class PostProcess
 	public $pdo;
 
 	/**
-	 * @var Groups
-	 */
-	private $groups;
-
-	/**
-	 * @var Nfo
-	 */
-	private $Nfo;
-
-	/**
-	 * @var ReleaseFiles
-	 */
-	private $releaseFiles;
-
-	/**
-	 * Add par2 info to rar list?
-	 * @var bool
-	 */
-	private $addpar2;
-
-	/**
-	 * Use alternate NNTP provider when download fails?
-	 * @var bool
-	 */
-	private $alternateNNTP;
-
-	/**
-	 * Should we echo to CLI?
-	 * @var bool
-	 */
-	private $echooutput;
-
-	/**
 	 * Class instance of debugging.
 	 *
-*@var Logger
+	 * @var Logger
 	 */
 	protected $debugging;
 
@@ -63,6 +30,39 @@ class PostProcess
 	 * @var Par2Info
 	 */
 	protected $_par2Info;
+
+	/**
+	 * Use alternate NNTP provider when download fails?
+	 * @var bool
+	 */
+	private $alternateNNTP;
+
+	/**
+	 * Add par2 info to rar list?
+	 * @var bool
+	 */
+	private $addpar2;
+
+	/**
+	 * Should we echo to CLI?
+	 * @var bool
+	 */
+	private $echooutput;
+
+	/**
+	 * @var Groups
+	 */
+	private $groups;
+
+	/**
+	 * @var Nfo
+	 */
+	private $Nfo;
+
+	/**
+	 * @var ReleaseFiles
+	 */
+	private $releaseFiles;
 
 	/**
 	 * Constructor.
