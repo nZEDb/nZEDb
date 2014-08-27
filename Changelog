@@ -3,6 +3,8 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
+2014-08-27 bart39
+	* Fix: Only save console/games cover if cover is found.
 2014-08-27 ruhllatio
 	* Chg: Update collections/releases cleaning for Anime in a.b.anime and multimedia.anime.highspeed
 2014-08-26 bart39
