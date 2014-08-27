@@ -1,4 +1,7 @@
 <?php
+
+use \nzedb\processing\PostProcess;
+
 /**
  * Gets information contained within the NZB.
  *

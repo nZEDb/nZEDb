@@ -204,7 +204,6 @@ class XXX
 			LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id
 			INNER JOIN xxxinfo xxx ON xxx.id = r.xxxinfo_id
 			WHERE r.nzbstatus = 1
-			AND xxx.cover = 1
 			AND xxx.title != ''
 			AND r.passwordstatus <= %d AND %s %s %s %s
 			GROUP BY xxx.id ORDER BY %s %s %s",
@@ -443,7 +442,7 @@ class XXX
 				$res = $mov->_getall();
 			} else {
 				// Nothing was found, go ahead and set to -2
-				return false;
+				return -2;
 			}
 		}
 

@@ -107,10 +107,10 @@ class Versions
 	 */
 	public function checkAll($update = true)
 	{
-		$this->checkGitCommit($update);
 		$this->checkGitTag($update);
+		//$this->checkSQLFileLatest($update);
 		$this->checkSQLDb($update);
-		$this->checkSQLFileLatest($update);
+		$this->checkGitCommit($update);
 		return $this->hasChanged();
 	}
 
@@ -122,7 +122,7 @@ class Versions
 	public function checkGitCommit($update = true)
 	{
 		$count = $this->git->commits();
-		if ($this->_vers->git->commit < $count || GIT_PRE_COMMIT === true) {	// Allow pre-commit to override the commit number (often branch number is higher than dev's)
+		if ($this->_vers->git->commit->__toString() < $count || GIT_PRE_COMMIT === true) {	// Allow pre-commit to override the commit number (often branch number is higher than dev's)
 			if ($update) {
 				if (GIT_PRE_COMMIT === true) { // only the pre-commit script is allowed to set the NEXT commit number
 					$count += 1;
@@ -150,13 +150,14 @@ class Versions
 		$ver = preg_match('#v(\d+\.\d+\.\d+).*#', $latest, $matches) ? $matches[1] : $latest;
 
 		// Check if version file's entry is the same as current branch's tag
-		if (version_compare($this->_vers->git->tag, $latest, '=')) {
+		if (version_compare($this->_vers->git->tag, $latest, '!=')) {
 			if ($update) {
-				echo $this->out->primaryOver("Updating tag version to ") . $this->out->header($latest);
+				echo $this->out->primaryOver("Updating tag version to ") . $this->out->headerOver($latest);
 				$this->_vers->git->tag = $ver;
 				$this->_changes |= self::UPDATED_GIT_TAG;
 			} else {
-				echo $this->out->primaryOver("Leaving tag version at ") . $this->out->header($latest);
+				echo $this->out->primaryOver("Leaving tag version at ") .
+					 $this->out->headerOver($this->_vers->git->tag);
 			}
 			return $this->_vers->git->tag;
 		} else {
@@ -174,13 +175,15 @@ class Versions
 	 */
 	public function checkSQLDb($update = false)
 	{
-		$settings = new Settings();
-		$setting  = $settings->getSetting('sqlpatch');
+		$this->checkSQLFileLatest($update);
 
-		if ($this->_vers->sql->db < $setting) {
+		//$settings = new Settings();
+		//$setting  = $settings->getSetting('sqlpatch');
+
+		if ($this->_vers->sql->db->__toString() != $this->_vers->sql->file->__toString()) {
 			if ($update) {
-				echo $this->out->primary("Updating Db revision to " . $setting);
-				$this->_vers->sql->db = $setting;
+				echo $this->out->primaryOver("Updating Db revision to " . $this->_vers->sql->file);
+				$this->_vers->sql->db = $this->_vers->sql->file->__toString();
 				$this->_changes |= self::UPDATED_SQL_DB_PATCH;
 			}
 			return $this->_vers->patch->db;
@@ -210,13 +213,17 @@ class Versions
 
 		$last = (preg_match($options['regex'], end($files), $matches)) ? (int)$matches['patch'] : false;
 
-		if ($last !== false && $this->_vers->sql->file != $last) {
-			if ($update) {
+		if ($update) {
+			if ($last !== false && $this->_vers->sql->file->__toString() != $last) {
 				echo $this->out->primary("Updating latest patch file to " . $last);
 				$this->_vers->sql->file = $last;
 				$this->_changes |= self::UPDATED_SQL_FILE_LAST;
 			}
-			return $this->_vers->patch->db;
+
+			if ($this->_vers->sql->file->__toString() != $last) {
+				$this->_vers->sql->file = $last;
+				$this->_changes |= self::UPDATED_SQL_DB_PATCH;
+			}
 		}
 		return $last;
 	}

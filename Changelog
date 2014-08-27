@@ -3,6 +3,32 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
+2014-08-26 bart39
+	* Fix: Actor / Director / Language info from IMDB.
+	* Fix: Display XXX / Music / Movie releases in cover view without a cover.
+	* Fix: Console error for null releasedate.
+2014-08-26 niel
+	* Chg: Moved PostProcessing scripts into the new nzedb\processing namespace.
+2014-08-26 ruhllatio
+	* Fix: Bad path issue in Tmux NNTP Proxy alternate NNTP
+	* Fix: Issue #1472 Console Processing Errors
+	* Chg: Rework queries for gfRn to support new indexing scheme (coming)
+	* Chg: A few Tmux query changes to reduce monitor loop times (will complement the index changes)
+	* Fix: Attempt to fix consoleinfoid not being set in some instances
+	* Chg: Optimize browse queries for large release databases by forcing a straight join on Groups table
+	* Fix: missing PostProc namespace in update_releases.php
+	* Fix: Genre's populating Unknown for console processing
+	* Add: Patch to update releases with bad Console genre data
+	* Rem: Bad patch +1 file
+	* Fix: Pretty sure console Genre is good to go this time
+	* Fix: Weird releasedate escaping in Console causing SQL errors in some cases
+	* Chg: Disable cover = 1 setting for console
+	* Chg: Improved Genre detection for Console - additional output showing genre on match (still lots of Unknowns because Amazon blows)
+	* Chg: Change a couple genre entries
+2014-08-25 bart39
+	* Fix: Update XXX releases correctly for no match.
+2014-08-25 niel
+	* Fix: Attempt to detect remote MySQL server during install and use LOCAL for table loading if so.
 2014-08-24 ruhllatio
 	* Fix: Console SQL errors when review isn't set.
 2014-08-23 ruhllatio

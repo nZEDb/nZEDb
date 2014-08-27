@@ -2,6 +2,7 @@
 require_once dirname(__FILE__) . '/../../../config.php';
 
 use nzedb\db\Settings;
+use \nzedb\processing\PostProcess;
 
 $pdo = new Settings();
 
@@ -20,7 +21,7 @@ if (!isset($argv[1])) {
 							sprintf('
 								SELECT r.id AS releaseid, r.guid, r.group_id, r.categoryid, r.name, r.searchname,
 									uncompress(nfo) AS textstring
-								FROM releases r USE INDEX (ix_releases_guid)
+								FROM releases r
 								INNER JOIN releasenfo rn ON r.id = rn.releaseid
 								WHERE r.guid %s
 								AND r.nzbstatus = 1
@@ -55,7 +56,7 @@ if (!isset($argv[1])) {
 							sprintf('
 								SELECT rf.name AS textstring, rf.releaseid AS fileid,
 									r.id AS releaseid, r.name, r.searchname, r.categoryid, r.group_id
-								FROM releases r USE INDEX (ix_releases_guid)
+								FROM releases r
 								INNER JOIN releasefiles rf ON r.id = rf.releaseid
 								WHERE r.guid %s
 								AND r.nzbstatus = 1 AND r.proc_files = 0
@@ -81,7 +82,7 @@ if (!isset($argv[1])) {
 							sprintf('
 								SELECT DISTINCT r.id AS releaseid, r.name, r.searchname, r.categoryid, r.group_id, r.dehashstatus,
 									rf.name AS filename
-								FROM releases r USE INDEX (ix_releases_guid)
+								FROM releases r
 								LEFT OUTER JOIN releasefiles rf ON r.id = rf.releaseid AND rf.ishashed = 1
 								WHERE r.guid %s
 								AND nzbstatus = 1 AND r.ishashed = 1
@@ -110,7 +111,7 @@ if (!isset($argv[1])) {
 			$releases = $pdo->queryDirect(
 							sprintf('
 								SELECT r.id AS releaseid, r.guid, r.group_id
-								FROM releases r USE INDEX (ix_releases_guid)
+								FROM releases r
 								WHERE r.guid %s
 								AND r.nzbstatus = 1
 								AND r.proc_par2 = 0
@@ -146,7 +147,7 @@ if (!isset($argv[1])) {
 			$releases = $pdo->queryDirect(
 							sprintf('
 								SELECT r.id AS releaseid
-								FROM releases r USE INDEX (ix_releases_guid)
+								FROM releases r
 								WHERE r.guid %s
 								AND r.nzbstatus = 1 AND r.nfostatus = 1
 								AND r.proc_sorter = 0 AND r.isrenamed = 0
