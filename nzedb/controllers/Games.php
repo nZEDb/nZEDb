@@ -611,7 +611,9 @@ class Games
 					$this->pdo->log->primary($con['title'])
 				);
 			}
+			if($con['cover'] === 1){
 			$con['cover'] = $ri->saveImage($gamesId, $con['coverurl'], $this->imgSavePath, 250, 250);
+			}
 			if($con['backdrop'] === 1){
 			$con['backdrop'] = $ri->saveImage($gamesId . '-backdrop', $con['backdropurl'], $this->imgSavePath, 1920, 1024);
 			}

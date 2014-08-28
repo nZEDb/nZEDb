@@ -619,11 +619,15 @@ class Console
 					$con['cover']
 				)
 			);
+			if($con['cover'] === 1){
 			$con['cover'] = $ri->saveImage($consoleId, $con['coverurl'], $this->imgSavePath, 250, 250);
+			}
 		} else {
 			$consoleId = $check['id'];
 
-			$con['cover'] = $ri->saveImage($consoleId, $con['coverurl'], $this->imgSavePath, 250, 250);
+			if($con['cover'] === 1){
+				$con['cover'] = $ri->saveImage($consoleId, $con['coverurl'], $this->imgSavePath, 250, 250);
+			}
 
 			$this->update(
 						$consoleId, $con['title'], $con['asin'], $con['url'], $con['salesrank'],
