@@ -1,7 +1,7 @@
 <?php
 require_once dirname(__FILE__) . '/config.php';
 
-use \nzedb\processing\post\ProcessReleases;
+use \nzedb\processing\ProcessReleases;
 
 $pdo = new \nzedb\db\Settings();
 
