@@ -1,7 +1,5 @@
 <?php
-namespace nzedb\processing\post;
-
-use \nzedb\processing\PostProcess;
+namespace nzedb\processing;
 
 class ProcessReleases
 {

@@ -47,8 +47,8 @@ class ADE
 
 	public function __construct()
 	{
-		$this->html = new simple_html_dom();
-		$this->edithtml = new simple_html_dom();
+		$this->html = new \simple_html_dom();
+		$this->edithtml = new \simple_html_dom();
 	}
 
 	/*
