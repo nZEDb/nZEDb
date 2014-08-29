@@ -139,7 +139,7 @@ switch ($options[1]) {
 	// $options[2] => (string)groupCount, number of groups terminated by _ | (int)groupID, group to work on
 	case 'releases':
 		$pdo = new \nzedb\db\Settings();
-		$releases = new \nzedb\processing\post\ProcessReleases(['Settings' => $pdo]);
+		$releases = new \nzedb\processing\ProcessReleases(['Settings' => $pdo]);
 
 		//Runs function that are per group
 		if (is_numeric($options[2])) {

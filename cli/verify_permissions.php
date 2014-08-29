@@ -62,7 +62,7 @@ foreach (['anime','audio','audiosample','book','console','games','movies','music
 
 // Set up covers paths.
 if (defined('DB_PASSWORD') && DB_PASSWORD != '') {
-	$ri = new ReleaseImage();
+	$ri = new \ReleaseImage();
 
 	$folders[$ri->audSavePath]      = [R, W];
 	$folders[$ri->imgSavePath]      = [R, W];

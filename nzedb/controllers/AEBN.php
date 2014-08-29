@@ -47,7 +47,7 @@ class AEBN
 	public function __construct()
 	{
 		$this->whichsite = array("straight" => self::AEBNSURL, "gay" => self::AEBNGURL);
-		$this->html = new simple_html_dom();
+		$this->html = new \simple_html_dom();
 		if (isset($this->cookie)) {
 			@$this->_geturl();
 		}
