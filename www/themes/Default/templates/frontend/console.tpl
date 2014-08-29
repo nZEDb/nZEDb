@@ -105,9 +105,9 @@
 							</div>
 						</div>
 					</td>
-					<td colspan="8" class="left" id="guid{$result.guid}">
+					<td colspan="8" class="left" id="guid{$result.grp_release_guid}">
 						<h2><a class="title" title="View details"
-							   href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.title|stripslashes|escape:"htmlall"}
+							   href="{$smarty.const.WWW_TOP}/details/{$result.grp_release_guid}/{$result.grp_release_name|escape:"htmlall"}">{$result.title|stripslashes|escape:"htmlall"}
 								- {$result.platform|escape:"htmlall"}</a></h2>
 						{if $result.genre != ""}<b>Genre:</b>{$result.genre}<br/>{/if}
 						{if $result.esrb != ""}<b>Rating:</b>{$result.esrb}<br/>{/if}
