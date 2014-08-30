@@ -361,27 +361,27 @@ class XXX
 		$this->whichclass = '';
 
 		$iafd = new IAFD();
-		$iafd->searchterm = $xxxmovie;
+		$iafd->searchTerm = $xxxmovie;
 
 		if ($iafd->findme() !== false) {
 
-			switch($iafd->classused) {
+			switch($iafd->classUsed) {
 				case "ade":
 					$mov = new ADE();
-					$mov->directlink = $iafd->directurl;
-					$res = $mov->getdirect();
+					$mov->directLink = $iafd->directUrl;
+					$res = $mov->getDirect();
 					$res['title'] = $iafd->title;
-					$res['directurl'] = (string)$iafd->directurl;
-					$this->whichclass = $iafd->classused;
+					$res['directurl'] = (string)$iafd->directUrl;
+					$this->whichclass = $iafd->classUsed;
 					$this->pdo->log->doEcho($this->pdo->log->primary("Fetching XXX info from IAFD: Adult DVD Empire"));
 					break;
 				case "hm":
 					$mov = new Hotmovies();
-					$mov->directlink = $iafd->directurl;
-					$res = $mov->getdirect();
+					$mov->directLink = $iafd->directUrl;
+					$res = $mov->getDirect();
 					$res['title'] = $iafd->title;
-					$res['directurl'] = (string)$iafd->directurl;
-					$this->whichclass = $iafd->classused;
+					$res['directurl'] = (string)$iafd->directUrl;
+					$this->whichclass = $iafd->classUsed;
 					$this->pdo->log->doEcho($this->pdo->log->primary("Fetching XXX info from IAFD: Hot Movies"));
 			}
 		}
@@ -391,13 +391,13 @@ class XXX
 			$this->whichclass = "aebn";
 			$mov = new AEBN();
 			$mov->cookie = $this->cookie;
-			$mov->searchterm = $xxxmovie;
+			$mov->searchTerm = $xxxmovie;
 			$res = $mov->search();
 
 			if ($res === false) {
 				$this->whichclass = "ade";
 				$mov = new ADE();
-				$mov->searchterm = $xxxmovie;
+				$mov->searchTerm = $xxxmovie;
 				$res = $mov->search();
 			}
 
@@ -405,7 +405,7 @@ class XXX
 				$this->whichclass = "hm";
 				$mov = new Hotmovies();
 				$mov->cookie = $this->cookie;
-				$mov->searchterm = $xxxmovie;
+				$mov->searchTerm = $xxxmovie;
 				$res = $mov->search();
 			}
 
@@ -413,7 +413,7 @@ class XXX
 				$this->whichclass = "pop";
 				$mov = new Popporn();
 				$mov->cookie = $this->cookie;
-				$mov->searchterm = $xxxmovie;
+				$mov->searchTerm = $xxxmovie;
 				$res = $mov->search();
 			}
 
@@ -439,7 +439,7 @@ class XXX
 					}
 					$this->pdo->log->doEcho($this->pdo->log->primary("Fetching XXX info from: " . $fromstr));
 				}
-				$res = $mov->_getall();
+				$res = $mov->getAll();
 			} else {
 				// Nothing was found, go ahead and set to -2
 				return -2;

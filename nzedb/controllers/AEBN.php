@@ -49,7 +49,7 @@ class AEBN
 		$this->whichsite = array("straight" => self::AEBNSURL, "gay" => self::AEBNGURL);
 		$this->html = new \simple_html_dom();
 		if (isset($this->cookie)) {
-			@$this->_geturl();
+			$this->getUrl();
 		}
 	}
 
@@ -68,7 +68,7 @@ class AEBN
 	 *
 	 * @return array|bool
 	 */
-	public function _trailers()
+	public function trailers()
 	{
 		if (!isset($this->response)) {
 			return false;
@@ -90,17 +90,12 @@ class AEBN
 	 *
 	 * @return array|bool
 	 */
-	public function _covers()
+	public function covers()
 	{
-		if (!isset($this->response)) {
-			return false;
-		}
 		if ($ret = $this->html->find("img#boxImage", 0)) {
 			$ret = trim($ret->src);
 			$this->res['boxcover'] = str_replace("160w.jpg", "xlf.jpg", $ret);
 			$this->res['backcover'] = str_replace("160w.jpg", "xlb.jpg", $ret);
-		} else {
-			return false;
 		}
 
 		return $this->res;
@@ -111,17 +106,12 @@ class AEBN
 	 *
 	 * @return array|bool
 	 */
-	public function _genres()
+	public function genres()
 	{
-		if (!isset($this->response)) {
-			return false;
-		}
 		if ($ret = $this->html->find("div.md-detailsCategories", 0)) {
 			foreach ($ret->find("a[itemprop=genre]") as $genre) {
 				$this->res['genres'][] = trim($genre->plaintext);
 			}
-		} else {
-			return false;
 		}
 
 		return $this->res;
@@ -132,11 +122,8 @@ class AEBN
 	 *
 	 * @return array|bool
 	 */
-	public function _cast()
+	public function cast()
 	{
-		if (!isset($this->response)) {
-			return false;
-		}
 		if ($ret = $this->html->find("div.starsFull", 0)) {
 			foreach ($ret->find("span[itemprop=name]") as $star) {
 				$this->res['cast'][] = trim($star->plaintext);
@@ -148,8 +135,6 @@ class AEBN
 						$this->res['cast'][] = trim($star->plaintext);
 					}
 				}
-			} else {
-				return false;
 			}
 		}
 
@@ -161,11 +146,8 @@ class AEBN
 	 *
 	 * @return array|bool
 	 */
-	public function _productinfo()
+	public function productInfo()
 	{
-		if (!isset($this->response)) {
-			return false;
-		}
 		if ($ret = $this->html->find("div#md-detailsLeft", 0)) {
 			foreach ($ret->find("div") as $div) {
 				foreach ($div->find("span") as $span) {
@@ -183,8 +165,6 @@ class AEBN
 				unset($this->res['productinfo'][$key + 1]);
 			}
 			$this->res['productinfo'] = array_chunk($this->res['productinfo'], 2, false);
-		} else {
-			return false;
 		}
 
 		return $this->res;
@@ -196,18 +176,13 @@ class AEBN
 	 * @return array|bool
 	 *
 	 */
-	public function _sypnosis()
+	public function sypnosis()
 	{
-		if (!isset($this->response)) {
-			return false;
-		}
 		if ($ret = $this->html->find("span[itemprop=about]", 0)) {
 			if (is_null($ret)) {
 				if ($ret = $this->html->find("div.movieDetailDescription", 0)) {
 					$this->res['sypnosis'] = trim($ret->plaintext);
-					$this->res['sypnosis'] = preg_replace("/Description:\s/", "", $this->res['plot']);
-				} else {
-					return false;
+					$this->res['sypnosis'] = preg_replace('/Description:\s/', "", $this->res['plot']);
 				}
 			} else {
 				$this->res['sypnosis'] = trim($ret->plaintext);
@@ -224,11 +199,11 @@ class AEBN
 	 */
 	public function search()
 	{
-		if (!isset($this->searchterm)) {
+		if (!isset($this->searchTerm)) {
 			return false;
 		}
-		$this->trailurl = self::TRAILINGSEARCH . urlencode($this->searchterm);
-		if ($this->_geturl(false, $this->currentsite) === false) {
+		$this->trailurl = self::TRAILINGSEARCH . urlencode($this->searchTerm);
+		if ($this->getUrl(false, $this->currentsite) === false) {
 			return false;
 		} else {
 			if ($count = count($this->html->find("div.movie"))) {
@@ -242,7 +217,7 @@ class AEBN
 							$this->title = trim($ret->title);
 							$this->trailurl = $ret->href;
 							$this->directurl = $this->whichsite[$this->currentsite] . $this->trailurl;
-							$this->_geturl(false, $this->currentsite);
+							$this->getUrl(false, $this->currentsite);
 							break;
 						} else {
 							continue;
@@ -261,9 +236,8 @@ class AEBN
 				return false;
 			}
 		}
-		if(!isset($this->title)){
+
 		return false;
-		}
 	}
 
 	/**
@@ -271,30 +245,30 @@ class AEBN
 	 *
 	 * @return array|bool
 	 */
-	public function _getall()
+	public function getAll()
 	{
 		$results = array();
 		if (isset($this->directurl)) {
 			$results['title'] = $this->title;
 			$results['directurl'] = $this->directurl;
 		}
-		if (is_array($this->_sypnosis())) {
-			$results = array_merge($results, $this->_sypnosis());
+		if (is_array($this->sypnosis())) {
+			$results = array_merge($results, $this->sypnosis());
 		}
-		if (is_array($this->_productinfo())) {
-			$results = array_merge($results, $this->_productinfo());
+		if (is_array($this->productinfo())) {
+			$results = array_merge($results, $this->productInfo());
 		}
-		if (is_array($this->_cast())) {
-			$results = array_merge($results, $this->_cast());
+		if (is_array($this->cast())) {
+			$results = array_merge($results, $this->cast());
 		}
-		if (is_array($this->_genres())) {
-			$results = array_merge($results, $this->_genres());
+		if (is_array($this->genres())) {
+			$results = array_merge($results, $this->genres());
 		}
-		if (is_array($this->_covers())) {
-			$results = array_merge($results, $this->_covers());
+		if (is_array($this->covers())) {
+			$results = array_merge($results, $this->covers());
 		}
-		if (is_array($this->_trailers())) {
-			$results = array_merge($results, $this->_trailers());
+		if (is_array($this->trailers())) {
+			$results = array_merge($results, $this->trailers());
 		}
 		if (empty($results) === true) {
 			return false;
@@ -311,7 +285,7 @@ class AEBN
 	 *
 	 * @return bool
 	 */
-	private function _geturl($usepost = false, $site = "straight")
+	private function getUrl($usepost = false, $site = "straight")
 	{
 		if (isset($this->trailurl)) {
 			$ch = curl_init($this->whichsite[$site] . $this->trailurl);
