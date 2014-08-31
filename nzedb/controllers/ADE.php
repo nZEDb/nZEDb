@@ -92,7 +92,7 @@ class ADE
 	 */
 	public function trailers()
 	{
-		$this->getAdeUrl($this->_trailers . $this->_urlFound);
+		$this->getUrl($this->_trailers . $this->_urlFound);
 		$this->_html->load($this->_response);
 		if (preg_match("/(\"|')(?P<swf>[^\"']+.swf)(\"|')/i", $this->_response, $matches)) {
 			$this->_res['trailers']['url'] = self::ADE . trim(trim($matches['swf']), '"');
@@ -121,7 +121,7 @@ class ADE
 	 */
 	public function covers()
 	{
-		$this->getAdeUrl($this->_boxCover . $this->_urlFound);
+		$this->getUrl($this->_boxCover . $this->_urlFound);
 		$this->_html->load($this->_response);
 		foreach ($this->_html->find("div[id=FrontBoxCover], img[itemprop=image]") as $img) {
 			if (stristr($img->src, "h.jpg")) {
@@ -129,7 +129,7 @@ class ADE
 				break;
 			}
 		}
-		$this->getAdeUrl($this->_backCover . $this->_urlFound);
+		$this->getUrl($this->_backCover . $this->_urlFound);
 		$this->_html->load($this->_response);
 		foreach ($this->_html->find("div[id=BackBoxCover], img[itemprop=image]") as $img) {
 			if (stristr($img->src, "bh.jpg")) {
@@ -291,7 +291,7 @@ class ADE
 	public function getDirect()
 	{
 		if (isset($this->directlink)) {
-			if ($this->getAdeUrl() === false) {
+			if ($this->getUrl() === false) {
 				return false;
 			} else {
 				$this->_html->load($this->_response);
@@ -309,7 +309,7 @@ class ADE
 		if (!isset($this->searchTerm)) {
 			return false;
 		}
-		if ($this->getAdeUrl($this->_dvdQuery . rawurlencode($this->searchTerm)) === false) {
+		if ($this->getUrl($this->_dvdQuery . rawurlencode($this->searchTerm)) === false) {
 			return false;
 		} else {
 			$this->_html->load($this->_response);
@@ -326,7 +326,7 @@ class ADE
 						$this->_title = trim($title);
 						unset($ret);
 						$this->_html->clear();
-						$this->getAdeUrl($this->_urlFound);
+						$this->getUrl($this->_urlFound);
 						$this->_html->load($this->_response);
 					} else {
 						$this->found = false;
@@ -347,7 +347,7 @@ class ADE
 	 *
 	 * @return bool - true if page has content
 	 */
-	private function getAdeUrl($trailing = null)
+	private function getUrl($trailing = null)
 	{
 		if (isset($trailing)) {
 			$this->_ch = curl_init(self::ADE . $trailing);

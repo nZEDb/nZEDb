@@ -77,7 +77,7 @@ class Popporn
 	{
 		$this->_html = new \simple_html_dom();
 		if (isset($this->cookie)) {
-			$this->getPopUrl();
+			$this->getUrl();
 		}
 	}
 
@@ -150,13 +150,13 @@ class Popporn
 			$ret->value = str_replace("..", "", $ret->value);
 			$tmprsp = $this->_response;
 			$this->_trailUrl = $ret->value;
-			$this->getPopUrl();
+			$this->getUrl();
 			if (preg_match_all('/productID="\+(?<id>[0-9]+),/', $this->_response, $matches)) {
 				$productid = $matches['id'][0];
 				$random = ((float)rand() / (float)getrandmax()) * 5400000000000000;
 				$this->_trailUrl = "/com/tlavideo/vod/FlvAjaxSupportService.cfc?random=" . $random;
 				$this->_postParams = "method=pipeStreamLoc&productID=" . $productid;
-				$this->getPopUrl(true);
+				$this->getUrl(true);
 				$ret = json_decode(json_decode($this->_response, true), true);
 				$this->_res['trailers']['baseurl'] = self::POPURL . "/flashmediaserver/trailerPlayer.swf";
 				$this->_res['trailers']['flashvars'] = "subscribe=false&image=&file=" . self::POPURL . "/" . $ret['LOC'] . "&autostart=false";
@@ -297,7 +297,7 @@ class Popporn
 			return false;
 		}
 		$this->_trailUrl = self::TRAILINGSEARCH . urlencode($this->searchTerm);
-		if ($this->getPopUrl() === false) {
+		if ($this->getUrl() === false) {
 			return false;
 		} else {
 			if ($ret = $this->_html->find('h2[class=title]', 0)) {
@@ -310,7 +310,7 @@ class Popporn
 				$title = preg_replace('/\(.*?\)|[-._]/i', ' ', $title);
 				if($ret = $ret->find('a',0)){
 					$this->_trailUrl = trim($ret->href);
-					@$this->getPopUrl();
+					@$this->getUrl();
 				}
 
 				}else{
@@ -381,7 +381,7 @@ class Popporn
 	 *
 	 * @return bool
 	 */
-	private function getPopUrl($usepost = false)
+	private function getUrl($usepost = false)
 	{
 		if (isset($this->_trailUrl)) {
 			$ch = curl_init(self::POPURL . $this->_trailUrl);

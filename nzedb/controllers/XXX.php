@@ -621,7 +621,7 @@ class XXX
 	 *
 	 * @return array|null
 	 */
-	public function getallgenres($activeOnly = false) {
+	public function getAllGenres($activeOnly = false) {
 		$i = 0;
 		$res = $ret = null;
 
@@ -714,7 +714,7 @@ class XXX
 	 *
 	 * @return string
 	 */
-	public function insertswf($whichclass, $res)
+	public function insertSwf($whichclass, $res)
 	{
 		if ($whichclass === "ade") {
 			$ret = '';
