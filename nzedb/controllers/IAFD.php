@@ -7,7 +7,7 @@ class IAFD {
 
 	public $classUsed = "";
 	public $cookie = "";
-	public $directUrl = "";
+	public $directUrl;
 	public $searchTerm = "";
 	public $title = "";
 
@@ -18,15 +18,15 @@ class IAFD {
 
 	protected $_dvdFound = false;
 	protected $_doSearch = false;
-	protected $_getRedirect = "";
+	protected $_getRedirect;
 	protected $_html;
 	protected $_res = array();
-	protected $_response = null;
+	protected $_response;
 
 
 	public function __construct()
 	{
-		$this->html = new \simple_html_dom();
+		$this->_html = new \simple_html_dom();
 		if (isset($this->cookie)) {
 			@$this->getUrl();
 		}

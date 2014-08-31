@@ -55,9 +55,8 @@ class AEBN
 	/**
 	 * Raw Html response from curl
 	 *
-	 * @var null
 	 */
-	protected $_response = null;
+	protected $_response;
 
 	/**
 	 * Returned results in all methods except search/geturl
@@ -98,7 +97,7 @@ class AEBN
 	 */
 	public function __construct()
 	{
-		$this->whichsite = array("straight" => self::AEBNSURL, "gay" => self::AEBNGURL);
+		$this->_whichSite = array("straight" => self::AEBNSURL, "gay" => self::AEBNGURL);
 		$this->_html = new \simple_html_dom();
 		if (isset($this->cookie)) {
 			$this->getUrl();
@@ -260,9 +259,7 @@ class AEBN
 		} else {
 			if ($count = count($this->_html->find("div.movie"))) {
 				$i = 1;
-
 				foreach ($this->_html->find("div.movie") as $movie) {
-					$title = "";
 					$string = "a#FTSMovieSearch_link_title_detail_" . $i;
 					if ($ret = $movie->find($string, 0)) {
 						$title = trim($ret->title);
@@ -343,8 +340,8 @@ class AEBN
 	 */
 	private function getUrl($usepost = false, $site = "straight")
 	{
-		if (isset($this->trailurl)) {
-			$ch = curl_init($this->whichsite[$site] . $this->trailurl);
+		if (isset($this->_trailUrl)) {
+			$ch = curl_init($this->_whichSite[$site] . $this->_trailUrl);
 		} else {
 			$ch = curl_init(self::IF18);
 		}

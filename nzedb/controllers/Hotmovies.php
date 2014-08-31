@@ -68,9 +68,8 @@ class Hotmovies
 	/**
 	 * Raw Html from Curl
 	 *
-	 * @var null
 	 */
-	protected $_response = null;
+	protected $_response;
 
 	/**
 	 * Sets the title in the getAll method
@@ -328,9 +327,9 @@ class Hotmovies
 		} else {
 			$ch = curl_init(self::HMURL);
 		}
-		if(isset($this->directlink)){
-			$ch = curl_init($this->directlink);
-			$this->directlink = "";
+		if(isset($this->directLink)){
+			$ch = curl_init($this->directLink);
+			$this->directLink = "";
 		}
 		if($usepost === true){
 			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");

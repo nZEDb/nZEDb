@@ -41,17 +41,13 @@ class Popporn
 
 	/**
 	 * POST Paramaters for Trailers Method
-	 *
-	 * @var array
 	 */
-	protected $_postParams = array();
+	protected $_postParams;
 
 	/**
 	 * Curl Raw Html
-	 *
-	 * @var null
 	 */
-	protected $_response = null;
+	protected $_response;
 
 	/**
 	 * Results returned from each method

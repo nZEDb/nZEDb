@@ -377,7 +377,7 @@ class XXX
 					break;
 				case "hm":
 					$mov = new Hotmovies();
-					$mov->directlink = $iafd->directUrl;
+					$mov->directLink = $iafd->directUrl;
 					$res = $mov->getDirect();
 					$res['title'] = $iafd->title;
 					$res['directurl'] = (string)$iafd->directUrl;
