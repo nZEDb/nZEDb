@@ -368,7 +368,7 @@ class XXX
 			switch($iafd->classUsed) {
 				case "ade":
 					$mov = new ADE();
-					$mov->directLink = $iafd->directUrl;
+					$mov->directLink = (string)$iafd->directUrl;
 					$res = $mov->getDirect();
 					$res['title'] = $iafd->title;
 					$res['directurl'] = (string)$iafd->directUrl;
@@ -377,7 +377,7 @@ class XXX
 					break;
 				case "hm":
 					$mov = new Hotmovies();
-					$mov->directLink = $iafd->directUrl;
+					$mov->directLink = (string)$iafd->directUrl;
 					$res = $mov->getDirect();
 					$res['title'] = $iafd->title;
 					$res['directurl'] = (string)$iafd->directUrl;

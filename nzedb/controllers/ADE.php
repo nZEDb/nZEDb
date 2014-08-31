@@ -60,10 +60,10 @@ class ADE
 	protected $_trailers = "/trailers";
 
 
-	protected $_url = null;
-	protected $_response = null;
+	protected $_url;
+	protected $_response;
 	protected $_res = array();
-	protected $_tmpResponse = null;
+	protected $_tmpResponse;
 	protected $_html;
 	protected $_edithtml;
 	protected $_ch;

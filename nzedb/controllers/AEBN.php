@@ -269,7 +269,7 @@ class AEBN
 						if ($p >= 90) {
 							$this->_title = trim($ret->title);
 							$this->_trailUrl = $ret->href;
-							$this->_directUrl = $this->whichsite[$this->_currentSite] . $this->_trailUrl;
+							$this->_directUrl = $this->_whichSite[$this->_currentSite] . $this->_trailUrl;
 							$this->getUrl(false, $this->_currentSite);
 							break;
 						} else {
@@ -301,9 +301,9 @@ class AEBN
 	public function getAll()
 	{
 		$results = array();
-		if (isset($this->_directurl)) {
+		if (isset($this->_directUrl)) {
 			$results['title'] = $this->_title;
-			$results['directurl'] = $this->_directurl;
+			$results['directurl'] = $this->_directUrl;
 		}
 		if (is_array($this->sypnosis())) {
 			$results = array_merge($results, $this->sypnosis());

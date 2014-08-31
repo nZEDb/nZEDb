@@ -34,7 +34,7 @@ class IAFD {
 
 	public function __destruct()
 	{
-		$this->html->clear();
+		$this->_html->clear();
 		unset($this->response);
 		unset($this->res);
 	}
@@ -42,8 +42,8 @@ class IAFD {
 	public function findme()
 	{
 		if ($this->search() === true) {
-			if ($this->html->find("div#commerce", 0)) {
-				foreach ($this->html->find("div#commerce") as $e) {
+			if ($this->_html->find("div#commerce", 0)) {
+				foreach ($this->_html->find("div#commerce") as $e) {
 					foreach ($e->find("h4, p.item") as $h4) {
 						//echo ($h4->innertext) ."\n";
 						if (trim($h4->plaintext) == "DVD") {
@@ -95,7 +95,7 @@ class IAFD {
 		} else {
 			$firsttitle = null;
 			$secondtitle = null;
-			if($ret = $this->html->find("div#moviedata, h2, dt", 0)){
+			if($ret = $this->_html->find("div#moviedata, h2, dt", 0)){
 			if($ret->find("h2",0)){
 				$firsttitle = $ret->find("h2",0)->innertext;
 				if(preg_match("/Movie Titles/",$firsttitle)){
@@ -170,7 +170,7 @@ class IAFD {
 		}
 		curl_close($ch);
 		if($this->_doSearch === true){
-		$this->html->load($this->_response);
+		$this->_html->load($this->_response);
 		$this->_doSearch = false;
 		}
 		return true;
