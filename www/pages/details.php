@@ -99,7 +99,7 @@ if (isset($_GET['id'])) {
 		$xxx = $x->getXXXInfo($data['xxxinfo_id']);
 
 		if (isset($xxx['trailers'])) {
-			$xxx['trailers'] = $x->insertswf($xxx['classused'], $xxx['trailers']);
+			$xxx['trailers'] = $x->insertSwf($xxx['classused'], $xxx['trailers']);
 		}
 
 		if ($xxx && isset($xxx['title'])) {
