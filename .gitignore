@@ -1,9 +1,11 @@
 .DS_Store
+composer.*
 config.php
 error_log
 failed-login.log
 php_errors.log
 php-errors.log
+test.php
 
 # Editor temp files
 *#
@@ -17,3 +19,4 @@ php-errors.log
 /resources/nzb/*
 /resources/tmp/*
 /templates_c/*
+/vendor
