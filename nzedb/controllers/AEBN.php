@@ -4,41 +4,93 @@ require_once nZEDb_LIBS . 'simple_html_dom.php';
 
 class AEBN
 {
-	// Sets a Cookie
-	public $cookie = null;
+	/**
+	 * Cookie File location used in curl
+	 *
+	 * @var string
+	 */
+	public $cookie = "";
 
-	// Sets a Searchterm
-	public $searchterm = null;
+	/**
+	 * Keyword to search
+	 *
+	 * @var string
+	 */
+	public $searchTerm = "";
 
-	// URLS used in functions
-	const AEBNSURL = "http://straight.theater.aebn.net";
+	/**
+	 * Url Constants used within this class
+	 */
 	const AEBNGURL = "http://gay.theater.aebn.net";
-	const TRAILINGSEARCH = "/dispatcher/fts?theaterId=13992&genreId=101&locale=en&count=30&imageType=Large&targetSearchMode=basic&isAdvancedSearch=false&isFlushAdvancedSearchCriteria=false&sortType=Relevance&userQuery=title%3A+%2B";
+	const AEBNSURL = "http://straight.theater.aebn.net";
 	const IF18 = "http://straight.theater.aebn.net/dispatcher/frontDoor?genreId=101&theaterId=13992&locale=en&refid=AEBN-000001";
+	const TRAILINGSEARCH = "/dispatcher/fts?theaterId=13992&genreId=101&locale=en&count=30&imageType=Large&targetSearchMode=basic&isAdvancedSearch=false&isFlushAdvancedSearchCriteria=false&sortType=Relevance&userQuery=title%3A+%2B";
 	const TRAILERURL = "/dispatcher/previewPlayer?locale=en&theaterId=13992&genreId=101&movieId=";
 
-	// Title is set in search()
-	protected $title = null;
+	/**
+	 * Sets the current site to search
+	 * @var string
+	 */
+	protected $_currentSite = "straight";
 
-	// Directurl is set in search()
-	protected $directurl = null;
+	/**
+	 * Direct Url in getAll method
+	 * @var string
+	 */
+	protected $_directUrl = "";
 
-	// Post Paramaters if any
-	protected $postparams = null;
+	/**
+	 * Simple Html Dom Object
+	 * @var simple_html_dom
+	 */
+	protected $_html;
 
-	// Trailing URL defined above
-	protected $trailurl = null;
+	/**
+	 * Post Parameters to use with curl
+	 *
+	 * @var array
+	 */
+	protected $_postParams = array();
 
-	// Specifies which site to search "straight or gay" defined in __construct
-	protected $currentsite = "straight";
+	/**
+	 * Raw Html response from curl
+	 *
+	 * @var null
+	 */
+	protected $_response = null;
 
-	// IF a search name matched.
-	protected $searchfound = false;
+	/**
+	 * Returned results in all methods except search/geturl
+	 *
+	 * @var array
+	 */
+	protected $_res = array();
 
-	protected $whichsite = array();
-	protected $response = null;
-	protected $res = array();
-	protected $html;
+	/**
+	 * If searchTerm is found
+	 * @var bool
+	 */
+	protected $_searchFound = false;
+
+	/**
+	 * Sets title in getAll method
+	 * @var string
+	 */
+	protected $_title = "";
+
+	/**
+	 * Trailing Url
+	 * @var string
+	 */
+	protected $_trailUrl = "";
+
+	/**
+	 * Used in __construct
+	 * @var array - straight, gay
+	 */
+	protected $_whichSite = array();
+
+
 
 	/**
 	 * Sets the variables that used throughout the class
@@ -47,7 +99,7 @@ class AEBN
 	public function __construct()
 	{
 		$this->whichsite = array("straight" => self::AEBNSURL, "gay" => self::AEBNGURL);
-		$this->html = new \simple_html_dom();
+		$this->_html = new \simple_html_dom();
 		if (isset($this->cookie)) {
 			$this->getUrl();
 		}
@@ -58,9 +110,9 @@ class AEBN
 	 */
 	public function __destruct()
 	{
-		$this->html->clear();
-		unset($this->response);
-		unset($this->res);
+		$this->_html->clear();
+		unset($this->_response);
+		unset($this->_res);
 	}
 
 	/**
@@ -70,19 +122,19 @@ class AEBN
 	 */
 	public function trailers()
 	{
-		if (!isset($this->response)) {
+		if (!isset($this->_response)) {
 			return false;
 		}
 		$movieid = null;
-		if ($ret = $this->html->find("a[itemprop=trailer]", 0)) {
-			preg_match("/movieId=(?<movieid>\d+)&/", trim($ret->href), $matches);
+		if ($ret = $this->_html->find("a[itemprop=trailer]", 0)) {
+			preg_match('/movieId=(?<movieid>\d+)&/', trim($ret->href), $matches);
 			$movieid = $matches['movieid'];
-			$this->res['trailers']['url'] =	$this->whichsite[$this->currentsite] . self::TRAILERURL . $movieid;
+			$this->_res['trailers']['url'] = $this->_whichSite[$this->_currentSite] . self::TRAILERURL . $movieid;
 		} else {
 			return false;
 		}
 
-		return $this->res;
+		return $this->_res;
 	}
 
 	/**
@@ -92,13 +144,13 @@ class AEBN
 	 */
 	public function covers()
 	{
-		if ($ret = $this->html->find("img#boxImage", 0)) {
+		if ($ret = $this->_html->find("img#boxImage, img[itemprop=thumbnailUrl]", 1)) {
 			$ret = trim($ret->src);
-			$this->res['boxcover'] = str_replace("160w.jpg", "xlf.jpg", $ret);
-			$this->res['backcover'] = str_replace("160w.jpg", "xlb.jpg", $ret);
+			$this->_res['boxcover'] = str_ireplace("160w.jpg", "xlf.jpg", $ret);
+			$this->_res['backcover'] = str_ireplace("160w.jpg", "xlb.jpg", $ret);
 		}
 
-		return $this->res;
+		return $this->_res;
 	}
 
 	/**
@@ -108,13 +160,13 @@ class AEBN
 	 */
 	public function genres()
 	{
-		if ($ret = $this->html->find("div.md-detailsCategories", 0)) {
+		if ($ret = $this->_html->find("div.md-detailsCategories", 0)) {
 			foreach ($ret->find("a[itemprop=genre]") as $genre) {
-				$this->res['genres'][] = trim($genre->plaintext);
+				$this->_res['genres'][] = trim($genre->plaintext);
 			}
 		}
 
-		return $this->res;
+		return $this->_res;
 	}
 
 	/**
@@ -124,21 +176,21 @@ class AEBN
 	 */
 	public function cast()
 	{
-		if ($ret = $this->html->find("div.starsFull", 0)) {
+		if ($ret = $this->_html->find("div.starsFull", 0)) {
 			foreach ($ret->find("span[itemprop=name]") as $star) {
-				$this->res['cast'][] = trim($star->plaintext);
+				$this->_res['cast'][] = trim($star->plaintext);
 			}
 		} else {
-			if ($ret = $this->html->find("div.detailsLink", 0)) {
+			if ($ret = $this->_html->find("div.detailsLink", 0)) {
 				foreach ($ret->find("span") as $star) {
 					if (!preg_match("/More/", $star->plaintext) && !preg_match("/Stars/", $star->plaintext)) {
-						$this->res['cast'][] = trim($star->plaintext);
+						$this->_res['cast'][] = trim($star->plaintext);
 					}
 				}
 			}
 		}
 
-		return $this->res;
+		return $this->_res;
 	}
 
 	/**
@@ -148,26 +200,26 @@ class AEBN
 	 */
 	public function productInfo()
 	{
-		if ($ret = $this->html->find("div#md-detailsLeft", 0)) {
+		if ($ret = $this->_html->find("div#md-detailsLeft", 0)) {
 			foreach ($ret->find("div") as $div) {
 				foreach ($div->find("span") as $span) {
 					$span->plaintext = rawurldecode($span->plaintext);
 					$span->plaintext = preg_replace("/&nbsp;/", "", $span->plaintext);
-					$this->res['productinfo'][] = trim($span->plaintext);
+					$this->_res['productinfo'][] = trim($span->plaintext);
 				}
 			}
-			if (false !== $key = array_search("Running Time:", $this->res['productinfo'])) {
-				unset($this->res['productinfo'][$key + 2]);
+			if (false !== $key = array_search("Running Time:", $this->_res['productinfo'])) {
+				unset($this->_res['productinfo'][$key + 2]);
 			}
-			if (false !== $key = array_search("Director:", $this->res['productinfo'])) {
-				$this->res['director'] = $this->res['productinfo'][$key + 1];
-				unset($this->res['productinfo'][$key]);
-				unset($this->res['productinfo'][$key + 1]);
+			if (false !== $key = array_search("Director:", $this->_res['productinfo'])) {
+				$this->_res['director'] = $this->_res['productinfo'][$key + 1];
+				unset($this->_res['productinfo'][$key]);
+				unset($this->_res['productinfo'][$key + 1]);
 			}
-			$this->res['productinfo'] = array_chunk($this->res['productinfo'], 2, false);
+			$this->_res['productinfo'] = array_chunk($this->_res['productinfo'], 2, false);
 		}
 
-		return $this->res;
+		return $this->_res;
 	}
 
 	/**
@@ -178,18 +230,18 @@ class AEBN
 	 */
 	public function sypnosis()
 	{
-		if ($ret = $this->html->find("span[itemprop=about]", 0)) {
+		if ($ret = $this->_html->find("span[itemprop=about]", 0)) {
 			if (is_null($ret)) {
-				if ($ret = $this->html->find("div.movieDetailDescription", 0)) {
-					$this->res['sypnosis'] = trim($ret->plaintext);
-					$this->res['sypnosis'] = preg_replace('/Description:\s/', "", $this->res['plot']);
+				if ($ret = $this->_html->find("div.movieDetailDescription", 0)) {
+					$this->_res['sypnosis'] = trim($ret->plaintext);
+					$this->_res['sypnosis'] = preg_replace('/Description:\s/', "", $this->_res['plot']);
 				}
 			} else {
-				$this->res['sypnosis'] = trim($ret->plaintext);
+				$this->_res['sypnosis'] = trim($ret->plaintext);
 			}
 		}
 
-		return $this->res;
+		return $this->_res;
 	}
 
 	/**
@@ -202,22 +254,22 @@ class AEBN
 		if (!isset($this->searchTerm)) {
 			return false;
 		}
-		$this->trailurl = self::TRAILINGSEARCH . urlencode($this->searchTerm);
-		if ($this->getUrl(false, $this->currentsite) === false) {
+		$this->_trailUrl = self::TRAILINGSEARCH . urlencode($this->searchTerm);
+		if ($this->getUrl(false, $this->_currentSite) === false) {
 			return false;
 		} else {
-			if ($count = count($this->html->find("div.movie"))) {
+			if ($count = count($this->_html->find("div.movie"))) {
 				$i = 1;
 
-				foreach ($this->html->find("div.movie") as $movie) {
+				foreach ($this->_html->find("div.movie") as $movie) {
 					$string = "a#FTSMovieSearch_link_title_detail_" . $i;
 					if ($ret = $movie->find($string, 0)) {
-						similar_text($this->searchterm, trim($ret->title), $p);
+						similar_text($this->searchTerm, trim($ret->title), $p);
 						if ($p >= 90) {
-							$this->title = trim($ret->title);
-							$this->trailurl = $ret->href;
-							$this->directurl = $this->whichsite[$this->currentsite] . $this->trailurl;
-							$this->getUrl(false, $this->currentsite);
+							$this->_title = trim($ret->title);
+							$this->_trailUrl = $ret->href;
+							$this->_directUrl = $this->whichsite[$this->_currentSite] . $this->_trailUrl;
+							$this->getUrl(false, $this->_currentSite);
 							break;
 						} else {
 							continue;
@@ -226,10 +278,10 @@ class AEBN
 					$i = $i + 1;
 				}
 				if ($i === $count OR $count === 0) {
-					if ($this->currentsite === "gay") {
+					if ($this->_currentSite === "gay") {
 						return false;
 					}
-					$this->currentsite = "gay";
+					$this->_currentSite = "gay";
 					$this->search();
 				}
 			} else {
@@ -248,9 +300,9 @@ class AEBN
 	public function getAll()
 	{
 		$results = array();
-		if (isset($this->directurl)) {
-			$results['title'] = $this->title;
-			$results['directurl'] = $this->directurl;
+		if (isset($this->_directurl)) {
+			$results['title'] = $this->_title;
+			$results['directurl'] = $this->_directurl;
 		}
 		if (is_array($this->sypnosis())) {
 			$results = array_merge($results, $this->sypnosis());
@@ -296,7 +348,7 @@ class AEBN
 		if ($usepost === true) {
 			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 			curl_setopt($ch, CURLOPT_POST, 1);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $this->postparams);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $this->_postParams);
 		}
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_HEADER, 0);
@@ -308,14 +360,14 @@ class AEBN
 			curl_setopt($ch, CURLOPT_COOKIEJAR, $this->cookie);
 			curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookie);
 		}
-		$this->response = curl_exec($ch);
-		if (!$this->response) {
+		$this->_response = curl_exec($ch);
+		if (!$this->_response) {
 			curl_close($ch);
 
 			return false;
 		}
 		curl_close($ch);
-		$this->html->load($this->response);
+		$this->_html->load($this->_response);
 
 		return true;
 	}

@@ -8,30 +8,27 @@ require_once nZEDb_LIBS . 'simple_html_dom.php';
 class ADE
 {
 	/**
-	 * Define ADE Url here
-	*/
-	const ADE = "http://www.adultdvdempire.com";
+	 * If a direct link is given parse it rather then search
+	 * @var string
+	 */
+	public $directLink = "";
 
 	/**
 	 * If a string is found do call back.
-	 *
 	 * @var bool
 	 */
 	public $found = false;
 
 	/**
 	 * Search keyword
-	 *
 	 * @var string
 	 */
 	public $searchTerm = "";
 
 	/**
-	 * If a direct link is given parse it rather then search
-	 *
-	 * @var string
-	 */
-	public $directLink = "";
+	 * Define ADE Url here
+	*/
+	const ADE = "http://www.adultdvdempire.com";
 
 	/**
 	 * Direct Url returned in getAll method
@@ -54,13 +51,14 @@ class ADE
 	 */
 	protected $_title = "";
 
-	/* Trailing urls */
+	/** Trailing urls */
 	protected $_dvdQuery = "/dvd/search?q=";
 	protected $_scenes = "/scenes";
 	protected $_boxCover = "/boxcover";
 	protected $_backCover = "/backcover";
 	protected $_reviews = "/reviews";
 	protected $_trailers = "/trailers";
+
 
 	protected $_url = null;
 	protected $_response = null;

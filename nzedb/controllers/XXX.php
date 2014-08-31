@@ -313,7 +313,7 @@ class XXX
 	 *
 	 *@param $id
 	 * @param $title
-	 * @param $tagline
+	 * @param $tagLine
 	 * @param $plot
 	 * @param $genre
 	 * @param $director
@@ -322,7 +322,7 @@ class XXX
 	 * @param $backdrop
 	 */
 	public function update(
-		$id = '', $title = '', $tagline = '', $plot = '', $genre = '', $director = '',
+		$id = '', $title = '', $tagLine = '', $plot = '', $genre = '', $director = '',
 		$actors = '', $cover = '', $backdrop = ''
 	)
 	{
@@ -373,16 +373,16 @@ class XXX
 					$res['title'] = $iafd->title;
 					$res['directurl'] = (string)$iafd->directUrl;
 					$this->whichclass = $iafd->classUsed;
-					$this->pdo->log->doEcho($this->pdo->log->primary("Fetching XXX info from IAFD: Adult DVD Empire"));
+					$this->pdo->log->doEcho($this->pdo->log->primary("Fetching XXX info from IAFD -> Adult DVD Empire"));
 					break;
 				case "hm":
 					$mov = new Hotmovies();
-					$mov->directLink = $iafd->directUrl;
+					$mov->directlink = $iafd->directUrl;
 					$res = $mov->getDirect();
 					$res['title'] = $iafd->title;
 					$res['directurl'] = (string)$iafd->directUrl;
 					$this->whichclass = $iafd->classUsed;
-					$this->pdo->log->doEcho($this->pdo->log->primary("Fetching XXX info from IAFD: Hot Movies"));
+					$this->pdo->log->doEcho($this->pdo->log->primary("Fetching XXX info from IAFD -> Hot Movies"));
 			}
 		}
 
@@ -423,7 +423,7 @@ class XXX
 
 					switch ($this->whichclass) {
 						case "aebn":
-							$fromstr = "AEBN";
+							$fromstr = "Adult Entertainment Broadcast Network";
 							break;
 						case "ade":
 							$fromstr = "Adult DVD Empire";

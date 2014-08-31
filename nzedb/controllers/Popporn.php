@@ -69,15 +69,15 @@ class Popporn
 
 	/**
 	 * Add this to popurl to get results
-	 * @var string null
+	 * @var string
 	 */
-	protected $_trailUrl = null;
+	protected $_trailUrl = "";
 
 	public function __construct()
 	{
 		$this->_html = new \simple_html_dom();
 		if (isset($this->cookie)) {
-			@$this->getPopUrl();
+			$this->getPopUrl();
 		}
 	}
 
@@ -300,12 +300,21 @@ class Popporn
 		if ($this->getPopUrl() === false) {
 			return false;
 		} else {
-			$this->_html->load($this->_response);
 			if ($ret = $this->_html->find('h2[class=title]', 0)) {
 				$title = trim($ret->innertext);
 			} else {
+				if($ret = $this->_html->find('div.product-info, div.title', 1)){
+				$title = trim($ret->plaintext);
+				if($ret = $ret->find('a',0)){
+					$this->_trailUrl = trim($ret->href);
+					@$this->getPopUrl();
+				}
+
+				}else{
 				return false;
+				}
 			}
+
 			if($ret = $this->_html->find('#link-to-this',0)){
 			$ret = trim($ret->href);
 			$this->_directUrl = $ret;
@@ -371,8 +380,8 @@ class Popporn
 	 */
 	private function getPopUrl($usepost = false)
 	{
-		if (isset($this->trailUrl)) {
-			$ch = curl_init(self::POPURL . $this->trailUrl);
+		if (isset($this->_trailUrl)) {
+			$ch = curl_init(self::POPURL . $this->_trailUrl);
 		} else {
 			$ch = curl_init(self::IF18);
 		}
@@ -398,6 +407,7 @@ class Popporn
 			return false;
 		}
 		curl_close($ch);
+		$this->_html->load($this->_response);
 		return true;
 	}
 }
