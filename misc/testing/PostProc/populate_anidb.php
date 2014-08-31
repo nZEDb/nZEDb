@@ -2,7 +2,6 @@
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
 use nzedb\db\Settings;
-use nzedb\db\populate\PopulateAniDB;
 
 $pdo = new Settings();
 
