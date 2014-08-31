@@ -738,6 +738,5 @@ class XXX
 				return ($ret);
 			}
 		}
-
 	}
 }
