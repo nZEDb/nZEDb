@@ -551,6 +551,9 @@ class XXX
 				$idcheck = -2;
 
 				// Try to get a name.
+				if ($this->debug && $this->echooutput) {
+					$this->pdo->log->doEcho("DB name: " . $arr['searchname'], true);
+				}
 				if ($this->parseXXXSearchName($arr['searchname']) !== false) {
 
 					$this->currentRelID = $arr['id'];
@@ -582,12 +585,7 @@ class XXX
 	protected function parseXXXSearchName($releaseName)
 	{
 			$name = '';
-			$followingList = '[^\w]((2160|1080|480|720)(p|i)|AC3D|Directors([^\w]CUT)?|DD5\.1|(DVD|BD|BR)(Rip)?|BluRay|divx|HDTV|iNTERNAL|LiMiTED|(Real\.)?Proper|RE(pack|Rip)|Sub\.?(fix|pack)|Unrated|WEB-DL|(x|H)[-._ ]?264|xvid|[Dd][Ii][Ss][Cc](\d+|\s*\d+|\.\d+)|XXX|BTS|DirFix|Trailer|WEBRiP|NFO|BONUS|(19|20)\d\d)[^\w]';
-
-			/* Initial scan of getting a name.
-			 * [\w. -]+ Gets 0-9a-z. - characters, most scene movie titles contain these chars.
-			 * ie: [61420]-[FULL]-[a.b.foreignEFNet]-[ Coraline.2009.DUTCH.INTERNAL.1080p.BluRay.x264-VeDeTT ]-[21/85] - "vedett-coralien-1080p.r04" yEnc
-			 */
+			$followingList = '[^\w]((2160|1080|480|720)(p|i)|AC3D|Directors([^\w]CUT)?|DD5\.1|(DVD|BD|BR)(Rip)?|BluRay|divx|HDTV|iNTERNAL|LiMiTED|(Real\.)?Proper|RE(pack|Rip)|Sub\.?(fix|pack)|Unrated|WEB-DL|(x|H)[-._ ]?264|xvid|[Dd][Ii][Ss][Cc](\d+|\s*\d+|\.\d+)|XXX|BTS|DirFix|Trailer|WEBRiP|NFO|(19|20)\d\d)[^\w]';
 
 			if (preg_match('/([^\w]{2,})?(?P<name>[\w .-]+?)' . $followingList . '/i', $releaseName, $matches)) {
 				$name = $matches['name'];
@@ -596,20 +594,16 @@ class XXX
 			// Check if we got something.
 			if ($name !== '') {
 
-				// Replace any foreign words
-				$name = preg_replace('/(brazilian|chinese|croatian|danish|deutsch|dutch|english|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|latin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish)/i', ' ', $name);
 				// If we still have any of the words in $followingList, remove them.
 				$name = preg_replace('/' . $followingList . '/i', ' ', $name);
 				// Remove periods, underscored, anything between parenthesis.
-				$name = preg_replace('/\(.*?\)|[._]/i', ' ', $name);
+				$name = preg_replace('/\(.*?\)|[-._]/i', ' ', $name);
 				// Finally remove multiple spaces and trim leading spaces.
 				$name = trim(preg_replace('/\s{2,}/', ' ', $name));
 
+
 				// Check if the name is long enough and not just numbers and not file (d) of (d) and does not contain Episodes and any dated 00.00.00 which are site rips..
-				if (strlen($name) > 5 && !preg_match('/^\d+$/', $name) && !preg_match('/(- File \d+ of \d+|\d+.\d+.\d+)/',$name) && !preg_match('/(E\d+)/',$name) && !preg_match('/\d\d\.\d\d.\d\d/', $name)) {
-					if ($this->debug && $this->echooutput) {
-						$this->pdo->log->doEcho("DB name: {$releaseName}", true);
-					}
+				if (strlen($name) > 5 && !preg_match('/^\d+$/', $name) && !preg_match('/( File \d+ of \d+|\d+.\d+.\d+)/',$name) && !preg_match('/(E\d+)/',$name) && !preg_match('/\d\d\.\d\d.\d\d/', $name)) {
 					$this->currentTitle = $name;
 					return true;
 				} else {

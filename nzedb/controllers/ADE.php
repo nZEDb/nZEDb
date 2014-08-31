@@ -315,6 +315,8 @@ class ADE
 			$this->_html->load($this->_response);
 			if ($ret = $this->_html->find("a.boxcover", 0)){
 					$title = $ret->title;
+					$title = preg_replace('/XXX/', '', $title);
+					$title = preg_replace('/\(.*?\)|[-._]/i', ' ', $title);
 					$ret = (string)trim($ret->href);
 					similar_text($this->searchTerm, $title, $p);
 					if ($p >= 90) {

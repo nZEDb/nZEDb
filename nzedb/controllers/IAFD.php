@@ -108,7 +108,11 @@ class IAFD {
 				unset($ret);
 				if(isset($secondtitle) OR isset($firsttitle)){
 					$firsttitle = preg_replace('/\(([0-9]+)\)/',"",$firsttitle);
+					$firsttitle = preg_replace('/XXX/', '', $firsttitle);
+					$firsttitle = preg_replace('/\(.*?\)|[-._]/i', ' ', $firsttitle);
 					$secondtitle = preg_replace('/\(([0-9]+)\)/', "", $secondtitle);
+					$secondtitle = preg_replace('/XXX/', '', $secondtitle);
+					$secondtitle = preg_replace('/\(.*?\)|[-._]/i', ' ', $secondtitle);
 					similar_text($this->searchTerm, trim($firsttitle), $p);
 					if ($p >= 90) {
 						$this->title = trim($firsttitle);

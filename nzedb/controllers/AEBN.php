@@ -140,7 +140,7 @@ class AEBN
 	/**
 	 * Gets the front and back cover of the box
 	 *
-	 * @return array|bool
+	 * @return array
 	 */
 	public function covers()
 	{
@@ -156,7 +156,7 @@ class AEBN
 	/**
 	 * Gets the Genres "Categories".
 	 *
-	 * @return array|bool
+	 * @return array
 	 */
 	public function genres()
 	{
@@ -172,7 +172,7 @@ class AEBN
 	/**
 	 * Gets the Cast Members "Stars" and Director if any
 	 *
-	 * @return array|bool
+	 * @return array
 	 */
 	public function cast()
 	{
@@ -196,7 +196,7 @@ class AEBN
 	/**
 	 * Gets the product information
 	 *
-	 * @return array|bool
+	 * @return array
 	 */
 	public function productInfo()
 	{
@@ -225,7 +225,7 @@ class AEBN
 	/**
 	 * Gets the sypnosis "plot"
 	 *
-	 * @return array|bool
+	 * @return array
 	 *
 	 */
 	public function sypnosis()
@@ -262,9 +262,13 @@ class AEBN
 				$i = 1;
 
 				foreach ($this->_html->find("div.movie") as $movie) {
+					$title = "";
 					$string = "a#FTSMovieSearch_link_title_detail_" . $i;
 					if ($ret = $movie->find($string, 0)) {
-						similar_text($this->searchTerm, trim($ret->title), $p);
+						$title = trim($ret->title);
+						$title = preg_replace('/XXX/', '', $title);
+						$title = preg_replace('/\(.*?\)|[-._]/i', ' ', $title);
+						similar_text($this->searchTerm, $title, $p);
 						if ($p >= 90) {
 							$this->_title = trim($ret->title);
 							$this->_trailUrl = $ret->href;

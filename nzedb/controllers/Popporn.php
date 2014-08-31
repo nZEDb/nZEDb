@@ -302,9 +302,12 @@ class Popporn
 		} else {
 			if ($ret = $this->_html->find('h2[class=title]', 0)) {
 				$title = trim($ret->innertext);
+				$title = preg_replace('/XXX/','',$title);
 			} else {
 				if($ret = $this->_html->find('div.product-info, div.title', 1)){
 				$title = trim($ret->plaintext);
+				$title = preg_replace('/XXX/', '', $title);
+				$title = preg_replace('/\(.*?\)|[-._]/i', ' ', $title);
 				if($ret = $ret->find('a',0)){
 					$this->_trailUrl = trim($ret->href);
 					@$this->getPopUrl();
