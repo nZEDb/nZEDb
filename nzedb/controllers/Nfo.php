@@ -388,7 +388,10 @@ class Nfo
 		// Remove nfo that we cant fetch after 5 attempts.
 		$releases = $this->pdo->queryDirect(
 			sprintf(
-				'SELECT id FROM releases WHERE nzbstatus = %d AND nfostatus < %d %s %s',
+				'SELECT r.id
+				FROM releases r
+				WHERE r.nzbstatus = %d
+				AND r.nfostatus < %d %s %s',
 				NZB::NZB_ADDED,
 				$this->maxRetries,
 				$groupIDQuery,
