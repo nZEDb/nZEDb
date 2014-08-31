@@ -3,6 +3,7 @@
 namespace nzedb\processing\post;
 
 use nzedb\db\Settings;
+use nzedb\db\populate\AniDB;
 
 class AniDB
 {
