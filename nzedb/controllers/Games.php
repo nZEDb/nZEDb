@@ -415,7 +415,7 @@ class Games
 					} else {
 						$con['esrb'] = (string)$this->_gameResults['original_game_rating']['name'];
 					}
-					$con['releasedate'] = $this->pdo->escapeString((string)$this->_gameResults['original_release_date']);
+					$con['releasedate'] = (string)$this->_gameResults['original_release_date'];
 
 					if (isset($this->_gameResults['description'])) {
 						$con['review'] = trim(strip_tags((string)$this->_gameResults['description']));

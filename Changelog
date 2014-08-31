@@ -5,6 +5,7 @@ New updates are grouped by person, at the top of the file.
 
 2014-08-31 bart39
 	* Fix: Merge Tasky's PR #1478 - Best to run misc/testing/DB/reset_processing.php xxx true truncate to get full effect of true matches.
+	* Fix: Double escaping on Games release date / Scrutinizer fix.
 2014-08-27 bart39
 	* Fix: Only save console/games cover if cover is found.
 2014-08-27 ruhllatio
