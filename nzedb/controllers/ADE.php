@@ -40,9 +40,8 @@ class ADE
 	/**
 	 * If a url is found that matches the keyword
 	 *
-	 * @var string
 	 */
-	protected $_urlFound = "";
+	protected $_urlFound;
 
 	/**
 	 * Sets the title in the getAll method
@@ -347,14 +346,14 @@ class ADE
 	 *
 	 * @return bool - true if page has content
 	 */
-	private function getUrl($trailing = null)
+	private function getUrl($trailing = "")
 	{
-		if (isset($trailing)) {
+		if (!empty($trailing)) {
 			$this->_ch = curl_init(self::ADE . $trailing);
 		}
-		if (isset($this->directlink)) {
-			$this->_ch = curl_init($this->directlink);
-			$this->directlink = null;
+		if (!empty($this->directLink)) {
+			$this->_ch = curl_init($this->directLink);
+			$this->directLink = "";
 		}
 		curl_setopt($this->_ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($this->_ch, CURLOPT_HEADER, 0);
