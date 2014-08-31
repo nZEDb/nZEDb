@@ -122,11 +122,8 @@ class AEBN
 	public function trailers()
 	{
 		if ($ret = $this->_html->find("a[itemprop=trailer]", 0)) {
-			preg_match('/movieId=(?<movieid>\d+)&/', trim($ret->href), $matches);
+			if(preg_match('/movieId=(?<movieid>\d+)&/', trim($ret->href), $matches)){
 			$movieid = $matches['movieid'];
-			$this->_trailUrl = self::TRAILERURL . $movieid;
-			$this->getUrl(false, $this->_currentSite);
-			if(preg_match('/src\:\s\'(?<trailerlink>.*)\',/', $this->_response, $matches)){
 			$this->_res['trailers']['url'] = $this->_whichSite[$this->_currentSite] . self::TRAILERURL . $movieid;;
 			}
 		}
