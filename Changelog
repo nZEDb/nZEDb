@@ -3,6 +3,9 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
+2014-08-31 ruhllatio
+	* Fix: NFO Proc Deletion SELECT not using guidChar/GroupID when threaded
+	* Fix: Forgot table referencing in above fix
 2014-08-31 bart39
 	* Fix: Merge Tasky's PR #1478 - Best to run misc/testing/DB/reset_postprocessing.php xxx true truncate to get full effect of true matches.
 	* Fix: Double escaping on Games release date / Scrutinizer fix.
