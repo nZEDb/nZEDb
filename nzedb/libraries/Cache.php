@@ -184,7 +184,7 @@ Class Cache
 
 			case self::TYPE_REDIS:
 				if (!extension_loaded('redis')) {
-					throw new \CacheException('The redis extension is not loaded!');
+					throw new CacheException('The redis extension is not loaded!');
 				}
 				$this->server = new \Redis();
 				$this->isRedis = true;
