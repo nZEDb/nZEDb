@@ -144,7 +144,7 @@ class Movie
 		];
 		$options += $defaults;
 
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new \Settings());
+		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 		$this->releaseImage = ($options['ReleaseImage'] instanceof \ReleaseImage ? $options['ReleaseImage'] : new \ReleaseImage($this->pdo));
 
 		$this->imdbLanguage = ($this->pdo->getSetting('imdblanguage') != '') ? (string)$this->pdo->getSetting('imdblanguage') : 'en';
@@ -1128,7 +1128,7 @@ class Movie
 	 */
 	protected function googleSearch()
 	{
-		$buffer = nzedb\utility\getUrl(
+		$buffer = \nzedb\utility\getUrl(
 			'https://www.google.com/search?hl=en&as_q=&as_epq=' .
 			urlencode(
 				$this->currentTitle .
@@ -1162,7 +1162,7 @@ class Movie
 	 */
 	protected function bingSearch()
 	{
-		$buffer = nzedb\utility\getUrl(
+		$buffer = \nzedb\utility\getUrl(
 			"http://www.bing.com/search?q=" .
 			urlencode(
 				'("' .
@@ -1191,7 +1191,7 @@ class Movie
 	 */
 	protected function yahooSearch()
 	{
-		$buffer = nzedb\utility\getUrl(
+		$buffer = \nzedb\utility\getUrl(
 			"http://search.yahoo.com/search?n=10&ei=UTF-8&va_vt=title&vo_vt=any&ve_vt=any&vp_vt=any&vf=all&vm=p&fl=0&fr=fp-top&p=intitle:" .
 			urlencode(
 				'intitle:' .
