@@ -124,14 +124,14 @@ class GiantBomb
 		// Send the request & save response to $resp
 		$resp["data"] = curl_exec($this->ch);
 		if (curl_errno($this->ch)) {
-			throw new GiantBombException('API call failed: ' . curl_error($this->ch));
+			throw new \GiantBombException('API call failed: ' . curl_error($this->ch));
 		}
 
 		// save http response code
 		$resp["httpCode"] = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
 
 		if (!$resp || !$resp["data"]) {
-			throw new GiantBombException("Couldn't get information from API");
+			throw new \GiantBombException("Couldn't get information from API");
 		}
 
 		return $resp;
@@ -171,7 +171,7 @@ class GiantBomb
 
 		// No game with given game id found
 		if ($resp["httpCode"] == 404) {
-			throw new GiantBombException('Couldn\'t find ' . $type . ' with game id "' . $id . '"');
+			throw new \GiantBombException('Couldn\'t find ' . $type . ' with game id "' . $id . '"');
 		}
 
 		return $this->parse_result($resp["data"]);
@@ -391,11 +391,11 @@ class GiantBomb
 				$result = @simplexml_load_string($data);
 			}
 		} catch (Exception $e) {
-			throw new GiantBombException("Parse error occoured", null, $e);
+			throw new \GiantBombException("Parse error occoured", null, $e);
 		}
 
 		if (empty($result) || !empty($result->error) && strtoupper($result->error) != "OK") {
-			throw new GiantBombException("Following error encountered: " . $result->error);
+			throw new \GiantBombException("Following error encountered: " . $result->error);
 		}
 
 		return $result;

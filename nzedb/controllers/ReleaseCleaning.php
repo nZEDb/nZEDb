@@ -412,6 +412,9 @@ class ReleaseCleaning
 		} //Overman King Gainer [Dual audio, EngSub] Exiled Destiny - [002/149] - "Overman King Gainer.part001.rar" yEnc
 		if (preg_match('/^(.+? \[Dual [aA]udio, EngSub\] .+?) - \[\d+\/\d+\] - ".+?" yEnc$/', $this->subject, $match)) {
 			return $match[1];
+		} //[ TOWN ]-[ www.town.ag ]-[ partner of www.ssl-news.info ]-[ ANIME ] [3/5] - "[HorribleSubs] Ai-Mai-Mi - Mousou Catastrophie - 04 [480p].part2.rar" - 26,44 MB yEnc
+		if (preg_match('/^.+?-\[\s*ANIME\s*\] \[\d+\/\d+\] - "(.*)" - \d+[,.]\d+ [mMkKgG][bB][\s]*yEnc$/', $this->subject, $match)) {
+			return $match[2];
 		}
 		return array("cleansubject" => $this->releaseCleanerHelper($this->subject), "properlynamed" => false);
 	}
@@ -2994,6 +2997,11 @@ class ReleaseCleaning
 	{
 		//High School DxD New 01 (480p|.avi|xvid|mp3) ~bY Hatsuyuki [01/18] - "[Hatsuyuki]_High_School_DxD_New_01_[848x480][76B2BB8C].avi.001" yEnc
 		if (preg_match('/.+? \((360|480|720|1080)p\|.+? ~bY .+? \[\d+\/\d+\] - "(.+?\[[A-F0-9]+\].+?)' . $this->e1, $this->subject, $match)) {
+			return $match[2];
+		}
+
+		//[Hatsuyuki]_Seirei_Tsukai_no_Blade_Dance_-_03_[720p] [E18FCA59] [01/18]
+		if (preg_match('/(\[[a-z0-9-]+\][\w_-]+_\d+_\[\d{3,4}[ip]\]\s\[[A-F0-9]{8}\])\s\[\d+\/\d+\]/i', $this->subject, $match)) {
 			return $match[2];
 		}
 		return array("cleansubject" => $this->releaseCleanerHelper($this->subject), "properlynamed" => false);

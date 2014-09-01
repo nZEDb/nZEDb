@@ -347,20 +347,20 @@ class AmazonProductAPI
 			// Echo the message.
 			echo $response->Error->Message . "\n";
 			$this->resetVars();
-			throw new Exception($response->Error->Message);
+			throw new \Exception($response->Error->Message);
 		} else if ($response === False) {
 			$this->resetVars();
-			throw new Exception("Could not connect to Amazon.");
+			throw new \Exception("Could not connect to Amazon.");
 		} else if ($response == "missingkey") {
 			$this->resetVars();
-			throw new Exception("Missing Amazon API key or associate tag.");
+			throw new \Exception("Missing Amazon API key or associate tag.");
 		} else {
 			if (isset($response->Items->Item->ItemAttributes->Title)) {
 				$this->resetVars();
 				return ($response);
 			} else {
 				$this->resetVars();
-				throw new Exception("Invalid xml response.");
+				throw new \Exception("Invalid xml response.");
 			}
 		}
 	}

@@ -2,7 +2,7 @@
 
 require_once dirname(__FILE__) . '/../www/config.php';
 
-$output = new ColorCLI();
+$output = new \ColorCLI();
 echo $output->primary("Checking for files in the renamed directories.");
 $status = 0;
 
@@ -76,7 +76,7 @@ foreach ($dirs as $dir) {
 		if (file_exists($pathOld)) {
 			$pathNew = nZEDb_ROOT . $dir['newpath'];
 			echo $output->info("Moving contents of '$pathOld' to '$pathNew'");
-			$dirIt = new DirectoryIterator($pathOld);
+			$dirIt = new \DirectoryIterator($pathOld);
 			foreach ($dirIt as $item) {
 				if ($item->isDot()) {
 					continue;

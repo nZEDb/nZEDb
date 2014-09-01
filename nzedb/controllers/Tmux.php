@@ -84,7 +84,7 @@ class Tmux
 				}
 			}
 			if ($constants['alternate_nntp']) {
-				$filename = $runVar['paths']['misc'] . "update/python/lib/nntpproxy_a.conf";
+				$filename = nZEDb_MISC . "update/python/lib/nntpproxy_a.conf";
 				$fp = fopen($filename, "r") or die("Couldn't open $filename");
 				while (!feof($fp)) {
 					$line = fgets($fp);
@@ -405,7 +405,7 @@ class Tmux
 						WHERE nzbstatus = 1
 						AND isrequestid = 1 AND preid = 0 AND reqidstatus = -3 AND adddate > NOW() - INTERVAL %s HOUR
 					) AS requestid_inprogress,
-					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND isrequestid = 1 AND reqidstatus = 1) AS requestid_matched,
+					(SELECT COUNT(*) FROM releases WHERE preid > 0 AND nzbstatus = 1 AND isrequestid = 1 AND reqidstatus = 1) AS requestid_matched,
 					(SELECT COUNT(*) FROM releases WHERE preid > 0 AND searchname IS NOT NULL) AS predb_matched,
 					(SELECT COUNT(DISTINCT(preid)) FROM releases WHERE preid > 0 AND searchname IS NOT NULL) AS distinct_predb_matched", $request_hours);
 			case 4:
@@ -426,10 +426,10 @@ class Tmux
 				);
 			case 6:
 				return "SELECT
-					(SELECT searchname FROM releases ORDER BY adddate DESC LIMIT 1) AS newestrelname,
+					(SELECT searchname FROM releases ORDER BY id DESC LIMIT 1) AS newestrelname,
 					(SELECT UNIX_TIMESTAMP(MIN(dateadded)) FROM collections) AS oldestcollection,
 					(SELECT UNIX_TIMESTAMP(MAX(predate)) FROM predb) AS newestpre,
-					(SELECT UNIX_TIMESTAMP(MAX(adddate)) FROM releases) AS newestrelease";
+					(SELECT UNIX_TIMESTAMP(adddate) FROM releases ORDER BY id DESC LIMIT 1) AS newestrelease";
 			default:
 				return false;
 		}

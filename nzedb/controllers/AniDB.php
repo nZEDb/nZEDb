@@ -266,14 +266,14 @@ class AniDB
 	function processAnAnimeRelease($results)
 	{
 		$pdo = $this->pdo;
-		$ri = new ReleaseImage($this->pdo);
+		$ri = new \ReleaseImage($this->pdo);
 
 		if (count($results) > 0) {
 			if ($this->echooutput) {
 				$this->pdo->log->doEcho('Processing ' . count($results) . " anime releases.", true);
 			}
 
-			$sphinx = new SphinxSearch();
+			$sphinx = new \SphinxSearch();
 			foreach ($results as $arr) {
 
 				// clean up the release name to ensure we get a good chance at getting a valid filename
