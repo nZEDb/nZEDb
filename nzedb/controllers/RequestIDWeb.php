@@ -108,7 +108,7 @@ class RequestIDWeb extends RequestID
 		// Array to store results.
 		$requestArray = array();
 
-		if ($this->_releases instanceof Traversable) {
+		if ($this->_releases instanceof \Traversable) {
 			// Loop all the results.
 			foreach($this->_releases as $release) {
 
@@ -297,7 +297,7 @@ class RequestIDWeb extends RequestID
 		$this->sphinx->updateReleaseSearchName($this->_release['id'], $newTitle);
 
 		if ($this->echoOutput) {
-			NameFixer::echoChangedReleaseName(array(
+			\NameFixer::echoChangedReleaseName(array(
 					'new_name' => $this->_newTitle['title'],
 					'old_name' => $this->_release['searchname'],
 					'new_category' => $this->category->getNameByID($determinedCategory),

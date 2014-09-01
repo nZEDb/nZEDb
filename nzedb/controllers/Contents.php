@@ -166,7 +166,7 @@ class Contents
 
 	public function row2Object($row, $prefix = "")
 	{
-		$obj = new Content();
+		$obj = new \Content();
 		if (isset($row[$prefix . "id"])) {
 			$obj->id = $row[$prefix . "id"];
 		}
@@ -218,7 +218,7 @@ class Contents
 
 	public function data_getByID($id, $role)
 	{
-		if ($role == Users::ROLE_ADMIN) {
+		if ($role == \Users::ROLE_ADMIN) {
 			$role = "";
 		} else {
 			$role = sprintf("AND (role = %d OR role = 0)", $role);
@@ -229,17 +229,17 @@ class Contents
 
 	public function data_getFrontPage()
 	{
-		return $this->pdo->query(sprintf("SELECT * FROM content WHERE status = 1 AND contenttype = %d ORDER BY ordinal ASC, COALESCE(ordinal, 1000000), id", Contents::TYPEINDEX));
+		return $this->pdo->query(sprintf("SELECT * FROM content WHERE status = 1 AND contenttype = %d ORDER BY ordinal ASC, COALESCE(ordinal, 1000000), id", \Contents::TYPEINDEX));
 	}
 
 	public function data_getIndex()
 	{
-		return $this->pdo->queryOneRow(sprintf("SELECT * FROM content WHERE status = 1 AND contenttype = %d", Contents::TYPEINDEX));
+		return $this->pdo->queryOneRow(sprintf("SELECT * FROM content WHERE status = 1 AND contenttype = %d", \Contents::TYPEINDEX));
 	}
 
 	public function data_getForMenuByTypeAndRole($id, $role)
 	{
-		if ($role == Users::ROLE_ADMIN) {
+		if ($role == \Users::ROLE_ADMIN) {
 			$role = "";
 		} else {
 			$role = sprintf("AND (role = %d OR role = 0)", $role);

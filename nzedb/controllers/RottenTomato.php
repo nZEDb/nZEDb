@@ -208,7 +208,7 @@ class RottenTomato
 	{
 		return trim(
 			nzedb\utility\getUrl(
-				RottenTomato::API_URL .
+				\RottenTomato::API_URL .
 				$function .
 				'?limit=' .
 				mt_rand(15, 20) .

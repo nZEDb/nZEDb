@@ -52,11 +52,11 @@ class Releases
 		$options += $defaults;
 
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
-		$this->groups = ($options['Groups'] instanceof Groups ? $options['Groups'] : new Groups(['Settings' => $this->pdo]));
+		$this->groups = ($options['Groups'] instanceof \Groups ? $options['Groups'] : new \Groups(['Settings' => $this->pdo]));
 		$this->updategrabs = ($this->pdo->getSetting('grabstatus') == '0' ? false : true);
 		$this->passwordStatus = ($this->pdo->getSetting('checkpasswordedrar') == 1 ? -1 : 0);
-		$this->sphinxSearch = new SphinxSearch();
-		$this->releaseSearch = new ReleaseSearch($this->pdo, $this->sphinxSearch);
+		$this->sphinxSearch = new \SphinxSearch();
+		$this->releaseSearch = new \ReleaseSearch($this->pdo, $this->sphinxSearch);
 	}
 
 	/**
@@ -228,16 +228,16 @@ class Releases
 			FROM settings
 			WHERE setting = 'showpasswordedrelease'"
 		);
-		$passwordStatus = ('= ' . Releases::PASSWD_NONE);
+		$passwordStatus = ('= ' . \Releases::PASSWD_NONE);
 		if ($setting === false) {
 			return $passwordStatus;
 		}
 
 		switch ($setting['value']) {
 			case 1:
-				return ('<= ' . Releases::PASSWD_POTENTIAL);
+				return ('<= ' . \Releases::PASSWD_POTENTIAL);
 			case 10:
-				return ('<= ' . Releases::PASSWD_RAR);
+				return ('<= ' . \Releases::PASSWD_RAR);
 			case 0:
 			default:
 				return $passwordStatus;
@@ -428,7 +428,7 @@ class Releases
 				$cartSearch = sprintf(' INNER JOIN usercart ON usercart.user_id = %d AND usercart.releaseid = r.id ', $userID);
 			} else if ($cat[0] != -1) {
 				$catSearch = ' AND (';
-				$Category = new Category(['Settings' => $this->pdo]);
+				$Category = new \Category(['Settings' => $this->pdo]);
 				foreach ($cat as $category) {
 					if ($category != -1) {
 						if ($Category->isParent($category)) {
@@ -646,8 +646,8 @@ class Releases
 			$list = [$list];
 		}
 
-		$nzb = new NZB($this->pdo);
-		$releaseImage = new ReleaseImage($this->pdo);
+		$nzb = new \NZB($this->pdo);
+		$releaseImage = new \ReleaseImage($this->pdo);
 
 		foreach ($list as $identifier) {
 			if ($isGUID) {
@@ -844,7 +844,7 @@ class Releases
 	{
 		$sql = '';
 		if (count($categories) > 0 && $categories[0] != -1) {
-			$Category = new Category(['Settings' => $this->pdo]);
+			$Category = new \Category(['Settings' => $this->pdo]);
 			$sql = ' AND (';
 			foreach ($categories as $category) {
 				if ($category != -1) {
@@ -1126,7 +1126,7 @@ class Releases
 	{
 		// Get the category for the parent of this release.
 		$currRow = $this->getById($currentID);
-		$catRow = (new Category(['Settings' => $this->pdo]))->getById($currRow['categoryid']);
+		$catRow = (new \Category(['Settings' => $this->pdo]))->getById($currRow['categoryid']);
 		$parentCat = $catRow['parentid'];
 
 		$results = $this->search($this->getSimilarName($name), -1, -1, -1, [$parentCat], -1, -1, 0, 0, -1, -1, 0, $limit, '', -1, $excludedCats);
@@ -1190,8 +1190,8 @@ class Releases
 	 */
 	public function getZipped($guids)
 	{
-		$nzb = new NZB($this->pdo);
-		$zipFile = new ZipFile();
+		$nzb = new \NZB($this->pdo);
+		$zipFile = new \ZipFile();
 
 		foreach ($guids as $guid) {
 			$nzbPath = $nzb->NZBPath($guid);

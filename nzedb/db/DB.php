@@ -89,7 +89,7 @@ class DB extends \PDO
 	 */
 	public function __construct(array $options = [])
 	{
-		$this->cli = Utility::isCLI();
+		$this->cli = \Utility::isCLI();
 
 		$defaults = [
 			'checkVersion'	=> false,
@@ -124,7 +124,7 @@ class DB extends \PDO
 
 		if ($this->cacheEnabled) {
 			try {
-				$this->cacheServer = new Cache();
+				$this->cacheServer = new \Cache();
 			} catch (CacheException $error) {
 				$this->cacheEnabled = false;
 				$this->echoError($error->getMessage(), '__construct', 4);
@@ -403,7 +403,7 @@ class DB extends \PDO
 		}
 
 		if (nZEDb_QUERY_STRIP_WHITESPACE) {
-			$query = Utility::collapseWhiteSpace($query);
+			$query = \Utility::collapseWhiteSpace($query);
 		}
 
 		$i = 2;
@@ -448,7 +448,7 @@ class DB extends \PDO
 		}
 
 		if (nZEDb_QUERY_STRIP_WHITESPACE) {
-			$query = Utility::collapseWhiteSpace($query);
+			$query = \Utility::collapseWhiteSpace($query);
 		}
 
 		$i = 2;
@@ -546,7 +546,7 @@ class DB extends \PDO
 		}
 
 		if (nZEDb_QUERY_STRIP_WHITESPACE) {
-			$query = Utility::collapseWhiteSpace($query);
+			$query = \Utility::collapseWhiteSpace($query);
 		}
 
 		try {
@@ -597,7 +597,7 @@ class DB extends \PDO
 		}
 
 		if (nZEDb_QUERY_STRIP_WHITESPACE) {
-			$query = Utility::collapseWhiteSpace($query);
+			$query = \Utility::collapseWhiteSpace($query);
 		}
 
 		if ($cache === true && $this->cacheEnabled === true) {
@@ -684,7 +684,7 @@ class DB extends \PDO
 		}
 
 		if (nZEDb_QUERY_STRIP_WHITESPACE) {
-			$query = Utility::collapseWhiteSpace($query);
+			$query = \Utility::collapseWhiteSpace($query);
 		}
 
 		try {

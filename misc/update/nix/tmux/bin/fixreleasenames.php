@@ -9,7 +9,7 @@ $pdo = new Settings();
 if (!isset($argv[1])) {
 	exit($pdo->log->error("This script is not intended to be run manually, it is called from fixreleasenames_threaded.py."));
 } else if (isset($argv[1])) {
-	$namefixer = new NameFixer(['Settings' => $pdo]);
+	$namefixer = new \NameFixer(['Settings' => $pdo]);
 	$pieces = explode(' ', $argv[1]);
 	if (isset($pieces[1]) && $pieces[0] == 'nfo') {
 		$release = $pieces[1];
@@ -54,7 +54,7 @@ if (!isset($argv[1])) {
 		}
 	} else if (isset($pieces[1]) && $pieces[0] == 'par2') {
 		//echo PHP_EOL . microtime();
-		$nntp = new NNTP(['Settings' => $pdo]);
+		$nntp = new \NNTP(['Settings' => $pdo]);
 		if (($pdo->getSetting('alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
 			exit($pdo->log->error("Unable to connect to usenet."));
 		}
@@ -62,11 +62,11 @@ if (!isset($argv[1])) {
 		$relID = $pieces[1];
 		$guid = $pieces[2];
 		$groupID = $pieces[3];
-		$nzbcontents = new NZBContents(
+		$nzbcontents = new \NZBContents(
 			array(
 				'Echo' => true, 'NNTP' => $nntp, 'Settings' => $pdo,
-				'Nfo' => new Nfo(['Settings' => $pdo, 'Echo' => true]),
-				'PostProcess' => new PostProcess(['Settings' => $pdo, 'NameFixer' => $namefixer])
+				'Nfo' => new \Nfo(['Settings' => $pdo, 'Echo' => true]),
+				'PostProcess' => new \PostProcess(['Settings' => $pdo, 'NameFixer' => $namefixer])
 			)
 		);
 		//echo " " . microtime();
@@ -77,12 +77,12 @@ if (!isset($argv[1])) {
 		}
 
 	} else if (isset($pieces[1]) && $pieces[0] == 'miscsorter') {
-		$nntp = new NNTP(['Settings' => $pdo]);
+		$nntp = new \NNTP(['Settings' => $pdo]);
 		if (($pdo->getSetting('alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
 			exit($pdo->log->error("Unable to connect to usenet."));
 		}
 
-		$sorter = new MiscSorter(true);
+		$sorter = new \MiscSorter(true);
 		$relID = $pieces[1];
 		$res = $sorter->nfosorter(null, $relID, $nntp);
 		if ($res != true) {

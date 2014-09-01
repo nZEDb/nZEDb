@@ -3,7 +3,7 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 
 use nzedb\db\Settings;
 
-$cli = new ColorCLI();
+$cli = new \ColorCLI();
 
 $pdo = new Settings(['checkVersion' => true]);
 $ftinnodb = $pdo->isDbVersionAtLeast('5.6');

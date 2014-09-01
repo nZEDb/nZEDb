@@ -9,7 +9,7 @@ $pdo = new Settings();
 if (!isset($argv[1])) {
 	exit($pdo->log->error("This script is not intended to be run manually, it is called from groupfixrelnames_threaded.py."));
 } else if (isset($argv[1])) {
-	$namefixer = new NameFixer(['Settings' => $pdo]);
+	$namefixer = new \NameFixer(['Settings' => $pdo]);
 	$pieces = explode(' ', $argv[1]);
 	$guidChar = $pieces[1];
 	$maxperrun = $pieces[2];
@@ -34,7 +34,7 @@ if (!isset($argv[1])) {
 								$maxperrun
 							)
 			);
-			if ($releases instanceof Traversable) {
+			if ($releases instanceof \Traversable) {
 				foreach ($releases as $release) {
 					if (preg_match('/^=newz\[NZB\]=\w+/', $release['textstring'])) {
 						$namefixer->done = $namefixer->matched = false;
@@ -67,7 +67,7 @@ if (!isset($argv[1])) {
 								$maxperrun
 							)
 			);
-			if ($releases instanceof Traversable) {
+			if ($releases instanceof \Traversable) {
 				foreach ($releases as $release) {
 					$namefixer->done = $namefixer->matched = false;
 					if ($namefixer->checkName($release, true, 'Filenames, ', 1, 1) !== true) {
@@ -94,7 +94,7 @@ if (!isset($argv[1])) {
 								$maxperrun
 							)
 			);
-			if ($releases instanceof Traversable) {
+			if ($releases instanceof \Traversable) {
 				foreach ($releases as $release) {
 					if (preg_match('/[a-fA-F0-9]{32,40}/i', $release['name'], $matches)) {
 						$namefixer->matchPredbHash($matches[0], $release, 1, 1, true, 1);
@@ -122,17 +122,17 @@ if (!isset($argv[1])) {
 								$maxperrun
 							)
 			);
-			if ($releases instanceof Traversable) {
-				$nntp = new NNTP(['Settings' => $pdo]);
+			if ($releases instanceof \Traversable) {
+				$nntp = new \NNTP(['Settings' => $pdo]);
 				if (($pdo->getSetting('alternate_nntp') == '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
 					exit($pdo->log->error("Unable to connect to usenet."));
 				}
 
-				$Nfo = new Nfo(['Settings' => $pdo, 'Echo' => true]);
-				$nzbcontents = new NZBContents(
+				$Nfo = new \Nfo(['Settings' => $pdo, 'Echo' => true]);
+				$nzbcontents = new \NZBContents(
 					array(
 						'Echo' => true, 'NNTP' => $nntp, 'Nfo' => $Nfo, 'Settings' => $pdo,
-						'PostProcess' => new PostProcess(['Settings' => $pdo, 'Nfo' => $Nfo, 'NameFixer' => $namefixer])
+						'PostProcess' => new \PostProcess(['Settings' => $pdo, 'Nfo' => $Nfo, 'NameFixer' => $namefixer])
 					)
 				);
 				foreach ($releases as $release) {
@@ -158,8 +158,8 @@ if (!isset($argv[1])) {
 								$maxperrun
 							)
 			);
-			if ($releases instanceof Traversable) {
-				$sorter = new MiscSorter(true, $pdo);
+			if ($releases instanceof \Traversable) {
+				$sorter = new \MiscSorter(true, $pdo);
 				foreach ($releases as $release) {
 					$res = $sorter->nfosorter(null, $release['releaseid']);
 				}
@@ -180,7 +180,7 @@ if (!isset($argv[1])) {
 							$thread * $maxperrun - $maxperrun
 						)
 			);
-			if ($pres instanceof Traversable) {
+			if ($pres instanceof \Traversable) {
 				foreach ($pres as $pre) {
 					$namefixer->done = $namefixer->matched = false;
 					$ftmatched = $searched = 0;

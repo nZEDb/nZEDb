@@ -5,12 +5,12 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 use nzedb\db\Settings;
 
 $pdo = new Settings();
-$c = new ColorCLI();
-$movie = new Movie(['Echo' => true, 'Settings' => $pdo]);
+$c = new \ColorCLI();
+$movie = new \Movie(['Echo' => true, 'Settings' => $pdo]);
 
 
 $movies = $pdo->queryDirect("SELECT imdbid FROM movieinfo WHERE tmdbid IS NULL ORDER BY id ASC");
-if ($movies instanceof Traversable) {
+if ($movies instanceof \Traversable) {
 	echo $pdo->log->header("Updating movie info for " . number_format($movies->rowCount()) . " movies.");
 
 	foreach ($movies as $mov) {

@@ -33,6 +33,23 @@
 class AmazonProductAPI
 {
 	/**
+	 * Constants for product types
+	 *
+	 * @note More categories can be found here:
+	 *       http://docs.amazonwebservices.com/AWSECommerceService/latest/DG/APPNDX_SearchIndexValues.html
+	 *
+	 * @var string
+	 */
+	const BOOKS      = "Books";
+	const DIGITALMUS = "DigitalMusic";
+	const DVD        = "DVD";
+	// This can be DigitalDownloads as well.
+	const GAMES       = "VideoGames";
+	const MP3         = "MP3Downloads";
+	const MUSICTRACKS = "MusicTracks";
+	const MUSIC       = "Music";
+
+	/**
 	 * Your Amazon Access Key Id
 	 * @access private
 	 * @var string
@@ -113,23 +130,6 @@ class AmazonProductAPI
 	const sleepIncrease = 1;
 
 	/**
-	 * Constants for product types
-	 *
-	 * @note More categories can be found here:
-	 *       http://docs.amazonwebservices.com/AWSECommerceService/latest/DG/APPNDX_SearchIndexValues.html
-	 *
-	 * @var string
-	 */
-	const BOOKS = "Books";
-	const DIGITALMUS = "DigitalMusic";
-	const DVD   = "DVD";
-	// This can be DigitalDownloads as well.
-	const MP3	= "MP3Downloads";
-	const MUSICTRACKS	= "MusicTracks";
-	const MUSIC = "Music";
-	const GAMES = "VideoGames";
-
-	/**
 	 * Construct.
 	 *
 	 * @param string $pubk Amazon public key.
@@ -181,7 +181,7 @@ class AmazonProductAPI
 					array(
 						"Operation" => "ItemLookup",
 						"ItemId"        => $search,
-						"SearchIndex"   => AmazonProductAPI::BOOKS,
+						"SearchIndex"   => self::BOOKS,
 						"IdType"        => "ISBN",
 						"ResponseGroup" => "Medium"
 					);

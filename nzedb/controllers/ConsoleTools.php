@@ -26,7 +26,7 @@ class ConsoleTools
 		];
 		$options += $defaults;
 
-		$this->cli = ($options['ColorCLI'] instanceof ColorCLI ? $options['ColorCLI'] : new ColorCLI());
+		$this->cli = ($options['ColorCLI'] instanceof \ColorCLI ? $options['ColorCLI'] : new \ColorCLI());
 
 		$this->lastMessageLength = 0;
 	}

@@ -14,7 +14,7 @@ if ($argv[1] == 'file' && isset($argv[2]) && file_exists($argv[2])) {
 		$line = fgets($fp, 1024);
 		$pieces = explode('                    ', $line);
 		if (isset($pieces[0]) && isset($pieces[1])) {
-			$groups = new Groups();
+			$groups = new \Groups();
 			$group = $groups->getByNameByID($pieces[0]);
 			test_regex($pieces[1], $group, $argv);
 			echo "\n\n\n";
@@ -25,7 +25,7 @@ if ($argv[1] == 'file' && isset($argv[2]) && file_exists($argv[2])) {
 }
 
 if (isset($argv[2]) && is_numeric($argv[2]) && $argv[1] != 'file') {
-	$groups = new Groups();
+	$groups = new \Groups();
 	$group = $groups->getByNameByID($argv[2]);
 	test_regex($argv[1], $group, $argv);
 } else if ($argv[1] != 'file') {
@@ -35,7 +35,7 @@ if (isset($argv[2]) && is_numeric($argv[2]) && $argv[1] != 'file') {
 function print_str($type, $str, $argv)
 {
 	if ($argv[1] != 'file') {
-		$cli = new ColorCLI();
+		$cli = new \ColorCLI();
 		if ($type == "primary") {
 			echo $cli->primary($str);
 		} else if ($type == "alternate") {
