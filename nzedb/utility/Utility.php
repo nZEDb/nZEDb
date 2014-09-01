@@ -297,6 +297,34 @@ class Utility
 		// so set both tls and ssl context in case the server does not support tls.
 		return ['tls' => $options, 'ssl' => $options];
 	}
+
+	/**
+	 * Set curl context options for verifying SSL certificates.
+	 *
+	 * @param bool $verify false = Ignore config.php and do not verify the openssl cert.
+	 *                     true  = Check config.php and verify based on those settings.
+	 *                     If you know the certificate will be self-signed, pass false.
+	 *
+	 * @return array
+	 */
+	static public function curlSslContextOptions($verify = false)
+	{
+		$options = [];
+		if ($verify && nZEDb_SSL_VERIFY_HOST) {
+			$options += [
+				CURLOPT_CAINFO         => nZEDb_SSL_CAFILE,
+				CURLOPT_CAPATH         => nZEDb_SSL_CAPATH,
+				CURLOPT_SSL_VERIFYPEER => (bool)nZEDb_SSL_VERIFY_PEER,
+				CURLOPT_SSL_VERIFYHOST => (nZEDb_SSL_VERIFY_HOST ? 2 : 0),
+			];
+		} else {
+			$options += [
+				CURLOPT_SSL_VERIFYPEER => false,
+				CURLOPT_SSL_VERIFYHOST => 0,
+			];
+		}
+		return $options;
+	}
 }
 
 /**
@@ -777,19 +805,7 @@ function getUrl ($url, $method = 'get', $postdata = '', $language = "", $debug =
 		CURLOPT_TIMEOUT        => 15
 	];
 
-	if ($verifyCert && nZEDb_SSL_VERIFY_HOST) {
-		$options += [
-			CURLOPT_CAINFO => nZEDb_SSL_CAFILE,
-			CURLOPT_CAPATH => nZEDb_SSL_CAPATH,
-			CURLOPT_SSL_VERIFYPEER => (bool)nZEDb_SSL_VERIFY_PEER,
-			CURLOPT_SSL_VERIFYHOST => (nZEDb_SSL_VERIFY_HOST ? 2 : 0),
-		];
-	} else {
-		$options += [
-			CURLOPT_SSL_VERIFYPEER => false,
-			CURLOPT_SSL_VERIFYHOST => 0,
-		];
-	}
+	$options += Utility::curlSslContextOptions($verifyCert);
 
 	if ($userAgent !== '') {
 		$options += [CURLOPT_USERAGENT => $userAgent];
