@@ -279,7 +279,7 @@ class Utility
 	 * @static
 	 * @access public
 	 */
-	static public function stream_ssl_context_options()
+	static public function streamSslContextOptions()
 	{
 		$options = [
 			'verify_peer'       => (bool)nZEDb_SSL_VERIFY_PEER,
