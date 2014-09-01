@@ -124,7 +124,7 @@ class Settings extends DB
 				'name' 			=> 'coverspath',
 				'setting' 		=> 'coverspath',
 			]);
-		\Utility::setCoversConstant($path);
+		Utility::setCoversConstant($path);
 	}
 
 	/**
