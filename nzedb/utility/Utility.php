@@ -306,8 +306,10 @@ class Utility
 	 *                     If you know the certificate will be self-signed, pass false.
 	 *
 	 * @return array
+	 * @static
+	 * @access public
 	 */
-	static public function curlSslContextOptions($verify = false)
+	static public function curlSslContextOptions($verify = true)
 	{
 		$options = [];
 		if ($verify && nZEDb_SSL_VERIFY_HOST) {
