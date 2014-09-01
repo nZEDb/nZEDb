@@ -281,7 +281,7 @@ class Settings extends DB
 	{
 		ksort($fields);
 		// Validate settings
-		$fields['nzbpath'] = \Utility::trailingSlash($fields['nzbpath']);
+		$fields['nzbpath'] = Utility::trailingSlash($fields['nzbpath']);
 		$error             = null;
 		switch (true) {
 			case ($fields['mediainfopath'] != "" && !is_file($fields['mediainfopath'])):
