@@ -4,6 +4,9 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
+2014-09-01 niel
+	* New: Merged and tagged v0.3.13 to master branch.
+	NOTE: This is the last version of to target PHP 5.4 which has reached its EOL.
 2014-08-25 niel
 	* New: Merged and tagged v0.3.13 to master branch.
 	* Fix: Attempt to detect remote MySQL server during install and use LOCAL for table loading if so.
