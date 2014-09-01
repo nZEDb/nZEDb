@@ -327,6 +327,101 @@ class Utility
 		}
 		return $options;
 	}
+
+	/**
+	 * Use cURL To download a web page into a string.
+	 *
+	 * @param array $options See details below.
+	 *
+	 * @return bool|mixed
+	 * @access public
+	 * @static
+	 */
+	public static function getUrl($options = [])
+	{
+		$defaults = [
+			'url'        => '',    // The URL to download.
+			'method'     => 'get', // Http method, get/post/etc..
+			'postdata'   => '',    // Data to send on post method.
+			'language'   => '',    // Language in header string.
+			'debug'      => false, // Show curl debug information.
+			'useragent'  => '',    // User agent string.
+			'cookie'     => '',    // Cookie string.
+			'verifycert' => true,  /* Verify certificate authenticity?
+									  Since curl does not have a verify self signed certs option,
+									  you should use this instead if your cert is self signed. */
+		];
+
+		$options += $defaults;
+
+		if (!$options['url']) {
+			return false;
+		}
+
+		switch ($options['language']) {
+			case 'fr':
+			case 'fr-fr':
+				$language = "fr-fr";
+				break;
+			case 'de':
+			case 'de-de':
+				$language = "de-de";
+				break;
+			case 'en-us':
+				$language = "en-us";
+				break;
+			case 'en-gb':
+				$language = "en-gb";
+				break;
+			case '':
+			case 'en':
+			default:
+				$language = 'en';
+		}
+		$header[] = "Accept-Language: " . $language;
+
+		$ch = curl_init();
+
+		$context = [
+			CURLOPT_URL            => $options['url'],
+			CURLOPT_HTTPHEADER     => $header,
+			CURLOPT_RETURNTRANSFER => 1,
+			CURLOPT_FOLLOWLOCATION => 1,
+			CURLOPT_TIMEOUT        => 15
+		];
+		$context += self::curlSslContextOptions($options['verifycert']);
+		if ($options['useragent'] !== '') {
+			$context += [CURLOPT_USERAGENT => $options['useragent']];
+		}
+		if ($options['cookie'] !== '') {
+			$context += [CURLOPT_COOKIE => $options['cookie']];
+		}
+		if ($options['method'] === 'post') {
+			$context += [
+				CURLOPT_POST       => 1,
+				CURLOPT_POSTFIELDS => $options['postdata']
+			];
+		}
+		if ($options['debug']) {
+			$context += [
+				CURLOPT_HEADER      => true,
+				CURLINFO_HEADER_OUT => true,
+				CURLOPT_NOPROGRESS  => false,
+				CURLOPT_VERBOSE     => true
+			];
+		}
+		curl_setopt_array($ch, $context);
+
+		$buffer = curl_exec($ch);
+		$err    = curl_errno($ch);
+		curl_close($ch);
+
+		if ($err !== 0) {
+			return false;
+		} else {
+			return $buffer;
+		}
+	}
 }
 
 /**
@@ -342,7 +437,7 @@ function bytesToSizeString ($bytes, $precision = 0)
 	if ($bytes == 0) {
 		return '0B';
 	}
-	$unit = array('B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB');
+	$unit = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB'];
 
 	return round($bytes / pow(1024, ($index = floor(log($bytes, 1024)))), $precision) . $unit[(int)$index];
 }
@@ -754,95 +849,6 @@ function cp437toUTF ($str)
 		}
 	}
 	return $out;
-}
-
-/**
- * Use cURL To download a web page into a string.
- *
- * @param string $url        The URL to download.
- * @param string $method     get/post
- * @param string $postdata   If using POST, post your POST data here.
- * @param string $language   Use alternate langauge in header.
- * @param bool   $debug      Show debug info.
- * @param string $userAgent  User agent.
- * @param string $cookie     Cookie.
- * @param bool   $verifyCert Verify certificate authenticity?
- *                           Since curl does not have a verify self signed certs option,
- *                           you should use this instead if your cert is self signed.
- *
- * @return bool|mixed
- */
-function getUrl ($url, $method = 'get', $postdata = '', $language = "", $debug = false,
-				 $userAgent = '', $cookie = '', $verifyCert = false)
-{
-	switch ($language) {
-		case 'fr':
-		case 'fr-fr':
-			$language = "fr-fr";
-			break;
-		case 'de':
-		case 'de-de':
-			$language = "de-de";
-			break;
-		case 'en-us':
-			$language = "en-us";
-			break;
-		case 'en-gb':
-			$language = "en-gb";
-			break;
-		case '':
-		case 'en':
-		default:
-			$language = 'en';
-	}
-	$header[] = "Accept-Language: " . $language;
-
-	$ch = curl_init();
-
-	$options = [
-		CURLOPT_URL            => $url,
-		CURLOPT_HTTPHEADER     => $header,
-		CURLOPT_RETURNTRANSFER => 1,
-		CURLOPT_FOLLOWLOCATION => 1,
-		CURLOPT_TIMEOUT        => 15
-	];
-
-	$options += Utility::curlSslContextOptions($verifyCert);
-
-	if ($userAgent !== '') {
-		$options += [CURLOPT_USERAGENT => $userAgent];
-	}
-
-	if ($cookie !== '') {
-		$options += [CURLOPT_COOKIE => $cookie];
-	}
-
-	if ($method === 'post') {
-		$options += [
-			CURLOPT_POST       => 1,
-			CURLOPT_POSTFIELDS => $postdata
-		];
-	}
-
-	if ($debug) {
-		$options += [
-				CURLOPT_HEADER      => true,
-				CURLINFO_HEADER_OUT => true,
-				CURLOPT_NOPROGRESS  => false,
-				CURLOPT_VERBOSE     => true
-			];
-	}
-	curl_setopt_array($ch, $options);
-
-	$buffer = curl_exec($ch);
-	$err    = curl_errno($ch);
-	curl_close($ch);
-
-	if ($err !== 0) {
-		return false;
-	} else {
-		return $buffer;
-	}
 }
 
 /**

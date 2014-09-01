@@ -44,7 +44,7 @@ if ($shows instanceof \Traversable) {
 
 		$imgbytes = '';
 		if (isset($rInfo['imgurl']) && !empty($rInfo['imgurl'])) {
-			$img = nzedb\utility\getUrl($rInfo['imgurl']);
+			$img = nzedb\utility\Utility::getUrl(['url' => $rInfo['imgurl']]);
 			if ($img !== false) {
 				$im = @imagecreatefromstring($img);
 				if ($im !== false) {
