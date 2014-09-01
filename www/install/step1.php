@@ -149,7 +149,7 @@ if ($cfg->schemaCheck === false) {
 }
 
 // Don't set error = true for these as we only want to display a warning.
-$cfg->phpCheck = (version_compare(PHP_VERSION, '5.4.0', '>=')) ? true : false;
+$cfg->phpCheck = (version_compare(PHP_VERSION, nZEDb_MINIMUM_PHP_VERSION, '>=')) ? true : false;
 $cfg->timelimitCheck = (ini_get('max_execution_time') >= 120) ? true : false;
 $cfg->memlimitCheck = (ini_get('memory_limit') >= 1024 || ini_get('memory_limit') == -1) ? true : false;
 $cfg->opensslCheck = extension_loaded("openssl");

@@ -28,4 +28,13 @@ define('NNTP_PORT_A', '%%NNTP_PORT_A%%');
 define('NNTP_SSLENABLED_A', %%NNTP_SSLENABLED_A%%);
 define('NNTP_SOCKET_TIMEOUT_A', '%%NNTP_SOCKET_TIMEOUT_A%%');
 
+// Location to CA bundle file on your system. You can download one here: http://curl.haxx.se/docs/caextract.html
+define('nZEDb_SSL_CAFILE', '%%nZEDb_SSL_CAFILE%%');
+// Path where openssl cert files are stored on your system, this is a fall back if the CAFILE is not found.
+define('nZEDb_SSL_CAPATH', '%%nZEDb_SSL_CAPATH%%');
+// Use the aforementioned CA bundle file to verify remote SSL certificates when connecting to a server using TLS/SSL.
+define('nZEDb_SSL_VERIFY_PEER', '%%nZEDb_SSL_VERIFY_PEER%%');
+// Allow self signed certificates.
+define('nZEDb_SSL_ALLOW_SELF_SIGNED', '%%nZEDb_SSL_ALLOW_SELF_SIGNED%%');
+
 require_once 'automated.config.php';

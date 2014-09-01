@@ -1,60 +1,53 @@
 {if $page->isSuccess()}
-	<div align="center">
-		<h1>Install Complete!</h1>
-		<br/>
-		<p>Continue to the <a href="../admin/">admin home page</a> to give your site a name and learn how to start indexing usenet.</p>
-		<br/><br/>
-		<p><b >Note:</b> It is a good idea to remove the www/install directory after setup</p>
+	<div style="text-align:center">
+		<p>The admin user has been setup, you may continue to the next step.</p>
+		<form action="step7.php"><input type="submit" value="Step seven: Set file paths" /></form>
 	</div>
 {else}
 
-	<p>You must accept or change these file paths. This is the location where your covers, NZB, and temporary files are stored:</p>
-	<form action="?" method="post">
-		<table width="100%" border="0" style="margin-top:10px;" class="data highlight">
-			<tr class="alt">
-			<td><label for="coverspath">Place to save Covers\Posters etc.:</label></td>
-			<td><input type="text" name="coverspath" value="{$cfg->COVERS_PATH}" size="70" /></td>
+<p>You must setup an admin user.</p>
+<p>The username must start with a letter followed by a letter or number, it must be 3 characters or longer.<br />
+The real first name is optional.<br />
+The real last name is optional.<br />
+The password must be at least 6 characters long.<br />
+The email address is used in case you forget your password.<br />
+<p>Please provide the following information:</p>
+<form action="?" method="post">
+	<table border="0" style="width:100%;margin-top:10px;" class="data highlight">
+		<tr class="alt">
+			<td><label for="user">Username:</label></td>
+			<td><input autocomplete="off" type="text" name="user" id="user" value="{$cfg->ADMIN_USER}" /></td>
 		</tr>
-			<tr class="alt">
-				<td><label for="nzbpath">Place to create NZB files:</label></td>
-				<td><input type="text" name="nzbpath" value="{$cfg->NZB_PATH}" size="70" /></td>
-			</tr>
-			<tr class="alt">
-				<td><label for="tmpunrarpath">Place for unRARing/temp work:</label></td>
-				<td><input type="text" name="tmpunrarpath" value="{$cfg->UNRAR_PATH}" size="70" /></td>
-			</tr>
-		</table>
+		<tr class="">
+			<td><label for="user">Real First Name:</label></td>
+			<td><input autocomplete="off" type="text" name="fname" id="fname" value="{$cfg->ADMIN_FNAME}" /></td>
+		</tr>
+		<tr class="alt">
+			<td><label for="user">Real Last Name:</label></td>
+			<td><input autocomplete="off" type="text" name="lname" id="lname" value="{$cfg->ADMIN_LNAME}" /></td>
+		</tr>
+        <tr class="">
+			<td><label for="pass">Password:</label></td>
+			<td><input autocomplete="off" type="text" name="pass" id="pass" value="{$cfg->ADMIN_PASS}" /></td>
+		</tr>
+		<tr class="alt">
+			<td><label for="email">Email:</label> </td>
+			<td><input autocomplete="off" type="text" name="email" id="email" value="{$cfg->ADMIN_EMAIL}" /></td>
+		</tr>
+	</table>
 
-		<div style="padding-top:20px; text-align:center;">
+	<div style="padding-top:20px; text-align:center;">
 			{if $cfg->error}
-				<div>
-					The following error was encountered:<br />
-					<hr>
-					{if !$cfg->nzbPathCheck}
-						<span class="error">
-						The installer cannot write to {$cfg->NZB_PATH}.<br />
-						A quick solution is to run:<br />
-						chmod -R 777 {$cfg->NZB_PATH}
-							{$fixString} {$cfg->NZB_PATH}
-					</span><br />
-						<hr>
-					{/if}
-					{if !$cfg->coverPathCheck}<br /><span class="error">The installer cannot write to {$cfg->COVERS_PATH}. A quick solution is to run:<br />chmod -R 777 {$cfg->COVERS_PATH}</span><br />{/if}
-					{if !$cfg->unrarPathCheck}
-						<span class="error">
-						The installer cannot write to {$cfg->UNRAR_PATH}.<br />
-						A quick solution is to run:<br />
-						chmod -R 777 {$cfg->UNRAR_PATH}
-							{$fixString} {$cfg->UNRAR_PATH}
-					</span><br />
-						<hr>
-					{/if}
-					<br />
-				</div>
+			<div>
+				The following error(s) were encountered:<br />
+				{if $cfg->ADMIN_USER == ''}<span class="error">&bull; Invalid username</span><br />{/if}
+				{if $cfg->ADMIN_PASS == ''}<span class="error">&bull; Invalid password</span><br />{/if}
+				{if $cfg->ADMIN_EMAIL == ''}<span class="error">&bull; Invalid email</span><br />{/if}
+				<br />
+			</div>
 			{/if}
-			<input type="submit" value="Set file paths" />
-		</div>
-
-	</form>
+			<input type="submit" value="Create Admin User" />
+	</div>
+</form>
 
 {/if}
