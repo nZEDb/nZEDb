@@ -207,7 +207,8 @@ class TvRage
 		$url = $this->showQuickInfoURL . urlencode($show);
 		$url .= !empty($options['episode']) ? '&ep=' . urlencode($options['episode']) : '';
 		$url .= !empty($options['exact']) ? '&exact=' . urlencode($options['exact']) : '';
-		if ($fp = fopen($url, "r")) {
+		$fp = fopen($url, "r", false, stream_context_create(nzedb\utility\Utility::streamSslContextOptions()));
+		if ($fp) {
 			while (!feof($fp)) {
 				$line = fgets($fp, 1024);
 				list ($sec, $val) = explode('@', $line, 2);
