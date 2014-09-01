@@ -58,7 +58,7 @@
 						<div class="movcover" style="padding-bottom:5px;">
 							<a
 								class="title thumbnail"
-								title="View giantbomb page"
+								title="View page"
 								target="_blank"
 								href="{$site->dereferrer_link}{$result.url}"
 								width="130px"
@@ -72,6 +72,7 @@
 							></a>
 							<div class="relextra" style="margin-top:5px;">
 								{if $result.url != ""}
+									{if $result.classused == "gb"}
 									<a
 										class="label"
 										target="_blank"
@@ -79,6 +80,17 @@
 										name="giantbomb{$result.gamesinfo_id}"
 										title="View giantbomb page"
 									><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/giantbomb.png"></a>
+									{/if}
+									{if $result.classused == "steam"}
+										<a
+											class="label"
+											target="_blank"
+											href="{$site->dereferrer_link}{$result.url}"
+											name="Steam{$result.gamesinfo_id}"
+											title="View Steam page"
+											><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/steam.png"></a>
+									{/if}
+
 								{/if}
 								<a
 									class="label"

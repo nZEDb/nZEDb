@@ -18,8 +18,8 @@ if ($row !== false) {
 }
 $path2covers = nZEDb_COVERS . 'xxx' . DS;
 
-$dirItr = new RecursiveDirectoryIterator($path2covers);
-$itr = new RecursiveIteratorIterator($dirItr, RecursiveIteratorIterator::LEAVES_ONLY);
+$dirItr = new \RecursiveDirectoryIterator($path2covers);
+$itr = new \RecursiveIteratorIterator($dirItr, \RecursiveIteratorIterator::LEAVES_ONLY);
 foreach ($itr as $filePath) {
 	if (is_file($filePath) && preg_match('/-cover\.jpg/', $filePath)) {
 		preg_match('/(\d+)-cover\.jpg/', basename($filePath), $match);
@@ -53,7 +53,7 @@ foreach ($itr as $filePath) {
 }
 
 $qry = $pdo->queryDirect("SELECT id FROM xxxinfo WHERE cover = 1");
-if ($qry instanceof Traversable) {
+if ($qry instanceof \Traversable) {
 	foreach ($qry as $rows) {
 		if (!is_file($path2covers . $rows['id'] . '-cover.jpg')) {
 			$pdo->queryDirect("UPDATE xxxinfo SET cover = 0 WHERE cover = 1 AND id = " . $rows['id']);
@@ -63,7 +63,7 @@ if ($qry instanceof Traversable) {
 	}
 }
 $qry1 = $pdo->queryDirect("SELECT id FROM xxxinfo WHERE backdrop = 1");
-if ($qry1 instanceof Traversable) {
+if ($qry1 instanceof \Traversable) {
 	foreach ($qry1 as $rows) {
 		if (!is_file($path2covers . $rows['id'] . '-backdrop.jpg')) {
 			$pdo->queryDirect("UPDATE xxxinfo SET backdrop = 0 WHERE backdrop = 1 AND id = " . $rows['id']);

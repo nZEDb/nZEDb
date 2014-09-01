@@ -9,10 +9,10 @@ else
 {
 	if ($argv[1] == "true")
 	{
-		$groups = new Groups();
+		$groups = new \Groups();
 		$grouplist = $groups->getActive();
-		$nntp = new NNTP(['Settings' => $groups->pdo]);
-		$binaries = new Binaries(['NNTP' => $nntp, 'Groups' => $groups, 'Settings' => $groups->pdo]);
+		$nntp = new \NNTP(['Settings' => $groups->pdo]);
+		$binaries = new \Binaries(['NNTP' => $nntp, 'Groups' => $groups, 'Settings' => $groups->pdo]);
 		foreach ($grouplist as $group)
 		{
 			if ($nntp->doConnect() !== true) {
@@ -24,8 +24,8 @@ else
 	}
 	else
 	{
-		$nntp = new NNTP();
-		$binaries = new Binaries(['NNTP' => $nntp, 'Settings' => $nntp->pdo]);
+		$nntp = new \NNTP();
+		$binaries = new \Binaries(['NNTP' => $nntp, 'Settings' => $nntp->pdo]);
 		if ($nntp->doConnect() !== true) {
 			exit();
 		}

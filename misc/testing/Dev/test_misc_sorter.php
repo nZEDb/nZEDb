@@ -1,10 +1,10 @@
 <?php
 require dirname(__FILE__) . '/../../../www/config.php';
 
-$pdo = new nzedb\db\Settings();
-$sorter = new MiscSorter(true, $pdo);
+$pdo = new \nzedb\db\Settings();
+$sorter = new \MiscSorter(true, $pdo);
 
-$cat = Category::CAT_MISC;
+$cat = \Category::CAT_MISC;
 $id = 0;
 
 if (isset($argv[1])) {

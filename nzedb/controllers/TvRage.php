@@ -42,7 +42,7 @@ class TvRage
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
 
 		$this->xmlEpisodeInfoUrl =
-			"http://services.tvrage.com/myfeeds/episodeinfo.php?key=" . TvRage::APIKEY;
+			"http://services.tvrage.com/myfeeds/episodeinfo.php?key=" . \TvRage::APIKEY;
 	}
 
 	/**
@@ -642,7 +642,7 @@ class TvRage
 		if ($lookupTvRage == 0) {
 			return $ret;
 		}
-		$trakt = new TraktTv(['Settings' => $this->pdo]);
+		$trakt = new \TraktTv(['Settings' => $this->pdo]);
 
 		// Get all releases without a rageid which are in a tv category.
 
@@ -917,7 +917,7 @@ class TvRage
 			$matchpct = ($numMatches / $totalMatches) * 100;
 		}
 
-		if ($matchpct >= TvRage::MATCH_PROBABILITY) {
+		if ($matchpct >= \TvRage::MATCH_PROBABILITY) {
 			return $matchpct;
 		} else {
 			return false;

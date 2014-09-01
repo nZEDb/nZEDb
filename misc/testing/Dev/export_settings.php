@@ -48,7 +48,7 @@ if ($sql != '') {
 	$res = $pdo->queryDirect($sql);
 	@unlink("xdfrexgvtedvgb.uhdntef");
 
-	if ($res instanceof Traversable) {
+	if ($res instanceof \Traversable) {
 		foreach ($res as $setting) {
 			$line = sprintf($mask, $setting['setting'], $setting['value']);
 			if (nZEDb_DEBUG) {

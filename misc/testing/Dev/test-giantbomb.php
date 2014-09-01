@@ -5,8 +5,8 @@ require_once nZEDb_LIBS . 'GiantBombAPI.php';
 // Test if your giantbomb key is working.
 
 $giantbombkey = (new \nzedb\db\Settings())->getSetting('giantbombkey');
-$cli = new ColorCLI();
-$obj = new GiantBomb($giantbombkey, $resp = "json");
+$cli = new \ColorCLI();
+$obj = new \GiantBomb($giantbombkey, $resp = "json");
 
 $searchgame = "South Park The Stick of Truth";
 $resultsfound = 0;

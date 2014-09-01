@@ -54,9 +54,9 @@ class ReleaseCleaning
 	public function __construct($settings = null)
 	{
 		// Extensions.
-		$this->e0 = CollectionsCleaning::regexFileExtensionString;
-		$this->e1 = CollectionsCleaning::regexFileExtensionString . CollectionsCleaning::regexEndString;
-		$this->e2 = CollectionsCleaning::regexFileExtensionString . CollectionsCleaning::regexSizeString . CollectionsCleaning::regexEndString;
+		$this->e0 = \CollectionsCleaning::regexFileExtensionString;
+		$this->e1 = \CollectionsCleaning::regexFileExtensionString . \CollectionsCleaning::regexEndString;
+		$this->e2 = \CollectionsCleaning::regexFileExtensionString . \CollectionsCleaning::regexSizeString . \CollectionsCleaning::regexEndString;
 		$this->pdo = ($settings instanceof Settings ? $settings : new Settings());
 	}
 

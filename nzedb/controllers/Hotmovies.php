@@ -225,7 +225,7 @@ class Hotmovies
 	 */
 	public function getDirect()
 	{
-		if (isset($this->directlink)) {
+		if (isset($this->directLink)) {
 			if ($this->getUrl() === false) {
 				return false;
 			} else {

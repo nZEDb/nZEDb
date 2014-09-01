@@ -18,8 +18,8 @@ if ($row !== false) {
 }
 $path2covers = nZEDb_COVERS . 'movies' . DS;
 
-$dirItr = new RecursiveDirectoryIterator($path2covers);
-$itr = new RecursiveIteratorIterator($dirItr, RecursiveIteratorIterator::LEAVES_ONLY);
+$dirItr = new \RecursiveDirectoryIterator($path2covers);
+$itr = new \RecursiveIteratorIterator($dirItr, \RecursiveIteratorIterator::LEAVES_ONLY);
 foreach ($itr as $filePath) {
 	if (is_file($filePath) && preg_match('/-cover\.jpg/', $filePath)) {
 		preg_match('/(\d+)-cover\.jpg/', basename($filePath), $match);
@@ -53,7 +53,7 @@ foreach ($itr as $filePath) {
 }
 
 $qry = $pdo->queryDirect("SELECT imdbid FROM movieinfo WHERE cover = 1");
-if ($qry instanceof Traversable) {
+if ($qry instanceof \Traversable) {
 	foreach ($qry as $rows) {
 		if (!is_file($path2covers . $rows['imdbid'] . '-cover.jpg')) {
 			$pdo->queryDirect("UPDATE movieinfo SET cover = 0 WHERE cover = 1 AND imdbid = " . $rows['imdbid']);
@@ -63,7 +63,7 @@ if ($qry instanceof Traversable) {
 	}
 }
 $qry1 = $pdo->queryDirect("SELECT imdbid FROM movieinfo WHERE backdrop = 1");
-if ($qry1 instanceof Traversable) {
+if ($qry1 instanceof \Traversable) {
 	foreach ($qry1 as $rows) {
 		if (!is_file($path2covers . $rows['imdbid'] . '-backdrop.jpg')) {
 			$pdo->queryDirect("UPDATE movieinfo SET backdrop = 0 WHERE backdrop = 1 AND imdbid = " . $rows['imdbid']);

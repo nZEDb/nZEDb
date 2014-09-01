@@ -62,7 +62,7 @@ class XXX
 		$options += $defaults;
 
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
-		$this->releaseImage = ($options['ReleaseImage'] instanceof ReleaseImage ? $options['ReleaseImage'] : new ReleaseImage($this->pdo));
+		$this->releaseImage = ($options['ReleaseImage'] instanceof \ReleaseImage ? $options['ReleaseImage'] : new \ReleaseImage($this->pdo));
 
 		$this->movieqty = ($this->pdo->getSetting('maxxxxprocessed') != '') ? $this->pdo->getSetting('maxxxxprocessed') : 100;
 		$this->showPasswords = ($this->pdo->getSetting('showpasswordedrelease') != '') ? $this->pdo->getSetting('showpasswordedrelease') : 0;
@@ -138,7 +138,7 @@ class XXX
 	{
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
-			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
+			$catsrch = (new \Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
 		}
 
 		$res = $this->pdo->queryOneRow(
@@ -180,7 +180,7 @@ class XXX
 	{
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
-			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
+			$catsrch = (new \Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
 		}
 
 		$order = $this->getXXXOrder($orderBy);
@@ -360,14 +360,14 @@ class XXX
 		$res = false;
 		$this->whichclass = '';
 
-		$iafd = new IAFD();
-		$iafd->searchTerm = $xxxmovie;
+		$iafd = new \IAFD();
+		$iafd->searchterm = $xxxmovie;
 
 		if ($iafd->findme() !== false) {
 
 			switch($iafd->classUsed) {
 				case "ade":
-					$mov = new ADE();
+					$mov = new A\DE();
 					$mov->directLink = (string)$iafd->directUrl;
 					$res = $mov->getDirect();
 					$res['title'] = $iafd->title;
@@ -376,7 +376,7 @@ class XXX
 					$this->pdo->log->doEcho($this->pdo->log->primary("Fetching XXX info from IAFD -> Adult DVD Empire"));
 					break;
 				case "hm":
-					$mov = new Hotmovies();
+					$mov = new \Hotmovies();
 					$mov->directLink = (string)$iafd->directUrl;
 					$res = $mov->getDirect();
 					$res['title'] = $iafd->title;
@@ -389,21 +389,21 @@ class XXX
 		if ($res === false) {
 
 			$this->whichclass = "aebn";
-			$mov = new AEBN();
+			$mov = new \AEBN();
 			$mov->cookie = $this->cookie;
 			$mov->searchTerm = $xxxmovie;
 			$res = $mov->search();
 
 			if ($res === false) {
 				$this->whichclass = "ade";
-				$mov = new ADE();
-				$mov->searchTerm = $xxxmovie;
+				$mov = new \ADE();
+				$mov->searchterm = $xxxmovie;
 				$res = $mov->search();
 			}
 
 			if ($res === false) {
 				$this->whichclass = "hm";
-				$mov = new Hotmovies();
+				$mov = new \Hotmovies();
 				$mov->cookie = $this->cookie;
 				$mov->searchTerm = $xxxmovie;
 				$res = $mov->search();
@@ -411,7 +411,7 @@ class XXX
 
 			if ($res === false) {
 				$this->whichclass = "pop";
-				$mov = new Popporn();
+				$mov = new \Popporn();
 				$mov->cookie = $this->cookie;
 				$mov->searchTerm = $xxxmovie;
 				$res = $mov->search();
@@ -600,7 +600,10 @@ class XXX
 				$name = preg_replace('/\(.*?\)|[-._]/i', ' ', $name);
 				// Finally remove multiple spaces and trim leading spaces.
 				$name = trim(preg_replace('/\s{2,}/', ' ', $name));
-
+				// Remove Private Movies {d} from name better matching.
+				$name = trim(preg_replace('/^Private\s(Specials|Blockbusters|Sports|Gold|Lesbian|Movies|Classics|Castings|Fetish|Stars|Pictures|XXX|Private|Black\sLabel|Black)\s\d+/i', '', $name));
+				// Remove Foreign Words at the end of the name.
+				$name = trim(preg_replace('/$(brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|latin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish)/i', '', $name));
 
 				// Check if the name is long enough and not just numbers and not file (d) of (d) and does not contain Episodes and any dated 00.00.00 which are site rips..
 				if (strlen($name) > 5 && !preg_match('/^\d+$/', $name) && !preg_match('/( File \d+ of \d+|\d+.\d+.\d+)/',$name) && !preg_match('/(E\d+)/',$name) && !preg_match('/\d\d\.\d\d.\d\d/', $name)) {

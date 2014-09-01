@@ -145,7 +145,7 @@ class Movie
 		$options += $defaults;
 
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
-		$this->releaseImage = ($options['ReleaseImage'] instanceof ReleaseImage ? $options['ReleaseImage'] : new ReleaseImage($this->pdo));
+		$this->releaseImage = ($options['ReleaseImage'] instanceof \ReleaseImage ? $options['ReleaseImage'] : new \ReleaseImage($this->pdo));
 
 		$this->imdbLanguage = ($this->pdo->getSetting('imdblanguage') != '') ? (string)$this->pdo->getSetting('imdblanguage') : 'en';
 
@@ -256,7 +256,7 @@ class Movie
 	{
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
-			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
+			$catsrch = (new \Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
 		}
 
 		$res = $this->pdo->queryOneRow(
@@ -297,7 +297,7 @@ class Movie
 	{
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
-			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
+			$catsrch = (new \Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
 		}
 
 		$order = $this->getMovieOrder($orderBy);
@@ -734,7 +734,7 @@ class Movie
 						$percent .
 						'% similar to (' .
 						$this->currentTitle . ')',
-						Logger::LOG_INFO
+						\Logger::LOG_INFO
 					);
 				}
 				return false;
@@ -841,7 +841,7 @@ class Movie
 							$percent .
 							'% similar to (' .
 							$this->currentTitle . ')',
-							Logger::LOG_INFO
+							\Logger::LOG_INFO
 						);
 					}
 					return false;
@@ -919,7 +919,7 @@ class Movie
 		if ($lookupIMDB == 0) {
 			return;
 		}
-		$trakTv = new TraktTv(['Settings' => $this->pdo]);
+		$trakTv = new \TraktTv(['Settings' => $this->pdo]);
 
 		// Get all releases without an IMDB id.
 		$res = $this->pdo->query(
@@ -1128,7 +1128,7 @@ class Movie
 	 */
 	protected function googleSearch()
 	{
-		$buffer = nzedb\utility\getUrl(
+		$buffer = \nzedb\utility\getUrl(
 			'https://www.google.com/search?hl=en&as_q=&as_epq=' .
 			urlencode(
 				$this->currentTitle .
@@ -1162,7 +1162,7 @@ class Movie
 	 */
 	protected function bingSearch()
 	{
-		$buffer = nzedb\utility\getUrl(
+		$buffer = \nzedb\utility\getUrl(
 			"http://www.bing.com/search?q=" .
 			urlencode(
 				'("' .
@@ -1191,7 +1191,7 @@ class Movie
 	 */
 	protected function yahooSearch()
 	{
-		$buffer = nzedb\utility\getUrl(
+		$buffer = \nzedb\utility\getUrl(
 			"http://search.yahoo.com/search?n=10&ei=UTF-8&va_vt=title&vo_vt=any&ve_vt=any&vp_vt=any&vf=all&vm=p&fl=0&fr=fp-top&p=intitle:" .
 			urlencode(
 				'intitle:' .
@@ -1305,9 +1305,9 @@ class Movie
 	{
 		$this->pdo->log->doEcho($this->pdo->log->header('Updating movie schedule using rotten tomatoes.'));
 
-		$rt = new RottenTomato($this->pdo->getSetting('rottentomatokey'));
+		$rt = new \RottenTomato($this->pdo->getSetting('rottentomatokey'));
 
-		if ($rt instanceof RottenTomato) {
+		if ($rt instanceof \RottenTomato) {
 
 			$this->_getRTData('boxoffice', $rt);
 			$this->_getRTData('theaters', $rt);
@@ -1335,23 +1335,23 @@ class Movie
 			switch ($operation) {
 				case 'boxoffice':
 					$data = $rt->getBoxOffice();
-					$update = Movie::SRC_BOXOFFICE;
+					$update = \Movie::SRC_BOXOFFICE;
 					break;
 				case 'theaters':
 					$data = $rt->getInTheaters();
-					$update = Movie::SRC_INTHEATRE;
+					$update = \Movie::SRC_INTHEATRE;
 					break;
 				case 'opening':
 					$data = $rt->getOpening();
-					$update = Movie::SRC_OPENING;
+					$update = \Movie::SRC_OPENING;
 					break;
 				case 'upcoming':
 					$data = $rt->getUpcoming();
-					$update = Movie::SRC_UPCOMING;
+					$update = \Movie::SRC_UPCOMING;
 					break;
 				case 'dvd':
 					$data = $rt->getDVDReleases();
-					$update = Movie::SRC_DVD;
+					$update = \Movie::SRC_DVD;
 					break;
 				default:
 					$data = false;

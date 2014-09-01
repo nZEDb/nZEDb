@@ -92,8 +92,8 @@ class NZBGet
 		}
 
 		$this->fullURL = $this->verifyURL($this->url);
-		$this->Releases = new Releases(['Settings' => $page->settings]);
-		$this->NZB = new NZB($page->settings);
+		$this->Releases = new \Releases(['Settings' => $page->settings]);
+		$this->NZB = new \NZB($page->settings);
 	}
 
 	/**

@@ -181,7 +181,7 @@ class Logger
 		];
 		$options += $defaults;
 
-		$this->colorCLI = ($options['ColorCLI'] instanceof ColorCLI ? $options['ColorCLI'] : new ColorCLI());
+		$this->colorCLI = ($options['ColorCLI'] instanceof \ColorCLI ? $options['ColorCLI'] : new \ColorCLI());
 
 		$this->getSettings();
 
@@ -453,7 +453,7 @@ class Logger
 			$this->resource = @fopen($this->logPath, 'ab');
 
 			if (!$this->resource) {
-				throw new LoggerException('Unable to open log file ' . $this->logPath);
+				throw new \LoggerException('Unable to open log file ' . $this->logPath);
 			}
 		}
 	}
@@ -513,7 +513,7 @@ class Logger
 		if (!is_dir($this->currentLogFolder)) {
 			$old = umask(0777);
 			if (!mkdir($this->currentLogFolder)) {
-				throw new LoggerException('Unable to create log file folder ' . $this->currentLogFolder);
+				throw new \LoggerException('Unable to create log file folder ' . $this->currentLogFolder);
 			}
 			chmod($this->currentLogFolder, 0777);
 			umask($old);
@@ -533,7 +533,7 @@ class Logger
 					$this->logPath,
 					'[' . $this->getDate() . '] [INIT]   [Initiating new log file.]' . PHP_EOL)
 			) {
-				throw new LoggerException('Unable to create new log file ' . $this->logPath);
+				throw new \LoggerException('Unable to create new log file ' . $this->logPath);
 			}
 		}
 	}
