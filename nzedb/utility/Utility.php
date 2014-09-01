@@ -702,18 +702,21 @@ function cp437toUTF ($str)
 /**
  * Use cURL To download a web page into a string.
  *
- * @param string $url       The URL to download.
- * @param string $method    get/post
- * @param string $postdata  If using POST, post your POST data here.
- * @param string $language  Use alternate langauge in header.
- * @param bool   $debug     Show debug info.
- * @param string $userAgent User agent.
- * @param string $cookie    Cookie.
+ * @param string $url        The URL to download.
+ * @param string $method     get/post
+ * @param string $postdata   If using POST, post your POST data here.
+ * @param string $language   Use alternate langauge in header.
+ * @param bool   $debug      Show debug info.
+ * @param string $userAgent  User agent.
+ * @param string $cookie     Cookie.
+ * @param bool   $verifyCert Verify certificate authenticity?
+ *                           Since curl does not have a verify self signed certs option,
+ *                           you should use this instead if your cert is self signed.
  *
  * @return bool|mixed
  */
 function getUrl ($url, $method = 'get', $postdata = '', $language = "", $debug = false,
-				 $userAgent = '', $cookie = '')
+				 $userAgent = '', $cookie = '', $verifyCert = false)
 {
 	switch ($language) {
 		case 'fr':
@@ -737,44 +740,54 @@ function getUrl ($url, $method = 'get', $postdata = '', $language = "", $debug =
 	}
 	$header[] = "Accept-Language: " . $language;
 
-	$ch      = curl_init();
-	$options = array(
+	$ch = curl_init();
+
+	$options = [
 		CURLOPT_URL            => $url,
 		CURLOPT_HTTPHEADER     => $header,
 		CURLOPT_RETURNTRANSFER => 1,
 		CURLOPT_FOLLOWLOCATION => 1,
-		CURLOPT_TIMEOUT        => 15,
-		CURLOPT_SSL_VERIFYPEER => false,
-		CURLOPT_SSL_VERIFYHOST => false,
-	);
-	curl_setopt_array($ch, $options);
+		CURLOPT_TIMEOUT        => 15
+	];
+
+	if ($verifyCert && nZEDb_SSL_VERIFY_HOST) {
+		$options += [
+			CURLOPT_CAINFO => nZEDb_SSL_CAFILE,
+			CURLOPT_CAPATH => nZEDb_SSL_CAPATH,
+			CURLOPT_SSL_VERIFYPEER => (bool)nZEDb_SSL_VERIFY_PEER,
+			CURLOPT_SSL_VERIFYHOST => (nZEDb_SSL_VERIFY_HOST ? 2 : 0),
+		];
+	} else {
+		$options += [
+			CURLOPT_SSL_VERIFYPEER => false,
+			CURLOPT_SSL_VERIFYHOST => 0,
+		];
+	}
 
 	if ($userAgent !== '') {
-		curl_setopt($ch, CURLOPT_USERAGENT, $userAgent);
+		$options += [CURLOPT_USERAGENT => $userAgent];
 	}
 
 	if ($cookie !== '') {
-		curl_setopt($ch, CURLOPT_COOKIE, $cookie);
+		$options += [CURLOPT_COOKIE => $cookie];
 	}
 
 	if ($method === 'post') {
-		$options = array(
+		$options += [
 			CURLOPT_POST       => 1,
 			CURLOPT_POSTFIELDS => $postdata
-		);
-		curl_setopt_array($ch, $options);
+		];
 	}
 
 	if ($debug) {
-		$options =
-			array(
+		$options += [
 				CURLOPT_HEADER      => true,
 				CURLINFO_HEADER_OUT => true,
 				CURLOPT_NOPROGRESS  => false,
 				CURLOPT_VERBOSE     => true
-			);
-		curl_setopt_array($ch, $options);
+			];
 	}
+	curl_setopt_array($ch, $options);
 
 	$buffer = curl_exec($ch);
 	$err    = curl_errno($ch);
