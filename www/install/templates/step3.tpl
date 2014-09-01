@@ -8,7 +8,7 @@
 		<p>An openssl CA bundle file is recommended to verify the authenticity of remote certificates when connecting to various servers using TLS/SSL.<br />
 			If you do not have one, you can download one <a href="http://curl.haxx.se/docs/caextract.html">here</a>.<br />
 			You can place the file in the /etc/ssl/certs/ folder if you are on linux.<br />
-			The file must be readable by both your web user (www-data by default) and your CLI user running scripts.
+			The file must be readable by both your web user (www-data by default) and your CLI user running scripts.<br />
 		</p>
 		<table border="0" style="width:100%;margin-top:10px;" class="data highlight">
 			<tr class="">
@@ -39,7 +39,10 @@
 				<td><label for="verifyhost">Verify host:</label></td>
 				<td>
 					<input type="checkbox" name="verifyhost" id="verifyhost" value="1" {if $cfg->nZEDb_SSL_VERIFY_HOST=="true"}checked="checked"{/if} />
-					<div class="hint">This makes sure the host is who they say they are. See <a href="http://curl.haxx.se/libcurl/c/CURLOPT_SSL_VERIFYHOST.html">this</a> link for detailed info.</div>
+					<div class="hint">This makes sure the host is who they say they are.<br />
+						See <a href="http://curl.haxx.se/libcurl/c/CURLOPT_SSL_VERIFYHOST.html">this</a> link for detailed info.<br />
+						You might need to disable this as some providers are using the wrong CN in their certs (probably because they are cheap and re-using a cert and rely on people disabling host verification or lack knowledge).<br />
+						Note that disabling this is a security risk and you should consider getting a usenet provider that has a proper certificate.</div>
 				</td>
 			</tr>
 			<tr class="">
