@@ -85,6 +85,7 @@ class Install
 	public $nZEDb_SSL_CAFILE;
 	public $nZEDb_SSL_CAPATH;
 	public $nZEDb_SSL_VERIFY_PEER;
+	public $nZEDb_SSL_VERIFY_HOST;
 	public $nZEDb_SSL_ALLOW_SELF_SIGNED;
 
 	public function __construct()
@@ -160,6 +161,7 @@ class Install
 		$tmpCfg = str_replace('%%nZEDb_SSL_CAFILE%%', $this->nZEDb_SSL_CAFILE, $tmpCfg);
 		$tmpCfg = str_replace('%%nZEDb_SSL_CAPATH%%', $this->nZEDb_SSL_CAPATH, $tmpCfg);
 		$tmpCfg = str_replace('%%nZEDb_SSL_VERIFY_PEER%%', $this->nZEDb_SSL_VERIFY_PEER, $tmpCfg);
+		$tmpCfg = str_replace('%%nZEDb_SSL_VERIFY_HOST%%', $this->nZEDb_SSL_VERIFY_HOST, $tmpCfg);
 		$tmpCfg = str_replace('%%nZEDb_SSL_ALLOW_SELF_SIGNED%%', $this->nZEDb_SSL_ALLOW_SELF_SIGNED, $tmpCfg);
 
 		$this->COMPILED_CONFIG = $tmpCfg;

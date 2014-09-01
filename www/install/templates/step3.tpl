@@ -30,15 +30,22 @@
 			<tr class="">
 				<td><label for="verifypeer">Verify peer:</label></td>
 				<td>
-					<input type="checkbox" name="verifypeer" id="verifypeer" value="1" {if $cfg->NNTP_SSLENABLED=="true"}checked="checked"{/if} />
+					<input type="checkbox" name="verifypeer" id="verifypeer" value="1" {if $cfg->nZEDb_SSL_VERIFY_PEER=="true"}checked="checked"{/if} />
 					<div class="hint">Disabling this will disable TLS/SSL remote certificate verification which is not recommended.<br />
 						Enabling this requires the ca bundle cert file path to be set.</div>
 				</td>
 			</tr>
 			<tr class="alt">
+				<td><label for="verifyhost">Verify host:</label></td>
+				<td>
+					<input type="checkbox" name="verifyhost" id="verifyhost" value="1" {if $cfg->nZEDb_SSL_VERIFY_HOST=="true"}checked="checked"{/if} />
+					<div class="hint">This makes sure the host is who they say they are. See <a href="http://curl.haxx.se/libcurl/c/CURLOPT_SSL_VERIFYHOST.html">this</a> link for detailed info.</div>
+				</td>
+			</tr>
+			<tr class="">
 				<td><label for="allowselfsigned">Allow self signed certificates:</label></td>
 				<td>
-					<input type="checkbox" name="allowselfsigned" id="allowselfsigned" value="1" {if $cfg->NNTP_SSLENABLED=="true"}checked="checked"{/if} />
+					<input type="checkbox" name="allowselfsigned" id="allowselfsigned" value="1" {if $cfg->nZEDb_SSL_ALLOW_SELF_SIGNED=="true"}checked="checked"{/if} />
 					<div class="hint">Enabling this will not verify self-signed openssl certificates.<br />
 						Note that you will require non self-signed certificates for sabnzbd/nzbget/etc if you disable this.</div>
 				</td>
@@ -48,7 +55,7 @@
 			{if $cfg->error}
 				<div>
 					The following error was encountered:<br />
-					<span class="error">&bull; {$cfg->sslCheck->message}</span><br /><br /><br />
+					<span class="error">&bull; {$cfg->error}</span><br /><br /><br />
 				</div>
 			{/if}
 			<input type="submit" value="Verify openssl settings" />

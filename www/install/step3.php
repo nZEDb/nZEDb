@@ -19,17 +19,19 @@ if ($page->isPostBack()) {
 	$cfg->nZEDb_SSL_CAFILE = trim($_POST['cafile']);
 	$cfg->nZEDb_SSL_CAPATH = trim($_POST['capath']);
 	$cfg->nZEDb_SSL_VERIFY_PEER = (isset($_POST['verifypeer']) ? (trim($_POST['verifypeer']) == '1' ? true : false) : false);
+	$cfg->nZEDb_SSL_VERIFY_HOST = (isset($_POST['verifyhost']) ? (trim($_POST['verifyhost']) == '1' ? true : false) : false);
 	$cfg->nZEDb_SSL_ALLOW_SELF_SIGNED = (isset($_POST['allowselfsigned']) ? (trim($_POST['allowselfsigned']) == '1' ? true : false) : false);
 
 	// If the user doesn't want to verify peer, disable everything.
 	if (!$cfg->nZEDb_SSL_VERIFY_PEER) {
 		$cfg->nZEDb_SSL_ALLOW_SELF_SIGNED = true;
+		$cfg->nZEDb_SSL_VERIFY_HOST = false;
 		$cfg->nZEDb_SSL_CAFILE = $cfg->nZEDb_SSL_CAPATH = '';
 	}
 
 	// If both paths are empty, disable everything.
 	if (!$cfg->nZEDb_SSL_CAPATH && !$cfg->nZEDb_SSL_CAFILE) {
-		$cfg->nZEDb_SSL_VERIFY_PEER = false;
+		$cfg->nZEDb_SSL_VERIFY_PEER = $cfg->nZEDb_SSL_VERIFY_HOST = false;
 		$cfg->nZEDb_SSL_ALLOW_SELF_SIGNED = true;
 		$cfg->nZEDb_SSL_CAFILE = $cfg->nZEDb_SSL_CAPATH = '';
 	}

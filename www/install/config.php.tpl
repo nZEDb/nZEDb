@@ -34,6 +34,8 @@ define('nZEDb_SSL_CAFILE', '%%nZEDb_SSL_CAFILE%%');
 define('nZEDb_SSL_CAPATH', '%%nZEDb_SSL_CAPATH%%');
 // Use the aforementioned CA bundle file to verify remote SSL certificates when connecting to a server using TLS/SSL.
 define('nZEDb_SSL_VERIFY_PEER', '%%nZEDb_SSL_VERIFY_PEER%%');
+// Verify the host is who they say they are.
+define('nZEDb_SSL_VERIFY_HOST', '%%nZEDb_SSL_VERIFY_HOST%%');
 // Allow self signed certificates.
 define('nZEDb_SSL_ALLOW_SELF_SIGNED', '%%nZEDb_SSL_ALLOW_SELF_SIGNED%%');
 
