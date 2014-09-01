@@ -1,5 +1,6 @@
 <?php
 namespace nzedb\db;
+
 use \nzedb\utility\Utility;
 use \nzedb\libraries\Cache;
 use \nzedb\libraries\CacheException;

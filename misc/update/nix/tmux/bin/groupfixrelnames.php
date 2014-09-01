@@ -1,7 +1,7 @@
 <?php
 require_once dirname(__FILE__) . '/../../../config.php';
 
-use nzedb\db\Settings;
+use \nzedb\db\Settings;
 use \nzedb\processing\PostProcess;
 
 $pdo = new Settings();
@@ -34,6 +34,7 @@ if (!isset($argv[1])) {
 								$maxperrun
 							)
 			);
+
 			if ($releases instanceof \Traversable) {
 				foreach ($releases as $release) {
 					if (preg_match('/^=newz\[NZB\]=\w+/', $release['textstring'])) {
@@ -67,6 +68,7 @@ if (!isset($argv[1])) {
 								$maxperrun
 							)
 			);
+
 			if ($releases instanceof \Traversable) {
 				foreach ($releases as $release) {
 					$namefixer->done = $namefixer->matched = false;
@@ -94,6 +96,7 @@ if (!isset($argv[1])) {
 								$maxperrun
 							)
 			);
+
 			if ($releases instanceof \Traversable) {
 				foreach ($releases as $release) {
 					if (preg_match('/[a-fA-F0-9]{32,40}/i', $release['name'], $matches)) {
@@ -122,6 +125,7 @@ if (!isset($argv[1])) {
 								$maxperrun
 							)
 			);
+
 			if ($releases instanceof \Traversable) {
 				$nntp = new \NNTP(['Settings' => $pdo]);
 				if (($pdo->getSetting('alternate_nntp') == '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
@@ -132,7 +136,7 @@ if (!isset($argv[1])) {
 				$nzbcontents = new \NZBContents(
 					array(
 						'Echo' => true, 'NNTP' => $nntp, 'Nfo' => $Nfo, 'Settings' => $pdo,
-						'PostProcess' => new \PostProcess(['Settings' => $pdo, 'Nfo' => $Nfo, 'NameFixer' => $namefixer])
+						'PostProcess' => new PostProcess(['Settings' => $pdo, 'Nfo' => $Nfo, 'NameFixer' => $namefixer])
 					)
 				);
 				foreach ($releases as $release) {
@@ -158,6 +162,7 @@ if (!isset($argv[1])) {
 								$maxperrun
 							)
 			);
+
 			if ($releases instanceof \Traversable) {
 				$sorter = new \MiscSorter(true, $pdo);
 				foreach ($releases as $release) {
@@ -180,6 +185,7 @@ if (!isset($argv[1])) {
 							$thread * $maxperrun - $maxperrun
 						)
 			);
+
 			if ($pres instanceof \Traversable) {
 				foreach ($pres as $pre) {
 					$namefixer->done = $namefixer->matched = false;
