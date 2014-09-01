@@ -24,7 +24,7 @@ $totalstart = microtime(true);
 echo "You have $numofgroups active, it takes about 2 minutes on average to processes each group.\n";
 foreach ($groups as $group) {
 	$starttime = microtime(true);
-	$nntp = new NNTP(['Settings' => $pdo]);
+	$nntp = new \NNTP(['Settings' => $pdo]);
 	if ($nntp->doConnect() !== true) {
 		return;
 	}
@@ -76,7 +76,7 @@ function daytopost($nntp, $group, $days, $debug = true, $bfcheck = true)
 	}
 
 	if (!isset($nntp)) {
-		$nntp = new NNTP(['Settings' => $pdo]);
+		$nntp = new \NNTP(['Settings' => $pdo]);
 		if ($nntp->doConnect(false) !== true) {
 			return;
 		}
@@ -84,7 +84,7 @@ function daytopost($nntp, $group, $days, $debug = true, $bfcheck = true)
 		$st = true;
 	}
 
-	$binaries = new Binaries(['NNTP' => $nntp, 'Settings' => $pdo]);
+	$binaries = new \Binaries(['NNTP' => $nntp, 'Settings' => $pdo]);
 
 	$data = $nntp->selectGroup($group);
 	if ($nntp->isError($data)) {

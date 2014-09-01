@@ -4,8 +4,8 @@ require_once dirname(__FILE__) . '/../../../../www/config.php';
 use nzedb\db\Settings;
 
 $pdo = new Settings();
-$tRun = new TmuxRun($pdo);
-$tOut = new TmuxOutput($pdo);
+$tRun = new \TmuxRun($pdo);
+$tOut = new \TmuxOutput($pdo);
 
 $runVar['paths']['misc'] = nZEDb_MISC;
 $db_name = DB_NAME;
@@ -68,7 +68,7 @@ while ($runVar['counts']['iterations'] > 0) {
 	$runVar['timers']['query']['tmux_time'] = (time() - $timer01);
 
 	$runVar['settings']['book_reqids'] = (!empty($runVar['settings']['book_reqids'])
-		? $runVar['settings']['book_reqids'] : Category::CAT_PARENT_BOOKS);
+		? $runVar['settings']['book_reqids'] : \Category::CAT_PARENT_BOOKS);
 
 	//get usenet connection info
 	$runVar['connections'] = $tOut->getConnectionsInfo($runVar['constants']);
@@ -189,7 +189,7 @@ while ($runVar['counts']['iterations'] > 0) {
 			$runVar['counts']['now']['collections_table'] = $runVar['counts']['now']['binaries_table'] = 0;
 			$runVar['counts']['now']['parts_table'] = $runVar['counts']['now']['parterpair_table'] = 0;
 
-			if ($tables instanceof Traversable) {
+			if ($tables instanceof \Traversable) {
 				foreach ($tables as $row) {
 					$cntsql = '';
 

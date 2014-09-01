@@ -1,7 +1,7 @@
 <?php
 require_once dirname(__FILE__) . '/config.php';
 
-$cli = new ColorCLI();
+$cli = new \ColorCLI();
 
 if (!isset($argv[1]) || ($argv[1] != "all" && $argv[1] != "full" && $argv[1] != "web" && !is_numeric($argv[1])) || !isset($argv[2]) || !in_array($argv[2], ['true', 'false'])) {
 	exit ($cli->error(
@@ -20,11 +20,11 @@ if (!isset($argv[1]) || ($argv[1] != "all" && $argv[1] != "full" && $argv[1] != 
 }
 
 if ($argv[1] === 'web') {
-	(new RequestIDWeb())->lookupRequestIDs(
+	(new \RequestIDWeb())->lookupRequestIDs(
 		['limit' => $argv[1], 'show' => $argv[2], 'time' => (isset($argv[3]) && is_numeric($argv[3]) && $argv[3] > 0 ? $argv[3] : 0)]
 	);
 } else {
-	(new RequestIDLocal())->lookupRequestIDs(
+	(new \RequestIDLocal())->lookupRequestIDs(
 		['limit' => $argv[1], 'show' => $argv[2], 'time' => (isset($argv[3]) && is_numeric($argv[3]) && $argv[3] > 0 ? $argv[3] : 0)]
 	);
 }

@@ -56,7 +56,7 @@ if ($groups === false) {
 	}
 
 	$groupCount = $groups->rowCount();
-	if ($groups instanceof Traversable && count($queries) && $groupCount) {
+	if ($groups instanceof \Traversable && count($queries) && $groupCount) {
 		foreach ($groups as $group) {
 			echo 'Fixing group ' . $group['id'] . PHP_EOL;
 			foreach ($queries as $query) {

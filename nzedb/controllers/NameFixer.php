@@ -146,11 +146,11 @@ class NameFixer
 		$this->fullall = '';
 		$this->_fileName = '';
 		$this->done = $this->matched = false;
-		$this->consoletools = ($options['ConsoleTools'] instanceof ConsoleTools ? $options['ConsoleTools'] :new ConsoleTools(['ColorCLI' => $this->pdo->log]));
-		$this->category = ($options['Categorize'] instanceof Categorize ? $options['Categorize'] : new Categorize(['Settings' => $this->pdo]));
+		$this->consoletools = ($options['ConsoleTools'] instanceof \ConsoleTools ? $options['ConsoleTools'] :new \ConsoleTools(['ColorCLI' => $this->pdo->log]));
+		$this->category = ($options['Categorize'] instanceof \Categorize ? $options['Categorize'] : new \Categorize(['Settings' => $this->pdo]));
 		$this->utility = ($options['Utility'] instanceof Utility ? $options['Utility'] :new Utility());
-		$this->_groups = ($options['Groups'] instanceof Groups ? $options['Groups'] : new Groups(['Settings' => $this->pdo]));
-		$this->sphinx = ($options['SphinxSearch'] instanceof SphinxSearch ? $options['SphinxSearch'] : new SphinxSearch());
+		$this->_groups = ($options['Groups'] instanceof \Groups ? $options['Groups'] : new \Groups(['Settings' => $this->pdo]));
+		$this->sphinx = ($options['SphinxSearch'] instanceof \SphinxSearch ? $options['SphinxSearch'] : new \SphinxSearch());
 	}
 
 	/**
@@ -176,7 +176,7 @@ class NameFixer
 					INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id)
 					WHERE nzbstatus = %d
 					AND preid = 0',
-					NZB::NZB_ADDED
+					\NZB::NZB_ADDED
 			);
 			$cats = 2;
 			$preId = true;
@@ -188,14 +188,14 @@ class NameFixer
 					WHERE (isrenamed = %d OR rel.categoryid = %d)
 					AND proc_nfo = %d',
 					self::IS_RENAMED_NONE,
-					Category::CAT_MISC,
+					\Category::CAT_MISC,
 					self::PROC_NFO_NONE
 			);
 		}
 
 		$releases = $this->_getReleases($time, $cats, $query);
 
-		if ($releases instanceof Traversable && $releases !== false) {
+		if ($releases instanceof \Traversable && $releases !== false) {
 			$total = $releases->rowCount();
 
 			if ($total > 0) {
@@ -256,7 +256,7 @@ class NameFixer
 					INNER JOIN releasefiles rf ON (rf.releaseid = rel.id)
 					WHERE nzbstatus = %d
 					AND preid = 0',
-					NZB::NZB_ADDED
+					\NZB::NZB_ADDED
 			);
 			$cats = 2;
 			$preId = true;
@@ -269,13 +269,13 @@ class NameFixer
 					WHERE (isrenamed = %d OR rel.categoryid = %d)
 					AND proc_files = %d',
 					self::IS_RENAMED_NONE,
-					Category::CAT_MISC,
+					\Category::CAT_MISC,
 					self::PROC_FILES_NONE
 			);
 		}
 
 		$releases = $this->_getReleases($time, $cats, $query);
-		if ($releases instanceof Traversable && $releases !== false) {
+		if ($releases instanceof \Traversable && $releases !== false) {
 
 			$total = $releases->rowCount();
 			if ($total > 0) {
@@ -316,7 +316,7 @@ class NameFixer
 					FROM releases rel
 					WHERE nzbstatus = %d
 					AND preid = 0',
-					NZB::NZB_ADDED
+					\NZB::NZB_ADDED
 			);
 			$cats = 2;
 		} else {
@@ -326,22 +326,22 @@ class NameFixer
 					WHERE (isrenamed = %d OR rel.categoryid = %d)
 					AND proc_par2 = %d',
 					self::IS_RENAMED_NONE,
-					Category::CAT_MISC,
+					\Category::CAT_MISC,
 					self::PROC_PAR2_NONE
 			);
 		}
 
 		$releases = $this->_getReleases($time, $cats, $query);
 
-		if ($releases instanceof Traversable && $releases !== false) {
+		if ($releases instanceof \Traversable && $releases !== false) {
 
 			$total = $releases->rowCount();
 			if ($total > 0) {
 				$this->_totalReleases = $total;
 
 				echo $this->pdo->log->primary(number_format($total) . ' releases to process.');
-				$Nfo = new Nfo(['Echo' => $this->echooutput, 'Settings' => $this->pdo]);
-				$nzbContents = new NZBContents(
+				$Nfo = new \Nfo(['Echo' => $this->echooutput, 'Settings' => $this->pdo]);
+				$nzbContents = new \NZBContents(
 					[
 						'Echo'        => $this->echooutput,
 						'NNTP'        => $nntp,
@@ -474,7 +474,7 @@ class NameFixer
 	public function updateRelease($release, $name, $method, $echo, $type, $nameStatus, $show, $preId = 0)
 	{
 		if ($this->relid !== $release['releaseid']) {
-			$releaseCleaning = new ReleaseCleaning($this->pdo);
+			$releaseCleaning = new \ReleaseCleaning($this->pdo);
 			$newName = $releaseCleaning->fixerCleaner($name);
 			if (strtolower($newName) != strtolower($release["searchname"])) {
 				$this->matched = true;
@@ -629,13 +629,13 @@ class NameFixer
 	) {
 		echo
 			PHP_EOL .
-			ColorCLI::headerOver('New name:     ') . ColorCLI::primaryOver($data['new_name']) . PHP_EOL .
-			ColorCLI::headerOver('Old name:     ') . ColorCLI::primaryOver($data['old_name']) . PHP_EOL .
-			ColorCLI::headerOver('New category: ') . ColorCLI::primaryOver($data['new_category']) . PHP_EOL .
-			ColorCLI::headerOver('Old category: ') . ColorCLI::primaryOver($data['old_category']) . PHP_EOL .
-			ColorCLI::headerOver('Group:        ') . ColorCLI::primaryOver($data['group']) . PHP_EOL .
-			ColorCLI::headerOver('Release ID:   ') . ColorCLI::primaryOver($data['release_id']) . PHP_EOL .
-			ColorCLI::headerOver('Method:       ') . ColorCLI::primaryOver($data['method']) . PHP_EOL;
+			\ColorCLI::headerOver('New name:     ') . \ColorCLI::primaryOver($data['new_name']) . PHP_EOL .
+			\ColorCLI::headerOver('Old name:     ') . \ColorCLI::primaryOver($data['old_name']) . PHP_EOL .
+			\ColorCLI::headerOver('New category: ') . \ColorCLI::primaryOver($data['new_category']) . PHP_EOL .
+			\ColorCLI::headerOver('Old category: ') . \ColorCLI::primaryOver($data['old_category']) . PHP_EOL .
+			\ColorCLI::headerOver('Group:        ') . \ColorCLI::primaryOver($data['group']) . PHP_EOL .
+			\ColorCLI::headerOver('Release ID:   ') . \ColorCLI::primaryOver($data['release_id']) . PHP_EOL .
+			\ColorCLI::headerOver('Method:       ') . \ColorCLI::primaryOver($data['method']) . PHP_EOL;
 	}
 
 	// Match a PreDB title to a release name or searchname using an exact full-text match
@@ -665,7 +665,7 @@ class NameFixer
 		}
 
 		// Run if row count is positive, but do not run if row count exceeds 10 (as this is likely a failed title match)
-		if ($total > 0 && $total <= 15 && $res instanceof Traversable) {
+		if ($total > 0 && $total <= 15 && $res instanceof \Traversable) {
 			foreach ($res as $row) {
 					if ($pre['title'] !== $row['searchname']) {
 						$this->updateRelease($row, $pre['title'], $method = "Title Match source: " . $pre['source'], $echo, "PreDB FT Exact, ", $namestatus, $show, $pre['preid']);
@@ -683,15 +683,15 @@ class NameFixer
 	protected function _preFTsearchQuery($preTitle)
 	{
 		switch (nZEDb_RELEASE_SEARCH_TYPE) {
-			case ReleaseSearch::SPHINX:
-				$titlematch = SphinxSearch::escapeString($preTitle);
+			case \ReleaseSearch::SPHINX:
+				$titlematch = \SphinxSearch::escapeString($preTitle);
 				$join = sprintf(
 						'INNER JOIN releases_se rse ON rse.id = r.id
 						WHERE rse.query = "@(name,searchname) %s;mode=extended"',
 						$titlematch
 				);
 				break;
-			case ReleaseSearch::FULLTEXT:
+			case \ReleaseSearch::FULLTEXT:
 			default:
 				//Remove all non-printable chars from PreDB title
 				preg_match_all('#[a-zA-Z0-9]{3,}#', $preTitle, $matches, PREG_PATTERN_ORDER);
@@ -741,7 +741,7 @@ class NameFixer
 
 			$total = $query->rowCount();
 
-			if ($total > 0 && $query instanceof Traversable) {
+			if ($total > 0 && $query instanceof \Traversable) {
 
 				echo $this->pdo->log->header("\n" . number_format($total) . ' releases to process.');
 

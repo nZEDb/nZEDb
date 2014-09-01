@@ -32,15 +32,15 @@ class MiscSorter
 
 		$this->pdo = ($pdo instanceof \nzedb\db\Settings ? $pdo : new \nzedb\db\Settings());
 
-		$this->category = new Categorize(['Settings' => $this->pdo]);
-		$this->movie = new Movie(['Echo' => $this->echooutput, 'Settings' => $this->pdo]);
+		$this->category = new \Categorize(['Settings' => $this->pdo]);
+		$this->movie = new \Movie(['Echo' => $this->echooutput, 'Settings' => $this->pdo]);
 	}
 
 	// Main function that determines which operation(s) should be run based on the releases NFO file
 	public function nfosorter($category = 0, $id = 0)
 	{
 		$idarr = ($id != 0 ? sprintf('AND r.id = %d', $id) : '');
-		$cat = ($category = 0 ? sprintf('AND r.categoryid = %d', Category::CAT_MISC) : sprintf('AND r.categoryid = %d', $category));
+		$cat = ($category = 0 ? sprintf('AND r.categoryid = %d', \Category::CAT_MISC) : sprintf('AND r.categoryid = %d', $category));
 
 		$res = $this->pdo->queryDirect(
 						sprintf("
@@ -57,7 +57,7 @@ class MiscSorter
 						)
 		);
 
-		if ($res !== false && $res instanceof Traversable) {
+		if ($res !== false && $res instanceof \Traversable) {
 
 			foreach ($res as $row) {
 
@@ -223,7 +223,7 @@ class MiscSorter
 		);
 
 		if ($release !== false && is_array($release) && $name !== '' && $name !== $release['searchname'] && strlen($name) >= 10) {
-			(new NameFixer(['Settings' => $this->pdo]))->updateRelease($release, $name, $type, 1, "sorter ", 1, 1);
+			(new \NameFixer(['Settings' => $this->pdo]))->updateRelease($release, $name, $type, 1, "sorter ", 1, 1);
 			$nameChanged = true;
 		} else {
 			$this->_setProcSorter(self::PROC_SORTER_DONE, $id);
@@ -303,7 +303,7 @@ class MiscSorter
 				$name2 = '';
 				$word = "/" . $movie['title'] . " " . $movie['year'] . "/i";
 				$tmp[] = preg_split($word, $name1);
-				if ($tmp instanceof Traversable) {
+				if ($tmp instanceof \Traversable) {
 					foreach ($tmp as $t) {
 						$name2 .= " " . $t[1];
 					}
@@ -334,7 +334,7 @@ class MiscSorter
 
 	private function doAmazon($name = '', $id = 0, $nfo = "", $q, $region = 'com', $case = false, $row = '')
 	{
-		$amazon = new AmazonProductAPI($this->pdo->getSetting('amazonpubkey'), $this->pdo->getSetting('amazonprivkey'), $this->pdo->getSetting('amazonassociatetag'));
+		$amazon = new \AmazonProductAPI($this->pdo->getSetting('amazonpubkey'), $this->pdo->getSetting('amazonprivkey'), $this->pdo->getSetting('amazonassociatetag'));
 		$ok = false;
 
 		try {
@@ -401,7 +401,7 @@ class MiscSorter
 		$rel = $this->_doAmazonLocal('bookinfo', (string) $amaz->Items->Item->ASIN);
 
 		if (count($rel) == 0) {
-			$bookId = (new Books(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->updateBookInfo('', $amaz);
+			$bookId = (new \Books(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->updateBookInfo('', $amaz);
 			unset($book);
 		} else {
 			$bookId = $rel['id'];
@@ -429,7 +429,7 @@ class MiscSorter
 		if ($rel !== false) {
 			$ok = $this->dodbupdate($id, $name, $rel['id'], 'musicinfoid');
 		} else {
-			$musicId = (new Music(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->updateMusicInfo('', '', $amaz);
+			$musicId = (new \Music(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->updateMusicInfo('', '', $amaz);
 			$ok = $this->dodbupdate($id, $name, $musicId, 'musicinfoid');
 		}
 		return $ok;
@@ -454,7 +454,7 @@ class MiscSorter
 		if ($rel !== false) {
 			$ok = $this->dodbupdate($id, $name, $rel['id'], 'consoleinfoid');
 		} else {
-			$consoleId = (new Console(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->
+			$consoleId = (new \Console(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->
 				updateConsoleInfo([
 							'title'    => (string) $amaz->Items->Item->Title,
 							'node'     => (int) $amaz->Items->Item->BrowseNodes->BrowseNodeId,
@@ -620,7 +620,7 @@ class MiscSorter
 		$title = preg_split('/(?:t\s?i\s?t\s?l\s?e\b|b\s?o\s?o\s?k\b)+? *?(?!(?:[^\s\.\:\}\]\*\xb0-\x{3000}\?] ?){2,}?\b)(?:[\*\?\-\=\|\;\:\.\[\}\]\(\s\xb0-\x{3000}\?]+?)[\s\.\>\:\(\)]((?!\:) ?[a-z0-9\&].+)(?:\s\s\s|$|\.\.\.)/Uuim', $nfo, 0, PREG_SPLIT_DELIM_CAPTURE);
 
 		if (isset($author[1]) && isset($title[1])) {
-			return $this->dodbupdate($row['id'], Category::CAT_MUSIC_AUDIOBOOK, $this->cleanname($author[1] . " - " . $title[1]));
+			return $this->dodbupdate($row['id'], \Category::CAT_MUSIC_AUDIOBOOK, $this->cleanname($author[1] . " - " . $title[1]));
 		} else if (preg_match('/[\h\_\.\:\xb0-\x{3000}]{2,}?([a-z].+) \- (.+)(?:[\s\_\.\:\xb0-\x{3000}]{2,}|$)/iu', $nfo, $matches)) {
 			$pos = $this->nfopos($this->_cleanStrForPos($nfo), $this->_cleanStrForPos($matches[1] . " - " . $matches[2]));
 			if ($pos !== false && $pos < 0.4 && !preg_match('/\:\d\d$/', $matches[2]) && strlen($matches[1]) < 48 && strlen($matches[2]) < 48

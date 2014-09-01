@@ -5,7 +5,7 @@ use nzedb\db\Settings;
 
 $pdo = new Settings();
 $count = $groups = 0;
-$cli = new ColorCLI();
+$cli = new \ColorCLI();
 
 echo $cli->header("This script will show all Backfill Groups.\n"
 	. "An optional first argument of ASC/DESC is used to sort the display by first_record_postdate in ascending/descending order.\n"

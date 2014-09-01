@@ -7,19 +7,19 @@ if (!isset($argv[1]) || !isset($argv[2]))
 	exit("ERROR: You must supply the level you want to reorganize it to, and the source directory  (You would use: 3 .../nZEDb/resources/nzb/ to move it to 3 levels deep)\n");
 
 $pdo = new Settings();
-$nzb = new NZB($pdo);
-$consoleTools = new ConsoleTools();
+$nzb = new \NZB($pdo);
+$consoleTools = new \ConsoleTools();
 
 $newLevel = $argv[1];
 $sourcePath = $argv[2];
-$objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($sourcePath));
+$objects = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($sourcePath));
 
 $filestoprocess = Array();
 $iFilesProcessed = $iFilesCounted = 0;
 $time = TIME();
 
 echo "\nReorganizing files to Level $newLevel from: $sourcePath This could take a while...\n";
-//$consoleTools = new ConsoleTools();
+//$consoleTools = new \ConsoleTools();
 foreach ($objects as $filestoprocess => $nzbFile) {
 	if ($nzbFile->getExtension() != "gz") {
 		continue;

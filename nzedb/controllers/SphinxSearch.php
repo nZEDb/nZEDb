@@ -13,7 +13,7 @@ class SphinxSearch
 	 */
 	public function __construct()
 	{
-		if (nZEDb_RELEASE_SEARCH_TYPE == ReleaseSearch::SPHINX) {
+		if (nZEDb_RELEASE_SEARCH_TYPE == \ReleaseSearch::SPHINX) {
 			if (!defined('nZEDb_SPHINXQL_HOST_NAME')) {
 				define('nZEDb_SPHINXQL_HOST_NAME', '0');
 			}

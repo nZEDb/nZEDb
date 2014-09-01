@@ -6,16 +6,16 @@ use nzedb\db\Settings;
 $pdo = new Settings();
 
 if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete")) {
-	$releases = new Releases(['Settings' => $pdo]);
-	$nzb = new NZB($pdo);
-	$releaseImage = new ReleaseImage($pdo);
-	$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
+	$releases = new \Releases(['Settings' => $pdo]);
+	$nzb = new \NZB($pdo);
+	$releaseImage = new \ReleaseImage($pdo);
+	$consoletools = new \ConsoleTools(['ColorCLI' => $pdo->log]);
 	$timestart = time();
 	$checked = $deleted = 0;
 	$couldbe = $argv[1] === "true" ? $couldbe = "could be " : "were ";
 	echo $pdo->log->header('Getting List of nzbs to check against db.');
-	$dirItr = new RecursiveDirectoryIterator($pdo->getSetting('nzbpath'));
-	$itr = new RecursiveIteratorIterator($dirItr, RecursiveIteratorIterator::LEAVES_ONLY);
+	$dirItr = new \RecursiveDirectoryIterator($pdo->getSetting('nzbpath'));
+	$itr = new \RecursiveIteratorIterator($dirItr, \RecursiveIteratorIterator::LEAVES_ONLY);
 	foreach ($itr as $filePath) {
 		if (is_file($filePath) && preg_match('/([a-f-0-9]+)\.nzb\.gz/', $filePath, $guid)) {
 			$nzbfile = nzedb\utility\Utility::unzipGzipFile($filePath);
@@ -50,7 +50,7 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete")) {
 	$checked = $deleted = 0;
 	echo $pdo->log->header("Getting List of releases to check against nzbs.");
 	$res = $pdo->queryDirect('SELECT id, guid FROM releases');
-	if ($res instanceof Traversable) {
+	if ($res instanceof \Traversable) {
 		foreach ($res as $row) {
 			$nzbpath = $nzb->getNZBPath($row["guid"]);
 			if (!file_exists($nzbpath)) {

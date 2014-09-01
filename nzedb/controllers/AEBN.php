@@ -121,16 +121,11 @@ class AEBN
 	 */
 	public function trailers()
 	{
-		if (!isset($this->_response)) {
-			return false;
-		}
-		$movieid = null;
 		if ($ret = $this->_html->find("a[itemprop=trailer]", 0)) {
-			preg_match('/movieId=(?<movieid>\d+)&/', trim($ret->href), $matches);
+			if(preg_match('/movieId=(?<movieid>\d+)&/', trim($ret->href), $matches)){
 			$movieid = $matches['movieid'];
-			$this->_res['trailers']['url'] = $this->_whichSite[$this->_currentSite] . self::TRAILERURL . $movieid;
-		} else {
-			return false;
+			$this->_res['trailers']['url'] = $this->_whichSite[$this->_currentSite] . self::TRAILERURL . $movieid;;
+			}
 		}
 
 		return $this->_res;
@@ -271,7 +266,7 @@ class AEBN
 							$this->_trailUrl = $ret->href;
 							$this->_directUrl = $this->_whichSite[$this->_currentSite] . $this->_trailUrl;
 							$this->getUrl(false, $this->_currentSite);
-							break;
+							return true;
 						} else {
 							continue;
 						}

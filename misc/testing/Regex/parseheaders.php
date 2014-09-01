@@ -3,12 +3,12 @@
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
 $group = $argv[1];
-$cleaner = new ReleaseCleaning();
+$cleaner = new \ReleaseCleaning();
 
 if (isset($argv[1]) && file_exists($argv[1])) {
 	$filename = $argv[1];
 	$fp = fopen($filename, "r") or die("Couldn't open $filename");
-	$groups = new Groups();
+	$groups = new \Groups();
 	$group = str_replace('.txt', '', basename($filename));
 	@unlink(nZEDb_RES . 'logs' . DS . 'not_yenc' . DS . $group . ".failed.regex.txt");
 	while (!feof($fp)) {

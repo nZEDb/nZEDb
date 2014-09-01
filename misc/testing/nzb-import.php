@@ -44,12 +44,12 @@ if (substr($path, -1) !== DS) {
 	$path .= DS;
 }
 
-$files = new RegexIterator(
-	new RecursiveIteratorIterator(
-		new RecursiveDirectoryIterator($argv[1])
+$files = new \RegexIterator(
+	new \RecursiveIteratorIterator(
+		new \RecursiveDirectoryIterator($argv[1])
 	),
 	'/^.+\.nzb(\.gz)?$/i',
-	RecursiveRegexIterator::GET_MATCH
+	\RecursiveRegexIterator::GET_MATCH
 );
 
 $i = 1;
@@ -71,7 +71,7 @@ if ($i > 1) {
 	$useNzbName = ($argv[4] == 'true') ? true : false;
 
 	// Create a new instance of NZBImport and send it the file locations.
-	$NZBImport = new NZBImport();
+	$NZBImport = new \NZBImport();
 
 	$NZBImport->beginImport($nzbFiles, $useNzbName, $deleteNZB, $deleteFailedNZB);
 } else {

@@ -8,8 +8,8 @@ if (!isset($argv[1])) {
 
 $group = $argv[1];
 //$cleaner = new CollectionsCleaning();
-$nntp = new NNTP();
-$cli = new ColorCLI();
+$nntp = new \NNTP();
+$cli = new \ColorCLI();
 if ($nntp->doConnect() !== true) {
 	exit($cli->error("Unable to connect to usenet."));
 }

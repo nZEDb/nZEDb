@@ -119,7 +119,7 @@ class Books
 
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
-			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
+			$catsrch = (new \Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
 		}
 
 
@@ -158,7 +158,7 @@ class Books
 
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
-			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
+			$catsrch = (new \Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
 		}
 
 		$maxage = '';
@@ -272,9 +272,9 @@ class Books
 
 	public function fetchAmazonProperties($title)
 	{
-		$obj = new AmazonProductAPI($this->pubkey, $this->privkey, $this->asstag);
+		$obj = new \AmazonProductAPI($this->pubkey, $this->privkey, $this->asstag);
 		try {
-			$result = $obj->searchProducts($title, AmazonProductAPI::BOOKS, 'TITLE');
+			$result = $obj->searchProducts($title, \AmazonProductAPI::BOOKS, 'TITLE');
 		} catch (Exception $e) {
 			$result = false;
 		}
@@ -321,7 +321,7 @@ class Books
 	 */
 	protected function processBookReleasesHelper($res, $categoryID)
 	{
-		if ($res instanceof Traversable && $res->rowCount() > 0) {
+		if ($res instanceof \Traversable && $res->rowCount() > 0) {
 			if ($this->echooutput) {
 				$this->pdo->log->doEcho($this->pdo->log->header("\nProcessing " . $res->rowCount() . ' book release(s) for category ID ' . $categoryID));
 			}
@@ -424,7 +424,7 @@ class Books
 
 	public function updateBookInfo($bookInfo = '', $amazdata = null)
 	{
-		$ri = new ReleaseImage($this->pdo);
+		$ri = new \ReleaseImage($this->pdo);
 
 		$book = array();
 

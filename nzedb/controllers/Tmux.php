@@ -386,7 +386,7 @@ class Tmux
 					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid IN (%s) AND bookinfoid IS NULL) AS processbooks,
 					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid = 4050 AND gamesinfo_id = 0) AS processgames,
 					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 6000 AND 6040 AND xxxinfo_id = 0) AS processxxx,
-					(SELECT COUNT(*) FROM releases r WHERE 1=1 %s) AS processnfo", $bookreqids, Nfo::NfoQueryString($this->pdo));
+					(SELECT COUNT(*) FROM releases r WHERE 1=1 %s) AS processnfo", $bookreqids, \Nfo::NfoQueryString($this->pdo));
 			case 2:
 				return "SELECT
 					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND nfostatus = 1) AS nfo,
