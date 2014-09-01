@@ -350,6 +350,7 @@ class AniDBstandAlone {
 		curl_setopt($ch, CURLOPT_HEADER, 0);
 		curl_setopt($ch, CURLOPT_FAILONERROR, 1);
 		curl_setopt($ch, CURLOPT_ENCODING, 'gzip');
+		curl_setopt_array($ch, nzedb\utility\Utility::curlSslContextOptions());
 		$apiresponse = curl_exec($ch);
 
 		if ($this->echooutput) {
