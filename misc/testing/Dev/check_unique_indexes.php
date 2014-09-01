@@ -15,7 +15,7 @@ if (!isset($argv[1])) {
 }
 
 // Set for Session
-if ($argv[1] === 'alter') {
+if (isset($argv[1]) && $argv[1] === 'alter') {
 	$pdo->queryExec("SET SESSION old_alter_table = 1");
 }
 
