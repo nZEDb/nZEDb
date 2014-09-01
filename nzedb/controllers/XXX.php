@@ -600,7 +600,10 @@ class XXX
 				$name = preg_replace('/\(.*?\)|[-._]/i', ' ', $name);
 				// Finally remove multiple spaces and trim leading spaces.
 				$name = trim(preg_replace('/\s{2,}/', ' ', $name));
-
+				// Remove Private Movies {d} from name better matching.
+				$name = trim(preg_replace('/^Private\s(Specials|Blockbusters|Sports|Gold|Lesbian|Movies|Classics|Castings|Fetish|Stars|Pictures|XXX|Private|Black\sLabel|Black)\s\d+/i', '', $name));
+				// Remove Foreign Words at the end of the name.
+				$name = trim(preg_replace('/$(brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|latin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish)/i', '', $name));
 
 				// Check if the name is long enough and not just numbers and not file (d) of (d) and does not contain Episodes and any dated 00.00.00 which are site rips..
 				if (strlen($name) > 5 && !preg_match('/^\d+$/', $name) && !preg_match('/( File \d+ of \d+|\d+.\d+.\d+)/',$name) && !preg_match('/(E\d+)/',$name) && !preg_match('/\d\d\.\d\d.\d\d/', $name)) {
