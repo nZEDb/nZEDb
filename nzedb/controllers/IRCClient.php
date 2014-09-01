@@ -626,7 +626,7 @@ class IRCClient
 			$error_string,
 			$this->_remote_connection_timeout,
 			STREAM_CLIENT_CONNECT,
-			stream_context_create(nzedb\utility\Utility::streamSslContextOptions())
+			stream_context_create(nzedb\utility\Utility::streamSslContextOptions(true))
 		);
 
 		if ($socket === false) {
