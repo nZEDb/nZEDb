@@ -10,6 +10,16 @@ class AniDB
 	const REGEX_NOFORN = 'English|Japanese|German|Danish|Flemish|Dutch|French|Swe(dish|sub)|Deutsch|Norwegian';
 
 	/**
+	 * @var int number of AniDB releases to process
+	 */
+	private $aniqty;
+
+	/**
+	 * @var bool Whether or not to echo messages to CLI
+	 */
+	public $echooutput;
+
+	/**
 	 * @var nzedb\db\populate\AniDB
 	 */
 	public $padb;
@@ -18,16 +28,6 @@ class AniDB
 	 * @var nzedb\db\Settings
 	 */
 	public $pdo;
-
-	/**
-	 * @var bool Whether or not to echo messages to CLI
-	 */
-	public $echooutput;
-
-	/**
-	 * @var int number of AniDB releases to process
-	 */
-	private $aniqty;
 
 	/**
 	 * @param array $options Class instances / Echo to cli.
@@ -88,58 +88,24 @@ class AniDB
 		}
 	}
 
-	private function _matchAnimeRelease($release = array())
+	private function _checkAniDBInfo($anidbId, $episode = -1)
 	{
-		$matched = false;
-		$type = 'Local';
+		return $this->pdo->queryOneRow(
+						 sprintf('
+							SELECT ae.anidb_id, ae.episode_no,
+								ae.airdate, ae.episode_title
+							FROM anidb_episodes ae
+							WHERE ae.anidb_id = %d
+							AND ae.episode_no = %d',
+								 $anidbId,
+								 $episode
+						 )
+		);
+	}
 
-		// clean up the release name to ensure we get a good chance at getting a valid title
-		$cleanArr = $this->_extractTitleEp($release['searchname']);
-
-		if (is_array($cleanArr) && isset($cleanArr['title']) && is_numeric($cleanArr['epno'])) {
-
-			echo $this->pdo->log->header(PHP_EOL . "Looking Up: ") .
-				$this->pdo->log->primary("   Title: {$cleanArr['title']}" . PHP_EOL . "   Episode: {$cleanArr['epno']}");
-
-			// get anidb number for the title of the name
-			$anidbId = $this->_getAnidbByName($cleanArr['title']);
-
-			if($anidbId === false) {
-				$tmpName = preg_replace('/\s/', '%', $cleanArr['title']);
-				$anidbId = $this->_getAnidbByName($tmpName);
-			}
-
-			if (!empty($anidbId) && is_numeric($anidbId['anidb_id']) && $anidbId['anidb_id'] > 0) {
-
-				$updatedAni = $this->_checkAniDBInfo($anidbId['anidb_id'], $cleanArr['epno']);
-
-				if ($updatedAni === false) {
-					if ($this->_updateTimeCheck($anidbId['anidb_id']) === false) {
-						$this->padb->_populateType('info', $anidbId['anidb_id']);
-						$this->_doRandSleep();
-						$updatedAni = $this->_checkAniDBInfo($anidbId['anidb_id']);
-						$type = 'Remote';
-					} else {
-						echo PHP_EOL . $this->pdo->log->info("This AniDB ID was not found to be accurate locally, but has been updated too recently to check AniDB.") . PHP_EOL;
-					}
-				}
-
-				$this->_updateRelease($anidbId['anidb_id'], $cleanArr['epno'], $updatedAni['episode_title'], $updatedAni['airdate'], $release['id']);
-
-				$this->pdo->log->doEcho(
-					$this->pdo->log->header("Matched {$type} AniDB ID: ") .
-					$this->pdo->log->alternateOver("   Title: ") .
-					$this->pdo->log->primary($anidbId['title']) .
-					$this->pdo->log->alternateOver("   Episode #: ") .
-					$this->pdo->log->primary($cleanArr['epno']) .
-					$this->pdo->log->alternateOver("   Episode Title: ") .
-					$this->pdo->log->primary($updatedAni['episode_title'])
-				);
-
-				$matched = true;
-			}
-		}
-		return $matched;
+	private function _doRandSleep()
+	{
+		sleep(rand(10, 15));
 	}
 
 	private function _extractTitleEp($cleanName = '')
@@ -162,26 +128,6 @@ class AniDB
 		return $matches;
 	}
 
-	private function _doRandSleep()
-	{
-		sleep(rand(10,15));
-	}
-
-	private function _checkAniDBInfo($anidbId, $episode = -1)
-	{
-		return $this->pdo->queryOneRow(
-						sprintf('
-							SELECT ae.anidb_id, ae.episode_no,
-								ae.airdate, ae.episode_title
-							FROM anidb_episodes ae
-							WHERE ae.anidb_id = %d
-							AND ae.episode_no = %d',
-							$anidbId,
-							$episode
-						)
-		);
-	}
-
 	private function _getAnidbByName($searchName = '')
 	{
 		return $this->pdo->queryOneRow(
@@ -192,6 +138,67 @@ class AniDB
 							$this->pdo->likeString($searchName, true, true)
 						)
 		);
+	}
+
+	private function _matchAnimeRelease($release = array())
+	{
+		$matched = false;
+		$type    = 'Local';
+
+		// clean up the release name to ensure we get a good chance at getting a valid title
+		$cleanArr = $this->_extractTitleEp($release['searchname']);
+
+		if (is_array($cleanArr) && isset($cleanArr['title']) && is_numeric($cleanArr['epno'])) {
+
+			echo $this->pdo->log->header(PHP_EOL . "Looking Up: ") .
+				 $this->pdo->log->primary("   Title: {$cleanArr['title']}" . PHP_EOL .
+										  "   Episode: {$cleanArr['epno']}");
+
+			// get anidb number for the title of the name
+			$anidbId = $this->_getAnidbByName($cleanArr['title']);
+
+			if ($anidbId === false) {
+				$tmpName = preg_replace('/\s/', '%', $cleanArr['title']);
+				$anidbId = $this->_getAnidbByName($tmpName);
+			}
+
+			if (!empty($anidbId) && is_numeric($anidbId['anidb_id']) && $anidbId['anidb_id'] > 0) {
+
+				$updatedAni = $this->_checkAniDBInfo($anidbId['anidb_id'], $cleanArr['epno']);
+
+				if ($updatedAni === false) {
+					if ($this->_updateTimeCheck($anidbId['anidb_id']) === false) {
+						$this->padb->_populateType('info', $anidbId['anidb_id']);
+						$this->_doRandSleep();
+						$updatedAni = $this->_checkAniDBInfo($anidbId['anidb_id']);
+						$type       = 'Remote';
+					} else {
+						echo PHP_EOL .
+							 $this->pdo->log->info("This AniDB ID was not found to be accurate locally, but has been updated too recently to check AniDB.") .
+							 PHP_EOL;
+					}
+				}
+
+				$this->_updateRelease($anidbId['anidb_id'],
+									  $cleanArr['epno'],
+									  $updatedAni['episode_title'],
+									  $updatedAni['airdate'],
+									  $release['id']);
+
+				$this->pdo->log->doEcho(
+							   $this->pdo->log->header("Matched {$type} AniDB ID: ") .
+							   $this->pdo->log->alternateOver("   Title: ") .
+							   $this->pdo->log->primary($anidbId['title']) .
+							   $this->pdo->log->alternateOver("   Episode #: ") .
+							   $this->pdo->log->primary($cleanArr['epno']) .
+							   $this->pdo->log->alternateOver("   Episode Title: ") .
+							   $this->pdo->log->primary($updatedAni['episode_title'])
+				);
+
+				$matched = true;
+			}
+		}
+		return $matched;
 	}
 
 	private function _updateRelease($anidbId, $epno, $title, $airdate, $relId)
