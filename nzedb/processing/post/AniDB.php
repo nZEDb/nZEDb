@@ -2,7 +2,7 @@
 
 namespace nzedb\processing\post;
 
-use nzedb\db\Settings;
+use \nzedb\db\Settings;
 
 class AniDB
 {
@@ -20,12 +20,12 @@ class AniDB
 	public $echooutput;
 
 	/**
-	 * @var nzedb\db\populate\AniDB
+	 * @var \nzedb\db\populate\AniDB
 	 */
 	public $padb;
 
 	/**
-	 * @var nzedb\db\Settings
+	 * @var \nzedb\db\Settings
 	 */
 	public $pdo;
 
@@ -70,7 +70,7 @@ class AniDB
 			$this->padb = new AniDB(['Echo' => $this->echooutput, 'Settings' => $this->pdo]);
 
 			foreach ($results as $release) {
-				$matched = $this->_matchAnimeRelease($release);
+				$matched = $this->matchAnimeRelease($release);
 				if ($matched === false) {
 					$this->pdo->queryExec(
 								sprintf('
@@ -88,7 +88,7 @@ class AniDB
 		}
 	}
 
-	private function _checkAniDBInfo($anidbId, $episode = -1)
+	private function checkAniDBInfo($anidbId, $episode = -1)
 	{
 		return $this->pdo->queryOneRow(
 						 sprintf('
@@ -103,12 +103,12 @@ class AniDB
 		);
 	}
 
-	private function _doRandSleep()
+	private function doRandomSleep()
 	{
 		sleep(rand(10, 15));
 	}
 
-	private function _extractTitleEp($cleanName = '')
+	private function extractTitleEpisode($cleanName = '')
 	{
 		if (preg_match('/(^|.*\")(\[[a-zA-Z\.\!?-]+\][\s_]*)?(\[BD\][\s_]*)?(\[\d{3,4}[ip]\][\s_]*)?(?P<title>[\w\s_.+!?\'-\(\)]+)(New Edit|(Blu-?ray)?( ?Box)?( ?Set)?)?([ _]-[ _]|([ ._-]Epi?(sode)?)?[ ._-]?|[ ._-]Vol\.|[ ._-]E)(?P<epno>\d{1,3}|Movie|O[VA]{2}|Complete Series)(v\d|-\d+)?[-_. ].*[\[\(\"]/i', $cleanName, $matches)) {
 			$matches['epno'] = (int) $matches['epno'];
@@ -128,7 +128,7 @@ class AniDB
 		return $matches;
 	}
 
-	private function _getAnidbByName($searchName = '')
+	private function getAnidbByName($searchName = '')
 	{
 		return $this->pdo->queryOneRow(
 						sprintf("
@@ -140,13 +140,13 @@ class AniDB
 		);
 	}
 
-	private function _matchAnimeRelease($release = array())
+	private function matchAnimeRelease($release = array())
 	{
 		$matched = false;
 		$type    = 'Local';
 
 		// clean up the release name to ensure we get a good chance at getting a valid title
-		$cleanArr = $this->_extractTitleEp($release['searchname']);
+		$cleanArr = $this->extractTitleEpisode($release['searchname']);
 
 		if (is_array($cleanArr) && isset($cleanArr['title']) && is_numeric($cleanArr['epno'])) {
 
@@ -155,22 +155,22 @@ class AniDB
 										  "   Episode: {$cleanArr['epno']}");
 
 			// get anidb number for the title of the name
-			$anidbId = $this->_getAnidbByName($cleanArr['title']);
+			$anidbId = $this->getAnidbByName($cleanArr['title']);
 
 			if ($anidbId === false) {
 				$tmpName = preg_replace('/\s/', '%', $cleanArr['title']);
-				$anidbId = $this->_getAnidbByName($tmpName);
+				$anidbId = $this->getAnidbByName($tmpName);
 			}
 
 			if (!empty($anidbId) && is_numeric($anidbId['anidb_id']) && $anidbId['anidb_id'] > 0) {
 
-				$updatedAni = $this->_checkAniDBInfo($anidbId['anidb_id'], $cleanArr['epno']);
+				$updatedAni = $this->checkAniDBInfo($anidbId['anidb_id'], $cleanArr['epno']);
 
 				if ($updatedAni === false) {
-					if ($this->_updateTimeCheck($anidbId['anidb_id']) === false) {
+					if ($this->updateTimeCheck($anidbId['anidb_id']) === false) {
 						$this->padb->_populateType('info', $anidbId['anidb_id']);
-						$this->_doRandSleep();
-						$updatedAni = $this->_checkAniDBInfo($anidbId['anidb_id']);
+						$this->doRandomSleep();
+						$updatedAni = $this->checkAniDBInfo($anidbId['anidb_id']);
 						$type       = 'Remote';
 					} else {
 						echo PHP_EOL .
@@ -179,7 +179,7 @@ class AniDB
 					}
 				}
 
-				$this->_updateRelease($anidbId['anidb_id'],
+				$this->updateRelease($anidbId['anidb_id'],
 									  $cleanArr['epno'],
 									  $updatedAni['episode_title'],
 									  $updatedAni['airdate'],
@@ -201,7 +201,7 @@ class AniDB
 		return $matched;
 	}
 
-	private function _updateRelease($anidbId, $epno, $title, $airdate, $relId)
+	private function updateRelease($anidbId, $epno, $title, $airdate, $relId)
 	{
 
 		$epno = 'E' . ($epno < 10 ? '0' : '') . $epno;
@@ -222,7 +222,7 @@ class AniDB
 		);
 	}
 
-	private function _updateTimeCheck($anidbId)
+	private function updateTimeCheck($anidbId)
 	{
 		return $this->pdo->queryOneRow(
 						sprintf("
@@ -234,5 +234,4 @@ class AniDB
 						)
 		);
 	}
-
 }
