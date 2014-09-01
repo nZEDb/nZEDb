@@ -175,7 +175,11 @@ class Binaries
 		$this->_debug = (nZEDb_DEBUG || nZEDb_LOGGING);
 
 		if ($this->_debug) {
-			$this->_debugging = ($options['Logger'] instanceof Logger ? $options['Logger'] : new Logger(['ColorCLI' => $this->_colorCLI]));
+			try {
+				$this->_debugging = ($options['Logger'] instanceof Logger ? $options['Logger'] : new Logger(['ColorCLI' => $this->_colorCLI]));
+			} catch (\LoggerException $error) {
+				$this->_debug = false;
+			}
 		}
 
 		$this->messageBuffer = ($this->_pdo->getSetting('maxmssgs') != '') ? $this->_pdo->getSetting('maxmssgs') : 20000;
@@ -621,8 +625,17 @@ class Binaries
 				}
 			}
 
-			// Find part / total parts. Ignore if no part count found.
-			if (preg_match('/^\s*(?!"Usenet Index Post)(.+)\s+\((\d+)\/(\d+)\)$/', $header['Subject'], $matches)) {
+			/*
+			 * Find part / total parts. Ignore if no part count found.
+			 *
+			 * \s* Trims the leading space.
+			 * (?!"Usenet Index Post) ignores these types of articles, they are useless.
+			 * (.+) Fetches the subject.
+			 * \s+ Trims trailing space after the subject.
+			 * \((\d+)\/(\d+)\) Gets the part count.
+			 * No ending ($) as there are cases of subjects with extra data after the part count.
+			 */
+			if (preg_match('/^\s*(?!"Usenet Index Post)(.+)\s+\((\d+)\/(\d+)\)/', $header['Subject'], $matches)) {
 				// Add yEnc to subjects that do not have them, but have the part number at the end of the header.
 				if (!stristr($header['Subject'], 'yEnc')) {
 					$matches[1] .= ' yEnc';
@@ -860,7 +873,7 @@ class Binaries
 				$this->_colorCLI->primaryOver(' to download articles, ') .
 				$this->_colorCLI->alternateOver($timeCleaning . 's') .
 				$this->_colorCLI->primaryOver(' to process collections, ') .
-				$this->_colorCLI->alternateOver(number_format($timeInsert, 2) . 's') .
+				$this->_colorCLI->alternateOver($timeInsert . 's') .
 				$this->_colorCLI->primaryOver(' to insert binaries/parts, ') .
 				$this->_colorCLI->alternateOver(number_format($currentMicroTime - $startPR, 2) . 's') .
 				$this->_colorCLI->primaryOver(' for part repair, ') .

@@ -28,7 +28,7 @@ Assuming you are on ubuntu:
 
 `sudo mv /etc/sphinxsearch/sphinx.conf /etc/sphinxsearch/sphinx.conf.1`
 
-`sudo cp sphinx.conf /etc/sphinxsearch/sphinx.conf`
+`sudo cp /var/www/nZEDb/misc/sphinxsearch/sphinx.conf /etc/sphinxsearch/sphinx.conf`
 
 ##### Edit the sphinx.conf file:
 Everything should be good by default for linux, but you can get better performance by changing some settings. Specifically the rt_mem_limit and mem_limit settings, setting those to 2048M if you have the RAM will make a difference.
@@ -73,10 +73,10 @@ Change the `nZEDb_RELEASE_SEARCH_TYPE` to `2`
 If you changed the `listen` setting in sphinx.conf you will need to change the `nZEDb_SPHINXQL_HOST_NAME` / `nZEDb_SPHINXQL_PORT` / `nZEDb_SPHINXQL_SOCK_FILE` settings accordingly, otherwise it's fine.
 
 ##### Create the SphinxSE table:
-In this folder there is a create_se_tables.php file, run the file using your hostname / port to the sphinx server you set in sphinx.conf (by default this should be 0 and 9312).
+In this folder (.../misc/sphinxsearch) there is a create_se_tables.php file, run the file using your hostname / port to the sphinx server you set in sphinx.conf (by default this should be 0 and 9312).
 
 ##### Populate the Sphinx RT index with data:
-In this folder there is a populate_rt_indexes.php file, run the file and wait until it is complete.
+In this folder (.../misc/sphinxsearch) there is a populate_rt_indexes.php file, run the file and wait until it is complete.
 
 You are now done with this guide, sphinx search should work. The index will populate itself from now on, you do not need to rerun this script unless you disable sphinx.
 

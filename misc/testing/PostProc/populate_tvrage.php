@@ -17,7 +17,11 @@ if ($tvshows !== false) {
 	foreach ($tvshows->show as $rage) {
 		$dupecheck = $pdo->queryOneRow(sprintf('SELECT COUNT(id) FROM tvrage WHERE id = %s', $pdo->escapeString($rage->id)));
 		if (isset($rage->id) && isset($rage->name) && !empty($rage->id) && !empty($rage->name) && empty($dupecheck)) {
-			$pdo->queryInsert(sprintf('INSERT INTO tvrage (rageid, releasetitle, country) VALUES (%s, %s, %s)', $pdo->escapeString($rage->id), $pdo->escapeString($rage->name), $pdo->escapeString($rage->country)));
+			$pdo->queryInsert(sprintf('INSERT INTO tvrage (id, rageid, releasetitle, country) VALUES (%s, %s, %s)',
+									  $pdo->escapeString($rage->id),
+									  $pdo->escapeString($rage->id),
+									  $pdo->escapeString($rage->name),
+									  $pdo->escapeString($rage->country)));
 			$updated++;
 		}
 	}

@@ -4,17 +4,69 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
-
 2014-08-25 niel
 	* New: Merged and tagged v0.3.13 to master branch.
+	* Fix: Attempt to detect remote MySQL server during install and use LOCAL for table loading if so.
+2014-08-24 ruhllatio
+	* Fix: Console SQL errors when review isn't set.
+2014-08-23 ruhllatio
+	* Fix: Bug where memcached sockets will not work with nZEDb because the port was defaulting and it needed to be 0 in offset 1
+	* Fix: browseby errors in Movie and XXX
+2014-08-23 kevin
+	* Fix: Bug in settings.tsv, extra tab character in mischashedretentionhours causing new installs to have empty value.
+	* Fix: Add missing 'Maximum repair tries:' to settings.tsv and fix typo in site edit.
+2014-08-22 kevin
+	* Fix: Double number format in Binaries echo.
+2014-08-22 ruhllatio
+	* Chg: Move largely duplicated catSrch code to Category->getCategorySearch
+	* Chg: Remove dead $pdo's and switch all to $this->pdo
+	* Chg: Movies.php now uses getCategorySearch as well instead of its own function
+	* Chg: Clean up XXX Post proc some - set unique index on xxxinfo.title removing dupes and remove ODKU
+2014-08-21 bart39
+	* Fix: Amazon throttling dues to api error message change.
+	* Fix: Wrong sort method for musictrack category via amazon lookup.
+	* Add: Regex additions for ReleaseCleaning.
+	* Fix: invalid GiantBomb link in alpha theme.
+	* Fix: Error resetting games post processing.
+	* Fix: NameFixer typo's.
+2014-08-21 ruhllatio
+	* Chg: Re-work RottenTomato update function to remove duplication
+	* Fix: Typo in RottenTomato function
+	* Chg: Behavior of updateSingleColumn in NameFixer
+	* Fix: A few bugs in various scripts
+	* Chg: Revamp console post processing and improve matching
 2014-08-21 niel
     * Fix: Cherry-pick commit e5e49153 to master to fix the 'driver not found' issue in install Step 2.
+2014-08-20 ruhllatio
+	* Chg: More optimizations to MiscSorter
+	* Fix: test_misc_sorter script errors due to removed functions
+	* Fix: Tmux Query for Process Console diff using Games count
+	* Chg: Remove a ton of repeated if conditions in NameFixer with single opening ifs
+	* Chg: Add function to NameFixer to update single columns in releases table
+	* Fix: A few errors in MiscSorter due to unhandled Amazon returns
+	* Chg: Optimize NameFixer more and fix more scrutinizer bugs
+	* Fix: 2 Regex compilation errors in NameFixer
+	* Fix: A few more scrutinizer issues
+2014-08-20 kevin
+	* Add: Script to verify the important folder permisions.
+	* Chg: Make cover path checking optional, in case user has not run install yet in verify_permissions script.
+	* Chg: Catch Logger exceptions, solves blank pages for those with improper permissions on resources/logs folder/files.
+2014-08-19 ruhllatio
+	* Chg: Revamp MiscSorter
+	* Add: Categorization support by group for a.b.cd.images.sega-saturn
+	* Fix: Issues identified by Scrutinizer
+2014-08-19 kevin
+	* Add: Regex support for alt.binaries.e-book.magazines
+	* Fix: Wrong array used in queue.php, reported/solution by user gaz_az.
 2014-08-19 niel
 	* Fix: Manually updated versions.
-2014-08-18 niel
-	* New: Merged and tagged v0.3.12 to master branch.
 2014-08-18 bart39
 	* Fix: Typo.
+	* Fix: Typo in site edit.
+2014-08-18 niel
+	* New: Merged and tagged v0.3.12 to master branch.
+2014-08-17 niel
+	* Mrg: Bringing in tasky's Steam scraping work.
 2014-08-15 kevin
 	* Chg: Speed up addLanguage api function.
 2014-08-15 bart39
