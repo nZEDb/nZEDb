@@ -7,7 +7,7 @@ $pdo = new Settings();
 
 if (isset($argv[1]) && $argv[1] == 'true') {
 	// next get the title list and populate the DB, update animetitles once a week
-	(new \nzedb\db\populate\AniDB(['Settings' => $pdo, 'Echo' => true]))->_populateType('full');
+	(new \nzedb\db\populate\AniDB(['Settings' => $pdo, 'Echo' => true]))->populateTable('full');
 
 } else {
 	$pdo->log->doEcho(PHP_EOL . $pdo->log->error(
