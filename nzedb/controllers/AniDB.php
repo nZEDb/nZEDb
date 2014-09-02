@@ -23,6 +23,21 @@ class AniDB
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 	}
 
+	/**
+	 * Updates stored AniDB entries in the database
+	 *
+	 * @param int $anidbID
+	 * @param string $type
+	 * @param string $startdate
+	 * @param string $enddate
+	 * @param string $related
+	 * @param string $similar
+	 * @param string $creators
+	 * @param string $description
+	 * @param string $rating
+	 * @param string $categories
+	 * @param string $characters
+	 */
 	public function updateTitle($anidbID, $type, $startdate, $enddate, $related, $similar, $creators, $description, $rating, $categories, $characters)
 	{
 		$this->pdo->queryExec(
@@ -51,6 +66,11 @@ class AniDB
 		);
 	}
 
+	/**
+	 * Deletes stored AniDB entries in the database
+	 *
+	 * @param int $anidbID
+	 */
 	public function deleteTitle($anidbID)
 	{
 		$this->pdo->queryExec(
@@ -65,34 +85,13 @@ class AniDB
 		);
 	}
 
-	public function getanidbID($title)
-	{
-		$anidbID = $this->pdo->queryOneRow(
-						sprintf('
-							SELECT anidb_id
-							FROM animetitles
-							WHERE title REGEXP %s
-							LIMIT 1',
-							$this->pdo->escapeString('^' . $title . '$')
-						)
-		);
-
-		// if the first query failed try it again using like as we have a change for a match
-		if ($anidbID == false) {
-			$anidbID = $this->pdo->queryOneRow(
-								sprintf('
-									SELECT anidb_id
-									FROM anidb
-									WHERE title %s
-									LIMIT 1',
-									$this->pdo->likeString($title, true, true)
-								)
-			);
-		}
-
-		return (empty($anidbID['anidb_id']) ? false : $anidbID['anidb_id']);
-	}
-
+	/**
+	 * Retrieves a list of Anime titles, optionally filtered by starting character and title
+	 *
+	 * @param string $letter
+	 * @param string $animetitle
+	 * @return array|bool
+	 */
 	public function getAnimeList($letter = '', $animetitle = '')
 	{
 		$regex = 'REGEXP';
@@ -110,21 +109,29 @@ class AniDB
 			$tsql .= sprintf('AND a.title %s', $this->pdo->likeString($animetitle, true, true));
 		}
 
-		return $this->pdo->query(
-					sprintf('
-						SELECT a.anidb_id, a.title, ai.type, ai.categories,
-							ai.rating, ai.startdate, ai.enddate
-						FROM anidb a
-						INNER JOIN anidb_info ai USING (anidb_id)
-						WHERE a.anidb_id > 0 %s %s
-						GROUP BY a.anidb_id
-						ORDER BY a.title ASC',
-						$rsql,
-						$tsql
-					)
+		return $this->pdo->queryDirect(
+						sprintf('
+							SELECT a.anidb_id, a.title, ai.type, ai.categories,
+								ai.rating, ai.startdate, ai.enddate
+							FROM anidb a
+							INNER JOIN anidb_info ai USING (anidb_id)
+							WHERE a.anidb_id > 0 %s %s
+							GROUP BY a.anidb_id
+							ORDER BY a.title ASC',
+							$rsql,
+							$tsql
+						)
 		);
 	}
 
+	/**
+	 * Retrieves a range of Anime titles for site display
+	 *
+	 * @param int $start
+	 * @param int $num
+	 * @param string $animetitle
+	 * @return array|bool
+	 */
 	public function getAnimeRange($start, $num, $animetitle = '')
 	{
 		if ($start === false) {
@@ -151,6 +158,12 @@ class AniDB
 		);
 	}
 
+	/**
+	 * Retrives the count of Anime titles for pager functions optionally filtered by title
+	 *
+	 * @param string $animetitle
+	 * @return int
+	 */
 	public function getAnimeCount($animetitle = '')
 	{
 		$rsql = '';
@@ -171,16 +184,22 @@ class AniDB
 		return $res['num'];
 	}
 
+	/**
+	 * Retrieves all info for a specific AniDB ID
+	 *
+	 * @param int $anidbID
+	 * @return
+	 */
 	public function getAnimeInfo($anidbID)
 	{
-		$animeInfo = $this->pdo->query(
-						sprintf('
-							SELECT a.*, ai.*
-							FROM anidb a
-							INNER JOIN anidb_info ai USING (anidb_id)
-							WHERE a.anidb_id = %d',
-							$anidbID
-						)
+		$animeInfo = $this->pdo->queryDirect(
+							sprintf('
+								SELECT a.*, ai.*
+								FROM anidb a
+								INNER JOIN anidb_info ai USING (anidb_id)
+								WHERE a.anidb_id = %d',
+								$anidbID
+							)
 		);
 
 		return isset($animeInfo[0]) ? $animeInfo[0] : false;
