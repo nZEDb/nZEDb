@@ -81,20 +81,6 @@ class AniDB
 		$this->banned = false;
 	}
 
-	public function deleteAniDBId()
-	{
-		$this->pdo->queryExec(
-				  sprintf('
-						DELETE a, ai, ae
-						FROM anidb a
-						LEFT OUTER JOIN anidb_info ai USING (anidb_id)
-						LEFT OUTER JOIN anidb_episodes ae USING (anidb_id)
-						WHERE a.anidb_id = %d',
-						  $this->anidbId
-				  )
-		);
-	}
-
 	public function getAnimeInfo()
 	{
 		return $this->pdo->queryDirect(
