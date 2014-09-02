@@ -452,7 +452,7 @@ CREATE TABLE         xxxinfo (
   createddate DATETIME                       NOT NULL,
   updateddate DATETIME                       NOT NULL,
   PRIMARY KEY                      (id),
-  INDEX        ix_xxxinfo_title  (title)
+  UNIQUE INDEX ix_xxxinfo_title  (title)
 )
   ENGINE          = MYISAM
   DEFAULT CHARSET = utf8
