@@ -192,7 +192,7 @@ class AniDB
 					}
 					$AniDBAPIArray['similar'] = implode(', ', $similarArray);
 			} else {
-				$AniDBAPIArray['similar'] = 'NULL';
+				$AniDBAPIArray['similar'] = 'No similar anime available for this AniDB ID.';
 			}
 
 			if (isset($AniDBAPIXML->relatedanime)
@@ -202,7 +202,7 @@ class AniDB
 					}
 					$AniDBAPIArray['related'] = implode(', ', $relatedArray);
 			} else {
-				$AniDBAPIArray['related'] = 'NULL';
+				$AniDBAPIArray['related'] = 'No related anime available for this AniDB ID.';
 			}
 
 			if ($AniDBAPIXML->creators instanceof \Traversable) {
@@ -211,7 +211,7 @@ class AniDB
 				}
 				$AniDBAPIArray['creators'] = implode(', ', $creatorArray);
 			} else {
-				$AniDBAPIArray['creators'] = 'NULL';
+				$AniDBAPIArray['creators'] = 'No creators available for this AniDB ID.';
 			}
 
 			if ($AniDBAPIXML->characters->character instanceof \Traversable) {
@@ -220,7 +220,7 @@ class AniDB
 				}
 				$AniDBAPIArray['characters'] = implode(', ', $characterArray);
 			} else {
-				$AniDBAPIArray['categories'] = 'NULL';
+				$AniDBAPIArray['characters'] = 'No characters available for this AniDB ID.';
 			}
 
 			if ($AniDBAPIXML->categories->category instanceof \Traversable) {
@@ -229,7 +229,7 @@ class AniDB
 				}
 				$AniDBAPIArray['categories'] = implode(', ', $categoryArray);
 			} else {
-				$AniDBAPIArray['categories'] = 'NULL';
+				$AniDBAPIArray['categories'] = 'No categories available for this AniDB ID.';
 			}
 
 			// only english, x-jat imploded episode titles for now
@@ -276,11 +276,13 @@ class AniDB
 				$AniDBAPIArray['rating'] = $AniDBAPIXML->ratings->permanent;
 			} elseif (isset($AniDBAPIXML->ratings->temporary)) {
 				$AniDBAPIArray['rating'] = $AniDBAPIXML->ratings->temporary;
+			} else {
+				$AniDBAPIArray['rating'] = 'No categories available for this AniDB ID.';
 			}
 
 			$AniDBAPIArray += array(
-						'type'          => isset($AniDBAPIXML->type[0]) ? (string) $AniDBAPIXML->type : '',
-						'description'   => isset($AniDBAPIXML->description) ? (string) $AniDBAPIXML->description : '',
+						'type'          => isset($AniDBAPIXML->type[0]) ? (string) $AniDBAPIXML->type : 'N/A',
+						'description'   => isset($AniDBAPIXML->description) ? (string) $AniDBAPIXML->description : 'No description available for this AniDB ID.',
 						'picture'       => isset($AniDBAPIXML->picture[0]) ? (string) $AniDBAPIXML->picture : '',
 						'epsarr'        => $episodeArray
 			);
