@@ -23,12 +23,12 @@ class AniDB
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 	}
 
-	public function updateTitle($anidbID, $title, $type, $startdate, $enddate, $related, $creators, $description, $rating, $categories, $characters, $epnos, $airdates, $episodetitles)
+	public function updateTitle($anidbID, $type, $startdate, $enddate, $related, $similar, $creators, $description, $rating, $categories, $characters)
 	{
 		$this->pdo->queryExec(
 					sprintf('
 						UPDATE anidb a INNER JOIN anidb_info ai USING (anidb_id) SET title = %s, type = %s, startdate = %s, enddate = %s,
-							related = %s, creators = %s, description = %s, rating = %s,
+							related = %s, similar = %s, creators = %s, description = %s, rating = %s,
 							categories = %s, characters = %s, epnos = %s, airdates = %s,
 							episodetitles = %s, unixtime = %d WHERE anidb_id = %d',
 						$this->pdo->escapeString($title),
@@ -36,6 +36,7 @@ class AniDB
 						$this->pdo->escapeString($startdate),
 						$this->pdo->escapeString($enddate),
 						$this->pdo->escapeString($related),
+						$this->pdo->escapeString($similar),
 						$this->pdo->escapeString($creators),
 						$this->pdo->escapeString($description),
 						$this->pdo->escapeString($rating),
@@ -52,7 +53,16 @@ class AniDB
 
 	public function deleteTitle($anidbID)
 	{
-		$this->pdo->queryExec(sprintf('DELETE FROM anidb a INNER JOIN anidb_info ai USING (anidb_id) WHERE anidb_id = %d', $anidbID));
+		$this->pdo->queryExec(
+					sprintf('
+						DELETE a, ai, ae
+						FROM anidb a
+						LEFT OUTER JOIN anidb_info ai USING (anidb_id)
+						LEFT OUTER JOIN anidb_episodes ae USING (anidb_id)
+						WHERE anidb_id = %d',
+						  $anidbID
+					)
+		);
 	}
 
 	public function getanidbID($title)
