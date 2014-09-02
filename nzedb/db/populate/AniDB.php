@@ -81,6 +81,11 @@ class AniDB
 		$this->banned = false;
 	}
 
+	/**
+	 * Retrieve main anime info for a given AniDB ID
+	 *
+	 * @return array|bool
+	 */
 	public function getAnimeInfo()
 	{
 		return $this->pdo->queryDirect(
@@ -94,6 +99,8 @@ class AniDB
 	}
 
 	/**
+	 * Main switch that initiates AniDB table population
+	 *
 	 * @param string	$type
 	 * @param integer	$anidbId
 	 */
@@ -110,6 +117,8 @@ class AniDB
 	}
 
 	/**
+	 * Inserts new anime info from AniDB to anidb table
+	 *
 	 * @param int $id The AniDB ID to be inserted
 	 * @param string $type The title type
 	 * @param string $lang The title language
@@ -139,6 +148,15 @@ class AniDB
 		}
 	}
 
+	/**
+	 * Checks for an existing anime title in anidb table
+	 *
+	 * @param int $id The AniDB ID to be inserted
+	 * @param string $type The title type
+	 * @param string $lang The title language
+	 * @param string $title The title of the Anime
+	 * @return array|bool
+	 */
 	private function checkDuplicateDbEntry($id, $type, $lang, $title)
 	{
 		return $this->pdo->queryOneRow(
@@ -157,6 +175,15 @@ class AniDB
 		);
 	}
 
+	/**
+	 * Retrieves supplemental anime info from the AniDB API
+	 *
+	 * @param int $id The AniDB ID to be inserted
+	 * @param string $type The title type
+	 * @param string $lang The title language
+	 * @param string $title The title of the Anime
+	 * @return array|bool
+	 */
 	private function getAniDbAPI()
 	{
 		$apiresponse = $this->getAniDbResponse();
@@ -278,6 +305,11 @@ class AniDB
 		return false;
 	}
 
+	/**
+	 * Requests and returns the API data from AniDB
+	 *
+	 * @return xmlobject
+	 */
 	private function getAniDbResponse()
 	{
 		$curlString = 	sprintf(
@@ -308,6 +340,12 @@ class AniDB
 		return $apiresponse;
 	}
 
+	/**
+	 * Inserts new anime info from AniDB to anidb table
+	 *
+	 * @param array $AniDBInfoArray
+	 * @return string
+	 */
 	private function insertAniDBInfoEps($AniDBInfoArray = array())
 	{
 		$this->pdo->queryInsert(
@@ -334,6 +372,11 @@ class AniDB
 		return $AniDBInfoArray['picture'];
 	}
 
+	/**
+	 * Inserts new anime info from AniDB to anidb table
+	 *
+	 * @param array $episodeArr
+	 */
 	private function insertAniDBEpisodes($episodeArr = array())
 	{
 		foreach ($episodeArr AS $episode) {
@@ -405,6 +448,9 @@ class AniDB
 		}
 	}
 
+	/**
+	 * Directs flow for populating the AniDB Info/Episodes table
+	 */
 	private function populateInfoTable()
 	{
 		$AniDBAPIArray = $this->getAniDbAPI();
@@ -425,11 +471,20 @@ class AniDB
 		}
 	}
 
+	/**
+	 * Sets the database time for last full AniDB update
+	 */
 	private function setLastUpdated()
 	{
 		$this->pdo->setSetting(['name' => 'lastanidbupdate', 'value' => time()]);
 	}
 
+	/**
+	 * Updates existing anime info in anidb info/episodes tables
+	 *
+	 * @param array $AniDBInfoArray
+	 * @return string
+	 */
 	private function updateAniDBInfoEps($AniDBInfoArray = array())
 	{
 		$this->pdo->queryExec(
@@ -458,6 +513,11 @@ class AniDB
 		return $AniDBInfoArray['picture'];
 	}
 
+	/**
+	 * Directs flow for updating child AniDB tables
+	 *
+	 * @param array $AniDBInfoArray
+	 */
 	private function updateAniChildTables($AniDBInfoArray = array())
 	{
 		$check = $this->pdo->queryOneRow(
