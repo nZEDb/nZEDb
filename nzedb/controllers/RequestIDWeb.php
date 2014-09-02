@@ -146,10 +146,16 @@ class RequestIDWeb extends RequestID
 		}
 
 		// Mock array for isset check on server.
-		$requestArray[0] = array('ident' => 0, 'group' => 'none', 'reqid' => 0);
+		$requestArray[0] = ['ident' => 0, 'group' => 'none', 'reqid' => 0];
 
 		// Do a web lookup.
-		$returnXml = nzedb\utility\getUrl($this->pdo->getSetting('request_url'), 'post', 'data=' . serialize($requestArray));
+		$returnXml = nzedb\utility\Utility::getUrl([
+				'url' => $this->pdo->getSetting('request_url'),
+				'method' => 'post',
+				'postdata' => 'data=' . serialize($requestArray),
+				'verifycert' => false,
+			]
+		);
 
 		$renamed = 0;
 		// Change the release titles and insert the PRE's if they don't exist.
@@ -158,7 +164,7 @@ class RequestIDWeb extends RequestID
 			if ($returnXml !== false) {
 
 				// Store the returned identifiers so we can check which releases we didn't find a request id.
-				$returnedIdentifiers = array();
+				$returnedIdentifiers = [];
 
 				$groupIDArray = [];
 				foreach($returnXml->request as $result) {

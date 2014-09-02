@@ -16,7 +16,7 @@
 	<td>{if $cfg->sha1Check}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 </tr>
 <tr class="alt">
-	<td>Checking PHP's version:{if !$cfg->phpCheck}<br /><span class="warn">Your PHP verion is lower than recommened (5.4.0). You may encounter errors if you proceed.</span>{/if}</td>
+	<td>Checking PHP's version:{if !$cfg->phpCheck}<br /><span class="warn">Your PHP version is lower than recommended ({$cfg->minPhpVersion}). You may encounter errors if you proceed.</span>{/if}</td>
 	<td>{if $cfg->phpCheck}<span class="success">OK</span>{else}<span class="warn">Warning</span>{/if}</td>
 </tr>
 <tr class="">
@@ -56,7 +56,7 @@
 	<td>{if $cfg->memlimitCheck}<span class="success">OK</span>{else}<span class="warn">Warning</span>{/if}</td>
 </tr>
 <tr class="alt">
-	<td>Checking if the Smarty compile dir is writeable:
+	<td>Checking if the Smarty compile dir is writable:
 		{if !$cfg->cacheCheck}<br />
 			<span class="error">
 					The template compile dir must be writable.<br /><br />
@@ -69,7 +69,7 @@
 	<td>{if $cfg->cacheCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 </tr>
 <tr class="">
-	<td>Checking if the anime covers dir is writeable:
+	<td>Checking if the anime covers dir is writable:
 		{if !$cfg->animeCoversCheck}<br />
 			<span class="error">
 					The covers/anime dir must be writable.<br />
@@ -82,7 +82,7 @@
 	<td>{if $cfg->animeCoversCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 </tr>
 <tr class="alt">
-	<td>Checking if the audio covers dir is writeable:
+	<td>Checking if the audio covers dir is writable:
 		{if !$cfg->audioCoversCheck}<br />
 			<span class="error">
 					The covers/audio dir must be writable.<br />
@@ -95,7 +95,7 @@
 	<td>{if $cfg->audioCoversCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 </tr>
 <tr class="">
-	<td>Checking if the audio sample dir is writeable:
+	<td>Checking if the audio sample dir is writable:
 		{if !$cfg->audiosampleCoversCheck}<br />
 			<span class="error">
 					The covers/audiosample dir must be writable.<br />
@@ -108,7 +108,7 @@
 	<td>{if $cfg->audiosampleCoversCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 </tr>
 <tr class="alt">
-	<td>Checking if the book covers dir is writeable:
+	<td>Checking if the book covers dir is writable:
 		{if !$cfg->bookCoversCheck}<br />
 			<span class="error">
 					The covers/book dir must be writable.<br />
@@ -121,7 +121,7 @@
 	<td>{if $cfg->bookCoversCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 </tr>
 <tr class="">
-	<td>Checking if the console covers dir is writeable:
+	<td>Checking if the console covers dir is writable:
 		{if !$cfg->consoleCoversCheck}<br />
 			<span class="error">
 					The covers/console dir must be writable.<br />
@@ -134,7 +134,7 @@
 	<td>{if $cfg->consoleCoversCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 </tr>
 <tr class="alt">
-	<td>Checking if the movie covers dir is writeable:
+	<td>Checking if the movie covers dir is writable:
 		{if !$cfg->movieCoversCheck}<br />
 			<span class="error">
 					The covers/movies dir must be writable.<br />
@@ -147,7 +147,7 @@
 	<td>{if $cfg->movieCoversCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 </tr>
 <tr class="">
-	<td>Checking if the music covers dir is writeable:
+	<td>Checking if the music covers dir is writable:
 		{if !$cfg->musicCoversCheck}<br />
 			<span class="error">
 					The covers/music dir must be writable.<br />
@@ -160,7 +160,7 @@
 	<td>{if $cfg->musicCoversCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 </tr>
 <tr class="alt">
-	<td>Checking if the preview picture dir is writeable:
+	<td>Checking if the preview picture dir is writable:
 		{if !$cfg->previewCoversCheck}<br />
 			<span class="error">
 					The covers/preview dir must be writable.<br />
@@ -173,7 +173,7 @@
 	<td>{if $cfg->previewCoversCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 </tr>
 <tr class="">
-	<td>Checking if the sample picture dir is writeable:
+	<td>Checking if the sample picture dir is writable:
 		{if !$cfg->sampleCoversCheck}<br />
 			<span class="error">
 					The covers/sample dir must be writable.<br />
@@ -186,7 +186,7 @@
 	<td>{if $cfg->sampleCoversCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 </tr>
 <tr class="alt">
-	<td>Checking if the video sample dir is writeable:
+	<td>Checking if the video sample dir is writable:
 		{if !$cfg->videoCoversCheck}<br />
 			<span class="error">
 					The covers/video dir must be writable.<br />
@@ -199,7 +199,7 @@
 	<td>{if $cfg->videoCoversCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 </tr>
 <tr class="">
-	<td>Checking if the config.php file is writeable:
+	<td>Checking if the config.php file is writable:
 		{if !$cfg->configCheck}<br />
 			<span class="error">
 					The installer cannot write to {$cfg->WWW_TOP}.<br />
@@ -212,7 +212,7 @@
 	<td>{if $cfg->configCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 </tr>
 <tr class="alt">
-	<td>Checking if the install.lock file is writeable:
+	<td>Checking if the install.lock file is writable:
 		{if !$cfg->lockCheck}<br />
 			<span class="error">
 					The installer cannot write to {$cfg->INSTALL_DIR}/install.lock.<br />
@@ -240,10 +240,10 @@
 
 </table>
 
-<div align="center">
+<div style="text-align:center">
 	{if !$cfg->error}
 		<p>No problems were found and you are ready to install.</p>
-		<form action="step2.php"><input type="submit" value="Go to step two: Set up the database" /></form>
+		<form action="step2.php"><input type="submit" value="Step two: Set up the database" /></form>
 	{else}
 		<div class="error">Errors encountered - nZEDb will not function correctly unless these problems are solved.</div>
 	{/if}

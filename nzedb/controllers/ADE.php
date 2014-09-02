@@ -360,6 +360,7 @@ class ADE
 		curl_setopt($this->_ch, CURLOPT_VERBOSE, 0);
 		curl_setopt($this->_ch, CURLOPT_USERAGENT, "Firefox/2.0.0.1");
 		curl_setopt($this->_ch, CURLOPT_FAILONERROR, 1);
+		curl_setopt_array($this->_ch, nzedb\utility\Utility::curlSslContextOptions());
 		$this->_response = curl_exec($this->_ch);
 		if (!$this->_response) {
 			curl_close($this->_ch);

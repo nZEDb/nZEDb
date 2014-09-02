@@ -40,12 +40,14 @@ Class TraktTv
 	public function traktTVSEsummary($title = '', $season = '', $ep = '')
 	{
 		if (!empty($this->APIKEY)) {
-			$TVjson = nzedb\utility\getUrl(
-				'http://api.trakt.tv/show/episode/summary.json/' .
-				$this->APIKEY . '/' .
-				str_replace(array(' ', '_', '.'), '-', $title) . '/' .
-				str_replace(array('S', 's'), '', $season) . '/' .
-				str_replace(array('E', 'e'), '', $ep)
+			$TVjson = nzedb\utility\Utility::getUrl([
+					'url' =>
+						'http://api.trakt.tv/show/episode/summary.json/' .
+						$this->APIKEY . '/' .
+						str_replace([' ', '_', '.'], '-', $title) . '/' .
+						str_replace(['S', 's'], '', $season) . '/' .
+						str_replace(['E', 'e'], '', $ep)
+				]
 			);
 
 			if ($TVjson !== false) {
@@ -69,11 +71,13 @@ Class TraktTv
 	public function traktMoviesummary($movie = '', $array=false)
 	{
 		if (!empty($this->APIKEY)) {
-			$MovieJson = nzedb\utility\getUrl(
-				'http://api.trakt.tv/movie/summary.json/' .
-				$this->APIKEY .
-				'/' .
-				str_replace(array(' ', '_', '.'), '-',  str_replace(array('(', ')'), '', $movie))
+			$MovieJson = nzedb\utility\Utility::getUrl([
+					'url' =>
+						'http://api.trakt.tv/movie/summary.json/' .
+						$this->APIKEY .
+						'/' .
+						str_replace([' ', '_', '.'], '-',  str_replace(['(', ')'], '', $movie))
+				]
 			);
 
 			if ($MovieJson !== false) {

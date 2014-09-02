@@ -6,7 +6,9 @@ use \nzedb\db\Settings;
 
 class AniDB
 {
-	const PROC_NOTFND = -1; //Anime release could not be found
+	const PROC_EXTFAIL = -1; // Release Anime title/episode # could not be extracted from searchname
+	const PROC_NOMATCH = -2; // AniDB ID was not found in anidb table using extracted title/episode #
+
 	const REGEX_NOFORN = 'English|Japanese|German|Danish|Flemish|Dutch|French|Swe(dish|sub)|Deutsch|Norwegian';
 
 	/**
@@ -30,6 +32,11 @@ class AniDB
 	public $pdo;
 
 	/**
+	 * @var int The status of the release being processed
+	 */
+	private $status;
+
+	/**
 	 * @param array $options Class instances / Echo to cli.
 	 */
 	public function __construct(array $options = array())
@@ -45,6 +52,8 @@ class AniDB
 
 		$qty = $this->pdo->getSetting('maxanidbprocessed');
 		$this->aniqty = !empty($qty) ? $qty : 100;
+
+		$this->status = 'NULL';
 	}
 
 	// postprocess Anime Releases
@@ -67,7 +76,7 @@ class AniDB
 
 		if ($results instanceof \Traversable) {
 
-			$this->padb = new AniDB(['Echo' => $this->echooutput, 'Settings' => $this->pdo]);
+			$this->padb = new \nzedb\db\populate\AniDB(['Echo' => $this->echooutput, 'Settings' => $this->pdo]);
 
 			foreach ($results as $release) {
 				$matched = $this->matchAnimeRelease($release);
@@ -77,12 +86,13 @@ class AniDB
 									UPDATE releases
 									SET anidbid = %d
 									WHERE id = %d',
-									self::PROC_NOTFND,
+									$this->status,
 									$release['id']
 								)
 					);
 				}
 			}
+
 		} else {
 			$this->pdo->log->doEcho($this->pdo->log->info("No work to process."), true);
 		}
@@ -117,8 +127,11 @@ class AniDB
 			}
 		} else if (preg_match('/^(\[[a-zA-Z\.\-!?]+\][\s_]*)?(\[BD\])?(\[\d{3,4}[ip]\])?(?P<title>[\w\s_.+!?\'-\(\)]+)(New Edit|(Blu-?ray)?( ?Box)?( ?Set)?)?\s*[\(\[](BD|\d{3,4}[ipx])/i', $cleanName, $matches)) {
 			$matches['epno'] = (int) 1;
-		} else if (nZEDb_DEBUG) {
-			$this->pdo->log->doEcho(PHP_EOL . "Could not parse searchname {$cleanName}.", true);
+		} else {
+			if (nZEDb_DEBUG) {
+				$this->pdo->log->doEcho(PHP_EOL . "Could not parse searchname {$cleanName}.", true);
+			}
+			$this->status = self::PROC_EXTFAIL;
 		}
 
 		if(!empty($matches['title'])) {
@@ -168,7 +181,7 @@ class AniDB
 
 				if ($updatedAni === false) {
 					if ($this->updateTimeCheck($anidbId['anidb_id']) === false) {
-						$this->padb->_populateType('info', $anidbId['anidb_id']);
+						$this->padb->populateTable('info', $anidbId['anidb_id']);
 						$this->doRandomSleep();
 						$updatedAni = $this->checkAniDBInfo($anidbId['anidb_id']);
 						$type       = 'Remote';
@@ -196,6 +209,8 @@ class AniDB
 				);
 
 				$matched = true;
+			} else {
+				$this->status = self::PROC_NOMATCH;
 			}
 		}
 		return $matched;
