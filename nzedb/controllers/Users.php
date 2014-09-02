@@ -715,7 +715,7 @@ class Users
 
 		// Make sure this is the last check, as if a further validation check failed, the invite would still have been used up.
 		$invitedBy = 0;
-		if (($this->pdo->getSetting('registerstatus') == \Settings::REGISTER_STATUS_INVITE) && !$forceInviteMode) {
+		if (($this->pdo->getSetting('registerstatus') == Settings::REGISTER_STATUS_INVITE) && !$forceInviteMode) {
 			if ($inviteCode == '') {
 				return \Users::ERR_SIGNUP_BADINVITECODE;
 			}
