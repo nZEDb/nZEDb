@@ -62,7 +62,7 @@ class XXX
 		$options += $defaults;
 
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
-		$this->releaseImage = ($options['ReleaseImage'] instanceof \ReleaseImage ? $options['ReleaseImage'] : new \ReleaseImage($this->pdo));
+		$this->releaseImage = ($options['ReleaseImage'] instanceof ReleaseImage ? $options['ReleaseImage'] : new ReleaseImage($this->pdo));
 
 		$this->movieqty = ($this->pdo->getSetting('maxxxxprocessed') != '') ? $this->pdo->getSetting('maxxxxprocessed') : 100;
 		$this->showPasswords = ($this->pdo->getSetting('showpasswordedrelease') != '') ? $this->pdo->getSetting('showpasswordedrelease') : 0;
@@ -138,7 +138,7 @@ class XXX
 	{
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
-			$catsrch = (new \Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
+			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
 		}
 
 		$res = $this->pdo->queryOneRow(
@@ -180,7 +180,7 @@ class XXX
 	{
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
-			$catsrch = (new \Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
+			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
 		}
 
 		$order = $this->getXXXOrder($orderBy);
@@ -323,7 +323,7 @@ class XXX
 	 */
 	public function update(
 		$id = '', $title = '', $tagLine = '', $plot = '', $genre = '', $director = '',
-		$actors = '', $cover = '', $backdrop = ''
+		$actors = '', $extras = '', $productInfo = '', $trailers = '', $directUrl = '', $classUsed = '', $cover = '', $backdrop = ''
 	)
 	{
 		if (!empty($id)) {
@@ -331,16 +331,23 @@ class XXX
 			$this->pdo->queryExec(
 				sprintf("
 					UPDATE xxxinfo
-					SET %s, %s, %s, %s, %s, %s, %d, %d, updateddate = NOW()
+					SET title = %s, tagline = %s, plot = COMPRESS(%s), genre = %s, director = %s,
+					actors = %s, extras = %s, productinfo = %s, trailers = %s, directurl = %s,
+					classused = %s, cover = %d, backdrop = %d, updateddate = NOW()
 					WHERE id = %d",
-					(empty($title)    ? '' : 'title = '    . $this->pdo->escapeString($title)),
-					(empty($tagLine)  ? '' : 'tagline = '  . $this->pdo->escapeString($tagLine)),
-					(empty($plot)     ? '' : 'plot = '     . $this->pdo->escapeString($plot)),
-					(empty($genre)    ? '' : 'genre = '    . $this->pdo->escapeString($genre)),
-					(empty($director) ? '' : 'director = ' . $this->pdo->escapeString($director)),
-					(empty($actors)   ? '' : 'actors = '   . $this->pdo->escapeString($actors)),
-					(empty($cover)    ? '' : 'cover = '    . $cover),
-					(empty($backdrop) ? '' : 'backdrop = ' . $backdrop),
+					$this->pdo->escapeString($title),
+					$this->pdo->escapeString($tagLine),
+					$this->pdo->escapeString($plot),
+					$this->pdo->escapeString(substr($genre, 0, 64)),
+					$this->pdo->escapeString($director),
+					$this->pdo->escapeString($actors),
+					$this->pdo->escapeString($extras),
+					$this->pdo->escapeString($productInfo),
+					$this->pdo->escapeString($trailers),
+					$this->pdo->escapeString($directUrl),
+					$this->pdo->escapeString($classUsed),
+					(empty($cover) ? 0 : $cover),
+					(empty($backdrop) ? 0 : $backdrop),
 					$id
 				)
 			);
@@ -360,14 +367,14 @@ class XXX
 		$res = false;
 		$this->whichclass = '';
 
-		$iafd = new \IAFD();
-		$iafd->searchterm = $xxxmovie;
+		$iafd = new IAFD();
+		$iafd->searchTerm = $xxxmovie;
 
 		if ($iafd->findme() !== false) {
 
 			switch($iafd->classUsed) {
 				case "ade":
-					$mov = new A\DE();
+					$mov = new ADE();
 					$mov->directLink = (string)$iafd->directUrl;
 					$res = $mov->getDirect();
 					$res['title'] = $iafd->title;
@@ -376,7 +383,7 @@ class XXX
 					$this->pdo->log->doEcho($this->pdo->log->primary("Fetching XXX info from IAFD -> Adult DVD Empire"));
 					break;
 				case "hm":
-					$mov = new \Hotmovies();
+					$mov = new Hotmovies();
 					$mov->directLink = (string)$iafd->directUrl;
 					$res = $mov->getDirect();
 					$res['title'] = $iafd->title;
@@ -389,21 +396,21 @@ class XXX
 		if ($res === false) {
 
 			$this->whichclass = "aebn";
-			$mov = new \AEBN();
+			$mov = new AEBN();
 			$mov->cookie = $this->cookie;
 			$mov->searchTerm = $xxxmovie;
 			$res = $mov->search();
 
 			if ($res === false) {
 				$this->whichclass = "ade";
-				$mov = new \ADE();
-				$mov->searchterm = $xxxmovie;
+				$mov = new ADE();
+				$mov->searchTerm = $xxxmovie;
 				$res = $mov->search();
 			}
 
 			if ($res === false) {
 				$this->whichclass = "hm";
-				$mov = new \Hotmovies();
+				$mov = new Hotmovies();
 				$mov->cookie = $this->cookie;
 				$mov->searchTerm = $xxxmovie;
 				$res = $mov->search();
@@ -411,7 +418,7 @@ class XXX
 
 			if ($res === false) {
 				$this->whichclass = "pop";
-				$mov = new \Popporn();
+				$mov = new Popporn();
 				$mov->cookie = $this->cookie;
 				$mov->searchTerm = $xxxmovie;
 				$res = $mov->search();
@@ -466,8 +473,10 @@ class XXX
 
 		$check = $this->pdo->queryOneRow(sprintf('SELECT id FROM xxxinfo WHERE title = %s',	$this->pdo->escapeString($mov['title'])));
 		$xxxID = null;
+		if($check === false OR isset($check['id'])){
 
-		if ($check === false) {
+			// Insert New XXX Information
+		if($check === false){
 			$xxxID = $this->pdo->queryInsert(
 				sprintf("
 					INSERT INTO xxxinfo
@@ -487,7 +496,13 @@ class XXX
 					$this->pdo->escapeString($mov['classused'])
 				)
 			);
+			}
 
+			// Update XXX Information
+			if($check['id'] > 0){
+			$this->update($check['id'], $mov['title'], $mov['tagline'], $mov['plot'], $mov['genre'], $mov['director'], $mov['actors'], $mov['extras'], $mov['productinfo'], $mov['trailers'], $mov['directurl'], $mov['classused']);
+			$xxxID = $check['id'];
+			}
 			if ($xxxID !== false) {
 
 				// BoxCover.
