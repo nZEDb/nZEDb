@@ -110,7 +110,7 @@ class AniDB
 
 	private function extractTitleEpisode($cleanName = '')
 	{
-		if (preg_match('/(^|.*\")(\[[a-zA-Z\.\!?-]+\][\s_]*)?(\[BD\][\s_]*)?(\[\d{3,4}[ip]\][\s_]*)?(?P<title>[\w\s_.+!?\'-\(\)]+)(New Edit|(Blu-?ray)?( ?Box)?( ?Set)?)?([ _]-[ _]|([ ._-]Epi?(sode)?)?[ ._-]?|[ ._-]Vol\.|[ ._-]E)(?P<epno>\d{1,3}|Movie|O[VA]{2}|Complete Series)(v\d|-\d+)?[-_. ].*[\[\(\"]/i', $cleanName, $matches)) {
+		if (preg_match('/(^|.*\")(\[[a-zA-Z\.\!?-]+\][\s_]*)?(\[BD\][\s_]*)?(\[\d{3,4}[ip]\][\s_]*)?(?P<title>[\w\s_.+!?\'-\(\)]+)(New Edit|(Blu-?ray)?( ?Box)?( ?Set)?)?([ _]-[ _]|([ ._-]Epi?(sode)?[ ._-]?0?)?[ ._-]?|[ ._-]Vol\.|[ ._-]E)(?P<epno>\d{1,3}|Movie|O[VA]{2}|Complete Series)(v\d|-\d+)?[-_. ].*[\[\(\"]/i', $cleanName, $matches)) {
 			$matches['epno'] = (int) $matches['epno'];
 			if (in_array($matches['epno'], ['Movie', 'OVA'])) {
 				$matches['epno'] = (int) 1;

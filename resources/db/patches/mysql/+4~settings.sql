@@ -1,0 +1,2 @@
+INSERT IGNORE INTO settings (name, value, hint, setting) VALUES ('intanidbupdate', '7', "The number of days between AniDB full updates.  Default is 7.", 'intanidbupdate');
+INSERT IGNORE INTO settings (name, value, hint, setting) VALUES ('lastanidbupdate', '0', "The last time a full AniDB update occurred in unixtime.", 'lastanidbupdate');
