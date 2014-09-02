@@ -275,16 +275,18 @@ class Utility
 	 * Creates an array to be used with stream_context_create() to verify openssl certificates
 	 * when connecting to a tls or ssl connection when using stream functions (fopen/file_get_contents/etc).
 	 *
+	 * @param bool $forceIgnore Force ignoring of verification.
+	 *
 	 * @return array
 	 * @static
 	 * @access public
 	 */
-	static public function streamSslContextOptions()
+	static public function streamSslContextOptions($forceIgnore = false)
 	{
 		$options = [
-			'verify_peer'       => (bool)nZEDb_SSL_VERIFY_PEER,
-			'verify_peer_name'  => (bool)nZEDb_SSL_VERIFY_HOST,
-			'allow_self_signed' => (bool)nZEDb_SSL_ALLOW_SELF_SIGNED,
+			'verify_peer'       => ($forceIgnore ? false : (bool)nZEDb_SSL_VERIFY_PEER),
+			'verify_peer_name'  => ($forceIgnore ? false : (bool)nZEDb_SSL_VERIFY_HOST),
+			'allow_self_signed' => ($forceIgnore ? true : (bool)nZEDb_SSL_ALLOW_SELF_SIGNED),
 		];
 		if (nZEDb_SSL_CAFILE) {
 			$options['cafile'] = nZEDb_SSL_CAFILE;
