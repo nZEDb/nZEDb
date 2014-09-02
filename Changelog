@@ -4,6 +4,8 @@ No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
 2014-09-01 kevin
+	* Chg: Force ignore cert checking on irc scraper, as all the synirc certs are either expired or self signed or invalid in some other way.
+	* Add: Support for openssl remote certificate checking on streams/CURL. Please update www/config.php using this guide: https://github.com/nZEDb/nZEDb/wiki/Setting-up-openssl
 	* Fix: Namespacing issue in DB.
 2014-09-01 niel
 	* Mrg: Merging PR 1479 from tasky

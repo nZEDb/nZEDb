@@ -140,10 +140,10 @@ class IAFD {
 		if ($this->_doSearch === true) {
 			$ch = curl_init(self::IAFDSEARCHURL . urlencode($this->searchTerm));
 		} else {
-			if(empty($this->_getRedirect)){
-			$ch = curl_init(self::IAFDURL);
-			}else{
-			$ch = curl_init($this->_getRedirect);
+			if (empty($this->_getRedirect)){
+				$ch = curl_init(self::IAFDURL);
+			} else {
+				$ch = curl_init($this->_getRedirect);
 			}
 		}
 
@@ -157,10 +157,11 @@ class IAFD {
 			curl_setopt($ch, CURLOPT_COOKIEJAR, $this->cookie);
 			curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookie);
 		}
+		curl_setopt_array($ch, nzedb\utility\Utility::curlSslContextOptions());
 		$this->_response = curl_exec($ch);
 		if(!empty($this->_getRedirect)){
-		$this->_getRedirect = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
-		curl_close($ch);
+			$this->_getRedirect = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+			curl_close($ch);
 			return $this->_getRedirect;
 		}
 		if (!$this->_response) {
@@ -170,8 +171,8 @@ class IAFD {
 		}
 		curl_close($ch);
 		if($this->_doSearch === true){
-		$this->_html->load($this->_response);
-		$this->_doSearch = false;
+			$this->_html->load($this->_response);
+			$this->_doSearch = false;
 		}
 		return true;
 	}

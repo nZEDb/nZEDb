@@ -57,7 +57,13 @@ class Install
 	public $lockCheck;
 	public $pearCheck;
 	public $schemaCheck;
+
+	/**
+	 * @var bool Is the PHP version higher than nZEDb_MINIMUM_PHP_VERSION?
+	 */
 	public $phpCheck;
+	public $minPhpVersion = nZEDb_MINIMUM_PHP_VERSION;
+
 	public $timelimitCheck;
 	public $memlimitCheck;
 	public $rewriteCheck;
@@ -74,6 +80,13 @@ class Install
 	public $saveConfigCheck;
 	public $saveLockCheck;
 	public $error = false;
+
+	// Step 3 (openssl) properties.
+	public $nZEDb_SSL_CAFILE;
+	public $nZEDb_SSL_CAPATH;
+	public $nZEDb_SSL_VERIFY_PEER;
+	public $nZEDb_SSL_VERIFY_HOST;
+	public $nZEDb_SSL_ALLOW_SELF_SIGNED;
 
 	public function __construct()
 	{
@@ -144,6 +157,12 @@ class Install
 		$tmpCfg = str_replace('%%NNTP_PORT_A%%', $this->NNTP_PORT_A, $tmpCfg);
 		$tmpCfg = str_replace('%%NNTP_SSLENABLED_A%%', ($this->NNTP_SSLENABLED_A ? "true" : "false"), $tmpCfg);
 		$tmpCfg = str_replace('%%NNTP_SOCKET_TIMEOUT_A%%', $this->NNTP_SOCKET_TIMEOUT_A, $tmpCfg);
+
+		$tmpCfg = str_replace('%%nZEDb_SSL_CAFILE%%', $this->nZEDb_SSL_CAFILE, $tmpCfg);
+		$tmpCfg = str_replace('%%nZEDb_SSL_CAPATH%%', $this->nZEDb_SSL_CAPATH, $tmpCfg);
+		$tmpCfg = str_replace('%%nZEDb_SSL_VERIFY_PEER%%', $this->nZEDb_SSL_VERIFY_PEER, $tmpCfg);
+		$tmpCfg = str_replace('%%nZEDb_SSL_VERIFY_HOST%%', $this->nZEDb_SSL_VERIFY_HOST, $tmpCfg);
+		$tmpCfg = str_replace('%%nZEDb_SSL_ALLOW_SELF_SIGNED%%', $this->nZEDb_SSL_ALLOW_SELF_SIGNED, $tmpCfg);
 
 		$this->COMPILED_CONFIG = $tmpCfg;
 		return @file_put_contents(nZEDb_WWW . DS .'config.php', $tmpCfg);

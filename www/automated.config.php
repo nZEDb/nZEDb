@@ -1,6 +1,9 @@
 <?php
 // YOU SHOULD NOT EDIT ANYTHING IN THIS FILE, COPY settings.php.example TO settings.php AND EDIT THAT FILE!
 
+define('nZEDb_MINIMUM_PHP_VERSION', '5.4.0');
+define('nZEDb_MINIMUM_MYSQL_VERSION', '5.5');
+
 define('DS', DIRECTORY_SEPARATOR);
 
 // These are file path constants
@@ -102,4 +105,13 @@ define('HAS_WHICH', nzedb\utility\Utility::hasWhich() ? true : false);
 
 if (file_exists(__DIR__ . DS . 'config.php')) {
 	require_once __DIR__ . DS . 'config.php';
+}
+
+// Check if they updated config.php for the openssl changes. Only check 1 to save speed.
+if (!defined('nZEDb_SSL_VERIFY_PEER')) {
+	define('nZEDb_SSL_CAFILE', '');
+	define('nZEDb_SSL_CAPATH', '');
+	define('nZEDb_SSL_VERIFY_PEER', '0');
+	define('nZEDb_SSL_VERIFY_HOST', '0');
+	define('nZEDb_SSL_ALLOW_SELF_SIGNED', '1');
 }

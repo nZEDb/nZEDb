@@ -3,9 +3,6 @@ require_once __DIR__ . '/../automated.config.php';
 
 use nzedb\db\Settings;
 
-// TODO Set these somewhere else?
-$minMySQLVersion = 5.5;
-
 $page = new InstallPage();
 $page->title = "Database Setup";
 
@@ -124,7 +121,7 @@ if ($page->isPostBack()) {
 		$goodVersion = false;
 		if (!$cfg->error) {
 			try {
-				$goodVersion = $pdo->isDbVersionAtLeast($minMySQLVersion);
+				$goodVersion = $pdo->isDbVersionAtLeast(nZEDb_MINIMUM_MYSQL_VERSION);
 			} catch (\PDOException $e) {
 				$goodVersion   = false;
 				$cfg->error    = true;
@@ -137,7 +134,7 @@ if ($page->isPostBack()) {
 					'You are using an unsupported version of ' .
 					$cfg->DB_SYSTEM .
 					' the minimum allowed version is ' .
-					$minMySQLVersion;
+					nZEDb_MINIMUM_MYSQL_VERSION;
 			}
 		}
 	}
