@@ -56,7 +56,9 @@ class AniDB
 		$this->status = 'NULL';
 	}
 
-	// postprocess Anime Releases
+	/**
+	 * Queues anime releases for processing
+	 */
 	public function processAnimeReleases()
 	{
 		$results = $this->pdo->queryDirect(
@@ -98,6 +100,13 @@ class AniDB
 		}
 	}
 
+	/**
+	 * Selects episode info for a local match
+	 *
+	 * @param int $anidbId
+	 * @param int $episode
+	 * @return array|bool
+	 */
 	private function checkAniDBInfo($anidbId, $episode = -1)
 	{
 		return $this->pdo->queryOneRow(
@@ -113,11 +122,20 @@ class AniDB
 		);
 	}
 
+	/**
+	 * Sleeps between 10 and 15 seconds for AniDB API cooldown
+	 */
 	private function doRandomSleep()
 	{
 		sleep(rand(10, 15));
 	}
 
+	/**
+	 * Extracts anime title and episode info from release searchname
+	 *
+	 * @param string $cleanName
+	 * @return array
+	 */
 	private function extractTitleEpisode($cleanName = '')
 	{
 		if (preg_match('/(^|.*\")(\[[a-zA-Z\.\!?-]+\][\s_]*)?(\[BD\][\s_]*)?(\[\d{3,4}[ip]\][\s_]*)?(?P<title>[\w\s_.+!?\'-\(\)]+)(New Edit|(Blu-?ray)?( ?Box)?( ?Set)?)?([ _]-[ _]|([ ._-]Epi?(sode)?[ ._-]?0?)?[ ._-]?|[ ._-]Vol\.|[ ._-]E)(?P<epno>\d{1,3}|Movie|O[VA]{2}|Complete Series)(v\d|-\d+)?[-_. ].*[\[\(\"]/i', $cleanName, $matches)) {
@@ -141,6 +159,12 @@ class AniDB
 		return $matches;
 	}
 
+	/**
+	 * Retrieves AniDB Info using a cleaned name
+	 *
+	 * @param string $searchName
+	 * @return array|bool
+	 */
 	private function getAnidbByName($searchName = '')
 	{
 		return $this->pdo->queryOneRow(
@@ -153,6 +177,13 @@ class AniDB
 		);
 	}
 
+	/**
+	 * Matches the anime release to AniDB Info
+	 * If no info is available locally the AniDB API is invoked
+	 *
+	 * @param array $release
+	 * @return bool
+	 */
 	private function matchAnimeRelease($release = array())
 	{
 		$matched = false;
@@ -216,6 +247,16 @@ class AniDB
 		return $matched;
 	}
 
+	/**
+	 * Updates releases based on matched Anime info
+	 *
+	 * @param int $anidbId
+	 * @param int $epno
+	 * @param string $title
+	 * @param string $airdate
+	 * @param int $relId
+	 * @return array|bool
+	 */
 	private function updateRelease($anidbId, $epno, $title, $airdate, $relId)
 	{
 
@@ -237,6 +278,12 @@ class AniDB
 		);
 	}
 
+	/**
+	 * Checks a specific Anime title's last update time
+	 *
+	 * @param int $anidbId
+	 * @return array|bool
+	 */
 	private function updateTimeCheck($anidbId)
 	{
 		return $this->pdo->queryOneRow(
