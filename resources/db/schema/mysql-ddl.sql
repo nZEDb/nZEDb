@@ -451,7 +451,7 @@ CREATE TABLE         xxxinfo (
   backdrop    TINYINT(1) UNSIGNED            NOT NULL DEFAULT '0',
   createddate DATETIME                       NOT NULL,
   updateddate DATETIME                       NOT NULL,
-  PRIMARY KEY                      (id),
+  PRIMARY KEY                    (id),
   UNIQUE INDEX ix_xxxinfo_title  (title)
 )
   ENGINE          = MYISAM
