@@ -473,9 +473,10 @@ class XXX
 
 		$check = $this->pdo->queryOneRow(sprintf('SELECT id FROM xxxinfo WHERE title = %s',	$this->pdo->escapeString($mov['title'])));
 		$xxxID = null;
+
 		if($check === false OR isset($check['id'])){
 
-			// Insert New XXX Information
+		// Insert New XXX Information
 		if($check === false){
 			$xxxID = $this->pdo->queryInsert(
 				sprintf("
@@ -498,7 +499,7 @@ class XXX
 			);
 			}
 
-			// Update XXX Information
+			// Update XXX Information, from getXXXCovers.php
 			if($check['id'] > 0){
 			$this->update($check['id'], $mov['title'], $mov['tagline'], $mov['plot'], $mov['genre'], $mov['director'], $mov['actors'], $mov['extras'], $mov['productinfo'], $mov['trailers'], $mov['directurl'], $mov['classused']);
 			$xxxID = $check['id'];
