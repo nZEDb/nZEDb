@@ -20,16 +20,16 @@ class AniDB
 	public $pdo;
 
 	/**
-	 * The name of the nZEDb client for AniDB lookups
-	 * @var string
-	 */
-	private $apiKey;
-
-	/**
 	 * The AniDB ID we are looking up
 	 * @var bool
 	 */
 	private $anidbId;
+
+	/**
+	 * The name of the nZEDb client for AniDB lookups
+	 * @var string
+	 */
+	private $apiKey;
 
 	/**
 	 * Whether or not AniDB thinks our client is banned
@@ -82,23 +82,6 @@ class AniDB
 	}
 
 	/**
-	 * Retrieve main anime info for a given AniDB ID
-	 *
-	 * @return array|bool
-	 */
-	public function getAnimeInfo()
-	{
-		return $this->pdo->queryDirect(
-						 sprintf('
-							SELECT *
-							FROM anidb
-							WHERE anidb_id = %d',
-								 $this->anidbId
-						 )
-		);
-	}
-
-	/**
 	 * Main switch that initiates AniDB table population
 	 *
 	 * @param string	$type
@@ -113,38 +96,6 @@ class AniDB
 			case 'info':
 				$this->anidbId = $anidbId;
 				$this->populateInfoTable();
-		}
-	}
-
-	/**
-	 * Inserts new anime info from AniDB to anidb table
-	 *
-	 * @param int $id The AniDB ID to be inserted
-	 * @param string $type The title type
-	 * @param string $lang The title language
-	 * @param string $title The title of the Anime
-	 */
-	private function insertAniDb($id, $type, $lang, $title)
-	{
-		if (!in_array($lang, ['ar', 'he', 'fa'])) {
-
-			$check = $this->checkDuplicateDbEntry($id, $type, $lang, $title);
-
-			if ($check === false) {
-
-				$this->pdo->queryInsert(
-							sprintf('
-								INSERT IGNORE INTO anidb
-									(anidb_id, type, lang, title)
-								VALUES
-									(%d, %s, %s, %s)',
-								$id,
-								$this->pdo->escapeString($type),
-								$this->pdo->escapeString($lang),
-								$this->pdo->escapeString($title)
-							)
-				);
-			}
 		}
 	}
 
@@ -338,6 +289,38 @@ class AniDB
 		}
 **/
 		return $apiresponse;
+	}
+
+	/**
+	 * Inserts new anime info from AniDB to anidb table
+	 *
+	 * @param int    $id    The AniDB ID to be inserted
+	 * @param string $type  The title type
+	 * @param string $lang  The title language
+	 * @param string $title The title of the Anime
+	 */
+	private function insertAniDb($id, $type, $lang, $title)
+	{
+		if (!in_array($lang, ['ar', 'he', 'fa'])) {
+
+			$check = $this->checkDuplicateDbEntry($id, $type, $lang, $title);
+
+			if ($check === false) {
+
+				$this->pdo->queryInsert(
+						  sprintf('
+								INSERT IGNORE INTO anidb
+									(anidb_id, type, lang, title)
+								VALUES
+									(%d, %s, %s, %s)',
+								  $id,
+								  $this->pdo->escapeString($type),
+								  $this->pdo->escapeString($lang),
+								  $this->pdo->escapeString($title)
+						  )
+				);
+			}
+		}
 	}
 
 	/**
