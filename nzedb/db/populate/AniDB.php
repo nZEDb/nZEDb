@@ -112,9 +112,9 @@ class AniDB
 	{
 		return $this->pdo->queryOneRow(
 						sprintf('
-							SELECT anidb_id
+							SELECT anidbid
 							FROM anidb
-							WHERE anidb_id = %d
+							WHERE anidbid = %d
 							AND type = %s
 							AND lang = %s
 							AND title = %s',
@@ -282,12 +282,12 @@ class AniDB
 		curl_setopt_array($ch, $curlOpts);
 		$apiresponse = curl_exec($ch);
 		curl_close($ch);
-/**
+/*
 		if (nZEDb_DEBUG) {
 			echo "CURL String: '{$curlString}'" . PHP_EOL;
 			echo "Response: '{$apiresponse}'" . PHP_EOL;
 		}
-**/
+*/
 		return $apiresponse;
 	}
 
@@ -310,7 +310,7 @@ class AniDB
 				$this->pdo->queryInsert(
 						  sprintf('
 								INSERT IGNORE INTO anidb
-									(anidb_id, type, lang, title)
+									(anidbid, type, lang, title)
 								VALUES
 									(%d, %s, %s, %s)',
 								  $id,
@@ -333,9 +333,9 @@ class AniDB
 	{
 		$this->pdo->queryInsert(
 				  sprintf('
-						INSERT INTO anidb_info
+						INSERT INTO anidb_info (anidbid, type, startdate, enddate, related, similar, creators, description, rating, picture, categories, characters)
 						VALUES
-							(%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)',
+							(%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
 						  $this->anidbId,
 						  $this->pdo->escapeString($AniDBInfoArray['type']),
 						  $this->pdo->escapeString($AniDBInfoArray['startdate']),
@@ -365,7 +365,7 @@ class AniDB
 		foreach ($episodeArr AS $episode) {
 			$this->pdo->queryInsert(
 					  sprintf('
-							INSERT IGNORE INTO anidb_episodes
+							INSERT IGNORE INTO anidb_episodes (anidbid, episodeid, episode_no, episode_title, airdate)
 							VALUES
 								(%d, %d, %d, %s, %s)',
 							  $this->anidbId,
@@ -459,7 +459,7 @@ class AniDB
 	 */
 	private function setLastUpdated()
 	{
-		$this->pdo->setSetting(['name' => 'lastanidbupdate', 'value' => time()]);
+		$this->pdo->setSetting(['APIs.anidb.last_full_update' => time()]);
 	}
 
 	/**
@@ -476,7 +476,7 @@ class AniDB
 						SET type = %s, startdate = %s, enddate = %s, related = %s,
 							similar = %s, creators = %s, description = %s,
 							rating = %s, picture = %s, categories = %s, characters = %s
-						WHERE anidb_id = %d',
+						WHERE anidbid = %d',
 						  $this->pdo->escapeString($AniDBInfoArray['type']),
 						  $this->pdo->escapeString($AniDBInfoArray['startdate']),
 						  $this->pdo->escapeString($AniDBInfoArray['enddate']),
@@ -505,9 +505,9 @@ class AniDB
 	{
 		$check = $this->pdo->queryOneRow(
 						   sprintf('
-							SELECT ai.anidb_id AS info
+							SELECT ai.anidbid AS info
 							FROM anidb_info ai
-							WHERE ai.anidb_id = %d',
+							WHERE ai.anidbid = %d',
 								   $this->anidbId
 						   )
 		);
