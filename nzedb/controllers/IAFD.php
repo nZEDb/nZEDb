@@ -14,7 +14,6 @@ class IAFD {
 	const ADE = "Adult DVD Empire";
 	const IAFDSEARCHURL = "http://www.iafd.com/results.asp?searchtype=title&searchstring=";
 	const IAFDURL = "http://www.iafd.com";
-	const HM = "Hot Movies";
 
 	protected $_dvdFound = false;
 	protected $_doSearch = false;
@@ -61,14 +60,6 @@ class IAFD {
 									$this->_dvdFound = false;
 									break;
 								}
-								if ($compare === self::HM && !empty($compare)) {
-									$this->classUsed = "hm";
-									$this->_getRedirect = self::IAFDURL . trim($alink->href);
-									$this->directUrl = $this->getUrl();
-									$this->directUrl = preg_replace('/\?(.*)/', '', $this->directUrl);
-									$this->directUrl = false;
-									break;
-							}
 					}
 				}
 		}
