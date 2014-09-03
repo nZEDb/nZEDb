@@ -143,7 +143,6 @@ class AEBN
 			$this->_res['boxcover'] = str_ireplace("160w.jpg", "xlf.jpg", $ret);
 			$this->_res['backcover'] = str_ireplace("160w.jpg", "xlb.jpg", $ret);
 		}
-		var_dump($this->_res); exit;
 		return $this->_res;
 	}
 
