@@ -138,7 +138,7 @@ class AEBN
 	 */
 	public function covers()
 	{
-		if ($ret = $this->_html->find("img#boxImage, img[itemprop=thumbnailUrl]", 1)) {
+		if ($ret = $this->_html->find("div#boxImage, img[itemprop=thumbnailUrl]", 0)) {
 			$ret = trim($ret->src);
 			$this->_res['boxcover'] = str_ireplace("160w.jpg", "xlf.jpg", $ret);
 			$this->_res['backcover'] = str_ireplace("160w.jpg", "xlb.jpg", $ret);
