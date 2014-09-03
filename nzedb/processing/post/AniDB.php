@@ -111,10 +111,10 @@ class AniDB
 	{
 		return $this->pdo->queryOneRow(
 						 sprintf('
-							SELECT ae.anidb_id, ae.episode_no,
+							SELECT ae.anidbid, ae.episode_no,
 								ae.airdate, ae.episode_title
 							FROM anidb_episodes ae
-							WHERE ae.anidb_id = %d
+							WHERE ae.anidbid = %d
 							AND ae.episode_no = %d',
 								 $anidbId,
 								 $episode
@@ -169,9 +169,9 @@ class AniDB
 	{
 		return $this->pdo->queryOneRow(
 						sprintf("
-							SELECT a.anidb_id, a.title
-							FROM anidb a
-							WHERE a.title %s",
+							SELECT at.anidbid, at.title
+							FROM anidb_titles at
+							WHERE at.title %s",
 							$this->pdo->likeString($searchName, true, true)
 						)
 		);
@@ -206,15 +206,15 @@ class AniDB
 				$anidbId = $this->getAnidbByName($tmpName);
 			}
 
-			if (!empty($anidbId) && is_numeric($anidbId['anidb_id']) && $anidbId['anidb_id'] > 0) {
+			if (!empty($anidbId) && is_numeric($anidbId['anidbid']) && $anidbId['anidbid'] > 0) {
 
-				$updatedAni = $this->checkAniDBInfo($anidbId['anidb_id'], $cleanArr['epno']);
+				$updatedAni = $this->checkAniDBInfo($anidbId['anidbid'], $cleanArr['epno']);
 
 				if ($updatedAni === false) {
-					if ($this->updateTimeCheck($anidbId['anidb_id']) === false) {
-						$this->padb->populateTable('info', $anidbId['anidb_id']);
+					if ($this->updateTimeCheck($anidbId['anidbid']) === false) {
+						$this->padb->populateTable('info', $anidbId['anidbid']);
 						$this->doRandomSleep();
-						$updatedAni = $this->checkAniDBInfo($anidbId['anidb_id']);
+						$updatedAni = $this->checkAniDBInfo($anidbId['anidbid']);
 						$type       = 'Remote';
 					} else {
 						echo PHP_EOL .
@@ -223,7 +223,7 @@ class AniDB
 					}
 				}
 
-				$this->updateRelease($anidbId['anidb_id'],
+				$this->updateRelease($anidbId['anidbid'],
 									  $cleanArr['epno'],
 									  $updatedAni['episode_title'],
 									  $updatedAni['airdate'],
@@ -288,10 +288,10 @@ class AniDB
 	{
 		return $this->pdo->queryOneRow(
 						sprintf("
-							SELECT anidb_id
+							SELECT anidbid
 							FROM anidb_info ai
-							WHERE DATEDIFF(NOW(), ai.updatetime) < 7
-							AND ai.anidb_id = %d",
+							WHERE DATEDIFF(NOW(), ai.updated) < 7
+							AND ai.anidbid = %d",
 							$anidbId
 						)
 		);

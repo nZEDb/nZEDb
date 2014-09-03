@@ -1,5 +1,6 @@
-DROP TABLE IF EXISTS animetitles;
 DROP TABLE IF EXISTS anidb;
+DROP TABLE IF EXISTS animetitles;
+DROP TABLE IF EXISTS anime_titles;
 
 CREATE TABLE anidb_titles (
   anidbid INT(10) UNSIGNED NOT NULL COMMENT 'Main ID from AniDB for title',
