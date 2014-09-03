@@ -339,7 +339,7 @@ class Utility
 	 * @access public
 	 * @static
 	 */
-	public static function getUrl($options = [])
+	public static function getUrl(array $options = [])
 	{
 		$defaults = [
 			'url'        => '',    // The URL to download.
@@ -862,7 +862,7 @@ function cp437toUTF ($str)
  */
 function imdb_trailers($imdbID)
 {
-	$xml = Utility::getUrl('http://api.traileraddict.com/?imdb=' . $imdbID);
+	$xml = Utility::getUrl(['url' => 'http://api.traileraddict.com/?imdb=' . $imdbID]);
 	if ($xml !== false) {
 		if (preg_match('/(<iframe.+?<\/iframe>)/i', $xml, $html)) {
 			return $html[1];
