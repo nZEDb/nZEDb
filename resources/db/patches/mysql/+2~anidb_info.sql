@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS anidb_info;
 
 CREATE TABLE anidb_info (
-  anidbid INT(7) UNSIGNED NOT NULL COMMENT 'Main ID from AniDB for title',
+  anidbid INT(10) UNSIGNED NOT NULL COMMENT 'ID of title from AniDB',
   type VARCHAR(32) COLLATE utf8_unicode_ci DEFAULT NULL,
   startdate DATE DEFAULT NULL,
   enddate DATE DEFAULT NULL,
