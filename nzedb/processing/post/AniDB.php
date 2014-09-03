@@ -12,11 +12,6 @@ class AniDB
 	const REGEX_NOFORN = 'English|Japanese|German|Danish|Flemish|Dutch|French|Swe(dish|sub)|Deutsch|Norwegian';
 
 	/**
-	 * @var int number of AniDB releases to process
-	 */
-	private $aniqty;
-
-	/**
 	 * @var bool Whether or not to echo messages to CLI
 	 */
 	public $echooutput;
@@ -30,6 +25,11 @@ class AniDB
 	 * @var \nzedb\db\Settings
 	 */
 	public $pdo;
+
+	/**
+	 * @var int number of AniDB releases to process
+	 */
+	private $aniqty;
 
 	/**
 	 * @var int The status of the release being processed
