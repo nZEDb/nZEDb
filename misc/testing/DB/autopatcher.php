@@ -7,10 +7,10 @@ $pdo = new Settings();
 $DIR = nZEDb_MISC;
 $smarty = new Smarty;
 $dbname = DB_NAME;
-$cli = new ColorCLI();
+$cli = new \ColorCLI();
 
 if (isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "safe")) {
-	$restart = (new Tmux())->isRunning();
+	$restart = (new \Tmux())->isRunning();
 
 	system("cd $DIR && git pull");
 

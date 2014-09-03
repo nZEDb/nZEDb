@@ -12,8 +12,8 @@ if (!isset($argv[1]) || $argv[1] != 'true') {
 }
 
 $start = time();
-$consoleTools = new ConsoleTools(['ColorCLI' => $pdo->log]);
-$groups = new Groups(['Settings' => $pdo]);
+$consoleTools = new \ConsoleTools(['ColorCLI' => $pdo->log]);
+$groups = new \Groups(['Settings' => $pdo]);
 
 $actgroups = $pdo->query("SELECT DISTINCT group_id from collections");
 
@@ -34,7 +34,7 @@ echo $pdo->log->info("Counting parts, this could table a few minutes.");
 $parts_count = $pdo->queryOneRow("SELECT COUNT(*) AS cnt FROM parts");
 
 $i = 0;
-if ($collections_rows instanceof Traversable) {
+if ($collections_rows instanceof \Traversable) {
 	foreach ($collections_rows as $row) {
 		$groupName = $groups->getByNameByID($row['group_id']);
 		echo $pdo->log->header("Processing ${groupName}");

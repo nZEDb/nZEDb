@@ -18,8 +18,8 @@ if ($row !== false) {
 }
 $path2covers = nZEDb_COVERS . 'console' . DS;
 
-$dirItr = new RecursiveDirectoryIterator($path2covers);
-$itr = new RecursiveIteratorIterator($dirItr, RecursiveIteratorIterator::LEAVES_ONLY);
+$dirItr = new \RecursiveDirectoryIterator($path2covers);
+$itr = new \RecursiveIteratorIterator($dirItr, \RecursiveIteratorIterator::LEAVES_ONLY);
 foreach ($itr as $filePath) {
     if (is_file($filePath) && preg_match('/\d+\.jpg/', $filePath)) {
         preg_match('/(\d+)\.jpg/', basename($filePath), $match);
@@ -38,7 +38,7 @@ foreach ($itr as $filePath) {
 }
 
 $qry = $pdo->queryDirect("SELECT id FROM consoleinfo WHERE cover = 1");
-if ($qry instanceof Traversable) {
+if ($qry instanceof \Traversable) {
 	foreach ($qry as $rows) {
 		if (!is_file($path2covers . $rows['id'] . '.jpg')) {
 			$pdo->queryDirect("UPDATE consoleinfo SET cover = 0 WHERE cover = 1 AND id = " . $rows['id']);

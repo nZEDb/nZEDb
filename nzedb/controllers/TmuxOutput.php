@@ -454,7 +454,7 @@ class TmuxOutput extends Tmux
 						   )
 		);
 
-		$pieces = explode(" ", $this->pdo->getAttribute(PDO::ATTR_SERVER_INFO));
+		$pieces = explode(" ", $this->pdo->getAttribute(\PDO::ATTR_SERVER_INFO));
 		$buffer .= $this->pdo->log->primaryOver("\nThreads = ") .
 				   $this->pdo->log->headerOver($pieces[4]) .
 				   $this->pdo->log->primaryOver(', Opens = ') .

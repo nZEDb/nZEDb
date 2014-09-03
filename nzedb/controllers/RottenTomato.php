@@ -204,17 +204,18 @@ class RottenTomato
 	 *
 	 * @return string JSON data from RT.
 	 */
-	private function _makeCall($function, $params = array())
+	private function _makeCall($function, $params = [])
 	{
 		return trim(
-			nzedb\utility\getUrl(
-				RottenTomato::API_URL .
-				$function .
-				'?limit=' .
-				mt_rand(15, 20) .
-				'&apikey=' .
-				$this->_apikey .
-				(!empty($params) ? ('&' . http_build_query($params)) : '')
+			nzedb\utility\Utility::getUrl([
+					'url' => \RottenTomato::API_URL .
+						$function .
+						'?limit=' .
+						mt_rand(15, 20) .
+						'&apikey=' .
+						$this->_apikey .
+						(!empty($params) ? ('&' . http_build_query($params)) : '')
+				]
 			)
 		);
 	}

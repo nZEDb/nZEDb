@@ -57,7 +57,7 @@ Class PreDb
 	{
 		$this->dateLimit = $dateLimit;
 
-		$consoleTools = new ConsoleTools(['ColorCLI' => $this->pdo->log]);
+		$consoleTools = new \ConsoleTools(['ColorCLI' => $this->pdo->log]);
 		$updated = 0;
 		$datesql = '';
 
@@ -83,7 +83,7 @@ Class PreDb
 			$total = $res->rowCount();
 			echo $this->pdo->log->primary(number_format($total) . ' releases to match.');
 
-			if ($res instanceof Traversable) {
+			if ($res instanceof \Traversable) {
 				foreach ($res as $row) {
 					$this->pdo->queryExec(
 						sprintf('UPDATE releases SET preid = %d WHERE id = %d', $row['preid'], $row['releaseid'])
@@ -160,8 +160,8 @@ Class PreDb
 	 */
 	public function parseTitles($time, $echo, $cats, $namestatus, $show)
 	{
-		$namefixer = new NameFixer(['Echo' => $this->echooutput, 'ConsoleTools' => $this->pdo->log, 'Settings' => $this->pdo]);
-		$consoletools = new ConsoleTools(['ColorCLI' => $this->pdo->log]);
+		$namefixer = new \NameFixer(['Echo' => $this->echooutput, 'ConsoleTools' => $this->pdo->log, 'Settings' => $this->pdo]);
+		$consoletools = new \ConsoleTools(['ColorCLI' => $this->pdo->log]);
 		$updated = $checked = 0;
 
 		$tq = '';
@@ -197,7 +197,7 @@ Class PreDb
 		$res = $this->pdo->queryDirect($query);
 		$total = $res->rowCount();
 		echo $this->pdo->log->primary(number_format($total) . " releases to process.");
-		if ($res instanceof Traversable) {
+		if ($res instanceof \Traversable) {
 			foreach ($res as $row) {
 				if (preg_match('/[a-fA-F0-9]{32,40}/i', $row['name'], $matches)) {
 					$updated = $updated + $namefixer->matchPredbHash($matches[0], $row, $echo, $namestatus, $this->echooutput, $show);

@@ -92,8 +92,8 @@ class NZBGet
 		}
 
 		$this->fullURL = $this->verifyURL($this->url);
-		$this->Releases = new Releases(['Settings' => $page->settings]);
-		$this->NZB = new NZB($page->settings);
+		$this->Releases = new \Releases(['Settings' => $page->settings]);
+		$this->NZB = new \NZB($page->settings);
 	}
 
 	/**
@@ -138,7 +138,7 @@ class NZBGet
 					</param>
 				</params>
 			</methodCall>';
-		nzedb\utility\getUrl($this->fullURL . 'append', 'post', $header);
+		nzedb\utility\Utility::getUrl(['url' => $this->fullURL . 'append', 'method' => 'post', 'postdata' => $header, 'verifycert' => false]);
 	}
 
 	/**
@@ -187,7 +187,7 @@ class NZBGet
 					</param>
 				</params>
 			</methodCall>';
-		nzedb\utility\getUrl($this->fullURL . 'appendurl', 'post', $header);
+		nzedb\utility\Utility::getUrl(['url' => $this->fullURL . 'appendurl', 'method' => 'post', 'postdata' => $header, 'verifycert' => false]);
 	}
 
 	/**
@@ -209,7 +209,7 @@ class NZBGet
 					</param>
 				</params>
 			</methodCall>';
-		nzedb\utility\getUrl($this->fullURL . 'pausedownload2', 'post', $header);
+		nzedb\utility\Utility::getUrl(['url' => $this->fullURL . 'pausedownload2', 'method' => 'post', 'postdata' => $header, 'verifycert' => false]);
 	}
 
 	/**
@@ -231,7 +231,7 @@ class NZBGet
 					</param>
 				</params>
 			</methodCall>';
-		nzedb\utility\getUrl($this->fullURL . 'resumedownload2', 'post', $header);
+		nzedb\utility\Utility::getUrl(['url' => $this->fullURL . 'resumedownload2', 'method' => 'post', 'postdata' => $header, 'verifycert' => false]);
 	}
 
 	/**
@@ -266,7 +266,7 @@ class NZBGet
 					</param>
 				</params>
 			</methodCall>';
-		nzedb\utility\getUrl($this->fullURL . 'editqueue', 'post', $header);
+		nzedb\utility\Utility::getUrl(['url' => $this->fullURL . 'editqueue', 'method' => 'post', 'postdata' => $header, 'verifycert' => false]);
 	}
 
 	/**
@@ -301,7 +301,7 @@ class NZBGet
 					</param>
 				</params>
 			</methodCall>';
-		nzedb\utility\getUrl($this->fullURL . 'editqueue', 'post', $header);
+		nzedb\utility\Utility::getUrl(['url' => $this->fullURL . 'editqueue', 'method' => 'post', 'postdata' => $header, 'verifycert' => false]);
 	}
 
 	/**
@@ -336,7 +336,7 @@ class NZBGet
 					</param>
 				</params>
 			</methodCall>';
-		nzedb\utility\getUrl($this->fullURL . 'editqueue', 'post', $header);
+		nzedb\utility\Utility::getUrl(['url' => $this->fullURL . 'editqueue', 'method' => 'post', 'postdata' => $header, 'verifycert' => false]);
 	}
 
 	/**
@@ -360,7 +360,7 @@ class NZBGet
 					</param>
 				</params>
 			</methodCall>';
-		nzedb\utility\getUrl($this->fullURL . 'rate', 'post', $header);
+		nzedb\utility\Utility::getUrl(['url' => $this->fullURL . 'rate', 'method' => 'post', 'postdata' => $header, 'verifycert' => false]);
 	}
 
 	/**
@@ -372,12 +372,12 @@ class NZBGet
 	 */
 	public function getQueue()
 	{
-		$data = nzedb\utility\getUrl($this->fullURL . 'listgroups');
+		$data = nzedb\utility\Utility::getUrl(['url' => $this->fullURL . 'listgroups', 'verifycert' => false]);
 		$retVal = false;
 		if ($data) {
 			$xml = simplexml_load_string($data);
 			if ($xml) {
-				$retVal = array();
+				$retVal = [];
 				$i = 0;
 				foreach($xml->params->param->value->array->data->value as $value) {
 					foreach ($value->struct->member as $member) {
@@ -403,7 +403,7 @@ class NZBGet
 	 */
 	public function status()
 	{
-		$data = nzedb\utility\getUrl($this->fullURL . 'status');
+		$data = nzedb\utility\Utility::getUrl(['url' => $this->fullURL . 'status', 'verifycert' => false]);
 		$retVal = false;
 		if ($data) {
 			$xml = simplexml_load_string($data);

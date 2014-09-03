@@ -1,8 +1,8 @@
 <?php
-require_once realpath(__DIR__ . '/../automated.config.php');
+require_once __DIR__ . '/../automated.config.php';
 
 $page = new InstallPage();
-$page->title = "News Server Setup";
+$page->title = "OpenSSL Setup";
 
 $cfg = new Install();
 
@@ -16,35 +16,36 @@ $cfg = $cfg->getSession();
 if ($page->isPostBack()) {
 	$cfg->doCheck = true;
 
-	$cfg->NNTP_SERVER = trim($_POST['server']);
-	$cfg->NNTP_USERNAME = trim($_POST['user']);
-	$cfg->NNTP_PASSWORD = trim($_POST['pass']);
-	$cfg->NNTP_PORT = (trim($_POST['port']) == '') ? 119 : trim($_POST['port']);
-	$cfg->NNTP_SSLENABLED = (isset($_POST['ssl']) ? (trim($_POST['ssl']) == '1' ? true : false) : false);
-	$cfg->NNTP_SOCKET_TIMEOUT = (is_numeric(trim($_POST['socket_timeout'])) ? (int) trim($_POST['socket_timeout']) : 120);
+	$cfg->nZEDb_SSL_CAFILE = trim($_POST['cafile']);
+	$cfg->nZEDb_SSL_CAPATH = trim($_POST['capath']);
+	$cfg->nZEDb_SSL_VERIFY_PEER = (isset($_POST['verifypeer']) ? (trim($_POST['verifypeer']) == '1' ? true : false) : false);
+	$cfg->nZEDb_SSL_VERIFY_HOST = (isset($_POST['verifyhost']) ? (trim($_POST['verifyhost']) == '1' ? true : false) : false);
+	$cfg->nZEDb_SSL_ALLOW_SELF_SIGNED = (isset($_POST['allowselfsigned']) ? (trim($_POST['allowselfsigned']) == '1' ? true : false) : false);
 
-	require_once nZEDb_LIBS . 'Net_NNTP/NNTP/Client.php';
-	$test = new Net_NNTP_Client();
-	$pear_obj = new PEAR();
-
-	$enc = false;
-	if ($cfg->NNTP_SSLENABLED) {
-		$enc = "tls";
+	// If the user doesn't want to verify peer, disable everything.
+	if (!$cfg->nZEDb_SSL_VERIFY_PEER) {
+		$cfg->nZEDb_SSL_ALLOW_SELF_SIGNED = true;
+		$cfg->nZEDb_SSL_VERIFY_HOST = false;
+		$cfg->nZEDb_SSL_CAFILE = $cfg->nZEDb_SSL_CAPATH = '';
 	}
 
-	// test connection
-	$cfg->nntpCheck = $test->connect($cfg->NNTP_SERVER, $enc, $cfg->NNTP_PORT);
-	if ($pear_obj->isError($cfg->nntpCheck)) {
-		$cfg->nntpCheck->message = 'Connection error, check your server name, port and SSL: (' . $cfg->nntpCheck->getMessage() . ')';
-		$cfg->error = true;
-    }
-	//test authentication if username and password are provided
-	else if ($cfg->NNTP_USERNAME != '' && $cfg->NNTP_PASSWORD != '') {
-		$cfg->nntpCheck = $test->authenticate($cfg->NNTP_USERNAME, $cfg->NNTP_PASSWORD);
-		if ($pear_obj->isError($cfg->nntpCheck)) {
-			$cfg->nntpCheck->message = 'Authentication error, check your username and password: (' . $cfg->nntpCheck->getMessage() .')';
-			$cfg->error = true;
+	// If both paths are empty, disable everything.
+	if (!$cfg->nZEDb_SSL_CAPATH && !$cfg->nZEDb_SSL_CAFILE) {
+		$cfg->nZEDb_SSL_VERIFY_PEER = $cfg->nZEDb_SSL_VERIFY_HOST = false;
+		$cfg->nZEDb_SSL_ALLOW_SELF_SIGNED = true;
+		$cfg->nZEDb_SSL_CAFILE = $cfg->nZEDb_SSL_CAPATH = '';
+	}
+
+	// Make sure the files and all paths are readable.
+	if ($cfg->nZEDb_SSL_CAFILE != '') {
+		if (!checkPathsReadable($cfg->nZEDb_SSL_CAFILE)) {
+			$cfg->error = 'Invalid ca file path or it is not readable or the folders up to it are not readable.';
+		} else if (1) {
+
 		}
+	}
+	if ($cfg->nZEDb_SSL_CAPATH != '' && !checkPathsReadable($cfg->nZEDb_SSL_CAPATH)) {
+		$cfg->error = 'Invalid ca folder path or it is not readable or the folders up to it are not readable.';
 	}
 
 	if (!$cfg->error) {
@@ -59,3 +60,18 @@ $page->smarty->assign('page', $page);
 
 $page->content = $page->smarty->fetch('step3.tpl');
 $page->render();
+
+function checkPathsReadable($location) {
+	$paths = preg_split('#\/#', $location);
+	$directory = '';
+	if ($paths && count($paths)) {
+		foreach ($paths as $path) {
+			$directory .= DS . $path;
+			if (!is_readable($directory)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	return false;
+}

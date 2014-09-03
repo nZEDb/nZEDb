@@ -5,7 +5,7 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 
 use nzedb\db\Settings;
 
-$cli = new ColorCLI();
+$cli = new \ColorCLI();
 if (isset($argv[1])) {
 	$del = false;
 	if (isset($argv[2])) {
@@ -21,7 +21,7 @@ if (isset($argv[1])) {
 function create_guids($live, $delete = false)
 {
 	$pdo = new Settings();
-	$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
+	$consoletools = new \ConsoleTools(['ColorCLI' => $pdo->log]);
 	$timestart = TIME();
 	$relcount = $deleted = $total = 0;
 
@@ -36,11 +36,11 @@ function create_guids($live, $delete = false)
 	}
 	if ($total > 0) {
 		echo $pdo->log->header("Creating nzb_guids for " . number_format($total) . " releases.");
-		$releases = new Releases(['Settings' => $pdo]);
-		$nzb = new NZB($pdo);
-		$releaseImage = new ReleaseImage($pdo);
+		$releases = new \Releases(['Settings' => $pdo]);
+		$nzb = new \NZB($pdo);
+		$releaseImage = new \ReleaseImage($pdo);
 		$reccnt = 0;
-		if ($relrecs instanceof Traversable) {
+		if ($relrecs instanceof \Traversable) {
 			foreach ($relrecs as $relrec) {
 				$reccnt++;
 				$nzbpath = $nzb->NZBPath($relrec['guid']);

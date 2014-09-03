@@ -149,22 +149,24 @@ class SABnzbd
 	 */
 	public function sendToSab($guid)
 	{
-		return nzedb\utility\getUrl(
-			$this->url .
-			'api?mode=addurl&priority=' .
-			$this->priority .
-			'&apikey=' .
-			$this->apikey .
-			'&name=' .
-			urlencode(
-				$this->serverurl .
-				'getnzb/' .
-				$guid .
-				'&i=' .
-				$this->uid .
-				'&r=' .
-				$this->rsstoken
-			)
+		return nzedb\utility\Utility::getUrl([
+				'url' => $this->url .
+					'api?mode=addurl&priority=' .
+					$this->priority .
+					'&apikey=' .
+					$this->apikey .
+					'&name=' .
+					urlencode(
+						$this->serverurl .
+						'getnzb/' .
+						$guid .
+						'&i=' .
+						$this->uid .
+						'&r=' .
+						$this->rsstoken
+					),
+				'verifypeer' => false,
+			]
 		);
 	}
 
@@ -175,10 +177,13 @@ class SABnzbd
 	 */
 	public function getQueue()
 	{
-		return nzedb\utility\getUrl(
-			$this->url .
-			"api?mode=qstatus&output=json&apikey=" .
-			$this->apikey
+		return nzedb\utility\Utility::getUrl([
+				'url' =>
+					$this->url .
+					"api?mode=qstatus&output=json&apikey=" .
+					$this->apikey,
+				'verifypeer' => false,
+			]
 		);
 	}
 
@@ -189,10 +194,13 @@ class SABnzbd
 	 */
 	public function getAdvQueue()
 	{
-		return nzedb\utility\getUrl(
-			$this->url .
-			"api?mode=queue&start=START&limit=LIMIT&output=json&apikey=" .
-			$this->apikey
+		return nzedb\utility\Utility::getUrl([
+				'url' =>
+					$this->url .
+					"api?mode=queue&start=START&limit=LIMIT&output=json&apikey=" .
+					$this->apikey,
+				'verifypeer' => false,
+			]
 		);
 	}
 
@@ -205,12 +213,15 @@ class SABnzbd
 	 */
 	public function delFromQueue($id)
 	{
-		return nzedb\utility\getUrl(
-			$this->url .
-			"api?mode=queue&name=delete&value=" .
-			$id .
-			"&apikey=" .
-			$this->apikey
+		return nzedb\utility\Utility::getUrl([
+				'url' =>
+					$this->url .
+					"api?mode=queue&name=delete&value=" .
+					$id .
+					"&apikey=" .
+					$this->apikey,
+				'verifypeer' => false,
+			]
 		);
 	}
 
@@ -223,12 +234,15 @@ class SABnzbd
 	 */
 	public function pauseFromQueue($id)
 	{
-		return nzedb\utility\getUrl(
-			$this->url .
-			"api?mode=queue&name=pause&value=" .
-			$id .
-			"&apikey=" .
-			$this->apikey
+		return nzedb\utility\Utility::getUrl([
+				'url' =>
+					$this->url .
+					"api?mode=queue&name=pause&value=" .
+					$id .
+					"&apikey=" .
+					$this->apikey,
+				'verifypeer' => false,
+			]
 		);
 	}
 
@@ -241,12 +255,15 @@ class SABnzbd
 	 */
 	public function resumeFromQueue($id)
 	{
-		return nzedb\utility\getUrl(
-			$this->url .
-			"api?mode=queue&name=resume&value=" .
-			$id .
-			"&apikey=" .
-			$this->apikey
+		return nzedb\utility\Utility::getUrl([
+				'url' =>
+					$this->url .
+					"api?mode=queue&name=resume&value=" .
+					$id .
+					"&apikey=" .
+					$this->apikey,
+				'verifypeer' => false,
+			]
 		);
 	}
 
@@ -257,11 +274,14 @@ class SABnzbd
 	 */
 	public function pauseAll()
 	{
-		return nzedb\utility\getUrl(
-			$this->url .
-			"api?mode=pause" .
-			"&apikey=" .
-			$this->apikey
+		return nzedb\utility\Utility::getUrl([
+				'url' =>
+					$this->url .
+					"api?mode=pause" .
+					"&apikey=" .
+					$this->apikey,
+				'verifypeer' => false,
+			]
 		);
 	}
 
@@ -272,11 +292,14 @@ class SABnzbd
 	 */
 	public function resumeAll()
 	{
-		return nzedb\utility\getUrl(
-			$this->url .
-			"api?mode=resume" .
-			"&apikey=" .
-			$this->apikey
+		return nzedb\utility\Utility::getUrl([
+				'url' =>
+					$this->url .
+					"api?mode=resume" .
+					"&apikey=" .
+					$this->apikey,
+				'verifypeer' => false,
+			]
 		);
 	}
 

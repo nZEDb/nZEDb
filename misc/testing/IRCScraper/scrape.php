@@ -31,4 +31,4 @@ $silent = ((isset($argv[2]) && $argv[2] === 'true') ? true : false);
 $debug = ((isset($argv[3]) && $argv[3] === 'true') ? true : false);
 
 // Start scraping.
-new IRCScraper($silent, $debug);
+new \IRCScraper($silent, $debug);

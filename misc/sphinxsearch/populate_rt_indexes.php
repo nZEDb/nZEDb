@@ -1,7 +1,7 @@
 <?php
 require dirname(__FILE__) . '/../../www/config.php';
 
-if (nZEDb_RELEASE_SEARCH_TYPE != ReleaseSearch::SPHINX) {
+if (nZEDb_RELEASE_SEARCH_TYPE != \ReleaseSearch::SPHINX) {
 	exit('Error, nZEDb_RELEASE_SEARCH_TYPE in www/settings.php must be set to SPHINX!' . PHP_EOL);
 }
 
@@ -20,11 +20,11 @@ switch ($argv[1]) {
 // Bulk insert releases into sphinx RT index.
 function releases_rt()
 {
-	$pdo = new nzedb\db\DB();
+	$pdo = new \nzedb\db\DB();
 	$rows = $pdo->queryExec('SELECT id, guid, name, searchname, fromname FROM releases');
 
 	if ($rows !== false && $rows->rowCount()) {
-		$sphinx = new SphinxSearch();
+		$sphinx = new \SphinxSearch();
 
 		$total = $rows->rowCount();
 		$string = 'REPLACE INTO releases_rt (id, guid, name, searchname, fromname) VALUES ';

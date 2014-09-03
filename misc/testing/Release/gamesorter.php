@@ -26,7 +26,7 @@ function getOddGames()
 
 	if ($res !== false) {
 				$pdo->log->doEcho($pdo->log->header("Processing... 150 release(s)."));
-			$gen = new Games(['Echo' => true, 'Settings' => $pdo]);
+			$gen = new \Games(['Echo' => true, 'Settings' => $pdo]);
 
 			//Match on 78% title
 			$gen->matchPercentage = 78;

@@ -500,7 +500,6 @@ class Net_NNTP_Protocol_Client extends PEAR
 				$port = is_null($port) ? 119 : $port;
 				break;
 
-			case 'sslv3':
 			case 'ssl':
 			case 'tls':
 				$transport = $encryption;
@@ -508,14 +507,16 @@ class Net_NNTP_Protocol_Client extends PEAR
 				break;
 
 			default:
-				$message = '$encryption parameter must be either tcp, tls, ssl or sslv3.';
+				$message = '$encryption parameter must be either tcp, tls, ssl.';
 				trigger_error($message, E_USER_ERROR);
 				return $this->throwError($message);
 		}
 
 		// Attempt to connect to usenet.
-		$socket = @stream_socket_client(
-			$transport . '://' . $host . ':' . $port, $errorNumber, $errorString, $timeout
+		$socket = stream_socket_client(
+			$transport . '://' . $host . ':' . $port,
+			$errorNumber, $errorString, $timeout, STREAM_CLIENT_CONNECT,
+			stream_context_create(nzedb\utility\Utility::streamSslContextOptions())
 		);
 
 		if ($socket === false) {

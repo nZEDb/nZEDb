@@ -20,12 +20,12 @@ class Menu
 	public function get($role, $serverurl)
 	{
 		$guest = "";
-		if ($role != Users::ROLE_GUEST) {
-			$guest = sprintf(" AND role != %d ", Users::ROLE_GUEST);
+		if ($role != \Users::ROLE_GUEST) {
+			$guest = sprintf(" AND role != %d ", \Users::ROLE_GUEST);
 		}
 
-		if ($role != Users::ROLE_ADMIN) {
-			$guest .= sprintf(" AND role != %d ", Users::ROLE_ADMIN);
+		if ($role != \Users::ROLE_ADMIN) {
+			$guest .= sprintf(" AND role != %d ", \Users::ROLE_ADMIN);
 		}
 
 		$data = $this->pdo->query(sprintf("SELECT * FROM menu WHERE role <= %d %s ORDER BY ordinal", $role, $guest));

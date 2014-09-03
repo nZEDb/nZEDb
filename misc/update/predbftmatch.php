@@ -15,7 +15,7 @@ if (!isset($argv[1]) || ( $argv[1] != "all" && $argv[1] != "full" && !is_numeric
 			));
 }
 
-$namefixer = new NameFixer(['Settings' => $pdo]);
+$namefixer = new \NameFixer(['Settings' => $pdo]);
 $offset = '';
 
 $timestart = time();
@@ -57,7 +57,7 @@ if ($total > 1) {
 			   . "'.' = No Match Found, '*' = Bad Match Parameters (Flood)\n\n");
 	sleep(2);
 
-	if ($titles instanceof Traversable) {
+	if ($titles instanceof \Traversable) {
 		foreach ($titles as $row) {
 			$matched = 0;
 			$searched = 0;

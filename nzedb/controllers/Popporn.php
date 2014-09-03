@@ -397,9 +397,10 @@ class Popporn
 		curl_setopt($ch, CURLOPT_USERAGENT, "Firefox/2.0.0.1");
 		curl_setopt($ch, CURLOPT_FAILONERROR, 1);
 		if (isset($this->cookie)) {
-		curl_setopt($ch, CURLOPT_COOKIEJAR, $this->cookie);
-		curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookie);
+			curl_setopt($ch, CURLOPT_COOKIEJAR, $this->cookie);
+			curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookie);
 		}
+		curl_setopt_array($ch, nzedb\utility\Utility::curlSslContextOptions());
 		$this->_response = curl_exec($ch);
 		if (!$this->_response) {
 			curl_close($ch);

@@ -12,8 +12,8 @@ use nzedb\db\Settings;
  */
 $debug = false;
 $pdo = new Settings();
-$groups = new Groups(['Settings' => $pdo]);
-$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
+$groups = new \Groups(['Settings' => $pdo]);
+$consoletools = new \ConsoleTools(['ColorCLI' => $pdo->log]);
 $DoPartRepair = ($pdo->getSetting('partrepair') == '0') ? false : true;
 
 if ((!isset($argv[1])) || $argv[1] != 'true') {
@@ -51,7 +51,7 @@ while ($cdone < $clen['total']) {
 	// Only load 1000 collections per loop to not overload memory.
 	$collections = $pdo->queryAssoc('select * from collections limit ' . $cdone . ',1000;');
 
-	if ($collections instanceof Traversable) {
+	if ($collections instanceof \Traversable) {
 		foreach ($collections as $collection) {
 			$collection['subject'] = $pdo->escapeString($collection['subject']);
 			$collection['fromname'] = $pdo->escapeString($collection['fromname']);
@@ -72,7 +72,7 @@ while ($cdone < $clen['total']) {
 			//Get binaries and split to correct group tables.
 			$binaries = $pdo->queryAssoc('SELECT * FROM binaries WHERE collectionID = ' . $oldcid . ';');
 
-			if ($binaries instanceof Traversable) {
+			if ($binaries instanceof \Traversable) {
 				foreach ($binaries as $binary) {
 					$binary['name'] = $pdo->escapeString($binary['name']);
 					$binary['binaryhash'] = $pdo->escapeString($binary['binaryhash']);
@@ -87,7 +87,7 @@ while ($cdone < $clen['total']) {
 
 					//Get parts and split to correct group tables.
 					$parts = $pdo->queryAssoc('SELECT * FROM parts WHERE binaryID = ' . $oldbid . ';');
-					if ($parts instanceof Traversable) {
+					if ($parts instanceof \Traversable) {
 						$firstpart = true;
 						$partsnew = '';
 						foreach ($parts as $part) {
@@ -121,7 +121,7 @@ if ($DoPartRepair === true) {
 		while ($pdone < $plen['total']) {
 			// Only load 10000 partrepair records per loop to not overload memory.
 			$partrepairs = $pdo->queryAssoc(sprintf('select * from partrepair where group_id = %d limit %d, 10000;', $group['id'], $pdone));
-			if ($partrepairs instanceof Traversable) {
+			if ($partrepairs instanceof \Traversable) {
 				foreach ($partrepairs as $partrepair) {
 					$partrepair['numberid'] = $pdo->escapeString($partrepair['numberid']);
 					$partrepair['group_id'] = $pdo->escapeString($partrepair['group_id']);

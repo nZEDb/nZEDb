@@ -18,7 +18,7 @@ class AniDBstandAlone {
 		$this->echooutput = $echooutput;
 		$this->imgSavePath = nZEDb_COVERS . 'anime' . DS;
 		$this->APIKEY = $this->pdo->getSetting('anidbkey');
-		$this->c = new ColorCLI();
+		$this->c = new \ColorCLI();
 		}
 
 	// ===== function getanimetitlesUpdate =================================================================
@@ -67,7 +67,7 @@ class AniDBstandAlone {
 
 		// Declare and set main variables
 		$pdo = $this->pdo;
-		$ri = new ReleaseImage($this->pdo);
+		$ri = new \ReleaseImage($this->pdo);
 		$apicount = 0;
 
 		$this->c->doEcho($this->c->header("Start getAniDBInfo at " . date('D M d, Y G:i a')));
@@ -350,6 +350,7 @@ class AniDBstandAlone {
 		curl_setopt($ch, CURLOPT_HEADER, 0);
 		curl_setopt($ch, CURLOPT_FAILONERROR, 1);
 		curl_setopt($ch, CURLOPT_ENCODING, 'gzip');
+		curl_setopt_array($ch, nzedb\utility\Utility::curlSslContextOptions());
 		$apiresponse = curl_exec($ch);
 
 		if ($this->echooutput) {
@@ -432,11 +433,11 @@ class AniDBstandAlone {
 	}
 } // end class AniDBstandAlone
 
-$c = new ColorCLI();
+$c = new \ColorCLI();
 
 if (isset($argv[1]) && is_numeric($argv[1])) {
 	// create a new AniDB object
-	$anidb = new AniDBstandAlone(true);
+	$anidb = new \AniDBstandAlone(true);
 
 	// next get the title list and populate the DB, update animetitles once a week
 	$anidb->animetitlesUpdate();
