@@ -862,7 +862,7 @@ function cp437toUTF ($str)
  */
 function imdb_trailers($imdbID)
 {
-	$xml = getUrl('http://api.traileraddict.com/?imdb=' . $imdbID);
+	$xml = Utility::getUrl('http://api.traileraddict.com/?imdb=' . $imdbID);
 	if ($xml !== false) {
 		if (preg_match('/(<iframe.+?<\/iframe>)/i', $xml, $html)) {
 			return $html[1];
