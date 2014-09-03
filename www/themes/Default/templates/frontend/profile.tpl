@@ -39,6 +39,8 @@
 	<tr><th>UI Preferences:</th>
 		<td>
 			{if $user.movieview == "1"}View movie covers{else}View standard movie category{/if}<br/>
+			{if $user.xxxview == "1"}View xxx covers{else}View standard xxx category{/if}<br />
+			{if $user.gameview == "1"}View game covers{else}View standard game category{/if}<br />
 			{if $user.musicview == "1"}View music covers{else}View standard music category{/if}<br/>
 			{if $user.consoleview == "1"}View console covers{else}View standard console category{/if}<br/>
 			{if $user.bookview == "1"}View book covers{else}View standard book category{/if}
