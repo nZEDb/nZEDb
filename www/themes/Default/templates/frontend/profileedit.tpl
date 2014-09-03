@@ -39,6 +39,13 @@
 				<div class="hint">Browse movie covers. Only shows movies with known IMDB info.</div>
 			</td>
 		</tr>
+				<tr>
+			<th>View XXX Page:</th>
+			<td>
+				<input id="xxxview"	name="xxxview" value="1" type="checkbox" {if $user.xxxview=="1"}checked="checked"{/if}>
+				<span class="help-block">Browse XXX covers. Only shows xxx releases with known lookup info.</span>
+			</td>
+		</tr>
 		<tr><th>View Music Page:</th>
 			<td>
 				<input id="musicview" name="musicview" value="1" type="checkbox" {if $user.musicview=="1"}checked="checked"{/if}></input>
@@ -49,6 +56,13 @@
 			<td>
 				<input id="consoleview" name="consoleview" value="1" type="checkbox" {if $user.consoleview=="1"}checked="checked"{/if}></input>
 				<div class="hint">Browse console covers. Only shows games with known lookup info.</div>
+			</td>
+		</tr>
+		<tr>
+			<th>View Game Page:</th>
+			<td>
+				<input id="gameview" name="gameview" value="1" type="checkbox" {if $user.gameview=="1"}checked="checked"{/if}>
+				<span class="help-block">Browse game covers. Only shows games with known lookup info.</span>
 			</td>
 		</tr>
 		<tr><th>View Book Page:</th>
