@@ -89,6 +89,9 @@ class Forking extends \fork_daemon
 		// Init Settings here, as forking causes errors when it's destroyed.
 		$this->pdo = new \nzedb\db\Settings();
 
+		// Process extra work that should not be forked and done before forking.
+		$this->processStartWork();
+
 		// Get work to fork.
 		$this->getWork();
 
@@ -168,6 +171,14 @@ class Forking extends \fork_daemon
 				$maxProcesses = $this->requestIDMainMethod();
 				break;
 
+			case 'safe_backfill':
+				$maxProcesses = $this->safeBackfillMainMethod();
+				break;
+
+			case 'safe_binaries':
+				$maxProcesses = $this->safeBinariesMainMethod();
+				break;
+
 			case 'update_per_group':
 				$maxProcesses = $this->updatePerGroupMainMethod();
 				break;
@@ -207,6 +218,21 @@ class Forking extends \fork_daemon
 	/**
 	 * Process any work that does not need to be forked, but needs to run at the end.
 	 */
+	private function processStartWork()
+	{
+		switch ($this->workType) {
+			//case 'safe_backfill':
+			case 'safe_binaries':
+				$this->_executeCommand(
+					PHP_BINARY . ' ' . nZEDb_NIX . 'tmux/bin/update_groups.php'
+				);
+				break;
+		}
+	}
+
+	/**
+	 * Process any work that does not need to be forked, but needs to run at the end.
+	 */
 	private function processEndWork()
 	{
 		switch ($this->workType) {
@@ -220,6 +246,11 @@ class Forking extends \fork_daemon
 			case 'update_per_group':
 				$this->_executeCommand(
 					$this->dnr_path . 'releases  ' . count($this->work) . '_"'
+				);
+				break;
+			case 'safe_backfill':
+				$this->_executeCommand(
+					$this->dnr_path . 'backfill_all_quantity  ' . $this->safeBackfillGroup . '  1000' . '"'
 				);
 				break;
 		}
@@ -250,9 +281,102 @@ class Forking extends \fork_daemon
 		foreach ($groups as $group) {
 			$this->_executeCommand(
 				PHP_BINARY . ' ' . nZEDb_UPDATE . 'backfill.php ' .
-				$group['name'] . (isset($group['max']) ? (' ' . $group['max']) : '')
+			$group['name'] . (isset($group['max']) ? (' ' . $group['max']) : '')
 			);
 		}
+	}
+
+	/**
+	 * @return int
+	 */
+	private function safeBackfillMainMethod()
+	{
+		$this->register_child_run([0 => $this, 1 => 'safeBackfillChildWorker']);
+
+		$run = $this->pdo->query("SELECT (SELECT value FROM tmux WHERE setting = 'backfill_qty') AS qty, (SELECT value FROM tmux WHERE setting = 'backfill') AS backfill, (SELECT value FROM tmux WHERE setting = 'backfill_order') AS orderby, (SELECT value FROM tmux WHERE setting = 'backfill_days') AS days, (SELECT value FROM settings WHERE setting = 'maxmssgs') AS maxmsgs");
+		$threads = $this->pdo->getSetting('backfillthreads');
+
+		$orderby = "ORDER BY a.last_record ASC";
+		switch ((int)$run[0]['orderby']) {
+			case 1:
+				$orderby = "ORDER BY first_record_postdate DESC";
+				break;
+
+			case 2:
+				$orderby = "ORDER BY first_record_postdate ASC";
+				break;
+
+			case 3:
+				$orderby = "ORDER BY name ASC";
+				break;
+
+			case 4:
+				$orderby = "ORDER BY name DESC";
+				break;
+
+			case 5:
+				$orderby = "ORDER BY a.last_record DESC";
+				break;
+		}
+
+		$backfilldays = '';
+		if ($run[0]['days'] == 1) {
+			$backfilldays = "backfill_target";
+		} elseif ($run[0]['days'] == 2) {
+			$backfilldays = round(abs(strtotime(date("Y-m-d")) - strtotime($this->pdo->getSetting('safebackfilldate'))) / 86400);;
+		}
+
+		$data = $this->pdo->queryOneRow(
+			sprintf(
+				"SELECT g.name,
+				g.first_record AS our_first,
+				MAX(a.first_record) AS their_first,
+				MAX(a.last_record) AS their_last
+				FROM groups g
+				INNER JOIN shortgroups a ON g.name = a.name
+				WHERE g.first_record IS NOT NULL
+				AND g.first_record_postdate IS NOT NULL
+				AND g.backfill = 1
+				AND (NOW() - INTERVAL %s DAY) < g.first_record_postdate
+				GROUP BY a.name, a.last_record, g.name, g.first_record
+				%s",
+				$backfilldays,
+				$orderby
+			)
+		);
+
+		$count = 0;
+		if ($data['name']) {
+			$this->safeBackfillGroup = $data['name'];
+
+			$count = ($data['our_first'] - $data['their_first']);
+		}
+
+		if ($count > 0) {
+			if ($count > ($run[0]['qty'] * $threads)) {
+				$geteach = ceil(($run[0]['qty'] * $threads) / $run[0]['maxmsgs']);
+			} else {
+				$geteach = $count / $run[0]['maxmsgs'];
+			}
+
+			$queue = array();
+			for ($i = 0; $i <= $geteach - 1; $i++) {
+				$queue[$i] = sprintf("get_range  backfill  %s  %s  %s  %s", $data['name'], $data['our_first'] - $i * $run[0]['maxmsgs'] - $run[0]['maxmsgs'], $data['our_first'] - $i * $run[0]['maxmsgs'] - 1, $i + 1);
+			}
+			$this->work = $queue;
+		}
+
+		return $threads;
+	}
+
+	public function safeBackfillChildWorker($ranges, $identifier = '')
+	{
+		foreach ($ranges as $range) {
+			$this->_executeCommand(
+				$this->dnr_path . $range . '"'
+			);
+		}
+		return;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -278,6 +402,65 @@ class Forking extends \fork_daemon
 				PHP_BINARY . ' ' . nZEDb_UPDATE  . 'update_binaries.php ' . $group['name'] . ' ' . $group['max']
 			);
 		}
+	}
+
+	/**
+	 * @return int
+	 */
+	private function safeBinariesMainMethod()
+	{
+		$this->register_child_run([0 => $this, 1 => 'safeBinariesChildWorker']);
+
+		$maxmssgs = $this->pdo->getSetting('maxmssgs');
+		$threads = $this->pdo->getSetting('binarythreads');
+
+		$groups = $this->pdo->query("SELECT g.name AS groupname, g.last_record AS our_last, a.last_record AS their_last FROM groups g INNER JOIN shortgroups a ON g.active = 1 AND g.name = a.name ORDER BY a.last_record DESC");
+
+		if ($groups) {
+			$i = 1;
+			$queue = array();
+			foreach ($groups as $group) {
+				if ($group['their_last'] == 0) {
+					$queue[$i] = sprintf("update_group_headers  %s", $group['groupname']);
+					$i++;
+				} else {
+					//only process if more than 20k headers available and skip the first 20k
+					$count = $group['their_last'] - $group['our_last'] - 20000;
+					//echo "count: " . $count . "maxmsgs x2: " . ($maxmssgs * 2) . PHP_EOL;
+					if ($count <= $maxmssgs * 2) {
+						$queue[$i] = sprintf("update_group_headers  %s", $group['groupname']);
+						$i++;
+					} else {
+						$queue[$i] = sprintf("part_repair  %s", $group['groupname']);
+						$i++;
+						$geteach = floor($count / $maxmssgs);
+						$remaining = $count - $geteach * $maxmssgs;
+						//echo "maxmssgs: " . $maxmssgs . " geteach: " . $geteach . " remaining: " . $remaining . PHP_EOL;
+						for ($j = 1; $j <= $geteach; $j++) {
+							$queue[$i] = sprintf("get_range  binaries  %s  %s  %s  %s", $group['groupname'], $group['our_last'] + $j * $maxmssgs + 1, $group['our_last'] + $j * $maxmssgs + $maxmssgs, $i);
+							$i++;
+						}
+						//add remainder to queue
+						$queue[$i] = sprintf("get_range  binaries  %s  %s  %s  %s", $group['groupname'], $group['our_last'] + ($j + 1) * $maxmssgs + 1, $group['our_last'] + ($j + 1) * $maxmssgs + $remaining + 1, $i);
+						$i++;
+					}
+				}
+			}
+			//var_dump($queue);
+			$this->work = $queue;
+		}
+
+		return $threads;
+	}
+
+	public function safeBinariesChildWorker($ranges, $identifier = '')
+	{
+		foreach ($ranges as $range) {
+			$this->_executeCommand(
+				$this->dnr_path . $range . '"'
+			);
+		}
+		return;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -791,6 +974,12 @@ class Forking extends \fork_daemon
 	 * @var bool
 	 */
 	private $tablePerGroup = false;
+
+	/**
+	 * Group used for safe backfill.
+	 * @var string
+	 */
+	private $safeBackfillGroup = '';
 
 	/**
 	 * @var \nzedb\db\Settings
