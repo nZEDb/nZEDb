@@ -388,14 +388,6 @@ class XXX
 					$this->whichclass = $iafd->classUsed;
 					$this->pdo->log->doEcho($this->pdo->log->primary("Fetching XXX info from IAFD -> Adult DVD Empire"));
 					break;
-				case "hm":
-					$mov = new \Hotmovies();
-					$mov->directLink = (string)$iafd->directUrl;
-					$res = $mov->getDirect();
-					$res['title'] = $iafd->title;
-					$res['directurl'] = (string)$iafd->directUrl;
-					$this->whichclass = $iafd->classUsed;
-					$this->pdo->log->doEcho($this->pdo->log->primary("Fetching XXX info from IAFD -> Hot Movies"));
 			}
 		}
 
@@ -415,20 +407,13 @@ class XXX
 			}
 
 			if ($res === false) {
-				$this->whichclass = "hm";
-				$mov = new \Hotmovies();
-				$mov->cookie = $this->cookie;
-				$mov->searchTerm = $xxxmovie;
-				$res = $mov->search();
-			}
-
-			if ($res === false) {
 				$this->whichclass = "pop";
 				$mov = new \Popporn();
 				$mov->cookie = $this->cookie;
 				$mov->searchTerm = $xxxmovie;
 				$res = $mov->search();
 			}
+
 
 			// If a result is true getall information.
 			if ($res !== false) {
