@@ -417,7 +417,8 @@ class AniDB
 				}
 
 				if ($this->echooutput) {
-					echo $this->pdo->log->header("Inserted {number_format($added)} AniDB entries." .
+					$added = (string)number_format($added);
+					echo $this->pdo->log->header("Inserted $added AniDB entries." .
 												 PHP_EOL);
 				}
 			} else {
