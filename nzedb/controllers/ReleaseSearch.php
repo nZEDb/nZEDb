@@ -28,10 +28,6 @@ class ReleaseSearch
 	 */
 	public function __construct(nzedb\db\Settings $settings)
 	{
-		if (!defined('nZEDb_RELEASE_SEARCH_TYPE')) {
-			define('nZEDb_RELEASE_SEARCH_TYPE', self::FULLTEXT);
-		}
-
 		switch (nZEDb_RELEASE_SEARCH_TYPE) {
 			case self::LIKE:
 				$this->fullTextJoinString = '';

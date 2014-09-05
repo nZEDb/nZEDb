@@ -387,7 +387,7 @@ class AniDB
 
 			if ($this->echooutput) {
 				echo $this->pdo->log->header(PHP_EOL .
-											 "Updating animetitles by grabbing full dat AniDB dump." .
+											 "Updating anime titles by grabbing full data AniDB dump." .
 											 PHP_EOL);
 			}
 
@@ -404,6 +404,7 @@ class AniDB
 												 " titles to add." . PHP_EOL);
 				}
 
+				$added = 0;
 				foreach ($animetitles->anime AS $anime) {
 					foreach ($anime->title AS $title) {
 						$xmlAttribs = $title->attributes('xml', true);
@@ -411,11 +412,12 @@ class AniDB
 										   $title['type'],
 										   $xmlAttribs->lang,
 										   $title[0]);
+						$added++;
 					}
 				}
 
 				if ($this->echooutput) {
-					echo $this->pdo->log->header("Inserted {number_format($this->_added)} AniDB entries." .
+					echo $this->pdo->log->header("Inserted {number_format($added)} AniDB entries." .
 												 PHP_EOL);
 				}
 			} else {
