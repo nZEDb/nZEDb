@@ -103,11 +103,16 @@ class ADM
 	{
 		if ($ret = $this->_html->find('img[rel=license]', 0)) {
 				if(isset($ret->src) && preg_match('/(?<skuimage>\d+\.jpg)/i', $ret->src, $matches)){
+				if(preg_match('/(?<cdn>cdn|cdn\d)/i',$ret->src,$mtchs)){
+				$this->_res['boxcover'] = 'http://'. $mtchs['cdn'] . '.adultdvdmarketplace.com/images/ivd_large_front_image/' . trim($matches['skuimage']);
+				$this->_res['backcover'] = 'http://'. $mtchs['cdn'] . '.adultdvdmarketplace.com/images/ivd_large_front_image/' . trim($matches['skuimage']);
+				   }else{
 				$this->_res['boxcover'] = self::IMGURL . '/images/ivd_large_front_image/' . trim($matches['skuimage']);
 				$this->_res['backcover'] = self::IMGURL . '/images/ivd_large_back_image/' . trim($matches['skuimage']);
 				}
+			}
 		}
-
+		var_dump($this->_res);
 		return $this->_res;
 	}
 
@@ -120,9 +125,9 @@ class ADM
 		if ($ret = $this->_html->find('span[itemprop=description]', 0)) {
 			if(preg_match('/(?<tagline>\<b\>(.*)\<\/b\>)/i', $ret->innertext, $matches)){
 				$this->_res['tagline'] = trim(strip_tags($matches['tagline']));
-				$ret->plaintext = str_replace($matches['tagline'], '', strip_tags($ret->innertext));
+				$ret->plaintext = str_replace($matches['tagline'], '', $ret->innertext);
 			}
-			$this->_res['sypnosis'] = trim($ret->plaintext);
+			$this->_res['sypnosis'] = trim(strip_tags($ret->plaintext,"<br>"));
 		} else {
 			$this->_res['sypnosis'] = "N/A";
 		}
@@ -198,7 +203,7 @@ class ADM
 
 	/**
 	 * Searches for match against searchterm
-	 * @return bool, true if search >= 98%
+	 * @return bool, true if search = 100%
 	 */
 	public function search()
 	{
@@ -219,11 +224,11 @@ class ADM
 					}
 					$title = trim($ret->alt,'"');
 					$title = preg_replace('/XXX/', '', $title);
-					$title = preg_replace('/\(.*?\)|[-._]/i', ' ', $title);
-					similar_text($title, $this->searchTerm, $p);
-					echo $title . " -> " . $p . "\n";
-					if ($p >= 98) {
-						$this->_title = $title;
+					$comparetitle = preg_replace('/[^\w]/', '', $title);
+					$comparesearch = preg_replace('/[^\w]/', '', $this->searchTerm);
+					similar_text($comparetitle, $comparesearch, $p);
+					if ($p == 100) {
+						$this->_title = trim($title);
 						$this->_trailUrl = trim($ret->parent()->href);
 						$this->_directUrl = self::ADMURL . $this->_trailUrl;
 						@$this->getUrl();
