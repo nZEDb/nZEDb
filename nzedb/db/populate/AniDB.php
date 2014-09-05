@@ -387,7 +387,7 @@ class AniDB
 
 			if ($this->echooutput) {
 				echo $this->pdo->log->header(PHP_EOL .
-											 "Updating animetitles by grabbing full dat AniDB dump." .
+											 "Updating anime titles by grabbing full data AniDB dump." .
 											 PHP_EOL);
 			}
 
