@@ -101,6 +101,8 @@
 								<a target="_blank" href="{$site->dereferrer_link}{$xxx.directurl}" title="View at Adult DVD Empire">ADE</a>
 								{elseif $xxx.classused === "pop"}
 								<a target="_blank" href="{$site->dereferrer_link}{$xxx.directurl}/" title="View at Popporn">Popporn</a>
+								{elseif $xxx.classused === "adm"}
+								<a target="_blank" href="{$site->dereferrer_link}{$xxx.directurl}" title="View at Adult DVD Marketplace">ADM</a>
 								{else}
 								<a target="_blank" href="{$site->dereferrer_link}{$xxx.directurl}" title="View at Adult Entertainment Broadcast Network">AEBN</a>
 								{/if}
