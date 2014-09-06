@@ -4,6 +4,14 @@ require_once nZEDb_LIBS . 'simple_html_dom.php';
 
 class ADM
 {
+	/**
+	 * Override if 18 years+ or older
+	 * Define Adult DVD Marketplace url
+	 * Needed Search Queries Constant
+	 */
+	const ADMURL			= "http://www.adultdvdmarketplace.com";
+	const IF18				= "http://www.adultdvdmarketplace.com/xcart/adult_dvd/disclaimer.php?action=enter&site=intl&return_url=";
+	const TRAILINGSEARCH	= "/xcart/adult_dvd/advanced_search.php?sort_by=relev&title=";
 
 	/**
 	 * Define a cookie file location for curl
@@ -24,15 +32,6 @@ class ADM
 	public $searchTerm = "";
 
 	/**
-	 * Override if 18 years+ or older
-	 * Define Adult DVD Marketplace url
-	 * Needed Search Queries Constant
-	*/
-	const IF18 = "http://www.adultdvdmarketplace.com/xcart/adult_dvd/disclaimer.php?action=enter&site=intl&return_url=";
-	const ADMURL = "http://www.adultdvdmarketplace.com";
-	const TRAILINGSEARCH = "/xcart/adult_dvd/advanced_search.php?sort_by=relev&title=";
-
-	/**
 	 * Sets the directurl for the return results array
 	 * @var string
 	 */
@@ -51,11 +50,6 @@ class ADM
 	protected $_postParams;
 
 	/**
-	 * Curl Raw Html
-	 */
-	protected $_response;
-
-	/**
 	 * Results returned from each method
 	 *
 	 * @var array
@@ -63,17 +57,22 @@ class ADM
 	protected $_res = array();
 
 	/**
-	 * This is set in the getAll method
-	 *
-	 * @var string
+	 * Curl Raw Html
 	 */
-	protected $_title = "";
+	protected $_response;
 
 	/**
 	 * Add this to popurl to get results
 	 * @var string
 	 */
 	protected $_trailUrl = "";
+
+	/**
+	 * This is set in the getAll method
+	 *
+	 * @var string
+	 */
+	protected $_title = "";
 
 	public function __construct()
 	{
@@ -139,7 +138,6 @@ class ADM
 	 */
 	public function productInfo()
 	{
-
 		foreach ($this->_html->find('td.DarkGrayTable') as $category) {
 			switch (trim($category->plaintext)) {
 				case "DIRECTOR":
@@ -205,39 +203,34 @@ class ADM
 	 */
 	public function search()
 	{
-		if (!isset($this->searchTerm)) {
-			return false;
-		}
-		$this->_trailUrl = self::TRAILINGSEARCH . urlencode($this->searchTerm);
-		if ($this->getUrl() === false) {
-			return false;
-		} else {
-			if ($ret = $this->_html->find('img[rel=license]')) {
-				if (count($ret) < 0) {
-					return false;
-				}
-				foreach ($this->_html->find('img[rel=license]') as $ret) {
-					if (!isset($ret->alt)) {
-						return false;
-					}
-					$title = trim($ret->alt, '"');
-					$title = preg_replace('/XXX/', '', $title);
-					$comparetitle = preg_replace('/[^\w]/', '', $title);
-					$comparesearch = preg_replace('/[^\w]/', '', $this->searchTerm);
-					similar_text($comparetitle, $comparesearch, $p);
-					if ($p == 100) {
-						$this->_title = trim($title);
-						$this->_trailUrl = trim($ret->parent()->href);
-						$this->_directUrl = self::ADMURL . $this->_trailUrl;
-						@$this->getUrl();
+		$result = false;
+		if (isset($this->searchTerm)) {
+			$this->_trailUrl = self::TRAILINGSEARCH . urlencode($this->searchTerm);
+			if ($this->getUrl() !== false) {
+				if ($ret = $this->_html->find('img[rel=license]')) {
+					if (count($ret) > 0) {
+						foreach ($this->_html->find('img[rel=license]') as $ret) {
+							if (isset($ret->alt)) {
+								$title = trim($ret->alt, '"');
+								$title = preg_replace('/XXX/', '', $title);
+								$comparetitle = preg_replace('/[^\w]/', '', $title);
+								$comparesearch = preg_replace('/[^\w]/', '', $this->searchTerm);
+								similar_text($comparetitle, $comparesearch, $p);
+								if ($p == 100) {
+									$this->_title = trim($title);
+									$this->_trailUrl = trim($ret->parent()->href);
+									$this->_directUrl = self::ADMURL . $this->_trailUrl;
+									@$this->getUrl();
 
-						return true;
+									$result = true;
+								}
+							}
+						}
 					}
 				}
 			}
-
-			return false;
 		}
+		return $result;
 	}
 
 	/**
@@ -251,27 +244,29 @@ class ADM
 			$results['title'] = $this->_title;
 			$results['directurl'] = $this->_directUrl;
 		}
+
 		if (is_array($this->sypnosis())) {
 			$results = array_merge($results, $this->sypnosis());
 		}
+
 		if (is_array($this->productInfo())) {
 			$results = array_merge($results, $this->productInfo());
 		}
+
 		if (is_array($this->cast())) {
 			$results = array_merge($results, $this->cast());
 		}
+
 		if (is_array($this->genres())) {
 			$results = array_merge($results, $this->genres());
 		}
+
 		if (is_array($this->covers())) {
 			$results = array_merge($results, $this->covers());
 		}
 
-		if (empty($results) === true) {
-			return false;
-		} else {
-			return $results;
-		}
+		$results = empty($results) ? false : $results;
+		return $results;
 	}
 
 	/**
@@ -294,22 +289,27 @@ class ADM
 			curl_setopt($ch, CURLOPT_POST, 1);
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $this->_postParams);
 		}
+
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_HEADER, 0);
 		curl_setopt($ch, CURLOPT_VERBOSE, 0);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 		curl_setopt($ch, CURLOPT_USERAGENT, "Firefox/2.0.0.1");
 		curl_setopt($ch, CURLOPT_FAILONERROR, 1);
+
 		if (isset($this->cookie)) {
 			curl_setopt($ch, CURLOPT_COOKIEJAR, $this->cookie);
 			curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookie);
 		}
+
 		curl_setopt_array($ch, nzedb\utility\Utility::curlSslContextOptions());
 		$this->_response = curl_exec($ch);
+
 		if (!$this->_response) {
 			curl_close($ch);
 			return false;
 		}
+
 		curl_close($ch);
 		$this->_html->load($this->_response);
 		return true;
