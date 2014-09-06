@@ -314,7 +314,7 @@ class ADE
 	/**
 	 * Gets raw html content using adeurl and any trailing url.
 	 *
-	 * @param null $trailing - required
+	 * @param string $trailing - required
 	 *
 	 * @return bool - true if page has content
 	 */
@@ -343,10 +343,8 @@ class ADE
 		return true;
 	}
 
-
-
-	/*
-	 * Gets all Information.
+	/**
+	 * Gets All Information from the methods
 	 *
 	 * @return array
 	 */
