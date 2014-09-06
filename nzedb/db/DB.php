@@ -214,6 +214,22 @@ class DB extends \PDO
 		return $result->fetchAll(\PDO::FETCH_ASSOC);
 	}
 
+	public function debugDisable()
+	{
+		unset($this->debugging);
+		$this->_debug = false;
+	}
+
+	public function debugEnable()
+	{
+		$this->_debug = true;
+		try {
+			$this->debugging = new \Logger(['ColorCLI' => $this->log]);
+		} catch (\LoggerException $error) {
+			$this->_debug = false;
+		}
+	}
+
 	public function getTableList ()
 	{
 		$query  = ($this->opts['dbtype'] === 'mysql' ? 'SHOW DATABASES' : 'SELECT datname AS Database FROM pg_database');
