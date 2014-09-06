@@ -436,7 +436,7 @@ class Forking extends \fork_daemon
 						$geteach = floor($count / $maxmssgs);
 						$remaining = $count - $geteach * $maxmssgs;
 						//echo "maxmssgs: " . $maxmssgs . " geteach: " . $geteach . " remaining: " . $remaining . PHP_EOL;
-						for ($j = 1; $j <= $geteach; $j++) {
+						for ($j = 0; $j < $geteach; $j++) {
 							$queue[$i] = sprintf("get_range  binaries  %s  %s  %s  %s", $group['groupname'], $group['our_last'] + $j * $maxmssgs + 1, $group['our_last'] + $j * $maxmssgs + $maxmssgs, $i);
 							$i++;
 						}
