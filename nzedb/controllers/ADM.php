@@ -165,7 +165,7 @@ class ADM
 	{
 		$cast = array();
 		foreach ($this->_html->find('td.section_heading') as $category) {
-			if (trim($category->plaintext == "CAST")) {
+			if (trim($category->plaintext) == "CAST") {
 				foreach ($this->_html->find('td.GrayDialogBody') as $td) {
 					foreach ($td->find('a') as $actor) {
 						if (preg_match_all('/search_performerid/', $actor->href, $matches)) {
@@ -188,7 +188,7 @@ class ADM
 	{
 		$genres = array();
 		foreach ($this->_html->find('td.DarkGrayTable') as $category) {
-			if (trim($category->plaintext == "CATEGORY")) {
+			if (trim($category->plaintext) == "CATEGORY") {
 				foreach ($category->next_sibling()->find('a') as $e) {
 					$genres[] = trim($e->plaintext);
 				}
