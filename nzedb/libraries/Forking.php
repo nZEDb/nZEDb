@@ -424,6 +424,7 @@ class Forking extends \fork_daemon
 			$i = 1;
 			$queue = array();
 			foreach ($groups as $group) {
+				echo "group last: " . $group['our_last'] . PHP_EOL;
 				if ($group['our_last'] == 0) {
 					$queue[$i] = sprintf("update_group_headers  %s", $group['groupname']);
 					$i++;
