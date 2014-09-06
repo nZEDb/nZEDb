@@ -69,7 +69,7 @@ class AniDB
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 
-		$maxanidbprocessed = $this->pdo->getSetting('maxanidbprocessed');
+//		$maxanidbprocessed = $this->pdo->getSetting('maxanidbprocessed');
 		$anidbupdint = $this->pdo->getSetting('intanidbupdate');
 		$lastupdated = $this->pdo->getSetting('lastanidbupdate');
 
@@ -84,8 +84,8 @@ class AniDB
 	/**
 	 * Main switch that initiates AniDB table population
 	 *
-	 * @param string	$type
-	 * @param integer	$anidbId
+	 * @param string  $type
+	 * @param integer $anidbId
 	 */
 	public function populateTable($type = '', $anidbId = 0)
 	{
@@ -102,16 +102,17 @@ class AniDB
 	/**
 	 * Checks for an existing anime title in anidb table
 	 *
-	 * @param int $id The AniDB ID to be inserted
-	 * @param string $type The title type
-	 * @param string $lang The title language
+	 * @param int    $id    The AniDB ID to be inserted
+	 * @param string $type  The title type
+	 * @param string $lang  The title language
 	 * @param string $title The title of the Anime
+	 *
 	 * @return array|bool
 	 */
 	private function checkDuplicateDbEntry($id, $type, $lang, $title)
 	{
 		return $this->pdo->queryOneRow(
-						sprintf('
+						 sprintf('
 							SELECT anidbid
 							FROM anidb
 							WHERE anidbid = %d
@@ -122,17 +123,18 @@ class AniDB
 							$this->pdo->escapeString($type),
 							$this->pdo->escapeString($lang),
 							$this->pdo->escapeString($title)
-						)
+						 )
 		);
 	}
 
 	/**
 	 * Retrieves supplemental anime info from the AniDB API
 	 *
-	 * @param int $id The AniDB ID to be inserted
-	 * @param string $type The title type
-	 * @param string $lang The title language
+	 * @param int    $id    The AniDB ID to be inserted
+	 * @param string $type  The title type
+	 * @param string $lang  The title language
 	 * @param string $title The title of the Anime
+	 *
 	 * @return array|bool
 	 */
 	private function getAniDbAPI()
@@ -150,28 +152,30 @@ class AniDB
 		} elseif ($AniDBAPIXML = new \SimpleXMLElement($apiresponse)) {
 
 			if (isset($AniDBAPIXML->similaranime)
-				&& $AniDBAPIXML->similaranime instanceof \Traversable) {
-					foreach ($AniDBAPIXML->similaranime AS $similar) {
-						$similarArray[] = (string) $similar->anime;
-					}
-					$AniDBAPIArray['similar'] = implode(', ', $similarArray);
+				&& $AniDBAPIXML->similaranime instanceof \Traversable
+			) {
+				foreach ($AniDBAPIXML->similaranime AS $similar) {
+					$similarArray[] = (string)$similar->anime;
+				}
+				$AniDBAPIArray['similar'] = implode(', ', $similarArray);
 			} else {
 				$AniDBAPIArray['similar'] = 'No similar anime available for this AniDB ID.';
 			}
 
 			if (isset($AniDBAPIXML->relatedanime)
-				&& $AniDBAPIXML->relatedanime instanceof \Traversable) {
-					foreach ($AniDBAPIXML->relatedanime AS $related) {
-						$relatedArray[] = (string) $related->anime;
-					}
-					$AniDBAPIArray['related'] = implode(', ', $relatedArray);
+				&& $AniDBAPIXML->relatedanime instanceof \Traversable
+			) {
+				foreach ($AniDBAPIXML->relatedanime AS $related) {
+					$relatedArray[] = (string)$related->anime;
+				}
+				$AniDBAPIArray['related'] = implode(', ', $relatedArray);
 			} else {
 				$AniDBAPIArray['related'] = 'No related anime available for this AniDB ID.';
 			}
 
 			if ($AniDBAPIXML->creators instanceof \Traversable) {
 				foreach ($AniDBAPIXML->creators->name AS $creator) {
-					$creatorArray[] = (string) $creator;
+					$creatorArray[] = (string)$creator;
 				}
 				$AniDBAPIArray['creators'] = implode(', ', $creatorArray);
 			} else {
@@ -180,7 +184,7 @@ class AniDB
 
 			if ($AniDBAPIXML->characters->character instanceof \Traversable) {
 				foreach ($AniDBAPIXML->characters->character AS $character) {
-					$characterArray[] = (string) $character->name;
+					$characterArray[] = (string)$character->name;
 				}
 				$AniDBAPIArray['characters'] = implode(', ', $characterArray);
 			} else {
@@ -189,7 +193,7 @@ class AniDB
 
 			if ($AniDBAPIXML->categories->category instanceof \Traversable) {
 				foreach ($AniDBAPIXML->categories->category AS $category) {
-					$categoryArray[] = (string) $category->name;
+					$categoryArray[] = (string)$category->name;
 				}
 				$AniDBAPIArray['categories'] = implode(', ', $categoryArray);
 			} else {
@@ -199,16 +203,16 @@ class AniDB
 			// only english, x-jat imploded episode titles for now
 			if ($AniDBAPIXML->episodes->episode instanceof \Traversable) {
 				$i = 1;
-				foreach($AniDBAPIXML->episodes->episode AS $episode) {
+				foreach ($AniDBAPIXML->episodes->episode AS $episode) {
 
 					$titleArray = array();
 
-					$episodeArray[$i]['episode_id'] = (int) $episode->attributes()->id[0];
-					$episodeArray[$i]['episode_no'] = (int) $episode->epno;
-					$episodeArray[$i]['airdate'] = (string) $episode->airdate;
+					$episodeArray[$i]['episode_id'] = (int)$episode->attributes()->id[0];
+					$episodeArray[$i]['episode_no'] = (int)$episode->epno;
+					$episodeArray[$i]['airdate']    = (string)$episode->airdate;
 
 					foreach ($episode->title AS $title) {
-						$xmlAttribs = $title->attributes('xml', TRUE);
+						$xmlAttribs = $title->attributes('xml', true);
 						if (in_array($xmlAttribs->lang, ['en', 'x-jat'])) {
 							$titleArray[] = $title[0];
 						}
@@ -245,10 +249,13 @@ class AniDB
 			}
 
 			$AniDBAPIArray += array(
-						'type'          => isset($AniDBAPIXML->type[0]) ? (string) $AniDBAPIXML->type : 'N/A',
-						'description'   => isset($AniDBAPIXML->description) ? (string) $AniDBAPIXML->description : 'No description available for this AniDB ID.',
-						'picture'       => isset($AniDBAPIXML->picture[0]) ? (string) $AniDBAPIXML->picture : '',
-						'epsarr'        => $episodeArray
+				'type'        => isset($AniDBAPIXML->type[0]) ? (string)$AniDBAPIXML->type : 'N/A',
+				'description' => isset($AniDBAPIXML->description) ?
+						(string)$AniDBAPIXML->description :
+						'No description available for this AniDB ID.',
+				'picture'     => isset($AniDBAPIXML->picture[0]) ? (string)$AniDBAPIXML->picture :
+						'',
+				'epsarr'      => $episodeArray
 			);
 
 			return $AniDBAPIArray;
@@ -263,31 +270,25 @@ class AniDB
 	 */
 	private function getAniDbResponse()
 	{
-		$curlString = 	sprintf(
-					'http://api.anidb.net:9001/httpapi?request=anime&client=%s&clientver=%d&protover=1&aid=%d',
-					$this->apiKey,
-					self::CLIENT_VERSION,
-					$this->anidbId
+		$curlString = sprintf(
+			'http://api.anidb.net:9001/httpapi?request=anime&client=%s&clientver=%d&protover=1&aid=%d',
+			$this->apiKey,
+			self::CLIENT_VERSION,
+			$this->anidbId
 		);
 
 		$ch = curl_init($curlString);
 
 		$curlOpts = array(
-					CURLOPT_RETURNTRANSFER =>     1,
-					CURLOPT_HEADER         =>     0,
-					CURLOPT_FAILONERROR    =>     1,
-					CURLOPT_ENCODING       => 'gzip'
+			CURLOPT_RETURNTRANSFER => 1,
+			CURLOPT_HEADER         => 0,
+			CURLOPT_FAILONERROR    => 1,
+			CURLOPT_ENCODING       => 'gzip'
 		);
 
 		curl_setopt_array($ch, $curlOpts);
 		$apiresponse = curl_exec($ch);
 		curl_close($ch);
-/*
-		if (nZEDb_DEBUG) {
-			echo "CURL String: '{$curlString}'" . PHP_EOL;
-			echo "Response: '{$apiresponse}'" . PHP_EOL;
-		}
-*/
 		return $apiresponse;
 	}
 
@@ -301,25 +302,22 @@ class AniDB
 	 */
 	private function insertAniDb($id, $type, $lang, $title)
 	{
-		if (!in_array($lang, ['ar', 'he', 'fa'])) {
+		$check = $this->checkDuplicateDbEntry($id, $type, $lang, $title);
 
-			$check = $this->checkDuplicateDbEntry($id, $type, $lang, $title);
-
-			if ($check === false) {
-
-				$this->pdo->queryInsert(
-						  sprintf('
-								INSERT IGNORE INTO anidb
+		if ($check === false) {
+			$this->pdo->queryInsert(
+					  sprintf('
+								INSERT IGNORE INTO anidb_titles
 									(anidbid, type, lang, title)
 								VALUES
 									(%d, %s, %s, %s)',
-								  $id,
-								  $this->pdo->escapeString($type),
-								  $this->pdo->escapeString($lang),
-								  $this->pdo->escapeString($title)
-						  )
-				);
-			}
+							  $id,
+							  $this->pdo->escapeString($type),
+							  $this->pdo->escapeString($lang),
+							  $this->pdo->escapeString($title)
+					  ));
+		} else {
+			echo $this->pdo->log->warning("Duplicate: $id");
 		}
 	}
 
@@ -327,6 +325,7 @@ class AniDB
 	 * Inserts new anime info from AniDB to anidb table
 	 *
 	 * @param array $AniDBInfoArray
+	 *
 	 * @return string
 	 */
 	private function insertAniDBInfoEps($AniDBInfoArray = array())
@@ -366,8 +365,7 @@ class AniDB
 			$this->pdo->queryInsert(
 					  sprintf('
 							INSERT IGNORE INTO anidb_episodes (anidbid, episodeid, episode_no, episode_title, airdate)
-							VALUES
-								(%d, %d, %d, %s, %s)',
+							VALUES (%d, %d, %d, %s, %s)',
 							  $this->anidbId,
 							  $episode['episode_id'],
 							  $episode['episode_no'],
@@ -392,32 +390,46 @@ class AniDB
 			}
 
 			$animetitles = new \SimpleXMLElement("compress.zlib://http://anidb.net/api/anime-titles.xml.gz", null, true);
+			/*
+			$lines = gzfile(realpath(nZEDb_ROOT . '..' . DS . 'anime-titles.xml.gz'));
+			$file = implode('', $lines);
+			$animetitles = new \SimpleXMLElement($file, 0, false);
+			*/
 
 			//Even if the update process fails,
 			//we must mark the last update time or risk ban
 			$this->setLastUpdated();
 
-			if ($animetitles->anime instanceof \Traversable) {
-
+			if ($animetitles instanceof \Traversable) {
 				if ($this->echooutput) {
-					echo $this->pdo->log->header("Total of " . number_format(count($animetitles)) .
-												 " titles to add." . PHP_EOL);
+					echo $this->pdo->log->header(
+										"Total of " . number_format(count($animetitles)) .
+										" titles to add." . PHP_EOL
+					);
 				}
 
 				$added = 0;
-				foreach ($animetitles->anime AS $anime) {
+				foreach ($animetitles AS $anime) {
+					echo "$added\r";
 					foreach ($anime->title AS $title) {
 						$xmlAttribs = $title->attributes('xml', true);
-						$this->insertAniDb($anime['aid'],
-										   $title['type'],
-										   $xmlAttribs->lang,
-										   $title[0]);
+						$this->insertAniDb((string)$anime['aid'],
+										   (string)$title['type'],
+										   (string)$xmlAttribs->lang,
+										   (string)$title[0]);
+						$this->pdo->log->primary(
+									   "Inserting: %d, %s, %s, %s",
+									   $anime['aid'],
+									   $title['type'],
+									   $xmlAttribs->lang,
+									   $title[0]);
 						$added++;
 					}
 				}
 
 				if ($this->echooutput) {
-					echo $this->pdo->log->header("Inserted {number_format($added)} AniDB entries." .
+					echo $this->pdo->log->header("Inserted " . number_format($added) .
+												 " AniDB entries." .
 												 PHP_EOL);
 				}
 			} else {
@@ -468,6 +480,7 @@ class AniDB
 	 * Updates existing anime info in anidb info/episodes tables
 	 *
 	 * @param array $AniDBInfoArray
+	 *
 	 * @return string
 	 */
 	private function updateAniDBInfoEps($AniDBInfoArray = array())
