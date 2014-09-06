@@ -31,7 +31,6 @@ class ADM
 	*/
 	const IF18 = "http://www.adultdvdmarketplace.com/xcart/adult_dvd/disclaimer.php?action=enter&site=intl&return_url=";
 	const ADMURL = "http://www.adultdvdmarketplace.com";
-	const IMGURL = "http://cdn.adultdvdmarketplace.com";
 	const TRAILINGSEARCH = "/xcart/adult_dvd/advanced_search.php?sort_by=relev&title=";
 
 	/**
@@ -102,17 +101,14 @@ class ADM
 	public function covers()
 	{
 		if ($ret = $this->_html->find('img[rel=license]', 0)) {
-				if(isset($ret->src) && preg_match('/(?<skuimage>\d+\.jpg)/i', $ret->src, $matches)){
-				if(preg_match('/(?<cdn>cdn|cdn\d)/i',$ret->src,$mtchs)){
-				$this->_res['boxcover'] = 'http://'. $mtchs['cdn'] . '.adultdvdmarketplace.com/images/ivd_large_front_image/' . trim($matches['skuimage']);
-				$this->_res['backcover'] = 'http://'. $mtchs['cdn'] . '.adultdvdmarketplace.com/images/ivd_large_front_image/' . trim($matches['skuimage']);
-				   }else{
-				$this->_res['boxcover'] = self::IMGURL . '/images/ivd_large_front_image/' . trim($matches['skuimage']);
-				$this->_res['backcover'] = self::IMGURL . '/images/ivd_large_back_image/' . trim($matches['skuimage']);
+			if (isset($ret->next_sibling()->href)) {
+				if(preg_match('/filename\=(?<covers>(.*))\'/i', $ret->next_sibling()->href, $matches)){
+					$this->_res['boxcover'] = $matches['covers'];
+					$this->_res['backcover'] = preg_replace('/front/i', 'back', $matches['covers']);
 				}
 			}
 		}
-		var_dump($this->_res);
+
 		return $this->_res;
 	}
 
@@ -170,15 +166,17 @@ class ADM
 		$cast = array();
 		foreach ($this->_html->find('td.section_heading') as $category) {
 			if (trim($category->plaintext == "CAST")) {
-				if ($ret = $category->parent()->parent()->find('td.GrayDialogBody', 2)) {
-					foreach ($ret->find('a') as $actor) {
-						$cast[] = trim($actor->plaintext);
+					foreach ($this->_html->find('td.GrayDialogBody') as $td) {
+						foreach($td->find('a') as $actor){
+						if(preg_match_all('/search_performerid/', $actor->href, $matches)){
+							$cast[] = trim($actor->plaintext);
+						}
 					}
-				}
+					}
+
 			}
 		}
-		$this->_res['cast'] = & $cast;
-
+		$this->_res['cast'] = array_unique($cast);
 		return $this->_res;
 	}
 
@@ -280,7 +278,7 @@ class ADM
 	 */
 	public function getDirect()
 	{
-		if (!empty($this->directLink) && $this->getUrl !== false) {
+		if (!empty($this->directLink) && $this->getUrl() !== false) {
 				return $this->getAll();
 		}
 		return false;
