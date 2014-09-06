@@ -26,7 +26,6 @@ class ADM
 	/**
 	 * Override if 18 years+ or older
 	 * Define Adult DVD Marketplace url
-	 * Images url for covers
 	 * Needed Search Queries Constant
 	*/
 	const IF18 = "http://www.adultdvdmarketplace.com/xcart/adult_dvd/disclaimer.php?action=enter&site=intl&return_url=";
@@ -89,9 +88,9 @@ class ADM
 	 */
 	public function __destruct()
 	{
-	$this->_html->clear();
-	unset($this->_response);
-	unset($this->_res);
+		$this->_html->clear();
+		unset($this->_response);
+		unset($this->_res);
 	}
 
 	/**
@@ -102,7 +101,8 @@ class ADM
 	{
 		if ($ret = $this->_html->find('img[rel=license]', 0)) {
 			if (isset($ret->next_sibling()->href)) {
-				if(preg_match('/filename\=(?<covers>(.*))\'/i', $ret->next_sibling()->href, $matches)){
+				if (preg_match('/filename\=(?<covers>(.*))\'/i', $ret->next_sibling()->href, $matches)
+				) {
 					$this->_res['boxcover'] = $matches['covers'];
 					$this->_res['backcover'] = preg_replace('/front/i', 'back', $matches['covers']);
 				}
@@ -166,17 +166,17 @@ class ADM
 		$cast = array();
 		foreach ($this->_html->find('td.section_heading') as $category) {
 			if (trim($category->plaintext == "CAST")) {
-					foreach ($this->_html->find('td.GrayDialogBody') as $td) {
-						foreach($td->find('a') as $actor){
-						if(preg_match_all('/search_performerid/', $actor->href, $matches)){
+				foreach ($this->_html->find('td.GrayDialogBody') as $td) {
+					foreach ($td->find('a') as $actor) {
+						if (preg_match_all('/search_performerid/', $actor->href, $matches)) {
 							$cast[] = trim($actor->plaintext);
 						}
 					}
-					}
-
+				}
 			}
 		}
 		$this->_res['cast'] = array_unique($cast);
+
 		return $this->_res;
 	}
 
@@ -220,7 +220,7 @@ class ADM
 					if (!isset($ret->alt)) {
 						return false;
 					}
-					$title = trim($ret->alt,'"');
+					$title = trim($ret->alt, '"');
 					$title = preg_replace('/XXX/', '', $title);
 					$comparetitle = preg_replace('/[^\w]/', '', $title);
 					$comparesearch = preg_replace('/[^\w]/', '', $this->searchTerm);
@@ -230,6 +230,7 @@ class ADM
 						$this->_trailUrl = trim($ret->parent()->href);
 						$this->_directUrl = self::ADMURL . $this->_trailUrl;
 						@$this->getUrl();
+
 						return true;
 					}
 				}
@@ -238,6 +239,7 @@ class ADM
 			return false;
 		}
 	}
+
 	/**
 	 * Gets all information
 	 * @return array
@@ -245,9 +247,9 @@ class ADM
 	public function getAll()
 	{
 		$results = array();
-		if(isset($this->_directUrl)){
-		$results['title'] = $this->_title;
-		$results['directurl'] = $this->_directUrl;
+		if (isset($this->_directUrl)) {
+			$results['title'] = $this->_title;
+			$results['directurl'] = $this->_directUrl;
 		}
 		if (is_array($this->sypnosis())) {
 			$results = array_merge($results, $this->sypnosis());
@@ -265,23 +267,11 @@ class ADM
 			$results = array_merge($results, $this->covers());
 		}
 
-		if(empty($results) === true){
-		return false;
-		}else{
-		return $results;
+		if (empty($results) === true) {
+			return false;
+		} else {
+			return $results;
 		}
-	}
-
-	/**
-	 * Gets the direct link information and returns it
-	 * @return array|bool
-	 */
-	public function getDirect()
-	{
-		if (!empty($this->directLink) && $this->getUrl() !== false) {
-				return $this->getAll();
-		}
-		return false;
 	}
 
 	/**
