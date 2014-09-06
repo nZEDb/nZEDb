@@ -410,7 +410,7 @@ class AniDB
 				}
 
 				foreach ($animetitles AS $anime) {
-					echo "Remaining: $count\r";
+					echo "Remaining: $count  \r";
 					foreach ($anime->title AS $title) {
 						$xmlAttribs = $title->attributes('xml', true);
 						$this->insertAniDb((string)$anime['aid'],
