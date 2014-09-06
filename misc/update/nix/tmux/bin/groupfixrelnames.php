@@ -10,12 +10,14 @@ if (!isset($argv[1])) {
 	exit($pdo->log->error("This script is not intended to be run manually, it is called from groupfixrelnames_threaded.py."));
 } else if (isset($argv[1])) {
 	$namefixer = new \NameFixer(['Settings' => $pdo]);
-	$guidChar = $argv[2];
-	$maxperrun = $argv[3];
-	$thread = $argv[4];
+	echo $argv[1] . PHP_EOL;
+	$pieces = explode(' ', $argv[1]);
+	$guidChar = $pieces[1];
+	$maxperrun = $pieces[2];
+	$thread = $pieces[3];
 
 	switch (true) {
-		case $argv[1] === 'nfo' && isset($guidChar) && isset($maxperrun) && is_numeric($maxperrun):
+		case $pieces[0] === 'nfo' && isset($guidChar) && isset($maxperrun) && is_numeric($maxperrun):
 			$releases = $pdo->queryDirect(
 							sprintf('
 								SELECT r.id AS releaseid, r.guid, r.group_id, r.categoryid, r.name, r.searchname,
@@ -51,7 +53,7 @@ if (!isset($argv[1])) {
 				}
 			}
 			break;
-		case $argv[1] === 'filename' && isset($guidChar) && isset($maxperrun) && is_numeric($maxperrun):
+		case $pieces[0] === 'filename' && isset($guidChar) && isset($maxperrun) && is_numeric($maxperrun):
 			$releases = $pdo->queryDirect(
 							sprintf('
 								SELECT rf.name AS textstring, rf.releaseid AS fileid,
@@ -78,7 +80,7 @@ if (!isset($argv[1])) {
 				}
 			}
 			break;
-		case $argv[1] === 'md5' && isset($guidChar) && isset($maxperrun) && is_numeric($maxperrun):
+		case $pieces[0] === 'md5' && isset($guidChar) && isset($maxperrun) && is_numeric($maxperrun):
 			$releases = $pdo->queryDirect(
 							sprintf('
 								SELECT DISTINCT r.id AS releaseid, r.name, r.searchname, r.categoryid, r.group_id, r.dehashstatus,
@@ -109,7 +111,7 @@ if (!isset($argv[1])) {
 				}
 			}
 			break;
-		case $argv[1] === 'par2' && isset($guidChar) && isset($maxperrun) && is_numeric($maxperrun):
+		case $pieces[0] === 'par2' && isset($guidChar) && isset($maxperrun) && is_numeric($maxperrun):
 			$releases = $pdo->queryDirect(
 							sprintf('
 								SELECT r.id AS releaseid, r.guid, r.group_id
@@ -146,7 +148,7 @@ if (!isset($argv[1])) {
 				}
 			}
 			break;
-		case $argv[1] === 'miscsorter' && isset($guidChar) && isset($maxperrun) && is_numeric($maxperrun):
+		case $pieces[0] === 'miscsorter' && isset($guidChar) && isset($maxperrun) && is_numeric($maxperrun):
 			$releases = $pdo->queryDirect(
 							sprintf('
 								SELECT r.id AS releaseid
@@ -169,7 +171,7 @@ if (!isset($argv[1])) {
 				}
 			}
 			break;
-		case $argv[1] === 'predbft' && isset($maxperrun) && is_numeric($maxperrun) && isset($thread) && is_numeric($thread):
+		case $pieces[0] === 'predbft' && isset($maxperrun) && is_numeric($maxperrun) && isset($thread) && is_numeric($thread):
 			$pres = $pdo->queryDirect(
 						sprintf('
 							SELECT p.id AS preid, p.title, p.source, p.searched

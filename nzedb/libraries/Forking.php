@@ -548,7 +548,7 @@ class Forking extends \fork_daemon
 	{
 		foreach ($guids as $guid) {
 			$this->_executeCommand(
-				PHP_BINARY . ' ' . nZEDb_NIX . 'tmux/bin/groupfixrelnames.php ' . $guid
+				PHP_BINARY . ' ' . nZEDb_NIX . 'tmux/bin/groupfixrelnames.php "' . $guid . '"'
 			);
 		}
 		return;
