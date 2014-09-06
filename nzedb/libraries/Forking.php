@@ -137,9 +137,9 @@ class Forking extends \fork_daemon
 				$maxProcesses = $this->binariesMainMethod();
 				break;
 
-//			case 'fixRelNames':
-//				$maxProcesses = $this->fixRelNamesMainMethod();
-//				break;
+			case 'fixRelNames':
+				$maxProcesses = $this->fixRelNamesMainMethod();
+				break;
 
 			case 'releases':
 				$maxProcesses = $this->releasesMainMethod();
@@ -424,7 +424,6 @@ class Forking extends \fork_daemon
 			$i = 1;
 			$queue = array();
 			foreach ($groups as $group) {
-				echo "group last: " . $group['our_last'] . PHP_EOL;
 				if ($group['our_last'] == 0) {
 					$queue[$i] = sprintf("update_group_headers  %s", $group['groupname']);
 					$i++;
@@ -472,49 +471,88 @@ class Forking extends \fork_daemon
 	//////////////////////////////////// All fix release names code here ///////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//	private function fixRelNamesMainMethod()
-//	{
-//		$this->register_child_run([0 => $this, 1 => 'fixRelNamesChildWorker']);
-//
-//
-//$limit = 0
-//
-//$join = ""
-//$where = ""
-//$datelimit = "AND DATEDIFF(NOW(), r.adddate) <= 7"
-//$groupby = "GROUP BY guidchar"
-//$orderby = "ORDER BY guidchar ASC"
-//$rowlimit = "LIMIT 16"
-//$extrawhere = "AND r.preid = 0 AND r.nzbstatus = 1"
-//$select = "DISTINCT LEFT(r.guid, 1) AS guidchar, COUNT(*) AS count"
-//
-//cur[0].execute("SELECT value FROM settings WHERE setting = 'fixnamethreads'")
-//$maxperrun = cur[0].fetchone()
-//cur[0].execute("SELECT value FROM settings WHERE setting = 'fixnamesperrun'")
-//$run_perrun = cur[0].fetchone()
-//
-//$threads = int(run_threads[0])
-//if $run_threads > 16:
-//	$run_threads = 16
-//$maxperrun = int(run_perrun[0])
-//
-//		return $this->pdo->getSetting('fixnamethreads');
-//	}
-//
-//	public function fixRelNamesChildWorker($groups, $identifier = '')
-//	{
-//		foreach ($groups as $group) {
-//			if ($this->tablePerGroup === true) {
-//				$this->_executeCommand(
-//					$this->dnr_path . 'releases  ' .  $group['id'] . '"'
-//				);
-//			} else {
-//				$this->_executeCommand(
-//					PHP_BINARY . ' ' . nZEDb_UPDATE . 'update_releases.php 1 false ' . $group['name']
-//				);
-//			}
-//		}
-//	}
+	private function fixRelNamesMainMethod()
+	{
+		$this->register_child_run([0 => $this, 1 => 'fixRelNamesChildWorker']);
+
+		$join = "";
+		$where = "";
+		$groupby = "GROUP BY guidchar";
+		$orderby = "ORDER BY guidchar ASC";
+		$rowLimit = "LIMIT 16";
+		$extrawhere = "AND r.preid = 0 AND r.nzbstatus = 1";
+		$select = "DISTINCT LEFT(r.guid, 1) AS guidchar, COUNT(*) AS count";
+
+
+		$threads = $this->pdo->getSetting('fixnamethreads');
+		$maxperrun = $this->pdo->getSetting('fixnamesperrun');
+
+		if ($threads > 16) {
+			$threads = 16;
+		}
+		switch($this->workTypeOptions[0]) {
+			case "md5":
+				$join = "LEFT OUTER JOIN releasefiles rf ON r.id = rf.releaseid AND rf.ishashed = 1";
+				$where = "r.ishashed = 1 AND r.dehashstatus BETWEEN -6 AND 0";
+				break;
+
+			case "nfo":
+				$where = "r.proc_nfo = 0 AND r.nfostatus = 1";
+				break;
+
+			case "filename":
+				$join = "INNER JOIN releasefiles rf ON r.id = rf.releaseid";
+				$where = "r.proc_files = 0";
+				break;
+
+			case "par2":
+				$where = "r.proc_par2 = 0";
+				break;
+
+			case "miscsorter":
+				$where = "r.nfostatus = 1 AND r.proc_nfo = 1 AND r.proc_sorter = 0 AND r.isrenamed = 0";
+				break;
+
+			case "predbft":
+				$extrawhere = "";
+				$where = "1=1";
+				$rowLimit = sprintf("LIMIT %s", $threads);
+				break;
+		}
+
+		$datas = $this->pdo->query(sprintf("SELECT %s FROM releases r %s WHERE %s %s %s %s %s", $select, $join, $where, $extrawhere, $groupby, $orderby, $rowLimit));
+
+		if ($datas) {
+			$count = 0;
+			$queue = array();
+			foreach ($datas as $firstguid) {
+				if ($count >= $threads) {
+					$count = 0;
+				}
+				$count++;
+				if ($firstguid['count'] < $maxperrun) {
+					$limit = $firstguid['count'];
+				} else {
+					$limit = $maxperrun;
+				}
+				if ($limit > 0) {
+					$queue[$count] = sprintf("%s %s %s %s", $this->workTypeOptions[0], $firstguid['guidchar'], $limit, $count);
+				}
+			}
+			$this->work = $queue;
+		}
+		return $threads;
+	}
+
+	public function fixRelNamesChildWorker($guids, $identifier = '')
+	{
+		foreach ($guids as $guid) {
+			$this->_executeCommand(
+				PHP_BINARY . ' ' . nZEDb_NIX . 'tmux/bin/groupfixrelnames.php ' . $guid
+			);
+		}
+		return;
+	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// All releases code here ////////////////////////////////////////////////////
