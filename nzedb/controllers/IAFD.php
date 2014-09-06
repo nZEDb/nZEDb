@@ -12,6 +12,7 @@ class IAFD {
 	public $title = "";
 
 	const ADE = "Adult DVD Empire";
+	const ADM = "AdultDVDMarketplace";
 	const IAFDSEARCHURL = "http://www.iafd.com/results.asp?searchtype=title&searchstring=";
 	const IAFDURL = "http://www.iafd.com";
 
@@ -57,6 +58,16 @@ class IAFD {
 									$this->_getRedirect = self::IAFDURL . trim($alink->href);
 									$this->directUrl = $this->getUrl();
 									$this->directUrl = preg_replace('/\?(.*)/', '', $this->directUrl);
+									$this->_dvdFound = false;
+									break;
+								}
+								if ($compare === self::ADM && !empty($compare)) {
+									$this->classUsed = "adm";
+									$this->_getRedirect = self::IAFDURL . trim($alink->href);
+									$this->directUrl = $this->getUrl();
+									$this->directUrl = preg_replace('/\?(.*)/',
+																	'',
+																	$this->directUrl);
 									$this->_dvdFound = false;
 									break;
 								}
