@@ -401,16 +401,16 @@ class AniDB
 			$this->setLastUpdated();
 
 			if ($animetitles instanceof \Traversable) {
+				$count = count($animetitles);
 				if ($this->echooutput) {
 					echo $this->pdo->log->header(
-										"Total of " . number_format(count($animetitles)) .
+										"Total of " . number_format($count) .
 										" titles to add." . PHP_EOL
 					);
 				}
 
-				$added = 0;
 				foreach ($animetitles AS $anime) {
-					echo "$added\r";
+					echo "Remaining: $count\r";
 					foreach ($anime->title AS $title) {
 						$xmlAttribs = $title->attributes('xml', true);
 						$this->insertAniDb((string)$anime['aid'],
@@ -423,8 +423,8 @@ class AniDB
 									   $title['type'],
 									   $xmlAttribs->lang,
 									   $title[0]);
-						$added++;
 					}
+					$count--;
 				}
 
 				if ($this->echooutput) {
