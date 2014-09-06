@@ -137,6 +137,10 @@ class Forking extends \fork_daemon
 				$maxProcesses = $this->binariesMainMethod();
 				break;
 
+//			case 'fixRelNames':
+//				$maxProcesses = $this->fixRelNamesMainMethod();
+//				break;
+
 			case 'releases':
 				$maxProcesses = $this->releasesMainMethod();
 				break;
@@ -420,7 +424,7 @@ class Forking extends \fork_daemon
 			$i = 1;
 			$queue = array();
 			foreach ($groups as $group) {
-				if ($group['their_last'] == 0) {
+				if ($group['our_last'] == 0) {
 					$queue[$i] = sprintf("update_group_headers  %s", $group['groupname']);
 					$i++;
 				} else {
@@ -462,6 +466,54 @@ class Forking extends \fork_daemon
 		}
 		return;
 	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////// All fix release names code here ///////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//	private function fixRelNamesMainMethod()
+//	{
+//		$this->register_child_run([0 => $this, 1 => 'fixRelNamesChildWorker']);
+//
+//
+//$limit = 0
+//
+//$join = ""
+//$where = ""
+//$datelimit = "AND DATEDIFF(NOW(), r.adddate) <= 7"
+//$groupby = "GROUP BY guidchar"
+//$orderby = "ORDER BY guidchar ASC"
+//$rowlimit = "LIMIT 16"
+//$extrawhere = "AND r.preid = 0 AND r.nzbstatus = 1"
+//$select = "DISTINCT LEFT(r.guid, 1) AS guidchar, COUNT(*) AS count"
+//
+//cur[0].execute("SELECT value FROM settings WHERE setting = 'fixnamethreads'")
+//$maxperrun = cur[0].fetchone()
+//cur[0].execute("SELECT value FROM settings WHERE setting = 'fixnamesperrun'")
+//$run_perrun = cur[0].fetchone()
+//
+//$threads = int(run_threads[0])
+//if $run_threads > 16:
+//	$run_threads = 16
+//$maxperrun = int(run_perrun[0])
+//
+//		return $this->pdo->getSetting('fixnamethreads');
+//	}
+//
+//	public function fixRelNamesChildWorker($groups, $identifier = '')
+//	{
+//		foreach ($groups as $group) {
+//			if ($this->tablePerGroup === true) {
+//				$this->_executeCommand(
+//					$this->dnr_path . 'releases  ' .  $group['id'] . '"'
+//				);
+//			} else {
+//				$this->_executeCommand(
+//					PHP_BINARY . ' ' . nZEDb_UPDATE . 'update_releases.php 1 false ' . $group['name']
+//				);
+//			}
+//		}
+//	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// All releases code here ////////////////////////////////////////////////////
