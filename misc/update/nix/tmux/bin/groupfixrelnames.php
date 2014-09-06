@@ -10,7 +10,6 @@ if (!isset($argv[1])) {
 	exit($pdo->log->error("This script is not intended to be run manually, it is called from groupfixrelnames_threaded.py."));
 } else if (isset($argv[1])) {
 	$namefixer = new \NameFixer(['Settings' => $pdo]);
-	echo $argv[1] . PHP_EOL;
 	$pieces = explode(' ', $argv[1]);
 	$guidChar = $pieces[1];
 	$maxperrun = $pieces[2];
