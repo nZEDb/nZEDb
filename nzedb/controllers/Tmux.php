@@ -9,6 +9,8 @@ class Tmux
 	 */
 	public $pdo;
 
+	public $tmux_session;
+
 	function __construct(Settings $pdo = null)
 	{
 		$this->pdo = (empty($pdo) ? new Settings() : $pdo);
@@ -43,12 +45,7 @@ class Tmux
 		$pdo = $this->pdo;
 		$where = ($setting !== '' ? sprintf('WHERE setting = %s', $pdo->escapeString($setting)) : '');
 
-		$rows = $pdo->query(
-					sprintf(
-						"SELECT * FROM tmux %s",
-						$where
-					)
-		);
+		$rows = $pdo->query(sprintf("SELECT * FROM tmux %s", $where));
 
 		if ($rows === false) {
 			return false;
