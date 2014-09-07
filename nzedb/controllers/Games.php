@@ -656,7 +656,7 @@ class Games
 				$this->_resultsFound = count($result['results']) - 1;
 				if ($this->_resultsFound !== 0) {
 					for ($i = 0; $i <= $this->_resultsFound; $i++) {
-						similar_text($result['results'][$i]['name'], $title, $p);
+						similar_text(strtolower($result['results'][$i]['name']), strtolower($title), $p);
 						if ($p > 77) {
 							$result = $result['results'][$i];
 							preg_match('/\/\d+\-(?<asin>\d+)\//', $result['api_detail_url'], $matches);
