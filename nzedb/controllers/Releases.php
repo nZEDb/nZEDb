@@ -950,17 +950,18 @@ class Releases
 			LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id
 			INNER JOIN groups ON groups.id = r.group_id
 			INNER JOIN category c ON c.id = r.categoryid
-			INNER JOIN category cp ON cp.id = c.parentid"
+			INNER JOIN category cp ON cp.id = c.parentid
+			%s",
+			$whereSql
 		);
 
 		$sql = sprintf(
 			"SELECT * FROM (
-				%s %s
+				%s
 			) r
 			ORDER BY r.%s %s
 			LIMIT %d OFFSET %d",
 			$baseSql,
-			$whereSql,
 			$orderBy[0],
 			$orderBy[1],
 			$limit,
@@ -1014,15 +1015,16 @@ class Releases
 			INNER JOIN groups ON groups.id = r.group_id
 			LEFT OUTER JOIN releasevideo re ON re.releaseid = r.id
 			LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
-			INNER JOIN category cp ON cp.id = c.parentid"
+			INNER JOIN category cp ON cp.id = c.parentid
+			%s",
+			$whereSql
 		);
 
 		$sql = sprintf(
-			"%s %s
+			"%s
 			ORDER BY postdate DESC
 			LIMIT %d OFFSET %d",
 			$baseSql,
-			$whereSql,
 			$limit,
 			$offset
 		);
@@ -1066,15 +1068,16 @@ class Releases
 			INNER JOIN category c ON c.id = r.categoryid
 			INNER JOIN groups ON groups.id = r.group_id
 			LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
-			INNER JOIN category cp ON cp.id = c.parentid"
+			INNER JOIN category cp ON cp.id = c.parentid
+			%s",
+			$whereSql
 		);
 
 		$sql = sprintf(
-			"%s %s
+			"%s
 			ORDER BY postdate DESC
 			LIMIT %d OFFSET %d",
 			$baseSql,
-			$whereSql,
 			$limit,
 			$offset
 		);
@@ -1119,15 +1122,16 @@ class Releases
 			INNER JOIN groups g ON g.id = r.group_id
 			INNER JOIN category c ON c.id = r.categoryid
 			LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
-			INNER JOIN category cp ON cp.id = c.parentid"
+			INNER JOIN category cp ON cp.id = c.parentid
+			%s",
+			$whereSql
 		);
 
 		$sql = sprintf(
-			"%s %s
+			"%s
 			ORDER BY postdate DESC
 			LIMIT %d OFFSET %d",
 			$baseSql,
-			$whereSql,
 			$limit,
 			$offset
 		);
