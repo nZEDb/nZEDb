@@ -289,7 +289,7 @@ class ADE
 					$title = preg_replace('/XXX/', '', $title);
 					$title = preg_replace('/\(.*?\)|[-._]/i', ' ', $title);
 					$ret = (string)trim($ret->href);
-					similar_text($this->searchTerm, $title, $p);
+					similar_text(strtolower($this->searchTerm), strtolower($title), $p);
 					if ($p >= 90) {
 						$this->found = true;
 						$this->_urlFound = $ret;
