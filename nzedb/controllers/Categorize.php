@@ -658,7 +658,7 @@ class Categorize extends Category
 
 	public function isMovieHD()
 	{
-		if (preg_match('/720p|1080p|AVC|VC1|VC\-1|web\-dl|wmvhd|x264|XvidHD|bdrip/i', $this->releaseName)) {
+		if (preg_match('/720p|1080p|AVC|VC1|VC\-1|WEB\-DL|wmvhd|x264|XvidHD|WEBRIP|WEBRiP|HDRip|bdrip/i', $this->releaseName)) {
 			$this->tmpCat = \Category::CAT_MOVIE_HD;
 			return true;
 		}
