@@ -138,7 +138,7 @@ class AEBN
 	 */
 	public function covers()
 	{
-		if ($ret = $this->_html->find("img#boxImage, img[itemprop=thumbnailUrl]", 0)) {
+		if ($ret = $this->_html->find("div#md-boxCover, img[itemprop=thumbnailUrl]", 1)) {
 			$ret = trim($ret->src);
 			$this->_res['boxcover'] = str_ireplace("160w.jpg", "xlf.jpg", $ret);
 			$this->_res['backcover'] = str_ireplace("160w.jpg", "xlb.jpg", $ret);
@@ -256,10 +256,10 @@ class AEBN
 				foreach ($this->_html->find("div.movie") as $movie) {
 					$string = "a#FTSMovieSearch_link_title_detail_" . $i;
 					if ($ret = $movie->find($string, 0)) {
-						$title = trim($ret->title);
-						$title = preg_replace('/XXX/', '', $title);
+						$title = preg_replace('/XXX/', '', $ret->title);
 						$title = preg_replace('/\(.*?\)|[-._]/i', ' ', $title);
-						similar_text($this->searchTerm, $title, $p);
+						$title = trim($title);
+						similar_text(strtolower($this->searchTerm), strtolower($title), $p);
 						if ($p >= 90) {
 							$this->_title = trim($ret->title);
 							$this->_trailUrl = $ret->href;
