@@ -6,6 +6,7 @@ New updates are grouped by person, at the top of the file.
 2014-09-06 niel
 	* New: Added couple methods to DB class to allow switching Logging errors on/off during runtime. Useful when you only want to catch errors on a single operation and not be flooded by other info.
 	* Mrg: Merging PR 1490 from tasky.
+	* Mrg: Merging PR 1491 from tasky.
 2014-09-04 kevin
 	* Chg: Define nZEDb_RELEASE_SEARCH_TYPE in automated.config.php if settings.php doesn't exist.
 2014-09-03 bart39
