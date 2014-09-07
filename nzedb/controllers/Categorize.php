@@ -592,6 +592,7 @@ class Categorize extends Category
 			switch (true) {
 				case $this->categorizeForeign && $this->isMovieForeign():
 				case $this->isMovieDVD():
+				case $this->catWebDL && $this->isMovieWEBDL():
 				case $this->isMovieSD():
 				case $this->isMovie3D():
 				case $this->isMovieBluRay():
@@ -669,6 +670,15 @@ class Categorize extends Category
 	{
 		if (preg_match('/[-._ ]cam[-._ ]/i', $this->releaseName)) {
 			$this->tmpCat = \Category::CAT_MOVIE_OTHER;
+			return true;
+		}
+		return false;
+	}
+
+	public function isMovieWEBDL()
+	{
+		if (preg_match('/web[-._ ]dl/i', $this->releaseName)) {
+			$this->tmpCat = \Category::CAT_MOVIE_WEBDL;
 			return true;
 		}
 		return false;

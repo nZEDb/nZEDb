@@ -919,7 +919,7 @@ class Releases
 			$searchOptions['fromname'] = $posterName;
 		}
 
-		$innerSql = sprintf(
+		$whereSql = sprintf(
 			"%s
 			WHERE r.passwordstatus <= %d %s %s %s %s %s %s %s %s %s %s %s",
 			$this->releaseSearch->getFullTextJoinString(),
@@ -937,23 +937,31 @@ class Releases
 			(count($searchOptions) > 0 ? $this->releaseSearch->getSearchSQL($searchOptions) : '')
 		);
 
-		$sql = sprintf(
-			"SELECT SQL_CALC_FOUND_ROWS * FROM (
-				SELECT r.*, CONCAT(cp.title, ' > ', c.title) AS category_name,
+		$baseSql = sprintf(
+			"SELECT r.*,
+				CONCAT(cp.title, ' > ', c.title) AS category_name,
 				CONCAT(cp.id, ',', c.id) AS category_ids,
-				groups.name AS group_name, rn.id AS nfoid,
-				re.releaseid AS reid, cp.id AS categoryparentid
-				FROM releases r
-				LEFT OUTER JOIN releasevideo re ON re.releaseid = r.id
-				LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id
-				INNER JOIN groups ON groups.id = r.group_id
-				INNER JOIN category c ON c.id = r.categoryid
-				INNER JOIN category cp ON cp.id = c.parentid
+				groups.name AS group_name,
+				rn.id AS nfoid,
+				re.releaseid AS reid,
+				cp.id AS categoryparentid
+			FROM releases r
+			LEFT OUTER JOIN releasevideo re ON re.releaseid = r.id
+			LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id
+			INNER JOIN groups ON groups.id = r.group_id
+			INNER JOIN category c ON c.id = r.categoryid
+			INNER JOIN category cp ON cp.id = c.parentid
+			%s",
+			$whereSql
+		);
+
+		$sql = sprintf(
+			"SELECT * FROM (
 				%s
 			) r
 			ORDER BY r.%s %s
 			LIMIT %d OFFSET %d",
-			$innerSql,
+			$baseSql,
 			$orderBy[0],
 			$orderBy[1],
 			$limit,
@@ -961,7 +969,7 @@ class Releases
 		);
 		$releases = $this->pdo->query($sql);
 		if ($releases && count($releases)) {
-			$releases[0]['_totalrows'] = $this->pdo->get_Found_Rows();
+			$releases[0]['_totalrows'] = $this->getReleaseCount($baseSql);
 		}
 		return $releases;
 	}
@@ -980,7 +988,7 @@ class Releases
 	 */
 	public function searchbyRageId($rageId, $series = '', $episode = '', $offset = 0, $limit = 100, $name = '', $cat = [-1], $maxAge = -1)
 	{
-		$baseSql = sprintf(
+		$whereSql = sprintf(
 			"%s
 			WHERE r.categoryid BETWEEN 5000 AND 5999
 			AND nzbstatus = 1
@@ -994,8 +1002,9 @@ class Releases
 			$this->categorySQL($cat),
 			($maxAge > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxAge) : '')
 		);
-		$sql = sprintf(
-			"SELECT SQL_CALC_FOUND_ROWS r.*,
+
+		$baseSql = sprintf(
+			"SELECT r.*,
 				concat(cp.title, ' > ', c.title) AS category_name,
 				CONCAT(cp.id, ',', c.id) AS category_ids,
 				groups.name AS group_name,
@@ -1007,7 +1016,12 @@ class Releases
 			LEFT OUTER JOIN releasevideo re ON re.releaseid = r.id
 			LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
 			INNER JOIN category cp ON cp.id = c.parentid
-			%s
+			%s",
+			$whereSql
+		);
+
+		$sql = sprintf(
+			"%s
 			ORDER BY postdate DESC
 			LIMIT %d OFFSET %d",
 			$baseSql,
@@ -1015,7 +1029,7 @@ class Releases
 			$offset
 		);
 		$releases = $this->pdo->query($sql);
-		$releases[0]['_totalrows'] = $this->pdo->get_Found_Rows();
+		$releases[0]['_totalrows'] = $this->getReleaseCount($baseSql);
 		return $releases;
 	}
 
@@ -1032,7 +1046,7 @@ class Releases
 	 */
 	public function searchbyAnidbId($aniDbID, $episodeNumber = '', $offset = 0, $limit = 100, $name = '', $cat = [-1], $maxAge = -1)
 	{
-		$baseSql = sprintf(
+		$whereSql = sprintf(
 			"%s
 			WHERE r.passwordstatus <= %d %s %s %s %s %s",
 			($name !== '' ? $this->releaseSearch->getFullTextJoinString() : ''),
@@ -1043,8 +1057,9 @@ class Releases
 			$this->categorySQL($cat),
 			($maxAge > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxAge) : '')
 		);
-		$sql = sprintf(
-			"SELECT SQL_CALC_FOUND_ROWS r.*,
+
+		$baseSql = sprintf(
+			"SELECT r.*,
 				CONCAT(cp.title, ' > ', c.title) AS category_name,
 				CONCAT(cp.id, ',', c.id) AS category_ids,
 				groups.name AS group_name,
@@ -1054,7 +1069,12 @@ class Releases
 			INNER JOIN groups ON groups.id = r.group_id
 			LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
 			INNER JOIN category cp ON cp.id = c.parentid
-			%s
+			%s",
+			$whereSql
+		);
+
+		$sql = sprintf(
+			"%s
 			ORDER BY postdate DESC
 			LIMIT %d OFFSET %d",
 			$baseSql,
@@ -1062,7 +1082,7 @@ class Releases
 			$offset
 		);
 		$releases = $this->pdo->query($sql);
-		$releases[0]['_totalrows'] = $this->pdo->get_Found_Rows();
+		$releases[0]['_totalrows'] = $this->getReleaseCount($baseSql);
 		return $releases;
 	}
 
@@ -1078,7 +1098,7 @@ class Releases
 	 */
 	public function searchbyImdbId($imDbId, $offset = 0, $limit = 100, $name = '', $cat = [-1], $maxAge = -1)
 	{
-		$baseSql = sprintf(
+		$whereSql = sprintf(
 			"%s
 			WHERE r.categoryid BETWEEN 2000 AND 2999
 			AND nzbstatus = 1
@@ -1091,8 +1111,9 @@ class Releases
 			$this->categorySQL($cat),
 			($maxAge > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxAge) : '')
 		);
-		$sql = sprintf(
-			"SELECT SQL_CALC_FOUND_ROWS r.*,
+
+		$baseSql = sprintf(
+			"SELECT r.*,
 				concat(cp.title, ' > ', c.title) AS category_name,
 				CONCAT(cp.id, ',', c.id) AS category_ids,
 				g.name AS group_name,
@@ -1102,7 +1123,12 @@ class Releases
 			INNER JOIN category c ON c.id = r.categoryid
 			LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
 			INNER JOIN category cp ON cp.id = c.parentid
-			%s
+			%s",
+			$whereSql
+		);
+
+		$sql = sprintf(
+			"%s
 			ORDER BY postdate DESC
 			LIMIT %d OFFSET %d",
 			$baseSql,
@@ -1110,8 +1136,26 @@ class Releases
 			$offset
 		);
 		$releases = $this->pdo->query($sql);
-		$releases[0]['_totalrows'] = $this->pdo->get_Found_Rows();
+		$releases[0]['_totalrows'] = $this->getReleaseCount($baseSql);
 		return $releases;
+	}
+
+	/**
+	 * Get count of releases for pager.
+	 *
+	 * @param string $query The query to get the count from.
+	 *
+	 * @return int
+	 */
+	private function getReleaseCount($query)
+	{
+		$count = $this->pdo->queryOneRow(
+			preg_replace('/SELECT.+?FROM\s+releases/is', 'SELECT COUNT(*) AS count FROM releases', $query)
+		);
+		if (isset($count['count']) && is_numeric($count['count'])) {
+			return $count['count'];
+		}
+		return 0;
 	}
 
 	/**

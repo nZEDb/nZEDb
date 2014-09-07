@@ -3,6 +3,10 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
+2014-09-07 ruhllatio
+	* Add: WEB-DL category for Movies, they currently go into TV WEB-DL right now
+2014-09-07 kevin
+	* Chg: Change releases to use count instead of SQL_CALC_FOUND_ROWS for pager, should speed up those queries.
 2014-09-06 niel
 	* New: Added couple methods to DB class to allow switching Logging errors on/off during runtime. Useful when you only want to catch errors on a single operation and not be flooded by other info.
 	* Mrg: Merging PR 1490 from tasky.
