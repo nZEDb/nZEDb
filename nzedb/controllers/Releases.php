@@ -195,12 +195,12 @@ class Releases
 					rn.id AS nfoid,
 					re.releaseid AS reid
 				FROM releases r
-				INNER JOIN groups g ON g.id = r.group_id
+				STRAIGHT_JOIN groups g ON g.id = r.group_id
+				STRAIGHT_JOIN category c ON c.id = r.categoryid
+				INNER JOIN category cp ON cp.id = c.parentid
 				LEFT OUTER JOIN releasevideo re ON re.releaseid = r.id
 				LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id
 				AND rn.nfo IS NOT NULL
-				INNER JOIN category c ON c.id = r.categoryid
-				INNER JOIN category cp ON cp.id = c.parentid
 				WHERE nzbstatus = 1 AND r.passwordstatus %s %s %s %s %s
 				ORDER BY %s %s %s",
 				$this->showPasswords(),

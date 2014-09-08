@@ -1,6 +1,7 @@
 <?php
 
 use nzedb\db\Settings;
+use \nzedb\processing\PostProcess;
 
 require_once nZEDb_LIBS . 'getid3/getid3/getid3.php';
 require_once nZEDb_LIBS . 'rarinfo/par2info.php';
@@ -387,9 +388,14 @@ class Nfo
 		// Remove nfo that we cant fetch after 5 attempts.
 		$releases = $this->pdo->queryDirect(
 			sprintf(
-				'SELECT id FROM releases WHERE nzbstatus = %d AND nfostatus < %d',
+				'SELECT r.id
+				FROM releases r
+				WHERE r.nzbstatus = %d
+				AND r.nfostatus < %d %s %s',
 				NZB::NZB_ADDED,
-				$this->maxRetries
+				$this->maxRetries,
+				$groupIDQuery,
+				$guidCharQuery
 			)
 		);
 

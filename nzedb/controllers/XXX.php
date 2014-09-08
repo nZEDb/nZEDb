@@ -204,7 +204,6 @@ class XXX
 			LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id
 			INNER JOIN xxxinfo xxx ON xxx.id = r.xxxinfo_id
 			WHERE r.nzbstatus = 1
-			AND xxx.cover = 1
 			AND xxx.title != ''
 			AND r.passwordstatus <= %d AND %s %s %s %s
 			GROUP BY xxx.id ORDER BY %s %s %s",
@@ -314,7 +313,7 @@ class XXX
 	 *
 	 *@param $id
 	 * @param $title
-	 * @param $tagline
+	 * @param $tagLine
 	 * @param $plot
 	 * @param $genre
 	 * @param $director
@@ -323,7 +322,7 @@ class XXX
 	 * @param $backdrop
 	 */
 	public function update(
-		$id = '', $title = '', $tagline = '', $plot = '', $genre = '', $director = '',
+		$id = '', $title = '', $tagLine = '', $plot = '', $genre = '', $director = '',
 		$actors = '', $cover = '', $backdrop = ''
 	)
 	{
@@ -362,28 +361,28 @@ class XXX
 		$this->whichclass = '';
 
 		$iafd = new IAFD();
-		$iafd->searchterm = $xxxmovie;
+		$iafd->searchTerm = $xxxmovie;
 
 		if ($iafd->findme() !== false) {
 
-			switch($iafd->classused) {
+			switch($iafd->classUsed) {
 				case "ade":
 					$mov = new ADE();
-					$mov->directlink = $iafd->directurl;
-					$res = $mov->getdirect();
+					$mov->directLink = (string)$iafd->directUrl;
+					$res = $mov->getDirect();
 					$res['title'] = $iafd->title;
-					$res['directurl'] = (string)$iafd->directurl;
-					$this->whichclass = $iafd->classused;
-					$this->pdo->log->doEcho($this->pdo->log->primary("Fetching XXX info from IAFD: Adult DVD Empire"));
+					$res['directurl'] = (string)$iafd->directUrl;
+					$this->whichclass = $iafd->classUsed;
+					$this->pdo->log->doEcho($this->pdo->log->primary("Fetching XXX info from IAFD -> Adult DVD Empire"));
 					break;
 				case "hm":
 					$mov = new Hotmovies();
-					$mov->directlink = $iafd->directurl;
-					$res = $mov->getdirect();
+					$mov->directLink = (string)$iafd->directUrl;
+					$res = $mov->getDirect();
 					$res['title'] = $iafd->title;
-					$res['directurl'] = (string)$iafd->directurl;
-					$this->whichclass = $iafd->classused;
-					$this->pdo->log->doEcho($this->pdo->log->primary("Fetching XXX info from IAFD: Hot Movies"));
+					$res['directurl'] = (string)$iafd->directUrl;
+					$this->whichclass = $iafd->classUsed;
+					$this->pdo->log->doEcho($this->pdo->log->primary("Fetching XXX info from IAFD -> Hot Movies"));
 			}
 		}
 
@@ -392,13 +391,13 @@ class XXX
 			$this->whichclass = "aebn";
 			$mov = new AEBN();
 			$mov->cookie = $this->cookie;
-			$mov->searchterm = $xxxmovie;
+			$mov->searchTerm = $xxxmovie;
 			$res = $mov->search();
 
 			if ($res === false) {
 				$this->whichclass = "ade";
 				$mov = new ADE();
-				$mov->searchterm = $xxxmovie;
+				$mov->searchTerm = $xxxmovie;
 				$res = $mov->search();
 			}
 
@@ -406,7 +405,7 @@ class XXX
 				$this->whichclass = "hm";
 				$mov = new Hotmovies();
 				$mov->cookie = $this->cookie;
-				$mov->searchterm = $xxxmovie;
+				$mov->searchTerm = $xxxmovie;
 				$res = $mov->search();
 			}
 
@@ -414,7 +413,7 @@ class XXX
 				$this->whichclass = "pop";
 				$mov = new Popporn();
 				$mov->cookie = $this->cookie;
-				$mov->searchterm = $xxxmovie;
+				$mov->searchTerm = $xxxmovie;
 				$res = $mov->search();
 			}
 
@@ -424,7 +423,7 @@ class XXX
 
 					switch ($this->whichclass) {
 						case "aebn":
-							$fromstr = "AEBN";
+							$fromstr = "Adult Entertainment Broadcast Network";
 							break;
 						case "ade":
 							$fromstr = "Adult DVD Empire";
@@ -440,10 +439,10 @@ class XXX
 					}
 					$this->pdo->log->doEcho($this->pdo->log->primary("Fetching XXX info from: " . $fromstr));
 				}
-				$res = $mov->_getall();
+				$res = $mov->getAll();
 			} else {
 				// Nothing was found, go ahead and set to -2
-				return false;
+				return -2;
 			}
 		}
 
@@ -552,6 +551,9 @@ class XXX
 				$idcheck = -2;
 
 				// Try to get a name.
+				if ($this->debug && $this->echooutput) {
+					$this->pdo->log->doEcho("DB name: " . $arr['searchname'], true);
+				}
 				if ($this->parseXXXSearchName($arr['searchname']) !== false) {
 
 					$this->currentRelID = $arr['id'];
@@ -583,12 +585,7 @@ class XXX
 	protected function parseXXXSearchName($releaseName)
 	{
 			$name = '';
-			$followingList = '[^\w]((2160|1080|480|720)(p|i)|AC3D|Directors([^\w]CUT)?|DD5\.1|(DVD|BD|BR)(Rip)?|BluRay|divx|HDTV|iNTERNAL|LiMiTED|(Real\.)?Proper|RE(pack|Rip)|Sub\.?(fix|pack)|Unrated|WEB-DL|(x|H)[-._ ]?264|xvid|[Dd][Ii][Ss][Cc](\d+|\s*\d+|\.\d+)|XXX|BTS|DirFix|Trailer|WEBRiP|NFO|BONUS|(19|20)\d\d)[^\w]';
-
-			/* Initial scan of getting a name.
-			 * [\w. -]+ Gets 0-9a-z. - characters, most scene movie titles contain these chars.
-			 * ie: [61420]-[FULL]-[a.b.foreignEFNet]-[ Coraline.2009.DUTCH.INTERNAL.1080p.BluRay.x264-VeDeTT ]-[21/85] - "vedett-coralien-1080p.r04" yEnc
-			 */
+			$followingList = '[^\w]((2160|1080|480|720)(p|i)|AC3D|Directors([^\w]CUT)?|DD5\.1|(DVD|BD|BR)(Rip)?|BluRay|divx|HDTV|iNTERNAL|LiMiTED|(Real\.)?Proper|RE(pack|Rip)|Sub\.?(fix|pack)|Unrated|WEB-DL|(x|H)[-._ ]?264|xvid|[Dd][Ii][Ss][Cc](\d+|\s*\d+|\.\d+)|XXX|BTS|DirFix|Trailer|WEBRiP|NFO|(19|20)\d\d)[^\w]';
 
 			if (preg_match('/([^\w]{2,})?(?P<name>[\w .-]+?)' . $followingList . '/i', $releaseName, $matches)) {
 				$name = $matches['name'];
@@ -597,20 +594,16 @@ class XXX
 			// Check if we got something.
 			if ($name !== '') {
 
-				// Replace any foreign words
-				$name = preg_replace('/(brazilian|chinese|croatian|danish|deutsch|dutch|english|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|latin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish)/i', ' ', $name);
 				// If we still have any of the words in $followingList, remove them.
 				$name = preg_replace('/' . $followingList . '/i', ' ', $name);
 				// Remove periods, underscored, anything between parenthesis.
-				$name = preg_replace('/\(.*?\)|[._]/i', ' ', $name);
+				$name = preg_replace('/\(.*?\)|[-._]/i', ' ', $name);
 				// Finally remove multiple spaces and trim leading spaces.
 				$name = trim(preg_replace('/\s{2,}/', ' ', $name));
 
+
 				// Check if the name is long enough and not just numbers and not file (d) of (d) and does not contain Episodes and any dated 00.00.00 which are site rips..
-				if (strlen($name) > 5 && !preg_match('/^\d+$/', $name) && !preg_match('/(- File \d+ of \d+|\d+.\d+.\d+)/',$name) && !preg_match('/(E\d+)/',$name) && !preg_match('/\d\d\.\d\d.\d\d/', $name)) {
-					if ($this->debug && $this->echooutput) {
-						$this->pdo->log->doEcho("DB name: {$releaseName}", true);
-					}
+				if (strlen($name) > 5 && !preg_match('/^\d+$/', $name) && !preg_match('/( File \d+ of \d+|\d+.\d+.\d+)/',$name) && !preg_match('/(E\d+)/',$name) && !preg_match('/\d\d\.\d\d.\d\d/', $name)) {
 					$this->currentTitle = $name;
 					return true;
 				} else {
@@ -628,7 +621,7 @@ class XXX
 	 *
 	 * @return array|null
 	 */
-	public function getallgenres($activeOnly = false) {
+	public function getAllGenres($activeOnly = false) {
 		$i = 0;
 		$res = $ret = null;
 
@@ -721,7 +714,7 @@ class XXX
 	 *
 	 * @return string
 	 */
-	public function insertswf($whichclass, $res)
+	public function insertSwf($whichclass, $res)
 	{
 		if ($whichclass === "ade") {
 			$ret = '';

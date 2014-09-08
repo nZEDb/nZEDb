@@ -7,119 +7,149 @@ require_once nZEDb_LIBS . 'simple_html_dom.php';
  */
 class ADE
 {
-	/* Define ADE Url here */
+	/**
+	 * If a direct link is given parse it rather then search
+	 * @var string
+	 */
+	public $directLink = "";
+
+	/**
+	 * If a string is found do call back.
+	 * @var bool
+	 */
+	public $found = false;
+
+	/**
+	 * Search keyword
+	 * @var string
+	 */
+	public $searchTerm = "";
+
+	/**
+	 * Define ADE Url here
+	*/
 	const ADE = "http://www.adultdvdempire.com";
 
-	/* If a release matches define it as as true = gives callback to continue */
-	public $found = null;
+	/**
+	 * Direct Url returned in getAll method
+	 *
+	 * @var string
+	 */
+	protected $_directUrl = "";
 
-	/* Get and compare searchterm */
-	public $searchterm = null;
+	/**
+	 * If a url is found that matches the keyword
+	 *
+	 */
+	protected $_urlFound;
 
-	/* If a directlink is given retrieve and parse */
-	public $directlink = null;
+	/**
+	 * Sets the title in the getAll method
+	 *
+	 * @var string
+	 */
+	protected $_title = "";
 
-	/* Define param if trailing url is found get it and set it for future calls */
-	/* Anything after the $ADE url is trailing */
-	protected $urlfound = null;
+	/** Trailing urls */
+	protected $_dvdQuery = "/dvd/search?q=";
+	protected $_scenes = "/scenes";
+	protected $_boxCover = "/boxcover";
+	protected $_backCover = "/backcover";
+	protected $_reviews = "/reviews";
+	protected $_trailers = "/trailers";
 
-	/* Sets the directurl for template */
-	protected $directurl = null;
 
-	/* Sets the true title found */
-	protected $title = null;
-
-	/* Trailing urls */
-	protected $dvdquery = "/dvd/search?q=";
-	protected $scenes = "/scenes";
-	protected $boxcover = "/boxcover";
-	protected $backcover = "/backcover";
-	protected $reviews = "/reviews";
-	protected $trailers = "/trailers";
-
-	protected $url = null;
-	protected $response = null;
-	protected $res = array();
-	protected $tmprsp = null;
-	protected $html;
-	protected $edithtml;
-	protected $ch;
+	protected $_url;
+	protected $_response;
+	protected $_res = array();
+	protected $_tmpResponse;
+	protected $_html;
+	protected $_edithtml;
+	protected $_ch;
 
 	public function __construct()
 	{
-		$this->html = new simple_html_dom();
-		$this->edithtml = new simple_html_dom();
-	}
-
-	/*
-	 * Remove from memory if they weren't removed
-	 *
-	 */
-	public function __destruct(){
-		$this->html->clear();
-		$this->edithtml->clear();
-		unset($this->response);
-		unset($this->tmprsp);
+		$this->_html = new \simple_html_dom();
+		$this->_edithtml = new \simple_html_dom();
 	}
 
 	/**
-	 * Gets Trailer Movies -- Need layout change
-	 * Todo: Make layout work with the player/Download swf?
-	 * @return array|bool - url, streamid, basestreamingurl
+	 *
+	 * Remove from memory if they were not removed
+	 *
 	 */
-	public function _trailers()
+	public function __destruct(){
+		$this->_html->clear();
+		$this->_edithtml->clear();
+		unset($this->_response);
+		unset($this->_tmpResponse);
+	}
+
+	/**
+	 * Gets Trailer Movies
+	 * @return array - url, streamid, basestreamingurl
+	 */
+	public function trailers()
 	{
-		$this->_getadeurl($this->trailers . $this->urlfound);
-		$this->html->load($this->response);
-		if (preg_match("/(\"|')(?P<swf>[^\"']+.swf)(\"|')/i", $this->response, $matches)) {
-			$this->res['trailers']['url'] = self::ADE . trim(trim($matches['swf']), '"');
-			if (preg_match("#(?:streamID:\s\")(?P<streamid>[0-9A-Z]+)(?:\")#",
-						   $this->response,
+		$this->getUrl($this->_trailers . $this->_urlFound);
+		$this->_html->load($this->_response);
+		if (preg_match("/(\"|')(?P<swf>[^\"']+.swf)(\"|')/i", $this->_response, $matches)) {
+			$this->_res['trailers']['url'] = self::ADE . trim(trim($matches['swf']), '"');
+			if (preg_match('#(?:streamID:\s\")(?P<streamid>[0-9A-Z]+)(?:\")#',
+						   $this->_response,
 						   $matches)
 			) {
-				$this->res['trailers']['streamid'] = trim($matches['streamid']);
+				$this->_res['trailers']['streamid'] = trim($matches['streamid']);
 			}
-			if (preg_match("#(?:BaseStreamingUrl:\s\")(?P<baseurl>[0-9]+.[0-9]+.[0-9]+.[0-9]+)(?:\")#",
-						   $this->response,
+			if (preg_match('#(?:BaseStreamingUrl:\s\")(?P<baseurl>[0-9]+.[0-9]+.[0-9]+.[0-9]+)(?:\")#',
+						   $this->_response,
 						   $matches)
 			) {
-				$this->res['trailers']['baseurl'] = $matches['baseurl'];
+				$this->_res['trailers']['baseurl'] = $matches['baseurl'];
 			}
-		} else {
-			return false;
 		}
 		unset($matches);
-		$this->html->clear();
+		$this->_html->clear();
 
-		return $this->res;
+		return $this->_res;
 	}
 
 	/**
 	 * Gets cover images for the xxx release
 	 * @return array - Boxcover and backcover
 	 */
-	public function _covers()
+	public function covers()
 	{
-		$this->_getadeurl($this->boxcover . $this->urlfound);
-		$this->html->load($this->response);
-		foreach ($this->html->find("div[id=FrontBoxCover], img[itemprop=image]") as $img) {
+		$this->getUrl($this->_boxCover . $this->_urlFound);
+		$this->_html->load($this->_response);
+		foreach ($this->_html->find("div[id=FrontBoxCover], img[itemprop=image]") as $img) {
 			if (stristr($img->src, "h.jpg")) {
-				$this->res['boxcover'] = $img->src;
+				$this->_res['boxcover'] = $img->src;
 				break;
 			}
 		}
-		$this->_getadeurl($this->backcover . $this->urlfound);
-		$this->html->load($this->response);
-		foreach ($this->html->find("div[id=BackBoxCover], img[itemprop=image]") as $img) {
+		$this->getUrl($this->_backCover . $this->_urlFound);
+		$this->_html->load($this->_response);
+		foreach ($this->_html->find("div[id=BackBoxCover], img[itemprop=image]") as $img) {
 			if (stristr($img->src, "bh.jpg")) {
-				$this->res['backcover'] = $img->src;
+				$this->_res['backcover'] = $img->src;
 				break;
 			}
 		}
-		unset($img);
-		$this->html->clear();
 
-		return $this->res;
+		if(empty($this->_res['boxcover'])){
+		if($ret = $this->_html->find("a[rel=boxcover]",0)){
+			if(stristr($ret->href,"h.jpg")){
+				$this->_res['boxcover'] = $ret->href;
+				$this->_res['backcoer'] = str_ireplace("h.jpg","bh.jpg",$ret->href);
+			}
+			if(stristr($ret->href,"m.jpg")){
+				$this->_res['boxcover'] = str_ireplace("m.jpg","h.jpg",$ret->href);
+				$this->_res['backcoer'] = str_ireplace("m.jpg", "bh.jpg", $ret->href);
+			}
+		}
+		}
+		return $this->_res;
 	}
 
 	/**
@@ -129,20 +159,20 @@ class ADE
 	 *
 	 * @return array - plot,tagline
 	 */
-	public function _sypnosis($tagline = false)
+	public function sypnosis($tagline = false)
 	{
 		if ($tagline === true) {
-			if($ret = $this->html->find("p.Tagline", 0)){
+			if($ret = $this->_html->find("p.Tagline", 0)){
 				if (!empty($ret->plaintext)) {
-				$this->res['tagline'] = trim($ret->plaintext);
+				$this->_res['tagline'] = trim($ret->plaintext);
 			}
 			}
 		}
-		if ($ret = $this->html->find("p.Tagline", 0)->next_sibling()->next_sibling()) {
-			$this->res['sypnosis'] = trim($ret->innertext);
+		if ($ret = @$this->_html->find("p.Tagline", 0)->next_sibling()->next_sibling()) {
+			$this->_res['sypnosis'] = trim($ret->innertext);
 		}
 
-		return $this->res;
+		return $this->_res;
 	}
 
 	/**
@@ -152,69 +182,64 @@ class ADE
 	 *
 	 * @return array - cast,awards
 	 */
-	public function _cast($awards = false)
+	public function cast($awards = false)
 	{
-		$this->tmprsp = str_ireplace("Section Cast", "scast", $this->response);
-		$this->edithtml->load($this->tmprsp);
+		$this->_tmpResponse = str_ireplace("Section Cast", "scast", $this->_response);
+		$this->_edithtml->load($this->_tmpResponse);
 
 
-		if ($ret = $this->edithtml->find("div[class=scast]", 0)) {
-		$this->tmprsp = trim($ret->outertext);
-		$ret = $this->edithtml->load($this->tmprsp);
+		if ($ret = $this->_edithtml->find("div[class=scast]", 0)) {
+		$this->_tmpResponse = trim($ret->outertext);
+		$ret = $this->_edithtml->load($this->_tmpResponse);
 		foreach ($ret->find("a.PerformerName") as $a) {
 			if ($a->plaintext != "(bio)") {
 				if($a->plaintext != "(interview)"){
-				$this->res['cast'][] = trim($a->plaintext);
+				$this->_res['cast'][] = trim($a->plaintext);
 				}
 			}
 		}
 		if ($awards == true) {
 			if ($ret->find("ul", 1)) {
 				foreach ($ret->find("ul", 1)->find("li, strong") as $li) {
-					$this->res['awards'][] = trim($li->plaintext);
+					$this->_res['awards'][] = trim($li->plaintext);
 				}
 			}
 		}
-
-		//$this->res['director']= array_pop($this->res['cast']);
-		$this->edithtml->clear();
+		$this->_edithtml->clear();
 		unset($ret);
-		unset($this->tmprsp);
-
-		return $this->res;
+		unset($this->_tmpResponse);
 		}
+		return $this->_res;
 	}
 
 	/**
 	 * Gets categories, if exists return array else return false
 	 * @return mixed array|bool - Categories, false
 	 */
-	public function _genres()
+	public function genres()
 	{
 		$categories = null;
-		$this->tmprsp = str_ireplace("Section Categories", "scat", $this->response);
-		$this->edithtml->load($this->tmprsp);
-		if($ret = $this->edithtml->find("div[class=scat]", 0)){
-		$this->tmprsp = trim($ret->outertext);
-		$ret = $this->edithtml->load($this->tmprsp);
+		$this->_tmpResponse = str_ireplace("Section Categories", "scat", $this->_response);
+		$this->_edithtml->load($this->_tmpResponse);
+		if($ret = $this->_edithtml->find("div[class=scat]", 0)){
+		$this->_tmpResponse = trim($ret->outertext);
+		$ret = $this->_edithtml->load($this->_tmpResponse);
 
 		foreach ($ret->find("p, a") as $categories) {
 			$categories = trim($categories->plaintext);
 			if (stristr($categories, ",")) {
 				$categories = explode(",", $categories);
 				break;
-			} else {
-				return false;
 			}
 		}
 		$categories = array_map('trim', $categories);
-		$this->res['genres'] = $categories;
+		$this->_res['genres'] = $categories;
 		}
-		$this->edithtml->clear();
-		unset($this->tmprsp);
+		$this->_edithtml->clear();
+		unset($this->_tmpResponse);
 		unset($ret);
 
-		return $this->res;
+		return $this->_res;
 	}
 
 	/**
@@ -224,54 +249,55 @@ class ADE
 	 *
 	 * @return array - ProductInfo/Extras = features
 	 */
-	public function _productinfo($features = false)
+	public function productInfo($features = false)
 	{
 		$dofeature = null;
-		$this->tmprsp = str_ireplace("Section ProductInfo", "spdinfo", $this->response);
-		$this->edithtml->load($this->tmprsp);
-		if($ret = $this->edithtml->find("div[class=spdinfo]", 0)){
-		$this->tmprsp = trim($ret->outertext);
-		$ret = $this->edithtml->load($this->tmprsp);
+		$this->_tmpResponse = str_ireplace("Section ProductInfo", "spdinfo", $this->_response);
+		$this->_edithtml->load($this->_tmpResponse);
+		if($ret = $this->_edithtml->find("div[class=spdinfo]", 0)){
+		$this->_tmpResponse = trim($ret->outertext);
+		$ret = $this->_edithtml->load($this->_tmpResponse);
 		foreach ($ret->find("text") as $strong) {
 			if (trim($strong->innertext) == "Features") {
 				$dofeature = true;
 			}
 			if ($dofeature != true) {
 				if (trim($strong->innertext) != "&nbsp;") {
-					$this->res['productinfo'][] = trim($strong->innertext);
+					$this->_res['productinfo'][] = trim($strong->innertext);
 				}
 			} else {
 				if ($features == true) {
-					$this->res['extras'][] = trim($strong->innertext);
+					$this->_res['extras'][] = trim($strong->innertext);
 				}
 			}
 		}
 
-		array_shift($this->res['productinfo']);
-		array_shift($this->res['productinfo']);
-		$this->res['productinfo'] = array_chunk($this->res['productinfo'], 2, false);
+		array_shift($this->_res['productinfo']);
+		array_shift($this->_res['productinfo']);
+		$this->_res['productinfo'] = array_chunk($this->_res['productinfo'], 2, false);
 		}
-		$this->edithtml->clear();
-		unset($this->tmprsp);
+		$this->_edithtml->clear();
+		unset($this->_tmpResponse);
 		unset($ret);
 
-		return $this->res;
+		return $this->_res;
 	}
 
 	/**
 	 * Gets the direct link information and returns it
 	 * @return array|bool
 	 */
-	public function getdirect()
+	public function getDirect()
 	{
 		if (isset($this->directlink)) {
-			if ($this->_getadeurl() === false) {
+			if ($this->getUrl() === false) {
 				return false;
 			} else {
-				$this->html->load($this->response);
-				return $this->_getall();
+				$this->_html->load($this->_response);
+				return $this->getAll();
 			}
 		}
+		return false;
 	}
 	/**
 	 * Searches xxx name.
@@ -279,26 +305,28 @@ class ADE
 	 */
 	public function search()
 	{
-		if (!isset($this->searchterm)) {
+		if (!isset($this->searchTerm)) {
 			return false;
 		}
-		if ($this->_getadeurl($this->dvdquery . rawurlencode($this->searchterm)) === false) {
+		if ($this->getUrl($this->_dvdQuery . rawurlencode($this->searchTerm)) === false) {
 			return false;
 		} else {
-			$this->html->load($this->response);
-			if ($ret = $this->html->find("a.boxcover", 0)){
+			$this->_html->load($this->_response);
+			if ($ret = $this->_html->find("a.boxcover", 0)){
 					$title = $ret->title;
+					$title = preg_replace('/XXX/', '', $title);
+					$title = preg_replace('/\(.*?\)|[-._]/i', ' ', $title);
 					$ret = (string)trim($ret->href);
-					similar_text($this->searchterm, $title, $p);
+					similar_text($this->searchTerm, $title, $p);
 					if ($p >= 90) {
 						$this->found = true;
-						$this->urlfound = $ret;
-						$this->directurl = self::ADE . $ret;
-						$this->title = trim($title);
+						$this->_urlFound = $ret;
+						$this->_directUrl = self::ADE . $ret;
+						$this->_title = trim($title);
 						unset($ret);
-						$this->html->clear();
-						$this->_getadeurl($this->urlfound);
-						$this->html->load($this->response);
+						$this->_html->clear();
+						$this->getUrl($this->_urlFound);
+						$this->_html->load($this->_response);
 					} else {
 						$this->found = false;
 
@@ -308,6 +336,7 @@ class ADE
 					return false;
 				}
 		}
+		return false;
 	}
 
 	/**
@@ -317,27 +346,27 @@ class ADE
 	 *
 	 * @return bool - true if page has content
 	 */
-	private function _getadeurl($trailing = null)
+	private function getUrl($trailing = "")
 	{
-		if (isset($trailing)) {
-			$this->ch = curl_init(self::ADE . $trailing);
+		if (!empty($trailing)) {
+			$this->_ch = curl_init(self::ADE . $trailing);
 		}
-		if (isset($this->directlink)) {
-			$this->ch = curl_init($this->directlink);
-			$this->directlink = null;
+		if (!empty($this->directLink)) {
+			$this->_ch = curl_init($this->directLink);
+			$this->directLink = "";
 		}
-		curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($this->ch, CURLOPT_HEADER, 0);
-		curl_setopt($this->ch, CURLOPT_VERBOSE, 0);
-		curl_setopt($this->ch, CURLOPT_USERAGENT, "Firefox/2.0.0.1");
-		curl_setopt($this->ch, CURLOPT_FAILONERROR, 1);
-		$this->response = curl_exec($this->ch);
-		if (!$this->response) {
-			curl_close($this->ch);
+		curl_setopt($this->_ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($this->_ch, CURLOPT_HEADER, 0);
+		curl_setopt($this->_ch, CURLOPT_VERBOSE, 0);
+		curl_setopt($this->_ch, CURLOPT_USERAGENT, "Firefox/2.0.0.1");
+		curl_setopt($this->_ch, CURLOPT_FAILONERROR, 1);
+		$this->_response = curl_exec($this->_ch);
+		if (!$this->_response) {
+			curl_close($this->_ch);
 
 			return false;
 		}
-		curl_close($this->ch);
+		curl_close($this->_ch);
 		return true;
 	}
 
@@ -348,30 +377,30 @@ class ADE
 	 *
 	 * @return array
 	 */
-	public function _getall()
+	public function getAll()
 	{
 		$results = array();
-		if(isset($this->directurl)){
-		$results['directurl'] = $this->directurl;
-		$results['title'] = $this->title;
+		if(isset($this->_directUrl)){
+		$results['directurl'] = $this->_directUrl;
+		$results['title'] = $this->_title;
 		}
-		if (is_array($this->_sypnosis(true))) {
-			$results = array_merge($results, $this->_sypnosis(true));
+		if (is_array($this->sypnosis(true))) {
+			$results = array_merge($results, $this->sypnosis(true));
 		}
-		if (is_array($this->_productinfo(true))) {
-			$results = array_merge($results, $this->_productinfo(true));
+		if (is_array($this->productInfo(true))) {
+			$results = array_merge($results, $this->productInfo(true));
 		}
-		if (is_array($this->_cast(true))) {
-			$results = array_merge($results, $this->_cast(true));
+		if (is_array($this->cast(true))) {
+			$results = array_merge($results, $this->cast(true));
 		}
-		if (is_array($this->_genres())) {
-			$results = array_merge($results, $this->_genres());
+		if (is_array($this->genres())) {
+			$results = array_merge($results, $this->genres());
 		}
-		if (is_array($this->_covers())) {
-			$results = array_merge($results, $this->_covers());
+		if (is_array($this->covers())) {
+			$results = array_merge($results, $this->covers());
 		}
-		if (is_array($this->_trailers())) {
-			$results = array_merge($results, $this->_trailers());
+		if (is_array($this->trailers())) {
+			$results = array_merge($results, $this->trailers());
 		}
 		return $results;
 	}

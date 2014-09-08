@@ -1,0 +1,2 @@
+UPDATE releases r INNER JOIN consoleinfo con ON r.consoleinfoid = con.id INNER JOIN genres g ON con.genre_id = g.id AND g.type = 1000 AND g.title = 'Unknown' SET r.consoleinfoid = NULL;
+DELETE con, g FROM consoleinfo con INNER JOIN genres g ON con.genre_id = g.id WHERE g.type = 1000 AND g.title = 'Unknown';

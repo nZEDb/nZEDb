@@ -6,53 +6,86 @@ class Hotmovies
 {
 
 	/**
-	* Set this for what you are searching for.
-	* @var string null
+	* Keyword Search.
+	* @var string
 	*/
-	public $searchterm = null;
+	public $searchTerm = "";
 
 	/**
-	 * Define a cookie file
-	 * @var string null
+	 * Define a cookie location
+	 *
+	 * @var string
 	 */
-	public $cookie = null;
+	public $cookie = "";
 
 	/**
-	 * If a directlink is set parse it instead of search for it.
-	 * @var null
+	 * If a direct link is set parse it instead of search for it.
+	 *
+	 * @var string
 	 */
-    public $directlink = null;
-	/*
-	 * Define HotMovies url http://www.hotmovies.com/search.php?words=bangin+the+boss&complete=on&search_in=video_title
+    public $directLink = "";
+
+	/**
+	 * Constant Urls used within this class
 	 * Needed Search Queries Variables
 	*/
-	const HMURL = "http://www.hotmovies.com";
-	const TRAILINGSEARCH = "/search.php?words=";
 	const EXTRASEARCH = "&complete=on&search_in=video_title";
+	const HMURL = "http://www.hotmovies.com";
 	const IF18 = true;
+	const TRAILINGSEARCH = "/search.php?words=";
 
-	// Sets Post fields for trailers
-	protected $postparams = null;
+	/**
+	 * Sets the direct url in the getAll method
+	 * @var string
+	 */
+	protected $_directUrl = "";
 
-	// Sets the found title and returns it in the array
-	protected $title = null;
+	/**
+	 * Sets the link to get in curl
+	 * @var string
+	 */
+	protected $_getLink = "";
 
-	// Sets the directurl for the template and returns it in the array
-	protected $directurl = null;
+	/**
+	 * Simple Html Dom Object
+	 * @var simple_html_dom
+	 */
+	protected $_html;
 
-	// Sets the URl to retrieve in _gethmurl
-	protected $getlink = null;
-	protected $response = null;
-	protected $res = array();
-	protected $html;
+	/**
+	 * POST parameters used with curl
+	 *
+	 * @var array
+	 */
+	protected $_postParams = array();
+
+	/**
+	 * Results return from some methods
+	 * @var array
+	 */
+	protected $_res = array();
+
+	/**
+	 * Raw Html from Curl
+	 *
+	 */
+	protected $_response;
+
+	/**
+	 * Sets the title in the getAll method
+	 * @var string
+	 */
+	protected $_title = "";
+
+
 
 	public function __construct()
 	{
-		$this->html = new simple_html_dom();
+		$this->_html = new \simple_html_dom();
 
 		// Set a cookie to override +18 warning.
 		if (isset($this->cookie)) {
-			@$this->_gethmurl();
+			@$this->getUrl();
 		}
 	}
 
@@ -61,53 +94,49 @@ class Hotmovies
 	 */
 	public function __destruct()
 	{
-	$this->html->clear();
-	unset($this->response);
-	unset($this->res);
+	$this->_html->clear();
+	unset($this->_response);
+	unset($this->_res);
 	}
 	/**
 	 * Get Box Cover Images
 	 * @return array - boxcover,backcover
 	 */
-	public function _covers()
+	public function covers()
 	{
-		if ($ret = $this->html->find('div#large_cover, img#cover', 1)) {
-			$this->res['boxcover'] = trim($ret->src);
-			$this->res['backcover'] = str_ireplace(".cover",".back",trim($ret->src));
+		if ($ret = $this->_html->find('div#large_cover, img#cover', 1)) {
+			$this->_res['boxcover'] = trim($ret->src);
+			$this->_res['backcover'] = str_ireplace(".cover",".back",trim($ret->src));
 		}else{
 			return false;
 		}
-		return $this->res;
+		return $this->_res;
 	}
 
 	/**
 	 * Gets the sypnosis
-	 * @return array|bool
+	 * @return array
 	 */
-	public function _sypnosis()
+	public function sypnosis()
 	{
-		if ($this->html->find('.desc_link', 0)) {
-			preg_match("/var descfullcontent = (?<content>.*)/",$this->response,$matches);
+		if ($this->_html->find('.desc_link', 0)) {
+			preg_match("/var descfullcontent = (?<content>.*)/",$this->_response,$matches);
 			if (is_array($matches)) {
-				$this->res['sypnosis'] = rawurldecode($matches['content']);
-			} else {
-				return false;
+				$this->_res['sypnosis'] = rawurldecode($matches['content']);
 			}
-		} else {
-			return false;
 		}
-		return $this->res;
+		return $this->_res;
 	}
 
 	/**Process ProductInfo
 	 *
-	 * @return array|bool
+	 * @return array
 	 */
-	public function _productinfo()
+	public function productInfo()
 	{
 		$studio = false;
 		$director = false;
-		if ($ret = $this->html->find('div.page_video_info', 0)) {
+		if ($ret = $this->_html->find('div.page_video_info', 0)) {
 			foreach ($ret->find("text") as $e) {
 				$e = trim($e->innertext);
 				$e = str_replace(",", "", $e);
@@ -116,23 +145,23 @@ class Hotmovies
 				if (stristr($e, "Studio:")) {
 					$studio = true;
 				}
-				if (stristr($e,"Director:")){
-				$director = true;
-				$e = null;
+				if (stristr($e, "Director:")) {
+					$director = true;
+					$e = null;
 				}
 				if ($studio === true) {
 					if (!stristr($e, "Custodian of Records")) {
-						if(!stristr($e,"Description")){
+						if (!stristr($e, "Description")) {
 
 							if ($director === true && !empty($e)) {
-								$this->res['director'] = $e;
+								$this->_res['director'] = $e;
 								$e = null;
 								$director = false;
 							}
-						if (!empty($e)) {
-							$this->res['productinfo'][] = $e;
-						}
-						}else {
+							if (!empty($e)) {
+								$this->_res['productinfo'][] = $e;
+							}
+						} else {
 							break;
 						}
 					} else {
@@ -140,69 +169,70 @@ class Hotmovies
 					}
 				}
 			}
-		} else {
-			return false;
 		}
-		$this->res['productinfo'] = array_chunk($this->res['productinfo'], 2, false);
-		return $this->res;
+		if (is_array($this->_res['productinfo'])) {
+			$this->_res['productinfo'] = array_chunk($this->_res['productinfo'], 2, false);
+		}
+
+		return $this->_res;
 	}
 
 	/**
 	 * Gets the cast members and director
-	 * @return array|bool
+	 * @return array
 	 */
-	public function _cast()
+	public function cast()
 	{
 		$cast = null;
-		if ($this->html->find('a[itemprop=actor]')) {
-			foreach ($this->html->find('a[itemprop=actor]') as $e) {
+		if ($this->_html->find('a[itemprop=actor]')) {
+			foreach ($this->_html->find('a[itemprop=actor]') as $e) {
 				$e= trim($e->title);
-				$e = preg_replace("/\((.*)\)/","",$e);
+				$e = preg_replace('/\((.*)\)/',"",$e);
 				$cast[] = trim($e);
 				}
-			$this->res['cast'] = & $cast;
-			return $this->res;
-		} else {
-			return false;
+			$this->_res['cast'] = & $cast;
+
 		}
+
+		return $this->_res;
 	}
 
 	/**
 	 * Gets categories
-	 * @return array|bool
+	 * @return array
 	 */
-	public function _genres()
+	public function genres()
 	{
 		$genres = array();
-		if ($ret = $this->html->find('div.categories',0)) {
+		if ($ret = $this->_html->find('div.categories',0)) {
 			foreach ($ret->find('a') as $e) {
 				if(stristr($e->title,"->")){
 				$e = explode("->",$e->plaintext);
 				$genres[] = trim($e[1]);
 			}
 			}
-			$this->res['genres'] = & $genres;
+			$this->_res['genres'] = & $genres;
 
-			return $this->res;
-		} else {
-			return false;
 		}
+
+		return $this->_res;
 	}
 
 	/**
 	 * Directly gets the link if directlink is set, and parses it.
 	 *
-	 * @return array|bool
+	 * @return array
 	 */
-	public function getdirect()
+	public function getDirect()
 	{
 		if (isset($this->directlink)) {
-			if ($this->_gethmurl() === false) {
+			if ($this->getUrl() === false) {
 				return false;
 			} else {
-				return $this->_getall();
+				return $this->getAll();
 			}
 		}
+		return false;
 	}
 
 
@@ -212,30 +242,31 @@ class Hotmovies
 	 */
 	public function search()
 	{
-		if (!isset($this->searchterm)) {
+		if (!isset($this->searchTerm)) {
 			return false;
 		}
-		$this->getlink = self::HMURL . self::TRAILINGSEARCH . urlencode($this->searchterm) . self::EXTRASEARCH;
-		if ($this->_gethmurl() === false) {
+		$this->_getLink = self::HMURL . self::TRAILINGSEARCH . urlencode($this->searchTerm) . self::EXTRASEARCH;
+		if ($this->getUrl() === false) {
 			return false;
 		} else {
-			if ($ret = $this->html->find('h3[class=title]', 0)) {
+			if ($ret = $this->_html->find('h3[class=title]', 0)) {
 				if($ret->find('a[title]',0)){
 					$ret = $ret->find('a[title]', 0);
 					$title = trim($ret->title);
-					$this->title = $title;
-					$this->getlink = trim($ret->href);
-					$this->directurl = trim($ret->href);
+					$title = preg_replace('/XXX/', '', $title);
+					$title = preg_replace('/\(.*?\)|[-._]/i', ' ', $title);
+					$this->_getLink = trim($ret->href);
+					$this->_directUrl = trim($ret->href);
 				   }
 			} else {
 				return false;
 			}
 			if (isset($title)) {
-				similar_text($this->searchterm, $title, $p);
+				similar_text($this->searchTerm, $title, $p);
 				if ($p >= 90) {
-					$this->title = $title;
+					$this->_title = $title;
 					// 90$ match found, load the url to start parsing
-					$this->_gethmurl();
+					$this->getUrl();
 					unset($ret);
 
 					return true;
@@ -252,27 +283,27 @@ class Hotmovies
 	 * Gets all information
 	 * @return array
 	 */
-	public function _getall()
+	public function getAll()
 	{
 		$results = array();
-		if(isset($this->directurl)){
-		$results['title'] = $this->title;
-		$results['directurl'] = $this->directurl;
+		if(isset($this->_directUrl)){
+		$results['title'] = $this->_title;
+		$results['directurl'] = $this->_directUrl;
 		}
-		if (is_array($this->_sypnosis())) {
-			$results = array_merge($results, $this->_sypnosis());
+		if (is_array($this->sypnosis())) {
+			$results = array_merge($results, $this->sypnosis());
 		}
-		if (is_array($this->_productinfo())) {
-			$results = array_merge($results, $this->_productinfo());
+		if (is_array($this->productInfo())) {
+			$results = array_merge($results, $this->productInfo());
 		}
-		if (is_array($this->_cast())) {
-			$results = array_merge($results, $this->_cast());
+		if (is_array($this->cast())) {
+			$results = array_merge($results, $this->cast());
 		}
-		if (is_array($this->_genres())) {
-			$results = array_merge($results, $this->_genres());
+		if (is_array($this->genres())) {
+			$results = array_merge($results, $this->genres());
 		}
-		if (is_array($this->_covers())) {
-			$results = array_merge($results, $this->_covers());
+		if (is_array($this->covers())) {
+			$results = array_merge($results, $this->covers());
 		}
 
 		if(empty($results) === true){
@@ -289,21 +320,21 @@ class Hotmovies
 	 *
 	 * @return bool
 	 */
-	private function _gethmurl($usepost = false)
+	private function getUrl($usepost = false)
 	{
-		if (isset($this->getlink)) {
-			$ch = curl_init($this->getlink);
+		if (isset($this->_getLink)) {
+			$ch = curl_init($this->_getLink);
 		} else {
 			$ch = curl_init(self::HMURL);
 		}
-		if(isset($this->directlink)){
-			$ch = curl_init($this->directlink);
-			$this->directlink = null;
+		if(isset($this->directLink)){
+			$ch = curl_init($this->directLink);
+			$this->directLink = "";
 		}
 		if($usepost === true){
 			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 			curl_setopt($ch, CURLOPT_POST, 1);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $this->postparams);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $this->_postParams);
 		}
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_HEADER, 0);
@@ -315,13 +346,14 @@ class Hotmovies
 		curl_setopt($ch, CURLOPT_COOKIEJAR, $this->cookie);
 		curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookie);
 		}
-		$this->response = curl_exec($ch);
-		if (!$this->response) {
+		$this->_response = curl_exec($ch);
+		if (!$this->_response) {
 			curl_close($ch);
 
 			return false;
 		}
-		$this->html->load($this->response);
+		$this->_html->load($this->_response);
 		curl_close($ch);
+		return true;
 	}
 }

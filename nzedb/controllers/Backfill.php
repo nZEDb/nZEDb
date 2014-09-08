@@ -94,15 +94,15 @@ class Backfill
 		$this->_echoCLI = ($options['Echo'] && nZEDb_ECHOCLI);
 
 		$this->pdo = ($options['Settings'] instanceof \nzedb\db\Settings ? $options['Settings'] : new \nzedb\db\Settings());
-		$this->_groups = ($options['Groups'] instanceof Groups ? $options['Groups'] : new Groups(['Settings' => $this->pdo]));
+		$this->_groups = ($options['Groups'] instanceof Groups ? $options['Groups'] : new \Groups(['Settings' => $this->pdo]));
 		$this->_nntp = ($options['NNTP'] instanceof NNTP
-			? $options['NNTP'] : new NNTP(['Settings' => $this->pdo])
+			? $options['NNTP'] : new \NNTP(['Settings' => $this->pdo])
 		);
 
 		$this->_debug = (nZEDb_LOGGING || nZEDb_DEBUG);
 		if ($this->_debug) {
 			try {
-				$this->_debugging = ($options['Logger'] instanceof Logger ? $options['Logger'] : new Logger(['ColorCLI' => $this->pdo->log]));
+				$this->_debugging = ($options['Logger'] instanceof Logger ? $options['Logger'] : new \Logger(['ColorCLI' => $this->pdo->log]));
 			} catch (\LoggerException $error) {
 				$this->_debug = false;
 			}
@@ -157,7 +157,7 @@ class Backfill
 				$this->pdo->log->doEcho($this->pdo->log->header($dMessage), true);
 			}
 
-			$this->_binaries = new Binaries(
+			$this->_binaries = new \Binaries(
 				['NNTP' => $this->_nntp, 'Echo' => $this->_echoCLI, 'Settings' => $this->pdo, 'Groups' => $this->_groups]
 			);
 

@@ -214,7 +214,7 @@ class Music
 					. "LEFT OUTER JOIN groups ON groups.id = r.group_id "
 					. "LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id "
 					. "INNER JOIN musicinfo m ON m.id = r.musicinfoid "
-					. "WHERE r.nzbstatus = 1 AND m.cover = 1 AND m.title != '' AND "
+					. "WHERE r.nzbstatus = 1 AND m.title != '' AND "
 					. "r.passwordstatus <= (SELECT value FROM settings WHERE setting='showpasswordedrelease') AND %s %s %s "
 					. "GROUP BY m.id ORDER BY %s %s" . $limit, $browseby, $catsrch, $exccatlist, $order[0], $order[1]));
 	}

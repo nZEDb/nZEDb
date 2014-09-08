@@ -4,68 +4,69 @@ require_once nZEDb_LIBS . 'simple_html_dom.php';
 
 class IAFD {
 
-	public $searchterm = null;
-	public $cookie = null;
-	public $classused = null;
-	public $directurl = null;
-	public $title = null;
 
+	public $classUsed = "";
+	public $cookie = "";
+	public $directUrl;
+	public $searchTerm = "";
+	public $title = "";
+
+	const ADE = "Adult DVD Empire";
 	const IAFDSEARCHURL = "http://www.iafd.com/results.asp?searchtype=title&searchstring=";
 	const IAFDURL = "http://www.iafd.com";
-	const ADE = "Adult DVD Empire";
 	const HM = "Hot Movies";
 
+	protected $_dvdFound = false;
+	protected $_doSearch = false;
+	protected $_getRedirect;
+	protected $_html;
+	protected $_res = array();
+	protected $_response;
 
-	protected $dosearch = false;
-	protected $dvdfound = false;
-	protected $getredirect = null;
-	protected $response = null;
-	protected $res = array();
-	protected $html;
 
 	public function __construct()
 	{
-		$this->html = new simple_html_dom();
+		$this->_html = new \simple_html_dom();
 		if (isset($this->cookie)) {
-			@$this->_geturl();
+			@$this->getUrl();
 		}
 	}
 
 	public function __destruct()
 	{
-		$this->html->clear();
+		$this->_html->clear();
 		unset($this->response);
 		unset($this->res);
 	}
 
 	public function findme()
 	{
-		if ($this->_search() === true) {
-			if ($this->html->find("div#commerce", 0)) {
-				foreach ($this->html->find("div#commerce") as $e) {
+		if ($this->search() === true) {
+			if ($this->_html->find("div#commerce", 0)) {
+				foreach ($this->_html->find("div#commerce") as $e) {
 					foreach ($e->find("h4, p.item") as $h4) {
 						//echo ($h4->innertext) ."\n";
 						if (trim($h4->plaintext) == "DVD") {
-							$this->dvdfound = true;
+							$this->_dvdFound = true;
 							$h4 = null;
 						}
-						if ($this->dvdfound === true && isset($h4)) {
+						if ($this->_dvdFound === true && isset($h4)) {
 							foreach ($h4->find("a") as $alink) {
 								$compare = trim($alink->innertext);
 								if ($compare === self::ADE && !empty($compare)) {
-									$this->classused = "ade";
-									$this->getredirect = self::IAFDURL . trim($alink->href);
-									$this->directurl = $this->_geturl();
-									$this->directurl = preg_replace('/\?(.*)/', '', $this->directurl);
-									$this->dvdfound = false;
+									$this->classUsed = "ade";
+									$this->_getRedirect = self::IAFDURL . trim($alink->href);
+									$this->directUrl = $this->getUrl();
+									$this->directUrl = preg_replace('/\?(.*)/', '', $this->directUrl);
+									$this->_dvdFound = false;
 									break;
 								}
 								if ($compare === self::HM && !empty($compare)) {
-									$this->classused = "hm";
-									$this->getredirect = self::IAFDURL . trim($alink->href);
-									$this->directurl = $this->_geturl();
-									$this->directurl = preg_replace('/\?(.*)/', '', $this->directurl);
-									$this->dvdfound = false;
+									$this->classUsed = "hm";
+									$this->_getRedirect = self::IAFDURL . trim($alink->href);
+									$this->directUrl = $this->getUrl();
+									$this->directUrl = preg_replace('/\?(.*)/', '', $this->directUrl);
+									$this->directUrl = false;
 									break;
 							}
 					}
@@ -73,7 +74,7 @@ class IAFD {
 		}
 		}
 	}
-			if (!isset($this->classused)) {
+			if (!isset($this->classUsed)) {
 				return false;
 			} else {
 				return true;
@@ -83,18 +84,18 @@ class IAFD {
 		}
 	}
 
-	private function _search(){
+	private function search(){
 
-		if (!isset($this->searchterm)) {
+		if (!isset($this->searchTerm)) {
 			return false;
 		}
-		$this->dosearch = true;
-		if ($this->_geturl() === false) {
+		$this->_doSearch = true;
+		if ($this->getUrl() === false) {
 			return false;
 		} else {
 			$firsttitle = null;
 			$secondtitle = null;
-			if($ret = $this->html->find("div#moviedata, h2, dt", 0)){
+			if($ret = $this->_html->find("div#moviedata, h2, dt", 0)){
 			if($ret->find("h2",0)){
 				$firsttitle = $ret->find("h2",0)->innertext;
 				if(preg_match("/Movie Titles/",$firsttitle)){
@@ -106,14 +107,18 @@ class IAFD {
 			}
 				unset($ret);
 				if(isset($secondtitle) OR isset($firsttitle)){
-					$firsttitle = preg_replace("/\(([0-9]+)\)/","",$firsttitle);
-					$secondtitle = preg_replace("/\(([0-9]+)\)/", "", $secondtitle);
-					similar_text($this->searchterm, trim($firsttitle), $p);
+					$firsttitle = preg_replace('/\(([0-9]+)\)/',"",$firsttitle);
+					$firsttitle = preg_replace('/XXX/', '', $firsttitle);
+					$firsttitle = preg_replace('/\(.*?\)|[-._]/i', ' ', $firsttitle);
+					$secondtitle = preg_replace('/\(([0-9]+)\)/', "", $secondtitle);
+					$secondtitle = preg_replace('/XXX/', '', $secondtitle);
+					$secondtitle = preg_replace('/\(.*?\)|[-._]/i', ' ', $secondtitle);
+					similar_text($this->searchTerm, trim($firsttitle), $p);
 					if ($p >= 90) {
 						$this->title = trim($firsttitle);
 						return true;
 					} else {
-						similar_text($this->searchterm, trim($secondtitle), $p);
+						similar_text($this->searchTerm, trim($secondtitle), $p);
 						if($p >= 90) {
 							$this->title = trim($secondtitle);
 							return true;
@@ -130,15 +135,15 @@ class IAFD {
 		}
 
 	}
-	private function _geturl()
+	private function getUrl()
 	{
-		if ($this->dosearch === true) {
-			$ch = curl_init(self::IAFDSEARCHURL . urlencode($this->searchterm));
+		if ($this->_doSearch === true) {
+			$ch = curl_init(self::IAFDSEARCHURL . urlencode($this->searchTerm));
 		} else {
-			if(empty($this->getredirect)){
+			if(empty($this->_getRedirect)){
 			$ch = curl_init(self::IAFDURL);
 			}else{
-			$ch = curl_init($this->getredirect);
+			$ch = curl_init($this->_getRedirect);
 			}
 		}
 
@@ -152,21 +157,21 @@ class IAFD {
 			curl_setopt($ch, CURLOPT_COOKIEJAR, $this->cookie);
 			curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookie);
 		}
-		$this->response = curl_exec($ch);
-		if(!empty($this->getredirect)){
-		$this->getredirect = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+		$this->_response = curl_exec($ch);
+		if(!empty($this->_getRedirect)){
+		$this->_getRedirect = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
 		curl_close($ch);
-			return $this->getredirect;
+			return $this->_getRedirect;
 		}
-		if (!$this->response) {
+		if (!$this->_response) {
 			curl_close($ch);
 
 			return false;
 		}
 		curl_close($ch);
-		if($this->dosearch === true){
-		$this->html->load($this->response);
-		$this->dosearch = false;
+		if($this->_doSearch === true){
+		$this->_html->load($this->_response);
+		$this->_doSearch = false;
 		}
 		return true;
 	}

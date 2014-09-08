@@ -4,9 +4,46 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
+2014-09-08 niel
+	* New: Merged and tagged v0.4.0 to master branch.
+	NOTE: This version forward targets PHP 5.5 and later.
 2014-09-01 niel
 	* New: Merged and tagged v0.3.13 to master branch.
 	NOTE: This is the last version of to target PHP 5.4 which has reached its EOL.
+2014-08-31 ruhllatio
+	* Fix: NFO Proc Deletion SELECT not using guidChar/GroupID when threaded
+	* Fix: Forgot table referencing in above fix
+2014-08-31 bart39
+	* Fix: Merge Tasky's PR #1478 - Best to run misc/testing/DB/reset_postprocessing.php xxx true truncate to get full effect of true matches.
+	* Fix: Double escaping on Games release date / Scrutinizer fix.
+2014-08-27 bart39
+	* Fix: Only save console/games cover if cover is found.
+2014-08-27 ruhllatio
+	* Chg: Update collections/releases cleaning for Anime in a.b.anime and multimedia.anime.highspeed
+2014-08-26 bart39
+	* Fix: Actor / Director / Language info from IMDB.
+	* Fix: Display XXX / Music / Movie releases in cover view without a cover.
+	* Fix: Console error for null releasedate.
+2014-08-26 niel
+	* Chg: Moved PostProcessing scripts into the new nzedb\processing namespace.
+2014-08-26 ruhllatio
+	* Fix: Bad path issue in Tmux NNTP Proxy alternate NNTP
+	* Fix: Issue #1472 Console Processing Errors
+	* Chg: Rework queries for gfRn to support new indexing scheme (coming)
+	* Chg: A few Tmux query changes to reduce monitor loop times (will complement the index changes)
+	* Fix: Attempt to fix consoleinfoid not being set in some instances
+	* Chg: Optimize browse queries for large release databases by forcing a straight join on Groups table
+	* Fix: missing PostProc namespace in update_releases.php
+	* Fix: Genre's populating Unknown for console processing
+	* Add: Patch to update releases with bad Console genre data
+	* Rem: Bad patch +1 file
+	* Fix: Pretty sure console Genre is good to go this time
+	* Fix: Weird releasedate escaping in Console causing SQL errors in some cases
+	* Chg: Disable cover = 1 setting for console
+	* Chg: Improved Genre detection for Console - additional output showing genre on match (still lots of Unknowns because Amazon blows)
+	* Chg: Change a couple genre entries
+2014-08-25 bart39
+	* Fix: Update XXX releases correctly for no match.
 2014-08-25 niel
 	* New: Merged and tagged v0.3.13 to master branch.
 	* Fix: Attempt to detect remote MySQL server during install and use LOCAL for table loading if so.

@@ -1,6 +1,8 @@
 <?php
 require_once dirname(__FILE__) . '/config.php';
 
+use \nzedb\processing\ProcessReleases;
+
 $pdo = new \nzedb\db\Settings();
 
 if (isset($argv[2]) && $argv[2] === 'true') {
