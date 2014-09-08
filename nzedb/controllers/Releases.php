@@ -115,7 +115,7 @@ class Releases
 				FROM releases r
 				INNER JOIN category c ON c.id = r.categoryid
 				INNER JOIN groups g ON g.id = r.group_id
-				WHERE nzbstatus = %d',
+				WHERE r.nzbstatus = %d',
 				NZB::NZB_ADDED
 			)
 		);
@@ -137,8 +137,8 @@ class Releases
 				FROM releases r
 				INNER JOIN category c ON c.id = r.categoryid
 				INNER JOIN category cp ON cp.id = c.parentid
-				WHERE nzbstatus = %d
-				ORDER BY postdate DESC %s",
+				WHERE r.nzbstatus = %d
+				ORDER BY r.postdate DESC %s",
 				NZB::NZB_ADDED,
 				($start === false ? '' : 'LIMIT ' . $num . ' OFFSET ' . $start)
 			)
@@ -207,7 +207,7 @@ class Releases
 				LEFT OUTER JOIN releasevideo re ON re.releaseid = r.id
 				LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id
 				AND rn.nfo IS NOT NULL
-				WHERE nzbstatus = %d
+				WHERE r.nzbstatus = %d
 				AND r.passwordstatus %s
 				%s %s %s %s
 				ORDER BY %s %s %s",
@@ -336,7 +336,7 @@ class Releases
 				INNER JOIN category ON r.categoryid = category.id
 				INNER JOIN groups ON r.group_id = groups.id
 				INNER JOIN category cp ON cp.id = category.parentid
-				WHERE nzbstatus = %d
+				WHERE r.nzbstatus = %d
 				%s %s %s",
 				NZB::NZB_ADDED,
 				$this->exportDateString($postFrom),
@@ -1135,7 +1135,7 @@ class Releases
 		$whereSql = sprintf(
 			"%s
 			WHERE r.categoryid BETWEEN 2000 AND 2999
-			AND nzbstatus = %d
+			AND r.nzbstatus = %d
 			AND r.passwordstatus %s
 			%s %s %s %s",
 			($name !== '' ? $this->releaseSearch->getFullTextJoinString() : ''),
