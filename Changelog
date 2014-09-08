@@ -3,6 +3,8 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
+2014-09-08 kevin
+	* Add: Setting to limit max releases for pager count, can speed up the web pages, update settings.php with nZEDb_MAX_PAGER_RESULTS
 2014-09-08 ruhllatio
 	* Fix: WEB-DL Movie categorization when WEB-DL categorization is disabled
 	* Add: Movie override for a.b.warez byGroup categorization
