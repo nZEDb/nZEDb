@@ -5,6 +5,7 @@ New updates are grouped by person, at the top of the file.
 
 2014-09-07 ruhllatio
 	* Add: WEB-DL category for Movies, they currently go into TV WEB-DL right now
+	* Fix: WEB-DL Movie categorization overridden by TV opening regex
 2014-09-07 kevin
 	* Chg: Change releases to use count instead of SQL_CALC_FOUND_ROWS for pager, should speed up those queries.
 2014-09-06 niel

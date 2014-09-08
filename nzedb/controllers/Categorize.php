@@ -450,7 +450,7 @@ class Categorize extends Category
 //			return false;
 //		}
 
-		if (preg_match('/Daily[-_\.]Show|Nightly News|^\[[a-zA-Z\.\-]+\].*[-_].*\d{1,3}[-_. ]((\[|\()(h264-)?\d{3,4}(p|i)(\]|\))\s?(\[AAC\])?|\[[a-fA-F0-9]{8}\]|(8|10)BIT|hi10p)(\[[a-fA-F0-9]{8}\])?|(\d\d-){2}[12]\d{3}|[12]\d{3}(\.\d\d){2}|\d+x\d+|s\d{1,3}[-._ ]?[ed]\d{1,3}([ex]\d{1,3}|[-.\w ])|[-._ ](\dx\d\d|C4TV|Complete[-._ ]Season|DSR|(D|H|P|S)DTV|EP[-._ ]?\d{1,3}|S\d{1,3}.+Extras|SUBPACK|Season[-._ ]\d{1,2}|WEB\-DL|WEBRip)([-._ ]|$)|TVRIP|TV[-._ ](19|20)\d\d|TrollHD/i', $this->releaseName)
+		if (preg_match('/Daily[-_\.]Show|Nightly News|^\[[a-zA-Z\.\-]+\].*[-_].*\d{1,3}[-_. ]((\[|\()(h264-)?\d{3,4}(p|i)(\]|\))\s?(\[AAC\])?|\[[a-fA-F0-9]{8}\]|(8|10)BIT|hi10p)(\[[a-fA-F0-9]{8}\])?|(\d\d-){2}[12]\d{3}|[12]\d{3}(\.\d\d){2}|\d+x\d+|s\d{1,3}[-._ ]?[ed]\d{1,3}([ex]\d{1,3}|[-.\w ])|[-._ ](\dx\d\d|C4TV|Complete[-._ ]Season|DSR|(D|H|P|S)DTV|EP[-._ ]?\d{1,3}|S\d{1,3}.+Extras|SUBPACK|Season[-._ ]\d{1,2})([-._ ]|$)|TVRIP|TV[-._ ](19|20)\d\d|TrollHD/i', $this->releaseName)
 			&& !preg_match('/[-._ ](flac|imageset|mp3|xxx)[-._ ]|[ .]exe$/i', $this->releaseName)) {
 			switch (true) {
 				case $this->isOtherTV():
@@ -532,7 +532,7 @@ class Categorize extends Category
 
 	public function isWEBDL()
 	{
-		if (preg_match('/web[-._ ]dl/i', $this->releaseName)) {
+		if (preg_match('/web[-._ ]dl|web-?rip/i', $this->releaseName)) {
 			$this->tmpCat = \Category::CAT_TV_WEBDL;
 			return true;
 		}
@@ -555,7 +555,7 @@ class Categorize extends Category
 			return true;
 		}
 		if ($this->catWebDL == false) {
-			if (preg_match('/web[-._ ]dl/i', $this->releaseName)) {
+			if (preg_match('/web[-._ ]dl|web-?rip/i', $this->releaseName)) {
 				$this->tmpCat = \Category::CAT_TV_HD;
 				return true;
 			}
@@ -677,7 +677,7 @@ class Categorize extends Category
 
 	public function isMovieWEBDL()
 	{
-		if (preg_match('/web[-._ ]dl/i', $this->releaseName)) {
+		if (preg_match('/web[-._ ]dl|web-?rip/i', $this->releaseName)) {
 			$this->tmpCat = \Category::CAT_MOVIE_WEBDL;
 			return true;
 		}
