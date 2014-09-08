@@ -1184,12 +1184,13 @@ class Releases
 	 */
 	private function getPagerCount($query)
 	{
-		$query = preg_replace('/SELECT.+?FROM\s+releases/is', 'SELECT r.id FROM releases', $query);
-		var_dump(\nzedb\utility\Utility::collapseWhiteSpace(sprintf('SELECT COUNT(*) AS count FROM (%s LIMIT %s) z', $query, nZEDb_MAX_PAGER_RESULTS)));
 		$count = $this->pdo->queryOneRow(
-			sprintf('SELECT COUNT(*) AS count FROM (%s LIMIT %s) z', $query, nZEDb_MAX_PAGER_RESULTS)
+			sprintf(
+				'SELECT COUNT(*) AS count FROM (%s LIMIT %s) z',
+				preg_replace('/SELECT.+?FROM\s+releases/is', 'SELECT r.id FROM releases', $query),
+				nZEDb_MAX_PAGER_RESULTS
+			)
 		);
-
 		if (isset($count['count']) && is_numeric($count['count'])) {
 			return $count['count'];
 		}
@@ -1211,7 +1212,9 @@ class Releases
 		$catRow = (new \Category(['Settings' => $this->pdo]))->getById($currRow['categoryid']);
 		$parentCat = $catRow['parentid'];
 
-		$results = $this->search($this->getSimilarName($name), -1, -1, -1, [$parentCat], -1, -1, 0, 0, -1, -1, 0, $limit, '', -1, $excludedCats);
+		$results = $this->search(
+			$this->getSimilarName($name), -1, -1, -1, [$parentCat], -1, -1, 0, 0, -1, -1, 0, $limit, '', -1, $excludedCats
+		);
 		if (!$results) {
 			return $results;
 		}
