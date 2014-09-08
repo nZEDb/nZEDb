@@ -137,7 +137,12 @@ class Forking extends \fork_daemon
 				$maxProcesses = $this->binariesMainMethod();
 				break;
 
-			case 'fixRelNames':
+			case 'fixRelNames_nfo':
+			case 'fixRelNames_filename':
+			case 'fixRelNames_md5':
+			case 'fixRelNames_par2':
+			case 'fixRelNames_miscsorter':
+			case 'fixRelNames_predbft':
 				$maxProcesses = $this->fixRelNamesMainMethod();
 				break;
 
@@ -202,7 +207,7 @@ class Forking extends \fork_daemon
 			if (nZEDb_ECHOCLI) {
 				$this->_colorCLI->doEcho(
 					$this->_colorCLI->header(
-						'Multi-processing started at ' . date(DATE_RFC2822) . ' with ' . $this->_workCount .
+						'Multi-processing started at ' . date(DATE_RFC2822) . ' for ' . $this->workType . ' with ' . $this->_workCount .
 						' job(s) to do using a max of ' . $this->maxProcesses . ' child process(es).'
 					)
 				);
@@ -548,7 +553,7 @@ class Forking extends \fork_daemon
 	{
 		foreach ($guids as $guid) {
 			$this->_executeCommand(
-				PHP_BINARY . ' ' . nZEDb_NIX . 'tmux/bin/groupfixrelnames.php "' . $guid . '"'
+				PHP_BINARY . ' ' . nZEDb_NIX . 'tmux/bin/groupfixrelnames.php "' . $guid . '"' . ' true'
 			);
 		}
 		return;
