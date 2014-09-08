@@ -71,22 +71,22 @@ do
 #
 ## Update all by group
 # $PHP ${MULTI_PATH}/								#update groups (update_binaries/backFill/update_releases/postprocess)
-# 													#one group per thread.
+#													#one group per thread.
 ## Binaries options
 #	$PHP ${MULTI_PATH}/binaries.php 500000			#run binaries one active group per thread upto a max of 500k headers
 #	$PHP ${MULTI_PATH}/binaries.php 0				#run binaries one active group per thread pulling all new headers
 #	$PHP ${MULTI_PATH}/safe.php binaries			#run safe binaries - pull all new headers split across all threads
 #													#This will queue all new headers for active groups for download but optimize
-# 													#your thread usage as the number of messages to download for each group will
-# 													#be split across the threads.
+#													#your thread usage as the number of messages to download for each group will
+#													#be split across the threads.
 #
 ## Backfill options
 #	$PHP ${MULTI_PATH}/backfill.php 500000			#run backfill one active backfill group per thread upto a max of 500k headers
 #	$PHP ${MULTI_PATH}/backfill.php 				#run backfill one active backfill group per thread upto groups backfill target date
 #	$PHP ${MULTI_PATH}/safe.php backfill			#run safe backfill - split across all threads
 #													#This will queue all headers for active backfill groups for download but
-# 													#optimize your thread usage as the number of messages to download for each
-# 													#group will be split across the threads (uses Tmux settings for safe backfill).
+#													#optimize your thread usage as the number of messages to download for each
+#													#group will be split across the threads (uses Tmux settings for safe backfill).
 #
 ## NZB Import
 #	$PHP ${MULTI_PATH}/import.php					#NZB import - see /misc/update/nix/multiprocessing/import.php for required arguments.
