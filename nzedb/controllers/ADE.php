@@ -213,7 +213,7 @@ class ADE
 			} else {
 				$categories = trim($categories);
 			}
-			$this->_res['genres'] = $categories;
+			$this->_res['genres'] = array_unique($categories);
 		}
 		$this->_edithtml->clear();
 		unset($this->_tmpResponse);
