@@ -62,7 +62,7 @@ if ($groups === false) {
 				)
 				WHERE c.filecheck = 3 AND c.filesize = 0";
 
-	if ($groups instanceof Traversable) {
+	if ($groups instanceof \Traversable) {
 		foreach ($groups as $group) {
 			echo 'Fixing group ' . $group['id'] . PHP_EOL;
 			$pdo->queryExec(sprintf($query1, 'collections_' . $group['id']), true);

@@ -10,7 +10,7 @@ if (!isset($argv[1])) {
 		. "php $argv[0] 1000000   ...: To show all groups you do not have with more than 1000000 posts per hour.\n"));
 }
 
-$nntp = new NNTP(['Settings' => $pdo]);
+$nntp = new \NNTP(['Settings' => $pdo]);
 if ($nntp->doConnect() !== true) {
 	exit();
 }

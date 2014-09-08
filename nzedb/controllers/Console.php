@@ -122,7 +122,7 @@ class Console
 	{
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
-			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
+			$catsrch = (new \Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
 		}
 
 		$res = $this->pdo->queryOneRow(
@@ -155,7 +155,7 @@ class Console
 
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
-			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
+			$catsrch = (new \Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
 		}
 
 		$exccatlist = "";
@@ -502,7 +502,7 @@ class Console
 									INSERT INTO genres (title, type)
 									VALUES (%s, %d)",
 									$this->pdo->escapeString($genreName),
-									Genres::CONSOLE_TYPE
+									\Genres::CONSOLE_TYPE
 								)
 			);
 		}
@@ -511,9 +511,9 @@ class Console
 
 	protected function _loadGenres()
 	{
-		$gen = new Genres(['Settings' => $this->pdo]);
+		$gen = new \Genres(['Settings' => $this->pdo]);
 
-		$defaultGenres = $gen->getGenres(Genres::CONSOLE_TYPE);
+		$defaultGenres = $gen->getGenres(\Genres::CONSOLE_TYPE);
 		$genreassoc = array();
 		foreach ($defaultGenres as $dg) {
 			$genreassoc[$dg['id']] = strtolower($dg['title']);
@@ -590,7 +590,7 @@ class Console
 
 	protected function _updateConsoleTable($con = array())
 	{
-		$ri = new ReleaseImage($this->pdo);
+		$ri = new \ReleaseImage($this->pdo);
 
 		$check = $this->pdo->queryOneRow(
 						sprintf('
@@ -640,9 +640,9 @@ class Console
 
 	public function fetchAmazonProperties($title, $node)
 	{
-		$obj = new AmazonProductAPI($this->pubkey, $this->privkey, $this->asstag);
+		$obj = new \AmazonProductAPI($this->pubkey, $this->privkey, $this->asstag);
 		try {
-			$result = $obj->searchProducts($title, AmazonProductAPI::GAMES, "NODE", $node);
+			$result = $obj->searchProducts($title, \AmazonProductAPI::GAMES, "NODE", $node);
 		} catch (Exception $e) {
 			$result = false;
 		}
@@ -660,13 +660,13 @@ class Console
 							AND categoryid BETWEEN 1000 AND 1999
 							ORDER BY postdate DESC
 							LIMIT %d',
-							NZB::NZB_ADDED,
+							\NZB::NZB_ADDED,
 							$this->renamed,
 							$this->gameqty
 						)
 		);
 
-		if ($res instanceof Traversable && $res->rowCount() > 0) {
+		if ($res instanceof \Traversable && $res->rowCount() > 0) {
 
 			if ($this->echooutput) {
 				$this->pdo->log->doEcho($this->pdo->log->header("Processing " . $res->rowCount() . ' console release(s).'));

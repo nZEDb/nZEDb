@@ -36,8 +36,8 @@ preName($argv, $argc);
 function preName($argv, $argc)
 {
 	global $pdo;
-	$groups = new Groups(['Settings' => $pdo]);
-	$category = new Categorize(['Settings' => $pdo]);
+	$groups = new \Groups(['Settings' => $pdo]);
+	$category = new \Categorize(['Settings' => $pdo]);
 	$internal = $external = $pre = 0;
 	$show = 2;
 	if ($argv[$argc - 1] === 'show') {
@@ -46,7 +46,7 @@ function preName($argv, $argc)
 		$show = 3;
 	}
 	$counter = 0;
-	$pdo->log = new ColorCLI();
+	$pdo->log = new \ColorCLI();
 	$full = $all = $usepre = false;
 	$what = $where = '';
 	if ($argv[1] === 'full') {
@@ -94,7 +94,7 @@ function preName($argv, $argc)
 	$res = $pdo->queryDirect("SELECT id, name, searchname, fromname, size, group_id, categoryid FROM releases" . $why . $what . $where);
 	$total = $res->rowCount();
 	if ($total > 0) {
-		$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
+		$consoletools = new \ConsoleTools(['ColorCLI' => $pdo->log]);
 		foreach ($res as $row) {
 			$groupname = $groups->getByNameByID($row['group_id']);
 			$cleanerName = releaseCleaner($row['name'], $row['fromname'], $row['size'], $groupname, $usepre);
@@ -124,7 +124,7 @@ function preName($argv, $argc)
 			if ($cleanName != '') {
 				if (preg_match('/alt\.binaries\.e\-?book(\.[a-z]+)?/', $groupname)) {
 					if (preg_match('/^[0-9]{1,6}-[0-9]{1,6}-[0-9]{1,6}$/', $cleanName, $match)) {
-						$rf = new ReleaseFiles($pdo);
+						$rf = new \ReleaseFiles($pdo);
 						$files = $rf->get($row['id']);
 						foreach ($files as $f) {
 							if (preg_match(
@@ -178,7 +178,7 @@ function preName($argv, $argc)
 							$oldcatname = $category->getNameByID($row["categoryid"]);
 							$newcatname = $category->getNameByID($determinedcat);
 
-							NameFixer::echoChangedReleaseName(array(
+							\NameFixer::echoChangedReleaseName(array(
 									'new_name'     => $cleanName,
 									'old_name'     => $row["searchname"],
 									'new_category' => $newcatname,
@@ -234,7 +234,7 @@ function preName($argv, $argc)
 	} else {
 		$relcount = catRelease("searchname", "WHERE (iscategorized = 0 OR categoryID = 7010) AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
 	}
-	$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
+	$consoletools = new \ConsoleTools(['ColorCLI' => $pdo->log]);
 	$time = $consoletools->convertTime(TIME() - $timestart);
 	echo $pdo->log->header("Finished categorizing " . number_format($relcount) . " releases in " . $time . " seconds, using the usenet subject.\n");
 	resetSearchnames();
@@ -269,8 +269,8 @@ function resetSearchnames()
 function catRelease($type, $where, $echooutput = false)
 {
 	global $pdo;
-	$cat = new Categorize(['Settings' => $pdo]);
-	$consoletools = new consoleTools(['ColorCLI' => $pdo->log]);
+	$cat = new \Categorize(['Settings' => $pdo]);
+	$consoletools = new \consoleTools(['ColorCLI' => $pdo->log]);
 	$relcount = 0;
 	echo $pdo->log->primary("SELECT id, " . $type . ", group_id FROM releases " . $where);
 	$resrel = $pdo->queryDirect("SELECT id, " . $type . ", group_id FROM releases " . $where);
@@ -293,8 +293,8 @@ function catRelease($type, $where, $echooutput = false)
 
 function releaseCleaner($subject, $fromName, $size, $groupname, $usepre)
 {
-	$groups = new Groups();
-	$releaseCleaning = new ReleaseCleaning($groups->pdo);
+	$groups = new \Groups();
+	$releaseCleaning = new \ReleaseCleaning($groups->pdo);
 	$cleanerName = $releaseCleaning->releaseCleaner($subject, $fromName, $size, $groupname, $usepre);
 	if (!is_array($cleanerName) && $cleanerName != false) {
 		return array("cleansubject" => $cleanerName, "properlynamed" => true, "increment" => false);

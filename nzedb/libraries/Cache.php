@@ -10,6 +10,49 @@ namespace nzedb\libraries;
  */
 Class Cache
 {
+	const SERIALIZER_PHP      = 0;
+	const SERIALIZER_IGBINARY = 1;
+	const SERIALIZER_NONE     = 2;
+
+	const TYPE_DISABLED  = 0;
+	const TYPE_MEMCACHED = 1;
+	const TYPE_REDIS     = 2;
+
+	/**
+	 * @var \Memcached|\Redis
+	 */
+	private $server = null;
+
+	/**
+	 * Are we connected to the cache server?
+	 * @var bool
+	 */
+	private $connected = false;
+
+	/**
+	 * Optional socket file location.
+	 * @var bool|string
+	 */
+	private $socketFile;
+
+	/**
+	 * Serializer type.
+	 * @var bool|int
+	 */
+	private $serializerType;
+
+	/**
+	 * Are we using redis or memcached?
+	 * @var bool
+	 */
+	private $isRedis = true;
+
+	/**
+	 * Does the user have igBinary support and wants to use it?
+	 * @var bool
+	 */
+	private $IgBinarySupport = false;
+
 	/**
 	 * Store data on the cache server.
 	 *
@@ -110,62 +153,19 @@ Class Cache
 		return array();
 	}
 
-	const TYPE_DISABLED  = 0;
-	const TYPE_MEMCACHED = 1;
-	const TYPE_REDIS     = 2;
-
-	const SERIALIZER_PHP      = 0;
-	const SERIALIZER_IGBINARY = 1;
-	const SERIALIZER_NONE     = 2;
-
-	/**
-	 * @var \Memcached|\Redis
-	 */
-	private $server = null;
-
-	/**
-	 * Are we connected to the cache server?
-	 * @var bool
-	 */
-	private $connected = false;
-
-	/**
-	 * Optional socket file location.
-	 * @var bool|string
-	 */
-	private $socketFile;
-
-	/**
-	 * Serializer type.
-	 * @var bool|int
-	 */
-	private $serializerType;
-
-	/**
-	 * Are we using redis or memcached?
-	 * @var bool
-	 */
-	private $isRedis = true;
-
-	/**
-	 * Does the user have igBinary support and wants to use it?
-	 * @var bool
-	 */
-	private $IgBinarySupport = false;
-
 	/**
 	 * Verify the user's cache settings, try to connect to the cache server.
 	 */
 	public function __construct()
 	{
 		if (!defined('nZEDb_CACHE_HOSTS')) {
-			throw new CacheException(
+			throw new \CacheException(
 				'The nZEDb_CACHE_HOSTS is not defined! Define it in settings.php'
 			);
 		}
 
 		if (!defined('nZEDb_CACHE_TIMEOUT')) {
-			throw new CacheException(
+			throw new \CacheException(
 				'The nZEDb_CACHE_TIMEOUT is not defined! Define it in settings.php, it is the time in seconds to time out from your cache server.'
 			);
 		}
@@ -182,7 +182,7 @@ Class Cache
 
 		switch(nZEDb_CACHE_TYPE) {
 
-			case Cache::TYPE_REDIS:
+			case self::TYPE_REDIS:
 				if (!extension_loaded('redis')) {
 					throw new CacheException('The redis extension is not loaded!');
 				}
@@ -195,7 +195,7 @@ Class Cache
 				}
 				break;
 
-			case Cache::TYPE_MEMCACHED:
+			case self::TYPE_MEMCACHED:
 				if (!extension_loaded('memcached')) {
 					throw new CacheException('The memcached extension is not loaded!');
 				}
@@ -209,7 +209,7 @@ Class Cache
 				$this->connect();
 				break;
 
-			case Cache::TYPE_DISABLED:
+			case self::TYPE_DISABLED:
 			default:
 				return;
 		}
@@ -221,10 +221,10 @@ Class Cache
 	public function __destruct()
 	{
 		switch(nZEDb_CACHE_TYPE) {
-			case Cache::TYPE_REDIS:
+			case self::TYPE_REDIS:
 				$this->server->close();
 				break;
-			case Cache::TYPE_MEMCACHED:
+			case self::TYPE_MEMCACHED:
 				$this->server->quit();
 				break;
 		}
@@ -299,7 +299,7 @@ Class Cache
 	private function verifySerializer()
 	{
 		switch(nZEDb_CACHE_SERIALIZER) {
-			case Cache::SERIALIZER_IGBINARY:
+			case self::SERIALIZER_IGBINARY:
 				if (extension_loaded('igbinary')) {
 					$this->IgBinarySupport = true;
 					if ($this->isRedis === true) {
@@ -314,13 +314,13 @@ Class Cache
 				} else {
 					throw new CacheException('Error: The igbinary extension is not loaded!');
 				}
-			case Cache::SERIALIZER_NONE:
+			case self::SERIALIZER_NONE:
 				if ($this->isRedis === true) {
 					return \Redis::SERIALIZER_NONE;
 				} else {
 					throw new CacheException('Error: Disabled serialization is not available on Memcached!');
 				}
-			case Cache::SERIALIZER_PHP:
+			case self::SERIALIZER_PHP:
 			default:
 				if ($this->isRedis === true) {
 					return \Redis::SERIALIZER_PHP;

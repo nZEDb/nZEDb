@@ -67,7 +67,7 @@ class RequestIDLocal extends RequestID
 	protected function _processReleases()
 	{
 		$renamed = $checked = 0;
-		if ($this->_releases instanceof Traversable) {
+		if ($this->_releases instanceof \Traversable) {
 			foreach ($this->_releases as $this->_release) {
 				$this->_requestID = $this->_siftReqId();
 
@@ -113,7 +113,7 @@ class RequestIDLocal extends RequestID
 			)
 		);
 
-		if ($check instanceof Traversable) {
+		if ($check instanceof \Traversable) {
 			if ($check->rowCount() == 1) {
 				foreach ($check as $row) {
 					if (preg_match('/s\d+/i', $row['title']) && !preg_match('/s\d+e\d+/i', $row['title'])) {
@@ -288,7 +288,7 @@ class RequestIDLocal extends RequestID
 		}
 
 		if ($this->_release['name'] !== $this->_newTitle['title'] && $this->_show == 1) {
-			NameFixer::echoChangedReleaseName(
+			\NameFixer::echoChangedReleaseName(
 				array(
 					'new_name'     => $this->_newTitle['title'],
 					'old_name'     => $this->_release['name'],

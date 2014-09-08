@@ -38,7 +38,7 @@ $user = $pdo->queryOneRow(
 );
 
 if ($user !== false) {
-	$users = new Users(['Settings' => $pdo]);
+	$users = new \Users(['Settings' => $pdo]);
 	$hash = $users->hashPassword($password);
 	$result = false;
 	if ($hash !== false) {

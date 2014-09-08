@@ -162,7 +162,7 @@ class Games
 	{
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
-			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
+			$catsrch = (new \Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
 		}
 
 		$res = $this->pdo->queryOneRow(
@@ -197,7 +197,7 @@ class Games
 
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
-			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
+			$catsrch = (new \Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
 		}
 
 		if ($maxage > 0) {
@@ -365,15 +365,15 @@ class Games
 	 */
 	public function updateGamesInfo($gameInfo)
 	{
-		$gen = new Genres(['Settings' => $this->pdo]);
-		$ri = new ReleaseImage($this->pdo);
+		$gen = new \Genres(['Settings' => $this->pdo]);
+		$ri = new \ReleaseImage($this->pdo);
 
 		$con = array();
 
 		// Process Steam first before giantbomb
 		// Steam has more details
 		$this->_gameResults = [];
-		$this->_getGame = new Steam();
+		$this->_getGame = new \Steam();
 		$this->_classUsed = "steam";
 		$this->_getGame->cookie = $this->cookie;
 		$this->_getGame->searchTerm = $gameInfo['title'];
@@ -460,7 +460,7 @@ class Games
 					}
 
 					if (!empty($this->_gameResults['gamedetails']['Release Date'])) {
-						$date = DateTime::createFromFormat('j M Y',
+						$date = \DateTime::createFromFormat('j M Y',
 									$this->_gameResults['gamedetails']['Release Date']);
 						$con['releasedate'] = $this->pdo->escapeString((string)$date->format('Y-m-d'));
 					}
@@ -495,7 +495,7 @@ class Games
 			return false;
 		}
 		// Load genres.
-		$defaultGenres = $gen->getGenres(Genres::GAME_TYPE);
+		$defaultGenres = $gen->getGenres(\Genres::GAME_TYPE);
 		$genreassoc = array();
 		foreach ($defaultGenres as $dg) {
 			$genreassoc[$dg['id']] = strtolower($dg['title']);
@@ -541,7 +541,7 @@ class Games
 					INSERT INTO genres (title, type)
 					VALUES (%s, %d)",
 					$this->pdo->escapeString($genreName),
-					Genres::GAME_TYPE
+					\Genres::GAME_TYPE
 				)
 			);
 		}
@@ -639,7 +639,7 @@ class Games
 
 	public function fetchGiantBombID($title = '')
 	{
-		$obj = new GiantBomb($this->publicKey);
+		$obj = new \GiantBomb($this->publicKey);
 		try {
 			$fields = array(
 			    "api_detail_url", "name"
@@ -656,7 +656,7 @@ class Games
 				$this->_resultsFound = count($result['results']) - 1;
 				if ($this->_resultsFound !== 0) {
 					for ($i = 0; $i <= $this->_resultsFound; $i++) {
-						similar_text($result['results'][$i]['name'], $title, $p);
+						similar_text(strtolower($result['results'][$i]['name']), strtolower($title), $p);
 						if ($p > 77) {
 							$result = $result['results'][$i];
 							preg_match('/\/\d+\-(?<asin>\d+)\//', $result['api_detail_url'], $matches);
@@ -688,7 +688,7 @@ class Games
 	 */
 	public function fetchGiantBombArray()
 	{
-		$obj = new GiantBomb($this->publicKey);
+		$obj = new \GiantBomb($this->publicKey);
 		try {
 			$fields = array(
 				"deck", "description", "original_game_rating", "api_detail_url", "image", "genres",
@@ -720,7 +720,7 @@ class Games
 			)
 		);
 
-		if ($res instanceof Traversable && $res->rowCount() > 0) {
+		if ($res instanceof \Traversable && $res->rowCount() > 0) {
 			if ($this->echoOutput) {
 				$this->pdo->log->doEcho($this->pdo->log->header("Processing " . $res->rowCount() . ' games release(s).'));
 			}

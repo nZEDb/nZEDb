@@ -289,49 +289,32 @@ class Popporn
 	 */
 	public function search()
 	{
-		if (!isset($this->searchTerm)) {
-			return false;
-		}
-		$this->_trailUrl = self::TRAILINGSEARCH . urlencode($this->searchTerm);
-		if ($this->getUrl() === false) {
-			return false;
-		} else {
-			if ($ret = $this->_html->find('h2[class=title]', 0)) {
-				$title = trim($ret->innertext);
-				$title = preg_replace('/XXX/','',$title);
-			} else {
-				if($ret = $this->_html->find('div.product-info, div.title', 1)){
-				$title = trim($ret->plaintext);
-				$title = preg_replace('/XXX/', '', $title);
-				$title = preg_replace('/\(.*?\)|[-._]/i', ' ', $title);
-				if($ret = $ret->find('a',0)){
-					$this->_trailUrl = trim($ret->href);
-					@$this->getUrl();
+		$result = false;
+		if (isset($this->searchTerm)) {
+			$this->_trailUrl = self::TRAILINGSEARCH . urlencode($this->searchTerm);
+			if ($this->getUrl() !== false) {
+				if ($ret = $this->_html->find('div.product-info, div.title', 1)) {
+					$this->_title = trim($ret->plaintext);
+					$title = preg_replace('/XXX/', '', $ret->plaintext);
+					$title = preg_replace('/\(.*?\)|[-._]/i', ' ', $title);
+					$title = trim($title);
+					if ($ret = $ret->find('a', 0)) {
+						$this->_trailUrl = trim($ret->href);
+						if ($this->getUrl() !== false) {
+							if ($ret = $this->_html->find('#link-to-this', 0)) {
+								$this->_directUrl = trim($ret->href);
+							}
+							similar_text(strtolower($this->searchTerm), strtolower($title), $p);
+							if ($p >= 90) {
+								$result = true;
+							}
+						}
+					}
 				}
-
-				}else{
-				return false;
-				}
-			}
-
-			if($ret = $this->_html->find('#link-to-this',0)){
-			$ret = trim($ret->href);
-			$this->_directUrl = $ret;
-			}
-			if (isset($title)) {
-				similar_text($this->searchTerm, $title, $p);
-				if ($p >= 90) {
-					$this->_title = $title;
-					unset($ret);
-
-					return true;
-				} else {
-					return false;
-				}
-			} else {
-				return false;
 			}
 		}
+
+		return $result;
 	}
 
 	/**
@@ -397,9 +380,10 @@ class Popporn
 		curl_setopt($ch, CURLOPT_USERAGENT, "Firefox/2.0.0.1");
 		curl_setopt($ch, CURLOPT_FAILONERROR, 1);
 		if (isset($this->cookie)) {
-		curl_setopt($ch, CURLOPT_COOKIEJAR, $this->cookie);
-		curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookie);
+			curl_setopt($ch, CURLOPT_COOKIEJAR, $this->cookie);
+			curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookie);
 		}
+		curl_setopt_array($ch, nzedb\utility\Utility::curlSslContextOptions());
 		$this->_response = curl_exec($ch);
 		if (!$this->_response) {
 			curl_close($ch);

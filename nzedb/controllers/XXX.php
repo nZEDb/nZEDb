@@ -62,7 +62,7 @@ class XXX
 		$options += $defaults;
 
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
-		$this->releaseImage = ($options['ReleaseImage'] instanceof ReleaseImage ? $options['ReleaseImage'] : new ReleaseImage($this->pdo));
+		$this->releaseImage = ($options['ReleaseImage'] instanceof \ReleaseImage ? $options['ReleaseImage'] : new \ReleaseImage($this->pdo));
 
 		$this->movieqty = ($this->pdo->getSetting('maxxxxprocessed') != '') ? $this->pdo->getSetting('maxxxxprocessed') : 100;
 		$this->showPasswords = ($this->pdo->getSetting('showpasswordedrelease') != '') ? $this->pdo->getSetting('showpasswordedrelease') : 0;
@@ -138,7 +138,7 @@ class XXX
 	{
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
-			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
+			$catsrch = (new \Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
 		}
 
 		$res = $this->pdo->queryOneRow(
@@ -147,7 +147,6 @@ class XXX
 				FROM releases r
 				INNER JOIN xxxinfo xxx ON xxx.id = r.xxxinfo_id
 				WHERE r.nzbstatus = 1
-				AND xxx.cover = 1
 				AND xxx.title != ''
 				AND r.passwordstatus <= %d
 				AND %s %s %s %s ",
@@ -180,7 +179,7 @@ class XXX
 	{
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
-			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
+			$catsrch = (new \Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
 		}
 
 		$order = $this->getXXXOrder($orderBy);
@@ -308,39 +307,50 @@ class XXX
 		}
 		return implode(', ', $newArr);
 	}
+
 	/**
-	 * Update movie on movie-edit page.
+	 * Update XXX Information from getXXXCovers.php in misc/testing/PostProc
 	 *
-	 *@param $id
-	 * @param $title
-	 * @param $tagLine
-	 * @param $plot
-	 * @param $genre
-	 * @param $director
-	 * @param $actors
-	 * @param $cover
-	 * @param $backdrop
+	 * @param string $id
+	 * @param string $title
+	 * @param string $tagLine
+	 * @param string $plot
+	 * @param string $genre
+	 * @param string $director
+	 * @param string $actors
+	 * @param string $extras
+	 * @param string $productInfo
+	 * @param string $trailers
+	 * @param string $directUrl
+	 * @param string $classUsed
+	 * @param string $cover
+	 * @param string $backdrop
 	 */
 	public function update(
 		$id = '', $title = '', $tagLine = '', $plot = '', $genre = '', $director = '',
-		$actors = '', $cover = '', $backdrop = ''
+		$actors = '', $extras = '', $productInfo = '', $trailers = '', $directUrl = '', $classUsed = '', $cover = '', $backdrop = ''
 	)
 	{
 		if (!empty($id)) {
 
 			$this->pdo->queryExec(
-				sprintf("
-					UPDATE xxxinfo
-					SET %s, %s, %s, %s, %s, %s, %d, %d, updateddate = NOW()
+				sprintf("UPDATE xxxinfo	SET title = %s, tagline = %s, plot = COMPRESS(%s), genre = %s, director = %s,
+					actors = %s, extras = %s, productinfo = %s, trailers = %s, directurl = %s,
+					classused = %s, cover = %d, backdrop = %d, updateddate = NOW()
 					WHERE id = %d",
-					(empty($title)    ? '' : 'title = '    . $this->pdo->escapeString($title)),
-					(empty($tagLine)  ? '' : 'tagline = '  . $this->pdo->escapeString($tagLine)),
-					(empty($plot)     ? '' : 'plot = '     . $this->pdo->escapeString($plot)),
-					(empty($genre)    ? '' : 'genre = '    . $this->pdo->escapeString($genre)),
-					(empty($director) ? '' : 'director = ' . $this->pdo->escapeString($director)),
-					(empty($actors)   ? '' : 'actors = '   . $this->pdo->escapeString($actors)),
-					(empty($cover)    ? '' : 'cover = '    . $cover),
-					(empty($backdrop) ? '' : 'backdrop = ' . $backdrop),
+					$this->pdo->escapeString($title),
+					$this->pdo->escapeString($tagLine),
+					$this->pdo->escapeString($plot),
+					$this->pdo->escapeString(substr($genre, 0, 64)),
+					$this->pdo->escapeString($director),
+					$this->pdo->escapeString($actors),
+					$this->pdo->escapeString($extras),
+					$this->pdo->escapeString($productInfo),
+					$this->pdo->escapeString($trailers),
+					$this->pdo->escapeString($directUrl),
+					$this->pdo->escapeString($classUsed),
+					(empty($cover) ? 0 : $cover),
+					(empty($backdrop) ? 0 : $backdrop),
 					$id
 				)
 			);
@@ -360,14 +370,14 @@ class XXX
 		$res = false;
 		$this->whichclass = '';
 
-		$iafd = new IAFD();
+		$iafd = new \IAFD();
 		$iafd->searchTerm = $xxxmovie;
 
 		if ($iafd->findme() !== false) {
 
 			switch($iafd->classUsed) {
 				case "ade":
-					$mov = new ADE();
+					$mov = new \ADE();
 					$mov->directLink = (string)$iafd->directUrl;
 					$res = $mov->getDirect();
 					$res['title'] = $iafd->title;
@@ -375,49 +385,43 @@ class XXX
 					$this->whichclass = $iafd->classUsed;
 					$this->pdo->log->doEcho($this->pdo->log->primary("Fetching XXX info from IAFD -> Adult DVD Empire"));
 					break;
-				case "hm":
-					$mov = new Hotmovies();
-					$mov->directLink = (string)$iafd->directUrl;
-					$res = $mov->getDirect();
-					$res['title'] = $iafd->title;
-					$res['directurl'] = (string)$iafd->directUrl;
-					$this->whichclass = $iafd->classUsed;
-					$this->pdo->log->doEcho($this->pdo->log->primary("Fetching XXX info from IAFD -> Hot Movies"));
 			}
 		}
 
 		if ($res === false) {
 
 			$this->whichclass = "aebn";
-			$mov = new AEBN();
+			$mov = new \AEBN();
 			$mov->cookie = $this->cookie;
 			$mov->searchTerm = $xxxmovie;
 			$res = $mov->search();
 
 			if ($res === false) {
 				$this->whichclass = "ade";
-				$mov = new ADE();
-				$mov->searchTerm = $xxxmovie;
-				$res = $mov->search();
-			}
-
-			if ($res === false) {
-				$this->whichclass = "hm";
-				$mov = new Hotmovies();
-				$mov->cookie = $this->cookie;
+				$mov = new \ADE();
 				$mov->searchTerm = $xxxmovie;
 				$res = $mov->search();
 			}
 
 			if ($res === false) {
 				$this->whichclass = "pop";
-				$mov = new Popporn();
+				$mov = new \Popporn();
 				$mov->cookie = $this->cookie;
 				$mov->searchTerm = $xxxmovie;
 				$res = $mov->search();
 			}
 
-			// If a result is true getall information.
+			// Last in list as it doesn't have trailers
+			if ($res === false) {
+				$this->whichclass = "adm";
+				$mov = new \ADM();
+				$mov->cookie = $this->cookie;
+				$mov->searchTerm = $xxxmovie;
+				$res = $mov->search();
+			}
+
+
+			// If a result is true getAll information.
 			if ($res !== false) {
 				if ($this->echooutput) {
 
@@ -431,8 +435,8 @@ class XXX
 						case "pop":
 							$fromstr = "PopPorn";
 							break;
-						case "hm":
-							$fromstr = "Hot Movies";
+						case "adm":
+							$fromstr = "Adult DVD Marketplace";
 							break;
 						default:
 							$fromstr = null;
@@ -451,8 +455,8 @@ class XXX
 		$mov['trailers'] = (isset($res['trailers'])) ? serialize($res['trailers']) : '';
 		$mov['extras'] = (isset($res['extras'])) ? serialize($res['extras']) : '';
 		$mov['productinfo'] = (isset($res['productinfo'])) ? serialize($res['productinfo']) : '';
-		$mov['backdrop'] = (isset($res['backcover'])) ? $res['backcover'] : '';
-		$mov['cover'] = (isset($res['boxcover'])) ? $res['boxcover'] : '';
+		$mov['backdrop'] = (isset($res['backcover'])) ? $res['backcover'] : 0;
+		$mov['cover'] = (isset($res['boxcover'])) ? $res['boxcover'] : 0;
 		$res['cast'] = (isset($res['cast'])) ? join(",", $res['cast']) : '';
 		$res['genres'] = (isset($res['genres'])) ? $this->getgenreid($res['genres']) : '';
 		$mov['title'] = html_entity_decode($res['title'], ENT_QUOTES, 'UTF-8');
@@ -465,9 +469,21 @@ class XXX
 		$mov['classused'] = $this->whichclass;
 
 		$check = $this->pdo->queryOneRow(sprintf('SELECT id FROM xxxinfo WHERE title = %s',	$this->pdo->escapeString($mov['title'])));
-		$xxxID = null;
+		$xxxID = 0;
+		if(isset($check['id'])){
+		$xxxID = $check['id'];
+		}
 
-		if ($check === false) {
+		if($check === false OR $xxxID > 0){
+
+		// Update Current XXX Information - getXXXCovers.php
+		if($xxxID > 0){
+			$this->update($check['id'], $mov['title'], $mov['tagline'], $mov['plot'], $mov['genre'], $mov['director'], $mov['actors'], $mov['extras'], $mov['productinfo'], $mov['trailers'], $mov['directurl'], $mov['classused']);
+			$xxxID = $check['id'];
+		}
+
+		// Insert New XXX Information
+		if($check === false){
 			$xxxID = $this->pdo->queryInsert(
 				sprintf("
 					INSERT INTO xxxinfo
@@ -487,8 +503,9 @@ class XXX
 					$this->pdo->escapeString($mov['classused'])
 				)
 			);
+			}
 
-			if ($xxxID !== false) {
+			if ($xxxID > 0) {
 
 				// BoxCover.
 				if (isset($mov['cover'])) {
@@ -499,13 +516,13 @@ class XXX
 				if (isset($mov['backdrop'])) {
 					$mov['backdrop'] = $this->releaseImage->saveImage($xxxID . '-backdrop', $mov['backdrop'], $this->imgSavePath, 1920, 1024);
 				}
+
 				$this->pdo->queryExec(sprintf('UPDATE xxxinfo SET cover = %d, backdrop = %d  WHERE id = %d', $mov['cover'], $mov['backdrop'], $xxxID));
+
+			} else {
+				$xxxID = -2;
 			}
 
-		} else {
-			// If xxxinfo title is found, update release with the current xxxinfo id because it was nulled before..
-			$this->pdo->queryExec(sprintf('UPDATE releases SET xxxinfo_id = %d WHERE id = %d', $check['id'], $this->currentRelID));
-			$xxxID = $check['id'];
 		}
 
 		if ($this->echooutput) {
@@ -514,6 +531,7 @@ class XXX
 				$this->pdo->log->primary($mov['title'])
 			);
 		}
+
 		return $xxxID;
 	}
 
@@ -600,7 +618,10 @@ class XXX
 				$name = preg_replace('/\(.*?\)|[-._]/i', ' ', $name);
 				// Finally remove multiple spaces and trim leading spaces.
 				$name = trim(preg_replace('/\s{2,}/', ' ', $name));
-
+				// Remove Private Movies {d} from name better matching.
+				$name = trim(preg_replace('/^Private\s(Specials|Blockbusters|Blockbuster|Sports|Gold|Lesbian|Movies|Classics|Castings|Fetish|Stars|Pictures|XXX|Private|Black\sLabel|Black)\s\d+/i', '', $name));
+				// Remove Foreign Words at the end of the name.
+				$name = trim(preg_replace('/(brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|latin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish)$/i', '', $name));
 
 				// Check if the name is long enough and not just numbers and not file (d) of (d) and does not contain Episodes and any dated 00.00.00 which are site rips..
 				if (strlen($name) > 5 && !preg_match('/^\d+$/', $name) && !preg_match('/( File \d+ of \d+|\d+.\d+.\d+)/',$name) && !preg_match('/(E\d+)/',$name) && !preg_match('/\d\d\.\d\d.\d\d/', $name)) {
@@ -622,7 +643,6 @@ class XXX
 	 * @return array|null
 	 */
 	public function getAllGenres($activeOnly = false) {
-		$i = 0;
 		$res = $ret = null;
 
 		if ($activeOnly) {
@@ -700,10 +720,11 @@ class XXX
 	 */
 	private function insertGenre($genre)
 	{
+		$res = '';
 		if (isset($genre)) {
 			$res = $this->pdo->queryInsert(sprintf("INSERT INTO genres (title, type, disabled) VALUES (%s ,%d ,%d)",$this->pdo->escapeString($genre), 6000, 0));
-			return $res;
 		}
+		return $res;
 	}
 
 	/**
@@ -716,8 +737,8 @@ class XXX
 	 */
 	public function insertSwf($whichclass, $res)
 	{
+		$ret = '';
 		if ($whichclass === "ade") {
-			$ret = '';
 			if (!empty($res)) {
 				$trailers = unserialize($res);
 				$ret .="<object width='360' height='240' type='application/x-shockwave-flash' id='EmpireFlashPlayer' name='EmpireFlashPlayer' data='".	$trailers['url'] . "'>";
@@ -728,7 +749,6 @@ class XXX
 			}
 		}
 		if ($whichclass === "pop") {
-			$ret = '';
 			if (!empty($res)) {
 				$trailers = unserialize($res);
 				$ret .= "<embed id='trailer' width='480' height='360'";
@@ -738,5 +758,7 @@ class XXX
 				return ($ret);
 			}
 		}
+
+		return $ret;
 	}
 }

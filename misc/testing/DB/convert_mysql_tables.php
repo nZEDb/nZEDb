@@ -3,7 +3,7 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 
 use nzedb\db\Settings;
 
-$cli = new ColorCLI();
+$cli = new \ColorCLI();
 
 $pdo = new Settings(['checkVersion' => true]);
 $ftinnodb = $pdo->isDbVersionAtLeast('5.6');
@@ -33,7 +33,7 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 		printf($cli->header("Not converting releasesearch / predbhash as your INNODB version does not support fulltext indexes"));
 	}
 } else if (isset($argv[1]) && $argv[1] == "fmyisam") {
-	$sql = 'SHOW table status WHERE Engine != "MyIsam" ||  Row_format != "FIXED"';
+	$sql = 'SHOW TABLE STATUS WHERE (Engine != "MyIsam" OR Row_format != "FIXED") AND Engine != "SPHINX"';
 	$tables = $pdo->query($sql);
 	foreach ($tables as $row) {
 		$tbl = $row['name'];
@@ -41,7 +41,7 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 		$pdo->queryExec("ALTER TABLE $tbl ENGINE=MYISAM ROW_FORMAT=FIXED");
 	}
 } else if (isset($argv[1]) && $argv[1] == "dmyisam") {
-	$sql = 'SHOW table status WHERE Engine != "MyIsam" ||  Row_format != "Dynamic"';
+	$sql = 'SHOW TABLE STATUS WHERE (Engine != "MyIsam" OR Row_format != "Dynamic) AND Engine != "SPHINX"';
 	$tables = $pdo->query($sql);
 	foreach ($tables as $row) {
 		$tbl = $row['name'];
@@ -49,7 +49,7 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 		$pdo->queryExec("ALTER TABLE $tbl ENGINE=MYISAM ROW_FORMAT=DYNAMIC");
 	}
 } else if (isset($argv[1]) && $argv[1] == "dinnodb") {
-	$sql = 'SHOW table status WHERE Engine != "InnoDB" OR Row_format != "Dynamic"';
+	$sql = 'SHOW TABLE STATUS WHERE (Engine != "InnoDB" OR Row_format != "Dynamic") AND Engine != "SPHINX"';
 	$tables = $pdo->query($sql);
 	foreach ($tables as $row) {
 		$tbl = $row['name'];
@@ -59,7 +59,7 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 		}
 	}
 	if ($ftinnodb) {
-		$sql = 'SHOW table status WHERE Name IN ("releasesearch", "predbhash") AND (Engine != "InnoDB" || Row_format != "Dynamic")';
+		$sql = 'SHOW TABLE STATUS WHERE Name IN ("releasesearch", "predbhash") AND (Engine != "InnoDB" || Row_format != "Dynamic")';
 		$tables = $pdo->query($sql);
 		foreach ($tables as $row) {
 			$tbl = $row['name'];
@@ -70,7 +70,7 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 		printf($cli->header("Not converting releasesearch as your INNODB version does not support fulltext indexes"));
 	}
 } else if (isset($argv[1]) && $argv[1] == "cinnodb") {
-	$sql = 'SHOW table status WHERE Engine != "InnoDB" OR Row_format != "Compressed"';
+	$sql = 'SHOW TABLE STATUS WHERE (Engine != "InnoDB" OR Row_format != "Compressed") AND Engine != "SPHINX"';
 	$tables = $pdo->query($sql);
 	foreach ($tables as $row) {
 		$tbl = $row['name'];
@@ -79,7 +79,7 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 			$pdo->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=COMPRESSED");
 		}
 	}
-	$sql = 'SHOW table status WHERE Name = "releasenfo" AND (Engine != "InnoDB" || Row_format != "Dynamic")';
+	$sql = 'SHOW TABLE STATUS WHERE Name = "releasenfo" AND (Engine != "InnoDB" || Row_format != "Dynamic")';
 	$tables = $pdo->query($sql);
 	foreach ($tables as $row) {
 		$tbl = $row['name'];
@@ -87,7 +87,7 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 		$pdo->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=DYNAMIC");
 	}
 	if ($ftinnodb) {
-		$sql = 'SHOW table status WHERE Name IN ("releasesearch", "predbhash") AND (Engine != "InnoDB" || Row_format != "Compressed")';
+		$sql = 'SHOW TABLE STATUS WHERE Name IN ("releasesearch", "predbhash") AND (Engine != "InnoDB" || Row_format != "Compressed")';
 		$tables = $pdo->query($sql);
 		foreach ($tables as $row) {
 			$tbl = $row['name'];
@@ -98,7 +98,7 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 		printf($cli->header("Not converting releasesearch / predbhash as your INNODB version does not support fulltext indexes"));
 	}
 } else if (isset($argv[1]) && $argv[1] == "cinnodb-noparts") {
-	$sql = 'SHOW table status WHERE Engine != "InnoDB" OR Row_format != "Compressed"';
+	$sql = 'SHOW TABLE STATUS WHERE (Engine != "InnoDB" OR Row_format != "Compressed") AND Engine != "SPHINX"';
 	$tables = $pdo->query($sql);
 	foreach ($tables as $row) {
 		$tbl = $row['name'];
@@ -107,14 +107,14 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 			$pdo->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=COMPRESSED");
 		}
 	}
-	$sql = 'SHOW table status WHERE Name = "releasenfo" AND (Engine != "InnoDB" || Row_format != "Dynamic")';
+	$sql = 'SHOW TABLE STATUS WHERE Name = "releasenfo" AND (Engine != "InnoDB" || Row_format != "Dynamic")';
 	$tables = $pdo->query($sql);
 	foreach ($tables as $row) {
 		$tbl = $row['name'];
 		printf($cli->header("Converting $tbl"));
 		$pdo->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=DYNAMIC");
 	}
-	$sql = 'SHOW table status WHERE Name LIKE "parts%" AND (Engine != "MyISAM" || Row_format != "Dynamic")';
+	$sql = 'SHOW TABLE STATUS WHERE Name LIKE "parts%" AND (Engine != "MyISAM" || Row_format != "Dynamic")';
 	$tables = $pdo->query($sql);
 	foreach ($tables as $row) {
 		$tbl = $row['name'];
@@ -122,7 +122,7 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 		$pdo->queryExec("ALTER TABLE $tbl ENGINE=MyISAM ROW_FORMAT=DYNAMIC");
 	}
 	if ($ftinnodb) {
-		$sql = 'SHOW table status WHERE Name IN ("releasesearch", "predbhash") AND AND (Engine != "InnoDB" || Row_format != "Compressed")';
+		$sql = 'SHOW TABLE STATUS WHERE Name IN ("releasesearch", "predbhash") AND (Engine != "InnoDB" || Row_format != "Compressed")';
 		$tables = $pdo->query($sql);
 		foreach ($tables as $row) {
 			$tbl = $row['name'];
@@ -140,7 +140,7 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 		$pdo->queryExec("ALTER TABLE $tbl ENGINE=MYISAM ROW_FORMAT=FIXED");
 	}
 } else if (isset($argv[1]) && $argv[1] == "mariadb-tokudb") {
-	$tables = $pdo->query('SHOW table status WHERE Engine != "TokuDB" OR Create_options != "`COMPRESSION`=tokudb_lzma"');
+	$tables = $pdo->query('SHOW TABLE STATUS WHERE (Engine != "TokuDB" OR Create_options != "`COMPRESSION`=tokudb_lzma") AND Engine != "SPHINX"');
 	foreach ($tables as $row) {
 		$tbl = $row['name'];
 		if ($tbl !== 'releasesearch') {
@@ -151,7 +151,7 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 		}
 	}
 } else if (isset($argv[1]) && $argv[1] == "tokudb") {
-	$tables = $pdo->query('SHOW table status WHERE Engine != "TokuDB" OR ROW_FORMAT="tokudb_lzma" OR Create_options != "`COMPRESSION`=tokudb_lzma"');
+	$tables = $pdo->query('SHOW TABLE STATUS WHERE (Engine != "TokuDB" OR ROW_FORMAT="tokudb_lzma" OR Create_options != "`COMPRESSION`=tokudb_lzma") AND Engine != "SPHINX"');
 	foreach ($tables as $row) {
 		$tbl = $row['name'];
 		if ($tbl !== 'releasesearch') {

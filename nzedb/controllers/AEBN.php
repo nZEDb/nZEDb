@@ -121,16 +121,11 @@ class AEBN
 	 */
 	public function trailers()
 	{
-		if (!isset($this->_response)) {
-			return false;
-		}
-		$movieid = null;
 		if ($ret = $this->_html->find("a[itemprop=trailer]", 0)) {
-			preg_match('/movieId=(?<movieid>\d+)&/', trim($ret->href), $matches);
+			if(preg_match('/movieId=(?<movieid>\d+)&/', trim($ret->href), $matches)){
 			$movieid = $matches['movieid'];
-			$this->_res['trailers']['url'] = $this->_whichSite[$this->_currentSite] . self::TRAILERURL . $movieid;
-		} else {
-			return false;
+			$this->_res['trailers']['url'] = $this->_whichSite[$this->_currentSite] . self::TRAILERURL . $movieid;;
+			}
 		}
 
 		return $this->_res;
@@ -143,12 +138,11 @@ class AEBN
 	 */
 	public function covers()
 	{
-		if ($ret = $this->_html->find("img#boxImage, img[itemprop=thumbnailUrl]", 1)) {
+		if ($ret = $this->_html->find("div#md-boxCover, img[itemprop=thumbnailUrl]", 1)) {
 			$ret = trim($ret->src);
 			$this->_res['boxcover'] = str_ireplace("160w.jpg", "xlf.jpg", $ret);
 			$this->_res['backcover'] = str_ireplace("160w.jpg", "xlb.jpg", $ret);
 		}
-
 		return $this->_res;
 	}
 
@@ -262,16 +256,16 @@ class AEBN
 				foreach ($this->_html->find("div.movie") as $movie) {
 					$string = "a#FTSMovieSearch_link_title_detail_" . $i;
 					if ($ret = $movie->find($string, 0)) {
-						$title = trim($ret->title);
-						$title = preg_replace('/XXX/', '', $title);
+						$title = preg_replace('/XXX/', '', $ret->title);
 						$title = preg_replace('/\(.*?\)|[-._]/i', ' ', $title);
-						similar_text($this->searchTerm, $title, $p);
+						$title = trim($title);
+						similar_text(strtolower($this->searchTerm), strtolower($title), $p);
 						if ($p >= 90) {
 							$this->_title = trim($ret->title);
 							$this->_trailUrl = $ret->href;
 							$this->_directUrl = $this->_whichSite[$this->_currentSite] . $this->_trailUrl;
 							$this->getUrl(false, $this->_currentSite);
-							break;
+							return true;
 						} else {
 							continue;
 						}
@@ -361,6 +355,7 @@ class AEBN
 			curl_setopt($ch, CURLOPT_COOKIEJAR, $this->cookie);
 			curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookie);
 		}
+		curl_setopt_array($ch, nzedb\utility\Utility::curlSslContextOptions());
 		$this->_response = curl_exec($ch);
 		if (!$this->_response) {
 			curl_close($ch);

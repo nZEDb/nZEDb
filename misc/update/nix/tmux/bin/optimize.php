@@ -22,7 +22,7 @@ if (command_exist('php5')) {
 }
 
 if (isset($argv[1])) {
-	$tmux = new Tmux();
+	$tmux = new \Tmux();
 	$restart = false;
 	if ($argv[1] === 'true') {
 		$restart = $tmux->isRunning();

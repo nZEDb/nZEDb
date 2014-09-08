@@ -175,13 +175,13 @@ class NZB
 
 			$collections = $this->pdo->queryDirect($this->_collectionsQuery . $relID);
 
-			if ($collections instanceof Traversable) {
+			if ($collections instanceof \Traversable) {
 
 				foreach ($collections as $collection) {
 					$poster = htmlspecialchars($collection['fromname'], ENT_QUOTES, 'utf-8');
 					$binaries = $this->pdo->queryDirect(sprintf($this->_binariesQuery, $collection['id']));
 
-					if ($binaries instanceof Traversable) {
+					if ($binaries instanceof \Traversable) {
 
 						foreach ($binaries as $binary) {
 
@@ -190,7 +190,7 @@ class NZB
 
 							$parts = $this->pdo->queryDirect(sprintf($this->_partsQuery, $binary['id']));
 
-							if ($parts instanceof Traversable) {
+							if ($parts instanceof \Traversable) {
 
 								foreach ($parts as $part) {
 									if ($nzb_guid === '') {
@@ -224,7 +224,7 @@ class NZB
 				$this->pdo->queryExec(
 					sprintf('
 						UPDATE releases SET nzbstatus = %d %s WHERE id = %d',
-						NZB::NZB_ADDED,
+						\NZB::NZB_ADDED,
 						($nzb_guid === '' ? '' : ', nzb_guid = ' . $this->pdo->escapestring(md5($nzb_guid))),
 						$relID
 					)

@@ -97,7 +97,7 @@ Class Sharing
 			return;
 		}
 
-		$this->nntp = ($options['NNTP'] instanceof NNTP ? $options['NNTP'] : new NNTP(['Settings' => $this->pdo]));
+		$this->nntp = ($options['NNTP'] instanceof \NNTP ? $options['NNTP'] : new \NNTP(['Settings' => $this->pdo]));
 
 		// Cache sharing settings.
 		$this->siteSettings = $check;
@@ -292,7 +292,7 @@ Class Sharing
 		$siteTimes = $this->pdo->queryDirect(
 			'SELECT createddate, siteid FROM releasecomment WHERE createddate > \'2005-01-01\' GROUP BY siteid ORDER BY createddate ASC'
 		);
-		if ($siteTimes instanceof Traversable && $siteTimes->rowCount()) {
+		if ($siteTimes instanceof \Traversable && $siteTimes->rowCount()) {
 			foreach ($siteTimes as $site) {
 				$this->pdo->queryExec(
 					sprintf(

@@ -12,9 +12,9 @@ class IAFD {
 	public $title = "";
 
 	const ADE = "Adult DVD Empire";
+	const ADM = "AdultDVDMarketplace";
 	const IAFDSEARCHURL = "http://www.iafd.com/results.asp?searchtype=title&searchstring=";
 	const IAFDURL = "http://www.iafd.com";
-	const HM = "Hot Movies";
 
 	protected $_dvdFound = false;
 	protected $_doSearch = false;
@@ -61,14 +61,16 @@ class IAFD {
 									$this->_dvdFound = false;
 									break;
 								}
-								if ($compare === self::HM && !empty($compare)) {
-									$this->classUsed = "hm";
+								if ($compare === self::ADM && !empty($compare)) {
+									$this->classUsed = "adm";
 									$this->_getRedirect = self::IAFDURL . trim($alink->href);
 									$this->directUrl = $this->getUrl();
-									$this->directUrl = preg_replace('/\?(.*)/', '', $this->directUrl);
-									$this->directUrl = false;
+									$this->directUrl = preg_replace('/\?(.*)/',
+																	'',
+																	$this->directUrl);
+									$this->_dvdFound = false;
 									break;
-							}
+								}
 					}
 				}
 		}
@@ -113,12 +115,12 @@ class IAFD {
 					$secondtitle = preg_replace('/\(([0-9]+)\)/', "", $secondtitle);
 					$secondtitle = preg_replace('/XXX/', '', $secondtitle);
 					$secondtitle = preg_replace('/\(.*?\)|[-._]/i', ' ', $secondtitle);
-					similar_text($this->searchTerm, trim($firsttitle), $p);
+					similar_text(strtolower($this->searchTerm), strtolower(trim($firsttitle)), $p);
 					if ($p >= 90) {
 						$this->title = trim($firsttitle);
 						return true;
 					} else {
-						similar_text($this->searchTerm, trim($secondtitle), $p);
+						similar_text(strtolower($this->searchTerm), strtolower(trim($secondtitle)), $p);
 						if($p >= 90) {
 							$this->title = trim($secondtitle);
 							return true;
@@ -140,10 +142,10 @@ class IAFD {
 		if ($this->_doSearch === true) {
 			$ch = curl_init(self::IAFDSEARCHURL . urlencode($this->searchTerm));
 		} else {
-			if(empty($this->_getRedirect)){
-			$ch = curl_init(self::IAFDURL);
-			}else{
-			$ch = curl_init($this->_getRedirect);
+			if (empty($this->_getRedirect)){
+				$ch = curl_init(self::IAFDURL);
+			} else {
+				$ch = curl_init($this->_getRedirect);
 			}
 		}
 
@@ -157,10 +159,11 @@ class IAFD {
 			curl_setopt($ch, CURLOPT_COOKIEJAR, $this->cookie);
 			curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookie);
 		}
+		curl_setopt_array($ch, nzedb\utility\Utility::curlSslContextOptions());
 		$this->_response = curl_exec($ch);
 		if(!empty($this->_getRedirect)){
-		$this->_getRedirect = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
-		curl_close($ch);
+			$this->_getRedirect = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+			curl_close($ch);
 			return $this->_getRedirect;
 		}
 		if (!$this->_response) {
@@ -170,8 +173,8 @@ class IAFD {
 		}
 		curl_close($ch);
 		if($this->_doSearch === true){
-		$this->_html->load($this->_response);
-		$this->_doSearch = false;
+			$this->_html->load($this->_response);
+			$this->_doSearch = false;
 		}
 		return true;
 	}

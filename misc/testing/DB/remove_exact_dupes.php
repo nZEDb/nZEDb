@@ -16,11 +16,11 @@ if ($argc < 3 || !isset($argv[1]) || (isset($argv[1]) && !is_numeric($argv[1])))
 }
 
 $crosspostt = $argv[1];
-$releases = new Releases(['Settings' => $pdo]);
+$releases = new \Releases(['Settings' => $pdo]);
 $count = $total = $all = 0;
-$nzb = new NZB($pdo);
-$ri = new ReleaseImage($pdo);
-$consoleTools = new ConsoleTools(['ColorCLI' => $pdo->log]);
+$nzb = new \NZB($pdo);
+$ri = new \ReleaseImage($pdo);
+$consoleTools = new \ConsoleTools(['ColorCLI' => $pdo->log]);
 $size = ' size ';
 if ($argv[2] === 'near') {
 	$size = ' size between (size *.99) AND (size * 1.01) ';
@@ -34,7 +34,7 @@ if ($crosspostt != 0) {
 
 do {
 	$resrel = $pdo->queryDirect($query);
-	if ($resrel instanceof Traversable) {
+	if ($resrel instanceof \Traversable) {
 		$total = $resrel->rowCount();
 		echo $pdo->log->header(number_format($total) . " Releases have Duplicates");
 		foreach ($resrel as $rowrel) {

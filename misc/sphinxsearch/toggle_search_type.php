@@ -10,14 +10,14 @@ if (!isset($argv[1]) || !in_array($argv[1], ['sphinx', 'standard'])) {
 
 switch ($argv[1]) {
 	case 'sphinx':
-		if (nZEDb_RELEASE_SEARCH_TYPE == ReleaseSearch::SPHINX) {
-			optimizeForSphinx(new nzedb\db\DB());
+		if (nZEDb_RELEASE_SEARCH_TYPE == \ReleaseSearch::SPHINX) {
+			optimizeForSphinx(new \nzedb\db\DB());
 		} else {
 			echo PHP_EOL . $pdo->log->error('Error, nZEDb_RELEASE_SEARCH_TYPE in www/settings.php must be set to SPHINX to optimize for Sphinx!' . PHP_EOL);
 		}
 		break;
 	case 'standard':
-		revertToStandard(new nzedb\db\DB());
+		revertToStandard(new \nzedb\db\DB());
 		break;
 }
 

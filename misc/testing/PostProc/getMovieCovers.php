@@ -6,10 +6,10 @@ use nzedb\db\Settings;
 
 $pdo = new Settings();
 
-$movie = new Movie(array('Echo' => true, 'Settings' => $pdo));
+$movie = new \Movie(array('Echo' => true, 'Settings' => $pdo));
 
 $movies = $pdo->queryDirect("SELECT imdbid FROM movieinfo WHERE cover = 0 ORDER BY year ASC, id DESC");
-if ($movies instanceof Traversable) {
+if ($movies instanceof \Traversable) {
 	echo $pdo->log->primary("Updating " . number_format($movies->rowCount()) . " movie covers.");
 	foreach ($movies as $mov) {
 		$starttime = microtime(true);

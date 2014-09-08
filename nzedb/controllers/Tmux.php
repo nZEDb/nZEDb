@@ -9,6 +9,8 @@ class Tmux
 	 */
 	public $pdo;
 
+	public $tmux_session;
+
 	function __construct(Settings $pdo = null)
 	{
 		$this->pdo = (empty($pdo) ? new Settings() : $pdo);
@@ -43,12 +45,7 @@ class Tmux
 		$pdo = $this->pdo;
 		$where = ($setting !== '' ? sprintf('WHERE setting = %s', $pdo->escapeString($setting)) : '');
 
-		$rows = $pdo->query(
-					sprintf(
-						"SELECT * FROM tmux %s",
-						$where
-					)
-		);
+		$rows = $pdo->query(sprintf("SELECT * FROM tmux %s", $where));
 
 		if ($rows === false) {
 			return false;
@@ -386,7 +383,7 @@ class Tmux
 					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid IN (%s) AND bookinfoid IS NULL) AS processbooks,
 					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid = 4050 AND gamesinfo_id = 0) AS processgames,
 					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 6000 AND 6040 AND xxxinfo_id = 0) AS processxxx,
-					(SELECT COUNT(*) FROM releases r WHERE 1=1 %s) AS processnfo", $bookreqids, Nfo::NfoQueryString($this->pdo));
+					(SELECT COUNT(*) FROM releases r WHERE 1=1 %s) AS processnfo", $bookreqids, \Nfo::NfoQueryString($this->pdo));
 			case 2:
 				return "SELECT
 					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND nfostatus = 1) AS nfo,

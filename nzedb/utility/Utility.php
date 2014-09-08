@@ -270,6 +270,160 @@ class Utility
 		// Return the string.
 		return ($string === '' ? false : $string);
 	}
+
+	/**
+	 * Creates an array to be used with stream_context_create() to verify openssl certificates
+	 * when connecting to a tls or ssl connection when using stream functions (fopen/file_get_contents/etc).
+	 *
+	 * @param bool $forceIgnore Force ignoring of verification.
+	 *
+	 * @return array
+	 * @static
+	 * @access public
+	 */
+	static public function streamSslContextOptions($forceIgnore = false)
+	{
+		$options = [
+			'verify_peer'       => ($forceIgnore ? false : (bool)nZEDb_SSL_VERIFY_PEER),
+			'verify_peer_name'  => ($forceIgnore ? false : (bool)nZEDb_SSL_VERIFY_HOST),
+			'allow_self_signed' => ($forceIgnore ? true : (bool)nZEDb_SSL_ALLOW_SELF_SIGNED),
+		];
+		if (nZEDb_SSL_CAFILE) {
+			$options['cafile'] = nZEDb_SSL_CAFILE;
+		}
+		if (nZEDb_SSL_CAPATH) {
+			$options['capath'] = nZEDb_SSL_CAPATH;
+		}
+		// If we set the transport to tls and the server falls back to ssl,
+		// the context options would be for tls and would not apply to ssl,
+		// so set both tls and ssl context in case the server does not support tls.
+		return ['tls' => $options, 'ssl' => $options];
+	}
+
+	/**
+	 * Set curl context options for verifying SSL certificates.
+	 *
+	 * @param bool $verify false = Ignore config.php and do not verify the openssl cert.
+	 *                     true  = Check config.php and verify based on those settings.
+	 *                     If you know the certificate will be self-signed, pass false.
+	 *
+	 * @return array
+	 * @static
+	 * @access public
+	 */
+	static public function curlSslContextOptions($verify = true)
+	{
+		$options = [];
+		if ($verify && nZEDb_SSL_VERIFY_HOST) {
+			$options += [
+				CURLOPT_CAINFO         => nZEDb_SSL_CAFILE,
+				CURLOPT_CAPATH         => nZEDb_SSL_CAPATH,
+				CURLOPT_SSL_VERIFYPEER => (bool)nZEDb_SSL_VERIFY_PEER,
+				CURLOPT_SSL_VERIFYHOST => (nZEDb_SSL_VERIFY_HOST ? 2 : 0),
+			];
+		} else {
+			$options += [
+				CURLOPT_SSL_VERIFYPEER => false,
+				CURLOPT_SSL_VERIFYHOST => 0,
+			];
+		}
+		return $options;
+	}
+
+	/**
+	 * Use cURL To download a web page into a string.
+	 *
+	 * @param array $options See details below.
+	 *
+	 * @return bool|mixed
+	 * @access public
+	 * @static
+	 */
+	public static function getUrl(array $options = [])
+	{
+		$defaults = [
+			'url'        => '',    // The URL to download.
+			'method'     => 'get', // Http method, get/post/etc..
+			'postdata'   => '',    // Data to send on post method.
+			'language'   => '',    // Language in header string.
+			'debug'      => false, // Show curl debug information.
+			'useragent'  => '',    // User agent string.
+			'cookie'     => '',    // Cookie string.
+			'verifycert' => true,  /* Verify certificate authenticity?
+									  Since curl does not have a verify self signed certs option,
+									  you should use this instead if your cert is self signed. */
+		];
+
+		$options += $defaults;
+
+		if (!$options['url']) {
+			return false;
+		}
+
+		switch ($options['language']) {
+			case 'fr':
+			case 'fr-fr':
+				$language = "fr-fr";
+				break;
+			case 'de':
+			case 'de-de':
+				$language = "de-de";
+				break;
+			case 'en-us':
+				$language = "en-us";
+				break;
+			case 'en-gb':
+				$language = "en-gb";
+				break;
+			case '':
+			case 'en':
+			default:
+				$language = 'en';
+		}
+		$header[] = "Accept-Language: " . $language;
+
+		$ch = curl_init();
+
+		$context = [
+			CURLOPT_URL            => $options['url'],
+			CURLOPT_HTTPHEADER     => $header,
+			CURLOPT_RETURNTRANSFER => 1,
+			CURLOPT_FOLLOWLOCATION => 1,
+			CURLOPT_TIMEOUT        => 15
+		];
+		$context += self::curlSslContextOptions($options['verifycert']);
+		if ($options['useragent'] !== '') {
+			$context += [CURLOPT_USERAGENT => $options['useragent']];
+		}
+		if ($options['cookie'] !== '') {
+			$context += [CURLOPT_COOKIE => $options['cookie']];
+		}
+		if ($options['method'] === 'post') {
+			$context += [
+				CURLOPT_POST       => 1,
+				CURLOPT_POSTFIELDS => $options['postdata']
+			];
+		}
+		if ($options['debug']) {
+			$context += [
+				CURLOPT_HEADER      => true,
+				CURLINFO_HEADER_OUT => true,
+				CURLOPT_NOPROGRESS  => false,
+				CURLOPT_VERBOSE     => true
+			];
+		}
+		curl_setopt_array($ch, $context);
+
+		$buffer = curl_exec($ch);
+		$err    = curl_errno($ch);
+		curl_close($ch);
+
+		if ($err !== 0) {
+			return false;
+		} else {
+			return $buffer;
+		}
+	}
 }
 
 /**
@@ -285,7 +439,7 @@ function bytesToSizeString ($bytes, $precision = 0)
 	if ($bytes == 0) {
 		return '0B';
 	}
-	$unit = array('B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB');
+	$unit = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB'];
 
 	return round($bytes / pow(1024, ($index = floor(log($bytes, 1024)))), $precision) . $unit[(int)$index];
 }
@@ -700,94 +854,6 @@ function cp437toUTF ($str)
 }
 
 /**
- * Use cURL To download a web page into a string.
- *
- * @param string $url       The URL to download.
- * @param string $method    get/post
- * @param string $postdata  If using POST, post your POST data here.
- * @param string $language  Use alternate langauge in header.
- * @param bool   $debug     Show debug info.
- * @param string $userAgent User agent.
- * @param string $cookie    Cookie.
- *
- * @return bool|mixed
- */
-function getUrl ($url, $method = 'get', $postdata = '', $language = "", $debug = false,
-				 $userAgent = '', $cookie = '')
-{
-	switch ($language) {
-		case 'fr':
-		case 'fr-fr':
-			$language = "fr-fr";
-			break;
-		case 'de':
-		case 'de-de':
-			$language = "de-de";
-			break;
-		case 'en-us':
-			$language = "en-us";
-			break;
-		case 'en-gb':
-			$language = "en-gb";
-			break;
-		case '':
-		case 'en':
-		default:
-			$language = 'en';
-	}
-	$header[] = "Accept-Language: " . $language;
-
-	$ch      = curl_init();
-	$options = array(
-		CURLOPT_URL            => $url,
-		CURLOPT_HTTPHEADER     => $header,
-		CURLOPT_RETURNTRANSFER => 1,
-		CURLOPT_FOLLOWLOCATION => 1,
-		CURLOPT_TIMEOUT        => 15,
-		CURLOPT_SSL_VERIFYPEER => false,
-		CURLOPT_SSL_VERIFYHOST => false,
-	);
-	curl_setopt_array($ch, $options);
-
-	if ($userAgent !== '') {
-		curl_setopt($ch, CURLOPT_USERAGENT, $userAgent);
-	}
-
-	if ($cookie !== '') {
-		curl_setopt($ch, CURLOPT_COOKIE, $cookie);
-	}
-
-	if ($method === 'post') {
-		$options = array(
-			CURLOPT_POST       => 1,
-			CURLOPT_POSTFIELDS => $postdata
-		);
-		curl_setopt_array($ch, $options);
-	}
-
-	if ($debug) {
-		$options =
-			array(
-				CURLOPT_HEADER      => true,
-				CURLINFO_HEADER_OUT => true,
-				CURLOPT_NOPROGRESS  => false,
-				CURLOPT_VERBOSE     => true
-			);
-		curl_setopt_array($ch, $options);
-	}
-
-	$buffer = curl_exec($ch);
-	$err    = curl_errno($ch);
-	curl_close($ch);
-
-	if ($err !== 0) {
-		return false;
-	} else {
-		return $buffer;
-	}
-}
-
-/**
  * Fetches an embeddable video to a IMDB trailer from http://www.traileraddict.com
  *
  * @param $imdbID
@@ -796,7 +862,7 @@ function getUrl ($url, $method = 'get', $postdata = '', $language = "", $debug =
  */
 function imdb_trailers($imdbID)
 {
-	$xml = getUrl('http://api.traileraddict.com/?imdb=' . $imdbID);
+	$xml = Utility::getUrl(['url' => 'http://api.traileraddict.com/?imdb=' . $imdbID]);
 	if ($xml !== false) {
 		if (preg_match('/(<iframe.+?<\/iframe>)/i', $xml, $html)) {
 			return $html[1];
