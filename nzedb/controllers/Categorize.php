@@ -411,6 +411,7 @@ class Categorize extends Category
 				case $group === 'alt.binaries.warez':
 					switch (true) {
 						case $this->isTV():
+						case $this->isMovie():
 						case $this->isPC():
 						case $this->isConsole():
 							break;
@@ -662,6 +663,12 @@ class Categorize extends Category
 		if (preg_match('/720p|1080p|AVC|VC1|VC\-1|web\-dl|wmvhd|x264|XvidHD|bdrip/i', $this->releaseName)) {
 			$this->tmpCat = \Category::CAT_MOVIE_HD;
 			return true;
+		}
+		if ($this->catWebDL == false) {
+			if (preg_match('/web[-._ ]dl|web-?rip/i', $this->releaseName)) {
+				$this->tmpCat = \Category::CAT_MOVIE_HD;
+				return true;
+			}
 		}
 		return false;
 	}
@@ -1064,7 +1071,7 @@ class Categorize extends Category
 	{
 		switch (true) {
 			//They Knew What They Wanted (1940).480p.DVDRIP.MP3-NoGroup -- prevents movies matches with MP3 audio codec in the title
-			case preg_match('/\d{3,4}(p|i)\.DVD(RIP)?\.MP3[-\.].*/i', $this->releaseName):
+			case preg_match('/\d{3,4}(p|i)\.DVD(RIP)?\.MP3[-\.].*|WEB(-DL|-?RIP)/i', $this->releaseName):
 				return false;
 			case $this->isMusicVideo():
 			case $this->isAudiobook():
@@ -1076,6 +1083,7 @@ class Categorize extends Category
 				return false;
 		}
 	}
+
 	public function isMusicForeign()
 	{
 		if ($this->categorizeForeign) {
