@@ -95,6 +95,7 @@ if (is_file(__DIR__ . DS . 'settings.php')) {
 	define('nZEDb_FLOOD_WAIT_TIME', 5);
 	define('nZEDb_FLOOD_MAX_REQUESTS_PER_SECOND', 5);
 	define('nZEDb_USE_SQL_TRANSACTIONS', true);
+	define('nZEDb_RELEASE_SEARCH_TYPE', 0);
 }
 
 require_once nZEDb_CORE . 'autoloader.php';
