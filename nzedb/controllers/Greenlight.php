@@ -116,7 +116,7 @@ class Greenlight
 	 */
 	public function details()
 	{
-		if ($ret = $this->_html->find("div.workshopTags", 0)) {
+		if ($this->_html->find("div.workshopTags", 0)) {
 			foreach ($this->_html->find("div.workshopTags") as $detail) {
 				if ($ret = $detail->find("span.workshopTagsTitle", 0)) {
 					$ret2 = trim($ret->next_sibling()->innertext);
