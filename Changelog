@@ -4,6 +4,8 @@ No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
 2014-09-08 bart39
+	* Fix: Namespace issue.
+2014-09-08 bart39
 	* Add: Add python safe binaries / backfill scripts to multiprocessing.
 	* Add: Added fixrelnames to multiprocessing.
 	* Add: Added all multiprocessing examples / options to threaded.sh (copy to user_threaded.sh).
