@@ -384,9 +384,7 @@ class AniDB
 		if ((time() - (int)$this->lastUpdate) > ((int)$this->updateInterval * 86400)) {
 
 			if ($this->echooutput) {
-				echo $this->pdo->log->header(PHP_EOL .
-											 "Updating anime titles by grabbing full data AniDB dump." .
-											 PHP_EOL);
+				echo $this->pdo->log->header("Updating anime titles by grabbing full data AniDB dump.");
 			}
 
 			$animetitles = new \SimpleXMLElement("compress.zlib://http://anidb.net/api/anime-titles.xml.gz", null, true);
