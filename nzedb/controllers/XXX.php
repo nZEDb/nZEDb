@@ -14,7 +14,7 @@ class XXX
 	public $pdo;
 
 	/**
-	 * We used AdultDVDEmpire or PopPorn class -- used for template and trailer information
+	 * What scraper class did we use -- used for template and trailer information
 	 *
 	 * @var string
 	 */
@@ -543,7 +543,7 @@ class XXX
 	public function processXXXReleases()
 	{
 
-		// Get all releases without an IMpdo id.
+		// Get all releases without an xxxinfo id.
 		$res = $this->pdo->query(
 			sprintf("
 				SELECT r.searchname, r.id
