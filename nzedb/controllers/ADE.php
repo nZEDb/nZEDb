@@ -197,19 +197,23 @@ class ADE
 		$categories = null;
 		$this->_tmpResponse = str_ireplace("Section Categories", "scat", $this->_response);
 		$this->_edithtml->load($this->_tmpResponse);
-		if($ret = $this->_edithtml->find("div[class=scat]", 0)){
-		$this->_tmpResponse = trim($ret->outertext);
-		$ret = $this->_edithtml->load($this->_tmpResponse);
+		if ($ret = $this->_edithtml->find("div[class=scat]", 0)) {
+			$this->_tmpResponse = trim($ret->outertext);
+			$ret = $this->_edithtml->load($this->_tmpResponse);
 
-		foreach ($ret->find("p, a") as $categories) {
-			$categories = trim($categories->plaintext);
-			if (stristr($categories, ",")) {
-				$categories = explode(",", $categories);
-				break;
+			foreach ($ret->find("p, a") as $categories) {
+				$categories = trim($categories->plaintext);
+				if (stristr($categories, ",")) {
+					$categories = explode(",", $categories);
+					break;
+				}
 			}
-		}
-		$categories = array_map('trim', $categories);
-		$this->_res['genres'] = $categories;
+			if (is_array($categories)) {
+				$categories = array_map('trim', $categories);
+			} else {
+				$categories = trim($categories);
+			}
+			$this->_res['genres'] = array_unique($categories);
 		}
 		$this->_edithtml->clear();
 		unset($this->_tmpResponse);
