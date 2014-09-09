@@ -170,7 +170,7 @@ class AniDB
 		return $this->pdo->queryOneRow(
 						sprintf("
 							SELECT at.anidbid, at.title
-							FROM anidb_titles at
+							FROM anidb_titles AS at
 							WHERE at.title %s",
 							$this->pdo->likeString($searchName, true, true)
 						)
