@@ -2291,7 +2291,7 @@ class CollectionsCleaning
 	protected function multimedia_anime_highspeed()
 	{
 		//High School DxD New 01 (480p|.avi|xvid|mp3) ~bY Hatsuyuki [01/18] - "[Hatsuyuki]_High_School_DxD_New_01_[848x480][76B2BB8C].avi.001" yEnc
-		if (preg_match('/(.+? \((360|480|720|1080)p\|.+? ~bY .+? \[)\d+\/\d+\] - ".+?\[[A-F0-9]+\].+?' . $this->e1, $this->subject, $match)) {
+		if (preg_match('#(.+? \((360|480|720|1080)p\|.+?\s*~bY\s*.+?\s*\[)\d+\/\d+\]\s*-\s*".+?\[[A-Z0-9\[\]\.]+.*#' . $this->e1, $this->subject, $match)) {
 			return $match[2];
 		}
 		return $this->generic();
