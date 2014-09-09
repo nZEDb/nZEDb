@@ -380,7 +380,15 @@ class Games
 		if($this->_getGame->search() !== false){
 			$this->_gameResults = $this->_getGame->getAll();
 		}
-
+		if (count($this->_gameResults) < 1) {
+			$this->_getGame = new \Desura();
+			$this->_classUsed = "desura";
+			$this->_getGame->cookie = $this->cookie;
+			$this->_getGame->searchTerm = $gameInfo['title'];
+			if ($this->_getGame->search() !== false) {
+				$this->_gameResults = $this->_getGame->getAll();
+			}
+		}
 		if (count($this->_gameResults) < 1) {
 			$this->_getGame = new \Greenlight();
 			$this->_classUsed = "gl";
@@ -400,10 +408,59 @@ class Games
 		if(!is_array($this->_gameResults)){
 			return false;
 		}
-
+		var_dump($this->_gameResults);
 		if (count($this->_gameResults) > 1) {
 
 			switch ($this->_classUsed) {
+
+				case "desura":
+					if (isset($this->_gameResults['cover'])) {
+						$con['coverurl'] = (string)$this->_gameResults['cover'];
+					}
+
+					if (isset($this->_gameResults['backdrop'])) {
+						$con['backdropurl'] = (string)$this->_gameResults['backdrop'];
+					}
+
+					$con['title'] = (string)$this->_gameResults['title'];
+					$con['asin'] = $this->_gameResults['desuragameid'];
+					$con['url'] = (string)$this->_gameResults['directurl'];
+
+					if (isset($this->_gameResults['gamedetails']['Publisher'])) {
+						$con['publisher'] = (string)$this->_gameResults['gamedetails']['Publisher'];
+					} else {
+						$con['publisher'] = "Unknown";
+					}
+
+					if (isset($this->_gameResults['rating'])) {
+						$con['esrb'] = (string)$this->_gameResults['rating'];
+					} else {
+						$con['esrb'] = "Not Rated";
+					}
+
+					if (isset($this->_gameResults['description'])) {
+						$con['review'] = trim(strip_tags((string)$this->_gameResults['description']));
+					}
+
+					if (isset($this->_gameResults['trailer'])) {
+						$con['trailer'] = (string)$this->_gameResults['trailer'];
+					}
+
+					$genreName = '';
+					if (empty($genreName) && isset($this->_gameResults['gamedetails']['Genre'])) {
+						$a = (string)$this->_gameResults['gamedetails']['Genre'];
+						$b = str_replace('-', ' ', $a);
+						$tmpGenre = explode(',', $b);
+						foreach ($tmpGenre as $tg) {
+							$genreMatch = $this->matchBrowseNode(ucwords($tg));
+							if ($genreMatch !== false) {
+								$genreName = (string)$genreMatch;
+								break;
+							}
+						}
+					}
+
+					break;
 
 				case "gb":
 					$con['coverurl'] = (string)$this->_gameResults['image']['super_url'];
@@ -444,6 +501,43 @@ class Games
 						}
 					}
 					break;
+				case "gl":
+					if (isset($this->_gameResults['cover'])) {
+						$con['coverurl'] = (string)$this->_gameResults['cover'];
+					}
+
+					if (isset($this->_gameResults['backdrop'])) {
+						$con['backdropurl'] = (string)$this->_gameResults['backdrop'];
+					}
+
+					$con['title'] = (string)$this->_gameResults['title'];
+					$con['asin'] = $this->_gameResults['greenlightgameid'];
+					$con['url'] = (string)$this->_gameResults['directurl'];
+					$con['publisher'] = "Unknown";
+					$con['esrb'] = "Not Rated";
+
+					if (isset($this->_gameResults['description'])) {
+						$con['review'] = trim(strip_tags((string)$this->_gameResults['description']));
+					}
+
+					if (isset($this->_gameResults['trailer'])) {
+						$con['trailer'] = (string)$this->_gameResults['trailer'];
+					}
+
+					$genreName = '';
+					if (empty($genreName) && isset($this->_gameResults['gamedetails']['Genre'])) {
+						$a = (string)$this->_gameResults['gamedetails']['Genre'];
+						$b = str_replace('-', ' ', $a);
+						$tmpGenre = explode(',', $b);
+						foreach ($tmpGenre as $tg) {
+							$genreMatch = $this->matchBrowseNode(ucwords($tg));
+							if ($genreMatch !== false) {
+								$genreName = (string)$genreMatch;
+								break;
+							}
+						}
+					}
+					break;
 				case "steam":
 					if (isset($this->_gameResults['cover'])) {
 						$con['coverurl'] = (string)$this->_gameResults['cover'];
@@ -470,47 +564,10 @@ class Games
 					}
 
 					if (!empty($this->_gameResults['gamedetails']['Release Date'])) {
-						$date = \DateTime::createFromFormat('j M Y', $this->_gameResults['gamedetails']['Release Date']);
+						$date = \DateTime::createFromFormat('j M Y',
+															$this->_gameResults['gamedetails']['Release Date']);
 						$con['releasedate'] = $this->pdo->escapeString((string)$date->format('Y-m-d'));
 					}
-
-					if (isset($this->_gameResults['description'])) {
-						$con['review'] = trim(strip_tags((string)$this->_gameResults['description']));
-					}
-
-					if(isset($this->_gameResults['trailer'])){
-						$con['trailer'] = (string)$this->_gameResults['trailer'];
-					}
-
-					$genreName = '';
-					if (empty($genreName) && isset($this->_gameResults['gamedetails']['Genre'])) {
-						$a = (string)$this->_gameResults['gamedetails']['Genre'];
-						$b = str_replace('-', ' ', $a);
-						$tmpGenre = explode(',', $b);
-						foreach ($tmpGenre as $tg) {
-							$genreMatch = $this->matchBrowseNode(ucwords($tg));
-							if ($genreMatch !== false) {
-								$genreName = (string)$genreMatch;
-								break;
-							}
-						}
-					}
-
-					break;
-				case "gl":
-					if (isset($this->_gameResults['cover'])) {
-						$con['coverurl'] = (string)$this->_gameResults['cover'];
-					}
-
-					if (isset($this->_gameResults['backdrop'])) {
-						$con['backdropurl'] = (string)$this->_gameResults['backdrop'];
-					}
-
-					$con['title'] = (string)$this->_gameResults['title'];
-					$con['asin'] = $this->_gameResults['greenlightgameid'];
-					$con['url'] = (string)$this->_gameResults['directurl'];
-					$con['publisher'] = "Unknown";
-					$con['esrb'] = "Not Rated";
 
 					if (isset($this->_gameResults['description'])) {
 						$con['review'] = trim(strip_tags((string)$this->_gameResults['description']));
@@ -856,6 +913,8 @@ class Games
 			$result['title'] = preg_replace('/(brazilian|chinese|croatian|danish|deutsch|dutch|english|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|latin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish)$/i', '', $result['title']);
 			// Remove PC ISO) ( from the beginning bad regex from Games category?
 			$result['title'] = preg_replace('/^(PC\sISO\)\s\()/i', '', $result['title']);
+			// Finally remove multiple spaces and trim leading spaces.
+			$result['title'] = trim(preg_replace('/\s{2,}/', ' ', $result['title']));
 			// Needed to add code to handle DLC Properly.
 			if (stripos($result['title'], 'dlc') !== false) {
 				$result['dlc'] = '1';
