@@ -214,7 +214,7 @@ switch ($options[1]) {
 			collectionCheck($pdo, $options[2]);
 
 			// Create releases.
-			processReleases(new \ProcessReleases(['Settings' => $pdo]), $options[2]);
+			processReleases(new \nzedb\processing\ProcessReleases(['Settings' => $pdo]), $options[2]);
 
 			// Post process the releases.
 			(new \nzedb\processing\post\ProcessAdditional(['Echo' => true, 'NNTP' => $nntp, 'Settings' => $pdo]))->start($options[2]);
@@ -269,7 +269,7 @@ switch ($options[1]) {
 /**
  * Create / process releases for a groupID.
  *
- * @param ProcessReleases $releases
+ * @param \nzedb\processing\ProcessReleases $releases
  * @param int             $groupID
  */
 function processReleases($releases, $groupID)
