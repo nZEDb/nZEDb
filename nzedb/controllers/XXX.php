@@ -573,7 +573,7 @@ class XXX
 					$this->pdo->log->doEcho("DB name: " . $arr['searchname'], true);
 				}
 				if ($this->parseXXXSearchName($arr['searchname']) !== false) {
-
+				if ($check = $this->checkXXXInfoExists($this->currentTitle) === false){
 					$this->currentRelID = $arr['id'];
 					$movieName = $this->currentTitle;
 
@@ -582,6 +582,9 @@ class XXX
 					}
 
 					$idcheck = $this->updateXXXInfo($movieName);
+				}else{
+				$idcheck = (int)$check['id'];
+				}
 				} else {
 					$this->pdo->log->doEcho(".", true);
 				}
@@ -591,6 +594,18 @@ class XXX
 		} elseif ($this->echooutput) {
 			$this->pdo->log->doEcho($this->pdo->log->header('No xxx releases to process.'));
 		}
+	}
+
+	/**
+	 * Checks xxxinfo to make sure releases doesn't exist
+	 *
+	 * @param $releaseName
+	 *
+	 * @return array|bool
+	 */
+	protected function checkXXXInfoExists($releaseName)
+	{
+		return $this->pdo->queryOneRow(sprintf("SELECT id, title FROM xxxinfo WHERE title LIKE %s", "'%". $releaseName . "%'"));
 	}
 
 	/**
