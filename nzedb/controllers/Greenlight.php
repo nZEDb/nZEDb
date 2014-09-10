@@ -230,14 +230,14 @@ class Greenlight
 	/**
 	 * Gets the raw html to parse
 	 *
-	 * @param null $fetchurl
+	 * @param string $fetchurl
 	 * @param bool $usepost
 	 *
 	 * @return bool
 	 */
-	private function getUrl($fetchurl = null, $usepost = false)
+	private function getUrl($fetchurl = "", $usepost = false)
 	{
-		if (isset($fetchurl)) {
+		if (!empty($fetchurl)) {
 			$this->_ch = curl_init($fetchurl);
 		}
 		if ($usepost === true) {
