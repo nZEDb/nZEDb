@@ -3,7 +3,9 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
-2014-09-08 bart39
+2014-09-09 DariusIII
+	* Upd: Updated codecposter removal with german, french and dutch variants of txt file.
+2014-09-09 bart39
 	* Fix: Namespace issue.
 2014-09-08 bart39
 	* Add: Add python safe binaries / backfill scripts to multiprocessing.
