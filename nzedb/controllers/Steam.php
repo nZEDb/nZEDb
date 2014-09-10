@@ -2,14 +2,8 @@
 
 require_once nZEDb_LIBS . 'simple_html_dom.php';
 
-Class Steam
+class Steam
 {
-
-	const STEAMURL = "http://store.steampowered.com";
-	const STEAMVARS = "/search/?category1=998&os=win&sort_order=ASC&page=1&term=";
-	const AGECHECKURL = "http://store.steampowered.com/agecheck/app/";
-	const GAMEURL = "http://store.steampowered.com/app/";
-	const CDNURL = "http://cdn.akamai.steamstatic.com/steam/apps/";
 
 	/**
 	 * @var
@@ -21,15 +15,16 @@ Class Steam
 	 */
 	public $searchTerm;
 
+	const AGECHECKURL = "http://store.steampowered.com/agecheck/app/";
+	const CDNURL = "http://cdn.akamai.steamstatic.com/steam/apps/";
+	const GAMEURL = "http://store.steampowered.com/app/";
+	const STEAMURL = "http://store.steampowered.com";
+	const STEAMVARS = "/search/?category1=998&os=win&sort_order=ASC&page=1&term=";
+
 	/**
 	 * @var bool
 	 */
 	protected $_ageCheckSet = false;
-
-	/**
-	 * @var string
-	 */
-	protected $_directURL = '';
 
 	/**
 	 * @var bool
@@ -40,6 +35,11 @@ Class Steam
 	 * @var
 	 */
 	protected $_ch;
+
+	/**
+	 * @var string
+	 */
+	protected $_directURL = '';
 
 	/**
 	 * @var
@@ -363,11 +363,11 @@ Class Steam
 					"ageYear" => "1966"
 				);
 				// Do twice so steam can set a birthtime/lastagecheckage cookie value
-				@$this->getUrl(self::AGECHECKURL . $this->_steamGameID . '/', true);
-				@$this->getUrl(self::AGECHECKURL . $this->_steamGameID . '/', true);
+				$this->getUrl(self::AGECHECKURL . $this->_steamGameID . '/', true);
+				$this->getUrl(self::AGECHECKURL . $this->_steamGameID . '/', true);
 			}
 		}
-		@$this->getUrl(self::GAMEURL . $this->_steamGameID . '/');
+		$this->getUrl(self::GAMEURL . $this->_steamGameID . '/');
 	}
 
 	/**

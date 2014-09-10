@@ -153,7 +153,7 @@
 			{if $game}
 				<tr>
 					<th style="vertical-align:top">PC Game Info:</th>
-					<td><strong>{$game.title|escape:"htmlall"} ({$game.releasedate|date_format:"%Y"})</strong><br>
+					<td><strong>{$game.title|escape:"htmlall"} {if $game.releasedate != ""}({$game.releasedate|date_format:"%Y"}){/if}</strong><br>
 						{if $game.review != ""}<span class="descinitial">{$game.review|escape:"htmlall"|nl2br|magicurl|truncate:"350":" <a class=\"descmore\" href=\"#\">more...</a>"}</span>{if $game.review|strlen > 350}<span class="descfull">{$game.review|escape:"htmlall"|nl2br|magicurl}</span>{/if}<br><br>{/if}
 						{if $game.esrb != ""}<strong>ESRB:</strong> {$game.esrb|escape:"htmlall"}<br>{/if}
 						{if $game.genres != ""}<strong>Genre:</strong> {$game.genres|escape:"htmlall"}<br>{/if}
@@ -167,6 +167,12 @@
 							{/if}
 							{if $game.classused == "steam"}
 								<a target="_blank" href="{$site->dereferrer_link}{$game.url}" title="View game at Steam">Steam</a>
+							{/if}
+							{if $game.classused == "gl"}
+								<a target="_blank" href="{$site->dereferrer_link}{$game.url}" title="View game at Greenlight">Greenlight</a>
+							{/if}
+							{if $game.classused == "desura"}
+								<a target="_blank" href="{$site->dereferrer_link}{$game.url}" title="View game at Desura">Desura</a>
 							{/if}
 							</span>
 						</div>
