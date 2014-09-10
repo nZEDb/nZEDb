@@ -56,7 +56,7 @@ class ReleaseCleaning
 		// Extensions.
 		$this->e0 = \CollectionsCleaning::REGEX_FILE_EXTENSIONS;
 		$this->e1 = \CollectionsCleaning::REGEX_FILE_EXTENSIONS . \CollectionsCleaning::REGEX_END;
-		$this->e2 = \CollectionsCleaning::REGEX_FILE_EXTENSIONS . \CollectionsCleaning::REGEX_SIZE . \CollectionsCleaning::REGEX_END;
+		$this->e2 = \CollectionsCleaning::REGEX_FILE_EXTENSIONS . \CollectionsCleaning::REGEX_SUBJECT_SIZE . \CollectionsCleaning::REGEX_END;
 		$this->pdo = ($settings instanceof Settings ? $settings : new Settings());
 	}
 
@@ -392,28 +392,28 @@ class ReleaseCleaning
 	public function anime()
 	{
 		//([AST] One Piece Episode 301-350 [720p]) [007/340] - "One Piece episode 301-350.part006.rar" yEnc
-		if (preg_match('/^\((\[.+?\]\s*.+?)\)\s*\[\d+\/\d+\]\s*-\s*".+?"\s*yEnc$/', $this->subject, $match)) {
+		if (preg_match('/^\((\[.+?\] .+?)\) \[\d+\/\d+\] - ".+?" yEnc$/', $this->subject, $match)) {
 			return $match[1];
 		} //[REPOST][ New Doraemon 2013.05.03 Episode 328 (TV Asahi) 1080i HDTV MPEG2 AAC-DoraClub.org ] [35/61] - "doraclub.org-doraemon-20130503-b8de1f8e.r32" yEnc
-		if (preg_match('/^\[.+?\]\[\s*(.+?)\s*\]\s*\[\d+\/\d+\]\s*-\s*".+?"\s*yEnc$/', $this->subject, $match)) {
+		if (preg_match('/^\[.+?\]\[ (.+?) \] \[\d+\/\d+\] - ".+?" yEnc$/', $this->subject, $match)) {
 			return $match[1];
 		} //[De.us] Suzumiya Haruhi no Shoushitsu (1920x1080 h.264 Dual-Audio FLAC 10-bit) [017CB24D] [000/357] - "[De.us] Suzumiya Haruhi no Shoushitsu (1920x1080 h.264 Dual-Audio FLAC 10-bit) [017CB24D].nzb" yEnc
-		if (preg_match('/^\[.+?\]\s*(.+?)\s*\[[A-F0-9]+\]\s*\[\d+\/\d+\]\s*-\s*".+?" yEnc$/', $this->subject, $match)) {
+		if (preg_match('/^\[.+?\] (.+?) \[[A-F0-9]+\] \[\d+\/\d+\] - ".+?" yEnc$/', $this->subject, $match)) {
 			return $match[1];
 		} //[eraser] Ghost in the Shell ARISE - border_1 Ghost Pain (BD 720p Hi444PP LC-AAC Stereo) - [01/65] - "[eraser] Ghost in the Shell ARISE - border_1 Ghost Pain (BD 720p Hi444PP LC-AAC Stereo) .md5" yEnc
-		if (preg_match('/^\[.+?\]\s*.+?)\s*-\s*\[\d+\/\d+\]\s*-\s*".+?" yEnc$/', $this->subject, $match)) {
+		if (preg_match('/^\[.+?\] (.+?) - \[\d+\/\d+\] - ".+?" yEnc$/', $this->subject, $match)) {
 			return $match[1];
 		} //(01/27) - Maid.Sama.Jap.dubbed.german.english.subbed - "01 Misaki ist eine Maid!.divx" - 6,44 GB - yEnc
-		if (preg_match('/^\(\d+\/\d+\)\s*-\s*(.+?)\s*-\s*".+?"\s*-\s*\d+[,.]\d+\s*[mMkKgG][bB]\s*-\s*yEnc$/', $this->subject, $match)) {
+		if (preg_match('/^\(\d+\/\d+\) - (.+?) - ".+?" - \d+[,.]\d+ [mMkKgG][bB] - yEnc$/', $this->subject, $match)) {
 			return $match[1];
 		} //[ New Doraemon 2013.06.14 Episode 334 (TV Asahi) 1080i HDTV MPEG2 AAC-DoraClub.org ] [01/60] - "doraclub.org-doraemon-20130614-fae28cec.nfo" yEnc
-		if (preg_match('/^\[\s*(.+?)\s*\]\s*\[\d+\/\d+\]\s*-\s*".+?"\s*yEnc$/', $this->subject, $match)) {
+		if (preg_match('/^\[ (.+?) \] \[\d+\/\d+\] - ".+?" yEnc$/', $this->subject, $match)) {
 			return $match[1];
 		} //Overman King Gainer [Dual audio, EngSub] Exiled Destiny - [002/149] - "Overman King Gainer.part001.rar" yEnc
-		if (preg_match('/^(.+?\s*\[Dual\s*[aA]udio,\s*EngSub\]\s*.+?)\s*-\s*\[\d+\/\d+\]\s*-\s*".+?"\s*yEnc$/', $this->subject, $match)) {
+		if (preg_match('/^(.+? \[Dual [aA]udio, EngSub\] .+?) - \[\d+\/\d+\] - ".+?" yEnc$/', $this->subject, $match)) {
 			return $match[1];
 		} //[ TOWN ]-[ www.town.ag ]-[ partner of www.ssl-news.info ]-[ ANIME ] [3/5] - "[HorribleSubs] Ai-Mai-Mi - Mousou Catastrophie - 04 [480p].part2.rar" - 26,44 MB yEnc
-		if (preg_match('/^.+?-\[\s*ANIME\s*\]\s*\[\d+\/\d+\]\s*-\s*"(.*)"\s*-\s*\d+[,.]\d+\s*[mMkKgG][bB][\s]*yEnc$/', $this->subject, $match)) {
+		if (preg_match('/^.+?-\[\s*ANIME\s*\] \[\d+\/\d+\] - "(.*)" - \d+[,.]\d+ [mMkKgG][bB][\s]*yEnc$/', $this->subject, $match)) {
 			return $match[2];
 		}
 		return array("cleansubject" => $this->releaseCleanerHelper($this->subject), "properlynamed" => false);
@@ -2996,12 +2996,12 @@ class ReleaseCleaning
 	public function multimedia_anime()
 	{
 		//High School DxD New 01 (480p|.avi|xvid|mp3) ~bY Hatsuyuki [01/18] - "[Hatsuyuki]_High_School_DxD_New_01_[848x480][76B2BB8C].avi.001" yEnc
-		if (preg_match('/.+?\s*\((360|480|720|1080)p\|.+?\s*~bY\s*.+?\s*\[\d+\/\d+\]\s*-\s*"(.+?\[[A-F0-9]+\].+?)' . $this->e1, $this->subject, $match)) {
+		if (preg_match('/.+? \((360|480|720|1080)p\|.+? ~bY .+? \[\d+\/\d+\] - "(.+?\[[A-F0-9]+\].+?)' . $this->e1, $this->subject, $match)) {
 			return $match[2];
 		}
 
 		//[Hatsuyuki]_Seirei_Tsukai_no_Blade_Dance_-_03_[720p] [E18FCA59] [01/18]
-		if (preg_match('#(\[[A-Z0-9-]+\][\w_-]+_\d+_\[\d{3,4}[ip]\])\s+\[[[A-Z0-9]{8}\]\s+\[\d+\/(\d+)\]#i', $this->subject, $match)) {
+		if (preg_match('#(\[:xdigit:]-]+\][\w_-]+_\d+_\[\d{3,4}[ip]\]\s\[[:xdigit:]]{8}\])\s\[\d+/\d+\]#i', $this->subject, $match)) {
 			return $match[2];
 		}
 		return array("cleansubject" => $this->releaseCleanerHelper($this->subject), "properlynamed" => false);
@@ -3010,7 +3010,7 @@ class ReleaseCleaning
 	public function multimedia_anime_highspeed()
 	{
 		//High School DxD New 01 (480p|.avi|xvid|mp3) ~bY Hatsuyuki [01/18] - "[Hatsuyuki]_High_School_DxD_New_01_[848x480][76B2BB8C].avi.001" yEnc
-		if (preg_match('/.+? \((360|480|720|1080)p\|.+?\s*~bY\s*.+?\s*\[\d+\/\d+\]\s*-\s*"(.+?\[[[:xdigit:]]]+\].+?)' . $this->e1, $this->subject, $match)) {
+		if (preg_match('/.+? \((360|480|720|1080)p\|.+? ~bY .+? \[\d+\/\d+\] - "(.+?\[[A-F0-9]+\].+?)' . $this->e1, $this->subject, $match)) {
 			return $match[2];
 		}
 		return array("cleansubject" => $this->releaseCleanerHelper($this->subject), "properlynamed" => false);
