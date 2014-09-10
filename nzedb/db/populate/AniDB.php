@@ -424,12 +424,6 @@ class AniDB
 					}
 					$count--;
 				}
-
-				if ($this->echooutput) {
-					echo $this->pdo->log->header("Inserted " . number_format($added) .
-												 " AniDB entries." .
-												 PHP_EOL);
-				}
 			} else {
 				echo PHP_EOL .
 					 $this->pdo->log->error("Error retrieving XML data from AniDB. Please try again later.") .
