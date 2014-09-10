@@ -1,9 +1,9 @@
 <?php
-if (!$users->isLoggedIn()) {
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
-$userData = $users->getById($users->currentUserId());
+$userData = $page->users->getById($page->users->currentUserId());
 if (!$userData) {
 	$page->show404();
 }
@@ -11,7 +11,7 @@ $page->smarty->assign('user', $userData);
 
 $queueType = $error = '';
 $queue = null;
-switch($page->site->sabintegrationtype) {
+switch($page->settings->getSetting('sabintegrationtype')) {
 	case SABnzbd::INTEGRATION_TYPE_NONE:
 		if ($userData['queuetype'] == 2) {
 			$queueType = 'NZBGet';
@@ -77,7 +77,7 @@ if (!is_null($queue)) {
 	}
 }
 
-$page->smarty->assign(array('queueType' => $queueType, 'error' => $error, 'user', $users));
+$page->smarty->assign(['queueType' => $queueType, 'error' => $error, 'user', $userData]);
 $page->title = "Your $queueType Download Queue";
 $page->meta_title = "View $queueType Queue";
 $page->meta_keywords = "view," . strtolower($queueType) .",queue";

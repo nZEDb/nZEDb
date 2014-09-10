@@ -2,13 +2,11 @@
 require dirname(__FILE__) . '/../../../www/config.php';
 require_once nZEDb_LIB . 'utility' . DS . 'CopyFileTree.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 $reorg = nZEDb_MISC . 'testing' . DS . 'DB' . DS . 'nzb-reorg.php';
-$s = new Sites();
-$site = $s->get();
-$db = new DB();
-$level = $site->nzbsplitlevel;
+$pdo = new Settings();
+$level = $pdo->getSetting('nzbsplitlevel');
 $nzbpath = $site->nzbpath;
 
 if (!isset($argv[1])) {
@@ -27,7 +25,7 @@ if (!isset($argv[1])) {
 	$files->copy('*');
 
 	echo "Setting nzbstatus for all releases\n";
-	$db->queryExec("UPDATE releases SET nzbstatus = 1");
+	$pdo->queryExec("UPDATE releases SET nzbstatus = 1");
 
 	system("php $reorg $level $nzbpath");
 }

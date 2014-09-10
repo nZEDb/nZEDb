@@ -44,6 +44,7 @@ div.icons {
 .icon_allmusic2      { content:url('../images/icons/allmusic.png'); }
 .icon_amazon         { background-image:url('../images/icons/amazon.png'); }
 .icon_amazon2        { content:url('../images/icons/amazon.png'); }
+.icon_giantbomb      { background-image:url('../images/icons/giantbomb.png');}
 .icon_cart           { background-image:url('../images/icons/cartup.png'); }
 .icon_cart_clicked   { background-image:url('../images/icons/cartdown.png'); }
 .icon_couch          { background-image:url('../images/icons/couch.png'); }
@@ -246,6 +247,12 @@ br.clear{
     display:inline-block;
     width: 130px;
     height: 180px;
+}
+
+.library-games {
+    display:inline-block;
+    width: 130px;
+    height: 130px;
 }
 
 .library-music {

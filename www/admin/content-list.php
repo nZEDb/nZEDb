@@ -1,9 +1,8 @@
 <?php
 require_once './config.php';
 
-
 $page = new AdminPage();
-$contents = new Contents();
+$contents = new Contents(['Settings' => $page->settings]);
 $contentlist = $contents->getAll();
 $page->smarty->assign('contentlist',$contentlist);
 
@@ -11,5 +10,3 @@ $page->title = "Content List";
 
 $page->content = $page->smarty->fetch('content-list.tpl');
 $page->render();
-
-?>

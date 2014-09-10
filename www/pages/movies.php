@@ -1,10 +1,10 @@
 <?php
-if (!$users->isLoggedIn()) {
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
-$movie = new Movie();
-$cat = new Category();
+$movie = new Movie(['Settings' => $page->settings]);
+$cat = new Category(['Settings' => $page->settings]);
 
 $moviecats = $cat->getChildren(Category::CAT_PARENT_MOVIE);
 $mtmp = array();
@@ -16,7 +16,7 @@ if (isset($_REQUEST['t']) && array_key_exists($_REQUEST['t'], $mtmp)) {
 	$category = $_REQUEST['t'] + 0;
 }
 
-$user = $users->getById($users->currentUserId());
+$user = $page->users->getById($page->users->currentUserId());
 $cpapi = $user['cp_api'];
 $cpurl = $user['cp_url'];
 $page->smarty->assign('cpapi', $cpapi);
@@ -36,13 +36,15 @@ $orderby = isset($_REQUEST['ob']) && in_array($_REQUEST['ob'], $ordering) ? $_RE
 
 $results = $movies = array();
 $results = $movie->getMovieRange($catarray, $offset, ITEMS_PER_COVER_PAGE, $orderby, -1, $page->userdata['categoryexclusions']);
-foreach ($results as $result) {
-	$result['genre'] = $movie->makeFieldLinks($result, 'genre');
-	$result['actors'] = $movie->makeFieldLinks($result, 'actors');
-	$result['director'] = $movie->makeFieldLinks($result, 'director');
-	$result['languages'] = explode(", ", $result['language']);
+if ($results instanceof Traversable) {
+	foreach ($results as $result) {
+		$result['genre'] = $movie->makeFieldLinks($result, 'genre');
+		$result['actors'] = $movie->makeFieldLinks($result, 'actors');
+		$result['director'] = $movie->makeFieldLinks($result, 'director');
+		$result['languages'] = explode(", ", $result['language']);
 
-	$movies[] = $result;
+		$movies[] = $result;
+	}
 }
 
 $title = (isset($_REQUEST['title']) && !empty($_REQUEST['title'])) ? stripslashes($_REQUEST['title']) : '';
@@ -100,7 +102,7 @@ $page->smarty->assign('results', $movies);
 
 $page->meta_title = "Browse Movies";
 $page->meta_keywords = "browse,movies,nzb,description,details";
-$page->meta_description = "Browse for Moviess";
+$page->meta_description = "Browse for Movies";
 
 $page->content = $page->smarty->fetch('movies.tpl');
 $page->render();

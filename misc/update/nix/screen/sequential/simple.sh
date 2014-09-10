@@ -7,21 +7,12 @@ else
 	export NZEDB_ROOT="$(php ../../../../../nZEDbBase.php)"
 fi
 
-export NZEDB_UNRAR=`php $NZEDB_ROOT/nzedb/db/Settings.php tmpunrarpath`
 export NZEDB_PATH="${NZEDB_ROOT}/misc/update"
 export TEST_PATH="${NZEDB_ROOT}/misc/testing"
 export NZEDB_SLEEP_TIME="60" # in seconds
 LASTOPTIMIZE=`date +%s`
 LASTOPTIMIZE1=`date +%s`
 command -v php5 >/dev/null 2>&1 && export PHP=`command -v php5` || { export PHP=`command -v php`; }
-
-#delete stale tmpunrar folders
-# we need to have this use the Db setting. No idea how yet, but this fails too often otherwise.
-export count=`find $NZEDB_UNRAR -type d -print| wc -l`
-if [ $count != 1 ]
-then
-	rm -r $NZEDB_UNRAR/*
-fi
 
 while :
 
@@ -55,7 +46,7 @@ if [ "$DIFF" -gt 43200 ] || [ "$DIFF" -lt 1 ]
 then
 	LASTOPTIMIZE1=`date +%s`
 	echo "Optimizing DB..."
-	$PHP ${NZEDB_PATH}/optimise_db.php run
+	$PHP ${NZEDB_PATH}/optimise_db.php space
 	$PHP ${NZEDB_PATH}/update_tvschedule.php
 	$PHP ${NZEDB_PATH}/update_theaters.php
 fi

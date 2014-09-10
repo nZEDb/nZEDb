@@ -3,9 +3,757 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
-***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
-***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
-
+2014-09-09 DariusIII
+	* Upd: Updated codecposter removal with german, french and dutch variants of txt file.
+2014-09-09 bart39
+	* Fix: Namespace issue.
+2014-09-08 bart39
+	* Add: Add python safe binaries / backfill scripts to multiprocessing.
+	* Add: Added fixrelnames to multiprocessing.
+	* Add: Added all multiprocessing examples / options to threaded.sh (copy to user_threaded.sh).
+2014-09-08 kevin
+	* Add: Setting to limit max releases for pager count, can speed up the web pages, update settings.php with nZEDb_MAX_PAGER_RESULTS
+2014-09-08 ruhllatio
+	* Fix: WEB-DL Movie categorization when WEB-DL categorization is disabled
+	* Add: Movie override for a.b.warez byGroup categorization
+	* Chg: Update Tmux to run new multiproc scripts for safe backfill/fixRelNames
+2014-09-07 ruhllatio
+	* Add: WEB-DL category for Movies, they currently go into TV WEB-DL right now
+	* Fix: WEB-DL Movie categorization overridden by TV opening regex
+2014-09-07 kevin
+	* Chg: Change releases to use count instead of SQL_CALC_FOUND_ROWS for pager, should speed up those queries.
+2014-09-06 niel
+	* New: Added couple methods to DB class to allow switching Logging errors on/off during runtime. Useful when you only want to catch errors on a single operation and not be flooded by other info.
+	* Mrg: Merging PR 1490 from tasky.
+	* Mrg: Merging PR 1491 from tasky.
+2014-09-04 kevin
+	* Chg: Define nZEDb_RELEASE_SEARCH_TYPE in automated.config.php if settings.php doesn't exist.
+2014-09-03 bart39
+	* Mrg: Merging in PR 1487 from tasky.
+2014-09-03 niel
+	* Mrg: Merging in PR 1485 from tasky.
+2014-09-01 ruhllatio
+	* Fix: Do not convert releases_se from SPHINX engine when converting mysql tables.
+2014-09-01 kevin
+	* Chg: Force ignore cert checking on irc scraper, as all the synirc certs are either expired or self signed or invalid in some other way.
+	* Add: Support for openssl remote certificate checking on streams/CURL. Please update www/config.php using this guide: https://github.com/nZEDb/nZEDb/wiki/Setting-up-openssl
+	* Fix: Namespacing issue in DB.
+2014-09-01 niel
+	* Mrg: Merging PR 1479 from tasky
+	* Fix: More name spacing issues.
+2014-08-31 ruhllatio
+	* Fix: NFO Proc Deletion SELECT not using guidChar/GroupID when threaded
+	* Fix: Forgot table referencing in above fix
+2014-08-31 bart39
+	* Fix: Merge Tasky's PR #1478 - Best to run misc/testing/DB/reset_postprocessing.php xxx true truncate to get full effect of true matches.
+	* Fix: Double escaping on Games release date / Scrutinizer fix.
+2014-08-27 bart39
+	* Fix: Only save console/games cover if cover is found.
+2014-08-27 ruhllatio
+	* Chg: Update collections/releases cleaning for Anime in a.b.anime and multimedia.anime.highspeed
+2014-08-26 bart39
+	* Fix: Actor / Director / Language info from IMDB.
+	* Fix: Display XXX / Music / Movie releases in cover view without a cover.
+	* Fix: Console error for null releasedate.
+2014-08-26 niel
+	* Chg: Moved PostProcessing scripts into the new nzedb\processing namespace.
+2014-08-26 ruhllatio
+	* Fix: Bad path issue in Tmux NNTP Proxy alternate NNTP
+	* Fix: Issue #1472 Console Processing Errors
+	* Chg: Rework queries for gfRn to support new indexing scheme (coming)
+	* Chg: A few Tmux query changes to reduce monitor loop times (will complement the index changes)
+	* Fix: Attempt to fix consoleinfoid not being set in some instances
+	* Chg: Optimize browse queries for large release databases by forcing a straight join on Groups table
+	* Fix: missing PostProc namespace in update_releases.php
+	* Fix: Genre's populating Unknown for console processing
+	* Add: Patch to update releases with bad Console genre data
+	* Rem: Bad patch +1 file
+	* Fix: Pretty sure console Genre is good to go this time
+	* Fix: Weird releasedate escaping in Console causing SQL errors in some cases
+	* Chg: Disable cover = 1 setting for console
+	* Chg: Improved Genre detection for Console - additional output showing genre on match (still lots of Unknowns because Amazon blows)
+	* Chg: Change a couple genre entries
+2014-08-25 bart39
+	* Fix: Update XXX releases correctly for no match.
+2014-08-25 niel
+	* Fix: Attempt to detect remote MySQL server during install and use LOCAL for table loading if so.
+2014-08-24 ruhllatio
+	* Fix: Console SQL errors when review isn't set.
+2014-08-23 ruhllatio
+	* Fix: Bug where memcached sockets will not work with nZEDb because the port was defaulting and it needed to be 0 in offset 1
+	* Fix: browseby errors in Movie and XXX
+2014-08-23 kevin
+	* Fix: Bug in settings.tsv, extra tab character in mischashedretentionhours causing new installs to have empty value.
+	* Fix: Add missing 'Maximum repair tries:' to settings.tsv and fix typo in site edit.
+2014-08-22 kevin
+	* Fix: Double number format in Binaries echo.
+2014-08-22 ruhllatio
+	* Chg: Move largely duplicated catSrch code to Category->getCategorySearch
+	* Chg: Remove dead $pdo's and switch all to $this->pdo
+	* Chg: Movies.php now uses getCategorySearch as well instead of its own function
+	* Chg: Clean up XXX Post proc some - set unique index on xxxinfo.title removing dupes and remove ODKU
+2014-08-21 bart39
+	* Fix: Amazon throttling dues to api error message change.
+	* Fix: Wrong sort method for musictrack category via amazon lookup.
+	* Add: Regex additions for ReleaseCleaning.
+	* Fix: invalid GiantBomb link in alpha theme.
+	* Fix: Error resetting games post processing.
+	* Fix: NameFixer typo's.
+2014-08-21 ruhllatio
+	* Chg: Re-work RottenTomato update function to remove duplication
+	* Fix: Typo in RottenTomato function
+	* Chg: Behavior of updateSingleColumn in NameFixer
+	* Fix: A few bugs in various scripts
+	* Chg: Revamp console post processing and improve matching
+2014-08-20 ruhllatio
+	* Chg: More optimizations to MiscSorter
+	* Fix: test_misc_sorter script errors due to removed functions
+	* Fix: Tmux Query for Process Console diff using Games count
+	* Chg: Remove a ton of repeated if conditions in NameFixer with single opening ifs
+	* Chg: Add function to NameFixer to update single columns in releases table
+	* Fix: A few errors in MiscSorter due to unhandled Amazon returns
+	* Chg: Optimize NameFixer more and fix more scrutinizer bugs
+	* Fix: 2 Regex compilation errors in NameFixer
+	* Fix: A few more scrutinizer issues
+2014-08-20 kevin
+	* Add: Script to verify the important folder permisions.
+	* Chg: Make cover path checking optional, in case user has not run install yet in verify_permissions script.
+	* Chg: Catch Logger exceptions, solves blank pages for those with improper permissions on resources/logs folder/files.
+2014-08-19 ruhllatio
+	* Chg: Revamp MiscSorter
+	* Add: Categorization support by group for a.b.cd.images.sega-saturn
+	* Fix: Issues identified by Scrutinizer
+2014-08-19 kevin
+	* Add: Regex support for alt.binaries.e-book.magazines
+	* Fix: Wrong array used in queue.php, reported/solution by user gaz_az.
+2014-08-18 bart39
+	* Fix: Typo.
+	* Fix: Typo in site edit.
+2014-08-17 niel
+	* Mrg: Bringing in tasky's Steam scraping work.
+2014-08-15 kevin
+	* Chg: Speed up addLanguage api function.
+2014-08-15 bart39
+	* Fix: API Issues.
+	* Fix: Only add row count to release query if releases found.
+	* Add: a.b.nl regex.
+	* Add: Ignore pictureset for PC categorization.
+2014-08-14 bart39
+	* Fix: Add mischashedretentionhours to 10-settings.tsv for new installs.
+	* Fix: Change query column to VARCHAR(1024)
+2014-08-13 niel
+	* Fix: Another missed userid to user_id.
+	* Fix: Some more genreid to genre_id changes.
+2014-08-13 ruhllatio
+	* Fix: a metric ton of genreid columns that weren't changed to genre_id (ahem archer})
+	* Fix: More genreid's in Genres.php that didn't get changed
+	* Chg: Optimize various TV Show and Movie RSS queries to leverage partitioning
+2014-08-12 niel
+	* Chg: Converting usa of 'userid' to 'user_id'.
+	* Chg: Converting use of 'genreid' to 'genre_id'.
+2014-08-12 ruhllatio
+	* Fix: undefined index error in MiscSorter and SQL query syntax error
+	* Add: script to optimize nZEDb moving to/from Sphinx (reclaims space from releasesearch that is unused with Sphinx).
+	* Fix: Forgot to remove limit in insert for testing
+2014-08-11 ruhllatio
+	* Chg: Standardize some of MiscSorter... remove needless NNTP, replace some preg with string ops
+	* Fix: Typo onion in ReleaseRemover
+	* Fix: API calls broken due to unconditional sphinxSE join (if you are using Sphinx) without an actual query
+	* Chg: Revert work query change for MiscSorter
+2014-08-10 kevin
+	* Chg: Cleanup of DbUpdate / put win checks for step2 failures.
+	* Fix: Issues in Settings.php
+	* Fix: Pager count issue.
+	* Chg: YOU MUST SET max_matches TO 10000 IN sphinx.conf IF YOU ARE RUNNING SPHINX AND RESTART SPHINX.
+	* Chg: Simplify pager count in releases by using SQL_CALC_FOUND_ROWS.
+2014-08-10 ruhllatio
+	* Add: PreDB FT match will now use Sphinx if it is available (Ridiculously fast compared to MySQL FTS)
+	* Fix: Codec query disjointed return in ReleaseRemover
+	* Chg: Greatly improve Sphinx search results
+	* Add: RemoveCrap no time limit can now use Sphinx instead of MySQL FTS (you will need to update your sphinx.conf).
+2014-08-10 niel
+	* Fix: Change repository reference and remove unneeded command.
+2014-08-09 ruhllatio
+	* Mrg: kevinlekiller's dev-sphinx into dev (RTFM -> misc/sphinxsearch/README.md) for info
+2014-08-08 ruhllatio
+	* Chg: NFO Update query performance is poor with new Guid CHAR query addendum
+2014-08-07 ruhllatio
+	* Chg: Tmux - make PreDB counter queries more compatible for bigger release databases
+	* Chg: Re-work match_prefiles content in NameFixer to (hopefully) fix more scrutinizer issues
+2014-08-06 niel
+	* Chg: Tmux - Reordered output in monitor pane.
+	* New: Setting to specify date formatting in shell scripts. Defaults to YYYY-MM-DD HH:MM:SS.
+2014-08-06 kevin
+	* Chg: Rename DebuggingException to LoggerException to match base class name.
+	* Chg: Clean up of Releases class after the move to ProcessReleases.
+	* Add: Setting to use the old search. Copy from www/settings.php.example to www/settings.php
+2014-08-05 tasky
+	* Fix: id supposed to be title #1457
+2014-08-05 bart39
+	* Fix: unknown column in where clause
+2014-08-05 niel
+	* Chg: Optimised TmuxOutput to improve monitor pane updates.
+2014-08-05 kevin
+	* Chg: Pass all $runVar params by reference, hopefully fixing all timer issues in Tmux scripts.
+	* Chg: Minor changes to Tmux.php
+	* Chg: Monitor to only analyze releases.
+	* Add: More options to optimise method (specifying table name / running on local tables only).
+	* Chg: Change doConnect logic based on recent compression on demand changes.
+	* Chg: Use max downloads setting on sharing when starting without backfill.
+	* Chg: Sharing, set the actual first seen date.
+	* Chg: Much better logging performance, and many more user changeable settings in settings.php (copy from settings.php.example).
+	* Chg: Use constants everywhere for logging severity.
+	* Fix: Issue where alternate usp can be used for headers. #1456
+	* Add: Static function to Nfo to simplify get query options.
+	* Chg: Remove obsolete stuff in Logger and simplify the set folder method.
+2014-08-04 bart39
+	* Mrg: tasky's GiantBomb search changes PR #1449
+2014-08-04 ruhllatio
+	* Chg: Re-work Match prefiles functions per scrutinizer recommendations
+2014-08-03 ruhllatio
+	* Fix: Bombing releaseRemover query for SCR
+	* Fix: Bugs according to scrutinizer
+	* Chg: Rework USP connection count gathering to have less paths...
+	* Fix: Pass PDO to SQL error function in tmux
+2014-08-03 kevin
+	* Chg: Various changes to postdate method.
+	* Fix: Fixes for get_range.
+	* Chg: Various changes to daytopost method.
+	* Fix: Fix for set_backfill_start.php if user resets but does not run update_binaries.php
+	* Fix: Convert unixtime to date in set_backfill_start.php
+	* Fix: Few more issues in set_backfill_start.php
+2014-08-02 ruhllatio
+	* Fix: RequestIDLocal Single Alt was looking for the groupname from the groupname, not the groupname from the usenet name
+	* Fix: RequestIDLocal not showing renaming results when specifying true to show renames
+	* Fix: typo for binaries_run should be 'settings' not 'scripts'
+2014-08-02 kevin
+	* Chg: Attempt to reduce dupe parts on "safe" scripts when user cancels the script by updating the groups table with time/article number every range.
+	* Fix: Various recommendations by scrutinizer.
+	* Cln: Cleanup.
+	* Fix: Issues in ReleaseRemover.php
+	* Fix: Possible fix for binaries issue in tmux.
+2014-08-02 niel
+	* Fix: Remove escaping causing problems in tmux.
+	* Chg: Alter date output to use international format in main tmux pain.
+2014-08-02 bart39
+	* Fix: _python not _php.
+	* Fix: Tmux basic sequential undefined variables.
+	* Fix: XXX Search filter for non Alpha Themes
+2014-08-01 DariusIII
+	* Upd: Codec spam removal update
+2014-08-01 bart39
+	* Fix: UpdateTV for tmux complete sequential.
+	* Fix: Display issues for long titles on predb alpha theme.
+	* Fix: Typo in gamesorter.php causing undefined variable error.
+	* Add: CollectionsCleaning Regex additions.
+	* Fix: offset for groupfixrelnames predbft.
+	* Add: Misc>Hashed Retention Hours #1437
+	* Fix: Categorize byGroup a.b.sounds.flac #1432, run php /misc/testing/Dev/recategorize.php all to fix
+	* Fix: Categorize HDTV Bluray, run php /misc/testing/Dev/recategorize.php all to fix
+2014-08-01 tasky
+	* Chg: Scrutinizer recommendations.
+	* Fix: Wrong resource type / __construct fixed
+2014-08-01 kevin
+	* ---: Test scrutinizer.
+	* Chg: More changes for scrutinizer.
+	* Chg: More scrutinize recommendations.
+	* Rem: Remove unused variables.
+	* Fix: Wrong var types.
+	* Fix: Type/doc issues.
+	* Chg: Initiate non-initiated arrays, add comments to empty catch blocks.
+2014-08-01 ruhllatio
+	* Mrg: tasky's XXX changes PR #1440
+	* Mrg: dev-tmuxrevamp into dev (please make sure tmux is restarted)
+	* Fix: Fix typo in tmux monitor output for USP connections
+	* Fix: 'apps' undefined indexes -- remove a few scrutinized breaks
+	* Fix: Backfill disappearing like JB every tmux non sequential loop
+	* Chg: Backfill 'All' setting in tmux now runs the multiprocessing script with quantity you set
+		group still runs a more worthless python script, Safe still runs the most worthless python script
+	* Fix: Same fix for basicsequential (tell tmux not to kill the pane every loop and respawn)
+	* Fix: backfill and partrepair counts in tmux
+2014-07-31 ruhllatio
+	* Mrg: tasky's XXX changes PR #1436
+2014-07-31 kevin
+	* Chg: Update pynntp to 0.8.4, fix bugs in nnptp proxy (body was never returning anything, exceptions were not catched when server would return errors, nntp errors were not returned, causing weird behavior in net_nntp).
+2014-07-31 niel
+	* Fix: Typoes in .../misc/testing/DB/convert_to_tpg.php causing undefined variable error.
+2014-07-30 niel
+	* Chg: Standardising all usage of ColorCLI class to either $cli, $pdo->log, or $this->pdo->log depending on context.
+		This reduces duplicated instances (and therefore RAM) and time taken to instantiate additional copies.
+2014-07-30 kevin
+	* Fix: Fix issue where multiple scripts running on the same group could overwrite the binaries table "currentparts" count causing long release creation time because of invalid count.
+	* Add: For users on PHP 5.5.0 or higher, set the CLI process name in ProcessAdditional to the releaseid so you can know which release is causing the issue.
+	* Chg: Set full path to file to be easier to track for previous add.
+	* Chg: Save a select query in binaries scan by changing the insert query.
+	* Chg: Speed up process time of headers by doing the sha1 only once.
+2014-07-29 kevin
+	* Chg: Add ignore to latest patch for those with duplicates.
+	* Fix: Issue where avconv returns single digit time vs ffmpeg's double digit time format, pad the string adding the missing 0's to mimic ffmpeg's output.
+	* Chg: Speed up article inserts even more.
+	* Fix: Put check to see if we downloaded 1 article header or not when inserting into binaries table.
+	* Fix: Part repair issue in Binaries.
+	* Fix: Check for empty parts query.
+	* Chg: Raise default min password_hash cost to 11. As noted previously, you should run the script to figure out a decent cost for your system. 10 is not recommended anymore by the PHP developper.
+	* Chg: Modify find_password_hash_cost.php to accept a time target argument. Recommended values are between 0.2 and 0.5 seconds.
+	* Rem: Remove the forced require on multiprocessing settings.php as we do defined checks on all the vars anyways and all the settings are optional.
+	* Chg: Extract the extension from the video file when getting time, as ffmpeg has issues on some videos when using the wrong extension.
+	* Chg: More changes to getVideoTime to increases chances of non black previews.
+2014-07-28 kevin
+	* Chg: Another massive boost to header insert speed.
+	* ---: With these changes, if you have not followed INSTALL.txt which says to change the MySQL max_allowed_packet to 16M (or more) you might have issues, be warned.
+	* ---: !!!!READ THIS!!!!: TPG users MUST run nzedb\build\_runonce\tpg_more_fixes.php
+	* Add: Debug message to binaries to show amount of bytes sent to MySQL when inserting parts.
+	* Add: Option to settings.php to disable SQL transactions. Update your settings.php file!
+2014-07-28 taskym
+	* Add: Added IAFD, less memory usage, regex update #1431
+2014-07-27 bart39
+	* Chg: Don't display Releases that have not been processed by PP Additional (passwordstatus -1 to -6) if show passwords is set to not display potentially passworded. #1302
+2014-07-27 tasky
+	* Fix: Popporn kept returning false #1425
+2014-07-27 ruhllatio
+	* Fix: local lookup query WHEREs were backwards sprintf'd
+	* Fix: forgot a LIKE
+	* Fix: Monitor not reflecting newestpre time despite having plenty of new Pres
+2014-07-27 kevin
+	* Fix: warningOver method on ColorCLI.
+	* Fix: Missing max part repair not being used in a query.
+	* Chg: Maximum failed part downloads setting to not divide by 5, this will speed up post process additional.
+	* Fix: The logic for calculating failed/downloaded rar parts.
+	* Fix: Typo in nfo query.
+	* Chg: Check if maxsizetopostprocess is 0 in nfo, ignore if so.
+	* Add: Min / Max release size setting to process NFOs.
+	* Chg: Move NZB decompression to a central location.
+	* Chg: Remove timeout for avconv also, will look into alternatives.
+	* Chg: Get timeout to work on avconv/ffmpeg, needed the --foreground option.
+	* Add: Max NFO download retries setting.
+	* Add: Query limiters to Forking to prevent spawning of processes needlessly.
+	* Add: password_compat library recommended by php.net for php versions prior to 5.5 to replace our usage of crypt without a salt, which will make passwords more secure for our users still on php 5.4
+2014-07-26 ruhllatio
+	* Merge Tasky's PR #1424 - updating changelog to reflect
+2014-07-26 tasky
+	* Add: Add Game/XXX Info to nzb details: First Stage.
+	* Add: Hot Movies Icon and Fix layout
+2014-07-26 bart39
+	* Fix: Remove 'See full summary »' from the end of imdb movie plot #1420
+2014-07-26 kevin
+	* Fix: #1421
+	* Add: Settings to settings.php for temporarily blocking site access to those sending too many requests.
+	* Chg: Show 404 page when page is missing.
+	* Chg: Move all tmpunrar deletions to ProcessAdditional to try to avoid external issues.
+	* Chg: Automatically use the new password_hash function if php version is 5.5 or higher, which is more secure than crypt and avoids warnings in PHP 5.6 for empty salt in crypt.
+	* ---: If you are running PHP 5.5 or higher, run the misc/testing/dev/find_password_hash_cost.php script and set the number it gives in settings.php nZEDb_PASSWORD_HASH_COST to make the password algorithm stronger.
+	* Chg: Automatically rehash user passwords if needed.
+	* Add: Support for GNU Timeout, to kill unrar/ffmpeg/etc after set time (you can set the time / path to timeout in site edit, on linux it should be /usr/bin/timeout)
+	* Chg: Move safe_pull.php into switch.php
+	* Add: Renamed option to multiprocess/postprocess.php movie/tv
+	* Add: PHP multi-processing import script.
+	* Chg: Do not use timeout for ffmpeg, it stalls, avconv however does not stall with timeout, change the time command for avcong/ffmpeg's changes.
+2014-07-25 ruhllatio
+	* Fix: match_prefiles not honoring CLI arg limit
+	* Chg: Monitor now using proper PDO for work queries
+	* Chg: Removed tons of nasty if/then/else statements that weren't needed
+	* Fix: unkown $c assignment causing script failure in monitor
+	* Fix: undefined index errors in monitor.php
+2014-07-25 kevin
+	* Chg: Re-use class instances in various places.
+	* Add: PHPDOC to Users.
+	* Chg: Re-use class instances when creating Users/UserSeries/XXX.
+	* Chg: Add PHPDOC to UserMovies and make it re-use Settings instances.
+	* Chg: TvRage to re-use class instances.
+	* Chg: Pass ColorCLI to PostProcess to pass to it's instanciated classes.
+	* Chg: Re-use Settings for TraktTv.
+	* Fix: Wrong BasePage var name usage.
+	* Chg: Re-use class instances on ReleaseRemover.
+	* Chg: Re-use class instances in various other places.
+	* Chg: Use BasePage's settings for many of the instanciations.
+	* Chg: Re-use class instances on Namefixer.
+	* Chg: Re-use class instances on Movie.
+	* Chg: Re-use BasePage's nzedb\db\Settings instance in as many www/admin files as possible to speed up page loads.
+	* Chg: BasePage, save a DB call by re-using the Settings instance for smarty, speeds up execution of all web-pages.
+	* Chg: Store and re-use the Users instance in BasePage instead of destroying it and later recreating another instance in index.php
+	* Add: Setting to settings.php for opening preinfo to the public.
+2014-07-24 ruhllatio
+	* Chg: Case a few if/elseif run ons in NameFixer -- more to do
+	* Fix: #1408 Issue with HDTS not being categorized properly
+2014-07-24 bart39
+	* Chg: use ColorCli for ProcessAdditional / NameFixer
+	* Chg: Reset gamesinfo_id and xxinfo_id when recategorizing
+	* Fix: Only use "like" matching when looking up release titles against existing tvrage shows if the name is more than one word
+	* Add: use ColorCli for Forking
+	NB: Run php /misc/testing/DB/reset_postprocessing.php tv true to attempt to fix these.
+2014-07-24 kevin
+	* Chg: Re-use class instances in Binaries.
+2014-07-23 bart39
+	* Fix: undefined variable
+2014-07-23 taskym
+	* Add: Hot Movies Scraper
+	* Add: Process Hotmovies, Chg: Fetch XXX Info from scraper used
+	* Chg: Alter xxxinfo_id back to 0 for hotmovies processing
+	* Add: Echo if no xxx releases to process
+	* Fix: constants style
+	* Fix: SQL -- xxxinfo_id
+2014-07-23 ruhllatio
+	* Chg: Move ReqIDLocal class to controllers, begin to add options to thread by Guid
+	* Chg: Remove needless concats from TMUX sql queries.
+	* Chg: match_prefiles revamp and class script
+	* Chg: match_prefiles has now moved to /misc/update and options have changed.
+	* Chg: Remove old match_prefiles from /misc/testing/Dev
+	* Fix: backfill_threaded script being called by php in monitor instead of python
+2014-07-23 niel
+	* Fix: Changing case on self::ADE.
+	* Fix: Code style violations
+2014-07-23 kevin
+	* Chg: Make monitor use the old backfill, since they are not compatible yet.
+	* Chg: Re-use some class instances when initiating NNTP / Sharing, saves memory/CPU.
+	* Chg: Re-use class instances when initiating Backfill.
+	* Chg: Rename update_all to update_per_group for conistency.
+	* Chg: Re-use class instancess win initiating ProcessReleases.
+	* Fix: Issues in ReqIDLocal
+	* Chg: Move RequestID Local and Web into their own classes.
+2014-07-22 bart39
+	* Fix: Another fix for PredbFT matching issue with preid being blanked out after match.
+	* Fix: MultiProcessing nfo fix
+	* Chg: ProcessAdditional - only rename audio from mediainfo if not already predb matched.
+	* Fix: typo in /update/postprocess.php
+2014-07-22 ruhllatio
+	* Fix: Attempt to fix strange PreDBFT name matching... also fix issue with preid being blanked out after match
+	* Chg: Monitor.php now uses PHP forking for threaded operations (if you're using safe scripts, these will still be python)
+	* Chg: Switched majority of if/then/else logic to switch/case.
+	* Chg: groupFixReleaseNames is now using guid thread separation like the other threaded scripts
+2014-07-22 kevin
+	* Add: Option to multiprocessing settings to change the way child process text is displayed (none, realtime, serially).
+	* Add: Setting for NFO threads.
+	* Add: More verbose to multi-processing.
+	* Chg: Make forking use tmux/bin/update-releases.php when TPG is on.
+	* Chg: Move some of the bin/ scripts into a central script.
+	* Add: php version of update_threaded.py
+	* Add: php multiprocess requestID, fix the python one at the same time.
+	* Chg: Re-use more class instances, save memory and process time.
+	* Fix: Use update_db.php on autopatcher/tmux optimize/patchDB
+	* Chg: Move postprocess_new.php into switch.php
+2014-07-21 ruhllatio
+	* Fix: NNTP being called in update_releases threaded removed -- much faster per thread
+2014-07-21 kevin
+	* Chg: Add options to multiprocessing postprocess.
+	* Chg: Change multiprocessing postprocess to check if there's work first.
+	* Add: Settings file for multiprocessing.
+	* Add: Option to limit how much new headers to download on update_binaries.
+	* Chg: Only enable header compression if we use a method that requires it, saves time when using the instance for something that will never use it.
+	* Add: Option to disable text output from child processes on multiprocessing scripts.
+	* Chg: Change cached query in browse to use nZEDb_CACHE_EXPIRY_MEDIUM.
+	* Fix: Query in NFO (the between was reversed).
+	* Chg: Change multiprocessing/threading scripts to do nfo/ppadd/movie/tv by guid first letter, gives better workload.
+	* Add: Renamed only processing option for movies/tv.
+	* Fix: Reverse like string %.
+2014-07-20 kevin
+	* Add: Multi processing scripts for binaries/backfill/postprocess/releases, written in PHP.
+2014-07-20 ruhllatio
+	* Fix: PreDB join timer logic in Tmux now runs full once and last week thereafter properly
+	* Add: ishashed to gfRn md5 work queries
+	* Chg: Revert decrypt_hashes all script to look outside category 7020 (Misc->Hashed)
+	* Chg: Improve NFO Proc count query and output
+2014-07-19 ruhllatio
+	* Chg: groupfixreleasenames var fixes and change to use categoryid instead of group_id
+	* Fix: groupID placement for PAR2 in gfrn / refactor pieces / fix whitespace
+	* Chg: add slower count logic to gfRn to be more exact on which categories to attempt
+	* Fix: last undefined in gfRn
+	* Chg: Remove postprocess_old_threaded from monitor as Amazon cannot make use of threaded ops and is a waste of overhead
+	* Chg: Revamp postprocess.php so it isn't complete shit
+	* Chg: Tweak some settings for gfRn
+	* Chg: Set Tmux Amazon to use Tmux php single thread script instead due to tmpunrar clearing in main postprocess.php
+2014-07-19 kevin
+	* Fix: Hard-coded 15 workers in update_threaded.py
+	* Chg: Various changes to process additional / nfo for python scripts.
+	* Chg: Create temp dir if not exists and set up perms for threaded scripts - processadditional.
+	* Chg: Change python postprocess_threaded.py to do tv and movie by groupID instead (in line with Bart/Ruhllatio's changes)
+	* Chg: Call processAdditional directly, saving a DB instance in postprocess.
+	* Add: Logic to attempt to detect string size overflow in NNTP, preventing some rare fatal errors.
+	* ---: Merge tasky's PR.
+2014-07-19 bart39
+	* Add: XXX to reset_postprocessing.
+	* Fix: Undefined variable in groupfixrelnames
+	* Chg: Various changes to process additional / nfo for python scripts.
+2014-07-19 taskym
+	* Fix: Better Matching (gamesorter)
+	* Add: Maximum Requests (Games)
+2014-07-18 ruhllatio
+	* Fix: MySQL memory leaks from cache limit errors in PreDB FT
+	* Chg: Remove NNTP from Tmux PreDB / set checkPre tmux to run full once then for past week with large DB supported query
+	* Add: fixReleaseNames by Group that beats the pants off the old one (testing mode)
+	* Chg: Clean a few queries up in new group fix release names
+	* Chg: Don't start NNTP for fRN Groups par2/miscsorter if SQL doesn't return any releases
+	* Chg: Monitor.php now uses groupfixRelNames instead of the old fixReleasesNames (reset your thread/max per thread settings)
+2014-07-18 kevin
+	* Fix: Missing UNCOMPRESS for plot on xxxinfo.
+	* Add: Customizable part-repair max tries.
+	* Add: (by Mike1) Query to tpg_fixes.php for getting size from parts into collections.
+2014-07-17 taskym
+	* Chg: Plot to Blob, Compress plot, Fix: Selecting title
+2014-07-17 niel
+	* Chg: Modifying DB::queryArray() to make it more efficient.
+2014-07-17 ruhllatio
+	* Chg: Move Tmux functions in monitor.php to Tmux class
+	* Chg: Move Tmux proc queries to Tmux class (will not require a restart of monitor.php to tweak queries)
+	* Chg: Greatly improve processing times for fixReleaseNames MD5 and remove needless loop.
+	* Chg: Monitor.php TPG row counts now use INFORMATION_SCHEMA instead as they don't need to be 100% accurate -- greatly increases monitor loop speed
+	* Chg: Parent Category counts now done using INFORMATION_SCHEMA.PARTITION table_row counts = much faster (try two)
+2014-07-17 kevin
+	* Chg: Various speed-up to purge group/partrepair/blacklist.
+	* Rem: Remove sab URL checking #1396.
+	* Chg: Speed up purging/reset group more, re-use more class instances, changes to optimise method.
+2014-07-16 bart39
+	* Fix: XXX processing / counts in monitor
+	* Fix: Set date to now if article header has no date
+2014-07-16 niel
+	* Chg: Refactored CLI code out of DbUpdate and Versions classes and into their own scripts in .../cli
+	NOTE: This means "php nzedb/db/DbUpdate.php true", now needs to be "php cli/update_db.php true"
+	* Fix: Processing tasky's SQL patch file.
+2014-07-16 ruhllatio
+	* Fix: TPG/Threaded for ProcessReleases move
+2014-07-16 kevin
+	* Chg: Link to ubuntu guide.
+	* Fix: Cache check on query.
+	* Add: Redis cache support, in addition to multiple server support for memcached. You must copy the new settings from settings.php.example, the old settings in config.php are obsolete.
+	* Chg: Move ProcessReleases out of Releases.
+	* Chg: Speed up release creation.
+	* ---: Merge PR by tasky.
+2014-07-15 ruhllatio
+	* Chg: Improve TV series listing site response
+	* Chg: Remove likes from predbft search query
+	* Chg: match_prefiles will find a few more audio matches
+	* Chg: More improvements (speed) to site queries for TV/Movie.
+2014-07-15 kevin
+	* Chg: Change stage 3 for the trigger changes on automatic binaries/parts deletion.
+	* Chg: Refactor stage 4.5 to be similar to stage 3.
+	* Chg: Refactor various processReleases stages.
+2014-07-15 bart39
+	* Fix: Delete collections at filecheck = 5 at the end of Releases Stage 3.
+	* Fix: Undefined variable $site in requestID.php
+	* Add: CollectionsCleaning regex additions.
+2014-07-14 niel
+	* Chg: Modified install step 2, to set sqlpatch setting using the value of the highest patch file found.
+2014-07-14 ruhllatio
+	* Chg: RequestID.php multi lookup (last chance match) much more accurate
+	* Fix: test-rottentomato not working
+	* Chg: Some categorization improvements.
+2014-07-14 kevin
+	* Chg: Speed-up stage 5 more by buffering some variables.
+	* Fix: Wrong usage of NZB construct in 2 places, pass pdo to all NZB contructs at the same time.
+2014-07-13 bart39
+	* Fix: !!! TPG USERS MUST RUN nzedb/build/_runounce/tpg_fixes.php !!!!!!!!!!!!!!!!!!!!!!!!!
+	* Fix: Move collections deletion trigger to before delete.
+	* Fix: Only create trigger if tpg tables were added.
+	* Add: Regex addition.
+2014-07-13 kevin
+	* Chg: !!! TPG USERS MUST RUN nzedb/build/_runounce/tpg_fixes.php !!!!!!!!!!!!!!!!!!!!!!!!!
+	* Chg: Move c/b/p deletion to stage 5.
+	* Chg: Update stage 7a query for trigger addition.
+	* Add: Echo's to stage 7a to see what's going on.
+	* Chg: Resolve weak warnings in DB for phpstorm.
+	* Add: Query to delete c/b/p missed on stage 5 in stage 7a.
+	* Fix: Issue where currently inserting c/b/p could be deleted by stage 7a.
+	* Chg: Change dupe delete query in stage 4 to reflect trigger changes.
+2014-07-13 bart39
+	* Fix: Console Cover View / Search filter.
+	* Add: PC Games Search Filter.
+	* Fix: Query error in show_table_sizes.php.
+	* Fix: Typo on Movies pages.
+2014-07-12 bart39
+	* Fix: typo
+2014-07-12 kevin
+	* Chg: !!!! IF YOU ARE RUNNING TPG, YOU MUST RUN nzedb\_runonce\tpg_fixes.php !!!!!! Huge speed-up to stage 1 on update-releases.
+	* Chg: Speed up to stage 2 on update-releases.
+	* Add: Debug info to stage1 for query times.
+	* Add: Debug info to stage7a for query times.
+	* Fix: Timer on stage7a.
+2014-07-11 kevin
+	* Fix: Issue where group_id could be set 0 on requestid.
+2014-07-10 kevin
+	* Fix: Conditionals in ProcessAdditional causing process sample / process mediainfo / process passwords to fail.
+	* Chg: Use 7zip/unrar directly instead of unrar for extracting, which is slower than rarinfo but produces larger files to work on.
+	* Add: session_write_close(); to ajax group requests to allow the admin to use his site while purging/reseting/deleting groups.
+	* Chg: Move site-edit options around, easier to browse through.
+	* Add: Process additional: blacklist rar/zip inner files.
+	* Add: Process additional: ability to chose how many nested rar/zip files deep to go down.
+	* Add: Process additional: ability to chose between using rarinfo or unrar/7z directly for extracting zips/rars.
+2014-07-09 bart39
+	* Fix: Fix ReleaseRemover for specific blacklist
+	* Add: Regex fixes / additions
+	* Add: dump_predb.php - drop predbhash triggers before import and re-add afterwards - should improve import speed
+	* Fix: Optimize monitor queries
+	* Fix: Add other-hashed category to recategorize.php
+	* Fix: renametopre.php - set properlynamed when matched via predb filename
+	* Fix: requestid.php - check if 2nd parameter is set
+2014-07-09 kevin
+	* Fix: Nzbget url missing a / when using a reverse proxy.
+	* Add: Headers to API/RSS, helps tracking problems.
+	* Fix: misc/update/backfill.php undefined Settings issue.
+2014-07-09 DariusIII
+	* Fix: Wrong column name in recategorize.php.
+2014-07-08 niel
+	* Fix: Admin => site-edit to work with Settings instead of Sites.
+2014-07-08 bart39
+	* Fix: Include PC Games lookup for postprocess amazon in tmux
+2014-07-08 kevin
+	* Chg: \s* to \s+ in binaries parts regex between yEnc and parts count, there should be space there, speeds up by removing the trims.
+	* Chg: Remove message array object, not used anywhere else. Binaries.
+	* Chg: Merge the usenet index post ignore regex into the subject/part count regex. Binaries.
+	* Chg: Move TPG functions out of DB into Groups.
+2014-7-08 ruhllatio
+	* Fix: blank screen for users not logged in.  Index.php calling $page->$pdo instead of $page->$settings to get settings from DB
+	* Fix: Login redirect function for home_path
+2014-07-07 kevin
+	* Add: Trim to collection check, collection name and binaries name (fixes issue with some space between yEnc and part count).
+2014-07-07 niel
+	* Chg: Refactored code to remove use of DB and Site classes in favour of combined Settings class. Should improve memory use and small performance boost.
+2014-07-06 bart39
+	* Fix: Monitor.php showing negative misc count
+2014-07-06 ruhllatio
+	* Chg: Monitor.php now shows PC work counts for unprocessed PC Game lookups
+	* Chg: Moved a few count queries in Monitor.php to the JOIN ON format instead of in where clause
+	* Add: More categorization improvements
+2014-07-05 bart39
+	* Fix: Typo in Releases.php, games cover view fixes.
+2014-07-05 kevin
+	* Chg: Add back on duplicate key update to collection query, required for those running multiple instances of the script.
+	* Add: Check to see if Bytes is empty, set it to 0, binaries (possible fix).
+	* Add: Catch failed collections/binaries inserts and rollback the transaction.
+	* Chg: Speed up group purging by using joined query.
+2014-07-04 kevin
+	* Chg: Binaries, more speedups to inserting headers, fix issue with part repair.
+	* Add: Speed-up for those with no enabled blacklists by buffering the SQL check.
+	* Chg: 4x+ speed-up of header processing by not sorting them (the benefits of sorting them is tiny vs the gain in performance).
+2014-07-03 bart39
+	* Fix: Fix RottenTomatoes covers due to api changes.
+2014-07-03 ruhllatio
+	* Fix: undefined offset 0 error for real in Games.php.
+2014-07-03 kevin
+	* Fix: Issue where first_record could get wrongly changed, rename more variables in Binaries.
+	* Chg: Speed up header inserts (3-4x faster from my end).
+	* Chg: Insert to insert ignore to hide duplicate errors on binaries.
+	* Chg: Remove doubled period check on compressed headers.
+	* Add: Script for setting the backfill start article based on the group's oldest release.
+2014-07-02 taskym
+	* Add: Add profile preference for Games cover view
+2014-07-02 ruhllatio
+	* Fix: undefined offset 0 error in Games.php lookup
+	* Chg: fastDelete releases query to remove concats
+	* Chg: New Poster Wall games sizing is now non-mongoloid
+2014-07-02 kevin
+	* Add: Add in pull request by tasky for fetching PC game info from GiantBomb and amazon, and adds PC games to new poster wall.
+	* Fix: Patch for missing 'setting' for giantbomb api key.
+	* Fix: Blank page on games cover view.
+	* Add: (UPDATE TO settings.php, update it if you have it.) Setting to settings.php.example for hiding/showing missing autoloader files.
+	* Fix: misc/testing/PostProc/getGames.php and changes to Games->ParseTitle
+	* Upd: Update games regex to pick up more games.
+	* Add: Re-enable header compression if header compression was disabled during fetching headers due to a decompression error.
+	* Fix: Undefined namespace issues in utility.
+	* Upd: Update some IGN.com links.
+	* Chg: Add check to see if explode is false on getXOVER (in case string is empty).
+	* Chg: Changes to binaries to help with large sections of missing headers.
+	* Chg: Changes to binaries to speed up part repair.
+2014-07-01 kevin
+	* ---: Happy canada day to all.
+	* Add: Missing reqid group to tsv.
+	* Chg: Clean up schema.
+	* Fix: Update tsv settings sqlpatch to 239.
+	* Add: Settings file to www, all automated.config.php settings moved to it. Copy settings.php.example to settings.php and edit.
+	* Add: Option for removing white space from queries, helps with slow-query log.
+	* Rem: Remove reverting of automated.config.php changes from commit for devs.
+	* Add: Extra options to settings.php.example for renaming releases using PAR2 or audio tags from media info. Copy them to your settings.php file.
+2014-07-01 ruhllatio
+	* Chg: Regex for IRCScraper now supports spaces in between parsing fields
+	* Fix: Deletion of old C, B, and P will now occur if parts are missing
+	* Chg: Begin to standardize queries for Releases.php
+	* Fix: fastDelete not working properly
+	* Fix: Broken queries in Releases.php
+	* Fix: Broken site browse query in Releases.php.
+	* Chg: More query standardization for Releases.php
+	* Fix: Typo in Releases.php
+2014-06-30 kevin
+	* Add: Option for ignoring PRE titles on IRCScraper.
+2014-06-30 niel
+	* Chg: Improving versioning output.
+2014-06-28 kevin
+	* Chg: Don't add mediainfo to DB if it's empty XML.
+	* Add: Double period line start check to compressed data NNTP function.
+	* Rem: Remove fetching of mediainfo from the sample videos, since they are re-encoded and their data does not correspond to the actual release.
+	* Fix: Corruption on some NNTP strings because of doubled period.
+2014-06-27 bart39
+	* Fix: Remove var_dump / fix query in ReleaseRemover.
+2014-06-27 kevin
+	* Chg: Various changes/fixes to ProcessAdditional.
+2014-06-27 ruhllatio
+	* Chg: removeCrapReleases can now be run in false mode with a Blacklist ID that isn't set to active for testing
+	* Fix: Remove trailing whitespace
+	* Fix: typo in requestid.php that prevented 'full' from running properly
+2014-06-26 kevin
+	* Add: Function to ProcessAdditional for recursively deleting files and folders within a folder.
+	* Add: Slightly faster method for parsing header array (class NNTP).
+	* Chg: Increase compression on NZB files, other slight speedups of NZB file creation.
+	* Chg: Buffer some NZB string data, increasing NZB write speed by almost 2x.
+	* Add: Setting for minimum release size to post process additional (to ignore NZB files and shit like that).
+	* Fix: Fix issue where passwordstatus might not be set.
+2014-06-25 ruhllatio
+	* Chg: Overhaul and class requestid.php
+	* Add: Title matching in multiple return requestIDs
+	* Fix: Trailing whitespaces in requestid.php
+	* Chg: Some variable factoring and comment edits
+	* Add: Slash removal from match_prefiles function
+	* Add: scnzb reequestid checks in requestid.php (still needs new triggers)
+	* Chg: Full work query for match_prefiles is now much more full
+2014-06-24 niel
+	* Fix: Prevent tmux statistics from being queried/displayed if monitor_delay set to 0.
+	* Chg: Default tmux monitor delay is now 300 seconds instead of 30. If you have changed this it will be unaffected.
+	* Rvt: Reverted above fix, as it causes too many missing variable notices. Looking for a better way.
+2014-06-23 ruhllatio
+	* Fix: RequestID Local setting -3 releases back to -1 reqidstatus
+	* Fix: Second try at fixing the PP hang -- add strlen check
+2014-06-23 kevin
+	* Add: Patch to fix broken triggers causing search/api/other stuff not to work.
+	* Add: Fix by JRouleau for fixing triggers on new installs (needs a patch for existing sites). #1360
+	* Fix: Missing single quotes on config.php.tpl causing install to fail on step 5.
+2014-06-22 ruhllatio
+	* Fix: requestID incorrectly matching requestID of zero
+2014-06-22 bart39
+	* Fix: requestID not set for web lookup causing insert errors
+2014-06-21 kevin
+	* Fix: Various fixes in requestID (hitting web every run needlessly).
+	* Chg: Minor changes to NNTP.
+	* Fix: IRCClient, servers with numbers in their names stay on the initial sequence.
+	* Fix: Extra "LIKE" on preinfo.
+	* Add: Category search on preinfo.
+2014-06-20 ruhllatio
+	* Chg: A few more categorization changes
+	* Fix: trailing whitespace
+2014-06-20 niel
+	* Fix: Adding white-space checks to queryOneRow LIMIT regex to catch queries spread over more than one line.
+2014-06-20 kevin
+	Add: Documentation for POST method of preinfo request ID lookup to preinfo.php
+	Add: The POST method for request ID to preinfo.php (you can send a POST method to preinfo with a serialized array of requests for request ID's).
+	Chg: Change requestID web to send multiple requests at once giving a big speed improvement.
+2014-06-19 ruhllatio
+	* Chg: Adopt switch/caseing for Categorize.php
+	* Fix: TV Categorization issue with recent changes
+2014-06-18 kevin
+	* Chg: Remove some scandir's from ProcessAdditional to speed some things up.
+	* Chg: Rename all methods/properties with protected/private access level in Class NNTP.
+	* Add: User changeable socket timeout. You can add define('NNTP_SOCKET_TIMEOUT', 120); and define('NNTP_SOCKET_TIMEOUT_A', 120); to config.php, 120 is the seconds.
+	* Chg: Use the proper "mode" for setting the socket back to blocked.
+	* Add: Socket timeout property to NNTP.
+	* Fix: Missing check for downloading media binary in ProcessAdditional.
+	* Add: Central method for error response code checking (NNTP).
+	* Chg: Refactor of Net_NNTP.
+	* Chg: Slight speedup to body fetching by removing useless empty check.
+	* Chg: Change various scripts to use new NameFixer echo method.
+	* Add: Static method for echo'ing renamed releases.
+2014-06-18 ruhllatio
+	* Fix: PP additional hang due to filenames that start with a period and match_prefiles bug
+	* Chg: Properly categorize PS4 and PS4 in a.b.console.ps3
+	* Fix: PS4 not post-processing correctly
+	* Fix: u4e rename results not colored correctly
+	* Rev: Revert changes to colorize u4e rename as they won't work
+	* Fix: optimize-keys option being used for MySQL other than Percona in mysqldump_tables.php #1330
 2014-06-15 DariusIII
 	*Chg: Remove tmpunrar folder cleaning from monitor, interferes with other scripts.
 2014-06-15 kevin

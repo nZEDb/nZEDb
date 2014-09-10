@@ -9,25 +9,25 @@ class SABnzbd
 {
 	/**
 	 * URL to the SAB server.
-	 * @var string
+	 * @var string|Array|bool
 	 */
 	public $url = '';
 
 	/**
 	 * The SAB API key.
-	 * @var string
+	 * @var string|Array|bool
 	 */
 	public $apikey = '';
 
 	/**
 	 * Download priority of the sent NZB file.
-	 * @var string
+	 * @var string|Array|bool
 	 */
 	public $priority = '';
 
 	/**
 	 * Type of SAB API key (full/nzb).
-	 * @var string
+	 * @var string|Array|bool
 	 */
 	public $apikeytype = '';
 
@@ -35,6 +35,12 @@ class SABnzbd
 	 * @var int
 	 */
 	public $integrated = self::INTEGRATION_TYPE_NONE;
+
+	/**
+	 * Is sab integrated into the site or not.
+	 * @var bool
+	 */
+	public $integratedBool = false;
 
 	/**
 	 * ID of the current user, to send to SAB when downloading a NZB.
@@ -88,7 +94,7 @@ class SABnzbd
 		$this->serverurl = $page->serverurl;
 
 		// Set up properties.
-		switch ($page->site->sabintegrationtype) {
+		switch ($page->settings->getSetting('sabintegrationtype')) {
 			case self::INTEGRATION_TYPE_USER:
 				if (!empty($_COOKIE['sabnzbd_' . $this->uid . '__apikey']) && !empty($_COOKIE['sabnzbd_' . $this->uid . '__host'])) {
 					$this->url = $_COOKIE['sabnzbd_' . $this->uid . '__host'];
@@ -102,35 +108,35 @@ class SABnzbd
 					$this->apikeytype = $page->userdata['sabapikeytype'];
 				}
 				$this->integrated = self::INTEGRATION_TYPE_USER;
+				switch((int)$page->userdata['queuetype']) {
+					case 1:
+					case 2:
+						$this->integratedBool = true;
+						break;
+					default:
+						$this->integratedBool = false;
+						break;
+				}
 				break;
 
 			case self::INTEGRATION_TYPE_SITEWIDE:
-				if (!empty($page->site->sabapikey) && !empty($page->site->saburl)) {
-					$this->url = $page->site->saburl;
-					$this->apikey = $page->site->sabapikey;
-					$this->priority = $page->site->sabpriority;
-					$this->apikeytype = $page->site->sabapikeytype;
+				if (($page->settings->getSetting('sabapikey') != '') && ($page->settings->getSetting('saburl') != '')) {
+					$this->url = $page->settings->getSetting('saburl');
+					$this->apikey = $page->settings->getSetting('sabapikey');
+					$this->priority = $page->settings->getSetting('sabpriority');
+					$this->apikeytype = $page->settings->getSetting('sabapikeytype');
 				}
 				$this->integrated = self::INTEGRATION_TYPE_SITEWIDE;
+				$this->integratedBool = true;
 				break;
 
 			case self::INTEGRATION_TYPE_NONE:
 				$this->integrated = self::INTEGRATION_TYPE_NONE;
+				// This is for nzbget.
+				if ($page->userdata['queuetype'] == 2) {
+					$this->integratedBool = true;
+				}
 				break;
-		}
-		// Verify the URL is good, fix it if not.
-		if ($this->url !== '' && preg_match('/(?P<first>\/)?(?P<sab>[a-z]+)?(?P<last>\/)?$/i', $this->url, $matches)) {
-			if (!isset($matches['first'])) {
-				$this->url .= '/';
-			}
-			if (!isset($matches['sab'])) {
-				$this->url .= 'sabnzbd';
-			} elseif ($matches['sab'] !== 'sabnzbd') {
-				$this->url .= 'sabnzbd';
-			}
-			if (!isset($matches['last'])) {
-				$this->url .= '/';
-			}
 		}
 	}
 
@@ -143,22 +149,24 @@ class SABnzbd
 	 */
 	public function sendToSab($guid)
 	{
-		return nzedb\utility\getUrl(
-			$this->url .
-			'api?mode=addurl&priority=' .
-			$this->priority .
-			'&apikey=' .
-			$this->apikey .
-			'&name=' .
-			urlencode(
-				$this->serverurl .
-				'getnzb/' .
-				$guid .
-				'&i=' .
-				$this->uid .
-				'&r=' .
-				$this->rsstoken
-			)
+		return nzedb\utility\Utility::getUrl([
+				'url' => $this->url .
+					'api?mode=addurl&priority=' .
+					$this->priority .
+					'&apikey=' .
+					$this->apikey .
+					'&name=' .
+					urlencode(
+						$this->serverurl .
+						'getnzb/' .
+						$guid .
+						'&i=' .
+						$this->uid .
+						'&r=' .
+						$this->rsstoken
+					),
+				'verifypeer' => false,
+			]
 		);
 	}
 
@@ -169,10 +177,13 @@ class SABnzbd
 	 */
 	public function getQueue()
 	{
-		return nzedb\utility\getUrl(
-			$this->url .
-			"api?mode=qstatus&output=json&apikey=" .
-			$this->apikey
+		return nzedb\utility\Utility::getUrl([
+				'url' =>
+					$this->url .
+					"api?mode=qstatus&output=json&apikey=" .
+					$this->apikey,
+				'verifypeer' => false,
+			]
 		);
 	}
 
@@ -183,10 +194,13 @@ class SABnzbd
 	 */
 	public function getAdvQueue()
 	{
-		return nzedb\utility\getUrl(
-			$this->url .
-			"api?mode=queue&start=START&limit=LIMIT&output=json&apikey=" .
-			$this->apikey
+		return nzedb\utility\Utility::getUrl([
+				'url' =>
+					$this->url .
+					"api?mode=queue&start=START&limit=LIMIT&output=json&apikey=" .
+					$this->apikey,
+				'verifypeer' => false,
+			]
 		);
 	}
 
@@ -199,12 +213,15 @@ class SABnzbd
 	 */
 	public function delFromQueue($id)
 	{
-		return nzedb\utility\getUrl(
-			$this->url .
-			"api?mode=queue&name=delete&value=" .
-			$id .
-			"&apikey=" .
-			$this->apikey
+		return nzedb\utility\Utility::getUrl([
+				'url' =>
+					$this->url .
+					"api?mode=queue&name=delete&value=" .
+					$id .
+					"&apikey=" .
+					$this->apikey,
+				'verifypeer' => false,
+			]
 		);
 	}
 
@@ -217,12 +234,15 @@ class SABnzbd
 	 */
 	public function pauseFromQueue($id)
 	{
-		return nzedb\utility\getUrl(
-			$this->url .
-			"api?mode=queue&name=pause&value=" .
-			$id .
-			"&apikey=" .
-			$this->apikey
+		return nzedb\utility\Utility::getUrl([
+				'url' =>
+					$this->url .
+					"api?mode=queue&name=pause&value=" .
+					$id .
+					"&apikey=" .
+					$this->apikey,
+				'verifypeer' => false,
+			]
 		);
 	}
 
@@ -235,12 +255,15 @@ class SABnzbd
 	 */
 	public function resumeFromQueue($id)
 	{
-		return nzedb\utility\getUrl(
-			$this->url .
-			"api?mode=queue&name=resume&value=" .
-			$id .
-			"&apikey=" .
-			$this->apikey
+		return nzedb\utility\Utility::getUrl([
+				'url' =>
+					$this->url .
+					"api?mode=queue&name=resume&value=" .
+					$id .
+					"&apikey=" .
+					$this->apikey,
+				'verifypeer' => false,
+			]
 		);
 	}
 
@@ -251,11 +274,14 @@ class SABnzbd
 	 */
 	public function pauseAll()
 	{
-		return nzedb\utility\getUrl(
-			$this->url .
-			"api?mode=pause" .
-			"&apikey=" .
-			$this->apikey
+		return nzedb\utility\Utility::getUrl([
+				'url' =>
+					$this->url .
+					"api?mode=pause" .
+					"&apikey=" .
+					$this->apikey,
+				'verifypeer' => false,
+			]
 		);
 	}
 
@@ -266,11 +292,14 @@ class SABnzbd
 	 */
 	public function resumeAll()
 	{
-		return nzedb\utility\getUrl(
-			$this->url .
-			"api?mode=resume" .
-			"&apikey=" .
-			$this->apikey
+		return nzedb\utility\Utility::getUrl([
+				'url' =>
+					$this->url .
+					"api?mode=resume" .
+					"&apikey=" .
+					$this->apikey,
+				'verifypeer' => false,
+			]
 		);
 	}
 

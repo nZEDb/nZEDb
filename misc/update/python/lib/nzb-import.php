@@ -1,28 +1,28 @@
 <?php
 require_once dirname(__FILE__) . '/../../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
-$c = new ColorCLI();
+$pdo = new Settings();
 
 if (!isset($argv[1])) {
-	exit($c->error("\nYou must supply a path as the first argument. Two additional, optional arguments can also be used.\n\n"
+	exit($pdo->log->error("\nYou must supply a path as the first argument. Two additional, optional arguments can also be used.\n\n"
 			. "php $argv[0] /path/to/import true 1000            ...: To import using the filename as release searchname, limited to 1000\n"
 			. "php $argv[0] /path/to/import false                ...: To import using the subject as release searchname\n"));
 }
 
-$db = new DB();
-$binaries = new Binaries();
-$s = new Sites();
-$site = $s->get();
-$crosspostt = (!empty($site->crossposttime)) ? $site->crossposttime : 2;
-$releasecleaning = new ReleaseCleaning();
-$categorize = new Categorize();
+$consoleTools = new \ConsoleTools(['ColorCLI' => $pdo->log]);
+$binaries = new \Binaries(['Settings' => $pdo]);
+$crosspostt = $pdo->getSetting('crossposttime');
+$crosspostt = (!empty($crosspostt)) ? $crosspostt : 2;
+$releasecleaning = new \ReleaseCleaning($pdo);
+$categorize = new \Categorize(['Settings' => $pdo]);
+$nzb = new \NZB($pdo);
+$releases = new \Releases(['Settings' => $pdo]);
 $nzbsperhour = $nzbSkipped = $maxtoprocess = 0;
-$consoleTools = new ConsoleTools();
 
 if (isset($argv[2]) && is_numeric($argv[2])) {
-	exit($c->error("\nTo use a max number to process, it must be the third argument. \nTo run:\nphp nzb-import.php /path [true, false] 1000\n"));
+	exit($pdo->log->error("\nTo use a max number to process, it must be the third argument. \nTo run:\nphp nzb-import.php /path [true, false] 1000\n"));
 }
 if (!isset($argv[2])) {
 	$pieces = explode("   ", $argv[1]);
@@ -36,7 +36,7 @@ if (isset($argv[3]) && is_numeric($argv[3])) {
 	$maxtoprocess = $argv[3];
 }
 
-$filestoprocess = Array();
+$filestoprocess = [];
 
 if (substr($path, strlen($path) - 1) != '/') {
 	$path = $path . "/";
@@ -50,10 +50,10 @@ function relativeTime($_time)
 	$d[3] = array(86400, "day");
 	$d[4] = array(31104000, "yr");
 
-	$w = array();
+	$w = [];
 
 	$return = "";
-	$now = TIME();
+	$now = time();
 	$diff = ($now - $_time);
 	$secondsLeft = $diff;
 
@@ -67,25 +67,25 @@ function relativeTime($_time)
 	return $return;
 }
 
-$groups = $db->query("SELECT id, name FROM groups");
+$groups = $pdo->query("SELECT id, name FROM groups");
 foreach ($groups as $group) {
 	$siteGroups[$group["name"]] = $group["id"];
 }
 
-$data = array();
+$data = [];
 
 if (!isset($groups) || count($groups) == 0) {
 	echo "No groups specified.\n";
 } else {
 	$nzbCount = 0;
-	$time = TIME();
+	$time = time();
 
 	//iterate over all nzb files in all folders and subfolders
 	if (!file_exists($path)) {
-		echo $c->error("\nUnable to access " . $path . "  Only use a folder (/path/to/nzbs/, not /path/to/nzbs/file.nzb).\n");
+		echo $pdo->log->error("\nUnable to access " . $path . "  Only use a folder (/path/to/nzbs/, not /path/to/nzbs/file.nzb).\n");
 		return;
 	}
-	$objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path));
+	$objects = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
 	foreach ($objects as $filestoprocess => $nzbFile) {
 		if (!$nzbFile->getExtension() == "nzb" || !$nzbFile->getExtension() == "gz") {
 			continue;
@@ -113,7 +113,7 @@ if (!isset($groups) || count($groups) == 0) {
 			continue;
 		}
 
-		$postdate = $postername = $firstname = array();
+		$postdate = $postername = $firstname = [];
 		$totalFiles = $i = $totalsize = 0;
 
 		foreach ($xml->file as $file) {
@@ -136,7 +136,7 @@ if (!isset($groups) || count($groups) == 0) {
 			$msg = array("Subject" => $subject, "From" => $fromname, "Message-ID" => "");
 
 			// Groups.
-			$groupArr = array();
+			$groupArr = [];
 			foreach ($file->groups->group as $group) {
 				$group = (string) $group;
 				if (array_key_exists($group, $siteGroups)) {
@@ -172,8 +172,7 @@ if (!isset($groups) || count($groups) == 0) {
 		if ($importfailed) {
 			@unlink($nzbFile);
 		} else {
-			$relguid = sha1(uniqid('', true) . mt_rand());
-			$nzb = new NZB();
+			$relguid = $releases->createGUID();
 			$propername = true;
 			$relid = false;
 			if ($usenzbname === true) {
@@ -204,13 +203,25 @@ if (!isset($groups) || count($groups) == 0) {
 			$maxsize = $totalsize * 1.01;
 
 			// Look for match on name, poster and size
-			$dupecheck = $db->queryOneRow(sprintf('SELECT id, guid FROM releases WHERE name = %s AND fromname = %s AND size BETWEEN %s AND %s', $db->escapeString($subject), $db->escapeString($poster), $db->escapeString($minsize), $db->escapeString($maxsize)));
+			$dupecheck = $pdo->queryOneRow(sprintf('SELECT id, guid FROM releases WHERE name = %s AND fromname = %s AND size BETWEEN %s AND %s', $pdo->escapeString($subject), $pdo->escapeString($poster), $pdo->escapeString($minsize), $pdo->escapeString($maxsize)));
 			if ($dupecheck === false) {
-				if ($propername === true && $importfailed === false) {
-					$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, group_id, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, isrenamed, iscategorized) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, 1, 1, 1)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($posteddate), $db->escapeString($poster), $db->escapeString($totalsize), ($site->checkpasswordedrar == "1" ? -1 : 0), $category));
-				} else {
-					$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, group_id, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, isrenamed, iscategorized) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, 1, 1, 1)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($posteddate), $db->escapeString($poster), $db->escapeString($totalsize), ($site->checkpasswordedrar == "1" ? -1 : 0), $category));
-				}
+				$relid = $releases->insertRelease(
+					[
+						'name' => $pdo->escapeString($subject),
+						'searchname' => $pdo->escapeString($cleanName),
+						'totalpart' => $totalFiles,
+						'group_id' => $groupID,
+						'guid' => $pdo->escapeString($relguid),
+						'postdate' => $pdo->escapeString($posteddate),
+						'fromname' => $pdo->escapeString($poster),
+						'size' => $pdo->escapeString($totalsize),
+						'categoryid' => $category,
+						'isrenamed' => 1,
+						'reqidstatus' => 0,
+						'preid' => 0,
+						'nzbstatus' => \NZB::NZB_ADDED
+					]
+				);
 			}
 
 			if ($relid === false || $dupecheck === false) {
@@ -218,7 +229,7 @@ if (!isset($groups) || count($groups) == 0) {
 				@unlink($nzbFile);
 				flush();
 			}
-			if (copyNZBforImport($relguid, $nzba, $nzb, $s)) {
+			if (copyNZBforImport($relguid, $nzba, $nzb, $pdo)) {
 				if ($relid !== false) {
 					$nzbCount++;
 				}
@@ -228,12 +239,12 @@ if (!isset($groups) || count($groups) == 0) {
 				}
 				if (( $nzbCount >= $maxtoprocess) && ( $maxtoprocess != 0 )) {
 					$nzbsperhour = number_format(round($nzbCount / $seconds * 3600), 0);
-					exit($c->header("\nProcessed " . number_format($nzbCount) . " nzbs in " . relativeTime($time) . "\nAveraged " . $nzbsperhour . " imports per hour from " . $path));
+					exit($pdo->log->header("\nProcessed " . number_format($nzbCount) . " nzbs in " . relativeTime($time) . "\nAveraged " . $nzbsperhour . " imports per hour from " . $path));
 				}
 				@unlink($nzbFile);
 			} else {
-				$db->queryExec(sprintf("DELETE FROM releases WHERE guid = %s AND postdate = %s AND size = %d", $db->escapeString($relguid), $db->escapeString($totalsize)));
-				echo $c->error("\nFailed copying NZB, deleting release from DB.\n");
+				$pdo->queryExec(sprintf("DELETE FROM releases WHERE guid = %s AND postdate = %s AND size = %d", $pdo->escapeString($relguid), $pdo->escapeString($totalsize)));
+				echo $pdo->log->error("\nFailed copying NZB, deleting release from DB.\n");
 				@unlink($nzbFile);
 				flush();
 				$importfailed = true;
@@ -243,7 +254,7 @@ if (!isset($groups) || count($groups) == 0) {
 	}
 }
 
-exit($c->header("\nRunning Time: " . relativeTime($time) . "\n"
+exit($pdo->log->header("\nRunning Time: " . relativeTime($time) . "\n"
 		. "Processed:    " . number_format($nzbCount + $nzbSkipped) . "\n"
 		. "Imported:     " . number_format($nzbCount) . "\n"
 		. "Duplicates:   " . number_format($nzbSkipped)));
@@ -259,7 +270,7 @@ exit($c->header("\nRunning Time: " . relativeTime($time) . "\n"
  * @return bool
  *
  */
-function copyNZBforImport($relguid, $nzb, $NZB, $site)
+function copyNZBforImport($relguid, $nzb, $NZB, $pdo)
 {
 	$path = $NZB->getNZBPath($relguid, 0, true);
 	$fp = gzopen($path, 'w5');
@@ -268,7 +279,7 @@ function copyNZBforImport($relguid, $nzb, $NZB, $site)
 		$article =
 			preg_replace(
 				'/dtd">\s*<nzb xmlns=/', "dtd\">\n<!-- NZB Generated by: nZEDb "
-				. $site->version() . ' ' . $date1 . " -->\n<nzb xmlns=", $nzb
+				. $pdo->version() . ' ' . $date1 . " -->\n<nzb xmlns=", $nzb
 			);
 
 		gzwrite($fp,

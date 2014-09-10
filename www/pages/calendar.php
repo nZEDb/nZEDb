@@ -1,9 +1,9 @@
 <?php
-if (!$users->isLoggedIn()) {
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
-$tvrage = new TvRage();
+$tvrage = new TvRage(['Settings' => $page->settings]);
 
 $date = date("Y-m-d");
 if (isset($_GET["date"])) {
@@ -13,6 +13,7 @@ if (isset($_GET["date"])) {
 $timestamp = mktime(0, 0, 0, substr($date, 5, 2), substr($date, 8, 2), substr($date, 0, 4));
 // Make it 7 days before, 7 days after.
 $start = $timestamp - (86400 * 7);
+$cal = array();
 for ($i = 0; $i <= 13; $i++) {
 	$start = $start + 86400;
 	$cal[] = date("Y-m-d", $start);

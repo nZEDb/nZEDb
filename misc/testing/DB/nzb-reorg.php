@@ -1,25 +1,25 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 if (!isset($argv[1]) || !isset($argv[2]))
 	exit("ERROR: You must supply the level you want to reorganize it to, and the source directory  (You would use: 3 .../nZEDb/resources/nzb/ to move it to 3 levels deep)\n");
 
-$db = new DB();
-$nzb = new NZB();
-$consoleTools = new ConsoleTools();
+$pdo = new Settings();
+$nzb = new \NZB($pdo);
+$consoleTools = new \ConsoleTools();
 
 $newLevel = $argv[1];
 $sourcePath = $argv[2];
-$objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($sourcePath));
+$objects = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($sourcePath));
 
 $filestoprocess = Array();
 $iFilesProcessed = $iFilesCounted = 0;
 $time = TIME();
 
 echo "\nReorganizing files to Level $newLevel from: $sourcePath This could take a while...\n";
-//$consoleTools = new ConsoleTools();
+//$consoleTools = new \ConsoleTools();
 foreach ($objects as $filestoprocess => $nzbFile) {
 	if ($nzbFile->getExtension() != "gz") {
 		continue;
@@ -38,12 +38,13 @@ foreach ($objects as $filestoprocess => $nzbFile) {
 	}
 }
 
-$db->ping(true);
-$db->queryExec(sprintf("UPDATE settings SET value = %s WHERE setting = 'nzbsplitlevel'", $argv[1]));
+$pdo->ping(true);
+$pdo->queryExec(sprintf("UPDATE settings SET value = %s WHERE setting = 'nzbsplitlevel'", $argv[1]));
 $consoleTools->overWrite("Processed $iFilesProcessed nzbs in " . relativeTime($time) . "\n");
 
 function relativeTime ($_time)
 {
+	$d = array();
 	$d[0] = array(1, "sec");
 	$d[1] = array(60, "min");
 	$d[2] = array(3600, "hr");

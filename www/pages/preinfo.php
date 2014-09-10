@@ -1,15 +1,22 @@
 <?php
 /**
+ * You can make this page accessible publicly by changing the nZEDb_PREINFO_OPEN setting in www/settings.php
+ *
  * This page prints an XML (or JSON, see extras) on the browser with predb data based on criteria.
  *
  * NOTE: By default only 1 result is returned, see the Extras for returning more than 1 result.
  * NOTE: This page is only accessible by logged in users or users providing their API key.
  *       If you wish to make this open to anybody, you can change the if (true) to if (false) lower in this file.
  *
+ * Main Parameter:
+ * --------------
+ *     type:
+ *         This is used to select the search type. This is a mandatory parameter.
+ *
  * Search Types:
  * ------------
- * These are the search types you can use: requestid, title, md5, sha1, all
- * They all have shorter versions, in order: r, t, m, s, a
+ * These are the search types you can use: requestid, title, md5, sha1, category, all
+ * They all have shorter versions, in order: r, t, m, s, c, a
  *
  *     requestid:
  *         This is an re-implementation of the http://predb_irc.nzedb.com/predb_irc.php?reqid=[REQUEST_ID]&group=[GROUP_NM]
@@ -21,7 +28,7 @@
  *
  *         Example URL:
  *         -----------
- *         http://example.com/preinfo?t=requestid&reqid=123&group=alt.binaries.example
+ *         http://example.com/preinfo?type=requestid&reqid=123&group=alt.binaries.example
  *
  *     title:
  *         This loosely searches for a title (using like '%TITLE%').
@@ -32,7 +39,7 @@
  *         title: The pre title you are searching for.
  *
  *         Example URL:
- *         http://example.com/preinfo?t=title&title=debian
+ *         http://example.com/preinfo?type=title&title=debian
  *
  *     md5:
  *         Searches for a PRE using the provided MD5.
@@ -43,7 +50,7 @@
  *
  *         Example URL:
  *         -----------
- *         http://example.com/preinfo?t=md5&md5=6e9552c9bd8e61c8f277c21220160234
+ *         http://example.com/preinfo?type=md5&md5=6e9552c9bd8e61c8f277c21220160234
  *
  *     sha1:
  *         Searches for a PRE using the provided SHA1.
@@ -54,7 +61,18 @@
  *
  *         Example URL:
  *         -----------
- *         http://example.com/preinfo?t=sha1&sha1=a6eb4d9d7f99ca47abe56f3220597663cf37ca4a
+ *         http://example.com/preinfo?type=sha1&sha1=a6eb4d9d7f99ca47abe56f3220597663cf37ca4a
+ *
+ *     category:
+ *         Search for PRE by category name.
+ *
+ *         Parameters:
+ *         ----------
+ *         category: Category name. ie: xxx
+ *
+ *         Example URL:
+ *         -----------
+ *         http://example.com/preinfo?type=category&category=xxx
  *
  *     all:
  *        Returns the newest pre(s). (see the Extras - limit option)
@@ -92,16 +110,30 @@
  *
  *     Returns 1 pre with this requestid and group : 188247 alt.binaries.teevee
  *     http://example.com/preinfo?type=requestid&reqid=188247&group=alt.binaries.teevee&apikey=227a0e58049d2e30efded245d0f447c8
+ *
+ * POST:
+ * -----
+ *     You can also send a POST method with a serialized array of requests.
+ *     An array with a key of 0 must be set. The other key's can be anything (the release ID for example).
+ *     ident - Can be used to send an identifier to track the returned result. (ie: the release ID)
+ *     group - This is the group name, alt.binaries.teevee for example.
+ *     reqid - This is the request ID to lookup for the group. Must be numeric (int|string).
+ *     Example: serialize(
+ *                  array(
+ *                       0 => array('ident' => 0, 'group' => 'none', 'reqid' => 0),
+ *                       1723 => array('ident' => 1723, 'group' => 'alt.binaries.moovee', 'reqid' => 194293),
+ *                       2384 => array('ident' => 2384, 'group' => 'alt.binaries.teevee', 'reqid' => 293823)
+ *                  )
+ *              )
  */
 
-// You can make this page accessible by all (even people without an API key) by setting this to false :
-if (true) {
-	if (!$users->isLoggedIn()) {
+if (nZEDb_PREINFO_OPEN) {
+	if (!$page->users->isLoggedIn()) {
 		if (!isset($_GET['apikey'])) {
 			apiError('Missing parameter (apikey)', 200);
 		}
 
-		if (!$users->getByRssToken($_GET['apikey'])) {
+		if (!$page->users->getByRssToken($_GET['apikey'])) {
 			apiError('Incorrect user credentials (api key is wrong)', 100);
 		}
 	}
@@ -127,7 +159,7 @@ if (isset($_GET['type'])) {
 		$offset = $_GET['offset'];
 	}
 
-	$newer = $older = $nuked = '';
+	$newer = $older = $nuked = $category = '';
 	if (isset($_GET['newer']) && is_numeric($_GET['newer'])) {
 		$newer = ' AND p.predate > FROM_UNIXTIME(' . $_GET['newer'] . ') ';
 	}
@@ -148,19 +180,20 @@ if (isset($_GET['type'])) {
 		case 'r':
 		case 'requestid':
 			if (isset($_GET['reqid']) && is_numeric($_GET['reqid']) && isset($_GET['group']) && is_string($_GET['group'])) {
-				$db = new nzedb\db\DB;
-				$preData = $db->query(
+				$pdo = new nzedb\db\DB;
+				$preData = $pdo->query(
 					sprintf('
-					SELECT p.*
-					FROM predb p
-					INNER JOIN groups g ON g.id = p.group_id
-					WHERE requestid = %d
-					AND g.name = %s
-					%s %s %s
-					LIMIT %d
-					OFFSET %d',
+						SELECT p.*,
+						g.name AS groupname
+						FROM predb p
+						INNER JOIN groups g ON g.id = p.group_id
+						WHERE requestid = %d
+						AND g.name = %s
+						%s %s %s
+						LIMIT %d
+						OFFSET %d',
 						$_GET['reqid'],
-						$db->escapeString($_GET['group']),
+						$pdo->escapeString($_GET['group']),
 						$newer,
 						$older,
 						$nuked,
@@ -174,13 +207,13 @@ if (isset($_GET['type'])) {
 		case 't':
 		case 'title':
 			if (isset($_GET['title'])) {
-				$db = new nzedb\db\DB;
-				$preData = $db->query(
-					sprintf('SELECT * FROM predb p WHERE p.title %s %s %s LIKE %s LIMIT %d OFFSET %d',
+				$pdo = new nzedb\db\DB;
+				$preData = $pdo->query(
+					sprintf('SELECT * FROM predb p WHERE p.title %s %s %s %s LIMIT %d OFFSET %d',
 						$newer,
 						$older,
 						$nuked,
-						$db->likeString(urldecode($_GET['title'])),
+						$pdo->likeString(urldecode($_GET['title'])),
 						$limit,
 						$offset
 					)
@@ -192,10 +225,10 @@ if (isset($_GET['type'])) {
 		case 'm':
 		case 'md5':
 			if (isset($_GET['md5']) && strlen($_GET['title']) === 32) {
-				$db = new nzedb\db\DB;
-				$preData = $db->query(
+				$pdo = new nzedb\db\DB;
+				$preData = $pdo->query(
 					sprintf('SELECT * FROM predb p INNER JOIN predbhash ph ON ph.pre_id = p.id WHERE MATCH(hashes) AGAINST (%s) %s %s %s LIMIT %d OFFSET %d',
-						$db->escapeString($_GET['md5']),
+						$pdo->escapeString($_GET['md5']),
 						$newer,
 						$older,
 						$nuked,
@@ -209,10 +242,10 @@ if (isset($_GET['type'])) {
 		case 's':
 		case 'sha1':
 			if (isset($_GET['sha1']) && strlen($_GET['sha1']) === 40) {
-				$db = new nzedb\db\DB;
-				$preData = $db->query(
+				$pdo = new nzedb\db\DB;
+				$preData = $pdo->query(
 					sprintf('SELECT * FROM predb p INNER JOIN predbhash ph ON ph.pre_id = p.id WHERE MATCH(hashes) AGAINST (%s) %s %s %s LIMIT %d OFFSET %d',
-						$db->escapeString($_GET['sha1']),
+						$pdo->escapeString($_GET['sha1']),
 						$newer,
 						$older,
 						$nuked,
@@ -223,10 +256,27 @@ if (isset($_GET['type'])) {
 			}
 			break;
 
+		case 'c':
+		case 'category':
+			if (isset($_GET['category'])) {
+				$pdo = new nzedb\db\DB;
+				$preData = $pdo->query(
+					sprintf('SELECT * FROM predb p WHERE p.category %s %s %s %s LIMIT %d OFFSET %d',
+						$newer,
+						$older,
+						$nuked,
+						$pdo->likeString($_GET['category']),
+						$limit,
+						$offset
+					)
+				);
+			}
+			break;
+
 		case 'a':
 		case 'all':
-			$db = new nzedb\db\DB;
-			$preData = $db->query(
+			$pdo = new nzedb\db\DB;
+			$preData = $pdo->query(
 				sprintf('SELECT * FROM predb p WHERE 1=1 %s %s %s ORDER BY p.predate DESC LIMIT %d OFFSET %d',
 					$newer,
 					$older,
@@ -236,6 +286,34 @@ if (isset($_GET['type'])) {
 				)
 			);
 			break;
+	}
+} else if (isset($_POST['data'])) {
+
+	$reqData = @unserialize($_POST['data']);
+	if ($reqData !== false && is_array($reqData) && isset($reqData[0]['ident'])) {
+		$pdo = new nzedb\db\DB;
+		$preData = array();
+
+		foreach ($reqData as $request) {
+			$result = $pdo->queryOneRow(
+				sprintf('
+					SELECT p.*,
+					g.name AS groupname
+					FROM predb p
+					INNER JOIN groups g ON g.id = p.group_id
+					WHERE requestid = %d
+					AND g.name = %s
+					LIMIT 1',
+					$request['reqid'],
+					$pdo->escapeString($request['group'])
+				)
+			);
+
+			if ($result !== false) {
+				$result['ident'] = $request['ident'];
+				$preData[] = $result;
+			}
+		}
 	}
 }
 
@@ -260,6 +338,8 @@ if ($json === false) {
 				' name="'       . (!empty($data['title'])      ? sanitize($data['title']) : '') . '"',
 				' date="'       . (!empty($data['predate'])    ? strtotime($data['predate']) : '') . '"',
 				' size="'       . (!empty($data['size']) && $data['size'] != 'NULL' ? $data['size'] : '') . '"',
+				' group="'      . (isset($data['groupname']) && !empty($data['groupname']) ? $data['groupname'] : '' ) . '"',
+				' ident="'      . (isset($data['ident']) && !empty($data['ident']) ? $data['ident'] : '') . '"',
 				'/>';
 		}
 	}

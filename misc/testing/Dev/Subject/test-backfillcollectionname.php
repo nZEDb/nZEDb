@@ -5,7 +5,13 @@ require_once dirname(__FILE__) . '/../../../../www/config.php';
 if (!isset($argv[1])) {
 	exit('You must start the script like this (# of articles) : php test-backfillcleansubject.php 20000' . "\n");
 } else {
-	$groups = new Groups();
+	$pdo = new \nzedb\db\Settings();
+	$nntp = new \NNTP(['Settings' => $pdo]);
+	if ($nntp->doConnect() !== true) {
+		exit($pdo->log->error("Unable to connect to usenet."));
+	}
+	$backfill = new \Backfill(['NNTP' => $nntp, 'Settings' => $pdo]);
+	$groups = new \Groups(['Settings' => $pdo]);
 	$grouplist = $groups->getActive();
 	foreach ($grouplist as $name) {
 		dogroup($name["name"], $argv[1]);
@@ -14,22 +20,13 @@ if (!isset($argv[1])) {
 
 function dogroup($name, $articles)
 {
-	$c = new ColorCLI();
-	$s = new Sites();
-	$site = $s->get();
-	$nntp = new NNTP();
-	if ($nntp->doConnect() !== true) {
-		exit($c->error("Unable to connect to usenet."));
-	}
-	if ($site->nntpproxy === "1") {
-		usleep(500000);
-	}
-	$backfill = new Backfill($nntp);
+	global $backfill, $pdo;
+
 	$backfill->backfillAllGroups($name, $articles);
-	echo $c->primaryOver("Type y and press enter to continue, n to quit.\n");
+	echo $pdo->log->primaryOver("Type y and press enter to continue, n to quit.\n");
 	if (trim(fgets(fopen("php://stdin", "r"))) == 'y') {
 		return true;
 	} else {
-		exit($c->primary("Done"));
+		exit($pdo->log->primary("Done"));
 	}
 }

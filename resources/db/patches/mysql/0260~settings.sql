@@ -1,0 +1,1 @@
+INSERT IGNORE INTO settings (name , value, setting, hint) VALUES ('partrepairmaxtries', '3', 'partrepairmaxtries', 'Maximum amount of times to try part repair.');

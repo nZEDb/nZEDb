@@ -2,12 +2,16 @@
 
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
+if (!isset($argv[1])) {
+	exit();
+}
+
 $group = $argv[1];
 //$cleaner = new CollectionsCleaning();
-$nntp = new NNTP();
-$c = new ColorCLI();
+$nntp = new \NNTP();
+$cli = new \ColorCLI();
 if ($nntp->doConnect() !== true) {
-	exit($c->error("Unable to connect to usenet."));
+	exit($cli->error("Unable to connect to usenet."));
 }
 
 $number = 1000000;
@@ -38,7 +42,7 @@ for ($x = $first; $x <= $last; $x += 5000) {
 	$y = $x + 4999;
 
 	echo "Grabbing " . $x . " -> " . $y . "\n";
-	$msgs = $nntp->getOverview((int)$x . "-" . (int)$y, true, false);
+	$msgs = $nntp->getXOVER($x . "-" . $y);
 
 	foreach ($msgs as $msg) {
 		//if (isset($msg[':bytes']))

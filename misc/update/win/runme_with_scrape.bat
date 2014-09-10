@@ -32,7 +32,7 @@ GOTO TOP
 
 :Optimise
 CD..
-php.exe optimise_db.php
+php.exe optimise_db.php space
 set optimise=0
 CD win
 GOTO OptimiseDone

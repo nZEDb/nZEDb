@@ -1,30 +1,5 @@
 #!/usr/bin/env bash
 
-export NZEDB_ROOT="$(pwd)"
-export NZEDB_A_CONFIG=$NZEDB_ROOT/www/automated.config.php
-
-# Get the user values in automated.config.php.
-nZEDb_ECHOCLI=`grep -e "define('nZEDb_ECHOCLI', .*);" $NZEDB_A_CONFIG`
-nZEDb_DEBUG=`grep -e "define('nZEDb_DEBUG', .*);" $NZEDB_A_CONFIG`
-nZEDb_LOGGING=`grep -e "define('nZEDb_LOGGING', .*);" $NZEDB_A_CONFIG`
-nZEDb_LOGINFO=`grep -e "define('nZEDb_LOGINFO', .*);" $NZEDB_A_CONFIG`
-nZEDb_LOGNOTICE=`grep -e "define('nZEDb_LOGNOTICE', .*);" $NZEDB_A_CONFIG`
-nZEDb_LOGWARNING=`grep -e "define('nZEDb_LOGWARNING', .*);" $NZEDB_A_CONFIG`
-nZEDb_LOGERROR=`grep -e "define('nZEDb_LOGERROR', .*);" $NZEDB_A_CONFIG`
-nZEDb_LOGFATAL=`grep -e "define('nZEDb_LOGFATAL', .*);" $NZEDB_A_CONFIG`
-nZEDb_LOGQUERIES=`grep -e "define('nZEDb_LOGQUERIES', .*);" $NZEDB_A_CONFIG`
-
-# Change them to the default values.
-sed -i "s/define('nZEDb_ECHOCLI', false);/define('nZEDb_ECHOCLI', true);/" $NZEDB_A_CONFIG
-sed -i "s/define('nZEDb_DEBUG', true);/define('nZEDb_DEBUG', false);/" $NZEDB_A_CONFIG
-sed -i "s/define('nZEDb_LOGGING', true);/define('nZEDb_LOGGING', false);/" $NZEDB_A_CONFIG
-sed -i "s/define('nZEDb_LOGINFO', true);/define('nZEDb_LOGINFO', false);/" $NZEDB_A_CONFIG
-sed -i "s/define('nZEDb_LOGNOTICE', true);/define('nZEDb_LOGNOTICE', false);/" $NZEDB_A_CONFIG
-sed -i "s/define('nZEDb_LOGWARNING', true);/define('nZEDb_LOGWARNING', false);/" $NZEDB_A_CONFIG
-sed -i "s/define('nZEDb_LOGERROR', true);/define('nZEDb_LOGERROR', false);/" $NZEDB_A_CONFIG
-sed -i "s/define('nZEDb_LOGFATAL', true);/define('nZEDb_LOGFATAL', false);/" $NZEDB_A_CONFIG
-sed -i "s/define('nZEDb_LOGQUERIES', true);/define('nZEDb_LOGQUERIES', false);/" $NZEDB_A_CONFIG
-
 # Add changes.
 git add -i
 
@@ -36,14 +11,3 @@ git add Changelog
 
 # Commit changes.
 git commit
-
-# Set back the users values in automated.config.php
-sed -i "s/define('nZEDb_ECHOCLI', true);/$nZEDb_ECHOCLI/" $NZEDB_A_CONFIG
-sed -i "s/define('nZEDb_DEBUG', false);/$nZEDb_DEBUG/" $NZEDB_A_CONFIG
-sed -i "s/define('nZEDb_LOGGING', false);/$nZEDb_LOGGING/" $NZEDB_A_CONFIG
-sed -i "s/define('nZEDb_LOGINFO', false);/$nZEDb_LOGINFO/" $NZEDB_A_CONFIG
-sed -i "s/define('nZEDb_LOGNOTICE', false);/$nZEDb_LOGNOTICE/" $NZEDB_A_CONFIG
-sed -i "s/define('nZEDb_LOGWARNING', false);/$nZEDb_LOGWARNING/" $NZEDB_A_CONFIG
-sed -i "s/define('nZEDb_LOGERROR', false);/$nZEDb_LOGERROR/" $NZEDB_A_CONFIG
-sed -i "s/define('nZEDb_LOGFATAL', false);/$nZEDb_LOGFATAL/" $NZEDB_A_CONFIG
-sed -i "s/define('nZEDb_LOGQUERIES', false);/$nZEDb_LOGQUERIES/" $NZEDB_A_CONFIG

@@ -35,7 +35,7 @@ class ReleaseImage
 	 *
 	 * @var string
 	 */
-	public $moveimgSavePath;
+	public $movieImgSavePath;
 
 	/**
 	 * Path to save video ogv files.
@@ -46,16 +46,19 @@ class ReleaseImage
 
 	/**
 	 * Construct.
+	 * @param \nzedb\db\Settings()
 	 */
-	public function __construct()
+	public function __construct(&$pdo = null)
 	{
 		// Creates the nZEDb_COVERS constant
-		$s = new Sites();
+		if ($pdo === null) {
+			$pdo = new \nzedb\db\Settings();
+		}
 		//                                                            Table    |  Column
 		$this->audSavePath    = nZEDb_COVERS . 'audiosample' . DS; // releases    guid
 		$this->imgSavePath    = nZEDb_COVERS . 'preview'     . DS; // releases    guid
 		$this->jpgSavePath    = nZEDb_COVERS . 'sample'      . DS; // releases    guid
-		$this->movimgSavePath = nZEDb_COVERS . 'movies'      . DS; // releases    imdbid
+		$this->movieImgSavePath = nZEDb_COVERS . 'movies'      . DS; // releases    imdbid
 		$this->vidSavePath    = nZEDb_COVERS . 'video'       . DS; // releases    guid
 
 		/* For reference. *
@@ -81,7 +84,7 @@ class ReleaseImage
 		$img = false;
 
 		if (strpos(strtolower($imgLoc), 'http:') === 0) {
-			$img = nzedb\utility\getUrl($imgLoc);
+			$img = nzedb\utility\Utility::getUrl(['url' => $imgLoc]);
 		} else if (is_file($imgLoc)) {
 			$img = @file_get_contents($imgLoc);
 		}

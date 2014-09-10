@@ -1,0 +1,1 @@
+INSERT IGNORE INTO settings(setting, name, value, hint) VALUES('mischashedretentionhours', 'mischashedretentionhours', '0', 'The number of hours releases categorized as Misc->Hashed will be retained. Set to 0 to disable.');

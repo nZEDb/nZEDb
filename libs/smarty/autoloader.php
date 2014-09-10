@@ -20,10 +20,8 @@ spl_autoload_register(
 			if (file_exists($spec)) {
 				require_once $spec;
 				break;
-			} else {
-				if (nZEDb_DEBUG) {
-					var_dump($spec);
-				}
+			} else if (nZEDb_LOGAUTOLOADER) {
+				var_dump($spec);
 			}
 		}
 	}

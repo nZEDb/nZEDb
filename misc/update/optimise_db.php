@@ -1,42 +1,35 @@
 <?php
 require_once dirname(__FILE__) . '/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
-$c = new ColorCLI();
-$db = new DB();
-$type = $db->dbSystem();
-if (isset($argv[1]) && ($argv[1] === "run" || $argv[1] === "true" || $argv[1] === "all" || $argv[1] === "full" || $argv[1] === "analyze")) {
-	if ($type == 'mysql') {
-		$a = 'MySQL';
-		$b = 'Optimizing';
-		$d = 'Optimized';
-	} else if ($type == 'pgsql') {
-		$a = 'PostgreSQL';
-		$b = 'Vacuuming';
-		$d = 'Vacuumed';
-	}
-	$e = 'Analyzed';
-	$f = 'Analyzing';
+$pdo = new Settings();
+if (isset($argv[1]) && in_array($argv[1], ['space', 'analyze', 'full'])) {
 
 	if ($argv[1] === 'analyze') {
-		echo $c->header($f." ".$a." tables, this can take a while...");
+		echo $pdo->log->header('Analyzing MySQL tables, this can take a while...' . PHP_EOL);
 	} else {
-		echo $c->header($b." ".$a." tables, should be quick...");
+		echo $pdo->log->header('Optimizing MySQL tables, should be quick...' . PHP_EOL);
 	}
-	$tablecnt = $db->optimise(false, $argv[1]);
-	if ($tablecnt > 0 && $argv[1] === 'analyze') {
-		exit($c->header("\n{$e} {$tablecnt} {$a} tables succesfuly."));
-	} else if ($tablecnt > 0) {
-		exit($c->header("\n{$d} {$tablecnt} {$a} tables succesfuly."));
+	$tableCount = $pdo->optimise(false, $argv[1], (isset($argv[2]) && $argv[2] === 'true'), (isset($argv[3]) ? [$argv[3]] : []));
+	if ($tableCount > 0 && $argv[1] === 'analyze') {
+		exit($pdo->log->header("Analyzed {$tableCount} MySQL tables successfully." . PHP_EOL));
+	} else if ($tableCount > 0) {
+		exit($pdo->log->header("Optimized {$tableCount} MySQL tables successfully." . PHP_EOL));
 	} else {
-		exit($c->notice("\nNo {$a} tables to optimize."));
+		exit($pdo->log->notice('No MySQL tables to optimize.' . PHP_EOL));
 	}
 } else {
-	exit($c->error("\nThis script will optimise the tables.\n\n"
-		. "php $argv[0] run          ...: Optimise the tables that have freespace > 5%.\n"
-		. "php $argv[0] true         ...: Force Optimise on all tables.\n"
-		. "php $argv[0] all          ...: Optimise all tables at once that have freespace > 5%.\n"
-		. "php $argv[0] full         ...: Force Optimise all tables at once.\n"
-		. "php $argv[0] analyze      ...: Analyze tables to rebuild statistics.\n"));
+	exit($pdo->log->error(
+			'This script will optimise the tables.' . PHP_EOL .
+			'Argument 1:' . PHP_EOL .
+			'space        ...: Optimise the tables that have free space > 5%.' . PHP_EOL .
+			'full         ...: Force Optimise on all tables.' . PHP_EOL .
+			'analyze      ...: Analyze tables to rebuild statistics.' . PHP_EOL . PHP_EOL .
+			'Argument 2:' . PHP_EOL .
+			'true|false   ...: (Optional) Work on local tables? (good for replication).' . PHP_EOL . PHP_EOL .
+			'Argument 3:' . PHP_EOL .
+			'Table Name   ...: (Optional) Name of a MySQL table, like releases' . PHP_EOL
+		)
+	);
 }

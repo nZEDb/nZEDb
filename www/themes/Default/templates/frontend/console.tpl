@@ -74,26 +74,6 @@
 								alt=""/></a><a title="Sort Ascending" href="{$orderbyreleasedate_asc}"><img
 								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt=""/></a>
 				</th>
-				<th>posted<br/><a title="Sort Descending" href="{$orderbyposted_desc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif"
-								alt=""/></a><a title="Sort Ascending" href="{$orderbyposted_asc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt=""/></a>
-				</th>
-				<th>size<br/><a title="Sort Descending" href="{$orderbysize_desc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif"
-								alt=""/></a><a title="Sort Ascending" href="{$orderbysize_asc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt=""/></a>
-				</th>
-				<th>files<br/><a title="Sort Descending" href="{$orderbyfiles_desc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif"
-								alt=""/></a><a title="Sort Ascending" href="{$orderbyfiles_asc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt=""/></a>
-				</th>
-				<th>stats<br/><a title="Sort Descending" href="{$orderbystats_desc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif"
-								alt=""/></a><a title="Sort Ascending" href="{$orderbystats_asc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt=""/></a>
-				</th>
 			</tr>
 
 			{foreach from=$results item=result}
@@ -101,20 +81,20 @@
 					<td class="mid">
 						<div class="movcover">
 							<a class="title" title="View details"
-							   href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">
+							   href="{$smarty.const.WWW_TOP}/details/{$result.grp_release_guid}/{$result.grp_release_name|escape:"htmlall"}">
 								<img class="shadow"
 									 src="{$smarty.const.WWW_TOP}/covers/console/{if $result.cover == 1}{$result.consoleinfoid}.jpg{else}no-cover.jpg{/if}"
 									 width="120" border="0" alt="{$result.title|escape:"htmlall"}"/>
 							</a>
 
 							<div class="movextra">
-								{if $result.nfoid > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}"
+								{if $result.nfoid > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$result.grp_release_guid}"
 														 title="View Nfo" class="rndbtn modal_nfo" rel="nfo">
 										Nfo</a>{/if}
 								<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}{$result.url}"
 								   name="amazon{$result.consoleinfoid}" title="View amazon page">Amazon</a>
 								<a class="rndbtn" target="_blank"
-								   href="{$site->dereferrer_link}http://ign.com/search?q={$result.title|escape:"htmlall"}/"
+								   href="{$site->dereferrer_link}http://ign.com/search?q={$result.title|escape:"htmlall"}&page=0&count=10&type=object&objectType=game&filter=games&"
 								   name="ign{$result.consoleinfoid}" title="View ign page">IGN</a>
 								<a class="rndbtn" target="_blank"
 								   href="{$site->dereferrer_link}http://www.gamespot.com/search/?qs={$result.title|escape:"htmlall"}/"
@@ -125,9 +105,9 @@
 							</div>
 						</div>
 					</td>
-					<td colspan="8" class="left" id="guid{$result.guid}">
+					<td colspan="8" class="left" id="guid{$result.grp_release_guid}">
 						<h2><a class="title" title="View details"
-							   href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.title|stripslashes|escape:"htmlall"}
+							   href="{$smarty.const.WWW_TOP}/details/{$result.grp_release_guid}/{$result.grp_release_name|escape:"htmlall"}">{$result.title|stripslashes|escape:"htmlall"}
 								- {$result.platform|escape:"htmlall"}</a></h2>
 						{if $result.genre != ""}<b>Genre:</b>{$result.genre}<br/>{/if}
 						{if $result.esrb != ""}<b>Rating:</b>{$result.esrb}<br/>{/if}

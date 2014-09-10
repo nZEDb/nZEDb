@@ -195,14 +195,14 @@ CREATE TABLE releasecomment (
 	id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 	releaseid INT(11) UNSIGNED NOT NULL,
 	text VARCHAR(2000) NOT NULL DEFAULT '',
-	userid INT(11) UNSIGNED NOT NULL,
+	user_id INT(11) UNSIGNED NOT NULL,
 	createddate DATETIME DEFAULT NULL,
 	host VARCHAR(15) NULL,
 	PRIMARY KEY (id)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1;
 
 CREATE INDEX ix_releasecomment_releaseid ON releasecomment (releaseid);
-CREATE INDEX ix_releasecomment_userid ON releasecomment (userid);
+CREATE INDEX ix_releasecomment_userid ON releasecomment (user_id);
 
 DROP TABLE IF EXISTS predb;
 CREATE TABLE predb (
@@ -293,7 +293,7 @@ CREATE TABLE IF NOT EXISTS forumpost (
 	id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 	forumid INT(11) NOT NULL DEFAULT '1',
 	parentid INT(11) NOT NULL DEFAULT '0',
-	userid INT(11) UNSIGNED NOT NULL,
+	user_id INT(11) UNSIGNED NOT NULL,
 	subject VARCHAR(255) NOT NULL,
 	message TEXT NOT NULL,
 	locked TINYINT(1) UNSIGNED NOT NULL DEFAULT '0',
@@ -303,7 +303,7 @@ CREATE TABLE IF NOT EXISTS forumpost (
 	updateddate DATETIME NOT NULL,
 	PRIMARY KEY (id),
 	KEY parentid (parentid),
-	KEY userid (userid),
+	KEY userid (user_id),
 	KEY createddate (createddate),
 	KEY updateddate (updateddate)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1;
@@ -468,26 +468,26 @@ CREATE TABLE users (
 DROP TABLE IF EXISTS userseries;
 CREATE TABLE userseries (
 	id INT(16) UNSIGNED NOT NULL AUTO_INCREMENT,
-	userid int(16) NOT NULL,
+	user_id int(16) NOT NULL,
 	rageid int(16) NOT NULL,
 	categoryid VARCHAR(64) NULL DEFAULT NULL,
 	createddate DATETIME NOT NULL,
 	PRIMARY KEY (id)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1;
 
-CREATE INDEX ix_userseries_userid ON userseries (userid, rageid);
+CREATE INDEX ix_userseries_userid ON userseries (user_id, rageid);
 
 DROP TABLE IF EXISTS usermovies;
 CREATE TABLE usermovies (
 	id INT(16) UNSIGNED NOT NULL AUTO_INCREMENT,
-	userid int(16) NOT NULL,
+	user_id int(16) NOT NULL,
 	imdbid MEDIUMINT(7) UNSIGNED ZEROFILL NULL,
 	categoryid VARCHAR(64) NULL DEFAULT NULL,
 	createddate DATETIME NOT NULL,
 	PRIMARY KEY (id)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1;
 
-CREATE INDEX ix_usermovies_userid ON usermovies (userid, imdbid);
+CREATE INDEX ix_usermovies_userid ON usermovies (user_id, imdbid);
 
 DROP TABLE IF EXISTS tvrageepisodes;
 CREATE TABLE tvrageepisodes (
@@ -519,51 +519,51 @@ CREATE TABLE userroles (
 DROP TABLE IF EXISTS userrequests;
 CREATE TABLE userrequests (
 	id int(10) unsigned NOT NULL AUTO_INCREMENT,
-	userid int(16) NOT NULL,
+	user_id int(16) NOT NULL,
 	request varchar(255) COLLATE utf8_unicode_ci NOT NULL,
 	timestamp datetime NOT NULL,
 	PRIMARY KEY (id),
-	KEY userid (userid),
+	KEY userid (user_id),
 	KEY timestamp (timestamp)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;
 
 DROP TABLE IF EXISTS userdownloads;
 CREATE TABLE userdownloads (
 	id int(10) unsigned NOT NULL AUTO_INCREMENT,
-	userid int(16) NOT NULL,
+	user_id int(16) NOT NULL,
 	timestamp datetime NOT NULL,
 	PRIMARY KEY (id),
-	KEY userid (userid),
+	KEY userid (user_id),
 	KEY timestamp (timestamp)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;
 
 DROP TABLE IF EXISTS usercart;
 CREATE TABLE usercart (
 	id INT(16) UNSIGNED NOT NULL AUTO_INCREMENT,
-	userid INT NOT NULL ,
+	user_id INT NOT NULL ,
 	releaseid INT NOT NULL,
 	createddate DATETIME NOT NULL,
 	PRIMARY KEY (id)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1;
 
-CREATE UNIQUE INDEX ix_usercart_userrelease ON usercart (userid, releaseid);
+CREATE UNIQUE INDEX ix_usercart_userrelease ON usercart (user_id, releaseid);
 
 DROP TABLE IF EXISTS userexcat;
 CREATE TABLE userexcat (
 	id INT(16) UNSIGNED NOT NULL AUTO_INCREMENT,
-	userid INT NOT NULL ,
+	user_id INT NOT NULL ,
 	categoryid INT NOT NULL,
 	createddate DATETIME NOT NULL,
 	PRIMARY KEY (id)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1;
 
-CREATE UNIQUE INDEX ix_userexcat_usercat ON userexcat (userid, categoryid);
+CREATE UNIQUE INDEX ix_userexcat_usercat ON userexcat (user_id, categoryid);
 
 DROP TABLE IF EXISTS userinvite;
 CREATE TABLE userinvite (
 	id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 	guid varchar(50) NOT NULL,
-	userid int(11) UNSIGNED NOT NULL,
+	user_id int(11) UNSIGNED NOT NULL,
 	createddate datetime NOT NULL,
 	PRIMARY KEY (id)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1;

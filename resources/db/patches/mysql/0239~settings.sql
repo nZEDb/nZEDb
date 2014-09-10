@@ -1,0 +1,1 @@
+INSERT IGNORE INTO settings (name , value, setting) VALUES ('minsizetopostprocess', '1', 'minsizetopostprocess');

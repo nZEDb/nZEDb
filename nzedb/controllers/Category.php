@@ -1,6 +1,6 @@
 <?php
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 class Category
 {
@@ -25,6 +25,7 @@ class Category
 	const CAT_MOVIE_3D = 2050;
 	const CAT_MOVIE_BLURAY = 2060;
 	const CAT_MOVIE_DVD = 2070;
+	const CAT_MOVIE_WEBDL = 2080;
 	const CAT_MUSIC_MP3 = 3010;
 	const CAT_MUSIC_VIDEO = 3020;
 	const CAT_MUSIC_AUDIOBOOK = 3030;
@@ -74,16 +75,23 @@ class Category
 	const STATUS_DISABLED = 2;
 
 	/**
-	 * @var DB
+	 * @var Settings
 	 */
-	protected $db;
+	public $pdo;
 
 	/**
 	 * Construct.
+	 *
+	 * @param array $options Class instances.
 	 */
-	public function __construct()
+	public function __construct(array $options = array())
 	{
-		$this->db = new DB();
+		$defaults = [
+			'Settings' => null,
+		];
+		$options += $defaults;
+
+		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 	}
 
 	/**
@@ -96,19 +104,52 @@ class Category
 	 */
 	public function get($activeonly = false, $excludedcats = array())
 	{
-		return $this->db->query(
+		return $this->pdo->query(
 			"SELECT c.id, CONCAT(cp.title, ' > ',c.title) AS title, cp.id AS parentid, c.status, c.minsize
 			FROM category c
 			INNER JOIN category cp ON cp.id = c.parentid " .
 			($activeonly ?
 				sprintf(
 					" WHERE c.status = %d %s ",
-					Category::STATUS_ACTIVE,
+					\Category::STATUS_ACTIVE,
 					(count($excludedcats) > 0 ? " AND c.id NOT IN (" . implode(",", $excludedcats) . ")" : '')
 				) : ''
 			) .
 			" ORDER BY c.id"
 		);
+	}
+
+	/**
+	 * Parse category search constraints
+	 *
+	 * @param array $cat
+	 *
+	 * @return string $catsrch
+	 */
+	public function getCategorySearch($cat = array())
+	{
+		$catsrch = ' (';
+
+		foreach ($cat as $category) {
+
+			$chlist = '-99';
+
+			if ($category != -1 && $this->isParent($category)) {
+				$children = $this->getChildren($category);
+
+				foreach ($children as $child) {
+					$chlist .= ', ' . $child['id'];
+				}
+			}
+
+			if ($chlist != '-99') {
+				$catsrch .= ' r.categoryid IN (' . $chlist . ') OR ';
+			} else {
+				$catsrch .= sprintf(' r.categoryid = %d OR ', $category);
+			}
+			$catsrch .= '1=2 )';
+		}
+		return $catsrch;
 	}
 
 	/**
@@ -120,7 +161,7 @@ class Category
 	 */
 	public function isParent($cid)
 	{
-		$ret = $this->db->queryOneRow(sprintf("SELECT * FROM category WHERE id = %d AND parentid IS NULL", $cid));
+		$ret = $this->pdo->queryOneRow(sprintf("SELECT * FROM category WHERE id = %d AND parentid IS NULL", $cid));
 		if ($ret) {
 			return true;
 		} else {
@@ -137,9 +178,9 @@ class Category
 	{
 		$act = "";
 		if ($activeonly) {
-			$act = sprintf(" WHERE c.status = %d ", Category::STATUS_ACTIVE);
+			$act = sprintf(" WHERE c.status = %d ", \Category::STATUS_ACTIVE);
 		}
-		return $this->db->query("SELECT c.*, (SELECT title FROM category WHERE id=c.parentid) AS parentName FROM category c " . $act . " ORDER BY c.id");
+		return $this->pdo->query("SELECT c.*, (SELECT title FROM category WHERE id=c.parentid) AS parentName FROM category c " . $act . " ORDER BY c.id");
 	}
 
 	/**
@@ -151,7 +192,7 @@ class Category
 	 */
 	public function getChildren($cid)
 	{
-		return $this->db->query(sprintf("SELECT c.* FROM category c WHERE parentid = %d", $cid));
+		return $this->pdo->query(sprintf("SELECT c.* FROM category c WHERE parentid = %d", $cid));
 	}
 
 	/**
@@ -160,7 +201,7 @@ class Category
 	 */
 	public function getEnabledParentNames()
 	{
-		return $this->db->query("SELECT title FROM category WHERE parentid IS NULL AND status = 1");
+		return $this->pdo->query("SELECT title FROM category WHERE parentid IS NULL AND status = 1");
 	}
 
 	/**
@@ -170,7 +211,7 @@ class Category
 	 */
 	public function getDisabledIDs()
 	{
-		return $this->db->query("SELECT id FROM category WHERE status = 2 OR parentid IN (SELECT id FROM category WHERE status = 2 AND parentid IS NULL)");
+		return $this->pdo->query("SELECT id FROM category WHERE status = 2 OR parentid IN (SELECT id FROM category WHERE status = 2 AND parentid IS NULL)");
 	}
 
 	/**
@@ -182,7 +223,7 @@ class Category
 	 */
 	public function getById($id)
 	{
-		return $this->db->queryOneRow(
+		return $this->pdo->queryOneRow(
 			sprintf(
 				"SELECT c.disablepreview, c.id,
 					CONCAT(COALESCE(cp.title,'') ,
@@ -205,7 +246,7 @@ class Category
 	public function getByIds($ids)
 	{
 		if (count($ids) > 0) {
-			return $this->db->query(
+			return $this->pdo->query(
 				sprintf(
 					"SELECT CONCAT(cp.title, ' > ',c.title) AS title
 					FROM category c
@@ -230,11 +271,11 @@ class Category
 	 */
 	public function update($id, $status, $desc, $disablepreview, $minsize)
 	{
-		return $this->db->queryExec(
+		return $this->pdo->queryExec(
 			sprintf(
 				"UPDATE category SET disablepreview = %d, status = %d, description = %s, minsize = %d
 				WHERE id = %d",
-				$disablepreview, $status, $this->db->escapeString($desc), $minsize, $id
+				$disablepreview, $status, $this->pdo->escapeString($desc), $minsize, $id
 			)
 		);
 	}
@@ -253,7 +294,7 @@ class Category
 			$exccatlist = ' AND id NOT IN (' . implode(',', $excludedcats) . ')';
 		}
 
-		$arr = $this->db->query(sprintf('SELECT * FROM category WHERE status = %d %s', Category::STATUS_ACTIVE, $exccatlist));
+		$arr = $this->pdo->query(sprintf('SELECT * FROM category WHERE status = %d %s', \Category::STATUS_ACTIVE, $exccatlist));
 		foreach ($arr as $a) {
 			if ($a['parentid'] == '') {
 				$ret[] = $a;
@@ -309,8 +350,8 @@ class Category
 	 */
 	public function getNameByID($ID)
 	{
-		$parent = $this->db->queryOneRow(sprintf("SELECT title FROM category WHERE id = %d", substr($ID, 0, 1) . "000"));
-		$cat = $this->db->queryOneRow(sprintf("SELECT title FROM category WHERE id = %d", $ID));
+		$parent = $this->pdo->queryOneRow(sprintf("SELECT title FROM category WHERE id = %d", substr($ID, 0, 1) . "000"));
+		$cat = $this->pdo->queryOneRow(sprintf("SELECT title FROM category WHERE id = %d", $ID));
 		return $parent["title"] . " " . $cat["title"];
 	}
 }

@@ -1,0 +1,1 @@
+INSERT IGNORE INTO settings(setting, name, value, hint) VALUES('nfothreads', 'nfothreads', '1', 'The number of threads for nfo postprocessing. The max is 16, if you set anything higher it will use 16.');

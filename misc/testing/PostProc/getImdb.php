@@ -2,15 +2,16 @@
 //This script will update all records in the movieinfo table
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
-$movie = new Movie(true);
-$db = new Db();
-$c = new ColorCLI();
+$pdo = new Settings();
+$c = new \ColorCLI();
+$movie = new \Movie(['Echo' => true, 'Settings' => $pdo]);
 
-$movies = $db->queryDirect("SELECT imdbid FROM movieinfo WHERE tmdbid IS NULL ORDER BY id ASC");
-if ($movies->rowCount() > 0) {
-	echo $c->header("Updating movie info for " . number_format($movies->rowCount()) . " movies.");
+
+$movies = $pdo->queryDirect("SELECT imdbid FROM movieinfo WHERE tmdbid IS NULL ORDER BY id ASC");
+if ($movies instanceof \Traversable) {
+	echo $pdo->log->header("Updating movie info for " . number_format($movies->rowCount()) . " movies.");
 
 	foreach ($movies as $mov) {
 		$starttime = microtime(true);

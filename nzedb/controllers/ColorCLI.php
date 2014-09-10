@@ -259,7 +259,7 @@ class ColorCLI
 
 	public static function warningOver($str)
 	{
-		$str = "\033[38;5;" . self::$colors256['Red'] . "m";
+		$str = "\033[38;5;" . self::$colors256['Red'] . "m$str\033[0m";
 		return $str;
 	}
 

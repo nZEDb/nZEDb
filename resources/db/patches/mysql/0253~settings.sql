@@ -1,0 +1,2 @@
+INSERT IGNORE INTO settings (name , value, setting, hint) VALUES ('lookupxxx', '0', 'lookupxxx', 'Whether to attempt to lookup XXX information from ADE or Popporn when processing binaries.');
+INSERT IGNORE INTO settings (name , value, setting, hint) VALUES ('maxxxxprocessed', '100', 'maxxxxprocessed', 'The maximum amount of XXX to process per run. This does not use an NNTP connection or query Amazon.');

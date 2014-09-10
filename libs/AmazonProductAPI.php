@@ -33,6 +33,23 @@
 class AmazonProductAPI
 {
 	/**
+	 * Constants for product types
+	 *
+	 * @note More categories can be found here:
+	 *       http://docs.amazonwebservices.com/AWSECommerceService/latest/DG/APPNDX_SearchIndexValues.html
+	 *
+	 * @var string
+	 */
+	const BOOKS      = "Books";
+	const DIGITALMUS = "DigitalMusic";
+	const DVD        = "DVD";
+	// This can be DigitalDownloads as well.
+	const GAMES       = "VideoGames";
+	const MP3         = "MP3Downloads";
+	const MUSICTRACKS = "MusicTracks";
+	const MUSIC       = "Music";
+
+	/**
 	 * Your Amazon Access Key Id
 	 * @access private
 	 * @var string
@@ -113,23 +130,6 @@ class AmazonProductAPI
 	const sleepIncrease = 1;
 
 	/**
-	 * Constants for product types
-	 *
-	 * @note More categories can be found here:
-	 *       http://docs.amazonwebservices.com/AWSECommerceService/latest/DG/APPNDX_SearchIndexValues.html
-	 *
-	 * @var string
-	 */
-	const BOOKS = "Books";
-	const DIGITALMUS = "DigitalMusic";
-	const DVD   = "DVD";
-	// This can be DigitalDownloads as well.
-	const MP3	= "MP3Downloads";
-	const MUSICTRACKS	= "MusicTracks";
-	const MUSIC = "Music";
-	const GAMES = "VideoGames";
-
-	/**
 	 * Construct.
 	 *
 	 * @param string $pubk Amazon public key.
@@ -181,22 +181,38 @@ class AmazonProductAPI
 					array(
 						"Operation" => "ItemLookup",
 						"ItemId"        => $search,
-						"SearchIndex"   => AmazonProductAPI::BOOKS,
+						"SearchIndex"   => self::BOOKS,
 						"IdType"        => "ISBN",
 						"ResponseGroup" => "Medium"
 					);
 				break;
 
 			case "TITLE" :
-				$parameters =
-					array(
-						"Operation"     => "ItemSearch",
-						//"Title"       => $search,
-						"Keywords"      => $search,
-						"Sort"          => "relevancerank",
-						"SearchIndex"   => $category,
-						"ResponseGroup" => "Large"
-					);
+				switch($category)
+				{
+					case "MUSICTRACKS" :
+						$parameters =
+							array(
+								"Operation"     => "ItemSearch",
+								//"Title"       => $search,
+								"Keywords"      => $search,
+								"Sort"          => "titlerank",
+								"SearchIndex"   => $category,
+								"ResponseGroup" => "Large"
+							);
+						break;
+					default :
+						$parameters =
+							array(
+								"Operation"     => "ItemSearch",
+								//"Title"       => $search,
+								"Keywords"      => $search,
+								"Sort"          => "relevancerank",
+								"SearchIndex"   => $category,
+								"ResponseGroup" => "Large"
+							);
+						break;
+				}
 				break;
 
 			case "TITLE2" :
@@ -314,7 +330,7 @@ class AmazonProductAPI
 		// Check if there's an error.
 		if (isset($response->Error)) {
 			// Check if we are throttled.
-			if ($this->searchProducts && strpos(strtolower($response->Error->Message), 'throttle') !== false && $this->tries <= self::maxTries) {
+			if ($this->searchProducts && strpos(strtolower($response->Error->Message), 'slower rate') !== false && $this->tries <= self::maxTries) {
 
 				// Sleep to let the throttle wear off.
 				sleep($this->currentSleepTime);
@@ -331,20 +347,20 @@ class AmazonProductAPI
 			// Echo the message.
 			echo $response->Error->Message . "\n";
 			$this->resetVars();
-			throw new Exception($response->Error->Message);
+			throw new \Exception($response->Error->Message);
 		} else if ($response === False) {
 			$this->resetVars();
-			throw new Exception("Could not connect to Amazon.");
+			throw new \Exception("Could not connect to Amazon.");
 		} else if ($response == "missingkey") {
 			$this->resetVars();
-			throw new Exception("Missing Amazon API key or associate tag.");
+			throw new \Exception("Missing Amazon API key or associate tag.");
 		} else {
 			if (isset($response->Items->Item->ItemAttributes->Title)) {
 				$this->resetVars();
 				return ($response);
 			} else {
 				$this->resetVars();
-				throw new Exception("Invalid xml response.");
+				throw new \Exception("Invalid xml response.");
 			}
 		}
 	}
@@ -422,7 +438,7 @@ class AmazonProductAPI
 			curl_setopt($ch, CURLOPT_URL,$request);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 			curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+			curl_setopt_array($ch, nzedb\utility\Utility::curlSslContextOptions());
 
 			$xml_response = curl_exec($ch);
 			if ($xml_response === False) {

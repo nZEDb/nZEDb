@@ -1,6 +1,6 @@
 <?php
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 use nzedb\utility;
 
 class Sites
@@ -20,12 +20,27 @@ class Sites
 	const ERR_BAD_COVERS_PATH = -9;
 	const ERR_BAD_YYDECODER_PATH = -10;
 
+	/**
+	 * @var nzedb\db\Settings
+	 */
 	protected $_db;
+
+	/**
+	 * @var \nzedb\utility\Versions|bool
+	 */
 	protected $_versions = false;
 
-	public function __construct()
+	/**
+	 * @param array $options Class instances.
+	 */
+	public function __construct(array $options = array())
 	{
-		$this->_db = new \nzedb\db\Settings();
+		$defaults = [
+			'Settings' => null,
+		];
+		$options += $defaults;
+
+		$this->_db = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 
 		if (defined('nZEDb_VERSIONS')) {
 			try {
@@ -43,7 +58,7 @@ class Sites
 
 	public function update($form)
 	{
-		$db = $this->_db;
+		$pdo = $this->_db;
 		$site = $this->row2Object($form);
 
 		if (substr($site->nzbpath, strlen($site->nzbpath) - 1) != '/') {
@@ -54,49 +69,49 @@ class Sites
 		// Validate site settings
 		//
 		if ($site->mediainfopath != "" && !is_file($site->mediainfopath)) {
-			return Sites::ERR_BADMEDIAINFOPATH;
+			return \Sites::ERR_BADMEDIAINFOPATH;
 		}
 
 		if ($site->ffmpegpath != "" && !is_file($site->ffmpegpath)) {
-			return Sites::ERR_BADFFMPEGPATH;
+			return \Sites::ERR_BADFFMPEGPATH;
 		}
 
 		if ($site->unrarpath != "" && !is_file($site->unrarpath)) {
-			return Sites::ERR_BADUNRARPATH;
+			return \Sites::ERR_BADUNRARPATH;
 		}
 
 		if (empty($site->nzbpath)) {
-			return Sites::ERR_BADNZBPATH_UNSET;
+			return \Sites::ERR_BADNZBPATH_UNSET;
 		}
 
 		if (!file_exists($site->nzbpath) || !is_dir($site->nzbpath)) {
-			return Sites::ERR_BADNZBPATH;
+			return \Sites::ERR_BADNZBPATH;
 		}
 
 		if (!is_readable($site->nzbpath)) {
-			return Sites::ERR_BADNZBPATH_UNREADABLE;
+			return \Sites::ERR_BADNZBPATH_UNREADABLE;
 		}
 
 		if ($site->checkpasswordedrar == 1 && !is_file($site->unrarpath)) {
-			return Sites::ERR_DEEPNOUNRAR;
+			return \Sites::ERR_DEEPNOUNRAR;
 		}
 
 		if ($site->tmpunrarpath != "" && !file_exists($site->tmpunrarpath)) {
-			return Sites::ERR_BADTMPUNRARPATH;
+			return \Sites::ERR_BADTMPUNRARPATH;
 		}
 
 		if ($site->yydecoderpath != "" && $site->yydecoderpath !== 'simple_php_yenc_decode' && !file_exists($site->yydecoderpath)) {
-			return Sites::ERR_BAD_YYDECODER_PATH;
+			return \Sites::ERR_BAD_YYDECODER_PATH;
 		}
 
 		$sql = $sqlKeys = array();
 		foreach ($form as $settingK => $settingV) {
-			$sql[] = sprintf("WHEN %s THEN %s", $db->escapeString($settingK), $db->escapeString($settingV));
-			$sqlKeys[] = $db->escapeString($settingK);
+			$sql[] = sprintf("WHEN %s THEN %s", $pdo->escapeString($settingK), $pdo->escapeString($settingV));
+			$sqlKeys[] = $pdo->escapeString($settingK);
 		}
 
-		$table = $db->settings();
-		$db->queryExec(
+		$table = $pdo->table();
+		$pdo->queryExec(
 		   sprintf("UPDATE $table SET value = CASE setting %s END WHERE setting IN (%s)",
 								implode(' ', $sql),
 								implode(', ', $sqlKeys)
@@ -108,9 +123,9 @@ class Sites
 
 	public function get()
 	{
-		$db = $this->_db;
-		$table = $db->settings();
-		$rows = $db->query("SELECT setting, value FROM $table WHERE setting != ''");
+		$pdo = $this->_db;
+		$table = $pdo->table();
+		$rows = $pdo->query("SELECT setting, value FROM $table WHERE setting != ''");
 
 		if ($rows === false) {
 			return false;
@@ -129,7 +144,7 @@ class Sites
 	function getSetting($setting = null)
 	{
 		$results = array();
-		$table = $this->_db->settings();
+		$table = $this->_db->table();
 		$sql = "SELECT setting, value FROM $table ";
 		if ($setting !== null) {
 			$sql .= "WHERE setting = '$setting' ";
@@ -137,7 +152,7 @@ class Sites
 		$sql .= 'ORDER BY setting';
 
 		$result = $this->_db->queryArray($sql);
-		if ($result !== false) {
+		if ($result instanceof \Traversable) {
 			foreach($result as $row) {
 				$results[$row['setting']] = $row['value'];
 			}

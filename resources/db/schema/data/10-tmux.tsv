@@ -1,6 +1,6 @@
 setting, value
 defrag_cache	900
-monitor_delay	30
+monitor_delay	300
 tmux_session	nZEDb
 niceness	19
 binaries	0

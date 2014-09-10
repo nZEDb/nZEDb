@@ -1,7 +1,7 @@
 <?php
 require_once './config.php';
 
-$contents = new Contents();
+$contents = new Contents(['Settings' => $page->settings]);
 
 $role = 0;
 if ($page->userdata != null) {

@@ -1,16 +1,14 @@
 <?php
-if (!$users->isLoggedIn()) {
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
-$m = new Movie();
-$s = new Sites();
-$site = $s->get();
+$m = new Movie(['Settings' => $page->settings]);
 
 if (!isset($_GET["id"])) {
 	$_GET["id"] = 1;
 }
-$user = $users->getById($users->currentUserId());
+$user = $page->users->getById($page->users->currentUserId());
 $cpapi = $user['cp_api'];
 $cpurl = $user['cp_url'];
 $page->smarty->assign('cpapi', $cpapi);
@@ -44,5 +42,20 @@ if ($data["info"] == "") {
 	$page->meta_keywords = "view,series,theatre,dvd";
 	$page->meta_description = "View upcoming theatre releases";
 }
+
+/**
+ * Replace _tmb.jpg with user setting from site edit.
+ *
+ * @param string $imageURL    The url to change.
+ * @param string $userSetting The users's setting.
+ *
+ * @return string
+ */
+function replace_quality($imageURL, $userSetting)
+{
+	$types = array('thumbnail' => '_tmb.', 'profile' => '_pro.', 'detailed' => '_det.', 'original' => '_ori.');
+	return str_replace('_tmb.', $types[$userSetting], $imageURL);
+}
+
 $page->content = $page->smarty->fetch('upcoming.tpl');
 $page->render();

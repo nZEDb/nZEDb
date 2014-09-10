@@ -1,10 +1,9 @@
 <?php
 require_once dirname(__FILE__) . '/../../../config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
-$c = new ColorCLI;
-$db = new DB();
+$pdo = new Settings();
 $DIR = nZEDb_MISC;
 $ROOTDIR = nZEDb_ROOT;
 $smarty = SMARTY_DIR . 'templates_c/';
@@ -23,61 +22,46 @@ if (command_exist('php5')) {
 }
 
 if (isset($argv[1])) {
-	$tmux = new Tmux();
-	$running = $tmux->get()->running;
-	$delay = $tmux->get()->monitor_delay;
-	$patch = $tmux->get()->patchdb;
-	$restart = 'false';
-
-	if ($running == '1' && $argv[1] == 'true') {
-		$db->queryExec("UPDATE tmux SET value = '0' WHERE setting = 'RUNNING'");
-		$sleep = $delay;
-		echo $c->header("Stopping tmux scripts and waiting $sleep seconds for all panes to shutdown");
-		$restart = 'true';
-		sleep($sleep);
+	$tmux = new \Tmux();
+	$restart = false;
+	if ($argv[1] === 'true') {
+		$restart = $tmux->isRunning();
 	}
 
-	if ($patch == '1') {
+	if ($tmux->get()->patchdb == '1') {
 		exec("cd $ROOTDIR && git pull");
 
 		//remove folders from smarty
 		if ((count(glob("${smarty}*"))) > 0) {
-			echo $c->info('Removing old stuff from ' . $smarty);
+			echo $pdo->log->info('Removing old stuff from ' . $smarty);
 			exec('rm -rf ' . $smarty . '*');
 		} else {
-			echo $c->info('Nothing to remove from ' . $smarty);
+			echo $pdo->log->info('Nothing to remove from ' . $smarty);
 		}
 
-		echo $c->primary('Patching database - ' . $dbname);
-		exec("$PHP ${DIR}testing/DB/patchDB.php");
+		echo $pdo->log->primary('Patching database - ' . $dbname);
+		exec("$PHP ${ROOTDIR}/cli/update_db.php true");
 	}
 
 	$tablecnt = 0;
-	if ($db->dbSystem() === 'mysql') {
-		$alltables = $db->query('SHOW TABLE STATUS WHERE Data_free / Data_length > 0.005');
-		$tablecnt = count($alltables);
-		foreach ($alltables as $table) {
-			if ($table['name'] != 'predb') {
-				echo $c->primary('Optimizing table: ' . $table['name']);
-				if (strtolower($table['engine']) == 'myisam') {
-					$db->queryDirect('REPAIR TABLE `' . $table['name'] . '`');
-				}
-				$db->queryDirect('OPTIMIZE TABLE `' . $table['name'] . '`');
+
+	$alltables = $pdo->query('SHOW TABLE STATUS WHERE Data_free / Data_length > 0.005');
+	$tablecnt = count($alltables);
+	foreach ($alltables as $table) {
+		if ($table['name'] != 'predb') {
+			echo $pdo->log->primary('Optimizing table: ' . $table['name']);
+			if (strtolower($table['engine']) == 'myisam') {
+				$pdo->queryDirect('REPAIR TABLE `' . $table['name'] . '`');
 			}
-		}
-		$db->queryDirect('FLUSH TABLES');
-	} else if ($db->dbSystem() === 'pgsql') {
-		$alltables = $db->query('SELECT table_name AS name FROM information_schema.tables WHERE table_schema = \'public\'');
-		$tablecnt = count($alltables);
-		foreach ($alltables as $table) {
-			echo $c->primary('Vacuuming table: ' . $table['name']);
-			$db->query('VACUUM (ANALYZE) ' . $table['name']);
+			$pdo->queryDirect('OPTIMIZE TABLE `' . $table['name'] . '`');
 		}
 	}
+	$pdo->queryDirect('FLUSH TABLES');
+
 	if ($restart == 'true' && $argv[1] == 'true') {
-		echo $c->info("Starting tmux scripts");
-		$db->queryExec('update tmux set value = \'1\' where setting = \'RUNNING\'');
+		echo $pdo->log->info("Starting tmux scripts");
+		$pdo->queryExec('update tmux set value = \'1\' where setting = \'RUNNING\'');
 	}
 } else {
-	exit($c->notice("\nIf you have set the settings in admin tmux, then this script will automatically do a git pull, patch the DB and delete the smarty folder contents and optimize the database.\nphp optimize.php true\n\nTo run without stopping tmux scripts run: \nphp optimize.php false\n"));
+	exit($pdo->log->notice("\nIf you have set the settings in admin tmux, then this script will automatically do a git pull, patch the DB and delete the smarty folder contents and optimize the database.\nphp optimize.php true\n\nTo run without stopping tmux scripts run: \nphp optimize.php false\n"));
 }

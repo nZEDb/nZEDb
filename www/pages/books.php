@@ -1,10 +1,10 @@
 <?php
-if (!$users->isLoggedIn()) {
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
-$book = new Books();
-$cat = new Category();
+$book = new Books(['Settings' => $page->settings]);
+$cat = new Category(['Settings' => $page->settings]);
 
 $boocats = $cat->getChildren(Category::CAT_PARENT_BOOKS);
 $btmp = array();
@@ -29,18 +29,20 @@ $ordering = $book->getBookOrdering();
 $orderby = isset($_REQUEST["ob"]) && in_array($_REQUEST['ob'], $ordering) ? $_REQUEST["ob"] : '';
 
 $results = $books = array();
-$results = $book->getBookRange($catarray, $offset, ITEMS_PER_COVER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"]);
+$results = $book->getBookRange($catarray, $offset, ITEMS_PER_COVER_PAGE, $orderby, $page->userdata["categoryexclusions"]);
 
 $maxwords = 50;
-foreach ($results as $result) {
-	if (!empty($result['overview'])) {
-		$words = explode(' ', $result['overview']);
-		if (sizeof($words) > $maxwords) {
-			$newwords = array_slice($words, 0, $maxwords);
-			$result['overview'] = implode(' ', $newwords) . '...';
+if ($results instanceof Traversable) {
+	foreach ($results as $result) {
+		if (!empty($result['overview'])) {
+			$words = explode(' ', $result['overview']);
+			if (sizeof($words) > $maxwords) {
+				$newwords = array_slice($words, 0, $maxwords);
+				$result['overview'] = implode(' ', $newwords) . '...';
+			}
 		}
+		$books[] = $result;
 	}
-	$books[] = $result;
 }
 
 $author = (isset($_REQUEST['author']) && !empty($_REQUEST['author'])) ? stripslashes($_REQUEST['author']) : '';

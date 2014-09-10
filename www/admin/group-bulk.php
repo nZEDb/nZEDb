@@ -6,11 +6,10 @@ $msgs = $error = false;
 // Set the current action.
 $action = (isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view');
 
-switch($action)
-{
+switch($action) {
 	case 'submit':
 		if (isset($_POST['groupfilter'])) {
-			$groups = new Groups;
+			$groups = new Groups();
 			$msgs = $groups->addBulk($_POST['groupfilter'], $_POST['active'], $_POST['backfill']);
 			if (is_string($msgs)) {
 				$error = true;

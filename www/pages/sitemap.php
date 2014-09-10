@@ -9,7 +9,7 @@ if ($page->userdata != null) {
 }
 
 // Useful links.
-$contents = new Contents();
+$contents = new Contents(['Settings' => $page->settings]);
 $contentlist = $contents->getForMenuByTypeAndRole(Contents::TYPEUSEFUL, $role);
 foreach ($contentlist as $content) {
 	$arPages[] = buildURL("Useful Links", $content->title, '/content/' . $content->id . $content->url, 'monthly', '0.50');
@@ -53,10 +53,10 @@ $page->smarty->assign('sitemaps', $arPages);
 if (isset($_GET["type"]) && $_GET["type"] == "xml") {
 	echo $page->smarty->fetch('sitemap-xml.tpl');
 } else {
-	$page->title = $page->site->title . " site map";
-	$page->meta_title = $page->site->title . " site map";
+	$page->title = $page->settings->getSetting('title') . " site map";
+	$page->meta_title = $page->settings->getSetting('title') . " site map";
 	$page->meta_keywords = "sitemap,site,map";
-	$page->meta_description = $page->site->title . " site map shows all our pages.";
+	$page->meta_description = $page->settings->getSetting('title') . " site map shows all our pages.";
 	$page->content = $page->smarty->fetch('sitemap.tpl');
 	$page->render();
 }

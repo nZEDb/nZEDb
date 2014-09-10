@@ -1,2 +1,2 @@
-forumid, parentid, userid, subject, message, locked, sticky, replies
+forumid, parentid, user_id, subject, message, locked, sticky, replies
 1	0	1	Welcome to nZEDb!	Feel free to leave a message.	0	0	0

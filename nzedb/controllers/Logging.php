@@ -1,6 +1,6 @@
 <?php
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 /**
  * Logs/Reports stuff
@@ -15,25 +15,29 @@ class Logging
 
 	/**
 	 * @var object DB Class instance.
-	 * @access private
+	 * @access public
 	 */
-	private $db;
+	public $pdo;
 
 	/**
 	 * @var object Class instance.
-	 * @access private
+	 * @access public
 	 */
-	private $colorCLI;
+	public $colorCLI;
 
 	/**
 	 * Constructor.
 	 *
 	 * @access public
 	 */
-	public function __construct()
+	public function __construct(array $options = array())
 	{
-		$this->db = new DB();
-		$this->colorCLI = new ColorCLI();
+		$defaults = [
+			'Settings' => null,
+		];
+		$options += $defaults;
+
+		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 
 		$this->newLine = PHP_EOL;
 	}
@@ -47,7 +51,7 @@ class Logging
 	 */
 	public function get()
 	{
-		return $this->db->query('SELECT * FROM logging');
+		return $this->pdo->query('SELECT * FROM logging');
 	}
 
 	/**
@@ -62,27 +66,27 @@ class Logging
 	 */
 	public function LogBadPasswd($username='', $host='')
 	{
-		$site = new Sites();
-		$s = $site->get();
 		// If logggingopt is = 0, then we do nothing, 0 = logging off.
-		if ($s->loggingopt == '1') {
-			$this->db->queryInsert(sprintf('INSERT INTO logging (time, username, host) VALUES (NOW(), %s, %s)',
-				$this->db->escapeString($username), $this->db->escapeString($host)));
+		$loggingOpt = $this->pdo->getSetting('loggingopt');
+		$logFile = $this->pdo->getSetting('logfile');
+		if ($loggingOpt == '1') {
+			$this->pdo->queryInsert(sprintf('INSERT INTO logging (time, username, host) VALUES (NOW(), %s, %s)',
+				$this->pdo->escapeString($username), $this->pdo->escapeString($host)));
 		}
-		else if ($s->loggingopt == '2')
+		else if ($loggingOpt == '2')
 		{
-			$this->db->queryInsert(sprintf('INSERT INTO logging (time, username, host) VALUES (NOW(), %s, %s)',
-				$this->db->escapeString($username), $this->db->escapeString($host)));
+			$this->pdo->queryInsert(sprintf('INSERT INTO logging (time, username, host) VALUES (NOW(), %s, %s)',
+				$this->pdo->escapeString($username), $this->pdo->escapeString($host)));
 			$logData = date('M d H:i:s ')."Login Failed for ".$username." from ".$host . "." . $this->newLine;
-			if (isset($s->logfile) && $s->logfile != "") {
-				file_put_contents($s->logfile, $logData, FILE_APPEND);
+			if (isset($logFile) && $logFile != "") {
+				file_put_contents($logFile, $logData, FILE_APPEND);
 			}
 		}
-		else if ($s->loggingopt == '3')
+		else if ($loggingOpt == '3')
 		{
 			$logData = date('M d H:i:s ')."Login Failed for ".$username." from ".$host . "." . $this->newLine;
-			if (isset($s->logfile) && $s->logfile != '') {
-				file_put_contents($s->logfile, $logData, FILE_APPEND);
+			if (isset($logFile) && $logFile != '') {
+				file_put_contents($logFile, $logData, FILE_APPEND);
 			}
 		}
 	}
@@ -94,7 +98,7 @@ class Logging
 	 */
 	public function getTopCombined()
 	{
-		return $this->db->query('SELECT MAX(time) AS time, username, host, COUNT(host) AS count FROM logging GROUP BY host, username ORDER BY count DESC LIMIT 10');
+		return $this->pdo->query('SELECT MAX(time) AS time, username, host, COUNT(host) AS count FROM logging GROUP BY host, username ORDER BY count DESC LIMIT 10');
 	}
 
 	/**
@@ -104,6 +108,6 @@ class Logging
 	 */
 	public function getTopIPs()
 	{
-		return $this->db->query('SELECT MAX(time) AS time, host, COUNT(host) AS count FROM logging GROUP BY host ORDER BY count DESC LIMIT 10');
+		return $this->pdo->query('SELECT MAX(time) AS time, host, COUNT(host) AS count FROM logging GROUP BY host ORDER BY count DESC LIMIT 10');
 	}
 }

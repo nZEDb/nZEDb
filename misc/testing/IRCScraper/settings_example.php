@@ -1,23 +1,74 @@
 <?php
-// If lazy set all usernames/nicknames/names here.
-// MAKE SURE THIS IS UNIQUE, IF SOMEONE HAS THE USERNAME ALREADY YOU WILL GET A BUNCH OF ERRORS, YOU HAVE BEEN WARNED.
+/***********************************************************************************************************************
+ * You can use this to set the NICKNAME, REALNAME and USERNAME below.
+ * You can change them manually below if you have to.
+ * @note THIS MUST NOT BE EMPTY, THIS MUST ALSO BE UNIQUE OR YOU WILL NOT BE ABLE TO CONNECT TO IRC.
+ **********************************************************************************************************************/
 $username = '';
 
-// https://www.synirc.net/servers Try another server if you have issues.
+/***********************************************************************************************************************
+ * The IRC server to connect to.
+ * @note If you have issues connecting, head to https://www.synirc.net/servers and try another server.
+ **********************************************************************************************************************/
 define('SCRAPE_IRC_SERVER', 'contego.ny.us.synirc.net');
-// Use Port 6697 or 7001 and set SCRAPE_IRC_TLS to true for encryption.
+
+/***********************************************************************************************************************
+ * This is the port to the IRC server.
+ * @note If you want use SSL/TLS, use a corresponding port (6697 or 7001 for example), and set SCRAPE_IRC_TLS to true.
+ **********************************************************************************************************************/
 define('SCRAPE_IRC_PORT', '6667');
+
+/***********************************************************************************************************************
+ * If you want to use SSL/TLS encryption on the IRC server, set this to true.
+ * @note Make sure you use a valid SSL/TLS port in SCRAPE_IRC_PORT.
+ **********************************************************************************************************************/
 define('SCRAPE_IRC_TLS', false);
+
+/***********************************************************************************************************************
+ * This is the nick name visible in IRC channels.
+ **********************************************************************************************************************/
 define('SCRAPE_IRC_NICKNAME', "$username");
+
+/***********************************************************************************************************************
+ * This is a name that is visible to others when they type /whois nickname.
+ **********************************************************************************************************************/
 define('SCRAPE_IRC_REALNAME', "$username");
+
+/***********************************************************************************************************************
+ * This is used as part of your "ident" when connecting to IRC.
+ * @note This is also the username for ZNC.
+ **********************************************************************************************************************/
 define('SCRAPE_IRC_USERNAME', "$username");
-// Set to false if you need no password. Use a string (quoted text) if you need a password.
+
+/***********************************************************************************************************************
+ * This is not required by synirc, but if you use ZNC, this is required.
+ * @note Put your password between quotes: 'mypassword'
+ * @note If you are using ZNC and having issues, try 'username:password' or 'username/network:<password>'
+ **********************************************************************************************************************/
 define('SCRAPE_IRC_PASSWORD', false);
-// Regex to ignore categories. Leave empty ('') to not exclude any category.
-// Case sensitive example: '/^(XXX|PDA|EBOOK|MP3)$/'
-// Case insensitive (note the i): '/^(X264|TV)$/i'
+
+/***********************************************************************************************************************
+ * This is an optional field you can use for ignoring categories.
+ * @note If you do not wish to exclude any categories, leave it a empty string: ''
+ * @examples Case sensitive:   '/^(XXX|PDA|EBOOK|MP3)$/'
+ *           Case insensitive: '/^(X264|TV)$/i'
+ **********************************************************************************************************************/
 define('SCRAPE_IRC_CATEGORY_IGNORE', '');
-// Set to true to ignore a source.
+
+/***********************************************************************************************************************
+ * This is an optional field you can use for ignoring PRE titles.
+ * @note If you do not wish to exclude any PRE titles, leave it a empty string: ''
+ * @examples Case insensitive ignore German or XXX in the title: '/\.(German|XXX)\./i'
+ *           This would ignore titles like:
+ *           Yanks.14.06.30.Bianca.Travelman.Is.A.Nudist.XXX.MP4-FUNKY
+ *           Blancanieves.Ein.Maerchen.von.Schwarz.und.Weiss.2012.German.1080p.BluRay.x264-CONTRiBUTiON
+ **********************************************************************************************************************/
+define('SCRAPE_IRC_TITLE_IGNORE', '');
+
+/***********************************************************************************************************************
+ * This is a list of all the sources we fetch PRE's from.
+ * If you want to ignore a source, change it from false to true.
+ **********************************************************************************************************************/
 define('SCRAPE_IRC_SOURCE_IGNORE',
 	serialize(
 		array(

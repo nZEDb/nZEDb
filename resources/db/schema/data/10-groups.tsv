@@ -115,6 +115,7 @@ alt.binaries.sounds.1960s.mp3	This group contains Music from the 1960\'s.	NULL	N
 alt.binaries.sounds.1970s.mp3	This group contains Music from the 1970\'s.	NULL	NULL
 alt.binaries.sounds.audiobooks.repost	This group contains Audiobooks.	NULL	NULL
 alt.binaries.sounds.country.mp3	""	5	NULL
+alt.binaries.sounds.flac	This group contains lossless music.	5	NULL
 alt.binaries.sounds.flac.jazz	This group contains lossless Jazz Music.	5	NULL
 alt.binaries.sounds.jpop	This group contains mostly Jpop music.	NULL	NULL
 alt.binaries.sounds.lossless.1960s	This group contains lossless 1960\'s Music.	5	NULL

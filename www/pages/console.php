@@ -1,11 +1,11 @@
 <?php
-if (!$users->isLoggedIn()) {
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
-$console = new Console();
-$cat = new Category();
-$gen = new Genres();
+$console = new Console(['Settings' => $page->settings]);
+$cat = new Category(['Settings' => $page->settings]);
+$gen = new Genres(['Settings' => $page->settings]);
 
 $concats = $cat->getChildren(Category::CAT_PARENT_GAME);
 $ctmp = array();
@@ -30,7 +30,7 @@ $ordering = $console->getConsoleOrdering();
 $orderby = isset($_REQUEST["ob"]) && in_array($_REQUEST['ob'], $ordering) ? $_REQUEST["ob"] : '';
 
 $results = $consoles = array();
-$results = $console->getConsoleRange($catarray, $offset, ITEMS_PER_COVER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"]);
+$results = $console->getConsoleRange($catarray, $offset, ITEMS_PER_COVER_PAGE, $orderby, $page->userdata["categoryexclusions"]);
 
 $maxwords = 50;
 foreach ($results as $result) {

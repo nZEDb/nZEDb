@@ -59,6 +59,12 @@
 			</td>
 		</tr>
 		<tr>
+			<td>XXX View:</td>
+			<td>
+				<input name="xxxview" type="checkbox" value="1" {if $user.xxxview=="1"}checked="checked"{/if}" />
+			</td>
+		</tr>
+		<tr>
 			<td>Music View:</td>
 			<td>
 				<input name="musicview" type="checkbox" value="1" {if $user.musicview=="1"}checked="checked"{/if}" />
@@ -68,6 +74,15 @@
 			<td>Console View:</td>
 			<td>
 				<input name="consoleview" type="checkbox" value="1" {if $user.consoleview=="1"}checked="checked"{/if}" />
+			</td>
+		</tr>
+		<tr>
+			<td>Game View:</td>
+			<td>
+				<input name="gameview"
+					type="checkbox"
+					value="1"
+					{if $user.gameview=="1"}checked="checked"{/if}" />
 			</td>
 		</tr>
 		<tr>

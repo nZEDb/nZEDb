@@ -1,4 +1,7 @@
 <?php
+
+use \nzedb\processing\PostProcess;
+
 /**
  * Gets information contained within the NZB.
  *
@@ -7,10 +10,10 @@
 Class NZBContents
 {
 	/**
-	 * @var nzedb\db\DB
+	 * @var nzedb\db\Settings
 	 * @access protected
 	 */
-	protected $db;
+	public $pdo;
 
 	/**
 	 * @var NNTP
@@ -65,27 +68,41 @@ Class NZBContents
 	 *
 	 * @param array $options
 	 *     array(
-	 *         'echo'  => bool        ; To echo to CLI or not.
-	 *         'nntp'  => NNTP        ; Class NNTP.
-	 *         'nfo'   => Nfo         ; Class Nfo.
-	 *         'db'    => DB          ; Class nzedb\db\DB.
-	 *         'pp'    => PostProcess ; Class PostProcess.
+	 *         'Echo'        => bool        ; To echo to CLI or not.
+	 *         'NNTP'        => NNTP        ; Class NNTP.
+	 *         'Nfo'         => Nfo         ; Class Nfo.
+	 *         'NZB'         => NZB         ; Class NZB.
+	 *         'Settings'    => DB          ; Class nzedb\db\Settings.
+	 *         'PostProcess' => PostProcess ; Class PostProcess.
 	 *     )
 	 *
 	 * @access public
 	 */
-	public function __construct($options)
+	public function __construct(array $options = array())
 	{
-		$this->echooutput = ($options['echo'] && nZEDb_ECHOCLI);
-		$s = new Sites();
-		$this->site = $s->get();
-		$this->lookuppar2 = ($this->site->lookuppar2 == 1 ? true : false);
-		$this->alternateNNTP = ($this->site->alternate_nntp == 1 ? true : false);
-		$this->db   = $options['db'];
-		$this->nntp = $options['nntp'];
-		$this->nfo  = $options['nfo'];
-		$this->pp   = $options['pp'];
-		$this->nzb  = new NZB();
+		$defaults = [
+			'Echo'        => false,
+			'NNTP'        => null,
+			'Nfo'         => null,
+			'NZB'         => null,
+			'Settings'    => null,
+			'PostProcess' => null,
+		];
+		$options += $defaults;
+
+		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
+		$this->pdo = ($options['Settings'] instanceof \nzedb\db\Settings ? $options['Settings'] : new \nzedb\db\Settings());
+		$this->nntp = ($options['NNTP'] instanceof \NNTP ? $options['NNTP'] : new \NNTP(['Echo' => $this->echooutput, 'Settings' => $this->pdo]));
+		$this->nfo = ($options['Nfo'] instanceof \Nfo ? $options['Nfo'] : new \Nfo(['Echo' => $this->echooutput, 'Settings' => $this->pdo]));
+		$this->pp = (
+			$options['PostProcess'] instanceof PostProcess
+				? $options['PostProcess']
+				: new \PostProcess(['Echo' => $this->echooutput, 'Nfo' => $this->nfo, 'Settings' => $this->pdo])
+		);
+		$this->nzb = ($options['NZB'] instanceof \NZB ? $options['NZB'] : new \NZB($this->pdo));
+
+		$this->lookuppar2 = ($this->pdo->getSetting('lookuppar2') == 1 ? true : false);
+		$this->alternateNNTP = ($this->pdo->getSetting('alternate_nntp') == 1 ? true : false);
 	}
 
 	/**
@@ -111,7 +128,7 @@ Class NZBContents
 			$fetchedBinary = $this->nntp->getMessages($groupName, $messageID['ID'], $this->alternateNNTP);
 			if ($this->nntp->isError($fetchedBinary)) {
 				// NFO download failed, increment attempts.
-				$this->db->queryExec(sprintf('UPDATE releases SET nfostatus = nfostatus - 1 WHERE id = %d', $relID));
+				$this->pdo->queryExec(sprintf('UPDATE releases SET nfostatus = nfostatus - 1 WHERE id = %d', $relID));
 				if ($this->echooutput) {
 					echo 'f';
 				}
@@ -125,14 +142,14 @@ Class NZBContents
 				if ($this->echooutput) {
 					echo '-';
 				}
-				$this->db->queryExec(sprintf('UPDATE releases SET nfostatus = 0 WHERE id = %d', $relID));
+				$this->pdo->queryExec(sprintf('UPDATE releases SET nfostatus = %d WHERE id = %d', \Nfo::NFO_NONFO, $relID));
 				$fetchedBinary = false;
 			}
 		} else {
 			if ($this->echooutput) {
 				echo '-';
 			}
-			$this->db->queryExec(sprintf('UPDATE releases SET nfostatus = 0 WHERE id = %d', $relID));
+			$this->pdo->queryExec(sprintf('UPDATE releases SET nfostatus = %d WHERE id = %d', \Nfo::NFO_NONFO, $relID));
 		}
 
 		return $fetchedBinary;
@@ -158,14 +175,14 @@ Class NZBContents
 			foreach ($nzbFile->file as $nzbContents) {
 				if (preg_match('/\.(par[2" ]|\d{2,3}").+\(1\/1\)$/i', (string)$nzbContents->attributes()->subject)) {
 					if ($this->pp->parsePAR2((string)$nzbContents->segments->segment, $relID, $groupID, $this->nntp, $show) === true && $nameStatus === 1) {
-						$this->db->queryExec(sprintf('UPDATE releases SET proc_par2 = 1 WHERE id = %d', $relID));
+						$this->pdo->queryExec(sprintf('UPDATE releases SET proc_par2 = 1 WHERE id = %d', $relID));
 						return true;
 					}
 				}
 			}
 		}
 		if ($nameStatus === 1) {
-			$this->db->queryExec(sprintf('UPDATE releases SET proc_par2 = 1 WHERE id = %d', $relID));
+			$this->pdo->queryExec(sprintf('UPDATE releases SET proc_par2 = 1 WHERE id = %d', $relID));
 		}
 		return false;
 	}
@@ -223,7 +240,7 @@ Class NZBContents
 				if ($foundPAR2 === false) {
 					if (preg_match('/\.(par[2" ]|\d{2,3}").+\(1\/1\)$/i', $subject)) {
 						if ($this->pp->parsePAR2((string)$nzbcontents->segments->segment, $relID, $groupID, $this->nntp, 1) === true) {
-							$this->db->queryExec(sprintf('UPDATE releases SET proc_par2 = 1 WHERE id = %d', $relID));
+							$this->pdo->queryExec(sprintf('UPDATE releases SET proc_par2 = 1 WHERE id = %d', $relID));
 							$foundPAR2 = true;
 						}
 					}
@@ -239,7 +256,7 @@ Class NZBContents
 				$completion = 100;
 			}
 
-			$this->db->queryExec(sprintf('UPDATE releases SET completion = %d WHERE id = %d', $completion, $relID));
+			$this->pdo->queryExec(sprintf('UPDATE releases SET completion = %d WHERE id = %d', $completion, $relID));
 
 			if ($foundNFO === true && strlen($messageID) > 1) {
 				return array('hidden' => false, 'ID' => $messageID);
@@ -270,8 +287,8 @@ Class NZBContents
 			return false;
 		}
 
-		$nzbPath = 'compress.zlib://' . $nzbPath;
-		if (!$nzbPath) {
+		$nzbContents = nzedb\utility\Utility::unzipGzipFile($nzbPath);
+		if (!$nzbContents) {
 			if ($this->echooutput) {
 				echo
 					PHP_EOL .
@@ -285,7 +302,7 @@ Class NZBContents
 			return false;
 		}
 
-		$nzbFile = @simplexml_load_file($nzbPath);
+		$nzbFile = @simplexml_load_string($nzbContents);
 		if (!$nzbFile) {
 			if ($this->echooutput) {
 				echo PHP_EOL . "Unable to load NZB: $guid appears to be an invalid NZB, skipping." . PHP_EOL;
