@@ -12,14 +12,14 @@ class CollectionsCleaning
 	 * @const
 	 * @string
 	 */
-	const regexEndString = '[- ]{0,3}yEnc$/';
+	const REGEX_END = '[- ]{0,3}yEnc$/';
 
 	/**
 	 * Used for matching file extension endings in article subjects.
 	 * @const
 	 * @string
 	 */
-	const regexFileExtensionString = '([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|")';
+	const REGEX_FILE_EXTENSIONS = '([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|")';
 
 	/**
 	 * Used for matching size strings in article subjects.
@@ -27,7 +27,7 @@ class CollectionsCleaning
 	 * @const
 	 * @string
 	 */
-	const regexSizeString = '[- ]{0,3}\d+([.,]\d+)? [kKmMgG][bB][- ]{0,3}';
+	const REGEX_SUBJECT_SIZE = '[- ]{0,3}\d+([.,]\d+)? [kKmMgG][bB][- ]{0,3}';
 
 	/**
 	 * @var string
@@ -60,9 +60,9 @@ class CollectionsCleaning
 	public function __construct()
 	{
 		// Extensions.
-		$this->e0 = self::regexFileExtensionString;
-		$this->e1 = self::regexFileExtensionString . self::regexEndString;
-		$this->e2 = self::regexFileExtensionString . self::regexSizeString . self::regexEndString;
+		$this->e0 = self::REGEX_FILE_EXTENSIONS;
+		$this->e1 = self::REGEX_FILE_EXTENSIONS . self::REGEX_END;
+		$this->e2 = self::REGEX_FILE_EXTENSIONS . self::REGEX_SUBJECT_SIZE . self::REGEX_END;
 	}
 
 	/**
