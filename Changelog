@@ -5,6 +5,8 @@ New updates are grouped by person, at the top of the file.
 
 2014-09-10 Bart39
 	* Mrg: Merging in PR 1497 from tasky.
+2014-09-10 kevin
+	* Fix: Issue where empty nzb would show on API when no results were returned.
 2014-09-10 kaibosh
 	* Fix: Fix for issue 1489 - Specify session name when selecting pane
 2014-09-09 DariusIII
