@@ -21,6 +21,18 @@ define('ITEMS_PER_PAGE', '50');
 define('ITEMS_PER_COVER_PAGE', '20');
 
 /**
+ * How many releases maximum to display in total on browse/search/etc.
+ * If you have ITEMS_PER_PAGE set to 50, and nZEDb_MAX_PAGER_RESULTS set to 125000, you would get a maximum of
+ * 2,500 pages of results in searches/browse.
+ *
+ * @note This setting can speed up browsing releases tremendously if you have millions of releases and you keep it
+ * a relatively low value.
+ *
+ * @default '125000'
+ */
+define('nZEDb_MAX_PAGER_RESULTS', '125000');
+
+/**
  * If the PRE API page (preinfo) is open to the public or only accessible by registered / api users.
  *
  * @default false

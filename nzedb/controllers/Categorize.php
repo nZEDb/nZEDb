@@ -411,6 +411,7 @@ class Categorize extends Category
 				case $group === 'alt.binaries.warez':
 					switch (true) {
 						case $this->isTV():
+						case $this->isMovie():
 						case $this->isPC():
 						case $this->isConsole():
 							break;
@@ -450,7 +451,7 @@ class Categorize extends Category
 //			return false;
 //		}
 
-		if (preg_match('/Daily[-_\.]Show|Nightly News|^\[[a-zA-Z\.\-]+\].*[-_].*\d{1,3}[-_. ]((\[|\()(h264-)?\d{3,4}(p|i)(\]|\))\s?(\[AAC\])?|\[[a-fA-F0-9]{8}\]|(8|10)BIT|hi10p)(\[[a-fA-F0-9]{8}\])?|(\d\d-){2}[12]\d{3}|[12]\d{3}(\.\d\d){2}|\d+x\d+|s\d{1,3}[-._ ]?[ed]\d{1,3}([ex]\d{1,3}|[-.\w ])|[-._ ](\dx\d\d|C4TV|Complete[-._ ]Season|DSR|(D|H|P|S)DTV|EP[-._ ]?\d{1,3}|S\d{1,3}.+Extras|SUBPACK|Season[-._ ]\d{1,2}|WEB\-DL|WEBRip)([-._ ]|$)|TVRIP|TV[-._ ](19|20)\d\d|TrollHD/i', $this->releaseName)
+		if (preg_match('/Daily[-_\.]Show|Nightly News|^\[[a-zA-Z\.\-]+\].*[-_].*\d{1,3}[-_. ]((\[|\()(h264-)?\d{3,4}(p|i)(\]|\))\s?(\[AAC\])?|\[[a-fA-F0-9]{8}\]|(8|10)BIT|hi10p)(\[[a-fA-F0-9]{8}\])?|(\d\d-){2}[12]\d{3}|[12]\d{3}(\.\d\d){2}|\d+x\d+|s\d{1,3}[-._ ]?[ed]\d{1,3}([ex]\d{1,3}|[-.\w ])|[-._ ](\dx\d\d|C4TV|Complete[-._ ]Season|DSR|(D|H|P|S)DTV|EP[-._ ]?\d{1,3}|S\d{1,3}.+Extras|SUBPACK|Season[-._ ]\d{1,2})([-._ ]|$)|TVRIP|TV[-._ ](19|20)\d\d|TrollHD/i', $this->releaseName)
 			&& !preg_match('/[-._ ](flac|imageset|mp3|xxx)[-._ ]|[ .]exe$/i', $this->releaseName)) {
 			switch (true) {
 				case $this->isOtherTV():
@@ -532,7 +533,7 @@ class Categorize extends Category
 
 	public function isWEBDL()
 	{
-		if (preg_match('/web[-._ ]dl/i', $this->releaseName)) {
+		if (preg_match('/web[-._ ]dl|web-?rip/i', $this->releaseName)) {
 			$this->tmpCat = \Category::CAT_TV_WEBDL;
 			return true;
 		}
@@ -555,7 +556,7 @@ class Categorize extends Category
 			return true;
 		}
 		if ($this->catWebDL == false) {
-			if (preg_match('/web[-._ ]dl/i', $this->releaseName)) {
+			if (preg_match('/web[-._ ]dl|web-?rip/i', $this->releaseName)) {
 				$this->tmpCat = \Category::CAT_TV_HD;
 				return true;
 			}
@@ -592,6 +593,7 @@ class Categorize extends Category
 			switch (true) {
 				case $this->categorizeForeign && $this->isMovieForeign():
 				case $this->isMovieDVD():
+				case $this->catWebDL && $this->isMovieWEBDL():
 				case $this->isMovieSD():
 				case $this->isMovie3D():
 				case $this->isMovieBluRay():
@@ -662,6 +664,12 @@ class Categorize extends Category
 			$this->tmpCat = \Category::CAT_MOVIE_HD;
 			return true;
 		}
+		if ($this->catWebDL == false) {
+			if (preg_match('/web[-._ ]dl|web-?rip/i', $this->releaseName)) {
+				$this->tmpCat = \Category::CAT_MOVIE_HD;
+				return true;
+			}
+		}
 		return false;
 	}
 
@@ -669,6 +677,15 @@ class Categorize extends Category
 	{
 		if (preg_match('/[-._ ]cam[-._ ]/i', $this->releaseName)) {
 			$this->tmpCat = \Category::CAT_MOVIE_OTHER;
+			return true;
+		}
+		return false;
+	}
+
+	public function isMovieWEBDL()
+	{
+		if (preg_match('/web[-._ ]dl|web-?rip/i', $this->releaseName)) {
+			$this->tmpCat = \Category::CAT_MOVIE_WEBDL;
 			return true;
 		}
 		return false;
@@ -1054,7 +1071,7 @@ class Categorize extends Category
 	{
 		switch (true) {
 			//They Knew What They Wanted (1940).480p.DVDRIP.MP3-NoGroup -- prevents movies matches with MP3 audio codec in the title
-			case preg_match('/\d{3,4}(p|i)\.DVD(RIP)?\.MP3[-\.].*/i', $this->releaseName):
+			case preg_match('/\d{3,4}(p|i)\.DVD(RIP)?\.MP3[-\.].*|WEB(-DL|-?RIP)/i', $this->releaseName):
 				return false;
 			case $this->isMusicVideo():
 			case $this->isAudiobook():
@@ -1066,6 +1083,7 @@ class Categorize extends Category
 				return false;
 		}
 	}
+
 	public function isMusicForeign()
 	{
 		if ($this->categorizeForeign) {

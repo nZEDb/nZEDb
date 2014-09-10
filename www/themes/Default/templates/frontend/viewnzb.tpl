@@ -76,6 +76,8 @@
 			<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}{$xxx.directurl}" title="View at Adult DVD Empire">ADE</a>
 		{elseif $xxx.classused === "pop"}
 			<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}{$xxx.directurl}/" title="View at Popporn">Popporn</a>
+		{elseif $xxx.classused === "adm"}
+			<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}{$xxx.directurl}/" title="View at Adult DVD Marketplace">ADM</a>
 		{else}
 			<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}{$xxx.directurl}" title="View at Adult Entertainment Broadcast Network">AEBN</a>
 		{/if}
