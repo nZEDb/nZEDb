@@ -13,6 +13,7 @@ if ($movies instanceof \Traversable) {
 	echo $pdo->log->primary("Updating " . number_format($movies->rowCount()) . " movie covers.");
 	foreach ($movies as $mov) {
 		$starttime = microtime(true);
+		echo $pdo->log->primaryOver("Looking up: " . $pdo->log->headerOver($mov['title'])) . "\n";
 		$mov = $movie->updateXXXInfo($mov['title']);
 
 		// sleep so that it's not ddos' the site

@@ -3,6 +3,29 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
+2014-09-09 DariusIII
+	* Upd: Updated codecposter removal with german, french and dutch variants of txt file.
+2014-09-09 bart39
+	* Fix: Namespace issue.
+2014-09-08 bart39
+	* Add: Add python safe binaries / backfill scripts to multiprocessing.
+	* Add: Added fixrelnames to multiprocessing.
+	* Add: Added all multiprocessing examples / options to threaded.sh (copy to user_threaded.sh).
+2014-09-08 kevin
+	* Add: Setting to limit max releases for pager count, can speed up the web pages, update settings.php with nZEDb_MAX_PAGER_RESULTS
+2014-09-08 ruhllatio
+	* Fix: WEB-DL Movie categorization when WEB-DL categorization is disabled
+	* Add: Movie override for a.b.warez byGroup categorization
+	* Chg: Update Tmux to run new multiproc scripts for safe backfill/fixRelNames
+2014-09-07 ruhllatio
+	* Add: WEB-DL category for Movies, they currently go into TV WEB-DL right now
+	* Fix: WEB-DL Movie categorization overridden by TV opening regex
+2014-09-07 kevin
+	* Chg: Change releases to use count instead of SQL_CALC_FOUND_ROWS for pager, should speed up those queries.
+2014-09-06 niel
+	* New: Added couple methods to DB class to allow switching Logging errors on/off during runtime. Useful when you only want to catch errors on a single operation and not be flooded by other info.
+	* Mrg: Merging PR 1490 from tasky.
+	* Mrg: Merging PR 1491 from tasky.
 2014-09-04 kevin
 	* Chg: Define nZEDb_RELEASE_SEARCH_TYPE in automated.config.php if settings.php doesn't exist.
 2014-09-03 bart39

@@ -7,30 +7,6 @@
  */
 class CollectionsCleaning
 {
-
-	/**
-	 * Used for matching endings in article subjects.
-	 * @const
-	 * @string
-	 */
-	const REGEX_END = '[- ]{0,3}yEnc$/';
-
-	/**
-	 * Used for matching file extension endings in article subjects.
-	 * @const
-	 * @string
-	 */
-	const REGEX_FILE_EXTENSIONS = '([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|")';
-
-	/**
-	 * Used for matching size strings in article subjects.
-	 * @example ' - 365.15 KB - '
-	 * @const
-	 * @string
-	 */
-	const REGEX_SIZE = '[- ]{0,3}\d+([.,]\d+)? [kKmMgG][bB][- ]{0,3}';
-
-
 	/**
 	 * @var string
 	 */
@@ -57,14 +33,36 @@ class CollectionsCleaning
 	public $e2;
 
 	/**
+	 * Used for matching file extension endings in article subjects.
+	 * @const
+	 * @string
+	 */
+	const regexFileExtensionString = '([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|")';
+
+	/**
+	 * Used for matching endings in article subjects.
+	 * @const
+	 * @string
+	 */
+	const regexEndString = '[- ]{0,3}yEnc$/';
+
+	/**
+	 * Used for matching size strings in article subjects.
+	 * @example ' - 365.15 KB - '
+	 * @const
+	 * @string
+	 */
+	const regexSizeString = '[- ]{0,3}\d+([.,]\d+)? [kKmMgG][bB][- ]{0,3}';
+
+	/**
 	 *
 	 */
 	public function __construct()
 	{
 		// Extensions.
-		$this->e0 = self::REGEX_FILE_EXTENSIONS;
-		$this->e1 = self::REGEX_FILE_EXTENSIONS . self::REGEX_END;
-		$this->e2 = self::REGEX_FILE_EXTENSIONS . self::REGEX_SIZE . self::REGEX_END;
+		$this->e0 = self::regexFileExtensionString;
+		$this->e1 = self::regexFileExtensionString . self::regexEndString;
+		$this->e2 = self::regexFileExtensionString . self::regexSizeString . self::regexEndString;
 	}
 
 	/**
@@ -2279,13 +2277,11 @@ class CollectionsCleaning
 	protected function multimedia_anime()
 	{
 		//High School DxD New 01 (480p|.avi|xvid|mp3) ~bY Hatsuyuki [01/18] - "[Hatsuyuki]_High_School_DxD_New_01_[848x480][76B2BB8C].avi.001" yEnc
-		if (preg_match('/(.+?\s*\((360|480|720|1080)p\|.+?\s*~bY\s*.+? \[)\d+\/\d+\]\s*-\s*".+?\[[[:xdigit:]+]\].+?' .
-					   self::REGEX_FILE_EXTENSIONS . self::REGEX_END, $this->subject, $match)) {
+		if (preg_match('/(.+? \((360|480|720|1080)p\|.+? ~bY .+? \[)\d+\/\d+\] - ".+?\[[A-F0-9]+\].+?' . $this->e1, $this->subject, $match)) {
 			return $match[1];
 		}
-
 		//[Hatsuyuki]_Seirei_Tsukai_no_Blade_Dance_-_03_[720p] [E18FCA59] [01/18]
-		if (preg_match('#(\[[A-Z0-9]-]+\][\w_-]+_\d+_\[\d{3,4}[ip]\]\s*\[[[:xdigit:]]{8}\])\s\[\d+/\d+\].*#', $this->subject, $match)) {
+		if (preg_match('#\[[:xdigit:]-]+\][\w_-]+_\d+_\[\d{3,4}[ip]\]\s\[[:xdigit:]]{8}\]\s\[\d+/\d+\].*#i', $this->subject, $match)) {
 			return $match[1];
 		}
 		return $this->generic();
@@ -2295,9 +2291,8 @@ class CollectionsCleaning
 	protected function multimedia_anime_highspeed()
 	{
 		//High School DxD New 01 (480p|.avi|xvid|mp3) ~bY Hatsuyuki [01/18] - "[Hatsuyuki]_High_School_DxD_New_01_[848x480][76B2BB8C].avi.001" yEnc
-		if (preg_match('/(?P<name>.+?\s*\((360|480|720|1080)p\|.+?\s*~bY\s*.+?)\s*\[\d+\/\d+\]\s*-\s*".+?\[[A-Z0-9\[\]\.]+.*' .
-					   self::REGEX_FILE_EXTENSIONS . self::REGEX_END, $this->subject, $match)) {
-			return $match[1];
+		if (preg_match('#(.+? \((360|480|720|1080)p\|.+?\s*~bY\s*.+?\s*\[)\d+\/\d+\]\s*-\s*".+?\[[A-Z0-9\[\]\.]+.*#' . $this->e1, $this->subject, $match)) {
+			return $match[2];
 		}
 		return $this->generic();
 	}

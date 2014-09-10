@@ -120,35 +120,11 @@ class ADE
 	 */
 	public function covers()
 	{
-		$this->getUrl($this->_boxCover . $this->_urlFound);
-		$this->_html->load($this->_response);
-		foreach ($this->_html->find("div[id=FrontBoxCover], img[itemprop=image]") as $img) {
-			if (stristr($img->src, "h.jpg")) {
-				$this->_res['boxcover'] = $img->src;
-				break;
-			}
-		}
-		$this->getUrl($this->_backCover . $this->_urlFound);
-		$this->_html->load($this->_response);
-		foreach ($this->_html->find("div[id=BackBoxCover], img[itemprop=image]") as $img) {
-			if (stristr($img->src, "bh.jpg")) {
-				$this->_res['backcover'] = $img->src;
-				break;
-			}
+		if($ret = $this->_html->find("div#Boxcover, img[itemprop=image]", 1)){
+				$this->_res['boxcover'] = preg_replace('/m\.jpg/', 'h.jpg', $ret->src);
+				$this->_res['backcover'] = preg_replace('/m\.jpg/', 'bh.jpg', $ret->src);
 		}
 
-		if(empty($this->_res['boxcover'])){
-		if($ret = $this->_html->find("a[rel=boxcover]",0)){
-			if(stristr($ret->href,"h.jpg")){
-				$this->_res['boxcover'] = $ret->href;
-				$this->_res['backcoer'] = str_ireplace("h.jpg","bh.jpg",$ret->href);
-			}
-			if(stristr($ret->href,"m.jpg")){
-				$this->_res['boxcover'] = str_ireplace("m.jpg","h.jpg",$ret->href);
-				$this->_res['backcoer'] = str_ireplace("m.jpg", "bh.jpg", $ret->href);
-			}
-		}
-		}
 		return $this->_res;
 	}
 
@@ -221,19 +197,23 @@ class ADE
 		$categories = null;
 		$this->_tmpResponse = str_ireplace("Section Categories", "scat", $this->_response);
 		$this->_edithtml->load($this->_tmpResponse);
-		if($ret = $this->_edithtml->find("div[class=scat]", 0)){
-		$this->_tmpResponse = trim($ret->outertext);
-		$ret = $this->_edithtml->load($this->_tmpResponse);
+		if ($ret = $this->_edithtml->find("div[class=scat]", 0)) {
+			$this->_tmpResponse = trim($ret->outertext);
+			$ret = $this->_edithtml->load($this->_tmpResponse);
 
-		foreach ($ret->find("p, a") as $categories) {
-			$categories = trim($categories->plaintext);
-			if (stristr($categories, ",")) {
-				$categories = explode(",", $categories);
-				break;
+			foreach ($ret->find("p, a") as $categories) {
+				$categories = trim($categories->plaintext);
+				if (stristr($categories, ",")) {
+					$categories = explode(",", $categories);
+					break;
+				}
 			}
-		}
-		$categories = array_map('trim', $categories);
-		$this->_res['genres'] = $categories;
+			if (is_array($categories)) {
+				$categories = array_map('trim', $categories);
+			} else {
+				$categories = trim($categories);
+			}
+			$this->_res['genres'] = array_unique($categories);
 		}
 		$this->_edithtml->clear();
 		unset($this->_tmpResponse);
@@ -289,13 +269,9 @@ class ADE
 	 */
 	public function getDirect()
 	{
-		if (isset($this->directlink)) {
-			if ($this->getUrl() === false) {
-				return false;
-			} else {
+		if (!empty($this->directLink) && $this->getUrl() !== false) {
 				$this->_html->load($this->_response);
 				return $this->getAll();
-			}
 		}
 		return false;
 	}
@@ -317,7 +293,7 @@ class ADE
 					$title = preg_replace('/XXX/', '', $title);
 					$title = preg_replace('/\(.*?\)|[-._]/i', ' ', $title);
 					$ret = (string)trim($ret->href);
-					similar_text($this->searchTerm, $title, $p);
+					similar_text(strtolower($this->searchTerm), strtolower($title), $p);
 					if ($p >= 90) {
 						$this->found = true;
 						$this->_urlFound = $ret;
@@ -342,7 +318,7 @@ class ADE
 	/**
 	 * Gets raw html content using adeurl and any trailing url.
 	 *
-	 * @param null $trailing - required
+	 * @param string $trailing - required
 	 *
 	 * @return bool - true if page has content
 	 */
@@ -371,10 +347,8 @@ class ADE
 		return true;
 	}
 
-
-
-	/*
-	 * Gets all Information.
+	/**
+	 * Gets All Information from the methods
 	 *
 	 * @return array
 	 */
