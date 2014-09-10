@@ -72,8 +72,7 @@ class Desura
 	}
 
 	/**
-	 *
-	 * Remove from memory
+	 * Remove object/resources from memory
 	 *
 	 */
 	public function __destruct()
@@ -83,7 +82,7 @@ class Desura
 	}
 
 	/**
-	 * Game Description Snippet
+	 * Game Description
 	 *
 	 * @return array
 	 */
@@ -96,7 +95,7 @@ class Desura
 	}
 
 	/**
-	 * Gets the metacritic Rating
+	 * Gets the Rating
 	 *
 	 * @return array
 	 */
@@ -129,7 +128,7 @@ class Desura
 	}
 
 	/**
-	 * Get Details of the game (Genre, Platform, Developer, Publisher)
+	 * Get Details of the game (Genre, Platform(s), Developer, Publisher)
 	 *
 	 * @return array
 	 */

@@ -527,7 +527,7 @@ class XXX
 
 		if ($this->echooutput) {
 			$this->pdo->log->doEcho(
-				$this->pdo->log->headerOver(($xxxID !== false ? 'Added/updated movie: ' : 'Nothing to update for xxx movie: ')) .
+				$this->pdo->log->headerOver(($xxxID !== false ? 'Added/updated XXX movie: ' : 'Nothing to update for XXX movie: ')) .
 				$this->pdo->log->primary($mov['title'])
 			);
 		}
@@ -536,16 +536,12 @@ class XXX
 	}
 
 	/**
-	 * Process releases with no xxxinfo ID's.
+	 * Process XXX releases where xxxinfo is 0
 	 *
 	 */
-
 	public function processXXXReleases()
 	{
-
-		// Get all releases without an xxxinfo id.
-		$res = $this->pdo->query(
-			sprintf("
+				$res = $this->pdo->query(sprintf("
 				SELECT r.searchname, r.id
 				FROM releases r
 				WHERE r.nzbstatus = 1
@@ -553,7 +549,7 @@ class XXX
 				AND r.categoryid BETWEEN 6000 AND 6040
 				LIMIT %d",
 				$this->movieqty
-			)
+						 )
 		);
 		$movieCount = count($res);
 
@@ -569,35 +565,34 @@ class XXX
 				$idcheck = -2;
 
 				// Try to get a name.
-				if ($this->debug && $this->echooutput) {
-					$this->pdo->log->doEcho("DB name: " . $arr['searchname'], true);
-				}
 				if ($this->parseXXXSearchName($arr['searchname']) !== false) {
-				if ($check = $this->checkXXXInfoExists($this->currentTitle) === false){
-					$this->currentRelID = $arr['id'];
-					$movieName = $this->currentTitle;
+					$check = $this->checkXXXInfoExists($this->currentTitle);
+					if ($check === false) {
+						$this->currentRelID = $arr['id'];
+						$movieName = $this->currentTitle;
+						if ($this->debug && $this->echooutput) {
+							$this->pdo->log->doEcho("DB name: " . $arr['searchname'], true);
+						}
+						if ($this->echooutput) {
+							$this->pdo->log->doEcho($this->pdo->log->primaryOver("Looking up: ") . $this->pdo->log->headerOver($movieName), true);
+						}
 
-					if ($this->echooutput) {
-						$this->pdo->log->doEcho($this->pdo->log->primaryOver("Looking up: ") . $this->pdo->log->headerOver($movieName), true);
+						$idcheck = $this->updateXXXInfo($movieName);
+					} else {
+						$idcheck = (int)$check['id'];
 					}
-
-					$idcheck = $this->updateXXXInfo($movieName);
-				}else{
-				$idcheck = (int)$check['id'];
-				}
 				} else {
 					$this->pdo->log->doEcho(".", true);
 				}
 				$this->pdo->queryExec(sprintf('UPDATE releases SET xxxinfo_id = %d WHERE id = %d', $idcheck, $arr['id']));
 			}
-
 		} elseif ($this->echooutput) {
 			$this->pdo->log->doEcho($this->pdo->log->header('No xxx releases to process.'));
 		}
 	}
 
 	/**
-	 * Checks xxxinfo to make sure releases doesn't exist
+	 * Checks xxxinfo to make sure releases exist
 	 *
 	 * @param $releaseName
 	 *
@@ -605,11 +600,11 @@ class XXX
 	 */
 	protected function checkXXXInfoExists($releaseName)
 	{
-		return $this->pdo->queryOneRow(sprintf("SELECT id, title FROM xxxinfo WHERE title LIKE %s", "'%". $releaseName . "%'"));
+		return $this->pdo->queryOneRow(sprintf("SELECT id, title FROM xxxinfo WHERE title LIKE %s", "'". $releaseName . "%'"));
 	}
 
 	/**
-	 * Parse a xxx name from a release search name.
+	 * Cleans up a searchname to make it easier to scrape.
 	 *
 	 * @param string $releaseName
 	 *

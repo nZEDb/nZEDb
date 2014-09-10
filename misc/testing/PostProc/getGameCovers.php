@@ -6,19 +6,24 @@ $pdo = new \nzedb\db\Settings();
 $game = new \Games(['Echo' => true, 'Settings' => $pdo]);
 
 $res = $pdo->query(
-	sprintf("SELECT searchname FROM releases WHERE gamesinfo_id IS NULL AND categoryid = 4050 ORDER BY id DESC LIMIT 100")
+	sprintf("SELECT id, title FROM gamesinfo WHERE cover = 0 ORDER BY id DESC LIMIT 100")
 );
 $total = count($res);
 if ($total > 0) {
-	echo $pdo->log->header("Updating game info for " . number_format($total) . " releases.");
+	echo $pdo->log->header("Updating game covers for " . number_format($total) . " releases.");
 
 	foreach ($res as $arr) {
 		$starttime = microtime(true);
-		$gameInfo = $game->parseTitle($arr['searchname']);
+		$gameInfo = $game->parseTitle($arr['title']);
 		if ($gameInfo !== false) {
+			echo $pdo->log->primary('Looking up: ' . $gameInfo['release']);
 			$gameData = $game->updateGamesInfo($gameInfo);
 			if ($gameData === false) {
 				echo $pdo->log->primary($gameInfo['release'] . ' not found');
+			} else {
+				if (file_exists(nZEDb_COVERS . 'games' . DS . $gameData . '.jpg')) {
+					$pdo->queryExec(sprintf('UPDATE gamesinfo SET cover = 1 WHERE id = %d',	$arr['id']));
+				}
 			}
 		}
 

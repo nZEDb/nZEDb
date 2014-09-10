@@ -90,6 +90,11 @@ class Greenlight
 		return $this->_res;
 	}
 
+	/**
+	 * Gets the images - cover and backdrop
+	 *
+	 * @return array
+	 */
 	public function images()
 	{
 			if ($ret = $this->_html->find("div.workshopItemPreviewImageMain", 0)) {
@@ -141,6 +146,11 @@ class Greenlight
 		return $this->_res;
 	}
 
+	/**
+	 * Gets the trailer for the game
+	 *
+	 * @return array
+	 */
 	public function trailer()
 	{
 			if (preg_match('#youtube_video_id: "(?<youtubeid>.*)",#i', $this->_response, $matches)) {
@@ -150,6 +160,11 @@ class Greenlight
 		return $this->_res;
 	}
 
+	/**
+	 * Searches for a 100% match.
+	 *
+	 * @return bool
+	 */
 	public function search()
 	{
 		$result = false;
@@ -212,9 +227,17 @@ class Greenlight
 		return $results;
 	}
 
-	private function getUrl($fetchurl = null, $usepost = false)
+	/**
+	 * Gets the raw html to parse
+	 *
+	 * @param string $fetchurl
+	 * @param bool $usepost
+	 *
+	 * @return bool
+	 */
+	private function getUrl($fetchurl = "", $usepost = false)
 	{
-		if (isset($fetchurl)) {
+		if (!empty($fetchurl)) {
 			$this->_ch = curl_init($fetchurl);
 		}
 		if ($usepost === true) {
@@ -246,8 +269,12 @@ class Greenlight
 	}
 
 	/**
-	 * Used for search method
-	 * Strips title and searchterm to alphanumeric characters only
+	 * Removes all but alphanumeric only and does a 100% match check
+	 *
+	 * @param string $title
+	 * @param string $searchtitle
+	 *
+	 * @return bool
 	 */
 	protected function cleanTitles($title = "", $searchtitle = "")
 	{
