@@ -1062,7 +1062,9 @@ class Releases
 			$offset
 		);
 		$releases = $this->pdo->query($sql);
-		$releases[0]['_totalrows'] = $this->getPagerCount($baseSql);
+		if ($releases && count($releases)) {
+			$releases[0]['_totalrows'] = $this->getPagerCount($baseSql);
+		}
 		return $releases;
 	}
 
@@ -1116,7 +1118,9 @@ class Releases
 			$offset
 		);
 		$releases = $this->pdo->query($sql);
-		$releases[0]['_totalrows'] = $this->getPagerCount($baseSql);
+		if ($releases && count($releases)) {
+			$releases[0]['_totalrows'] = $this->getPagerCount($baseSql);
+		}
 		return $releases;
 	}
 
@@ -1171,7 +1175,9 @@ class Releases
 			$offset
 		);
 		$releases = $this->pdo->query($sql);
-		$releases[0]['_totalrows'] = $this->getPagerCount($baseSql);
+		if ($releases && count($releases)) {
+			$releases[0]['_totalrows'] = $this->getPagerCount($baseSql);
+		}
 		return $releases;
 	}
 
