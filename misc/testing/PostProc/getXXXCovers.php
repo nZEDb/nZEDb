@@ -16,7 +16,7 @@ if ($movies instanceof \Traversable) {
 		echo $pdo->log->primaryOver("Looking up: " . $pdo->log->headerOver($mov['title'])) . "\n";
 		$mov = $movie->updateXXXInfo($mov['title']);
 		if($mov > 0){
-			if (file_exists(nZEDb_COVERS . 'xxx' . DS . $mov . '.jpg')) {
+			if (file_exists(nZEDb_COVERS . 'xxx' . DS . $mov . '-cover.jpg')) {
 				$pdo->queryExec(sprintf('UPDATE xxxinfo SET cover = 1 WHERE id = %d', $mov));
 			}
 		}
