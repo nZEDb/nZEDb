@@ -101,7 +101,7 @@ class Steam
 		$this->_html = new simple_html_dom();
 		$this->_editHtml = new simple_html_dom();
 		if (isset($this->cookie)) {
-			@$this->getUrl(self::STEAMURL);
+			$this->getUrl(self::STEAMURL);
 		}
 	}
 
@@ -168,12 +168,9 @@ class Steam
 	 */
 	public function rating()
 	{
-		if (isset($this->_response) && isset($this->_title)) {
 			if ($this->_ret = $this->_html->find("div#game_area_metascore", 0)) {
 				$this->_res['rating'] = (int)$this->_ret->plaintext;
 			}
-		}
-
 		return $this->_res;
 	}
 
@@ -184,7 +181,6 @@ class Steam
 	 */
 	public function images()
 	{
-		if (isset($this->_response) && isset($this->_title)) {
 			if ($this->_ret = $this->_html->find("img.game_header_image", 0)) {
 				$this->_res['cover'] = $this->_ret->src;
 			}
@@ -198,7 +194,6 @@ class Steam
 
 				}
 			}
-		}
 
 		return $this->_res;
 	}
@@ -240,7 +235,7 @@ class Steam
 	{
 			if (preg_match('/store.steampowered.com\/video\//', $this->_response)) {
 				$this->_res['trailer'] = self::STEAMURL . '/video/' . $this->_steamGameID;
-				@$this->getUrl($this->_res['trailer']);
+				$this->getUrl($this->_res['trailer']);
 				if (preg_match('@FILENAME\:\s+(?<videourl>\"\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))")@',
 							   $this->_response,
 							   $matches)
@@ -288,8 +283,8 @@ class Steam
 									preg_match('/\/app\/(?<id>\d+)\//', $result->href, $matches);
 									$this->_steamGameID = $matches['id'];
 									$this->_directURL = self::GAMEURL . $this->_steamGameID . '/';
-									@$this->getUrl($result->href);
-									@$this->ageCheck();
+									$this->getUrl($result->href);
+									$this->ageCheck();
 									return true;
 								} else {
 									return false;
