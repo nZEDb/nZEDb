@@ -15,4 +15,5 @@ CREATE TABLE anidb_info (
   characters VARCHAR(1024) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (anidbid),
   KEY ix_anidb_info_datetime (startdate, enddate, updated)
-) DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE = MYISAM
+ DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
