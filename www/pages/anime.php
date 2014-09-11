@@ -84,16 +84,18 @@ if (isset($_GET["id"]) && ctype_digit($_GET['id'])) {
 	$page->meta_description = "View Anime List";
 
 	$animelist = array();
-	foreach ($masterserieslist as $s) {
-		if (preg_match('/^[0-9]/', $s['releasetitle'])) {
-			$thisrange = '0-9';
-		} else {
-			preg_match('/([A-Z]).*/i', $s['releasetitle'], $matches);
-			$thisrange = strtoupper($matches[1]);
+	if ($masterserieslist instanceof \Traversable) {
+		foreach ($masterserieslist as $s) {
+			if (preg_match('/^[0-9]/', $s['releasetitle'])) {
+				$thisrange = '0-9';
+			} else {
+				preg_match('/([A-Z]).*/i', $s['releasetitle'], $matches);
+				$thisrange = strtoupper($matches[1]);
+			}
+			$animelist[$thisrange][] = $s;
 		}
-		$animelist[$thisrange][] = $s;
+		ksort($animelist);
 	}
-	ksort($animelist);
 
 	$page->smarty->assign('animelist', $animelist);
 	$page->smarty->assign('animerange', range('A', 'Z'));
