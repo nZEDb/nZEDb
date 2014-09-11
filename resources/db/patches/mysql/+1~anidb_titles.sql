@@ -8,4 +8,5 @@ CREATE TABLE anidb_titles (
   lang VARCHAR(25) COLLATE utf8_unicode_ci NOT NULL,
   title VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (anidbid, type, lang, title)
-) DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE = MYISAM
+ DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

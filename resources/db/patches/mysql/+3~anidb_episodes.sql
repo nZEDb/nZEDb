@@ -7,4 +7,5 @@ CREATE TABLE anidb_episodes (
   episode_title VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Title of the episode (en, x-jat)',
   airdate date NOT NULL,
   PRIMARY KEY (anidbid, episodeid)
-) DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE = MYISAM
+ DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

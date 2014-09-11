@@ -42,10 +42,10 @@ class AniDB
 	{
 		$this->pdo->queryExec(
 					sprintf('
-						UPDATE anidb a INNER JOIN anidb_info ai USING (anidb_id) SET title = %s, type = %s, startdate = %s, enddate = %s,
+						UPDATE anidb_titles AS at INNER JOIN anidb_info ai USING (anidbid) SET title = %s, type = %s, startdate = %s, enddate = %s,
 							related = %s, similar = %s, creators = %s, description = %s, rating = %s,
 							categories = %s, characters = %s, epnos = %s, airdates = %s,
-							episodetitles = %s, unixtime = %d WHERE anidb_id = %d',
+							episodetitles = %s, unixtime = %d WHERE anidbid = %d',
 						$this->pdo->escapeString($title),
 						$this->pdo->escapeString($type),
 						$this->pdo->escapeString($startdate),
@@ -75,11 +75,11 @@ class AniDB
 	{
 		$this->pdo->queryExec(
 					sprintf('
-						DELETE a, ai, ae
-						FROM anidb a
-						LEFT OUTER JOIN anidb_info ai USING (anidb_id)
-						LEFT OUTER JOIN anidb_episodes ae USING (anidb_id)
-						WHERE anidb_id = %d',
+						DELETE at, ai, ae
+						FROM anidb_titles AS at
+						LEFT OUTER JOIN anidb_info ai USING (anidbid)
+						LEFT OUTER JOIN anidb_episodes ae USING (anidbid)
+						WHERE anidbid = %d',
 						  $anidbID
 					)
 		);
@@ -111,13 +111,13 @@ class AniDB
 
 		return $this->pdo->queryDirect(
 						sprintf('
-							SELECT a.anidb_id, a.title, ai.type, ai.categories,
+							SELECT at.anidb_id, at.title, ai.type, ai.categories,
 								ai.rating, ai.startdate, ai.enddate
-							FROM anidb a
-							INNER JOIN anidb_info ai USING (anidb_id)
-							WHERE a.anidb_id > 0 %s %s
-							GROUP BY a.anidb_id
-							ORDER BY a.title ASC',
+							FROM anidb_titles AS at
+							INNER JOIN anidb_info ai USING (anidbid)
+							WHERE at.anidbid > 0 %s %s
+							GROUP BY at.anidbid
+							ORDER BY at.title ASC',
 							$rsql,
 							$tsql
 						)
@@ -147,11 +147,11 @@ class AniDB
 
 		return $this->pdo->query(
 					sprintf('
-						SELECT a.anidb_id, a.title, ai.description
-						FROM anidb a
-						INNER JOIN anidb_info ai USING (anidb_id)
+						SELECT at.anidbid, at.title, ai.description
+						FROM anidb_titles AS at
+						INNER JOIN anidb_info ai USING (anidbid)
 						WHERE 1=1 %s
-						ORDER BY a.anidb_id ASC %s',
+						ORDER BY at.anidbid ASC %s',
 						$rsql,
 						$limit
 					)
@@ -173,9 +173,9 @@ class AniDB
 
 		$res = $this->pdo->queryOneRow(
 						sprintf('
-							SELECT COUNT(a.anidb_id) AS num
-							FROM anidb a
-							INNER JOIN anidb_info ai USING (anidb_id)
+							SELECT COUNT(at.anidbid) AS num
+							FROM anidb_titles AS at
+							INNER JOIN anidb_info ai USING (anidbid)
 							WHERE 1=1 %s',
 							$rsql
 						)
@@ -194,10 +194,10 @@ class AniDB
 	{
 		$animeInfo = $this->pdo->queryDirect(
 							sprintf('
-								SELECT a.*, ai.*
-								FROM anidb a
-								INNER JOIN anidb_info ai USING (anidb_id)
-								WHERE a.anidb_id = %d',
+								SELECT at.*, ai.*
+								FROM anidb_titles AS at
+								INNER JOIN anidb_info ai USING (anidbid)
+								WHERE at.anidbid = %d',
 								$anidbID
 							)
 		);
