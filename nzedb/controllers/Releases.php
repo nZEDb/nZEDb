@@ -1617,4 +1617,27 @@ class Releases
 		);
 	}
 
+	/**
+	 * Get all newest TV with covers for poster wall.
+	 *
+	 * @return array
+	 */
+	public function getNewestTV()
+	{
+		return $this->pdo->query(
+			"SELECT DISTINCT (a.rageid),
+				guid, name, b.title, searchname, size, completion,
+				postdate, categoryid, comments, grabs, c.id as tvid, c.imgdata, c.releasetitle as tvtitle
+			FROM releases a, category b, tvrage c
+			WHERE length(c.imgdata) > 0
+			AND a.categoryid BETWEEN 5000 AND 5999
+			AND b.title = 'TV'
+			AND a.rageid = c.rageid
+			AND a.rageid != -2
+			GROUP BY a.rageid
+			ORDER BY a.postdate
+			DESC LIMIT 24"
+		);
+	}
+
 }
