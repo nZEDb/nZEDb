@@ -244,6 +244,7 @@ class Tmux
 					(%2\$s 'lookupxxx') AS processxxx,
 					(%2\$s 'lookupimdb') AS processmovies,
 					(%2\$s 'lookuptvrage') AS processtvrage,
+					(%2\$s 'lookupanidb') AS processanime,
 					(%2\$s 'lookupnfo') AS processnfo,
 					(%2\$s 'lookuppar2') AS processpar2,
 					(%2\$s 'nzbthreads') AS nzbthreads,
@@ -377,6 +378,7 @@ class Tmux
 			case 1:
 				return sprintf("SELECT
 					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 5000 AND 5999 AND rageid = -1) AS processtvrage,
+					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid = 5070 AND anidbid IS NULL) AS processanime,
 					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 2000 AND 2999 AND imdbid IS NULL) AS processmovies,
 					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid IN (3010, 3040, 3050) AND musicinfoid IS NULL) AS processmusic,
 					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 1000 AND 1999 AND consoleinfoid IS NULL) AS processconsole,

@@ -3068,7 +3068,7 @@ class ReleaseCleaning
 		}
 
 		//[Hatsuyuki]_Seirei_Tsukai_no_Blade_Dance_-_03_[720p] [E18FCA59] [01/18]
-		if (preg_match('/(\[[a-z0-9-]+\][\w_-]+_\d+_\[\d{3,4}[ip]\]\s\[[A-F0-9]{8}\])\s\[\d+\/\d+\]/i', $this->subject, $match)) {
+		if (preg_match('#(\[:xdigit:]-]+\][\w_-]+_\d+_\[\d{3,4}[ip]\]\s\[[:xdigit:]]{8}\])\s\[\d+/\d+\]#i', $this->subject, $match)) {
 			return $match[2];
 		}
 		return array("cleansubject" => $this->releaseCleanerHelper($this->subject), "properlynamed" => false);

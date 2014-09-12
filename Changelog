@@ -3,6 +3,15 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
+2014-09-12 ruhllatio
+	* Mrg: dev-anime into dev for Anime Post processing support
+	* Fix: SQL patch doesn't drop new anidb_titles table if it exists
+	* Fix: File permissions for Desura/Greenlight and some SQL patches
+	* Del: +\d patches from dev-anime merge
+	* Fix: Dupe check query in AniDB population
+	* Fix: Missing column that didn't make it to branch / Fix file perm for patch
+	* Fix: Regex constant errors in ReleaseCleaning due to shitty merge
+	* Add: Anime SQL patch fix to SQL schema
 2014-09-11 ruhllatio
 	* Chg: Re-work New Poster Wall queries - should improve response
 2014-09-11 Bart39

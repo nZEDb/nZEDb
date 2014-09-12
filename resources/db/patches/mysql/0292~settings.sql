@@ -1,0 +1,2 @@
+INSERT IGNORE INTO settings (section , subsection, name, value, hint, setting) VALUES ('APIs', 'anidb', 'max_update_frequency', '7', "The number of days between AniDB full updates.  Default is 7.", 'intanidbupdate');
+INSERT IGNORE INTO settings (section , subsection, name, value, hint, setting) VALUES ('APIs', 'anidb', 'last_full_update', '0', "The last time a full AniDB update occurred in unixtime.", 'lastanidbupdate');
