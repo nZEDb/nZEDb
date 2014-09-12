@@ -9,7 +9,7 @@ New updates are grouped by person, at the top of the file.
 	* Fix: File permissions for Desura/Greenlight and some SQL patches
 	* Del: +\d patches from dev-anime merge
 	* Fix: Dupe check query in AniDB population
-	* Fix: Missing column that didn't make it to branch
+	* Fix: Missing column that didn't make it to branch / Fix file perm for patch
 2014-09-11 ruhllatio
 	* Chg: Re-work New Poster Wall queries - should improve response
 2014-09-11 Bart39
