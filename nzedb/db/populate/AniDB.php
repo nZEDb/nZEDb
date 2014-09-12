@@ -114,7 +114,7 @@ class AniDB
 		return $this->pdo->queryOneRow(
 						 sprintf('
 							SELECT anidbid
-							FROM anidb
+							FROM anidb_titles
 							WHERE anidbid = %d
 							AND type = %s
 							AND lang = %s
