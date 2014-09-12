@@ -10,7 +10,7 @@ $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
 
 switch ($action) {
 	case 'submit':
-		$AniDB->updateTitle($_POST["anidb_id"], $_POST["type"], $_POST["startdate"], $_POST["enddate"], $_POST["related"], $_POST["similar"], $_POST["creators"], $_POST["description"], $_POST["rating"], $_POST["categories"], $_POST["characters"]);
+		$AniDB->updateTitle($_POST["anidbid"], $_POST["type"], $_POST["startdate"], $_POST["enddate"], $_POST["related"], $_POST["similar"], $_POST["creators"], $_POST["description"], $_POST["rating"], $_POST["categories"], $_POST["characters"]);
 
 		if(isset($_POST['from']) && !empty($_POST['from'])) {
 			header("Location:".$_POST['from']);
