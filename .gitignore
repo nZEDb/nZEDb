@@ -15,6 +15,7 @@ test.php
 /.idea/
 /nbproject/
 /nbproject/private/
+/resources/*
 /resources/covers/*
 /resources/nzb/*
 /resources/tmp/*
