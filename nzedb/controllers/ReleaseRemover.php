@@ -934,6 +934,7 @@ class ReleaseRemover
 	{
 		$this->method = 'Codec Poster';
 		$regex = "rf.name REGEXP 'x264.*\.(wmv|avi)$'";
+		$regex2 = "rf.name REGEXP '(720p.|Webrip.)*\.avi$'";
 		$codec = '%\\Codec%Setup.exe%';
 		$iferror = '%If_you_get_error.txt%';
 		$ifnotplaying = '%read me if the movie not playing.txt%';
@@ -960,7 +961,7 @@ class ReleaseRemover
 		$this->query = sprintf(
 			"SELECT r.guid, r.searchname, r.id FROM releases
 			r INNER JOIN releasefiles rf ON (rf.releaseid = r.id)
-			WHERE %s %s %s %s %s", $categories, $regex, $this->crapTime, $codeclike, $this->crapTime
+			WHERE %s %s OR %s %s %s %s", $categories, $regex, $regex2, $this->crapTime, $codeclike, $this->crapTime
 		);
 
 		if ($this->checkSelectQuery() === false) {
