@@ -22,7 +22,7 @@
 				<input id="url" class="long" name="url" type="text" value="{$game.url|escape:'htmlall'}" />
 			</td>
 		</tr>
-				<tr>
+		<tr>
 			<td><label for="trailerurl">Trailer URL:</label></td>
 			<td>
 				<input id="trailerurl" class="long" name="trailerurl" type="text" value="{$game.trailer|escape:'htmlall'}" />
