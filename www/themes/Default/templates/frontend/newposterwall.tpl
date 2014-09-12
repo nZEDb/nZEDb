@@ -34,6 +34,8 @@
 									class="library-show"
 								{elseif $type == 'PC'}
 									class="library-games"
+								{elseif $type == 'TV'}
+									class="library-show"
 								{/if}
 								>
 							<div class="poster">
@@ -57,6 +59,9 @@
 									{elseif $type == 'PC'}
 										<img height="130px" width="130px" alt=""
 											 src="{$smarty.const.WWW_TOP}/covers/games/{$result.gamesinfo_id}.jpg"/>
+									{elseif $type == 'TV'}
+										<img height="140px" width="205px" alt=""
+											 src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$result.tvid}"/>
 									{/if}
 								</a>
 							</div>
@@ -167,6 +172,12 @@
 											   href="{$site->dereferrer_link}http://www.shelfari.com/search/books?Keywords={if $result.author != ""}{$result.author|escape:"url"}{"+-+"}{/if}{$result.booktitle|escape:"url"}"
 											   target="_blank"></a>
 										</div>
+									{elseif $type == 'TV'}
+									<div class="icon icon_tvrage">
+										<a class="divlink" title="View in TvRage"
+										   href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$result.rageid}"
+										   target="_blank"></a>
+									</div>
 									{/if}
 								</div>
 							</div>

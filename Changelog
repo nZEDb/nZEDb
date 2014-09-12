@@ -3,6 +3,13 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
+2014-09-11 ruhllatio
+	* Chg: Re-work New Poster Wall queries - should improve response
+2014-09-11 Bart39
+	* Add: Add TV to new release posterwall.
+	* Add: Regex for a.b.amazing.
+	* Chg: Amend regex to cater for german characters.
+	* Add: Videoot XXX Xvid dvd rips in NameFixer
 2014-09-10 Bart39
 	* Mrg: Merging in PR 1497 from tasky.
 2014-09-10 kevin
