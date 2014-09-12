@@ -1349,6 +1349,8 @@ class NameFixer
 				$this->updateRelease($release, $newname, $method = "fileCheck: Movie (year) iso", $echo, $type, $namestatus, $show);
 			} else if (preg_match('/^(.+?IMAGESET.+?)\\\\.+/i', $release["textstring"], $result)) {
 				$this->updateRelease($release, $result["1"], $method = "fileCheck: XXX Imagesets", $echo, $type, $namestatus, $show);
+			} else if (preg_match('/^VIDEOOT-[A-Z0-9]+\\\\([\w!.,& ()\[\]\'\`-]{8,}?\b.?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev|\.vol.+?|\.mp4)/', $release["textstring"], $result)) {
+					$this->updateRelease($release, $result["1"] . " XXX DVDRIP XviD-VIDEOOT", $method = "fileCheck: XXX XviD VIDEOOT", $echo, $type, $namestatus, $show);
 			} else if (preg_match('/\w[-\w.\',;& ]+1080i[._ -]DD5[._ -]1[._ -]MPEG2-R&C(?=\.ts)/i', $release["textstring"], $result)) {
 				$result = str_replace("MPEG2", "MPEG2.HDTV", $result["0"]);
 				$this->updateRelease($release, $result, $method = "fileCheck: R&C", $echo, $type, $namestatus, $show);

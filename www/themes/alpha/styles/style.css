@@ -31,6 +31,8 @@ div.icon { width:16px; height:16px; background-repeat:no-repeat; cursor:pointer;
 .icon_discogs        { background-image:url('../../../themes_shared/images/icons/discogs.png'); }
 .icon_giantbomb      { background-image:url('../../../themes_shared/images/icons/giantbomb.png'); }
 .icon_steam          { background-image:url('../../../themes_shared/images/icons/steam.png'); }
+.icon_greenlight     { background-image:url('../../../themes_shared/images/icons/greenlight.png'); }
+.icon_desura         { background-image:url('../../../themes_shared/images/icons/desura.png'); }
 .icon_gamespot       { background-image:url('../../../themes_shared/images/icons/gamespot.png'); }
 .icon_ign            { background-image:url('../../../themes_shared/images/icons/ign.png'); }
 .icon_lastfm         { background-image:url('../../../themes_shared/images/icons/lastfm.png'); }

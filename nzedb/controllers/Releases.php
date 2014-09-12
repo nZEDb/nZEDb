@@ -1062,7 +1062,9 @@ class Releases
 			$offset
 		);
 		$releases = $this->pdo->query($sql);
-		$releases[0]['_totalrows'] = $this->getPagerCount($baseSql);
+		if ($releases && count($releases)) {
+			$releases[0]['_totalrows'] = $this->getPagerCount($baseSql);
+		}
 		return $releases;
 	}
 
@@ -1116,7 +1118,9 @@ class Releases
 			$offset
 		);
 		$releases = $this->pdo->query($sql);
-		$releases[0]['_totalrows'] = $this->getPagerCount($baseSql);
+		if ($releases && count($releases)) {
+			$releases[0]['_totalrows'] = $this->getPagerCount($baseSql);
+		}
 		return $releases;
 	}
 
@@ -1171,7 +1175,9 @@ class Releases
 			$offset
 		);
 		$releases = $this->pdo->query($sql);
-		$releases[0]['_totalrows'] = $this->getPagerCount($baseSql);
+		if ($releases && count($releases)) {
+			$releases[0]['_totalrows'] = $this->getPagerCount($baseSql);
+		}
 		return $releases;
 	}
 
@@ -1475,20 +1481,18 @@ class Releases
 	 */
 	public function getNewestMovies()
 	{
-		return $this->pdo->query(
-			"SELECT DISTINCT (a.imdbID),
-				guid, name, b.title, searchname, size, completion,
-				postdate, categoryid, comments, grabs, c.cover
-			FROM releases a, category b, movieinfo c
-			WHERE a.categoryid BETWEEN 2000 AND 2999
-			AND b.title = 'Movies'
-			AND a.imdbid = c.imdbid
-			AND a.imdbid !='NULL'
-			AND a.imdbid != 0
-			AND c.cover = 1
-			GROUP BY a.imdbid
-			ORDER BY a.postdate
-			DESC LIMIT 24"
+		return $this->pdo->queryDirect(
+			"SELECT r.imdbid, r.guid, r.name, r.searchname, r.size, r.completion,
+				postdate, categoryid, comments, grabs,
+				m.cover
+			FROM releases r
+			INNER JOIN movieinfo m USING (imdbid)
+			WHERE r.categoryid BETWEEN 2000 AND 2999
+			AND m.imdbid > 0
+			AND m.cover = 1
+			GROUP BY m.imdbid
+			ORDER BY r.postdate DESC
+			LIMIT 24"
 		);
 	}
 
@@ -1499,20 +1503,18 @@ class Releases
 	 */
 	public function getNewestXXX()
 	{
-		return $this->pdo->query(
-			"SELECT DISTINCT (a.xxxinfo_id),
-				guid, name, b.title, searchname, size, completion,
-				postdate, categoryid, comments, grabs, c.cover, c.title
-			FROM releases a, category b, xxxinfo c
+		return $this->pdo->queryDirect(
+			"SELECT r.xxxinfo_id, r.guid, r.name, r.searchname, r.size, r.completion,
+				r.postdate, r.categoryid, r.comments, r.grabs,
+				xxx.cover, xxx.title
+			FROM releases r
+			INNER JOIN xxxinfo xxx ON r.xxxinfo_id = xxx.id
 			WHERE a.categoryid BETWEEN 6000 AND 6040
-			AND b.title = 'XXX'
-			AND a.xxxinfo_id = c.id
-			AND a.xxxinfo_id !='NULL'
-			AND a.xxxinfo_id != 0
-			AND c.cover = 1
-			GROUP BY a.xxxinfo_id
-			ORDER BY a.postdate
-			DESC LIMIT 24"
+			AND xxx.id > 0
+			AND xxx.cover = 1
+			GROUP BY xxx.id
+			ORDER BY r.postdate DESC
+			LIMIT 24"
 		);
 	}
 
@@ -1523,20 +1525,18 @@ class Releases
 	 */
 	public function getNewestConsole()
 	{
-		return $this->pdo->query(
-			"SELECT DISTINCT (a.consoleinfoid),
-				guid, name, b.title, searchname, size, completion,
-				postdate, categoryid, comments, grabs, c.cover
-			FROM releases a, category b, consoleinfo c
-			WHERE c.cover > 0
-			AND a.categoryid BETWEEN 1000 AND 1999
-			AND b.title = 'Console'
-			AND a.consoleinfoid = c.id
-			AND a.consoleinfoid != -2
-			AND a.consoleinfoid != 0
-			GROUP BY a.consoleinfoid
-			ORDER BY a.postdate
-			DESC LIMIT 35"
+		return $this->pdo->queryDirect(
+			"SELECT r.consoleinfoid, r.guid, r.name, r.searchname, r.size, r.completion,
+				r.postdate, r.categoryid, r.comments, r.grabs,
+				con.cover
+			FROM releases r
+			INNER JOIN consoleinfo con ON r.consoleinfoid = con.id
+			WHERE r.categoryid BETWEEN 1000 AND 1999
+			AND con.id > 0
+			AND con.cover > 0
+			GROUP BY con.id
+			ORDER BY r.postdate DESC
+			LIMIT 35"
 		);
 	}
 
@@ -1547,20 +1547,18 @@ class Releases
 	 */
 	public function getNewestGames()
 	{
-		return $this->pdo->query(
-			"SELECT DISTINCT (a.gamesinfo_id),
-				guid, name, b.title, searchname, size, completion,
-				postdate, categoryid, comments, grabs, c.cover
-			FROM releases a, category b, gamesinfo c
-			WHERE c.cover > 0
-			AND a.categoryid = 4050
-			AND b.title = 'Games'
-			AND a.gamesinfo_id = c.id
-			AND a.gamesinfo_id != -2
-			AND a.gamesinfo_id != 0
-			GROUP BY a.gamesinfo_id
-			ORDER BY a.postdate
-			DESC LIMIT 35"
+		return $this->pdo->queryDirect(
+			"SELECT r.gamesinfo_id, r.guid, r.name, r.searchname, r.size, r.completion,
+				r.postdate, r.categoryid, r.comments, r.grabs,
+				gi.cover
+			FROM releases r
+			INNER JOIN gamesinfo gi ON r.gamesinfo_id = gi.id
+			WHERE r.categoryid = 4050
+			AND gi.id > 0
+			AND gi.cover > 0
+			GROUP BY gi.id
+			ORDER BY r.postdate DESC
+			LIMIT 35"
 		);
 	}
 
@@ -1571,20 +1569,19 @@ class Releases
 	 */
 	public function getNewestMP3s()
 	{
-		return $this->pdo->query(
-			"SELECT DISTINCT (a.musicinfoid),
-				guid, name, b.title, searchname, size, completion,
-				 postdate, categoryid, comments, grabs, c.cover
-			FROM releases a, category b, musicinfo c
-			WHERE c.cover > 0
-			AND a.categoryid BETWEEN 3000 AND 3999
-			AND a.categoryid != 3030
-			AND b.title = 'Audio'
-			AND a.musicinfoid = c.id
-			AND a.musicinfoid != -2
-			GROUP BY a.musicinfoid
-			ORDER BY a.postdate
-			DESC LIMIT 24"
+		return $this->pdo->queryDirect(
+			"SELECT r.musicinfoid, r.guid, r.name, r.searchname, r.size, r.completion,
+				r.postdate, r.categoryid, r.comments, r.grabs,
+				m.cover
+			FROM releases r
+			INNER JOIN musicinfo m ON r.musicinfoid = m.id
+			WHERE r.categoryid BETWEEN 3000 AND 3999
+			AND r.categoryid != 3030
+			AND m.id > 0
+			AND m.cover > 0
+			GROUP BY m.id
+			ORDER BY r.postdate DESC
+			LIMIT 24"
 		);
 	}
 
@@ -1595,19 +1592,41 @@ class Releases
 	 */
 	public function getNewestBooks()
 	{
-		return $this->pdo->query(
-			"SELECT DISTINCT (a.bookinfoid),
-				guid, name, b.title, searchname, size, completion,
-				postdate, categoryid, comments, grabs, url, c.cover, c.title as booktitle, c.author
-			FROM releases a, category b, bookinfo c
-			WHERE c.cover > 0
-			AND (a.categoryid BETWEEN 8000 AND 8999 OR a.categoryid = 3030)
-			AND (b.title = 'Books' OR b.title = 'Audiobook')
-			AND a.bookinfoid = c.id
-			AND a.bookinfoid != -2
-			GROUP BY a.bookinfoid
-			ORDER BY a.postdate
-			DESC LIMIT 24"
+		return $this->pdo->queryDirect(
+			"SELECT r.bookinfoid, r.guid, r.name, r.searchname, r.size, r.completion,
+				r.postdate, r.categoryid, r.comments, r.grabs,
+				b.url,	b.cover, b.title as booktitle, b.author
+			FROM releases r
+			INNER JOIN bookinfo b ON r.bookinfoid = b.id
+			WHERE r.categoryid BETWEEN 8000 AND 8999
+			OR r.categoryid = 3030
+			AND b.id > 0
+			AND b.cover > 0
+			GROUP BY b.id
+			ORDER BY r.postdate DESC
+			LIMIT 24"
+		);
+	}
+
+	/**
+	 * Get all newest TV with covers for poster wall.
+	 *
+	 * @return array
+	 */
+	public function getNewestTV()
+	{
+		return $this->pdo->queryDirect(
+			"SELECT r.rageid, r.guid, r.name, r.searchname, r.size, r.completion,
+				r.postdate, r.categoryid, r.comments, r.grabs,
+				tv.id as tvid, tv.imgdata, tv.releasetitle as tvtitle
+			FROM releases r
+			INNER JOIN tvrage tv USING (rageid)
+			WHERE r.categoryid BETWEEN 5000 AND 5999
+			AND tv.rageid > 0
+			AND tv.imgdata IS NOT NULL
+			GROUP BY tv.rageid
+			ORDER BY r.postdate DESC
+			LIMIT 24"
 		);
 	}
 
