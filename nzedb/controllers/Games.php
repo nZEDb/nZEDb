@@ -332,7 +332,20 @@ class Games
 		return implode(', ', $newArr);
 	}
 
-	// Not Used but maybe in the future?
+	/**
+	 * Updates the game for game-edit.php
+	 *
+	 * @param $id
+	 * @param $title
+	 * @param $asin
+	 * @param $url
+	 * @param $publisher
+	 * @param $releasedate
+	 * @param $esrb
+	 * @param $cover
+	 * @param $trailerurl
+	 * @param $genreID
+	 */
 	public function update($id, $title, $asin, $url, $publisher, $releasedate, $esrb, $cover, $trailerurl, $genreID)
 	{
 
