@@ -54,9 +54,9 @@ class ReleaseCleaning
 	public function __construct($settings = null)
 	{
 		// Extensions.
-		$this->e0 = \CollectionsCleaning::regexFileExtensionString;
-		$this->e1 = \CollectionsCleaning::regexFileExtensionString . \CollectionsCleaning::regexEndString;
-		$this->e2 = \CollectionsCleaning::regexFileExtensionString . \CollectionsCleaning::regexSizeString . \CollectionsCleaning::regexEndString;
+		$this->e0 = \CollectionsCleaning::REGEX_FILE_EXTENSIONS;
+		$this->e1 = \CollectionsCleaning::REGEX_FILE_EXTENSIONS . \CollectionsCleaning::REGEX_END;
+		$this->e2 = \CollectionsCleaning::REGEX_FILE_EXTENSIONS . \CollectionsCleaning::REGEX_SUBJECT_SIZE . \CollectionsCleaning::REGEX_END;
 		$this->pdo = ($settings instanceof Settings ? $settings : new Settings());
 	}
 
@@ -3068,7 +3068,7 @@ class ReleaseCleaning
 		}
 
 		//[Hatsuyuki]_Seirei_Tsukai_no_Blade_Dance_-_03_[720p] [E18FCA59] [01/18]
-		if (preg_match('/(\[[a-z0-9-]+\][\w_-]+_\d+_\[\d{3,4}[ip]\]\s\[[A-F0-9]{8}\])\s\[\d+\/\d+\]/i', $this->subject, $match)) {
+		if (preg_match('#(\[:xdigit:]-]+\][\w_-]+_\d+_\[\d{3,4}[ip]\]\s\[[:xdigit:]]{8}\])\s\[\d+/\d+\]#i', $this->subject, $match)) {
 			return $match[2];
 		}
 		return array("cleansubject" => $this->releaseCleanerHelper($this->subject), "properlynamed" => false);
