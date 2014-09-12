@@ -45,9 +45,9 @@ if (isset($_GET["id"]) && ctype_digit($_GET['id'])) {
 
 		$page->smarty->assign('animeEpisodeTitlesSize', count($animeEpisodeTitles));
 		$page->smarty->assign('animeEpisodeTitles', $animeEpisodeTitles);
-		$page->smarty->assign('animeAnidbID', $anidb['anidb_id']);
+		$page->smarty->assign('animeAnidbID', $anidb['anidbid']);
 		# case is off on old variable this resolves that, I do not think the other is ever used, but left if anyways
-		$page->smarty->assign('animeAnidbid', $anidb['anidb_id']);
+		$page->smarty->assign('animeAnidbid', $anidb['anidbid']);
 		$page->smarty->assign('animeTitle', $anidb['title']);
 		$page->smarty->assign('animeType', $anidb['type']);
 		$page->smarty->assign('animePicture', $anidb['picture']);

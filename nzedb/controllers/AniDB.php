@@ -111,7 +111,7 @@ class AniDB
 
 		return $this->pdo->queryDirect(
 						sprintf('
-							SELECT at.anidb_id, at.title, ai.type, ai.categories,
+							SELECT at.anidbid, at.title, ai.type, ai.categories,
 								ai.rating, ai.startdate, ai.enddate
 							FROM anidb_titles AS at
 							INNER JOIN anidb_info ai USING (anidbid)
