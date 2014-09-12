@@ -32,16 +32,6 @@ class CollectionsCleaning
 	/**
 	 * @var string
 	 */
-	public $subject = '';
-
-	/**
-	 * @var string
-	 */
-	public $groupName = '';
-
-	/**
-	 * @var string
-	 */
 	public $e0;
 
 	/**
@@ -53,6 +43,16 @@ class CollectionsCleaning
 	 * @var string
 	 */
 	public $e2;
+
+	/**
+	 * @var string
+	 */
+	public $groupName = '';
+
+	/**
+	 * @var string
+	 */
+	public $subject = '';
 
 	/**
 	 *
@@ -82,6 +82,8 @@ class CollectionsCleaning
 				return $this->_0daystuffz();
 			case 'alt.binaries.3d':
 				return $this->_3d();
+			case 'alt.binaries.amazing':
+				return $this->amazing();
 			case 'alt.binaries.anime':
 				return $this->anime();
 			case 'alt.binaries.astronomy':
@@ -298,6 +300,51 @@ class CollectionsCleaning
 		if (preg_match('/^(.+)\[\d+\/(\d+\]) - ".+?' . $this->e1, $this->subject, $match)) {
 			return $match[1] . $match[2];
 		}
+		return $this->generic();
+	}
+
+	public function amazing()
+	{
+		//(???) [1/1] - "Asimov, Isaac - [Foundation 01] - De Foundation_v2.rar" yEnc
+		if (preg_match('/^\(\?+\) \[\d+(\/\d+\])[-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1, $this->subject, $match)) {
+			return $match[1] . $match[2];
+		} //(Ass Backwards (2013) WEBrip XviD AC3 (english subs)) [18/35] - "Ass Backwards (2013) WEBrip XviD AC3 (english subs).part17.rar" yEnc
+		if (preg_match('/^\([\w!.,&_ ()\[\]\'\`-]{8,}\)[-_ ]{0,3}\[\d+(\/\d+\])[-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1, $this->subject, $match)) {
+			return $match[1] . $match[2];
+		} //05VANmA80DckBho "05VANmA80DckBho.part07.rar"08/94 yEnc
+		if (preg_match('/^\w+[-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 . '\d+(\/\d+)[- ]{0,3}yEnc$/', $this->subject, $match)) {
+			return $match[1] . $match[2];
+		} //(Angels4Always) [1/1] - "Vermeulen, John - De tweelingparadox.rar" yEnc
+		if (preg_match('/^\(Angels4Always\)[-_ ]{0,3}\[\d+(\/\d+\])[-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1, $this->subject, $match)) {
+			return $match[1] . $match[2];
+		} //www.wolfsteamers.info [1/6] - "Wohnen Bauen Leben - Sommer 2014.par2" - 16,46 MB yEnc
+		if (preg_match('/^www\.wolfsteamers\.info[-_ ]{0,3}\[\d+(\/\d+\])[-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e2, $this->subject, $match)) {
+			return $match[1] . $match[2];
+		} //Heaven_en_Fayth Presenteren Diana Gabaldon - Reiziger Cyclus 01 - De Reiziger[0/3] - "Diana Gabaldon - Reiziger Cyclus 01 - De Reiziger.nzb" yEnc
+		if (preg_match('/^[\w!.,&_ ()\[\]\'\`-]{8,}\[\d+(\/\d+\])[-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1, $this->subject, $match)) {
+			return $match[1] . $match[2];
+		} //096XZFUPQ0PxH4441H14fU8V - [34/99] - "096XZFUPQ0PxH4441H14fU8V.part033.rar" yEnc
+		if (preg_match('/^\w+[-_ ]{0,3}\[\d+(\/\d+\])[-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1, $this->subject, $match)) {
+			return $match[1] . $match[2];
+		} //(Slaapkop post voor http://the-ultimate-force.org.ua/) [0/7] - "Wham - I'm Your Man (1985).nzb" yEnc
+		if (preg_match('/^\(.+the-ultimate-force\.org\.ua\/\)[-_ ]{0,3}\[\d+(\/\d+\])[-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1, $this->subject, $match)) {
+			return $match[1] . $match[2];
+		} //(001/101) - P2H - "L62WD8P4U539A7.par2" - 4,66 GB - Z9F6KN7SXRCY845 yEnc
+		if (preg_match('/^\(\d+(\/\d+\)) - P2H - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 . '[- ]{0,3}\d+([.,]\d+)? [kKmMgG][bB][- ]{0,3}\w+[- ]{0,3}yEnc$/', $this->subject, $match)) {
+			return $match[1] . $match[2];
+		} //(001/101)  "654258ItB1418pBRDNS264159.par2" - 9,74 GB - yEnc
+		//(001/105) - Description - "oH291TB0bPxf3lqm1P7QQ.par2" - 4,56 GB - yEnc
+		//(03/43) - FTTEAM.INFO - "JDSJ2J4ENASJCKR-FTTEAM.INFO.part02.rar" - 2,04 GB - yEnc
+		if (preg_match('/^\(\d+(\/\d+\))([-_ ]{0,4}(Description|FTTEAM\.INFO))?[-_ ]{0,4}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e2, $this->subject, $match)) {
+			return $match[1] . $match[4];
+		} //- - [001/242] - "C65JuogI92CwfMo2TiX59.par2" yEnc
+		if (preg_match('/^[-_ .]{0,4}\[\d+(\/\d+\])[-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1, $this->subject, $match)) {
+			return $match[1] . $match[2];
+		} //- [01/10] - "file.xyz" yEnc - [001/107] - "86u1Qr8mm56jGiW7nUPTM.par2" yEnc
+		if (preg_match('/^[-_ ]{0,4}\[\d+\/\d+\][-_ ]{0,3}".+" yEnc[-_ ]{0,3}\[\d+(\/\d+\])[-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1, $this->subject, $match)) {
+			return $match[1] . $match[2];
+		}
+
 		return $this->generic();
 	}
 
