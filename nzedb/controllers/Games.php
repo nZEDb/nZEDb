@@ -146,7 +146,7 @@ class Games
 	{
 		return $this->pdo->query(
 			sprintf(
-				"SELECT * FROM gamesinfo ORDER BY createddate DESC %s",
+				"SELECT gi.*, g.title AS genretitle FROM gamesinfo gi INNER JOIN genres g ON gi.genre_id = g.id ORDER BY createddate DESC %s",
 				($start === false ? '' : 'LIMIT ' . $num . ' OFFSET ' . $start)
 			)
 		);
@@ -333,23 +333,23 @@ class Games
 	}
 
 	// Not Used but maybe in the future?
-	public function update($id, $title, $asin, $url, $salesrank, $publisher, $releasedate, $esrb, $cover, $genreID)
+	public function update($id, $title, $asin, $url, $publisher, $releasedate, $esrb, $cover, $trailerurl, $genreID)
 	{
 
 		$this->pdo->queryExec(
 			sprintf("
 				UPDATE gamesinfo
-				SET title = %s, asin = %s, url = %s, salesrank = %s, publisher = %s,
-					releasedate = %s, esrb = %s, cover = %d, genre_id = %d, updateddate = NOW()
+				SET title = %s, asin = %s, url = %s, publisher = %s,
+					releasedate = %s, esrb = %s, cover = %d, trailer = %s, genre_id = %d, updateddate = NOW()
 				WHERE id = %d",
 				$this->pdo->escapeString($title),
 				$this->pdo->escapeString($asin),
 				$this->pdo->escapeString($url),
-				$salesrank,
 				$this->pdo->escapeString($publisher),
 				$this->pdo->escapeString($releasedate),
 				$this->pdo->escapeString($esrb),
 				$cover,
+				$this->pdo->escapeString($trailerurl),
 				$genreID,
 				$id
 			)
@@ -409,7 +409,7 @@ class Games
 			return false;
 		}
 		if (count($this->_gameResults) > 1) {
-
+		$genreName = '';
 			switch ($this->_classUsed) {
 
 				case "desura":
@@ -445,20 +445,10 @@ class Games
 						$con['trailer'] = (string)$this->_gameResults['trailer'];
 					}
 
-					$genreName = '';
-					if (empty($genreName) && isset($this->_gameResults['gamedetails']['Genre'])) {
-						$a = (string)$this->_gameResults['gamedetails']['Genre'];
-						$b = str_replace('-', ' ', $a);
-						$tmpGenre = explode(',', $b);
-						foreach ($tmpGenre as $tg) {
-							$genreMatch = $this->matchBrowseNode(ucwords($tg));
-							if ($genreMatch !== false) {
-								$genreName = (string)$genreMatch;
-								break;
-							}
-						}
+					if (isset($this->_gameResults['gamedetails']['Genre'])) {
+						$genres = (string)$this->_gameResults['gamedetails']['Genre'];
+						$genreName = $this->_matchGenre($genres);
 					}
-
 					break;
 
 				case "gb":
@@ -486,19 +476,10 @@ class Games
 					if (isset($this->_gameResults['description'])) {
 						$con['review'] = trim(strip_tags((string)$this->_gameResults['description']));
 					}
-					$genreName = '';
-					if (empty($genreName) && isset($this->_gameResults['genres'][0]['name'])) {
-						$a = (string)$this->_gameResults['genres'][0]['name'];
-						$b = str_replace('-', ' ', $a);
-						$tmpGenre = explode(',', $b);
-						foreach ($tmpGenre as $tg) {
-							$genreMatch = $this->matchBrowseNode(ucwords($tg));
-							if ($genreMatch !== false) {
-								$genreName = (string)$genreMatch;
-								break;
-							}
+					if (isset($this->_gameResults['genres'][0]['name'])) {
+						$genres = (string)$this->_gameResults['genres'][0]['name'];
+						$genreName = $this->_matchGenre($genres);
 						}
-					}
 					break;
 				case "gl":
 					if (isset($this->_gameResults['cover'])) {
@@ -523,18 +504,9 @@ class Games
 						$con['trailer'] = (string)$this->_gameResults['trailer'];
 					}
 
-					$genreName = '';
-					if (empty($genreName) && isset($this->_gameResults['gamedetails']['Genre'])) {
-						$a = (string)$this->_gameResults['gamedetails']['Genre'];
-						$b = str_replace('-', ' ', $a);
-						$tmpGenre = explode(',', $b);
-						foreach ($tmpGenre as $tg) {
-							$genreMatch = $this->matchBrowseNode(ucwords($tg));
-							if ($genreMatch !== false) {
-								$genreName = (string)$genreMatch;
-								break;
-							}
-						}
+					if (isset($this->_gameResults['gamedetails']['Genre'])) {
+						$genres = (string)$this->_gameResults['gamedetails']['Genre'];
+						$genreName = $this->_matchGenre($genres);
 					}
 					break;
 				case "steam":
@@ -563,8 +535,7 @@ class Games
 					}
 
 					if (!empty($this->_gameResults['gamedetails']['Release Date'])) {
-						$date = \DateTime::createFromFormat('j M Y',
-															$this->_gameResults['gamedetails']['Release Date']);
+						$date = \DateTime::createFromFormat('j M Y', $this->_gameResults['gamedetails']['Release Date']);
 						$con['releasedate'] = $this->pdo->escapeString((string)$date->format('Y-m-d'));
 					}
 
@@ -576,18 +547,9 @@ class Games
 						$con['trailer'] = (string)$this->_gameResults['trailer'];
 					}
 
-					$genreName = '';
-					if (empty($genreName) && isset($this->_gameResults['gamedetails']['Genre'])) {
-						$a = (string)$this->_gameResults['gamedetails']['Genre'];
-						$b = str_replace('-', ' ', $a);
-						$tmpGenre = explode(',', $b);
-						foreach ($tmpGenre as $tg) {
-							$genreMatch = $this->matchBrowseNode(ucwords($tg));
-							if ($genreMatch !== false) {
-								$genreName = (string)$genreMatch;
-								break;
-							}
-						}
+					if (isset($this->_gameResults['gamedetails']['Genre'])) {
+						$genres = (string)$this->_gameResults['gamedetails']['Genre'];
+						$genreName = $this->_matchGenre($genres);
 					}
 
 					break;
@@ -636,6 +598,7 @@ class Games
 		if (empty($genreName)) {
 			$genreName = 'Unknown';
 		}
+
 		if (in_array(strtolower($genreName), $genreassoc)) {
 			$genreKey = array_search(strtolower($genreName), $genreassoc);
 		} else {
@@ -972,5 +935,35 @@ class Games
 		}
 
 		return ($str !== '') ? $str : false;
+	}
+
+	/**
+	 * Matches Genres
+	 *
+	 * @param string $genre
+	 *
+	 * @return string
+	 */
+	protected function _matchGenre($genre = '')
+	{
+		$genreName = '';
+		$a = str_replace('-', ' ', $genre);
+		$tmpGenre = explode(',', $a);
+		if (is_array($tmpGenre)) {
+			foreach ($tmpGenre as $tg) {
+				$genreMatch = $this->matchBrowseNode(ucwords($tg));
+				if ($genreMatch !== false) {
+					$genreName = (string)$genreMatch;
+					break;
+				}
+			}
+		if(empty($genreName)){
+		$genreName = $tmpGenre[0];
+		}
+		} else {
+			$genreName = $genre;
+		}
+
+		return $genreName;
 	}
 }
