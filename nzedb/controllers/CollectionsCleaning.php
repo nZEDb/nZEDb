@@ -8,14 +8,26 @@
 class CollectionsCleaning
 {
 	/**
-	 * @var string
+	 * Used for matching endings in article subjects.
+	 * @const
+	 * @string
 	 */
-	public $subject = '';
+	const REGEX_END = '[- ]{0,3}yEnc$/';
 
 	/**
-	 * @var string
+	 * Used for matching file extension endings in article subjects.
+	 * @const
+	 * @string
 	 */
-	public $groupName = '';
+	const REGEX_FILE_EXTENSIONS = '([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|")';
+
+	/**
+	 * Used for matching size strings in article subjects.
+	 * @example ' - 365.15 KB - '
+	 * @const
+	 * @string
+	 */
+	const REGEX_SUBJECT_SIZE = '[- ]{0,3}\d+([.,]\d+)? [kKmMgG][bB][- ]{0,3}';
 
 	/**
 	 * @var string
@@ -33,26 +45,14 @@ class CollectionsCleaning
 	public $e2;
 
 	/**
-	 * Used for matching file extension endings in article subjects.
-	 * @const
-	 * @string
+	 * @var string
 	 */
-	const regexFileExtensionString = '([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|")';
+	public $groupName = '';
 
 	/**
-	 * Used for matching endings in article subjects.
-	 * @const
-	 * @string
+	 * @var string
 	 */
-	const regexEndString = '[- ]{0,3}yEnc$/u';
-
-	/**
-	 * Used for matching size strings in article subjects.
-	 * @example ' - 365.15 KB - '
-	 * @const
-	 * @string
-	 */
-	const regexSizeString = '[- ]{0,3}\d+([.,]\d+)? [kKmMgG][bB][- ]{0,3}';
+	public $subject = '';
 
 	/**
 	 *
@@ -60,9 +60,9 @@ class CollectionsCleaning
 	public function __construct()
 	{
 		// Extensions.
-		$this->e0 = self::regexFileExtensionString;
-		$this->e1 = self::regexFileExtensionString . self::regexEndString;
-		$this->e2 = self::regexFileExtensionString . self::regexSizeString . self::regexEndString;
+		$this->e0 = self::REGEX_FILE_EXTENSIONS;
+		$this->e1 = self::REGEX_FILE_EXTENSIONS . self::REGEX_END;
+		$this->e2 = self::REGEX_FILE_EXTENSIONS . self::REGEX_SUBJECT_SIZE . self::REGEX_END;
 	}
 
 	/**
