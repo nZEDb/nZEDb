@@ -168,13 +168,11 @@ class AniDB
 		}
 
 		$res = $this->pdo->queryOneRow(
-						sprintf('
-							SELECT COUNT(at.anidbid) AS num
-							FROM anidb_titles AS at
-							INNER JOIN anidb_info ai USING (anidbid)
-							WHERE 1=1 %s',
-							$rsql
-						)
+			sprintf('SELECT COUNT(at.anidbid) AS num
+				FROM anidb_titles AS at LEFT JOIN anidb_info AS ai USING (anidbid)
+				WHERE 1=1 %s',
+				$rsql
+			)
 		);
 
 		return $res['num'];
@@ -188,16 +186,15 @@ class AniDB
 	 */
 	public function getAnimeInfo($anidbID)
 	{
-		$animeInfo = $this->pdo->queryDirect(
-							sprintf('
-								SELECT at.*, ai.*
-								FROM anidb_titles AS at
-								INNER JOIN anidb_info ai USING (anidbid)
-								WHERE at.anidbid = %d',
-								$anidbID
-							)
+		$animeInfo = $this->pdo->query(
+			sprintf('SELECT at.anidbid, at.type, at.lang, at.title, ai.type AS videoType,
+				ai.startdate, ai.enddate, ai.updated, ai.related, ai.creators, ai.description,
+				ai.rating, ai.picture, ai.categories, ai.characters
+				FROM anidb_titles AS at LEFT JOIN anidb_info ai USING (anidbid)
+				WHERE at.anidbid = %d',
+				$anidbID
+			)
 		);
-
 		return isset($animeInfo[0]) ? $animeInfo[0] : false;
 	}
 
