@@ -86,10 +86,10 @@ if (isset($_GET['id']) && ctype_digit($_GET['id'])) {
 	$animelist = array();
 	if ($masterserieslist instanceof \Traversable) {
 		foreach ($masterserieslist as $s) {
-			if (preg_match('/^[0-9]/', $s['releasetitle'])) {
+			if (preg_match('/^[0-9]/', $s['title'])) {
 				$thisrange = '0-9';
 			} else {
-				preg_match('/([A-Z]).*/i', $s['releasetitle'], $matches);
+				preg_match('/([A-Z]).*/i', $s['title'], $matches);
 				$thisrange = strtoupper($matches[1]);
 			}
 			$animelist[$thisrange][] = $s;
