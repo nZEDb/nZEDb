@@ -25,5 +25,5 @@
 		{/foreach}
 	</table>
 {else}
-	<p>No AniDB episodes available.</p>
+	<p>No AniDB titles found in database.</p>
 {/if}

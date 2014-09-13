@@ -22,13 +22,11 @@ switch ($action) {
 
 	case 'view':
 	default:
-
 		if (isset($_GET["id"])) {
 			$page->title = "AniDB Edit";
 			$AniDBAPIArray = $AniDB->getAnimeInfo($_GET["id"]);
 			$page->smarty->assign('anime', $AniDBAPIArray);
 		}
-
 	break;
 }
 
