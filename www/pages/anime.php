@@ -6,18 +6,18 @@ if (!$page->users->isLoggedIn()) {
 $Releases = new Releases(['Settings' => $page->settings]);
 $AniDB = new AniDB(['Settings' => $page->settings]);
 
-if (isset($_GET["id"]) && ctype_digit($_GET['id'])) {
+if (isset($_GET['id']) && ctype_digit($_GET['id'])) {
 
 	# force the category to 5070 as it should be for anime, as $catarray was NULL and we know the category for sure for anime
-	$rel = $Releases->searchbyAnidbId($_GET["id"], '', 0, 1000, "", array("5070"), -1);
+	$rel = $Releases->searchbyAnidbId($_GET['id'], '', 0, 1000, '', array('5070'), -1);
 	$anidb = $AniDB->getAnimeInfo($_GET['id']);
 
 	if (!$release && !$anidb) {
 		$page->show404();
 	} else if (!$anidb) {
-		$page->smarty->assign("nodata", "No AniDB information for this series.");
+		$page->smarty->assign('nodata', 'No AniDB information for this series.');
 	} elseif (!$rel) {
-		$page->smarty->assign("nodata", "No releases for this series.");
+		$page->smarty->assign('nodata', 'No releases for this series.');
 	} else {
 		// Sort releases by season, episode, date posted.
 		$season = $episode = $posted = array();
@@ -60,28 +60,28 @@ if (isset($_GET["id"]) && ctype_digit($_GET['id'])) {
 		$page->smarty->assign('animeCategories', $anidb['categories']);
 
 		$page->title = $anidb['title'];
-		$page->meta_title = "View Anime " . $anidb['title'];
-		$page->meta_keywords = "view,anime,anidb,description,details";
-		$page->meta_description = "View " . $anidb['title'] . " Anime";
+		$page->meta_title = 'View Anime ' . $anidb['title'];
+		$page->meta_keywords = 'view,anime,anidb,description,details';
+		$page->meta_description = 'View ' . $anidb['title'] . ' Anime';
 
 		$page->content = $page->smarty->fetch('viewanime.tpl');
 		$page->render();
 	}
 } else {
-	$letter = (isset($_GET["id"]) && preg_match('/^(0\-9|[A-Z])$/i', $_GET['id'])) ? $_GET['id'] : '0-9';
+	$letter = (isset($_GET['id']) && preg_match('/^(0\-9|[A-Z])$/i', $_GET['id'])) ? $_GET['id'] : '0-9';
 
 	$animetitle = (isset($_GET['title']) && !empty($_GET['title'])) ? $_GET['title'] : '';
 
-	if ($animetitle != "" && !isset($_GET["id"])) {
-		$letter = "";
+	if ($animetitle != '' && !isset($_GET['id'])) {
+		$letter = '';
 	}
 
 	$masterserieslist = $AniDB->getAnimeList($letter, $animetitle);
 
 	$page->title = 'Anime List';
-	$page->meta_title = "View Anime List";
-	$page->meta_keywords = "view,anime,series,description,details";
-	$page->meta_description = "View Anime List";
+	$page->meta_title = 'View Anime List';
+	$page->meta_keywords = 'view,anime,series,description,details';
+	$page->meta_description = 'View Anime List';
 
 	$animelist = array();
 	if ($masterserieslist instanceof \Traversable) {
