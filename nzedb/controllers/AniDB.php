@@ -144,15 +144,13 @@ class AniDB
 		}
 
 		return $this->pdo->query(
-					sprintf('
-						SELECT at.anidbid, at.title, ai.description
-						FROM anidb_titles AS at
-						INNER JOIN anidb_info ai USING (anidbid)
-						WHERE 1=1 %s
-						ORDER BY at.anidbid ASC %s',
-						$rsql,
-						$limit
-					)
+			sprintf('SELECT at.anidbid, at.title, ai.description
+					FROM anidb_titles AS at LEFT JOIN anidb_info AS ai USING (anidbid)
+					WHERE 1=1 %s
+					ORDER BY at.anidbid ASC %s',
+					$rsql,
+					$limit
+			)
 		);
 	}
 
