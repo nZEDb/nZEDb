@@ -142,7 +142,7 @@ class AniDB
 
 		$rsql = '';
 		if ($animetitle != '') {
-			$rsql = sprintf('AND a.title %s', $this->pdo->likeString($animetitle, true, true));
+			$rsql = sprintf('AND at.title %s', $this->pdo->likeString($animetitle, true, true));
 		}
 
 		return $this->pdo->query(
