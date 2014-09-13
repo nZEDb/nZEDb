@@ -40,6 +40,7 @@ class AniDB
 	 */
 	public function updateTitle($anidbID, $type, $startdate, $enddate, $related, $similar, $creators, $description, $rating, $categories, $characters)
 	{
+		// FIXME fix  the missing variables for this query
 		$this->pdo->queryExec(
 					sprintf('
 						UPDATE anidb_titles AS at INNER JOIN anidb_info ai USING (anidbid) SET title = %s, type = %s, startdate = %s, enddate = %s,
@@ -101,26 +102,23 @@ class AniDB
 			if ($letter == '0-9') {
 				$letter = '[0-9]';
 			}
-			$rsql .= sprintf('AND a.title %s %s', $regex, $this->pdo->escapeString('^' . $letter));
+			$rsql .= sprintf('AND at.title %s %s', $regex, $this->pdo->escapeString('^' . $letter));
 		}
 
 		$tsql = '';
 		if ($animetitle != '') {
-			$tsql .= sprintf('AND a.title %s', $this->pdo->likeString($animetitle, true, true));
+			$tsql .= sprintf('AND at.title %s', $this->pdo->likeString($animetitle, true, true));
 		}
 
 		return $this->pdo->queryDirect(
-						sprintf('
-							SELECT at.anidbid, at.title, ai.type, ai.categories,
-								ai.rating, ai.startdate, ai.enddate
-							FROM anidb_titles AS at
-							INNER JOIN anidb_info ai USING (anidbid)
-							WHERE at.anidbid > 0 %s %s
-							GROUP BY at.anidbid
-							ORDER BY at.title ASC',
-							$rsql,
-							$tsql
-						)
+			sprintf('SELECT at.anidbid, at.title, ai.type, ai.categories, ai.rating, ai.startdate, ai.enddate
+					FROM anidb_titles AS at LEFT JOIN anidb_info AS ai USING (anidbid)
+					WHERE at.anidbid > 0 %s %s
+					GROUP BY at.anidbid
+					ORDER BY at.title ASC',
+					$rsql,
+					$tsql
+			)
 		);
 	}
 
@@ -142,7 +140,7 @@ class AniDB
 
 		$rsql = '';
 		if ($animetitle != '') {
-			$rsql = sprintf('AND a.title %s', $this->pdo->likeString($animetitle, true, true));
+			$rsql = sprintf('AND at.title %s', $this->pdo->likeString($animetitle, true, true));
 		}
 
 		return $this->pdo->query(
@@ -168,7 +166,7 @@ class AniDB
 	{
 		$rsql = '';
 		if ($animetitle != '') {
-			$rsql .= sprintf('AND a.title %s', $this->pdo->likeString($animetitle, true, true));
+			$rsql .= sprintf('AND at.title %s', $this->pdo->likeString($animetitle, true, true));
 		}
 
 		$res = $this->pdo->queryOneRow(
