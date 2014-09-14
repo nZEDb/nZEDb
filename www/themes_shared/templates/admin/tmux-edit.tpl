@@ -6,21 +6,21 @@
 		<td align="right" class="top-nav">
 			<form action="#">
 				<select>
-					<option value="tmux_monitor">Monitor</option>
-					<option value="tmux_sequential">Sequential</option>
-					<option value="tmux_updatebinaries">Update Binaries</option>
 					<option value="tmux_backfill">Backfill</option>
-					<option value="tmux_importnzbs">Import Nzbs</option>
-					<option value="tmux_updatereleases">Update Releases</option>
-					<option value="tmux_postprocessing">Postprocessing</option>
 					<option value="tmux_commentsharing">Comment Sharing</option>
-					<option value="tmux_fixreleasenames">Fix Release Names</option>
-					<option value="tmux_removecrapreleases">Remove Crap Releases</option>
 					<option value="tmux_decrypthashes">Decrypt Hashes</option>
-					<option value="tmux_updatetvtheater">Update TV/Theater</option>
-					<option value="tmux_ircscraper">PreDb IRC Scraper</option>
+					<option value="tmux_fixreleasenames">Fix Release Names</option>
+					<option value="tmux_importnzbs">Import Nzbs</option>
 					<option value="tmux_misc">Miscellaneous</option>
+					<option value="tmux_monitor">Monitor</option>
+					<option value="tmux_postprocessing">Postprocessing</option>
+					<option value="tmux_ircscraper">PreDb IRC Scraper</option>
+					<option value="tmux_removecrapreleases">Remove Crap Releases</option>
+					<option value="tmux_sequential">Sequential</option>
 					<option value="tmux_servermonitors">Server Monitors</option>
+					<option value="tmux_updatebinaries">Update Binaries</option>
+					<option value="tmux_updatereleases">Update Releases</option>
+					<option value="tmux_updatetvtheater">Update TV/Theater</option>
 				</select>
 			</form>
 		</td>

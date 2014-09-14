@@ -6,24 +6,24 @@
 		<td align="right" class="top-nav">
 			<form action="#">
 				<select>
-					<option value="site_main">Main Site Settings, Html layout, Tags</option>
-					<option value="site_languagecat">Language/Categorization options</option>
-					<option value="site_googlestatbanner">Google Adsense, Analytics and 3rd Party Banners</option>
 					<option value="site_externalapis">3rd Party API Keys</option>
 					<option value="site_externalapps">3rd Party Application Paths</option>
-					<option value="site_sabnzbd">SABnzbd Integration Settings</option>
+					<option value="site_developerset">Developer Settings</option>
+					<option value="site_googlestatbanner">Google Adsense, Analytics and 3rd Party Banners</option>
+					<option value="site_languagecat">Language/Categorization options</option>
+					<option value="site_main">Main Site Settings, Html layout, Tags</option>
+					<option value="site_nfoprocessing">NFO Processing Settings</option>
+					<option value="site_nzbsettings">NZB Settings</option>
+					<option value="site_partrepair">Part Repair Settings</option>
+					<option value="site_postadditional">Post Process Additional Settings - Rar/ZIP file processing</option>
+					<option value="site_postsettings">Post Process Settings</option>
 					<option value="site_releaseset">Release Settings</option>
 					<option value="site_requidset">RequestID Settings</option>
-					<option value="site_nzbsettings">NZB Settings</option>
-					<option value="site_postsettings">Post Process Settings</option>
-					<option value="site_nfoprocessing">NFO Processing Settings</option>
-					<option value="site_postadditional">Post Process Additional Settings - Rar/ZIP file processing</option>
-					<option value="site_usenetset">Usenet Settings</option>
-					<option value="site_partrepair">Part Repair Settings</option>
-					<option value="site_variousset">Various Settings</option>
-					<option value="site_developerset">Developer Settings</option>
+					<option value="site_sabnzbd">SABnzbd Integration Settings</option>
 					<option value="site_threadsettings">Threaded Settings</option>
+					<option value="site_usenetset">Usenet Settings</option>
 					<option value="site_usersettings">User Settings</option>
+					<option value="site_variousset">Various Settings</option>
 				</select>
 			</form>
 		</td>
