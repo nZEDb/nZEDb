@@ -63,10 +63,9 @@ if (isset($_GET['id']) && ctype_digit($_GET['id'])) {
 		$page->meta_title = 'View Anime ' . $anidb['title'];
 		$page->meta_keywords = 'view,anime,anidb,description,details';
 		$page->meta_description = 'View ' . $anidb['title'] . ' Anime';
-
-		$page->content = $page->smarty->fetch('viewanime.tpl');
-		$page->render();
 	}
+	$page->content = $page->smarty->fetch('viewanime.tpl');
+	$page->render();
 } else {
 	$letter = (isset($_GET['id']) && preg_match('/^(0\-9|[A-Z])$/i', $_GET['id'])) ? $_GET['id'] : '0-9';
 
