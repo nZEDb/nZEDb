@@ -4,8 +4,8 @@ fieldset { margin-bottom:20px; border:1px solid #999;}
 legend { padding: 0.4em 0.6em; border:1px solid #999; font-weight:bold; text-align:right; }
 
 #content { width: 77%; }
-#sidebar { width: 200px; }
-#sidebar li li:hover { cursor:auto; }
+#admin_sidebar { width: 200px; }
+#admin_sidebar li li:hover { cursor:auto; }
 #logo { width: 0; height: 0; margin: 0 auto; padding-left:0; }
 .footer { width: 100%; height: 100px; margin: 0 auto; background: #FFF; border-top: 0; }
 #menu { height:0; border:0;}
