@@ -1,27 +1,32 @@
-<div class="top-nav">
-	<form action="#">
-<h1>{$page->title}</h1>
-		<select>
-			<option value="tmux_how">Tmux - How it Works</option>
-			<option value="tmux_monitor">Monitor</option>
-			<option value="tmux_sequential">Sequential</option>
-			<option value="tmux_updatebinaries">Update Binaries</option>
-			<option value="tmux_backfill">Backfill</option>
-			<option value="tmux_importnzbs">Import Nzbs</option>
-			<option value="tmux_updatereleases">Update Releases</option>
-			<option value="tmux_postprocessing">Postprocessing</option>
-			<option value="tmux_commentsharing">Comment Sharing</option>
-			<option value="tmux_fixreleasenames">Fix Release Names</option>
-			<option value="tmux_removecrapreleases">Remove Crap Releases</option>
-			<option value="tmux_decrypthashes">Decrypt Hashes</option>
-			<option value="tmux_updatetvtheater">Update TV/Theater</option>
-			<option value="tmux_ircscraper">PreDb IRC Scraper</option>
-			<option value="tmux_misc">Miscellaneous</option>
-			<option value="tmux_servermonitors">Server Monitors</option>
-		</select>
-	</form>
+<div>
+<table border="0" width="100%">
+	<tr>
+		<td><h1>{$page->title}</h1></td>
+		<td></td>
+		<td align="right" class="top-nav">
+			<form action="#">
+				<select>
+					<option value="tmux_monitor">Monitor</option>
+					<option value="tmux_sequential">Sequential</option>
+					<option value="tmux_updatebinaries">Update Binaries</option>
+					<option value="tmux_backfill">Backfill</option>
+					<option value="tmux_importnzbs">Import Nzbs</option>
+					<option value="tmux_updatereleases">Update Releases</option>
+					<option value="tmux_postprocessing">Postprocessing</option>
+					<option value="tmux_commentsharing">Comment Sharing</option>
+					<option value="tmux_fixreleasenames">Fix Release Names</option>
+					<option value="tmux_removecrapreleases">Remove Crap Releases</option>
+					<option value="tmux_decrypthashes">Decrypt Hashes</option>
+					<option value="tmux_updatetvtheater">Update TV/Theater</option>
+					<option value="tmux_ircscraper">PreDb IRC Scraper</option>
+					<option value="tmux_misc">Miscellaneous</option>
+					<option value="tmux_servermonitors">Server Monitors</option>
+				</select>
+			</form>
+		</td>
+	</tr>
+</table>
 </div>
-<br />
 <form action="{$SCRIPT_NAME}?action=submit" method="post">
 {if $error != ''}
 	<div class="error">{$error}</div>
