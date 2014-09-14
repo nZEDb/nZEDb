@@ -1,9 +1,32 @@
+<div class="top-nav">
+	<form action="#">
 <h1>{$page->title}</h1>
+		<select>
+			<option value="tmux_how">Tmux - How it Works</option>
+			<option value="tmux_monitor">Monitor</option>
+			<option value="tmux_sequential">Sequential</option>
+			<option value="tmux_updatebinaries">Update Binaries</option>
+			<option value="tmux_backfill">Backfill</option>
+			<option value="tmux_importnzbs">Import Nzbs</option>
+			<option value="tmux_updatereleases">Update Releases</option>
+			<option value="tmux_postprocessing">Postprocessing</option>
+			<option value="tmux_commentsharing">Comment Sharing</option>
+			<option value="tmux_fixreleasenames">Fix Release Names</option>
+			<option value="tmux_removecrapreleases">Remove Crap Releases</option>
+			<option value="tmux_decrypthashes">Decrypt Hashes</option>
+			<option value="tmux_updatetvtheater">Update TV/Theater</option>
+			<option value="tmux_ircscraper">PreDb IRC Scraper</option>
+			<option value="tmux_misc">Miscellaneous</option>
+			<option value="tmux_servermonitors">Server Monitors</option>
+		</select>
+	</form>
+</div>
+<br />
 <form action="{$SCRIPT_NAME}?action=submit" method="post">
 {if $error != ''}
 	<div class="error">{$error}</div>
 {/if}
-<fieldset>
+<fieldset id="tmux_how">
 	<legend>Tmux - How It Works</legend>
 	<table class="input">
 		<tr>
@@ -28,7 +51,7 @@
 		</tr>
 	</table>
 </fieldset>
-<fieldset>
+<fieldset id="tmux_monitor">
 	<legend>Monitor</legend>
 	<table class="input">
 		<tr>
@@ -123,7 +146,7 @@
 		</tr>
 	</table>
 </fieldset>
-<fieldset>
+<fieldset id="tmux_sequential">
 	<legend>Sequential</legend>
 	<table class="input">
 		<tr>
@@ -152,7 +175,7 @@
 		</tr>
 	</table>
 </fieldset>
-<fieldset>
+<fieldset id="tmux_updatebinaries">
 	<legend>Update Binaries</legend>
 	<table class="input">
 		<tr>
@@ -175,7 +198,7 @@
 		</tr>
 	</table>
 </fieldset>
-<fieldset>
+<fieldset id="tmux_backfill">
 	<legend>Backfill</legend>
 	<table class="input">
 		<tr>
@@ -247,7 +270,7 @@
 		</tr>
 	</table>
 </fieldset>
-<fieldset>
+<fieldset id="tmux_importnzbs">
 	<legend>Import nzbs</legend>
 	<table class="input">
 		<tr>
@@ -289,7 +312,7 @@
 		</tr>
 	</table>
 </fieldset>
-<fieldset>
+<fieldset id="tmux_updatereleases">
 	<legend>Update Releases</legend>
 	<table class="input">
 		<tr>
@@ -312,7 +335,7 @@
 		</tr>
 	</table>
 </fieldset>
-<fieldset>
+<fieldset id="tmux_postprocessing">
 	<legend>Postprocessing</legend>
 	<table class="input">
 		<tr>
@@ -374,7 +397,7 @@
 		</tr>
 	</table>
 </fieldset>
-<fieldset>
+<fieldset id="tmux_commentsharing">
 	<legend>Comment Sharing</legend>
 	<table class="input">
 		<tr>
@@ -397,7 +420,7 @@
 		</tr>
 	</table>
 </fieldset>
-<fieldset>
+<fieldset id="tmux_fixreleasenames">
 	<legend>Fix Release Names</legend>
 	<table class="input">
 		<tr>
@@ -418,7 +441,7 @@
 		</tr>
 	</table>
 </fieldset>
-<fieldset>
+<fieldset id="tmux_removecrapreleases">
 	<legend>Remove Crap Releases</legend>
 	<table class="input">
 		<tr>
@@ -445,7 +468,7 @@
 		</tr>
 	</table>
 </fieldset>
-<fieldset>
+<fieldset id="tmux_decrypthashes">
 	<legend>Decrypt Hashes</legend>
 	<table class="input">
 		<tr>
@@ -476,7 +499,7 @@
 		</tr>
 	</table>
 </fieldset>
-<fieldset>
+<fieldset id="tmux_updatetvtheater">
 	<legend>Update TV/Theater</legend>
 	<table class="input">
 		<tr>
@@ -497,7 +520,7 @@
 		</tr>
 	</table>
 </fieldset>
-<fieldset>
+<fieldset id="tmux_ircscraper">
 	<legend>PreDb IRC Scraper</legend>
 	<table class="input">
 		<tr>
@@ -520,7 +543,7 @@
 		</tr>
 	</table>
 </fieldset>
-<fieldset>
+<fieldset id="tmux_misc">
 	<legend>Miscellaneous</legend>
 	<table class="input">
 		<tr>
@@ -576,7 +599,7 @@
 		</tr>
 	</table>
 </fieldset>
-<fieldset>
+<fieldset id="tmux_servermonitors">
 	<legend>Server Monitors</legend>
 	<table class="input">
 		<tr>

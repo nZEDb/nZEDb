@@ -168,5 +168,12 @@
 		{literal}
 		<script>$("#xxxgenre_list").multiSelect();</script>
 		{/literal}
+		{literal}
+		<script type="text/javascript">
+			$('.top-nav').children().children('select').bind('change', function () {
+				$("html, body").animate({scrollTop: $('#' + $(this).val()).offset().top}, "slow");
+			});
+		</script>
+		{/literal}
 	</body>
 </html>
