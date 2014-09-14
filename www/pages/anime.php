@@ -9,29 +9,29 @@ $AniDB = new AniDB(['Settings' => $page->settings]);
 if (isset($_GET['id']) && ctype_digit($_GET['id'])) {
 
 	# force the category to 5070 as it should be for anime, as $catarray was NULL and we know the category for sure for anime
-	$rel = $Releases->searchbyAnidbId($_GET['id'], '', 0, 1000, '', array('5070'), -1);
+	$releases = $Releases->searchbyAnidbId($_GET['id'], '', 0, 1000, '', array('5070'), -1);
 	$anidb = $AniDB->getAnimeInfo($_GET['id']);
 
-	if (!$release && !$anidb) {
+	if (!$releases && !$anidb) {
 		$page->show404();
 	} else if (!$anidb) {
 		$page->smarty->assign('nodata', 'No AniDB information for this series.');
-	} elseif (!$rel) {
+	} elseif (!$releases) {
 		$page->smarty->assign('nodata', 'No releases for this series.');
 	} else {
 		// Sort releases by season, episode, date posted.
 		$season = $episode = $posted = array();
 
-		foreach ($rel as $rlk => $rlv) {
+		foreach ($releases as $rlk => $rlv) {
 			$season[$rlk] = $rlv['season'];
 			$episode[$rlk] = $rlv['episode'];
 			$posted[$rlk] = $rlv['postdate'];
 		}
 
-		array_multisort($episode, SORT_DESC, $posted, SORT_DESC, $rel);
+		array_multisort($episode, SORT_DESC, $posted, SORT_DESC, $releases);
 
 		$seasons = array();
-		foreach ($rel as $r) {
+		foreach ($releases as $r) {
 			$seasons[$r['season']][$r['episode']][] = $r;
 		}
 
@@ -39,7 +39,7 @@ if (isset($_GET['id']) && ctype_digit($_GET['id'])) {
 		$page->smarty->assign('anidb', $anidb);
 
 		$animeEpisodeTitles = array();
-		foreach ($rel as $r) {
+		foreach ($releases as $r) {
 			$animeEpisodeTitles[$r['tvtitle']][] = $r;
 		}
 
@@ -63,10 +63,9 @@ if (isset($_GET['id']) && ctype_digit($_GET['id'])) {
 		$page->meta_title = 'View Anime ' . $anidb['title'];
 		$page->meta_keywords = 'view,anime,anidb,description,details';
 		$page->meta_description = 'View ' . $anidb['title'] . ' Anime';
-
-		$page->content = $page->smarty->fetch('viewanime.tpl');
-		$page->render();
 	}
+	$page->content = $page->smarty->fetch('viewanime.tpl');
+	$page->render();
 } else {
 	$letter = (isset($_GET['id']) && preg_match('/^(0\-9|[A-Z])$/i', $_GET['id'])) ? $_GET['id'] : '0-9';
 

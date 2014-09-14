@@ -12,7 +12,7 @@ class CollectionsCleaning
 	 * @const
 	 * @string
 	 */
-	const REGEX_END = '[- ]{0,3}yEnc$/';
+	const REGEX_END = '[- ]{0,3}yEnc$/u';
 
 	/**
 	 * Used for matching file extension endings in article subjects.
@@ -698,10 +698,10 @@ class CollectionsCleaning
 		}
 		//[scnzbefnet][500934] Super.Fun.Night.S01E09.720p.HDTV.X264-DIMENSION [1/19] - "bieber.109.720p-dimension.sfv" yEnc
 		//REPOST: [scnzbefnet][500025] Major.Crimes.S02E13.720p.HDTV.x264-IMMERSE [16/33] - "major.crimes.s02e13.720p.hdtv.x264-immerse.r24" yEnc
-		if (preg_match('/^(REPOST: )?\[scnzbefnet\]\[(\d+)\] (.+?) \[\d+\/(\d+\]) - ".+?" yEnc$/', $this->subject, $match)) {
+		if (preg_match('/^(REPOST: )?\[\s*#?scnzb@?efnet\s*\]\[(\d+)\] (.+?) \[\d+\/(\d+\]) - ".+?" yEnc$/', $this->subject, $match)) {
 			return $match[2] . $match[3] . $match[4];
 		} //[scnzbefnet] Murdoch.Mysteries.S07E09.HDTV.x264-KILLERS [1/20] - "murdoch.mysteries.s07e09.hdtv.x264-killers.r13" yEnc
-		if (preg_match('/^\[scnzbefnet\] (.+?) \[\d+\/(\d+\]) - ".+?" yEnc$/', $this->subject, $match)) {
+		if (preg_match('/^\[\s*#?scnzb@?efnet\s*\] (.+?) \[\d+\/(\d+\]) - ".+?" yEnc$/', $this->subject, $match)) {
 			return $match[1] . $match[2];
 		}
 		//(68/89) "dz1R2wT8hH1iQEA28gRvm.part67.rar" - 7,91 GB - yEnc
@@ -1587,7 +1587,7 @@ class CollectionsCleaning
 		if (preg_match('/^(\d+ - \[)\d+\/\d+\] - ".+?' . $this->e1, $this->subject, $match)) {
 			return $match[1];
 		} //[scnzbefnet] Were.the.Millers.2013.EXTENDED.720p.BluRay.x264-SPARKS [01/61] - "were.the.millers.2013.extended.720p.bluray.x264-sparks.nfo" yEnc
-		if (preg_match('/^\[scnzbefnet\] (.+?) \[\d+\/(\d+\]) - ".+?" yEnc$/', $this->subject, $match)) {
+		if (preg_match('/^\[\s*#?scnzb@?efnet\s*\] (.+?) \[\d+\/(\d+\]) - ".+?" yEnc$/', $this->subject, $match)) {
 			return $match[1] . $match[2];
 		}
 		return $this->generic();
@@ -2331,7 +2331,7 @@ class CollectionsCleaning
 			return $match[1];
 		}
 		//[Hatsuyuki]_Seirei_Tsukai_no_Blade_Dance_-_03_[720p] [E18FCA59] [01/18]
-		if (preg_match('#\[[:xdigit:]-]+\][\w_-]+_\d+_\[\d{3,4}[ip]\]\s\[[:xdigit:]]{8}\]\s\[\d+/\d+\].*#i', $this->subject, $match)) {
+		if (preg_match('#\[([\w-]+\][\w-]+_\d+_\[\d{3,4}[ip])\]\s*\[([0-9A-Fa-f]{8})\]\s*\[\d+/(\d+)\].*#i', $this->subject, $match)) {
 			return $match[1];
 		}
 		return $this->generic();
