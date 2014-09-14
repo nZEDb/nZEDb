@@ -2331,7 +2331,7 @@ class CollectionsCleaning
 			return $match[1];
 		}
 		//[Hatsuyuki]_Seirei_Tsukai_no_Blade_Dance_-_03_[720p] [E18FCA59] [01/18]
-		if (preg_match('#\[([\w-]+\][\w-]+_\d+_\[\d{3,4}[ip])\]\s\[([[:xdigit:]]{8})\]\s*\[\d+/\d+\].*#i', $this->subject, $match)) {
+		if (preg_match('#\[([\w-]+\][\w-]+_\d+_\[\d{3,4}[ip])\]\s*\[([0-9A-Fa-f]{8})\]\s*\[\d+/(\d+)\].*#i', $this->subject, $match)) {
 			return $match[1];
 		}
 		return $this->generic();
