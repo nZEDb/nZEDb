@@ -3,6 +3,8 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
+2014-09-13 bart39
+	* Fix: another attempt at fixing scnzbefnet collections
 2014-09-13 DariusIII
 	* Upd: Updated regexes for codecposter
 2014-09-12 bart39
