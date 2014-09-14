@@ -17,7 +17,6 @@
 		<link href="{$smarty.const.WWW_TOP}/../themes_shared/styles/jquery.accordian.css" rel="stylesheet" media="screen">
 		<link href="{$smarty.const.WWW_TOP}/../themes/Default/styles/style.css" rel="stylesheet" media="screen">
 		<link href="{$smarty.const.WWW_TOP}/../themes_shared/styles/admin.css" rel="stylesheet" media="screen">
-		<link href="{$smarty.const.WWW_TOP}/../themes_shared/styles/jquery.multiselect.css" rel="stylesheet" media="screen">
 		<link rel="shortcut icon" href="{$smarty.const.WWW_TOP}/../themes_shared/images/favicon.ico">
 		<!--[if lt IE 9]>
 		<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -65,7 +64,6 @@
 		<script src="{$smarty.const.WWW_TOP}/../themes_shared/scripts/sorttable.js"></script>
 		<script src="{$smarty.const.WWW_TOP}/../themes_shared/scripts/utils-admin.js"></script>
 		<script src="{$smarty.const.WWW_TOP}/../themes_shared/scripts/jquery.multifile.js"></script>
-		<script src="{$smarty.const.WWW_TOP}/../themes_shared/scripts/jquery.multiselect.js"></script>
 		<script>var WWW_TOP = "{$smarty.const.WWW_TOP}/..";</script>
 		{if $site->google_analytics_acc != ''}
 			{literal}
@@ -163,10 +161,6 @@
 				})(jQuery);
 
 			</script>
-		{/literal}
-
-		{literal}
-		<script>$("#xxxgenre_list").multiSelect();</script>
 		{/literal}
 		{literal}
 		<script type="text/javascript">
