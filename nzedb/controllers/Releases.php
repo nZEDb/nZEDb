@@ -1509,7 +1509,7 @@ class Releases
 				xxx.cover, xxx.title
 			FROM releases r
 			INNER JOIN xxxinfo xxx ON r.xxxinfo_id = xxx.id
-			WHERE a.categoryid BETWEEN 6000 AND 6040
+			WHERE r.categoryid BETWEEN 6000 AND 6040
 			AND xxx.id > 0
 			AND xxx.cover = 1
 			GROUP BY xxx.id
@@ -1623,7 +1623,7 @@ class Releases
 			INNER JOIN tvrage tv USING (rageid)
 			WHERE r.categoryid BETWEEN 5000 AND 5999
 			AND tv.rageid > 0
-			AND tv.imgdata IS NOT NULL
+			AND length(tv.imgdata) > 0
 			GROUP BY tv.rageid
 			ORDER BY r.postdate DESC
 			LIMIT 24"

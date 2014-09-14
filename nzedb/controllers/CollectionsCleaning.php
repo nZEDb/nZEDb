@@ -8,14 +8,26 @@
 class CollectionsCleaning
 {
 	/**
-	 * @var string
+	 * Used for matching endings in article subjects.
+	 * @const
+	 * @string
 	 */
-	public $subject = '';
+	const REGEX_END = '[- ]{0,3}yEnc$/u';
 
 	/**
-	 * @var string
+	 * Used for matching file extension endings in article subjects.
+	 * @const
+	 * @string
 	 */
-	public $groupName = '';
+	const REGEX_FILE_EXTENSIONS = '([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|")';
+
+	/**
+	 * Used for matching size strings in article subjects.
+	 * @example ' - 365.15 KB - '
+	 * @const
+	 * @string
+	 */
+	const REGEX_SUBJECT_SIZE = '[- ]{0,3}\d+([.,]\d+)? [kKmMgG][bB][- ]{0,3}';
 
 	/**
 	 * @var string
@@ -33,26 +45,14 @@ class CollectionsCleaning
 	public $e2;
 
 	/**
-	 * Used for matching file extension endings in article subjects.
-	 * @const
-	 * @string
+	 * @var string
 	 */
-	const regexFileExtensionString = '([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|")';
+	public $groupName = '';
 
 	/**
-	 * Used for matching endings in article subjects.
-	 * @const
-	 * @string
+	 * @var string
 	 */
-	const regexEndString = '[- ]{0,3}yEnc$/u';
-
-	/**
-	 * Used for matching size strings in article subjects.
-	 * @example ' - 365.15 KB - '
-	 * @const
-	 * @string
-	 */
-	const regexSizeString = '[- ]{0,3}\d+([.,]\d+)? [kKmMgG][bB][- ]{0,3}';
+	public $subject = '';
 
 	/**
 	 *
@@ -60,9 +60,9 @@ class CollectionsCleaning
 	public function __construct()
 	{
 		// Extensions.
-		$this->e0 = self::regexFileExtensionString;
-		$this->e1 = self::regexFileExtensionString . self::regexEndString;
-		$this->e2 = self::regexFileExtensionString . self::regexSizeString . self::regexEndString;
+		$this->e0 = self::REGEX_FILE_EXTENSIONS;
+		$this->e1 = self::REGEX_FILE_EXTENSIONS . self::REGEX_END;
+		$this->e2 = self::REGEX_FILE_EXTENSIONS . self::REGEX_SUBJECT_SIZE . self::REGEX_END;
 	}
 
 	/**
@@ -696,6 +696,14 @@ class CollectionsCleaning
 		if (preg_match('/^\( ([\w. -]{8,}) \)[-_ ]{0,3}\[\d+\/(\d+\]) - ".+?' . $this->e1, $this->subject, $match)) {
 			return $match[1] . $match[2];
 		}
+		//[scnzbefnet][500934] Super.Fun.Night.S01E09.720p.HDTV.X264-DIMENSION [1/19] - "bieber.109.720p-dimension.sfv" yEnc
+		//REPOST: [scnzbefnet][500025] Major.Crimes.S02E13.720p.HDTV.x264-IMMERSE [16/33] - "major.crimes.s02e13.720p.hdtv.x264-immerse.r24" yEnc
+		if (preg_match('/^(REPOST: )?\[\s*#?scnzb@?efnet\s*\]\[(\d+)\] (.+?) \[\d+\/(\d+\]) - ".+?" yEnc$/', $this->subject, $match)) {
+			return $match[2] . $match[3] . $match[4];
+		} //[scnzbefnet] Murdoch.Mysteries.S07E09.HDTV.x264-KILLERS [1/20] - "murdoch.mysteries.s07e09.hdtv.x264-killers.r13" yEnc
+		if (preg_match('/^\[\s*#?scnzb@?efnet\s*\] (.+?) \[\d+\/(\d+\]) - ".+?" yEnc$/', $this->subject, $match)) {
+			return $match[1] . $match[2];
+		}
 		//(68/89) "dz1R2wT8hH1iQEA28gRvm.part67.rar" - 7,91 GB - yEnc
 		//(01/14)  - "JrjCY4pUjQ9qUqQ7jx6k2VLF.par2" - 4,39 GB - yEnc
 		if (preg_match('/^\(\d+(\/\d+\)\s+(- )?"([a-zA-Z0-9]+)\.).+?" - \d+[,.]\d+ [mMkKgG][bB] - yEnc$/', $this->subject, $match)) {
@@ -774,14 +782,6 @@ class CollectionsCleaning
 		//Place2home.net - Diablo_III_USA_RF_XBOX360-PROTOCOL - "d3-ptc.r34" yEnc
 		if (preg_match('/^place2home\.net - (.*?) - (\[\d+\/\d+\] - )?".+?" yEnc$/i', $this->subject, $match)) {
 			return $match[1];
-		}
-		//[scnzbefnet][500934] Super.Fun.Night.S01E09.720p.HDTV.X264-DIMENSION [1/19] - "bieber.109.720p-dimension.sfv" yEnc
-		//REPOST: [scnzbefnet][500025] Major.Crimes.S02E13.720p.HDTV.x264-IMMERSE [16/33] - "major.crimes.s02e13.720p.hdtv.x264-immerse.r24" yEnc
-		if (preg_match('/^(REPOST: )?\[scnzbefnet\]\[(\d+)\] (.+?) \[\d+\/(\d+\]) - ".+?" yEnc$/', $this->subject, $match)) {
-			return $match[2] . $match[3] . $match[4];
-		} //[scnzbefnet] Murdoch.Mysteries.S07E09.HDTV.x264-KILLERS [1/20] - "murdoch.mysteries.s07e09.hdtv.x264-killers.r13" yEnc
-		if (preg_match('/^\[scnzbefnet\] (.+?) \[\d+\/(\d+\]) - ".+?" yEnc$/', $this->subject, $match)) {
-			return $match[1] . $match[2];
 		} //(Ancient.Aliens.S03E05.Aliens.and.Mysterious.Rituals.720p.HDTV.x264.AC3.2Ch.REPOST) [41/42] - "Ancient.Aliens.S03E05.Aliens.and.Mysterious.Rituals.720p.HDTV.x264.AC3.2Ch.REPOST.vol071+66.PAR2" yEnc
 		if (preg_match('/^(\((.+?)\) \[)\d+(\/\d+] - ").+?" yEnc$/', $this->subject, $match)) {
 			return $match[1] . $match[3];
@@ -1587,7 +1587,7 @@ class CollectionsCleaning
 		if (preg_match('/^(\d+ - \[)\d+\/\d+\] - ".+?' . $this->e1, $this->subject, $match)) {
 			return $match[1];
 		} //[scnzbefnet] Were.the.Millers.2013.EXTENDED.720p.BluRay.x264-SPARKS [01/61] - "were.the.millers.2013.extended.720p.bluray.x264-sparks.nfo" yEnc
-		if (preg_match('/^\[scnzbefnet\] (.+?) \[\d+\/(\d+\]) - ".+?" yEnc$/', $this->subject, $match)) {
+		if (preg_match('/^\[\s*#?scnzb@?efnet\s*\] (.+?) \[\d+\/(\d+\]) - ".+?" yEnc$/', $this->subject, $match)) {
 			return $match[1] . $match[2];
 		}
 		return $this->generic();
@@ -2062,6 +2062,9 @@ class CollectionsCleaning
 		} //[28/55] - "XzrgzBWoRqtcuBF.part27.rar" - 4,78 GB >>>UpperTeam for Usenet-Space-Cowboys.info and Secretusenet.com<<< yEnc
 		if (preg_match('/^\[\d+\/(\d+\][ _-]{0,3}".+?)' . $this->e0 . '[- ]{0,3}\d+[.,]\d+ [kKmMgG][bB].+UpperTeam.+ Secretusenet\.com.+yEnc$/', $this->subject, $match)) {
 			return $match[1];
+		} //(38/55)  | "Apocalypse.La.premiere.guerre.mondiale.e02.Peur.HDTV.1080p-STL.7z.037" | yEnc
+		if (preg_match('/^\(\d+(\/\d+\))[- ]{0,3}[|][- ]{0,3}"([\w\säöüÄÖÜ¤ß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 . '[- ]{0,3}[|] yEnc$/u', $this->subject, $match)) {
+			return $match[1] . $match[2];
 		}
 		return $this->generic();
 	}
@@ -2328,7 +2331,7 @@ class CollectionsCleaning
 			return $match[1];
 		}
 		//[Hatsuyuki]_Seirei_Tsukai_no_Blade_Dance_-_03_[720p] [E18FCA59] [01/18]
-		if (preg_match('/\[[a-z0-9-]+\][\w_-]+_\d+_\[\d{3,4}[ip]\]\s\[[A-F0-9]{8}\]\s\[\d+\/\d+\].*/i', $this->subject, $match)) {
+		if (preg_match('#\[([\w-]+\][\w-]+_\d+_\[\d{3,4}[ip])\]\s*\[([0-9A-Fa-f]{8})\]\s*\[\d+/(\d+)\].*#i', $this->subject, $match)) {
 			return $match[1];
 		}
 		return $this->generic();
@@ -2338,7 +2341,7 @@ class CollectionsCleaning
 	protected function multimedia_anime_highspeed()
 	{
 		//High School DxD New 01 (480p|.avi|xvid|mp3) ~bY Hatsuyuki [01/18] - "[Hatsuyuki]_High_School_DxD_New_01_[848x480][76B2BB8C].avi.001" yEnc
-		if (preg_match('/(.+? \((360|480|720|1080)p\|.+? ~bY .+? \[)\d+\/\d+\] - ".+?\[[A-F0-9]+\].+?' . $this->e1, $this->subject, $match)) {
+		if (preg_match('/(.+? \((360|480|720|1080)p\|.+?\s*~bY\s*.+?\s*\[)\d+\/\d+\]\s*-\s*".+?\[[A-Z0-9\[\]\.]+.*' . $this->e1, $this->subject, $match)) {
 			return $match[2];
 		}
 		return $this->generic();

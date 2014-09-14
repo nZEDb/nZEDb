@@ -21,6 +21,8 @@ section,subsection,name,value,hint,setting
 		grabstatus	1	Whether to update download counts when someone downloads a release.	grabstatus
 		innerfileblacklist			You can add a regex here to set releases to potentially passworded when a file name inside a rar/zip matches this regex.	innerfileblacklist
 		lastpretime	0	Last time we downloaded a pre using WEB sources	lastpretime
+		intanidbupdate	7	The number of days between AniDB full updates.  Default is 7.	intanidbupdate
+		lastanidbupdate	0	The last time a full AniDB update occurred in unixtime.	lastanidbupdate
 		lookup_reqids	1	Whether to attempt to lookup Request IDs using the Request ID link below.	lookup_reqids
 		lookupanidb	0	Whether to attempt to lookup anime information from AniDB when processing binaries. Currently it is not recommend to enable this.	lookupanidb
 		lookupbooks	1	Whether to attempt to lookup book information from Amazon when processing binaries.	lookupbooks
