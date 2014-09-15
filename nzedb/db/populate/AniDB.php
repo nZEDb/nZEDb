@@ -228,6 +228,7 @@ class AniDB
 				}
 			}
 
+			$episodeArray = [];
 			//start and end date come from AniDB API as perfect date strings -- no manipulation needed
 			if (isset($AniDBAPIXML->startdate)) {
 				$AniDBAPIArray['startdate'] = $AniDBAPIXML->startdate;
@@ -256,7 +257,7 @@ class AniDB
 						'No description available for this AniDB ID.',
 				'picture'     => isset($AniDBAPIXML->picture[0]) ? (string)$AniDBAPIXML->picture :
 						'',
-				'epsarr'      => $episodeArray
+				'epsarr'      => $episodeArray,
 			);
 
 			return $AniDBAPIArray;
