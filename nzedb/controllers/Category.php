@@ -25,6 +25,7 @@ class Category
 	const CAT_MOVIE_3D = 2050;
 	const CAT_MOVIE_BLURAY = 2060;
 	const CAT_MOVIE_DVD = 2070;
+	const CAT_MOVIE_WEBDL = 2080;
 	const CAT_MUSIC_MP3 = 3010;
 	const CAT_MUSIC_VIDEO = 3020;
 	const CAT_MUSIC_AUDIOBOOK = 3030;

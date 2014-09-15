@@ -173,12 +173,12 @@ class TmuxRun extends Tmux
 			case 1:
 				$log = $this->writelog($runVar['panes']['one'][0]);
 				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:1.0 ' \
-					{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/groupfixrelnames_threaded.py md5 $log; \
-					{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/groupfixrelnames_threaded.py filename $log; \
-					{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/groupfixrelnames_threaded.py nfo $log; \
-					{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/groupfixrelnames_threaded.py par2 $log; \
-					{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/groupfixrelnames_threaded.py miscsorter $log; \
-					{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/groupfixrelnames_threaded.py predbft $log; date +\"{$this->_dateFormat}\"; \
+					{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/fixrelnames.php md5 $log; \
+					{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/fixrelnames.php filename $log; \
+					{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/fixrelnames.php nfo $log; \
+					{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/fixrelnames.php par2 $log; \
+					{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/fixrelnames.php miscsorter $log; \
+					{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/fixrelnames.php predbft $log; date +\"{$this->_dateFormat}\"; \
 					{$runVar['commands']['_sleep']} {$runVar['settings']['fix_timer']}' 2>&1 1> /dev/null"
 				);
 				break;
@@ -267,18 +267,19 @@ class TmuxRun extends Tmux
 	protected function _runNonAmazon(&$runVar)
 	{
 		switch (true) {
-			case $runVar['settings']['post_non'] != 0 && ($runVar['counts']['now']['processmovies'] > 0 || $runVar['counts']['now']['processtvrage'] > 0):
+			case $runVar['settings']['post_non'] != 0 && ($runVar['counts']['now']['processmovies'] > 0 || $runVar['counts']['now']['processtvrage'] > 0 || $runVar['counts']['now']['processanime'] > 0):
 				$log = $this->writelog($runVar['panes']['two'][1]);
 				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:2.1 ' \
 						{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/postprocess.php tv {$runVar['modsettings']['clean']} $log; \
 						{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/postprocess.php mov {$runVar['modsettings']['clean']} $log; \
+						{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/postprocess.php anime true $log; \
 						date +\"{$this->_dateFormat}\"; {$runVar['commands']['_sleep']} {$runVar['settings']['post_timer_non']}' 2>&1 1> /dev/null"
 				);
 				break;
-			case $runVar['settings']['post_non'] != 0 && $runVar['counts']['now']['processmovies'] == 0 && $runVar['counts']['now']['processtvrage'] == 0:
+			case $runVar['settings']['post_non'] != 0 && $runVar['counts']['now']['processmovies'] == 0 && $runVar['counts']['now']['processtvrage'] == 0 && $runVar['counts']['now']['processanime'] == 0:
 				$color = $this->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
 				shell_exec("tmux respawnp -k -t{$runVar['constants']['tmux_session']}:2.1 \
-					'echo \"\033[38;5;${color}m\n{$runVar['panes']['two'][1]} has been disabled/terminated by No Movies/TV to process\"'");
+					'echo \"\033[38;5;${color}m\n{$runVar['panes']['two'][1]} has been disabled/terminated by No Movies/TV/Anime to process\"'");
 				break;
 			default:
 				$color = $this->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
@@ -314,32 +315,10 @@ class TmuxRun extends Tmux
 		);
 
 		if (($runVar['settings']['backfill'] != 0) && ($runVar['killswitch']['coll'] == false) && ($runVar['killswitch']['pp'] == false)) {
-
-			switch ($runVar['settings']['backfill']) {
-
-				case 1:
-					$log = $this->writelog($runVar['panes']['zero'][3]);
-					shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.3 ' \
-						{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/backfill.php {$runVar['settings']['backfill_qty']} $log; \
-							date +\"{$this->_dateFormat}\"; {$runVar['commands']['_sleep']} $backsleep' 2>&1 1> /dev/null"
-					);
-					$runVar['timers']['timer5'] = time();
-					break;
-				case 2:
-					$log = $this->writelog($runVar['panes']['zero'][3]);
-					shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.3 ' \
-						{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_threaded.py group $log; \
-							date +\"{$this->_dateFormat}\"; {$runVar['commands']['_sleep']} $backsleep' 2>&1 1> /dev/null"
-					);
-					break;
-				case 4:
-					$log = $this->writelog($runVar['panes']['zero'][3]);
-					shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.3 ' \
-						{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_safe_threaded.py $log; \
-							date +\"{$this->_dateFormat}\"; {$runVar['commands']['_sleep']} $backsleep' 2>&1 1> /dev/null"
-					);
-			}
-
+			$log = $this->writelog($runVar['panes']['zero'][3]);
+			shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.3 ' \
+				{$runVar['scripts']['backfill']} $log; date +\"{$this->_dateFormat}\"; {$runVar['commands']['_sleep']} $backsleep' 2>&1 1> /dev/null"
+			);
 		} else if (($runVar['killswitch']['coll'] == true) || ($runVar['killswitch']['pp'] == true)) {
 			$color = $this->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
 			shell_exec("tmux respawnp -k -t{$runVar['constants']['tmux_session']}:0.3 'echo \"\033[38;5;${color}m\n{$runVar['panes']['zero'][3]} has been disabled/terminated by Exceeding Limits\"'");
