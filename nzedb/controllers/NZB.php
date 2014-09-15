@@ -161,7 +161,7 @@ class NZB
 	public function writeNZBforReleaseId($relID, $relGuid, $name, $cTitle)
 	{
 		$path = ($this->buildNZBPath($relGuid, $this->nzbSplitLevel, true) . $relGuid . '.nzb.gz');
-		$fp = gzopen($path, 'w7');
+		$fp = gzopen($path, 'wb7');
 		if ($fp) {
 			$nzb_guid = '';
 			gzwrite(

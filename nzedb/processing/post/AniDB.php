@@ -78,6 +78,8 @@ class AniDB
 
 		if ($results instanceof \Traversable) {
 
+			$this->doRandomSleep();
+
 			$this->padb = new \nzedb\db\populate\AniDB(['Echo' => $this->echooutput, 'Settings' => $this->pdo]);
 
 			foreach ($results as $release) {
@@ -230,7 +232,8 @@ class AniDB
 									  $release['id']);
 
 				$this->pdo->log->doEcho(
-							   $this->pdo->log->header("Matched {$type} AniDB ID: ") .
+							   $this->pdo->log->headerOver("Matched {$type} AniDB ID: ") .
+							   $this->pdo->log->primary($anidbId['anidbid']) .
 							   $this->pdo->log->alternateOver("   Title: ") .
 							   $this->pdo->log->primary($anidbId['title']) .
 							   $this->pdo->log->alternateOver("   Episode #: ") .
@@ -241,6 +244,9 @@ class AniDB
 
 				$matched = true;
 			} else {
+				if (nZEDb_DEBUG) {
+					$this->pdo->log->doEcho(PHP_EOL . "Could not match searchname: {$release['searchname']}.", true);
+				}
 				$this->status = self::PROC_NOMATCH;
 			}
 		}
