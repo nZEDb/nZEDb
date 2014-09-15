@@ -58,7 +58,7 @@ class AniDB
 	/**
 	 * @param array $options Class instances / Echo to cli.
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options =[])
 	{
 		$defaults = [
 			'Echo'     => false,
@@ -174,10 +174,11 @@ class AniDB
 			}
 
 			if ($AniDBAPIXML->creators instanceof \Traversable) {
-				foreach ($AniDBAPIXML->creators->name AS $creator) {
-					$creatorArray[] = (string)$creator;
+				$temp = '';
+				foreach ($AniDBAPIXML->creators->children() AS $creator) {
+					$temp .= (string)$creator->name . ', ';
 				}
-				$AniDBAPIArray['creators'] = implode(', ', $creatorArray);
+				$AniDBAPIArray['creators'] = (empty($temp) ? '' : substr($temp, 0, -2));
 			} else {
 				$AniDBAPIArray['creators'] = 'No creators available for this AniDB ID.';
 			}
@@ -328,7 +329,7 @@ class AniDB
 	 *
 	 * @return string
 	 */
-	private function insertAniDBInfoEps($AniDBInfoArray = array())
+	private function insertAniDBInfoEps(array $AniDBInfoArray = [])
 	{
 		$this->pdo->queryInsert(
 				  sprintf('
@@ -359,20 +360,22 @@ class AniDB
 	 *
 	 * @param array $episodeArr
 	 */
-	private function insertAniDBEpisodes($episodeArr = array())
+	private function insertAniDBEpisodes(array $episodeArr = [])
 	{
-		foreach ($episodeArr AS $episode) {
-			$this->pdo->queryInsert(
-					  sprintf('
-							INSERT IGNORE INTO anidb_episodes (anidbid, episodeid, episode_no, episode_title, airdate)
-							VALUES (%d, %d, %d, %s, %s)',
-							  $this->anidbId,
-							  $episode['episode_id'],
-							  $episode['episode_no'],
-							  $this->pdo->escapeString($episode['episode_title']),
-							  $this->pdo->escapeString($episode['airdate'])
-					  )
-			);
+		if (!empty($episodeArr)) {
+			foreach ($episodeArr AS $episode) {
+				$this->pdo->queryInsert(
+						  sprintf('
+								INSERT IGNORE INTO anidb_episodes (anidbid, episodeid, episode_no, episode_title, airdate)
+								VALUES (%d, %d, %d, %s, %s)',
+								  $this->anidbId,
+								  $episode['episode_id'],
+								  $episode['episode_no'],
+								  $this->pdo->escapeString($episode['episode_title']),
+								  $this->pdo->escapeString($episode['airdate'])
+						  )
+				);
+			}
 		}
 	}
 
