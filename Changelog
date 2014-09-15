@@ -7,6 +7,8 @@ New updates are grouped by person, at the top of the file.
 	* Fix: Force updated column in anidb_info to be populated on INSERT and updated on UPDATE scenarios to prevent API bans
 	* Fix: Anime title view displays language type (main, official) instead of anime type (Movie, TV Show, etc.)
 	* Fix: Bad copy/paste in reset_postprocessing for anime
+	* Add: Initial sleep for AniDB post process in case user respawns script too fast
+	* Add: Additional debug output if searchname can't be matched
 2014-09-15 niel
 	* Fix: User cart problem. Changing userid to user_id in usercart table.
 	* New: Added reporting reason for pre-commit hook refusing to comit.
