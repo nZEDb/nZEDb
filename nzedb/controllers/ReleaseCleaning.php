@@ -5248,20 +5248,20 @@ class ReleaseCleaning
 	public function multimedia_anime()
 	{
 		//High School DxD New 01 (480p|.avi|xvid|mp3) ~bY Hatsuyuki [01/18] - "[Hatsuyuki]_High_School_DxD_New_01_[848x480][76B2BB8C].avi.001" yEnc
-		if (preg_match('/.+? \((360|480|720|1080)p\|.+? ~bY .+? \[\d+\/\d+\] - "(.+?\[[A-F0-9]+\].+?)' .
+		if (preg_match('/(.+?\s*\((360|480|720|1080)p\|.+?\s*~bY\s*.+?)\s*\[\d+\/\d+\]\s*- "(?P<release>.+?\[(?P<crc>[0-9A-Fa-f]+)\]).+?' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
-			return $match[2];
+			return $match['release'];
 		}
 
 		//[Hatsuyuki]_Seirei_Tsukai_no_Blade_Dance_-_03_[720p] [E18FCA59] [01/18]
-		if (preg_match('#(\[:xdigit:]-]+\][\w_-]+_\d+_\[\d{3,4}[ip]\]\s\[[:xdigit:]]{8}\])\s\[\d+/\d+\]#i',
+		if (preg_match('#(?P<release>\[[A-Z0-9-]+\][\w_-]+_\d+_\[\d{3,4}[ip]\]\s*\[[(?P<crc>0-9A-Fa-f]{8}\])\s\[\d+/(\d+)\]#i',
 					   $this->subject,
 					   $match)
 		) {
-			return $match[2];
+			return $match['release'];
 		}
 		return array(
 			"cleansubject" => $this->releaseCleanerHelper($this->subject), "properlynamed" => false
