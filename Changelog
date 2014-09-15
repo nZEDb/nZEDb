@@ -3,6 +3,8 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
+2014-09-15 ruhllatio
+	* Fix: Force updated column in anidb_info to be populated on INSERT and updated on UPDATE scenarios to prevent API bans
 2014-09-15 niel
 	* Fix: User cart problem. Changing userid to user_id in usercart table.
 	* New: Added reporting reason for pre-commit hook refusing to comit.

@@ -332,9 +332,9 @@ class AniDB
 	{
 		$this->pdo->queryInsert(
 				  sprintf('
-						INSERT INTO anidb_info (anidbid, type, startdate, enddate, related, similar, creators, description, rating, picture, categories, characters)
+						INSERT INTO anidb_info (anidbid, type, startdate, enddate, related, similar, creators, description, rating, picture, categories, characters, updated)
 						VALUES
-							(%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
+							(%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW())',
 						  $this->anidbId,
 						  $this->pdo->escapeString($AniDBInfoArray['type']),
 						  $this->pdo->escapeString($AniDBInfoArray['startdate']),
@@ -482,7 +482,8 @@ class AniDB
 						UPDATE anidb_info
 						SET type = %s, startdate = %s, enddate = %s, related = %s,
 							similar = %s, creators = %s, description = %s,
-							rating = %s, picture = %s, categories = %s, characters = %s
+							rating = %s, picture = %s, categories = %s, characters = %s,
+							updated = NOW()
 						WHERE anidbid = %d',
 						  $this->pdo->escapeString($AniDBInfoArray['type']),
 						  $this->pdo->escapeString($AniDBInfoArray['startdate']),
