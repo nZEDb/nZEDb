@@ -1,0 +1,165 @@
+#accordian,
+#accordian ul,
+#accordian ul li,
+#accordian ul li a {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  list-style: none;
+  line-height: .5;
+  display: block;
+  position: relative;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+#accordian {
+  width: 200px;
+  font-family: Helvetica, Arial, sans-serif;
+  color: #ffffff;
+}
+#accordian ul ul {
+  display: none;
+}
+.align-right {
+  float: right;
+}
+#accordian > ul > li > a {
+  padding: 15px 20px;
+  border-left: 1px solid #ffffff;
+  border-right: 1px solid #ffffff;
+  border-top: 1px solid #000000;
+  cursor: pointer;
+  z-index: 2;
+  font-size: 14px;
+  font-weight: bold;
+  text-decoration: none;
+  color: #eb210d;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.35);
+  background: #000000;
+  background: -webkit-linear-gradient(#ffffff, #ffffff);
+  background: -moz-linear-gradient(#ffffff, #ffffff);
+  background: -o-linear-gradient(#ffffff, #ffffff);
+  background: -ms-linear-gradient(#ffffff, #ffffff);
+  background: linear-gradient(#ffffff, #ffffff);
+  box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.15);
+}
+#accordian > ul > li > a:hover,
+#accordian > ul > li.active > a,
+#accordian > ul > li.open > a {
+  color: #eb210d;
+  background: #ffffff;
+  background: -webkit-linear-gradient(#ffffff, #ffffff);
+  background: -moz-linear-gradient(#ffffff, #ffffff);
+  background: -o-linear-gradient(#ffffff, #ffffff);
+  background: -ms-linear-gradient(#ffffff, #ffffff);
+  background: linear-gradient(#ffffff, #ffffff);
+}
+#accordian > ul > li.open > a {
+  box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.15), 0 1px 1px rgba(0, 0, 0, 0.15);
+  border-bottom: 1px solid #888888;
+}
+#accordian > ul > li:last-child > a,
+#accordian > ul > li.last > a {
+  border-bottom: 1px solid #000000;
+}
+.holder {
+  width: 0;
+  height: 0;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+.holder::after,
+.holder::before {
+  display: block;
+  position: absolute;
+  content: "";
+  width: 6px;
+  height: 6px;
+  right: 20px;
+  z-index: 10;
+  -webkit-transform: rotate(-135deg);
+  -moz-transform: rotate(-135deg);
+  -ms-transform: rotate(-135deg);
+  -o-transform: rotate(-135deg);
+  transform: rotate(-135deg);
+}
+.holder::after {
+  top: 17px;
+  border-top: 3px solid #eb210d;
+  border-left: 3px solid #eb210d;
+}
+#accordian > ul > li > a:hover > span::after,
+#accordian > ul > li.active > a > span::after,
+#accordian > ul > li.open > a > span::after {
+  border-color: #eeeeee;
+}
+.holder::before {
+  top: 18px;
+  border-top: 2px solid;
+  border-left: 2px solid;
+  border-top-color: inherit;
+  border-left-color: inherit;
+}
+#accordian ul ul li a {
+  cursor: pointer;
+  border-bottom: 1px solid #888888;
+  border-left: 1px solid #888888;
+  border-right: 1px solid #888888;
+  padding: 10px 20px;
+  z-index: 1;
+  text-decoration: none;
+  font-size: 13px;
+  color: #eb210d;
+  background: #ffffff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+#accordian ul ul li:hover > a,
+#accordian ul ul li.open > a,
+#accordian ul ul li.active > a {
+  background: #ffffff;
+  color: #000000;
+}
+#accordian ul ul li:first-child > a {
+  box-shadow: none;
+}
+#accordian ul ul ul li:first-child > a {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+#accordian ul ul ul li a {
+  padding-left: 30px;
+}
+#accordian > ul > li > ul > li:last-child > a,
+#accordian > ul > li > ul > li.last > a {
+  border-bottom: 0;
+}
+#accordian > ul > li > ul > li.open:last-child > a,
+#accordian > ul > li > ul > li.last.open > a {
+  border-bottom: 1px solid #888888;
+}
+#accordian > ul > li > ul > li.open:last-child > ul > li:last-child > a {
+  border-bottom: 0;
+}
+#accordian ul ul li.has-sub > a::after {
+  display: block;
+  position: absolute;
+  content: "";
+  width: 5px;
+  height: 5px;
+  right: 20px;
+  z-index: 10;
+  top: 11.5px;
+  border-top: 2px solid #eb210d;
+  border-left: 2px solid #eb210d;
+  -webkit-transform: rotate(-135deg);
+  -moz-transform: rotate(-135deg);
+  -ms-transform: rotate(-135deg);
+  -o-transform: rotate(-135deg);
+  transform: rotate(-135deg);
+}
+#accordian ul ul li.active > a::after,
+#accordian ul ul li.open > a::after,
+#accordian ul ul li > a:hover::after {
+  border-color: #000000;
+}
