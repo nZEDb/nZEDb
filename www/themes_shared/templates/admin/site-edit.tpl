@@ -4,7 +4,7 @@
 		<td><h1>{$page->title}</h1></td>
 		<td></td>
 		<td align="right" class="top-nav">
-			<form action="#">
+			<form id="site_jumpbox" action="#">
 				<select>
 					<option value="site_externalapis">3rd Party API Keys</option>
 					<option value="site_externalapps">3rd Party Application Paths</option>
@@ -29,8 +29,8 @@
 		</td>
 	</tr>
 </table>
-</div
-<form action="{$SCRIPT_NAME}?action=submit" method="post">
+</div>
+<form id="site_settings" action="{$SCRIPT_NAME}?action=submit" method="post">
 	{if $error != ''}
 		<div class="error">{$error}</div>
 	{/if}
