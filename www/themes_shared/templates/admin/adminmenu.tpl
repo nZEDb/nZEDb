@@ -56,7 +56,8 @@
 			<li><a href="{$smarty.const.WWW_TOP}/game-list.php">View Games</a></li>
 			<li><a href="{$smarty.const.WWW_TOP}/music-list.php">View Music</a></li>
 			<li><a href="{$smarty.const.WWW_TOP}/musicgenre-list.php">View Music Genres</a></li>
-			<li class="last"><a href="{$smarty.const.WWW_TOP}/release-list.php">View Releases</a></li>
+			<li><a href="{$smarty.const.WWW_TOP}/release-list.php">View Releases</a></li>
+			<li class="last"><a href="{$smarty.const.WWW_TOP}/xxx-list.php">View XXX</a></li>
 		</ul>
 	</li>
 

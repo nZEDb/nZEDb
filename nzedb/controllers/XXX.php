@@ -299,9 +299,9 @@ class XXX
 				$ta = $this->getGenres(true,$ta);
 				$ta = $ta["title"];
 			}
-			if ($i > 5) {
+			if ($i > 7) {
 				break;
-			} //only use first 6
+			} //only use first 8
 			$newArr[] = '<a href="' . WWW_TOP . '/xxx?' . $field . '=' . urlencode($ta) . '" title="' . $ta . '">' . $ta . '</a>';
 			$i++;
 		}
