@@ -35,7 +35,7 @@
 								{elseif $type == 'PC'}
 									class="library-games"
 								{elseif $type == 'TV'}
-									class="library-show"
+									class="library-games"
 								{/if}
 								>
 							<div class="poster">
@@ -60,7 +60,7 @@
 										<img height="130px" width="130px" alt=""
 											 src="{$smarty.const.WWW_TOP}/covers/games/{$result.gamesinfo_id}.jpg"/>
 									{elseif $type == 'TV'}
-										<img height="140px" width="205px" alt=""
+										<img height="130px" width="130px" alt=""
 											 src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$result.tvid}"/>
 									{/if}
 								</a>
