@@ -46,6 +46,7 @@ if ($error === false) {
 		} catch (\Exception $e) {
 			$error = 1;
 			echo "Error while checking patches!\n";
+			echo $e->getMessage() . "\n";
 		}
 
 		if ($error === false) {

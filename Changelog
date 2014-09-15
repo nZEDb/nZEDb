@@ -5,6 +5,7 @@ New updates are grouped by person, at the top of the file.
 
 2014-09-15 niel
 	* Fix: User cart problem. Changing userid to user_id in usercart table.
+	* New: Added reporting reason for pre-commit hook refusing to comit.
 2014-09-14 bart39
 	* Mrg: Merge PR 1502 from tasky.
 2014-09-13 bart39
