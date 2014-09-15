@@ -3,7 +3,7 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 
 use \nzedb\processing\PostProcess;
 
-$pdo = new nzedb\db\Settings();
+$pdo = new \nzedb\db\Settings();
 
 $tmpPath = $pdo->getSetting('tmpunrarpath');
 
@@ -33,18 +33,18 @@ if (empty($unrarPath)) {
 	exit ('The site setting for the unrar path must not be empty!' . PHP_EOL);
 }
 
-$nntp = new NNTP(['Settings' => $pdo]);
-$nfo = new Nfo(['Echo' => true, 'Settings' => $pdo]);
-$nzbContents= new NZBContents(
+$nntp = new \NNTP(['Settings' => $pdo]);
+$nfo = new \Nfo(['Echo' => true, 'Settings' => $pdo]);
+$nzbContents= new \NZBContents(
 	array(
 		'Settings' => $pdo,
 		'Echo' => true,
 		'Nfo' => $nfo,
-		'PostProcess' => new PostProcess(['Settings' => $pdo, 'Nfo' => $nfo]),
+		'PostProcess' => new \PostProcess(['Settings' => $pdo, 'Nfo' => $nfo]),
 		'NNTP' => $nntp
 	)
 );
-$categorize = new Categorize(['Settings' => $pdo]);
+$categorize = new \Categorize(['Settings' => $pdo]);
 
 $releases = $pdo->queryDirect(
 	sprintf('
@@ -60,11 +60,11 @@ $releases = $pdo->queryDirect(
 	)
 );
 
-if ($releases instanceof Traversable) {
+if ($releases instanceof \Traversable) {
 
 	$nntp->doConnect();
 
-	$sphinx = new SphinxSearch();
+	$sphinx = new \SphinxSearch();
 
 	foreach($releases as $release) {
 
@@ -174,7 +174,7 @@ if ($releases instanceof Traversable) {
 
 		$determinedCat = $categorize->determineCategory($newName, $release['group_id']);
 
-		NameFixer::echoChangedReleaseName(array(
+		\NameFixer::echoChangedReleaseName(array(
 				'new_name'     => $newName,
 				'old_name'     => $release['oldname'],
 				'new_category' => $categorize->getNameByid($determinedCat),

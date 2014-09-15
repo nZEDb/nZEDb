@@ -97,10 +97,10 @@ class Users
 	{
 		$this->delCartForUser($userID);
 		$this->delUserCategoryExclusions($userID);
-		(new ReleaseComments($this->pdo))->deleteCommentsForUser($userID);
-		(new UserMovies(['Settings' => $this->pdo]))->delMovieForUser($userID);
-		(new UserSeries(['Settings' => $this->pdo]))->delShowForUser($userID);
-		(new Forum(['Settings' => $this->pdo]))->deleteUser($userID);
+		(new \ReleaseComments($this->pdo))->deleteCommentsForUser($userID);
+		(new \UserMovies(['Settings' => $this->pdo]))->delMovieForUser($userID);
+		(new \UserSeries(['Settings' => $this->pdo]))->delShowForUser($userID);
+		(new \Forum(['Settings' => $this->pdo]))->deleteUser($userID);
 
 		$this->pdo->queryExec(sprintf("DELETE FROM users WHERE id = %d", $userID));
 	}
@@ -229,7 +229,7 @@ class Users
 	 *
 	 * @return bool|int
 	 */
-	public function add($userName, $firstName, $lastName, $password, $email, $role, $host, $invites = Users::DEFAULT_INVITES, $invitedBy = 0)
+	public function add($userName, $firstName, $lastName, $password, $email, $role, $host, $invites = \Users::DEFAULT_INVITES, $invitedBy = 0)
 	{
 		$password = $this->hashPassword($password);
 		if (!$password) {
@@ -297,21 +297,21 @@ class Users
 		$email = trim($email);
 
 		if (!$this->isValidUsername($userName)) {
-			return Users::ERR_SIGNUP_BADUNAME;
+			return \Users::ERR_SIGNUP_BADUNAME;
 		}
 
 		$check = $this->getByUsername($userName);
 		if ($check !== false && $check['id'] != $id) {
-			return Users::ERR_SIGNUP_UNAMEINUSE;
+			return \Users::ERR_SIGNUP_UNAMEINUSE;
 		}
 
 		if (!$this->isValidEmail($email)) {
-			return Users::ERR_SIGNUP_BADEMAIL;
+			return \Users::ERR_SIGNUP_BADEMAIL;
 		}
 
 		$check = $this->getByEmail($email);
 		if ($check !== false && $check['id'] != $id) {
-			return Users::ERR_SIGNUP_EMAILINUSE;
+			return \Users::ERR_SIGNUP_EMAILINUSE;
 		}
 
 		$sql = array();
@@ -370,7 +370,7 @@ class Users
 		}
 		$this->pdo->queryExec(sprintf("UPDATE users SET %s WHERE id = %d", implode(', ', $sql), $id));
 
-		return Users::SUCCESS;
+		return \Users::SUCCESS;
 	}
 
 	/**
@@ -396,7 +396,7 @@ class Users
 	public function updatePassResetGuid($userID, $GUID)
 	{
 		$this->pdo->queryExec(sprintf("UPDATE users SET resetguid = %s WHERE id = %d", $this->pdo->escapeString($GUID), $userID));
-		return Users::SUCCESS;
+		return \Users::SUCCESS;
 	}
 
 	/**
@@ -411,7 +411,7 @@ class Users
 	{
 		$password = $this->hashPassword($password);
 		if (!$password) {
-			return Users::FAILURE;
+			return \Users::FAILURE;
 		}
 		$this->pdo->queryExec(
 			sprintf(
@@ -421,7 +421,7 @@ class Users
 				$userID
 			)
 		);
-		return Users::SUCCESS;
+		return \Users::SUCCESS;
 	}
 
 	/**
@@ -614,7 +614,7 @@ class Users
 				$this->pdo->escapeString($userName)
 			)
 		);
-		return ($role === false ? false : $role['role'] == Users::ROLE_DISABLED);
+		return ($role === false ? false : $role['role'] == \Users::ROLE_DISABLED);
 	}
 
 	/**
@@ -685,44 +685,44 @@ class Users
 	 * @return bool|int
 	 */
 	public function signUp(
-		$userName, $firstName, $lastName, $password, $email, $host, $role = Users::ROLE_USER,
-		$invites = Users::DEFAULT_INVITES, $inviteCode = '', $forceInviteMode = false
+		$userName, $firstName, $lastName, $password, $email, $host, $role = \Users::ROLE_USER,
+		$invites = \Users::DEFAULT_INVITES, $inviteCode = '', $forceInviteMode = false
 	) {
 		$userName = trim($userName);
 		if (!$this->isValidUsername($userName)) {
-			return Users::ERR_SIGNUP_BADUNAME;
+			return \Users::ERR_SIGNUP_BADUNAME;
 		}
 
 		$password = trim($password);
 		if (!$this->isValidPassword($password)) {
-			return Users::ERR_SIGNUP_BADPASS;
+			return \Users::ERR_SIGNUP_BADPASS;
 		}
 
 		$email = trim($email);
 		if (!$this->isValidEmail($email)) {
-			return Users::ERR_SIGNUP_BADEMAIL;
+			return \Users::ERR_SIGNUP_BADEMAIL;
 		}
 
 		$res = $this->getByUsername($userName);
 		if ($res) {
-			return Users::ERR_SIGNUP_UNAMEINUSE;
+			return \Users::ERR_SIGNUP_UNAMEINUSE;
 		}
 
 		$res1 = $this->getByEmail($email);
 		if ($res1) {
-			return Users::ERR_SIGNUP_EMAILINUSE;
+			return \Users::ERR_SIGNUP_EMAILINUSE;
 		}
 
 		// Make sure this is the last check, as if a further validation check failed, the invite would still have been used up.
 		$invitedBy = 0;
 		if (($this->pdo->getSetting('registerstatus') == Settings::REGISTER_STATUS_INVITE) && !$forceInviteMode) {
 			if ($inviteCode == '') {
-				return Users::ERR_SIGNUP_BADINVITECODE;
+				return \Users::ERR_SIGNUP_BADINVITECODE;
 			}
 
 			$invitedBy = $this->checkAndUseInvite($inviteCode);
 			if ($invitedBy < 0) {
-				return Users::ERR_SIGNUP_BADINVITECODE;
+				return \Users::ERR_SIGNUP_BADINVITECODE;
 			}
 		}
 
@@ -817,7 +817,7 @@ class Users
 		} else if (isset($_COOKIE['uid']) && isset($_COOKIE['idh'])) {
 			$u = $this->getById($_COOKIE['uid']);
 
-			if (($_COOKIE['idh'] == $this->hashSHA1($u["userseed"] . $_COOKIE['uid'])) && ($u["role"] != Users::ROLE_DISABLED)) {
+			if (($_COOKIE['idh'] == $this->hashSHA1($u["userseed"] . $_COOKIE['uid'])) && ($u["role"] != \Users::ROLE_DISABLED)) {
 				$this->login($_COOKIE['uid'], $_SERVER['REMOTE_ADDR']);
 			}
 		}
@@ -1064,7 +1064,7 @@ class Users
 	public function getCategoryExclusionNames($userID)
 	{
 		$data = $this->getCategoryExclusion($userID);
-		$category = new Category(['Settings' => $this->pdo]);
+		$category = new \Category(['Settings' => $this->pdo]);
 		$categories = $category->getByIds($data);
 		$ret = array();
 		if ($categories !== false) {
@@ -1144,7 +1144,7 @@ class Users
 		$this->pdo->queryExec(
 			sprintf(
 				"DELETE FROM userinvite WHERE createddate < NOW() - INTERVAL %d DAY",
-				Users::DEFAULT_INVITE_EXPIRY_DAYS
+				\Users::DEFAULT_INVITE_EXPIRY_DAYS
 			)
 		);
 

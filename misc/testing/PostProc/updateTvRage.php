@@ -6,7 +6,7 @@ use nzedb\db\Settings;
 use nzedb\utility;
 
 $pdo = new Settings();
-$tvrage = new TvRage(['Settings' => $pdo, 'Echo' => true]);
+$tvrage = new \TvRage(['Settings' => $pdo, 'Echo' => true]);
 
 $shows = $pdo->queryDirect("SELECT rageid FROM tvrage WHERE imgdata IS NULL ORDER BY rageid DESC LIMIT 2000");
 if ($shows->rowCount() > 0) {
@@ -18,7 +18,7 @@ if ($shows->rowCount() > 0) {
 	usleep(5000000);
 }
 $loop = 0;
-if ($shows instanceof Traversable) {
+if ($shows instanceof \Traversable) {
 	foreach ($shows as $show) {
 		$starttime = microtime(true);
 		$rageid = $show['rageid'];
@@ -44,7 +44,7 @@ if ($shows instanceof Traversable) {
 
 		$imgbytes = '';
 		if (isset($rInfo['imgurl']) && !empty($rInfo['imgurl'])) {
-			$img = nzedb\utility\getUrl($rInfo['imgurl']);
+			$img = nzedb\utility\Utility::getUrl(['url' => $rInfo['imgurl']]);
 			if ($img !== false) {
 				$im = @imagecreatefromstring($img);
 				if ($im !== false) {

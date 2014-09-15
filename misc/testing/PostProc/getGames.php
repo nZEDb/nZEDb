@@ -2,8 +2,8 @@
 //This script will update all records in the gamesinfo table
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-$pdo = new nzedb\db\Settings();
-$game = new Games(['Echo' => true, 'Settings' => $pdo]);
+$pdo = new \nzedb\db\Settings();
+$game = new \Games(['Echo' => true, 'Settings' => $pdo]);
 
 $res = $pdo->query(
 	sprintf("SELECT searchname FROM releases WHERE gamesinfo_id IS NULL AND categoryid = 4050 ORDER BY id DESC LIMIT 100")

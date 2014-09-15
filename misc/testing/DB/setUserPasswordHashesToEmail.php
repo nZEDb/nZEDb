@@ -19,7 +19,7 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 
 use nzedb\db\Settings;
 
-$colorCLI = new ColorCLI();
+$colorCLI = new \ColorCLI();
 
 $warning = <<<WARNING
 This script will (re)set the password hashes for older hashes (pre Db patch
@@ -42,7 +42,7 @@ $pdo = new Settings();
 $users = $pdo->query("SELECT id, username, email, password FROM users");
 $update = $pdo->Prepare('UPDATE users SET password = :password WHERE id = :id');
 
-$Users = new Users(['Settings' => $pdo]);
+$Users = new \Users(['Settings' => $pdo]);
 
 foreach($users as $user) {
 	if (needUpdate($user)) {

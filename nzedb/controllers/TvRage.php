@@ -42,7 +42,7 @@ class TvRage
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
 
 		$this->xmlEpisodeInfoUrl =
-			"http://services.tvrage.com/myfeeds/episodeinfo.php?key=" . TvRage::APIKEY;
+			"http://services.tvrage.com/myfeeds/episodeinfo.php?key=" . \TvRage::APIKEY;
 	}
 
 	/**
@@ -207,7 +207,8 @@ class TvRage
 		$url = $this->showQuickInfoURL . urlencode($show);
 		$url .= !empty($options['episode']) ? '&ep=' . urlencode($options['episode']) : '';
 		$url .= !empty($options['exact']) ? '&exact=' . urlencode($options['exact']) : '';
-		if ($fp = fopen($url, "r")) {
+		$fp = fopen($url, "r", false, stream_context_create(nzedb\utility\Utility::streamSslContextOptions()));
+		if ($fp) {
 			while (!feof($fp)) {
 				$line = fgets($fp, 1024);
 				list ($sec, $val) = explode('@', $line, 2);
@@ -356,7 +357,7 @@ class TvRage
 				echo $this->pdo->log->headerOver('Updating schedule for: ') . $this->pdo->log->primary($country['country']);
 			}
 
-			$sched = nzedb\utility\getURL($this->xmlFullScheduleUrl . $country['country']);
+			$sched = nzedb\utility\Utility::getURL(['url' => $this->xmlFullScheduleUrl . $country['country']]);
 			if ($sched !== false && ($xml = @simplexml_load_string($sched))) {
 				$tzOffset = 60 * 60 * 6;
 				$yesterday = strtotime("-1 day") - $tzOffset;
@@ -453,7 +454,7 @@ class TvRage
 
 		$series = str_ireplace("s", "", $series);
 		$episode = str_ireplace("e", "", $episode);
-		$xml = nzedb\utility\getUrl($this->xmlEpisodeInfoUrl . "&sid=" . $rageid . "&ep=" . $series . "x" . $episode);
+		$xml = nzedb\utility\Utility::getUrl(['url' => $this->xmlEpisodeInfoUrl . "&sid=" . $rageid . "&ep=" . $series . "x" . $episode]);
 		if ($xml !== false) {
 			if (preg_match('/no show found/i', $xml)) {
 				return false;
@@ -479,7 +480,7 @@ class TvRage
 	public function getRageInfoFromPage($rageid)
 	{
 		$result = array('desc' => '', 'imgurl' => '');
-		$page = nzedb\utility\getUrl($this->showInfoUrl . $rageid);
+		$page = nzedb\utility\Utility::getUrl(['url' => $this->showInfoUrl . $rageid]);
 		$matches = '';
 		if ($page !== false) {
 			// Description.
@@ -510,7 +511,7 @@ class TvRage
 	{
 		$result = array('genres' => '', 'country' => '', 'showid' => $rageid);
 		// Full search gives us the akas.
-		$xml = nzedb\utility\getUrl($this->xmlShowInfoUrl . $rageid);
+		$xml = nzedb\utility\Utility::getUrl(['url' => $this->xmlShowInfoUrl . $rageid]);
 		if ($xml !== false) {
 			$arrXml = nzedb\utility\objectsIntoArray(simplexml_load_string($xml));
 			if (is_array($arrXml)) {
@@ -583,7 +584,7 @@ class TvRage
 
 		$imgbytes = '';
 		if (isset($rInfo['imgurl']) && !empty($rInfo['imgurl'])) {
-			$img = nzedb\utility\getUrl($rInfo['imgurl']);
+			$img = nzedb\utility\Utility::getUrl(['url' => $rInfo['imgurl']]);
 			if ($img !== false) {
 				$im = @imagecreatefromstring($img);
 				if ($im !== false) {
@@ -624,7 +625,7 @@ class TvRage
 
 		$imgbytes = '';
 		if (isset($rInfo['imgurl']) && !empty($rInfo['imgurl'])) {
-			$img = nzedb\utility\getUrl($rInfo['imgurl']);
+			$img = nzedb\utility\Utility::getUrl(['url' => $rInfo['imgurl']]);
 			if ($img !== false) {
 				$im = @imagecreatefromstring($img);
 				if ($im !== false) {
@@ -642,7 +643,7 @@ class TvRage
 		if ($lookupTvRage == 0) {
 			return $ret;
 		}
-		$trakt = new TraktTv(['Settings' => $this->pdo]);
+		$trakt = new \TraktTv(['Settings' => $this->pdo]);
 
 		// Get all releases without a rageid which are in a tv category.
 
@@ -757,7 +758,7 @@ class TvRage
 	{
 		$title = $showInfo['cleanname'];
 		// Full search gives us the akas.
-		$xml = nzedb\utility\getUrl($this->xmlFullSearchUrl . urlencode(strtolower($title)));
+		$xml = nzedb\utility\Utility::getUrl(['url' => $this->xmlFullSearchUrl . urlencode(strtolower($title))]);
 		if ($xml !== false) {
 			$arrXml = @nzedb\utility\objectsIntoArray(simplexml_load_string($xml));
 			if (isset($arrXml['show']) && is_array($arrXml)) {
@@ -917,7 +918,7 @@ class TvRage
 			$matchpct = ($numMatches / $totalMatches) * 100;
 		}
 
-		if ($matchpct >= TvRage::MATCH_PROBABILITY) {
+		if ($matchpct >= \TvRage::MATCH_PROBABILITY) {
 			return $matchpct;
 		} else {
 			return false;

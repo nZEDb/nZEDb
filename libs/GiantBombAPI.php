@@ -120,6 +120,7 @@ class GiantBomb
 
 		// Set URL
 		curl_setopt($this->ch, CURLOPT_URL, $url);
+		curl_setopt_array($this->ch, nzedb\utility\Utility::curlSslContextOptions());
 
 		// Send the request & save response to $resp
 		$resp["data"] = curl_exec($this->ch);

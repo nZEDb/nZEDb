@@ -21,9 +21,9 @@ echo $pdo->log->header("Thank you, continuing...\n\n");
 
 $timestart = time();
 $relcount = 0;
-$ri = new ReleaseImage($pdo);
-$nzb = new NZB($pdo);
-$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
+$ri = new \ReleaseImage($pdo);
+$nzb = new \NZB($pdo);
+$consoletools = new \ConsoleTools(['ColorCLI' => $pdo->log]);
 
 $pdo->queryExec("UPDATE groups SET first_record = 0, first_record_postdate = NULL, last_record = 0, last_record_postdate = NULL, last_updated = NULL");
 echo $pdo->log->primary("Reseting all groups completed.");
@@ -53,13 +53,13 @@ foreach ($tables as $row) {
 	}
 }
 
-(new SphinxSearch())->truncateRTIndex('releases_rt');
+(new \SphinxSearch())->truncateRTIndex('releases_rt');
 
 $pdo->optimise(false, 'full');
 
 echo $pdo->log->header("Deleting nzbfiles subfolders.");
 try {
-	$files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($pdo->getSetting('nzbpath'), RecursiveDirectoryIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST);
+	$files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($pdo->getSetting('nzbpath'), \RecursiveDirectoryIterator::SKIP_DOTS), \RecursiveIteratorIterator::CHILD_FIRST);
 	foreach ($files as $file) {
 		if (basename($file) != '.gitignore' && basename($file) != 'tmpunrar') {
 			$todo = ($file->isDir() ? 'rmdir' : 'unlink');
@@ -72,8 +72,8 @@ try {
 
 echo $pdo->log->header("Deleting all images, previews and samples that still remain.");
 try {
-	$dirItr = new RecursiveDirectoryIterator(nZEDb_COVERS);
-	$itr = new RecursiveIteratorIterator($dirItr, RecursiveIteratorIterator::LEAVES_ONLY);
+	$dirItr = new \RecursiveDirectoryIterator(nZEDb_COVERS);
+	$itr = new \RecursiveIteratorIterator($dirItr, \RecursiveIteratorIterator::LEAVES_ONLY);
 	foreach ($itr as $filePath) {
 		if (basename($filePath) != '.gitignore' && basename($filePath) != 'no-cover.jpg' && basename($filePath) != 'no-backdrop.jpg') {
 			@unlink($filePath);

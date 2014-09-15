@@ -146,7 +146,7 @@ class Music
 
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
-			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
+			$catsrch = (new \Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
 		}
 
 		if ($maxage > 0) {
@@ -188,7 +188,7 @@ class Music
 
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
-			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
+			$catsrch = (new \Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
 		}
 
 		$exccatlist = "";
@@ -352,8 +352,8 @@ class Music
 	 */
 	public function updateMusicInfo($title, $year, $amazdata = null)
 	{
-		$gen = new Genres(['Settings' => $this->pdo]);
-		$ri = new ReleaseImage($this->pdo);
+		$gen = new \Genres(['Settings' => $this->pdo]);
+		$ri = new \ReleaseImage($this->pdo);
 		$titlepercent = 0;
 
 		$mus = array();
@@ -379,7 +379,7 @@ class Music
 		}
 
 		// Load genres.
-		$defaultGenres = $gen->getGenres(Genres::MUSIC_TYPE);
+		$defaultGenres = $gen->getGenres(\Genres::MUSIC_TYPE);
 		$genreassoc = array();
 		foreach ($defaultGenres as $dg) {
 			$genreassoc[$dg['id']] = strtolower($dg['title']);
@@ -468,7 +468,7 @@ class Music
 										INSERT INTO genres (title, type)
 										VALUES (%s, %d)",
 										$this->pdo->escapeString($genreName),
-										Genres::MUSIC_TYPE
+										\Genres::MUSIC_TYPE
 									)
 				);
 			}
@@ -532,10 +532,10 @@ class Music
 	public function fetchAmazonProperties($title)
 	{
 		$result = false;
-		$obj = new AmazonProductAPI($this->pubkey, $this->privkey, $this->asstag);
+		$obj = new \AmazonProductAPI($this->pubkey, $this->privkey, $this->asstag);
 		// Try Music category.
 		try {
-			$result = $obj->searchProducts($title, AmazonProductAPI::MUSIC, "TITLE");
+			$result = $obj->searchProducts($title, \AmazonProductAPI::MUSIC, "TITLE");
 		} catch (Exception $e) {
 			// Empty because we try another method.
 		}
@@ -544,7 +544,7 @@ class Music
 		if ($result === false) {
 			usleep(700000);
 			try {
-				$result = $obj->searchProducts($title, AmazonProductAPI::MP3, "TITLE");
+				$result = $obj->searchProducts($title, \AmazonProductAPI::MP3, "TITLE");
 			} catch (Exception $e) {
 				// Empty because we try another method.
 			}
@@ -554,7 +554,7 @@ class Music
 		if ($result === false) {
 			usleep(700000);
 			try {
-				$result = $obj->searchProducts($title, AmazonProductAPI::DIGITALMUS, "TITLE");
+				$result = $obj->searchProducts($title, \AmazonProductAPI::DIGITALMUS, "TITLE");
 			} catch (Exception $e) {
 				// Empty because we try another method.
 			}
@@ -564,7 +564,7 @@ class Music
 		if ($result === false) {
 			usleep(700000);
 			try {
-				$result = $obj->searchProducts($title, AmazonProductAPI::MUSICTRACKS, "TITLE");
+				$result = $obj->searchProducts($title, \AmazonProductAPI::MUSICTRACKS, "TITLE");
 			} catch (Exception $e) {
 				// Empty because we exhausted all possibilities.
 			}
@@ -581,7 +581,7 @@ class Music
 		$res = $this->pdo->queryDirect(sprintf('SELECT searchname, id FROM releases '
 				. 'WHERE musicinfoid IS NULL AND nzbstatus = 1 %s AND categoryid IN (3010, 3040, 3050) '
 				. 'ORDER BY postdate DESC LIMIT %d', $this->renamed, $this->musicqty));
-		if ($res instanceof Traversable && $res->rowCount() > 0) {
+		if ($res instanceof \Traversable && $res->rowCount() > 0) {
 			if ($this->echooutput) {
 				$this->pdo->log->doEcho(
 					$this->pdo->log->header("Processing " . $res->rowCount() .' music release(s).'

@@ -11,7 +11,7 @@ if (!isset($argv[1])) {
 
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-$pdo = new nzedb\db\DB();
+$pdo = new \nzedb\db\DB();
 
 if ($argv[1] === 'all') {
 	$groups = $pdo->query('SELECT * FROM groups WHERE backfill = 1');
@@ -27,11 +27,11 @@ if (count($groups) === 0) {
 	}
 }
 
-$nntp = new NNTP(['Settings' => $pdo]);
+$nntp = new \NNTP(['Settings' => $pdo]);
 
 $nntp->doConnect() or exit('Could not connect to Usenet!' . PHP_EOL);
 
-$binaries = new Binaries(['NNTP' => $nntp, 'Settings' => $pdo]);
+$binaries = new \Binaries(['NNTP' => $nntp, 'Settings' => $pdo]);
 
 foreach ($groups as $group) {
 	$groupNNTP = $nntp->selectGroup($group['name']);

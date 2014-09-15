@@ -357,10 +357,10 @@ class AniDB
 	{
 		$pdo = $this->pdo;
 		if ($hours == 0)
-			$results = $pdo->query(sprintf('SELECT searchname, id FROM releases WHERE nzbstatus = 1 AND anidbid IS NULL AND categoryid IN (SELECT id FROM category WHERE categoryid = %d) ORDER BY postdate DESC LIMIT %d', Category::CAT_TV_ANIME, $this->aniqty));
+			$results = $pdo->query(sprintf('SELECT searchname, id FROM releases WHERE nzbstatus = 1 AND anidbid IS NULL AND categoryid IN (SELECT id FROM category WHERE categoryid = %d) ORDER BY postdate DESC LIMIT %d', \Category::CAT_TV_ANIME, $this->aniqty));
 		else
 		// only select items within 6 hours
-			$results = $pdo->query(sprintf('SELECT searchname, id FROM releases WHERE nzbstatus = 1 AND anidbid IS NULL AND categoryid IN (SELECT id FROM category WHERE categoryid = %d) adddate > ( NOW( ) - INTERVAL 6 HOUR ) ORDER BY postdate DESC LIMIT %d', Category::CAT_TV_ANIME, $this->aniqty));
+			$results = $pdo->query(sprintf('SELECT searchname, id FROM releases WHERE nzbstatus = 1 AND anidbid IS NULL AND categoryid IN (SELECT id FROM category WHERE categoryid = %d) adddate > ( NOW( ) - INTERVAL 6 HOUR ) ORDER BY postdate DESC LIMIT %d', \Category::CAT_TV_ANIME, $this->aniqty));
 
 
 		// process the resulting set

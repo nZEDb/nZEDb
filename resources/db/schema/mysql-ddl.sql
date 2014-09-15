@@ -441,7 +441,7 @@ CREATE TABLE         xxxinfo (
   plot        BLOB                           NULL DEFAULT NULL,
   genre       VARCHAR(64)                    NOT NULL,
   director    VARCHAR(64)                    DEFAULT NULL,
-  actors      VARCHAR(2000)                  NOT NULL,
+  actors      VARCHAR(2500)                  NOT NULL,
   extras      TEXT                           DEFAULT NULL,
   productinfo TEXT                           DEFAULT NULL,
   trailers    TEXT                           DEFAULT NULL,

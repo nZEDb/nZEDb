@@ -6,7 +6,7 @@ use nzedb\db\Settings;
 passthru("clear");
 
 $pdo = new Settings();
-$t = new Tmux();
+$t = new \Tmux();
 $tmux = $t->get();
 $powerline = (isset($tmux->powerline)) ? $tmux->powerline : 0;
 

@@ -24,12 +24,13 @@ div.icon { width:16px; height:16px; background-repeat:no-repeat; cursor:pointer;
 .icon_allmusic2      { content:url('../../../themes_shared/images/icons/allmusic.png'); }
 .icon_amazon         { background-image:url('../../../themes_shared/images/icons/amazon.png'); }
 .icon_amazon2        { content:url('../../../themes_shared/images/icons/amazon.png'); }
-.icon_giantbomb      { background-image:url('../../../themes_shared/images/icons/giantbomb.png'); }
 .icon_cart           { background-image:url('../../../themes_shared/images/icons/cartup.png'); }
 .icon_cart_clicked   { background-image:url('../../../themes_shared/images/icons/cartdown.png'); }
 .icon_couch          { background-image:url('../../../themes_shared/images/icons/couch.png'); }
 .icon_couch2         { content:url('../../../themes_shared/images/icons/couch.png'); }
 .icon_discogs        { background-image:url('../../../themes_shared/images/icons/discogs.png'); }
+.icon_giantbomb      { background-image:url('../../../themes_shared/images/icons/giantbomb.png'); }
+.icon_steam          { background-image:url('../../../themes_shared/images/icons/steam.png'); }
 .icon_gamespot       { background-image:url('../../../themes_shared/images/icons/gamespot.png'); }
 .icon_ign            { background-image:url('../../../themes_shared/images/icons/ign.png'); }
 .icon_lastfm         { background-image:url('../../../themes_shared/images/icons/lastfm.png'); }
@@ -38,8 +39,8 @@ div.icon { width:16px; height:16px; background-repeat:no-repeat; cursor:pointer;
 .icon_nzb a          { text-decoration:none; padding-bottom:2px; padding-right:12px; }
 .icon_predbme        { background-image:url('../../../themes_shared/images/icons/predbme.png'); }
 .icon_ade            { background-image: url('../../../themes_shared/images/icons/ade.png');}
+.icon_aebn           { background-image: url('../../../themes_shared/images/icons/aebn.png');}
 .icon_popporn        { background-image: url('../../../themes_shared/images/icons/popporn.png');}
-.icon_hm             { background-image: url('../../../themes_shared/images/icons/hotmovies.png');}
 .icon_iafd           { background-image: url('../../../themes_shared/images/icons/iafd.png');}
 .icon_imdb           { background-image:url('../../../themes_shared/images/icons/imdb.png'); }
 .icon_imdb2          { content:url('../../../themes_shared/images/icons/imdb.png'); }

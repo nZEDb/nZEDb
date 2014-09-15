@@ -9,10 +9,10 @@ $pdo = new Settings();
 if (isset($argv[1]) && $argv[1] == "true") {
 
 	$timestart = TIME();
-	$releases = new Releases(['Settings' => $pdo]);
-	$category = new Category(['Settings' => $pdo]);
-	$nzb = new NZB($pdo);
-	$releaseImage = new ReleaseImage($pdo);
+	$releases = new \Releases(['Settings' => $pdo]);
+	$category = new \Category(['Settings' => $pdo]);
+	$nzb = new \NZB($pdo);
+	$releaseImage = new \ReleaseImage($pdo);
 	$catlist = $category->getDisabledIDs();
 	$relsdeleted = 0;
 	if (count($catlist > 0)) {
