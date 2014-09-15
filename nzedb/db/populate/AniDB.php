@@ -351,7 +351,9 @@ class AniDB
 				  )
 		);
 
-		$this->insertAniDBEpisodes($AniDBInfoArray['epsarr']);
+		if (isset($AniDBInfoArray['epsarr'])) {
+			$this->insertAniDBEpisodes($AniDBInfoArray['epsarr']);
+		}
 		return $AniDBInfoArray['picture'];
 	}
 
