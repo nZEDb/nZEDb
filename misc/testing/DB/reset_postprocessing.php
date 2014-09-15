@@ -214,7 +214,7 @@ if (isset($argv[1]) && ($argv[1] === "anime" || $argv[1] === "all")) {
 	}
 	if (isset($argv[2]) && $argv[2] === "true") {
 		echo $pdo->log->header("Resetting all Anime postprocessing");
-		$where = '  WHERE rageid != -1';
+		$where = ' WHERE categoryid = 5070';
 	} else {
 		echo $pdo->log->header("Resetting all failed Anime postprocessing");
 		$where = " WHERE anidbid BETWEEN -2 AND -1 AND categoryid = 5070";
