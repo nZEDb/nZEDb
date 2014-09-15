@@ -4,7 +4,7 @@ No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
 2014-09-15 niel
-	* Fix: Changing userid to user_id in usercart table.
+	* Fix: User cart problem. Changing userid to user_id in usercart table.
 2014-09-14 bart39
 	* Mrg: Merge PR 1502 from tasky.
 2014-09-13 bart39
