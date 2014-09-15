@@ -173,15 +173,11 @@ class AniDB
 				$AniDBAPIArray['related'] = 'No related anime available for this AniDB ID.';
 			}
 
-			if ($AniDBAPIXML->creators instanceof \Traversable) {
-				$temp = '';
-				foreach ($AniDBAPIXML->creators->children() AS $creator) {
-					$temp .= (string)$creator->name . ', ';
-				}
-				$AniDBAPIArray['creators'] = (empty($temp) ? '' : substr($temp, 0, -2));
-			} else {
-				$AniDBAPIArray['creators'] = 'No creators available for this AniDB ID.';
+			$temp = '';
+			foreach ($AniDBAPIXML->creators->children() AS $creators) {
+				$temp .= (string)$creators->name . ', ';
 			}
+			$AniDBAPIArray['creators'] = (empty($temp) ? '' : substr($temp, 0, -2));
 
 			if ($AniDBAPIXML->characters->character instanceof \Traversable) {
 				foreach ($AniDBAPIXML->characters->character AS $character) {
