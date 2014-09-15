@@ -1,0 +1,1 @@
+ALTER TABLE anidb_info ADD COLUMN similar VARCHAR(1024) COLLATE utf8_unicode_ci DEFAULT NULL AFTER related;

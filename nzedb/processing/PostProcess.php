@@ -131,10 +131,8 @@ class PostProcess
 	 */
 	public function processAnime()
 	{
-		if ($this->pdo->getSetting('lookupanidb') == 1) {
-			$anidb = new \AniDB(['Echo' => $this->echooutput, 'Settings' => $this->pdo]);
-			$anidb->animetitlesUpdate();
-			$anidb->processAnimeReleases();
+		if ($this->pdo->getSetting('lookupanidb') != 0) {
+			(new \nzedb\processing\post\AniDB(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->processAnimeReleases();
 		}
 	}
 
