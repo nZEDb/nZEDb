@@ -17,7 +17,7 @@ $pager = $page->smarty->fetch("pager.tpl");
 $page->smarty->assign('pager', $pager);
 
 $xxxmovielist = $xxxmovie->getRange($offset, ITEMS_PER_PAGE);
-foreach($xxxmovielist as $key => $mov){
+foreach ($xxxmovielist as $key => $mov) {
 	$xxxmovielist[$key]['hastrailer'] = (!empty($mov['trailers'])) ? 1 : 0;
 }
 $page->smarty->assign('xxxmovielist',$xxxmovielist);

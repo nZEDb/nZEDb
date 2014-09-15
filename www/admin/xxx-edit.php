@@ -55,8 +55,8 @@ if (isset($_REQUEST["id"])) {
 		case 'view':
 		default:
 			$page->title = "XXX Movie Edit";
-			if(stristr($xxx['genre'],",")){
-			$xxx['genre'] = explode(",",$xxx['genre']);
+			if (stristr($xxx['genre'], ",")) {
+				$xxx['genre'] = explode(",", $xxx['genre']);
 			}
 			$xxx['trailers'] = (!empty($xxx['trailers'])) ? unserialize($xxx['trailers']) : '';
 			$xxx['trailers'] = $xxx['trailers']['url'];
