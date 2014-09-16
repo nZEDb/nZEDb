@@ -536,8 +536,8 @@ class Movie
 		$mov['cover'] = $mov['backdrop'] = $movieID = 0;
 		$mov['type'] = $mov['director'] = $mov['actors'] = $mov['language'] = '';
 
-		$mov['imdbid'] = $imdbId;
-		$mov['tmdbid'] = (!isset($tmdb['tmdbid']) || $tmdb['tmdbid'] == '') ? 'NULL' : $tmdb['tmdbid'];
+		$mov['imdb_id'] = $imdbId;
+		$mov['tmdb_id'] = (!isset($tmdb['tmdb_id']) || $tmdb['tmdb_id'] == '') ? 'NULL' : $tmdb['tmdb_id'];
 
 		// Prefer FanArt.tv cover over TMDB. And TMDB over IMDB.
 		if ($this->checkVariable($fanart['cover'])) {
@@ -607,8 +607,8 @@ class Movie
 				ON DUPLICATE KEY UPDATE
 					imdbid = %d, tmdbid = %s, title = %s, rating = %s, tagline = %s, plot = %s, year = %s, genre = %s,
 					type = %s, director = %s, actors = %s, language = %s, cover = %d, backdrop = %d, updateddate = NOW()",
-				$mov['imdbid'],
-				$mov['tmdbid'],
+				$mov['imdb_id'],
+				$mov['tmdb_id'],
 				$this->pdo->escapeString($mov['title']),
 				$this->pdo->escapeString($mov['rating']),
 				$this->pdo->escapeString($mov['tagline']),
@@ -621,8 +621,8 @@ class Movie
 				$this->pdo->escapeString(substr($mov['language'], 0, 64)),
 				$mov['cover'],
 				$mov['backdrop'],
-				$mov['imdbid'],
-				$mov['tmdbid'],
+				$mov['imdb_id'],
+				$mov['tmdb_id'],
 				$this->pdo->escapeString($mov['title']),
 				$this->pdo->escapeString($mov['rating']),
 				$this->pdo->escapeString($mov['tagline']),
@@ -645,7 +645,7 @@ class Movie
 					' (' .
 					$mov['year'] .
 					') - ' .
-					$mov['imdbid']
+					$mov['imdb_id']
 				)
 			);
 		}
@@ -741,9 +741,9 @@ class Movie
 			}
 		}
 
-		$ret['tmdbid'] = $tmdbLookup['id'];
-		$ImdbID = str_replace('tt', '', $tmdbLookup['imdbid']);
-		$ret['imdbid'] = $ImdbID;
+		$ret['tmdb_id'] = $tmdbLookup['id'];
+		$ImdbID = str_replace('tt', '', $tmdbLookup['imdb_id']);
+		$ret['imdb_id'] = $ImdbID;
 		if (isset($tmdbLookup['vote_average'])) {
 			$ret['rating'] = ($tmdbLookup['vote_average'] == 0) ? '' : $tmdbLookup['vote_average'];
 		}
@@ -1252,9 +1252,9 @@ class Movie
 			$name = $matches['name'];
 			$year = $matches['year'];
 
-		/* If we didn't find a year, try to get a name anyways.
-		 * Try to look for a title before the $followingList and after anything but a-z0-9 two times or more (-[ for example)
-		 */
+			/* If we didn't find a year, try to get a name anyways.
+			 * Try to look for a title before the $followingList and after anything but a-z0-9 two times or more (-[ for example)
+			 */
 		} else if (preg_match('/([^\w]{2,})?(?P<name>[\w .-]+?)' . $followingList . '/i', $releaseName, $matches)) {
 			$name = $matches['name'];
 		}
@@ -1268,7 +1268,7 @@ class Movie
 			$name = preg_replace('/\(.*?\)|[._]/i', ' ', $name);
 			// Finally remove multiple spaces and trim leading spaces.
 			$name = trim(preg_replace('/\s{2,}/', ' ', $name));
-				// Check if the name is long enough and not just numbers.
+			// Check if the name is long enough and not just numbers.
 			if (strlen($name) > 4 && !preg_match('/^\d+$/', $name)) {
 				if ($this->debug && $this->echooutput) {
 					$this->pdo->log->doEcho("DB name: {$releaseName}", true);
