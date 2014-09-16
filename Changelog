@@ -16,7 +16,8 @@ New updates are grouped by person, at the top of the file.
 	* Add: Additional debug output if searchname can't be matched
 2014-09-15 niel
 	* Fix: User cart problem. Changing userid to user_id in usercart table.
-	* New: Added reporting reason for pre-commit hook refusing to comit.
+	* New: Added reporting reason for pre-commit hook refusing to commit.
+	* New: Added setting to settings table to record the timestamp of the last time AniDB returned a 'ban' message.
 2014-09-14 bart39
 	* Mrg: Merge PR 1502 from tasky.
 2014-09-13 bart39
