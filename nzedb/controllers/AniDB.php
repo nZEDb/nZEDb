@@ -187,9 +187,9 @@ class AniDB
 	public function getAnimeInfo($anidbID)
 	{
 		$animeInfo = $this->pdo->query(
-			sprintf('SELECT at.anidbid, at.type, at.lang, at.title, ai.type AS videoType,
+			sprintf('SELECT at.anidbid, at.lang, at.title,
 				ai.startdate, ai.enddate, ai.updated, ai.related, ai.creators, ai.description,
-				ai.rating, ai.picture, ai.categories, ai.characters
+				ai.rating, ai.picture, ai.categories, ai.characters, ai.type
 				FROM anidb_titles AS at LEFT JOIN anidb_info ai USING (anidbid)
 				WHERE at.anidbid = %d',
 				$anidbID

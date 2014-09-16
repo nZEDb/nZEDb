@@ -396,13 +396,13 @@ class ReleaseCleaning
 	public function _3d()
 	{
 		//(084/113) "The Little Mermaid - 3D HSBS (1989) 1080p BluRay - Multi - P3n6u1n.part082.rar" - 10.56 GB - yEnc
-		if (preg_match('/^\(\d+\/\d+\) "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e2,
+		if (preg_match('/^\(\d+\/\d+\) "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e2,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //"pandas.3d.back.to.the.wild.h-sbs.fs-3d.r22" - 1.55 GB - yEnc
-		if (preg_match('/^"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e2,
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e2,
 					   $this->subject,
 					   $match)
 		) {
@@ -416,64 +416,64 @@ class ReleaseCleaning
 	public function amazing()
 	{
 		//(???) [1/1] - "Asimov, Isaac - [Foundation 01] - De Foundation_v2.rar" yEnc
-		if (preg_match('/^\(\?+\) \[\d+\/\d+\][-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\?+\) \[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(Ass Backwards (2013) WEBrip XviD AC3 (english subs)) [18/35] - "Ass Backwards (2013) WEBrip XviD AC3 (english subs).part17.rar" yEnc
-		if (preg_match('/^\([\w!.,&_ ()\[\]\'\`-]{8,}\)[-_ ]{0,3}\[\d+\/\d+\][-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\([\w!.,&_ ()\[\]\'\`-]{8,}\)[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(Angels4Always) [1/1] - "Vermeulen, John - De tweelingparadox.rar" yEnc
-		if (preg_match('/^\(Angels4Always\)[-_ ]{0,3}\[\d+\/\d+\][-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(Angels4Always\)[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Heaven_en_Fayth Presenteren Diana Gabaldon - Reiziger Cyclus 01 - De Reiziger[0/3] - "Diana Gabaldon - Reiziger Cyclus 01 - De Reiziger.nzb" yEnc
-		if (preg_match('/^[\w!.,&_ ()\[\]\'\`-]{8,}\[\d+\/\d+\][-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^[\w!.,&_ ()\[\]\'\`-]{8,}\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //www.wolfsteamers.info [1/6] - "Wohnen Bauen Leben - Sommer 2014.par2" - 16,46 MB yEnc
-		if (preg_match('/^www\.wolfsteamers\.info[-_ ]{0,3}\[\d+\/\d+\][-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^www\.wolfsteamers\.info[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e2,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //096XZFUPQ0PxH4441H14fU8V - [34/99] - "096XZFUPQ0PxH4441H14fU8V.part033.rar" yEnc
-		if (preg_match('/^\w+[-_ ]{0,3}\[\d+\/\d+\][-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\w+[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //05VANmA80DckBho "05VANmA80DckBho.part07.rar"08/94 yEnc
-		if (preg_match('/^\w+[-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
-					   '\d+(\/\d+)[- ]{0,3}yEnc$/',
+		if (preg_match('/^\w+[-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+					   '\d+(\/\d+)[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(Slaapkop post voor http://the-ultimate-force.org.ua/) [0/7] - "Wham - I'm Your Man (1985).nzb" yEnc
-		if (preg_match('/^\(.+the-ultimate-force\.org\.ua\/\)[-_ ]{0,3}\[\d+\/\d+\][-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(.+the-ultimate-force\.org\.ua\/\)[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(001/101) - P2H - "L62WD8P4U539A7.par2" - 4,66 GB - Z9F6KN7SXRCY845 yEnc
-		if (preg_match('/^\(\d+\/\d+\) - P2H - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
-					   $this->e0 . '[- ]{0,3}\d+([.,]\d+)? [kKmMgG][bB][- ]{0,3}\w+[- ]{0,3}yEnc$/',
+		if (preg_match('/^\(\d+\/\d+\) - P2H - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+					   $this->e0 . '[-_\s]{0,3}\d+([.,]\d+)? [kKmMgG][bB][-_\s]{0,3}\w+[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -481,33 +481,33 @@ class ReleaseCleaning
 		} //(001/101)  "654258ItB1418pBRDNS264159.par2" - 9,74 GB - yEnc
 		//(001/105) - Description - "oH291TB0bPxf3lqm1P7QQ.par2" - 4,56 GB - yEnc
 		//(03/43) - FTTEAM.INFO - "JDSJ2J4ENASJCKR-FTTEAM.INFO.part02.rar" - 2,04 GB - yEnc
-		if (preg_match('/^\(\d+\/\d+\)([-_ ]{0,4}(Description|FTTEAM\.INFO))?[-_ ]{0,4}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\d+\/\d+\)([-_ ]{0,4}(Description|FTTEAM\.INFO))?[-_ ]{0,4}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e2,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[3];
 		} //- - [001/242] - "C65JuogI92CwfMo2TiX59.par2" yEnc
-		if (preg_match('/^[-_ .]{0,4}\[\d+\/\d+\][-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^[-_ .]{0,4}\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //- "5nivJ7V6Q2jqAR34bZ8m.part46.rar" yEnc
-		if (preg_match('/^[-_ .]{0,4}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/^[-_ .]{0,4}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //- "7UAF6LE2PDM38NB.par2" - 8,53 GB - yEnc
-		if (preg_match('/^[-_ .]{0,4}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e2,
+		if (preg_match('/^[-_ .]{0,4}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e2,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //- [01/10] - "file.xyz" yEnc - [001/107] - "86u1Qr8mm56jGiW7nUPTM.par2" yEnc
-		if (preg_match('/^[-_ ]{0,4}\[\d+\/\d+\][-_ ]{0,3}".+" yEnc[-_ ]{0,3}\[\d+\/\d+\][-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^[-_ ]{0,4}\[\d+\/\d+\][-_\s]{0,3}".+" yEnc[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -584,7 +584,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //>>>>>Hell-of-Usenet>>>>> - [01/33] - "Cassadaga Hier lebt der Teufel 2011 German AC3 DVDRip XViD iNTERNAL-VhV.par2" yEnc
-		if (preg_match('/^>+Hell-of-Usenet(\.org)?>+( -)? \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^>+Hell-of-Usenet(\.org)?>+( -)? \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . '( - \d+[.,]\d+ [kKmMgG][bB])? yEnc$/',
 					   $this->subject,
 					   $match)
@@ -603,7 +603,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //<Have Fun> "Invader.German.2012.PAL.DVDR-MORTAL.nfo" SpongeBoZZ yEnc
-		if (preg_match('/^<Have Fun> "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^<Have Fun> "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   ' SpongeBoZZ yEnc$/',
 					   $this->subject,
 					   $match)
@@ -763,7 +763,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //(????) [1/1] - "Dust in the Wind - the Violin Solo.rar" yEnc
-		if (preg_match('/^\(\?{4}\) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\?{4}\) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -790,7 +790,7 @@ class ReleaseCleaning
 		if (preg_match('/^\[\d+\/\d+\] - "(.+?) \(.+?" yEnc$/', $this->subject, $match)) {
 			return $match[1];
 		} //- "as-jew3.vol03+3.PAR2" - yEnc
-		if (preg_match('/^- "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/^- "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
@@ -841,7 +841,7 @@ class ReleaseCleaning
 		) {
 			return $match[2];
 		} //>>> www.lords-of-usenet.org <<<  "Der Schuh Des Manitu.par2" DVD5  [001/158] - 4,29 GB yEnc
-		if (preg_match('/^>>> www\.lords-of-usenet\.org <<<.+? "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^>>> www\.lords-of-usenet\.org <<<.+? "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . ' .+? \[\d+\/\d+\] - .+? yEnc$/',
 					   $this->subject,
 					   $match)
@@ -850,7 +850,7 @@ class ReleaseCleaning
 		}
 		//NEUES 4y - [@ usenet-4all.info - powered by ssl.news -] [5,58 GB] [002/120] "DovakinPack.part002.rar" yEnc
 		//NEUES 4y (PW)  [@ usenet-4all.info - powered by ssl.news -] [7,05 GB] [014/152] "EngelsGleich.part014.rar" yEnc
-		if (preg_match('/^.+? (-|\(PW\))\s+\[.+? -\] \[\d+[,.]\d+ [mMkKgG][bB]\] \[\d+\/\d+\] "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^.+? (-|\(PW\))\s+\[.+? -\] \[\d+[,.]\d+ [mMkKgG][bB]\] \[\d+\/\d+\] "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -867,14 +867,14 @@ class ReleaseCleaning
 		}
 		//>>>  20,36 MB   "Winamp.Pro.v5.70.3392.Incl.Keygen-FFF.par2"   552 B yEnc
 		//..:[DoAsYouLike]:..    9,64 MB    "Snooper 1.39.5.par2"    468 B yEnc
-		if (preg_match('/^.+?\s{2,}\d+[,.]\d+ [mMkKgG][bB]\s{2,}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^.+?\s{2,}\d+[,.]\d+ [mMkKgG][bB]\s{2,}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . '\s{2,}(\d+ B|\d+[,.]\d+ [mMkKgG][bB]) yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(MKV - DVD - Rip - German - English - Italiano) - "CALIGULA (1982) UNCUT.sfv" yEnc
-		if (preg_match('/^\(.+?\) - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/^\(.+?\) - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
@@ -899,13 +899,13 @@ class ReleaseCleaning
 		if (preg_match('/^([a-z]{3,}) - \[\d+\/\d+\] - ".+?" yEnc$/', $this->subject, $match)) {
 			return $match[1];
 		} //(08/22) - "538D7B021B362A4300D1C0D84DD17E6D.r06" yEnc
-		if (preg_match('/^\(\d+\/\d+\) - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/^\(\d+\/\d+\) - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(????) [02/71] - "Lasting Weep (1969-1971).part.par2" yEnc
-		if (preg_match('/^\(\?{4}\) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\?{4}\) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -914,7 +914,7 @@ class ReleaseCleaning
 		}
 		//(01/59) "ThienSuChungQuy_II_E16.avi.001" - 1,49 GB - yEnc
 		//(058/183) "LS_HoangChui_2xdvd5.part057.rar" - 8,36 GB -re yEnc
-		if (preg_match('/^\(\d+\/\d+\) "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^\(\d+\/\d+\) "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   ' - \d+[,.]\d+ [mMkKgG][bB] -(re)? yEnc$/',
 					   $this->subject,
 					   $match)
@@ -927,14 +927,14 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //(nate) [01/27] - "nate_light_13.05.23.par2" yEnc
-		if (preg_match('/^\([a-z]+\) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\([a-z]+\) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //""Absolute Database Component for BCBuilder 4-6 MultiUser Edit 4.85.rar"" yEnc
-		if (preg_match('/^""([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 . '" yEnc$/',
+		if (preg_match('/^""([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 . '" yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -960,7 +960,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //[10/17] - "EGk13kQ1c8.part09.rar" - 372.48 MB <-> usenet-space-cowboys.info <-> powered by secretusenet.com <-> yEnc
-		if (preg_match('/^\[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^\[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   ' - \d+[,.]\d+ [mMkKgG][bB] .+? usenet-space.+?yEnc$/',
 					   $this->subject,
 					   $match)
@@ -970,14 +970,14 @@ class ReleaseCleaning
 		if (preg_match('/^\((.+?)\) - ".+?" yEnc$/', $this->subject, $match)) {
 			return $match[1];
 		} //(2/8) "Mike.und.Molly.S01E22.Maennergespraeche.GERMAN.DL.DUBBED.720p.BluRay.x264-TVP.part1.rar" - 1023,92 MB - yEnc
-		if (preg_match('/^\(\d+\/\d+\) "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^\(\d+\/\d+\) "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   ' - \d+[,.]\d+ [mMkKgG][bB] - yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //4y (PW)   [@ usenet-4all.info - powered by ssl.news -] [27,35 GB] [001/118] "1f8867bb6f89491793d3.part001.rar" yEnc
-		if (preg_match('/^.+? (-|\(PW\))\s+\[.+? -\] \[\d+[,.]\d+ [mMkKgG][bB]\] \[\d+\/\d+\] "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^.+? (-|\(PW\))\s+\[.+? -\] \[\d+[,.]\d+ [mMkKgG][bB]\] \[\d+\/\d+\] "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -1060,7 +1060,7 @@ class ReleaseCleaning
 			return $match[1];
 		} //THE_PACIFIC_DISC_6_FULL_BLURAY_BD50_EX3 - [5/6] - "THE PACIFIC DISC 6 FULL BLURAY.part07.rar" yEnc
 		if (preg_match(
-			'/^[\w-\. ]+[ _-]{0,3}[\(\[]\d+\/\d+[\)\]][ _-]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+			'/^[\w-\. ]+[ _-]{0,3}[\(\[]\d+\/\d+[\)\]][ _-]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 			$this->e1,
 			$this->subject,
 			$match
@@ -1068,7 +1068,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //LOST SEASON1 DISC4 REENCODED BD25 DJMASTURBEAT (151/154) "LOST SEASON1 DISC4 BD25 DJMASTURBEAT.vol3312+131.par2" - 26.91 GB - yEnc
-		if (preg_match('/^[\w-\. ]+[ _-]{0,3}[\(\[]\d+\/\d+[\)\]][ _-]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^[\w-\. ]+[ _-]{0,3}[\(\[]\d+\/\d+[\)\]][ _-]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e2,
 					   $this->subject,
 					   $match)
@@ -1089,14 +1089,14 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //(PC-ISO) ( Trials.Fusion.Riders.of.the.Rustlands-SKIDROW ) [10/40] - "sr-tfrotr.part01.rar" yEnc
-		if (preg_match('/^\(PC-ISO\)[-_ ]{0,3}\( ([\w.,& ()\[\]\'\`-]{8,}?\b) \) \[\d+\/\d+\][-_ ]{0,3}".+?' .
+		if (preg_match('/^\(PC-ISO\)[-_\s]{0,3}\( ([\w.,& ()\[\]\'\`-]{8,}?\b) \) \[\d+\/\d+\][-_\s]{0,3}".+?' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //( Overlord II RELOADED ) - [013/112] - "rld-olii.part001.rar" yEnc
-		if (preg_match('/^\( ([\w. -]{8,}) \)[-_ ]{0,3}\[\d+\/(\d+\]) - ".+?' . $this->e1,
+		if (preg_match('/^\( ([\w. -]{8,}) \)[-_\s]{0,3}\[\d+\/(\d+\]) - ".+?' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
@@ -1144,7 +1144,7 @@ class ReleaseCleaning
 		}
 		//(????) [011/161] - "flynns-image-redux.part010.rar" yEnc
 		//(Dgpc) [000/110] - "Teen Wolf - Seizoen.3 - Dvd.2 (NLsub).nzb" yEnc
-		if (preg_match('/^\((\?{4}|[a-zA-Z]+)\) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\((\?{4}|[a-zA-Z]+)\) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -1157,7 +1157,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //"par.4kW9beE.1.vol122+21.par2" yEnc
-		if (preg_match('/^"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
@@ -1165,7 +1165,7 @@ class ReleaseCleaning
 		}
 		//brothers-of-usenet.info/.net <<<Partner von SSL-News.info>>> - [01/19] - "Age.of.Dinosaurs.German.AC3.HDRip.x264-FuN.par2" yEnc
 		//>>>>>Hell-of-Usenet.org>>>>> - [01/35] - "Female.Agents.German.2008.AC3.DVDRip.XviD.iNTERNAL-VideoStar.par2" yEnc
-		if (preg_match('/^.+?\.(info|org)>+ - \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^.+?\.(info|org)>+ - \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -1174,13 +1174,13 @@ class ReleaseCleaning
 		}
 		//[010/101] - "Bf56a8aR-20743f8D-Vf7a11fD-d7c6c0.part09.rar" yEnc
 		//[1/9] - "fdbvgdfbdfb.part.par2" yEnc
-		if (preg_match('/^\[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/^\[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[LB] - [063/112] - "RVL-GISSFBD.part063.rar" yEnc
-		if (preg_match('/^\[[A-Z]+\] - \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\[[A-Z]+\] - \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -1236,35 +1236,35 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //(aangemeld bij usenet collector) [001/125] - "Northern_Exposure_Season_1_dvd_1.par2" yEnc
-		if (preg_match('/^\(aangemeld bij usenet collector\) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(aangemeld bij usenet collector\) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[15/16] - "Person.of.Interest.S03E09.480p.HDTV.x264-mSD.vol0+1.par2" - 177,28 MB <-> usenet-space-cowboys.info <-> powered by secretusenet.com <-> yEnc
-		if (preg_match('/^\[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^\[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   ' - \d+[.,]\d+ [kKmMgG][bB] .+usenet-space-cowboys\.info.+ yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //brothers-of-usenet.info&net-empfehlen-ssl-news.info Black Mirror s01e01 - Der wille des volkes - [09/15] - "Black Mirror - S01E01 - Der Wille des Volkes.vol00+01.par2" yEnc
-		if (preg_match('/^brothers-of-usenet\.info.+ - \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^brothers-of-usenet\.info.+ - \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(024/264) "Enf.S04E02.G.D.H.X-M.vol51+46.PAR2" - 8,27 GB -Enf.S04.G.D.H.X yEnc
-		if (preg_match('/^\(\d+\/\d+\) "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^\(\d+\/\d+\) "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   ' - \d+[.,]\d+ [kKmMgG][bB] .+yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //- "Auction Hunters S04E04.HDTV.x264-StarryNights1.nzb" yEnc
-		if (preg_match('/.*"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
+		if (preg_match('/.*"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -1293,14 +1293,14 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //Wizards Vs Aliens - 1x06 - Rebel Magic, Part Two [XviD][00/27] - "wizards.vs.aliens.106.rebel.magic.part.two.[ws.pdtv].nzb" yEnc
-		if (preg_match('/^.+?[-_ ]{0,3}\d+[xX]\d+[-_ ]{0,3}.+?\[\d+\/\d+\][-_ ]{0,3}.+?"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^.+?[-_\s]{0,3}\d+[xX]\d+[-_\s]{0,3}.+?\[\d+\/\d+\][-_\s]{0,3}.+?"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Vera.3x03.Young.Gods.720p.HDTV.x264-FoV - "vera.3x03.young_gods.720p_hdtv_x264-fov.r00" yEnc
-		if (preg_match('/^[a-zA-Z0-9-\.]+ - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/^[a-zA-Z0-9-\.]+ - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
@@ -1312,21 +1312,21 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //Minder S10E10 [00/52] - "S10E10.nzb" yEnc
-		if (preg_match('/^(.+ S\d+E\d+)[-_ ]{0,3}\[\d+\/\d+\][-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^(.+ S\d+E\d+)[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Rosemary & Thyme.106..The Tree of Death....Read txt file for more info about this posting - File 03 of 51 - "Rosemary & Thyme.106.The Tree of Death.part01.rar" yEnc
-		if (preg_match('/^.+File \d+ of \d+ - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^.+File \d+ of \d+ - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //The.Tudors.S01E04.2007.720p[33/57] - "The.Tudors.S01E04.2007.720p.part31.rar" yEnc
-		if (preg_match('/^.+\[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/^.+\[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
@@ -1338,13 +1338,13 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //"Rosemary & Thyme - 2x02 Orpheus In The Undergrowth.par2"  yEnc
-		if (preg_match('/^"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[01/45] - "Minder S01E08.sfv" yEnc
-		if (preg_match('/^\[\d+\/\d+\][- ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -1423,7 +1423,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //"MythBusters S10E02 720p HDTV x264-DHD.rar"  yEnc
-		if (preg_match('/^"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 . ' {1,2}yEnc$/',
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 . ' {1,2}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -1435,7 +1435,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //(????) [005/358] - "WLAN - professionell absichern.rar" Sayco  yEnc
-		if (preg_match('/^\(\?+\) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\?+\) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . ' Sayco  yEnc$/',
 					   $this->subject,
 					   $match)
@@ -1450,7 +1450,7 @@ class ReleaseCleaning
 	public function cbts()
 	{
 		//"softWoRx.Suite.2.0.0.25.x32-TFT.rar" yEnc
-		if (preg_match('/"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
@@ -1555,7 +1555,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //(28/55) "Ivan Neville - If My Ancestors Could See Me Now.par2" - 624,44 MB - yEnc
-		if (preg_match('/^\(\d+\/\d+\) "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^\(\d+\/\d+\) "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   ' - \d+[,.]\d+ [mMkKgG][bB] - yEnc$/',
 					   $this->subject,
 					   $match)
@@ -1600,20 +1600,20 @@ class ReleaseCleaning
 		if (preg_match('/^Re: REQ: (.+? - ".+?)' . $this->e1, $this->subject, $match)) {
 			return $match[1];
 		} //Per REQ - "The.Wild.Wild.West.S03E11.The.Night.of.the.Cut-Throats.DVDRip.XVID-tz.par2" 512x384 [01/40] yEnc
-		if (preg_match('/^Per REQ - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^Per REQ - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   ' .+? \[\d+\/\d+\] yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //By req: "Dennis The Menace - 4x25 - Dennis and the Homing Pigeons.part05.rar" yEnc
-		if (preg_match('/^By req: "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/^By req: "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //I Spy HQ DVDRips "I Spy - 3x26 Pinwheel.part10.rar" [13/22] yEnc
-		if (preg_match('/^[a-zA-Z ]+HQ DVDRips "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^[a-zA-Z ]+HQ DVDRips "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . ' \[\d+\/\d+\] yEnc$/',
 					   $this->subject,
 					   $match)
@@ -1639,7 +1639,7 @@ class ReleaseCleaning
 		}
 		//The.Love.Boat.S05E08 [01/31] - "The.Love.Boat.S05E08.Chefs.Special.Kleinschmidt.New.Beginnings.par2" yEnc
 		//Barney.Miller.S08E05.Stress.Analyzer [01/18] - "Barney.Miller.S08E05.Stress.Analyzer.VHSTVRip.DivX.par2" yEnc
-		if (preg_match('/^[a-zA-Z0-9][a-zA-Z0-9.-]+S\d+E\d+([a-zA-Z0-9.]+)? \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^[a-zA-Z0-9][a-zA-Z0-9.-]+S\d+E\d+([a-zA-Z0-9.]+)? \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -1658,7 +1658,7 @@ class ReleaseCleaning
 		//Re: Outside Edge series 1 - [01/20] - "Outside Edge S01.nfo" yEnc
 		//Green Acres Season 1 [01/87] - "Green Acres Season 1.par2" yEnc
 		//MASH Season 1 - [01/54] - "MASH - Season 01.par2" yEnc
-		if (preg_match('/^(Re: )?[a-zA-Z0-9]+.+? (series|Season) \d+ (- )?\[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^(Re: )?[a-zA-Z0-9]+.+? (series|Season) \d+ (- )?\[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -1683,7 +1683,7 @@ class ReleaseCleaning
 		}
 		//'Mission: Impossible' - 1x09 - NTSC - DivX - 28 of 48 - "MI-S01E09.r23" yEnc
 		//'Mission: Impossible' - 1x09 - NTSC - DivX - 01 of 48 - "MI-S01E09.nfo" (1/1)
-		if (preg_match('/^([a-zA-Z0-9 -_\.:]+) - \d+( of \d+)[-_ ]{0,3}".+?' . $this->e0 .
+		if (preg_match('/^([a-zA-Z0-9 -_\.:]+) - \d+( of \d+)[-_\s]{0,3}".+?' . $this->e0 .
 					   ' (\(\d+\/\d+\) )?(yEnc)?$/',
 					   $this->subject,
 					   $match)
@@ -1692,20 +1692,20 @@ class ReleaseCleaning
 		}
 		//"Batman - S2E58-Ice Spy.par2"yEnc
 		//"Black Sheep Squadron 1x03 Best Three Out of Five.par2"
-		if (preg_match('/^"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 . '(yEnc)?( )?$/',
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 . '(yEnc)?( )?$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //"Guns of Will Sonnett - 1x04.mp4" (Not My Rip)Guns Of Will Sonnett Season 1 1 - 26 Mp4 With Pars yEnc
-		if (preg_match('/^"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   ' \(Not My Rip\).+ \d+ (- \d+) .+ yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(01/10) "Watch_With_Mother-Bill_And_Ben-1953_02_12-Scarecrow-VHSRip-XviD.avi" - 162.20 MB - yEnc
-		if (preg_match('/^\(\d+\/\d+\) "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^\(\d+\/\d+\) "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   ' - \d+[.,]\d+ [kKmMgG][bB] - yEnc$/',
 					   $this->subject,
 					   $match)
@@ -1714,21 +1714,21 @@ class ReleaseCleaning
 		}
 		//(Our Gang - Little Rascals  DVDRips)  "Our Gang -  The Lucky Corner (1936).part0.sfv" [01/19] yEnc
 		//(Our Gang - Little Rascals  DVDRips)  "Our Gang -  Wild Poses (1933).part.par" [02/20] Last One I Have! yEnc
-		if (preg_match('/^\(.+\)  "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^\(.+\)  "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   ' \[\d+\/(\d+\]) (Last One I Have! )?yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[EnJoY] =>A Blast from Usenet Past (1/3)<= [00/14] - "Mcdonalds Training Film - 1972 (Vhs-Mpg).part.nzb" yEnc
-		if (preg_match('/^.+ Usenet Past .+\[\d+\/(\d+\]) - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^.+ Usenet Past .+\[\d+\/(\d+\]) - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[2];
 		} //<OPA_TV> [01/12] - "Yancy Derringer - 03 - Geheime Fracht.par2" yEnc
-		if (preg_match('/^<OPA_TV> \[\d+\/(\d+\]) - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^<OPA_TV> \[\d+\/(\d+\]) - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -1737,7 +1737,7 @@ class ReleaseCleaning
 		}
 		//77 Sunset Strip 409 [1 of 23] "77 Sunset Strip 409 The Missing Daddy Caper.avi.vol63+34.par2" yEnc
 		//Barney.Miller.NZBs [001/170] - "Barney.Miller.S01E01.Ramon.nzb" yEnc
-		if (preg_match('/^.+ [\[\(]\d+( of |\/)(\d+[\]\)])[-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^.+ [\[\(]\d+( of |\/)(\d+[\]\)])[-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -1746,7 +1746,7 @@ class ReleaseCleaning
 		}
 		//All in the Family - missing eps - DVDRips  "All in the Family - 6x23 Gloria & Mike's House Guests.part5.rar" [08/16] yEnc
 		//Amos 'n' Andy - more shows---read info.txt  "Amos 'n' Andy S01E00 Introduction of the Cast.mkv.001" (002/773) yEnc
-		if (preg_match('/^.+[-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^.+[-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   ' [\[\(]\d+\/(\d+[\]\)]) yEnc$/',
 					   $this->subject,
 					   $match)
@@ -1927,7 +1927,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //"Angry Birds USA PSN PSP-NRP.exe" yEnc
-		if (preg_match('/^"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
@@ -1942,21 +1942,21 @@ class ReleaseCleaning
 	{
 		//Film - [13/59] - "Jerry Maguire (1996) 1080p DTS multisub HUN HighCode-PHD.part13.rar" yEnc
 		//Film - "Phone.booth.2003.RERIP.Bluray.1080p.DTS-HD.x264-Grym.part001.rar" yEnc
-		if (preg_match('/^Film - (\[\d+\/\d+\] - )?"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^Film - (\[\d+\/\d+\] - )?"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[2];
 		} //[Art-Of-Use.Net] :: [AUTO] :: - [34/36] - "ImmoralLive.13.11.10.Immoral.Orgies.Rikki.Six.Carmen.Callaway.And.Amanda.Tate.XXX.1080p.MP4-KTR.vol15+16.par2" yEnc
-		if (preg_match('/^\[Art-Of-Use\.Net\] :: \[.+?\] :: - \[\d+\/\d+\][-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\[Art-Of-Use\.Net\] :: \[.+?\] :: - \[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //brothers-of-usenet.info.net Partner von---- SSL-News.info-----  brothers-of-usenet.info.net Partner von---- SSL-News.info-----AVG.Internet.Security.2014.Build.4335.x86.x64 - "AVG.Internet.Security.2014.Build.4335.vol00+01.PAR2" - 315,68 MB - yEnc
-		if (preg_match('/^brothers-of-usenet\.info\.net.+SSL-News\.info-----(.+) - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^brothers-of-usenet\.info\.net.+SSL-News\.info-----(.+) - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e2,
 					   $this->subject,
 					   $match)
@@ -1969,28 +1969,28 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //<<<usenet-space-cowboys.info>>> USC <<<Powered by https://secretusenet.com>>> [22/26] - "Zombie.Tycoon.2.Brainhovs.Revenge-SKIDROW.vol00+1.par2" - 1,85 GB yEnc
-		if (preg_match('/^<<<usenet-space-cowboys\.info.+secretusenet\.com>>> \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^<<<usenet-space-cowboys\.info.+secretusenet\.com>>> \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e2,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //::: Usejunkies.tk ::: - [01/11] - "DJ Shog - DNA - HD 720p.par2" - 47,76 MB yEnc
-		if (preg_match('/^.+Usejunkies.tk.+ \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^.+Usejunkies.tk.+ \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e2,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(5/9) :...Usejunkies.tk...:----"Leawo.Blu-ray.Ripper.v4.4.0.rar.vol003+04.par2" - 30.94 MB - yEnc
-		if (preg_match('/^\(\d+\/\d+\).+Usejunkies.tk.+"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\d+\/\d+\).+Usejunkies.tk.+"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e2,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(Grimms03e10) [6/9] - "Grimm_S03E10_Eyes_of_the_Beholder.avi.vol007+08.PAR2"Grimm S03E10  yEnc
-		if (preg_match('/^\(.+s\d+e\d+\) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(.+s\d+e\d+\) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . '.+yEnc$/',
 					   $this->subject,
 					   $match)
@@ -1999,7 +1999,7 @@ class ReleaseCleaning
 		}
 		//Jipejans post voor u op www.Dreamplace.biz - [010/568] - "Alien-Antology-DC-Special-Edition-1979-1997-1080p-GER-HUN-HighCode.part009.rar" yEnc
 		//Egbert47 post voor u op www.nzbworld.me - [01/21] - "100 Hits - Lady Sings The Blues 2006 (5cd's).par2" yEnc
-		if (preg_match('/^[a-zA-Z0-9]+ post voor u op www\..+? - \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^[a-zA-Z0-9]+ post voor u op www\..+? - \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -2039,42 +2039,42 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //(aangemeld bij usenet collector) [001/125] - "Northern_Exposure_Season_1_dvd_1.par2" yEnc
-		if (preg_match('/^\(aangemeld bij usenet collector\) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(aangemeld bij usenet collector\) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[15/16] - "Person.of.Interest.S03E09.480p.HDTV.x264-mSD.vol0+1.par2" - 177,28 MB <-> usenet-space-cowboys.info <-> powered by secretusenet.com <-> yEnc
-		if (preg_match('/^\[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^\[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   ' - \d+[.,]\d+ [kKmMgG][bB] .+usenet-space-cowboys\.info.+ yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //brothers-of-usenet.info&net-empfehlen-ssl-news.info Black Mirror s01e01 - Der wille des volkes - [09/15] - "Black Mirror - S01E01 - Der Wille des Volkes.vol00+01.par2" yEnc
-		if (preg_match('/^brothers-of-usenet\.info.+ - \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^brothers-of-usenet\.info.+ - \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(024/264) "Enf.S04E02.G.D.H.X-M.vol51+46.PAR2" - 8,27 GB -Enf.S04.G.D.H.X yEnc
-		if (preg_match('/^\(\d+\/\d+\) "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^\(\d+\/\d+\) "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   ' - \d+[.,]\d+ [kKmMgG][bB] .+yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[01/10] - "Wondershare.Video.Converter.Ultimate.v6.7.1.0.Multilanguage.par2" - 45,44 MB yEnc
-		if (preg_match('/^\[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^\[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   '.+yEnc$/i',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //"8 Wenn ich einmal gross bin .mp3" Koelschefetz postet.Die Filue -Immer Wigger  yEnc
-		if (preg_match('/^"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 . '.+yEnc$/',
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 . '.+yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -2094,7 +2094,7 @@ class ReleaseCleaning
 	public function dc()
 	{
 		//brothers-of-usenet.info&net-empfehlen-ssl-news.info (02/51) "Paul.Panzer.-.Hart.Backbord.2012.German.PAL.DVDR-icq4711.part01.rar" - 4,33 GB yEnc
-		if (preg_match('/^brothers-of-usenet.+? \(\d+\/\d+\) "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^brothers-of-usenet.+? \(\d+\/\d+\) "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . ' - \d+[,.]\d+ [mMkKgG][bB] yEnc$/',
 					   $this->subject,
 					   $match)
@@ -2159,7 +2159,7 @@ class ReleaseCleaning
 		) {
 			return $match[4];
 		} //"Fat Head 2009 Tom Naughton (why we get fat documentary) XVID.par2" (01/66) Paleo Low Carb Gluten-Free Diet yEnc
-		if (preg_match('/^"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   ' \(\d+\/\d+\).+yEnc$/',
 					   $this->subject,
 					   $match)
@@ -2172,7 +2172,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //Battlefield S1 S01E04 "Battlefield.104.The.Battle.of.Stalingrad.nfo" yEnc
-		if (preg_match('/^Battlefield S\d S\d+E\d+ "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^Battlefield S\d S\d+E\d+ "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -2187,7 +2187,7 @@ class ReleaseCleaning
 		if (preg_match('/^\[ (.+?) \] \[\d+\/\d+\] - ".+?' . $this->e1, $this->subject, $match)) {
 			return $match[1];
 		} //Rough Cut - Woodworking with Tommy Mac - Pilgrim Blanket Chest (1600s) DVDrip DivX - (02-17) "Rough.Cut-Woodworking.with.Tommy.Mac-Pilgrim.Blanket.Chest.1600s-DVDrip.DivX.2010.par2" - yEnc yEnc
-		if (preg_match('/.*[\(\[]\d+-(\d+[\)\]])[-_ ]{0,3}("|#34;)(.+?)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}("|#34;)).+?yEnc$/',
+		if (preg_match('/.*[\(\[]\d+-(\d+[\)\]])[-_\s]{0,3}("|#34;)(.+?)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}("|#34;)).+?yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -2195,19 +2195,19 @@ class ReleaseCleaning
 		}
 		//Asia This Week (NHK World, 19 & 20 July 2013) - 'Malala's movement for girls' education + Japan seeks imports from Southeast Asia - soccer players' - (02|14) - "ATW-2013-07-20.par2" yEnc
 		//Asia Biz Forecast (NHK World, 6 & 7 July 2013) - 'China: limits of growth + Japan: remote access' - (05|14) - "ABF-2013-07-07.part3.rar" yEnc
-		if (preg_match('/(Asia.+) - [\(\[]\d+(\|\d+[\)\]])[-_ ]{0,3}("|#34;).+?(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}("|#34;)).+?yEnc$/',
+		if (preg_match('/(Asia.+) - [\(\[]\d+(\|\d+[\)\]])[-_\s]{0,3}("|#34;).+?(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}("|#34;)).+?yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Asia Biz Forecast (NHK World, 16-17 June 2012) - "Japan seeks energy options" - File 01 of 14  - ABF-2012-06-16.nfo  (yEnc
-		if (preg_match('/(Asia.+) - File \d+ of (\d+)[-_ ]{0,3}.+?(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}).+?yEnc$/',
+		if (preg_match('/(Asia.+) - File \d+ of (\d+)[-_\s]{0,3}.+?(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}).+?yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Dark MatterDark Energy S02E06 - "Dark Matter_Dark Energy S02E06 - The Universe - History Channel.part1.rar"  51.0 MBytes yEnc
-		if (preg_match('/^.+? S\d+E\d+ - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^.+? S\d+E\d+ - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   '  (\d+[,.]\d+ [kKmMgG][bB]ytes) yEnc$/',
 					   $this->subject,
 					   $match)
@@ -2220,47 +2220,47 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //"BBC.The.Treasures.of.Ancient.Rome.1of3.Warts.n.All.720p.HDTV.x264.AAC.MVGroup.org.mkv.025" yEnc
-		if (preg_match('/^"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 . ' {1,2}yEnc$/',
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 . ' {1,2}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return preg_replace('/MVGroup.+/', 'MVGroup', $match[1]);
 		} //"Time Team - 2012 - 05 - Beadnell, Northumbria.par2" -  [01 of 84 - 64 kb] yEnc
-		if (preg_match('/^"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   ' -  \[\d+ of \d+ - \d+([,.]\d+)? [kKmMgG][bB]\] yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //"Lang Lang - Mendelssohn.m4v"  [2/9]  yEnc
-		if (preg_match('/^"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
-					   '[-_ ]{0,3}\[\d+\/\d+\][-_ ]{0,3}yEnc$/',
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+					   '[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(06/24) "BBC Upgrade Me 2009.part04.rar" - 47.68 MB - 807.79 MB - yEnc
-		if (preg_match('/^\(\d+\/\d+\) "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^\(\d+\/\d+\) "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   ' - \d+[.,]\d+ [kKmMgG][bB] .+yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(35/45) - Keating Pt4 - "Keating Pt4.part34.rar" - 1.77 GB - yEnc
-		if (preg_match('/\(\d+\/(\d+\) - .+) - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/\(\d+\/(\d+\) - .+) - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . ' - \d+[.,]\d+ [kKmMgG][bB] - yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[2];
 		} //(World Air Routes - WESTJET - B737-700) [028/109] - "World Air Routes - WESTJET - B737-700.part027.rar" yEnc
-		if (preg_match('/^\(.+?\)\[\d+\/(\d+\][-_ ]{0,3}.+?)[-_ ]{0,3}("|#34;)(.+?)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}("|#34;))[-_ ]{0,3}yEnc$/',
+		if (preg_match('/^\(.+?\)\[\d+\/(\d+\][-_\s]{0,3}.+?)[-_\s]{0,3}("|#34;)(.+?)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}("|#34;))[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[3];
 		} //Beyond Vanilla (2010) Documentary DVDrip XviD-Uncut - (02/22) "Beyond.Vanilla.2010.Documentary.DVDrip.XviD-Uncut.par2" - yenc yEnc
-		if (preg_match('/(.+?) - [\(\[]\d+\/(\d+[\)\]])[-_ ]{0,3}("|#34;).+?(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4})("|#34;)(.+?)yEnc$/',
+		if (preg_match('/(.+?) - [\(\[]\d+\/(\d+[\)\]])[-_\s]{0,3}("|#34;).+?(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4})("|#34;)(.+?)yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -2272,48 +2272,48 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //PBS Nature The Private Life of Deer (01/23) - "PBS Nature 2013 The Private Life of Deer 720p x264 AAC.part01.rar" - 1.41 GB yEnc
-		if (preg_match('/^PBS.+\(\d+\/\d+\) - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^PBS.+\(\d+\/\d+\) - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e2,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //PBS - Inside Nature's Giants - Big Cats [100 of 101] "PBS - Inside Nature's Giants - Big Cats.m4v.vol970+143.par2" yEnc
-		if (preg_match('/^PBS.+\[\d+ of \d+\][-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^PBS.+\[\d+ of \d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //59/63 "Gates Of Heaven.vol023+19.PAR2" yEnc
-		if (preg_match('/^\d+\/\d+ "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/^\d+\/\d+ "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Asia Biz Forecast (NHK World, 9 & 10 November 2013) - 'Mizuho: Shadow banking' (01|14) - "ABF-2013-11-09.nfo" yEnc
-		if (preg_match('/^(.+?) \(\d+\|\d+\) - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^(.+?) \(\d+\|\d+\) - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //TG1 "Top.gear.the.perfect.road.trip.2013.vol0000+128.PAR2" :: [01/10] yEnc
-		if (preg_match('/^[\w ]+"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
-					   '(.+[\(\[]\d+\/\d+[\)\]])?[- ]{0,3}yEnc$/',
+		if (preg_match('/^[\w ]+"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+					   '(.+[\(\[]\d+\/\d+[\)\]])?[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[Walmart - The High Cost of Low Prices]-[28/59] - "wthcolp.part26.rar" yEnc
-		if (preg_match('/^\[([\w- ]+)\]-\[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\[([\w- ]+)\]-\[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[SR09-0013] - "America Revealed E02 Nation On The Move (2012) x264 720p AC3 5.1.nfo" yEnc
-		if (preg_match('/^\[[\w- ]+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/^\[[\w- ]+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
@@ -2322,7 +2322,7 @@ class ReleaseCleaning
 		if (preg_match('/^([\w- ]+.+?)' . $this->e1, $this->subject, $match)) {
 			return $match[1];
 		} //(World Air Routes - Turkish Airlines B777-300ER) [001/114] - "World Air Routes - Turkish Airlines B777-300ER.par2" yEnc
-		if (preg_match('/^\(World Air Routes.+\) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(World Air Routes.+\) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -2332,7 +2332,7 @@ class ReleaseCleaning
 		if (preg_match('/\(\?+\) \[\d+\/\d+\] - "(.+)' . $this->e1, $this->subject, $match)) {
 			return $match[1];
 		} //dokus4alle presents (01/52) "BBC.Tweed.1of3.Trouble.Looms.H264.AAC.nfo" - 603.24 MB - yEnc
-		if (preg_match('/^dokus4alle presents \(\d+\/\d+\) "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^dokus4alle presents \(\d+\/\d+\) "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e2,
 					   $this->subject,
 					   $match)
@@ -2441,7 +2441,7 @@ class ReleaseCleaning
 		) {
 			return $match[2];
 		} //Rowwendees post voor u op www.nzbworld.me - [0/6] - "Animaniacs - Lights, Camera, Action!.nzb" yEnc (1/1)
-		if (preg_match('/www.nzbworld.me - \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/www.nzbworld.me - \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . ' yEnc/',
 					   $this->subject,
 					   $match)
@@ -2449,7 +2449,7 @@ class ReleaseCleaning
 			return $match[1];
 		} //Re: Tune In: The Beatles: All These Years (Mark Lewisohn) - Lewisohn, Mark - Tune In- the Beatles- All These Years, Volume 01 -  [epub].rar  yEnc
 		//Re: REQ: Robert Edsel The Monuments Men - Edsel, Robert M - The Monuments Men- Allied Heroes, Nazi Thieves, and the Greatest Treasure Hunt in History (Retail) [epub].rar  yEnc
-		if (preg_match('/^Re:(Req:)? [\w:()\?\' -]+ - ([\w ,.()\[\]-]{8,}?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[- ]{0,3}yEnc$/i',
+		if (preg_match('/^Re:(Req:)? [\w:()\?\' -]+ - ([\w ,.()\[\]-]{8,}?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[-_\s]{0,3}yEnc$/i',
 					   $this->subject,
 					   $match)
 		) {
@@ -2498,8 +2498,8 @@ class ReleaseCleaning
 		}
 		//(NordicAlbino) [01/10] - "SWHQ_NA_675qe0033102suSmzSE.sfv" yEnc
 		//365 Sex Positions A New Way Every Day for a Steamy Erotic Year [eBook] - (1/5) "365.Sex.Positions.A.New.Way.Every.Day.for.a.Steamy.Erotic.Year.eBook.nfo" - yenc yEnc
-		if (preg_match('/(.+)[-_ ]{0,3}[\(\[]\d+\/\d+[\)\]][-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
-					   $this->e0 . '([-_ ]{0,3}yEnc){1,2}$/i',
+		if (preg_match('/(.+)[-_\s]{0,3}[\(\[]\d+\/\d+[\)\]][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+					   $this->e0 . '([-_\s]{0,3}yEnc){1,2}$/i',
 					   $this->subject,
 					   $match)
 		) {
@@ -2517,7 +2517,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //(1/7) "0865779767.epub" - 88,93 MB - "Anatomic Basis of Neurologic Diagnosis - epub" yEnc
-		if (preg_match('/^\(\d+\/\d+\) ".+(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}")([-_ ]{0,3}\d+[.,]\d+ [kKmMgG][bB])?[-_ ]{0,3}"([\w., &\'()-]{8,}?\b)" yEnc$/',
+		if (preg_match('/^\(\d+\/\d+\) ".+(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}")([-_\s]{0,3}\d+[.,]\d+ [kKmMgG][bB])?[-_\s]{0,3}"([\w., &\'()-]{8,}?\b)" yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -2526,7 +2526,7 @@ class ReleaseCleaning
 		//Re: REQ: Jay Lake's Mainspring series/trilogy (see titles inside) - "Lake, Jay - Clockwork Earth 03 - Pinion [epub].rar"  405.6 kBytes yEnc
 		//Attn: Brownian - "del Rey, Maria - Paradise Bay (FBS).rar" yEnc
 		//New Scan "Herbert, James - Sepulchre (html).rar" yEnc
-		if (preg_match('/^(Attn:|Re: REQ:|New Scan).+?[-_ ]{0,3}"([\w., &\'()-]{8,}?\b)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}")[-_ ]{0,3}(\d+[.,]\d+ [kKmMgG][bB](ytes)?)? yEnc$/i',
+		if (preg_match('/^(Attn:|Re: REQ:|New Scan).+?[-_\s]{0,3}"([\w., &\'()-]{8,}?\b)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}")[-_\s]{0,3}(\d+[.,]\d+ [kKmMgG][bB](ytes)?)? yEnc$/i',
 					   $this->subject,
 					   $match)
 		) {
@@ -2540,49 +2540,49 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //Patterson flood - Mobi -  15/45  "James Patterson - AC 13 - Double Cross.mobi"
-		if (preg_match('/(.+?)[-_ ]{0,4}\d+\/\d+[-_ ]{0,3}([\w. &\'()\[\]-]{8,}?\b.?)\.(txt|pdf|mobi|epub|azw)"( \(\d+\/\d+\))?( )?$/',
+		if (preg_match('/(.+?)[-_ ]{0,4}\d+\/\d+[-_\s]{0,3}([\w. &\'()\[\]-]{8,}?\b.?)\.(txt|pdf|mobi|epub|azw)"( \(\d+\/\d+\))?( )?$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[2];
 		} //--- Michael Dobbs - House of Cards.mobi  yEnc
-		if (preg_match('/^--- ([\w., &\'()-]{8,}?\b)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[- ]{0,3}yEnc$/',
+		if (preg_match('/^--- ([\w., &\'()-]{8,}?\b)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //'Steel's Edge - Ilona Andrews.epub'  yEnc
-		if (preg_match('/^\'([\w. &\'()\[\]-]{8,}?\b.?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})\'[- ]{0,3}yEnc$/',
+		if (preg_match('/^\'([\w. &\'()\[\]-]{8,}?\b.?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})\'[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[1 of 1] - Howard Gordon - Gideon's War & Hard Target.epub  yEnc
-		if (preg_match('/^\[\d+ of \d+\][- ]{0,3}([\w. &\'()\[\]-]{8,}?\b.?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[- ]{0,3}yEnc$/',
+		if (preg_match('/^\[\d+ of \d+\][-_\s]{0,3}([\w. &\'()\[\]-]{8,}?\b.?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //1 Playboy-Ausgabe vom Jnner 1953 [RARITT].rar  yEnc
-		if (preg_match('/^([\w. &\'\[\]-]{8,}?\b.?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[- ]{0,3}yEnc$/',
+		if (preg_match('/^([\w. &\'\[\]-]{8,}?\b.?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Re: Req: Please, does anyone have Scott Berg's Wilson biography? MTIA... - A. Scott Berg - Wilson.epub  yEnc
-		if (preg_match('/^.+ - ([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)\.[A-Za-z0-9]{2,4}[- ]{0,3}yEnc$/',
+		if (preg_match('/^.+ - ([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)\.[A-Za-z0-9]{2,4}[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //REQ: "Keep it Pithy" by Bill O'Reilly "Keep It Pithy - Bill O'Reilly.epub"yEnc
-		if (preg_match('/.*"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)\.[A-Za-z0-9]{2,4}"[- ]{0,3}yEnc$/',
+		if (preg_match('/.*"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)\.[A-Za-z0-9]{2,4}"[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //For Your Eyes Only - Ian Fleming.epub - answering my own request  yEnc
-		if (preg_match('/^([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)\.[A-Za-z0-9]{2,4}.+[- ]{0,3}yEnc$/',
+		if (preg_match('/^([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)\.[A-Za-z0-9]{2,4}.+[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -2608,7 +2608,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //Doctor Who - Target Books [128/175] - "DW125_ Terror of the Vervoids - Pip Baker.mobi" yEnc
-		if (preg_match('/^Doctor Who - Target Books \[\d+\/(\d+\]) - "DW[0-9]{0,3}[-_ ]{0,3}(.+?)\.(txt|pdf|mobi|epub|azw)" yEnc$/',
+		if (preg_match('/^Doctor Who - Target Books \[\d+\/(\d+\]) - "DW[0-9]{0,3}[-_\s]{0,3}(.+?)\.(txt|pdf|mobi|epub|azw)" yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -2622,7 +2622,7 @@ class ReleaseCleaning
 		}
 		//(NordicAlbino) [01/10] - "SWHQ_NA_675qe0033102suSmzSE.sfv" yEnc
 		//365 Sex Positions A New Way Every Day for a Steamy Erotic Year [eBook] - (1/5) "365.Sex.Positions.A.New.Way.Every.Day.for.a.Steamy.Erotic.Year.eBook.nfo" - yenc yEnc
-		if (preg_match('/(.+)[-_ ]{0,3}[\(\[]\d+\/\d+[\)\]][-_ ]{0,3}"(.+?)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
+		if (preg_match('/(.+)[-_\s]{0,3}[\(\[]\d+\/\d+[\)\]][-_\s]{0,3}"(.+?)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -2630,25 +2630,25 @@ class ReleaseCleaning
 		}
 		//[1/8] - "Robin Lane Fox - Travelling heroes.epub" yEnc
 		//(1/1) "Unintended Consequences - John Ross.nzb" - 8.67 kB - yEnc
-		if (preg_match('/^[\(\[]\d+\/\d+[\)\]][-_ ]{0,3}"(.+?)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}")([-_ ]{0,3}\d+[.,]\d+ [kKmMgG][bB])?[-_ ]{0,3}yEnc$/',
+		if (preg_match('/^[\(\[]\d+\/\d+[\)\]][-_\s]{0,3}"(.+?)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}")([-_\s]{0,3}\d+[.,]\d+ [kKmMgG][bB])?[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[ Mega Dating and Sex Advice Ebooks - Tips and Tricks for Men PDF ] - "Vatsyayana - The Kama Sutra.pdf.rar" - (54/58) yEnc
-		if (preg_match('/^[\(\[] .+? [\)\][-_ ]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}")[-_ ]{0,3}[\(\[]\d+\/(\d+[\)\]])[-_ ]{0,3}yEnc$/',
+		if (preg_match('/^[\(\[] .+? [\)\][-_\s]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}")[-_\s]{0,3}[\(\[]\d+\/(\d+[\)\]])[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //WWII in Photos - "WWII in Photos_05_Conflict Spreads Around the Globe - The Atlantic.epub" yEnc
-		if (preg_match('/^(WWII in Photos)[-_ ]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}")[-_ ]{0,3}yEnc$/',
+		if (preg_match('/^(WWII in Photos)[-_\s]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}")[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[2];
 		} //Various ebooks on History pdf format  "Chelsea House Publishing Discovering U.S. History Vol. 8, World War I and the Roaring Twenties - 1914-1928 (2010).pdf"  [1 of 1] yEnc
-		if (preg_match('/^.+?"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}")[-_ ]{0,3}\[\d+ of (\d+\])[-_ ]{0,3}yEnc$/',
+		if (preg_match('/^.+?"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}")[-_\s]{0,3}\[\d+ of (\d+\])[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -2666,7 +2666,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //Pottermore UK retail - "Harry Potter and the Goblet of Fire - J.K. Rowling.epub" (05/14) - 907.57 kB - yEnc
-		if (preg_match('/^.+?[-_ ]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}") [\(\[]\d+\/\d+[\)\]] ([-_ ]{0,3}\d+[.,]\d+ [kKmMgG][bB])?[-_ ]{0,3}yEnc$/',
+		if (preg_match('/^.+?[-_\s]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}") [\(\[]\d+\/\d+[\)\]] ([-_\s]{0,3}\d+[.,]\d+ [kKmMgG][bB])?[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -2684,7 +2684,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //(1/7) "0865779767.epub" - 88,93 MB - "Anatomic Basis of Neurologic Diagnosis - epub" yEnc
-		if (preg_match('/^\(\d+\/\d+\) ".+(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}")([-_ ]{0,3}\d+[.,]\d+ [kKmMgG][bB])?[-_ ]{0,3}"(.+?)" yEnc$/',
+		if (preg_match('/^\(\d+\/\d+\) ".+(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}")([-_\s]{0,3}\d+[.,]\d+ [kKmMgG][bB])?[-_\s]{0,3}"(.+?)" yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -2693,7 +2693,7 @@ class ReleaseCleaning
 		//Re: REQ: Jay Lake's Mainspring series/trilogy (see titles inside) - "Lake, Jay - Clockwork Earth 03 - Pinion [epub].rar"  405.6 kBytes yEnc
 		//Attn: Brownian - "del Rey, Maria - Paradise Bay (FBS).rar" yEnc
 		//New Scan "Herbert, James - Sepulchre (html).rar" yEnc
-		if (preg_match('/^(Attn:|Re: REQ:|New Scan).+?[-_ ]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}")[-_ ]{0,3}(\d+[.,]\d+ [kKmMgG][bB](ytes)?)? yEnc$/i',
+		if (preg_match('/^(Attn:|Re: REQ:|New Scan).+?[-_\s]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}")[-_\s]{0,3}(\d+[.,]\d+ [kKmMgG][bB](ytes)?)? yEnc$/i',
 					   $this->subject,
 					   $match)
 		) {
@@ -2707,19 +2707,19 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //Patterson flood - Mobi -  15/45  "James Patterson - AC 13 - Double Cross.mobi"
-		if (preg_match('/(.+?)[-_ ]{0,3}\d+\/(\d+[-_ ]{0,3}".+?)\.(txt|pdf|mobi|epub|azw)"( \(\d+\/\d+\))?( )?$/',
+		if (preg_match('/(.+?)[-_\s]{0,3}\d+\/(\d+[-_\s]{0,3}".+?)\.(txt|pdf|mobi|epub|azw)"( \(\d+\/\d+\))?( )?$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[2];
 		} //04/63  Brave New World Revisited - Aldous Huxley.mobi  yEnc
-		if (preg_match('/\d+\/\d+[-_ ]{0,3}(.+)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4})[-_ ]{0,3}yEnc$/',
+		if (preg_match('/\d+\/\d+[-_\s]{0,3}(.+)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4})[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //- Campbell, F.E. - Susan - HIT 125.rar  BDSM Themed Adult Erotica - M/F F/F - Rtf & Pdf
-		if (preg_match('/^- (.+?)\.(par|vol|rar|nfo)[-_ ]{0,3}(.+)/', $this->subject, $match)) {
+		if (preg_match('/^- (.+?)\.(par|vol|rar|nfo)[-_\s]{0,3}(.+)/', $this->subject, $match)) {
 			return $match[1];
 		} //"D. F. Jones - 03 - Colossus and The Crab.epub" (1/3)
 		if (preg_match('/^"(.+?)\.(txt|pdf|mobi|epub|azw)" \(\d+\/(\d+\))/',
@@ -2757,7 +2757,7 @@ class ReleaseCleaning
 		) {
 			return $match[2];
 		} //002/240  Swordships.of.Scorpio.(Dray.Prescot).-.Alan.Burt.Akers.epub
-		if (preg_match('/^\d+\/(\d+)[-_ ]{0,3}(.+?)\.(txt|pdf|mobi|epub|azw|lit|rar|nfo|par)$/',
+		if (preg_match('/^\d+\/(\d+)[-_\s]{0,3}(.+?)\.(txt|pdf|mobi|epub|azw|lit|rar|nfo|par)$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -2786,7 +2786,7 @@ class ReleaseCleaning
 		//World War II History - "Spies of the Balkans - Alan Furst.mobi" yEnc
 		//True Crime  "T. J. English - Havana Nocturne (v5.0).mobi" yEnc
 		//E C Tubb Flood - "E C Tubb - Dumarest 31 The Temple of Truth.epub" - yEnc
-		if (preg_match('/^[A-Za-z ]+[-_ ]{0,3}"(.+?)\.(txt|pdf|mobi|epub|azw)"[-_ ]{0,3}yEnc$/',
+		if (preg_match('/^[A-Za-z ]+[-_\s]{0,3}"(.+?)\.(txt|pdf|mobi|epub|azw)"[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -2804,7 +2804,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //Patterson flood - Mobi -  15/45  "James Patterson - AC 13 - Double Cross.mobi"
-		if (preg_match('/(.+?)[-_ ]{0,3}\d+\/(\d+[-_ ]{0,3}".+?)\.(txt|pdf|mobi|epub|azw)"( \(\d+\/\d+\))?( )?$/',
+		if (preg_match('/(.+?)[-_\s]{0,3}\d+\/(\d+[-_\s]{0,3}".+?)\.(txt|pdf|mobi|epub|azw)"( \(\d+\/\d+\))?( )?$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -2813,7 +2813,7 @@ class ReleaseCleaning
 		//Re: REQ: Jay Lake's Mainspring series/trilogy (see titles inside) - "Lake, Jay - Clockwork Earth 03 - Pinion [epub].rar"  405.6 kBytes yEnc
 		//Attn: Brownian - "del Rey, Maria - Paradise Bay (FBS).rar" yEnc
 		//New Scan "Herbert, James - Sepulchre (html).rar" yEnc
-		if (preg_match('/^(Attn:|Re: REQ:|New Scan).+?[-_ ]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}")[-_ ]{0,3}(\d+[.,]\d+ [kKmMgG][bB](ytes)?)? yEnc$/i',
+		if (preg_match('/^(Attn:|Re: REQ:|New Scan).+?[-_\s]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}")[-_\s]{0,3}(\d+[.,]\d+ [kKmMgG][bB](ytes)?)? yEnc$/i',
 					   $this->subject,
 					   $match)
 		) {
@@ -2839,7 +2839,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //(1/7) "0865779767.epub" - 88,93 MB - "Anatomic Basis of Neurologic Diagnosis - epub" yEnc
-		if (preg_match('/^\(\d+\/\d+\) ".+(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}")([-_ ]{0,3}\d+[.,]\d+ [kKmMgG][bB])?[-_ ]{0,3}"(.+?)" yEnc$/',
+		if (preg_match('/^\(\d+\/\d+\) ".+(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}")([-_\s]{0,3}\d+[.,]\d+ [kKmMgG][bB])?[-_\s]{0,3}"(.+?)" yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -2848,7 +2848,7 @@ class ReleaseCleaning
 		//Re: REQ: Jay Lake's Mainspring series/trilogy (see titles inside) - "Lake, Jay - Clockwork Earth 03 - Pinion [epub].rar"  405.6 kBytes yEnc
 		//Attn: Brownian - "del Rey, Maria - Paradise Bay (FBS).rar" yEnc
 		//New Scan "Herbert, James - Sepulchre (html).rar" yEnc
-		if (preg_match('/^(Attn:|Re: REQ:|New Scan).+?[-_ ]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}")[-_ ]{0,3}(\d+[.,]\d+ [kKmMgG][bB](ytes)?)? yEnc$/i',
+		if (preg_match('/^(Attn:|Re: REQ:|New Scan).+?[-_\s]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}")[-_\s]{0,3}(\d+[.,]\d+ [kKmMgG][bB](ytes)?)? yEnc$/i',
 					   $this->subject,
 					   $match)
 		) {
@@ -2856,7 +2856,7 @@ class ReleaseCleaning
 		}
 		//*FULL REPOST* New eBooks 26 Nov 2012 & 20% PAR2 Set -  "Elisabeth Kyle - The Captain's House (siPDF).rar"
 		//*REPOST* New eBooks 23 Nov 2012 -  "Charles Culver - [The 11th Floor 02] - Awakening (mobi).rar"
-		if (preg_match('/^\*(FULL )?REPOST\* New eBooks.+[-_ ]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}")$/',
+		if (preg_match('/^\*(FULL )?REPOST\* New eBooks.+[-_\s]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}")$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -2864,7 +2864,7 @@ class ReleaseCleaning
 		}
 		//1 - 5 July 2013 - Search for number at end of title - Bevin Alexander - How Hitler Could Have Won World War II- The Fatal Errors That Lead to Nazi Defeat (epub).rar - 14418-25255-6053.rar.txt yEnc
 		//10 July 2013 - Search 4 Numeric String at End of Subject - Andew Hodges - Alan Turing- The Enigma (Centenary Edition) (kf8 mobi).rar = 21317-25234-21710.rar.txt yEnc
-		if (preg_match('/^.+?Search (for|4) (number|Numeric String) at end of (title|Subject)[-_ ]{0,3}(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4})[-\=_ ]{0,3}\d+[-_ ]{0,3}.+?yEnc$/i',
+		if (preg_match('/^.+?Search (for|4) (number|Numeric String) at end of (title|Subject)[-_\s]{0,3}(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4})[-\=_ ]{0,3}\d+[-_\s]{0,3}.+?yEnc$/i',
 					   $this->subject,
 					   $match)
 		) {
@@ -2878,7 +2878,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //"Back to Pakistan_ A Fifty-Year Journey - Leslie Noyes Mass.pdf"  2778K
-		if (preg_match('/^"(.+)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}")[-_ ]{0,3}\d+[kKmMgG]$/',
+		if (preg_match('/^"(.+)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}")[-_\s]{0,3}\d+[kKmMgG]$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -2886,7 +2886,7 @@ class ReleaseCleaning
 		}
 		//[002/182] A. E. Van Vogt - The Anarchistic Colossus.mobi  mobi flood
 		//[002/115] Alan Dean Foster - Alien.mobi  sf single author flood
-		if (preg_match('/^\[\d+\/\d+\][-_ ]{0,3}(.+)\.(txt|pdf|mobi|epub|azw)[-_ ]{0,3}.+flood( )?$/',
+		if (preg_match('/^\[\d+\/\d+\][-_\s]{0,3}(.+)\.(txt|pdf|mobi|epub|azw)[-_\s]{0,3}.+flood( )?$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -2906,7 +2906,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //reposting 2012-10-31 new ebooks with 35.74 pars - AD&D - [Tomes] - The Rod of Seven Parts - Douglas Niles (mobi).rar  yEnc
-		if (preg_match('/^reposting \d+-\d+-\d+ new ebooks.+ pars[- ]{0,3}(.+?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})  yEnc$/i',
+		if (preg_match('/^reposting \d+-\d+-\d+ new ebooks.+ pars[-_\s]{0,3}(.+?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})  yEnc$/i',
 					   $this->subject,
 					   $match)
 		) {
@@ -2920,7 +2920,7 @@ class ReleaseCleaning
 		}
 		//Filling Req for Delderfield- To Serve Them All My Days - R F Delderfield.mobi [6/6] -  yEnc
 		//Filling Request - Armistead Maupin - 1 - Tales of the City.mobi [1/8] -  yEnc
-		if (preg_match('/^Filling Req(uest)?( for \w+)?[- ]{0,3}(.+?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4}) \[\d+\/\d+\] -  yEnc$/i',
+		if (preg_match('/^Filling Req(uest)?( for \w+)?[-_\s]{0,3}(.+?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4}) \[\d+\/\d+\] -  yEnc$/i',
 					   $this->subject,
 					   $match)
 		) {
@@ -2938,7 +2938,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //Attn: fastpiety - your requests - Countess of Carnarvon - Lady Almina and the Real Downton Abbey- The Lost Legacy of Highclere Castle (epub).epub [1/1] -  yEnc
-		if (preg_match('/^Attn: fastpiety - your requests[- ]{0,3}(.+?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4}) \[\d+\/\d+\] -  yEnc$/i',
+		if (preg_match('/^Attn: fastpiety - your requests[-_\s]{0,3}(.+?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4}) \[\d+\/\d+\] -  yEnc$/i',
 					   $this->subject,
 					   $match)
 		) {
@@ -2950,31 +2950,31 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //A Game of Thrones 01- George R. R. Martin.mobi_as found  yEnc
-		if (preg_match('/^([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)\.[A-Za-z0-9]{2,4}_as found[- ]{0,3}yEnc$/',
+		if (preg_match('/^([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)\.[A-Za-z0-9]{2,4}_as found[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Ben Carson - America the Beautiful- Rediscovering What Made This Nation Great (epub).epub - File 1 of 1 - yEnc
-		if (preg_match('/^([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)\.[A-Za-z0-9]{2,4}[- ]{0,3}File \d+ of \d+[- ]{0,3}yEnc$/',
+		if (preg_match('/^([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)\.[A-Za-z0-9]{2,4}[-_\s]{0,3}File \d+ of \d+[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Re: Attn Reg143- (Morse 7) The Secret of Annexe 3 - Colin Dexter.mobi [11/14] -  yEnc
-		if (preg_match('/^Re: Attn Reg143- ([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)\.[A-Za-z0-9]{2,4}[- ]{0,3}\[\d+\/\d+\][- ]{0,4}yEnc$/',
+		if (preg_match('/^Re: Attn Reg143- ([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)\.[A-Za-z0-9]{2,4}[-_\s]{0,3}\[\d+\/\d+\][- ]{0,4}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //New eBooks 20 Aug 2012 - File 001 of 409 - yEnc
-		if (preg_match('/^([\w.,& ()\[\]\'\`-]{8,}?)[- ]{0,3}File \d+ of \d+[- ]{0,3}yEnc$/',
+		if (preg_match('/^([\w.,& ()\[\]\'\`-]{8,}?)[-_\s]{0,3}File \d+ of \d+[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Re: Request  - 05 L. E. Modesitt - Princeps.mobi [5/7] -  yEnc
-		if (preg_match('/^Re: Request[- ]{0,4}\d+[- ]{0,3}([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[- ]{0,3}\[\d+\/\d+\][- ]{0,4}yEnc$/',
+		if (preg_match('/^Re: Request[- ]{0,4}\d+[-_\s]{0,3}([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[-_\s]{0,3}\[\d+\/\d+\][- ]{0,4}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -3027,130 +3027,94 @@ class ReleaseCleaning
 	public function erotica()
 	{
 		//[######]-[FULL]-[#a.b.teevee@EFNet]-[ Misfits.S01.SUBPACK.DVDRip.XviD-P0W4DVD ] [1/5] - "Misfits.S01.SUBPACK.DVDRip.XviD-P0W4DVD.nfo" yEnc
-		if (preg_match('/\[#+\]-\[.+?\]-\[.+?\]-\[ (.+?) \][- ]\[\d+\/\d+\] - ".+?" yEnc$/',
-					   $this->subject,
-					   $match)
-		) {
+		if (preg_match('/\[#+\]-\[.+?\]-\[.+?\]-\[ (.+?) \][- ]\[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1, $this->subject, $match)) {
 			return $match[1];
 		} //NihilCumsteR [1/8] - "Conysgirls.cumpilation.xxx.NihilCumsteR.par2" yEnc
-		if (preg_match('/^NihilCumsteR \[\d+\/\d+\] - "(.+?)NihilCumsteR\./',
-					   $this->subject,
-					   $match)
-		) {
+		if (preg_match('/^NihilCumsteR \[\d+\/\d+\] - "(.+?)NihilCumsteR\./', $this->subject, $match)) {
 			return $match[1];
 		} //"Lesbian seductions 26.part.nzb" yEnc
-		if (preg_match('/^"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
-					   $this->subject,
-					   $match)
-		) {
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1, $this->subject, $match)) {
 			return $match[1];
 		} //[01/13] - "Mahina.Zaltana.14.01.17.720p.x264-DFury.7z.001" yEnc
-		if (preg_match('/^\[\d+\/\d+\][- ]{0,3}"([\w.()-]{8,}?\b)' . $this->e1,
-					   $this->subject,
-					   $match)
-		) {
+		if (preg_match('/^\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1, $this->subject, $match)) {
 			return $match[1];
 		} //>>>>>Hell-of-Usenet.org>>>>> - [01/23] - "Cum Hunters 3 XXX.par2" yEnc
-		if (preg_match('/^[><]+Hell-of-Usenet\.org[<>]+ - \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
-					   $this->e1,
-					   $this->subject,
-					   $match)
-		) {
+		if (preg_match('/^[><]+Hell-of-Usenet\.org[<>]+ - \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1, $this->subject, $match)) {
 			return $match[1];
 		} //Lesbian Crush Diaries 5 XXX DVDRip x264-Pr0nStarS - (01/26) "Lesbian.Crush.Diaries.5.XXX.DVDRip.x264-Pr0nStarS.nfo" - yenc
-		if (preg_match('/^[A-Z0-9][a-zA-Z0-9 -]{8,}? - \(\d+\/\d+\) "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
-					   $this->e0 . ' - yenc yEnc$/',
-					   $this->subject,
-					   $match)
-		) {
+		if (preg_match('/^[A-Z0-9][a-zA-Z0-9 -]{8,}? - \(\d+\/\d+\) "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 . ' - yenc yEnc$/', $this->subject, $match)) {
 			return $match[1];
 		} //Megan Coxxx Takes Out Her Favourite Strap On Dildos And Plays With Her Girlfriend Re - File 01 of 67 - "Toy_Stories.r00.par2" yEnc
-		if (preg_match('/^([A-Z0-9][a-zA-Z0-9 ]{8,}?) - File \d+ of \d+ - ".+?' . $this->e1,
-					   $this->subject,
-					   $match)
-		) {
+		if (preg_match('/^([A-Z0-9][a-zA-Z0-9 ]{8,}?) - File \d+ of \d+ - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1, $this->subject, $match)) {
 			return $match[1];
 		} //[02/21] - "Staendig Feucht.part01.rar" - 493.38 MB ....::::UR-powered by SecretUsenet.com::::.... yEnc
-		if (preg_match('/^\[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
-					   ' - \d+[.,]\d+ [kKmMgG][bB] .+? yEnc$/',
-					   $this->subject,
-					   $match)
-		) {
+		if (preg_match('/^\[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 . ' - \d+[.,]\d+ [kKmMgG][bB] .+? yEnc$/', $this->subject, $match)) {
 			return $match[1];
 		} //Big Tits in Sport 12 (2013) XXX DVDRip x264-CHiKANi - (03/39) "Big.Tits.in.Sport.12.XXX.DVDRip.x264-CHiKANi.part01.rar" - yenc yEnc
-		if (preg_match('/^[A-Z0-9].{8,}? - \(\d+\/\d+\) "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
-					   $this->e0 . ' - yenc yEnc$/',
-					   $this->subject,
-					   $match)
-		) {
+		if (preg_match('/^[A-Z0-9].{8,}? - \(\d+\/\d+\) "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 . ' - yenc yEnc$/', $this->subject, $match)) {
 			return $match[1];
 		} //"Babysitters_a_Slut_4_Scene_4.part01.rar"_SpotBots yEnc
-		if (preg_match('/^"(.+?)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}")(.+?)yEnc$/',
-					   $this->subject,
-					   $match)
-		) {
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,})(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}")(.+?)yEnc$/', $this->subject, $match)) {
 			return $match[1];
 		} //<<<>>CowboyUp2012 XXX><<<Is.Not.Force.It.My.Younger.SOE-806.Jav.Censored.DVDRip.XviD-MotTto>>>usenet-space-cowboys.info<<<Powered by https://secretusenet.com>< "Is.Not.Force.It.My.Younger.SOE-806.Jav.Censored.DVDRip.XviD-MotTto.part01.rar" >< 01/15 (1,39
-		if (preg_match('/^.+?usenet-space.+?Powered by.+? "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
-					   $this->e0 . '.+? \d+\/(\d+.+?)$/',
-					   $this->subject,
-					   $match)
-		) {
+		if (preg_match('/^.+?usenet-space.+?Powered by.+? "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 . '.+? \d+\/(\d+.+?)$/', $this->subject, $match)) {
 			return $match[1];
 		} //Fake Taxi E58 - Taylor[01/23] - "faket.e58.taylor.part01.rar" yEnc
-		if (preg_match('/^(Fake Taxi E\d+.+?)\[\d+\/\d+\] - ".+?' . $this->e1,
-					   $this->subject,
-					   $match)
-		) {
+		if (preg_match('/^(Fake Taxi E\d+.+?)\[\d+\/\d+\] - ".+?' . $this->e1, $this->subject, $match)) {
 			return $match[1];
 		} //Flapdrol mp4 - "HotKinkyJo - 2013-12-28 - Pink Leopard toys sex movie.part5.rar" yEnc
-		if (preg_match('/^Flapdrol mp4 - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
-					   $this->subject,
-					   $match)
-		) {
+		if (preg_match('/^Flapdrol mp4 - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1, $this->subject, $match)) {
 			return $match[1];
 		} //[U4A][-always take the post from the first and original poster!-] - "VIDEOOT-10VSN01.vol27+23.PAR2" yEnc
-		if (preg_match('/^\[U4A\]\[.+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
-					   $this->subject,
-					   $match)
-		) {
+		if (preg_match('/^\[U4A\]\[.+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1, $this->subject, $match)) {
 			return $match[1];
 		} //VolSpuitenMetBud - - [14/26] - "SexuallyBroken - 2013-12-30 - Stunning Cherie DeVille turned into blowjob device, hardcore deepthroating, relentless pounding! Cherie DeVille & Matt Williams.part13.rar" yEnc
-		if (preg_match('/^VolSpuitenMetBud - - \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
-					   $this->e1,
-					   $this->subject,
-					   $match)
-		) {
+		if (preg_match('/^VolSpuitenMetBud - - \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1, $this->subject, $match)) {
 			return $match[1];
 		} //..::kleverig.eu::.. [01/18] - "CQVNAj4WLDW_7Bm8Ax6J.par2" - 686,38 MB yEnc
-		if (preg_match('/^.+[Kk]leverig\.eu.+\[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
-					   $this->e2,
-					   $this->subject,
-					   $match)
-		) {
+		if (preg_match('/^.+[Kk]leverig\.eu.+\[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e2, $this->subject, $match)) {
 			return $match[1];
 		} //Brazilian.Transsexuals.SR.UD.12.28.13.HD.720p.HDL [19 of 24] "JhoanyWilkerXmasLD_1_hdmp4.mp4.vol00+1.par2" yEnc
-		if (preg_match('/^([a-zA-Z0-9._-]+)[-_ ]{0,3}[\(\[]\d+ of (\d+[\)\]])[-_ ]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
-					   $this->subject,
-					   $match)
-		) {
+		if (preg_match('/^([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,})[-_\s]{0,3}[\(\[]\d+ of (\d+[\)\]])[-_\s]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/', $this->subject, $match) ) {
 			return $match[1];
 		} //(????) [01/18] - "Blonde Cutie Seduces Her Step Dad Black Market.rar" yEnc
-		if (preg_match('/^\(\?+\) \[\d+\/\d+\][ -]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
-					   $this->e0 . '.+yEnc$/',
-					   $this->subject,
-					   $match)
-		) {
+		if (preg_match('/^\(\?+\) \[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 . '.+yEnc$/', $this->subject, $match)) {
+			return $match[1];
+		} //- - [001/202] - "epAgY717nUChOeWswZR4.par2" yEnc
+		if (preg_match('/^[-_\s]{0,4}\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1, $this->subject, $match)) {
+			return $match[1];
+		} //- "ADJG3HG2H1U9YHDGHD5GA8H.par2" yEnc
+		if (preg_match('/^[-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1, $this->subject, $match)) {
+			return $match[1];
+		} //- "dvd_10-96CEA81F.part1.rar" - [3/9] - 1,21 GB - yEnc
+		if (preg_match('/^[-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 . '[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}\d+([.,]\d+)? [kKmMgG][bB][-_\s]{0,3}[-_\s]{0,3}yEnc$/u', $this->subject, $match)) {
+			return $match[1];
+		} //- (01/74) - "50.Shades.Of.Dylan.Ryan.DVDRip.AVC.par2" yEnc
+		if (preg_match('/^[-_\s]{0,3}\(\d+\/\d+\)[-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1, $this->subject, $match)) {
+			return $match[1];
+		} //"HD_1110.part01.rar"_SpotBots yEnc
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 . '_SpotBots[-_\s]{0,3}yEnc$/u', $this->subject, $match)) {
+			return $match[1];
+		} //( DreadysCEMPenetrationshumides(1977) )  ** By Dready Niek** ) [11/25] - "DreadysCEMPenetrationshumides(1977).part10.rar" yEnc
+		if (preg_match('/^\(\s*.+\s*\)\s*.+By Dready Niek.+\s*\)[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}"Dreadys([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1, $this->subject, $match)) {
+			return $match[1];
+		} //(  [  Magma classic - Tyra Misoux-Schwere Jungs Und Leichte Madchen  ]   ) [01/16] - ".par2" yEnc
+		if (preg_match('/^\(\s*\[\s*[Mm]agma classic[-_\s]{0,3}([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,})\s*\]\s*\)[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}".+?' . $this->e1, $this->subject, $match)) {
+			return $match[1];
+		} //(01/21) - New.Nippi.Video.The.Artist - "Next.Door.Nikki.Sims.2013-05-03_the_artist.jpeg" - 574.84 MB - yEnc
+		if (preg_match('/^\(\d+\/\d+\)[-_\s]{0,3}New\.Nippi.+[-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e2, $this->subject, $match)) {
+			return $match[1];
+		} //(01/22) - Busty.Latina.Rebecca-Video02 - "rebebate2.jpeg" - 310.69 MB - yEnc
+		if (preg_match('/^\(\d+\/\d+\)[-_\s]{0,3}([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?)[-_\s]{0,3}".+?' . $this->e2, $this->subject, $match)) {
 			return $match[1];
 		} //PNG170514XW042SOE9[01/35] - "PNG170514XW042SOE9.jpg" yEnc
-		if (preg_match('/^[\w.,& ()\[\]\'\`-]{8,}?\[\d+\/\d+\][- ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
-					   $this->e1,
-					   $this->subject,
-					   $match)
-		) {
-			if (!preg_match('/^\[ ?\d+ ?\]/', $this->subject)) {
+		if (preg_match('/^[\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1, $this->subject, $match)) {
+			if (!preg_match('/^\[\s*\d+\s*\]/', $this->subject)) {
 				return $match[1];
 			}
+		} //"Cuties 6.part.vol551+106.par2" yEnc
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1, $this->subject, $match)) {
+			return $match[1];
 		}
 		return array(
 			"cleansubject" => $this->releaseCleanerHelper($this->subject), "properlynamed" => false
@@ -3166,22 +3130,22 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //..:[DoAsYouLike]:..    116,12 MB    "Graphite v8.9.17 SP4R4.nfo"    3,00 kB yEnc
-		if (preg_match('/^.+\[DoAsYouLike\].+\d+[.,]\d+ [kKmMgG][bB].+"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
-					   $this->e0 . '    (\d+[.,])?\d+ ([kKmMgG])?[bB][- ]{0,3}yEnc$/',
+		if (preg_match('/^.+\[DoAsYouLike\].+\d+[.,]\d+ [kKmMgG][bB].+"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+					   $this->e0 . '    (\d+[.,])?\d+ ([kKmMgG])?[bB][-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(047/550) "Enf.S02E02.G.D.D.W.7.H.x2-e.vol105+99.PAR2" - 36,13 GB -Enf.S02.G.D.D.W.7.H.x2-e yEnc
 		//[3/3] - "Mayle Peter - Der Coup von Marseille.epub.vol0+1.par2" - 956,83 kB {UR} yEnc
-		if (preg_match('/^[\(\[]\d+\/\d+[\)\]][ -]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^[\(\[]\d+\/\d+[\)\]][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . '.+yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //<<<Old but Sold>>>  <<< >< >< "German Top 50 ODC - 12.08.2013.nfo" >< 02/33 (541,61 MB) >< 10,93 kB > yEnc
-		if (preg_match('/^.+Old but Sold.+>< "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^.+Old but Sold.+>< "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . ' >< \d+\/\d+ \(\d+[.,]\d+ [kKmMgG][bB]\).+ yEnc$/',
 					   $this->subject,
 					   $match)
@@ -3194,21 +3158,21 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //704900999555666777123978 - [398/415] - "Jormungand Complete [720p] mHD.part31.rar" yEnc
-		if (preg_match('/^\d+[- ]{0,3}\[\d+\/\d+\][- ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\d+[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Man.Of.Steel.2013.BRRip.x264.AC3-UNiQUE - [02/38] - "Man.Of.Steel.2013.BRRip.x264.AC3-UNiQUE.part01.rar" yEnc
-		if (preg_match('/^[\w. -]+[- ]{0,3}\[\d+\/\d+\][- ]{0,3}"([\w.()-]{8,}?\b)' . $this->e1,
+		if (preg_match('/^[\w. -]+[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}"([\w.()-]{8,}?\b)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //<<<< old but sold >>>> < USC> <"K11 - Kommissare im Einsatz (DE) NDS.part3.rar">[04/11] 74,54 MB yEnc
 		if (preg_match('/^.+old but sold.+([\w. ()-]{8,}?\b)' . $this->e0 .
-					   '>\[\d+\/\d+\][- ]{0,3}\d+[.,]\d+ [kKmMgG][bB][- ]{0,3}yEnc$/',
+					   '>\[\d+\/\d+\][-_\s]{0,3}\d+[.,]\d+ [kKmMgG][bB][-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -3220,13 +3184,13 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //Bitsum.Technologies.Process.Lasso.Pro.v6.5.00.Cracked-EAT - [3/4] - "eat.vol0+1.par2" yEnc
-		if (preg_match('/^([\w.()-]{8,})[- ]{0,3}\[\d+\/\d+\][- ]{0,3}".+?' . $this->e1,
+		if (preg_match('/^([\w.()-]{8,})[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}".+?' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //<<<usenet-space-cowboys.info>>> USC <<<Powered by https://secretusenet.com><Medieval Wii Pal>< "Medieval Wii Pal.vol108+29.par2" >< 60/60 (4,82 GB) >< 95,77 MB > yEnc
-		if (preg_match('/^.+?usenet-space.+?Powered by.+? "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^.+?usenet-space.+?Powered by.+? "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . '.+? \d+\/(\d+.+?)$/',
 					   $this->subject,
 					   $match)
@@ -3234,7 +3198,7 @@ class ReleaseCleaning
 			return $match[1];
 		} //<<<< old but sold >>>> < USC> <"K11 - Kommissare im Einsatz (DE) NDS.part3.rar">[04/11] 74,54 MB yEnc
 		if (preg_match('/^.+old but sold.+([\w. ()-]{8,}?\b)' . $this->e0 .
-					   '>\[\d+\/\d+\][- ]{0,3}\d+[.,]\d+ [kKmMgG][bB][- ]{0,3}yEnc$/',
+					   '>\[\d+\/\d+\][-_\s]{0,3}\d+[.,]\d+ [kKmMgG][bB][-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -3246,7 +3210,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //Bitsum.Technologies.Process.Lasso.Pro.v6.5.00.Cracked-EAT - [3/4] - "eat.vol0+1.par2" yEnc
-		if (preg_match('/^([\w.()-]{8,})[- ]{0,3}\[\d+\/\d+\][- ]{0,3}".+?' . $this->e1,
+		if (preg_match('/^([\w.()-]{8,})[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}".+?' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
@@ -3259,37 +3223,37 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //W33d5.S01.720p.BluRay.x264 - "W33d5.S01.720p.BluRay.x264.part63.rar" yEnc
-		if (preg_match('/^[\w. -]+[- ]{0,3}"([\w.()-]{8,}?\b)' . $this->e1,
+		if (preg_match('/^[\w. -]+[-_\s]{0,3}"([\w.()-]{8,}?\b)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Man.Of.Steel.2013.BRRip.x264.AC3-UNiQUE - [02/38] - "Man.Of.Steel.2013.BRRip.x264.AC3-UNiQUE.part01.rar" yEnc
-		if (preg_match('/^[\w. -]+[- ]{0,3}\[\d+\/\d+\][- ]{0,3}"([\w.()-]{8,}?\b)' . $this->e1,
+		if (preg_match('/^[\w. -]+[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}"([\w.()-]{8,}?\b)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //>GOU<< XUS Clock Plus v1.5.0 with Key [TorDigger].PAR2 >>www.SSL-News.info<  yEnc
-		if (preg_match('/^>GOU<< ([\w.\[\]() -]{8,}?\b)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rarr|\.7z)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4}).+www\.SSL-News\.info<[- ]{0,3}yEnc$/',
+		if (preg_match('/^>GOU<< ([\w.\[\]() -]{8,}?\b)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rarr|\.7z)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4}).+www\.SSL-News\.info<[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Man.Of.Steel.2013.BRRip.x264.AC3-UNiQUE - [02/38] - "Man.Of.Steel.2013.BRRip.x264.AC3-UNiQUE.part01.rar" yEnc
-		if (preg_match('/^[\w. -]+[- ]{0,3}\[\d+\/\d+\][- ]{0,3}"([\w.()-]{8,}?\b)' . $this->e1,
+		if (preg_match('/^[\w. -]+[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}"([\w.()-]{8,}?\b)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //>GOU<< XUS Clock Plus v1.5.0 with Key [TorDigger].PAR2 >>www.SSL-News.info<  yEnc
-		if (preg_match('/^>GOU<< ([\w.\[\]() -]{8,}?\b)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rarr|\.7z)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4}).+www\.SSL-News\.info<[- ]{0,3}yEnc$/',
+		if (preg_match('/^>GOU<< ([\w.\[\]() -]{8,}?\b)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rarr|\.7z)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4}).+www\.SSL-News\.info<[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //"Drains_READNFO-VACE.nfo" yEnc
-		if (preg_match('/^"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
@@ -3304,14 +3268,14 @@ class ReleaseCleaning
 	{
 		//(aangemeld bij usenet collector) [181/190] - "Ally_McBeal_Season_3_Dvd_4.vol0176+176.par2" yEnc
 		//Usenet collector(aangemeld bij usenet collector) [001/124] - "Northern_Exposure_Season_4_dvd_2.par2" yEnc
-		if (preg_match('/^(Usenet collector)?\(aangemeld.+\) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^(Usenet collector)?\(aangemeld.+\) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[2];
 		} //"Family Games-OUTLAWS.nfo" yEnc
-		if (preg_match('/^"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
@@ -3323,7 +3287,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //(Wondershare AllMyTube 3.8.0.4 + Patch) [01/12] - "Wondershare AllMyTube 3.8.0.4 + Patch.nfo" yEnc
-		if (preg_match('/^\(([\w+ .()-]{8,})\)[- ]{0,3}\[\d+\/\d+\][- ]{0,3}".+?' . $this->e1,
+		if (preg_match('/^\(([\w+ .()-]{8,})\)[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}".+?' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
@@ -3380,14 +3344,14 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //brothers-of-usenet.info/.net <<<Partner von SSL-News.info>>> - [11/17] - "Reload.Outdoor.Action.Target.Down.GERMAN-0x0007.vol003+004.PAR2" yEnc
-		if (preg_match('/\.net <<<Partner von SSL-News\.info>>> - \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/\.net <<<Partner von SSL-News\.info>>> - \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[162198]-[FULL]-[a.b.teevee]-[ MasterChef.Junior.S01E07.720p.HDTV.X264-DIMENSION ]-[09/54] - "masterchef.junior.107.720p-dimension.nfo" yEnc
-		if (preg_match('/\[[\d#]+\]-\[.+?\]-\[.+?\]-\[ (.+?) \][- ]\[\d+\/(\d+\])[ -]{0,3}("|#34;).+?/',
+		if (preg_match('/\[[\d#]+\]-\[.+?\]-\[.+?\]-\[ (.+?) \][- ]\[\d+\/(\d+\])[-_\s]{0,3}("|#34;).+?/',
 					   $this->subject,
 					   $match)
 		) {
@@ -3399,20 +3363,20 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //"Mad.Men.S06E11.HDTV.x264-2HD.par2" yEnc
-		if (preg_match('/^"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //"Marvels.Agents.of.S.H.I.E.L.D.S01E07.HDTV.XviD-FUM.avi.nfo" [09/16] yEnc
-		if (preg_match('/^"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   '[ _-]{0,3}\[\d+\/(\d+\])[ _-]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(????) [03/20] - "Weblinger - The.Haunted.House.Mysteries.v1.0-ZEKE.part01.rar" yEnc
-		if (preg_match('/^\(\?+\) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\?+\) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -3424,15 +3388,15 @@ class ReleaseCleaning
 		//(01/11) "Microsoft Games for Windows 8 v1.2.par2" - 189,87 MB - [REPOST] yEnc
 		//(01/24) "ExBrULlNjyRPMdxqSlJKEtAYSncStZs3.nfo" - 3.96 kB - 404.55 MB - yEnc
 		//(01/44) - - "Wii_2688_R_Knorloading.par2" - 1,81 GB - yEnc
-		if (preg_match('/^\(\d+\/\d+\)( - Description)?[-_ ]{0,5}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\d+\/\d+\)( - Description)?[-_ ]{0,5}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 .
-					   '( - \d+([.,]\d+ [kKmMgG])?[bB])? - \d+([.,]\d+ [kKmMgG])?[bB][-_ ]{0,3}(\[REPOST\] )?yEnc$/',
+					   '( - \d+([.,]\d+ [kKmMgG])?[bB])? - \d+([.,]\d+ [kKmMgG])?[bB][-_\s]{0,3}(\[REPOST\] )?yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[2];
 		} //(01/59) - [Lords-of-Usenet] presents Sins.of.a.Solar.Empire.Rebellion.Forbidden.Worlds-RELOADED - "rld-soaserfw.nfo" - yEnc
-		if (preg_match('/^\(\d+\/\d+\) - \[Lords-of-Usenet\] presents (.+?)[-_ ]{0,3}".+?' .
+		if (preg_match('/^\(\d+\/\d+\) - \[Lords-of-Usenet\] presents (.+?)[-_\s]{0,3}".+?' .
 					   $this->e0 . ' - yEnc$/',
 					   $this->subject,
 					   $match)
@@ -3441,21 +3405,21 @@ class ReleaseCleaning
 		}
 		//(19/28) "sr-joedanger.rar" - 816,05 MB -Joe.Danger-SKIDROW yEnc
 		//(39/40) "flt-ts31554.vol061+57.PAR2" - 1,43 GB -The_Sims_3_v1.55.4-FLTDOX yEnc
-		if (preg_match('/^\(\d+\/(\d+\))[-_ ]{0,3}".+?' . $this->e0 .
+		if (preg_match('/^\(\d+\/(\d+\))[-_\s]{0,3}".+?' . $this->e0 .
 					   ' - \d+([.,]\d+ [kKmMgG])?[bB] -([a-zA-Z0-9-_\.]+) yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[8];
 		} //[02/17] - "Castle.Of.Illusion.Starring.Mickey.Mouse.PSN.PS3-DUPLEX.nfo" yEnc
-		if (preg_match('/^[\(\[]\d+\/\d+[\)\]][-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^[\(\[]\d+\/\d+[\)\]][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[PROPER] FIFA.14.PAL.XBOX360-iNSOMNi [008/100]- "ins-fifa14pal.r05" yEnc
-		if (preg_match('/^\[PROPER\] ([a-zA-Z0-9-_\.]+) [\(\[]\d+\/\d+[\)\]][-_ ]{0,3}".+?' .
+		if (preg_match('/^\[PROPER\] ([a-zA-Z0-9-_\.]+) [\(\[]\d+\/\d+[\)\]][-_\s]{0,3}".+?' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -3513,13 +3477,13 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //( Overlord II RELOADED ) - [013/112] - "rld-olii.part001.rar" yEnc
-		if (preg_match('/^\( ([\w. -]{8,}) \)[-_ ]{0,3}\[\d+\/(\d+\]) - ".+?' . $this->e1,
+		if (preg_match('/^\( ([\w. -]{8,}) \)[-_\s]{0,3}\[\d+\/(\d+\]) - ".+?' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Baku.No.JAP.Working.PSP-PaL - [1/7] - "Baku.No.JAP.Working.PSP-PaL.rar" yEnc
-		if (preg_match('/^([a-zA-Z0-9 -\._]+) - \[\d+\/(\d+\])[-_ ]{0,3}".+?' . $this->e1,
+		if (preg_match('/^([a-zA-Z0-9 -\._]+) - \[\d+\/(\d+\])[-_\s]{0,3}".+?' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
@@ -3541,14 +3505,14 @@ class ReleaseCleaning
 		}
 		//[NEW DOX] The.King.of.Fighters.XIII.Update.v1.1c-RELOADED [1/6] - "The.King.of.Fighters.XIII.Update.v1.1c-RELOADED.par2" yEnc
 		//[NEW DOX] Crysis.3.Crackfix.3.INTERNAL-RELOADED [00/12] ".nzb"  yEnc
-		if (preg_match('/^\[NEW DOX\][ _-]{0,3}(.+?)[ _-]{0,3}\[\d+\/\d+\][ _-]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\[NEW DOX\][ _-]{0,3}(.+?)[ _-]{0,3}\[\d+\/\d+\][ _-]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[NEW DOX] Minecraft.1.6.2.Installer.Updated.Server.List  - "Minecraft 1 6 2 Cracked Installer Updater Serverlist.nfo" - yEnc
-		if (preg_match('/^\[NEW DOX\][ _-]{0,3}(.+?)[ _-]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\[NEW DOX\][ _-]{0,3}(.+?)[ _-]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -3579,8 +3543,8 @@ class ReleaseCleaning
 		if (preg_match('/^\[([a-zA-Z0-9-\._ ]+)\]- ".+?' . $this->e1, $this->subject, $match)) {
 			return $match[1];
 		} //[OLD DOX] (0001/2018) - "18.Wheels.of.Steel.American.Long.Haul.CHEAT.CODES-RETARDS.7z" - 1,44 GB - yEnc
-		if (preg_match('/^\[OLD DOX\][ _-]{0,3}\(\d+\/\d+\)[ _-]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
-					   $this->e0 . '[-_ ]{0,3}\d+[,.]\d+ [mMkKgG][bB][-_ ]{0,3}yEnc$/',
+		if (preg_match('/^\[OLD DOX\][ _-]{0,3}\(\d+\/\d+\)[ _-]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+					   $this->e0 . '[-_\s]{0,3}\d+[,.]\d+ [mMkKgG][bB][-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -3654,13 +3618,13 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //[11614]-[#a.b.g.wii@efnet]-[ EA.Sports.Active.NFL.Training.Camp.USA.WII-ProCiSiON ]-[01/95] - "xxx-nflt.nfo" yEnc
-		if (preg_match('/\[[\d#]+\]-\[.+?\]-\[ (.+?) \][- ]\[\d+\/\d+\][ -]{0,3}".+?" yEnc$/',
+		if (preg_match('/\[[\d#]+\]-\[.+?\]-\[ (.+?) \][- ]\[\d+\/\d+\][-_\s]{0,3}".+?" yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[8524]-[#a.b.g.wii@EFNet]-[FULL]-[Fantastic_Four_Rise_Of_The_Silver_Surfer_NTSC_Wii-VORTEX]-[001/104] - "vortex-ffrotss.wii.nfo" yEnc
-		if (preg_match('/\[[\d#]+\]-\[.+?\]-\[.+?\]-\[(.+?)\][- ]\[\d+\/\d+\][ -]{0,3}".+?" yEnc$/',
+		if (preg_match('/\[[\d#]+\]-\[.+?\]-\[.+?\]-\[(.+?)\][- ]\[\d+\/\d+\][-_\s]{0,3}".+?" yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -3776,37 +3740,37 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //(01/15) "Mass.Effect.3.Collectors.Edition.DLC.JTAG-XPG.par2" - 747.42 MB - yEnc
-		if (preg_match('/^[\[\(]\d+\/(\d+[\)\]])[-_ ]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
+		if (preg_match('/^[\[\(]\d+\/(\d+[\)\]])[-_\s]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[2];
 		} //(????) [00/28] - "Farming.Simulator.XBOX360.JTAG.RGH.nzb" yEnc
-		if (preg_match('/^\(.+\)[-_ ]{0,3}[\(\[]\d+\/(\d+[\)\]])[-_ ]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
+		if (preg_match('/^\(.+\)[-_\s]{0,3}[\(\[]\d+\/(\d+[\)\]])[-_\s]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[2];
 		} //(14227) BloodRayne_Betrayal_XBLA_XBOX360-XBLAplus [01/25] - "xp-blobe.nfo" yEnc
-		if (preg_match('/^\(\d+\)[-_ ]{0,3}(.+)[-_ ]{0,3}[\(\[]\d+\/(\d+[\)\]])[-_ ]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
+		if (preg_match('/^\(\d+\)[-_\s]{0,3}(.+)[-_\s]{0,3}[\(\[]\d+\/(\d+[\)\]])[-_\s]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[2];
 		} //(14811) [#alt.binaries.games.xbox360@EFNet]-[AMY_XBLA_XBOX360-XBLAplus]-[]-  "xp-amyxb.nfo"  yEnc
-		if (preg_match('/^(\(\d+\))[-_ ]{0,3}\[.+EFNet\][-_ ]{0,3}\[(.+)\][-_ ]{0,3}\[\][-_ ]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
+		if (preg_match('/^(\(\d+\))[-_\s]{0,3}\[.+EFNet\][-_\s]{0,3}\[(.+)\][-_\s]{0,3}\[\][-_\s]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[2];
 		} //(14872) [#alt.binaries.games.xbox360@EFNet]-[BlazBlue_CS_System_Version_Data_Pack_1.03-DLC_XBOX360]-  "xp-bbcssvdp103.nfo"  yEnc
-		if (preg_match('/^(\(\d+\))[-_ ]{0,3}\[.+EFNet\][-_ ]{0,3}\[(.+)\][-_ ]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
+		if (preg_match('/^(\(\d+\))[-_\s]{0,3}\[.+EFNet\][-_\s]{0,3}\[(.+)\][-_\s]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[2];
 		} //(44/82) - Fuzion_Frenzy_2_REPACK-USA-XBOX360-DAGGER - "ff2r-dgr.041" - 6.84 GB - yEnc
-		if (preg_match('/^\(\d+\/(\d+\))[-_ ]{0,3}(.+?)[-_ ]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
+		if (preg_match('/^\(\d+\/(\d+\))[-_\s]{0,3}(.+?)[-_\s]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -3815,7 +3779,7 @@ class ReleaseCleaning
 		//[  14047  ] - [ ABGX@EFNET ] - [  Rock.Band.Pearl.Jam.Ten.DLC.XBOX360-FYK ALL DLC    ] -  (01/46) "rbpjtdlc-fyk.nfo" - 526,92 MB - yEnc
 		//[  14046  ] - [ ABGX@EFNET ] - [  Rock_Band-2011-07-19-DLC_XBOX360-XBLAplus ALL   ] -  (01/12) "xp-rb-2011-07-19.nfo" - 198,70 MB - yEnc
 		//[ 14102 ] -[ ABGX.NET ] - [ F1.2010.XBOX360-COMPLEX NTSC DVD9  ] -  (01/79) "cpx-f12010.nfo" - 6,57 GB - yEnc
-		if (preg_match('/^\[[-_ ]{0,3}(\d+)[-_ ]{0,3}\][-_ ]{0,3}\[ ABGX.+\][-_ ]{0,3}\[[-_ ]{0,3}(.+)[-_ ]{0,4}\][-_ ]{0,4}\(\d+\/\d+\)[-_ ]{0,3}"(.+?)(\.part\d*|\.rar)?(\.vol.+\(\d+\\d+\)"|\.[A-Za-z0-9]{2,4}")[-_ ]{0,3}\d+[,.]\d+ [mMkKgG][bB][-_ ]{0,3}yEnc$/i',
+		if (preg_match('/^\[[-_\s]{0,3}(\d+)[-_\s]{0,3}\][-_\s]{0,3}\[ ABGX.+\][-_\s]{0,3}\[[-_\s]{0,3}(.+)[-_ ]{0,4}\][-_ ]{0,4}\(\d+\/\d+\)[-_\s]{0,3}"(.+?)(\.part\d*|\.rar)?(\.vol.+\(\d+\\d+\)"|\.[A-Za-z0-9]{2,4}")[-_\s]{0,3}\d+[,.]\d+ [mMkKgG][bB][-_\s]{0,3}yEnc$/i',
 					   $this->subject,
 					   $match)
 		) {
@@ -3823,13 +3787,13 @@ class ReleaseCleaning
 		}
 		//[ 17956]-[FULL]-[ abgx360EFNet ]-[ F1_2012_JPN_XBOX360-Caravan ]-[78/99] - "cvn-f12012j.r75" yEnc
 		//[ 17827]-[FULL]-[ #abgx360@EFNet ]-[ Capcom_Arcade_Cabinet_XBLA_XBOX360-XBLAplus ]-[01/34] - "xp-capac.nfo" yEnc
-		if (preg_match('/^\[[-_ ]{0,3}(\d+)[-_ ]{0,3}\][-_ ]{0,3}\[FULL\][-_ ]{0,3}\[ (abgx360EFNet|#abgx360@EFNet) \][-_ ]{0,3}\[[-_ ]{0,3}(.+)[-_ ]{0,3}\][-_ ]{0,3}\[\d+\/\d+\][-_ ]{0,3}"(.+?)(\.part\d*|\.rar)?(\.vol.+\(\d+\\d+\)"|\.[A-Za-z0-9]{2,4}")[-_ ]{0,3}yEnc$/i',
+		if (preg_match('/^\[[-_\s]{0,3}(\d+)[-_\s]{0,3}\][-_\s]{0,3}\[FULL\][-_\s]{0,3}\[ (abgx360EFNet|#abgx360@EFNet) \][-_\s]{0,3}\[[-_\s]{0,3}(.+)[-_\s]{0,3}\][-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}"(.+?)(\.part\d*|\.rar)?(\.vol.+\(\d+\\d+\)"|\.[A-Za-z0-9]{2,4}")[-_\s]{0,3}yEnc$/i',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[3];
 		} //[ GAMERZZ ] - [ Grand.Theft.Auto.V.XBOX360-COMPLEX ] [159/170] - "complex-gta5.vol000+18.par2" yEnc
-		if (preg_match('/^\[[-_ ]{0,3}GAMERZZ[-_ ]{0,3}\][-_ ]{0,3}\[[-_ ]{0,3}(.+)[-_ ]{0,3}\][-_ ]{0,3}\[\d+\/(\d+\])[-_ ]{0,3}"(.+?)(\.part\d*|\.rar)?(\.vol.+\(\d+\\d+\)"|\.[A-Za-z0-9]{2,4}")[-_ ]{0,3}yEnc$/i',
+		if (preg_match('/^\[[-_\s]{0,3}GAMERZZ[-_\s]{0,3}\][-_\s]{0,3}\[[-_\s]{0,3}(.+)[-_\s]{0,3}\][-_\s]{0,3}\[\d+\/(\d+\])[-_\s]{0,3}"(.+?)(\.part\d*|\.rar)?(\.vol.+\(\d+\\d+\)"|\.[A-Za-z0-9]{2,4}")[-_\s]{0,3}yEnc$/i',
 					   $this->subject,
 					   $match)
 		) {
@@ -3888,7 +3852,7 @@ class ReleaseCleaning
 		//[ TrollHD ] - [ 0270/2688 ] - "Tour De France 2013 1080i HDTV MPA 2.0 MPEG2-TrollHD.part0269.rar" yEnc
 		//[17/48] - "Oprah's Next Chapter S02E37 Lindsay Lohan 1080i HDTV DD5.1 MPEG2-TrollHD.part16.rar" yEnc
 		//[02/29] - "Fox Sports 1 on 1 - Tom Brady 720p HDTV DD5.1 MPEG2-DON.part01.rar" yEnc
-		if (preg_match('/^(\[ TrollHD \] - )?[\[\(][-_ ]{0,3}\d+\/(\d+[-_ ]{0,3}[\)\]]) - "(.+?) MPEG2-(DON|TrollHD)\..+?" yEnc$/',
+		if (preg_match('/^(\[ TrollHD \] - )?[\[\(][-_\s]{0,3}\d+\/(\d+[-_\s]{0,3}[\)\]]) - "(.+?) MPEG2-(DON|TrollHD)\..+?" yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -3915,56 +3879,56 @@ class ReleaseCleaning
 		if (preg_match('/^NBC.+\[\d+\/\d+\] - "(.+)\.vol.+" yEnc$/', $this->subject, $match)) {
 			return $match[1];
 		} //(Newseros.com) Cueva 1080p [02/42] - "idonhom-mirc.part01.rar" yEnc
-		if (preg_match('/\(Newseros\.com\) .+? \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/\(Newseros\.com\) .+? \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //It's.Always.Sunny.in.Philadelphia.S07E09.The.Gang.Gets.Trapped.BluRay.1080p.Remux.AVC.DTSHD-MA.5.1-PtZ-BeyondHD.me [047/123] - "It's.Always.Sunny.in.Philadelphia.S07E09.The.Gang.Gets.Trapped.BluRay.1080p.Remux.AVC.DTSHD-MA.5.1-PtZ-BeyondHD.me.r44" yEnc
-		if (preg_match('/^.+S\d+E\d+.+\[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^.+S\d+E\d+.+\[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(Alpha.House.S01E08.WEBRip.1080p.x264.DD5.1-Absinth) [14/24] - "Alpha.House.S01E08.WEBRip.1080p.x264.DD5.1-Absinth.part13.rar" yEnc
-		if (preg_match('/^\(.+\) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(.+\) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(024/264) "Enf.S04E02.G.D.H.X-M.vol51+46.PAR2" - 8,27 GB -Enf.S04.G.D.H.X yEnc
-		if (preg_match('/^\(\d+\/\d+\) "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^\(\d+\/\d+\) "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   ' - \d+[.,]\d+ [kKmMgG][bB] .+yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[01/10] - "Wondershare.Video.Converter.Ultimate.v6.7.1.0.Multilanguage.par2" - 45,44 MB yEnc
-		if (preg_match('/^\[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^\[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   '.+yEnc$/i',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(01/60) "Micro Monsters With David Attenborough 2013 3D HSBS DTS5.1 EP5 - Family-3D4U.par2" yEnc
-		if (preg_match('/^[\(\[]\d+\/\d+[\)\]] "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^[\(\[]\d+\/\d+[\)\]] "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[ TrollHD ] - [ 01/32 ] - "Demi Lovato - 2vLive Concert 2013-10-28 PROPER [see NFO] 720p WEB-CAP AAC2.0 H.264-TrollHD.nfo" yEnc
-		if (preg_match('/^\[ TrollHD \] - [\(\[] \d+\/\d+ [\)\]] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\[ TrollHD \] - [\(\[] \d+\/\d+ [\)\]] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[00245] [ PPKORE ] [44/57] - "The L Word S04E08 1080p WEB-DL DD5 1 H 264-PPKORE.vol014+14.par2" yEnc
-		if (preg_match('/\[\d+\][- ]{0,3}\[ PPKORE \][- ]{0,3}\[\d+\/\d+\][- ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/\[\d+\][-_\s]{0,3}\[ PPKORE \][-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -3977,20 +3941,20 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //Bad.Penny.2013.720p.HDTV.x264-GBL "bad.penny.2013.720p.hdtv.x264-gbl.par2" yEnc
-		if (preg_match('/^[\w-\.]+ "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/^[\w-\.]+ "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //The.Colbert.Report.2013.07.29.The.Lumineers.WEBRip.AAC2.0.H.264-DCK [01/11] - "The.Colbert.Report.2013.07.29.The.Lumineers.WEBRip.AAC2.0.H.264-DCK.mp4"  yEnc
-		if (preg_match('/^[\w-\. ]+\[\d+\/\d+\][- ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^[\w-\. ]+\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //"8 Wenn ich einmal gross bin .mp3" Koelschefetz postet.Die Filue -Immer Wigger  yEnc
-		if (preg_match('/^"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 . '.+yEnc$/',
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 . '.+yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -3998,14 +3962,14 @@ class ReleaseCleaning
 		} //Elysium  (AVCHD)  2013  (720p)  Untouched  (Postet by Edition50)    [01/169] - "file.xyz" yEnc
 		//Frozen Ground  (AVCHD)  2013  (720p)  postet by Edition50 - [01/158] - "file.xyz" yEnc - [000/158] - "FROZEN GROUND  (AVCHD)  2013  (720p)  Untouched.nzb" yEnc
 		//Cabin in the Woods  (AVCHD)  2013  (720p)  Postet by (Edition50) [01/159] - "file.xyz" yEnc
-		if (preg_match('/^(.+?)[- ]{0,3}\(?[Pp]ostet +by +\(?Edition50\)?[- ]{0,4}\[\d+\/\d+\][- ]{0,3}".+?' .
+		if (preg_match('/^(.+?)[-_\s]{0,3}\(?[Pp]ostet +by +\(?Edition50\)?[- ]{0,4}\[\d+\/\d+\][-_\s]{0,3}".+?' .
 					   $this->e0 . '.+yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Dark Zero Thirty (2013)  AVCHD (720p)  Untouched [01/151] - "ZERO DARK THIRTY  (2013)  AVCHD  720p)  Untouched.par2" yEnc
-		if (preg_match('/^(.+?)[- ]{0,3}[\(\[]\d+\/\d+[\)\]][- ]{0,3}".+?' . $this->e1,
+		if (preg_match('/^(.+?)[-_\s]{0,3}[\(\[]\d+\/\d+[\)\]][-_\s]{0,3}".+?' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
@@ -4020,7 +3984,7 @@ class ReleaseCleaning
 	{
 		//(23/36) "Love.Is.In.The.Meadow.S08E08.HDTV.720p.x264.ac3.part22.rar" - 2,80 GB - yEnc
 		//AMEa(01/49) - AME- "Arbitrage 2013 DTS HD MSTR 5.1 MKV h264 1080p German by AME.nfo" - 7,87 GB - yEnc
-		if (preg_match('/^(AMEa)?\(\d+\/\d+\)( - AME-)? "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^(AMEa)?\(\d+\/\d+\)( - AME-)? "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . ' - \d+[,.]\d+ [mMkKgG][bB] - yEnc$/',
 					   $this->subject,
 					   $match)
@@ -4044,14 +4008,14 @@ class ReleaseCleaning
 		//Season of the Witch 2011 - "Season.of.the.Witch.2011.1080p.BluRay.DTS.x264-CyTSuNee.part005.rar" yEnc
 		//Film - "Alien Antology DC Special Edition 1979-1997 1080p GER HUN HighCode.part001.rar" yEnc
 		//Austex Memorandum   "Austex Memorandum 700877270640835.z17" yEnc
-		if (preg_match('/^[A-Z][a-zA-Z0-9 ]+ [- ] "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^[A-Z][a-zA-Z0-9 ]+ [- ] "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //"Ninja-Revenge Will Rise UC-Pittis AVCHD-ADD.English.dtsHR.nfo.txt" (01/55) yEnc
-		if (preg_match('/^"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   ' \(\d+\/\d+\) yEnc$/',
 					   $this->subject,
 					   $match)
@@ -4070,7 +4034,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //[8370]-[#alt.binaries.hdtv.x264@EFNet]-[Mr.Brooks.2007.720p.BluRay.DTS.x264-ESiR]-[00/86] "Mr.Brooks.2007.720p.BluRay.DTS.x264-ESiR.nzb" yEnc
-		if (preg_match('/^\[\d+\][ -]\[#.+\][ -]\[(.+)\][ -]\[\d+\/\d+\][ -]{0,3}("|#34;).+("|#34;) yEnc$/',
+		if (preg_match('/^\[\d+\][ -]\[#.+\][ -]\[(.+)\][ -]\[\d+\/\d+\][-_\s]{0,3}("|#34;).+("|#34;) yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -4112,13 +4076,13 @@ class ReleaseCleaning
 		) {
 			return $match[2];
 		} //-4y (PW)   [ usenet-4all.info - powered by ssl.news -] [12,40 GB] [49/57] "43842168c542ed3.vol000+01.par2" yEnc
-		if (preg_match('/^.+?\[(\d+[.,]\d+ [kKmMgG][bB])\] \[\d+\/(\d+\][-_ ]{0,3}.+?)[-_ ]{0,3}"(.+?)(\.part\d*|\.rar|\.pdf)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/',
+		if (preg_match('/^.+?\[(\d+[.,]\d+ [kKmMgG][bB])\] \[\d+\/(\d+\][-_\s]{0,3}.+?)[-_\s]{0,3}"(.+?)(\.part\d*|\.rar|\.pdf)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|") yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[3];
 		} //!MR [01/49] - "Persuasion 2007.par2" EN MKV yEnc
-		if (preg_match('/.*[\(\[]\d+\/(\d+[\)\]])[-_ ]{0,3}("|#34;)(.+?)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4})("|#34;)(.+?)yEnc$/',
+		if (preg_match('/.*[\(\[]\d+\/(\d+[\)\]])[-_\s]{0,3}("|#34;)(.+?)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4})("|#34;)(.+?)yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -4163,7 +4127,7 @@ class ReleaseCleaning
 		}
 		//[03/61] - "www.realmom.info - xvid - xf-fatalmovecd1.r00" - 773,34 MB - yEnc
 		//[40/54] - "Mankind.Die.Geschichte.der.Menschheit.S01E12.Das.Ende.der.Reise.GERMAN.DUBBED.DL.DOKU.1080p.BluRay.x264-TVP.part39.rar" - 4,79 GB yEnc
-		if (preg_match('/^\[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^\[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   ' - \d+[,.]\d+ [mMkKgG][bB]( -)? yEnc$/',
 					   $this->subject,
 					   $match)
@@ -4179,7 +4143,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //www.usenet-town.com [Sponsored by Astinews] (103/103) "Intimate.Enemies.German.2007.AC3.[passwort protect].vol60+21.PAR2" yEnc
-		if (preg_match('/^www\..+? \[Sponsored.+?\] \(\d+\/\d+\) "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^www\..+? \[Sponsored.+?\] \(\d+\/\d+\) "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -4192,14 +4156,14 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //[ TiMnZb ] [ www.binnfo.in ] [REPOST] [01/46] - "Columbo - S07 E05 - Des sourires et des armes.nfo" yEnc
-		if (preg_match('/^\[ .+? \] \[ www\..+? \]( \[.+?\])? \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\[ .+? \] \[ www\..+? \]( \[.+?\])? \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[2];
 		} //< "Burn.Notice.S04E17.Out.of.the.Fire.GERMAN.DUBBED.DL.720p.WebHD.x264-TVP.par2" >< 01/17 (1.54 GB) >< 11.62 kB > yEnc
-		if (preg_match('/^< "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^< "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   ' >< \d+\/\d+ \(.+?\) >< .+? > yEnc$/',
 					   $this->subject,
 					   $match)
@@ -4242,25 +4206,25 @@ class ReleaseCleaning
 	public function inner_sanctum()
 	{
 		//[ nEwZ[NZB].iNFO - [ Zed--The_Invitation-WEB-2010-WUS ] - File [12/13]: "08-zed--the_river.mp3" yEnc
-		if (preg_match('/^\[ nEwZ\[NZB\]\.iNFO( \])?[-_ ]{0,3}\[ (\d+[-_])?(.+?) \][-_ ]{0,3}(File )?[\(\[]\d+\/(\d+[\)\]]): "(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?(yEnc)?$/',
+		if (preg_match('/^\[ nEwZ\[NZB\]\.iNFO( \])?[-_\s]{0,3}\[ (\d+[-_])?(.+?) \][-_\s]{0,3}(File )?[\(\[]\d+\/(\d+[\)\]]): "(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?(yEnc)?$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[3];
 		} //nEwZ[NZB].iNFO - VA-Universal_Music_Sampler_07_February-PROMO-CDR-FLAC-2013-WRE - File [6/9]: "01-alesso-years_(hard_rock_sofa_remix).flac"
-		if (preg_match('/^nEwZ\[NZB\]\.iNFO[-_ ]{0,3} (.+?) [-_ ]{0,3}(File )?[\(\[]\d+\/(\d+[\)\]]): "(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}")$/',
+		if (preg_match('/^nEwZ\[NZB\]\.iNFO[-_\s]{0,3} (.+?) [-_\s]{0,3}(File )?[\(\[]\d+\/(\d+[\)\]]): "(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}")$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //..:[DoAsYouLike]:..   1,11 GB   "KGMmDSSHBWnxV4g7Vbq5.part01.rar"   47,68 MB yEnc
-		if (preg_match('/.+[DoAsYouLike\].?[ _-]{0,3}\d+[,.]\d+ [mMkKgG][bB][-_ ]{0,3}"(.+?)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}")[ _-]{0,3}\d+([,.]\d+ [mMkKgG])? [bB][-_ ]{0,3}yEnc$/',
+		if (preg_match('/.+[DoAsYouLike\].?[ _-]{0,3}\d+[,.]\d+ [mMkKgG][bB][-_\s]{0,3}"(.+?)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}")[ _-]{0,3}\d+([,.]\d+ [mMkKgG])? [bB][-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(01/10) "LeeDrOiD HD V3.3.2-Port-R4-A2SD.par2" - 357.92 MB - yEnc
-		if (preg_match('/^\(\d+\/\d+\)( - Description -)? "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\d+\/\d+\)( - Description -)? "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 .
 					   '( - \d+[,.]\d+ [mMkKgG][bB])? - \d+[,.]\d+ [mMkKgG][bB] - yEnc$/',
 					   $this->subject,
@@ -4268,7 +4232,7 @@ class ReleaseCleaning
 		) {
 			return $match[2];
 		} //"Ashlar-Vellum Graphite v8 2 2 WinAll Incl Keygen-CRD.par2" yEnc
-		if (preg_match('/^"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
@@ -4280,7 +4244,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //(17/41) - "3-8139g0m530.017" yEnc
-		if (preg_match('/^[\[\(]\d+( of |\/)(\d+[\]\)])[-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^[\[\(]\d+( of |\/)(\d+[\]\)])[-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -4305,7 +4269,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //Big.Brother.IL.S05E01.WS.PDTV.XviD-Silver007 [1/1] - "Big.Brother.IL.S05E01.WS.PDTV.XviD-Silver007.avi" yEnc
-		if (preg_match('/^[a-zA-Z0-9._-]+ \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^[a-zA-Z0-9._-]+ \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match) && !preg_match('/[a-fA-F0-9]{32}/', $this->subject)
@@ -4324,7 +4288,7 @@ class ReleaseCleaning
 	public function mojo()
 	{
 		//[17/61] - "www.realmom.info - xvid - xf-devilstomb.r14" - 773,11 MB - yEnc
-		if (preg_match('/^\[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^\[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   ' - \d+[,.]\d+ [mMkKgG][bB] - yEnc$/',
 					   $this->subject,
 					   $match)
@@ -4345,28 +4309,28 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //brothers-of-usenet.info/.net <<<Partner von SSL-News.info>>> - [01/26] - "Be.Cool.German.AC3.HDRip.x264-FuN.par2" yEnc
-		if (preg_match('/^\[Art-of-Usenet\] ([a-fA-F0-9]+) \[\d+\/\d+\][-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\[Art-of-Usenet\] ([a-fA-F0-9]+) \[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[2];
 		} //(????) [03/20] - "Weblinger - The.Haunted.House.Mysteries.v1.0-ZEKE.part01.rar" yEnc
-		if (preg_match('/^\(\?+\) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\?+\) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //ShesGonnaSquirt.12.12.13.Sindy.Lange.My.Knight.In.Squirting.Armor.XXX.1080p.x264 - [1/1] - "ShesGonnaSquirt.12.12.13.Sindy.Lange.My.Knight.In.Squirting.Armor.XXX.1080p.x264.rar" yEnc
-		if (preg_match('/[\w.-]{8,}[- ]{0,3}\[\d+\/\d+\][- ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/[\w.-]{8,}[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[Art-of-Usenet] dea75eb65e65c56197d749d57919806d [01/19] - "dea75eb65e65c56197d749d57919806d.par2" yEnc
-		if (preg_match('/^\[Art-of-Usenet\] .+? \[\d+\/\d+\][-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\[Art-of-Usenet\] .+? \[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -4414,7 +4378,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //(01/29) - Description - "Revolution.2012.S01E06.HDTV.x264-LOL.nfo" - 317.24 MB - yEnc
-		if (preg_match('/^\(\d+\/(\d+\))[ _-]{0,3}Description[ _-]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\d+\/(\d+\))[ _-]{0,3}Description[ _-]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . '[ _-]{0,3}\d+[.,]\d+ [kKmMgG][bB][ _-]{0,3}yEnc$/i',
 					   $this->subject,
 					   $match)
@@ -4428,7 +4392,7 @@ class ReleaseCleaning
 		) {
 			return $match[2];
 		} //[002/161] - "Rayman_Legends_USA_PS3-CLANDESTiNE.nfo" yEnc
-		if (preg_match('/^\[\d+\/\d+\][ _-]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\[\d+\/\d+\][ _-]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -4444,33 +4408,33 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //happy birthday brothers - brothers-of-usenet.info&net-empfehlen-ssl-news - 2brokegirls-s03e12-Die.franzoesische.Versuchung.48 - [01/12] - "2brokegirls-s03e12-Die.franzoesische.Versuchung.480p.par2" yEnc
-		if (preg_match('/brothers-of-usenet\.info&net-empfehlen-ssl-news.+\[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/brothers-of-usenet\.info&net-empfehlen-ssl-news.+\[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Eragon postet   Pfeil   S01E18   german                      [01/19] - "Pfeil S01E18.par2" yEnc
-		if (preg_match('/^Eragon postet.+\[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^Eragon postet.+\[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //"[Fansub-Resistance] Naruto Shippuuden 345 xvid (848x480).vol25+15.PAR2" yEnc
-		if (preg_match('/^"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //"Die.Sopranos.S05E02.German.AVC-TVS.vol063+60.par2" (repack180414) yEnc
-		if (preg_match('/^"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 . '.+yEnc$/',
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 . '.+yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //LOL.3E05.720p.WEB.DL.nHD.x264-NhaNc3 [64/71] - "LOL.3E05.720p.WEB.DL.nHD.x264-NhaNc3.sfv" yEnc
-		if (preg_match('/^([\w.-]{8,})[- ]{0,3}\[\d+\/(\d+\])[- ]{0,3}".+?' . $this->e1,
+		if (preg_match('/^([\w.-]{8,})[-_\s]{0,3}\[\d+\/(\d+\])[-_\s]{0,3}".+?' . $this->e1,
 					   $this->subject,
 					   $match)
 			&& !preg_match('/^(\d{4,6})-\d{1}\[/', $this->subject)
@@ -4483,7 +4447,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //(21/27) - Description Lava.Land.2013.3D.1080p.Bluray.HOU.X264.DL-zman - "Lava.Land.2013.3D.1080.HOU.DL-zman.part20.rar" - 8,85 GB - yEnc
-		if (preg_match('/^\(\d+\/\d+\)[- ]{0,3}Description ([\w.,& ()\[\]\'\`-]{8,}?)[- ]{0,3}".+?' .
+		if (preg_match('/^\(\d+\/\d+\)[-_\s]{0,3}Description ([\w.,& ()\[\]\'\`-]{8,}?)[-_\s]{0,3}".+?' .
 					   $this->e2,
 					   $this->subject,
 					   $match)
@@ -4491,21 +4455,21 @@ class ReleaseCleaning
 			return $match[1];
 		} //- "z7QxDdQ5Qs63v8B8.01" - 374,56 MB - yEnc
 		//- Description - "le gars et son arc 2x21.vol06+05.PAR2" - 273,04 MB - yEnc
-		if (preg_match('/^- (Description - )?"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^- (Description - )?"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e2,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[2];
 		} //::: Usejunkies.tk ::: - [11/15] - "Saitenfeuer - Kein Zurueck 2013.vol00+1.par2" - 116,42 MB yEnc
-		if (preg_match('/^.+Usejunkies\.tk.+\[\d+\/\d+\][- ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^.+Usejunkies\.tk.+\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e2,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //:.Usejunkies.tk.:---- - [4/8] - "MKTO - MKTO.vol00+5.par2" yEnc
-		if (preg_match('/^.+Usejunkies\.tk.+\[\d+\/\d+\][- ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^.+Usejunkies\.tk.+\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -4515,14 +4479,14 @@ class ReleaseCleaning
 		if (preg_match('/^"(.{8,}?)' . $this->e1, $this->subject, $match)) {
 			return $match[1];
 		} //(08/12) [ArtofUsenet] >>> www.art-of-use.net <<< "Alles Atze - S01E05 - Die Anatolische Fliege.vol01+02.par2" - 245,19 MB - yEnc
-		if (preg_match('/^\(\d+\/\d+\) \[ArtofUsenet\].+www\.art-of-use\.net.+"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\d+\/\d+\) \[ArtofUsenet\].+www\.art-of-use\.net.+"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e2,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(1/3) "Die drei Fragezeichen - Folge 162 - Der schreiende Nebel.rar" - 121,56 MB - yEnc
-		if (preg_match('/^\(\d+\/\d+\)[- ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\d+\/\d+\)[-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e2,
 					   $this->subject,
 					   $match)
@@ -4562,14 +4526,14 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //(????) [0/1] - "A.Good.Day.to.Die.Hard.2013.nzb" yEnc
-		if (preg_match('/^\(\?{4}\) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\?{4}\) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[xxxxx]-[#a.b.moovee@EFNet]-[ xxxxx ]-[02/66] - "tulob88.part01.rar" yEnc
-		if (preg_match('/^\[x+\]-\[.+?\]-\[ x+ \]-\[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\[x+\]-\[.+?\]-\[ x+ \]-\[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -4626,7 +4590,7 @@ class ReleaseCleaning
 		if (preg_match('/^\(T\.U\.F The real thing (.+?) T\.U\.F\)/', $this->subject, $match)) {
 			return $match[1];
 		} //(Ringside.The.Best.of.Mike.Tyson.DVDRip.x264.AC3-FCZ)[01/68] - "Ringside.The.Best.of.Mike.Tyson.DVDRip.1.of.2.x264.AC3-FCZ.nfo" yEnc
-		if (preg_match('/^\(([\w.-]+)\)\[\d+\/(\d+\])[- ]{0,3}".+?' . $this->e1,
+		if (preg_match('/^\(([\w.-]+)\)\[\d+\/(\d+\])[-_\s]{0,3}".+?' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
@@ -4664,21 +4628,21 @@ class ReleaseCleaning
 		if (preg_match('/^([a-z].+) .+\.(par2|nfo|rar|nzb)$/i', $this->subject, $match)) {
 			return $match[1];
 		} //(????) [1/1] - "The Secret Life of Walter Mitty 2013 CAM AAC x264-SSDD.mp4" yEnc
-		if (preg_match('/^\(\?+\) \[\d+\/\d+\][-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\?+\) \[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(001/114) - Description - "The.Chronicles.of.Riddick.2004.DC.BluRay.1080p.DTS.par2" - 10,50 GB - yEnc
-		if (preg_match('/^\(\d+\/\d+\)[-_ ]{0,3}Description[-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\d+\/\d+\)[-_\s]{0,3}Description[-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e2,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[00/56] - "The.Last.Days.On.Mars.720p.BluRay.x264-DR.nzb" yEnc
-		if (preg_match('/^\[\d+\/\d+\][-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -4692,26 +4656,26 @@ class ReleaseCleaning
 		) {
 			return $match[2];
 		} //- Description - "The.Legend.of.Hercules.2014.720p.BluRay.x264.YIFY.mp4.01" - 795,28 MB -  yEnc
-		if (preg_match('/^- Description - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
-					   '([- ]{0,3}\d+[.,]\d+ [kKmMgG][bB])[- ]{0,4}yEnc$/',
+		if (preg_match('/^- Description - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+					   '([-_\s]{0,3}\d+[.,]\d+ [kKmMgG][bB])[- ]{0,4}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Star.Trek.Into.Darkness.2013.3D.HOU.BDRip.1080p-FAGGOTS [431/432] - "stid3d.vol124+128.par2" yEnc
-		if (preg_match('/^([\w.()-]{8,}?)[- ]{0,3}\[\d+\/\d+\][- ]{0,3}".+?' . $this->e1,
+		if (preg_match('/^([\w.()-]{8,}?)[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}".+?' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(130/138) - Captain America The Winter Soldier 2014 NEW (FIXED) 720p CAM x264 Pimp4003 - "wXZ6LxFt.zip.130" - 2.02 GB - yEnc
-		if (preg_match('/^\(\d+\/\d+\)[- ]{0,3}([\w.() -]{8,}?\b)[- ]{0,3}".+?' . $this->e2,
+		if (preg_match('/^\(\d+\/\d+\)[-_\s]{0,3}([\w.() -]{8,}?\b)[-_\s]{0,3}".+?' . $this->e2,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //22.Jump.Street.2014.720p.BluRay.x264-tpU.vol000+01.PAR2 [73/84] - "22.Jump.Street.2014.720p.BluRay.x264-tpU.vol000+01.PAR2" yEnc
-		if (preg_match('/^.+\[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/^.+\[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
@@ -4725,33 +4689,33 @@ class ReleaseCleaning
 	public function movies_divx()
 	{
 		//(www.Thunder-News.org) >CD2< <Sponsored by Secretusenet> - "exvid-emma-cd2.par2" yEnc
-		if (preg_match('/^\(www\.Thunder-News\.org\) .+? - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(www\.Thunder-News\.org\) .+? - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Movieland Post Voor FTN - [01/43] - "movieland0560.par2" yEnc
-		if (preg_match('/^[a-zA-Z ]+Post Voor FTN - \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^[a-zA-Z ]+Post Voor FTN - \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Disney short films collection by mayhem masta"1923 - Alice's Wonderland.vol15+7.par2" yEnc
-		if (preg_match('/.+?by mayhem masta"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/.+?by mayhem masta"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(http://dream-of-usenet.info) - [01/43] - "Nicht.auflegen.2002.German.DL.AC3.BDRip.XviD-iNCEPTiON.nfo" yEnc
-		if (preg_match('/^\(.+usenet\.info\)[ -]{0,3}\[\d+\/\d+\][ -]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
+		if (preg_match('/^\(.+usenet\.info\)[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[######]-[FULL]-[#hdtv@LinkNet]-[Sesame.Street.S41E03.1080i.HDTV.DD5.1.MPEG2-TrollHD]-[00/51] - "Sesame Street S41E03 Chicken When It Comes to Thunderstorms 1080i HDTV DD5.1 MPEG2-TrollHD.nzb" yEnc
-		if (preg_match('/\[#]+\]-\[.+\]-\[.+\]-\[(.+)\][- ]\[\d+\/\d+\][ -]{0,3}".+" yEnc$/',
+		if (preg_match('/\[#]+\]-\[.+\]-\[.+\]-\[(.+)\][- ]\[\d+\/\d+\][-_\s]{0,3}".+" yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -4789,60 +4753,60 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //"The.Hudsucker.Proxy.1994.1080p.Blu-ray.Remux.AVC.DTS.HD.MA.2.0-KRaLiMaRKo"(127/132) "The.Hudsucker.Proxy.1994.1080p.Blu-ray.Remux.AVC.DTS.HD.MA.2.0-KRaLiMaRKo.vol379+20.par2" - 24.61 GB - yEnc
-		if (preg_match('/("|#34;)(.+)("|#34;)[-_ ]{0,3}[\(\[]\d+\/(\d+[\)\]])[-_ ]{0,3}("|#34;).+?(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4})("|#34;)[-_ ]{0,3}\d+[.,]\d+ [kKmMgG][bB][-_ ]{0,3}yEnc$/',
+		if (preg_match('/("|#34;)(.+)("|#34;)[-_\s]{0,3}[\(\[]\d+\/(\d+[\)\]])[-_\s]{0,3}("|#34;).+?(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4})("|#34;)[-_\s]{0,3}\d+[.,]\d+ [kKmMgG][bB][-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[2];
 		} //(Amour.2012.1080p.BluRay.x264-EbP)(002/337) "Amour.2012.1080p.BluRay.x264-EbP.part001.rar" - 16.58 GB - yEnc
-		if (preg_match('/^\([\w.-]+\)[\(\[]\d+\/\d+[\]\)] "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\([\w.-]+\)[\(\[]\d+\/\d+[\]\)] "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e2,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(La.pianiste.(aka.The.Piano.Teacher).(2001).720p.BluRay.AC3.x264-MandR) [085/101] - "La.pianiste.(aka.The.Piano.Teacher).(2001).720p.BluRay.AC3.x264-MandR.part084.rar" yEnc
-		if (preg_match('/^\([\w .()-]+\) [\(\[]\d+\/\d+[\]\)] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\([\w .()-]+\) [\(\[]\d+\/\d+[\]\)] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[00/56] - "The.Last.Days.On.Mars.720p.BluRay.x264-DR.nzb" yEnc
-		if (preg_match('/^\[\d+\/\d+\][-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //< Michael.Jackson.Bad.25.2012.720p.BluRay.x264-PHD > - "Michael.Jackson.Bad.25.2012.720p.BluRay.x264-PHD.par2" (01/64) yEnc
-		if (preg_match('/^< [\w.() -]+ > - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^< [\w.() -]+ > - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   ' \(\d+\/\d+\) yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //:Waga.Haha.no.Ki.2012.BluRay.720p.DTS.x264 - Chronicle.Of.My.Mother.2012 - [55/56] - "waha.720p.vol063+64.par2" yEnc
-		if (preg_match('/^:([\w.-]+)[- ]{0,3}[\w.-]+[- ]{0,3}\[\d+\/\d+\][- ]{0,3}".+?' . $this->e1,
+		if (preg_match('/^:([\w.-]+)[-_\s]{0,3}[\w.-]+[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}".+?' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //"Cat Ballou (1965) Multi-Dub AVC 480p.MKV.001" 01 of 11  yEnc
-		if (preg_match('/^"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
-					   ' \d+ of \d+[- ]{0,3}yEnc$/',
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+					   ' \d+ of \d+[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Fly.With.The.Gold.2012.720p.BluRay.x264-WiKi [03/73] - "wiki-fwtg.par2" yEnc
-		if (preg_match('/^([\w.-]+)[- ]{0,3}\[\d+\/(\d+\])[- ]{0,3}".+?' . $this->e1,
+		if (preg_match('/^([\w.-]+)[-_\s]{0,3}\[\d+\/(\d+\])[-_\s]{0,3}".+?' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Parker.2013.MULTi.720p.BluRay.x264-GAIA - "Parker.2013.MULTi.720p.BluRay.x264-GAIA.nfo" yEnc
-		if (preg_match('/^([\w.-]+)[- ]{0,3}".+?' . $this->e1, $this->subject, $match)) {
+		if (preg_match('/^([\w.-]+)[-_\s]{0,3}".+?' . $this->e1, $this->subject, $match)) {
 			return $match[1];
 		}
 		return array(
@@ -4853,7 +4817,7 @@ class ReleaseCleaning
 	public function mp3()
 	{
 		//"The Absence - Riders Of The Plague" [00/14] - "the_absence-riders_of_the_plague.nzb" yEnc
-		if (preg_match('/"([\w. -]{8,})"[-_ ]{0,3}[\(\[]\d+\/(\d+[\)\]])[-_ ]{0,3}".+' . $this->e1,
+		if (preg_match('/"([\w. -]{8,})"[-_\s]{0,3}[\(\[]\d+\/(\d+[\)\]])[-_\s]{0,3}".+' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
@@ -4861,169 +4825,169 @@ class ReleaseCleaning
 		}
 		//( Albert Cummings Albums 6x By Dready Niek (1999-2012) )  ( ** By Dready Niek ** ) [11/20] - "Albert Cummings Albums 6x By Dready Niek (1999-2012).part10.rar" yEnc
 		//( Fat Freddy's Drop - Blackbird (2013) -- By Dready Niek ) -- By Dready Niek ) [01/15] - "Fat Freddy's Drop - Blackbird (2013) -- By Dready Niek.par2" yEnc
-		if (preg_match('/\( ([\w. -]{8,}) \)[-_ ]{0,3}( |\().+\)[-_ ]{0,3}[\(\[]\d+\/(\d+[\)\]])[-_ ]{0,3}".+(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
+		if (preg_match('/\( ([\w. -]{8,}) \)[-_\s]{0,3}( |\().+\)[-_\s]{0,3}[\(\[]\d+\/(\d+[\)\]])[-_\s]{0,3}".+(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //<<<Old but Sold>>>  <<< >< >< "German Top 50 ODC - 12.08.2013.nfo" >< 02/33 (541,61 MB) >< 10,93 kB > yEnc
-		if (preg_match('/^.+Old but Sold.+>< "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^.+Old but Sold.+>< "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . ' >< \d+\/\d+ \(\d+[.,]\d+ [kKmMgG][bB]\).+ yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Musikjunkie-The.Voice.Of.Germany.2013.The.Best.of.Liveshows.4.CD.Box.Set.VBR [15/28]"voice.part13.rar" yEnc
-		if (preg_match('/^Musikjunkie-([\w. -]{8,})[- ]{0,3}\[\d+\/\d+\]".+?' . $this->e1,
+		if (preg_match('/^Musikjunkie-([\w. -]{8,})[-_\s]{0,3}\[\d+\/\d+\]".+?' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Metallica - Ride The Lightning    "01 - Fight Fire With Fire.mp3" yEnc
-		if (preg_match('/^([\w. -]{8,})[-_ ]{0,3}("|#34;)(.+?)' . $this->e1,
+		if (preg_match('/^([\w. -]{8,})[-_\s]{0,3}("|#34;)(.+?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //::: Usejunkies.tk ::: - [08/11] - "DJ Shog - DNA - HD 720p.vol00+1.par2" - 47,76 MB yEnc
-		if (preg_match('/^.+Usejunkies\.tk.+[- ]{0,3}\[\d+\/\d+\][- ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^.+Usejunkies\.tk.+[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e2,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //"AnyDVD 7.0.0.0.rar" poc  yEnc
-		if (preg_match('/^"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
-					   '[- ]{0,3}poc[- ]{0,3}yEnc$/',
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+					   '[-_\s]{0,3}poc[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //"A Produce & Loren Nerell - Intangible.nzb" yEnc
-		if (preg_match('/^"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(01/12) "Sunfly Hits April (2013) SF326 [Skytwohigh].par2" - 109.59 MB - yEnc
-		if (preg_match('/^\(\d+\/\d+\)[- ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\d+\/\d+\)[-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e2,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(01/15) - Description - "Goldene Schlager - Erinnerungen Folge 3.par2" - 126,08 MB - yEnc
-		if (preg_match('/^\(\d+\/\d+\)[- ]{0,3}Description[- ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\d+\/\d+\)[-_\s]{0,3}Description[-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e2,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(Musica - House&Dance - mix 1 - april 2014 1) [00/45] - "Musica - House&Dance mix 1 april.nzb" yEnc
-		if (preg_match('/^\(([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)\) \[\d+\/\d+\][- ]{0,3}".+?' .
+		if (preg_match('/^\(([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)\) \[\d+\/\d+\][-_\s]{0,3}".+?' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[04/17] - "Schlager.am.laufenden.Band.-.Vol.13.part02.rar" - 622,46 MB yEnc
-		if (preg_match('/^\[\d+\/\d+\][- ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e2,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //"Karate Andi - Pilsator Platin   2014.nfo.nfo Karate Andi - Pilsator Platin   2014 by PsyDealer  yEnc
-		if (preg_match('/^"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4}) [\w.,& ()\[\]\'\`-]{8,}?\b.?( by )?PsyDealer  yEnc$/',
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4}) [\w.,& ()\[\]\'\`-]{8,}?\b.?( by )?PsyDealer  yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(????) [089/100] - "090-florence_and_the_machine_-_spectrum_(say_my_name)_(calvin_harris_edit).mp3 Top 100 Single Charts 13.05.2013"  yEnc
-		if (preg_match('/^\(\?+\)[- ]{0,3}\[\d+\/\d+\][- ]{0,3}"[\w.,& ()\[\]\'\`-]{8,}?\b.?\.[A-Za-z0-9]{2,4} (Top \d+ Single Charts \d+\.\d+\.\d+)"[- ]{0,3}yEnc$/',
+		if (preg_match('/^\(\?+\)[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}"[\w.,& ()\[\]\'\`-]{8,}?\b.?\.[A-Za-z0-9]{2,4} (Top \d+ Single Charts \d+\.\d+\.\d+)"[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(????) [02/26] - "8Cursed.rar" yEnc
-		if (preg_match('/^\(\?+\)[- ]{0,3}\[\d+\/\d+\][- ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\?+\)[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(????) [00/34] - "The Official UK Top 40 Singles Chart 15-06-2014.nzb"otfINWnjfg7856fghj  yEnc
-		if (preg_match('/^\(\?+\)[- ]{0,3}\[\d+\/\d+\][- ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
-					   $this->e0 . '\w+[- ]{0,3}yEnc$/',
+		if (preg_match('/^\(\?+\)[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+					   $this->e0 . '\w+[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(01/24) VA - Now Thats What I Call Disco 2013 - "VA - Now Thats What I Call Disco 2013.7z.001" - 487.23 MB - yEnc
-		if (preg_match('/^\(\d+\/\d+\) ([\w.,& ()\[\]\'\`-]{8,}?)[- ]{0,3}"[\w.,& ()\[\]\'\`-]{8,}?\b.?' .
+		if (preg_match('/^\(\d+\/\d+\) ([\w.,& ()\[\]\'\`-]{8,}?)[-_\s]{0,3}"[\w.,& ()\[\]\'\`-]{8,}?\b.?' .
 					   $this->e2,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(102400) [06/13] - "Time Life - The Teen Years.part05.rar" yEnc
-		if (preg_match('/^\(102400\) \[\d+\/\d+\][- ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(102400\) \[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(18 Gouden Piraten Hits Deel 2 [03/11] - "18 Gouden Piraten Hits Deel 2.part2.rar" yEnc
-		if (preg_match('/^\([\w.,& ()\[\]\'\`-]{8,} \[\d+\/\d+\][- ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\([\w.,& ()\[\]\'\`-]{8,} \[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(Amigos - Ihre Lieblingshits - Folge 2 - 2013 - by Taekwondo145)[00/62] - "Amigos - Ihre Lieblingshits - Folge 2 - 2013.nzb" yEnc
-		if (preg_match('/^\([\w.,& ()\[\]\'\`-]{8,}\)\[\d+\/\d+\][- ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\([\w.,& ()\[\]\'\`-]{8,}\)\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(German TOP100 Single Jahrescharts-2013 - by Taekwondo456([67/70] - "German TOP100 Single Jahrescharts-2013.vol041+41.PAR2" yEnc
-		if (preg_match('/^\([\w.,& ()\[\]\'\`-]{8,} - by Taekwondo(\d+\()?\[\d+\/\d+\][- ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\([\w.,& ()\[\]\'\`-]{8,} - by Taekwondo(\d+\()?\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[2];
 		} //(Liedjes uit de film De Grote Patriottische Oorlog..o.a. Rod McK )  ( ** By Dready Niek ** ) [02/11] - "Liedjes uit de film De Grote Patriottische Oorlog..o.a. Rod McKuen - By Dready Niek.part1.rar" yEnc
-		if (preg_match('/^\( ?([\w.,& ()\[\]\'\`-]{8,}) ?\)[- ]{0,3}\(.+Dready Niek.+\)[- ]{0,3}\[\d+\/\d+\][- ]{0,3}"[\w.,& ()\[\]\'\`-]{8,}?' .
+		if (preg_match('/^\( ?([\w.,& ()\[\]\'\`-]{8,}) ?\)[-_\s]{0,3}\(.+Dready Niek.+\)[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}"[\w.,& ()\[\]\'\`-]{8,}?' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[21/23] - "JNEQ3_20130413_028.vol0+1.par2" - 282,65 MB <-> Partner of secretusenet.com <-> yEnc
-		if (preg_match('/^\[\d+\/\d+\][- ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 .
-					   '[- ]{0,3}\d+[.,]\d+ [kKmMgG][bB] <-> Partner of secretusenet\.com <->[- ]{0,3}yEnc$/',
+					   '[-_\s]{0,3}\d+[.,]\d+ [kKmMgG][bB] <-> Partner of secretusenet\.com <->[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Yogi_and_Husky--Nu_Sound_EP-(RSR021)-WEB-2012-dh - "Yogi_and_Husky--Nu_Sound_EP-(RSR021)-WEB-2012-dh.r00" yEnc
-		if (preg_match('/^[\w.,& ()\[\]\'\`-]{8,}?[- ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^[\w.,& ()\[\]\'\`-]{8,}?[-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Zido.Alben.All.in.One.Read.NFO-Ren & Stimpy - [35/43] - "Zydo.part33.rar" yEnc
-		if (preg_match('/^([\w.,& ()\[\]\'\`-]{8,}?)[- ]{0,3}\[\d+\/\d+\][- ]{0,3}".+?' . $this->e1,
+		if (preg_match('/^([\w.,& ()\[\]\'\`-]{8,}?)[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}".+?' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //! ! !! - h311b0y101022014 - !! ! ! [01/14] - "h311b0y101022014.par2" yEnc
-		if (preg_match('/(h311b0y|Hellboy).+\[\d+\/\d+\][- ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/(h311b0y|Hellboy).+\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -5038,28 +5002,28 @@ class ReleaseCleaning
 	public function mp3_complete_cd()
 	{
 		//(05/10) - [Lords-of-usenet] <<Partner of SSL-News.info>>  "Wynardtage Praise The Fallen(2007).vol00+01.PAR2" - 132,64 MB - yEnc
-		if (preg_match('/^\(\d+\/\d+\)[ _-]{0,3}\[Lords-of-usenet\][ _-]{0,3}<<Partner of SSL-News.info>>[ _-]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\d+\/\d+\)[ _-]{0,3}\[Lords-of-usenet\][ _-]{0,3}<<Partner of SSL-News.info>>[ _-]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . '[ _-]{0,3}\d+[.,]\d+ [kKmMgG][bB][ _-]{0,3}yEnc$/i',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(06/11) - <www.lords-of-usenet.org><by Nerts> - "Diens - Schwarzmale.vol00+01.PAR2" - 141,07 MB - yEnc
-		if (preg_match('/^\(\d+\/\d+\)[ _-]{0,3}<www\.lords-of-usenet\.org><by Nerts>[ _-]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\d+\/\d+\)[ _-]{0,3}<www\.lords-of-usenet\.org><by Nerts>[ _-]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . '[ _-]{0,3}\d+[.,]\d+ [kKmMgG][bB][ _-]{0,3}yEnc$/i',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //<www.Lords-Of-Usenet.org><by Nerts> (09/18) - "Mantus - Fatum (2013) [2CD].FH.vol00+2.PAR2" - 336,39 MB - yEnc
-		if (preg_match('/^<www\.lords-of-usenet\.org><by Nerts>[ _-]{0,3}\(\d+\/\d+\)[ _-]{0,3}[ _-]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^<www\.lords-of-usenet\.org><by Nerts>[ _-]{0,3}\(\d+\/\d+\)[ _-]{0,3}[ _-]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . '[ _-]{0,3}\d+[.,]\d+ [kKmMgG][bB][ _-]{0,3}yEnc$/i',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(08/15) "Noemi-Red.(Unreleased).2006.by.NYCrules.vol000+01.PAR2" - 179,66 MB - yEnc
-		if (preg_match('/^\(\d+\/\d+\)[ _-]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\d+\/\d+\)[ _-]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . '[ _-]{0,3}\d+[.,]\d+ [kKmMgG][bB][ _-]{0,3}yEnc$/i',
 					   $this->subject,
 					   $match)
@@ -5069,14 +5033,14 @@ class ReleaseCleaning
 		//[16_Bit_Lolitas-Warung_Brazil_002-2CD-2012-iHF] [www.usenet4ever.info by Secretusenet] -  "000-16_bit_lolitas-warung_brazil_002-2cd-2012-ihf.sfv" yEnc
 		//[3RD_Prototype_-_On_My_Way-(TB7368)-WEB-2013-FMC] [www.usenet4ever.info by Secretusenet] -  "01-3rd_prototype_-_deafback-when_you_are_in_the_dark_(deafback_remix).mp3" yEnc
 		//[Armin_Van_Buuren_Feat._Fiora-Waiting_For_The_Night-(ARMD1140)-WEB-2013-UKHx] [www.usenet4ever.info by Secretusenet] -  "00-armin_van_buuren_feat._fiora-waiting_for_the_night-(armd1140)-web-2013-ukhx.m3u" yEnc
-		if (preg_match('/^\[([a-zA-Z0-9-_\(\)\.]+)\] \[www\.usenet4ever\.info by Secretusenet\] -  "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\[([a-zA-Z0-9-_\(\)\.]+)\] \[www\.usenet4ever\.info by Secretusenet\] -  "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //>ghost-of-usenet.org<< 16_Bit_Lolitas-Warung_Brazil_002-2CD-2012-iHF >>www.SSL-News.info> -  "101-16_bit_lolitas-warung_brazil_002_cd1.mp3" yEnc
-		if (preg_match('/^>ghost-of-usenet\.org<< ([a-zA-Z0-9-_\(\)\.]+) >>www\.SSL-News\.info> -  "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^>ghost-of-usenet\.org<< ([a-zA-Z0-9-_\(\)\.]+) >>www\.SSL-News\.info> -  "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -5085,7 +5049,7 @@ class ReleaseCleaning
 		}
 		//Blok_B-Bienvenue_Dans_Mon_Blok_Vol.1-2005-BZ_INT [20 of 27] "01-gangsta.mp3" yEnc
 		//DJ Neev - HedKandi_2013-06-08 (Ministry of Sound Radio) [01/13] - "DJ Neev - HedKandi_2013-06-08 (Ministry of Sound Radio).par2" yEnc
-		if (preg_match('/^([a-zA-Z0-9 -_\(\)\.]+) \[\d+(\/| of )(\d+\])[-_ ]{0,3}".+?' . $this->e1,
+		if (preg_match('/^([a-zA-Z0-9 -_\(\)\.]+) \[\d+(\/| of )(\d+\])[-_\s]{0,3}".+?' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
@@ -5098,20 +5062,20 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //[1/1] - (MP3 ALBUM CHARTS) - "Andreas Gabalier - Volksrock'n'roller-Live.rar" yEnc
-		if (preg_match('/^\[\d+\/\d+\] - \((MP3 )?ALBUM CHARTS\) - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\[\d+\/\d+\] - \((MP3 )?ALBUM CHARTS\) - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . '  yEnc$/i',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[2];
 		} //"Miley Cyrus - Bangerz (Deluxe Version).nzb" - yEnc
-		if (preg_match('/^"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 . ' - yEnc$/i',
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 . ' - yEnc$/i',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //VA 200 NRJ 2014 CD2 mp3_320kbps[18/27]VA 200 NRJ 2014 CD2 mp3_320kbps"(217) [Capital Cities] Safe And Sound.mp3"  yEnc
-		if (preg_match('/^.+\[\d+\/\d+\](.+)"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^.+\[\d+\/\d+\](.+)"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . '  yEnc$/',
 					   $this->subject,
 					   $match)
@@ -5126,7 +5090,7 @@ class ReleaseCleaning
 	public function mp3_full_albums()
 	{
 		//. - [05/10] - "Blues 'N Trouble - With Friends Like These [1989].vol00+01.par2" yEnc
-		if (preg_match('/^\. - \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\. - \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -5142,7 +5106,7 @@ class ReleaseCleaning
 		}
 		//(06/10) "Pink Floyd - Dark Side Of The Moon [MFSL UDCD 517].vol00+01.PAR2"- - 67,88 MB - Pink Floyd - Dark Side Of The Moon [MFSL UDCD 517] yEnc
 		//(07/11) "VA - Twilight - New Moon - Ost.vol00+01.PAR2"- - 93,69 MB - VA - Twilight - New Moon - Ost yEnc
-		if (preg_match('/^\(\d+\/(\d+\)) "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^\(\d+\/(\d+\)) "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   '[ _-]{0,4}\d+[.,]\d+ [kKmMgG][bB][ _-]{0,3}.+?yEnc$/',
 					   $this->subject,
 					   $match)
@@ -5162,33 +5126,33 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //[00021]-["1999 Alphaville - Dreamscapes.part069.rar"[ yEnc
-		if (preg_match('/^\[\d+\]-\["([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^\[\d+\]-\["([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   '\[ yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(nzbDMZ) [0/2] - "Miles Crossing - Miles Crossing (2011).nzb" yEnc
-		if (preg_match('/^\(.+\) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(.+\) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[06/10] - "Jeff Healey - Legacy Volume One [The Singles].vol00+01.PAR2" yEnc
-		if (preg_match('/^\[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/^\[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //00008 "2003 Camouflage - Sensor.par2" yEnc
-		if (preg_match('/^\d+ "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/^\d+ "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Alex Oriental Experience_-_Live II (Live II) [1/9] - "01_Red_Dress.mp3" yEnc
-		if (preg_match('/^([a-zA-Z0-9 -_\(\)\.]+) \[\d+(\/| of )(\d+\])[-_ ]{0,3}".+?' . $this->e1,
+		if (preg_match('/^([a-zA-Z0-9 -_\(\)\.]+) \[\d+(\/| of )(\d+\])[-_\s]{0,3}".+?' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
@@ -5209,13 +5173,13 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //[####]-[FULL]-[#a.b.teevee@EFNet]-[ Tosh.0.S02E14.720p.HDTV.x264-aAF ]-[10/21] - "aaf-tosh.0.s02e14.720p.r07" yEnc
-		if (preg_match('/\[[#]+\]-\[.+?\]-\[.+?\]-\[ ([\w.,& ()\[\]\'\`-]{8,}?) \][- ]\[\d+\/\d+\][ -]{0,3}("|#34;).+?/',
+		if (preg_match('/\[[#]+\]-\[.+?\]-\[.+?\]-\[ ([\w.,& ()\[\]\'\`-]{8,}?) \][- ]\[\d+\/\d+\][-_\s]{0,3}("|#34;).+?/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[ Top.Chef.S11E12.Mississippi.Mud.Bugs.720p.WEB-DL.AAC2.0.H.264-TVSmash ] - [13/38] - "tc1112-720p.r10" yEnc
-		if (preg_match('/^\[ ?([\w.,& ()\[\]\'\`-]{8,}?) ?\][-_ ]{0,3}\[\d+\/\d+\][-_ ]{0,3}".+?' .
+		if (preg_match('/^\[ ?([\w.,& ()\[\]\'\`-]{8,}?) ?\][-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}".+?' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -5228,13 +5192,13 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //- "Auction Hunters S04E04.HDTV.x264-StarryNights1.nzb" yEnc
-		if (preg_match('/.*"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
+		if (preg_match('/.*"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //homeland.s02e12.1080p.bluray-bia.r08 - [011/111]  yEnc
-		if (preg_match('/^([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)\.[A-Za-z0-9]{2,4} - \[\d+\/(\d+\])  yEnc$/',
+		if (preg_match('/^([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)\.[A-Za-z0-9]{2,4} - \[\d+\/(\d+\])  yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -5286,7 +5250,7 @@ class ReleaseCleaning
 	public function multimedia_documentaries()
 	{
 		//"Universe S4E08.part40.rar" - [41 of 76 - 10013 kb] yEnc
-		if (preg_match('/^"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   ' - \[\d+ of \d+ - \d+ [kKmMgG][bB]\] yEnc$/',
 					   $this->subject,
 					   $match)
@@ -5301,7 +5265,7 @@ class ReleaseCleaning
 	public function multimedia_scifi()
 	{
 		//some m4vs - "SilverHawks_v1eps01_The Origin Story.par2" yEnc
-		if (preg_match('/^some m4vs - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/^some m4vs - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
@@ -5315,7 +5279,7 @@ class ReleaseCleaning
 	public function music()
 	{
 		//( 80's Giga Hits Collection (32 CDs) By Dready Niek )  By Dready Niek ) [44/54] - "80's Giga Hits Collection (32 CDs) By Dready Niek.part43.rar" yEnc
-		if (preg_match('/^.+By Dready Niek \) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^.+By Dready Niek \) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -5334,14 +5298,14 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //(????) [001/153] - "C4 House Party Horse Meat Disco Set 6.nfo" C4 House Party Horse Meat Disco Set 6 yEnc
-		if (preg_match('/^\(\?+\) \[\d+\/\d+\][ -]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\?+\) \[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . '.+yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(????) [19/22] - C.K.N. Demo 85  "19-rotten system.mp3" yEnc
-		if (preg_match('/^\(\?+\) \[\d+\/\d+\] - (.+)[ -]{0,3}".+?' . $this->e0 . '.+yEnc$/',
+		if (preg_match('/^\(\?+\) \[\d+\/\d+\] - (.+)[-_\s]{0,3}".+?' . $this->e0 . '.+yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -5350,7 +5314,7 @@ class ReleaseCleaning
 		if (preg_match('/^\((.+)\) \[\d+\/(\d+\]) - ".+?' . $this->e1, $this->subject, $match)) {
 			return $match[1];
 		} //[1/8] - "Black Market Flowers - Bind (1993).sfv" yEnc
-		if (preg_match('/^\[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/^\[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
@@ -5362,7 +5326,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //<<< <ghost-of-usenet.org> <"Dream Dance Vol. 21-30 - 20CDs MP3 - Ghost.part20.rar"> >www.SSL-News.info<  - (22/32) - 2,45 GB yEnc
-		if (preg_match('/^.+ghost-of-usenet\.org.+"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^.+ghost-of-usenet\.org.+"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 .
 					   '> >www\.SSL-News\.info<  - \(\d+\/\d+\) - \d+[.,]\d+ [kKmMgG][bB] yEnc$/',
 					   $this->subject,
@@ -5370,21 +5334,21 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //Musikjunkie-The.Voice.Of.Germany.2013.The.Best.of.Liveshows.4.CD.Box.Set.VBR [15/28]"voice.part13.rar" yEnc
-		if (preg_match('/^Musikjunkie-([\pL\pN\pM\pP. -]{8,})[- ]{0,3}\[\d+\/\d+\]".+?' .
+		if (preg_match('/^Musikjunkie-([\pL\pN\pM\pP. -]{8,})[-_\s]{0,3}\[\d+\/\d+\]".+?' .
 					   $this->e1 . 'u',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //"8 Wenn ich einmal gross bin .mp3" Koelschefetz postet.Die Filue -Immer Wigger  yEnc
-		if (preg_match('/^"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 . '.+yEnc$/',
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 . '.+yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Der etwas andere Mix - Deutscher Foxmix 14 (by dem verrÃ¼ckten Lordi) (3/8) "Der etwas andere Mix - Deutscher Foxmix 14.txt" - 271,24 MB 11.11.03 yEnc
-		if (preg_match('/^.+\(by dem verrÃ¼ckten Lordi\)[- ]{0,3}\(\d+\/\d+\)[- ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
-					   $this->e0 . '[- ]{0,3}\d+[.,]\d+ [kKmMgG][bB].+[- ]{0,3}yEnc$/',
+		if (preg_match('/^.+\(by dem verrÃ¼ckten Lordi\)[-_\s]{0,3}\(\d+\/\d+\)[-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+					   $this->e0 . '[-_\s]{0,3}\d+[.,]\d+ [kKmMgG][bB].+[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -5392,8 +5356,8 @@ class ReleaseCleaning
 		}
 		//(01/10) "MylÃ¨ne Farmer - Monkey me (2012 Bluray Audio).rar" - 1,56 GB - yEnc
 		//(3/7) "DJ Taz3 - Your Choice Sendung Silvester 2012.mp3.vol00+01.PAR2" - 119,50 MB -RadioShows und Livesets yEnc
-		if (preg_match('/^\(\d+\/\d+\)[ -]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
-					   $this->e0 . '[- ]{0,3}\d+[.,]\d+ [kKmMgG][bB][- ]{0,3}.+yEnc$/',
+		if (preg_match('/^\(\d+\/\d+\)[-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+					   $this->e0 . '[-_\s]{0,3}\d+[.,]\d+ [kKmMgG][bB][-_\s]{0,3}.+yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -5401,46 +5365,46 @@ class ReleaseCleaning
 		}
 		//[00/20]  Nomadi - Terzo Tempo (2012) "Nomadi - Terzo Tempo (2012).nzb" - nightsteff  yEnc
 		//[02/56] - The Beatles - The Decca Tapes "Beatles - The Decca Tapes.part01.rar" yEnc
-		if (preg_match('/^[\(\[]\d+\/\d+[\]\)][ -]{0,3}(.+) ".+?' . $this->e0 .
-					   '([ -]{0,3}nightsteff)?[ -]{0,3}yEnc$/',
+		if (preg_match('/^[\(\[]\d+\/\d+[\]\)][-_\s]{0,3}(.+) ".+?' . $this->e0 .
+					   '([-_\s]{0,3}nightsteff)?[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[Marillion - Live From Cadogan Hall 2011 (DVD 1)] [981/98] - "Marillion - Live From Cadogan Hall 2011 (DVD 1).par2" yEnc
-		if (preg_match('/^\[.+\] \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\[.+\] \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //XTC - NMR - 2001 - Homegrown - The Wasp Star Home Demos [22 of 34] "2001 - Homegrown - The Wasp Star Home Demos.vol00+01.PAR2" yEnc
-		if (preg_match('/^.+ \[\d+ of \d+\] "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/^.+ \[\d+ of \d+\] "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Wendy O Williams Bump n Grind - "Wendy.O.Williams.Bump.n.Grind.nfo"  yEnc
-		if (preg_match('/^.+[ -]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/^.+[-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //The Amity Affliction - Chasing Ghosts_lossless (01/11) - "The Amity Affliction - Chasing Ghosts_lossless.par2" - 321,40 MB - codari_4_usenetrevolution.info-Partner of SSL-News yEnc
-		if (preg_match('/^.+ \(\d+\/\d+\) - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^.+ \(\d+\/\d+\) - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . ' - \d+[.,]\d+ [kKmMgG][bB].+yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Bob Marley & The Wailers - African Herbsman.nzb 0/8  yEnc
-		if (preg_match('/^([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4}) \d+\/\d+[- ]{0,3}yEnc$/',
+		if (preg_match('/^([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4}) \d+\/\d+[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //DOG DAYS' Season 2 ED Single - Natsu no Yakusoku (Horie Yui)[KICM-1402].- DOG DAYS' Season 2 ED Single - Natsu no Yakusoku (Horie Yui)[KICM-1402].nzb [00/13]  yEnc
-		if (preg_match('/^[\w. &()\[\]\'-]+?\.- ([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4}) \[\d+\/\d+\][- ]{0,3}yEnc$/',
+		if (preg_match('/^[\w. &()\[\]\'-]+?\.- ([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4}) \[\d+\/\d+\][-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -5455,33 +5419,33 @@ class ReleaseCleaning
 	public function music_mp3()
 	{
 		//(00/20]  Nomadi - Terzo Tempo (2012) "Nomadi - Terzo Tempo (2012).nzb" - nightsteff  yEnc
-		if (preg_match('/^[\(\[]\d+\/\d+[\]\)][ -]{0,3}(.+) ".+?' . $this->e0 .
-					   '[ -]{0,3}nightsteff[ -]{0,3}yEnc$/',
+		if (preg_match('/^[\(\[]\d+\/\d+[\]\)][-_\s]{0,3}(.+) ".+?' . $this->e0 .
+					   '[-_\s]{0,3}nightsteff[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(????) [0/8] - Crionics Post - Alice In Chains - Dirt REPOST"Alice In Chains - Dirt.nzb" yEnc
-		if (preg_match('/^.+?\[\d+\/(\d+\][-_ ]{0,3}.+?)[-_ ]{0,3}("|#34;)(.+?)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}("|#34;))[-_ ]{0,3}yEnc$/',
+		if (preg_match('/^.+?\[\d+\/(\d+\][-_\s]{0,3}.+?)[-_\s]{0,3}("|#34;)(.+?)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}("|#34;))[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[3];
 		} //(????) [001/153] - "C4 House Party Horse Meat Disco Set 6.nfo" C4 House Party Horse Meat Disco Set 6 yEnc
-		if (preg_match('/^\(\?+\) \[\d+\/\d+\][ -]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\?+\) \[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . '.+yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(????) [19/22] - C.K.N. Demo 85  "19-rotten system.mp3" yEnc
-		if (preg_match('/^\(\?+\) \[\d+\/\d+\] - (.+)[ -]{0,3}".+?' . $this->e0 . '.+yEnc$/',
+		if (preg_match('/^\(\?+\) \[\d+\/\d+\] - (.+)[-_\s]{0,3}".+?' . $this->e0 . '.+yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(BierbauchFreddy Quwinn seine grÃ¶Ãten Coversongs Vol2) [22/60] - "040c - Freddy Quinn - Don't Forbid Me (1957) (NH 22 639, EPH 20 575).mp3" yEnc
-		if (preg_match('/^\((.+)\) \[\d+\/\d+\][ -]{0,3}".+?' . $this->e1,
+		if (preg_match('/^\((.+)\) \[\d+\/\d+\][-_\s]{0,3}".+?' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
@@ -5498,7 +5462,7 @@ class ReleaseCleaning
 		//[1/1] - (Top100 Album Charts) - "Bastille - Pompeii.rar"  yEnc
 		//[1/1] - (Top100 Charts) - "Beatrice Egli - Gluecksgefuehle.rar"  yEnc
 		//[1/1] - (Top100 Single Charts) -  "Alicia Keys - Girl On Fire.rar"  yEnc
-		if (preg_match('/^\[\d+\/\d+\][ -]{0,3}\(((Top)?\d+ )?(MP3 )?((Album|Single) )?Charts\)[ -]{0,4}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\[\d+\/\d+\][-_\s]{0,3}\(((Top)?\d+ )?(MP3 )?((Album|Single) )?Charts\)[ -]{0,4}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . '  yEnc$/',
 					   $this->subject,
 					   $match)
@@ -5507,7 +5471,7 @@ class ReleaseCleaning
 		}
 		//[1/1] - Album Top 100 - "Amy MacDonald - Life In A Beautiful Light.rar"  yEnc
 		//[1/1] - Top 100 Album Charts 2012 - "Cro - Einmal Um Die Welt.rar"  yEnc
-		if (preg_match('/^\[\d+\/\d+\][ -]{0,3}(Album )?Top \d+( Album Charts \d+)?[ -]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\[\d+\/\d+\][-_\s]{0,3}(Album )?Top \d+( Album Charts \d+)?[-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . '  yEnc$/',
 					   $this->subject,
 					   $match)
@@ -5517,7 +5481,7 @@ class ReleaseCleaning
 		//[1/1] (Album Top 100 - 2012) - "Cro - Einmal Um Die Welt.rar"  yEnc
 		//[1/1] (Album Top 100 2012) - "Cro - Einmal Um Die Welt.rar"  yEnc
 		//[1/1] (Album Top 100) - "Cro - Raop.rar"  yEnc
-		if (preg_match('/^\[\d+\/\d+\][ -]{0,3}\(Album Top \d+(( -)? \d+)?\)[ -]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\[\d+\/\d+\][-_\s]{0,3}\(Album Top \d+(( -)? \d+)?\)[-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . '  yEnc$/',
 					   $this->subject,
 					   $match)
@@ -5530,13 +5494,13 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //(001/225) "Dead Can Dance (mp3 - 320Kbs - CBR).part001.rar" - 1.11 GB - yEnc
-		if (preg_match('/^\(\d+\/\d+\) "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e2,
+		if (preg_match('/^\(\d+\/\d+\) "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e2,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[1/1] (MP3 Album)- "Agnes Obel - Aventine.rar"  yEnc
-		if (preg_match('/^[\(\[]\d+\/\d+[\]\)][ -]{0,3}\(MP3 Album\)[ -]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^[\(\[]\d+\/\d+[\]\)][-_\s]{0,3}\(MP3 Album\)[-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -5549,41 +5513,41 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //<< http://usenet-piraten.info >> - [13/15] - "Monster Cyborg - Overkill (mp3).vol0+1.par2" yEnc
-		if (preg_match('/^.+usenet-piraten\.info.+[- ]{0,3}\[\d+\/\d+\][- ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^.+usenet-piraten\.info.+[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[1/8] - "Nightwish - Storytime (Retail-Single 2011).sfv" -  ShapterV yEnc
-		if (preg_match('/^\[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^\[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   '[- ]{0,4}ShapterV yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //100 Rock - Vol.04<>usenet-piraten.info<>www.newsconnection.eu<> - (1/5)  "100 Rock - Vol.04.par2" - 101,65 MB - yEnc
-		if (preg_match('/^.+usenet-piraten\.info.+newsconnection\.eu.+[- ]{0,3}\(\d+\/\d+\)[ -]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^.+usenet-piraten\.info.+newsconnection\.eu.+[-_\s]{0,3}\(\d+\/\d+\)[-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e2,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //40 Italo Dance Tunes (2CD) - "00. 40 Italo Dance Tunes 2011.nfo" [02/ 50] nightsteff  yEnc
-		if (preg_match('/^(.+?)[- ]{0,3}".+?' . $this->e0 .
-					   '[- ]{0,3}\[\d+\/ (\d+\]) nightsteff[- ]{0,3}yEnc$/',
+		if (preg_match('/^(.+?)[-_\s]{0,3}".+?' . $this->e0 .
+					   '[-_\s]{0,3}\[\d+\/ (\d+\]) nightsteff[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Bud Spencer & Terence Hill - Greatest Hits Vol 1 (1995) "04 - Just A Good Boy.mp3" nightsteff  yEnc
-		if (preg_match('/^(.+?) ".+?' . $this->e0 . '[ -]{0,3}nightsteff  yEnc$/',
+		if (preg_match('/^(.+?) ".+?' . $this->e0 . '[-_\s]{0,3}nightsteff  yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Attn: bearcat - Avenged Sevenfold - Avenged Sevenfold 320[17/18] - .vol15+16.par2 5.9Mb yEnc
-		if (preg_match('/^Attn: \w+ - (.+?)\[\d+\/(\d+\]) - .+?([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[- ]{0,3}\d+[.,]\d+[kKmMgG][bB][- ]{0,3}yEnc$/',
+		if (preg_match('/^Attn: \w+ - (.+?)\[\d+\/(\d+\]) - .+?([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[-_\s]{0,3}\d+[.,]\d+[kKmMgG][bB][-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -5715,26 +5679,26 @@ class ReleaseCleaning
 		) {
 			return $match[2];
 		} //JN - [1/3] - "Operatie Teheran-Joel C Rosenberg JN.par2" yEnc
-		if (preg_match('/^\w+[-_ ]{0,3}[\[\(]\d+\/\d+[\]\)][-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\w+[-_\s]{0,3}[\[\(]\d+\/\d+[\]\)][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //( Overlord II RELOADED ) - [013/112] - "rld-olii.part001.rar" yEnc
-		if (preg_match('/^\( ([\w. -]{8,}) \)[-_ ]{0,3}\[\d+\/(\d+\]) - ".+?' . $this->e1,
+		if (preg_match('/^\( ([\w. -]{8,}) \)[-_\s]{0,3}\[\d+\/(\d+\]) - ".+?' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Batman.Arkham-Origins.Initiation-RELOADED - [006/296] - "r.vol010+08.PAR2" yEnc
-		if (preg_match('/^([\w. &()-]{8,}?\b)[- ]{0,3}\[\d+\/(\d+\])[- ]{0,3}".+?' . $this->e1,
+		if (preg_match('/^([\w. &()-]{8,}?\b)[-_\s]{0,3}\[\d+\/(\d+\])[-_\s]{0,3}".+?' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(PC-ISO) ( Trials.Fusion.Riders.of.the.Rustlands-SKIDROW ) [10/40] - "sr-tfrotr.part01.rar" yEnc
-		if (preg_match('/^\(PC-ISO\)[-_ ]{0,3}\( ([\w.,& ()\[\]\'\`-]{8,}?\b) \) \[\d+\/\d+\][-_ ]{0,3}".+?' .
+		if (preg_match('/^\(PC-ISO\)[-_\s]{0,3}\( ([\w.,& ()\[\]\'\`-]{8,}?\b) \) \[\d+\/\d+\][-_\s]{0,3}".+?' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -5760,7 +5724,7 @@ class ReleaseCleaning
 	public function ps3()
 	{
 		//[4197] [036/103] - "ant-mgstlcd2.r34" yEnc
-		if (preg_match('/^(\[\d+\] )\[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^(\[\d+\] )\[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -5775,32 +5739,32 @@ class ReleaseCleaning
 	public function series_tv_french()
 	{
 		//(01/34) "Merlin.2008.1x04.la.vengeance.de.nimue.par2" - 388,38 MB - yEnc
-		if (preg_match('/^\(\d+\/(\d+\)) "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^\(\d+\/(\d+\)) "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   ' - \d+[,.]\d+ [mMkKgG][bB]( -)? yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[2];
 		} //Breaking.Bad.S02.MULTi.720p.BluRay.AC3.x264-BoO [749/883] - "212ACS3517.part01.rar" yEnc
-		if (preg_match('/^([a-zA-Z0-9._-]+)[-_ ]{0,3}[\(\[]\d+\/(\d+[\)\]])[-_ ]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
+		if (preg_match('/^([a-zA-Z0-9._-]+)[-_\s]{0,3}[\(\[]\d+\/(\d+[\)\]])[-_\s]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Dawson.Saison2.DVDRIP.x264.FRENCH [111 of 196] "Dawson.S2.E22.Tout feu, tout flambe.m4v.003" yEnc
-		if (preg_match('/^([a-zA-Z0-9._-]+)[-_ ]{0,3}[\(\[]\d+ of (\d+[\)\]])[-_ ]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
+		if (preg_match('/^([a-zA-Z0-9._-]+)[-_\s]{0,3}[\(\[]\d+ of (\d+[\)\]])[-_\s]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[01/22] - "Unnatural.History.1x03.Espion.En.Sommeil.FR.LD.par2" yEnc
-		if (preg_match('/^[\(\[]\d+\/(\d+[\)\]])[-_ ]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
+		if (preg_match('/^[\(\[]\d+\/(\d+[\)\]])[-_\s]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[MagNeum 3.14 S1 D.V.D + par2][1148/1167] - "ZDFRIKK8470DO776.D7P" yEnc
-		if (preg_match('/^\[(.+?)\][-_ ]{0,3}[\(\[]\d+\/(\d+[\)\]])[-_ ]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
+		if (preg_match('/^\[(.+?)\][-_\s]{0,3}[\(\[]\d+\/(\d+[\)\]])[-_\s]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -5814,7 +5778,7 @@ class ReleaseCleaning
 	public function sony_psp()
 	{
 		//(01/10) "Assassins Creed - Bloodlines [EUR].par2" - 408,46 MB yEnc
-		if (preg_match('/^\(\d+\/\d+\) "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^\(\d+\/\d+\) "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   ' - \d+([.,]\d+ [kKmMgG])?[bB] yEnc$/',
 					   $this->subject,
 					   $match)
@@ -5835,48 +5799,48 @@ class ReleaseCleaning
 	public function sound_mp3()
 	{
 		//- codari_4_usenetrevolution.info-Partner of SSL-News UK.Single.Charts.Top.40  [01/25] - "UK.Single.Charts.Top.40.par2" - 301,70 MB - yEnc
-		if (preg_match('/.+[-_ ]{0,3}[\(\[]\d+\/\d+[\)\]][-_ ]{0,3}"(.+)' . $this->e0 .
+		if (preg_match('/.+[-_\s]{0,3}[\(\[]\d+\/\d+[\)\]][-_\s]{0,3}"(.+)' . $this->e0 .
 					   '[ _-]{0,3}\d+[.,]\d+ [kKmMgG][bB][ _-]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //"Terraplane Sun - Funnel of Love.mp3" - 21.55 MB - (1/6) - yEnc
-		if (preg_match('/^"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   '[ _-]{0,3}\d+[.,]\d+ [kKmMgG][bB][ _-]{0,3}\(\d+\/(\d+\))[ _-]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //trtk09920 - [01/12] - "Guido Negraszus - Night Cafe Iii (Freedom Travellers) (2012)(320).par2" yEnc
-		if (preg_match('/^trtk\d+[ -]{0,3}\[\d+\/\d+\][ -]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^trtk\d+[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(????) [001/153] - "C4 House Party Horse Meat Disco Set 6.nfo" C4 House Party Horse Meat Disco Set 6 yEnc
-		if (preg_match('/^\(\?+\) \[\d+\/\d+\][ -]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\?+\) \[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . '.+yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(????) [19/22] - C.K.N. Demo 85  "19-rotten system.mp3" yEnc
-		if (preg_match('/^\(\?+\) \[\d+\/\d+\] - (.+)[ -]{0,3}".+?' . $this->e0 . '.+yEnc$/',
+		if (preg_match('/^\(\?+\) \[\d+\/\d+\] - (.+)[-_\s]{0,3}".+?' . $this->e0 . '.+yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(LUNATIC SOUL - IMPRESSIONS) [00/18] - "Lunatic Soul - Impressions 2011.nzb" yEnc
-		if (preg_match('/^\(.+\)[ -]{0,3}\[\d+\/\d+\][ -]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(.+\)[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[1/8] - "Black Market Flowers - Bind (1993).sfv" yEnc
-		if (preg_match('/^\[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/^\[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
@@ -5887,7 +5851,7 @@ class ReleaseCleaning
 		//[1/1] - (Top100 Album Charts) - "Bastille - Pompeii.rar"  yEnc
 		//[1/1] - (Top100 Charts) - "Beatrice Egli - Gluecksgefuehle.rar"  yEnc
 		//[1/1] - (Top100 Single Charts) -  "Alicia Keys - Girl On Fire.rar"  yEnc
-		if (preg_match('/^\[\d+\/\d+\][ -]{0,3}\(((Top)?\d+ )?(MP3 )?((Album|Single) )?Charts\)[ -]{0,4}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\[\d+\/\d+\][-_\s]{0,3}\(((Top)?\d+ )?(MP3 )?((Album|Single) )?Charts\)[ -]{0,4}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . '  yEnc$/',
 					   $this->subject,
 					   $match)
@@ -5898,48 +5862,48 @@ class ReleaseCleaning
 		//[1/1] - Album Top 100 - "ACDC - Live At River Plate.rar"  yEnc
 		//[1/1] (Album Top 100 - 2012) - "Alicia Keys - Girl On Fire.rar"  yEnc
 		//[1/1] (Album Top 100 2012) - "Asaf Avidan And The Mojos - One Day.rar"  yEnc
-		if (preg_match('/^\[\d+\/\d+\][ -]{0,3}(\()?(Album|Single) Top \d+ ([- ]{0,2}\d+)?(\))? - "(\[.+?\] )?(.+?)' .
+		if (preg_match('/^\[\d+\/\d+\][-_\s]{0,3}(\()?(Album|Single) Top \d+ ([- ]{0,2}\d+)?(\))? - "(\[.+?\] )?(.+?)' .
 					   $this->e0 . ' {1,4}yEnc$/i',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[6];
 		} //[1/1] - Top 100 Album Charts 2012 - "Aura Dione feat. Rock Mafia - Friends.rar"  yEnc
-		if (preg_match('/^\[\d+\/\d+\][ -]{0,3}Top \d+ Album Charts \d+[ -]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\[\d+\/\d+\][-_\s]{0,3}Top \d+ Album Charts \d+[-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . ' {1,4}yEnc$/i',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //<>usenet-piraten.info<>partner<>ssl-news.info<> - [10/10] - "Overexposed (Deluxe Version).vol31+23.par2" yEnc
-		if (preg_match('/^.+usenet-piraten\.info.+ - \[\d+\/\d+\][ -]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^.+usenet-piraten\.info.+ - \[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(1/1) "Adam Levine (Maroon 5) & Alicia Keys - Daylight & Girl on fire LIVE 55TH GRAMMY AWARDS 320Kpbs.mp3" yEnc
-		if (preg_match('/^\(\d+\/\d+\) "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/^\(\d+\/\d+\) "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(1/4) - VERBAteamÂ present - "Avril Lavigne - Rock 'N Roll (Official Audio).mp3" - 5,80 MB - yEnc
-		if (preg_match('/^\(\d+\/\d+\) - VERBAteamÂ present - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\d+\/\d+\) - VERBAteamÂ present - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e2,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[1/1] - (Album Top 1000) - "Davis, Miles - Complete Live at the Plugged Nickel 1965.rar"  yEnc
-		if (preg_match('/^\[\d+\/\d+\][ -]{0,3}\(Album Top \d+\)[ -]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\[\d+\/\d+\][-_\s]{0,3}\(Album Top \d+\)[-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . '  yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[1/1] - Album Top 100 - "Rammstein - Made In Germany 1995-2011.rar"  yEnc
-		if (preg_match('/^\[\d+\/\d+\][ -]{0,3}Album Top \d+[ -]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\[\d+\/\d+\][-_\s]{0,3}Album Top \d+[-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . '  yEnc$/',
 					   $this->subject,
 					   $match)
@@ -5948,14 +5912,14 @@ class ReleaseCleaning
 		} //Andrea Berg - My Danish Collection (2013) by dem verrÃ¼ckten Lordi (14/27) "Andrea Berg - My Danish Collection (2013).par2" - 132,74 MB  150920134 yEnc
 		//Der Deutsche Beat Mix Teil 2 auf wunsch (by dem verrÃ¼ckten Lordi) (2/9) "Der Deutsche Beat Mix Teil 3 Back.jpg" - 117,84 MB 13.11.05 yEnc
 		if (preg_match('/^(.+?) (\()?by dem verrÃ¼ckten Lordi(\))? {1,2}\(\d+\/\d+\) ".+?' .
-					   $this->e0 . '[- ]{0,3}\d+[.,]\d+ [kKmMgG][bB].+yEnc$/i',
+					   $this->e0 . '[-_\s]{0,3}\d+[.,]\d+ [kKmMgG][bB].+yEnc$/i',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Christian Anders - Tief in dir  (15/24) "Christian Anders - Tief In Dir Back.jpg" - 58,56 MB by dem verrÃ¼ckten Lordi 0703123 yEnc
 		if (preg_match('/^(.+?)  \(\d+\/\d+\) ".+?' . $this->e0 .
-					   '[- ]{0,3}\d+[.,]\d+ [kKmMgG][bB] {1,2}by dem verrÃ¼ckten Lordi.+yEnc$/i',
+					   '[-_\s]{0,3}\d+[.,]\d+ [kKmMgG][bB] {1,2}by dem verrÃ¼ckten Lordi.+yEnc$/i',
 					   $this->subject,
 					   $match)
 		) {
@@ -5968,7 +5932,7 @@ class ReleaseCleaning
 			return $match[1];
 		} //Full Discography - The Cranberries (01/47) "Full Discography - The Cranberries.par2" - 3,52 GB  2812111 yEnc
 		if (preg_match('/^(.+?) \(\d+\/\d+\) ".+?' . $this->e0 .
-					   '[- ]{0,3}\d+[.,]\d+ [kKmMgG][bB] {1,2}\d+ yEnc$/i',
+					   '[-_\s]{0,3}\d+[.,]\d+ [kKmMgG][bB] {1,2}\d+ yEnc$/i',
 					   $this->subject,
 					   $match)
 		) {
@@ -5991,42 +5955,42 @@ class ReleaseCleaning
 	public function sound_mp3_complete_cd()
 	{
 		//(05/10) - [Lords-of-usenet] <<Partner of SSL-News.info>>  "Wynardtage Praise The Fallen(2007).vol00+01.PAR2" - 132,64 MB - yEnc
-		if (preg_match('/^\(\d+\/\d+\)[ _-]{0,3}\[Lords-of-usenet\][ _-]{0,3}<<Partner of SSL-News.info>>[ _-]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\d+\/\d+\)[ _-]{0,3}\[Lords-of-usenet\][ _-]{0,3}<<Partner of SSL-News.info>>[ _-]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . '[ _-]{0,3}\d+[.,]\d+ [kKmMgG][bB][ _-]{0,3}yEnc$/i',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(06/11) - <www.lords-of-usenet.org><by Nerts> - "Diens - Schwarzmale.vol00+01.PAR2" - 141,07 MB - yEnc
-		if (preg_match('/^\(\d+\/\d+\)[ _-]{0,3}<www\.lords-of-usenet\.org><by Nerts>[ _-]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\d+\/\d+\)[ _-]{0,3}<www\.lords-of-usenet\.org><by Nerts>[ _-]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . '[ _-]{0,3}\d+[.,]\d+ [kKmMgG][bB][ _-]{0,3}yEnc$/i',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //trtk09920 - [01/12] - "Guido Negraszus - Night Cafe Iii (Freedom Travellers) (2012)(320).par2" yEnc
-		if (preg_match('/^trtk\d+[ -]{0,3}\[\d+\/\d+\][ -]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^trtk\d+[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(????) [01/31] - "Adrian von Ziegler - Discography - 2010-2013.par2" yEnc
-		if (preg_match('/^\(\?+\) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\?+\) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //<www.Lords-Of-Usenet.org><by Nerts> (09/18) - "Mantus - Fatum (2013) [2CD].FH.vol00+2.PAR2" - 336,39 MB - yEnc
-		if (preg_match('/^<www\.lords-of-usenet\.org><by Nerts>[ _-]{0,3}\(\d+\/\d+\)[ _-]{0,3}[ _-]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^<www\.lords-of-usenet\.org><by Nerts>[ _-]{0,3}\(\d+\/\d+\)[ _-]{0,3}[ _-]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . '[ _-]{0,3}\d+[.,]\d+ [kKmMgG][bB][ _-]{0,3}yEnc$/i',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(08/15) "Noemi-Red.(Unreleased).2006.by.NYCrules.vol000+01.PAR2" - 179,66 MB - yEnc
-		if (preg_match('/^\(\d+\/\d+\)[ _-]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\d+\/\d+\)[ _-]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . '[ _-]{0,3}\d+[.,]\d+ [kKmMgG][bB][ _-]{0,3}yEnc$/i',
 					   $this->subject,
 					   $match)
@@ -6036,14 +6000,14 @@ class ReleaseCleaning
 		//[16_Bit_Lolitas-Warung_Brazil_002-2CD-2012-iHF] [www.usenet4ever.info by Secretusenet] -  "000-16_bit_lolitas-warung_brazil_002-2cd-2012-ihf.sfv" yEnc
 		//[3RD_Prototype_-_On_My_Way-(TB7368)-WEB-2013-FMC] [www.usenet4ever.info by Secretusenet] -  "01-3rd_prototype_-_deafback-when_you_are_in_the_dark_(deafback_remix).mp3" yEnc
 		//[Armin_Van_Buuren_Feat._Fiora-Waiting_For_The_Night-(ARMD1140)-WEB-2013-UKHx] [www.usenet4ever.info by Secretusenet] -  "00-armin_van_buuren_feat._fiora-waiting_for_the_night-(armd1140)-web-2013-ukhx.m3u" yEnc
-		if (preg_match('/^\[([a-zA-Z0-9-_\(\)\.]+)\] \[www\.usenet4ever\.info by Secretusenet\] -  "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\[([a-zA-Z0-9-_\(\)\.]+)\] \[www\.usenet4ever\.info by Secretusenet\] -  "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //>ghost-of-usenet.org<< 16_Bit_Lolitas-Warung_Brazil_002-2CD-2012-iHF >>www.SSL-News.info> -  "101-16_bit_lolitas-warung_brazil_002_cd1.mp3" yEnc
-		if (preg_match('/^>ghost-of-usenet\.org<< ([a-zA-Z0-9-_\(\)\.]+) >>www\.SSL-News\.info> -  "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^>ghost-of-usenet\.org<< ([a-zA-Z0-9-_\(\)\.]+) >>www\.SSL-News\.info> -  "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -6052,7 +6016,7 @@ class ReleaseCleaning
 		}
 		//Blok_B-Bienvenue_Dans_Mon_Blok_Vol.1-2005-BZ_INT [20 of 27] "01-gangsta.mp3" yEnc
 		//DJ Neev - HedKandi_2013-06-08 (Ministry of Sound Radio) [01/13] - "DJ Neev - HedKandi_2013-06-08 (Ministry of Sound Radio).par2" yEnc
-		if (preg_match('/^([a-zA-Z0-9 -_\(\)\.]+) \[\d+(\/| of )(\d+\])[-_ ]{0,3}".+?' . $this->e1,
+		if (preg_match('/^([a-zA-Z0-9 -_\(\)\.]+) \[\d+(\/| of )(\d+\])[-_\s]{0,3}".+?' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
@@ -6065,7 +6029,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //[1/1] - (MP3 ALBUM CHARTS) - "Andreas Gabalier - Volksrock'n'roller-Live.rar" yEnc
-		if (preg_match('/^\[\d+\/\d+\] - \((MP3 )?ALBUM CHARTS\) - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\[\d+\/\d+\] - \((MP3 )?ALBUM CHARTS\) - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . '  yEnc$/i',
 					   $this->subject,
 					   $match)
@@ -6100,7 +6064,7 @@ class ReleaseCleaning
 	public function sounds_lossless()
 	{
 		//http://dream-of-usenet.org empfehlen newsconnection.eu - [02/32] - "Adam_Ant-Manners_and_Physique-(MCAD-6315)-CD-FLAC-1989-2Eleven.par2" yEnc
-		if (preg_match('/^http:\/\/dream-of-usenet\.org .+? - \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^http:\/\/dream-of-usenet\.org .+? - \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -6115,7 +6079,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //trtk07073 - [18/26] - "1990 Santana - Spirits Dancing In The Flesh (flac).part17.rar" yEnc
-		if (preg_match('/^trtk\d+ - \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^trtk\d+ - \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -6174,14 +6138,14 @@ class ReleaseCleaning
 		}
 		//.: VA-Liquid_Music-The_Future_House_Compilation-CD-FLAC-1993-WRS :. - .:www.thunder-news.org:. - .:sponsored by secretusenet.com:. - "00-va-liquid_music-the_future_house_compilation-cd-flac-1993-wrs.nfo" yEnc
 		//.:Bruce_BecVar-Arriba-CD-FLAC-1993-JLM:. - .:thunder-news.org:. - .:sponsored by secretusenet.com:. - "00-bruce_becvar-arriba-cd-flac-1993.m3u" yEnc
-		if (preg_match('/^.:[-_ ]{0,3}(.+?)[-_ ]{0,3}:..+?thunder-news\.org.+?secretusenet\.com:. - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^.:[-_\s]{0,3}(.+?)[-_\s]{0,3}:..+?thunder-news\.org.+?secretusenet\.com:. - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //_ "CARUSO & GIGLI - O Sole Mio - The  Unknown.nzb" yEnc
-		if (preg_match('/^[-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/^[-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
@@ -6189,14 +6153,14 @@ class ReleaseCleaning
 		}
 		//"Art Tatum - The Complete Trio Sessions with Tiny Grimes & Slam Stewart - Vol 1.NFO" - 1 of 6 (1/1)
 		//"Galen Jeter and the Dallas Jazz Orchestra - Thank You, Leon.NFO" - 1 of 5 (1/1) (1/1)
-		if (preg_match('/^[-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
-					   '[-_ ]{0,3}\d+ (of \d+)( \(\d+\/\d+\)){1,2} (yEnc)?$/',
+		if (preg_match('/^[-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+					   '[-_\s]{0,3}\d+ (of \d+)( \(\d+\/\d+\)){1,2} (yEnc)?$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //"Doc Watson - 1973 - The Essential Doc Watson - 01 - Tom Dooley.flac" - 406.64 MB - yEnc
-		if (preg_match('/^[-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^[-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   '[ _-]{0,3}\d+[.,]\d+ [kKmMgG][bB][ _-]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
@@ -6211,21 +6175,21 @@ class ReleaseCleaning
 	public function sounds_mp3()
 	{
 		//(dream-of-usenet.info) - [04/15] - "Enya-And_Winter_Came...-2008.part2.rar" yEnc
-		if (preg_match('/^\(dream-of-usenet\.info\) - \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(dream-of-usenet\.info\) - \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //http://dream-of-usenet.org empfehlen newsconnection.eu - [02/32] - "Adam_Ant-Manners_and_Physique-(MCAD-6315)-CD-FLAC-1989-2Eleven.par2" yEnc
-		if (preg_match('/^http:\/\/dream-of-usenet\.org .+? - \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^http:\/\/dream-of-usenet\.org .+? - \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //trtk09920 - [01/12] - "Guido Negraszus - Night Cafe Iii (Freedom Travellers) (2012)(320).par2" yEnc
-		if (preg_match('/^trtk\d+[ -]{0,3}\[\d+\/\d+\][ -]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^trtk\d+[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -6238,7 +6202,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //<<<usenet-space-cowboys.info>>>  <<<Powered by https://secretusenet.com>< "Justin_Bieber-Believe_Acoustic-2013-pLAN9_usenet-space-cowbys.info.rar" >< 4/6 (78.65 MB) >< 60.84 MB > yEnc
-		if (preg_match('/^.+?usenet-space.+?Powered by.+? "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^.+?usenet-space.+?Powered by.+? "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 .
 					   '.+? \d+\/\d+ \(\d+[.,]\d+ [kKmMgG][bB]\) .+? \d+[.,]\d+ [kKmMgG][bB] .+?yEnc$/',
 					   $this->subject,
@@ -6246,7 +6210,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //"The Absence - Riders Of The Plague" [00/14] - "the_absence-riders_of_the_plague.nzb" yEnc
-		if (preg_match('/"(.+)"[-_ ]{0,3}[\(\[]\d+\/(\d+[\)\]])[-_ ]{0,3}".+(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
+		if (preg_match('/"(.+)"[-_\s]{0,3}[\(\[]\d+\/(\d+[\)\]])[-_\s]{0,3}".+(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -6254,39 +6218,39 @@ class ReleaseCleaning
 		}
 		//( Albert Cummings Albums 6x By Dready Niek (1999-2012) )  ( ** By Dready Niek ** ) [11/20] - "Albert Cummings Albums 6x By Dready Niek (1999-2012).part10.rar" yEnc
 		//( Fat Freddy's Drop - Blackbird (2013) -- By Dready Niek ) -- By Dready Niek ) [01/15] - "Fat Freddy's Drop - Blackbird (2013) -- By Dready Niek.par2" yEnc
-		if (preg_match('/\( (.+?)\)[-_ ]{0,3}( |\().+\)[-_ ]{0,3}[\(\[]\d+\/(\d+[\)\]])[-_ ]{0,3}".+(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
+		if (preg_match('/\( (.+?)\)[-_\s]{0,3}( |\().+\)[-_\s]{0,3}[\(\[]\d+\/(\d+[\)\]])[-_\s]{0,3}".+(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //( Addison_Road-Addison_Road-2008 ) [01/10] - "01. Addison Road - This Could Be Our Day.mp3" yEnc
-		if (preg_match('/\( (.+?) \)[-_ ]{0,3}[\(\[]\d+\/(\d+[\)\]])[-_ ]{0,3}".+(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
+		if (preg_match('/\( (.+?) \)[-_\s]{0,3}[\(\[]\d+\/(\d+[\)\]])[-_\s]{0,3}".+(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(????) [0/8] - Crionics Post - Alice In Chains - Dirt REPOST"Alice In Chains - Dirt.nzb" yEnc
-		if (preg_match('/^.+?\[\d+\/(\d+\][-_ ]{0,3}.+?)[-_ ]{0,3}("|#34;)(.+?)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}("|#34;))[-_ ]{0,3}yEnc$/',
+		if (preg_match('/^.+?\[\d+\/(\d+\][-_\s]{0,3}.+?)[-_\s]{0,3}("|#34;)(.+?)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}("|#34;))[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[3];
 		} //(????) [001/153] - "C4 House Party Horse Meat Disco Set 6.nfo" C4 House Party Horse Meat Disco Set 6 yEnc
-		if (preg_match('/^\(\?+\) \[\d+\/\d+\][ -]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\?+\) \[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . '.+yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(????) [19/22] - C.K.N. Demo 85  "19-rotten system.mp3" yEnc
-		if (preg_match('/^\(\?+\) \[\d+\/\d+\] - (.+)[ -]{0,3}".+?' . $this->e0 . '.+yEnc$/',
+		if (preg_match('/^\(\?+\) \[\d+\/\d+\] - (.+)[-_\s]{0,3}".+?' . $this->e0 . '.+yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(03/11) "Europe - Discography (1983 - 2009) (320 kbps CBR)  www.brothers-of-usenet.org - empfehlen - Newsconnection.par2" yEnc
 		//(03/11) "Evanescence Diskographie (1998-2011) www.brothers-of-usenet.org - empfehlen - Newsconnection.par2" yEnc
-		if (preg_match('/^\(\d+\/\d+\)[ -]{0,3}"(.+?) {1,3}www\.brothers-of-usenet\.org - empfehlen - Newsconnection' .
+		if (preg_match('/^\(\d+\/\d+\)[-_\s]{0,3}"(.+?) {1,3}www\.brothers-of-usenet\.org - empfehlen - Newsconnection' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -6294,28 +6258,28 @@ class ReleaseCleaning
 			return $match[1];
 		} //(107/123) - "Mark.EG.M.Zone.Rave.Tape.Packs.Hard.Trance.1990s.vol006+04.PAR2" - 11.39 GB yEnc
 		//(12/16) "Horrid Henry The Movie - Original Soundtrack.vol00+01.PAR2" - 102.32 MB - yEnc
-		if (preg_match('/^\(\d+\/\d+\)[ -]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\d+\/\d+\)[-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e2,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[002/123] - "Mark.EG.M.Zone.Rave.Tape.Packs.Hard.Trance.1990s.part001.rar" yEnc
-		if (preg_match('/^\[\d+\/\d+\][ -]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //< usenetrevolution > <-> Partner of ssl-news.info <-> Anastacia.-.It's.a.Mans.World  [04/15] - "Anastacia.-.It's.a.Mans.World.part01.rar" - 100,47 MB - yEnc
-		if (preg_match('/^.+usenetrevolution.+Partner of ssl-news\.info.+\[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^.+usenetrevolution.+Partner of ssl-news\.info.+\[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e2,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //<<<Old but Sold>>>  <<< >< >< "German Top 50 ODC - 12.08.2013.nfo" >< 02/33 (541,61 MB) >< 10,93 kB > yEnc
-		if (preg_match('/^.+Old but Sold.+>< "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^.+Old but Sold.+>< "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . ' >< \d+\/\d+ \(\d+[.,]\d+ [kKmMgG][bB]\).+ yEnc$/',
 					   $this->subject,
 					   $match)
@@ -6323,22 +6287,22 @@ class ReleaseCleaning
 			return $match[1];
 		} //<<< <ghost-of-usenet.org> <"MC Basstard Diskographie 16CDs 2000-2011 MP3 - Ghost.part08.rar"> >www.SSL-News.info<  - (10/43) - 1,69 GB yEnc
 		//<<< <ghost-of-usenet.org> >"UltraTraxx Rare Remixes - Vol 011 MP3 192kbps.par2"> >www.SSL-News.info<  - (1/9) - 120,82 MB yEnc
-		if (preg_match('/^.+ghost-of-usenet.org[<>] [><]"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^.+ghost-of-usenet.org[<>] [><]"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 .
-					   '> >www\.SSL-News\.info<  - \(\d+\/\d+\)[- ]{0,3}\d+[.,]\d+ [kKmMgG][bB][- ]{0,3}yEnc$/',
+					   '> >www\.SSL-News\.info<  - \(\d+\/\d+\)[-_\s]{0,3}\d+[.,]\d+ [kKmMgG][bB][-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //BY REQ:........! - "Keith Whitley - All American Country - .par2" [06/22]  yEnc
-		if (preg_match('/^BY REQ.+ - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^BY REQ.+ - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   ' \[\d+\/\d+\]  yEnc$/i',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Der etwas andere Mix - Wilde Herzenmix (auf wunsch) neu (by dem verrÃ¼ckten Lordi) (1/8) "Der etwas andere Mix - Wilde Herzenmix.par2" yEnc
-		if (preg_match('/^Der etwas.+ \(\d+\/\d+\) "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^Der etwas.+ \(\d+\/\d+\) "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . '.+yEnc$/i',
 					   $this->subject,
 					   $match)
@@ -6346,26 +6310,26 @@ class ReleaseCleaning
 			return $match[1];
 		} //DJ Inferno Beatport Xtreme September 2011[63/66] - "DJ Inferno Beatport Xtreme September 2011.vol073+55.PAR2" upp o-o  yEnc
 		//Kastelruther Spatzen - Weihnachten Bei Uns Daheim (2011) (22/25) "Kastelruther Spatzen - Weihnachten Bei Uns Daheim (2011).vol00+1.PAR2" - 113,03 MB -  Tapier 13.11.02 yEnc
-		if (preg_match('/^.+[\[\(]\d+\/\d+[\)\]][ -]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^.+[\[\(]\d+\/\d+[\)\]][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . '.+yEnc$/i',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //"8 Wenn ich einmal gross bin .mp3" Koelschefetz postet.Die Filue -Immer Wigger  yEnc
-		if (preg_match('/^"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 . '.+yEnc$/',
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 . '.+yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Queens Of The Stone Age - Rated R (2000) (10th Anniversary Deluxe Edition 2010) [EAC/Lame V0] "QU2 - Queens of the Stone Age - Rated R.M3u" yEnc
-		if (preg_match('/^.+"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 . '.+yEnc$/',
+		if (preg_match('/^.+"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 . '.+yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //squeeze-east side story-nmr- [01/14] - 01-squeeze-in quintessence.mp3  yEnc
-		if (preg_match('/^(.+?)- [\[\(]\d+\/\d+[\)\]][ -]{0,3}\d\d.+?([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})  yEnc$/',
+		if (preg_match('/^(.+?)- [\[\(]\d+\/\d+[\)\]][-_\s]{0,3}\d\d.+?([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})  yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -6386,21 +6350,21 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //(01/15) "Dafuniks - Enter The Sideshow Groove.rar.001"by_Funkeefly yEnc
-		if (preg_match('/^\(\d+\/\d+\) "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^\(\d+\/\d+\) "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   'by_Funkeefly yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //trtk09920 - [01/12] - "Guido Negraszus - Night Cafe Iii (Freedom Travellers) (2012)(320).par2" yEnc
-		if (preg_match('/^trtk\d+[ -]{0,3}\[\d+\/\d+\][ -]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^trtk\d+[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(01/20) "Oz Discography by Grave Digger.par2" - 445,72 MB - yEnc
-		if (preg_match('/^\(\d+\/\d+\) "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e2,
+		if (preg_match('/^\(\d+\/\d+\) "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e2,
 					   $this->subject,
 					   $match)
 		) {
@@ -6412,7 +6376,7 @@ class ReleaseCleaning
 		) {
 			return $match[2];
 		} //<<< <ghost-of-usenet.org> <"Dream Dance Vol. 21-30 - 20CDs MP3 - Ghost.part20.rar"> >www.SSL-News.info<  - (22/32) - 2,45 GB yEnc
-		if (preg_match('/^.+ghost-of-usenet\.org.+"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^.+ghost-of-usenet\.org.+"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 .
 					   '> >www\.SSL-News\.info<  - \(\d+\/\d+\) - \d+[.,]\d+ [kKmMgG][bB] yEnc$/',
 					   $this->subject,
@@ -6437,7 +6401,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //<<<Usenet-Space-Cowboys.info>>><<<Fuzzy>>> <Powered by https://secretusenet.com> < "Alice_Cooper-Trash-1989-Wyse.nfo" >< 2/8 (89,39 MB) >< 17,21 kB > yEnc
-		if (preg_match('/^<<<usenet-space-cowboys\.info>>>.+secretusenet\.com> < "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^<<<usenet-space-cowboys\.info>>>.+secretusenet\.com> < "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 .
 					   ' >< \d+\/\d+ \(\d+[.,]\d+ [kKmMgG][bB]\) >< \d+[.,]\d+ [kKmMgG][bB] > yEnc$/i',
 					   $this->subject,
@@ -6446,21 +6410,21 @@ class ReleaseCleaning
 			return $match[1];
 		} //>>> www.lords-of-usenet.org <<< "Chris De Burgh - The Getaway.par2" - [1/9] - [115,51 MB] yEnc
 		//>>> www.lords-of-usenet.org <<< "Das Deutsche Schlager Magazin Die Maxis 1 2CD.par2" [01/12] - 205,70 MB yEnc
-		if (preg_match('/^>>> www.lords-of-usenet\.org <<< "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^>>> www.lords-of-usenet\.org <<< "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 .
-					   '[-_ ]{0,3}\[\d+\/\d+\] - (\[)?\d+[.,]\d+ [kKmMgG][bB](\])? yEnc$/i',
+					   '[-_\s]{0,3}\[\d+\/\d+\] - (\[)?\d+[.,]\d+ [kKmMgG][bB](\])? yEnc$/i',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[BFMP3] [Barrelhouse_Time Frames.nzb] [00/18] yEnc
-		if (preg_match('/^\[.+?\][-_ ]{0,3}\[([\w.,& ()\[\]\'\`-]{8,}?)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}\])[-_ ]{0,3}[\(\[]\d+\/\d+[\)\]][-_ ]{0,3}yEnc$/',
+		if (preg_match('/^\[.+?\][-_\s]{0,3}\[([\w.,& ()\[\]\'\`-]{8,}?)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}\])[-_\s]{0,3}[\(\[]\d+\/\d+[\)\]][-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Metallica - Ride The Lightning    "01 - Fight Fire With Fire.mp3" yEnc
-		if (preg_match('/^([\w.,& ()\[\]\'\`-]{8,}?)[-_ ]{0,3}("|#34;)(.+?)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}("|#34;))[-_ ]{0,3}yEnc$/',
+		if (preg_match('/^([\w.,& ()\[\]\'\`-]{8,}?)[-_\s]{0,3}("|#34;)(.+?)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}("|#34;))[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -6473,7 +6437,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //The Refreshments - [1/9] - "The Refreshments - RockÂ´n Roll Christmas [2003].par2" yEnc
-		if (preg_match('/([\w.,& ()\[\]\'\`-]{8,}?)[-_ ]{0,3}[\(\[]\d+\/\d+[\)\]][-_ ]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
+		if (preg_match('/([\w.,& ()\[\]\'\`-]{8,}?)[-_\s]{0,3}[\(\[]\d+\/\d+[\)\]][-_\s]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -6491,7 +6455,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //[01/10] - "Acdc - Fly On The Wall - 1985 -01 - Fly On The Wall -Creative7164.mp3"  yEnc
-		if (preg_match('/^\[\d+\/\d+\][ -]{0,3}"([\w.,& ()\[\]\'\`-]{8,}?)[ -]{0,3}\d+[\w.,& ()\[\]\'\`-]{8,}?' .
+		if (preg_match('/^\[\d+\/\d+\][-_\s]{0,3}"([\w.,& ()\[\]\'\`-]{8,}?)[-_\s]{0,3}\d+[\w.,& ()\[\]\'\`-]{8,}?' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -6519,7 +6483,7 @@ class ReleaseCleaning
 	public function sounds_mp3_dance()
 	{
 		//[2707]Solarstone-Solarstone_Collected_Vol_1-ARDI3177-WEB-2012-TraX "02-solarstone_feat_kym_marsh-day_by_day_(red_jerry_smackthe_bigot_up_remix).mp3" - yEnc
-		if (preg_match('/^\[\d+\](.+?)[-_ ]{0,3}("|#34;)(.+?)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}("|#34;))[-_ ]{0,3}yEnc$/',
+		if (preg_match('/^\[\d+\](.+?)[-_\s]{0,3}("|#34;)(.+?)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}("|#34;))[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -6533,15 +6497,15 @@ class ReleaseCleaning
 	public function sounds_mp3_electronic()
 	{
 		//(03/10) "Washing Machines - Planet-E CH-Basel Ultimate Hardcore - 4.9.1993.vol00+01.PAR2" - 232.39 MB - yEnc
-		if (preg_match('/^\(\d+\/\d+\)[ -]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\d+\/\d+\)[-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e2,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(2/7) "Cosmic Baby live at Energy 1995.vol00+01.PAR2" - 0 B - yEnc
-		if (preg_match('/^\(\d+\/\d+\)[ -]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
-					   $this->e0 . '[- ]{0,3}\d+ [bB][- ]{0,3}yEnc$/',
+		if (preg_match('/^\(\d+\/\d+\)[-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+					   $this->e0 . '[-_\s]{0,3}\d+ [bB][-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -6559,13 +6523,13 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //Alec Empire - Low On Ice  06 - Untitled.mp3  yEnc
-		if (preg_match('/^([\w.,& ()\[\]\'\`-]{8,}?)[ -]{0,3}\d+[ -]{0,3}[\w.,& ()\[\]\'\`-]{8,}?\b.?([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[ -]{0,3}yEnc$/',
+		if (preg_match('/^([\w.,& ()\[\]\'\`-]{8,}?)[-_\s]{0,3}\d+[-_\s]{0,3}[\w.,& ()\[\]\'\`-]{8,}?\b.?([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Selected Songs by Various Artists - Collide - Razor Sharp.mp3  yEnc
-		if (preg_match('/^Selected Songs by Various Artists - ([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[ -]{0,3}yEnc$/',
+		if (preg_match('/^Selected Songs by Various Artists - ([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -6579,31 +6543,31 @@ class ReleaseCleaning
 	public function teevee()
 	{
 		//[######]-[FULL]-[#a.b.teevee@EFNet]-[ Misfits.S01.SUBPACK.DVDRip.XviD-P0W4DVD ] [1/5] - "Misfits.S01.SUBPACK.DVDRip.XviD-P0W4DVD.nfo" yEnc
-		if (preg_match('/^\[#+\]-\[.+?\]-\[.+?\]-\[ (.+?) \][- ]\[\d+\/\d+\][ -]{0,3}("|#34;).+?("|#34;) yEnc$/',
+		if (preg_match('/^\[#+\]-\[.+?\]-\[.+?\]-\[ (.+?) \][- ]\[\d+\/\d+\][-_\s]{0,3}("|#34;).+?("|#34;) yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[34148]-[FULL]-[#a.b.teevee@EFNet]-[Batman.The.Animated.Series.S04E01.DVDRiP.XviD-PyRo]-[00/35] "Batman.The.Animated.Series.S04E01.DVDRiP.XviD-PyRo.nzb" yEnc
-		if (preg_match('/^\[#+\]-\[.+?\]-\[.+?\]-\[(.+?)\][- ]\[\d+\/\d+\][ -]{0,3}".+?" yEnc$/',
+		if (preg_match('/^\[#+\]-\[.+?\]-\[.+?\]-\[(.+?)\][- ]\[\d+\/\d+\][-_\s]{0,3}".+?" yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[38722]-[#a.b.foreign@EFNet]-[ Game.Of.Thrones.S01E01.Der.Winter.Naht.GERMAN.DL.WS.1080p.HDTV.x264-MiSFiTS ]-[01/37] - "misfits-gameofthrones1080-s01e01-sample-sample.par2" yEnc
-		if (preg_match('/^\[#+\]-\[.+?\]-\[ (.+?) \][- ]\[\d+\/\d+\][ -]{0,3}".+?" yEnc$/',
+		if (preg_match('/^\[#+\]-\[.+?\]-\[ (.+?) \][- ]\[\d+\/\d+\][-_\s]{0,3}".+?" yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[#a.b.teevee] Parks.and.Recreation.S01E01.720p.WEB-DL.DD5.1.H.264-CtrlHD - [01/24] - "Parks.and.Recreation.S01E01.720p.WEB-DL.DD5.1.H.264-CtrlHD.nfo" yEnc
-		if (preg_match('/^\[#+\]-\[.+?\]-\[.+?\]-\[ (.+?) \][- ]\[\d+\/\d+\][ -]{0,3}("|#34;).+?("|#34;) yEnc$/',
+		if (preg_match('/^\[#+\]-\[.+?\]-\[.+?\]-\[ (.+?) \][- ]\[\d+\/\d+\][-_\s]{0,3}("|#34;).+?("|#34;) yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[17319]-[FULL]-[#a.b.teevee@EFNet]-[ CSI.New.York.S05E22.720p.HDTV.X264-DIMENSION ]-[01/34] "csi.new.york.522.720p-dimension.nfo" (1/1) (1/1
-		if (preg_match('/\[#+\]-\[.+?\]-\[.+?\]-\[ ?(.+?) ?\][- ]\[\d+\/\d+\][ -]{0,3}("|#34;).+?("|#34;) \(\d+\/\d+\) \(\d+\/\d+$/',
+		if (preg_match('/\[#+\]-\[.+?\]-\[.+?\]-\[ ?(.+?) ?\][- ]\[\d+\/\d+\][-_\s]{0,3}("|#34;).+?("|#34;) \(\d+\/\d+\) \(\d+\/\d+$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -6611,7 +6575,7 @@ class ReleaseCleaning
 		}
 		//(01/37) "Entourage S08E08.part01.rar" - 349,20 MB - yEnc
 		//(01/24) "EGtnu7OrLNQMO2pDbgpDrBL8SnjZDpab.nfo" - 686 B - 338.74 MB - yEnc (1/1)
-		if (preg_match('/^\(\d+\/\d+\) "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^\(\d+\/\d+\) "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   ' - \d.+?B - (\d.+?B -)? yEnc$/',
 					   $this->subject,
 					   $match)
@@ -6628,21 +6592,21 @@ class ReleaseCleaning
 			return $match[1];
 		} //(01/15) - "Oz.S01E01.The.Routine.par2" - 380.18 MB yEnc
 		//(01/87) "Homeland.S03E05.Mini.720p.WEB.DL.DD5.1.H.264-ITSat.par2" - 773,24 MB - yEnc
-		if (preg_match('/^\(\d+\/\d+\)[ -]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\d+\/\d+\)[-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e2,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(????) [10/26] - "The.Young.Riders.S01E02.480pWEB-DL.AAC2.0.H.264-AJP69.part09.rar" yEnc
-		if (preg_match('/^\(\?+\) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\?+\) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(Dgpc) [01/19] - "The.Xtra.Factor.S10E04.PDTVx264.JIVE.par2" yEnc
-		if (preg_match('/^\(Dgpc\) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(Dgpc\) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -6663,14 +6627,14 @@ class ReleaseCleaning
 		} //The Colbert Report [00/12] "The.Colbert.Report.2014.01.20.Scott.Stossel.720p.WEB-DL.AAC2.0.H.264-monkee.nzb" yEnc
 		//Colbert [01/10] "The.Colbert.Report.2013.12.19.Ben Stiller.720p.WEB-DL.AAC2.0.H264-zee.rar" yEnc
 		//Whale Wars (01/30) "Whale.Wars.S06.A.Commander.Rises.PDTV.XviD-ZEN.par2" yEnc
-		if (preg_match('/^[\w ]+[\(\[]\d+\/\d+[\)\]] "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^[\w ]+[\(\[]\d+\/\d+[\)\]] "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //. - [01/42] - "Under.the.Dome.S01E03.Manhunt.1080p.WEB-DL.DD5.1.H.264-NTb.par2" yEnc
-		if (preg_match('/^\. - \[\d+\/\d+\][-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\. - \[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -6694,7 +6658,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //(bf1) [03/31] - "The.Block.AU.Sky.High.S07E61.WS.PDTV.XviD.BF1.part01.sfv" yEnc (1/1)
-		if (preg_match('/^\(bf1\) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(bf1\) \[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -6702,72 +6666,72 @@ class ReleaseCleaning
 			return $match[1];
 		} //"Moving.On.S05E05.HDTV.x264.part19.rar" - (21/28) - Per REQ  yEnc
 		if (preg_match('/^"([\w._-]{8,}?\b)' . $this->e0 .
-					   '[- ]{0,3}\(\d+\/\d+\)[-_ ]{0,3}[\w. -]+[-_ ]{0,3}yEnc$/',
+					   '[-_\s]{0,3}\(\d+\/\d+\)[-_\s]{0,3}[\w. -]+[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(????) [01/20] - "Boxing.Cinnamon vs El Perro.8th.March.2014.PDTV.x264-Sir.Paul.par2" Cinnamon vs El Perro  yEnc
-		if (preg_match('/^\(\?+\)[-_ ]{0,3}\[\d+\/\d+\][-_ ]{0,3}"([\w._-]{8,}?\b)' . $this->e0 .
-					   '[-_ ]{0,3}[\w. -]+[-_ ]{0,3}yEnc$/',
+		if (preg_match('/^\(\?+\)[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}"([\w._-]{8,}?\b)' . $this->e0 .
+					   '[-_\s]{0,3}[\w. -]+[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[REPOST]-"True.Blood.S06E01-E10.HDTV.x264.part094.rar" yEnc
-		if (preg_match('/^\[[\w. -]+\][-_ ]{0,3}"([\w._-]{8,}?\b)' . $this->e1,
+		if (preg_match('/^\[[\w. -]+\][-_\s]{0,3}"([\w._-]{8,}?\b)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(Pretty.Little.Liars.S04E11.Bring.Down.the.Hoe.1080p.WEB-DL.DD5.1.H.264-BS) [31/45] - ""Pretty.Little.Liars.S04E11.Bring.Down.the.Hoe.1080p.WEB-DL.DD5.1.H.264-BS.part29.rar"" yEnc yEnc
-		if (preg_match('/^\([\w. -]{8,}\)[-_ ]{0,3}\[\d+\/\d+\][-_ ]{0,3}""([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
-					   $this->e0 . '"[-_ ]{0,3}[\w. -]+[-_ ]{0,3}yEnc$/',
+		if (preg_match('/^\([\w. -]{8,}\)[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}""([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+					   $this->e0 . '"[-_\s]{0,3}[\w. -]+[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[]-[FULL]-[a.b.teevee]-[Hannibal.S01.Special.Ceuf.720p.WEB-DL.DD5.1.H-264-NTb]-[03/40] - "Hannibal.S01.Special.Ceuf.720p.WEB-DL.DD5.1.H-264-NTb.part01.rar"  yEnc
-		if (preg_match('/^[\w(). -]+[-_ ]{0,3}\[\d+\/\d+\][-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^[\w(). -]+[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[Ax.Men.S06E18.Risking.it.All.720p.WEB-DL.AAC.2.0.H.264-AKS74u]-[07/68] "Ax.Men.S06E18.Risking.it.All.720p.WEB-DL.AAC.2.0.H.264-AKS74u.r04" - 1.46 GB yEnc
-		if (preg_match('/^\[[\w. -]{8,}\][-_ ]{0,3}\[\d+\/\d+\][-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\[[\w. -]{8,}\][-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e2,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[ As requested ] Pawn.Stars.S07E15.Colt.To.The.Touch.720p.WEB-DL.AAC2.0.H.264.par2  yEnc
-		if (preg_match('/^\[ As requested \][-_ ]{0,3}([\w. -]+)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[-_ ]{0,3}yEnc$/',
+		if (preg_match('/^\[ As requested \][-_\s]{0,3}([\w. -]+)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Alaska.The.Last.Frontier.S02E15.HDTV.XviD-AFG.nzb  yEnc
-		if (preg_match('/^([\w.-]+)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[-_ ]{0,3}yEnc$/',
+		if (preg_match('/^([\w.-]+)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //09/13 The.Exes.S03E10.My.Ex-Boyfriends.Wedding.WEBRip.x264.AAC-NoGRP.vol007+05.PAR2  yEnc
-		if (preg_match('/^\d+\/\d+[-_ ]{0,3}([\w. -]+)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[-_ ]{0,3}yEnc$/',
+		if (preg_match('/^\d+\/\d+[-_\s]{0,3}([\w. -]+)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[14/16] - Game.of.Thrones.S03E04.720p to 640x480 for size.vol11+08.PAR2  yEnc
 		//[22/39] LEGO.Batman.The.Movie.2013.1080p.WEB-DL.DD5.1.H.264-YFN.part21.rar  yEnc
-		if (preg_match('/^\[\d+\/\d+\][-_ ]{0,3}([\w. -]+)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[-_ ]{0,3}yEnc$/',
+		if (preg_match('/^\[\d+\/\d+\][-_\s]{0,3}([\w. -]+)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(tv) ncis.1021.hdtv-lol [1/8] - "ncis.1021.hdtv-lol.sfv" yEnc
-		if (preg_match('/^\[\]-\[FULL\]-\[a\.b\.teevee\]-\[[\w.-]+\][-_ ]{0,3}\[\d+\/\d+\][-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\[\]-\[FULL\]-\[a\.b\.teevee\]-\[[\w.-]+\][-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -6775,7 +6739,7 @@ class ReleaseCleaning
 			return $match[1];
 		} //(05/29) - LoK214 - "The.Legend.of.Korra.S02E14.Light.in.the.Dark.1080p.WEB-DL.DD5.1.H.264-BS.part04.rar" - 1,01 GB - yEnc
 		//(34/45) -Continuum.S02E11.1080p.WEB-DL.AAC2.0.H264- "Continuum.S02E11.1080p.WEB-DL.AAC2.0.H264.part33.rar" - 1.76 GB - yEnc
-		if (preg_match('/^\(\d+\/\d+\)[-_ ]{0,3}[\w. -]+[-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\d+\/\d+\)[-_\s]{0,3}[\w. -]+[-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e2,
 					   $this->subject,
 					   $match)
@@ -6783,7 +6747,7 @@ class ReleaseCleaning
 			return $match[1];
 		} //[ TVPower ] - "Dexter.S07E10.720p.HDTV.x264-NLsubs.par2" yEnc
 		//[ TVPower ] - [010/101] - "Desperate.Housewives.S08Disc2.NLsubs.part009.rar" yEnc
-		if (preg_match('/^\[ [A-Za-z]+ \] - (\[\d+\/\d+\] - )?"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\[ [A-Za-z]+ \] - (\[\d+\/\d+\] - )?"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -6796,14 +6760,14 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //(www.Thunder-News.org) >CD1< <Sponsored by Secretusenet> - "moovee-fastest.cda.par2" yEnc
-		if (preg_match('/^\(www\..+?\) .+? <Sponsored.+?> - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(www\..+?\) .+? <Sponsored.+?> - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //<<<Pitbull>>> usenet-space-cowboys.info <<<Powered by https://secretusenet.com>< "S05E03 Pack die Badehose ein_usenet-space-cowbys.info.par2" >< 01/10 (411,16 MB) >< 3,48 kB > yEnc
-		if (preg_match('/\.info .+?Powered by .+?\.com "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/\.info .+?Powered by .+?\.com "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . ' .+? \d+\/\d+ \(\d+[,.]\d+ [mMkKgG][bB]\) .+? yEnc$/',
 					   $this->subject,
 					   $match)
@@ -6837,7 +6801,7 @@ class ReleaseCleaning
 		) {
 			return $match[2];
 		} //[84491]-[FULL]-[#a.b.teevee@EFNet]-[ Tennis.Australian.Open.2012.Mens.1st.Round.Lleyton.Hewitt.vs.Cedrik-Marcel.Stebe.720p.HDTV.x264-LMAO ]-[04/97] - "tennis.australian.open.2012.mens.1st.round.lleyton.hewitt.vs.cedrik-marcel.stebe.720p.hdtv.x264-lmao.r01
-		if (preg_match('/^\[[\d#]+\]-\[.+?\]-\[.+?\]-\[ (.+?) \][- ]\[\d+\/\d+\][ -]{0,3}("|#34;).+?/',
+		if (preg_match('/^\[[\d#]+\]-\[.+?\]-\[.+?\]-\[ (.+?) \][- ]\[\d+\/\d+\][-_\s]{0,3}("|#34;).+?/',
 					   $this->subject,
 					   $match)
 		) {
@@ -6885,7 +6849,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //Touch.S02E09.PROPER.1080p.WEB-DL.DD5.1.H.264-LFF NoAds [01/30] - "Touch.S02E09.PROPER.1080p.WEB-DL.DD5.1.H.264-LFF.nfo" yEnc
-		if (preg_match('/^(.+?) NoAds \[\d+\/\d+\][ -]{0,3}("|#34;).+?("|#34;) yEnc$/',
+		if (preg_match('/^(.+?) NoAds \[\d+\/\d+\][-_\s]{0,3}("|#34;).+?("|#34;) yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -6925,7 +6889,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //[Mercy.S01.720p.WEB-DL.DD5.1.h.264-LP-MMI]-[ Mercy.S01E18.Of Course I'm Not.720p.WEB-DL.DD5.1.H.264-LP ]-[01/24] - "Mercy.S01E18.Of Course I'm Not.720p.WEB-DL.DD5.1.H.264-LP.par2" yEnc
-		if (preg_match('/^\[.+\][ -]{0,3}\[ (.+) \][ -]{0,3}\[\d+\/\d+\][ -]{0,3}("|#34;).+("|#34;) yEnc$/',
+		if (preg_match('/^\[.+\][-_\s]{0,3}\[ (.+) \][-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}("|#34;).+("|#34;) yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -6979,39 +6943,39 @@ class ReleaseCleaning
 		if (preg_match('/^<UHQ>< (.+) >- \[\d+\/\d+\] - ".+" yEnc$/', $this->subject, $match)) {
 			return $match[1];
 		} //Sam & Cat S01E06 BabysitterWar [1 of 9] "Sam & Cat - S01E06 - BabysitterWar-ORIG.mp4" yEnc
-		if (preg_match('/[Ss]\d+[Ee]\d+.+\[\d+ of \d+\] "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/[Ss]\d+[Ee]\d+.+\[\d+ of \d+\] "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Sam & Cat - S01E10 - BabysittingCommercial - "Sam & Cat - S01E10 - BabysittingCommercial.m4v" yEnc
-		if (preg_match('/[Ss]\d+[Ee]\d+.+- "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/[Ss]\d+[Ee]\d+.+- "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[12/22] - "stargate_sg-1.6x12.unnatural_selection.ws_dvdrip_xvid-fov.avi"  yEnc
-		if (preg_match('/^\[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/^\[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //For teevee - "Silent.Witness.S17E05.480p.HDTV.x264-mSD.mkv.sfv" [01/23] yEnc
-		if (preg_match('/^For teevee - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^For teevee - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   ' \[\d+\/\d+\][ _-]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //"Mad.Men.S06E11.HDTV.x264-2HD.par2" yEnc
-		if (preg_match('/^"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //"Marvels.Agents.of.S.H.I.E.L.D.S01E07.HDTV.XviD-FUM.avi.nfo" [09/16] yEnc
-		if (preg_match('/^"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   '[ _-]{0,3}\[\d+\/(\d+\])[ _-]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
@@ -7022,93 +6986,93 @@ class ReleaseCleaning
 			return $match[1];
 		} //-=->EnJoY!<-=- (Day1/5) [01/17] - "The Machine that Changed the World S01E01 - Giant Brains - 1992 (480p,x264).nfo" yEnc
 		//-=>EnJoY!<-=->Req:The Animated Alias:Tribunal (2004)<=- [01/17] - "Da Vinci's Demons - S01E07 - The Hierophant (480p,x264).nfo" yEnc
-		if (preg_match('/^.+EnJoY\!.+\[\d+\/\d+\][-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^.+EnJoY\!.+\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //The.Colbert.Report.2013.07.29.The.Lumineers.WEBRip.AAC2.0.H.264-DCK [01/11] - "The.Colbert.Report.2013.07.29.The.Lumineers.WEBRip.AAC2.0.H.264-DCK.mp4"  yEnc
-		if (preg_match('/^[\w. -]+\[\d+\/\d+\][- ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^[\w. -]+\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //the.lockerbie.bombing.720p.HDTV.x264-fatboy  - "the.lockerbie.bombing.720p.HDTV.x264-fatboy.nfo" - 829.12 MB - yEnc
-		if (preg_match('/^[\w. -]+[-_ ]{0,4}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e2,
+		if (preg_match('/^[\w. -]+[-_ ]{0,4}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e2,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //The.Vampire.Diaries.S05E13.HDTV.X264"The.Vampire.Diaries.S05E13.HDTV.X264.vol40+36.PAR2" yEnc
-		if (preg_match('/^[\w. -]+[-_ ]{0,4}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/^[\w. -]+[-_ ]{0,4}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[Doomsday.Preppers.S03E11.720p.HDTV.x264-TTVa] - NOT ORIGINAL RARS, REPACKED. Sorry. - (18/35) "Doomsday.Preppers.S03E11.720p.HDTV.x264-TTVa.r16" - 1.31 GB - yEnc
-		if (preg_match('/^\[[\w.-]+\][-_ ]{0,3}.+[-_ ]{0,3}\(\d+\/\d+\) "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\[[\w.-]+\][-_\s]{0,3}.+[-_\s]{0,3}\(\d+\/\d+\) "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e2,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[CONAN] Conan.2013.12.12.Adam.Levine.WEBRiP.x264-CoCo [Missed Conan Episodes] - [22/32] - "conan.2013.12.12.adam.levine.webrip.x264-coco.r18" yEnc
-		if (preg_match('/^\[[\w. -]+\][-_ ]{0,3}.+[-_ ]{0,3}[\[\(]\d+\/\d+[\]\)][-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\[[\w. -]+\][-_\s]{0,3}.+[-_\s]{0,3}[\[\(]\d+\/\d+[\]\)][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Dave Gorman Modern Life is Goodish Series 1 - [114 of 126] - "Dave Gorman Modern Life is Goodish S01E06.mkv.008" yEnc
-		if (preg_match('/^[\w -]+[-_ ]{0,3}[\[\(]\d+ of \d+[\]\)][-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^[\w -]+[-_\s]{0,3}[\[\(]\d+ of \d+[\]\)][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(1/9) "Tronens_Spil_S03E08.par2" yEnc
-		if (preg_match('/^[\[\(]\d+\/\d+[\]\)][-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^[\[\(]\d+\/\d+[\]\)][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //07/14  "Sister.Wives.S06E06.STV.XviD-kralcx.vol000+01.PAR2" yEnc
-		if (preg_match('/^\d+\/\d+[- ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/^\d+\/\d+[-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //07/14  "Sister.Wives.S06E06.STV.XviD-kralcx.vol000+01.PAR2" yEnc
-		if (preg_match('/^\d+\/\d+[- ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/^\d+\/\d+[-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[ 749,75 MB ]-[ 01/20 ]-"choir.of.young.believers-this.is.for.the.white.in.your.eyes.live.2009.pdtv.x264.nfo" yEnc
-		if (preg_match('/^\[ \d+[.,]\d+ [kKmMgG][bB] \][-_ ]{0,3}\[ \d+\/\d+ \][-_ ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\[ \d+[.,]\d+ [kKmMgG][bB] \][-_\s]{0,3}\[ \d+\/\d+ \][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //<Enjoy> Hannibal.S01E04.mp4  yEnc
-		if (preg_match('/^<Enjoy> ([\w. ()-]{8,}?\b)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[- ]{0,3}yEnc$/',
+		if (preg_match('/^<Enjoy> ([\w. ()-]{8,}?\b)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //A5F - [ NOVA.S40E19.Manhunt.Boston.Bombers.HDTV.x264-A5F ] - [01/43] - "NOVA.S40E19.Manhunt.Boston.Bombers.HDTV.x264-A5F.sfv" (not.teevee) yEnc
-		if (preg_match('/^A5F[- ]{0,3}\[ ([\w. ()-]{8,}?\b) \][- ]{0,3}\[\d+\/\d+\][- ]{0,3}".+?' .
+		if (preg_match('/^A5F[-_\s]{0,3}\[ ([\w. ()-]{8,}?\b) \][-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}".+?' .
 					   $this->e0 . '.+yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Arrested.Development.S04E08.x264(04/164) "Arrested.Development.S04E08.WEBRiP.x264.part03.rar" - 197.21 MB - yEnc
-		if (preg_match('/^[\w. ()-]{8,}?\b\(\d+\/\d+\)[- ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^[\w. ()-]{8,}?\b\(\d+\/\d+\)[-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e2,
 					   $this->subject,
 					   $match)
@@ -7265,7 +7229,7 @@ class ReleaseCleaning
 			return $match[1];
 		} //World's.Strongest.Man.2013.Episode1.Webrip [01/46] - "2013x01.nfo" yEnc
 		if (preg_match('/^([\w.\' -]{8,}) [\[\(]\d+\/\d+[\]\)] - ".+?' . $this->e0 .
-					   '([- ]{0,3}[\w.-]+)?[ _-]{0,3}yEncs$/',
+					   '([-_\s]{0,3}[\w.-]+)?[ _-]{0,3}yEncs$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -7303,38 +7267,38 @@ class ReleaseCleaning
 			return $match[1];
 		} //(bf1) [03/31] - "The.Block.AU.Sky.High.S07E56.WS.PDTV.XviD.BF1.part01.sfv" yEnc
 		//[REPOST] - [01/33] - "Breaking.Bad.S05E16.Felina.1080p.WEB-DL.DD5.1.H.264-BS.par2" yEnc
-		if (preg_match('/^[\[\(]\w+[\]\)][- ]{0,3}\[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^[\[\(]\w+[\]\)][-_\s]{0,3}\[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(????) [01/11] - "The Carrie Diaries - S02E01 - HDTV x264-LOL.sfvCarrieDiariesS02E01" yEnc
-		if (preg_match('/^\(\?+\)[- ]{0,3}[\(\[]\d+\/\d+[\]\)][- ]{0,3}"(.+?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})Carrie.+"[- ]{0,3}yEnc$/',
+		if (preg_match('/^\(\?+\)[-_\s]{0,3}[\(\[]\d+\/\d+[\]\)][-_\s]{0,3}"(.+?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})Carrie.+"[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(noname 0307) NCIS.S11E14.HDTV.x264-LOL[rarbg].vol047+40.PAR2  yEnc
-		if (preg_match('/^\([\w. ]+\)[- ]{0,3}([\w+. -]{8,})(\[\w+\])?([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[- ]{0,3}yEnc$/',
+		if (preg_match('/^\([\w. ]+\)[-_\s]{0,3}([\w+. -]{8,})(\[\w+\])?([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[014/144] - The Bible (2013) - S1E01 - In the Beginning AVC 480p.vol31+27.PAR2  yEnc
-		if (preg_match('/^\[\d+\/\d+\][- ]{0,3}([\w.() -]{8,}?\b)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[- ]{0,3}yEnc$/',
+		if (preg_match('/^\[\d+\/\d+\][-_\s]{0,3}([\w.() -]{8,}?\b)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //Saturday Morning Classic Return-to-the-Planet-of-the-Apes-S01E03 - Lagoon of Peril.avi.001  yEnc
-		if (preg_match('/^Saturday Morning Classic ([\w.()-]{8,}?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[- ]{0,3}yEnc$/',
+		if (preg_match('/^Saturday Morning Classic ([\w.()-]{8,}?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //"NCIS S11E21" yEnc - [01/21] - "NCIS.S11E21.hdtv-lol.par2" yEnc
-		if (preg_match('/^"[\w ]+" yEnc[- ]{0,3}\[\d+\/\d+\][- ]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^"[\w ]+" yEnc[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -7347,7 +7311,7 @@ class ReleaseCleaning
 		) {
 			return $match[2];
 		} //"Arrow S02E07" yEnc
-		if (preg_match('/^"([\w. -]{8,})"[- ]{0,3}yEnc$/', $this->subject, $match)) {
+		if (preg_match('/^"([\w. -]{8,})"[-_\s]{0,3}yEnc$/', $this->subject, $match)) {
 			return $match[1];
 		}
 		return array(
@@ -7424,21 +7388,21 @@ class ReleaseCleaning
 		}
 		//"Forbrydelsen.II.S01E03.2009.DVDRip.MULTi.DD5.1.x264.nzb" - 213.54 kB - yEnc
 		//"Futurama S07E01 The Bots And The Bees.vol26+23.PAR2" - 8.49 MB - 193.51 MB - yEnc
-		if (preg_match('/^"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   '( - \d+([.,]\d+ [kKmMgG])?[bB])? - \d+([.,]\d+ [kKmMgG])?[bB] - yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //"Rijdende.Rechter.-.19x01.-.Huisbiggen.1080p.MKV-BNABOYZ.part38.rar" - [40/56] - yEnc
-		if (preg_match('/^"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   ' - \[\d+\/(\d+\]) - yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(003/104) "blackcave1001.part002.rar" - 4,83 GB - yEnc
-		if (preg_match('/^\(\d+\/\d+\) "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^\(\d+\/\d+\) "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   ' - \d+[.,]\d+ [kKmMgG][bB] - yEnc$/',
 					   $this->subject,
 					   $match)
@@ -7451,7 +7415,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //X-Men Evolution - 2000 -  [01/20] - "X-Men Evolution - 3x03 - Mainstream.par2" yEnc
-		if (preg_match('/^[a-zA-Z0-9 -_\.]+ \[\d+\/(\d+\]) - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^[a-zA-Z0-9 -_\.]+ \[\d+\/(\d+\]) - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -7461,14 +7425,14 @@ class ReleaseCleaning
 		//'X-Files' Season 1 XviD RETRY  "Files101.par2" 004/387
 		//'X-Files' Season 5 XviD "Files502.par2" 018/321 yEnc
 		//'X-Files' Season 2 XviD  "Files223.part2.rar" 356/401  yEnc
-		if (preg_match('/^([a-zA-Z0-9 -_\.]+) (RETRY)?[-_ ]{0,3}".+?' . $this->e0 .
+		if (preg_match('/^([a-zA-Z0-9 -_\.]+) (RETRY)?[-_\s]{0,3}".+?' . $this->e0 .
 					   ' \d+(\/\d+)( {0,2}yEnc)?$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //"the.tudors.s03e03.nfo" yEnc
-		if (preg_match('/^"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
@@ -7483,7 +7447,7 @@ class ReleaseCleaning
 		) {
 			return $match[4];
 		} //[ Angel.S01.NTSC.DVDRip.DD2.0.x264.CRF-OtakuLoser ]-[003/550] - "Angel.S01E01.City.Of.NTSC.DVDRip.DD2.0.CRF.x264-OtakuLoser.part01.rar" yEnc
-		if (preg_match('/^(.+?)[-_ ]{0,3}("|#34;)(.+?)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}("|#34;))[-_ ]{0,3}yEnc$/',
+		if (preg_match('/^(.+?)[-_\s]{0,3}("|#34;)(.+?)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}("|#34;))[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -7495,7 +7459,7 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //(03/19) "Damages S04E02 FR.avi" - 5,49 GB yEnc
-		if (preg_match('/^\(\d+(\/\d+\)) "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e2,
+		if (preg_match('/^\(\d+(\/\d+\)) "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e2,
 					   $this->subject,
 					   $match)
 		) {
@@ -7523,7 +7487,7 @@ class ReleaseCleaning
 	public function u4e()
 	{
 		//"Angry Birds USA PSN PSP-NRP.exe" yEnc
-		if (preg_match('/^"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
+		if (preg_match('/^"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
@@ -7551,8 +7515,8 @@ class ReleaseCleaning
 	public function usenetrevolution()
 	{
 		//[3/3] - "Berwein Saskia - Leitner und Grohmann 02 - Herzenskaelte.epub.vol0+1.par2" - 860,05 kB {UR - powered by secretusenet.com} yEnc
-		if (preg_match('/^\[\d+\/\d+\][ _-]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
-					   $this->e0 . '[- ]{0,3}\d+[.,]\d+ [kKmMgG][bB].+secretusenet\.com.+yEnc$/i',
+		if (preg_match('/^\[\d+\/\d+\][ _-]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+					   $this->e0 . '[-_\s]{0,3}\d+[.,]\d+ [kKmMgG][bB].+secretusenet\.com.+yEnc$/i',
 					   $this->subject,
 					   $match)
 		) {
@@ -7560,7 +7524,7 @@ class ReleaseCleaning
 		}
 		//- UR-powered by secretusenet.com - [3/3] - "Berg Ellen - Zur Hoelle mit Seniorentellern!.vol0+1.par2" - 1,24 MB yEnc
 		if (preg_match('/^.secretusenet\.com[ _-]{0,3}\[\d+\/\d+\][ _-]{0,3}"([\w.,&! ()\[\]\'-]{8,}?\b.?)' .
-					   $this->e0 . '[- ]{0,3}\d+[.,]\d+ [kKmMgG][bB][- ]{0,3}yEnc$/i',
+					   $this->e0 . '[-_\s]{0,3}\d+[.,]\d+ [kKmMgG][bB][-_\s]{0,3}yEnc$/i',
 					   $this->subject,
 					   $match)
 		) {
@@ -7568,7 +7532,7 @@ class ReleaseCleaning
 		}
 		//- "Alcohol 120 Retail v2.0.2.5629German-UR.info.rar" - (2/3) -  13,35 MB -...:::UR.info-SecretUsenet.com:::... yEnc
 		if (preg_match('/^"([\w.,&! ()\[\]\'-]{8,}?\b.?)' . $this->e0 .
-					   '[ _-]{0,3}\(\d+\/\d+\)[ _-]{0,3}[- ]{0,3}\d+[.,]\d+ [kKmMgG][bB].+secretusenet\.com.+yEnc$/i',
+					   '[ _-]{0,3}\(\d+\/\d+\)[ _-]{0,3}[-_\s]{0,3}\d+[.,]\d+ [kKmMgG][bB].+secretusenet\.com.+yEnc$/i',
 					   $this->subject,
 					   $match)
 		) {
@@ -7593,7 +7557,7 @@ class ReleaseCleaning
 		}
 		//-Panzer.Command.Kharkov-SKIDROW - [1/7] - "-Panzer.Command.Kharkov-SKIDROW.rar" yEnc
 		//-AssMasterpiece.12.07.09.Alexis.Monroe.XXX.1080p.x264-SEXORS - [1/7] - #34;-AssMasterpiece.12.07.09.Alexis.Monroe.XXX.1080p.x264-SEXORS.rar#34; yEnc
-		if (preg_match('/.*[\(\[]\d+\/\d+[\)\]][-_ ]{0,3}("|#34;)(.+?)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4})("|#34;)(.+?)yEnc$/',
+		if (preg_match('/.*[\(\[]\d+\/\d+[\)\]][-_\s]{0,3}("|#34;)(.+?)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4})("|#34;)(.+?)yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -7627,7 +7591,7 @@ class ReleaseCleaning
 		}
 		//-Panzer.Command.Kharkov-SKIDROW - [1/7] - "-Panzer.Command.Kharkov-SKIDROW.rar" yEnc
 		//-AssMasterpiece.12.07.09.Alexis.Monroe.XXX.1080p.x264-SEXORS - [1/7] - #34;-AssMasterpiece.12.07.09.Alexis.Monroe.XXX.1080p.x264-SEXORS.rar#34; yEnc
-		if (preg_match('/.*[\(\[]\d+\/\d+[\)\]][-_ ]{0,3}("|#34;)(.+?)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4})("|#34;)(.+?)yEnc$/',
+		if (preg_match('/.*[\(\[]\d+\/\d+[\)\]][-_\s]{0,3}("|#34;)(.+?)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4})("|#34;)(.+?)yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -7716,14 +7680,14 @@ class ReleaseCleaning
 		) {
 			return $match[3];
 		} //(01/40) - Description - "Cloudy.with.a.Chance.of.Meatballs.2009.AC3.23Fps.640Kbps.6Ch.TR.Audio.BD-Demuxed.by.DWA.nfo" - 454,60 MB - yEnc
-		if (preg_match('/^\(\d+\/\d+\) - Description - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\d+\/\d+\) - Description - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e2,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(151/161) "Troy.2004.Directors.Cut.1080p.BluRay.x264.DTS.vol064+21.PAR2.bad" - 18,64 GB - yEnc
-		if (preg_match('/^\(\d+\/\d+\) "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e2,
+		if (preg_match('/^\(\d+\/\d+\) "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e2,
 					   $this->subject,
 					   $match)
 		) {
@@ -7732,8 +7696,8 @@ class ReleaseCleaning
 		//[Macguffin Proudly Presents] (33/75) -Reservoir Dogs 1992 720p BDRip AC3 x264 MacGuffin - "macguffin-redog720p.r30"  - 3.06 GB - yEnc
 		//[Request][MacGuffin Proudly Presents](056/229) - LOTR The Trilogy EXTENDED REPOST 720p BRRip AC3 x264 MacGuffin - "macguffin-tfotr720p.r53" - 18.54 GB - yEnc
 		//[REPOST][MacGuffin Proudly Presents](44/54) - Flight 2012 720p BRRip REPOST AC3 x264 MacGuffin - "macguffin-flit720p.rar" - 4.09 GB - yEnc
-		if (preg_match('/^(\[(Request|Repost)\])?\[Macguffin Proudly Presents\][- ]{0,3}\(\d+\/\d+\)[- ]{0,3}(.+?) MacGuffin[- ]{0,3}".+' .
-					   $this->e0 . '[- ]{0,4}\d+[.,]\d+ [kKmMgG][bB][- ]{0,3}yEnc$/i',
+		if (preg_match('/^(\[(Request|Repost)\])?\[Macguffin Proudly Presents\][-_\s]{0,3}\(\d+\/\d+\)[-_\s]{0,3}(.+?) MacGuffin[-_\s]{0,3}".+' .
+					   $this->e0 . '[- ]{0,4}\d+[.,]\d+ [kKmMgG][bB][-_\s]{0,3}yEnc$/i',
 					   $this->subject,
 					   $match)
 		) {
@@ -7767,20 +7731,20 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		} //(001/108) "Wizards.of.Waverly.Place.720p.S04E01.by.sugarr.par2" - 5,15 GB - yEnc
-		if (preg_match('/^\(\d+\/(\d+\)) "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
+		if (preg_match('/^\(\d+\/(\d+\)) "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' . $this->e0 .
 					   ' - \d+[,.]\d+ [mMkKgG][bB]( -)? yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[2];
 		} //[NZBsRus.com]-[Arthur.Christmas.2011.BDRip.AC3-5.1.x264-AKS74u] [18/74] - "ac-bdrip-aks74u.r15" yEnc
-		if (preg_match('/^\[NZBsRus\.com.+\]-\[(.+)\][-_ ]{0,3}\[\d+\/\d+\] - ".+?' . $this->e1,
+		if (preg_match('/^\[NZBsRus\.com.+\]-\[(.+)\][-_\s]{0,3}\[\d+\/\d+\] - ".+?' . $this->e1,
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //[Entourage.S05.720p.WEB-DL.DD5.1.H.264-BTN]-[167/193] - "Entourage.S05E11.Playn.With.Fire.720p.WEB-DL.DD5.1.h.264-BTN.part05.rar" yEnc
-		if (preg_match('/^\[.+\]-\[\d+\/\d+\] - "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\[.+\]-\[\d+\/\d+\] - "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -7790,20 +7754,20 @@ class ReleaseCleaning
 		if (preg_match('/^CTW\d+ \| (.+)  yEnc$/', $this->subject, $match)) {
 			return $match[1];
 		} //(????) [0/8] - Crionics Post - Alice In Chains - Dirt REPOST"Alice In Chains - Dirt.nzb" yEnc
-		if (preg_match('/^.+?\[\d+\/(\d+\][-_ ]{0,3}.+?)[-_ ]{0,3}("|#34;)(.+?)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}("|#34;))[-_ ]{0,3}yEnc$/',
+		if (preg_match('/^.+?\[\d+\/(\d+\][-_\s]{0,3}.+?)[-_\s]{0,3}("|#34;)(.+?)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}("|#34;))[-_\s]{0,3}yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[3];
 		} //(????) [001/153] - "C4 House Party Horse Meat Disco Set 6.nfo" C4 House Party Horse Meat Disco Set 6 yEnc
-		if (preg_match('/^\(\?+\) \[\d+\/\d+\][ -]{0,3}"([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\?+\) \[\d+\/\d+\][-_\s]{0,3}"([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . '.+yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(????) [19/22] - C.K.N. Demo 85  "19-rotten system.mp3" yEnc
-		if (preg_match('/^\(\?+\) \[\d+\/\d+\] - (.+)[ -]{0,3}".+?' . $this->e0 . '.+yEnc$/',
+		if (preg_match('/^\(\?+\) \[\d+\/\d+\] - (.+)[-_\s]{0,3}".+?' . $this->e0 . '.+yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
@@ -7939,14 +7903,14 @@ class ReleaseCleaning
 		) {
 			return $match[2];
 		} //<TOWN> www.town.ag > sponsored by www.ssl-news.info > (1/3) "HolzWerken_40.par2" - 43,89 MB - yEnc
-		if (preg_match('/^<TOWN> www\.town\.ag > sponsored by www\.ssl-news\.info > \(\d+\/\d+\) "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^<TOWN> www\.town\.ag > sponsored by www\.ssl-news\.info > \(\d+\/\d+\) "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e0 . ' - \d+[,.]\d+ [mMkKgG][bB] - yEnc$/',
 					   $this->subject,
 					   $match)
 		) {
 			return $match[1];
 		} //(1/9)<<<www.town.ag>>> sponsored by ssl-news.info<<<[HorribleSubs]_AIURA_-_01_[480p].mkv "[HorribleSubs]_AIURA_-_01_[480p].par2" yEnc
-		if (preg_match('/^\(\d+\/\d+\).+?www\.town\.ag.+?sponsored by (www\.)?ssl-news\.info<+?.+? "([\w\säöüÄÖÜß¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
+		if (preg_match('/^\(\d+\/\d+\).+?www\.town\.ag.+?sponsored by (www\.)?ssl-news\.info<+?.+? "([\w\säöüÄÖÜß¤¶!.,&_()\[\]\'\`-]{8,}?\b.?)' .
 					   $this->e1,
 					   $this->subject,
 					   $match)
@@ -7980,7 +7944,7 @@ class ReleaseCleaning
 	public function generic()
 	{
 		// This regex gets almost all of the predb release names also keep in mind that not every subject ends with yEnc, some are truncated, because of the 255 character limit and some have extra charaters tacked onto the end, like (5/10).
-		if (preg_match('/^\[\d+\][- ]{0,3}(\[(reup|full|repost.+?|part|re-repost|xtr|sample)(\])?[- ]{0,3}\[[- #@\.\w]+\][- ]{0,3}|\[[- #@\.\w]+\][- ]{0,3}\[(reup|full|repost.+?|part|re-repost|xtr|sample)(\])?[- ]{0,3}|\[.+?efnet\][- ]{0,3}|\[(reup|full|repost.+?|part|re-repost|xtr|sample)(\])?[- ]{0,3})(\[FULL\])?[- ]{0,3}(\[ )?(\[)? ?(\/sz\/)?(F: - )?(?P<title>[- _!@\.\'\w\(\)~]{10,}) ?(\])?[- ]{0,3}(\[)? ?(REPOST|REPACK|SCENE|EXTRA PARS|REAL)? ?(\])?[- ]{0,3}?(\[\d+[-\/~]\d+\])?[- ]{0,3}["|#34;]*.+["|#34;]* ?[yEnc]{0,4}/i',
+		if (preg_match('/^\[\d+\][-_\s]{0,3}(\[(reup|full|repost.+?|part|re-repost|xtr|sample)(\])?[-_\s]{0,3}\[[- #@\.\w]+\][-_\s]{0,3}|\[[- #@\.\w]+\][-_\s]{0,3}\[(reup|full|repost.+?|part|re-repost|xtr|sample)(\])?[-_\s]{0,3}|\[.+?efnet\][-_\s]{0,3}|\[(reup|full|repost.+?|part|re-repost|xtr|sample)(\])?[-_\s]{0,3})(\[FULL\])?[-_\s]{0,3}(\[ )?(\[)? ?(\/sz\/)?(F: - )?(?P<title>[- _!@\.\'\w\(\)~]{10,}) ?(\])?[-_\s]{0,3}(\[)? ?(REPOST|REPACK|SCENE|EXTRA PARS|REAL)? ?(\])?[-_\s]{0,3}?(\[\d+[-\/~]\d+\])?[-_\s]{0,3}["|#34;]*.+["|#34;]* ?[yEnc]{0,4}/i',
 					   $this->subject,
 					   $match)
 		) {

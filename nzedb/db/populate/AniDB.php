@@ -15,6 +15,12 @@ class AniDB
 	public $echooutput;
 
 	/**
+	 * The directory to store AniDB covers
+	 * @var string
+	 */
+	public $imgSavePath;
+
+	/**
 	 * @var \nzedb\db\Settings
 	 */
 	public $pdo;
@@ -38,12 +44,6 @@ class AniDB
 	private $banned;
 
 	/**
-	 * The directory to store AniDB covers
-	 * @var string
-	 */
-	public $imgSavePath;
-
-	/**
 	 * The last unixtime a full AniDB update was run
 	 * @var string
 	 */
@@ -58,7 +58,7 @@ class AniDB
 	/**
 	 * @param array $options Class instances / Echo to cli.
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		$defaults = [
 			'Echo'     => false,
@@ -67,18 +67,19 @@ class AniDB
 		$options += $defaults;
 
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo        = ($options['Settings'] instanceof Settings ? $options['Settings'] :
+			new Settings());
 
-//		$maxanidbprocessed = $this->pdo->getSetting('maxanidbprocessed');
+		//		$maxanidbprocessed = $this->pdo->getSetting('maxanidbprocessed');
 		$anidbupdint = $this->pdo->getSetting('intanidbupdate');
 		$lastupdated = $this->pdo->getSetting('lastanidbupdate');
 
 		$this->imgSavePath = nZEDb_COVERS . 'anime' . DS;
-		$this->apiKey = $this->pdo->getSetting('anidbkey');
+		$this->apiKey      = $this->pdo->getSetting('anidbkey');
 
 		$this->updateInterval = (isset($anidbupdint) ? $anidbupdint : '7');
-		$this->lastUpdate = (isset($lastupdated) ? $lastupdated : '0');
-		$this->banned = false;
+		$this->lastUpdate     = (isset($lastupdated) ? $lastupdated : '0');
+		$this->banned         = false;
 	}
 
 	/**
@@ -119,10 +120,10 @@ class AniDB
 							AND type = %s
 							AND lang = %s
 							AND title = %s',
-							$id,
-							$this->pdo->escapeString($type),
-							$this->pdo->escapeString($lang),
-							$this->pdo->escapeString($title)
+								 $id,
+								 $this->pdo->escapeString($type),
+								 $this->pdo->escapeString($lang),
+								 $this->pdo->escapeString($title)
 						 )
 		);
 	}
@@ -139,6 +140,11 @@ class AniDB
 	 */
 	private function getAniDbAPI()
 	{
+		$timestamp = $this->pdo->getSetting('APIs.AniDB.banned') + 90000;
+		if ($timestamp > time()) {
+			echo "Banned from AniDB lookups until " . date('Y-m-d H:i:s', $timestamp) . "\n";
+			return false;
+		}
 		$apiresponse = $this->getAniDbResponse();
 
 		$AniDBAPIArray = array();
@@ -147,120 +153,90 @@ class AniDB
 			echo "AniDB: Error getting response." . PHP_EOL;
 		} elseif (preg_match("/\<error\>Banned\<\/error\>/", $apiresponse)) {
 			$this->banned = true;
+			$this->pdo->setSetting('APIs.AniDB.banned', time());
 		} elseif (preg_match("/\<error\>Anime not found\<\/error\>/", $apiresponse)) {
 			echo "AniDB   : Anime not yet on site. Remove until next update.\n";
 		} elseif ($AniDBAPIXML = new \SimpleXMLElement($apiresponse)) {
+			$AniDBAPIArray['similar'] = $this->processAPIResponceElement($AniDBAPIXML->similaranime, 'anime');
 
-			if (isset($AniDBAPIXML->similaranime)
-				&& $AniDBAPIXML->similaranime instanceof \Traversable
-			) {
-				foreach ($AniDBAPIXML->similaranime AS $similar) {
-					$similarArray[] = (string)$similar->anime;
-				}
-				$AniDBAPIArray['similar'] = implode(', ', $similarArray);
-			} else {
-				$AniDBAPIArray['similar'] = 'No similar anime available for this AniDB ID.';
-			}
+			$AniDBAPIArray['related'] = $this->processAPIResponceElement($AniDBAPIXML->relatedanime, 'anime');
 
-			if (isset($AniDBAPIXML->relatedanime)
-				&& $AniDBAPIXML->relatedanime instanceof \Traversable
-			) {
-				foreach ($AniDBAPIXML->relatedanime AS $related) {
-					$relatedArray[] = (string)$related->anime;
-				}
-				$AniDBAPIArray['related'] = implode(', ', $relatedArray);
-			} else {
-				$AniDBAPIArray['related'] = 'No related anime available for this AniDB ID.';
-			}
+			$AniDBAPIArray['creators'] = $this->processAPIResponceElement($AniDBAPIXML->creators);
 
-			if ($AniDBAPIXML->creators instanceof \Traversable) {
-				foreach ($AniDBAPIXML->creators->name AS $creator) {
-					$creatorArray[] = (string)$creator;
-				}
-				$AniDBAPIArray['creators'] = implode(', ', $creatorArray);
-			} else {
-				$AniDBAPIArray['creators'] = 'No creators available for this AniDB ID.';
-			}
+			$AniDBAPIArray['characters'] = $this->processAPIResponceElement($AniDBAPIXML->characters);
 
-			if ($AniDBAPIXML->characters->character instanceof \Traversable) {
-				foreach ($AniDBAPIXML->characters->character AS $character) {
-					$characterArray[] = (string)$character->name;
-				}
-				$AniDBAPIArray['characters'] = implode(', ', $characterArray);
-			} else {
-				$AniDBAPIArray['characters'] = 'No characters available for this AniDB ID.';
-			}
+			$AniDBAPIArray['categories'] = $this->processAPIResponceElement($AniDBAPIXML->categories);
 
-			if ($AniDBAPIXML->categories->category instanceof \Traversable) {
-				foreach ($AniDBAPIXML->categories->category AS $category) {
-					$categoryArray[] = (string)$category->name;
-				}
-				$AniDBAPIArray['categories'] = implode(', ', $categoryArray);
-			} else {
-				$AniDBAPIArray['categories'] = 'No categories available for this AniDB ID.';
-			}
-
-			// only english, x-jat imploded episode titles for now
-			if ($AniDBAPIXML->episodes->episode instanceof \Traversable) {
+			if ($AniDBAPIXML->episodes && $AniDBAPIXML->episodes[0]->attributes()) {
 				$i = 1;
 				foreach ($AniDBAPIXML->episodes->episode AS $episode) {
-
 					$titleArray = array();
 
 					$episodeArray[$i]['episode_id'] = (int)$episode->attributes()->id[0];
 					$episodeArray[$i]['episode_no'] = (int)$episode->epno;
 					$episodeArray[$i]['airdate']    = (string)$episode->airdate;
 
-					foreach ($episode->title AS $title) {
-						$xmlAttribs = $title->attributes('xml', true);
-						if (in_array($xmlAttribs->lang, ['en', 'x-jat'])) {
-							$titleArray[] = $title[0];
+					if ($AniDBAPIXML->title && $AniDBAPIXML->title[0]->attributes()) {
+						foreach ($AniDBAPIXML->title->children() AS $title) {
+							$xmlAttribs = $title->attributes('xml', true);
+							// only english, x-jat imploded episode titles for now
+							if (in_array($xmlAttribs->lang, ['en', 'x-jat'])) {
+								$titleArray[] = $title[0];
+							}
 						}
 					}
 
-					if (!empty($titleArray)) {
-						$episodeArray[$i]['episode_title'] = implode(', ', $titleArray);
-					} else {
-						$episodeArray[$i]['episode_title'] = 'No title available for this episode.';
-					}
+					$episodeArray[$i]['episode_title'] = empty($titleArray) ? '' :
+						implode(', ', $titleArray);
 					$i++;
 				}
 			}
 
-			//start and end date come from AniDB API as perfect date strings -- no manipulation needed
-			if (isset($AniDBAPIXML->startdate)) {
-				$AniDBAPIArray['startdate'] = $AniDBAPIXML->startdate;
-			} else {
-				$AniDBAPIArray['startdate'] = 'NULL';
-			}
-
-			if (isset($AniDBAPIXML->enddate)) {
-				$AniDBAPIArray['enddate'] = $AniDBAPIXML->enddate;
-			} else {
-				$AniDBAPIArray['enddate'] = 'NULL';
-			}
+			$episodeArray = [];
+			//start and end date come from AniDB API as date strings -- no manipulation needed
+			$AniDBAPIArray['startdate'] = isset($AniDBAPIXML->startdate) ? $AniDBAPIXML->startdate :
+				'0000-00-00';
+			$AniDBAPIArray['enddate']   = isset($AniDBAPIXML->enddate) ? $AniDBAPIXML->enddate :
+				'0000-00-00';
 
 			if (isset($AniDBAPIXML->ratings->permanent)) {
 				$AniDBAPIArray['rating'] = $AniDBAPIXML->ratings->permanent;
-			} elseif (isset($AniDBAPIXML->ratings->temporary)) {
-				$AniDBAPIArray['rating'] = $AniDBAPIXML->ratings->temporary;
 			} else {
-				$AniDBAPIArray['rating'] = 'No categories available for this AniDB ID.';
+				$AniDBAPIArray['rating'] = isset($AniDBAPIXML->ratings->temporary) ?
+					$AniDBAPIXML->ratings->temporary : $AniDBAPIArray['rating'] = '';
 			}
 
 			$AniDBAPIArray += array(
-				'type'        => isset($AniDBAPIXML->type[0]) ? (string)$AniDBAPIXML->type : 'N/A',
+				'type'        => isset($AniDBAPIXML->type[0]) ? (string)$AniDBAPIXML->type : '',
 				'description' => isset($AniDBAPIXML->description) ?
-						(string)$AniDBAPIXML->description :
-						'No description available for this AniDB ID.',
+						(string)$AniDBAPIXML->description : '',
 				'picture'     => isset($AniDBAPIXML->picture[0]) ? (string)$AniDBAPIXML->picture :
 						'',
-				'epsarr'      => $episodeArray
+				'epsarr'      => $episodeArray,
 			);
 
 			return $AniDBAPIArray;
 		}
 		return false;
+	}
+
+	/**
+	 * @param \SimpleXMLElement $element
+	 * @param string            $item
+	 * @param string            $property
+	 *
+	 * @return string
+	 */
+	private function processAPIResponceElement(\SimpleXMLElement $element, $property = null)
+	{
+		$property = empty($property) ? 'name' : $property;
+		$temp     = '';
+		if ($element && $element[0]->attributes()) {
+			foreach ($element->children() AS $entry) {
+				$temp .= (string)$entry->$property . ', ';
+			}
+		}
+		return (empty($temp) ? '' : substr($temp, 0, -2));
 	}
 
 	/**
@@ -328,13 +304,13 @@ class AniDB
 	 *
 	 * @return string
 	 */
-	private function insertAniDBInfoEps($AniDBInfoArray = array())
+	private function insertAniDBInfoEps(array $AniDBInfoArray = [])
 	{
 		$this->pdo->queryInsert(
 				  sprintf('
-						INSERT INTO anidb_info (anidbid, type, startdate, enddate, related, similar, creators, description, rating, picture, categories, characters)
+						INSERT INTO anidb_info (anidbid, type, startdate, enddate, related, similar, creators, description, rating, picture, categories, characters, updated)
 						VALUES
-							(%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
+							(%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW())',
 						  $this->anidbId,
 						  $this->pdo->escapeString($AniDBInfoArray['type']),
 						  $this->pdo->escapeString($AniDBInfoArray['startdate']),
@@ -350,7 +326,9 @@ class AniDB
 				  )
 		);
 
-		$this->insertAniDBEpisodes($AniDBInfoArray['epsarr']);
+		if (isset($AniDBInfoArray['epsarr'])) {
+			$this->insertAniDBEpisodes($AniDBInfoArray['epsarr']);
+		}
 		return $AniDBInfoArray['picture'];
 	}
 
@@ -359,20 +337,22 @@ class AniDB
 	 *
 	 * @param array $episodeArr
 	 */
-	private function insertAniDBEpisodes($episodeArr = array())
+	private function insertAniDBEpisodes(array $episodeArr = [])
 	{
-		foreach ($episodeArr AS $episode) {
-			$this->pdo->queryInsert(
-					  sprintf('
-							INSERT IGNORE INTO anidb_episodes (anidbid, episodeid, episode_no, episode_title, airdate)
-							VALUES (%d, %d, %d, %s, %s)',
-							  $this->anidbId,
-							  $episode['episode_id'],
-							  $episode['episode_no'],
-							  $this->pdo->escapeString($episode['episode_title']),
-							  $this->pdo->escapeString($episode['airdate'])
-					  )
-			);
+		if (!empty($episodeArr)) {
+			foreach ($episodeArr AS $episode) {
+				$this->pdo->queryInsert(
+						  sprintf('
+								INSERT IGNORE INTO anidb_episodes (anidbid, episodeid, episode_no, episode_title, airdate)
+								VALUES (%d, %d, %d, %s, %s)',
+								  $this->anidbId,
+								  $episode['episode_id'],
+								  $episode['episode_no'],
+								  $this->pdo->escapeString($episode['episode_title']),
+								  $this->pdo->escapeString($episode['airdate'])
+						  )
+				);
+			}
 		}
 	}
 
@@ -482,7 +462,8 @@ class AniDB
 						UPDATE anidb_info
 						SET type = %s, startdate = %s, enddate = %s, related = %s,
 							similar = %s, creators = %s, description = %s,
-							rating = %s, picture = %s, categories = %s, characters = %s
+							rating = %s, picture = %s, categories = %s, characters = %s,
+							updated = NOW()
 						WHERE anidbid = %d',
 						  $this->pdo->escapeString($AniDBInfoArray['type']),
 						  $this->pdo->escapeString($AniDBInfoArray['startdate']),
@@ -525,7 +506,7 @@ class AniDB
 			$picture = $this->updateAniDBInfoEps($AniDBInfoArray);
 		}
 
-		if (!empty($result) && !file_exists($this->imgSavePath . $this->anidbId . ".jpg")) {
+		if (!empty($picture) && !file_exists($this->imgSavePath . $this->anidbId . ".jpg")) {
 			(new \ReleaseImage($this->pdo))->saveImage(
 										   $this->anidbId,
 										   'http://img7.anidb.net/pics/anime/' . $picture,
