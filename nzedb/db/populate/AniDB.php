@@ -526,7 +526,7 @@ class AniDB
 			$picture = $this->updateAniDBInfoEps($AniDBInfoArray);
 		}
 
-		if (!empty($result) && !file_exists($this->imgSavePath . $this->anidbId . ".jpg")) {
+		if (!empty($picture) && !file_exists($this->imgSavePath . $this->anidbId . ".jpg")) {
 			(new \ReleaseImage($this->pdo))->saveImage(
 										   $this->anidbId,
 										   'http://img7.anidb.net/pics/anime/' . $picture,
