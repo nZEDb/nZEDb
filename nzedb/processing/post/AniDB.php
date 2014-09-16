@@ -1,24 +1,25 @@
 <?php
 
-namespace nzedb\db\populate;
+namespace nzedb\processing\post;
 
 use \nzedb\db\Settings;
 
 class AniDB
 {
-	const CLIENT_VERSION = 2;
+	const PROC_EXTFAIL = -1; // Release Anime title/episode # could not be extracted from searchname
+	const PROC_NOMATCH = -2; // AniDB ID was not found in anidb table using extracted title/episode #
+
+	const REGEX_NOFORN = 'English|Japanese|German|Danish|Flemish|Dutch|French|Swe(dish|sub)|Deutsch|Norwegian';
 
 	/**
-	 * Whether or not to echo message output
-	 * @var bool
+	 * @var bool Whether or not to echo messages to CLI
 	 */
 	public $echooutput;
 
 	/**
-	 * The directory to store AniDB covers
-	 * @var string
+	 * @var \nzedb\db\populate\AniDB
 	 */
-	public $imgSavePath;
+	public $padb;
 
 	/**
 	 * @var \nzedb\db\Settings
@@ -26,39 +27,19 @@ class AniDB
 	public $pdo;
 
 	/**
-	 * The AniDB ID we are looking up
-	 * @var bool
+	 * @var int number of AniDB releases to process
 	 */
-	private $anidbId;
+	private $aniqty;
 
 	/**
-	 * The name of the nZEDb client for AniDB lookups
-	 * @var string
+	 * @var int The status of the release being processed
 	 */
-	private $apiKey;
-
-	/**
-	 * Whether or not AniDB thinks our client is banned
-	 * @var bool
-	 */
-	private $banned;
-
-	/**
-	 * The last unixtime a full AniDB update was run
-	 * @var string
-	 */
-	private $lastUpdate;
-
-	/**
-	 * The number of days between full AniDB updates
-	 * @var string
-	 */
-	private $updateInterval;
+	private $status;
 
 	/**
 	 * @param array $options Class instances / Echo to cli.
 	 */
-	public function __construct(array $options = [])
+	public function __construct(array $options = array())
 	{
 		$defaults = [
 			'Echo'     => false,
@@ -70,447 +51,272 @@ class AniDB
 		$this->pdo        = ($options['Settings'] instanceof Settings ? $options['Settings'] :
 			new Settings());
 
-		//		$maxanidbprocessed = $this->pdo->getSetting('maxanidbprocessed');
-		$anidbupdint = $this->pdo->getSetting('intanidbupdate');
-		$lastupdated = $this->pdo->getSetting('lastanidbupdate');
+		$qty          = $this->pdo->getSetting('maxanidbprocessed');
+		$this->aniqty = !empty($qty) ? $qty : 100;
 
-		$this->imgSavePath = nZEDb_COVERS . 'anime' . DS;
-		$this->apiKey      = $this->pdo->getSetting('anidbkey');
-
-		$this->updateInterval = (isset($anidbupdint) ? $anidbupdint : '7');
-		$this->lastUpdate     = (isset($lastupdated) ? $lastupdated : '0');
-		$this->banned         = false;
+		$this->status = 'NULL';
 	}
 
 	/**
-	 * Main switch that initiates AniDB table population
-	 *
-	 * @param string  $type
-	 * @param integer $anidbId
+	 * Queues anime releases for processing
 	 */
-	public function populateTable($type = '', $anidbId = 0)
+	public function processAnimeReleases()
 	{
-		switch ($type) {
-			case 'full':
-				$this->populateMainTable();
-				break;
-			case 'info':
-				$this->anidbId = $anidbId;
-				$this->populateInfoTable();
+		$results = $this->pdo->queryDirect(
+							 sprintf('
+							SELECT searchname, id
+							FROM releases
+							WHERE nzbstatus = %d
+							AND anidbid IS NULL
+							AND categoryid = %d
+							ORDER BY postdate DESC
+							LIMIT %d',
+									 \NZB::NZB_ADDED,
+									 \Category::CAT_TV_ANIME,
+									 $this->aniqty
+							 )
+		);
+
+		if ($results instanceof \Traversable) {
+
+			$this->doRandomSleep();
+
+			$this->padb = new \nzedb\db\populate\AniDB([
+														   'Echo'     => $this->echooutput,
+														   'Settings' => $this->pdo
+													   ]);
+
+			foreach ($results as $release) {
+				$matched = $this->matchAnimeRelease($release);
+				if ($matched === false) {
+					$this->pdo->queryExec(
+							  sprintf('
+									UPDATE releases
+									SET anidbid = %d
+									WHERE id = %d',
+									  $this->status,
+									  $release['id']
+							  )
+					);
+				}
+			}
+		} else {
+			$this->pdo->log->doEcho($this->pdo->log->info("No work to process."), true);
 		}
 	}
 
 	/**
-	 * Checks for an existing anime title in anidb table
+	 * Selects episode info for a local match
 	 *
-	 * @param int    $id    The AniDB ID to be inserted
-	 * @param string $type  The title type
-	 * @param string $lang  The title language
-	 * @param string $title The title of the Anime
+	 * @param int $anidbId
+	 * @param int $episode
 	 *
 	 * @return array|bool
 	 */
-	private function checkDuplicateDbEntry($id, $type, $lang, $title)
+	private function checkAniDBInfo($anidbId, $episode = -1)
 	{
 		return $this->pdo->queryOneRow(
 						 sprintf('
-							SELECT anidbid
-							FROM anidb_titles
-							WHERE anidbid = %d
-							AND type = %s
-							AND lang = %s
-							AND title = %s',
-								 $id,
-								 $this->pdo->escapeString($type),
-								 $this->pdo->escapeString($lang),
-								 $this->pdo->escapeString($title)
+							SELECT ae.anidbid, ae.episode_no,
+								ae.airdate, ae.episode_title
+							FROM anidb_episodes ae
+							WHERE ae.anidbid = %d
+							AND ae.episode_no = %d',
+								 $anidbId,
+								 $episode
 						 )
 		);
 	}
 
 	/**
-	 * Retrieves supplemental anime info from the AniDB API
+	 * Sleeps between 10 and 15 seconds for AniDB API cooldown
+	 */
+	private function doRandomSleep()
+	{
+		sleep(rand(10, 15));
+	}
+
+	/**
+	 * Extracts anime title and episode info from release searchname
 	 *
-	 * @param int    $id    The AniDB ID to be inserted
-	 * @param string $type  The title type
-	 * @param string $lang  The title language
-	 * @param string $title The title of the Anime
+	 * @param string $cleanName
+	 *
+	 * @return array
+	 */
+	private function extractTitleEpisode($cleanName = '')
+	{
+		if (preg_match('/(^|.*\")(\[[a-zA-Z\.\!?-]+\][\s_]*)?(\[BD\][\s_]*)?(\[\d{3,4}[ip]\][\s_]*)?(?P<title>[\w\s_.+!?\'-\(\)]+)(New Edit|(Blu-?ray)?( ?Box)?( ?Set)?)?([ _]-[ _]|([ ._-]Epi?(sode)?[ ._-]?0?)?[ ._-]?|[ ._-]Vol\.|[ ._-]E)(?P<epno>\d{1,3}|Movie|O[VA]{2}|Complete Series)(v\d|-\d+)?[-_. ].*[\[\(\"]/i',
+					   $cleanName,
+					   $matches)
+		) {
+			$matches['epno'] = (int)$matches['epno'];
+			if (in_array($matches['epno'], ['Movie', 'OVA'])) {
+				$matches['epno'] = (int)1;
+			}
+		} else if (preg_match('/^(\[[a-zA-Z\.\-!?]+\][\s_]*)?(\[BD\])?(\[\d{3,4}[ip]\])?(?P<title>[\w\s_.+!?\'-\(\)]+)(New Edit|(Blu-?ray)?( ?Box)?( ?Set)?)?\s*[\(\[](BD|\d{3,4}[ipx])/i',
+							  $cleanName,
+							  $matches)
+		) {
+			$matches['epno'] = (int)1;
+		} else {
+			if (nZEDb_DEBUG) {
+				$this->pdo->log->doEcho(PHP_EOL . "Could not parse searchname {$cleanName}.", true);
+			}
+			$this->status = self::PROC_EXTFAIL;
+		}
+
+		if (!empty($matches['title'])) {
+			$matches['title'] = trim(str_replace(['_', '.'], ' ', $matches['title']));
+		}
+
+		return $matches;
+	}
+
+	/**
+	 * Retrieves AniDB Info using a cleaned name
+	 *
+	 * @param string $searchName
 	 *
 	 * @return array|bool
 	 */
-	private function getAniDbAPI()
+	private function getAnidbByName($searchName = '')
 	{
-		$timestamp = $this->pdo->getSetting('APIs.AniDB.banned') + 90000;
-		if ($timestamp > time()) {
-			echo "Banned from AniDB lookups until " . date('Y-m-d H:i:s', $timestamp);
-			return false;
-		}
+		return $this->pdo->queryOneRow(
+						 sprintf("
+							SELECT at.anidbid, at.title
+							FROM anidb_titles AS at
+							WHERE at.title %s",
+								 $this->pdo->likeString($searchName, true, true)
+						 )
+		);
+	}
 
-		$apiresponse = $this->getAniDbResponse();
+	/**
+	 * Matches the anime release to AniDB Info
+	 * If no info is available locally the AniDB API is invoked
+	 *
+	 * @param array $release
+	 *
+	 * @return bool
+	 */
+	private function matchAnimeRelease($release = array())
+	{
+		$matched = false;
+		$type    = 'Local';
 
-		$AniDBAPIArray = array();
+		// clean up the release name to ensure we get a good chance at getting a valid title
+		$cleanArr = $this->extractTitleEpisode($release['searchname']);
 
-		if (!$apiresponse) {
-			echo "AniDB: Error getting response." . PHP_EOL;
-		} elseif (preg_match("/\<error\>Banned\<\/error\>/", $apiresponse)) {
-			$this->banned = true;
-			$this->pdo->setSetting('APIs.AniDB.banned', time());
-		} elseif (preg_match("/\<error\>Anime not found\<\/error\>/", $apiresponse)) {
-			echo "AniDB   : Anime not yet on site. Remove until next update.\n";
-		} elseif ($AniDBAPIXML = new \SimpleXMLElement($apiresponse)) {
-			$AniDBAPIArray['similar'] = $this->processAPIResponceElement($AniDBAPIXML->similaranime, 'anime');
+		if (is_array($cleanArr) && isset($cleanArr['title']) && is_numeric($cleanArr['epno'])) {
 
-			$AniDBAPIArray['related'] = $this->processAPIResponceElement($AniDBAPIXML->relatedanime, 'anime');
+			echo $this->pdo->log->header(PHP_EOL . "Looking Up: ") .
+				 $this->pdo->log->primary("   Title: {$cleanArr['title']}" . PHP_EOL .
+										  "   Episode: {$cleanArr['epno']}");
 
-			$AniDBAPIArray['creators'] = $this->processAPIResponceElement($AniDBAPIXML->creators);
+			// get anidb number for the title of the name
+			$anidbId = $this->getAnidbByName($cleanArr['title']);
 
-			$AniDBAPIArray['characters'] = $this->processAPIResponceElement($AniDBAPIXML->characters);
+			if ($anidbId === false) {
+				$tmpName = preg_replace('/\s/', '%', $cleanArr['title']);
+				$anidbId = $this->getAnidbByName($tmpName);
+			}
 
-			$AniDBAPIArray['categories'] = $this->processAPIResponceElement($AniDBAPIXML->categories);
+			if (!empty($anidbId) && is_numeric($anidbId['anidbid']) && $anidbId['anidbid'] > 0) {
 
-			if ($AniDBAPIXML->episodes && $AniDBAPIXML->episodes[0]->attributes()) {
-				$i = 1;
-				foreach ($AniDBAPIXML->episodes->episode AS $episode) {
-					$titleArray = [];
+				$updatedAni = $this->checkAniDBInfo($anidbId['anidbid'], $cleanArr['epno']);
 
-					$episodeArray[$i]['episode_id'] = (int)$episode->attributes()->id[0];
-					$episodeArray[$i]['episode_no'] = (int)$episode->epno;
-					$episodeArray[$i]['airdate']    = (string)$episode->airdate;
-
-					if ($AniDBAPIXML->title && $AniDBAPIXML->title[0]->attributes()) {
-						foreach ($AniDBAPIXML->title->children() AS $title) {
-							$xmlAttribs = $title->attributes('xml', true);
-							// only english, x-jat imploded episode titles for now
-							if (in_array($xmlAttribs->lang, ['en', 'x-jat'])) {
-								$titleArray[] = $title[0];
-							}
-						}
+				if ($updatedAni === false) {
+					if ($this->updateTimeCheck($anidbId['anidbid']) === false) {
+						$this->padb->populateTable('info', $anidbId['anidbid']);
+						$this->doRandomSleep();
+						$updatedAni = $this->checkAniDBInfo($anidbId['anidbid']);
+						$type       = 'Remote';
+					} else {
+						echo PHP_EOL .
+							 $this->pdo->log->info("This AniDB ID was not found to be accurate locally, but has been updated too recently to check AniDB.") .
+							 PHP_EOL;
 					}
-
-					$episodeArray[$i]['episode_title'] = empty($titleArray) ? '' :
-						implode(', ', $titleArray);
-					$i++;
 				}
-			}
 
-			$episodeArray = [];
-			//start and end date come from AniDB API as date strings -- no manipulation needed
-			$AniDBAPIArray['startdate'] = isset($AniDBAPIXML->startdate) ? $AniDBAPIXML->startdate :
-				'0000-00-00';
-			$AniDBAPIArray['enddate']   = isset($AniDBAPIXML->enddate) ? $AniDBAPIXML->enddate :
-				'0000-00-00';
+				$this->updateRelease($anidbId['anidbid'],
+									 $cleanArr['epno'],
+									 $updatedAni['episode_title'],
+									 $updatedAni['airdate'],
+									 $release['id']);
 
-			if (isset($AniDBAPIXML->ratings->permanent)) {
-				$AniDBAPIArray['rating'] = $AniDBAPIXML->ratings->permanent;
-			} else {
-				$AniDBAPIArray['rating'] = isset($AniDBAPIXML->ratings->temporary) ?
-					$AniDBAPIXML->ratings->temporary : $AniDBAPIArray['rating'] = '';
-			}
-
-			$AniDBAPIArray += array(
-				'type'        => isset($AniDBAPIXML->type[0]) ? (string)$AniDBAPIXML->type : '',
-				'description' => isset($AniDBAPIXML->description) ?	(string)$AniDBAPIXML->description : '',
-				'picture'     => isset($AniDBAPIXML->picture[0]) ? (string)$AniDBAPIXML->picture : '',
-				'epsarr'      => $episodeArray,
-			);
-
-			return $AniDBAPIArray;
-		}
-		return false;
-	}
-
-	/**
-	 * @param \SimpleXMLElement $element
-	 * @param string            $item
-	 * @param string            $property
-	 *
-	 * @return string
-	 */
-	private function processAPIResponceElement(\SimpleXMLElement $element, $property = null)
-	{
-		$property = empty($property) ? 'name' : $property;
-		$temp     = '';
-		if ($element && $element[0]->attributes()) {
-			foreach ($element->children() AS $entry) {
-				$temp .= (string)$entry->$property . ', ';
-			}
-		}
-		return (empty($temp) ? '' : substr($temp, 0, -2));
-	}
-
-	/**
-	 * Requests and returns the API data from AniDB
-	 *
-	 * @return xmlobject
-	 */
-	private function getAniDbResponse()
-	{
-		$curlString = sprintf(
-			'http://api.anidb.net:9001/httpapi?request=anime&client=%s&clientver=%d&protover=1&aid=%d',
-			$this->apiKey,
-			self::CLIENT_VERSION,
-			$this->anidbId
-		);
-
-		$ch = curl_init($curlString);
-
-		$curlOpts = array(
-			CURLOPT_RETURNTRANSFER => 1,
-			CURLOPT_HEADER         => 0,
-			CURLOPT_FAILONERROR    => 1,
-			CURLOPT_ENCODING       => 'gzip'
-		);
-
-		curl_setopt_array($ch, $curlOpts);
-		$apiresponse = curl_exec($ch);
-		curl_close($ch);
-		return $apiresponse;
-	}
-
-	/**
-	 * Inserts new anime info from AniDB to anidb table
-	 *
-	 * @param int    $id    The AniDB ID to be inserted
-	 * @param string $type  The title type
-	 * @param string $lang  The title language
-	 * @param string $title The title of the Anime
-	 */
-	private function insertAniDb($id, $type, $lang, $title)
-	{
-		$check = $this->checkDuplicateDbEntry($id, $type, $lang, $title);
-
-		if ($check === false) {
-			$this->pdo->queryInsert(
-					  sprintf('
-								INSERT IGNORE INTO anidb_titles
-									(anidbid, type, lang, title)
-								VALUES
-									(%d, %s, %s, %s)',
-							  $id,
-							  $this->pdo->escapeString($type),
-							  $this->pdo->escapeString($lang),
-							  $this->pdo->escapeString($title)
-					  ));
-		} else {
-			echo $this->pdo->log->warning("Duplicate: $id");
-		}
-	}
-
-	/**
-	 * Inserts new anime info from AniDB to anidb table
-	 *
-	 * @param array $AniDBInfoArray
-	 *
-	 * @return string
-	 */
-	private function insertAniDBInfoEps(array $AniDBInfoArray = [])
-	{
-		$this->pdo->queryInsert(
-				  sprintf('
-						INSERT INTO anidb_info (anidbid, type, startdate, enddate, related, similar, creators, description, rating, picture, categories, characters, updated)
-						VALUES
-							(%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW())',
-						  $this->anidbId,
-						  $this->pdo->escapeString($AniDBInfoArray['type']),
-						  $this->pdo->escapeString($AniDBInfoArray['startdate']),
-						  $this->pdo->escapeString($AniDBInfoArray['enddate']),
-						  $this->pdo->escapeString($AniDBInfoArray['related']),
-						  $this->pdo->escapeString($AniDBInfoArray['similar']),
-						  $this->pdo->escapeString($AniDBInfoArray['creators']),
-						  $this->pdo->escapeString($AniDBInfoArray['description']),
-						  $this->pdo->escapeString($AniDBInfoArray['rating']),
-						  $this->pdo->escapeString($AniDBInfoArray['picture']),
-						  $this->pdo->escapeString($AniDBInfoArray['categories']),
-						  $this->pdo->escapeString($AniDBInfoArray['characters'])
-				  )
-		);
-
-		if (isset($AniDBInfoArray['epsarr'])) {
-			$this->insertAniDBEpisodes($AniDBInfoArray['epsarr']);
-		}
-		return $AniDBInfoArray['picture'];
-	}
-
-	/**
-	 * Inserts new anime info from AniDB to anidb table
-	 *
-	 * @param array $episodeArr
-	 */
-	private function insertAniDBEpisodes(array $episodeArr = [])
-	{
-		if (!empty($episodeArr)) {
-			foreach ($episodeArr AS $episode) {
-				$this->pdo->queryInsert(
-						  sprintf('
-								INSERT IGNORE INTO anidb_episodes (anidbid, episodeid, episode_no, episode_title, airdate)
-								VALUES (%d, %d, %d, %s, %s)',
-								  $this->anidbId,
-								  $episode['episode_id'],
-								  $episode['episode_no'],
-								  $this->pdo->escapeString($episode['episode_title']),
-								  $this->pdo->escapeString($episode['airdate'])
-						  )
+				$this->pdo->log->doEcho(
+							   $this->pdo->log->headerOver("Matched {$type} AniDB ID: ") .
+							   $this->pdo->log->primary($anidbId['anidbid']) .
+							   $this->pdo->log->alternateOver("   Title: ") .
+							   $this->pdo->log->primary($anidbId['title']) .
+							   $this->pdo->log->alternateOver("   Episode #: ") .
+							   $this->pdo->log->primary($cleanArr['epno']) .
+							   $this->pdo->log->alternateOver("   Episode Title: ") .
+							   $this->pdo->log->primary($updatedAni['episode_title'])
 				);
-			}
-		}
-	}
 
-	/**
-	 *  Grabs AniDB Full Dump XML and inserts it into anidb table
-	 */
-	private function populateMainTable()
-	{
-		if ((time() - (int)$this->lastUpdate) > ((int)$this->updateInterval * 86400)) {
-
-			if ($this->echooutput) {
-				echo $this->pdo->log->header("Updating anime titles by grabbing full data AniDB dump.");
-			}
-
-			$animetitles = new \SimpleXMLElement("compress.zlib://http://anidb.net/api/anime-titles.xml.gz", null, true);
-			/*
-			$lines = gzfile(realpath(nZEDb_ROOT . '..' . DS . 'anime-titles.xml.gz'));
-			$file = implode('', $lines);
-			$animetitles = new \SimpleXMLElement($file, 0, false);
-			*/
-
-			//Even if the update process fails,
-			//we must mark the last update time or risk ban
-			$this->setLastUpdated();
-
-			if ($animetitles instanceof \Traversable) {
-				$count = count($animetitles);
-				if ($this->echooutput) {
-					echo $this->pdo->log->header(
-										"Total of " . number_format($count) .
-										" titles to add." . PHP_EOL
-					);
-				}
-
-				foreach ($animetitles AS $anime) {
-					echo "Remaining: $count  \r";
-					foreach ($anime->title AS $title) {
-						$xmlAttribs = $title->attributes('xml', true);
-						$this->insertAniDb((string)$anime['aid'],
-										   (string)$title['type'],
-										   (string)$xmlAttribs->lang,
-										   (string)$title[0]);
-						$this->pdo->log->primary(
-									   "Inserting: %d, %s, %s, %s",
-									   $anime['aid'],
-									   $title['type'],
-									   $xmlAttribs->lang,
-									   $title[0]);
-					}
-					$count--;
-				}
+				$matched = true;
 			} else {
-				echo PHP_EOL .
-					 $this->pdo->log->error("Error retrieving XML data from AniDB. Please try again later.") .
-					 PHP_EOL;
-			}
-		} else {
-			echo PHP_EOL . $this->pdo->log->info(
-										  "AniDB has been updated within the past {$this->updateInterval} days.  " .
-										  "Either set this value lower in Site Edit (at your own risk of being banned) or try again later.") .
-				 PHP_EOL;
-		}
-	}
-
-	/**
-	 * Directs flow for populating the AniDB Info/Episodes table
-	 */
-	private function populateInfoTable()
-	{
-		$AniDBAPIArray = $this->getAniDbAPI();
-
-		if ($this->banned === true) {
-			$this->pdo->log->doEcho($this->pdo->log->error("AniDB Banned, import will fail, please wait 24 hours before retrying."),
-									true);
-			exit;
-		} elseif ($AniDBAPIArray === false && $this->echooutput) {
-			$this->pdo->log->doEcho($this->pdo->log->info("Anime ID: {$this->anidbId} not available for update yet."),
-									true);
-		} else {
-			$this->updateAniChildTables($AniDBAPIArray);
-			if (nZEDb_DEBUG) {
-				$this->pdo->log->doEcho($this->pdo->log->headerOver("Added/Updated AniDB ID: {$this->anidbId}"),
-										true);
+				if (nZEDb_DEBUG) {
+					$this->pdo->log->doEcho(PHP_EOL .
+											"Could not match searchname: {$release['searchname']}.",
+											true);
+				}
+				$this->status = self::PROC_NOMATCH;
 			}
 		}
+		return $matched;
 	}
 
 	/**
-	 * Sets the database time for last full AniDB update
+	 * Updates releases based on matched Anime info
+	 *
+	 * @param int    $anidbId
+	 * @param int    $epno
+	 * @param string $title
+	 * @param string $airdate
+	 * @param int    $relId
+	 *
+	 * @return array|bool
 	 */
-	private function setLastUpdated()
+	private function updateRelease($anidbId, $epno, $title, $airdate, $relId)
 	{
-		$this->pdo->setSetting(['APIs.anidb.last_full_update' => time()]);
-	}
 
-	/**
-	 * Updates existing anime info in anidb info/episodes tables
-	 *
-	 * @param array $AniDBInfoArray
-	 *
-	 * @return string
-	 */
-	private function updateAniDBInfoEps($AniDBInfoArray = array())
-	{
+		$epno = 'E' . ($epno < 10 ? '0' : '') . $epno;
+
 		$this->pdo->queryExec(
-				  sprintf('
-						UPDATE anidb_info
-						SET type = %s, startdate = %s, enddate = %s, related = %s,
-							similar = %s, creators = %s, description = %s,
-							rating = %s, picture = %s, categories = %s, characters = %s,
-							updated = NOW()
-						WHERE anidbid = %d',
-						  $this->pdo->escapeString($AniDBInfoArray['type']),
-						  $this->pdo->escapeString($AniDBInfoArray['startdate']),
-						  $this->pdo->escapeString($AniDBInfoArray['enddate']),
-						  $this->pdo->escapeString($AniDBInfoArray['related']),
-						  $this->pdo->escapeString($AniDBInfoArray['similar']),
-						  $this->pdo->escapeString($AniDBInfoArray['creators']),
-						  $this->pdo->escapeString($AniDBInfoArray['description']),
-						  $this->pdo->escapeString($AniDBInfoArray['rating']),
-						  $this->pdo->escapeString($AniDBInfoArray['picture']),
-						  $this->pdo->escapeString($AniDBInfoArray['categories']),
-						  $this->pdo->escapeString($AniDBInfoArray['characters']),
-						  $this->anidbId
+				  sprintf("
+						UPDATE releases
+						SET anidbid = %d, seriesfull = %s, season = 'S01', episode = %s,
+							tvtitle = %s, tvairdate = %s
+						WHERE id = %d",
+						  $anidbId,
+						  $this->pdo->escapeString('S01' . $epno),
+						  $this->pdo->escapeString($epno),
+						  $this->pdo->escapeString($title),
+						  $this->pdo->escapeString($airdate),
+						  $relId
 				  )
 		);
-
-		$this->insertAniDBEpisodes($AniDBInfoArray['epsarr']);
-		return $AniDBInfoArray['picture'];
 	}
 
 	/**
-	 * Directs flow for updating child AniDB tables
+	 * Checks a specific Anime title's last update time
 	 *
-	 * @param array $AniDBInfoArray
+	 * @param int $anidbId
+	 *
+	 * @return array|bool
 	 */
-	private function updateAniChildTables($AniDBInfoArray = array())
+	private function updateTimeCheck($anidbId)
 	{
-		$check = $this->pdo->queryOneRow(
-						   sprintf('
-							SELECT ai.anidbid AS info
+		return $this->pdo->queryOneRow(
+						 sprintf("
+							SELECT anidbid
 							FROM anidb_info ai
-							WHERE ai.anidbid = %d',
-								   $this->anidbId
-						   )
+							WHERE DATEDIFF(NOW(), ai.updated) < 7
+							AND ai.anidbid = %d",
+								 $anidbId
+						 )
 		);
-
-		if ($check === false) {
-			$picture = $this->insertAniDBInfoEps($AniDBInfoArray);
-		} else {
-			$picture = $this->updateAniDBInfoEps($AniDBInfoArray);
-		}
-
-		if (!empty($picture) && !file_exists($this->imgSavePath . $this->anidbId . ".jpg")) {
-			(new \ReleaseImage($this->pdo))->saveImage(
-										   $this->anidbId,
-										   'http://img7.anidb.net/pics/anime/' . $picture,
-										   $this->imgSavePath
-			);
-		}
 	}
 }

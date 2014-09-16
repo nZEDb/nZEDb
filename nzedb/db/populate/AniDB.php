@@ -15,6 +15,12 @@ class AniDB
 	public $echooutput;
 
 	/**
+	 * The directory to store AniDB covers
+	 * @var string
+	 */
+	public $imgSavePath;
+
+	/**
 	 * @var \nzedb\db\Settings
 	 */
 	public $pdo;
@@ -38,12 +44,6 @@ class AniDB
 	private $banned;
 
 	/**
-	 * The directory to store AniDB covers
-	 * @var string
-	 */
-	public $imgSavePath;
-
-	/**
 	 * The last unixtime a full AniDB update was run
 	 * @var string
 	 */
@@ -58,7 +58,7 @@ class AniDB
 	/**
 	 * @param array $options Class instances / Echo to cli.
 	 */
-	public function __construct(array $options =[])
+	public function __construct(array $options = [])
 	{
 		$defaults = [
 			'Echo'     => false,
@@ -67,18 +67,19 @@ class AniDB
 		$options += $defaults;
 
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo        = ($options['Settings'] instanceof Settings ? $options['Settings'] :
+			new Settings());
 
-//		$maxanidbprocessed = $this->pdo->getSetting('maxanidbprocessed');
+		//		$maxanidbprocessed = $this->pdo->getSetting('maxanidbprocessed');
 		$anidbupdint = $this->pdo->getSetting('intanidbupdate');
 		$lastupdated = $this->pdo->getSetting('lastanidbupdate');
 
 		$this->imgSavePath = nZEDb_COVERS . 'anime' . DS;
-		$this->apiKey = $this->pdo->getSetting('anidbkey');
+		$this->apiKey      = $this->pdo->getSetting('anidbkey');
 
 		$this->updateInterval = (isset($anidbupdint) ? $anidbupdint : '7');
-		$this->lastUpdate = (isset($lastupdated) ? $lastupdated : '0');
-		$this->banned = false;
+		$this->lastUpdate     = (isset($lastupdated) ? $lastupdated : '0');
+		$this->banned         = false;
 	}
 
 	/**
@@ -119,10 +120,10 @@ class AniDB
 							AND type = %s
 							AND lang = %s
 							AND title = %s',
-							$id,
-							$this->pdo->escapeString($type),
-							$this->pdo->escapeString($lang),
-							$this->pdo->escapeString($title)
+								 $id,
+								 $this->pdo->escapeString($type),
+								 $this->pdo->escapeString($lang),
+								 $this->pdo->escapeString($title)
 						 )
 		);
 	}
@@ -139,6 +140,11 @@ class AniDB
 	 */
 	private function getAniDbAPI()
 	{
+		$timestamp = $this->pdo->getSetting('APIs.AniDB.banned') + 90000;
+		if ($timestamp > time()) {
+			echo "Banned from AniDB lookups until " . date('Y-m-d H:i:s', $timestamp) . "\n";
+			return false;
+		}
 		$apiresponse = $this->getAniDbResponse();
 
 		$AniDBAPIArray = array();
@@ -147,50 +153,21 @@ class AniDB
 			echo "AniDB: Error getting response." . PHP_EOL;
 		} elseif (preg_match("/\<error\>Banned\<\/error\>/", $apiresponse)) {
 			$this->banned = true;
+			$this->pdo->setSetting('APIs.AniDB.banned', time());
 		} elseif (preg_match("/\<error\>Anime not found\<\/error\>/", $apiresponse)) {
 			echo "AniDB   : Anime not yet on site. Remove until next update.\n";
 		} elseif ($AniDBAPIXML = new \SimpleXMLElement($apiresponse)) {
-			$temp = '';
-			if ($AniDBAPIXML->similaranime && $AniDBAPIXML->similaranime[0]->attributes()) {
-				foreach ($AniDBAPIXML->similaranime->children() AS $similar) {
-					$temp .= (string)$similar->anime . ', ';
-				}
-			}
-			$AniDBAPIArray['similar'] = (empty($temp) ? '' : substr($temp, 0, -2));
+			$AniDBAPIArray['similar'] = $this->processAPIResponceElement($AniDBAPIXML->similaranime, 'anime');
 
-			$temp = '';
-			if ($AniDBAPIXML->relatedanime && $AniDBAPIXML->relatedanime[0]->attributes()) {
-				foreach ($AniDBAPIXML->relatedanime->children() AS $related) {
-					$temp .= (string)$related->anime . ', ';
-				}
-			}
-			$AniDBAPIArray['related'] = (empty($temp) ? '' : substr($temp, 0, -2));
+			$AniDBAPIArray['related'] = $this->processAPIResponceElement($AniDBAPIXML->relatedanime, 'anime');
 
-			$temp = '';
-			if ($AniDBAPIXML->creators && $AniDBAPIXML->creators[0]->attributes()) {
-				foreach ($AniDBAPIXML->creators->children() AS $creators) {
-					$temp .= (string)$creators->name . ', ';
-				}
-			}
-			$AniDBAPIArray['creators'] = (empty($temp) ? '' : substr($temp, 0, -2));
+			$AniDBAPIArray['creators'] = $this->processAPIResponceElement($AniDBAPIXML->creators);
 
-			$temp = '';
-			if ($AniDBAPIXML->characters && $AniDBAPIXML->characters[0]->attributes()) {
-				foreach ($AniDBAPIXML->characters->children() AS $characters) {
-					$temp .= (string)$characters->name . ', ';
-				}
-			}
-			$AniDBAPIArray['characters'] = (empty($temp) ? '' : substr($temp, 0, -2));
+			$AniDBAPIArray['characters'] = $this->processAPIResponceElement($AniDBAPIXML->characters);
 
-			$temp = '';
-			if ($AniDBAPIXML->categories && $AniDBAPIXML->categories[0]->attributes()) {
-				foreach ($AniDBAPIXML->categories->children() AS $categories) {
-					$temp .= (string)$categories->name . ', ';
-				}
-			}
-			$AniDBAPIArray['categories'] = (empty($temp) ? '' : substr($temp, 0, -2));
+			$AniDBAPIArray['categories'] = $this->processAPIResponceElement($AniDBAPIXML->categories);
 
-			if ($AniDBAPIXML->episodes->episode instanceof \Traversable) {
+			if ($AniDBAPIXML->episodes && $AniDBAPIXML->episodes[0]->attributes()) {
 				$i = 1;
 				foreach ($AniDBAPIXML->episodes->episode AS $episode) {
 					$titleArray = array();
@@ -216,25 +193,17 @@ class AniDB
 			}
 
 			$episodeArray = [];
-			//start and end date come from AniDB API as perfect date strings -- no manipulation needed
-			if (isset($AniDBAPIXML->startdate)) {
-				$AniDBAPIArray['startdate'] = $AniDBAPIXML->startdate;
-			} else {
-				$AniDBAPIArray['startdate'] = '0000-00-00';
-			}
-
-			if (isset($AniDBAPIXML->enddate)) {
-				$AniDBAPIArray['enddate'] = $AniDBAPIXML->enddate;
-			} else {
-				$AniDBAPIArray['enddate'] = '0000-00-00';
-			}
+			//start and end date come from AniDB API as date strings -- no manipulation needed
+			$AniDBAPIArray['startdate'] = isset($AniDBAPIXML->startdate) ? $AniDBAPIXML->startdate :
+				'0000-00-00';
+			$AniDBAPIArray['enddate']   = isset($AniDBAPIXML->enddate) ? $AniDBAPIXML->enddate :
+				'0000-00-00';
 
 			if (isset($AniDBAPIXML->ratings->permanent)) {
 				$AniDBAPIArray['rating'] = $AniDBAPIXML->ratings->permanent;
-			} elseif (isset($AniDBAPIXML->ratings->temporary)) {
-				$AniDBAPIArray['rating'] = $AniDBAPIXML->ratings->temporary;
 			} else {
-				$AniDBAPIArray['rating'] = '';
+				$AniDBAPIArray['rating'] = isset($AniDBAPIXML->ratings->temporary) ?
+					$AniDBAPIXML->ratings->temporary : $AniDBAPIArray['rating'] = '';
 			}
 
 			$AniDBAPIArray += array(
@@ -249,6 +218,25 @@ class AniDB
 			return $AniDBAPIArray;
 		}
 		return false;
+	}
+
+	/**
+	 * @param \SimpleXMLElement $element
+	 * @param string            $item
+	 * @param string            $property
+	 *
+	 * @return string
+	 */
+	private function processAPIResponceElement(\SimpleXMLElement $element, $property = null)
+	{
+		$property = empty($property) ? 'name' : $property;
+		$temp     = '';
+		if ($element && $element[0]->attributes()) {
+			foreach ($element->children() AS $entry) {
+				$temp .= (string)$entry->$property . ', ';
+			}
+		}
+		return (empty($temp) ? '' : substr($temp, 0, -2));
 	}
 
 	/**
