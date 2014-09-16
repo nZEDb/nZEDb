@@ -150,76 +150,67 @@ class AniDB
 		} elseif (preg_match("/\<error\>Anime not found\<\/error\>/", $apiresponse)) {
 			echo "AniDB   : Anime not yet on site. Remove until next update.\n";
 		} elseif ($AniDBAPIXML = new \SimpleXMLElement($apiresponse)) {
-
-			if (isset($AniDBAPIXML->similaranime)
-				&& $AniDBAPIXML->similaranime instanceof \Traversable
-			) {
-				foreach ($AniDBAPIXML->similaranime AS $similar) {
-					$similarArray[] = (string)$similar->anime;
+			$temp = '';
+			if ($AniDBAPIXML->similaranime && $AniDBAPIXML->similaranime[0]->attributes()) {
+				foreach ($AniDBAPIXML->similaranime->children() AS $similar) {
+					$temp .= (string)$similar->anime . ', ';
 				}
-				$AniDBAPIArray['similar'] = implode(', ', $similarArray);
-			} else {
-				$AniDBAPIArray['similar'] = 'No similar anime available for this AniDB ID.';
 			}
-
-			if (isset($AniDBAPIXML->relatedanime)
-				&& $AniDBAPIXML->relatedanime instanceof \Traversable
-			) {
-				foreach ($AniDBAPIXML->relatedanime AS $related) {
-					$relatedArray[] = (string)$related->anime;
-				}
-				$AniDBAPIArray['related'] = implode(', ', $relatedArray);
-			} else {
-				$AniDBAPIArray['related'] = 'No related anime available for this AniDB ID.';
-			}
+			$AniDBAPIArray['similar'] = (empty($temp) ? '' : substr($temp, 0, -2));
 
 			$temp = '';
-			foreach ($AniDBAPIXML->creators->children() AS $creators) {
-				$temp .= (string)$creators->name . ', ';
+			if ($AniDBAPIXML->relatedanime && $AniDBAPIXML->relatedanime[0]->attributes()) {
+				foreach ($AniDBAPIXML->relatedanime->children() AS $related) {
+					$temp .= (string)$related->anime . ', ';
+				}
+			}
+			$AniDBAPIArray['related'] = (empty($temp) ? '' : substr($temp, 0, -2));
+
+			$temp = '';
+			if ($AniDBAPIXML->creators && $AniDBAPIXML->creators[0]->attributes()) {
+				foreach ($AniDBAPIXML->creators->children() AS $creators) {
+					$temp .= (string)$creators->name . ', ';
+				}
 			}
 			$AniDBAPIArray['creators'] = (empty($temp) ? '' : substr($temp, 0, -2));
 
-			if ($AniDBAPIXML->characters->character instanceof \Traversable) {
-				foreach ($AniDBAPIXML->characters->character AS $character) {
-					$characterArray[] = (string)$character->name;
+			$temp = '';
+			if ($AniDBAPIXML->characters && $AniDBAPIXML->characters[0]->attributes()) {
+				foreach ($AniDBAPIXML->characters->children() AS $characters) {
+					$temp .= (string)$characters->name . ', ';
 				}
-				$AniDBAPIArray['characters'] = implode(', ', $characterArray);
-			} else {
-				$AniDBAPIArray['characters'] = 'No characters available for this AniDB ID.';
 			}
+			$AniDBAPIArray['characters'] = (empty($temp) ? '' : substr($temp, 0, -2));
 
-			if ($AniDBAPIXML->categories->category instanceof \Traversable) {
-				foreach ($AniDBAPIXML->categories->category AS $category) {
-					$categoryArray[] = (string)$category->name;
+			$temp = '';
+			if ($AniDBAPIXML->categories && $AniDBAPIXML->categories[0]->attributes()) {
+				foreach ($AniDBAPIXML->categories->children() AS $categories) {
+					$temp .= (string)$categories->name . ', ';
 				}
-				$AniDBAPIArray['categories'] = implode(', ', $categoryArray);
-			} else {
-				$AniDBAPIArray['categories'] = 'No categories available for this AniDB ID.';
 			}
+			$AniDBAPIArray['categories'] = (empty($temp) ? '' : substr($temp, 0, -2));
 
-			// only english, x-jat imploded episode titles for now
 			if ($AniDBAPIXML->episodes->episode instanceof \Traversable) {
 				$i = 1;
 				foreach ($AniDBAPIXML->episodes->episode AS $episode) {
-
 					$titleArray = array();
 
 					$episodeArray[$i]['episode_id'] = (int)$episode->attributes()->id[0];
 					$episodeArray[$i]['episode_no'] = (int)$episode->epno;
 					$episodeArray[$i]['airdate']    = (string)$episode->airdate;
 
-					foreach ($episode->title AS $title) {
-						$xmlAttribs = $title->attributes('xml', true);
-						if (in_array($xmlAttribs->lang, ['en', 'x-jat'])) {
-							$titleArray[] = $title[0];
+					if ($AniDBAPIXML->title && $AniDBAPIXML->title[0]->attributes()) {
+						foreach ($AniDBAPIXML->title->children() AS $title) {
+							$xmlAttribs = $title->attributes('xml', true);
+							// only english, x-jat imploded episode titles for now
+							if (in_array($xmlAttribs->lang, ['en', 'x-jat'])) {
+								$titleArray[] = $title[0];
+							}
 						}
 					}
 
-					if (!empty($titleArray)) {
-						$episodeArray[$i]['episode_title'] = implode(', ', $titleArray);
-					} else {
-						$episodeArray[$i]['episode_title'] = 'No title available for this episode.';
-					}
+					$episodeArray[$i]['episode_title'] = empty($titleArray) ? '' :
+						implode(', ', $titleArray);
 					$i++;
 				}
 			}
@@ -229,13 +220,13 @@ class AniDB
 			if (isset($AniDBAPIXML->startdate)) {
 				$AniDBAPIArray['startdate'] = $AniDBAPIXML->startdate;
 			} else {
-				$AniDBAPIArray['startdate'] = 'NULL';
+				$AniDBAPIArray['startdate'] = '0000-00-00';
 			}
 
 			if (isset($AniDBAPIXML->enddate)) {
 				$AniDBAPIArray['enddate'] = $AniDBAPIXML->enddate;
 			} else {
-				$AniDBAPIArray['enddate'] = 'NULL';
+				$AniDBAPIArray['enddate'] = '0000-00-00';
 			}
 
 			if (isset($AniDBAPIXML->ratings->permanent)) {
@@ -243,14 +234,13 @@ class AniDB
 			} elseif (isset($AniDBAPIXML->ratings->temporary)) {
 				$AniDBAPIArray['rating'] = $AniDBAPIXML->ratings->temporary;
 			} else {
-				$AniDBAPIArray['rating'] = 'No categories available for this AniDB ID.';
+				$AniDBAPIArray['rating'] = '';
 			}
 
 			$AniDBAPIArray += array(
-				'type'        => isset($AniDBAPIXML->type[0]) ? (string)$AniDBAPIXML->type : 'N/A',
+				'type'        => isset($AniDBAPIXML->type[0]) ? (string)$AniDBAPIXML->type : '',
 				'description' => isset($AniDBAPIXML->description) ?
-						(string)$AniDBAPIXML->description :
-						'No description available for this AniDB ID.',
+						(string)$AniDBAPIXML->description : '',
 				'picture'     => isset($AniDBAPIXML->picture[0]) ? (string)$AniDBAPIXML->picture :
 						'',
 				'epsarr'      => $episodeArray,
