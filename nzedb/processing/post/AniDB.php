@@ -140,6 +140,12 @@ class AniDB
 	 */
 	private function getAniDbAPI()
 	{
+		$timestamp = $this->pdo->getSetting('APIs.AniDB.banned') + 90000;
+		if ($timestamp > time()) {
+			echo "Banned from AniDB lookups until " . date('Y-m-d H:i:s', $timestamp);
+			return false;
+		}
+
 		$apiresponse = $this->getAniDbResponse();
 
 		$AniDBAPIArray = array();
@@ -148,14 +154,13 @@ class AniDB
 			echo "AniDB: Error getting response." . PHP_EOL;
 		} elseif (preg_match("/\<error\>Banned\<\/error\>/", $apiresponse)) {
 			$this->banned = true;
+			$this->pdo->setSetting('APIs.AniDB.banned', time());
 		} elseif (preg_match("/\<error\>Anime not found\<\/error\>/", $apiresponse)) {
 			echo "AniDB   : Anime not yet on site. Remove until next update.\n";
 		} elseif ($AniDBAPIXML = new \SimpleXMLElement($apiresponse)) {
-			$AniDBAPIArray['similar'] = $this->processAPIResponceElement($AniDBAPIXML->similaranime,
-																		 'anime');
+			$AniDBAPIArray['similar'] = $this->processAPIResponceElement($AniDBAPIXML->similaranime, 'anime');
 
-			$AniDBAPIArray['related'] = $this->processAPIResponceElement($AniDBAPIXML->relatedanime,
-																		 'anime');
+			$AniDBAPIArray['related'] = $this->processAPIResponceElement($AniDBAPIXML->relatedanime, 'anime');
 
 			$AniDBAPIArray['creators'] = $this->processAPIResponceElement($AniDBAPIXML->creators);
 
@@ -166,7 +171,7 @@ class AniDB
 			if ($AniDBAPIXML->episodes && $AniDBAPIXML->episodes[0]->attributes()) {
 				$i = 1;
 				foreach ($AniDBAPIXML->episodes->episode AS $episode) {
-					$titleArray = array();
+					$titleArray = [];
 
 					$episodeArray[$i]['episode_id'] = (int)$episode->attributes()->id[0];
 					$episodeArray[$i]['episode_no'] = (int)$episode->epno;
@@ -204,10 +209,8 @@ class AniDB
 
 			$AniDBAPIArray += array(
 				'type'        => isset($AniDBAPIXML->type[0]) ? (string)$AniDBAPIXML->type : '',
-				'description' => isset($AniDBAPIXML->description) ?
-						(string)$AniDBAPIXML->description : '',
-				'picture'     => isset($AniDBAPIXML->picture[0]) ? (string)$AniDBAPIXML->picture :
-						'',
+				'description' => isset($AniDBAPIXML->description) ?	(string)$AniDBAPIXML->description : '',
+				'picture'     => isset($AniDBAPIXML->picture[0]) ? (string)$AniDBAPIXML->picture : '',
 				'epsarr'      => $episodeArray,
 			);
 
