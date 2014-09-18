@@ -934,7 +934,7 @@ class ReleaseRemover
 	{
 		$this->method = 'Codec Poster';
 		$regex = "rf.name REGEXP 'x264.*\.(wmv|avi)$'";
-		$regex2 = "rf.name REGEXP '\\\\.*((DVDrip|BRRip)[. ].*[. ](R(5|6)|HQ)|720p[ .](DVDrip|HQ)|Webrip.*[. ](R(5|6)|Xvid|AC3|US)|720p.*[. ]WEB-DL[. ]Xvid[. ]AC3[. ]US|HDRip.*[. ]Xvid[. ]DD5).*[. ]avi$'";
+		$regex2 = "rf.name REGEXP '\\\\.*((DVDrip|BRRip)[. ].*[. ](R[56]|HQ)|720p[ .](DVDrip|HQ)|Webrip.*[. ](R[56]|Xvid|AC3|US)|720p.*[. ]WEB-DL[. ]Xvid[. ]AC3[. ]US|HDRip.*[. ]Xvid[. ]DD5).*[. ]avi$'";
 		$codec = '%\\Codec%Setup.exe%';
 		$iferror = '%If_you_get_error.txt%';
 		$ifnotplaying = '%read me if the movie not playing.txt%';
