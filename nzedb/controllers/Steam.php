@@ -142,9 +142,9 @@ class Steam
 				foreach ($this->_ret->find("li") as $req) {
 					$this->_res['gamerequirements']['minimum'][] = trim($req->plaintext);
 				}
-				if (false !== $key = preg_grep("/Partner Requirements/",
-											   $this->_res['gamerequirements']['minimum'])
-				) {
+				$key = preg_grep("/Partner Requirements/",
+								 $this->_res['gamerequirements']['minimum']);
+				if ($key !== false) {
 					$key = array_keys($key);
 					if(isset($key[0])){
 					unset($this->_res['gamerequirements']['minimum'][$key[0]]);
