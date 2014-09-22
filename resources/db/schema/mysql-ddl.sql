@@ -479,7 +479,7 @@ CREATE TABLE anidb_info (
   enddate     DATE DEFAULT NULL,
   updated     TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   related     VARCHAR(1024) COLLATE utf8_unicode_ci DEFAULT NULL,
-  similar     VARCHAR(1024) COLLATE utf8_unicode_ci DEFAULT NULL
+  similar     VARCHAR(1024) COLLATE utf8_unicode_ci DEFAULT NULL,
   creators    VARCHAR(1024) COLLATE utf8_unicode_ci DEFAULT NULL,
   description TEXT          COLLATE utf8_unicode_ci DEFAULT NULL,
   rating      VARCHAR(5)    COLLATE utf8_unicode_ci DEFAULT NULL,
