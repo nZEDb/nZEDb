@@ -1252,9 +1252,9 @@ class Movie
 			$name = $matches['name'];
 			$year = $matches['year'];
 
-		/* If we didn't find a year, try to get a name anyways.
-		 * Try to look for a title before the $followingList and after anything but a-z0-9 two times or more (-[ for example)
-		 */
+			/* If we didn't find a year, try to get a name anyways.
+			 * Try to look for a title before the $followingList and after anything but a-z0-9 two times or more (-[ for example)
+			 */
 		} else if (preg_match('/([^\w]{2,})?(?P<name>[\w .-]+?)' . $followingList . '/i', $releaseName, $matches)) {
 			$name = $matches['name'];
 		}
@@ -1268,7 +1268,7 @@ class Movie
 			$name = preg_replace('/\(.*?\)|[._]/i', ' ', $name);
 			// Finally remove multiple spaces and trim leading spaces.
 			$name = trim(preg_replace('/\s{2,}/', ' ', $name));
-				// Check if the name is long enough and not just numbers.
+			// Check if the name is long enough and not just numbers.
 			if (strlen($name) > 4 && !preg_match('/^\d+$/', $name)) {
 				if ($this->debug && $this->echooutput) {
 					$this->pdo->log->doEcho("DB name: {$releaseName}", true);
