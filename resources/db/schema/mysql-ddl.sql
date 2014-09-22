@@ -676,6 +676,7 @@ CREATE TABLE         tvrageepisodes (
   UNIQUE INDEX ix_tvrageepisodes_rageid (rageid, fullep)
 )
   ENGINE          = MYISAM
+  AUTO_INCREMENT  = 1000000
   DEFAULT CHARSET = utf8
   COLLATE         = utf8_unicode_ci
   AUTO_INCREMENT  = 1;

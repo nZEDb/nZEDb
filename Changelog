@@ -3,6 +3,23 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
+2014-09-15 bart39
+	* Mrg: Merge PR 1503 from tasky.
+	* Fix: fix potential cause of corrupt nzb's
+	* Chg: reduce size of tv images on posterwall.
+	* Add: More regex additions
+2014-09-15 ruhllatio
+	* Fix: Force updated column in anidb_info to be populated on INSERT and updated on UPDATE scenarios to prevent API bans
+	* Fix: Anime title view displays language type (main, official) instead of anime type (Movie, TV Show, etc.)
+	* Fix: Bad copy/paste in reset_postprocessing for anime
+	* Add: Initial sleep for AniDB post process in case user respawns script too fast
+	* Add: Additional debug output if searchname can't be matched
+2014-09-15 niel
+	* Fix: User cart problem. Changing userid to user_id in usercart table.
+	* New: Added reporting reason for pre-commit hook refusing to commit.
+	* New: Added setting to settings table to record the timestamp of the last time AniDB returned a 'ban' message.
+2014-09-14 bart39
+	* Mrg: Merge PR 1502 from tasky.
 2014-09-13 bart39
 	* Fix: another attempt at fixing scnzbefnet collections
 2014-09-13 DariusIII
