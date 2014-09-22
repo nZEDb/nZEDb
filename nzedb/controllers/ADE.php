@@ -189,32 +189,35 @@ class ADE
 	}
 
 	/**
-	 * Gets categories, if exists return array else return false
-	 * @return mixed array|bool - Categories, false
+	 * Gets Genres, if exists return array else return false
+	 * @return mixed array - Genres
 	 */
 	public function genres()
 	{
-		$categories = null;
+		$genres = array();
 		$this->_tmpResponse = str_ireplace("Section Categories", "scat", $this->_response);
 		$this->_edithtml->load($this->_tmpResponse);
-		if($ret = $this->_edithtml->find("div[class=scat]", 0)){
-		$this->_tmpResponse = trim($ret->outertext);
-		$ret = $this->_edithtml->load($this->_tmpResponse);
+		if ($ret = $this->_edithtml->find("div[class=scat]", 0)) {
+			$ret = $ret->find("p",0);
+			$this->_tmpResponse = trim($ret->outertext);
+			$ret = $this->_edithtml->load($this->_tmpResponse);
 
-		foreach ($ret->find("p, a") as $categories) {
-			$categories = trim($categories->plaintext);
-			if (stristr($categories, ",")) {
-				$categories = explode(",", $categories);
-				break;
+			foreach ($ret->find("a") as $categories) {
+				$categories = trim($categories->plaintext);
+				if (stristr($categories, ",")) {
+					$genres = explode(",", $categories);
+					$genres = array_map('trim', $genres);
+				}else{
+				$genres[] = $categories;
+				}
 			}
-		}
-		$categories = array_map('trim', $categories);
-		$this->_res['genres'] = $categories;
+			if (is_array($genres)) {
+				$this->_res['genres'] = array_unique($genres);
+			}
 		}
 		$this->_edithtml->clear();
 		unset($this->_tmpResponse);
 		unset($ret);
-
 		return $this->_res;
 	}
 

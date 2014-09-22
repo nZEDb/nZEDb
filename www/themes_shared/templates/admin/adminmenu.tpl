@@ -16,6 +16,7 @@
 	<li><a href="{$smarty.const.WWW_TOP}/anidb-list.php">View AniDB List</a></li>
 	<li><a href="{$smarty.const.WWW_TOP}/music-list.php">View Music List</a></li>
 	<li><a href="{$smarty.const.WWW_TOP}/console-list.php">View Console List</a></li>
+	<li><a href="{$smarty.const.WWW_TOP}/game-list.php">View Game List</a></li>
 	<li><a href="{$smarty.const.WWW_TOP}/nzb-import.php">Import</a> <a style="padding:0;" href="{$smarty.const.WWW_TOP}/nzb-export.php">Export</a> Nzb's</li>
 	<li><a href="{$smarty.const.WWW_TOP}/db-optimise.php" class="confirm_action">Optimise</a> Tables</li>
 	<li><a href="{$smarty.const.WWW_TOP}/opcachestats.php">Opcache Statistics</a></li>

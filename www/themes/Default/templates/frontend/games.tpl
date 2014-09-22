@@ -94,7 +94,7 @@
 					<td class="mid">
 						<div class="movcover">
 							<a class="title" title="View details"
-							   href="{$smarty.const.WWW_TOP}/details/{$result.grp_release_guid}/{$result.grp_release_name|escape:"htmlall"}">
+								href="{$smarty.const.WWW_TOP}/details/{$result.grp_release_guid}/{$result.grp_release_name|escape:"htmlall"}">
 								<img class="shadow"
 									 src="{$smarty.const.WWW_TOP}/covers/games/{if $result.cover == 1}{$result.gamesinfo_id}.jpg{else}no-cover.jpg{/if}"
 									 width="120" border="0" alt="{$result.title|escape:"htmlall"}"/>
@@ -104,17 +104,32 @@
 								{if $result.nfoid > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$result.grp_release_guid}"
 														 title="View Nfo" class="rndbtn modal_nfo" rel="nfo">
 										Nfo</a>{/if}
+								{if $result.classused == "gb"}
 								<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}{$result.url}"
-								   name="amazon{$result.gamesinfo_id}" title="View amazon page">Amazon</a>
+								   name="giantbomb{$result.gamesinfo_id}" title="View giantbomb page">Giantbomb</a>
+								{/if}
+								{if $result.classused == "steam"}
 								<a class="rndbtn" target="_blank"
-								   href="{$site->dereferrer_link}http://ign.com/search?q={$result.title|escape:"htmlall"}&page=0&count=10&type=object&objectType=game&filter=games&"
-								   name="ign{$result.gamesinfo_id}" title="View ign page">IGN</a>
+								   href="{$site->dereferrer_link}{$result.url|escape:"htmlall"}"
+								   name="steam{$result.gamesinfo_id}" title="View Steam page">Steam</a>
+								{/if}
+								{if $result.classused == "gl"}
 								<a class="rndbtn" target="_blank"
-								   href="{$site->dereferrer_link}http://www.gamespot.com/search/?qs={$result.title|escape:"htmlall"}/"
-								   name="gamespot{$result.gamesinfo_id}" title="View gamespot page">Gamespot</a>
+								   href="{$site->dereferrer_link}{$result.url|escape:"htmlall"}"
+								   name="greenlight{$result.gamesinfo_id}" title="View greenlight page">Greenlight</a>
+								{/if}
+								{if $result.classused == "desura"}
 								<a class="rndbtn" target="_blank"
-								   href="{$site->dereferrer_link}http://www.metacritic.com/search/game/{$result.title|escape:"htmlall"}/results"
-								   name="metacritic{$result.gamesinfo_id}" title="View metacritic page">Metacritic</a>
+								   href="{$site->dereferrer_link}{$result.url|escape:"htmlall"}"
+								   name="desura{$result.gamesinfo_id}" title="View Desura page">Desura</a>
+								{/if}
+								<a class="rndbtn" target="_blank"
+									href="{$site->dereferrer_link}http://ign.com/search?q={$result.title|escape:"htmlall"}&page=0&count=10&type=object&objectType=game&filter=games&"
+									name="ign{$result.id}"	title="Find game on IGN">IGN</a>
+								<a class="rndbtn" target="_blank"
+									href="{$site->dereferrer_link}http://www.gamespot.com/search/?q={$result.title|escape:"htmlall"}"
+									name="gamespot{$result.id}"
+									title="Find game on Gamespot">Gamespot</a>
 							</div>
 						</div>
 					</td>

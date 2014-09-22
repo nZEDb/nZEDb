@@ -158,7 +158,7 @@ class AEBN
 				$this->_res['genres'][] = trim($genre->plaintext);
 			}
 		}
-
+		$this->_res['genres'] = array_unique($this->_res['genres']);
 		return $this->_res;
 	}
 

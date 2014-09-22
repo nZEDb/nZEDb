@@ -4,8 +4,60 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
+2014-09-22 niel
+	* New: Merged and tagged v0.4.2 to master branch.
 2014-09-15 niel
 	* New: Merged and tagged v0.4.1 to master branch.
+2014-09-13 bart39
+	* Fix: another attempt at fixing scnzbefnet collections
+2014-09-13 DariusIII
+	* Upd: Updated regexes for codecposter
+2014-09-12 bart39
+	* Add: More regex magic.
+	* Fix: possible fix for boneless splitting scnzbefnet par2 releases.
+	* Mrg: Merge PR 1499 from tasky.
+	* Fix: XXX / TV Posterwall
+2014-09-12 ruhllatio
+	* Mrg: dev-anime into dev for Anime Post processing support
+	* Fix: SQL patch doesn't drop new anidb_titles table if it exists
+	* Fix: File permissions for Desura/Greenlight and some SQL patches
+	* Del: +\d patches from dev-anime merge
+	* Fix: Dupe check query in AniDB population
+	* Fix: Missing column that didn't make it to branch / Fix file perm for patch
+	* Fix: Regex constant errors in ReleaseCleaning due to shitty merge
+	* Add: Anime SQL patch fix to SQL schema
+2014-09-11 ruhllatio
+	* Chg: Re-work New Poster Wall queries - should improve response
+2014-09-11 Bart39
+	* Add: Add TV to new release posterwall.
+	* Add: Regex for a.b.amazing.
+	* Chg: Amend regex to cater for german characters.
+	* Add: Videoot XXX Xvid dvd rips in NameFixer
+2014-09-10 Bart39
+	* Mrg: Merging in PR 1497 from tasky.
+2014-09-10 kevin
+	* Fix: Issue where empty nzb would show on API when no results were returned.
+2014-09-10 kaibosh
+	* Fix: Fix for issue 1489 - Specify session name when selecting pane
+2014-09-09 DariusIII
+	* Upd: Updated codecposter removal with german, french and dutch variants of txt file.
+2014-09-09 bart39
+	* Fix: Namespace issue.
+2014-09-08 bart39
+	* Add: Add python safe binaries / backfill scripts to multiprocessing.
+	* Add: Added fixrelnames to multiprocessing.
+	* Add: Added all multiprocessing examples / options to threaded.sh (copy to user_threaded.sh).
+2014-09-08 kevin
+	* Add: Setting to limit max releases for pager count, can speed up the web pages, update settings.php with nZEDb_MAX_PAGER_RESULTS
+2014-09-08 ruhllatio
+	* Fix: WEB-DL Movie categorization when WEB-DL categorization is disabled
+	* Add: Movie override for a.b.warez byGroup categorization
+	* Chg: Update Tmux to run new multiproc scripts for safe backfill/fixRelNames
+2014-09-07 ruhllatio
+	* Add: WEB-DL category for Movies, they currently go into TV WEB-DL right now
+	* Fix: WEB-DL Movie categorization overridden by TV opening regex
+2014-09-07 kevin
+	* Chg: Change releases to use count instead of SQL_CALC_FOUND_ROWS for pager, should speed up those queries.
 2014-09-08 niel
 	* New: Merged and tagged v0.4.0 to master branch.
 	NOTE: This version forward targets PHP 5.5 and later.

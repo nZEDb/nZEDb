@@ -206,6 +206,35 @@ if (isset($argv[1]) && ($argv[1] === "tv" || $argv[1] === "all")) {
 	}
 	echo $pdo->log->header("\n" . number_format($concount) . " rageID's reset.");
 }
+if (isset($argv[1]) && ($argv[1] === "anime" || $argv[1] === "all")) {
+	$ran = true;
+	if (isset($argv[3]) && $argv[3] === "truncate") {
+		$pdo->queryExec("TRUNCATE TABLE anidb_info");
+		$pdo->queryExec("TRUNCATE TABLE anidb_episodes");
+	}
+	if (isset($argv[2]) && $argv[2] === "true") {
+		echo $pdo->log->header("Resetting all Anime postprocessing");
+		$where = '  WHERE rageid != -1';
+	} else {
+		echo $pdo->log->header("Resetting all failed Anime postprocessing");
+		$where = " WHERE anidbid BETWEEN -2 AND -1 AND categoryid = 5070";
+	}
+
+	$qry      = $pdo->queryDirect("SELECT id FROM releases" . $where);
+	if ($qry !== false ) {
+		$total = $qry->rowCount();
+	} else {
+		$total = 0;
+	}
+	$concount = 0;
+	if ($qry instanceof \Traversable) {
+		foreach ($qry as $releases) {
+			$pdo->queryExec("UPDATE releases SET anidbid = NULL WHERE id = " . $releases['id']);
+			$consoletools->overWritePrimary("Resetting Anime Releases:  " . $consoletools->percentString(++$concount, $total));
+		}
+	}
+	echo $pdo->log->header("\n" . number_format($concount) . " anidbID's reset.");
+}
 if (isset($argv[1]) && ($argv[1] === "books" || $argv[1] === "all")) {
 	$ran = true;
 	if (isset($argv[3]) && $argv[3] === "truncate") {
@@ -294,6 +323,7 @@ if ($ran === false) {
 			. "php reset_postprocessing.php music true       ...: To reset all music.\n"
 			. "php reset_postprocessing.php misc true        ...: To reset all misc.\n"
 			. "php reset_postprocessing.php tv true          ...: To reset all tv.\n"
+			. "php reset_postprocessing.php anime true       ...: To reset all anime.\n"
 			. "php reset_postprocessing.php books true       ...: To reset all books.\n"
 			. "php reset_postprocessing.php xxx true         ...: To reset all xxx.\n"
 			. "php reset_postprocessing.php nfos true        ...: To reset all nfos.\n"

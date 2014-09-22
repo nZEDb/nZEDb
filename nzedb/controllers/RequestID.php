@@ -133,7 +133,7 @@ abstract class RequestID
 	{
 		$requestID = array();
 		switch (true) {
-			case preg_match('/\[ ?#?scnzb@?efnet ?\]\[(\d+)\]/', $this->_release['name'], $requestID):
+			case preg_match('/\[\s*#?scnzb@?efnet\s*\]\[(\d+)\]/', $this->_release['name'], $requestID):
 			case preg_match('/\[\s*(\d+)\s*\]/', $this->_release['name'], $requestID):
 			case preg_match('/^REQ\s*(\d{4,6})/i', $this->_release['name'], $requestID):
 			case preg_match('/^(\d{4,6})-\d{1}\[/', $this->_release['name'], $requestID):

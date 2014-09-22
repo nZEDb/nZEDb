@@ -39,6 +39,12 @@
 			</td>
 		</tr>
 		<tr>
+			<td><label for="similar">Similar:</label></td>
+			<td>
+				<input id="similar" class="long" name="similar" type="text" value="{$anime.similar|escape:'htmlall'}" />
+			</td>
+		</tr>
+		<tr>
 			<td><label for="creators">Creators:</label></td>
 			<td>
 				<input id="creators" class="long" name="creators" type="text" value="{$anime.creators|escape:'htmlall'}" />
@@ -66,24 +72,6 @@
 			<td><label for="characters">Characters:</label></td>
 			<td>
 				<input id="characters" class="long" name="characters" type="text" value="{$anime.characters|escape:'htmlall'}" />
-			</td>
-		</tr>
-		<tr>
-			<td><label for="epnos">Episode numbers:</label></td>
-			<td>
-				<input id="epnos" class="long" name="epnos" type="text" value="{$anime.epnos|escape:'htmlall'}" />
-			</td>
-		</tr>
-		<tr>
-			<td><label for="airdates">Episode air dates:</label></td>
-			<td>
-				<input id="airdates" class="long" name="airdates" type="text" value="{$anime.airdates|escape:'htmlall'}" />
-			</td>
-		</tr>
-		<tr>
-			<td><label for="episodetitles">Episode titles:</label></td>
-			<td>
-				<input id="episodetitles" class="long" name="episodetitles" type="text" value="{$anime.episodetitles|escape:'htmlall'}" />
 			</td>
 		</tr>
 		<tr>
