@@ -5,6 +5,7 @@ New updates are grouped by person, at the top of the file.
 
 2014-09-23 kevin
 	* Fix: Missing comma in mysql-ddl.sql
+	* Fix: Fixes for windows operating system installation issues.
 2014-09-22 kevin
 	* Add: Check sessions path for read/write permissions on step 1 of install.
 2014-09-15 bart39
