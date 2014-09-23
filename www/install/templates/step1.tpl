@@ -237,6 +237,10 @@
 		<td>{if $cfg->rewriteCheck}<span class="success">OK</span>{else}<span class="warn">Warning</span>{/if}</td>
 	{/if}
 </tr>
+<tr class="">
+	<td>Checking PHP sessions path permissions:{if !$cfg->sessionsPathPermissions}<br /><span class="error">The PHP sessions path ({$sessionsSavePath}) does not have read or write access.</span>{/if}</td>
+	<td>{if $cfg->sessionsPathPermissions}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
+</tr>
 
 </table>
 
