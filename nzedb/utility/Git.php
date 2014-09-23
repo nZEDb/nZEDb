@@ -29,7 +29,7 @@ require_once nZEDb_LIBS . 'Git.php' . DS . 'Git.php';
 class Git extends \GitRepo
 {
 	private $branch;
-	private $mainBranches = ['dev', 'next-master', 'master'];
+	private $mainBranches = ['dev', 'next-master', 'master', 'dev-test'];
 
 	public function __construct(array $options = array())
 	{
