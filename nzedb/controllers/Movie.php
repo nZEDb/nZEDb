@@ -16,6 +16,9 @@ class Movie
 	const SRC_UPCOMING = 4;
 	const SRC_DVD = 5;
 
+	/**
+	 * @var Settings
+	 */
 	public $pdo;
 
 	/**
@@ -158,7 +161,7 @@ class Movie
 		$this->showPasswords = ($this->pdo->getSetting('showpasswordedrelease') != '') ? $this->pdo->getSetting('showpasswordedrelease') : 0;
 
 		$this->debug = nZEDb_DEBUG;
-		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
+		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI && $this->pdo->cli);
 		$this->imgSavePath = nZEDb_COVERS . 'movies' . DS;
 		$this->service = '';
 
@@ -1308,7 +1311,9 @@ class Movie
 	 */
 	public function updateUpcoming()
 	{
-		$this->pdo->log->doEcho($this->pdo->log->header('Updating movie schedule using rotten tomatoes.'));
+		if ($this->echooutput) {
+			$this->pdo->log->doEcho($this->pdo->log->header('Updating movie schedule using rotten tomatoes.'));
+		}
 
 		$rt = new \RottenTomato($this->pdo->getSetting('rottentomatokey'));
 
@@ -1324,7 +1329,7 @@ class Movie
 				$this->pdo->log->doEcho($this->pdo->log->header("Updated successfully."));
 			}
 
-		} else {
+		} else if ($this->echooutput) {
 			$this->pdo->log->doEcho($this->pdo->log->header("Error retrieving your RottenTomato API Key. Exiting..." . PHP_EOL));
 		}
 	}
