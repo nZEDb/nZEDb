@@ -113,25 +113,29 @@ class Utility
 	 */
 	static public function getDirFiles (array $options = null)
 	{
-		$defaults = array(
+		$defaults = [
 			'dir'	=> false,
 			'ext'	=> '',
 			'path'	=> '',
 			'regex'	=> '',
-		);
+		];
 		$options += $defaults;
 
-		$files = array();
-		$iterator = new \FilesystemIterator($options['path'],
-										\FilesystemIterator::KEY_AS_PATHNAME |
-										\FilesystemIterator::SKIP_DOTS |
-										\FilesystemIterator::UNIX_PATHS);
-		foreach ($iterator as $fileinfo) {
+		// Replace windows style path separators with unix style.
+		$iterator = new \FilesystemIterator(
+			str_replace('\\', '/', $options['path']),
+			\FilesystemIterator::KEY_AS_PATHNAME |
+			\FilesystemIterator::SKIP_DOTS |
+			\FilesystemIterator::UNIX_PATHS
+		);
+
+		$files = [];
+		foreach ($iterator as $fileInfo) {
 			$file = $iterator->key();
 			switch (true) {
-				case !$options['dir'] && $fileinfo->isDir():
+				case !$options['dir'] && $fileInfo->isDir():
 					break;
-				case !empty($options['ext']) && $fileinfo->getExtension() != $options['ext'];
+				case !empty($options['ext']) && $fileInfo->getExtension() != $options['ext'];
 					break;
 				case (empty($options['regex']) || !preg_match($options['regex'], $file)):
 					break;

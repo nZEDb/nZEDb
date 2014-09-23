@@ -333,7 +333,10 @@ class GitRepo {
 	 * @return  string
 	 */
 	public function run($command) {
-		return $this->run_command(Git::get_bin()." ".$command);
+		// If git.exe is in C:/Program Files, the space between Program and Files causes an error.
+		return $this->run_command(
+			(nzedb\utility\Utility::isWin() ? ('"' . Git::get_bin() . '" ' . $command) : (Git::get_bin() . ' ' . $command))
+		);
 	}
 
 	/**
