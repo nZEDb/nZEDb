@@ -198,18 +198,18 @@ if ($page->isPostBack()) {
 				} else {
 					$updateSettings = false;
 				}
-			}
 
-			// If it all worked, move to the next page.
-			if ($dbInstallWorked && $updateSettings) {
-				header("Location: ?success");
-				if (file_exists($cfg->DB_DIR . '/post_install.php')) {
-					exec("php " . $cfg->DB_DIR . "/post_install.php ${pdo}");
+				// If it all worked, move to the next page.
+				if ($updateSettings) {
+					header("Location: ?success");
+					if (file_exists($cfg->DB_DIR . '/post_install.php')) {
+						exec("php " . $cfg->DB_DIR . "/post_install.php ${pdo}");
+					}
+					exit();
+				} else {
+					$cfg->error    = true;
+					$cfg->emessage = "Could not update sqlpatch to '$patch' for your database.";
 				}
-				exit();
-			} else if (!$updateSettings) {
-				$cfg->error    = true;
-				$cfg->emessage = "Could not update sqlpatch to '$patch' for your database.";
 			} else {
 				$cfg->dbCreateCheck = false;
 				$cfg->error         = true;

@@ -6,8 +6,8 @@
 			<file>293</file>
 		</sql>
 		<git>
-			<tag>0.4.1</tag>
-			<commit>9861</commit>
+			<tag>0.4.2</tag>
+			<commit>9862</commit>
 			<hooks>
 				<precommit>9</precommit>
 				<!-- this is the version of the pre-commit file in githooks NOT the files it calls -->
