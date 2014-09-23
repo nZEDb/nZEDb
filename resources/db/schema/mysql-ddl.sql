@@ -31,7 +31,7 @@ DROP TABLE IF EXISTS binaries;
 CREATE TABLE         binaries (
   id           BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   name         VARCHAR(1000)       NOT NULL DEFAULT '',
-  collectionid INT(11) UNSIGNED    NOT NULL DEFAULT '0',
+  collection_id INT(11) UNSIGNED    NOT NULL DEFAULT '0',
   filenumber   INT UNSIGNED        NOT NULL DEFAULT '0',
   totalparts   INT(11) UNSIGNED    NOT NULL DEFAULT '0',
   currentparts INT UNSIGNED        NOT NULL DEFAULT '0',
@@ -41,7 +41,7 @@ CREATE TABLE         binaries (
   PRIMARY KEY                       (id),
   UNIQUE INDEX ix_binary_binaryhash (binaryhash),
   INDEX        ix_binary_partcheck  (partcheck),
-  INDEX        ix_binary_collection (collectionid)
+  INDEX        ix_binary_collection (collection_id)
 )
   ENGINE          = MYISAM
   DEFAULT CHARSET = utf8
@@ -1133,7 +1133,7 @@ CREATE TRIGGER delete_hashes AFTER DELETE ON predb FOR EACH ROW
   END; $$
 CREATE TRIGGER delete_collections BEFORE DELETE ON collections FOR EACH ROW
   BEGIN
-    DELETE FROM binaries WHERE collectionid = OLD.id;
+    DELETE FROM binaries WHERE collection_id = OLD.id;
     DELETE FROM parts WHERE collection_id = OLD.id;
   END; $$
 DELIMITER ;

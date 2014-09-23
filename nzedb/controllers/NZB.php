@@ -133,7 +133,7 @@ class NZB
 			$cName
 		);
 		$this->_binariesQuery = (
-			'SELECT id, name, totalparts FROM '. $bName .' WHERE collectionid = %d ORDER BY name'
+			'SELECT id, name, totalparts FROM '. $bName .' WHERE collection_id = %d ORDER BY name'
 		);
 		$this->_partsQuery = (
 			'SELECT DISTINCT(messageid), size, partnumber FROM ' . $pName . ' WHERE binaryid = %d ORDER BY partnumber'
