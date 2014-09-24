@@ -11,5 +11,7 @@
 		{/if}
 	{/foreach}
 {else}
-	{$c->body}
+	{foreach from=$content item=c}
+		{$c->body}
+	{/foreach}
 {/if}
