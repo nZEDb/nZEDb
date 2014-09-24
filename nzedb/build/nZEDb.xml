@@ -2,12 +2,12 @@
 <nzedb>
 	<versions>
 		<sql>
-			<db>295</db>
+			<db>296</db>
 			<file>296</file>
 		</sql>
 		<git>
 			<tag>0.3.2</tag>
-			<commit>9775</commit>
+			<commit>9778</commit>
 			<hooks>
 				<precommit>9</precommit>
 				<!-- this is the version of the pre-commit file in githooks NOT the files it calls -->
