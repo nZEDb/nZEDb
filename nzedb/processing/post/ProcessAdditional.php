@@ -90,11 +90,6 @@ Class ProcessAdditional
 	protected $_unrarPath;
 
 	/**
-	 * @var bool
-	 */
-	protected $_hasGNUFile;
-
-	/**
 	 * @var string
 	 */
 	protected $_killString;
@@ -311,8 +306,6 @@ Class ProcessAdditional
 			$this->_7zipPath = $this->pdo->getSetting('zippath');
 		}
 		$this->_archiveInfo->setExternalClients($clients);
-
-		$this->_hasGNUFile = (\nzedb\utility\Utility::hasCommand('file') === true ? true : false);
 
 		$this->_killString = '"';
 		if ($this->pdo->getSetting('timeoutpath') != '' && $this->pdo->getSetting('timeoutseconds') > 0) {
@@ -1188,35 +1181,30 @@ Class ProcessAdditional
 						$this->_release['categoryid'] == \Category::CAT_OTHER_HASHED
 					) {
 						$this->_processU4ETitle($file);
-					} // If we have GNU file, check the type of file and process it.
-					else if ($this->_hasGNUFile) {
-						exec('file -b "' . $file . '"', $output);
+					}
 
+					// Check file's magic info.
+					else {
+						$output = \nzedb\utility\Utility::fileInfo($file);
 						if (!empty($output)) {
-
-							if (count($output) > 1) {
-								$output = implode(',', $output);
-							} else {
-								$output = $output[0];
-							}
 
 							switch (true) {
 
-								case ($this->_foundJPGSample === false && preg_match('/^JPE?G/i', $output[0])):
+								case ($this->_foundJPGSample === false && preg_match('/^JPE?G/i', $output)):
 									$this->_getJPGSample($file);
 									@unlink($file);
 									break;
 
 								case (
 									($this->_foundMediaInfo === false || $this->_foundSample === false || $this->_foundVideo === false)
-									&& preg_match('/Matroska data|MPEG v4|MPEG sequence, v2|\WAVI\W/i', $output[0])
+									&& preg_match('/Matroska data|MPEG v4|MPEG sequence, v2|\WAVI\W/i', $output)
 								):
 									$this->_processVideoFile($file);
 									break;
 
 								case (
 									($this->_foundAudioSample === false || $this->_foundAudioInfo === false) &&
-									preg_match('/^FLAC|layer III|Vorbis audio/i', $file, $fileType)
+									preg_match('/^FLAC|layer III|Vorbis audio/i', $output, $fileType)
 								):
 									switch ($fileType[0]) {
 										case 'FLAC':
@@ -1234,7 +1222,7 @@ Class ProcessAdditional
 									@unlink($this->tmpPath . 'audiofile.' . $fileType);
 									break;
 
-								case ($this->_foundPAR2Info === false && preg_match('/^Parity/i', $file)):
+								case ($this->_foundPAR2Info === false && preg_match('/^Parity/i', $output)):
 									$this->_siftPAR2Info($file);
 									break;
 							}

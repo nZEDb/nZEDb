@@ -5,6 +5,8 @@ namespace nzedb\utility;
  * General util functions.
  * Class Util
  */
+use nzedb\processing\post\ProcessAdditional;
+
 class Utility
 {
 	/**
@@ -28,9 +30,9 @@ class Utility
 		return trim(
 		// Replace 2 or more white space for a single space.
 			preg_replace('/\s{2,}/',
-						 ' ',
+				' ',
 				// Replace all literal and non literal new lines and carriage returns.
-						 str_replace(array("\n", '\n', "\r", '\r'), ' ', $text)
+				str_replace(array("\n", '\n', "\r", '\r'), ' ', $text)
 			)
 		);
 	}
@@ -62,6 +64,7 @@ class Utility
 				CURLOPT_SSL_VERIFYHOST => 0,
 			];
 		}
+
 		return $options;
 	}
 
@@ -74,17 +77,17 @@ class Utility
 	 * @param string $string         the string to search through.
 	 * @param string $side           determines whether text to the left or the right of the character is returned.
 	 *                               Options are: left, or right.
-	 * @param bool   $keepCharacter determines whether or not to keep the character.
+	 * @param bool   $keepCharacter  determines whether or not to keep the character.
 	 *                               Options are: true, or false.
 	 *
 	 * @return string
 	 */
 	static public function cutStringUsingLast($character, $string, $side, $keepCharacter = true)
 	{
-		$offset      = ($keepCharacter ? 1 : 0);
+		$offset = ($keepCharacter ? 1 : 0);
 		$wholeLength = strlen($string);
 		$rightLength = (strlen(strrchr($string, $character)) - 1);
-		$leftLength  = ($wholeLength - $rightLength - 1);
+		$leftLength = ($wholeLength - $rightLength - 1);
 		switch ($side) {
 			case 'left':
 				$piece = substr($string, 0, ($leftLength + $offset));
@@ -97,6 +100,7 @@ class Utility
 				$piece = false;
 				break;
 		}
+
 		return ($piece);
 	}
 
@@ -104,20 +108,20 @@ class Utility
 	 * Get list of files/directories from supplied directory.
 	 *
 	 * @param array $options
-	 *        'dir'		=> boolean, include directory paths
-	 *        'ext'		=> file suffix, no full stop (period) separator should be used.
-	 *        'path'	=> The path to list from. If left empty it will use whatever the current working directory is.
-	 *        'regex'	=> Regular expressions that the full path must match to be included,
+	 *        'dir'        => boolean, include directory paths
+	 *        'ext'        => file suffix, no full stop (period) separator should be used.
+	 *        'path'    => The path to list from. If left empty it will use whatever the current working directory is.
+	 *        'regex'    => Regular expressions that the full path must match to be included,
 	 *
-	 * @return array	Always returns array of path-names in unix format (even on Windows).
+	 * @return array    Always returns array of path-names in unix format (even on Windows).
 	 */
-	static public function getDirFiles (array $options = null)
+	static public function getDirFiles(array $options = null)
 	{
 		$defaults = [
-			'dir'	=> false,
-			'ext'	=> '',
-			'path'	=> '',
-			'regex'	=> '',
+			'dir'   => false,
+			'ext'   => '',
+			'path'  => '',
+			'regex' => '',
 		];
 		$options += $defaults;
 
@@ -141,8 +145,9 @@ class Utility
 					break;
 				default:
 					$files[] = $file;
-				}
+			}
 		}
+
 		return $files;
 	}
 
@@ -231,7 +236,7 @@ class Utility
 		curl_setopt_array($ch, $context);
 
 		$buffer = curl_exec($ch);
-		$err    = curl_errno($ch);
+		$err = curl_errno($ch);
 		curl_close($ch);
 
 		if ($err !== 0) {
@@ -253,18 +258,22 @@ class Utility
 			}
 			throw new \RuntimeException('Versioning file is broken!');
 		}
+
 		return $versions;
 	}
 
 	/**
 	 * Detect if the command is accessible on the system.
+	 *
 	 * @param $cmd
+	 *
 	 * @return bool|null Returns true if found, false if not found, and null if which is not detected.
 	 */
 	static public function hasCommand($cmd)
 	{
 		if (HAS_WHICH) {
 			$returnVal = shell_exec("which $cmd");
+
 			return (empty($returnVal) ? false : true);
 		} else {
 			return null;
@@ -277,6 +286,7 @@ class Utility
 	static public function hasWhich()
 	{
 		exec('which which', $output, $error);
+
 		return !$error;
 	}
 
@@ -285,7 +295,7 @@ class Utility
 	 *
 	 * @return bool
 	 */
-	static public function isCLI ()
+	static public function isCLI()
 	{
 		return ((strtolower(PHP_SAPI) === 'cli') ? true : false);
 	}
@@ -321,12 +331,12 @@ class Utility
 		if (!defined('nZEDb_COVERS')) {
 			switch (true) {
 				case (substr($path, 0, 1) == '/' ||
-					  substr($path, 1, 1) == ':' ||
-					  substr($path, 0, 1) == '\\'):
+					substr($path, 1, 1) == ':' ||
+					substr($path, 0, 1) == '\\'):
 					define('nZEDb_COVERS', self::trailingSlash($path));
 					break;
 				case (strlen($path) > 0 && substr($path, 0, 1) != '/' && substr($path, 1, 1) != ':' &&
-					  substr($path, 0, 1) != '\\'):
+					substr($path, 0, 1) != '\\'):
 					define('nZEDb_COVERS', realpath(nZEDb_ROOT . self::trailingSlash($path)));
 					break;
 				case empty($path): // Default to resources location.
@@ -365,7 +375,7 @@ class Utility
 		return ['tls' => $options, 'ssl' => $options];
 	}
 
-	static public function stripBOM (&$text)
+	static public function stripBOM(&$text)
 	{
 		$bom = pack("CCC", 0xef, 0xbb, 0xbf);
 		if (0 == strncmp($text, $bom, 3)) {
@@ -379,9 +389,9 @@ class Utility
 	 * Operates directly on the text string, but also returns the result for situations requiring a
 	 * return value (use in ternary, etc.)/
 	 *
-	 * @param $text		String variable to strip.
+	 * @param $text        String variable to strip.
 	 *
-	 * @return string	The stripped variable.
+	 * @return string    The stripped variable.
 	 */
 	static public function stripNonPrintingChars(&$text)
 	{
@@ -392,6 +402,7 @@ class Utility
 			"\x18", "\x19", "\x1A", "\x1B", "\x1C", "\x1D", "\x1E", "\x1F",
 		];
 		$text = str_replace($lowChars, '', $text);
+
 		return $text;
 	}
 
@@ -400,6 +411,7 @@ class Utility
 		if (substr($path, strlen($path) - 1) != '/') {
 			$path .= '/';
 		}
+
 		return $path;
 	}
 
@@ -425,8 +437,52 @@ class Utility
 			// Close the gzip file.
 			gzclose($gzFile);
 		}
+
 		// Return the string.
 		return ($string === '' ? false : $string);
+	}
+
+	/**
+	 * Return file type/info using magic.
+	 * Try using PHP's finfo_ functions, fallback on operating system file executable.
+	 *
+	 * @param string $path Path to the file / folder to check.
+	 *
+	 * @return string File info. Empty string on failure.
+	 */
+	static public function fileInfo($path)
+	{
+		$fileInfo = @finfo_open(FILEINFO_RAW);
+
+		$output = '';
+		if ($fileInfo) {
+
+			$output = finfo_file($fileInfo, $path);
+			if (empty($output)) {
+				$output = '';
+			}
+			finfo_close($fileInfo);
+
+		} else if (self::hasCommand('file')) {
+
+			exec('file -b "' . $path . '"', $output);
+
+			if (is_array($output)) {
+				switch (count($output)) {
+					case 1:
+						$output = $output[0];
+						break;
+					default:
+						$output = implode(' ', $output);
+						break;
+					case 0:
+						$output = '';
+				}
+			} else {
+				$output = '';
+			}
+		}
+		return $output;
 	}
 }
 
