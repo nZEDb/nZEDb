@@ -1,4 +1,4 @@
-{if $loggedin=="true"}
+{if $loggedin=="true" || $front}
 	{foreach from=$content item=c}
 		{if $front == false }
 			<h4>
