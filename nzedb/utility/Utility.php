@@ -452,7 +452,10 @@ class Utility
 	 */
 	static public function fileInfo($path)
 	{
-		$fileInfo = @finfo_open(FILEINFO_RAW);
+		$fileInfo = false;
+		if (function_exists('finfo_open')) {
+			$fileInfo = finfo_open(FILEINFO_RAW);
+		}
 
 		$output = '';
 		if ($fileInfo) {
