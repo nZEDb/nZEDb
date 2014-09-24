@@ -9,7 +9,7 @@ fi
 
 export NZEDB_PATH="${NZEDB_ROOT}/misc/update"
 export HELP_PATH="${NZEDB_ROOT}/misc/update/nix/screen/threaded"
-export THREAD_PATH="${NZEDB_ROOT}/misc/update/python"
+export THREAD_PATH="${NZEDB_ROOT}/misc/update/nix/multiprocessing"
 export TEST_PATH="${NZEDB_ROOT}/misc/testing"
 
 command -v php5 >/dev/null 2>&1 && export PHP=`command -v php5` || { export PHP=`command -v php`; }
@@ -34,10 +34,10 @@ do
 	fi
 
 	cd ${THREAD_PATH}
-		echo "Start binaries_threaded.py..."
-	$PYTHON -OOu ${THREAD_PATH}/binaries_threaded.py
-		echo "Start backfill_threaded.py all ..."
-	$PYTHON -OOu ${THREAD_PATH}/backfill_threaded.py all
+		echo "Start Multi-Processing binaries.php..."
+	$PHP ${THREAD_PATH}/binaries.php
+		echo "Start Multi-Processing backfill.php..."
+	$PHP ${THREAD_PATH}/backfill.php
 
 	cd ${HELP_PATH}
 	if ! $SCREEN -list | grep -q "RELEASES"; then
