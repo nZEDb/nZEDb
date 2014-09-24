@@ -3,6 +3,8 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
+2014-09-24 bart39
+	* Fix: fix screen/threaded/start.sh script
 2014-09-23 kevin
 	* Fix: Missing comma in mysql-ddl.sql
 	* Fix: Fixes for windows operating system installation issues.

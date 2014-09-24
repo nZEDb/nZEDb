@@ -28,11 +28,10 @@ do
 	tmux kill-session -t NNTPProxy
 	$PHP ${NZEDB_PATH}/nntpproxy.php
 
-#	cd ${NZEDB_PATH}
-#	if ! $SCREEN -list | grep -q "POSTP"; then
-#		cd $NZEDB_PATH && $SCREEN -dmS POSTP $PHP $NZEDB_PATH/postprocess.php allinf true
-#	fi
-$PHP $NZEDB_PATH/postprocess.php allinf true
+	cd ${NZEDB_PATH}
+	if ! $SCREEN -list | grep -q "POSTP"; then
+		cd $NZEDB_PATH && $SCREEN -dmS POSTP $PHP $NZEDB_PATH/postprocess.php allinf true
+	fi
 
 	cd ${THREAD_PATH}
 		echo "Start binaries_threaded.py..."
@@ -40,10 +39,10 @@ $PHP $NZEDB_PATH/postprocess.php allinf true
 		echo "Start backfill_threaded.py all ..."
 	$PYTHON -OOu ${THREAD_PATH}/backfill_threaded.py all
 
-#	cd ${HELP_PATH}
-#	if ! $SCREEN -list | grep -q "RELEASES"; then
-#		cd $HELP_PATH && $SCREEN -dmS RELEASES sh $HELP_PATH/helper.sh
-#	fi
+	cd ${HELP_PATH}
+	if ! $SCREEN -list | grep -q "RELEASES"; then
+		cd $HELP_PATH && $SCREEN -dmS RELEASES sh $HELP_PATH/helper.sh
+	fi
 
 	cd ${TEST_PATH}
 	DIFF=$(($CURRTIME-$LASTOPTIMIZE))
