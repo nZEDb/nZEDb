@@ -1,4 +1,4 @@
-{if $loggedin=="true" || $front}
+{if $loggedin=="true"}
 	{foreach from=$content item=c}
 		{if $front == false }
 			<h3>
@@ -10,4 +10,6 @@
 			<a style="color:#0082E1" href="{$smarty.const.WWW_TOP}content">See more...</a>
 		{/if}
 	{/foreach}
+{else}
+	{$c->body}
 {/if}

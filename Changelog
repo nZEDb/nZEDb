@@ -9,6 +9,7 @@ New updates are grouped by person, at the top of the file.
 	* Chg: use multiprocessing binaries / backfill instead of python in screen/threaded/start.sh script
 	* Fix: fix screen/threaded/start.sh script
 	* Fix: Blank content page when logged out.
+	* Fix: Remove "see more..." from logged out content page.
 2014-09-23 kevin
 	* Fix: Missing comma in mysql-ddl.sql
 	* Fix: Fixes for windows operating system installation issues.
