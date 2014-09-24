@@ -15,6 +15,13 @@ $cfg->setSession();
 $cfg = $cfg->getSession();
 
 // Start checks.
+$cfg->sessionsPathPermissions = true;
+$page->smarty->assign('sessionsSavePath', session_save_path());
+if (!is_readable(session_save_path()) || !is_writable(session_save_path())) {
+	$cfg->error = true;
+	$cfg->sessionsPathPermissions = false;
+}
+
 $cfg->cryptCheck = function_exists('crypt');
 if ($cfg->cryptCheck === false) {
 	$cfg->error = true;

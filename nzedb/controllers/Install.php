@@ -88,6 +88,9 @@ class Install
 	public $nZEDb_SSL_VERIFY_HOST;
 	public $nZEDb_SSL_ALLOW_SELF_SIGNED;
 
+	// Does the sessions save path have RW permissions?
+	public $sessionsPathPermissions;
+
 	public function __construct()
 	{
 		$this->COVERS_PATH = nZEDb_RES . 'covers' . DS;
