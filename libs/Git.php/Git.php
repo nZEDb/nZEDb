@@ -120,20 +120,27 @@ class Git {
 	{
 		$binPath = $binPath ?: '/usr/bin/git';
 
-		if (\nzedb\utility\Utility::hasWhich()) {
-			exec('which git', $output, $error);
-			if (!$error) {
-				$binPath = $output[0];
-			}
+		$resource = proc_open('which git', [1 => ['pipe', 'w']], $pipes);
 
-			if (strpos($binPath, ' ') !== false) {
-				$binPath = nzedb\utility\Utility::isWin() ? '"' . $binPath . '"'
-					: str_replace(' ', '\ ', $binPath);
-			}
+		$stdout = stream_get_contents($pipes[1]);
+
+		foreach ($pipes as $pipe) {
+			fclose($pipe);
 		}
-		self::set_bin($binPath);
 
-		return self::get_bin();
+		$status = trim(proc_close($resource));
+
+		if (!$status) {
+			$binPath = trim($stdout);
+		}
+
+		if (strpos($binPath, ' ') !== false) {
+			$binPath = nzedb\utility\Utility::isWin() ? '"' . $binPath . '"'
+				: str_replace(' ', '\ ', $binPath);
+		}
+
+		self::set_bin($binPath);
+		return $binPath;
 	}
 }
 
