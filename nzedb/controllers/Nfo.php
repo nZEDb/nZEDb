@@ -159,8 +159,7 @@ class Nfo
 			}
 
 			// If above checks couldn't  make a categorical identification, Use GetId3 to check if it's an image/video/rar/zip etc..
-			$getid3 = new getid3();
-			$check = $getid3->analyze($tmpPath);
+			$check = (new getid3())->analyze($tmpPath);
 			@unlink($tmpPath);
 			if (isset($check['error'])) {
 

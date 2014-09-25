@@ -1081,7 +1081,7 @@ class NNTP extends Net_NNTP_Client
 				$ouFile = $this->_yEncTempOutput . mt_rand(0, 999999);
 				file_put_contents($inFile, $input[1]);
 				file_put_contents($ouFile, '');
-				nzedb\utility\runCmd(
+				nzedb\utility\Utility::runCmd(
 					"'" .
 					$this->_yyDecoderPath .
 					"' '" .
@@ -1155,7 +1155,7 @@ class NNTP extends Net_NNTP_Client
 			}
 		} else if ($this->_yyDecoderPath !== false) {
 
-			$this->_yEncSilence    = (nzedb\utility\isWindows() ? '' : ' > /dev/null 2>&1');
+			$this->_yEncSilence    = (nzedb\utility\Utility::isWin() ? '' : ' > /dev/null 2>&1');
 			$this->_yEncTempInput  = nZEDb_TMP . 'yEnc' . DS;
 			$this->_yEncTempOutput = $this->_yEncTempInput . 'output';
 			$this->_yEncTempInput .= 'input';

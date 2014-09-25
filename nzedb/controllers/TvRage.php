@@ -461,7 +461,7 @@ class TvRage
 			}
 
 			$xmlObj = @simplexml_load_string($xml);
-			$arrXml = nzedb\utility\objectsIntoArray($xmlObj);
+			$arrXml = nzedb\utility\Utility::objectsIntoArray($xmlObj);
 			if (is_array($arrXml)) {
 				if (isset($arrXml['episode']['airdate']) && $arrXml['episode']['airdate'] != '0000-00-00') {
 					$result['airdate'] = $arrXml['episode']['airdate'];
@@ -513,7 +513,7 @@ class TvRage
 		// Full search gives us the akas.
 		$xml = nzedb\utility\Utility::getUrl(['url' => $this->xmlShowInfoUrl . $rageid]);
 		if ($xml !== false) {
-			$arrXml = nzedb\utility\objectsIntoArray(simplexml_load_string($xml));
+			$arrXml = nzedb\utility\Utility::objectsIntoArray(simplexml_load_string($xml));
 			if (is_array($arrXml)) {
 				$result['genres'] = (isset($arrXml['genres'])) ? $arrXml['genres'] : '';
 				$result['country'] = (isset($arrXml['origin_country'])) ? $arrXml['origin_country'] : '';
@@ -760,7 +760,7 @@ class TvRage
 		// Full search gives us the akas.
 		$xml = nzedb\utility\Utility::getUrl(['url' => $this->xmlFullSearchUrl . urlencode(strtolower($title))]);
 		if ($xml !== false) {
-			$arrXml = @nzedb\utility\objectsIntoArray(simplexml_load_string($xml));
+			$arrXml = @nzedb\utility\Utility::objectsIntoArray(simplexml_load_string($xml));
 			if (isset($arrXml['show']) && is_array($arrXml)) {
 				// We got a valid xml response
 				$titleMatches = $urlMatches = $akaMatches = array();
