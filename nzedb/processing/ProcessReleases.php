@@ -16,7 +16,7 @@ class ProcessReleases
 	const FILE_COMPLETE   = 1; // We have all the parts for the file (binaries table partcheck column).
 
 	/**
-	 * @var Groups
+	 * @var \Groups
 	 */
 	public $groups;
 
@@ -56,32 +56,32 @@ class ProcessReleases
 	public $echoCLI;
 
 	/**
-	 * @var nzedb\db\Settings
+	 * @var \nzedb\db\Settings
 	 */
 	public $pdo;
 
 	/**
-	 * @var ConsoleTools
+	 * @var \ConsoleTools
 	 */
 	public $consoleTools;
 
 	/**
-	 * @var NZB
+	 * @var \NZB
 	 */
 	public $nzb;
 
 	/**
-	 * @var ReleaseCleaning
+	 * @var \ReleaseCleaning
 	 */
 	public $releaseCleaning;
 
 	/**
-	 * @var Releases
+	 * @var \Releases
 	 */
 	public $releases;
 
 	/**
-	 * @var ReleaseImage
+	 * @var \ReleaseImage
 	 */
 	public $releaseImage;
 
@@ -104,7 +104,7 @@ class ProcessReleases
 
 		$this->echoCLI = ($options['Echo'] && nZEDb_ECHOCLI);
 
-		$this->pdo = ($options['Settings'] instanceof \nzedb\db\Settings ? $options['Settings'] : new nzedb\db\Settings());
+		$this->pdo = ($options['Settings'] instanceof \nzedb\db\Settings ? $options['Settings'] : new \nzedb\db\Settings());
 		$this->consoleTools = ($options['ConsoleTools'] instanceof \ConsoleTools ? $options['ConsoleTools'] : new \ConsoleTools(['ColorCLI' => $this->pdo->log]));
 		$this->groups = ($options['Groups'] instanceof \Groups ? $options['Groups'] : new \Groups(['Settings' => $this->pdo]));
 		$this->nzb = ($options['NZB'] instanceof \NZB ? $options['NZB'] : new \NZB($this->pdo));
@@ -130,7 +130,7 @@ class ProcessReleases
 	 * @param int    $categorize
 	 * @param int    $postProcess
 	 * @param string $groupName (optional)
-	 * @param NNTP   $nntp
+	 * @param \NNTP   $nntp
 	 * @param bool   $echooutput
 	 *
 	 * @return int

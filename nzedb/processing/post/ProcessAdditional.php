@@ -5,6 +5,7 @@ require_once nZEDb_LIBS . 'rarinfo/archiveinfo.php';
 require_once nZEDb_LIBS . 'rarinfo/par2info.php';
 
 use nzedb\db\Settings;
+use nzedb\utility\Utility;
 
 Class ProcessAdditional
 {
@@ -16,7 +17,7 @@ Class ProcessAdditional
 	const maxCompressedFilesToCheck = 20;
 
 	/**
-	 * @var nzedb\db\Settings
+	 * @var \nzedb\db\Settings
 	 */
 	public $pdo;
 
@@ -88,11 +89,6 @@ Class ProcessAdditional
 	 * @var array|bool|string
 	 */
 	protected $_unrarPath;
-
-	/**
-	 * @var bool
-	 */
-	protected $_hasGNUFile;
 
 	/**
 	 * @var string
@@ -311,8 +307,6 @@ Class ProcessAdditional
 			$this->_7zipPath = $this->pdo->getSetting('zippath');
 		}
 		$this->_archiveInfo->setExternalClients($clients);
-
-		$this->_hasGNUFile = (\nzedb\utility\Utility::hasCommand('file') === true ? true : false);
 
 		$this->_killString = '"';
 		if ($this->pdo->getSetting('timeoutpath') != '' && $this->pdo->getSetting('timeoutseconds') > 0) {
@@ -944,7 +938,7 @@ Class ProcessAdditional
 				if ($this->_extractUsingRarInfo === false && $this->_unrarPath !== false) {
 					$fileName = $this->tmpPath . uniqid() . '.rar';
 					file_put_contents($fileName, $compressedData);
-					\nzedb\utility\runCmd(
+					Utility::runCmd(
 						$this->_killString . $this->_unrarPath .
 						'" e -ai -ep -c- -id -inul -kb -or -p- -r -y "' .
 						$fileName . '" "' . $this->tmpPath . 'unrar/"'
@@ -960,7 +954,7 @@ Class ProcessAdditional
 				if ($this->_extractUsingRarInfo === false && $this->_7zipPath !== false) {
 					$fileName = $this->tmpPath . uniqid() . '.zip';
 					file_put_contents($fileName, $compressedData);
-					\nzedb\utility\runCmd(
+					Utility::runCmd(
 						$this->_killString . $this->_7zipPath . '" x "' .
 						$fileName . '" -bd -y -o"' . $this->tmpPath . 'unzip/"'
 					);
@@ -1013,7 +1007,7 @@ Class ProcessAdditional
 					break;
 				}
 
-				$fileName = array();
+				$fileName = [];
 				if (preg_match('/[^\/\\\\]*\.[a-zA-Z0-9]*$/', $file['name'], $fileName)) {
 					$fileName = $fileName[0];
 				} else {
@@ -1188,35 +1182,30 @@ Class ProcessAdditional
 						$this->_release['categoryid'] == \Category::CAT_OTHER_HASHED
 					) {
 						$this->_processU4ETitle($file);
-					} // If we have GNU file, check the type of file and process it.
-					else if ($this->_hasGNUFile) {
-						exec('file -b "' . $file . '"', $output);
+					}
 
+					// Check file's magic info.
+					else {
+						$output = \nzedb\utility\Utility::fileInfo($file);
 						if (!empty($output)) {
-
-							if (count($output) > 1) {
-								$output = implode(',', $output);
-							} else {
-								$output = $output[0];
-							}
 
 							switch (true) {
 
-								case ($this->_foundJPGSample === false && preg_match('/^JPE?G/i', $output[0])):
+								case ($this->_foundJPGSample === false && preg_match('/^JPE?G/i', $output)):
 									$this->_getJPGSample($file);
 									@unlink($file);
 									break;
 
 								case (
 									($this->_foundMediaInfo === false || $this->_foundSample === false || $this->_foundVideo === false)
-									&& preg_match('/Matroska data|MPEG v4|MPEG sequence, v2|\WAVI\W/i', $output[0])
+									&& preg_match('/Matroska data|MPEG v4|MPEG sequence, v2|\WAVI\W/i', $output)
 								):
 									$this->_processVideoFile($file);
 									break;
 
 								case (
 									($this->_foundAudioSample === false || $this->_foundAudioInfo === false) &&
-									preg_match('/^FLAC|layer III|Vorbis audio/i', $file, $fileType)
+									preg_match('/^FLAC|layer III|Vorbis audio/i', $output, $fileType)
 								):
 									switch ($fileType[0]) {
 										case 'FLAC':
@@ -1234,7 +1223,7 @@ Class ProcessAdditional
 									@unlink($this->tmpPath . 'audiofile.' . $fileType);
 									break;
 
-								case ($this->_foundPAR2Info === false && preg_match('/^Parity/i', $file)):
+								case ($this->_foundPAR2Info === false && preg_match('/^Parity/i', $output)):
 									$this->_siftPAR2Info($file);
 									break;
 							}
@@ -1628,13 +1617,13 @@ Class ProcessAdditional
 			if ($retVal === false) {
 
 				// Get the media info for the file.
-				$xmlArray = \nzedb\utility\runCmd(
+				$xmlArray = Utility::runCmd(
 					$this->_killString . $this->pdo->getSetting('mediainfopath') . '" --Output=XML "' . $fileLocation . '"'
 				);
 				if (is_array($xmlArray)) {
 
 					// Convert to array.
-					$arrXml = \nzedb\utility\objectsIntoArray(@simplexml_load_string(implode("\n", $xmlArray)));
+					$arrXml = \nzedb\utility\Utility::objectsIntoArray(@simplexml_load_string(implode("\n", $xmlArray)));
 
 					if (isset($arrXml['File']['track'])) {
 
@@ -1715,7 +1704,7 @@ Class ProcessAdditional
 				$audioFileName = ($this->_release['guid'] . '.ogg');
 
 				// Create an audio sample.
-				\nzedb\utility\runCmd(
+				Utility::runCmd(
 					$this->_killString .
 					$this->pdo->getSetting('ffmpegpath') .
 					'" -t 30 -i "' .
@@ -1818,7 +1807,7 @@ Class ProcessAdditional
 
 		$tmpVideo = ($this->tmpPath . uniqid() . $extension);
 		// Get the real duration of the file.
-		$time = \nzedb\utility\runCmd(
+		$time = Utility::runCmd(
 			$this->_killString .
 			$this->pdo->getSetting('ffmpegpath') .
 			'" -i "' . $videoLocation .
@@ -1864,7 +1853,7 @@ Class ProcessAdditional
 			$time = $this->getVideoTime($fileLocation);
 
 			// Create the image.
-			\nzedb\utility\runCmd(
+			Utility::runCmd(
 				$this->_killString .
 				$this->pdo->getSetting('ffmpegpath') .
 				'" -i "' .
@@ -1955,7 +1944,7 @@ Class ProcessAdditional
 					}
 
 					// Try to get the sample (from the end instead of the start).
-					\nzedb\utility\runCmd(
+					Utility::runCmd(
 						$this->_killString .
 						$this->pdo->getSetting('ffmpegpath') .
 						'" -i "' .
@@ -1972,7 +1961,7 @@ Class ProcessAdditional
 
 			if ($newMethod === false) {
 				// If longer than 60 or we could not get the video length, run the old way.
-				\nzedb\utility\runCmd(
+				Utility::runCmd(
 					$this->_killString .
 					$this->pdo->getSetting('ffmpegpath') .
 					'" -i "' .
@@ -2047,7 +2036,7 @@ Class ProcessAdditional
 		if (is_file($fileLocation)) {
 
 			// Run media info on it.
-			$xmlArray = \nzedb\utility\runCmd(
+			$xmlArray = Utility::runCmd(
 				$this->_killString . $this->pdo->getSetting('mediainfopath') . '" --Output=XML "' . $fileLocation . '"'
 			);
 

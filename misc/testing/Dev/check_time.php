@@ -8,7 +8,7 @@ use nzedb\utility;
 $n = PHP_EOL;
 
 // TODO change this to be able to use GnuWin
-if (!nzedb\utility\isWindows()) {
+if (!nzedb\utility\Utility::isWin()) {
 	echo 'These are the settings in your php.ini files:' . $n;
 	echo 'CLI PHP timezone : ' . exec('cat /etc/php5/cli/php.ini | grep \'date.timezone =\' | cut -d \  -f 3') . $n;
 	echo 'apache2 timezone : ' . exec('cat /etc/php5/apache2/php.ini| grep \'date.timezone =\' | cut -d \  -f 3') . $n;
@@ -18,7 +18,7 @@ $system = ' not supported on windows.';
 
 $pdo = new Settings();
 $MySQL = $pdo->queryOneRow('SELECT NOW() AS time, @@system_time_zone AS tz');
-if (! nzedb\utility\isWindows()) {
+if (!nzedb\utility\Utility::isWin()) {
 	$system = exec('date');
 }
 $php = date('D M d H:i:s T o');

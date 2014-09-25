@@ -1125,7 +1125,7 @@ class Users
 				" to this email address.<br>To accept the invitation click <a href=\"$url\">this link</a>\n";
 		}
 
-		nzedb\utility\sendEmail($emailTo, $subject, $contents, $siteEmail);
+		nzedb\utility\Utility::sendEmail($emailTo, $subject, $contents, $siteEmail);
 		$this->addInvite($userID, $token);
 
 		return $url;

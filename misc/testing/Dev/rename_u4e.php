@@ -119,7 +119,7 @@ if ($releases instanceof \Traversable) {
 		}
 
 		// Extract the RAR file.
-		nzedb\utility\runCmd(
+		nzedb\utility\Utility::runCmd(
 			'"' .
 			$unrarPath .
 			'" e -ai -ep -c- -id -inul -kb -or -p- -r -y "' .
