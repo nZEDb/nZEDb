@@ -3,6 +3,9 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
+
+2014-09-25 niel
+	* Cng: Refactored Git.php Git::check_bin to check for spaces in the path and deal with them appropriately.
 2014-09-24 kevin
 	* Chg: Use PHP's finfo for magic file checking, falling back on O/S's file binary executable. Move all file usage to Utility function.
 2014-09-24 bart39
