@@ -3,6 +3,8 @@ if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
+use nzedb\utility\Utility;
+
 $nzbget = new NZBGet($page);
 
 $output = "";
@@ -16,11 +18,11 @@ if ($data !== false) {
 		if ($status !== false) {
 			$output .=
 			"<div class='container text-center' style='display:block;'>
-				<div style='width:16.666666667%;float:left;'><b>Avg Speed:</b><br /> " . nzedb\utility\bytesToSizeString($status['AverageDownloadRate'], 2) . "/s </div>
-				<div style='width:16.666666667%;float:left;'><b>Speed:</b><br /> " . nzedb\utility\bytesToSizeString($status['DownloadRate'], 2) . "/s </div>
-				<div style='width:16.666666667%;float:left;'><b>Limit:</b><br /> " . nzedb\utility\bytesToSizeString($status['DownloadLimit'], 2) . "/s </div>
-				<div style='width:16.666666667%;float:left;'><b>Queue Left(no pars):</b><br /> " . nzedb\utility\bytesToSizeString($status['RemainingSizeLo'], 2) . " </div>
-				<div style='width:16.666666667%;float:left;'><b>Free Space:</b><br /> " . nzedb\utility\bytesToSizeString($status['FreeDiskSpaceMB'] * 1024000, 2) . " </div>
+				<div style='width:16.666666667%;float:left;'><b>Avg Speed:</b><br /> " . Utility::bytesToSizeString($status['AverageDownloadRate'], 2) . "/s </div>
+				<div style='width:16.666666667%;float:left;'><b>Speed:</b><br /> " . Utility::bytesToSizeString($status['DownloadRate'], 2) . "/s </div>
+				<div style='width:16.666666667%;float:left;'><b>Limit:</b><br /> " . Utility::bytesToSizeString($status['DownloadLimit'], 2) . "/s </div>
+				<div style='width:16.666666667%;float:left;'><b>Queue Left(no pars):</b><br /> " . Utility::bytesToSizeString($status['RemainingSizeLo'], 2) . " </div>
+				<div style='width:16.666666667%;float:left;'><b>Free Space:</b><br /> " . Utility::bytesToSizeString($status['FreeDiskSpaceMB'] * 1024000, 2) . " </div>
 				<div style='width:16.666666667%;float:left;'><b>Status:</b><br /> " . ($status['Download2Paused'] == 1 ? 'Paused' : 'Downloading') . " </div>
 			</div>";
 		}

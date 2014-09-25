@@ -79,7 +79,7 @@ if (isset($_GET['id'])) {
 			'https://www.youtube.com/v/' . $youtubeM[1] .
 			'" type="application/x-shockwave-flash"></embed>';
 		} else {
-			$mov['trailer'] = nzedb\utility\imdb_trailers($data['imdbid']);
+			$mov['trailer'] = nzedb\utility\Utility::imdb_trailers($data['imdbid']);
 		}
 
 		if ($mov && isset($mov['title'])) {
