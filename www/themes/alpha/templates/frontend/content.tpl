@@ -4,7 +4,7 @@
 	{/foreach}
 {else}
 	{foreach from=$content item=c}
-		{if $c->role == 2 && $admin == 'true' || $c->role == 0 || $c->role == 1}
+		{if $c->role == 0 || $c->role == 1 || ($c->role == 2 && $admin == 'true')}
 			{if $front == false}
 				<h3>
 					<a style="color:#0082E1" href="{$smarty.const.WWW_TOP}content?id={$c->id}">{$c->title}</a>
