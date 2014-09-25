@@ -8,6 +8,22 @@ if ($page->userdata != null) {
 	$role = $page->userdata["role"];
 }
 
+/* The role column in the content table values are :
+ * 0 = everyone
+ * 1 = logged in users
+ * 2 = admins
+ *
+ * The user role values are:
+ * 0 = guest
+ * 1 = user
+ * 2 = admin
+ * 3 = disabled
+ * 4 = moderator
+ *
+ * Admins and mods should be the only ones to see admin content.
+ */
+$page->smarty->assign('admin', (($role == 2 || $role == 4) ? 'true' : 'false'));
+
 $contentid = 0;
 if (isset($_GET["id"])) {
 	$contentid = $_GET["id"];
