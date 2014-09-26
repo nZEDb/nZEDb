@@ -322,7 +322,7 @@
 		</table>
 	</fieldset>
 
-	<fieldset id="externalapps">
+	<fieldset id="site_externalapps">
 		<legend>3<sup>rd</sup> Party Application Paths</legend>
 		<table class="input">
 			<tr>

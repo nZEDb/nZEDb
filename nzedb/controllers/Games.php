@@ -416,7 +416,9 @@ class Games
 			if ($this->maxHitRequest === true) {
 				return false;
 			}
-
+		}
+		if(empty($this->_gameResults['title'])){
+			return false;
 		}
 		if(!is_array($this->_gameResults)){
 			return false;

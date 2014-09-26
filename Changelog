@@ -4,6 +4,8 @@ No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
 
+2014-09-25 bart39
+	* Mrg: Merge PR #1510 from tasky.
 2014-09-25 niel
 	* Cng: Refactored Git.php Git::check_bin to check for spaces in the path and deal with them appropriately.
 2014-09-24 kevin
