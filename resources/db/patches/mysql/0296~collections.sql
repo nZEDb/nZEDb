@@ -30,6 +30,7 @@ CREATE
       END LOOP;
 
       CLOSE cur1;
-    END$$
+    END;
+$$
 CALL update_collectionsid;
 DROP PROCEDURE IF EXISTS update_collectionsid;
