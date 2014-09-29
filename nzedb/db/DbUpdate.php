@@ -91,7 +91,7 @@ class DbUpdate
 			'ext'	=> 'tsv',
 			'files'	=> [],
 			'path'	=> nZEDb_RES . 'db' . DS . 'schema' . DS . 'data',
-			'regex'	=> '#^' . Utility::PATH_REGEX . '(?P<order>\d+)-(?<table>\w+)\.tsv$#',
+			'regex'	=> '#^' . Utility::PATH_REGEX . '(?P<order>\d+)-(?P<table>\w+)\.tsv$#',
 		];
 		$options += $defaults;
 

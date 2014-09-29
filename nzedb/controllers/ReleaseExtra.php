@@ -88,7 +88,7 @@ class ReleaseExtra
 	public function addFromXml($releaseID, $xml)
 	{
 		$xmlObj = @simplexml_load_string($xml);
-		$arrXml = nzedb\utility\objectsIntoArray($xmlObj);
+		$arrXml = nzedb\utility\Utility::objectsIntoArray($xmlObj);
 		$containerformat = '';
 		$overallbitrate = '';
 

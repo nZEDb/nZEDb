@@ -33,6 +33,11 @@ class Git {
 	 */
 	protected static $bin = null;
 
+	public function __construct($binPath = null)
+	{
+		self::check_bin($binPath);
+	}
+
 	/**
 	 * Sets git executable path
 	 *
@@ -46,8 +51,7 @@ class Git {
 	 * Gets git executable path
 	 */
 	public static function get_bin() {
-		self::check_bin();
-		return self::$bin;
+		return empty(self::$bin) ? self::check_bin() : self::$bin;
 	}
 
 	/**
@@ -112,26 +116,31 @@ class Git {
 		return (get_class($var) == 'GitRepo');
 	}
 
-	public function __construct($binPath = null)
+	private static function check_bin($binPath = '')
 	{
-		self::check_bin($binPath);
-	}
+		$binPath = $binPath ?: '/usr/bin/git';
 
-	private static function check_bin($binPath = null)
-	{
-		if (!empty(self::$bin)) {
-			return;
+		$resource = proc_open('which git', [1 => ['pipe', 'w']], $pipes);
+
+		$stdout = stream_get_contents($pipes[1]);
+
+		foreach ($pipes as $pipe) {
+			fclose($pipe);
 		}
-		if (empty($binPath)) {
-			$binPath = '/usr/bin/git';
-			if (\nzedb\utility\Utility::hasWhich()) {
-				exec('which git', $output, $error);
-				if (!$error) {
-					$binPath = $output[0];
-				}
-			}
+
+		$status = trim(proc_close($resource));
+
+		if (!$status) {
+			$binPath = trim($stdout);
 		}
+
+		if (strpos($binPath, ' ') !== false) {
+			$binPath = nzedb\utility\Utility::isWin() ? '"' . $binPath . '"'
+				: str_replace(' ', '\ ', $binPath);
+		}
+
 		self::set_bin($binPath);
+		return $binPath;
 	}
 }
 
@@ -333,7 +342,8 @@ class GitRepo {
 	 * @return  string
 	 */
 	public function run($command) {
-		return $this->run_command(Git::get_bin()." ".$command);
+		// If git.exe is in C:/Program Files, the space between Program and Files causes an error.
+		return $this->run_command(Git::get_bin() . " " . $command);
 	}
 
 	/**
