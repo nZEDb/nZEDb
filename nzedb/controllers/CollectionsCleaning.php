@@ -1576,6 +1576,9 @@ class CollectionsCleaning
 		} //<<<>>CowboyUp2012 XXX><<<Is.Not.Force.It.My.Younger.SOE-806.Jav.Censored.DVDRip.XviD-MotTto>>>usenet-space-cowboys.info<<<Powered by https://secretusenet.com>< "Is.Not.Force.It.My.Younger.SOE-806.Jav.Censored.DVDRip.XviD-MotTto.part01.rar" >< 01/15 (1,39
 		if (preg_match('/^(.+?usenet-space.+?Powered by.+? ".+?)' . $this->e0 . '.+? \d+\/(\d+.+?)$/', $this->subject, $match)) {
 			return $match[1];
+		} //"HD_1110.part01.rar"_SpotBots yEnc
+		if (preg_match('/^"(.+?)' . $this->e0 . '(_SpotBots)[- ]{0,3}yEnc$/u', $this->subject, $match)) {
+			return $match[1] . $match[7];
 		}
 		return $this->generic();
 	}

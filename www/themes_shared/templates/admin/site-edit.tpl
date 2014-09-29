@@ -1,10 +1,41 @@
-<h1>{$page->title}</h1>
-<form action="{$SCRIPT_NAME}?action=submit" method="post">
+<div>
+<table border="0" width="100%">
+	<tr>
+		<td><h1>{$page->title}</h1></td>
+		<td></td>
+		<td align="right" class="top-nav">
+			<form id="site_jumpbox" action="#">
+				<select>
+					<option value="site_externalapis">3rd Party API Keys</option>
+					<option value="site_externalapps">3rd Party Application Paths</option>
+					<option value="site_developerset">Developer Settings</option>
+					<option value="site_googlestatbanner">Google Adsense, Analytics and 3rd Party Banners</option>
+					<option value="site_languagecat">Language/Categorization options</option>
+					<option value="site_main">Main Site Settings, Html layout, Tags</option>
+					<option value="site_nfoprocessing">NFO Processing Settings</option>
+					<option value="site_nzbsettings">NZB Settings</option>
+					<option value="site_partrepair">Part Repair Settings</option>
+					<option value="site_postadditional">Post Process Additional Settings - Rar/ZIP file processing</option>
+					<option value="site_postsettings">Post Process Settings</option>
+					<option value="site_releaseset">Release Settings</option>
+					<option value="site_requidset">RequestID Settings</option>
+					<option value="site_sabnzbd">SABnzbd Integration Settings</option>
+					<option value="site_threadsettings">Threaded Settings</option>
+					<option value="site_usenetset">Usenet Settings</option>
+					<option value="site_usersettings">User Settings</option>
+					<option value="site_variousset">Various Settings</option>
+				</select>
+			</form>
+		</td>
+	</tr>
+</table>
+</div>
+<form id="site_settings" action="{$SCRIPT_NAME}?action=submit" method="post">
 	{if $error != ''}
 		<div class="error">{$error}</div>
 	{/if}
 
-	<fieldset>
+	<fieldset id="site_main">
 		<legend>Main Site Settings, Html Layout, Tags</legend>
 		<table class="input">
 			<tr>
@@ -125,7 +156,7 @@
 		</table>
 	</fieldset>
 
-	<fieldset>
+	<fieldset id="site_languagecat">
 		<legend>Language/Categorization options</legend>
 		<table class="input">
 			<tr>
@@ -168,7 +199,7 @@
 		</table>
 	</fieldset>
 
-	<fieldset>
+	<fieldset id="site_googlestatbanner">
 		<legend>Google Adsense, Analytics and 3rd Party Banners</legend>
 		<table class="input">
 			<tr>
@@ -216,7 +247,7 @@
 		</table>
 	</fieldset>
 
-	<fieldset>
+	<fieldset id="site_externalapis">
 		<legend>3<sup>rd</sup> Party API Keys</legend>
 		<table class="input">
 			<tr>
@@ -291,7 +322,7 @@
 		</table>
 	</fieldset>
 
-	<fieldset>
+	<fieldset id="externalapps">
 		<legend>3<sup>rd</sup> Party Application Paths</legend>
 		<table class="input">
 			<tr>
@@ -375,7 +406,7 @@
 		</table>
 	</fieldset>
 
-	<fieldset>
+	<fieldset id="site_sabnzbd">
 		<legend>SABnzbd Integration Settings</legend>
 		<table class="input">
 			<tr>
@@ -422,7 +453,7 @@
 		</table>
 	</fieldset>
 
-	<fieldset>
+	<fieldset id="site_releaseset">
 	<legend>Release Settings</legend>
 		<table class="input">
 			<tr>
@@ -522,7 +553,7 @@
 		</table>
 	</fieldset>
 
-	<fieldset>
+	<fieldset id="site_requidset">
 		<legend>RequestID Settings</legend>
 		<table class="input">
 			<tr>
@@ -551,7 +582,7 @@
 		</table>
 	</fieldset>
 
-	<fieldset>
+	<fieldset id="site_nzbsettings">
 	<legend>NZB Settings</legend>
 		<table class="input">
 			<tr>
@@ -575,7 +606,7 @@
 		</table>
 	</fieldset>
 
-	<fieldset>
+	<fieldset id="site_postsettings">
 	<legend>Post Process Settings</legend>
 		<table class="input">
 			<tr>
@@ -721,7 +752,7 @@
 		</table>
 	</fieldset>
 
-	<fieldset>
+	<fieldset id="site_nfoprocessing">
 	<legend>NFO Processing Settings</legend>
 		<table class="input">
 			<tr>
@@ -766,7 +797,7 @@
 		</table>
 	</fieldset>
 
-	<fieldset>
+	<fieldset id="site_postadditional">
 	<legend>Post Process Additional Settings - Rar/ZIP file processing</legend>
 		<table class="input">
 			<tr>
@@ -887,7 +918,7 @@
 		</table>
 	</fieldset>
 
-	<fieldset>
+	<fieldset id="site_usenetset">
 		<legend>Usenet Settings</legend>
 		<table class="input">
 			<tr>
@@ -976,7 +1007,7 @@
 		</table>
 	</fieldset>
 
-	<fieldset>
+	<fieldset id="site_partrepair">
 		<legend>Part Repair Settings</legend>
 		<table class="input">
 			<tr>
@@ -1015,7 +1046,7 @@
 		</table>
 	</fieldset>
 
-	<fieldset>
+	<fieldset id="site_variousset">
 		<legend>Various settings</legend>
 		<table class="input">
 			<tr>
@@ -1043,7 +1074,7 @@
 		</table>
 	</fieldset>
 
-	<fieldset>
+	<fieldset id="site_developerset">
 		<legend>Developer Settings</legend>
 		<table class="input">
 			<tr>
@@ -1056,7 +1087,7 @@
 		</table>
 	</fieldset>
 
-	<fieldset>
+	<fieldset id="site_threadsettings">
 		<legend>Threaded Settings</legend>
 		<table class="input">
 			<tr>
@@ -1145,7 +1176,7 @@
 		</table>
 	</fieldset>
 
-	<fieldset>
+	<fieldset id="site_usersettings">
 		<legend>User Settings</legend>
 		<table class="input">
 			<tr>

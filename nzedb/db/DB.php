@@ -238,24 +238,30 @@ class DB extends \PDO
 	}
 
 	/**
+	 * Attempts to determine if the Db is on the local machine.
+	 *
+	 * If the method returns true, then the Db is definitely on the local machine. However,
+	 * returning false only indicates that it could not positively be determined to be local - so
+	 * assume remote.
+	 *
 	 * @return bool Whether the Db is definitely on the local machine.
 	 */
 	public function isLocalDb ()
 	{
+		$local = false;
 		if (!empty($this->opts['dbsock']) || $this->opts['dbhost'] == 'localhost') {
-			return true;
-		}
+			$local = true;
+		} else {
+			preg_match_all('/inet' . '6?' . ' addr: ?([^ ]+)/', `ifconfig`, $ips);
 
-		preg_match_all('/inet' . '6?' . ' addr: ?([^ ]+)/', `ifconfig`, $ips);
-
-		// Check for dotted quad - if exists compare against local IP number(s)
-		if (preg_match('#^\d+\.\d+\.\d+\.\d+$#', $this->opts['dbhost'])) {
-			if (in_array($this->opts['dbhost'], $ips[1])) {
-				return true;
+			// Check for dotted quad - if exists compare against local IP number(s)
+			if (preg_match('#^\d+\.\d+\.\d+\.\d+$#', $this->opts['dbhost'])) {
+				if (in_array($this->opts['dbhost'], $ips[1])) {
+					$local = true;
+				}
 			}
 		}
-
-		return false;
+		return $local;
 	}
 
 	/**
