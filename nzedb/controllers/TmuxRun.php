@@ -116,6 +116,9 @@ class TmuxRun extends Tmux
 					case 'amazon':
 						$this->_runAmazonFull($runVar);
 						break;
+					case 'import':
+						$this->_runNZBImport($runVar);
+						break;
 					case 'main':
 						$this->_runMainFull($runVar);
 						break;
