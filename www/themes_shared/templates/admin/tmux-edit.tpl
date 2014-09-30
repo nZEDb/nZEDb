@@ -114,7 +114,7 @@
 			<td style="width:180px;"><label for="explain">Information:</label></td>
 			<td>
 				<div class="explanation">
-					Monitor is the name of the script that monitors all of the tmux panes and windows. It stops/stops
+					Monitor is the name of the script that monitors all of the tmux panes and windows. It starts/stops
 					scripts based on user settings. It queries the database to provide stats from your nZEDb
 					database.<br/><br/>
 					There are 2 columns of numbers, 'In Process' and 'In Database'. The 'In Process' is all releases
@@ -143,8 +143,11 @@
 					number changed since the script started. The 'In Database' is the total matches of releases to
 					requestIDs and inside the parenthesis is percentage of total releases that you have matched to a
 					requestID.<br/><br/>
-					The 'In Process' rows PC and Pron are simply subsets of the 'In Process' row Misc. There is no
-					postprocessing specifically for these categories. The 'In Database' is the actual count for the
+					The 'In Process' PC is the number waiting to be processed and inside the parenthesis is the
+					number changed since the script started. The 'In Database' is the actual count for the
+					category.<br/><br/>
+					The 'In Process' XXX is the number waiting to be processed and inside the parenthesis is the
+					number changed since the script started. The 'In Database' is the actual count for the
 					category.
 				</div>
 			</td>

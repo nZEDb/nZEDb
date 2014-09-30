@@ -3,6 +3,14 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
+
+2014-09-30 bart39
+	* Fix: Monitor counts for pp types when that type of pp has been turned off.
+	* Chg: Add Misc->Other category for alt.binaries.u4e file renaming.
+	* Chg: Update Monitor explanation for Tmux edit page.
+	* Fix: Add missing NZB Import to Tmux Complete Sequential.
+	* Chg: ReleaseCleaning regex additions for a.b.frogs, a.b.kenpsx and various other updates.
+	* Chg: CollectionsCleaning regex additions / fixes.
 2014-09-26 niel
 	* Chg: Convert binaries tables and code to use collection_id column;
 	!!IMPORTANT!! TPG users: After running DbUpdate to process the patch, you MUST run php nzedb/build/_runonce/tpg_triggers_update_2014-09-25.php to convert the triggers.
