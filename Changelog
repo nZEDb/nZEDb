@@ -3,12 +3,11 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
-
 2014-09-26 niel
 	* Chg: Convert binaries tables and code to use collection_id column;
 	!!IMPORTANT!! TPG users: After running DbUpdate to process the patch, you MUST run php nzedb/build/_runonce/tpg_triggers_update_2014-09-25.php to convert the triggers.
 2014-09-25 bart39
-	* Mrg: Merge PR #1510 from tasky.
+	* Mrg: Merge PR 1510 from tasky.
 2014-09-25 niel
 	* Cng: Refactored Git.php Git::check_bin to check for spaces in the path and deal with them appropriately.
 2014-09-24 kevin
@@ -20,6 +19,7 @@ New updates are grouped by person, at the top of the file.
 	* Fix: Remove "see more..." from logged out content page.
 	* Fix: More fixes to content page, to adhere to "Logged in / Admin / Everyone".
 	* Chg: Move all remaining utility functions into Utility class.
+	* Fix: fix screen/threaded/start.sh script
 2014-09-23 kevin
 	* Fix: Missing comma in mysql-ddl.sql
 	* Fix: Fixes for windows operating system installation issues.
