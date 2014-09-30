@@ -339,7 +339,7 @@ class ProcessReleases
 		$checked = $this->pdo->queryExec(
 			sprintf(
 				'UPDATE %s c
-				SET filesize = (SELECT COALESCE(SUM(b.partsize), 0) FROM %s b WHERE b.collectionid = c.id),
+				SET filesize = (SELECT COALESCE(SUM(b.partsize), 0) FROM %s b WHERE b.collection_id = c.id),
 				filecheck = %d
 				WHERE c.filecheck = %d
 				AND c.filesize = 0 %s',
@@ -898,7 +898,7 @@ class ProcessReleases
 		// Binaries/parts that somehow have no collection.
 		$deleteQuery = $this->pdo->queryExec(
 			sprintf(
-				'DELETE %s, %s FROM %s, %s WHERE %s.collectionid = 0 AND %s.id = %s.binaryid',
+				'DELETE %s, %s FROM %s, %s WHERE %s.collection_id = 0 AND %s.id = %s.binaryid',
 				$group['bname'], $group['pname'], $group['bname'], $group['pname'],
 				$group['bname'], $group['bname'], $group['pname']
 			)
@@ -945,7 +945,7 @@ class ProcessReleases
 		// Binaries that somehow have no collection. Don't delete currently inserting binaries by checking the max id.
 		$deleteQuery = $this->pdo->queryExec(
 			sprintf(
-				'DELETE FROM %s WHERE collectionid NOT IN (SELECT id FROM %s) %s',
+				'DELETE FROM %s WHERE collection_id NOT IN (SELECT id FROM %s) %s',
 				$group['bname'], $group['cname'], $this->minMaxQueryFormulator($group['bname'], 20000)
 			)
 		);
@@ -967,7 +967,7 @@ class ProcessReleases
 		// Collections that somehow have no binaries.
 		$collectionIDs = $this->pdo->queryDirect(
 			sprintf(
-				'SELECT id FROM %s WHERE id NOT IN (SELECT collectionid FROM %s) %s',
+				'SELECT id FROM %s WHERE id NOT IN (SELECT collection_id FROM %s) %s',
 				$group['cname'], $group['bname'], $this->minMaxQueryFormulator($group['cname'], 10000)
 			)
 		);
@@ -1421,9 +1421,9 @@ class ProcessReleases
 			sprintf('
 				UPDATE %s c INNER JOIN
 					(SELECT c.id FROM %s c
-					INNER JOIN %s b ON b.collectionid = c.id
+					INNER JOIN %s b ON b.collection_id = c.id
 					WHERE c.totalfiles > 0 AND c.filecheck = %d %s
-					GROUP BY b.collectionid, c.totalfiles, c.id
+					GROUP BY b.collection_id, c.totalfiles, c.id
 					HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)
 					)
 				r ON c.id = r.id SET filecheck = %d',
@@ -1457,7 +1457,7 @@ class ProcessReleases
 			sprintf('
 				UPDATE %s c INNER JOIN
 					(SELECT c.id FROM %s c
-					INNER JOIN %s b ON b.collectionid = c.id
+					INNER JOIN %s b ON b.collection_id = c.id
 					WHERE b.filenumber = 0
 					AND c.totalfiles > 0
 					AND c.filecheck = %d %s
@@ -1501,7 +1501,7 @@ class ProcessReleases
 			sprintf('
 				UPDATE %s b INNER JOIN
 					(SELECT b.id FROM %s b
-					INNER JOIN %s c ON c.id = b.collectionid
+					INNER JOIN %s c ON c.id = b.collection_id
 					WHERE c.filecheck = %d AND b.partcheck = %d %s
 					AND b.currentparts = b.totalparts
 					GROUP BY b.id, b.totalparts)
@@ -1519,7 +1519,7 @@ class ProcessReleases
 			sprintf('
 				UPDATE %s b INNER JOIN
 					(SELECT b.id FROM %s b
-					INNER JOIN %s c ON c.id = b.collectionid
+					INNER JOIN %s c ON c.id = b.collection_id
 					WHERE c.filecheck = %d AND b.partcheck = %d %s
 					AND b.currentparts >= (b.totalparts + 1)
 					GROUP BY b.id, b.totalparts)
@@ -1552,9 +1552,9 @@ class ProcessReleases
 			sprintf('
 				UPDATE %s c INNER JOIN
 					(SELECT c.id FROM %s c
-					INNER JOIN %s b ON c.id = b.collectionid
+					INNER JOIN %s b ON c.id = b.collection_id
 					WHERE b.partcheck = 1 AND c.filecheck IN (%d, %d) %s
-					GROUP BY b.collectionid, c.totalfiles, c.id HAVING COUNT(b.id) >= c.totalfiles)
+					GROUP BY b.collection_id, c.totalfiles, c.id HAVING COUNT(b.id) >= c.totalfiles)
 				r ON c.id = r.id SET filecheck = %d',
 				$group['cname'],
 				$group['cname'],
@@ -1607,7 +1607,7 @@ class ProcessReleases
 	{
 		$this->pdo->queryExec(
 			sprintf("
-				UPDATE %s c SET filecheck = %d, totalfiles = (SELECT COUNT(b.id) FROM %s b WHERE b.collectionid = c.id)
+				UPDATE %s c SET filecheck = %d, totalfiles = (SELECT COUNT(b.id) FROM %s b WHERE b.collection_id = c.id)
 				WHERE c.dateadded < NOW() - INTERVAL '%d' HOUR
 				AND c.filecheck IN (%d, %d, 10) %s",
 				$group['cname'],

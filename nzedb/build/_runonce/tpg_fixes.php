@@ -47,18 +47,18 @@ if ($groups === false) {
 	$query4[] = "ALTER TABLE parts_%s ADD INDEX ix_parts_collection_id(collection_id)";
 	$query4[] = "DROP TRIGGER IF EXISTS delete_collections_%s";
 
-	$query5 = "UPDATE parts_%s p INNER JOIN binaries_%s b ON b.id = p.binaryid SET p.collection_id = b.collectionid";
+	$query5 = "UPDATE parts_%s p INNER JOIN binaries_%s b ON b.id = p.binaryid SET p.collection_id = b.collection_id";
 
 	// Creates trigger to delete parts / binaries when collections are deleted.
 	$query6 = "CREATE TRIGGER delete_collections_%s BEFORE DELETE ON collections_%s FOR EACH ROW BEGIN DELETE FROM
-	binaries_%s WHERE collectionid = OLD.id; DELETE FROM parts_%s WHERE collection_id = OLD.id; END";
+	binaries_%s WHERE collection_id = OLD.id; DELETE FROM parts_%s WHERE collection_id = OLD.id; END";
 
 	// Get size from parts and add it to collections.
 	$query7 = "UPDATE collections_%s c
 				SET c.filesize = (
 					SELECT COALESCE(SUM(p.size), 0)
 					FROM parts_%s p
-					WHERE p.collectionid = c.id
+					WHERE p.collection_id = c.id
 				)
 				WHERE c.filecheck = 3 AND c.filesize = 0";
 
