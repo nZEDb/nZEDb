@@ -4,6 +4,9 @@ No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
 
+2014-09-26 niel
+	* Chg: Convert binaries tables and code to use collection_id column;
+	!!IMPORTANT!! TPG users: After running DbUpdate to process the patch, you MUST run php nzedb/build/_runonce/tpg_triggers_update_2014-09-25.php to convert the triggers.
 2014-09-25 bart39
 	* Mrg: Merge PR #1510 from tasky.
 2014-09-25 niel

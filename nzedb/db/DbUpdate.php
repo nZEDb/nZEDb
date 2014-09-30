@@ -281,8 +281,10 @@ class DbUpdate
 			if (is_resource($file)) {
 				$query = [];
 
+				$oldDelimiter = '';
 				while (!feof($file)) {
-					$query[] = fgets($file);
+					$line = fgets($file);
+					$query[] = $line;
 
 					if (preg_match('~' . preg_quote($options['delimiter'], '~') . '\s*$~iS',
 								   end($query)) == 1
@@ -345,6 +347,14 @@ class DbUpdate
 							ob_end_flush();
 						}
 						flush();
+						if ($oldDelimiter != '') {
+							$options['delimiter'] = $oldDelimiter;
+							$oldDelimiter = '';
+						}
+					}
+					if (preg_match('#^\s*DELIMITER\s+(?P<delimiter>.+)$#i', $line, $matches)) {
+						$oldDelimiter = $options['delimiter'];
+						$options['delimiter'] = $matches['delimiter'];
 					}
 
 					if (is_string($query) === true) {
