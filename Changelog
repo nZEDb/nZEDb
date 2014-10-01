@@ -3,7 +3,9 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
-
+2014-09-30 ruhllatio
+	* Fix: Issue #1477 - MySQL Full-Text Search broken after implementation of Sphinx
+	* Fix: Whitespace\New line EOF (second try weirdness) and change SQL patch file perms to 0755
 2014-09-30 niel
 	* Fix: Column definition of collection_id in binaries* tables.
 2014-09-30 bart39

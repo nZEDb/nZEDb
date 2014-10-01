@@ -147,8 +147,11 @@ CREATE TABLE         releasesearch (
   guid       VARCHAR(50)      NOT NULL,
   name       VARCHAR(255)     NOT NULL DEFAULT '',
   searchname VARCHAR(255)     NOT NULL DEFAULT '',
+  fromname   VARCHAR(255)     NULL,
   PRIMARY KEY                                        (id),
-  FULLTEXT INDEX ix_releasesearch_name_searchname_ft (name, searchname),
+  FULLTEXT INDEX ix_releasesearch_name_ft (name),
+  FULLTEXT INDEX ix_releasesearch_searchname_ft (searchname),
+  FULLTEXT INDEX ix_releasesearch_fromname_ft (fromname),
   INDEX          ix_releasesearch_releaseid          (releaseid),
   INDEX          ix_releasesearch_guid               (guid)
 )
@@ -1099,7 +1102,7 @@ CREATE TRIGGER check_rfupdate BEFORE UPDATE ON releasefiles FOR EACH ROW
   END; $$
 CREATE TRIGGER insert_search AFTER INSERT ON releases FOR EACH ROW
   BEGIN
-    INSERT INTO releasesearch (releaseid, guid, name, searchname) VALUES (NEW.id, NEW.guid, NEW.name, NEW.searchname);
+    INSERT INTO releasesearch (releaseid, guid, name, searchname, fromname) VALUES (NEW.id, NEW.guid, NEW.name, NEW.searchname, NEW.fromname);
   END; $$
 CREATE TRIGGER update_search AFTER UPDATE ON releases FOR EACH ROW
   BEGIN
@@ -1111,6 +1114,9 @@ CREATE TRIGGER update_search AFTER UPDATE ON releases FOR EACH ROW
     END IF;
     IF NEW.searchname != OLD.searchname
       THEN UPDATE releasesearch SET searchname = NEW.searchname WHERE releaseid = OLD.id;
+    END IF;
+    IF NEW.fromname != OLD.fromname
+      THEN UPDATE releasesearch SET fromname = NEW.fromname WHERE releaseid = OLD.id;
     END IF;
   END; $$
 CREATE TRIGGER delete_search AFTER DELETE ON releases FOR EACH ROW
