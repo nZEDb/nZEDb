@@ -133,11 +133,9 @@ class Steam
 				}
 			}
 			$totaldetails = count($textarr) - 1;
-			$b = 1;
 			for ($i = 0; $i <= $totaldetails;) {
-				$this->_res['gamedetails'][$textarr[$i]] = $textarr[$b];
-				$i = $b + 1;
-				$b = $i + 1;
+				$this->_res['gamedetails'][$textarr[$i]] = $textarr[$i+1];
+				$i = $i+2;;
 			}
 		}
 
