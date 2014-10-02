@@ -134,9 +134,21 @@ class Steam
 			}
 			$totaldetails = count($textarr) - 1;
 			for ($i = 0; $i <= $totaldetails;) {
+				if ($textarr[$i] == "Release Date") {
+					$pregmatchdate = $textarr[$i+1];
+					if (preg_match_all('#(?P<day>[0-3]?\d)[^\d]|(?P<month>Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)|(?P<year>[12][09]\d{2})#i', $pregmatchdate, $matches)) {
+
+						$matches = array_map('array_filter', $matches);
+						$matches = array_map('array_values', $matches);
+						$matchday = $matches['day'][0];
+						$matchmonth = $matches['month'][0];
+						$matchyear = $matches['year'][0];
+						$textarr[$i+1] = $matchmonth . '/' . $matchday . '/' . $matchyear;
+					}
+				}
 				$this->_res['gamedetails'][$textarr[$i]] = $textarr[$i+1];
 				$i = $i+2;
-			}
+		}
 		}
 
 		return $this->_res;
@@ -320,8 +332,7 @@ class Steam
 					"ageMonth" => "May",
 					"ageYear" => "1966"
 				);
-				// Do twice so steam can set a birthtime/lastagecheckage cookie value
-				$this->getUrl(self::AGECHECKURL . $this->_steamGameID . '/', true);
+
 				$this->getUrl(self::AGECHECKURL . $this->_steamGameID . '/', true);
 			}
 		}
