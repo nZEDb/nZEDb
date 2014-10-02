@@ -687,7 +687,7 @@ class DB extends \PDO
 		$result = $this->queryArray($query);
 
 		if ($mode != \PDO::FETCH_ASSOC) {
-			$this->pdo->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
+			$this->pdo->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, $mode);	// Restore old mode
 		}
 		return $result;
 	}
