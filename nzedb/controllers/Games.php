@@ -551,7 +551,6 @@ class Games
 
 					if (!empty($this->_gameResults['gamedetails']['Release Date'])) {
 						$date = \DateTime::createFromFormat('M/j/Y', $this->_gameResults['gamedetails']['Release Date']);
-
 						$con['releasedate'] = (string)$date->format('Y-m-d');
 					}
 
