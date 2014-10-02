@@ -135,7 +135,7 @@ class Steam
 			$totaldetails = count($textarr) - 1;
 			for ($i = 0; $i <= $totaldetails;) {
 				$this->_res['gamedetails'][$textarr[$i]] = $textarr[$i+1];
-				$i = $i+2;;
+				$i = $i+2;
 			}
 		}
 
