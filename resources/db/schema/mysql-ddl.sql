@@ -236,8 +236,8 @@ CREATE TABLE countries (
   COLLATE = utf8_unicode_ci;
 
 
-DROP TABLE IF EXISTS forumpost;
-CREATE TABLE forumpost (
+DROP TABLE IF EXISTS forum_posts;
+CREATE TABLE forum_posts (
   id          INT(11) UNSIGNED    NOT NULL AUTO_INCREMENT,
   forumid     INT(11)             NOT NULL DEFAULT '1',
   parentid    INT(11)             NOT NULL DEFAULT '0',
