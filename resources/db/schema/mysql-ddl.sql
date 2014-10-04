@@ -225,8 +225,8 @@ CREATE TABLE consoleinfo (
   AUTO_INCREMENT = 1;
 
 
-DROP TABLE IF EXISTS content;
-CREATE TABLE content (
+DROP TABLE IF EXISTS page_contents;
+CREATE TABLE page_contents (
   id              INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
   title           VARCHAR(255)    NOT NULL,
   url             VARCHAR(2000)   NULL,
