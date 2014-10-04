@@ -147,9 +147,9 @@ convertTable($pdo,
 
 convertTable($pdo,
 			 $nZEDB_schema,
-			 "content",
+			 "page_contents",
 			 "INSERT INTO " . $nZEDB_schema .
-			 ".content (id, title, url, body, metadescription, metakeywords, contenttype, showinmenu, status, ordinal, role) " .
+			 ".page_contents (id, title, url, body, metadescription, metakeywords, contenttype, showinmenu, status, ordinal, role) " .
 			 "SELECT id, title, url, body, metadescription, metakeywords, contenttype, showinmenu, status, ordinal, role FROM " .
 			 $nn_schema . ".content",
 			 $runQueries);
@@ -167,9 +167,9 @@ convertTable($pdo,
 
 convertTable($pdo,
 			 $nZEDB_schema,
-			 "forumpost",
+			 "forum_posts",
 			 "INSERT INTO " . $nZEDB_schema .
-			 ".forumpost (forumid, parentid, user_id, subject, message, locked, sticky, replies, createddate, updateddate) " .
+			 ".forum_posts (forumid, parentid, user_id, subject, message, locked, sticky, replies, createddate, updateddate) " .
 			 "SELECT forumID, parentID, userID, subject, message, locked, sticky, replies, createddate, updateddate FROM " .
 			 $nn_schema . ".forumpost",
 			 $runQueries);
