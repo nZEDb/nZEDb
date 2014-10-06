@@ -200,7 +200,7 @@ class Logger
 		$this->setLogFile();
 
 		$this->outputCLI = (strtolower(PHP_SAPI) === 'cli');
-		$this->isWindows = (strtolower(substr(PHP_OS, 0, 3)) === 'win');
+		$this->isWindows = nzedb\utility\Utility::isWin();
 		$this->timeStart = time();
 	}
 

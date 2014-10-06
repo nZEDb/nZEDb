@@ -141,16 +141,8 @@ class Nfo
 			$tmpPath = $this->tmpPath . $guid . '.nfo';
 			file_put_contents($tmpPath, $possibleNFO);
 
-			// Linux boxes have 'file' (so should Macs), Windows *can* have it too: see GNUWIN.txt in docs.
-			if (nzedb\utility\Utility::hasCommand('file')) {
-				exec('file -b "' . $tmpPath . '"', $result);
-				if (is_array($result)) {
-					if (count($result) > 1) {
-						$result = implode(',', $result[0]);
-					} else {
-						$result = $result[0];
-					}
-				}
+			$result = nzedb\utility\Utility::fileInfo($tmpPath);
+			if (!empty($result)) {
 
 				// Check if it's text.
 				if (preg_match('/(ASCII|ISO-8859|UTF-(8|16|32).*?)\s*text/', $result)) {
@@ -167,8 +159,7 @@ class Nfo
 			}
 
 			// If above checks couldn't  make a categorical identification, Use GetId3 to check if it's an image/video/rar/zip etc..
-			$getid3 = new getid3();
-			$check = $getid3->analyze($tmpPath);
+			$check = (new getid3())->analyze($tmpPath);
 			@unlink($tmpPath);
 			if (isset($check['error'])) {
 

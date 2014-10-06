@@ -28,9 +28,9 @@ class Utility
 		return trim(
 		// Replace 2 or more white space for a single space.
 			preg_replace('/\s{2,}/',
-						 ' ',
+				' ',
 				// Replace all literal and non literal new lines and carriage returns.
-						 str_replace(array("\n", '\n', "\r", '\r'), ' ', $text)
+				str_replace(array("\n", '\n', "\r", '\r'), ' ', $text)
 			)
 		);
 	}
@@ -62,6 +62,7 @@ class Utility
 				CURLOPT_SSL_VERIFYHOST => 0,
 			];
 		}
+
 		return $options;
 	}
 
@@ -74,17 +75,17 @@ class Utility
 	 * @param string $string         the string to search through.
 	 * @param string $side           determines whether text to the left or the right of the character is returned.
 	 *                               Options are: left, or right.
-	 * @param bool   $keepCharacter determines whether or not to keep the character.
+	 * @param bool   $keepCharacter  determines whether or not to keep the character.
 	 *                               Options are: true, or false.
 	 *
 	 * @return string
 	 */
 	static public function cutStringUsingLast($character, $string, $side, $keepCharacter = true)
 	{
-		$offset      = ($keepCharacter ? 1 : 0);
+		$offset = ($keepCharacter ? 1 : 0);
 		$wholeLength = strlen($string);
 		$rightLength = (strlen(strrchr($string, $character)) - 1);
-		$leftLength  = ($wholeLength - $rightLength - 1);
+		$leftLength = ($wholeLength - $rightLength - 1);
 		switch ($side) {
 			case 'left':
 				$piece = substr($string, 0, ($leftLength + $offset));
@@ -97,6 +98,7 @@ class Utility
 				$piece = false;
 				break;
 		}
+
 		return ($piece);
 	}
 
@@ -104,41 +106,46 @@ class Utility
 	 * Get list of files/directories from supplied directory.
 	 *
 	 * @param array $options
-	 *        'dir'		=> boolean, include directory paths
-	 *        'ext'		=> file suffix, no full stop (period) separator should be used.
-	 *        'path'	=> The path to list from. If left empty it will use whatever the current working directory is.
-	 *        'regex'	=> Regular expressions that the full path must match to be included,
+	 *        'dir'        => boolean, include directory paths
+	 *        'ext'        => file suffix, no full stop (period) separator should be used.
+	 *        'path'    => The path to list from. If left empty it will use whatever the current working directory is.
+	 *        'regex'    => Regular expressions that the full path must match to be included,
 	 *
-	 * @return array	Always returns array of path-names in unix format (even on Windows).
+	 * @return array    Always returns array of path-names in unix format (even on Windows).
 	 */
-	static public function getDirFiles (array $options = null)
+	static public function getDirFiles(array $options = null)
 	{
-		$defaults = array(
-			'dir'	=> false,
-			'ext'	=> '',
-			'path'	=> '',
-			'regex'	=> '',
-		);
+		$defaults = [
+			'dir'   => false,
+			'ext'   => '',
+			'path'  => '',
+			'regex' => '',
+		];
 		$options += $defaults;
 
-		$files = array();
-		$iterator = new \FilesystemIterator($options['path'],
-										\FilesystemIterator::KEY_AS_PATHNAME |
-										\FilesystemIterator::SKIP_DOTS |
-										\FilesystemIterator::UNIX_PATHS);
-		foreach ($iterator as $fileinfo) {
+		// Replace windows style path separators with unix style.
+		$iterator = new \FilesystemIterator(
+			str_replace('\\', '/', $options['path']),
+			\FilesystemIterator::KEY_AS_PATHNAME |
+			\FilesystemIterator::SKIP_DOTS |
+			\FilesystemIterator::UNIX_PATHS
+		);
+
+		$files = [];
+		foreach ($iterator as $fileInfo) {
 			$file = $iterator->key();
 			switch (true) {
-				case !$options['dir'] && $fileinfo->isDir():
+				case !$options['dir'] && $fileInfo->isDir():
 					break;
-				case !empty($options['ext']) && $fileinfo->getExtension() != $options['ext'];
+				case !empty($options['ext']) && $fileInfo->getExtension() != $options['ext'];
 					break;
 				case (empty($options['regex']) || !preg_match($options['regex'], $file)):
 					break;
 				default:
 					$files[] = $file;
-				}
+			}
 		}
+
 		return $files;
 	}
 
@@ -151,7 +158,7 @@ class Utility
 	 * @access public
 	 * @static
 	 */
-	public static function getUrl(array $options = [])
+	static public function getUrl(array $options = [])
 	{
 		$defaults = [
 			'url'        => '', // The URL to download.
@@ -227,7 +234,7 @@ class Utility
 		curl_setopt_array($ch, $context);
 
 		$buffer = curl_exec($ch);
-		$err    = curl_errno($ch);
+		$err = curl_errno($ch);
 		curl_close($ch);
 
 		if ($err !== 0) {
@@ -249,18 +256,22 @@ class Utility
 			}
 			throw new \RuntimeException('Versioning file is broken!');
 		}
+
 		return $versions;
 	}
 
 	/**
 	 * Detect if the command is accessible on the system.
+	 *
 	 * @param $cmd
+	 *
 	 * @return bool|null Returns true if found, false if not found, and null if which is not detected.
 	 */
 	static public function hasCommand($cmd)
 	{
 		if (HAS_WHICH) {
 			$returnVal = shell_exec("which $cmd");
+
 			return (empty($returnVal) ? false : true);
 		} else {
 			return null;
@@ -273,6 +284,7 @@ class Utility
 	static public function hasWhich()
 	{
 		exec('which which', $output, $error);
+
 		return !$error;
 	}
 
@@ -281,7 +293,7 @@ class Utility
 	 *
 	 * @return bool
 	 */
-	static public function isCLI ()
+	static public function isCLI()
 	{
 		return ((strtolower(PHP_SAPI) === 'cli') ? true : false);
 	}
@@ -317,12 +329,12 @@ class Utility
 		if (!defined('nZEDb_COVERS')) {
 			switch (true) {
 				case (substr($path, 0, 1) == '/' ||
-					  substr($path, 1, 1) == ':' ||
-					  substr($path, 0, 1) == '\\'):
+					substr($path, 1, 1) == ':' ||
+					substr($path, 0, 1) == '\\'):
 					define('nZEDb_COVERS', self::trailingSlash($path));
 					break;
 				case (strlen($path) > 0 && substr($path, 0, 1) != '/' && substr($path, 1, 1) != ':' &&
-					  substr($path, 0, 1) != '\\'):
+					substr($path, 0, 1) != '\\'):
 					define('nZEDb_COVERS', realpath(nZEDb_ROOT . self::trailingSlash($path)));
 					break;
 				case empty($path): // Default to resources location.
@@ -361,7 +373,7 @@ class Utility
 		return ['tls' => $options, 'ssl' => $options];
 	}
 
-	static public function stripBOM (&$text)
+	static public function stripBOM(&$text)
 	{
 		$bom = pack("CCC", 0xef, 0xbb, 0xbf);
 		if (0 == strncmp($text, $bom, 3)) {
@@ -375,9 +387,9 @@ class Utility
 	 * Operates directly on the text string, but also returns the result for situations requiring a
 	 * return value (use in ternary, etc.)/
 	 *
-	 * @param $text		String variable to strip.
+	 * @param $text        String variable to strip.
 	 *
-	 * @return string	The stripped variable.
+	 * @return string    The stripped variable.
 	 */
 	static public function stripNonPrintingChars(&$text)
 	{
@@ -388,6 +400,7 @@ class Utility
 			"\x18", "\x19", "\x1A", "\x1B", "\x1C", "\x1D", "\x1E", "\x1F",
 		];
 		$text = str_replace($lowChars, '', $text);
+
 		return $text;
 	}
 
@@ -396,6 +409,7 @@ class Utility
 		if (substr($path, strlen($path) - 1) != '/') {
 			$path .= '/';
 		}
+
 		return $path;
 	}
 
@@ -421,547 +435,581 @@ class Utility
 			// Close the gzip file.
 			gzclose($gzFile);
 		}
+
 		// Return the string.
 		return ($string === '' ? false : $string);
 	}
-}
 
-/**
- * Get human readable size string from bytes.
- *
- * @param int $bytes     Bytes number to convert.
- * @param int $precision How many floating point units to add.
- *
- * @return string
- */
-function bytesToSizeString ($bytes, $precision = 0)
-{
-	if ($bytes == 0) {
-		return '0B';
-	}
-	$unit = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB'];
-
-	return round($bytes / pow(1024, ($index = floor(log($bytes, 1024)))), $precision) . $unit[(int)$index];
-}
-
-function checkStatus ($code)
-{
-	return ($code == 0) ? true : false;
-}
-
-/**
- * Convert Code page 437 chars to UTF.
- *
- * @param string $str
- *
- * @return string
- */
-function cp437toUTF ($str)
-{
-	$out = '';
-	for ($i = 0; $i < strlen($str); $i++) {
-		$ch = ord($str{$i});
-		switch ($ch) {
-			case 128:
-				$out .= 'Ç';
-				break;
-			case 129:
-				$out .= 'ü';
-				break;
-			case 130:
-				$out .= 'é';
-				break;
-			case 131:
-				$out .= 'â';
-				break;
-			case 132:
-				$out .= 'ä';
-				break;
-			case 133:
-				$out .= 'à';
-				break;
-			case 134:
-				$out .= 'å';
-				break;
-			case 135:
-				$out .= 'ç';
-				break;
-			case 136:
-				$out .= 'ê';
-				break;
-			case 137:
-				$out .= 'ë';
-				break;
-			case 138:
-				$out .= 'è';
-				break;
-			case 139:
-				$out .= 'ï';
-				break;
-			case 140:
-				$out .= 'î';
-				break;
-			case 141:
-				$out .= 'ì';
-				break;
-			case 142:
-				$out .= 'Ä';
-				break;
-			case 143:
-				$out .= 'Å';
-				break;
-			case 144:
-				$out .= 'É';
-				break;
-			case 145:
-				$out .= 'æ';
-				break;
-			case 146:
-				$out .= 'Æ';
-				break;
-			case 147:
-				$out .= 'ô';
-				break;
-			case 148:
-				$out .= 'ö';
-				break;
-			case 149:
-				$out .= 'ò';
-				break;
-			case 150:
-				$out .= 'û';
-				break;
-			case 151:
-				$out .= 'ù';
-				break;
-			case 152:
-				$out .= 'ÿ';
-				break;
-			case 153:
-				$out .= 'Ö';
-				break;
-			case 154:
-				$out .= 'Ü';
-				break;
-			case 155:
-				$out .= '¢';
-				break;
-			case 156:
-				$out .= '£';
-				break;
-			case 157:
-				$out .= '¥';
-				break;
-			case 158:
-				$out .= '₧';
-				break;
-			case 159:
-				$out .= 'ƒ';
-				break;
-			case 160:
-				$out .= 'á';
-				break;
-			case 161:
-				$out .= 'í';
-				break;
-			case 162:
-				$out .= 'ó';
-				break;
-			case 163:
-				$out .= 'ú';
-				break;
-			case 164:
-				$out .= 'ñ';
-				break;
-			case 165:
-				$out .= 'Ñ';
-				break;
-			case 166:
-				$out .= 'ª';
-				break;
-			case 167:
-				$out .= 'º';
-				break;
-			case 168:
-				$out .= '¿';
-				break;
-			case 169:
-				$out .= '⌐';
-				break;
-			case 170:
-				$out .= '¬';
-				break;
-			case 171:
-				$out .= '½';
-				break;
-			case 172:
-				$out .= '¼';
-				break;
-			case 173:
-				$out .= '¡';
-				break;
-			case 174:
-				$out .= '«';
-				break;
-			case 175:
-				$out .= '»';
-				break;
-			case 176:
-				$out .= '░';
-				break;
-			case 177:
-				$out .= '▒';
-				break;
-			case 178:
-				$out .= '▓';
-				break;
-			case 179:
-				$out .= '│';
-				break;
-			case 180:
-				$out .= '┤';
-				break;
-			case 181:
-				$out .= '╡';
-				break;
-			case 182:
-				$out .= '╢';
-				break;
-			case 183:
-				$out .= '╖';
-				break;
-			case 184:
-				$out .= '╕';
-				break;
-			case 185:
-				$out .= '╣';
-				break;
-			case 186:
-				$out .= '║';
-				break;
-			case 187:
-				$out .= '╗';
-				break;
-			case 188:
-				$out .= '╝';
-				break;
-			case 189:
-				$out .= '╜';
-				break;
-			case 190:
-				$out .= '╛';
-				break;
-			case 191:
-				$out .= '┐';
-				break;
-			case 192:
-				$out .= '└';
-				break;
-			case 193:
-				$out .= '┴';
-				break;
-			case 194:
-				$out .= '┬';
-				break;
-			case 195:
-				$out .= '├';
-				break;
-			case 196:
-				$out .= '─';
-				break;
-			case 197:
-				$out .= '┼';
-				break;
-			case 198:
-				$out .= '╞';
-				break;
-			case 199:
-				$out .= '╟';
-				break;
-			case 200:
-				$out .= '╚';
-				break;
-			case 201:
-				$out .= '╔';
-				break;
-			case 202:
-				$out .= '╩';
-				break;
-			case 203:
-				$out .= '╦';
-				break;
-			case 204:
-				$out .= '╠';
-				break;
-			case 205:
-				$out .= '═';
-				break;
-			case 206:
-				$out .= '╬';
-				break;
-			case 207:
-				$out .= '╧';
-				break;
-			case 208:
-				$out .= '╨';
-				break;
-			case 209:
-				$out .= '╤';
-				break;
-			case 210:
-				$out .= '╥';
-				break;
-			case 211:
-				$out .= '╙';
-				break;
-			case 212:
-				$out .= '╘';
-				break;
-			case 213:
-				$out .= '╒';
-				break;
-			case 214:
-				$out .= '╓';
-				break;
-			case 215:
-				$out .= '╫';
-				break;
-			case 216:
-				$out .= '╪';
-				break;
-			case 217:
-				$out .= '┘';
-				break;
-			case 218:
-				$out .= '┌';
-				break;
-			case 219:
-				$out .= '█';
-				break;
-			case 220:
-				$out .= '▄';
-				break;
-			case 221:
-				$out .= '▌';
-				break;
-			case 222:
-				$out .= '▐';
-				break;
-			case 223:
-				$out .= '▀';
-				break;
-			case 224:
-				$out .= 'α';
-				break;
-			case 225:
-				$out .= 'ß';
-				break;
-			case 226:
-				$out .= 'Γ';
-				break;
-			case 227:
-				$out .= 'π';
-				break;
-			case 228:
-				$out .= 'Σ';
-				break;
-			case 229:
-				$out .= 'σ';
-				break;
-			case 230:
-				$out .= 'µ';
-				break;
-			case 231:
-				$out .= 'τ';
-				break;
-			case 232:
-				$out .= 'Φ';
-				break;
-			case 233:
-				$out .= 'Θ';
-				break;
-			case 234:
-				$out .= 'Ω';
-				break;
-			case 235:
-				$out .= 'δ';
-				break;
-			case 236:
-				$out .= '∞';
-				break;
-			case 237:
-				$out .= 'φ';
-				break;
-			case 238:
-				$out .= 'ε';
-				break;
-			case 239:
-				$out .= '∩';
-				break;
-			case 240:
-				$out .= '≡';
-				break;
-			case 241:
-				$out .= '±';
-				break;
-			case 242:
-				$out .= '≥';
-				break;
-			case 243:
-				$out .= '≤';
-				break;
-			case 244:
-				$out .= '⌠';
-				break;
-			case 245:
-				$out .= '⌡';
-				break;
-			case 246:
-				$out .= '÷';
-				break;
-			case 247:
-				$out .= '≈';
-				break;
-			case 248:
-				$out .= '°';
-				break;
-			case 249:
-				$out .= '∙';
-				break;
-			case 250:
-				$out .= '·';
-				break;
-			case 251:
-				$out .= '√';
-				break;
-			case 252:
-				$out .= 'ⁿ';
-				break;
-			case 253:
-				$out .= '²';
-				break;
-			case 254:
-				$out .= '■';
-				break;
-			case 255:
-				$out .= ' ';
-				break;
-			default :
-				$out .= chr($ch);
+	/**
+	 * Return file type/info using magic.
+	 * Try using PHP's finfo_ functions, fallback on operating system file executable.
+	 *
+	 * @param string $path Path to the file / folder to check.
+	 *
+	 * @return string File info. Empty string on failure.
+	 */
+	static public function fileInfo($path)
+	{
+		$fileInfo = false;
+		if (function_exists('finfo_open')) {
+			$fileInfo = finfo_open(FILEINFO_RAW);
 		}
-	}
-	return $out;
-}
 
-/**
- * Fetches an embeddable video to a IMDB trailer from http://www.traileraddict.com
- *
- * @param $imdbID
- *
- * @return string
- */
-function imdb_trailers($imdbID)
-{
-	$xml = Utility::getUrl(['url' => 'http://api.traileraddict.com/?imdb=' . $imdbID]);
-	if ($xml !== false) {
-		if (preg_match('/(<iframe.+?<\/iframe>)/i', $xml, $html)) {
-			return $html[1];
-		}
-	}
-	return '';
-}
+		$output = '';
+		if ($fileInfo) {
 
-// Check if O/S is windows.
-function isWindows ()
-{
-	return Utility::isWin();
-}
-
-// Convert obj to array.
-function objectsIntoArray ($arrObjData, $arrSkipIndices = array())
-{
-	$arrData = array();
-
-	// If input is object, convert into array.
-	if (is_object($arrObjData)) {
-		$arrObjData = get_object_vars($arrObjData);
-	}
-
-	if (is_array($arrObjData)) {
-		foreach ($arrObjData as $index => $value) {
-			// Recursive call.
-			if (is_object($value) || is_array($value)) {
-				$value = objectsIntoArray($value, $arrSkipIndices);
+			$output = finfo_file($fileInfo, $path);
+			if (empty($output)) {
+				$output = '';
 			}
-			if (in_array($index, $arrSkipIndices)) {
-				continue;
+			finfo_close($fileInfo);
+
+		} else if (!self::isWin() && self::hasCommand('file')) {
+
+			$output = self::runCmd('file -b "' . $path . '"');
+
+			if (is_array($output)) {
+				switch (count($output)) {
+					case 1:
+						$output = $output[0];
+						break;
+					default:
+						$output = implode(' ', $output);
+						break;
+					case 0:
+						$output = '';
+				}
+			} else {
+				$output = '';
 			}
-			$arrData[$index] = $value;
 		}
-	}
-	return $arrData;
-}
-
-/**
- * Run CLI command.
- *
- * @param string $command
- * @param bool   $debug
- *
- * @return array
- */
-function runCmd ($command, $debug = false)
-{
-	$eol = PHP_EOL;
-	if (isWindows() && strpos(phpversion(), "5.2") !== false) {
-		$command = "\"" . $command . "\"";
+		return $output;
 	}
 
-	if ($debug) {
-		echo '-Running Command: ' . $eol . '   ' . $command . $eol;
+
+	/**
+	 * Run CLI command.
+	 *
+	 * @param string $command
+	 * @param bool   $debug
+	 *
+	 * @return array
+	 */
+	static public function runCmd($command, $debug = false)
+	{
+		if ($debug) {
+			echo '-Running Command: ' . PHP_EOL . '   ' . $command . PHP_EOL;
+		}
+
+		$output = [];
+		$status = 1;
+		@exec($command, $output, $status);
+
+		if ($debug) {
+			echo '-Command Output: ' . PHP_EOL . '   ' . implode(PHP_EOL . '  ', $output) . PHP_EOL;
+		}
+
+		return $output;
 	}
 
-	$output = array();
-	$status = 1;
-	@exec($command, $output, $status);
-
-	if ($debug) {
-		echo '-Command Output: ' . $eol . '   ' . implode($eol . '  ', $output) . $eol;
+	/**
+	 * Remove unsafe chars from a filename.
+	 *
+	 * @param string $filename
+	 *
+	 * @return string
+	 */
+	static public function safeFilename($filename)
+	{
+		return trim(preg_replace('/[^\w\s.-]*/i', '', $filename));
 	}
 
-	return $output;
-}
+	/**
+	 * Get human readable size string from bytes.
+	 *
+	 * @param int $bytes     Bytes number to convert.
+	 * @param int $precision How many floating point units to add.
+	 *
+	 * @return string
+	 */
+	static public function bytesToSizeString($bytes, $precision = 0)
+	{
+		if ($bytes == 0) {
+			return '0B';
+		}
+		$unit = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB'];
 
-/**
- * Remove unsafe chars from a filename.
- *
- * @param string $filename
- *
- * @return string
- */
-function safeFilename ($filename)
-{
-	return trim(preg_replace('/[^\w\s.-]*/i', '', $filename));
-}
+		return round($bytes / pow(1024, ($index = floor(log($bytes, 1024)))), $precision) . $unit[(int)$index];
+	}
 
-// Central function for sending site email.
-function sendEmail($to, $subject, $contents, $from)
-{
-	$eol = PHP_EOL;
+	/**
+	 * Convert Code page 437 chars to UTF.
+	 *
+	 * @param string $str
+	 *
+	 * @return string
+	 */
+	static public function cp437toUTF($str)
+	{
+		$out = '';
+		for ($i = 0; $i < strlen($str); $i++) {
+			$ch = ord($str{$i});
+			switch ($ch) {
+				case 128:
+					$out .= 'Ç';
+					break;
+				case 129:
+					$out .= 'ü';
+					break;
+				case 130:
+					$out .= 'é';
+					break;
+				case 131:
+					$out .= 'â';
+					break;
+				case 132:
+					$out .= 'ä';
+					break;
+				case 133:
+					$out .= 'à';
+					break;
+				case 134:
+					$out .= 'å';
+					break;
+				case 135:
+					$out .= 'ç';
+					break;
+				case 136:
+					$out .= 'ê';
+					break;
+				case 137:
+					$out .= 'ë';
+					break;
+				case 138:
+					$out .= 'è';
+					break;
+				case 139:
+					$out .= 'ï';
+					break;
+				case 140:
+					$out .= 'î';
+					break;
+				case 141:
+					$out .= 'ì';
+					break;
+				case 142:
+					$out .= 'Ä';
+					break;
+				case 143:
+					$out .= 'Å';
+					break;
+				case 144:
+					$out .= 'É';
+					break;
+				case 145:
+					$out .= 'æ';
+					break;
+				case 146:
+					$out .= 'Æ';
+					break;
+				case 147:
+					$out .= 'ô';
+					break;
+				case 148:
+					$out .= 'ö';
+					break;
+				case 149:
+					$out .= 'ò';
+					break;
+				case 150:
+					$out .= 'û';
+					break;
+				case 151:
+					$out .= 'ù';
+					break;
+				case 152:
+					$out .= 'ÿ';
+					break;
+				case 153:
+					$out .= 'Ö';
+					break;
+				case 154:
+					$out .= 'Ü';
+					break;
+				case 155:
+					$out .= '¢';
+					break;
+				case 156:
+					$out .= '£';
+					break;
+				case 157:
+					$out .= '¥';
+					break;
+				case 158:
+					$out .= '₧';
+					break;
+				case 159:
+					$out .= 'ƒ';
+					break;
+				case 160:
+					$out .= 'á';
+					break;
+				case 161:
+					$out .= 'í';
+					break;
+				case 162:
+					$out .= 'ó';
+					break;
+				case 163:
+					$out .= 'ú';
+					break;
+				case 164:
+					$out .= 'ñ';
+					break;
+				case 165:
+					$out .= 'Ñ';
+					break;
+				case 166:
+					$out .= 'ª';
+					break;
+				case 167:
+					$out .= 'º';
+					break;
+				case 168:
+					$out .= '¿';
+					break;
+				case 169:
+					$out .= '⌐';
+					break;
+				case 170:
+					$out .= '¬';
+					break;
+				case 171:
+					$out .= '½';
+					break;
+				case 172:
+					$out .= '¼';
+					break;
+				case 173:
+					$out .= '¡';
+					break;
+				case 174:
+					$out .= '«';
+					break;
+				case 175:
+					$out .= '»';
+					break;
+				case 176:
+					$out .= '░';
+					break;
+				case 177:
+					$out .= '▒';
+					break;
+				case 178:
+					$out .= '▓';
+					break;
+				case 179:
+					$out .= '│';
+					break;
+				case 180:
+					$out .= '┤';
+					break;
+				case 181:
+					$out .= '╡';
+					break;
+				case 182:
+					$out .= '╢';
+					break;
+				case 183:
+					$out .= '╖';
+					break;
+				case 184:
+					$out .= '╕';
+					break;
+				case 185:
+					$out .= '╣';
+					break;
+				case 186:
+					$out .= '║';
+					break;
+				case 187:
+					$out .= '╗';
+					break;
+				case 188:
+					$out .= '╝';
+					break;
+				case 189:
+					$out .= '╜';
+					break;
+				case 190:
+					$out .= '╛';
+					break;
+				case 191:
+					$out .= '┐';
+					break;
+				case 192:
+					$out .= '└';
+					break;
+				case 193:
+					$out .= '┴';
+					break;
+				case 194:
+					$out .= '┬';
+					break;
+				case 195:
+					$out .= '├';
+					break;
+				case 196:
+					$out .= '─';
+					break;
+				case 197:
+					$out .= '┼';
+					break;
+				case 198:
+					$out .= '╞';
+					break;
+				case 199:
+					$out .= '╟';
+					break;
+				case 200:
+					$out .= '╚';
+					break;
+				case 201:
+					$out .= '╔';
+					break;
+				case 202:
+					$out .= '╩';
+					break;
+				case 203:
+					$out .= '╦';
+					break;
+				case 204:
+					$out .= '╠';
+					break;
+				case 205:
+					$out .= '═';
+					break;
+				case 206:
+					$out .= '╬';
+					break;
+				case 207:
+					$out .= '╧';
+					break;
+				case 208:
+					$out .= '╨';
+					break;
+				case 209:
+					$out .= '╤';
+					break;
+				case 210:
+					$out .= '╥';
+					break;
+				case 211:
+					$out .= '╙';
+					break;
+				case 212:
+					$out .= '╘';
+					break;
+				case 213:
+					$out .= '╒';
+					break;
+				case 214:
+					$out .= '╓';
+					break;
+				case 215:
+					$out .= '╫';
+					break;
+				case 216:
+					$out .= '╪';
+					break;
+				case 217:
+					$out .= '┘';
+					break;
+				case 218:
+					$out .= '┌';
+					break;
+				case 219:
+					$out .= '█';
+					break;
+				case 220:
+					$out .= '▄';
+					break;
+				case 221:
+					$out .= '▌';
+					break;
+				case 222:
+					$out .= '▐';
+					break;
+				case 223:
+					$out .= '▀';
+					break;
+				case 224:
+					$out .= 'α';
+					break;
+				case 225:
+					$out .= 'ß';
+					break;
+				case 226:
+					$out .= 'Γ';
+					break;
+				case 227:
+					$out .= 'π';
+					break;
+				case 228:
+					$out .= 'Σ';
+					break;
+				case 229:
+					$out .= 'σ';
+					break;
+				case 230:
+					$out .= 'µ';
+					break;
+				case 231:
+					$out .= 'τ';
+					break;
+				case 232:
+					$out .= 'Φ';
+					break;
+				case 233:
+					$out .= 'Θ';
+					break;
+				case 234:
+					$out .= 'Ω';
+					break;
+				case 235:
+					$out .= 'δ';
+					break;
+				case 236:
+					$out .= '∞';
+					break;
+				case 237:
+					$out .= 'φ';
+					break;
+				case 238:
+					$out .= 'ε';
+					break;
+				case 239:
+					$out .= '∩';
+					break;
+				case 240:
+					$out .= '≡';
+					break;
+				case 241:
+					$out .= '±';
+					break;
+				case 242:
+					$out .= '≥';
+					break;
+				case 243:
+					$out .= '≤';
+					break;
+				case 244:
+					$out .= '⌠';
+					break;
+				case 245:
+					$out .= '⌡';
+					break;
+				case 246:
+					$out .= '÷';
+					break;
+				case 247:
+					$out .= '≈';
+					break;
+				case 248:
+					$out .= '°';
+					break;
+				case 249:
+					$out .= '∙';
+					break;
+				case 250:
+					$out .= '·';
+					break;
+				case 251:
+					$out .= '√';
+					break;
+				case 252:
+					$out .= 'ⁿ';
+					break;
+				case 253:
+					$out .= '²';
+					break;
+				case 254:
+					$out .= '■';
+					break;
+				case 255:
+					$out .= ' ';
+					break;
+				default :
+					$out .= chr($ch);
+			}
+		}
+		return $out;
+	}
 
-	$body = '<html>' . $eol;
-	$body .= '<body style=\'font-family:Verdana, Verdana, Geneva, sans-serif; font-size:12px; color:#666666;\'>' . $eol;
-	$body .= $contents;
-	$body .= '</body>' . $eol;
-	$body .= '</html>' . $eol;
+	/**
+	 * Fetches an embeddable video to a IMDB trailer from http://www.traileraddict.com
+	 *
+	 * @param $imdbID
+	 *
+	 * @return string
+	 */
+	static public function imdb_trailers($imdbID)
+	{
+		$xml = Utility::getUrl(['url' => 'http://api.traileraddict.com/?imdb=' . $imdbID]);
+		if ($xml !== false) {
+			if (preg_match('/(<iframe.+?<\/iframe>)/i', $xml, $html)) {
+				return $html[1];
+			}
+		}
+		return '';
+	}
 
-	$headers = 'From: ' . $from . $eol;
-	$headers .= 'Reply-To: ' . $from . $eol;
-	$headers .= 'Return-Path: ' . $from . $eol;
-	$headers .= 'X-Mailer: nZEDb' . $eol;
-	$headers .= 'MIME-Version: 1.0' . $eol;
-	$headers .= 'Content-type: text/html; charset=iso-8859-1' . $eol;
-	$headers .= $eol;
+	// Convert obj to array.
+	static public function objectsIntoArray ($arrObjData, $arrSkipIndices = [])
+	{
+		$arrData = [];
 
-	return mail($to, $subject, $body, $headers);
+		// If input is object, convert into array.
+		if (is_object($arrObjData)) {
+			$arrObjData = get_object_vars($arrObjData);
+		}
+
+		if (is_array($arrObjData)) {
+			foreach ($arrObjData as $index => $value) {
+				// Recursive call.
+				if (is_object($value) || is_array($value)) {
+					$value = self::objectsIntoArray($value, $arrSkipIndices);
+				}
+				if (in_array($index, $arrSkipIndices)) {
+					continue;
+				}
+				$arrData[$index] = $value;
+			}
+		}
+		return $arrData;
+	}
+
+	// Central function for sending site email.
+	static public function sendEmail($to, $subject, $contents, $from)
+	{
+		$eol = PHP_EOL;
+
+		$body = '<html>' . $eol;
+		$body .= '<body style=\'font-family:Verdana, Verdana, Geneva, sans-serif; font-size:12px; color:#666666;\'>' . $eol;
+		$body .= $contents;
+		$body .= '</body>' . $eol;
+		$body .= '</html>' . $eol;
+
+		$headers = 'From: ' . $from . $eol;
+		$headers .= 'Reply-To: ' . $from . $eol;
+		$headers .= 'Return-Path: ' . $from . $eol;
+		$headers .= 'X-Mailer: nZEDb' . $eol;
+		$headers .= 'MIME-Version: 1.0' . $eol;
+		$headers .= 'Content-type: text/html; charset=iso-8859-1' . $eol;
+		$headers .= $eol;
+
+		return mail($to, $subject, $body, $headers);
+	}
+
+
 }
