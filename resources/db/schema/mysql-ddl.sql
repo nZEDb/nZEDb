@@ -225,26 +225,6 @@ CREATE TABLE consoleinfo (
   AUTO_INCREMENT = 1;
 
 
-DROP TABLE IF EXISTS content;
-CREATE TABLE content (
-  id              INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-  title           VARCHAR(255)    NOT NULL,
-  url             VARCHAR(2000)   NULL,
-  body            TEXT            NULL,
-  metadescription VARCHAR(1000)   NOT NULL,
-  metakeywords    VARCHAR(1000)   NOT NULL,
-  contenttype     INT             NOT NULL,
-  showinmenu      INT             NOT NULL,
-  status          INT             NOT NULL,
-  ordinal         INT             NULL,
-  role            INT             NOT NULL DEFAULT '0'
-)
-  ENGINE = MYISAM
-  DEFAULT CHARSET = utf8
-  COLLATE = utf8_unicode_ci
-  AUTO_INCREMENT = 1;
-
-
 DROP TABLE IF EXISTS countries;
 CREATE TABLE countries (
   code CHAR(2)      NOT NULL DEFAULT '',
@@ -256,8 +236,8 @@ CREATE TABLE countries (
   COLLATE = utf8_unicode_ci;
 
 
-DROP TABLE IF EXISTS forumpost;
-CREATE TABLE forumpost (
+DROP TABLE IF EXISTS forum_posts;
+CREATE TABLE forum_posts (
   id          INT(11) UNSIGNED    NOT NULL AUTO_INCREMENT,
   forumid     INT(11)             NOT NULL DEFAULT '1',
   parentid    INT(11)             NOT NULL DEFAULT '0',
@@ -360,8 +340,8 @@ CREATE TABLE logging (
   AUTO_INCREMENT = 1;
 
 
-DROP TABLE IF EXISTS menu;
-CREATE TABLE menu (
+DROP TABLE IF EXISTS menu_items;
+CREATE TABLE menu_items (
   id        INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   href      VARCHAR(2000)    NOT NULL DEFAULT '',
   title     VARCHAR(2000)    NOT NULL DEFAULT '',
@@ -426,6 +406,26 @@ CREATE TABLE musicinfo (
   updateddate DATETIME            NOT NULL,
   PRIMARY KEY (id),
   UNIQUE INDEX ix_musicinfo_asin (asin)
+)
+  ENGINE = MYISAM
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci
+  AUTO_INCREMENT = 1;
+
+
+DROP TABLE IF EXISTS page_contents;
+CREATE TABLE page_contents (
+  id              INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  title           VARCHAR(255)    NOT NULL,
+  url             VARCHAR(2000)   NULL,
+  body            TEXT            NULL,
+  metadescription VARCHAR(1000)   NOT NULL,
+  metakeywords    VARCHAR(1000)   NOT NULL,
+  contenttype     INT             NOT NULL,
+  showinmenu      INT             NOT NULL,
+  status          INT             NOT NULL,
+  ordinal         INT             NULL,
+  role            INT             NOT NULL DEFAULT '0'
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
