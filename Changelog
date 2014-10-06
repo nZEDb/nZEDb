@@ -3,6 +3,8 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
+2014-10-06 ruhllatio
+	* Chg: Use wordwrap instead of truncate to fix formatting issues with name/searchnames in browse, search, viewnzb
 2014-10-02 bart39
 	* Mrg: Merge pull request #1518 from tasky.
 2014-09-30 ruhllatio
