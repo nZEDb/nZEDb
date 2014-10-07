@@ -1179,7 +1179,7 @@ Class ProcessAdditional
 					} // Check if it's alt.binaries.u4e file.
 					else if (in_array($this->_releaseGroupName, array('alt.binaries.u4e', 'alt.binaries.mom')) &&
 						preg_match('/Linux_2rename\.sh/i', $file) &&
-						($this->_release['categoryid'] == \Category::CAT_OTHER_HASHED || $this->_release['categoryid'] == \Category::CAT_OTHER_MISC)
+						($this->_release['categoryid'] == \Category::CAT_OTHER_HASHED || $this->_release['categoryid'] == \Category::CAT_MISC)
 					) {
 						$this->_processU4ETitle($file);
 					}

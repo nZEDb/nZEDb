@@ -3,6 +3,8 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
+2014-10-07 niel
+	* Fix: Misnamed constant. Closes issue 1522.
 2014-10-06 ruhllatio
 	* Chg: Use wordwrap instead of truncate to fix formatting issues with name/searchnames in browse, search, viewnzb
 	* Fix: Table formatting for cover views when searchnames are too large for auto column settings
