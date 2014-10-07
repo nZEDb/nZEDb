@@ -8,7 +8,7 @@
 	<br>
 {/if}
 
-<h2>{$release.searchname|escape:"htmlall"}</h2>
+<h2>{$release.searchname|escape:"htmlall"|truncate:100:"...":true}</h2><br>
 <div class="container">
 	<div class="col-xs-8">
 		<span class="label label-default">{$release.category_name}</span> <span class="label label-default">{$release.group_name}</span>
@@ -268,7 +268,7 @@
 <table class="table table-condensed table-striped data">
 <tr>
 	<th style="vertical-align:top">Name:</th>
-	<td>{$release.name|escape:"htmlall"}</td>
+	<td>{$release.name|escape:"htmlall"|wordwrap:80:"\n":true}</td>
 </tr>
 
 <tr>

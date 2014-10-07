@@ -145,14 +145,14 @@ class Contents
 		$content = $this->row2Object($form);
 		$content = $this->validate($content);
 		if ($content->ordinal == 1) {
-			$this->pdo->queryDirect("UPDATE content SET ordinal = ordinal + 1 WHERE ordinal > 0");
+			$this->pdo->queryDirect("UPDATE page_contents SET ordinal = ordinal + 1 WHERE ordinal > 0");
 		}
 		return $this->data_add($content);
 	}
 
 	public function delete($id)
 	{
-		return $this->pdo->queryExec(sprintf("DELETE FROM content WHERE id = %d", $id));
+		return $this->pdo->queryExec(sprintf("DELETE FROM page_contents WHERE id = %d", $id));
 	}
 
 	public function update($form)
@@ -188,22 +188,22 @@ class Contents
 
 	public function data_update($content)
 	{
-		return $this->pdo->queryExec(sprintf("UPDATE content SET role = %d, title = %s, url = %s, body = %s, metadescription = %s, metakeywords = %s, contenttype = %d, showinmenu = %d, status = %d, ordinal = %d WHERE id = %d", $content->role, $this->pdo->escapeString($content->title), $this->pdo->escapeString($content->url), $this->pdo->escapeString($content->body), $this->pdo->escapeString($content->metadescription), $this->pdo->escapeString($content->metakeywords), $content->contenttype, $content->showinmenu, $content->status, $content->ordinal, $content->id));
+		return $this->pdo->queryExec(sprintf("UPDATE page_contents SET role = %d, title = %s, url = %s, body = %s, metadescription = %s, metakeywords = %s, contenttype = %d, showinmenu = %d, status = %d, ordinal = %d WHERE id = %d", $content->role, $this->pdo->escapeString($content->title), $this->pdo->escapeString($content->url), $this->pdo->escapeString($content->body), $this->pdo->escapeString($content->metadescription), $this->pdo->escapeString($content->metakeywords), $content->contenttype, $content->showinmenu, $content->status, $content->ordinal, $content->id));
 	}
 
 	public function data_add($content)
 	{
-		return $this->pdo->queryInsert(sprintf("INSERT INTO content (role, title, url, body, metadescription, metakeywords, contenttype, showinmenu, status, ordinal) values (%d, %s, %s, %s, %s, %s, %d, %d, %d, %d )", $content->role, $this->pdo->escapeString($content->title), $this->pdo->escapeString($content->url), $this->pdo->escapeString($content->body), $this->pdo->escapeString($content->metadescription), $this->pdo->escapeString($content->metakeywords), $content->contenttype, $content->showinmenu, $content->status, $content->ordinal));
+		return $this->pdo->queryInsert(sprintf("INSERT INTO page_contents (role, title, url, body, metadescription, metakeywords, contenttype, showinmenu, status, ordinal) values (%d, %s, %s, %s, %s, %s, %d, %d, %d, %d )", $content->role, $this->pdo->escapeString($content->title), $this->pdo->escapeString($content->url), $this->pdo->escapeString($content->body), $this->pdo->escapeString($content->metadescription), $this->pdo->escapeString($content->metakeywords), $content->contenttype, $content->showinmenu, $content->status, $content->ordinal));
 	}
 
 	public function data_get()
 	{
-		return $this->pdo->query(sprintf("SELECT * FROM content WHERE status = 1 ORDER BY contenttype, COALESCE(ordinal, 1000000)"));
+		return $this->pdo->query(sprintf("SELECT * FROM page_contents WHERE status = 1 ORDER BY contenttype, COALESCE(ordinal, 1000000)"));
 	}
 
 	public function data_getAll()
 	{
-		return $this->pdo->query(sprintf("SELECT * FROM content ORDER BY contenttype, COALESCE(ordinal, 1000000)"));
+		return $this->pdo->query(sprintf("SELECT * FROM page_contents ORDER BY contenttype, COALESCE(ordinal, 1000000)"));
 	}
 
 	/**
@@ -213,7 +213,7 @@ class Contents
 	 */
 	public function data_getAllButFront()
 	{
-		return $this->pdo->query(sprintf("SELECT * FROM content WHERE id != 1 ORDER BY contenttype, COALESCE(ordinal, 1000000)"));
+		return $this->pdo->query(sprintf("SELECT * FROM page_contents WHERE id != 1 ORDER BY contenttype, COALESCE(ordinal, 1000000)"));
 	}
 
 	public function data_getByID($id, $role)
@@ -224,17 +224,17 @@ class Contents
 			$role = sprintf("AND (role = %d OR role = 0)", $role);
 		}
 
-		return $this->pdo->queryOneRow(sprintf("SELECT * FROM content WHERE id = %d %s", $id, $role));
+		return $this->pdo->queryOneRow(sprintf("SELECT * FROM page_contents WHERE id = %d %s", $id, $role));
 	}
 
 	public function data_getFrontPage()
 	{
-		return $this->pdo->query(sprintf("SELECT * FROM content WHERE status = 1 AND contenttype = %d ORDER BY ordinal ASC, COALESCE(ordinal, 1000000), id", \Contents::TYPEINDEX));
+		return $this->pdo->query(sprintf("SELECT * FROM page_contents WHERE status = 1 AND contenttype = %d ORDER BY ordinal ASC, COALESCE(ordinal, 1000000), id", \Contents::TYPEINDEX));
 	}
 
 	public function data_getIndex()
 	{
-		return $this->pdo->queryOneRow(sprintf("SELECT * FROM content WHERE status = 1 AND contenttype = %d", \Contents::TYPEINDEX));
+		return $this->pdo->queryOneRow(sprintf("SELECT * FROM page_contents WHERE status = 1 AND contenttype = %d", \Contents::TYPEINDEX));
 	}
 
 	public function data_getForMenuByTypeAndRole($id, $role)
@@ -244,6 +244,6 @@ class Contents
 		} else {
 			$role = sprintf("AND (role = %d OR role = 0)", $role);
 		}
-		return $this->pdo->query(sprintf("SELECT * FROM content WHERE showinmenu = 1 AND status = 1 AND contenttype = %d %s ", $id, $role));
+		return $this->pdo->query(sprintf("SELECT * FROM page_contents WHERE showinmenu = 1 AND status = 1 AND contenttype = %d %s ", $id, $role));
 	}
 }
