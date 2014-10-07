@@ -163,6 +163,11 @@ switch ($function) {
 			categoryID(),
 			$maxAge
 		);
+		foreach ($relData as &$release) {
+			if ($release['jpgstatus'] == '1') {
+				$release['coverurl'] = "covers/movies/{$release['imdbid']}-covers.jpg";
+			}
+		}
 
 		addLanguage($relData, $page->settings);
 		printOutput($relData, $outputXML, $page, $offset);
