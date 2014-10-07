@@ -109,6 +109,7 @@ APIs		rottentomatoquality	profile	Select the quality of the images to display in
 APIs		tmdbkey	9a4e16adddcd1e86da19bcaf5ff3c2a3	The API key used for access to TMDb.	tmdbkey
 APIs		trakttvkey		The trakt.tv api key. Used for movie and tv lookups.	trakttvkey
 APIs	APIKeys	section-label	3<sup>rd.</sup> Party API Keys		""
+apps	indexer	magic_file_path		Path to magic number database. Windows&apos; users should set this if they have installed GNUWin &lsquo;file&rsquo;. *nix users can optionally set this to a file of their choice.	magic_file_path
 apps		7zippath		The path to the 7za (7zip command line in windows) binary, used for grabbing nfos from compressed zip files. Use forward slashes in windows c:/path/to/7z.exe	zippath
 apps		ffmpegpath		The path to the ffmpeg or avconv binary. Used for making thumbnails and video/audio previews. Use empty path to disable thumbnailing. Use forward slashes in windows c:/path/to/ffmpeg.exe	ffmpegpath
 apps		mediainfopath		The path to the mediainfo binary. Used for deep file media analysis. Use empty path to disable mediainfo checks Use forward slashes in windows c:/path/to/mediainfo.exe	mediainfopath
