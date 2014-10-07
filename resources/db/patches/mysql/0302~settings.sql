@@ -1,0 +1,1 @@
+INSERT IGNORE INTO settings (section, subsection, name, value, hint, setting) VALUES ('apps', 'indexer', 'magic_file_path', '', 'Path to magic number database. Windows&apos; users should set this if they have installed GNUWin &lsquo;file&rsquo;. *nix users can optionally set this to a file of their choice.', 'magic_file_path');

@@ -144,7 +144,7 @@
 											</td>
 											<td class="name">
 												<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">
-													<b>{$mname[$m@index]|escape:"htmlall"}</b>
+													<b>{$mname[$m@index]|escape:"htmlall"|wordwrap:80:"\n":true}</b>
 												</a>
 												<br>
 												<div class="resextra">

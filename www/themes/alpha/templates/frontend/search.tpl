@@ -103,17 +103,22 @@
 {elseif ($search || $subject || $searchadvr || $searchadvsubject || $selectedgroup || $selectedsizefrom || $searchadvdaysold) == ""}
 {else}
 	<form id="nzb_multi_operations_form" method="get" action="{$smarty.const.WWW_TOP}/search">
-		<div class="container nzb_multi_operations">
-			<div class="col-12" style="text-align: right; padding-bottom: 4px;">
-				View:
-				<a href="{$smarty.const.WWW_TOP}/{$section}?t={$category}"><i class="icon-th-list"></i></a>&nbsp;&nbsp;
-				<span><i class="icon-align-justify"></i></span>
+		<div class="container nzb_multi_operations" style="text-align:right;margin-bottom:5px;">
+			{if $covgroup != ''}View:
+				<a href="{$smarty.const.WWW_TOP}/{$covgroup}?t={$category}">
+					<i class="icon-th-list"></i>
+				</a>
 				&nbsp;&nbsp;
-				{if $isadmin || $ismod}
-					Admin: <input type="button" class="btn btn-warning btn-small nzb_multi_operations_edit" value="Edit">
-					<input type="button" class="btn btn-danger btn-small nzb_multi_operations_delete" value="Delete">
-				{/if}
-			</div>
+				<span>
+					<i class="icon-align-justify"></i>
+				</span>
+			{/if}
+			{if $isadmin || $ismod}
+				&nbsp;&nbsp;
+				Admin:
+				<button type="button" class="btn btn-warning btn-sm nzb_multi_operations_edit">Edit</button>
+				<button type="button" class="btn btn-danger btn-sm nzb_multi_operations_delete">Delete</button>
+			{/if}
 		</div>
 		{include file='multi-operations.tpl'}
 
@@ -180,7 +185,7 @@
 			<tbody>
 			{foreach from=$results item=result}
 				<tr class="{if $lastvisit|strtotime<$result.adddate|strtotime}success{/if}" id="guid{$result.guid}">
-					<td class="check" style="text-align:center;">
+					<td class="check" style="width:26px;text-align:center;white-space:nowrap;">
 						<input id="chk{$result.guid|substr:0:7}" type="checkbox" class="nzb_check" value="{$result.guid}">
 					</td>
 					<td class="item" style="width:100%;text-align:left;">
@@ -189,7 +194,7 @@
 								class="title"
 								title="View details"
 								href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}"
-							>{$result.searchname|escape:"htmlall"|truncate:150:"...":true}</a>
+							>{$result.searchname|escape:"htmlall"|wordwrap:70:"\n":true}</a>
 						</label>
 						<div class="resextra">
 							{if $result.passwordstatus == 1}

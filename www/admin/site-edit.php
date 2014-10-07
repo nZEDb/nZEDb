@@ -65,6 +65,7 @@ switch($action)
 		$page->title = "Site Edit";
 		$site = $page->settings;
 		$page->smarty->assign('site', $site);
+		$page->smarty->assign('settings', $site->getSettingsAsTree());
 		break;
 }
 

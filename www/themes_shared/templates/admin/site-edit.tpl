@@ -403,6 +403,18 @@
 					</div>
 				</td>
 			</tr>
+			<tr>
+				<td style="width:180px;"><label for="magic_file_path">Magic Numbers file:</label></td>
+				<td>
+					<input id="magic_file_path"
+						class="long"
+						name="magic_file_path"
+						type="text"
+						value="{$settings['apps']['indexer']['magic_file_path']['value']}" />
+
+					<div class="hint">{$settings['apps']['indexer']['magic_file_path']['hint']}</div>
+				</td>
+			</tr>
 		</table>
 	</fieldset>
 
