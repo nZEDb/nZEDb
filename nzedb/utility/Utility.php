@@ -443,8 +443,8 @@ class Utility
 	}
 
 	/**
-	 * Return file type/info using magic.
-	 * Try using `file` program where available, fallback to using PHP's finfo.
+	 * Return file type/info using magic numbers.
+	 * Try using `file` program where available, fallback to using PHP's finfo class.
 	 *
 	 * @param string $path Path to the file / folder to check.
 	 *
@@ -484,7 +484,6 @@ class Utility
 
 		return $output;
 	}
-
 
 	/**
 	 * Run CLI command.
