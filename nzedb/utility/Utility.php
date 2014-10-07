@@ -444,7 +444,7 @@ class Utility
 
 	/**
 	 * Return file type/info using magic.
-	 * Try using PHP's finfo_ functions, fallback on operating system file executable.
+	 * Try using `file` program where available, fallback to using PHP's finfo.
 	 *
 	 * @param string $path Path to the file / folder to check.
 	 *
@@ -460,14 +460,14 @@ class Utility
 
 			if (is_array($output)) {
 				switch (count($output)) {
+					case 0:
+						$output = '';
 					case 1:
 						$output = $output[0];
 						break;
 					default:
 						$output = implode(' ', $output);
 						break;
-					case 0:
-						$output = '';
 				}
 			} else {
 				$output = '';
