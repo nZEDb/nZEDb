@@ -283,7 +283,7 @@ function showApiError($errorCode = 900, $errorText = '')
 				$errorText = 'Account suspended';
 				break;
 			case 102:
-				$errorText = 'Insufficient priviledges/not authorized';
+				$errorText = 'Insufficient privileges/not authorized';
 				break;
 			case 103:
 				$errorText = 'Registration denied';
