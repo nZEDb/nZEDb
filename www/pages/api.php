@@ -2,6 +2,8 @@
 
 use \nzedb\db\Settings;
 
+require_once dirname(__DIR__) . 'autoconfig.php';
+
 // API functions.
 $function = 's';
 if (isset($_GET['t'])) {
@@ -164,9 +166,7 @@ switch ($function) {
 			$maxAge
 		);
 		foreach ($relData as &$release) {
-			if ($release['jpgstatus'] == '1') {
-				$release['coverurl'] = "covers/movies/{$release['imdbid']}-covers.jpg";
-			}
+			$release['coverurl'] = \nzedb\utility\Utility::getCoverURL(['type' => 'movies', 'id' => $release['imdbid']]);
 		}
 
 		addLanguage($relData, $page->settings);
