@@ -1,8 +1,9 @@
 <?php
+require_once dirname(__DIR__) . 'autoconfig.php';
 
 use \nzedb\db\Settings;
+use \nzedb\utility\Utility;
 
-require_once dirname(__DIR__) . 'autoconfig.php';
 
 // API functions.
 $function = 's';
@@ -165,10 +166,8 @@ switch ($function) {
 			categoryID(),
 			$maxAge
 		);
-		foreach ($relData as &$release) {
-			$release['coverurl'] = \nzedb\utility\Utility::getCoverURL(['type' => 'movies', 'id' => $release['imdbid']]);
-		}
 
+		addCoverURL($relData, Utility::getCoverURL(['type' => 'movies', 'id' => $_GET['imdbid']]));
 		addLanguage($relData, $page->settings);
 		printOutput($relData, $outputXML, $page, $offset);
 		break;
@@ -424,6 +423,15 @@ function verifyEmptyParameter($parameter)
 {
 	if (isset($_GET[$parameter]) && $_GET[$parameter] == '') {
 		showApiError(201, 'Incorrect parameter (' . $parameter . ' must not be empty)');
+	}
+}
+
+function addCoverURL(&$releases, $coverURL)
+{
+	if ($releases && count($releases)) {
+		foreach ($releases as $key => $release) {
+			$releases[$key]['coverurl'] = $coverURL;
+		}
 	}
 }
 
