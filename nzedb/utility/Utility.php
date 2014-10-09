@@ -5,6 +5,8 @@ namespace nzedb\utility;
  * General util functions.
  * Class Util
  */
+use nzedb\db\Settings;
+
 class Utility
 {
 	/**
@@ -441,8 +443,8 @@ class Utility
 	}
 
 	/**
-	 * Return file type/info using magic.
-	 * Try using PHP's finfo_ functions, fallback on operating system file executable.
+	 * Return file type/info using magic numbers.
+	 * Try using `file` program where available, fallback to using PHP's finfo class.
 	 *
 	 * @param string $path Path to the file / folder to check.
 	 *
@@ -450,42 +452,38 @@ class Utility
 	 */
 	static public function fileInfo($path)
 	{
-		$fileInfo = false;
-		if (function_exists('finfo_open')) {
-			$fileInfo = finfo_open(FILEINFO_RAW);
-		}
-
 		$output = '';
-		if ($fileInfo) {
-
-			$output = finfo_file($fileInfo, $path);
-			if (empty($output)) {
-				$output = '';
-			}
-			finfo_close($fileInfo);
-
-		} else if (!self::isWin() && self::hasCommand('file')) {
-
-			$output = self::runCmd('file -b "' . $path . '"');
+		$magicPath = (new Settings())->getSetting('apps.indexer.magic_file_path');
+		if (self::hasCommand('file') && (!self::isWin() || !empty($magicPath))) {
+			$magicSwitch = empty($magicPath) ? '' : " -m $magicPath";
+			$output = self::runCmd('file' . $magicSwitch . ' -b "' . $path . '"');
 
 			if (is_array($output)) {
 				switch (count($output)) {
+					case 0:
+						$output = '';
 					case 1:
 						$output = $output[0];
 						break;
 					default:
 						$output = implode(' ', $output);
 						break;
-					case 0:
-						$output = '';
 				}
 			} else {
 				$output = '';
 			}
+		} else {
+			$fileInfo = empty($magicPath) ? new finfo(FILEINFO_RAW) : new finfo(FILEINFO_RAW, $magicPath);
+
+			$output = $fileInfo->file($path);
+			if (empty($output)) {
+				$output = '';
+			}
+			$fileInfo->close();
 		}
+
 		return $output;
 	}
-
 
 	/**
 	 * Run CLI command.
