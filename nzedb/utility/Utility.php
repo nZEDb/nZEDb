@@ -112,6 +112,7 @@ class Utility
 			'type' => '',
 		];
 		$options += $defaults;
+		$fileSpecTemplate = '%s/%s%s';
 		$fileSpec = '';
 
 		if (!empty($options['id']) && in_array($options['type'],
@@ -121,8 +122,9 @@ class Utility
 												   'tvrage', 'video', 'xxx'
 											   ])
 		) {
-			$fileSpec = $options['type'] . DS . $options['id'] . $options['suffix'];
-			$fileSpec = file_exists(nZEDb_COVERS . $fileSpec) ? $fileSpec : '';
+			$fileSpec = sprintf($fileSpecTemplate, $options['type'], $options['id'], $options['suffix']);
+			$fileSpec = file_exists(nZEDb_COVERS . $fileSpec) ? $fileSpec :
+				sprintf($fileSpecTemplate, $options['type'], 'no', $options['suffix']);
 		}
 
 		return $fileSpec;
