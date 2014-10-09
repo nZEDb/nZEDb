@@ -116,12 +116,7 @@ class Utility
 		$fileSpec = '';
 
 		if (!empty($options['id']) && in_array($options['type'],
-											   [
-												   'anime', 'audio', 'audiosample', 'book', 'console',
-												   'games', 'movies', 'music', 'preview', 'sample',
-												   'tvrage', 'video', 'xxx'
-											   ])
-		) {
+		   ['anime', 'audio', 'audiosample', 'book', 'console',  'games', 'movies', 'music', 'preview', 'sample', 'tvrage', 'video', 'xxx'])) {
 			$fileSpec = sprintf($fileSpecTemplate, $options['type'], $options['id'], $options['suffix']);
 			$fileSpec = file_exists(nZEDb_COVERS . $fileSpec) ? $fileSpec :
 				sprintf($fileSpecTemplate, $options['type'], 'no', $options['suffix']);
