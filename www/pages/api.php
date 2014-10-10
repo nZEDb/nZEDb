@@ -168,11 +168,11 @@ switch ($function) {
 			$maxAge
 		);
 
-		foreach ($relData as $key => $rel) {
-			if (is_numeric($rel['imdbid']) && $rel['imdbid'] > 0) {
-				$relData[$key]['coverurl'] = Utility::getCoverURL(['type' => 'movies', 'id' => $rel['imdbid']]);
+		addCoverURL($relData,
+			function ($release) {
+				return Utility::getCoverURL(['type' => 'movies', 'id' => $release['imdbid']]);
 			}
-		}
+		);
 
 		addLanguage($relData, $page->settings);
 		printOutput($relData, $outputXML, $page, $offset);
@@ -429,6 +429,16 @@ function verifyEmptyParameter($parameter)
 {
 	if (isset($_GET[$parameter]) && $_GET[$parameter] == '') {
 		showApiError(201, 'Incorrect parameter (' . $parameter . ' must not be empty)');
+	}
+}
+
+function addCoverURL(&$releases, callable $getCoverURL)
+{
+	if ($releases && count($releases)) {
+		foreach ($releases as $key => $release) {
+			$coverURL = $getCoverURL($release);
+			$releases[$key]['coverurl'] = $coverURL;
+		}
 	}
 }
 
