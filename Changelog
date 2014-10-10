@@ -3,6 +3,8 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 New updates are grouped by person, at the top of the file.
 
+2014-10-10 ruhllatio
+	* Mrg: Merge dev-api into dev for nzb360 movie cover compatibility
 2014-10-10 bart39
 	* Mrg: Merge pull request #1527 from kaibosh.
 2014-10-07 niel
