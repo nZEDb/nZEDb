@@ -157,8 +157,10 @@ switch ($function) {
 		$page->users->addApiRequest($uid, $_SERVER['REQUEST_URI']);
 		$offset = offset();
 
+		$imdbId = (isset($_GET['imdbid']) ? $_GET['imdbid'] : '-1');
+
 		$relData = $releases->searchbyImdbId(
-			(isset($_GET['imdbid']) ? $_GET['imdbid'] : '-1'),
+			$imdbId,
 			$offset,
 			limit(),
 			(isset($_GET['q']) ? $_GET['q'] : ''),
@@ -166,7 +168,12 @@ switch ($function) {
 			$maxAge
 		);
 
-		addCoverURL($relData, Utility::getCoverURL(['type' => 'movies', 'id' => $_GET['imdbid']]));
+		foreach ($relData as $key => $rel) {
+			if (is_numeric($rel['imdbid']) && $rel['imdbid'] > 0) {
+				$relData[$key]['coverurl'] = Utility::getCoverURL(['type' => 'movies', 'id' => $rel['imdbid']]);
+			}
+		}
+
 		addLanguage($relData, $page->settings);
 		printOutput($relData, $outputXML, $page, $offset);
 		break;
@@ -422,15 +429,6 @@ function verifyEmptyParameter($parameter)
 {
 	if (isset($_GET[$parameter]) && $_GET[$parameter] == '') {
 		showApiError(201, 'Incorrect parameter (' . $parameter . ' must not be empty)');
-	}
-}
-
-function addCoverURL(&$releases, $coverURL)
-{
-	if ($releases && count($releases)) {
-		foreach ($releases as $key => $release) {
-			$releases[$key]['coverurl'] = $coverURL;
-		}
 	}
 }
 
