@@ -7,6 +7,8 @@ New updates are grouped by person, at the top of the file.
 	* Mrg: Merge dev-api into dev for nzb360 movie cover compatibility
 2014-10-10 bart39
 	* Mrg: Merge pull request #1527 from kaibosh.
+2014-10-09 niel
+	* New: Added basic support for coverurl attribute in API output.
 2014-10-07 niel
 	* Fix: Misnamed constant. Closes issue 1522.
 2014-10-06 ruhllatio
