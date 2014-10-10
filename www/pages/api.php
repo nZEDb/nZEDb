@@ -1,6 +1,8 @@
 <?php
 
 use \nzedb\db\Settings;
+use \nzedb\utility\Utility;
+
 
 // API functions.
 $function = 's';
@@ -155,14 +157,22 @@ switch ($function) {
 		$page->users->addApiRequest($uid, $_SERVER['REQUEST_URI']);
 		$offset = offset();
 
+		$imdbId = (isset($_GET['imdbid']) ? $_GET['imdbid'] : '-1');
+
 		$relData = $releases->searchbyImdbId(
-			(isset($_GET['imdbid']) ? $_GET['imdbid'] : '-1'),
+			$imdbId,
 			$offset,
 			limit(),
 			(isset($_GET['q']) ? $_GET['q'] : ''),
 			categoryID(),
 			$maxAge
 		);
+
+		foreach ($relData as $key => $rel) {
+			if (is_numeric($rel['imdbid']) && $rel['imdbid'] > 0) {
+				$relData[$key]['coverurl'] = Utility::getCoverURL(['type' => 'movies', 'id' => $rel['imdbid']]);
+			}
+		}
 
 		addLanguage($relData, $page->settings);
 		printOutput($relData, $outputXML, $page, $offset);
@@ -278,7 +288,7 @@ function showApiError($errorCode = 900, $errorText = '')
 				$errorText = 'Account suspended';
 				break;
 			case 102:
-				$errorText = 'Insufficient priviledges/not authorized';
+				$errorText = 'Insufficient privileges/not authorized';
 				break;
 			case 103:
 				$errorText = 'Registration denied';

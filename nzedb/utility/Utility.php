@@ -104,6 +104,28 @@ class Utility
 		return ($piece);
 	}
 
+	public static function  getCoverURL(array $options = [])
+	{
+		$defaults = [
+			'id' => null,
+			'suffix' => '-cover.jpg',
+			'type' => '',
+		];
+		$options += $defaults;
+		$fileSpecTemplate = '%s/%s%s';
+		$fileSpec = '';
+
+		if (!empty($options['id']) && in_array($options['type'],
+		   ['anime', 'audio', 'audiosample', 'book', 'console',  'games', 'movies', 'music', 'preview', 'sample', 'tvrage', 'video', 'xxx'])) {
+			$fileSpec = sprintf($fileSpecTemplate, $options['type'], $options['id'], $options['suffix']);
+			$fileSpec = file_exists(nZEDb_COVERS . $fileSpec) ? $fileSpec :
+				sprintf($fileSpecTemplate, $options['type'], 'no', $options['suffix']);
+		}
+
+		return $fileSpec;
+	}
+
+
 	/**
 	 * Get list of files/directories from supplied directory.
 	 *
