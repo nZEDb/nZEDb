@@ -1,8 +1,10 @@
 * Note *
 Pull requests will be accepted *only* against the dev branch.
+Please make sure any PR's comply with our coding standards policy: http://li3.me/docs/specs/accepted/LSR-0-coding.md
+
 New updates are grouped by person, at the top of the file.
 
-2014-10-10 niel
+2014-10-11 niel
 	* Mrg: Merging PR 1528 from bfincher, Correct error in blacklist query by poster.
 2014-10-10 ruhllatio
 	* Mrg: Merge dev-api into dev for nzb360 movie cover compatibility
