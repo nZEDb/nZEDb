@@ -6,6 +6,7 @@ New updates are grouped by person, at the top of the file.
 
 2014-10-11 niel
 	* Mrg: Merging PR 1528 from bfincher, Correct error in blacklist query by poster.
+	* Chg: Cleaning tmux startup checks, so that no messages about checks not being an error is needed.
 2014-10-10 ruhllatio
 	* Mrg: Merge dev-api into dev for nzb360 movie cover compatibility
 2014-10-10 bart39
