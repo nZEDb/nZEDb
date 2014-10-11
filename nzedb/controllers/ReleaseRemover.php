@@ -827,10 +827,10 @@ class ReleaseRemover
 					)
 				);
 
-                                if ($opTypeName == "Subject") {
-   				    $join = (nZEDb_RELEASE_SEARCH_TYPE == \ReleaseSearch::SPHINX ? "INNER JOIN releases_se rse ON rse.id = r.id" : "INNER JOIN releasesearch rs ON rs.releaseid = r.id");
+				if ($opTypeName == 'Subject') {
+					$join = (nZEDb_RELEASE_SEARCH_TYPE == \ReleaseSearch::SPHINX ? 'INNER JOIN releases_se rse ON rse.id = r.id' : 'INNER JOIN releasesearch rs ON rs.releaseid = r.id');
 				} else {
- 				    $join = "";
+					$join = '';
 				}
 
 				$this->query = sprintf("
