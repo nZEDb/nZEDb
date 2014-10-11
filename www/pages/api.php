@@ -1,6 +1,8 @@
 <?php
 
 use \nzedb\db\Settings;
+use \nzedb\utility\Utility;
+
 
 // API functions.
 $function = 's';
@@ -155,13 +157,21 @@ switch ($function) {
 		$page->users->addApiRequest($uid, $_SERVER['REQUEST_URI']);
 		$offset = offset();
 
+		$imdbId = (isset($_GET['imdbid']) ? $_GET['imdbid'] : '-1');
+
 		$relData = $releases->searchbyImdbId(
-			(isset($_GET['imdbid']) ? $_GET['imdbid'] : '-1'),
+			$imdbId,
 			$offset,
 			limit(),
 			(isset($_GET['q']) ? $_GET['q'] : ''),
 			categoryID(),
 			$maxAge
+		);
+
+		addCoverURL($relData,
+			function ($release) {
+				return Utility::getCoverURL(['type' => 'movies', 'id' => $release['imdbid']]);
+			}
 		);
 
 		addLanguage($relData, $page->settings);
@@ -278,7 +288,7 @@ function showApiError($errorCode = 900, $errorText = '')
 				$errorText = 'Account suspended';
 				break;
 			case 102:
-				$errorText = 'Insufficient priviledges/not authorized';
+				$errorText = 'Insufficient privileges/not authorized';
 				break;
 			case 103:
 				$errorText = 'Registration denied';
@@ -419,6 +429,16 @@ function verifyEmptyParameter($parameter)
 {
 	if (isset($_GET[$parameter]) && $_GET[$parameter] == '') {
 		showApiError(201, 'Incorrect parameter (' . $parameter . ' must not be empty)');
+	}
+}
+
+function addCoverURL(&$releases, callable $getCoverURL)
+{
+	if ($releases && count($releases)) {
+		foreach ($releases as $key => $release) {
+			$coverURL = $getCoverURL($release);
+			$releases[$key]['coverurl'] = $coverURL;
+		}
 	}
 }
 
