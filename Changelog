@@ -1,10 +1,9 @@
 * Note *
-No pull requests will be accepted without this file being updated to reflect what you changed and when.
-No pull requests will be accepted to any branch except the dev branch.
+Pull requests will be accepted *only* against the dev branch.
 New updates are grouped by person, at the top of the file.
 
-2014-10-10 bfincher
-	* New: Correct error in blacklist query by poster.
+2014-10-10 niel
+	* Mrg: Merging PR 1528 from bfincher, Correct error in blacklist query by poster.
 2014-10-10 ruhllatio
 	* Mrg: Merge dev-api into dev for nzb360 movie cover compatibility
 2014-10-10 bart39
