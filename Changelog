@@ -1,12 +1,18 @@
 * Note *
-No pull requests will be accepted without this file being updated to reflect what you changed and when.
-No pull requests will be accepted to any branch except the dev branch.
+Pull requests will be accepted *only* against the dev branch.
+Please make sure any PR's comply with our coding standards policy: http://li3.me/docs/specs/accepted/LSR-0-coding.md
+
 New updates are grouped by person, at the top of the file.
 
+2014-10-11 niel
+	* Mrg: Merging PR 1528 from bfincher, Correct error in blacklist query by poster.
+	* Chg: Cleaning tmux startup checks, so that no messages about checks not being an error is needed.
 2014-10-10 ruhllatio
 	* Mrg: Merge dev-api into dev for nzb360 movie cover compatibility
 2014-10-10 bart39
 	* Mrg: Merge pull request #1527 from kaibosh.
+2014-10-09 niel
+	* New: Added basic support for coverurl attribute in API output.
 2014-10-07 niel
 	* Fix: Misnamed constant. Closes issue 1522.
 2014-10-06 ruhllatio
