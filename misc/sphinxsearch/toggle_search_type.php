@@ -66,8 +66,11 @@ function revertToStandard($pdo)
 					guid VARCHAR(50) NOT NULL,
 					name VARCHAR(255) NOT NULL DEFAULT '',
 					searchname VARCHAR(255) NOT NULL DEFAULT '',
+					fromname VARCHAR(255) DEFAULT NULL,
 					PRIMARY KEY (id),
-					FULLTEXT INDEX ix_releasesearch_name_searchname_ft (name, searchname),
+					FULLTEXT INDEX ix_releasesearch_name_ft (name),
+					FULLTEXT INDEX ix_releasesearch_searchname_ft (searchname),
+					FULLTEXT INDEX ix_releasesearch_fromname_ft (fromname),
 					INDEX ix_releasesearch_releaseid (releaseid),
 					INDEX ix_releasesearch_guid (guid)
 				)
@@ -80,8 +83,8 @@ function revertToStandard($pdo)
 	);
 
 	echo $pdo->log->info('Populating the releasearch table with initial data. (Slow)' . PHP_EOL);
-	$pdo->queryInsert('INSERT INTO releasesearch (releaseid, guid, name, searchname)
-				SELECT id, guid, name, searchname FROM releases');
+	$pdo->queryInsert('INSERT INTO releasesearch (releaseid, guid, name, searchname, fromname)
+				SELECT id, guid, name, searchname, fromname FROM releases');
 
 	echo $pdo->log->info('Adding the auto-population triggers. (Quick)' . PHP_EOL);
 
@@ -90,8 +93,8 @@ function revertToStandard($pdo)
 	$pdo->exec('
 				CREATE TRIGGER insert_search AFTER INSERT ON releases FOR EACH ROW
 					BEGIN
-						INSERT INTO releasesearch (releaseid, guid, name, searchname)
-						VALUES (NEW.id, NEW.guid, NEW.name, NEW.searchname);
+						INSERT INTO releasesearch (releaseid, guid, name, searchname, fromname)
+						VALUES (NEW.id, NEW.guid, NEW.name, NEW.searchname, NEW.fromname);
 					END;
 
 				CREATE TRIGGER update_search AFTER UPDATE ON releases FOR EACH ROW
@@ -109,6 +112,11 @@ function revertToStandard($pdo)
 						IF NEW.searchname != OLD.searchname
 						THEN UPDATE releasesearch
 							SET searchname = NEW.searchname
+							WHERE releaseid = OLD.id;
+						END IF;
+						IF NEW.fromname != OLD.fromname
+						THEN UPDATE releasesearch
+							SET fromname = NEW.fromname
 							WHERE releaseid = OLD.id;
 						END IF;
 					END;

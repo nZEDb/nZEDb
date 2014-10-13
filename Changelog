@@ -1,14 +1,33 @@
 
 * Note *
-No pull requests will be accepted without this file being updated to reflect what you changed and when.
-No pull requests will be accepted to any branch except the dev branch.
+Pull requests will be accepted *only* against the dev branch.
 New updates are grouped by person, at the top of the file.
 
+2014-10-13 niel
+	* New: Merged and tagged v0.4.5 to master branch.
+2014-10-10 niel
+	* Mrg: Merging PR 1528 from bfincher, Correct error in blacklist query by poster.
 
 2014-10-06 niel
 	* New: Merged and tagged v0.4.4 to master branch.
+2014-09-30 ruhllatio
+	* Fix: Issue #1477 - MySQL Full-Text Search broken after implementation of Sphinx
+	* Fix: Whitespace\New line EOF (second try weirdness) and change SQL patch file perms to 0755
+2014-09-30 niel
+	* Fix: Column definition of collection_id in binaries* tables.
+2014-09-30 bart39
+	* Fix: Monitor counts for pp types when that type of pp has been turned off.
+	* Chg: Add Misc->Other category for alt.binaries.u4e file renaming.
+	* Chg: Update Monitor explanation for Tmux edit page.
+	* Fix: Add missing NZB Import to Tmux Complete Sequential.
+	* Chg: ReleaseCleaning regex additions for a.b.frogs, a.b.kenpsx and various other updates.
+	* Chg: CollectionsCleaning regex additions / fixes.
+
 2014-09-29 niel
 	* New: Merged and tagged v0.4.3 to master branch.
+2014-09-26 niel
+	* Chg: Convert binaries tables and code to use collection_id column;
+	!!IMPORTANT!! TPG users: After running DbUpdate to process the patch, you MUST run php nzedb/build/_runonce/tpg_triggers_update_2014-09-25.php to convert the triggers.
 2014-09-25 bart39
 	* Mrg: Merge PR 1510 from tasky.
 2014-09-25 niel
@@ -30,6 +49,7 @@ New updates are grouped by person, at the top of the file.
 	* Add: Catch Rotten Tomato API errors on upcoming page.
 2014-09-22 kevin
 	* Add: Check sessions path for read/write permissions on step 1 of install.
+
 2014-09-22 niel
 	* New: Merged and tagged v0.4.2 to master branch.
 2014-09-15 bart39

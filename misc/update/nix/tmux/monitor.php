@@ -279,7 +279,7 @@ while ($runVar['counts']['iterations'] > 0) {
 
 		// Zero out any post proc counts when that type of pp has been turned off
 		foreach ($runVar['settings'] as $settingkey => $setting) {
-			if (strpos($settingkey, 'process') === 0 && $setting === 0) {
+			if (strpos($settingkey, 'process') == 0 && $setting == 0) {
 				$runVar['counts']['now'][$settingkey] = $runVar['counts']['start'][$settingkey] = 0;
 			}
 		}

@@ -765,7 +765,7 @@ class ReleaseRemover
 
 					$ftMatch = (nZEDb_RELEASE_SEARCH_TYPE == \ReleaseSearch::SPHINX
 						? sprintf('rse.query = "@(name,searchname) %s;limit=10000;maxmatches=10000;mode=any" AND', str_replace('|', ' ', str_replace('"', '', $regexMatch)))
-						: sprintf("MATCH (rs.name, rs.searchname) AGAINST ('%s') AND", str_replace('|', ' ', $regexMatch))
+						: sprintf("(MATCH (rs.name) AGAINST ('%1\$s') OR MATCH (rs.searchname) AGAINST ('%1\$s')) AND", str_replace('|', ' ', $regexMatch))
 					);
 				}
 
@@ -827,7 +827,11 @@ class ReleaseRemover
 					)
 				);
 
-				$join = (nZEDb_RELEASE_SEARCH_TYPE == \ReleaseSearch::SPHINX ? "INNER JOIN releases_se rse ON rse.id = r.id" : "INNER JOIN releasesearch rs ON rs.releaseid = r.id");
+				if ($opTypeName == 'Subject') {
+					$join = (nZEDb_RELEASE_SEARCH_TYPE == \ReleaseSearch::SPHINX ? 'INNER JOIN releases_se rse ON rse.id = r.id' : 'INNER JOIN releasesearch rs ON rs.releaseid = r.id');
+				} else {
+					$join = '';
+				}
 
 				$this->query = sprintf("
 							SELECT r.guid, r.searchname, r.id

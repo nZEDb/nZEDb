@@ -651,7 +651,8 @@ class Categorize extends Category
 
 	public function isMovieBluRay()
 	{
-		if (preg_match('/bluray\-|[-._ ]bd?[-._ ]?(25|50)|blu-ray|Bluray\s\-\sUntouched|[-._ ]untouched[-._ ]/i', $this->releaseName)) {
+		if (preg_match('/bluray\-|[-._ ]bd?[-._ ]?(25|50)|blu-ray|Bluray\s\-\sUntouched|[-._ ]untouched[-._ ]/i', $this->releaseName)
+			&& !preg_match('/SecretUsenet\.com/i', $this->releaseName)) {
 			$this->tmpCat = \Category::CAT_MOVIE_BLURAY;
 			return true;
 		}
