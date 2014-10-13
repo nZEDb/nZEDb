@@ -1,4 +1,10 @@
 <?php
+/*
+ * This does not do as it says (get all binary groups).
+ *
+ * This script should be removed/replaced whenever possible as it does not have much value.
+ * This script and '.../misc/testing/DB/find_new_groups.php' are the only two that use allgroups table as a temp store.
+ */
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
 use nzedb\db\Settings;

@@ -550,8 +550,8 @@ class Games
 					}
 
 					if (!empty($this->_gameResults['gamedetails']['Release Date'])) {
-						$date = \DateTime::createFromFormat('j M Y', $this->_gameResults['gamedetails']['Release Date']);
-						$con['releasedate'] = $this->pdo->escapeString((string)$date->format('Y-m-d'));
+						$date = \DateTime::createFromFormat('M/j/Y', $this->_gameResults['gamedetails']['Release Date']);
+						$con['releasedate'] = (string)$date->format('Y-m-d');
 					}
 
 					if (isset($this->_gameResults['description'])) {
@@ -687,7 +687,7 @@ class Games
 		if ($gamesId) {
 			if ($this->echoOutput) {
 				$this->pdo->log->doEcho(
-					$this->pdo->log->header("Added/updated game: ") .
+					$this->pdo->log->header("Added/updated game from " . $this->_classUsed . ": ") .
 					$this->pdo->log->alternateOver("   Title:    ") .
 					$this->pdo->log->primary($con['title'])
 				);

@@ -39,7 +39,7 @@
 		{/if}
 	</div>
 	{include file='multi-operations.tpl'}
-	<table class="table table-striped table-condensed data" id="coverstable">
+	<table class="table table-striped table-condensed table-hover data icons" id="coverstable">
 		<thead>
 			<tr>
 				<th><input type="checkbox" class="nzb_check_all"></th>
@@ -54,7 +54,7 @@
 		<tbody>
 		{foreach from=$results item=result}
 			<tr>
-				<td style="vertical-align:top;text-align:center;width:150px;padding:10px;">
+				<td colspan="1" style="vertical-align:top;text-align:center;width:160px;padding:10px;">
 					<div class="movcover">
 						<a
 							target="_blank"
@@ -100,7 +100,7 @@
 						</div>
 					</div>
 				</td>
-				<td colspan="3" class="left">
+				<td colspan="3" class="left" style="width:auto;white-space:normal;">
 					<h2>
 						<a
 							title="{$result.title|stripslashes|escape:"htmlall"}"
@@ -165,7 +165,7 @@
 									</td>
 									<td class="name">
 										<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">
-											<b>{$mname[$m@index]|escape:"htmlall"}</b>
+											<b>{$mname[$m@index]|escape:"htmlall"|wordwrap:80:"\n":true}</b>
 										</a>
 										<br>
 										<div class="resextra">

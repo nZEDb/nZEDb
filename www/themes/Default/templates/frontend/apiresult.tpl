@@ -29,6 +29,9 @@
 					<newznab:attr name="category" value="{$cat}" />
 				{/foreach}
 				<newznab:attr name="size" value="{$release.size}" />
+				{if $release.coverurl != ""}
+					<newznab:attr name="coverurl" value="{$serverroot}covers/{$release.coverurl}" />
+				{/if}
 				{if $extended=="1"}
 					<newznab:attr name="files" value="{$release.totalpart}" />
 					<newznab:attr name="poster" value="{$release.fromname|escape:html}" />

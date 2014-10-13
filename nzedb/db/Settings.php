@@ -101,6 +101,28 @@ class Settings extends DB
 		return $result;
 	}
 
+	public function getSettingsAsTree($excludeUnsectioned = true)
+	{
+		$where = $excludeUnsectioned ? "WHERE section != ''" : '';
+
+		$sql = sprintf("SELECT section, subsection, name, value, hint FROM settings %s ORDER BY section, subsection, name", $where);
+		$results = $this->queryArray($sql);
+
+		$tree = [];
+		if (is_array($results)) {
+			foreach ($results as $result) {
+				if (!empty($result['section']) || !$excludeUnsectioned) {
+					$tree[$result['section']][$result['subsection']][$result['name']] =
+						['value' => $result['value'], 'hint' => $result['hint']];
+				}
+			}
+		} else {
+			echo "NO results!!\n";
+		}
+
+		return $tree;
+	}
+
 	public function rowToArray(array $row)
 	{
 		$this->settings[$row['setting']] = $row['value'];
@@ -325,3 +347,5 @@ class Settings extends DB
 if (Utility::isCLI() && isset($argv[1])) {
 	echo (new Settings())->getSetting($argv[1]);
 }
+
+?>
