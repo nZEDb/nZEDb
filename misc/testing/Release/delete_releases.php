@@ -23,11 +23,11 @@ if ($totalArgs < 2) {
 		'size       : Release must be (bigger than |smaller than |exactly) this size.(bytes) (modifiers: equals,bigger,smaller)' . $n .
 		'adddate    : Look for releases added to our DB (older than|newer than) x hours. (modifiers: bigger,smaller)' . $n .
 		'postdate   : Look for posted to usenet (older than|newer than) x hours. (modifiers: bigger,smaller)' . $n .
-		'completion : Look for completion (less than) (modifiers: smaller)' . $n . 
-		'categoryid : Look for releases within specified category (modifiers: equals)' . $n . 
-		'imdbid     : Look for releases with imdbid (modifiers: equals)' . $n . 
-		'rageid     : Look for releases with rageid (modifiers: equals)' . $n . 
-		'totalpart  : Look for releases with certain number of parts (modifiers: equals,bigger,smaller)' . $n . 
+		'completion : Look for completion (less than) (modifiers: smaller)' . $n .
+		'categoryid : Look for releases within specified category (modifiers: equals)' . $n .
+		'imdbid     : Look for releases with imdbid (modifiers: equals)' . $n .
+		'rageid     : Look for releases with rageid (modifiers: equals)' . $n .
+		'totalpart  : Look for releases with certain number of parts (modifiers: equals,bigger,smaller)' . $n .
 		'nzbstatus  : Look for releases with nzbstatus (modifiers: equals)' . $n . $n .
 		'List of Modifiers:' . $n .
 		'equals     : Match must be exactly this. (fromname=equals="john" will only look for "john", not "johndoe")' . $n .
