@@ -53,6 +53,9 @@
 				<newznab:attr name="password" value="{$release.passwordstatus}" />
 				<newznab:attr name="usenetdate" value="{$release.postdate|phpdate_format:"DATE_RSS"}" />
 				<newznab:attr name="group" value="{$release.group_name|escape:html}" />
+				{if $release.coverurl != ""}
+					<newznab:attr name="coverurl" value="{$release.coverurl}" />
+				{/if}
 			</item>
 		{/foreach}
 	</channel>

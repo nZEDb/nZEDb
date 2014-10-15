@@ -827,7 +827,11 @@ class ReleaseRemover
 					)
 				);
 
-				$join = (nZEDb_RELEASE_SEARCH_TYPE == \ReleaseSearch::SPHINX ? "INNER JOIN releases_se rse ON rse.id = r.id" : "INNER JOIN releasesearch rs ON rs.releaseid = r.id");
+				if ($opTypeName == 'Subject') {
+					$join = (nZEDb_RELEASE_SEARCH_TYPE == \ReleaseSearch::SPHINX ? 'INNER JOIN releases_se rse ON rse.id = r.id' : 'INNER JOIN releasesearch rs ON rs.releaseid = r.id');
+				} else {
+					$join = '';
+				}
 
 				$this->query = sprintf("
 							SELECT r.guid, r.searchname, r.id
@@ -1041,6 +1045,55 @@ class ReleaseRemover
 			$args[1] = $this->cleanSpaces($args[1]);
 			$args[2] = $this->cleanSpaces($args[2]);
 			switch ($args[0]) {
+				case 'categoryid':
+					switch ($args[1]) {
+						case 'equals':
+							return ' AND categoryID = ' . $args[2];
+						default:
+							break;
+					}
+					break;
+				case 'imdbid':
+					switch ($args[1]) {
+						case 'equals':
+							if ($args[2] === 'NULL') {
+								return ' AND imdbID IS NULL ';
+							}
+							else {
+								return ' AND imdbID = ' . $args[2];
+							}
+						default:
+							break;
+					}
+					break;
+				case 'nzbstatus':
+					switch ($args[1]) {
+						case 'equals':
+							return ' AND nzbstatus = ' . $args[2];
+						default:
+							break;
+					}
+					break;
+				case 'rageid':
+					switch ($args[1]) {
+						case 'equals':
+							return ' AND rageID = ' . $args[2];
+						default:
+							break;
+					}
+					break;
+				case 'totalpart':
+					switch ($args[1]) {
+						case 'equals':
+							return ' AND totalpart = ' . $args[2];
+						case 'bigger':
+							return ' AND totalpart > ' . $args[2];
+						case 'smaller':
+							return ' AND totalpart < ' . $args[2];
+						default:
+							break;
+					}
+					break;
 				case 'fromname':
 					switch ($args[1]) {
 						case 'equals':
