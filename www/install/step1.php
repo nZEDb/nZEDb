@@ -16,8 +16,9 @@ $cfg = $cfg->getSession();
 
 // Start checks.
 $cfg->sessionsPathPermissions = true;
-$page->smarty->assign('sessionsSavePath', session_save_path());
-if (!is_readable(session_save_path()) || !is_writable(session_save_path())) {
+$sessionPath = empty($sessionPath = session_save_path()) ? sys_get_temp_dir() : $sessionPath;
+$page->smarty->assign('sessionsSavePath', $sessionPath);
+if (!is_readable($sessionPath) || !is_writable($sessionPath)) {
 	$cfg->error = true;
 	$cfg->sessionsPathPermissions = false;
 }
