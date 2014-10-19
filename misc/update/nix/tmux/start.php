@@ -62,7 +62,7 @@ function command_exist($cmd)
 }
 
 //check for apps
-$apps = array("time", "tmux", "nice", "python", "tee");
+$apps = array("time", "tmux", "nice", "tee");
 foreach ($apps as &$value) {
 	if (!command_exist($value)) {
 		exit($pdo->log->error("Tmux scripts require " . $value . " but it's not installed. Aborting.\n"));
