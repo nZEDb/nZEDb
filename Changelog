@@ -3,6 +3,8 @@
 Pull requests will be accepted *only* against the dev branch.
 New updates are grouped by person, at the top of the file.
 
+2014-10-19 josh4trunks
+	* Fix: Remove python dependency check from tmux start script.
 2014-10-13 niel
 	* New: Merged and tagged v0.4.5 to master branch.
 2014-10-10 niel
