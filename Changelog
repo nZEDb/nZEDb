@@ -4,6 +4,8 @@ Please make sure any PR's comply with our coding standards policy: http://li3.me
 
 New updates are grouped by person, at the top of the file.
 
+2014-10-19 josh4trunks
+	* Fix: Added unix domain socket support for the SphinxAPI connection.
 2014-10-15 niel
 	* Fix: Issue 1526. Preventing empty path being used for checking permissions for sessionSavePath.
 2014-10-11 niel
