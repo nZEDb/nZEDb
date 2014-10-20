@@ -23,7 +23,12 @@ if ($totalArgs < 2) {
 		'size       : Release must be (bigger than |smaller than |exactly) this size.(bytes) (modifiers: equals,bigger,smaller)' . $n .
 		'adddate    : Look for releases added to our DB (older than|newer than) x hours. (modifiers: bigger,smaller)' . $n .
 		'postdate   : Look for posted to usenet (older than|newer than) x hours. (modifiers: bigger,smaller)' . $n .
-		'completion : Look for completion (less than) (modifiers: smaller)' . $n . $n .
+		'completion : Look for completion (less than) (modifiers: smaller)' . $n .
+		'categoryid : Look for releases within specified category (modifiers: equals)' . $n .
+		'imdbid     : Look for releases with imdbid (modifiers: equals)' . $n .
+		'rageid     : Look for releases with rageid (modifiers: equals)' . $n .
+		'totalpart  : Look for releases with certain number of parts (modifiers: equals,bigger,smaller)' . $n .
+		'nzbstatus  : Look for releases with nzbstatus (modifiers: equals)' . $n . $n .
 		'List of Modifiers:' . $n .
 		'equals     : Match must be exactly this. (fromname=equals="john" will only look for "john", not "johndoe")' . $n .
 		'like       : Match can be similar to this. Separate words using spaces(ie:"cars hdtv x264").' . $n .
@@ -36,7 +41,8 @@ if ($totalArgs < 2) {
 		$_SERVER['_'] . ' ' . $argv[0] . ' groupname=equals="alt.binaries.teevee" searchname=like="olympics 2014" postdate=bigger="5"' . $n .
 		$_SERVER['_'] . ' ' . $argv[0] . ' guid=equals="8fb5956bae3de4fb94edcc69da44d6883d586fd0"' . $n .
 		$_SERVER['_'] . ' ' . $argv[0] . ' size=smaller="104857600" size=bigger="2048" groupname=like="movies"' . $n .
-		$_SERVER['_'] . ' ' . $argv[0] . ' fromname=like="@XviD.net" groupname=equals="alt.binaries.movies.divx" ignore'
+		$_SERVER['_'] . ' ' . $argv[0] . ' fromname=like="@XviD.net" groupname=equals="alt.binaries.movies.divx" ignore' .$n .
+		$_SERVER['_'] . ' ' . $argv[0] . ' imdbid=equals=NULL categoryid=equals=2020 nzbstatus=equals=1 adddate=bigger=2880 # Remove other movie releases with non-cleaned names added > 120 days ago'
 	));
 }
 

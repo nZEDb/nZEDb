@@ -290,6 +290,9 @@ class ReleaseRemover
 			case 'codec':
 				$this->removeCodecPoster();
 				break;
+            case 'wmv':
+                $this->removeWMV();
+                break;
 			case '':
 				$this->removeBlacklist();
 				$this->removeBlacklistFiles();
@@ -304,6 +307,7 @@ class ReleaseRemover
 				$this->removeSize();
 				$this->removeHuge();
 				$this->removeCodecPoster();
+                $this->removeWMV();
 				break;
 			default:
 				$this->error = 'Wrong type: ' . $type;
@@ -928,6 +932,28 @@ class ReleaseRemover
 		return true;
 	}
 
+    /**
+	 * Remove releases that contain .wmv file, aka that spam poster.
+	 * Thanks to dizant from nZEDb forums for the sql query
+	 * @return bool
+	 */
+	protected function removeWMV()
+	{
+		$this->method = 'WMV';
+        $regex = sprintf("rf.name %s 'x264.*\.wmv$'", $this->regexp);
+		$this->query = sprintf(
+            "SELECT DISTINCT r.ID, r.searchname FROM releasefiles
+            rf INNER JOIN releases r ON (rf.releaseID = r.ID)
+            WHERE %s",
+            $regex
+		);
+
+		if ($this->checkSelectQuery() === false) {
+			return $this->returnError();
+		}
+		return $this->deleteReleases();
+	}
+
 	/**
 	 * Remove releases that contain .wmv files and Codec\Setup.exe files, aka that spam poster.
 	 * Thanks to dizant from nZEDb forums for parts of the sql query
@@ -1045,6 +1071,55 @@ class ReleaseRemover
 			$args[1] = $this->cleanSpaces($args[1]);
 			$args[2] = $this->cleanSpaces($args[2]);
 			switch ($args[0]) {
+				case 'categoryid':
+					switch ($args[1]) {
+						case 'equals':
+							return ' AND categoryID = ' . $args[2];
+						default:
+							break;
+					}
+					break;
+				case 'imdbid':
+					switch ($args[1]) {
+						case 'equals':
+							if ($args[2] === 'NULL') {
+								return ' AND imdbID IS NULL ';
+							}
+							else {
+								return ' AND imdbID = ' . $args[2];
+							}
+						default:
+							break;
+					}
+					break;
+				case 'nzbstatus':
+					switch ($args[1]) {
+						case 'equals':
+							return ' AND nzbstatus = ' . $args[2];
+						default:
+							break;
+					}
+					break;
+				case 'rageid':
+					switch ($args[1]) {
+						case 'equals':
+							return ' AND rageID = ' . $args[2];
+						default:
+							break;
+					}
+					break;
+				case 'totalpart':
+					switch ($args[1]) {
+						case 'equals':
+							return ' AND totalpart = ' . $args[2];
+						case 'bigger':
+							return ' AND totalpart > ' . $args[2];
+						case 'smaller':
+							return ' AND totalpart < ' . $args[2];
+						default:
+							break;
+					}
+					break;
 				case 'fromname':
 					switch ($args[1]) {
 						case 'equals':

@@ -1,15 +1,37 @@
 
 * Note *
 Pull requests will be accepted *only* against the dev branch.
+Please make sure any PR's comply with our coding standards policy: http://li3.me/docs/specs/accepted/LSR-0-coding.md
+
 New updates are grouped by person, at the top of the file.
+
+2014-10-20 niel
+	* New: Merged and tagged v0.4.6 to master branch.
 
 2014-10-13 niel
 	* New: Merged and tagged v0.4.5 to master branch.
+2014-10-11 niel
+	* Mrg: Merging PR 1528 from bfincher, Correct error in blacklist query by poster.
+	* Chg: Cleaning tmux startup checks, so that no messages about checks not being an error is needed.
+2014-10-10 ruhllatio
+	* Mrg: Merge dev-api into dev for nzb360 movie cover compatibility
+2014-10-10 bart39
+	* Mrg: Merge pull request #1527 from kaibosh.
 2014-10-10 niel
 	* Mrg: Merging PR 1528 from bfincher, Correct error in blacklist query by poster.
+2014-10-09 niel
+	* New: Added basic support for coverurl attribute in API output.
+2014-10-07 niel
+	* Fix: Misnamed constant. Closes issue 1522.
+2014-10-06 ruhllatio
+	* Chg: Use wordwrap instead of truncate to fix formatting issues with name/searchnames in browse, search, viewnzb
+	* Fix: Table formatting for cover views when searchnames are too large for auto column settings
+	* Fix: Movie covers not standard causing other formatting issues
 
-2014-10-06 niel
+22014-10-06 niel
 	* New: Merged and tagged v0.4.4 to master branch.
+014-10-02 bart39
+	* Mrg: Merge pull request #1518 from tasky.
 2014-09-30 ruhllatio
 	* Fix: Issue #1477 - MySQL Full-Text Search broken after implementation of Sphinx
 	* Fix: Whitespace\New line EOF (second try weirdness) and change SQL patch file perms to 0755

@@ -5,6 +5,8 @@ namespace nzedb\utility;
  * General util functions.
  * Class Util
  */
+use nzedb\db\Settings;
+
 class Utility
 {
 	/**
@@ -101,6 +103,28 @@ class Utility
 
 		return ($piece);
 	}
+
+	public static function  getCoverURL(array $options = [])
+	{
+		$defaults = [
+			'id' => null,
+			'suffix' => '-cover.jpg',
+			'type' => '',
+		];
+		$options += $defaults;
+		$fileSpecTemplate = '%s/%s%s';
+		$fileSpec = '';
+
+		if (!empty($options['id']) && in_array($options['type'],
+		   ['anime', 'audio', 'audiosample', 'book', 'console',  'games', 'movies', 'music', 'preview', 'sample', 'tvrage', 'video', 'xxx'])) {
+			$fileSpec = sprintf($fileSpecTemplate, $options['type'], $options['id'], $options['suffix']);
+			$fileSpec = file_exists(nZEDb_COVERS . $fileSpec) ? $fileSpec :
+				sprintf($fileSpecTemplate, $options['type'], 'no', $options['suffix']);
+		}
+
+		return $fileSpec;
+	}
+
 
 	/**
 	 * Get list of files/directories from supplied directory.
@@ -441,8 +465,8 @@ class Utility
 	}
 
 	/**
-	 * Return file type/info using magic.
-	 * Try using PHP's finfo_ functions, fallback on operating system file executable.
+	 * Return file type/info using magic numbers.
+	 * Try using `file` program where available, fallback to using PHP's finfo class.
 	 *
 	 * @param string $path Path to the file / folder to check.
 	 *
@@ -450,42 +474,38 @@ class Utility
 	 */
 	static public function fileInfo($path)
 	{
-		$fileInfo = false;
-		if (function_exists('finfo_open')) {
-			$fileInfo = finfo_open(FILEINFO_RAW);
-		}
-
 		$output = '';
-		if ($fileInfo) {
-
-			$output = finfo_file($fileInfo, $path);
-			if (empty($output)) {
-				$output = '';
-			}
-			finfo_close($fileInfo);
-
-		} else if (!self::isWin() && self::hasCommand('file')) {
-
-			$output = self::runCmd('file -b "' . $path . '"');
+		$magicPath = (new Settings())->getSetting('apps.indexer.magic_file_path');
+		if (self::hasCommand('file') && (!self::isWin() || !empty($magicPath))) {
+			$magicSwitch = empty($magicPath) ? '' : " -m $magicPath";
+			$output = self::runCmd('file' . $magicSwitch . ' -b "' . $path . '"');
 
 			if (is_array($output)) {
 				switch (count($output)) {
+					case 0:
+						$output = '';
 					case 1:
 						$output = $output[0];
 						break;
 					default:
 						$output = implode(' ', $output);
 						break;
-					case 0:
-						$output = '';
 				}
 			} else {
 				$output = '';
 			}
+		} else {
+			$fileInfo = empty($magicPath) ? new finfo(FILEINFO_RAW) : new finfo(FILEINFO_RAW, $magicPath);
+
+			$output = $fileInfo->file($path);
+			if (empty($output)) {
+				$output = '';
+			}
+			$fileInfo->close();
 		}
+
 		return $output;
 	}
-
 
 	/**
 	 * Run CLI command.
