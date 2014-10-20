@@ -17,7 +17,7 @@ $delaytimet = $pdo->getSetting('delaytime');
 $delaytimet = ($delaytimet) ? (int)$delaytimet : 2;
 $nntpproxy = $pdo->getSetting('nntpproxy');
 
-// Search for NNTPProxy session that might be running froma userthreaded.php run. Setup a clean environment to run in.
+// Search for NNTPProxy session that might be running from a user threaded.php run. Setup a clean environment to run in.
 $nntpkill = shell_exec("tmux list-session | grep NNTPProxy");
 if (count($nntpkill) !== 0) {
 	exec("tmux kill-session -t NNTPProxy");
@@ -26,7 +26,7 @@ if (count($nntpkill) !== 0) {
 	$sessions = shell_exec("tmux list-session");
 }
 
-	$t = new \Tmux();
+$t = new \Tmux();
 $tmux = $t->get();
 $tmux_session = (isset($tmux->tmux_session)) ? $tmux->tmux_session : 0;
 $seq = (isset($tmux->sequential)) ? $tmux->sequential : 0;
