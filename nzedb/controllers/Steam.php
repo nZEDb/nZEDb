@@ -136,14 +136,18 @@ class Steam
 			for ($i = 0; $i <= $totaldetails;) {
 				if ($textarr[$i] == "Release Date") {
 					$pregmatchdate = $textarr[$i+1];
-					if (preg_match_all('#(?P<day>[0-3]?\d)[^\d]|(?P<month>Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)|(?P<year>[12][09]\d{2})#i', $pregmatchdate, $matches)) {
+					if (preg_match_all('#(?P<day>[0-3]?\d)[^\d]|(?P<month>Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)|(?P<year>(19|20)\d{2})#i',
+									   $pregmatchdate,
+									   $matches)) {
 
-						$matches = array_map('array_filter', $matches);
-						$matches = array_map('array_values', $matches);
-						$matchday = $matches['day'][0];
-						$matchmonth = $matches['month'][0];
-						$matchyear = $matches['year'][0];
-						$textarr[$i+1] = $matchmonth . '/' . $matchday . '/' . $matchyear;
+						$matches    = array_map('array_filter', $matches);
+						$matches    = array_map('array_values', $matches);
+						$matchday   = isset($matches['day'][0]) ? $matches['day'][0] : '1';
+						$matchmonth = isset($matches['month'][0]) ? $matches['month'][0] : '';
+						$matchyear  = isset($matches['year'][0]) ? $matches['year'][0] : '';
+						if (!empty($matchday) && !empty($matchmonth) && !empty($matchyear)) {
+							$textarr[$i + 1] = $matchmonth . '/' . $matchday . '/' . $matchyear;
+						}
 					}
 				}
 				$this->_res['gamedetails'][$textarr[$i]] = $textarr[$i+1];
