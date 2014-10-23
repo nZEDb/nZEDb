@@ -1,8 +1,6 @@
 <?php
 require_once nZEDb_LIBS . 'AmazonProductAPI.php';
 
-use nzedb\db\Settings;
-
 /**
  * Class MiscSorter
  */
@@ -18,7 +16,6 @@ class MiscSorter
 	private $pdo;
 	private $category;
 	private $movie;
-	private $nfolib;
 
 	/**
 	 * @param bool $echooutput
@@ -286,7 +283,6 @@ class MiscSorter
 
 	private function moviename($nfo = '', $imdb = 0, $name = '')
 	{
-		$qual = '';
 		$tmp = array();
 
 		$qual = $this->_getVideoQuality($nfo);

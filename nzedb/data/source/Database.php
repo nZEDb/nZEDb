@@ -24,12 +24,13 @@ use \PDOException;
 use \InvalidArgumentException;
 use \UnexpectedValueException;
 
+use \nzedb\data\Source;
 use \nzedb\NetworkException;
 
 /**
  * The `Database` class provides the base-level abstraction for SQL-oriented relational databases.
  */
-abstract class Database extends \nzedb\data\Source
+abstract class Database extends Source
 {
 	/**
 	 * @var \PDO
@@ -51,9 +52,9 @@ abstract class Database extends \nzedb\data\Source
 	 *
 	 * @return Database object.
 	 */
-	public function __construct(array $config = array())
+	public function __construct(array $config = [])
 	{
-		$defaults = array(
+		$defaults = [
 			'persistent' => true,
 			'host'       => 'localhost',
 			'login'      => 'root',
@@ -61,8 +62,8 @@ abstract class Database extends \nzedb\data\Source
 			'database'   => null,
 			'encoding'   => 'utf8',
 			'dsn'        => null,
-			'options'    => array()
-		);
+			'options'    => []
+		];
 		parent::__construct($config + $defaults);
 	}
 
@@ -79,10 +80,10 @@ abstract class Database extends \nzedb\data\Source
 		}
 		$dsn = $config['dsn'];
 
-		$options = $config['options'] + array(
+		$options = $config['options'] + [
 				PDO::ATTR_PERSISTENT => $config['persistent'],
 				PDO::ATTR_ERRMODE    => PDO::ERRMODE_EXCEPTION
-			);
+			];
 
 		try {
 			$this->connection = new PDO($dsn, $config['login'], $config['password'], $options);
@@ -94,7 +95,7 @@ abstract class Database extends \nzedb\data\Source
 					$msg = "Unable to connect to host `{$config['host']}`.";
 					throw new NetworkException($msg, null, $e);
 					break;
-				case in_array($code, array('28000', '42000')):
+				case in_array($code, ['28000', '42000']):
 					$msg = "Host connected, but could not access database `{$config['database']}`.";
 					throw new RuntimeException($msg, null, $e);
 					break;
@@ -122,7 +123,7 @@ abstract class Database extends \nzedb\data\Source
 	 * @return boolean Returns `true` if the query succeeded, otherwise `false`.
 	 * @filter
 	 */
-	public function create($query, array $options = array())
+	public function create($query, array $options = [])
 	{
 	}
 
@@ -172,13 +173,13 @@ abstract class Database extends \nzedb\data\Source
 	 * @return mixed Determined by `$options['return']`.
 	 * @filter
 	 */
-	public function read($query, array $options = array())
+	public function read($query, array $options = [])
 	{
-		$defaults = array(
+		$defaults = [
 			'return' => is_string($query) ? 'array' : 'item',
 			'schema' => null,
 			'quotes' => $this->_quotes
-		);
+		];
 		$options += $defaults;
 
 		return $this->_filter(__METHOD__,
@@ -194,12 +195,12 @@ abstract class Database extends \nzedb\data\Source
 				if (is_string($query)) {
 					$sql = String::insert($query, $self->value($args));
 				} else {
-					if (!$data = $self->invokeMethod('_queryExport', array($query))) {
+					if (!$data = $self->invokeMethod('_queryExport', [$query])) {
 						return false;
 					}
 					$sql = $self->renderCommand($data['type'], $data);
 				}
-				$result = $self->invokeMethod('_execute', array($sql));
+				$result = $self->invokeMethod('_execute', [$sql]);
 
 				switch ($return) {
 					case 'resource':
@@ -208,14 +209,14 @@ abstract class Database extends \nzedb\data\Source
 						$columns = $args['schema'] ? : $self->schema($query, $result);
 
 						if (!is_array(reset($columns))) {
-							$columns = array('' => $columns);
+							$columns = ['' => $columns];
 						}
 
 						$i       = 0;
-						$records = array();
+						$records = [];
 						foreach ($result as $data) {
 							$offset      = 0;
-							$records[$i] = array();
+							$records[$i] = [];
 							foreach ($columns as $path => $cols) {
 								$len    = count($cols);
 								$values = array_combine($cols, array_slice($data, $offset, $len));
@@ -230,10 +231,10 @@ abstract class Database extends \nzedb\data\Source
 						}
 						return Set::expand($records);
 					case 'item':
-						return $model::create(array(),
-											  compact('query', 'result') + array(
+						return $model::create([],
+											  compact('query', 'result') + [
 												  'class' => 'set', 'defaults' => false
-											  ));
+											  ]);
 				}
 			});
 	}
@@ -248,7 +249,7 @@ abstract class Database extends \nzedb\data\Source
 	 *
 	 * @return mixed value with converted type
 	 */
-	public function value($value, array $schema = array())
+	public function value($value, array $schema = [])
 	{
 		if (is_array($value)) {
 			foreach ($value as $key => $val) {
@@ -277,14 +278,14 @@ abstract class Database extends \nzedb\data\Source
 	 * @param string $type   Name of the column type
 	 * @param string $value  Value to cast
 	 * @param array  $column The column definition
-	 * ~param array  $schema
+	 * @param array  $schema
 	 *
 	 * @return mixed Casted value
 	 */
-	protected function _cast($type, $value, $column, $schema = array())
+	protected function _cast($type, $value, $column, $schema = [])
 	{
-		$column += array('formatter' => null, 'format' => null);
-		$schema += array('default' => null, 'null' => false);
+		$column += ['formatter' => null, 'format' => null];
+		$schema += ['default' => null, 'null' => false];
 
 		if (is_object($value)) {
 			return $value;
@@ -322,8 +323,6 @@ abstract class Database extends \nzedb\data\Source
 	 * Provide an associative array of Closures to be used as the "formatter" key inside of the
 	 * `Database::$_columns` specification. Each Closure should return the appropriately quoted
 	 * or unquoted value and accept one or two parameters:
-	 *  - @param mixed $value to be formatted
-	 *  - @param mixed $format to apply to $value
 	 *
 	 * @see lithium\data\source\Database::$_columns
 	 * @see lithium\data\source\Database::_init()
@@ -340,11 +339,11 @@ abstract class Database extends \nzedb\data\Source
 			return $self->connection->quote($value);
 		};
 
-		return compact('datetime', 'timestamp', 'date', 'time') + array(
+		return compact('datetime', 'timestamp', 'date', 'time') + [
 			'boolean' => function ($value) {
 					return $value ? 1 : 0;
 				}
-		);
+		];
 	}
 
 	/**
@@ -373,7 +372,7 @@ abstract class Database extends \nzedb\data\Source
 				return explode('.', $field, 2);
 			}
 		}
-		return array(null, $field);
+		return [null, $field];
 	}
 
 	/**
@@ -397,7 +396,7 @@ abstract class Database extends \nzedb\data\Source
 					$sql            = $this->renderCommand('read', $data);
 					$result         = $this->_execute($sql);
 
-					$ids = array();
+					$ids = [];
 					while ($row = $result->next()) {
 						$ids[] = $row[0];
 					}
@@ -408,9 +407,9 @@ abstract class Database extends \nzedb\data\Source
 					}
 					$data['fields']     = $fields;
 					$data['limit']      = '';
-					$data['conditions'] = $this->conditions(array(
+					$data['conditions'] = $this->conditions([
 																"{$name}.{$key}" => $ids
-															),
+															],
 															$query);
 					return $data;
 				}
@@ -428,7 +427,7 @@ abstract class Database extends \nzedb\data\Source
 	 * @return boolean
 	 * @filter
 	 */
-	public function update($query, array $options = array())
+	public function update($query, array $options = [])
 	{
 		return $this->_filter(__METHOD__,
 							  compact('query', 'options'),
@@ -436,7 +435,7 @@ abstract class Database extends \nzedb\data\Source
 				$query  = $params['query'];
 				$params = $query->export($self);
 				$sql    = $self->renderCommand('update', $params, $query);
-				$result = (boolean)$self->invokeMethod('_execute', array($sql));
+				$result = (boolean)$self->invokeMethod('_execute', [$sql]);
 
 				if ($result && is_object($query) && $query->entity()) {
 					$query->entity()->sync();
@@ -456,7 +455,7 @@ abstract class Database extends \nzedb\data\Source
 	 *         deleted), otherwise `false`.
 	 * @filter
 	 */
-	public function delete($query, array $options = array())
+	public function delete($query, array $options = [])
 	{
 		return $this->_filter(__METHOD__,
 							  compact('query', 'options'),
@@ -469,10 +468,10 @@ abstract class Database extends \nzedb\data\Source
 				} else {
 					$sql = String::insert($query, $self->value($params['options']));
 				}
-				$result = (boolean)$self->invokeMethod('_execute', array($sql));
+				$result = (boolean)$self->invokeMethod('_execute', [$sql]);
 
 				if ($result && $isObject && $query->entity()) {
-					$query->entity()->sync(null, array(), array('dematerialize' => true));
+					$query->entity()->sync(null, [], ['dematerialize' => true]);
 				}
 				return $result;
 			});
@@ -485,6 +484,8 @@ abstract class Database extends \nzedb\data\Source
 	 * @param data\model\Query $query A Query instance.
 	 * @param object           $resource
 	 * @param object           $context
+	 *
+	 * @return array of fields.
 	 */
 	public function schema($query, $resource = null, $context = null)
 	{
@@ -493,7 +494,7 @@ abstract class Database extends \nzedb\data\Source
 			return $this->_schema($query, $this->_fields($query->fields(), $query));
 		}
 
-		$result = array();
+		$result = [];
 		$count  = $resource->resource()->columnCount();
 
 		for ($i = 0; $i < $count; $i++) {
@@ -508,6 +509,8 @@ abstract class Database extends \nzedb\data\Source
 	 *
 	 * @param data\model\Query $query  A Query instance.
 	 * @param array            $fields Array of formatted fields.
+	 *
+	 * @return array
 	 */
 	protected function _schema($query, $fields = null)
 	{
@@ -515,7 +518,7 @@ abstract class Database extends \nzedb\data\Source
 		$paths  = $query->paths($this);
 		$models = $query->models($this);
 		$alias  = $query->alias();
-		$result = array();
+		$result = [];
 
 		if (!$model) {
 			foreach ($fields as $field => $value) {
@@ -548,7 +551,7 @@ abstract class Database extends \nzedb\data\Source
 			unset($fields[0]);
 		}
 
-		$fields = isset($fields[$alias]) ? array($alias => $fields[$alias]) + $fields : $fields;
+		$fields = isset($fields[$alias]) ? [$alias => $fields[$alias]] + $fields : $fields;
 
 		foreach ($fields as $field => $value) {
 			if (is_array($value)) {
@@ -584,9 +587,9 @@ abstract class Database extends \nzedb\data\Source
 	 *
 	 * @return string Returns the `WHERE` clause of an SQL query.
 	 */
-	public function conditions($conditions, $context, array $options = array())
+	public function conditions($conditions, $context, array $options = [])
 	{
-		$defaults = array('prepend' => 'WHERE');
+		$defaults = ['prepend' => 'WHERE'];
 		$options += $defaults;
 		return $this->_conditions($conditions, $context, $options);
 	}
@@ -608,9 +611,9 @@ abstract class Database extends \nzedb\data\Source
 	 *
 	 * @return string Returns the `HAVING` clause of an SQL query.
 	 */
-	public function having($conditions, $context, array $options = array())
+	public function having($conditions, $context, array $options = [])
 	{
-		$defaults = array('prepend' => 'HAVING');
+		$defaults = ['prepend' => 'HAVING'];
 		$options += $defaults;
 		return $this->_conditions($conditions, $context, $options);
 	}
@@ -631,10 +634,10 @@ abstract class Database extends \nzedb\data\Source
 	 *
 	 * @return string Returns an SQL conditions clause.
 	 */
-	protected function _conditions($conditions, $context, array $options = array())
+	protected function _conditions($conditions, $context, array $options = [])
 	{
-		$defaults = array('prepend' => false);
-		$ops      = $this->_operators;
+		$defaults = ['prepend' => false];
+//		$ops      = $this->_operators;
 		$options += $defaults;
 
 		switch (true) {
@@ -645,7 +648,7 @@ abstract class Database extends \nzedb\data\Source
 			case !is_array($conditions):
 				return '';
 		}
-		$result = array();
+		$result = [];
 
 		foreach ($conditions as $key => $value) {
 			$return = $this->_processConditions($key, $value, $context);
@@ -670,7 +673,7 @@ abstract class Database extends \nzedb\data\Source
 		} elseif ($model) {
 			$schema = $model::schema();
 		}
-		$fieldMeta = $schema ? (array)$schema->fields($second) : array();
+		$fieldMeta = $schema ? (array)$schema->fields($second) : [];
 
 		switch (true) {
 			case (is_numeric($key) && is_string($value)):
@@ -688,7 +691,7 @@ abstract class Database extends \nzedb\data\Source
 				}
 				return $this->name($key) . ' IS NULL';
 			case is_numeric($key) && is_array($value):
-				$result = array();
+				$result = [];
 				foreach ($value as $cKey => $cValue) {
 					$result[] = $this->_processConditions($cKey, $cValue, $context, $schema, $glue);
 				}
@@ -697,7 +700,7 @@ abstract class Database extends \nzedb\data\Source
 				$value = trim(rtrim($this->renderCommand($value), ';'));
 				return "{$this->name($key)} IN ({$value})";
 			case is_array($value) && isset($constraintTypes[strtoupper($key)]):
-				$result = array();
+				$result = [];
 				$glue   = strtoupper($key);
 
 				foreach ($value as $cKey => $cValue) {
@@ -722,7 +725,7 @@ abstract class Database extends \nzedb\data\Source
 	 *
 	 * @return mixed Returns the operator expression string or `false` if no operator
 	 *         is applicable.
-	 * @throws A `QueryException` if the operator is not supported.
+	 * @throws QueryException if the operator is not supported.
 	 */
 	protected function _processOperator($key, $value, $fieldMeta, $glue)
 	{
@@ -735,7 +738,7 @@ abstract class Database extends \nzedb\data\Source
 				throw new QueryException("Unsupported operator `{$operator}`.");
 			}
 			foreach ($value as $op => $val) {
-				$result[] = $this->_operator($key, array($op => $val), $fieldMeta);
+				$result[] = $this->_operator($key, [$op => $val], $fieldMeta);
 			}
 			return '(' . implode(' ' . $glue . ' ', $result) . ')';
 		}
@@ -746,7 +749,7 @@ abstract class Database extends \nzedb\data\Source
 	 * Returns a string of formatted fields to be inserted into the query statement.
 	 *
 	 * @param array  $fields  Array of fields.
-	 * @param object $context Generally a `data\model\Query` instance.
+	 * @param data\model\Query $context Generally a `data\model\Query` instance.
 	 *
 	 * @return string A SQL formatted string
 	 */
@@ -763,7 +766,7 @@ abstract class Database extends \nzedb\data\Source
 		$context->applyStrategy($this);
 		$fields = $this->_fields($fields ? : $context->fields(), $context);
 		$context->map($this->_schema($context, $fields));
-		$toMerge = array();
+		$toMerge = [];
 
 		if (isset($fields[0])) {
 			foreach ($fields[0] as $val) {
@@ -772,7 +775,7 @@ abstract class Database extends \nzedb\data\Source
 			unset($fields[0]);
 		}
 
-		$fields = isset($fields[$alias]) ? array($alias => $fields[$alias]) + $fields : $fields;
+		$fields = isset($fields[$alias]) ? [$alias => $fields[$alias]] + $fields : $fields;
 
 		foreach ($fields as $field => $value) {
 			if (is_array($value)) {
@@ -802,7 +805,7 @@ abstract class Database extends \nzedb\data\Source
 	{
 		$alias  = $context->alias();
 		$models = $context->models($this);
-		$list   = array();
+		$list   = [];
 		foreach ($fields as $key => $field) {
 			if (!is_string($field)) {
 				if (isset($models[$key])) {
@@ -893,7 +896,7 @@ abstract class Database extends \nzedb\data\Source
 				$result .= ' ';
 			}
 			$join            = is_array($join) ? $this->_instance('query', $join) : $join;
-			$options['keys'] = array('mode', 'source', 'alias', 'constraints');
+			$options['keys'] = ['mode', 'source', 'alias', 'constraints'];
 			$result .= $this->renderCommand('join', $join->export($this, $options));
 		}
 		return $result;
@@ -916,9 +919,9 @@ abstract class Database extends \nzedb\data\Source
 	 *
 	 * @return string Returns the `ON` clause of an SQL query.
 	 */
-	public function constraints($constraints, $context, array $options = array())
+	public function constraints($constraints, $context, array $options = [])
 	{
-		$defaults = array('prepend' => 'ON');
+		$defaults = ['prepend' => 'ON'];
 		$options += $defaults;
 		if (is_array($constraints)) {
 			$constraints = $this->_constraints($constraints);
@@ -979,6 +982,8 @@ abstract class Database extends \nzedb\data\Source
 	 *
 	 * @param mixed  $field The field
 	 * @param object $context
+	 * @param string $clause
+	 * @param boolean $direction
 	 *
 	 * @return string Formatted clause.
 	 */
@@ -992,20 +997,20 @@ abstract class Database extends \nzedb\data\Source
 				$field     = $match[1];
 				$direction = $match[2];
 			}
-			$field = array($field => $direction);
+			$field = [$field => $direction];
 		}
 
 		if (!is_array($field) || empty($field)) {
 			return;
 		}
-		$result = array();
+		$result = [];
 
 		foreach ($field as $column => $dir) {
 			if (is_int($column)) {
 				$column = $dir;
 				$dir    = $direction;
 			}
-			$dir = in_array($dir, array('ASC', 'asc', 'DESC', 'desc')) ? " {$dir}" : $direction;
+			$dir = in_array($dir, ['ASC', 'asc', 'DESC', 'desc']) ? " {$dir}" : $direction;
 
 			if ($model && $field = $model::schema($column)) {
 				$column   = $this->name($column);
@@ -1040,18 +1045,18 @@ abstract class Database extends \nzedb\data\Source
 		return $alias ? "AS " . $this->name($alias) : null;
 	}
 
-	public function cast($entity, array $data, array $options = array())
+	public function cast($entity, array $data, array $options = [])
 	{
 		return $data;
 	}
 
 	protected function _createFields($data, $schema, $context)
 	{
-		$fields = $values = array();
+		$fields = $values = [];
 
 		foreach ($data as $field => $value) {
 			$fields[] = $this->name($field);
-			$values[] = $this->value($value, isset($schema[$field]) ? $schema[$field] : array());
+			$values[] = $this->value($value, isset($schema[$field]) ? $schema[$field] : []);
 		}
 		$fields = join(', ', $fields);
 		$values = join(', ', $values);
@@ -1060,10 +1065,10 @@ abstract class Database extends \nzedb\data\Source
 
 	protected function _updateFields($data, $schema, $context)
 	{
-		$fields = array();
+		$fields = [];
 
 		foreach ($data as $field => $value) {
-			$schema += array($field => array('default' => null));
+			$schema += [$field => ['default' => null]];
 			$fields[] = $this->name($field) . ' = ' . $this->value($value, $schema[$field]);
 		}
 		return join(', ', $fields);
@@ -1079,20 +1084,20 @@ abstract class Database extends \nzedb\data\Source
 	 *
 	 * @return string Returns an SQL string representing part of a `WHERE` clause of a query.
 	 */
-	protected function _operator($key, $value, array $schema = array(), array $options = array())
+	protected function _operator($key, $value, array $schema = [], array $options = [])
 	{
-		$defaults = array('boolean' => 'AND');
+		$defaults = ['boolean' => 'AND'];
 		$options += $defaults;
 
 		list($op, $value) = each($value);
 		$op     = strtoupper($op);
 		$config = $this->_operators[$op];
 		$key    = $this->name($key);
-		$values = array();
+		$values = [];
 
 		if (!is_object($value)) {
 			if ($value === null) {
-				$value = array(null);
+				$value = [null];
 			}
 			foreach ((array)$value as $val) {
 				$values[] = $this->value($val, $schema);
@@ -1133,9 +1138,9 @@ abstract class Database extends \nzedb\data\Source
 	 *
 	 * @return string Returns a quoted table name.
 	 */
-	protected function _entityName($entity, array $options = array())
+	protected function _entityName($entity, array $options = [])
 	{
-		$defaults = array('quoted' => false);
+		$defaults = ['quoted' => false];
 		$options += $defaults;
 
 		if (class_exists($entity, false) && method_exists($entity, 'meta')) {
@@ -1219,6 +1224,9 @@ abstract class Database extends \nzedb\data\Source
 	 *
 	 * @param array  $options The option array
 	 * @param object $context A find query object to configure
+	 *
+	 * @throws QueryException
+	 * @throws RuntimeException
 	 */
 	public function applyStrategy($options, $context)
 	{
@@ -1226,7 +1234,7 @@ abstract class Database extends \nzedb\data\Source
 			return;
 		}
 
-		$options += array('strategy' => 'joined');
+		$options += ['strategy' => 'joined'];
 		if (!$model = $context->model()) {
 			throw new RuntimeException('The `\'with\'` option need a valid `\'model\'` option.');
 		}
@@ -1250,7 +1258,7 @@ abstract class Database extends \nzedb\data\Source
 	 * @param mixed  $constraints If `$constraints` is an array, it will be merged to defaults
 	 *                            constraints. If `$constraints` is an object, defaults won't be merged.
 	 */
-	public function join($context, $rel, $fromAlias = null, $toAlias = null, $constraints = array())
+	public function join($context, $rel, $fromAlias = null, $toAlias = null, $constraints = [])
 	{
 		$model = $rel->to();
 
@@ -1268,10 +1276,10 @@ abstract class Database extends \nzedb\data\Source
 		}
 
 		$context->joins($toAlias,
-						compact('constraints', 'model') + array(
+						compact('constraints', 'model') + [
 							'mode'  => 'LEFT',
 							'alias' => $toAlias
-						));
+						]);
 	}
 
 	/**
@@ -1283,7 +1291,7 @@ abstract class Database extends \nzedb\data\Source
 	 *
 	 * @return string
 	 */
-	protected function _aliasing($name, $alias, $map = array())
+	protected function _aliasing($name, $alias, $map = [])
 	{
 		list($first, $second) = $this->_splitFieldname($name);
 		if (!$first && preg_match('/^[a-z0-9_-]+$/i', $second)) {
@@ -1298,35 +1306,35 @@ abstract class Database extends \nzedb\data\Source
 	 * Build the `ON` constraints from a `Relationship` instance
 	 *
 	 * @param object $rel         A Relationship instance
-	 * @param string $fromAlias   Set a specific alias for the `'from'` `Model`.
-	 * @param string $toAlias     Set a specific alias for `'to'` `Model`.
+	 * @param string $aliasFrom   Set a specific alias for the `'from'` `Model`.
+	 * @param string $aliasTo     Set a specific alias for `'to'` `Model`.
 	 * @param array  $constraints Array of additionnal $constraints.
 	 *
 	 * @return array A constraints array.
 	 */
-	public function on($rel, $aliasFrom = null, $aliasTo = null, $constraints = array())
+	public function on($rel, $aliasFrom = null, $aliasTo = null, $constraints = [])
 	{
 		$model = $rel->from();
 
 		$aliasFrom = $aliasFrom ? : $model::meta('name');
 		$aliasTo   = $aliasTo ? : $rel->name();
 
-		$keyConstraints = array();
+		$keyConstraints = [];
 		foreach ($rel->key() as $from => $to) {
 			$keyConstraints["{$aliasFrom}.{$from}"] = "{$aliasTo}.{$to}";
 		}
 
-		$mapAlias = array($model::meta('name') => $aliasFrom, $rel->name() => $aliasTo);
+		$mapAlias = [$model::meta('name') => $aliasFrom, $rel->name() => $aliasTo];
 
 		$relConstraints = $this->_on((array)$rel->constraints(), $aliasFrom, $aliasTo, $mapAlias);
-		$constraints    = $this->_on($constraints, $aliasFrom, $aliasTo, array());
+		$constraints    = $this->_on($constraints, $aliasFrom, $aliasTo, []);
 
 		return $constraints + $relConstraints + $keyConstraints;
 	}
 
-	protected function _on(array $constraints, $aliasFrom, $aliasTo, $mapAlias = array())
+	protected function _on(array $constraints, $aliasFrom, $aliasTo, $mapAlias = [])
 	{
-		$result = array();
+		$result = [];
 		foreach ($constraints as $key => $value) {
 			$isAliasable = (
 				!is_numeric($key) &&
@@ -1362,10 +1370,10 @@ abstract class Database extends \nzedb\data\Source
 		if (!$meta || (isset($meta['options']) && !in_array($value, $meta['options']))) {
 			return;
 		}
-		$meta += array('keyword' => '', 'escape' => false, 'join' => ' ');
+		$meta += ['keyword' => '', 'escape' => false, 'join' => ' '];
 		extract($meta);
 		if ($escape === true) {
-			$value = $this->value($value, array('type' => 'string'));
+			$value = $this->value($value, ['type' => 'string']);
 		}
 		$result = $keyword . $join . $value;
 		return $result !== ' ' ? $result : '';
@@ -1382,14 +1390,14 @@ abstract class Database extends \nzedb\data\Source
 	 */
 	protected function _constraint($name, $value, $schema = null)
 	{
-		$value += array('options' => array());
+		$value += ['options' => []];
 		$meta     = isset($this->_constraints[$name]) ? $this->_constraints[$name] : null;
 		$template = isset($meta['template']) ? $meta['template'] : null;
 		if (!$template) {
 			return;
 		}
 
-		$data = array();
+		$data = [];
 		foreach ($value as $name => $value) {
 			switch ($name) {
 				case 'key':
@@ -1406,8 +1414,8 @@ abstract class Database extends \nzedb\data\Source
 					break;
 				case 'expr':
 					if (is_array($value)) {
-						$result  = array();
-						$context = new Query(array('type' => 'none'));
+						$result  = [];
+						$context = new Query(['type' => 'none']);
 						foreach ($value as $key => $val) {
 							$return = $this->_processConditions($key, $val, $context, $schema);
 							if ($return) {
@@ -1421,18 +1429,18 @@ abstract class Database extends \nzedb\data\Source
 					break;
 				case 'toColumn':
 				case 'column':
-					$data[$name] = join(', ', array_map(array($this, 'name'), (array)$value));
+					$data[$name] = join(', ', array_map([$this, 'name'], (array)$value));
 					break;
 			}
 		}
 
-		return trim(String::insert($template, $data, array('clean' => array('method' => 'text'))));
+		return trim(String::insert($template, $data, ['clean' => ['method' => 'text']]));
 	}
 
 	/**
 	 * Create a database-native schema
 	 *
-	 * @param string $name   A table name.
+	 * @param string $source   A table name.
 	 * @param object $schema A `Schema` instance.
 	 *
 	 * @return boolean `true` on success, `true` otherwise
@@ -1444,7 +1452,7 @@ abstract class Database extends \nzedb\data\Source
 			throw new InvalidArgumentException("Passed schema is not a valid `{$class}` instance.");
 		}
 
-		$columns = array();
+		$columns = [];
 		$primary = null;
 
 		$source = $this->name($source);
@@ -1458,7 +1466,7 @@ abstract class Database extends \nzedb\data\Source
 		}
 		$columns = join(",\n", array_filter($columns));
 
-		$metas = $schema->meta() + array('table' => array(), 'constraints' => array());
+		$metas = $schema->meta() + ['table' => [], 'constraints' => []];
 
 		$constraints = $this->_buildConstraints($metas['constraints'], $schema, ",\n", $primary);
 		$table       = $this->_buildMetas('table', $metas['table']);
@@ -1473,9 +1481,10 @@ abstract class Database extends \nzedb\data\Source
 	 * @see DatabaseSchema::createSchema()
 	 * @see DatabaseSchema::_column()
 	 *
+	 * @param string $type
 	 * @param array $metas  The array of column metas.
 	 * @param array $names  If `$names` is not `null` only build meta present in `$names`
-	 * @param type  $joiner The join character
+	 * @param string $joiner The join character
 	 *
 	 * @return string The SQL constraints
 	 */
@@ -1498,8 +1507,9 @@ abstract class Database extends \nzedb\data\Source
 	 * @see DatabaseSchema::createSchema()
 	 *
 	 * @param array $constraints The array of constraints
-	 * @param type  $schema      The schema of the table
-	 * @param type  $joiner      The join character
+	 * @param string  $schema      The schema of the table
+	 * @param string  $joiner      The join character
+	 * @param boolean $primary
 	 *
 	 * @return string The SQL constraints
 	 */
@@ -1519,7 +1529,7 @@ abstract class Database extends \nzedb\data\Source
 			}
 		}
 		if ($primary) {
-			$result .= $joiner . $this->_constraint('primary', array('column' => $primary));
+			$result .= $joiner . $this->_constraint('primary', ['column' => $primary]);
 		}
 		return $result;
 	}
@@ -1527,7 +1537,7 @@ abstract class Database extends \nzedb\data\Source
 	/**
 	 * Drop a table
 	 *
-	 * @param string  $name The table name to drop.
+	 * @param string $source The table name to drop.
 	 * @param boolean $soft With "soft dropping", the function will retrun `true` even if the
 	 *                      table doesn't exists.
 	 *
@@ -1546,7 +1556,7 @@ abstract class Database extends \nzedb\data\Source
 	/**
 	 * Generate a database-native column schema string
 	 *
-	 * @param array $column A field array structured like the following:
+	 * @param array $field A field array structured like the following:
 	 *                      `array('name' => 'value', 'type' => 'value' [, options])`, where options can
 	 *                      be `'default'`, `'null'`, `'length'` or `'precision'`.
 	 *
@@ -1568,14 +1578,14 @@ abstract class Database extends \nzedb\data\Source
 
 		$field += $this->_columns[$field['type']];
 
-		$field += array(
+		$field += [
 			'name'      => null,
 			'type'      => null,
 			'length'    => null,
 			'precision' => null,
 			'default'   => null,
 			'null'      => null
-		);
+		];
 
 		$isNumeric = preg_match('/^(integer|float|boolean)$/', $field['type']);
 		if ($isNumeric && $field['default'] === '') {
