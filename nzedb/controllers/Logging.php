@@ -28,9 +28,9 @@ class Logging
 	/**
 	 * Constructor.
 	 *
-	 * @access public
+	 * @param array $options
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		$defaults = [
 			'Settings' => null,

@@ -87,6 +87,8 @@ class DB extends \PDO
 	/**
 	 * Constructor. Sets up all necessary properties. Instantiates a PDO object
 	 * if needed, otherwise returns the current one.
+	 *
+	 * @param array $options
 	 */
 	public function __construct(array $options = [])
 	{

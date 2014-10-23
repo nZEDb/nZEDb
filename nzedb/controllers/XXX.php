@@ -653,7 +653,7 @@ class XXX
 	 * @return array|null
 	 */
 	public function getAllGenres($activeOnly = false) {
-		$res = $ret = null;
+		$ret = null;
 
 		if ($activeOnly) {
 			$res = $this->pdo->query("SELECT title FROM genres WHERE disabled = 0 AND type = 6000 ORDER BY title");
