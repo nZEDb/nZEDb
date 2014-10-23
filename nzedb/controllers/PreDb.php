@@ -185,12 +185,12 @@ Class PreDb
 		if ($cats === 3) {
 			$query = sprintf('SELECT r.id AS releaseid, r.name, r.searchname, r.categoryid, r.group_id, '
 				. 'dehashstatus, rf.name AS filename FROM releases r '
-				. 'LEFT OUTER JOIN releasefiles rf ON r.id = rf.releaseid '
+				. 'LEFT OUTER JOIN release_files rf ON r.id = rf.releaseid '
 				. 'WHERE nzbstatus = 1 AND dehashstatus BETWEEN -6 AND 0 AND preid = 0 %s', $regex);
 		} else {
 			$query = sprintf('SELECT r.id AS releaseid, r.name, r.searchname, r.categoryid, r.group_id, '
 				. 'dehashstatus, rf.name AS filename FROM releases r '
-				. 'LEFT OUTER JOIN releasefiles rf ON r.id = rf.releaseid '
+				. 'LEFT OUTER JOIN release_files rf ON r.id = rf.releaseid '
 				. 'WHERE nzbstatus = 1 AND isrenamed = 0 AND dehashstatus BETWEEN -6 AND 0 %s %s %s', $regex, $ct, $tq);
 		}
 

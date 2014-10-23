@@ -501,7 +501,7 @@
 					Included in the same pane is Update Predb. This scrapes several predb sites and then tries to match
 					against releases.<br/>
 					This should be run along with fixReleasenames.php, this is faster, but only looks at releases.names.
-					fixReleasenames.php goes further and looks at releasefiles.name.
+					fixReleasenames.php goes further and looks at release_files.name.
 				</div>
 			</td>
 		</tr>

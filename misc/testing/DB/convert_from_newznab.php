@@ -92,7 +92,7 @@ echo "Resetting Collections/Binaries/Parts/PartRepair\n";
 truncateTable($pdo, $nZEDB_schema . ".collections", $runQueries);
 truncateTable($pdo, $nZEDB_schema . ".binaries", $runQueries);
 truncateTable($pdo, $nZEDB_schema . ".parts", $runQueries);
-truncateTable($pdo, $nZEDB_schema . ".partrepair", $runQueries);
+truncateTable($pdo, $nZEDB_schema . ".missed_parts", $runQueries);
 
 echo "Converting from newznab to nZEDb... This will take a while...\n\n";
 
@@ -154,13 +154,13 @@ convertTable($pdo,
 			 $nn_schema . ".content",
 			 $runQueries);
 
-echo "episodeinfo = tvrageepisodes in nZEDb\n";
+echo "episodeinfo = tvrage_episodes in nZEDb\n";
 // Convert episodeinfo to tvrageepisodes - You loose (tvdbID, imdbID, director, gueststars, overview, rating, writer, epabsolute)
 convertTable($pdo,
 			 $nZEDB_schema,
-			 "tvrageepisodes",
+			 "tvrage_episodes",
 			 "INSERT INTO " . $nZEDB_schema .
-			 ".tvrageepisodes (id, rageid, showtitle, airdate, link, fullep, eptitle) " .
+			 ".tvrage_episodes (id, rageid, showtitle, airdate, link, fullep, eptitle) " .
 			 "SELECT MIN(ID), rageID, showtitle, MIN(airdate), link, fullep, eptitle FROM " .
 			 $nn_schema . ".episodeinfo where rageID <> 0 GROUP BY rageID, fullep",
 			 $runQueries);
@@ -220,9 +220,9 @@ echo "Skipping predb table: Not in NZEDb\n";
 
 convertTable($pdo,
 			 $nZEDB_schema,
-			 "releaseaudio",
+			 "audio_data",
 			 "INSERT INTO " . $nZEDB_schema .
-			 ".releaseaudio (releaseid, audioid, audioformat, audiomode, audiobitratemode, audiobitrate, audiochannels, audiosamplerate, audiolibrary, audiolanguage, audiotitle) " .
+			 ".audio_data (releaseid, audioid, audioformat, audiomode, audiobitratemode, audiobitrate, audiochannels, audiosamplerate, audiolibrary, audiolanguage, audiotitle) " .
 			 "SELECT releaseID, audioID, audioformat, audiomode, audiobitratemode, audiobitrate, audiochannels, audiosamplerate, audiolibrary, audiolanguage, audiotitle FROM " .
 			 $nn_schema . ".releaseaudio GROUP BY releaseID",
 			 $runQueries);
@@ -230,9 +230,9 @@ convertTable($pdo,
 // You lose all spotnab additions (sourceID, gid, cid, isvisible, issynced, username).
 convertTable($pdo,
 			 $nZEDB_schema,
-			 "releasecomment",
+			 "release_comments",
 			 "INSERT INTO " . $nZEDB_schema .
-			 ".releasecomment (createddate, host, id, releaseid, text, user_id) " .
+			 ".release_comments (createddate, host, id, releaseid, text, user_id) " .
 			 "SELECT createddate, host, ID, releaseID, text, userID FROM " . $nn_schema .
 			 ".releasecomment",
 			 $runQueries);
@@ -246,17 +246,17 @@ convertTable($pdo,
 
 convertTable($pdo,
 			 $nZEDB_schema,
-			 "releasefiles",
+			 "release_files",
 			 "INSERT INTO " . $nZEDB_schema .
-			 ".releasefiles (releaseid, name, size, createddate, passworded) " .
+			 ".release_files (releaseid, name, size, createddate, passworded) " .
 			 "SELECT releaseID, name, size, createddate, passworded FROM " . $nn_schema .
 			 ".releasefiles group by releaseID",
 			 $runQueries);
 
 convertTable($pdo,
 			 $nZEDB_schema,
-			 "releasenfo",
-			 "INSERT INTO " . $nZEDB_schema . ".releasenfo (releaseid, nfo) " .
+			 "release_nfos",
+			 "INSERT INTO " . $nZEDB_schema . ".release_nfos (releaseid, nfo) " .
 			 "SELECT releaseID, nfo FROM " . $nn_schema . ".releasenfo group by releaseID",
 			 $runQueries);
 
@@ -300,17 +300,17 @@ convertTable($pdo,
 
 convertTable($pdo,
 			 $nZEDB_schema,
-			 "releasesubs",
-			 "INSERT INTO " . $nZEDB_schema . ".releasesubs (releaseid, subsid, subslanguage) " .
+			 "release_subtitles",
+			 "INSERT INTO " . $nZEDB_schema . ".release_subtitles (releaseid, subsid, subslanguage) " .
 			 "SELECT releaseID, subsID, subslanguage FROM " . $nn_schema . ".releasesubs",
 			 $runQueries);
 
 // You lose (definition).
 convertTable($pdo,
 			 $nZEDB_schema,
-			 "releasevideo",
+			 "video_data",
 			 "INSERT INTO " . $nZEDB_schema .
-			 ".releasevideo (containerformat,overallbitrate,releaseid,videoaspect,videocodec,videoduration,videoformat,videoframerate,videoheight,videolibrary,videowidth) " .
+			 ".video_data (containerformat,overallbitrate,releaseid,videoaspect,videocodec,videoduration,videoformat,videoframerate,videoheight,videolibrary,videowidth) " .
 			 "SELECT containerformat,overallbitrate,releaseID,videoaspect,videocodec,videoduration,videoformat,videoframerate, videoheight, videolibrary, videowidth FROM " .
 			 $nn_schema . ".releasevideo group by releaseID",
 			 $runQueries);
@@ -327,71 +327,71 @@ echo "Skipping thetvdb table: Not in nZEDb\n";
 
 convertTable($pdo,
 			 $nZEDB_schema,
-			 "tvrage",
+			 "tvrage_titles",
 			 "INSERT INTO " . $nZEDB_schema .
-			 ".tvrage (country, createddate, description, genre, id, imgdata, nextdate, nextinfo, prevdate, previnfo, rageid, releasetitle, tvdbid) " .
+			 ".tvrage_titles (country, createddate, description, genre, id, imgdata, nextdate, nextinfo, prevdate, previnfo, rageid, releasetitle, tvdbid) " .
 			 "SELECT country, createddate, description, genre, ID, imgdata, nextdate, nextinfo, prevdate, previnfo, rageID, releasetitle, tvdbID FROM " .
 			 $nn_schema . ".tvrage group by releasetitle",
 			 $runQueries);
 
 convertTable($pdo,
 			 $nZEDB_schema,
-			 "upcoming",
-			 "INSERT INTO " . $nZEDB_schema . ".upcoming (source, typeid, info, updateddate) " .
+			 "upcoming_releases",
+			 "INSERT INTO " . $nZEDB_schema . ".upcoming_releases (source, typeid, info, updateddate) " .
 			 "SELECT source, typeID, info, updateddate FROM " . $nn_schema . ".upcoming",
 			 $runQueries);
 
 convertTable($pdo,
 			 $nZEDB_schema,
-			 "usercart",
-			 "INSERT INTO " . $nZEDB_schema . ".usercart (user_id, releaseid, createddate) " .
+			 "users_releases",
+			 "INSERT INTO " . $nZEDB_schema . ".users_releases (user_id, releaseid, createddate) " .
 			 "SELECT userID, releaseID, createddate FROM " . $nn_schema . ".usercart",
 			 $runQueries);
 
 // You lose (hosthash, releaseID).
 convertTable($pdo,
 			 $nZEDB_schema,
-			 "userdownloads",
-			 "INSERT INTO " . $nZEDB_schema . ".userdownloads (id, timestamp, user_id) " .
+			 "user_downloads",
+			 "INSERT INTO " . $nZEDB_schema . ".user_downloads (id, timestamp, user_id) " .
 			 "SELECT ID, timestamp, userID FROM " . $nn_schema . ".userdownloads",
 			 $runQueries);
 
 convertTable($pdo,
 			 $nZEDB_schema,
-			 "userexcat",
-			 "INSERT INTO " . $nZEDB_schema . ".userexcat (user_id, categoryid, createddate) " .
+			 "user_excluded_categories",
+			 "INSERT INTO " . $nZEDB_schema . ".user_excluded_categories (user_id, categoryid, createddate) " .
 			 "SELECT userID, categoryID, createddate FROM " . $nn_schema . ".userexcat",
 			 $runQueries);
 
 convertTable($pdo,
 			 $nZEDB_schema,
-			 "userinvite",
-			 "INSERT INTO " . $nZEDB_schema . ".userinvite (guid, user_id, createddate) " .
+			 "invitations",
+			 "INSERT INTO " . $nZEDB_schema . ".invitations (guid, user_id, createddate) " .
 			 "SELECT guid, userID, createddate FROM " . $nn_schema . ".userinvite",
 			 $runQueries);
 
 convertTable($pdo,
 			 $nZEDB_schema,
-			 "usermovies",
+			 "user_movies",
 			 "INSERT INTO " . $nZEDB_schema .
-			 ".usermovies (user_id, imdbid, categoryid, createddate) " .
+			 ".user_movies (user_id, imdbid, categoryid, createddate) " .
 			 "SELECT userID, imdbID, categoryID, createddate FROM " . $nn_schema . ".usermovies",
 			 $runQueries);
 
 // You lose (hosthash).
 convertTable($pdo,
 			 $nZEDB_schema,
-			 "userrequests",
-			 "INSERT INTO " . $nZEDB_schema . ".userrequests (id, request, timestamp, user_id) " .
+			 "user_requests",
+			 "INSERT INTO " . $nZEDB_schema . ".user_requests (id, request, timestamp, user_id) " .
 			 "SELECT ID, request, timestamp, userID FROM " . $nn_schema . ".userrequests",
 			 $runQueries);
 
 // You lose (canpre).
 convertTable($pdo,
 			 $nZEDB_schema,
-			 "userroles",
+			 "user_roles",
 			 "INSERT IGNORE INTO " . $nZEDB_schema .
-			 ".userroles (apirequests, canpreview, defaultinvites, downloadrequests, id, isdefault, name) " .
+			 ".user_roles (apirequests, canpreview, defaultinvites, downloadrequests, id, isdefault, name) " .
 			 "SELECT apirequests, canpreview, defaultinvites, downloadrequests, ID, isdefault, name FROM " .
 			 $nn_schema . ".userroles",
 			 $runQueries);
@@ -408,9 +408,9 @@ convertTable($pdo,
 
 convertTable($pdo,
 			 $nZEDB_schema,
-			 "userseries",
+			 "user_series",
 			 "INSERT INTO " . $nZEDB_schema .
-			 ".userseries (user_id, rageid, categoryid, createddate) " .
+			 ".user_series (user_id, rageid, categoryid, createddate) " .
 			 "SELECT userID, rageID, categoryID, createddate FROM " . $nn_schema . ".userseries",
 			 $runQueries);
 

@@ -37,7 +37,7 @@ class ReleaseSearch
 				break;
 			case self::FULLTEXT:
 			default:
-			$this->fullTextJoinString = 'INNER JOIN releasesearch rs on rs.releaseid = r.id';
+			$this->fullTextJoinString = 'INNER JOIN release_search_data rs on rs.releaseid = r.id';
 				break;
 		}
 

@@ -195,11 +195,11 @@ class Nfo
 	{
 		if ($release['id'] > 0 && $this->isNFO($nfo, $release['guid'])) {
 
-			$check = $this->pdo->queryOneRow(sprintf('SELECT id FROM releasenfo WHERE releaseid = %d', $release['id']));
+			$check = $this->pdo->queryOneRow(sprintf('SELECT id FROM release_nfos WHERE releaseid = %d', $release['id']));
 
 			if ($check === false) {
 				$this->pdo->queryInsert(
-					sprintf('INSERT INTO releasenfo (nfo, releaseid) VALUES (compress(%s), %d)',
+					sprintf('INSERT INTO release_nfos (nfo, releaseid) VALUES (compress(%s), %d)',
 						$this->pdo->escapeString($nfo),
 						$release['id']
 					)
@@ -347,9 +347,9 @@ class Nfo
 					$cp = 'COMPRESS(%s)';
 					$nc = $this->pdo->escapeString($fetchedBinary);
 
-					$ckreleaseid = $this->pdo->queryOneRow(sprintf('SELECT id FROM releasenfo WHERE releaseid = %d', $arr['id']));
+					$ckreleaseid = $this->pdo->queryOneRow(sprintf('SELECT id FROM release_nfos WHERE releaseid = %d', $arr['id']));
 					if (!isset($ckreleaseid['id'])) {
-						$this->pdo->queryInsert(sprintf('INSERT INTO releasenfo (nfo, releaseid) VALUES (' . $cp . ', %d)', $nc, $arr['id']));
+						$this->pdo->queryInsert(sprintf('INSERT INTO release_nfos (nfo, releaseid) VALUES (' . $cp . ', %d)', $nc, $arr['id']));
 					}
 					$this->pdo->queryExec(sprintf('UPDATE releases SET nfostatus = %d WHERE id = %d', self::NFO_FOUND, $arr['id']));
 					$ret++;
@@ -393,7 +393,7 @@ class Nfo
 		if ($releases instanceof Traversable) {
 			foreach ($releases as $release) {
 				$this->pdo->queryExec(
-					sprintf('DELETE FROM releasenfo WHERE nfo IS NULL AND releaseid = %d', $release['id'])
+					sprintf('DELETE FROM release_nfos WHERE nfo IS NULL AND releaseid = %d', $release['id'])
 				);
 			}
 		}
