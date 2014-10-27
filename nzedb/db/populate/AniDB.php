@@ -148,7 +148,7 @@ class AniDB
 			echo "AniDB: Error getting response." . PHP_EOL;
 		} elseif (preg_match("/\<error\>Banned\<\/error\>/", $apiresponse)) {
 			$this->banned = true;
-			$this->pdo->setSetting(['APIs.AniDB.banned'], time());
+			$this->pdo->setSetting(['APIs.AniDB.banned' => time()]);
 		} elseif (preg_match("/\<error\>Anime not found\<\/error\>/", $apiresponse)) {
 			echo "AniDB   : Anime not yet on site. Remove until next update.\n";
 		} elseif ($AniDBAPIXML = new \SimpleXMLElement($apiresponse)) {
