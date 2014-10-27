@@ -6,7 +6,7 @@ New updates are grouped by person, at the top of the file.
 
 
 2014-10-27 niel
-	* Chg: Database table renaming to bring our schema closer inline with our naming conventions. Still some to do.
+	* Chg: Database table renaming to bring our schema more inline with our naming conventions. Still some to do.
 2014-10-25 bart39
 	* Fix: Missing parameter for binaries.php in /threaded/start.sh
 2014-10-23 niel
