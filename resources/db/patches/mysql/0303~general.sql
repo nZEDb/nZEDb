@@ -1,4 +1,3 @@
-RENAME TABLE menu TO menu_items;
 RENAME TABLE partrepair TO missed_parts;
 RENAME TABLE releaseaudio TO release_audio;
 RENAME TABLE releasecomment TO release_comments;

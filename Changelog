@@ -7,6 +7,7 @@ New updates are grouped by person, at the top of the file.
 
 2014-10-27 niel
 	* Chg: Database table renaming to bring our schema more inline with our naming conventions. Still some to do.
+	!!NOTE!! Db updates may take a long time, depending on your ammount of releases
 2014-10-25 bart39
 	* Fix: Missing parameter for binaries.php in /threaded/start.sh
 2014-10-23 niel
