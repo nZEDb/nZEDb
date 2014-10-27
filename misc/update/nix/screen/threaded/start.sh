@@ -35,7 +35,7 @@ do
 
 	cd ${THREAD_PATH}
 		echo "Start Multi-Processing binaries.php..."
-	$PHP ${THREAD_PATH}/binaries.php
+	$PHP ${THREAD_PATH}/binaries.php 0
 		echo "Start Multi-Processing backfill.php..."
 	$PHP ${THREAD_PATH}/backfill.php
 

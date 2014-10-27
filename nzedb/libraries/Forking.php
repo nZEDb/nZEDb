@@ -1,6 +1,7 @@
 <?php
 namespace nzedb\libraries;
 
+use \nzedb\db\Settings;
 use \nzedb\processing\PostProcess;
 
 require_once(nZEDb_LIBS . 'forkdaemon-php' . DS . 'fork_daemon.php');
@@ -87,7 +88,7 @@ class Forking extends \fork_daemon
 		$this->work = [];
 
 		// Init Settings here, as forking causes errors when it's destroyed.
-		$this->pdo = new \nzedb\db\Settings();
+		$this->pdo = new Settings();
 
 		// Process extra work that should not be forked and done before forking.
 		$this->processStartWork();
@@ -368,7 +369,7 @@ class Forking extends \fork_daemon
 				$geteach = $count / $run[0]['maxmsgs'];
 			}
 
-			$queue = array();
+			$queue = [];
 			for ($i = 0; $i <= $geteach - 1; $i++) {
 				$queue[$i] = sprintf("get_range  backfill  %s  %s  %s  %s", $data['name'], $data['our_first'] - $i * $run[0]['maxmsgs'] - $run[0]['maxmsgs'], $data['our_first'] - $i * $run[0]['maxmsgs'] - 1, $i + 1);
 			}
@@ -427,7 +428,7 @@ class Forking extends \fork_daemon
 
 		if ($groups) {
 			$i = 1;
-			$queue = array();
+			$queue = [];
 			foreach ($groups as $group) {
 				if ($group['our_last'] == 0) {
 					$queue[$i] = sprintf("update_group_headers  %s", $group['groupname']);
@@ -529,7 +530,7 @@ class Forking extends \fork_daemon
 
 		if ($datas) {
 			$count = 0;
-			$queue = array();
+			$queue = [];
 			foreach ($datas as $firstguid) {
 				if ($count >= $threads) {
 					$count = 0;
