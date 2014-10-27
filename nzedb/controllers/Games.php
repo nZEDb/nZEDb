@@ -550,8 +550,19 @@ class Games
 					}
 
 					if (!empty($this->_gameResults['gamedetails']['Release Date'])) {
-						$date = \DateTime::createFromFormat('M/j/Y', $this->_gameResults['gamedetails']['Release Date']);
-						$con['releasedate'] = (string)$date->format('Y-m-d');
+						$dateReleased = $this->_gameResults['gamedetails']['Release Date'];
+						if (!preg_match('#^\s*(?P<month>\w+)\s+(?P<day>\d{1,2}),?\s+(?P<year>\d{4})\s*$#',
+										$dateReleased)) {
+							if (preg_match('#^\s*(?P<month>\w+)\s+(?P<year>\d{4})\s*$#',
+												$dateReleased, $matches)) {
+								$dateReleased = "{$matches['month']} 1, {$matches['year']}";
+							}
+						}
+
+						$date = \DateTime::createFromFormat('M/j/Y', $dateReleased);
+						if ($date instanceof \DateTime) {
+							$con['releasedate'] = (string)$date->format('Y-m-d');
+						}
 					}
 
 					if (isset($this->_gameResults['description'])) {

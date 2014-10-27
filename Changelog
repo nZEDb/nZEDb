@@ -5,8 +5,13 @@ Please make sure any PR's comply with our coding standards policy: http://li3.me
 
 New updates are grouped by person, at the top of the file.
 
+2014-10-27 niel
+	* New: Merged and tagged v0.4.7 to master branch.
+
 2014-10-20 niel
 	* New: Merged and tagged v0.4.6 to master branch.
+2014-10-15 niel
+	* Fix: Issue 1526. Preventing empty path being used for checking permissions for sessionSavePath.
 
 2014-10-13 niel
 	* New: Merged and tagged v0.4.5 to master branch.
