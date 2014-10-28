@@ -65,11 +65,11 @@ elif len(sys.argv) > 1 and sys.argv[1] == "miscsorter":
 	cur[0].execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur[0].fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "filename"):
-	run = "SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE nzbstatus = 1 AND proc_files = 0 AND" + clean + "ORDER BY postdate ASC LIMIT %s"
+	run = "SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN release_files relfiles ON (relfiles.releaseid = rel.id) WHERE nzbstatus = 1 AND proc_files = 0 AND" + clean + "ORDER BY postdate ASC LIMIT %s"
 	cur[0].execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur[0].fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "md5"):
-	run = "SELECT DISTINCT rel.id FROM releases rel LEFT OUTER JOIN releasefiles rf ON rel.id = rf.releaseid AND rf.ishashed = 1 WHERE nzbstatus = 1 AND rel.dehashstatus BETWEEN -6 AND 0 AND rel.ishashed = 1 AND preid = 0 ORDER BY dehashstatus DESC, postdate ASC LIMIT %s"
+	run = "SELECT DISTINCT rel.id FROM releases rel LEFT OUTER JOIN release_files rf ON rel.id = rf.releaseid AND rf.ishashed = 1 WHERE nzbstatus = 1 AND rel.dehashstatus BETWEEN -6 AND 0 AND rel.ishashed = 1 AND preid = 0 ORDER BY dehashstatus DESC, postdate ASC LIMIT %s"
 	cur[0].execute(run, (int(perrun[0])*int(run_threads[0])))
 	datas = cur[0].fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "par2"):
