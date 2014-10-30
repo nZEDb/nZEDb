@@ -4,6 +4,8 @@ Please make sure any PR's comply with our coding standards policy: http://li3.me
 
 New updates are grouped by person, at the top of the file.
 
+2014-01-30 niel
+	* Fix: Correcting some output fornatting for amazon lookups.
 2014-10-28 niel
 	* Fix: Incorrectly changed table releaseaudio to release_audio, when it should have been audio_data.
 2014-10-27 niel

@@ -551,7 +551,7 @@ class Books
 			if ($this->echooutput) {
 				$this->pdo->log->doEcho(
 					$this->pdo->log->header('Nothing to update: ') .
-					$this->pdo->log->header($book['author'] .
+					$this->pdo->log->primary($book['author'] .
 						' - ' .
 						$book['title'])
 				);

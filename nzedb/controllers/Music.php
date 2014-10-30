@@ -509,7 +509,7 @@ class Music
 				}
 				$this->pdo->log->doEcho(
 					$this->pdo->log->headerOver("Nothing to update: ") .
-					$this->pdo->log->primaryOver(
+					$this->pdo->log->primary(
 						$artist .
 						$mus['title'] .
 						" (" .

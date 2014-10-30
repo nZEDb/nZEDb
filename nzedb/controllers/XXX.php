@@ -527,7 +527,7 @@ class XXX
 
 		if ($this->echooutput) {
 			$this->pdo->log->doEcho(
-				$this->pdo->log->headerOver(($xxxID !== false ? 'Added/updated XXX movie: ' : 'Nothing to update for XXX movie: ')) .
+				$this->pdo->log->headerOver(($xxxID !== false ? 'Added/updated XXX movie: ' : 'Nothing to update: ')) .
 				$this->pdo->log->primary($mov['title'])
 			);
 		}
