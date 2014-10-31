@@ -1121,14 +1121,14 @@ CREATE TRIGGER check_update BEFORE UPDATE ON releases FOR EACH ROW
     END IF;
   END; $$
 
-CREATE TRIGGER check_rfinsert BEFORE INSERT ON releasefiles FOR EACH ROW
+CREATE TRIGGER check_rfinsert BEFORE INSERT ON release_files FOR EACH ROW
   BEGIN
     IF NEW.name REGEXP '[a-fA-F0-9]{32}'
       THEN SET NEW.ishashed = 1;
     END IF;
   END; $$
 
-CREATE TRIGGER check_rfupdate BEFORE UPDATE ON releasefiles FOR EACH ROW
+CREATE TRIGGER check_rfupdate BEFORE UPDATE ON release_files FOR EACH ROW
   BEGIN
     IF NEW.name REGEXP '[a-fA-F0-9]{32}'
       THEN SET NEW.ishashed = 1;
