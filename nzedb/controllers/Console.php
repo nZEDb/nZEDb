@@ -526,6 +526,7 @@ class Console
 	 *
 	 * @param string $platform
 	 *
+	 * @return string
 	**/
 	protected function _replacePlatform($platform)
 	{

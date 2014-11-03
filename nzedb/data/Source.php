@@ -42,9 +42,9 @@ abstract class Source
 	 *
 	 * @return Source object
 	 */
-	public function __construct(array $config = array())
+	public function __construct(array $config = [])
 	{
-		$defaults = array('autoConnect' => true);
+		$defaults = ['autoConnect' => true];
 		$this->_config = $config + $defaults;
 		$this->_init();
 	}
@@ -72,10 +72,14 @@ abstract class Source
 	 * Checks the connection status of this data source. If the `'autoConnect'` option is set to
 	 * true and the source connection is not currently active, a connection attempt will be made
 	 * before returning the result of the connection status.
+	 *
+	 * @param array $options
+	 *
+	 * @return bool
 	 */
-	public function isConnected(array $options = array())
+	public function isConnected(array $options = [])
 	{
-		$defaults = array('autoConnect' => false);
+		$defaults = ['autoConnect' => false];
 		$options += $defaults;
 
 		if (!$this->_isConnected && $options['autoConnect']) {
@@ -135,7 +139,7 @@ abstract class Source
 	 *         field, containing the following keys:
 	 *         - `'type'`: The field type name
 	 */
-	abstract public function describe($entity, $schema = array(), array $meta = array());
+	abstract public function describe($entity, $schema = [], array $meta = []);
 
 	/**
 	 * Create a record. This is the abstract method that is implemented by specific data sources.
@@ -154,7 +158,7 @@ abstract class Source
 	 *
 	 * @return boolean Returns true if the operation was a success, otherwise false.
 	 */
-	abstract public function create($query, array $options = array());
+	abstract public function create($query, array $options = []);
 
 	/**
 	 * Abstract. Must be defined by child classes.
@@ -164,7 +168,7 @@ abstract class Source
 	 *
 	 * @return boolean Returns true if the operation was a success, otherwise false.
 	 */
-	abstract public function delete($query, array $options = array());
+	abstract public function delete($query, array $options = []);
 
 	/**
 	 * Abstract. Must be defined by child classes.
@@ -174,7 +178,7 @@ abstract class Source
 	 *
 	 * @return boolean Returns true if the operation was a success, otherwise false.
 	 */
-	abstract public function read($query, array $options = array());
+	abstract public function read($query, array $options = []);
 
 	/**
 	 * Updates a set of records in a concrete data store.
@@ -187,7 +191,7 @@ abstract class Source
 	 *
 	 * @return boolean Returns true if the update operation was a success, otherwise false.
 	 */
-	abstract public function update($query, array $options = array());
+	abstract public function update($query, array $options = []);
 }
 
 ?>

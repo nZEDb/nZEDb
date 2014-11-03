@@ -1,12 +1,14 @@
 <?php
 namespace nzedb\utility;
 
+
+use \nzedb\db\Settings;
+
+
 /*
  * General util functions.
  * Class Util
  */
-use nzedb\db\Settings;
-
 class Utility
 {
 	/**
@@ -32,7 +34,7 @@ class Utility
 			preg_replace('/\s{2,}/',
 				' ',
 				// Replace all literal and non literal new lines and carriage returns.
-				str_replace(array("\n", '\n', "\r", '\r'), ' ', $text)
+				str_replace(["\n", '\n', "\r", '\r'], ' ', $text)
 			)
 		);
 	}
@@ -326,7 +328,7 @@ class Utility
 	{
 		$versions = self::getValidVersionsFile();
 
-		$pdo = new \nzedb\db\Settings();
+		$pdo = new Settings();
 		$patch = $pdo->getSetting(['section' => '', 'subsection' => '', 'name' => 'sqlpatch']);
 		$ver = $versions->versions->sql->file;
 
@@ -484,6 +486,7 @@ class Utility
 				switch (count($output)) {
 					case 0:
 						$output = '';
+						break;
 					case 1:
 						$output = $output[0];
 						break;

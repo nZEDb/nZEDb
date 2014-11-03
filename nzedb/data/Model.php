@@ -20,28 +20,30 @@
  */
 namespace nzedb\data;
 
-class Model extends \nzedb\StaticObject
+use \nzedb\StaticObject;
+
+class Model extends StaticObject
 {
 	/**
 	 * Model belongsTo relations.
 	 *
 	 * @var array
 	 */
-	public $belongsTo = array();
+	public $belongsTo = [];
 
 	/**
 	 * Model hasOne relations.
 	 *
 	 * @var array
 	 */
-	public $hasOne = array();
+	public $hasOne = [];
 
 	/**
 	 * Model hasMany relations.
 	 *
 	 * @var array
 	 */
-	public $hasMany = array();
+	public $hasMany = [];
 
 	/**
 	 * Criteria for data validation.
@@ -59,7 +61,7 @@ class Model extends \nzedb\StaticObject
 	 *
 	 * @var array
 	 */
-	public $validates = array();
+	public $validates = [];
 
 
 	/**
@@ -70,23 +72,23 @@ class Model extends \nzedb\StaticObject
 	 * @see lithium\data\Model::config()
 	 * @var array
 	 */
-	protected $_autoConfig = array(
+	protected $_autoConfig = [
 		'meta',
 		'finders',
 		'query',
 		'schema',
 		'classes',
 		'initializers'
-	);
+	];
 
 	/**
 	 * Class dependencies.
 	 *
 	 * @var array
 	 */
-	protected $_classes = array(
+	protected $_classes = [
 		'connections' => 'lithium\data\Connections'
-	);
+	];
 
 	/**
 	 * Custom find query properties, indexed by name.
@@ -94,7 +96,7 @@ class Model extends \nzedb\StaticObject
 	 * @see lithium\data\Model::finder()
 	 * @var array
 	 */
-	protected $_finders = array();
+	protected $_finders = [];
 
 	/**
 	 * List of initialized instances.
@@ -102,28 +104,28 @@ class Model extends \nzedb\StaticObject
 	 * @see lithium\data\Model::_initialize();
 	 * @var array
 	 */
-	protected static $_initialized = array();
+	protected static $_initialized = [];
 
 	/**
 	 * Array of closures used to lazily initialize metadata.
 	 *
 	 * @var array
 	 */
-	protected $_initializers = array();
+	protected $_initializers = [];
 
 	/**
 	 * Stores all custom instance methods created by `Model::instanceMethods`.
 	 *
 	 * @var array
 	 */
-	protected static $_instanceMethods = array();
+	protected static $_instanceMethods = [];
 
 	/**
 	 * Stores the filters that are applied to the model instances stored in `Model::$_instances`.
 	 *
 	 * @var array
 	 */
-	protected $_instanceFilters = array();
+	protected $_instanceFilters = [];
 
 	/**
 	 * Stores model instances for internal use.
@@ -135,7 +137,7 @@ class Model extends \nzedb\StaticObject
 	 *
 	 * @var array
 	 */
-	protected static $_instances = array();
+	protected static $_instances = [];
 
 	/**
 	 * Specifies all meta-information for this model class, including the name of the data source it
@@ -155,13 +157,13 @@ class Model extends \nzedb\StaticObject
 	 * @var array
 	 * @see lithium\data\Connections::add()
 	 */
-	protected $_meta = array(
+	protected $_meta = [
 		'name'       => null,
 		'title'      => null,
 		'class'      => null,
 		'source'     => null,
 		'connection' => 'default'
-	);
+	];
 
 	/**
 	 * Default query parameters for the model finders.
@@ -177,21 +179,21 @@ class Model extends \nzedb\StaticObject
 	 *
 	 * @var array
 	 */
-	protected $_query = array(
+	protected $_query = [
 		'conditions' => null,
 		'fields'     => null,
 		'order'      => null,
 		'limit'      => null,
 		'page'       => null,
-		'with'       => array()
-	);
+		'with'       => []
+	];
 
 	/**
 	 * Matching between relation's fieldnames and their corresponding relation name.
 	 *
 	 * @var array
 	 */
-	protected $_relationFieldNames = array();
+	protected $_relationFieldNames = [];
 
 	/**
 	 * List of relation types.
@@ -204,21 +206,21 @@ class Model extends \nzedb\StaticObject
 	 *
 	 * @var array
 	 */
-	protected $_relationTypes = array('belongsTo', 'hasOne', 'hasMany');
+	protected $_relationTypes = ['belongsTo', 'hasOne', 'hasMany'];
 
 	/**
 	 * A list of the current relation types for this `Model`.
 	 *
 	 * @var array
 	 */
-	protected $_relations = array();
+	protected $_relations = [];
 
 	/**
 	 * Store available relation names for this model which still unloaded.
 	 *
 	 * @var array This array use the following notation : `relation_name => relation_type`.
 	 */
-	protected $_relationsToLoad = array();
+	protected $_relationsToLoad = [];
 
 	/**
 	 * Stores the data schema.
@@ -278,7 +280,7 @@ class Model extends \nzedb\StaticObject
 	 * @see lithium\data\source\MongoDb::$_schema
 	 * @var array
 	 */
-	protected $_schema = array();
+	protected $_schema = [];
 
 	/**
 	 * Holds an array of attributes to be inherited.
@@ -286,7 +288,7 @@ class Model extends \nzedb\StaticObject
 	 * @see lithium\data\Model::_inherited()
 	 * @var array
 	 */
-	protected $_inherits = array();
+	protected $_inherits = [];
 
 
 	/**
@@ -298,6 +300,8 @@ class Model extends \nzedb\StaticObject
 	 * @param string $method Method name caught by `__call()`.
 	 * @param array  $params Arguments given to the above `$method` call.
 	 *
+	 * @throws \BadMethodCallException
+	 *
 	 * @return mixed
 	 */
 	public function __call($method, $params)
@@ -307,7 +311,7 @@ class Model extends \nzedb\StaticObject
 			return call_user_func_array($methods[$method], $params);
 		}
 		$message = "Unhandled method call `{$method}`.";
-		throw new BadMethodCallException($message);
+		throw new \BadMethodCallException($message);
 	}
 
 	/**
@@ -329,14 +333,14 @@ class Model extends \nzedb\StaticObject
 		$isFinder = isset($self->_finders[$method]);
 
 		if ($isFinder && count($params) === 2 && is_array($params[1])) {
-			$params = array($params[1] + array($method => $params[0]));
+			$params = [$params[1] + [$method => $params[0]]];
 		}
 
 		if ($method === 'all' || $isFinder) {
 			if ($params && !is_array($params[0])) {
-				$params[0] = array('conditions' => static::key($params[0]));
+				$params[0] = ['conditions' => static::key($params[0])];
 			}
-			return $self::find($method, $params ? $params[0] : array());
+			return $self::find($method, $params ? $params[0] : []);
 		}
 		preg_match('/^findBy(?P<field>\w+)$|^find(?P<type>\w+)By(?P<fields>\w+)$/', $method, $args);
 
@@ -349,7 +353,7 @@ class Model extends \nzedb\StaticObject
 		$type    = isset($args['type']) ? $args['type'] : 'first';
 		$type[0] = strtolower($type[0]);
 
-		$conditions = array($field => array_shift($params));
+		$conditions = [$field => array_shift($params)];
 		$params     = (isset($params[0]) && count($params) === 1) ? $params[0] : $params;
 		return $self::find($type, compact('conditions') + $params);
 	}
@@ -366,7 +370,7 @@ class Model extends \nzedb\StaticObject
 	 *                      - `schema`: A `Schema` instance for this model.
 	 *                      - `classes`: Classes used by this model.
 	 */
-	public static function config(array $config = array())
+	public static function config(array $config = [])
 	{
 		if (($class = get_called_class()) === __CLASS__) {
 			return;
@@ -409,21 +413,21 @@ class Model extends \nzedb\StaticObject
 
 		$self->_inherit();
 
-		$source = array(
-			'classes' => array(), 'meta' => array(), 'finders' => array(), 'schema' => array()
-		);
+		$source = [
+			'classes' => [], 'meta' => [], 'finders' => [], 'schema' => []
+		];
 
 		$meta = $self->_meta;
 		if ($meta['connection']) {
 			$classes = $self->_classes;
 			$conn    = $classes['connections']::get($meta['connection']);
-			$source  = (($conn) ? $conn->configureClass($class) : array()) + $source;
+			$source  = (($conn) ? $conn->configureClass($class) : []) + $source;
 		}
 
 		$self->_classes += $source['classes'];
 		$self->_meta = compact('class') + $self->_meta + $source['meta'];
 
-		$self->_initializers += array(
+		$self->_initializers += [
 			'name'   => function ($self) {
 					return basename(str_replace('\\', '/', $self));
 				},
@@ -431,11 +435,11 @@ class Model extends \nzedb\StaticObject
 					return Inflector::tableize($self::meta('name'));
 				},
 			'title'  => function ($self) {
-					$titleKeys = array('title', 'name');
+					$titleKeys = ['title', 'name'];
 					$titleKeys = array_merge($titleKeys, (array)$self::meta('key'));
 					return $self::hasField($titleKeys);
 				}
-		);
+		];
 
 		if (is_object($self->_schema)) {
 			$self->_schema->append($source['schema']);
@@ -445,11 +449,11 @@ class Model extends \nzedb\StaticObject
 
 		$self->_finders += $source['finders'] + $self->_findFilters();
 
-		$self->_classes += array(
+		$self->_classes += [
 			'query'     => 'lithium\data\model\Query',
 			'validator' => 'lithium\util\Validator',
 			'entity'    => 'lithium\data\Entity'
-		);
+		];
 
 		static::_relationsToLoad();
 		return $self;
@@ -461,7 +465,7 @@ class Model extends \nzedb\StaticObject
 	protected function _inherit()
 	{
 
-		$inherited = array_fill_keys($this->_inherited(), array());
+		$inherited = array_fill_keys($this->_inherited(), []);
 
 		foreach (static::_parents() as $parent) {
 			$parentConfig = get_class_vars($parent);
@@ -491,11 +495,13 @@ class Model extends \nzedb\StaticObject
 	 * Return inherited attributes.
 	 *
 	 * @param array
+	 *
+	 * @return array
 	 */
 	protected function _inherited()
 	{
 		return array_merge($this->_inherits,
-						   array(
+						   [
 							   'validates',
 							   'belongsTo',
 							   'hasMany',
@@ -506,7 +512,7 @@ class Model extends \nzedb\StaticObject
 							   '_schema',
 							   '_classes',
 							   '_initializers'
-						   ));
+						   ]);
 	}
 
 	/**
@@ -519,7 +525,7 @@ class Model extends \nzedb\StaticObject
 	 *
 	 * @return object
 	 */
-	protected static function _instance($name, array $options = array())
+	protected static function _instance($name, array $options = [])
 	{
 		$self = static::_object();
 		if (is_string($name) && isset($self->_classes[$name])) {
@@ -577,10 +583,10 @@ class Model extends \nzedb\StaticObject
 	 * @return mixed
 	 * @filter This method can be filtered.
 	 */
-	public static function find($type, array $options = array())
+	public static function find($type, array $options = [])
 	{
 		$self   = static::_object();
-		$finder = array();
+		$finder = [];
 
 		if ($type === null) {
 			return null;
@@ -597,16 +603,16 @@ class Model extends \nzedb\StaticObject
 		}
 
 		$options = (array)$options + (array)$self->_query;
-		$meta    = array('meta' => $self->_meta, 'name' => get_called_class());
+		$meta    = ['meta' => $self->_meta, 'name' => get_called_class()];
 		$params  = compact('type', 'options');
 
 		$filter = function ($self, $params) use ($meta) {
-			$options = $params['options'] + array('type' => 'read', 'model' => $meta['name']);
-			$query   = $self::invokeMethod('_instance', array('query', $options));
+			$options = $params['options'] + ['type' => 'read', 'model' => $meta['name']];
+			$query   = $self::invokeMethod('_instance', ['query', $options]);
 			return $self::connection()->read($query, $options);
 		};
 		if (is_string($type) && isset($self->_finders[$type])) {
-			$finder = is_callable($self->_finders[$type]) ? array($self->_finders[$type]) : array();
+			$finder = is_callable($self->_finders[$type]) ? [$self->_finders[$type]] : [];
 		}
 		return static::_filter(__FUNCTION__, $params, $filter, $finder);
 	}
@@ -689,7 +695,7 @@ class Model extends \nzedb\StaticObject
 	{
 		if (!$key) {
 			$all  = array_keys($this->_initializers);
-			$call = array(&$this, '_getMetaKey');
+			$call = [&$this, '_getMetaKey'];
 			return $all ? array_combine($all, array_map($call, $all)) + $this->_meta : $this->_meta;
 		}
 
@@ -749,11 +755,11 @@ class Model extends \nzedb\StaticObject
 		}
 
 		if (!is_array($values) && !is_array($key)) {
-			return array($key => $values);
+			return [$key => $values];
 		}
 
 		$key    = (array)$key;
-		$result = array();
+		$result = [];
 		foreach ($key as $value) {
 			if (!isset($values[$value])) {
 				return null;
@@ -778,9 +784,9 @@ class Model extends \nzedb\StaticObject
 	protected static function _key($key, $values, $entity)
 	{
 		if (isset($values->$key)) {
-			return array($key => $values->$key);
+			return [$key => $values->$key];
 		} elseif (!$values instanceof $entity) {
-			return array($key => $values);
+			return [$key => $values];
 		}
 		return null;
 	}
@@ -845,7 +851,7 @@ class Model extends \nzedb\StaticObject
 			foreach ($self->_relationsToLoad as $name => $t) {
 				static::bind($t, $name, (array)$self->{$t}[$name]);
 			}
-			$self->_relationsToLoad = array();
+			$self->_relationsToLoad = [];
 			return $self->_relations;
 		}
 		foreach ($self->_relationsToLoad as $name => $t) {
@@ -873,9 +879,11 @@ class Model extends \nzedb\StaticObject
 	 * @param array  $config Any other configuration that should be specified in the relationship.
 	 *                       See the `Relationship` class for more information.
 	 *
+	 * @throws ConfigException
+	 *
 	 * @return object Returns an instance of the `Relationship` class that defines the connection.
 	 */
-	public static function bind($type, $name, array $config = array())
+	public static function bind($type, $name, array $config = [])
 	{
 		$self = static::_object();
 		if (!isset($config['fieldName'])) {
@@ -902,6 +910,8 @@ class Model extends \nzedb\StaticObject
 	 *                     one field. Otherwise, an array containing all fields is returned. If `false`, the
 	 *                     schema is reset to an empty value. If an array, field definitions contained are
 	 *                     appended to the schema.
+	 *
+	 * @throws ConfigException
 	 *
 	 * @return array
 	 */
@@ -991,9 +1001,9 @@ class Model extends \nzedb\StaticObject
 	 *         `'default'` key of each field defined in `$_schema`.
 	 * @filter
 	 */
-	public static function create(array $data = array(), array $options = array())
+	public static function create(array $data = [], array $options = [])
 	{
-		$defaults = array('defaults' => true, 'class' => 'entity');
+		$defaults = ['defaults' => true, 'class' => 'entity'];
 		$options += $defaults;
 		return static::_filter(__FUNCTION__,
 							   compact('data', 'options'),
@@ -1005,8 +1015,8 @@ class Model extends \nzedb\StaticObject
 				} else {
 					$data = $params['data'];
 				}
-				$options = array('model' => $self, 'data' => $data) + $params['options'];
-				return $self::invokeMethod('_instance', array($class, $options));
+				$options = ['model' => $self, 'data' => $data] + $params['options'];
+				return $self::invokeMethod('_instance', [$class, $options]);
 			});
 	}
 
@@ -1032,10 +1042,10 @@ class Model extends \nzedb\StaticObject
 		$class = get_called_class();
 
 		if (!isset(static::$_instanceMethods[$class])) {
-			static::$_instanceMethods[$class] = array();
+			static::$_instanceMethods[$class] = [];
 		}
-		if ($methods === array()) {
-			return static::$_instanceMethods[$class] = array();
+		if ($methods === []) {
+			return static::$_instanceMethods[$class] = [];
 		}
 		if (!is_null($methods)) {
 			static::$_instanceMethods[$class] = $methods + static::$_instanceMethods[$class];
@@ -1106,19 +1116,19 @@ class Model extends \nzedb\StaticObject
 	 * @return boolean Returns `true` on a successful save operation, `false` on failure.
 	 * @filter
 	 */
-	public function save($entity, $data = null, array $options = array())
+	public function save($entity, $data = null, array $options = [])
 	{
 		$self    = static::_object();
-		$_meta   = array('model' => get_called_class()) + $self->_meta;
+		$_meta   = ['model' => get_called_class()] + $self->_meta;
 		$_schema = $self->schema();
 
-		$defaults = array(
+		$defaults = [
 			'validate'  => true,
 			'events'    => $entity->exists() ? 'update' : 'create',
 			'whitelist' => null,
 			'callbacks' => true,
 			'locked'    => $self->_meta['locked']
-		);
+		];
 		$options += $defaults;
 		$params = compact('entity', 'data', 'options');
 
@@ -1143,7 +1153,7 @@ class Model extends \nzedb\StaticObject
 
 			$type      = $entity->exists() ? 'update' : 'create';
 			$queryOpts = compact('type', 'whitelist', 'entity') + $options + $_meta;
-			$query     = $self::invokeMethod('_instance', array('query', $queryOpts));
+			$query     = $self::invokeMethod('_instance', ['query', $queryOpts]);
 			return $self::connection()->{$type}($query, $options);
 		};
 
@@ -1198,13 +1208,13 @@ class Model extends \nzedb\StaticObject
 	 *         the entity, and accessible through the `errors()` method of the entity object.
 	 * @filter
 	 */
-	public function validates($entity, array $options = array())
+	public function validates($entity, array $options = [])
 	{
-		$defaults = array(
+		$defaults = [
 			'rules'  => $this->validates,
 			'events' => $entity->exists() ? 'update' : 'create',
 			'model'  => get_called_class()
-		);
+		];
 		$options += $defaults;
 		$self      = static::_object();
 		$validator = $self->_classes['validator'];
@@ -1234,7 +1244,7 @@ class Model extends \nzedb\StaticObject
 	 * @return boolean Success.
 	 * @filter
 	 */
-	public function delete($entity, array $options = array())
+	public function delete($entity, array $options = [])
 	{
 		$params = compact('entity', 'options');
 
@@ -1242,10 +1252,10 @@ class Model extends \nzedb\StaticObject
 							   $params,
 			function ($self, $params) {
 				$options =
-					$params + $params['options'] + array('model' => $self, 'type' => 'delete');
+					$params + $params['options'] + ['model' => $self, 'type' => 'delete'];
 				unset($options['options']);
 
-				$query = $self::invokeMethod('_instance', array('query', $options));
+				$query = $self::invokeMethod('_instance', ['query', $options]);
 				return $self::connection()->delete($query, $options);
 			});
 	}
@@ -1266,7 +1276,7 @@ class Model extends \nzedb\StaticObject
 	 * @return boolean Returns `true` if the update operation succeeded, otherwise `false`.
 	 * @filter
 	 */
-	public static function update($data, $conditions = array(), array $options = array())
+	public static function update($data, $conditions = [], array $options = [])
 	{
 		$params = compact('data', 'conditions', 'options');
 
@@ -1274,10 +1284,10 @@ class Model extends \nzedb\StaticObject
 							   $params,
 			function ($self, $params) {
 				$options =
-					$params + $params['options'] + array('model' => $self, 'type' => 'update');
+					$params + $params['options'] + ['model' => $self, 'type' => 'update'];
 				unset($options['options']);
 
-				$query = $self::invokeMethod('_instance', array('query', $options));
+				$query = $self::invokeMethod('_instance', ['query', $options]);
 				return $self::connection()->update($query, $options);
 			});
 	}
@@ -1297,7 +1307,7 @@ class Model extends \nzedb\StaticObject
 	 * @return boolean Returns `true` if the remove operation succeeded, otherwise `false`.
 	 * @filter
 	 */
-	public static function remove($conditions = array(), array $options = array())
+	public static function remove($conditions = [], array $options = [])
 	{
 		$params = compact('conditions', 'options');
 
@@ -1305,10 +1315,10 @@ class Model extends \nzedb\StaticObject
 							   $params,
 			function ($self, $params) {
 				$options =
-					$params['options'] + $params + array('model' => $self, 'type' => 'delete');
+					$params['options'] + $params + ['model' => $self, 'type' => 'delete'];
 				unset($options['options']);
 
-				$query = $self::invokeMethod('_instance', array('query', $options));
+				$query = $self::invokeMethod('_instance', ['query', $options]);
 				return $self::connection()->delete($query, $options);
 			});
 	}
@@ -1319,6 +1329,8 @@ class Model extends \nzedb\StaticObject
 	 *
 	 * @return object Returns an instance of `lithium\data\Source` from the connection configuration
 	 *         to which this model is bound.
+	 *
+	 * @throws ConfigException
 	 */
 	public static function &connection()
 	{
@@ -1347,14 +1359,14 @@ class Model extends \nzedb\StaticObject
 		$instance = static::_object();
 
 		if ($method === false) {
-			$instance->_instanceFilters = array();
+			$instance->_instanceFilters = [];
 			return;
 		}
 		$methods = (array)$method;
 
 		foreach ($methods as $method) {
 			if (!isset($instance->_instanceFilters[$method]) || $closure === false) {
-				$instance->_instanceFilters[$method] = array();
+				$instance->_instanceFilters[$method] = [];
 			}
 			if ($closure !== false) {
 				$instance->_instanceFilters[$method][] = $closure;
@@ -1374,7 +1386,7 @@ class Model extends \nzedb\StaticObject
 	 *
 	 * @return object
 	 */
-	protected static function _filter($method, $params, $callback, $filters = array())
+	protected static function _filter($method, $params, $callback, $filters = [])
 	{
 		if (!strpos($method, '::')) {
 			$method = get_called_class() . '::' . $method;
@@ -1452,7 +1464,7 @@ class Model extends \nzedb\StaticObject
 		$self   = static::_object();
 		$_query = $self->_query;
 
-		return array(
+		return [
 			'first' => function ($self, $params, $chain) {
 					$options          =& $params['options'];
 					$options['limit'] = 1;
@@ -1467,7 +1479,7 @@ class Model extends \nzedb\StaticObject
 					return $data ? : null;
 				},
 			'list'  => function ($self, $params, $chain) {
-					$result = array();
+					$result = [];
 					$meta   = $self::meta();
 					$name   = $meta['key'];
 
@@ -1483,15 +1495,15 @@ class Model extends \nzedb\StaticObject
 					$options = array_diff_key($params['options'], $_query);
 
 					if ($options && !isset($params['options']['conditions'])) {
-						$options = array('conditions' => $options);
+						$options = ['conditions' => $options];
 					} else {
 						$options = $params['options'];
 					}
-					$options += array('type' => 'read') + compact('model');
-					$query = $self::invokeMethod('_instance', array('query', $options));
+					$options += ['type' => 'read'] + compact('model');
+					$query = $self::invokeMethod('_instance', ['query', $options]);
 					return $self::connection()->calculation('count', $query, $options);
 				}
-		);
+		];
 	}
 
 	/**

@@ -1,12 +1,12 @@
 <?php
 
-require_once dirname(__FILE__) . '/../www/config.php';
+require_once dirname(dirname(dirname(__DIR__))) . '/www/config.php';
 
 $output = new \ColorCLI();
 echo $output->primary("Checking for files in the renamed directories.");
 $status = 0;
 
-$dirs = array(
+$dirs = [
 	[
 		'old' => 'misc/testing/DB_scripts',
 		'newpath' => 'misc/testing/DB'
@@ -67,7 +67,7 @@ $dirs = array(
 		'old' => 'misc/update_scripts',
 		'newpath' => 'misc/update'
 	],
-);
+];
 
 $tatus = 0;
 foreach ($dirs as $dir) {

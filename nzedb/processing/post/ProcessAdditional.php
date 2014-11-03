@@ -45,7 +45,7 @@ Class ProcessAdditional
 	protected $_release;
 
 	/**
-	 * @var NZB
+	 * @var \NZB
 	 */
 	protected $_nzb;
 
@@ -56,17 +56,17 @@ Class ProcessAdditional
 	protected $_nzbContents;
 
 	/**
-	 * @var Groups
+	 * @var \Groups
 	 */
 	protected $_groups;
 
 	/**
-	 * @var Par2Info
+	 * @var \Par2Info
 	 */
 	protected $_par2Info;
 
 	/**
-	 * @var ArchiveInfo
+	 * @var \ArchiveInfo
 	 */
 	protected $_archiveInfo;
 
@@ -151,37 +151,37 @@ Class ProcessAdditional
 	protected $_echoCLI;
 
 	/**
-	 * @var NNTP
+	 * @var \NNTP
 	 */
 	protected $_nntp;
 
 	/**
-	 * @var ReleaseFiles
+	 * @var \ReleaseFiles
 	 */
 	protected $_releaseFiles;
 
 	/**
-	 * @var Categorize
+	 * @var \Categorize
 	 */
 	protected $_categorize;
 
 	/**
-	 * @var NameFixer
+	 * @var \NameFixer
 	 */
 	protected $_nameFixer;
 
 	/**
-	 * @var ReleaseExtra
+	 * @var \ReleaseExtra
 	 */
 	protected $_releaseExtra;
 
 	/**
-	 * @var ReleaseImage
+	 * @var \ReleaseImage
 	 */
 	protected $_releaseImage;
 
 	/**
-	 * @var Nfo
+	 * @var \Nfo
 	 */
 	protected $_nfo;
 
@@ -448,7 +448,7 @@ Class ProcessAdditional
 		}
 
 		if (!is_dir($this->_mainTmpPath)) {
-			throw new \ProcessAdditionalException('Could create the tmpunrar folder (' . $this->_mainTmpPath . ')');
+			throw new ProcessAdditionalException('Could not create the tmpunrar folder (' . $this->_mainTmpPath . ')');
 		}
 
 		$this->_clearMainTmpPath();
@@ -487,8 +487,7 @@ Class ProcessAdditional
 	{
 		$this->_releases = $this->pdo->query(
 			sprintf(
-				'
-				SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.group_id, r.nfostatus, r.completion, r.categoryid, r.searchname, r.preid
+				'SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.group_id, r.nfostatus, r.completion, r.categoryid, r.searchname, r.preid
 				FROM releases r
 				LEFT JOIN category c ON c.id = r.categoryid
 				WHERE r.nzbstatus = 1
@@ -692,7 +691,7 @@ Class ProcessAdditional
 			return false;
 		}
 
-		$nzbContents = \nzedb\utility\Utility::unzipGzipFile($nzbPath);
+		$nzbContents = Utility::unzipGzipFile($nzbPath);
 
 		// Get a list of files in the nzb.
 		$this->_nzbContents = $this->_nzb->nzbFileList($nzbContents);
@@ -835,6 +834,7 @@ Class ProcessAdditional
 		$failed = $downloaded = 0;
 		// Loop through the files, attempt to find if password-ed and files. Starting with what not to process.
 		foreach ($this->_nzbContents as $nzbFile) {
+			// TODO change this to max calculated size, as segments vary in size greatly.
 			if ($downloaded >= $this->_maximumRarSegments) {
 				break;
 			} else if ($failed >= $this->_maximumRarPasswordChecks) {
@@ -1186,7 +1186,7 @@ Class ProcessAdditional
 
 					// Check file's magic info.
 					else {
-						$output = \nzedb\utility\Utility::fileInfo($file);
+						$output = Utility::fileInfo($file);
 						if (!empty($output)) {
 
 							switch (true) {
@@ -1538,7 +1538,7 @@ Class ProcessAdditional
 	 * @param string $pattern Regex, optional
 	 * @param string $path    Path to the folder (if empty, uses $this->tmpPath)
 	 *
-	 * @return Iterator Object|bool
+	 * @return \Iterator Object|bool
 	 */
 	protected function _getTempDirectoryContents($pattern = '', $path = '')
 	{
@@ -1559,7 +1559,7 @@ Class ProcessAdditional
 					new \RecursiveDirectoryIterator($path)
 				);
 			}
-		} catch (exception $e) {
+		} catch (\Exception $e) {
 			$this->_debug('ERROR: Could not open temp dir: ' . $e->getMessage() . PHP_EOL);
 			return false;
 		}
@@ -1623,7 +1623,7 @@ Class ProcessAdditional
 				if (is_array($xmlArray)) {
 
 					// Convert to array.
-					$arrXml = \nzedb\utility\Utility::objectsIntoArray(@simplexml_load_string(implode("\n", $xmlArray)));
+					$arrXml = Utility::objectsIntoArray(@simplexml_load_string(implode("\n", $xmlArray)));
 
 					if (isset($arrXml['File']['track'])) {
 
@@ -2240,8 +2240,7 @@ Class ProcessAdditional
 					// Update the release with the data.
 					$this->pdo->queryExec(
 						sprintf(
-							'
-							UPDATE releases
+							'UPDATE releases
 							SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL,
 								tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL,
 								consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, preid = 0,

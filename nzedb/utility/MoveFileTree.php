@@ -33,13 +33,16 @@ class MoveFileTree
 	private $rItIt;
 
 	/**
-	 * Constructor
+	 *
 	 *
 	 * @param type $source A filepath to a valid directory, or an array of valid
-	 *			filepaths (not neccessarily in the same directory).
+	 *                     filepaths (not neccessarily in the same directory).
 	 * @param type $target A valid directory that the files and directories will
-	 *			be moved to.
+	 *                     be moved to.
+	 * @param bool $moveSourceBase
+	 *
 	 * @throws \UnexpectedValueException
+	 *
 	 */
 	function __construct($source, $target, $moveSourceBase = true)
 	{
@@ -119,7 +122,7 @@ class MoveFileTree
 
 	protected function _enumerateSource($filespec)
 	{
-		$this->_dirs = $this->_files = $files = $dirs = array();
+		$this->_dirs = $this->_files = $files = $dirs = [];
 		$this->rItIt = new \RecursiveIteratorIterator(
 			new \RecursiveDirectoryIterator(
 				$filespec,

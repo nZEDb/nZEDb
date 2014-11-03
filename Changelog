@@ -5,8 +5,19 @@ Please make sure any PR's comply with our coding standards policy: http://li3.me
 
 New updates are grouped by person, at the top of the file.
 
+2014-11-03 niel
+	* New: Merged and tagged v0.4.8 to master branch.
+
 2014-10-27 niel
 	* New: Merged and tagged v0.4.7 to master branch.
+2014-10-25 bart39
+	* Fix: Missing parameter for binaries.php in /threaded/start.sh
+2014-10-23 niel
+	* Fix: page_contents and forum_posts tables were not being filled during install step 2.
+2014-10-20 niel
+	* Fix: Copied couple javascripts over to alpha theme from Default, to fix the Sending to NZBGet issue some users were having.
+	NOTE: This is a temporary fix! Someone with better understanding of the alpha theme (kevin?) needs to take a proper look at this.
+	* Fix: Adding sanity checking for game's release dates.
 
 2014-10-20 niel
 	* New: Merged and tagged v0.4.6 to master branch.

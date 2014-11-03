@@ -1,8 +1,6 @@
 <?php
 namespace nzedb\utility;
 
-use nzedb\db\Settings;
-
 if (!defined('GIT_PRE_COMMIT')) {
 	define('GIT_PRE_COMMIT', false);
 }
@@ -51,7 +49,9 @@ class Versions
 	/**
 	 * Class constructor initialises the SimpleXML object and sets a few properties.
 	 * @param string $filepath Optional filespec for the XML file to use. Will use default otherwise.
+	 *
 	 * @throws \Exception If the XML is invalid.
+	 * @throws \RuntimeException If version file does not exist.
 	 */
 	public function __construct($filepath = null)
 	{

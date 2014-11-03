@@ -20,7 +20,9 @@
  */
 namespace nzedb\db;
 
-use nzedb\utility\Utility;
+use \nzedb\db\Settings;
+use \nzedb\utility\Git;
+use \nzedb\utility\Utility;
 
 
 class DbUpdate
@@ -60,18 +62,18 @@ class DbUpdate
 
 	public function __construct(array $options = [])
 	{
-		$defaults = array(
+		$defaults = [
 			'backup' => true,
 			'db'     => null,
-			'git'    => new \nzedb\utility\Git(),
+			'git'    => new Git(),
 			'logger' => new \ColorCLI(),
-		);
+		];
 		$options += $defaults;
 		unset($defaults);
 
 		$this->backup = $options['backup'];
 		$this->pdo    = (is_a($options['db'], '\nzedb\db\Settings')
-			? $options['db'] : new \nzedb\db\Settings());
+			? $options['db'] : new Settings());
 		$this->git    = $options['git'];
 		$this->log    = $options['logger'];
 
@@ -79,7 +81,7 @@ class DbUpdate
 			// If $pdo is an instance of Settings, reuse it to save resources.
 			$this->settings =& $this->pdo;
 		} else {
-			$this->settings = new \nzedb\db\Settings();
+			$this->settings = new Settings();
 		}
 
 		$this->_DbSystem = strtolower($this->pdo->dbSystem());
@@ -141,6 +143,8 @@ class DbUpdate
 	 * patch. <table> should be the name of the primary table affected. If you have to modify more
 	 * than one table, consider splitting into multiple patches using different patch modifier
 	 * numbers to order them. i.e. +1~settings.sql, +2~predb.sql, etc.
+	 *
+	 * @param array $options
 	 */
 	public function newPatches(array $options = [])
 	{

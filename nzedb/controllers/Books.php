@@ -257,8 +257,6 @@ class Books
 
 	public function getBrowseBy()
 	{
-		$like = 'LIKE';
-
 		$browseby = ' ';
 		$browsebyArr = $this->getBrowseByOptions();
 		foreach ($browsebyArr as $bbk => $bbv) {
