@@ -7,7 +7,7 @@ use nzedb\db\Settings;
 $reorg = nZEDb_MISC . 'testing' . DS . 'DB' . DS . 'nzb-reorg.php';
 $pdo = new Settings();
 $level = $pdo->getSetting('nzbsplitlevel');
-$nzbpath = $site->nzbpath;
+$nzbpath = $pdo->getSetting('nzbpath');
 
 if (!isset($argv[1])) {
 	exit("WARNING: Run convert_from_newznab.php BEFORE running this script.\nUsage php copy_from_newznab.php path_to_newznab_base\n");
