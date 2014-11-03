@@ -146,7 +146,7 @@ while ($runVar['counts']['iterations'] > 0) {
 		$partitions = $pdo->queryDirect(
 			sprintf("
 				SELECT SUM(TABLE_ROWS) AS count, PARTITION_NAME AS category
-				FROM INFORMATION_SCHEMA.PARTITIONS
+				FROM information_schema.PARTITIONS
 				WHERE TABLE_NAME = 'releases'
 				AND TABLE_SCHEMA = %s
 				GROUP BY PARTITION_NAME",
@@ -191,14 +191,14 @@ while ($runVar['counts']['iterations'] > 0) {
 
 			if ($tables instanceof \Traversable) {
 				foreach ($tables as $row) {
-					$cntsql = '';
+//					$cntsql = '';
 
 					$tbl = $row['name'];
 					$stamp = 'UNIX_TIMESTAMP(MIN(dateadded))';
 					$orderlim = '';
 					$cntsql = sprintf('
 							SELECT TABLE_ROWS AS count
-							FROM INFORMATION_SCHEMA.TABLES
+							FROM information_schema.TABLES
 							WHERE TABLE_NAME = %s
 							AND TABLE_SCHEMA = %s',
 							$pdo->escapeString($tbl),

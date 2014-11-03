@@ -425,7 +425,7 @@ class ReleaseRemover
 		$this->query = sprintf(
 			"SELECT r.guid, r.searchname, r.id
 			FROM releases r
-			INNER JOIN releasefiles rf ON rf.releaseid = r.id
+			INNER JOIN release_files rf ON rf.releaseid = r.id
 			WHERE r.searchname NOT LIKE %s
 			AND rf.name LIKE %s
 			AND r.categoryid NOT IN (%d, %d, %d, %d, %d) %s",
@@ -457,7 +457,7 @@ class ReleaseRemover
 		$this->query = sprintf(
 			"SELECT r.guid, r.searchname, r.id
 			FROM releases r
-			INNER JOIN releasefiles rf ON rf.releaseid = r.id
+			INNER JOIN release_files rf ON rf.releaseid = r.id
 			WHERE rf.name LIKE %s %s",
 			"'%install.bin%'",
 			$this->crapTime
@@ -481,7 +481,7 @@ class ReleaseRemover
 		$this->query = sprintf(
 			"SELECT r.guid, r.searchname, r.id
 			FROM releases r
-			INNER JOIN releasefiles rf ON rf.releaseid = r.id
+			INNER JOIN release_files rf ON rf.releaseid = r.id
 			WHERE rf.name LIKE %s %s",
 			"'%password.url%'",
 			$this->crapTime
@@ -651,7 +651,7 @@ class ReleaseRemover
 		$this->query = sprintf(
 			"SELECT r.guid, r.searchname, r.id
 			FROM releases r
-			LEFT JOIN releasefiles rf on rf.releaseid = r.id
+			LEFT JOIN release_files rf on rf.releaseid = r.id
 			WHERE (rf.name REGEXP '[.]scr[$ \"]' OR r.name REGEXP '[.]scr[$ \"]')
 			%s",
 			$this->crapTime
@@ -832,7 +832,7 @@ class ReleaseRemover
 				);
 
 				if ($opTypeName == 'Subject') {
-					$join = (nZEDb_RELEASE_SEARCH_TYPE == \ReleaseSearch::SPHINX ? 'INNER JOIN releases_se rse ON rse.id = r.id' : 'INNER JOIN releasesearch rs ON rs.releaseid = r.id');
+					$join = (nZEDb_RELEASE_SEARCH_TYPE == \ReleaseSearch::SPHINX ? 'INNER JOIN releases_se rse ON rse.id = r.id' : 'INNER JOIN release_search_data rs ON rs.releaseid = r.id');
 				} else {
 					$join = '';
 				}
@@ -883,7 +883,7 @@ class ReleaseRemover
 
 			foreach ($allRegex as $regex) {
 
-				$regexSQL = sprintf("LEFT JOIN releasefiles rf ON r.id = rf.releaseid
+				$regexSQL = sprintf("LEFT JOIN release_files rf ON r.id = rf.releaseid
 				WHERE rf.name REGEXP %s ", $this->pdo->escapeString($regex['regex'])
 				);
 
@@ -985,12 +985,12 @@ class ReleaseRemover
 			\Category::CAT_XXX_OTHER
 		);
 		$codeclike = sprintf("UNION SELECT r.guid, r.searchname, r.id FROM releases r
-			LEFT JOIN releasefiles rf ON r.id = rf.releaseid
+			LEFT JOIN release_files rf ON r.id = rf.releaseid
 			WHERE %s rf.name LIKE '%s' OR rf.name LIKE '%s' OR rf.name LIKE '%s' OR rf.name LIKE '%s' OR rf.name LIKE '%s' OR rf.name LIKE '%s'", $categories, $codec, $iferror, $ifnotplaying, $frenchv, $nl, $german
 		);
 		$this->query = sprintf(
 			"SELECT r.guid, r.searchname, r.id FROM releases
-			r INNER JOIN releasefiles rf ON (rf.releaseid = r.id)
+			r INNER JOIN release_files rf ON (rf.releaseid = r.id)
 			WHERE %s %s OR %s %s %s %s", $categories, $regex, $regex2, $this->crapTime, $codeclike, $this->crapTime
 		);
 
