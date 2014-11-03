@@ -22,7 +22,7 @@ if (!isset($argv[1])) {
 								SELECT r.id AS releaseid, r.guid, r.group_id, r.categoryid, r.name, r.searchname,
 									uncompress(nfo) AS textstring
 								FROM releases r
-								INNER JOIN releasenfo rn ON r.id = rn.releaseid
+								INNER JOIN release_nfos rn ON r.id = rn.releaseid
 								WHERE r.guid %s
 								AND r.nzbstatus = 1
 								AND r.proc_nfo = 0
@@ -58,7 +58,7 @@ if (!isset($argv[1])) {
 								SELECT rf.name AS textstring, rf.releaseid AS fileid,
 									r.id AS releaseid, r.name, r.searchname, r.categoryid, r.group_id
 								FROM releases r
-								INNER JOIN releasefiles rf ON r.id = rf.releaseid
+								INNER JOIN release_files rf ON r.id = rf.releaseid
 								WHERE r.guid %s
 								AND r.nzbstatus = 1 AND r.proc_files = 0
 								AND r.preid = 0
@@ -85,7 +85,7 @@ if (!isset($argv[1])) {
 								SELECT DISTINCT r.id AS releaseid, r.name, r.searchname, r.categoryid, r.group_id, r.dehashstatus,
 									rf.name AS filename
 								FROM releases r
-								LEFT OUTER JOIN releasefiles rf ON r.id = rf.releaseid AND rf.ishashed = 1
+								LEFT OUTER JOIN release_files rf ON r.id = rf.releaseid AND rf.ishashed = 1
 								WHERE r.guid %s
 								AND nzbstatus = 1 AND r.ishashed = 1
 								AND r.dehashstatus BETWEEN -6 AND 0

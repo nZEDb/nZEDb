@@ -411,7 +411,7 @@ class Tmux
 				return sprintf("
 					SELECT
 					(SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE table_name = 'predb' AND TABLE_SCHEMA = %1\$s) AS predb,
-					(SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE table_name = 'partrepair' AND TABLE_SCHEMA = %1\$s) AS partrepair_table,
+					(SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE table_name = 'missed_parts' AND TABLE_SCHEMA = %1\$s) AS partrepair_table,
 					(SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE table_name = 'parts' AND TABLE_SCHEMA = %1\$s) AS parts_table,
 					(SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE table_name = 'binaries' AND TABLE_SCHEMA = %1\$s) AS binaries_table,
 					(SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE table_name = 'collections' AND TABLE_SCHEMA = %1\$s) AS collections_table,

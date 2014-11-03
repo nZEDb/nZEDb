@@ -171,7 +171,7 @@ Class Sharing
 		$newComments = $this->pdo->query(
 			sprintf(
 				'SELECT rc.text, rc.id, %s, u.username, r.nzb_guid
-				FROM releasecomment rc
+				FROM release_comments rc
 				INNER JOIN users u ON rc.user_id = u.id
 				INNER JOIN releases r on rc.releaseid = r.id
 				WHERE rc.shared = 0 LIMIT %d',
@@ -212,7 +212,7 @@ Class Sharing
 		$sid = sha1($row['unix_time'] . $row['text'] . $row['nzb_guid']);
 
 		// Check if the comment is already shared.
-		$check = $this->pdo->queryOneRow(sprintf('SELECT id FROM releasecomment WHERE shareid = %s', $this->pdo->escapeString($sid)));
+		$check = $this->pdo->queryOneRow(sprintf('SELECT id FROM release_comments WHERE shareid = %s', $this->pdo->escapeString($sid)));
 		if ($check === false) {
 
 			// Example of a subject.
@@ -240,7 +240,7 @@ Class Sharing
 				// Update DB to say we posted the article.
 				$this->pdo->queryExec(
 					sprintf('
-						UPDATE releasecomment
+						UPDATE release_comments
 						SET shared = 1, shareid = %s
 						WHERE id = %d',
 						$this->pdo->escapeString($sid),
@@ -253,7 +253,7 @@ Class Sharing
 			}
 		} else {
 			// Update the DB to say it's shared.
-			$this->pdo->queryExec(sprintf('UPDATE releasecomment SET shared = 1 WHERE id = %d', $row['id']));
+			$this->pdo->queryExec(sprintf('UPDATE release_comments SET shared = 1 WHERE id = %d', $row['id']));
 		}
 	}
 
@@ -267,7 +267,7 @@ Class Sharing
 		$res = $this->pdo->query('
 			SELECT r.id, r.nzb_guid
 			FROM releases r
-			INNER JOIN releasecomment rc ON rc.nzb_guid = r.nzb_guid
+			INNER JOIN release_comments rc ON rc.nzb_guid = r.nzb_guid
 			WHERE rc.releaseid = 0'
 		);
 
@@ -276,7 +276,7 @@ Class Sharing
 			foreach ($res as $row) {
 				$this->pdo->queryExec(
 					sprintf(
-						"UPDATE releasecomment SET releaseid = %d WHERE nzb_guid = %s",
+						"UPDATE release_comments SET releaseid = %d WHERE nzb_guid = %s",
 						$row['id'],
 						$this->pdo->escapeString($row['nzb_guid'])
 					)
@@ -290,7 +290,7 @@ Class Sharing
 
 		// Update first time seen.
 		$siteTimes = $this->pdo->queryDirect(
-			'SELECT createddate, siteid FROM releasecomment WHERE createddate > \'2005-01-01\' GROUP BY siteid ORDER BY createddate ASC'
+			'SELECT createddate, siteid FROM release_comments WHERE createddate > \'2005-01-01\' GROUP BY siteid ORDER BY createddate ASC'
 		);
 		if ($siteTimes instanceof \Traversable && $siteTimes->rowCount()) {
 			foreach ($siteTimes as $site) {
@@ -390,7 +390,7 @@ Class Sharing
 
 				// Check if we already have the comment.
 				$check = $this->pdo->queryOneRow(
-					sprintf('SELECT id FROM releasecomment WHERE shareid = %s',
+					sprintf('SELECT id FROM release_comments WHERE shareid = %s',
 						$this->pdo->escapeString($matches['sid'])
 					)
 				);
@@ -519,7 +519,7 @@ Class Sharing
 		// Insert the comment.
 		if ($this->pdo->queryExec(
 			sprintf('
-				INSERT INTO releasecomment
+				INSERT INTO release_comments
 				(text, createddate, shareid, nzb_guid, siteid, username, user_id, releaseid, shared, host)
 				VALUES (%s, %s, %s, %s, %s, %s, 0, 0, 2, "")',
 				$this->pdo->escapeString($body['BODY']),

@@ -204,8 +204,8 @@ class Releases
 				STRAIGHT_JOIN groups g ON g.id = r.group_id
 				STRAIGHT_JOIN category c ON c.id = r.categoryid
 				INNER JOIN category cp ON cp.id = c.parentid
-				LEFT OUTER JOIN releasevideo re ON re.releaseid = r.id
-				LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id
+				LEFT OUTER JOIN video_data re ON re.releaseid = r.id
+				LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
 				AND rn.nfo IS NOT NULL
 				WHERE r.nzbstatus = %d
 				AND r.passwordstatus %s
@@ -444,7 +444,7 @@ class Releases
 
 		if (count($cat)) {
 			if ($cat[0] == -2) {
-				$cartSearch = sprintf(' INNER JOIN usercart ON usercart.user_id = %d AND usercart.releaseid = r.id ', $userID);
+				$cartSearch = sprintf(' INNER JOIN users_releases ON users_releases.user_id = %d AND users_releases.releaseid = r.id ', $userID);
 			} else if ($cat[0] != -1) {
 				$catSearch = ' AND (';
 				$Category = new \Category(['Settings' => $this->pdo]);
@@ -529,13 +529,13 @@ class Releases
 				INNER JOIN category c ON c.id = r.categoryid
 				INNER JOIN category cp ON cp.id = c.parentid
 				INNER JOIN groups g ON g.id = r.group_id
-				LEFT OUTER JOIN tvrage tvr ON tvr.rageid = r.rageid
+				LEFT OUTER JOIN tvrage_titles tvr ON tvr.rageid = r.rageid
 				WHERE %s %s %s
 				AND r.nzbstatus = %d
 				AND r.categoryid BETWEEN 5000 AND 5999
 				AND r.passwordstatus %s
 				ORDER BY postdate DESC %s",
-				$this->uSQL($this->pdo->query(sprintf('SELECT rageid, categoryid FROM userseries WHERE user_id = %d', $userID), true), 'rageid'),
+				$this->uSQL($this->pdo->query(sprintf('SELECT rageid, categoryid FROM user_series WHERE user_id = %d', $userID), true), 'rageid'),
 				(count($excludedCats) ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : ''),
 				($airDate > -1 ? sprintf(' AND r.tvairdate >= DATE_SUB(CURDATE(), INTERVAL %d DAY) ', $airDate) : ''),
 				NZB::NZB_ADDED,
@@ -572,7 +572,7 @@ class Releases
 				AND r.categoryid BETWEEN 2000 AND 2999
 				AND r.passwordstatus %s
 				ORDER BY postdate DESC %s",
-				$this->uSQL($this->pdo->query(sprintf('SELECT imdbid, categoryid FROM usermovies WHERE user_id = %d', $userID), true), 'imdbid'),
+				$this->uSQL($this->pdo->query(sprintf('SELECT imdbid, categoryid FROM user_movies WHERE user_id = %d', $userID), true), 'imdbid'),
 				(count($excludedCats) ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : ''),
 				NZB::NZB_ADDED,
 				$this->showPasswords(),
@@ -602,9 +602,9 @@ class Releases
 					CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name,
 					rn.id AS nfoid, re.releaseid AS reid
 				FROM releases r
-				LEFT OUTER JOIN releasevideo re ON re.releaseid = r.id
+				LEFT OUTER JOIN video_data re ON re.releaseid = r.id
 				INNER JOIN groups ON groups.id = r.group_id
-				LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
+				LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
 				INNER JOIN category c ON c.id = r.categoryid
 				INNER JOIN category cp ON cp.id = c.parentid
 				WHERE %s %s
@@ -719,13 +719,13 @@ class Releases
 			sprintf('
 				DELETE r, rn, rc, uc, rf, ra, rs, rv, re
 				FROM releases r
-				LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id
-				LEFT OUTER JOIN releasecomment rc ON rc.releaseid = r.id
-				LEFT OUTER JOIN usercart uc ON uc.releaseid = r.id
-				LEFT OUTER JOIN releasefiles rf ON rf.releaseid = r.id
-				LEFT OUTER JOIN releaseaudio ra ON ra.releaseid = r.id
-				LEFT OUTER JOIN releasesubs rs ON rs.releaseid = r.id
-				LEFT OUTER JOIN releasevideo rv ON rv.releaseid = r.id
+				LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
+				LEFT OUTER JOIN release_comments rc ON rc.releaseid = r.id
+				LEFT OUTER JOIN users_releases uc ON uc.releaseid = r.id
+				LEFT OUTER JOIN release_files rf ON rf.releaseid = r.id
+				LEFT OUTER JOIN audio_data ra ON ra.releaseid = r.id
+				LEFT OUTER JOIN release_subtitles rs ON rs.releaseid = r.id
+				LEFT OUTER JOIN video_data rv ON rv.releaseid = r.id
 				LEFT OUTER JOIN releaseextrafull re ON re.releaseid = r.id
 				WHERE r.guid = %s',
 				$this->pdo->escapeString($identifiers['g'])
@@ -978,8 +978,8 @@ class Releases
 				re.releaseid AS reid,
 				cp.id AS categoryparentid
 			FROM releases r
-			LEFT OUTER JOIN releasevideo re ON re.releaseid = r.id
-			LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id
+			LEFT OUTER JOIN video_data re ON re.releaseid = r.id
+			LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
 			INNER JOIN groups ON groups.id = r.group_id
 			INNER JOIN category c ON c.id = r.categoryid
 			INNER JOIN category cp ON cp.id = c.parentid
@@ -1046,8 +1046,8 @@ class Releases
 			FROM releases r
 			INNER JOIN category c ON c.id = r.categoryid
 			INNER JOIN groups ON groups.id = r.group_id
-			LEFT OUTER JOIN releasevideo re ON re.releaseid = r.id
-			LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
+			LEFT OUTER JOIN video_data re ON re.releaseid = r.id
+			LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
 			INNER JOIN category cp ON cp.id = c.parentid
 			%s",
 			$whereSql
@@ -1103,7 +1103,7 @@ class Releases
 			FROM releases r
 			INNER JOIN category c ON c.id = r.categoryid
 			INNER JOIN groups ON groups.id = r.group_id
-			LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
+			LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
 			INNER JOIN category cp ON cp.id = c.parentid
 			%s",
 			$whereSql
@@ -1160,7 +1160,7 @@ class Releases
 			FROM releases r
 			INNER JOIN groups g ON g.id = r.group_id
 			INNER JOIN category c ON c.id = r.categoryid
-			LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
+			LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
 			INNER JOIN category cp ON cp.id = c.parentid
 			%s",
 			$whereSql
@@ -1410,7 +1410,7 @@ class Releases
 	{
 		return $this->pdo->queryOneRow(
 			sprintf(
-				'SELECT id, releaseid %s FROM releasenfo WHERE releaseid = %d AND nfo IS NOT NULL',
+				'SELECT id, releaseid %s FROM release_nfos WHERE releaseid = %d AND nfo IS NOT NULL',
 				($getNfoString ? ", UNCOMPRESS(nfo) AS nfo" : ''),
 				$id
 			)
@@ -1620,7 +1620,7 @@ class Releases
 				r.postdate, r.categoryid, r.comments, r.grabs,
 				tv.id as tvid, tv.imgdata, tv.releasetitle as tvtitle
 			FROM releases r
-			INNER JOIN tvrage tv USING (rageid)
+			INNER JOIN tvrage_titles tv USING (rageid)
 			WHERE r.categoryid BETWEEN 5000 AND 5999
 			AND tv.rageid > 0
 			AND length(tv.imgdata) > 0

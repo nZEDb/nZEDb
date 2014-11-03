@@ -448,7 +448,7 @@ class Groups
 		(new \Binaries(['Groups' => $this, 'Settings' => $this->pdo]))->purgeGroup($id);
 
 		// Remove rows from part repair.
-		$this->pdo->queryExec(sprintf("DELETE FROM partrepair WHERE group_id = %d", $id));
+		$this->pdo->queryExec(sprintf("DELETE FROM missed_parts WHERE group_id = %d", $id));
 
 		$this->pdo->queryExec(sprintf('DROP TABLE IF EXISTS collections_%d', $id));
 		$this->pdo->queryExec(sprintf('DROP TABLE IF EXISTS binaries_%d', $id));
@@ -475,7 +475,7 @@ class Groups
 		$this->pdo->queryExec("TRUNCATE TABLE collections");
 		$this->pdo->queryExec("TRUNCATE TABLE binaries");
 		$this->pdo->queryExec("TRUNCATE TABLE parts");
-		$this->pdo->queryExec("TRUNCATE TABLE partrepair");
+		$this->pdo->queryExec("TRUNCATE TABLE missed_parts");
 		$groups = $this->pdo->query("SELECT id FROM groups");
 		foreach ($groups as $group) {
 			$this->pdo->queryExec('DROP TABLE IF EXISTS collections_' . $group['id']);
@@ -623,7 +623,7 @@ class Groups
 		$tables['cname']  = 'collections';
 		$tables['bname']  = 'binaries';
 		$tables['pname']  = 'parts';
-		$tables['prname'] = 'partrepair';
+		$tables['prname'] = 'missed_parts';
 
 		if ($tpgSetting === true) {
 			if ($groupID == '') {
@@ -656,7 +656,7 @@ class Groups
 	 */
 	public function createNewTPGTables($groupID)
 	{
-		foreach (['collections', 'binaries', 'parts', 'partrepair'] as $tableName) {
+		foreach (['collections', 'binaries', 'parts', 'missed_parts'] as $tableName) {
 			if ($this->pdo->queryExec(sprintf('SELECT * FROM %s_%s LIMIT 1', $tableName, $groupID), true) === false) {
 				if ($this->pdo->queryExec(sprintf('CREATE TABLE %s_%s LIKE %s', $tableName, $groupID, $tableName), true) === false) {
 					return false;

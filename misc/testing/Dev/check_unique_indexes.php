@@ -92,7 +92,7 @@ if ($handle) {
 						}
 						$qry = "ALTER IGNORE TABLE " . trim($match['table']) . " ADD CONSTRAINT " . trim($match['index']) ." UNIQUE (${match['column']})";
 						run_query($qry, $argv[1]);
-					} else if (trim($match['table']) === 'partrepair') {
+					} else if (trim($match['table']) === 'missed_parts') {
 						$tables = $pdo->query("SHOW TABLES");
 						foreach ($tables as $row) {
 							$tbl = $row['tables_in_' . DB_NAME];
