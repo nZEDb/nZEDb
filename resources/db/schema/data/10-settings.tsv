@@ -78,7 +78,7 @@ section,subsection,name,value,hint,setting
 		processjpg	0	Whether to attempt to retrieve a JPG file while additional post processing, these are usually on XXX releases.	processjpg
 		processvideos	0	Whether to attempt to process a video sample, these videos are very short 1-3 seconds, 100KB on average, in ogv format. You must have ffmpeg for this.	processvideos
 		registerstatus	0	The status of registrations to the site.	registerstatus
-		releasecompletion	0	The minimum completion % to keep a release. Set to 0 to disable.	releasecompletion
+		releasecompletion	95	The minimum completion % to keep a release. Set to 0 to disable.	releasecompletion
 		releaseretentiondays	0	!!THIS IS NOT HEADER RETENTION!! The number of days releases will be retained for use throughout site. Set to 0 to disable.	releaseretentiondays
 		releasesthreads	1	The number of threads for update_releases. This is only for tablepergroup.	releasesthreads
 		replacenzbs	0	NZBs that are crossposted, instead of deleting, replace with the nzb grabbed.(This is not necessary, was added before I understood how crossposted nzbs work).	replacenzbs
