@@ -179,7 +179,7 @@ class TmuxOutput extends Tmux
 		);
 		$buffer .= sprintf($this->tmpMasks[1],
 				"Parts in Repair:",
-				number_format($this->runVar['counts']['now']['partrepair_table'])
+				number_format($this->runVar['counts']['now']['missed_parts_table'])
 		);
 
 		if (($this->runVar['settings']['post'] == "1" || $this->runVar['settings']['post'] == "3") && $this->runVar['constants']['sequential'] != 2) {

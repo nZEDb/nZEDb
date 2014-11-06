@@ -96,7 +96,7 @@ if ($handle) {
 						$tables = $pdo->query("SHOW TABLES");
 						foreach ($tables as $row) {
 							$tbl = $row['tables_in_' . DB_NAME];
-							if (preg_match('/partrepair_\d+/', $tbl)) {
+							if (preg_match('/missed_parts_\d+/', $tbl)) {
 								$checkPartRepair = $pdo->checkColumnIndex($tbl, $column);
 								if (!isset($checkPartRepair['key_name'])) {
 									$qry = "ALTER IGNORE TABLE ${tbl} ADD CONSTRAINT {$match['index']} UNIQUE (${match['column']})";

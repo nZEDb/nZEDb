@@ -129,9 +129,9 @@ if ($DoPartRepair === true) {
 					if ($debug) {
 						echo "\n\nPart Repair insert:\n";
 						print_r($partrepair);
-						echo sprintf("\nINSERT INTO partrepair_%d (numberid, group_id, attempts) VALUES (%s, %s, %s)\n\n", $group['id'], $partrepair['numberid'], $partrepair['group_id'], $partrepair['attempts']);
+						echo sprintf("\nINSERT INTO missed_parts_%d (numberid, group_id, attempts) VALUES (%s, %s, %s)\n\n", $group['id'], $partrepair['numberid'], $partrepair['group_id'], $partrepair['attempts']);
 					}
-					$pdo->queryExec(sprintf('INSERT INTO partrepair_%d (numberid, group_id, attempts) VALUES (%s, %s, %s);', $group['id'], $partrepair['numberid'], $partrepair['group_id'], $partrepair['attempts']));
+					$pdo->queryExec(sprintf('INSERT INTO missed_parts_%d (numberid, group_id, attempts) VALUES (%s, %s, %s);', $group['id'], $partrepair['numberid'], $partrepair['group_id'], $partrepair['attempts']));
 					$consoletools->overWrite('Part Repairs Completed for ' . $group['name'] . ':' . $consoletools->percentString($pcount, $plen['total']));
 					$pcount++;
 				}

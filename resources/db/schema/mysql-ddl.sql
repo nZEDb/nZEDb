@@ -497,10 +497,10 @@ CREATE TABLE missed_parts (
   COMMENT 'FK to groups',
   attempts TINYINT(1)       NOT NULL DEFAULT '0',
   PRIMARY KEY (id),
-  INDEX ix_partrepair_attempts                  (attempts),
-  INDEX ix_partrepair_groupid_attempts          (group_id, attempts),
-  INDEX ix_partrepair_numberid_groupid_attempts (numberid, group_id, attempts),
-  UNIQUE INDEX ix_partrepair_numberid_groupid          (numberid, group_id)
+  INDEX ix_missed_parts_attempts                  (attempts),
+  INDEX ix_missed_parts_groupid_attempts          (group_id, attempts),
+  INDEX ix_missed_parts_numberid_groupid_attempts (numberid, group_id, attempts),
+  UNIQUE INDEX ix_missed_parts_numberid_groupid          (numberid, group_id)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
