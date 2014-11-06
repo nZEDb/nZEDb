@@ -453,7 +453,7 @@ class Groups
 		$this->pdo->queryExec(sprintf('DROP TABLE IF EXISTS collections_%d', $id));
 		$this->pdo->queryExec(sprintf('DROP TABLE IF EXISTS binaries_%d', $id));
 		$this->pdo->queryExec(sprintf('DROP TABLE IF EXISTS parts_%d', $id));
-		$this->pdo->queryExec(sprintf('DROP TABLE IF EXISTS partrepair_%d', $id));
+		$this->pdo->queryExec(sprintf('DROP TABLE IF EXISTS missed_parts_%d', $id));
 
 		// Reset the group stats.
 		return $this->pdo->queryExec(
@@ -481,7 +481,7 @@ class Groups
 			$this->pdo->queryExec('DROP TABLE IF EXISTS collections_' . $group['id']);
 			$this->pdo->queryExec('DROP TABLE IF EXISTS binaries_' . $group['id']);
 			$this->pdo->queryExec('DROP TABLE IF EXISTS parts_' . $group['id']);
-			$this->pdo->queryExec('DROP TABLE IF EXISTS partrepair_' . $group['id']);
+			$this->pdo->queryExec('DROP TABLE IF EXISTS missed_parts_' . $group['id']);
 		}
 
 		// Reset the group stats.

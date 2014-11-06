@@ -28,7 +28,7 @@ if (isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "drop")) {
 		$tables = $pdo->query($sql);
 		foreach ($tables as $row) {
 			$tbl = $row['name'];
-			if (preg_match('/collections_\d+/', $tbl) || preg_match('/binaries_\d+/', $tbl) || preg_match('/parts_\d+/', $tbl) || preg_match('/partrepair_\d+/', $tbl) || preg_match('/\d+_collections/', $tbl) || preg_match('/\d+_binaries/', $tbl) || preg_match('/\d+_parts/', $tbl) || preg_match('/\d+_partrepair_\d+/', $tbl)) {
+			if (preg_match('/collections_\d+/', $tbl) || preg_match('/binaries_\d+/', $tbl) || preg_match('/parts_\d+/', $tbl) || preg_match('/missed_parts_\d+/', $tbl) || preg_match('/\d+_collections/', $tbl) || preg_match('/\d+_binaries/', $tbl) || preg_match('/\d+_parts/', $tbl) || preg_match('/\d+_missed_parts_\d+/', $tbl)) {
 				if ($argv[1] == "drop") {
 					$rel = $pdo->queryDirect(sprintf('DROP TABLE %s', $tbl));
 					if ($rel !== false) {
