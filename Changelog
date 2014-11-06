@@ -6,6 +6,9 @@ New updates are grouped by person, at the top of the file.
 
 2014-11-06 niel
 	* Fix: Setting default release completion value to 95.
+	* Fix: Replacing some 'partrepair' references with 'missed_parts' that were omitted previously due to excessive caution ;-)
+	* Fix: Tmux monitor showing incorrect Part Repair numbers (possibly others).
+	* Chg: Slight improvement in Tmux monitor's updating numbers. Probably too small to notice for most users.
 2014-10-31 niel
 	* Fix: Changing the triggers for releases_files table that were missed with the others.
 2014-10-30 niel
