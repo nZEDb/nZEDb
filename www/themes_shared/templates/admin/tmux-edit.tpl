@@ -65,7 +65,7 @@
 				{html_radios id="running" name='running' values=$yesno_ids output=$yesno_names selected=$ftmux->running separator='<br />'}
 				<div class="hint">This is the shutdown, true/on, it runs, false/off and all scripts are terminated. This
 					will start/stop all panes without terminating the monitor pane. This is not instant, it does not
-					kill any panes, it simply does not aloow any pane to restart if set to false.
+					kill any panes, it simply does not allow any pane to restart if set to false.
 				</div>
 			</td>
 		</tr>
