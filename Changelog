@@ -4,6 +4,8 @@ Please make sure any PR's comply with our coding standards policy: http://li3.me
 
 New updates are grouped by person, at the top of the file.
 
+2014-11-07 niel
+	* Mrg: Merging in PR 1543 from gregorystorme, which implements Issue 1530 - Feature Request: Add to My Movies.
 2014-11-06 niel
 	* Fix: Setting default release completion value to 95.
 	* Fix: Replacing some 'partrepair' references with 'missed_parts' that were omitted previously due to excessive caution ;-)
