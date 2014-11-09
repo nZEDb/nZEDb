@@ -1098,9 +1098,10 @@ class Utility
 
 		$site_email = $settings->getSetting('email');
 
-		(PHPMAIL_FROM_EMAIL === '') ? $fromEmail = $site_email : $fromEmail = PHPMAIL_FROM_EMAIL;
-		(PHPMAIL_FROM_NAME === '') ? $fromName = $settings->getSetting('title') : $fromName = PHPMAIL_FROM_NAME;
-		(PHPMAIL_REPLYTO === '') ? $replyTo = $site_email : $replyTo = PHPMAIL_REPLYTO;
+		$fromEmail = (PHPMAIL_FROM_EMAIL === '') ? $site_email : PHPMAIL_FROM_EMAIL;
+		$fromName  = (PHPMAIL_FROM_NAME === '') ? $settings->getSetting('title') : PHPMAIL_FROM_NAME;
+		$replyTo   = (PHPMAIL_REPLYTO === '') ? $site_email : PHPMAIL_REPLYTO;
+
 		(PHPMAIL_BCC !== '') ?	$mail->addBCC(PHPMAIL_BCC) : null;
 
 		$mail->setFrom($fromEmail, $fromName);
