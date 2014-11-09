@@ -1022,6 +1022,8 @@ class Utility
 	static public function sendEmail($to, $subject, $contents, $from)
 	{
 
+		$mail = new \PHPMailer;
+
 		//Setup the body first since we need it regardless of sending method.
 		$eol = PHP_EOL;
 
@@ -1032,10 +1034,9 @@ class Utility
 		$body .= '</html>' . $eol;
 
 
-		// If this directive doesn't exist there's a good chance the user has an incomplete settings file & we should fallback to php mail()
+		// If the mailer couldn't instantiate there's a good chance the user has an incomplete update & we should fallback to php mail()
 		// @todo Log this failure.
-		// @todo Derive library failure in a better way.
-		if (!defined('PHPMAIL_USE_SMTP')) {
+		if (!$mail) {
 
 			$headers = 'From: ' . $from . $eol;
 			$headers .= 'Reply-To: ' . $from . $eol;
@@ -1048,8 +1049,6 @@ class Utility
 			return mail($to, $subject, $body, $headers);
 
 		}
-
-		$mail = new \PHPMailer;
 
 		// Check to make sure the user has their settings correct.
 		if (PHPMAIL_USE_SMTP == true) {
