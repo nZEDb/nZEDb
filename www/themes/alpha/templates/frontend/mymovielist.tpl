@@ -35,9 +35,8 @@
 						<br/><br/>
 						{if $ourmovies[$imdbid] != ""}
 							<a class="rndbtn" href="{$smarty.const.WWW_TOP}/movies?imdb={$imdbid}">Download</a>
-						{else}
-							<a style="display:{if $userimdbs[$imdbid] == ""}inline{else}none;{/if}" onclick="mymovie_add('{$imdbid}', this);return false;" class="rndbtn" href="#">Add To My Movies</a>
 						{/if}
+						<a style="display:{if $userimdbs[$imdbid] == ""}inline{else}none;{/if}" onclick="mymovie_add('{$imdbid}', this);return false;" class="rndbtn" href="#">Add To My Movies</a>
 						<a style="display:{if $userimdbs[$imdbid] != ""}inline{else}none;{/if}" onclick="mymovie_del('{$imdbid}', this);return false;" href="#" class="rndbtn">Remove From My Movies</a>
 					</td>
 				</tr>
