@@ -375,8 +375,14 @@ define('nZEDb_QUERY_STRIP_WHITESPACE', false);
 define('nZEDb_USE_SQL_TRANSACTIONS', true);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////// Mail Settings /////////////////////////////////////////////////////////
+////////////////////////////////////////////// PHPMailer Settings //////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * Simple constant to let us know this file is included and we should use PHPMailer library.
+ * Uncomment the line below after setting the other constants.
+ */
+//define('PHPMAILER_ENABLED', true);
+
 /**
  * Should we use a SMTP server to send mail?
  * If false, it will use your default settings from php.ini.
@@ -384,7 +390,7 @@ define('nZEDb_USE_SQL_TRANSACTIONS', true);
  * @note If set to true, be sure to set the server settings below.
  * @default false
  */
-define('PHPMAIL_USE_SMTP', false);
+define('PHPMAILER_USE_SMTP', false);
 
 /**
  * Global "From" Address.
@@ -394,7 +400,7 @@ define('PHPMAIL_USE_SMTP', false);
  * @note Depending on server configurations, it may not respect this value.
  * @default '' (uses the contact email configured in 'Edit Site' settings)
  */
-define('PHPMAIL_FROM_EMAIL', '');
+define('PHPMAILER_FROM_EMAIL', '');
 
 /**
  * Global "From" Name.
@@ -404,7 +410,7 @@ define('PHPMAIL_FROM_EMAIL', '');
  * @note Depending on server configurations, it may not respect this value.
  * @default '' (uses the site title configured in 'Edit Site' settings)
  */
-define('PHPMAIL_FROM_NAME', '');
+define('PHPMAILER_FROM_NAME', '');
 
 /**
  * Global "Reply-to" Address.
@@ -414,7 +420,7 @@ define('PHPMAIL_FROM_NAME', '');
  * @note It's a good idea to set this to your support email account (if possible)
  * @default '' (uses the contact email configured in 'Edit Site' settings)
  */
-define('PHPMAIL_REPLYTO', '');
+define('PHPMAILER_REPLYTO', '');
 
 /**
  * Always BCC.
@@ -423,12 +429,12 @@ define('PHPMAIL_REPLYTO', '');
  * @note This has very specific uses, don't enable unless you're sure you want to get the deluge.
  * @default ''
  */
-define('PHPMAIL_BCC', '');
+define('PHPMAILER_BCC', '');
 
 
 
 /*********************************************************************************
- * The following options require PHPMAIL_USE_SMTP to be true: *
+ * The following options require PHPMAILER_USE_SMTP to be true: *
  *********************************************************************************/
 
 
@@ -438,7 +444,7 @@ define('PHPMAIL_BCC', '');
  * @note You can specify main and backup hosts, delimit with a semicolon. (i.e. 'main.host.com;backup.host.com')
  * @default ''
  */
-define('PHPMAIL_SMTP_HOST', '');
+define('PHPMAILER_SMTP_HOST', '');
 
 /**
  * TLS & SSL Support for your SMTP server.
@@ -446,7 +452,7 @@ define('PHPMAIL_SMTP_HOST', '');
  * @note Possible values: false, 'tls', 'ssl'
  * @default 'tls'
  */
-define('PHPMAIL_SMTP_SECURE','tls');
+define('PHPMAILER_SMTP_SECURE','tls');
 
 /**
  * SMTP Port
@@ -454,7 +460,7 @@ define('PHPMAIL_SMTP_SECURE','tls');
  * @note Usually this is 25, 465, or 587
  * @default 587
  */
-define('PHPMAIL_SMTP_PORT', 587);
+define('PHPMAILER_SMTP_PORT', 587);
 
 /**
  * Does your SMTP host require authentication?
@@ -462,11 +468,11 @@ define('PHPMAIL_SMTP_PORT', 587);
  * @note Be sure to set credentials below if changing to true.
  * @default false
  */
-define('PHPMAIL_SMTP_AUTH', false);
+define('PHPMAILER_SMTP_AUTH', false);
 
 
 /*********************************************************************************
- * The following options require both PHPMAIL_USE_SMTP & PHPMAIL_SMTP_AUTH to be true: *
+ * The following options require both PHPMAILER_USE_SMTP & PHPMAILER_SMTP_AUTH to be true: *
  *********************************************************************************/
 
 
@@ -475,11 +481,11 @@ define('PHPMAIL_SMTP_AUTH', false);
  *
  * @default ''
  */
-define('PHPMAIL_SMTP_USER','');
+define('PHPMAILER_SMTP_USER','');
 
 /**
  * SMTP password for authentication.
  *
  * @default ''
  */
-define('PHPMAIL_SMTP_PASSWORD', '');
+define('PHPMAILER_SMTP_PASSWORD', '');

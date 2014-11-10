@@ -2,6 +2,7 @@
 namespace nzedb\utility;
 
 
+use \libs\PHPMailer;
 use \nzedb\db\Settings;
 
 /**
@@ -1021,8 +1022,7 @@ class Utility
 	// Central function for sending site email.
 	static public function sendEmail($to, $subject, $contents, $from)
 	{
-
-		$mail = new \PHPMailer;
+		$mail = new PHPMailer;
 
 		//Setup the body first since we need it regardless of sending method.
 		$eol = PHP_EOL;
@@ -1033,11 +1033,9 @@ class Utility
 		$body .= '</body>' . $eol;
 		$body .= '</html>' . $eol;
 
-
 		// If the mailer couldn't instantiate there's a good chance the user has an incomplete update & we should fallback to php mail()
 		// @todo Log this failure.
-		if (!$mail) {
-
+		if (!defined('PHPMAILER_ENABLED') || PHPMAILER_ENABLED !== true || !($mail instanceof PHPMailer)) {
 			$headers = 'From: ' . $from . $eol;
 			$headers .= 'Reply-To: ' . $from . $eol;
 			$headers .= 'Return-Path: ' . $from . $eol;
@@ -1051,24 +1049,23 @@ class Utility
 		}
 
 		// Check to make sure the user has their settings correct.
-		if (PHPMAIL_USE_SMTP == true) {
-
-			if ((!defined('PHPMAIL_SMTP_HOST') || PHPMAIL_SMTP_HOST === '') ||
-				(!defined('PHPMAIL_SMTP_PORT') || PHPMAIL_SMTP_PORT === '')
+		if (PHPMAILER_USE_SMTP == true) {
+			if ((!defined('PHPMAILER_SMTP_HOST') || PHPMAILER_SMTP_HOST === '') ||
+				(!defined('PHPMAILER_SMTP_PORT') || PHPMAILER_SMTP_PORT === '')
 			) {
 				throw new \phpmailerException(
-					'You opted to use SMTP but the PHPMAIL_SMTP_HOST and/or PHPMAIL_SMTP_PORT is/are not defined correctly! Either fix the missing/incorrect values or change PHPMAIL_USE_SMTP to false in the www/settings.php'
+					'You opted to use SMTP but the PHPMAILER_SMTP_HOST and/or PHPMAILER_SMTP_PORT is/are not defined correctly! Either fix the missing/incorrect values or change PHPMAILER_USE_SMTP to false in the www/settings.php'
 				);
 			}
 
 			// If the user enabled SMTP & Auth but did not setup credentials, throw an exception.
-			if (defined('PHPMAIL_SMTP_AUTH') && PHPMAIL_SMTP_AUTH == true)
+			if (defined('PHPMAILER_SMTP_AUTH') && PHPMAILER_SMTP_AUTH == true)
 			{
-				if ((!defined('PHPMAIL_SMTP_USER') || PHPMAIL_SMTP_USER === '') ||
-					(!defined('PHPMAIL_SMTP_PASSWORD') || PHPMAIL_SMTP_PASSWORD === '')
+				if ((!defined('PHPMAILER_SMTP_USER') || PHPMAILER_SMTP_USER === '') ||
+					(!defined('PHPMAILER_SMTP_PASSWORD') || PHPMAILER_SMTP_PASSWORD === '')
 				) {
 					throw new \phpmailerException(
-						'You opted to use SMTP and SMTP Auth but the PHPMAIL_SMTP_USER and/or PHPMAIL_SMTP_PASSWORD is/are not defined correctly. Please set them in www/settings.php'
+						'You opted to use SMTP and SMTP Auth but the PHPMAILER_SMTP_USER and/or PHPMAILER_SMTP_PASSWORD is/are not defined correctly. Please set them in www/settings.php'
 					);
 				}
 			}
@@ -1077,18 +1074,18 @@ class Utility
 		//Finally we can send the mail.
 		$mail->isHTML(true);
 
-		if (PHPMAIL_USE_SMTP) {
+		if (PHPMAILER_USE_SMTP) {
 			$mail->isSMTP();
 
-			$mail->Host = PHPMAIL_SMTP_HOST;
-			$mail->Port = PHPMAIL_SMTP_PORT;
+			$mail->Host = PHPMAILER_SMTP_HOST;
+			$mail->Port = PHPMAILER_SMTP_PORT;
 
-			$mail->SMTPSecure = PHPMAIL_SMTP_SECURE;
+			$mail->SMTPSecure = PHPMAILER_SMTP_SECURE;
 
-			if (PHPMAIL_SMTP_AUTH) {
+			if (PHPMAILER_SMTP_AUTH) {
 				$mail->SMTPAuth = true;
-				$mail->Username = PHPMAIL_SMTP_USER;
-				$mail->Password = PHPMAIL_SMTP_PASSWORD;
+				$mail->Username = PHPMAILER_SMTP_USER;
+				$mail->Password = PHPMAILER_SMTP_PASSWORD;
 			}
 
 		}
@@ -1097,11 +1094,11 @@ class Utility
 
 		$site_email = $settings->getSetting('email');
 
-		$fromEmail = (PHPMAIL_FROM_EMAIL === '') ? $site_email : PHPMAIL_FROM_EMAIL;
-		$fromName  = (PHPMAIL_FROM_NAME === '') ? $settings->getSetting('title') : PHPMAIL_FROM_NAME;
-		$replyTo   = (PHPMAIL_REPLYTO === '') ? $site_email : PHPMAIL_REPLYTO;
+		$fromEmail = (PHPMAILER_FROM_EMAIL === '') ? $site_email : PHPMAILER_FROM_EMAIL;
+		$fromName  = (PHPMAILER_FROM_NAME === '') ? $settings->getSetting('title') : PHPMAILER_FROM_NAME;
+		$replyTo   = (PHPMAILER_REPLYTO === '') ? $site_email : PHPMAILER_REPLYTO;
 
-		(PHPMAIL_BCC !== '') ?	$mail->addBCC(PHPMAIL_BCC) : null;
+		(PHPMAILER_BCC !== '') ?	$mail->addBCC(PHPMAILER_BCC) : null;
 
 		$mail->setFrom($fromEmail, $fromName);
 		$mail->addAddress($to);
@@ -1119,6 +1116,4 @@ class Utility
 
 		return $sent;
 	}
-
-
 }
