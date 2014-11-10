@@ -181,7 +181,7 @@ class Console
 				. "GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs, "
 				. "con.*, r.consoleinfoid, groups.name AS group_name, rn.id as nfoid FROM releases r "
 				. "LEFT OUTER JOIN groups ON groups.id = r.group_id "
-				. "LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id "
+				. "LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id "
 				. "INNER JOIN consoleinfo con ON con.id = r.consoleinfoid "
 				. "WHERE r.nzbstatus = 1 AND con.title != '' AND "
 				. "r.passwordstatus <= (SELECT value FROM settings WHERE setting='showpasswordedrelease') AND %s %s
@@ -526,6 +526,7 @@ class Console
 	 *
 	 * @param string $platform
 	 *
+	 * @return string
 	**/
 	protected function _replacePlatform($platform)
 	{

@@ -57,7 +57,7 @@ class Music
 	/**
 	 * @param array $options Class instances/ echo to CLI.
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		$defaults = [
 			'Echo'     => false,
@@ -87,7 +87,6 @@ class Music
 	 */
 	public function getMusicInfo($id)
 	{
-		$pdo = $this->pdo;
 		return $this->pdo->queryOneRow(sprintf("SELECT musicinfo.*, genres.title AS genres FROM musicinfo LEFT OUTER JOIN genres ON genres.id = musicinfo.genre_id WHERE musicinfo.id = %d ", $id));
 	}
 
@@ -138,7 +137,7 @@ class Music
 	 *
 	 * @return mixed
 	 */
-	public function getMusicCount($cat, $maxage = -1, $excludedcats = array())
+	public function getMusicCount($cat, $maxage = -1, $excludedcats = [])
 	{
 
 
@@ -174,7 +173,7 @@ class Music
 	 *
 	 * @return array
 	 */
-	public function getMusicRange($cat, $start, $num, $orderby, $excludedcats = array())
+	public function getMusicRange($cat, $start, $num, $orderby, $excludedcats = [])
 	{
 
 
@@ -212,7 +211,7 @@ class Music
 					. "GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs, "
 					. "m.*, r.musicinfoid, groups.name AS group_name, rn.id as nfoid FROM releases r "
 					. "LEFT OUTER JOIN groups ON groups.id = r.group_id "
-					. "LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id "
+					. "LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id "
 					. "INNER JOIN musicinfo m ON m.id = r.musicinfoid "
 					. "WHERE r.nzbstatus = 1 AND m.title != '' AND "
 					. "r.passwordstatus <= (SELECT value FROM settings WHERE setting='showpasswordedrelease') AND %s %s %s "
@@ -253,7 +252,7 @@ class Music
 				break;
 		}
 		$ordersort = (isset($orderArr[1]) && preg_match('/^asc|desc$/i', $orderArr[1])) ? $orderArr[1] : 'desc';
-		return array($orderfield, $ordersort);
+		return [$orderfield, $ordersort];
 	}
 
 	/**
@@ -261,7 +260,7 @@ class Music
 	 */
 	public function getMusicOrdering()
 	{
-		return array('artist_asc', 'artist_desc', 'posted_asc', 'posted_desc', 'size_asc', 'size_desc', 'files_asc', 'files_desc', 'stats_asc', 'stats_desc', 'year_asc', 'year_desc', 'genre_asc', 'genre_desc');
+		return ['artist_asc', 'artist_desc', 'posted_asc', 'posted_desc', 'size_asc', 'size_desc', 'files_asc', 'files_desc', 'stats_asc', 'stats_desc', 'year_asc', 'year_desc', 'genre_asc', 'genre_desc'];
 	}
 
 	/**
@@ -269,7 +268,7 @@ class Music
 	 */
 	public function getBrowseByOptions()
 	{
-		return array('artist' => 'artist', 'title' => 'title', 'genre' => 'genre_id', 'year' => 'year');
+		return ['artist' => 'artist', 'title' => 'title', 'genre' => 'genre_id', 'year' => 'year'];
 	}
 
 	/**
@@ -301,7 +300,7 @@ class Music
 	public function makeFieldLinks($data, $field)
 	{
 		$tmpArr = explode(', ', $data[$field]);
-		$newArr = array();
+		$newArr = [];
 		$i = 0;
 		foreach ($tmpArr as $ta) {
 			if ($i > 5) {
@@ -356,7 +355,7 @@ class Music
 		$ri = new \ReleaseImage($this->pdo);
 		$titlepercent = 0;
 
-		$mus = array();
+		$mus = [];
 		if ($title != '') {
 			$amaz = $this->fetchAmazonProperties($title);
 		} else if ($amazdata != null) {
@@ -380,7 +379,7 @@ class Music
 
 		// Load genres.
 		$defaultGenres = $gen->getGenres(\Genres::MUSIC_TYPE);
-		$genreassoc = array();
+		$genreassoc = [];
 		foreach ($defaultGenres as $dg) {
 			$genreassoc[$dg['id']] = strtolower($dg['title']);
 		}
@@ -510,7 +509,7 @@ class Music
 				}
 				$this->pdo->log->doEcho(
 					$this->pdo->log->headerOver("Nothing to update: ") .
-					$this->pdo->log->primaryOver(
+					$this->pdo->log->primary(
 						$artist .
 						$mus['title'] .
 						" (" .
@@ -574,7 +573,7 @@ class Music
 	}
 
 	/**
-	 *
+	 * @param bool $local
 	 */
 	public function processMusicReleases($local = false)
 	{
@@ -647,7 +646,7 @@ class Music
 	public function parseArtist($releasename)
 	{
 		if (preg_match('/(.+?)(\d{1,2} \d{1,2} )?\(?(19\d{2}|20[0-1][0-9])\b/', $releasename, $name)) {
-			$result = array();
+			$result = [];
 			$result["year"] = $name[3];
 
 			$a = preg_replace('/ (\d{1,2} \d{1,2} )?(Bootleg|Boxset|Clean.+Version|Compiled by.+|\dCD|Digipak|DIRFIX|DVBS|FLAC|(Ltd )?(Deluxe|Limited|Special).+Edition|Promo|PROOF|Reissue|Remastered|REPACK|RETAIL(.+UK)?|SACD|Sampler|SAT|Summer.+Mag|UK.+Import|Deluxe.+Version|VINYL|WEB)/i', ' ', $name[1]);
@@ -656,7 +655,7 @@ class Music
 			$d = preg_replace('/VA( |-)/', 'Various Artists ', $c);
 			$e = preg_replace('/ (\d{1,2} \d{1,2} )?(DAB|DE|DVBC|EP|FIX|IT|Jap|NL|PL|(Pure )?FM|SSL|VLS) /i', ' ', $d);
 			$f = preg_replace('/ (\d{1,2} \d{1,2} )?(CABLE|CD(A|EP|M|R|S)?|QEDCD|SAT|SBD) /i', ' ', $e);
-			$g = str_replace(array('_', '-'), ' ', $f);
+			$g = str_replace(['_', '-'], ' ', $f);
 			$h = trim(preg_replace('/\s\s+/', ' ', $g));
 			$newname = trim(preg_replace('/ [a-z]{2}$| [a-z]{3} \d{2,}$|\d{5,} \d{5,}$|-WEB$/i', '', $h));
 

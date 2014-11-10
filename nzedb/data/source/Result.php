@@ -19,12 +19,14 @@
  */
 namespace nzedb\data\model\source;
 
-abstract class Result extends \nzedb\Object implements \Iterator
+use \nzedb\Object;
+
+abstract class Result extends Object implements \Iterator
 {
 	/**
 	 * Autoconfig.
 	 */
-	protected $_autoConfig = array('resource');
+	protected $_autoConfig = ['resource'];
 
 	/**
 	 * Contains the current element of the result set.
@@ -135,7 +137,7 @@ abstract class Result extends \nzedb\Object implements \Iterator
 	public function prev()
 	{
 		if (!$this->_cache) {
-			return;
+			return null;
 		}
 		if (isset($this->_cache[--$this->_iterator - 1])) {
 			$this->_key = $this->_iterator - 1;

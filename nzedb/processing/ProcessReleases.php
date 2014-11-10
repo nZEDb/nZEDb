@@ -1,6 +1,8 @@
 <?php
 namespace nzedb\processing;
 
+use \nzedb\db\Settings;
+
 class ProcessReleases
 {
 	const COLLFC_DEFAULT  =  0; // Collection has default filecheck status
@@ -104,7 +106,7 @@ class ProcessReleases
 
 		$this->echoCLI = ($options['Echo'] && nZEDb_ECHOCLI);
 
-		$this->pdo = ($options['Settings'] instanceof \nzedb\db\Settings ? $options['Settings'] : new \nzedb\db\Settings());
+		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 		$this->consoleTools = ($options['ConsoleTools'] instanceof \ConsoleTools ? $options['ConsoleTools'] : new \ConsoleTools(['ColorCLI' => $this->pdo->log]));
 		$this->groups = ($options['Groups'] instanceof \Groups ? $options['Groups'] : new \Groups(['Settings' => $this->pdo]));
 		$this->nzb = ($options['NZB'] instanceof \NZB ? $options['NZB'] : new \NZB($this->pdo));

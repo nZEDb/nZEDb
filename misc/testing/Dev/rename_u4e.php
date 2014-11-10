@@ -49,7 +49,7 @@ $categorize = new \Categorize(['Settings' => $pdo]);
 $releases = $pdo->queryDirect(
 	sprintf('
 		SELECT rf.name AS filename, r.categoryid, r.name, r.guid, r.id, r.group_id, r.postdate, r.searchname AS oldname, g.name AS groupname
-		FROM releasefiles rf
+		FROM release_files rf
 		INNER JOIN releases r ON rf.releaseid = r.id
 		INNER JOIN groups g ON r.group_id = g.id
 		WHERE (r.isrenamed = 0 OR r.categoryid = 7020)

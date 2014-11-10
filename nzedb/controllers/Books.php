@@ -188,7 +188,7 @@ class Books
 			. "GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs, "
 			. "boo.*, r.bookinfoid, groups.name AS group_name, rn.id as nfoid FROM releases r "
 			. "LEFT OUTER JOIN groups ON groups.id = r.group_id "
-			. "LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id "
+			. "LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id "
 			. "INNER JOIN bookinfo boo ON boo.id = r.bookinfoid "
 			. "WHERE r.nzbstatus = 1 AND boo.cover = 1 AND boo.title != '' AND "
 			. "r.passwordstatus <= (SELECT value FROM settings WHERE setting='showpasswordedrelease') AND %s %s %s %s "
@@ -257,8 +257,6 @@ class Books
 
 	public function getBrowseBy()
 	{
-		$like = 'LIKE';
-
 		$browseby = ' ';
 		$browsebyArr = $this->getBrowseByOptions();
 		foreach ($browsebyArr as $bbk => $bbv) {
@@ -553,7 +551,7 @@ class Books
 			if ($this->echooutput) {
 				$this->pdo->log->doEcho(
 					$this->pdo->log->header('Nothing to update: ') .
-					$this->pdo->log->header($book['author'] .
+					$this->pdo->log->primary($book['author'] .
 						' - ' .
 						$book['title'])
 				);

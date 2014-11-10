@@ -19,7 +19,13 @@
  * @copyright 2014 nZEDb
  */
 
-// Function inpsired by c0r3@newznabforums adds country flags on the browse page.
+// Function inspired by c0r3@newznabforums adds country flags on the browse page.
+/**
+ * @param $x
+ * @param $t
+ *
+ * @return bool|string
+ */
 function release_flag ($x, $t)
 {
 	$y = $d = "";
@@ -111,7 +117,7 @@ function release_flag ($x, $t)
 	}
 	if ($y !== "" && $t == "browse") {
 		$www = WWW_TOP;
-		if (!in_array(substr($www, -1), array('\\', '/'))) {
+		if (!in_array(substr($www, -1), ['\\', '/'])) {
 			$www .= DS;
 		}
 

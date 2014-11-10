@@ -453,7 +453,7 @@ function addLanguage(&$releases, Settings $settings)
 	if ($releases && count($releases)) {
 		foreach ($releases as $key => $release) {
 			if (isset($release['id'])) {
-				$language = $settings->queryOneRow(sprintf('SELECT audiolanguage FROM releaseaudio WHERE releaseid = %d', $release['id']));
+				$language = $settings->queryOneRow(sprintf('SELECT audiolanguage FROM audio_data WHERE releaseid = %d', $release['id']));
 				if ($language !== false) {
 					$releases[$key]['searchname'] = $releases[$key]['searchname'] . ' ' . $language['audiolanguage'];
 				}

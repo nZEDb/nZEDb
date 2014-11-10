@@ -29,10 +29,10 @@ $pdo->queryExec("UPDATE groups SET first_record = 0, first_record_postdate = NUL
 echo $pdo->log->primary("Reseting all groups completed.");
 
 $arr = [
-		"tvrage", "releasenfo", "releasecomment", 'sharing', 'sharing_sites',
-		"usercart", "usermovies", "userseries", "movieinfo", "musicinfo", "releasefiles",
-		"releaseaudio", "releasesubs", "releasevideo", "releaseextrafull", "parts",
-		"partrepair", "binaries", "collections", "releases"
+		"tvrage_titles", "release_nfos", "release_comments", 'sharing', 'sharing_sites',
+		"users_releases", "user_movies", "user_series", "movieinfo", "musicinfo", "release_files",
+		"audio_data", "release_subtitles", "video_data", "releaseextrafull", "parts",
+		"missed_parts", "binaries", "collections", "releases"
 ];
 foreach ($arr as &$value) {
 	$rel = $pdo->queryExec("TRUNCATE TABLE $value");
@@ -46,7 +46,7 @@ $sql = "SHOW table status";
 $tables = $pdo->query($sql);
 foreach ($tables as $row) {
 	$tbl = $row['name'];
-	if (preg_match('/collections_\d+/', $tbl) || preg_match('/binaries_\d+/', $tbl) || preg_match('/parts_\d+/', $tbl) || preg_match('/partrepair_\d+/', $tbl) || preg_match('/\d+_collections/', $tbl) || preg_match('/\d+_binaries/', $tbl) || preg_match('/\d+_parts/', $tbl) || preg_match('/\d+_partrepair_\d+/', $tbl)) {
+	if (preg_match('/collections_\d+/', $tbl) || preg_match('/binaries_\d+/', $tbl) || preg_match('/parts_\d+/', $tbl) || preg_match('/missed_parts_\d+/', $tbl) || preg_match('/\d+_collections/', $tbl) || preg_match('/\d+_binaries/', $tbl) || preg_match('/\d+_parts/', $tbl) || preg_match('/\d+_missed_parts_\d+/', $tbl)) {
 		$rel = $pdo->queryDirect(sprintf('DROP TABLE %s', $tbl));
 		if ($rel !== false)
 			echo $pdo->log->primary("Dropping ${tbl} completed.");
@@ -88,7 +88,7 @@ $tvshows = @simplexml_load_file('http://services.tvrage.com/feeds/show_list.php'
 if ($tvshows !== false) {
 	foreach ($tvshows->show as $rage) {
 		if (isset($rage->id) && isset($rage->name) && !empty($rage->id) && !empty($rage->name))
-			$pdo->queryInsert(sprintf('INSERT INTO tvrage (rageid, releasetitle, country) VALUES (%s, %s, %s)', $pdo->escapeString($rage->id), $pdo->escapeString($rage->name), $pdo->escapeString($rage->country)));
+			$pdo->queryInsert(sprintf('INSERT INTO tvrage_titles (rageid, releasetitle, country) VALUES (%s, %s, %s)', $pdo->escapeString($rage->id), $pdo->escapeString($rage->name), $pdo->escapeString($rage->country)));
 	}
 } else {
 	echo $pdo->log->error("TVRage site has a hard limit of 400 concurrent api requests. At the moment, they have reached that limit. Please wait before retrying again.");

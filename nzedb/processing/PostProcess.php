@@ -1,8 +1,10 @@
 <?php
 namespace nzedb\processing;
 
-use nzedb\controllers;
-use nzedb\utility;
+use \nzedb\db\Settings;
+use \nzedb\processing\post\AniDB;
+use \nzedb\processing\post\ProcessAdditional;
+use \nzedb\utility;
 
 require_once nZEDb_LIBS . 'rarinfo/par2info.php';
 
@@ -87,7 +89,7 @@ class PostProcess
 		//\\
 
 		//\\ Class instances.
-		$this->pdo = (($options['Settings'] instanceof \nzedb\db\Settings) ? $options['Settings'] : new \nzedb\db\Settings());
+		$this->pdo = (($options['Settings'] instanceof Settings) ? $options['Settings'] : new Settings());
 		$this->groups = (($options['Groups'] instanceof \Groups) ? $options['Groups'] : new \Groups(['Settings' => $this->pdo]));
 		$this->_par2Info = new \Par2Info();
 		$this->debugging = ($options['Logger'] instanceof \Logger ? $options['Logger'] : new \Logger(['ColorCLI' => $this->pdo->log]));
@@ -132,7 +134,7 @@ class PostProcess
 	public function processAnime()
 	{
 		if ($this->pdo->getSetting('lookupanidb') != 0) {
-			(new \nzedb\processing\post\AniDB(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->processAnimeReleases();
+			(new AniDB(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->processAnimeReleases();
 		}
 	}
 
@@ -269,7 +271,7 @@ class PostProcess
 	 */
 	public function processAdditional(&$nntp, $groupID = '', $guidChar = '')
 	{
-		(new \nzedb\processing\post\ProcessAdditional(['Echo' => $this->echooutput, 'NNTP' => $nntp, 'Settings' => $this->pdo, 'Groups' => $this->groups, 'NameFixer' => $this->nameFixer, 'Nfo' => $this->Nfo, 'ReleaseFiles' => $this->releaseFiles]))->start($groupID, $guidChar);
+		(new ProcessAdditional(['Echo' => $this->echooutput, 'NNTP' => $nntp, 'Settings' => $this->pdo, 'Groups' => $this->groups, 'NameFixer' => $this->nameFixer, 'Nfo' => $this->Nfo, 'ReleaseFiles' => $this->releaseFiles]))->start($groupID, $guidChar);
 	}
 
 	/**
@@ -309,7 +311,7 @@ class PostProcess
 		$foundName = true;
 		if (!in_array(
 			(int)$query['categoryid'],
-			array(
+			[
 				\Category::CAT_BOOKS_OTHER,
 				\Category::CAT_GAME_OTHER,
 				\Category::CAT_MOVIE_OTHER,
@@ -319,7 +321,7 @@ class PostProcess
 				\Category::CAT_OTHER_HASHED,
 				\Category::CAT_XXX_OTHER,
 				\Category::CAT_MISC
-			)
+			]
 		)
 		) {
 			$foundName = false;
@@ -361,7 +363,7 @@ class PostProcess
 						$this->pdo->queryOneRow(
 							sprintf('
 								SELECT id
-								FROM releasefiles
+								FROM release_files
 								WHERE releaseid = %d
 								AND name = %s',
 								$relID,
@@ -390,7 +392,7 @@ class PostProcess
 
 			// If we found some files.
 			if ($filesAdded > 0) {
-				$this->debugging->log('PostProcess', 'parsePAR2', 'Added ' . $filesAdded . ' releasefiles from PAR2 for ' . $query['searchname'], \Logger::LOG_INFO);
+				$this->debugging->log('PostProcess', 'parsePAR2', 'Added ' . $filesAdded . ' release_files from PAR2 for ' . $query['searchname'], \Logger::LOG_INFO);
 
 				// Update the file count with the new file count + old file count.
 				$this->pdo->queryExec(

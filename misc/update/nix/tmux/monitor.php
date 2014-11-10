@@ -54,6 +54,9 @@ $runVar['counts']['iterations'] = 1;
 $runVar['modsettings']['fc']['firstrun'] = true;
 $runVar['modsettings']['fc']['num'] = 0;
 
+$tblCount = "SELECT TABLE_ROWS AS count FROM information_schema.TABLES WHERE TABLE_NAME = :table AND TABLE_SCHEMA = " . $pdo->escapeString($db_name);
+$psTableRowCount = $pdo->Prepare($tblCount);
+
 while ($runVar['counts']['iterations'] > 0) {
 
 	//check the db connection
@@ -124,8 +127,8 @@ while ($runVar['counts']['iterations'] > 0) {
 
 		$splitqry = $newOldqry = '';
 
-		$splitqry = $tRun->proc_query(4, $runVar['settings']['book_reqids'], $runVar['settings']['request_hours'], $db_name);
-		$newOldqry = $tRun->proc_query(6, $runVar['settings']['book_reqids'], $runVar['settings']['request_hours'], $db_name);
+		$splitqry = $tRun->proc_query(4, null, null, $db_name);
+		$newOldqry = $tRun->proc_query(6, null, null, null);
 
 		$splitres = $pdo->queryOneRow($splitqry, false);
 		$runVar['timers']['newOld'] = $pdo->queryOneRow($newOldqry, false);
@@ -146,7 +149,7 @@ while ($runVar['counts']['iterations'] > 0) {
 		$partitions = $pdo->queryDirect(
 			sprintf("
 				SELECT SUM(TABLE_ROWS) AS count, PARTITION_NAME AS category
-				FROM INFORMATION_SCHEMA.PARTITIONS
+				FROM information_schema.PARTITIONS
 				WHERE TABLE_NAME = 'releases'
 				AND TABLE_SCHEMA = %s
 				GROUP BY PARTITION_NAME",
@@ -189,63 +192,55 @@ while ($runVar['counts']['iterations'] > 0) {
 			$runVar['counts']['now']['collections_table'] = $runVar['counts']['now']['binaries_table'] = 0;
 			$runVar['counts']['now']['parts_table'] = $runVar['counts']['now']['parterpair_table'] = 0;
 
-			if ($tables instanceof \Traversable) {
-				foreach ($tables as $row) {
-					$cntsql = '';
+			if ($psTableRowCount === false) {
+				echo "Unable to prepare statement, skipping monitor updates!";
+			} else {
+				if ($tables instanceof \Traversable) {
+					foreach ($tables as $row) {
+						$tbl   = $row['name'];
+						$stamp = 'UNIX_TIMESTAMP(MIN(dateadded))';
 
-					$tbl = $row['name'];
-					$stamp = 'UNIX_TIMESTAMP(MIN(dateadded))';
-					$orderlim = '';
-					$cntsql = sprintf('
-							SELECT TABLE_ROWS AS count
-							FROM INFORMATION_SCHEMA.TABLES
-							WHERE TABLE_NAME = %s
-							AND TABLE_SCHEMA = %s',
-							$pdo->escapeString($tbl),
-							$pdo->escapeString($db_name)
-					);
+						switch (true) {
+							case strpos($tbl, 'collections_') !== false:
+								$runVar['counts']['now']['collections_table'] += getTableRowCount($psTableRowCount,
+																								  $tbl);
+								$added = $pdo->queryOneRow(
+									sprintf('SELECT %s AS dateadded FROM %s',
+											$stamp,
+											$tbl
+									)
+								);
+								if (isset($added['dateadded']) && is_numeric($added['dateadded']) &&
+									$added['dateadded'] < $age
+								) {
+									$age = $added['dateadded'];
+								}
+								break;
+							case strpos($tbl, 'binaries_') !== false:
+								$runVar['counts']['now']['binaries_table'] += getTableRowCount($psTableRowCount,
+																							   $tbl);
+								break;
+							// This case must come before the 'parts_' one.
+							case strpos($tbl, 'missed_parts_') !== false:
+								$runVar['counts']['now']['missed_parts_table'] += getTableRowCount($psTableRowCount,
+																								   $tbl);
 
-					if (strpos($tbl, 'collections_') !== false) {
-						$run = $pdo->queryOneRow($cntsql, $tRun->rand_bool($runVar['counts']['iterations']));
-						$runVar['counts']['now']['collections_table'] += $run['count'];
-						$run1 =
-							$pdo->queryOneRow(
-									sprintf('
-										SELECT %s AS dateadded
-										FROM %s %s',
-										$stamp,
-										$tbl,
-										$orderlim
-									),
-							$tRun->rand_bool($runVar['counts']['iterations'])
-						);
-						if (isset($run1['dateadded']) && is_numeric($run1['dateadded']) && $run1['dateadded'] < $age) {
-							$age = $run1['dateadded'];
-						}
-					} else if (strpos($tbl, 'binaries_') !== false) {
-						$run = $pdo->queryOneRow($cntsql, $tRun->rand_bool($runVar['counts']['iterations']));
-						if (isset($run['count']) && is_numeric($run['count'])) {
-							$runVar['counts']['now']['binaries_table'] += $run['count'];
-						}
-					} else if (strpos($tbl, 'parts_') !== false) {
-						$run = $pdo->queryOneRow($cntsql, $tRun->rand_bool($runVar['counts']['iterations']));
-						if (isset($run['count']) && is_numeric($run['count'])) {
-							$runVar['counts']['now']['parts_table'] += $run['count'];
-						}
-					} else if (strpos($tbl, 'partrepair_') !== false) {
-						$run = $pdo->queryOneRow($cntsql, $tRun->rand_bool($runVar['counts']['iterations']));
-						if (isset($run['count']) && is_numeric($run['count'])) {
-							$runVar['counts']['now']['partrepair_table'] += $run['count'];
+								break;
+							case strpos($tbl, 'parts_') !== false:
+								$runVar['counts']['now']['parts_table'] += getTableRowCount($psTableRowCount,
+																							$tbl);
+								break;
+							default:
 						}
 					}
+					$runVar['timers']['newOld']['oldestcollection'] = $age;
+
+					//free up memory used by now stale data
+					unset($age, $added, $tables);
+
+					$runVar['timers']['query']['tpg_time']  = (time() - $timer07);
+					$runVar['timers']['query']['tpg1_time'] = (time() - $timer01);
 				}
-				$runVar['timers']['newOld']['oldestcollection'] = $age;
-
-				//free up memory used by now stale data
-				unset($age, $run, $run1, $tables);
-
-				$runVar['timers']['query']['tpg_time'] = (time() - $timer07);
-				$runVar['timers']['query']['tpg1_time'] = (time() - $timer01);
 			}
 		}
 		$runVar['timers']['timer2'] = time();
@@ -379,4 +374,16 @@ function errorOnSQL($pdo)
 {
 	echo $pdo->log->error(PHP_EOL . "Monitor encountered severe errors retrieving process data from MySQL.  Please diagnose and try running again." . PHP_EOL);
 	exit;
+}
+
+function getTableRowCount(PDOStatement &$ps, $table)
+{
+	$success = $ps->execute([':table' => $table]);
+	if ($success) {
+		$result = $ps->fetch();
+
+		return is_numeric($result['count']) ? $result['count'] : 0;
+	}
+
+	return false;
 }

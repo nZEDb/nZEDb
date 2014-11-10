@@ -16,7 +16,7 @@ Class NZBContents
 	public $pdo;
 
 	/**
-	 * @var NNTP
+	 * @var \NNTP
 	 * @access protected
 	 */
 	protected $nntp;

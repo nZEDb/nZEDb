@@ -410,12 +410,12 @@ class Tmux
 			case 4:
 				return sprintf("
 					SELECT
-					(SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE table_name = 'predb' AND TABLE_SCHEMA = %1\$s) AS predb,
-					(SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE table_name = 'partrepair' AND TABLE_SCHEMA = %1\$s) AS partrepair_table,
-					(SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE table_name = 'parts' AND TABLE_SCHEMA = %1\$s) AS parts_table,
-					(SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE table_name = 'binaries' AND TABLE_SCHEMA = %1\$s) AS binaries_table,
-					(SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE table_name = 'collections' AND TABLE_SCHEMA = %1\$s) AS collections_table,
-					(SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE table_name = 'releases' AND TABLE_SCHEMA = %1\$s) AS releases,
+					(SELECT TABLE_ROWS FROM information_schema.TABLES WHERE table_name = 'predb' AND TABLE_SCHEMA = %1\$s) AS predb,
+					(SELECT TABLE_ROWS FROM information_schema.TABLES WHERE table_name = 'missed_parts' AND TABLE_SCHEMA = %1\$s) AS missed_parts_table,
+					(SELECT TABLE_ROWS FROM information_schema.TABLES WHERE table_name = 'parts' AND TABLE_SCHEMA = %1\$s) AS parts_table,
+					(SELECT TABLE_ROWS FROM information_schema.TABLES WHERE table_name = 'binaries' AND TABLE_SCHEMA = %1\$s) AS binaries_table,
+					(SELECT TABLE_ROWS FROM information_schema.TABLES WHERE table_name = 'collections' AND TABLE_SCHEMA = %1\$s) AS collections_table,
+					(SELECT TABLE_ROWS FROM information_schema.TABLES WHERE table_name = 'releases' AND TABLE_SCHEMA = %1\$s) AS releases,
 					(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1
 						AND (now() - INTERVAL backfill_target DAY) < first_record_postdate
 					) AS backfill_groups_days,

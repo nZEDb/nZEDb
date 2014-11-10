@@ -182,7 +182,7 @@ class AniDB
 	 * Retrieves all info for a specific AniDB ID
 	 *
 	 * @param int $anidbID
-	 * @return
+	 * @return array|boolean
 	 */
 	public function getAnimeInfo($anidbID)
 	{

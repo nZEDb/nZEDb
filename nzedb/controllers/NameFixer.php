@@ -173,7 +173,7 @@ class NameFixer
 			$query = sprintf('
 					SELECT rel.id AS releaseid
 					FROM releases rel
-					INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id)
+					INNER JOIN release_nfos nfo ON (nfo.releaseid = rel.id)
 					WHERE nzbstatus = %d
 					AND preid = 0',
 					\NZB::NZB_ADDED
@@ -184,7 +184,7 @@ class NameFixer
 			$query = sprintf('
 					SELECT rel.id AS releaseid
 					FROM releases rel
-					INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id)
+					INNER JOIN release_nfos nfo ON (nfo.releaseid = rel.id)
 					WHERE (isrenamed = %d OR rel.categoryid = %d)
 					AND proc_nfo = %d',
 					self::IS_RENAMED_NONE,
@@ -208,7 +208,7 @@ class NameFixer
 							SELECT nfo.releaseid AS nfoid, rel.group_id, rel.categoryid, rel.name, rel.searchname,
 								UNCOMPRESS(nfo) AS textstring, rel.id AS releaseid
 							FROM releases rel
-							INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id)
+							INNER JOIN release_nfos nfo ON (nfo.releaseid = rel.id)
 							WHERE rel.id = %d',
 							$rel['releaseid']
 						)
@@ -253,7 +253,7 @@ class NameFixer
 					SELECT rf.name AS textstring, rel.categoryid, rel.name, rel.searchname, rel.group_id,
 						rf.releaseid AS fileid, rel.id AS releaseid
 					FROM releases rel
-					INNER JOIN releasefiles rf ON (rf.releaseid = rel.id)
+					INNER JOIN release_files rf ON (rf.releaseid = rel.id)
 					WHERE nzbstatus = %d
 					AND preid = 0',
 					\NZB::NZB_ADDED
@@ -265,7 +265,7 @@ class NameFixer
 					SELECT rf.name AS textstring, rel.categoryid, rel.name, rel.searchname, rel.group_id,
 						rf.releaseid AS fileid, rel.id AS releaseid
 					FROM releases rel
-					INNER JOIN releasefiles rf ON (rf.releaseid = rel.id)
+					INNER JOIN release_files rf ON (rf.releaseid = rel.id)
 					WHERE (isrenamed = %d OR rel.categoryid = %d)
 					AND proc_files = %d',
 					self::IS_RENAMED_NONE,
@@ -697,7 +697,7 @@ class NameFixer
 				preg_match_all('#[a-zA-Z0-9]{3,}#', $preTitle, $matches, PREG_PATTERN_ORDER);
 				$titlematch = '+' . implode(' +', $matches[0]);
 				$join = sprintf(
-						"INNER JOIN releasesearch rs ON rs.releaseid = r.id
+						"INNER JOIN release_search_data rs ON rs.releaseid = r.id
 						WHERE
 							(MATCH (rs.name) AGAINST ('%1\$s' IN BOOLEAN MODE)
 							OR MATCH (rs.searchname) AGAINST ('%1\$s' IN BOOLEAN MODE))",
@@ -721,7 +721,7 @@ class NameFixer
 		}
 
 		echo $this->pdo->log->header("\nMatch PreFiles (${args[1]}) Started at " . date('g:i:s'));
-		echo $this->pdo->log->primary("Matching predb filename to cleaned releasefiles.name.\n");
+		echo $this->pdo->log->primary("Matching predb filename to cleaned release_files.name.\n");
 
 		$query = $this->pdo->queryDirect(
 						sprintf('
@@ -729,7 +729,7 @@ class NameFixer
 								r.group_id, r.categoryid,
 								rf.name AS filename
 							FROM releases r
-							INNER JOIN releasefiles rf ON r.id = rf.releaseid
+							INNER JOIN release_files rf ON r.id = rf.releaseid
 							AND rf.name IS NOT NULL
 							WHERE r.preid = 0
 							GROUP BY r.id
@@ -849,7 +849,7 @@ class NameFixer
 		$row = $pdo->queryOneRow(
 					sprintf("
 						SELECT p.id AS preid, p.title, p.source
-						FROM predb p INNER JOIN predbhash h ON h.pre_id = p.id
+						FROM predb p INNER JOIN predb_hashes h ON h.pre_id = p.id
 						WHERE MATCH (h.hashes) AGAINST (%s)
 						LIMIT 1",
 						$pdo->escapeString(strtolower($hash))

@@ -200,7 +200,7 @@ class XXX
 			GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs,
 			xxx.*, UNCOMPRESS(xxx.plot) AS plot, groups.name AS group_name, rn.id as nfoid FROM releases r
 			LEFT OUTER JOIN groups ON groups.id = r.group_id
-			LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id
+			LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
 			INNER JOIN xxxinfo xxx ON xxx.id = r.xxxinfo_id
 			WHERE r.nzbstatus = 1
 			AND xxx.title != ''
@@ -527,7 +527,7 @@ class XXX
 
 		if ($this->echooutput) {
 			$this->pdo->log->doEcho(
-				$this->pdo->log->headerOver(($xxxID !== false ? 'Added/updated XXX movie: ' : 'Nothing to update for XXX movie: ')) .
+				$this->pdo->log->headerOver(($xxxID !== false ? 'Added/updated XXX movie: ' : 'Nothing to update: ')) .
 				$this->pdo->log->primary($mov['title'])
 			);
 		}
@@ -653,7 +653,7 @@ class XXX
 	 * @return array|null
 	 */
 	public function getAllGenres($activeOnly = false) {
-		$res = $ret = null;
+		$ret = null;
 
 		if ($activeOnly) {
 			$res = $this->pdo->query("SELECT title FROM genres WHERE disabled = 0 AND type = 6000 ORDER BY title");

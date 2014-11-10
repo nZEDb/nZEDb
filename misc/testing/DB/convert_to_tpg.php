@@ -116,11 +116,11 @@ if ($DoPartRepair === true) {
 	foreach ($actgroups as $group) {
 		$pcount = 1;
 		$pdone = 0;
-		$sql = sprintf('SELECT COUNT(*) AS total FROM partrepair where group_id = %d;', $group['id']);
+		$sql = sprintf('SELECT COUNT(*) AS total FROM missed_parts where group_id = %d;', $group['id']);
 		$plen = $pdo->queryOneRow($sql);
 		while ($pdone < $plen['total']) {
 			// Only load 10000 partrepair records per loop to not overload memory.
-			$partrepairs = $pdo->queryAssoc(sprintf('select * from partrepair where group_id = %d limit %d, 10000;', $group['id'], $pdone));
+			$partrepairs = $pdo->queryAssoc(sprintf('select * from missed_parts where group_id = %d limit %d, 10000;', $group['id'], $pdone));
 			if ($partrepairs instanceof \Traversable) {
 				foreach ($partrepairs as $partrepair) {
 					$partrepair['numberid'] = $pdo->escapeString($partrepair['numberid']);
@@ -129,9 +129,9 @@ if ($DoPartRepair === true) {
 					if ($debug) {
 						echo "\n\nPart Repair insert:\n";
 						print_r($partrepair);
-						echo sprintf("\nINSERT INTO partrepair_%d (numberid, group_id, attempts) VALUES (%s, %s, %s)\n\n", $group['id'], $partrepair['numberid'], $partrepair['group_id'], $partrepair['attempts']);
+						echo sprintf("\nINSERT INTO missed_parts_%d (numberid, group_id, attempts) VALUES (%s, %s, %s)\n\n", $group['id'], $partrepair['numberid'], $partrepair['group_id'], $partrepair['attempts']);
 					}
-					$pdo->queryExec(sprintf('INSERT INTO partrepair_%d (numberid, group_id, attempts) VALUES (%s, %s, %s);', $group['id'], $partrepair['numberid'], $partrepair['group_id'], $partrepair['attempts']));
+					$pdo->queryExec(sprintf('INSERT INTO missed_parts_%d (numberid, group_id, attempts) VALUES (%s, %s, %s);', $group['id'], $partrepair['numberid'], $partrepair['group_id'], $partrepair['attempts']));
 					$consoletools->overWrite('Part Repairs Completed for ' . $group['name'] . ':' . $consoletools->percentString($pcount, $plen['total']));
 					$pcount++;
 				}
@@ -150,7 +150,7 @@ if (isset($argv[2]) && $argv[2] == 'delete') {
 	$pdo->queryDirect('TRUNCATE TABLE collections;');
 	$pdo->queryDirect('TRUNCATE TABLE binaries;');
 	$pdo->queryDirect('TRUNCATE TABLE parts');
-	$pdo->queryDirect('TRUNCATE TABLE partrepair');
+	$pdo->queryDirect('TRUNCATE TABLE missed_parts');
 	echo "Complete.\n";
 }
 // Update TPG setting in site-edit.

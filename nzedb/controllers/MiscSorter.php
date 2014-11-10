@@ -1,8 +1,6 @@
 <?php
 require_once nZEDb_LIBS . 'AmazonProductAPI.php';
 
-use nzedb\db\Settings;
-
 /**
  * Class MiscSorter
  */
@@ -18,7 +16,6 @@ class MiscSorter
 	private $pdo;
 	private $category;
 	private $movie;
-	private $nfolib;
 
 	/**
 	 * @param bool $echooutput
@@ -46,7 +43,7 @@ class MiscSorter
 						sprintf("
 							SELECT UNCOMPRESS(rn.nfo) AS nfo,
 								r.id, r.name, r.searchname
-							FROM releasenfo rn
+							FROM release_nfos rn
 							INNER JOIN releases r ON rn.releaseid = r.id
 							INNER JOIN groups g ON r.group_id = g.id
 							WHERE rn.nfo IS NOT NULL
@@ -286,7 +283,6 @@ class MiscSorter
 
 	private function moviename($nfo = '', $imdb = 0, $name = '')
 	{
-		$qual = '';
 		$tmp = array();
 
 		$qual = $this->_getVideoQuality($nfo);

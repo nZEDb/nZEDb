@@ -4,6 +4,24 @@ Please make sure any PR's comply with our coding standards policy: http://li3.me
 
 New updates are grouped by person, at the top of the file.
 
+2014-11-06 niel
+	* Fix: Setting default release completion value to 95.
+	* Fix: Replacing some 'partrepair' references with 'missed_parts' that were omitted previously due to excessive caution ;-)
+	* Fix: TPG Only - Tmux monitor showing incorrect Part Repair (possibly others) numbers.
+	* Chg: TPG Only - Slight improvement in Tmux monitor's updating numbers. Probably too small to notice for most users.
+2014-10-31 niel
+	* Fix: Changing the triggers for releases_files table that were missed with the others.
+2014-10-30 niel
+	* Fix: Correcting some output fornatting for amazon lookups.
+2014-10-28 niel
+	* Fix: Incorrectly changed table releaseaudio to release_audio, when it should have been audio_data.
+2014-10-27 niel
+	* Chg: Database table renaming to bring our schema more inline with our naming conventions. Still some to do.
+	!!NOTE!! Db updates may take a long time, depending on your ammount of releases
+2014-10-25 bart39
+	* Fix: Missing parameter for binaries.php in /threaded/start.sh
+2014-10-23 niel
+	* Fix: page_contents and forum_posts tables were not being filled during install step 2.
 2014-10-20 niel
 	* Fix: Copied couple javascripts over to alpha theme from Default, to fix the Sending to NZBGet issue some users were having.
 	NOTE: This is a temporary fix! Someone with better understanding of the alpha theme (kevin?) needs to take a proper look at this.

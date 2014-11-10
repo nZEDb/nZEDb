@@ -1,6 +1,7 @@
 <?php
 namespace nzedb\libraries;
 
+use \nzedb\db\Settings;
 use \nzedb\processing\PostProcess;
 
 require_once(nZEDb_LIBS . 'forkdaemon-php' . DS . 'fork_daemon.php');
@@ -87,7 +88,7 @@ class Forking extends \fork_daemon
 		$this->work = [];
 
 		// Init Settings here, as forking causes errors when it's destroyed.
-		$this->pdo = new \nzedb\db\Settings();
+		$this->pdo = new Settings();
 
 		// Process extra work that should not be forked and done before forking.
 		$this->processStartWork();
@@ -342,7 +343,7 @@ class Forking extends \fork_daemon
 				MAX(a.first_record) AS their_first,
 				MAX(a.last_record) AS their_last
 				FROM groups g
-				INNER JOIN shortgroups a ON g.name = a.name
+				INNER JOIN short_groups a ON g.name = a.name
 				WHERE g.first_record IS NOT NULL
 				AND g.first_record_postdate IS NOT NULL
 				AND g.backfill = 1
@@ -368,7 +369,7 @@ class Forking extends \fork_daemon
 				$geteach = $count / $run[0]['maxmsgs'];
 			}
 
-			$queue = array();
+			$queue = [];
 			for ($i = 0; $i <= $geteach - 1; $i++) {
 				$queue[$i] = sprintf("get_range  backfill  %s  %s  %s  %s", $data['name'], $data['our_first'] - $i * $run[0]['maxmsgs'] - $run[0]['maxmsgs'], $data['our_first'] - $i * $run[0]['maxmsgs'] - 1, $i + 1);
 			}
@@ -423,11 +424,11 @@ class Forking extends \fork_daemon
 		$maxmssgs = $this->pdo->getSetting('maxmssgs');
 		$threads = $this->pdo->getSetting('binarythreads');
 
-		$groups = $this->pdo->query("SELECT g.name AS groupname, g.last_record AS our_last, a.last_record AS their_last FROM groups g INNER JOIN shortgroups a ON g.active = 1 AND g.name = a.name ORDER BY a.last_record DESC");
+		$groups = $this->pdo->query("SELECT g.name AS groupname, g.last_record AS our_last, a.last_record AS their_last FROM groups g INNER JOIN short_groups a ON g.active = 1 AND g.name = a.name ORDER BY a.last_record DESC");
 
 		if ($groups) {
 			$i = 1;
-			$queue = array();
+			$queue = [];
 			foreach ($groups as $group) {
 				if ($group['our_last'] == 0) {
 					$queue[$i] = sprintf("update_group_headers  %s", $group['groupname']);
@@ -497,7 +498,7 @@ class Forking extends \fork_daemon
 		}
 		switch($this->workTypeOptions[0]) {
 			case "md5":
-				$join = "LEFT OUTER JOIN releasefiles rf ON r.id = rf.releaseid AND rf.ishashed = 1";
+				$join = "LEFT OUTER JOIN release_files rf ON r.id = rf.releaseid AND rf.ishashed = 1";
 				$where = "r.ishashed = 1 AND r.dehashstatus BETWEEN -6 AND 0";
 				break;
 
@@ -506,7 +507,7 @@ class Forking extends \fork_daemon
 				break;
 
 			case "filename":
-				$join = "INNER JOIN releasefiles rf ON r.id = rf.releaseid";
+				$join = "INNER JOIN release_files rf ON r.id = rf.releaseid";
 				$where = "r.proc_files = 0";
 				break;
 
@@ -529,7 +530,7 @@ class Forking extends \fork_daemon
 
 		if ($datas) {
 			$count = 0;
-			$queue = array();
+			$queue = [];
 			foreach ($datas as $firstguid) {
 				if ($count >= $threads) {
 					$count = 0;
