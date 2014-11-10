@@ -28,7 +28,7 @@ The overall speed of nZEDb is largely governed by performance of the database. A
 
 ### Software
 
-	PHP 5.4+ (and various modules)
+	PHP 5.5+ (and various modules)
 	MySQL 5.5+ (Postgres support is Work-In-Progress)
 	Python 2.7 or 3.0 (and various modules)
 The installation guides have more detailed software requirements.
