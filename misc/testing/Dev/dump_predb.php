@@ -66,7 +66,7 @@ if (isset($argv[1]) && $argv[1] == 'export' && isset($argv[2])) {
     $pdo->queryDirect("DELETE FROM tmp_pre WHERE LENGTH(title) <= 8");
 
 	// Drop triggers on predb
-	echo $pdo->log->info("Dropping predbhash triggers");
+	echo $pdo->log->info("Dropping predb_hashes triggers");
 	$pdo->queryDirect("DROP TRIGGER IF EXISTS insert_hashes");
 	$pdo->queryDirect("DROP TRIGGER IF EXISTS update_hashes");
 
@@ -99,13 +99,13 @@ if (isset($argv[1]) && $argv[1] == 'export' && isset($argv[2])) {
 	 predb.group_id = IF(g.id IS NOT NULL, g.id, predb.group_id)');
 
 	// Add hashes
-	echo $pdo->log->info("Adding predbhash entries");
-	$pdo->queryDirect("INSERT IGNORE INTO predbhash (pre_id, hashes) (SELECT id, CONCAT_WS(',', MD5(title), MD5(MD5(title)), SHA1(title)) FROM predb)");
+	echo $pdo->log->info("Adding predb_hashes entries");
+	$pdo->queryDirect("INSERT IGNORE INTO predb_hashes (pre_id, hashes) (SELECT id, CONCAT_WS(',', MD5(title), MD5(MD5(title)), SHA1(title)) FROM predb)");
 
 	// Re-add triggers on predb
-	echo $pdo->log->info("Adding predbhash triggers");
-	$pdo->exec("CREATE TRIGGER insert_hashes AFTER INSERT ON predb FOR EACH ROW BEGIN INSERT INTO predbhash (pre_id, hashes) VALUES (NEW.id, CONCAT_WS(',', MD5(NEW.title), MD5(MD5(NEW.title)), SHA1(NEW.title))); END;");
-	$pdo->exec("CREATE TRIGGER update_hashes AFTER UPDATE ON predb FOR EACH ROW BEGIN IF NEW.title != OLD.title THEN UPDATE predbhash SET hashes = CONCAT_WS(',', MD5(NEW.title), MD5(MD5(NEW.title)), SHA1(NEW.title)) WHERE pre_id = OLD.id; END IF; END;");
+	echo $pdo->log->info("Adding predb_hashes triggers");
+	$pdo->exec("CREATE TRIGGER insert_hashes AFTER INSERT ON predb FOR EACH ROW BEGIN INSERT INTO predb_hashes (pre_id, hashes) VALUES (NEW.id, CONCAT_WS(',', MD5(NEW.title), MD5(MD5(NEW.title)), SHA1(NEW.title))); END;");
+	$pdo->exec("CREATE TRIGGER update_hashes AFTER UPDATE ON predb FOR EACH ROW BEGIN IF NEW.title != OLD.title THEN UPDATE predb_hashes SET hashes = CONCAT_WS(',', MD5(NEW.title), MD5(MD5(NEW.title)), SHA1(NEW.title)) WHERE pre_id = OLD.id; END IF; END;");
 
 	// Drop tmp_pre table
 	$pdo->queryExec('DROP TABLE IF EXISTS tmp_pre');

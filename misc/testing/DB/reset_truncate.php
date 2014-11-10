@@ -10,7 +10,7 @@ if (isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "drop")) {
 	$pdo->queryExec("UPDATE groups SET first_record = 0, first_record_postdate = NULL, last_record = 0, last_record_postdate = NULL, last_updated = NULL");
 	echo $pdo->log->primary("Reseting all groups completed.");
 
-	$arr = array("parts", "partrepair", "binaries", "collections");
+	$arr = array("parts", "missed_parts", "binaries", "collections");
 	foreach ($arr as &$value) {
 		$rel = $pdo->queryExec("TRUNCATE TABLE $value");
 		if ($rel !== false) {
@@ -28,7 +28,7 @@ if (isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "drop")) {
 		$tables = $pdo->query($sql);
 		foreach ($tables as $row) {
 			$tbl = $row['name'];
-			if (preg_match('/collections_\d+/', $tbl) || preg_match('/binaries_\d+/', $tbl) || preg_match('/parts_\d+/', $tbl) || preg_match('/partrepair_\d+/', $tbl) || preg_match('/\d+_collections/', $tbl) || preg_match('/\d+_binaries/', $tbl) || preg_match('/\d+_parts/', $tbl) || preg_match('/\d+_partrepair_\d+/', $tbl)) {
+			if (preg_match('/collections_\d+/', $tbl) || preg_match('/binaries_\d+/', $tbl) || preg_match('/parts_\d+/', $tbl) || preg_match('/missed_parts_\d+/', $tbl) || preg_match('/\d+_collections/', $tbl) || preg_match('/\d+_binaries/', $tbl) || preg_match('/\d+_parts/', $tbl) || preg_match('/\d+_missed_parts_\d+/', $tbl)) {
 				if ($argv[1] == "drop") {
 					$rel = $pdo->queryDirect(sprintf('DROP TABLE %s', $tbl));
 					if ($rel !== false) {

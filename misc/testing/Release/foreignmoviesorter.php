@@ -20,7 +20,7 @@ if (isset($argv[1]) && $argv[1] === "true") {
 function getForeignMovies() {
 	global $pdo;
 	$like = 'LIKE';
-	return $pdo->query('SELECT r.id, r.searchname FROM releases r JOIN releaseaudio ra ON ra.releaseID = r.id WHERE ra.audiolanguage ' . $like . " '%English%' AND r.categoryid = 2010");
+	return $pdo->query('SELECT r.id, r.searchname FROM releases r JOIN audio_data ra ON ra.releaseID = r.id WHERE ra.audiolanguage ' . $like . " '%English%' AND r.categoryid = 2010");
 }
 
 function updateRelease($id, $cat) {

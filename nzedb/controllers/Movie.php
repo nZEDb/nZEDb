@@ -321,7 +321,7 @@ class Movie
 			GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs,
 			m.*, groups.name AS group_name, rn.id as nfoid FROM releases r
 			LEFT OUTER JOIN groups ON groups.id = r.group_id
-			LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id
+			LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
 			INNER JOIN movieinfo m ON m.imdbid = r.imdbid
 			WHERE r.nzbstatus = 1 AND r.imdbid != '0000000'
 			AND m.title != ''
@@ -1295,12 +1295,12 @@ class Movie
 	public function getUpcoming($type, $source = 'rottentomato')
 	{
 		$list = $this->pdo->queryOneRow(
-			sprintf('SELECT * FROM upcoming WHERE source = %s AND typeid = %d', $this->pdo->escapeString($source), $type)
+			sprintf('SELECT * FROM upcoming_releases WHERE source = %s AND typeid = %d', $this->pdo->escapeString($source), $type)
 		);
 		if ($list === false) {
 			$this->updateUpcoming();
 			$list = $this->pdo->queryOneRow(
-				sprintf('SELECT * FROM upcoming WHERE source = %s AND typeid = %d', $this->pdo->escapeString($source), $type)
+				sprintf('SELECT * FROM upcoming_releases WHERE source = %s AND typeid = %d', $this->pdo->escapeString($source), $type)
 			);
 		}
 		return $list;
@@ -1408,7 +1408,7 @@ class Movie
 	{
 		return $this->pdo->queryExec(
 			sprintf("
-				INSERT INTO upcoming (source, typeid, info, updateddate)
+				INSERT INTO upcoming_releases (source, typeid, info, updateddate)
 				VALUES (%s, %d, %s, NOW())
 				ON DUPLICATE KEY UPDATE info = %s",
 				$this->pdo->escapeString($source),

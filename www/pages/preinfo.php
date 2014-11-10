@@ -227,7 +227,7 @@ if (isset($_GET['type'])) {
 			if (isset($_GET['md5']) && strlen($_GET['title']) === 32) {
 				$pdo = new nzedb\db\DB;
 				$preData = $pdo->query(
-					sprintf('SELECT * FROM predb p INNER JOIN predbhash ph ON ph.pre_id = p.id WHERE MATCH(hashes) AGAINST (%s) %s %s %s LIMIT %d OFFSET %d',
+					sprintf('SELECT * FROM predb p INNER JOIN predb_hashes ph ON ph.pre_id = p.id WHERE MATCH(hashes) AGAINST (%s) %s %s %s LIMIT %d OFFSET %d',
 						$pdo->escapeString($_GET['md5']),
 						$newer,
 						$older,
@@ -244,7 +244,7 @@ if (isset($_GET['type'])) {
 			if (isset($_GET['sha1']) && strlen($_GET['sha1']) === 40) {
 				$pdo = new nzedb\db\DB;
 				$preData = $pdo->query(
-					sprintf('SELECT * FROM predb p INNER JOIN predbhash ph ON ph.pre_id = p.id WHERE MATCH(hashes) AGAINST (%s) %s %s %s LIMIT %d OFFSET %d',
+					sprintf('SELECT * FROM predb p INNER JOIN predb_hashes ph ON ph.pre_id = p.id WHERE MATCH(hashes) AGAINST (%s) %s %s %s LIMIT %d OFFSET %d',
 						$pdo->escapeString($_GET['sha1']),
 						$newer,
 						$older,

@@ -29,7 +29,7 @@ class ReleaseFiles
 	 */
 	public function get($id)
 	{
-		return $this->pdo->query(sprintf("SELECT * FROM releasefiles WHERE releaseid = %d ORDER BY releasefiles.name", $id));
+		return $this->pdo->query(sprintf("SELECT * FROM release_files WHERE releaseid = %d ORDER BY release_files.name", $id));
 	}
 
 	/**
@@ -43,11 +43,11 @@ class ReleaseFiles
 	{
 		return $this->pdo->query(
 			sprintf("
-				SELECT releasefiles.*
-				FROM releasefiles
-				INNER JOIN releases r ON r.id = releasefiles.releaseid
+				SELECT release_files.*
+				FROM release_files
+				INNER JOIN releases r ON r.id = release_files.releaseid
 				WHERE r.guid = %s
-				ORDER BY releasefiles.name ",
+				ORDER BY release_files.name ",
 				$this->pdo->escapeString($guid)
 			)
 		);
@@ -62,7 +62,7 @@ class ReleaseFiles
 	 */
 	public function delete($id)
 	{
-		return $this->pdo->queryExec(sprintf("DELETE FROM releasefiles WHERE releaseid = %d", $id));
+		return $this->pdo->queryExec(sprintf("DELETE FROM release_files WHERE releaseid = %d", $id));
 	}
 
 	/**
@@ -81,7 +81,7 @@ class ReleaseFiles
 		$duplicateCheck = $this->pdo->queryOneRow(
 			sprintf('
 				SELECT id
-				FROM releasefiles
+				FROM release_files
 				WHERE releaseid = %d AND name = %s',
 				$id,
 				$this->pdo->escapeString(utf8_encode($name))
@@ -91,7 +91,7 @@ class ReleaseFiles
 		if ($duplicateCheck === false) {
 			return $this->pdo->queryInsert(
 				sprintf("
-					INSERT INTO releasefiles
+					INSERT INTO release_files
 					(releaseid, name, size, createddate, passworded)
 					VALUES
 					(%d, %s, %s, %s, %d)",

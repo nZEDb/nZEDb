@@ -526,7 +526,7 @@ class Binaries
 			if ($partRepair === true) {
 				$this->_pdo->queryExec(
 					sprintf(
-						'UPDATE partrepair SET attempts = attempts + 1 WHERE group_id = %d AND numberid %s',
+						'UPDATE missed_parts SET attempts = attempts + 1 WHERE group_id = %d AND numberid %s',
 						$groupMySQL['id'],
 						($first == $last ? '= ' . $first : 'IN (' . implode(',', range($first, $last)) . ')')
 					)
@@ -978,7 +978,7 @@ class Binaries
 				}
 
 				// Get article headers from newsgroup.
-				$this->scan($groupArr, $partFrom, $partTo, 'partrepair', $partList);
+				$this->scan($groupArr, $partFrom, $partTo, 'missed_parts', $partList);
 			}
 
 			// Calculate parts repaired

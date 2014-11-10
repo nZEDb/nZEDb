@@ -232,7 +232,7 @@ def main(args):
 		final = cur[0].fetchall()
 		if len(datas) > 0:
 			for item in final:
-				run = "DELETE FROM releasenfo WHERE nfo IS NULL AND releaseid = %s"
+				run = "DELETE FROM release_nfos WHERE nfo IS NULL AND releaseid = %s"
 				cur[0].execute(run, (item[0]))
 				final = cur[0].fetchall()
 

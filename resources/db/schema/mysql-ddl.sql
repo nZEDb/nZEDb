@@ -84,6 +84,29 @@ CREATE TABLE anidb_titles (
   COLLATE = utf8_unicode_ci;
 
 
+DROP TABLE IF EXISTS audio_data;
+CREATE TABLE audio_data (
+  id               INT(11)     UNSIGNED AUTO_INCREMENT,
+  releaseid        INT(11)     UNSIGNED NOT NULL,
+  audioid          INT(2)      UNSIGNED NOT NULL,
+  audioformat      VARCHAR(50) DEFAULT NULL,
+  audiomode        VARCHAR(50) DEFAULT NULL,
+  audiobitratemode VARCHAR(50) DEFAULT NULL,
+  audiobitrate     VARCHAR(10) DEFAULT NULL,
+  audiochannels    VARCHAR(25) DEFAULT NULL,
+  audiosamplerate  VARCHAR(25) DEFAULT NULL,
+  audiolibrary     VARCHAR(50) DEFAULT NULL,
+  audiolanguage    VARCHAR(50) DEFAULT NULL,
+  audiotitle       VARCHAR(50) DEFAULT NULL,
+  PRIMARY KEY (id),
+  UNIQUE INDEX ix_releaseaudio_releaseid_audioid (releaseid, audioid)
+)
+  ENGINE = MYISAM
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci
+  AUTO_INCREMENT = 1;
+
+
 DROP TABLE IF EXISTS binaries;
 CREATE TABLE binaries (
   id            BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -326,6 +349,20 @@ CREATE TABLE groups (
   AUTO_INCREMENT = 1;
 
 
+DROP TABLE IF EXISTS invitations;
+CREATE TABLE invitations (
+  id          INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  guid        VARCHAR(50)      NOT NULL,
+  user_id INT(11) UNSIGNED NOT NULL,
+  createddate DATETIME         NOT NULL,
+  PRIMARY KEY (id)
+)
+  ENGINE = MYISAM
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci
+  AUTO_INCREMENT = 1;
+
+
 DROP TABLE IF EXISTS logging;
 CREATE TABLE logging (
   id       INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -452,18 +489,18 @@ CREATE TABLE parts (
   AUTO_INCREMENT = 1;
 
 
-DROP TABLE IF EXISTS partrepair;
-CREATE TABLE partrepair (
+DROP TABLE IF EXISTS missed_parts;
+CREATE TABLE missed_parts (
   id       INT(16) UNSIGNED NOT NULL AUTO_INCREMENT,
   numberid BIGINT UNSIGNED  NOT NULL,
   group_id INT(11) UNSIGNED NOT NULL DEFAULT '0'
   COMMENT 'FK to groups',
   attempts TINYINT(1)       NOT NULL DEFAULT '0',
   PRIMARY KEY (id),
-  INDEX ix_partrepair_attempts                  (attempts),
-  INDEX ix_partrepair_groupid_attempts          (group_id, attempts),
-  INDEX ix_partrepair_numberid_groupid_attempts (numberid, group_id, attempts),
-  UNIQUE INDEX ix_partrepair_numberid_groupid          (numberid, group_id)
+  INDEX ix_missed_parts_attempts                  (attempts),
+  INDEX ix_missed_parts_groupid_attempts          (group_id, attempts),
+  INDEX ix_missed_parts_numberid_groupid_attempts (numberid, group_id, attempts),
+  UNIQUE INDEX ix_missed_parts_numberid_groupid          (numberid, group_id)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
@@ -506,13 +543,13 @@ CREATE TABLE predb (
   AUTO_INCREMENT = 1;
 
 
-DROP TABLE IF EXISTS predbhash;
-CREATE TABLE predbhash (
+DROP TABLE IF EXISTS predb_hashes;
+CREATE TABLE predb_hashes (
   pre_id INT(11) UNSIGNED NOT NULL DEFAULT '0',
   hashes VARCHAR(512)     NOT NULL DEFAULT '',
   PRIMARY KEY (pre_id),
-  FULLTEXT INDEX ix_predbhash_hashes_ft (hashes),
-  UNIQUE INDEX ix_predbhash_hashes    (hashes(32))
+  FULLTEXT INDEX ix_predb_hashes_ft (hashes),
+  UNIQUE INDEX ix_predb_hashes    (hashes(32))
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8mb4
@@ -610,31 +647,8 @@ CREATE TABLE         releases (
   );
 
 
-DROP TABLE IF EXISTS releaseaudio;
-CREATE TABLE releaseaudio (
-  id               INT(11)     UNSIGNED AUTO_INCREMENT,
-  releaseid        INT(11)     UNSIGNED NOT NULL,
-  audioid          INT(2)      UNSIGNED NOT NULL,
-  audioformat      VARCHAR(50) DEFAULT NULL,
-  audiomode        VARCHAR(50) DEFAULT NULL,
-  audiobitratemode VARCHAR(50) DEFAULT NULL,
-  audiobitrate     VARCHAR(10) DEFAULT NULL,
-  audiochannels    VARCHAR(25) DEFAULT NULL,
-  audiosamplerate  VARCHAR(25) DEFAULT NULL,
-  audiolibrary     VARCHAR(50) DEFAULT NULL,
-  audiolanguage    VARCHAR(50) DEFAULT NULL,
-  audiotitle       VARCHAR(50) DEFAULT NULL,
-  PRIMARY KEY (id),
-  UNIQUE INDEX ix_releaseaudio_releaseid_audioid (releaseid, audioid)
-)
-  ENGINE = MYISAM
-  DEFAULT CHARSET = utf8
-  COLLATE = utf8_unicode_ci
-  AUTO_INCREMENT = 1;
-
-
-DROP TABLE IF EXISTS releasecomment;
-CREATE TABLE releasecomment (
+DROP TABLE IF EXISTS release_comments;
+CREATE TABLE release_comments (
   id          INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   releaseid   INT(11) UNSIGNED NOT NULL,
   text        VARCHAR(2000)    NOT NULL DEFAULT '',
@@ -656,8 +670,8 @@ CREATE TABLE releasecomment (
   AUTO_INCREMENT = 1;
 
 
-DROP TABLE IF EXISTS releasefiles;
-CREATE TABLE releasefiles (
+DROP TABLE IF EXISTS release_files;
+CREATE TABLE release_files (
   id          INT(10)             NOT NULL AUTO_INCREMENT,
   releaseid   INT(11) UNSIGNED    NOT NULL,
   name        VARCHAR(255)        NULL,
@@ -677,8 +691,8 @@ CREATE TABLE releasefiles (
   AUTO_INCREMENT = 1;
 
 
-DROP TABLE IF EXISTS releasenfo;
-CREATE TABLE releasenfo (
+DROP TABLE IF EXISTS release_nfos;
+CREATE TABLE release_nfos (
   id        INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   releaseid INT(11) UNSIGNED NOT NULL,
   nfo       BLOB             NULL DEFAULT NULL,
@@ -691,8 +705,8 @@ CREATE TABLE releasenfo (
   AUTO_INCREMENT = 1;
 
 
-DROP TABLE IF EXISTS releasesearch;
-CREATE TABLE         releasesearch (
+DROP TABLE IF EXISTS release_search_data;
+CREATE TABLE release_search_data (
   id         INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   releaseid  INT(11) UNSIGNED NOT NULL,
   guid       VARCHAR(50)      NOT NULL,
@@ -712,8 +726,8 @@ CREATE TABLE         releasesearch (
   AUTO_INCREMENT  = 1;
 
 
-DROP TABLE IF EXISTS releasesubs;
-CREATE TABLE releasesubs (
+DROP TABLE IF EXISTS release_subtitles;
+CREATE TABLE release_subtitles (
   id           INT(11)     UNSIGNED AUTO_INCREMENT,
   releaseid    INT(11)     UNSIGNED NOT NULL,
   subsid       INT(2)      UNSIGNED NOT NULL,
@@ -727,8 +741,8 @@ CREATE TABLE releasesubs (
   AUTO_INCREMENT = 1;
 
 
-DROP TABLE IF EXISTS releasevideo;
-CREATE TABLE         releasevideo (
+DROP TABLE IF EXISTS video_data;
+CREATE TABLE video_data (
   releaseid       INT(11) UNSIGNED NOT NULL,
   containerformat VARCHAR(50)      DEFAULT NULL,
   overallbitrate  VARCHAR(20)      DEFAULT NULL,
@@ -844,8 +858,8 @@ CREATE TABLE tmux (
   AUTO_INCREMENT = 1;
 
 
-DROP TABLE IF EXISTS tvrage;
-CREATE TABLE         tvrage (
+DROP TABLE IF EXISTS tvrage_titles;
+CREATE TABLE tvrage_titles (
   id           INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   rageid       INT              NOT NULL,
   tvdbid       INT              NOT NULL DEFAULT '0',
@@ -870,8 +884,8 @@ CREATE TABLE         tvrage (
   AUTO_INCREMENT  = 1;
 
 
-DROP TABLE IF EXISTS tvrageepisodes;
-CREATE TABLE tvrageepisodes (
+DROP TABLE IF EXISTS tvrage_episodes;
+CREATE TABLE tvrage_episodes (
   id        INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   rageid    INT(11) UNSIGNED NOT NULL,
   showtitle VARCHAR(255) DEFAULT NULL,
@@ -889,8 +903,8 @@ CREATE TABLE tvrageepisodes (
   AUTO_INCREMENT = 1;
 
 
-DROP TABLE IF EXISTS upcoming;
-CREATE TABLE upcoming (
+DROP TABLE IF EXISTS upcoming_releases;
+CREATE TABLE upcoming_releases (
   id          INT(10)                               NOT NULL AUTO_INCREMENT,
   source      VARCHAR(20)                           NOT NULL,
   typeid      INT(10)                               NOT NULL,
@@ -950,8 +964,8 @@ CREATE TABLE users (
   AUTO_INCREMENT = 1;
 
 
-DROP TABLE IF EXISTS usercart;
-CREATE TABLE usercart (
+DROP TABLE IF EXISTS users_releases;
+CREATE TABLE users_releases (
   id          INT(16) UNSIGNED NOT NULL AUTO_INCREMENT,
   user_id INT              NOT NULL,
   releaseid   INT              NOT NULL,
@@ -965,8 +979,8 @@ CREATE TABLE usercart (
   AUTO_INCREMENT = 1;
 
 
-DROP TABLE IF EXISTS userdownloads;
-CREATE TABLE userdownloads (
+DROP TABLE IF EXISTS user_downloads;
+CREATE TABLE user_downloads (
   id        INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   user_id INT(16)          NOT NULL,
   timestamp DATETIME         NOT NULL,
@@ -980,8 +994,8 @@ CREATE TABLE userdownloads (
   AUTO_INCREMENT = 1;
 
 
-DROP TABLE IF EXISTS userexcat;
-CREATE TABLE userexcat (
+DROP TABLE IF EXISTS user_excluded_categories;
+CREATE TABLE user_excluded_categories (
   id          INT(16) UNSIGNED NOT NULL AUTO_INCREMENT,
   user_id INT              NOT NULL,
   categoryid  INT              NOT NULL,
@@ -995,22 +1009,8 @@ CREATE TABLE userexcat (
   AUTO_INCREMENT = 1;
 
 
-DROP TABLE IF EXISTS userinvite;
-CREATE TABLE userinvite (
-  id          INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  guid        VARCHAR(50)      NOT NULL,
-  user_id INT(11) UNSIGNED NOT NULL,
-  createddate DATETIME         NOT NULL,
-  PRIMARY KEY (id)
-)
-  ENGINE = MYISAM
-  DEFAULT CHARSET = utf8
-  COLLATE = utf8_unicode_ci
-  AUTO_INCREMENT = 1;
-
-
-DROP TABLE IF EXISTS usermovies;
-CREATE TABLE usermovies (
+DROP TABLE IF EXISTS user_movies;
+CREATE TABLE user_movies (
   id          INT(16) UNSIGNED               NOT NULL AUTO_INCREMENT,
   user_id INT(16)                        NOT NULL,
   imdbid      MEDIUMINT(7) UNSIGNED ZEROFILL NULL,
@@ -1025,8 +1025,8 @@ CREATE TABLE usermovies (
   AUTO_INCREMENT = 1;
 
 
-DROP TABLE IF EXISTS userrequests;
-CREATE TABLE userrequests (
+DROP TABLE IF EXISTS user_requests;
+CREATE TABLE user_requests (
   id        INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   user_id INT(16)          NOT NULL,
   request   VARCHAR(255)     NOT NULL,
@@ -1041,8 +1041,8 @@ CREATE TABLE userrequests (
   AUTO_INCREMENT = 1;
 
 
-DROP TABLE IF EXISTS userroles;
-CREATE TABLE userroles (
+DROP TABLE IF EXISTS user_roles;
+CREATE TABLE user_roles (
   id               INT(10)             NOT NULL AUTO_INCREMENT,
   name             VARCHAR(32)         NOT NULL,
   apirequests      INT(10) UNSIGNED    NOT NULL,
@@ -1058,8 +1058,8 @@ CREATE TABLE userroles (
   AUTO_INCREMENT = 4;
 
 
-DROP TABLE IF EXISTS userseries;
-CREATE TABLE userseries (
+DROP TABLE IF EXISTS user_series;
+CREATE TABLE user_series (
   id          INT(16) UNSIGNED NOT NULL AUTO_INCREMENT,
   user_id INT(16)          NOT NULL,
   rageid      INT(16)          NOT NULL,
@@ -1111,6 +1111,7 @@ CREATE TRIGGER check_insert BEFORE INSERT ON releases FOR EACH ROW
       THEN SET NEW.isrequestid = 1;
     END IF;
   END; $$
+
 CREATE TRIGGER check_update BEFORE UPDATE ON releases FOR EACH ROW
   BEGIN
     IF NEW.searchname REGEXP '[a-fA-F0-9]{32}' OR NEW.name REGEXP '[a-fA-F0-9]{32}'
@@ -1119,55 +1120,64 @@ CREATE TRIGGER check_update BEFORE UPDATE ON releases FOR EACH ROW
       THEN SET NEW.isrequestid = 1;
     END IF;
   END; $$
-CREATE TRIGGER check_rfinsert BEFORE INSERT ON releasefiles FOR EACH ROW
+
+CREATE TRIGGER check_rfinsert BEFORE INSERT ON release_files FOR EACH ROW
   BEGIN
     IF NEW.name REGEXP '[a-fA-F0-9]{32}'
       THEN SET NEW.ishashed = 1;
     END IF;
   END; $$
-CREATE TRIGGER check_rfupdate BEFORE UPDATE ON releasefiles FOR EACH ROW
+
+CREATE TRIGGER check_rfupdate BEFORE UPDATE ON release_files FOR EACH ROW
   BEGIN
     IF NEW.name REGEXP '[a-fA-F0-9]{32}'
       THEN SET NEW.ishashed = 1;
     END IF;
   END; $$
+
 CREATE TRIGGER insert_search AFTER INSERT ON releases FOR EACH ROW
   BEGIN
-    INSERT INTO releasesearch (releaseid, guid, name, searchname, fromname) VALUES (NEW.id, NEW.guid, NEW.name, NEW.searchname, NEW.fromname);
+    INSERT INTO release_search_data (releaseid, guid, name, searchname, fromname) VALUES (NEW.id, NEW.guid, NEW.name, NEW.searchname, NEW.fromname);
   END; $$
+
 CREATE TRIGGER update_search AFTER UPDATE ON releases FOR EACH ROW
   BEGIN
     IF NEW.guid != OLD.guid
-      THEN UPDATE releasesearch SET guid = NEW.guid WHERE releaseid = OLD.id;
+      THEN UPDATE release_search_data SET guid = NEW.guid WHERE releaseid = OLD.id;
     END IF;
     IF NEW.name != OLD.name
-      THEN UPDATE releasesearch SET name = NEW.name WHERE releaseid = OLD.id;
+      THEN UPDATE release_search_data SET name = NEW.name WHERE releaseid = OLD.id;
     END IF;
     IF NEW.searchname != OLD.searchname
-      THEN UPDATE releasesearch SET searchname = NEW.searchname WHERE releaseid = OLD.id;
+      THEN UPDATE release_search_data SET searchname = NEW.searchname WHERE releaseid = OLD.id;
     END IF;
     IF NEW.fromname != OLD.fromname
-      THEN UPDATE releasesearch SET fromname = NEW.fromname WHERE releaseid = OLD.id;
+      THEN UPDATE release_search_data SET fromname = NEW.fromname WHERE releaseid = OLD.id;
     END IF;
   END; $$
+
 CREATE TRIGGER delete_search AFTER DELETE ON releases FOR EACH ROW
   BEGIN
-    DELETE FROM releasesearch WHERE releaseid = OLD.id;
+    DELETE FROM release_search_data WHERE releaseid = OLD.id;
   END; $$
+
 CREATE TRIGGER insert_hashes AFTER INSERT ON predb FOR EACH ROW
   BEGIN
-    INSERT INTO predbhash (pre_id, hashes) VALUES (NEW.id, CONCAT_WS(',', MD5(NEW.title), MD5(MD5(NEW.title)), SHA1(NEW.title)));
+    INSERT INTO predb_hashes (pre_id, hashes) VALUES (NEW.id, CONCAT_WS(',', MD5(NEW.title), MD5(MD5(NEW.title)), SHA1(NEW.title)));
   END; $$
+
 CREATE TRIGGER update_hashes AFTER UPDATE ON predb FOR EACH ROW
   BEGIN
     IF NEW.title != OLD.title
-      THEN UPDATE predbhash SET hashes = CONCAT_WS(',', MD5(NEW.title), MD5(MD5(NEW.title)), SHA1(NEW.title)) WHERE pre_id = OLD.id;
+      THEN UPDATE predb_hashes SET hashes = CONCAT_WS(',', MD5(NEW.title), MD5(MD5(NEW.title)), SHA1(NEW.title)) WHERE pre_id = OLD.id;
     END IF;
   END; $$
+
 CREATE TRIGGER delete_hashes AFTER DELETE ON predb FOR EACH ROW
   BEGIN
-    DELETE FROM predbhash WHERE pre_id = OLD.id;
+    DELETE FROM predb_hashes WHERE pre_id = OLD.id;
   END; $$
+
 CREATE TRIGGER delete_collections BEFORE DELETE ON collections FOR EACH ROW
   BEGIN
     DELETE FROM binaries WHERE collection_id = OLD.id;
