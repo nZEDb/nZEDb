@@ -40,7 +40,7 @@ $nzbContents= new \NZBContents(
 		'Settings' => $pdo,
 		'Echo' => true,
 		'Nfo' => $nfo,
-		'PostProcess' => new \PostProcess(['Settings' => $pdo, 'Nfo' => $nfo]),
+		'PostProcess' => new PostProcess(['Settings' => $pdo, 'Nfo' => $nfo]),
 		'NNTP' => $nntp
 	)
 );
