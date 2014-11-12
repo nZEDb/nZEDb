@@ -22,7 +22,7 @@ if ($tvshows !== false) {
 											   $pdo->escapeString($rage->id)));
 
 		if (isset($rage->id) && isset($rage->name) && !empty($rage->id) && !empty($rage->name) &&
-			$dupecheck !== false && $dupecheck['count'] == 0)) {
+			$dupecheck !== false && $dupecheck['count'] == 0) {
 			$pdo->queryInsert(sprintf('INSERT INTO tvrage_titles (rageid, releasetitle, country) VALUES (%s, %s, %s)',
 									  $pdo->escapeString($rage->id),
 									  $pdo->escapeString($rage->name),
