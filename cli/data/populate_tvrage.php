@@ -18,21 +18,21 @@ if ($tvshows !== false) {
 	echo "Starting to process file entries...\n";
 	foreach ($tvshows->show as $rage) {
 		echo "RageID: " . $rage->id . ", name: " . $rage->name . " - ";
-		$dupecheck = $pdo->queryOneRow(sprintf('SELECT COUNT(id) FROM tvrage_titles WHERE id = %s',
+		$dupecheck = $pdo->queryOneRow(sprintf('SELECT COUNT(id) AS count FROM tvrage_titles WHERE id = %s',
 											   $pdo->escapeString($rage->id)));
+
 		if (isset($rage->id) && isset($rage->name) && !empty($rage->id) && !empty($rage->name) &&
-			empty($dupecheck)
-		) {
+			$dupecheck !== false && $dupecheck['count'] == 0)) {
 			$pdo->queryInsert(sprintf('INSERT INTO tvrage_titles (rageid, releasetitle, country) VALUES (%s, %s, %s)',
 									  $pdo->escapeString($rage->id),
 									  $pdo->escapeString($rage->name),
-									  $pdo->escapeString($rage->country$
+									  $pdo->escapeString($rage->country)
+							  ));
 			$updated++;
-                        echo "added";
-                } else {
-			echo "FAILED!!";
+            echo "added\n";
+		} else {
+			echo "FAILED!!\n";
 		}
-		echo "\n";
 	}
 } else {
 	exit($pdo->log->info("TVRage site has a hard limit of 400 concurrent API requests. At the moment, they have reached that limit. Please wait before retrying\n"));
