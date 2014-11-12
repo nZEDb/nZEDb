@@ -4,6 +4,8 @@ Please make sure any PR's comply with our coding standards policy: http://li3.me
 
 New updates are grouped by person, at the top of the file.
 
+2014-11-12 niel
+	* Chg: Moved and updated populate_tvrage script to be more easily accessible.
 2014-11-10 niel
 	* Mrg: josh4trunks' PR 1534, which implements Issue 1519 - Add Unix domain socket support to create_se_tables.php.
 
