@@ -4,8 +4,10 @@ Please make sure any PR's comply with our coding standards policy: http://li3.me
 
 New updates are grouped by person, at the top of the file.
 
+2014-11-14 niel
+	* Fix: Broken tvrage updating in tmux. Closes issue 1548.
 2014-11-14 bart39
-	* Fix: Fix PreDB Search.
+	* Fix: Fix PreDB Search - Closes issue 1547.
 2014-11-12 niel
 	* Chg: Moved and updated populate_tvrage script to be more easily accessible.
 2014-11-10 niel
