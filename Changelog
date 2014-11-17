@@ -5,13 +5,18 @@ Please make sure any PR's comply with our coding standards policy: http://li3.me
 
 New updates are grouped by person, at the top of the file.
 
+2014-11-17
+	* New: Merged and tagged v0.4.10 to master branch.
+
 2014-11-10
 	* New: Merged and tagged v0.4.9 to master branch.
 
+2014-11-07 niel
+	* Mrg: Merging in PR 1543 from gregorystorme, which implements Issue 1530 - Feature Request: Add to My Movies.
 2014-11-06 niel
 	* Fix: Setting default release completion value to 95.
 	* Fix: Replacing some 'partrepair' references with 'missed_parts' that were omitted previously due to excessive caution ;-)
-	* Fix: Tmux monitor showing incorrect Part Repair numbers (possibly others).
+	* Fix: TPG Only - Tmux monitor showing incorrect Part Repair (possibly others) numbers.
 	* Chg: TPG Only - Slight improvement in Tmux monitor's updating numbers. Probably too small to notice for most users.
 
 2014-11-03 niel
@@ -51,8 +56,6 @@ New updates are grouped by person, at the top of the file.
 	* Mrg: Merge dev-api into dev for nzb360 movie cover compatibility
 2014-10-10 bart39
 	* Mrg: Merge pull request #1527 from kaibosh.
-2014-10-10 niel
-	* Mrg: Merging PR 1528 from bfincher, Correct error in blacklist query by poster.
 2014-10-09 niel
 	* New: Added basic support for coverurl attribute in API output.
 2014-10-07 niel
