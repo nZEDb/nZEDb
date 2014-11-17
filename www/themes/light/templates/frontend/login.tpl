@@ -10,7 +10,7 @@
     <table class="data">
         <tr><th><label for="username">Username<br/> or Email:</label></th>
             <td>
-                <input style="width:150px;" id="username" value="{$username}" name="username" type="text"/>
+                <input style="width:150px;" id="username" value="{$username|escape:"htmlall"}" name="username" type="text"/>
             </td></tr>
         <tr><th><label for="password">Password:</label></th>
             <td>

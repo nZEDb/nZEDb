@@ -9,7 +9,7 @@
 				<h2 class="form-signin-heading">Please Sign In</h2>
 				<div class="form-group">
 					<label class="sr-only" for="username">Username</label>
-					<input type="text" class="form-control" placeholder="Username or Email" id="username" value="{$username}" name="username">
+					<input type="text" class="form-control" placeholder="Username or Email" id="username" value="{$username|escape:"htmlall"}" name="username">
 				</div>
 				<div class="form-group">
 					<label class="sr-only" for="password">Password</label>

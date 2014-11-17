@@ -480,7 +480,7 @@ class TmuxRun extends Tmux
 				$log = $this->writelog($runVar['panes']['one'][3]);
 				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:1.2 ' \
 						{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/update_theaters.php $log; \
-						{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}testing/PostProc/populate_tvrage.php true $log; \
+						{$runVar['commands']['_phpn']} {$runVar['paths']['cli']}data/populate_tvrage.php true $log; \
 						{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/update_tvschedule.php $log; \
 						{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}testing/PostProc/updateTvRage.php $log; date +\"{$this->_dateFormat}\"' 2>&1 1> /dev/null"
 				);
@@ -505,7 +505,7 @@ class TmuxRun extends Tmux
 			$log = $this->writelog($runVar['panes']['one'][0]);
 			shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:1.0 ' \
 				{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/update_theaters.php $log; \
-				{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}testing/PostProc/populate_tvrage.php true $log; \
+				{$runVar['commands']['_phpn']} {$runVar['paths']['cli']}data/populate_tvrage.php true $log; \
 				{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/update_tvschedule.php $log; \
 				{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}testing/PostProc/updateTvRage.php $log; date +\"{$this->_dateFormat}\"' 2>&1 1> /dev/null"
 			);

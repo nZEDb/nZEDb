@@ -1,4 +1,4 @@
-INSERT INTO userroles (id, name, apirequests, downloadrequests, defaultinvites, isdefault, canpreview)
+INSERT INTO user_roles (id, name, apirequests, downloadrequests, defaultinvites, isdefault, canpreview)
   VALUES
   (1, 'Guest', 0, 0, 0, 0, 0),
   (2, 'User', 10, 10, 1, 1, 0),
@@ -7,4 +7,4 @@ INSERT INTO userroles (id, name, apirequests, downloadrequests, defaultinvites, 
   (5, 'Moderator', 1000, 1000, 1000, 0, 1),
   (6, 'Friend', 100, 100, 5, 0, 1);
 
-UPDATE userroles SET id =  id - 1;
+UPDATE user_roles SET id =  id - 1;

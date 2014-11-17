@@ -4,6 +4,18 @@ Please make sure any PR's comply with our coding standards policy: http://li3.me
 
 New updates are grouped by person, at the top of the file.
 
+2014-11-15 niel
+	* Fix: Adding escaping to username in login page templates, to avoid XSS attacks. Alternative to PR 1549 from zetas.
+2014-11-14 niel
+	* Fix: Broken tvrage updating in tmux. Closes issue 1548.
+2014-11-14 bart39
+	* Fix: Fix PreDB Search - Closes issue 1547.
+2014-11-12 niel
+	* Chg: Moved and updated populate_tvrage script to be more easily accessible.
+2014-11-10 niel
+	* Mrg: josh4trunks' PR 1534, which implements Issue 1519 - Add Unix domain socket support to create_se_tables.php.
+2014-11-07 niel
+	* Mrg: Merging in PR 1543 from gregorystorme, which implements Issue 1530 - Feature Request: Add to My Movies.
 2014-11-06 niel
 	* Fix: Setting default release completion value to 95.
 	* Fix: Replacing some 'partrepair' references with 'missed_parts' that were omitted previously due to excessive caution ;-)
