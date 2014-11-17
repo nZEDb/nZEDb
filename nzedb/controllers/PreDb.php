@@ -234,7 +234,7 @@ Class PreDb
 			if (count($search) > 1) {
 				$search = "LIKE '%" . implode("%' AND title LIKE '%", $search) . "%'";
 			} else {
-				$search = "LIKE '%" . $search . "%'";
+				$search = "LIKE '%" . $search[0] . "%'";
 			}
 			$search = 'WHERE title ' . $search;
 			$count = $this->pdo->queryOneRow(sprintf('SELECT COUNT(*) AS cnt FROM predb %s', $search));
