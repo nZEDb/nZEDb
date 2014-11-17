@@ -8,6 +8,7 @@ $tRun = new \TmuxRun($pdo);
 $tOut = new \TmuxOutput($pdo);
 
 $runVar['paths']['misc'] = nZEDb_MISC;
+$runVar['paths']['cli'] = nZEDb_ROOT . 'cli/';
 $db_name = DB_NAME;
 $dbtype = DB_SYSTEM;
 $tmux = $tRun->get('niceness');
