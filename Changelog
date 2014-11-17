@@ -4,6 +4,8 @@ Please make sure any PR's comply with our coding standards policy: http://li3.me
 
 New updates are grouped by person, at the top of the file.
 
+2014-11-17 niel
+	* Fix: Allowing unsupported PHP versions to make it as far as the requirements page, before using minimum version specific behaviour.
 2014-11-15 niel
 	* Fix: Adding escaping to username in login page templates, to avoid XSS attacks. Alternative to PR 1549 from zetas.
 2014-11-14 niel
