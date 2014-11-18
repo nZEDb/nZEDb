@@ -42,10 +42,10 @@ $page->smarty->assign('releases_ids', [0,1,2]);
 $page->smarty->assign('releases_names', ['Disabled', 'Update Releases', 'Update Releases Threaded']);
 $page->smarty->assign('post_ids', [0,1,2,3]);
 $page->smarty->assign('post_names', ['Disabled', 'PostProcess Additional', 'PostProcess NFOs', 'All']);
-$page->smarty->assign('fix_crap_radio_names', ['Disabled', 'All', 'Custom']);
+$page->smarty->assign('fix_crap_radio_names', ['Disabled', 'All (except wmv_all)', 'Custom']);
 $page->smarty->assign('fix_crap_check_names', ['blacklist', 'blfiles', 'codec', 'executable', 'gibberish', 'hashed',
 											   'huge', 'installbin', 'passworded', 'passwordurl',
-											   'sample', 'scr', 'short', 'size', 'wmv']);
+											   'sample', 'scr', 'short', 'size', 'wmv_all']);
 $page->smarty->assign('sequential_ids', [0,1,2]);
 $page->smarty->assign('sequential_names', ['Disabled', 'Basic Sequential', 'Complete Sequential']);
 $page->smarty->assign('binaries_ids', [0,1,2]);
