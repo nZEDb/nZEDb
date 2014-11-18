@@ -290,7 +290,7 @@ class ReleaseRemover
 			case 'codec':
 				$this->removeCodecPoster();
 				break;
-            case 'wmv':
+            case 'wmv_all':
                 $this->removeWMV();
                 break;
 			case '':
@@ -307,7 +307,6 @@ class ReleaseRemover
 				$this->removeSize();
 				$this->removeHuge();
 				$this->removeCodecPoster();
-                $this->removeWMV();
 				break;
 			default:
 				$this->error = 'Wrong type: ' . $type;
@@ -939,18 +938,13 @@ class ReleaseRemover
 	 */
 	protected function removeWMV()
 	{
-		$this->method = 'WMV';
-        $regex = "rf.name REGEXP 'x264.*\.wmv$'";
-		$this->query = sprintf(
-            "SELECT DISTINCT r.ID, r.searchname FROM releasefiles
-            rf INNER JOIN releases r ON (rf.releaseID = r.ID)
-            WHERE %s",
-            $regex
-		);
+		$this->method = 'WMV_ALL';
+		$this->query = "SELECT DISTINCT r.ID, r.searchname FROM release_files AS rf INNER JOIN releases r ON (rf.releaseID = r.ID) WHERE rf.name REGEXP 'x264.*\.wmv$'";
 
 		if ($this->checkSelectQuery() === false) {
 			return $this->returnError();
 		}
+
 		return $this->deleteReleases();
 	}
 
