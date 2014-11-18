@@ -940,7 +940,7 @@ class ReleaseRemover
 	protected function removeWMV()
 	{
 		$this->method = 'WMV';
-        $regex = sprintf("rf.name %s 'x264.*\.wmv$'", $this->regexp);
+        $regex = "rf.name REGEXP 'x264.*\.wmv$'";
 		$this->query = sprintf(
             "SELECT DISTINCT r.ID, r.searchname FROM releasefiles
             rf INNER JOIN releases r ON (rf.releaseID = r.ID)
