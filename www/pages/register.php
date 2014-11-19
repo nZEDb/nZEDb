@@ -29,7 +29,7 @@ if ($showregister == 0) {
 			$username = htmlspecialchars($_POST['username']);
 			$password = htmlspecialchars($_POST['password']);
 			$confirmpassword = htmlspecialchars($_POST['confirmpassword']);
-			$email =htmlspecialchars($_POST['email']);
+			$email = htmlspecialchars($_POST['email']);
 			$invitecode = htmlspecialchars($_POST["invitecode"]);
 
 			$page->smarty->assign('username', $username);
