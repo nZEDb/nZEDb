@@ -18,7 +18,7 @@
  * @author niel
  * @copyright 2014 nZEDb
  */
-require_once realpath(dirname(__DIR__) . '/../www/config.php');
+require_once realpath(dirname(__DIR__) . '/../www/automatic.config.php');
 
 define('nZEDb_GIT', nZEDb_ROOT . '.git' . DS);
 define('nZEDb_HOOKS', nZEDb_GIT . 'hooks' . DS);

@@ -32,20 +32,20 @@ foreach (explode(DS, nZEDb_ROOT) as $folder) {
 
 // List of folders to check with required permissions.
 $folders = [
-	nZEDb_LIBS                                                 => [R],
-	nZEDb_LIBS . 'smarty'                                      => [R],
-	nZEDb_LIBS . 'smarty' . DS . 'templates_c'                 => [R, W],
-	nZEDb_RES                                                  => [R, W, E],
-	nZEDb_RES . 'db'                                           => [R, E],
-	nZEDb_RES . 'db' . DS . 'patches'                          => [R, E],
-	nZEDb_RES . 'db' . DS . 'schema'                           => [R, E],
-	nZEDb_RES . 'nzb'                                          => [R],
-	nZEDb_LOGS                                                 => [R, W],
-	nZEDb_TMP                                                  => [R, W],
-	nZEDb_TMP . DS . 'unrar'                                   => [R, W],
-	nZEDb_TMP . DS . 'unrar' . DS . 'u4e'                      => [R, W],
-	nZEDb_TMP . DS . 'yEnc'                                    => [R, W],
-	nZEDb_VERSIONS                                             => [R],
+	nZEDb_LIBS										=> [R],
+	nZEDb_LIBS . 'smarty'							=> [R],
+	nZEDb_LIBS . 'smarty' . DS . 'templates_c'		=> [R, W],
+	nZEDb_RES										=> [R, W, E],
+	nZEDb_RES . 'db'								=> [R, E],
+	nZEDb_RES . 'db' . DS . 'patches'				=> [R, E],
+	nZEDb_RES . 'db' . DS . 'schema'				=> [R, E],
+	nZEDb_RES . 'db' . DS . 'schema' . DS . 'data'	=> [R, E],
+	nZEDb_RES . 'nzb'								=> [R],
+	nZEDb_LOGS										=> [R, W],
+	nZEDb_TMP										=> [R, W],
+	nZEDb_TMP . DS . 'unrar'						=> [R, W, E],
+	nZEDb_TMP . DS . 'yEnc'							=> [R, W, E],
+	nZEDb_VERSIONS									=> [R],
 ];
 
 // Add nzb folders.
