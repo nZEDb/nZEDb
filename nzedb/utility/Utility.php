@@ -2,7 +2,14 @@
 namespace nzedb\utility;
 
 
+use \libs\PHPMailer;
 use \nzedb\db\Settings;
+
+/**
+ * @todo Find a better way to include this. I'd rather stick to the new namespace style instead of requires.
+ */
+require_once nZEDb_LIBS . 'PHPMailer/PHPMailerAutoload.php';
+
 
 
 /*
@@ -1015,6 +1022,9 @@ class Utility
 	// Central function for sending site email.
 	static public function sendEmail($to, $subject, $contents, $from)
 	{
+		$mail = new PHPMailer;
+
+		//Setup the body first since we need it regardless of sending method.
 		$eol = PHP_EOL;
 
 		$body = '<html>' . $eol;
@@ -1023,16 +1033,87 @@ class Utility
 		$body .= '</body>' . $eol;
 		$body .= '</html>' . $eol;
 
-		$headers = 'From: ' . $from . $eol;
-		$headers .= 'Reply-To: ' . $from . $eol;
-		$headers .= 'Return-Path: ' . $from . $eol;
-		$headers .= 'X-Mailer: nZEDb' . $eol;
-		$headers .= 'MIME-Version: 1.0' . $eol;
-		$headers .= 'Content-type: text/html; charset=iso-8859-1' . $eol;
-		$headers .= $eol;
+		// If the mailer couldn't instantiate there's a good chance the user has an incomplete update & we should fallback to php mail()
+		// @todo Log this failure.
+		if (!defined('PHPMAILER_ENABLED') || PHPMAILER_ENABLED !== true || !($mail instanceof PHPMailer)) {
+			$headers = 'From: ' . $from . $eol;
+			$headers .= 'Reply-To: ' . $from . $eol;
+			$headers .= 'Return-Path: ' . $from . $eol;
+			$headers .= 'X-Mailer: nZEDb' . $eol;
+			$headers .= 'MIME-Version: 1.0' . $eol;
+			$headers .= 'Content-type: text/html; charset=iso-8859-1' . $eol;
+			$headers .= $eol;
 
-		return mail($to, $subject, $body, $headers);
+			return mail($to, $subject, $body, $headers);
+
+		}
+
+		// Check to make sure the user has their settings correct.
+		if (PHPMAILER_USE_SMTP == true) {
+			if ((!defined('PHPMAILER_SMTP_HOST') || PHPMAILER_SMTP_HOST === '') ||
+				(!defined('PHPMAILER_SMTP_PORT') || PHPMAILER_SMTP_PORT === '')
+			) {
+				throw new \phpmailerException(
+					'You opted to use SMTP but the PHPMAILER_SMTP_HOST and/or PHPMAILER_SMTP_PORT is/are not defined correctly! Either fix the missing/incorrect values or change PHPMAILER_USE_SMTP to false in the www/settings.php'
+				);
+			}
+
+			// If the user enabled SMTP & Auth but did not setup credentials, throw an exception.
+			if (defined('PHPMAILER_SMTP_AUTH') && PHPMAILER_SMTP_AUTH == true)
+			{
+				if ((!defined('PHPMAILER_SMTP_USER') || PHPMAILER_SMTP_USER === '') ||
+					(!defined('PHPMAILER_SMTP_PASSWORD') || PHPMAILER_SMTP_PASSWORD === '')
+				) {
+					throw new \phpmailerException(
+						'You opted to use SMTP and SMTP Auth but the PHPMAILER_SMTP_USER and/or PHPMAILER_SMTP_PASSWORD is/are not defined correctly. Please set them in www/settings.php'
+					);
+				}
+			}
+		}
+
+		//Finally we can send the mail.
+		$mail->isHTML(true);
+
+		if (PHPMAILER_USE_SMTP) {
+			$mail->isSMTP();
+
+			$mail->Host = PHPMAILER_SMTP_HOST;
+			$mail->Port = PHPMAILER_SMTP_PORT;
+
+			$mail->SMTPSecure = PHPMAILER_SMTP_SECURE;
+
+			if (PHPMAILER_SMTP_AUTH) {
+				$mail->SMTPAuth = true;
+				$mail->Username = PHPMAILER_SMTP_USER;
+				$mail->Password = PHPMAILER_SMTP_PASSWORD;
+			}
+
+		}
+
+		$settings = new Settings();
+
+		$site_email = $settings->getSetting('email');
+
+		$fromEmail = (PHPMAILER_FROM_EMAIL === '') ? $site_email : PHPMAILER_FROM_EMAIL;
+		$fromName  = (PHPMAILER_FROM_NAME === '') ? $settings->getSetting('title') : PHPMAILER_FROM_NAME;
+		$replyTo   = (PHPMAILER_REPLYTO === '') ? $site_email : PHPMAILER_REPLYTO;
+
+		(PHPMAILER_BCC !== '') ?	$mail->addBCC(PHPMAILER_BCC) : null;
+
+		$mail->setFrom($fromEmail, $fromName);
+		$mail->addAddress($to);
+		$mail->addReplyTo($replyTo);
+		$mail->Subject = $subject;
+		$mail->Body = $body;
+		$mail->AltBody = $mail->html2text($body, true);
+
+		$sent = $mail->send();
+
+		if (!$sent) {
+			//@todo Log failed email send attempt.
+			throw new \phpmailerException('Unable to send mail. Error: ' . $mail->ErrorInfo);
+		}
+
+		return $sent;
 	}
-
-
 }
