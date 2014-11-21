@@ -1038,9 +1038,7 @@ class Utility
 
 		// If the mailer couldn't instantiate there's a good chance the user has an incomplete update & we should fallback to php mail()
 		// @todo Log this failure.
-		if (!defined('PHPMAILER_ENABLED') || PHPMAILER_ENABLED !== true ||
-			!($mail instanceof PHPMailer)
-		) {
+		if (!defined('PHPMAILER_ENABLED') || PHPMAILER_ENABLED !== true || 	!($mail instanceof \PHPMailer)) {
 			$headers = 'From: ' . $from . $CRLF;
 			$headers .= 'Reply-To: ' . $from . $CRLF;
 			$headers .= 'Return-Path: ' . $from . $CRLF;
