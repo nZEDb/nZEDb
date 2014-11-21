@@ -1,4 +1,9 @@
 <?php
+/**
+ * Remember!! Keeps these files simple until after the requirements checks are met.
+ * No point having a check for PHP version if we can't get to that page because of higher version
+ * requirements.
+ */
 require_once realpath(__DIR__ . '/../automated.config.php');
 
 $page = new InstallPage();
@@ -16,7 +21,8 @@ $cfg = $cfg->getSession();
 
 // Start checks.
 $cfg->sessionsPathPermissions = true;
-$sessionPath = empty($sessionPath = session_save_path()) ? sys_get_temp_dir() : $sessionPath;
+$sessionPath = session_save_path();
+$sessionPath = empty($sessionPath) ? sys_get_temp_dir() : $sessionPath;
 $page->smarty->assign('sessionsSavePath', $sessionPath);
 if (!is_readable($sessionPath) || !is_writable($sessionPath)) {
 	$cfg->error = true;

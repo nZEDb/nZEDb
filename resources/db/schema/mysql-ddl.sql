@@ -145,7 +145,7 @@ CREATE TABLE binaryblacklist (
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci
-  AUTO_INCREMENT = 100000;
+  AUTO_INCREMENT = 1000001;
 
 
 DROP TABLE IF EXISTS bookinfo;
@@ -191,7 +191,7 @@ CREATE TABLE category (
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci
-  AUTO_INCREMENT = 100000;
+  AUTO_INCREMENT = 1000001;
 
 
 DROP TABLE IF EXISTS collections;
@@ -321,7 +321,7 @@ CREATE TABLE genres (
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci
-  AUTO_INCREMENT = 150;
+  AUTO_INCREMENT = 1000001;
 
 
 DROP TABLE IF EXISTS groups;
@@ -346,7 +346,7 @@ CREATE TABLE groups (
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci
-  AUTO_INCREMENT = 1;
+  AUTO_INCREMENT = 1000001;
 
 
 DROP TABLE IF EXISTS invitations;
@@ -392,7 +392,7 @@ CREATE TABLE menu_items (
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci
-  AUTO_INCREMENT = 1;
+  AUTO_INCREMENT = 1000001;
 
 
 DROP TABLE IF EXISTS movieinfo;
@@ -467,7 +467,7 @@ CREATE TABLE page_contents (
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci
-  AUTO_INCREMENT = 1;
+  AUTO_INCREMENT = 1000001;
 
 
 DROP TABLE IF EXISTS parts;
@@ -876,12 +876,12 @@ CREATE TABLE tvrage_titles (
   PRIMARY KEY                                (id),
   INDEX        ix_tvrage_rageid              (rageid),
   INDEX        ix_tvrage_releasetitle        (releasetitle),
-  UNIQUE INDEX ix_tvrage_rageid_releasetitle (rageid, releasetitle)
+  UNIQUE INDEX ux_tvrage_rageid_releasetitle (rageid, releasetitle)
 )
   ENGINE          = MYISAM
   DEFAULT CHARSET = utf8
   COLLATE         = utf8_unicode_ci
-  AUTO_INCREMENT  = 1;
+  AUTO_INCREMENT  = 1000001;
 
 
 DROP TABLE IF EXISTS tvrage_episodes;
@@ -897,10 +897,9 @@ CREATE TABLE tvrage_episodes (
   UNIQUE INDEX ix_tvrageepisodes_rageid (rageid, fullep)
 )
   ENGINE = MYISAM
-  AUTO_INCREMENT = 1000000
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci
-  AUTO_INCREMENT = 1;
+  AUTO_INCREMENT = 1000001;
 
 
 DROP TABLE IF EXISTS upcoming_releases;
