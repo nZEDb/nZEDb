@@ -8,10 +8,12 @@ if (isset($_POST["useremail"])) {
 	$mailto = $page->settings->getSetting('email');
 
 	$mailsubj = "Contact Form Submitted";
-	$mailbody = "Values submitted from contact form:\n";
+	$mailbody = "Values submitted from contact form:<br/>";
 
 	while (list ($key, $val) = each($_POST)) {
-		$mailbody .= "$key : $val\n";
+		if ($key != "submit") {
+			$mailbody .= "$key : $val<br/>";
+		}
 	}
 
 	if (!preg_match("/\n/i", $_POST["useremail"])) {
