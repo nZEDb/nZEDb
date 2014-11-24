@@ -5,11 +5,24 @@ Please make sure any PR's comply with our coding standards policy: http://li3.me
 
 New updates are grouped by person, at the top of the file.
 
+2014-11-24
+	* New: Merged and tagged v0.4.11 to master branch.
+
 2014-11-17 niel
 	* Fix: Allowing unsupported PHP versions to make it as far as the requirements page, before using minimum version specific behaviour.
 2014-11-17
 	* New: Merged and tagged v0.4.10 to master branch.
 
+2014-11-15 niel
+	* Fix: Adding escaping to username in login page templates, to avoid XSS attacks. Alternative to PR 1549 from zetas.
+2014-11-14 niel
+	* Fix: Broken tvrage updating in tmux. Closes issue 1548.
+2014-11-14 bart39
+	* Fix: Fix PreDB Search - Closes issue 1547.
+2014-11-12 niel
+	* Chg: Moved and updated populate_tvrage script to be more easily accessible.
+2014-11-10 niel
+	* Mrg: josh4trunks' PR 1534, which implements Issue 1519 - Add Unix domain socket support to create_se_tables.php.
 2014-11-10
 	* New: Merged and tagged v0.4.9 to master branch.
 

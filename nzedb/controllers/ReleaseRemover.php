@@ -10,59 +10,14 @@ use nzedb\db\Settings;
 class ReleaseRemover
 {
 	/**
-	 * @var nzedb\db\Settings
+	 * @const New line.
 	 */
-	protected $pdo;
+	const N = PHP_EOL;
 
 	/**
-	 * @var NZB
-	 */
-	private $nzb;
-
-	/**
-	 * @var ConsoleTools
-	 */
-	protected $consoleTools;
-
-	/**
-	 * @var Releases
-	 */
-	protected $releases;
-
-	/**
-	 * The query we will use to select unwanted releases.
-	 *
 	 * @var string
 	 */
-	protected $query;
-
-	/**
-	 * If an error occurred, store it here.
-	 *
-	 * @var string
-	 */
-	protected $error;
-
-	/**
-	 * Time we started.
-	 *
-	 * @var int
-	 */
-	protected $timeStart;
-
-	/**
-	 * Result of the select query.
-	 *
-	 * @var array
-	 */
-	protected $result;
-
-	/**
-	 * Ignore user check?
-	 *
-	 * @var bool
-	 */
-	protected $ignoreUserCheck;
+	protected $blacklistID;
 
 	/**
 	 * Is is run from the browser?
@@ -72,14 +27,19 @@ class ReleaseRemover
 	protected $browser;
 
 	/**
+	 * @var ConsoleTools
+	 */
+	protected $consoleTools;
+
+	/**
 	 * @var string
 	 */
 	protected $crapTime = '';
 
 	/**
-	 * @var string
+	 * @var bool
 	 */
-	protected $method = '';
+	protected $delete;
 
 	/**
 	 * @var int
@@ -89,22 +49,62 @@ class ReleaseRemover
 	/**
 	 * @var bool
 	 */
-	protected $delete;
+	protected $echoCLI;
 
 	/**
+	 * If an error occurred, store it here.
+	 *
+	 * @var string
+	 */
+	protected $error;
+
+	/**
+	 * Ignore user check?
+	 *
 	 * @var bool
 	 */
-	protected $echoCLI;
+	protected $ignoreUserCheck;
 
 	/**
 	 * @var string
 	 */
-	protected $blacklistID;
+	protected $method = '';
 
 	/**
-	 * @const New line.
+	 * @var nzedb\db\Settings
 	 */
-	const N = PHP_EOL;
+	protected $pdo;
+
+	/**
+	 * The query we will use to select unwanted releases.
+	 *
+	 * @var string
+	 */
+	protected $query;
+
+	/**
+	 * @var Releases
+	 */
+	protected $releases;
+
+	/**
+	 * Result of the select query.
+	 *
+	 * @var array
+	 */
+	protected $result;
+
+	/**
+	 * Time we started.
+	 *
+	 * @var int
+	 */
+	protected $timeStart;
+
+	/**
+	 * @var NZB
+	 */
+	private $nzb;
 
 	/**
 	 * Construct.
@@ -290,7 +290,7 @@ class ReleaseRemover
 			case 'codec':
 				$this->removeCodecPoster();
 				break;
-            case 'wmv':
+            case 'wmv_all':
                 $this->removeWMV();
                 break;
 			case '':
@@ -307,7 +307,6 @@ class ReleaseRemover
 				$this->removeSize();
 				$this->removeHuge();
 				$this->removeCodecPoster();
-                $this->removeWMV();
 				break;
 			default:
 				$this->error = 'Wrong type: ' . $type;
@@ -727,7 +726,7 @@ class ReleaseRemover
 							str_replace('nl  subed|bed|s', 'nlsubs|nlsubbed|nlsubed',
 								str_replace('?', '',
 									str_replace('.', ' ',
-										str_replace(array('-', '(', ')'), '',
+										str_replace(['-', '(', ')'], '',
 											substr($dbRegex, $forBegin,
 												strrpos($dbRegex, ')') - $forBegin
 											)
@@ -748,7 +747,7 @@ class ReleaseRemover
 						// Find first bd|dl instance position in Regex, then find last closing parenthesis as this is reversed.
 						$forBegin = strpos($dbRegex, 'bd|dl');
 						$regexMatch =
-							str_replace(array('\\',']','['), '',
+							str_replace(['\\',']','['], '',
 								str_replace('bd|dl)mux', 'bdmux|dlmux',
 									substr($dbRegex, $forBegin,
 										strrpos($dbRegex, ')') - $forBegin
@@ -939,18 +938,13 @@ class ReleaseRemover
 	 */
 	protected function removeWMV()
 	{
-		$this->method = 'WMV';
-        $regex = sprintf("rf.name %s 'x264.*\.wmv$'", $this->regexp);
-		$this->query = sprintf(
-            "SELECT DISTINCT r.ID, r.searchname FROM releasefiles
-            rf INNER JOIN releases r ON (rf.releaseID = r.ID)
-            WHERE %s",
-            $regex
-		);
+		$this->method = 'WMV_ALL';
+		$this->query = "SELECT DISTINCT r.ID, r.searchname FROM release_files AS rf INNER JOIN releases r ON (rf.releaseID = r.ID) WHERE rf.name REGEXP 'x264.*\.wmv$'";
 
 		if ($this->checkSelectQuery() === false) {
 			return $this->returnError();
 		}
+
 		return $this->deleteReleases();
 	}
 

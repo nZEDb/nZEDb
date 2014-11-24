@@ -28,8 +28,9 @@ if ($argCnt === 2) {
 			'arg2 (Required) = full/number' . $n .
 			'                  full   = Run without a time limit.' . $n .
 			'                  number = Run on releases up to this old.' . $n . $n .
-			'arg3 (Optional) = blacklist | blfiles | executable | gibberish | hashed | installbin | passworded | passwordurl | sample | scr | short | size | wmv' . $n .
+			'arg3 (Optional) = blacklist | blfiles | codec | executable | gibberish | hashed | huge | installbin | passworded | passwordurl | sample | scr | short | size | wmv_all' . $n .
 			'                  blfiles     = Remove releases using the enabled blacklists in admin section of site against filenames.' . $n .
+			'                  codec       = Remove releases where the release contains AVI or WMV file and is in x264 category (the spammer).' . $n .
 			'                  executable  = Remove releases containing an exe file.' . $n .
 			'                  gibberish   = Remove releases where the name is letters/numbers only and 15 characters or longer.' . $n .
 			'                  hashed      = Remove releases where the name is letters/numbers only and 25 characters or longer.' . $n .
@@ -39,7 +40,7 @@ if ($argCnt === 2) {
 			'                  sample      = Remove releases that are smaller than 40MB more than 1 file and have sample in the title' . $n .
 			'                  scr         = Remove releases where .scr extension is found in the files or subject.' . $n .
 			'                  short       = Remove releases where the name is only numbers or letters and is 5 characters or less.' . $n .
-              '                wmv         = Remove releases where the release contains WMV file and is in x264 category (the spamer).' . $n .
+            '                  wmv_all     = Remove releases where the release contains WMV file in any group!!.' . $n .
 			'                  size        = Remove releases smaller than 1MB and have only 1 file and not in books or mp3 section.' . $n . $n .
 			'examples:' . $n .
 			"php $argv[0] true 12 blacklist     = Remove releases up to 12 hours old using site blacklists." . $n .
