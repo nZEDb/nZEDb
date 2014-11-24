@@ -2,8 +2,13 @@
 Pull requests will be accepted *only* against the dev branch.
 Please make sure any PR's comply with our coding standards policy: http://li3.me/docs/specs/accepted/LSR-0-coding.md
 
-New updates are grouped by person, at the top of the file.
+New updates are grouped by person (committer/merger), at the top of the file.
 
+
+2014-11-18 niel
+	* Mrg: Bringing badly merged removeCrapReleases WMV method into dev from next-master.
+	* Chg: Removing WMV removeCrap method from ALL.
+	* Mrg: PR 1551 from zetas - XSS Fix for Login & Register.
 2014-11-17 niel
 	* Fix: Allowing unsupported PHP versions to make it as far as the requirements page, before using minimum version specific behaviour.
 2014-11-15 niel
