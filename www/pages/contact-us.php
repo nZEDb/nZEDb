@@ -12,7 +12,7 @@ if (isset($_POST["useremail"])) {
 
 	while (list ($key, $val) = each($_POST)) {
 		if ($key != "submit") {
-			$mailbody .= "$key : $val<br/>";
+			$mailbody .= "$key : $val<br />\r\n";
 		}
 	}
 
