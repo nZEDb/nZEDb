@@ -24,24 +24,30 @@ if ($showregister == 0) {
 	switch ($action) {
 		case 'submit':
 
-			$firstName = (isset($_POST['firstname']) ? $_POST['firstname'] : '');
-			$lastName = (isset($_POST['lastname']) ? $_POST['lastname'] : '');
-			$page->smarty->assign('username', $_POST['username']);
+			$firstName = (isset($_POST['firstname']) ? htmlspecialchars($_POST['firstname']) : '');
+			$lastName = (isset($_POST['lastname']) ? htmlspecialchars($_POST['lastname']) : '');
+			$username = htmlspecialchars($_POST['username']);
+			$password = htmlspecialchars($_POST['password']);
+			$confirmpassword = htmlspecialchars($_POST['confirmpassword']);
+			$email = htmlspecialchars($_POST['email']);
+			$invitecode = htmlspecialchars($_POST["invitecode"]);
+
+			$page->smarty->assign('username', $username);
 			$page->smarty->assign('firstname', $firstName);
 			$page->smarty->assign('lastname', $lastName);
-			$page->smarty->assign('password', $_POST['password']);
-			$page->smarty->assign('confirmpassword', $_POST['confirmpassword']);
-			$page->smarty->assign('email', $_POST['email']);
-			$page->smarty->assign('invitecode', $_POST["invitecode"]);
+			$page->smarty->assign('password', $password);
+			$page->smarty->assign('confirmpassword', $confirmpassword);
+			$page->smarty->assign('email', $email);
+			$page->smarty->assign('invitecode', $invitecode);
 
 			// Check uname/email isnt in use, password valid. If all good create new user account and redirect back to home page.
-			if ($_POST['password'] != $_POST['confirmpassword']) {
+			if ($password != $confirmpassword) {
 				$page->smarty->assign('error', "Password Mismatch");
 			} else {
 				// Get the default user role.
 				$userdefault = $page->users->getDefaultRole();
 
-				$ret = $page->users->signUp($_POST['username'], $_POST['firstname'], $_POST['lastname'], $_POST['password'], $_POST['email'], $_SERVER['REMOTE_ADDR'], $userdefault['id'], $userdefault['defaultinvites'], $_POST['invitecode']);
+				$ret = $page->users->signUp($username, $firstname, $lastname, $password, $email, $_SERVER['REMOTE_ADDR'], $userdefault['id'], $userdefault['defaultinvites'], $invitecode);
 				if ($ret > 0) {
 					$page->users->login($ret, $_SERVER['REMOTE_ADDR']);
 					header("Location: " . WWW_TOP . "/");
@@ -73,9 +79,10 @@ if ($showregister == 0) {
 			}
 			break;
 		case "view": {
-				if (isset($_GET["invitecode"])) {
+				$invitecode = htmlspecialchars($_GET["invitecode"]);
+				if (isset($invitecode)) {
 					// See if its a valid invite.
-					$invite = $page->users->getInvite($_GET["invitecode"]);
+					$invite = $page->users->getInvite($invitecode);
 					if (!$invite) {
 						$page->smarty->assign('error', sprintf("Bad or invite code older than %d days.", Users::DEFAULT_INVITE_EXPIRY_DAYS));
 						$page->smarty->assign('showregister', "0");
