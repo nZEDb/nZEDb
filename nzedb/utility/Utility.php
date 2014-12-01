@@ -1022,7 +1022,7 @@ class Utility
 	// Central function for sending site email.
 	static public function sendEmail($to, $subject, $contents, $from)
 	{
-		$mail = new PHPMailer;
+		$mail = new \PHPMailer;
 
 		//Setup the body first since we need it regardless of sending method.
 		$eol = PHP_EOL;
