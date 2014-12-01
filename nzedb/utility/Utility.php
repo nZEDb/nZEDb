@@ -1045,7 +1045,6 @@ class Utility
 			$headers .= $eol;
 
 			return mail($to, $subject, $body, $headers);
-
 		}
 
 		// Check to make sure the user has their settings correct.
@@ -1087,7 +1086,6 @@ class Utility
 				$mail->Username = PHPMAILER_SMTP_USER;
 				$mail->Password = PHPMAILER_SMTP_PASSWORD;
 			}
-
 		}
 
 		$settings = new Settings();
