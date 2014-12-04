@@ -19,7 +19,7 @@ section,subsection,name,value,hint,setting
 		fixnamesperrun	10	The maximum number of releases to check per run(threaded script only).	fixnamesperrun
 		fixnamethreads	1	The number of threads for fixReleasesNames. This includes md5, nfos and filenames.	fixnamethreads
 		grabstatus	1	Whether to update download counts when someone downloads a release.	grabstatus
-		innerfileblacklist			You can add a regex here to set releases to potentially passworded when a file name inside a rar/zip matches this regex.	innerfileblacklist
+indexer	ppa	innerfileblacklist			You can add a regex here to set releases to potentially passworded when a file name inside a rar/zip matches this regex.	innerfileblacklist
 		lastpretime	0	Last time we downloaded a pre using WEB sources	lastpretime
 		intanidbupdate	7	The number of days between AniDB full updates.  Default is 7.	intanidbupdate
 		lastanidbupdate	0	The last time a full AniDB update occurred in unixtime.	lastanidbupdate
