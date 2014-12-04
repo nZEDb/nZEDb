@@ -27,6 +27,7 @@ switch($action)
 
 		if (is_int($ret))
 		{
+			// TODO convert to switch
 			if ($ret == Settings::ERR_BADUNRARPATH)
 				$error = "The unrar path does not point to a valid binary";
 			else if ($ret == Settings::ERR_BADFFMPEGPATH)
