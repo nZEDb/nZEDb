@@ -23,6 +23,19 @@ class Utility
 	 */
 	const PATH_REGEX = '(?P<drive>[A-Za-z]:|)(?P<path>[\\/\w .-]+|)';
 
+	static public function clearScreen()
+	{
+		if (self::isCLI())
+		{
+			if (self::isWin())
+			{
+				passthru('cls');
+			} else {
+				passthru('clear');
+			}
+		}
+	}
+
 	/**
 	 * Replace all white space chars for a single space.
 	 *
