@@ -2,16 +2,16 @@
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
 use nzedb\db\Settings;
+use nzedb\utility\Utility;
 
-// TODO make this platform agnostic
-passthru("clear");
+Utility::clearScreen();
 $pdo = new Settings();
 
 if (!isset($argv[1]) || (isset($argv[1]) && $argv[1] != "site" && $argv[1] != "tmux")) {
 	exit($pdo->log->error("\nThis script will output the setting of your site-edit or tmux-edit page to share with others. This will ouptut directly to web using pastebinit. This does not post any private information.\nTo run:\nphp export_settings.php [site, tmux] [tabbed, html, csv]\n"));
 }
 
-if (!nzedb\utility\Utility::hasCommand('pastebinit')) {
+if (!Utility::hasCommand('pastebinit')) {
 	exit($pdo->log->error("This script requires pastebinit, but it's not installed. Aborting.\n"));
 }
 
