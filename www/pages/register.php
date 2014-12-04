@@ -23,7 +23,6 @@ if ($showregister == 0) {
 
 	switch ($action) {
 		case 'submit':
-
 			$firstName = (isset($_POST['firstname']) ? htmlspecialchars($_POST['firstname']) : '');
 			$lastName = (isset($_POST['lastname']) ? htmlspecialchars($_POST['lastname']) : '');
 			$username = htmlspecialchars($_POST['username']);
