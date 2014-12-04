@@ -939,7 +939,7 @@ class ReleaseRemover
 	protected function removeWMV()
 	{
 		$this->method = 'WMV_ALL';
-		$this->query = "SELECT DISTINCT r.ID, r.searchname FROM release_files AS rf INNER JOIN releases r ON (rf.releaseID = r.ID) WHERE rf.name REGEXP 'x264.*\.wmv$'";
+		$this->query = "SELECT DISTINCT r.guid, r.searchname FROM release_files AS rf INNER JOIN releases r ON (rf.releaseid = r.id) WHERE rf.name REGEXP 'x264.*\.wmv$'";
 
 		if ($this->checkSelectQuery() === false) {
 			return $this->returnError();
