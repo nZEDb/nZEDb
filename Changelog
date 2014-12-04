@@ -4,8 +4,10 @@ Please make sure any PR's comply with our coding standards policy: http://li3.me
 
 New updates are grouped by person (committer/merger), at the top of the file.
 
-2014-12-1 ruhllatio
+2014-12-01 ruhllatio
 	* Fix: Contact us form erroring due to PHP Mailer class not found
+2014-11-20 niel
+	* Mrg: PR 1545 from zetas/kingcat - Add PHPMailer Support.
 2014-11-18 niel
 	* Mrg: Bringing badly merged removeCrapReleases WMV method into dev from next-master.
 	* Chg: Removing WMV removeCrap method from ALL.
