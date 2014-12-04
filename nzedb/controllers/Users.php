@@ -49,7 +49,7 @@ class Users
 	/**
 	 * @param array $options Class instances.
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		$defaults = [
 			'Settings' => null,
@@ -58,6 +58,9 @@ class Users
 
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 
+		// TODO We require 5.5 as our minimum version now, so the password_compat library is no
+		// longer needed.  Remove this and any other references to the password_compat library,
+		// before removing  the library itself.
 		// password_hash functions are available on PHP 5.5.0 or higher, use password_compat for forward compatibility on older versions.
 		if (!version_compare(PHP_VERSION, '5.5.0', '>=')) {
 			require_once(nZEDb_LIBS . 'password_compat' . DS . 'lib' . DS . 'password.php');
@@ -200,7 +203,7 @@ class Users
 				break;
 		}
 		$orderSort = (isset($orderArr[1]) && preg_match('/^asc|desc$/i', $orderArr[1])) ? $orderArr[1] : 'desc';
-		return array($orderField, $orderSort);
+		return [$orderField, $orderSort];
 	}
 
 	/**
@@ -314,7 +317,7 @@ class Users
 			return self::ERR_SIGNUP_EMAILINUSE;
 		}
 
-		$sql = array();
+		$sql = [];
 
 		$sql[] = sprintf('username = %s', $this->pdo->escapeString($userName));
 		$sql[] = sprintf('email = %s', $this->pdo->escapeString($email));
@@ -553,7 +556,7 @@ class Users
 	 */
 	public function getBrowseOrdering()
 	{
-		return array(
+		return [
 			'username_asc',
 			'username_desc',
 			'email_asc',
@@ -570,7 +573,7 @@ class Users
 			'grabs_desc',
 			'role_asc',
 			'role_desc'
-		);
+		];
 	}
 
 	/**
@@ -960,7 +963,7 @@ class Users
 			return false;
 		}
 
-		$del = array();
+		$del = [];
 		foreach ($ids as $id) {
 			if (is_numeric($id)) {
 				$del[] = $id;
@@ -1045,7 +1048,7 @@ class Users
 	 */
 	public function getCategoryExclusion($userID)
 	{;
-		$ret = array();
+		$ret = [];
 		$categories = $this->pdo->query(sprintf("SELECT categoryid FROM user_excluded_categories WHERE user_id = %d", $userID));
 		foreach ($categories as $category) {
 			$ret[] = $category["categoryid"];
@@ -1066,7 +1069,7 @@ class Users
 		$data = $this->getCategoryExclusion($userID);
 		$category = new \Category(['Settings' => $this->pdo]);
 		$categories = $category->getByIds($data);
-		$ret = array();
+		$ret = [];
 		if ($categories !== false) {
 			foreach ($categories as $cat) {
 				$ret[] = $cat["title"];
@@ -1317,7 +1320,7 @@ class Users
 	{
 		$res = $this->pdo->query(sprintf("SELECT id FROM users WHERE role = %d", $id));
 		if (sizeof($res) > 0) {
-			$userids = array();
+			$userids = [];
 			foreach ($res as $user) {
 				$userids[] = $user['id'];
 			}
