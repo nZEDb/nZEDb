@@ -94,10 +94,16 @@ class Versions
 	/**
 	 * Checks the git commit number against the XML's stored value.
 	 * @param boolean $update Whether the XML should be updated by the check.
-	 * @return integer The new git commit number, or false.
+	 * @return integer|boolean The new git commit number, or false.
 	 */
 	public function checkGitCommit($update = true)
 	{
+		// We don't maintain the commit count in the XML file since Dec 2014 as it is no longer used
+		// in the code base.
+		if ((int)$this->_vers->sql->db >= 307) {
+			return 0;
+		}
+
 		$count = $this->git->commits();
 		if ($this->_vers->git->commit->__toString() < $count || GIT_PRE_COMMIT === true) {	// Allow pre-commit to override the commit number (often branch number is higher than dev's)
 			if ($update) {
