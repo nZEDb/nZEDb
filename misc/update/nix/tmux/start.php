@@ -55,6 +55,7 @@ if ($nntpproxy == '1') {
 
 //reset collections dateadded to now if dateadded > delay time check
 echo $pdo->log->header("Resetting expired collections dateadded to now. This could take a minute or two. Really.");
+
 if ($tablepergroup == 1) {
 	$sql    = "SHOW table status";
 	$tables = $pdo->queryDirect($sql);
@@ -96,6 +97,7 @@ if ($seq == 1) {
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
+// todo simplify this IF removing redundancy (consider moving to a function)
 	if ($nntpproxy == 1) {
 		window_ircscraper($tmux_session);
 		window_proxy($tmux_session, 4);
@@ -113,6 +115,7 @@ if ($seq == 1) {
 		exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 25 'printf \"\033]2;nzb-import\033\"'");
 
 		window_stripped_utilities($tmux_session);
+// todo simplify this IF removing redundancy (consider moving to a function)
 		if ($nntpproxy == 1) {
 			window_ircscraper($tmux_session);
 			window_proxy($tmux_session, 3);
