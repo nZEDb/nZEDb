@@ -34,7 +34,7 @@ class TmuxOutput extends Tmux
 	public function __construct(Settings $pdo = null)
 	{
 		parent::__construct($pdo);
-		$this->_git = new Git();
+		$this->_git = new \nzedb\utility\Git();        // Do not remove the full namespace/ PHP gets confused for some reason without it.
 		$this->_vers = Utility::getValidVersionsFile();
 
 		$this->_setColourMasks();
