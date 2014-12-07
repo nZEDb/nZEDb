@@ -337,11 +337,13 @@ class Utility
 		return ((strtolower(PHP_SAPI) === 'cli') ? true : false);
 	}
 
-	static public function isPatched()
+	static public function isPatched(Settings $pdo = null)
 	{
 		$versions = self::getValidVersionsFile();
 
-		$pdo = new Settings();
+		if (!($pdo instanceof Settings)) {
+			$pdo = new Settings();
+		}
 		$patch = $pdo->getSetting(['section' => '', 'subsection' => '', 'name' => 'sqlpatch']);
 		$ver = $versions->versions->sql->file;
 
