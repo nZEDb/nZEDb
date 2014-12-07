@@ -69,30 +69,7 @@ class Versions
 		$this->out = new \ColorCLI();
 		$this->git = new Git();
 
-		$temp = libxml_use_internal_errors(true);
-		$this->_xml = simplexml_load_file($filepath);
-		libxml_use_internal_errors($temp);
-
-		if ($this->_xml === false) {
-			if (Utility::isCLI()) {
-				$this->out->error("Your versions XML file ({nZEDb_VERSIONS}) is broken, try updating from git.");
-			}
-			throw new \Exception("Failed to open versions XML file '$filepath'");
-		}
-
-		if ($this->_xml->count() > 0) {
-			$vers = $this->_xml->xpath('/nzedb/versions');
-
-			if ($vers[0]->count() == 0) {
-				$this->out->error("Your versions XML file ({nZEDb_VERSIONS}) does not contain version info, try updating from git.");
-				throw new \Exception("Failed to find versions node in XML file '$filepath'");
-			} else {
-				$this->out->primary("Your versions XML file ({nZEDb_VERSIONS}) looks okay, continuing.");
-				$this->_vers = &$this->_xml->versions;
-			}
-		} else {
-			throw new \RuntimeException("No elements in file!\n");
-		}
+		$this->getValidVersionsFile();
 	}
 
 	public function changes()
@@ -200,14 +177,14 @@ class Versions
 	 */
 	public function checkSQLFileLatest($update = true)
 	{
-		$options = array(
+		$options = [
 			'data'  => nZEDb_RES . 'db' . DS . 'schema' . DS . 'data' . DS,
 			'ext'   => 'sql',
 			'path'  => nZEDb_RES . 'db' . DS . 'patches' . DS . 'mysql',
 			'regex' =>
 				'#^' . Utility::PATH_REGEX . '(?P<patch>\d{4})~(?P<table>\w+)\.sql$#',
 			'safe'  => true,
-		);
+		];
 		$files = Utility::getDirFiles($options);
 		natsort($files);
 
@@ -251,6 +228,38 @@ class Versions
 	public function getTagVersion()
 	{
 		return $this->_vers->git->tag->__toString();
+	}
+
+	public function getValidVersionsFile($filepath = null)
+	{
+		$filepath = empty($filepath) ? $this->_filespec : $filepath;
+
+		$temp = libxml_use_internal_errors(true);
+		$this->_xml = simplexml_load_file($filepath);
+		libxml_use_internal_errors($temp);
+
+		if ($this->_xml === false) {
+			if (Utility::isCLI()) {
+				$this->out->error("Your versions XML file ($filepath) is broken, try updating from git.");
+			}
+			throw new \Exception("Failed to open versions XML file '$filepath'");
+		}
+
+		if ($this->_xml->count() > 0) {
+			$vers = $this->_xml->xpath('/nzedb/versions');
+
+			if ($vers[0]->count() == 0) {
+				$this->out->error("Your versions XML file ({nZEDb_VERSIONS}) does not contain version info, try updating from git.");
+				throw new \Exception("Failed to find versions node in XML file '$filepath'");
+			} else {
+				$this->out->primary("Your versions XML file ({nZEDb_VERSIONS}) looks okay, continuing.");
+				$this->_vers = &$this->_xml->versions;
+			}
+		} else {
+			throw new \RuntimeException("No elements in file!\n");
+		}
+
+		return $this->_xml;
 	}
 
 	/**
