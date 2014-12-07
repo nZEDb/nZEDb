@@ -285,18 +285,9 @@ class Utility
 
 	static public function getValidVersionsFile()
 	{
-		$versions = @simplexml_load_file(nZEDb_VERSIONS);
+		$versions = new Versions();
 
-		if ($versions === false) {
-			if (self::isCLI()) {
-				echo (new \ColorCLI())->error(
-					"\nYour versioning XML file ({nZEDb_VERSIONS}) is broken, try updating from git.\n"
-				);
-			}
-			throw new \RuntimeException('Versioning file is broken!');
-		}
-
-		return $versions;
+		return $versions->getValidVersionsFile();
 	}
 
 	/**
