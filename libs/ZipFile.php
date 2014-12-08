@@ -1,7 +1,4 @@
 <?php
-/**
- * @TODO: This should be moved to the nZEDb_LIBS directory
- */
 
 /**
  * Zip file creation class.

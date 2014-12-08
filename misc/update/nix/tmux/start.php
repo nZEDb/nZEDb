@@ -2,14 +2,15 @@
 require_once dirname(__FILE__) . '/../../../../www/config.php';
 
 use nzedb\db\Settings;
+use nzedb\utility\Utility;
 
 $pdo = new Settings();
 $DIR = nZEDb_MISC;
 
 // Check that Db patch level is current. Also checks nZEDb.xml is valid.
-\nzedb\utility\Utility::isPatched();
+Utility::isPatched();
 
-passthru('clear');
+Utility::clearScreen();
 
 $patch = $pdo->getSetting('sqlpatch');
 $patch = ($patch != '') ? $patch : 0;
@@ -62,7 +63,7 @@ function command_exist($cmd)
 }
 
 //check for apps
-$apps = array("time", "tmux", "nice", "python", "tee");
+$apps = ["time", "tmux", "nice", "python", "tee"];
 foreach ($apps as &$value) {
 	if (!command_exist($value)) {
 		exit($pdo->log->error("Tmux scripts require " . $value . " but it's not installed. Aborting.\n"));
@@ -79,7 +80,7 @@ function python_module_exist($module)
 
 $nntpproxy = $pdo->getSetting('nntpproxy');
 if ($nntpproxy == '1') {
-	$modules = array("nntp", "socketpool");
+	$modules = ["nntp", "socketpool"];
 	foreach ($modules as &$value) {
 		if (!python_module_exist($value)) {
 			exit($pdo->log->error("\nNNTP Proxy requires " . $value . " python module but it's not installed. Aborting.\n"));

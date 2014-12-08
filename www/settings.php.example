@@ -384,15 +384,6 @@ define('nZEDb_USE_SQL_TRANSACTIONS', true);
 //define('PHPMAILER_ENABLED', true);
 
 /**
- * Should we use a SMTP server to send mail?
- * If false, it will use your default settings from php.ini.
- *
- * @note If set to true, be sure to set the server settings below.
- * @default false
- */
-define('PHPMAILER_USE_SMTP', false);
-
-/**
  * Global "From" Address.
  * This address will be set as the From: address on every email sent by nZEDb.
  *
@@ -431,6 +422,14 @@ define('PHPMAILER_REPLYTO', '');
  */
 define('PHPMAILER_BCC', '');
 
+/**
+ * Should we use a SMTP server to send mail?
+ * If false, it will use your default settings from php.ini.
+ *
+ * @note If set to true, be sure to set the server settings below.
+ * @default false
+ */
+define('PHPMAILER_USE_SMTP', false);
 
 
 /*********************************************************************************

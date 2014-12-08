@@ -4,7 +4,7 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 use nzedb\db\Settings;
 
 /* This script will update the groups table to get the new article numbers for each group you have activated.
-  It will also truncate the parts, binaries, collections, and partsrepair tables.
+  It will also truncate the parts, binaries, collections, and missed_parts tables.
  */
 // TODO: Make this threaded so it goes faster.
 
