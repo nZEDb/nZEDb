@@ -28,7 +28,6 @@ spl_autoload_register(
 				if ($fileInfo->isDir() && !$fileInfo->isDot()) {
 					$file = $fileInfo->getPathname() . DIRECTORY_SEPARATOR . $filename;
 					if (file_exists($file) && is_readable($file)) {
-						var_dump($file);
 						require_once $file;
 					}
 				}
