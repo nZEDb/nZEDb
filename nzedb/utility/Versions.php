@@ -98,8 +98,8 @@ class Versions
 	 */
 	public function checkGitCommit($update = true)
 	{
-		// We don't maintain the commit count in the XML file since Dec 2014 as it is no longer used
-		// in the code base.
+		// Since Dec 2014 we no longer maintain the git commit count in the XML file, as it is no
+		// longer used in the code base.
 		if ((int)$this->_vers->sql->db >= 307) {
 			return 0;
 		}
