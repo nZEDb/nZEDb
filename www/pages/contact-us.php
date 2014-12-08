@@ -1,19 +1,23 @@
 <?php
+
+use \nzedb\utility\Utility;
+
 if (isset($_POST["useremail"])) {
 	// Send the contact info and report back to user.
 	$email = $_POST["useremail"];
 	$mailto = $page->settings->getSetting('email');
 
 	$mailsubj = "Contact Form Submitted";
-	$mailhead = "From: $email\n";
-	$mailbody = "Values submitted from contact form:\n";
+	$mailbody = "Values submitted from contact form:<br/>";
 
 	while (list ($key, $val) = each($_POST)) {
-		$mailbody .= "$key : $val\n";
+		if ($key != "submit") {
+			$mailbody .= "$key : $val<br />\r\n";
+		}
 	}
 
 	if (!preg_match("/\n/i", $_POST["useremail"])) {
-		@mail($mailto, $mailsubj, $mailbody, $mailhead);
+		Utility::sendEmail($mailto, $mailsubj, $mailbody, $email);
 	}
 
 	$page->smarty->assign("msg", "<h2 style='text-align:center;'>Thank you for getting in touch with " . $page->settings->getSetting('title') . ".</h2>");
