@@ -39,7 +39,7 @@ if ($showregister == 0) {
 			$page->smarty->assign('email', $email);
 			$page->smarty->assign('invitecode', $invitecode);
 
-			// Check uname/email isnt in use, password valid. If all good create new user account and redirect back to home page.
+			// Check uname/email isn't in use, password valid. If all good create new user account and redirect back to home page.
 			if ($password != $confirmpassword) {
 				$page->smarty->assign('error', "Password Mismatch");
 			} else {

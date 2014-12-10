@@ -40,7 +40,7 @@ class AniDB
 	 */
 	public function updateTitle($anidbID, $type, $startdate, $enddate, $related, $similar, $creators, $description, $rating, $categories, $characters)
 	{
-		// FIXME fix  the missing variables for this query
+		// FIXME fix the missing variables for this query
 		$this->pdo->queryExec(
 					sprintf('
 						UPDATE anidb_titles AS at INNER JOIN anidb_info ai USING (anidbid) SET title = %s, type = %s, startdate = %s, enddate = %s,

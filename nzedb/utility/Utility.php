@@ -2,14 +2,7 @@
 namespace nzedb\utility;
 
 
-use \libs\PHPMailer;
 use \nzedb\db\Settings;
-
-/**
- * @todo Find a better way to include this. I'd rather stick to the new namespace style instead of requires.
- */
-require_once nZEDb_LIBS . 'PHPMailer/PHPMailerAutoload.php';
-
 
 
 /*
@@ -22,6 +15,19 @@ class Utility
 	 *  Regex for detecting multi-platform path. Use it where needed so it can be updated in one location as required characters get added.
 	 */
 	const PATH_REGEX = '(?P<drive>[A-Za-z]:|)(?P<path>[\\/\w .-]+|)';
+
+	static public function clearScreen()
+	{
+		if (self::isCLI())
+		{
+			if (self::isWin())
+			{
+				passthru('cls');
+			} else {
+				passthru('clear');
+			}
+		}
+	}
 
 	/**
 	 * Replace all white space chars for a single space.
@@ -279,18 +285,9 @@ class Utility
 
 	static public function getValidVersionsFile()
 	{
-		$versions = @simplexml_load_file(nZEDb_VERSIONS);
+		$versions = new Versions();
 
-		if ($versions === false) {
-			if (self::isCLI()) {
-				echo (new \ColorCLI())->error(
-					"\nYour versioning XML file ({nZEDb_VERSIONS}) is broken, try updating from git.\n"
-				);
-			}
-			throw new \RuntimeException('Versioning file is broken!');
-		}
-
-		return $versions;
+		return $versions->getValidVersionsFile();
 	}
 
 	/**
@@ -331,11 +328,13 @@ class Utility
 		return ((strtolower(PHP_SAPI) === 'cli') ? true : false);
 	}
 
-	static public function isPatched()
+	static public function isPatched(Settings $pdo = null)
 	{
 		$versions = self::getValidVersionsFile();
 
-		$pdo = new Settings();
+		if (!($pdo instanceof Settings)) {
+			$pdo = new Settings();
+		}
 		$patch = $pdo->getSetting(['section' => '', 'subsection' => '', 'name' => 'sqlpatch']);
 		$ver = $versions->versions->sql->file;
 
@@ -1027,9 +1026,7 @@ class Utility
 
 		// Setup the body first since we need it regardless of sending method.
 		$body = '<html>' . $CRLF;
-		$body .=
-			'<body style=\'font-family:Verdana, Verdana, Geneva, sans-serif; font-size:12px; color:#666666;\'>' .
-			$CRLF;
+		$body .= '<body style=\'font-family:Verdana, Verdana, Geneva, sans-serif; font-size:12px; color:#666666;\'>' . $CRLF;
 		$body .= $contents;
 		$body .= '</body>' . $CRLF;
 		$body .= '</html>' . $CRLF;
@@ -1040,9 +1037,7 @@ class Utility
 
 		// If the mailer couldn't instantiate there's a good chance the user has an incomplete update & we should fallback to php mail()
 		// @todo Log this failure.
-		if (!defined('PHPMAILER_ENABLED') || PHPMAILER_ENABLED !== true ||
-			!($mail instanceof \PHPMailer)
-		) {
+		if (!defined('PHPMAILER_ENABLED') || PHPMAILER_ENABLED !== true || !($mail instanceof \PHPMailer)) {
 			$headers = 'From: ' . $from . $CRLF;
 			$headers .= 'Reply-To: ' . $from . $CRLF;
 			$headers .= 'Return-Path: ' . $from . $CRLF;
