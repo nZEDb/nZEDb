@@ -2,14 +2,7 @@
 namespace nzedb\utility;
 
 
-use \libs\PHPMailer;
 use \nzedb\db\Settings;
-
-/**
- * @todo Find a better way to include this. I'd rather stick to the new namespace style instead of requires.
- */
-require_once nZEDb_LIBS . 'PHPMailer/PHPMailerAutoload.php';
-
 
 
 /*
@@ -22,6 +15,19 @@ class Utility
 	 *  Regex for detecting multi-platform path. Use it where needed so it can be updated in one location as required characters get added.
 	 */
 	const PATH_REGEX = '(?P<drive>[A-Za-z]:|)(?P<path>[\\/\w .-]+|)';
+
+	static public function clearScreen()
+	{
+		if (self::isCLI())
+		{
+			if (self::isWin())
+			{
+				passthru('cls');
+			} else {
+				passthru('clear');
+			}
+		}
+	}
 
 	/**
 	 * Replace all white space chars for a single space.
@@ -279,18 +285,9 @@ class Utility
 
 	static public function getValidVersionsFile()
 	{
-		$versions = @simplexml_load_file(nZEDb_VERSIONS);
+		$versions = new Versions();
 
-		if ($versions === false) {
-			if (self::isCLI()) {
-				echo (new \ColorCLI())->error(
-					"\nYour versioning XML file ({nZEDb_VERSIONS}) is broken, try updating from git.\n"
-				);
-			}
-			throw new \RuntimeException('Versioning file is broken!');
-		}
-
-		return $versions;
+		return $versions->getValidVersionsFile();
 	}
 
 	/**
@@ -331,11 +328,13 @@ class Utility
 		return ((strtolower(PHP_SAPI) === 'cli') ? true : false);
 	}
 
-	static public function isPatched()
+	static public function isPatched(Settings $pdo = null)
 	{
 		$versions = self::getValidVersionsFile();
 
-		$pdo = new Settings();
+		if (!($pdo instanceof Settings)) {
+			$pdo = new Settings();
+		}
 		$patch = $pdo->getSetting(['section' => '', 'subsection' => '', 'name' => 'sqlpatch']);
 		$ver = $versions->versions->sql->file;
 
@@ -1022,27 +1021,30 @@ class Utility
 	// Central function for sending site email.
 	static public function sendEmail($to, $subject, $contents, $from)
 	{
-		$mail = new PHPMailer;
+		// Email *always* uses CRLF for line endings unless the mail agent is broken, like qmail
+		$CRLF = "\r\n";
 
-		//Setup the body first since we need it regardless of sending method.
-		$eol = PHP_EOL;
-
-		$body = '<html>' . $eol;
-		$body .= '<body style=\'font-family:Verdana, Verdana, Geneva, sans-serif; font-size:12px; color:#666666;\'>' . $eol;
+		// Setup the body first since we need it regardless of sending method.
+		$body = '<html>' . $CRLF;
+		$body .= '<body style=\'font-family:Verdana, Verdana, Geneva, sans-serif; font-size:12px; color:#666666;\'>' . $CRLF;
 		$body .= $contents;
-		$body .= '</body>' . $eol;
-		$body .= '</html>' . $eol;
+		$body .= '</body>' . $CRLF;
+		$body .= '</html>' . $CRLF;
+
+		if (defined('PHPMAILER_ENABLED') && PHPMAILER_ENABLED == true) {
+			$mail = new \PHPMailer;
+		}
 
 		// If the mailer couldn't instantiate there's a good chance the user has an incomplete update & we should fallback to php mail()
 		// @todo Log this failure.
-		if (!defined('PHPMAILER_ENABLED') || PHPMAILER_ENABLED !== true || !($mail instanceof PHPMailer)) {
-			$headers = 'From: ' . $from . $eol;
-			$headers .= 'Reply-To: ' . $from . $eol;
-			$headers .= 'Return-Path: ' . $from . $eol;
-			$headers .= 'X-Mailer: nZEDb' . $eol;
-			$headers .= 'MIME-Version: 1.0' . $eol;
-			$headers .= 'Content-type: text/html; charset=iso-8859-1' . $eol;
-			$headers .= $eol;
+		if (!defined('PHPMAILER_ENABLED') || PHPMAILER_ENABLED !== true || !($mail instanceof \PHPMailer)) {
+			$headers = 'From: ' . $from . $CRLF;
+			$headers .= 'Reply-To: ' . $from . $CRLF;
+			$headers .= 'Return-Path: ' . $from . $CRLF;
+			$headers .= 'X-Mailer: nZEDb' . $CRLF;
+			$headers .= 'MIME-Version: 1.0' . $CRLF;
+			$headers .= 'Content-type: text/html; charset=iso-8859-1' . $CRLF;
+			$headers .= $CRLF;
 
 			return mail($to, $subject, $body, $headers);
 		}
@@ -1058,8 +1060,7 @@ class Utility
 			}
 
 			// If the user enabled SMTP & Auth but did not setup credentials, throw an exception.
-			if (defined('PHPMAILER_SMTP_AUTH') && PHPMAILER_SMTP_AUTH == true)
-			{
+			if (defined('PHPMAILER_SMTP_AUTH') && PHPMAILER_SMTP_AUTH == true) {
 				if ((!defined('PHPMAILER_SMTP_USER') || PHPMAILER_SMTP_USER === '') ||
 					(!defined('PHPMAILER_SMTP_PASSWORD') || PHPMAILER_SMTP_PASSWORD === '')
 				) {
@@ -1092,17 +1093,20 @@ class Utility
 
 		$site_email = $settings->getSetting('email');
 
-		$fromEmail = (PHPMAILER_FROM_EMAIL === '') ? $site_email : PHPMAILER_FROM_EMAIL;
-		$fromName  = (PHPMAILER_FROM_NAME === '') ? $settings->getSetting('title') : PHPMAILER_FROM_NAME;
-		$replyTo   = (PHPMAILER_REPLYTO === '') ? $site_email : PHPMAILER_REPLYTO;
+		$fromEmail = (PHPMAILER_FROM_EMAIL == '') ? $site_email : PHPMAILER_FROM_EMAIL;
+		$fromName  = (PHPMAILER_FROM_NAME == '') ? $settings->getSetting('title') :
+			PHPMAILER_FROM_NAME;
+		$replyTo   = (PHPMAILER_REPLYTO == '') ? $site_email : PHPMAILER_REPLYTO;
 
-		(PHPMAILER_BCC !== '') ?	$mail->addBCC(PHPMAILER_BCC) : null;
+		if (PHPMAILER_BCC != '') {
+			$mail->addBCC(PHPMAILER_BCC);
+		}
 
 		$mail->setFrom($fromEmail, $fromName);
 		$mail->addAddress($to);
 		$mail->addReplyTo($replyTo);
 		$mail->Subject = $subject;
-		$mail->Body = $body;
+		$mail->Body    = $body;
 		$mail->AltBody = $mail->html2text($body, true);
 
 		$sent = $mail->send();
