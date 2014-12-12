@@ -173,12 +173,15 @@ function importDump($path, $local, $verbose = true)
 	$pdo->queryExec('DROP TABLE IF EXISTS tmp_pre');
 	$pdo->queryExec('CREATE TABLE tmp_pre LIKE predb');
 
-	// Drop indexes on tmp_pre
-	$pdo->queryExec('ALTER TABLE tmp_pre DROP INDEX `ix_predb_nfo`, DROP INDEX `ix_predb_predate`, DROP INDEX `ix_predb_source`, DROP INDEX `ix_predb_title`, DROP INDEX `ix_predb_requestid`');
+	// Drop id as it is not needed and incurs overhead creating each id.
+	$pdo->queryExec('ALTER TABLE tmp_pre DROP COLUMN id');
+
+	// Add a column for the group's name which is included instead of the group_id, which may be
+	// different between individual databases
 	$pdo->queryExec('ALTER TABLE tmp_pre ADD COLUMN groupname VARCHAR (255)');
 
-	// Drop id as it is not needed and incurs overhead creating new id.
-	$pdo->queryExec('ALTER TABLE tmp_pre DROP COLUMN id');
+	// Drop indexes on tmp_pre
+	$pdo->queryExec('ALTER TABLE tmp_pre DROP INDEX `ix_predb_nfo`, DROP INDEX `ix_predb_predate`, DROP INDEX `ix_predb_source`, DROP INDEX `ix_predb_title`, DROP INDEX `ix_predb_requestid`');
 
 	// Import file into tmp_pre
 	$sqlLoad = sprintf(
@@ -186,7 +189,7 @@ function importDump($path, $local, $verbose = true)
 		($local !== false ? 'LOCAL' : ''),
 		$path
 	);
-	if ($verbose) {
+	if (nZEDb_DEBUG) {
 		echo $pdo->log->header($sqlLoad);
 	}
 	$pdo->queryDirect($sqlLoad);
@@ -197,12 +200,23 @@ function importDump($path, $local, $verbose = true)
 	}
 	$pdo->queryDirect("DELETE FROM tmp_pre WHERE LENGTH(title) <= 8");
 
+	// Add any groups that do not currently exist
+	$sqlAddGroups = <<<SQL_ADD_GROUPS
+INSERT IGNORE INTO groups (`name`, description)
+	SELECT groupname, 'Added by predb import script'
+	FROM tmp_pre AS t LEFT JOIN groups AS g ON t.`groupname` = g.`name`
+	WHERE t.`groupname` IS NOT NULL AND g.`name` IS NULL
+	GROUP BY groupname;
+SQL_ADD_GROUPS;
+
+	$pdo->queryDirect($sqlAddGroups);
+
 	// Insert and update table
 	$sqlInsert = <<<SQL_INSERT
 INSERT INTO $table (title, nfo, size, files, filename, nuked, nukereason, category, predate, SOURCE, requestid, group_id)
-  SELECT t.title, t.nfo, t.size, t.files, t.filename, t.nuked, t.nukereason, t.category, t.predate, t.source, t.requestid, IF(g.id IS NOT NULL, g.id, 0)
-    FROM tmp_pre AS t
-	LEFT OUTER JOIN groups g ON t.groupname = g.name ON DUPLICATE KEY UPDATE predb.nfo = IF(predb.nfo IS NULL, t.nfo, predb.nfo),
+  SELECT t.title, t.nfo, t.size, t.files, t.filename, t.nuked, t.nukereason, t.category, t.predate, t.source, t.requestid, g.id
+    FROM tmp_pre AS t LEFT OUTER JOIN groups g ON t.groupname = g.name
+  ON DUPLICATE KEY UPDATE predb.nfo = IF(predb.nfo IS NULL, t.nfo, predb.nfo),
 	  predb.size = IF(predb.size IS NULL, t.size, predb.size),
 	  predb.files = IF(predb.files IS NULL, t.files, predb.files),
 	  predb.filename = IF(predb.filename = '', t.filename, predb.filename),
@@ -214,8 +228,8 @@ INSERT INTO $table (title, nfo, size, files, filename, nuked, nukereason, catego
 SQL_INSERT;
 
 	echo $pdo->log->info("Inserting records from temporary table into $table");
-	if ($verbose) {
-		//		echo $pdo->log->primary($sqlInsert);
+	if (nZEDb_DEBUG) {
+		echo $pdo->log->primary($sqlInsert);
 	}
 	if ($pdo->queryDirect($sqlInsert) === false) {
 		echo "FAILED\n";
