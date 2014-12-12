@@ -1,5 +1,9 @@
 <?php
 
+/* TODO better tune the queries for performance, including using prepared statements and
+   pre-fetching group_id and other data for faster inclusion in the main query.
+*/
+
 use nzedb\utility\Utility;
 
 $config = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR .
