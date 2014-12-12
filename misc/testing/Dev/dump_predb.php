@@ -65,6 +65,16 @@ if (isset($argv[1]) && $argv[1] == 'export' && isset($argv[2])) {
     echo $pdo->log->info("Deleting any records where title <=8 from Temporary Table");
     $pdo->queryDirect("DELETE FROM tmp_pre WHERE LENGTH(title) <= 8");
 
+	// Add any groups that do not currently exist
+	$sqlAddGroups = <<<SQL_ADD_GROUPS
+INSERT IGNORE INTO groups (`name`, description)
+	SELECT groupname, 'Added by predb import script'
+	FROM tmp_pre AS t LEFT JOIN groups AS g ON t.`groupname` = g.`name`
+	WHERE t.`groupname` IS NOT NULL AND g.`name` IS NULL
+	GROUP BY groupname;
+SQL_ADD_GROUPS;
+	$pdo->queryDirect($sqlAddGroups);
+
 	// Drop triggers on predb
 	echo $pdo->log->info("Dropping predb_hashes triggers");
 	$pdo->queryDirect("DROP TRIGGER IF EXISTS insert_hashes");
