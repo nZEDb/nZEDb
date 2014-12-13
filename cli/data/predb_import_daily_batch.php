@@ -160,7 +160,7 @@ function rw_progress($settings, $read = true)
 }
 
 // This function duplicates how dump_predb works but does not drop the hashes/triggers as recreating
-// potentially millions for the small addition dailies add isn't worth it.
+// potentially millions for the small addition that dailies add, isn't worth it.
 function importDump($path, $local, $verbose = true)
 {
 	global $pdo, $table;
@@ -186,7 +186,7 @@ function importDump($path, $local, $verbose = true)
 	// Import file into tmp_pre
 	$sqlLoad = sprintf(
 		"LOAD DATA %s INFILE '%s' IGNORE INTO TABLE tmp_pre FIELDS TERMINATED BY '\\t\\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\\r\\n' (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, groupname);",
-		($local !== false ? 'LOCAL' : ''),
+		($local === false ? 'LOCAL' : ''),
 		$path
 	);
 	if (nZEDb_DEBUG) {
