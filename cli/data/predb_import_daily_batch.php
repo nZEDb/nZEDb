@@ -74,6 +74,20 @@ if ($result) {
 	if ($argv[1] != 'progress') {
 		$progress['last'] = !is_numeric($argv[1]) ? time() : $argv[1];
 	}
+
+	$pdo->queryExec('DROP TABLE IF EXISTS tmp_pre');
+	$pdo->queryExec('CREATE TABLE tmp_pre LIKE predb');
+
+	// Drop id as it is not needed and incurs overhead creating each id.
+	$pdo->queryExec('ALTER TABLE tmp_pre DROP COLUMN id');
+
+	// Add a column for the group's name which is included instead of the group_id, which may be
+	// different between individual databases
+	$pdo->queryExec('ALTER TABLE tmp_pre ADD COLUMN groupname VARCHAR (255)');
+
+	// Drop indexes on tmp_pre
+	$pdo->queryExec('ALTER TABLE tmp_pre DROP INDEX `ix_predb_nfo`, DROP INDEX `ix_predb_predate`, DROP INDEX `ix_predb_source`, DROP INDEX `ix_predb_title`, DROP INDEX `ix_predb_requestid`');
+
 	foreach ($all_matches as $matches) {
 		if (preg_match('#^(.+)/(\d+)_#', $matches, $match)) {
 			$timematch = -1 + $progress['last'];
@@ -132,6 +146,9 @@ if ($result) {
 				 ' dumps remaining to import.' . PHP_EOL;
 		}
 	}
+
+	// Drop tmp_pre table
+	$pdo->queryExec('DROP TABLE IF EXISTS tmp_pre');
 }
 
 function settings_array($last = null, $settings = null)
@@ -161,27 +178,17 @@ function rw_progress($settings, $read = true)
 
 // This function duplicates how dump_predb works but does not drop the hashes/triggers as recreating
 // potentially millions for the small addition that dailies add, isn't worth it.
-function importDump($path, $local, $verbose = true)
+function importDump($path, $local, $verbose = true, $table = 'predb')
 {
-	global $pdo, $table;
-	$table = 'predb';
+	global $pdo;
 
 	// Create temp table to allow updating
 	if ($verbose) {
 		echo $pdo->log->info("Creating temporary table");
 	}
-	$pdo->queryExec('DROP TABLE IF EXISTS tmp_pre');
-	$pdo->queryExec('CREATE TABLE tmp_pre LIKE predb');
 
-	// Drop id as it is not needed and incurs overhead creating each id.
-	$pdo->queryExec('ALTER TABLE tmp_pre DROP COLUMN id');
-
-	// Add a column for the group's name which is included instead of the group_id, which may be
-	// different between individual databases
-	$pdo->queryExec('ALTER TABLE tmp_pre ADD COLUMN groupname VARCHAR (255)');
-
-	// Drop indexes on tmp_pre
-	$pdo->queryExec('ALTER TABLE tmp_pre DROP INDEX `ix_predb_nfo`, DROP INDEX `ix_predb_predate`, DROP INDEX `ix_predb_source`, DROP INDEX `ix_predb_title`, DROP INDEX `ix_predb_requestid`');
+	// TRuncate to clear any old data
+	$pdo->queryDirect("TRUNCATE TABLE tmp_pre");
 
 	// Import file into tmp_pre
 	$sqlLoad = sprintf(
@@ -214,7 +221,7 @@ SQL_ADD_GROUPS;
 	// Insert and update table
 	$sqlInsert = <<<SQL_INSERT
 INSERT INTO $table (title, nfo, size, files, filename, nuked, nukereason, category, predate, SOURCE, requestid, group_id)
-  SELECT t.title, t.nfo, t.size, t.files, t.filename, t.nuked, t.nukereason, t.category, t.predate, t.source, t.requestid, g.id
+  SELECT t.title, t.nfo, t.size, t.files, t.filename, t.nuked, t.nukereason, t.category, t.predate, t.source, t.requestid, IF(g.id IS NOT NULL, g.id, 0)
     FROM tmp_pre AS t LEFT OUTER JOIN groups g ON t.groupname = g.name
   ON DUPLICATE KEY UPDATE predb.nfo = IF(predb.nfo IS NULL, t.nfo, predb.nfo),
 	  predb.size = IF(predb.size IS NULL, t.size, predb.size),
@@ -234,7 +241,4 @@ SQL_INSERT;
 	if ($pdo->queryDirect($sqlInsert) === false) {
 		echo "FAILED\n";
 	}
-
-	// Drop tmp_pre table
-	$pdo->queryExec('DROP TABLE IF EXISTS tmp_pre');
 }
