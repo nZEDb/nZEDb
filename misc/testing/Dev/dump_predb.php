@@ -65,38 +65,38 @@ if (isset($argv[1]) && $argv[1] == 'export' && isset($argv[2])) {
     echo $pdo->log->info("Deleting any records where title <=8 from Temporary Table");
     $pdo->queryDirect("DELETE FROM tmp_pre WHERE LENGTH(title) <= 8");
 
+	// Add any groups that do not currently exist
+	$sqlAddGroups = <<<SQL_ADD_GROUPS
+INSERT IGNORE INTO groups (`name`, description)
+	SELECT groupname, 'Added by predb import script'
+	FROM tmp_pre AS t LEFT JOIN groups AS g ON t.`groupname` = g.`name`
+	WHERE t.`groupname` IS NOT NULL AND g.`name` IS NULL
+	GROUP BY groupname;
+SQL_ADD_GROUPS;
+	$pdo->queryDirect($sqlAddGroups);
+
 	// Drop triggers on predb
 	echo $pdo->log->info("Dropping predb_hashes triggers");
 	$pdo->queryDirect("DROP TRIGGER IF EXISTS insert_hashes");
 	$pdo->queryDirect("DROP TRIGGER IF EXISTS update_hashes");
 
 	// Insert and update table
-	echo $pdo->log->primary('INSERT INTO ' . $table . " (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, group_id)
-	SELECT t.title, t.nfo, t.size, t.files, t.filename, t.nuked, t.nukereason, t.category,
-	 t.predate, t.source, t.requestid, IF(g.id IS NOT NULL, g.id, 0) FROM tmp_pre t
-	 LEFT OUTER JOIN groups g ON t.groupname = g.name
-	 ON DUPLICATE KEY UPDATE predb.nfo = IF(predb.nfo is null, t.nfo, predb.nfo),
-	 predb.size = IF(predb.size is null, t.size, predb.size),
-	 predb.files = IF(predb.files is null, t.files, predb.files),
-	 predb.filename = IF(predb.filename = '', t.filename, predb.filename),
-	 predb.nuked = IF(t.nuked > 0, t.nuked, predb.nuked),
-	 predb.nukereason = IF(t.nuked > 0, t.nukereason, predb.nukereason),
-	 predb.category = IF(predb.category is null, t.category, predb.category),
-	 predb.requestid = IF(predb.requestid = 0, t.requestid, predb.requestid),
-	 predb.group_id = IF(g.id IS NOT NULL, g.id, 0);\n");
-	$pdo->queryDirect('INSERT INTO ' . $table . ' (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, group_id)
-	SELECT t.title, t.nfo, t.size, t.files, t.filename, t.nuked, t.nukereason, t.category,
-	 t.predate, t.source, t.requestid, IF(g.id IS NOT NULL, g.id, 0) FROM tmp_pre t
-	 LEFT OUTER JOIN groups g ON t.groupname = g.name
-	 ON DUPLICATE KEY UPDATE predb.nfo = IF(predb.nfo is null, t.nfo, predb.nfo),
-	 predb.size = IF(predb.size is null, t.size, predb.size),
-	 predb.files = IF(predb.files is null, t.files, predb.files),
-	 predb.filename = IF(predb.filename = "", t.filename, predb.filename),
-	 predb.nuked = IF(t.nuked > 0, t.nuked, predb.nuked),
-	 predb.nukereason = IF(t.nuked > 0, t.nukereason, predb.nukereason),
-	 predb.category = IF(predb.category is null, t.category, predb.category),
-	 predb.requestid = IF(predb.requestid = 0, t.requestid, predb.requestid),
-	 predb.group_id = IF(g.id IS NOT NULL, g.id, predb.group_id)');
+	$sqlInsert = <<<SQL_INSERT
+INSERT INTO $table (title, nfo, size, files, filename, nuked, nukereason, category, predate, SOURCE, requestid, group_id)
+  SELECT t.title, t.nfo, t.size, t.files, t.filename, t.nuked, t.nukereason, t.category, t.predate, t.source, t.requestid, IF(g.id IS NOT NULL, g.id, 0))
+    FROM tmp_pre AS t
+	LEFT OUTER JOIN groups g ON t.groupname = g.name ON DUPLICATE KEY UPDATE predb.nfo = IF(predb.nfo IS NULL, t.nfo, predb.nfo),
+	  predb.size = IF(predb.size IS NULL, t.size, predb.size),
+	  predb.files = IF(predb.files IS NULL, t.files, predb.files),
+	  predb.filename = IF(predb.filename = '', t.filename, predb.filename),
+	  predb.nuked = IF(t.nuked > 0, t.nuked, predb.nuked),
+	  predb.nukereason = IF(t.nuked > 0, t.nukereason, predb.nukereason),
+	  predb.category = IF(predb.category IS NULL, t.category, predb.category),
+	  predb.requestid = IF(predb.requestid = 0, t.requestid, predb.requestid),
+	  predb.group_id = IF(g.id IS NOT NULL, g.id, 0);
+SQL_INSERT;
+	echo $pdo->log->primary($sqlInsert);
+	$pdo->queryDirect($sqlInsert);
 
 	// Add hashes
 	echo $pdo->log->info("Adding predb_hashes entries");

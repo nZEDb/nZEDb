@@ -5,6 +5,11 @@ Please make sure any PR's comply with our coding standards policy: http://li3.me
 New updates are grouped by person (committer/merger), at the top of the file.
 
 
+2014-12-14 niel
+	* Mrg: PR 1562 from zetas/kingcat - Mail: Use supplied from address as reply-to.
+	* Fix: NZBGet was being sent incorrect URLs for NZB files, which resulted in it being redirected to the login page.
+2014-12-12 niel
+	* Adding script to batch import predb daily dumps without repeatedly calling the dump_predb script, which drops and readds triggers.
 2014-12-01 ruhllatio
 	* Fix: Contact us form erroring due to PHP Mailer class not found
 2014-11-20 niel

@@ -42,6 +42,117 @@ if (count($session) !== 0) {
 	exit($pdo->log->error("tmux session: '" . $tmux_session . "' is already running, aborting.\n"));
 }
 
+$nntpproxy = $pdo->getSetting('nntpproxy');
+if ($nntpproxy == '1') {
+	$modules = ["nntp", "socketpool"];
+	foreach ($modules as &$value) {
+		if (!python_module_exist($value)) {
+			exit($pdo->log->error("\nNNTP Proxy requires " . $value .
+								  " python module but it's not installed. Aborting.\n"));
+		}
+	}
+}
+
+//reset collections dateadded to now if dateadded > delay time check
+echo $pdo->log->header("Resetting expired collections dateadded to now. This could take a minute or two. Really.");
+
+if ($tablepergroup == 1) {
+	$sql    = "SHOW table status";
+	$tables = $pdo->queryDirect($sql);
+	$ran    = 0;
+	foreach ($tables as $row) {
+		$tbl = $row['name'];
+		if (preg_match('/collections_\d+/', $tbl)) {
+			$run = $pdo->queryExec('UPDATE ' . $tbl .
+								   ' SET dateadded = now() WHERE dateadded < now() - INTERVAL ' .
+								   $delaytimet . ' HOUR');
+			if ($run !== false) {
+				$ran += $run->rowCount();
+			}
+		}
+	}
+	echo $pdo->log->primary(number_format($ran) . " collections reset.");
+} else {
+	$ran = 0;
+	$run = $pdo->queryExec('update collections set dateadded = now() WHERE dateadded < now() - INTERVAL ' .
+						   $delaytimet . ' HOUR');
+	if ($run !== false) {
+		$ran += $run->rowCount();
+	}
+	echo $pdo->log->primary(number_format($ran) . " collections reset.");
+}
+sleep(2);
+
+//create tmux session
+if ($powerline == 1) {
+	$tmuxconfig = $DIR . "update/nix/tmux/powerline/tmux.conf";
+} else {
+	$tmuxconfig = $DIR . "update/nix/tmux/tmux.conf";
+}
+
+if ($seq == 1) {
+	exec("cd ${DIR}/update/nix/tmux; tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;\"Monitor\"\033\"'");
+	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -h -p 67 'printf \"\033]2;update_releases\033\"'");
+	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 25 'printf \"\033]2;nzb-import\033\"'");
+
+	window_utilities($tmux_session);
+	window_post($tmux_session);
+// todo simplify this IF removing redundancy (consider moving to a function)
+	if ($nntpproxy == 1) {
+		window_ircscraper($tmux_session);
+		window_proxy($tmux_session, 4);
+		window_sharing($tmux_session);
+	} else {
+		window_ircscraper($tmux_session);
+		window_sharing($tmux_session);
+	}
+	start_apps($tmux_session);
+	attach($DIR, $tmux_session);
+} else {
+	if ($seq == 2) {
+		exec("cd ${DIR}/update/nix/tmux; tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;\"Monitor\"\033\"'");
+		exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -h -p 67 'printf \"\033]2;sequential\033\"'");
+		exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 25 'printf \"\033]2;nzb-import\033\"'");
+
+		window_stripped_utilities($tmux_session);
+// todo simplify this IF removing redundancy (consider moving to a function)
+		if ($nntpproxy == 1) {
+			window_ircscraper($tmux_session);
+			window_proxy($tmux_session, 3);
+			window_sharing($tmux_session);
+		} else {
+			window_ircscraper($tmux_session);
+			window_sharing($tmux_session);
+		}
+
+		start_apps($tmux_session);
+		attach($DIR, $tmux_session);
+	} else {
+		exec("cd ${DIR}/update/nix/tmux; tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;Monitor\033\"'");
+		exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -h -p 67 'printf \"\033]2;update_binaries\033\"'");
+		exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 25 'printf \"\033]2;nzb-import\033\"'");
+		exec("tmux selectp -t $tmux_session:0.2; tmux splitw -t $tmux_session:0 -v -p 67 'printf \"\033]2;backfill\033\"'");
+		exec("tmux splitw -t $tmux_session -v -p 50 'printf \"\033]2;update_releases\033\"'");
+
+		window_utilities($tmux_session);
+		window_post($tmux_session);
+		if ($nntpproxy == 1) {
+			window_ircscraper($tmux_session);
+			window_proxy($tmux_session, 4);
+			window_sharing($tmux_session);
+		} else {
+			window_ircscraper($tmux_session);
+			window_sharing($tmux_session);
+		}
+		start_apps($tmux_session);
+		attach($DIR, $tmux_session);
+	}
+}
+
+####################################################################################################
+######################################### F U N C T I O N S ########################################
+####################################################################################################
+
 function writelog($pane)
 {
 	$path = dirname(__FILE__) . "/logs";
@@ -77,42 +188,6 @@ function python_module_exist($module)
 
 	return ($returnCode == 0 ? true : false);
 }
-
-$nntpproxy = $pdo->getSetting('nntpproxy');
-if ($nntpproxy == '1') {
-	$modules = ["nntp", "socketpool"];
-	foreach ($modules as &$value) {
-		if (!python_module_exist($value)) {
-			exit($pdo->log->error("\nNNTP Proxy requires " . $value . " python module but it's not installed. Aborting.\n"));
-		}
-	}
-}
-
-//reset collections dateadded to now if dateadded > delay time check
-echo $pdo->log->header("Resetting expired collections dateadded to now. This could take a minute or two. Really.");
-if ($tablepergroup == 1) {
-	$sql = "SHOW table status";
-	$tables = $pdo->queryDirect($sql);
-	$ran = 0;
-	foreach ($tables as $row) {
-		$tbl = $row['name'];
-		if (preg_match('/collections_\d+/', $tbl)) {
-			$run = $pdo->queryExec('UPDATE ' . $tbl . ' SET dateadded = now() WHERE dateadded < now() - INTERVAL ' . $delaytimet . ' HOUR');
-			if ($run !== false) {
-				$ran += $run->rowCount();
-			}
-		}
-	}
-	echo $pdo->log->primary(number_format($ran) . " collections reset.");
-} else {
-	$ran = 0;
-	$run = $pdo->queryExec('update collections set dateadded = now() WHERE dateadded < now() - INTERVAL ' . $delaytimet . ' HOUR');
-	if ($run !== false) {
-		$ran += $run->rowCount();
-	}
-	echo $pdo->log->primary(number_format($ran) . " collections reset.");
-}
-sleep(2);
 
 function start_apps($tmux_session)
 {
@@ -246,66 +321,4 @@ function attach($DIR, $tmux_session)
 	$log = writelog($panes0[0]);
 	exec("tmux respawnp -t $tmux_session:0.0 '$PHP " . $DIR . "update/nix/tmux/monitor.php $log'");
 	exec("tmux select-window -t $tmux_session:0; tmux attach-session -d -t $tmux_session");
-}
-
-//create tmux session
-if ($powerline == 1) {
-	$tmuxconfig = $DIR . "update/nix/tmux/powerline/tmux.conf";
-} else {
-	$tmuxconfig = $DIR . "update/nix/tmux/tmux.conf";
-}
-
-if ($seq == 1) {
-	exec("cd ${DIR}/update/nix/tmux; tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;\"Monitor\"\033\"'");
-	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -h -p 67 'printf \"\033]2;update_releases\033\"'");
-	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 25 'printf \"\033]2;nzb-import\033\"'");
-
-	window_utilities($tmux_session);
-	window_post($tmux_session);
-	if ($nntpproxy == 1) {
-		window_ircscraper($tmux_session);
-		window_proxy($tmux_session, 4);
-		window_sharing($tmux_session);
-	} else {
-		window_ircscraper($tmux_session);
-		window_sharing($tmux_session);
-	}
-	start_apps($tmux_session);
-	attach($DIR, $tmux_session);
-} else if ($seq == 2) {
-	exec("cd ${DIR}/update/nix/tmux; tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;\"Monitor\"\033\"'");
-	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -h -p 67 'printf \"\033]2;sequential\033\"'");
-	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 25 'printf \"\033]2;nzb-import\033\"'");
-
-	window_stripped_utilities($tmux_session);
-	if ($nntpproxy == 1) {
-		window_ircscraper($tmux_session);
-		window_proxy($tmux_session, 3);
-		window_sharing($tmux_session);
-	} else {
-		window_ircscraper($tmux_session);
-		window_sharing($tmux_session);
-	}
-
-	start_apps($tmux_session);
-	attach($DIR, $tmux_session);
-} else {
-	exec("cd ${DIR}/update/nix/tmux; tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;Monitor\033\"'");
-	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -h -p 67 'printf \"\033]2;update_binaries\033\"'");
-	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 25 'printf \"\033]2;nzb-import\033\"'");
-	exec("tmux selectp -t $tmux_session:0.2; tmux splitw -t $tmux_session:0 -v -p 67 'printf \"\033]2;backfill\033\"'");
-	exec("tmux splitw -t $tmux_session -v -p 50 'printf \"\033]2;update_releases\033\"'");
-
-	window_utilities($tmux_session);
-	window_post($tmux_session);
-	if ($nntpproxy == 1) {
-		window_ircscraper($tmux_session);
-		window_proxy($tmux_session, 4);
-		window_sharing($tmux_session);
-	} else {
-		window_ircscraper($tmux_session);
-		window_sharing($tmux_session);
-	}
-	start_apps($tmux_session);
-	attach($DIR, $tmux_session);
 }

@@ -72,17 +72,13 @@ class DbUpdate
 		unset($defaults);
 
 		$this->backup = $options['backup'];
-		$this->pdo    = (is_a($options['db'], '\nzedb\db\Settings')
-			? $options['db'] : new Settings());
+		$this->pdo    = (($options['db'] instanceof Settings) ? $options['db'] : new Settings());
 		$this->git    = $options['git'];
 		$this->log    = $options['logger'];
 
-		if (is_a($this->pdo, '\nzedb\db\Settings')) {
-			// If $pdo is an instance of Settings, reuse it to save resources.
-			$this->settings =& $this->pdo;
-		} else {
-			$this->settings = new Settings();
-		}
+		// If $pdo is an instance of Settings, reuse it to save resources.
+		// This is for unconverted scripts that still use $db->settings instead of the $db->pdo property.
+		$this->settings =& $this->pdo;
 
 		$this->_DbSystem = strtolower($this->pdo->dbSystem());
 	}
