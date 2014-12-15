@@ -177,9 +177,9 @@ class NZBGet
 								$this->serverurl .
 								'getnzb/' .
 								$guid .
-								'%26i%3D' .
+								'&i=' .
 								$this->uid .
-								'%26r%3D' .
+								'&r=' .
 								$this->rsstoken
 								.
 							'</string>
