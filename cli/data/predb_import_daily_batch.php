@@ -4,6 +4,7 @@
    pre-fetching group_id and other data for faster inclusion in the main query.
 */
 
+use nzedb\db\PreDb;
 use nzedb\utility\Utility;
 
 $config = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR .
@@ -217,6 +218,9 @@ INSERT IGNORE INTO groups (`name`, description)
 SQL_ADD_GROUPS;
 
 	$pdo->queryDirect($sqlAddGroups);
+
+	// Fill the group_id
+	$pdo->queryDirect("UPDATE tmp_pre AS t SET group_id = (SELECT id FROM groups WHERE name = t.groupname) WHERE groupname IS NOT NULL");
 
 	// Insert and update table
 	$sqlInsert = <<<SQL_INSERT
