@@ -6,12 +6,11 @@
 			<file>307</file>
 		</sql>
 		<git>
-			<tag>0.4.12</tag>
-			<commit>10194</commit>
+			<tag>0.4.13</tag>
 			<hooks>
 				<precommit>9</precommit>
 				<!-- this is the version of the pre-commit file in githooks NOT the files it calls -->
 			</hooks>
-		</git>
+		<commit>10237</commit></git>
 	</versions>
 </nzedb>

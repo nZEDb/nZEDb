@@ -1,6 +1,8 @@
 <?php
 
-use nzedb\db\Settings;
+use \nzedb\db\Settings;
+new \nzedb\utility\Git;
+use \nzedb\utility\Utility;
 
 /**
  * Tmux output functions for printing monitor data
@@ -32,8 +34,8 @@ class TmuxOutput extends Tmux
 	public function __construct(Settings $pdo = null)
 	{
 		parent::__construct($pdo);
-		$this->_git = new \nzedb\utility\Git();
-		$this->_vers = \nzedb\utility\Utility::getValidVersionsFile();
+		$this->_git = new \nzedb\utility\Git();        // Do not remove the full namespace/ PHP gets confused for some reason without it.
+		$this->_vers = Utility::getValidVersionsFile();
 
 		$this->_setColourMasks();
 	}
@@ -99,13 +101,13 @@ class TmuxOutput extends Tmux
 	protected function _getFormatMasks($compressed)
 	{
 		$index = $compressed == 1 ? 2.1 : 2.0;
-		return array(
+		return [
 			1 => &$this->_colourMasks[1],
 			2 => &$this->_colourMasks[$index],
 			3 => &$this->_colourMasks[3],
 			4 => &$this->_colourMasks[4],
 			5 => &$this->_colourMasks[5],
-		);
+		];
 	}
 
 	protected function _getHeader()

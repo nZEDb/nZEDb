@@ -10,7 +10,7 @@ $username = '';
  * The IRC server to connect to.
  * @note If you have issues connecting, head to https://www.synirc.net/servers and try another server.
  **********************************************************************************************************************/
-define('SCRAPE_IRC_SERVER', 'contego.ny.us.synirc.net');
+define('SCRAPE_IRC_SERVER', 'irc.synirc.net');
 
 /***********************************************************************************************************************
  * This is the port to the IRC server.
