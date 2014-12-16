@@ -510,7 +510,7 @@ CREATE TABLE missed_parts (
 
 DROP TABLE IF EXISTS predb;
 CREATE TABLE predb (
-  id         INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  id         INT(11) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key',
   title      VARCHAR(255)     NOT NULL DEFAULT '',
   nfo        VARCHAR(255)     NULL,
   size       VARCHAR(50)      NULL,
@@ -518,14 +518,10 @@ CREATE TABLE predb (
   predate    DATETIME                  DEFAULT NULL,
   source     VARCHAR(50)      NOT NULL DEFAULT '',
   requestid  INT(10) UNSIGNED NOT NULL DEFAULT '0',
-  group_id   INT(10) UNSIGNED NOT NULL DEFAULT '0'
-  COMMENT 'FK to groups',
-  nuked      TINYINT(1)       NOT NULL DEFAULT '0'
-  COMMENT 'Is this pre nuked? 0 no 2 yes 1 un nuked 3 mod nuked',
-  nukereason VARCHAR(255)     NULL
-  COMMENT 'If this pre is nuked, what is the reason?',
-  files      VARCHAR(50)      NULL
-  COMMENT 'How many files does this pre have ?',
+  group_id   INT(10) UNSIGNED NOT NULL DEFAULT '0'   COMMENT 'FK to groups',
+  nuked      TINYINT(1)       NOT NULL DEFAULT '0'  COMMENT 'Is this pre nuked? 0 no 2 yes 1 un nuked 3 mod nuked',
+  nukereason VARCHAR(255)     NULL  COMMENT 'If this pre is nuked, what is the reason?',
+  files      VARCHAR(50)      NULL  COMMENT 'How many files does this pre have ?',
   filename   VARCHAR(255)     NOT NULL DEFAULT '',
   searched   TINYINT(1)       NOT NULL DEFAULT '0',
   PRIMARY KEY (id),
