@@ -225,8 +225,8 @@ SQL_ADD_GROUPS;
 	// Insert and update table
 	$sqlInsert = <<<SQL_INSERT
 INSERT INTO $table (title, nfo, size, files, filename, nuked, nukereason, category, predate, SOURCE, requestid, group_id)
-  SELECT t.title, t.nfo, t.size, t.files, t.filename, t.nuked, t.nukereason, t.category, t.predate, t.source, t.requestid, g.id
-    FROM tmp_pre AS t LEFT OUTER JOIN groups AS g ON t.groupname = g.name
+  SELECT t.title, t.nfo, t.size, t.files, t.filename, t.nuked, t.nukereason, t.category, t.predate, t.source, t.requestid, t.group_id
+    FROM tmp_pre AS t
   ON DUPLICATE KEY UPDATE predb.nfo = IF(predb.nfo IS NULL, t.nfo, predb.nfo),
 	  predb.size = IF(predb.size IS NULL, t.size, predb.size),
 	  predb.files = IF(predb.files IS NULL, t.files, predb.files),
@@ -235,7 +235,7 @@ INSERT INTO $table (title, nfo, size, files, filename, nuked, nukereason, catego
 	  predb.nukereason = IF(t.nuked > 0, t.nukereason, predb.nukereason),
 	  predb.category = IF(predb.category IS NULL, t.category, predb.category),
 	  predb.requestid = IF(predb.requestid = 0, t.requestid, predb.requestid),
-	  predb.group_id = IF(predb.group_id = 0, g.id, predb.group_id);
+	  predb.group_id = IF(predb.group_id = 0, t.group_id, predb.group_id);
 SQL_INSERT;
 
 	echo $pdo->log->info("Inserting records from temporary table into $table");
