@@ -361,7 +361,7 @@ class TmuxRun extends Tmux
 		if (($runVar['settings']['import'] != 0) && ($runVar['killswitch']['pp'] == false)) {
 			$log = $this->writelog($runVar['panes']['zero'][1]);
 			shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.1 ' \
-				{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/nix/multiprocessing/import.php {$runVar['settings']['nzbs']} {$runVar['settings']['nzbthreads']} true {$useFilenames} false $log; \
+				{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/nix/multiprocessing/import.php {$runVar['settings']['nzbs']} {$runVar['settings']['nzbthreads']} true true {$useFilenames} false $log; \
 				date +\"{$this->_dateFormat}\"; {$runVar['commands']['_sleep']} {$runVar['settings']['import_timer']}' 2>&1 1> /dev/null"
 			);
 
