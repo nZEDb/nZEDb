@@ -46,27 +46,64 @@ class PreDb extends DB
 		$this->table = $options['table'];
 	}
 
-	public function import($localDB = false)
+	public function import(\String $filespec, $localDB = false)
 	{
-		if (!($this->preparedAddGroups instanceof \PDOStatement))
-		{
+		if (!($this->importPS['AddGroups'] instanceof \PDOStatement)) {
 			$this->prepareImportSQL($localDB);
 		}
+
+		$this->importPS['Truncate']->exec;
+
+		$this->importPS['LoadData'];
+
+		$this->importPS['DeleteShort'];
+
+		$this->importPS[''];
+
+		$this->importPS[''];
+
+		$this->importPS[''];
+
+		$this->importPS[''];
+
+		$this->importPS[''];
 	}
 
+	protected function createTempTable()
+	{
+		$this->dropTempTable();
+
+		$this->queryExec('CREATE TABLE tmp_pre LIKE predb');
+
+		// Drop id as it is not needed and incurs overhead creating each id.
+		$this->queryExec('ALTER TABLE tmp_pre DROP COLUMN id');
+
+		// Add a column for the group's name which is included instead of the group_id, which may be
+		// different between individual databases
+		$this->queryExec('ALTER TABLE tmp_pre ADD COLUMN groupname VARCHAR (255)');
+
+		// Drop indexes on tmp_pre
+		$this->queryExec('ALTER TABLE tmp_pre DROP INDEX `ix_predb_nfo`, DROP INDEX `ix_predb_predate`, DROP INDEX `ix_predb_source`, DROP INDEX `ix_predb_title`, DROP INDEX `ix_predb_requestid`');
+	}
+
+	protected function dropTempTable()
+	{
+		$this->queryExec('DROP TABLE IF EXISTS tmp_pre');
+	}
 
 	protected function prepareImportSQL($localDB = false)
 	{
-		$this->importPS['Truncate'] = $this->pdo->prepare("TRUNCATE TABLE tmp_pre");
+		$this->importPS['Truncate'] = $this->prepare("TRUNCATE TABLE tmp_pre");
+
 		$sql                    = sprintf(
 			"LOAD DATA %s INFILE :path IGNORE INTO TABLE tmp_pre FIELDS TERMINATED BY '\\t\\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\\r\\n' (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, groupname);",
 			($localDB === false ? 'LOCAL' : '')
 		);
-		$this->importPS['LoadData'] = $this->pdo->prepare($sql);
+		$this->importPS['LoadData'] = $this->prepare($sql);
 
-		$this->importPS['DeleteShort'] = $this->pdo->prepare("DELETE FROM tmp_pre WHERE LENGTH(title) <= 8");
+		$this->importPS['DeleteShort'] = $this->prepare("DELETE FROM tmp_pre WHERE LENGTH(title) <= 8");
 
-		// Add any groups that do not currently exist
+		// Add any groups that are not in our current groups table
 		$sql = <<<SQL_ADD_GROUPS
 INSERT IGNORE INTO groups (name, description)
 	SELECT groupname, 'Added by predb import script'
@@ -75,10 +112,10 @@ INSERT IGNORE INTO groups (name, description)
 	GROUP BY groupname;
 SQL_ADD_GROUPS;
 
-		$this->importPS['AddGroups'] = $this->pdo->prepare($sql);
+		$this->importPS['AddGroups'] = $this->prepare($sql);
 
 		// Fill the group_id
-		$this->importPS['UpdateGroupID'] = $this->pdo->prepare("UPDATE tmp_pre AS t SET group_id = (SELECT id FROM groups WHERE name = t.groupname) WHERE groupname IS NOT NULL");
+		$this->importPS['UpdateGroupID'] = $this->prepare("UPDATE tmp_pre AS t SET group_id = (SELECT id FROM groups WHERE name = t.groupname) WHERE groupname IS NOT NULL");
 
 		$sql = <<<SQL_INSERT
 INSERT INTO {$this->table} (title, nfo, size, files, filename, nuked, nukereason, category, predate, SOURCE, requestid, group_id)
@@ -95,6 +132,6 @@ INSERT INTO {$this->table} (title, nfo, size, files, filename, nuked, nukereason
 	  predb.group_id = IF(predb.group_id == 0, t.group_id, predb.group_id);
 SQL_INSERT;
 
-		$this->importPS['Import'] = $this->pdo->prepare($sql);
+		$this->importPS['Import'] = $this->prepare($sql);
 	}
 }
