@@ -41,7 +41,7 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 		$pdo->queryExec("ALTER TABLE $tbl ENGINE=MYISAM ROW_FORMAT=FIXED");
 	}
 } else if (isset($argv[1]) && $argv[1] == "dmyisam") {
-	$sql = 'SHOW TABLE STATUS WHERE (Engine != "MyIsam" OR Row_format != "Dynamic) AND Engine != "SPHINX"';
+	$sql = 'SHOW TABLE STATUS WHERE (Engine != "MyIsam" OR Row_format != "Dynamic") AND Engine != "SPHINX"';
 	$tables = $pdo->query($sql);
 	foreach ($tables as $row) {
 		$tbl = $row['name'];
