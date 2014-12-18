@@ -179,10 +179,11 @@ class Console
 				. "GROUP_CONCAT(r.totalpart ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_totalparts, "
 				. "GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments, "
 				. "GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs, "
-				. "con.*, r.consoleinfoid, groups.name AS group_name, rn.id as nfoid FROM releases r "
+				. "con.*, r.consoleinfoid, groups.name AS group_name, genres.title as genre, rn.id as nfoid FROM releases r "
 				. "LEFT OUTER JOIN groups ON groups.id = r.group_id "
 				. "LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id "
 				. "INNER JOIN consoleinfo con ON con.id = r.consoleinfoid "
+				. "INNER JOIN genres ON con.genre_id = genres.id "
 				. "WHERE r.nzbstatus = 1 AND con.title != '' AND "
 				. "r.passwordstatus <= (SELECT value FROM settings WHERE setting='showpasswordedrelease') AND %s %s
 				%s "
