@@ -10,7 +10,7 @@ $dbname = DB_NAME;
 $cli = new \ColorCLI();
 
 if (isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "safe")) {
-	$restart = (new \Tmux())->isRunning();
+	$restart = (new \Tmux())->stopIfRunning();
 
 	system("cd $DIR && git pull");
 
