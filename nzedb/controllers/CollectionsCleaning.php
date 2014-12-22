@@ -252,6 +252,8 @@ class CollectionsCleaning
 				return $this->tv();
 			case 'alt.binaries.tvseries':
 				return $this->tvseries();
+			case 'alt.binaries.u-4all':
+				return $this->u_4all();
 			case 'alt.binaries.warez':
 				return $this->warez();
 			case 'alt.binaries.warez.0-day':
@@ -682,6 +684,22 @@ class CollectionsCleaning
 		//<<OBLIVION - Untouched>><<TLR for usenet-4all.info>><<www.ssl-news.info>><<13/14>> "xxtxxlxxrxxbdxx05.vol421+98.par2" - 2,54 GB - yEnc
 		if (preg_match('/^.+?<<\d+\/\d+>> "(.+?)' . $this->e0 . ' - \d+[.,]\d+ [kKmMgG][bB] - yEnc$/', $this->subject, $match)) {
 			return $match[1];
+		}
+		//(wtnybhd7i3g6p1kuj3dffhnqyrx) [27/31] - "wtnybhd7i3g6p1kuj3dffhnqyrx.vol224+8.par2" yEnc
+		if (preg_match('/^\((\w+)\)[-_\s]{0,3}\[\d+\/\d+\][-_\s]{0,3}"(.+?)' . $this->e1, $this->subject, $match)) {
+			return $match[1] . $match[2];
+		}
+		//nS9XNOrMzD7FNniVfWUswrGmq8hQPMBqMSuQcMty - File 91 of 98: "aWYt0MpWaY6bmDp0d8hOdvBgz6.par2" yEnc
+		if (preg_match('/^(\w+)[-_\s]{0,3}File \d+ of (\d+):[-_\s]{0,3}".+?' . $this->e1, $this->subject, $match)) {
+			return $match[1] . $match[2];
+		}
+		//"t46e6mopz864y82-Pittis ZusatzTon.English.dtsHDma.vol168+67.PAR2" (46/46) yEnc
+		if (preg_match('/^"(.+?)' . $this->e0 . '[-_\s]{0,3}\(\d+\/(\d+)\)[-_\s]{0,3}yEnc$/ui', $this->subject, $match)) {
+			return $match[1] . $match[2];
+		}
+		//(190/201)  "Kreatur by Eisenschrott & Gollum.vol1781+137.PAR2" - 9,46 GB - yEnc
+		if (preg_match('/^\(\d+\/(\d+)\)[-_\s]{0,3}"(.+?)' . $this->e2, $this->subject, $match)) {
+			return $match[1] . $match[2];
 		}
 		return $this->generic();
 	}
@@ -1884,6 +1902,10 @@ class CollectionsCleaning
 		if (preg_match('/^\(\d+(\/\d+\) ".+?)' . $this->e0 . ' - \d+[,.]\d+ [mMkKgG][bB] - yEnc$/', $this->subject, $match)) {
 			return $match[1];
 		}
+		//[ House.of.Lies.S03E05.1080p.WEB-DL.DD5.1.H.264-NTb ] - [01/35] - "House.of.Lies.S03E05.Soldiers.1080p.WEB-DL.DD5.1.H.264-NTb.nfo" yEnc
+		if (preg_match('/^\[ (.+) \][-_ ]{0,3}\[\d+(\/\d+)\][-_ ]{0,3}".+?" yEnc$/', $this->subject, $match)) {
+			return $match[1] . $match[2];
+		}
 		//Hard.Target.1993.1080p.Bluray.X264-BARC0DE - [36/68] - "BARC0DE1080pHTAR.r22" yEnc
 		//Goddess.2013.720p.BDRip.x264.AC3-noOne  [086/100] - "Goddess.2013.720p.BDRip.x264.AC3-noOne.part84.rar" yEnc
 		if (preg_match('/^([A-Z0-9a-z][A-Za-z0-9.-]+ -? \[)\d+\/\d+\] - ".+?" yEnc$/', $this->subject, $match)) {
@@ -2864,6 +2886,16 @@ class CollectionsCleaning
 		} //(03/19) "Damages S04E02 FR.avi" - 5,49 GB yEnc
 		if (preg_match('/^\(\d+(\/\d+\)) "(.+?)' . $this->e2, $this->subject, $match)) {
 			return $match[1] . $match[2];
+		}
+		return $this->generic();
+	}
+
+	//a.b.u-4all
+	protected function u_4all()
+	{
+		//-4y (PW)   [ usenet-4all.info - powered by ssl.news -] [1,44 GB] [08/14] "71cc4edc6R08eb7.vol00+01.PAR2" yEnc
+		if (preg_match('/\[ usenet-4all\.info - powered by ssl\.news -\][-_\s]{0,3}\[\d+([.,]\d+)? [kKmMgG][bB]\][-_\s]{0,3}\[\d+\/(\d+)\][-_\s]{0,3}"(.+?)' . $this->e1, $this->subject, $match)) {
+			return $match[2] . $match[3];
 		}
 		return $this->generic();
 	}
