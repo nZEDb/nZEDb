@@ -5,6 +5,8 @@ Please make sure any PR's comply with our coding standards policy: http://li3.me
 New updates are grouped by person (committer/merger), at the top of the file.
 
 
+2014-12-20 bart39
+	* Add: Add Indexes.
 2014-12-17 bart39
 	* Fix: Don't rename from source in NFO processing.
 	* Fix: Missing quote in convert_mysql_tables.php.

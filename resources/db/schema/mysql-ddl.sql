@@ -302,7 +302,8 @@ CREATE TABLE gamesinfo (
   createddate DATETIME            NOT NULL,
   updateddate DATETIME            NOT NULL,
   PRIMARY KEY (id),
-  UNIQUE INDEX ix_gamesinfo_asin (asin)
+  UNIQUE INDEX  ix_gamesinfo_asin (asin),
+  INDEX         ix_title (title)
 )
   ENGINE = MyISAM
   DEFAULT CHARSET = utf8
@@ -387,7 +388,8 @@ CREATE TABLE menu_items (
   role      INT(11) UNSIGNED NOT NULL,
   ordinal   INT(11) UNSIGNED NOT NULL,
   menueval  VARCHAR(2000)    NOT NULL DEFAULT '',
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  INDEX ix_role_ordinal (role, ordinal)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
@@ -462,7 +464,8 @@ CREATE TABLE page_contents (
   showinmenu      INT             NOT NULL,
   status          INT             NOT NULL,
   ordinal         INT             NULL,
-  role            INT             NOT NULL DEFAULT '0'
+  role            INT             NOT NULL DEFAULT '0',
+  INDEX ix_showinmenu_status_contenttype_role (showinmenu, status, contenttype, role)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
@@ -624,7 +627,8 @@ CREATE TABLE         releases (
   INDEX ix_releases_preid_searchname          (preid, searchname),
   INDEX ix_releases_status                    (nzbstatus, iscategorized, isrenamed, nfostatus, ishashed, isrequestid,
                                                passwordstatus, dehashstatus, reqidstatus, musicinfoid, consoleinfoid,
-                                               bookinfoid, haspreview, categoryid, imdbid, rageid)
+                                               bookinfoid, haspreview, categoryid, imdbid, rageid),
+  INDEX ix_passwordstatus                     (passwordstatus)
 )
   ENGINE          = MYISAM
   DEFAULT CHARSET = utf8
@@ -951,7 +955,8 @@ CREATE TABLE users (
   cp_url         VARCHAR(255)     NULL     DEFAULT NULL,
   cp_api         VARCHAR(255)     NULL     DEFAULT NULL,
   style          VARCHAR(255)     NULL     DEFAULT NULL,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  INDEX ix_role (role)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
