@@ -285,18 +285,9 @@ class Utility
 
 	static public function getValidVersionsFile()
 	{
-		$versions = @simplexml_load_file(nZEDb_VERSIONS);
+		$versions = new Versions();
 
-		if ($versions === false) {
-			if (self::isCLI()) {
-				echo (new \ColorCLI())->error(
-					"\nYour versioning XML file ({nZEDb_VERSIONS}) is broken, try updating from git.\n"
-				);
-			}
-			throw new \RuntimeException('Versioning file is broken!');
-		}
-
-		return $versions;
+		return $versions->getValidVersionsFile();
 	}
 
 	/**
@@ -1100,12 +1091,9 @@ class Utility
 
 		$settings = new Settings();
 
-		$site_email = $settings->getSetting('email');
-
-		$fromEmail = (PHPMAILER_FROM_EMAIL == '') ? $site_email : PHPMAILER_FROM_EMAIL;
-		$fromName  = (PHPMAILER_FROM_NAME == '') ? $settings->getSetting('title') :
-			PHPMAILER_FROM_NAME;
-		$replyTo   = (PHPMAILER_REPLYTO == '') ? $site_email : PHPMAILER_REPLYTO;
+		$fromEmail = (PHPMAILER_FROM_EMAIL == '') ? $settings->getSetting('email') : PHPMAILER_FROM_EMAIL;
+		$fromName  = (PHPMAILER_FROM_NAME == '') ? $settings->getSetting('title') : PHPMAILER_FROM_NAME;
+		$replyTo   = (PHPMAILER_REPLYTO == '') ? $from : PHPMAILER_REPLYTO;
 
 		if (PHPMAILER_BCC != '') {
 			$mail->addBCC(PHPMAILER_BCC);
