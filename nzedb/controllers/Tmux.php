@@ -459,11 +459,12 @@ class Tmux
 		}
 		return false;
 	}
-	
-	public function makeActive()
+
+	public function startRunning()
 	{
-		$this->pdo->queryExec("UPDATE tmux SET value = '1' WHERE setting = 'RUNNING'");
+		if (!$this->isRunning()) {
+			return $this->pdo->queryExec("UPDATE tmux SET value = '1' WHERE setting = 'RUNNING'");
+		}
 		return true;
 	}
-
 }
