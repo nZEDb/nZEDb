@@ -1,6 +1,6 @@
 <?php
 
-require_once dirname(__FILE__) . '/../../../../www/config.php';
+require_once realpath(__DIR__ . '/../../../../www/config.php');
 
 $restart = (new \Tmux())->stopIfRunning();
 
