@@ -4,6 +4,10 @@ Please make sure any PR's comply with our coding standards policy: http://li3.me
 
 New updates are grouped by person (committer/merger), at the top of the file.
 
+2014-12-23 niel
+	* Fix: Adding work-around to prevent tmux throwing Server not found errors.
+	* Chg: Renamed tmux's start script to run, to allow using start for starting the running flag as stop turns it off.
+			Users running 'start.php' from cron or other scripts shouldn't notice a difference as the replacement also calls run if it detects that no nZEDb session is running.
 2014-12-21 niel
 	* Mrg: PR 1566 from NZBmets - Adds a stop.php script to allow stopping tmux scripts from continuing.
 2014-12-20 bart39
