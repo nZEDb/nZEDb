@@ -7,6 +7,7 @@ use nzedb\utility\Utility;
 $pdo = new Settings();
 $DIR = nZEDb_MISC;
 
+
 // Check that Db patch level is current. Also checks nZEDb.xml is valid.
 Utility::isPatched();
 
@@ -18,13 +19,16 @@ $delaytimet = $pdo->getSetting('delaytime');
 $delaytimet = ($delaytimet) ? (int)$delaytimet : 2;
 $nntpproxy = $pdo->getSetting('nntpproxy');
 
+echo "Starting Tmux...\n";
+// Create a placeholder session so tmux commands do not throw server not found errors.
+exec('tmux new-session -ds placeholder 2>/dev/null');
 // Search for NNTPProxy session that might be running from a user threaded.php run. Setup a clean environment to run in.
-$nntpkill = shell_exec("tmux list-session | grep NNTPProxy");
+exec("tmux list-session | grep NNTPProxy", $nntpkill);
 if (count($nntpkill) !== 0) {
 	exec("tmux kill-session -t NNTPProxy");
 	echo $pdo->log->notice("Found NNTPProxy tmux session and killing it.");
 } else {
-	$sessions = shell_exec("tmux list-session");
+	exec("tmux list-session", $session);
 }
 
 $t = new \Tmux();
@@ -37,7 +41,9 @@ $tablepergroup = $pdo->getSetting('tablepergroup');
 $tablepergroup = ($tablepergroup != '') ? $tablepergroup : 0;
 
 //check if session exists
-$session = shell_exec("tmux list-session | grep $tmux_session");
+exec("tmux list-session | grep $tmux_session", $session);
+// Kill the placeholder
+exec('tmux kill-session -t placeholder');
 if (count($session) !== 0) {
 	exit($pdo->log->error("tmux session: '" . $tmux_session . "' is already running, aborting.\n"));
 }
