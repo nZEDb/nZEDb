@@ -15,6 +15,7 @@ $pdo = new Settings();
 $tmux = new \Tmux();
 $tmux_settings = $tmux->get();
 $tmux_session = (isset($tmux_settings->tmux_session)) ? $tmux_settings->tmux_session : 0;
+$path = __DIR__;
 
 // Set running value to on.
 $tmux->startRunning();
@@ -23,10 +24,10 @@ $tmux->startRunning();
 exec('tmux new-session -ds placeholder 2>/dev/null');
 
 //check if session exists
-exec("tmux list-session | grep $tmux_session", $session);
+$session = shell_exec("tmux list-session | grep $tmux_session");
 // Kill the placeholder
 exec('tmux kill-session -t placeholder');
 if (count($session) == 0) {
 	echo $pdo->log->info("Starting the tmux server and monitor script.\n");
-	passthru('php run.php');
+	passthru('php $path/run.php');
 }
