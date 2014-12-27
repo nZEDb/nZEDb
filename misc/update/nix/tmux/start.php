@@ -29,5 +29,5 @@ $session = shell_exec("tmux list-session | grep $tmux_session");
 exec('tmux kill-session -t placeholder');
 if (count($session) == 0) {
 	echo $pdo->log->info("Starting the tmux server and monitor script.\n");
-	passthru('php $path/run.php');
+	passthru("php $path/run.php");
 }
