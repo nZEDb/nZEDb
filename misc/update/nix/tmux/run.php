@@ -41,7 +41,7 @@ $tablepergroup = $pdo->getSetting('tablepergroup');
 $tablepergroup = ($tablepergroup != '') ? $tablepergroup : 0;
 
 //check if session exists
-exec("tmux list-session | grep $tmux_session", $session);
+$session = shell_exec("tmux list-session | grep $tmux_session");
 // Kill the placeholder
 exec('tmux kill-session -t placeholder');
 if (count($session) !== 0) {
