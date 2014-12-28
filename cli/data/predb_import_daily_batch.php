@@ -111,7 +111,7 @@ if ($result) {
 				continue;
 			}
 
-			// Make sure we didn't get a HTML page.
+			// Make sure we didn't get an HTML page.
 			if (strlen($dump) < 5000 && strpos($dump, '<!DOCTYPE html>') !== false) {
 				echo 'The dump file ' . $match[2] . ' might be missing from dropbox.' . PHP_EOL;
 				continue;
