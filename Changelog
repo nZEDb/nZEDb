@@ -4,7 +4,22 @@ Please make sure any PR's comply with our coding standards policy: http://li3.me
 
 New updates are grouped by person (committer/merger), at the top of the file.
 
+2014-12-30 niel
+	* Mrg: PR 1571 from kevinlekiller - Fix lighthttpd rewrite rule.
+		***NOTE*** Nginx users need to manually change the rewrite rule for file extensions as described in the Ubuntu install guide.
+2014-12-28 niel
+	* Fix: Query in dump_predb.php to add new groups had a typo. Thanks to makkbe on github for the fix.
 
+2014-12-24 ruhllatio
+	* Del: Deprecated AniDB cron script that won't work.  Use the populate_anidb script instead, then resume postproc.
+2014-12-23 niel
+	* Fix: Adding work-around to prevent tmux throwing Server not found errors.
+	* Chg: Renamed tmux's start script to run, to allow using start for starting the running flag as stop turns it off.
+			Users running 'start.php' from cron or other scripts shouldn't notice a difference as the replacement also calls run if it detects that no nZEDb session is running.
+2014-12-21 niel
+	* Mrg: PR 1566 from NZBmets - Adds a stop.php script to allow stopping tmux scripts from continuing.
+2014-12-20 bart39
+	* Add: Add Indexes.
 2014-12-17 bart39
 	* Fix: Don't rename from source in NFO processing.
 	* Fix: Missing quote in convert_mysql_tables.php.

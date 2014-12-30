@@ -2,8 +2,8 @@
 <nzedb>
 	<versions>
 		<sql>
-			<db>307</db>
-			<file>307</file>
+			<db>308</db>
+			<file>308</file>
 		</sql>
 		<git>
 			<tag>0.3.2</tag>

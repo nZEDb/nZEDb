@@ -25,7 +25,7 @@ if (isset($argv[1])) {
 	$tmux = new \Tmux();
 	$restart = false;
 	if ($argv[1] === 'true') {
-		$restart = $tmux->isRunning();
+		$restart = $tmux->stopIfRunning();
 	}
 
 	if ($tmux->get()->patchdb == '1') {
