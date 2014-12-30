@@ -2,7 +2,7 @@ RewriteEngine on
 #RewriteBase /
 
 # Do not process images or CSS files further
-RewriteRule \.(css|jpe?g|gif|ogg|ogv|png|js|ico|ttf|eot|woff|svg)$ - [L]
+RewriteRule \.(css|eot|gif|gz|ico|inc|jpe?g|js|ogg|png|svg|ttf|txt|woff|xml)$ - [L]
 
 # Leave /admin and /install static
 RewriteRule ^(admin|install).*$ - [L]
