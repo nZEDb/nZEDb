@@ -56,7 +56,7 @@
 									src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/imdb.png"></a>
 							<a
 									target="_blank"
-									href="{$site->dereferrer_link}http://trakt.tv/search/imdb?q=tt{$result->alternate_ids->imdb}/"
+									href="{$site->dereferrer_link}http://trakt.tv/search/imdb/tt{$result->alternate_ids->imdb}/"
 									name="trakt{$result->alternate_ids->imdb}"
 									title="View trakt page"><img
 									src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/trakt.png"></a>
