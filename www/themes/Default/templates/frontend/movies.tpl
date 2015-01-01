@@ -106,7 +106,7 @@
 									Imdb
 								</a>
 								<a class="rndbtn" target="_blank"
-									href="{$site->dereferrer_link}http://trakt.tv/search/imdb?q=tt{$result.imdbid}/"
+									href="{$site->dereferrer_link}http://trakt.tv/search/imdb/tt{$result.imdbid}/"
 									name="trakt{$result.imdbid}" title="View trakt page">
 									Trakt
 								</a>
