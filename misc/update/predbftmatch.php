@@ -53,6 +53,7 @@ if (isset($argv[2]) && $argv[2] === "show") {
 $total = ($titles === false ? 0 : $titles->rowCount());
 if ($total > 1) {
 
+	$consoletools = new \ConsoleTools(['ColorCLI' => $pdo->log]);
 	echo $pdo->log->header("\nMatching " . number_format($total) . " PreDB titles against release name or searchname.\n"
 			   . "'.' = No Match Found, '*' = Bad Match Parameters (Flood)\n\n");
 	sleep(2);
@@ -80,6 +81,7 @@ if ($total > 1) {
 			}
 		}
 	}
+
 	if ($total > 0) {
 		echo $pdo->log->header("\nRenamed " . number_format($counted) . " releases in " . $consoletools->convertTime(TIME() - $timestart) . ".");
 	} else {
