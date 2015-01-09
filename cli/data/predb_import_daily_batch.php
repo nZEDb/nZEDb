@@ -76,18 +76,7 @@ if ($result) {
 		$progress['last'] = !is_numeric($argv[1]) ? time() : $argv[1];
 	}
 
-	$pdo->queryExec('DROP TABLE IF EXISTS tmp_pre');
-	$pdo->queryExec('CREATE TABLE tmp_pre LIKE predb');
-
-	// Drop id as it is not needed and incurs overhead creating each id.
-	$pdo->queryExec('ALTER TABLE tmp_pre DROP COLUMN id');
-
-	// Add a column for the group's name which is included instead of the group_id, which may be
-	// different between individual databases
-	$pdo->queryExec('ALTER TABLE tmp_pre ADD COLUMN groupname VARCHAR (255)');
-
-	// Drop indexes on tmp_pre
-	$pdo->queryExec('ALTER TABLE tmp_pre DROP INDEX `ix_predb_nfo`, DROP INDEX `ix_predb_predate`, DROP INDEX `ix_predb_source`, DROP INDEX `ix_predb_title`, DROP INDEX `ix_predb_requestid`');
+	$pdo->queryExec('TRUNCATE TABLE tmp_pre');
 
 	foreach ($all_matches as $matches) {
 		if (preg_match('#^(.+)/(\d+)_#', $matches, $match)) {
@@ -188,7 +177,7 @@ function importDump($path, $local, $verbose = true, $table = 'predb')
 		echo $pdo->log->info("Creating temporary table");
 	}
 
-	// TRuncate to clear any old data
+	// Truncate to clear any old data
 	$pdo->queryDirect("TRUNCATE TABLE tmp_pre");
 
 	// Import file into tmp_pre
