@@ -43,14 +43,8 @@ if (isset($argv[1]) && $argv[1] == 'export' && isset($argv[2])) {
 		$table = 'predb';
 	}
 
-	// Create temp table to allow updating
-	echo $pdo->log->info("Creating temporary table");
-	$pdo->queryExec('DROP TABLE IF EXISTS tmp_pre');
-	$pdo->queryExec('CREATE TABLE tmp_pre LIKE predb');
-
-	// Drop indexes on tmp_pre
-	$pdo->queryExec('ALTER TABLE tmp_pre DROP INDEX `ix_predb_nfo`, DROP INDEX `ix_predb_predate`, DROP INDEX `ix_predb_source`, DROP INDEX `ix_predb_title`, DROP INDEX `ix_predb_requestid`');
-	$pdo->queryExec('ALTER TABLE tmp_pre ADD COLUMN groupname VARCHAR (255)');
+	// Truncate tmp_pre to clear any old data
+	$pdo->queryDirect("TRUNCATE TABLE tmp_pre");
 
 	// Import file into tmp_pre
 	if ($argv[1] == 'remote') {
@@ -107,8 +101,7 @@ SQL_INSERT;
 	$pdo->exec("CREATE TRIGGER insert_hashes AFTER INSERT ON predb FOR EACH ROW BEGIN INSERT INTO predb_hashes (pre_id, hashes) VALUES (NEW.id, CONCAT_WS(',', MD5(NEW.title), MD5(MD5(NEW.title)), SHA1(NEW.title))); END;");
 	$pdo->exec("CREATE TRIGGER update_hashes AFTER UPDATE ON predb FOR EACH ROW BEGIN IF NEW.title != OLD.title THEN UPDATE predb_hashes SET hashes = CONCAT_WS(',', MD5(NEW.title), MD5(MD5(NEW.title)), SHA1(NEW.title)) WHERE pre_id = OLD.id; END IF; END;");
 
-	// Drop tmp_pre table
-	$pdo->queryExec('DROP TABLE IF EXISTS tmp_pre');
+	$pdo->queryDirect("TRUNCATE TABLE tmp_pre");
 } else {
 	exit($pdo->log->error("\nThis script can export or import a predb dump file. You may use the full path, or a relative path.\n"
 					. "For importing, the script insert new rows and update existing matched rows. For databases not on the local system, use remote, else use local.\n"
