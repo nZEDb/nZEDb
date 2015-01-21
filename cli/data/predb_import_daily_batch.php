@@ -129,7 +129,7 @@ if ($result) {
 			importDump($dumpFile, $local, $verbose);
 
 			// Delete the dump.
-			//			unlink($dumpFile);
+			unlink($dumpFile);
 
 			$progress = rw_progress(settings_array($match[2] + 1, $progress), false);
 			echo 'Successfully imported PreDB dump ' . $match[2] . ' ' . (--$total) .
