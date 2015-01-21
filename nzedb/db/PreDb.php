@@ -35,15 +35,17 @@ class PreDb extends DB
 		'UpdateGroupID'	=> null,
 	];
 
-	protected $table;
+	protected $tableMain;
+	protected $tableTemp;
 
 	public function __construct(array $options = [])
 	{
-		$defaults = ['table' => 'predb'];
+		$defaults = [];
 		$options += $defaults;
 		parent::__construct($options);
 
-		$this->table = $options['table'];
+		$this->tableMain = 'predb';
+		$this->tableTemp = 'tmp_pre';
 	}
 
 	public function import(\String $filespec, $localDB = false)
@@ -69,33 +71,11 @@ class PreDb extends DB
 		$this->importPS[''];
 	}
 
-	protected function createTempTable()
-	{
-		$this->dropTempTable();
-
-		$this->queryExec('CREATE TABLE tmp_pre LIKE predb');
-
-		// Drop id as it is not needed and incurs overhead creating each id.
-		$this->queryExec('ALTER TABLE tmp_pre DROP COLUMN id');
-
-		// Add a column for the group's name which is included instead of the group_id, which may be
-		// different between individual databases
-		$this->queryExec('ALTER TABLE tmp_pre ADD COLUMN groupname VARCHAR (255)');
-
-		// Drop indexes on tmp_pre
-		$this->queryExec('ALTER TABLE tmp_pre DROP INDEX `ix_predb_nfo`, DROP INDEX `ix_predb_predate`, DROP INDEX `ix_predb_source`, DROP INDEX `ix_predb_title`, DROP INDEX `ix_predb_requestid`');
-	}
-
-	protected function dropTempTable()
-	{
-		$this->queryExec('DROP TABLE IF EXISTS tmp_pre');
-	}
-
-	protected function prepareImportSQL($localDB = false)
+	protected function prepareSQLStatements($localDB = false)
 	{
 		$this->importPS['Truncate'] = $this->prepare("TRUNCATE TABLE tmp_pre");
 
-		$sql                    = sprintf(
+		$sql = sprintf(
 			"LOAD DATA %s INFILE :path IGNORE INTO TABLE tmp_pre FIELDS TERMINATED BY '\\t\\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\\r\\n' (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, groupname);",
 			($localDB === false ? 'LOCAL' : '')
 		);
@@ -118,7 +98,7 @@ SQL_ADD_GROUPS;
 		$this->importPS['UpdateGroupID'] = $this->prepare("UPDATE tmp_pre AS t SET group_id = (SELECT id FROM groups WHERE name = t.groupname) WHERE groupname IS NOT NULL");
 
 		$sql = <<<SQL_INSERT
-INSERT INTO {$this->table} (title, nfo, size, files, filename, nuked, nukereason, category, predate, SOURCE, requestid, group_id)
+INSERT INTO {$this->tableMain} (title, nfo, size, files, filename, nuked, nukereason, category, predate, SOURCE, requestid, group_id)
   SELECT t.title, t.nfo, t.size, t.files, t.filename, t.nuked, t.nukereason, t.category, t.predate, t.source, t.requestid, group_id
     FROM tmp_pre AS t
   ON DUPLICATE KEY UPDATE predb.nfo = IF(predb.nfo IS NULL, t.nfo, predb.nfo),
