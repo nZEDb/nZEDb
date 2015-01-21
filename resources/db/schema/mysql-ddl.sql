@@ -775,53 +775,6 @@ CREATE TABLE release_subtitles (
   AUTO_INCREMENT = 1;
 
 
-DROP TABLE IF EXISTS video_data;
-CREATE TABLE video_data (
-  releaseid       INT(11) UNSIGNED NOT NULL,
-  containerformat VARCHAR(50)      DEFAULT NULL,
-  overallbitrate  VARCHAR(20)      DEFAULT NULL,
-  videoduration   VARCHAR(20)      DEFAULT NULL,
-  videoformat     VARCHAR(50)      DEFAULT NULL,
-  videocodec      VARCHAR(50)      DEFAULT NULL,
-  videowidth      INT(10)          DEFAULT NULL,
-  videoheight     INT(10)          DEFAULT NULL,
-  videoaspect     VARCHAR(10)      DEFAULT NULL,
-  videoframerate  FLOAT(7, 4)      DEFAULT NULL,
-  videolibrary    VARCHAR(50)      DEFAULT NULL,
-  PRIMARY KEY (releaseid)
-)
-  ENGINE          = MYISAM
-  DEFAULT CHARSET = utf8
-  COLLATE         = utf8_unicode_ci;
-
-
-DROP TABLE IF EXISTS releaseextrafull;
-CREATE TABLE         releaseextrafull (
-  releaseid INT(11) UNSIGNED NOT NULL,
-  mediainfo TEXT    NULL,
-  PRIMARY KEY (releaseid)
-)
-  ENGINE          = MYISAM
-  DEFAULT CHARSET = utf8
-  COLLATE         = utf8_unicode_ci;
-
-
-DROP TABLE IF EXISTS settings;
-CREATE TABLE settings (
-  section    VARCHAR(25)   NOT NULL DEFAULT '',
-  subsection VARCHAR(25)   NOT NULL DEFAULT '',
-  name       VARCHAR(25)   NOT NULL DEFAULT '',
-  value      VARCHAR(1000) NOT NULL DEFAULT '',
-  hint       TEXT          NOT NULL,
-  setting    VARCHAR(64)   NOT NULL DEFAULT '',
-  PRIMARY KEY (section, subsection, name),
-  UNIQUE KEY ui_settings_setting (setting)
-)
-  ENGINE = MYISAM
-  DEFAULT CHARSET = utf8
-  COLLATE = utf8_unicode_ci;
-
-
 DROP TABLE IF EXISTS sharing;
 CREATE TABLE sharing (
   site_guid      VARCHAR(40)        NOT NULL DEFAULT '',
@@ -1106,6 +1059,51 @@ CREATE TABLE user_series (
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci
   AUTO_INCREMENT = 1;
+
+
+DROP TABLE IF EXISTS video_data;
+CREATE TABLE video_data (
+  releaseid       INT(11) UNSIGNED NOT NULL,
+  containerformat VARCHAR(50) DEFAULT NULL,
+  overallbitrate  VARCHAR(20) DEFAULT NULL,
+  videoduration   VARCHAR(20) DEFAULT NULL,
+  videoformat     VARCHAR(50) DEFAULT NULL,
+  videocodec      VARCHAR(50) DEFAULT NULL,
+  videowidth      INT(10)     DEFAULT NULL,
+  videoheight     INT(10)     DEFAULT NULL,
+  videoaspect     VARCHAR(10) DEFAULT NULL,
+  videoframerate  FLOAT(7, 4) DEFAULT NULL,
+  videolibrary    VARCHAR(50) DEFAULT NULL,
+  PRIMARY KEY (releaseid)
+)
+  ENGINE = MYISAM
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
+
+DROP TABLE IF EXISTS releaseextrafull;
+CREATE TABLE releaseextrafull (
+  releaseid INT(11) UNSIGNED NOT NULL,
+  mediainfo TEXT NULL,
+  PRIMARY KEY (releaseid)
+)
+  ENGINE = MYISAM
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
+
+DROP TABLE IF EXISTS settings;
+CREATE TABLE settings (
+  section    VARCHAR(25)   NOT NULL DEFAULT '',
+  subsection VARCHAR(25)   NOT NULL DEFAULT '',
+  name       VARCHAR(25)   NOT NULL DEFAULT '',
+  value      VARCHAR(1000) NOT NULL DEFAULT '',
+  hint       TEXT          NOT NULL,
+  setting    VARCHAR(64)   NOT NULL DEFAULT '',
+  PRIMARY KEY (section, subsection, name),
+  UNIQUE KEY ui_settings_setting (setting)
+)
+  ENGINE = MYISAM
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 
 DROP TABLE IF EXISTS xxxinfo;
