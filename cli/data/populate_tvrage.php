@@ -30,8 +30,11 @@ if ($tvshows !== false) {
 							  ));
 			$updated++;
             echo "added\n";
+		} elseif (isset($rage->id) && isset($rage->name) && !empty($rage->id) && !empty($rage->name) &&
+			$dupecheck !== false && $dupecheck['count'] > 0) {
+			echo "Up to date\n";
 		} else {
-			echo "FAILED!!\n";
+			echo "FAILED\n";
 		}
 	}
 } else {
