@@ -70,11 +70,11 @@ class PreDb extends DB
 		$this->importPS['Insert']->exec();
 	}
 
-	public function executeLoadData($filespec)
+	public function executeLoadData($filespec, $local = false)
 	{
 		if (!isset($this->importPS['LoadData'])) {
 			// TODO detect LOCAL here and pass parameter as appropriate
-			$this->prepareSQLLoadData();
+			$this->prepareSQLLoadData($local);
 		}
 		$this->importPS['LoadData']->exec([':path' => $filespec]);
 	}
