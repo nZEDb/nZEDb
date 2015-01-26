@@ -397,6 +397,25 @@ CREATE TABLE menu_items (
   AUTO_INCREMENT = 1000001;
 
 
+DROP TABLE IF EXISTS missed_parts;
+CREATE TABLE missed_parts (
+  id       INT(16) UNSIGNED NOT NULL AUTO_INCREMENT,
+  numberid BIGINT UNSIGNED  NOT NULL,
+  group_id INT(11) UNSIGNED NOT NULL DEFAULT '0'
+  COMMENT 'FK to groups',
+  attempts TINYINT(1)       NOT NULL DEFAULT '0',
+  PRIMARY KEY (id),
+  INDEX ix_missed_parts_attempts                  (attempts),
+  INDEX ix_missed_parts_groupid_attempts          (group_id, attempts),
+  INDEX ix_missed_parts_numberid_groupid_attempts (numberid, group_id, attempts),
+  UNIQUE INDEX ix_missed_parts_numberid_groupid          (numberid, group_id)
+)
+  ENGINE = MYISAM
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci
+  AUTO_INCREMENT = 1;
+
+
 DROP TABLE IF EXISTS movieinfo;
 CREATE TABLE movieinfo (
   id          INT(10) UNSIGNED               NOT NULL AUTO_INCREMENT,
@@ -492,25 +511,6 @@ CREATE TABLE parts (
   AUTO_INCREMENT = 1;
 
 
-DROP TABLE IF EXISTS missed_parts;
-CREATE TABLE missed_parts (
-  id       INT(16) UNSIGNED NOT NULL AUTO_INCREMENT,
-  numberid BIGINT UNSIGNED  NOT NULL,
-  group_id INT(11) UNSIGNED NOT NULL DEFAULT '0'
-  COMMENT 'FK to groups',
-  attempts TINYINT(1)       NOT NULL DEFAULT '0',
-  PRIMARY KEY (id),
-  INDEX ix_missed_parts_attempts                  (attempts),
-  INDEX ix_missed_parts_groupid_attempts          (group_id, attempts),
-  INDEX ix_missed_parts_numberid_groupid_attempts (numberid, group_id, attempts),
-  UNIQUE INDEX ix_missed_parts_numberid_groupid          (numberid, group_id)
-)
-  ENGINE = MYISAM
-  DEFAULT CHARSET = utf8
-  COLLATE = utf8_unicode_ci
-  AUTO_INCREMENT = 1;
-
-
 DROP TABLE IF EXISTS predb;
 CREATE TABLE predb (
   id         INT(11) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key',
@@ -553,6 +553,7 @@ CREATE TABLE predb_hashes (
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
+
 
 DROP TABLE IF EXISTS predb_imports;
 CREATE TABLE predb_imports (
