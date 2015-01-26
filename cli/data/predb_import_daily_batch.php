@@ -123,7 +123,30 @@ if ($result) {
 			$local   = strtolower($argv[2]) == 'local' ? true : false;
 			$verbose = $argv[3] == true ? true : false;
 
-			importDump($dumpFile, $local, $verbose);
+			if ($verbose) {
+				echo $pdo->log->info("Clearing import table");
+			}
+
+			// Truncate to clear any old data
+			$predb->executeTruncate();
+
+			// Import file into tmp_pre
+			$predb->executeLoadData($path, $local);
+
+			// Remove any titles where length <=8
+			if ($verbose) {
+				echo $pdo->log->info("Deleting any records where title <=8 from Temporary Table");
+			}
+			$predb->executeDeleteShort();
+
+			// Add any groups that do not currently exist
+			$predb->executeAddGroups();
+
+			// Fill the group_id
+			$predb->executeUpdateGroupID();
+
+			echo $pdo->log->info("Inserting records from temporary table into predb table");
+			$predb->executeInsert();
 
 			// Delete the dump.
 			unlink($dumpFile);
@@ -147,38 +170,4 @@ function settings_array($last = null, $settings = null)
 	}
 
 	return $settings;
-}
-
-
-// This function duplicates how dump_predb works but does not drop the hashes/triggers as recreating
-// potentially millions for the small addition that dailies add, isn't worth it.
-function importDump($path, $local, $verbose = true)
-{
-	global $pdo, $predb;
-
-	// Create temp table to allow updating
-	if ($verbose) {
-		echo $pdo->log->info("Clearing import table");
-	}
-
-	// Truncate to clear any old data
-	$predb->executeTruncate();
-
-	// Import file into tmp_pre
-	$predb->executeLoadData($path, $local);
-
-	// Remove any titles where length <=8
-	if ($verbose) {
-		echo $pdo->log->info("Deleting any records where title <=8 from Temporary Table");
-	}
-	$predb->executeDeleteShort();
-
-	// Add any groups that do not currently exist
-	$predb->executeAddGroups();
-
-	// Fill the group_id
-	$predb->executeUpdateGroupID();
-
-	echo $pdo->log->info("Inserting records from temporary table into predb table");
-	$predb->executeInsert();
 }
