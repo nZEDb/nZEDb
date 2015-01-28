@@ -46,8 +46,8 @@ class Utility
 		// Replace 2 or more white space for a single space.
 			preg_replace('/\s{2,}/',
 				' ',
-				// Replace all literal and non literal new lines and carriage returns.
-				str_replace(["\n", '\n', "\r", '\r'], ' ', $text)
+				// Replace new lines and carriage returns. DO NOT try removing '\r' or '\n' as they are valid in queries which uses this method.
+				str_replace(["\n", "\r"], ' ', $text)
 			)
 		);
 	}
