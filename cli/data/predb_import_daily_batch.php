@@ -136,9 +136,6 @@ if ($result) {
 				 ' dumps remaining to import.' . PHP_EOL;
 		}
 	}
-
-	// Drop tmp_pre table
-	$pdo->queryExec('DROP TABLE IF EXISTS tmp_pre');
 }
 
 function settings_array($last = null, $settings = null)
@@ -176,9 +173,6 @@ function importDump($path, $local, $verbose = true, $table = 'predb')
 	if ($verbose) {
 		echo $pdo->log->info("Creating temporary table");
 	}
-
-	// Truncate to clear any old data
-	$pdo->queryDirect("TRUNCATE TABLE tmp_pre");
 
 	// Import file into tmp_pre
 	$sqlLoad = sprintf(
@@ -234,4 +228,6 @@ SQL_INSERT;
 	if ($pdo->queryDirect($sqlInsert) === false) {
 		echo "FAILED\n";
 	}
+
+	$pdo->queryDirect("TRUNCATE TABLE tmp_pre");
 }
