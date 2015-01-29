@@ -51,7 +51,7 @@ class PreDb extends DB
 		if (!isset($this->importPS['AddGroups'])) {
 			$this->prepareSQLAddGroups();
 		}
-		$this->importPS['AddGroups']->exec();
+		$this->importPS['AddGroups']->execute();
 	}
 
 	public function executeDeleteShort()
@@ -59,7 +59,7 @@ class PreDb extends DB
 		if (!isset($this->importPS['DeleteShort'])) {
 			$this->prepareSQLDeleteShort();
 		}
-		$this->importPS['DeleteShort']->exec();
+		$this->importPS['DeleteShort']->execute();
 	}
 
 	public function executeInsert()
@@ -67,7 +67,7 @@ class PreDb extends DB
 		if (!isset($this->importPS['Insert'])) {
 			$this->prepareSQLInsert();
 		}
-		$this->importPS['Insert']->exec();
+		$this->importPS['Insert']->execute();
 	}
 
 	public function executeLoadData($filespec, $local = false)
@@ -76,7 +76,7 @@ class PreDb extends DB
 			// TODO detect LOCAL here and pass parameter as appropriate
 			$this->prepareSQLLoadData($local);
 		}
-		$this->importPS['LoadData']->exec([':path' => $filespec]);
+		$this->importPS['LoadData']->execute([':path' => $filespec]);
 	}
 
 	public function executeTruncate()
@@ -84,7 +84,7 @@ class PreDb extends DB
 		if (!isset($this->importPS['Truncate'])) {
 			$this->prepareSQLTruncate();
 		}
-		$this->importPS['Truncate']->exec();
+		$this->importPS['Truncate']->execute();
 	}
 
 	public function executeUpdateGroupID()
@@ -92,7 +92,7 @@ class PreDb extends DB
 		if (!isset($this->importPS['UpdateGroupID'])) {
 			$this->prepareSQLUpdateGroupIDs();
 		}
-		$this->importPS['UpdateGroupID']->exec();
+		$this->importPS['UpdateGroupID']->execute();
 	}
 
 	public function import(\String $filespec, $localDB = false)
@@ -101,17 +101,17 @@ class PreDb extends DB
 			$this->prepareImportSQL($localDB);
 		}
 
-		$this->importPS['Truncate']->exec();
+		$this->importPS['Truncate']->execute();
 
-		$this->importPS['LoadData']->exec([':path' => $filespec]);
+		$this->importPS['LoadData']->execute([':path' => $filespec]);
 
-		$this->importPS['DeleteShort']->exec();
+		$this->importPS['DeleteShort']->execute();
 
-		$this->importPS['AddGroups']->exec();
+		$this->importPS['AddGroups']->execute();
 
-		$this->importPS['UpdateGroupID']->exec();
+		$this->importPS['UpdateGroupID']->execute();
 
-		$this->importPS['Insert']->exec();
+		$this->importPS['Insert']->execute();
 	}
 
 	public function progress($settings = null, array $options = [])
