@@ -151,7 +151,7 @@ if ($result) {
 			// Delete the dump.
 			unlink($dumpFile);
 
-			$progress = $predb->progress(settings_array($match[2] + 1, $progress), false);
+			$progress = $predb->progress(settings_array($match[2] + 1, $progress), ['read' => false]);
 			echo "Successfully imported PreDB dump {$match[2]} " . (--$total) .
 				 ' dumps remaining to import.' . PHP_EOL;
 		}
