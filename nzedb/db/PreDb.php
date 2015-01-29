@@ -184,7 +184,7 @@ INSERT INTO {$this->tableMain} (title, nfo, size, files, filename, nuked, nukere
 	  predb.nukereason = IF(pi.nuked > 0, pi.nukereason, predb.nukereason),
 	  predb.category = IF(predb.category IS NULL, pi.category, predb.category),
 	  predb.requestid = IF(predb.requestid = 0, pi.requestid, predb.requestid),
-	  predb.group_id = IF(predb.group_id == 0, pi.group_id, predb.group_id);
+	  predb.group_id = IF(predb.group_id = 0, pi.group_id, predb.group_id);
 SQL_INSERT;
 
 		$this->prepareSQLStatement($sql, 'Insert');
