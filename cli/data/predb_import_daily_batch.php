@@ -1,7 +1,7 @@
 <?php
 
-/* TODO better tune the queries for performance, including using prepared statements and
-   pre-fetching group_id and other data for faster inclusion in the main query.
+/* TODO better tune the queries for performance, including pre-fetching group_id and other data for
+	faster inclusion in the main query.
 */
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php';
 
