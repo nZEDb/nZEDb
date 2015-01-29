@@ -131,7 +131,7 @@ if ($result) {
 			$predb->executeTruncate();
 
 			// Import file into tmp_pre
-			$predb->executeLoadData($path, $local);
+			$predb->executeLoadData($dumpFile, $local);
 
 			// Remove any titles where length <=8
 			if ($verbose) {
