@@ -13,8 +13,11 @@ test.php
 *.orig
 
 /.idea/
+/app/resources/tmp/*
+
 /nbproject/
 /nbproject/private/
+/resources/*.csv
 /resources/covers/*
 /resources/nzb/*
 /resources/tmp/*
