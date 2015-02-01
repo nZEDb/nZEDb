@@ -397,6 +397,25 @@ CREATE TABLE menu_items (
   AUTO_INCREMENT = 1000001;
 
 
+DROP TABLE IF EXISTS missed_parts;
+CREATE TABLE missed_parts (
+  id       INT(16) UNSIGNED NOT NULL AUTO_INCREMENT,
+  numberid BIGINT UNSIGNED  NOT NULL,
+  group_id INT(11) UNSIGNED NOT NULL DEFAULT '0'
+  COMMENT 'FK to groups',
+  attempts TINYINT(1)       NOT NULL DEFAULT '0',
+  PRIMARY KEY (id),
+  INDEX ix_missed_parts_attempts                  (attempts),
+  INDEX ix_missed_parts_groupid_attempts          (group_id, attempts),
+  INDEX ix_missed_parts_numberid_groupid_attempts (numberid, group_id, attempts),
+  UNIQUE INDEX ix_missed_parts_numberid_groupid          (numberid, group_id)
+)
+  ENGINE = MYISAM
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci
+  AUTO_INCREMENT = 1;
+
+
 DROP TABLE IF EXISTS movieinfo;
 CREATE TABLE movieinfo (
   id          INT(10) UNSIGNED               NOT NULL AUTO_INCREMENT,
@@ -492,25 +511,6 @@ CREATE TABLE parts (
   AUTO_INCREMENT = 1;
 
 
-DROP TABLE IF EXISTS missed_parts;
-CREATE TABLE missed_parts (
-  id       INT(16) UNSIGNED NOT NULL AUTO_INCREMENT,
-  numberid BIGINT UNSIGNED  NOT NULL,
-  group_id INT(11) UNSIGNED NOT NULL DEFAULT '0'
-  COMMENT 'FK to groups',
-  attempts TINYINT(1)       NOT NULL DEFAULT '0',
-  PRIMARY KEY (id),
-  INDEX ix_missed_parts_attempts                  (attempts),
-  INDEX ix_missed_parts_groupid_attempts          (group_id, attempts),
-  INDEX ix_missed_parts_numberid_groupid_attempts (numberid, group_id, attempts),
-  UNIQUE INDEX ix_missed_parts_numberid_groupid          (numberid, group_id)
-)
-  ENGINE = MYISAM
-  DEFAULT CHARSET = utf8
-  COLLATE = utf8_unicode_ci
-  AUTO_INCREMENT = 1;
-
-
 DROP TABLE IF EXISTS predb;
 CREATE TABLE predb (
   id         INT(11) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key',
@@ -553,6 +553,41 @@ CREATE TABLE predb_hashes (
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
+
+
+DROP TABLE IF EXISTS predb_imports;
+CREATE TABLE predb_imports (
+  title      VARCHAR(255)
+               COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  nfo        VARCHAR(255)
+               COLLATE utf8_unicode_ci          DEFAULT NULL,
+  size       VARCHAR(50)
+               COLLATE utf8_unicode_ci          DEFAULT NULL,
+  category   VARCHAR(255)
+               COLLATE utf8_unicode_ci          DEFAULT NULL,
+  predate    DATETIME                         DEFAULT NULL,
+  source     VARCHAR(50)
+               COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  requestid  INT(10) UNSIGNED        NOT NULL DEFAULT '0',
+  group_id   INT(10) UNSIGNED        NOT NULL DEFAULT '0'
+    COMMENT 'FK to groups',
+  nuked      TINYINT(1)              NOT NULL DEFAULT '0'
+    COMMENT 'Is this pre nuked? 0 no 2 yes 1 un nuked 3 mod nuked',
+  nukereason VARCHAR(255)
+               COLLATE utf8_unicode_ci          DEFAULT NULL
+  COMMENT 'If this pre is nuked, what is the reason?',
+  files      VARCHAR(50)
+               COLLATE utf8_unicode_ci          DEFAULT NULL
+  COMMENT 'How many files does this pre have ?',
+  filename   VARCHAR(255)
+               COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  searched   TINYINT(1)              NOT NULL DEFAULT '0',
+  groupname  VARCHAR(255)
+               COLLATE utf8_unicode_ci          DEFAULT NULL
+)
+  ENGINE =MYISAM
+  DEFAULT CHARSET =utf8
+  COLLATE =utf8_unicode_ci;
 
 
 DROP TABLE IF EXISTS releases;
@@ -741,53 +776,6 @@ CREATE TABLE release_subtitles (
   AUTO_INCREMENT = 1;
 
 
-DROP TABLE IF EXISTS video_data;
-CREATE TABLE video_data (
-  releaseid       INT(11) UNSIGNED NOT NULL,
-  containerformat VARCHAR(50)      DEFAULT NULL,
-  overallbitrate  VARCHAR(20)      DEFAULT NULL,
-  videoduration   VARCHAR(20)      DEFAULT NULL,
-  videoformat     VARCHAR(50)      DEFAULT NULL,
-  videocodec      VARCHAR(50)      DEFAULT NULL,
-  videowidth      INT(10)          DEFAULT NULL,
-  videoheight     INT(10)          DEFAULT NULL,
-  videoaspect     VARCHAR(10)      DEFAULT NULL,
-  videoframerate  FLOAT(7, 4)      DEFAULT NULL,
-  videolibrary    VARCHAR(50)      DEFAULT NULL,
-  PRIMARY KEY (releaseid)
-)
-  ENGINE          = MYISAM
-  DEFAULT CHARSET = utf8
-  COLLATE         = utf8_unicode_ci;
-
-
-DROP TABLE IF EXISTS releaseextrafull;
-CREATE TABLE         releaseextrafull (
-  releaseid INT(11) UNSIGNED NOT NULL,
-  mediainfo TEXT    NULL,
-  PRIMARY KEY (releaseid)
-)
-  ENGINE          = MYISAM
-  DEFAULT CHARSET = utf8
-  COLLATE         = utf8_unicode_ci;
-
-
-DROP TABLE IF EXISTS settings;
-CREATE TABLE settings (
-  section    VARCHAR(25)   NOT NULL DEFAULT '',
-  subsection VARCHAR(25)   NOT NULL DEFAULT '',
-  name       VARCHAR(25)   NOT NULL DEFAULT '',
-  value      VARCHAR(1000) NOT NULL DEFAULT '',
-  hint       TEXT          NOT NULL,
-  setting    VARCHAR(64)   NOT NULL DEFAULT '',
-  PRIMARY KEY (section, subsection, name),
-  UNIQUE KEY ui_settings_setting (setting)
-)
-  ENGINE = MYISAM
-  DEFAULT CHARSET = utf8
-  COLLATE = utf8_unicode_ci;
-
-
 DROP TABLE IF EXISTS sharing;
 CREATE TABLE sharing (
   site_guid      VARCHAR(40)        NOT NULL DEFAULT '',
@@ -841,27 +829,6 @@ CREATE TABLE shortgroups (
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci
   AUTO_INCREMENT = 1;
-
-
-CREATE TABLE `tmp_pre` (
-  `title`      VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `nfo`        VARCHAR(255) COLLATE utf8_unicode_ci          DEFAULT NULL,
-  `size`       VARCHAR(50)  COLLATE utf8_unicode_ci          DEFAULT NULL,
-  `category`   VARCHAR(255) COLLATE utf8_unicode_ci          DEFAULT NULL,
-  `predate`    DATETIME                                      DEFAULT NULL,
-  `source`     VARCHAR(50)  COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `requestid`  INT(10) UNSIGNED                     NOT NULL DEFAULT '0',
-  `group_id`   INT(10) UNSIGNED                     NOT NULL DEFAULT '0' COMMENT 'FK to groups',
-  `nuked`      TINYINT(1)                           NOT NULL DEFAULT '0' COMMENT 'Is this pre nuked? 0 no 2 yes 1 un nuked 3 mod nuked',
-  `nukereason` VARCHAR(255) COLLATE utf8_unicode_ci          DEFAULT NULL COMMENT 'If this pre is nuked, what is the reason?',
-  `files`      VARCHAR(50)  COLLATE utf8_unicode_ci          DEFAULT NULL COMMENT 'How many files does this pre have ?',
-  `filename`   VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `searched`   TINYINT(1)                           NOT NULL DEFAULT '0',
-  `groupname`  VARCHAR(255) COLLATE utf8_unicode_ci          DEFAULT NULL
-)
-  ENGINE =MYISAM
-  DEFAULT CHARSET =utf8
-  COLLATE =utf8_unicode_ci;
 
 
 DROP TABLE IF EXISTS tmux;
@@ -1093,6 +1060,51 @@ CREATE TABLE user_series (
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci
   AUTO_INCREMENT = 1;
+
+
+DROP TABLE IF EXISTS video_data;
+CREATE TABLE video_data (
+  releaseid       INT(11) UNSIGNED NOT NULL,
+  containerformat VARCHAR(50) DEFAULT NULL,
+  overallbitrate  VARCHAR(20) DEFAULT NULL,
+  videoduration   VARCHAR(20) DEFAULT NULL,
+  videoformat     VARCHAR(50) DEFAULT NULL,
+  videocodec      VARCHAR(50) DEFAULT NULL,
+  videowidth      INT(10)     DEFAULT NULL,
+  videoheight     INT(10)     DEFAULT NULL,
+  videoaspect     VARCHAR(10) DEFAULT NULL,
+  videoframerate  FLOAT(7, 4) DEFAULT NULL,
+  videolibrary    VARCHAR(50) DEFAULT NULL,
+  PRIMARY KEY (releaseid)
+)
+  ENGINE = MYISAM
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
+
+DROP TABLE IF EXISTS releaseextrafull;
+CREATE TABLE releaseextrafull (
+  releaseid INT(11) UNSIGNED NOT NULL,
+  mediainfo TEXT NULL,
+  PRIMARY KEY (releaseid)
+)
+  ENGINE = MYISAM
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
+
+DROP TABLE IF EXISTS settings;
+CREATE TABLE settings (
+  section    VARCHAR(25)   NOT NULL DEFAULT '',
+  subsection VARCHAR(25)   NOT NULL DEFAULT '',
+  name       VARCHAR(25)   NOT NULL DEFAULT '',
+  value      VARCHAR(1000) NOT NULL DEFAULT '',
+  hint       TEXT          NOT NULL,
+  setting    VARCHAR(64)   NOT NULL DEFAULT '',
+  PRIMARY KEY (section, subsection, name),
+  UNIQUE KEY ui_settings_setting (setting)
+)
+  ENGINE = MYISAM
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 
 DROP TABLE IF EXISTS xxxinfo;

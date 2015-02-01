@@ -30,20 +30,69 @@ class PreDb extends DB
 		'AddGroups'		=> null,
 		'DeleteShort' 	=> null,
 		'Import' 		=> null,
+		'Insert'		=> null,
 		'LoadData' 		=> null,
 		'Truncate'		=> null,
 		'UpdateGroupID'	=> null,
 	];
 
-	protected $table;
-
 	public function __construct(array $options = [])
 	{
-		$defaults = ['table' => 'predb'];
+		$defaults = [];
 		$options += $defaults;
 		parent::__construct($options);
 
-		$this->table = $options['table'];
+		$this->tableMain = 'predb';
+		$this->tableTemp = 'tmp_pre';
+	}
+
+	public function executeAddGroups()
+	{
+		if (!isset($this->importPS['AddGroups'])) {
+			$this->prepareSQLAddGroups();
+		}
+		$this->importPS['AddGroups']->execute();
+	}
+
+	public function executeDeleteShort()
+	{
+		if (!isset($this->importPS['DeleteShort'])) {
+			$this->prepareSQLDeleteShort();
+		}
+		$this->importPS['DeleteShort']->execute();
+	}
+
+	public function executeInsert()
+	{
+		if (!isset($this->importPS['Insert'])) {
+			$this->prepareSQLInsert();
+		}
+		$this->importPS['Insert']->execute();
+	}
+
+	public function executeLoadData($filespec, $local = false)
+	{
+		if (!isset($this->importPS['LoadData'])) {
+			// TODO detect LOCAL here and pass parameter as appropriate
+			$this->prepareSQLLoadData($local);
+		}
+		$this->importPS['LoadData']->execute([':path' => $filespec]);
+	}
+
+	public function executeTruncate()
+	{
+		if (!isset($this->importPS['Truncate'])) {
+			$this->prepareSQLTruncate();
+		}
+		$this->importPS['Truncate']->execute();
+	}
+
+	public function executeUpdateGroupID()
+	{
+		if (!isset($this->importPS['UpdateGroupID'])) {
+			$this->prepareSQLUpdateGroupIDs();
+		}
+		$this->importPS['UpdateGroupID']->execute();
 	}
 
 	public function import(\String $filespec, $localDB = false)
@@ -52,86 +101,112 @@ class PreDb extends DB
 			$this->prepareImportSQL($localDB);
 		}
 
-		$this->importPS['Truncate']->exec;
+		$this->importPS['Truncate']->execute();
 
-		$this->importPS['LoadData'];
+		$this->importPS['LoadData']->execute([':path' => $filespec]);
 
-		$this->importPS['DeleteShort'];
+		$this->importPS['DeleteShort']->execute();
 
-		$this->importPS[''];
+		$this->importPS['AddGroups']->execute();
 
-		$this->importPS[''];
+		$this->importPS['UpdateGroupID']->execute();
 
-		$this->importPS[''];
-
-		$this->importPS[''];
-
-		$this->importPS[''];
+		$this->importPS['Insert']->execute();
 	}
 
-	protected function createTempTable()
+	public function progress($settings = null, array $options = [])
 	{
-		$this->dropTempTable();
+		$defaults = [
+			'path'	=> nZEDb_ROOT . 'cli' . DS . 'data' . DS . 'predb_progress.txt',
+			'read'	=> true,
+		];
+		$options += $defaults;
 
-		$this->queryExec('CREATE TABLE tmp_pre LIKE predb');
+		if (!$options['read'] || !is_file($options['path'])) {
+			file_put_contents($options['path'], base64_encode(serialize($settings)));
+		} else {
+			$settings = unserialize(base64_decode(file_get_contents($options['path'])));
+		}
 
-		// Drop id as it is not needed and incurs overhead creating each id.
-		$this->queryExec('ALTER TABLE tmp_pre DROP COLUMN id');
-
-		// Add a column for the group's name which is included instead of the group_id, which may be
-		// different between individual databases
-		$this->queryExec('ALTER TABLE tmp_pre ADD COLUMN groupname VARCHAR (255)');
-
-		// Drop indexes on tmp_pre
-		$this->queryExec('ALTER TABLE tmp_pre DROP INDEX `ix_predb_nfo`, DROP INDEX `ix_predb_predate`, DROP INDEX `ix_predb_source`, DROP INDEX `ix_predb_title`, DROP INDEX `ix_predb_requestid`');
-	}
-
-	protected function dropTempTable()
-	{
-		$this->queryExec('DROP TABLE IF EXISTS tmp_pre');
+		return $settings;
 	}
 
 	protected function prepareImportSQL($localDB = false)
 	{
-		$this->importPS['Truncate'] = $this->prepare("TRUNCATE TABLE tmp_pre");
+		$this->prepareSQLTruncate();
 
-		$sql                    = sprintf(
-			"LOAD DATA %s INFILE :path IGNORE INTO TABLE tmp_pre FIELDS TERMINATED BY '\\t\\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\\r\\n' (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, groupname);",
-			($localDB === false ? 'LOCAL' : '')
-		);
-		$this->importPS['LoadData'] = $this->prepare($sql);
+		$this->prepareSQLLoadData($localDB);
 
-		$this->importPS['DeleteShort'] = $this->prepare("DELETE FROM tmp_pre WHERE LENGTH(title) <= 8");
+		$this->prepareSQLDeleteShort();
 
+		$this->prepareSQLAddGroups();
+
+		$this->prepareSQLUpdateGroupIDs();
+
+		$this->prepareSQLInsert();
+	}
+
+	protected function prepareSQLStatement($sql, $index)
+	{
+		$this->importPS[$index] = $this->prepare($sql);
+	}
+
+	protected function prepareSQLAddGroups()
+	{
 		// Add any groups that are not in our current groups table
 		$sql = <<<SQL_ADD_GROUPS
 INSERT IGNORE INTO groups (name, description)
 	SELECT groupname, 'Added by predb import script'
-	FROM tmp_pre AS t LEFT JOIN groups AS g ON t.groupname = g.name
-	WHERE t.groupname IS NOT NULL AND g.name IS NULL
+	FROM predb_imports AS pi LEFT JOIN groups AS g ON pi.groupname = g.name
+	WHERE pi.groupname IS NOT NULL AND g.name IS NULL
 	GROUP BY groupname;
 SQL_ADD_GROUPS;
 
-		$this->importPS['AddGroups'] = $this->prepare($sql);
+		$this->prepareSQLStatement($sql, 'AddGroups');
+	}
 
-		// Fill the group_id
-		$this->importPS['UpdateGroupID'] = $this->prepare("UPDATE tmp_pre AS t SET group_id = (SELECT id FROM groups WHERE name = t.groupname) WHERE groupname IS NOT NULL");
+	protected function prepareSQLDeleteShort()
+	{
+		$this->prepareSQLStatement('DELETE FROM predb_imports WHERE LENGTH(title) <= 8', 'DeleteShort');
+	}
 
+	protected function prepareSQLInsert()
+	{
 		$sql = <<<SQL_INSERT
-INSERT INTO {$this->table} (title, nfo, size, files, filename, nuked, nukereason, category, predate, SOURCE, requestid, group_id)
-  SELECT t.title, t.nfo, t.size, t.files, t.filename, t.nuked, t.nukereason, t.category, t.predate, t.source, t.requestid, group_id
-    FROM tmp_pre AS t
-  ON DUPLICATE KEY UPDATE predb.nfo = IF(predb.nfo IS NULL, t.nfo, predb.nfo),
-	  predb.size = IF(predb.size IS NULL, t.size, predb.size),
-	  predb.files = IF(predb.files IS NULL, t.files, predb.files),
-	  predb.filename = IF(predb.filename = '', t.filename, predb.filename),
-	  predb.nuked = IF(t.nuked > 0, t.nuked, predb.nuked),
-	  predb.nukereason = IF(t.nuked > 0, t.nukereason, predb.nukereason),
-	  predb.category = IF(predb.category IS NULL, t.category, predb.category),
-	  predb.requestid = IF(predb.requestid = 0, t.requestid, predb.requestid),
-	  predb.group_id = IF(predb.group_id == 0, t.group_id, predb.group_id);
+INSERT INTO {$this->tableMain} (title, nfo, size, files, filename, nuked, nukereason, category, predate, SOURCE, requestid, group_id)
+  SELECT pi.title, pi.nfo, pi.size, pi.files, pi.filename, pi.nuked, pi.nukereason, pi.category, pi.predate, pi.source, pi.requestid, group_id
+    FROM predb_imports AS pi
+  ON DUPLICATE KEY UPDATE predb.nfo = IF(predb.nfo IS NULL, pi.nfo, predb.nfo),
+	  predb.size = IF(predb.size IS NULL, pi.size, predb.size),
+	  predb.files = IF(predb.files IS NULL, pi.files, predb.files),
+	  predb.filename = IF(predb.filename = '', pi.filename, predb.filename),
+	  predb.nuked = IF(pi.nuked > 0, pi.nuked, predb.nuked),
+	  predb.nukereason = IF(pi.nuked > 0, pi.nukereason, predb.nukereason),
+	  predb.category = IF(predb.category IS NULL, pi.category, predb.category),
+	  predb.requestid = IF(predb.requestid = 0, pi.requestid, predb.requestid),
+	  predb.group_id = IF(predb.group_id = 0, pi.group_id, predb.group_id);
 SQL_INSERT;
 
-		$this->importPS['Import'] = $this->prepare($sql);
+		$this->prepareSQLStatement($sql, 'Insert');
+	}
+
+	protected function prepareSQLLoadData($local = true)
+	{
+		$sql = sprintf(
+			"LOAD DATA %s INFILE :path IGNORE INTO TABLE predb_imports FIELDS TERMINATED BY '\\t\\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\\r\\n' (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, groupname);",
+			($local === false ? 'LOCAL' : '')
+		);
+		$this->prepareSQLStatement($sql, 'LoadData');
+	}
+
+	protected function prepareSQLTruncate()
+	{
+		$this->prepareSQLStatement('TRUNCATE TABLE predb_imports', 'Truncate');
+	}
+
+	protected function prepareSQLUpdateGroupIDs()
+	{
+		$sql = "UPDATE predb_imports AS pi SET group_id = (SELECT id FROM groups WHERE name = pi.groupname) WHERE groupname IS NOT NULL";
+		$this->prepareSQLStatement($sql, 'UpdateGroupID');
 	}
 }
