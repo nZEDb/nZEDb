@@ -4,6 +4,11 @@ Please make sure any PR's comply with our coding standards policy: http://li3.me
 
 New updates are grouped by person (committer/merger), at the top of the file.
 
+2015-01-28 niel
+	* Fix: Removing extra tab from innerfileblacklist row that causes the setting to not work.
+2015-01-08 niel
+	* Chg: Added tmp_pre to schema as permanent table and changed predb scripts accordingly.
+	* Chg: Renamed tmp_pre table to predb_imports to be clearer about its purpose.
 2015-01-07 niel
 	* Fix: Issue 1575 - Notice: Undefined variable: consoletools in /home/schwick/www/nZEDb/misc/update/predbftmatch.php on line 84
 
