@@ -24,7 +24,7 @@
 						<div class="movextra">
 							<a class="rndbtnsml" target="_blank" href="{$site->dereferrer_link}{$result->links->alternate}" title="View Rotten Tomatoes Details">Rotten Tomatoes</a>
 							<a class="rndbtnsml" target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result->alternate_ids->imdb}/" name="imdb{$result->alternate_ids->imdb}" title="View imdb page">Imdb</a>
-							<a class="rndbtnsml" target="_blank" href="{$site->dereferrer_link}http://trakt.tv/search/imdb?q=tt{$result->alternate_ids->imdb}/" name="trakt{$result->alternate_ids->imdb}" title="View trakt page">Trakt</a>
+							<a class="rndbtnsml" target="_blank" href="{$site->dereferrer_link}http://trakt.tv/search/imdb/tt{$result->alternate_ids->imdb}/" name="trakt{$result->alternate_ids->imdb}" title="View trakt page">Trakt</a>
 							{if $cpurl != '' && $cpapi != ''}
 								<a class="rndbtnsml sendtocouch" target="blackhole" href="javascript:;" rel="{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result->alternate_ids->imdb}&title={$result->title}" name="CP{$result->alternate_ids->imdb}" title="Add to CouchPotato">CouchPotato</a>
 							{/if}

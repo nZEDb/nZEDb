@@ -435,14 +435,22 @@ class Tmux
 	}
 
 	/**
-	 * Check if Tmux is running, stop it if it is.
-	 *
-	 * @return bool
-	 * @access public
+	 * @return bool true if tmux is running, false otherwise.
 	 */
 	public function isRunning()
 	{
-		if ($this->get()->running == 1) {
+		return ($this->get()->running == 1);
+	}
+
+	/**
+	 * Check if Tmux is running, if it is, stop it.
+	 *
+	 * @return bool		true if scripts were running, false otherwise.
+	 * @access public
+	 */
+	public function stopIfRunning()
+	{
+		if ($this->isRunning() == 1) {
 			$this->pdo->queryExec("UPDATE tmux SET value = '0' WHERE setting = 'RUNNING'");
 			$sleep = $this->get()->monitor_delay;
 			echo $this->pdo->log->header("Stopping tmux scripts and waiting $sleep seconds for all panes to shutdown");
@@ -452,4 +460,11 @@ class Tmux
 		return false;
 	}
 
+	public function startRunning()
+	{
+		if (!$this->isRunning()) {
+			return $this->pdo->queryExec("UPDATE tmux SET value = '1' WHERE setting = 'RUNNING'");
+		}
+		return true;
+	}
 }
