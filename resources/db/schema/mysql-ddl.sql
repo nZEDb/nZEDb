@@ -815,8 +815,8 @@ CREATE TABLE sharing_sites (
   AUTO_INCREMENT = 1;
 
 
-DROP TABLE IF EXISTS shortgroups;
-CREATE TABLE shortgroups (
+DROP TABLE IF EXISTS short_groups;
+CREATE TABLE short_groups (
   id           INT(11)         NOT NULL AUTO_INCREMENT,
   name         VARCHAR(255)    NOT NULL DEFAULT '',
   first_record BIGINT UNSIGNED NOT NULL DEFAULT '0',
