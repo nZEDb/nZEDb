@@ -4,6 +4,9 @@ Please make sure any PR's comply with our coding standards policy: http://li3.me
 
 New updates are grouped by person (committer/merger), at the top of the file.
 
+2015-02-06 bart39
+	* Mrg: PR 1590 from dariusIII - Add XXX-SD category.
+		***NOTE*** run "php /misc/testing/Dev/recategorize.php all" to re-categorize existing releases.
 2015-01-08 niel
 	* Chg: Added tmp_pre to schema as permanent table and changed predb scripts accordingly.
 2015-01-07 niel
