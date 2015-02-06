@@ -790,7 +790,7 @@ class Categorize extends Category
 
 	public function isXxx264()
 	{
-		if (preg_match('/720p|1080(hd|[ip])|[xh][^a-z0-9]?264/i', $this->releaseName) && !preg_match('/\bwmv\b/i', $this->releaseName)) {
+		if (preg_match('/720p|1080(hd|[ip])|[xh][^a-z0-9]?264/i', $this->releaseName) && !preg_match('/\bwmv\b/i', $this->releaseName) && !preg_match('/SDX264XXX/i', $this->releaseName)) {
 			$this->tmpCat = \Category::CAT_XXX_X264;
 			return true;
 		}
