@@ -780,6 +780,7 @@ class Categorize extends Category
 			case $this->isXxxWMV():
 			case $this->isXxxDVD():
 			case $this->isXxxOther():
+			case $this->isXxxSD():
 				return true;
 			default:
 				$this->tmpCat = \Category::CAT_XXX_OTHER;
@@ -846,6 +847,15 @@ class Categorize extends Category
 		// If nothing else matches, then try these words.
 		if (preg_match('/[-._ ]Brazzers|Creampie|[-._ ]JAV[-._ ]|North\.Pole|^Nubiles|She[-._ ]?Male|Transsexual|OLDER ANGELS/i', $this->releaseName)) {
 			$this->tmpCat = \Category::CAT_XXX_OTHER;
+			return true;
+		}
+		return false;
+	}
+
+	public function isXxxSD()
+	{
+		if (preg_match('/SDX264XXX|XXX\.HR\./i', $this->releaseName)) {
+			$this->tmpCat = \Category::CAT_XXX_SD;
 			return true;
 		}
 		return false;
