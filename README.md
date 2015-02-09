@@ -109,3 +109,39 @@ Kevin123, jonnyboy, Miatrix, zombu2, Codeslave, sinfuljosh, ugo, Whitelighter, B
 <a href="https://flattr.com/submit/auto?user_id=nzedb&url=https%3A%2F%2Fgithub.com%2FnZEDb%2FnZEDb" target="_blank"><img src="//api.flattr.com/button/flattr-badge-large.png" alt="Donations." title="Donations." border="0"></a>
 
 <p>
+
+### Licenses
+
+nZEDb is GPL v3. See /docs/LICENSE.txt for the full license.
+
+Other licenses by various software used by nZEDb:
+
+Git.php => MIT and GPL v3
+
+Net_NNTP => W3C
+
+PHPMailer => GNU Lesser General Public License
+
+forkdaemon-php => Barracuda Networks, Inc.
+
+getid3 => GPL v3
+
+password_compat => Anthony Ferrara
+
+rarinfo => Modified BSD
+
+smarty => GNU Lesser General Public v2.1
+
+AmazonProductAPI.php => Sameer Borate
+
+GiantBombAPI.php => MIT
+
+TMDb PHP API class => BSD
+
+Zip file creation class => No license specified.
+
+simple_html_dom.php => MIT
+
+All external libraries will have their full licenses in their respectful folders.
+
+Some licenses might have been missed in this document for various external software, they will be included in their respectful folders.
