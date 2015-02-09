@@ -79,7 +79,7 @@ if((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "dum
 	$filename = $argv[3]."/".$dbname.".gz";
 	if (file_exists($filename)) {
 		echo $pdo->log->header("Restoring $dbname.");
-		$command = "zcat < $filename | mysql --defaults-file=mysql-defaults.txt -h$dbhost $use $dbname";
+		$command = "zcat < $filename | mysql --defaults-file=mysql-defaults.txt $host $use $dbname";
 		$pdo->queryExec("SET FOREIGN_KEY_CHECKS=0");
 		system($command);
 		$pdo->queryExec("SET FOREIGN_KEY_CHECKS=1");
@@ -94,7 +94,7 @@ if((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "dum
 		if (file_exists($filename)) {
 			newname($filename);
 		}
-		$command = "mysqldump --defaults-file=mysql-defaults.txt $exportopts -h$dbhost $use "."$dbname $tbl | gzip -9 > $filename";
+		$command = "mysqldump --defaults-file=mysql-defaults.txt $exportopts $host $use "."$dbname $tbl | gzip -9 > $filename";
 		system($command);
 	}
 } else if((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] == "restore") && (isset($argv[3]) && file_exists($argv[3]))) {
@@ -106,7 +106,7 @@ if((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "dum
 		$filename = $argv[3]."/".$tbl.".gz";
 		if (file_exists($filename)) {
 			echo $pdo->log->header("Restoring $tbl.");
-			$command = "zcat < $filename | mysql --defaults-file=mysql-defaults.txt -h$dbhost $use $dbname";
+			$command = "zcat < $filename | mysql --defaults-file=mysql-defaults.txt $host $use $dbname";
 			system($command);
 		}
 	}
@@ -119,7 +119,7 @@ if((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "dum
 		if (file_exists($filename)) {
 			newname($filename);
 		}
-		$command = "mysqldump --defaults-file=mysql-defaults.txt $exportopts -h$dbhost $use "."$dbname $tbl | gzip -9 > $filename";
+		$command = "mysqldump --defaults-file=mysql-defaults.txt $exportopts $host $use "."$dbname $tbl | gzip -9 > $filename";
 		system($command);
 	}
 } else if((isset($argv[1]) && $argv[1] == "test") && (isset($argv[2]) && $argv[2] == "restore") && (isset($argv[3]) && file_exists($argv[3]))) {
@@ -129,7 +129,7 @@ if((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "dum
 		$filename = $argv[3]."/".$tbl.".gz";
 		if (file_exists($filename)) {
 			echo $pdo->log->header("Restoring $tbl.");
-			$command = "zcat < $filename | mysql --defaults-file=mysql-defaults.txt -h$dbhost $use $dbname";
+			$command = "zcat < $filename | mysql --defaults-file=mysql-defaults.txt $host $use $dbname";
 			system($command);
 		}
 	}
