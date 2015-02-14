@@ -456,18 +456,24 @@ class Utility
 	{
 		// String to hold the NZB contents.
 		$string = '';
-
 		// Open the gzip file.
 		$gzFile = @gzopen($filePath, 'rb', 0);
 		if ($gzFile) {
 			// Append the decompressed data to the string until we find the end of file pointer.
 			while (!gzeof($gzFile)) {
-				$string .= gzread($gzFile, 1024);
+				$temp = gzread($gzFile, 1024);
+				// Check for corrupt data, there will be no end of file, so the loop would go on and on taking 100% CPU.
+				if ($temp) {
+					$string .= $temp;
+				} else {
+					// If the data was corrupt, set the big string empty so we return false and break out of the loop.
+					$string = '';
+					break;
+				}
 			}
 			// Close the gzip file.
 			gzclose($gzFile);
 		}
-
 		// Return the string.
 		return ($string === '' ? false : $string);
 	}
