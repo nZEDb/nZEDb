@@ -1,4 +1,4 @@
-nZEDb automatically scans the usenet similar to the way google search bots scan the internet. It does this by collecting usenet headers and temporarily storing them in a SQL database. It provides a web-based front-end providing search, browse and programmable (API) functionality.
+nZEDb automatically scans usenet, similar to the way google search bots scan the internet. It does this by collecting usenet headers and temporarily storing them in a database until they can be collated into posts/releases. It provides a web-based front-end providing search, browse, and programmable (API) functionality.
 
 This project is a fork of the open source usenet indexer newznab plus: https://github.com/anth0/nnplus
 
@@ -10,8 +10,8 @@ nZEDb improves upon the original design, implementing several new features inclu
 - Optional sharing of comments with other nZEDb sites
 - Optional tmux (terminal session multiplexing) engine that provides thread, database and performance monitoring
 - Image and video samples
-- sabnzbd integration web, API and pause/resume
-- CouchPotato integration web and API
+- SABnzbd/NZBGet integration (web, API and pause/resume)
+- CouchPotato integration (web and API)
 
 
 ## Prerequisites
