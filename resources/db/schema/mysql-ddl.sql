@@ -776,6 +776,22 @@ CREATE TABLE release_subtitles (
   AUTO_INCREMENT = 1;
 
 
+DROP TABLE IF EXISTS settings;
+CREATE TABLE settings (
+  section    VARCHAR(25)   NOT NULL DEFAULT '',
+  subsection VARCHAR(25)   NOT NULL DEFAULT '',
+  name       VARCHAR(25)   NOT NULL DEFAULT '',
+  value      VARCHAR(1000) NOT NULL DEFAULT '',
+  hint       TEXT          NOT NULL,
+  setting    VARCHAR(64)   NOT NULL DEFAULT '',
+  PRIMARY KEY (section, subsection, name),
+  UNIQUE KEY ui_settings_setting (setting)
+)
+  ENGINE = MYISAM
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
+
+
 DROP TABLE IF EXISTS sharing;
 CREATE TABLE sharing (
   site_guid      VARCHAR(40)        NOT NULL DEFAULT '',
@@ -815,8 +831,8 @@ CREATE TABLE sharing_sites (
   AUTO_INCREMENT = 1;
 
 
-DROP TABLE IF EXISTS shortgroups;
-CREATE TABLE shortgroups (
+DROP TABLE IF EXISTS short_groups;
+CREATE TABLE short_groups (
   id           INT(11)         NOT NULL AUTO_INCREMENT,
   name         VARCHAR(255)    NOT NULL DEFAULT '',
   first_record BIGINT UNSIGNED NOT NULL DEFAULT '0',
@@ -1102,26 +1118,12 @@ CREATE TABLE video_data (
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci;
 
+
 DROP TABLE IF EXISTS releaseextrafull;
 CREATE TABLE releaseextrafull (
   releaseid INT(11) UNSIGNED NOT NULL,
   mediainfo TEXT NULL,
   PRIMARY KEY (releaseid)
-)
-  ENGINE = MYISAM
-  DEFAULT CHARSET = utf8
-  COLLATE = utf8_unicode_ci;
-
-DROP TABLE IF EXISTS settings;
-CREATE TABLE settings (
-  section    VARCHAR(25)   NOT NULL DEFAULT '',
-  subsection VARCHAR(25)   NOT NULL DEFAULT '',
-  name       VARCHAR(25)   NOT NULL DEFAULT '',
-  value      VARCHAR(1000) NOT NULL DEFAULT '',
-  hint       TEXT          NOT NULL,
-  setting    VARCHAR(64)   NOT NULL DEFAULT '',
-  PRIMARY KEY (section, subsection, name),
-  UNIQUE KEY ui_settings_setting (setting)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
