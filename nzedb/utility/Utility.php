@@ -328,6 +328,22 @@ class Utility
 		return ((strtolower(PHP_SAPI) === 'cli') ? true : false);
 	}
 
+	static public function isGZipped($filename)
+	{
+		$gzipped = null;
+		if (($fp = fopen($filename, 'r')) !== false) {
+			if (@fread($fp, 2) == "\x1F\x8B") { // this is a gzip'd file
+				fseek($fp, -4, SEEK_END);
+				if (strlen($datum = @fread($fp, 4)) == 4) {
+					$gzipped = $datum;
+				}
+			}
+			fclose($fp);
+		}
+
+		return ($gzipped);
+	}
+
 	static public function isPatched(Settings $pdo = null)
 	{
 		$versions = self::getValidVersionsFile();
