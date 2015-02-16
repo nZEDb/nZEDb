@@ -470,6 +470,11 @@ class Utility
 	 */
 	static public function unzipGzipFile($filePath)
 	{
+		$length = Utility::isGZipped($filePath);
+		if ($length === false || $length === null) {
+			return false;
+		}
+
 		// String to hold the NZB contents.
 		$string = '';
 		// Open the gzip file.
