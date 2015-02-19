@@ -216,6 +216,8 @@ class CollectionsCleaning
 				return $this->pictures_erotica_anime();
 			case 'alt.binaries.ps3':
 				return $this->ps3();
+			case 'alt.binaries.pwp':
+				return $this->pwp();
 			case 'alt.binaries.series.tv.french':
 				return $this->series_tv_french();
 			case 'alt.binaries.sony.psp':
@@ -2504,6 +2506,20 @@ class CollectionsCleaning
 	{
 		//[4197] [036/103] - "ant-mgstlcd2.r34" yEnc
 		if (preg_match('/^\[\d+\] \[\d+(\/\d+\] - ".+?)' . $this->e1, $this->subject, $match)) {
+			return $match[1];
+		}
+		return $this->generic();
+	}
+
+	// a.b.pwp
+	protected function pwp()
+	{
+		//(620/899) -  "Giggi_9M05YD32TO4.part147.rar" - 252,53 GB - yEnc
+		if (preg_match('/^\(\d+\/(\d+\)[-_ ]{0,4}"Giggi.+)[A-Z]\d' . $this->e2, $this->subject, $match)) {
+			return $match[1];
+		}
+		//(300/454) "James_Bond_You_Only_Live_Twice_bd25.part300.rar" - 22,22 GB - yEnc
+		if (preg_match('/^\(\d+\/(\d+\)[-_ ]{0,4}".+?)' . $this->e2, $this->subject, $match)) {
 			return $match[1];
 		}
 		return $this->generic();
