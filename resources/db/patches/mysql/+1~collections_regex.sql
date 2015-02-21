@@ -28,10 +28,10 @@ INSERT INTO collections_regex (id, group_regex, regex, status, description, ordi
 
 INSERT INTO collections_regex (id, group_regex, regex, status, description, ordinal)
   VALUES (
-    1,
+    2,
     'alt\.binaries\.teevee',
     '(?P<match1>\[[\d#]+\]-\[.+?\]-\[.+?\])-\[ (?P<match2>.+?) \][ -]{0,3}".+?" yEnc$',
     1,
     '[185409]-[FULL]-[a.b.teeveeEFNet]-[ Dragon.Ball.Z.S03E24.1080p.WS.BluRay.x264-CCAT ]-"dragon.ball.z.s03e24.1080p.ws.bluray.x264-ccat.nfo" yEnc',
-    0
+    1
 );
