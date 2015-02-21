@@ -4,6 +4,11 @@ Please make sure any PR's comply with our coding standards policy: http://li3.me
 
 New updates are grouped by person (committer/merger), at the top of the file.
 
+2015-02-20 bart39
+	* Fix: Missing binaries from releases due to collection_id not being set.
+		Suggest that you run reset_truncate after this update.
+		NB: IMPORTANT - TPG users (that means you McFuzz) must run "php /nzedb/build/_runonce/tpg_add_collections_column_205-02-20.php"
+		FAILURE TO DO SO WILL CAUSE INSERT ERRORS
 2015-02-17 bart39
 	* Chg: Regex updates / categorize fixes for SD XXX
 2015-02-17 bart39
