@@ -1,7 +1,11 @@
 {if $page->isSuccess()}
 	<div style="align=center">
-		<p>The database setup is correct, you may continue to the next step.</p>
-		<form action="step3.php"><input type="submit" value="Step three: Setup openssl" /></form>
+		<p style="text-align:center">The database setup is correct, you may continue to the next step.</p>
+		<form action="step3.php">
+			<div style="padding-top:20px; text-align:center;">
+				<input align="center" type="submit" value="Step three: Setup openssl" />
+			</div>
+		</form>
 	</div>
 {else}
 
