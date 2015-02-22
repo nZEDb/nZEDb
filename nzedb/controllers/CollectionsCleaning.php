@@ -94,10 +94,10 @@ class CollectionsCleaning
 		return (bool)$this->pdo->queryInsert(
 			sprintf(
 				'INSERT INTO collection_regexes (group_regex, regex, status, description, ordinal) VALUES (%s, %s, %d, %s, %d)',
-				$this->pdo->escapeString($data['group_regex']),
-				$this->pdo->escapeString($data['regex']),
+				trim($this->pdo->escapeString($data['group_regex'])),
+				trim($this->pdo->escapeString($data['regex'])),
 				$data['status'],
-				$this->pdo->escapeString($data['description']),
+				trim($this->pdo->escapeString($data['description'])),
 				$data['ordinal']
 			)
 		);
@@ -117,10 +117,10 @@ class CollectionsCleaning
 				'UPDATE collection_regexes
 				SET group_regex = %s, regex = %s, status = %d, description = %s, ordinal = %d
 				WHERE id = %d',
-				$this->pdo->escapeString($data['group_regex']),
-				$this->pdo->escapeString($data['regex']),
+				trim($this->pdo->escapeString($data['group_regex'])),
+				trim($this->pdo->escapeString($data['regex'])),
 				$data['status'],
-				$this->pdo->escapeString($data['description']),
+				trim($this->pdo->escapeString($data['description'])),
 				$data['ordinal'],
 				$data['id']
 			)
