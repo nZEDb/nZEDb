@@ -227,7 +227,7 @@ DROP TABLE IF EXISTS collection_regexes;
 CREATE TABLE collection_regexes (
   id          INT UNSIGNED  NOT NULL AUTO_INCREMENT,
   group_regex VARCHAR(255)  NULL                          COMMENT 'This is a regex to match against usenet groups',
-  regex       VARCHAR(5000) NOT NULL                      COMMENT 'Regex used for collection grouping'
+  regex       VARCHAR(5000) NOT NULL                      COMMENT 'Regex used for collection grouping',
   status      TINYINT(1)    UNSIGNED NOT NULL DEFAULT '1' COMMENT '1=ON 0=OFF',
   description VARCHAR(1000) NOT NULL                      COMMENT 'Optional extra details on this regex',
   ordinal     INT SIGNED    NOT NULL DEFAULT '0'          COMMENT 'Order to run the regex in',
