@@ -568,7 +568,7 @@ function ajax_binaryblacklist_delete(id)
     // no caching of results
     var rand_no = Math.random();
 	$.ajax({
-	  url       : WWW_TOP + '/admin/ajax_binaryblacklist-list.php?action=2&rand=' + rand_no,
+	  url       : WWW_TOP + '/admin/ajax_regex.php?action=2&rand=' + rand_no,
 	  data      : { bin_id: id},
 	  dataType  : "html",
 	  success   : function(data)
