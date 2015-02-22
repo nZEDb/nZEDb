@@ -34,7 +34,7 @@ switch($action) {
 			$cc->updateRegex($_POST);
 		}
 
-		header("Location:".WWW_TOP."/collectionsregex-list.php");
+		header("Location:".WWW_TOP."/collection_regexes-list.php");
 		break;
 
 	case 'view':
@@ -54,5 +54,5 @@ switch($action) {
 $page->smarty->assign('status_ids', array(Category::STATUS_ACTIVE,Category::STATUS_INACTIVE));
 $page->smarty->assign('status_names', array( 'Yes', 'No'));
 
-$page->content = $page->smarty->fetch('collectionsregex-edit.tpl');
+$page->content = $page->smarty->fetch('collection_regexes-edit.tpl');
 $page->render();

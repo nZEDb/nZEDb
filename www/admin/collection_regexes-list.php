@@ -20,8 +20,8 @@ $page->smarty->assign('pagertotalitems', $count);
 $page->smarty->assign('pageroffset', $offset);
 $page->smarty->assign('pageritemsperpage', ITEMS_PER_PAGE);
 
-$page->smarty->assign('pagerquerybase', WWW_TOP . "/collectionsregex-list.php?" . $group . "offset=");
+$page->smarty->assign('pagerquerybase', WWW_TOP . "/collection_regexes-list.php?" . $group . "offset=");
 $page->smarty->assign('pager', $page->smarty->fetch("pager.tpl"));
 
-$page->content = $page->smarty->fetch('collectionsregex-list.tpl');
+$page->content = $page->smarty->fetch('collection_regexes-list.tpl');
 $page->render();
