@@ -11,6 +11,7 @@
 				<input type="text" id="group_regex" name="group_regex" value="{$regex.group_regex|escape:html}" />
 				<div class="hint">
 					Regex to match against a group or multiple groups.<br />
+					Delimiters are already added, and PCRE_CASELESS is added after for case insensitivity.
 					An example of matching a single group: alt\.binaries\.example<br />
 					An example of matching multiple groups: alt\.binaries.*
 				</div>
@@ -22,7 +23,8 @@
 				<textarea id="regex" name="regex" >{$regex.regex|escape:html}</textarea>
 				<div class="hint">
 					The regex to use when matching (grouping) collections.<br />
-					The delimiters are already added (/ /). <br />
+					The regex delimiters are not added, you MUST add them. See <a href="http://php.net/manual/en/regexp.reference.delimiters.php">this</a> page.<br />
+					To make the regex case insensitive, add i after the last delimiter.<br />
 					You MUST include at least one regex capture group.<br />
 					You MUST name your regex capture groups.<br />
 					A string will be created from your matched capture groups.<br />

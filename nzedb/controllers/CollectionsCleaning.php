@@ -435,7 +435,7 @@ class CollectionsCleaning
 		// If there are no regex, return and try regex in this file.
 		if ($this->_regexCache[$this->groupName]['regex']) {
 			foreach ($this->_regexCache[$this->groupName]['regex'] as $regex) {
-				if (preg_match('/' . $regex['regex'] . '/i', $this->subject, $matches)) {
+				if (preg_match($regex['regex'], $this->subject, $matches)) {
 					if (count($matches) > 0) {
 						// Sort the keys, the named key matches will be concatenated in this order.
 						ksort($matches);
