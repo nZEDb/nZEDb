@@ -93,7 +93,7 @@ class CollectionsCleaning
 	{
 		return (bool)$this->pdo->queryInsert(
 			sprintf(
-				'INSERT INTO collections_regex (group_regex, regex, status, description, ordinal) VALUES (%s, %s, %d, %s, %d)',
+				'INSERT INTO collection_regexes (group_regex, regex, status, description, ordinal) VALUES (%s, %s, %d, %s, %d)',
 				$this->pdo->escapeString($data['group_regex']),
 				$this->pdo->escapeString($data['regex']),
 				$data['status'],
@@ -114,7 +114,7 @@ class CollectionsCleaning
 	{
 		return (bool)$this->pdo->queryExec(
 			sprintf(
-				'UPDATE collections_regex
+				'UPDATE collection_regexes
 				SET group_regex = %s, regex = %s, status = %d, description = %s, ordinal = %d
 				WHERE id = %d',
 				$this->pdo->escapeString($data['group_regex']),
@@ -136,7 +136,7 @@ class CollectionsCleaning
 	 */
 	public function getRegexByID($id)
 	{
-		return $this->pdo->queryOneRow(sprintf('SELECT * FROM collections_regex WHERE id = %d', $id));
+		return $this->pdo->queryOneRow(sprintf('SELECT * FROM collection_regexes WHERE id = %d', $id));
 	}
 
 	/**
@@ -152,7 +152,7 @@ class CollectionsCleaning
 	{
 		return $this->pdo->query(
 			sprintf(
-				'SELECT * FROM collections_regex %s %s',
+				'SELECT * FROM collection_regexes %s %s',
 				($group_regex ? ('WHERE group_regex ' . $this->pdo->likeString($group_regex)) : ''),
 				($limit ? ('LIMIT ' . $limit . ' OFFSET ' . $offset) : '')
 			)
@@ -170,7 +170,7 @@ class CollectionsCleaning
 	{
 		$query = $this->pdo->queryOneRow(
 			sprintf(
-				'SELECT COUNT(id) AS count FROM collections_regex %s',
+				'SELECT COUNT(id) AS count FROM collection_regexes %s',
 				($group_regex ? ('WHERE group_regex ' . $this->pdo->likeString($group_regex)) : '')
 			)
 		);
@@ -184,7 +184,7 @@ class CollectionsCleaning
 	 */
 	public function deleteRegex($id)
 	{
-		$this->pdo->queryExec('DELETE FROM collections_regex WHERE id = ' . $id);
+		$this->pdo->queryExec('DELETE FROM collection_regexes WHERE id = ' . $id);
 	}
 
 	/**
@@ -414,7 +414,7 @@ class CollectionsCleaning
 		// Get all regex from DB which match the current group name. Cache them for 15 minutes. #CACHEDQUERY#
 		$this->_regexCache[$this->groupName]['regex'] = $this->pdo->query(
 			sprintf(
-				'SELECT c.regex FROM collections_regex c WHERE %s REGEXP c.group_regex AND c.status = 1 ORDER BY c.ordinal DESC, c.group_regex ASC',
+				'SELECT c.regex FROM collection_regexes c WHERE %s REGEXP c.group_regex AND c.status = 1 ORDER BY c.ordinal DESC, c.group_regex ASC',
 				$this->pdo->escapeString($this->groupName)
 			), true, 900
 		);
