@@ -4,7 +4,7 @@
 
 <form name="groupsearch" action="" style="margin-bottom:5px;">
 	<label for="group">Search a group:</label>
-	<input id="group" type="text" name="group" value="{$groupname}" size="15" />
+	<input id="group" type="text" name="group" value="{$group}" size="15" />
 	&nbsp;&nbsp;
 	<input type="submit" value="Go" />
 </form>
@@ -26,7 +26,7 @@
 			<tr id="row-{$row.id}" class="{cycle values=",alt"}">
 				<td>{$row.id}</td>
 				<td>{$row.group_regex}</td>
-				<td title="Edit this regex"><a href="{$smarty.const.WWW_TOP}/collections_regexes-edit.php?id={$row.id}">Edit</a></td>
+				<td title="Edit this regex"><a href="{$smarty.const.WWW_TOP}/collection_regexes-edit.php?id={$row.id}">Edit</a></td>
 				<td>{$row.description|truncate:50:"...":true}</td>
 				<td title="Delete this regex"><a href="javascript:ajax_collection_regex_delete({$row.id})" onclick="return confirm('Are you sure? This will delete the regex from this list.');" >Delete</a></td>
 				<td>{$row.ordinal}</td>
