@@ -480,7 +480,7 @@ class CollectionsCleaning
 		// Get all regex from DB which match the current group name. Cache them for 15 minutes. #CACHEDQUERY#
 		$this->_regexCache[$this->groupName]['regex'] = $this->pdo->query(
 			sprintf(
-				'SELECT c.regex FROM collection_regexes c WHERE %s REGEXP c.group_regex AND c.status = 1 ORDER BY c.ordinal DESC, c.group_regex ASC',
+				'SELECT c.regex FROM collection_regexes c WHERE %s REGEXP c.group_regex AND c.status = 1 ORDER BY c.ordinal ASC, c.group_regex ASC',
 				$this->pdo->escapeString($this->groupName)
 			), true, 900
 		);
