@@ -225,15 +225,21 @@ class CollectionsCleaning
 			$limit--;
 			$hashes = [];
 			foreach ($rows as $row) {
-				$this->subject = $row['name'];
-				$match = $this->_matchDBRegex($regex);
-				if ($match) {
+				if (preg_match($regex, $row['name'], $matches)) {
+					ksort($matches);
+					$string = $string2 = '';
+					foreach ($matches as $key => $match) {
+						if (!is_int($key)) {
+							$string .= $match;
+							$string2 .= '<br/>' . $key . ': ' . $match;
+						}
+					}
 					$files = 0;
 					if (preg_match('/[[(\s](\d{1,5})(\/|[\s_]of[\s_]|-)(\d{1,5})[])\s$:]/i', $row['name'], $fileCount)) {
 						$files = $fileCount[3];
 					}
-					$newCollectionHash = sha1($match . $row['fromname'] . $groupID . $files);
-					$data[$newCollectionHash][$row['binaryhash']] = [
+					$newCollectionHash = sha1($string . $row['fromname'] . $groupID . $files);
+					$data['New hash: ' . $newCollectionHash . $string2][$row['binaryhash']] = [
 						'file_name'           => $row['name'],
 						'file_total_parts'    => $row['totalparts'],
 						'file_current_parts'  => $row['currentparts'],

@@ -13,11 +13,10 @@
 	</form>
 	{if $data}
 
-		{assign var=collections value=1}
 		{foreach from=$data key=hash item=collection}
 			<table style="margin-top:10px;" class="data">
 				<tr>
-					<th>{$collections++}. New Hash: {$hash} Current Files: {count($collection)}</th>
+					<th>{$hash}<br />Current Files: {count($collection)}</th>
 				</tr>
 			</table>
 			<table style="margin-top:10px;" class="data Sortable highlight">
