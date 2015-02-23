@@ -188,6 +188,72 @@ class CollectionsCleaning
 	}
 
 	/**
+	 * Test a regex for a group name.
+	 *
+	 * Requires table per group to be on.
+	 *
+	 * @param string $groupName
+	 * @param string $regex
+	 * @param int    $limit
+	 *
+	 * @return array
+	 */
+	public function testRegex($groupName, $regex, $limit)
+	{
+		$groups = new Groups(['Settings' => $this->pdo]);
+		$groupID = $groups->getIDByName($groupName);
+
+		if (!$groupID) {
+			return [];
+		}
+
+		$tableNames = $groups->getCBPTableNames(true, $groupID);
+
+		$rows = $this->pdo->query(
+			sprintf(
+				'SELECT
+					b.name, b.totalparts, b.currentparts, b.binaryhash,
+					c.fromname, c.collectionhash
+				FROM %s b
+				INNER JOIN %s c ON c.id = b.collection_id',
+				$tableNames['bname'], $tableNames['cname']
+			)
+		);
+
+		$data = [];
+		if ($rows) {
+			$limit--;
+			$hashes = [];
+			foreach ($rows as $row) {
+				$this->subject = $row['name'];
+				$match = $this->_matchDBRegex($regex);
+				if ($match) {
+					$files = 0;
+					if (preg_match('/[[(\s](\d{1,5})(\/|[\s_]of[\s_]|-)(\d{1,5})[])\s$:]/i', $row['name'], $fileCount)) {
+						$files = $fileCount[3];
+					}
+					$newCollectionHash = sha1($match . $row['fromname'] . $groupID . $files);
+					$data[$newCollectionHash][$row['binaryhash']] = [
+						'file_name'           => $row['name'],
+						'file_total_parts'    => $row['totalparts'],
+						'file_current_parts'  => $row['currentparts'],
+						'collection_poster'   => $row['fromname'],
+						'old_collection_hash' => $row['collectionhash'],
+					];
+
+					if ($limit > 0) {
+						if (count($hashes) > $limit) {
+							break;
+						}
+						$hashes[$newCollectionHash] = '';
+					}
+				}
+			}
+		}
+		return $data;
+	}
+
+	/**
 	 * Cleans a usenet subject returning a string that can be used to "merge" files together, a pretty subject, a categoryID and the name status.
 	 *
 	 * @param string $subject   Subject to parse.
@@ -435,25 +501,40 @@ class CollectionsCleaning
 		// If there are no regex, return and try regex in this file.
 		if ($this->_regexCache[$this->groupName]['regex']) {
 			foreach ($this->_regexCache[$this->groupName]['regex'] as $regex) {
-				if (preg_match($regex['regex'], $this->subject, $matches)) {
-					if (count($matches) > 0) {
-						// Sort the keys, the named key matches will be concatenated in this order.
-						ksort($matches);
-						foreach ($matches as $key => $value) {
-							// Ignore non-named capture groups. Only named capture groups are important.
-							if (is_int($key)) {
-								continue;
-							}
-							// Concatenate the string to return.
-							$returnString .= $value;
-						}
-					}
-					// If this regex found something, break and return, or else continue trying other regex.
-					if ($returnString) {
-						break;
-					} else {
+
+				$returnString = $this->_matchDBRegex($regex['regex']);
+				// If this regex found something, break and return, or else continue trying other regex.
+				if ($returnString) {
+					break;
+				}
+			}
+		}
+		return $returnString;
+	}
+
+	/**
+	 * Find matches on a regex taken from the database.
+	 *
+	 * Requires at least 1 named captured group.
+	 *
+	 * @param string $regex
+	 *
+	 * @return string
+	 */
+	protected function _matchDBRegex($regex)
+	{
+		$returnString = '';
+		if (preg_match($regex, $this->subject, $matches)) {
+			if (count($matches) > 0) {
+				// Sort the keys, the named key matches will be concatenated in this order.
+				ksort($matches);
+				foreach ($matches as $key => $value) {
+					// Ignore non-named capture groups. Only named capture groups are important.
+					if (is_int($key)) {
 						continue;
 					}
+					// Concatenate the string to return.
+					$returnString .= $value;
 				}
 			}
 		}
