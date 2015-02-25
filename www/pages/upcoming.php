@@ -63,7 +63,7 @@ if ($data["info"] == "") {
 function replace_quality($imageURL, $userSetting)
 {
 	$types = array('thumbnail' => '_tmb.', 'profile' => '_pro.', 'detailed' => '_det.', 'original' => '_ori.');
-	return str_replace('_tmb.', $types[$userSetting], $imageURL);
+	return preg_replace("#http://resizing\.flixster\.com(/[\w=+-]+){3}\.cloudfront\.net#i", "https://content6.flixster.com", str_replace('_tmb.', $types[$userSetting], $imageURL));
 }
 
 $page->content = $page->smarty->fetch('upcoming.tpl');
