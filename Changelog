@@ -5,6 +5,7 @@ Please make sure any PR's comply with our coding standards policy: http://li3.me
 New updates are grouped by person (committer/merger), at the top of the file.
 
 2015-02-25 bart39
+	* Mrg: PR #1600 from kevin - Add support for in DB collections (grouping) regex.
 	* Mrg: PR #1599 from kevin - Changes to install templates.
 	* Mrg: PR #1602 from dariusIII - Add XXX WEB-DL category to XXX releases.
 		***NOTE*** run "php /misc/testing/Dev/recategorize.php all" to re-categorize existing releases.
