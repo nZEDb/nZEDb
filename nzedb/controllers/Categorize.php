@@ -834,6 +834,7 @@ class Categorize extends Category
 				return false;
 			case $this->isXxxPack():
 			case $this->isXxxSD():
+			case $this->catWebDL && $this->isXxxWEBDL():
 			case $this->isXxx264():
 			case $this->isXxxXvid():
 			case $this->isXxxImageset():
@@ -854,6 +855,13 @@ class Categorize extends Category
 			$this->tmpCat = \Category::CAT_XXX_X264;
 
 			return true;
+		}
+
+		if ($this->catWebDL == false) {
+			if (preg_match('/web[-._ ]dl|web-?rip/i', $this->releaseName)) {
+				$this->tmpCat = \Category::CAT_XXX_X264;
+				return true;
+			}
 		}
 
 		return false;
@@ -930,6 +938,15 @@ class Categorize extends Category
 	{
 		if (preg_match('/SDX264XXX|XXX\.HR\./i', $this->releaseName)) {
 			$this->tmpCat = \Category::CAT_XXX_SD;
+			return true;
+		}
+		return false;
+	}
+
+	public function isXxxWEBDL()
+	{
+		if (preg_match('/web[-._ ]dl|web-?rip/i', $this->releaseName)) {
+			$this->tmpCat = \Category::CAT_XXX_WEBDL;
 			return true;
 		}
 		return false;
