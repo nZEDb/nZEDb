@@ -55,14 +55,208 @@ class CollectionsCleaning
 	public $subject = '';
 
 	/**
-	 *
+	 * @var \nzedb\db\Settings
 	 */
-	public function __construct()
+	public $pdo;
+
+	/**
+	 * @var array Cache of regex and their TTL.
+	 */
+	protected $_regexCache;
+
+	/**
+	 * @param array $options Class instances.
+	 */
+	public function __construct(array $options = array())
 	{
 		// Extensions.
 		$this->e0 = self::REGEX_FILE_EXTENSIONS;
 		$this->e1 = self::REGEX_FILE_EXTENSIONS . self::REGEX_END;
 		$this->e2 = self::REGEX_FILE_EXTENSIONS . self::REGEX_SUBJECT_SIZE . self::REGEX_END;
+
+		$defaults = [
+			'Settings' => null,
+		];
+		$options += $defaults;
+
+		$this->pdo = ($options['Settings'] instanceof nzedb\db\Settings ? $options['Settings'] : new nzedb\db\Settings());
+	}
+
+	/**
+	 * Add a new regex.
+	 *
+	 * @param array $data
+	 *
+	 * @return bool
+	 */
+	public function addRegex(array $data)
+	{
+		return (bool)$this->pdo->queryInsert(
+			sprintf(
+				'INSERT INTO collection_regexes (group_regex, regex, status, description, ordinal) VALUES (%s, %s, %d, %s, %d)',
+				trim($this->pdo->escapeString($data['group_regex'])),
+				trim($this->pdo->escapeString($data['regex'])),
+				$data['status'],
+				trim($this->pdo->escapeString($data['description'])),
+				$data['ordinal']
+			)
+		);
+	}
+
+	/**
+	 * Update a regex with new info.
+	 *
+	 * @param array $data
+	 *
+	 * @return bool
+	 */
+	public function updateRegex(array $data)
+	{
+		return (bool)$this->pdo->queryExec(
+			sprintf(
+				'UPDATE collection_regexes
+				SET group_regex = %s, regex = %s, status = %d, description = %s, ordinal = %d
+				WHERE id = %d',
+				trim($this->pdo->escapeString($data['group_regex'])),
+				trim($this->pdo->escapeString($data['regex'])),
+				$data['status'],
+				trim($this->pdo->escapeString($data['description'])),
+				$data['ordinal'],
+				$data['id']
+			)
+		);
+	}
+
+	/**
+	 * Get a single regex using its id.
+	 *
+	 * @param int $id
+	 *
+	 * @return array
+	 */
+	public function getRegexByID($id)
+	{
+		return $this->pdo->queryOneRow(sprintf('SELECT * FROM collection_regexes WHERE id = %d', $id));
+	}
+
+	/**
+	 * Get all regex.
+	 *
+	 * @param string $group_regex Optional, a keyword to find a group.
+	 * @param int    $limit       Optional, amount of results to limit.
+	 * @param int    $offset      Optional, the offset to use when limiting the result set.
+	 *
+	 * @return array
+	 */
+	public function getRegex($group_regex = '', $limit = 0, $offset = 0)
+	{
+		return $this->pdo->query(
+			sprintf(
+				'SELECT * FROM collection_regexes %s %s',
+				($group_regex ? ('WHERE group_regex ' . $this->pdo->likeString($group_regex)) : ''),
+				($limit ? ('LIMIT ' . $limit . ' OFFSET ' . $offset) : '')
+			)
+		);
+	}
+
+	/**
+	 * Get the count of regex in the DB.
+	 *
+	 * @param string $group_regex Optional, keyword to find a group.
+	 *
+	 * @return int
+	 */
+	public function getCount($group_regex = '')
+	{
+		$query = $this->pdo->queryOneRow(
+			sprintf(
+				'SELECT COUNT(id) AS count FROM collection_regexes %s',
+				($group_regex ? ('WHERE group_regex ' . $this->pdo->likeString($group_regex)) : '')
+			)
+		);
+		return (int)$query['count'];
+	}
+
+	/**
+	 * Delete a regex using its id.
+	 *
+	 * @param int $id
+	 */
+	public function deleteRegex($id)
+	{
+		$this->pdo->queryExec('DELETE FROM collection_regexes WHERE id = ' . $id);
+	}
+
+	/**
+	 * Test a regex for a group name.
+	 *
+	 * Requires table per group to be on.
+	 *
+	 * @param string $groupName
+	 * @param string $regex
+	 * @param int    $limit
+	 *
+	 * @return array
+	 */
+	public function testRegex($groupName, $regex, $limit)
+	{
+		$groups = new Groups(['Settings' => $this->pdo]);
+		$groupID = $groups->getIDByName($groupName);
+
+		if (!$groupID) {
+			return [];
+		}
+
+		$tableNames = $groups->getCBPTableNames(true, $groupID);
+
+		$rows = $this->pdo->query(
+			sprintf(
+				'SELECT
+					b.name, b.totalparts, b.currentparts, b.binaryhash,
+					c.fromname, c.collectionhash
+				FROM %s b
+				INNER JOIN %s c ON c.id = b.collection_id',
+				$tableNames['bname'], $tableNames['cname']
+			)
+		);
+
+		$data = [];
+		if ($rows) {
+			$limit--;
+			$hashes = [];
+			foreach ($rows as $row) {
+				if (preg_match($regex, $row['name'], $matches)) {
+					ksort($matches);
+					$string = $string2 = '';
+					foreach ($matches as $key => $match) {
+						if (!is_int($key)) {
+							$string .= $match;
+							$string2 .= '<br/>' . $key . ': ' . $match;
+						}
+					}
+					$files = 0;
+					if (preg_match('/[[(\s](\d{1,5})(\/|[\s_]of[\s_]|-)(\d{1,5})[])\s$:]/i', $row['name'], $fileCount)) {
+						$files = $fileCount[3];
+					}
+					$newCollectionHash = sha1($string . $row['fromname'] . $groupID . $files);
+					$data['New hash: ' . $newCollectionHash . $string2][$row['binaryhash']] = [
+						'file_name'           => $row['name'],
+						'file_total_parts'    => $row['totalparts'],
+						'file_current_parts'  => $row['currentparts'],
+						'collection_poster'   => $row['fromname'],
+						'old_collection_hash' => $row['collectionhash'],
+					];
+
+					if ($limit > 0) {
+						if (count($hashes) > $limit) {
+							break;
+						}
+						$hashes[$newCollectionHash] = '';
+					}
+				}
+			}
+		}
+		return $data;
 	}
 
 	/**
@@ -77,6 +271,13 @@ class CollectionsCleaning
 	{
 		$this->subject = $subject;
 		$this->groupName = $groupName;
+
+		// Try DB regex first.
+		$potentialString = $this->_processDBRegex();
+		if ($potentialString) {
+			return $potentialString;
+		}
+
 		switch ($groupName) {
 			case 'alt.binaries.0day.stuffz':
 				return $this->_0daystuffz();
@@ -269,6 +470,81 @@ class CollectionsCleaning
 			default:
 				return $this->generic();
 		}
+	}
+
+	/**
+	 * Get the regex from the DB, cache them locally for 15 mins.
+	 * Cache them also in the cache server, as this script might be terminated.
+	 */
+	protected function _fetchRegex()
+	{
+		// Check if we need to do an initial cache or refresh our cache.
+		if (isset($this->_regexCache[$this->groupName]['ttl']) && (time() - $this->_regexCache[$this->groupName]['ttl']) < 900) {
+			return;
+		}
+
+		// Get all regex from DB which match the current group name. Cache them for 15 minutes. #CACHEDQUERY#
+		$this->_regexCache[$this->groupName]['regex'] = $this->pdo->query(
+			sprintf(
+				'SELECT c.regex FROM collection_regexes c WHERE %s REGEXP c.group_regex AND c.status = 1 ORDER BY c.ordinal ASC, c.group_regex ASC',
+				$this->pdo->escapeString($this->groupName)
+			), true, 900
+		);
+		// Set the TTL.
+		$this->_regexCache[$this->groupName]['ttl'] = time();
+	}
+
+	/**
+	 * This will process the regex stored in the DB before trying hardcoded regex below.
+	 *
+	 * @return string
+	 */
+	protected function _processDBRegex()
+	{
+		$this->_fetchRegex();
+
+		$returnString = '';
+		// If there are no regex, return and try regex in this file.
+		if ($this->_regexCache[$this->groupName]['regex']) {
+			foreach ($this->_regexCache[$this->groupName]['regex'] as $regex) {
+
+				$returnString = $this->_matchDBRegex($regex['regex']);
+				// If this regex found something, break and return, or else continue trying other regex.
+				if ($returnString) {
+					break;
+				}
+			}
+		}
+		return $returnString;
+	}
+
+	/**
+	 * Find matches on a regex taken from the database.
+	 *
+	 * Requires at least 1 named captured group.
+	 *
+	 * @param string $regex
+	 *
+	 * @return string
+	 */
+	protected function _matchDBRegex($regex)
+	{
+		$returnString = '';
+		if (preg_match($regex, $this->subject, $matches)) {
+			if (count($matches) > 0) {
+				// Sort the keys, the named key matches will be concatenated in this order.
+				ksort($matches);
+				foreach ($matches as $key => $value) {
+					// Ignore non-named capture groups. Only named capture groups are important.
+					if (is_int($key)) {
+						continue;
+					}
+					// Concatenate the string to return.
+					$returnString .= $value;
+				}
+			}
+		}
+		return $returnString;
 	}
 
 	// a.b.0daystuffz
@@ -2754,27 +3030,6 @@ class CollectionsCleaning
 	// a.b.teevee
 	protected function teevee()
 	{
-		//[278997]-[FULL]-[#a.b.erotica]-[ chi-the.walking.dead.xxx ]-[06/51] - "chi-the.walking.dead.xxx-s.mp4" yEnc
-		//[######]-[FULL]-[#a.b.teevee@EFNet]-[ Misfits.S01.SUBPACK.DVDRip.XviD-P0W4DVD ] [1/5] - "Misfits.S01.SUBPACK.DVDRip.XviD-P0W4DVD.nfo" yEnc
-		//Re: [147053]-[FULL]-[#a.b.teevee]-[ Top_Gear.20x04.HDTV_x264-FoV ]-[11/59] - "top_gear.20x04.hdtv_x264-fov.r00" yEnc (01/20)
-		if (preg_match('/(\[[\d#]+\]-\[.+?\]-\[.+?\])-\[ (.+?) \][- ]\[\d+\/\d+\][ -]{0,3}".+?" yEnc$/', $this->subject, $match)) {
-			return $match[1] . $match[2];
-		} //[185409]-[FULL]-[a.b.teeveeEFNet]-[ Dragon.Ball.Z.S03E24.1080p.WS.BluRay.x264-CCAT ]-"dragon.ball.z.s03e24.1080p.ws.bluray.x264-ccat.nfo" yEnc
-		if (preg_match('/(\[[\d#]+\]-\[.+?\]-\[.+?\])-\[ (.+?) \][ -]{0,3}".+?" yEnc$/', $this->subject, $match)) {
-			return $match[1] . $match[2];
-		} //[#a.b.teevee] Parks.and.Recreation.S01E01.720p.WEB-DL.DD5.1.H.264-CtrlHD - [01/24] - "Parks.and.Recreation.S01E01.720p.WEB-DL.DD5.1.H.264-CtrlHD.nfo" yEnc
-		if (preg_match('/^(\[#a\.b\.teevee\] .+? - \[)\d+\/\d+\] - ".+?" yEnc$/', $this->subject, $match)) {
-			return $match[1];
-		} //ah63jka93jf0jh26ahjas558 - [01/22] - "ah63jka93jf0jh26ahjas558.par2" yEnc
-		if (preg_match('/^([a-z0-9]+ - )\[\d+\/\d+\] - "[a-z0-9]+\..+?" yEnc$/', $this->subject, $match)) {
-			return $match[1];
-		} //fhdbg34rgjdsfd008c (42/43) "fhdbg34rgjdsfd008c.vol062+64.par2" - 3,68 GB - yEnc
-		if (preg_match('/^([a-z0-9]+ \()\d+\/\d+\) ".+?" - \d+[,.]\d+ [mMkKgG][bB] - yEnc$/', $this->subject, $match)) {
-			return $match[1];
-		} //t2EI3CdWdF0hi5b8L9tkx[08/52] - "t2EI3CdWdF0hi5b8L9tkx.part07.rar" yEnc
-		if (preg_match('/^([a-zA-Z0-9]+)\[\d+\/\d+\] - ".+?" yEnc$/', $this->subject, $match)) {
-			return $match[1];
-		}
 		//(01/37) "Entourage S08E08.part01.rar" - 349,20 MB - yEnc
 		//(01/24) "EGtnu7OrLNQMO2pDbgpDrBL8SnjZDpab.nfo" - 686 B - 338.74 MB - yEnc (1/1)
 		if (preg_match('/^\(\d+(\/\d+\) ".+?)' . $this->e0 . ' - \d.+?B - (\d.+?B -)? yEnc$/', $this->subject, $match)) {
