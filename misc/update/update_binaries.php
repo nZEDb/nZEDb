@@ -21,8 +21,8 @@ if (isset($argv[1]) && !is_numeric($argv[1])) {
 	$grp = new \Groups(['Settings' => $pdo]);
 	$group = $grp->getByName($groupName);
 	if (is_array($group)) {
-		$binaries->updateGroup($group, (isset($argv[2]) && is_numeric($argv[2]) && $argv[2] > 0 ? $argv[2] : 0));
+		$binaries->updateGroup($group, (isset($argv[2]) && is_numeric($argv[2]) && $argv[2] > 0 ? $argv[2] : 100000));
 	}
 } else {
-	$binaries->updateAllGroups((isset($argv[1]) && is_numeric($argv[1]) && $argv[1] > 0 ? $argv[1] : 0));
+	$binaries->updateAllGroups((isset($argv[1]) && is_numeric($argv[1]) && $argv[1] > 0 ? $argv[1] : 100000));
 }

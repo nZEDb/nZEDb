@@ -204,7 +204,7 @@ class Binaries
 	 *
 	 * @return void
 	 */
-	public function updateAllGroups($maxHeaders = 0)
+	public function updateAllGroups($maxHeaders = 100000)
 	{
 		$groups = $this->_groups->getActive();
 
