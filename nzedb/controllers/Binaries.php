@@ -665,8 +665,15 @@ class Binaries
 			// Set up the info for inserting into parts/binaries/collections tables.
 			if (!isset($articles[$matches[1]])) {
 
+				// check whether file count should be ignored (XXX packs for now only).
+				$whitelistMatch = false;
+				if ($this->_ignoreFileCount($groupMySQL['name'], $matches[1])) {
+					$whitelistMatch = true;
+					$fileCount[1] = $fileCount[3] = 0;
+				}
+
 				// Attempt to find the file count. If it is not found, set it to 0.
-				if (!preg_match('/[[(\s](\d{1,5})(\/|[\s_]of[\s_]|-)(\d{1,5})[])\s$:]/i', $matches[1], $fileCount)) {
+				if (!$whitelistMatch && !preg_match('/[[(\s](\d{1,5})(\/|[\s_]of[\s_]|-)(\d{1,5})[])\s$:]/i', $matches[1], $fileCount)) {
 					$fileCount[1] = $fileCount[3] = 0;
 
 					if ($this->_showDroppedYEncParts === true) {
@@ -685,6 +692,7 @@ class Binaries
 					$fileCount[3]
 				);
 
+
 				if (!isset($collectionIDs[$header['CollectionKey']])) {
 
 					/* Date from header should be a string this format:
@@ -701,7 +709,7 @@ class Binaries
 							INSERT INTO %s (subject, fromname, date, xref, group_id,
 								totalfiles, collectionhash, dateadded)
 							VALUES (%s, %s, FROM_UNIXTIME(%s), %s, %d, %d, '%s', NOW())
-							ON DUPLICATE KEY UPDATE dateadded = NOW()",
+							ON DUPLICATE KEY UPDATE dateadded = NOW(), noise = '%s'",
 							$tableNames['cname'],
 							$this->_pdo->escapeString(substr(utf8_encode($matches[1]), 0, 255)),
 							$this->_pdo->escapeString(utf8_encode($header['From'])),
@@ -709,7 +717,8 @@ class Binaries
 							$this->_pdo->escapeString(substr($header['Xref'], 0, 255)),
 							$groupMySQL['id'],
 							$fileCount[3],
-							sha1($header['CollectionKey'])
+							sha1($header['CollectionKey']),
+							md5(uniqid('', true) . mt_rand())
 						)
 					);
 
@@ -1477,4 +1486,21 @@ class Binaries
 		}
 	}
 
+	/**
+	 * Check if we should ignore the filecount and return true or false.
+	 *
+	 * @access protected
+	 */
+	protected function _ignoreFileCount($groupName, $subject)
+	{
+		$ignore = false;
+		switch ($groupName) {
+			case 'alt.binaries.erotica':
+				if (preg_match('/^\[\d+\]-\[FULL\]-\[#a\.b\.erotica@EFNet\]-\[ \d{2,3}_/', $subject)) {
+					$ignore = true;
+				}
+				break;
+		}
+		return $ignore;
+	}
 }

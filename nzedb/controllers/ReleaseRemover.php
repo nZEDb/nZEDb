@@ -225,10 +225,12 @@ class ReleaseRemover
 
 		$time = trim($time);
 		$this->crapTime = '';
+		$type = strtolower(trim($type));
+
 		switch ($time) {
 			case 'full':
 				if ($this->echoCLI) {
-					echo $this->pdo->log->header("Removing crap releases - no time limit.\n");
+					echo $this->pdo->log->header("Removing " . ($type == '' ? "All crap releases " : $type . " crap releases") . " - no time limit.\n");
 				}
 				break;
 			default:
@@ -238,7 +240,7 @@ class ReleaseRemover
 					return $this->returnError();
 				}
 				if ($this->echoCLI) {
-					echo $this->pdo->log->header('Removing crap releases from the past ' . $time . " hour(s).\n");
+					echo $this->pdo->log->header("Removing " . ($type == '' ? "All crap releases " : $type . " crap releases") . " from the past " . $time . " hour(s).\n");
 				}
 				$this->crapTime = ' AND r.adddate > (NOW() - INTERVAL ' . $time . ' HOUR)';
 				break;
@@ -246,7 +248,6 @@ class ReleaseRemover
 		}
 
 		$this->deletedCount = 0;
-		$type = strtolower(trim($type));
 		switch ($type) {
 			case 'blacklist':
 				$this->removeBlacklist();
@@ -427,12 +428,13 @@ class ReleaseRemover
 			INNER JOIN release_files rf ON rf.releaseid = r.id
 			WHERE r.searchname NOT LIKE %s
 			AND rf.name LIKE %s
-			AND r.categoryid NOT IN (%d, %d, %d, %d, %d) %s",
+			AND r.categoryid NOT IN (%d, %d, %d, %d, %d, %d) %s",
 			"'%.exes%'",
 			"'%.exe%'",
 			\Category::CAT_PC_0DAY,
 			\Category::CAT_PC_GAMES,
 			\Category::CAT_PC_ISO,
+			\Category::CAT_PC_MAC,
 			\Category::CAT_MISC,
 			\Category::CAT_OTHER_HASHED,
 			$this->crapTime
@@ -958,7 +960,7 @@ class ReleaseRemover
 	{
 		$this->method = 'Codec Poster';
 		$regex = "rf.name REGEXP 'x264.*\.(wmv|avi)$'";
-		$regex2 = "rf.name REGEXP '(720p.\DVDrip|Webrip.\(R5|R6|Xvid)).*\.avi$'";
+		$regex2 = "rf.name REGEXP '\\\\.*((DVDrip|BRRip)[. ].*[. ](R[56]|HQ)|720p[ .](DVDrip|HQ)|Webrip.*[. ](R[56]|Xvid|AC3|US)|720p.*[. ]WEB-DL[. ]Xvid[. ]AC3[. ]US|HDRip.*[. ]Xvid[. ]DD5).*[. ]avi$'";
 		$codec = '%\\Codec%Setup.exe%';
 		$iferror = '%If_you_get_error.txt%';
 		$ifnotplaying = '%read me if the movie not playing.txt%';

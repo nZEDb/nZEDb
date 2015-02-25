@@ -4,6 +4,36 @@ Please make sure any PR's comply with our coding standards policy: http://li3.me
 
 New updates are grouped by person (committer/merger), at the top of the file.
 
+2015-02-21 niel
+	* Chg: Changing defaults for 'show passworded releases' (now shows potentially passworded) and 'NZB split level' (now 4) for new installs.
+2015-02-20 bart39
+	* Fix: Group XXX pack releases in abErotica correctly.
+	* Fix: Missing binaries from releases due to collection_id not being set.
+		Suggest that you run reset_truncate after this update.
+		NB: IMPORTANT - TPG users (that means you McFuzz) must run "php /nzedb/build/_runonce/tpg_add_collections_column_205-02-20.php"
+		FAILURE TO DO SO WILL CAUSE INSERT ERRORS
+2015-02-17 bart39
+	* Chg: Regex updates / categorize fixes for SD XXX
+2015-02-17 bart39
+	* Chg: Update sphinxsearch RT index when manually editing release searchname.
+	* Chg: Optimize queries for new release posterwall.
+	* Fix: Issue 1594 - Fix word wrap on alpha theme.
+2015-02-13 bart39
+	* Fix: Reading a corrupt nzb would hang on 100% cpu.
+2015-02-12 bart39
+	* Fix: Fix dupecheck when inserting tvrage titles.
+2015-02-09 bart39
+	* Fix: Fix another issue with mysqldump_tables.php when using sockets.
+	* Chg: Make ReleaseRemover more informative of the type it is processing.
+	* Chg: Ignore PC > Mac category for removeExecutable (Core Releases include their exe file for some reason).
+2015-02-07 bart39
+	* Fix: Fix issue with mysqldump_tables.php when using socket.
+	* Mrg: PR 1589 from dariusIII - Updated regex for codec poster.
+2015-02-06 bart39
+	* Mrg: PR 1590 from dariusIII - Add XXX-SD category.
+		***NOTE*** run "php /misc/testing/Dev/recategorize.php all" to re-categorize existing releases.
+2015-01-28 niel
+	* Fix: Removing text literals from whitespace collapsing as they screw up DB::queryDirect().
 2015-01-08 niel
 	* Chg: Added tmp_pre to schema as permanent table and changed predb scripts accordingly.
 2015-01-07 niel

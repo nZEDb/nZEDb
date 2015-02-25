@@ -216,6 +216,8 @@ class CollectionsCleaning
 				return $this->pictures_erotica_anime();
 			case 'alt.binaries.ps3':
 				return $this->ps3();
+			case 'alt.binaries.pwp':
+				return $this->pwp();
 			case 'alt.binaries.series.tv.french':
 				return $this->series_tv_french();
 			case 'alt.binaries.sony.psp':
@@ -1562,8 +1564,17 @@ class CollectionsCleaning
 	// a.b.erotica
 	protected function erotica()
 	{
+		// SPECIAL CASE FOR XXX PACKS
+		//[398342]-[FULL]-[#a.b.erotica@EFNet]-[ 02_18onlygirls.com.a.golden.lady..12.10.12.stephanie ]-[04/16] - "02_18onlygirls.com.a.golden.lady..12.10.12.stephanie.part03.rar" yEnc
+		if (preg_match('/(\[[\d]+\]-\[FULL\]-\[#a\.b\.erotica@EFNet\]-\[) \d{2,3}_.+? \][- ]\[\d+\/\d+\] - ".+?" yEnc$/', $this->subject, $match)) {
+			return $match[1];
+		}
 		//[f3a543495657d38c361dbe767a8506df] - sandramilka01-casting [10/25] - "sandramilka01-casting.part08.rar" yEnc
 		if (preg_match('/\[([a-fA-F0-9]+)][-_ ]{0,3}.+?[-_ ]{0,3}[\(\[]\d+\/(\d+[\)\]])[-_ ]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}") yEnc$/', $this->subject, $match)) {
+			return $match[1] . $match[2];
+		}
+		//ECG190215XUTFQI4JB[34/37] - "ECG190215XUTFQI4JB.vol03+04.par2" yEnc
+		if (preg_match('/^(\w+)\[\d+\/(\d+)\] - ".+?" yEnc$/', $this->subject, $match)) {
 			return $match[1] . $match[2];
 		}
 		//[278997]-[FULL]-[#a.b.erotica]-[ chi-the.walking.dead.xxx ]-[06/51] - "chi-the.walking.dead.xxx-s.mp4" yEnc
@@ -1571,7 +1582,17 @@ class CollectionsCleaning
 		//Re: [147053]-[FULL]-[#a.b.teevee]-[ Top_Gear.20x04.HDTV_x264-FoV ]-[11/59] - "top_gear.20x04.hdtv_x264-fov.r00" yEnc (01/20)
 		if (preg_match('/(\[[\d#]+\]-\[.+?\]-\[.+?\])-\[ (.+?) \][- ]\[\d+\/\d+\] - ".+?" yEnc$/', $this->subject, $match)) {
 			return $match[1] . $match[2];
-		} //<TOWN><www.town.ag > <download all our files with>>> www.ssl-news.info <<< > [01/28] - "TayTO-heyzo_hd_0317_full.par2" - 2,17 GB yEnc
+		}
+		//[U4A] - [11/12] - "yyf535864ky3btdmeq3bvh1y089v0bsw44oukp15fxtnqiu4wi.vol062+64.par2" yEnc
+		//[Art-of-Usenet] - [21/31] - "XxX2015PeHo02AoU15XxX.part20.rar" yEnc
+		if (preg_match('/\[.+?\] - \[\d+\/(\d+\]) - "(.+?)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}") yEnc$/', $this->subject, $match)) {
+			return $match[1] . $match[2];
+		}
+		//999akilina88cast77 - [06/27] - "999akilina88cast77.part05.rar" yEnc
+		if (preg_match('/\w+ - \[\d+\/(\d+\]) - "(.+?)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}") yEnc$/', $this->subject, $match)) {
+			return $match[1] . $match[2];
+		}
+		//<TOWN><www.town.ag > <download all our files with>>> www.ssl-news.info <<< > [01/28] - "TayTO-heyzo_hd_0317_full.par2" - 2,17 GB yEnc
 		if (preg_match('/^<TOWN><www\.town\.ag > <download all our files with>>> www\.ssl-news\.info <<< > \[\d+(\/\d+\] - ".+?)' . $this->e0 . ' - /', $this->subject, $match)) {
 			return $match[1];
 		} //NihilCumsteR [1/8] - "Conysgirls.cumpilation.xxx.NihilCumsteR.par2" yEnc
@@ -1586,8 +1607,10 @@ class CollectionsCleaning
 		} //..::kleverig.eu::.. [001/141] - "ZYGBUTD5TPgMdjjxnvrl.par2" - 13,28 GB yEnc
 		if (preg_match('/(.+)[-_ ]{0,3}[\(\[]\d+\/(\d+[\)\]][-_ ]{0,3}("|#34;).+?)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4})("|#34;)(.+?)yEnc$/', $this->subject, $match)) {
 			return $match[2];
-		}
-		//"Babysitters_a_Slut_4_Scene_4.part01.rar"_SpotBots yEnc
+		} //Whornitas 3 (2015) XXX DVDRiP x264-DivXfacTory - "Whornitas.3.XXX.DVDRiP.x264-DivXfacTory.part40.rar" - (42 - 50) yEnc
+		if (preg_match('/.*"(.+?)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}") - \(\d+ - (\d+\)) yEnc$/', $this->subject, $match)) {
+			return $match[1] . $match[4];
+		} //"Babysitters_a_Slut_4_Scene_4.part01.rar"_SpotBots yEnc
 		//- "JH2U0H5FIK8TO7YK3Q.part12.rar" yEnc
 		if (preg_match('/.*"(.+?)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}")(.+?)yEnc$/', $this->subject, $match)) {
 			return $match[1] . $match[4];
@@ -2504,6 +2527,20 @@ class CollectionsCleaning
 	{
 		//[4197] [036/103] - "ant-mgstlcd2.r34" yEnc
 		if (preg_match('/^\[\d+\] \[\d+(\/\d+\] - ".+?)' . $this->e1, $this->subject, $match)) {
+			return $match[1];
+		}
+		return $this->generic();
+	}
+
+	// a.b.pwp
+	protected function pwp()
+	{
+		//(620/899) -  "Giggi_9M05YD32TO4.part147.rar" - 252,53 GB - yEnc
+		if (preg_match('/^\(\d+\/(\d+\)[-_ ]{0,4}"Giggi.+)[A-Z]\d' . $this->e2, $this->subject, $match)) {
+			return $match[1];
+		}
+		//(300/454) "James_Bond_You_Only_Live_Twice_bd25.part300.rar" - 22,22 GB - yEnc
+		if (preg_match('/^\(\d+\/(\d+\)[-_ ]{0,4}".+?)' . $this->e2, $this->subject, $match)) {
 			return $match[1];
 		}
 		return $this->generic();

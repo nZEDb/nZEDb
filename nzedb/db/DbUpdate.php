@@ -179,6 +179,7 @@ class DbUpdate
 							   $matches['table'] . '.sql';
 					rename($matches[0], $newName);
 					$this->git->add($newName);
+					$this->git->run("add -uv {$matches[0]}");										// add updates to old filename, this should remove the temp file from the index.
 				}
 			}
 		}
@@ -320,11 +321,11 @@ class DbUpdate
 							) {
 								if ($e->errorInfo[1] == 1060) {
 									echo $this->log->warning(
-												   "$query The column already exists - No need to worry {" .
+												   "$query The column already exists - No need to worry \{" .
 												   $e->errorInfo[1] . "}.\n");
 								} else {
 									echo $this->log->warning(
-												   "$query Skipped - No need to worry {" .
+												   "$query Skipped - No need to worry \{" .
 												   $e->errorInfo[1] . "}.\n");
 								}
 							} else {
@@ -335,10 +336,10 @@ class DbUpdate
 										echo $this->log->alternateOver('SUCCESS: ') .
 											 $this->log->primary($query);
 									} catch (\PDOException $e) {
-										exit($this->log->error("$query Failed {" . $e->errorInfo[1] . "}\n\t" . $e->errorInfo[2]));
+										exit($this->log->error("$query Failed \{" . $e->errorInfo[1] . "}\n\t" . $e->errorInfo[2]));
 									}
 								} else {
-									exit($this->log->error("$query Failed {" . $e->errorInfo[1] . "}\n\t" . $e->errorInfo[2]));
+									exit($this->log->error("$query Failed \{" . $e->errorInfo[1] . "}\n\t" . $e->errorInfo[2]));
 								}
 							}
 						}
