@@ -71,3 +71,4 @@ processupdate	2
 run_ircscraper	0
 run_sharing	0
 sharing_timer	60
+import_count	50000
