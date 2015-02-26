@@ -13,7 +13,7 @@ if (isset($argv[2]) && $argv[2] === 'true') {
 	}
 }
 if ($pdo->getSetting('tablepergroup') === 1) {
-	exit($pdo->log->error("You are using 'tablepergroup', you must use releases_threaded.py"));
+	exit($pdo->log->error("You are using 'tablepergroup', you must use .../misc/update/nix/multiprocessing/releases.php"));
 }
 
 $groupName = isset($argv[3]) ? $argv[3] : '';

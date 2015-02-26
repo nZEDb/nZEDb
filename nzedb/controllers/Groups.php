@@ -46,7 +46,7 @@ class Groups
 	public function getGroupsForSelect()
 	{
 		$categories = $this->pdo->query("SELECT * FROM groups WHERE active = 1 ORDER BY name");
-		$temp_array = array();
+		$temp_array = [];
 
 		$temp_array[-1] = "--Please Select--";
 
@@ -627,7 +627,7 @@ class Groups
 
 		if ($tpgSetting === true) {
 			if ($groupID == '') {
-				exit('Error: You must use releases_threaded.py since you have enabled TPG!');
+				exit('Error: You must use .../misc/update/nix/multiprocessing/releases.php since you have enabled TPG!');
 			}
 
 			if ($this->createNewTPGTables($groupID) === false && nZEDb_ECHOCLI) {
