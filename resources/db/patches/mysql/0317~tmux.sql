@@ -1,0 +1,1 @@
+update tmux set setting = 'import_count' where setting = 'IMPORT_COUNT';

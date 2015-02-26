@@ -208,6 +208,7 @@ class Tmux
 					(%1\$s 'seq_timer') AS seq_timer,
 					(%1\$s 'bins_timer') AS bins_timer,
 					(%1\$s 'back_timer') AS back_timer,
+					(%1\$s 'import_count') AS import_count,
 					(%1\$s 'import_timer') AS import_timer,
 					(%1\$s 'rel_timer') AS rel_timer,
 					(%1\$s 'fix_timer') AS fix_timer,

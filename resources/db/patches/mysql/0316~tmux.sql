@@ -1,0 +1,1 @@
+INSERT IGNORE INTO `tmux` (`setting`, `value`) VALUES ('IMPORT_COUNT','50000');
