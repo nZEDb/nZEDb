@@ -58,13 +58,6 @@ class Users
 
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 
-		// TODO We require 5.5 as our minimum version now, so the password_compat library is no
-		// longer needed.  Remove this and any other references to the password_compat library,
-		// before removing  the library itself.
-		// password_hash functions are available on PHP 5.5.0 or higher, use password_compat for forward compatibility on older versions.
-		if (!version_compare(PHP_VERSION, '5.5.0', '>=')) {
-			require_once(nZEDb_LIBS . 'password_compat' . DS . 'lib' . DS . 'password.php');
-		}
 		$this->password_hash_cost = (defined('nZEDb_PASSWORD_HASH_COST') ? nZEDb_PASSWORD_HASH_COST : 11);
 	}
 

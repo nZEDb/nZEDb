@@ -67,11 +67,6 @@
  * @see
  */
 
-// Warn about PHP bugs
-if (version_compare(PHP_VERSION, '5.2.11') === 0) {
-	trigger_error('PHP bug #16657 breaks feof() on socket streams! Connection consistency might be compromised!', E_USER_WARNING);
-}
-
 require_once 'PEAR.php';
 require_once 'Responsecode.php';
 
