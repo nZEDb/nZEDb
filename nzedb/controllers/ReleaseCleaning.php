@@ -61,6 +61,44 @@ class ReleaseCleaning
 		$this->pdo = ($settings instanceof Settings ? $settings : new Settings());
 	}
 
+	/**
+	 * Get all regex.
+	 *
+	 * @param string $group_regex Optional, a keyword to find a group.
+	 * @param int    $limit       Optional, amount of results to limit.
+	 * @param int    $offset      Optional, the offset to use when limiting the result set.
+	 *
+	 * @return array
+	 */
+	public function getRegex($group_regex = '', $limit = 0, $offset = 0)
+	{
+		return $this->pdo->query(
+			sprintf(
+				'SELECT * FROM release_naming_regexes %s %s',
+				($group_regex ? ('WHERE group_regex ' . $this->pdo->likeString($group_regex)) : ''),
+				($limit ? ('LIMIT ' . $limit . ' OFFSET ' . $offset) : '')
+			)
+		);
+	}
+
+	/**
+	 * Get the count of regex in the DB.
+	 *
+	 * @param string $group_regex Optional, keyword to find a group.
+	 *
+	 * @return int
+	 */
+	public function getCount($group_regex = '')
+	{
+		$query = $this->pdo->queryOneRow(
+			sprintf(
+				'SELECT COUNT(id) AS count FROM release_naming_regexes %s',
+				($group_regex ? ('WHERE group_regex ' . $this->pdo->likeString($group_regex)) : '')
+			)
+		);
+		return (int)$query['count'];
+	}
+
 	public function releaseCleaner($subject, $fromName, $size, $groupName, $usepre = false)
 	{
 		$match           = $matches = array();
@@ -6829,37 +6867,6 @@ class ReleaseCleaning
 		}
 		// END teevee requestid renaming
 
-		//[######]-[FULL]-[#a.b.teevee@EFNet]-[ Misfits.S01.SUBPACK.DVDRip.XviD-P0W4DVD ] [1/5] - "Misfits.S01.SUBPACK.DVDRip.XviD-P0W4DVD.nfo" yEnc
-		if (preg_match('/^\[#+\]-\[.+?\]-\[.+?\]-\[ (.+?) \][- ]\[\d+\/\d+\][-_\s]{0,3}("|#34;).+?("|#34;) yEnc$/',
-					   $this->subject,
-					   $match)
-		) {
-			return $match[1];
-		} //[34148]-[FULL]-[#a.b.teevee@EFNet]-[Batman.The.Animated.Series.S04E01.DVDRiP.XviD-PyRo]-[00/35] "Batman.The.Animated.Series.S04E01.DVDRiP.XviD-PyRo.nzb" yEnc
-		if (preg_match('/^\[#+\]-\[.+?\]-\[.+?\]-\[(.+?)\][- ]\[\d+\/\d+\][-_\s]{0,3}".+?" yEnc$/',
-					   $this->subject,
-					   $match)
-		) {
-			return $match[1];
-		} //[38722]-[#a.b.foreign@EFNet]-[ Game.Of.Thrones.S01E01.Der.Winter.Naht.GERMAN.DL.WS.1080p.HDTV.x264-MiSFiTS ]-[01/37] - "misfits-gameofthrones1080-s01e01-sample-sample.par2" yEnc
-		if (preg_match('/^\[#+\]-\[.+?\]-\[ (.+?) \][- ]\[\d+\/\d+\][-_\s]{0,3}".+?" yEnc$/',
-					   $this->subject,
-					   $match)
-		) {
-			return $match[1];
-		} //[#a.b.teevee] Parks.and.Recreation.S01E01.720p.WEB-DL.DD5.1.H.264-CtrlHD - [01/24] - "Parks.and.Recreation.S01E01.720p.WEB-DL.DD5.1.H.264-CtrlHD.nfo" yEnc
-		if (preg_match('/^\[#+\]-\[.+?\]-\[.+?\]-\[ (.+?) \][- ]\[\d+\/\d+\][-_\s]{0,3}("|#34;).+?("|#34;) yEnc$/',
-					   $this->subject,
-					   $match)
-		) {
-			return $match[1];
-		} //[17319]-[FULL]-[#a.b.teevee@EFNet]-[ CSI.New.York.S05E22.720p.HDTV.X264-DIMENSION ]-[01/34] "csi.new.york.522.720p-dimension.nfo" (1/1) (1/1
-		if (preg_match('/\[#+\]-\[.+?\]-\[.+?\]-\[ ?(.+?) ?\][- ]\[\d+\/\d+\][-_\s]{0,3}("|#34;).+?("|#34;) \(\d+\/\d+\) \(\d+\/\d+$/',
-					   $this->subject,
-					   $match)
-		) {
-			return $match[1];
-		}
 		//(01/37) "Entourage S08E08.part01.rar" - 349,20 MB - yEnc
 		//(01/24) "EGtnu7OrLNQMO2pDbgpDrBL8SnjZDpab.nfo" - 686 B - 338.74 MB - yEnc (1/1)
 		if (preg_match('/^\(\d+\/\d+\) "([\w\säöüÄÖÜß+¤¶!.,&_()\[\]\'\`{}#-]{8,}?\b.?)' . $this->e0 .

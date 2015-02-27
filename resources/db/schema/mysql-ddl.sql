@@ -223,6 +223,7 @@ CREATE TABLE         collections (
   COLLATE         = utf8_unicode_ci
   AUTO_INCREMENT  = 1;
 
+
 DROP TABLE IF EXISTS collection_regexes;
 CREATE TABLE collection_regexes (
   id          INT UNSIGNED  NOT NULL AUTO_INCREMENT,
@@ -240,6 +241,7 @@ CREATE TABLE collection_regexes (
   DEFAULT CHARSET = utf8
   COLLATE         = utf8_unicode_ci
   AUTO_INCREMENT  = 100000;
+
 
 DROP TABLE IF EXISTS consoleinfo;
 CREATE TABLE consoleinfo (
@@ -742,6 +744,25 @@ CREATE TABLE release_files (
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci
   AUTO_INCREMENT = 1;
+
+
+DROP TABLE IF EXISTS release_naming_regexes;
+CREATE TABLE release_naming_regexes (
+  id          INT UNSIGNED  NOT NULL AUTO_INCREMENT,
+  group_regex VARCHAR(255)  NULL                          COMMENT 'This is a regex to match against usenet groups',
+  regex       VARCHAR(5000) NOT NULL                      COMMENT 'Regex used for extracting name from subject',
+  status      TINYINT(1)    UNSIGNED NOT NULL DEFAULT '1' COMMENT '1=ON 0=OFF',
+  description VARCHAR(1000) NOT NULL                      COMMENT 'Optional extra details on this regex',
+  ordinal     INT SIGNED    NOT NULL DEFAULT '0'          COMMENT 'Order to run the regex in',
+  PRIMARY KEY (id),
+  INDEX ix_release_naming_regexes_group_regex (group_regex),
+  INDEX ix_release_naming_regexes_status      (status),
+  INDEX ix_release_naming_regexes_ordinal     (ordinal)
+)
+  ENGINE          = MYISAM
+  DEFAULT CHARSET = utf8
+  COLLATE         = utf8_unicode_ci
+  AUTO_INCREMENT  = 100000;
 
 
 DROP TABLE IF EXISTS release_nfos;
