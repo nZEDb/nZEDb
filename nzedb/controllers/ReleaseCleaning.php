@@ -49,6 +49,11 @@ class ReleaseCleaning
 	public $subject = '';
 
 	/**
+	 * @var Regexes
+	 */
+	protected $_regexes;
+
+	/**
 	 * @param nzedb\db\Settings $settings
 	 */
 	public function __construct($settings = null)
@@ -59,44 +64,7 @@ class ReleaseCleaning
 		$this->e2  = \CollectionsCleaning::REGEX_FILE_EXTENSIONS .
 					 \CollectionsCleaning::REGEX_SUBJECT_SIZE . \CollectionsCleaning::REGEX_END;
 		$this->pdo = ($settings instanceof Settings ? $settings : new Settings());
-	}
-
-	/**
-	 * Get all regex.
-	 *
-	 * @param string $group_regex Optional, a keyword to find a group.
-	 * @param int    $limit       Optional, amount of results to limit.
-	 * @param int    $offset      Optional, the offset to use when limiting the result set.
-	 *
-	 * @return array
-	 */
-	public function getRegex($group_regex = '', $limit = 0, $offset = 0)
-	{
-		return $this->pdo->query(
-			sprintf(
-				'SELECT * FROM release_naming_regexes %s %s',
-				($group_regex ? ('WHERE group_regex ' . $this->pdo->likeString($group_regex)) : ''),
-				($limit ? ('LIMIT ' . $limit . ' OFFSET ' . $offset) : '')
-			)
-		);
-	}
-
-	/**
-	 * Get the count of regex in the DB.
-	 *
-	 * @param string $group_regex Optional, keyword to find a group.
-	 *
-	 * @return int
-	 */
-	public function getCount($group_regex = '')
-	{
-		$query = $this->pdo->queryOneRow(
-			sprintf(
-				'SELECT COUNT(id) AS count FROM release_naming_regexes %s',
-				($group_regex ? ('WHERE group_regex ' . $this->pdo->likeString($group_regex)) : '')
-			)
-		);
-		return (int)$query['count'];
+		$this->_regexes = new Regexes(['Settings' => $this->pdo, 'Table_Name' => 'release_naming_regexes']);
 	}
 
 	public function releaseCleaner($subject, $fromName, $size, $groupName, $usepre = false)
@@ -192,10 +160,18 @@ class ReleaseCleaning
 		if ($usepre === true) {
 			return false;
 		}
+
+		// Try DB regex.
+		$potentialName = $this->_regexes->tryRegex($subject, $groupName);
+		if ($potentialName) {
+			return $potentialName;
+		}
+
 		//if www.town.ag releases check against generic_town regexes
 		if (preg_match('/www\.town\.ag/i', $this->subject)) {
 			return $this->generic_town();
 		}
+
 		switch ($groupName) {
 			case 'alt.binaries.0day.stuffz':
 				return $this->_0daystuffz();
@@ -6848,25 +6824,6 @@ class ReleaseCleaning
 
 	public function teevee()
 	{
-		// rename these teevee releases as the requestid is for the full season
-		// Episode info in 4th block so use that
-		//[169018]-[FULL]-[a.b.teevee]-[ House.of.Lies.S01E01.720p.WEB-DL.DD5.1.H.264-BS ]-[04/32] - "House.of.Lies.S01E01.The.Gods.of.Dangerous.Financial.Instruments.720p.WEB-DL.DD5.1.H.264-BS.part03.rar" yEnc
-		if (preg_match('/\[\d+\]-\[.+?\]-\[.+?\]-\[ (.+\.S\d\dE\d\d\..+?) \][- ]\[\d+\/\d+\][ -]{0,3}"[\w\säöüÄÖÜß+¤¶!.,&_()\[\]\'\`{}-]{8,}?\b.?' . $this->e1,
-			$this->subject,
-			$match)
-		) {
-			return $match[1];
-		}
-		// Season only in 4th block so take filename
-		//[169019]-[FULL]-[a.b.teevee]-[ House.of.Lies.S02.720p.WEB-DL.DD5.1.H.264-BS ]-[24/32] - "House.of.Lies.S02E02.When.Dinosaurs.Ruled.the.Planet.720p.WEB-DL.DD5.1.H.264-BS.vol000+01.par2" yEnc
-		if (preg_match('/\[\d+\]-\[.+?\]-\[.+?\]-\[ .+\.S\d\d\..+? \][- ]\[\d+\/\d+\][ -]{0,3}"([\w\säöüÄÖÜß+¤¶!.,&_()\[\]\'\`{}#-]{8,}?\b.?)' . $this->e1,
-			$this->subject,
-			$match)
-		) {
-			return $match[1];
-		}
-		// END teevee requestid renaming
-
 		//(01/37) "Entourage S08E08.part01.rar" - 349,20 MB - yEnc
 		//(01/24) "EGtnu7OrLNQMO2pDbgpDrBL8SnjZDpab.nfo" - 686 B - 338.74 MB - yEnc (1/1)
 		if (preg_match('/^\(\d+\/\d+\) "([\w\säöüÄÖÜß+¤¶!.,&_()\[\]\'\`{}#-]{8,}?\b.?)' . $this->e0 .

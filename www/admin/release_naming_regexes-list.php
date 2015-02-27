@@ -2,7 +2,7 @@
 require_once './config.php';
 
 $page = new AdminPage();
-$rc = new ReleaseCleaning($page->settings);
+$regexes = new Regexes(['Settings' => $page->settings, 'Table_Name' => 'release_naming_regexes']);
 
 $page->title = "Release Naming Regex List";
 
@@ -12,10 +12,10 @@ if (isset($_REQUEST['group']) && !empty($_REQUEST['group'])) {
 }
 
 $offset = isset($_REQUEST["offset"]) ? $_REQUEST["offset"] : 0;
-$regex = $rc->getRegex($group, ITEMS_PER_PAGE, $offset);
+$regex = $regexes->getRegex($group, ITEMS_PER_PAGE, $offset);
 $page->smarty->assign('regex', $regex);
 
-$count = $rc->getCount($group);
+$count = $regexes->getCount($group);
 $page->smarty->assign('pagertotalitems', $count);
 $page->smarty->assign('pageroffset', $offset);
 $page->smarty->assign('pageritemsperpage', ITEMS_PER_PAGE);

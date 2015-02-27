@@ -2,7 +2,7 @@
 require_once './config.php';
 
 $page = new AdminPage();
-$cc = new CollectionsCleaning(['Settings' => $page->settings]);
+$regexes = new Regexes(['Settings' => $page->settings, 'Table_Name' => 'collection_regexes']);
 
 $page->title = "Collections Regex List";
 
@@ -12,10 +12,10 @@ if (isset($_REQUEST['group']) && !empty($_REQUEST['group'])) {
 }
 
 $offset = isset($_REQUEST["offset"]) ? $_REQUEST["offset"] : 0;
-$regex = $cc->getRegex($group, ITEMS_PER_PAGE, $offset);
+$regex = $regexes->getRegex($group, ITEMS_PER_PAGE, $offset);
 $page->smarty->assign('regex', $regex);
 
-$count = $cc->getCount($group);
+$count = $regexes->getCount($group);
 $page->smarty->assign('pagertotalitems', $count);
 $page->smarty->assign('pageroffset', $offset);
 $page->smarty->assign('pageritemsperpage', ITEMS_PER_PAGE);
