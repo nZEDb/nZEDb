@@ -21,11 +21,11 @@
 								<li class="last"><a href="{$smarty.const.WWW_TOP}/collection_regexes-list.php">View</a></li>
 							</ul>
 						</li>
-						<li class="has-sub"><a href="#">Release Names</a>
+						<li class="has-sub"><a href="#">Release Naming</a>
 							<ul>
-								<li><a href="{$smarty.const.WWW_TOP}/release_name_regexes-edit.php?action=add">Add</a></li>
-								<li><a href="{$smarty.const.WWW_TOP}/release_name_regexes-test.php?action=add">Test</a></li>
-								<li class="last"><a href="{$smarty.const.WWW_TOP}/release_name_regexes-list.php">View</a></li>
+								<li><a href="{$smarty.const.WWW_TOP}/release_naming_regexes-edit.php?action=add">Add</a></li>
+								<li><a href="{$smarty.const.WWW_TOP}/release_naming_regexes-test.php?action=add">Test</a></li>
+								<li class="last"><a href="{$smarty.const.WWW_TOP}/release_naming_regexes-list.php">View</a></li>
 							</ul>
 						</li>
 					</ul>
