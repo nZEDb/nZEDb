@@ -22,15 +22,12 @@
 			<td>
 				<textarea id="regex" name="regex" >{$regex.regex|escape:html}</textarea>
 				<div class="hint">
-					The regex to use when matching (grouping) collections.<br />
+					The regex to use when trying to name a release using the usenet subject.<br />
 					The regex delimiters are not added, you MUST add them. See <a href="http://php.net/manual/en/regexp.reference.delimiters.php">this</a> page.<br />
 					To make the regex case insensitive, add i after the last delimiter.<br />
 					You MUST include at least one regex capture group.<br />
-					You MUST name your regex capture groups (the ones you want to be included).<br />
-					A string will be created from your matched capture groups.<br />
-					The string will form part of a "collection hash".<br />
-					The collection hash is used to group many parts together, to form the finalized release.<br />
-					The usenet group and name of the poster are added automatically when hashing.<br />
+					You MUST name your regex capture groups (the ones you want included).<br />
+					The named capture groups will be concatenated into a string.
 					Capture groups are sorted alphabetically (by capture group name) when concatenating the string.<br />
 				</div>
 			</td>

@@ -2,9 +2,9 @@
 require_once './config.php';
 
 $page = new AdminPage();
-$regexes = new Regexes(['Settings' => $page->settings, 'Table_Name' => 'collection_regexes']);
+$regexes = new Regexes(['Settings' => $page->settings, 'Table_Name' => 'release_naming_regexes']);
 
-$page->title = "Collections Regex List";
+$page->title = "Release Naming Regex List";
 
 $group = '';
 if (isset($_REQUEST['group']) && !empty($_REQUEST['group'])) {
@@ -20,8 +20,8 @@ $page->smarty->assign('pagertotalitems', $count);
 $page->smarty->assign('pageroffset', $offset);
 $page->smarty->assign('pageritemsperpage', ITEMS_PER_PAGE);
 
-$page->smarty->assign('pagerquerybase', WWW_TOP . "/collection_regexes-list.php?" . $group . "offset=");
+$page->smarty->assign('pagerquerybase', WWW_TOP . "/release_naming_regexes-list.php?" . $group . "offset=");
 $page->smarty->assign('pager', $page->smarty->fetch("pager.tpl"));
 
-$page->content = $page->smarty->fetch('collection_regexes-list.tpl');
+$page->content = $page->smarty->fetch('release_naming_regexes-list.tpl');
 $page->render();

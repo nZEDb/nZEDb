@@ -21,7 +21,13 @@ switch($_GET['action']) {
 
 	case 'collection_regex_delete':
 		$id = (int) $_GET['row_id'];
-		(new CollectionsCleaning($settings))->deleteRegex($id);
+		(new Regexes(['Settings' => $admin->settings, 'Table_Name' => 'collection_regexes']))->deleteRegex($id);
+		print "Regex $id deleted.";
+		break;
+
+	case 'release_naming_regex_delete':
+		$id = (int) $_GET['row_id'];
+		(new Regexes(['Settings' => $admin->settings, 'Table_Name' => 'release_naming_regexes']))->deleteRegex($id);
 		print "Regex $id deleted.";
 		break;
 

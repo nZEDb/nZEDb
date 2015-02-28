@@ -49,6 +49,11 @@ class ReleaseCleaning
 	public $subject = '';
 
 	/**
+	 * @var Regexes
+	 */
+	protected $_regexes;
+
+	/**
 	 * @param nzedb\db\Settings $settings
 	 */
 	public function __construct($settings = null)
@@ -59,6 +64,7 @@ class ReleaseCleaning
 		$this->e2  = \CollectionsCleaning::REGEX_FILE_EXTENSIONS .
 					 \CollectionsCleaning::REGEX_SUBJECT_SIZE . \CollectionsCleaning::REGEX_END;
 		$this->pdo = ($settings instanceof Settings ? $settings : new Settings());
+		$this->_regexes = new Regexes(['Settings' => $this->pdo, 'Table_Name' => 'release_naming_regexes']);
 	}
 
 	public function releaseCleaner($subject, $fromName, $size, $groupName, $usepre = false)
@@ -154,10 +160,18 @@ class ReleaseCleaning
 		if ($usepre === true) {
 			return false;
 		}
+
+		// Try DB regex.
+		$potentialName = $this->_regexes->tryRegex($subject, $groupName);
+		if ($potentialName) {
+			return $potentialName;
+		}
+
 		//if www.town.ag releases check against generic_town regexes
 		if (preg_match('/www\.town\.ag/i', $this->subject)) {
 			return $this->generic_town();
 		}
+
 		switch ($groupName) {
 			case 'alt.binaries.0day.stuffz':
 				return $this->_0daystuffz();
@@ -6810,56 +6824,6 @@ class ReleaseCleaning
 
 	public function teevee()
 	{
-		// rename these teevee releases as the requestid is for the full season
-		// Episode info in 4th block so use that
-		//[169018]-[FULL]-[a.b.teevee]-[ House.of.Lies.S01E01.720p.WEB-DL.DD5.1.H.264-BS ]-[04/32] - "House.of.Lies.S01E01.The.Gods.of.Dangerous.Financial.Instruments.720p.WEB-DL.DD5.1.H.264-BS.part03.rar" yEnc
-		if (preg_match('/\[\d+\]-\[.+?\]-\[.+?\]-\[ (.+\.S\d\dE\d\d\..+?) \][- ]\[\d+\/\d+\][ -]{0,3}"[\w\säöüÄÖÜß+¤¶!.,&_()\[\]\'\`{}-]{8,}?\b.?' . $this->e1,
-			$this->subject,
-			$match)
-		) {
-			return $match[1];
-		}
-		// Season only in 4th block so take filename
-		//[169019]-[FULL]-[a.b.teevee]-[ House.of.Lies.S02.720p.WEB-DL.DD5.1.H.264-BS ]-[24/32] - "House.of.Lies.S02E02.When.Dinosaurs.Ruled.the.Planet.720p.WEB-DL.DD5.1.H.264-BS.vol000+01.par2" yEnc
-		if (preg_match('/\[\d+\]-\[.+?\]-\[.+?\]-\[ .+\.S\d\d\..+? \][- ]\[\d+\/\d+\][ -]{0,3}"([\w\säöüÄÖÜß+¤¶!.,&_()\[\]\'\`{}#-]{8,}?\b.?)' . $this->e1,
-			$this->subject,
-			$match)
-		) {
-			return $match[1];
-		}
-		// END teevee requestid renaming
-
-		//[######]-[FULL]-[#a.b.teevee@EFNet]-[ Misfits.S01.SUBPACK.DVDRip.XviD-P0W4DVD ] [1/5] - "Misfits.S01.SUBPACK.DVDRip.XviD-P0W4DVD.nfo" yEnc
-		if (preg_match('/^\[#+\]-\[.+?\]-\[.+?\]-\[ (.+?) \][- ]\[\d+\/\d+\][-_\s]{0,3}("|#34;).+?("|#34;) yEnc$/',
-					   $this->subject,
-					   $match)
-		) {
-			return $match[1];
-		} //[34148]-[FULL]-[#a.b.teevee@EFNet]-[Batman.The.Animated.Series.S04E01.DVDRiP.XviD-PyRo]-[00/35] "Batman.The.Animated.Series.S04E01.DVDRiP.XviD-PyRo.nzb" yEnc
-		if (preg_match('/^\[#+\]-\[.+?\]-\[.+?\]-\[(.+?)\][- ]\[\d+\/\d+\][-_\s]{0,3}".+?" yEnc$/',
-					   $this->subject,
-					   $match)
-		) {
-			return $match[1];
-		} //[38722]-[#a.b.foreign@EFNet]-[ Game.Of.Thrones.S01E01.Der.Winter.Naht.GERMAN.DL.WS.1080p.HDTV.x264-MiSFiTS ]-[01/37] - "misfits-gameofthrones1080-s01e01-sample-sample.par2" yEnc
-		if (preg_match('/^\[#+\]-\[.+?\]-\[ (.+?) \][- ]\[\d+\/\d+\][-_\s]{0,3}".+?" yEnc$/',
-					   $this->subject,
-					   $match)
-		) {
-			return $match[1];
-		} //[#a.b.teevee] Parks.and.Recreation.S01E01.720p.WEB-DL.DD5.1.H.264-CtrlHD - [01/24] - "Parks.and.Recreation.S01E01.720p.WEB-DL.DD5.1.H.264-CtrlHD.nfo" yEnc
-		if (preg_match('/^\[#+\]-\[.+?\]-\[.+?\]-\[ (.+?) \][- ]\[\d+\/\d+\][-_\s]{0,3}("|#34;).+?("|#34;) yEnc$/',
-					   $this->subject,
-					   $match)
-		) {
-			return $match[1];
-		} //[17319]-[FULL]-[#a.b.teevee@EFNet]-[ CSI.New.York.S05E22.720p.HDTV.X264-DIMENSION ]-[01/34] "csi.new.york.522.720p-dimension.nfo" (1/1) (1/1
-		if (preg_match('/\[#+\]-\[.+?\]-\[.+?\]-\[ ?(.+?) ?\][- ]\[\d+\/\d+\][-_\s]{0,3}("|#34;).+?("|#34;) \(\d+\/\d+\) \(\d+\/\d+$/',
-					   $this->subject,
-					   $match)
-		) {
-			return $match[1];
-		}
 		//(01/37) "Entourage S08E08.part01.rar" - 349,20 MB - yEnc
 		//(01/24) "EGtnu7OrLNQMO2pDbgpDrBL8SnjZDpab.nfo" - 686 B - 338.74 MB - yEnc (1/1)
 		if (preg_match('/^\(\d+\/\d+\) "([\w\säöüÄÖÜß+¤¶!.,&_()\[\]\'\`{}#-]{8,}?\b.?)' . $this->e0 .
