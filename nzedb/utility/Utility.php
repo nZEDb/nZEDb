@@ -470,32 +470,27 @@ class Utility
 	 */
 	static public function unzipGzipFile($filePath)
 	{
+		/* Potential issues with this, so commenting out.
 		$length = Utility::isGZipped($filePath);
 		if ($length === false || $length === null) {
 			return false;
-		}
+		}*/
 
-		// String to hold the NZB contents.
 		$string = '';
-		// Open the gzip file.
 		$gzFile = @gzopen($filePath, 'rb', 0);
 		if ($gzFile) {
-			// Append the decompressed data to the string until we find the end of file pointer.
 			while (!gzeof($gzFile)) {
 				$temp = gzread($gzFile, 1024);
-				// Check for corrupt data, there will be no end of file, so the loop would go on and on taking 100% CPU.
-				if ($temp) {
-					$string .= $temp;
-				} else {
-					// If the data was corrupt, set the big string empty so we return false and break out of the loop.
-					$string = '';
+				// Check for empty string.
+				// Without this the loop would be endless and consume 100% CPU.
+				// Do not set $string empty here, as the data might still be good.
+				if (!$temp) {
 					break;
 				}
+				$string .= $temp;
 			}
-			// Close the gzip file.
 			gzclose($gzFile);
 		}
-		// Return the string.
 		return ($string === '' ? false : $string);
 	}
 
