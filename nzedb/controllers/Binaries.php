@@ -718,7 +718,7 @@ class Binaries
 							$groupMySQL['id'],
 							$fileCount[3],
 							sha1($header['CollectionKey']),
-							bin2hex(openssl_random_pseudo_bytes(32))
+							bin2hex(openssl_random_pseudo_bytes(16))
 						)
 					);
 
