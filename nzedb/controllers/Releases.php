@@ -101,7 +101,7 @@ class Releases
 	 */
 	public function createGUID()
 	{
-		return sha1(uniqid('', true) . mt_rand());
+		return bin2hex(openssl_random_pseudo_bytes(40));
 	}
 
 	/**
