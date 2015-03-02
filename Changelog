@@ -5,6 +5,7 @@ Please make sure any PR's comply with our coding standards policy: http://li3.me
 New updates are grouped by person (committer/merger), at the top of the file.
 
 2015-03-02 bart39
+	* Mrg: PR #1608 from kevin - Faster / more random hex string gen (for release guid and binary hash).
 	* Mrg: PR #1607 from kevin - Fixes for compressed NZB reading and return.
 2015-02-27 bart39
 	* Mrg: PR #1606 from kevin - Add database release naming regex support.
