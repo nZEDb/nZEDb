@@ -334,6 +334,9 @@ Class Regexes
 					if (is_int($key)) {
 						continue;
 					}
+					if ($this->tableName === 'release_naming_regexes' && !in_array($key, ['parts', 'reqid'])) {
+						continue;
+					}
 					// Concatenate the string to return.
 					$returnString .= $value;
 				}
