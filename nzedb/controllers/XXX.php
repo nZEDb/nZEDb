@@ -546,7 +546,7 @@ class XXX
 				FROM releases r
 				WHERE r.nzbstatus = 1
 				AND r.xxxinfo_id = 0
-				AND r.categoryid BETWEEN 6000 AND 6040
+				AND r.categoryid IN (6010, 6020, 6030, 6040, 6080, 6090)
 				LIMIT %d",
 				$this->movieqty
 						 )

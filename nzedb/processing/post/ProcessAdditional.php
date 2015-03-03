@@ -420,7 +420,7 @@ Class ProcessAdditional
 			);
 		}
 
-		$this->_showCLIReleaseID = (version_compare(PHP_VERSION, '5.5.0', '>=') ? (PHP_BINARY . ' ' . __DIR__ . DS .  'ProcessAdditional.php ReleaseID: ') : false);
+		$this->_showCLIReleaseID = (PHP_BINARY . ' ' . __DIR__ . DS .  'ProcessAdditional.php ReleaseID: ');
 
 		// Maximum amount of releases to fetch per run.
 		$this->_queryLimit =

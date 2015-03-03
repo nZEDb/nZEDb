@@ -4,43 +4,68 @@ Pull requests will be accepted *only* against the dev branch.
 Please make sure any PR's comply with our coding standards policy: http://li3.me/docs/specs/accepted/LSR-0-coding.md
 
 New updates are grouped by person (committer/merger), at the top of the file.
+All entries are dated according to merging into the code in dev branch.
+For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
-
-2014-02-02 niel
-	* New: Merged and tagged v0.4.18 to master branch.
 
 2014-01-05 niel
 	* Msg: HAPPY NEW YEAR From now on I'll be releasing to master monthly, unless and important bug fix needs merging.
 	* New: Merged and tagged v0.4.17 to master branch.
-
+2015-02-25 bart39
+	* Chg: Add new XXX categories to posterwall.
+	* Mrg: PR #1600 from kevin - Add support for in DB collections (grouping) regex.
+	* Mrg: PR #1599 from kevin - Changes to install templates.
+	* Mrg: PR #1602 from dariusIII - Add XXX WEB-DL category to XXX releases.
+		***NOTE*** run "php /misc/testing/Dev/recategorize.php all" to re-categorize existing releases.
+	* Fix: RottenTomatoes high-res images - clear your smarty cache.
+2015-02-21 niel
+	* Chg: Changing defaults for 'show passworded releases' (now shows potentially passworded) and 'NZB split level' (now 4) for new installs.
+2015-02-20 bart39
+	* Fix: Group XXX pack releases in a.b.erotica correctly.
+	* Fix: Missing binaries from releases due to collection_id not being set.
+		Suggest that you run reset_truncate after this update.
+		NB: IMPORTANT - TPG users (that means you McFuzz) must run "php /nzedb/build/_runonce/tpg_add_collections_column_205-02-20.php"
+		FAILURE TO DO SO WILL CAUSE INSERT ERRORS
+2015-02-17 bart39
+	* Chg: Regex updates / categorize fixes for SD XXX
+	* Chg: Update sphinxsearch RT index when manually editing release searchname.
+	* Chg: Optimize queries for new release posterwall.
+	* Fix: Issue 1594 - Fix word wrap on alpha theme.
+2015-02-13 bart39
+	* Fix: Reading a corrupt nzb would hang on 100% cpu.
+2015-02-12 bart39
+	* Fix: Fix dupecheck when inserting tvrage titles.
+2015-02-09 bart39
+	* Fix: Fix another issue with mysqldump_tables.php when using sockets.
+	* Chg: Make ReleaseRemover more informative of the type it is processing.
+	* Chg: Ignore PC > Mac category for removeExecutable (Core Releases include their exe file for some reason).
+2015-02-07 bart39
+	* Fix: Fix issue with mysqldump_tables.php when using socket.
+	* Mrg: PR 1589 from dariusIII - Updated regex for codec poster.
+2015-02-06 bart39
+	* Mrg: PR 1590 from dariusIII - Add XXX-SD category.
+		***NOTE*** run "php /misc/testing/Dev/recategorize.php all" to re-categorize existing releases.
 2015-01-28 niel
-	* Fix: Removing extra tab from innerfileblacklist row that causes the setting to not work.
+	* Fix: Removing text literals from whitespace collapsing as they screw up DB::queryDirect().
 2015-01-08 niel
 	* Chg: Added tmp_pre to schema as permanent table and changed predb scripts accordingly.
-	* Chg: Renamed tmp_pre table to predb_imports to be clearer about its purpose.
 2015-01-07 niel
 	* Fix: Issue 1575 - Notice: Undefined variable: consoletools in /home/schwick/www/nZEDb/misc/update/predbftmatch.php on line 84
-
+2015-01-28 niel
+	* Fix: Removing extra tab from innerfileblacklist row that causes the setting to not work.
 2014-12-31 bart39
 	* Mrg: PR 1573 from dariusIII - Changed trakt.tv imdb search to new format.
 2014-12-30 niel
 	* Mrg: PR 1571 from kevinlekiller - Fix lighthttpd rewrite rule.
 		***NOTE*** Nginx users need to manually change the rewrite rule for file extensions as described in the Ubuntu install guide.
-
-2014-12-29 niel
-	* New: Merged and tagged v0.4.16 to master branch.
 2014-12-28 niel
 	* Fix: Query in dump_predb.php to add new groups had a typo. Thanks to makkbe on github for the fix.
-
 2014-12-24 ruhllatio
 	* Del: Deprecated AniDB cron script that won't work.  Use the populate_anidb script instead, then resume postproc.
 2014-12-23 niel
 	* Fix: Adding work-around to prevent tmux throwing Server not found errors.
 	* Chg: Renamed tmux's start script to run, to allow using start for starting the running flag as stop turns it off.
 			Users running 'start.php' from cron or other scripts shouldn't notice a difference as the replacement also calls run if it detects that no nZEDb session is running.
-
-2014-12-22 niel
-	* New: Merged and tagged v0.4.15 to master branch.
 2014-12-21 niel
 	* Mrg: PR 1566 from NZBmets - Adds a stop.php script to allow stopping tmux scripts from continuing.
 2014-12-20 bart39
@@ -53,24 +78,13 @@ New updates are grouped by person (committer/merger), at the top of the file.
 	* Add: Additional regex for TV categorization.
 	* Add: Regex additions for CollectionsCLeaning and ReleaseCleaning.
 	* Fix: Don't match abTeevee releases against predb if it is just the season name.
-
-2014-12-15 niel
-	* New: Merged and tagged v0.4.14 to master branch.
 2014-12-14 niel
 	* Mrg: PR 1562 from zetas/kingcat - Mail: Use supplied from address as reply-to.
 	* Fix: NZBGet was being sent incorrect URLs for NZB files, which resulted in it being redirected to the login page.
 2014-12-12 niel
 	* Adding script to batch import predb daily dumps without repeatedly calling the dump_predb script, which drops and readds triggers.
-2014-12-08 niel
-	* New: Merged and tagged v0.4.13 to master branch.
-
 2014-12-01 ruhllatio
 	* Fix: Contact us form erroring due to PHP Mailer class not found
-2014-12-01 niel
-	* New: Merged and tagged v0.4.12 to master branch.
-
-2014-11-24
-	* New: Merged and tagged v0.4.11 to master branch.
 2014-11-20 niel
 	* Mrg: PR 1545 from zetas/kingcat - Add PHPMailer Support.
 2014-11-18 niel
@@ -79,9 +93,6 @@ New updates are grouped by person (committer/merger), at the top of the file.
 	* Mrg: PR 1551 from zetas - XSS Fix for Login & Register.
 2014-11-17 niel
 	* Fix: Allowing unsupported PHP versions to make it as far as the requirements page, before using minimum version specific behaviour.
-2014-11-17
-	* New: Merged and tagged v0.4.10 to master branch.
-
 2014-11-15 niel
 	* Fix: Adding escaping to username in login page templates, to avoid XSS attacks. Alternative to PR 1549 from zetas.
 2014-11-14 niel
@@ -92,9 +103,6 @@ New updates are grouped by person (committer/merger), at the top of the file.
 	* Chg: Moved and updated populate_tvrage script to be more easily accessible.
 2014-11-10 niel
 	* Mrg: josh4trunks' PR 1534, which implements Issue 1519 - Add Unix domain socket support to create_se_tables.php.
-2014-11-10
-	* New: Merged and tagged v0.4.9 to master branch.
-
 2014-11-07 niel
 	* Mrg: Merging in PR 1543 from gregorystorme, which implements Issue 1530 - Feature Request: Add to My Movies.
 2014-11-06 niel
@@ -102,9 +110,6 @@ New updates are grouped by person (committer/merger), at the top of the file.
 	* Fix: Replacing some 'partrepair' references with 'missed_parts' that were omitted previously due to excessive caution ;-)
 	* Fix: TPG Only - Tmux monitor showing incorrect Part Repair (possibly others) numbers.
 	* Chg: TPG Only - Slight improvement in Tmux monitor's updating numbers. Probably too small to notice for most users.
-
-2014-11-03 niel
-	* New: Merged and tagged v0.4.8 to master branch.
 2014-10-31 niel
 	* Fix: Changing the triggers for releases_files table that were missed with the others.
 2014-10-30 niel
@@ -114,9 +119,6 @@ New updates are grouped by person (committer/merger), at the top of the file.
 2014-10-27 niel
 	* Chg: Database table renaming to bring our schema more inline with our naming conventions. Still some to do.
 	!!NOTE!! Db updates may take a long time, depending on your ammount of releases
-
-2014-10-27 niel
-	* New: Merged and tagged v0.4.7 to master branch.
 2014-10-25 bart39
 	* Fix: Missing parameter for binaries.php in /threaded/start.sh
 2014-10-23 niel
@@ -125,14 +127,8 @@ New updates are grouped by person (committer/merger), at the top of the file.
 	* Fix: Copied couple javascripts over to alpha theme from Default, to fix the Sending to NZBGet issue some users were having.
 	NOTE: This is a temporary fix! Someone with better understanding of the alpha theme (kevin?) needs to take a proper look at this.
 	* Fix: Adding sanity checking for game's release dates.
-
-2014-10-20 niel
-	* New: Merged and tagged v0.4.6 to master branch.
 2014-10-15 niel
 	* Fix: Issue 1526. Preventing empty path being used for checking permissions for sessionSavePath.
-
-2014-10-13 niel
-	* New: Merged and tagged v0.4.5 to master branch.
 2014-10-11 niel
 	* Mrg: Merging PR 1528 from bfincher, Correct error in blacklist query by poster.
 	* Chg: Cleaning tmux startup checks, so that no messages about checks not being an error is needed.
@@ -148,9 +144,6 @@ New updates are grouped by person (committer/merger), at the top of the file.
 	* Chg: Use wordwrap instead of truncate to fix formatting issues with name/searchnames in browse, search, viewnzb
 	* Fix: Table formatting for cover views when searchnames are too large for auto column settings
 	* Fix: Movie covers not standard causing other formatting issues
-
-22014-10-06 niel
-	* New: Merged and tagged v0.4.4 to master branch.
 014-10-02 bart39
 	* Mrg: Merge pull request #1518 from tasky.
 2014-09-30 ruhllatio
@@ -165,9 +158,6 @@ New updates are grouped by person (committer/merger), at the top of the file.
 	* Fix: Add missing NZB Import to Tmux Complete Sequential.
 	* Chg: ReleaseCleaning regex additions for a.b.frogs, a.b.kenpsx and various other updates.
 	* Chg: CollectionsCleaning regex additions / fixes.
-
-2014-09-29 niel
-	* New: Merged and tagged v0.4.3 to master branch.
 2014-09-26 niel
 	* Chg: Convert binaries tables and code to use collection_id column;
 	!!IMPORTANT!! TPG users: After running DbUpdate to process the patch, you MUST run php nzedb/build/_runonce/tpg_triggers_update_2014-09-25.php to convert the triggers.
@@ -192,9 +182,6 @@ New updates are grouped by person (committer/merger), at the top of the file.
 	* Add: Catch Rotten Tomato API errors on upcoming page.
 2014-09-22 kevin
 	* Add: Check sessions path for read/write permissions on step 1 of install.
-
-2014-09-22 niel
-	* New: Merged and tagged v0.4.2 to master branch.
 2014-09-15 bart39
 	* Mrg: Merge PR 1503 from tasky.
 	* Fix: fix potential cause of corrupt nzb's
@@ -210,7 +197,6 @@ New updates are grouped by person (committer/merger), at the top of the file.
 	* Fix: User cart problem. Changing userid to user_id in usercart table.
 	* New: Added reporting reason for pre-commit hook refusing to commit.
 	* New: Added setting to settings table to record the timestamp of the last time AniDB returned a 'ban' message.
-	* New: Merged and tagged v0.4.1 to master branch.
 2014-09-14 bart39
 	* Mrg: Merge PR 1502 from tasky.
 2014-09-13 bart39
@@ -263,9 +249,6 @@ New updates are grouped by person (committer/merger), at the top of the file.
 	* Fix: WEB-DL Movie categorization overridden by TV opening regex
 2014-09-07 kevin
 	* Chg: Change releases to use count instead of SQL_CALC_FOUND_ROWS for pager, should speed up those queries.
-2014-09-08 niel
-	* New: Merged and tagged v0.4.0 to master branch.
-	NOTE: This version forward targets PHP 5.5 and later.
 2014-09-06 niel
 	* New: Added couple methods to DB class to allow switching Logging errors on/off during runtime. Useful when you only want to catch errors on a single operation and not be flooded by other info.
 	* Mrg: Merging PR 1490 from tasky.
@@ -282,9 +265,6 @@ New updates are grouped by person (committer/merger), at the top of the file.
 	* Chg: Force ignore cert checking on irc scraper, as all the synirc certs are either expired or self signed or invalid in some other way.
 	* Add: Support for openssl remote certificate checking on streams/CURL. Please update www/config.php using this guide: https://github.com/nZEDb/nZEDb/wiki/Setting-up-openssl
 	* Fix: Namespacing issue in DB.
-2014-09-01 niel
-	* New: Merged and tagged v0.3.13 to master branch.
-	NOTE: This is the last version of to target PHP 5.4 which has reached its EOL.
 	* Mrg: Merging PR 1479 from tasky
 	* Fix: More name spacing issues.
 2014-08-31 ruhllatio
@@ -322,7 +302,6 @@ New updates are grouped by person (committer/merger), at the top of the file.
 2014-08-25 bart39
 	* Fix: Update XXX releases correctly for no match.
 2014-08-25 niel
-	* New: Merged and tagged v0.3.13 to master branch.
 	* Fix: Attempt to detect remote MySQL server during install and use LOCAL for table loading if so.
 2014-08-24 ruhllatio
 	* Fix: Console SQL errors when review isn't set.
@@ -380,8 +359,6 @@ New updates are grouped by person (committer/merger), at the top of the file.
 2014-08-18 bart39
 	* Fix: Typo.
 	* Fix: Typo in site edit.
-2014-08-18 niel
-	* New: Merged and tagged v0.3.12 to master branch.
 2014-08-17 niel
 	* Mrg: Bringing in tasky's Steam scraping work.
 2014-08-15 kevin
@@ -408,8 +385,6 @@ New updates are grouped by person (committer/merger), at the top of the file.
 	* Fix: undefined index error in MiscSorter and SQL query syntax error
 	* Add: script to optimize nZEDb moving to/from Sphinx (reclaims space from releasesearch that is unused with Sphinx).
 	* Fix: Forgot to remove limit in insert for testing
-2014-08-11 niel
-	* New: Merged and tagged v0.3.11 to master branch.
 2014-08-11 ruhllatio
 	* Chg: Standardize some of MiscSorter... remove needless NNTP, replace some preg with string ops
 	* Fix: Typo onion in ReleaseRemover
@@ -461,8 +436,6 @@ New updates are grouped by person (committer/merger), at the top of the file.
 	* Fix: Issue where alternate usp can be used for headers. #1456
 	* Add: Static function to Nfo to simplify get query options.
 	* Chg: Remove obsolete stuff in Logger and simplify the set folder method.
-2014-08-04 niel
-	* New: Merged and tagged v0.3.10 to master branch.
 2014-08-04 bart39
 	* Mrg: tasky's GiantBomb search changes PR #1449
 2014-08-04 ruhllatio
@@ -555,8 +528,6 @@ New updates are grouped by person (committer/merger), at the top of the file.
 	* Rem: Remove the forced require on multiprocessing settings.php as we do defined checks on all the vars anyways and all the settings are optional.
 	* Chg: Extract the extension from the video file when getting time, as ffmpeg has issues on some videos when using the wrong extension.
 	* Chg: More changes to getVideoTime to increases chances of non black previews.
-2014-07-28 niel
-	* New: Merged and tagged v0.3.9 to master branch
 2014-07-28 kevin
 	* Chg: Another massive boost to header insert speed.
 	* ---: With these changes, if you have not followed INSTALL.txt which says to change the MySQL max_allowed_packet to 16M (or more) you might have issues, be warned.

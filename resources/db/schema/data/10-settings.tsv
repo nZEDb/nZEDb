@@ -63,7 +63,7 @@ indexer	ppa	innerfileblacklist	/setup\.exe|password\.url/i	You can add a regex h
 		nntpproxy	0	Using the NNTP Proxy for nZEDb can improve performance of nZEDb dramatically. It uses connection pooling which not only give more control over the number of connections to use but also reduces time for connection setup/teardown. The proxy also takes care of compressed headers for you. To use this featrure you will need to install pynntp (sudo pip install pynntp or sudo easy_install pynntp) and socketpool (sudo pip install socketpool or sudo easy_install socketpool) (ensure python2 is default) and edit the configuration file (nntpproxy.conf and nntpproxy_a.conf) in the update_scripts/python_scripts/lib (copy sample) directory and finally edit your www/config.php file to use the proxy (username and password are ignored by the proxy - make then anything you like - the proxy doesn't use ssl either). Make sure you turn off the use compressed headers option here in site preferences (the proxy uses compressed headers by default and passes on decompressed data).	nntpproxy
 		nntpretries	10	The maximum number of retry attmpts to connect to nntp provider. On error, each retry takes approximately 5 seconds nntp returns reply. (Default 10).	nntpretries
 		nzbpath	/your/path/to/nzbs/	The directory where nzb files will be stored.	nzbpath
-		nzbsplitlevel	1	Levels deep to store the nzb Files.	nzbsplitlevel
+		nzbsplitlevel	4	Levels deep to store the nzb Files.	nzbsplitlevel
 		nzbthreads	1	The number of threads for Grab NZBs.	nzbthreads
 		partrepair	1	Whether to attempt to repair parts or not, increases backfill/binaries updating time.	partrepair
 		partrepairmaxtries	3	Maximum amount of times to try part repair.	partrepairmaxtries
@@ -90,7 +90,7 @@ indexer	ppa	innerfileblacklist	/setup\.exe|password\.url/i	You can add a regex h
 		segmentstodownload	2	The maximum number of segments to download to generate the sample video file. (Default 2)	segmentstodownload
 		showbacks	0		showbacks
 		showdroppedyencparts	0	For developers. Whether to log all headers that have 'yEnc' and are dropped. Logged to not_yenc/groupname.dropped.txt.	showdroppedyencparts
-		showpasswordedrelease	0	Whether to show passworded or potentially passworded releases in browse, search, api and rss feeds. Potentially passworded means releases which contain .cab or .ace files which are typically password protected.	showpasswordedrelease
+		showpasswordedrelease	10	Whether to show passworded or potentially passworded releases in browse, search, api and rss feeds. Potentially passworded means releases which contain .cab or .ace files which are typically password protected.	showpasswordedrelease
 		sqlpatch	0		sqlpatch
 		storeuserips	0	Whether to store the users ip address when they signup or login.	storeuserips
 		tablepergroup	0	This uses separate tables for collections, binaries and parts for each group.<br />This requires you to run convert_to_tpg.php or reset_truncate.php.<br />This requires that you also run releases_threaded.py.<br />Run: show variables like '%open%f	tablepergroup

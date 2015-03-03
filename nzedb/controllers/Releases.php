@@ -783,6 +783,7 @@ class Releases
 				$ID
 			)
 		);
+		$this->sphinxSearch->updateReleaseSearchName($ID, $searchName);
 	}
 
 	/**
@@ -1490,7 +1491,7 @@ class Releases
 			WHERE r.categoryid BETWEEN 2000 AND 2999
 			AND m.imdbid > 0
 			AND m.cover = 1
-			GROUP BY m.imdbid
+			AND r.id in (select max(id) from releases where imdbid > 0 group by imdbid)
 			ORDER BY r.postdate DESC
 			LIMIT 24"
 		);
@@ -1509,10 +1510,10 @@ class Releases
 				xxx.cover, xxx.title
 			FROM releases r
 			INNER JOIN xxxinfo xxx ON r.xxxinfo_id = xxx.id
-			WHERE r.categoryid BETWEEN 6000 AND 6040
+			WHERE r.categoryid BETWEEN 6000 AND 6999
 			AND xxx.id > 0
 			AND xxx.cover = 1
-			GROUP BY xxx.id
+			AND r.id in (select max(id) from releases where xxxinfo_id > 0 group by xxxinfo_id)
 			ORDER BY r.postdate DESC
 			LIMIT 24"
 		);
@@ -1534,7 +1535,7 @@ class Releases
 			WHERE r.categoryid BETWEEN 1000 AND 1999
 			AND con.id > 0
 			AND con.cover > 0
-			GROUP BY con.id
+			AND r.id in (select max(id) from releases where consoleinfoid > 0 group by consoleinfoid)
 			ORDER BY r.postdate DESC
 			LIMIT 35"
 		);
@@ -1556,7 +1557,7 @@ class Releases
 			WHERE r.categoryid = 4050
 			AND gi.id > 0
 			AND gi.cover > 0
-			GROUP BY gi.id
+			AND r.id in (select max(id) from releases where gamesinfo_id > 0 group by gamesinfo_id)
 			ORDER BY r.postdate DESC
 			LIMIT 35"
 		);
@@ -1579,7 +1580,7 @@ class Releases
 			AND r.categoryid != 3030
 			AND m.id > 0
 			AND m.cover > 0
-			GROUP BY m.id
+			AND r.id in (select max(id) from releases where musicinfoid > 0 group by musicinfoid)
 			ORDER BY r.postdate DESC
 			LIMIT 24"
 		);
@@ -1602,7 +1603,7 @@ class Releases
 			OR r.categoryid = 3030
 			AND b.id > 0
 			AND b.cover > 0
-			GROUP BY b.id
+			AND r.id in (select max(id) from releases where bookinfoid > 0 group by bookinfoid)
 			ORDER BY r.postdate DESC
 			LIMIT 24"
 		);

@@ -208,6 +208,7 @@ CREATE TABLE         collections (
   filecheck      TINYINT(3) UNSIGNED NOT NULL DEFAULT '0',
   filesize       BIGINT UNSIGNED     NOT NULL DEFAULT '0',
   releaseid      INT                 NULL,
+  noise          CHAR(32)            NOT NULL DEFAULT '',
   PRIMARY KEY                               (id),
   INDEX        fromname                     (fromname),
   INDEX        date                         (date),

@@ -1,0 +1,35 @@
+This file details which changes to the code are in which release version. It is a complement to the ChangeLog file which list *when* changes are made to the dev branch.
+
+0.4.19	2015-03-02
+	* Chg: Add new XXX categories to posterwall.
+	* Chg: Make ReleaseRemover more informative of the type it is processing.
+	* Chg: Ignore PC > Mac category for removeExecutable (Core Releases include their exe file for some reason).
+	* Chg: Changing defaults for 'show passworded releases' (now shows potentially passworded) and 'NZB split level' (now 4) for new installs.
+	* Chg: Regex updates / categorize fixes for SD XXX
+	* Chg: Update sphinxsearch RT index when manually editing release searchname.
+	* Chg: Optimize queries for new release posterwall.
+
+	* Mrg: PR 1602 from dariusIII - Add XXX WEB-DL category to XXX releases.
+	* Mrg: PR 1600 from kevin - Add support for in DB collections (grouping) regex.
+	* Mrg: PR 1599 from kevin - Changes to install templates.
+	* Mrg: PR 1590 from dariusIII - Add XXX-SD category.
+		***NOTE*** run "php /misc/testing/Dev/recategorize.php all" to re-categorize existing releases.
+	* Mrg: PR 1589 from dariusIII - Updated regex for codec poster.
+
+	* Fix: RottenTomatoes high-res images - clear your smarty cache.
+	* Fix: Group XXX pack releases in a.b.erotica correctly.
+	* Fix: Missing binaries from releases due to collection_id not being set.
+		Suggest that you run reset_truncate after this update.
+		NB: IMPORTANT - TPG users (that means you McFuzz) must run "php /nzedb/build/_runonce/tpg_add_collections_column_205-02-20.php"
+		FAILURE TO DO SO WILL CAUSE INSERT ERRORS
+	* Fix: Issue 1594 - Fix word wrap on alpha theme.
+	* Fix: Reading a corrupt nzb would hang on 100% cpu.
+	* Fix: Dupecheck when inserting tvrage titles.
+	* Fix: Issue with mysqldump_tables.php when using socket.
+	* Fix: Another issue with mysqldump_tables.php when using sockets.
+
+0.4.0	2014-09-08 niel
+	NOTE: This version forward targets PHP 5.5 and later.
+
+0.3.13	2014-09-01
+	NOTE: This is the last version of nZEDb to target PHP 5.4 which has reached its EOL.

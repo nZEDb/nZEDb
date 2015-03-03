@@ -57,6 +57,8 @@ id, title, parentid
 6050	Other	6000
 6060	Imageset	6000
 6070	Packs	6000
+6080	SD	6000
+6090	WEBDL	6000
 7010	Misc	7000
 7020	Hashed	7000
 8010	Ebook	8000

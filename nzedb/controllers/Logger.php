@@ -535,6 +535,7 @@ class Logger
 			) {
 				throw new \LoggerException('Unable to create new log file ' . $this->logPath);
 			}
+			chmod($this->logPath, 0664);
 		}
 	}
 
