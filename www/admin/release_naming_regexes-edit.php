@@ -2,7 +2,7 @@
 require_once './config.php';
 
 $page = new AdminPage();
-$regexes = new Regexes(['Settings' => $page->settings, 'Table_Name' => 'collection_regexes']);
+$regexes = new Regexes(['Settings' => $page->settings, 'Table_Name' => 'release_naming_regexes']);
 
 // Set the current action.
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
@@ -34,17 +34,17 @@ switch($action) {
 			$regexes->updateRegex($_POST);
 		}
 
-		header("Location:".WWW_TOP."/collection_regexes-list.php");
+		header("Location:".WWW_TOP."/release_naming_regexes-list.php");
 		break;
 
 	case 'view':
 	default:
 		if (isset($_GET["id"])) {
-			$page->title = "Collections Regex Edit";
+			$page->title = "Release Naming Regex Edit";
 			$id = $_GET["id"];
 			$r = $regexes->getRegexByID($id);
 		} else {
-			$page->title = "Collections Regex Add";
+			$page->title = "Release Naming Regex Add";
 			$r = ['status' => 1];
 		}
 		$page->smarty->assign('regex', $r);
@@ -54,5 +54,5 @@ switch($action) {
 $page->smarty->assign('status_ids', array(Category::STATUS_ACTIVE,Category::STATUS_INACTIVE));
 $page->smarty->assign('status_names', array( 'Yes', 'No'));
 
-$page->content = $page->smarty->fetch('collection_regexes-edit.tpl');
+$page->content = $page->smarty->fetch('release_naming_regexes-edit.tpl');
 $page->render();

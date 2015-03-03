@@ -606,6 +606,30 @@ function ajax_collection_regex_delete(id)
     });
 }
 
+/**
+ * ajax_release_naming_regex_delete()
+ *
+ * @param id        binary id
+ */
+function ajax_release_naming_regex_delete(id)
+{
+    // no caching of results
+    var rand_no = Math.random();
+    $.ajax({
+        url       : WWW_TOP + '/admin/ajax.php?action=release_naming_regex_delete&rand=' + rand_no,
+        data      : { row_id: id},
+        dataType  : "html",
+        success   : function(data)
+        {
+            $('div#message').html(data);
+            $('div#message').show('fast', function() {});
+            $('#row-'+id).fadeOut(2000);
+            $('#message').fadeOut(5000);
+        },
+        error: function(xhr,err,e) { alert( "Error in ajax_release_naming_regex_delete: " + err ); }
+    });
+}
+
 jQuery(function($){
 
 $('#regexGroupSelect').change(function() {

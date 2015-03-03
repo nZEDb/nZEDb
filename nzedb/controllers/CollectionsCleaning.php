@@ -60,9 +60,9 @@ class CollectionsCleaning
 	public $pdo;
 
 	/**
-	 * @var array Cache of regex and their TTL.
+	 * @var Regexes
 	 */
-	protected $_regexCache;
+	protected $_regexes;
 
 	/**
 	 * @param array $options Class instances.
@@ -80,183 +80,7 @@ class CollectionsCleaning
 		$options += $defaults;
 
 		$this->pdo = ($options['Settings'] instanceof nzedb\db\Settings ? $options['Settings'] : new nzedb\db\Settings());
-	}
-
-	/**
-	 * Add a new regex.
-	 *
-	 * @param array $data
-	 *
-	 * @return bool
-	 */
-	public function addRegex(array $data)
-	{
-		return (bool)$this->pdo->queryInsert(
-			sprintf(
-				'INSERT INTO collection_regexes (group_regex, regex, status, description, ordinal) VALUES (%s, %s, %d, %s, %d)',
-				trim($this->pdo->escapeString($data['group_regex'])),
-				trim($this->pdo->escapeString($data['regex'])),
-				$data['status'],
-				trim($this->pdo->escapeString($data['description'])),
-				$data['ordinal']
-			)
-		);
-	}
-
-	/**
-	 * Update a regex with new info.
-	 *
-	 * @param array $data
-	 *
-	 * @return bool
-	 */
-	public function updateRegex(array $data)
-	{
-		return (bool)$this->pdo->queryExec(
-			sprintf(
-				'UPDATE collection_regexes
-				SET group_regex = %s, regex = %s, status = %d, description = %s, ordinal = %d
-				WHERE id = %d',
-				trim($this->pdo->escapeString($data['group_regex'])),
-				trim($this->pdo->escapeString($data['regex'])),
-				$data['status'],
-				trim($this->pdo->escapeString($data['description'])),
-				$data['ordinal'],
-				$data['id']
-			)
-		);
-	}
-
-	/**
-	 * Get a single regex using its id.
-	 *
-	 * @param int $id
-	 *
-	 * @return array
-	 */
-	public function getRegexByID($id)
-	{
-		return $this->pdo->queryOneRow(sprintf('SELECT * FROM collection_regexes WHERE id = %d', $id));
-	}
-
-	/**
-	 * Get all regex.
-	 *
-	 * @param string $group_regex Optional, a keyword to find a group.
-	 * @param int    $limit       Optional, amount of results to limit.
-	 * @param int    $offset      Optional, the offset to use when limiting the result set.
-	 *
-	 * @return array
-	 */
-	public function getRegex($group_regex = '', $limit = 0, $offset = 0)
-	{
-		return $this->pdo->query(
-			sprintf(
-				'SELECT * FROM collection_regexes %s %s',
-				($group_regex ? ('WHERE group_regex ' . $this->pdo->likeString($group_regex)) : ''),
-				($limit ? ('LIMIT ' . $limit . ' OFFSET ' . $offset) : '')
-			)
-		);
-	}
-
-	/**
-	 * Get the count of regex in the DB.
-	 *
-	 * @param string $group_regex Optional, keyword to find a group.
-	 *
-	 * @return int
-	 */
-	public function getCount($group_regex = '')
-	{
-		$query = $this->pdo->queryOneRow(
-			sprintf(
-				'SELECT COUNT(id) AS count FROM collection_regexes %s',
-				($group_regex ? ('WHERE group_regex ' . $this->pdo->likeString($group_regex)) : '')
-			)
-		);
-		return (int)$query['count'];
-	}
-
-	/**
-	 * Delete a regex using its id.
-	 *
-	 * @param int $id
-	 */
-	public function deleteRegex($id)
-	{
-		$this->pdo->queryExec('DELETE FROM collection_regexes WHERE id = ' . $id);
-	}
-
-	/**
-	 * Test a regex for a group name.
-	 *
-	 * Requires table per group to be on.
-	 *
-	 * @param string $groupName
-	 * @param string $regex
-	 * @param int    $limit
-	 *
-	 * @return array
-	 */
-	public function testRegex($groupName, $regex, $limit)
-	{
-		$groups = new Groups(['Settings' => $this->pdo]);
-		$groupID = $groups->getIDByName($groupName);
-
-		if (!$groupID) {
-			return [];
-		}
-
-		$tableNames = $groups->getCBPTableNames(true, $groupID);
-
-		$rows = $this->pdo->query(
-			sprintf(
-				'SELECT
-					b.name, b.totalparts, b.currentparts, b.binaryhash,
-					c.fromname, c.collectionhash
-				FROM %s b
-				INNER JOIN %s c ON c.id = b.collection_id',
-				$tableNames['bname'], $tableNames['cname']
-			)
-		);
-
-		$data = [];
-		if ($rows) {
-			$limit--;
-			$hashes = [];
-			foreach ($rows as $row) {
-				if (preg_match($regex, $row['name'], $matches)) {
-					ksort($matches);
-					$string = $string2 = '';
-					foreach ($matches as $key => $match) {
-						if (!is_int($key)) {
-							$string .= $match;
-							$string2 .= '<br/>' . $key . ': ' . $match;
-						}
-					}
-					$files = 0;
-					if (preg_match('/[[(\s](\d{1,5})(\/|[\s_]of[\s_]|-)(\d{1,5})[])\s$:]/i', $row['name'], $fileCount)) {
-						$files = $fileCount[3];
-					}
-					$newCollectionHash = sha1($string . $row['fromname'] . $groupID . $files);
-					$data['New hash: ' . $newCollectionHash . $string2][$row['binaryhash']] = [
-						'file_name'           => $row['name'],
-						'file_total_parts'    => $row['totalparts'],
-						'file_current_parts'  => $row['currentparts'],
-						'collection_poster'   => $row['fromname'],
-						'old_collection_hash' => $row['collectionhash'],
-					];
-
-					if ($limit > 0) {
-						if (count($hashes) > $limit) {
-							break;
-						}
-						$hashes[$newCollectionHash] = '';
-					}
-				}
-			}
-		}
-		return $data;
+		$this->_regexes = new Regexes(['Settings' => $this->pdo, 'Table_Name' => 'collection_regexes']);
 	}
 
 	/**
@@ -273,7 +97,7 @@ class CollectionsCleaning
 		$this->groupName = $groupName;
 
 		// Try DB regex first.
-		$potentialString = $this->_processDBRegex();
+		$potentialString = $this->_regexes->tryRegex($subject, $groupName);
 		if ($potentialString) {
 			return $potentialString;
 		}
@@ -470,81 +294,6 @@ class CollectionsCleaning
 			default:
 				return $this->generic();
 		}
-	}
-
-	/**
-	 * Get the regex from the DB, cache them locally for 15 mins.
-	 * Cache them also in the cache server, as this script might be terminated.
-	 */
-	protected function _fetchRegex()
-	{
-		// Check if we need to do an initial cache or refresh our cache.
-		if (isset($this->_regexCache[$this->groupName]['ttl']) && (time() - $this->_regexCache[$this->groupName]['ttl']) < 900) {
-			return;
-		}
-
-		// Get all regex from DB which match the current group name. Cache them for 15 minutes. #CACHEDQUERY#
-		$this->_regexCache[$this->groupName]['regex'] = $this->pdo->query(
-			sprintf(
-				'SELECT c.regex FROM collection_regexes c WHERE %s REGEXP c.group_regex AND c.status = 1 ORDER BY c.ordinal ASC, c.group_regex ASC',
-				$this->pdo->escapeString($this->groupName)
-			), true, 900
-		);
-		// Set the TTL.
-		$this->_regexCache[$this->groupName]['ttl'] = time();
-	}
-
-	/**
-	 * This will process the regex stored in the DB before trying hardcoded regex below.
-	 *
-	 * @return string
-	 */
-	protected function _processDBRegex()
-	{
-		$this->_fetchRegex();
-
-		$returnString = '';
-		// If there are no regex, return and try regex in this file.
-		if ($this->_regexCache[$this->groupName]['regex']) {
-			foreach ($this->_regexCache[$this->groupName]['regex'] as $regex) {
-
-				$returnString = $this->_matchDBRegex($regex['regex']);
-				// If this regex found something, break and return, or else continue trying other regex.
-				if ($returnString) {
-					break;
-				}
-			}
-		}
-		return $returnString;
-	}
-
-	/**
-	 * Find matches on a regex taken from the database.
-	 *
-	 * Requires at least 1 named captured group.
-	 *
-	 * @param string $regex
-	 *
-	 * @return string
-	 */
-	protected function _matchDBRegex($regex)
-	{
-		$returnString = '';
-		if (preg_match($regex, $this->subject, $matches)) {
-			if (count($matches) > 0) {
-				// Sort the keys, the named key matches will be concatenated in this order.
-				ksort($matches);
-				foreach ($matches as $key => $value) {
-					// Ignore non-named capture groups. Only named capture groups are important.
-					if (is_int($key)) {
-						continue;
-					}
-					// Concatenate the string to return.
-					$returnString .= $value;
-				}
-			}
-		}
-		return $returnString;
 	}
 
 	// a.b.0daystuffz
