@@ -953,15 +953,6 @@ class Categorize extends Category
 		return false;
 	}
 
-	public function isXxxSD()
-	{
-		if (preg_match('/SDX264XXX|XXX\.HR\./i', $this->releaseName)) {
-			$this->tmpCat = \Category::CAT_XXX_SD;
-			return true;
-		}
-		return false;
-	}
-
 	//	Console.
 	public function isConsole()
 	{
