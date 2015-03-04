@@ -24,7 +24,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	* Fix: Group XXX pack releases in a.b.erotica correctly.
 	* Fix: Missing binaries from releases due to collection_id not being set.
 		Suggest that you run reset_truncate after this update.
-		NB: IMPORTANT - TPG users (that means you McFuzz) must run "php /nzedb/build/_runonce/tpg_add_collections_column_205-02-20.php"
+		NB: IMPORTANT - TPG users (that means you McFuzz) must run "php /nzedb/build/_runonce/tpg_add_collections_column_2015-02-20.php"
 		FAILURE TO DO SO WILL CAUSE INSERT ERRORS
 2015-02-17 bart39
 	* Chg: Regex updates / categorize fixes for SD XXX
