@@ -328,6 +328,22 @@ class Utility
 		return ((strtolower(PHP_SAPI) === 'cli') ? true : false);
 	}
 
+	static public function isGZipped($filename)
+	{
+		$gzipped = null;
+		if (($fp = fopen($filename, 'r')) !== false) {
+			if (@fread($fp, 2) == "\x1F\x8B") { // this is a gzip'd file
+				fseek($fp, -4, SEEK_END);
+				if (strlen($datum = @fread($fp, 4)) == 4) {
+					$gzipped = $datum;
+				}
+			}
+			fclose($fp);
+		}
+
+		return ($gzipped);
+	}
+
 	static public function isPatched(Settings $pdo = null)
 	{
 		$versions = self::getValidVersionsFile();
@@ -454,27 +470,27 @@ class Utility
 	 */
 	static public function unzipGzipFile($filePath)
 	{
-		// String to hold the NZB contents.
+		/* Potential issues with this, so commenting out.
+		$length = Utility::isGZipped($filePath);
+		if ($length === false || $length === null) {
+			return false;
+		}*/
+
 		$string = '';
-		// Open the gzip file.
 		$gzFile = @gzopen($filePath, 'rb', 0);
 		if ($gzFile) {
-			// Append the decompressed data to the string until we find the end of file pointer.
 			while (!gzeof($gzFile)) {
 				$temp = gzread($gzFile, 1024);
-				// Check for corrupt data, there will be no end of file, so the loop would go on and on taking 100% CPU.
-				if ($temp) {
-					$string .= $temp;
-				} else {
-					// If the data was corrupt, set the big string empty so we return false and break out of the loop.
-					$string = '';
+				// Check for empty string.
+				// Without this the loop would be endless and consume 100% CPU.
+				// Do not set $string empty here, as the data might still be good.
+				if (!$temp) {
 					break;
 				}
+				$string .= $temp;
 			}
-			// Close the gzip file.
 			gzclose($gzFile);
 		}
-		// Return the string.
 		return ($string === '' ? false : $string);
 	}
 

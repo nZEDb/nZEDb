@@ -170,7 +170,7 @@ class Binaries
 		$this->_groups = ($options['Groups'] instanceof \Groups ? $options['Groups'] : new \Groups(['Settings' => $this->_pdo]));
 		$this->_colorCLI = ($options['ColorCLI'] instanceof \ColorCLI ? $options['ColorCLI'] : new \ColorCLI());
 		$this->_nntp = ($options['NNTP'] instanceof \NNTP ? $options['NNTP'] : new \NNTP(['Echo' => $this->_colorCLI, 'Settings' => $this->_pdo, 'ColorCLI' => $this->_colorCLI]));
-		$this->_collectionsCleaning = ($options['CollectionsCleaning'] instanceof \CollectionsCleaning ? $options['CollectionsCleaning'] : new \CollectionsCleaning());
+		$this->_collectionsCleaning = ($options['CollectionsCleaning'] instanceof \CollectionsCleaning ? $options['CollectionsCleaning'] : new \CollectionsCleaning(['Settings' => $this->_pdo]));
 
 		$this->_debug = (nZEDb_DEBUG || nZEDb_LOGGING);
 
@@ -718,7 +718,7 @@ class Binaries
 							$groupMySQL['id'],
 							$fileCount[3],
 							sha1($header['CollectionKey']),
-							md5(uniqid('', true) . mt_rand())
+							bin2hex(openssl_random_pseudo_bytes(16))
 						)
 					);
 
