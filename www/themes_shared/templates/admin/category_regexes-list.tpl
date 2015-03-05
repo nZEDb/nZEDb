@@ -1,5 +1,7 @@
 <h1>{$page->title}</h1>
-<p>This page lists regex used for categorizing releases.</p>
+<p>This page lists regex used for categorizing releases.<br />
+	You can recategorize all releases by running misc/update/update_releases.php 6 true
+</p>
 <div id="message"></div>
 
 <form name="groupsearch" action="" style="margin-bottom:5px;">
