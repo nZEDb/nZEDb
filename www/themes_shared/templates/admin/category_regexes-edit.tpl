@@ -11,7 +11,7 @@
 				<input type="text" id="group_regex" name="group_regex" value="{$regex.group_regex|escape:html}" />
 				<div class="hint">
 					Regex to match against a group or multiple groups.<br />
-					Delimiters are already added, and PCRE_CASELESS is added after for case insensitivity.<br />
+					Delimiters are already added, and PCRE_CASELESS is added after for case insensitivity.
 					An example of matching a single group: alt\.binaries\.example<br />
 					An example of matching multiple groups: alt\.binaries.*
 				</div>
@@ -22,14 +22,9 @@
 			<td>
 				<textarea id="regex" name="regex" >{$regex.regex|escape:html}</textarea>
 				<div class="hint">
-					The regex to use when trying to name a release using the usenet subject.<br />
+					Regex to use when categorizing releases.<br />
 					The regex delimiters are not added, you MUST add them. See <a href="http://php.net/manual/en/regexp.reference.delimiters.php">this</a> page.<br />
 					To make the regex case insensitive, add i after the last delimiter.<br />
-					You MUST include at least one regex capture group.<br />
-					You MUST name your regex capture groups (the ones you want included).<br />
-					The named capture groups will be concatenated into a string.<br />
-					Capture groups are sorted alphabetically (by capture group name) when concatenating the string.<br />
-					Capture groups named 'reqid' and 'parts' are ignored.
 				</div>
 			</td>
 		</tr>
@@ -59,6 +54,13 @@
 			<td>
 				{html_radios id="status" name='status' values=$status_ids output=$status_names selected=$regex.status separator='<br />'}
 				<div class="hint">Only active regex are used during the collection matching process.</div>
+			</td>
+		</tr>
+		<tr>
+			<td><label for="category_id">Category:</label></td>
+			<td>
+				{html_options id="category_id" name='category_id' values=$category_ids output=$category_names selected=$regex.category_id}
+				<div class="hint">Select a category which releases matched to this regex will go into.</div>
 			</td>
 		</tr>
 		<tr>
