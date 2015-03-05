@@ -1,6 +1,7 @@
 <?php
 
 use \nzedb\processing\PostProcess;
+use \nzedb\utility\Utility;
 
 /**
  * Gets information contained within the NZB.
@@ -287,7 +288,7 @@ Class NZBContents
 			return false;
 		}
 
-		$nzbContents = nzedb\utility\Utility::unzipGzipFile($nzbPath);
+		$nzbContents = Utility::unzipGzipFile($nzbPath);
 		if (!$nzbContents) {
 			if ($this->echooutput) {
 				echo
