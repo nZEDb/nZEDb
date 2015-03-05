@@ -277,7 +277,7 @@ Class NZBContents
 	 *
 	 * @access public
 	 */
-	public function LoadNZB(&$guid)
+	public function LoadNZB($guid)
 	{
 		// Fetch the NZB location using the GUID.
 		$nzbPath = $this->nzb->NZBPath($guid);
