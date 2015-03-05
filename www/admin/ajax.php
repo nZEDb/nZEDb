@@ -19,6 +19,12 @@ switch($_GET['action']) {
 		print "Blacklist $id deleted.";
 		break;
 
+	case 'category_regex_delete':
+		$id = (int) $_GET['row_id'];
+		(new Regexes(['Settings' => $admin->settings, 'Table_Name' => 'category_regexes']))->deleteRegex($id);
+		print "Regex $id deleted.";
+		break;
+
 	case 'collection_regex_delete':
 		$id = (int) $_GET['row_id'];
 		(new Regexes(['Settings' => $admin->settings, 'Table_Name' => 'collection_regexes']))->deleteRegex($id);
