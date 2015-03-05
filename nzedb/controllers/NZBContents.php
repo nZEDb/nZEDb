@@ -98,7 +98,7 @@ Class NZBContents
 		$this->pp = (
 			$options['PostProcess'] instanceof PostProcess
 				? $options['PostProcess']
-				: new \PostProcess(['Echo' => $this->echooutput, 'Nfo' => $this->nfo, 'Settings' => $this->pdo])
+				: new PostProcess(['Echo' => $this->echooutput, 'Nfo' => $this->nfo, 'Settings' => $this->pdo])
 		);
 		$this->nzb = ($options['NZB'] instanceof \NZB ? $options['NZB'] : new \NZB($this->pdo));
 
