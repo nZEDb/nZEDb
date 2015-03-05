@@ -420,7 +420,7 @@ Class ProcessAdditional
 			);
 		}
 
-		$this->_showCLIReleaseID = (version_compare(PHP_VERSION, '5.5.0', '>=') ? (PHP_BINARY . ' ' . __DIR__ . DS .  'ProcessAdditional.php ReleaseID: ') : false);
+		$this->_showCLIReleaseID = (PHP_BINARY . ' ' . __DIR__ . DS .  'ProcessAdditional.php ReleaseID: ');
 
 		// Maximum amount of releases to fetch per run.
 		$this->_queryLimit =
@@ -756,17 +756,8 @@ Class ProcessAdditional
 			@umask($old);
 
 			if (!is_dir($this->tmpPath)) {
-
 				$this->_echo('Unable to create directory: ' . $this->tmpPath, 'warning');
-
-				// Decrement password status.
-				$this->pdo->queryExec(
-					sprintf(
-						'UPDATE releases SET passwordstatus = passwordstatus - 1 WHERE id = %d',
-						$this->_release['id']
-					)
-				);
-				return false;
+				return $this->_decrementPasswordStatus();
 			}
 		}
 		return true;
@@ -781,41 +772,45 @@ Class ProcessAdditional
 	{
 		$nzbPath = $this->_nzb->NZBPath($this->_release['guid']);
 		if ($nzbPath === false) {
-
 			$this->_echo('NZB not found for GUID: ' . $this->_release['guid'], 'warning');
-
-			// The nzb was not located. decrement the password status.
-			$this->pdo->queryExec(
-				sprintf(
-					'UPDATE releases SET passwordstatus = passwordstatus - 1 WHERE id = %d',
-					$this->_release['id']
-				)
-			);
-			return false;
+			return $this->_decrementPasswordStatus();
 		}
 
 		$nzbContents = Utility::unzipGzipFile($nzbPath);
+		if (!$nzbContents) {
+			$this->_echo('NZB is empty or broken for GUID: ' . $this->_release['guid'], 'warning');
+			return $this->_decrementPasswordStatus();
+		}
 
 		// Get a list of files in the nzb.
 		$this->_nzbContents = $this->_nzb->nzbFileList($nzbContents);
 		if (count($this->_nzbContents) === 0) {
-
-			$this->_echo('NZB is empty or broken for GUID: ' . $this->_release['guid'], 'warning');
-
-			// There does not appear to be any files in the nzb, decrement password status.
-			$this->pdo->queryExec(
-				sprintf(
-					'UPDATE releases SET passwordstatus = passwordstatus - 1 WHERE id = %d',
-					$this->_release['id']
-				)
-			);
-			return false;
+			$this->_echo('NZB is potentially broken for GUID: ' . $this->_release['guid'], 'warning');
+			return $this->_decrementPasswordStatus();
 		}
 
 		// Sort the files inside the NZB.
 		usort($this->_nzbContents, ['\nzedb\processing\post\ProcessAdditional', '_sortNZB']);
 
 		return true;
+	}
+
+	/**
+	 * Decrement password status for the current release.
+	 *
+	 * @param bool $return Return value.
+	 *
+	 * @return bool
+	 */
+	protected function _decrementPasswordStatus($return = false)
+	{
+		$this->pdo->queryExec(
+			sprintf(
+				'UPDATE releases SET passwordstatus = passwordstatus - 1 WHERE id = %d',
+				$this->_release['id']
+			)
+		);
+		return $return;
 	}
 
 	/**
@@ -1605,10 +1600,9 @@ Class ProcessAdditional
 		// If we failed to get anything from the RAR/ZIPs, decrement the passwordstatus, if the rar/zip has no password.
 		if ($this->_releaseHasPassword === false && $this->_NZBHasCompressedFile && $releaseFiles['count'] == 0) {
 			$query = sprintf(
-				'
-								UPDATE releases
-								SET passwordstatus = passwordstatus - 1, rarinnerfilecount = %d %s %s %s
-								WHERE id = %d',
+				'UPDATE releases
+				SET passwordstatus = passwordstatus - 1, rarinnerfilecount = %d %s %s %s
+				WHERE id = %d',
 				$releaseFiles['count'],
 				$iSQL,
 				$vSQL,
@@ -1618,8 +1612,7 @@ Class ProcessAdditional
 		} // Else update the release with the password status (if the admin enabled the setting).
 		else {
 			$query = sprintf(
-				'
-				UPDATE releases
+				'UPDATE releases
 				SET passwordstatus = %d, rarinnerfilecount = %d %s %s %s
 				WHERE id = %d',
 				($this->_processPasswords === true ? $this->_passwordStatus : \Releases::PASSWD_NONE),

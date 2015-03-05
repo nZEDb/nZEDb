@@ -39,6 +39,11 @@ class Categorize extends Category
 	public $groupID;
 
 	/**
+	 * @var Regexes
+	 */
+	public $regexes;
+
+	/**
 	 * Construct.
 	 *
 	 * @param array $options Class instances.
@@ -48,6 +53,7 @@ class Categorize extends Category
 		parent::__construct($options);
 		$this->categorizeForeign = ($this->pdo->getSetting('categorizeforeign') == "0") ? false : true;
 		$this->catWebDL = ($this->pdo->getSetting('catwebdl') == "0") ? false : true;
+		$this->regexes = new Regexes(['Settings' => $this->pdo, 'Table_Name' => 'category_regexes']);
 	}
 
 	/**
@@ -68,9 +74,9 @@ class Categorize extends Category
 
 		switch (true) {
 			case $this->isMisc():
-				// Note that in byGroup() some overrides occur...
-			case $this->byGroup():
-				//Try against all functions, if still nothing, return Cat Misc.
+			case $this->databaseRegex():
+			case $this->byGroup(): // Note that in byGroup() some overrides occur...
+			//Try against all functions, if still nothing, return Cat Misc.
 			case $this->isPC():
 			case $this->isXXX():
 			case $this->isTV():
@@ -85,15 +91,35 @@ class Categorize extends Category
 	}
 
 	/**
+	 * Cache of group names for group ID's.
+	 * @var array
+	 */
+	private $groups = [];
+
+	/**
+	 * Sets/Gets a group name for the current group ID in the buffer.
+	 *
+	 * @return string Group Name.
+	 */
+	private function groupName()
+	{
+		if (!isset($this->groups[$this->groupID])) {
+			$group = $this->pdo->queryOneRow(sprintf('SELECT LOWER(name) AS name FROM groups WHERE id = %d', $this->groupID));
+			$this->groups[$this->groupID] = ($group === false ? false : $group['name']);
+		}
+
+		return $this->groups[$this->groupID];
+	}
+
+	/**
 	 * Determine category by group name.
 	 *
 	 * @return bool
 	 */
 	public function byGroup()
 	{
-		$group = $this->pdo->queryOneRow(sprintf('SELECT LOWER(name) AS name FROM groups WHERE id = %d', $this->groupID));
+		$group = $this->groupName();
 		if ($group !== false) {
-			$group = $group['name'];
 			switch (true) {
 				case $group === 'alt.binaries.0day.stuffz':
 					switch (true) {
@@ -416,9 +442,6 @@ class Categorize extends Category
 					}
 					$this->tmpCat = \Category::CAT_GAME_PSP;
 					break;
-				case $group === 'alt.binaries.sony.psvita':
-					$this->tmpCat = \Category::CAT_GAME_PSVITA;
-					break;
 				case $group === 'alt.binaries.warez':
 					switch (true) {
 						case $this->isTV():
@@ -450,6 +473,20 @@ class Categorize extends Category
 			return true;
 		}
 
+		return false;
+	}
+
+	/**
+	 * Try database regexes against a group / release name.
+	 * @return bool
+	 */
+	public function databaseRegex()
+	{
+		$cat = $this->regexes->tryRegex($this->releaseName, $this->groupName());
+		if ($cat) {
+			$this->tmpCat = $cat;
+			return true;
+		}
 		return false;
 	}
 
@@ -834,6 +871,7 @@ class Categorize extends Category
 				return false;
 			case $this->isXxxPack():
 			case $this->isXxxSD():
+			case $this->catWebDL && $this->isXxxWEBDL():
 			case $this->isXxx264():
 			case $this->isXxxXvid():
 			case $this->isXxxImageset():
@@ -854,6 +892,13 @@ class Categorize extends Category
 			$this->tmpCat = \Category::CAT_XXX_X264;
 
 			return true;
+		}
+
+		if ($this->catWebDL == false) {
+			if (preg_match('/web[-._ ]dl|web-?rip/i', $this->releaseName)) {
+				$this->tmpCat = \Category::CAT_XXX_X264;
+				return true;
+			}
 		}
 
 		return false;
@@ -930,6 +975,15 @@ class Categorize extends Category
 	{
 		if (preg_match('/SDX264XXX|XXX\.HR\./i', $this->releaseName)) {
 			$this->tmpCat = \Category::CAT_XXX_SD;
+			return true;
+		}
+		return false;
+	}
+
+	public function isXxxWEBDL()
+	{
+		if (preg_match('/web[-._ ]dl|web-?rip/i', $this->releaseName)) {
+			$this->tmpCat = \Category::CAT_XXX_WEBDL;
 			return true;
 		}
 		return false;

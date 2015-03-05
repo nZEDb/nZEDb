@@ -3,18 +3,40 @@ Pull requests will be accepted *only* against the dev branch.
 Please make sure any PR's comply with our coding standards policy: http://li3.me/docs/specs/accepted/LSR-0-coding.md
 
 New updates are grouped by person (committer/merger), at the top of the file.
+All entries are dated according to merging into the code in dev branch.
+For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2015-03-05 bart39
+	* Mrg: PR #1612 from kevin - Add support for category regexes in the DB.
+2015-03-04 bart39
+	* Mrg: PR #1610 from kevin - Dev regexes.
+2015-03-02 bart39
+	* Mrg: PR #1608 from kevin - Faster / more random hex string gen (for release guid and binary hash).
+	* Mrg: PR #1607 from kevin - Fixes for compressed NZB reading and return.
+2015-02-27 bart39
+	* Mrg: PR #1606 from kevin - Add database release naming regex support.
+	* Mrg: PR #1605 from kevin - Update opcache-gui to v2.0.1.
+2015-02-26 bart39
+	* Mrg: PR #1603 from kevin - Remove unneeded PHP version checks. Remove password compat library.
+	* Mrg: PR #1604 from kevin - Move all php ajax receiver files into 1 file.
+2015-02-25 bart39
+	* Chg: Add number of nzbs to import per process to tmux settings - Feaure Request #1287.
+	* Chg: Add new XXX categories to posterwall.
+	* Mrg: PR #1600 from kevin - Add support for in DB collections (grouping) regex.
+	* Mrg: PR #1599 from kevin - Changes to install templates.
+	* Mrg: PR #1602 from dariusIII - Add XXX WEB-DL category to XXX releases.
+		***NOTE*** run "php /misc/testing/Dev/recategorize.php all" to re-categorize existing releases.
+	* Fix: RottenTomatoes high-res images - clear your smarty cache.
 2015-02-21 niel
 	* Chg: Changing defaults for 'show passworded releases' (now shows potentially passworded) and 'NZB split level' (now 4) for new installs.
 2015-02-20 bart39
-	* Fix: Group XXX pack releases in abErotica correctly.
+	* Fix: Group XXX pack releases in a.b.erotica correctly.
 	* Fix: Missing binaries from releases due to collection_id not being set.
 		Suggest that you run reset_truncate after this update.
-		NB: IMPORTANT - TPG users (that means you McFuzz) must run "php /nzedb/build/_runonce/tpg_add_collections_column_205-02-20.php"
+		NB: IMPORTANT - TPG users (that means you McFuzz) must run "php /nzedb/build/_runonce/tpg_add_collections_column_2015-02-20.php"
 		FAILURE TO DO SO WILL CAUSE INSERT ERRORS
 2015-02-17 bart39
 	* Chg: Regex updates / categorize fixes for SD XXX
-2015-02-17 bart39
 	* Chg: Update sphinxsearch RT index when manually editing release searchname.
 	* Chg: Optimize queries for new release posterwall.
 	* Fix: Issue 1594 - Fix word wrap on alpha theme.
@@ -38,7 +60,6 @@ New updates are grouped by person (committer/merger), at the top of the file.
 	* Chg: Added tmp_pre to schema as permanent table and changed predb scripts accordingly.
 2015-01-07 niel
 	* Fix: Issue 1575 - Notice: Undefined variable: consoletools in /home/schwick/www/nZEDb/misc/update/predbftmatch.php on line 84
-
 2015-01-28 niel
 	* Fix: Removing extra tab from innerfileblacklist row that causes the setting to not work.
 
@@ -49,7 +70,6 @@ New updates are grouped by person (committer/merger), at the top of the file.
 		***NOTE*** Nginx users need to manually change the rewrite rule for file extensions as described in the Ubuntu install guide.
 2014-12-28 niel
 	* Fix: Query in dump_predb.php to add new groups had a typo. Thanks to makkbe on github for the fix.
-
 2014-12-24 ruhllatio
 	* Del: Deprecated AniDB cron script that won't work.  Use the populate_anidb script instead, then resume postproc.
 2014-12-23 niel

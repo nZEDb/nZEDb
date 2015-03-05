@@ -101,7 +101,7 @@ class Releases
 	 */
 	public function createGUID()
 	{
-		return sha1(uniqid('', true) . mt_rand());
+		return bin2hex(openssl_random_pseudo_bytes(20));
 	}
 
 	/**
@@ -1510,7 +1510,7 @@ class Releases
 				xxx.cover, xxx.title
 			FROM releases r
 			INNER JOIN xxxinfo xxx ON r.xxxinfo_id = xxx.id
-			WHERE r.categoryid BETWEEN 6000 AND 6040
+			WHERE r.categoryid BETWEEN 6000 AND 6999
 			AND xxx.id > 0
 			AND xxx.cover = 1
 			AND r.id in (select max(id) from releases where xxxinfo_id > 0 group by xxxinfo_id)
