@@ -7,6 +7,7 @@ All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 2015-03-06 bart39
+	* Mrg: PR #1615 from kevin - Rename tmp_pre to predb_imports.
 	* Mrg: PR #1614 from kevin - Parsing black lists on white listed fields.
 2015-03-05 bart39
 	* Mrg: PR #1612 from kevin - Add support for category regexes in the DB.
