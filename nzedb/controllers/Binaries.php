@@ -16,11 +16,17 @@ class Binaries
 	const BLACKLIST_FIELD_MESSAGEID = 3;
 
 	/**
-	 * The cache of the blacklist.
+	 * Cache of black list regexes.
 	 *
 	 * @var array
 	 */
 	public $blackList = [];
+
+	/**
+	 * Cache of white list regexes.
+	 * @var array
+	 */
+	public $whiteList = [];
 
 	/**
 	 * How many headers do we download per loop?
@@ -53,13 +59,6 @@ class Binaries
 	 * @var NNTP
 	 */
 	protected $_nntp;
-
-	/**
-	 * Is the blacklist already cached?
-	 *
-	 * @var bool
-	 */
-	protected $_blackListLoaded = false;
 
 	/**
 	 * Should we use header compression?
@@ -135,12 +134,6 @@ class Binaries
 	protected $_debug = false;
 
 	/**
-	 * Does the user have any blacklists enabled?
-	 * @var bool
-	 */
-	protected $_blackListEmpty = false;
-
-	/**
 	 * Max tries to download headers.
 	 * @var int
 	 */
@@ -193,8 +186,7 @@ class Binaries
 		$this->_showDroppedYEncParts = ($this->_pdo->getSetting('showdroppedyencparts') == 1 ? true : false);
 		$this->_tablePerGroup = ($this->_pdo->getSetting('tablepergroup') == 1 ? true : false);
 
-		$this->blackList = [];
-		$this->_blackListLoaded = false;
+		$this->blackList = $this->whiteList = [];
 	}
 
 	/**
@@ -652,7 +644,7 @@ class Binaries
 			}
 
 			// Filter subject based on black/white list.
-			if ($this->_blackListEmpty === false && $this->isBlackListed($header, $groupMySQL['name'])) {
+			if ($this->isBlackListed($header, $groupMySQL['name'])) {
 				$headersBlackListed++;
 				continue;
 			}
@@ -1292,20 +1284,27 @@ class Binaries
 	}
 
 	/**
+	 * Are white or black lists loaded for a group name?
+	 * @var array
+	 */
+	protected $_listsFound = [];
+
+	/**
 	 * Get blacklist and cache it. Return if already cached.
+	 *
+	 * @param string $groupName
 	 *
 	 * @return void
 	 */
-	protected function retrieveBlackList()
+	protected function _retrieveBlackList($groupName)
 	{
-		if ($this->_blackListLoaded) {
-			return;
+		if (!isset($this->blackList[$groupName])) {
+			$this->blackList[$groupName] = $this->getBlacklist(true, self::OPTYPE_BLACKLIST, $groupName, true);
 		}
-		$this->blackList = $this->getBlacklist(true);
-		$this->_blackListLoaded = true;
-		if (count($this->blackList) === 0) {
-			$this->_blackListEmpty = true;
+		if (!isset($this->whiteList[$groupName])) {
+			$this->whiteList[$groupName] = $this->getBlacklist(true, self::OPTYPE_WHITELIST, $groupName, true);
 		}
+		$this->_listsFound[$groupName] = ($this->blackList[$groupName] || $this->whiteList[$groupName]);
 	}
 
 	/**
@@ -1318,44 +1317,82 @@ class Binaries
 	 */
 	public function isBlackListed($msg, $groupName)
 	{
-		$this->retrieveBlackList();
-		$field = [];
-		$field[self::BLACKLIST_FIELD_SUBJECT]   = $msg['Subject'];
-		$field[self::BLACKLIST_FIELD_FROM]      = $msg['From'];
-		$field[self::BLACKLIST_FIELD_MESSAGEID] = $msg['Message-ID'];
+		if (!isset($this->_listsFound[$groupName])) {
+			$this->_retrieveBlackList($groupName);
+		}
+		if (!$this->_listsFound[$groupName]) {
+			return false;
+		}
 
-		foreach ($this->blackList as $blackList) {
-			if (preg_match('/^' . $blackList['groupname'] . '$/i', $groupName)) {
-				// Black?
-				if ($blackList['optype'] == self::OPTYPE_BLACKLIST && preg_match('/' . $blackList['regex'] . '/i', $field[$blackList['msgcol']])) {
-					return true;
-				// White?
-				} else if ($blackList['optype'] == self::OPTYPE_WHITELIST && !preg_match('/' . $blackList['regex'] . '/i', $field[$blackList['msgcol']])) {
-					return true;
+		$blackListed = false;
+
+		$field = [
+			self::BLACKLIST_FIELD_SUBJECT   => $msg['Subject'],
+			self::BLACKLIST_FIELD_FROM      => $msg['From'],
+			self::BLACKLIST_FIELD_MESSAGEID => $msg['Message-ID']
+		];
+
+		// Try white lists first.
+		if ($this->whiteList[$groupName]) {
+			// There are white lists for this group, so anything that doesn't match a white list should be considered black listed.
+			$blackListed = true;
+			foreach ($this->whiteList[$groupName] as $whiteList) {
+				if (preg_match('/' . $whiteList['regex'] . '/i', $field[$whiteList['msgcol']])) {
+					// This field matched a white list, so it might not be black listed.
+					$blackListed = false;
+					break;
 				}
 			}
 		}
-		return false;
+
+		// Check if the field is black listed.
+		if (!$blackListed && $this->blackList[$groupName]) {
+			foreach ($this->blackList[$groupName] as $blackList) {
+				if (preg_match('/' . $blackList['regex'] . '/i', $field[$blackList['msgcol']])) {
+					$blackListed = true;
+					break;
+				}
+			}
+		}
+		return $blackListed;
 	}
 
 	/**
 	 * Return all blacklists.
 	 *
-	 * @param bool $activeOnly Only display active blacklists ?
+	 * @param bool   $activeOnly Only display active blacklists ?
+	 * @param int    $opType     Optional, get white or black lists (use Binaries constants).
+	 * @param string $groupName  Optional, group.
+	 * @param bool   $groupRegex Optional Join groups / binaryblacklist using regexp for equals.
 	 *
 	 * @return array
 	 */
-	public function getBlacklist($activeOnly = true)
+	public function getBlacklist($activeOnly = true, $opType = -1, $groupName = '', $groupRegex = false)
 	{
+		switch ($opType) {
+			case self::OPTYPE_BLACKLIST:
+				$opType = 'AND binaryblacklist.optype = ' . self::OPTYPE_BLACKLIST;
+				break;
+			case self::OPTYPE_WHITELIST:
+				$opType = 'AND binaryblacklist.optype = ' . self::OPTYPE_WHITELIST;;
+				break;
+			default:
+				$opType ='';
+				break;
+		}
 		return $this->_pdo->query(
 			sprintf('
 				SELECT
 					binaryblacklist.id, binaryblacklist.optype, binaryblacklist.status, binaryblacklist.description,
 					binaryblacklist.groupname AS groupname, binaryblacklist.regex, groups.id AS group_id, binaryblacklist.msgcol
 				FROM binaryblacklist
-				LEFT OUTER JOIN groups ON groups.name = binaryblacklist.groupname %s
+				LEFT OUTER JOIN groups ON groups.name %s binaryblacklist.groupname
+				WHERE 1=1 %s %s %s
 				ORDER BY coalesce(groupname,\'zzz\')',
-				($activeOnly ? ' WHERE binaryblacklist.status = 1 ' : '')
+				($groupRegex ? 'REGEXP' : '='),
+				($activeOnly ? 'AND binaryblacklist.status = 1' : ''),
+				$opType,
+				($groupName ? ('AND groups.name REGEXP ' . $this->_pdo->escapeString($groupName)) : '')
 			)
 		);
 	}

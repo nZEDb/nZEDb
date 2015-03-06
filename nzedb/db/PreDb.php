@@ -43,7 +43,7 @@ class PreDb extends DB
 		parent::__construct($options);
 
 		$this->tableMain = 'predb';
-		$this->tableTemp = 'tmp_pre';
+		$this->tableTemp = 'predb_imports';
 	}
 
 	public function executeAddGroups()

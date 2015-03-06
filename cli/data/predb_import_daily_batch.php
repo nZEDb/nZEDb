@@ -130,7 +130,7 @@ if ($result) {
 			// Truncate to clear any old data
 			$predb->executeTruncate();
 
-			// Import file into tmp_pre
+			// Import file into predb_imports
 			$predb->executeLoadData($dumpFile, $local);
 
 			// Remove any titles where length <=8
