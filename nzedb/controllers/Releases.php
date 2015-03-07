@@ -930,7 +930,19 @@ class Releases
 		$orderBy = '', $maxAge = -1, $excludedCats = [], $type = 'basic'
 	)
 	{
-		$sizeRange = range(1,11);
+		$sizeRange = array(
+			1 => 1,
+			2 => 2.5,
+			3 => 5,
+			4 => 10,
+			5 => 20,
+			6 => 30,
+			7 => 40,
+			8 => 80,
+			9 => 160,
+			10 => 320,
+			11 => 640,
+		);
 
 		if ($orderBy == '') {
 			$orderBy = [];
@@ -959,8 +971,8 @@ class Releases
 			NZB::NZB_ADDED,
 			($maxAge > 0 ? sprintf(' AND r.postdate > (NOW() - INTERVAL %d DAY) ', $maxAge) : ''),
 			($groupName != -1 ? sprintf(' AND r.group_id = %d ', $this->groups->getIDByName($groupName)) : ''),
-			(in_array($sizeFrom, $sizeRange) ? ' AND r.size > ' . (string)(104857600 * (int)$sizeFrom) . ' ' : ''),
-			(in_array($sizeTo, $sizeRange) ? ' AND r.size < ' . (string)(104857600 * (int)$sizeTo) . ' ' : ''),
+			(array_key_exists($sizeFrom, $sizeRange) ? ' AND r.size > ' . (string)(104857600 * (int)$sizeRange[$sizeFrom]) . ' ' : ''),
+			(array_key_exists($sizeTo, $sizeRange) ? ' AND r.size < ' . (string)(104857600 * (int)$sizeRange[$sizeTo]) . ' ' : ''),
 			($hasNfo != 0 ? ' AND r.nfostatus = 1 ' : ''),
 			($hasComments != 0 ? ' AND r.comments > 0 ' : ''),
 			($type !== 'advanced' ? $this->categorySQL($cat) : ($cat[0] != '-1' ? sprintf(' AND (r.categoryid = %d) ', $cat[0]) : '')),
