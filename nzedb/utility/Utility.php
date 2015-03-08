@@ -16,6 +16,29 @@ class Utility
 	 */
 	const PATH_REGEX = '(?P<drive>[A-Za-z]:|)(?P<path>[\\/\w .-]+|)';
 
+	/**
+	 * Checks all levels of the supplied path are readable and executable by current user.
+	 *
+	 * @todo Make this recursive with a switch to only check end point.
+	 * @param $path	*nix path to directory or file
+	 *
+	 * @return bool|string True is successful, otherwise the part of the path that failed testing.
+	 */
+	static public function canExecuteRead($path)
+	{
+		$paths = preg_split('#/#', $path);
+		$fullPath = DS;
+		foreach ($paths as $path) {
+			if ($path !== '') {
+				$fullPath .= $path . DS;
+				if (!is_readable($fullPath) || !is_executable($fullPath)) {
+					return "The '$fullPath' directory must be readable and executable by all ." .PHP_EOL;
+				}
+			}
+		}
+		return true;
+	}
+
 	static public function clearScreen()
 	{
 		if (self::isCLI())
