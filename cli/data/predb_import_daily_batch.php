@@ -10,18 +10,11 @@ use \nzedb\db\Settings;
 use \nzedb\utility\Utility;
 
 if (!Utility::isWin()) {
-	$fullPath = DS;
-	$paths    = preg_split('#/#', nZEDb_RES);
-	foreach ($paths as $path) {
-		if ($path !== '') {
-			$fullPath .= $path . DS;
-			if (!is_readable($fullPath) || !is_executable($fullPath)) {
-				exit('The (' . $fullPath . ') folder must be readable and executable by all.' .
-					 PHP_EOL);
-			}
-		}
+	$canExeRead = Utility::canExecuteRead(nZEDb_RES);
+	if (is_string($canExeRead)) {
+		exit($canExeRead);
 	}
-	unset($fullPath, $paths, $path);
+	unset($canExeRead);
 }
 
 if (!is_writable(nZEDb_RES)) {
