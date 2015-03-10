@@ -6815,7 +6815,7 @@ INSERT INTO release_naming_regexes (id, group_regex, regex, status, description,
 ), (
     979,
     'alt\\.binaries\\.teevee',
-    '/^(?P<match0>.+) Confessions.+\\[\\d+ of \\d+\\] ".+\\((?P<match1>(1080|720).+[HS]D)\\).+" yEnc$/',
+    '/^(?P<match0>.+ )Confessions.+\\[\\d+ of \\d+\\] ".+\\((?P<match1>(1080|720).+[HS]D)\\).+" yEnc$/',
     1,
     '//Breaking Bad S6E03 Confessions enjoy! [7 of 46] "03 Confessions (1080p HD).mov.007" yEnc',
     295
