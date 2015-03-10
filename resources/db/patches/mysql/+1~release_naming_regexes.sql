@@ -1424,7 +1424,7 @@ INSERT INTO release_naming_regexes (id, group_regex, regex, status, description,
 ), (
     211,
     'alt\\.binaries\\.comics',
-    '/.*"(?P<match0>.+?)(\\.part\\d*|\\.rar)?(\\.vol.+?"|\\.[A-Za-z0-9]{2,4}").+?yEnc$/',
+    '/.*"(?P<match0>.{7,}?)(\\.part\\d*|\\.rar)?(\\.[A-Za-z0-9]{2,4}").+?yEnc$/',
     1,
     '// Return anything between the quotes.',
     15
@@ -1473,7 +1473,7 @@ INSERT INTO release_naming_regexes (id, group_regex, regex, status, description,
 ), (
     218,
     'alt\\.binaries\\.comics\\.dcp',
-    '/.*"(?P<match0>.+?)(\\.part\\d*|\\.rar)?(\\.vol.+?"|\\.[A-Za-z0-9]{2,4}").+?yEnc$/',
+    '/.*"(?P<match0>{7,}+?)(\\.part\\d*|\\.rar)?(\\.[A-Za-z0-9]{2,4}").+?yEnc$/',
     1,
     '// Return anything between the quotes.',
     35
@@ -4140,7 +4140,7 @@ INSERT INTO release_naming_regexes (id, group_regex, regex, status, description,
 ), (
     599,
     'alt\\.binaries\\.highspeed',
-    '/^"(?P<match0>.+?)(\\.(part\\d*|rar|avi|mp4|mkv|mpg))?(\\d{1,3}\\.rev"|\\.vol.+?"|\\.[A-Za-z0-9]{2,4}"|") yEnc$/',
+    '/^"(?P<match0>.{7,}?)(\\.(part\\d*|rar|avi|mp4|mkv|mpg))?(\\d{1,3}\\.rev"|\\.[A-Za-z0-9]{2,4}"|") yEnc$/',
     1,
     '//"Homeland.S01.Complete.German.WS.DVDRiP.XViD-ETM.part001.rar" yEnc',
     55
@@ -6513,7 +6513,7 @@ INSERT INTO release_naming_regexes (id, group_regex, regex, status, description,
 ), (
     938,
     'alt\\.binaries\\.teevee',
-    '/^(Re: )?(?P<match0>[\\w._-]{8,})([{}A-Z_]+)?( -)? \\[\\d+(\\/| of )\\d+\\]( -)? ".+?" yEnc$/',
+    '/^(Re: )?(?P<match0>([\\w._-]{8,31}|[\\w._-]{33,}))([{}A-Z_]+)?( -)? \\[\\d+(\\/| of )\\d+\\]( -)? ".+?" yEnc$/',
     1,
     '//House.Hunters.International.S05E502.720p.hdtv.x264 [01/27] - "House.Hunters.International.S05E502.720p.hdtv.x264.nfo" yEnc ::: //Criminal.Minds.S03E01.Doubt.PROPER.DVDRip.XviD-SAiNTS - [01/33] - "Criminal.Minds.S03E01.Doubt.PROPER.DVDRip.XviD-SAiNTS.par2" yEnc',
     90
