@@ -1,6 +1,21 @@
+DELETE FROM release_naming_regexes WHERE id IN (1,2);
 DELETE FROM release_naming_regexes WHERE id BETWEEN 8 AND 1127;
 INSERT INTO release_naming_regexes (id, group_regex, regex, status, description, ordinal)
   VALUES (
+    1,
+    'alt\\.binaries\\.teevee',
+    '/\\[\\d+\\]-\\[.+?\\]-\\[.+?\\]-\\[ (?P<match0>.+\\.S\\d\\dE\\d\\d\\..+?) \\][- ]\\[\d+\\/\\d+\\][ -]{0,3}"[\\w\\säöüÄÖÜß+¤¶!.,&_()\\[\\]\\\'\\`{}-]{8,}?\\b.?([-_](proof|sample|thumbs?))*(\\.part\\d*(\\.rar)?|\\.rar|\\.7z)?(\\d{1,3}\\.rev"|\\.vol.+?"|\\.[A-Za-z0-9]{2,4}"|")[-_\\s]{0,3}\d+([.,]\\d+)? [kKmMgG][bB][-_\\s]{0,3}[-_\\s]{0,3}yEnc$/ui',
+    1,
+    'rename these teevee releases as the requestid is for the full season ::: [169018]-[FULL]-[a.b.teevee]-[ House.of.Lies.S01E01.720p.WEB-DL.DD5.1.H.264-BS ]-[04/32] - "House.of.Lies.S01E01.The.Gods.of.Dangerous.Financial.Instruments.720p.WEB-DL.DD5.1.H.264-BS.part03.rar" yEnc',
+    5
+), (
+    2,
+    'alt\\.binaries\\.teevee',
+    '/\\[\\d+\\]-\\[.+?\\]-\\[.+?\\]-\\[ .+\\.S\\d\\d\\..+? \\][- ]\\[\\d+\\/\\d+\\][ -]{0,3}"(?P<match0>[\\w\\säöüÄÖÜß+¤¶!.,&_()\[\]\\\'\\`{}#-]{8,}?\\b.?)([-_](proof|sample|thumbs?))*(\\.part\\d*(\\.rar)?|\\.rar|\\.7z)?(\\d{1,3}\\.rev"|\\.vol.+?"|\\.[A-Za-z0-9]{2,4}"|")[-_\\s]{0,3}\d+([.,]\\d+)? [kKmMgG][bB][-_\\s]{0,3}[-_\\s]{0,3}yEnc$/ui',
+    1,
+    'Season only in 4th block so take filename ::: [169019]-[FULL]-[a.b.teevee]-[ House.of.Lies.S02.720p.WEB-DL.DD5.1.H.264-BS ]-[24/32] - "House.of.Lies.S02E02.When.Dinosaurs.Ruled.the.Planet.720p.WEB-DL.DD5.1.H.264-BS.vol000+01.par2" yEnc',
+    10
+), (
     8,
     'alt\\.binaries\\.0day\\.stuffz',
     '/^(?P<match0>[a-zA-Z0-9].+?) - \\[\\d+\\/\\d+\\] - ".+?" yEnc$/',
@@ -276,7 +291,7 @@ INSERT INTO release_naming_regexes (id, group_regex, regex, status, description,
 ), (
     47,
     'alt\\.binaries\\.ath',
-    '/^<Have Fun> "(?P<match0>[\\w\\säöüÄÖÜß+¤¶!.,&_\\()\\[\\]\\\'\\`{}#-]{8,}?\\b.?)([-_](proof?P<match1>|sample|thumbs?))*(\\.part\\d*(\\.rar)?|\\.rar|\\.7z)?(\\d{1,3}\\.rev"|\\.vol.+?"|\\.[A-Za-z0-9]{2,4}"|") SpongeBoZZ yEnc$/',
+    '/^<Have Fun> "(?P<match0>[\\w\\säöüÄÖÜß+¤¶!.,&_\\()\\[\\]\\\'\\`{}#-]{8,}?\\b.?)([-_](?P<match1>proof|sample|thumbs?))*(\\.part\\d*(\\.rar)?|\\.rar|\\.7z)?(\\d{1,3}\\.rev"|\\.vol.+?"|\\.[A-Za-z0-9]{2,4}"|") SpongeBoZZ yEnc$/',
     1,
     '//<Have Fun> "Invader.German.2012.PAL.DVDR-MORTAL.nfo" SpongeBoZZ yEnc',
     60
@@ -3433,7 +3448,7 @@ INSERT INTO release_naming_regexes (id, group_regex, regex, status, description,
 ), (
     498,
     'alt\\.binaries\\.games',
-    '/^>>> www\\.lords-of-usenet\\.org <<< "(?P<match0>[\\w\\säöüÄÖÜß+¤¶!.,&_\\()\\[\\]\\\'\\`{}#-]{8,}?\\b.?)([-_](proof|sample|thumbs?))*(\\.part\\d*(\\.rar)?|\\.rar|\\.7z)?(\\d{1,3}\\.rev"|\\.vol.+?"|\\.[A-Za-z0-9]{2,4}"|")( \\(PS2 Gam?P<match1>e\\)) \\[\\d+\\/\\d+\\] - \\[\\d+([.,]\\d+ [kKmMgG])?[bB]\\] yEnc$/ui',
+    '/^>>> www\\.lords-of-usenet\\.org <<< "(?P<match0>[\\w\\säöüÄÖÜß+¤¶!.,&_\\()\\[\\]\\\'\\`{}#-]{8,}?\\b.?)([-_](proof|sample|thumbs?))*(\\.part\\d*(\\.rar)?|\\.rar|\\.7z)?(\\d{1,3}\\.rev"|\\.vol.+?"|\\.[A-Za-z0-9]{2,4}"|")(?P<match1> \\(PS2 Game\\)) \\[\\d+\\/\\d+\\] - \\[\\d+([.,]\\d+ [kKmMgG])?[bB]\\] yEnc$/ui',
     1,
     '//>>> www.lords-of-usenet.org <<< "SpongeBob & Freunde - Schlacht um die Vulkaninsel.part21.rar" (PS2 Game) [22/33] - [1,15 GB] yEnc',
     135
@@ -5302,7 +5317,7 @@ INSERT INTO release_naming_regexes (id, group_regex, regex, status, description,
 ), (
     765,
     'alt\\.binaries\\.music',
-    '/^.+\\(by dem verrÃ¼ckten Lordi\\)[-_\\s]{0,3}\\(\\d+\\/\\d+\\)[-_\\s]{0,3}"([\\?P<match0>w\\säöüÄÖÜß+¤¶!.,&_\\()\\[\\]\\\'\\`{}#-]{8,}?\\b.?)([-_](proof|sample|thumbs?))*(\\.part\\d*(\\.rar)?|\\.rar|\\.7z)?(\\d{1,3}\\.rev"|\\.vol.+?"|\\.[A-Za-z0-9]{2,4}"|")[-_\\s]{0,3}\\d+[.,]\\d+ [kKmMgG][bB].+[-_\\s]{0,3}yEnc$/',
+    '/^.+\\(by dem verrÃ¼ckten Lordi\\)[-_\\s]{0,3}\\(\\d+\\/\\d+\\)[-_\\s]{0,3}"(?P<match0>[\\w\\säöüÄÖÜß+¤¶!.,&_\\()\\[\\]\\\'\\`{}#-]{8,}?\\b.?)([-_](proof|sample|thumbs?))*(\\.part\\d*(\\.rar)?|\\.rar|\\.7z)?(\\d{1,3}\\.rev"|\\.vol.+?"|\\.[A-Za-z0-9]{2,4}"|")[-_\\s]{0,3}\\d+[.,]\\d+ [kKmMgG][bB].+[-_\\s]{0,3}yEnc$/',
     1,
     '//Der etwas andere Mix - Deutscher Foxmix 14 (by dem verrÃ¼ckten Lordi) (3/8) "Der etwas andere Mix - Deutscher Foxmix 14.txt" - 271,24 MB 11.11.03 yEnc',
     60
@@ -5841,7 +5856,7 @@ INSERT INTO release_naming_regexes (id, group_regex, regex, status, description,
 ), (
     842,
     'alt\\.binaries\\.sound\\.mp3',
-    '/^\\(\\d+\\/\\d+\\) - VERBAteamÂ present - "([\\?P<match0>w\\säöüÄÖÜß+¤¶!.,&_\\()\\[\\]\\\'\\`{}#-]{8,}?\\b.?)([-_](proof|sample|thumbs?))*(\\.part\\d*(\\.rar)?|\\.rar|\\.7z)?(\\d{1,3}\\.rev"|\\.vol.+?"|\\.[A-Za-z0-9]{2,4}"|")[-_\\s]{0,3}\\d+([.,]\\d+)? [kKmMgG][bB][-_\\s]{0,3}[-_\\s]{0,3}yEnc$/ui',
+    '/^\\(\\d+\\/\\d+\\) - VERBAteamÂ present - "(?P<match0>[\\w\\säöüÄÖÜß+¤¶!.,&_\\()\\[\\]\\\'\\`{}#-]{8,}?\\b.?)([-_](proof|sample|thumbs?))*(\\.part\\d*(\\.rar)?|\\.rar|\\.7z)?(\\d{1,3}\\.rev"|\\.vol.+?"|\\.[A-Za-z0-9]{2,4}"|")[-_\\s]{0,3}\\d+([.,]\\d+)? [kKmMgG][bB][-_\\s]{0,3}[-_\\s]{0,3}yEnc$/ui',
     1,
     '//(1/4) - VERBAteamÂ present - "Avril Lavigne - Rock \'N Roll (Official Audio).mp3" - 5,80 MB - yEnc',
     65
