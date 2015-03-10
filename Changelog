@@ -6,6 +6,8 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2015-03-06 bart39
+	* Mrg: PR #1618 from kevin - Convert collections regex to db.
 2015-03-07 bart39
 	* Fix: Min/Max sizes on Adv Search.
 2015-03-06 niel
