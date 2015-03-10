@@ -333,16 +333,16 @@ INSERT INTO release_naming_regexes (id, group_regex, regex, status, description,
 ), (
     53,
     'alt\\.binaries\\.audiobooks',
-    '/^(Re: )?(?P<match0>[\\w\\s]+) - \\[\\d+\\/\\d+\\] - "(?P<match1>.+)[\\.-]([Pp]art|vol|jpg|sfv|mp3|nzb|nfo|rar).*" yEnc$/',
+    '/^(Re: )?(?P<match0>[\\w\\s]+ - )\\[\\d+\\/\\d+\\] - "(?P<match1>.+)[\\.-]([Pp]art|vol|jpg|sfv|mp3|nzb|nfo|rar).*" yEnc$/',
     1,
-    '//WEB Gr',
+    '//WEB Griffin - [06/26] - "The Outlaws-Part06.mp3" yEnc ::: //Re: WEB Griffin - [18/26] - "The Outlaws.par2" yEnc',
     5
 ), (
     54,
     'alt\\.binaries\\.audiobooks',
-    '/^(Re: )?(?P<match0>[\\w\\s]+) - \\[\\d+\\/\\d+\\] - "(?P<match1>.+)[\\.-]([Pp]ar2).*" yEnc$/',
+    '/^(Re: )?(?P<match0>[\\w\\s]+ - )\\[\\d+\\/\\d+\\] - "(?P<match1>.+)[\\.-]([Pp]ar2).*" yEnc$/',
     1,
-    '//WEB Gr',
+    '//WEB Griffin - [06/26] - "The Outlaws-Part06.mp3" yEnc ::: //Re: WEB Griffin - [18/26] - "The Outlaws.par2" yEnc',
     10
 ), (
     55,
