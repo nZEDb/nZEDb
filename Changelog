@@ -7,6 +7,7 @@ All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 2015-03-06 bart39
+	* Chg: Better handling of .vol in regex extensions.
 	* Mrg: PR #1618 from kevin - Convert collections regex to db.
 2015-03-07 bart39
 	* Fix: Min/Max sizes on Adv Search.
