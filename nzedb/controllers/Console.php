@@ -115,7 +115,7 @@ class Console
 			$searchwords = trim($searchwords);
 			$searchsql .= sprintf(" MATCH(title, platform) AGAINST(%s IN BOOLEAN MODE)", $this->pdo->escapeString($searchwords));
 		}
-		return $this->pdo->queryOneRow(sprintf("SELECT * FROM bookinfo WHERE %s", $searchsql));
+		return $this->pdo->queryOneRow(sprintf("SELECT * FROM consoleinfo WHERE %s", $searchsql));
 	}
 
 	public function getRange($start, $num)
