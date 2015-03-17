@@ -138,6 +138,17 @@ class Categorize extends Category
 				case preg_match('/alt\.binaries\.(multimedia\.erotica\.|cartoons\.french\.|dvd\.|multimedia\.)?anime(\.highspeed|\.repost|s-fansub|\.german)?/', $group):
 					$this->tmpCat = \Category::CAT_TV_ANIME;
 					break;
+				case $group === 'alt.binaries.b4e.erotica':
+					switch (true) {
+						case $this->isTV():
+						case $this->isMovie():
+						case $this->isXxx():
+							break;
+						default:
+							$this->tmpCat = \Category::CAT_XXX_OTHER;
+							break;
+					}
+					break;
 				case $group === 'alt.binaries.british.drama':
 					switch (true) {
 						case $this->isHDTV():
@@ -270,6 +281,7 @@ class Categorize extends Category
 					break;
 				case preg_match('/alt.binaries.cd.images?.games/', $group):
 					switch (true) {
+						case $this->is0day():
 						case $this->isConsole():
 						case $this->isBook():
 							break;
