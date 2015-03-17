@@ -37,7 +37,7 @@ class RequestIDLocal extends RequestID
 		switch ($this->_limit) {
 			case 'full':
 				$query .= sprintf(
-					" AND r.isrenamed = 0 AND r.reqidstatus in (%d, %d, %d)",
+					" AND r.reqidstatus in (%d, %d, %d)",
 					self::REQID_UPROC,
 					self::REQID_NOLL,
 					self::REQID_NONE
@@ -45,7 +45,7 @@ class RequestIDLocal extends RequestID
 				break;
 			case is_numeric($this->_limit):
 				$query .= sprintf(
-					" AND r.isrenamed = 0 AND r.reqidstatus in (%d, %d, %d) ORDER BY r.postdate DESC LIMIT %d",
+					" AND r.reqidstatus in (%d, %d, %d) ORDER BY r.postdate DESC LIMIT %d",
 					self::REQID_UPROC,
 					self::REQID_NOLL,
 					self::REQID_NONE,
