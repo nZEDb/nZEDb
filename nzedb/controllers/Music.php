@@ -98,17 +98,11 @@ class Music
 	 */
 	public function getMusicInfoByName($artist, $album)
 	{
-		$pdo = $this->pdo;
-		$like = 'ILIKE';
-		if ($pdo->dbSystem() === 'mysql') {
-			$like = 'LIKE';
-		}
-
 		//only used to get a count of words
 		$searchwords = $searchsql = '';
-		$ft = $pdo->queryDirect("SHOW INDEX FROM musicinfo WHERE key_name = 'ix_musicinfo_artist_title_ft'");
+		$ft = $this->pdo->queryDirect("SHOW INDEX FROM musicinfo WHERE key_name = 'ix_musicinfo_artist_title_ft'");
 		if ($ft->rowCount() !== 2) {
-			$searchsql .= sprintf(" artist LIKE %s AND title %s %s'", $pdo->escapeString('%' . $artist . '%'), $like, $pdo->escapeString('%' . $album . '%'));
+			$searchsql .= sprintf(" artist %s AND title %s'", $this->pdo->likeString($artist, true, true), $this->pdo->likeString($album, true, true));
 		} else {
 			$album = preg_replace('/( - | -|\(.+\)|\(|\))/', ' ', $album);
 			$album = preg_replace('/[^\w ]+/', '', $album);
@@ -125,9 +119,9 @@ class Music
 				}
 			}
 			$searchwords = trim($searchwords);
-			$searchsql .= sprintf(" MATCH(artist, title) AGAINST(%s IN BOOLEAN MODE)", $pdo->escapeString($searchwords));
+			$searchsql .= sprintf(" MATCH(artist, title) AGAINST(%s IN BOOLEAN MODE)", $this->pdo->escapeString($searchwords));
 		}
-		return $pdo->queryOneRow(sprintf("SELECT * FROM musicinfo WHERE %s", $searchsql));
+		return $this->pdo->queryOneRow(sprintf("SELECT * FROM musicinfo WHERE %s", $searchsql));
 	}
 
 	/**

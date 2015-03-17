@@ -92,17 +92,11 @@ class Books
 
 	public function getBookInfoByName($author, $title)
 	{
-		$pdo = $this->pdo;
-		$like = 'ILIKE';
-		if ($pdo->dbSystem() === 'mysql') {
-			$like = 'LIKE';
-		}
-
 		//only used to get a count of words
 		$searchwords = $searchsql = '';
-		$ft = $pdo->queryDirect("SHOW INDEX FROM bookinfo WHERE key_name = 'ix_bookinfo_author_title_ft'");
+		$ft = $this->pdo->queryDirect("SHOW INDEX FROM bookinfo WHERE key_name = 'ix_bookinfo_author_title_ft'");
 		if ($ft->rowCount() !== 2) {
-			$searchsql .= sprintf(" author LIKE %s AND title %s %s'", $pdo->escapeString('%' . $author . '%'), $like, $pdo->escapeString('%' . $title . '%'));
+			$searchsql .= sprintf(" author %s AND title %s'", $this->pdo->likeString($author, true, true), $this->pdo->likeString($title, true, true));
 		} else {
 			$title = preg_replace('/( - | -|\(.+\)|\(|\))/', ' ', $title);
 			$title = preg_replace('/[^\w ]+/', '', $title);
@@ -118,9 +112,9 @@ class Books
 				}
 			}
 			$searchwords = trim($searchwords);
-			$searchsql .= sprintf(" MATCH(author, title) AGAINST(%s IN BOOLEAN MODE)", $pdo->escapeString($searchwords));
+			$searchsql .= sprintf(" MATCH(author, title) AGAINST(%s IN BOOLEAN MODE)", $this->pdo->escapeString($searchwords));
 		}
-		return $pdo->queryOneRow(sprintf("SELECT * FROM bookinfo WHERE %s", $searchsql));
+		return $this->pdo->queryOneRow(sprintf("SELECT * FROM bookinfo WHERE %s", $searchsql));
 	}
 
 	public function getRange($start, $num)
