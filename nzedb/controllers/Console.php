@@ -93,13 +93,29 @@ class Console
 
 	public function getConsoleInfoByName($title, $platform)
 	{
-		return $this->pdo->queryOneRow(
-			sprintf(
-				"SELECT * FROM consoleinfo WHERE title %s AND platform %s",
-				$this->pdo->likeString($title, true, true),
-				$this->pdo->likeString($platform, true, true)
-			)
-		);
+		//only used to get a count of words
+		$searchwords = $searchsql = '';
+		$ft = $this->pdo->queryDirect("SHOW INDEX FROM consoleinfo WHERE key_name = 'ix_consoleinfo_title_platform_ft'");
+		if ($ft->rowCount() !== 2) {
+			$searchsql .= sprintf(" title %s AND platform %s'", $this->pdo->likeString($title, true, true), $this->pdo->likeString($platform, true, true));
+		} else {
+			$title = preg_replace('/( - | -|\(.+\)|\(|\))/', ' ', $title);
+			$title = preg_replace('/[^\w ]+/', '', $title);
+			$title = trim(preg_replace('/\s\s+/i', ' ', $title));
+			$title = trim($title);
+			$words = explode(' ', $title);
+
+			foreach ($words as $word) {
+				$word = trim(rtrim(trim($word), '-'));
+				if ($word !== '' && $word !== '-') {
+					$word = '+' . $word;
+					$searchwords .= sprintf('%s ', $word);
+				}
+			}
+			$searchwords = trim($searchwords);
+			$searchsql .= sprintf(" MATCH(title, platform) AGAINST(%s IN BOOLEAN MODE)", $this->pdo->escapeString($searchwords));
+		}
+		return $this->pdo->queryOneRow(sprintf("SELECT * FROM bookinfo WHERE %s", $searchsql));
 	}
 
 	public function getRange($start, $num)

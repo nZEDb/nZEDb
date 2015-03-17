@@ -92,7 +92,35 @@ class Books
 
 	public function getBookInfoByName($author, $title)
 	{
-		return $this->pdo->queryOneRow(sprintf('SELECT * FROM bookinfo WHERE author %s AND title %s', $this->pdo->likeString($author, true, true), $this->pdo->likeString($title, true, true)));
+		$pdo = $this->pdo;
+		$like = 'ILIKE';
+		if ($pdo->dbSystem() === 'mysql') {
+			$like = 'LIKE';
+		}
+
+		//only used to get a count of words
+		$searchwords = $searchsql = '';
+		$ft = $pdo->queryDirect("SHOW INDEX FROM bookinfo WHERE key_name = 'ix_bookinfo_author_title_ft'");
+		if ($ft->rowCount() !== 2) {
+			$searchsql .= sprintf(" author LIKE %s AND title %s %s'", $pdo->escapeString('%' . $author . '%'), $like, $pdo->escapeString('%' . $title . '%'));
+		} else {
+			$title = preg_replace('/( - | -|\(.+\)|\(|\))/', ' ', $title);
+			$title = preg_replace('/[^\w ]+/', '', $title);
+			$title = trim(preg_replace('/\s\s+/i', ' ', $title));
+			$title = trim($title);
+			$words = explode(' ', $title);
+
+			foreach ($words as $word) {
+				$word = trim(rtrim(trim($word), '-'));
+				if ($word !== '' && $word !== '-') {
+					$word = '+' . $word;
+					$searchwords .= sprintf('%s ', $word);
+				}
+			}
+			$searchwords = trim($searchwords);
+			$searchsql .= sprintf(" MATCH(author, title) AGAINST(%s IN BOOLEAN MODE)", $pdo->escapeString($searchwords));
+		}
+		return $pdo->queryOneRow(sprintf("SELECT * FROM bookinfo WHERE %s", $searchsql));
 	}
 
 	public function getRange($start, $num)
@@ -352,7 +380,7 @@ class Books
 						}
 					} else {
 						$bookId = $bookCheck['id'];
-					}
+						}
 
 					// Update release.
 					$this->pdo->queryExec(sprintf('UPDATE releases SET bookinfoid = %d WHERE id = %d', $bookId, $arr['id']));
@@ -553,7 +581,8 @@ class Books
 					$this->pdo->log->header('Nothing to update: ') .
 					$this->pdo->log->primary($book['author'] .
 						' - ' .
-						$book['title'])
+						$book['title']
+					)
 				);
 			}
 		}
