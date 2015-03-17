@@ -7,6 +7,7 @@ All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 2015-03-17 bart39
+	* Fix: Update error if consoleinfo releasedate is null
 	* Chg: Better matching on whether to ignore lines in nfo beginning with Source.
 	* Add: FULLTEXT indexes on bookinfo, consoleinfo and musicinfo for better existing title matching.
 	* Add: add categorization for alt.binaries.b4e.erotica.

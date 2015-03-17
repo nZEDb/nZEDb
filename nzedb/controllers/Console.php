@@ -649,7 +649,7 @@ class Console
 
 			$this->update(
 						$consoleId, $con['title'], $con['asin'], $con['url'], $con['salesrank'],
-						$con['platform'], $con['publisher'], $con['releasedate'], $con['esrb'],
+						$con['platform'], $con['publisher'], (isset($con['releasedate']) ? $con['releasedate']: null), $con['esrb'],
 						$con['cover'], $con['consolegenreID'], (isset($con['review']) ? $con['review'] : null)
 			);
 		}
