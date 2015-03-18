@@ -45,6 +45,10 @@ HELP;
 	$path = !preg_match('#^/#', $argv[1]) ? getcwd() . '/' . $argv[1] : $argv[1];
 }
 
+if (file_exists($path) && is_file($path)) {
+	unlink($path);
+}
+
 Utility::clearScreen();
 
 $table = isset($argv[2]) ? $argv[2] : 'predb';
