@@ -7,7 +7,7 @@ All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 2015-03-18 bart39
-	* Fix: Fix patch 0321, if your mysql version < 5.6 then bookinfo, consoleinfo and musinfo will be converted to myisam to support the FT indexes.
+	* Fix: Fix patch 0321, if your mysql version < 5.6 then bookinfo, consoleinfo and musicinfo will be converted to myisam to support the FT indexes.
 2015-03-17 bart39
 	* Add: Add naming regex for a.b.b4e.erotica
 	* Mrg: PR #1617 from kevin - Convert naming regexes.
