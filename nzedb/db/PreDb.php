@@ -24,11 +24,12 @@ namespace nzedb\db;
 class PreDb extends DB
 {
 	/**
-	 * @var array Prepared Statement objects for importing files
+	 * @var array Prepared Statement objects
 	 */
-	protected $importPS = [
+	protected $ps = [
 		'AddGroups'		=> null,
 		'DeleteShort' 	=> null,
+		'Export'		=> null,
 		'Import' 		=> null,
 		'Insert'		=> null,
 		'LoadData' 		=> null,
@@ -48,70 +49,113 @@ class PreDb extends DB
 
 	public function executeAddGroups()
 	{
-		if (!isset($this->importPS['AddGroups'])) {
+		if (!isset($this->ps['AddGroups'])) {
 			$this->prepareSQLAddGroups();
 		}
-		$this->importPS['AddGroups']->execute();
+
+		return $this->ps['AddGroups']->execute();
 	}
 
 	public function executeDeleteShort()
 	{
-		if (!isset($this->importPS['DeleteShort'])) {
+		if (!isset($this->ps['DeleteShort'])) {
 			$this->prepareSQLDeleteShort();
 		}
-		$this->importPS['DeleteShort']->execute();
+
+		return $this->ps['DeleteShort']->execute();
+	}
+
+	public function executeExport(array $options = null)
+	{
+		$defaults = [
+			'enclosed'	=> '',
+			'fields'	=> '\\t',
+			'lines'		=> '\\n',
+			'path'		=> null,
+		];
+		$options += $defaults;
+
+		if (empty($options['path'])) {
+			return null;
+		}
+
+		if (!isset($this->ps['Export'])) {
+			$this->prepareSQLExport();
+		}
+
+		return $this->ps['Export']->execute([
+				':enclosed'	=> $options['enclosed'],
+				':fields'	=> $options['fields'],
+				':lines'	=> $options['lines'],
+				':path'		=> $options['path'],
+			]);
 	}
 
 	public function executeInsert()
 	{
-		if (!isset($this->importPS['Insert'])) {
+		if (!isset($this->ps['Insert'])) {
 			$this->prepareSQLInsert();
 		}
-		$this->importPS['Insert']->execute();
+
+		return $this->ps['Insert']->execute();
 	}
 
-	public function executeLoadData($filespec, $local = false)
+	public function executeLoadData(array $options = null)
 	{
-		if (!isset($this->importPS['LoadData'])) {
-			// TODO detect LOCAL here and pass parameter as appropriate
-			$this->prepareSQLLoadData($local);
+		$defaults = [
+			'fields'	=> '\\t',
+			'lines'		=> '\\n',
+			'local'		=> false,
+			'path'		=> null,
+		];
+		$options += $defaults;
+
+		if (empty($options['path'])) {
+			return null;
 		}
-		$this->importPS['LoadData']->execute([':path' => $filespec]);
+
+		if (!isset($this->ps['LoadData'])) {
+			// TODO detect LOCAL here and pass parameter as appropriate
+			$this->prepareSQLLoadData($options['local']);
+		}
+
+		return $this->ps['LoadData']->execute([':path' => $options['path']]);
 	}
 
 	public function executeTruncate()
 	{
-		if (!isset($this->importPS['Truncate'])) {
+		if (!isset($this->ps['Truncate'])) {
 			$this->prepareSQLTruncate();
 		}
-		$this->importPS['Truncate']->execute();
+		return $this->ps['Truncate']->execute();
 	}
 
 	public function executeUpdateGroupID()
 	{
-		if (!isset($this->importPS['UpdateGroupID'])) {
+		if (!isset($this->ps['UpdateGroupID'])) {
 			$this->prepareSQLUpdateGroupIDs();
 		}
-		$this->importPS['UpdateGroupID']->execute();
+
+		return $this->ps['UpdateGroupID']->execute();
 	}
 
 	public function import(\String $filespec, $localDB = false)
 	{
-		if (!($this->importPS['AddGroups'] instanceof \PDOStatement)) {
+		if (!($this->ps['AddGroups'] instanceof \PDOStatement)) {
 			$this->prepareImportSQL($localDB);
 		}
 
-		$this->importPS['Truncate']->execute();
+		$this->ps['Truncate']->execute();
 
-		$this->importPS['LoadData']->execute([':path' => $filespec]);
+		$this->ps['LoadData']->execute([':path' => $filespec]);
 
-		$this->importPS['DeleteShort']->execute();
+		$this->ps['DeleteShort']->execute();
 
-		$this->importPS['AddGroups']->execute();
+		$this->ps['AddGroups']->execute();
 
-		$this->importPS['UpdateGroupID']->execute();
+		$this->ps['UpdateGroupID']->execute();
 
-		$this->importPS['Insert']->execute();
+		$this->ps['Insert']->execute();
 	}
 
 	public function progress($settings = null, array $options = [])
@@ -152,12 +196,14 @@ class PreDb extends DB
 	 */
 	protected function prepareSQLStatement($sql, $index)
 	{
-		$this->importPS[$index] = $this->prepare($sql);
+		$this->ps[$index] = $this->prepare($sql);
 	}
 
+	/**
+	 * Add any groups that are not in our current groups table
+	 */
 	protected function prepareSQLAddGroups()
 	{
-		// Add any groups that are not in our current groups table
 		$sql = <<<SQL_ADD_GROUPS
 INSERT IGNORE INTO groups (name, description)
 	SELECT groupname, 'Added by predb import script'
@@ -172,6 +218,20 @@ SQL_ADD_GROUPS;
 	protected function prepareSQLDeleteShort()
 	{
 		$this->prepareSQLStatement('DELETE FROM predb_imports WHERE LENGTH(title) <= 8', 'DeleteShort');
+	}
+
+	protected function prepareSQLExport()
+	{
+		$sql = <<<SQL_EXPORT
+SELECT title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, g.name
+	FROM {$this->tableMain} p LEFT OUTER JOIN groups g ON p.group_id = g.id
+	INTO OUTFILE :path
+	FIELDS TERMINATED BY :field
+	:enclosed
+	LINES TERMINATED BY :lines;
+SQL_EXPORT;
+
+		$this->prepareSQLStatement($sql, 'Export');
 	}
 
 	protected function prepareSQLInsert()
