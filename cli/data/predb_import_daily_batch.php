@@ -123,7 +123,12 @@ if ($result) {
 			$predb->executeTruncate();
 
 			// Import file into predb_imports
-			$predb->executeLoadData($dumpFile, $local);
+			$predb->executeLoadData([
+										'fields' => '\\t\\t',
+										'lines'  => '\\r\\n',
+										'local' => $local,
+										'path' => $dumpFile,
+									]);
 
 			// Remove any titles where length <=8
 			if ($verbose) {
