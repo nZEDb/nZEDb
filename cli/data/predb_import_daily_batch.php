@@ -132,7 +132,7 @@ if ($result) {
 									]);
 
 			// Remove any titles where length <=8
-			if ($verbose) {
+			if ($verbose === true) {
 				echo $pdo->log->info("Deleting any records where title <=8 from Temporary Table");
 			}
 			$predb->executeDeleteShort();
