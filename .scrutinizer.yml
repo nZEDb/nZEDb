@@ -1,5 +1,7 @@
 checks:
     php:
+        code_rating: true
+        duplication: true
         fix_php_opening_tag: false
         remove_php_closing_tag: false
         one_class_per_file: true
