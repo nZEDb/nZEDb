@@ -10,18 +10,11 @@ use \nzedb\db\Settings;
 use \nzedb\utility\Utility;
 
 if (!Utility::isWin()) {
-	$fullPath = DS;
-	$paths    = preg_split('#/#', nZEDb_RES);
-	foreach ($paths as $path) {
-		if ($path !== '') {
-			$fullPath .= $path . DS;
-			if (!is_readable($fullPath) || !is_executable($fullPath)) {
-				exit('The (' . $fullPath . ') folder must be readable and executable by all.' .
-					 PHP_EOL);
-			}
-		}
+	$canExeRead = Utility::canExecuteRead(nZEDb_RES);
+	if (is_string($canExeRead)) {
+		exit($canExeRead);
 	}
-	unset($fullPath, $paths, $path);
+	unset($canExeRead);
 }
 
 if (!is_writable(nZEDb_RES)) {
@@ -131,10 +124,15 @@ if ($result) {
 			$predb->executeTruncate();
 
 			// Import file into predb_imports
-			$predb->executeLoadData($dumpFile, $local);
+			$predb->executeLoadData([
+										'fields' => '\\t\\t',
+										'lines'  => '\\r\\n',
+										'local' => $local,
+										'path' => $dumpFile,
+									]);
 
 			// Remove any titles where length <=8
-			if ($verbose) {
+			if ($verbose === true) {
 				echo $pdo->log->info("Deleting any records where title <=8 from Temporary Table");
 			}
 			$predb->executeDeleteShort();
