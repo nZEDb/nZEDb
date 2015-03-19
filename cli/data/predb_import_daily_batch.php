@@ -6,7 +6,6 @@
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php';
 
 use \nzedb\db\PreDb;
-use \nzedb\db\Settings;
 use \nzedb\utility\Utility;
 
 if (!Utility::isWin()) {
@@ -41,7 +40,7 @@ $fileName = '_predb_dump.csv.gz';
 $innerUrl = 'fb2pffwwriruyco';
 $baseUrl  = 'https://www.dropbox.com/sh/' . $innerUrl;
 
-$result = nzedb\utility\Utility::getUrl(['url' => $baseUrl . '/AACy9Egno_v2kcziVHuvWbbxa']);
+$result = Utility::getUrl(['url' => $baseUrl . '/AACy9Egno_v2kcziVHuvWbbxa']);
 
 if (!$result) {
 	exit('Error connecting to dropbox.com, try again later?' . PHP_EOL);
@@ -57,7 +56,6 @@ $result = preg_match_all(
 if ($result) {
 	$links      = array_unique($links[1]);
 	$total      = count($links);
-	$pdo        = new Settings();
 	$predb      = new PreDb();
 
 	$progress = $predb->progress(settings_array());
@@ -132,7 +130,7 @@ if ($result) {
 
 			// Remove any titles where length <=8
 			if ($verbose === true) {
-				echo $pdo->log->info("Deleting any records where title <=8 from Temporary Table");
+				echo $predb->log->info("Deleting any records where title <=8 from Temporary Table");
 			}
 			$predb->executeDeleteShort();
 
@@ -142,7 +140,7 @@ if ($result) {
 			// Fill the group_id
 			$predb->executeUpdateGroupID();
 
-			echo $pdo->log->info("Inserting records from temporary table into predb table");
+			echo $predb->log->info("Inserting records from temporary table into predb table");
 			$predb->executeInsert();
 
 			// Delete the dump.
