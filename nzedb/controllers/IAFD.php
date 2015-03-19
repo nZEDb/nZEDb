@@ -91,24 +91,26 @@ class IAFD {
 		if (!isset($this->searchTerm)) {
 			return false;
 		}
+
 		$this->_doSearch = true;
+
 		if ($this->getUrl() === false) {
 			return false;
 		} else {
 			$firsttitle = null;
 			$secondtitle = null;
-			if($ret = $this->_html->find("div#moviedata, h2, dt", 0)){
-			if($ret->find("h2",0)){
-				$firsttitle = $ret->find("h2",0)->innertext;
-				if(preg_match("/Movie Titles/",$firsttitle)){
-					return false;
+			if($ret = $this->_html->find("div#moviedata, h2, dt", 0)) {
+				if($ret->find("h2",0)) {
+					$firsttitle = $ret->find("h2",0)->innertext;
+					if(preg_match("/Movie Titles/",$firsttitle)){
+						return false;
+					}
 				}
+				if($ret->find("dt",0)) {
+					$secondtitle = $ret->find("dd", 0)->innertext;
 				}
-			if($ret->find("dt",0)){
-			    $secondtitle = $ret->find("dd", 0)->innertext;
-			}
 				unset($ret);
-				if(isset($secondtitle) OR isset($firsttitle)){
+				if(isset($secondtitle) || isset($firsttitle)) {
 					$firsttitle = preg_replace('/\(([0-9]+)\)/',"",$firsttitle);
 					$firsttitle = preg_replace('/XXX/', '', $firsttitle);
 					$firsttitle = preg_replace('/\(.*?\)|[-._]/i', ' ', $firsttitle);
@@ -128,10 +130,10 @@ class IAFD {
 							return false;
 						}
 					}
-				}else{
+				} else {
 					return false;
 				}
-			}else{
+			} else {
 				return false;
 			}
 		}
@@ -155,27 +157,33 @@ class IAFD {
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 		curl_setopt($ch, CURLOPT_USERAGENT, "Firefox/2.0.0.1");
 		curl_setopt($ch, CURLOPT_FAILONERROR, 1);
+
 		if (isset($this->cookie)) {
 			curl_setopt($ch, CURLOPT_COOKIEJAR, $this->cookie);
 			curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookie);
 		}
+
 		curl_setopt_array($ch, nzedb\utility\Utility::curlSslContextOptions());
 		$this->_response = curl_exec($ch);
-		if(!empty($this->_getRedirect)){
+
+		if (!empty($this->_getRedirect)) {
 			$this->_getRedirect = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
 			curl_close($ch);
 			return $this->_getRedirect;
 		}
+
 		if (!$this->_response) {
 			curl_close($ch);
 
 			return false;
 		}
 		curl_close($ch);
-		if($this->_doSearch === true){
+
+		if ($this->_doSearch === true) {
 			$this->_html->load($this->_response);
 			$this->_doSearch = false;
 		}
+
 		return true;
 	}
 

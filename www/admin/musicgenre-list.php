@@ -27,7 +27,7 @@ $page->smarty->assign('pagerquerybase', WWW_TOP."/musicgenre-list.php?".$activeO
 $pager = $page->smarty->fetch('pager.tpl');
 $page->smarty->assign('pager', $pager);
 
-$genrelist = $genres->getRange(Genres::MUSIC_TYPE, $activeOnly, $offset, ITEMS_PER_PAGE);
+$genrelist = $genres->getRange($offset, ITEMS_PER_PAGE, Genres::MUSIC_TYPE, $activeOnly);
 
 $page->smarty->assign('genrelist', $genrelist);
 

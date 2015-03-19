@@ -28,7 +28,7 @@ class RequestIDWeb extends RequestID
 	 *
 	 * @param array $options Class instances / Echo to cli?
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		parent::__construct($options);
 		$this->_request_hours = ($this->pdo->getSetting('request_hours') != '') ? (int)$this->pdo->getSetting('request_hours') : 1;
@@ -106,7 +106,7 @@ class RequestIDWeb extends RequestID
 	protected function _processReleases()
 	{
 		// Array to store results.
-		$requestArray = array();
+		$requestArray = [];
 
 		if ($this->_releases instanceof \Traversable) {
 			// Loop all the results.
@@ -131,12 +131,12 @@ class RequestIDWeb extends RequestID
 				}
 
 				// Send the release ID so we can track the return data.
-				$requestArray[$release['id']] = array(
+				$requestArray[$release['id']] = [
 					'reqid' => $requestId,
 					'ident' => $release['id'],
 					'group' => $release['groupname'],
 					'sname' => $release['searchname']
-				);
+				];
 			}
 		}
 
@@ -283,7 +283,7 @@ class RequestIDWeb extends RequestID
 	 */
 	protected function _updateRelease()
 	{
-		$determinedCategory = $this->category->determineCategory($this->_newTitle['title'], $this->_release['group_id']);
+		$determinedCategory = $this->category->determineCategory($this->_release['group_id'], $this->_newTitle['title']);
 		$newTitle = $this->pdo->escapeString($this->_newTitle['title']);
 		$this->pdo->queryExec(
 			sprintf('
@@ -303,7 +303,7 @@ class RequestIDWeb extends RequestID
 		$this->sphinx->updateReleaseSearchName($this->_release['id'], $newTitle);
 
 		if ($this->echoOutput) {
-			\NameFixer::echoChangedReleaseName(array(
+			\NameFixer::echoChangedReleaseName([
 					'new_name' => $this->_newTitle['title'],
 					'old_name' => $this->_release['searchname'],
 					'new_category' => $this->category->getNameByID($determinedCategory),
@@ -311,7 +311,7 @@ class RequestIDWeb extends RequestID
 					'group' => $this->_release['groupname'],
 					'release_id' => $this->_release['id'],
 					'method' => 'RequestID->updateRelease<web>'
-				)
+				]
 			);
 		}
 	}

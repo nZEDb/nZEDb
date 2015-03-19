@@ -258,7 +258,7 @@ class ProcessReleases
 		if ($releases && $releases->rowCount()) {
 			$total = $releases->rowCount();
 			foreach ($releases as $release) {
-				$catId = $cat->determineCategory($release[$type], $release['group_id']);
+				$catId = $cat->determineCategory($release['group_id'], $release[$type]);
 				$this->pdo->queryExec(
 					sprintf('UPDATE releases SET categoryid = %d, iscategorized = 1 WHERE id = %d', $catId, $release['id'])
 				);
@@ -588,7 +588,7 @@ class ProcessReleases
 							'postdate' => $this->pdo->escapeString($collection['date']),
 							'fromname' => $fromName,
 							'size' => $collection['filesize'],
-							'categoryid' => $categorize->determineCategory($cleanedName, $collection['group_id']),
+							'categoryid' => $categorize->determineCategory($collection['group_id'], $cleanedName),
 							'isrenamed' => ($properName === true ? 1 : 0),
 							'reqidstatus' => ($isReqID === true ? 1 : 0),
 							'preid' => ($preID === false ? 0 : $preID),

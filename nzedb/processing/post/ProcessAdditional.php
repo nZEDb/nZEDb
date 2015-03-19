@@ -1744,7 +1744,7 @@ Class ProcessAdditional
 									} else if ($ext === 'FLAC') {
 										$newCat = \Category::CAT_MUSIC_LOSSLESS;
 									} else {
-										$newCat = $this->_categorize->determineCategory($newName, $rQuery['group_id']);
+										$newCat = $this->_categorize->determineCategory($rQuery['group_id'], $newName);
 									}
 
 									$newTitle = $this->pdo->escapeString(substr($newName, 0, 255));
@@ -2330,7 +2330,7 @@ Class ProcessAdditional
 					}
 
 					// Get a new category ID.
-					$newCategory = $this->_categorize->determineCategory($newName, $this->_release['group_id']);
+					$newCategory = $this->_categorize->determineCategory($this->_release['group_id'], $newName);
 
 					$newTitle = $this->pdo->escapeString(substr($newName, 0, 255));
 					// Update the release with the data.

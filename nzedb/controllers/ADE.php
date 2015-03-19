@@ -156,7 +156,7 @@ class ADE
 	 *
 	 * @param bool $awards - Include Awards? true/false
 	 *
-	 * @return array - cast,awards
+	 * @return array - cast, awards
 	 */
 	public function cast($awards = false)
 	{

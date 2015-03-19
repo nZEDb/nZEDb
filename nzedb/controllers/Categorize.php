@@ -48,7 +48,7 @@ class Categorize extends Category
 	 *
 	 * @param array $options Class instances.
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		parent::__construct($options);
 		$this->categorizeForeign = ($this->pdo->getSetting('categorizeforeign') == "0") ? false : true;
@@ -66,7 +66,7 @@ class Categorize extends Category
 	 *
 	 * @return int The categoryID.
 	 */
-	public function determineCategory($releaseName = '', $groupID)
+	public function determineCategory($groupID, $releaseName = '')
 	{
 		$this->releaseName = $releaseName;
 		$this->groupID = $groupID;
@@ -119,7 +119,9 @@ class Categorize extends Category
 	public function byGroup()
 	{
 		$group = $this->groupName();
-		if ($group !== false) {
+		if ($group === false) {
+			return false;
+		} else {
 			switch (true) {
 				case $group === 'alt.binaries.0day.stuffz':
 					switch (true) {
@@ -495,7 +497,7 @@ class Categorize extends Category
 	public function databaseRegex()
 	{
 		$cat = $this->regexes->tryRegex($this->releaseName, $this->groupName());
-		if ($cat) {
+		if (is_numeric($cat)) {
 			$this->tmpCat = $cat;
 			return true;
 		}
@@ -560,7 +562,7 @@ class Categorize extends Category
 	public function isForeignTV()
 	{
 		switch (true) {
-			case preg_match('/[-._ ](NHL|stanley.+cup)[-._ ]/', $this->releaseName):
+			case preg_match('/[-._ ](NHL|stanley.+cup)[-._ ]/', $this->releaseName) !== false:
 				return false;
 			case preg_match('/[-._ ](chinese|dk|fin|french|ger?|heb|ita|jap|kor|nor|nordic|nl|pl|swe)[-._ ]?(sub|dub)(ed|bed|s)?|<German>/i', $this->releaseName):
 			case preg_match('/[-._ ](brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|ita|latin|mandarin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish).+(720p|1080p|Divx|DOKU|DUB(BED)?|DLMUX|NOVARIP|RealCo|Sub(bed|s)?|Web[-._ ]?Rip|WS|Xvid|x264)[-._ ]/i', $this->releaseName):

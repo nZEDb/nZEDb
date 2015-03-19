@@ -44,11 +44,11 @@ if (substr($path, strlen($path) - 1) != '/') {
 
 function relativeTime($_time)
 {
-	$d[0] = array(1, "sec");
-	$d[1] = array(60, "min");
-	$d[2] = array(3600, "hr");
-	$d[3] = array(86400, "day");
-	$d[4] = array(31104000, "yr");
+	$d[0] = [1, "sec"];
+	$d[1] = [60, "min"];
+	$d[2] = [3600, "hr"];
+	$d[3] = [86400, "day"];
+	$d[4] = [31104000, "yr"];
 
 	$w = [];
 
@@ -133,7 +133,7 @@ if (!isset($groups) || count($groups) == 0) {
 			$subject = utf8_encode(trim($partless));
 
 			// Make a fake message object to use to check the blacklist.
-			$msg = array("Subject" => $subject, "From" => $fromname, "Message-ID" => "");
+			$msg = ["Subject" => $subject, "From" => $fromname, "Message-ID" => ""];
 
 			// Groups.
 			$groupArr = [];
@@ -152,7 +152,7 @@ if (!isset($groups) || count($groups) == 0) {
 			}
 			if ($groupID != -1 && !$isBlackListed) {
 				if ($usenzbname) {
-					$usename = str_replace(array('.nzb.gz', '.nzb'), '', basename($nzbFile));
+					$usename = str_replace(['.nzb.gz', '.nzb'], '', basename($nzbFile));
 				}
 				if (count($file->segments->segment) > 0) {
 					foreach ($file->segments->segment as $segment) {
@@ -196,7 +196,7 @@ if (!isset($groups) || count($groups) == 0) {
 			} else {
 				$posteddate = $postdate[0];
 			}
-			$category = $categorize->determineCategory($cleanName, $groupID);
+			$category = $categorize->determineCategory($groupID, $cleanName);
 
 			// A 1% variance in size is considered the same size when the subject and poster are the same
 			$minsize = $totalsize * .99;

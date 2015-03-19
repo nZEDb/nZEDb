@@ -1374,7 +1374,7 @@ class Binaries
 				$opType = 'AND binaryblacklist.optype = ' . self::OPTYPE_BLACKLIST;
 				break;
 			case self::OPTYPE_WHITELIST:
-				$opType = 'AND binaryblacklist.optype = ' . self::OPTYPE_WHITELIST;;
+				$opType = 'AND binaryblacklist.optype = ' . self::OPTYPE_WHITELIST;
 				break;
 			default:
 				$opType ='';

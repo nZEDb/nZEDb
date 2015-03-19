@@ -107,6 +107,7 @@ class CollectionsCleaning
 			case 'alt.binaries.this.is.an.example':
 				return $this->_example_method_name();
 			*/
+			case null:
 			default:
 				return $this->generic();
 		}

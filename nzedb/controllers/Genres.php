@@ -19,7 +19,7 @@ class Genres
 	/**
 	 * @param array $options Class instances.
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		$defaults = [
 			'Settings' => null
@@ -70,14 +70,14 @@ class Genres
 		return $sql;
 	}
 
-	public function getRange($type='', $activeonly=false, $start, $num)
+	public function getRange($start, $num, $type = '', $activeonly = false)
 	{
 		$sql = $this->getListQuery($type, $activeonly);
-		$sql .= " LIMIT ".$num." OFFSET ".$start;
+		$sql .= " LIMIT $num OFFSET $start";
 		return $this->pdo->query($sql);
 	}
 
-	public function getCount($type='', $activeonly=false)
+	public function getCount($type = '', $activeonly = false)
 	{
 		if (!empty($type))
 			$typesql = sprintf(" AND g.type = %d", $type);

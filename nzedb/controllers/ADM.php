@@ -199,7 +199,7 @@ class ADM
 
 	/**
 	 * Searches for match against searchterm
-	 * @return bool, true if search = 100%
+	 * @return bool - true if search = 100%
 	 */
 	public function search()
 	{

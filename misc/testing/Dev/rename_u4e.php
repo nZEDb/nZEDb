@@ -36,13 +36,13 @@ if (empty($unrarPath)) {
 $nntp = new \NNTP(['Settings' => $pdo]);
 $nfo = new \Nfo(['Echo' => true, 'Settings' => $pdo]);
 $nzbContents= new \NZBContents(
-	array(
+	[
 		'Settings' => $pdo,
 		'Echo' => true,
 		'Nfo' => $nfo,
 		'PostProcess' => new PostProcess(['Settings' => $pdo, 'Nfo' => $nfo]),
 		'NNTP' => $nntp
-	)
+	]
 );
 $categorize = new \Categorize(['Settings' => $pdo]);
 
@@ -172,9 +172,9 @@ if ($releases instanceof \Traversable) {
 			continue;
 		}
 
-		$determinedCat = $categorize->determineCategory($newName, $release['group_id']);
+		$determinedCat = $categorize->determineCategory($release['group_id'], $newName);
 
-		\NameFixer::echoChangedReleaseName(array(
+		\NameFixer::echoChangedReleaseName([
 				'new_name'     => $newName,
 				'old_name'     => $release['oldname'],
 				'new_category' => $categorize->getNameByid($determinedCat),
@@ -182,7 +182,7 @@ if ($releases instanceof \Traversable) {
 				'group'        => $release['groupname'],
 				'release_id'   => $release['id'],
 				'method'       => 'misc/testing/Dev/rename_u4e.php'
-			)
+			]
 		);
 
 		$newName = $pdo->escapeString(substr($newName, 0, 255));

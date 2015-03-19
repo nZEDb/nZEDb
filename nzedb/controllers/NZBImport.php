@@ -274,10 +274,10 @@ class NZBImport
 			}
 
 			// Make a fake message array to use to check the blacklist.
-			$msg = array("Subject" => (string) $file->attributes()->subject, "From" => (string) $file->attributes()->poster, "Message-ID" => "");
+			$msg = ["Subject" => (string) $file->attributes()->subject, "From" => (string) $file->attributes()->poster, "Message-ID" => ""];
 
 			// Get the group names, group_id, check if it's blacklisted.
-			$groupArr = array();
+			$groupArr = [];
 			foreach ($file->groups->group as $group) {
 				$group = (string) $group;
 
@@ -324,7 +324,7 @@ class NZBImport
 
 		// Try to insert the NZB details into the DB.
 		return $this->insertNZB(
-			array(
+			[
 				'subject'    => $firstName,
 				'useFName'   => $useNzbName,
 				'postDate'   => (empty($postDate) ? date("Y-m-d H:i:s") : $postDate),
@@ -333,7 +333,7 @@ class NZBImport
 				'groupName'  => $groupName,
 				'totalFiles' => $totalFiles,
 				'totalSize'  => $totalSize
-			)
+			]
 		);
 	}
 
@@ -397,7 +397,7 @@ class NZBImport
 					'postdate' => $this->pdo->escapeString($nzbDetails['postDate']),
 					'fromname' => $escapedFromName,
 					'size' => $this->pdo->escapeString($nzbDetails['totalSize']),
-					'categoryid' => $this->category->determineCategory($cleanName, $nzbDetails['group_id']),
+					'categoryid' => $this->category->determineCategory($nzbDetails['group_id'], $cleanName),
 					'isrenamed' => $renamed,
 					'reqidstatus' => 0,
 					'preid' => 0,
