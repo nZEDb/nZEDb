@@ -45,9 +45,9 @@ function reCategorize($argv)
 	}
 	$timestart = TIME();
 	if (isset($argv[1]) && (is_numeric($argv[1]) || preg_match('/\([\d, ]+\)/', $argv[1])) || $argv[1] === 'misc') {
-		$chgcount = categorizeRelease($update, str_replace(" AND", "WHERE", $where), true);
+		$chgcount = categorizeRelease(str_replace(" AND", "WHERE", $where), $update, true);
 	} else {
-		$chgcount = categorizeRelease($update, "", true);
+		$chgcount = categorizeRelease('', $update, true);
 	}
 	$consoletools = new \ConsoleTools(['ColorCLI' => $pdo->log]);
 	$time = $consoletools->convertTime(TIME() - $timestart);
@@ -61,7 +61,7 @@ function reCategorize($argv)
 
 // Categorizes releases.
 // Returns the quantity of categorized releases.
-function categorizeRelease($update = true, $where, $echooutput = false)
+function categorizeRelease($where, $update = true, $echooutput = false)
 {
 	global $pdo;
 	$cat = new \Categorize(['Settings' => $pdo]);

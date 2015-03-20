@@ -737,6 +737,8 @@ abstract class Database extends Source
 			if (!isset($this->_operators[$operator])) {
 				throw new QueryException("Unsupported operator `{$operator}`.");
 			}
+
+			$result = [];
 			foreach ($value as $op => $val) {
 				$result[] = $this->_operator($key, [$op => $val], $fieldMeta);
 			}
@@ -891,6 +893,7 @@ abstract class Database extends Source
 	{
 		$result = null;
 
+		$options = [];
 		foreach ($joins as $key => $join) {
 			if ($result) {
 				$result .= ' ';

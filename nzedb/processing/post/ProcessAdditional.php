@@ -494,7 +494,7 @@ Class ProcessAdditional
 	 */
 	public function start($groupID = '', $guidChar = '')
 	{
-		$this->_setMainTempPath($groupID, $guidChar);
+		$this->_setMainTempPath($guidChar, $groupID);
 
 		// Fetch all the releases to work on.
 		$this->_fetchReleases($groupID, $guidChar);
@@ -526,7 +526,7 @@ Class ProcessAdditional
 	 *
 	 * @throws ProcessAdditionalException
 	 */
-	protected function _setMainTempPath(&$groupID = '', &$guidChar)
+	protected function _setMainTempPath(&$guidChar, &$groupID = '')
 	{
 		// Set up the temporary files folder location.
 		$this->_mainTmpPath = (string)$this->pdo->getSetting('tmpunrarpath');

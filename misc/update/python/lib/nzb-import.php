@@ -44,6 +44,7 @@ if (substr($path, strlen($path) - 1) != '/') {
 
 function relativeTime($_time)
 {
+	$d = [];
 	$d[0] = [1, "sec"];
 	$d[1] = [60, "min"];
 	$d[2] = [3600, "hr"];

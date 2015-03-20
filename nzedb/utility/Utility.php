@@ -1041,7 +1041,7 @@ class Utility
 	}
 
 	// Central function for sending site email.
-	static public function sendEmail($to, $subject, $contents, $from)
+	public static function sendEmail($to, $subject, $contents, $from)
 	{
 		// Email *always* uses CRLF for line endings unless the mail agent is broken, like qmail
 		$CRLF = "\r\n";

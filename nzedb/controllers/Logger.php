@@ -368,7 +368,7 @@ class Logger
 	 * @access public
 	 * @static
 	 */
-	static public function getDefaultLogPaths()
+	public static function getDefaultLogPaths()
 	{
 		$defaultLogName = (defined('nZEDb_LOGGING_LOG_NAME') ? nZEDb_LOGGING_LOG_NAME : 'nzedb');
 		$defaultLogName = (ctype_alnum($defaultLogName) ? $defaultLogName : 'nzedb');

@@ -297,8 +297,22 @@ class Tmux
 	public function decodeSize($bytes)
 	{
 		$types = ['B', 'KB', 'MB', 'GB', 'TB'];
+		/*
 		for ($i = 0; $bytes >= 1024 && $i < (count($types) - 1); $bytes /= 1024, $i++);
+
 		return (round($bytes, 2) . " " . $types[$i]);
+		*/
+
+		$suffix = 'B';
+		foreach ($types as $type)
+		{
+			if ($bytes < 1024.0) {
+				$suffix = $type;
+				break;
+			}
+			$bytes /= 1024;
+		}
+		return (round($bytes, 2) . " " . $suffix);
 	}
 
 	public function writelog($pane)
@@ -344,6 +358,7 @@ class Tmux
 
 	public function relativeTime($_time)
 	{
+		$d = [];
 		$d[0] = [1, "sec"];
 		$d[1] = [60, "min"];
 		$d[2] = [3600, "hr"];

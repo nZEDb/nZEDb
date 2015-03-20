@@ -18,7 +18,9 @@ if (is_file($www_path . 'config.php')) {
 	require($www_path . 'automated.config.php');
 }
 
-define('R',   1); define('W',   2); define('E',   4);
+define('R',   1);
+define('W',   2);
+define('E',   4);
 
 // Check All folders up to nZEDb root folder.
 $string = DS;

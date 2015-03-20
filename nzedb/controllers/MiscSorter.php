@@ -111,7 +111,7 @@ class MiscSorter
 
 	private function _cleanStrForPos($str)
 	{
-		$str = str_replace(array(' ', '\t', '_', '.', '?'), " ", $str);
+		$str = str_replace([' ', '\t', '_', '.', '?'], " ", $str);
 		$str = str_replace('  ', " ", $str);
 		$str = preg_replace('/^\s+?/Umi', "", $str);
 		return $str;
@@ -119,7 +119,7 @@ class MiscSorter
 
 	private function doarray($matches)
 	{
-		$r = array();
+		$r = [];
 		$i = 0;
 
 		$matches = array_count_values($matches);
@@ -244,7 +244,7 @@ class MiscSorter
 	private function doOS($nfo = '', $id = 0)
 	{
 		$ok = false;
-		$tmp = array();
+		$tmp = [];
 
 		$nfo = preg_replace("/[^\x09-\x80]|\?/", "", $nfo);
 		$nfo = preg_replace("/[\x01-\x09\x0e-\x20]/", " ", $nfo);
@@ -276,14 +276,14 @@ class MiscSorter
 		return preg_split($pattern, $nfo, 0, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
 	}
 
-	private function _doOSsplitPos($split = array(), $nfo = '')
+	private function _doOSsplitPos($split = [], $nfo = '')
 	{
 		return (isset($split[1]) ? $this->nfopos($nfo, $this->_cleanStrForPos($split[1])) : false);
 	}
 
 	private function moviename($nfo = '', $imdb = 0, $name = '')
 	{
-		$tmp = array();
+		$tmp = [];
 
 		$qual = $this->_getVideoQuality($nfo);
 
@@ -314,11 +314,11 @@ class MiscSorter
 
 	private function _getVideoQuality($nfo = '')
 	{
-		$qualities = array('(:?..)?tv', '480[ip]?', '640[ip]?', '720[ip]?', '1080[ip]?', 'ac3', 'audio_ts', 'avi', 'bd[\- ]?rip', 'bd25', 'bd50',
+		$qualities = ['(:?..)?tv', '480[ip]?', '640[ip]?', '720[ip]?', '1080[ip]?', 'ac3', 'audio_ts', 'avi', 'bd[\- ]?rip', 'bd25', 'bd50',
 			'bdmv', 'blu ?ray', 'br[\- ]?disk', 'br[\- ]?rip', 'cam', 'cam[\- ]?rip', 'dc', 'directors.?cut', 'divx\d?', 'dts', 'dvd', 'dvd[\- ]?r',
 			'dvd[\- ]?rip', 'dvd[\- ]?scr', 'extended', 'hd', 'hd[\- ]?tv', 'h264', 'hd[\- ]?cam', 'hd[\- ]?ts', 'iso', 'm2ts', 'mkv', 'mpeg(:?\-\d)?',
 			'mpg', 'ntsc', 'pal', 'proper', 'ppv', 'ppv[\- ]?rip', 'r\d{1}', 'repack', 'repacked', 'scr', 'screener', 'tc', 'telecine', 'telesync', 'ts',
-			'tv[\- ]?rip', 'unrated', 'vhs( ?rip)?', 'video_ts', 'video ts', 'x264', 'xvid', 'web[\- ]?rip');
+			'tv[\- ]?rip', 'unrated', 'vhs( ?rip)?', 'video_ts', 'video ts', 'x264', 'xvid', 'web[\- ]?rip'];
 
 		foreach ($qualities as $quality) {
 			if (stripos($nfo, $quality) !== false) {
@@ -328,7 +328,7 @@ class MiscSorter
 		return false;
 	}
 
-	private function doAmazon($name = '', $id = 0, $nfo = "", $q, $region = 'com', $case = false, $row = '')
+	private function doAmazon($q, $name = '', $id = 0, $nfo = '', $region = 'com', $case = false, $row = '')
 	{
 		$amazon = new \AmazonProductAPI($this->pdo->getSetting('amazonpubkey'), $this->pdo->getSetting('amazonprivkey'), $this->pdo->getSetting('amazonassociatetag'));
 		$ok = false;
@@ -371,7 +371,7 @@ class MiscSorter
 				case 'Movies':
 				case 'DVD':
 				case 'DVD & Bluray':
-					$ok = $this->_doAmazonMovies($amaz, $id, $nfo);
+					$ok = $this->_doAmazonMovies($nfo, $amaz, $id);
 					break;
 				case 'Video Games':
 					$ok = $this->_doAmazonVG($amaz, $id);
@@ -384,7 +384,7 @@ class MiscSorter
 		return $ok;
 	}
 
-	private function _doAmazonBooks($amaz = array(), $id = 0)
+	private function _doAmazonBooks($amaz = [], $id = 0)
 	{
 		$audiobook = false;
 		$v = (string) $amaz->Items->Item->ItemAttributes->Format;
@@ -412,7 +412,7 @@ class MiscSorter
 		return $ok;
 	}
 
-	private function _doAmazonMusic($amaz = array(), $id = 0)
+	private function _doAmazonMusic($amaz = [], $id = 0)
 	{
 		$new = (string) $amaz->Items->Item->ItemAttributes->Artist;
 		if ($new != '') {
@@ -431,7 +431,7 @@ class MiscSorter
 		return $ok;
 	}
 
-	private function _doAmazonMovies($amaz = array(), $id = 0, $nfo)
+	private function _doAmazonMovies($nfo, $amaz = [], $id = 0)
 	{
 		$new = (string) $amaz->Items->Item->ItemAttributes->Title;
 		$new = $new . " (" . substr((string) $amaz->Items->Item->ItemAttributes->ReleaseDate, 0, 4) . ")";
@@ -439,7 +439,7 @@ class MiscSorter
 		return $this->dodbupdate($id, $name, null, 'amazonMov');
 	}
 
-	private function _doAmazonVG($amaz = array(), $id = 0)
+	private function _doAmazonVG($amaz = [], $id = 0)
 	{
 		$name = (string) $amaz->Items->Item->ItemAttributes->Title;
 		$name .= "." . (string) $amaz->Items->Item->ItemAttributes->Region . ".";
@@ -547,20 +547,21 @@ class MiscSorter
 					if (strlen($set[1]) <= 13) {
 						$set[2] = $set[1];
 						$set[1] = "com";
-						$ok = $this->doAmazon($row['name'], $row['id'], $nfo, $set[2], $set[1], $case, $row);
+						$ok = $this->doAmazon($set[2],
+											  $row['name'], $row['id'], $nfo, $set[1], $case, $row);
 					}
 				}
 				break;
 			case "amazon.":
 				if (preg_match('/amazon\.([a-z]*?\.?[a-z]{2,3}?)\/.*\/dp\/([a-zA-Z0-9]{8,10}?)/iU', $nfo, $set)) {
-					$ok = $this->doAmazon($row['name'], $row['id'], $nfo, $set[2], $set[1], 'asin', $row);
+					$ok = $this->doAmazon($set[2], $row['name'], $row['id'], $nfo, $set[1], 'asin', $row);
 				}
 				break;
 			case "upc":
 				if (preg_match('/UPC\:?? *?([a-zA-Z0-9]*?)/iU', $nfo, $set)) {
 					$set[2] = $set[1];
 					$set[1] = "All";
-					$ok = $this->doAmazon($row['name'], $row['id'], $nfo, $set[2], $set[1], $case, $row);
+					$ok = $this->doAmazon($set[2], $row['name'], $row['id'], $nfo, $set[1], $case, $row);
 				}
 				break;
 		}

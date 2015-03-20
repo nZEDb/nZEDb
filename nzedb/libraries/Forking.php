@@ -333,7 +333,7 @@ class Forking extends \fork_daemon
 		if ($run[0]['days'] == 1) {
 			$backfilldays = "backfill_target";
 		} elseif ($run[0]['days'] == 2) {
-			$backfilldays = round(abs(strtotime(date("Y-m-d")) - strtotime($this->pdo->getSetting('safebackfilldate'))) / 86400);;
+			$backfilldays = round(abs(strtotime(date("Y-m-d")) - strtotime($this->pdo->getSetting('safebackfilldate'))) / 86400);
 		}
 
 		$data = $this->pdo->queryOneRow(

@@ -1379,7 +1379,7 @@ class NNTP extends Net_NNTP_Client
 		if ($this->_debugBool) {
 			$this->_debugging->log('NNTP', "_getXFeatureTextResponse", $message, \Logger::LOG_NOTICE);
 		}
-		$message = $this->throwError($this->pdo->log->error($message), 1000);;
+		$message = $this->throwError($this->pdo->log->error($message), 1000);
 		return $message;
 	}
 

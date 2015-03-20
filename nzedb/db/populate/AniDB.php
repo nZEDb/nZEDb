@@ -142,7 +142,7 @@ class AniDB
 		}
 		$apiresponse = $this->getAniDbResponse();
 
-		$AniDBAPIArray = array();
+		$AniDBAPIArray = [];
 
 		if (!$apiresponse) {
 			echo "AniDB: Error getting response." . PHP_EOL;
@@ -162,10 +162,11 @@ class AniDB
 
 			$AniDBAPIArray['categories'] = $this->processAPIResponceElement($AniDBAPIXML->categories);
 
+			$episodeArray = [];
 			if ($AniDBAPIXML->episodes && $AniDBAPIXML->episodes[0]->attributes()) {
 				$i = 1;
 				foreach ($AniDBAPIXML->episodes->episode AS $episode) {
-					$titleArray = array();
+					$titleArray = [];
 
 					$episodeArray[$i]['episode_id'] = (int)$episode->attributes()->id[0];
 					$episodeArray[$i]['episode_no'] = (int)$episode->epno;
@@ -187,7 +188,6 @@ class AniDB
 				}
 			}
 
-			$episodeArray = [];
 			//start and end date come from AniDB API as date strings -- no manipulation needed
 			$AniDBAPIArray['startdate'] = isset($AniDBAPIXML->startdate) ? $AniDBAPIXML->startdate :
 				'0000-00-00';
@@ -201,14 +201,14 @@ class AniDB
 					$AniDBAPIXML->ratings->temporary : $AniDBAPIArray['rating'] = '';
 			}
 
-			$AniDBAPIArray += array(
+			$AniDBAPIArray += [
 				'type'        => isset($AniDBAPIXML->type[0]) ? (string)$AniDBAPIXML->type : '',
 				'description' => isset($AniDBAPIXML->description) ?
 						(string)$AniDBAPIXML->description : '',
 				'picture'     => isset($AniDBAPIXML->picture[0]) ? (string)$AniDBAPIXML->picture :
 						'',
 				'epsarr'      => $episodeArray,
-			);
+			];
 
 			return $AniDBAPIArray;
 		}
@@ -249,12 +249,12 @@ class AniDB
 
 		$ch = curl_init($curlString);
 
-		$curlOpts = array(
+		$curlOpts = [
 			CURLOPT_RETURNTRANSFER => 1,
 			CURLOPT_HEADER         => 0,
 			CURLOPT_FAILONERROR    => 1,
 			CURLOPT_ENCODING       => 'gzip'
-		);
+		];
 
 		curl_setopt_array($ch, $curlOpts);
 		$apiresponse = curl_exec($ch);
@@ -449,7 +449,7 @@ class AniDB
 	 *
 	 * @return string
 	 */
-	private function updateAniDBInfoEps($AniDBInfoArray = array())
+	private function updateAniDBInfoEps($AniDBInfoArray = [])
 	{
 		$this->pdo->queryExec(
 				  sprintf('
@@ -483,7 +483,7 @@ class AniDB
 	 *
 	 * @param array $AniDBInfoArray
 	 */
-	private function updateAniChildTables($AniDBInfoArray = array())
+	private function updateAniChildTables($AniDBInfoArray = [])
 	{
 		$check = $this->pdo->queryOneRow(
 						   sprintf('

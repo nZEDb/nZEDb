@@ -436,7 +436,7 @@ class Releases
 	 *
 	 * @return array
 	 */
-	public function getRss($cat, $offset, $userID = 0, $rageID, $aniDbID, $airDate = -1)
+	public function getRss($cat, $offset, $rageID, $aniDbID, $userID = 0, $airDate = -1)
 	{
 		$catSearch = $cartSearch = '';
 
@@ -925,12 +925,26 @@ class Releases
 	 * @return array
 	 */
 	public function search(
-		$searchName, $usenetName, $posterName, $groupName, $cat = [-1], $sizeFrom,
-		$sizeTo, $hasNfo, $hasComments, $daysNew, $daysOld, $offset = 0, $limit = 1000,
-		$orderBy = '', $maxAge = -1, $excludedCats = [], $type = 'basic'
+		$searchName,
+		$usenetName,
+		$posterName,
+		$groupName,
+		$sizeFrom,
+		$sizeTo,
+		$hasNfo,
+		$hasComments,
+		$daysNew,
+		$daysOld,
+		$offset = 0,
+		$limit = 1000,
+		$orderBy = '',
+		$maxAge = -1,
+		$excludedCats = [],
+		$type = 'basic',
+		$cat = [-1]
 	)
 	{
-		$sizeRange = array(
+		$sizeRange = [
 			1 => 1,
 			2 => 2.5,
 			3 => 5,
@@ -942,7 +956,7 @@ class Releases
 			9 => 160,
 			10 => 320,
 			11 => 640,
-		);
+		];
 
 		if ($orderBy == '') {
 			$orderBy = [];

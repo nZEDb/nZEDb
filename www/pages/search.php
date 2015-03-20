@@ -12,7 +12,7 @@ $page->meta_title = "Search Nzbs";
 $page->meta_keywords = "search,nzb,description,details";
 $page->meta_description = "Search for Nzbs";
 
-$results = array();
+$results = [];
 $searchtype = "basic";
 $searchStr = "";
 
@@ -27,7 +27,7 @@ if (isset($_REQUEST["id"]) && !isset($_REQUEST["searchadvr"]) && !isset($_REQUES
 
 	if ($searchtype == "basic") {
 		$searchStr = (string) $_REQUEST["id"];
-		$categoryId = array();
+		$categoryId = [];
 		if (isset($_REQUEST["t"])) {
 			$categoryId = explode(",", $_REQUEST["t"]);
 		} else {
@@ -44,7 +44,7 @@ if (isset($_REQUEST["id"]) && !isset($_REQUEST["searchadvr"]) && !isset($_REQUES
 		if (isset ($_REQUEST['subject'])) {
 			$page->smarty->assign('subject', $_REQUEST['subject']);
 		}
-		$results = $releases->search($searchStr, -1, -1, -1, $categoryId, -1, -1, 0, 0, -1, -1, $offset, ITEMS_PER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"]);
+		$results = $releases->search($searchStr, -1, -1, -1, -1, -1, 0, 0, -1, -1, $offset, ITEMS_PER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"], $categoryId);
 	}
 
 	$page->smarty->assign('lastvisit', $page->userdata['lastlogin']);
@@ -71,7 +71,7 @@ if (isset($_REQUEST["subject"]) && !isset($_REQUEST["searchadvr"]) && !isset($_R
 	if ($searchtype == "basic") {
 		$searchStr = (string) $_REQUEST["subject"];
 
-		$categoryId = array();
+		$categoryId = [];
 		if (isset($_REQUEST["t"])) {
 			$categoryId = explode(",", $_REQUEST["t"]);
 		} else {
@@ -85,7 +85,8 @@ if (isset($_REQUEST["subject"]) && !isset($_REQUEST["searchadvr"]) && !isset($_R
 		$page->smarty->assign('category', $categoryId);
 		$page->smarty->assign('pagerquerybase', WWW_TOP . "/search/" . htmlentities($searchStr) . "?t=" . (implode(',', $categoryId)) . "&amp;ob=" . $orderby . "&amp;offset=");
 		$page->smarty->assign('subject', $searchStr);
-		$results = $releases->search($searchStr, -1, -1, -1, $categoryId, -1, -1, 0, 0, -1, -1, $offset, ITEMS_PER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"]);
+		$results = $releases->search($searchStr, -1, -1, -1, -1, -1, 0, 0, -1, -1, $offset, ITEMS_PER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"],
+									 $categoryId);
 	}
 
 	$page->smarty->assign('lastvisit', $page->userdata['lastlogin']);
@@ -157,7 +158,8 @@ if (isset($_REQUEST["searchadvr"]) && !isset($_REQUEST["id"]) && !isset($_REQUES
 		if ($_REQUEST["searchadvcat"] == "") {
 			$searchCat = -1;
 		}
-		$results = $releases->search($searchSearchName, $searchUsenetName, $searchPoster, $searchGroups, [$searchCat], $searchSizeFrom, $searchSizeTo, $searchHasNFO, $searchHascomments, $searchdaysnew, $searchdaysold, $offset, ITEMS_PER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"], "advanced");
+		$results = $releases->search($searchSearchName, $searchUsenetName, $searchPoster, $searchGroups, $searchSizeFrom, $searchSizeTo, $searchHasNFO, $searchHascomments, $searchdaysnew, $searchdaysold, $offset, ITEMS_PER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"], "advanced",
+									 [$searchCat]);
 	}
 
 	$page->smarty->assign('lastvisit', $page->userdata['lastlogin']);
@@ -182,7 +184,7 @@ $page->smarty->assign('grouplist', $grouplist);
 $catlist = $c->getForSelect();
 $page->smarty->assign('catlist', $catlist);
 
-$sizelist = array(-1 => '--Select--',
+$sizelist = [-1 => '--Select--',
 	1 => '100MB',
 	2 => '250MB',
 	3 => '500MB',
@@ -194,7 +196,7 @@ $sizelist = array(-1 => '--Select--',
 	9 => '16GB',
 	10 => '32GB',
 	11 => '64GB'
-);
+];
 
 $page->smarty->assign('sizelist', $sizelist);
 $page->smarty->assign('results', $results);

@@ -240,7 +240,7 @@ class Nfo
 	 * @access public
 	 * @static
 	 */
-	static public function NfoQueryString(Settings &$pdo)
+	public static function NfoQueryString(Settings &$pdo)
 	{
 		$maxSize = $pdo->getSetting('maxsizetoprocessnfo');
 		$minSize = $pdo->getSetting('minsizetoprocessnfo');
