@@ -377,7 +377,7 @@ class NNTP extends Net_NNTP_Client
 	/**
 	 * Fetch an overview of article(s) in the currently selected group.
 	 *
-	 * @param null $range
+	 * @param string $range
 	 * @param bool $names
 	 * @param bool $forceNames
 	 *
@@ -800,11 +800,11 @@ class NNTP extends Net_NNTP_Client
 	/**
 	 * Post an article to usenet.
 	 *
-	 * @param $groups   mixed   (array)  Groups. ie.: $groups = array('alt.test', 'alt.testing', 'free.pt');
+	 * @param string $groups   mixed   (array)  Groups. ie.: $groups = array('alt.test', 'alt.testing', 'free.pt');
 	 *                          (string) Group.  ie.: $groups = 'alt.test';
-	 * @param $subject  string  The subject.     ie.: $subject = 'Test article';
-	 * @param $body     string  The message.     ie.: $message = 'This is only a test, please disregard.';
-	 * @param $from     string  The poster.      ie.: $from = '<anon@anon.com>';
+	 * @param string $subject  string  The subject.     ie.: $subject = 'Test article';
+	 * @param string $body     string  The message.     ie.: $message = 'This is only a test, please disregard.';
+	 * @param string $from     string  The poster.      ie.: $from = '<anon@anon.com>';
 	 * @param $extra    string  Extra, separated by \r\n
 	 *                                           ie.: $extra  = 'Organization: <nZEDb>\r\nNNTP-Posting-Host: <127.0.0.1>';
 	 * @param $yEnc     bool    Encode the message with yEnc?
@@ -1418,7 +1418,7 @@ class NNTP extends Net_NNTP_Client
 	 * @param mixed $identifier (string) The message-ID of the article to download.
 	 *                          (int)    The article number.
 	 *
-	 * @return mixed On success : (string) The article's body.
+	 * @return string On success : (string) The article's body.
 	 *               On failure : (object) PEAR_Error.
 	 *
 	 * @access protected
