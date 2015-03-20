@@ -45,12 +45,13 @@ function dogroup($group, $binaries)
 	$binaries->updateGroup($group);
 	echo "Press enter to continue, type n and press enter to quit.\n";
 	$cmd = trim(fgets(fopen("php://stdin","r")));
-	if($cmd == '')
+	if ($cmd == '') {
 		return true;
-	else if ($cmd == "no")
+	} else if ($cmd == "no") {
 		exit("Done.\n");
-	else
+	} else {
 		return true;
+	}
 }
 
 ?>

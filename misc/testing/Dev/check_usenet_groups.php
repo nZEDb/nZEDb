@@ -25,6 +25,7 @@ $data = $nntp->getGroups();
 if ($nntp->isError($data)) {
 	exit($pdo->log->error("\nFailed to getGroups() from nntp server.\n"));
 }
+
 if (!isset($data['group'])) {
 	exit($pdo->log->error("\nFailed to getGroups() from nntp server.\n"));
 }
@@ -36,8 +37,12 @@ $minvalue = $argv[1];
 
 foreach ($data as $newgroup) {
 	if (isset($newgroup["group"])) {
-		if (strstr($newgroup["group"], ".bin") != false && MyInArray($res, $newgroup["group"], "name") == false && ($newgroup["last"] - $newgroup["first"]) > 1000000)
-			$pdo->queryInsert(sprintf("INSERT INTO allgroups (name, first_record, last_record, updated) VALUES (%s, %d, %d, NOW())", $pdo->escapeString($newgroup["group"]), $newgroup["first"], $newgroup["last"]));
+		if (strstr($newgroup["group"], ".bin") != false && MyInArray($res, $newgroup["group"], "name") == false && ($newgroup["last"] - $newgroup["first"]) > 1000000) {
+			$pdo->queryInsert(sprintf("INSERT INTO allgroups (name, first_record, last_record, updated) VALUES (%s, %d, %d, NOW())",
+									  $pdo->escapeString($newgroup["group"]),
+									  $newgroup["first"],
+									  $newgroup["last"]));
+		}
 	}
 }
 
@@ -60,16 +65,17 @@ if ($counter == 0) {
 	echo $pdo->log->info("No groups currently exceeding ".number_format($minvalue)." posts per hour. Try again in a few minutes.");
 }
 
-function myInArray($array, $value, $key){
+function myInArray($array, $value, $key)
+{
 	//loop through the array
 	foreach ($array as $val) {
 		//if $val is an array cal myInArray again with $val as array input
-		if(is_array($val)){
+		if (is_array($val)){
 			if(myInArray($val,$value,$key))
 				return true;
 		} else {
 			//else check if the given key has $value as value
-			if($array[$key]==$value) {
+			if ($array[$key]==$value) {
 				return true;
 			}
 		}

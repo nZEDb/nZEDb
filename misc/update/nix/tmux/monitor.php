@@ -87,7 +87,7 @@ while ($runVar['counts']['iterations'] > 0) {
 		: "{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/releases.php"
 	);
 
-	switch((int) $runVar['settings']['binaries_run']) {
+	switch ((int) $runVar['settings']['binaries_run']) {
 		case 1:
 			$runVar['scripts']['binaries'] = "{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/binaries.php 0";
 			break;
@@ -98,7 +98,7 @@ while ($runVar['counts']['iterations'] > 0) {
 			$runVar['scripts']['binaries'] = 0;
 	}
 
-	switch ((int) $runVar['settings']['backfill']) {
+	switch ((int)$runVar['settings']['backfill']) {
 		case 1:
 			$runVar['scripts']['backfill'] = "{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/backfill.php";
 			break;
@@ -378,7 +378,7 @@ function errorOnSQL($pdo)
 	exit;
 }
 
-function getTableRowCount(PDOStatement &$ps, $table)
+function getTableRowCount(\PDOStatement &$ps, $table)
 {
 	$success = $ps->execute([':table' => $table]);
 	if ($success) {
