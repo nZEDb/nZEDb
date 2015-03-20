@@ -656,7 +656,7 @@ class Movie
 		return ($movieID === 0 ? false : true);
 	}
 
-   /**
+	/**
 	 * Fetch FanArt.tv backdrop / cover / title.
 	 *
 	 * @param $imdbId
@@ -675,16 +675,13 @@ class Movie
 				$ret = array();
 				if (isset($art['moviebackground'][0]['url'])) {
 					$ret['backdrop'] = $art['moviebackground'][0]['url'];
-				} else if (isset($art['moviethumb'[0]['url']])) {
+				} elseif (isset($art['moviethumb'[0]['url']])) {
 					$ret['backdrop'] = $art['moviethumb'][0]['url'];
 				}
-
 				if (isset($art['movieposter'][0]['url'])) {
 					$ret['cover'] = $art['movieposter'][0]['url'];
 				}
-
 				if (isset($ret['backdrop']) && isset($ret['cover'])) {
-
 					$ret['title'] = $imdbId;
 					if (isset($art['name'])) {
 						$ret['title'] = $art['name'];
@@ -696,8 +693,8 @@ class Movie
 				}
 			}
 		}
-return false;
-}
+		return false;
+	}
 
 	/**
 	 * Fetch info for IMDB id from TMDB.
