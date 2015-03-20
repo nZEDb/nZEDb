@@ -234,7 +234,7 @@ class Releases
 	/**
 	 * Return site setting for hiding/showing passworded releases.
 	 *
-	 * @return int
+	 * @return string
 	 */
 	public function showPasswords()
 	{
@@ -242,9 +242,7 @@ class Releases
 			return $this->passwordSettingBuffer;
 		}
 		$setting = $this->pdo->queryOneRow(
-			"SELECT value
-			FROM settings
-			WHERE setting = 'showpasswordedrelease'"
+			"SELECT value FROM settings	WHERE setting = 'showpasswordedrelease'"
 		);
 		$passwordStatus = ('= ' . \Releases::PASSWD_NONE);
 		if ($setting !== false) {
@@ -298,7 +296,7 @@ class Releases
 	/**
 	 * Return ordering types usable on site.
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public function getBrowseOrdering()
 	{
@@ -908,7 +906,6 @@ class Releases
 	 * @param string $usenetName
 	 * @param string $posterName
 	 * @param string $groupName
-	 * @param array  $cat
 	 * @param int    $sizeFrom
 	 * @param int    $sizeTo
 	 * @param int    $hasNfo
@@ -921,6 +918,7 @@ class Releases
 	 * @param int    $maxAge
 	 * @param array  $excludedCats
 	 * @param string $type
+	 * @param array  $cat
 	 *
 	 * @return array
 	 */

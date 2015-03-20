@@ -107,9 +107,9 @@ class Tmux
 
 		switch ($which) {
 			case 'alternate':
-					$ip = 'ip_a';
-					$port = 'port_a';
-					break;
+				$ip = 'ip_a';
+				$port = 'port_a';
+				break;
 			case 'primary':
 			default:
 				$ip = 'ip';
