@@ -666,32 +666,30 @@ class Movie
 	protected function fetchFanartTVProperties($imdbId)
 	{
 		if ($this->fanartapikey != '') {
-			$buffer = nzedb\utility\Utility::getUrl(['url' => 'http://api.fanart.tv/webservice/movie/' . $this->fanartapikey . '/tt' . $imdbId . '/xml/']);
+			$buffer = Utility::getUrl(['url' => 'https://webservice.fanart.tv/v3/movies/' . 'tt' . $imdbId . '?api_key=' . $this->fanartapikey , 'verifycert' => false]);
 			if ($buffer !== false) {
-				$art = @simplexml_load_string($buffer);
-				if ($art !== false) {
-					$ret = array();
-					if (isset($art->movie->moviebackgrounds->moviebackground[0]['url'])) {
-						$ret['backdrop'] = $art->movie->moviebackgrounds->moviebackground[0]['url'];
-					} else if (isset($art->movie->moviethumbs->moviethumb[0]['url'])) {
-						$ret['backdrop'] = $art->movie->moviethumbs->moviethumb[0]['url'];
+				$art = json_decode($buffer, true);
+				if (isset($art['status']) && $art['status'] === 'error') {
+					return false;
+				}
+				$ret = array();
+				if (isset($art['moviebackground'][0]['url'])) {
+					$ret['backdrop'] = $art['moviebackground'][0]['url'];
+				} elseif (isset($art['moviethumb'[0]['url']])) {
+					$ret['backdrop'] = $art['moviethumb'][0]['url'];
+				}
+				if (isset($art['movieposter'][0]['url'])) {
+					$ret['cover'] = $art['movieposter'][0]['url'];
+				}
+				if (isset($ret['backdrop']) && isset($ret['cover'])) {
+					$ret['title'] = $imdbId;
+					if (isset($art['name'])) {
+						$ret['title'] = $art['name'];
 					}
-
-					if (isset($art->movie->movieposters->movieposter[0]['url'])) {
-						$ret['cover'] = $art->movie->movieposters->movieposter[0]['url'];
+					if ($this->echooutput) {
+						$this->pdo->log->doEcho($this->pdo->log->alternateOver("Fanart Found ") . $this->pdo->log->headerOver($ret['title']));
 					}
-
-					if (isset($ret['backdrop']) && isset($ret['cover'])) {
-
-						$ret['title'] = $imdbId;
-						if (isset($art->movie['name'])) {
-							$ret['title'] = $art->movie['name'];
-						}
-						if ($this->echooutput) {
-							$this->pdo->log->doEcho($this->pdo->log->alternateOver("Fanart Found ") . $this->pdo->log->headerOver($ret['title']));
-						}
-						return $ret;
-					}
+					return $ret;
 				}
 			}
 		}
