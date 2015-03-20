@@ -18,7 +18,7 @@ checks:
         no_global_keyword: false
         no_mixed_inline_html: false
         no_short_method_names:
-            minimum: '5'
+            minimum: '3'
         no_short_variable_names:
             minimum: '3'
         no_underscore_prefix_in_methods: true
