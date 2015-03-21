@@ -69,6 +69,7 @@ coding_style:
             keywords:
                 general: lower
             constants:
+                general: upper
                 true_false_null: undefined
 
 filter:
