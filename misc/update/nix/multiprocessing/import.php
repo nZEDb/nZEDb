@@ -1,5 +1,6 @@
 <?php
-declare(ticks=1);
+declare(ticks = 1)
+
 require('.do_not_run/require.php');
 
 if (!isset($argv[1]) || !is_dir($argv[1])) {

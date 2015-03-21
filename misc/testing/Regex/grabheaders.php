@@ -57,7 +57,7 @@ for ($x = $first; $x <= $last; $x += 5000) {
 		//$header = $msg['Number']."\t\t".$msg['Subject']."\t\t".$msg['From']."\t\t".$msg['Date']."\t\t".$msg['Message-ID']."\t\t".$bytes."\t\t".$msg['Xref']."\n";
 		if (isset($msg['Subject'])) {
 			$header = $msg['Subject'] . "\n";
-			if (preg_match('/yEnc/', $header )) {
+			if (preg_match('/yEnc/', $header)) {
 				echo $header;
 			}
 			file_put_contents(nZEDb_RES . 'logs' . DS . 'not_yenc' . DS . $group . '.txt', $header, FILE_APPEND);

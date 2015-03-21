@@ -41,7 +41,7 @@ if ($argv[2] === "resume") {
 
 // --- Speed Limit ---
 if ($argv[2] === "speedlimit" && isset($argv[3]) && is_numeric($argv[3])) {
-	echo $pdo->log->header("Speed limiting sabnzbd to ".$argv[3]." KB/s");
+	echo $pdo->log->header("Speed limiting sabnzbd to " . $argv[3] . " KB/s");
 	$response = file_get_contents($saburl . "api?mode=config&name=speedlimit&value={$argv[3]}&apikey=$sabapikey");
 	echo $pdo->log->header($response);
 }

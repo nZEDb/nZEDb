@@ -173,7 +173,7 @@ class hash_algorithms
 		$hashTypes = array('md5', 'md4', 'sha1', 'sha256', 'sha512');
 		$tmpArray = array();
 		foreach ($hashTypes as $hash) {
-			foreach($strings as $key => $value) {
+			foreach ($strings as $key => $value) {
 				$tmpArray[$hash . '_' . $key] = hash($hash, $value, false);
 			}
 		}
