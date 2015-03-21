@@ -18,7 +18,7 @@ checks:
         no_global_keyword: false
         no_mixed_inline_html: false
         no_short_method_names:
-            minimum: '5'
+            minimum: '3'
         no_short_variable_names:
             minimum: '3'
         no_underscore_prefix_in_methods: true
@@ -44,24 +44,32 @@ coding_style:
                 class: new-line
                 function: new-line
                 closure: end-of-line
-            for:
-                opening: end-of-line
-            while:
-                opening: end-of-line
             do_while:
                 opening: end-of-line
+            if:
+                opening: end-of-line
+            for:
+                opening: end-of-line
             switch:
-                opening: new-line
+                opening: end-of-line
             try:
+                opening: end-of-line
+            while:
                 opening: end-of-line
         indentation:
             general:
                 use_tabs: true
+        spaces:
+            around_operators:
+                bitwise: true
+                concatenation: true
+            other:
+                after_type_cast: false
         upper_lower_casing:
             keywords:
                 general: lower
             constants:
-                true_false_null: lower
+                true_false_null: undefined
 
 filter:
     excluded_paths:
