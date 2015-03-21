@@ -50,7 +50,7 @@ if (count($releases) === 0) {
 $RC = new \ReleaseCleaning($pdo);
 $sphinx = new \SphinxSearch();
 
-foreach($releases as $release) {
+foreach ($releases as $release) {
 	$newName = $RC->releaseCleaner($release['name'], $release['fromname'], $release['size'], $argv[1]);
 	if (is_array($newName)) {
 		$newName = $newName['cleansubject'];

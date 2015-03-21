@@ -95,7 +95,7 @@ if (isset($argv[1]) && ($argv[1] === "games" || $argv[1] === "all")) {
 	if ($qry instanceof \Traversable) {
 		foreach ($qry as $releases) {
 			$pdo->queryExec("UPDATE releases SET gamesinfo_id = 0 WHERE id = " . $releases['id']);
-			$consoletools->overWritePrimary("Resetting Games Releases:  " .	$consoletools->percentString(++$concount, $total));
+			$consoletools->overWritePrimary("Resetting Games Releases:  " . $consoletools->percentString(++$concount, $total));
 		}
 		echo $pdo->log->header("\n" . number_format($concount) . " gameinfo_ID's reset.");
 	}
@@ -147,7 +147,7 @@ if (isset($argv[1]) && ($argv[1] === "music" || $argv[1] === "all")) {
 	if ($qry instanceof \Traversable) {
 		foreach ($qry as $releases) {
 			$pdo->queryExec("UPDATE releases SET musicinfoid = NULL WHERE id = " . $releases['id']);
-			$consoletools->overWritePrimary("Resetting Music Releases:  " .	$consoletools->percentString(++$concount, $total));
+			$consoletools->overWritePrimary("Resetting Music Releases:  " . $consoletools->percentString(++$concount, $total));
 		}
 	}
 	echo $pdo->log->header("\n" . number_format($concount) . " musicinfoID's reset.");
@@ -164,7 +164,7 @@ if (isset($argv[1]) && ($argv[1] === "misc" || $argv[1] === "all")) {
 
 	echo $pdo->log->primary("SELECT id FROM releases" . $where);
 	$qry = $pdo->queryDirect("SELECT id FROM releases" . $where);
-	if ($qry !== false ) {
+	if ($qry !== false) {
 		$total = $qry->rowCount();
 	} else {
 		$total = 0;
@@ -192,7 +192,7 @@ if (isset($argv[1]) && ($argv[1] === "tv" || $argv[1] === "all")) {
 	}
 
 	$qry = $pdo->queryDirect("SELECT id FROM releases" . $where);
-	if ($qry !== false ) {
+	if ($qry !== false) {
 		$total = $qry->rowCount();
 	} else {
 		$total = 0;
@@ -221,7 +221,7 @@ if (isset($argv[1]) && ($argv[1] === "anime" || $argv[1] === "all")) {
 	}
 
 	$qry = $pdo->queryDirect("SELECT id FROM releases" . $where);
-	if ($qry !== false ) {
+	if ($qry !== false) {
 		$total = $qry->rowCount();
 	} else {
 		$total = 0;

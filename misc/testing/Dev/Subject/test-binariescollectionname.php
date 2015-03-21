@@ -34,7 +34,7 @@ if (!isset($argv[1])) {
  * @param array    $group
  * @param Binaries $binaries
  *
- * @return bool
+ * @return boolean|null
  */
 function dogroup($group, $binaries)
 {

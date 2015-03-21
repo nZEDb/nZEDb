@@ -55,9 +55,9 @@ if (isset($argv[1]) && $argv[1] == 'export' && isset($argv[2])) {
 		$pdo->queryDirect("LOAD DATA INFILE '" . $path . "' IGNORE into table predb_imports FIELDS TERMINATED BY '\t\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\r\n' (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, groupname)");
 	}
 
-    // Remove any titles where length <=8
-    echo $pdo->log->info("Deleting any records where title <=8 from Temporary Table");
-    $pdo->queryDirect("DELETE FROM predb_imports WHERE LENGTH(title) <= 8");
+	// Remove any titles where length <=8
+	echo $pdo->log->info("Deleting any records where title <=8 from Temporary Table");
+	$pdo->queryDirect("DELETE FROM predb_imports WHERE LENGTH(title) <= 8");
 
 	// Add any groups that do not currently exist
 	$sqlAddGroups = <<<SQL_ADD_GROUPS
