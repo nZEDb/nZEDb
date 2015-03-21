@@ -61,7 +61,7 @@ coding_style:
                 use_tabs: true
         spaces:
             around_operators:
-                bitwise: false
+                bitwise: true
                 concatenation: true
             other:
                 after_type_cast: false
@@ -69,7 +69,7 @@ coding_style:
             keywords:
                 general: lower
             constants:
-                true_false_null: lower
+                true_false_null: undefined
 
 filter:
     excluded_paths:

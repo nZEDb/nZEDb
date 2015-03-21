@@ -85,7 +85,7 @@ if (isset($argv[1]) && ($argv[1] === "games" || $argv[1] === "all")) {
 		$where = " WHERE gamesinfo_id IN (-2, 0) AND categoryid = 4050";
 	}
 
-	$qry      = $pdo->queryDirect("SELECT id FROM releases" . $where);
+	$qry = $pdo->queryDirect("SELECT id FROM releases" . $where);
 	if ($qry !== false) {
 		$total = $qry->rowCount();
 	} else {
@@ -113,7 +113,7 @@ if (isset($argv[1]) && ($argv[1] === "movies" || $argv[1] === "all")) {
 		$where = " WHERE imdbid IN (-2, 0) AND categoryid BETWEEN 2000 AND 2999";
 	}
 
-	$qry      = $pdo->queryDirect("SELECT id FROM releases" . $where);
+	$qry = $pdo->queryDirect("SELECT id FROM releases" . $where);
 	if ($qry !== false) {
 		$total = $qry->rowCount();
 	} else {
@@ -163,7 +163,7 @@ if (isset($argv[1]) && ($argv[1] === "misc" || $argv[1] === "all")) {
 	}
 
 	echo $pdo->log->primary("SELECT id FROM releases" . $where);
-	$qry      = $pdo->queryDirect("SELECT id FROM releases" . $where);
+	$qry = $pdo->queryDirect("SELECT id FROM releases" . $where);
 	if ($qry !== false ) {
 		$total = $qry->rowCount();
 	} else {
@@ -191,7 +191,7 @@ if (isset($argv[1]) && ($argv[1] === "tv" || $argv[1] === "all")) {
 		$where = " WHERE rageid IN (-2, 0) OR rageid IS NULL AND categoryid BETWEEN 5000 AND 5999";
 	}
 
-	$qry      = $pdo->queryDirect("SELECT id FROM releases" . $where);
+	$qry = $pdo->queryDirect("SELECT id FROM releases" . $where);
 	if ($qry !== false ) {
 		$total = $qry->rowCount();
 	} else {
@@ -220,7 +220,7 @@ if (isset($argv[1]) && ($argv[1] === "anime" || $argv[1] === "all")) {
 		$where = " WHERE anidbid BETWEEN -2 AND -1 AND categoryid = 5070";
 	}
 
-	$qry      = $pdo->queryDirect("SELECT id FROM releases" . $where);
+	$qry = $pdo->queryDirect("SELECT id FROM releases" . $where);
 	if ($qry !== false ) {
 		$total = $qry->rowCount();
 	} else {

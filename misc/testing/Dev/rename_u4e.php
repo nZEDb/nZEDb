@@ -44,7 +44,7 @@ $nzbContents = new \NZBContents(
 		'NNTP'        => $nntp
 	]
 );
-$categorize  = new \Categorize(['Settings' => $pdo]);
+$categorize = new \Categorize(['Settings' => $pdo]);
 
 $releases = $pdo->queryDirect(
 	sprintf('
