@@ -11,8 +11,8 @@ checks:
         avoid_usage_of_logical_operators: true
         blank_line_after_namespace_declaration: true
         classes_in_camel_caps: true
-        code_rating: true
-        duplication: true
+        code_rating: false
+        duplication: false
         encourage_postdec_operator: true
         encourage_single_quotes: true
         fix_php_opening_tag: false
