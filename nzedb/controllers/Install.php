@@ -138,7 +138,7 @@ class Install
 
 	public function saveConfig()
 	{
-		$tmpCfg = file_get_contents($this->INSTALL_DIR . DS .'config.php.tpl');
+		$tmpCfg = file_get_contents($this->INSTALL_DIR . DS . 'config.php.tpl');
 		$tmpCfg = str_replace('%%DB_SYSTEM%%', $this->DB_SYSTEM, $tmpCfg);
 		$tmpCfg = str_replace('%%DB_HOST%%', $this->DB_HOST, $tmpCfg);
 		$tmpCfg = str_replace('%%DB_PORT%%', $this->DB_PORT, $tmpCfg);
@@ -168,12 +168,12 @@ class Install
 		$tmpCfg = str_replace('%%nZEDb_SSL_ALLOW_SELF_SIGNED%%', $this->nZEDb_SSL_ALLOW_SELF_SIGNED, $tmpCfg);
 
 		$this->COMPILED_CONFIG = $tmpCfg;
-		return @file_put_contents(nZEDb_WWW . DS .'config.php', $tmpCfg);
+		return @file_put_contents(nZEDb_WWW . DS . 'config.php', $tmpCfg);
 	}
 
 	public function saveInstallLock()
 	{
-		return @file_put_contents($this->INSTALL_DIR . DS .'install.lock', '');
+		return @file_put_contents($this->INSTALL_DIR . DS . 'install.lock', '');
 	}
 
 }

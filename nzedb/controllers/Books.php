@@ -378,7 +378,8 @@ class Books
 
 					// Update release.
 					$this->pdo->queryExec(sprintf('UPDATE releases SET bookinfoid = %d WHERE id = %d', $bookId, $arr['id']));
-				} else { // Could not parse release title.
+				} else {
+					// Could not parse release title.
 					$this->pdo->queryExec(sprintf('UPDATE releases SET bookinfoid = %d WHERE id = %d', -2, $arr['id']));
 					if ($this->echooutput) {
 						echo '.';

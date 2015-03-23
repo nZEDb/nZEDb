@@ -652,7 +652,7 @@ class Binaries
 			if (!isset($header['Bytes'])) {
 				$header['Bytes'] = (isset($header[':bytes']) ? $header[':bytes'] : 0);
 			}
-			$header['Bytes'] = (int) $header['Bytes'];
+			$header['Bytes'] = (int)$header['Bytes'];
 
 			// Set up the info for inserting into parts/binaries/collections tables.
 			if (!isset($articles[$matches[1]])) {
@@ -798,7 +798,7 @@ class Binaries
 				);
 			}
 
-			if (((strlen($partsQuery) === strlen($partsCheck)) ? true  : $this->_pdo->queryExec(rtrim($partsQuery, ',')))) {
+			if (((strlen($partsQuery) === strlen($partsCheck)) ? true : $this->_pdo->queryExec(rtrim($partsQuery, ',')))) {
 				$this->_pdo->Commit();
 			} else {
 				if ($addToPartRepair) {
@@ -975,7 +975,7 @@ class Binaries
 				$partList = $range['partlist'];
 
 				if ($this->_echoCLI) {
-					echo chr(rand(45,46)) . "\r";
+					echo chr(rand(45, 46)) . "\r";
 				}
 
 				// Get article headers from newsgroup.
@@ -1043,7 +1043,7 @@ class Binaries
 	 * @param int    $post      The article number to get the time from.
 	 * @param array  $groupData Usenet group info from NNTP selectGroup method.
 	 *
-	 * @return bool|int
+	 * @return int	Timestamp.
 	 */
 	public function postdate($post, array $groupData)
 	{
@@ -1148,10 +1148,9 @@ class Binaries
 	 */
 	public function daytopost($days, $data)
 	{
-		$goalTime =          // The time we want =
-			time()           // current unix time (ex. 1395699114)
-			-                // minus
-			(86400 * $days); // 86400 (seconds in a day) times days wanted. (ie 1395699114 - 2592000 (30days)) = 1393107114
+		$goalTime = time() - (86400 * $days);
+		// The time we want = current unix time (ex. 1395699114) - minus 86400 (seconds in a day)
+		// times days wanted. (ie 1395699114 - 2592000 (30days)) = 1393107114
 
 		// The servers oldest date.
 		$firstDate = $this->postdate($data['first'], $data);
@@ -1260,7 +1259,7 @@ class Binaries
 	{
 		$insertStr = 'INSERT INTO ' . $tableName . ' (numberid, group_id) VALUES ';
 		foreach ($numbers as $number) {
-			$insertStr .= '(' . $number . ',' . $groupID .'),';
+			$insertStr .= '(' . $number . ',' . $groupID . '),';
 		}
 		return $this->_pdo->queryInsert((rtrim($insertStr, ',') . ' ON DUPLICATE KEY UPDATE attempts=attempts+1'));
 	}
@@ -1377,7 +1376,7 @@ class Binaries
 				$opType = 'AND binaryblacklist.optype = ' . self::OPTYPE_WHITELIST;
 				break;
 			default:
-				$opType ='';
+				$opType = '';
 				break;
 		}
 		return $this->_pdo->query(
@@ -1426,7 +1425,6 @@ class Binaries
 	 *
 	 * @param Array $blacklistArray
 	 *
-	 * @return bool
 	 */
 	public function updateBlacklist($blacklistArray)
 	{
@@ -1524,9 +1522,13 @@ class Binaries
 	}
 
 	/**
-	 * Check if we should ignore the filecount and return true or false.
+	 * Check if we should ignore the file count and return true or false.
+	 *
+	 * @param string $subject
 	 *
 	 * @access protected
+	 *
+	 * @return boolean
 	 */
 	protected function _ignoreFileCount($groupName, $subject)
 	{

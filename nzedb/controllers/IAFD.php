@@ -86,7 +86,7 @@ class IAFD {
 		}
 	}
 
-	private function search(){
+	private function search() {
 
 		if (!isset($this->searchTerm)) {
 			return false;
@@ -99,19 +99,19 @@ class IAFD {
 		} else {
 			$firsttitle = null;
 			$secondtitle = null;
-			if($ret = $this->_html->find("div#moviedata, h2, dt", 0)) {
-				if($ret->find("h2",0)) {
-					$firsttitle = $ret->find("h2",0)->innertext;
-					if(preg_match("/Movie Titles/",$firsttitle)){
+			if ($ret = $this->_html->find("div#moviedata, h2, dt", 0)) {
+				if ($ret->find("h2", 0)) {
+					$firsttitle = $ret->find("h2", 0)->innertext;
+					if (preg_match("/Movie Titles/", $firsttitle)) {
 						return false;
 					}
 				}
-				if($ret->find("dt",0)) {
+				if ($ret->find("dt", 0)) {
 					$secondtitle = $ret->find("dd", 0)->innertext;
 				}
 				unset($ret);
-				if(isset($secondtitle) || isset($firsttitle)) {
-					$firsttitle = preg_replace('/\(([0-9]+)\)/',"",$firsttitle);
+				if (isset($secondtitle) || isset($firsttitle)) {
+					$firsttitle = preg_replace('/\(([0-9]+)\)/', "", $firsttitle);
 					$firsttitle = preg_replace('/XXX/', '', $firsttitle);
 					$firsttitle = preg_replace('/\(.*?\)|[-._]/i', ' ', $firsttitle);
 					$secondtitle = preg_replace('/\(([0-9]+)\)/', "", $secondtitle);
@@ -120,13 +120,17 @@ class IAFD {
 					similar_text(strtolower($this->searchTerm), strtolower(trim($firsttitle)), $p);
 					if ($p >= 90) {
 						$this->title = trim($firsttitle);
+
 						return true;
 					} else {
-						similar_text(strtolower($this->searchTerm), strtolower(trim($secondtitle)), $p);
-						if($p >= 90) {
+						similar_text(strtolower($this->searchTerm),
+									 strtolower(trim($secondtitle)),
+									 $p);
+						if ($p >= 90) {
 							$this->title = trim($secondtitle);
+
 							return true;
-						}else{
+						} else {
 							return false;
 						}
 					}
@@ -139,12 +143,13 @@ class IAFD {
 		}
 
 	}
+
 	private function getUrl()
 	{
 		if ($this->_doSearch === true) {
 			$ch = curl_init(self::IAFDSEARCHURL . urlencode($this->searchTerm));
 		} else {
-			if (empty($this->_getRedirect)){
+			if (empty($this->_getRedirect)) {
 				$ch = curl_init(self::IAFDURL);
 			} else {
 				$ch = curl_init($this->_getRedirect);

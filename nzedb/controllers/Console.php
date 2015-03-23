@@ -374,7 +374,7 @@ class Console
 		similar_text(strtolower($gameInfo['platform']), strtolower($con['platform']), $platformpercent);
 
 		if (nZEDb_DEBUG) {
-			echo(PHP_EOL ."Matched: Title Percentage 1: $titlepercent% between " . $gameInfo['title'] . " and " . $con['title'] . PHP_EOL);
+			echo(PHP_EOL . "Matched: Title Percentage 1: $titlepercent% between " . $gameInfo['title'] . " and " . $con['title'] . PHP_EOL);
 		}
 
 		// Since Wii Ware games and XBLA have inconsistent original platforms, as long as title is 50% its ok.
@@ -447,7 +447,7 @@ class Console
 		$con['esrb'] = (string)$amaz->Items->Item->ItemAttributes->ESRBAgeRating;
 		$con['releasedate'] = (string)$amaz->Items->Item->ItemAttributes->ReleaseDate;
 
-		if(!isset($con['releasedate'])){
+		if (!isset($con['releasedate'])) {
 			$con['releasedate'] = "";
 		}
 
@@ -546,7 +546,7 @@ class Console
 	 * @param string $platform
 	 *
 	 * @return string
-	**/
+	 **/
 	protected function _replacePlatform($platform)
 	{
 		switch (strtoupper($platform)) {
@@ -639,8 +639,8 @@ class Console
 					$con['cover']
 				)
 			);
-			if($con['cover'] === 1){
-			$con['cover'] = $ri->saveImage($consoleId, $con['coverurl'], $this->imgSavePath, 250, 250);
+			if ($con['cover'] === 1) {
+				$con['cover'] = $ri->saveImage($consoleId, $con['coverurl'], $this->imgSavePath, 250, 250);
 			}
 		} else {
 			$consoleId = $check['id'];
@@ -651,7 +651,7 @@ class Console
 
 			$this->update(
 						$consoleId, $con['title'], $con['asin'], $con['url'], $con['salesrank'],
-						$con['platform'], $con['publisher'], (isset($con['releasedate']) ? $con['releasedate']: null), $con['esrb'],
+						$con['platform'], $con['publisher'], (isset($con['releasedate']) ? $con['releasedate'] : null), $con['esrb'],
 						$con['cover'], $con['consolegenreID'], (isset($con['review']) ? $con['review'] : null)
 			);
 		}
@@ -764,7 +764,7 @@ class Console
 			$title = $matches['title'];
 
 			// Replace dots, underscores, or brackets with spaces.
-			$result['title'] = str_replace(['.','_','%20', '[', ']'], ' ', $title);
+			$result['title'] = str_replace(['.', '_','%20', '[', ']'], ' ', $title);
 			$result['title'] = str_replace([' RF ', '.RF.', '-RF-', '_RF_'], ' ', $result['title']);
 			//Remove format tags from release title for match
 			$result['title'] = trim(preg_replace('/PAL|MULTI(\d)?|NTSC-?J?|\(JAPAN\)/i', '', $result['title']));

@@ -25,51 +25,67 @@ use \nzedb\db\Settings;
 use \nzedb\utility;
 
 $dirs = array(
-	[	'basemv' => false,
+	[
+		'basemv' => false,
 		'source' => nZEDb_MISC . 'testing/DB_scripts',
-		'target' => nZEDb_MISC . 'testing/DB'],
-	[	'basemv' => false,
+		'target' => nZEDb_MISC . 'testing/DB'
+	], [
+		'basemv' => false,
 		'source' => nZEDb_MISC . 'testing/Dev_testing/Subject_testing',
-		'target' => nZEDb_MISC . 'testing/Dev/Subject'],
-	[	'basemv' => false,
+		'target' => nZEDb_MISC . 'testing/Dev/Subject'
+	], [
+		'basemv' => false,
 		'source' => nZEDb_MISC . 'testing/Dev_testing',
-		'target' => nZEDb_MISC . 'testing/Dev'],
-	[	'basemv' => false,
+		'target' => nZEDb_MISC . 'testing/Dev'
+	], [
+		'basemv' => false,
 		'source' => nZEDb_MISC . 'testing/PostProc_testing',
-		'target' => nZEDb_MISC . 'testing/PostProc'],
-	[	'basemv' => false,
+		'target' => nZEDb_MISC . 'testing/PostProc'
+	], [
+		'basemv' => false,
 		'source' => nZEDb_MISC . 'testing/Regex_testing',
-		'target' => nZEDb_MISC . 'testing/Regex'],
-	[	'basemv' => false,
+		'target' => nZEDb_MISC . 'testing/Regex'
+	], [
+		'basemv' => false,
 		'source' => nZEDb_MISC . 'testing/Release_scripts',
-		'target' => nZEDb_MISC . 'testing/Release'],
-	[	'basemv' => false,
+		'target' => nZEDb_MISC . 'testing/Release'
+	], [
+		'basemv' => false,
 		'source' => nZEDb_MISC . 'update_scripts/nix_scripts/tmux/powerline/themes',
-		'target' => nZEDb_MISC . 'update/nix/tmux/powerline/themes'],
-	[	'basemv' => false,
+		'target' => nZEDb_MISC . 'update/nix/tmux/powerline/themes'
+	], [
+		'basemv' => false,
 		'source' => nZEDb_MISC . 'update_scripts/nix_scripts/tmux/powerline',
-		'target' => nZEDb_MISC . 'update/nix/tmux/powerline'],
-	[	'basemv' => false,
+		'target' => nZEDb_MISC . 'update/nix/tmux/powerline'
+	], [
+		'basemv' => false,
 		'source' => nZEDb_MISC . 'update_scripts/nix_scripts/screen/sequential',
-		'target' => nZEDb_MISC . 'update/nix/screen/sequential'],
-	[	'basemv' => false,
+		'target' => nZEDb_MISC . 'update/nix/screen/sequential'
+	], [
+		'basemv' => false,
 		'source' => nZEDb_MISC . 'update_scripts/nix_scripts/tmux/',
-		'target' => nZEDb_MISC . 'update/nix/tmux'],
-	[	'basemv' => false,
+		'target' => nZEDb_MISC . 'update/nix/tmux'
+	], [
+		'basemv' => false,
 		'source' => nZEDb_MISC . 'update_scripts/nix_scripts',
-		'target' => nZEDb_MISC . 'update/nix'],
-	[	'basemv' => false,
+		'target' => nZEDb_MISC . 'update/nix'
+	], [
+		'basemv' => false,
 		'source' => nZEDb_MISC . 'update_scripts/python_scripts/lib',
-		'target' => nZEDb_MISC . 'update/python/lib'],
-	[	'basemv' => false,
+		'target' => nZEDb_MISC . 'update/python/lib'
+	], [
+		'basemv' => false,
 		'source' => nZEDb_MISC . 'update_scripts/python_scripts',
-		'target' => nZEDb_MISC . 'update/python'],
-	[	'basemv' => false,
+		'target' => nZEDb_MISC . 'update/python'
+	], [
+		'basemv' => false,
 		'source' => nZEDb_MISC . 'update_scripts/win_scripts',
-		'target' => nZEDb_MISC . 'update/win'],
-	[	'basemv' => false,
+		'target' => nZEDb_MISC . 'update/win'
+	], [
+		'basemv' => false,
 		'source' => nZEDb_MISC . 'update_scripts',
-		'target' => nZEDb_MISC . 'update'],
+		'target' => nZEDb_MISC . 'update'
+	],
 
 /*
 	'covers' =>	[	'source' => nZEDb_WWW . 'covers' . DS,

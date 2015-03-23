@@ -29,17 +29,18 @@ class Genres
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 	}
 
-	public function getGenres($type='', $activeonly=false)
+	public function getGenres($type = '', $activeonly = false)
 	{
 		return $this->pdo->query($this->getListQuery($type, $activeonly));
 	}
 
-	private function getListQuery($type='', $activeonly=false)
+	private function getListQuery($type = '', $activeonly = false)
 	{
-		if (!empty($type))
+		if (!empty($type)) {
 			$typesql = sprintf(" AND g.type = %d", $type);
-		else
+		} else {
 			$typesql = '';
+		}
 
 		if ($activeonly) {
 			$sql = sprintf("
@@ -79,12 +80,13 @@ class Genres
 
 	public function getCount($type = '', $activeonly = false)
 	{
-		if (!empty($type))
+		if (!empty($type)) {
 			$typesql = sprintf(" AND g.type = %d", $type);
-		else
+		} else {
 			$typesql = '';
+		}
 
-		if ($activeonly)
+		if ($activeonly) {
 			$sql = sprintf("
 						SELECT COUNT(*) AS num
 						FROM genres g
@@ -103,10 +105,11 @@ class Genres
 						INNER JOIN
 							(SELECT DISTINCT genre_id FROM gamesinfo) x
 							ON x.genre_id = g.id %1\$s",
-						$typesql
+						   $typesql
 			);
-		else
+		} else {
 			$sql = sprintf("SELECT COUNT(g.id) AS num FROM genres g WHERE 1 %s ORDER BY g.title", $typesql);
+		}
 
 		$res = $this->pdo->queryOneRow($sql);
 		return $res["num"];
