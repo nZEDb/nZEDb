@@ -580,7 +580,7 @@ class IRCClient
 	{
 		$command .= "\r\n";
 		for ($written = 0; $written < strlen($command); $written += $fWrite) {
-			stream_set_timeout($this->_socket , $this->_socket_timeout);
+			stream_set_timeout($this->_socket, $this->_socket_timeout);
 			$fWrite = $this->_writeSocketChar(substr($command, $written));
 
 			// http://www.php.net/manual/en/function.fwrite.php#96951 | fwrite can return 0 causing an infinite loop.

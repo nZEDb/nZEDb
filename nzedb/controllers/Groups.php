@@ -21,8 +21,7 @@ class Groups
 		];
 		$options += $defaults;
 
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] :
-			new Settings());
+		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 	}
 
 	/**
@@ -338,15 +337,13 @@ class Groups
 
 		$minFileString =
 			($group["minfilestoformrelease"] == '' ?
-				"minfilestoformrelease = NULL," :
-				sprintf(" minfilestoformrelease = %d,",
+				"minfilestoformrelease = NULL," : sprintf(" minfilestoformrelease = %d,",
 						$this->formatNumberString($group["minfilestoformrelease"], false))
 			);
 
 		$minSizeString =
 			($group["minsizetoformrelease"] == '' ?
-				"minsizetoformrelease = NULL" :
-				sprintf(" minsizetoformrelease = %d",
+				"minsizetoformrelease = NULL" : sprintf(" minsizetoformrelease = %d",
 						$this->formatNumberString($group["minsizetoformrelease"], false))
 			);
 
@@ -380,15 +377,11 @@ class Groups
 	public function add($group)
 	{
 		$minFileString =
-			($group["minfilestoformrelease"] == '' ?
-				"NULL" :
-				sprintf("%d", $this->formatNumberString($group["minfilestoformrelease"], false))
+			($group["minfilestoformrelease"] == '' ? "NULL" : sprintf("%d", $this->formatNumberString($group["minfilestoformrelease"], false))
 			);
 
 		$minSizeString =
-			($group["minsizetoformrelease"] == '' ?
-				"NULL" :
-				sprintf("%d", $this->formatNumberString($group["minsizetoformrelease"], false))
+			($group["minsizetoformrelease"] == '' ? "NULL" : sprintf("%d", $this->formatNumberString($group["minsizetoformrelease"], false))
 			);
 
 		return $this->pdo->queryInsert(

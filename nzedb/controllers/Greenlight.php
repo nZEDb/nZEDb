@@ -280,7 +280,7 @@ class Greenlight
 	{
 		$title = preg_replace('/[^\w]/', '', $title);
 		$searchtitle = preg_replace('/[^\w]/', '', $searchtitle);
-		similar_text($title , $searchtitle, $p);
+		similar_text($title, $searchtitle, $p);
 		if ($p == 100) {
 			return true;
 		} else {

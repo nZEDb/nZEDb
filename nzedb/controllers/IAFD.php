@@ -2,9 +2,8 @@
 
 require_once nZEDb_LIBS . 'simple_html_dom.php';
 
-class IAFD {
-
-
+class IAFD
+{
 	public $classUsed = "";
 	public $cookie = "";
 	public $directUrl;
@@ -86,7 +85,8 @@ class IAFD {
 		}
 	}
 
-	private function search() {
+	private function search()
+	{
 
 		if (!isset($this->searchTerm)) {
 			return false;

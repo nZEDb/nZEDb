@@ -645,7 +645,7 @@ class Console
 		} else {
 			$consoleId = $check['id'];
 
-			if($con['cover'] === 1){
+			if ($con['cover'] === 1) {
 				$con['cover'] = $ri->saveImage($consoleId, $con['coverurl'], $this->imgSavePath, 250, 250);
 			}
 
@@ -764,7 +764,7 @@ class Console
 			$title = $matches['title'];
 
 			// Replace dots, underscores, or brackets with spaces.
-			$result['title'] = str_replace(['.', '_','%20', '[', ']'], ' ', $title);
+			$result['title'] = str_replace(['.', '_', '%20', '[', ']'], ' ', $title);
 			$result['title'] = str_replace([' RF ', '.RF.', '-RF-', '_RF_'], ' ', $result['title']);
 			//Remove format tags from release title for match
 			$result['title'] = trim(preg_replace('/PAL|MULTI(\d)?|NTSC-?J?|\(JAPAN\)/i', '', $result['title']));

@@ -721,7 +721,7 @@ class Games
 			if ($this->echoOutput) {
 				$this->pdo->log->doEcho(
 					$this->pdo->log->headerOver("Nothing to update: ") .
-					$this->pdo->log->primary($con['title'] . ' (PC)' )
+					$this->pdo->log->primary($con['title'] . ' (PC)')
 				);
 			}
 		}

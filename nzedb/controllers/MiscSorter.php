@@ -6,9 +6,8 @@ require_once nZEDb_LIBS . 'AmazonProductAPI.php';
  */
 class MiscSorter
 {
-
-	const PROC_SORTER_NONE = 0;	//Release has not been run through MiscSorter before
-	const PROC_SORTER_DONE = 1;	//Release has been processed by MiscSorter
+	const PROC_SORTER_NONE = 0; //Release has not been run through MiscSorter before
+	const PROC_SORTER_DONE = 1; //Release has been processed by MiscSorter
 
 	private $qty;
 	private $echooutput;
@@ -387,14 +386,14 @@ class MiscSorter
 	private function _doAmazonBooks($amaz = [], $id = 0)
 	{
 		$audiobook = false;
-		$v = (string) $amaz->Items->Item->ItemAttributes->Format;
+		$v = (string)$amaz->Items->Item->ItemAttributes->Format;
 		if (stripos($v, "audiobook") !== false) {
 			$audiobook = true;
 		}
 		$new = (string) $amaz->Items->Item->ItemAttributes->Author;
-		$name = $new . " - " . (string) $amaz->Items->Item->ItemAttributes->Title;
+		$name = $new . " - " . (string)$amaz->Items->Item->ItemAttributes->Title;
 
-		$rel = $this->_doAmazonLocal('bookinfo', (string) $amaz->Items->Item->ASIN);
+		$rel = $this->_doAmazonLocal('bookinfo', (string)$amaz->Items->Item->ASIN);
 
 		if (count($rel) == 0) {
 			$bookId = (new \Books(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->updateBookInfo('', $amaz);
@@ -414,13 +413,13 @@ class MiscSorter
 
 	private function _doAmazonMusic($amaz = [], $id = 0)
 	{
-		$new = (string) $amaz->Items->Item->ItemAttributes->Artist;
+		$new = (string)$amaz->Items->Item->ItemAttributes->Artist;
 		if ($new != '') {
 			$new .= " - ";
 		}
 		$name = $new . (string) $amaz->Items->Item->ItemAttributes->Title;
 
-		$rel = $this->_doAmazonLocal('musicinfo', (string) $amaz->Items->Item->ASIN);
+		$rel = $this->_doAmazonLocal('musicinfo', (string)$amaz->Items->Item->ASIN);
 
 		if ($rel !== false) {
 			$ok = $this->dodbupdate($id, $name, $rel['id'], 'musicinfoid');
@@ -431,30 +430,37 @@ class MiscSorter
 		return $ok;
 	}
 
+	/**
+	 * @param string $nfo
+	 * @param array  $amaz
+	 * @param int    $id
+	 *
+	 * @return boolean
+	 */
 	private function _doAmazonMovies($nfo, $amaz = [], $id = 0)
 	{
-		$new = (string) $amaz->Items->Item->ItemAttributes->Title;
-		$new = $new . " (" . substr((string) $amaz->Items->Item->ItemAttributes->ReleaseDate, 0, 4) . ")";
+		$new = (string)$amaz->Items->Item->ItemAttributes->Title;
+		$new = $new . " (" . substr((string)$amaz->Items->Item->ItemAttributes->ReleaseDate, 0, 4) . ")";
 		$name = $this->moviename($nfo, 0, $new);
 		return $this->dodbupdate($id, $name, null, 'amazonMov');
 	}
 
 	private function _doAmazonVG($amaz = [], $id = 0)
 	{
-		$name = (string) $amaz->Items->Item->ItemAttributes->Title;
-		$name .= "." . (string) $amaz->Items->Item->ItemAttributes->Region . ".";
-		$name .= "-" . (string) $amaz->Items->Item->ItemAttributes->Platform;
+		$name = (string)$amaz->Items->Item->ItemAttributes->Title;
+		$name .= "." . (string)$amaz->Items->Item->ItemAttributes->Region . ".";
+		$name .= "-" . (string)$amaz->Items->Item->ItemAttributes->Platform;
 
-		$rel = $this->_doAmazonLocal('consoleinfo', (string) $amaz->Items->Item->ASIN);
+		$rel = $this->_doAmazonLocal('consoleinfo', (string)$amaz->Items->Item->ASIN);
 
 		if ($rel !== false) {
 			$ok = $this->dodbupdate($id, $name, $rel['id'], 'consoleinfoid');
 		} else {
 			$consoleId = (new \Console(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->
 				updateConsoleInfo([
-							'title'    => (string) $amaz->Items->Item->Title,
-							'node'     => (int) $amaz->Items->Item->BrowseNodes->BrowseNodeId,
-							'platform' => (string) $amaz->Items->Item->ItemAttributes->Platform]
+							'title'    => (string)$amaz->Items->Item->Title,
+							'node'     => (int)$amaz->Items->Item->BrowseNodes->BrowseNodeId,
+							'platform' => (string)$amaz->Items->Item->ItemAttributes->Platform]
 				);
 			$ok = $this->dodbupdate($id, $name, $consoleId, 'consoleinfoid');
 		}
@@ -476,6 +482,13 @@ class MiscSorter
 	}
 
 	// Main switch for determining operation type after parsing the NFO file
+	/**
+	 * @param $case
+	 * @param string $nfo
+	 * @param $row
+	 *
+	 * @return bool
+	 */
 	private function matchnfo($case, $nfo, $row)
 	{
 		$ok = false;
@@ -646,7 +659,7 @@ class MiscSorter
 	//and returning the results of the split
 	private function _sortTypeFromNFO($nfo = '')
 	{
-		$pattern = 	'/.+(\.rar|\.001) [0-9a-f]{6,10}?|(imdb)\.[a-z0-9\.\_\-\/]+?(?:tt|\?)\d+?\/?|(tvrage)\.com\/|(\bASIN)|' .
+		$pattern = '/.+(\.rar|\.001) [0-9a-f]{6,10}?|(imdb)\.[a-z0-9\.\_\-\/]+?(?:tt|\?)\d+?\/?|(tvrage)\.com\/|(\bASIN)|' .
 				'(isbn)|(UPC\b)|(comic book)|(comix)|(tv series)|(\bos\b)|(documentaries)|(documentary)|(doku)|(macintosh)|' .
 				'(dmg)|(mac[ _\.\-]??os[ _\.\-]??x??)|(\bos\b\s??x??)|(\bosx\b)|(\bios\b)|(iphone)|(ipad)|(ipod)|(pdtv)|' .
 				'(hdtv)|(video streams)|(movie)|(audiobook)|(audible)|(recorded books)|(spoken book)|(speech)|(read by)\:?|' .

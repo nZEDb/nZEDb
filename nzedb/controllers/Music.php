@@ -435,7 +435,7 @@ class Music
 
 		$mus['publisher'] = (string)$amaz->Items->Item->ItemAttributes->Publisher;
 
-		$mus['releasedate'] = $this->pdo->escapeString((string) $amaz->Items->Item->ItemAttributes->ReleaseDate);
+		$mus['releasedate'] = $this->pdo->escapeString((string)$amaz->Items->Item->ItemAttributes->ReleaseDate);
 		if ($mus['releasedate'] == "''") {
 			$mus['releasedate'] = 'null';
 		}
@@ -606,7 +606,7 @@ class Music
 		if ($res instanceof \Traversable && $res->rowCount() > 0) {
 			if ($this->echooutput) {
 				$this->pdo->log->doEcho(
-					$this->pdo->log->header("Processing " . $res->rowCount() .' music release(s).'
+					$this->pdo->log->header("Processing " . $res->rowCount() . ' music release(s).'
 					)
 				);
 			}

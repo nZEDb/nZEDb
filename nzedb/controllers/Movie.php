@@ -31,7 +31,7 @@ class Movie
 	 * Current year of parsed search name.
 	 * @var string
 	 */
-	protected $currentYear  = '';
+	protected $currentYear = '';
 
 	/**
 	 * Current release id of parsed search name.
@@ -374,7 +374,7 @@ class Movie
 	/**
 	 * Order types for movies page.
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public function getMovieOrdering()
 	{
@@ -447,13 +447,11 @@ class Movie
 	 * @param $cover
 	 * @param $backdrop
 	 */
-	public function update(
-		$id = '', $title = '', $tagLine = '', $plot = '', $year = '', $rating = '', $genre = '', $director = '',
-		$actors = '', $language = '', $cover = '', $backdrop = ''
-	)
+	public function update($id = '', $title = '', $tagLine = '', $plot = '', $year = '',
+						   $rating = '', $genre = '', $director = '',
+						   $actors = '', $language = '', $cover = '', $backdrop = '')
 	{
 		if (!empty($id)) {
-
 			$this->pdo->queryExec(
 				sprintf("
 					UPDATE movieinfo
@@ -481,7 +479,7 @@ class Movie
 	 *
 	 * @param $variable
 	 *
-	 * @return string
+	 * @return boolean
 	 */
 	protected function checkVariable(&$variable)
 	{
@@ -512,7 +510,7 @@ class Movie
 	/**
 	 * Fetch IMDB/TMDB info for the movie.
 	 *
-	 * @param $imdbId
+	 * @param string $imdbId
 	 *
 	 * @return bool
 	 */
@@ -1333,6 +1331,10 @@ class Movie
 		}
 	}
 
+	/**
+	 * @param \RottenTomato $rt
+	 * @param string $operation
+	 */
 	protected function _getRTData($rt, $operation = '')
 	{
 		$count = 0;
@@ -1397,7 +1399,7 @@ class Movie
 	/**
 	 * Update upcoming table.
 	 *
-	 * @param $source
+	 * @param string $source
 	 * @param $type
 	 * @param $info
 	 *
@@ -1421,7 +1423,7 @@ class Movie
 	/**
 	 * Get IMDB genres.
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public function getGenres()
 	{

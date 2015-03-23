@@ -1425,10 +1425,11 @@ class Binaries
 	 *
 	 * @param Array $blacklistArray
 	 *
+	 * @return boolean
 	 */
 	public function updateBlacklist($blacklistArray)
 	{
-		$this->_pdo->queryExec(
+		return $this->_pdo->queryExec(
 			sprintf('
 				UPDATE binaryblacklist
 				SET groupname = %s, regex = %s, status = %d, description = %s, optype = %d, msgcol = %d
