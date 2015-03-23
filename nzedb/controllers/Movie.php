@@ -1401,7 +1401,7 @@ class Movie
 	 *
 	 * @param string $source
 	 * @param $type
-	 * @param string|false $info
+	 * @param string $info
 	 *
 	 * @return bool|int
 	 */

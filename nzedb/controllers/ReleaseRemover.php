@@ -291,9 +291,9 @@ class ReleaseRemover
 			case 'codec':
 				$this->removeCodecPoster();
 				break;
-            case 'wmv_all':
-                $this->removeWMV();
-                break;
+			case 'wmv_all':
+				$this->removeWMV();
+				break;
 			case '':
 				$this->removeBlacklist();
 				$this->removeBlacklistFiles();
@@ -335,7 +335,7 @@ class ReleaseRemover
 	/**
 	 * Remove releases with 15 or more letters or numbers, nothing else.
 	 *
-	 * @return bool
+	 * @return mixed
 	 */
 	protected function removeGibberish()
 	{
@@ -363,7 +363,7 @@ class ReleaseRemover
 	/**
 	 * Remove releases with 25 or more letters/numbers, probably hashed.
 	 *
-	 * @return bool
+	 * @return mixed
 	 */
 	protected function removeHashed()
 	{
@@ -390,7 +390,7 @@ class ReleaseRemover
 	/**
 	 * Remove releases with 5 or less letters/numbers.
 	 *
-	 * @return bool
+	 * @return mixed
 	 */
 	protected function removeShort()
 	{
@@ -417,7 +417,7 @@ class ReleaseRemover
 	/**
 	 * Remove releases with an exe file not in other misc or pc apps/games.
 	 *
-	 * @return bool
+	 * @return mixed
 	 */
 	protected function removeExecutable()
 	{
@@ -450,7 +450,7 @@ class ReleaseRemover
 	/**
 	 * Remove releases with an install.bin file.
 	 *
-	 * @return bool
+	 * @return mixed
 	 */
 	protected function removeInstallBin()
 	{
@@ -474,7 +474,7 @@ class ReleaseRemover
 	/**
 	 * Remove releases with an password.url file.
 	 *
-	 * @return bool
+	 * @return mixed
 	 */
 	protected function removePasswordURL()
 	{
@@ -498,7 +498,7 @@ class ReleaseRemover
 	/**
 	 * Remove releases with password in the search name.
 	 *
-	 * @return bool
+	 * @return mixed
 	 */
 	protected function removePassworded()
 	{
@@ -545,7 +545,7 @@ class ReleaseRemover
 	/**
 	 * Remove releases smaller than 2MB with 1 part not in MP3/books/misc section.
 	 *
-	 * @return bool
+	 * @return mixed
 	 */
 	protected function removeSize()
 	{
@@ -580,7 +580,7 @@ class ReleaseRemover
 	/**
 	 * Remove releases bigger than 200MB with just a single file.
 	 *
-	 * @return bool
+	 * @return mixed
 	 */
 	protected function removeHuge()
 	{
@@ -603,7 +603,7 @@ class ReleaseRemover
 	/**
 	 * Remove releases with more than 1 part, less than 40MB, sample in name. TV/Movie sections.
 	 *
-	 * @return bool
+	 * @return mixed
 	 */
 	protected function removeSample()
 	{
@@ -644,7 +644,7 @@ class ReleaseRemover
 	/**
 	 * Remove releases with a scr file in the filename/subject.
 	 *
-	 * @return bool
+	 * @return mixed
 	 */
 	protected function removeSCR()
 	{
@@ -749,7 +749,7 @@ class ReleaseRemover
 						// Find first bd|dl instance position in Regex, then find last closing parenthesis as this is reversed.
 						$forBegin = strpos($dbRegex, 'bd|dl');
 						$regexMatch =
-							str_replace(['\\',']','['], '',
+							str_replace(['\\',']', '['], '',
 								str_replace('bd|dl)mux', 'bdmux|dlmux',
 									substr($dbRegex, $forBegin,
 										strrpos($dbRegex, ')') - $forBegin
@@ -883,7 +883,6 @@ class ReleaseRemover
 		if (count($allRegex) > 0) {
 
 			foreach ($allRegex as $regex) {
-
 				$regexSQL = sprintf("LEFT JOIN release_files rf ON r.id = rf.releaseid
 				WHERE rf.name REGEXP %s ", $this->pdo->escapeString($regex['regex'])
 				);
@@ -933,10 +932,10 @@ class ReleaseRemover
 		return true;
 	}
 
-    /**
+	/**
 	 * Remove releases that contain .wmv file, aka that spam poster.
 	 * Thanks to dizant from nZEDb forums for the sql query
-	 * @return bool
+	 * @return mixed
 	 */
 	protected function removeWMV()
 	{
@@ -1080,8 +1079,7 @@ class ReleaseRemover
 						case 'equals':
 							if ($args[2] === 'NULL') {
 								return ' AND imdbID IS NULL ';
-							}
-							else {
+							} else {
 								return ' AND imdbID = ' . $args[2];
 							}
 						default:

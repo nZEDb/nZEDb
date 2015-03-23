@@ -2246,7 +2246,7 @@ Class ProcessAdditional
 			if ($foundName === false) {
 				$this->_release['textstring'] = $file['name'];
 				$this->_release['releaseid'] = $this->_release['id'];
-				if ($this->_nameFixer->checkName($this->_release, ($this->_echoCLI ? 1 : 0), 'PAR2, ', 1, 1) === true) {
+				if ($this->_nameFixer->checkName($this->_release, ($this->_echoCLI ? true: false), 'PAR2, ', 1, 1) === true) {
 					$foundName = true;
 				}
 			}

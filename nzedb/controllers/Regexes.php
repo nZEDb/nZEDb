@@ -1,6 +1,6 @@
 <?php
 
-Class Regexes
+class Regexes
 {
 	/**
 	 * @var \nzedb\db\Settings

@@ -69,7 +69,7 @@ class ReleaseCleaning
 
 	public function releaseCleaner($subject, $fromName, $size, $groupName, $usepre = false)
 	{
-		$match           = $matches = array();
+		$match           = $matches = [];
 		$this->groupName = $groupName;
 		$this->subject   = $subject;
 		$this->fromName  = $fromName;
@@ -87,13 +87,13 @@ class ReleaseCleaning
 						$title = false;
 					}
 					if ($title !== false) {
-						return array(
+						return [
 							"cleansubject"  => $title['title'],
 							"properlynamed" => true,
 							"increment"     => false,
 							"predb"         => $title['id'],
 							"requestid"     => false
-						);
+						];
 					}
 				}
 			}
@@ -148,13 +148,13 @@ class ReleaseCleaning
 				$title = false;
 			}
 			if ($title !== false) {
-				return array(
+				return [
 					"cleansubject"  => $title['title'],
 					"properlynamed" => true,
 					"increment"     => false,
 					"predb"         => $title['id'],
 					"requestid"     => true
-				);
+				];
 			}
 		}
 		if ($usepre === true) {
@@ -184,13 +184,13 @@ class ReleaseCleaning
 	{
 		//[140022]-[04] - [01/40] - "140022-04.nfo" yEnc
 		if (preg_match('/\[\d+\]-\[.+\] - \[\d+\/\d+\] - "\d+-.+" yEnc/', $this->subject)) {
-			return array(
+			return [
 				"cleansubject" => $this->subject, "properlynamed" => false, "ignore" => true
-			);
+			];
 		}
-		return array(
+		return [
 			"cleansubject" => $this->releaseCleanerHelper($this->subject), "properlynamed" => false
-		);
+		];
 	}
 
 	public function generic_town()
@@ -327,9 +327,9 @@ class ReleaseCleaning
 		) {
 			return $match[1];
 		}
-		return array(
+		return [
 			"cleansubject" => $this->releaseCleanerHelper($this->subject), "properlynamed" => false
-		);
+		];
 	}
 
 	// Run at the end because this can be dangerous. In the future it's better to make these per group. There should not be numbers after yEnc because we remove them as well before inserting (even when importing).
@@ -342,20 +342,29 @@ class ReleaseCleaning
 		) {
 			return $match['title'];
 		}
-		return array(
+		return [
 			"cleansubject" => $this->releaseCleanerHelper($this->subject), "properlynamed" => false
-		);
+		];
 	}
 
+	/**
+	 * @param string $subject
+	 *
+	 * @return string
+	 */
 	public function releaseCleanerHelper($subject)
 	{
 		$cleanerName = preg_replace('/(- )?yEnc$/', '', $subject);
 		return trim(preg_replace('/\s\s+/', ' ', $cleanerName));
 	}
 
-	//
-	//	Cleans release name for the namefixer class.
-	//
+	/**
+	 * Cleans release name for the namefixer class.
+	 *
+	 * @param string $name
+	 *
+	 * @return mixed|string
+	 */
 	public function fixerCleaner($name)
 	{
 		//Extensions.

@@ -157,7 +157,7 @@ class NameFixer
 	 * Attempts to fix release names using the NFO.
 	 *
 	 * @param int $time    1: 24 hours, 2: no time limit
-	 * @param int $echo    1: change the name, anything else: preview of what could have been changed.
+	 * @param boolean $echo    1: change the name, anything else: preview of what could have been changed.
 	 * @param int $cats    1: other categories, 2: all categories
 	 * @param $nameStatus
 	 * @param $show
@@ -237,7 +237,7 @@ class NameFixer
 	 * Attempts to fix release names using the File name.
 	 *
 	 * @param int $time   1: 24 hours, 2: no time limit
-	 * @param int $echo   1: change the name, anything else: preview of what could have been changed.
+	 * @param boolean $echo   1: change the name, anything else: preview of what could have been changed.
 	 * @param int $cats   1: other categories, 2: all categories
 	 * @param $nameStatus
 	 * @param $show
@@ -765,7 +765,7 @@ class NameFixer
 	 * Match a release filename to a PreDB filename or title.
 	 *
 	 * @param $release
-	 * @param integer $echo
+	 * @param boolean $echo
 	 * @param integer $namestatus
 	 * @param boolean $echooutput
 	 * @param integer $show
@@ -985,7 +985,7 @@ class NameFixer
 	 * Look for a TV name.
 	 *
 	 * @param $release
-	 * @param integer $echo
+	 * @param boolean $echo
 	 * @param string  $type
 	 * @param $namestatus
 	 * @param $show
@@ -1020,7 +1020,7 @@ class NameFixer
 	 * Look for a movie name.
 	 *
 	 * @param $release
-	 * @param integer $echo
+	 * @param boolean $echo
 	 * @param string  $type
 	 * @param $namestatus
 	 * @param $show
@@ -1065,7 +1065,7 @@ class NameFixer
 	 * Look for a game name.
 	 *
 	 * @param $release
-	 * @param integer $echo
+	 * @param boolean $echo
 	 * @param string $type
 	 * @param $namestatus
 	 * @param $show
@@ -1094,7 +1094,7 @@ class NameFixer
 	 * Look for a app name.
 	 *
 	 * @param $release
-	 * @param integer $echo
+	 * @param boolean $echo
 	 * @param string $type
 	 * @param $namestatus
 	 * @param $show
@@ -1117,7 +1117,15 @@ class NameFixer
 	 * Just for NFOS.
 	 */
 
-	//  TV.
+	/**
+	 * TV.
+	 *
+	 * @param $release
+	 * @param boolean $echo
+	 * @param string $type
+	 * @param $namestatus
+	 * @param $show
+	 */
 	public function nfoCheckTV($release, $echo, $type, $namestatus, $show)
 	{
 		$result = [];
@@ -1132,7 +1140,15 @@ class NameFixer
 		}
 	}
 
-	//  Movies.
+	/**
+	 * Movies.
+	 *
+	 * @param $release
+	 * @param boolean $echo
+	 * @param string $type
+	 * @param $namestatus
+	 * @param $show
+	 */
 	public function nfoCheckMov($release, $echo, $type, $namestatus, $show)
 	{
 		$result = [];
@@ -1149,7 +1165,13 @@ class NameFixer
 		}
 	}
 
-	//  Music.
+	/**
+	 * @param $release
+	 * @param boolean $echo
+	 * @param string $type
+	 * @param $namestatus
+	 * @param $show
+	 */
 	public function nfoCheckMus($release, $echo, $type, $namestatus, $show)
 	{
 		$result = [];
@@ -1163,7 +1185,15 @@ class NameFixer
 		}
 	}
 
-	//  Title (year)
+	/**
+	 * Title (year)
+	 *
+	 * @param $release
+	 * @param boolean $echo
+	 * @param string $type
+	 * @param $namestatus
+	 * @param $show
+	 */
 	public function nfoCheckTY($release, $echo, $type, $namestatus, $show)
 	{
 		$result = [];
@@ -1328,7 +1358,15 @@ class NameFixer
 		}
 	}
 
-	//  Games.
+	/**
+	 * Games.
+	 *
+	 * @param $release
+	 * @param boolean $echo
+	 * @param string $type
+	 * @param $namestatus
+	 * @param $show
+	 */
 	public function nfoCheckG($release, $echo, $type, $namestatus, $show)
 	{
 		$result = [];
@@ -1346,7 +1384,16 @@ class NameFixer
 		}
 	}
 
-	//  Misc.
+	//
+	/**
+	 * Misc.
+	 *
+	 * @param $release
+	 * @param boolean $echo
+	 * @param string $type
+	 * @param $namestatus
+	 * @param $show
+	 */
 	public function nfoCheckMisc($release, $echo, $type, $namestatus, $show)
 	{
 		if ($this->done === false && $this->relid !== $release["releaseid"]) {
@@ -1378,10 +1425,15 @@ class NameFixer
 		}
 	}
 
-	/*
+	/**
 	 * Just for filenames.
+	 *
+	 * @param $release
+	 * @param boolean $echo
+	 * @param string $type
+	 * @param $namestatus
+	 * @param $show
 	 */
-
 	public function fileCheck($release, $echo, $type, $namestatus, $show)
 	{
 		$result = [];

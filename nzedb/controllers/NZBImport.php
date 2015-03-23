@@ -263,7 +263,7 @@ class NZBImport
 			$groupID = -1;
 
 			// Get the nzb info.
-			if ($firstName === false ) {
+			if ($firstName === false) {
 				$firstName = (string)$file->attributes()->subject;
 			}
 			if ($posterName === false) {

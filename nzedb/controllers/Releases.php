@@ -751,10 +751,9 @@ class Releases
 	 * @param int    $imDbID
 	 * @param int    $aniDbID
 	 */
-	public function update(
-		$ID, $name, $searchName, $fromName, $categoryID, $parts, $grabs, $size,
-		$postedDate, $addedDate, $rageID, $seriesFull, $season, $episode, $imDbID, $aniDbID
-	)
+	public function update($ID, $name, $searchName, $fromName, $categoryID, $parts, $grabs, $size,
+						   $postedDate, $addedDate, $rageID, $seriesFull, $season, $episode,
+						   $imDbID, $aniDbID)
 	{
 		$this->pdo->queryExec(
 			sprintf(
