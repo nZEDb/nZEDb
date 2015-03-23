@@ -62,7 +62,7 @@ function relativeTime($_time)
 		$w[$i] = intval($secondsLeft / $d[$i][0]);
 		$secondsLeft -= ($w[$i] * $d[$i][0]);
 		if ($w[$i] != 0) {
-			$return.= $w[$i] . " " . $d[$i][1] . (($w[$i] > 1) ? 's' : '') . " ";
+			$return .= $w[$i] . " " . $d[$i][1] . (($w[$i] > 1) ? 's' : '') . " ";
 		}
 	}
 	return $return;
@@ -120,13 +120,13 @@ if (!isset($groups) || count($groups) == 0) {
 		foreach ($xml->file as $file) {
 			// File info.
 			$groupID = -1;
-			$name = (string) $file->attributes()->subject;
+			$name = (string)$file->attributes()->subject;
 			$firstname[] = $name;
-			$fromname = (string) $file->attributes()->poster;
+			$fromname = (string)$file->attributes()->poster;
 			$postername[] = $fromname;
-			$unixdate = (string) $file->attributes()->date;
+			$unixdate = (string)$file->attributes()->date;
 			$totalFiles++;
-			$date = date("Y-m-d H:i:s", (string) ($file->attributes()->date));
+			$date = date("Y-m-d H:i:s", (string)($file->attributes()->date));
 			$postdate[] = $date;
 			//removes everything after yEnc in subject
 			$partless = preg_replace('/(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?$/', 'yEnc', $firstname['0']);
@@ -139,7 +139,7 @@ if (!isset($groups) || count($groups) == 0) {
 			// Groups.
 			$groupArr = [];
 			foreach ($file->groups->group as $group) {
-				$group = (string) $group;
+				$group = (string)$group;
 				if (array_key_exists($group, $siteGroups)) {
 					$groupName = $group;
 					$groupID = $siteGroups[$group];
@@ -234,11 +234,11 @@ if (!isset($groups) || count($groups) == 0) {
 				if ($relid !== false) {
 					$nzbCount++;
 				}
-				if (( $nzbCount % 100 == 0) && ( $nzbCount != 0 )) {
+				if (($nzbCount % 100 == 0) && ($nzbCount != 0)) {
 					$seconds = TIME() - $time;
 					$nzbsperhour = number_format(round($nzbCount / $seconds * 3600), 0);
 				}
-				if (( $nzbCount >= $maxtoprocess) && ( $maxtoprocess != 0 )) {
+				if (($nzbCount >= $maxtoprocess) && ($maxtoprocess != 0)) {
 					$nzbsperhour = number_format(round($nzbCount / $seconds * 3600), 0);
 					exit($pdo->log->header("\nProcessed " . number_format($nzbCount) . " nzbs in " . relativeTime($time) . "\nAveraged " . $nzbsperhour . " imports per hour from " . $path));
 				}
@@ -266,7 +266,7 @@ exit($pdo->log->header("\nRunning Time: " . relativeTime($time) . "\n"
  * @param string $relguid    The guid of the release.
  * @param string $nzb        String containing the imported NZB.
  * @param NZB    $NZB
- * @param object $site
+ * @param object $pdo
  *
  * @return bool
  *

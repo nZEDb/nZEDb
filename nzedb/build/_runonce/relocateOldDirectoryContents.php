@@ -97,4 +97,4 @@ foreach ($dirs as $dir) {
 	}
 }
 
-exit((int) $status);
+exit((int)$status);

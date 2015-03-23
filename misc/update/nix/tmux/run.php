@@ -178,7 +178,7 @@ function writelog($pane)
 }
 
 /**
- * @param $cmd
+ * @param string $cmd
  *
  * @return bool
  */
