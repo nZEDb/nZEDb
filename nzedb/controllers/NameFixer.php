@@ -462,14 +462,14 @@ class NameFixer
 	/**
 	 * Update the release with the new information.
 	 *
-	 * @param array  $release
-	 * @param string $name
-	 * @param string $method
-	 * @param int    $echo
-	 * @param string $type
-	 * @param int    $nameStatus
-	 * @param int    $show
-	 * @param int    $preId
+	 * @param array   $release
+	 * @param string  $name
+	 * @param string  $method
+	 * @param boolean $echo
+	 * @param string  $type
+	 * @param int     $nameStatus
+	 * @param int     $show
+	 * @param int     $preId
 	 */
 	public function updateRelease($release, $name, $method, $echo, $type, $nameStatus, $show, $preId = 0)
 	{
@@ -533,7 +533,7 @@ class NameFixer
 
 				$newTitle = $this->pdo->escapeString(substr($newName, 0, 255));
 
-				if ($echo == 1) {
+				if ($echo == true) {
 					if ($nameStatus == 1) {
 						$status = '';
 						switch ($type) {
@@ -765,10 +765,10 @@ class NameFixer
 	 * Match a release filename to a PreDB filename or title.
 	 *
 	 * @param $release
-	 * @param $echo
-	 * @param $namestatus
-	 * @param $echooutput
-	 * @param $show
+	 * @param integer $echo
+	 * @param integer $namestatus
+	 * @param boolean $echooutput
+	 * @param integer $show
 	 *
 	 * @return int
 	 */
@@ -847,9 +847,8 @@ class NameFixer
 	 *
 	 * @param string $hash
 	 * @param $release
-	 * @param $echo
 	 * @param $namestatus
-	 * @param $echooutput
+	 * @param boolean $echooutput
 	 * @param $show
 	 *
 	 * @return int
@@ -892,7 +891,7 @@ class NameFixer
 	 * Check the array using regex for a clean name.
 	 *
 	 * @param         $release
-	 * @param integer $echo
+	 * @param boolean $echo
 	 * @param string  $type
 	 * @param         $namestatus
 	 * @param         $show
@@ -986,8 +985,8 @@ class NameFixer
 	 * Look for a TV name.
 	 *
 	 * @param $release
-	 * @param $echo
-	 * @param $type
+	 * @param integer $echo
+	 * @param string  $type
 	 * @param $namestatus
 	 * @param $show
 	 */
@@ -1017,7 +1016,15 @@ class NameFixer
 		}
 	}
 
-	//  Look for a movie name.
+	/**
+	 * Look for a movie name.
+	 *
+	 * @param $release
+	 * @param integer $echo
+	 * @param string  $type
+	 * @param $namestatus
+	 * @param $show
+	 */
 	public function movieCheck($release, $echo, $type, $namestatus, $show)
 	{
 		$result = [];
@@ -1054,7 +1061,15 @@ class NameFixer
 		}
 	}
 
-	//  Look for a game name.
+	/**
+	 * Look for a game name.
+	 *
+	 * @param $release
+	 * @param integer $echo
+	 * @param string $type
+	 * @param $namestatus
+	 * @param $show
+	 */
 	public function gameCheck($release, $echo, $type, $namestatus, $show)
 	{
 		$result = [];
@@ -1075,7 +1090,15 @@ class NameFixer
 		}
 	}
 
-	//  Look for a app name.
+	/**
+	 * Look for a app name.
+	 *
+	 * @param $release
+	 * @param integer $echo
+	 * @param string $type
+	 * @param $namestatus
+	 * @param $show
+	 */
 	public function appCheck($release, $echo, $type, $namestatus, $show)
 	{
 		$result = [];

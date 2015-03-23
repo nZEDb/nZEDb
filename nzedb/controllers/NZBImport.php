@@ -92,14 +92,14 @@ class NZBImport
 	public function __construct(array $options = [])
 	{
 		$defaults = [
-			'Browser'          => false, // Was this started from the browser?
-			'Echo'             => true,  // Echo to CLI?
-			'Binaries'         => null,
-			'Categorize'       => null,
-			'NZB'              => null,
-			'ReleaseCleaning'  => null,
-			'Releases'         => null,
-			'Settings'         => null,
+			'Browser'         => false,	// Was this started from the browser?
+			'Echo'            => true,	// Echo to CLI?
+			'Binaries'        => null,
+			'Categorize'      => null,
+			'NZB'             => null,
+			'ReleaseCleaning' => null,
+			'Releases'        => null,
+			'Settings'        => null,
 		];
 		$options += $defaults;
 
@@ -184,8 +184,8 @@ class NZBImport
 					$path = $this->nzb->getNZBPath($this->relGuid, 0, true);
 
 					// Try to compress the NZB file in the NZB folder.
-					$fp = gzopen ($path, 'w5');
-					gzwrite ($fp, $nzbString);
+					$fp = gzopen($path, 'w5');
+					gzwrite($fp, $nzbString);
 					gzclose($fp);
 
 					if (!is_file($path)) {
@@ -264,22 +264,22 @@ class NZBImport
 
 			// Get the nzb info.
 			if ($firstName === false ) {
-				$firstName =(string) $file->attributes()->subject;
+				$firstName = (string)$file->attributes()->subject;
 			}
 			if ($posterName === false) {
-				$posterName = (string) $file->attributes()->poster;
+				$posterName = (string)$file->attributes()->poster;
 			}
 			if ($postDate === false) {
-				$postDate = date("Y-m-d H:i:s", (string) $file->attributes()->date);
+				$postDate = date("Y-m-d H:i:s", (string)$file->attributes()->date);
 			}
 
 			// Make a fake message array to use to check the blacklist.
-			$msg = ["Subject" => (string) $file->attributes()->subject, "From" => (string) $file->attributes()->poster, "Message-ID" => ""];
+			$msg = ["Subject" => (string)$file->attributes()->subject, "From" => (string)$file->attributes()->poster, "Message-ID" => ""];
 
 			// Get the group names, group_id, check if it's blacklisted.
 			$groupArr = [];
 			foreach ($file->groups->group as $group) {
-				$group = (string) $group;
+				$group = (string)$group;
 
 				// If group_id is -1 try to get a group_id.
 				if ($groupID === -1) {
@@ -438,7 +438,7 @@ class NZBImport
 
 	/**
 	 * Echo message to browser or CLI.
-	 * @param $message
+	 * @param string $message
 	 *
 	 * @access protected
 	 */

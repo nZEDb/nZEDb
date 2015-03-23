@@ -32,7 +32,7 @@ class TmuxRun extends Tmux
 	{
 		switch ((int) $runVar['constants']['sequential']) {
 			case 0:
-				switch ((string) $cmdParam) {
+				switch ((string)$cmdParam) {
 					case 'amazon':
 						$this->_runAmazon($runVar);
 						break;

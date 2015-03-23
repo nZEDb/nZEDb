@@ -55,7 +55,7 @@ class NZBExport
 	{
 		$defaults = [
 			'Browser'  => false, // Started from browser?
-			'Echo'     => true,  // Echo to CLI?
+			'Echo'     => true, // Echo to CLI?
 			'NZB'      => null,
 			'Releases' => null,
 			'Settings' => null,

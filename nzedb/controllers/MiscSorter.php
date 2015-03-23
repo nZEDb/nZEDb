@@ -390,7 +390,7 @@ class MiscSorter
 		if (stripos($v, "audiobook") !== false) {
 			$audiobook = true;
 		}
-		$new = (string) $amaz->Items->Item->ItemAttributes->Author;
+		$new = (string)$amaz->Items->Item->ItemAttributes->Author;
 		$name = $new . " - " . (string)$amaz->Items->Item->ItemAttributes->Title;
 
 		$rel = $this->_doAmazonLocal('bookinfo', (string)$amaz->Items->Item->ASIN);
@@ -417,7 +417,7 @@ class MiscSorter
 		if ($new != '') {
 			$new .= " - ";
 		}
-		$name = $new . (string) $amaz->Items->Item->ItemAttributes->Title;
+		$name = $new . (string)$amaz->Items->Item->ItemAttributes->Title;
 
 		$rel = $this->_doAmazonLocal('musicinfo', (string)$amaz->Items->Item->ASIN);
 
@@ -503,7 +503,7 @@ class MiscSorter
 			case '44.1kHz':
 			case 'm3u':
 			case 'flac':
-				$ok = $this->_matchNfoAudio($nfo, $row);
+				$ok = $this->matchNfoAudio($nfo, $row);
 				break;
 			case 'dmg':
 			case 'mac':
@@ -581,8 +581,15 @@ class MiscSorter
 		return $ok;
 	}
 
-	// tries to derive artist and title of album/song from release NFO
-	private function _matchNfoAudio($nfo, $row)
+	/**
+	 * Tries to derive artist and title of album/song from release NFO
+	 *
+	 * @param string $nfo
+	 * @param $row
+	 *
+	 * @return bool
+	 */
+	private function matchNfoAudio($nfo, $row)
 	{
 		if (preg_match('/(a\s?r\s?t\s?i\s?s\s?t|l\s?a\s?b\s?e\s?l|mp3|e\s?n\s?c\s?o\s?d\s?e\s?r|rip|stereo|mono|single charts)/i', $nfo)
 			&& !preg_match('/(\bavi\b|x\.?264|divx|mvk|xvid|install(?!ation)|Setup\.exe|unzip|unrar)/i', $nfo)) {
@@ -613,7 +620,14 @@ class MiscSorter
 		return false;
 	}
 
-	// tries to derive the IMDB ID from release NFO
+	/**
+	 * Tries to derive the IMDB ID from release
+	 *
+	 * @param string $nfo
+	 * @param $row
+	 *
+	 * @return bool
+	 */
 	private function _matchNfoImdb($nfo, $row)
 	{
 		$imdb = $this->movie->doMovieUpdate($nfo, "sorter", $row['id']);
@@ -623,7 +637,14 @@ class MiscSorter
 		return false;
 	}
 
-	// tries to derive author and title of book from release NFO
+	/**
+	 * Tries to derive author and title of book from release NFO
+	 *
+	 * @param string $nfo
+	 * @param $row
+	 *
+	 * @return bool
+	 */
 	private function _matchNfoBook($nfo, $row)
 	{
 		$author = preg_split('/(?:a\s?u\s?t\s?h\s?o\s?r\b)+? *?(?!(?:[^\s\.\:\}\]\*\xb0-\x{3000}\?] ?){2,}?\b)(?:[\*\?\-\=\|\;\:\.\[\}\]\(\s\xb0-\x{3000}\?]+?)[\s\.\>\:\(\)]((?!\:) ?[a-z0-9\&].+)(?:\s\s\s|$|\.\.\.)/Uuim', $nfo, 0, PREG_SPLIT_DELIM_CAPTURE);
@@ -641,7 +662,12 @@ class MiscSorter
 		return false;
 	}
 
-	// Sets the release to its proper status in the database
+	/**
+	 * Sets the release to its proper status in the database
+	 *
+	 * @param int $status
+	 * @param int $id
+	 */
 	private function _setProcSorter($status = 0, $id = 0)
 	{
 		$this->pdo->queryExec(
@@ -655,8 +681,13 @@ class MiscSorter
 		);
 	}
 
-	//derives type of processing to do by preg_splitting NFO file
-	//and returning the results of the split
+	/**
+	 * Derives type of processing to do by preg_splitting NFO file and returning the results of the split
+	 *
+	 * @param string $nfo
+	 *
+	 * @return array
+	 */
 	private function _sortTypeFromNFO($nfo = '')
 	{
 		$pattern = '/.+(\.rar|\.001) [0-9a-f]{6,10}?|(imdb)\.[a-z0-9\.\_\-\/]+?(?:tt|\?)\d+?\/?|(tvrage)\.com\/|(\bASIN)|' .

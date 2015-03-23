@@ -366,14 +366,14 @@ class TvRage
 				foreach ($xml->DAY as $sDay) {
 					$currDay = strtotime($sDay['attr']);
 					foreach ($sDay as $sTime) {
-						$currTime = (string) $sTime['attr'];
+						$currTime = (string)$sTime['attr'];
 						foreach ($sTime as $sShow) {
-							$currShowName = (string) $sShow['name'];
-							$currShowId = (string) $sShow->sid;
+							$currShowName = (string)$sShow['name'];
+							$currShowId = (string)$sShow->sid;
 							$day_time = strtotime($sDay['attr'] . ' ' . $currTime);
 							$tag = ($currDay < $yesterday) ? 'prev' : 'next';
 							if ($tag == 'prev' || ($tag == 'next' && !isset($xmlSchedule[$currShowId]['next']))) {
-								$xmlSchedule[$currShowId][$tag] = array('name' => $currShowName, 'day' => $currDay, 'time' => $currTime, 'day_time' => $day_time, 'day_date' => date("Y-m-d H:i:s", $day_time), 'title' => html_entity_decode((string) $sShow->title, ENT_QUOTES, 'UTF-8'), 'episode' => html_entity_decode((string) $sShow->ep, ENT_QUOTES, 'UTF-8'));
+								$xmlSchedule[$currShowId][$tag] = array('name' => $currShowName, 'day' => $currDay, 'time' => $currTime, 'day_time' => $day_time, 'day_date' => date("Y-m-d H:i:s", $day_time), 'title' => html_entity_decode((string)$sShow->title, ENT_QUOTES, 'UTF-8'), 'episode' => html_entity_decode((string)$sShow->ep, ENT_QUOTES, 'UTF-8'));
 								$xmlSchedule[$currShowId]['showname'] = $currShowName;
 							}
 

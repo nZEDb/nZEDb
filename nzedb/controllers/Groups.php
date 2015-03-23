@@ -552,7 +552,7 @@ class Groups
 
 			$ret = [];
 
-			foreach ($groups AS $group) {
+			foreach ($groups as $group) {
 				if (preg_match($regFilter, $group['group']) > 0) {
 					$res = $this->pdo->queryOneRow(
 						sprintf('SELECT id FROM groups WHERE name = %s',
