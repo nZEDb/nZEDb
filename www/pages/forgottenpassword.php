@@ -8,7 +8,7 @@ if ($page->users->isLoggedIn()) {
 
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
 
-switch($action) {
+switch ($action) {
 	case "reset":
 		if (!isset($_REQUEST['guid'])) {
 			$page->smarty->assign('error', "No reset code provided.");
@@ -26,8 +26,8 @@ switch($action) {
 			$page->users->updatePassword($ret["id"], $newpass);
 
 			$to = $ret["email"];
-			$subject = $page->settings->getSetting('title')." Password Reset";
-			$contents = "Your password has been reset to ".$newpass;
+			$subject = $page->settings->getSetting('title') . " Password Reset";
+			$contents = "Your password has been reset to " . $newpass;
 			nzedb\utility\Utility::sendEmail($to, $subject, $contents, $page->settings->getSetting('email'));
 
 			$page->smarty->assign('confirmed', "true");

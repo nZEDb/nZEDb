@@ -367,5 +367,5 @@ function apiError($error, $code) {
 // There's some weird encoding issues in some of the pre titles.
 function sanitize($string) {
 	//return $string;
-	return preg_replace ('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u', '.', $string);
+	return preg_replace('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u', '.', $string);
 }

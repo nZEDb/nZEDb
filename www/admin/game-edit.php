@@ -30,9 +30,7 @@ if (isset($_REQUEST["id"])) {
 			}
 
 			$_POST['cover']       = (file_exists($coverLoc)) ? 1 : 0;
-			$_POST['releasedate'] = (empty($_POST['releasedate']) ||
-									 !strtotime($_POST['releasedate'])) ? $game['releasedate'] :
-				date("Y-m-d H:i:s", strtotime($_POST['releasedate']));
+			$_POST['releasedate'] = (empty($_POST['releasedate']) || !strtotime($_POST['releasedate'])) ? $game['releasedate'] : date("Y-m-d H:i:s", strtotime($_POST['releasedate']));
 
 			$games->update($id,
 						   $_POST["title"],

@@ -20,10 +20,10 @@ if ($page->isPostBack()) {
 	$gzip     = ($_POST["gzip"] === '1' ? true : false);
 
 	if ($path !== "") {
-		$NE     = new NZBExport([
-									'Browser'  => true, 'Settings' => $page->settings,
-									'Releases' => $rel
-								]);
+		$NE = new NZBExport([
+								'Browser'  => true, 'Settings' => $page->settings,
+								'Releases' => $rel
+							]);
 		$retVal = $NE->beginExport(
 			[
 				$path,

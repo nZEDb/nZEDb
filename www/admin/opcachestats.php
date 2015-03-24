@@ -67,16 +67,18 @@ class OpCacheService
 		return $self;
 	}
 
+	/**
+	 * @param string $name
+	 *
+	 * @return array|null
+	 */
 	public function getOption($name = null)
 	{
 		if ($name === null) {
 			return $this->options;
 		}
 
-		return (isset($this->options[$name])
-			? $this->options[$name]
-			: null
-		);
+		return (isset($this->options[$name]) ? $this->options[$name] : null);
 	}
 
 	public function getData($section = null, $property = null)
@@ -122,7 +124,7 @@ class OpCacheService
 	{
 		$status  = opcache_get_status();
 		$config  = opcache_get_configuration();
-		$memsize = function ($size, $precision = 3, $space = false) {
+		$memsize = function($size, $precision = 3, $space = false) {
 			$i   = 0;
 			$val = [' bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 			while (($size / 1024) > 1) {
@@ -136,7 +138,7 @@ class OpCacheService
 		$files = [];
 		if (!empty($status['scripts'])) {
 			uasort($status['scripts'],
-				function ($a, $b) {
+				function($a, $b) {
 					return $a['hits'] < $b['hits'];
 				});
 			foreach ($status['scripts'] as &$file) {

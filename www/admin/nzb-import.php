@@ -25,8 +25,7 @@ if ($page->isPostBack()) {
 	} else {
 
 		// Check if the user wants to use the file name as the release name.
-		$useNzbName = (isset($_POST['usefilename']) && $_POST["usefilename"] == 'on') ? true :
-			false;
+		$useNzbName = (isset($_POST['usefilename']) && $_POST["usefilename"] == 'on') ? true : false;
 
 		// Check if the user wants to delete the NZB file when done importing.
 		$deleteNZB = (isset($_POST['deleteNZB']) && $_POST["deleteNZB"] == 'on') ? true : false;
