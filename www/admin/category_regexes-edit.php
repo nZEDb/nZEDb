@@ -61,7 +61,7 @@ $categories_db = $page->settings->queryDirect(
 	WHERE c.parentid IS NOT NULL
 	ORDER BY c.id ASC'
 );
-$categories    = ['category_names', 'category_ids'];
+$categories = ['category_names', 'category_ids'];
 if ($categories_db) {
 	foreach ($categories_db as $category_db) {
 		$categories['category_names'][] =

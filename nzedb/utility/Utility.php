@@ -329,7 +329,8 @@ class Utility
 	{
 		$gzipped = null;
 		if (($fp = fopen($filename, 'r')) !== false) {
-			if (@fread($fp, 2) == "\x1F\x8B") { // this is a gzip'd file
+			if (@fread($fp, 2) == "\x1F\x8B") {
+				// this is a gzip'd file
 				fseek($fp, -4, SEEK_END);
 				if (strlen($datum = @fread($fp, 4)) == 4) {
 					$gzipped = $datum;

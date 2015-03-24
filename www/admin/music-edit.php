@@ -1,10 +1,10 @@
 <?php
 require_once './config.php';
 
-$page = new AdminPage();
+$page  = new AdminPage();
 $music = new Music(['Settings' => $page->settings]);
-$gen = new Genres(['Settings' => $page->settings]);
-$id = 0;
+$gen   = new Genres(['Settings' => $page->settings]);
+$id    = 0;
 
 // Set the current action.
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
@@ -30,8 +30,12 @@ if (isset($_REQUEST["id"])) {
 			}
 
 			$_POST['cover']       = (file_exists($coverLoc)) ? 1 : 0;
-			$_POST['salesrank']   = (empty($_POST['salesrank']) || !ctype_digit($_POST['salesrank']) ? "null" : $_POST['salesrank']);
-			$_POST['releasedate'] = (empty($_POST['releasedate']) || !strtotime($_POST['releasedate'])) ? $mus['releasedate'] : date("Y-m-d H:i:s", strtotime($_POST['releasedate']));
+			$_POST['salesrank']   = (empty($_POST['salesrank']) ||
+									 !ctype_digit($_POST['salesrank']) ? "null" :
+				$_POST['salesrank']);
+			$_POST['releasedate'] = (empty($_POST['releasedate']) ||
+									 !strtotime($_POST['releasedate'])) ? $mus['releasedate'] :
+				date("Y-m-d H:i:s", strtotime($_POST['releasedate']));
 
 			$music->update($id,
 						   $_POST["title"],

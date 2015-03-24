@@ -2015,12 +2015,14 @@ class ProcessAdditional
 					$newMethod = true;
 
 					// Get the lowest time we can start making the video at based on how many seconds the admin wants the video to be.
-					if ($numbers[1] <= $this->_ffMPEGDuration) { // If the clip is shorter than the length we want.
+					if ($numbers[1] <= $this->_ffMPEGDuration) {
+						// If the clip is shorter than the length we want.
 
 						// The lowest we want is 0.
 						$lowestLength = '00:00:00.00';
 
-					} else { // If the clip is longer than the length we want.
+					} else {
+						// If the clip is longer than the length we want.
 
 						// The lowest we want is the the difference between the max video length and our wanted total time.
 						$lowestLength = ($numbers[1] - $this->_ffMPEGDuration);
@@ -2522,4 +2524,6 @@ class ProcessAdditional
 	}
 }
 
-class ProcessAdditionalException extends \Exception { }
+class ProcessAdditionalException extends \Exception
+{
+}

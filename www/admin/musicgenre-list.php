@@ -22,7 +22,8 @@ if ($activeOnly) {
 	$activeOnlySearch = "";
 }
 
-$page->smarty->assign('pagerquerybase', WWW_TOP."/musicgenre-list.php?".$activeOnlySearch."offset=");
+$page->smarty->assign('pagerquerybase',
+					  WWW_TOP . "/musicgenre-list.php?" . $activeOnlySearch . "offset=");
 
 $pager = $page->smarty->fetch('pager.tpl');
 $page->smarty->assign('pager', $pager);

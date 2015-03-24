@@ -79,7 +79,7 @@ class ForkingImportNZB extends Forking
 	{
 		foreach ($directories as $directory) {
 			$this->_executeCommand(
-				$this->importPath  . '"' .
+				$this->importPath . '"' .
 				$directory . '" ' .
 				$this->deleteComplete . ' ' .
 				$this->deleteFailed . ' ' .
