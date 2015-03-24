@@ -1,0 +1,82 @@
+build:
+    environment:
+        php:
+            version: 5.5.14
+checks:
+    php:
+        avoid_closing_tag: false
+        avoid_multiple_statements_on_same_line: true
+        avoid_perl_style_comments: true
+        avoid_superglobals: false
+        avoid_usage_of_logical_operators: true
+        blank_line_after_namespace_declaration: true
+        classes_in_camel_caps: true
+        code_rating: true
+        duplication: true
+        encourage_postdec_operator: true
+        encourage_single_quotes: true
+        fix_php_opening_tag: false
+        function_in_camel_caps: true
+        newline_at_end_of_file: true
+        no_exit: false
+        no_global_keyword: false
+        no_mixed_inline_html: false
+        no_short_method_names:
+            minimum: '3'
+        no_short_variable_names:
+            minimum: '3'
+        no_underscore_prefix_in_methods: true
+        no_underscore_prefix_in_properties: true
+        one_class_per_file: true
+        optional_parameters_at_the_end: true
+        param_doc_comment_if_not_inferrable: true
+        php5_style_constructor: true
+        properties_in_camelcaps: true
+        psr2_class_declaration: false
+        psr2_control_structure_declaration: false
+        psr2_switch_declaration: false
+        remove_php_closing_tag: false
+        require_braces_around_control_structures: false
+        security_vulnerabilities: false
+        side_effects_or_types: false
+        single_namespace_per_use: false
+
+coding_style:
+    php:
+        braces:
+            classes_functions:
+                class: new-line
+                function: new-line
+                closure: end-of-line
+            do_while:
+                opening: end-of-line
+            if:
+                opening: end-of-line
+            for:
+                opening: end-of-line
+            switch:
+                opening: end-of-line
+            try:
+                opening: end-of-line
+            while:
+                opening: end-of-line
+        indentation:
+            general:
+                use_tabs: true
+        spaces:
+            around_operators:
+                bitwise: true
+                concatenation: true
+            other:
+                after_type_cast: false
+        upper_lower_casing:
+            keywords:
+                general: lower
+            constants:
+                true_false_null: undefined
+
+filter:
+    excluded_paths:
+        - libs/*
+        - resources/*
+        - vendor/*

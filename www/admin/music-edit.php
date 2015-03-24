@@ -1,10 +1,10 @@
 <?php
 require_once './config.php';
 
-$page = new AdminPage();
+$page  = new AdminPage();
 $music = new Music(['Settings' => $page->settings]);
-$gen = new Genres(['Settings' => $page->settings]);
-$id = 0;
+$gen   = new Genres(['Settings' => $page->settings]);
+$id    = 0;
 
 // Set the current action.
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';

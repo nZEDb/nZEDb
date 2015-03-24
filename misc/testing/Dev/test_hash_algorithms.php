@@ -69,7 +69,7 @@ class hash_algorithms
 		$firstArray = $this->_hashesToArray($this->_inputString);
 
 		$secondArray = array();
-		foreach($firstArray as $key => $value) {
+		foreach ($firstArray as $key => $value) {
 			if (!$this->_writeToFile) {
 				if (in_array($value, $this->_expectedString)) {
 					exit(
@@ -110,7 +110,7 @@ class hash_algorithms
 						);
 					}
 				} else {
-					file_put_contents('hash_matches.txt', $key . ' => ' . $key2 .  "\t\t" . $value2 . PHP_EOL, FILE_APPEND);
+					file_put_contents('hash_matches.txt', $key . ' => ' . $key2 . "\t\t" . $value2 . PHP_EOL, FILE_APPEND);
 				}
 				$thirdArray[$key][$key2] = $this->_hashesToArray($value2);
 			}
@@ -142,7 +142,7 @@ class hash_algorithms
 						}
 					} else {
 						file_put_contents('hash_matches.txt',
-							$key . ' => ' . $key2 . ' => ' . $key3 .  "\t\t" . $value3 . PHP_EOL, FILE_APPEND
+							$key . ' => ' . $key2 . ' => ' . $key3 . "\t\t" . $value3 . PHP_EOL, FILE_APPEND
 						);
 					}
 				}
@@ -172,8 +172,8 @@ class hash_algorithms
 
 		$hashTypes = array('md5', 'md4', 'sha1', 'sha256', 'sha512');
 		$tmpArray = array();
-		foreach($hashTypes as $hash) {
-			foreach($strings as $key => $value) {
+		foreach ($hashTypes as $hash) {
+			foreach ($strings as $key => $value) {
 				$tmpArray[$hash . '_' . $key] = hash($hash, $value, false);
 			}
 		}

@@ -107,7 +107,8 @@ class Nfo
 	 *
 	 * @access public
 	 */
-	public function parseRageId($str) {
+	public function parseRageId($str)
+	{
 		if (preg_match('/tvrage\.com\/shows\/id-(\d{1,6})/i', $str, $matches)) {
 			return trim($matches[1]);
 		}
@@ -124,19 +125,17 @@ class Nfo
 	 *
 	 * @access public
 	 */
-	public function isNFO(&$possibleNFO, $guid) {
+	public function isNFO(&$possibleNFO, $guid)
+	{
 		if ($possibleNFO === false) {
 			return false;
 		}
 
 		// Make sure it's not too big or small, size needs to be at least 12 bytes for header checking. Ignore common file types.
 		$size = strlen($possibleNFO);
-		if ($size < 65535 &&
-			$size > 11 &&
-			!preg_match(
+		if ($size < 65535 && $size > 11 && !preg_match(
 				'/\A(\s*<\?xml|=newz\[NZB\]=|RIFF|\s*[RP]AR|.{0,10}(JFIF|matroska|ftyp|ID3))|;\s*Generated\s*by.*SF\w/i'
-				, $possibleNFO))
-		{
+				, $possibleNFO)) {
 			// File/GetId3 work with files, so save to disk.
 			$tmpPath = $this->tmpPath . $guid . '.nfo';
 			file_put_contents($tmpPath, $possibleNFO);
@@ -151,8 +150,7 @@ class Nfo
 
 				// Or binary.
 				} else if (preg_match('/^(JPE?G|Parity|PNG|RAR|XML|(7-)?[Zz]ip)/', $result) ||
-					preg_match('/[\x00-\x08\x12-\x1F\x0B\x0E\x0F]/', $possibleNFO))
-				{
+					preg_match('/[\x00-\x08\x12-\x1F\x0B\x0E\x0F]/', $possibleNFO)) {
 					@unlink($tmpPath);
 					return false;
 				}
@@ -185,9 +183,9 @@ class Nfo
 	 *
 	 * @param string $nfo     The nfo.
 	 * @param array  $release The SQL row for this release.
-	 * @param object $nntp    Instance of class NNTP.
+	 * @param \NNTP  $nntp    Instance of class NNTP.
 	 *
-	 * @return bool           True on success, False on failure.
+	 * @return boolean        True on success, False on failure.
 	 *
 	 * @access public
 	 */
@@ -240,7 +238,7 @@ class Nfo
 	 * @access public
 	 * @static
 	 */
-	static public function NfoQueryString(Settings &$pdo)
+	public static function NfoQueryString(Settings &$pdo)
 	{
 		$maxSize = $pdo->getSetting('maxsizetoprocessnfo');
 		$minSize = $pdo->getSetting('minsizetoprocessnfo');

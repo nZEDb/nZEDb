@@ -210,7 +210,7 @@ class IRCScraper extends IRCClient
 			}
 			if ($matches['req'] !== 'N/A' && preg_match('/^(?P<req>\d+):(?P<group>.+)$/i', $matches['req'], $matches2)) {
 				$this->_curPre['reqid'] = $matches2['req'];
-				$this->_curPre['group_id']  = $this->_getGroupID($matches2['group']);
+				$this->_curPre['group_id'] = $this->_getGroupID($matches2['group']);
 			}
 			if ($matches['size'] !== 'N/A') {
 				$this->_curPre['size'] = $matches['size'];
@@ -341,11 +341,11 @@ class IRCScraper extends IRCClient
 				: ''
 		);
 
-		if ($query === 'UPDATE predb SET '){
+		if ($query === 'UPDATE predb SET ') {
 			return;
 		}
 
-		$query .= 'title = '      . $this->_pdo->escapeString($this->_curPre['title']);
+		$query .= 'title = ' . $this->_pdo->escapeString($this->_curPre['title']);
 		$query .= ' WHERE title = ' . $this->_pdo->escapeString($this->_curPre['title']);
 
 		$this->_pdo->ping(true);
@@ -368,7 +368,7 @@ class IRCScraper extends IRCClient
 
 			$nukeString = '';
 			if ($this->_nuked !== false) {
-				switch((int)$this->_curPre['nuked']) {
+				switch ((int)$this->_curPre['nuked']) {
 					case \PreDb::PRE_NUKED:
 						$nukeString = '[ NUKED ] ';
 						break;
@@ -391,23 +391,10 @@ class IRCScraper extends IRCClient
 			}
 
 			echo
-				'[' .
-				date('r') .
-				($new ? '] [ Added Pre ] [' : '] [Updated Pre] [') .
-				$this->_curPre['source'] .
-				'] ' .
-				 $nukeString .
-				'[' .
-				$this->_curPre['title'] .
-				']' .
-				(!empty($this->_curPre['category'])
-					? ' [' . $this->_curPre['category'] . ']'
-					: (!empty($this->_oldPre['category'])
-						? ' [' . $this->_oldPre['category'] . ']'
-						: ''
-					)
-				) .
-				(!empty($this->_curPre['size']) ? ' [' . $this->_curPre['size'] . ']' : '') .
+				'[' . date('r') . ($new ? '] [ Added Pre ] [' : '] [Updated Pre] [') .
+				$this->_curPre['source'] . '] ' . $nukeString . '[' . $this->_curPre['title'] .
+				']' . (!empty($this->_curPre['category']) ? ' [' . $this->_curPre['category'] . ']' : (!empty($this->_oldPre['category']) ? ' [' . $this->_oldPre['category'] . ']' : '')
+				) . (!empty($this->_curPre['size']) ? ' [' . $this->_curPre['size'] . ']' : '') .
 				PHP_EOL;
 		}
 	}

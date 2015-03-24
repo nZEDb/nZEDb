@@ -43,7 +43,7 @@ class PreDb extends DB
 		parent::__construct($options);
 
 		$this->tableMain = 'predb';
-		$this->tableTemp = 'tmp_pre';
+		$this->tableTemp = 'predb_imports';
 	}
 
 	public function executeAddGroups()
@@ -146,6 +146,10 @@ class PreDb extends DB
 		$this->prepareSQLInsert();
 	}
 
+	/**
+	 * @param $sql
+	 * @param string $index
+	 */
 	protected function prepareSQLStatement($sql, $index)
 	{
 		$this->importPS[$index] = $this->prepare($sql);

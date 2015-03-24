@@ -1,6 +1,6 @@
 <?php
 
-Class Regexes
+class Regexes
 {
 	/**
 	 * @var \nzedb\db\Settings
@@ -16,6 +16,11 @@ Class Regexes
 	 * @var array Cache of regex and their TTL.
 	 */
 	protected $_regexCache;
+
+	/**
+	 * @var int
+	 */
+	protected $_categoryID = Category::CAT_MISC;
 
 	/**
 	 * @param array $options
@@ -43,13 +48,15 @@ Class Regexes
 	{
 		return (bool)$this->pdo->queryInsert(
 			sprintf(
-				'INSERT INTO %s (group_regex, regex, status, description, ordinal) VALUES (%s, %s, %d, %s, %d)',
+				'INSERT INTO %s (group_regex, regex, status, description, ordinal%s) VALUES (%s, %s, %d, %s, %d%s)',
 				$this->tableName,
+				($this->tableName === 'category_regexes' ? ', category_id' : ''),
 				trim($this->pdo->escapeString($data['group_regex'])),
 				trim($this->pdo->escapeString($data['regex'])),
 				$data['status'],
 				trim($this->pdo->escapeString($data['description'])),
-				$data['ordinal']
+				$data['ordinal'],
+				($this->tableName === 'category_regexes' ? (', ' . $data['category_id']) : '')
 			)
 		);
 	}
@@ -66,7 +73,7 @@ Class Regexes
 		return (bool)$this->pdo->queryExec(
 			sprintf(
 				'UPDATE %s
-				SET group_regex = %s, regex = %s, status = %d, description = %s, ordinal = %d
+				SET group_regex = %s, regex = %s, status = %d, description = %s, ordinal = %d %s
 				WHERE id = %d',
 				$this->tableName,
 				trim($this->pdo->escapeString($data['group_regex'])),
@@ -74,6 +81,7 @@ Class Regexes
 				$data['status'],
 				trim($this->pdo->escapeString($data['description'])),
 				$data['ordinal'],
+				($this->tableName === 'category_regexes' ? (', category_id = ' . $data['category_id']) : ''),
 				$data['id']
 			)
 		);
@@ -104,7 +112,7 @@ Class Regexes
 	{
 		return $this->pdo->query(
 			sprintf(
-				'SELECT * FROM %s %s %s',
+				'SELECT * FROM %s %s ORDER BY id %s',
 				$this->tableName,
 				$this->_groupQueryString($group_regex),
 				($limit ? ('LIMIT ' . $limit . ' OFFSET ' . $offset) : '')
@@ -277,6 +285,10 @@ Class Regexes
 		if ($this->_regexCache[$groupName]['regex']) {
 			foreach ($this->_regexCache[$groupName]['regex'] as $regex) {
 
+				if ($this->tableName === 'category_regexes') {
+					$this->_categoryID = $regex['category_id'];
+				}
+
 				$returnString = $this->_matchRegex($regex['regex'], $subject);
 				// If this regex found something, break and return, or else continue trying other regex.
 				if ($returnString) {
@@ -303,7 +315,8 @@ Class Regexes
 		// Get all regex from DB which match the current group name. Cache them for 15 minutes. #CACHEDQUERY#
 		$this->_regexCache[$groupName]['regex'] = $this->pdo->query(
 			sprintf(
-				'SELECT c.regex FROM %s c WHERE %s REGEXP c.group_regex AND c.status = 1 ORDER BY c.ordinal ASC, c.group_regex ASC',
+				'SELECT r.regex%s FROM %s r WHERE %s REGEXP r.group_regex AND r.status = 1 ORDER BY r.ordinal ASC, r.group_regex ASC',
+				($this->tableName === 'category_regexes' ? ', r.category_id' : ''),
 				$this->tableName,
 				$this->pdo->escapeString($groupName)
 			), true, 900
@@ -330,12 +343,19 @@ Class Regexes
 				// Sort the keys, the named key matches will be concatenated in this order.
 				ksort($matches);
 				foreach ($matches as $key => $value) {
-					// Ignore non-named capture groups. Only named capture groups are important.
-					if (is_int($key)) {
-						continue;
+					switch ($this->tableName) {
+						case 'collection_naming_regexes': // Put this at the top since it's the most important for performance.
+						case 'release_naming_regexes':
+							// Ignore non-named capture groups. Only named capture groups are important.
+							if (is_int($key) || preg_match('#reqid|parts#i', $key)) {
+								continue 2;
+							}
+							$returnString .= $value; // Concatenate the string to return.
+							break;
+						case 'category_regexes':
+							$returnString = $this->_categoryID; // Regex matched, so return the category ID.
+							break 2;
 					}
-					// Concatenate the string to return.
-					$returnString .= $value;
 				}
 			}
 		}

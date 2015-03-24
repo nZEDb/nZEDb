@@ -5,7 +5,9 @@ $page->title = 'Sharing Settings';
 
 $offset = (isset($_GET['offset']) ? $_GET['offset'] : 0);
 
-$allSites = $page->settings->query(sprintf('SELECT * FROM sharing_sites ORDER BY id LIMIT %d OFFSET %d', 25, $offset));
+$allSites = $page->settings->query(sprintf('SELECT * FROM sharing_sites ORDER BY id LIMIT %d OFFSET %d',
+										   25,
+										   $offset));
 if (count($allSites) === 0) {
 	$allSites = false;
 }
@@ -13,7 +15,9 @@ if (count($allSites) === 0) {
 $ourSite = $page->settings->queryOneRow('SELECT * FROM sharing');
 
 if (!empty($_POST)) {
-	if (!empty($_POST['sharing_name']) && !preg_match('/\s+/', $_POST['sharing_name']) && strlen($_POST['sharing_name']) < 255) {
+	if (!empty($_POST['sharing_name']) && !preg_match('/\s+/', $_POST['sharing_name']) &&
+		strlen($_POST['sharing_name']) < 255
+	) {
 		$site_name = trim($_POST['sharing_name']);
 	} else {
 		$site_name = $ourSite['site_name'];
@@ -37,7 +41,10 @@ if (!empty($_POST)) {
 		sprintf('
 			UPDATE sharing
 			SET site_name = %s, max_push = %d, max_pull = %d, max_download = %d',
-			$page->settings->escapeString($site_name), $max_push, $max_pull, $max_download
+				$page->settings->escapeString($site_name),
+				$max_push,
+				$max_pull,
+				$max_download
 		)
 	);
 	$ourSite = $page->settings->queryOneRow('SELECT * FROM sharing');
@@ -53,7 +60,7 @@ $page->smarty->assign('pagerquerybase', WWW_TOP . "/sharing.php?offset=");
 $pager = $page->smarty->fetch("pager.tpl");
 $page->smarty->assign('pager', $pager);
 
-$page->smarty->assign(array('local' => $ourSite, 'sites' => $allSites));
+$page->smarty->assign(['local' => $ourSite, 'sites' => $allSites]);
 
 $page->content = $page->smarty->fetch('sharing.tpl');
 $page->render();

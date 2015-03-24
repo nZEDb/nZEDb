@@ -53,7 +53,7 @@ class Page extends BasePage
 
 		$searchStr = '';
 		if ($this->page == 'search' && isset($_REQUEST["id"])) {
-			$searchStr = (string) $_REQUEST["id"];
+			$searchStr = (string)$_REQUEST["id"];
 		}
 		$this->smarty->assign('header_menu_search', $searchStr);
 

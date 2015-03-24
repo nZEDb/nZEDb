@@ -33,8 +33,7 @@ class SplClassLoader
 	{
 		$this->_namespace = $ns;
 		foreach ($includePath as &$path) {
-			if (substr($path, -1) == '/')
-			{
+			if (substr($path, -1) == '/') {
 				$path = substr($path, 0, -1);
 			}
 		}
@@ -54,7 +53,7 @@ class SplClassLoader
 	/**
 	 * Gets the namespace seperator used by classes in the namespace of this class loader.
 	 *
-	 * @return void
+	 * @return string
 	 */
 	public function getNamespaceSeparator()
 	{
@@ -125,14 +124,15 @@ class SplClassLoader
 	 */
 	public function loadClass($className)
 	{
-		if (preg_match('#\\\#', $className)) {	// Looks like it's a namespaced class. just clean pathsepearator for now.
+		if (preg_match('#\\\#', $className)) {
+			// Looks like it's a namespaced class. just clean pathsepearator for now.
 			$className = str_replace('#\\#', DS, $className);
 		}
 		if ($className == 'Smarty') {
 			require_once SMARTY_DIR . 'Smarty.class.php';
 			return;
 		}
-		if ($this->_namespace === null || $this->_namespace.$this->_namespaceSeparator === substr($className, 0, strlen($this->_namespace.$this->_namespaceSeparator))) {
+		if ($this->_namespace === null || $this->_namespace . $this->_namespaceSeparator === substr($className, 0, strlen($this->_namespace . $this->_namespaceSeparator))) {
 			$fileName = '';
 			$namespace = '';
 			if (strtolower(substr($className, 0, 7)) !== 'smarty_') {
@@ -148,7 +148,7 @@ class SplClassLoader
 
 			if (!empty($this->_includePath)) {
 				foreach ($this->_includePath as $path) {
-					$spec = $path . DIRECTORY_SEPARATOR  . $fileName;
+					$spec = $path . DIRECTORY_SEPARATOR . $fileName;
 					if (file_exists($spec)) {
 						require_once $spec;
 						return;

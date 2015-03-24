@@ -27,7 +27,7 @@ class ADE
 
 	/**
 	 * Define ADE Url here
-	*/
+	 */
 	const ADE = "http://www.adultdvdempire.com";
 
 	/**
@@ -78,7 +78,8 @@ class ADE
 	 * Remove from memory if they were not removed
 	 *
 	 */
-	public function __destruct(){
+	public function __destruct()
+	{
 		$this->_html->clear();
 		$this->_edithtml->clear();
 		unset($this->_response);
@@ -120,7 +121,7 @@ class ADE
 	 */
 	public function covers()
 	{
-		if($ret = $this->_html->find("div#Boxcover, img[itemprop=image]", 1)){
+		if ($ret = $this->_html->find("div#Boxcover, img[itemprop=image]", 1)) {
 				$this->_res['boxcover'] = preg_replace('/m\.jpg/', 'h.jpg', $ret->src);
 				$this->_res['backcover'] = preg_replace('/m\.jpg/', 'bh.jpg', $ret->src);
 		}
@@ -138,10 +139,10 @@ class ADE
 	public function sypnosis($tagline = false)
 	{
 		if ($tagline === true) {
-			if($ret = $this->_html->find("p.Tagline", 0)){
+			if ($ret = $this->_html->find("p.Tagline", 0)) {
 				if (!empty($ret->plaintext)) {
-				$this->_res['tagline'] = trim($ret->plaintext);
-			}
+					$this->_res['tagline'] = trim($ret->plaintext);
+				}
 			}
 		}
 		if ($ret = @$this->_html->find("p.Tagline", 0)->next_sibling()->next_sibling()) {
@@ -156,7 +157,7 @@ class ADE
 	 *
 	 * @param bool $awards - Include Awards? true/false
 	 *
-	 * @return array - cast,awards
+	 * @return array - cast, awards
 	 */
 	public function cast($awards = false)
 	{
@@ -169,8 +170,8 @@ class ADE
 		$ret = $this->_edithtml->load($this->_tmpResponse);
 		foreach ($ret->find("a.PerformerName") as $a) {
 			if ($a->plaintext != "(bio)") {
-				if($a->plaintext != "(interview)"){
-				$this->_res['cast'][] = trim($a->plaintext);
+				if ($a->plaintext != "(interview)") {
+					$this->_res['cast'][] = trim($a->plaintext);
 				}
 			}
 		}
@@ -198,7 +199,7 @@ class ADE
 		$this->_tmpResponse = str_ireplace("Section Categories", "scat", $this->_response);
 		$this->_edithtml->load($this->_tmpResponse);
 		if ($ret = $this->_edithtml->find("div[class=scat]", 0)) {
-			$ret = $ret->find("p",0);
+			$ret = $ret->find("p", 0);
 			$this->_tmpResponse = trim($ret->outertext);
 			$ret = $this->_edithtml->load($this->_tmpResponse);
 
@@ -207,8 +208,8 @@ class ADE
 				if (stristr($categories, ",")) {
 					$genres = explode(",", $categories);
 					$genres = array_map('trim', $genres);
-				}else{
-				$genres[] = $categories;
+				} else {
+					$genres[] = $categories;
 				}
 			}
 			if (is_array($genres)) {
@@ -233,27 +234,27 @@ class ADE
 		$dofeature = null;
 		$this->_tmpResponse = str_ireplace("Section ProductInfo", "spdinfo", $this->_response);
 		$this->_edithtml->load($this->_tmpResponse);
-		if($ret = $this->_edithtml->find("div[class=spdinfo]", 0)){
-		$this->_tmpResponse = trim($ret->outertext);
-		$ret = $this->_edithtml->load($this->_tmpResponse);
-		foreach ($ret->find("text") as $strong) {
-			if (trim($strong->innertext) == "Features") {
-				$dofeature = true;
-			}
-			if ($dofeature != true) {
-				if (trim($strong->innertext) != "&nbsp;") {
-					$this->_res['productinfo'][] = trim($strong->innertext);
+		if ($ret = $this->_edithtml->find("div[class=spdinfo]", 0)) {
+			$this->_tmpResponse = trim($ret->outertext);
+			$ret                = $this->_edithtml->load($this->_tmpResponse);
+			foreach ($ret->find("text") as $strong) {
+				if (trim($strong->innertext) == "Features") {
+					$dofeature = true;
 				}
-			} else {
-				if ($features == true) {
-					$this->_res['extras'][] = trim($strong->innertext);
+				if ($dofeature != true) {
+					if (trim($strong->innertext) != "&nbsp;") {
+						$this->_res['productinfo'][] = trim($strong->innertext);
+					}
+				} else {
+					if ($features == true) {
+						$this->_res['extras'][] = trim($strong->innertext);
+					}
 				}
 			}
-		}
 
-		array_shift($this->_res['productinfo']);
-		array_shift($this->_res['productinfo']);
-		$this->_res['productinfo'] = array_chunk($this->_res['productinfo'], 2, false);
+			array_shift($this->_res['productinfo']);
+			array_shift($this->_res['productinfo']);
+			$this->_res['productinfo'] = array_chunk($this->_res['productinfo'], 2, false);
 		}
 		$this->_edithtml->clear();
 		unset($this->_tmpResponse);
@@ -287,29 +288,29 @@ class ADE
 			return false;
 		} else {
 			$this->_html->load($this->_response);
-			if ($ret = $this->_html->find("a.boxcover", 0)){
-					$title = $ret->title;
-					$title = preg_replace('/XXX/', '', $title);
-					$title = preg_replace('/\(.*?\)|[-._]/i', ' ', $title);
-					$ret = (string)trim($ret->href);
-					similar_text(strtolower($this->searchTerm), strtolower($title), $p);
-					if ($p >= 90) {
-						$this->found = true;
-						$this->_urlFound = $ret;
-						$this->_directUrl = self::ADE . $ret;
-						$this->_title = trim($title);
-						unset($ret);
-						$this->_html->clear();
-						$this->getUrl($this->_urlFound);
-						$this->_html->load($this->_response);
-					} else {
-						$this->found = false;
-
-						return false;
-					}
+			if ($ret = $this->_html->find("a.boxcover", 0)) {
+				$title = $ret->title;
+				$title = preg_replace('/XXX/', '', $title);
+				$title = preg_replace('/\(.*?\)|[-._]/i', ' ', $title);
+				$ret   = (string)trim($ret->href);
+				similar_text(strtolower($this->searchTerm), strtolower($title), $p);
+				if ($p >= 90) {
+					$this->found      = true;
+					$this->_urlFound  = $ret;
+					$this->_directUrl = self::ADE . $ret;
+					$this->_title     = trim($title);
+					unset($ret);
+					$this->_html->clear();
+					$this->getUrl($this->_urlFound);
+					$this->_html->load($this->_response);
 				} else {
+					$this->found = false;
+
 					return false;
 				}
+			} else {
+				return false;
+			}
 		}
 		return false;
 	}
@@ -353,10 +354,10 @@ class ADE
 	 */
 	public function getAll()
 	{
-		$results = array();
-		if(isset($this->_directUrl)){
-		$results['directurl'] = $this->_directUrl;
-		$results['title'] = $this->_title;
+		$results = [];
+		if (isset($this->_directUrl)) {
+			$results['directurl'] = $this->_directUrl;
+			$results['title']     = $this->_title;
 		}
 		if (is_array($this->sypnosis(true))) {
 			$results = array_merge($results, $this->sypnosis(true));

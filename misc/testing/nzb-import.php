@@ -5,7 +5,7 @@ $n = PHP_EOL;
 // Print usage.
 if (count($argv) !== 6) {
 	exit(
-		'This will import NZB files(.nzb or .nzb.gz), into your nZEDb site from a folder recursively(it will go down into sub-folders).'. $n .
+		'This will import NZB files(.nzb or .nzb.gz), into your nZEDb site from a folder recursively(it will go down into sub-folders).' . $n .
 		'Please use arg5, something sensible like 100k, if you have millions of NZB files the initial scan will be VERY slow otherwise.' . $n . $n .
 		'Usage: ' . $n .
 		$_SERVER['_'] . ' ' . __FILE__ . ' arg1 arg2 arg3 arg4 arg5' . $n . $n .

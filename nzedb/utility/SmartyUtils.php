@@ -26,7 +26,7 @@
  *
  * @return bool|string
  */
-function release_flag ($x, $t)
+function release_flag($x, $t)
 {
 	$y = $d = "";
 

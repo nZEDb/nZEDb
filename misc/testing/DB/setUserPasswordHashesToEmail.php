@@ -44,7 +44,7 @@ $update = $pdo->Prepare('UPDATE users SET password = :password WHERE id = :id');
 
 $Users = new \Users(['Settings' => $pdo]);
 
-foreach($users as $user) {
+foreach ($users as $user) {
 	if (needUpdate($user)) {
 		$hash = $Users->hashPassword($user['email']);
 		if ($hash !== false) {

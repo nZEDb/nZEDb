@@ -1,13 +1,14 @@
 <?php
 
 use \nzedb\processing\PostProcess;
+use \nzedb\utility\Utility;
 
 /**
  * Gets information contained within the NZB.
  *
  * Class NZBContents
  */
-Class NZBContents
+class NZBContents
 {
 	/**
 	 * @var nzedb\db\Settings
@@ -97,7 +98,7 @@ Class NZBContents
 		$this->pp = (
 			$options['PostProcess'] instanceof PostProcess
 				? $options['PostProcess']
-				: new \PostProcess(['Echo' => $this->echooutput, 'Nfo' => $this->nfo, 'Settings' => $this->pdo])
+				: new PostProcess(['Echo' => $this->echooutput, 'Nfo' => $this->nfo, 'Settings' => $this->pdo])
 		);
 		$this->nzb = ($options['NZB'] instanceof \NZB ? $options['NZB'] : new \NZB($this->pdo));
 
@@ -230,8 +231,7 @@ Class NZBContents
 						!preg_match('/\.(apk|bat|bmp|cbr|cbz|cfg|css|csv|cue|db|dll|doc|epub|exe|gif|htm|ico|idx|ini' .
 							'|jpg|lit|log|m3u|mid|mobi|mp3|nib|nzb|odt|opf|otf|par|par2|pdf|psd|pps|png|ppt|r\d{2,4}' .
 							'|rar|sfv|srr|sub|srt|sql|rom|rtf|tif|torrent|ttf|txt|vb|vol\d+\+\d+|wps|xml|zip)/i',
-							$subject))
-					{
+							$subject)) {
 						$hiddenID = (string)$nzbcontents->segments->segment;
 						$hiddenNFO = true;
 					}
@@ -276,7 +276,7 @@ Class NZBContents
 	 *
 	 * @access public
 	 */
-	public function LoadNZB(&$guid)
+	public function LoadNZB($guid)
 	{
 		// Fetch the NZB location using the GUID.
 		$nzbPath = $this->nzb->NZBPath($guid);
@@ -287,7 +287,7 @@ Class NZBContents
 			return false;
 		}
 
-		$nzbContents = nzedb\utility\Utility::unzipGzipFile($nzbPath);
+		$nzbContents = Utility::unzipGzipFile($nzbPath);
 		if (!$nzbContents) {
 			if ($this->echooutput) {
 				echo

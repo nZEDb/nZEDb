@@ -115,14 +115,14 @@ class ProcessReleases
 		$this->releaseImage = ($options['ReleaseImage'] instanceof \ReleaseImage ? $options['ReleaseImage'] : new \ReleaseImage($this->pdo));
 
 		$this->tablePerGroup = ($this->pdo->getSetting('tablepergroup') == 0 ? false : true);
-		$this->collectionDelayTime = ($this->pdo->getSetting('delaytime')!= '' ? (int)$this->pdo->getSetting('delaytime') : 2);
-		$this->crossPostTime = ($this->pdo->getSetting('crossposttime')!= '' ? (int)$this->pdo->getSetting('crossposttime') : 2);
+		$this->collectionDelayTime = ($this->pdo->getSetting('delaytime') != '' ? (int)$this->pdo->getSetting('delaytime') : 2);
+		$this->crossPostTime = ($this->pdo->getSetting('crossposttime') != '' ? (int)$this->pdo->getSetting('crossposttime') : 2);
 		$this->releaseCreationLimit = ($this->pdo->getSetting('maxnzbsprocessed') != '' ? (int)$this->pdo->getSetting('maxnzbsprocessed') : 1000);
-		$this->completion = ($this->pdo->getSetting('releasecompletion')!= '' ? (int)$this->pdo->getSetting('releasecompletion') : 0);
+		$this->completion = ($this->pdo->getSetting('releasecompletion') != '' ? (int)$this->pdo->getSetting('releasecompletion') : 0);
 		$this->processRequestIDs = (int)$this->pdo->getSetting('lookup_reqids');
 		if ($this->completion > 100) {
 			$this->completion = 100;
-			echo $this->pdo->log->error(PHP_EOL . 'You have an invalid setting for completion. It must be lower than 100.');
+			echo $this->pdo->log->error(PHP_EOL . 'You have an invalid setting for completion. It cannot be higher than 100.');
 		}
 	}
 
@@ -258,7 +258,7 @@ class ProcessReleases
 		if ($releases && $releases->rowCount()) {
 			$total = $releases->rowCount();
 			foreach ($releases as $release) {
-				$catId = $cat->determineCategory($release[$type], $release['group_id']);
+				$catId = $cat->determineCategory($release['group_id'], $release[$type]);
 				$this->pdo->queryExec(
 					sprintf('UPDATE releases SET categoryid = %d, iscategorized = 1 WHERE id = %d', $catId, $release['id'])
 				);
@@ -588,7 +588,7 @@ class ProcessReleases
 							'postdate' => $this->pdo->escapeString($collection['date']),
 							'fromname' => $fromName,
 							'size' => $collection['filesize'],
-							'categoryid' => $categorize->determineCategory($cleanedName, $collection['group_id']),
+							'categoryid' => $categorize->determineCategory($collection['group_id'], $cleanedName),
 							'isrenamed' => ($properName === true ? 1 : 0),
 							'reqidstatus' => ($isReqID === true ? 1 : 0),
 							'preid' => ($preID === false ? 0 : $preID),
@@ -1004,7 +1004,7 @@ class ProcessReleases
 		);
 
 		if ($collections instanceof \Traversable) {
-			foreach($collections as $collection) {
+			foreach ($collections as $collection) {
 				$deleted++;
 				$this->pdo->queryExec(
 					sprintf('

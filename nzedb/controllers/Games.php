@@ -6,11 +6,11 @@ use nzedb\db\Settings;
 
 class Games
 {
-	const REQID_FOUND 		= 1; // Request ID found and release was updated.
-	const REQID_NO_LOCAL	= -1; // Request ID was not found via local lookup.
-	const REQID_NONE		= -3; // The Request ID was not found locally or via web lookup.
-	const REQID_UNPROCESSED	= 0; // Release has not been processed.
-	const REQID_ZERO		= -2; // The Request ID was 0.
+	const REQID_FOUND = 1; // Request ID found and release was updated.
+	const REQID_NO_LOCAL = -1; // Request ID was not found via local lookup.
+	const REQID_NONE = -3; // The Request ID was not found locally or via web lookup.
+	const REQID_UNPROCESSED = 0; // Release has not been processed.
+	const REQID_ZERO = -2; // The Request ID was 0.
 
 	/**
 	 * @var string
@@ -90,7 +90,7 @@ class Games
 	/**
 	 * @param array $options Class instances / Echo to cli.
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		$defaults = [
 			'Echo'     => false,
@@ -158,7 +158,7 @@ class Games
 		return ($res === false ? 0 : $res["num"]);
 	}
 
-	public function getGamesCount($cat, $maxage = -1, $excludedcats = array())
+	public function getGamesCount($cat, $maxage = -1, $excludedcats = [])
 	{
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
@@ -185,7 +185,7 @@ class Games
 		return ($res === false ? 0 : $res["num"]);
 	}
 
-	public function getGamesRange($cat, $start, $num, $orderby, $maxage = -1, $excludedcats = array())
+	public function getGamesRange($cat, $start, $num, $orderby, $maxage = -1, $excludedcats = [])
 	{
 		$browseby = $this->getBrowseBy();
 
@@ -276,21 +276,21 @@ class Games
 		}
 		$ordersort = (isset($orderArr[1]) && preg_match('/^asc|desc$/i', $orderArr[1])) ? $orderArr[1] : 'desc';
 
-		return array($orderfield, $ordersort);
+		return [$orderfield, $ordersort];
 	}
 
 	public function getGamesOrdering()
 	{
-		return array(
+		return [
 			'title_asc', 'title_desc', 'posted_asc', 'posted_desc', 'size_asc', 'size_desc',
 			'files_asc', 'files_desc', 'stats_asc', 'stats_desc',
 			'releasedate_asc', 'releasedate_desc', 'genre_asc', 'genre_desc'
-		);
+		];
 	}
 
 	public function getBrowseByOptions()
 	{
-		return array('title' => 'title', 'genre' => 'genre_id', 'year' => 'year');
+		return ['title' => 'title', 'genre' => 'genre_id', 'year' => 'year'];
 	}
 
 	public function getBrowseBy()
@@ -316,7 +316,7 @@ class Games
 	public function makeFieldLinks($data, $field)
 	{
 		$tmpArr = explode(', ', $data[$field]);
-		$newArr = array();
+		$newArr = [];
 		$i = 0;
 		foreach ($tmpArr as $ta) {
 			// Only use first 6.
@@ -381,7 +381,7 @@ class Games
 		$gen = new \Genres(['Settings' => $this->pdo]);
 		$ri = new \ReleaseImage($this->pdo);
 
-		$con = array();
+		$con = [];
 
 		// Process Steam first before giantbomb
 		// Steam has more details
@@ -390,7 +390,7 @@ class Games
 		$this->_classUsed = "steam";
 		$this->_getGame->cookie = $this->cookie;
 		$this->_getGame->searchTerm = $gameInfo['title'];
-		if($this->_getGame->search() !== false){
+		if ($this->_getGame->search() !== false) {
 			$this->_gameResults = $this->_getGame->getAll();
 		}
 		if (count($this->_gameResults) < 1) {
@@ -417,10 +417,10 @@ class Games
 				return false;
 			}
 		}
-		if(empty($this->_gameResults['title'])){
+		if (empty($this->_gameResults['title'])) {
 			return false;
 		}
-		if(!is_array($this->_gameResults)){
+		if (!is_array($this->_gameResults)) {
 			return false;
 		}
 		if (count($this->_gameResults) > 1) {
@@ -587,7 +587,7 @@ class Games
 		}
 		// Load genres.
 		$defaultGenres = $gen->getGenres(\Genres::GAME_TYPE);
-		$genreassoc = array();
+		$genreassoc = [];
 		foreach ($defaultGenres as $dg) {
 			$genreassoc[$dg['id']] = strtolower($dg['title']);
 		}
@@ -609,15 +609,15 @@ class Games
 		if (empty($con['title'])) {
 			$con['title'] = $gameInfo['title'];
 		}
-		if(!isset($con['releasedate'])){
-		$con['releasedate'] = "";
+		if (!isset($con['releasedate'])) {
+			$con['releasedate'] = "";
 		}
 
 		if ($con['releasedate'] == "''") {
 			$con['releasedate'] = "";
 		}
-		if(!isset($con['review'])){
-		$con['review'] = 'No Review';
+		if (!isset($con['review'])) {
+			$con['review'] = 'No Review';
 		}
 		$con['classused'] = $this->_classUsed;
 
@@ -703,17 +703,25 @@ class Games
 					$this->pdo->log->primary($con['title'])
 				);
 			}
-			if($con['cover'] === 1){
-			$con['cover'] = $ri->saveImage($gamesId, $con['coverurl'], $this->imgSavePath, 250, 250);
+			if ($con['cover'] === 1) {
+				$con['cover'] = $ri->saveImage($gamesId,
+											   $con['coverurl'],
+											   $this->imgSavePath,
+											   250,
+											   250);
 			}
-			if($con['backdrop'] === 1){
-			$con['backdrop'] = $ri->saveImage($gamesId . '-backdrop', $con['backdropurl'], $this->imgSavePath, 1920, 1024);
+			if ($con['backdrop'] === 1) {
+				$con['backdrop'] = $ri->saveImage($gamesId . '-backdrop',
+												  $con['backdropurl'],
+												  $this->imgSavePath,
+												  1920,
+												  1024);
 			}
 		} else {
 			if ($this->echoOutput) {
 				$this->pdo->log->doEcho(
 					$this->pdo->log->headerOver("Nothing to update: ") .
-					$this->pdo->log->primary($con['title'] . ' (PC)' )
+					$this->pdo->log->primary($con['title'] . ' (PC)')
 				);
 			}
 		}
@@ -733,10 +741,8 @@ class Games
 	{
 		$obj = new \GiantBomb($this->publicKey);
 		try {
-			$fields = array(
-			    "api_detail_url", "name"
-			);
-			$result = json_decode(json_encode($obj->search($title, $fields, 10, 1, array("game"))), true);
+			$fields = ["api_detail_url", "name"];
+			$result = json_decode(json_encode($obj->search($title, $fields, 10, 1, ["game"])), true);
 			// We hit the maximum request.
 			if (empty($result)) {
 				$this->maxHitRequest = true;
@@ -782,11 +788,11 @@ class Games
 	{
 		$obj = new \GiantBomb($this->publicKey);
 		try {
-			$fields = array(
+			$fields = [
 				"deck", "description", "original_game_rating", "api_detail_url", "image", "genres",
 				"name", "publishers", "original_release_date", "reviews",
 				"site_detail_url"
-			);
+			];
 			$result = json_decode(json_encode($obj->game($this->_gameID, $fields)), true);
 			$result = $result['results'];
 		} catch (Exception $e) {
@@ -818,7 +824,6 @@ class Games
 			}
 
 			foreach ($res as $arr) {
-
 				// Reset maxhitrequest
 				$this->maxHitRequest = false;
 				$startTime = microtime(true);
@@ -829,7 +834,7 @@ class Games
 					if ($this->echoOutput) {
 						$this->pdo->log->doEcho(
 							$this->pdo->log->headerOver('Looking up: ') .
-							$this->pdo->log->primary($gameInfo['title'] . ' (PC)' )
+							$this->pdo->log->primary($gameInfo['title'] . ' (PC)')
 						);
 					}
 
@@ -843,9 +848,9 @@ class Games
 							$gameId = -2;
 
 						// Leave gamesinfo_id 0 to parse again
-						if($this->maxHitRequest === true){
-							$gameId = 0;
-						}
+							if ($this->maxHitRequest === true) {
+								$gameId = 0;
+							}
 						}
 
 					} else {
@@ -895,7 +900,7 @@ class Games
 			preg_replace('/\sMulti\d?\s/i', '', $releasename), $matches)) {
 
 			// Replace dots, underscores, colons, or brackets with spaces.
-			$result = array();
+			$result = [];
 			$result['title'] = str_replace(' RF ', ' ', preg_replace('/(\-|\:|\.|_|\%20|\[|\])/', ' ', $matches['title']));
 			// Replace any foreign words at the end of the release
 			$result['title'] = preg_replace('/(brazilian|chinese|croatian|danish|deutsch|dutch|english|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|latin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish)$/i', '', $result['title']);
@@ -915,7 +920,7 @@ class Games
 					$result['title'] = $dlc[0];
 				}
 			}
-			if(empty($result['title'])){
+			if (empty($result['title'])) {
 				return false;
 			}
 			$browseNode = '94';
@@ -983,9 +988,9 @@ class Games
 					break;
 				}
 			}
-		if(empty($genreName)){
-		$genreName = $tmpGenre[0];
-		}
+			if (empty($genreName)) {
+				$genreName = $tmpGenre[0];
+			}
 		} else {
 			$genreName = $genre;
 		}

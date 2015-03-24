@@ -37,8 +37,9 @@ class ConsoleTools
 	 */
 	public function overWriteHeader($message, $reset = False)
 	{
-		if ($reset)
+		if ($reset) {
 			$this->lastMessageLength = 0;
+		}
 
 		echo str_repeat(chr(8), $this->lastMessageLength);
 		echo str_repeat(" ", $this->lastMessageLength);

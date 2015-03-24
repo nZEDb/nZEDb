@@ -7,7 +7,7 @@ require_once nZEDb_LIBS . 'rarinfo/par2info.php';
 use nzedb\db\Settings;
 use nzedb\utility\Utility;
 
-Class ProcessAdditional
+class ProcessAdditional
 {
 	/**
 	 * How many compressed (rar/zip) files to check.
@@ -420,7 +420,7 @@ Class ProcessAdditional
 			);
 		}
 
-		$this->_showCLIReleaseID = (PHP_BINARY . ' ' . __DIR__ . DS .  'ProcessAdditional.php ReleaseID: ');
+		$this->_showCLIReleaseID = (PHP_BINARY . ' ' . __DIR__ . DS . 'ProcessAdditional.php ReleaseID: ');
 
 		// Maximum amount of releases to fetch per run.
 		$this->_queryLimit =
@@ -494,7 +494,7 @@ Class ProcessAdditional
 	 */
 	public function start($groupID = '', $guidChar = '')
 	{
-		$this->_setMainTempPath($groupID, $guidChar);
+		$this->_setMainTempPath($guidChar, $groupID);
 
 		// Fetch all the releases to work on.
 		$this->_fetchReleases($groupID, $guidChar);
@@ -526,7 +526,7 @@ Class ProcessAdditional
 	 *
 	 * @throws ProcessAdditionalException
 	 */
-	protected function _setMainTempPath(&$groupID = '', &$guidChar)
+	protected function _setMainTempPath(&$guidChar, &$groupID = '')
 	{
 		// Set up the temporary files folder location.
 		$this->_mainTmpPath = (string)$this->pdo->getSetting('tmpunrarpath');
@@ -713,8 +713,8 @@ Class ProcessAdditional
 	/**
 	 * Deletes files and folders recursively.
 	 *
-	 * @param string $path           Path to a folder or file.
-	 * @param array  $ignoredFolders Array with paths to folders to ignore.
+	 * @param string 	$path          Path to a folder or file.
+	 * @param string[] $ignoredFolders Array with paths to folders to ignore.
 	 *
 	 * @void
 	 * @access protected
@@ -1744,7 +1744,7 @@ Class ProcessAdditional
 									} else if ($ext === 'FLAC') {
 										$newCat = \Category::CAT_MUSIC_LOSSLESS;
 									} else {
-										$newCat = $this->_categorize->determineCategory($newName, $rQuery['group_id']);
+										$newCat = $this->_categorize->determineCategory($rQuery['group_id'], $newName);
 									}
 
 									$newTitle = $this->pdo->escapeString(substr($newName, 0, 255));
@@ -1954,7 +1954,7 @@ Class ProcessAdditional
 				$this->pdo->getSetting('ffmpegpath') .
 				'" -i "' .
 				$fileLocation .
-				'" -ss ' . ($time === '' ? '00:00:03.00' : $time)  .
+				'" -ss ' . ($time === '' ? '00:00:03.00' : $time) .
 				' -vframes 1 -loglevel quiet -y "' .
 				$fileName .
 				'"'
@@ -2015,12 +2015,14 @@ Class ProcessAdditional
 					$newMethod = true;
 
 					// Get the lowest time we can start making the video at based on how many seconds the admin wants the video to be.
-					if ($numbers[1] <= $this->_ffMPEGDuration) { // If the clip is shorter than the length we want.
+					if ($numbers[1] <= $this->_ffMPEGDuration) {
+						// If the clip is shorter than the length we want.
 
 						// The lowest we want is 0.
 						$lowestLength = '00:00:00.00';
 
-					} else { // If the clip is longer than the length we want.
+					} else {
+						// If the clip is longer than the length we want.
 
 						// The lowest we want is the the difference between the max video length and our wanted total time.
 						$lowestLength = ($numbers[1] - $this->_ffMPEGDuration);
@@ -2246,7 +2248,7 @@ Class ProcessAdditional
 			if ($foundName === false) {
 				$this->_release['textstring'] = $file['name'];
 				$this->_release['releaseid'] = $this->_release['id'];
-				if ($this->_nameFixer->checkName($this->_release, ($this->_echoCLI ? 1 : 0), 'PAR2, ', 1, 1) === true) {
+				if ($this->_nameFixer->checkName($this->_release, ($this->_echoCLI ? true : false), 'PAR2, ', 1, 1) === true) {
 					$foundName = true;
 				}
 			}
@@ -2308,7 +2310,7 @@ Class ProcessAdditional
 	/**
 	 * Try to get a title from a Linux_2rename.sh file for alt.binaries.u4e group.
 	 *
-	 * @param $fileLocation
+	 * @param string $fileLocation
 	 */
 	protected function _processU4ETitle($fileLocation)
 	{
@@ -2330,7 +2332,7 @@ Class ProcessAdditional
 					}
 
 					// Get a new category ID.
-					$newCategory = $this->_categorize->determineCategory($newName, $this->_release['group_id']);
+					$newCategory = $this->_categorize->determineCategory($this->_release['group_id'], $newName);
 
 					$newTitle = $this->pdo->escapeString(substr($newName, 0, 255));
 					// Update the release with the data.
@@ -2522,4 +2524,6 @@ Class ProcessAdditional
 	}
 }
 
-class ProcessAdditionalException extends \Exception { }
+class ProcessAdditionalException extends \Exception
+{
+}

@@ -30,9 +30,9 @@ class TmuxRun extends Tmux
 	// main switch for running tmux panes
 	public function runPane($cmdParam, &$runVar)
 	{
-		switch ((int) $runVar['constants']['sequential']) {
+		switch ((int)$runVar['constants']['sequential']) {
 			case 0:
-				switch ((string) $cmdParam) {
+				switch ((string)$cmdParam) {
 					case 'amazon':
 						$this->_runAmazon($runVar);
 						break;
@@ -195,10 +195,20 @@ class TmuxRun extends Tmux
 	{
 		switch (true) {
 			case $runVar['settings']['post_amazon'] == 1 && ($runVar['counts']['now']['processmusic'] > 0
-					|| $runVar['counts']['now']['processbooks'] > 0 || $runVar['counts']['now']['processconsole'] > 0
-						|| $runVar['counts']['now']['processgames'] > 0 || $runVar['counts']['now']['processxxx'] > 0)
-							&& ($runVar['settings']['processbooks'] == 1 || $runVar['settings']['processmusic'] == 1
-								|| $runVar['settings']['processgames'] == 1  || $runVar['settings']['processxxx'] == 1):
+															 ||
+															 $runVar['counts']['now']['processbooks'] >
+															 0 ||
+															 $runVar['counts']['now']['processconsole'] >
+															 0
+															 ||
+															 $runVar['counts']['now']['processgames'] >
+															 0 ||
+															 $runVar['counts']['now']['processxxx'] >
+															 0)
+				 && ($runVar['settings']['processbooks'] == 1 ||
+					 $runVar['settings']['processmusic'] == 1
+					 || $runVar['settings']['processgames'] == 1 ||
+					 $runVar['settings']['processxxx'] == 1):
 
 				$log = $this->writelog($runVar['panes']['two'][2]);
 				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:2.2 ' \

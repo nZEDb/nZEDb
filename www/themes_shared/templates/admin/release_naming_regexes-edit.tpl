@@ -11,7 +11,7 @@
 				<input type="text" id="group_regex" name="group_regex" value="{$regex.group_regex|escape:html}" />
 				<div class="hint">
 					Regex to match against a group or multiple groups.<br />
-					Delimiters are already added, and PCRE_CASELESS is added after for case insensitivity.
+					Delimiters are already added, and PCRE_CASELESS is added after for case insensitivity.<br />
 					An example of matching a single group: alt\.binaries\.example<br />
 					An example of matching multiple groups: alt\.binaries.*
 				</div>
@@ -27,8 +27,9 @@
 					To make the regex case insensitive, add i after the last delimiter.<br />
 					You MUST include at least one regex capture group.<br />
 					You MUST name your regex capture groups (the ones you want included).<br />
-					The named capture groups will be concatenated into a string.
+					The named capture groups will be concatenated into a string.<br />
 					Capture groups are sorted alphabetically (by capture group name) when concatenating the string.<br />
+					Capture groups named 'reqid' and 'parts' are ignored.
 				</div>
 			</td>
 		</tr>

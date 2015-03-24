@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--[if lt IE 7]>
+<html class="no-js lt-ie9 lt-ie8 lt-ie7">
+<![endif]-->
+<!--[if IE 7]>
+<html class="no-js lt-ie9 lt-ie8">
+<![endif]-->
+<!--[if IE 8]>
+<html class="no-js lt-ie9">
+<![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>View TV Series 30 for 30 - An indexer</title>
+<meta name="keywords" content="view,series,tv,show,description,details,usenet,nzbs,cms,community">
+<meta name="description" content="View 30 for 30 Series - A usenet indexing website">
+<meta name="application-name" content="nZEDb-v">
+<meta name="viewport" content="width=device-width">
+<script type="text/javascript">
+//<![CDATA[
+try{if (!window.CloudFlare) {var CloudFlare=[{verbose:0,p:1413332101,byc:0,owlid:"cf",bag2:1,mirage2:0,oracle:0,paths:{cloudflare:"/cdn-cgi/nexp/dok2v=1613a3a185/"},atok:"857e6523f2740cd0fb357071d2a61183",petok:"e0d5b70f6fc19e75ad2b2309667ffec6e8993408-1413832828-1800",zone:"snapnzb.me",rocket:"a",apps:{}}];document.write('<script type="text/javascript" src="//ajax.cloudflare.com/cdn-cgi/nexp/dok2v=919620257c/cloudflare.min.js"><'+'\/script>');}}catch(e){};
+//]]>
+</script>
+<link rel="alternate" type="application/rss+xml" title="snapNZB Full Rss Feed" href="/rss?t=0&amp;dl=1&amp;i=20&amp;r=004343155cedbe690be75a2009934d9d">
+<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+<link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/3.2.0/css/font-awesome.css" rel="stylesheet" media="screen">
+<link href="/themes_shared/styles/jquery.qtip.css" rel="stylesheet" media="screen">
+<link href="/themes_shared/styles/posterwall.css" rel="stylesheet" type="text/css" media="screen"/>
+<link href="/themes/Default/styles/style.css" rel="stylesheet" media="screen">
+<style>select{min-width:120px;width:auto;}input{width:180px;}</style>
+<link rel="shortcut icon" href="/themes_shared/images/favicon.ico">
+<!--[if lt IE 9]>
+<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<script>window.html5 || document.write('<script src="/themes_shared/scripts/html5shiv.js"><\/script>')</script>
+<![endif]-->
+<script type="text/rocketscript"> /* <![CDATA[ */ var WWW_TOP = ""; var SERVERROOT = "http://snapnzb.me/"; var UID = "20"; var RSSTOKEN = "004343155cedbe690be75a2009934d9d"; /* ]]> */ </script>
+</head>
+<body>
+<div id="statusbar"><a href="/profile">Profile</a> | <a href="/logout">Logout</a></div>
+<div id="logo">
+<a class="logolink" title="snapNZB Logo" href="/"><img class="logoimg" alt="snapNZB Logo" src="/themes_shared/images/clearlogo.png"/></a>
+<ul><li class="menu_main">
+<h2>Menu</h2>
+<ul>
+<li class="mmenu"><a title="View Your Queue." href="http://snapnzb.me/queue">My Queue</a></li>
+<li class="mmenu"><a title="Search for releases." href="http://snapnzb.me/search">Advanced Search</a></li>
+<li class="mmenu"><a title="Newest Releases Poster Wall" href="http://snapnzb.me/newposterwall">New Releases</a></li>
+<li class="mmenu"><a title="Administrator messages for users." href="http://snapnzb.me/content">Contents page</a></li>
+<li class="mmenu"><a title="Movies currently in theatres." href="http://snapnzb.me/upcoming">Theatres</a></li>
+<li class="mmenu"><a title="Browse TV Series." href="http://snapnzb.me/series">TV Series</a></li>
+<li class="mmenu"><a title="Browse PreDB." href="http://snapnzb.me/predb">PreDB</a></li>
+<li class="mmenu"><a title="View what's on TV." href="http://snapnzb.me/calendar">TV Calendar</a></li>
+<li class="mmenu"><a title="Browse Anime" href="http://snapnzb.me/anime">Anime</a></li>
+<li class="mmenu"><a title="Your Nzb cart." href="http://snapnzb.me/cart">My Cart</a></li>
+<li class="mmenu"><a title="Your TV shows." href="http://snapnzb.me/myshows">My Shows</a></li>
+<li class="mmenu"><a title="Your Movie Wishlist." href="http://snapnzb.me/mymovies">My Movies</a></li>
+<li class="mmenu"><a title="Information on the API." href="http://snapnzb.me/apihelp">API</a></li>
+<li class="mmenu"><a title="RSS Feeds." href="http://snapnzb.me/rss">RSS</a></li>
+<li class="mmenu"><a title="Browse Forum." href="http://snapnzb.me/forum">Forum</a></li>
+</ul>
+</li>
+</ul>
+<h1><a href="/">snapNZB</a></h1>
+<p><em>We find the NZB</em></p>
+</div>
+<hr/>
+<div id="header">
+<div id="menu">
+<div id="menucontainer">
+<div id="menusearchlink">
+<form id="headsearch_form" action="/search/" method="get">
+<div class="gobutton" title="Submit search"><input id="headsearch_go" type="submit" value="" tabindex="3"/></div>
+<label style="display:none;" for="headcat">Search Category</label>
+<select id="headcat" name="t" tabindex="2">
+<option class="grouping" value="-1">All</option>
+<option class="grouping" value="1000">Console</option>
+<option value="1110">&nbsp;&nbsp;3DS</option>
+<option value="1010">&nbsp;&nbsp;NDS</option>
+<option value="1090">&nbsp;&nbsp;Other</option>
+<option value="1120">&nbsp;&nbsp;PS Vita</option>
+<option value="1080">&nbsp;&nbsp;PS3</option>
+<option value="1180">&nbsp;&nbsp;PS4</option>
+<option value="1020">&nbsp;&nbsp;PSP</option>
+<option value="1030">&nbsp;&nbsp;Wii</option>
+<option value="1130">&nbsp;&nbsp;WiiU</option>
+<option value="1060">&nbsp;&nbsp;WiiWare/VC</option>
+<option value="1070">&nbsp;&nbsp;XBOX 360 DLC</option>
+<option value="1040">&nbsp;&nbsp;Xbox</option>
+<option value="1050">&nbsp;&nbsp;Xbox 360</option>
+<option value="1140">&nbsp;&nbsp;Xbox One</option>
+<option class="grouping" value="2000">Movies</option>
+<option value="2050">&nbsp;&nbsp;3D</option>
+<option value="2060">&nbsp;&nbsp;BluRay</option>
+<option value="2070">&nbsp;&nbsp;DVD</option>
+<option value="2010">&nbsp;&nbsp;Foreign</option>
+<option value="2040">&nbsp;&nbsp;HD</option>
+<option value="2020">&nbsp;&nbsp;Other</option>
+<option value="2030">&nbsp;&nbsp;SD</option>
+<option value="2080">&nbsp;&nbsp;WEBDL</option>
+<option class="grouping" value="3000">Audio</option>
+<option value="3030">&nbsp;&nbsp;Audiobook</option>
+<option value="3060">&nbsp;&nbsp;Foreign</option>
+<option value="3040">&nbsp;&nbsp;Lossless</option>
+<option value="3010">&nbsp;&nbsp;MP3</option>
+<option value="3050">&nbsp;&nbsp;Other</option>
+<option value="3020">&nbsp;&nbsp;Video</option>
+<option class="grouping" value="4000">PC</option>
+<option value="4010">&nbsp;&nbsp;0day</option>
+<option value="4050">&nbsp;&nbsp;Games</option>
+<option value="4020">&nbsp;&nbsp;ISO</option>
+<option value="4030">&nbsp;&nbsp;Mac</option>
+<option value="4070">&nbsp;&nbsp;Phone-Android</option>
+<option value="4060">&nbsp;&nbsp;Phone-IOS</option>
+<option value="4040">&nbsp;&nbsp;Phone-Other</option>
+<option class="grouping" value="5000">TV</option>
+<option value="5070">&nbsp;&nbsp;Anime</option>
+<option value="5080">&nbsp;&nbsp;Documentary</option>
+<option value="5020">&nbsp;&nbsp;Foreign</option>
+<option value="5040">&nbsp;&nbsp;HD</option>
+<option value="5050">&nbsp;&nbsp;Other</option>
+<option value="5030">&nbsp;&nbsp;SD</option>
+<option value="5060">&nbsp;&nbsp;Sport</option>
+<option value="5010">&nbsp;&nbsp;WEB-DL</option>
+<option class="grouping" value="6000">XXX</option>
+<option value="6010">&nbsp;&nbsp;DVD</option>
+<option value="6060">&nbsp;&nbsp;Imageset</option>
+<option value="6050">&nbsp;&nbsp;Other</option>
+<option value="6070">&nbsp;&nbsp;Packs</option>
+<option value="6020">&nbsp;&nbsp;WMV</option>
+<option value="6030">&nbsp;&nbsp;XviD</option>
+<option value="6040">&nbsp;&nbsp;x264</option>
+<option class="grouping" value="7000">Other</option>
+<option value="7020">&nbsp;&nbsp;Hashed</option>
+<option value="7010">&nbsp;&nbsp;Misc</option>
+<option class="grouping" value="8000">Books</option>
+<option value="8020">&nbsp;&nbsp;Comics</option>
+<option value="8010">&nbsp;&nbsp;Ebook</option>
+<option value="8060">&nbsp;&nbsp;Foreign</option>
+<option value="8030">&nbsp;&nbsp;Magazines</option>
+<option value="8050">&nbsp;&nbsp;Other</option>
+<option value="8040">&nbsp;&nbsp;Technical</option>
+</select>
+<label style="display:none;" for="headsearch">Search Text</label>
+<input id="headsearch" name="search" value="Enter keywords" style="width:85px;" type="text" tabindex="1"/>
+</form>
+</div>
+<div id="menulink">
+<ul>
+<li><a title="Browse Console" href="/console">Console</a>
+<ul>
+<li><a title="Browse 3DS" href="/console?t=1110">3DS</a></li>
+<li><a title="Browse NDS" href="/console?t=1010">NDS</a></li>
+<li><a title="Browse Other" href="/console?t=1090">Other</a></li>
+<li><a title="Browse PS Vita" href="/console?t=1120">PS Vita</a></li>
+<li><a title="Browse PS3" href="/console?t=1080">PS3</a></li>
+<li><a title="Browse PS4" href="/console?t=1180">PS4</a></li>
+<li><a title="Browse PSP" href="/console?t=1020">PSP</a></li>
+<li><a title="Browse Wii" href="/console?t=1030">Wii</a></li>
+<li><a title="Browse WiiU" href="/console?t=1130">WiiU</a></li>
+<li><a title="Browse WiiWare/VC" href="/console?t=1060">WiiWare/VC</a></li>
+<li><a title="Browse XBOX 360 DLC" href="/console?t=1070">XBOX 360 DLC</a></li>
+<li><a title="Browse Xbox" href="/console?t=1040">Xbox</a></li>
+<li><a title="Browse Xbox 360" href="/console?t=1050">Xbox 360</a></li>
+<li><a title="Browse Xbox One" href="/console?t=1140">Xbox One</a></li>
+</ul>
+</li>
+<li><a title="Browse Movies" href="/movies">Movies</a>
+<ul>
+<li><a title="Browse 3D" href="/movies?t=2050">3D</a></li>
+<li><a title="Browse BluRay" href="/movies?t=2060">BluRay</a></li>
+<li><a title="Browse DVD" href="/movies?t=2070">DVD</a></li>
+<li><a title="Browse Foreign" href="/movies?t=2010">Foreign</a></li>
+<li><a title="Browse HD" href="/movies?t=2040">HD</a></li>
+<li><a title="Browse Other" href="/movies?t=2020">Other</a></li>
+<li><a title="Browse SD" href="/movies?t=2030">SD</a></li>
+<li><a title="Browse WEBDL" href="/movies?t=2080">WEBDL</a></li>
+</ul>
+</li>
+<li><a title="Browse Audio" href="/music">Audio</a>
+<ul>
+<li><a title="Browse Audiobook" href="/browse?t=3030">Audiobook</a></li>
+<li><a title="Browse Foreign" href="/music?t=3060">Foreign</a></li>
+<li><a title="Browse Lossless" href="/music?t=3040">Lossless</a></li>
+<li><a title="Browse MP3" href="/music?t=3010">MP3</a></li>
+<li><a title="Browse Other" href="/music?t=3050">Other</a></li>
+<li><a title="Browse Video" href="/music?t=3020">Video</a></li>
+</ul>
+</li>
+<li><a title="Browse PC" href="/games">PC</a>
+<ul>
+<li><a title="Browse 0day" href="/browse?t=4010">0day</a></li>
+<li><a title="Browse Games" href="/games">Games</a></li>
+<li><a title="Browse ISO" href="/browse?t=4020">ISO</a></li>
+<li><a title="Browse Mac" href="/browse?t=4030">Mac</a></li>
+<li><a title="Browse Phone-Android" href="/browse?t=4070">Phone-Android</a></li>
+<li><a title="Browse Phone-IOS" href="/browse?t=4060">Phone-IOS</a></li>
+<li><a title="Browse Phone-Other" href="/browse?t=4040">Phone-Other</a></li>
+</ul>
+</li>
+<li><a title="Browse TV" href="/browse?t=5000">TV</a>
+<ul>
+<li><a title="Browse Anime" href="/browse?t=5070">Anime</a></li>
+<li><a title="Browse Documentary" href="/browse?t=5080">Documentary</a></li>
+<li><a title="Browse Foreign" href="/browse?t=5020">Foreign</a></li>
+<li><a title="Browse HD" href="/browse?t=5040">HD</a></li>
+<li><a title="Browse Other" href="/browse?t=5050">Other</a></li>
+<li><a title="Browse SD" href="/browse?t=5030">SD</a></li>
+<li><a title="Browse Sport" href="/browse?t=5060">Sport</a></li>
+<li><a title="Browse WEB-DL" href="/browse?t=5010">WEB-DL</a></li>
+</ul>
+</li>
+<li class="dropdown">
+<a id="cat3" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" href="/xxx">XXX <b class="caret"></b></a>
+<ul class="dropdown-menu" role="menu" aria-labelledby="cat3">
+<li><a href="/xxx">All XXX</a></li>
+<li><a title="Browse DVD" href="/xxx?t=6010">DVD</a>
+</li>
+<li><a title="Browse Imageset" href="/xxx?t=6060">Imageset</a>
+</li>
+<li><a title="Browse Other" href="/xxx?t=6050">Other</a>
+</li>
+<li><a title="Browse Packs" href="/xxx?t=6070">Packs</a>
+</li>
+<li><a title="Browse WMV" href="/xxx?t=6020">WMV</a>
+</li>
+<li><a title="Browse XviD" href="/xxx?t=6030">XviD</a>
+</li>
+<li><a title="Browse x264" href="/xxx?t=6040">x264</a>
+</li>
+</ul>
+</li>
+<li><a title="Browse Other" href="/browse?t=7000">Other</a>
+<ul>
+<li><a title="Browse Hashed" href="/browse?t=7020">Hashed</a></li>
+<li><a title="Browse Misc" href="/browse?t=7010">Misc</a></li>
+</ul>
+</li>
+<li><a title="Browse Books" href="/books">Books</a>
+<ul>
+<li><a title="Browse Comics" href="/browse?t=8020">Comics</a></li>
+<li><a title="Browse Ebook" href="/books">Ebook</a></li>
+<li><a title="Browse Foreign" href="/browse?t=8060">Foreign</a></li>
+<li><a title="Browse Magazines" href="/browse?t=8030">Magazines</a></li>
+<li><a title="Browse Other" href="/browse?t=8050">Other</a></li>
+<li><a title="Browse Technical" href="/browse?t=8040">Technical</a></li>
+</ul>
+</li>
+<li><a title="Browse All" href="/browse">All</a>
+<ul>
+<li><a title="Browse Groups" href="/browsegroup">Groups</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<!--[if lt IE 7]>
+<p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+<![endif]-->
+<div id="page">
+<div id="content">
+<h1> 30 for 30 </h1>
+<div class="tvseriesheading">
+<img class="shadow" alt="30 for 30 Logo" src="/getimage?type=tvrage&amp;id=23111"/>
+<p>
+<b>Family - Sports</b><br/>
+<span class="descinitial">Inspired by ESPN&#039;s upcoming 30th anniversary, ESPN Films is launching 30 for 30, an unprecedented documentary series featuring 30 of today&#039;s finest storytellers who will chronicle 30 remarkable stories from the ESPN era. Each storyteller will bring their passion and point of view to their film detailing the issues and events that transformed the sports landscape since 1979. (Source: espn) Currently 0/10</span>
+</p>
+</div>
+<b>My Shows</b>: <span> &nbsp;[ <a href="/myshows/add/23722?from=%2Fseries%2F23722" class="myshows" rel="add" name="series23722" title="Add to My Shows">Add</a> ] <form id="nzb_multi_operations_form" action="get">
+<div class="nzb_multi_operations">
+<div style="padding-bottom:10px;">
+<a target="_blank" href="http://www.tvrage.com/shows/id-23722" title="View in TvRage">View in Tv Rage</a> | <a href="/rss?rage=23722&amp;dl=1&amp;i=20&amp;r=004343155cedbe690be75a2009934d9d">Rss Feed for this Series</a>
+</div>
+<small>With Selected:</small>
+<input type="button" class="nzb_multi_operations_download" value="Download NZBs"/>
+<input type="button" class="nzb_multi_operations_cart" value="Add to Cart"/>
+<input type="button" class="nzb_multi_operations_sab" value="Send to my Queue"/>
+</div>
+<a id="latest"></a>
+<table style="width:100%;" class="data highlight icons" id="browsetable">
+<tr>
+<td style="padding-top:15px;" colspan="10"><h2>Season S02</h2></td>
+</tr>
+<tr>
+<th>Ep</th>
+<th>Name</th>
+<th><input id="chkSelectAllS02" type="checkbox" name="S02" class="nzb_check_all_season"/><label for="chkSelectAllS02" style="display:none;">Select All</label></th>
+<th>Category</th>
+<th style="text-align:center;">Posted</th>
+<th>Size</th>
+<th>Files</th>
+<th>Stats</th>
+<th></th>
+</tr>
+<tr class="" id="guide617a272289881bc709399890fb82119c7a9f616">
+<td width="20" class="static">E21</td>
+<td>
+<a title="View details" href="/details/e617a272289881bc709399890fb82119c7a9f616/30.for.30.S02E21.The.Day.the.Series.Stopped.720p.HDTV.x264-BALLS">30 for 30 S02E21 The Day the Series Stopped 720p HDTV x264-BALLS</a>
+<div class="resextra">
+<div class="btns">
+<a href="/nfo/e617a272289881bc709399890fb82119c7a9f616" title="View Nfo" class="modal_nfo rndbtn" rel="nfo">Nfo</a>
+<span class="rndbtn" title="'The Day The Series Stopped (Ryan Fleck)' Aired on Oct 14, 2014">Aired 6d ago</span>
+<span class="mediainfo rndbtn" title="e617a272289881bc709399890fb82119c7a9f616">Media</span>
+</div>
+</div>
+</td>
+<td class="check"><input id="chke617a27" type="checkbox" class="nzb_check" name="S02" value="e617a272289881bc709399890fb82119c7a9f616"/></td>
+<td class="less"><a title="This series in TV > HD" href="/series/23722?t=5040">TV > HD</a></td>
+<td class="less mid" width="40" title="2014-10-15 04:32:02">5.4d</td>
+<td width="40" class="less right">2.02 GB<br/>100%</td>
+<td class="less mid">
+<a title="View file list" href="/filelist/e617a272289881bc709399890fb82119c7a9f616">50</a>
+<div class="rarfilelist">
+<img src="/themes_shared/images/icons/magnifier.png" alt="e617a272289881bc709399890fb82119c7a9f616" class="tooltip"/>
+</div>
+</td>
+<td width="40" class="less" nowrap="nowrap"><a title="View comments for 30.for.30.S02E21.The.Day.the.Series.Stopped.720p.HDTV.x264-BALLS" href="/details/e617a272289881bc709399890fb82119c7a9f616/30.for.30.S02E21.The.Day.the.Series.Stopped.720p.HDTV.x264-BALLS#comments">0 cmts</a><br/>1 grab</td>
+<td class="icons">
+<div class="icon icon_nzb"><a title="Download Nzb" href="/getnzb/e617a272289881bc709399890fb82119c7a9f616/30.for.30.S02E21.The.Day.the.Series.Stopped.720p.HDTV.x264-BALLS">&nbsp;</a></div>
+<div class="icon icon_sab" title="Send to my Queue"></div>
+<div class="icon icon_cart" title="Add to Cart"></div>
+</td>
+</tr>
+</table>
+</form>
+</div>
+</div>
+<script data-rocketsrc="//code.jquery.com/jquery-1.9.1.js" type="text/rocketscript"></script>
+<script type="text/rocketscript">window.jQuery || document.write('<script src="/themes_shared/scripts/jquery-1.9.1.js"><\/script>')</script>
+<script data-rocketsrc="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js" type="text/rocketscript"></script>
+<script type="text/rocketscript">window.jQuery || document.write('<script src="/themes/Default/scripts/bootstrap.min.js"><\/script>')</script>
+<script data-rocketsrc="/themes_shared/scripts/jquery.colorbox-min.js" type="text/rocketscript"></script>
+<script data-rocketsrc="/themes_shared/scripts/jquery.qtip.min.js" type="text/rocketscript"></script>
+<script data-rocketsrc="/themes/Default/scripts/utils.js" type="text/rocketscript"></script>
+<script data-rocketsrc="/themes_shared/scripts/sorttable.js" type="text/rocketscript"></script>
+<input type="hidden" name="UID" value="20">
+<input type="hidden" name="RSSTOKEN" value="004343155cedbe690be75a2009934d9d">
+</body>
+</html>

@@ -61,7 +61,8 @@ $page->smarty->assign('page', $page);
 $page->content = $page->smarty->fetch('step3.tpl');
 $page->render();
 
-function checkPathsReadable($location) {
+function checkPathsReadable($location)
+{
 	$paths = preg_split('#\/#', $location);
 	$directory = '';
 	if ($paths && count($paths)) {

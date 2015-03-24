@@ -62,7 +62,7 @@ $result = preg_match_all(
 	$links);
 
 if ($result) {
-	$links		= array_unique($links[1]);
+	$links      = array_unique($links[1]);
 	$total      = count($links);
 	$pdo        = new Settings();
 	$predb      = new PreDb();
@@ -75,8 +75,7 @@ if ($result) {
 
 	$predb->executeTruncate();
 
-	foreach ($links as $link)
-	{
+	foreach ($links as $link) {
 		if (preg_match('#^(.+)/(\d+)_#', $link, $match)) {
 			$timematch = -1 + $progress['last'];
 
@@ -92,7 +91,7 @@ if ($result) {
 			$dump = Utility::getUrl(['url' => "$baseUrl/{$match[1]}/{$match[2]}$fileName?dl=1"]);
 
 			if (!$dump) {
-				echo "Error downloading dump {$match[2]} you can try manually importing it." .PHP_EOL;
+				echo "Error downloading dump {$match[2]} you can try manually importing it." . PHP_EOL;
 				continue;
 			}
 
@@ -130,7 +129,7 @@ if ($result) {
 			// Truncate to clear any old data
 			$predb->executeTruncate();
 
-			// Import file into tmp_pre
+			// Import file into predb_imports
 			$predb->executeLoadData($dumpFile, $local);
 
 			// Remove any titles where length <=8

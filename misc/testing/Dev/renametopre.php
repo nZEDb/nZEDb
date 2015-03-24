@@ -149,7 +149,7 @@ function preName($argv, $argc)
 				if ($cleanName != $row['name'] && $cleanName != $row['searchname']) {
 					if (strlen(utf8_decode($cleanName)) <= 3) {
 					} else {
-						$determinedcat = $category->determineCategory($cleanName, $row["group_id"]);
+						$determinedcat = $category->determineCategory($row["group_id"], $cleanName);
 						if ($propername == true) {
 							$pdo->queryExec(
 								sprintf(
@@ -178,7 +178,7 @@ function preName($argv, $argc)
 							$oldcatname = $category->getNameByID($row["categoryid"]);
 							$newcatname = $category->getNameByID($determinedcat);
 
-							\NameFixer::echoChangedReleaseName(array(
+							\NameFixer::echoChangedReleaseName([
 									'new_name'     => $cleanName,
 									'old_name'     => $row["searchname"],
 									'new_category' => $newcatname,
@@ -186,7 +186,7 @@ function preName($argv, $argc)
 									'group'        => $groupname,
 									'release_id'   => $row["id"],
 									'method'       => 'misc/testing/Dev/renametopre.php'
-								)
+								]
 							);
 						}
 					}
@@ -277,7 +277,7 @@ function catRelease($type, $where, $echooutput = false)
 	$total = $resrel->rowCount();
 	if ($total > 0) {
 		foreach ($resrel as $rowrel) {
-			$catId = $cat->determineCategory($rowrel[$type], $rowrel['group_id']);
+			$catId = $cat->determineCategory($rowrel['group_id'], $rowrel[$type]);
 			$pdo->queryExec(sprintf("UPDATE releases SET iscategorized = 1, categoryid = %d WHERE id = %d", $catId, $rowrel['id']));
 			$relcount++;
 			if ($echooutput) {
@@ -297,7 +297,7 @@ function releaseCleaner($subject, $fromName, $size, $groupname, $usepre)
 	$releaseCleaning = new \ReleaseCleaning($groups->pdo);
 	$cleanerName = $releaseCleaning->releaseCleaner($subject, $fromName, $size, $groupname, $usepre);
 	if (!is_array($cleanerName) && $cleanerName != false) {
-		return array("cleansubject" => $cleanerName, "properlynamed" => true, "increment" => false);
+		return ["cleansubject" => $cleanerName, "properlynamed" => true, "increment" => false];
 	} else {
 		return $cleanerName;
 	}

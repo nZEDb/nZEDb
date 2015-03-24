@@ -16,7 +16,7 @@ if (isset($argv[1]) && $argv[1] == "true") {
 	if ($guids instanceof \Traversable) {
 		foreach ($guids as $guid) {
 			$nzbpath = $nzb->NZBPath($guid["guid"]);
-			if($nzbpath !== false) {
+			if ($nzbpath !== false) {
 				$nzbcount++;
 				$nzbfile = nzedb\utility\Utility::unzipGzipFile($nzbpath);
 
@@ -35,7 +35,7 @@ if (isset($argv[1]) && $argv[1] == "true") {
 					}
 				}
 				if ($nzbcount % 5000 == 0) {
-					echo $nzbcount." NZBs scanned. ".$brokencount." NZBs fixed. ".(TIME() - $timestart)." seconds.\n";
+					echo $nzbcount . " NZBs scanned. " . $brokencount . " NZBs fixed. " . (TIME() - $timestart) . " seconds.\n";
 				} else if ($nzbcount % 1000 == 0) {
 					echo "\n";
 				} else if ($nzbcount % 10 == 0) {
@@ -47,7 +47,7 @@ if (isset($argv[1]) && $argv[1] == "true") {
 			unset($guid);
 		}
 	}
-	echo $pdo->log->header($nzbcount." NZB files scanned. in " . TIME() - $timestart . " seconds. ".$brokencount." NZB files were fixed.");
+	echo $pdo->log->header($nzbcount . " NZB files scanned. in " . TIME() - $timestart . " seconds. " . $brokencount . " NZB files were fixed.");
 } else {
 	exit($pdo->log->error("\nThis script can be dangerous, if you are sure you want to run this, STOP ALL OTHER nZEDb SCRIPTS.\n\n"
 				. "php $argv[0] true     ...: To remove blank lines from all nzbs.\n"));

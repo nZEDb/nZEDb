@@ -307,7 +307,7 @@ class Object
 	/**
 	 * Exit immediately. Primarily used for overrides during testing.
 	 *
-	 * @param integer|string $status integer range 0 to 254, string printed on exit
+	 * @param integer $status integer range 0 to 254, string printed on exit
 	 *
 	 * @return void
 	 */
