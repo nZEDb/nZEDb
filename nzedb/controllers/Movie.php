@@ -658,7 +658,7 @@ class Movie
 	/**
 	 * Fetch FanArt.tv backdrop / cover / title.
 	 *
-	 * @param $imdbId
+	 * @param string $imdbId
 	 *
 	 * @return bool|array
 	 */
@@ -701,8 +701,8 @@ class Movie
 	/**
 	 * Fetch info for IMDB id from TMDB.
 	 *
-	 * @param      $imdbId
-	 * @param bool $text
+	 * @param string  $imdbId
+	 * @param boolean $text
 	 *
 	 * @return array|bool
 	 */
@@ -779,7 +779,7 @@ class Movie
 	}
 
 	/**
-	 * @param $imdbId
+	 * @param string $imdbId
 	 *
 	 * @return array|bool
 	 */
@@ -1404,7 +1404,7 @@ class Movie
 	 *
 	 * @param string $source
 	 * @param $type
-	 * @param $info
+	 * @param string|false $info
 	 *
 	 * @return boolean|int
 	 */

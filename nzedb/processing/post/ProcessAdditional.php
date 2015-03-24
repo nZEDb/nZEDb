@@ -7,7 +7,7 @@ require_once nZEDb_LIBS . 'rarinfo/par2info.php';
 use nzedb\db\Settings;
 use nzedb\utility\Utility;
 
-Class ProcessAdditional
+class ProcessAdditional
 {
 	/**
 	 * How many compressed (rar/zip) files to check.
@@ -420,7 +420,7 @@ Class ProcessAdditional
 			);
 		}
 
-		$this->_showCLIReleaseID = (PHP_BINARY . ' ' . __DIR__ . DS .  'ProcessAdditional.php ReleaseID: ');
+		$this->_showCLIReleaseID = (PHP_BINARY . ' ' . __DIR__ . DS . 'ProcessAdditional.php ReleaseID: ');
 
 		// Maximum amount of releases to fetch per run.
 		$this->_queryLimit =
@@ -713,8 +713,8 @@ Class ProcessAdditional
 	/**
 	 * Deletes files and folders recursively.
 	 *
-	 * @param string $path           Path to a folder or file.
-	 * @param array  $ignoredFolders Array with paths to folders to ignore.
+	 * @param string 	$path          Path to a folder or file.
+	 * @param string[] $ignoredFolders Array with paths to folders to ignore.
 	 *
 	 * @void
 	 * @access protected
@@ -1954,7 +1954,7 @@ Class ProcessAdditional
 				$this->pdo->getSetting('ffmpegpath') .
 				'" -i "' .
 				$fileLocation .
-				'" -ss ' . ($time === '' ? '00:00:03.00' : $time)  .
+				'" -ss ' . ($time === '' ? '00:00:03.00' : $time) .
 				' -vframes 1 -loglevel quiet -y "' .
 				$fileName .
 				'"'
@@ -2246,7 +2246,7 @@ Class ProcessAdditional
 			if ($foundName === false) {
 				$this->_release['textstring'] = $file['name'];
 				$this->_release['releaseid'] = $this->_release['id'];
-				if ($this->_nameFixer->checkName($this->_release, ($this->_echoCLI ? true: false), 'PAR2, ', 1, 1) === true) {
+				if ($this->_nameFixer->checkName($this->_release, ($this->_echoCLI ? true : false), 'PAR2, ', 1, 1) === true) {
 					$foundName = true;
 				}
 			}
@@ -2308,7 +2308,7 @@ Class ProcessAdditional
 	/**
 	 * Try to get a title from a Linux_2rename.sh file for alt.binaries.u4e group.
 	 *
-	 * @param $fileLocation
+	 * @param string $fileLocation
 	 */
 	protected function _processU4ETitle($fileLocation)
 	{

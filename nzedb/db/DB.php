@@ -412,7 +412,7 @@ class DB extends \PDO
 	 *
 	 * @param string $query
 	 *
-	 * @return integer|false
+	 * @return integer|false|string
 	 */
 	public function queryInsert($query)
 	{
@@ -435,7 +435,7 @@ class DB extends \PDO
 									 ($i - 1) . ")",
 									 'queryInsert',
 									 4);
-					$this->ct->showsleep($i * ($i/2));
+					$this->ct->showsleep($i * ($i / 2));
 					$i++;
 				} else {
 					break;

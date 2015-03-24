@@ -829,6 +829,12 @@ abstract class Database extends Source
 		return $list;
 	}
 
+	/**
+	 * @param $alias
+	 * @param string $field
+	 *
+	 * @return string
+	 */
 	protected function _fieldsQuote($alias, $field)
 	{
 		$open     = $this->_quotes[0];

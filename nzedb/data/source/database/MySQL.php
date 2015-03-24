@@ -135,7 +135,7 @@ class MySql extends Database
 	 * @param string $feature Test for support for a specific feature, i.e. `"transactions"` or
 	 *                        `"arrays"`.
 	 *
-	 * @return boolean Returns `true` if the particular feature (or if MySQL) support is enabled,
+	 * @return boolean|null Returns `true` if the particular feature (or if MySQL) support is enabled,
 	 *         otherwise `false`.
 	 */
 	public static function enabled($feature = null)
@@ -244,7 +244,7 @@ class MySql extends Database
 										   'field', 'type', 'null', 'key', 'default', 'extra'
 									   ]
 									   ]);
-				$fields  = [];
+				$fields = [];
 
 				foreach ($columns as $column) {
 					$schema  = $self->invokeMethod('_column', [$column['type']]);

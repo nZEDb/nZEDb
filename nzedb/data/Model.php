@@ -1148,7 +1148,7 @@ class Model extends StaticObject
 				}
 			}
 			if (($whitelist = $options['whitelist']) || $options['locked']) {
-				$whitelist = $whitelist ? : array_keys($_schema->fields());
+				$whitelist = $whitelist ?: array_keys($_schema->fields());
 			}
 
 			$type      = $entity->exists() ? 'update' : 'create';
@@ -1476,7 +1476,7 @@ class Model extends StaticObject
 						$data = is_object($data) ? $data->rewind() : $data;
 					}
 
-					return $data ? : null;
+					return $data ?: null;
 				},
 			'list'  => function($self, $params, $chain) {
 					$result = [];

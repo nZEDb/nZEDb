@@ -93,7 +93,7 @@ class PostProcess
 		$this->_par2Info = new \Par2Info();
 		$this->debugging = ($options['Logger'] instanceof \Logger ? $options['Logger'] : new \Logger(['ColorCLI' => $this->pdo->log]));
 		$this->nameFixer = (($options['NameFixer'] instanceof \NameFixer) ? $options['NameFixer'] : new \NameFixer(['Echo' => $this->echooutput, 'Settings' => $this->pdo, 'Groups' => $this->groups]));
-		$this->Nfo = (($options['Nfo'] instanceof \Nfo ) ? $options['Nfo'] : new \Nfo(['Echo' => $this->echooutput, 'Settings' => $this->pdo]));
+		$this->Nfo = (($options['Nfo'] instanceof \Nfo) ? $options['Nfo'] : new \Nfo(['Echo' => $this->echooutput, 'Settings' => $this->pdo]));
 		$this->releaseFiles = (($options['ReleaseFiles'] instanceof \ReleaseFiles) ? $options['ReleaseFiles'] : new \ReleaseFiles($this->pdo));
 
 		// Site settings.
