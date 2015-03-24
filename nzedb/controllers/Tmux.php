@@ -440,7 +440,11 @@ class Tmux
 	 */
 	public function isRunning()
 	{
-		return ($this->get()->running == 1);
+		$running = $this->get()->running;
+		if ($running === false) {
+			throw new RuntimeException("Tmux's running flag was not found in the database.\nPlease check the tables are correctly setup.\n");
+		}
+		return ($running == 1);
 	}
 
 	/**
