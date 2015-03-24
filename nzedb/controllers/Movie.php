@@ -31,7 +31,7 @@ class Movie
 	 * Current year of parsed search name.
 	 * @var string
 	 */
-	protected $currentYear = '';
+	protected $currentYear  = '';
 
 	/**
 	 * Current release id of parsed search name.
@@ -206,7 +206,7 @@ class Movie
 					',,',
 					',',
 					str_replace(
-						['(,', ' ,', ', )', ',)'],
+						array('(,', ' ,', ', )', ',)'),
 						'',
 						implode(',', $imdbIDs)
 					)
@@ -255,7 +255,7 @@ class Movie
 	 *
 	 * @return int
 	 */
-	public function getMovieCount($cat, $maxAge = -1, $excludedCats = [])
+	public function getMovieCount($cat, $maxAge = -1, $excludedCats = array())
 	{
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
@@ -296,7 +296,7 @@ class Movie
 	 *
 	 * @return bool|PDOStatement
 	 */
-	public function getMovieRange($cat, $start, $num, $orderBy, $maxAge = -1, $excludedCats = [])
+	public function getMovieRange($cat, $start, $num, $orderBy, $maxAge = -1, $excludedCats = array())
 	{
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
@@ -368,17 +368,17 @@ class Movie
 				break;
 		}
 
-		return [$orderField, ((isset($orderArr[1]) && preg_match('/^asc|desc$/i', $orderArr[1])) ? $orderArr[1] : 'desc')];
+		return array($orderField, ((isset($orderArr[1]) && preg_match('/^asc|desc$/i', $orderArr[1])) ? $orderArr[1] : 'desc'));
 	}
 
 	/**
 	 * Order types for movies page.
 	 *
-	 * @return string[]
+	 * @return array
 	 */
 	public function getMovieOrdering()
 	{
-		return ['title_asc', 'title_desc', 'year_asc', 'year_desc', 'rating_asc', 'rating_desc'];
+		return array('title_asc', 'title_desc', 'year_asc', 'year_desc', 'rating_asc', 'rating_desc');
 	}
 
 	/**
@@ -387,7 +387,7 @@ class Movie
 	protected function getBrowseBy()
 	{
 		$browseBy = ' ';
-		$browseByArr = ['title', 'director', 'actors', 'genre', 'rating', 'year', 'imdb'];
+		$browseByArr = array('title', 'director', 'actors', 'genre', 'rating', 'year', 'imdb');
 		foreach ($browseByArr as $bb) {
 			if (isset($_REQUEST[$bb]) && !empty($_REQUEST[$bb])) {
 				$bbv = stripslashes($_REQUEST[$bb]);
@@ -419,7 +419,7 @@ class Movie
 		}
 
 		$tmpArr = explode(', ', $data[$field]);
-		$newArr = [];
+		$newArr = array();
 		$i = 0;
 		foreach ($tmpArr as $ta) {
 			if ($i > 5) {
@@ -447,11 +447,13 @@ class Movie
 	 * @param $cover
 	 * @param $backdrop
 	 */
-	public function update($id = '', $title = '', $tagLine = '', $plot = '', $year = '',
-						   $rating = '', $genre = '', $director = '',
-						   $actors = '', $language = '', $cover = '', $backdrop = '')
+	public function update(
+		$id = '', $title = '', $tagLine = '', $plot = '', $year = '', $rating = '', $genre = '', $director = '',
+		$actors = '', $language = '', $cover = '', $backdrop = ''
+	)
 	{
 		if (!empty($id)) {
+
 			$this->pdo->queryExec(
 				sprintf("
 					UPDATE movieinfo
@@ -479,7 +481,7 @@ class Movie
 	 *
 	 * @param $variable
 	 *
-	 * @return boolean
+	 * @return string
 	 */
 	protected function checkVariable(&$variable)
 	{
@@ -510,7 +512,7 @@ class Movie
 	/**
 	 * Fetch IMDB/TMDB info for the movie.
 	 *
-	 * @param string $imdbId
+	 * @param $imdbId
 	 *
 	 * @return bool
 	 */
@@ -532,7 +534,7 @@ class Movie
 		// Check FanArt.tv for background images.
 		$fanart = $this->fetchFanartTVProperties($imdbId);
 
-		$mov = [];
+		$mov = array();
 
 		$mov['cover'] = $mov['backdrop'] = $movieID = 0;
 		$mov['type'] = $mov['director'] = $mov['actors'] = $mov['language'] = '';
@@ -597,7 +599,7 @@ class Movie
 
 		$mov['type']    = html_entity_decode(ucwords(preg_replace('/[\.\_]/', ' ', $mov['type'])), ENT_QUOTES, 'UTF-8');
 
-		$mov['title'] = str_replace(['/', '\\'], '', $mov['title']);
+		$mov['title'] = str_replace(array('/', '\\'), '', $mov['title']);
 		$movieID = $this->pdo->queryInsert(
 			sprintf("
 				INSERT INTO movieinfo
@@ -657,50 +659,51 @@ class Movie
 	/**
 	 * Fetch FanArt.tv backdrop / cover / title.
 	 *
-	 * @param string $imdbId
+	 * @param $imdbId
 	 *
 	 * @return bool|array
 	 */
 	protected function fetchFanartTVProperties($imdbId)
 	{
 		if ($this->fanartapikey != '') {
-			$buffer = nzedb\utility\Utility::getUrl(['url' => 'http://api.fanart.tv/webservice/movie/' . $this->fanartapikey . '/tt' . $imdbId . '/xml/']);
+			$buffer = Utility::getUrl(['url' => 'https://webservice.fanart.tv/v3/movies/tt' . $imdbId . '?api_key=' . $this->fanartapikey , 'verifycert' => false]);
 			if ($buffer !== false) {
-				$art = @simplexml_load_string($buffer);
-				if ($art !== false) {
-					$ret = [];
-					if (isset($art->movie->moviebackgrounds->moviebackground[0]['url'])) {
-						$ret['backdrop'] = $art->movie->moviebackgrounds->moviebackground[0]['url'];
-					} else if (isset($art->movie->moviethumbs->moviethumb[0]['url'])) {
-						$ret['backdrop'] = $art->movie->moviethumbs->moviethumb[0]['url'];
+				$art = json_decode($buffer, true);
+				if (isset($art['status']) && $art['status'] === 'error') {
+					return false;
+				}
+				$ret = [];
+				if (isset($art['moviebackground'][0]['url'])) {
+					$ret['backdrop'] = $art['moviebackground'][0]['url'];
+				} elseif (isset($art['moviethumb'[0]['url']])) {
+					$ret['backdrop'] = $art['moviethumb'][0]['url'];
+				}
+				if (isset($art['movieposter'][0]['url'])) {
+					$ret['cover'] = $art['movieposter'][0]['url'];
+				}
+				if (isset($ret['backdrop']) && isset($ret['cover'])) {
+					$ret['title'] = $imdbId;
+					if (isset($art['name'])) {
+						$ret['title'] = $art['name'];
+					}
+					if ($this->echooutput) {
+						$this->pdo->log->doEcho($this->pdo->log->alternateOver("Fanart Found ") .
+												$this->pdo->log->headerOver($ret['title']));
 					}
 
-					if (isset($art->movie->movieposters->movieposter[0]['url'])) {
-						$ret['cover'] = $art->movie->movieposters->movieposter[0]['url'];
-					}
-
-					if (isset($ret['backdrop']) && isset($ret['cover'])) {
-
-						$ret['title'] = $imdbId;
-						if (isset($art->movie['name'])) {
-							$ret['title'] = $art->movie['name'];
-						}
-						if ($this->echooutput) {
-							$this->pdo->log->doEcho($this->pdo->log->alternateOver("Fanart Found ") . $this->pdo->log->headerOver($ret['title']));
-						}
-						return $ret;
-					}
+					return $ret;
 				}
 			}
 		}
+
 		return false;
 	}
 
 	/**
 	 * Fetch info for IMDB id from TMDB.
 	 *
-	 * @param string  $imdbId
-	 * @param boolean $text
+	 * @param      $imdbId
+	 * @param bool $text
 	 *
 	 * @return array|bool
 	 */
@@ -718,7 +721,7 @@ class Movie
 			return false;
 		}
 
-		$ret = [];
+		$ret = array();
 		$ret['title'] = $tmdbLookup['title'];
 
 		if ($this->currentTitle !== '') {
@@ -758,7 +761,7 @@ class Movie
 			$ret['year'] = date("Y", strtotime($tmdbLookup['release_date']));
 		}
 		if (isset($tmdbLookup['genres']) && sizeof($tmdbLookup['genres']) > 0) {
-			$genres = [];
+			$genres = array();
 			foreach ($tmdbLookup['genres'] as $genre) {
 				$genres[] = $genre['name'];
 			}
@@ -777,26 +780,26 @@ class Movie
 	}
 
 	/**
-	 * @param string $imdbId
+	 * @param $imdbId
 	 *
 	 * @return array|bool
 	 */
 	protected function fetchIMDBProperties($imdbId)
 	{
-		$imdb_regex = [
+		$imdb_regex = array(
 			'title' => '/<title>(.*?)\s?\(.*?<\/title>/i',
 			'tagline' => '/taglines:<\/h4>\s([^<]+)/i',
 			'plot' => '/<p itemprop="description">\s*?(.*?)\s*?<\/p>/i',
 			'rating' => '/"ratingValue">([\d.]+)<\/span>/i',
 			'year' => '/<title>.*?\(.*?(\d{4}).*?<\/title>/i',
 			'cover' => '/<link rel=\'image_src\' href="(http:\/\/ia\.media-imdb\.com.+\.jpg)">/'
-		];
+		);
 
-		$imdb_regex_multi = [
+		$imdb_regex_multi = array(
 			'genre' => '/href="\/genre\/(.*?)\?/i',
 			'language' => '/<a href="\/language\/.+?\'url\'>(.+?)<\/a>/s',
 			'type' => '/<meta property=\'og\:type\' content=\"(.+)\" \/>/i'
-		];
+		);
 
 		$buffer =
 			nzedb\utility\Utility::getUrl([
@@ -808,7 +811,7 @@ class Movie
 			);
 
 		if ($buffer !== false) {
-			$ret = [];
+			$ret = array();
 			foreach ($imdb_regex as $field => $regex) {
 				if (preg_match($regex, $buffer, $matches)) {
 					$match = $matches[1];
@@ -817,7 +820,7 @@ class Movie
 				}
 			}
 
-			$matches = [];
+			$matches = array();
 			foreach ($imdb_regex_multi as $field => $regex) {
 				if (preg_match_all($regex, $buffer, $matches)) {
 					$match2 = $matches[1];
@@ -1046,7 +1049,7 @@ class Movie
 			$pieces = explode(' ', $this->currentTitle);
 			$tempTitle = '%';
 			foreach ($pieces as $piece) {
-				$tempTitle .= str_replace(["'", "!", '"'], '', $piece) . '%';
+				$tempTitle .= str_replace(array("'", "!", '"'), '', $piece) . '%';
 			}
 			$IMDBCheck = $this->pdo->queryOneRow(
 				sprintf("%s WHERE replace(replace(title, \"'\", ''), '!', '') %s %s",
@@ -1070,7 +1073,7 @@ class Movie
 					$pieces = explode(' ', $tempTitle);
 					$tempTitle = '%';
 					foreach ($pieces as $piece) {
-						$tempTitle .= str_replace(["'", "!", '"'], "", $piece) . '%';
+						$tempTitle .= str_replace(array("'", "!", '"'), "", $piece) . '%';
 					}
 					$IMDBCheck = $this->pdo->queryOneRow(
 						sprintf("%s WHERE replace(replace(replace(title, \"'\", ''), '!', ''), '\"', '') %s %s",
@@ -1316,11 +1319,12 @@ class Movie
 		$rt = new \RottenTomato($this->pdo->getSetting('rottentomatokey'));
 
 		if ($rt instanceof \RottenTomato) {
-			$this->_getRTData($rt, 'boxoffice');
-			$this->_getRTData($rt, 'theaters');
-			$this->_getRTData($rt, 'opening');
-			$this->_getRTData($rt, 'upcoming');
-			$this->_getRTData($rt, 'dvd');
+
+			$this->_getRTData('boxoffice', $rt);
+			$this->_getRTData('theaters', $rt);
+			$this->_getRTData('opening', $rt);
+			$this->_getRTData('upcoming', $rt);
+			$this->_getRTData('dvd', $rt);
 
 			if ($this->echooutput) {
 				$this->pdo->log->doEcho($this->pdo->log->header("Updated successfully."));
@@ -1331,11 +1335,7 @@ class Movie
 		}
 	}
 
-	/**
-	 * @param \RottenTomato $rt
-	 * @param string $operation
-	 */
-	protected function _getRTData($rt, $operation = '')
+	protected function _getRTData($operation = '', $rt)
 	{
 		$count = 0;
 		$check = false;
@@ -1399,9 +1399,9 @@ class Movie
 	/**
 	 * Update upcoming table.
 	 *
-	 * @param string $source
+	 * @param $source
 	 * @param $type
-	 * @param string $info
+	 * @param $info
 	 *
 	 * @return bool|int
 	 */
@@ -1423,11 +1423,11 @@ class Movie
 	/**
 	 * Get IMDB genres.
 	 *
-	 * @return string[]
+	 * @return array
 	 */
 	public function getGenres()
 	{
-		return [
+		return array(
 			'Action',
 			'Adventure',
 			'Animation',
@@ -1454,7 +1454,7 @@ class Movie
 			'Thriller',
 			'War',
 			'Western'
-		];
+		);
 	}
 
 }
