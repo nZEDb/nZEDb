@@ -40,7 +40,7 @@ class RequestIDWeb extends RequestID
 	protected function _getReleases()
 	{
 		$this->_releases = $this->pdo->queryDirect(
-			sprintf ('
+			sprintf('
 				SELECT r.id, r.name, r.searchname, g.name AS groupname, r.group_id, r.categoryid
 				FROM releases r
 				INNER JOIN groups g ON r.group_id = g.id
@@ -110,7 +110,7 @@ class RequestIDWeb extends RequestID
 
 		if ($this->_releases instanceof \Traversable) {
 			// Loop all the results.
-			foreach($this->_releases as $release) {
+			foreach ($this->_releases as $release) {
 
 				$this->_release['name'] = $release['name'];
 				// Try to find a request ID for the release.
@@ -167,7 +167,7 @@ class RequestIDWeb extends RequestID
 				$returnedIdentifiers = [];
 
 				$groupIDArray = [];
-				foreach($returnXml->request as $result) {
+				foreach ($returnXml->request as $result) {
 					if (isset($result['name']) && isset($result['ident']) && (int)$result['ident'] > 0) {
 						$this->_newTitle['title'] = (string)$result['name'];
 						$this->_requestID = (int)$result['reqid'];
@@ -218,7 +218,7 @@ class RequestIDWeb extends RequestID
 
 					$status = self::REQID_NONE;
 					if ($addDate !== false && !empty($addDate['adddate'])) {
-						if ((bool) (intval((time() - (int)$addDate['adddate']) / 3600) > $this->_request_hours)) {
+						if ((bool)(intval((time() - (int)$addDate['adddate']) / 3600) > $this->_request_hours)) {
 							$status = self::REQID_OLD;
 						}
 					} else {

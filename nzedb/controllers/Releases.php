@@ -915,7 +915,7 @@ class Releases
 	 * @param int    $limit
 	 * @param string $orderBy
 	 * @param int    $maxAge
-	 * @param array  $excludedCats
+	 * @param integer[] $excludedCats
 	 * @param string $type
 	 * @param array  $cat
 	 *
@@ -939,8 +939,7 @@ class Releases
 		$excludedCats = [],
 		$type = 'basic',
 		$cat = [-1]
-	)
-	{
+	) {
 		$sizeRange = [
 			1 => 1,
 			2 => 2.5,

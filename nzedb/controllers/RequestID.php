@@ -126,7 +126,9 @@ abstract class RequestID
 	 *
 	 * @return array|bool
 	 */
-	protected function _getNewTitle() { }
+	protected function _getNewTitle()
+	{
+	}
 
 	/**
 	 * Find a RequestID in a usenet subject.
@@ -142,8 +144,8 @@ abstract class RequestID
 			case preg_match('/^REQ\s*(\d{4,6})/i', $this->_release['name'], $requestID):
 			case preg_match('/^(\d{4,6})-\d{1}\[/', $this->_release['name'], $requestID):
 			case preg_match('/(\d{4,6}) -/', $this->_release['name'], $requestID):
-				if ((int) $requestID[1] > 0) {
-					return (int) $requestID[1];
+				if ((int)$requestID[1] > 0) {
+					return (int)$requestID[1];
 				}
 		}
 		return self::REQID_ZERO;

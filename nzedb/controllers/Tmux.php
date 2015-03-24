@@ -294,6 +294,11 @@ class Tmux
 		return ((float)$usec + (float)$sec);
 	}
 
+	/**
+	 * @param double $bytes
+	 *
+	 * @return string
+	 */
 	public function decodeSize($bytes)
 	{
 		$types = ['B', 'KB', 'MB', 'GB', 'TB'];
@@ -304,8 +309,7 @@ class Tmux
 		*/
 
 		$suffix = 'B';
-		foreach ($types as $type)
-		{
+		foreach ($types as $type) {
 			if ($bytes < 1024.0) {
 				$suffix = $type;
 				break;

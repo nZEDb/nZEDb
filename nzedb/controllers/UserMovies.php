@@ -12,7 +12,7 @@ class UserMovies
 	/**
 	 * @param array $options Class instances.
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		$defaults = [
 			'Settings' => null,
@@ -31,7 +31,7 @@ class UserMovies
 	 *
 	 * @return bool|int
 	 */
-	public function addMovie($uid, $imdbid, $catid=array())
+	public function addMovie($uid, $imdbid, $catid = [])
 	{
 		$catid = (!empty($catid)) ? $this->pdo->escapeString(implode('|', $catid)) : "NULL";
 		return $this->pdo->queryInsert(sprintf("INSERT INTO user_movies (user_id, imdbid, categoryid, createddate) VALUES (%d, %d, %s, NOW())", $uid, $imdbid, $catid));
@@ -92,7 +92,7 @@ class UserMovies
 	 * @param int   $imdbid
 	 * @param array $catid
 	 */
-	public function updateMovie($uid, $imdbid, $catid=array())
+	public function updateMovie($uid, $imdbid, $catid = [])
 	{
 		$catid = (!empty($catid)) ? $this->pdo->escapeString(implode('|', $catid)) : "NULL";
 		$this->pdo->queryExec(sprintf("UPDATE user_movies SET categoryid = %s WHERE user_id = %d AND imdbid = %d", $catid, $uid, $imdbid));

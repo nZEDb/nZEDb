@@ -335,7 +335,7 @@ class ReleaseRemover
 	/**
 	 * Remove releases with 15 or more letters or numbers, nothing else.
 	 *
-	 * @return mixed
+	 * @return boolean|string
 	 */
 	protected function removeGibberish()
 	{
@@ -363,7 +363,7 @@ class ReleaseRemover
 	/**
 	 * Remove releases with 25 or more letters/numbers, probably hashed.
 	 *
-	 * @return mixed
+	 * @return boolean|string
 	 */
 	protected function removeHashed()
 	{
@@ -390,7 +390,7 @@ class ReleaseRemover
 	/**
 	 * Remove releases with 5 or less letters/numbers.
 	 *
-	 * @return mixed
+	 * @return boolean|string
 	 */
 	protected function removeShort()
 	{
@@ -417,7 +417,7 @@ class ReleaseRemover
 	/**
 	 * Remove releases with an exe file not in other misc or pc apps/games.
 	 *
-	 * @return mixed
+	 * @return boolean|string
 	 */
 	protected function removeExecutable()
 	{
@@ -450,7 +450,7 @@ class ReleaseRemover
 	/**
 	 * Remove releases with an install.bin file.
 	 *
-	 * @return mixed
+	 * @return boolean|string
 	 */
 	protected function removeInstallBin()
 	{
@@ -474,7 +474,7 @@ class ReleaseRemover
 	/**
 	 * Remove releases with an password.url file.
 	 *
-	 * @return mixed
+	 * @return boolean|string
 	 */
 	protected function removePasswordURL()
 	{
@@ -498,7 +498,7 @@ class ReleaseRemover
 	/**
 	 * Remove releases with password in the search name.
 	 *
-	 * @return mixed
+	 * @return boolean|string
 	 */
 	protected function removePassworded()
 	{
@@ -545,7 +545,7 @@ class ReleaseRemover
 	/**
 	 * Remove releases smaller than 2MB with 1 part not in MP3/books/misc section.
 	 *
-	 * @return mixed
+	 * @return boolean|string
 	 */
 	protected function removeSize()
 	{
@@ -580,7 +580,7 @@ class ReleaseRemover
 	/**
 	 * Remove releases bigger than 200MB with just a single file.
 	 *
-	 * @return mixed
+	 * @return boolean|string
 	 */
 	protected function removeHuge()
 	{
@@ -603,7 +603,7 @@ class ReleaseRemover
 	/**
 	 * Remove releases with more than 1 part, less than 40MB, sample in name. TV/Movie sections.
 	 *
-	 * @return mixed
+	 * @return boolean|string
 	 */
 	protected function removeSample()
 	{
@@ -644,7 +644,7 @@ class ReleaseRemover
 	/**
 	 * Remove releases with a scr file in the filename/subject.
 	 *
-	 * @return mixed
+	 * @return boolean|string
 	 */
 	protected function removeSCR()
 	{
@@ -749,7 +749,7 @@ class ReleaseRemover
 						// Find first bd|dl instance position in Regex, then find last closing parenthesis as this is reversed.
 						$forBegin = strpos($dbRegex, 'bd|dl');
 						$regexMatch =
-							str_replace(['\\',']', '['], '',
+							str_replace(['\\', ']', '['], '',
 								str_replace('bd|dl)mux', 'bdmux|dlmux',
 									substr($dbRegex, $forBegin,
 										strrpos($dbRegex, ')') - $forBegin

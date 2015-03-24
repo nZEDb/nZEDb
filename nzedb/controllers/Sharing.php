@@ -1,11 +1,13 @@
 <?php
+
 use nzedb\db\Settings;
+
 /**
  * @note Does not currently work with NntpProxy because it does not implement all of NNTP's command.
  *
  * Class Sharing
  */
-Class Sharing
+class Sharing
 {
 	/**
 	 *      --------------------------------------------
@@ -76,7 +78,7 @@ Class Sharing
 	 */
 	public function __construct(array $options = [])
 	{
-		$defaults= [
+		$defaults = [
 			'Settings' => null,
 			'NNTP'     => null,
 		];
@@ -190,7 +192,7 @@ Class Sharing
 		}
 
 		// Loop over the comments.
-		foreach($newComments as $comment) {
+		foreach ($newComments as $comment) {
 			$this->postComment($comment);
 		}
 

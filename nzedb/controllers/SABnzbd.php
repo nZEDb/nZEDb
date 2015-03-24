@@ -108,7 +108,7 @@ class SABnzbd
 					$this->apikeytype = $page->userdata['sabapikeytype'];
 				}
 				$this->integrated = self::INTEGRATION_TYPE_USER;
-				switch((int)$page->userdata['queuetype']) {
+				switch ((int)$page->userdata['queuetype']) {
 					case 1:
 					case 2:
 						$this->integratedBool = true;

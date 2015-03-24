@@ -1032,8 +1032,8 @@ class Movie
 
 		//If we found a year, try looking in a 4 year range.
 		if ($this->currentYear !== false) {
-			$start = (int) $this->currentYear - 2;
-			$end   = (int) $this->currentYear + 2;
+			$start = (int)$this->currentYear - 2;
+			$end   = (int)$this->currentYear + 2;
 			$andYearIn = 'AND year IN (';
 			while ($start < $end) {
 				$andYearIn .= $start . ',';

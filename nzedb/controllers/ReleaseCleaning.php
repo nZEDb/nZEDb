@@ -363,7 +363,7 @@ class ReleaseCleaning
 	 *
 	 * @param string $name
 	 *
-	 * @return mixed|string
+	 * @return string
 	 */
 	public function fixerCleaner($name)
 	{
