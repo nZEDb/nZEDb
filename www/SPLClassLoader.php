@@ -132,7 +132,7 @@ class SplClassLoader
 			require_once SMARTY_DIR . 'Smarty.class.php';
 			return;
 		}
-		if ($this->_namespace === null || $this->_namespace . $this->_namespaceSeparator === substr($className, 0, strlen($this->_namespace.$this->_namespaceSeparator))) {
+		if ($this->_namespace === null || $this->_namespace . $this->_namespaceSeparator === substr($className, 0, strlen($this->_namespace . $this->_namespaceSeparator))) {
 			$fileName = '';
 			$namespace = '';
 			if (strtolower(substr($className, 0, 7)) !== 'smarty_') {

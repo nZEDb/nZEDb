@@ -24,8 +24,7 @@ if (isset($_REQUEST["id"]) && !isset($_REQUEST["searchadvr"]) && !isset($_REQUES
 	$offset   = (isset($_REQUEST["offset"]) && ctype_digit($_REQUEST['offset'])) ?
 		$_REQUEST["offset"] : 0;
 	$ordering = $releases->getBrowseOrdering();
-	$orderby  = isset($_REQUEST["ob"]) && in_array($_REQUEST['ob'], $ordering) ? $_REQUEST["ob"] :
-		'';
+	$orderby  = isset($_REQUEST["ob"]) && in_array($_REQUEST['ob'], $ordering) ? $_REQUEST["ob"] : '';
 
 	if ($searchtype == "basic") {
 		$searchStr  = (string)$_REQUEST["id"];
@@ -88,8 +87,7 @@ if (isset($_REQUEST["subject"]) && !isset($_REQUEST["searchadvr"]) && !isset($_R
 	$offset   = (isset($_REQUEST["offset"]) && ctype_digit($_REQUEST['offset'])) ?
 		$_REQUEST["offset"] : 0;
 	$ordering = $releases->getBrowseOrdering();
-	$orderby  = isset($_REQUEST["ob"]) && in_array($_REQUEST['ob'], $ordering) ? $_REQUEST["ob"] :
-		'';
+	$orderby  = isset($_REQUEST["ob"]) && in_array($_REQUEST['ob'], $ordering) ? $_REQUEST["ob"] : '';
 
 	if ($searchtype == "basic") {
 		$searchStr = (string)$_REQUEST["subject"];
@@ -150,8 +148,7 @@ if (isset($_REQUEST["searchadvr"]) && !isset($_REQUEST["id"]) && !isset($_REQUES
 	$offset   = (isset($_REQUEST["offset"]) && ctype_digit($_REQUEST['offset'])) ?
 		$_REQUEST["offset"] : 0;
 	$ordering = $releases->getBrowseOrdering();
-	$orderby  = isset($_REQUEST["ob"]) && in_array($_REQUEST['ob'], $ordering) ? $_REQUEST["ob"] :
-		'';
+	$orderby  = isset($_REQUEST["ob"]) && in_array($_REQUEST['ob'], $ordering) ? $_REQUEST["ob"] : '';
 
 	if ($searchtype !== "basic") {
 
