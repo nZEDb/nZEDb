@@ -2,7 +2,7 @@
 require_once nZEDb_LIBS . 'TMDb.php';
 
 use nzedb\db\Settings;
-use nzedb\utility;
+use nzedb\utility\Utility;
 
 /**
  * Class Movie
@@ -674,7 +674,7 @@ class Movie
 				$ret = [];
 				if (isset($art['moviebackground'][0]['url'])) {
 					$ret['backdrop'] = $art['moviebackground'][0]['url'];
-				} elseif (isset($art['moviethumb'[0]['url']])) {
+				} elseif (isset($art['moviethumb'][0]['url'])) {
 					$ret['backdrop'] = $art['moviethumb'][0]['url'];
 				}
 				if (isset($art['movieposter'][0]['url'])) {
