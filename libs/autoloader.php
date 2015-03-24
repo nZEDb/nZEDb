@@ -6,7 +6,7 @@
  * @return void
  */
 spl_autoload_register(
-	function ($class) {
+	function($class) {
 		// base directory for the namespace prefix
 		$base_dir = __DIR__ . DIRECTORY_SEPARATOR;
 

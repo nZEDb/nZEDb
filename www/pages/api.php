@@ -170,7 +170,7 @@ switch ($function) {
 		);
 
 		addCoverURL($relData,
-			function ($release) {
+			function($release) {
 				return Utility::getCoverURL(['type' => 'movies', 'id' => $release['imdbid']]);
 			}
 		);

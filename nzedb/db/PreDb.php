@@ -146,6 +146,10 @@ class PreDb extends DB
 		$this->prepareSQLInsert();
 	}
 
+	/**
+	 * @param $sql
+	 * @param string $index
+	 */
 	protected function prepareSQLStatement($sql, $index)
 	{
 		$this->importPS[$index] = $this->prepare($sql);

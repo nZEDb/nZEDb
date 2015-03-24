@@ -575,7 +575,7 @@ class Forking extends \fork_daemon
 
 			if ($groups instanceof \Traversable) {
 				foreach ($groups as $group) {
-					if ($this->pdo->queryOneRow(sprintf('SELECT id FROM collections_%d  LIMIT 1',$group['id'])) !== false) {
+					if ($this->pdo->queryOneRow(sprintf('SELECT id FROM collections_%d  LIMIT 1', $group['id'])) !== false) {
 						$this->work[] = ['id' => $group['id']];
 					}
 				}
@@ -1083,9 +1083,11 @@ class Forking extends \fork_daemon
 	 * @var bool
 	 */
 	private $processAdditional = false; // Should we process additional?
-	private $processNFO = false;        // Should we process NFOs?
-	private $processMovies = false;     // Should we process Movies?
-	private $processTV = false;         // Should we process TV?
+	private $processNFO = false; // Should we process NFOs?
+	private $processMovies = false; // Should we process Movies?
+	private $processTV = false; // Should we process TV?
 }
 
-class ForkingException extends \Exception {}
+class ForkingException extends \Exception
+{
+}

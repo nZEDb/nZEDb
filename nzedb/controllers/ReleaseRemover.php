@@ -1048,7 +1048,7 @@ class ReleaseRemover
 	 *
 	 * @param string $argument User argument.
 	 *
-	 * @return string|boolean
+	 * @return string|false
 	 */
 	protected function formatCriteriaQuery($argument)
 	{
