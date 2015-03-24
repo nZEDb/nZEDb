@@ -665,7 +665,7 @@ class Movie
 	protected function fetchFanartTVProperties($imdbId)
 	{
 		if ($this->fanartapikey != '') {
-			$buffer = Utility::getUrl(['url' => 'https://webservice.fanart.tv/v3/movies/tt' . $imdbId . '?api_key=' . $this->fanartapikey, 'verifycert' => false]);
+			$buffer = nzedb\utility\Utility::getUrl(['url' => 'https://webservice.fanart.tv/v3/movies/tt' . $imdbId . '?api_key=' . $this->fanartapikey, 'verifycert' => false]);
 			if ($buffer !== false) {
 				$art = json_decode($buffer, true);
 				if (isset($art['status']) && $art['status'] === 'error') {
@@ -674,7 +674,7 @@ class Movie
 				$ret = [];
 				if (isset($art['moviebackground'][0]['url'])) {
 					$ret['backdrop'] = $art['moviebackground'][0]['url'];
-				} elseif (isset($art['moviethumb'[0]['url']])) {
+				} elseif (isset($art['moviethumb'][0]['url'])) {
 					$ret['backdrop'] = $art['moviethumb'][0]['url'];
 				}
 				if (isset($art['movieposter'][0]['url'])) {
