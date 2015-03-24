@@ -935,7 +935,8 @@ class ReleaseRemover
 	/**
 	 * Remove releases that contain .wmv file, aka that spam poster.
 	 * Thanks to dizant from nZEDb forums for the sql query
-	 * @return mixed
+	 *
+	 * @return string|boolean
 	 */
 	protected function removeWMV()
 	{
@@ -953,7 +954,7 @@ class ReleaseRemover
 	 * Remove releases that contain .wmv files and Codec\Setup.exe files, aka that spam poster.
 	 * Thanks to dizant from nZEDb forums for parts of the sql query
 	 *
-	 * @return bool
+	 * @return string|boolean
 	 */
 	protected function removeCodecPoster()
 	{
@@ -1022,7 +1023,7 @@ class ReleaseRemover
 	/**
 	 * Verify if the query has any results.
 	 *
-	 * @return bool|int False on failure, count of found releases.
+	 * @return boolean False on failure, true on success after setting a count of found releases.
 	 */
 	protected function checkSelectQuery()
 	{
@@ -1047,7 +1048,7 @@ class ReleaseRemover
 	 *
 	 * @param string $argument User argument.
 	 *
-	 * @return bool|string
+	 * @return string|boolean
 	 */
 	protected function formatCriteriaQuery($argument)
 	{

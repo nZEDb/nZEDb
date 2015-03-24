@@ -329,8 +329,7 @@ class XXX
 	public function update(
 		$id = '', $title = '', $tagLine = '', $plot = '', $genre = '', $director = '',
 		$actors = '', $extras = '', $productInfo = '', $trailers = '', $directUrl = '', $classUsed = '', $cover = '', $backdrop = ''
-	)
-	{
+	) {
 		if (!empty($id)) {
 
 			$this->pdo->queryExec(
@@ -474,7 +473,7 @@ class XXX
 			$xxxID = $check['id'];
 		}
 
-		if ($check === false OR $xxxID > 0) {
+		if ($check === false || $xxxID > 0) {
 			// Update Current XXX Information - getXXXCovers.php
 			if ($xxxID > 0) {
 				$this->update($check['id'],
@@ -615,7 +614,7 @@ class XXX
 	 */
 	protected function checkXXXInfoExists($releaseName)
 	{
-		return $this->pdo->queryOneRow(sprintf("SELECT id, title FROM xxxinfo WHERE title LIKE %s", "'". $releaseName . "%'"));
+		return $this->pdo->queryOneRow(sprintf("SELECT id, title FROM xxxinfo WHERE title LIKE %s", "'" . $releaseName . "%'"));
 	}
 
 	/**
@@ -671,7 +670,8 @@ class XXX
 	 *
 	 * @return array|null
 	 */
-	public function getAllGenres($activeOnly = false) {
+	public function getAllGenres($activeOnly = false)
+	{
 		$ret = null;
 
 		if ($activeOnly) {
@@ -697,7 +697,7 @@ class XXX
 	public function getGenres($activeOnly = false, $gid = null)
 	{
 		if (isset($gid)) {
-			$gid = " AND id = ". $this->pdo->escapeString($gid) . " ORDER BY title";
+			$gid = " AND id = " . $this->pdo->escapeString($gid) . " ORDER BY title";
 		} else {
 			$gid = " ORDER BY title";
 		}
@@ -736,7 +736,7 @@ class XXX
 			}
 		}
 
-		$ret = ltrim($ret,",");
+		$ret = ltrim($ret, ",");
 		return ($ret);
 	}
 
@@ -751,7 +751,7 @@ class XXX
 	{
 		$res = '';
 		if (isset($genre)) {
-			$res = $this->pdo->queryInsert(sprintf("INSERT INTO genres (title, type, disabled) VALUES (%s ,%d ,%d)",$this->pdo->escapeString($genre), 6000, 0));
+			$res = $this->pdo->queryInsert(sprintf("INSERT INTO genres (title, type, disabled) VALUES (%s ,%d ,%d)", $this->pdo->escapeString($genre), 6000, 0));
 		}
 		return $res;
 	}
@@ -770,7 +770,7 @@ class XXX
 		if ($whichclass === "ade") {
 			if (!empty($res)) {
 				$trailers = unserialize($res);
-				$ret .="<object width='360' height='240' type='application/x-shockwave-flash' id='EmpireFlashPlayer' name='EmpireFlashPlayer' data='".	$trailers['url'] . "'>";
+				$ret .= "<object width='360' height='240' type='application/x-shockwave-flash' id='EmpireFlashPlayer' name='EmpireFlashPlayer' data='" . $trailers['url'] . "'>";
 				$ret .= "<param name='flashvars' value= 'streamID=" . $trailers['streamid'] . "&amp;autoPlay=false&amp;BaseStreamingUrl=" . $trailers['baseurl'] . "'>";
 				$ret .= "</object>";
 
@@ -781,8 +781,8 @@ class XXX
 			if (!empty($res)) {
 				$trailers = unserialize($res);
 				$ret .= "<embed id='trailer' width='480' height='360'";
-				$ret .= "flashvars='" .	$trailers['flashvars'] . "' allowfullscreen='true' allowscriptaccess='always' quality='high' name='trailer' style='undefined'";
-				$ret .= "src='" . $trailers['baseurl'] . "' type='application/x-shockwave-flash'>";
+				$ret .= "flashvars='{$trailers['flashvars']}' allowfullscreen='true' allowscriptaccess='always' quality='high' name='trailer' style='undefined'";
+				$ret .= "src='{$trailers['baseurl']}' type='application/x-shockwave-flash'>";
 
 				return ($ret);
 			}

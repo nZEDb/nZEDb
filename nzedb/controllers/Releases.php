@@ -1242,7 +1242,7 @@ class Releases
 		$parentCat = $catRow['parentid'];
 
 		$results = $this->search(
-			$this->getSimilarName($name), -1, -1, -1, [$parentCat], -1, -1, 0, 0, -1, -1, 0, $limit, '', -1, $excludedCats
+			$this->getSimilarName($name), -1, -1, -1, -1, -1, 0, 0, -1, -1, 0, $limit, '', -1, $excludedCats, null, [$parentCat]
 		);
 		if (!$results) {
 			return $results;

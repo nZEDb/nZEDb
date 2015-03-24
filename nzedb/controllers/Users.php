@@ -160,7 +160,7 @@ class Users
 	 *
 	 * @param $orderBy
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public function getBrowseOrder($orderBy)
 	{

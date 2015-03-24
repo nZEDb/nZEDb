@@ -31,7 +31,7 @@ class Movie
 	 * Current year of parsed search name.
 	 * @var string
 	 */
-	protected $currentYear  = '';
+	protected $currentYear = '';
 
 	/**
 	 * Current release id of parsed search name.
@@ -666,7 +666,7 @@ class Movie
 	protected function fetchFanartTVProperties($imdbId)
 	{
 		if ($this->fanartapikey != '') {
-			$buffer = Utility::getUrl(['url' => 'https://webservice.fanart.tv/v3/movies/tt' . $imdbId . '?api_key=' . $this->fanartapikey , 'verifycert' => false]);
+			$buffer = Utility::getUrl(['url' => 'https://webservice.fanart.tv/v3/movies/tt' . $imdbId . '?api_key=' . $this->fanartapikey, 'verifycert' => false]);
 			if ($buffer !== false) {
 				$art = json_decode($buffer, true);
 				if (isset($art['status']) && $art['status'] === 'error') {

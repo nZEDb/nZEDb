@@ -542,21 +542,26 @@ class TvRage
 	/**
 	 * Convert 2012-24-07 to 2012-07-24, there is probably a better way
 	 *
-	 * @param $date
+	 * This shouldn't ever happen as I've never heard of a date starting with year being followed by day value.
+	 * Could this be a mistake? i.e. trying to solve the mm-dd-yyyy/dd-mm-yyyy confusion into a yyyy-mm-dd?
 	 *
-	 * @return string|boolean|null
+	 * @param string $date
+	 *
+	 * @return string
 	 */
 	public function checkDate($date)
 	{
-		if (!empty($date) && $date != NULL) {
+		if (!empty($date)) {
 			$chk = explode(" ", $date);
 			$chkd = explode("-", $chk[0]);
 			if ($chkd[1] > 12) {
 				$date = date('Y-m-d H:i:s', strtotime($chkd[1] . " " . $chkd[2] . " " . $chkd[0]));
 			}
-			return $date;
+		} else {
+			$date = null;
 		}
-		return NULL;
+
+		return $date;
 	}
 
 	public function updateEpInfo($show, $relid)
