@@ -1653,4 +1653,35 @@ class Releases
 		);
 	}
 
+	/**
+	 * Retrieve alternate release with same or similar searchname
+	 *
+	 * @param string $guid
+	 * @param string $searchname
+	 * @param string $userid
+	 * @param bool   $failed
+	 * @return string
+	 *
+	 */
+
+	public function getAlternate($guid, $searchname, $userid, $failed = true)
+	{
+		//status values
+		// 0 = default value
+		// 1 = failed
+		// 2 = success
+
+
+		$this->pdo->queryInsert(sprintf("INSERT INTO failed_downloads (guid, userid, status) VALUES (%s, %d, %d) ON DUPLICATE KEY UPDATE status = %d",
+				$this->pdo->escapeString($guid),
+				$userid,
+				($failed == true ? 1 : 2),
+				($failed == true ? 1 : 2)
+				)
+		);
+
+		$alternate = $this->pdo->queryOneRow(sprintf('SELECT * FROM releases r WHERE r.searchname %s AND r.guid NOT IN (SELECT guid FROM failed_downloads WHERE userid = %d)', $this->pdo->likeString($searchname), $userid));
+		return $alternate;
+	}
+
 }
