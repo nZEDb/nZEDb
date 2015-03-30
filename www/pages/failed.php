@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 $releases = new Releases(['Settings' => $page->settings]);
 $users = new Users();

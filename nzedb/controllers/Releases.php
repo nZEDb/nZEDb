@@ -1667,16 +1667,15 @@ class Releases
 	public function getAlternate($guid, $searchname, $userid, $failed = true)
 	{
 		//status values
-		// 0 = default value
-		// 1 = failed
-		// 2 = success
+		// 0/false = successfull download
+		// 1/true = failed download
 
 
 		$this->pdo->queryInsert(sprintf("INSERT INTO failed_downloads (guid, userid, status) VALUES (%s, %d, %d) ON DUPLICATE KEY UPDATE status = %d",
 				$this->pdo->escapeString($guid),
 				$userid,
-				($failed == true ? 1 : 2),
-				($failed == true ? 1 : 2)
+				($failed === true ? true : false),
+				($failed === true ? true : false)
 				)
 		);
 
