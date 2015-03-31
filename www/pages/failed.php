@@ -17,6 +17,7 @@ if (isset($_GET['userid']) && is_numeric($_GET['userid']) && isset($_GET['rsstok
 	if (!$alt) {
 	$page->show404();
 	}
+
 	$url = $page->serverurl . 'getnzb/' . $alt['guid'] . '.nzb' . '&i=' . $userid . '&r=' . $rsstoken;
 	header('Location: ' . $url . '');
 }
