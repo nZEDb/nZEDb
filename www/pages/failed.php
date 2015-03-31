@@ -9,7 +9,7 @@ if (isset($_GET['userid']) && is_numeric($_GET['userid']) && isset($_GET['rsstok
 	$userid = $_GET['userid'];
 	$rsstoken = $_GET['rsstoken'];
 
-	if (!$rel){
+	if (!$rel) {
 	$page->show404();
 	}
 
