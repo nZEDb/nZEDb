@@ -1653,33 +1653,32 @@ class Releases
 		);
 	}
 
-	/**
+   /**
 	 * Retrieve alternate release with same or similar searchname
 	 *
 	 * @param string $guid
 	 * @param string $searchname
 	 * @param string $userid
-	 * @param bool   $failed
 	 * @return string
-	 *
 	 */
-
-	public function getAlternate($guid, $searchname, $userid, $failed = true)
+	public function getAlternate($guid, $searchname, $userid)
 	{
 		//status values
-		// 0/false = successfull download
-		// 1/true = failed download
-
-
-		$this->pdo->queryInsert(sprintf("INSERT INTO failed_downloads (guid, userid, status) VALUES (%s, %d, %d) ON DUPLICATE KEY UPDATE status = %d",
-				$this->pdo->escapeString($guid),
+		// 0/false 	= successfully downloaded
+		// 1/true 	= failed download
+		$this->pdo->queryInsert(sprintf("INSERT IGNORE INTO dnzb_failures (userid, guid) VALUES (%d, %s)",
 				$userid,
-				($failed === true ? true : false),
-				($failed === true ? true : false)
+				$this->pdo->escapeString($guid)
 				)
 		);
 
-		$alternate = $this->pdo->queryOneRow(sprintf('SELECT * FROM releases r WHERE r.searchname %s AND r.guid NOT IN (SELECT guid FROM failed_downloads WHERE userid = %d)', $this->pdo->likeString($searchname), $userid));
+		$alternate = $this->pdo->queryOneRow(sprintf('SELECT * FROM releases r
+			WHERE r.searchname %s
+			AND r.guid NOT IN (SELECT guid FROM failed_downloads WHERE userid = %d)',
+			$this->pdo->likeString($searchname),
+			$userid
+			)
+		);
 		return $alternate;
 	}
 
