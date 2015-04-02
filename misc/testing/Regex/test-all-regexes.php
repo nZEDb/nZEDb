@@ -2,11 +2,11 @@
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
 if ($argc == 1) {
-	exit("This script will test a string(release name), single quoted, against all regexes in NameCleaning.php. To test a string run:\nphp test_all_regexes.php '[Samurai.Warriors.3.PROPER.USA.Wii-CLANDESTiNE-Scrubbed-xeroxmalf]-[#a.b.g.w@efnet]-[www.abgx.net]-[001/176] - \"Samurai.Warriors.3.PROPER.USA.Wii-CLANDESTiNE-Scrubbed-xeroxmalf.par2\" yEnc'\n");
+	exit("This script will test a string (release name), single quoted, against all regexes in NameCleaning.php. To test a string run:\nphp test_all_regexes.php '[Samurai.Warriors.3.PROPER.USA.Wii-CLANDESTiNE-Scrubbed-xeroxmalf]-[#a.b.g.w@efnet]-[www.abgx.net]-[001/176] - \"Samurai.Warriors.3.PROPER.USA.Wii-CLANDESTiNE-Scrubbed-xeroxmalf.par2\" yEnc'\n");
 }
 
-
 passthru('clear');
+
 if ($argv[1] == 'file' && isset($argv[2]) && file_exists($argv[2])) {
 	$filename = $argv[2];
 	$fp = fopen($filename, "r") or die("Couldn't open $filename");

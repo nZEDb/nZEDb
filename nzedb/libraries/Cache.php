@@ -8,7 +8,7 @@ namespace nzedb\libraries;
  *
  * @package nzedb\libraries
  */
-Class Cache
+class Cache
 {
 	const SERIALIZER_PHP      = 0;
 	const SERIALIZER_IGBINARY = 1;
@@ -103,7 +103,7 @@ Class Cache
 	public function delete($key)
 	{
 		if ($this->connected === true && $this->ping() === true) {
-			return (bool) $this->server->delete($key);
+			return (bool)$this->server->delete($key);
 		}
 		return false;
 	}
@@ -180,7 +180,7 @@ Class Cache
 			$this->serializerType = true;
 		}
 
-		switch(nZEDb_CACHE_TYPE) {
+		switch (nZEDb_CACHE_TYPE) {
 
 			case self::TYPE_REDIS:
 				if (!extension_loaded('redis')) {
@@ -220,7 +220,7 @@ Class Cache
 	 */
 	public function __destruct()
 	{
-		switch(nZEDb_CACHE_TYPE) {
+		switch (nZEDb_CACHE_TYPE) {
 			case self::TYPE_REDIS:
 				$this->server->close();
 				break;
@@ -280,7 +280,7 @@ Class Cache
 	{
 		if ($this->isRedis === true) {
 			try {
-				return (bool) $this->server->ping();
+				return (bool)$this->server->ping();
 			} catch (\RedisException $error) {
 				$this->connect();
 				return $this->connected;
@@ -298,7 +298,7 @@ Class Cache
 	 */
 	private function verifySerializer()
 	{
-		switch(nZEDb_CACHE_SERIALIZER) {
+		switch (nZEDb_CACHE_SERIALIZER) {
 			case self::SERIALIZER_IGBINARY:
 				if (extension_loaded('igbinary')) {
 					$this->IgBinarySupport = true;
@@ -337,4 +337,6 @@ Class Cache
  *
  * @package nzedb\libraries
  */
-Class CacheException extends \Exception {}
+class CacheException extends \Exception
+{
+}

@@ -1,9 +1,9 @@
 <?php
 require_once './config.php';
 
-$page = new AdminPage();
+$page     = new AdminPage();
 $releases = new Releases(['Settings' => $page->settings]);
-$logging = new Logging(['Settings' => $page->settings]);
+$logging  = new Logging(['Settings' => $page->settings]);
 if ($page->settings->getSetting('loggingopt') == '0') {
 	$loggingon = '0';
 } else {

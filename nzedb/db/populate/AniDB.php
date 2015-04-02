@@ -67,8 +67,7 @@ class AniDB
 		$options += $defaults;
 
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
-		$this->pdo        = ($options['Settings'] instanceof Settings ? $options['Settings'] :
-			new Settings());
+		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 
 		//		$maxanidbprocessed = $this->pdo->getSetting('maxanidbprocessed');
 		$anidbupdint = $this->pdo->getSetting('intanidbupdate');
@@ -142,7 +141,7 @@ class AniDB
 		}
 		$apiresponse = $this->getAniDbResponse();
 
-		$AniDBAPIArray = array();
+		$AniDBAPIArray = [];
 
 		if (!$apiresponse) {
 			echo "AniDB: Error getting response." . PHP_EOL;
@@ -162,17 +161,18 @@ class AniDB
 
 			$AniDBAPIArray['categories'] = $this->processAPIResponceElement($AniDBAPIXML->categories);
 
+			$episodeArray = [];
 			if ($AniDBAPIXML->episodes && $AniDBAPIXML->episodes[0]->attributes()) {
 				$i = 1;
-				foreach ($AniDBAPIXML->episodes->episode AS $episode) {
-					$titleArray = array();
+				foreach ($AniDBAPIXML->episodes->episode as $episode) {
+					$titleArray = [];
 
 					$episodeArray[$i]['episode_id'] = (int)$episode->attributes()->id[0];
 					$episodeArray[$i]['episode_no'] = (int)$episode->epno;
 					$episodeArray[$i]['airdate']    = (string)$episode->airdate;
 
 					if ($AniDBAPIXML->title && $AniDBAPIXML->title[0]->attributes()) {
-						foreach ($AniDBAPIXML->title->children() AS $title) {
+						foreach ($AniDBAPIXML->title->children() as $title) {
 							$xmlAttribs = $title->attributes('xml', true);
 							// only english, x-jat imploded episode titles for now
 							if (in_array($xmlAttribs->lang, ['en', 'x-jat'])) {
@@ -181,18 +181,14 @@ class AniDB
 						}
 					}
 
-					$episodeArray[$i]['episode_title'] = empty($titleArray) ? '' :
-						implode(', ', $titleArray);
+					$episodeArray[$i]['episode_title'] = empty($titleArray) ? '' : implode(', ', $titleArray);
 					$i++;
 				}
 			}
 
-			$episodeArray = [];
 			//start and end date come from AniDB API as date strings -- no manipulation needed
-			$AniDBAPIArray['startdate'] = isset($AniDBAPIXML->startdate) ? $AniDBAPIXML->startdate :
-				'0000-00-00';
-			$AniDBAPIArray['enddate']   = isset($AniDBAPIXML->enddate) ? $AniDBAPIXML->enddate :
-				'0000-00-00';
+			$AniDBAPIArray['startdate'] = isset($AniDBAPIXML->startdate) ? $AniDBAPIXML->startdate : '0000-00-00';
+			$AniDBAPIArray['enddate']   = isset($AniDBAPIXML->enddate) ? $AniDBAPIXML->enddate : '0000-00-00';
 
 			if (isset($AniDBAPIXML->ratings->permanent)) {
 				$AniDBAPIArray['rating'] = $AniDBAPIXML->ratings->permanent;
@@ -201,14 +197,12 @@ class AniDB
 					$AniDBAPIXML->ratings->temporary : $AniDBAPIArray['rating'] = '';
 			}
 
-			$AniDBAPIArray += array(
+			$AniDBAPIArray += [
 				'type'        => isset($AniDBAPIXML->type[0]) ? (string)$AniDBAPIXML->type : '',
-				'description' => isset($AniDBAPIXML->description) ?
-						(string)$AniDBAPIXML->description : '',
-				'picture'     => isset($AniDBAPIXML->picture[0]) ? (string)$AniDBAPIXML->picture :
-						'',
+				'description' => isset($AniDBAPIXML->description) ? (string)$AniDBAPIXML->description : '',
+				'picture'     => isset($AniDBAPIXML->picture[0]) ? (string)$AniDBAPIXML->picture : '',
 				'epsarr'      => $episodeArray,
-			);
+			];
 
 			return $AniDBAPIArray;
 		}
@@ -226,7 +220,7 @@ class AniDB
 		$property = empty($property) ? 'name' : $property;
 		$temp     = '';
 		if ($element && $element[0]->attributes()) {
-			foreach ($element->children() AS $entry) {
+			foreach ($element->children() as $entry) {
 				$temp .= (string)$entry->$property . ', ';
 			}
 		}
@@ -236,7 +230,7 @@ class AniDB
 	/**
 	 * Requests and returns the API data from AniDB
 	 *
-	 * @return xmlobject
+	 * @return string
 	 */
 	private function getAniDbResponse()
 	{
@@ -249,12 +243,12 @@ class AniDB
 
 		$ch = curl_init($curlString);
 
-		$curlOpts = array(
+		$curlOpts = [
 			CURLOPT_RETURNTRANSFER => 1,
 			CURLOPT_HEADER         => 0,
 			CURLOPT_FAILONERROR    => 1,
 			CURLOPT_ENCODING       => 'gzip'
-		);
+		];
 
 		curl_setopt_array($ch, $curlOpts);
 		$apiresponse = curl_exec($ch);
@@ -334,7 +328,7 @@ class AniDB
 	private function insertAniDBEpisodes(array $episodeArr = [])
 	{
 		if (!empty($episodeArr)) {
-			foreach ($episodeArr AS $episode) {
+			foreach ($episodeArr as $episode) {
 				$this->pdo->queryInsert(
 						  sprintf('
 								INSERT IGNORE INTO anidb_episodes (anidbid, episodeid, episode_no, episode_title, airdate)
@@ -381,9 +375,9 @@ class AniDB
 					);
 				}
 
-				foreach ($animetitles AS $anime) {
+				foreach ($animetitles as $anime) {
 					echo "Remaining: $count  \r";
-					foreach ($anime->title AS $title) {
+					foreach ($anime->title as $title) {
 						$xmlAttribs = $title->attributes('xml', true);
 						$this->insertAniDb((string)$anime['aid'],
 										   (string)$title['type'],
@@ -449,7 +443,7 @@ class AniDB
 	 *
 	 * @return string
 	 */
-	private function updateAniDBInfoEps($AniDBInfoArray = array())
+	private function updateAniDBInfoEps($AniDBInfoArray = [])
 	{
 		$this->pdo->queryExec(
 				  sprintf('
@@ -483,7 +477,7 @@ class AniDB
 	 *
 	 * @param array $AniDBInfoArray
 	 */
-	private function updateAniChildTables($AniDBInfoArray = array())
+	private function updateAniChildTables($AniDBInfoArray = [])
 	{
 		$check = $this->pdo->queryOneRow(
 						   sprintf('

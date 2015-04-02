@@ -124,7 +124,7 @@ class NameFixer
 	/**
 	 * @param array $options Class instances / Echo to cli.
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		$defaults = [
 			'Echo'         => true,
@@ -146,9 +146,9 @@ class NameFixer
 		$this->fullall = '';
 		$this->_fileName = '';
 		$this->done = $this->matched = false;
-		$this->consoletools = ($options['ConsoleTools'] instanceof \ConsoleTools ? $options['ConsoleTools'] :new \ConsoleTools(['ColorCLI' => $this->pdo->log]));
+		$this->consoletools = ($options['ConsoleTools'] instanceof \ConsoleTools ? $options['ConsoleTools'] : new \ConsoleTools(['ColorCLI' => $this->pdo->log]));
 		$this->category = ($options['Categorize'] instanceof \Categorize ? $options['Categorize'] : new \Categorize(['Settings' => $this->pdo]));
-		$this->utility = ($options['Utility'] instanceof Utility ? $options['Utility'] :new Utility());
+		$this->utility = ($options['Utility'] instanceof Utility ? $options['Utility'] : new Utility());
 		$this->_groups = ($options['Groups'] instanceof \Groups ? $options['Groups'] : new \Groups(['Settings' => $this->pdo]));
 		$this->sphinx = ($options['SphinxSearch'] instanceof \SphinxSearch ? $options['SphinxSearch'] : new \SphinxSearch());
 	}
@@ -157,7 +157,7 @@ class NameFixer
 	 * Attempts to fix release names using the NFO.
 	 *
 	 * @param int $time    1: 24 hours, 2: no time limit
-	 * @param int $echo    1: change the name, anything else: preview of what could have been changed.
+	 * @param boolean $echo    1: change the name, anything else: preview of what could have been changed.
 	 * @param int $cats    1: other categories, 2: all categories
 	 * @param $nameStatus
 	 * @param $show
@@ -237,7 +237,7 @@ class NameFixer
 	 * Attempts to fix release names using the File name.
 	 *
 	 * @param int $time   1: 24 hours, 2: no time limit
-	 * @param int $echo   1: change the name, anything else: preview of what could have been changed.
+	 * @param boolean $echo   1: change the name, anything else: preview of what could have been changed.
 	 * @param int $cats   1: other categories, 2: all categories
 	 * @param $nameStatus
 	 * @param $show
@@ -462,14 +462,14 @@ class NameFixer
 	/**
 	 * Update the release with the new information.
 	 *
-	 * @param array  $release
-	 * @param string $name
-	 * @param string $method
-	 * @param int    $echo
-	 * @param string $type
-	 * @param int    $nameStatus
-	 * @param int    $show
-	 * @param int    $preId
+	 * @param array   $release
+	 * @param string  $name
+	 * @param string  $method
+	 * @param boolean $echo
+	 * @param string  $type
+	 * @param int     $nameStatus
+	 * @param int     $show
+	 * @param int     $preId
 	 */
 	public function updateRelease($release, $name, $method, $echo, $type, $nameStatus, $show, $preId = 0)
 	{
@@ -480,7 +480,7 @@ class NameFixer
 				$this->matched = true;
 				$this->relid = $release["releaseid"];
 
-				$determinedCategory = $this->category->determineCategory($newName, $release['group_id']);
+				$determinedCategory = $this->category->determineCategory($release['group_id'], $newName);
 
 				if ($type === "PAR2, ") {
 					$newName = ucwords($newName);
@@ -492,7 +492,7 @@ class NameFixer
 				$this->fixed++;
 
 				$newName = explode("\\", $newName);
-				$newName = preg_replace(array('/^[-=_\.:\s]+/', '/[-=_\.:\s]+$/'), '',  $newName[0]);
+				$newName = preg_replace(['/^[-=_\.:\s]+/', '/[-=_\.:\s]+$/'], '', $newName[0]);
 
 				if ($this->echooutput === true && $show === 1) {
 					$groupName = $this->_groups->getByNameByID($release['group_id']);
@@ -533,7 +533,7 @@ class NameFixer
 
 				$newTitle = $this->pdo->escapeString(substr($newName, 0, 255));
 
-				if ($echo == 1) {
+				if ($echo == true) {
 					if ($nameStatus == 1) {
 						$status = '';
 						switch ($type) {
@@ -617,7 +617,7 @@ class NameFixer
 	 * @void
 	 */
 	public static function echoChangedReleaseName(array $data =
-		array(
+		[
 			'new_name'     => '',
 			'old_name'     => '',
 			'new_category' => '',
@@ -625,7 +625,7 @@ class NameFixer
 			'group'        => '',
 			'release_id'   => 0,
 			'method'       => ''
-		)
+		]
 	) {
 		echo
 			PHP_EOL .
@@ -708,7 +708,7 @@ class NameFixer
 		return $join;
 	}
 
-	public function getPreFileNames($args = array())
+	public function getPreFileNames($args = [])
 	{
 		$timestart = time();
 		$counter = $counted = 0;
@@ -739,12 +739,10 @@ class NameFixer
 						)
 		);
 
-		if ($query !== false){
-
+		if ($query !== false) {
 			$total = $query->rowCount();
 
 			if ($total > 0 && $query instanceof \Traversable) {
-
 				echo $this->pdo->log->header("\n" . number_format($total) . ' releases to process.');
 
 				foreach ($query as $row) {
@@ -763,7 +761,17 @@ class NameFixer
 		}
 	}
 
-	// Match a release filename to a PreDB filename or title.
+	/**
+	 * Match a release filename to a PreDB filename or title.
+	 *
+	 * @param $release
+	 * @param boolean $echo
+	 * @param integer $namestatus
+	 * @param boolean $echooutput
+	 * @param integer $show
+	 *
+	 * @return int
+	 */
 	public function matchPredbFiles($release, $echo, $namestatus, $echooutput, $show)
 	{
 		$matching = 0;
@@ -793,7 +801,9 @@ class NameFixer
 		return $matching;
 	}
 
-	// Cleans file names for PreDB Match
+	/**
+	 * Cleans file names for PreDB Match
+	 */
 	protected function _cleanMatchFiles($fileName = '')
 	{
 
@@ -832,7 +842,17 @@ class NameFixer
 		}
 	}
 
-	// Match a Hash from the predb to a release.
+	/**
+	 * Match a Hash from the predb to a release.
+	 *
+	 * @param string $hash
+	 * @param $release
+	 * @param $namestatus
+	 * @param boolean $echooutput
+	 * @param $show
+	 *
+	 * @return int
+	 */
 	public function matchPredbHash($hash, $release, $echo, $namestatus, $echooutput, $show)
 	{
 		$pdo = $this->pdo;
@@ -867,7 +887,18 @@ class NameFixer
 		return $matching;
 	}
 
-	//  Check the array using regex for a clean name.
+	/**
+	 * Check the array using regex for a clean name.
+	 *
+	 * @param         $release
+	 * @param boolean $echo
+	 * @param string  $type
+	 * @param         $namestatus
+	 * @param         $show
+	 * @param boolean $preid
+	 *
+	 * @return boolean
+	 */
 	public function checkName($release, $echo, $type, $namestatus, $show, $preid = false)
 	{
 		// Get pre style name from releases.name
@@ -930,10 +961,10 @@ class NameFixer
 	 *  The first parameter is the column to update, the second is the value
 	 *  The final parameter is the ID of the release to update
 	 *
-	 * @param string $column
-	 * @param string|int $status
-	 * @param int $id
-	**/
+	 * @param string  $column
+	 * @param integer $status
+	 * @param integer $id
+	 */
 	private function _updateSingleColumn($column = '', $status = 0, $id = 0)
 	{
 		if ($column !== '' && $id !== 0) {
@@ -950,10 +981,18 @@ class NameFixer
 		}
 	}
 
-	//  Look for a TV name.
+	/**
+	 * Look for a TV name.
+	 *
+	 * @param $release
+	 * @param boolean $echo
+	 * @param string  $type
+	 * @param $namestatus
+	 * @param $show
+	 */
 	public function tvCheck($release, $echo, $type, $namestatus, $show)
 	{
-		$result = array();
+		$result = [];
 
 		if ($this->done === false && $this->relid !== $release["releaseid"]) {
 
@@ -977,10 +1016,18 @@ class NameFixer
 		}
 	}
 
-	//  Look for a movie name.
+	/**
+	 * Look for a movie name.
+	 *
+	 * @param $release
+	 * @param boolean $echo
+	 * @param string  $type
+	 * @param $namestatus
+	 * @param $show
+	 */
 	public function movieCheck($release, $echo, $type, $namestatus, $show)
 	{
-		$result = array();
+		$result = [];
 
 		if ($this->done === false && $this->relid !== $release["releaseid"]) {
 
@@ -1014,10 +1061,18 @@ class NameFixer
 		}
 	}
 
-	//  Look for a game name.
+	/**
+	 * Look for a game name.
+	 *
+	 * @param $release
+	 * @param boolean $echo
+	 * @param string $type
+	 * @param $namestatus
+	 * @param $show
+	 */
 	public function gameCheck($release, $echo, $type, $namestatus, $show)
 	{
-		$result = array();
+		$result = [];
 
 		if ($this->done === false && $this->relid !== $release["releaseid"]) {
 
@@ -1035,10 +1090,18 @@ class NameFixer
 		}
 	}
 
-	//  Look for a app name.
+	/**
+	 * Look for a app name.
+	 *
+	 * @param $release
+	 * @param boolean $echo
+	 * @param string $type
+	 * @param $namestatus
+	 * @param $show
+	 */
 	public function appCheck($release, $echo, $type, $namestatus, $show)
 	{
-		$result = array();
+		$result = [];
 
 		if ($this->done === false && $this->relid !== $release["releaseid"]) {
 
@@ -1054,10 +1117,18 @@ class NameFixer
 	 * Just for NFOS.
 	 */
 
-	//  TV.
+	/**
+	 * TV.
+	 *
+	 * @param $release
+	 * @param boolean $echo
+	 * @param string $type
+	 * @param $namestatus
+	 * @param $show
+	 */
 	public function nfoCheckTV($release, $echo, $type, $namestatus, $show)
 	{
-		$result = array();
+		$result = [];
 
 		if ($this->done === false && $this->relid !== $release["releaseid"]) {
 
@@ -1069,14 +1140,22 @@ class NameFixer
 		}
 	}
 
-	//  Movies.
+	/**
+	 * Movies.
+	 *
+	 * @param $release
+	 * @param boolean $echo
+	 * @param string $type
+	 * @param $namestatus
+	 * @param $show
+	 */
 	public function nfoCheckMov($release, $echo, $type, $namestatus, $show)
 	{
-		$result = array();
+		$result = [];
 
 		if ($this->done === false && $this->relid !== $release["releaseid"]) {
 
-			if (preg_match('/(?:((?<!Source\s)\:\s{1,}))(.+?(19|20)\d\d.+?(BDRip|bluray|DVD(R|Rip)?|XVID).+?)(\s{2,}|\r|\n)/i', $release["textstring"], $result)) {
+			if (preg_match('/(?:((?!Source\s)\:\s{1,}))(.+?(19|20)\d\d.+?(BDRip|bluray|DVD(R|Rip)?|XVID).+?)(\s{2,}|\r|\n)/i', $release["textstring"], $result)) {
 				$this->updateRelease($release, $result["2"], $method = "nfoCheck: Generic Movies 1", $echo, $type, $namestatus, $show);
 			} else if (preg_match('/(?:(\s{2,}))((?!Source).+?[\.\-_ ](19|20)\d\d.+?(BDRip|bluray|DVD(R|Rip)?|XVID).+?)(\s{2,}|\r|\n)/i', $release["textstring"], $result)) {
 				$this->updateRelease($release, $result["2"], $method = "nfoCheck: Generic Movies 2", $echo, $type, $namestatus, $show);
@@ -1086,10 +1165,16 @@ class NameFixer
 		}
 	}
 
-	//  Music.
+	/**
+	 * @param $release
+	 * @param boolean $echo
+	 * @param string $type
+	 * @param $namestatus
+	 * @param $show
+	 */
 	public function nfoCheckMus($release, $echo, $type, $namestatus, $show)
 	{
-		$result = array();
+		$result = [];
 
 		if ($this->done === false && $this->relid !== $release["releaseid"]) {
 
@@ -1100,16 +1185,23 @@ class NameFixer
 		}
 	}
 
-	//  Title (year)
+	/**
+	 * Title (year)
+	 *
+	 * @param $release
+	 * @param boolean $echo
+	 * @param string $type
+	 * @param $namestatus
+	 * @param $show
+	 */
 	public function nfoCheckTY($release, $echo, $type, $namestatus, $show)
 	{
-		$result = array();
+		$result = [];
 
 		if ($this->done === false && $this->relid !== $release["releaseid"]) {
 			if (preg_match('/(\w[-\w`~!@#$%^&*()_+={}|"<>?\[\]\\;\',.\/ ]+\s?\((19|20)\d\d\))/i', $release["textstring"], $result) && !preg_match('/\.pdf|Audio ?Book/i', $release["textstring"])) {
 				$releasename = $result[0];
 				if (preg_match('/(idiomas|lang|language|langue|sprache).*?\b(?P<lang>Brazilian|Chinese|Croatian|Danish|DE|Deutsch|Dutch|Estonian|ES|English|Englisch|Finnish|Flemish|Francais|French|FR|German|Greek|Hebrew|Icelandic|Italian|Japenese|Japan|Japanese|Korean|Latin|Nordic|Norwegian|Polish|Portuguese|Russian|Serbian|Slovenian|Swedish|Spanisch|Spanish|Thai|Turkish)\b/i', $release["textstring"], $result)) {
-
 					switch ($result['lang']) {
 						case 'DE':
 							$result['lang'] = 'DUTCH';
@@ -1128,8 +1220,8 @@ class NameFixer
 					}
 					$releasename = $releasename . "." . $result['lang'];
 				}
-				if (preg_match('/(frame size|(video )?res(olution)?|video).*?(?P<res>(272|336|480|494|528|608|\(?640|688|704|720x480|810|816|820|1 ?080|1280( \@)?|1 ?920(x1080)?))/i', $release["textstring"], $result)) {
 
+				if (preg_match('/(frame size|(video )?res(olution)?|video).*?(?P<res>(272|336|480|494|528|608|\(?640|688|704|720x480|810|816|820|1 ?080|1280( \@)?|1 ?920(x1080)?))/i', $release["textstring"], $result)) {
 					switch ($result['res']) {
 						case '272':
 						case '336':
@@ -1161,9 +1253,7 @@ class NameFixer
 					}
 
 					$releasename = $releasename . "." . $result['res'];
-				}
-				else if (preg_match('/(largeur|width).*?(?P<res>(\(?640|688|704|720|1280( \@)?|1 ?920))/i', $release["textstring"], $result)) {
-
+				} else if (preg_match('/(largeur|width).*?(?P<res>(\(?640|688|704|720|1280( \@)?|1 ?920))/i', $release["textstring"], $result)) {
 					switch ($result['res']) {
 						case '640':
 						case '(640':
@@ -1184,6 +1274,7 @@ class NameFixer
 
 					$releasename = $releasename . "." . $result['res'];
 				}
+
 				if (preg_match('/source.*?\b(?P<source>BD(-?(25|50|RIP))?|Blu-?Ray ?(3D)?|BRRIP|CAM(RIP)?|DBrip|DTV|DVD\-?(5|9|(R(IP)?|scr(eener)?))?|[HPS]D?(RIP|TV(RIP)?)?|NTSC|PAL|R5|Ripped |S?VCD|scr(eener)?|SAT(RIP)?|TS|VHS(RIP)?|VOD|WEB-DL)\b/i', $release["textstring"], $result)) {
 
 					switch ($result['source']) {
@@ -1210,9 +1301,7 @@ class NameFixer
 					}
 
 					$releasename = $releasename . "." . $result['source'];
-				}
-				else if (preg_match('/(codec( (name|code))?|(original )?format|res(olution)|video( (codec|format|res))?|tv system|type|writing library).*?\b(?P<video>AVC|AVI|DBrip|DIVX|\(Divx|DVD|[HX][._ -]?264|MPEG-4 Visual|NTSC|PAL|WMV|XVID)\b/i', $release["textstring"], $result)) {
-
+				} else if (preg_match('/(codec( (name|code))?|(original )?format|res(olution)|video( (codec|format|res))?|tv system|type|writing library).*?\b(?P<video>AVC|AVI|DBrip|DIVX|\(Divx|DVD|[HX][._ -]?264|MPEG-4 Visual|NTSC|PAL|WMV|XVID)\b/i', $release["textstring"], $result)) {
 					switch ($result['video']) {
 						case 'AVI':
 							$result['video'] = 'DVDRIP';
@@ -1242,6 +1331,7 @@ class NameFixer
 
 					$releasename = $releasename . "." . $result['video'];
 				}
+
 				if (preg_match('/(audio( format)?|codec( name)?|format).*?\b(?P<audio>0x0055 MPEG-1 Layer 3|AAC( LC)?|AC-?3|\(AC3|DD5(.1)?|(A_)?DTS-?(HD)?|Dolby(\s?TrueHD)?|TrueHD|FLAC|MP3)\b/i', $release["textstring"], $result)) {
 
 					switch ($result['audio']) {
@@ -1268,17 +1358,23 @@ class NameFixer
 		}
 	}
 
-	//  Games.
+	/**
+	 * Games.
+	 *
+	 * @param $release
+	 * @param boolean $echo
+	 * @param string $type
+	 * @param $namestatus
+	 * @param $show
+	 */
 	public function nfoCheckG($release, $echo, $type, $namestatus, $show)
 	{
-		$result = array();
+		$result = [];
 
 		if ($this->done === false && $this->relid !== $release["releaseid"]) {
-
 			if (preg_match('/ALiAS|BAT-TEAM|FAiRLiGHT|Game Type|Glamoury|HI2U|iTWINS|JAGUAR|(LARGE|MEDIUM)ISO|MAZE|nERv|PROPHET|PROFiT|PROCYON|RELOADED|REVOLVER|ROGUE|ViTALiTY/i', $release["textstring"])) {
-
 				if (preg_match('/\w[\w.+&*\/\()\',;: -]+\(c\)[-\w.\',;& ]+\w/i', $release["textstring"], $result)) {
-					$releasename = str_replace(array("(c)", "(C)"), "(GAMES) (c)", $result['0']);
+					$releasename = str_replace(["(c)", "(C)"], "(GAMES) (c)", $result['0']);
 					$this->updateRelease($release, $releasename, $method = "nfoCheck: PC Games (c)", $echo, $type, $namestatus, $show);
 				} else if (preg_match('/\w[\w.+&*\/()\',;: -]+\*ISO\*/i', $release["textstring"], $result)) {
 					$releasename = str_replace("*ISO*", "*ISO* (PC GAMES)", $result['0']);
@@ -1288,15 +1384,23 @@ class NameFixer
 		}
 	}
 
-	//  Misc.
+	//
+	/**
+	 * Misc.
+	 *
+	 * @param $release
+	 * @param boolean $echo
+	 * @param string $type
+	 * @param $namestatus
+	 * @param $show
+	 */
 	public function nfoCheckMisc($release, $echo, $type, $namestatus, $show)
 	{
-
 		if ($this->done === false && $this->relid !== $release["releaseid"]) {
 
 			if (preg_match('/Supplier.+?IGUANA/i', $release["textstring"])) {
 				$releasename = '';
-				$result = array();
+				$result = [];
 				if (preg_match('/\w[-\w`~!@#$%^&*()+={}|:"<>?\[\]\\;\',.\/ ]+\s\((19|20)\d\d\)/i', $release["textstring"], $result)) {
 					$releasename = $result[0];
 				} else if (preg_match('/\s\[\*\] (English|Dutch|French|German|Spanish)\b/i', $release["textstring"], $result)) {
@@ -1321,13 +1425,18 @@ class NameFixer
 		}
 	}
 
-	/*
+	/**
 	 * Just for filenames.
+	 *
+	 * @param $release
+	 * @param boolean $echo
+	 * @param string $type
+	 * @param $namestatus
+	 * @param $show
 	 */
-
 	public function fileCheck($release, $echo, $type, $namestatus, $show)
 	{
-		$result = array();
+		$result = [];
 
 		if ($this->done === false && $this->relid !== $release["releaseid"]) {
 
@@ -1371,6 +1480,8 @@ class NameFixer
 				$this->updateRelease($release, $result["0"], $method = "fileCheck: Title - SxxExx - Eptitle", $echo, $type, $namestatus, $show);
 			} else if (preg_match('/\w.+?\)\.nds/i', $release["textstring"], $result)) {
 				$this->updateRelease($release, $result["0"], $method = "fileCheck: ).nds Nintendo DS", $echo, $type, $namestatus, $show);
+			} else if (preg_match('/3DS_\d{4}.+\d{4} - (.+?)\.3ds/i', $release["textstring"], $result)) {
+				$this->updateRelease($release, "3DS " . $result["1"], $method = "fileCheck: .3ds Nintendo 3DS", $echo, $type, $namestatus, $show);
 			} else if (preg_match('/\w.+?\.(epub|mobi|azw|opf|fb2|prc|djvu|cb[rz])/i', $release["textstring"], $result)) {
 				$result = str_replace("." . $result["1"], " (" . $result["1"] . ")", $result['0']);
 				$this->updateRelease($release, $result, $method = "fileCheck: EBook", $echo, $type, $namestatus, $show);

@@ -43,27 +43,27 @@ if (isset($argv[1]) && $argv[1] == 'export' && isset($argv[2])) {
 		$table = 'predb';
 	}
 
-	// Truncate tmp_pre to clear any old data
-	$pdo->queryDirect("TRUNCATE TABLE tmp_pre");
+	// Truncate predb_imports to clear any old data
+	$pdo->queryDirect("TRUNCATE TABLE predb_imports");
 
-	// Import file into tmp_pre
+	// Import file into predb_imports
 	if ($argv[1] == 'remote') {
-		echo  $pdo->log->header("LOAD DATA LOCAL INFILE '" . $path . "' IGNORE into table tmp_pre FIELDS TERMINATED BY '\\t\\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\\r\\n' (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, groupname);");
-		$pdo->queryDirect("LOAD DATA LOCAL INFILE '" . $path . "' IGNORE into table tmp_pre FIELDS TERMINATED BY '\t\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\r\n' (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, groupname)");
+		echo  $pdo->log->header("LOAD DATA LOCAL INFILE '" . $path . "' IGNORE into table predb_imports FIELDS TERMINATED BY '\\t\\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\\r\\n' (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, groupname);");
+		$pdo->queryDirect("LOAD DATA LOCAL INFILE '" . $path . "' IGNORE into table predb_imports FIELDS TERMINATED BY '\t\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\r\n' (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, groupname)");
 	} else {
-		echo  $pdo->log->header("LOAD DATA INFILE '" . $path . "' IGNORE into table tmp_pre FIELDS TERMINATED BY '\\t\\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\\r\\n' (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, groupname);");
-		$pdo->queryDirect("LOAD DATA INFILE '" . $path . "' IGNORE into table tmp_pre FIELDS TERMINATED BY '\t\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\r\n' (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, groupname)");
+		echo  $pdo->log->header("LOAD DATA INFILE '" . $path . "' IGNORE into table predb_imports FIELDS TERMINATED BY '\\t\\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\\r\\n' (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, groupname);");
+		$pdo->queryDirect("LOAD DATA INFILE '" . $path . "' IGNORE into table predb_imports FIELDS TERMINATED BY '\t\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\r\n' (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, groupname)");
 	}
 
-    // Remove any titles where length <=8
-    echo $pdo->log->info("Deleting any records where title <=8 from Temporary Table");
-    $pdo->queryDirect("DELETE FROM tmp_pre WHERE LENGTH(title) <= 8");
+	// Remove any titles where length <=8
+	echo $pdo->log->info("Deleting any records where title <=8 from Temporary Table");
+	$pdo->queryDirect("DELETE FROM predb_imports WHERE LENGTH(title) <= 8");
 
 	// Add any groups that do not currently exist
 	$sqlAddGroups = <<<SQL_ADD_GROUPS
 INSERT IGNORE INTO groups (`name`, description)
 	SELECT groupname, 'Added by predb import script'
-	FROM tmp_pre AS t LEFT JOIN groups AS g ON t.`groupname` = g.`name`
+	FROM predb_imports AS t LEFT JOIN groups AS g ON t.`groupname` = g.`name`
 	WHERE t.`groupname` IS NOT NULL AND g.`name` IS NULL
 	GROUP BY groupname;
 SQL_ADD_GROUPS;
@@ -78,7 +78,7 @@ SQL_ADD_GROUPS;
 	$sqlInsert = <<<SQL_INSERT
 INSERT INTO $table (title, nfo, size, files, filename, nuked, nukereason, category, predate, SOURCE, requestid, group_id)
   SELECT t.title, t.nfo, t.size, t.files, t.filename, t.nuked, t.nukereason, t.category, t.predate, t.source, t.requestid, IF(g.id IS NOT NULL, g.id, 0)
-    FROM tmp_pre AS t
+    FROM predb_imports AS t
 	LEFT OUTER JOIN groups g ON t.groupname = g.name ON DUPLICATE KEY UPDATE predb.nfo = IF(predb.nfo IS NULL, t.nfo, predb.nfo),
 	  predb.size = IF(predb.size IS NULL, t.size, predb.size),
 	  predb.files = IF(predb.files IS NULL, t.files, predb.files),
@@ -101,7 +101,7 @@ SQL_INSERT;
 	$pdo->exec("CREATE TRIGGER insert_hashes AFTER INSERT ON predb FOR EACH ROW BEGIN INSERT INTO predb_hashes (pre_id, hashes) VALUES (NEW.id, CONCAT_WS(',', MD5(NEW.title), MD5(MD5(NEW.title)), SHA1(NEW.title))); END;");
 	$pdo->exec("CREATE TRIGGER update_hashes AFTER UPDATE ON predb FOR EACH ROW BEGIN IF NEW.title != OLD.title THEN UPDATE predb_hashes SET hashes = CONCAT_WS(',', MD5(NEW.title), MD5(MD5(NEW.title)), SHA1(NEW.title)) WHERE pre_id = OLD.id; END IF; END;");
 
-	$pdo->queryDirect("TRUNCATE TABLE tmp_pre");
+	$pdo->queryDirect("TRUNCATE TABLE predb_imports");
 } else {
 	exit($pdo->log->error("\nThis script can export or import a predb dump file. You may use the full path, or a relative path.\n"
 					. "For importing, the script insert new rows and update existing matched rows. For databases not on the local system, use remote, else use local.\n"

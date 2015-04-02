@@ -52,7 +52,7 @@ class XXX
 	/**
 	 * @param array $options Echo to cli / Class instances.
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		$defaults = [
 			'Echo'         => false,
@@ -134,7 +134,7 @@ class XXX
 	 *
 	 * @return int
 	 */
-	public function getXXXCount($cat, $maxAge = -1, $excludedCats = array())
+	public function getXXXCount($cat, $maxAge = -1, $excludedCats = [])
 	{
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
@@ -175,7 +175,7 @@ class XXX
 	 *
 	 * @return array
 	 */
-	public function getXXXRange($cat, $start, $num, $orderBy, $maxAge = -1, $excludedCats = array())
+	public function getXXXRange($cat, $start, $num, $orderBy, $maxAge = -1, $excludedCats = [])
 	{
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
@@ -241,17 +241,17 @@ class XXX
 				break;
 		}
 
-		return array($orderField, ((isset($orderArr[1]) && preg_match('/^asc|desc$/i', $orderArr[1])) ? $orderArr[1] : 'desc'));
+		return [$orderField, ((isset($orderArr[1]) && preg_match('/^asc|desc$/i', $orderArr[1])) ? $orderArr[1] : 'desc')];
 	}
 
 	/**
 	 * Order types for xxx page.
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public function getXXXOrdering()
 	{
-		return array('title_asc', 'title_desc');
+		return ['title_asc', 'title_desc'];
 	}
 
 	/**
@@ -260,7 +260,7 @@ class XXX
 	protected function getBrowseBy()
 	{
 		$browseBy = ' ';
-		$browseByArr = array('title', 'director', 'actors', 'genre', 'id');
+		$browseByArr = ['title', 'director', 'actors', 'genre', 'id'];
 		foreach ($browseByArr as $bb) {
 			if (isset($_REQUEST[$bb]) && !empty($_REQUEST[$bb])) {
 				$bbv = stripslashes($_REQUEST[$bb]);
@@ -292,11 +292,11 @@ class XXX
 		}
 
 		$tmpArr = explode(',', $data[$field]);
-		$newArr = array();
+		$newArr = [];
 		$i = 0;
 		foreach ($tmpArr as $ta) {
-			if ($field == "genre" ) {
-				$ta = $this->getGenres(true,$ta);
+			if ($field == "genre") {
+				$ta = $this->getGenres(true, $ta);
 				$ta = $ta["title"];
 			}
 			if ($i > 7) {
@@ -329,8 +329,7 @@ class XXX
 	public function update(
 		$id = '', $title = '', $tagLine = '', $plot = '', $genre = '', $director = '',
 		$actors = '', $extras = '', $productInfo = '', $trailers = '', $directUrl = '', $classUsed = '', $cover = '', $backdrop = ''
-	)
-	{
+	) {
 		if (!empty($id)) {
 
 			$this->pdo->queryExec(
@@ -360,9 +359,9 @@ class XXX
 	/**
 	 * Fetch xxx info for the movie.
 	 *
-	 * @param $xxxmovie
+	 * @param string $xxxmovie
 	 *
-	 * @return bool
+	 * @return boolean
 	 */
 	public function updateXXXInfo($xxxmovie)
 	{
@@ -375,7 +374,7 @@ class XXX
 
 		if ($iafd->findme() !== false) {
 
-			switch($iafd->classUsed) {
+			switch ($iafd->classUsed) {
 				case "ade":
 					$mov = new \ADE();
 					$mov->directLink = (string)$iafd->directUrl;
@@ -450,7 +449,7 @@ class XXX
 			}
 		}
 
-		$mov = array();
+		$mov = [];
 
 		$mov['trailers'] = (isset($res['trailers'])) ? serialize($res['trailers']) : '';
 		$mov['extras'] = (isset($res['extras'])) ? serialize($res['extras']) : '';
@@ -468,67 +467,82 @@ class XXX
 		$mov['directurl'] = html_entity_decode($res['directurl'], ENT_QUOTES, 'UTF-8');
 		$mov['classused'] = $this->whichclass;
 
-		$check = $this->pdo->queryOneRow(sprintf('SELECT id FROM xxxinfo WHERE title = %s',	$this->pdo->escapeString($mov['title'])));
+		$check = $this->pdo->queryOneRow(sprintf('SELECT id FROM xxxinfo WHERE title = %s', $this->pdo->escapeString($mov['title'])));
 		$xxxID = 0;
-		if(isset($check['id'])){
-		$xxxID = $check['id'];
-		}
-
-		if($check === false OR $xxxID > 0){
-
-		// Update Current XXX Information - getXXXCovers.php
-		if($xxxID > 0){
-			$this->update($check['id'], $mov['title'], $mov['tagline'], $mov['plot'], $mov['genre'], $mov['director'], $mov['actors'], $mov['extras'], $mov['productinfo'], $mov['trailers'], $mov['directurl'], $mov['classused']);
+		if (isset($check['id'])) {
 			$xxxID = $check['id'];
 		}
 
-		// Insert New XXX Information
-		if($check === false){
-			$xxxID = $this->pdo->queryInsert(
-				sprintf("
+		if ($check === false || $xxxID > 0) {
+			// Update Current XXX Information - getXXXCovers.php
+			if ($xxxID > 0) {
+				$this->update($check['id'],
+							  $mov['title'],
+							  $mov['tagline'],
+							  $mov['plot'],
+							  $mov['genre'],
+							  $mov['director'],
+							  $mov['actors'],
+							  $mov['extras'],
+							  $mov['productinfo'],
+							  $mov['trailers'],
+							  $mov['directurl'],
+							  $mov['classused']);
+				$xxxID = $check['id'];
+			}
+
+			// Insert New XXX Information
+			if ($check === false) {
+				$xxxID = $this->pdo->queryInsert(
+					sprintf("
 					INSERT INTO xxxinfo
 						(title, tagline, plot, genre, director, actors, extras, productinfo, trailers, directurl, classused, cover, backdrop, createddate, updateddate)
 					VALUES
 						(%s, %s, COMPRESS(%s), %s, %s, %s, %s, %s, %s, %s, %s, 0, 0, NOW(), NOW())",
-					$this->pdo->escapeString($mov['title']),
-					$this->pdo->escapeString($mov['tagline']),
-					$this->pdo->escapeString($mov['plot']),
-					$this->pdo->escapeString(substr($mov['genre'], 0, 64)),
-					$this->pdo->escapeString($mov['director']),
-					$this->pdo->escapeString($mov['actors']),
-					$this->pdo->escapeString($mov['extras']),
-					$this->pdo->escapeString($mov['productinfo']),
-					$this->pdo->escapeString($mov['trailers']),
-					$this->pdo->escapeString($mov['directurl']),
-					$this->pdo->escapeString($mov['classused'])
-				)
-			);
+							$this->pdo->escapeString($mov['title']),
+							$this->pdo->escapeString($mov['tagline']),
+							$this->pdo->escapeString($mov['plot']),
+							$this->pdo->escapeString(substr($mov['genre'], 0, 64)),
+							$this->pdo->escapeString($mov['director']),
+							$this->pdo->escapeString($mov['actors']),
+							$this->pdo->escapeString($mov['extras']),
+							$this->pdo->escapeString($mov['productinfo']),
+							$this->pdo->escapeString($mov['trailers']),
+							$this->pdo->escapeString($mov['directurl']),
+							$this->pdo->escapeString($mov['classused'])
+					)
+				);
 			}
 
 			if ($xxxID > 0) {
-
 				// BoxCover.
 				if (isset($mov['cover'])) {
-					$mov['cover'] = $this->releaseImage->saveImage($xxxID . '-cover', $mov['cover'], $this->imgSavePath);
+					$mov['cover'] = $this->releaseImage->saveImage($xxxID . '-cover',
+																   $mov['cover'],
+																   $this->imgSavePath);
 				}
 
 				// BackCover.
 				if (isset($mov['backdrop'])) {
-					$mov['backdrop'] = $this->releaseImage->saveImage($xxxID . '-backdrop', $mov['backdrop'], $this->imgSavePath, 1920, 1024);
+					$mov['backdrop'] = $this->releaseImage->saveImage($xxxID . '-backdrop',
+																	  $mov['backdrop'],
+																	  $this->imgSavePath,
+																	  1920,
+																	  1024);
 				}
 
-				$this->pdo->queryExec(sprintf('UPDATE xxxinfo SET cover = %d, backdrop = %d  WHERE id = %d', $mov['cover'], $mov['backdrop'], $xxxID));
-
+				$this->pdo->queryExec(sprintf('UPDATE xxxinfo SET cover = %d, backdrop = %d  WHERE id = %d',
+											  $mov['cover'],
+											  $mov['backdrop'],
+											  $xxxID));
 			} else {
 				$xxxID = -2;
 			}
-
 		}
 
 		if ($this->echooutput) {
 			$this->pdo->log->doEcho(
-				$this->pdo->log->headerOver(($xxxID !== false ? 'Added/updated XXX movie: ' : 'Nothing to update: ')) .
-				$this->pdo->log->primary($mov['title'])
+				$this->pdo->log->headerOver(($xxxID !== false ? 'Added/updated XXX movie: ' : 'Nothing to update: ')) . $this->pdo->log->primary($mov['title'])
 			);
 		}
 
@@ -594,13 +608,13 @@ class XXX
 	/**
 	 * Checks xxxinfo to make sure releases exist
 	 *
-	 * @param $releaseName
+	 * @param string $releaseName
 	 *
-	 * @return array|bool
+	 * @return array|boolean
 	 */
 	protected function checkXXXInfoExists($releaseName)
 	{
-		return $this->pdo->queryOneRow(sprintf("SELECT id, title FROM xxxinfo WHERE title LIKE %s", "'". $releaseName . "%'"));
+		return $this->pdo->queryOneRow(sprintf("SELECT id, title FROM xxxinfo WHERE title LIKE %s", "'" . $releaseName . "%'"));
 	}
 
 	/**
@@ -634,8 +648,12 @@ class XXX
 				$name = trim(preg_replace('/(brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|latin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish)$/i', '', $name));
 
 				// Check if the name is long enough and not just numbers and not file (d) of (d) and does not contain Episodes and any dated 00.00.00 which are site rips..
-				if (strlen($name) > 5 && !preg_match('/^\d+$/', $name) && !preg_match('/( File \d+ of \d+|\d+.\d+.\d+)/',$name) && !preg_match('/(E\d+)/',$name) && !preg_match('/\d\d\.\d\d.\d\d/', $name)) {
+				if (strlen($name) > 5 && !preg_match('/^\d+$/', $name) &&
+					!preg_match('/( File \d+ of \d+|\d+.\d+.\d+)/', $name) &&
+					!preg_match('/(E\d+)/', $name) && !preg_match('/\d\d\.\d\d.\d\d/', $name)
+				) {
 					$this->currentTitle = $name;
+
 					return true;
 				} else {
 					$this->pdo->log->doEcho(".", false);
@@ -652,7 +670,8 @@ class XXX
 	 *
 	 * @return array|null
 	 */
-	public function getAllGenres($activeOnly = false) {
+	public function getAllGenres($activeOnly = false)
+	{
 		$ret = null;
 
 		if ($activeOnly) {
@@ -678,7 +697,7 @@ class XXX
 	public function getGenres($activeOnly = false, $gid = null)
 	{
 		if (isset($gid)) {
-			$gid = " AND id = ". $this->pdo->escapeString($gid) . " ORDER BY title";
+			$gid = " AND id = " . $this->pdo->escapeString($gid) . " ORDER BY title";
 		} else {
 			$gid = " ORDER BY title";
 		}
@@ -717,7 +736,7 @@ class XXX
 			}
 		}
 
-		$ret = ltrim($ret,",");
+		$ret = ltrim($ret, ",");
 		return ($ret);
 	}
 
@@ -732,7 +751,7 @@ class XXX
 	{
 		$res = '';
 		if (isset($genre)) {
-			$res = $this->pdo->queryInsert(sprintf("INSERT INTO genres (title, type, disabled) VALUES (%s ,%d ,%d)",$this->pdo->escapeString($genre), 6000, 0));
+			$res = $this->pdo->queryInsert(sprintf("INSERT INTO genres (title, type, disabled) VALUES (%s ,%d ,%d)", $this->pdo->escapeString($genre), 6000, 0));
 		}
 		return $res;
 	}
@@ -751,7 +770,7 @@ class XXX
 		if ($whichclass === "ade") {
 			if (!empty($res)) {
 				$trailers = unserialize($res);
-				$ret .="<object width='360' height='240' type='application/x-shockwave-flash' id='EmpireFlashPlayer' name='EmpireFlashPlayer' data='".	$trailers['url'] . "'>";
+				$ret .= "<object width='360' height='240' type='application/x-shockwave-flash' id='EmpireFlashPlayer' name='EmpireFlashPlayer' data='" . $trailers['url'] . "'>";
 				$ret .= "<param name='flashvars' value= 'streamID=" . $trailers['streamid'] . "&amp;autoPlay=false&amp;BaseStreamingUrl=" . $trailers['baseurl'] . "'>";
 				$ret .= "</object>";
 
@@ -762,8 +781,8 @@ class XXX
 			if (!empty($res)) {
 				$trailers = unserialize($res);
 				$ret .= "<embed id='trailer' width='480' height='360'";
-				$ret .= "flashvars='" .	$trailers['flashvars'] . "' allowfullscreen='true' allowscriptaccess='always' quality='high' name='trailer' style='undefined'";
-				$ret .= "src='" . $trailers['baseurl'] . "' type='application/x-shockwave-flash'>";
+				$ret .= "flashvars='{$trailers['flashvars']}' allowfullscreen='true' allowscriptaccess='always' quality='high' name='trailer' style='undefined'";
+				$ret .= "src='{$trailers['baseurl']}' type='application/x-shockwave-flash'>";
 
 				return ($ret);
 			}

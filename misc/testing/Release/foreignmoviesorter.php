@@ -17,18 +17,21 @@ if (isset($argv[1]) && $argv[1] === "true") {
 					. "php $argv[0] true       ...:recategorize foreign movies.\n"));
 }
 
-function getForeignMovies() {
+function getForeignMovies()
+{
 	global $pdo;
 	$like = 'LIKE';
 	return $pdo->query('SELECT r.id, r.searchname FROM releases r JOIN audio_data ra ON ra.releaseID = r.id WHERE ra.audiolanguage ' . $like . " '%English%' AND r.categoryid = 2010");
 }
 
-function updateRelease($id, $cat) {
+function updateRelease($id, $cat)
+{
 	global $pdo;
 	$pdo->queryExec(sprintf("UPDATE releases SET categoryid = %s WHERE id = %d", $cat, $id));
 }
 
-function determineMovieCategory($name) {
+function determineMovieCategory($name)
+{
 	// Determine sub category
 	global $categorize;
 

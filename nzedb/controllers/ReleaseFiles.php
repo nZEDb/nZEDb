@@ -99,7 +99,7 @@ class ReleaseFiles
 					$this->pdo->escapeString(utf8_encode($name)),
 					$this->pdo->escapeString($size),
 					$this->pdo->from_unixtime($createdTime),
-					$hasPassword ));
+					$hasPassword));
 		}
 		return 0;
 	}

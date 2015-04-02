@@ -1,13 +1,13 @@
 <?php
 require_once './config.php';
 
-$page = new AdminPage();
+$page    = new AdminPage();
 $regexes = new Regexes(['Settings' => $page->settings, 'Table_Name' => 'release_naming_regexes']);
 
 // Set the current action.
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
 
-switch($action) {
+switch ($action) {
 	case 'submit':
 		if ($_POST["group_regex"] == "") {
 			$page->smarty->assign('error', "Group regex must not be empty!");
@@ -34,25 +34,25 @@ switch($action) {
 			$regexes->updateRegex($_POST);
 		}
 
-		header("Location:".WWW_TOP."/release_naming_regexes-list.php");
+		header("Location:" . WWW_TOP . "/release_naming_regexes-list.php");
 		break;
 
 	case 'view':
 	default:
 		if (isset($_GET["id"])) {
 			$page->title = "Release Naming Regex Edit";
-			$id = $_GET["id"];
-			$r = $regexes->getRegexByID($id);
+			$id          = $_GET["id"];
+			$r           = $regexes->getRegexByID($id);
 		} else {
 			$page->title = "Release Naming Regex Add";
-			$r = ['status' => 1];
+			$r           = ['status' => 1];
 		}
 		$page->smarty->assign('regex', $r);
 		break;
 }
 
-$page->smarty->assign('status_ids', array(Category::STATUS_ACTIVE,Category::STATUS_INACTIVE));
-$page->smarty->assign('status_names', array( 'Yes', 'No'));
+$page->smarty->assign('status_ids', [Category::STATUS_ACTIVE, Category::STATUS_INACTIVE]);
+$page->smarty->assign('status_names', ['Yes', 'No']);
 
 $page->content = $page->smarty->fetch('release_naming_regexes-edit.tpl');
 $page->render();

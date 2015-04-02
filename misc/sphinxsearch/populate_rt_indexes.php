@@ -34,7 +34,7 @@ function releases_rt()
 		foreach ($rows as $row) {
 			$i++;
 			$tempString .= sprintf(
-				'(%d, %s, %s, %s, %s),' ,
+				'(%d, %s, %s, %s, %s),',
 				$row['id'],
 				$sphinx->sphinxQL->escapeString($row['guid']),
 				$sphinx->sphinxQL->escapeString($row['name']),

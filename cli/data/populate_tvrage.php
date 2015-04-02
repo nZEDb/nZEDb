@@ -29,7 +29,7 @@ if ($tvshows !== false) {
 									  $pdo->escapeString($rage->country)
 							  ));
 			$updated++;
-            echo "added\n";
+			echo "added\n";
 		} else {
 			echo "FAILED!!\n";
 		}

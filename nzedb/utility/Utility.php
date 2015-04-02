@@ -18,10 +18,8 @@ class Utility
 
 	static public function clearScreen()
 	{
-		if (self::isCLI())
-		{
-			if (self::isWin())
-			{
+		if (self::isCLI()) {
+			if (self::isWin()) {
 				passthru('cls');
 			} else {
 				passthru('clear');
@@ -131,10 +129,9 @@ class Utility
 		$fileSpec = '';
 
 		if (!empty($options['id']) && in_array($options['type'],
-		   ['anime', 'audio', 'audiosample', 'book', 'console',  'games', 'movies', 'music', 'preview', 'sample', 'tvrage', 'video', 'xxx'])) {
+		   ['anime', 'audio', 'audiosample', 'book', 'console', 'games', 'movies', 'music', 'preview', 'sample', 'tvrage', 'video', 'xxx'])) {
 			$fileSpec = sprintf($fileSpecTemplate, $options['type'], $options['id'], $options['suffix']);
-			$fileSpec = file_exists(nZEDb_COVERS . $fileSpec) ? $fileSpec :
-				sprintf($fileSpecTemplate, $options['type'], 'no', $options['suffix']);
+			$fileSpec = file_exists(nZEDb_COVERS . $fileSpec) ? $fileSpec : sprintf($fileSpecTemplate, $options['type'], 'no', $options['suffix']);
 		}
 
 		return $fileSpec;
@@ -293,7 +290,7 @@ class Utility
 	/**
 	 * Detect if the command is accessible on the system.
 	 *
-	 * @param $cmd
+	 * @param string $cmd
 	 *
 	 * @return bool|null Returns true if found, false if not found, and null if which is not detected.
 	 */
@@ -332,7 +329,8 @@ class Utility
 	{
 		$gzipped = null;
 		if (($fp = fopen($filename, 'r')) !== false) {
-			if (@fread($fp, 2) == "\x1F\x8B") { // this is a gzip'd file
+			if (@fread($fp, 2) == "\x1F\x8B") {
+				// this is a gzip'd file
 				fseek($fp, -4, SEEK_END);
 				if (strlen($datum = @fread($fp, 4)) == 4) {
 					$gzipped = $datum;
@@ -466,7 +464,7 @@ class Utility
 	 *
 	 * @param string $filePath
 	 *
-	 * @return bool|string
+	 * @return string|false
 	 */
 	static public function unzipGzipFile($filePath)
 	{
@@ -1016,7 +1014,7 @@ class Utility
 	}
 
 	// Convert obj to array.
-	static public function objectsIntoArray ($arrObjData, $arrSkipIndices = [])
+	static public function objectsIntoArray($arrObjData, $arrSkipIndices = [])
 	{
 		$arrData = [];
 
@@ -1040,8 +1038,19 @@ class Utility
 		return $arrData;
 	}
 
-	// Central function for sending site email.
-	static public function sendEmail($to, $subject, $contents, $from)
+	/**
+	 * Central function for sending site email.
+	 *
+	 * @param string $to
+	 * @param string $subject
+	 * @param string $contents
+	 * @param string $from
+	 *
+	 * @return boolean
+	 * @throws \Exception
+	 * @throws \phpmailerException
+	 */
+	public static function sendEmail($to, $subject, $contents, $from)
 	{
 		// Email *always* uses CRLF for line endings unless the mail agent is broken, like qmail
 		$CRLF = "\r\n";

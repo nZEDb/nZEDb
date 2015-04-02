@@ -1,10 +1,12 @@
 <?php
+
 use nzedb\db\Settings;
+
 /**
  * Class TraktTv
  * Lookup information from trakt.tv using their API.
  */
-Class TraktTv
+class TraktTv
 {
 	private $APIKEY;
 
@@ -68,7 +70,7 @@ Class TraktTv
 	 *
 	 * @access public
 	 */
-	public function traktMoviesummary($movie = '', $array=false)
+	public function traktMoviesummary($movie = '', $array = false)
 	{
 		if (!empty($this->APIKEY)) {
 			$MovieJson = nzedb\utility\Utility::getUrl([
@@ -76,7 +78,7 @@ Class TraktTv
 						'http://api.trakt.tv/movie/summary.json/' .
 						$this->APIKEY .
 						'/' .
-						str_replace([' ', '_', '.'], '-',  str_replace(['(', ')'], '', $movie))
+						str_replace([' ', '_', '.'], '-', str_replace(['(', ')'], '', $movie))
 				]
 			);
 

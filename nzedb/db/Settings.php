@@ -49,7 +49,7 @@ class Settings extends DB
 	public function __construct(array $options = [])
 	{
 		parent::__construct($options);
-		$result         = parent::exec("describe site", true);
+		$result = parent::exec("describe site", true);
 		$this->table = ($result === false) ? 'settings' : 'site';
 		$this->setCovers();
 
@@ -130,7 +130,7 @@ class Settings extends DB
 
 	public function rowsToArray(array $rows)
 	{
-		foreach($rows as $row) {
+		foreach ($rows as $row) {
 			if (is_array($row)) {
 				$this->rowToArray($row);
 			}

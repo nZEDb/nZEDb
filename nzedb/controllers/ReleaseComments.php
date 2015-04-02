@@ -38,8 +38,7 @@ class ReleaseComments
 	public function deleteComment($id)
 	{
 		$res = $this->getCommentById($id);
-		if ($res)
-		{
+		if ($res) {
 			$this->pdo->queryExec(sprintf("DELETE FROM release_comments WHERE id = %d", $id));
 			$this->updateReleaseCommentCount($res["releaseid"]);
 		}
@@ -55,11 +54,9 @@ class ReleaseComments
 	{
 
 		$numcomments = $this->getCommentCountForUser($id);
-		if ($numcomments > 0)
-		{
+		if ($numcomments > 0) {
 			$comments = $this->getCommentsForUserRange($id, 0, $numcomments);
-			foreach ($comments as $comment)
-			{
+			foreach ($comments as $comment) {
 				$this->deleteComment($comment["id"]);
 				$this->updateReleaseCommentCount($comment["releaseid"]);
 			}
@@ -68,8 +65,9 @@ class ReleaseComments
 
 	public function addComment($id, $text, $userid, $host)
 	{
-		if ($this->pdo->getSetting('storeuserips') != "1")
+		if ($this->pdo->getSetting('storeuserips') != "1") {
 			$host = "";
+		}
 
 		$username = $this->pdo->queryOneRow(sprintf('SELECT username FROM users WHERE id = %d', $userid));
 		$username = ($username === false ? 'ANON' : $username['username']);
@@ -131,10 +129,11 @@ class ReleaseComments
 
 	public function getCommentsForUserRange($uid, $start, $num)
 	{
-		if ($start === false)
-			$limit = "";
-		else
-			$limit = " LIMIT ".$num." OFFSET ".$start;
+		if ($start === false) {
+			$limit = '';
+		} else {
+			$limit = " LIMIT $num OFFSET $start";
+		}
 
 		return $this->pdo->query(
 			sprintf("

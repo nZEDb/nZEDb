@@ -38,7 +38,7 @@ class ForkingImportNZB extends Forking
 	public function start($folder, $maxProcesses, $deleteComplete, $deleteFailed, $useFileName, $maxPerProcess)
 	{
 		$startTime = microtime(true);
-		$directories = glob($folder . '/*' , GLOB_ONLYDIR);
+		$directories = glob($folder . '/*', GLOB_ONLYDIR);
 
 		$this->_workCount = count($directories);
 
@@ -79,7 +79,7 @@ class ForkingImportNZB extends Forking
 	{
 		foreach ($directories as $directory) {
 			$this->_executeCommand(
-				$this->importPath  . '"' .
+				$this->importPath . '"' .
 				$directory . '" ' .
 				$this->deleteComplete . ' ' .
 				$this->deleteFailed . ' ' .

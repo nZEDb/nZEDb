@@ -160,7 +160,7 @@ class Users
 	 *
 	 * @param $orderBy
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public function getBrowseOrder($orderBy)
 	{
@@ -213,15 +213,15 @@ class Users
 	/**
 	 * Add a new user.
 	 *
-	 * @param     $userName
-	 * @param     $firstName
-	 * @param     $lastName
-	 * @param     $password
-	 * @param     $email
-	 * @param     $role
-	 * @param     $host
-	 * @param int $invites
-	 * @param int $invitedBy
+	 * @param string  $userName
+	 * @param string  $firstName
+	 * @param string  $lastName
+	 * @param string  $password
+	 * @param string  $email
+	 * @param integer $role
+	 * @param $host
+	 * @param integer $invites
+	 * @param integer $invitedBy
 	 *
 	 * @return bool|int
 	 */
@@ -488,7 +488,7 @@ class Users
 	 *
 	 * @param int $userID ID of the user.
 	 *
-	 * @return array|bool
+	 * @return boolean|array
 	 */
 	public function getById($userID)
 	{
@@ -545,7 +545,7 @@ class Users
 	/**
 	 * Get valid list of user sorting methods.
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public function getBrowseOrdering()
 	{
@@ -586,9 +586,9 @@ class Users
 	 * When a user is changing their password of registering, verify their password meets certain criteria.
 	 * It must be at least 6 characters.
 	 *
-	 * @param $password
+	 * @param string $password
 	 *
-	 * @return bool
+	 * @return boolean
 	 */
 	public function isValidPassword($password)
 	{
@@ -1040,7 +1040,7 @@ class Users
 	 * @return array
 	 */
 	public function getCategoryExclusion($userID)
-	{;
+	{
 		$ret = [];
 		$categories = $this->pdo->query(sprintf("SELECT categoryid FROM user_excluded_categories WHERE user_id = %d", $userID));
 		foreach ($categories as $category) {

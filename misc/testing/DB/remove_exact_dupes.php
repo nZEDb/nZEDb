@@ -59,4 +59,4 @@ do {
 	$count = 0;
 	echo "\n\n";
 } while ($total > 0);
-echo $pdo->log->header("\nDeleted ". number_format($all) . " Duplicate Releases");
+echo $pdo->log->header("\nDeleted " . number_format($all) . " Duplicate Releases");

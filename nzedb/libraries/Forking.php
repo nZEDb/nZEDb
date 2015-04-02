@@ -333,7 +333,7 @@ class Forking extends \fork_daemon
 		if ($run[0]['days'] == 1) {
 			$backfilldays = "backfill_target";
 		} elseif ($run[0]['days'] == 2) {
-			$backfilldays = round(abs(strtotime(date("Y-m-d")) - strtotime($this->pdo->getSetting('safebackfilldate'))) / 86400);;
+			$backfilldays = round(abs(strtotime(date("Y-m-d")) - strtotime($this->pdo->getSetting('safebackfilldate'))) / 86400);
 		}
 
 		$data = $this->pdo->queryOneRow(
@@ -409,7 +409,7 @@ class Forking extends \fork_daemon
 	{
 		foreach ($groups as $group) {
 			$this->_executeCommand(
-				PHP_BINARY . ' ' . nZEDb_UPDATE  . 'update_binaries.php ' . $group['name'] . ' ' . $group['max']
+				PHP_BINARY . ' ' . nZEDb_UPDATE . 'update_binaries.php ' . $group['name'] . ' ' . $group['max']
 			);
 		}
 	}
@@ -496,7 +496,7 @@ class Forking extends \fork_daemon
 		if ($threads > 16) {
 			$threads = 16;
 		}
-		switch($this->workTypeOptions[0]) {
+		switch ($this->workTypeOptions[0]) {
 			case "md5":
 				$join = "LEFT OUTER JOIN release_files rf ON r.id = rf.releaseid AND rf.ishashed = 1";
 				$where = "r.ishashed = 1 AND r.dehashstatus BETWEEN -6 AND 0";
@@ -574,8 +574,8 @@ class Forking extends \fork_daemon
 			$groups = $this->pdo->queryDirect('SELECT id FROM groups WHERE (active = 1 OR backfill = 1)');
 
 			if ($groups instanceof \Traversable) {
-				foreach($groups as $group) {
-					if ($this->pdo->queryOneRow(sprintf('SELECT id FROM collections_%d  LIMIT 1',$group['id'])) !== false) {
+				foreach ($groups as $group) {
+					if ($this->pdo->queryOneRow(sprintf('SELECT id FROM collections_%d  LIMIT 1', $group['id'])) !== false) {
 						$this->work[] = ['id' => $group['id']];
 					}
 				}
@@ -591,9 +591,7 @@ class Forking extends \fork_daemon
 	{
 		foreach ($groups as $group) {
 			if ($this->tablePerGroup === true) {
-				$this->_executeCommand(
-					$this->dnr_path . 'releases  ' .  $group['id'] . '"'
-				);
+				$this->_executeCommand($this->dnr_path . 'releases  ' . $group['id'] . '"');
 			} else {
 				$this->_executeCommand(
 					PHP_BINARY . ' ' . nZEDb_UPDATE . 'update_releases.php 1 false ' . $group['name']
@@ -628,7 +626,7 @@ class Forking extends \fork_daemon
 
 			if ($type !== '') {
 				$this->_executeCommand(
-					$this->dnr_path . $type .  $group['id'] . (isset($group['renamed']) ? ('  ' . $group['renamed']) : '') . '"'
+					$this->dnr_path . $type . $group['id'] . (isset($group['renamed']) ? ('  ' . $group['renamed']) : '') . '"'
 				);
 			}
 		}
@@ -909,9 +907,7 @@ class Forking extends \fork_daemon
 	public function requestIDChildWorker($groups, $identifier = '')
 	{
 		foreach ($groups as $group) {
-			$this->_executeCommand(
-				$this->dnr_path . 'requestid  ' .  $group['id'] . '"'
-			);
+			$this->_executeCommand($this->dnr_path . 'requestid  ' . $group['id'] . '"');
 		}
 	}
 
@@ -930,7 +926,7 @@ class Forking extends \fork_daemon
 	{
 		foreach ($groups as $group) {
 			$this->_executeCommand(
-				$this->dnr_path . 'update_per_group  ' .  $group['id'] . '"'
+				$this->dnr_path . 'update_per_group  ' . $group['id'] . '"'
 			);
 		}
 	}
@@ -946,7 +942,7 @@ class Forking extends \fork_daemon
 	 */
 	protected function _executeCommand($command)
 	{
-		switch($this->outputType) {
+		switch ($this->outputType) {
 			case self::OUTPUT_NONE:
 				exec($command);
 				break;
@@ -1087,9 +1083,11 @@ class Forking extends \fork_daemon
 	 * @var bool
 	 */
 	private $processAdditional = false; // Should we process additional?
-	private $processNFO = false;        // Should we process NFOs?
-	private $processMovies = false;     // Should we process Movies?
-	private $processTV = false;         // Should we process TV?
+	private $processNFO = false; // Should we process NFOs?
+	private $processMovies = false; // Should we process Movies?
+	private $processTV = false; // Should we process TV?
 }
 
-class ForkingException extends \Exception {}
+class ForkingException extends \Exception
+{
+}

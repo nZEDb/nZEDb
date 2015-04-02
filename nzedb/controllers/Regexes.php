@@ -1,6 +1,6 @@
 <?php
 
-Class Regexes
+class Regexes
 {
 	/**
 	 * @var \nzedb\db\Settings
@@ -112,7 +112,7 @@ Class Regexes
 	{
 		return $this->pdo->query(
 			sprintf(
-				'SELECT * FROM %s %s %s',
+				'SELECT * FROM %s %s ORDER BY id %s',
 				$this->tableName,
 				$this->_groupQueryString($group_regex),
 				($limit ? ('LIMIT ' . $limit . ' OFFSET ' . $offset) : '')

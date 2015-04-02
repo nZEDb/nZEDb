@@ -21,7 +21,7 @@ $groupArr = $nntp->selectGroup($group);
 print_r($groupArr);
 
 // Insert actual local part numbers here.
-$msg = $nntp->getXOVER($first.'-'.$first);
+$msg = $nntp->getXOVER($first . '-' . $first);
 
 // Print out the array of headers.
 print_r($msg);
@@ -29,4 +29,4 @@ print_r($msg);
 // get postdate for an article
 $binaries = new \Binaries(['NNTP' => $nntp]);
 $newdate = $binaries->postdate($first, $groupArr);
-echo $cli->primary("The posted date for ".$group.", article ".$first." is ".date('Y-m-d H:i:s', $newdate));
+echo $cli->primary("The posted date for " . $group . ", article " . $first . " is " . date('Y-m-d H:i:s', $newdate));

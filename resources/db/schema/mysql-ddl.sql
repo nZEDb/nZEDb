@@ -167,6 +167,7 @@ CREATE TABLE bookinfo (
   createddate DATETIME            NOT NULL,
   updateddate DATETIME            NOT NULL,
   PRIMARY KEY (id),
+  FULLTEXT INDEX ix_bookinfo_author_title_ft (author, title),
   UNIQUE INDEX ix_bookinfo_asin (asin)
 )
   ENGINE = MYISAM
@@ -281,6 +282,7 @@ CREATE TABLE consoleinfo (
   createddate DATETIME            NOT NULL,
   updateddate DATETIME            NOT NULL,
   PRIMARY KEY (id),
+  FULLTEXT INDEX ix_consoleinfo_title_platform_ft (title, platform),
   UNIQUE INDEX ix_consoleinfo_asin (asin)
 )
   ENGINE = MYISAM
@@ -504,6 +506,7 @@ CREATE TABLE musicinfo (
   createddate DATETIME            NOT NULL,
   updateddate DATETIME            NOT NULL,
   PRIMARY KEY (id),
+  FULLTEXT INDEX ix_musicinfo_artist_title_ft (artist, title),
   UNIQUE INDEX ix_musicinfo_asin (asin)
 )
   ENGINE = MYISAM

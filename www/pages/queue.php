@@ -10,27 +10,27 @@ if (!$userData) {
 $page->smarty->assign('user', $userData);
 
 $queueType = $error = '';
-$queue = null;
-switch($page->settings->getSetting('sabintegrationtype')) {
+$queue     = null;
+switch ($page->settings->getSetting('sabintegrationtype')) {
 	case SABnzbd::INTEGRATION_TYPE_NONE:
 		if ($userData['queuetype'] == 2) {
 			$queueType = 'NZBGet';
-			$queue = new NZBGet($page);
+			$queue     = new NZBGet($page);
 		}
 		break;
 	case SABnzbd::INTEGRATION_TYPE_SITEWIDE:
 		$queueType = 'Sabnzbd';
-		$queue = new SABnzbd($page);
+		$queue     = new SABnzbd($page);
 		break;
 	case SABnzbd::INTEGRATION_TYPE_USER:
-		switch((int)$userData['queuetype']) {
+		switch ((int)$userData['queuetype']) {
 			case 1:
 				$queueType = 'Sabnzbd';
-				$queue = new SABnzbd($page);
+				$queue     = new SABnzbd($page);
 				break;
 			case 2:
 				$queueType = 'NZBGet';
-				$queue = new NZBGet($page);
+				$queue     = new NZBGet($page);
 				break;
 		}
 		break;
@@ -78,9 +78,9 @@ if (!is_null($queue)) {
 }
 
 $page->smarty->assign(['queueType' => $queueType, 'error' => $error, 'user', $userData]);
-$page->title = "Your $queueType Download Queue";
-$page->meta_title = "View $queueType Queue";
-$page->meta_keywords = "view," . strtolower($queueType) .",queue";
+$page->title            = "Your $queueType Download Queue";
+$page->meta_title       = "View $queueType Queue";
+$page->meta_keywords    = "view," . strtolower($queueType) . ",queue";
 $page->meta_description = "View $queueType Queue";
 
 $page->content = $page->smarty->fetch('viewqueue.tpl');

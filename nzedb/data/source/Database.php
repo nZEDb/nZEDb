@@ -89,7 +89,7 @@ abstract class Database extends Source
 			$this->connection = new PDO($dsn, $config['login'], $config['password'], $options);
 		} catch (PDOException $e) {
 			preg_match('/SQLSTATE\[(.+?)\]/', $e->getMessage(), $code);
-			$code = $code[1] ? : 0;
+			$code = $code[1] ?: 0;
 			switch (true) {
 				case $code === 'HY000' || substr($code, 0, 2) === '08':
 					$msg = "Unable to connect to host `{$config['host']}`.";
@@ -120,7 +120,7 @@ abstract class Database extends Source
 	 * @param array  $options If $query is a string, $options contains an array of bind values to be
 	 *                        escaped, quoted, and inserted into `$query`.
 	 *
-	 * @return boolean Returns `true` if the query succeeded, otherwise `false`.
+	 * @return boolean|null Returns `true` if the query succeeded, otherwise `false`.
 	 * @filter
 	 */
 	public function create($query, array $options = [])
@@ -184,7 +184,7 @@ abstract class Database extends Source
 
 		return $this->_filter(__METHOD__,
 							  compact('query', 'options'),
-			function ($self, $params) {
+			function($self, $params) {
 				$query  = $params['query'];
 				$args   = $params['options'];
 				$return = $args['return'];
@@ -206,7 +206,7 @@ abstract class Database extends Source
 					case 'resource':
 						return $result;
 					case 'array':
-						$columns = $args['schema'] ? : $self->schema($query, $result);
+						$columns = $args['schema'] ?: $self->schema($query, $result);
 
 						if (!is_array(reset($columns))) {
 							$columns = ['' => $columns];
@@ -332,7 +332,7 @@ abstract class Database extends Source
 	{
 		$self = $this;
 
-		$datetime = $timestamp = $date = $time = function ($format, $value) use ($self) {
+		$datetime = $timestamp = $date = $time = function($format, $value) use ($self) {
 			if ($format && (($time = strtotime($value)) !== false)) {
 				$value = date($format, $time);
 			}
@@ -340,7 +340,7 @@ abstract class Database extends Source
 		};
 
 		return compact('datetime', 'timestamp', 'date', 'time') + [
-			'boolean' => function ($value) {
+			'boolean' => function($value) {
 					return $value ? 1 : 0;
 				}
 		];
@@ -431,7 +431,7 @@ abstract class Database extends Source
 	{
 		return $this->_filter(__METHOD__,
 							  compact('query', 'options'),
-			function ($self, $params) {
+			function($self, $params) {
 				$query  = $params['query'];
 				$params = $query->export($self);
 				$sql    = $self->renderCommand('update', $params, $query);
@@ -459,7 +459,7 @@ abstract class Database extends Source
 	{
 		return $this->_filter(__METHOD__,
 							  compact('query', 'options'),
-			function ($self, $params) {
+			function($self, $params) {
 				$query    = $params['query'];
 				$isObject = is_object($query);
 
@@ -538,7 +538,7 @@ abstract class Database extends Source
 			return $result;
 		}
 
-		$unalias = function ($value) {
+		$unalias = function($value) {
 			if (is_object($value) && isset($value->scalar)) {
 				$value = $value->scalar;
 			}
@@ -718,12 +718,12 @@ abstract class Database extends Source
 	/**
 	 * Helper method used by `_processConditions`.
 	 *
-	 * @param string The field name string.
-	 * @param array  The operator to parse.
-	 * @param array  The schema of the field.
-	 * @param string The glue operator (e.g `'AND'` or '`OR`'.
+	 * @param string $key The field name string.
+	 * @param array $value The operator to parse.
+	 * @param array $fieldMeta  The schema of the field.
+	 * @param string $glue The glue operator (e.g `'AND'` or '`OR`'.
 	 *
-	 * @return mixed Returns the operator expression string or `false` if no operator
+	 * @return string|false Returns the operator expression string or `false` if no operator
 	 *         is applicable.
 	 * @throws QueryException if the operator is not supported.
 	 */
@@ -737,6 +737,8 @@ abstract class Database extends Source
 			if (!isset($this->_operators[$operator])) {
 				throw new QueryException("Unsupported operator `{$operator}`.");
 			}
+
+			$result = [];
 			foreach ($value as $op => $val) {
 				$result[] = $this->_operator($key, [$op => $val], $fieldMeta);
 			}
@@ -764,7 +766,7 @@ abstract class Database extends Source
 		}
 
 		$context->applyStrategy($this);
-		$fields = $this->_fields($fields ? : $context->fields(), $context);
+		$fields = $this->_fields($fields ?: $context->fields(), $context);
 		$context->map($this->_schema($context, $fields));
 		$toMerge = [];
 
@@ -827,6 +829,12 @@ abstract class Database extends Source
 		return $list;
 	}
 
+	/**
+	 * @param $alias
+	 * @param string $field
+	 *
+	 * @return string
+	 */
 	protected function _fieldsQuote($alias, $field)
 	{
 		$open     = $this->_quotes[0];
@@ -834,7 +842,7 @@ abstract class Database extends Source
 		$aliasing = preg_split("/\s+as\s+/i", $field);
 		if (isset($aliasing[1])) {
 			list($aliasname, $fieldname) = $this->_splitFieldname($aliasing[0]);
-			$alias = $aliasname ? : $alias;
+			$alias = $aliasname ?: $alias;
 			return "{$open}{$alias}{$close}.{$open}{$fieldname}{$close} as {$aliasing[1]}";
 		} elseif ($alias) {
 			return "{$open}{$alias}{$close}.{$open}{$field}{$close}";
@@ -873,7 +881,7 @@ abstract class Database extends Source
 		if (!$limit) {
 			return;
 		}
-		if ($offset = $context->offset() ? : '') {
+		if ($offset = $context->offset() ?: '') {
 			$offset = " OFFSET {$offset}";
 		}
 		return "LIMIT {$limit}{$offset}";
@@ -891,6 +899,7 @@ abstract class Database extends Source
 	{
 		$result = null;
 
+		$options = [];
 		foreach ($joins as $key => $join) {
 			if ($result) {
 				$result .= ' ';
@@ -1120,7 +1129,7 @@ abstract class Database extends Source
 			case (count($values) > 1):
 				return join(" {$options['boolean']} ",
 							array_map(
-								function ($v) use ($key, $op) {
+								function($v) use ($key, $op) {
 									return "{$key} {$op} {$v}";
 								},
 								$values
@@ -1212,7 +1221,7 @@ abstract class Database extends Source
 		$params = compact('sql');
 		return $this->_filter(__METHOD__,
 							  $params,
-			function ($self, $params) {
+			function($self, $params) {
 				$sql = $params['sql'];
 				list($code, $error) = $self->error();
 				throw new QueryException("{$sql}: {$error}", $code);
@@ -1316,8 +1325,8 @@ abstract class Database extends Source
 	{
 		$model = $rel->from();
 
-		$aliasFrom = $aliasFrom ? : $model::meta('name');
-		$aliasTo   = $aliasTo ? : $rel->name();
+		$aliasFrom = $aliasFrom ?: $model::meta('name');
+		$aliasTo   = $aliasTo ?: $rel->name();
 
 		$keyConstraints = [];
 		foreach ($rel->key() as $from => $to) {

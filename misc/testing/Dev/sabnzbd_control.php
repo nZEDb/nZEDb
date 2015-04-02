@@ -28,20 +28,20 @@ if ($sabapikeytype != 2) {
 // --- Pause ---
 if ($argv[2] === "pause") {
 	echo $pdo->log->header("Pausing sabnzbd.");
-	$response = file_get_contents($saburl."api?mode=pause"."&apikey=".$sabapikey);
+	$response = file_get_contents($saburl . 'api?mode=pause&apikey=' . $sabapikey);
 	echo $pdo->log->header($response);
 }
 
 // --- Resume ---
 if ($argv[2] === "resume") {
 	echo $pdo->log->header("Resuming sabnzbd.");
-	$response = file_get_contents($saburl."api?mode=resume"."&apikey=".$sabapikey);
+	$response = file_get_contents($saburl . 'api?mode=resume&apikey=' . $sabapikey);
 	echo $pdo->log->header($response);
 }
 
 // --- Speed Limit ---
 if ($argv[2] === "speedlimit" && isset($argv[3]) && is_numeric($argv[3])) {
-	echo $pdo->log->header("Speed limiting sabnzbd to ".$argv[3]." KB/s");
-	$response = file_get_contents($saburl."api?mode=config&name=speedlimit&value=".$argv[3]."&apikey=".$sabapikey);
+	echo $pdo->log->header("Speed limiting sabnzbd to " . $argv[3] . " KB/s");
+	$response = file_get_contents($saburl . "api?mode=config&name=speedlimit&value={$argv[3]}&apikey=$sabapikey");
 	echo $pdo->log->header($response);
 }

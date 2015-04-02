@@ -38,7 +38,8 @@ $error = false;
 if ($error === false) {
 	$git = new \nzedb\utility\Git();
 	$branch = $git->active_branch();
-	if (in_array($branch, $git->mainBranches())) { // Only update versions, patches, etc. on specific branches to lessen conflicts
+	if (in_array($branch, $git->mainBranches())) {
+		// Only update versions, patches, etc. on specific branches to lessen conflicts
 		try {
 			// Run DbUpdates to make sure we're up to date.
 			$DbUpdater = new \nzedb\db\DbUpdate(['git' => $git]);

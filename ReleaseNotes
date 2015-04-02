@@ -11,7 +11,7 @@ Changes:
 	* Move the blacklist menu into new "Regex" menu item.
 
 Fixes:
-
+	* Correcting tmp_pre table references to predb_imports in dump_predb script.
 
 0.4.19	2015-03-02
 New

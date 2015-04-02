@@ -45,8 +45,9 @@ class ReleaseImage
 	public $vidSavePath;
 
 	/**
-	 * Construct.
-	 * @param \nzedb\db\Settings()
+	 * Constructor.
+	 *
+	 * @param \nzedb\db\Settings $pdo
 	 */
 	public function __construct(&$pdo = null)
 	{
@@ -110,7 +111,8 @@ class ReleaseImage
 	 *
 	 * @return int 1 on success, 0 on failure Used on site to check if there is an image.
 	 */
-	public function saveImage($imgName, $imgLoc, $imgSavePath, $imgMaxWidth='', $imgMaxHeight='', $saveThumb=false)
+	public function saveImage($imgName, $imgLoc, $imgSavePath, $imgMaxWidth = '',
+							  $imgMaxHeight = '', $saveThumb = false)
 	{
 		// Try to get the image as a string.
 		$cover = $this->fetchImage($imgLoc);
@@ -123,10 +125,10 @@ class ReleaseImage
 			$im = @imagecreatefromstring($cover);
 			$width = @imagesx($im);
 			$height = @imagesy($im);
-			$ratio = min($imgMaxHeight/$height, $imgMaxWidth/$width);
+			$ratio = min($imgMaxHeight / $height, $imgMaxWidth / $width);
 			// New dimensions
-			$new_width = intval($ratio*$width);
-			$new_height = intval($ratio*$height);
+			$new_width  = intval($ratio * $width);
+			$new_height = intval($ratio * $height);
 			if ($new_width < $width && $new_width > 10 && $new_height > 10) {
 				$new_image = @imagecreatetruecolor($new_width, $new_height);
 				@imagecopyresampled($new_image, $im, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
@@ -136,7 +138,7 @@ class ReleaseImage
 				@imagedestroy($new_image);
 
 				if ($saveThumb) {
-					@file_put_contents($imgSavePath.$imgName.'_thumb.jpg', $thumb);
+					@file_put_contents($imgSavePath . $imgName . '_thumb.jpg', $thumb);
 				} else {
 					$cover = $thumb;
 				}
@@ -146,7 +148,7 @@ class ReleaseImage
 			@imagedestroy($im);
 		}
 		// Store it on the hard drive.
-		$coverPath = $imgSavePath.$imgName.'.jpg';
+		$coverPath = $imgSavePath . $imgName . '.jpg';
 		$coverSave = @file_put_contents($coverPath, $cover);
 
 		// Check if it's on the drive.

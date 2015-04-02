@@ -138,7 +138,7 @@ class NNTP extends Net_NNTP_Client
 	 * @param boolean $alternate   Use the alternate NNTP connection.
 	 *
 	 * @return mixed  On success = (bool)   Did we successfully connect to the usenet?
-     *                On failure = (object) PEAR_Error.
+	 *                On failure = (object) PEAR_Error.
 	 *
 	 * @access public
 	 */
@@ -377,7 +377,7 @@ class NNTP extends Net_NNTP_Client
 	/**
 	 * Fetch an overview of article(s) in the currently selected group.
 	 *
-	 * @param null $range
+	 * @param string $range
 	 * @param bool $names
 	 * @param bool $forceNames
 	 *
@@ -438,7 +438,7 @@ class NNTP extends Net_NNTP_Client
 
 		// Send XOVER command to NNTP with wanted articles.
 		$response = $this->_sendCommand('XOVER ' . $range);
-		if ($this->isError($response)){
+		if ($this->isError($response)) {
 			return $response;
 		}
 
@@ -800,11 +800,11 @@ class NNTP extends Net_NNTP_Client
 	/**
 	 * Post an article to usenet.
 	 *
-	 * @param $groups   mixed   (array)  Groups. ie.: $groups = array('alt.test', 'alt.testing', 'free.pt');
+	 * @param string $groups   mixed   (array)  Groups. ie.: $groups = array('alt.test', 'alt.testing', 'free.pt');
 	 *                          (string) Group.  ie.: $groups = 'alt.test';
-	 * @param $subject  string  The subject.     ie.: $subject = 'Test article';
-	 * @param $body     string  The message.     ie.: $message = 'This is only a test, please disregard.';
-	 * @param $from     string  The poster.      ie.: $from = '<anon@anon.com>';
+	 * @param string $subject  string  The subject.     ie.: $subject = 'Test article';
+	 * @param string $body     string  The message.     ie.: $message = 'This is only a test, please disregard.';
+	 * @param string $from     string  The poster.      ie.: $from = '<anon@anon.com>';
 	 * @param $extra    string  Extra, separated by \r\n
 	 *                                           ie.: $extra  = 'Organization: <nZEDb>\r\nNNTP-Posting-Host: <127.0.0.1>';
 	 * @param $yEnc     bool    Encode the message with yEnc?
@@ -1148,7 +1148,7 @@ class NNTP extends Net_NNTP_Client
 	protected function _initiateYEncSettings()
 	{
 		// Check if the user wants to use yyDecode or the simple_php_yenc_decode extension.
-		$this->_yyDecoderPath  = ($this->pdo->getSetting('yydecoderpath') != '') ? (string)$this->pdo->getSetting('yydecoderpath') : false;
+		$this->_yyDecoderPath = ($this->pdo->getSetting('yydecoderpath') != '') ? (string)$this->pdo->getSetting('yydecoderpath') : false;
 		if (strpos((string)$this->_yyDecoderPath, 'simple_php_yenc_decode') !== false) {
 			if (extension_loaded('simple_php_yenc_decode')) {
 				$this->_yEncExtension = true;
@@ -1276,7 +1276,6 @@ class NNTP extends Net_NNTP_Client
 	 *
 	 * @return string/print Have we failed to decompress the data, was there a
 	 *                 problem downloading the data, etc..
-
 	 * @return mixed  On success : (array)  The headers.
 	 *                On failure : (object) PEAR_Error.
 	 *
@@ -1379,7 +1378,7 @@ class NNTP extends Net_NNTP_Client
 		if ($this->_debugBool) {
 			$this->_debugging->log('NNTP', "_getXFeatureTextResponse", $message, \Logger::LOG_NOTICE);
 		}
-		$message = $this->throwError($this->pdo->log->error($message), 1000);;
+		$message = $this->throwError($this->pdo->log->error($message), 1000);
 		return $message;
 	}
 
@@ -1418,7 +1417,7 @@ class NNTP extends Net_NNTP_Client
 	 * @param mixed $identifier (string) The message-ID of the article to download.
 	 *                          (int)    The article number.
 	 *
-	 * @return mixed On success : (string) The article's body.
+	 * @return string On success : (string) The article's body.
 	 *               On failure : (object) PEAR_Error.
 	 *
 	 * @access protected
@@ -1511,7 +1510,7 @@ class NNTP extends Net_NNTP_Client
 		if (parent::_isConnected()) {
 			$retVal = true;
 		} else {
-			switch($this->_currentServer) {
+			switch ($this->_currentServer) {
 				case NNTP_SERVER:
 					if (is_resource($this->_socket)) {
 						$this->doQuit(true);
@@ -1527,7 +1526,8 @@ class NNTP extends Net_NNTP_Client
 				default:
 					$retVal = $this->throwError('Wrong server constant used in NNTP checkConnection()!');
 			}
-			if ($retVal === true && $reSelectGroup){
+
+			if ($retVal === true && $reSelectGroup) {
 				$group = $this->selectGroup($currentGroup);
 				if ($this->isError($group)) {
 					$retVal = $group;

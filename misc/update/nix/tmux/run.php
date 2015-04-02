@@ -159,6 +159,11 @@ if ($seq == 1) {
 ######################################### F U N C T I O N S ########################################
 ####################################################################################################
 
+/**
+ *
+ * @param string $pane
+ *
+ */
 function writelog($pane)
 {
 	$path = dirname(__FILE__) . "/logs";
@@ -172,6 +177,11 @@ function writelog($pane)
 	}
 }
 
+/**
+ * @param string $cmd
+ *
+ * @return bool
+ */
 function command_exist($cmd)
 {
 	$returnVal = exec("which $cmd 2>/dev/null");
@@ -187,6 +197,11 @@ foreach ($apps as &$value) {
 	}
 }
 
+/**
+ * @param $module
+ *
+ * @return bool
+ */
 function python_module_exist($module)
 {
 	$output = $returnCode = '';
@@ -195,6 +210,9 @@ function python_module_exist($module)
 	return ($returnCode == 0 ? true : false);
 }
 
+/**
+ * @param $tmux_session
+ */
 function start_apps($tmux_session)
 {
 	$t = new \Tmux();
@@ -245,6 +263,10 @@ function start_apps($tmux_session)
 	}
 }
 
+/**
+ * @param $tmux_session
+ * @param $window
+ */
 function window_proxy($tmux_session, $window)
 {
 	global $pdo;
@@ -268,6 +290,9 @@ function window_proxy($tmux_session, $window)
 	}
 }
 
+/**
+ * @param $tmux_session
+ */
 function window_utilities($tmux_session)
 {
 	exec("tmux new-window -t $tmux_session -n utils 'printf \"\033]2;fixReleaseNames\033\"'");
@@ -276,17 +301,26 @@ function window_utilities($tmux_session)
 	exec("tmux selectp -t $tmux_session:1.2; tmux splitw -t $tmux_session:1 -h -p 50 'printf \"\033]2;decryptHashes\033\"'");
 }
 
+/**
+ * @param $tmux_session
+ */
 function window_stripped_utilities($tmux_session)
 {
 	exec("tmux new-window -t $tmux_session -n utils 'printf \"\033]2;updateTVandTheaters\033\"'");
 	exec("tmux selectp -t $tmux_session:1.0; tmux splitw -t $tmux_session:1 -h -p 50 'printf \"\033]2;postprocessing_amazon\033\"'");
 }
 
+/**
+ * @param $tmux_session
+ */
 function window_ircscraper($tmux_session)
 {
 	exec("tmux new-window -t $tmux_session -n IRCScraper 'printf \"\033]2;scrapeIRC\033\"'");
 }
 
+/**
+ * @param $tmux_session
+ */
 function window_post($tmux_session)
 {
 	exec("tmux new-window -t $tmux_session -n post 'printf \"\033]2;postprocessing_additional\033\"'");
@@ -294,12 +328,18 @@ function window_post($tmux_session)
 	exec("tmux splitw -t $tmux_session:2 -v -p 50 'printf \"\033]2;postprocessing_amazon\033\"'");
 }
 
+/**
+ * @param $tmux_session
+ */
 function window_optimize($tmux_session)
 {
 	exec("tmux new-window -t $tmux_session -n optimize 'printf \"\033]2;update_nZEDb\033\"'");
 	exec("tmux splitw -t $tmux_session:3 -v -p 50 'printf \"\033]2;optimize\033\"'");
 }
 
+/**
+ * @param $tmux_session
+ */
 function window_sharing($tmux_session)
 {
 	$pdo = new Settings();
@@ -313,6 +353,10 @@ function window_sharing($tmux_session)
 	}
 }
 
+/**
+ * @param $DIR
+ * @param $tmux_session
+ */
 function attach($DIR, $tmux_session)
 {
 	if (command_exist("php5")) {

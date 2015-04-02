@@ -29,7 +29,7 @@ class TvRage
 	/**
 	 * @param array $options Class instances / Echo to CLI.
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		$defaults = [
 			'Echo'     => false,
@@ -96,9 +96,9 @@ class TvRage
 			$pieces = explode(' ', $title2);
 			$title4 = '%';
 			foreach ($pieces as $piece) {
-				$title4 .= str_replace(array("'", "!"), "", $piece) . '%';
+				$title4 .= str_replace(["'", "!"], "", $piece) . '%';
 			}
-			$res = $this->pdo->queryOneRow(sprintf("SELECT rageid FROM tvrage_titles WHERE replace(replace(releasetitle, %s, ''), '!', '') LIKE %s", $string ,$this->pdo->escapeString($title4)));
+			$res = $this->pdo->queryOneRow(sprintf("SELECT rageid FROM tvrage_titles WHERE replace(replace(releasetitle, %s, ''), '!', '') LIKE %s", $string, $this->pdo->escapeString($title4)));
 			if (isset($res['rageid'])) {
 				return $res['rageid'];
 			}
@@ -115,9 +115,9 @@ class TvRage
 			$pieces = explode(' ', $title3);
 			$title4 = '%';
 			foreach ($pieces as $piece) {
-				$title4 .= str_replace(array("'", "!"), "", $piece) . '%';
+				$title4 .= str_replace(["'", "!"], "", $piece) . '%';
 			}
-			$res = $this->pdo->queryOneRow(sprintf("SELECT rageid FROM tvrage_titles WHERE replace(replace(releasetitle, %s, ''), '!', '') LIKE %s", $string ,$this->pdo->escapeString($title4)));
+			$res = $this->pdo->queryOneRow(sprintf("SELECT rageid FROM tvrage_titles WHERE replace(replace(releasetitle, %s, ''), '!', '') LIKE %s", $string, $this->pdo->escapeString($title4)));
 			if (isset($res['rageid'])) {
 				return $res['rageid'];
 			}
@@ -130,7 +130,7 @@ class TvRage
 		if (count($pieces) > 1) {
 			$title4 = '%';
 			foreach ($pieces as $piece) {
-				$title4 .= str_replace(array("'", "!"), "", $piece) . '%';
+				$title4 .= str_replace(["'", "!"], "", $piece) . '%';
 			}
 			$res = $this->pdo->queryOneRow(sprintf("SELECT rageid FROM tvrage_titles WHERE replace(replace(releasetitle, %s, ''), '!', '') LIKE %s", $string, $this->pdo->escapeString($title4)));
 			if (isset($res['rageid'])) {
@@ -161,9 +161,17 @@ class TvRage
 		return $country;
 	}
 
+	/**
+* @param $rageid
+	 * @param $releasename
+	 * @param string $desc
+	 * @param $genre
+	 * @param $country
+	 * @param $imgbytes
+	 */
 	public function add($rageid, $releasename, $desc, $genre, $country, $imgbytes)
 	{
-		$releasename = str_replace(array('.', '_'), array(' ', ' '), $releasename);
+		$releasename = str_replace(['.', '_'], [' ', ' '], $releasename);
 		$country = $this->countryCode($country);
 
 		if ($rageid != -2) {
@@ -194,9 +202,9 @@ class TvRage
 		return $this->pdo->queryExec(sprintf("DELETE FROM tvrage_titles WHERE id = %d", $id));
 	}
 
-	public function fetchShowQuickInfo($show, array $options = array())
+	public function fetchShowQuickInfo($show, array $options = [])
 	{
-		$defaults = array('exact' => '', 'episode' => '');
+		$defaults = ['exact' => '', 'episode' => ''];
 		$options += $defaults;
 		$ret = [];
 
@@ -348,7 +356,7 @@ class TvRage
 	{
 		$countries = $this->pdo->query("SELECT DISTINCT(country) AS country FROM tvrage_titles WHERE country != ''");
 		$showsindb = $this->pdo->query("SELECT DISTINCT(rageid) AS rageid FROM tvrage_titles");
-		$showarray = array();
+		$showarray = [];
 		foreach ($showsindb as $show) {
 			$showarray[] = $show['rageid'];
 		}
@@ -361,19 +369,19 @@ class TvRage
 			if ($sched !== false && ($xml = @simplexml_load_string($sched))) {
 				$tzOffset = 60 * 60 * 6;
 				$yesterday = strtotime("-1 day") - $tzOffset;
-				$xmlSchedule = array();
+				$xmlSchedule = [];
 
 				foreach ($xml->DAY as $sDay) {
 					$currDay = strtotime($sDay['attr']);
 					foreach ($sDay as $sTime) {
-						$currTime = (string) $sTime['attr'];
+						$currTime = (string)$sTime['attr'];
 						foreach ($sTime as $sShow) {
-							$currShowName = (string) $sShow['name'];
-							$currShowId = (string) $sShow->sid;
+							$currShowName = (string)$sShow['name'];
+							$currShowId = (string)$sShow->sid;
 							$day_time = strtotime($sDay['attr'] . ' ' . $currTime);
 							$tag = ($currDay < $yesterday) ? 'prev' : 'next';
 							if ($tag == 'prev' || ($tag == 'next' && !isset($xmlSchedule[$currShowId]['next']))) {
-								$xmlSchedule[$currShowId][$tag] = array('name' => $currShowName, 'day' => $currDay, 'time' => $currTime, 'day_time' => $day_time, 'day_date' => date("Y-m-d H:i:s", $day_time), 'title' => html_entity_decode((string) $sShow->title, ENT_QUOTES, 'UTF-8'), 'episode' => html_entity_decode((string) $sShow->ep, ENT_QUOTES, 'UTF-8'));
+								$xmlSchedule[$currShowId][$tag] = ['name' => $currShowName, 'day' => $currDay, 'time' => $currTime, 'day_time' => $day_time, 'day_date' => date("Y-m-d H:i:s", $day_time), 'title' => html_entity_decode((string)$sShow->title, ENT_QUOTES, 'UTF-8'), 'episode' => html_entity_decode((string)$sShow->ep, ENT_QUOTES, 'UTF-8')];
 								$xmlSchedule[$currShowId]['showname'] = $currShowName;
 							}
 
@@ -395,7 +403,7 @@ class TvRage
 					if (sizeof($res) > 0) {
 						foreach ($res as $arr) {
 							$prev_ep = $next_ep = "";
-							$query = array();
+							$query = [];
 
 							// Previous episode.
 							if (isset($epInfo['prev']) && $epInfo['prev']['episode'] != '') {
@@ -450,7 +458,7 @@ class TvRage
 
 	public function getEpisodeInfo($rageid, $series, $episode)
 	{
-		$result = array('title' => '', 'airdate' => '');
+		$result = ['title' => '', 'airdate' => ''];
 
 		$series = str_ireplace("s", "", $series);
 		$episode = str_ireplace("e", "", $episode);
@@ -479,7 +487,7 @@ class TvRage
 
 	public function getRageInfoFromPage($rageid)
 	{
-		$result = array('desc' => '', 'imgurl' => '');
+		$result = ['desc' => '', 'imgurl' => ''];
 		$page = nzedb\utility\Utility::getUrl(['url' => $this->showInfoUrl . $rageid]);
 		$matches = '';
 		if ($page !== false) {
@@ -507,9 +515,14 @@ class TvRage
 		return $result;
 	}
 
+	/**
+	 * @param string $rageid
+	 *
+	 * @return array|bool|mixed
+	 */
 	public function getRageInfoFromService($rageid)
 	{
-		$result = array('genres' => '', 'country' => '', 'showid' => $rageid);
+		$result = ['genres' => '', 'country' => '', 'showid' => $rageid];
 		// Full search gives us the akas.
 		$xml = nzedb\utility\Utility::getUrl(['url' => $this->xmlShowInfoUrl . $rageid]);
 		if ($xml !== false) {
@@ -525,18 +538,30 @@ class TvRage
 		return false;
 	}
 
-	// Convert 2012-24-07 to 2012-07-24, there is probably a better way
+	//
+	/**
+	 * Convert 2012-24-07 to 2012-07-24, there is probably a better way
+	 *
+	 * This shouldn't ever happen as I've never heard of a date starting with year being followed by day value.
+	 * Could this be a mistake? i.e. trying to solve the mm-dd-yyyy/dd-mm-yyyy confusion into a yyyy-mm-dd?
+	 *
+	 * @param string $date
+	 *
+	 * @return string
+	 */
 	public function checkDate($date)
 	{
-		if (!empty($date) && $date != NULL) {
+		if (!empty($date)) {
 			$chk = explode(" ", $date);
 			$chkd = explode("-", $chk[0]);
 			if ($chkd[1] > 12) {
 				$date = date('Y-m-d H:i:s', strtotime($chkd[1] . " " . $chkd[2] . " " . $chkd[0]));
 			}
-			return $date;
+		} else {
+			$date = null;
 		}
-		return NULL;
+
+		return $date;
 	}
 
 	public function updateEpInfo($show, $relid)
@@ -763,11 +788,11 @@ class TvRage
 			$arrXml = @nzedb\utility\Utility::objectsIntoArray(simplexml_load_string($xml));
 			if (isset($arrXml['show']) && is_array($arrXml)) {
 				// We got a valid xml response
-				$titleMatches = $urlMatches = $akaMatches = array();
+				$titleMatches = $urlMatches = $akaMatches = [];
 
 				if (isset($arrXml['show']['showid'])) {
 					// We got exactly 1 match so lets convert it to an array so we can use it in the logic below.
-					$newArr = array();
+					$newArr = [];
 					$newArr[] = $arrXml['show'];
 					unset($arrXml);
 					$arrXml['show'] = $newArr;
@@ -779,7 +804,7 @@ class TvRage
 					// Get a match percentage based on our name and the name returned from tvr.
 					$titlepct = $this->checkMatch($title, $arr['name']);
 					if ($titlepct !== false) {
-						$titleMatches[$titlepct][] = array('title' => $arr['name'], 'showid' => $arr['showid'], 'country' => $this->countryCode($arr['country']), 'genres' => $arr['genres'], 'tvr' => $arr);
+						$titleMatches[$titlepct][] = ['title' => $arr['name'], 'showid' => $arr['showid'], 'country' => $this->countryCode($arr['country']), 'genres' => $arr['genres'], 'tvr' => $arr];
 					}
 
 					// Get a match percentage based on our name and the url returned from tvr.
@@ -787,7 +812,7 @@ class TvRage
 						$urltitle = str_replace('_', ' ', $tvrlink[1]);
 						$urlpct = $this->checkMatch($title, $urltitle);
 						if ($urlpct !== false) {
-							$urlMatches[$urlpct][] = array('title' => $urltitle, 'showid' => $arr['showid'], 'country' => $this->countryCode($arr['country']), 'genres' => $arr['genres'], 'tvr' => $arr);
+							$urlMatches[$urlpct][] = ['title' => $urltitle, 'showid' => $arr['showid'], 'country' => $this->countryCode($arr['country']), 'genres' => $arr['genres'], 'tvr' => $arr];
 						}
 					}
 
@@ -798,14 +823,14 @@ class TvRage
 							foreach ($arr['akas']['aka'] as $aka) {
 								$akapct = $this->checkMatch($title, $aka);
 								if ($akapct !== false) {
-									$akaMatches[$akapct][] = array('title' => $aka, 'showid' => $arr['showid'], 'country' => $this->countryCode($arr['country']), 'genres' => $arr['genres'], 'tvr' => $arr);
+									$akaMatches[$akapct][] = ['title' => $aka, 'showid' => $arr['showid'], 'country' => $this->countryCode($arr['country']), 'genres' => $arr['genres'], 'tvr' => $arr];
 								}
 							}
 						} else {
 							// One aka.
 							$akapct = $this->checkMatch($title, $arr['akas']['aka']);
 							if ($akapct !== false) {
-								$akaMatches[$akapct][] = array('title' => $arr['akas']['aka'], 'showid' => $arr['showid'], 'country' => $this->countryCode($arr['country']), 'genres' => $arr['genres'], 'tvr' => $arr);
+								$akaMatches[$akapct][] = ['title' => $arr['akas']['aka'], 'showid' => $arr['showid'], 'country' => $this->countryCode($arr['country']), 'genres' => $arr['genres'], 'tvr' => $arr];
 							}
 						}
 					}
@@ -927,19 +952,19 @@ class TvRage
 
 	public function cleanName($str)
 	{
-		$str = str_replace(array('.', '_'), ' ', $str);
+		$str = str_replace(['.', '_'], ' ', $str);
 
-		$str = str_replace(array('à', 'á', 'â', 'ã', 'ä', 'æ', 'À', 'Á', 'Â', 'Ã', 'Ä'), 'a', $str);
-		$str = str_replace(array('ç', 'Ç'), 'c', $str);
-		$str = str_replace(array('Σ', 'è', 'é', 'ê', 'ë', 'È', 'É', 'Ê', 'Ë'), 'e', $str);
-		$str = str_replace(array('ì', 'í', 'î', 'ï', 'Ì', 'Í', 'Î', 'Ï'), 'i', $str);
-		$str = str_replace(array('ò', 'ó', 'ô', 'õ', 'ö', 'Ò', 'Ó', 'Ô', 'Õ', 'Ö'), 'o', $str);
-		$str = str_replace(array('ù', 'ú', 'û', 'ü', 'ū', 'Ú', 'Û', 'Ü', 'Ū'), 'u', $str);
+		$str = str_replace(['à', 'á', 'â', 'ã', 'ä', 'æ', 'À', 'Á', 'Â', 'Ã', 'Ä'], 'a', $str);
+		$str = str_replace(['ç', 'Ç'], 'c', $str);
+		$str = str_replace(['Σ', 'è', 'é', 'ê', 'ë', 'È', 'É', 'Ê', 'Ë'], 'e', $str);
+		$str = str_replace(['ì', 'í', 'î', 'ï', 'Ì', 'Í', 'Î', 'Ï'], 'i', $str);
+		$str = str_replace(['ò', 'ó', 'ô', 'õ', 'ö', 'Ò', 'Ó', 'Ô', 'Õ', 'Ö'], 'o', $str);
+		$str = str_replace(['ù', 'ú', 'û', 'ü', 'ū', 'Ú', 'Û', 'Ü', 'Ū'], 'u', $str);
 		$str = str_replace('ß', 'ss', $str);
 
 		$str = str_replace('&', 'and', $str);
 		$str = preg_replace('/^(history|discovery) channel/i', '', $str);
-		$str = str_replace(array('\'', ':', '!', '"', '#', '*', '’', ',', '(', ')', '?'), '', $str);
+		$str = str_replace(['\'', ':', '!', '"', '#', '*', '’', ',', '(', ')', '?'], '', $str);
 		$str = str_replace('$', 's', $str);
 		$str = preg_replace('/\s{2,}/', ' ', $str);
 
@@ -949,7 +974,7 @@ class TvRage
 
 	public function parseNameEpSeason($relname)
 	{
-		$showInfo = array('name' => '', 'season' => '', 'episode' => '', 'seriesfull' => '', 'airdate' => '', 'country' => '', 'year' => '', 'cleanname' => '');
+		$showInfo = ['name' => '', 'season' => '', 'episode' => '', 'seriesfull' => '', 'airdate' => '', 'country' => '', 'year' => '', 'cleanname' => ''];
 		$matches = '';
 
 		$following = '[^a-z0-9](\d\d-\d\d|\d{1,2}x\d{2,3}|(19|20)\d\d|(480|720|1080)[ip]|AAC2?|BDRip|BluRay|D0?\d|DD5|DiVX|DLMux|DTS|DVD(Rip)?|E\d{2,3}|[HX][-_. ]?264|ITA(-ENG)?|[HPS]DTV|PROPER|REPACK|S\d+[^a-z0-9]?(E\d+)?|WEB[-_. ]?(DL|Rip)|XViD)[^a-z0-9]';
@@ -966,12 +991,12 @@ class TvRage
 			// S01E01-E02 and S01E01-02
 			if (preg_match('/^(.*?)[^a-z0-9]s(\d{1,2})[^a-z0-9]?e(\d{1,3})(?:[e-])(\d{1,3})[^a-z0-9]/i', $relname, $matches)) {
 				$showInfo['season'] = intval($matches[2]);
-				$showInfo['episode'] = array(intval($matches[3]), intval($matches[4]));
+				$showInfo['episode'] = [intval($matches[3]), intval($matches[4])];
 			}
 			//S01E0102 - lame no delimit numbering, regex would collide if there was ever 1000 ep season.
 			else if (preg_match('/^(.*?)[^a-z0-9]s(\d{2})[^a-z0-9]?e(\d{2})(\d{2})[^a-z0-9]/i', $relname, $matches)) {
 				$showInfo['season'] = intval($matches[2]);
-				$showInfo['episode'] = array(intval($matches[3]), intval($matches[4]));
+				$showInfo['episode'] = [intval($matches[3]), intval($matches[4])];
 			}
 			// S01E01 and S01.E01
 			else if (preg_match('/^(.*?)[^a-z0-9]s(\d{1,2})[^a-z0-9]?e(\d{1,3})[^a-z0-9]/i', $relname, $matches)) {
@@ -1090,7 +1115,7 @@ class TvRage
 			$countryMatch = $yearMatch = '';
 			// Country or origin matching.
 			if (preg_match('/\W(US|UK|AU|NZ|CA|NL|Canada|Australia|America|United[^a-z0-9]States|United[^a-z0-9]Kingdom)\W/', $showInfo['name'], $countryMatch)) {
-				$currentCountry = strtolower($countryMatch[1]) ;
+				$currentCountry = strtolower($countryMatch[1]);
 				if ($currentCountry == 'canada') {
 					$showInfo['country'] = 'CA';
 				} else if ($currentCountry == 'australia') {
@@ -1119,7 +1144,7 @@ class TvRage
 				$showInfo['season'] = sprintf('S%02d', $showInfo['season']);
 				// Check for multi episode release.
 				if (is_array($showInfo['episode'])) {
-					$tmpArr = array();
+					$tmpArr = [];
 					foreach ($showInfo['episode'] as $ep) {
 						$tmpArr[] = sprintf('E%02d', $ep);
 					}
@@ -1138,10 +1163,10 @@ class TvRage
 
 	public function getGenres()
 	{
-		return array('Action', 'Adult/Porn', 'Adventure', 'Anthology', 'Arts & Crafts', 'Automobiles', 'Buy, Sell & Trade', 'Celebrities', 'Children', 'Cinema/Theatre', 'Comedy', 'Cooking/Food', 'Crime', 'Current Events',
+		return ['Action', 'Adult/Porn', 'Adventure', 'Anthology', 'Arts & Crafts', 'Automobiles', 'Buy, Sell & Trade', 'Celebrities', 'Children', 'Cinema/Theatre', 'Comedy', 'Cooking/Food', 'Crime', 'Current Events',
 			'Dance', 'Debate', 'Design/Decorating', 'Discovery/Science', 'Drama', 'Educational', 'Family', 'Fantasy', 'Fashion/Make-up', 'Financial/Business', 'Fitness', 'Garden/Landscape', 'History',
 			'Horror/Supernatural', 'Housing/Building', 'How To/Do It Yourself', 'Interview', 'Lifestyle', 'Literature', 'Medical', 'Military/War', 'Music', 'Mystery', 'Pets/Animals', 'Politics', 'Puppets',
-			'Religion', 'Romance/Dating', 'Sci-Fi', 'Sketch/Improv', 'Soaps', 'Sports', 'Super Heroes', 'Talent', 'Tech/Gaming', 'Teens', 'Thriller', 'Travel', 'Western', 'Wildlife');
+			'Religion', 'Romance/Dating', 'Sci-Fi', 'Sketch/Improv', 'Soaps', 'Sports', 'Super Heroes', 'Talent', 'Tech/Gaming', 'Teens', 'Thriller', 'Travel', 'Western', 'Wildlife'];
 	}
 
 }

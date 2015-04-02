@@ -104,7 +104,9 @@ class NNTPDebug
 }
 
 $nntp = new \NNTPTest(new \NNTPDebug((isset($argv[1]) ? true : false)));
-if ($nntp->doConnect() !== true) {exit('Error connecting to usenet!' . PHP_EOL);}
+if ($nntp->doConnect() !== true) {
+	exit('Error connecting to usenet!' . PHP_EOL);
+}
 $n = PHP_EOL;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -114,7 +116,7 @@ $n = PHP_EOL;
 $db = new \nzedb\db\DB();
 $groups = $db->query('SELECT name FROM groups WHERE name NOT like \'alt.binaries.%\' AND active = 1');
 
-$groupList = array();
+$groupList = [];
 foreach ($groups as $group) {
 	$groupList += $nntp->getGroups($group['name']);
 }
@@ -122,10 +124,10 @@ $groupList += $nntp->getGroups('alt.binaries.*');
 
 $groups = $db->queryDirect('SELECT name FROM groups WHERE active = 1');
 
-$activeGroups = array();
+$activeGroups = [];
 
 if ($groups instanceof \Traversable) {
-	foreach($groups as $group) {
+	foreach ($groups as $group) {
 		if (isset($groupList[$group['name']])) {
 			$activeGroups[$group['name']] = $groupList[$group['name']];
 		}

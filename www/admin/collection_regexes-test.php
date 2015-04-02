@@ -16,9 +16,12 @@ if ($tpg) {
 	$page->smarty->assign(['group' => $group, 'regex' => $regex, 'limit' => $limit]);
 
 	if ($group && $regex) {
-		$page->smarty->assign('data', (new Regexes(['Settings' => $page->settings, 'Table_Name' => 'collection_regexes']))->testCollectionRegex($group, $regex, $limit));
+		$page->smarty->assign('data',
+							  (new Regexes([
+											   'Settings' => $page->settings,
+											   'Table_Name' => 'collection_regexes'
+										   ]))->testCollectionRegex($group, $regex, $limit));
 	}
-
 }
 
 $page->content = $page->smarty->fetch('collection_regexes-test.tpl');

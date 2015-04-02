@@ -13,7 +13,7 @@ $totalArgs = count($argv);
 if ($totalArgs < 2) {
 	exit($cli->info($n .
 		'This deletes releases based on a list of criteria you pass.' . $n .
-		'Usage:' . $n . $n.
+		'Usage:' . $n . $n .
 		'List of supported criteria:' . $n .
 		'fromname   : Look for names of people who posted releases (the poster name). (modifiers: equals, like)' . $n .
 		'groupname  : Look in groups. (modifiers: equals, like)' . $n .
@@ -41,11 +41,11 @@ if ($totalArgs < 2) {
 		$_SERVER['_'] . ' ' . $argv[0] . ' groupname=equals="alt.binaries.teevee" searchname=like="olympics 2014" postdate=bigger="5"' . $n .
 		$_SERVER['_'] . ' ' . $argv[0] . ' guid=equals="8fb5956bae3de4fb94edcc69da44d6883d586fd0"' . $n .
 		$_SERVER['_'] . ' ' . $argv[0] . ' size=smaller="104857600" size=bigger="2048" groupname=like="movies"' . $n .
-		$_SERVER['_'] . ' ' . $argv[0] . ' fromname=like="@XviD.net" groupname=equals="alt.binaries.movies.divx" ignore' .$n .
+		$_SERVER['_'] . ' ' . $argv[0] . ' fromname=like="@XviD.net" groupname=equals="alt.binaries.movies.divx" ignore' . $n .
 		$_SERVER['_'] . ' ' . $argv[0] . ' imdbid=equals=NULL categoryid=equals=2020 nzbstatus=equals=1 adddate=bigger=2880 # Remove other movie releases with non-cleaned names added > 120 days ago'
 	));
 }
 
 $RR = new \ReleaseRemover();
 // Remove argv[0] and send the array.
-$RR->removeByCriteria(array_slice($argv, 1, $totalArgs-1));
+$RR->removeByCriteria(array_slice($argv, 1, $totalArgs - 1));

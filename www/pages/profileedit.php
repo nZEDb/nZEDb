@@ -105,7 +105,7 @@ switch ($action) {
 $themeList[] = 'None';
 $themes = scandir(nZEDb_WWW . '/themes');
 foreach ($themes as $theme) {
-	if (strpos($theme, ".") === false && $theme[0] !== '_' && is_dir(nZEDb_WWW . '/themes/' .$theme)) {
+	if (strpos($theme, ".") === false && $theme[0] !== '_' && is_dir(nZEDb_WWW . '/themes/' . $theme)) {
 		$themeList[] = $theme;
 	}
 }
