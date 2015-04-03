@@ -10,12 +10,12 @@ if (isset($_GET['userid']) && is_numeric($_GET['userid']) && isset($_GET['rsstok
 	$rsstoken = $_GET['rsstoken'];
 
 	if (!$rel) {
-	$page->show404();
+		$page->show404();
 	}
 
 	$alt = $releases->getAlternate($rel['guid'], $rel['searchname'], $userid);
 	if (!$alt) {
-	$page->show404();
+		$page->show404();
 	}
 
 	$url = $page->serverurl . 'getnzb/' . $alt['guid'] . '.nzb' . '&i=' . $userid . '&r=' . $rsstoken;
