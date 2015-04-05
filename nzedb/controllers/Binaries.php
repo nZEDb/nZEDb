@@ -540,7 +540,7 @@ class Binaries
 			// Check if the non-compression headers have an error.
 			if ($this->_nntp->isError($headers)) {
 				$this->log(
-					"Code {$headers->code}: {$headers->message}\nSkipping group: ${$groupMySQL['name']}",
+					"Code {$headers->code}: {$headers->message}\nSkipping group: {$groupMySQL['name']}",
 					'scan',
 					\Logger::LOG_WARNING,
 					'error'
