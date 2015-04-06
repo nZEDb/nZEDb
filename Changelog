@@ -7,11 +7,50 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
-
-2014-01-05 niel
-	* Msg: HAPPY NEW YEAR From now on I'll be releasing to master monthly, unless and important bug fix needs merging.
-	* New: Merged and tagged v0.4.17 to master branch.
+2015-03-24 niel
+	* Chg: Merging in dev-scrutinizer branch which addresses a lot of code style issues.
+2015-03-21 bart39
+	* Fix: Fix Class not found error in Movie.php.
+2015-03-20 niel
+	* New: Added scrutinizer configuration file.
+2015-03-20 bart39
+	* Mrg: PR #1623 from darius - Fix oversized fanart images when viewing movie info popup.
+	* Mrg: PR #1622 from darius - Switch to fanart.tv v3 api, closes #1620.
+2015-03-18 bart39
+	* Fix: Fix patch 0321, if your mysql version < 5.6 then bookinfo, consoleinfo and musicinfo will be converted to myisam to support the FT indexes.
+2015-03-17 bart39
+	* Add: Add naming regex for a.b.b4e.erotica
+	* Mrg: PR #1617 from kevin - Convert naming regexes.
+	* Chg: Better matching on whether to ignore lines in nfo beginning with Source.
+	* Add: FULLTEXT indexes on bookinfo, consoleinfo and musicinfo for better existing title matching.
+	* Add: add categorization for alt.binaries.b4e.erotica.
+	* Fix: Don't ignore renamed releases for local requestID lookup.
+2015-03-06 bart39
+	* Chg: Better handling of .vol in regex extensions.
+	* Mrg: PR #1618 from kevin - Convert collections regex to db.
+2015-03-07 bart39
+	* Fix: Min/Max sizes on Adv Search.
+2015-03-06 niel
+	* Fix: Correcting tmp_pre table references to predb_imports in dump_predb script.
+2015-03-06 bart39
+	* Mrg: PR #1616 from kevin - Changes _tmb to _ori, to fix user setting, fixes #1613.
+	* Mrg: PR #1615 from kevin - Rename tmp_pre to predb_imports.
+	* Mrg: PR #1614 from kevin - Parsing black lists on white listed fields.
+2015-03-05 bart39
+	* Mrg: PR #1612 from kevin - Add support for category regexes in the DB.
+2015-03-04 bart39
+	* Mrg: PR #1610 from kevin - Dev regexes.
+2015-03-02 bart39
+	* Mrg: PR #1608 from kevin - Faster / more random hex string gen (for release guid and binary hash).
+	* Mrg: PR #1607 from kevin - Fixes for compressed NZB reading and return.
+2015-02-27 bart39
+	* Mrg: PR #1606 from kevin - Add database release naming regex support.
+	* Mrg: PR #1605 from kevin - Update opcache-gui to v2.0.1.
+2015-02-26 bart39
+	* Mrg: PR #1603 from kevin - Remove unneeded PHP version checks. Remove password compat library.
+	* Mrg: PR #1604 from kevin - Move all php ajax receiver files into 1 file.
 2015-02-25 bart39
+	* Chg: Add number of nzbs to import per process to tmux settings - Feaure Request #1287.
 	* Chg: Add new XXX categories to posterwall.
 	* Mrg: PR #1600 from kevin - Add support for in DB collections (grouping) regex.
 	* Mrg: PR #1599 from kevin - Changes to install templates.
@@ -53,6 +92,9 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	* Fix: Issue 1575 - Notice: Undefined variable: consoletools in /home/schwick/www/nZEDb/misc/update/predbftmatch.php on line 84
 2015-01-28 niel
 	* Fix: Removing extra tab from innerfileblacklist row that causes the setting to not work.
+2015-01-05 niel
+	* Msg: HAPPY NEW YEAR From now on I'll be releasing to master monthly, unless and important bug fix needs merging.
+	* New: Merged and tagged v0.4.17 to master branch.
 2014-12-31 bart39
 	* Mrg: PR 1573 from dariusIII - Changed trakt.tv imdb search to new format.
 2014-12-30 niel

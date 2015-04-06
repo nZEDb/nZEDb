@@ -1,6 +1,6 @@
 <?php
 require_once SMARTY_DIR . 'Smarty.class.php';
-require_once nZEDb_LIB . 'utility' . DS .'SmartyUtils.php';
+require_once nZEDb_LIB . 'utility' . DS . 'SmartyUtils.php';
 
 class BasePage
 {
@@ -87,7 +87,7 @@ class BasePage
 
 		$this->smarty->setTemplateDir(
 			array(
-				'user_frontend' => nZEDb_WWW.'themes/' . $this->settings->getSetting('style') . '/templates/frontend',
+				'user_frontend' => nZEDb_WWW . 'themes/' . $this->settings->getSetting('style') . '/templates/frontend',
 				'frontend' => nZEDb_WWW . 'themes/Default/templates/frontend'
 			)
 		);
@@ -144,8 +144,8 @@ class BasePage
 					$this->smarty->assign('ismod', 'true');
 			}
 		} else {
-			$this->smarty->assign('isadmin',  'false');
-			$this->smarty->assign('ismod',    'false');
+			$this->smarty->assign('isadmin', 'false');
+			$this->smarty->assign('ismod', 'false');
 			$this->smarty->assign('loggedin', 'false');
 		}
 
@@ -160,7 +160,7 @@ class BasePage
 	 */
 	private function stripSlashes(&$array)
 	{
-		foreach($array as $key => $value) {
+		foreach ($array as $key => $value) {
 			$array[$key] = (is_array($value) ? array_map('stripslashes', $value) : stripslashes($value));
 		}
 	}

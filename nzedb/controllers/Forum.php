@@ -24,14 +24,15 @@ class Forum
 
 	public function add($parentid, $userid, $subject, $message, $locked = 0, $sticky = 0, $replies = 0)
 	{
-		if ($message == "")
+		if ($message == "") {
 			return -1;
+		}
 
-		if ($parentid != 0)
-		{
+		if ($parentid != 0) {
 			$par = $this->getParent($parentid);
-			if ($par == false)
+			if ($par == false) {
 				return -1;
+			}
 
 			$this->pdo->queryExec(sprintf("UPDATE forum_posts SET replies = replies + 1, updateddate = NOW() WHERE id = %d", $parentid));
 		}
@@ -121,7 +122,7 @@ class Forum
 	public function getCountForUser($uid)
 	{
 		$res = $this->pdo->queryOneRow(sprintf("SELECT COUNT(id) AS num FROM forum_posts WHERE user_id = %d", $uid));
-		return ($res === false ? 0 :$res["num"]);
+		return ($res === false ? 0 : $res["num"]);
 	}
 
 	public function getForUserRange($uid, $start, $num)

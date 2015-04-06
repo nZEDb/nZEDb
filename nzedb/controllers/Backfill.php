@@ -123,7 +123,7 @@ class Backfill
 	 *
 	 * @return void
 	 */
-	public function backfillAllGroups($groupName = '', $articles ='', $type = '')
+	public function backfillAllGroups($groupName = '', $articles = '', $type = '')
 	{
 		$res = [];
 		if ($groupName !== '') {

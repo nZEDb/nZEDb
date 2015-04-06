@@ -55,7 +55,7 @@ $cfg->curlCheck = function_exists('curl_init');
 
 if (extension_loaded('posix') && strtolower(substr(PHP_OS, 0, 3)) !== 'win') {
 	$group = posix_getgrgid(posix_getgid());
-	$fixString = '<br /><br />Another solution is to run:<br />chown -R YourUnixUserName:' . $group['name']  . ' ' . nZEDb_ROOT .
+	$fixString = '<br /><br />Another solution is to run:<br />chown -R YourUnixUserName:' . $group['name'] . ' ' . nZEDb_ROOT .
 		'<br />Then give your user access to the group:<br />usermod -a -G ' . $group['name'] . ' YourUnixUserName' .
 		'<br />Finally give read/write access to your user/group:<br />chmod -R 774 ' . nZEDb_ROOT;
 	$page->smarty->assign('fixString', $fixString);

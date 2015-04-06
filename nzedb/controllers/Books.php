@@ -92,7 +92,29 @@ class Books
 
 	public function getBookInfoByName($author, $title)
 	{
-		return $this->pdo->queryOneRow(sprintf('SELECT * FROM bookinfo WHERE author %s AND title %s', $this->pdo->likeString($author, true, true), $this->pdo->likeString($title, true, true)));
+		//only used to get a count of words
+		$searchwords = $searchsql = '';
+		$ft = $this->pdo->queryDirect("SHOW INDEX FROM bookinfo WHERE key_name = 'ix_bookinfo_author_title_ft'");
+		if ($ft->rowCount() !== 2) {
+			$searchsql .= sprintf(" author %s AND title %s'", $this->pdo->likeString($author, true, true), $this->pdo->likeString($title, true, true));
+		} else {
+			$title = preg_replace('/( - | -|\(.+\)|\(|\))/', ' ', $title);
+			$title = preg_replace('/[^\w ]+/', '', $title);
+			$title = trim(preg_replace('/\s\s+/i', ' ', $title));
+			$title = trim($title);
+			$words = explode(' ', $title);
+
+			foreach ($words as $word) {
+				$word = trim(rtrim(trim($word), '-'));
+				if ($word !== '' && $word !== '-') {
+					$word = '+' . $word;
+					$searchwords .= sprintf('%s ', $word);
+				}
+			}
+			$searchwords = trim($searchwords);
+			$searchsql .= sprintf(" MATCH(author, title) AGAINST(%s IN BOOLEAN MODE)", $this->pdo->escapeString($searchwords));
+		}
+		return $this->pdo->queryOneRow(sprintf("SELECT * FROM bookinfo WHERE %s", $searchsql));
 	}
 
 	public function getRange($start, $num)
@@ -352,11 +374,12 @@ class Books
 						}
 					} else {
 						$bookId = $bookCheck['id'];
-					}
+						}
 
 					// Update release.
 					$this->pdo->queryExec(sprintf('UPDATE releases SET bookinfoid = %d WHERE id = %d', $bookId, $arr['id']));
-				} else { // Could not parse release title.
+				} else {
+					// Could not parse release title.
 					$this->pdo->queryExec(sprintf('UPDATE releases SET bookinfoid = %d WHERE id = %d', -2, $arr['id']));
 					if ($this->echooutput) {
 						echo '.';
@@ -553,7 +576,8 @@ class Books
 					$this->pdo->log->header('Nothing to update: ') .
 					$this->pdo->log->primary($book['author'] .
 						' - ' .
-						$book['title'])
+						$book['title']
+					)
 				);
 			}
 		}

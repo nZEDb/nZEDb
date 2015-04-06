@@ -265,7 +265,7 @@ class Logger
 	 */
 	public function showMemUsage($oldUsage = 0, $realUsage = false, $peak = false)
 	{
-		$currentUsage = ($peak ? memory_get_peak_usage($realUsage)  : memory_get_usage($realUsage));
+		$currentUsage = ($peak ? memory_get_peak_usage($realUsage) : memory_get_usage($realUsage));
 		$actualUsage = ($oldUsage > 0 ? $currentUsage - $oldUsage : $currentUsage);
 
 		$units = [
@@ -302,7 +302,7 @@ class Logger
 	/**
 	 * Get resource usage string.
 	 *
-	 * @return bool|string
+	 * @return string|false
 	 *
 	 * @access public
 	 */
@@ -312,7 +312,7 @@ class Logger
 			$usage = getrusage();
 
 			return
-				'USR: '  . $this->formatTimeString($usage['ru_utime.tv_sec']) .
+				'USR: ' . $this->formatTimeString($usage['ru_utime.tv_sec']) .
 				' SYS: ' . $this->formatTimeString($usage['ru_stime.tv_sec']) .
 				' FAULTS: ' . $usage['ru_majflt'] .
 				' SWAPS: ' . $usage['ru_nswap'];
@@ -323,7 +323,7 @@ class Logger
 	/**
 	 * Get system load.
 	 *
-	 * @return string|bool
+	 * @return string|false
 	 *
 	 * @access public
 	 */
@@ -332,11 +332,11 @@ class Logger
 		if (!$this->isWindows) {
 			$string = '';
 			// Fix for single digits (2) or single float (2.1).
-			foreach(sys_getloadavg() as $load) {
+			foreach (sys_getloadavg() as $load) {
 				$strLen = strlen($load);
 				if ($strLen === 1) {
 					$string .= $load . '.00,';
-				} elseif ($strLen === 3) {
+				} else if ($strLen === 3) {
 					$string .= str_pad($load, 4, '0', STR_PAD_RIGHT) . ',';
 				} else {
 					$string .= $load . ',';
@@ -368,7 +368,7 @@ class Logger
 	 * @access public
 	 * @static
 	 */
-	static public function getDefaultLogPaths()
+	public static function getDefaultLogPaths()
 	{
 		$defaultLogName = (defined('nZEDb_LOGGING_LOG_NAME') ? nZEDb_LOGGING_LOG_NAME : 'nzedb');
 		$defaultLogName = (ctype_alnum($defaultLogName) ? $defaultLogName : 'nzedb');
@@ -603,7 +603,7 @@ class Logger
 		asort($logs);
 
 		// Remove all new logs from array (all elements under the last 51 elements of the array).
-		array_splice($logs, -$this->maxLogs+1);
+		array_splice($logs, -$this->maxLogs + 1);
 
 		// Delete all the logs left in the array.
 		array_map('unlink', $logs);
@@ -696,11 +696,11 @@ class Logger
 			$time .= '00H:';
 		}
 		if ($seconds > 60) {
-			$time .= str_pad(round((($seconds % 3600) / 60)), 2 , '0', STR_PAD_LEFT) . 'M:';
+			$time .= str_pad(round((($seconds % 3600) / 60)), 2, '0', STR_PAD_LEFT) . 'M:';
 		} else {
 			$time .= '00M:';
 		}
-		$time .= str_pad($seconds % 60, 2 , '0', STR_PAD_LEFT) . 'S';
+		$time .= str_pad($seconds % 60, 2, '0', STR_PAD_LEFT) . 'S';
 		return $time;
 	}
 
@@ -757,4 +757,6 @@ class Logger
 
 }
 
-class LoggerException extends Exception {}
+class LoggerException extends Exception
+{
+}

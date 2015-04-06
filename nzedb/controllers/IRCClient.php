@@ -277,7 +277,7 @@ class IRCClient
 			$this->_remote_socket_string = $socket_string;
 
 			// Try to connect until we run out of retries.
-			while($this->_reconnectRetries >= $this->_currentRetries++) {
+			while ($this->_reconnectRetries >= $this->_currentRetries++) {
 				$this->_initiateStream();
 				if ($this->_connected()) {
 					break;
@@ -339,7 +339,7 @@ class IRCClient
 		}
 
 		// Loop over socket buffer until we find "001".
-		while(true) {
+		while (true) {
 			$this->_readSocket();
 
 			$matches = array();
@@ -470,7 +470,9 @@ class IRCClient
 	 *
 	 * @access protected
 	 */
-	protected function processChannelMessages() {}
+	protected function processChannelMessages()
+	{
+	}
 
 	/**
 	 * Join a channel.
@@ -578,7 +580,7 @@ class IRCClient
 	{
 		$command .= "\r\n";
 		for ($written = 0; $written < strlen($command); $written += $fWrite) {
-			stream_set_timeout($this->_socket , $this->_socket_timeout);
+			stream_set_timeout($this->_socket, $this->_socket_timeout);
 			$fWrite = $this->_writeSocketChar(substr($command, $written));
 
 			// http://www.php.net/manual/en/function.fwrite.php#96951 | fwrite can return 0 causing an infinite loop.
@@ -669,18 +671,17 @@ class IRCClient
 	 *
 	 * @access protected
 	 */
-	protected function _stripControlCharacters($text) {
+	protected function _stripControlCharacters($text)
+	{
 		return preg_replace(
-			array(
+			[
 				'/(\x03(?:\d{1,2}(?:,\d{1,2})?)?)/',    // Color code
 				'/\x02/',                               // Bold
 				'/\x0F/',                               // Escaped
 				'/\x16/',                               // Italic
 				'/\x1F/',                               // Underline
 				'/\x12/'                                // Device control 2
-			),
-			'',
-			$text
+			], '', $text
 		);
 	}
 }

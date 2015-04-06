@@ -18,7 +18,7 @@ if (isset($argv[1]) && file_exists($argv[1])) {
 			if (is_array($clean)) {
 				file_put_contents(
 					nZEDb_RES . 'logs' . DS . 'not_yenc' . DS . $group .
-					'.failed.regex.txt' , $line . "\n", FILE_APPEND
+					'.failed.regex.txt', $line . "\n", FILE_APPEND
 				);
 			}
 			/*$clean = preg_replace(array('/\d+\.mp3"/', '/\.jpg"/', '/\.nzb"/', '/\.sfv"/', '/\.srr"/', '/\.mp4"/', '/\.m4b"/', '/\.mov"/', '/\.mkv"/', '/\.avi"/', '/\.m4v"/', '/\.nfo"/', '/\.mkv"/', '/\.par2"/i', '/\.r\d+"/', '/\.rar"/i', '/\.vol\d+\+\d+"/i'), '"', $matches[1]);

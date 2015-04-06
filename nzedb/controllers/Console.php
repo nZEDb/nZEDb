@@ -57,7 +57,7 @@ class Console
 	/**
 	 * @param array $options Class instances / Echo to cli.
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		$defaults = [
 			'Echo'     => false,
@@ -93,13 +93,29 @@ class Console
 
 	public function getConsoleInfoByName($title, $platform)
 	{
-		return $this->pdo->queryOneRow(
-			sprintf(
-				"SELECT * FROM consoleinfo WHERE title %s AND platform %s",
-				$this->pdo->likeString($title, true, true),
-				$this->pdo->likeString($platform, true, true)
-			)
-		);
+		//only used to get a count of words
+		$searchwords = $searchsql = '';
+		$ft = $this->pdo->queryDirect("SHOW INDEX FROM consoleinfo WHERE key_name = 'ix_consoleinfo_title_platform_ft'");
+		if ($ft->rowCount() !== 2) {
+			$searchsql .= sprintf(" title %s AND platform %s'", $this->pdo->likeString($title, true, true), $this->pdo->likeString($platform, true, true));
+		} else {
+			$title = preg_replace('/( - | -|\(.+\)|\(|\))/', ' ', $title);
+			$title = preg_replace('/[^\w ]+/', '', $title);
+			$title = trim(preg_replace('/\s\s+/i', ' ', $title));
+			$title = trim($title);
+			$words = explode(' ', $title);
+
+			foreach ($words as $word) {
+				$word = trim(rtrim(trim($word), '-'));
+				if ($word !== '' && $word !== '-') {
+					$word = '+' . $word;
+					$searchwords .= sprintf('%s ', $word);
+				}
+			}
+			$searchwords = trim($searchwords);
+			$searchsql .= sprintf(" MATCH(title, platform) AGAINST(%s IN BOOLEAN MODE)", $this->pdo->escapeString($searchwords));
+		}
+		return $this->pdo->queryOneRow(sprintf("SELECT * FROM consoleinfo WHERE %s", $searchsql));
 	}
 
 	public function getRange($start, $num)
@@ -118,7 +134,7 @@ class Console
 		return ($res === false ? 0 : $res['num']);
 	}
 
-	public function getConsoleCount($cat, $maxage = -1, $excludedcats = array())
+	public function getConsoleCount($cat, $maxage = -1, $excludedcats = [])
 	{
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
@@ -142,7 +158,7 @@ class Console
 		return ($res === false ? 0 : $res["num"]);
 	}
 
-	public function getConsoleRange($cat, $start, $num, $orderby, $excludedcats = array())
+	public function getConsoleRange($cat, $start, $num, $orderby, $excludedcats = [])
 	{
 
 		$browseby = $this->getBrowseBy();
@@ -224,17 +240,17 @@ class Console
 				break;
 		}
 		$ordersort = (isset($orderArr[1]) && preg_match('/^asc|desc$/i', $orderArr[1])) ? $orderArr[1] : 'desc';
-		return array($orderfield, $ordersort);
+		return [$orderfield, $ordersort];
 	}
 
 	public function getConsoleOrdering()
 	{
-		return array('title_asc', 'title_desc', 'posted_asc', 'posted_desc', 'size_asc', 'size_desc', 'files_asc', 'files_desc', 'stats_asc', 'stats_desc', 'platform_asc', 'platform_desc', 'releasedate_asc', 'releasedate_desc', 'genre_asc', 'genre_desc');
+		return ['title_asc', 'title_desc', 'posted_asc', 'posted_desc', 'size_asc', 'size_desc', 'files_asc', 'files_desc', 'stats_asc', 'stats_desc', 'platform_asc', 'platform_desc', 'releasedate_asc', 'releasedate_desc', 'genre_asc', 'genre_desc'];
 	}
 
 	public function getBrowseByOptions()
 	{
-		return array('platform' => 'platform', 'title' => 'title', 'genre' => 'genre_id');
+		return ['platform' => 'platform', 'title' => 'title', 'genre' => 'genre_id'];
 	}
 
 	public function getBrowseBy()
@@ -254,7 +270,7 @@ class Console
 	public function makeFieldLinks($data, $field)
 	{
 		$tmpArr = explode(', ', $data[$field]);
-		$newArr = array();
+		$newArr = [];
 		$i = 0;
 		foreach ($tmpArr as $ta) {
 			// Only use first 6.
@@ -344,7 +360,7 @@ class Console
 		return $consoleId;
 	}
 
-	protected function _matchConToGameInfo($gameInfo = array(), $con = array())
+	protected function _matchConToGameInfo($gameInfo = [], $con = [])
 	{
 		$matched = false;
 
@@ -358,7 +374,7 @@ class Console
 		similar_text(strtolower($gameInfo['platform']), strtolower($con['platform']), $platformpercent);
 
 		if (nZEDb_DEBUG) {
-			echo(PHP_EOL ."Matched: Title Percentage 1: $titlepercent% between " . $gameInfo['title'] . " and " . $con['title'] . PHP_EOL);
+			echo(PHP_EOL . "Matched: Title Percentage 1: $titlepercent% between " . $gameInfo['title'] . " and " . $con['title'] . PHP_EOL);
 		}
 
 		// Since Wii Ware games and XBLA have inconsistent original platforms, as long as title is 50% its ok.
@@ -393,6 +409,7 @@ class Console
 
 	protected function _setConBeforeMatch($amaz, $gameInfo)
 	{
+		$con = [];
 		$con['platform'] = (string)$amaz->Items->Item->ItemAttributes->Platform;
 		if (empty($con['platform'])) {
 			$con['platform'] = $gameInfo['platform'];
@@ -408,13 +425,14 @@ class Console
 		}
 
 		// Remove Download strings
-		$dlStrings = array(' [Online Game Code]', ' [Download]', ' [Digital Code]', ' [Digital Download]');
+		$dlStrings = [' [Online Game Code]', ' [Download]', ' [Digital Code]', ' [Digital Download]'];
 		$con['title'] = str_ireplace($dlStrings, '', $con['title']);
 		return $con;
 	}
 
-	protected function _setConAfterMatch($amaz = array())
+	protected function _setConAfterMatch($amaz = [])
 	{
+		$con = [];
 		$con['asin'] = (string)$amaz->Items->Item->ASIN;
 
 		$con['url'] = (string)$amaz->Items->Item->DetailPageURL;
@@ -429,7 +447,7 @@ class Console
 		$con['esrb'] = (string)$amaz->Items->Item->ItemAttributes->ESRBAgeRating;
 		$con['releasedate'] = (string)$amaz->Items->Item->ItemAttributes->ReleaseDate;
 
-		if(!isset($con['releasedate'])){
+		if (!isset($con['releasedate'])) {
 			$con['releasedate'] = "";
 		}
 
@@ -444,7 +462,7 @@ class Console
 		return $con;
 	}
 
-	protected function _matchGenre($amaz = array())
+	protected function _matchGenre($amaz = [])
 	{
 
 		$genreName = '';
@@ -488,7 +506,7 @@ class Console
 
 		$genreKey = $this->_getGenreKey($genreName);
 
-		return array('consolegenre' => $genreName, 'consolegenreID' => $genreKey);
+		return ['consolegenre' => $genreName, 'consolegenreID' => $genreKey];
 	}
 
 	protected function _getGenreKey($genreName)
@@ -515,7 +533,7 @@ class Console
 		$gen = new \Genres(['Settings' => $this->pdo]);
 
 		$defaultGenres = $gen->getGenres(\Genres::CONSOLE_TYPE);
-		$genreassoc = array();
+		$genreassoc = [];
 		foreach ($defaultGenres as $dg) {
 			$genreassoc[$dg['id']] = strtolower($dg['title']);
 		}
@@ -528,7 +546,7 @@ class Console
 	 * @param string $platform
 	 *
 	 * @return string
-	**/
+	 **/
 	protected function _replacePlatform($platform)
 	{
 		switch (strtoupper($platform)) {
@@ -590,7 +608,7 @@ class Console
 		return $platform;
 	}
 
-	protected function _updateConsoleTable($con = array())
+	protected function _updateConsoleTable($con = [])
 	{
 		$ri = new \ReleaseImage($this->pdo);
 
@@ -621,19 +639,19 @@ class Console
 					$con['cover']
 				)
 			);
-			if($con['cover'] === 1){
-			$con['cover'] = $ri->saveImage($consoleId, $con['coverurl'], $this->imgSavePath, 250, 250);
+			if ($con['cover'] === 1) {
+				$con['cover'] = $ri->saveImage($consoleId, $con['coverurl'], $this->imgSavePath, 250, 250);
 			}
 		} else {
 			$consoleId = $check['id'];
 
-			if($con['cover'] === 1){
+			if ($con['cover'] === 1) {
 				$con['cover'] = $ri->saveImage($consoleId, $con['coverurl'], $this->imgSavePath, 250, 250);
 			}
 
 			$this->update(
 						$consoleId, $con['title'], $con['asin'], $con['url'], $con['salesrank'],
-						$con['platform'], $con['publisher'], $con['releasedate'], $con['esrb'],
+						$con['platform'], $con['publisher'], (isset($con['releasedate']) ? $con['releasedate'] : null), $con['esrb'],
 						$con['cover'], $con['consolegenreID'], (isset($con['review']) ? $con['review'] : null)
 			);
 		}
@@ -736,17 +754,17 @@ class Console
 		}
 	}
 
-	function parseTitle($releasename)
+	public function parseTitle($releasename)
 	{
 		$releasename = preg_replace('/\sMulti\d?\s/i', '', $releasename);
-		$result = array();
+		$result = [];
 
 		// Get name of the game from name of release.
 		if (preg_match('/^(.+((abgx360EFNet|EFNet\sFULL|FULL\sabgxEFNet|abgx\sFULL|abgxbox360EFNet)\s|illuminatenboard\sorg|Place2(hom|us)e.net|united-forums? co uk|\(\d+\)))?(?P<title>.*?)[\.\-_ ](v\.?\d\.\d|PAL|NTSC|EUR|USA|JP|ASIA|JAP|JPN|AUS|MULTI(\.?\d{1,2})?|PATCHED|FULLDVD|DVD5|DVD9|DVDRIP|PROPER|REPACK|RETAIL|DEMO|DISTRIBUTION|REGIONFREE|[\. ]RF[\. ]?|READ\.?NFO|NFOFIX|PSX(2PSP)?|PS[2-4]|PSP|PSVITA|WIIU|WII|X\-?BOX|XBLA|X360|3DS|NDS|N64|NGC)/i', $releasename, $matches)) {
 			$title = $matches['title'];
 
 			// Replace dots, underscores, or brackets with spaces.
-			$result['title'] = str_replace(['.','_','%20', '[', ']'], ' ', $title);
+			$result['title'] = str_replace(['.', '_', '%20', '[', ']'], ' ', $title);
 			$result['title'] = str_replace([' RF ', '.RF.', '-RF-', '_RF_'], ' ', $result['title']);
 			//Remove format tags from release title for match
 			$result['title'] = trim(preg_replace('/PAL|MULTI(\d)?|NTSC-?J?|\(JAPAN\)/i', '', $result['title']));
@@ -802,7 +820,7 @@ class Console
 		return (isset($result['title']) && !empty($result['title']) && isset($result['platform'])) ? $result : false;
 	}
 
-	function getBrowseNode($platform)
+	public function getBrowseNode($platform)
 	{
 		switch ($platform) {
 			case 'PS2':

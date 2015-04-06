@@ -151,9 +151,9 @@ if ($page->isPostBack()) {
 		);
 
 		try {
-			$DbSetup->processSQLFile();	// Setup default schema
-			$DbSetup->loadTables();		// Load default data files
-			$DbSetup->processSQLFile(	// Process any custom stuff.
+			$DbSetup->processSQLFile(); // Setup default schema
+			$DbSetup->loadTables(); // Load default data files
+			$DbSetup->processSQLFile( // Process any custom stuff.
 					array(
 						 'filepath' =>	nZEDb_RES . 'db' . DS . 'schema' . DS . 'mysql-data.sql'
 					)

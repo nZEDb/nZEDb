@@ -98,16 +98,16 @@ class Greenlight
 	public function images()
 	{
 			if ($ret = $this->_html->find("div.workshopItemPreviewImageMain", 0)) {
-				if(preg_match('#\'(?<largeimage>.*)\'#i', $ret->outertext, $matches)){
-				$this->_res['cover'] = trim($matches['largeimage']);
-				}else{
-				$this->_res['cover'] = $this->_html->find("img#previewImageMain", 0)->src;
+				if (preg_match('#\'(?<largeimage>.*)\'#i', $ret->outertext, $matches)) {
+					$this->_res['cover'] = trim($matches['largeimage']);
+				} else {
+					$this->_res['cover'] = $this->_html->find("img#previewImageMain", 0)->src;
 				}
 			}
 			if ($ret = $this->_html->find("div.screenshot_holder", 0)) {
 				if ($ret = $ret->find("a", 0)) {
-					if(preg_match('#\'(?<backdropimage>.*)\'#', $ret->outertext, $matches)){
-					$this->_res['backdrop'] = trim($matches['backdropimage']);
+					if (preg_match('#\'(?<backdropimage>.*)\'#', $ret->outertext, $matches)) {
+						$this->_res['backdrop'] = trim($matches['backdropimage']);
 					}
 				}
 			}
@@ -186,8 +186,8 @@ class Greenlight
 									$result = true;
 									break;
 								}
-							}else{
-							$result = false;
+							} else {
+								$result = false;
 							}
 						}
 					}
@@ -280,7 +280,7 @@ class Greenlight
 	{
 		$title = preg_replace('/[^\w]/', '', $title);
 		$searchtitle = preg_replace('/[^\w]/', '', $searchtitle);
-	    similar_text($title , $searchtitle, $p);
+		similar_text($title, $searchtitle, $p);
 		if ($p == 100) {
 			return true;
 		} else {

@@ -21,7 +21,7 @@ class Popporn
 	 * Override if 18 years+ or older
 	 * Define Popporn url
 	 * Needed Search Queries Constant
-	*/
+	 */
 	const IF18 = "http://www.popporn.com/popporn/4";
 	const POPURL = "http://www.popporn.com";
 	const TRAILINGSEARCH = "/results/index.cfm?v=4&g=0&searchtext=";
@@ -323,10 +323,10 @@ class Popporn
 	 */
 	public function getAll()
 	{
-		$results = array();
-		if(isset($this->_directUrl)){
-		$results['title'] = $this->_title;
-		$results['directurl'] = $this->_directUrl;
+		$results = [];
+		if (isset($this->_directUrl)) {
+			$results['title']     = $this->_title;
+			$results['directurl'] = $this->_directUrl;
 		}
 		if (is_array($this->sypnosis())) {
 			$results = array_merge($results, $this->sypnosis());
@@ -346,10 +346,10 @@ class Popporn
 		if (is_array($this->trailers())) {
 			$results = array_merge($results, $this->trailers());
 		}
-		if(empty($results) === true){
-		return false;
-		}else{
-		return $results;
+		if (empty($results) === true) {
+			return false;
+		} else {
+			return $results;
 		}
 	}
 
@@ -368,7 +368,7 @@ class Popporn
 			$ch = curl_init(self::IF18);
 		}
 
-		if($usepost === true){
+		if ($usepost === true) {
 			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 			curl_setopt($ch, CURLOPT_POST, 1);
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $this->_postParams);

@@ -25,7 +25,7 @@ $table_data = "SELECT TABLE_NAME AS 'Table', TABLE_ROWS AS 'Rows', "
 
 $run = $pdo->queryDirect($table_data);
 
-$mask = $pdo->log->headerOver("%-25.25s ") .  $pdo->log->primaryOver("%7.7s %10.10s %15.15s %15.15s %15.15s %15.15s\n");
+$mask = $pdo->log->headerOver("%-25.25s ") . $pdo->log->primaryOver("%7.7s %10.10s %15.15s %15.15s %15.15s %15.15s\n");
 printf($mask, 'Table Name', 'Engine', 'Row_Format', 'Data Size', 'Index Size', 'Free Space', 'Total Size');
 printf($mask, '=========================', '=======', '==========', '===============', '===============', '===============', '===============');
 if ($run instanceof \Traversable) {
@@ -41,7 +41,7 @@ if ($run instanceof \Traversable) {
 }
 printf($mask, '=========================', '=======', '==========', '===============', '===============', '===============', '===============');
 printf($mask, 'Table Name', 'Engine', 'Row_Format', 'Data Size', 'Index Size', 'Free Space', 'Total Size');
-printf($mask, '', '', '', number_format($data, 2) . " MB", number_format($index, 2) . " MB", number_format($free	, 2) . " MB", number_format($total, 2) . " MB");
+printf($mask, '', '', '', number_format($data, 2) . " MB", number_format($index, 2) . " MB", number_format($free, 2) . " MB", number_format($total, 2) . " MB");
 
 $myisam = $pdo->queryOneRow("SELECT CONCAT(ROUND(KBS/POWER(1024,IF(pw<0,0,IF(pw>3,0,pw)))+0.49999), "
 	. "SUBSTR(' KMG',IF(pw<0,0,IF(pw>3,0,pw))+1,1)) recommended_key_buffer_size "

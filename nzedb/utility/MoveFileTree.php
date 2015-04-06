@@ -120,6 +120,9 @@ class MoveFileTree
 		return strtolower(PHP_OS) == 'windows';
 	}
 
+	/**
+	 * @param string $filespec
+	 */
 	protected function _enumerateSource($filespec)
 	{
 		$this->_dirs = $this->_files = $files = $dirs = [];

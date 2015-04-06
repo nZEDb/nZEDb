@@ -11,7 +11,7 @@ class RequestIDLocal extends RequestID
 	/**
 	 * @param array $options Class instances / Echo to cli?
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		parent::__construct($options);
 	}
@@ -37,7 +37,7 @@ class RequestIDLocal extends RequestID
 		switch ($this->_limit) {
 			case 'full':
 				$query .= sprintf(
-					" AND r.isrenamed = 0 AND r.reqidstatus in (%d, %d, %d)",
+					" AND r.reqidstatus in (%d, %d, %d)",
 					self::REQID_UPROC,
 					self::REQID_NOLL,
 					self::REQID_NONE
@@ -45,7 +45,7 @@ class RequestIDLocal extends RequestID
 				break;
 			case is_numeric($this->_limit):
 				$query .= sprintf(
-					" AND r.isrenamed = 0 AND r.reqidstatus in (%d, %d, %d) ORDER BY r.postdate DESC LIMIT %d",
+					" AND r.reqidstatus in (%d, %d, %d) ORDER BY r.postdate DESC LIMIT %d",
 					self::REQID_UPROC,
 					self::REQID_NOLL,
 					self::REQID_NONE,
@@ -119,7 +119,7 @@ class RequestIDLocal extends RequestID
 					if (preg_match('/s\d+/i', $row['title']) && !preg_match('/s\d+e\d+/i', $row['title'])) {
 						return false;
 					}
-					return array('title' => $row['title'], 'id' => $row['id']);
+					return ['title' => $row['title'], 'id' => $row['id']];
 				}
 			} else {
 				//Prevents multiple releases with the same request id/group from being renamed to the same Pre.
@@ -158,7 +158,7 @@ class RequestIDLocal extends RequestID
 				'(avi|jpg|nzb|m3u|mkv|par2|part\d+|nfo|sample|sfv|rar|r?\d{1,3}|\d+|zip)*)\s*\".*/i'
 		;
 
-		$matches = array();
+		$matches = [];
 		switch (true) {
 			case preg_match($regex1, $this->_release['name'], $matches):
 			case preg_match($regex2, $this->_release['name'], $matches):
@@ -180,7 +180,7 @@ class RequestIDLocal extends RequestID
 					)
 				);
 				if ($check !== false) {
-					return array('title' => $check['title'], 'id' => $check['id']);
+					return ['title' => $check['title'], 'id' => $check['id']];
 				}
 				continue;
 			default:
@@ -189,7 +189,7 @@ class RequestIDLocal extends RequestID
 		return false;
 	}
 
-	private $groupIDCache = array();
+	private $groupIDCache = [];
 
 	/**
 	 * Attempts to remap the release group_id by extracting the new group name from the release usenet name.
@@ -242,7 +242,7 @@ class RequestIDLocal extends RequestID
 			)
 		);
 		if ($check !== false) {
-			return array('title' => $check['title'], 'id' => $check['id']);
+			return ['title' => $check['title'], 'id' => $check['id']];
 		}
 		return false;
 	}
@@ -252,7 +252,7 @@ class RequestIDLocal extends RequestID
 	 */
 	protected function _updateRelease()
 	{
-		$determinedCat = $this->category->determineCategory($this->_newTitle['title'], $this->_release['gid']);
+		$determinedCat = $this->category->determineCategory($this->_release['gid'], $this->_newTitle['title']);
 		if ($determinedCat == $this->_release['categoryid']) {
 			$newTitle = $this->pdo->escapeString($this->_newTitle['title']);
 			$this->pdo->queryExec(
@@ -289,7 +289,7 @@ class RequestIDLocal extends RequestID
 
 		if ($this->_release['name'] !== $this->_newTitle['title'] && $this->_show == 1) {
 			\NameFixer::echoChangedReleaseName(
-				array(
+				[
 					'new_name'     => $this->_newTitle['title'],
 					'old_name'     => $this->_release['name'],
 					'new_category' => $this->category->getNameByID($determinedCat),
@@ -297,7 +297,7 @@ class RequestIDLocal extends RequestID
 					'group'        => $this->_release['groupname'],
 					'release_id'   => $this->_release['id'],
 					'method'       => 'RequestIDLocal'
-				)
+				]
 			);
 		}
 	}

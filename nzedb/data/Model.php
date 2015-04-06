@@ -428,13 +428,13 @@ class Model extends StaticObject
 		$self->_meta = compact('class') + $self->_meta + $source['meta'];
 
 		$self->_initializers += [
-			'name'   => function ($self) {
+			'name'   => function($self) {
 					return basename(str_replace('\\', '/', $self));
 				},
-			'source' => function ($self) {
+			'source' => function($self) {
 					return Inflector::tableize($self::meta('name'));
 				},
-			'title'  => function ($self) {
+			'title'  => function($self) {
 					$titleKeys = ['title', 'name'];
 					$titleKeys = array_merge($titleKeys, (array)$self::meta('key'));
 					return $self::hasField($titleKeys);
@@ -606,7 +606,7 @@ class Model extends StaticObject
 		$meta    = ['meta' => $self->_meta, 'name' => get_called_class()];
 		$params  = compact('type', 'options');
 
-		$filter = function ($self, $params) use ($meta) {
+		$filter = function($self, $params) use ($meta) {
 			$options = $params['options'] + ['type' => 'read', 'model' => $meta['name']];
 			$query   = $self::invokeMethod('_instance', ['query', $options]);
 			return $self::connection()->read($query, $options);
@@ -861,7 +861,7 @@ class Model extends StaticObject
 			}
 		}
 		return array_filter($self->_relations,
-			function ($i) use ($type) {
+			function($i) use ($type) {
 				return $i->data('type') === $type;
 			});
 	}
@@ -1007,7 +1007,7 @@ class Model extends StaticObject
 		$options += $defaults;
 		return static::_filter(__FUNCTION__,
 							   compact('data', 'options'),
-			function ($self, $params) {
+			function($self, $params) {
 				$class = $params['options']['class'];
 				unset($params['options']['class']);
 				if ($class === 'entity' && $params['options']['defaults']) {
@@ -1132,7 +1132,7 @@ class Model extends StaticObject
 		$options += $defaults;
 		$params = compact('entity', 'data', 'options');
 
-		$filter = function ($self, $params) use ($_meta, $_schema) {
+		$filter = function($self, $params) use ($_meta, $_schema) {
 			$entity  = $params['entity'];
 			$options = $params['options'];
 
@@ -1148,7 +1148,7 @@ class Model extends StaticObject
 				}
 			}
 			if (($whitelist = $options['whitelist']) || $options['locked']) {
-				$whitelist = $whitelist ? : array_keys($_schema->fields());
+				$whitelist = $whitelist ?: array_keys($_schema->fields());
 			}
 
 			$type      = $entity->exists() ? 'update' : 'create';
@@ -1221,7 +1221,7 @@ class Model extends StaticObject
 		$entity->errors(false);
 		$params = compact('entity', 'options');
 
-		$filter = function ($parent, $params) use ($validator) {
+		$filter = function($parent, $params) use ($validator) {
 			$entity  = $params['entity'];
 			$options = $params['options'];
 			$rules   = $options['rules'];
@@ -1250,7 +1250,7 @@ class Model extends StaticObject
 
 		return static::_filter(__FUNCTION__,
 							   $params,
-			function ($self, $params) {
+			function($self, $params) {
 				$options =
 					$params + $params['options'] + ['model' => $self, 'type' => 'delete'];
 				unset($options['options']);
@@ -1282,7 +1282,7 @@ class Model extends StaticObject
 
 		return static::_filter(__FUNCTION__,
 							   $params,
-			function ($self, $params) {
+			function($self, $params) {
 				$options =
 					$params + $params['options'] + ['model' => $self, 'type' => 'update'];
 				unset($options['options']);
@@ -1313,7 +1313,7 @@ class Model extends StaticObject
 
 		return static::_filter(__FUNCTION__,
 							   $params,
-			function ($self, $params) {
+			function($self, $params) {
 				$options =
 					$params['options'] + $params + ['model' => $self, 'type' => 'delete'];
 				unset($options['options']);
@@ -1381,7 +1381,7 @@ class Model extends StaticObject
 	 *
 	 * @param string $method
 	 * @param array  $params
-	 * @param mixed  $callback
+	 * @param \Closure  $callback
 	 * @param array  $filters Defaults to empty array.
 	 *
 	 * @return object
@@ -1465,7 +1465,7 @@ class Model extends StaticObject
 		$_query = $self->_query;
 
 		return [
-			'first' => function ($self, $params, $chain) {
+			'first' => function($self, $params, $chain) {
 					$options          =& $params['options'];
 					$options['limit'] = 1;
 					$data             = $chain->next($self, $params, $chain);
@@ -1476,9 +1476,9 @@ class Model extends StaticObject
 						$data = is_object($data) ? $data->rewind() : $data;
 					}
 
-					return $data ? : null;
+					return $data ?: null;
 				},
-			'list'  => function ($self, $params, $chain) {
+			'list'  => function($self, $params, $chain) {
 					$result = [];
 					$meta   = $self::meta();
 					$name   = $meta['key'];
@@ -1489,7 +1489,7 @@ class Model extends StaticObject
 					}
 					return $result;
 				},
-			'count' => function ($self, $params) use ($_query) {
+			'count' => function($self, $params) use ($_query) {
 					$model   = $self;
 					$type    = $params['type'];
 					$options = array_diff_key($params['options'], $_query);

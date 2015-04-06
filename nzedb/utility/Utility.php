@@ -18,10 +18,8 @@ class Utility
 
 	static public function clearScreen()
 	{
-		if (self::isCLI())
-		{
-			if (self::isWin())
-			{
+		if (self::isCLI()) {
+			if (self::isWin()) {
 				passthru('cls');
 			} else {
 				passthru('clear');
@@ -131,10 +129,9 @@ class Utility
 		$fileSpec = '';
 
 		if (!empty($options['id']) && in_array($options['type'],
-		   ['anime', 'audio', 'audiosample', 'book', 'console',  'games', 'movies', 'music', 'preview', 'sample', 'tvrage', 'video', 'xxx'])) {
+		   ['anime', 'audio', 'audiosample', 'book', 'console', 'games', 'movies', 'music', 'preview', 'sample', 'tvrage', 'video', 'xxx'])) {
 			$fileSpec = sprintf($fileSpecTemplate, $options['type'], $options['id'], $options['suffix']);
-			$fileSpec = file_exists(nZEDb_COVERS . $fileSpec) ? $fileSpec :
-				sprintf($fileSpecTemplate, $options['type'], 'no', $options['suffix']);
+			$fileSpec = file_exists(nZEDb_COVERS . $fileSpec) ? $fileSpec : sprintf($fileSpecTemplate, $options['type'], 'no', $options['suffix']);
 		}
 
 		return $fileSpec;
@@ -293,7 +290,7 @@ class Utility
 	/**
 	 * Detect if the command is accessible on the system.
 	 *
-	 * @param $cmd
+	 * @param string $cmd
 	 *
 	 * @return bool|null Returns true if found, false if not found, and null if which is not detected.
 	 */
@@ -326,6 +323,23 @@ class Utility
 	static public function isCLI()
 	{
 		return ((strtolower(PHP_SAPI) === 'cli') ? true : false);
+	}
+
+	static public function isGZipped($filename)
+	{
+		$gzipped = null;
+		if (($fp = fopen($filename, 'r')) !== false) {
+			if (@fread($fp, 2) == "\x1F\x8B") {
+				// this is a gzip'd file
+				fseek($fp, -4, SEEK_END);
+				if (strlen($datum = @fread($fp, 4)) == 4) {
+					$gzipped = $datum;
+				}
+			}
+			fclose($fp);
+		}
+
+		return ($gzipped);
 	}
 
 	static public function isPatched(Settings $pdo = null)
@@ -450,31 +464,31 @@ class Utility
 	 *
 	 * @param string $filePath
 	 *
-	 * @return bool|string
+	 * @return string|false
 	 */
 	static public function unzipGzipFile($filePath)
 	{
-		// String to hold the NZB contents.
+		/* Potential issues with this, so commenting out.
+		$length = Utility::isGZipped($filePath);
+		if ($length === false || $length === null) {
+			return false;
+		}*/
+
 		$string = '';
-		// Open the gzip file.
 		$gzFile = @gzopen($filePath, 'rb', 0);
 		if ($gzFile) {
-			// Append the decompressed data to the string until we find the end of file pointer.
 			while (!gzeof($gzFile)) {
 				$temp = gzread($gzFile, 1024);
-				// Check for corrupt data, there will be no end of file, so the loop would go on and on taking 100% CPU.
-				if ($temp) {
-					$string .= $temp;
-				} else {
-					// If the data was corrupt, set the big string empty so we return false and break out of the loop.
-					$string = '';
+				// Check for empty string.
+				// Without this the loop would be endless and consume 100% CPU.
+				// Do not set $string empty here, as the data might still be good.
+				if (!$temp) {
 					break;
 				}
+				$string .= $temp;
 			}
-			// Close the gzip file.
 			gzclose($gzFile);
 		}
-		// Return the string.
 		return ($string === '' ? false : $string);
 	}
 
@@ -1000,7 +1014,7 @@ class Utility
 	}
 
 	// Convert obj to array.
-	static public function objectsIntoArray ($arrObjData, $arrSkipIndices = [])
+	static public function objectsIntoArray($arrObjData, $arrSkipIndices = [])
 	{
 		$arrData = [];
 
@@ -1024,8 +1038,19 @@ class Utility
 		return $arrData;
 	}
 
-	// Central function for sending site email.
-	static public function sendEmail($to, $subject, $contents, $from)
+	/**
+	 * Central function for sending site email.
+	 *
+	 * @param string $to
+	 * @param string $subject
+	 * @param string $contents
+	 * @param string $from
+	 *
+	 * @return boolean
+	 * @throws \Exception
+	 * @throws \phpmailerException
+	 */
+	public static function sendEmail($to, $subject, $contents, $from)
 	{
 		// Email *always* uses CRLF for line endings unless the mail agent is broken, like qmail
 		$CRLF = "\r\n";

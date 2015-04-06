@@ -85,7 +85,7 @@ class DbUpdate
 
 	public function loadTables(array $options = [])
 	{
-		$defaults	= [
+		$defaults = [
 			'ext'	=> 'tsv',
 			'files'	=> [],
 			'path'	=> nZEDb_RES . 'db' . DS . 'schema' . DS . 'data',
@@ -179,6 +179,7 @@ class DbUpdate
 							   $matches['table'] . '.sql';
 					rename($matches[0], $newName);
 					$this->git->add($newName);
+					$this->git->run("add -uv {$matches[0]}"); // add updates to old filename, this should remove the temp file from the index.
 				}
 			}
 		}
@@ -186,8 +187,8 @@ class DbUpdate
 
 	public function processPatches(array $options = [])
 	{
-		$patched	= 0;
-		$defaults	= [
+		$patched = 0;
+		$defaults = [
 			'data'	=> nZEDb_RES . 'db' . DS . 'schema' . DS . 'data' . DS,
 			'ext'	=> 'sql',
 			'path'	=> nZEDb_RES . 'db' . DS . 'patches' . DS . $this->_DbSystem,
@@ -201,8 +202,7 @@ class DbUpdate
 			exit("Bad sqlpatch value: '$currentVersion'\n");
 		}
 
-		$files = empty($options['files']) ? Utility::getDirFiles($options) :
-			$options['files'];
+		$files = empty($options['files']) ? Utility::getDirFiles($options) : $options['files'];
 
 		if (count($files)) {
 			natsort($files);
@@ -210,12 +210,12 @@ class DbUpdate
 			$data  = $options['data'];
 			echo $this->log->primary('Looking for unprocessed patches...');
 			foreach ($files as $file) {
-				$setPatch	= false;
-				$fp			= fopen($file, 'r');
-				$patch		= fread($fp, filesize($file));
+				$setPatch = false;
+				$fp = fopen($file, 'r');
+				$patch = fread($fp, filesize($file));
 
 				if (preg_match($options['regex'], str_replace('\\', '/', $file), $matches)) {
-					$patch    = (integer)$matches['patch'];
+					$patch = (integer)$matches['patch'];
 					$setPatch = true;
 				} else if (preg_match('/UPDATE `?site`? SET `?value`? = \'?(?P<patch>\d+)\'? WHERE `?setting`? = \'sqlpatch\'/i',
 									$patch,
@@ -320,11 +320,11 @@ class DbUpdate
 							) {
 								if ($e->errorInfo[1] == 1060) {
 									echo $this->log->warning(
-												   "$query The column already exists - No need to worry {" .
+												   "$query The column already exists - No need to worry \{" .
 												   $e->errorInfo[1] . "}.\n");
 								} else {
 									echo $this->log->warning(
-												   "$query Skipped - No need to worry {" .
+												   "$query Skipped - No need to worry \{" .
 												   $e->errorInfo[1] . "}.\n");
 								}
 							} else {
@@ -335,10 +335,10 @@ class DbUpdate
 										echo $this->log->alternateOver('SUCCESS: ') .
 											 $this->log->primary($query);
 									} catch (\PDOException $e) {
-										exit($this->log->error("$query Failed {" . $e->errorInfo[1] . "}\n\t" . $e->errorInfo[2]));
+										exit($this->log->error("$query Failed \{" . $e->errorInfo[1] . "}\n\t" . $e->errorInfo[2]));
 									}
 								} else {
-									exit($this->log->error("$query Failed {" . $e->errorInfo[1] . "}\n\t" . $e->errorInfo[2]));
+									exit($this->log->error("$query Failed \{" . $e->errorInfo[1] . "}\n\t" . $e->errorInfo[2]));
 								}
 							}
 						}
@@ -372,7 +372,7 @@ class DbUpdate
 			'file'	=> '10-settings.tsv',
 			'path'	=> 'resources' . DS . 'db' . DS . 'schema' . DS . 'data' . DS,
 			'regex'	=> '#^(?P<section>.*)\t(?P<subsection>.*)\t(?P<name>.*)\t(?P<value>.*)\t(?P<hint>.*)\t(?P<setting>.*)$#',
-			'value'	=> function (array $matches) {
+			'value'	=> function(array $matches) {
 					return "{$matches['section']}\t{$matches['subsection']}\t{$matches['name']}\t{$matches['value']}\t{$matches['hint']}\t{$matches['setting']}";
 				} // WARNING: leaving this empty will blank not remove lines.
 		];

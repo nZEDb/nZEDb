@@ -54,7 +54,7 @@ if ($data !== false) {
 				"<td style='text-align:center;'>" . $item['RemainingSizeMB'] . " MB</td>" .
 				"<td style='text-align:center;'>" . ($item['FileSizeMB'] == 0 ? 0 : round(100 - ($item['RemainingSizeMB'] / $item['FileSizeMB']) * 100)) . "%</td>" .
 				"<td style='text-align:center;'>" . ($item['ActiveDownloads'] > 0 ? 'Downloading' : 'Paused') . "</td>" .
-				"<td style='text-align:center;'><a  onclick=\"return confirm('Are you sure?');\" href='?del=" .  $item['LastID'] . "'>Delete</a></td>" .
+				"<td style='text-align:center;'><a  onclick=\"return confirm('Are you sure?');\" href='?del=" . $item['LastID'] . "'>Delete</a></td>" .
 				"<td style='text-align:center;'><a href='?pause=" . $item['LastID'] . "'>Pause</a></td>" .
 				"<td style='text-align:center;'><a href='?resume=" . $item['LastID'] . "'>Resume</a></td>" .
 				"</tr>";

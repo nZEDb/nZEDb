@@ -15,8 +15,7 @@ if (!Utility::hasCommand('pastebinit')) {
 	exit($pdo->log->error("This script requires pastebinit, but it's not installed. Aborting.\n"));
 }
 
-switch (strtolower($argv[1]))
-{
+switch (strtolower($argv[1])) {
 	case 'site':
 		$sql = "SELECT * FROM settings WHERE setting NOT LIKE '%key%' AND setting NOT LIKE '%google%' AND setting NOT LIKE '%seed%' AND setting NOT LIKE '%amazon%' AND setting != 'saburl' AND setting != 'adheader' AND setting != 'adbrowse' AND setting != 'addetail' AND setting != 'request_url'";
 		break;
@@ -30,8 +29,7 @@ switch (strtolower($argv[1]))
 if ($sql != '') {
 	$output = '';
 	$style = isset($argv[2]) ? strtolower($argv[2]) : '';
-	switch ($style)
-	{
+	switch ($style) {
 		case 'html':
 			$mask = "\t\t<tr><td>%s</td><td>%s</td></tr>\n";
 			$output = "<table>\n\t<thead>\n\t\t<tr>\n\t\t\t<th>Setting</th>\n\t\t\t<th>Value</th>\n\t\t</tr>\n\t</thead>\n\t<tbody>\n";

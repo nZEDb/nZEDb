@@ -75,7 +75,7 @@ if ($groups === false) {
 						break;
 				}
 			}
-			echo 'Finished fixing group ' . $group['id'] . ', ' . (--$groupCount) . ' to go!' .PHP_EOL;
+			echo 'Finished fixing group ' . $group['id'] . ', ' . (--$groupCount) . ' to go!' . PHP_EOL;
 		}
 	}
 	echo 'All done!' . PHP_EOL;

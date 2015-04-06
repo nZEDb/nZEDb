@@ -18,7 +18,7 @@ if ($tvshows !== false) {
 	echo "Starting to process file entries...\n";
 	foreach ($tvshows->show as $rage) {
 		echo "RageID: " . $rage->id . ", name: " . $rage->name . " - ";
-		$dupecheck = $pdo->queryOneRow(sprintf('SELECT COUNT(id) AS count FROM tvrage_titles WHERE id = %s',
+		$dupecheck = $pdo->queryOneRow(sprintf('SELECT COUNT(id) AS count FROM tvrage_titles WHERE rageid = %s',
 											   $pdo->escapeString($rage->id)));
 
 		if (isset($rage->id) && isset($rage->name) && !empty($rage->id) && !empty($rage->name) &&
@@ -29,7 +29,7 @@ if ($tvshows !== false) {
 									  $pdo->escapeString($rage->country)
 							  ));
 			$updated++;
-            echo "added\n";
+			echo "added\n";
 		} else {
 			echo "FAILED!!\n";
 		}

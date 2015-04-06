@@ -86,10 +86,8 @@ class NZBGet
 
 		if (!empty($page->userdata['nzbgeturl'])) {
 			$this->url      = $page->userdata['nzbgeturl'];
-			$this->userName = (empty($page->userdata['nzbgetusername']) ? '' :
-				$page->userdata['nzbgetusername']);
-			$this->password = (empty($page->userdata['nzbgetpassword']) ? '' :
-				$page->userdata['nzbgetpassword']);
+			$this->userName = (empty($page->userdata['nzbgetusername']) ? '' : $page->userdata['nzbgetusername']);
+			$this->password = (empty($page->userdata['nzbgetpassword']) ? '' : $page->userdata['nzbgetpassword']);
 		}
 
 		$this->fullURL  = $this->verifyURL($this->url);
@@ -411,7 +409,7 @@ NZBGet_RATE;
 	 */
 	public function getQueue()
 	{
-		$data   = nzedb\utility\Utility::getUrl([
+		$data = nzedb\utility\Utility::getUrl([
 													'url'        => $this->fullURL . 'listgroups',
 													'verifycert' => false
 												]);
@@ -446,10 +444,10 @@ NZBGet_RATE;
 	 */
 	public function status()
 	{
-		$data   = nzedb\utility\Utility::getUrl([
+		$data = nzedb\utility\Utility::getUrl([
 													'url'        => $this->fullURL . 'status',
 													'verifycert' => false
-												]);
+											  ]);
 		$retVal = false;
 		if ($data) {
 			$xml = simplexml_load_string($data);
@@ -482,16 +480,8 @@ NZBGet_RATE;
 					   $url,
 					   $matches)) {
 			return
-				$matches['protocol'] .
-				'://' .
-				$this->userName .
-				':' .
-				$this->password .
-				'@' .
-				$matches['url'] .
-				(isset($matches['port']) ? ':' . $matches['port'] :
-					(substr($matches['url'], -1) === '/' ? '' : '/')) .
-				'xmlrpc/';
+				$matches['protocol'] . '://' . $this->userName . ':' . $this->password . '@' .
+				$matches['url'] . (isset($matches['port']) ? ':' . $matches['port'] : (substr($matches['url'], -1) === '/' ? '' : '/')) . 'xmlrpc/';
 		} else {
 			return false;
 		}

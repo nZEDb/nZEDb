@@ -6,12 +6,12 @@ if (!$page->users->isLoggedIn()) {
 $releases = new Releases(['Settings' => $page->settings]);
 $contents = new Contents(['Settings' => $page->settings]);
 $category = new Category(['Settings' => $page->settings]);
-$error = false;
+$error    = false;
 
 // Array with all the possible poster wall types.
-$startTypes = array('Books', 'Console', 'Movies', 'XXX', 'Audio', 'PC', 'TV'/*, 'Recent'*/);
+$startTypes = ['Books', 'Console', 'Movies', 'XXX', 'Audio', 'PC', 'TV'/*, 'Recent'*/];
 // Array that will contain the poster wall types (the above array minus whatever they have disabled in admin).
-$types = array();
+$types = [];
 // Get the names of all enabled parent categories.
 $categories = $category->getEnabledParentNames();
 // Loop through our possible ones and check if they are in the enabled categories.
@@ -26,7 +26,8 @@ if (count($categories) > 0) {
 }
 
 if (count($types) === 0) {
-	$error = 'No categories enabled for the new poster wall. Possible choices are: ' . implode(', ', $startTypes) . '.';
+	$error = 'No categories enabled for the new poster wall. Possible choices are: ' .
+			 implode(', ', $startTypes) . '.';
 }
 
 if (!$error) {
@@ -67,11 +68,11 @@ if (!$error) {
 			$page->smarty->assign('goto', 'xxx');
 			break;
 
-        case 'PC':
-            $getnewestgame = $releases->getNewestGames();
-            $page->smarty->assign('newest', $getnewestgame);
-            $page->smarty->assign('goto', 'games');
-            break;
+		case 'PC':
+			$getnewestgame = $releases->getNewestGames();
+			$page->smarty->assign('newest', $getnewestgame);
+			$page->smarty->assign('goto', 'games');
+			break;
 
 		case 'Audio':
 			$getnewestmp3 = $releases->getnewestMP3s();
@@ -101,9 +102,9 @@ if (!$error) {
 			$error = "ERROR: Invalid ?t parameter (" . $_REQUEST['t'] . ").";
 	}
 }
-$page->title = 'New ' . $_REQUEST['t'] . ' Releases';
-$page->meta_title = $_REQUEST['t'] . ' Poster Wall';
-$page->meta_keywords = "view,new,releases,posters,wall";
+$page->title            = 'New ' . $_REQUEST['t'] . ' Releases';
+$page->meta_title       = $_REQUEST['t'] . ' Poster Wall';
+$page->meta_keywords    = "view,new,releases,posters,wall";
 $page->meta_description = "The newest " . $_REQUEST['t'] . ' releases';
 $page->smarty->assign('error', $error);
 $page->content = $page->smarty->fetch('newposterwall.tpl');

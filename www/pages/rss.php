@@ -108,7 +108,12 @@ if (!isset($_GET["t"]) && !isset($_GET["rage"]) && !isset($_GET["anidb"])) {
 		$catexclusions = $page->users->getCategoryExclusion($uid);
 		$reldata = $releases->getMyMoviesRss($usernum, $uid, $catexclusions);
 	} else {
-		$reldata = $releases->getRss(explode(",", $usercat), $usernum, $uid, $userrage, $useranidb, $userairdate);
+		$reldata = $releases->getRss(explode(",", $usercat),
+									 $usernum,
+									 $userrage,
+									 $useranidb,
+									 $uid,
+									 $userairdate);
 	}
 
 	$page->smarty->assign('releases', $reldata);

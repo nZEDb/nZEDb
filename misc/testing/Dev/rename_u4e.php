@@ -8,7 +8,7 @@ $pdo = new \nzedb\db\Settings();
 $tmpPath = $pdo->getSetting('tmpunrarpath');
 
 if (empty($tmpPath)) {
-	exit ('The tmpunrarpath site setting must not be empty!' . PHP_EOL);
+	exit('The tmpunrarpath site setting must not be empty!' . PHP_EOL);
 }
 
 if (substr($tmpPath, -1) !== DS) {
@@ -30,19 +30,19 @@ if (!is_dir($tmpPath)) {
 $unrarPath = $pdo->getSetting('unrarpath');
 
 if (empty($unrarPath)) {
-	exit ('The site setting for the unrar path must not be empty!' . PHP_EOL);
+	exit('The site setting for the unrar path must not be empty!' . PHP_EOL);
 }
 
-$nntp = new \NNTP(['Settings' => $pdo]);
-$nfo = new \Nfo(['Echo' => true, 'Settings' => $pdo]);
-$nzbContents= new \NZBContents(
-	array(
-		'Settings' => $pdo,
-		'Echo' => true,
-		'Nfo' => $nfo,
+$nntp        = new \NNTP(['Settings' => $pdo]);
+$nfo         = new \Nfo(['Echo' => true, 'Settings' => $pdo]);
+$nzbContents = new \NZBContents(
+	[
+		'Settings'    => $pdo,
+		'Echo'        => true,
+		'Nfo'         => $nfo,
 		'PostProcess' => new PostProcess(['Settings' => $pdo, 'Nfo' => $nfo]),
-		'NNTP' => $nntp
-	)
+		'NNTP'        => $nntp
+	]
 );
 $categorize = new \Categorize(['Settings' => $pdo]);
 
@@ -56,7 +56,7 @@ $releases = $pdo->queryDirect(
 		AND r.passwordstatus = 0
 		AND rf.name %s
 		ORDER BY r.postdate DESC',
-		$pdo->likeString('Linux_2rename.sh')
+			$pdo->likeString('Linux_2rename.sh')
 	)
 );
 
@@ -66,7 +66,7 @@ if ($releases instanceof \Traversable) {
 
 	$sphinx = new \SphinxSearch();
 
-	foreach($releases as $release) {
+	foreach ($releases as $release) {
 
 		// Clear old files.
 		foreach (glob($tmpPath . '*') as $file) {
@@ -83,7 +83,7 @@ if ($releases instanceof \Traversable) {
 
 		// Try to get the first RAR message-id.
 		$messageID = '';
-		foreach($nzbXML->file as $file) {
+		foreach ($nzbXML->file as $file) {
 			if (preg_match('/part0*1\.rar/i', (string)$file->attributes()->subject)) {
 				$messageID = (string)$file->segments->segment;
 				break;
@@ -92,7 +92,7 @@ if ($releases instanceof \Traversable) {
 
 		// If we didn't find a messageID, try again with a less strict regex.
 		if ($messageID === '') {
-			foreach($nzbXML->file as $file) {
+			foreach ($nzbXML->file as $file) {
 				if (preg_match('/\.r(ar|0[01])/i', (string)$file->attributes()->subject)) {
 					$messageID = (string)$file->segments->segment;
 					break;
@@ -155,7 +155,7 @@ if ($releases instanceof \Traversable) {
 		}
 
 		$newName = '';
-		$handle = @fopen($tmpPath . $fileName, 'r');
+		$handle  = @fopen($tmpPath . $fileName, 'r');
 		if ($handle) {
 			while (($buffer = fgets($handle, 16384)) !== false) {
 				if (stripos($buffer, 'mkdir') !== false) {
@@ -172,17 +172,17 @@ if ($releases instanceof \Traversable) {
 			continue;
 		}
 
-		$determinedCat = $categorize->determineCategory($newName, $release['group_id']);
+		$determinedCat = $categorize->determineCategory($release['group_id'], $newName);
 
-		\NameFixer::echoChangedReleaseName(array(
-				'new_name'     => $newName,
-				'old_name'     => $release['oldname'],
-				'new_category' => $categorize->getNameByid($determinedCat),
-				'old_category' => $categorize->getNameByid($release['categoryid']),
-				'group'        => $release['groupname'],
-				'release_id'   => $release['id'],
-				'method'       => 'misc/testing/Dev/rename_u4e.php'
-			)
+		\NameFixer::echoChangedReleaseName([
+											'new_name'     => $newName,
+											'old_name'     => $release['oldname'],
+											'new_category' => $categorize->getNameByid($determinedCat),
+											'old_category' => $categorize->getNameByid($release['categoryid']),
+											'group'        => $release['groupname'],
+											'release_id'   => $release['id'],
+											'method'       => 'misc/testing/Dev/rename_u4e.php'
+										   ]
 		);
 
 		$newName = $pdo->escapeString(substr($newName, 0, 255));
@@ -194,9 +194,9 @@ if ($releases instanceof \Traversable) {
 						consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, preid = 0,
 						searchname = %s, isrenamed = 1, iscategorized = 1, proc_files = 1, categoryid = %d
 					WHERE id = %d',
-				$newName,
-				$determinedCat,
-				$release['id']
+					$newName,
+					$determinedCat,
+					$release['id']
 			)
 		);
 		$sphinx->updateReleaseSearchName($release['id'], $newName);

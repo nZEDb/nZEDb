@@ -8,9 +8,11 @@ if (nZEDb_RELEASE_SEARCH_TYPE != \ReleaseSearch::SPHINX) {
 $sphinxConnection = '';
 if ($argc == 3 && is_numeric($argv[2])) {
 	$sphinxConnection = sprintf('sphinx://%s:%d/', $argv[1], $argv[2]);
-} elseif ($argc == 2) { // Checks that argv[1] exists AND that there are no other arguments, which would be an error.
+} elseif ($argc == 2) {
+	// Checks that argv[1] exists AND that there are no other arguments, which would be an error.
 	$socket = preg_replace('#^(?:unix://)?(.*)$#', '$1', $argv[1]);
-	if (substr($socket, 0, 1) == '/') { // Make sure the socket path is fully qualified (and using correct separator).
+	if (substr($socket, 0, 1) == '/') {
+		// Make sure the socket path is fully qualified (and using correct separator).
 		$sphinxConnection = sprintf('unix://%s:', $socket);
 	}
 } else {

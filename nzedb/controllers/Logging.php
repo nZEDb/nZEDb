@@ -64,7 +64,7 @@ class Logging
 	 *
 	 * @access public
 	 */
-	public function LogBadPasswd($username='', $host='')
+	public function LogBadPasswd($username = '', $host = '')
 	{
 		// If logggingopt is = 0, then we do nothing, 0 = logging off.
 		$loggingOpt = $this->pdo->getSetting('loggingopt');
@@ -72,19 +72,16 @@ class Logging
 		if ($loggingOpt == '1') {
 			$this->pdo->queryInsert(sprintf('INSERT INTO logging (time, username, host) VALUES (NOW(), %s, %s)',
 				$this->pdo->escapeString($username), $this->pdo->escapeString($host)));
-		}
-		else if ($loggingOpt == '2')
-		{
+		} else if ($loggingOpt == '2') {
 			$this->pdo->queryInsert(sprintf('INSERT INTO logging (time, username, host) VALUES (NOW(), %s, %s)',
 				$this->pdo->escapeString($username), $this->pdo->escapeString($host)));
-			$logData = date('M d H:i:s ')."Login Failed for ".$username." from ".$host . "." . $this->newLine;
+			$logData = date('M d H:i:s ') . "Login Failed for " . $username . " from " . $host . "." .
+				$this->newLine;
 			if (isset($logFile) && $logFile != "") {
 				file_put_contents($logFile, $logData, FILE_APPEND);
 			}
-		}
-		else if ($loggingOpt == '3')
-		{
-			$logData = date('M d H:i:s ')."Login Failed for ".$username." from ".$host . "." . $this->newLine;
+		} else if ($loggingOpt == '3') {
+			$logData = date('M d H:i:s ') . "Login Failed for " . $username . " from " . $host . "." . $this->newLine;
 			if (isset($logFile) && $logFile != '') {
 				file_put_contents($logFile, $logData, FILE_APPEND);
 			}

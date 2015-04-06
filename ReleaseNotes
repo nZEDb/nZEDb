@@ -1,32 +1,60 @@
 This file details which changes to the code are in which release version. It is a complement to the ChangeLog file which list *when* changes are made to the dev branch.
 
+
+
+0.4.20 2014-04-06
+New
+	* Added a list of licenses used by nZEDb.
+	* Added support for in DB collections (grouping) regex.
+	* Added "regex" sub-menu to admin menu.
+	* Added a "collections" menu item to the new regex menu.
+	* Added support for category regexes in the DB.
+	* Added support for alt.binaries.b4e.erotica.
+	* Added FULLTEXT indexes on bookinfo, consoleinfo, and musicinfo for better existing title matching.
+
+Changes:
+	* Move the blacklist menu into new "Regex" menu item.
+	* Convert collections regex to db.
+	* Better handling of .vol in regex extensions.
+	* Improvements to parsing nfo files for source.
+	* Switch to fanart.tv v3 api
+
+Fixes:
+	* Correcting tmp_pre table references to predb_imports in dump_predb script.
+	* Fixes for compressed NZB reading and return.
+	* Don't ignore renamed releases for local requestID lookup.
+	* Fix oversized fanart images when viewing movie info popup.
+	* Fix Class not found error in Movie.php.
+
 0.4.19	2015-03-02
-	* Chg: Add new XXX categories to posterwall.
-	* Chg: Make ReleaseRemover more informative of the type it is processing.
-	* Chg: Ignore PC > Mac category for removeExecutable (Core Releases include their exe file for some reason).
-	* Chg: Changing defaults for 'show passworded releases' (now shows potentially passworded) and 'NZB split level' (now 4) for new installs.
-	* Chg: Regex updates / categorize fixes for SD XXX
-	* Chg: Update sphinxsearch RT index when manually editing release searchname.
-	* Chg: Optimize queries for new release posterwall.
-
-	* Mrg: PR 1602 from dariusIII - Add XXX WEB-DL category to XXX releases.
-	* Mrg: PR 1600 from kevin - Add support for in DB collections (grouping) regex.
-	* Mrg: PR 1599 from kevin - Changes to install templates.
-	* Mrg: PR 1590 from dariusIII - Add XXX-SD category.
+New
+	* Add XXX WEB-DL category to XXX releases.
+	* Add XXX-SD category.
 		***NOTE*** run "php /misc/testing/Dev/recategorize.php all" to re-categorize existing releases.
-	* Mrg: PR 1589 from dariusIII - Updated regex for codec poster.
+	* Add new XXX categories to posterwall.
 
-	* Fix: RottenTomatoes high-res images - clear your smarty cache.
-	* Fix: Group XXX pack releases in a.b.erotica correctly.
-	* Fix: Missing binaries from releases due to collection_id not being set.
+Changes:
+	* Make ReleaseRemover more informative of the type it is processing.
+	* Ignore PC > Mac category for removeExecutable (Core Releases include their exe file for some reason).
+	* Changing defaults for 'show passworded releases' (now shows potentially passworded) and 'NZB split level' (now 4) for new installs.
+	* Regex updates / categorize fixes for SD XXX
+	* Update sphinxsearch RT index when manually editing release searchname.
+	* Optimize queries for new release posterwall.
+	* Changes to install templates.
+	* Updated regex for codec poster.
+
+Fixes:
+	* RottenTomatoes high-res images - clear your smarty cache.
+	* Group XXX pack releases in a.b.erotica correctly.
+	* Missing binaries from releases due to collection_id not being set.
 		Suggest that you run reset_truncate after this update.
 		NB: IMPORTANT - TPG users (that means you McFuzz) must run "php /nzedb/build/_runonce/tpg_add_collections_column_205-02-20.php"
 		FAILURE TO DO SO WILL CAUSE INSERT ERRORS
-	* Fix: Issue 1594 - Fix word wrap on alpha theme.
-	* Fix: Reading a corrupt nzb would hang on 100% cpu.
-	* Fix: Dupecheck when inserting tvrage titles.
-	* Fix: Issue with mysqldump_tables.php when using socket.
-	* Fix: Another issue with mysqldump_tables.php when using sockets.
+	* Issue 1594 - Fix word wrap on alpha theme.
+	* Reading a corrupt nzb would hang on 100% cpu.
+	* Dupecheck when inserting tvrage titles.
+	* Issues with mysqldump_tables.php when using socket.
+
 
 0.4.0	2014-09-08 niel
 	NOTE: This version forward targets PHP 5.5 and later.

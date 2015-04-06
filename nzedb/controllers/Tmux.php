@@ -107,9 +107,9 @@ class Tmux
 
 		switch ($which) {
 			case 'alternate':
-					$ip = 'ip_a';
-					$port = 'port_a';
-					break;
+				$ip = 'ip_a';
+				$port = 'port_a';
+				break;
 			case 'primary':
 			default:
 				$ip = 'ip';
@@ -208,6 +208,7 @@ class Tmux
 					(%1\$s 'seq_timer') AS seq_timer,
 					(%1\$s 'bins_timer') AS bins_timer,
 					(%1\$s 'back_timer') AS back_timer,
+					(%1\$s 'import_count') AS import_count,
 					(%1\$s 'import_timer') AS import_timer,
 					(%1\$s 'rel_timer') AS rel_timer,
 					(%1\$s 'fix_timer') AS fix_timer,
@@ -293,11 +294,29 @@ class Tmux
 		return ((float)$usec + (float)$sec);
 	}
 
+	/**
+	 * @param double $bytes
+	 *
+	 * @return string
+	 */
 	public function decodeSize($bytes)
 	{
 		$types = ['B', 'KB', 'MB', 'GB', 'TB'];
+		/*
 		for ($i = 0; $bytes >= 1024 && $i < (count($types) - 1); $bytes /= 1024, $i++);
+
 		return (round($bytes, 2) . " " . $types[$i]);
+		*/
+
+		$suffix = 'B';
+		foreach ($types as $type) {
+			if ($bytes < 1024.0) {
+				$suffix = $type;
+				break;
+			}
+			$bytes /= 1024;
+		}
+		return (round($bytes, 2) . " " . $suffix);
 	}
 
 	public function writelog($pane)
@@ -343,6 +362,7 @@ class Tmux
 
 	public function relativeTime($_time)
 	{
+		$d = [];
 		$d[0] = [1, "sec"];
 		$d[1] = [60, "min"];
 		$d[2] = [3600, "hr"];
@@ -374,7 +394,7 @@ class Tmux
 
 	public function proc_query($qry, $bookreqids, $request_hours, $db_name)
 	{
-		switch ((int) $qry) {
+		switch ((int)$qry) {
 			case 1:
 				return sprintf("SELECT
 					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 5000 AND 5999 AND rageid = -1) AS processtvrage,
@@ -439,7 +459,11 @@ class Tmux
 	 */
 	public function isRunning()
 	{
-		return ($this->get()->running == 1);
+		$running = $this->get()->running;
+		if ($running === false) {
+			throw new RuntimeException("Tmux's running flag was not found in the database.\nPlease check the tables are correctly setup.\n");
+		}
+		return ($running == 1);
 	}
 
 	/**

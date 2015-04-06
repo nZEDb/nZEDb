@@ -18,7 +18,9 @@ if (is_file($www_path . 'config.php')) {
 	require($www_path . 'automated.config.php');
 }
 
-define('R',   1); define('W',   2); define('E',   4);
+define('R', 1);
+define('W', 2);
+define('E', 4);
 
 // Check All folders up to nZEDb root folder.
 $string = DS;
@@ -49,13 +51,13 @@ $folders = [
 ];
 
 // Add nzb folders.
-foreach ([0,1,2,3,4,5,6,7,8,9,'a','b','c','d','e','f'] as $identifier) {
+foreach ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'a', 'b', 'c', 'd', 'e', 'f'] as $identifier) {
 	$nzbFolder = nZEDb_RES . 'nzb' . DS . $identifier . DS;
 	$folders[$nzbFolder] = [R, W];
 }
 
 // Add covers paths.
-foreach (['anime','audio','audiosample','book','console','games','movies','music','preview','sample','tvrage','video','xxx'] as $identifier) {
+foreach (['anime', 'audio', 'audiosample', 'book', 'console', 'games', 'movies', 'music', 'preview', 'sample', 'tvrage', 'video', 'xxx'] as $identifier) {
 	$nzbFolder = nZEDb_RES . 'covers' . DS . $identifier . DS;
 	$folders[$nzbFolder] = [R, W];
 }
@@ -100,22 +102,29 @@ if (!nzedb\utility\Utility::isWin()) {
 	}
 }
 
-function readable($folder) {
+function readable($folder)
+{
 	if (!is_readable($folder)) {
 		exit('Error: This path is not readable: (' . $folder . ') resolve this and rerun the script.' . PHP_EOL);
 	}
 }
-function writable($folder) {
+
+function writable($folder)
+{
 	if (!is_writable($folder)) {
 		exit('Error: This path is not writable: (' . $folder . ') resolve this and rerun the script.' . PHP_EOL);
 	}
 }
-function executable($folder) {
+
+function executable($folder)
+{
 	if (!is_executable($folder)) {
 		exit('Error: This path is not executable: (' . $folder . ') resolve this and rerun the script.' . PHP_EOL);
 	}
 }
-function exists($folder) {
+
+function exists($folder)
+{
 	if (!file_exists($folder)) {
 		exit('Error: This path (' . $folder . ') does not exist or is not readable. Create it or make it readable.' . PHP_EOL);
 	}

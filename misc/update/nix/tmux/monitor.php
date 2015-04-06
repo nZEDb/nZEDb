@@ -87,7 +87,7 @@ while ($runVar['counts']['iterations'] > 0) {
 		: "{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/releases.php"
 	);
 
-	switch((int) $runVar['settings']['binaries_run']) {
+	switch ((int)$runVar['settings']['binaries_run']) {
 		case 1:
 			$runVar['scripts']['binaries'] = "{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/binaries.php 0";
 			break;
@@ -98,7 +98,7 @@ while ($runVar['counts']['iterations'] > 0) {
 			$runVar['scripts']['binaries'] = 0;
 	}
 
-	switch ((int) $runVar['settings']['backfill']) {
+	switch ((int)$runVar['settings']['backfill']) {
 		case 1:
 			$runVar['scripts']['backfill'] = "{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/backfill.php";
 			break;
@@ -137,7 +137,7 @@ while ($runVar['counts']['iterations'] > 0) {
 
 		//assign split query results to main var
 		if (is_array($splitres)) {
-			foreach ($splitres AS $splitkey => $split) {
+			foreach ($splitres as $splitkey => $split) {
 				$runVar['counts']['now'][$splitkey] = $split;
 			}
 		}
@@ -249,7 +249,7 @@ while ($runVar['counts']['iterations'] > 0) {
 
 		//assign postprocess values from $proc
 		if (is_array($proc1res)) {
-			foreach ($proc1res AS $proc1key => $proc1) {
+			foreach ($proc1res as $proc1key => $proc1) {
 				$runVar['counts']['now'][$proc1key] = $proc1;
 			}
 		} else {
@@ -257,14 +257,14 @@ while ($runVar['counts']['iterations'] > 0) {
 		}
 
 		if (is_array($proc2res)) {
-			foreach ($proc2res AS $proc2key => $proc2) {
+			foreach ($proc2res as $proc2key => $proc2) {
 				$runVar['counts']['now'][$proc2key] = $proc2;
 			}
 		} else {
 			errorOnSQL($pdo);
 		}
 		if (is_array($proc3res)) {
-			foreach ($proc3res AS $proc3key => $proc3) {
+			foreach ($proc3res as $proc3key => $proc3) {
 				$runVar['counts']['now'][$proc3key] = $proc3;
 			}
 		} else {
@@ -378,7 +378,7 @@ function errorOnSQL($pdo)
 	exit;
 }
 
-function getTableRowCount(PDOStatement &$ps, $table)
+function getTableRowCount(\PDOStatement &$ps, $table)
 {
 	$success = $ps->execute([':table' => $table]);
 	if ($success) {

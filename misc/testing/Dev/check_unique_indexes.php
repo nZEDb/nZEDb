@@ -41,7 +41,7 @@ function run_query($query, $test)
 	}
 }
 
-$path = nZEDb_RES . 'db' . DS . 'schema' . DS .'mysql-ddl.sql';
+$path = nZEDb_RES . 'db' . DS . 'schema' . DS . 'mysql-ddl.sql';
 $handle = fopen($path, "r");
 if ($handle) {
 	while (($line = fgets($handle)) !== false) {
@@ -62,7 +62,7 @@ if ($handle) {
 								}
 							}
 						}
-						$qry = "ALTER IGNORE TABLE " . trim($match['table']) . " ADD CONSTRAINT " . trim($match['index']) ." UNIQUE (${match['column']})";
+						$qry = "ALTER IGNORE TABLE " . trim($match['table']) . " ADD CONSTRAINT " . trim($match['index']) . " UNIQUE (${match['column']})";
 						run_query($qry, $argv[1]);
 					} else if (trim($match['table']) === 'binaries') {
 						$tables = $pdo->query("SHOW TABLES");
@@ -76,7 +76,7 @@ if ($handle) {
 								}
 							}
 						}
-						$qry = "ALTER IGNORE TABLE " . trim($match['table']) . " ADD CONSTRAINT " . trim($match['index']) ." UNIQUE (${match['column']})";
+						$qry = "ALTER IGNORE TABLE " . trim($match['table']) . " ADD CONSTRAINT " . trim($match['index']) . " UNIQUE (${match['column']})";
 						run_query($qry, $argv[1]);
 					} else if (trim($match['table']) === 'parts') {
 						$tables = $pdo->query("SHOW TABLES");
@@ -90,7 +90,7 @@ if ($handle) {
 								}
 							}
 						}
-						$qry = "ALTER IGNORE TABLE " . trim($match['table']) . " ADD CONSTRAINT " . trim($match['index']) ." UNIQUE (${match['column']})";
+						$qry = "ALTER IGNORE TABLE " . trim($match['table']) . " ADD CONSTRAINT " . trim($match['index']) . " UNIQUE (${match['column']})";
 						run_query($qry, $argv[1]);
 					} else if (trim($match['table']) === 'missed_parts') {
 						$tables = $pdo->query("SHOW TABLES");
@@ -104,10 +104,10 @@ if ($handle) {
 								}
 							}
 						}
-						$qry = "ALTER IGNORE TABLE " . trim($match['table']) . " ADD CONSTRAINT " . trim($match['index']) ." UNIQUE (${match['column']})";
+						$qry = "ALTER IGNORE TABLE " . trim($match['table']) . " ADD CONSTRAINT " . trim($match['index']) . " UNIQUE (${match['column']})";
 						run_query($qry, $argv[1]);
 					} else {
-						$qry = "ALTER IGNORE TABLE " . trim($match['table']) . " ADD CONSTRAINT " . trim($match['index']) ." UNIQUE (${match['column']})";
+						$qry = "ALTER IGNORE TABLE " . trim($match['table']) . " ADD CONSTRAINT " . trim($match['index']) . " UNIQUE (${match['column']})";
 						run_query($qry, $argv[1]);
 					}
 				} else {

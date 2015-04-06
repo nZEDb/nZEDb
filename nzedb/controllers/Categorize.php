@@ -39,15 +39,21 @@ class Categorize extends Category
 	public $groupID;
 
 	/**
+	 * @var Regexes
+	 */
+	public $regexes;
+
+	/**
 	 * Construct.
 	 *
 	 * @param array $options Class instances.
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		parent::__construct($options);
 		$this->categorizeForeign = ($this->pdo->getSetting('categorizeforeign') == "0") ? false : true;
 		$this->catWebDL = ($this->pdo->getSetting('catwebdl') == "0") ? false : true;
+		$this->regexes = new Regexes(['Settings' => $this->pdo, 'Table_Name' => 'category_regexes']);
 	}
 
 	/**
@@ -60,7 +66,7 @@ class Categorize extends Category
 	 *
 	 * @return int The categoryID.
 	 */
-	public function determineCategory($releaseName = '', $groupID)
+	public function determineCategory($groupID, $releaseName = '')
 	{
 		$this->releaseName = $releaseName;
 		$this->groupID = $groupID;
@@ -68,9 +74,9 @@ class Categorize extends Category
 
 		switch (true) {
 			case $this->isMisc():
-				// Note that in byGroup() some overrides occur...
-			case $this->byGroup():
-				//Try against all functions, if still nothing, return Cat Misc.
+			case $this->databaseRegex():
+			case $this->byGroup(): // Note that in byGroup() some overrides occur...
+			//Try against all functions, if still nothing, return Cat Misc.
 			case $this->isPC():
 			case $this->isXXX():
 			case $this->isTV():
@@ -85,15 +91,37 @@ class Categorize extends Category
 	}
 
 	/**
+	 * Cache of group names for group ID's.
+	 * @var array
+	 */
+	private $groups = [];
+
+	/**
+	 * Sets/Gets a group name for the current group ID in the buffer.
+	 *
+	 * @return string Group Name.
+	 */
+	private function groupName()
+	{
+		if (!isset($this->groups[$this->groupID])) {
+			$group = $this->pdo->queryOneRow(sprintf('SELECT LOWER(name) AS name FROM groups WHERE id = %d', $this->groupID));
+			$this->groups[$this->groupID] = ($group === false ? false : $group['name']);
+		}
+
+		return $this->groups[$this->groupID];
+	}
+
+	/**
 	 * Determine category by group name.
 	 *
 	 * @return bool
 	 */
 	public function byGroup()
 	{
-		$group = $this->pdo->queryOneRow(sprintf('SELECT LOWER(name) AS name FROM groups WHERE id = %d', $this->groupID));
-		if ($group !== false) {
-			$group = $group['name'];
+		$group = $this->groupName();
+		if ($group === false) {
+			return false;
+		} else {
 			switch (true) {
 				case $group === 'alt.binaries.0day.stuffz':
 					switch (true) {
@@ -111,6 +139,17 @@ class Categorize extends Category
 					break;
 				case preg_match('/alt\.binaries\.(multimedia\.erotica\.|cartoons\.french\.|dvd\.|multimedia\.)?anime(\.highspeed|\.repost|s-fansub|\.german)?/', $group):
 					$this->tmpCat = \Category::CAT_TV_ANIME;
+					break;
+				case $group === 'alt.binaries.b4e.erotica':
+					switch (true) {
+						case $this->isTV():
+						case $this->isMovie():
+						case $this->isXxx():
+							break;
+						default:
+							$this->tmpCat = \Category::CAT_XXX_OTHER;
+							break;
+					}
 					break;
 				case $group === 'alt.binaries.british.drama':
 					switch (true) {
@@ -244,6 +283,7 @@ class Categorize extends Category
 					break;
 				case preg_match('/alt.binaries.cd.images?.games/', $group):
 					switch (true) {
+						case $this->is0day():
 						case $this->isConsole():
 						case $this->isBook():
 							break;
@@ -416,9 +456,6 @@ class Categorize extends Category
 					}
 					$this->tmpCat = \Category::CAT_GAME_PSP;
 					break;
-				case $group === 'alt.binaries.sony.psvita':
-					$this->tmpCat = \Category::CAT_GAME_PSVITA;
-					break;
 				case $group === 'alt.binaries.warez':
 					switch (true) {
 						case $this->isTV():
@@ -450,6 +487,20 @@ class Categorize extends Category
 			return true;
 		}
 
+		return false;
+	}
+
+	/**
+	 * Try database regexes against a group / release name.
+	 * @return bool
+	 */
+	public function databaseRegex()
+	{
+		$cat = $this->regexes->tryRegex($this->releaseName, $this->groupName());
+		if (is_numeric($cat)) {
+			$this->tmpCat = $cat;
+			return true;
+		}
 		return false;
 	}
 
@@ -511,7 +562,7 @@ class Categorize extends Category
 	public function isForeignTV()
 	{
 		switch (true) {
-			case preg_match('/[-._ ](NHL|stanley.+cup)[-._ ]/', $this->releaseName):
+			case preg_match('/[-._ ](NHL|stanley.+cup)[-._ ]/', $this->releaseName) !== false:
 				return false;
 			case preg_match('/[-._ ](chinese|dk|fin|french|ger?|heb|ita|jap|kor|nor|nordic|nl|pl|swe)[-._ ]?(sub|dub)(ed|bed|s)?|<German>/i', $this->releaseName):
 			case preg_match('/[-._ ](brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|ita|latin|mandarin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish).+(720p|1080p|Divx|DOKU|DUB(BED)?|DLMUX|NOVARIP|RealCo|Sub(bed|s)?|Web[-._ ]?Rip|WS|Xvid|x264)[-._ ]/i', $this->releaseName):
@@ -841,6 +892,7 @@ class Categorize extends Category
 			case $this->isXxxWMV():
 			case $this->isXxxDVD():
 			case $this->isXxxOther():
+			case $this->isXxxSD():
 				return true;
 			default:
 				$this->tmpCat = \Category::CAT_XXX_OTHER;

@@ -153,7 +153,7 @@ class Sites
 
 		$result = $this->_db->queryArray($sql);
 		if ($result instanceof \Traversable) {
-			foreach($result as $row) {
+			foreach ($result as $row) {
 				$results[$row['setting']] = $row['value'];
 			}
 

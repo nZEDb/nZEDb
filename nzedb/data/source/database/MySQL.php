@@ -135,7 +135,7 @@ class MySql extends Database
 	 * @param string $feature Test for support for a specific feature, i.e. `"transactions"` or
 	 *                        `"arrays"`.
 	 *
-	 * @return boolean Returns `true` if the particular feature (or if MySQL) support is enabled,
+	 * @return boolean|null Returns `true` if the particular feature (or if MySQL) support is enabled,
 	 *         otherwise `false`.
 	 */
 	public static function enabled($feature = null)
@@ -193,7 +193,7 @@ class MySql extends Database
 
 		return $this->_filter(__METHOD__,
 							  $params,
-			function ($self) use ($_config) {
+			function($self) use ($_config) {
 				$name = $self->name($_config['database']);
 
 				if (!$result = $self->invokeMethod('_execute',
@@ -230,7 +230,7 @@ class MySql extends Database
 		$params = compact('entity', 'meta', 'fields');
 		return $this->_filter(__METHOD__,
 							  $params,
-			function ($self, $params) {
+			function($self, $params) {
 				extract($params);
 
 				if ($fields) {
@@ -244,7 +244,7 @@ class MySql extends Database
 										   'field', 'type', 'null', 'key', 'default', 'extra'
 									   ]
 									   ]);
-				$fields  = [];
+				$fields = [];
 
 				foreach ($columns as $column) {
 					$schema  = $self->invokeMethod('_column', [$column['type']]);
@@ -370,7 +370,7 @@ class MySql extends Database
 
 		return $this->_filter(__METHOD__,
 							  $params,
-			function ($self, $params) use ($conn) {
+			function($self, $params) use ($conn) {
 				$sql     = $params['sql'];
 				$options = $params['options'];
 				$conn->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, $options['buffered']);

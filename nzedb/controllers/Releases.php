@@ -101,7 +101,7 @@ class Releases
 	 */
 	public function createGUID()
 	{
-		return sha1(uniqid('', true) . mt_rand());
+		return bin2hex(openssl_random_pseudo_bytes(20));
 	}
 
 	/**
@@ -234,7 +234,7 @@ class Releases
 	/**
 	 * Return site setting for hiding/showing passworded releases.
 	 *
-	 * @return int
+	 * @return string
 	 */
 	public function showPasswords()
 	{
@@ -242,9 +242,7 @@ class Releases
 			return $this->passwordSettingBuffer;
 		}
 		$setting = $this->pdo->queryOneRow(
-			"SELECT value
-			FROM settings
-			WHERE setting = 'showpasswordedrelease'"
+			"SELECT value FROM settings	WHERE setting = 'showpasswordedrelease'"
 		);
 		$passwordStatus = ('= ' . \Releases::PASSWD_NONE);
 		if ($setting !== false) {
@@ -298,7 +296,7 @@ class Releases
 	/**
 	 * Return ordering types usable on site.
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public function getBrowseOrdering()
 	{
@@ -436,7 +434,7 @@ class Releases
 	 *
 	 * @return array
 	 */
-	public function getRss($cat, $offset, $userID = 0, $rageID, $aniDbID, $airDate = -1)
+	public function getRss($cat, $offset, $rageID, $aniDbID, $userID = 0, $airDate = -1)
 	{
 		$catSearch = $cartSearch = '';
 
@@ -753,10 +751,9 @@ class Releases
 	 * @param int    $imDbID
 	 * @param int    $aniDbID
 	 */
-	public function update(
-		$ID, $name, $searchName, $fromName, $categoryID, $parts, $grabs, $size,
-		$postedDate, $addedDate, $rageID, $seriesFull, $season, $episode, $imDbID, $aniDbID
-	)
+	public function update($ID, $name, $searchName, $fromName, $categoryID, $parts, $grabs, $size,
+						   $postedDate, $addedDate, $rageID, $seriesFull, $season, $episode,
+						   $imDbID, $aniDbID)
 	{
 		$this->pdo->queryExec(
 			sprintf(
@@ -908,7 +905,6 @@ class Releases
 	 * @param string $usenetName
 	 * @param string $posterName
 	 * @param string $groupName
-	 * @param array  $cat
 	 * @param int    $sizeFrom
 	 * @param int    $sizeTo
 	 * @param int    $hasNfo
@@ -919,18 +915,44 @@ class Releases
 	 * @param int    $limit
 	 * @param string $orderBy
 	 * @param int    $maxAge
-	 * @param array  $excludedCats
+	 * @param integer[] $excludedCats
 	 * @param string $type
+	 * @param array  $cat
 	 *
 	 * @return array
 	 */
 	public function search(
-		$searchName, $usenetName, $posterName, $groupName, $cat = [-1], $sizeFrom,
-		$sizeTo, $hasNfo, $hasComments, $daysNew, $daysOld, $offset = 0, $limit = 1000,
-		$orderBy = '', $maxAge = -1, $excludedCats = [], $type = 'basic'
-	)
-	{
-		$sizeRange = range(1,11);
+		$searchName,
+		$usenetName,
+		$posterName,
+		$groupName,
+		$sizeFrom,
+		$sizeTo,
+		$hasNfo,
+		$hasComments,
+		$daysNew,
+		$daysOld,
+		$offset = 0,
+		$limit = 1000,
+		$orderBy = '',
+		$maxAge = -1,
+		$excludedCats = [],
+		$type = 'basic',
+		$cat = [-1]
+	) {
+		$sizeRange = [
+			1 => 1,
+			2 => 2.5,
+			3 => 5,
+			4 => 10,
+			5 => 20,
+			6 => 30,
+			7 => 40,
+			8 => 80,
+			9 => 160,
+			10 => 320,
+			11 => 640,
+		];
 
 		if ($orderBy == '') {
 			$orderBy = [];
@@ -959,8 +981,8 @@ class Releases
 			NZB::NZB_ADDED,
 			($maxAge > 0 ? sprintf(' AND r.postdate > (NOW() - INTERVAL %d DAY) ', $maxAge) : ''),
 			($groupName != -1 ? sprintf(' AND r.group_id = %d ', $this->groups->getIDByName($groupName)) : ''),
-			(in_array($sizeFrom, $sizeRange) ? ' AND r.size > ' . (string)(104857600 * (int)$sizeFrom) . ' ' : ''),
-			(in_array($sizeTo, $sizeRange) ? ' AND r.size < ' . (string)(104857600 * (int)$sizeTo) . ' ' : ''),
+			(array_key_exists($sizeFrom, $sizeRange) ? ' AND r.size > ' . (string)(104857600 * (int)$sizeRange[$sizeFrom]) . ' ' : ''),
+			(array_key_exists($sizeTo, $sizeRange) ? ' AND r.size < ' . (string)(104857600 * (int)$sizeRange[$sizeTo]) . ' ' : ''),
 			($hasNfo != 0 ? ' AND r.nfostatus = 1 ' : ''),
 			($hasComments != 0 ? ' AND r.comments > 0 ' : ''),
 			($type !== 'advanced' ? $this->categorySQL($cat) : ($cat[0] != '-1' ? sprintf(' AND (r.categoryid = %d) ', $cat[0]) : '')),
@@ -1220,7 +1242,7 @@ class Releases
 		$parentCat = $catRow['parentid'];
 
 		$results = $this->search(
-			$this->getSimilarName($name), -1, -1, -1, [$parentCat], -1, -1, 0, 0, -1, -1, 0, $limit, '', -1, $excludedCats
+			$this->getSimilarName($name), -1, -1, -1, -1, -1, 0, 0, -1, -1, 0, $limit, '', -1, $excludedCats, null, [$parentCat]
 		);
 		if (!$results) {
 			return $results;

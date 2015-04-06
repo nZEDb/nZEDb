@@ -105,9 +105,11 @@ class Versions
 		}
 
 		$count = $this->git->commits();
-		if ($this->_vers->git->commit->__toString() < $count || GIT_PRE_COMMIT === true) {	// Allow pre-commit to override the commit number (often branch number is higher than dev's)
+		if ($this->_vers->git->commit->__toString() < $count || GIT_PRE_COMMIT === true) {
+			// Allow pre-commit to override the commit number (often branch number is higher than dev's)
 			if ($update) {
-				if (GIT_PRE_COMMIT === true) { // only the pre-commit script is allowed to set the NEXT commit number
+				if (GIT_PRE_COMMIT === true) {
+					// only the pre-commit script is allowed to set the NEXT commit number
 					$count += 1;
 				}
 				if ($count != $this->_vers->git->commit) {

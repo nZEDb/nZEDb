@@ -11,7 +11,7 @@ require_once nZEDb_LIBS . 'rarinfo/par2info.php';
 class PostProcess
 {
 	/**
-	 * @var nzedb\db\Settings
+	 * @var \nzedb\db\Settings
 	 */
 	public $pdo;
 
@@ -52,12 +52,12 @@ class PostProcess
 	private $echooutput;
 
 	/**
-	 * @var Groups
+	 * @var \Groups
 	 */
 	private $groups;
 
 	/**
-	 * @var Nfo
+	 * @var \Nfo
 	 */
 	private $Nfo;
 
@@ -84,24 +84,21 @@ class PostProcess
 		];
 		$options += $defaults;
 
-		//\\ Various.
+		// Various.
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
-		//\\
 
-		//\\ Class instances.
+		// Class instances.
 		$this->pdo = (($options['Settings'] instanceof Settings) ? $options['Settings'] : new Settings());
 		$this->groups = (($options['Groups'] instanceof \Groups) ? $options['Groups'] : new \Groups(['Settings' => $this->pdo]));
 		$this->_par2Info = new \Par2Info();
 		$this->debugging = ($options['Logger'] instanceof \Logger ? $options['Logger'] : new \Logger(['ColorCLI' => $this->pdo->log]));
 		$this->nameFixer = (($options['NameFixer'] instanceof \NameFixer) ? $options['NameFixer'] : new \NameFixer(['Echo' => $this->echooutput, 'Settings' => $this->pdo, 'Groups' => $this->groups]));
-		$this->Nfo = (($options['Nfo'] instanceof \Nfo ) ? $options['Nfo'] : new \Nfo(['Echo' => $this->echooutput, 'Settings' => $this->pdo]));
+		$this->Nfo = (($options['Nfo'] instanceof \Nfo) ? $options['Nfo'] : new \Nfo(['Echo' => $this->echooutput, 'Settings' => $this->pdo]));
 		$this->releaseFiles = (($options['ReleaseFiles'] instanceof \ReleaseFiles) ? $options['ReleaseFiles'] : new \ReleaseFiles($this->pdo));
-		//\\
 
-		//\\ Site settings.
+		// Site settings.
 		$this->addpar2 = ($this->pdo->getSetting('addpar2') == 0) ? false : true;
 		$this->alternateNNTP = ($this->pdo->getSetting('alternate_nntp') == 1 ? true : false);
-		//\\
 	}
 
 	/**

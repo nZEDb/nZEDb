@@ -8,17 +8,17 @@ if (PHP_SAPI === 'cli') {
 require_once './config.php';
 $page = new AdminPage();
 
-$filesToProcess = Array();
+$filesToProcess = [];
 if ($page->isPostBack()) {
 
 	$useNzbName = false;
-	$deleteNZB = true;
+	$deleteNZB  = true;
 	// Get the list of NZB files from php /tmp folder if nzb files were uploaded.
 	if (isset($_FILES["uploadedfiles"])) {
 		foreach ($_FILES["uploadedfiles"]["error"] as $key => $error) {
 			if ($error == UPLOAD_ERR_OK) {
-				$tmp_name = $_FILES["uploadedfiles"]["tmp_name"][$key];
-				$name = $_FILES["uploadedfiles"]["name"][$key];
+				$tmp_name         = $_FILES["uploadedfiles"]["tmp_name"][$key];
+				$name             = $_FILES["uploadedfiles"]["name"][$key];
 				$filesToProcess[] = $tmp_name;
 			}
 		}
@@ -32,7 +32,7 @@ if ($page->isPostBack()) {
 
 		// Get the path the user set in the browser if he put one.
 		$path = (isset($_POST["folder"]) ? $_POST["folder"] : "");
-		if (substr($path, strlen($path) -1) !== DS) {
+		if (substr($path, strlen($path) - 1) !== DS) {
 			$path .= DS;
 		}
 
@@ -40,15 +40,16 @@ if ($page->isPostBack()) {
 		$filesToProcess = glob($path . "*.nzb");
 	}
 
-	if (count ($filesToProcess) > 0) {
+	if (count($filesToProcess) > 0) {
 
 		// Create a new instance of NZBImport and send it the file locations.
 		$NZBImport = new NZBImport(['Browser' => true, 'Settings' => $page->settings]);
 
-		$page->smarty->assign('output', $NZBImport->beginImport($filesToProcess, $useNzbName, $deleteNZB));
+		$page->smarty->assign('output',
+							  $NZBImport->beginImport($filesToProcess, $useNzbName, $deleteNZB));
 	}
 }
 
-$page->title = "Import Nzbs";
+$page->title   = "Import Nzbs";
 $page->content = $page->smarty->fetch('nzb-import.tpl');
 $page->render();

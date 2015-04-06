@@ -69,7 +69,7 @@ if (!$cfg->error) {
 					if (extension_loaded('posix') && strtolower(substr(PHP_OS, 0, 3)) !== 'win') {
 						$group = posix_getgrgid(posix_getgid());
 						echo
-						'<br /><br />Another solution is to run:<br />chown -R YourUnixUserName:' . $group['name']  . ' ' . nZEDb_ROOT .
+						'<br /><br />Another solution is to run:<br />chown -R YourUnixUserName:' . $group['name'] . ' ' . nZEDb_ROOT .
 						'<br />Then give your user access to the group:<br />usermod -a -G ' . $group['name'] . ' YourUnixUserName' .
 						'<br />Finally give read/write access to your user/group:<br />chmod -R 774 ' . nZEDb_ROOT;
 					}

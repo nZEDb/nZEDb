@@ -98,7 +98,30 @@ class Music
 	 */
 	public function getMusicInfoByName($artist, $album)
 	{
-		return $this->pdo->queryOneRow(sprintf("SELECT * FROM musicinfo WHERE title %s AND artist %s", $this->pdo->likeString($album, true, true), $this->pdo->likeString($artist, true, true)));
+		//only used to get a count of words
+		$searchwords = $searchsql = '';
+		$ft = $this->pdo->queryDirect("SHOW INDEX FROM musicinfo WHERE key_name = 'ix_musicinfo_artist_title_ft'");
+		if ($ft->rowCount() !== 2) {
+			$searchsql .= sprintf(" artist %s AND title %s'", $this->pdo->likeString($artist, true, true), $this->pdo->likeString($album, true, true));
+		} else {
+			$album = preg_replace('/( - | -|\(.+\)|\(|\))/', ' ', $album);
+			$album = preg_replace('/[^\w ]+/', '', $album);
+			$album = preg_replace('/(WEB|FLAC|CD)/', '', $album);
+			$album = trim(preg_replace('/\s\s+/i', ' ', $album));
+			$album = trim($album);
+			$words = explode(' ', $album);
+
+			foreach ($words as $word) {
+				$word = trim(rtrim(trim($word), '-'));
+				if ($word !== '' && $word !== '-') {
+					$word = '+' . $word;
+					$searchwords .= sprintf('%s ', $word);
+				}
+			}
+			$searchwords = trim($searchwords);
+			$searchsql .= sprintf(" MATCH(artist, title) AGAINST(%s IN BOOLEAN MODE)", $this->pdo->escapeString($searchwords));
+		}
+		return $this->pdo->queryOneRow(sprintf("SELECT * FROM musicinfo WHERE %s", $searchsql));
 	}
 
 	/**
@@ -369,7 +392,7 @@ class Music
 		}
 
 		if (isset($amaz->Items->Item->ItemAttributes->Title)) {
-			$mus['title'] = (string) $amaz->Items->Item->ItemAttributes->Title;
+			$mus['title'] = (string)$amaz->Items->Item->ItemAttributes->Title;
 			if (empty($mus['title'])) {
 				return false;
 			}
@@ -385,41 +408,41 @@ class Music
 		}
 
 		// Get album properties.
-		$mus['coverurl'] = (string) $amaz->Items->Item->LargeImage->URL;
+		$mus['coverurl'] = (string)$amaz->Items->Item->LargeImage->URL;
 		if ($mus['coverurl'] != "") {
 			$mus['cover'] = 1;
 		} else {
 			$mus['cover'] = 0;
 		}
 
-		$mus['asin'] = (string) $amaz->Items->Item->ASIN;
+		$mus['asin'] = (string)$amaz->Items->Item->ASIN;
 
-		$mus['url'] = (string) $amaz->Items->Item->DetailPageURL;
+		$mus['url'] = (string)$amaz->Items->Item->DetailPageURL;
 		$mus['url'] = str_replace("%26tag%3Dws", "%26tag%3Dopensourceins%2D21", $mus['url']);
 
-		$mus['salesrank'] = (string) $amaz->Items->Item->SalesRank;
+		$mus['salesrank'] = (string)$amaz->Items->Item->SalesRank;
 		if ($mus['salesrank'] == "") {
 			$mus['salesrank'] = 'null';
 		}
 
-		$mus['artist'] = (string) $amaz->Items->Item->ItemAttributes->Artist;
+		$mus['artist'] = (string)$amaz->Items->Item->ItemAttributes->Artist;
 		if (empty($mus['artist'])) {
-			$mus['artist'] = (string) $amaz->Items->Item->ItemAttributes->Creator;
+			$mus['artist'] = (string)$amaz->Items->Item->ItemAttributes->Creator;
 			if (empty($mus['artist'])) {
 				$mus['artist'] = "";
 			}
 		}
 
-		$mus['publisher'] = (string) $amaz->Items->Item->ItemAttributes->Publisher;
+		$mus['publisher'] = (string)$amaz->Items->Item->ItemAttributes->Publisher;
 
-		$mus['releasedate'] = $this->pdo->escapeString((string) $amaz->Items->Item->ItemAttributes->ReleaseDate);
+		$mus['releasedate'] = $this->pdo->escapeString((string)$amaz->Items->Item->ItemAttributes->ReleaseDate);
 		if ($mus['releasedate'] == "''") {
 			$mus['releasedate'] = 'null';
 		}
 
 		$mus['review'] = "";
 		if (isset($amaz->Items->Item->EditorialReviews)) {
-			$mus['review'] = trim(strip_tags((string) $amaz->Items->Item->EditorialReviews->EditorialReview->Content));
+			$mus['review'] = trim(strip_tags((string)$amaz->Items->Item->EditorialReviews->EditorialReview->Content));
 		}
 
 		$mus['year'] = $year;
@@ -429,7 +452,7 @@ class Music
 
 		$mus['tracks'] = "";
 		if (isset($amaz->Items->Item->Tracks)) {
-			$tmpTracks = (array) $amaz->Items->Item->Tracks->Disc;
+			$tmpTracks = (array)$amaz->Items->Item->Tracks->Disc;
 			$tracks = $tmpTracks['Track'];
 			$mus['tracks'] = (is_array($tracks) && !empty($tracks)) ? implode('|', $tracks) : '';
 		}
@@ -583,7 +606,7 @@ class Music
 		if ($res instanceof \Traversable && $res->rowCount() > 0) {
 			if ($this->echooutput) {
 				$this->pdo->log->doEcho(
-					$this->pdo->log->header("Processing " . $res->rowCount() .' music release(s).'
+					$this->pdo->log->header("Processing " . $res->rowCount() . ' music release(s).'
 					)
 				);
 			}

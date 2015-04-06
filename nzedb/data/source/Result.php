@@ -86,7 +86,7 @@ abstract class Result extends Object implements \Iterator
 	/**
 	 * Contains the current result.
 	 *
-	 * @return array The current result (or `null` if there is none).
+	 * @return array|null The current result (or `null` if there is none).
 	 */
 	public function current()
 	{
@@ -114,7 +114,7 @@ abstract class Result extends Object implements \Iterator
 	/**
 	 * Fetches the next element from the resource.
 	 *
-	 * @return mixed The next result (or `false` if there is none).
+	 * @return array|false The next result (or `false` if there is none).
 	 */
 	public function next()
 	{

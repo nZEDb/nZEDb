@@ -112,7 +112,7 @@ class NZB
 			if ($this->groupID == '') {
 				exit("$this->groupID is missing\n");
 			}
-			$cName = 'collections_' .$this->groupID;
+			$cName = 'collections_' . $this->groupID;
 			$bName = 'binaries_' . $this->groupID;
 			$pName = 'parts_' . $this->groupID;
 		} else {
@@ -133,7 +133,7 @@ class NZB
 			$cName
 		);
 		$this->_binariesQuery = (
-			'SELECT id, name, totalparts FROM '. $bName .' WHERE collection_id = %d ORDER BY name'
+			'SELECT id, name, totalparts FROM ' . $bName . ' WHERE collection_id = %d ORDER BY name'
 		);
 		$this->_partsQuery = (
 			'SELECT DISTINCT(messageid), size, partnumber FROM ' . $pName . ' WHERE binaryid = %d ORDER BY partnumber'
@@ -323,8 +323,7 @@ class NZB
 			return $result;
 		}
 
-		$nzb = str_replace("\x0F", '', $nzb);
-		$xml = @simplexml_load_string($nzb);
+		$xml = @simplexml_load_string(str_replace("\x0F", '', $nzb));
 		if (!$xml || strtolower($xml->getName()) !== 'nzb') {
 			return $result;
 		}
@@ -371,7 +370,7 @@ class NZB
 
 			// File size.
 			foreach ($file->segments->segment as $segment) {
-				array_push($result[$i]['segments'], (string) $segment);
+				array_push($result[$i]['segments'], (string)$segment);
 				$fileSize += $segment->attributes()->bytes;
 				$numSegments++;
 			}
@@ -388,7 +387,7 @@ class NZB
 				$result[$i]['groups'] = array();
 			}
 			foreach ($file->groups->group as $g) {
-				array_push($result[$i]['groups'], (string) $g);
+				array_push($result[$i]['groups'], (string)$g);
 			}
 
 			unset($result[$i]['segments']['@attributes']);
