@@ -124,8 +124,8 @@
 							subel.click();
 						}
 						el.closest('.has-sub').addClass('open active');
-					    el.slideDown();
-						
+						el.slideDown();
+
 						(function getColor() {
 							var r, g, b;
 							var textColor = $('#accordian').css('color');
