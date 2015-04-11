@@ -8,6 +8,7 @@ use \nzedb\db\Settings;
 if ($page->users->isLoggedIn()) {
 	$uid = $page->users->currentUserId();
 	$maxdls = $page->userdata["downloadrequests"];
+	$rsstoken = $page->userdata['rsstoken'];
 } else {
 	if ($page->settings->getSetting('registerstatus') == Settings::REGISTER_STATUS_API_ONLY) {
 		$res = $page->users->getById(0);
@@ -26,6 +27,7 @@ if ($page->users->isLoggedIn()) {
 		}
 	}
 	$uid = $res["id"];
+	$rsstoken = $res['rsstoken'];
 	$maxdls = $res["downloadrequests"];
 }
 
@@ -110,6 +112,7 @@ if (isset($_GET["id"])) {
 	header("Content-Type: application/x-nzb");
 	header("Expires: " . date('r', time() + 31536000));
 	// Set X-DNZB header data.
+	header("X-DNZB-Failure: " . $page->serverurl . 'failed/' . '?guid=' . $_GET['id'] . '&userid=' . $uid . '&rsstoken=' . $rsstoken);
 	header("X-DNZB-Category: " . $reldata["category_name"]);
 	header("X-DNZB-Details: " . $page->serverurl . 'details/' . $_GET["id"]);
 	if (!empty($reldata['imdbid']) && $reldata['imdbid'] > 0) {
