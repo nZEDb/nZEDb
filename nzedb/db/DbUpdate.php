@@ -287,7 +287,7 @@ class DbUpdate
 					$query[] = $line;
 
 					if (preg_match('~' . preg_quote($options['delimiter'], '~') . '\s*$~iS',
-								   end($query)) == 1
+								end($query)) == 1
 					) {
 						$query = trim(implode('', $query));
 						if ($options['local'] !== null) {
