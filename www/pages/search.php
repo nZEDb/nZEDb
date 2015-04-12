@@ -64,6 +64,7 @@ if (isset($_REQUEST["id"]) && !isset($_REQUEST["searchadvr"]) && !isset($_REQUES
 									 $orderby,
 									 -1,
 									 $page->userdata["categoryexclusions"],
+									 "basic",
 									 $categoryId);
 	}
 
@@ -125,6 +126,7 @@ if (isset($_REQUEST["subject"]) && !isset($_REQUEST["searchadvr"]) && !isset($_R
 									 $orderby,
 									 -1,
 									 $page->userdata["categoryexclusions"],
+									 "basic",
 									 $categoryId);
 	}
 

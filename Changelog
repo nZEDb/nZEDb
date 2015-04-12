@@ -7,6 +7,7 @@ All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 2015-04-11 bart39
+	* Fix: Call to releases::search missing one parameter for basic searches in search.php #1637
 	* Mrg: PR #1636 from tasky - Added admin menu state changes.
 	* Mrg: PR #1634 from dariusIII - Fix typo that caused : PHP Notice: Undefined variable: in Binaries.php line 543.
 	* Fix: fix sql patch.
