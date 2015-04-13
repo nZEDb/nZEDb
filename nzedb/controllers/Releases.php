@@ -1647,7 +1647,7 @@ class Releases
 			WHERE r.categoryid BETWEEN 5000 AND 5999
 			AND tv.rageid > 0
 			AND length(tv.imgdata) > 0
-			GROUP BY tv.rageid
+			AND r.id in (select max(id) from releases where rageid > 0 group by rageid)
 			ORDER BY r.postdate DESC
 			LIMIT 24"
 		);
