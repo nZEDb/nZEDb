@@ -7,6 +7,7 @@ All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 2015-04-11 bart39
+	* Fix: Fix api query issue raised in comments for #1637.
 	* Fix: Correct see more link on TV posterwall to point to /series.
 	* Chg: Optimize TV Posterwall query.
 2015-04-11 bart39
