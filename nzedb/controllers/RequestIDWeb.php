@@ -10,7 +10,7 @@ use nzedb\utility;
  */
 class RequestIDWeb extends RequestID
 {
-	const MAX_WEB_LOOKUPS = 100; // Please don't exceed this, not to be to harsh on the Request ID server.
+	const MAX_WEB_LOOKUPS = 75; // Please don't exceed this, not to be to harsh on the Request ID server.
 
 	/**
 	 * The ID of the PRE entry the found request ID belongs to.
@@ -59,8 +59,8 @@ class RequestIDWeb extends RequestID
 				$this->_request_hours,
 				(empty($this->_groupID) ? '' : ('AND r.group_id = ' . $this->_groupID)),
 				$this->_getReqIdGroups(),
-				($this->_maxTime === '' ? '' : sprintf(' AND r.adddate > NOW() - INTERVAL %d HOUR', $this->_maxTime)),
-				$this->_limit
+				($this->_maxTime === 0 ? '' : sprintf(' AND r.adddate > NOW() - INTERVAL %d HOUR', $this->_maxTime)),
+				(empty($this->_limit) || $this->_limit > 1000 ? 1000 : $this->_limit)
 			)
 		);
 	}
