@@ -74,6 +74,23 @@ class Git extends \GitRepo
 		return $this->branch;
 	}
 
+	public function isCommited($gitObject)
+	{
+		$cmd = "cat-file -e $gitObject";
+
+		try {
+			$result = $this->run($cmd);
+		} catch (\Exception $e) {
+			$message = explode("\n", $e->getMessage());
+			if ($message[0] === "fatal: Not a valid object name $gitObject") {
+				$result = false;
+			} else {
+				throw new \Exception($message);
+			}
+		}
+		return ($result === '');
+	}
+
 	public function log($options = null)
 	{
 		return $this->run("log $options");
