@@ -1,1 +1,0 @@
-ALTER TABLE musicinfo modify review VARCHAR(10000);

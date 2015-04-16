@@ -1,1 +1,0 @@
-ALTER TABLE consoleinfo modify review VARCHAR(10000);
