@@ -7,6 +7,7 @@ All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 2015-04-16 bart39
+	* Fix: undefined offset in ProcessAdditional.
 	* Fix: Fix issues with web RequestID lookups failing.
 2015-04-14 bart39
 	* Mrg: PR #1638 from darius - Fix the wrong table name in Regexes.php.  Was using release naming regexes to create collections.
