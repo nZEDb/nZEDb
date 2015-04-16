@@ -7,6 +7,7 @@ All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 2015-04-16 bart39
+	* Fix: Increase column sizes for bookinfo.overview, consoleinfo.review and musicinfo.review due to truncation.
 	* Fix: undefined offset in ProcessAdditional.
 	* Fix: Fix issues with web RequestID lookups failing.
 2015-04-14 bart39
