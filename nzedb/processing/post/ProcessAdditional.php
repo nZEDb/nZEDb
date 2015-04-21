@@ -898,7 +898,7 @@ class ProcessAdditional
 				preg_match('/' . $this->_videoFileRegex . '[. ")\]]/i', $this->_currentNZBFile['title'])
 			) {
 
-				if (isset($this->_currentNZBFile['segments'])) {
+				if (isset($this->_currentNZBFile['segments'][0])) {
 					$this->_MediaInfoMessageIDs = (string)$this->_currentNZBFile['segments'][0];
 				}
 			}
