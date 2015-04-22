@@ -1647,10 +1647,39 @@ class Releases
 			WHERE r.categoryid BETWEEN 5000 AND 5999
 			AND tv.rageid > 0
 			AND length(tv.imgdata) > 0
-			GROUP BY tv.rageid
+			AND r.id in (select max(id) from releases where rageid > 0 group by rageid)
 			ORDER BY r.postdate DESC
 			LIMIT 24"
 		);
+	}
+
+   /**
+	 * Retrieve alternate release with same or similar searchname
+	 *
+	 * @param string $guid
+	 * @param string $searchname
+	 * @param string $userid
+	 * @return string
+	 */
+	public function getAlternate($guid, $searchname, $userid)
+	{
+		//status values
+		// 0/false 	= successfully downloaded
+		// 1/true 	= failed download
+		$this->pdo->queryInsert(sprintf("INSERT IGNORE INTO dnzb_failures (userid, guid) VALUES (%d, %s)",
+				$userid,
+				$this->pdo->escapeString($guid)
+				)
+		);
+
+		$alternate = $this->pdo->queryOneRow(sprintf('SELECT * FROM releases r
+			WHERE r.searchname %s
+			AND r.guid NOT IN (SELECT guid FROM failed_downloads WHERE userid = %d)',
+			$this->pdo->likeString($searchname),
+			$userid
+			)
+		);
+		return $alternate;
 	}
 
 }

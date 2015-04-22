@@ -89,7 +89,7 @@ if (!$error) {
 		case 'TV':
 			$getnewesttv = $releases->getNewestTV();
 			$page->smarty->assign('newest', $getnewesttv);
-			$page->smarty->assign('goto', 'tv');
+			$page->smarty->assign('goto', 'series');
 			break;
 
 		case 'Recent':

@@ -1,17 +1,29 @@
 This file details which changes to the code are in which release version. It is a complement to the ChangeLog file which list *when* changes are made to the dev branch.
 
-NEXT
+
+0.4.20 2014-04-06
 New
 	* Added a list of licenses used by nZEDb.
-	* Add support for in DB collections (grouping) regex.
-	* Add "regex" sub-menu to admin menu.
-	* Add a "collections" menu item to the new regex menu.
+	* Added support for in DB collections (grouping) regex.
+	* Added "regex" sub-menu to admin menu.
+	* Added a "collections" menu item to the new regex menu.
+	* Added support for category regexes in the DB.
+	* Added support for alt.binaries.b4e.erotica.
+	* Added FULLTEXT indexes on bookinfo, consoleinfo, and musicinfo for better existing title matching.
 
 Changes:
 	* Move the blacklist menu into new "Regex" menu item.
+	* Convert collections regex to db.
+	* Better handling of .vol in regex extensions.
+	* Improvements to parsing nfo files for source.
+	* Switch to fanart.tv v3 api
 
 Fixes:
 	* Correcting tmp_pre table references to predb_imports in dump_predb script.
+	* Fixes for compressed NZB reading and return.
+	* Don't ignore renamed releases for local requestID lookup.
+	* Fix oversized fanart images when viewing movie info popup.
+	* Fix Class not found error in Movie.php.
 
 0.4.19	2015-03-02
 New
@@ -45,7 +57,6 @@ Fixes:
 
 0.4.0	2014-09-08 niel
 	NOTE: This version forward targets PHP 5.5 and later.
-
 
 0.3.13	2014-09-01
 	NOTE: This is the last version of nZEDb to target PHP 5.4 which has reached its EOL.

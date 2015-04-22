@@ -87,6 +87,7 @@
 		{/if}
 		{literal}
 			<script type="text/javascript">
+
 				(function ($) {
 					$(document).ready(function () {
 						$('#accordian li.has-sub>a').on('click', function () {
@@ -94,20 +95,36 @@
 							var element = $(this).parent('li');
 							if (element.hasClass('open')) {
 								element.removeClass('open');
+								element.removeClass('active');
 								element.find('li').removeClass('open');
+								element.find('li').removeClass('active');
 								element.find('ul').slideUp();
 							}
 							else {
 								element.addClass('open');
+								element.addClass('active');
 								element.children('ul').slideDown();
 								element.siblings('li').children('ul').slideUp();
 								element.siblings('li').removeClass('open');
+								element.siblings('li').removeClass('active');
 								element.siblings('li').find('li').removeClass('open');
+								element.siblings('li').find('li').removeClass('active');
 								element.siblings('li').find('ul').slideUp();
 							}
 						});
 
 						$('#accordian>ul>li.has-sub>a').append('<span class="holder"></span>');
+
+						var el = $('a[href="' + $(location).attr('pathname') + $(location).attr('search') + '"]').closest('ul');
+
+						$('a[href="' + $(location).attr('pathname') + $(location).attr('search') + '"]').closest('li').addClass('active');
+
+						var subel = el.parent().parent().closest('.has-sub').find('a[href="#"]')[0];
+						if (subel) {
+							subel.click();
+						}
+						el.closest('.has-sub').addClass('open active');
+						el.slideDown();
 
 						(function getColor() {
 							var r, g, b;
@@ -161,7 +178,6 @@
 						}
 					});
 				})(jQuery);
-
 			</script>
 		{/literal}
 		{literal}
