@@ -74,6 +74,12 @@ class Git extends \GitRepo
 		return $this->branch;
 	}
 
+	/**
+	 * @param $gitObject
+	 *
+	 * @return bool
+	 * @throws \Exception
+	 */
 	public function isCommited($gitObject)
 	{
 		$cmd = "cat-file -e $gitObject";
