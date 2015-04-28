@@ -295,6 +295,9 @@ class XXX
 		$newArr = [];
 		$i = 0;
 		foreach ($tmpArr as $ta) {
+			if (trim($ta) == '') {
+				continue;
+			}
 			if ($field == "genre") {
 				$ta = $this->getGenres(true, $ta);
 				$ta = $ta["title"];

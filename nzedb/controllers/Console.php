@@ -273,6 +273,9 @@ class Console
 		$newArr = [];
 		$i = 0;
 		foreach ($tmpArr as $ta) {
+			if (trim($ta) == '') {
+				continue;
+			}
 			// Only use first 6.
 			if ($i > 5) {
 				break;
