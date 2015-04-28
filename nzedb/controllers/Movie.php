@@ -814,8 +814,10 @@ class Movie
 			foreach ($imdb_regex as $field => $regex) {
 				if (preg_match($regex, $buffer, $matches)) {
 					$match = $matches[1];
-					$match1 = strip_tags(trim(rtrim($match)));
-					$ret[$field] = $match1;
+					$match1 = trim(strip_tags($match));
+					if ($match1 != '') {
+						$ret[$field] = $match1;
+					}
 				}
 			}
 
@@ -823,8 +825,10 @@ class Movie
 			foreach ($imdb_regex_multi as $field => $regex) {
 				if (preg_match_all($regex, $buffer, $matches)) {
 					$match2 = $matches[1];
-					$match3 = array_map("trim", $match2);
-					$ret[$field] = $match3;
+					$match3 = array_filter(array_map('trim', $match2));
+					if (!empty($match3)) {
+						$ret[$field] = $match3;
+					}
 				}
 			}
 
@@ -852,6 +856,7 @@ class Movie
 			// Actors.
 			if (preg_match('/<table class="cast_list">(.+?)<\/table>/s', $buffer, $hit)) {
 				if (preg_match_all('/<span class="itemprop" itemprop="name">\s*(.+?)\s*<\/span>/i', $hit[0], $results, PREG_PATTERN_ORDER)) {
+					$results[1] = array_filter(array_map('trim', $results[1]));
 					$ret['actors'] = $results[1];
 				}
 			}
@@ -859,6 +864,7 @@ class Movie
 			// Directors.
 			if (preg_match('/itemprop="directors?".+?<\/div>/s', $buffer, $hit)) {
 				if (preg_match_all('/"name">(.*?)<\/span>/is', $hit[0], $results, PREG_PATTERN_ORDER)) {
+					$results[1] = array_filter(array_map('trim', $results[1]));
 					$ret['director'] = $results[1];
 				}
 			}
