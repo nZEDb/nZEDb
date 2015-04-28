@@ -326,6 +326,9 @@ class Music
 		$newArr = [];
 		$i = 0;
 		foreach ($tmpArr as $ta) {
+			if (trim($ta) == '') {
+				continue;
+			}
 			if ($i > 5) {
 				break;
 			} //only use first 6
