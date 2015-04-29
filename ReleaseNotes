@@ -22,6 +22,7 @@ Fixes:
 	* Fix issues with web RequestID lookups failing.
 	* Undefined offset in ProcessAdditional.
 	* Adding a check to see if the sqlpatch file was previously committed, before trying to update the commit.
+	* Problem behaviour when min/max sizes are both zero.
 
 
 0.4.20 2015-04-06
