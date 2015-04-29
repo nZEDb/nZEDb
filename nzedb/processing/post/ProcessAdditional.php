@@ -443,12 +443,12 @@ class ProcessAdditional
 		// Maximum size of releases in GB.
 		$this->_maxSize =
 			(string)($this->pdo->getSetting('maxsizetopostprocess') != '') ? $this->pdo->getSetting('maxsizetopostprocess') : 100;
-		$this->_maxSize = ($this->_maxSize === 0 ? '' : 'AND r.size < ' . ($this->_maxSize * 1073741824));
+		$this->_maxSize = ($this->_maxSize == 0 ? '' : 'AND r.size < ' . ($this->_maxSize * 1073741824));
 
 		// Minimum size of releases in MB.
 		$this->_minSize =
 			(string)($this->pdo->getSetting('minsizetopostprocess') != '') ? $this->pdo->getSetting('minsizetopostprocess') : 1;
-		$this->_minSize = ($this->_minSize === 0 ? '' : 'AND r.size > ' . ($this->_minSize * 1048576));
+		$this->_minSize = ($this->_minSize == 0 ? '' : 'AND r.size > ' . ($this->_minSize * 1048576));
 
 		// Use the alternate NNTP provider for downloading Message-ID's ?
 		$this->_alternateNNTP = ($this->pdo->getSetting('alternate_nntp') == 1 ? true : false);
