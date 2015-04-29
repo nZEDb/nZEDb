@@ -415,10 +415,11 @@ class NZBImport
 		}
 		return true;
 	}
+
 	/**
 	 * Get all groups in the DB.
-	 * @return bool
 	 *
+	 * @return bool
 	 * @access protected
 	 */
 	protected function getAllGroups()
@@ -438,6 +439,7 @@ class NZBImport
 
 	/**
 	 * Echo message to browser or CLI.
+	 *
 	 * @param string $message
 	 *
 	 * @access protected

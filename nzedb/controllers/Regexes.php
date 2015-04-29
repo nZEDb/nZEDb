@@ -344,7 +344,7 @@ class Regexes
 				ksort($matches);
 				foreach ($matches as $key => $value) {
 					switch ($this->tableName) {
-						case 'collection_naming_regexes': // Put this at the top since it's the most important for performance.
+						case 'collection_regexes': // Put this at the top since it's the most important for performance.
 						case 'release_naming_regexes':
 							// Ignore non-named capture groups. Only named capture groups are important.
 							if (is_int($key) || preg_match('#reqid|parts#i', $key)) {
