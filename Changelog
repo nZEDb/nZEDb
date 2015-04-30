@@ -9,6 +9,8 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 2015-04-30 niel
 	* Mrg: Merged in Db script changes from March.
 		Added two scripts to .../cli/data for importing/exporting predb data. They're intended to replace the predb_dump script which will no longer be maintained.
+2015-04-29 bart39
+	* Fix: Invalid type check for Forking PPA min / max sizes when set to 0.
 2015-04-29 niel
 	* Mrg: PR 1643 from Enverex - Empty database field negation and Alpha theme readability cleanups.
 
