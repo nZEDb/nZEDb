@@ -8,9 +8,9 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2015-04-29 niel
 	* Mrg: PR 1643 from Enverex - Empty database field negation and Alpha theme readability cleanups.
+
 2015-04-28 bart39
 	* Fix: Invalid type check for PPA min / max sizes when set to 0.
-
 2015-04-17 niel
 	* Fix: Adding a check to see if the sqlpatch file was previously committed, before trying to update the commit.
 2015-04-16 bart39
