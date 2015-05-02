@@ -159,13 +159,13 @@ class Cache
 	public function __construct()
 	{
 		if (!defined('nZEDb_CACHE_HOSTS')) {
-			throw new \CacheException(
+			throw new CacheException(
 				'The nZEDb_CACHE_HOSTS is not defined! Define it in settings.php'
 			);
 		}
 
 		if (!defined('nZEDb_CACHE_TIMEOUT')) {
-			throw new \CacheException(
+			throw new CacheException(
 				'The nZEDb_CACHE_TIMEOUT is not defined! Define it in settings.php, it is the time in seconds to time out from your cache server.'
 			);
 		}
@@ -330,13 +330,4 @@ class Cache
 		}
 	}
 
-}
-
-/**
- * Class CacheException
- *
- * @package nzedb\libraries
- */
-class CacheException extends \Exception
-{
 }

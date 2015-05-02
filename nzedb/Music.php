@@ -12,7 +12,7 @@ use nzedb\db\Settings;
 class Music
 {
 	/**
-	 * @var nzedb\db\Settings
+	 * @var \nzedb\db\Settings
 	 */
 	public $pdo;
 
@@ -170,7 +170,7 @@ class Music
 
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
-			$catsrch = (new \Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
+			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
 		}
 
 		if ($maxage > 0) {
@@ -212,7 +212,7 @@ class Music
 
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
-			$catsrch = (new \Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
+			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
 		}
 
 		$exccatlist = "";
@@ -379,8 +379,8 @@ class Music
 	 */
 	public function updateMusicInfo($title, $year, $amazdata = null)
 	{
-		$gen = new \Genres(['Settings' => $this->pdo]);
-		$ri = new \ReleaseImage($this->pdo);
+		$gen = new Genres(['Settings' => $this->pdo]);
+		$ri = new ReleaseImage($this->pdo);
 		$titlepercent = 0;
 
 		$mus = [];
@@ -406,7 +406,7 @@ class Music
 		}
 
 		// Load genres.
-		$defaultGenres = $gen->getGenres(\Genres::MUSIC_TYPE);
+		$defaultGenres = $gen->getGenres(Genres::MUSIC_TYPE);
 		$genreassoc = [];
 		foreach ($defaultGenres as $dg) {
 			$genreassoc[$dg['id']] = strtolower($dg['title']);
@@ -495,7 +495,7 @@ class Music
 										INSERT INTO genres (title, type)
 										VALUES (%s, %d)",
 										$this->pdo->escapeString($genreName),
-										\Genres::MUSIC_TYPE
+										Genres::MUSIC_TYPE
 									)
 				);
 			}
@@ -563,7 +563,7 @@ class Music
 		// Try Music category.
 		try {
 			$result = $obj->searchProducts($title, \AmazonProductAPI::MUSIC, "TITLE");
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			// Empty because we try another method.
 		}
 
@@ -572,7 +572,7 @@ class Music
 			usleep(700000);
 			try {
 				$result = $obj->searchProducts($title, \AmazonProductAPI::MP3, "TITLE");
-			} catch (Exception $e) {
+			} catch (\Exception $e) {
 				// Empty because we try another method.
 			}
 		}
@@ -582,7 +582,7 @@ class Music
 			usleep(700000);
 			try {
 				$result = $obj->searchProducts($title, \AmazonProductAPI::DIGITALMUS, "TITLE");
-			} catch (Exception $e) {
+			} catch (\Exception $e) {
 				// Empty because we try another method.
 			}
 		}
@@ -592,7 +592,7 @@ class Music
 			usleep(700000);
 			try {
 				$result = $obj->searchProducts($title, \AmazonProductAPI::MUSICTRACKS, "TITLE");
-			} catch (Exception $e) {
+			} catch (\Exception $e) {
 				// Empty because we exhausted all possibilities.
 			}
 		}
@@ -817,5 +817,4 @@ class Music
 		}
 		return ($str != '') ? $str : false;
 	}
-
 }

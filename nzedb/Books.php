@@ -11,7 +11,7 @@ use nzedb\db\Settings;
 class Books
 {
 	/**
-	 * @var nzedb\db\Settings
+	 * @var \nzedb\db\Settings
 	 */
 	public $pdo;
 
@@ -143,7 +143,7 @@ class Books
 
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
-			$catsrch = (new \Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
+			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
 		}
 
 
@@ -182,7 +182,7 @@ class Books
 
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
-			$catsrch = (new \Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
+			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
 		}
 
 		$maxage = '';
@@ -297,7 +297,7 @@ class Books
 		$obj = new \AmazonProductAPI($this->pubkey, $this->privkey, $this->asstag);
 		try {
 			$result = $obj->searchProducts($title, \AmazonProductAPI::BOOKS, 'TITLE');
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			$result = false;
 		}
 		return $result;
@@ -443,11 +443,12 @@ class Books
 				return false;
 			}
 		}
+		return false;
 	}
 
 	public function updateBookInfo($bookInfo = '', $amazdata = null)
 	{
-		$ri = new \ReleaseImage($this->pdo);
+		$ri = new ReleaseImage($this->pdo);
 
 		$book = [];
 

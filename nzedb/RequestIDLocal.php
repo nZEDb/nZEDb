@@ -289,7 +289,7 @@ class RequestIDLocal extends RequestID
 		}
 
 		if ($this->_release['name'] !== $this->_newTitle['title'] && $this->_show == 1) {
-			\NameFixer::echoChangedReleaseName(
+			NameFixer::echoChangedReleaseName(
 				[
 					'new_name'     => $this->_newTitle['title'],
 					'old_name'     => $this->_release['name'],

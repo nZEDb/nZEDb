@@ -2,7 +2,7 @@
 namespace nzedb;
 
 use nzedb\db\Settings;
-use nzedb\utility;
+use nzedb\utility\Utility;
 
 /**
  * Class Users
@@ -38,7 +38,7 @@ class Users
 	const QUEUE_NZBGET  = 2;
 
 	/**
-	 * @var nzedb\db\Settings
+	 * @var \nzedb\db\Settings
 	 */
 	public $pdo;
 
@@ -94,10 +94,10 @@ class Users
 	{
 		$this->delCartForUser($userID);
 		$this->delUserCategoryExclusions($userID);
-		(new \ReleaseComments($this->pdo))->deleteCommentsForUser($userID);
-		(new \UserMovies(['Settings' => $this->pdo]))->delMovieForUser($userID);
-		(new \UserSeries(['Settings' => $this->pdo]))->delShowForUser($userID);
-		(new \Forum(['Settings' => $this->pdo]))->deleteUser($userID);
+		(new ReleaseComments($this->pdo))->deleteCommentsForUser($userID);
+		(new UserMovies(['Settings' => $this->pdo]))->delMovieForUser($userID);
+		(new UserSeries(['Settings' => $this->pdo]))->delShowForUser($userID);
+		(new Forum(['Settings' => $this->pdo]))->deleteUser($userID);
 
 		$this->pdo->queryExec(sprintf("DELETE FROM users WHERE id = %d", $userID));
 	}
@@ -1061,7 +1061,7 @@ class Users
 	public function getCategoryExclusionNames($userID)
 	{
 		$data = $this->getCategoryExclusion($userID);
-		$category = new \Category(['Settings' => $this->pdo]);
+		$category = new Category(['Settings' => $this->pdo]);
 		$categories = $category->getByIds($data);
 		$ret = [];
 		if ($categories !== false) {
@@ -1122,7 +1122,7 @@ class Users
 				" to this email address.<br>To accept the invitation click <a href=\"$url\">this link</a>\n";
 		}
 
-		nzedb\utility\Utility::sendEmail($emailTo, $subject, $contents, $siteEmail);
+		Utility::sendEmail($emailTo, $subject, $contents, $siteEmail);
 		$this->addInvite($userID, $token);
 
 		return $url;

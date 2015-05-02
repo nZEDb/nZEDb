@@ -1,7 +1,7 @@
 <?php
 namespace nzedb\utility;
 
-
+use nzedb\ColorCLI;
 use \nzedb\db\Settings;
 
 
@@ -380,7 +380,7 @@ class Utility
 			$message = "\nYour database is not up to date. Reported patch levels\n   Db: $patch\nfile: $ver\nPlease update.\n php " .
 				nZEDb_ROOT . "cli/update_db.php true\n";
 			if (self::isCLI()) {
-				echo (new \ColorCLI())->error($message);
+				echo (new ColorCLI())->error($message);
 			}
 			throw new \RuntimeException($message);
 		}
@@ -547,7 +547,7 @@ class Utility
 				$output = '';
 			}
 		} else {
-			$fileInfo = empty($magicPath) ? new finfo(FILEINFO_RAW) : new finfo(FILEINFO_RAW, $magicPath);
+			$fileInfo = empty($magicPath) ? new \finfo(FILEINFO_RAW) : new \finfo(FILEINFO_RAW, $magicPath);
 
 			$output = $fileInfo->file($path);
 			if (empty($output)) {

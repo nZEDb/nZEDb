@@ -1,11 +1,14 @@
 <?php
 namespace nzedb;
 
+use nzedb\db\DB;
+use nzedb\db\Settings;
+
 class SphinxSearch
 {
 	/**
 	 * SphinxQL connection.
-	 * @var nzedb\db\DB
+	 * @var \nzedb\db\DB
 	 */
 	public $sphinxQL = null;
 
@@ -14,7 +17,7 @@ class SphinxSearch
 	 */
 	public function __construct()
 	{
-		if (nZEDb_RELEASE_SEARCH_TYPE == \ReleaseSearch::SPHINX) {
+		if (nZEDb_RELEASE_SEARCH_TYPE == ReleaseSearch::SPHINX) {
 			if (!defined('nZEDb_SPHINXQL_HOST_NAME')) {
 				define('nZEDb_SPHINXQL_HOST_NAME', '0');
 			}
@@ -24,7 +27,7 @@ class SphinxSearch
 			if (!defined('nZEDb_SPHINXQL_SOCK_FILE')) {
 				define('nZEDb_SPHINXQL_SOCK_FILE', '');
 			}
-			$this->sphinxQL = new nzedb\db\DB(
+			$this->sphinxQL = new DB(
 				[
 					'dbname' => '',
 					'dbport' => nZEDb_SPHINXQL_PORT,
@@ -60,7 +63,7 @@ class SphinxSearch
 	 * @param array $identifiers ['g' => Release GUID(mandatory), 'id => ReleaseID(optional, pass false)]
 	 * @param nzedb\db\Settings $pdo
 	 */
-	public function deleteRelease($identifiers, nzedb\db\Settings $pdo)
+	public function deleteRelease($identifiers, Settings $pdo)
 	{
 		if (!is_null($this->sphinxQL)) {
 			if ($identifiers['i'] === false) {

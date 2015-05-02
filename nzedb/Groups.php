@@ -6,7 +6,7 @@ use nzedb\db\Settings;
 class Groups
 {
 	/**
-	 * @var nzedb\db\Settings
+	 * @var \nzedb\db\Settings
 	 */
 	public $pdo;
 
@@ -446,7 +446,7 @@ class Groups
 	public function reset($id)
 	{
 		// Remove rows from collections / binaries / parts.
-		(new \Binaries(['Groups' => $this, 'Settings' => $this->pdo]))->purgeGroup($id);
+		(new Binaries(['Groups' => $this, 'Settings' => $this->pdo]))->purgeGroup($id);
 
 		// Remove rows from part repair.
 		$this->pdo->queryExec(sprintf("DELETE FROM missed_parts WHERE group_id = %d", $id));
@@ -513,9 +513,9 @@ class Groups
 		);
 
 		if ($releaseArray instanceof \Traversable) {
-			$releases     = new \Releases(['Settings' => $this->pdo, 'Groups' => $this]);
-			$nzb          = new \NZB($this->pdo);
-			$releaseImage = new \ReleaseImage($this->pdo);
+			$releases     = new Releases(['Settings' => $this->pdo, 'Groups' => $this]);
+			$nzb          = new NZB($this->pdo);
+			$releaseImage = new ReleaseImage($this->pdo);
 			foreach ($releaseArray as $release) {
 				$releases->deleteSingle(['g' => $release['guid'], 'i' => $release['id']],
 										$nzb,
@@ -538,7 +538,7 @@ class Groups
 		if (preg_match('/^\s*$/m', $groupList)) {
 			$ret = "No group list provided.";
 		} else {
-			$nntp = new \NNTP(['Echo' => false]);
+			$nntp = new NNTP(['Echo' => false]);
 			if ($nntp->doConnect() !== true) {
 				return 'Problem connecting to usenet.';
 			}

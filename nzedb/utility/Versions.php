@@ -5,6 +5,8 @@ if (!defined('GIT_PRE_COMMIT')) {
 	define('GIT_PRE_COMMIT', false);
 }
 
+use nzedb\ColorCLI;
+
 class Versions
 {
 	/**
@@ -66,7 +68,7 @@ class Versions
 		}
 		$this->_filespec = $filepath;
 
-		$this->out = new \ColorCLI();
+		$this->out = new ColorCLI();
 		$this->git = new Git();
 
 		$this->getValidVersionsFile();

@@ -1,6 +1,8 @@
 <?php
 namespace nzedb;
 
+use nzedb\db\Settings;
+
 class ReleaseSearch
 {
 	const FULLTEXT = 0;
@@ -8,7 +10,7 @@ class ReleaseSearch
 	const SPHINX   = 2;
 
 	/***
-	 * @var nzedb\db\Settings
+	 * @var \nzedb\db\Settings
 	 */
 	public $pdo;
 
@@ -27,7 +29,7 @@ class ReleaseSearch
 	/**
 	 * @param \nzedb\db\Settings $settings
 	 */
-	public function __construct(nzedb\db\Settings $settings)
+	public function __construct(Settings $settings)
 	{
 		switch (nZEDb_RELEASE_SEARCH_TYPE) {
 			case self::LIKE:
@@ -42,7 +44,7 @@ class ReleaseSearch
 				break;
 		}
 
-		$this->pdo = ($settings instanceof nzedb\db\Settings ? $settings : new nzedb\db\Settings());
+		$this->pdo = ($settings instanceof Settings ? $settings : new Settings());
 	}
 
 	/**

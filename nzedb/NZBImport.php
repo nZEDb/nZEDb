@@ -2,6 +2,7 @@
 namespace nzedb;
 
 use nzedb\db\Settings;
+use nzedb\utility\Utility;
 
 /**
  * Import NZB files into the database.
@@ -106,11 +107,11 @@ class NZBImport
 
 		$this->echoCLI = (!$this->browser && nZEDb_ECHOCLI && $options['Echo']);
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
-		$this->binaries = ($options['Binaries'] instanceof \Binaries ? $options['Binaries'] : new \Binaries(['Settings' => $this->pdo, 'Echo' => $this->echoCLI]));
-		$this->category = ($options['Categorize'] instanceof \Categorize ? $options['Categorize'] : new \Categorize(['Settings' => $this->pdo]));
-		$this->nzb = ($options['NZB'] instanceof \NZB ? $options['NZB'] : new \NZB($this->pdo));
-		$this->releaseCleaner = ($options['ReleaseCleaning'] instanceof \ReleaseCleaning ? $options['ReleaseCleaning'] : new \ReleaseCleaning($this->pdo));
-		$this->releases = ($options['Releases'] instanceof \Releases ? $options['Releases'] : new \Releases(['settings' => $this->pdo]));
+		$this->binaries = ($options['Binaries'] instanceof Binaries ? $options['Binaries'] : new Binaries(['Settings' => $this->pdo, 'Echo' => $this->echoCLI]));
+		$this->category = ($options['Categorize'] instanceof Categorize ? $options['Categorize'] : new Categorize(['Settings' => $this->pdo]));
+		$this->nzb = ($options['NZB'] instanceof NZB ? $options['NZB'] : new NZB($this->pdo));
+		$this->releaseCleaner = ($options['ReleaseCleaning'] instanceof ReleaseCleaning ? $options['ReleaseCleaning'] : new ReleaseCleaning($this->pdo));
+		$this->releases = ($options['Releases'] instanceof Releases ? $options['Releases'] : new Releases(['settings' => $this->pdo]));
 
 		$this->crossPostt = ($this->pdo->getSetting('crossposttime') != '') ? $this->pdo->getSetting('crossposttime') : 2;
 		$this->browser = $options['Browser'];
@@ -149,7 +150,7 @@ class NZBImport
 
 				// Get the contents of the NZB file as a string.
 				if (strtolower(substr($nzbFile, -7)) === '.nzb.gz') {
-					$nzbString = nzedb\utility\Utility::unzipGzipFile($nzbFile);
+					$nzbString = Utility::unzipGzipFile($nzbFile);
 				} else {
 					$nzbString = file_get_contents($nzbFile);
 				}
@@ -402,7 +403,7 @@ class NZBImport
 					'isrenamed' => $renamed,
 					'reqidstatus' => 0,
 					'preid' => 0,
-					'nzbstatus' => \NZB::NZB_ADDED
+					'nzbstatus' => NZB::NZB_ADDED
 				]
 			);
 		} else {

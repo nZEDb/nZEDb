@@ -3,6 +3,8 @@ namespace nzedb;
 
 require_once nZEDb_LIBS . 'simple_html_dom.php';
 
+use nzedb\utility\Utility;
+
 class IAFD
 {
 	public $classUsed = "";
@@ -169,7 +171,7 @@ class IAFD
 			curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookie);
 		}
 
-		curl_setopt_array($ch, nzedb\utility\Utility::curlSslContextOptions());
+		curl_setopt_array($ch, Utility::curlSslContextOptions());
 		$this->_response = curl_exec($ch);
 
 		if (!empty($this->_getRedirect)) {

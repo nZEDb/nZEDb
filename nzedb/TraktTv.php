@@ -2,6 +2,7 @@
 namespace nzedb;
 
 use nzedb\db\Settings;
+use nzedb\utility\Utility;
 
 /**
  * Class TraktTv
@@ -43,7 +44,7 @@ class TraktTv
 	public function traktTVSEsummary($title = '', $season = '', $ep = '')
 	{
 		if (!empty($this->APIKEY)) {
-			$TVjson = nzedb\utility\Utility::getUrl([
+			$TVjson = Utility::getUrl([
 					'url' =>
 						'http://api.trakt.tv/show/episode/summary.json/' .
 						$this->APIKEY . '/' .
@@ -74,7 +75,7 @@ class TraktTv
 	public function traktMoviesummary($movie = '', $array = false)
 	{
 		if (!empty($this->APIKEY)) {
-			$MovieJson = nzedb\utility\Utility::getUrl([
+			$MovieJson = Utility::getUrl([
 					'url' =>
 						'http://api.trakt.tv/movie/summary.json/' .
 						$this->APIKEY .

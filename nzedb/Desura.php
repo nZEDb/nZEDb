@@ -3,6 +3,8 @@ namespace nzedb;
 
 require_once nZEDb_LIBS . 'simple_html_dom.php';
 
+use nzedb\utility\Utility;
+
 class Desura
 {
 
@@ -66,7 +68,7 @@ class Desura
 
 	public function __construct()
 	{
-		$this->_html = new simple_html_dom();
+		$this->_html = new \simple_html_dom();
 		if (isset($this->cookie)) {
 			$this->getUrl(self::DESURAURL);
 		}
@@ -270,7 +272,7 @@ class Desura
 			curl_setopt($this->_ch, CURLOPT_COOKIEJAR, $this->cookie);
 			curl_setopt($this->_ch, CURLOPT_COOKIEFILE, $this->cookie);
 		}
-		curl_setopt_array($this->_ch, nzedb\utility\Utility::curlSslContextOptions());
+		curl_setopt_array($this->_ch, Utility::curlSslContextOptions());
 		$this->_response = curl_exec($this->_ch);
 		if (!$this->_response) {
 			curl_close($this->_ch);

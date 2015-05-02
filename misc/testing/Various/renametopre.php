@@ -178,7 +178,7 @@ function preName($argv, $argc)
 							$oldcatname = $category->getNameByID($row["categoryid"]);
 							$newcatname = $category->getNameByID($determinedcat);
 
-							\NameFixer::echoChangedReleaseName([
+							NameFixer::echoChangedReleaseName([
 									'new_name'     => $cleanName,
 									'old_name'     => $row["searchname"],
 									'new_category' => $newcatname,

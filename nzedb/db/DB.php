@@ -1,11 +1,13 @@
 <?php
 namespace nzedb\db;
 
-use \nzedb\ColorCLI;
-use \nzedb\ConsoleTools;
-use \nzedb\utility\Utility;
-use \nzedb\libraries\Cache;
-use \nzedb\libraries\CacheException;
+use nzedb\ColorCLI;
+use nzedb\ConsoleTools;
+use nzedb\Logger;
+use nzedb\LoggerException;
+use nzedb\utility\Utility;
+use nzedb\libraries\Cache;
+use nzedb\libraries\CacheException;
 
 
 /**
@@ -28,12 +30,12 @@ class DB extends \PDO
 	public $cli;
 
 	/**
-	 * @var object Instance of ConsoleTools class.
+	 * @var object Instance of \nzedb\ConsoleTools class.
 	 */
 	public $ct;
 
 	/**
-	 * @var \ColorCLI	Instance variable for logging object. Currently only ColorCLI supported,
+	 * @var \nzedb\ColorCLI	Instance variable for logging object. Currently only ColorCLI supported,
 	 * but expanding for full logging with agnostic API planned.
 	 */
 	public $log;
@@ -151,8 +153,8 @@ class DB extends \PDO
 		$this->_debug = (nZEDb_DEBUG || nZEDb_LOGGING);
 		if ($this->_debug) {
 			try {
-				$this->debugging = new \Logger(['ColorCLI' => $this->log]);
-			} catch (\LoggerException $error) {
+				$this->debugging = new Logger(['ColorCLI' => $this->log]);
+			} catch (LoggerException $error) {
 				$this->_debug = false;
 			}
 		}
@@ -245,8 +247,8 @@ class DB extends \PDO
 	{
 		$this->_debug = true;
 		try {
-			$this->debugging = new \Logger(['ColorCLI' => $this->log]);
-		} catch (\LoggerException $error) {
+			$this->debugging = new Logger(['ColorCLI' => $this->log]);
+		} catch (LoggerException $error) {
 			$this->_debug = false;
 		}
 	}
@@ -464,7 +466,7 @@ class DB extends \PDO
 		}
 		if ($this->_debug) {
 			$this->echoError($error, 'queryInsert', 4);
-			$this->debugging->log('\nzedb\db\DB', "queryInsert", $query, \Logger::LOG_SQL);
+			$this->debugging->log('\nzedb\db\DB', "queryInsert", $query, Logger::LOG_SQL);
 		}
 		return false;
 	}
@@ -522,7 +524,7 @@ class DB extends \PDO
 		}
 		if ($silent === false && $this->_debug) {
 			$this->echoError($error, 'queryExec', 4);
-			$this->debugging->log('\nzedb\db\DB', "queryExec", $query, \Logger::LOG_SQL);
+			$this->debugging->log('\nzedb\db\DB', "queryExec", $query, Logger::LOG_SQL);
 		}
 		return false;
 	}
@@ -617,7 +619,7 @@ class DB extends \PDO
 				$this->echoError($e->getMessage(), 'Exec', 4, false);
 
 				if ($this->_debug) {
-					$this->debugging->log('\nzedb\db\DB', "Exec", $query, \Logger::LOG_SQL);
+					$this->debugging->log('\nzedb\db\DB', "Exec", $query, Logger::LOG_SQL);
 				}
 			}
 
@@ -746,7 +748,7 @@ class DB extends \PDO
 				if ($ignore === false) {
 					$this->echoError($e->getMessage(), 'queryDirect', 4, false);
 					if ($this->_debug) {
-						$this->debugging->log('\nzedb\db\DB', "queryDirect", $query, \Logger::LOG_SQL);
+						$this->debugging->log('\nzedb\db\DB', "queryDirect", $query, Logger::LOG_SQL);
 					}
 				}
 				$result = false;
@@ -922,7 +924,7 @@ class DB extends \PDO
 
 		}
 		if ($this->_debug) {
-			$this->debugging->log('\nzedb\db\DB', 'optimise', $message, \Logger::LOG_INFO);
+			$this->debugging->log('\nzedb\db\DB', 'optimise', $message, Logger::LOG_INFO);
 		}
 	}
 
@@ -1062,7 +1064,7 @@ class DB extends \PDO
 			$PDOstatement = $this->pdo->prepare($query, $options);
 		} catch (\PDOException $e) {
 			if ($this->_debug) {
-				$this->debugging->log('\nzedb\db\DB', "Prepare", $e->getMessage(), \Logger::LOG_INFO);
+				$this->debugging->log('\nzedb\db\DB', "Prepare", $e->getMessage(), Logger::LOG_INFO);
 			}
 			echo $this->log->error("\n" . $e->getMessage());
 			$PDOstatement = false;
@@ -1085,7 +1087,7 @@ class DB extends \PDO
 				$result = $this->pdo->getAttribute($attribute);
 			} catch (\PDOException $e) {
 				if ($this->_debug) {
-					$this->debugging->log('\nzedb\db\DB', "getAttribute", $e->getMessage(), \Logger::LOG_INFO);
+					$this->debugging->log('\nzedb\db\DB', "getAttribute", $e->getMessage(), Logger::LOG_INFO);
 				}
 				echo $this->log->error("\n" . $e->getMessage());
 				$result = false;

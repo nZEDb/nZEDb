@@ -1,6 +1,8 @@
 <?php
 namespace nzedb;
 
+use nzedb\utility\Utility;
+
 /**
  * Show log message to CLI/Web and log it to a file.
  * Turn these on in automated.config.php
@@ -183,7 +185,7 @@ class Logger
 		];
 		$options += $defaults;
 
-		$this->colorCLI = ($options['ColorCLI'] instanceof \ColorCLI ? $options['ColorCLI'] : new \ColorCLI());
+		$this->colorCLI = ($options['ColorCLI'] instanceof ColorCLI ? $options['ColorCLI'] : new ColorCLI());
 
 		$this->getSettings();
 
@@ -202,7 +204,7 @@ class Logger
 		$this->setLogFile();
 
 		$this->outputCLI = (strtolower(PHP_SAPI) === 'cli');
-		$this->isWindows = nzedb\utility\Utility::isWin();
+		$this->isWindows = Utility::isWin();
 		$this->timeStart = time();
 	}
 
@@ -281,24 +283,9 @@ class Logger
 		return
 			str_pad(
 				number_format(
-					round(
-						$actualUsage
-						/
-						pow(
-							1024,
-							($i =
-								floor(
-									log(
-										$actualUsage,
-										1024
-									)
-								)
-							)
-						), 2
-					)
-				), 4, '~~~', STR_PAD_LEFT
-			) .
-			$units[(int)$i];
+					round($actualUsage / pow(1024, ($i = floor(log($actualUsage, 1024)))), 2)),
+					4, '~~~', STR_PAD_LEFT
+			) . $units[(int)$i];
 	}
 
 	/**
@@ -455,7 +442,7 @@ class Logger
 			$this->resource = @fopen($this->logPath, 'ab');
 
 			if (!$this->resource) {
-				throw new \LoggerException('Unable to open log file ' . $this->logPath);
+				throw new LoggerException('Unable to open log file ' . $this->logPath);
 			}
 		}
 	}
@@ -515,7 +502,7 @@ class Logger
 		if (!is_dir($this->currentLogFolder)) {
 			$old = umask(0777);
 			if (!mkdir($this->currentLogFolder)) {
-				throw new \LoggerException('Unable to create log file folder ' . $this->currentLogFolder);
+				throw new LoggerException('Unable to create log file folder ' . $this->currentLogFolder);
 			}
 			chmod($this->currentLogFolder, 0777);
 			umask($old);
@@ -535,7 +522,7 @@ class Logger
 					$this->logPath,
 					'[' . $this->getDate() . '] [INIT]   [Initiating new log file.]' . PHP_EOL)
 			) {
-				throw new \LoggerException('Unable to create new log file ' . $this->logPath);
+				throw new LoggerException('Unable to create new log file ' . $this->logPath);
 			}
 			chmod($this->logPath, 0664);
 		}
@@ -757,8 +744,4 @@ class Logger
 		}
 	}
 
-}
-
-class LoggerException extends Exception
-{
 }

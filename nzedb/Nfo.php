@@ -2,7 +2,8 @@
 namespace nzedb;
 
 use nzedb\db\Settings;
-use \nzedb\processing\PostProcess;
+use nzedb\processing\PostProcess;
+use nzedb\utility\Utility;
 
 require_once nZEDb_LIBS . 'getid3/getid3/getid3.php';
 require_once nZEDb_LIBS . 'rarinfo/par2info.php';
@@ -16,8 +17,9 @@ class Nfo
 {
 	/**
 	 * Instance of class DB
-	 * @var nzedb\db\Settings
-	 * @access private
+	 *
+	 * @var \nzedb\db\Settings
+	 * @access public
 	 */
 	public $pdo;
 
@@ -141,7 +143,7 @@ class Nfo
 			$tmpPath = $this->tmpPath . $guid . '.nfo';
 			file_put_contents($tmpPath, $possibleNFO);
 
-			$result = nzedb\utility\Utility::fileInfo($tmpPath);
+			$result = Utility::fileInfo($tmpPath);
 			if (!empty($result)) {
 
 				// Check if it's text.
@@ -158,17 +160,17 @@ class Nfo
 			}
 
 			// If above checks couldn't  make a categorical identification, Use GetId3 to check if it's an image/video/rar/zip etc..
-			$check = (new getid3())->analyze($tmpPath);
+			$check = (new \getid3())->analyze($tmpPath);
 			@unlink($tmpPath);
 			if (isset($check['error'])) {
 
 				// Check if it's a par2.
-				$par2info = new Par2Info();
+				$par2info = new \Par2Info();
 				$par2info->setData($possibleNFO);
 				if ($par2info->error) {
 
 					// Check if it's an SFV.
-					$sfv = new SfvInfo();
+					$sfv = new \SfvInfo();
 					$sfv->setData($possibleNFO);
 					if ($sfv->error) {
 						return true;
@@ -317,7 +319,7 @@ class Nfo
 						$groupIDQuery
 					)
 				);
-				if ($nfoStats instanceof Traversable) {
+				if ($nfoStats instanceof \Traversable) {
 					$outString = PHP_EOL . 'Available to process';
 					foreach ($nfoStats as $row) {
 						$outString .= ', ' . $row['status'] . ' = ' . number_format($row['count']);
@@ -389,7 +391,7 @@ class Nfo
 			)
 		);
 
-		if ($releases instanceof Traversable) {
+		if ($releases instanceof \Traversable) {
 			foreach ($releases as $release) {
 				$this->pdo->queryExec(
 					sprintf('DELETE FROM release_nfos WHERE nfo IS NULL AND releaseid = %d', $release['id'])

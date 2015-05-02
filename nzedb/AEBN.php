@@ -3,6 +3,8 @@ namespace nzedb;
 
 require_once nZEDb_LIBS . 'simple_html_dom.php';
 
+use nzedb\utility\Utility;
+
 class AEBN
 {
 	/**
@@ -356,7 +358,7 @@ class AEBN
 			curl_setopt($ch, CURLOPT_COOKIEJAR, $this->cookie);
 			curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookie);
 		}
-		curl_setopt_array($ch, nzedb\utility\Utility::curlSslContextOptions());
+		curl_setopt_array($ch, Utility::curlSslContextOptions());
 		$this->_response = curl_exec($ch);
 		if (!$this->_response) {
 			curl_close($ch);

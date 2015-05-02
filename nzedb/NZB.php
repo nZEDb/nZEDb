@@ -1,12 +1,17 @@
 <?php
 namespace nzedb;
 
+use nzedb\db\Settings;
+
 /**
  * Class for reading and writing NZB files on the hard disk,
  * building folder paths to store the NZB files.
  */
 class NZB
 {
+	const NZB_NONE = 0; // Release has no NZB file yet.
+	const NZB_ADDED = 1; // Release had an NZB file created.
+
 	/**
 	 * Determines if the site setting table per group is enabled.
 	 * @var bool
@@ -35,7 +40,7 @@ class NZB
 
 	/**
 	 * Instance of class db.
-	 * @var \nzedb\db\Settings
+	 * @var Settings
 	 * @access public
 	 */
 	public $pdo;
@@ -75,19 +80,16 @@ class NZB
 	 */
 	protected $_nzbHeadString;
 
-	const NZB_NONE  = 0; // Release has no NZB file yet.
-	const NZB_ADDED = 1; // Release had an NZB file created.
-
 	/**
 	 * Default constructor.
 	 *
-	 * @param \nzedb\db\Settings $pdo
+	 * @param Settings $pdo
 	 *
 	 * @access public
 	 */
 	public function __construct(&$pdo = null)
 	{
-		$this->pdo = ($pdo instanceof \nzedb\db\Settings ? $pdo : new \nzedb\db\Settings());
+		$this->pdo = ($pdo instanceof Settings ? $pdo : new Settings());
 
 		$this->tablePerGroup = ($this->pdo->getSetting('tablepergroup') == 0 ? false : true);
 		$nzbSplitLevel = $this->pdo->getSetting('nzbsplitlevel');
@@ -225,7 +227,7 @@ class NZB
 				$this->pdo->queryExec(
 					sprintf('
 						UPDATE releases SET nzbstatus = %d %s WHERE id = %d',
-						\NZB::NZB_ADDED,
+						NZB::NZB_ADDED,
 						($nzb_guid === '' ? '' : ', nzb_guid = ' . $this->pdo->escapestring(md5($nzb_guid))),
 						$relID
 					)
@@ -396,5 +398,4 @@ class NZB
 		}
 		return $result;
 	}
-
 }

@@ -2,7 +2,7 @@
 namespace nzedb;
 
 use nzedb\db\Settings;
-use nzedb\utility;
+use Utility;
 
 /**
  * Export NZB's to a folder.
@@ -66,8 +66,8 @@ class NZBExport
 		$this->browser = $options['Browser'];
 		$this->echoCLI = (!$this->browser && nZEDb_ECHOCLI && $options['Echo']);
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Setting'] : new Settings());
-		$this->releases = ($options['Releases'] instanceof \Releases ? $options['Releases'] : new \Releases(['Settings' => $this->pdo]));
-		$this->nzb = ($options['NZB'] instanceof \NZB ? $options['NZB'] : new \NZB($this->pdo));
+		$this->releases = ($options['Releases'] instanceof Releases ? $options['Releases'] : new Releases(['Settings' => $this->pdo]));
+		$this->nzb = ($options['NZB'] instanceof NZB ? $options['NZB'] : new NZB($this->pdo));
 	}
 
 	/**
@@ -184,7 +184,7 @@ class NZBExport
 					}
 				// If not, decompress it and create a file to store it in.
 				} else {
-					$nzbContents = nzedb\utility\Utility::unzipGzipFile($nzbFile);
+					$nzbContents = Utility::unzipGzipFile($nzbFile);
 					if (!$nzbContents) {
 						if ($this->echoCLI) {
 							echo 'Unable to export NZB with GUID: ' . $release['guid'];

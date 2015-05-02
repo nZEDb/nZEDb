@@ -2,7 +2,6 @@
 namespace nzedb;
 
 use nzedb\db\Settings;
-use nzedb\utility;
 
 /**
  * Class XXX
@@ -10,7 +9,7 @@ use nzedb\utility;
 class XXX
 {
 	/**
-	 * @var nzedb\db\Settings
+	 * @var \nzedb\db\Settings
 	 */
 	public $pdo;
 
@@ -28,7 +27,7 @@ class XXX
 	protected $currentTitle = '';
 
 	/**
-	 * @var Logger
+	 * @var \nzedb\Logger
 	 */
 	protected $debugging;
 
@@ -38,7 +37,7 @@ class XXX
 	protected $debug;
 
 	/**
-	 * @var ReleaseImage
+	 * @var \nzedb\ReleaseImage
 	 */
 	protected $releaseImage;
 
@@ -63,7 +62,7 @@ class XXX
 		$options += $defaults;
 
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
-		$this->releaseImage = ($options['ReleaseImage'] instanceof \ReleaseImage ? $options['ReleaseImage'] : new \ReleaseImage($this->pdo));
+		$this->releaseImage = ($options['ReleaseImage'] instanceof ReleaseImage ? $options['ReleaseImage'] : new ReleaseImage($this->pdo));
 
 		$this->movieqty = ($this->pdo->getSetting('maxxxxprocessed') != '') ? $this->pdo->getSetting('maxxxxprocessed') : 100;
 		$this->showPasswords = ($this->pdo->getSetting('showpasswordedrelease') != '') ? $this->pdo->getSetting('showpasswordedrelease') : 0;
@@ -75,8 +74,8 @@ class XXX
 		if (nZEDb_DEBUG || nZEDb_LOGGING) {
 			$this->debug = true;
 			try {
-				$this->debugging = new \Logger();
-			} catch (\LoggerException $error) {
+				$this->debugging = new Logger();
+			} catch (LoggerException $error) {
 				$this->_debug = false;
 			}
 		}
@@ -139,7 +138,7 @@ class XXX
 	{
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
-			$catsrch = (new \Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
+			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
 		}
 
 		$res = $this->pdo->queryOneRow(
@@ -180,7 +179,7 @@ class XXX
 	{
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
-			$catsrch = (new \Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
+			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
 		}
 
 		$order = $this->getXXXOrder($orderBy);
@@ -373,14 +372,14 @@ class XXX
 		$res = false;
 		$this->whichclass = '';
 
-		$iafd = new \IAFD();
+		$iafd = new IAFD();
 		$iafd->searchTerm = $xxxmovie;
 
 		if ($iafd->findme() !== false) {
 
 			switch ($iafd->classUsed) {
 				case "ade":
-					$mov = new \ADE();
+					$mov = new ADE();
 					$mov->directLink = (string)$iafd->directUrl;
 					$res = $mov->getDirect();
 					$res['title'] = $iafd->title;
@@ -394,21 +393,21 @@ class XXX
 		if ($res === false) {
 
 			$this->whichclass = "aebn";
-			$mov = new \AEBN();
+			$mov = new AEBN();
 			$mov->cookie = $this->cookie;
 			$mov->searchTerm = $xxxmovie;
 			$res = $mov->search();
 
 			if ($res === false) {
 				$this->whichclass = "ade";
-				$mov = new \ADE();
+				$mov = new ADE();
 				$mov->searchTerm = $xxxmovie;
 				$res = $mov->search();
 			}
 
 			if ($res === false) {
 				$this->whichclass = "pop";
-				$mov = new \Popporn();
+				$mov = new Popporn();
 				$mov->cookie = $this->cookie;
 				$mov->searchTerm = $xxxmovie;
 				$res = $mov->search();
@@ -417,7 +416,7 @@ class XXX
 			// Last in list as it doesn't have trailers
 			if ($res === false) {
 				$this->whichclass = "adm";
-				$mov = new \ADM();
+				$mov = new ADM();
 				$mov->cookie = $this->cookie;
 				$mov->searchTerm = $xxxmovie;
 				$res = $mov->search();

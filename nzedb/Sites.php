@@ -2,7 +2,7 @@
 namespace nzedb;
 
 use nzedb\db\Settings;
-use nzedb\utility;
+use nzedb\utility\Versions;
 
 class Sites
 {
@@ -45,8 +45,8 @@ class Sites
 
 		if (defined('nZEDb_VERSIONS')) {
 			try {
-				$this->_versions = new \nzedb\utility\Versions(nZEDb_VERSIONS);
-			} catch (Exception $e) {
+				$this->_versions = new Versions(nZEDb_VERSIONS);
+			} catch (\Exception $e) {
 				$this->_versions = false;
 			}
 		}
@@ -70,39 +70,39 @@ class Sites
 		// Validate site settings
 		//
 		if ($site->mediainfopath != "" && !is_file($site->mediainfopath)) {
-			return \Sites::ERR_BADMEDIAINFOPATH;
+			return Sites::ERR_BADMEDIAINFOPATH;
 		}
 
 		if ($site->ffmpegpath != "" && !is_file($site->ffmpegpath)) {
-			return \Sites::ERR_BADFFMPEGPATH;
+			return Sites::ERR_BADFFMPEGPATH;
 		}
 
 		if ($site->unrarpath != "" && !is_file($site->unrarpath)) {
-			return \Sites::ERR_BADUNRARPATH;
+			return Sites::ERR_BADUNRARPATH;
 		}
 
 		if (empty($site->nzbpath)) {
-			return \Sites::ERR_BADNZBPATH_UNSET;
+			return Sites::ERR_BADNZBPATH_UNSET;
 		}
 
 		if (!file_exists($site->nzbpath) || !is_dir($site->nzbpath)) {
-			return \Sites::ERR_BADNZBPATH;
+			return Sites::ERR_BADNZBPATH;
 		}
 
 		if (!is_readable($site->nzbpath)) {
-			return \Sites::ERR_BADNZBPATH_UNREADABLE;
+			return Sites::ERR_BADNZBPATH_UNREADABLE;
 		}
 
 		if ($site->checkpasswordedrar == 1 && !is_file($site->unrarpath)) {
-			return \Sites::ERR_DEEPNOUNRAR;
+			return Sites::ERR_DEEPNOUNRAR;
 		}
 
 		if ($site->tmpunrarpath != "" && !file_exists($site->tmpunrarpath)) {
-			return \Sites::ERR_BADTMPUNRARPATH;
+			return Sites::ERR_BADTMPUNRARPATH;
 		}
 
 		if ($site->yydecoderpath != "" && $site->yydecoderpath !== 'simple_php_yenc_decode' && !file_exists($site->yydecoderpath)) {
-			return \Sites::ERR_BAD_YYDECODER_PATH;
+			return Sites::ERR_BAD_YYDECODER_PATH;
 		}
 
 		$sql = $sqlKeys = [];
@@ -165,7 +165,7 @@ class Sites
 
 	public function rows2Object($rows)
 	{
-		$obj = new stdClass;
+		$obj = new \stdClass;
 		foreach ($rows as $row) {
 			$obj->{$row['setting']} = trim($row['value']);
 		}
@@ -176,7 +176,7 @@ class Sites
 
 	public function row2Object($row)
 	{
-		$obj = new stdClass;
+		$obj = new \stdClass;
 		$rowKeys = array_keys($row);
 		foreach ($rowKeys as $key) {
 			$obj->{$key} = trim($row[$key]);

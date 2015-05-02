@@ -2,7 +2,6 @@
 namespace nzedb;
 
 use \nzedb\db\Settings;
-new \nzedb\utility\Git;
 use \nzedb\utility\Utility;
 
 /**
@@ -13,16 +12,17 @@ use \nzedb\utility\Utility;
 class TmuxOutput extends Tmux
 {
 	/**
-	 * @var Git
+	 * @var \nzedb\utility\Git
 	 */
 	protected $_git;
 
 	/**
-	 * @var Versions
+	 * @var \nzedb\utility\Versions
 	 */
 	protected $_vers;
 
 	private $runVar;
+
 	/**
 	 * @var array of current format masks to use.
 	 */

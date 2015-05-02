@@ -1,6 +1,8 @@
 <?php
 namespace nzedb;
 
+use nzedb\db\Settings;
+
 class Regexes
 {
 	/**
@@ -34,7 +36,7 @@ class Regexes
 		];
 		$options += $defaults;
 
-		$this->pdo = ($options['Settings'] instanceof nzedb\db\Settings ? $options['Settings'] : new nzedb\db\Settings());
+		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 		$this->tableName = $options['Table_Name'];
 	}
 

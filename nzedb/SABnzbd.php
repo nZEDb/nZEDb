@@ -1,13 +1,35 @@
 <?php
 namespace nzedb;
 
-use nzedb\utility;
+use nzedb\utility\Utility;
 
 /**
  * Class SABnzbd
  */
 class SABnzbd
 {
+	/**
+	 * Type of site integration.
+	 */
+	const INTEGRATION_TYPE_NONE = 0; // Sab is completely disabled - no user can use it.
+	const INTEGRATION_TYPE_SITEWIDE = 1; // Sab is enabled, 1 remote SAB server for the whole site.
+	const INTEGRATION_TYPE_USER = 2; // Sab is enabled, every user can use their own SAB server.
+
+	/**
+	 * Type of SAB API key.
+	 */
+	const API_TYPE_NZB = 1;
+	const API_TYPE_FULL = 2;
+
+	/**
+	 * Priority to send the NZB to SAB.
+	 */
+	const PRIORITY_PAUSED = -2;
+	const PRIORITY_LOW = -1;
+	const PRIORITY_NORMAL = 0;
+	const PRIORITY_HIGH = 1;
+	const PRIORITY_FORCE = 2;
+
 	/**
 	 * URL to the SAB server.
 	 * @var string|Array|bool
@@ -60,28 +82,6 @@ class SABnzbd
 	 * @var string
 	 */
 	protected $serverurl = '';
-
-	/**
-	 * Type of site integration.
-	 */
-	const INTEGRATION_TYPE_NONE     = 0; // Sab is completely disabled - no user can use it.
-	const INTEGRATION_TYPE_SITEWIDE = 1; // Sab is enabled, 1 remote SAB server for the whole site.
-	const INTEGRATION_TYPE_USER     = 2; // Sab is enabled, every user can use their own SAB server.
-
-	/**
-	 * Type of SAB API key.
-	 */
-	const API_TYPE_NZB  = 1;
-	const API_TYPE_FULL = 2;
-
-	/**
-	 * Priority to send the NZB to SAB.
-	 */
-	const PRIORITY_PAUSED = -2;
-	const PRIORITY_LOW = -1;
-	const PRIORITY_NORMAL = 0;
-	const PRIORITY_HIGH = 1;
-	const PRIORITY_FORCE = 2;
 
 	/**
 	 * Construct.
@@ -150,7 +150,7 @@ class SABnzbd
 	 */
 	public function sendToSab($guid)
 	{
-		return nzedb\utility\Utility::getUrl([
+		return Utility::getUrl([
 				'url' => $this->url .
 					'api?mode=addurl&priority=' .
 					$this->priority .
@@ -178,7 +178,7 @@ class SABnzbd
 	 */
 	public function getQueue()
 	{
-		return nzedb\utility\Utility::getUrl([
+		return Utility::getUrl([
 				'url' =>
 					$this->url .
 					"api?mode=qstatus&output=json&apikey=" .
@@ -195,7 +195,7 @@ class SABnzbd
 	 */
 	public function getAdvQueue()
 	{
-		return nzedb\utility\Utility::getUrl([
+		return Utility::getUrl([
 				'url' =>
 					$this->url .
 					"api?mode=queue&start=START&limit=LIMIT&output=json&apikey=" .
@@ -214,7 +214,7 @@ class SABnzbd
 	 */
 	public function delFromQueue($id)
 	{
-		return nzedb\utility\Utility::getUrl([
+		return Utility::getUrl([
 				'url' =>
 					$this->url .
 					"api?mode=queue&name=delete&value=" .
@@ -235,7 +235,7 @@ class SABnzbd
 	 */
 	public function pauseFromQueue($id)
 	{
-		return nzedb\utility\Utility::getUrl([
+		return Utility::getUrl([
 				'url' =>
 					$this->url .
 					"api?mode=queue&name=pause&value=" .
@@ -256,7 +256,7 @@ class SABnzbd
 	 */
 	public function resumeFromQueue($id)
 	{
-		return nzedb\utility\Utility::getUrl([
+		return Utility::getUrl([
 				'url' =>
 					$this->url .
 					"api?mode=queue&name=resume&value=" .
@@ -275,7 +275,7 @@ class SABnzbd
 	 */
 	public function pauseAll()
 	{
-		return nzedb\utility\Utility::getUrl([
+		return Utility::getUrl([
 				'url' =>
 					$this->url .
 					"api?mode=pause" .
@@ -293,7 +293,7 @@ class SABnzbd
 	 */
 	public function resumeAll()
 	{
-		return nzedb\utility\Utility::getUrl([
+		return Utility::getUrl([
 				'url' =>
 					$this->url .
 					"api?mode=resume" .

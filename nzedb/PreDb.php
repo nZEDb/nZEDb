@@ -29,7 +29,7 @@ class PreDb
 	protected $echooutput;
 
 	/**
-	 * @var nzedb\db\DB
+	 * @var \nzedb\db\DB
 	 */
 	protected $pdo;
 
@@ -59,7 +59,7 @@ class PreDb
 	{
 		$this->dateLimit = $dateLimit;
 
-		$consoleTools = new \ConsoleTools(['ColorCLI' => $this->pdo->log]);
+		$consoleTools = new ConsoleTools(['ColorCLI' => $this->pdo->log]);
 		$updated = 0;
 		$datesql = '';
 
@@ -162,8 +162,8 @@ class PreDb
 	 */
 	public function parseTitles($time, $echo, $cats, $namestatus, $show)
 	{
-		$namefixer = new \NameFixer(['Echo' => $this->echooutput, 'ConsoleTools' => $this->pdo->log, 'Settings' => $this->pdo]);
-		$consoletools = new \ConsoleTools(['ColorCLI' => $this->pdo->log]);
+		$namefixer = new NameFixer(['Echo' => $this->echooutput, 'ConsoleTools' => $this->pdo->log, 'Settings' => $this->pdo]);
+		$consoletools = new ConsoleTools(['ColorCLI' => $this->pdo->log]);
 		$updated = $checked = 0;
 
 		$tq = '';

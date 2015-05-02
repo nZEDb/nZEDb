@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use nzedb\utility;
+use nzedb\utility\Utility;
 
 /**
  * Attempts to find a PRE name for a release using a request ID from our local pre database,
@@ -150,7 +150,7 @@ class RequestIDWeb extends RequestID
 		$requestArray[0] = ['ident' => 0, 'group' => 'none', 'reqid' => 0];
 
 		// Do a web lookup.
-		$returnXml = nzedb\utility\Utility::getUrl([
+		$returnXml = Utility::getUrl([
 				'url' => $this->pdo->getSetting('request_url'),
 				'method' => 'post',
 				'postdata' => 'data=' . serialize($requestArray),
@@ -304,7 +304,7 @@ class RequestIDWeb extends RequestID
 		$this->sphinx->updateReleaseSearchName($this->_release['id'], $newTitle);
 
 		if ($this->echoOutput) {
-			\NameFixer::echoChangedReleaseName([
+			NameFixer::echoChangedReleaseName([
 					'new_name' => $this->_newTitle['title'],
 					'old_name' => $this->_release['searchname'],
 					'new_category' => $this->category->getNameByID($determinedCategory),

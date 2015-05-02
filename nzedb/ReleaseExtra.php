@@ -2,17 +2,17 @@
 namespace nzedb;
 
 use nzedb\db\Settings;
-use nzedb\utility;
+use nzedb\utility\Utility;
 
 class ReleaseExtra
 {
 	/**
-	 * @var nzedb\db\Settings
+	 * @var \nzedb\db\Settings
 	 */
 	public $pdo;
 
 	/**
-	 * @param nzedb\db\Settings $settings
+	 * @param \nzedb\db\Settings $settings
 	 */
 	public function __construct($settings = null)
 	{
@@ -89,7 +89,7 @@ class ReleaseExtra
 	public function addFromXml($releaseID, $xml)
 	{
 		$xmlObj = @simplexml_load_string($xml);
-		$arrXml = nzedb\utility\Utility::objectsIntoArray($xmlObj);
+		$arrXml = Utility::objectsIntoArray($xmlObj);
 		$containerformat = '';
 		$overallbitrate = '';
 

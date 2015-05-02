@@ -1,7 +1,9 @@
 <?php
 require dirname(__FILE__) . '/../../www/config.php';
 
-if (nZEDb_RELEASE_SEARCH_TYPE != \ReleaseSearch::SPHINX) {
+use \nzedb\ReleaseSearch;
+
+if (nZEDb_RELEASE_SEARCH_TYPE != ReleaseSearch::SPHINX) {
 	exit('Error, nZEDb_RELEASE_SEARCH_TYPE in www/settings.php must be set to SPHINX!' . PHP_EOL);
 }
 

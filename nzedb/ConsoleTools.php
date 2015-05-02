@@ -1,6 +1,7 @@
 <?php
 namespace nzedb;
 
+
 /**
  * Class ConsoleTools
  */
@@ -8,7 +9,7 @@ class ConsoleTools
 {
 
 	/**
-	 * @var ColorCLI
+	 * @var \nzedb\ColorCLI
 	 */
 	public $cli;
 
@@ -27,7 +28,7 @@ class ConsoleTools
 		];
 		$options += $defaults;
 
-		$this->cli = ($options['ColorCLI'] instanceof \ColorCLI ? $options['ColorCLI'] : new \ColorCLI());
+		$this->cli = ($options['ColorCLI'] instanceof ColorCLI ? $options['ColorCLI'] : new ColorCLI());
 
 		$this->lastMessageLength = 0;
 	}

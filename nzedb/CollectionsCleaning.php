@@ -1,6 +1,8 @@
 <?php
 namespace nzedb;
 
+use nzedb\db\Settings;
+
 /**
  * Cleans names for collections/imports/namefixer.
  *
@@ -80,7 +82,7 @@ class CollectionsCleaning
 		];
 		$options += $defaults;
 
-		$this->pdo = ($options['Settings'] instanceof nzedb\db\Settings ? $options['Settings'] : new nzedb\db\Settings());
+		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 		$this->_regexes = new Regexes(['Settings' => $this->pdo, 'Table_Name' => 'collection_regexes']);
 	}
 

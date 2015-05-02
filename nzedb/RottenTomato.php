@@ -1,6 +1,8 @@
 <?php
 namespace nzedb;
 
+use nzedb\utility\Utility;
+
 /**
  * Fetches and returns JSON documents from the Rotten Tomato API using a supplied API key.
  *
@@ -208,8 +210,8 @@ class RottenTomato
 	private function _makeCall($function, $params = [])
 	{
 		return trim(
-			nzedb\utility\Utility::getUrl([
-					'url' => \RottenTomato::API_URL .
+			Utility::getUrl([
+					'url' => RottenTomato::API_URL .
 						$function .
 						'?limit=' .
 						mt_rand(15, 20) .

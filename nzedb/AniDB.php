@@ -6,7 +6,7 @@ use nzedb\db\Settings;
 class AniDB
 {
 	/**
-	 * @var nzedb\db\Settings
+	 * @var \nzedb\db\Settings
 	 */
 	public $pdo;
 
