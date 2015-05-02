@@ -114,7 +114,7 @@ if ($result) {
 			$verbose = $argv[3] == true ? true : false;
 
 			if ($verbose) {
-				echo $pdo->log->info("Clearing import table");
+				echo $predb->log->info("Clearing import table");
 			}
 
 			// Truncate to clear any old data
