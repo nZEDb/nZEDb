@@ -6,6 +6,8 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2015-05-02 niel
+	* Fix Renamed $pdo to $predb that was missed in refactoring - Thanks to tasky.
 2015-05-01 niel
 	* Chg: Changed handling of nZEDb.xml tag checks for dev branch. Forces tag element of '0.0.0'.
 2015-04-30 niel
