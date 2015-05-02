@@ -1,4 +1,5 @@
 <?php
+namespace nzedb;
 
 use nzedb\db\Settings;
 
@@ -30,7 +31,7 @@ class Menu
 
 		$data = $this->pdo->query(sprintf("SELECT * FROM menu_items WHERE role <= %d %s ORDER BY ordinal", $role, $guest));
 
-		$ret = array();
+		$ret = [];
 		foreach ($data as $d) {
 			if (!preg_match("/http/i", $d["href"])) {
 				$d["href"] = $serverurl . $d["href"];

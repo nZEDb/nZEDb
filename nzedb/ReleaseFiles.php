@@ -1,5 +1,8 @@
 <?php
+namespace nzedb;
+
 use nzedb\db\Settings;
+
 /**
  * Adds/fetches rar/zip/etc files for a release.
  *

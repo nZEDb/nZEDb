@@ -1,4 +1,5 @@
 <?php
+namespace nzedb;
 
 class SphinxSearch
 {

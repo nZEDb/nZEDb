@@ -1,4 +1,5 @@
 <?php
+namespace nzedb;
 
 /**
  * Fetches and returns JSON documents from the Rotten Tomato API using a supplied API key.
@@ -39,10 +40,10 @@ class RottenTomato
 	{
 		return $this->_makeCall(
 			'lists/movies/box_office.json',
-			array(
+			[
 				'limit'   => $limit,
 				'country' => $country
-			)
+			]
 		);
 	}
 
@@ -60,11 +61,11 @@ class RottenTomato
 	{
 		return $this->_makeCall(
 			'lists/movies/in_theaters.json',
-			array(
+			[
 				'page_limit' => $limit,
 				'page'       => $page,
 				'country'    => $country
-			)
+			]
 		);
 	}
 
@@ -81,10 +82,10 @@ class RottenTomato
 	{
 		return $this->_makeCall(
 			'lists/movies/opening.json',
-			array(
+			[
 				'limit'   => $limit,
 				'country' => $country
-			)
+			]
 		);
 	}
 
@@ -102,11 +103,11 @@ class RottenTomato
 	{
 		return $this->_makeCall(
 			'lists/movies/upcoming.json',
-			array(
+			[
 				'page_limit' => $limit,
 				'page'       => $page,
 				'country'    => $country
-			)
+			]
 		);
 	}
 
@@ -133,11 +134,11 @@ class RottenTomato
 	{
 		return $this->_makeCall(
 			'movies.json',
-			array(
+			[
 				'q'          => $title,
 				'page_limit' => $limit,
 				'page'       => $page
-			)
+			]
 		);
 	}
 
@@ -175,12 +176,12 @@ class RottenTomato
 	{
 		return $this->_makeCall(
 			'movies/' . $ID . '/reviews.json',
-			array(
+			[
 				'review_type' => $type,
 				'page_limit'  => $limit,
 				'page'        => $page,
 				'country'     => $country
-			)
+			]
 		);
 	}
 

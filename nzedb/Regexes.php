@@ -1,4 +1,5 @@
 <?php
+namespace nzedb;
 
 class Regexes
 {
@@ -25,7 +26,7 @@ class Regexes
 	/**
 	 * @param array $options
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		$defaults = [
 			'Settings' => null,

@@ -1,4 +1,5 @@
 <?php
+namespace nzedb;
 
 use \nzedb\processing\PostProcess;
 use \nzedb\utility\Utility;
@@ -79,7 +80,7 @@ class NZBContents
 	 *
 	 * @access public
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		$defaults = [
 			'Echo'        => false,
@@ -259,9 +260,9 @@ class NZBContents
 			$this->pdo->queryExec(sprintf('UPDATE releases SET completion = %d WHERE id = %d', $completion, $relID));
 
 			if ($foundNFO === true && strlen($messageID) > 1) {
-				return array('hidden' => false, 'ID' => $messageID);
+				return ['hidden' => false, 'ID' => $messageID];
 			} elseif ($hiddenNFO === true && strlen($hiddenID) > 1) {
-				return array('hidden' => true, 'ID' => $hiddenID);
+				return ['hidden' => true, 'ID' => $hiddenID];
 			}
 		}
 		return false;

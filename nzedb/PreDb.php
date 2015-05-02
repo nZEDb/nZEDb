@@ -1,4 +1,5 @@
 <?php
+namespace nzedb;
 
 use nzedb\db\Settings;
 
@@ -37,7 +38,7 @@ class PreDb
 	/**
 	 * @param array $options
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		$defaults = [
 			'Echo'     => false,
@@ -127,10 +128,10 @@ class PreDb
 		);
 
 		if ($titleCheck !== false) {
-			return array(
+			return [
 				'title' => $cleanerName,
 				'preid' => $titleCheck['id']
-			);
+			];
 		}
 
 		// Check if clean name matches a PreDB filename.
@@ -139,10 +140,10 @@ class PreDb
 		);
 
 		if ($fileCheck !== false) {
-			return array(
+			return [
 				'title' => $fileCheck['title'],
 				'preid' => $fileCheck['id']
-			);
+			];
 		}
 
 		return false;
@@ -255,7 +256,7 @@ class PreDb
 				$offset
 			)
 		);
-		return array('arr' => $parr, 'count' => $count);
+		return ['arr' => $parr, 'count' => $count];
 	}
 
 	/**

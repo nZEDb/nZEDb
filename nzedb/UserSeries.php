@@ -1,4 +1,5 @@
 <?php
+namespace nzedb;
 
 use nzedb\db\Settings;
 
@@ -17,7 +18,7 @@ class UserSeries
 	/**
 	 * @param array $options Class instances.
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		$defaults = [
 			'Settings' => null,
@@ -36,7 +37,7 @@ class UserSeries
 	 *
 	 * @return bool|int
 	 */
-	public function addShow($uID, $rageID, $catID = array())
+	public function addShow($uID, $rageID, $catID = [])
 	{
 		return $this->pdo->queryInsert(
 			sprintf(
@@ -145,7 +146,7 @@ class UserSeries
 	 * @param int   $rageID ID of the TV show.
 	 * @param array $catID  List of category ID's.
 	 */
-	public function updateShow($uID, $rageID, $catID = array())
+	public function updateShow($uID, $rageID, $catID = [])
 	{
 		$this->pdo->queryExec(
 			sprintf(

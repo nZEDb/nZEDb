@@ -1,4 +1,5 @@
 <?php
+namespace nzedb;
 
 require_once nZEDb_LIBS . 'simple_html_dom.php';
 
@@ -64,12 +65,12 @@ class Steam
 	/**
 	 * @var array
 	 */
-	protected $_postParams = array();
+	protected $_postParams = [];
 
 	/**
 	 * @var array
 	 */
-	protected $_res = array();
+	protected $_res = [];
 
 	/**
 	 * @var
@@ -125,7 +126,7 @@ class Steam
 	public function details()
 	{
 		if ($this->_ret = $this->_html->find("div.details_block", 0)) {
-			$textarr = array();
+			$textarr = [];
 			foreach ($this->_ret->find('text') as $text) {
 				$text = trim($text->plaintext);
 				if (!empty($text)) {
@@ -179,7 +180,7 @@ class Steam
 	 */
 	public function getAll()
 	{
-		$results = array();
+		$results = [];
 		if (isset($this->_directURL)) {
 			$results['steamgameid'] = $this->_steamGameID;
 			$results['directurl'] = $this->_directURL;

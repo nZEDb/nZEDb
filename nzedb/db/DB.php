@@ -1,11 +1,12 @@
 <?php
 namespace nzedb\db;
 
+use \nzedb\ColorCLI;
+use \nzedb\ConsoleTools;
 use \nzedb\utility\Utility;
 use \nzedb\libraries\Cache;
 use \nzedb\libraries\CacheException;
 
-//use nzedb\controllers\ColorCLI;
 
 /**
  * Class for handling connection to MySQL database using PDO.
@@ -107,7 +108,7 @@ class DB extends \PDO
 		$defaults = [
 			'checkVersion'	=> false,
 			'createDb'		=> false, // create dbname if it does not exist?
-			'ct'			=> new \ConsoleTools(),
+			'ct'			=> new ConsoleTools(),
 			'dbhost'		=> defined('DB_HOST') ? DB_HOST : '',
 			'dbname' 		=> defined('DB_NAME') ? DB_NAME : '',
 			'dbpass' 		=> defined('DB_PASSWORD') ? DB_PASSWORD : '',
@@ -115,7 +116,7 @@ class DB extends \PDO
 			'dbsock'		=> defined('DB_SOCKET') ? DB_SOCKET : '',
 			'dbtype'		=> defined('DB_SYSTEM') ? DB_SYSTEM : '',
 			'dbuser' 		=> defined('DB_USER') ? DB_USER : '',
-			'log'			=> new \ColorCLI(),
+			'log'			=> new ColorCLI(),
 			'persist'		=> false,
 		];
 		$options += $defaults;

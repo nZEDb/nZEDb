@@ -1,4 +1,5 @@
 <?php
+namespace nzedb;
 
 use \nzedb\db\Settings;
 new \nzedb\utility\Git;

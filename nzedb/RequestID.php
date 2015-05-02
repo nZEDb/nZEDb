@@ -1,4 +1,5 @@
 <?php
+namespace nzedb;
 
 use nzedb\db\Settings;
 
@@ -47,7 +48,7 @@ abstract class RequestID
 	 *
 	 * @return int Quantity of releases matched to a request ID.
 	 */
-	public function lookupRequestIDs(array $options = array())
+	public function lookupRequestIDs(array $options = [])
 	{
 		$curOptions = [
 			'charGUID'      => '',
@@ -137,7 +138,7 @@ abstract class RequestID
 	 */
 	protected function _siftReqId()
 	{
-		$requestID = array();
+		$requestID = [];
 		switch (true) {
 			case preg_match('/\[\s*#?scnzb@?efnet\s*\]\[(\d+)\]/', $this->_release['name'], $requestID):
 			case preg_match('/\[\s*(\d+)\s*\]/', $this->_release['name'], $requestID):

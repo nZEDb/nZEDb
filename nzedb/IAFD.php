@@ -1,4 +1,5 @@
 <?php
+namespace nzedb;
 
 require_once nZEDb_LIBS . 'simple_html_dom.php';
 
@@ -19,7 +20,7 @@ class IAFD
 	protected $_doSearch = false;
 	protected $_getRedirect;
 	protected $_html;
-	protected $_res = array();
+	protected $_res = [];
 	protected $_response;
 
 

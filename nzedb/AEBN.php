@@ -1,4 +1,5 @@
 <?php
+namespace nzedb;
 
 require_once nZEDb_LIBS . 'simple_html_dom.php';
 
@@ -50,7 +51,7 @@ class AEBN
 	 *
 	 * @var array
 	 */
-	protected $_postParams = array();
+	protected $_postParams = [];
 
 	/**
 	 * Raw Html response from curl
@@ -63,7 +64,7 @@ class AEBN
 	 *
 	 * @var array
 	 */
-	protected $_res = array();
+	protected $_res = [];
 
 	/**
 	 * If searchTerm is found
@@ -87,7 +88,7 @@ class AEBN
 	 * Used in __construct
 	 * @var array - straight, gay
 	 */
-	protected $_whichSite = array();
+	protected $_whichSite = [];
 
 
 
@@ -97,7 +98,7 @@ class AEBN
 	 */
 	public function __construct()
 	{
-		$this->_whichSite = array("straight" => self::AEBNSURL, "gay" => self::AEBNGURL);
+		$this->_whichSite = ["straight" => self::AEBNSURL, "gay" => self::AEBNGURL];
 		$this->_html = new \simple_html_dom();
 		if (isset($this->cookie)) {
 			$this->getUrl();
@@ -294,7 +295,7 @@ class AEBN
 	 */
 	public function getAll()
 	{
-		$results = array();
+		$results = [];
 		if (isset($this->_directUrl)) {
 			$results['title'] = $this->_title;
 			$results['directurl'] = $this->_directUrl;

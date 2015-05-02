@@ -1,4 +1,5 @@
 <?php
+namespace nzedb;
 
 require_once nZEDb_LIBS . 'simple_html_dom.php';
 
@@ -54,7 +55,7 @@ class Popporn
 	 *
 	 * @var array
 	 */
-	protected $_res = array();
+	protected $_res = [];
 
 	/**
 	 * This is set in the getAll method
@@ -228,7 +229,7 @@ class Popporn
 	{
 		$cast = false;
 		$director = false;
-		$er = array();
+		$er = [];
 		if ($ret = $this->_html->find('div#lside', 0)) {
 			foreach ($ret->find("text") as $e) {
 				$e = trim($e->innertext);
@@ -272,7 +273,7 @@ class Popporn
 	 */
 	public function genres()
 	{
-		$genres = array();
+		$genres = [];
 		if ($ret = $this->_html->find('div[id=thekeywords], p[class=keywords]', 1)) {
 			foreach ($ret->find('a') as $e) {
 				$genres[] = trim($e->plaintext);

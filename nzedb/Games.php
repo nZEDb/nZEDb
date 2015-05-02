@@ -1,4 +1,6 @@
 <?php
+namespace nzedb;
+
 require_once nZEDb_LIBS . 'GiantBombAPI.php';
 require_once nZEDb_LIB . 'utility' . DS . 'Utility.php';
 

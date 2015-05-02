@@ -1,4 +1,5 @@
 <?php
+namespace nzedb;
 
 /**
  * Categorizing of releases by name/group.

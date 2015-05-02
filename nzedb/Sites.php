@@ -1,4 +1,5 @@
 <?php
+namespace nzedb;
 
 use nzedb\db\Settings;
 use nzedb\utility;
@@ -33,7 +34,7 @@ class Sites
 	/**
 	 * @param array $options Class instances.
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		$defaults = [
 			'Settings' => null,
@@ -104,7 +105,7 @@ class Sites
 			return \Sites::ERR_BAD_YYDECODER_PATH;
 		}
 
-		$sql = $sqlKeys = array();
+		$sql = $sqlKeys = [];
 		foreach ($form as $settingK => $settingV) {
 			$sql[] = sprintf("WHEN %s THEN %s", $pdo->escapeString($settingK), $pdo->escapeString($settingV));
 			$sqlKeys[] = $pdo->escapeString($settingK);
@@ -143,7 +144,7 @@ class Sites
 	 */
 	function getSetting($setting = null)
 	{
-		$results = array();
+		$results = [];
 		$table = $this->_db->table();
 		$sql = "SELECT setting, value FROM $table ";
 		if ($setting !== null) {

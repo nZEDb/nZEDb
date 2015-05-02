@@ -1,4 +1,5 @@
 <?php
+namespace nzedb;
 
 /**
  * Cleans names for collections/imports/namefixer.
@@ -67,7 +68,7 @@ class CollectionsCleaning
 	/**
 	 * @param array $options Class instances.
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		// Extensions.
 		$this->e0 = self::REGEX_FILE_EXTENSIONS;

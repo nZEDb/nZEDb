@@ -1,4 +1,5 @@
 <?php
+namespace nzedb;
 
 /**
  * Attempts to find a PRE name for a release using a request ID from our local pre database,

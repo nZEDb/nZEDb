@@ -1,4 +1,5 @@
 <?php
+namespace nzedb;
 
 use nzedb\db\Settings;
 use nzedb\utility;
@@ -51,7 +52,7 @@ class NZBExport
 	 *
 	 * @access public
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		$defaults = [
 			'Browser'  => false, // Started from browser?

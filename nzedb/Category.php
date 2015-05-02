@@ -1,4 +1,5 @@
 <?php
+namespace nzedb;
 
 use nzedb\db\Settings;
 
@@ -86,7 +87,7 @@ class Category
 	 *
 	 * @param array $options Class instances.
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		$defaults = [
 			'Settings' => null,
@@ -104,7 +105,7 @@ class Category
 	 *
 	 * @return array
 	 */
-	public function get($activeonly = false, $excludedcats = array())
+	public function get($activeonly = false, $excludedcats = [])
 	{
 		return $this->pdo->query(
 			"SELECT c.id, CONCAT(cp.title, ' > ',c.title) AS title, cp.id AS parentid, c.status, c.minsize
@@ -128,7 +129,7 @@ class Category
 	 *
 	 * @return string $catsrch
 	 */
-	public function getCategorySearch($cat = array())
+	public function getCategorySearch($cat = [])
 	{
 		$catsrch = ' (';
 
@@ -287,9 +288,9 @@ class Category
 	 *
 	 * @return array
 	 */
-	public function getForMenu($excludedcats = array())
+	public function getForMenu($excludedcats = [])
 	{
-		$ret = array();
+		$ret = [];
 
 		$exccatlist = '';
 		if (count($excludedcats) > 0) {
@@ -304,8 +305,8 @@ class Category
 		}
 
 		foreach ($ret as $key => $parent) {
-			$subcatlist = array();
-			$subcatnames = array();
+			$subcatlist = [];
+			$subcatnames = [];
 			foreach ($arr as $a) {
 				if ($a['parentid'] == $parent['id']) {
 					$subcatlist[] = $a;
@@ -331,7 +332,7 @@ class Category
 	public function getForSelect($blnIncludeNoneSelected = true)
 	{
 		$categories = $this->get();
-		$temp_array = array();
+		$temp_array = [];
 
 		if ($blnIncludeNoneSelected) {
 			$temp_array[-1] = "--Please Select--";

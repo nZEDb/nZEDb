@@ -1,4 +1,5 @@
 <?php
+namespace nzedb;
 
 require_once nZEDb_LIBS . 'simple_html_dom.php';
 
@@ -35,12 +36,12 @@ class Desura
 	/**
 	 * @var array
 	 */
-	protected $_postParams = array();
+	protected $_postParams = [];
 
 	/**
 	 * @var array
 	 */
-	protected $_res = array();
+	protected $_res = [];
 
 	/**
 	 * @var
@@ -218,7 +219,7 @@ class Desura
 	 */
 	public function getAll()
 	{
-		$results = array();
+		$results = [];
 		if (isset($this->_directURL)) {
 			$results['desuragameid'] = $this->_desuraGameID;
 			$results['directurl'] = $this->_directURL;

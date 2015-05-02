@@ -1,4 +1,6 @@
 <?php
+namespace nzedb;
+
 require_once nZEDb_LIBS . 'Net_NNTP/NNTP/Client.php';
 
 

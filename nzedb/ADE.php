@@ -1,4 +1,5 @@
 <?php
+namespace nzedb;
 
 require_once nZEDb_LIBS . 'simple_html_dom.php';
 
@@ -61,7 +62,7 @@ class ADE
 
 	protected $_url;
 	protected $_response;
-	protected $_res = array();
+	protected $_res = [];
 	protected $_tmpResponse;
 	protected $_html;
 	protected $_edithtml;
@@ -195,7 +196,7 @@ class ADE
 	 */
 	public function genres()
 	{
-		$genres = array();
+		$genres = [];
 		$this->_tmpResponse = str_ireplace("Section Categories", "scat", $this->_response);
 		$this->_edithtml->load($this->_tmpResponse);
 		if ($ret = $this->_edithtml->find("div[class=scat]", 0)) {

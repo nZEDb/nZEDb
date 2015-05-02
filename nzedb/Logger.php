@@ -1,4 +1,6 @@
 <?php
+namespace nzedb;
+
 /**
  * Show log message to CLI/Web and log it to a file.
  * Turn these on in automated.config.php

@@ -1,4 +1,6 @@
 <?php
+namespace nzedb;
+
 require_once nZEDb_LIBS . 'AmazonProductAPI.php';
 
 use nzedb\db\Settings;
@@ -61,7 +63,7 @@ class Books
 	/**
 	 * @param array $options Class instances / Echo to cli.
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		$defaults = [
 			'Echo'     => false,
@@ -134,7 +136,7 @@ class Books
 		return $res['num'];
 	}
 
-	public function getBookCount($cat, $maxage = -1, $excludedcats = array())
+	public function getBookCount($cat, $maxage = -1, $excludedcats = [])
 	{
 
 		$browseby = $this->getBrowseBy();
@@ -167,7 +169,7 @@ class Books
 		return $res['num'];
 	}
 
-	public function getBookRange($cat, $start, $num, $orderby, $excludedcats = array())
+	public function getBookRange($cat, $start, $num, $orderby, $excludedcats = [])
 	{
 
 		$browseby = $this->getBrowseBy();
@@ -249,12 +251,12 @@ class Books
 				break;
 		}
 		$ordersort = (isset($orderArr[1]) && preg_match('/^asc|desc$/i', $orderArr[1])) ? $orderArr[1] : 'desc';
-		return array($orderfield, $ordersort);
+		return [$orderfield, $ordersort];
 	}
 
 	public function getBookOrdering()
 	{
-		return array(
+		return [
 			'title_asc',
 			'title_desc',
 			'posted_asc',
@@ -269,12 +271,12 @@ class Books
 			'releasedate_desc',
 			'author_asc',
 			'author_desc'
-		);
+		];
 	}
 
 	public function getBrowseByOptions()
 	{
-		return array('author' => 'author', 'title' => 'title');
+		return ['author' => 'author', 'title' => 'title'];
 	}
 
 	public function getBrowseBy()
@@ -306,7 +308,7 @@ class Books
 	 */
 	public function processBookReleases()
 	{
-		$bookids = array();
+		$bookids = [];
 		if (preg_match('/^\d+$/', $this->bookreqids)) {
 			$bookids[] = $this->bookreqids;
 		} else {
@@ -447,7 +449,7 @@ class Books
 	{
 		$ri = new \ReleaseImage($this->pdo);
 
-		$book = array();
+		$book = [];
 
 		$amaz = false;
 		if ($bookInfo != '') {

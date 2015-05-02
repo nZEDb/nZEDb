@@ -1,4 +1,5 @@
 <?php
+namespace nzedb;
 
 /**
  * Class for reading and writing NZB files on the hard disk,
@@ -317,7 +318,7 @@ class NZB
 	public function nzbFileList($nzb)
 	{
 		$num_pars = $i = 0;
-		$result = array();
+		$result = [];
 
 		if (!$nzb) {
 			return $result;
@@ -365,7 +366,7 @@ class NZB
 
 			// Parts.
 			if (!isset($result[$i]['segments'])) {
-				$result[$i]['segments'] = array();
+				$result[$i]['segments'] = [];
 			}
 
 			// File size.
@@ -384,7 +385,7 @@ class NZB
 
 			// Groups.
 			if (!isset($result[$i]['groups'])) {
-				$result[$i]['groups'] = array();
+				$result[$i]['groups'] = [];
 			}
 			foreach ($file->groups->group as $g) {
 				array_push($result[$i]['groups'], (string)$g);

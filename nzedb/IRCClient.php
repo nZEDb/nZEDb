@@ -1,4 +1,5 @@
 <?php
+namespace nzedb;
 
 /**
  * Basic IRC client for fetching IRCScraper.
@@ -103,7 +104,7 @@ class IRCClient
 	 * @var array
 	 * @access protected
 	 */
-	protected $_channelData = array();
+	protected $_channelData = [];
 
 	/**
 	 * Nick name when we log in.
@@ -342,7 +343,7 @@ class IRCClient
 		while (true) {
 			$this->_readSocket();
 
-			$matches = array();
+			$matches = [];
 			// We got pinged, reply with a pong.
 			if (preg_match('/^PING\s*:(.+?)$/', $this->_buffer, $matches)) {
 				$this->_pong($matches[1]);
@@ -420,11 +421,11 @@ class IRCClient
 				$matches)) {
 
 				$this->_channelData =
-					array(
+					[
 						'nickname' => $matches['nickname'],
 						'channel'  => $matches['channel'],
 						'message'  => $matches['message']
-					);
+					];
 
 				$this->processChannelMessages();
 			}
@@ -446,7 +447,7 @@ class IRCClient
 	 *
 	 * @access public
 	 */
-	public function joinChannels($channels = array())
+	public function joinChannels($channels = [])
 	{
 		$this->_channels = $channels;
 

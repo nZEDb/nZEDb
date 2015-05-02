@@ -1,4 +1,5 @@
 <?php
+namespace nzedb;
 
 use nzedb\db\Settings;
 
@@ -16,7 +17,7 @@ class Contents
 	/**
 	 * @param array $options Class instances.
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		$defaults = [
 			'Settings' => null,
@@ -28,7 +29,7 @@ class Contents
 
 	public function get()
 	{
-		$arr = array();
+		$arr = [];
 		$rows = $this->data_get();
 		if ($rows === false) {
 			return false;
@@ -43,7 +44,7 @@ class Contents
 
 	public function getAll()
 	{
-		$arr = array();
+		$arr = [];
 		$rows = $this->data_getAll();
 		if ($rows === false) {
 			return false;
@@ -63,7 +64,7 @@ class Contents
 	 */
 	public function getAllButFront()
 	{
-		$arr = array();
+		$arr = [];
 		$rows = $this->data_getAllButFront();
 		if ($rows === false) {
 			return false;
@@ -78,7 +79,7 @@ class Contents
 
 	public function getFrontPage()
 	{
-		$arr = array();
+		$arr = [];
 		$rows = $this->data_getFrontPage();
 		if ($rows === false) {
 			return false;
@@ -94,7 +95,7 @@ class Contents
 	public function getForMenuByTypeAndRole($id, $role)
 	{
 
-		$arr = array();
+		$arr = [];
 		$rows = $this->data_getForMenuByTypeAndRole($id, $role);
 		if ($rows === false) {
 			return false;
