@@ -478,6 +478,7 @@ class DB extends \PDO
 	 */
 	public function queryDelete($query, $silent = false)
 	{
+		// Accommodate for chained queries (SELECT 1;DELETE x FROM y)
 		if (preg_match('#(.*?[^a-z0-9])DELETE\s+(.+?)$#i', $query, $matches)) {
 			$query = $matches[1] . 'DELETE ' . $this->DELETE_LOW_PRIORITY . $this->DELETE_QUICK . $matches[2];
 		}
