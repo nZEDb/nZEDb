@@ -168,7 +168,7 @@ class ProcessReleases
 		$PYTHON = shell_exec('which python3 2>/dev/null');
 		$PYTHON = (empty($PYTHON) ? 'python -OOu' : 'python3 -OOu');
 
-		$totalReleasesAdded = $loops = 0;
+		$totalReleasesAdded = 0;
 		do {
 			$releasesAdded = $this->createReleases($groupID);
 			$totalReleasesAdded += $releasesAdded;
@@ -199,8 +199,8 @@ class ProcessReleases
 			$this->postProcessReleases($postProcess, $nntp);
 			$this->deleteCollections($groupID);
 
-			// This loops as long as there were releases created or 3 loops, otherwise, you could loop indefinately
-		} while (($nzbFilesAdded > 0 || $releasesAdded > 0) && $loops++ < 3);
+			// This loops as long as the number of releases or nzbs added was >= the limit (meaning there are more waiting to be created)
+		} while ($releasesAdded >= $this->releaseCreationLimit || $nzbFilesAdded >= $this->releaseCreationLimit);
 
 
 
