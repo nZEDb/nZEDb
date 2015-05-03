@@ -1,4 +1,7 @@
 <?php
+
+use nzedb\Movie;
+
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }

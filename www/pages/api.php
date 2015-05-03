@@ -1,5 +1,7 @@
 <?php
 
+use nzedb\Category;
+use nzedb\Releases;
 use \nzedb\db\Settings;
 use \nzedb\utility\Utility;
 

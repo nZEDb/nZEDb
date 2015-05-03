@@ -1,4 +1,8 @@
 <?php
+
+use nzedb\Category;
+use nzedb\XXX;
+
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }

@@ -1,5 +1,7 @@
 <?php
 
+use nzedb\TvRage;
+
 // Page is accessible only to logged in users.
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
