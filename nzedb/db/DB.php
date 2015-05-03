@@ -416,12 +416,8 @@ class DB extends \PDO
 	 */
 	public function queryInsert($query)
 	{
-		if (empty($query)) {
+		if (!$this->parseQuery($query)) {
 			return false;
-		}
-
-		if (nZEDb_QUERY_STRIP_WHITESPACE) {
-			$query = Utility::collapseWhiteSpace($query);
 		}
 
 		$i = 2;
@@ -464,12 +460,8 @@ class DB extends \PDO
 	 */
 	public function queryExec($query, $silent = false)
 	{
-		if (empty($query)) {
+		if (!$this->parseQuery($query)) {
 			return false;
-		}
-
-		if (nZEDb_QUERY_STRIP_WHITESPACE) {
-			$query = Utility::collapseWhiteSpace($query);
 		}
 
 		$i = 2;
@@ -562,12 +554,8 @@ class DB extends \PDO
 	 */
 	public function exec($query, $silent = false)
 	{
-		if (empty($query)) {
+		if (!$this->parseQuery($query)) {
 			return false;
-		}
-
-		if (nZEDb_QUERY_STRIP_WHITESPACE) {
-			$query = Utility::collapseWhiteSpace($query);
 		}
 
 		try {
@@ -613,12 +601,8 @@ class DB extends \PDO
 	 */
 	public function query($query, $cache = false, $cacheExpiry = 600)
 	{
-		if (empty($query)) {
+		if (!$this->parseQuery($query)) {
 			return false;
-		}
-
-		if (nZEDb_QUERY_STRIP_WHITESPACE) {
-			$query = Utility::collapseWhiteSpace($query);
 		}
 
 		if ($cache === true && $this->cacheEnabled === true) {
@@ -700,12 +684,8 @@ class DB extends \PDO
 	 */
 	public function queryDirect($query, $ignore = false)
 	{
-		if (empty($query)) {
+		if (!$this->parseQuery($query)) {
 			return false;
-		}
-
-		if (nZEDb_QUERY_STRIP_WHITESPACE) {
-			$query = Utility::collapseWhiteSpace($query);
 		}
 
 		try {
@@ -1113,6 +1093,25 @@ class DB extends \PDO
 			$dummy = explode('-', $result['version'], 2);
 			$this->dbVersion = $dummy[0];
 		}
+	}
+
+	/**
+	 * Checks if the query is empty. Cleans the query of whitespace is needed.
+	 *
+	 * @param reference string $query
+	 *
+	 * @return bool
+	 */
+	private function parseQuery(&$query)
+	{
+		if (empty($query)) {
+			return false;
+		}
+
+		if (nZEDb_QUERY_STRIP_WHITESPACE) {
+			$query = Utility::collapseWhiteSpace($query);
+		}
+		return true;
 	}
 
 }
