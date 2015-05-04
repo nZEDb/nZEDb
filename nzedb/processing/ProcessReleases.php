@@ -704,7 +704,7 @@ class ProcessReleases
 				);
 			}
 
-			$deleteQuery = $this->pdo->queryExec(
+			$deleteQuery = $this->pdo->queryDelete(
 				sprintf('
 					DELETE c FROM %s c
 					INNER JOIN releases r ON r.id = c.releaseid

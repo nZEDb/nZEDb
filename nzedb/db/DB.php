@@ -85,6 +85,16 @@ class DB extends \PDO
 	private $cacheEnabled = false;
 
 	/**
+	 * @var string MySQL LOW_PRIORITY DELETE option.
+	 */
+	private $DELETE_LOW_PRIORITY = '';
+
+	/**
+	 * @var string MYSQL QUICK DELETE option.
+	 */
+	private $DELETE_QUICK = '';
+
+	/**
 	 * Constructor. Sets up all necessary properties. Instantiates a PDO object
 	 * if needed, otherwise returns the current one.
 	 *
@@ -149,6 +159,14 @@ class DB extends \PDO
 
 		if ($this->opts['checkVersion']) {
 			$this->fetchDbVersion();
+		}
+
+		if (defined('nZEDb_SQL_DELETE_LOW_PRIORITY') && nZEDb_SQL_DELETE_LOW_PRIORITY) {
+			$this->DELETE_LOW_PRIORITY = ' LOW_PRIORITY ';
+		}
+
+		if (defined('nZEDb_SQL_DELETE_QUICK') && nZEDb_SQL_DELETE_QUICK) {
+			$this->DELETE_QUICK = ' QUICK ';
 		}
 
 		return $this->pdo;
@@ -416,12 +434,8 @@ class DB extends \PDO
 	 */
 	public function queryInsert($query)
 	{
-		if (empty($query)) {
+		if (!$this->parseQuery($query)) {
 			return false;
-		}
-
-		if (nZEDb_QUERY_STRIP_WHITESPACE) {
-			$query = Utility::collapseWhiteSpace($query);
 		}
 
 		$i = 2;
@@ -455,6 +469,23 @@ class DB extends \PDO
 	}
 
 	/**
+	 * Delete rows from MySQL.
+	 *
+	 * @param string $query
+	 * @param bool   $silent Echo or log errors?
+	 *
+	 * @return bool|\PDOStatement
+	 */
+	public function queryDelete($query, $silent = false)
+	{
+		// Accommodate for chained queries (SELECT 1;DELETE x FROM y)
+		if (preg_match('#(.*?[^a-z0-9]|^)DELETE\s+(.+?)$#is', $query, $matches)) {
+			$query = $matches[1] . 'DELETE ' . $this->DELETE_LOW_PRIORITY . $this->DELETE_QUICK . $matches[2];
+		}
+		return $this->queryExec($query, $silent);
+	}
+
+	/**
 	 * Used for deleting, updating (and inserting without needing the last insert id).
 	 *
 	 * @param string $query
@@ -464,12 +495,8 @@ class DB extends \PDO
 	 */
 	public function queryExec($query, $silent = false)
 	{
-		if (empty($query)) {
+		if (!$this->parseQuery($query)) {
 			return false;
-		}
-
-		if (nZEDb_QUERY_STRIP_WHITESPACE) {
-			$query = Utility::collapseWhiteSpace($query);
 		}
 
 		$i = 2;
@@ -562,12 +589,8 @@ class DB extends \PDO
 	 */
 	public function exec($query, $silent = false)
 	{
-		if (empty($query)) {
+		if (!$this->parseQuery($query)) {
 			return false;
-		}
-
-		if (nZEDb_QUERY_STRIP_WHITESPACE) {
-			$query = Utility::collapseWhiteSpace($query);
 		}
 
 		try {
@@ -613,12 +636,8 @@ class DB extends \PDO
 	 */
 	public function query($query, $cache = false, $cacheExpiry = 600)
 	{
-		if (empty($query)) {
+		if (!$this->parseQuery($query)) {
 			return false;
-		}
-
-		if (nZEDb_QUERY_STRIP_WHITESPACE) {
-			$query = Utility::collapseWhiteSpace($query);
 		}
 
 		if ($cache === true && $this->cacheEnabled === true) {
@@ -700,12 +719,8 @@ class DB extends \PDO
 	 */
 	public function queryDirect($query, $ignore = false)
 	{
-		if (empty($query)) {
+		if (!$this->parseQuery($query)) {
 			return false;
-		}
-
-		if (nZEDb_QUERY_STRIP_WHITESPACE) {
-			$query = Utility::collapseWhiteSpace($query);
 		}
 
 		try {
@@ -1113,6 +1128,25 @@ class DB extends \PDO
 			$dummy = explode('-', $result['version'], 2);
 			$this->dbVersion = $dummy[0];
 		}
+	}
+
+	/**
+	 * Checks if the query is empty. Cleans the query of whitespace is needed.
+	 *
+	 * @param reference string $query
+	 *
+	 * @return bool
+	 */
+	private function parseQuery(&$query)
+	{
+		if (empty($query)) {
+			return false;
+		}
+
+		if (nZEDb_QUERY_STRIP_WHITESPACE) {
+			$query = Utility::collapseWhiteSpace($query);
+		}
+		return true;
 	}
 
 }
