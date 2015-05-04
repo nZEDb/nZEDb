@@ -442,13 +442,12 @@ class ProcessAdditional
 
 		// Maximum size of releases in GB.
 		$this->_maxSize =
-			(string)($this->pdo->getSetting('maxsizetopostprocess') != '') ? $this->pdo->getSetting('maxsizetopostprocess') : 100;
-		$this->_maxSize = ($this->_maxSize === 0 ? '' : 'AND r.size < ' . ($this->_maxSize * 1073741824));
-
+			($this->pdo->getSetting('maxsizetopostprocess') != '') ? (int)$this->pdo->getSetting('maxsizetopostprocess') : 100;
+		$this->_maxSize = ($this->_maxSize > 0 ? ('AND r.size < ' . ($this->_maxSize * 1073741824)) : '');
 		// Minimum size of releases in MB.
 		$this->_minSize =
-			(string)($this->pdo->getSetting('minsizetopostprocess') != '') ? $this->pdo->getSetting('minsizetopostprocess') : 1;
-		$this->_minSize = ($this->_minSize === 0 ? '' : 'AND r.size > ' . ($this->_minSize * 1048576));
+			($this->pdo->getSetting('minsizetopostprocess') != '') ? (int)$this->pdo->getSetting('minsizetopostprocess') : 100;
+		$this->_minSize = ($this->_minSize > 0 ? ('AND r.size > ' . ($this->_minSize * 1048576)) : '');
 
 		// Use the alternate NNTP provider for downloading Message-ID's ?
 		$this->_alternateNNTP = ($this->pdo->getSetting('alternate_nntp') == 1 ? true : false);
@@ -898,7 +897,7 @@ class ProcessAdditional
 				preg_match('/' . $this->_videoFileRegex . '[. ")\]]/i', $this->_currentNZBFile['title'])
 			) {
 
-				if (isset($this->_currentNZBFile['segments'])) {
+				if (isset($this->_currentNZBFile['segments'][0])) {
 					$this->_MediaInfoMessageIDs = (string)$this->_currentNZBFile['segments'][0];
 				}
 			}

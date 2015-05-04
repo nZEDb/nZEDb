@@ -1,8 +1,31 @@
 This file details which changes to the code are in which release version. It is a complement to the ChangeLog file which list *when* changes are made to the dev branch.
 
 
+0.4.21 2015-05-04
+New:
+	* Added X-DNZB-Failure header support.
 
-0.4.20 2014-04-06
+Changes:
+	* PR 1636 - Added admin menu state changes.
+	* Improved TV Posterwall query.
+	* Increase column sizes for bookinfo.overview, consoleinfo.review and musicinfo.review due to truncation.
+
+Fixes:
+	* PR 1620 - Switch to fanart.tv v3 api
+	* PR 1623 - Fix oversized fanart images when viewing movie info popup.
+	* Class not found error in Movie.php.
+	* PR 1634 - Fix typo that caused : PHP Notice: Undefined variable: in Binaries.php line 543.
+	* PR 1637 - Call to releases::search missing one parameter for basic searches in search.php
+	* Corrected 'see more' link on TV posterwall to point to /series.
+	* API query issue raised in comments for Issue 1637.
+	* PR 1638 - Fix the wrong table name in Regexes.php.  Was using release naming regexes to create collections.
+	* Fix issues with web RequestID lookups failing.
+	* Undefined offset in ProcessAdditional.
+	* Adding a check to see if the sqlpatch file was previously committed, before trying to update the commit.
+	* Problem behaviour when min/max sizes are both zero.
+
+
+0.4.20 2015-04-06
 New
 	* Added a list of licenses used by nZEDb.
 	* Added support for in DB collections (grouping) regex.
@@ -25,6 +48,7 @@ Fixes:
 	* Don't ignore renamed releases for local requestID lookup.
 	* Fix oversized fanart images when viewing movie info popup.
 	* Fix Class not found error in Movie.php.
+
 
 0.4.19	2015-03-02
 New

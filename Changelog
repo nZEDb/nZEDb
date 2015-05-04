@@ -7,6 +7,26 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2015-04-28 bart39
+	* Fix: Invalid type check for PPA min / max sizes when set to 0.
+2015-04-17 niel
+	* Fix: Adding a check to see if the sqlpatch file was previously committed, before trying to update the commit.
+2015-04-16 bart39
+	* Fix: Increase column sizes for bookinfo.overview, consoleinfo.review and musicinfo.review due to truncation.
+	* Fix: undefined offset in ProcessAdditional.
+	* Fix: Fix issues with web RequestID lookups failing.
+2015-04-14 bart39
+	* Mrg: PR #1638 from darius - Fix the wrong table name in Regexes.php.  Was using release naming regexes to create collections.
+2015-04-11 bart39
+	* Fix: Fix api query issue raised in comments for #1637.
+	* Fix: Correct see more link on TV posterwall to point to /series.
+	* Chg: Optimize TV Posterwall query.
+2015-04-11 bart39
+	* Fix: Call to releases::search missing one parameter for basic searches in search.php #1637
+	* Mrg: PR #1636 from tasky - Added admin menu state changes.
+	* Mrg: PR #1634 from dariusIII - Fix typo that caused : PHP Notice: Undefined variable: in Binaries.php line 543.
+	* Fix: fix sql patch.
+	* Mrg: PR #1632 from dariusIII - Add X-DNZB-Failure header support.
 2015-03-24 niel
 	* Chg: Merging in dev-scrutinizer branch which addresses a lot of code style issues.
 2015-03-21 bart39
