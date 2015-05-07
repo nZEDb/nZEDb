@@ -114,10 +114,6 @@ $page->smarty->assign('imdblang_names',
 $page->smarty->assign('imdb_urls', [0, 1]);
 $page->smarty->assign('imdburl_names', ['imdb.com', 'akas.imdb.com']);
 
-$page->smarty->assign('rottentomatoquality_ids', ['thumbnail', 'profile', 'detailed', 'original']);
-$page->smarty->assign('rottentomatoquality_names',
-					  ['Thumbnail', 'Profile', 'Detailed', 'Original']);
-
 $page->smarty->assign('menupos_ids', [0, 1, 2]);
 $page->smarty->assign('menupos_names', ['Right', 'Left', 'Top']);
 

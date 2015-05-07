@@ -262,9 +262,7 @@
 				<td style="width:180px;"><label for="rottentomatokey">Rotten Tomatoes Key:</label></td>
 				<td>
 					<input id="rottentomatokey" class="long" name="rottentomatokey" type="text" value="{$site->rottentomatokey}"/>
-					{html_options style="width:180px;" id="rottentomatoquality" name='rottentomatoquality' values=$rottentomatoquality_ids output=$rottentomatoquality_names selected=$site->rottentomatoquality}
-					<div class="hint">The api key used for access to rotten tomatoes. Select the quality of the images to
-						display in Upcoming.
+					<div class="hint">The api key used for access to rotten tomatoes.
 					</div>
 				</td>
 			</tr>
