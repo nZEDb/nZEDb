@@ -31,7 +31,7 @@
 			<tr>
 				<td style="width:150px;padding:10px;text-align:center;">
 					<div class="movcover">
-						<img class="shadow img-thumbnail" src="{replace_url($result->posters->original)}"" width="120"
+						<img class="shadow img-thumbnail" src="{replace_url($result->posters->original)}" width="120"
 						border="0" alt="{$result->title|escape:"htmlall"}"/>
 
 						<div class="movextra">
