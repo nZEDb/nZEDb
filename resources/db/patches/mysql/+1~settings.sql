@@ -1,0 +1,2 @@
+INSERT INTO settings (section, name, hint, setting) VALUES ('APIs', 'recaptchasitekey', 'ReCaptcha SiteKey for generating the captcha block for input forms.', 'recaptchasitekey');
+INSERT INTO settings (section, name, hint, setting) VALUES ('APIs', 'recaptchasecretkey', 'ReCaptcha SecretKey for verifying submitted captcha results.', 'recaptchasecretkey');

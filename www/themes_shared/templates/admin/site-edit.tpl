@@ -317,6 +317,23 @@
 					</div>
 				</td>
 			</tr>
+			<tr>
+				<td style="width:180px;"><label for="recaptchasitekey">ReCaptcha Site Key:</label></td>
+				<td>
+					<input id="recaptchasitekey" class="long" name="recaptchasitekey" type="text" value="{$site->recaptchasitekey}"/>
+					<div class="hint">Register your application with ReCaptcha <a href="https://www.google.com/recaptcha" target="_blank">here</a>
+						to get your site and secret keys. Adding these keys will place ReCaptch's on all user-input forms. (Login, Register, Contact Us, Forgot Password)
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="recaptchasecretkey">ReCaptcha Secret key:</label></td>
+				<td>
+					<input id="recaptchasecretkey" class="long" name="recaptchasecretkey" type="text" value="{$site->recaptchasecretkey}"/>
+					<div class="hint">This is the required secret key for ReCaptcha to work, see the above setting hint for further information.
+					</div>
+				</td>
+			</tr>
 		</table>
 	</fieldset>
 
