@@ -1504,31 +1504,14 @@ class ProcessReleases
 				UPDATE %s b INNER JOIN
 					(SELECT b.id FROM %s b
 					INNER JOIN %s c ON c.id = b.collection_id
-					WHERE c.filecheck = %d AND b.partcheck = %d %s
-					AND b.currentparts = b.totalparts
+					WHERE c.filecheck IN (%d, %d) AND b.partcheck = %d %s
+					AND b.currentparts >= b.totalparts
 					GROUP BY b.id, b.totalparts)
 				r ON b.id = r.id SET b.partcheck = %d',
 				$group['bname'],
 				$group['bname'],
 				$group['cname'],
 				self::COLLFC_TEMPCOMP,
-				self::FILE_INCOMPLETE,
-				$where,
-				self::FILE_COMPLETE
-			)
-		);
-		$this->pdo->queryExec(
-			sprintf('
-				UPDATE %s b INNER JOIN
-					(SELECT b.id FROM %s b
-					INNER JOIN %s c ON c.id = b.collection_id
-					WHERE c.filecheck = %d AND b.partcheck = %d %s
-					AND b.currentparts >= (b.totalparts + 1)
-					GROUP BY b.id, b.totalparts)
-				r ON b.id = r.id SET b.partcheck = %d',
-				$group['bname'],
-				$group['bname'],
-				$group['cname'],
 				self::COLLFC_ZEROPART,
 				self::FILE_INCOMPLETE,
 				$where,
