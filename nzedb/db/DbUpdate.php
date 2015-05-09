@@ -179,7 +179,7 @@ class DbUpdate
 							   $matches['table'] . '.sql';
 					rename($matches[0], $newName);
 					$this->git->add($newName);
-					if ($this->git->isCommited($matches[0])) {
+					if ($this->git->isCommited($this->git->getBranch() . ':' . $matches[0])) {
 						$this->git->run("add -uv {$matches[0]}"); // add updates to old filename, this should remove the temp file from the index.
 					}
 				}
