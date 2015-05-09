@@ -2,11 +2,13 @@
 //This script will update all records in the movieinfo table
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
+use nzedb\ColorCLI;
+use nzedb\Movie;
 use nzedb\db\Settings;
 
 $pdo = new Settings();
-$c = new \ColorCLI();
-$movie = new \Movie(['Echo' => true, 'Settings' => $pdo]);
+$c = new ColorCLI();
+$movie = new Movie(['Echo' => true, 'Settings' => $pdo]);
 
 
 $movies = $pdo->queryDirect("SELECT imdbid FROM movieinfo WHERE tmdbid IS NULL ORDER BY id ASC");

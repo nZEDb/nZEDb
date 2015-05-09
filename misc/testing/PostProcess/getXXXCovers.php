@@ -2,11 +2,12 @@
 //This script will update all records in the xxxinfo table where there is no cover
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
+use nzedb\XXX;
 use nzedb\db\Settings;
 
 $pdo = new Settings();
 
-$movie = new \XXX(['Echo' => true, 'Settings' => $pdo]);
+$movie = new XXX(['Echo' => true, 'Settings' => $pdo]);
 
 $movies = $pdo->queryDirect("SELECT title FROM xxxinfo WHERE cover = 0");
 if ($movies instanceof \Traversable) {

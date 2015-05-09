@@ -2,18 +2,20 @@
 require_once dirname(__FILE__) . '/../../../www/config.php';
 require_once nZEDb_LIBS . 'AmazonProductAPI.php';
 
+use nzedb\db\Settings;
+
 // Test if your amazon keys are working.
 
-$pdo = new \nzedb\db\Settings();
+$pdo = new Settings();
 $pubkey = $pdo->getSetting('amazonpubkey');
 $privkey = $pdo->getSetting('amazonprivkey');
 $asstag = $pdo->getSetting('amazonassociatetag');
-$obj = new \AmazonProductAPI($pubkey, $privkey, $asstag);
+$obj = new AmazonProductAPI($pubkey, $privkey, $asstag);
 
 $e = null;
 
 try {
-	$result = $obj->searchProducts("Adriana Koulias The Seal", \AmazonProductAPI::BOOKS, "TITLE");
+	$result = $obj->searchProducts("Adriana Koulias The Seal", AmazonProductAPI::BOOKS, "TITLE");
 } catch (Exception $e) {
 	$result = false;
 }

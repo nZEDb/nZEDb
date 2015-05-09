@@ -1,8 +1,8 @@
 <?php
 require dirname(__FILE__) . '/../../www/config.php';
 
-use \nzedb\ReleaseSearch;
-use \nzedb\db\DB;
+use nzedb\ReleaseSearch;
+use nzedb\db\DB;
 
 if (!isset($argv[1]) || !in_array($argv[1], ['sphinx', 'standard'])) {
 	exit('Argument1 (required) is the method of search you would like to optimize for.  Choices are sphinx or standard.' . PHP_EOL .

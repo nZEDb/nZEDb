@@ -28,7 +28,7 @@ function run_query($query, $test)
 			$qry = $pdo->prepare($query);
 			$qry->execute();
 			echo $pdo->log->alternateOver('SUCCESS: ') . $pdo->log->primary($query);
-		} catch (PDOException $e) {
+		} catch (\PDOException $e) {
 			if ($e->errorInfo[1] == 1061) {
 				// Duplicate key exists
 				echo $pdo->log->alternateOver('SKIPPED Index name exists: ') . $pdo->log->primary($query);

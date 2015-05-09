@@ -1,12 +1,15 @@
 <?php
 require_once dirname(__FILE__) . '/../../../../www/config.php';
 
+use nzedb\Category;
+use nzedb\TmuxOutput;
+use nzedb\TmuxRun;
 use nzedb\db\Settings;
 use nzedb\utility\Utility;
 
 $pdo = new Settings();
-$tRun = new \TmuxRun($pdo);
-$tOut = new \TmuxOutput($pdo);
+$tRun = new TmuxRun($pdo);
+$tOut = new TmuxOutput($pdo);
 
 $runVar['paths']['misc'] = nZEDb_MISC;
 $runVar['paths']['cli'] = nZEDb_ROOT . 'cli/';
@@ -73,7 +76,7 @@ while ($runVar['counts']['iterations'] > 0) {
 	$runVar['timers']['query']['tmux_time'] = (time() - $timer01);
 
 	$runVar['settings']['book_reqids'] = (!empty($runVar['settings']['book_reqids'])
-		? $runVar['settings']['book_reqids'] : \Category::CAT_PARENT_BOOKS);
+		? $runVar['settings']['book_reqids'] : Category::CAT_PARENT_BOOKS);
 
 	//get usenet connection info
 	$runVar['connections'] = $tOut->getConnectionsInfo($runVar['constants']);

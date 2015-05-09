@@ -1,6 +1,8 @@
 <?php
 require_once(dirname(__FILE__) . '/../../../www/config.php');
 
+use nzedb\ConsoleTools;
+use nzedb\Groups;
 use nzedb\db\Settings;
 
 $pdo = new Settings();
@@ -12,8 +14,8 @@ if (!isset($argv[1]) || $argv[1] != 'true') {
 }
 
 $start = time();
-$consoleTools = new \ConsoleTools(['ColorCLI' => $pdo->log]);
-$groups = new \Groups(['Settings' => $pdo]);
+$consoleTools = new ConsoleTools(['ColorCLI' => $pdo->log]);
+$groups = new Groups(['Settings' => $pdo]);
 
 $actgroups = $pdo->query("SELECT DISTINCT group_id from collections");
 

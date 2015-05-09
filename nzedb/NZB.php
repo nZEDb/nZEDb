@@ -40,7 +40,7 @@ class NZB
 
 	/**
 	 * Instance of class db.
-	 * @var Settings
+	 * @var \nzedb\db\Settings
 	 * @access public
 	 */
 	public $pdo;

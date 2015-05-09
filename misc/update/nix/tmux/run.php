@@ -1,6 +1,7 @@
 <?php
 require_once dirname(__FILE__) . '/../../../../www/config.php';
 
+use nzedb\Tmux;
 use nzedb\db\Settings;
 use nzedb\utility\Utility;
 
@@ -31,7 +32,7 @@ if (count($nntpkill) !== 0) {
 	exec("tmux list-session", $session);
 }
 
-$t = new \Tmux();
+$t = new Tmux();
 $tmux = $t->get();
 $tmux_session = (isset($tmux->tmux_session)) ? $tmux->tmux_session : 0;
 $seq = (isset($tmux->sequential)) ? $tmux->sequential : 0;
@@ -168,7 +169,7 @@ function writelog($pane)
 {
 	$path = dirname(__FILE__) . "/logs";
 	$getdate = gmDate("Ymd");
-	$tmux = new \Tmux();
+	$tmux = new Tmux();
 	$logs = $tmux->get()->write_logs;
 	if ($logs == 1) {
 		return "2>&1 | tee -a $path/$pane-$getdate.log";
@@ -215,7 +216,7 @@ function python_module_exist($module)
  */
 function start_apps($tmux_session)
 {
-	$t = new \Tmux();
+	$t = new Tmux();
 	$tmux = $t->get();
 	$htop = $tmux->htop;
 	$vnstat = $tmux->vnstat;
@@ -344,7 +345,7 @@ function window_sharing($tmux_session)
 {
 	$pdo = new Settings();
 	$sharing = $pdo->queryOneRow('SELECT enabled, posting, fetching FROM sharing');
-	$t = new \Tmux();
+	$t = new Tmux();
 	$tmux = $t->get();
 	$tmux_share = (isset($tmux->run_sharing)) ? $tmux->run_sharing : 0;
 

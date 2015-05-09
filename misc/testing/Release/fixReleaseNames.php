@@ -9,10 +9,14 @@
 
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
+use nzedb\NameFixer;
+use nzedb\NNTP;
+use nzedb\PreDb;
+
 $n = "\n";
 $pdo = new \nzedb\db\Settings();
-$namefixer = new \NameFixer(['Settings' => $pdo]);
-$predb = new \PreDb(['Echo' => true, 'Settings' => $pdo]);
+$namefixer = new NameFixer(['Settings' => $pdo]);
+$predb = new PreDb(['Echo' => true, 'Settings' => $pdo]);
 
 if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4])) {
 	$update = ($argv[2] == "true") ? 1 : 2;
@@ -31,7 +35,7 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4])) {
 
 	$nntp = null;
 	if ($argv[1] == 7 || $argv[1] == 8) {
-		$nntp = new \NNTP(['Settings' => $pdo]);
+		$nntp = new NNTP(['Settings' => $pdo]);
 		if (($pdo->getSetting('alternate_nntp') == '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
 			echo $pdo->log->error("Unable to connect to usenet.\n");
 			return;

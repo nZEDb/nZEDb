@@ -2,8 +2,11 @@
 //This script will update all records in the gamesinfo table
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-$pdo = new \nzedb\db\Settings();
-$game = new \Games(['Echo' => true, 'Settings' => $pdo]);
+use nzedb\Games;
+use nzedb\db\Settings;
+
+$pdo = new Settings();
+$game = new Games(['Echo' => true, 'Settings' => $pdo]);
 
 $res = $pdo->query(
 	sprintf("SELECT id, title FROM gamesinfo WHERE cover = 0 ORDER BY id DESC LIMIT 100")

@@ -5,8 +5,8 @@
 */
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php';
 
-use \nzedb\db\PreDb;
-use \nzedb\utility\Utility;
+use nzedb\db\PreDb;
+use nzedb\utility\Utility;
 
 if (!Utility::isWin()) {
 	$canExeRead = Utility::canExecuteRead(nZEDb_RES);

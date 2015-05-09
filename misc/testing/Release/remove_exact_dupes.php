@@ -1,6 +1,10 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
+use nzedb\ConsoleTools;
+use nzedb\NZB;
+use nzedb\ReleaseImage;
+use nzedb\Releases;
 use nzedb\db\Settings;
 
 $pdo = new Settings();
@@ -16,11 +20,11 @@ if ($argc < 3 || !isset($argv[1]) || (isset($argv[1]) && !is_numeric($argv[1])))
 }
 
 $crosspostt = $argv[1];
-$releases = new \Releases(['Settings' => $pdo]);
+$releases = new Releases(['Settings' => $pdo]);
 $count = $total = $all = 0;
-$nzb = new \NZB($pdo);
-$ri = new \ReleaseImage($pdo);
-$consoleTools = new \ConsoleTools(['ColorCLI' => $pdo->log]);
+$nzb = new NZB($pdo);
+$ri = new ReleaseImage($pdo);
+$consoleTools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 $size = ' size ';
 if ($argv[2] === 'near') {
 	$size = ' size between (size *.99) AND (size * 1.01) ';

@@ -2,11 +2,12 @@
 //This script downloads covert art for Tv Shows -- it is intended to be run at interval, generally after the TvRage database is populated
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
+use nzedb\TvRage;
 use nzedb\db\Settings;
-use nzedb\utility;
+use nzedb\utility\Utility;
 
 $pdo = new Settings();
-$tvrage = new \TvRage(['Settings' => $pdo, 'Echo' => true]);
+$tvrage = new TvRage(['Settings' => $pdo, 'Echo' => true]);
 
 $shows = $pdo->queryDirect("SELECT rageid FROM tvrage_titles WHERE imgdata IS NULL ORDER BY rageid DESC LIMIT 2000");
 if ($shows->rowCount() > 0) {
@@ -44,7 +45,7 @@ if ($shows instanceof \Traversable) {
 
 		$imgbytes = '';
 		if (isset($rInfo['imgurl']) && !empty($rInfo['imgurl'])) {
-			$img = nzedb\utility\Utility::getUrl(['url' => $rInfo['imgurl']]);
+			$img = Utility::getUrl(['url' => $rInfo['imgurl']]);
 			if ($img !== false) {
 				$im = @imagecreatefromstring($img);
 				if ($im !== false) {

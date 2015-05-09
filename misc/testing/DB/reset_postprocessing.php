@@ -1,10 +1,11 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
+use nzedb\ConsoleTools;
 use nzedb\db\Settings;
 
 $pdo = new Settings();
-$consoletools = new \ConsoleTools(['ColorCLI' => $pdo->log]);
+$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 $ran = false;
 
 if (isset($argv[1]) && $argv[1] === "all") {
