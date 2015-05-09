@@ -44,6 +44,7 @@ alt.binaries.font	This group contains mostly TV.	NULL	NULL
 alt.binaries.french-tv	This group contains French TV.	NULL	NULL
 alt.binaries.frogs	This group contains a variety.	NULL	NULL
 alt.binaries.ftn	This group contains a variety of Music and TV.	NULL	NULL
+alt.binaries.fz	This group contains german Movies and TV.	NULL	NULL
 alt.binaries.games.nintendods	This group contains Nintendo DS Games 	5	NULL
 alt.binaries.games	This group contains PC and Console Games.	5	NULL
 alt.binaries.games.wii	This group contains Nintendo WII Games, WII-Ware, and VC.	5	NULL
