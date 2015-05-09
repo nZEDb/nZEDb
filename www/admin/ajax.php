@@ -8,6 +8,12 @@ if (!isset($_GET['action'])) {
 
 require_once './config.php';
 
+use nzedb\Binaries;
+use nzedb\Groups;
+use nzedb\Regexes;
+use nzedb\ReleaseComments;
+use nzedb\Sharing;
+
 // Make sure the user is an admin and logged in.
 $admin = new AdminPage;
 

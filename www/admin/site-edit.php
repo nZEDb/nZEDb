@@ -1,6 +1,7 @@
 <?php
 require_once './config.php';
 
+use nzedb\SABnzbd;
 use nzedb\db\Settings;
 
 // new to get information on books groups

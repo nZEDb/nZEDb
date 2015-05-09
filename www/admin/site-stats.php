@@ -1,6 +1,9 @@
 <?php
 require_once './config.php';
 
+use nzedb\Logging;
+use nzedb\Releases;
+
 $page     = new AdminPage();
 $releases = new Releases(['Settings' => $page->settings]);
 $logging  = new Logging(['Settings' => $page->settings]);

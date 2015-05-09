@@ -1,6 +1,8 @@
 <?php
 require_once './config.php';
 
+use nzedb\Music;
+
 $page = new AdminPage();
 $m    = new Music(['Settings' => $page->settings]);
 
