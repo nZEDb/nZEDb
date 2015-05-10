@@ -4,7 +4,7 @@ require_once nZEDb_LIB . 'utility' . DS . 'CopyFileTree.php';
 
 use nzedb\db\Settings;
 
-$reorg = nZEDb_MISC . 'testing' . DS . 'DB' . DS . 'nzb-reorg.php';
+$reorg = nZEDb_MISC . 'testing' . DS . 'NZBs' . DS . 'nzb-reorg.php';
 $pdo = new Settings();
 $level = $pdo->getSetting('nzbsplitlevel');
 $nzbpath = $pdo->getSetting('nzbpath');
