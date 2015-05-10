@@ -8,6 +8,8 @@ $id     = 0;
 // Set the current action.
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
 
+//$page->smarty->assign(['id' => '', 'name' => '']);
+
 switch ($action) {
 	case 'submit':
 		if ($_POST["id"] == "") {
@@ -28,14 +30,10 @@ switch ($action) {
 			$group       = $groups->getByID($id);
 		} else {
 			$page->title                    = "Newsgroup Add";
-			$group                          = [];
-			$group["active"]                = "0";
-			$group["backfill"]              = "0";
-			$group["minfilestoformrelease"] = "0";
-			$group["minsizetoformrelease"]  = "0";
-			$group["first_record"]          = "0";
-			$group["last_record"]           = "0";
-			$group["backfill_target"]       = "0";
+			$group                          = [
+				'id' => '', 'name' => '', 'description' => '', 'minfilestoformrelease' => 0, 'active' => 0, 'backfill' => 0,
+				'minsizetoformrelease' => 0, 'first_record' => 0, 'last_record' => 0, 'backfill_target' => 0
+			];
 		}
 		$page->smarty->assign('group', $group);
 		break;
