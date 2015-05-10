@@ -6,10 +6,13 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2015-05-10 niel
+	* Mrg: Bringing in dev-namespace branch.
 2015-04-10 bart39
 	* Mrg: PR 1657 from kevin123 - Fix notices in various web pages.
 	* Mrg: PR 1650 from zetas - Adding ReCaptcha support.
 	* Mrg: PR 1656 from kevin123 - Move files around in misc/testing folder.
+		***NOTE*** this may break any custom scripts you have written.
 	* Mrg: PR 1654 from tasky - Fix Popporn error - causing xxx not to post process, also fixes #1655.
 	* Fix: Genre display in music pages, clear your smarty cache to correct.
 2015-05-09 niel
