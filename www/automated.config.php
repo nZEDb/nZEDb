@@ -69,7 +69,7 @@ $settings_file = __DIR__ . DS . 'settings.php';
 if (is_file($settings_file)) {
 	require_once($settings_file);
 	if (php_sapi_name() == 'cli') {
-		$current_settings_file_version = 1; // Update this when updating settings.php.example
+		$current_settings_file_version = 2; // Update this when updating settings.php.example
 		if (!defined('nZEDb_SETTINGS_FILE_VERSION') || nZEDb_SETTINGS_FILE_VERSION != $current_settings_file_version) {
 			echo ("\033[0;31mNotice: Your $settings_file file is either out of date or you have not updated" .
 				" nZEDb_SETTINGS_FILE_VERSION to $current_settings_file_version in that file.\033[0m" . PHP_EOL
