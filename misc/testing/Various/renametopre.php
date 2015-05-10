@@ -185,7 +185,7 @@ function preName($argv, $argc)
 									'old_category' => $oldcatname,
 									'group'        => $groupname,
 									'release_id'   => $row["id"],
-									'method'       => 'misc/testing/Dev/renametopre.php'
+									'method'       => 'misc/testing/Various/renametopre.php'
 								]
 							);
 						}

@@ -13,11 +13,11 @@ $dirs = [
 	],
 	[
 		'old' => 'misc/testing/Dev_testing/Subject_testing',
-		'newpath' => 'misc/testing/Dev/Subject'
+		'newpath' => 'misc/testing/Developers/Subject'
 	],
 	[
 		'old' => 'misc/testing/Dev_testing',
-		'newpath' => 'misc/testing/Dev'
+		'newpath' => 'misc/testing/Developers'
 	],
 	[
 		'old' => 'misc/testing/PostProc_testing',

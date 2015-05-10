@@ -569,9 +569,7 @@ class ProcessAdditional
 				// These are folders we don't want to delete.
 				[
 					// This is the actual temp folder.
-					$this->_mainTmpPath,
-					// This folder is used by misc/testing/Dev/rename_u4e.php
-					$this->_mainTmpPath . 'u4e'
+					$this->_mainTmpPath
 				]
 			);
 		}
