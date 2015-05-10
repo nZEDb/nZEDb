@@ -37,29 +37,30 @@ switch ($action) {
 
 		break;
 	case 'submit':
+		if ($page->captcha->getError() === false) {
+			$page->smarty->assign('email', $_POST['email']);
 
-		$page->smarty->assign('email', $_POST['email']);
-
-		if ($_POST['email'] == "") {
-			$page->smarty->assign('error', "Missing Email");
-		} else {
-			// Check users exists and send an email.
-			$ret = $page->users->getByEmail($_POST['email']);
-			if (!$ret) {
-				$page->smarty->assign('sent', "true");
-				break;
+			if ($_POST['email'] == "") {
+				$page->smarty->assign('error', "Missing Email");
 			} else {
-				// Generate a forgottenpassword guid, store it in the user table.
-				$guid = md5(uniqid());
-				$page->users->updatePassResetGuid($ret["id"], $guid);
+				// Check users exists and send an email.
+				$ret = $page->users->getByEmail($_POST['email']);
+				if (!$ret) {
+					$page->smarty->assign('sent', "true");
+					break;
+				} else {
+					// Generate a forgottenpassword guid, store it in the user table.
+					$guid = md5(uniqid());
+					$page->users->updatePassResetGuid($ret["id"], $guid);
 
-				// Send the email
-				$to = $ret["email"];
-				$subject = $page->settings->getSetting('title') . " Forgotten Password Request";
-				$contents = "Someone has requested a password reset for this email address.<br>To reset the password use <a href=\"" . $page->serverurl . "forgottenpassword?action=reset&guid=$guid\">this link</a>\n";
-				$page->smarty->assign('sent', "true");
-				nzedb\utility\Utility::sendEmail($to, $subject, $contents, $page->settings->getSetting('email'));
-				break;
+					// Send the email
+					$to = $ret["email"];
+					$subject = $page->settings->getSetting('title') . " Forgotten Password Request";
+					$contents = "Someone has requested a password reset for this email address.<br>To reset the password use <a href=\"" . $page->serverurl . "forgottenpassword?action=reset&guid=$guid\">this link</a>\n";
+					$page->smarty->assign('sent', "true");
+					nzedb\utility\Utility::sendEmail($to, $subject, $contents, $page->settings->getSetting('email'));
+					break;
+				}
 			}
 		}
 		break;

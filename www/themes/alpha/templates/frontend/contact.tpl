@@ -22,6 +22,7 @@
 							<label for="comment">Comment or Review</label>
 							<textarea rows="3" id="comment" class="form-control" name="comment" value=""></textarea>
 						</div>
+						{$page->smarty->fetch('captcha.tpl')}
 						<div class="form-group">
 							<button id="submit" name="submit" class="btn btn-success">Submit</button>
 						</div>

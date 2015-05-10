@@ -18,7 +18,7 @@
 					<input id="email" autocomplete="off" name="email" value="{$email}" type="email"/>
 				</td>
 			</tr>
-			<tr><th></th><td><input type="submit" value="Request Password Reset" /><div style="float:right;" class="hint"><em>*</em> Indicates mandatory field.</div></td></tr>
+			<tr><th></th><td>{$page->smarty->fetch('captcha.tpl')}<input type="submit" value="Request Password Reset" /><div style="float:right;" class="hint"><em>*</em> Indicates mandatory field.</div></td></tr>
 		</table>
 	</form>
 {elseif $sent != ''}
