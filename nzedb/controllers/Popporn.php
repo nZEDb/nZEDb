@@ -123,7 +123,7 @@ class Popporn
 				if (!stristr(trim($ret->next_sibling()->plaintext), "POPPORN EXCLUSIVE")) {
 					$this->_res['sypnosis'] = trim($ret->next_sibling()->plaintext);
 				} else {
-					if ($ret->next_sibling()->next_sibling()->next_sibling()->plaintext) {
+					if ($ret->next_sibling()->next_sibling()) {
 						$this->_res['sypnosis'] = trim($ret->next_sibling()->next_sibling()->next_sibling()->plaintext);
 					} else {
 						$this->_res['sypnosis'] = "N/A";
