@@ -9,7 +9,9 @@
 	<a href="{$smarty.const.WWW_TOP}/upcoming/4">Upcoming</a> |
 	<a href="{$smarty.const.WWW_TOP}/upcoming/5">DVD Releases</a>
 </p>
-{if $data|@count > 0}
+{if isset($nodata)}
+	{$nodata}
+{elseif $data|@count > 0}
 	<table style="width:100%;" class="data highlight icons" id="coverstable">
 		<tr>
 			<th></th>
