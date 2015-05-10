@@ -6,7 +6,7 @@
 {/if}
 
 {if $showregister != "0"}
-	<form method="post" action="register?action=submit">
+	<form method="post" action="register?action=submit{$invite_code_query}">
 
 		<table style="width:500px;" class="data">
 			<tr><th width="75px;"><label for="username">Username:</label> <em>*</em></th>
@@ -39,7 +39,7 @@
 		</table>
 
 		<table style="width:500px; margin-top:10px;" class="data">
-			<tr><th width="75px;"></th><td><input type="submit" value="Register"/><div style="float:right;" class="hint"><em>*</em> Indicates mandatory field.</div></td></tr>
+			<tr><th width="75px;"></th><td>{$page->smarty->fetch('captcha.tpl')}<input type="submit" value="Register"/><div style="float:right;" class="hint"><em>*</em> Indicates mandatory field.</div></td></tr>
 		</table>
 
 	</form>

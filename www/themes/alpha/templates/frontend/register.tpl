@@ -6,7 +6,7 @@
 	<div class="container">
 	<div class="col-sm-6 col-sm-offset-3">
 		<div class="well">
-			<form class="form-signin" action="register?action=submit" method="post">
+			<form class="form-signin" action="register?action=submit{$invite_code_query}" method="post">
 				<h2 class="form-signin-heading">Please Register</h2>
 				<div class="form-group">
 					<label class="sr-only" for="username">Username</label>
@@ -41,6 +41,7 @@
 					<label class="sr-only" for="email">E-mail Address</label>
 					<input type="email" class="form-control" placeholder="Email" autocomplete="off" id="email" name="email" value="{$email}">
 				</div>
+				{$page->smarty->fetch('captcha.tpl')}
 				<input type="hidden" class="form-control" id="invitecode" name="invitecode" value="{$invitecode|escape:html_all}">
 				<button class="btn btn-default" type="submit" value="Register">Register</button>
 			</form>
