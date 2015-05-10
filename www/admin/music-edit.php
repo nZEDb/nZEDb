@@ -1,6 +1,9 @@
 <?php
 require_once './config.php';
 
+use nzedb\Genres;
+use nzedb\Music;
+
 $page  = new AdminPage();
 $music = new Music(['Settings' => $page->settings]);
 $gen   = new Genres(['Settings' => $page->settings]);

@@ -1,4 +1,7 @@
 <?php
+
+use nzedb\PreDb;
+
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }

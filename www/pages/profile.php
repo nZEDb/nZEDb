@@ -1,4 +1,8 @@
 <?php
+
+use nzedb\ReleaseComments;
+use nzedb\SABnzbd;
+
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }

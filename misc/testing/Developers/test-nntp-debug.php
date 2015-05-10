@@ -3,6 +3,11 @@
 //////////////////////////////// Put your test code at the bottom of this file. ////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 require_once dirname(__FILE__) . '/../../../www/config.php';
+
+use nzedb\ColorCLI;
+use nzedb\NNTP;
+use nzedb\db\DB;
+
 echo 'This script is going to run without debug, you can turn on debug by passing true as an argument.' . PHP_EOL;
 
 class NNTPTest extends NNTP
@@ -37,7 +42,7 @@ class NNTPDebug
 	public function __construct($debug = false)
 	{
 		define('PEAR_LOG_DEBUG', $debug);
-		$this->color = new \ColorCLI();
+		$this->color = new ColorCLI();
 	}
 
 	/**
@@ -103,7 +108,7 @@ class NNTPDebug
 	}
 }
 
-$nntp = new \NNTPTest(new \NNTPDebug((isset($argv[1]) ? true : false)));
+$nntp = new NNTPTest(new NNTPDebug((isset($argv[1]) ? true : false)));
 if ($nntp->doConnect() !== true) {
 	exit('Error connecting to usenet!' . PHP_EOL);
 }
@@ -113,7 +118,7 @@ $n = PHP_EOL;
 //////////////////////////////////////// Put your test code under here. ////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-$db = new \nzedb\db\DB();
+$db = new DB();
 $groups = $db->query('SELECT name FROM groups WHERE name NOT like \'alt.binaries.%\' AND active = 1');
 
 $groupList = [];

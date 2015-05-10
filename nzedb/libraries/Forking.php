@@ -1,6 +1,11 @@
 <?php
 namespace nzedb\libraries;
 
+use nzedb\ColorCLI;
+use nzedb\Nfo;
+use nzedb\NNTP;
+use nzedb\NZB;
+use nzedb\RequestID;
 use \nzedb\db\Settings;
 use \nzedb\processing\PostProcess;
 
@@ -29,7 +34,7 @@ class Forking extends \fork_daemon
 	{
 		parent::__construct();
 
-		$this->_colorCLI = new \ColorCLI();
+		$this->_colorCLI = new ColorCLI();
 
 		$this->register_logging(
 			[0 => $this, 1 => 'logger'],
@@ -704,7 +709,7 @@ class Forking extends \fork_daemon
 	private function checkProcessNfo()
 	{
 		if ($this->pdo->getSetting('lookupnfo') == 1) {
-			$this->nfoQueryString = \Nfo::NfoQueryString($this->pdo);
+			$this->nfoQueryString = Nfo::NfoQueryString($this->pdo);
 			return (
 				$this->pdo->queryOneRow(
 					sprintf(
@@ -857,7 +862,7 @@ class Forking extends \fork_daemon
 	{
 		$sharing = $this->pdo->queryOneRow('SELECT enabled FROM sharing');
 		if ($sharing !== false && $sharing['enabled'] == 1) {
-			$nntp = new \NNTP(['Settings' => $this->pdo]);
+			$nntp = new NNTP(['Settings' => $this->pdo]);
 			if (($this->pdo->getSetting('alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) === true) {
 				(new PostProcess(['Settings' => $this->pdo, 'ColorCLI' => $this->_colorCLI]))->processSharing($nntp);
 			}
@@ -897,8 +902,8 @@ class Forking extends \fork_daemon
 				AND r.preid = 0
 				AND r.isrequestid = 1
 				AND r.reqidstatus = %d',
-				\NZB::NZB_ADDED,
-				\RequestID::REQID_UPROC
+				NZB::NZB_ADDED,
+				RequestID::REQID_UPROC
 			)
 		);
 		return $this->pdo->getSetting('reqidthreads');
@@ -1086,8 +1091,4 @@ class Forking extends \fork_daemon
 	private $processNFO = false; // Should we process NFOs?
 	private $processMovies = false; // Should we process Movies?
 	private $processTV = false; // Should we process TV?
-}
-
-class ForkingException extends \Exception
-{
 }

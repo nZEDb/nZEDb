@@ -1,5 +1,8 @@
 <?php
 
+use nzedb\Releases;
+use nzedb\NZB;
+
 $uid = 0;
 
 use \nzedb\db\Settings;

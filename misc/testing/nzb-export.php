@@ -1,5 +1,8 @@
 <?php
 require_once dirname(__FILE__) . '/../../www/config.php';
+
+use nzedb\NZBExport;
+
 $n = PHP_EOL;
 
 // Print usage.
@@ -19,7 +22,7 @@ if (count($argv) !== 6) {
 	);
 }
 
-$NE = new \NZBExport();
+$NE = new NZBExport();
 $NE->beginExport(
 	array(
 		// Path.

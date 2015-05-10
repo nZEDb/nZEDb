@@ -1,6 +1,8 @@
 <?php
 require_once './config.php';
 
+use nzedb\XXX;
+
 $page     = new AdminPage();
 $xxxmovie = new XXX(['Settings' => $page->settings]);
 

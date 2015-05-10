@@ -1,13 +1,16 @@
 <?php
 require_once dirname(__FILE__) . '/config.php';
 
-use \nzedb\processing\ProcessReleases;
+use nzedb\ConsoleTools;
+use nzedb\NNTP;
+use nzedb\db\Settings;
+use nzedb\processing\ProcessReleases;
 
-$pdo = new \nzedb\db\Settings();
+$pdo = new Settings();
 
 if (isset($argv[2]) && $argv[2] === 'true') {
 	// Create the connection here and pass
-	$nntp = new \NNTP(['Settings' => $pdo]);
+	$nntp = new NNTP(['Settings' => $pdo]);
 	if ($nntp->doConnect() !== true) {
 		exit($pdo->log->error("Unable to connect to usenet."));
 	}
@@ -18,7 +21,7 @@ if ($pdo->getSetting('tablepergroup') === 1) {
 
 $groupName = isset($argv[3]) ? $argv[3] : '';
 if (isset($argv[1]) && isset($argv[2])) {
-	$consoletools = new \ConsoleTools(['ColorCLI' => $pdo->log]);
+	$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 	$releases = new ProcessReleases(['Settings' => $pdo, 'ConsoleTools' => $consoletools]);
 	if ($argv[1] == 1 && $argv[2] == 'true') {
 		$releases->processReleases(1, 1, $groupName, $nntp, true);
@@ -41,14 +44,14 @@ if (isset($argv[1]) && isset($argv[2])) {
 		echo $pdo->log->header("Categorizing releases in all sections using the searchname. This can take a while, be patient.");
 		$timestart = TIME();
 		$relcount = $releases->categorizeRelease('searchname', '');
-		$consoletools = new \ConsoleTools(['ColorCLI' => $pdo->log]);
+		$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 		$time = $consoletools->convertTime(TIME() - $timestart);
 		echo $pdo->log->primary("\n" . 'Finished categorizing ' . $relcount . ' releases in ' . $time . " seconds, using the search name.");
 	} else if ($argv[1] == 6 && $argv[2] == 'false') {
 		echo $pdo->log->header("Categorizing releases in misc sections using the searchname. This can take a while, be patient.");
 		$timestart = TIME();
 		$relcount = $releases->categorizeRelease('searchname', 'WHERE categoryID IN (1090, 2020, 3050, 5050, 6050, 7010)');
-		$consoletools = new \ConsoleTools(['ColorCLI' => $pdo->log]);
+		$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 		$time = $consoletools->convertTime(TIME() - $timestart);
 		echo $pdo->log->primary("\n" . 'Finished categorizing ' . $relcount . ' releases in ' . $time . " seconds, using the search name.");
 	} else {

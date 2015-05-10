@@ -1,6 +1,8 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
+use nzedb\ConsoleTools;
+use nzedb\NZB;
 use nzedb\db\Settings;
 
 if (!isset($argv[1]) || !isset($argv[2])) {
@@ -8,8 +10,8 @@ if (!isset($argv[1]) || !isset($argv[2])) {
 }
 
 $pdo = new Settings();
-$nzb = new \NZB($pdo);
-$consoleTools = new \ConsoleTools();
+$nzb = new NZB($pdo);
+$consoleTools = new ConsoleTools();
 
 $newLevel = $argv[1];
 $sourcePath = $argv[2];

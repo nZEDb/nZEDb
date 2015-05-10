@@ -2,6 +2,7 @@
 /* Fixes NZB files with a blank first line. */
 require dirname(__FILE__) . '/../../../www/config.php';
 
+use nzedb\NZB;
 use nzedb\db\Settings;
 
 $pdo = new Settings();
@@ -12,7 +13,7 @@ if (isset($argv[1]) && $argv[1] == "true") {
 
 	$guids = $pdo->queryDirect("SELECT guid FROM releases WHERE nzbstatus = 1 ORDER BY postdate DESC");
 	echo $pdo->log->primary("Be patient, this WILL take a very long time, make sure to kill all nZEDb scripts first. There are " . number_format($guids->rowCount()) . " NZB files to scan.");
-	$nzb = new \NZB($pdo);
+	$nzb = new NZB($pdo);
 	if ($guids instanceof \Traversable) {
 		foreach ($guids as $guid) {
 			$nzbpath = $nzb->NZBPath($guid["guid"]);

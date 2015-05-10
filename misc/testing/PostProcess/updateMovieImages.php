@@ -2,6 +2,7 @@
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
 use nzedb\db\Settings;
+use nzedb\utility\Utility;
 
 $pdo = new Settings();
 $covers = $updated = $deleted = 0;
@@ -12,7 +13,7 @@ if ($argc == 1 || $argv[1] != 'true') {
 
 $row = $pdo->queryOneRow("SELECT value FROM settings WHERE setting = 'coverspath'");
 if ($row !== false) {
-	\nzedb\utility\Utility::setCoversConstant($row['value']);
+	Utility::setCoversConstant($row['value']);
 } else {
 	die("Unable to set Covers' constant!\n");
 }

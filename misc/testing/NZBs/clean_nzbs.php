@@ -1,15 +1,20 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
+use nzedb\ConsoleTools;
+use nzedb\NZB;
+use nzedb\ReleaseImage;
+use nzedb\Releases;
 use nzedb\db\Settings;
+use nzedb\utility\Utility;
 
 $pdo = new Settings();
 
 if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete")) {
-	$releases = new \Releases(['Settings' => $pdo]);
-	$nzb = new \NZB($pdo);
-	$releaseImage = new \ReleaseImage($pdo);
-	$consoletools = new \ConsoleTools(['ColorCLI' => $pdo->log]);
+	$releases = new Releases(['Settings' => $pdo]);
+	$nzb = new NZB($pdo);
+	$releaseImage = new ReleaseImage($pdo);
+	$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 	$timestart = time();
 	$checked = $deleted = 0;
 	$couldbe = $argv[1] === "true" ? $couldbe = "could be " : "were ";
@@ -18,7 +23,7 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete")) {
 	$itr = new \RecursiveIteratorIterator($dirItr, \RecursiveIteratorIterator::LEAVES_ONLY);
 	foreach ($itr as $filePath) {
 		if (is_file($filePath) && preg_match('/([a-f-0-9]+)\.nzb\.gz/', $filePath, $guid)) {
-			$nzbfile = nzedb\utility\Utility::unzipGzipFile($filePath);
+			$nzbfile = Utility::unzipGzipFile($filePath);
 			if ($nzbfile) {
 				$nzbfile = @simplexml_load_string($nzbfile);
 			}

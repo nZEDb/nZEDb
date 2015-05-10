@@ -1,6 +1,9 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
+use nzedb\Categorize;
+use nzedb\ColorCLI;
+use nzedb\ConsoleTools;
 use nzedb\db\Settings;
 
 $pdo = new Settings();
@@ -49,7 +52,7 @@ function reCategorize($argv)
 	} else {
 		$chgcount = categorizeRelease('', $update, true);
 	}
-	$consoletools = new \ConsoleTools(['ColorCLI' => $pdo->log]);
+	$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 	$time = $consoletools->convertTime(TIME() - $timestart);
 	if ($update === true) {
 		echo $pdo->log->header("Finished re-categorizing " . number_format($chgcount) . " releases in " . $time . " , 	using the searchname.\n");
@@ -64,9 +67,9 @@ function reCategorize($argv)
 function categorizeRelease($where, $update = true, $echooutput = false)
 {
 	global $pdo;
-	$cat = new \Categorize(['Settings' => $pdo]);
-	$pdo->log = new \ColorCLI();
-	$consoletools = new \consoleTools(['ColorCLI' => $pdo->log]);
+	$cat = new Categorize(['Settings' => $pdo]);
+	$pdo->log = new ColorCLI();
+	$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 	$relcount = $chgcount = 0;
 	echo $pdo->log->primary("SELECT id, searchname, group_id, categoryid FROM releases " . $where);
 	$resrel = $pdo->queryDirect("SELECT id, searchname, group_id, categoryid FROM releases " . $where);

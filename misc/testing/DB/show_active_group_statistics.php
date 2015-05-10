@@ -1,7 +1,9 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-$pdo = new \nzedb\db\Settings();
+use nzedb\db\Settings;
+
+$pdo = new Settings();
 $count = $groups = 0;
 if (!isset($argv[1])) {
 	passthru("clear");

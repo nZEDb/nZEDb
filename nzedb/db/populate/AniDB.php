@@ -2,7 +2,8 @@
 
 namespace nzedb\db\populate;
 
-use \nzedb\db\Settings;
+use nzedb\ReleaseImage;
+use nzedb\db\Settings;
 
 class AniDB
 {
@@ -495,7 +496,7 @@ class AniDB
 		}
 
 		if (!empty($picture) && !file_exists($this->imgSavePath . $this->anidbId . ".jpg")) {
-			(new \ReleaseImage($this->pdo))->saveImage(
+			(new ReleaseImage($this->pdo))->saveImage(
 										   $this->anidbId,
 										   'http://img7.anidb.net/pics/anime/' . $picture,
 										   $this->imgSavePath

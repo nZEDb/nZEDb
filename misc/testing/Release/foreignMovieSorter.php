@@ -1,9 +1,11 @@
 <?php
 require dirname(__FILE__) . '/../../../www/config.php';
 
+use nzedb\Categorize;
 use nzedb\db\Settings;
+
 $pdo = new Settings();
-$categorize = new \Categorize(['Settings' => $pdo]);
+$categorize = new Categorize(['Settings' => $pdo]);
 
 if (isset($argv[1]) && $argv[1] === "true") {
 	$results = getForeignMovies();

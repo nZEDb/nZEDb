@@ -1,7 +1,10 @@
 <?php
 require_once dirname(__FILE__) . '/../../www/config.php';
 
-$cli = new \ColorCLI();
+use nzedb\ColorCLI;
+use nzedb\NameFixer;
+
+$cli = new ColorCLI();
 
 if (!isset($argv[1]) && ($argv[1] !== 'full' || !is_numeric($argv[1]))) {
 	exit(
@@ -14,6 +17,6 @@ if (!isset($argv[1]) && ($argv[1] !== 'full' || !is_numeric($argv[1]))) {
 	);
 }
 
-$nameFixer = new \NameFixer();
+$nameFixer = new NameFixer();
 
 $nameFixer->getPreFileNames($argv);

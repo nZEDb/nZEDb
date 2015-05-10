@@ -3,7 +3,7 @@
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
 use nzedb\db\Settings;
-use nzedb\utility;
+use nzedb\utility\Utility;
 
 $n = PHP_EOL;
 
@@ -18,7 +18,7 @@ $system = ' not supported on windows.';
 
 $pdo = new Settings();
 $MySQL = $pdo->queryOneRow('SELECT NOW() AS time, @@system_time_zone AS tz');
-if (!nzedb\utility\Utility::isWin()) {
+if (!Utility::isWin()) {
 	$system = exec('date');
 }
 $php = date('D M d H:i:s T o');

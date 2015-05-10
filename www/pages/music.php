@@ -1,4 +1,9 @@
 <?php
+
+use nzedb\Category;
+use nzedb\Genres;
+use nzedb\Music;
+
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }

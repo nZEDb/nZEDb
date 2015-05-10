@@ -1,6 +1,8 @@
 <?php
 require_once './config.php';
 
+use nzedb\AniDB;
+
 $page  = new AdminPage();
 $AniDB = new AniDB(['Settings' => $page->settings]);
 

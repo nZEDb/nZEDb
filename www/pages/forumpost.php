@@ -1,4 +1,7 @@
-<?php
+<?
+
+use nzedb\Forum;
+
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }

@@ -2,6 +2,10 @@
 require_once SMARTY_DIR . 'Smarty.class.php';
 require_once nZEDb_LIB . 'utility' . DS . 'SmartyUtils.php';
 
+use \nzedb\SABnzbd;
+use \nzedb\Users;
+use \nzedb\db\Settings;
+
 class BasePage
 {
 	/**
@@ -88,7 +92,7 @@ class BasePage
 		}
 
 		// Buffer settings/DB connection.
-		$this->settings = new \nzedb\db\Settings();
+		$this->settings = new Settings();
 
 		$this->smarty = new Smarty();
 

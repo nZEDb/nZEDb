@@ -1,6 +1,8 @@
 <?php
 require_once './config.php';
 
+use nzedb\Contents;
+
 $page        = new AdminPage();
 $contents    = new Contents(['Settings' => $page->settings]);
 $contentlist = $contents->getAll();

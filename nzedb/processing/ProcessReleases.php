@@ -1,6 +1,17 @@
 <?php
 namespace nzedb\processing;
 
+use nzedb\Categorize;
+use nzedb\Category;
+use nzedb\ConsoleTools;
+use nzedb\Genres;
+use nzedb\Groups;
+use nzedb\NZB;
+use nzedb\ReleaseCleaning;
+use nzedb\ReleaseImage;
+use nzedb\Releases;
+use nzedb\RequestIDLocal;
+use nzedb\RequestIDWeb;
 use \nzedb\db\Settings;
 
 class ProcessReleases
@@ -18,7 +29,7 @@ class ProcessReleases
 	const FILE_COMPLETE   = 1; // We have all the parts for the file (binaries table partcheck column).
 
 	/**
-	 * @var \Groups
+	 * @var \nzedb\Groups
 	 */
 	public $groups;
 
@@ -63,27 +74,27 @@ class ProcessReleases
 	public $pdo;
 
 	/**
-	 * @var \ConsoleTools
+	 * @var \nzedb\ConsoleTools
 	 */
 	public $consoleTools;
 
 	/**
-	 * @var \NZB
+	 * @var \nzedb\NZB
 	 */
 	public $nzb;
 
 	/**
-	 * @var \ReleaseCleaning
+	 * @var \nzedb\ReleaseCleaning
 	 */
 	public $releaseCleaning;
 
 	/**
-	 * @var \Releases
+	 * @var \nzedb\Releases
 	 */
 	public $releases;
 
 	/**
-	 * @var \ReleaseImage
+	 * @var \nzedb\ReleaseImage
 	 */
 	public $releaseImage;
 
@@ -107,12 +118,12 @@ class ProcessReleases
 		$this->echoCLI = ($options['Echo'] && nZEDb_ECHOCLI);
 
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
-		$this->consoleTools = ($options['ConsoleTools'] instanceof \ConsoleTools ? $options['ConsoleTools'] : new \ConsoleTools(['ColorCLI' => $this->pdo->log]));
-		$this->groups = ($options['Groups'] instanceof \Groups ? $options['Groups'] : new \Groups(['Settings' => $this->pdo]));
-		$this->nzb = ($options['NZB'] instanceof \NZB ? $options['NZB'] : new \NZB($this->pdo));
-		$this->releaseCleaning = ($options['ReleaseCleaning'] instanceof \ReleaseCleaning ? $options['ReleaseCleaning'] : new \ReleaseCleaning($this->pdo));
-		$this->releases = ($options['Releases'] instanceof \Releases ? $options['Releases'] : new \Releases(['Settings' => $this->pdo, 'Groups' => $this->groups]));
-		$this->releaseImage = ($options['ReleaseImage'] instanceof \ReleaseImage ? $options['ReleaseImage'] : new \ReleaseImage($this->pdo));
+		$this->consoleTools = ($options['ConsoleTools'] instanceof ConsoleTools ? $options['ConsoleTools'] : new ConsoleTools(['ColorCLI' => $this->pdo->log]));
+		$this->groups = ($options['Groups'] instanceof Groups ? $options['Groups'] : new Groups(['Settings' => $this->pdo]));
+		$this->nzb = ($options['NZB'] instanceof NZB ? $options['NZB'] : new NZB($this->pdo));
+		$this->releaseCleaning = ($options['ReleaseCleaning'] instanceof ReleaseCleaning ? $options['ReleaseCleaning'] : new ReleaseCleaning($this->pdo));
+		$this->releases = ($options['Releases'] instanceof Releases ? $options['Releases'] : new Releases(['Settings' => $this->pdo, 'Groups' => $this->groups]));
+		$this->releaseImage = ($options['ReleaseImage'] instanceof ReleaseImage ? $options['ReleaseImage'] : new ReleaseImage($this->pdo));
 
 		$this->tablePerGroup = ($this->pdo->getSetting('tablepergroup') == 0 ? false : true);
 		$this->collectionDelayTime = ($this->pdo->getSetting('delaytime') != '' ? (int)$this->pdo->getSetting('delaytime') : 2);
@@ -237,7 +248,7 @@ class ProcessReleases
 	public function resetCategorize($where = '')
 	{
 		$this->pdo->queryExec(
-			sprintf('UPDATE releases SET categoryid = %d, iscategorized = 0 %s', \Category::CAT_MISC, $where)
+			sprintf('UPDATE releases SET categoryid = %d, iscategorized = 0 %s', Category::CAT_MISC, $where)
 		);
 	}
 
@@ -252,7 +263,7 @@ class ProcessReleases
 	 */
 	public function categorizeRelease($type, $where = '')
 	{
-		$cat = new \Categorize(['Settings' => $this->pdo]);
+		$cat = new Categorize(['Settings' => $this->pdo]);
 		$categorized = $total = 0;
 		$releases = $this->pdo->queryDirect(sprintf('SELECT id, %s, group_id FROM releases %s', $type, $where));
 		if ($releases && $releases->rowCount()) {
@@ -491,7 +502,7 @@ class ProcessReleases
 		$startTime = time();
 		$group = $this->groups->getCBPTableNames($this->tablePerGroup, $groupID);
 
-		$categorize = new \Categorize(['Settings' => $this->pdo]);
+		$categorize = new Categorize(['Settings' => $this->pdo]);
 		$returnCount = $duplicate = 0;
 
 		if ($this->echoCLI) {
@@ -522,7 +533,7 @@ class ProcessReleases
 		}
 
 		if ($collections instanceof \Traversable) {
-			$preDB = new \PreDb(['Echo' => $this->echoCLI, 'Settings' => $this->pdo]);
+			$preDB = new PreDb(['Echo' => $this->echoCLI, 'Settings' => $this->pdo]);
 
 			foreach ($collections as $collection) {
 
@@ -592,7 +603,7 @@ class ProcessReleases
 							'isrenamed' => ($properName === true ? 1 : 0),
 							'reqidstatus' => ($isReqID === true ? 1 : 0),
 							'preid' => ($preID === false ? 0 : $preID),
-							'nzbstatus' => \NZB::NZB_NONE
+							'nzbstatus' => NZB::NZB_NONE
 						]
 					);
 
@@ -766,14 +777,14 @@ class ProcessReleases
 
 		if ($local === true) {
 			$foundRequestIDs = (
-				new \RequestIDLocal(
+				new RequestIDLocal(
 					['Echo' => $this->echoCLI, 'ConsoleTools' => $this->consoleTools,
 					 'Groups' => $this->groups, 'Settings' => $this->pdo]
 				)
 			)->lookupRequestIDs(['GroupID' => $groupID, 'limit' => $limit, 'time' => 168]);
 		} else {
 			$foundRequestIDs = (
-				new \RequestIDWeb(
+				new RequestIDWeb(
 					['Echo' => $this->echoCLI, 'ConsoleTools' => $this->consoleTools,
 					 'Groups' => $this->groups, 'Settings' => $this->pdo]
 				)
@@ -1142,8 +1153,8 @@ class ProcessReleases
 	public function deleteReleases()
 	{
 		$startTime = time();
-		$category = new \Category(['Settings' => $this->pdo]);
-		$genres = new \Genres(['Settings' => $this->pdo]);
+		$category = new Category(['Settings' => $this->pdo]);
+		$genres = new Genres(['Settings' => $this->pdo]);
 		$passwordDeleted = $duplicateDeleted = $retentionDeleted = $completionDeleted = $disabledCategoryDeleted = 0;
 		$disabledGenreDeleted = $miscRetentionDeleted = $miscHashedDeleted = $categoryMinSizeDeleted = 0;
 
@@ -1173,7 +1184,7 @@ class ProcessReleases
 			$releases = $this->pdo->queryDirect(
 				sprintf(
 					'SELECT id, guid FROM releases WHERE passwordstatus = %d',
-					\Releases::PASSWD_RAR
+					Releases::PASSWD_RAR
 				)
 			);
 			if ($releases instanceof \Traversable) {
@@ -1189,7 +1200,7 @@ class ProcessReleases
 			$releases = $this->pdo->queryDirect(
 				sprintf(
 					'SELECT id, guid FROM releases WHERE passwordstatus = %d',
-					\Releases::PASSWD_POTENTIAL
+					Releases::PASSWD_POTENTIAL
 				)
 			);
 			if ($releases instanceof \Traversable) {
@@ -1310,7 +1321,7 @@ class ProcessReleases
 					FROM releases
 					WHERE categoryid = %d
 					AND adddate <= NOW() - INTERVAL %d HOUR',
-					\Category::CAT_MISC,
+					Category::CAT_MISC,
 					$this->pdo->getSetting('miscotherretentionhours')
 				)
 			);
@@ -1330,7 +1341,7 @@ class ProcessReleases
 					FROM releases
 					WHERE categoryid = %d
 					AND adddate <= NOW() - INTERVAL %d HOUR',
-					\Category::CAT_OTHER_HASHED,
+					Category::CAT_OTHER_HASHED,
 					$this->pdo->getSetting('mischashedretentionhours')
 				)
 			);

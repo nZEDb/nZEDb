@@ -2,7 +2,9 @@
 
 require_once dirname(dirname(dirname(__DIR__))) . '/www/config.php';
 
-$output = new \ColorCLI();
+use nzedb\ColorCLI;
+
+$output = new ColorCLI();
 echo $output->primary("Checking for files in the renamed directories.");
 $status = 0;
 

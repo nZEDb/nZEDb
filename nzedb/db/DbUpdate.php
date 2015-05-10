@@ -20,7 +20,7 @@
  */
 namespace nzedb\db;
 
-use \nzedb\db\Settings;
+use \nzedb\ColorCLI;
 use \nzedb\utility\Git;
 use \nzedb\utility\Utility;
 
@@ -66,7 +66,7 @@ class DbUpdate
 			'backup' => true,
 			'db'     => null,
 			'git'    => new Git(),
-			'logger' => new \ColorCLI(),
+			'logger' => new ColorCLI(),
 		];
 		$options += $defaults;
 		unset($defaults);

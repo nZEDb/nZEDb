@@ -1,4 +1,7 @@
 <?php
+
+use nzedb\Music;
+
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
