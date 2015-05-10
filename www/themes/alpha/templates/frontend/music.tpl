@@ -111,7 +111,7 @@
 				</td>
 				<td colspan="7" class="left" id="guid{$result.guid}">
 					<h4>{$result.artist}{" - "}{$result.title}</h4>
-					{if $result.genre != ""}
+					{if $result.genre_id != ""}
 						<b>Genre:</b>
 						<a href="{$smarty.const.WWW_TOP}/music/?genre={$result.genre_id}">{$result.genre|escape:"htmlall"}</a>
 						<br>
