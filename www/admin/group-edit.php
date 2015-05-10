@@ -8,8 +8,6 @@ $id     = 0;
 // Set the current action.
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
 
-//$page->smarty->assign(['id' => '', 'name' => '']);
-
 switch ($action) {
 	case 'submit':
 		if ($_POST["id"] == "") {
