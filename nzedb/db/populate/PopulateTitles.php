@@ -20,8 +20,8 @@
  */
 namespace nzedb\db\populate;
 
-use \nzedb\db\Settings;
-use \nzedb\utility\Utility;
+use nzedb\db\Settings;
+use nzedb\utility\Utility;
 
 class PopulateTitles
 {

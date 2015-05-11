@@ -1,7 +1,7 @@
 <?php
 
 use nzedb\Users;
-use \nzedb\db\Settings;
+use nzedb\db\Settings;
 
 if ($page->users->isLoggedIn()) {
 	$page->show404();

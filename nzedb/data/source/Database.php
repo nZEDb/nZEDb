@@ -24,8 +24,8 @@ use \PDOException;
 use \InvalidArgumentException;
 use \UnexpectedValueException;
 
-use \nzedb\data\Source;
-use \nzedb\NetworkException;
+use nzedb\data\Source;
+use nzedb\NetworkException;
 
 /**
  * The `Database` class provides the base-level abstraction for SQL-oriented relational databases.

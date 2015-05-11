@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use \nzedb\db\Settings;
+use nzedb\db\Settings;
 
 class Menu
 {

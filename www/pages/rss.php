@@ -2,7 +2,7 @@
 
 use nzedb\Category;
 use nzedb\Releases;
-use \nzedb\db\Settings;
+use nzedb\db\Settings;
 
 $category = new Category(['Settings' => $page->settings]);
 $releases = new Releases(['Settings' => $page->settings]);

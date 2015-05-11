@@ -20,9 +20,9 @@
  */
 namespace nzedb\db;
 
-use \nzedb\ColorCLI;
-use \nzedb\utility\Git;
-use \nzedb\utility\Utility;
+use nzedb\ColorCLI;
+use nzedb\utility\Git;
+use nzedb\utility\Utility;
 
 
 class DbUpdate

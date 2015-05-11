@@ -15,10 +15,10 @@ use nzedb\Sharing;
 use nzedb\TvRage;
 use nzedb\XXX;
 use nzedb\ReleaseFiles;
-use \nzedb\db\Settings;
-use \nzedb\processing\post\AniDB;
-use \nzedb\processing\post\ProcessAdditional;
-use \nzedb\utility;
+use nzedb\db\Settings;
+use nzedb\processing\post\AniDB;
+use nzedb\processing\post\ProcessAdditional;
+use nzedb\utility;
 
 require_once nZEDb_LIBS . 'rarinfo/par2info.php';
 

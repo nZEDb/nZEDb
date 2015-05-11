@@ -4,7 +4,7 @@ namespace nzedb\processing\post;
 
 use nzedb\Category;
 use nzedb\NZB;
-use \nzedb\db\Settings;
+use nzedb\db\Settings;
 
 class AniDB
 {

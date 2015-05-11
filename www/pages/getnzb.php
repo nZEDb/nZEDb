@@ -5,7 +5,7 @@ use nzedb\NZB;
 
 $uid = 0;
 
-use \nzedb\db\Settings;
+use nzedb\db\Settings;
 
 // Page is accessible only by the rss token, or logged in users.
 if ($page->users->isLoggedIn()) {

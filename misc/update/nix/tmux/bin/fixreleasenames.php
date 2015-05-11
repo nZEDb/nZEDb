@@ -7,7 +7,7 @@ use nzedb\Nfo;
 use nzedb\NZBContents;
 use nzedb\NNTP;
 use nzedb\db\Settings;
-use \nzedb\processing\PostProcess;
+use nzedb\processing\PostProcess;
 
 $pdo = new Settings();
 

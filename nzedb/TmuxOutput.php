@@ -1,8 +1,8 @@
 <?php
 namespace nzedb;
 
-use \nzedb\db\Settings;
-use \nzedb\utility\Utility;
+use nzedb\db\Settings;
+use nzedb\utility\Utility;
 
 /**
  * Tmux output functions for printing monitor data

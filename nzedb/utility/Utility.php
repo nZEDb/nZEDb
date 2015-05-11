@@ -2,7 +2,7 @@
 namespace nzedb\utility;
 
 use nzedb\ColorCLI;
-use \nzedb\db\Settings;
+use nzedb\db\Settings;
 
 
 /*

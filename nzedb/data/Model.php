@@ -20,7 +20,7 @@
  */
 namespace nzedb\data;
 
-use \nzedb\StaticObject;
+use nzedb\StaticObject;
 
 class Model extends StaticObject
 {

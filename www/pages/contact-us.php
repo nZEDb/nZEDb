@@ -1,6 +1,6 @@
 <?php
 
-use \nzedb\utility\Utility;
+use nzedb\utility\Utility;
 
 if (isset($_POST["useremail"])) {
 

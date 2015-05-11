@@ -13,7 +13,7 @@ use nzedb\ReleaseImage;
 use nzedb\Releases;
 use nzedb\RequestIDLocal;
 use nzedb\RequestIDWeb;
-use \nzedb\db\Settings;
+use nzedb\db\Settings;
 
 class ProcessReleases
 {

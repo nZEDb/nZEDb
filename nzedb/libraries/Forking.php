@@ -6,8 +6,8 @@ use nzedb\Nfo;
 use nzedb\NNTP;
 use nzedb\NZB;
 use nzedb\RequestID;
-use \nzedb\db\Settings;
-use \nzedb\processing\PostProcess;
+use nzedb\db\Settings;
+use nzedb\processing\PostProcess;
 
 require_once(nZEDb_LIBS . 'forkdaemon-php' . DS . 'fork_daemon.php');
 
