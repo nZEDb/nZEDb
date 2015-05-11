@@ -1,12 +1,15 @@
 <?php
 
 use nzedb\utility\Utility;
+use nzedb\Captcha;
 
 if ($page->users->isLoggedIn()) {
 	$page->show404();
 }
 
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
+
+$captcha = new Captcha($page);
 
 switch ($action) {
 	case "reset":
@@ -37,7 +40,7 @@ switch ($action) {
 
 		break;
 	case 'submit':
-		if ($page->captcha->getError() === false) {
+		if ($captcha->getError() === false) {
 			$page->smarty->assign('email', $_POST['email']);
 
 			if ($_POST['email'] == "") {
