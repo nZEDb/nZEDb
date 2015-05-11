@@ -3,6 +3,7 @@
 use nzedb\Category;
 use nzedb\Groups;
 use nzedb\Releases;
+use nzedb\ReleaseSearch;
 
 if (!$page->users->isLoggedIn()) {
 	$page->show403();

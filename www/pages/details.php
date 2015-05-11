@@ -13,6 +13,7 @@ use nzedb\Releases;
 use nzedb\TraktTv;
 use nzedb\TvRage;
 use nzedb\XXX;
+use nzedb\ReleaseFiles;
 
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
