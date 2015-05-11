@@ -166,7 +166,7 @@ class SABnzbd
 						'&r=' .
 						$this->rsstoken
 					),
-				'verifypeer' => false,
+				'verifycert' => false,
 			]
 		);
 	}
@@ -183,7 +183,7 @@ class SABnzbd
 					$this->url .
 					"api?mode=qstatus&output=json&apikey=" .
 					$this->apikey,
-				'verifypeer' => false,
+				'verifycert' => false,
 			]
 		);
 	}
@@ -200,7 +200,7 @@ class SABnzbd
 					$this->url .
 					"api?mode=queue&start=START&limit=LIMIT&output=json&apikey=" .
 					$this->apikey,
-				'verifypeer' => false,
+				'verifycert' => false,
 			]
 		);
 	}
@@ -221,7 +221,7 @@ class SABnzbd
 					$id .
 					"&apikey=" .
 					$this->apikey,
-				'verifypeer' => false,
+				'verifycert' => false,
 			]
 		);
 	}
@@ -242,7 +242,7 @@ class SABnzbd
 					$id .
 					"&apikey=" .
 					$this->apikey,
-				'verifypeer' => false,
+				'verifycert' => false,
 			]
 		);
 	}
@@ -263,7 +263,7 @@ class SABnzbd
 					$id .
 					"&apikey=" .
 					$this->apikey,
-				'verifypeer' => false,
+				'verifycert' => false,
 			]
 		);
 	}
@@ -281,7 +281,7 @@ class SABnzbd
 					"api?mode=pause" .
 					"&apikey=" .
 					$this->apikey,
-				'verifypeer' => false,
+				'verifycert' => false,
 			]
 		);
 	}
@@ -299,7 +299,7 @@ class SABnzbd
 					"api?mode=resume" .
 					"&apikey=" .
 					$this->apikey,
-				'verifypeer' => false,
+				'verifycert' => false,
 			]
 		);
 	}
