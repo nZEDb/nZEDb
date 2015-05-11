@@ -5,6 +5,7 @@ require_once nZEDb_LIB . 'utility' . DS . 'SmartyUtils.php';
 use \nzedb\SABnzbd;
 use \nzedb\Users;
 use \nzedb\db\Settings;
+use \nzedb\controllers\Captcha;
 
 class BasePage
 {
