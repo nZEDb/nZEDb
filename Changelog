@@ -10,6 +10,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	* Fix: Namespace issues - Thanks to Darius for compiling the list.
 	* Fix: Captcha namespace issue.
 	* Chg: Dropping initial backslash from most use statements.
+	* Fix: ReleaseExtra namespace issue in ajax_mediainfo - Thanks Greg.
 2015-05-10 niel
 	* Mrg: Bringing in dev-namespace branch.
 2015-04-10 bart39
