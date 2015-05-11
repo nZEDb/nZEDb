@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use Utility;
+use nzedb\utility\Utility;
 
 /**
  * Class NZBGet

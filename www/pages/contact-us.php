@@ -1,10 +1,13 @@
 <?php
 
 use nzedb\utility\Utility;
+use nzedb\Captcha;
+
+$captcha = new Captcha($page);
 
 if (isset($_POST["useremail"])) {
 
-	if ($page->captcha->getError() === false) {
+	if ($captcha->getError() === false) {
 
 		// Send the contact info and report back to user.
 		$email = $_POST["useremail"];
