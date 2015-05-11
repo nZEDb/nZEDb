@@ -1,6 +1,10 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
+use nzedb\ConsoleTools;
+use nzedb\NZB;
+use nzedb\ReleaseImage;
+use nzedb\SphinxSearch;
 use nzedb\db\Settings;
 
 passthru('clear');
@@ -23,9 +27,9 @@ echo $pdo->log->header("Thank you, continuing...\n\n");
 
 $timestart = time();
 $relcount = 0;
-$ri = new \ReleaseImage($pdo);
-$nzb = new \NZB($pdo);
-$consoletools = new \ConsoleTools(['ColorCLI' => $pdo->log]);
+$ri = new ReleaseImage($pdo);
+$nzb = new NZB($pdo);
+$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 
 $pdo->queryExec("UPDATE groups SET first_record = 0, first_record_postdate = NULL, last_record = 0, last_record_postdate = NULL, last_updated = NULL");
 echo $pdo->log->primary("Reseting all groups completed.");
@@ -57,7 +61,7 @@ foreach ($tables as $row) {
 	}
 }
 
-(new \SphinxSearch())->truncateRTIndex('releases_rt');
+(new SphinxSearch())->truncateRTIndex('releases_rt');
 
 $pdo->optimise(false, 'full');
 

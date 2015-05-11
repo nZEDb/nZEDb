@@ -1,12 +1,15 @@
 <?php
-// New line for CLI.
-$n = PHP_EOL;
-
 // Include config.php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
+use nzedb\ReleaseRemover;
+use nzedb\ColorCLI;
+
+// New line for CLI.
+$n = PHP_EOL;
+
 // ColorCLI class.
-$cli = new \ColorCLI();
+$cli = new ColorCLI();
 
 // Print arguments/usage.
 $totalArgs = count($argv);
@@ -46,6 +49,6 @@ if ($totalArgs < 2) {
 	));
 }
 
-$RR = new \ReleaseRemover();
+$RR = new ReleaseRemover();
 // Remove argv[0] and send the array.
 $RR->removeByCriteria(array_slice($argv, 1, $totalArgs - 1));

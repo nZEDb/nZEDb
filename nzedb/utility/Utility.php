@@ -1,8 +1,8 @@
 <?php
 namespace nzedb\utility;
 
-
-use \nzedb\db\Settings;
+use nzedb\ColorCLI;
+use nzedb\db\Settings;
 
 
 /*
@@ -15,6 +15,29 @@ class Utility
 	 *  Regex for detecting multi-platform path. Use it where needed so it can be updated in one location as required characters get added.
 	 */
 	const PATH_REGEX = '(?P<drive>[A-Za-z]:|)(?P<path>[\\/\w .-]+|)';
+
+	/**
+	 * Checks all levels of the supplied path are readable and executable by current user.
+	 *
+	 * @todo Make this recursive with a switch to only check end point.
+	 * @param $path	*nix path to directory or file
+	 *
+	 * @return bool|string True is successful, otherwise the part of the path that failed testing.
+	 */
+	static public function canExecuteRead($path)
+	{
+		$paths = preg_split('#/#', $path);
+		$fullPath = DS;
+		foreach ($paths as $path) {
+			if ($path !== '') {
+				$fullPath .= $path . DS;
+				if (!is_readable($fullPath) || !is_executable($fullPath)) {
+					return "The '$fullPath' directory must be readable and executable by all ." .PHP_EOL;
+				}
+			}
+		}
+		return true;
+	}
 
 	static public function clearScreen()
 	{
@@ -357,7 +380,7 @@ class Utility
 			$message = "\nYour database is not up to date. Reported patch levels\n   Db: $patch\nfile: $ver\nPlease update.\n php " .
 				nZEDb_ROOT . "cli/update_db.php true\n";
 			if (self::isCLI()) {
-				echo (new \ColorCLI())->error($message);
+				echo (new ColorCLI())->error($message);
 			}
 			throw new \RuntimeException($message);
 		}
@@ -524,7 +547,7 @@ class Utility
 				$output = '';
 			}
 		} else {
-			$fileInfo = empty($magicPath) ? new finfo(FILEINFO_RAW) : new finfo(FILEINFO_RAW, $magicPath);
+			$fileInfo = empty($magicPath) ? new \finfo(FILEINFO_RAW) : new \finfo(FILEINFO_RAW, $magicPath);
 
 			$output = $fileInfo->file($path);
 			if (empty($output)) {

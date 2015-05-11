@@ -1,4 +1,20 @@
 <?php
+
+use nzedb\AniDB;
+use nzedb\Books;
+use nzedb\Console;
+use nzedb\Games;
+use nzedb\Movie;
+use nzedb\Music;
+use nzedb\PreDb;
+use nzedb\ReleaseComments;
+use nzedb\ReleaseExtra;
+use nzedb\ReleaseFiles;
+use nzedb\Releases;
+use nzedb\TraktTv;
+use nzedb\TvRage;
+use nzedb\XXX;
+
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }

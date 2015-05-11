@@ -127,6 +127,8 @@
  *              )
  */
 
+use nzedb\db\DB;
+
 if (nZEDb_PREINFO_OPEN) {
 	if (!$page->users->isLoggedIn()) {
 		if (!isset($_GET['apikey'])) {
@@ -139,7 +141,7 @@ if (nZEDb_PREINFO_OPEN) {
 	}
 }
 
-$preData = array();
+$preData = [];
 $json = false;
 if (isset($_GET['json']) && $_GET['json'] == 1) {
 	$json = true;
@@ -180,7 +182,7 @@ if (isset($_GET['type'])) {
 		case 'r':
 		case 'requestid':
 			if (isset($_GET['reqid']) && is_numeric($_GET['reqid']) && isset($_GET['group']) && is_string($_GET['group'])) {
-				$pdo = new nzedb\db\DB;
+				$pdo = new DB;
 				$preData = $pdo->query(
 					sprintf('
 						SELECT p.*,
@@ -207,7 +209,7 @@ if (isset($_GET['type'])) {
 		case 't':
 		case 'title':
 			if (isset($_GET['title'])) {
-				$pdo = new nzedb\db\DB;
+				$pdo = new DB;
 				$preData = $pdo->query(
 					sprintf('SELECT * FROM predb p WHERE p.title %s %s %s %s LIMIT %d OFFSET %d',
 						$newer,
@@ -225,7 +227,7 @@ if (isset($_GET['type'])) {
 		case 'm':
 		case 'md5':
 			if (isset($_GET['md5']) && strlen($_GET['title']) === 32) {
-				$pdo = new nzedb\db\DB;
+				$pdo = new DB;
 				$preData = $pdo->query(
 					sprintf('SELECT * FROM predb p INNER JOIN predb_hashes ph ON ph.pre_id = p.id WHERE MATCH(hashes) AGAINST (%s) %s %s %s LIMIT %d OFFSET %d',
 						$pdo->escapeString($_GET['md5']),
@@ -242,7 +244,7 @@ if (isset($_GET['type'])) {
 		case 's':
 		case 'sha1':
 			if (isset($_GET['sha1']) && strlen($_GET['sha1']) === 40) {
-				$pdo = new nzedb\db\DB;
+				$pdo = new DB;
 				$preData = $pdo->query(
 					sprintf('SELECT * FROM predb p INNER JOIN predb_hashes ph ON ph.pre_id = p.id WHERE MATCH(hashes) AGAINST (%s) %s %s %s LIMIT %d OFFSET %d',
 						$pdo->escapeString($_GET['sha1']),
@@ -259,7 +261,7 @@ if (isset($_GET['type'])) {
 		case 'c':
 		case 'category':
 			if (isset($_GET['category'])) {
-				$pdo = new nzedb\db\DB;
+				$pdo = new DB;
 				$preData = $pdo->query(
 					sprintf('SELECT * FROM predb p WHERE p.category %s %s %s %s LIMIT %d OFFSET %d',
 						$newer,
@@ -275,7 +277,7 @@ if (isset($_GET['type'])) {
 
 		case 'a':
 		case 'all':
-			$pdo = new nzedb\db\DB;
+			$pdo = new DB;
 			$preData = $pdo->query(
 				sprintf('SELECT * FROM predb p WHERE 1=1 %s %s %s ORDER BY p.predate DESC LIMIT %d OFFSET %d',
 					$newer,
@@ -291,8 +293,8 @@ if (isset($_GET['type'])) {
 
 	$reqData = @unserialize($_POST['data']);
 	if ($reqData !== false && is_array($reqData) && isset($reqData[0]['ident'])) {
-		$pdo = new nzedb\db\DB;
-		$preData = array();
+		$pdo = new DB;
+		$preData = [];
 
 		foreach ($reqData as $request) {
 			$result = $pdo->queryOneRow(

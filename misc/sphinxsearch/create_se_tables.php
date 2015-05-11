@@ -1,7 +1,10 @@
 <?php
 require dirname(__FILE__) . '/../../www/config.php';
 
-if (nZEDb_RELEASE_SEARCH_TYPE != \ReleaseSearch::SPHINX) {
+use nzedb\ReleaseSearch;
+use nzedb\db\DB;
+
+if (nZEDb_RELEASE_SEARCH_TYPE != ReleaseSearch::SPHINX) {
 	exit('Error, nZEDb_RELEASE_SEARCH_TYPE in www/settings.php must be set to SPHINX!' . PHP_EOL);
 }
 
@@ -19,7 +22,7 @@ if ($argc == 3 && is_numeric($argv[2])) {
 	exit("Argument 1 must the hostname or IP to the Sphinx searchd server, Argument 2 must be the port to the Sphinx searchd server.\nAlternatively, Argument 1 can be a unix domain socket." . PHP_EOL);
 }
 
-$pdo = new \nzedb\db\DB();
+$pdo = new DB();
 
 $tableSQL = <<<DDLSQL
 CREATE TABLE releases_se

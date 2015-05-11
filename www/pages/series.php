@@ -1,4 +1,10 @@
 <?php
+
+use nzedb\Category;
+use nzedb\Releases;
+use nzedb\TvRage;
+use nzedb\UserSeries;
+
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }

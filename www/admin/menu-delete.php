@@ -1,6 +1,8 @@
 <?php
 require_once './config.php';
 
+use nzedb\Menu;
+
 $page = new AdminPage();
 
 if (isset($_GET['id'])) {

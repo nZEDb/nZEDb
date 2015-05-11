@@ -103,22 +103,22 @@
 						<td colspan="8" class="left" id="guid{$result.guid}">
 							<h4>{if $result.author != ""}{$result.author}{" - "}{/if}{$result.title}</h4>
 							{if $result.genre != "null"}
-								<b>Genre:</b>{$result.genre|escape:'htmlall'}<br>
+								<b>Genre:</b> {$result.genre|escape:'htmlall'}<br>
 							{/if}
 							{if $result.publisher != ""}
-								<b>Publisher:</b>{$result.publisher}<br>
+								<b>Publisher:</b> {$result.publisher}<br>
 							{/if}
 							{if $result.publishdate != ""}
-								<b>Released:</b>{$result.publishdate|date_format}<br>
+								<b>Released:</b> {$result.publishdate|date_format}<br>
 							{/if}
 							{if $result.pages != ""}
-								<b>Pages:</b>{$result.pages}<br>
+								<b>Pages:</b> {$result.pages}<br>
 							{/if}
 							{if $result.salesrank != ""}
-								<b>Amazon Rank:</b>{$result.salesrank}<br>
+								<b>Amazon Rank:</b> {$result.salesrank}<br>
 							{/if}
 							{if $result.overview != "null"}
-								<b>Overview:</b>{$result.overview|escape:'htmlall'}<br>
+								<b>Overview:</b> {$result.overview|escape:'htmlall'}<br>
 							{/if}
 							<br>
 							<div class="relextra">

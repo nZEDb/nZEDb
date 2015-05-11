@@ -1,6 +1,8 @@
 <?php
 require_once './config.php';
 
+use nzedb\TvRage;
+
 $page   = new AdminPage();
 $tvrage = new TvRage(['Settings' => $page->settings]);
 $id     = 0;

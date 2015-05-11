@@ -1,4 +1,8 @@
 <?php
+
+use nzedb\Category;
+use nzedb\Releases;
+
 $page = new AdminPage(true);
 $releases = new Releases(['Settings' => $page->settings]);
 $category = new Category(['Settings' => $page->settings]);

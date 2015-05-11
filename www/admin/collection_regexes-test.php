@@ -1,6 +1,8 @@
 <?php
 require_once './config.php';
 
+use nzedb\Regexes;
+
 $page = new AdminPage();
 
 $page->title = "Collections Regex Test";

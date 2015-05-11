@@ -262,9 +262,7 @@
 				<td style="width:180px;"><label for="rottentomatokey">Rotten Tomatoes Key:</label></td>
 				<td>
 					<input id="rottentomatokey" class="long" name="rottentomatokey" type="text" value="{$site->rottentomatokey}"/>
-					{html_options style="width:180px;" id="rottentomatoquality" name='rottentomatoquality' values=$rottentomatoquality_ids output=$rottentomatoquality_names selected=$site->rottentomatoquality}
-					<div class="hint">The api key used for access to rotten tomatoes. Select the quality of the images to
-						display in Upcoming.
+					<div class="hint">The api key used for access to rotten tomatoes.
 					</div>
 				</td>
 			</tr>
@@ -316,6 +314,23 @@
 					<input id="fanarttvkey" class="long" name="fanarttvkey" type="text" value="{$site->fanarttvkey}"/>
 					<div class="hint">The Fanart.tv api key. Used for Fanart.tv lookups. Fanart.tv would appreciate it if
 						you use this service to help them out by adding high quality images not already available on TMDB.
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="recaptchasitekey">ReCaptcha Site Key:</label></td>
+				<td>
+					<input id="recaptchasitekey" class="long" name="recaptchasitekey" type="text" value="{$site->recaptchasitekey}"/>
+					<div class="hint">Register your application with ReCaptcha <a href="https://www.google.com/recaptcha" target="_blank">here</a>
+						to get your site and secret keys. Adding these keys will place ReCaptch's on all user-input forms. (Login, Register, Contact Us, Forgot Password)
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="recaptchasecretkey">ReCaptcha Secret key:</label></td>
+				<td>
+					<input id="recaptchasecretkey" class="long" name="recaptchasecretkey" type="text" value="{$site->recaptchasecretkey}"/>
+					<div class="hint">This is the required secret key for ReCaptcha to work, see the above setting hint for further information.
 					</div>
 				</td>
 			</tr>
@@ -611,7 +626,7 @@
 				<td>
 					<input id="nzbsplitlevel" class="short" name="nzbsplitlevel" type="text" value="{$site->nzbsplitlevel}"/>
 					<div class="hint">Levels deep to store the nzb Files.
-						<br /><strong>If you change this you must run the misc/testing/DB/nzb-reorg.php script!</strong>
+						<br /><strong>If you change this you must run the misc/testing/NZBs/nzb-reorg.php script!</strong>
 					</div>
 				</td>
 			</tr>

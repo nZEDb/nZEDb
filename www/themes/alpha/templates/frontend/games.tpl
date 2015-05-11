@@ -129,18 +129,18 @@
 					<td colspan="8" class="left" id="guid{$result.guid}">
 						<h4>{$result.title}</h4>
 						{if $result.genre != ""}
-							<b>Genre:</b>{$result.genre}<br>
+							<b>Genre:</b> {$result.genre}<br>
 						{/if}
 						{if $result.esrb != ""}
-							<b>Rating:</b>{$result.esrb}<br>
+							<b>Rating:</b> {$result.esrb}<br>
 						{/if}
 						{if $result.publisher != ""}
-							<b>Publisher:</b>{$result.publisher}<br>
+							<b>Publisher:</b> {$result.publisher}<br>
 						{/if}
 						{if $result.releasedate != ""}
-							<b>Released:</b>{$result.releasedate|date_format}<br>
+							<b>Released:</b> {$result.releasedate|date_format}<br>
 						{/if}
-						{if $result.review != ""}<b>Review:</b>{$result.review|escape:'htmlall'}<br>{/if}
+						{if $result.review != ""}<b>Synopsis:</b> {$result.review|escape:'htmlall'}<br>{/if}
 						<div class="relextra">
 							<table class="table table-condensed table-hover data">
 								{assign var="msplits" value=","|explode:$result.grp_release_id}

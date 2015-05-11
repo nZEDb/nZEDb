@@ -1,9 +1,12 @@
 <?php
+
+use nzedb\NZBGet;
+use nzedb\utility\Utility;
+
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
-use nzedb\utility\Utility;
 
 $nzbget = new NZBGet($page);
 

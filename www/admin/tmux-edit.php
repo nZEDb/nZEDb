@@ -1,6 +1,8 @@
 <?php
 require_once './config.php';
 
+use nzedb\Tmux;
+
 $page = new AdminPage();
 $tmux = new Tmux();
 $id   = 0;

@@ -1,6 +1,10 @@
 <?php
 require_once './config.php';
 
+use nzedb\Category;
+use nzedb\Genres;
+use nzedb\XXX;
+
 $page     = new AdminPage();
 $xxxmovie = new XXX(['Settings' => $page->settings]);
 $gen      = new Genres(['Settings' => $page->settings]);
@@ -73,7 +77,7 @@ if (isset($_REQUEST["id"])) {
 			}
 			$xxx['trailers'] = (!empty($xxx['trailers'])) ? unserialize($xxx['trailers']) : '';
 			$xxx['trailers'] = $xxx['trailers']['url'];
-			$page->smarty->assign('genres', $gen->getGenres(\Category::CAT_PARENT_XXX));
+			$page->smarty->assign('genres', $gen->getGenres(Category::CAT_PARENT_XXX));
 			$page->smarty->assign('xxxmovie', $xxx);
 			break;
 	}

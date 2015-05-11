@@ -2,6 +2,11 @@
 require_once SMARTY_DIR . 'Smarty.class.php';
 require_once nZEDb_LIB . 'utility' . DS . 'SmartyUtils.php';
 
+use nzedb\Captcha;
+use nzedb\SABnzbd;
+use nzedb\Users;
+use nzedb\db\Settings;
+
 class BasePage
 {
 	/**
@@ -60,6 +65,13 @@ class BasePage
 	public $https = false;
 
 	/**
+	 * Public access to Captcha object for error checking.
+	 *
+	 * @var Captcha
+	 */
+	public $captcha;
+
+	/**
 	 * Set up session / smarty / user variables.
 	 */
 	public function __construct()
@@ -81,7 +93,7 @@ class BasePage
 		}
 
 		// Buffer settings/DB connection.
-		$this->settings = new \nzedb\db\Settings();
+		$this->settings = new Settings();
 
 		$this->smarty = new Smarty();
 
@@ -147,10 +159,41 @@ class BasePage
 			$this->smarty->assign('isadmin', 'false');
 			$this->smarty->assign('ismod', 'false');
 			$this->smarty->assign('loggedin', 'false');
+
+			$this->handleCaptcha();
 		}
 
 		$this->smarty->assign('site', $this->settings);
 		$this->smarty->assign('page', $this);
+	}
+
+	/**
+	 * Allow display on pages that require captcha
+	 * and handle captcha responses.
+	 *
+	 * @notes Optimized for speed over code brevity since it's
+	 * executed on every singe page.
+	 * Instantiating Captcha() doesn't initialize the underlying libraries.
+	 * shouldDisplay() does it if applicable.
+	 */
+	private function handleCaptcha() {
+		$this->captcha = new Captcha(['Settings' => $this->settings]);
+
+		if ($this->captcha->shouldDisplay($this->page)) {
+			$this->smarty->assign('showCaptcha', true);
+			$this->smarty->assign('sitekey', $this->captcha->getSiteKey());
+
+			if ($this->isPostBack()) {
+				if (!$this->captcha->processCaptcha($_POST, $_SERVER['REMOTE_ADDR'])) {
+					$this->smarty->assign('error', $this->captcha->getError());
+				}
+				//Delete this key after using so it doesn't interfere with normal $_POST
+				//processing. (i.e. contact-us)
+				unset($_POST[Captcha::RECAPTCHA_POSTKEY]);
+			}
+		} else {
+			$this->smarty->assign('showCaptcha', false);
+		}
 	}
 
 	/**

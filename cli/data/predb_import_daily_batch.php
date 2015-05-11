@@ -5,23 +5,15 @@
 */
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php';
 
-use \nzedb\db\PreDb;
-use \nzedb\db\Settings;
-use \nzedb\utility\Utility;
+use nzedb\db\PreDb;
+use nzedb\utility\Utility;
 
 if (!Utility::isWin()) {
-	$fullPath = DS;
-	$paths    = preg_split('#/#', nZEDb_RES);
-	foreach ($paths as $path) {
-		if ($path !== '') {
-			$fullPath .= $path . DS;
-			if (!is_readable($fullPath) || !is_executable($fullPath)) {
-				exit('The (' . $fullPath . ') folder must be readable and executable by all.' .
-					 PHP_EOL);
-			}
-		}
+	$canExeRead = Utility::canExecuteRead(nZEDb_RES);
+	if (is_string($canExeRead)) {
+		exit($canExeRead);
 	}
-	unset($fullPath, $paths, $path);
+	unset($canExeRead);
 }
 
 if (!is_writable(nZEDb_RES)) {
@@ -48,7 +40,7 @@ $fileName = '_predb_dump.csv.gz';
 $innerUrl = 'fb2pffwwriruyco';
 $baseUrl  = 'https://www.dropbox.com/sh/' . $innerUrl;
 
-$result = nzedb\utility\Utility::getUrl(['url' => $baseUrl . '/AACy9Egno_v2kcziVHuvWbbxa']);
+$result = Utility::getUrl(['url' => $baseUrl . '/AACy9Egno_v2kcziVHuvWbbxa']);
 
 if (!$result) {
 	exit('Error connecting to dropbox.com, try again later?' . PHP_EOL);
@@ -64,7 +56,6 @@ $result = preg_match_all(
 if ($result) {
 	$links      = array_unique($links[1]);
 	$total      = count($links);
-	$pdo        = new Settings();
 	$predb      = new PreDb();
 
 	$progress = $predb->progress(settings_array());
@@ -123,18 +114,23 @@ if ($result) {
 			$verbose = $argv[3] == true ? true : false;
 
 			if ($verbose) {
-				echo $pdo->log->info("Clearing import table");
+				echo $predb->log->info("Clearing import table");
 			}
 
 			// Truncate to clear any old data
 			$predb->executeTruncate();
 
 			// Import file into predb_imports
-			$predb->executeLoadData($dumpFile, $local);
+			$predb->executeLoadData([
+										'fields' => '\\t\\t',
+										'lines'  => '\\r\\n',
+										'local' => $local,
+										'path' => $dumpFile,
+									]);
 
 			// Remove any titles where length <=8
-			if ($verbose) {
-				echo $pdo->log->info("Deleting any records where title <=8 from Temporary Table");
+			if ($verbose === true) {
+				echo $predb->log->info("Deleting any records where title <=8 from Temporary Table");
 			}
 			$predb->executeDeleteShort();
 
@@ -144,7 +140,7 @@ if ($result) {
 			// Fill the group_id
 			$predb->executeUpdateGroupID();
 
-			echo $pdo->log->info("Inserting records from temporary table into predb table");
+			echo $predb->log->info("Inserting records from temporary table into predb table");
 			$predb->executeInsert();
 
 			// Delete the dump.

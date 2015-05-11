@@ -19,7 +19,7 @@
  */
 namespace nzedb;
 
-use \Closure;
+use Closure;
 
 /**
  * Base class in hierarchy, from which all concrete classes inherit. This class defines

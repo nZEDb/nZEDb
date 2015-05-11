@@ -8,11 +8,12 @@
  */
 require_once realpath(__DIR__ . '/../../../../www/config.php');
 
+use nzedb\Tmux;
 use nzedb\db\Settings;
 
 $pdo = new Settings();
 
-$tmux = new \Tmux();
+$tmux = new Tmux();
 $tmux_settings = $tmux->get();
 $tmux_session = (isset($tmux_settings->tmux_session)) ? $tmux_settings->tmux_session : 0;
 $path = __DIR__;

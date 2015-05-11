@@ -1,6 +1,8 @@
 <?php
 require_once './config.php';
 
+use nzedb\Binaries;
+
 $page = new AdminPage();
 $bin  = new Binaries(['Settings' => $page->settings]);
 

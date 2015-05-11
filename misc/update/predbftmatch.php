@@ -1,6 +1,8 @@
 <?php
 require_once dirname(__FILE__) . '/config.php';
 
+use nzedb\ConsoleTools;
+use nzedb\NameFixer;
 use nzedb\db\Settings;
 
 $pdo = new Settings();
@@ -15,7 +17,7 @@ if (!isset($argv[1]) || ($argv[1] != "all" && $argv[1] != "full" && !is_numeric(
 			));
 }
 
-$namefixer = new \NameFixer(['Settings' => $pdo]);
+$namefixer = new NameFixer(['Settings' => $pdo]);
 $offset = '';
 
 $timestart = time();
@@ -53,7 +55,7 @@ if (isset($argv[2]) && $argv[2] === "show") {
 $total = ($titles === false ? 0 : $titles->rowCount());
 if ($total > 1) {
 
-	$consoletools = new \ConsoleTools(['ColorCLI' => $pdo->log]);
+	$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 	echo $pdo->log->header("\nMatching " . number_format($total) . " PreDB titles against release name or searchname.\n"
 			   . "'.' = No Match Found, '*' = Bad Match Parameters (Flood)\n\n");
 	sleep(2);

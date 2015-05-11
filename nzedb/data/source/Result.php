@@ -19,7 +19,7 @@
  */
 namespace nzedb\data\model\source;
 
-use \nzedb\Object;
+use nzedb\Object;
 
 abstract class Result extends Object implements \Iterator
 {

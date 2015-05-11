@@ -111,19 +111,19 @@
 				</td>
 				<td colspan="7" class="left" id="guid{$result.guid}">
 					<h4>{$result.artist}{" - "}{$result.title}</h4>
-					{if $result.genre != ""}
+					{if $result.genre_id != ""}
 						<b>Genre:</b>
 						<a href="{$smarty.const.WWW_TOP}/music/?genre={$result.genre_id}">{$result.genre|escape:"htmlall"}</a>
 						<br>
 					{/if}
 					{if $result.publisher != ""}
-						<b>Publisher:</b>{$result.publisher|escape:"htmlall"}<br>
+						<b>Publisher:</b> {$result.publisher|escape:"htmlall"}<br>
 					{/if}
 					{if $result.releasedate != ""}
-						<b>Released:</b>{$result.releasedate|date_format}<br>
+						<b>Released:</b> {$result.releasedate|date_format}<br>
 					{/if}
 					{if $result.review != ""}
-						<b>Review:</b>{$result.review|escape:'htmlall'}<br>
+						<b>Review:</b> {$result.review|escape:'htmlall'}<br>
 					{/if}
 					{if $result.haspreview == 2 && $userdata.canpreview == 1}
 						<b>Preview:</b>

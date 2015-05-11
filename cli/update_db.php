@@ -36,7 +36,7 @@ if (isset($argc) && $argc > 1 && isset($argv[1]) && $argv[1] == true) {
 	if ($patched > 0) {
 		echo $updater->log->info("$patched patch(es) applied.");
 
-		$smarty  = new \Smarty();
+		$smarty  = new Smarty();
 		$cleared = $smarty->clearCompiledTemplate();
 		if ($cleared) {
 			$msg = "The smarty template cache has been cleaned for you\n";
