@@ -9,6 +9,7 @@ use nzedb\Music;
 use nzedb\PreDb;
 use nzedb\ReleaseComments;
 use nzedb\ReleaseExtra;
+use nzedb\ReleaseFiles;
 use nzedb\Releases;
 use nzedb\TraktTv;
 use nzedb\TvRage;

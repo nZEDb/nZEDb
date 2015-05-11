@@ -1,5 +1,7 @@
 <?php
-use \nzedb\db\Settings;
+namespace nzedb;
+
+use nzedb\db\Settings;
 
 
 class Captcha {
@@ -196,5 +198,4 @@ class Captcha {
 
 		return false;
 	}
-
 }

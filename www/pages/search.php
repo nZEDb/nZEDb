@@ -2,6 +2,7 @@
 
 use nzedb\Category;
 use nzedb\Groups;
+use nzedb\ReleaseSearch;
 use nzedb\Releases;
 
 if (!$page->users->isLoggedIn()) {
