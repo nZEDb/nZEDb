@@ -2,6 +2,7 @@
 
 use nzedb\Users;
 use nzedb\db\Settings;
+use nzedb\Captcha;
 
 if ($page->users->isLoggedIn()) {
 	$page->show404();
@@ -29,9 +30,11 @@ if ($showregister == 0) {
 		$page->smarty->assign('invite_code_query', '');
 	}
 
+	$captcha = new Captcha($page);
+
 	switch ($action) {
 		case 'submit':
-			if ($page->captcha->getError() === false) {
+			if ($captcha->getError() === false) {
 				$firstName = (isset($_POST['firstname']) ? htmlspecialchars($_POST['firstname']) : '');
 				$lastName = (isset($_POST['lastname']) ? htmlspecialchars($_POST['lastname']) : '');
 				$username = htmlspecialchars($_POST['username']);
