@@ -1,4 +1,6 @@
 <?php
+namespace nzedb\controllers;
+
 use \nzedb\db\Settings;
 
 
