@@ -664,7 +664,7 @@ class Forking extends \fork_daemon
 					AND c.disablepreview = 0
 					%s %s
 					LIMIT 1',
-					\NZB::NZB_ADDED,
+					NZB::NZB_ADDED,
 					$this->ppAddMaxSize,
 					$this->ppAddMinSize
 				)
