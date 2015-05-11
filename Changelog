@@ -11,6 +11,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	* Fix: Captcha namespace issue.
 	* Chg: Dropping initial backslash from most use statements.
 	* Fix: ReleaseExtra namespace issue in ajax_mediainfo - Thanks Greg.
+	* Fix: More namespace fixes for NZBGet and Greenlight classes - Thanks to Scottia.
 2015-05-10 niel
 	* Mrg: Bringing in dev-namespace branch.
 2015-04-10 bart39
