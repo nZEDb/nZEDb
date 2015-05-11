@@ -664,7 +664,7 @@ class Forking extends \fork_daemon
 					AND c.disablepreview = 0
 					%s %s
 					LIMIT 1',
-					\NZB::NZB_ADDED,
+					NZB::NZB_ADDED,
 					$this->ppAddMaxSize,
 					$this->ppAddMinSize
 				)
@@ -690,7 +690,7 @@ class Forking extends \fork_daemon
 					%s %s
 					GROUP BY LEFT(r.guid, 1)
 					LIMIT 16',
-					\NZB::NZB_ADDED,
+					NZB::NZB_ADDED,
 					$this->ppAddMaxSize,
 					$this->ppAddMinSize
 				)
@@ -760,7 +760,7 @@ class Forking extends \fork_daemon
 						AND categoryid BETWEEN 2000 AND 2999
 						%s %s
 						LIMIT 1',
-						\NZB::NZB_ADDED,
+						NZB::NZB_ADDED,
 						($this->pdo->getSetting('lookupimdb') == 2 ? 'AND isrenamed = 1' : ''),
 						($this->ppRenamedOnly ? 'AND isrenamed = 1' : '')
 					)
@@ -787,7 +787,7 @@ class Forking extends \fork_daemon
 					GROUP BY LEFT(guid, 1)
 					LIMIT 16',
 					($this->ppRenamedOnly ? 2 : 1),
-					\NZB::NZB_ADDED,
+					NZB::NZB_ADDED,
 					($this->pdo->getSetting('lookupimdb') == 2 ? 'AND isrenamed = 1' : ''),
 					($this->ppRenamedOnly ? 'AND isrenamed = 1' : '')
 				)
@@ -815,7 +815,7 @@ class Forking extends \fork_daemon
 						AND categoryid BETWEEN 5000 AND 5999
 						%s %s
 						LIMIT 1',
-						\NZB::NZB_ADDED,
+						NZB::NZB_ADDED,
 						($this->pdo->getSetting('lookuptvrage') == 2 ? 'AND isrenamed = 1' : ''),
 						($this->ppRenamedOnly ? 'AND isrenamed = 1' : '')
 					)
@@ -843,7 +843,7 @@ class Forking extends \fork_daemon
 					GROUP BY LEFT(guid, 1)
 					LIMIT 16',
 					($this->ppRenamedOnly ? 2 : 1),
-					\NZB::NZB_ADDED,
+					NZB::NZB_ADDED,
 					($this->pdo->getSetting('lookuptvrage') == 2 ? 'AND isrenamed = 1' : ''),
 					($this->ppRenamedOnly ? 'AND isrenamed = 1' : '')
 				)

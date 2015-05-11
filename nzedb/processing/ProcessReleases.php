@@ -7,6 +7,7 @@ use nzedb\ConsoleTools;
 use nzedb\Genres;
 use nzedb\Groups;
 use nzedb\NZB;
+use nzedb\PreDb;
 use nzedb\ReleaseCleaning;
 use nzedb\ReleaseImage;
 use nzedb\Releases;
@@ -722,7 +723,7 @@ class ProcessReleases
 					WHERE r.nzbstatus = %d
 					AND c.filecheck = %d',
 					$group['cname'],
-					\NZB::NZB_ADDED,
+					NZB::NZB_ADDED,
 					self::COLLFC_INSERTED
 				)
 			);
