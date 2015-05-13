@@ -369,8 +369,8 @@ function categoryID()
 	if (isset($_GET['cat'])) {
 		$categoryIDs = urldecode($_GET['cat']);
 		// Append Web-DL category ID if HD present for SickBeard / NZBDrone compatibility.
-		if (strpos(urldecode($_GET['cat']), (string)Category::CAT_TV_HD) !== false &&
-			strpos(urldecode($_GET['cat']), (string)Category::CAT_TV_WEBDL) === false) {
+		if (strpos($categoryIDs, (string)Category::CAT_TV_HD) !== false &&
+			strpos($categoryIDs, (string)Category::CAT_TV_WEBDL) === false) {
 			$categoryIDs .= (',' . Category::CAT_TV_WEBDL);
 		}
 		$categoryID = explode(',', $categoryIDs);

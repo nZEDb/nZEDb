@@ -14,6 +14,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	* Mrg: PR 1664 from zetas - Captcha Refactor. Moving logic from BasePage into Captcha class.
 	* Fix: Changing 'verifypeer' to 'verifycert' in SABnzbd class to fix integration. Thanks to zetas.
 	* Fix: Console's 'Invalid xml response.' exception.
+	* Mrg: PR 1669 from tyldum - Do urldecode before working on 'cat'
 2015-05-10 niel
 	* Mrg: Bringing in dev-namespace branch.
 2015-04-10 bart39
