@@ -320,8 +320,10 @@ class Console
 		try {
 			$amaz = $this->fetchAmazonProperties($gameInfo['title'], $gameInfo['node']);
 		} catch (\Exception $e) {
-			if ($e == 'Invalid xml response.') {
+			if ($e->getMessage() == 'Invalid xml response.') {
 				$amaz = false;
+			} else {
+				throw new \Exception($e->getMessage(), $e->getCode(), $e);
 			}
 		}
 
