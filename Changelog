@@ -13,6 +13,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	* Fix: ReleaseExtra namespace issue in ajax_mediainfo - Thanks Greg.
 	* Mrg: PR 1664 from zetas - Captcha Refactor. Moving logic from BasePage into Captcha class.
 	* Fix: Changing 'verifypeer' to 'verifycert' in SABnzbd class to fix integration. Thanks to zetas.
+	* Fix: Console's 'Invalid xml response.' exception.
 2015-05-10 niel
 	* Mrg: Bringing in dev-namespace branch.
 2015-04-10 bart39
