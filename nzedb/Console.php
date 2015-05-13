@@ -317,10 +317,15 @@ class Console
 	{
 		$consoleId = self::CONS_NTFND;
 
-		$amaz = $this->fetchAmazonProperties($gameInfo['title'], $gameInfo['node']);
+		try {
+			$amaz = $this->fetchAmazonProperties($gameInfo['title'], $gameInfo['node']);
+		} catch (\Exception $e) {
+			if ($e == 'Invalid xml response.') {
+				$amaz = false;
+			}
+		}
 
-		if ($amaz) {
-
+		if ($amaz != false) {
 			$gameInfo['platform'] = $this->_replacePlatform($gameInfo['platform']);
 
 			$con = $this->_setConBeforeMatch($amaz, $gameInfo);
