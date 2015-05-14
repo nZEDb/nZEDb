@@ -57,6 +57,12 @@ class Music
 	public $renamed;
 
 	/**
+	 * Store names of failed Amazon lookup items
+	 * @var array
+	 */
+	public $failCache;
+
+	/**
 	 * @param array $options Class instances/ echo to CLI.
 	 */
 	public function __construct(array $options = [])
