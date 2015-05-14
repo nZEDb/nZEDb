@@ -838,8 +838,9 @@ class Users
 	{
 		session_unset();
 		session_destroy();
-		setcookie('uid', '', (time() - 2592000));
-		setcookie('idh', '', (time() - 2592000));
+		$secure_cookie = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? '1' : '0');
+		setcookie('uid', null, -1, '/', null, $secure_cookie, true);
+		setcookie('idh', null, -1, '/', null, $secure_cookie, true);
 	}
 
 	/**
@@ -900,9 +901,8 @@ class Users
 	{
 		$user = $this->getById($userID);
 		$secure_cookie = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? '1' : '0');
-		setcookie('uid', $userID, (time() + 2592000), '/', '', $secure_cookie, 'true');
-		setcookie('idh', ($this->hashSHA1($user['userseed'] . $userID)), (time() + 2592000), '/', '', $secure_cookie, 'true');
-	}
+		setcookie('uid', $userID, (time() + 2592000), '/', null, $secure_cookie, true);
+		setcookie('idh', ($this->hashSHA1($user['userseed'] . $userID)), (time() + 2592000), '/', null, $secure_cookie, true);	}
 
 	/**
 	 * Add a release to the user's cart.
