@@ -85,6 +85,8 @@ class Books
 		if ($this->pdo->getSetting('lookupbooks') == 2) {
 			$this->renamed = 'AND isrenamed = 1';
 		}
+
+		$this->failCache = array();
 	}
 
 	public function getBookInfo($id)
@@ -368,15 +370,22 @@ class Books
 					// Do a local lookup first
 					$bookCheck = $this->getBookInfoByName('', $bookInfo);
 
-					if ($bookCheck === false) {
+					if ($bookCheck === false && in_array($bookInfo, $this->failCache)) {
+						// Lookup recently failed, no point trying again
+						if ($this->echooutput) {
+							$this->pdo->log->doEcho($this->pdo->log->headerOver('Cached previous failure. Skipping.') . PHP_EOL);
+						}
+						$bookId = -2;
+					} else if ($bookCheck === false) {
 						$bookId = $this->updateBookInfo($bookInfo);
 						$usedAmazon = true;
 						if ($bookId === false) {
 							$bookId = -2;
+							$this->failCache[] = $bookInfo;
 						}
 					} else {
 						$bookId = $bookCheck['id'];
-						}
+					}
 
 					// Update release.
 					$this->pdo->queryExec(sprintf('UPDATE releases SET bookinfoid = %d WHERE id = %d', $bookId, $arr['id']));
