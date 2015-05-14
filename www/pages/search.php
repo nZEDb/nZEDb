@@ -71,7 +71,6 @@ if ((isset($_REQUEST["id"]) || isset($_REQUEST["subject"])) && !isset($_REQUEST[
 			'pageroffset' => $offset,
 			'pageritemsperpage' => ITEMS_PER_PAGE,
 			'pagerquerysuffix' => "#results",
-			'pager' => $page->smarty->fetch("pager.tpl"),
 			'pagerquerybase' =>
 				WWW_TOP . "/search/" . htmlentities($searchString) . "?t=" .
 				(implode(',', $categoryID)) . "&amp;ob=$orderBy&amp;offset=",
@@ -134,7 +133,6 @@ if (isset($_REQUEST["searchadvr"]) && !isset($_REQUEST["id"]) && !isset($_REQUES
 			'pageroffset' => $offset,
 			'pageritemsperpage' => ITEMS_PER_PAGE,
 			'pagerquerysuffix' => "#results",
-			'pager' => $page->smarty->fetch("pager.tpl"),
 			'pagerquerybase' => WWW_TOP . "/search?searchadvr=$orderByString&search_type=adv&amp;ob=$orderBy&amp;offset="
 		]
 	);
@@ -184,7 +182,8 @@ $page->smarty->assign(
 		'results' => $results, 'sadvanced' => ($searchType != "basic"),
 		'grouplist' => $groups->getGroupsForSelect(),
 		'catlist' => (new Category(['Settings' => $page->settings]))->getForSelect(),
-		'search_description' => $search_description
+		'search_description' => $search_description,
+		'pager' => $page->smarty->fetch("pager.tpl")
 	]
 );
 
