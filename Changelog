@@ -7,6 +7,7 @@ All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 2015-05-14 bart39
+	* Add: Collection regexes part 1 from issue #1668
 	* Mrg: PR 1671 from enverex - Make sure that the destroyed cookie matches the created cookie.
 2015-05-11 niel
 	* Fix: Namespace issues - Thanks to Darius for compiling the list.
