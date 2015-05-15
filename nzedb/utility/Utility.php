@@ -24,7 +24,7 @@ class Utility
 	 *
 	 * @return bool|string True is successful, otherwise the part of the path that failed testing.
 	 */
-	static public function canExecuteRead($path)
+	public static function canExecuteRead($path)
 	{
 		$paths = preg_split('#/#', $path);
 		$fullPath = DS;
@@ -39,7 +39,7 @@ class Utility
 		return true;
 	}
 
-	static public function clearScreen()
+	public static function clearScreen()
 	{
 		if (self::isCLI()) {
 			if (self::isWin()) {
@@ -60,7 +60,7 @@ class Utility
 	 * @static
 	 * @access public
 	 */
-	static public function collapseWhiteSpace($text)
+	public static function collapseWhiteSpace($text)
 	{
 		// Strip leading/trailing white space.
 		return trim(
@@ -84,7 +84,7 @@ class Utility
 	 * @static
 	 * @access public
 	 */
-	static public function curlSslContextOptions($verify = true)
+	public static function curlSslContextOptions($verify = true)
 	{
 		$options = [];
 		if ($verify && nZEDb_SSL_VERIFY_HOST) {
@@ -118,7 +118,7 @@ class Utility
 	 *
 	 * @return string
 	 */
-	static public function cutStringUsingLast($character, $string, $side, $keepCharacter = true)
+	public static function cutStringUsingLast($character, $string, $side, $keepCharacter = true)
 	{
 		$offset = ($keepCharacter ? 1 : 0);
 		$wholeLength = strlen($string);
@@ -172,7 +172,7 @@ class Utility
 	 *
 	 * @return array    Always returns array of path-names in unix format (even on Windows).
 	 */
-	static public function getDirFiles(array $options = null)
+	public static function getDirFiles(array $options = null)
 	{
 		$defaults = [
 			'dir'   => false,
@@ -217,7 +217,7 @@ class Utility
 	 * @access public
 	 * @static
 	 */
-	static public function getUrl(array $options = [])
+	public static function getUrl(array $options = [])
 	{
 		$defaults = [
 			'url'        => '', // The URL to download.
@@ -303,7 +303,7 @@ class Utility
 		}
 	}
 
-	static public function getValidVersionsFile()
+	public static function getValidVersionsFile()
 	{
 		$versions = new Versions();
 
@@ -317,7 +317,7 @@ class Utility
 	 *
 	 * @return bool|null Returns true if found, false if not found, and null if which is not detected.
 	 */
-	static public function hasCommand($cmd)
+	public static function hasCommand($cmd)
 	{
 		if (HAS_WHICH) {
 			$returnVal = shell_exec("which $cmd");
@@ -331,7 +331,7 @@ class Utility
 	/**
 	 * Check for availability of which command
 	 */
-	static public function hasWhich()
+	public static function hasWhich()
 	{
 		exec('which which', $output, $error);
 
@@ -343,12 +343,12 @@ class Utility
 	 *
 	 * @return bool
 	 */
-	static public function isCLI()
+	public static function isCLI()
 	{
 		return ((strtolower(PHP_SAPI) === 'cli') ? true : false);
 	}
 
-	static public function isGZipped($filename)
+	public static function isGZipped($filename)
 	{
 		$gzipped = null;
 		if (($fp = fopen($filename, 'r')) !== false) {
@@ -365,7 +365,7 @@ class Utility
 		return ($gzipped);
 	}
 
-	static public function isPatched(Settings $pdo = null)
+	public static function isPatched(Settings $pdo = null)
 	{
 		$versions = self::getValidVersionsFile();
 
@@ -388,12 +388,12 @@ class Utility
 		return true;
 	}
 
-	static public function isWin()
+	public static function isWin()
 	{
 		return (strtolower(substr(PHP_OS, 0, 3)) === 'win');
 	}
 
-	static public function setCoversConstant($path)
+	public static function setCoversConstant($path)
 	{
 		if (!defined('nZEDb_COVERS')) {
 			switch (true) {
@@ -423,7 +423,7 @@ class Utility
 	 * @static
 	 * @access public
 	 */
-	static public function streamSslContextOptions($forceIgnore = false)
+	public static function streamSslContextOptions($forceIgnore = false)
 	{
 		$options = [
 			'verify_peer'       => ($forceIgnore ? false : (bool)nZEDb_SSL_VERIFY_PEER),
@@ -442,7 +442,7 @@ class Utility
 		return ['tls' => $options, 'ssl' => $options];
 	}
 
-	static public function stripBOM(&$text)
+	public static function stripBOM(&$text)
 	{
 		$bom = pack("CCC", 0xef, 0xbb, 0xbf);
 		if (0 == strncmp($text, $bom, 3)) {
@@ -460,7 +460,7 @@ class Utility
 	 *
 	 * @return string    The stripped variable.
 	 */
-	static public function stripNonPrintingChars(&$text)
+	public static function stripNonPrintingChars(&$text)
 	{
 		$lowChars = [
 			"\x00", "\x01", "\x02", "\x03", "\x04", "\x05", "\x06", "\x07",
@@ -473,7 +473,7 @@ class Utility
 		return $text;
 	}
 
-	static public function trailingSlash($path)
+	public static function trailingSlash($path)
 	{
 		if (substr($path, strlen($path) - 1) != '/') {
 			$path .= '/';
@@ -489,7 +489,7 @@ class Utility
 	 *
 	 * @return string|false
 	 */
-	static public function unzipGzipFile($filePath)
+	public static function unzipGzipFile($filePath)
 	{
 		/* Potential issues with this, so commenting out.
 		$length = Utility::isGZipped($filePath);
@@ -523,7 +523,7 @@ class Utility
 	 *
 	 * @return string File info. Empty string on failure.
 	 */
-	static public function fileInfo($path)
+	public static function fileInfo($path)
 	{
 		$output = '';
 		$magicPath = (new Settings())->getSetting('apps.indexer.magic_file_path');
@@ -567,7 +567,7 @@ class Utility
 	 *
 	 * @return array
 	 */
-	static public function runCmd($command, $debug = false)
+	public static function runCmd($command, $debug = false)
 	{
 		if ($debug) {
 			echo '-Running Command: ' . PHP_EOL . '   ' . $command . PHP_EOL;
@@ -591,7 +591,7 @@ class Utility
 	 *
 	 * @return string
 	 */
-	static public function safeFilename($filename)
+	public static function safeFilename($filename)
 	{
 		return trim(preg_replace('/[^\w\s.-]*/i', '', $filename));
 	}
@@ -604,7 +604,7 @@ class Utility
 	 *
 	 * @return string
 	 */
-	static public function bytesToSizeString($bytes, $precision = 0)
+	public static function bytesToSizeString($bytes, $precision = 0)
 	{
 		if ($bytes == 0) {
 			return '0B';
@@ -621,7 +621,7 @@ class Utility
 	 *
 	 * @return string
 	 */
-	static public function cp437toUTF($str)
+	public static function cp437toUTF($str)
 	{
 		$out = '';
 		for ($i = 0; $i < strlen($str); $i++) {
@@ -1025,7 +1025,7 @@ class Utility
 	 *
 	 * @return string
 	 */
-	static public function imdb_trailers($imdbID)
+	public static function imdb_trailers($imdbID)
 	{
 		$xml = Utility::getUrl(['url' => 'http://api.traileraddict.com/?imdb=' . $imdbID]);
 		if ($xml !== false) {
@@ -1037,7 +1037,7 @@ class Utility
 	}
 
 	// Convert obj to array.
-	static public function objectsIntoArray($arrObjData, $arrSkipIndices = [])
+	public static function objectsIntoArray($arrObjData, $arrSkipIndices = [])
 	{
 		$arrData = [];
 
