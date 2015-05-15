@@ -81,6 +81,13 @@ class NZB
 	protected $_nzbHeadString;
 
 	/**
+	 * Names of CBP tables.
+	 * @var array [string => string]
+	 * @access protected
+	 */
+	protected $_tableNames;
+
+	/**
 	 * Default constructor.
 	 *
 	 * @param Settings $pdo
@@ -115,13 +122,17 @@ class NZB
 			if ($this->groupID == '') {
 				exit("$this->groupID is missing\n");
 			}
-			$cName = 'collections_' . $this->groupID;
-			$bName = 'binaries_' . $this->groupID;
-			$pName = 'parts_' . $this->groupID;
+			$this->_tableNames = [
+				'cName' => 'collections_' . $this->groupID,
+				'bName' => 'binaries_' . $this->groupID,
+				'pName' => 'parts_' . $this->groupID
+			];
 		} else {
-			$cName = 'collections';
-			$bName = 'binaries';
-			$pName = 'parts';
+			$this->_tableNames = [
+				'cName' => 'collections',
+				'bName' => 'binaries',
+				'pName' => 'parts'
+			];
 		}
 
 		$this->_collectionsQuery = sprintf(
@@ -129,17 +140,18 @@ class NZB
 			FROM %s
 			INNER JOIN groups ON %s.group_id = groups.id
 			WHERE %s.releaseid = ',
-			$cName,
-			$cName,
-			$cName,
-			$cName,
-			$cName
+			$this->_tableNames['cName'],
+			$this->_tableNames['cName'],
+			$this->_tableNames['cName'],
+			$this->_tableNames['cName'],
+			$this->_tableNames['cName']
 		);
 		$this->_binariesQuery = (
-			'SELECT id, name, totalparts FROM ' . $bName . ' WHERE collection_id = %d ORDER BY name'
+			'SELECT id, name, totalparts FROM ' . $this->_tableNames['bName'] . ' WHERE collection_id = %d ORDER BY name'
 		);
 		$this->_partsQuery = (
-			'SELECT DISTINCT(messageid), size, partnumber FROM ' . $pName . ' WHERE binaryid = %d ORDER BY partnumber'
+			'SELECT DISTINCT(messageid), size, partnumber FROM ' . $this->_tableNames['pName'] .
+			' WHERE binaryid = %d ORDER BY partnumber'
 		);
 
 		$this->_nzbHeadString = (
@@ -224,12 +236,14 @@ class NZB
 			gzclose($fp);
 
 			if (is_file($path)) {
+				// Mark release as having NZB and delete CBP.
 				$this->pdo->queryExec(
 					sprintf('
-						UPDATE releases SET nzbstatus = %d %s WHERE id = %d',
+						UPDATE releases SET nzbstatus = %d %s WHERE id = %d;
+						DELETE FROM %s WHERE releaseid = %d',
 						NZB::NZB_ADDED,
 						($nzb_guid === '' ? '' : ', nzb_guid = ' . $this->pdo->escapestring(md5($nzb_guid))),
-						$relID
+						$relID, $this->_tableNames['cName'], $relID
 					)
 				);
 
