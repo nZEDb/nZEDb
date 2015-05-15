@@ -670,7 +670,6 @@ class ProcessReleases
 	public function createNZBs($groupID)
 	{
 		$startTime = time();
-		$group = $this->groups->getCBPTableNames($this->tablePerGroup, $groupID);
 
 		if ($this->echoCLI) {
 			$this->pdo->log->doEcho($this->pdo->log->header("Process Releases -> Create the NZB, delete collections/binaries/parts."));
@@ -688,7 +687,7 @@ class ProcessReleases
 			)
 		);
 
-		$deleted = $nzbCount = 0;
+		$nzbCount = 0;
 
 		if ($releases && $releases->rowCount()) {
 			$total = $releases->rowCount();
@@ -699,47 +698,20 @@ class ProcessReleases
 				if ($this->nzb->writeNZBforReleaseId($release['id'], $release['guid'], $release['name'], $release['title']) === true) {
 					$nzbCount++;
 					if ($this->echoCLI) {
-						echo $this->pdo->log->primaryOver("Creating NZBs:\t" . $nzbCount . '/' . $total . "\r");
+						echo $this->pdo->log->primaryOver("Creating NZBs and deleting Collections:\t" . $nzbCount . '/' . $total . "\r");
 					}
 				}
 			}
 		}
 
-		$nzbEnd = time();
-
-		if ($nzbCount > 0) {
-			if ($this->echoCLI) {
-				$this->pdo->log->doEcho(
-					$this->pdo->log->primary(
-						PHP_EOL . 'Deleting collections/binaries/parts, be patient.'
-					)
-				);
-			}
-
-			$deleteQuery = $this->pdo->queryDelete(
-				sprintf('
-					DELETE c FROM %s c
-					INNER JOIN releases r ON r.id = c.releaseid
-					WHERE r.nzbstatus = %d
-					AND c.filecheck = %d',
-					$group['cname'],
-					NZB::NZB_ADDED,
-					self::COLLFC_INSERTED
-				)
-			);
-			if ($deleteQuery !== false) {
-				$deleted = $deleteQuery->rowCount();
-			}
-		}
-
-		$deleteEnd = time();
+		$totalTime = (time() - $startTime);
 
 		if ($this->echoCLI) {
 			$this->pdo->log->doEcho(
 				$this->pdo->log->primary(
-					number_format($nzbCount) . ' NZBs created in ' . ($nzbEnd - $startTime) . ' seconds.' . PHP_EOL .
-					'Deleted ' . number_format($deleted) . ' collections in ' . ($deleteEnd - $nzbEnd) . ' seconds.' . PHP_EOL .
-					'Total time: ' . $this->pdo->log->primary($this->consoleTools->convertTime(time() - $startTime))
+					number_format($nzbCount) . ' NZBs created/Collections deleted in ' .
+					$totalTime . ' seconds.' . PHP_EOL .
+					'Total time: ' . $this->pdo->log->primary($this->consoleTools->convertTime($totalTime))
 				)
 			);
 		}
