@@ -31,6 +31,11 @@ if (!is_readable($sessionPath) || !is_writable($sessionPath)) {
 	$cfg->sessionsPathPermissions = false;
 }
 
+$cfg->iconvCheck = function_exists('iconv');
+if ($cfg->iconvCheck === false) {
+	$cfg->error = true;
+}
+
 $cfg->cryptCheck = function_exists('crypt');
 if ($cfg->cryptCheck === false) {
 	$cfg->error = true;

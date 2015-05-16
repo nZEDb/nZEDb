@@ -41,6 +41,7 @@ class Install
 	public $doCheck = false;
 	public $sha1Check;
 	public $cryptCheck;
+	public $iconvCheck;
 	public $PDOCheck;
 	public $gdCheck;
 	public $curlCheck;
