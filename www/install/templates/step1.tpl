@@ -4,8 +4,8 @@
 	<th style="width:75px;">status</th>
 </tr>
 <tr class="">
-	<td>Checking for Curl support:{if !$cfg->curlCheck}<br /><span class="warn">The PHP installation lacks support for curl.</span>{/if}</td>
-	<td>{if $cfg->curlCheck}<span class="success">OK</span>{else}<span class="warn">Warning</span>{/if}</td>
+	<td>Checking for Curl support:{if !$cfg->curlCheck}<br /><span class="error">The PHP installation lacks support for curl.</span>{/if}</td>
+	<td>{if $cfg->curlCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 </tr>
 <tr class="alt">
 	<td>Checking for sha1():{if !$cfg->sha1Check}<br /><span class="error">The PHP installation lacks support for sha1.</span>{/if}</td>
@@ -16,8 +16,8 @@
 	<td>{if $cfg->sha1Check}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 </tr>
 <tr class="alt">
-	<td>Checking PHP's version:{if !$cfg->phpCheck}<br /><span class="warn">Your PHP version is lower than recommended ({$cfg->minPhpVersion}). You may encounter errors if you proceed.</span>{/if}</td>
-	<td>{if $cfg->phpCheck}<span class="success">OK</span>{else}<span class="warn">Warning</span>{/if}</td>
+	<td>Checking PHP's version:{if !$cfg->phpCheck}<br /><span class="error">Your PHP version is lower than recommended ({$cfg->minPhpVersion}). You may encounter errors if you proceed.</span>{/if}</td>
+	<td>{if $cfg->phpCheck}<span class="success">OK</span>{else}<span class="error">Warning</span>{/if}</td>
 </tr>
 <tr class="">
 	<td>Checking for Pear:{if !$cfg->pearCheck}<br /><span class="error">Cannot find PEAR. To install PEAR follow the instructions at <a href="http://pear.php.net/manual/en/installation.php" target="_blank">http://pear.php.net/manual/en/installation.php</a></span>{/if}</td>
