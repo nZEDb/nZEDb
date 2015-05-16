@@ -8,6 +8,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2015-05-16 niel
 	* Mrg: PR 1680 from kevin123 - Use iconv for converting CP437, fix broking install.
+	* Add: PR 1679 from kaibosh - Add check_previews script, cleanup tool.
 2015-05-15 niel
 	* Fix: Minor coding standards fixes.
 2015-05-15 bart39
