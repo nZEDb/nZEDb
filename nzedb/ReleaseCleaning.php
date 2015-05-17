@@ -55,7 +55,7 @@ class ReleaseCleaning
 	protected $_regexes;
 
 	/**
-	 * @param nzedb\db\Settings $settings
+	 * @param \nzedb\db\Settings $settings
 	 */
 	public function __construct($settings = null)
 	{

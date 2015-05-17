@@ -8,7 +8,7 @@ class Backfill
 	/**
 	 * Instance of class Settings
 	 *
-	 * @var nzedb\db\DB
+	 * @var \nzedb\db\DB
 	 */
 	public $pdo;
 

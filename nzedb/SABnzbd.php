@@ -86,7 +86,7 @@ class SABnzbd
 	/**
 	 * Construct.
 	 *
-	 * @param BasePage $page
+	 * @param \BasePage $page
 	 */
 	public function __construct(&$page)
 	{

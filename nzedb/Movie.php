@@ -95,7 +95,7 @@ class Movie
 	protected $releaseImage;
 
 	/**
-	 * @var TMDb
+	 * @var \TMDb
 	 */
 	protected $tmdb;
 
@@ -296,7 +296,7 @@ class Movie
 	 * @param       $maxAge
 	 * @param array $excludedCats
 	 *
-	 * @return bool|PDOStatement
+	 * @return bool|\PDOStatement
 	 */
 	public function getMovieRange($cat, $start, $num, $orderBy, $maxAge = -1, $excludedCats = [])
 	{
@@ -1347,7 +1347,7 @@ class Movie
 
 	/**
 	 * @param string $operation
-	 * @param \RottenTomato $rt
+	 * @param \nzedb\RottenTomato $rt
 	 */
 	protected function _getRTData($operation = '', $rt)
 	{

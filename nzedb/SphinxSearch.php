@@ -61,7 +61,7 @@ class SphinxSearch
 	/**
 	 * Delete release from Sphinx RT table.
 	 * @param array $identifiers ['g' => Release GUID(mandatory), 'id => ReleaseID(optional, pass false)]
-	 * @param nzedb\db\Settings $pdo
+	 * @param \nzedb\db\Settings $pdo
 	 */
 	public function deleteRelease($identifiers, Settings $pdo)
 	{
