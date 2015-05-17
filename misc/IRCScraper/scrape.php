@@ -1,5 +1,5 @@
 <?php
-require_once dirname(__FILE__) . '/../../../www/config.php';
+require_once dirname(__FILE__) . '/../../www/config.php';
 
 $settings_file = nZEDb_ROOT . 'misc/IRCScraper/settings.php';
 switch (true) {
@@ -42,4 +42,4 @@ $silent = ((isset($argv[2]) && $argv[2] === 'true') ? true : false);
 $debug = ((isset($argv[3]) && $argv[3] === 'true') ? true : false);
 
 // Start scraping.
-new \IRCScraper($silent, $debug);
+new nzedb\IRCScraper($silent, $debug);
