@@ -695,6 +695,8 @@ class Utility
 
 		if (defined('PHPMAILER_ENABLED') && PHPMAILER_ENABLED == true) {
 			$mail = new \PHPMailer;
+		} else {
+			$mail = null;
 		}
 
 		// If the mailer couldn't instantiate there's a good chance the user has an incomplete update & we should fallback to php mail()
