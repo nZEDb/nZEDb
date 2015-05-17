@@ -144,7 +144,7 @@ class ProcessReleases
 	 * @param int    $categorize
 	 * @param int    $postProcess
 	 * @param string $groupName (optional)
-	 * @param \NNTP   $nntp
+	 * @param \nzedb\NNTP   $nntp
 	 * @param bool   $echooutput
 	 *
 	 * @return int
@@ -813,7 +813,7 @@ class ProcessReleases
 	 * Post-process releases.
 	 *
 	 * @param int        $postProcess
-	 * @param NNTP       $nntp
+	 * @param \nzedb\NNTP       $nntp
 	 *
 	 * @void
 	 * @access public

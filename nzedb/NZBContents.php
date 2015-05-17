@@ -13,13 +13,13 @@ use nzedb\utility\Utility;
 class NZBContents
 {
 	/**
-	 * @var nzedb\db\Settings
+	 * @var \nzedb\db\Settings
 	 * @access protected
 	 */
 	public $pdo;
 
 	/**
-	 * @var \NNTP
+	 * @var \nzedb\NNTP
 	 * @access protected
 	 */
 	protected $nntp;
@@ -43,7 +43,7 @@ class NZBContents
 	protected $nzb;
 
 	/**
-	 * @var bool|stdClass
+	 * @var bool|\stdClass
 	 * @access protected
 	 */
 	protected $site;
@@ -274,7 +274,7 @@ class NZBContents
 	 *
 	 * @param string $guid Release guid.
 	 *
-	 * @return bool|SimpleXMLElement
+	 * @return bool|\SimpleXMLElement
 	 *
 	 * @access public
 	 */

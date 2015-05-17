@@ -29,7 +29,7 @@ class NZBImport
 	protected $releaseCleaner;
 
 	/**
-	 * @var bool|stdClass
+	 * @var bool|\stdClass
 	 * @access protected
 	 */
 	protected $site;

@@ -186,7 +186,7 @@ class Nfo
 	 *
 	 * @param string $nfo     The nfo.
 	 * @param array  $release The SQL row for this release.
-	 * @param \NNTP  $nntp    Instance of class NNTP.
+	 * @param \nzedb\NNTP  $nntp    Instance of class NNTP.
 	 *
 	 * @return boolean        True on success, False on failure.
 	 *

@@ -12,7 +12,7 @@ class Console
 	const CONS_NTFND = -2;
 
 	/**
-	 * @var nzedb\db\Settings
+	 * @var \nzedb\db\Settings
 	 */
 	public $pdo;
 
@@ -683,7 +683,7 @@ class Console
 		$obj = new \AmazonProductAPI($this->pubkey, $this->privkey, $this->asstag);
 		try {
 			$result = $obj->searchProducts($title, \AmazonProductAPI::GAMES, "NODE", $node);
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			$result = false;
 		}
 		return $result;

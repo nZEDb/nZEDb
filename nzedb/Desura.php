@@ -31,7 +31,7 @@ class Desura
 	protected $_directURL = '';
 
 	/**
-	 * @var simple_html_dom
+	 * @var \simple_html_dom
 	 */
 	protected $_html;
 

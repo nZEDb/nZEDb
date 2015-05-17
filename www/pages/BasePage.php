@@ -66,7 +66,7 @@ class BasePage
 	/**
 	 * Public access to Captcha object for error checking.
 	 *
-	 * @var Captcha
+	 * @var \nzedb\Captcha
 	 */
 	public $captcha;
 

@@ -1,6 +1,9 @@
 <?php
 require_once nZEDb_LIBS . 'TMDb.php';
 
+use nzedb\Movie;
+use nzedb\UserMovies;
+
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
