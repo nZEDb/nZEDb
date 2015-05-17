@@ -11,12 +11,12 @@ use nzedb\db\Settings;
 class ReleaseFiles
 {
 	/**
-	 * @var nzedb\db\Settings
+	 * @var \nzedb\db\Settings
 	 */
 	protected $pdo;
 
 	/**
-	 * @param nzedb\db\Settings $settings
+	 * @param \nzedb\db\Settings $settings
 	 */
 	public function __construct($settings = null)
 	{

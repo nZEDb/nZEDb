@@ -6,12 +6,12 @@ use nzedb\db\Settings;
 class ReleaseComments
 {
 	/**
-	 * @var nzedb\db\Settings
+	 * @var \nzedb\db\Settings
 	 */
 	public $pdo;
 
 	/**
-	 * @param nzedb\db\Settings $settings
+	 * @param \nzedb\db\Settings $settings
 	 */
 	public function __construct($settings = null)
 	{

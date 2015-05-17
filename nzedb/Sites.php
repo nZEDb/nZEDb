@@ -22,7 +22,7 @@ class Sites
 	const ERR_BAD_YYDECODER_PATH = -10;
 
 	/**
-	 * @var nzedb\db\Settings
+	 * @var \nzedb\db\Settings
 	 */
 	protected $_db;
 

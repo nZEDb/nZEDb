@@ -2,6 +2,7 @@
 require_once realpath(__DIR__ . '/../automated.config.php');
 
 use nzedb\Install;
+use nzedb\Users;
 
 $page = new InstallPage();
 $page->title = "Setup Admin User";

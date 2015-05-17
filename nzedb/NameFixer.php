@@ -372,7 +372,7 @@ class NameFixer
 	 * @param int    $cats  1: other categories, 2: all categories
 	 * @param string $query Query to execute.
 	 *
-	 * @return PDOStatement|bool False on failure, PDOStatement with query results on success.
+	 * @return \PDOStatement|bool False on failure, PDOStatement with query results on success.
 	 */
 	protected function _getReleases($time, $cats, $query)
 	{

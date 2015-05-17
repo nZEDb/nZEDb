@@ -375,7 +375,7 @@ class Users
 	 *
 	 * @param int $userID ID of the user.
 	 *
-	 * @return bool|PDOStatement
+	 * @return bool|\PDOStatement
 	 */
 	public function updateRssKey($userID)
 	{
@@ -1279,7 +1279,7 @@ class Users
 	 * @param int    $isDefault        Is this the default role?
 	 * @param int    $canPreview       Can the user view previews?
 	 *
-	 * @return bool|PDOStatement
+	 * @return bool|\PDOStatement
 	 */
 	public function updateRole($id, $name, $apiRequests, $downloadRequests, $defaultInvites, $isDefault, $canPreview)
 	{
@@ -1308,7 +1308,7 @@ class Users
 	 *
 	 * @param int $id ID of the role.
 	 *
-	 * @return bool|PDOStatement
+	 * @return bool|\PDOStatement
 	 */
 	public function deleteRole($id)
 	{
