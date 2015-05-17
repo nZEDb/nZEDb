@@ -7,6 +7,8 @@ All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 2015-05-17 bart39
+	* Fix: Giantbomb api error if empty result returned.
+	* Mrg: PR 1685 from enverex - Update the audioNFO regex to be slightly less rubbish.
 	* Mrg: PR 1683 from kevin123 - Fix namespace issues. Fixes broken install on step 6.
 	* Mrg: PR 1682 from wally73 - Update populate_tvrage.php.
 	* Mrg: PR 1681 from kevin123 - IRCScraper fixes.
