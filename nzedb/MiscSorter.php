@@ -599,7 +599,7 @@ class MiscSorter
 			&& !preg_match('/(\bavi\b|x\.?264|divx|mvk|xvid|install(?!ation)|Setup\.exe|unzip|unrar)/i', $nfo)) {
 			$artist = preg_split('/(?:a\s?r\s?t\s?i\s?s\s?ts?\b[^ \.\:]*) *?(?!(?:[^\s\.\:\}\]\*\x{2500}-\x{3000}\?] ?){2,}?\b)(?:[\*\?\-\=\|\;\:\.\[\}\]\(\s\x{2500}-\x{3000}\?]+?)[\s\.\>\:\(\)\x{2500}-\x{3000}\?]((?!\:) ?\w.+)(?:\n|$|\s{3}|\.{3})/Uuim', $nfo, 0, PREG_SPLIT_DELIM_CAPTURE);
 			if($artist[1]) {
-				$title = preg_split('/(?:t+\s?i+\s?t+\s?l+\s?e+\b|a\s?l\s?b\s?u\s?m\b) *?(?!(?:[^\s\.\:\}\]\*\x{2500}-\x{3000}\?] ?){2,}?\b)(?:[\*\?\-\=\|\;\:\.\[\}\]\(\s\x{2500}-\x{3000}\?]+?)[\s\.\>\:\(\)\x{2500}-\x{3000}\?]((?!\:) ?\w.+)(?:\n|$|\s{3}|\.{3})/Uuim', $nfo, 0, PREG_SPLIT_DELIM_CAPTURE);
+				$title = preg_split('/(?:t+\s?i+\s?t+\s?l+\s?e+\b|a\s?l\s?b\s?u\s?m\b|r\s?e\s?l\s?e\s?a\s?s\s?e\b) *?(?!(?:[^\s\.\:\}\]\*\x{2500}-\x{3000}\?] ?){2,}?\b)(?:[\*\?\-\=\|\;\:\.\[\}\]\(\s\x{2500}-\x{3000}\?]+?)[\s\.\>\:\(\)\x{2500}-\x{3000}\?]((?!\:) ?\w.+)(?:\n|$|\s{3}|\.{3})/Uuim', $nfo, 0, PREG_SPLIT_DELIM_CAPTURE);
 			}
 
 			if (!isset($title[1]) || !isset($artist[1])) {
