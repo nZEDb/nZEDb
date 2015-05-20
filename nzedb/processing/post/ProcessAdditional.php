@@ -467,10 +467,15 @@ class ProcessAdditional
 
 		$this->_addPAR2Files = ($this->pdo->getSetting('addpar2') === '0') ? false : true;
 
-		$this->_processSample = ($this->pdo->getSetting('ffmpegpath') == '' ? false : true);
-		$this->_processVideo = ($this->pdo->getSetting('processvideos') == 0) ? false : true;
+		if (!$this->pdo->getSetting('ffmpegpath')) {
+			$this->_processAudioSample = $this->_processSample = $this->_processVideo = false;
+		} else {
+			$this->_processAudioSample = ($this->pdo->getSetting('processaudiosample') == 0) ? false : true;
+			$this->_processSample = ($this->pdo->getSetting('processthumbnails') == 0 ? false : true);
+			$this->_processVideo = ($this->pdo->getSetting('processvideos') == 0) ? false : true;
+		}
+
 		$this->_processJPGSample = ($this->pdo->getSetting('processjpg') == 0) ? false : true;
-		$this->_processAudioSample = ($this->pdo->getSetting('processaudiosample') == 0) ? false : true;
 		$this->_processMediaInfo = ($this->pdo->getSetting('mediainfopath') == '') ? false : true;
 		$this->_processAudioInfo = $this->_processMediaInfo;
 		$this->_processPasswords = (
