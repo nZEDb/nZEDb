@@ -1,7 +1,0 @@
-#!/bin/bash
-
-echo Ensuring we have permissions to move files/dirs.
-sudo chmod -R 0777 misc
-sudo chmod -R 0777 resources
-
-php ./nzedb/build/_runonce/relocateOldDirectoryContents.php
