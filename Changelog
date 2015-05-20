@@ -7,6 +7,7 @@ All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 2015-05-20 bart39
+	* Chg: another update ab.cd.image collection regex.
 	* Chg: add DEViANCE and PLAZA to PC Game categorization.
 	* Chg: update ab.cd.image collection regex.
 	* Mrg: PR 1689 from enverex - Add additional audiobook regexes.
