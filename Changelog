@@ -6,6 +6,15 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2015-05-20 bart39
+	* Chg: another update ab.cd.image collection regex.
+	* Chg: add DEViANCE and PLAZA to PC Game categorization.
+	* Chg: update ab.cd.image collection regex.
+	* Mrg: PR 1689 from enverex - Add additional audiobook regexes.
+	* Mrg: PR 1688 from sebst3r - Fix typo in "Admin Home".
+	* Mrg: PR 1686 from enverex - Add match for "release" and "author" when finding audio name.
+2015-05-18 bart39
+	* Chg: Improved release creation loop even further and added same logic to multiprocessing.
 2015-05-17 bart39
 	* Fix: Giantbomb api error if empty result returned.
 	* Mrg: PR 1685 from enverex - Update the audioNFO regex to be slightly less rubbish.

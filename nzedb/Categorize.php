@@ -867,7 +867,7 @@ class Categorize extends Category
 
 	public function isPCGame()
 	{
-		if (preg_match('/[^a-z0-9](0x0007|ALiAS|BACKLASH|BAT|CLONECD|CPY|FAS(DOX|iSO)|FLT([-._ ]|COGENT)|-FLT(DOX)?|PC GAMES?|\(?(Game(s|z)|GAME(S|Z))\)? ?(\((C|c)\))|GENESIS|-GOG|-HATRED|HI2U|INLAWS|JAGUAR|MAZE|MONEY|OUTLAWS|PPTCLASSiCS|PC Game|PROPHET|RAiN|Razor1911|RELOADED|RiTUELYPOGEiOS|[rR][iI][pP]-[uU][nN][lL][eE][aA][sS][hH][eE][dD]|Steam(\b)?Rip|SKIDROW|TiNYiSO|CODEX)[^a-z0-9]?/', $this->releaseName)) {
+		if (preg_match('/[^a-z0-9](0x0007|ALiAS|BACKLASH|BAT|CLONECD|CPY|FAS(DOX|iSO)|FLT([-._ ]|COGENT)|-FLT(DOX)?|PC GAMES?|\(?(Game(s|z)|GAME(S|Z))\)? ?(\((C|c)\))|GENESIS|-GOG|-HATRED|HI2U|INLAWS|JAGUAR|MAZE|MONEY|OUTLAWS|PPTCLASSiCS|PC Game|PROPHET|RAiN|Razor1911|RELOADED|DEViANCE|PLAZA|RiTUELYPOGEiOS|[rR][iI][pP]-[uU][nN][lL][eE][aA][sS][hH][eE][dD]|Steam(\b)?Rip|SKIDROW|TiNYiSO|CODEX)[^a-z0-9]?/', $this->releaseName)) {
 			$this->tmpCat = Category::CAT_PC_GAMES;
 
 			return true;
