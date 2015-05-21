@@ -1169,7 +1169,7 @@ class Binaries
 			return $data['last'];
 		}
 
-		$totalArticles = (int)($lastDate - $firstDate);
+		$totalArticles = (int)($data['last'] - $data['first']);
 
 		if ($this->_echoCLI) {
 			$this->_colorCLI->doEcho(
@@ -1179,57 +1179,61 @@ class Binaries
 			);
 		}
 
-		switch (true) {
-			case $totalArticles < 1000000:
-				$matchPercentage = 1.0100;
-				break;
-			case $totalArticles < 10000000:
-				$matchPercentage = 1.0070;
-
-				break;
-			case $totalArticles < 100000000:
-				$matchPercentage = 1.0030;
-				break;
-			case $totalArticles < 500000000:
-				$matchPercentage = 1.0010;
-				break;
-			case $totalArticles < 1000000000:
-				$matchPercentage = 1.0008;
-				break;
-			default:
-				$matchPercentage = 1.0005;
-				break;
-		}
-
-		$wantedArticle = ($data['last'] * (($goalTime - $firstDate) / ($totalArticles)));
-		$articleTime = 0;
-		$percent = 1.01;
-		for ($i = 0; $i < 100; $i++) {
-			$wantedArticle = (int)$wantedArticle;
-
+		// Pick the middle to start with
+		$wantedArticle = (int)round(($data['last'] + $data['first']) / 2);
+		$aMax = $data['last'];
+		$aMin = $data['first'];
+		while(true) {
+			// Article exists outside of available range, this shouldn't happen
 			if ($wantedArticle <= $data['first'] || $wantedArticle >= $data['last']) {
 				break;
 			}
 
+			// Keep a note of the last articles we checked
+			$reallyOldArticle = $oldArticle;
+			$oldArticle = $wantedArticle;
+			
+			// Get the date of this article
 			$articleTime = $this->postdate($wantedArticle, $data);
-			if ($articleTime >= ($goalTime / $matchPercentage) && $articleTime <= ($goalTime * $matchPercentage)) {
+
+			// Article doesn't exist, start again with something random
+			if(!$articleTime) {
+				$wantedArticle = mt_rand($aMin, $aMax);
+				$articleTime = $this->postdate($wantedArticle, $data);
+			}
+
+			// Article is older than we want
+			if ($articleTime < $goalTime) {
+				$aMin = $oldArticle;
+				$wantedArticle = round(($aMax + $oldArticle) / 2);
+				if ($this->_echoCLI) { echo '-'; }
+			// Article is newer than we want
+			} else if ($articleTime > $goalTime) {
+				$aMax = $oldArticle;
+				$wantedArticle = round(($aMin + $oldArticle) / 2);
+				if ($this->_echoCLI) { echo '+'; }
+			}
+
+			// Exact match. We did it! (this will likely never happen though)
+			if($articleTime == $goalTime) {
 				break;
 			}
 
-			if ($articleTime > $goalTime) {
-				$wantedArticle /= $percent;
-			} else if ($articleTime < $goalTime) {
-				$wantedArticle *= $percent;
+			// We seem to be flip-flopping between 2 articles, assume we're out of articles to check.
+			// End on an article more recent than our oldest so that we don't miss any releases.
+			if($reallyOldArticle == $wantedArticle && ($goalTime - $articleTime) <= 0) {
+				break;
 			}
-			$percent -= 0.001;
 		}
+
+		echo PHP_EOL;
 
 		$wantedArticle = (int)$wantedArticle;
 		if ($this->_echoCLI) {
 			$this->_colorCLI->doEcho(
 				$this->_colorCLI->primary(
-					 'Found article #' . $wantedArticle . ' which has a date of ' . date('r', $articleTime) .
-					', vs wanted date of ' . date('r', $goalTime) . '.'
+					'Found article #' . $wantedArticle . ' which has a date of ' . date('r', $articleTime) .
+					', vs wanted date of ' . date('r', $goalTime) . '. Difference from goal is ' . round(($goalTime - $articleTime) / 60 / 60 / 24, 1) . ' days.'
 				)
 			);
 		}
