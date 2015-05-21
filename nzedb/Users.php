@@ -375,7 +375,7 @@ class Users
 	 *
 	 * @param int $userID ID of the user.
 	 *
-	 * @return bool|PDOStatement
+	 * @return bool|\PDOStatement
 	 */
 	public function updateRssKey($userID)
 	{
@@ -838,8 +838,9 @@ class Users
 	{
 		session_unset();
 		session_destroy();
-		setcookie('uid', '', (time() - 2592000));
-		setcookie('idh', '', (time() - 2592000));
+		$secure_cookie = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? '1' : '0');
+		setcookie('uid', null, -1, '/', null, $secure_cookie, true);
+		setcookie('idh', null, -1, '/', null, $secure_cookie, true);
 	}
 
 	/**
@@ -900,9 +901,8 @@ class Users
 	{
 		$user = $this->getById($userID);
 		$secure_cookie = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? '1' : '0');
-		setcookie('uid', $userID, (time() + 2592000), '/', '', $secure_cookie, 'true');
-		setcookie('idh', ($this->hashSHA1($user['userseed'] . $userID)), (time() + 2592000), '/', '', $secure_cookie, 'true');
-	}
+		setcookie('uid', $userID, (time() + 2592000), '/', null, $secure_cookie, true);
+		setcookie('idh', ($this->hashSHA1($user['userseed'] . $userID)), (time() + 2592000), '/', null, $secure_cookie, true);	}
 
 	/**
 	 * Add a release to the user's cart.
@@ -1279,7 +1279,7 @@ class Users
 	 * @param int    $isDefault        Is this the default role?
 	 * @param int    $canPreview       Can the user view previews?
 	 *
-	 * @return bool|PDOStatement
+	 * @return bool|\PDOStatement
 	 */
 	public function updateRole($id, $name, $apiRequests, $downloadRequests, $defaultInvites, $isDefault, $canPreview)
 	{
@@ -1308,7 +1308,7 @@ class Users
 	 *
 	 * @param int $id ID of the role.
 	 *
-	 * @return bool|PDOStatement
+	 * @return bool|\PDOStatement
 	 */
 	public function deleteRole($id)
 	{

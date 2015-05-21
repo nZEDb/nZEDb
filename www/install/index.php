@@ -2,6 +2,8 @@
 @session_start();
 require_once realpath(__DIR__ . '/../automated.config.php');
 
+use nzedb\Install;
+
 $page_title = "Welcome";
 
 $cfg = new Install();

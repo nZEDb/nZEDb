@@ -43,7 +43,7 @@ class PostProcess
 	protected $nameFixer;
 
 	/**
-	 * @var Par2Info
+	 * @var \Par2Info
 	 */
 	protected $_par2Info;
 
@@ -66,12 +66,12 @@ class PostProcess
 	private $echooutput;
 
 	/**
-	 * @var \Groups
+	 * @var \nzedb\Groups
 	 */
 	private $groups;
 
 	/**
-	 * @var \Nfo
+	 * @var \nzedb\Nfo
 	 */
 	private $Nfo;
 
@@ -218,7 +218,7 @@ class PostProcess
 	/**
 	 * Process nfo files.
 	 *
-	 * @param NNTP   $nntp
+	 * @param \nzedb\NNTP   $nntp
 	 * @param string $groupID  (Optional) ID of a group to work on.
 	 * @param string $guidChar (Optional) First letter of a release GUID to use to get work.
 	 *
@@ -234,7 +234,7 @@ class PostProcess
 	/**
 	 * Process comments.
 	 *
-	 * @param NNTP $nntp
+	 * @param \nzedb\NNTP $nntp
 	 */
 	public function processSharing(&$nntp)
 	{
@@ -274,7 +274,7 @@ class PostProcess
 	 *
 	 * @note Called externally by tmux/bin/update_per_group and update/postprocess.php
 	 *
-	 * @param NNTP       $nntp    Class NNTP
+	 * @param \nzedb\NNTP       $nntp    Class NNTP
 	 * @param int|string $groupID  (Optional) ID of a group to work on.
 	 * @param string     $guidChar (Optional) First char of release GUID, can be used to select work.
 	 *
@@ -293,7 +293,7 @@ class PostProcess
 	 * @param string $messageID MessageID from NZB file.
 	 * @param int    $relID     ID of the release.
 	 * @param int    $groupID   Group ID of the release.
-	 * @param NNTP   $nntp      Class NNTP
+	 * @param \nzedb\NNTP   $nntp      Class NNTP
 	 * @param int    $show      Only show result or apply iy.
 	 *
 	 * @return bool

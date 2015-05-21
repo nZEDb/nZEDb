@@ -12,7 +12,7 @@ class Console
 	const CONS_NTFND = -2;
 
 	/**
-	 * @var nzedb\db\Settings
+	 * @var \nzedb\db\Settings
 	 */
 	public $pdo;
 
@@ -57,6 +57,12 @@ class Console
 	public $renamed;
 
 	/**
+	 * Store names of failed Amazon lookup items
+	 * @var array
+	 */
+	public $failCache;
+
+	/**
 	 * @param array $options Class instances / Echo to cli.
 	 */
 	public function __construct(array $options = [])
@@ -81,6 +87,8 @@ class Console
 			$this->renamed = 'AND isrenamed = 1';
 		}
 		//$this->cleanconsole = ($this->pdo->getSetting('lookupgames') == 2) ? 'AND isrenamed = 1' : '';
+
+		$this->failCache = array();
 	}
 
 	public function getConsoleInfo($id)
@@ -317,10 +325,17 @@ class Console
 	{
 		$consoleId = self::CONS_NTFND;
 
-		$amaz = $this->fetchAmazonProperties($gameInfo['title'], $gameInfo['node']);
+		try {
+			$amaz = $this->fetchAmazonProperties($gameInfo['title'], $gameInfo['node']);
+		} catch (\Exception $e) {
+			if ($e->getMessage() == 'Invalid xml response.') {
+				$amaz = false;
+			} else {
+				throw new \Exception($e->getMessage(), $e->getCode(), $e);
+			}
+		}
 
-		if ($amaz) {
-
+		if ($amaz != false) {
 			$gameInfo['platform'] = $this->_replacePlatform($gameInfo['platform']);
 
 			$con = $this->_setConBeforeMatch($amaz, $gameInfo);
@@ -668,7 +683,7 @@ class Console
 		$obj = new \AmazonProductAPI($this->pubkey, $this->privkey, $this->asstag);
 		try {
 			$result = $obj->searchProducts($title, \AmazonProductAPI::GAMES, "NODE", $node);
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			$result = false;
 		}
 		return $result;
@@ -718,9 +733,19 @@ class Console
 					// Check for existing console entry.
 					$gameCheck = $this->getConsoleInfoByName($gameInfo['title'], $gameInfo['platform']);
 
-					if ($gameCheck === false) {
+					if ($gameCheck === false && in_array($gameInfo['title'] . $gameInfo['platform'], $this->failCache)) {
+						// Lookup recently failed, no point trying again
+						if ($this->echooutput) {
+							$this->pdo->log->doEcho($this->pdo->log->headerOver('Cached previous failure. Skipping.') . PHP_EOL);
+						}
+						$gameId = -2;
+					} else if ($gameCheck === false) {
 						$gameId = $this->updateConsoleInfo($gameInfo);
 						$usedAmazon = true;
+						if ($gameId === false) {
+							$gameId = -2;
+							$this->failCache[] = $gameInfo['title'] . $gameInfo['platform'];
+						}
 					} else {
 						if ($this->echooutput) {
 							$this->pdo->log->doEcho(

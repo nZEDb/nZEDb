@@ -157,7 +157,7 @@ switch ($options[1]) {
 				collectionCheck($pdo, $options[2]);
 			}
 
-			processReleases($releases, $options[2]);
+			processReleases($pdo, $releases, $options[2]);
 
 		} else {
 
@@ -223,7 +223,7 @@ switch ($options[1]) {
 			collectionCheck($pdo, $options[2]);
 
 			// Create releases.
-			processReleases(new ProcessReleases(['Settings' => $pdo]), $options[2]);
+			processReleases($pdo, new ProcessReleases(['Settings' => $pdo]), $options[2]);
 
 			// Post process the releases.
 			(new ProcessAdditional(['Echo' => true, 'NNTP' => $nntp, 'Settings' => $pdo]))->start($options[2]);
@@ -278,16 +278,23 @@ switch ($options[1]) {
 /**
  * Create / process releases for a groupID.
  *
+ * @param Settings        $pdo
  * @param ProcessReleases $releases
  * @param int             $groupID
  */
-function processReleases($releases, $groupID)
+function processReleases($pdo, $releases, $groupID)
 {
+	$releaseCreationLimit = ($pdo->getSetting('maxnzbsprocessed') != '' ? (int)$pdo->getSetting('maxnzbsprocessed') : 1000);
 	$releases->processIncompleteCollections($groupID);
 	$releases->processCollectionSizes($groupID);
 	$releases->deleteUnwantedCollections($groupID);
-	$releases->createReleases($groupID);
-	$releases->createNZBs($groupID);
+
+	do {
+		$releasesCount = $releases->createReleases($groupID);
+		$nzbFilesAdded = $releases->createNZBs($groupID);
+
+		// This loops as long as the number of releases or nzbs added was >= the limit (meaning there are more waiting to be created)
+	} while (($releasesCount['added'] + $releasesCount['dupes']) >= $releaseCreationLimit || $nzbFilesAdded >= $releaseCreationLimit);
 	$releases->deleteCollections($groupID);
 }
 

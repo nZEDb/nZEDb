@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../automated.config.php';
 
 use nzedb\db\Settings;
+use nzedb\Install;
 
 $page = new InstallPage();
 $page->title = "Database Setup";

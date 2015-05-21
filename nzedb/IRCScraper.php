@@ -49,7 +49,7 @@ class IRCScraper extends IRCClient
 	protected $_oldPre;
 
 	/**
-	 * @var nzedb\db\DB
+	 * @var \nzedb\db\DB
 	 * @access protected
 	 */
 	protected $_pdo;

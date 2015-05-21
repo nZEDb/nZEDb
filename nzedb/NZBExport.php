@@ -2,7 +2,7 @@
 namespace nzedb;
 
 use nzedb\db\Settings;
-use Utility;
+use nzedb\utility\Utility;
 
 /**
  * Export NZB's to a folder.

@@ -1,4 +1,4 @@
-<?
+<?php
 
 use nzedb\Forum;
 

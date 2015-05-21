@@ -40,6 +40,8 @@ class Install
 	public $COMPILED_CONFIG;
 	public $doCheck = false;
 	public $sha1Check;
+	public $cryptCheck;
+	public $iconvCheck;
 	public $PDOCheck;
 	public $gdCheck;
 	public $curlCheck;

@@ -6,6 +6,8 @@
  */
 require_once realpath(__DIR__ . '/../automated.config.php');
 
+use nzedb\Install;
+
 $page = new InstallPage();
 $page->title = "Preflight Checklist";
 
@@ -27,6 +29,11 @@ $page->smarty->assign('sessionsSavePath', $sessionPath);
 if (!is_readable($sessionPath) || !is_writable($sessionPath)) {
 	$cfg->error = true;
 	$cfg->sessionsPathPermissions = false;
+}
+
+$cfg->iconvCheck = function_exists('iconv');
+if ($cfg->iconvCheck === false) {
+	$cfg->error = true;
 }
 
 $cfg->cryptCheck = function_exists('crypt');

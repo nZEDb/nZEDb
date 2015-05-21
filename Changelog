@@ -6,6 +6,36 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2015-05-20 bart39
+	* Chg: another update ab.cd.image collection regex.
+	* Chg: add DEViANCE and PLAZA to PC Game categorization.
+	* Chg: update ab.cd.image collection regex.
+	* Mrg: PR 1689 from enverex - Add additional audiobook regexes.
+	* Mrg: PR 1688 from sebst3r - Fix typo in "Admin Home".
+	* Mrg: PR 1686 from enverex - Add match for "release" and "author" when finding audio name.
+2015-05-18 bart39
+	* Chg: Improved release creation loop even further and added same logic to multiprocessing.
+2015-05-17 bart39
+	* Fix: Giantbomb api error if empty result returned.
+	* Mrg: PR 1685 from enverex - Update the audioNFO regex to be slightly less rubbish.
+	* Mrg: PR 1683 from kevin123 - Fix namespace issues. Fixes broken install on step 6.
+	* Mrg: PR 1682 from wally73 - Update populate_tvrage.php.
+	* Mrg: PR 1681 from kevin123 - IRCScraper fixes.
+2015-05-16 niel
+	* Mrg: PR 1680 from kevin123 - Use iconv for converting CP437, fix broking install.
+	* Add: PR 1679 from kaibosh - Add check_previews script, cleanup tool.
+2015-05-15 niel
+	* Fix: Minor coding standards fixes.
+2015-05-15 bart39
+	* Mrg: PR 1678 from kevin123 - Move CBP deletion.
+	* Mrg: PR 1677 from kevin123 - Fix on advanced search page.
+	* Fix: correct collection regexes that caused Regex.php Line 344 error issue #1675.
+2015-05-14 niel
+	* Mrg: PR 1673 from kevin123 - Fix broken pager on search page.
+	* Mrg: PR 1672 from Enverex - Implement local temporary caching for Amazon lookup failures.
+2015-05-14 bart39
+	* Add: Collection regexes part 1 from issue #1668
+	* Mrg: PR 1671 from enverex - Make sure that the destroyed cookie matches the created cookie.
 2015-05-11 niel
 	* Fix: Namespace issues - Thanks to Darius for compiling the list.
 	* Fix: Captcha namespace issue.
@@ -13,6 +43,8 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	* Fix: ReleaseExtra namespace issue in ajax_mediainfo - Thanks Greg.
 	* Mrg: PR 1664 from zetas - Captcha Refactor. Moving logic from BasePage into Captcha class.
 	* Fix: Changing 'verifypeer' to 'verifycert' in SABnzbd class to fix integration. Thanks to zetas.
+	* Fix: Console's 'Invalid xml response.' exception.
+	* Mrg: PR 1669 from tyldum - Do urldecode before working on 'cat'
 2015-05-10 niel
 	* Mrg: Bringing in dev-namespace branch.
 2015-04-10 bart39

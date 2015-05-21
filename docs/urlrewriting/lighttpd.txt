@@ -1,5 +1,5 @@
 url.rewrite-once = (
-	"^/.*\.(css|eot|gif|gz|ico|inc|jpe?g|js|ogg|png|svg|ttf|txt|woff|xml)$" => "$0",
+	"^/.*\.(css|eot|gif|gz|ico|inc|jpe?g|js|ogg|oga|ogv|mp4|m4a|mp3|png|svg|ttf|txt|woff|xml)$" => "$0",
 	"^/(admin|install).*$" => "$0",
 	"^/([^/\.]+)/?(?:\?(.*))$" => "index.php?page=$1&$2",
 	"^/([^/\.]+)/?$" => "index.php?page=$1",
