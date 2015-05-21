@@ -1180,9 +1180,10 @@ class Binaries
 		}
 
 		// Pick the middle to start with
-		$wantedArticle = (int)round(($data['last'] + $data['first']) / 2);
+		$wantedArticle = round(($data['last'] + $data['first']) / 2);
 		$aMax = $data['last'];
 		$aMin = $data['first'];
+
 		while(true) {
 			// Article exists outside of available range, this shouldn't happen
 			if ($wantedArticle <= $data['first'] || $wantedArticle >= $data['last']) {
@@ -1197,36 +1198,40 @@ class Binaries
 			$articleTime = $this->postdate($wantedArticle, $data);
 
 			// Article doesn't exist, start again with something random
-			if(!$articleTime) {
+			if (!$articleTime) {
 				$wantedArticle = mt_rand($aMin, $aMax);
 				$articleTime = $this->postdate($wantedArticle, $data);
 			}
 
-			// Article is older than we want
 			if ($articleTime < $goalTime) {
+				// Article is older than we want
 				$aMin = $oldArticle;
 				$wantedArticle = round(($aMax + $oldArticle) / 2);
-				if ($this->_echoCLI) { echo '-'; }
-			// Article is newer than we want
+				if ($this->_echoCLI) {
+					echo '-';
+				}
 			} else if ($articleTime > $goalTime) {
+				// Article is newer than we want
 				$aMax = $oldArticle;
 				$wantedArticle = round(($aMin + $oldArticle) / 2);
-				if ($this->_echoCLI) { echo '+'; }
-			}
-
-			// Exact match. We did it! (this will likely never happen though)
-			if($articleTime == $goalTime) {
+				if ($this->_echoCLI) {
+					echo '+';
+				}
+			} else if ($articleTime == $goalTime) {
+				// Exact match. We did it! (this will likely never happen though)
 				break;
 			}
 
 			// We seem to be flip-flopping between 2 articles, assume we're out of articles to check.
 			// End on an article more recent than our oldest so that we don't miss any releases.
-			if($reallyOldArticle == $wantedArticle && ($goalTime - $articleTime) <= 0) {
+			if ($reallyOldArticle == $wantedArticle && ($goalTime - $articleTime) <= 0) {
 				break;
 			}
 		}
 
-		echo PHP_EOL;
+		if ($this->_echoCLI) {
+			echo PHP_EOL;
+		}
 
 		$wantedArticle = (int)$wantedArticle;
 		if ($this->_echoCLI) {
