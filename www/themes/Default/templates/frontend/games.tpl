@@ -165,7 +165,7 @@
 																	 value="{$mguid[$m@index]}"/></div>
 										</td>
 										<td>
-											<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">{$mname[$m@index]|escape:"htmlall"}</a>
+											<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$mname[$m@index]|escape:"htmlall"}</a>
 
 											<div>
 												<i class="icon-calendar"></i> Posted {$mpostdate[$m@index]|timeago} | <i
@@ -174,7 +174,7 @@
 																				  href="{$smarty.const.WWW_TOP}/filelist/{$mguid[$m@index]}">{$mtotalparts[$m@index]}
 													files</a> | <i class="icon-comments"></i> <a
 														title="View comments for {$mname[$m@index]|escape:"htmlall"}"
-														href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}#comments">{$mcomments[$m@index]}
+														href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}#comments">{$mcomments[$m@index]}
 													cmt{if $mcomments[$m@index] != 1}s{/if}</a> | <i
 														class="icon-download"></i> {$mgrabs[$m@index]}
 												grab{if $mgrabs[$m@index] != 1}s{/if} |
