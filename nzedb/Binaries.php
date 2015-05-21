@@ -1229,15 +1229,11 @@ class Binaries
 			}
 		}
 
-		if ($this->_echoCLI) {
-			echo PHP_EOL;
-		}
-
 		$wantedArticle = (int)$wantedArticle;
 		if ($this->_echoCLI) {
 			$this->_colorCLI->doEcho(
 				$this->_colorCLI->primary(
-					'Found article #' . $wantedArticle . ' which has a date of ' . date('r', $articleTime) .
+					PHP_EOL . 'Found article #' . $wantedArticle . ' which has a date of ' . date('r', $articleTime) .
 					', vs wanted date of ' . date('r', $goalTime) . '. Difference from goal is ' . round(($goalTime - $articleTime) / 60 / 60 / 24, 1) . ' days.'
 				)
 			);
