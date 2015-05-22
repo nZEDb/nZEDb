@@ -1,8 +1,11 @@
-See docs folder or the git wiki for O/S specific guides.
-
 REQUIREMENTS
+	Executable programs in PATH
+		git   https://git-scm.com/downloads
+		which https://savannah.gnu.org/projects/which/
+		file  http://darwinsys.com/file/
+
 	PHP
-		php version 5.4 or higher
+		php version 5.5 or higher
 
 		(ini file settings)
 			date.timezone Set to your local (http://ca3.php.net/manual/en/timezones.php)
@@ -10,7 +13,7 @@ REQUIREMENTS
 			minimum execution time of 120+ seconds (max_execution_time = 120)
 			sessions enabled (This should be enabled by default ; http://support.qualityunit.com/021373-How-To-Enable-Session-Support-for-PHP)
 
-			Make sure you update the php.ini for both web and cli (the date.timezone options are important)
+			Make sure you update the ini for both web (fpm or apache) and cli (the date.timezone options are important)
 
 		(extensions)
 			Curl
@@ -37,111 +40,187 @@ REQUIREMENTS
 			Sockets
 			ZLib
 
-		(optional extensions)
-			Memcached (caching query results) (Memcached, not the memcache extension).
-			simple_php_yenc_decode (https://github.com/kevinlekiller/simple_php_yenc_decode) for decoding yEnc faster.
-
 	Database:
 		MySQL 5.5+
 			max_allowed_packet = 16M
 			group_concat_max_len = 8192
-			file permissions if not using root user (GRANT FILE ON *.* TO 'YourMySQLUsername'@'YourMySQLServerIPAddress';)
+			Non root MySQL USER.
+			MySQL user with ALL permissions. (GRANT ALL ON *.* TO 'YourMySQLUsername'@'YourMySQLServerIPAddress';)
+			MySQL user with FILE permissions. (GRANT FILE ON *.* TO 'YourMySQLUsername'@'YourMySQLServerIPAddress';)
+
+			MariaDB recommended. https://mariadb.org/
 
 		Note for some linux O/S's:
 			Apparmor must be disabled or configured to ignore MySQL.
 
+	Web server (it is recommended to only install one, unless you know what you are doing):
+		Apache https://httpd.apache.org/
+			mod_rewrite enabled
+			.htaccess allow override on
+			In apache 2.4 Directory AllowOverride must be true.
 
-	Apache
-		script timeout of at least 60 seconds
-		mod_rewrite enabled
-		.htaccess allow override on
-		In apache 2.4 Directory AllowOverride must be true.
+		Nginx http://nginx.org/
+
+		Lighttpd http://www.lighttpd.net/
+
+		You must set up an alias to the resources/covers folder. (apache example: Alias /covers /srv/http/nZEDb/resources/covers)
+
+
+OPTIONAL REQUIREMENTS
+
+	PHP
+		(extensions)
+			Memcached (caching query results) (Memcached, not the memcache extension).
+				To enabled in nZEDb: www/config.php -> change MEMCACHE_ENABLED to true
+			simple_php_yenc_decode (https://github.com/kevinlekiller/simple_php_yenc_decode) for decoding yEnc faster.
 
 	3rd Party API Keys (recommended to get your own api keys)
-		tmdb (signup @ http://api.themoviedb.org/2.1/)
-		amazon (signup @ https://affiliate-program.amazon.com/gp/advertising/api/detail/main.html)
-		rottentomatoes (signup @ http://developer.rottentomatoes.com)
-		trakt.tv (https://trakt.tv/api-docs)
-		anidb (http://anidb.net)
+		tmdb            http://api.themoviedb.org/2.1/
+		amazon          https://affiliate-program.amazon.com/gp/advertising/api/detail/main.html
+		rottentomatoes  http://developer.rottentomatoes.com
+		trakt.tv        https://trakt.tv/api-docs
+		anidb           http://anidb.net
 
-	Deep rar password inspection
-		unrar version 3.9 or higher
-		7zip
+	Executable programs in PATH
+		unrar 3.9+      http://www.rarlab.com/download.htm
+		7zip            http://www.7-zip.org/download.html
+		timeout         https://www.gnu.org/software/coreutils/coreutils.html
+		ffmpeg or libav https://www.ffmpeg.org/download.html
+		mediainfo       https://mediaarea.net/en/MediaInfo/Download
+		screen          https://www.gnu.org/software/screen/
+		tmux
+			tmux        http://tmux.sourceforge.net/
+			time        https://www.gnu.org/software/time/
 
-	Misc applications
-		timeout (from gnu core-utils) For killing hanging processes.
-		file (from http://darwinsys.com/file/) For finding information on file data.
+	Daemons
+		Cache server (can be configured in www/settings.php):
+			memcached   http://memcached.org/
+			redis       http://redis.io/
 
-	Thumbnailing and media info (if feep rar inspection is enabled)
-		ffmpeg or avconv
-		mediainfo
+		IRC (see misc/IRCScraper/ folder)
+			znc         http://wiki.znc.in/ZNC
 
-	# For the threaded scripts you will require the Python cymysql module for mysql:
-		#For Ubuntu 13.10, python3 uses pip3, not pip3.2
-		# Python 2.*
-			sudo apt-get install python-setuptools python-pip
-			sudo python -m easy_install pip
-			sudo easy_install cymysql
-			sudo easy_install pynntp
-			sudo easy_install socketpool
-			pip list
-		# Python 3.* - If Python 3 is installed, the module also must be installed
-			sudo apt-get install python3-setuptools python3-pip
-			sudo python3 -m easy_install pip
-			sudo pip-3.2 install cymysql
-			sudo pip-3.2 install pynntp
-			sudo pip-3.2 install socketpool
-			pip-3.2 list
-		# -or-
-			sudo pip-3.3 install cymysql
-			pip-3.3 list
+		sphinx (see www/settings.php and misc/sphinxsearch/ folder)
+			sphinx      http://sphinxsearch.com/
 
-	Memcache
-		sudo apt-get install memcached php5-memcache
-		sudo nano /etc/php5/apache2/php.ini    -> add    extension=memcache.so    in the dynamic extensions section
-		sudo service apache2 restart
-		sudo nano /var/www/nZEDb/www/config.php    -> change MEMCACHE_ENABLED to true
-
-	Tmux Scripts
-		sudo apt-get install tmux time
 
 INSTALLATION
-	there is an installer in \install\ try it first by creating your website,
-	copying the application files there, and browsing to http://yournewznabserver/install.
 
-	refer to the list of requirements above if you encounter any errors during install, or the FAQ in the README
+	See the guides here: https://github.com/nZEDb/nZEDb/wiki/Install-Guides
 
-	once installed activate only one or two groups to test with first (a.b.teevee is a good choice), this
-	will save you time if it is not working correctly.
+	For other operating systems:
+		Install the required programs listed above, optionally install the optional requirements.
 
-	run the update_binaries.php and update_releases.php scripts in \misc\update_scripts\ via command-line.
+		Clone the nZEDb repository using git.
 
-	if updating was successful then you can continue to setup your site and configure the update scripts for
-	auto-updating.
+		Set up a virtualhost (see below for examples) on your web server for the www/ folder of the cloned git.
+
+		Browse to the install page on a web browser (http://mysite/install)
+
+		Refer to the list of requirements above if you encounter any errors during install, or the FAQ in the README.
+
+		Once installed activate only one or two groups to test with first (a.b.teevee is a good choice), this
+		will save you time if it is not working correctly.
+
+		Run the misc/update/update_binaries.php and misc/update/update_releases.php scripts in via command-line.
+
+		If updating was successful then you can continue to setup your site and configure the update scripts for auto-updating.
 
 
 RUNNING OUTSIDE OF WEB ROOT
-	set /.htaccess RewriteBase to your virtual directory
+	set www\.htaccess RewriteBase to your virtual directory
 
 
-SAMPLE APACHE VHOST CONFIG
-	add this to your existing VHOST file modifying your values for ServerName, Server Alias, and DocumentRoot.
-	You should find this under /etc/apache2/sites-enabled/ (000-default).
+SAMPLE VIRTUALHOST FILES
+	Modify these to suit your server.
 
-	Change directory/DocumentRoot to the www/ folder of nZEDb.
+	Apache 2.2:
 
-	<VirtualHost *:80>
-			<Directory /domains/www/example.com/newz/www/>
-					Options FollowSymLinks
-					AllowOverride All
-					Order allow,deny
-					allow from all
-			</Directory>
+<VirtualHost *:80>
+	ServerAdmin webmaster@localhost
+	ServerName localhost
+	DocumentRoot "/srv/http/nZEDb/www"
+	LogLevel warn
+	ServerSignature Off
+	ErrorLog /var/log/apache2/error.log
+	<Directory "/srv/http/nZEDb/www">
+		Options FollowSymLinks
+		AllowOverride All
+		Order allow,deny
+		allow from all
+	</Directory>
+	Alias /covers /srv/http/nZEDb/resources/covers
+</VirtualHost>
 
-			ServerAdmin admin@example.com
-			ServerName example.com
-			ServerAlias www.example.com
-			DocumentRoot /domains/www/example.com/newz/www
-			LogLevel warn
-			ServerSignature Off
-	</VirtualHost>
+
+	Apache 2.4:
+
+<VirtualHost *:80>
+	ServerAdmin webmaster@localhost
+	ServerName localhost
+	DocumentRoot "/srv/http/nZEDb/www"
+	LogLevel warn
+	ServerSignature Off
+	ErrorLog /var/log/apache2/error.log
+	<Directory "/srv/http/nZEDb/www">
+		Options FollowSymLinks
+		AllowOverride All
+		Require all granted
+	</Directory>
+	Alias /covers /srv/http/nZEDb/resources/covers
+</VirtualHost>
+
+
+	Nginx:
+
+server {
+	listen 80 default_server;
+	server_name localhost;
+
+	# These are the log locations, you should not have to change these.
+	access_log /var/log/nginx/access.log;
+	error_log /var/log/nginx/error.log;
+
+	# This is the root web folder for nZEDb, you shouldn't have to change this.
+	root /srv/http/nZEDb/www/;
+	index index.html index.htm index.php;
+
+	location ~* \.(?:css|eot|gif|gz|ico|inc|jpe?g|js|ogg|oga|ogv|mp4|m4a|mp3|png|svg|ttf|txt|woff|xml)$ {
+		expires max;
+		add_header Pragma public;
+		add_header Cache-Control "public, must-revalidate, proxy-revalidate";
+	}
+
+	location / {
+		try_files $uri $uri/ @rewrites;
+	}
+
+	location ^~ /covers/ {
+		# This is where the nZEDb covers folder should be in.
+		root /srv/http/nZEDb/resources;
+	}
+
+	location @rewrites {
+		rewrite ^/([^/\.]+)/([^/]+)/([^/]+)/? /index.php?page=$1&id=$2&subpage=$3 last;
+		rewrite ^/([^/\.]+)/([^/]+)/?$ /index.php?page=$1&id=$2 last;
+		rewrite ^/([^/\.]+)/?$ /index.php?page=$1 last;
+	}
+
+	location /admin {
+	}
+
+	location /install {
+	}
+
+	location ~ \.php$ {
+		include /etc/nginx/fastcgi_params;
+
+		# Uncomment the following line and comment the .sock line if you want to use TCP.
+		#fastcgi_pass 127.0.0.1:9000;
+		fastcgi_pass unix:/var/run/php5-fpm.sock;
+
+		# The next two lines should go in your fastcgi_params
+		fastcgi_index index.php;
+		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+	}
+}
