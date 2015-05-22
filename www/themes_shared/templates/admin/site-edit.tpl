@@ -401,7 +401,7 @@
 					<input id="ffmpegpath" class="long" name="ffmpegpath" type="text" value="{$site->ffmpegpath}"/>
 					<div class="hint">The path to the <a href="http://www.ffmpeg.org/">ffmpeg</a> or <a
 								href="https://libav.org/">avconv</a> binary. Used for making thumbnails and video/audio
-						previews. Use empty path to disable thumbnailing.
+						previews.
 						<br/>Use forward slashes in windows <span style="font-family:courier;">c:/path/to/ffmpeg.exe</span>
 					</div>
 				</td>
@@ -860,6 +860,13 @@
 				<td>
 					{html_radios id="processjpg" name='processjpg' values=$yesno_ids output=$yesno_names selected=$site->processjpg separator='<br />'}
 					<div class="hint">Whether to attempt to retrieve a JPG file while additional post processing, these are usually on XXX releases.<br/></div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="processthumbnails">Process Video Thumbnails:</label></td>
+				<td>
+					{html_radios id="processthumbnails" name='processthumbnails' values=$yesno_ids output=$yesno_names selected=$site->processthumbnails separator='<br />'}
+					<div class="hint">Whether to attempt to process a video thumbnail image. You must have ffmpeg for this.<br/></div>
 				</td>
 			</tr>
 			<tr>
