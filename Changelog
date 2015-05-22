@@ -7,6 +7,7 @@ All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 2015-05-23 bart39
+	* Mrg: PR 1693 from kevin123 - Add thumbnail creation setting.
 	* Mrg: PR 1692 from kevin123 - Update documentation. Remove obsolete files.
 2015-05-20 bart39
 	* Chg: another update ab.cd.image collection regex.
