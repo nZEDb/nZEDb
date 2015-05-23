@@ -7,6 +7,8 @@ All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 2015-05-23 bart39
+	* Mrg: PR 1702 from enverex - Ensure all variables are set.
+2015-05-22 bart39
 	* Mrg: PR 1698 from enverex - Improve daytopost accuracy and speed.
 	* Mrg: PR 1696 from kevin123 - Fix alternate provider not being set in config.php on install. #1695
 	* Mrg: PR 1693 from kevin123 - Add thumbnail creation setting.
