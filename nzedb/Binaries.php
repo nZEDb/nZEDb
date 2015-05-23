@@ -1169,8 +1169,6 @@ class Binaries
 			return $data['last'];
 		}
 
-		$totalArticles = (int)($data['last'] - $data['first']);
-
 		if ($this->_echoCLI) {
 			$this->_colorCLI->doEcho(
 				$this->_colorCLI->primary(
@@ -1183,6 +1181,7 @@ class Binaries
 		$wantedArticle = round(($data['last'] + $data['first']) / 2);
 		$aMax = $data['last'];
 		$aMin = $data['first'];
+		$reallyOldArticle = $oldArticle = $articleTime = null;
 
 		while(true) {
 			// Article exists outside of available range, this shouldn't happen
