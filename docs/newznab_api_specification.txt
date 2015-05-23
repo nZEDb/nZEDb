@@ -1,13 +1,12 @@
+                                    newznab Usenet Searching Web API
 
+                                                v0.4
+                                             2015-05-23
 
-
-					nZEDb Usenet Searching Web API
-
-
-							   v0.3
-							 22/8/2010
-
-Author: ensi ensisoft@gmail.com
+Authors:
+ensi     ensisoft@gmail.com
+newznab  http://newznab.com/
+nZEDb    https://github.com/nZEDb/nZEDb
 
 1.  Introduction
 2.  Functions
@@ -23,14 +22,15 @@ Author: ensi ensisoft@gmail.com
 4.2 Attribute example
 5.  nZEDb Error Codes
 5.1 Error code example
+6   Changelog
 
 1. Introduction
 
-   This document describes the nZEDb Usenet Searching Web API. The API is designed to be implemented
+   This document describes the newznab/nZEDb Usenet Searching Web API. The API is designed to be implemented
    by Usenet indexing sites, i.e. sites that index Usenet newsgroups through some means, typically
-   by downloading and inspecting the NTTP headers. The API is aimed for NZB aware client applications
+   by downloading and inspecting the NNTP headers. The API is aimed for NZB aware client applications
    to allow them to perform Usenet searches against nZEDb servers and receive NZB information in order
-   to facilitate direct downloading from Usenet without having to download any NTTP headers.
+   to facilitate direct downloading from Usenet without having to download any NNTP headers.
 
    This document does not describe the actual implementation of either the client or the server but just
    describes the HTTP(S) interface and request/response sequences.
@@ -39,10 +39,10 @@ Author: ensi ensisoft@gmail.com
 
 1.1 Notation
 
-	This document uses the follocation notations:
+   This document uses the following notations:
 
-	Parameters: "t=c" denotes a required HTTP query parameter. [o=json | o=xml] denotes optional
-	parameters with possible values.
+   Parameters: "t=c" denotes a required HTTP query parameter. [o=json | o=xml] denotes optional
+   parameters with possible values.
 
 
 2. Functions
@@ -63,503 +63,500 @@ Author: ensi ensisoft@gmail.com
    2.1 CAPS
 
    Description:
-	 CAPS function is used to query the server for supported features and the protocol version and other
-	 meta data relevant to the implementation. This function does not require the client to provide any
-	 login information but can be executed out of "login session".
+   CAPS function is used to query the server for supported features and the protocol version and other
+   meta data relevant to the implementation. This function does not require the client to provide any
+   login information but can be executed out of "login session".
 
    Important fields of the returned data:
-	  server/version                    The version of the protocol implemented by the server. All implementations should be backwards compatible.
-	  limits                            The limit and defaults to the number of search results returned.
-	  retention                         Server retention (how many days NZB information is stored before being purged).
-	  category                          Defines a searchable category which might have any number of subcategories.
-	  category/id                       Unique category ID, can be either one of the standard category IDs or a site specific ID.
-	  category/name                     Any descriptive name for the category. Can be site/language specific.
-	  category/description              A description of the contents of the category.
-	  category/subcat                   A subcategory.
-	  category/subcat/id/               Unique category ID, can be either one of the standard category IDs or a site specific ID.
-	  category/subcat/name              Any descriptive name for the category. Can be site/language specific.
-	  category/subcat/description       A description of the contents of the category.
+    server/version                    The version of the protocol implemented by the server. All implementations should be backwards compatible.
+    limits                            The limit and defaults to the number of search results returned.
+    retention                         Server retention (how many days NZB information is stored before being purged).
+    category                          Defines a searchable category which might have any number of subcategories.
+    category/id                       Unique category ID, can be either one of the standard category IDs or a site specific ID.
+    category/name                     Any descriptive name for the category. Can be site/language specific.
+    category/description              A description of the contents of the category.
+    category/subcat                   A subcategory.
+    category/subcat/id/               Unique category ID, can be either one of the standard category IDs or a site specific ID.
+    category/subcat/name              Any descriptive name for the category. Can be site/language specific.
+    category/subcat/description       A description of the contents of the category.
 
    HTTP Method:
-	 GET
+   GET
 
    HTTP Response:
-	 200 OK
+   200 OK
 
    Parameters:
-	 t=caps                     Caps function, must always be "caps".
+   t=caps                     Caps function, must always be "caps".
 
    Optional parameters:
-	 o=xxx                      Output format, either "JSON" or "XML. Default is "XML".
+   o=xxx                      Output format, either "JSON" or "XML. Default is "XML".
 
    Examples:
-	 --> GET http://servername.com/api?t=caps
-	 <-- 200 OK
-		<?xml version="1.0" encoding="UTF-8"?>
-		  <caps>
-			<!-- server information -->
-			<server version="1.0" title="nZEDb" strapline="A great usenet indexer"
-					email="info@nZEDb.com" url="http://servername.com/"
-					image="http://servername.com/theme/black/images/banner.jpg"/>
+   --> GET http://servername.com/api?t=caps
+   <-- 200 OK
+      <?xml version="1.0" encoding="UTF-8"?>
+         <caps>
+            <!-- server information -->
+            <server version="1.0" title="nZEDb" strapline="A great usenet indexer"
+             email="info@nZEDb.com" url="http://servername.com/" image="http://servername.com/theme/black/images/banner.jpg"/>
 
-			<!-- limit parameter range -->
-			<limits max="100" default="50"/>
+            <!-- limit parameter range -->
+            <limits max="100" default="50"/>
 
-			<!-- the server NZB retention -->
-			<retention days="400"/>
+            <!-- the server NZB retention -->
+            <retention days="400"/>
 
-			<!-- registration available or not -->
-			<registration available="yes" open="yes" />
+            <!-- registration available or not -->
+            <registration available="yes" open="yes" />
 
-			<!--
-				 The search functions available at the server
-				 The only currently defined search functions are SEARCH and TV-SEARCH.
-				 Any conforming implementation should at least support the basic search.
-				 Other search functions are optional.
-			-->
-			<searching>
-				<search available="yes"/>
-				<tv-search available="yes"/>
-				<movie-search available="no"/>
-			</searching>
+            <!--
+                The search functions available at the server
+                The only currently defined search functions are SEARCH and TV-SEARCH.
+                Any conforming implementation should at least support the basic search.
+                Other search functions are optional.
+            -->
+            <searching>
+               <search available="yes"/>
+               <tv-search available="yes"/>
+               <movie-search available="no"/>
+            </searching>
 
-			<!-- supported categories -->
-			<categories>
-				<category id="1000" name="Console">
-				  <subcat id="1010" name="NDS"/>
-				  <subcat id="1020" name="PSP"/>
-				</category>
-				<category id="2000" name="Movies">
-				  <subcat id="2010" name="Foreign"/>
-				</category>
+            <!-- supported categories -->
+            <categories>
+               <category id="1000" name="Console">
+                  <subcat id="1010" name="NDS"/>
+                  <subcat id="1020" name="PSP"/>
+               </category>
+               <category id="2000" name="Movies">
+                  <subcat id="2010" name="Foreign"/>
+               </category>
 
-				<!-- site specific categories -->
-				<category id="1000001" name="MotoGP"       description="Latest MotoGP stuff"/>
-				<category id="1000002" name="Fifa 2010"    description="Fifa 2010 world cup">
-				  <subcat id="1000003" name="Fifa 2010 HD" description="HD stuff"/>
-				  <subcat id="1000004" name="Fifa 2010 SD" description="SD stuff"/>
-				</category>
-				<!-- etc.. -->
-			</categories>
-		  </caps>
-		</xml>
+               <!-- site specific categories -->
+               <category id="1000001" name="MotoGP"       description="Latest MotoGP stuff"/>
+               <category id="1000002" name="Fifa 2010"    description="Fifa 2010 world cup">
+                  <subcat id="1000003" name="Fifa 2010 HD" description="HD stuff"/>
+                  <subcat id="1000004" name="Fifa 2010 SD" description="SD stuff"/>
+               </category>
+               <!-- etc.. -->
+            </categories>
+         </caps>
+      </xml>
 
    2.2 REGISTER
 
    Description:
 
-	   REGISTER function is used for automatically creating and registering user account.
-	   This is an optional function and may or may not be available at a site. It is also possible
-	   that function is available but currently registrations at the site are closed.
+      REGISTER function is used for automatically creating and registering user account.
+      This is an optional function and may or may not be available at a site. It is also possible
+      that function is available but currently registrations at the site are closed.
 
-	   The only prerequisite for registering an account is a valid email address and any server policies.
-	   It is at the server administration discretion to allow or deny registrations based on
-	   for example the validity of the email address or the the current client host address.
+      The only prerequisite for registering an account is a valid email address and any server policies.
+      It is at the server administration discretion to allow or deny registrations based on
+      for example the validity of the email address or the the current client host address.
 
-	   On succesful registration a valid username, password and api key are returned to the caller
-	   On error an appropriate error code is returned.
+      On successful registration a valid username, password and api key are returned to the caller
+      On error an appropriate error code is returned.
 
    HTTP Method:
-	  GET
+     GET
 
    HTTP Response:
-	  200 OK
+     200 OK
 
    Parameters:
-	  t=register        Register function, must always be "register"
-	  email=xxx         A valid email address to be used for registration. (URL/UTF-8 encoded).
+     t=register        Register function, must always be "register"
+     email=xxx         A valid email address to be used for registration. (URL/UTF-8 encoded).
 
    Examples:
-	  --> GET HTTP://servername.com/api?t=register&email=john.joe%40acme.com
-	  <-- 200 OK
-		  <?xml version="1.0" encoding="UTF-8"?>
-			 <register username="user123" password="pass123" apikey="abcabcd11234abc"/>
-		  </register>
+      --> GET HTTP://servername.com/api?t=register&email=john.joe%40acme.com
+      <-- 200 OK
+         <?xml version="1.0" encoding="UTF-8"?>
+            <register username="user123" password="pass123" apikey="abcabcd11234abc"/>
+            </register>
 
-	  --> GET HTTP://servername.com/api?t=register&email=john.joe%40acme.com
-	  <-- 200 OK
-		  <?xml version="1.0" encoding="UTF-8"?>
-		  <error code="103" description="Registration denied"/>
+      --> GET HTTP://servername.com/api?t=register&email=john.joe%40acme.com
+      <-- 200 OK
+         <?xml version="1.0" encoding="UTF-8"?>
+         <error code="103" description="Registration denied"/>
 
-	  --> GET HTTP://servername.com/api?t=register&email=john.joe%40acme.com
-	  <-- 200 OK
-		 <?xml version="1.0" encoding="UTF-8"?>
-		 <error code="104" description="No more registrations allowed"/>
+      --> GET HTTP://servername.com/api?t=register&email=john.joe%40acme.com
+      <-- 200 OK
+         <?xml version="1.0" encoding="UTF-8"?>
+         <error code="104" description="No more registrations allowed"/>
 
-	  --> GET HTTP://servername.com/api?t=register&email=john.joe%40acme.com
-	  <-- 200 OK
-		 <?xml version="1.0" encoding="UTF-8"?>
-		 <error code="203" description="Function not available"/>
+      --> GET HTTP://servername.com/api?t=register&email=john.joe%40acme.com
+      <-- 200 OK
+         <?xml version="1.0" encoding="UTF-8"?>
+         <error code="203" description="Function not available"/>
 
 
    2.3 SEARCH
 
    Description:
-	  SEARCH function searches the index for items matching the search criteria. On succesful
-	  search the response contains a list of found items. Even if search matched nothing an empty
-	  response set is created and returned. This function requires passing the user credentials.
+      SEARCH function searches the index for items matching the search criteria. On successful
+      search the response contains a list of found items. Even if search matched nothing an empty
+      response set is created and returned. This function requires passing the user credentials.
 
-	  Searches that include categories that are not supported by the server are still executed
-	  but the non-supported categories are simply skipped. This basically treats such a search
-	  simply as a "no match" but allows the same query to be ran simultaneously against several
-	  servers.
+      Searches that include categories that are not supported by the server are still executed
+      but the non-supported categories are simply skipped. This basically treats such a search
+      simply as a "no match" but allows the same query to be ran simultaneously against several
+      servers.
 
-	  The list of search categories specifies a logical OR condition. I.e. an item matching the
-	  search input in any of the specified categories is considered a match and is returned. E.g.
-	  a search searching for "linux" in "computer" and "ebook" categories searches for matching
-	  items in "computer" and "ebook" but does not search for example the "movies" category.
-	  Items found in either group are then combined into a single result set. If the input string
-	  for search is empty all items (within the server/query limits) are returned for the
-	  matching categories.
+      The list of search categories specifies a logical OR condition. I.e. an item matching the
+      search input in any of the specified categories is considered a match and is returned. E.g.
+      a search searching for "linux" in "computer" and "ebook" categories searches for matching
+      items in "computer" and "ebook" but does not search for example the "movies" category.
+      Items found in either group are then combined into a single result set. If the input string
+      for search is empty all items (within the server/query limits) are returned for the
+      matching categories.
 
-	  When performing the query the categories to be searched are concatenated into a single
-	  query parameter by , (comma). For example "cat=200,300,400", which is then URL encoded.
+      When performing the query the categories to be searched are concatenated into a single
+      query parameter by , (comma). For example "cat=200,300,400", which is then URL encoded.
 
-	  The returned XML data stream is RSS 2.0 compliant and also contains additional information
-	  in the extra namespace.
+      The returned XML data stream is RSS 2.0 compliant and also contains additional information
+      in the extra namespace.
 
-	  Response-offset field identifies the current subset of all the matches that are being
-	  transmitted in the response. In other words, if a search for "disco" finds more matches
-	  than the server is capable of transmitting in a single response, the response needs to be
-	  split into several responses. Then it is's the clients responsibility to repeat the same
-	  query with same parameters but specify an increased offset in order to return the next
-	  set of results.
+      Response-offset field identifies the current subset of all the matches that are being
+      transmitted in the response. In other words, if a search for "disco" finds more matches
+      than the server is capable of transmitting in a single response, the response needs to be
+      split into several responses. Then it is the clients responsibility to repeat the same
+      query with same parameters but specify an increased offset in order to return the next
+      set of results.
 
-	  If offset query parameter is not used response data contains items between 0 offset - limit.
-	  If offset query parameter is out of bounds an empty result set is returned.
+      If offset query parameter is not used response data contains items between 0 offset - limit.
+      If offset query parameter is out of bounds an empty result set is returned.
 
    Important fields of the returned data (RSS):
-	 title              Title of the found item.
-	 guid               A globally unique (GUID) item identifier.
-	 pubdate            The publishing date in RSS date object as specified by RFC822/2822. (not the Usenet date)
-	 category           The category the NZB belongs to. (This is human readable for RSS. More precise category is found in additional data)
-	 enclosure          The NZB url
+      title              Title of the found item.
+      guid               A globally unique (GUID) item identifier.
+      pubdate            The publishing date in RSS date object as specified by RFC822/2822. (not the Usenet date)
+      category           The category the NZB belongs to. (This is human readable for RSS. More precise category is found in additional data)
+      enclosure          The NZB url
 
-	HTTP Method:
-	  GET
+   HTTP Method:
+      GET
 
-	HTTP Response:
-	  200 OK
+   HTTP Response:
+      200 OK
 
-	Parameters:
-	  t=search          Search function, must always be "search"
-	  apikey=xxxx       User's key as provided by the service provider.
+   Parameters:
+      t=search          Search function, must always be "search"
+      apikey=xxxx       User's key as provided by the service provider.
 
    Optional parameters:
-	  q=xxxx            Search input (URL/UTF-8 encoded). Case insensitive.
-	  limit=123         Upper limit for the number of items to be returned.
-	  cat=xxx           List of categories to search delimeted by ","
-	  o=xxx             Output format, either "JSON" or "XML". Default is "XML".
-	  extended=1        Return extended information in the search results. (See DETAILS).
-	  del=1        			Delete the item from a users cart on download.
-	  maxage=123        Only return results which were posted to usenet in the last x days.
-	  offset=50         The 0 based query offset defining which part of the response we want.
+      q=xxxx            Search input (URL/UTF-8 encoded). Case insensitive.
+      limit=123         Upper limit for the number of items to be returned.
+      cat=xxx           List of categories to search delimited by ","
+      o=xxx             Output format, either "JSON" or "XML". Default is "XML".
+      extended=1        Return extended information in the search results. (See DETAILS).
+      del=1             Delete the item from a users cart on download.
+      maxage=123        Only return results which were posted to usenet in the last x days.
+      offset=50         The 0 based query offset defining which part of the response we want.
 
-	Examples:
-	  --> GET http://servername.com/api?t=search&apikey=xxxxx&q=a%20tv%20show
-	  <-- 200 OK
-		  <?xml version="1.0" encoding="UTF-8"?>
-		  <rss version="2.0">
+   Examples:
+      --> GET http://servername.com/api?t=search&apikey=xxxxx&q=a%20tv%20show
+      <-- 200 OK
+         <?xml version="1.0" encoding="UTF-8"?>
+         <rss version="2.0">
 
-		  <channel>
-			<title>example.com</tile>
-			<description>example.com API results</description>
-			<!--
-			   More RSS content
-			 -->
+            <channel>
+               <title>example.com</tile>
+               <description>example.com API results</description>
+               <!--
+                  More RSS content
+               -->
 
-			<!-- offset is the current offset of the response
-				 total is the total number of items found by the query
-			 -->
-			<nZEDb:response offset="0" total="2344"/>
+               <!-- offset is the current offset of the response total is the total number of items found by the query -->
+               <newznab:response offset="0" total="2344"/>
 
-			<item>
-			  <!-- Standard RSS 2.0 Data -->
-			  <title>A.Tv.Show.S06E05.DVDRIP.XviD</title>
-			  <guid isPermaLink="true">http://servername.com/rss/viewnzb/e9c515e02346086e3a477a5436d7bc8c</guid>
-			  <link>http://servername.com/rss/nzb/e9c515e02346086e3a477a5436d7bc8c&amp;i=1&amp;r=18cf9f0a736041465e3bd521d00a90b9</link>
-			  <comments>http://servername.com/rss/viewnzb/e9c515e02346086e3a477a5436d7bc8c#comments</comments>
-			  <pubDate>Sun, 06 Jun 2010 17:29:23 +0100</pubDate>
-			  <category>TV > XviD</category>
-			  <description>Some TV show</description>
-			  <enclosure url="http://servername.com/rss/nzb/e9c515e02346086e3a477a5436d7bc8c&amp;i=1&amp;r=18cf9f0a736041465e3bd521d00a90b9" length="154653309" type="application/x-nzb" />
+               <item>
+                  <!-- Standard RSS 2.0 Data -->
+                  <title>A.Tv.Show.S06E05.DVDRIP.XviD</title>
+                  <guid isPermaLink="true">http://servername.com/rss/viewnzb/e9c515e02346086e3a477a5436d7bc8c</guid>
+                  <link>http://servername.com/rss/nzb/e9c515e02346086e3a477a5436d7bc8c&amp;i=1&amp;r=18cf9f0a736041465e3bd521d00a90b9</link>
+                  <comments>http://servername.com/rss/viewnzb/e9c515e02346086e3a477a5436d7bc8c#comments</comments>
+                  <pubDate>Sun, 06 Jun 2010 17:29:23 +0100</pubDate>
+                  <category>TV > XviD</category>
+                  <description>Some TV show</description>
+                  <enclosure url="http://servername.com/rss/nzb/e9c515e02346086e3a477a5436d7bc8c&amp;i=1&amp;r=18cf9f0a736041465e3bd521d00a90b9" length="154653309" type="application/x-nzb" />
 
-			  <!-- Additional attributes -->
-			  <nZEDb:attr name="category" value="2000"/>
-			  <nZEDb:attr name="category" value="2030"/>
-			  <nZEDb:attr name="size"     value="4294967295"/>
-		   </item>
-		 </channel>
-		 </rss>
+                  <!-- Additional attributes -->
+                  <newznab:attr name="category" value="2000"/>
+                  <newznab:attr name="category" value="2030"/>
+                  <newznab:attr name="size"     value="4294967295"/>
+               </item>
+            </channel>
+         </rss>
 
 
-	  // no items matched the search criteria
-	  --> GET http://servername.com/api?t=search&apikey=xxxxx&q=linux%20image
-	  <-- 200 OK
-		  <?xml version="1.0" encoding="UTF-8"?>
-		  <rss>
-			<channel>
-				<nZEDb:response offset="0" total="0"/>
-			</channel>
-		  </rss>
+      // no items matched the search criteria
+      --> GET http://servername.com/api?t=search&apikey=xxxxx&q=linux%20image
+      <-- 200 OK
+         <?xml version="1.0" encoding="UTF-8"?>
+         <rss>
+            <channel>
+               <newznab:response offset="0" total="0"/>
+            </channel>
+         </rss>
 
-	 // Query could not be completed because user credentials are broken
-	 --> GET http://servername.com/api?t=search&apikey=xxxxx&q=linux%20image
-	 <-- 200  OK
-		 <?xml version="1.0" encoding="UTF-8"?>
-		 <error code="100" description="Incorrect user credentials"/>
+      // Query could not be completed because user credentials are broken
+       --> GET http://servername.com/api?t=search&apikey=xxxxx&q=linux%20image
+      <-- 200  OK
+      <?xml version="1.0" encoding="UTF-8"?>
+         <error code="100" description="Incorrect user credentials"/>
 
 
-	 // Query could not be completed because it was malformed
-	 --> GET http://servername.com/api?t=search&apikey=xxxxx&q=linux%20image
-	 <-- 200 OK
-		 <?xml version="1.0" encoding="UTF-8"/>
-		 <error code="200" description="Missing parameter: key"/>
+      // Query could not be completed because it was malformed
+      --> GET http://servername.com/api?t=search&apikey=xxxxx&q=linux%20image
+      <-- 200 OK
+      <?xml version="1.0" encoding="UTF-8"/>
+         <error code="200" description="Missing parameter: key"/>
 
    2.4 TV-SEARCH
 
    Description:
-	 TV-SEARCH function searches the index in the TV category for items matching the search criteria.
-	 The criteria includes query string and in addition information about season and episode.
-	 On succesful search the response contains a list of items that matched the query. Even if the
-	 search matched nothing an empty but valid response is created and returned. This function
-	 requires passing the user credentials.
+      TV-SEARCH function searches the index in the TV category for items matching the search criteria.
+      The criteria includes query string and in addition information about season and episode.
+      On successful search the response contains a list of items that matched the query. Even if the
+      search matched nothing an empty but valid response is created and returned. This function
+      requires passing the user credentials.
 
-	 The returned XML data stream is RSS 2.0 compliant and also contains additional information
-	 in the extra namespace and optionally TV specific information
+      The returned XML data stream is RSS 2.0 compliant and also contains additional information
+      in the extra namespace and optionally TV specific information
 
    HTTP Method:
-	 GET
+      GET
 
    HTTP Response:
-	 200 OK
+      200 OK
 
    Parameters:
-	 t=tvsearch         TV-Search function, must always be "tvsearch".
-	 apikey=xxx         User's key as provided by the service provider.
+      t=tvsearch         TV-Search function, must always be "tvsearch".
+      apikey=xxx         User's key as provided by the service provider.
 
    Optional parameters:
-	 limit=123          Upper limit for the number of items to be returned, e.g. 123.
-	 rid=xxxx           TVRage id of the item being queried.
-	 cat=xxx            List of categories to search delimeted by ","
-	 season=xxxx        Season string, e.g S13 or 13 for the item being queried.
-	 q=xxxx             Search input (URL/UTF-8 encoded). Case insensitive.
-	 ep=xxx             Episode string, e.g E13 or 13 for the item being queried.
-	 o=xml              Output format, either "JSON" or "XML". Default is "XML".
-	 extended=1         Return extended information in the search results
-	 del=1              Delete the item from a users cart on download.
-	 maxage=123         Only return results which were posted to usenet in the last x days.
-	 offset=50          The 0 based query offset defining whcih part of the response we want.
+      limit=123          Upper limit for the number of items to be returned, e.g. 123.
+      rid=xxxx           TVRage id of the item being queried.
+      cat=xxx            List of categories to search delimited by ","
+      season=xxxx        Season string, e.g S13 or 13 for the item being queried.
+      q=xxxx             Search input (URL/UTF-8 encoded). Case insensitive.
+      ep=xxx             Episode string, e.g E13 or 13 for the item being queried.
+      o=xml              Output format, either "JSON" or "XML". Default is "XML".
+      extended=1         Return extended information in the search results
+      del=1              Delete the item from a users cart on download.
+      maxage=123         Only return results which were posted to usenet in the last x days.
+      offset=50          The 0 based query offset defining which part of the response we want.
 
    Examples:
-	 --> GET http://servername.com/api?t=tvsearch&apikey=xxxq=lost&season=S03
-	 <-- 200 OK
-		 <?xml version="1.0" encoding="UTF-8"?>
-		 <rss version="2.0">
-		 <channel>
-			<title>example.com</title>
-			<description>example.com API results</description>
-			<!--
-			  More RSS content
-			-->
+      --> GET http://servername.com/api?t=tvsearch&apikey=xxxq=lost&season=S03
+      <-- 200 OK
+      <?xml version="1.0" encoding="UTF-8"?>
+      <rss version="2.0">
+         <channel>
+            <title>example.com</title>
+            <description>example.com API results</description>
+            <!--
+               More RSS content
+            -->
 
-			<!-- offset is the current offset of the response
-				 total is the total number of items found by the query
-			-->
-			<nZEDb:response offset="0" total="1234"/>
+            <!-- offset is the current offset of the response
+               total is the total number of items found by the query
+            -->
+            <newznab:response offset="0" total="1234"/>
 
-			<item>
-			  <!-- Standard RSS 2.0 data -->
-			  <title>Land.of.the.Lost.S03E02.Survival.Kit.iNTERNAL.DVDRip.XViD-SPRiNTER</title>
-			  <guid isPermaLink="true">http://servername.com/rss/viewnzb/e9c515e02346086e3a477a5436d7bc8c</guid>
-			  <link>http://servername.com/rss/nzb/e9c515e02346086e3a477a5436d7bc8c&amp;i=1&amp;r=18cf9f0a736041465e3bd521d00a90b9</link>
-			  <comments>http://servername.com/rss/viewnzb/e9c515e02346086e3a477a5436d7bc8c#comments</comments>
-			  <pubDate>Sun, 06 Jun 2010 17:29:23 +0100</pubDate>
-			  <category>TV > XviD</category>
-			  <description>Some TV show</description>
-			  <enclosure url="http://servername.com/rss/nzb/e9c515e02346086e3a477a5436d7bc8c&amp;i=1&amp;r=18cf9f0a736041465e3bd521d00a90b9" length="154653309" type="application/x-nzb" />
+            <item>
+               <!-- Standard RSS 2.0 data -->
+               <title>Land.of.the.Lost.S03E02.Survival.Kit.iNTERNAL.DVDRip.XViD-SPRiNTER</title>
+               <guid isPermaLink="true">http://servername.com/rss/viewnzb/e9c515e02346086e3a477a5436d7bc8c</guid>
+               <link>http://servername.com/rss/nzb/e9c515e02346086e3a477a5436d7bc8c&amp;i=1&amp;r=18cf9f0a736041465e3bd521d00a90b9</link>
+               <comments>http://servername.com/rss/viewnzb/e9c515e02346086e3a477a5436d7bc8c#comments</comments>
+               <pubDate>Sun, 06 Jun 2010 17:29:23 +0100</pubDate>
+               <category>TV > XviD</category>
+               <description>Some TV show</description>
+               <enclosure url="http://servername.com/rss/nzb/e9c515e02346086e3a477a5436d7bc8c&amp;i=1&amp;r=18cf9f0a736041465e3bd521d00a90b9" length="154653309" type="application/x-nzb" />
 
-			  <!-- Additional attributes -->
-			  <nZEDb:attr name="category" value="5030"/>
-			  <nZEDb:attr name="size"     value="154653309"/>
-			  <nZEDb:attr name="season"   value="3"/>
-			  <nZEDb:attr name="episode"  value="2"/>
-			</item>
+               <!-- Additional attributes -->
+               <newznab:attr name="category" value="5030"/>
+               <newznab:attr name="size"     value="154653309"/>
+               <newznab:attr name="season"   value="3"/>
+               <newznab:attr name="episode"  value="2"/>
+            </item>
 
-			<item>
-			  <!-- Standard RSS 2.0 data -->
-			  <title>Lost.S03E01.720p.BluRay.DTS.x264.INTERNAL-hV</title>
-			  <guid isPermaLink="true">http://servername.com/rss/viewnzb/e9c515e02346086e3a477a5436d7bc8c</guid>
-			  <link>http://servername.com/rss/nzb/e9c515e02346086e3a477a5436d7bc8c&amp;i=1&amp;r=18cf9f0a736041465e3bd521d00a90b9</link>
-			  <comments>http://servername.com/rss/viewnzb/e9c515e02346086e3a477a5436d7bc8c#comments</comments>
-			  <pubDate>Sun, 06 Jun 2010 17:29:23 +0100</pubDate>
-			  <category>TV > XviD</category>
-			  <description>Some TV show</description>
-			  <enclosure url="http://servername.com/rss/nzb/e9c515e02346086e3a477a5436d7bc8c&amp;i=1&amp;r=18cf9f0a736041465e3bd521d00a90b9" length="154653309" type="application/x-nzb" />
+            <item>
+               <!-- Standard RSS 2.0 data -->
+               <title>Lost.S03E01.720p.BluRay.DTS.x264.INTERNAL-hV</title>
+               <guid isPermaLink="true">http://servername.com/rss/viewnzb/e9c515e02346086e3a477a5436d7bc8c</guid>
+               <link>http://servername.com/rss/nzb/e9c515e02346086e3a477a5436d7bc8c&amp;i=1&amp;r=18cf9f0a736041465e3bd521d00a90b9</link>
+               <comments>http://servername.com/rss/viewnzb/e9c515e02346086e3a477a5436d7bc8c#comments</comments>
+               <pubDate>Sun, 06 Jun 2010 17:29:23 +0100</pubDate>
+               <category>TV > XviD</category>
+               <description>Some TV show</description>
+               <enclosure url="http://servername.com/rss/nzb/e9c515e02346086e3a477a5436d7bc8c&amp;i=1&amp;r=18cf9f0a736041465e3bd521d00a90b9" length="154653309" type="application/x-nzb" />
 
-			  <!-- Additional attributes -->
-			  <nZEDb:attr name="category" value="5000" />
-			  <nZEDb:attr name="category" value="5030" />
-			  <nZEDb:attr name="size"     value="4294967295" />
-			  <nZEDb:attr name="season"   value="3"/>
-			  <nZEDb:attr name="episode"  value="1"/>
-			</item>
+               <!-- Additional attributes -->
+               <newznab:attr name="category" value="5000" />
+               <newznab:attr name="category" value="5030" />
+               <newznab:attr name="size"     value="4294967295" />
+               <newznab:attr name="season"   value="3"/>
+               <newznab:attr name="episode"  value="1"/>
+            </item>
 
-			<!-- more items to follow -->
+            <!-- more items to follow -->
 
-		 </channel>
-		 </rss>
+         </channel>
+      </rss>
 
    2.5 MOVIE-SEARCH
 
    Description:
-	 MOVIE-SEARCH function searches the index for items matching an imdb id or search query.
-	 On successful search the response contains a list of items that matched the query. Even if the
-	 search matched nothing an empty but valid response is created and returned. This function
-	 requires passing the user credentials.
+      MOVIE-SEARCH function searches the index for items matching an IMDB id or search query.
+      On successful search the response contains a list of items that matched the query. Even if the
+      search matched nothing an empty but valid response is created and returned. This function
+      requires passing the user credentials.
 
-	 The returned XML data stream is RSS 2.0 compliant and also contains additional information
-	 in the extra namespace and optionally movie specific information.
+      The returned XML data stream is RSS 2.0 compliant and also contains additional information
+      in the extra namespace and optionally movie specific information.
 
    HTTP Method:
-	 GET
+      GET
 
    HTTP Response:
-	 200 OK
+      200 OK
 
    Parameters:
-	 t=movie            Movie-Search function, must always be "movie".
-	 apikey=xxx         User's key as provided by the service provider.
+      t=movie            Movie-Search function, must always be "movie".
+      apikey=xxx         User's key as provided by the service provider.
 
    Optional parameters:
-	 limit=123          Upper limit for the number of items to be returned, e.g. 123.
-	 imdbid=xxxx        IMDB id of the item being queried e.g. 0058935.
-	 cat=xxx            List of categories to search delimeted by ","
-	 q=xxxx             Search input (URL/UTF-8 encoded). Case insensitive.
-	 o=xml              Output format, either "JSON" or "XML". Default is "XML".
-	 extended=1         Return extended information in the search results
-	 del=1              Delete the item from a users cart on download.
-	 maxage=123         Only return results which were posted to usenet in the last x days.
-	 offset=50          The 0 based query offset defining whcih part of the response we want.
+      limit=123          Upper limit for the number of items to be returned, e.g. 123.
+      imdbid=xxxx        IMDB id of the item being queried e.g. 0058935.
+      cat=xxx            List of categories to search delimited by ","
+      q=xxxx             Search input (URL/UTF-8 encoded). Case insensitive.
+      o=xml              Output format, either "JSON" or "XML". Default is "XML".
+      extended=1         Return extended information in the search results
+      del=1              Delete the item from a users cart on download.
+      maxage=123         Only return results which were posted to usenet in the last x days.
+      offset=50          The 0 based query offset defining which part of the response we want.
 
    Examples:
-	 --> GET http://servername.com/api?t=movie&apikey=xxx&imdbid=0058935
-	 <-- 200 OK
-		 <?xml version="1.0" encoding="UTF-8"?>
-		 <rss version="2.0">
-		 <channel>
-			<title>example.com</title>
-			<description>example.com API results</description>
-			<!--
-			  More RSS content
-			-->
+      --> GET http://servername.com/api?t=movie&apikey=xxx&imdbid=0058935
+      <-- 200 OK
+      <?xml version="1.0" encoding="UTF-8"?>
+      <rss version="2.0">
+         <channel>
+            <title>example.com</title>
+            <description>example.com API results</description>
+            <!--
+               More RSS content
+            -->
 
-			<!-- offset is the current offset of the response
-				 total is the total number of items found by the query
-			-->
-			<nZEDb:response offset="0" total="1234"/>
+            <!-- offset is the current offset of the response
+               total is the total number of items found by the query
+            -->
+            <newznab:response offset="0" total="1234"/>
 
-			<item>
-			  <!-- Standard RSS 2.0 data -->
-			  <title>Movie.Name.720p.BluRay.DTS.x264</title>
-			  <guid isPermaLink="true">http://servername.com/rss/viewnzb/e9c515e02346086e3a477a5436d7bc8c</guid>
-			  <link>http://servername.com/rss/nzb/e9c515e02346086e3a477a5436d7bc8c&amp;i=1&amp;r=18cf9f0a736041465e3bd521d00a90b9</link>
-			  <comments>http://servername.com/rss/viewnzb/e9c515e02346086e3a477a5436d7bc8c#comments</comments>
-			  <pubDate>Sun, 06 Jun 2010 17:29:23 +0100</pubDate>
-			  <category>Movie > XviD</category>
-			  <description>Some movie</description>
-			  <enclosure url="http://servername.com/rss/nzb/e9c515e02346086e3a477a5436d7bc8c&amp;i=1&amp;r=18cf9f0a736041465e3bd521d00a90b9" length="154653309" type="application/x-nzb" />
+            <item>
+               <!-- Standard RSS 2.0 data -->
+               <title>Movie.Name.720p.BluRay.DTS.x264</title>
+               <guid isPermaLink="true">http://servername.com/rss/viewnzb/e9c515e02346086e3a477a5436d7bc8c</guid>
+               <link>http://servername.com/rss/nzb/e9c515e02346086e3a477a5436d7bc8c&amp;i=1&amp;r=18cf9f0a736041465e3bd521d00a90b9</link>
+               <comments>http://servername.com/rss/viewnzb/e9c515e02346086e3a477a5436d7bc8c#comments</comments>
+               <pubDate>Sun, 06 Jun 2010 17:29:23 +0100</pubDate>
+               <category>Movie > XviD</category>
+               <description>Some movie</description>
+               <enclosure url="http://servername.com/rss/nzb/e9c515e02346086e3a477a5436d7bc8c&amp;i=1&amp;r=18cf9f0a736041465e3bd521d00a90b9" length="154653309" type="application/x-nzb" />
 
-			  <!-- Additional attributes -->
-			  <nZEDb:attr name="category" value="2000" />
-			  <nZEDb:attr name="category" value="2030" />
-			  <nZEDb:attr name="size"     value="4294967295" />
-			</item>
+               <!-- Additional attributes -->
+               <newznab:attr name="category" value="2000" />
+               <newznab:attr name="category" value="2030" />
+               <newznab:attr name="size"     value="4294967295" />
+            </item>
 
-		 </channel>
-		 </rss>
+         </channel>
+      </rss>
 
    2.6 DETAILS
 
    Description:
-	  DETAILS function returns all information for a particular Usenet (NZB) item. The response
-	  contains the generic RSS part + full extra information + full type/category specific information.
+      DETAILS function returns all information for a particular Usenet (NZB) item. The response
+      contains the generic RSS part + full extra information + full type/category specific information.
 
-	HTTP Method:
-	  GET
+   HTTP Method:
+      GET
 
-	HTTP Response:
-	  200 OK
+   HTTP Response:
+      200 OK
 
-	Parameters:
-	  t=details         Details function, must always be "details".
-	  guid=xxxx         The GUID of the item being queried.
-	  apikey=xxxx       User's key as provided by the service provider.
+   Parameters:
+      t=details         Details function, must always be "details".
+      guid=xxxx         The GUID of the item being queried.
+      apikey=xxxx       User's key as provided by the service provider.
 
-	Optional parameters:
-	  o=xxx             Output format, either "JSON" or "XML". Default is "XML".
-	  del=1             Delete the item from a users cart on download.
+   Optional parameters:
+      o=xxx             Output format, either "JSON" or "XML". Default is "XML".
+      del=1             Delete the item from a users cart on download.
 
-	Example:
-	  --> GET http://servername.com/api?t=details&apikey=xxxxx&guid=xxxxxxxxx
-	  <-- 200 OK
-		  <?xml version="1.0" encoding="UTF-8"?>
-		  <rss version="2.0">
-			<channel>
-			  <item>
-				<!-- Standard RSS 2.0 Data -->
-				<title>A.Tv.Show.S06E05.DVDRIP.XviD</title>
-				<guid isPermaLink="true">http://servername.com/rss/viewnzb/e9c515e02346086e3a477a5436d7bc8c</guid>
-				<link>http://servername.com/rss/nzb/e9c515e02346086e3a477a5436d7bc8c&amp;i=1&amp;r=18cf9f0a736041465e3bd521d00a90b9</link>
-				<comments>http://servername.com/rss/viewnzb/e9c515e02346086e3a477a5436d7bc8c#comments</comments>
-				<pubDate>Sun, 06 Jun 2010 17:29:23 +0100</pubDate>
-				<category>TV > XviD</category>
-				<description>Some TV show</description>
-				<enclosure url="http://servername.com/rss/nzb/e9c515e02346086e3a477a5436d7bc8c&amp;i=1&amp;r=18cf9f0a736041465e3bd521d00a90b9" length="154653309" type="application/x-nzb" />
+   Example:
+      --> GET http://servername.com/api?t=details&apikey=xxxxx&guid=xxxxxxxxx
+      <-- 200 OK
+      <?xml version="1.0" encoding="UTF-8"?>
+      <rss version="2.0">
+         <channel>
+            <item>
+               <!-- Standard RSS 2.0 Data -->
+               <title>A.Tv.Show.S06E05.DVDRIP.XviD</title>
+               <guid isPermaLink="true">http://servername.com/rss/viewnzb/e9c515e02346086e3a477a5436d7bc8c</guid>
+               <link>http://servername.com/rss/nzb/e9c515e02346086e3a477a5436d7bc8c&amp;i=1&amp;r=18cf9f0a736041465e3bd521d00a90b9</link>
+               <comments>http://servername.com/rss/viewnzb/e9c515e02346086e3a477a5436d7bc8c#comments</comments>
+               <pubDate>Sun, 06 Jun 2010 17:29:23 +0100</pubDate>
+               <category>TV > XviD</category>
+               <description>Some TV show</description>
+               <enclosure url="http://servername.com/rss/nzb/e9c515e02346086e3a477a5436d7bc8c&amp;i=1&amp;r=18cf9f0a736041465e3bd521d00a90b9" length="154653309" type="application/x-nzb" />
 
-				<!--
-					 Additional attributes
-					 Details function returns all possible attributes that are 1) known and 2) applicable
-					 for the item requested.
-				-->
-				<nZEDb:attr name="category"   value="2000" />
-				<nZEDb:attr name="category"   value="2030" />
-				<nZEDb:attr name="size"       value="4294967295" />
-				<nZEDb:attr name="files"      value="107" />
-				<nZEDb:attr name="poster"     value="example@4u.net (example)" />
-				<nZEDb:attr name="grabs"      value="1" />
-				<nZEDb:attr name="comments"   value="0" />
-				<nZEDb:attr name="usenetdate" value="Tue, 22 Jun 2010 06:54:22 +0100" />
-				<nZEDb:attr name="group"      value="alt.binaries.movies.divx" />
+               <!--
+                  Additional attributes
+                  Details function returns all possible attributes that are 1) known and 2) applicable
+                  for the item requested.
+               -->
+               <newznab:attr name="category"   value="2000" />
+               <newznab:attr name="category"   value="2030" />
+               <newznab:attr name="size"       value="4294967295" />
+               <newznab:attr name="files"      value="107" />
+               <newznab:attr name="poster"     value="example@4u.net (example)" />
+               <newznab:attr name="grabs"      value="1" />
+               <newznab:attr name="comments"   value="0" />
+               <newznab:attr name="usenetdate" value="Tue, 22 Jun 2010 06:54:22 +0100" />
+               <newznab:attr name="group"      value="alt.binaries.movies.divx" />
 
-			  </item>
-			</channel>
-		  </rss>
+            </item>
+         </channel>
+      </rss>
 
-	  // Query could not be completed because it was malformed
-	  --> GET http://servername.com/api?t=details&apikey=xxxxx&guid=xxxxxxxxx
-	  <-- 200 OK
-		  <?xml version="1.0" encoding="UTF-8"/>
-		  <error code="200" description="Missing parameter: key"/>
+      // Query could not be completed because it was malformed
+      --> GET http://servername.com/api?t=details&apikey=xxxxx&guid=xxxxxxxxx
+      <-- 200 OK
+      <?xml version="1.0" encoding="UTF-8"/>
+         <error code="200" description="Missing parameter: key"/>
 
-	 // Query could not be completed because no such item was available
-	 --> GET http://servername.com/api?t=details&apikey=xxxxx&guid=xxxxxxxxx
-	 <-- 200 OK
-		 <?xml version="1.0" encoding="UTF-8"/>
-		 <error code="300" description="No such GUID"/>
+      // Query could not be completed because no such item was available
+      --> GET http://servername.com/api?t=details&apikey=xxxxx&guid=xxxxxxxxx
+      <-- 200 OK
+      <?xml version="1.0" encoding="UTF-8"/>
+         <error code="300" description="No such GUID"/>
 
-	 // Query could not be completed because user credentials are broken
-	 --> GET http://servername.com/api?t=details&apikey=xxxxx&guid=xxxxxxxxx
-	 <-- 200 OK
-		 <?xml version="1.0" encoding="UTF-8"/>
-		 <error code="100" description="Incorrect user credentials"/>
+      // Query could not be completed because user credentials are broken
+      --> GET http://servername.com/api?t=details&apikey=xxxxx&guid=xxxxxxxxx
+      <-- 200 OK
+      <?xml version="1.0" encoding="UTF-8"/>
+         <error code="100" description="Incorrect user credentials"/>
 
 
 
 3. Predefined Categories
 
    In order to facilitate operation that does not rely on a particular natural language, e.g. english
-   a set of predefined catetegory IDs have been defined. It is possible to define custom categories
+   a set of predefined category IDs have been defined. It is possible to define custom categories
    in the custom category range. Each category is given a range for a set of subcategories. It is possible
    for an item to belong to several categories at the same time.
 
@@ -572,7 +569,8 @@ Author: ensi ensisoft@gmail.com
    5000-5999                            TV
    6000-6999                            XXX
    7000-7999                            Other
-   8000-99999                           Reserved                        Reserved for future expansion
+   8000-8999                            Books
+   9000-99999                           Reserved                        Reserved for future expansion
    100000-                              Custom                          Site specific category range. Defined in CAPS
 
    Categories                           Category Name
@@ -582,48 +580,75 @@ Author: ensi ensisoft@gmail.com
    1010                                 Console/NDS                     Nintendo DS
    1020                                 Console/PSP                     Sony Playstation Portable
    1030                                 Console/Wii                     Nintendo Wii
-   1040                                 Console/XBox                    Microsoft XBox
-   1050                                 Console/Xb0x 360                Microsoft XBox 360
-   1060                                 Console/Wiiware                 Wii homebrew
-   1070                                 Console/Xb0x 360 DLC            Microsoft XBox 360 Downloadable Content
+   1040                                 Console/Xbox                    Microsoft XBox
+   1050                                 Console/Xbox 360                Microsoft XBox 360
+   1060                                 Console/Wiiware/VC              Wii homebrew
+   1070                                 Console/XBOX 360 DLC            Microsoft XBox 360 Downloadable Content
+   1080                                 Console/PS3                     Playstation 3
+   1090                                 Console/Other                   Misc Console
+   1110                                 Console/3DS                     Nintendo 3DS
+   1120                                 Console/PS Vita                 Playstation Vita
+   1130                                 Console/WiiU                    Nintento Wii U
+   1140                                 Console/Xbox One                Xbox One
+   1180                                 Console/PS4                     Playstation 4
    2000                                 Movies                          All of movies
-   2010                                 Movies/Foreign
-   2020                                 Movies/Other
-   2030                                 Movies/SD
-   2040                                 Movies/HD                     HD movies with AVC encoding
+   2010                                 Movies/Foreign                  Non english movies
+   2020                                 Movies/Other                    Misc movies
+   2030                                 Movies/SD                       Standard definition movies
+   2040                                 Movies/HD                       High definition movies (720p+)
+   2050                                 Movies/3D                       3D movies
+   2060                                 Movies/BluRay                   Full BR movies
+   2070                                 Movies/DVD                      Full DVD movies
+   2080                                 Movies/WEBDL                    WEB-DL movies
    3000                                 Audio                           All of audio
-   3010                                 Audio/MP3
+   3010                                 Audio/MP3                       Mp3 music
    3020                                 Audio/Video                     Music videos
-   3030                                 Audio/Audiobook                 wtf is an audiobook?
-   3040                                 Audio/Lossless
+   3030                                 Audio/Audiobook                 Books in audio format
+   3040                                 Audio/Lossless                  Lossless music
+   3050                                 Audio/Other                     Misc music
+   3060                                 Audio/Foreign                   Non english music.
    4000                                 PC                              All of PC
    4010                                 PC/0day                         Apps and games not released in ISO.
    4020                                 PC/ISO                          CD-ROM images/DVD Images
-   4030                                 PC/Mac
-   4040                                 PC/Phone                        Mobile phone software
+   4030                                 PC/Mac                          OS X apps and games
+   4040                                 PC/Phone-Other                  Misc mobile phone software
    4050                                 PC/Games                        PC Games
+   4060                                 PC/Phone-IOS                    IOS apps
+   4070                                 PC/Phone-Android                Android apps
    5000                                 TV                              All of TV
+   5010                                 TV/WEB-DL                       WEB-DL TV
    5020                                 TV/FOREIGN                      FOREIGN TV
-   5030                                 TV/SD												SD TV
-   5040                                 TV/HD                        HD TV
-   5050                                 TV/OTHER												Other TV Content
-   5060                                 TV/Sport
+   5030                                 TV/SD                           SD TV
+   5040                                 TV/HD                           HD TV
+   5050                                 TV/OTHER                        Other TV Content
+   5060                                 TV/Sport                        Sports
+   5070                                 TV/Anime                        Anime
+   5080                                 TV/Documentary                  Documentaries
    6000                                 XXX                             All of XXX
-   6010                                 XXX/DVD
-   6020                                 XXX/WMV
-   6030                                 XXX/XviD
-   6040                                 XXX/x264                        HD Pron
-   7000                                 Other                           All of other
-   7010                                 Misc
-   7020                                 EBook                           E-Books
-   7030																	Comics													Comics Ebooks
+   6010                                 XXX/DVD                         Full DVD's
+   6020                                 XXX/WMV                         WMV rips
+   6030                                 XXX/XviD                        dvdrips
+   6040                                 XXX/x264                        HD Porn
+   6050                                 XXX/Other                       Misc Porn
+   6060                                 XXX/Imageset                    Sets of porn images
+   6070                                 XXX/Packs                       Packs of multiple porn videos
+   7000                                 Other                           All of Other
+   7010                                 Other/Misc                      Anything that could not get categorized
+   7020                                 Other/Hashed                    Anything with a hashed name
+   8000                                 Books                           All of Books
+   8010                                 Books/Ebook                     Ebooks
+   8020                                 Books/Comics                    Comics Ebooks
+   8030                                 Books/Magazines                 Magazines
+   8040                                 Books/Technical                 Technical books
+   8050                                 Books/Other                     Misc books
+   8060                                 Books/Foreign                   Non english books
    100000-                              Custom                          Specific to a site
 
 
 4. PREDEFINED ATTRIBUTES
 
    A set of known attributes for items in different categories has been defined.
-   Its possible that not all attributes are vailable at all times. Therefore a
+   Its possible that not all attributes are available at all times. Therefore a
    client application should not rely on any particular attributes being in the
    returned data but should take this list as an optional extra information.
    However attributes marked with * are always available.
@@ -633,7 +658,7 @@ Author: ensi ensisoft@gmail.com
    category items.
 
    All attributes are defined using XML namespace syntax.
-   e.g. xmlns:nZEDb="http://www.nZEDb.com/DTD/2010/feeds/attributes/"
+   e.g. xmlns:newznab="http://www.newznab.com/DTD/2010/feeds/attributes/"
 
    4.1 List of Attributes
 
@@ -671,14 +696,14 @@ Author: ensi ensisoft@gmail.com
 
    Example attribute declarations within <item> element.
 
-   <nZEDb:attr name="category" value="2000" />
-   <nZEDb:attr name="category" value="2030" />
-   <nZEDb:attr name="size"     value="4294967295" />
+   <newznab:attr name="category" value="2000" />
+   <newznab:attr name="category" value="2030" />
+   <newznab:attr name="size"     value="4294967295" />
 
 
 5. nZEDb Error Codes
 
-   Under normal circumstances i.e. when the HTTP requst/response sequence is successfully completed
+   Under normal circumstances i.e. when the HTTP request/response sequence is successfully completed
    nZEDb implementations always respond with HTTP 200 OK. However this does not mean that the
    query was semantically correct. It simply means that the HTTP part of the sequence was successful.
    One then must check the actual response body/data to see if the request was completed
@@ -708,6 +733,9 @@ Author: ensi ensisoft@gmail.com
 
    300                  No such item.
 
+   500                  Request limit reached
+   501                  Download limit reached
+
    900                  Unknown error
 
    5.1 Error code example
@@ -715,5 +743,13 @@ Author: ensi ensisoft@gmail.com
    // Query could not be completed because user credentials are broken
    --> GET http://servername.com/api?t=details&apikey=xxxxx&guid=xxxxxxxxx
    <-- 200 OK
-	   <?xml version="1.0" encoding="UTF-8"?>
-	   <error code="100" description="Incorrect user credentials"/>
+   <?xml version="1.0" encoding="UTF-8"?>
+      <error code="100" description="Incorrect user credentials"/>
+
+6  Changelog
+
+   2015-05-23 kevinlekiller
+      Fix spelling issues.
+      Fix indentation issues.
+      Add missing categories.
+      Add missing error codes.
