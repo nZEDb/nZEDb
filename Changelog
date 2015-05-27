@@ -6,6 +6,17 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2015-05-24 bart39
+	* Mrg: PR 1703 from kevin123 - Use full php tag in anime page.
+2015-05-23 bart39
+	* Mrg: PR 1701 from kevin123 - Update API docs.
+	* Mrg: PR 1700 from kevin123 - Fix broken install on step 6.
+	* Mrg: PR 1702 from enverex - Ensure all variables are set.
+2015-05-22 bart39
+	* Mrg: PR 1698 from enverex - Improve daytopost accuracy and speed.
+	* Mrg: PR 1696 from kevin123 - Fix alternate provider not being set in config.php on install. #1695
+	* Mrg: PR 1693 from kevin123 - Add thumbnail creation setting.
+	* Mrg: PR 1692 from kevin123 - Update documentation. Remove obsolete files.
 2015-05-20 bart39
 	* Chg: another update ab.cd.image collection regex.
 	* Chg: add DEViANCE and PLAZA to PC Game categorization.

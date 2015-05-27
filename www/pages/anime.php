@@ -1,4 +1,4 @@
-<?
+<?php
 
 use nzedb\AniDB;
 use nzedb\Releases;

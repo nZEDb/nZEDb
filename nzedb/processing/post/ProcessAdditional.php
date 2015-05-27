@@ -145,7 +145,7 @@ class ProcessAdditional
 	/**
 	 * @var bool
 	 */
-	protected $_processSample;
+	protected $_processThumbnails;
 
 	/**
 	 * @var string
@@ -467,10 +467,15 @@ class ProcessAdditional
 
 		$this->_addPAR2Files = ($this->pdo->getSetting('addpar2') === '0') ? false : true;
 
-		$this->_processSample = ($this->pdo->getSetting('ffmpegpath') == '' ? false : true);
-		$this->_processVideo = ($this->pdo->getSetting('processvideos') == 0) ? false : true;
+		if (!$this->pdo->getSetting('ffmpegpath')) {
+			$this->_processAudioSample = $this->_processThumbnails = $this->_processVideo = false;
+		} else {
+			$this->_processAudioSample = ($this->pdo->getSetting('processaudiosample') == 0) ? false : true;
+			$this->_processThumbnails = ($this->pdo->getSetting('processthumbnails') == 0 ? false : true);
+			$this->_processVideo = ($this->pdo->getSetting('processvideos') == 0) ? false : true;
+		}
+
 		$this->_processJPGSample = ($this->pdo->getSetting('processjpg') == 0) ? false : true;
-		$this->_processAudioSample = ($this->pdo->getSetting('processaudiosample') == 0) ? false : true;
 		$this->_processMediaInfo = ($this->pdo->getSetting('mediainfopath') == '') ? false : true;
 		$this->_processAudioInfo = $this->_processMediaInfo;
 		$this->_processPasswords = (
@@ -686,7 +691,7 @@ class ProcessAdditional
 			}
 
 			if ($this->_processPasswords === true ||
-				$this->_processSample === true ||
+				$this->_processThumbnails === true ||
 				$this->_processMediaInfo === true ||
 				$this->_processAudioInfo === true ||
 				$this->_processVideo === true
@@ -860,7 +865,7 @@ class ProcessAdditional
 			}
 
 			// Look for a video sample, make sure it's not an image.
-			if ($this->_processSample === true &&
+			if ($this->_processThumbnails === true &&
 				empty($this->_sampleMessageIDs) &&
 				preg_match('/sample/i', $this->_currentNZBFile['title']) &&
 				!preg_match('/\.jpe?g/i', $this->_currentNZBFile['title'])
@@ -1945,7 +1950,7 @@ class ProcessAdditional
 	 */
 	protected function _getSample($fileLocation)
 	{
-		if (!$this->_processSample) {
+		if (!$this->_processThumbnails) {
 			return false;
 		}
 
@@ -2474,7 +2479,7 @@ class ProcessAdditional
 		$this->_foundAudioInfo = ($this->_processAudioInfo ? false : true);
 		$this->_foundAudioSample = ($this->_processAudioSample ? false : true);
 		$this->_foundJPGSample = ($this->_processJPGSample ? false : true);
-		$this->_foundSample = ($this->_processSample ? false : true);
+		$this->_foundSample = ($this->_processThumbnails ? false : true);
 		$this->_foundSample = (($this->_release['disablepreview'] == 1) ? true : false);
 		$this->_foundPAR2Info = false;
 
