@@ -1,7 +1,7 @@
 <?php
 require_once realpath(__DIR__ . '/../../www/config.php');
 
-use nzedb\AniDB;
+use nzedb\db\populate\AniDB;
 use nzedb\db\Settings;
 
 $pdo = new Settings();
