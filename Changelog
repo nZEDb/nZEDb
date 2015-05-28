@@ -6,6 +6,8 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2015-05-28 bart39
+	* Mrg: PR 1704 from kevin123 - Fix bad namespace in populate_anidb.php.
 2015-05-24 bart39
 	* Mrg: PR 1703 from kevin123 - Use full php tag in anime page.
 2015-05-23 bart39
