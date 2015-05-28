@@ -7,6 +7,7 @@ All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 2015-05-28 bart39
+	* Mrg: PR 1705 from zetas - [Security Bug] Fix for: Logged in users can view others profiles.
 	* Mrg: PR 1705 from kevin123 - Add requested regexes.
 	* Mrg: PR 1704 from kevin123 - Fix bad namespace in populate_anidb.php.
 2015-05-24 bart39
