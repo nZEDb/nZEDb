@@ -972,6 +972,13 @@
 				</td>
 			</tr>
 			<tr>
+				<td style="width:180px;"><label for="disablebackfillgroup">Auto disable groups during Backfill:</label></td>
+				<td>
+					{html_radios id="disablebackfillgroup" name='disablebackfillgroup' values=$yesno_ids output=$yesno_names selected=$site->disablebackfillgroup separator='<br />'}
+					<div class="hint">Whether to disable a group automatically during backfill if the traget date has been reached.</div>
+				</td>
+			</tr>
+			<tr>
 				<td style="width:180px;"><label for="partretentionhours">Part Retention Hours:</label></td>
 				<td>
 					<input class="short" id="partretentionhours" name="partretentionhours" type="text" value="{$site->partretentionhours}"/>

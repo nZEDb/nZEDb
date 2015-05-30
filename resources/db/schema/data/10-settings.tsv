@@ -13,6 +13,7 @@ section,subsection,name,value,hint,setting
 		delaytime	2	The time in hours to wait, since last activity, before releases without parts counts in the subject are are created<br \\> Setting this below 2 hours could create incomplete releases.	delaytime
 		deletepasswordedrelease	0	Whether to delete releases which are passworded.	deletepasswordedrelease
 		deletepossiblerelease	0	Whether to delete releases which are potentially passworded.	deletepossiblerelease
+		disablebackfillgroup	0	Whether to disable backfill on a group if the target date has been reached.	disablebackfillgroup
 		extractusingrarinfo	0	Whether to use rarinfo or 7zip/unrar directly to decompress zip/rar files.	extractusingrarinfo
 		ffmpeg_duration	5	The maximum duration (In Seconds) for ffmpeg to generate the sample for. (Default 5)	ffmpeg_duration
 		ffmpeg_image_time	5		ffmpeg_image_time

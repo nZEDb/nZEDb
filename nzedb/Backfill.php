@@ -79,6 +79,12 @@ class Backfill
 	protected $_safePartRepair;
 
 	/**
+	 * Should we disable the group if we have backfilled far enough?
+	 * @var bool
+	 */
+	protected $_disableBackfillGroup;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param array $options Class instances / Echo to cli?
@@ -115,6 +121,7 @@ class Backfill
 		$this->_safeBackFillDate = ($this->pdo->getSetting('safebackfilldate') != '') ? (string)$this->pdo->getSetting('safebackfilldate') : '2008-08-14';
 		$this->_safePartRepair = ($this->pdo->getSetting('safepartrepair') == 1 ? 'update' : 'backfill');
 		$this->_tablePerGroup = ($this->pdo->getSetting('tablepergroup') == 1 ? true : false);
+		$this->_disableBackfillGroup = ($this->pdo->getSetting('disablebackfillgroup') == 1 ? true : false);
 	}
 
 	/**
@@ -269,9 +276,20 @@ class Backfill
 			$dMessage =
 				"We have hit the maximum we can backfill for " .
 				$groupName .
-				", skipping it, consider disabling backfill on it.";
+				($this->_disableBackfillGroup ? ", disabling backfill on it." :
+				", skipping it, consider disabling backfill on it.");
 			if ($this->_debug) {
 				$this->_debugging->log('Backfill', "backfillGroup", $dMessage, Logger::LOG_NOTICE);
+			}
+
+			if ($this->_disableBackfillGroup) {
+				$this->pdo->queryExec(
+					sprintf('
+					UPDATE groups
+					SET backfill = 0
+					WHERE id = %d',
+						$groupArr['id'])
+				);
 			}
 
 			if ($this->_echoCLI) {
