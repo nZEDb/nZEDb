@@ -610,7 +610,11 @@
 				{foreach from=$comments item=comment}
 					<tr>
 						<td class="less" title="{$comment.createddate}">
-							<a title="View {$comment.username}'s profile" href="{$smarty.const.WWW_TOP}/profile?name={$comment.username}">{$comment.username}</a>
+							{if !$privateprofiles || $isadmin || $ismod}
+								<a title="View {$comment.username}'s profile" href="{$smarty.const.WWW_TOP}/profile?name={$comment.username}">{$comment.username}</a>
+							{else}
+								{$comment.username}
+							{/if}
 							<br/>{$comment.createddate|date_format} ({$comment.createddate|timeago} ago)
 						</td>
 						{if $comment.shared == 2}

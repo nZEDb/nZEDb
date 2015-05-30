@@ -598,20 +598,15 @@ class Users
 
 	/**
 	 * Check if the user is disabled.
+	 * Wrapper for roleCheck
 	 *
 	 * @param string $userName Name of the user.
-	 *
+	 * @todo Would probably be better to use userId instead of username.
 	 * @return bool
 	 */
 	public function isDisabled($userName)
 	{
-		$role = $this->pdo->queryOneRow(
-			sprintf(
-				"SELECT role AS role FROM users WHERE username = %s",
-				$this->pdo->escapeString($userName)
-			)
-		);
-		return ($role === false ? false : $role['role'] == self::ROLE_DISABLED);
+		return $this->roleCheck(self::ROLE_DISABLED, $userName);
 	}
 
 	/**
@@ -1420,5 +1415,52 @@ class Users
 				$userID
 			)
 		);
+	}
+
+	/**
+	 * Checks if a user is a specific role.
+	 *
+	 * @notes Uses type of $user to denote identifier. if string: username, if int: userid
+	 * @param int $roleID
+	 * @param string|int $user
+	 * @return bool
+	 */
+	public function roleCheck($roleID, $user) {
+		if (is_string($user) && strlen($user) > 0) {
+			$querySuffix = "username = '$user'";
+		} elseif (is_int($user) && $user > 0) {
+			$querySuffix = "id = $user";
+		} else {
+			return false;
+		}
+
+		$result = $this->pdo->queryOneRow(
+			sprintf(
+				"SELECT role FROM users WHERE %s",
+				$querySuffix
+			)
+		);
+
+		return ((int)$result['role'] == (int)$roleID) ? true : false;
+	}
+
+	/**
+	 * Wrapper for roleCheck specifically for Admins.
+	 *
+	 * @param int $userID
+	 * @return bool
+	 */
+	public function isAdmin($userID) {
+		return $this->roleCheck(self::ROLE_ADMIN, (int) $userID);
+	}
+
+	/**
+	 * Wrapper for roleCheck specifically for Moderators.
+	 *
+	 * @param int $userId
+	 * @return bool
+	 */
+	public function isModerator($userId) {
+		return $this->roleCheck(self::ROLE_MODERATOR, (int) $userId);
 	}
 }

@@ -26,6 +26,7 @@ $page->meta_keywords = "view,forum,post,thread";
 $page->meta_description = "View forum post";
 
 $page->smarty->assign('results', $results);
+$page->smarty->assign('privateprofiles', ($page->settings->getSetting('privateprofiles') == 1) ? true : false);
 
 $page->content = $page->smarty->fetch('forumpost.tpl');
 $page->render();
