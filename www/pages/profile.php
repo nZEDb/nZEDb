@@ -10,17 +10,7 @@ if (!$page->users->isLoggedIn()) {
 $rc  = new ReleaseComments($page->settings);
 $sab = new SABnzbd($page);
 
-$userid = 0;
-if (isset($_GET["id"])) {
-	$userid = $_GET["id"] + 0;
-} elseif (isset($_GET["name"])) {
-	$res = $page->users->getByUsername($_GET["name"]);
-	if ($res) {
-		$userid = $res["id"];
-	}
-} else {
-	$userid = $page->users->currentUserId();
-}
+$userid = $page->users->currentUserId();
 
 $data = $page->users->getById($userid);
 if (!$data) {
