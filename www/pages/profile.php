@@ -21,7 +21,7 @@ if (!$privateProfiles || $privileged) {
 	$altUsername = (isset($_GET['name']) && strlen($_GET['name']) > 0) ? $_GET['name'] : false;
 
 	// If both 'id' and 'name' are specified, 'id' should take precedence.
-	if ($altID === false && $altUsername) {
+	if ($altID === false && $altUsername !== false) {
 		$user = $page->users->getByUsername($altUsername);
 		if ($user) {
 			$altID = $user['id'];
