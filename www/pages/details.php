@@ -1,4 +1,20 @@
 <?php
+
+use nzedb\AniDB;
+use nzedb\Books;
+use nzedb\Console;
+use nzedb\Games;
+use nzedb\Movie;
+use nzedb\Music;
+use nzedb\PreDb;
+use nzedb\ReleaseComments;
+use nzedb\ReleaseExtra;
+use nzedb\ReleaseFiles;
+use nzedb\Releases;
+use nzedb\TraktTv;
+use nzedb\TvRage;
+use nzedb\XXX;
+
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
@@ -170,6 +186,7 @@ if (isset($_GET['id'])) {
 	$page->smarty->assign('comments', $comments);
 	$page->smarty->assign('similars', $similars);
 	$page->smarty->assign('searchname', $releases->getSimilarName($data['searchname']));
+	$page->smarty->assign('privateprofiles', ($page->settings->getSetting('privateprofiles') == 1) ? true : false );
 
 	$page->meta_title       = 'View NZB';
 	$page->meta_keywords    = 'view,nzb,description,details';

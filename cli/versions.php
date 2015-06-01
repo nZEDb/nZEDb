@@ -18,8 +18,7 @@
  * @author niel
  * @copyright 2014 nZEDb
  */
-require_once
-	dirname(__DIR__) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php';
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php';
 
 use nzedb\utility\Utility;
 use nzedb\utility\Versions;

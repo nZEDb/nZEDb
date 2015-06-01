@@ -20,7 +20,7 @@
  */
 namespace nzedb\data\model;
 
-use \nzedb\data\model\Model;
+use nzedb\data\model\Model;
 
 class Anidb extends Model
 {

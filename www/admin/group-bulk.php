@@ -1,5 +1,8 @@
 <?php
 require_once './config.php';
+
+use nzedb\Groups;
+
 $page = new AdminPage();
 $msgs = $error = false;
 

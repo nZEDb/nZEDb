@@ -10,3 +10,4 @@ id, groupname, regex, msgcol, optype, status, description
 9	alt\\.binaries\\..*	Passworded	1	1	0	Removes passworded releases.
 10	alt\\.binaries\\.(boneless|movies\\.divx)	((Frkz|info)@XviD2?|x?VIDZ?@pwrpst|movies@movies?)\\.net|(hsv\\.stoned@hotmail|unequal87@gmail|ilove@movies)\\.com	2	1	0	Virus codec posters.
 11	alt\\.binaries\\.tun	\\[PRiVATE\\]\\s+[a-z0-9]+ 	1	1	0	Passworded/Encrypted junk.
+12	^alt\\.binaries\\.teevee$	^\\[KoreanTV\\] 	1	1	0	Blocks posts by koreantv.

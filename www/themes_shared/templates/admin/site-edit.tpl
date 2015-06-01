@@ -262,9 +262,7 @@
 				<td style="width:180px;"><label for="rottentomatokey">Rotten Tomatoes Key:</label></td>
 				<td>
 					<input id="rottentomatokey" class="long" name="rottentomatokey" type="text" value="{$site->rottentomatokey}"/>
-					{html_options style="width:180px;" id="rottentomatoquality" name='rottentomatoquality' values=$rottentomatoquality_ids output=$rottentomatoquality_names selected=$site->rottentomatoquality}
-					<div class="hint">The api key used for access to rotten tomatoes. Select the quality of the images to
-						display in Upcoming.
+					<div class="hint">The api key used for access to rotten tomatoes.
 					</div>
 				</td>
 			</tr>
@@ -316,6 +314,23 @@
 					<input id="fanarttvkey" class="long" name="fanarttvkey" type="text" value="{$site->fanarttvkey}"/>
 					<div class="hint">The Fanart.tv api key. Used for Fanart.tv lookups. Fanart.tv would appreciate it if
 						you use this service to help them out by adding high quality images not already available on TMDB.
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="recaptchasitekey">ReCaptcha Site Key:</label></td>
+				<td>
+					<input id="recaptchasitekey" class="long" name="recaptchasitekey" type="text" value="{$site->recaptchasitekey}"/>
+					<div class="hint">Register your application with ReCaptcha <a href="https://www.google.com/recaptcha" target="_blank">here</a>
+						to get your site and secret keys. Adding these keys will place ReCaptch's on all user-input forms. (Login, Register, Contact Us, Forgot Password)
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="recaptchasecretkey">ReCaptcha Secret key:</label></td>
+				<td>
+					<input id="recaptchasecretkey" class="long" name="recaptchasecretkey" type="text" value="{$site->recaptchasecretkey}"/>
+					<div class="hint">This is the required secret key for ReCaptcha to work, see the above setting hint for further information.
 					</div>
 				</td>
 			</tr>
@@ -386,7 +401,7 @@
 					<input id="ffmpegpath" class="long" name="ffmpegpath" type="text" value="{$site->ffmpegpath}"/>
 					<div class="hint">The path to the <a href="http://www.ffmpeg.org/">ffmpeg</a> or <a
 								href="https://libav.org/">avconv</a> binary. Used for making thumbnails and video/audio
-						previews. Use empty path to disable thumbnailing.
+						previews.
 						<br/>Use forward slashes in windows <span style="font-family:courier;">c:/path/to/ffmpeg.exe</span>
 					</div>
 				</td>
@@ -611,7 +626,7 @@
 				<td>
 					<input id="nzbsplitlevel" class="short" name="nzbsplitlevel" type="text" value="{$site->nzbsplitlevel}"/>
 					<div class="hint">Levels deep to store the nzb Files.
-						<br /><strong>If you change this you must run the misc/testing/DB/nzb-reorg.php script!</strong>
+						<br /><strong>If you change this you must run the misc/testing/NZBs/nzb-reorg.php script!</strong>
 					</div>
 				</td>
 			</tr>
@@ -848,6 +863,13 @@
 				</td>
 			</tr>
 			<tr>
+				<td style="width:180px;"><label for="processthumbnails">Process Video Thumbnails:</label></td>
+				<td>
+					{html_radios id="processthumbnails" name='processthumbnails' values=$yesno_ids output=$yesno_names selected=$site->processthumbnails separator='<br />'}
+					<div class="hint">Whether to attempt to process a video thumbnail image. You must have ffmpeg for this.<br/></div>
+				</td>
+			</tr>
+			<tr>
 				<td style="width:180px;"><label for="processvideos">Process Video Samples:</label></td>
 				<td>
 					{html_radios id="processvideos" name='processvideos' values=$yesno_ids output=$yesno_names selected=$site->processvideos separator='<br />'}
@@ -947,6 +969,13 @@
 				<td>
 					<input class="small" id="safebackfilldate" name="safebackfilldate" type="text" value="{$site->safebackfilldate}"/>
 					<div class="hint">The target date for safe backfill. Format: YYYY-MM-DD</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="disablebackfillgroup">Auto disable groups during Backfill:</label></td>
+				<td>
+					{html_radios id="disablebackfillgroup" name='disablebackfillgroup' values=$yesno_ids output=$yesno_names selected=$site->disablebackfillgroup separator='<br />'}
+					<div class="hint">Whether to disable a group automatically during backfill if the target date has been reached.</div>
 				</td>
 			</tr>
 			<tr>
@@ -1080,7 +1109,7 @@
 				<td style="width:180px;"><label for="maxnzbsprocessed">Maximum NZBs stage5:</label></td>
 				<td>
 					<input class="short" id="maxnzbsprocessed" name="maxnzbsprocessed" type="text" value="{$site->maxnzbsprocessed}"/>
-					<div class="hint">The maximum amount of NZB files to create on stage 5 in update_releases.</div>
+					<div class="hint">The maximum amount of NZB files to create on stage 5 at a time in update_releases. If more are to be created it will loop stage 5 until none remain.</div>
 				</td>
 			</tr>
 		</table>
@@ -1203,6 +1232,13 @@
 				<td>
 					{html_radios id="storeuserips" name='storeuserips' values=$yesno_ids output=$yesno_names selected=$site->storeuserips separator='<br />'}
 					<div class="hint">Whether to store the users ip address when they signup or login.</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="privateprofiles">Private Profiles:</label></td>
+				<td>
+					{html_radios id="privateprofiles" name='privateprofiles' values=$yesno_ids output=$yesno_names selected=$site->privateprofiles separator='<br />'}
+					<div class="hint">Should we <strong>disallow</strong> users from accessing profiles other than their own? (regardless of this setting admin/mod can access).</div>
 				</td>
 			</tr>
 		</table>

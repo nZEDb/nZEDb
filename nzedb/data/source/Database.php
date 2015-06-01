@@ -24,8 +24,8 @@ use \PDOException;
 use \InvalidArgumentException;
 use \UnexpectedValueException;
 
-use \nzedb\data\Source;
-use \nzedb\NetworkException;
+use nzedb\data\Source;
+use nzedb\NetworkException;
 
 /**
  * The `Database` class provides the base-level abstraction for SQL-oriented relational databases.
@@ -73,10 +73,10 @@ abstract class Database extends Source
 		$config             = $this->_config;
 
 		if (!$config['database']) {
-			throw new RuntimeException('No Database configured');
+			throw new \RuntimeException('No Database configured');
 		}
 		if (!$config['dsn']) {
-			throw new RuntimeException('No DSN setup for DB Connection');
+			throw new \RuntimeException('No DSN setup for DB Connection');
 		}
 		$dsn = $config['dsn'];
 
@@ -97,10 +97,10 @@ abstract class Database extends Source
 					break;
 				case in_array($code, ['28000', '42000']):
 					$msg = "Host connected, but could not access database `{$config['database']}`.";
-					throw new RuntimeException($msg, null, $e);
+					throw new \RuntimeException($msg, null, $e);
 					break;
 			}
-			throw new RuntimeException("An unknown configuration error has occured.", null, $e);
+			throw new \RuntimeException("An unknown configuration error has occured.", null, $e);
 		}
 		$this->_isConnected = true;
 
@@ -1235,7 +1235,7 @@ abstract class Database extends Source
 	 * @param object $context A find query object to configure
 	 *
 	 * @throws QueryException
-	 * @throws RuntimeException
+	 * @throws \RuntimeException
 	 */
 	public function applyStrategy($options, $context)
 	{
@@ -1245,7 +1245,7 @@ abstract class Database extends Source
 
 		$options += ['strategy' => 'joined'];
 		if (!$model = $context->model()) {
-			throw new RuntimeException('The `\'with\'` option need a valid `\'model\'` option.');
+			throw new \RuntimeException('The `\'with\'` option need a valid `\'model\'` option.');
 		}
 
 		$strategy = $options['strategy'];

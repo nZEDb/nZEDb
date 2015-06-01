@@ -21,7 +21,7 @@
 namespace nzedb;
 
 
-use \Closure;
+use Closure;
 
 /**
  * Provides a base class for all static classes in the framework.

@@ -21,8 +21,8 @@
 require_once realpath(dirname(__FILE__) . '/../www/config.php');
 require_once nZEDb_LIB . 'utility' . DS . 'MoveFileTree.php';
 
-use \nzedb\db\Settings;
-use \nzedb\utility;
+use nzedb\db\Settings;
+use nzedb\utility;
 
 $dirs = array(
 	[
@@ -32,11 +32,11 @@ $dirs = array(
 	], [
 		'basemv' => false,
 		'source' => nZEDb_MISC . 'testing/Dev_testing/Subject_testing',
-		'target' => nZEDb_MISC . 'testing/Dev/Subject'
+		'target' => nZEDb_MISC . 'testing/Developers/Subject'
 	], [
 		'basemv' => false,
 		'source' => nZEDb_MISC . 'testing/Dev_testing',
-		'target' => nZEDb_MISC . 'testing/Dev'
+		'target' => nZEDb_MISC . 'testing/Developers'
 	], [
 		'basemv' => false,
 		'source' => nZEDb_MISC . 'testing/PostProc_testing',

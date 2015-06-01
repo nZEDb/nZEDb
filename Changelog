@@ -7,6 +7,101 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+
+2015-06-01 niel
+	* Mrg: PR 1709 from zetas - Implementing private profiles and the ability to turn them on or off via the ACP.
+2015-05-29 bart39
+	* Add: Add option to disable a group during backfill if target date reached (site edit > usenet settings).
+2015-05-28 bart39
+	* Mrg: PR 1705 from zetas - [Security Bug] Fix for: Logged in users can view others profiles.
+	* Mrg: PR 1705 from kevin123 - Add requested regexes.
+	* Mrg: PR 1704 from kevin123 - Fix bad namespace in populate_anidb.php.
+2015-05-24 bart39
+	* Mrg: PR 1703 from kevin123 - Use full php tag in anime page.
+2015-05-23 bart39
+	* Mrg: PR 1701 from kevin123 - Update API docs.
+	* Mrg: PR 1700 from kevin123 - Fix broken install on step 6.
+	* Mrg: PR 1702 from enverex - Ensure all variables are set.
+2015-05-22 bart39
+	* Mrg: PR 1698 from enverex - Improve daytopost accuracy and speed.
+	* Mrg: PR 1696 from kevin123 - Fix alternate provider not being set in config.php on install. #1695
+	* Mrg: PR 1693 from kevin123 - Add thumbnail creation setting.
+	* Mrg: PR 1692 from kevin123 - Update documentation. Remove obsolete files.
+2015-05-20 bart39
+	* Chg: another update ab.cd.image collection regex.
+	* Chg: add DEViANCE and PLAZA to PC Game categorization.
+	* Chg: update ab.cd.image collection regex.
+	* Mrg: PR 1689 from enverex - Add additional audiobook regexes.
+	* Mrg: PR 1688 from sebst3r - Fix typo in "Admin Home".
+	* Mrg: PR 1686 from enverex - Add match for "release" and "author" when finding audio name.
+2015-05-18 bart39
+	* Chg: Improved release creation loop even further and added same logic to multiprocessing.
+2015-05-17 bart39
+	* Fix: Giantbomb api error if empty result returned.
+	* Mrg: PR 1685 from enverex - Update the audioNFO regex to be slightly less rubbish.
+	* Mrg: PR 1683 from kevin123 - Fix namespace issues. Fixes broken install on step 6.
+	* Mrg: PR 1682 from wally73 - Update populate_tvrage.php.
+	* Mrg: PR 1681 from kevin123 - IRCScraper fixes.
+2015-05-16 niel
+	* Mrg: PR 1680 from kevin123 - Use iconv for converting CP437, fix broking install.
+	* Add: PR 1679 from kaibosh - Add check_previews script, cleanup tool.
+2015-05-15 niel
+	* Fix: Minor coding standards fixes.
+2015-05-15 bart39
+	* Mrg: PR 1678 from kevin123 - Move CBP deletion.
+	* Mrg: PR 1677 from kevin123 - Fix on advanced search page.
+	* Fix: correct collection regexes that caused Regex.php Line 344 error issue #1675.
+2015-05-14 niel
+	* Mrg: PR 1673 from kevin123 - Fix broken pager on search page.
+	* Mrg: PR 1672 from Enverex - Implement local temporary caching for Amazon lookup failures.
+2015-05-14 bart39
+	* Add: Collection regexes part 1 from issue #1668
+	* Mrg: PR 1671 from enverex - Make sure that the destroyed cookie matches the created cookie.
+2015-05-11 niel
+	* Fix: Namespace issues - Thanks to Darius for compiling the list.
+	* Fix: Captcha namespace issue.
+	* Chg: Dropping initial backslash from most use statements.
+	* Fix: ReleaseExtra namespace issue in ajax_mediainfo - Thanks Greg.
+	* Mrg: PR 1664 from zetas - Captcha Refactor. Moving logic from BasePage into Captcha class.
+	* Fix: Changing 'verifypeer' to 'verifycert' in SABnzbd class to fix integration. Thanks to zetas.
+	* Fix: Console's 'Invalid xml response.' exception.
+	* Mrg: PR 1669 from tyldum - Do urldecode before working on 'cat'
+2015-05-10 niel
+	* Mrg: Bringing in dev-namespace branch.
+2015-04-10 bart39
+	* Mrg: PR 1657 from kevin123 - Fix notices in various web pages.
+	* Mrg: PR 1650 from zetas - Adding ReCaptcha support.
+	* Mrg: PR 1656 from kevin123 - Move files around in misc/testing folder.
+		***NOTE*** this may break any custom scripts you have written.
+	* Mrg: PR 1654 from tasky - Fix Popporn error - causing xxx not to post process, also fixes #1655.
+	* Fix: Genre display in music pages, clear your smarty cache to correct.
+2015-05-09 niel
+	* Mrg: PR 1653 from kevin123 - Fix an issue in query, add regexes.
+2015-05-08 bart39
+	* Mrg: PR 1652 from kevin123 - Fix issues with collection regexes relating to #1647.
+		***NOTE*** see http://tinyurl.com/k7vwc35 for details
+2015-05-07 bart39
+	* Chg: Remove Rotten Tomatoes quality settings as no longer required, correct the image url - fixes #1649.
+2015-05-05 bart39
+	* Mrg: PR 1648 from kevin123 - Fix 2 issues with regexes relating to #1635 / #1647.
+2015-05-04 niel
+	* Mrg: PR 1646 from kevin123 - Changes to settings.php.example, Changes to DB.
+2015-05-03 bart39
+	* Chg: Alter ProcessReleases to loop as long as the number of releases or nzbs added was >= the limit
+		(meaning there are more waiting to be created). Addresses Issue #1630
+2015-05-02 niel
+	* Fix: Renamed $pdo to $predb that was missed in refactoring - Thanks to tasky.
+2015-05-01 niel
+	* Chg: Changed handling of nZEDb.xml tag checks for dev branch. Forces tag element of '0.0.0'.
+2015-04-30 niel
+	* Mrg: Merged in Db script changes from March.
+		Added two scripts to .../cli/data for importing/exporting predb data. They're intended to replace the predb_dump script which will no longer be maintained.
+
+
+2015-04-29 bart39
+	* Fix: Invalid type check for Forking PPA min / max sizes when set to 0.
+2015-04-29 niel
+	* Mrg: PR 1643 from Enverex - Empty database field negation and Alpha theme readability cleanups.
 2015-04-28 bart39
 	* Fix: Invalid type check for PPA min / max sizes when set to 0.
 2015-04-17 niel
@@ -38,6 +133,8 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	* Mrg: PR #1622 from darius - Switch to fanart.tv v3 api, closes #1620.
 2015-03-18 bart39
 	* Fix: Fix patch 0321, if your mysql version < 5.6 then bookinfo, consoleinfo and musicinfo will be converted to myisam to support the FT indexes.
+2015-03-17 niel
+	* New: Added two scripts to .../cli/data for importing/exporting predb data. They're intended to replace the predb_dump script which will no longer be maintained.
 2015-03-17 bart39
 	* Add: Add naming regex for a.b.b4e.erotica
 	* Mrg: PR #1617 from kevin - Convert naming regexes.

@@ -2,6 +2,10 @@
 require_once SMARTY_DIR . 'Smarty.class.php';
 require_once nZEDb_LIB . 'utility' . DS . 'SmartyUtils.php';
 
+use nzedb\SABnzbd;
+use nzedb\Users;
+use nzedb\db\Settings;
+
 class BasePage
 {
 	/**
@@ -60,6 +64,13 @@ class BasePage
 	public $https = false;
 
 	/**
+	 * Public access to Captcha object for error checking.
+	 *
+	 * @var \nzedb\Captcha
+	 */
+	public $captcha;
+
+	/**
 	 * Set up session / smarty / user variables.
 	 */
 	public function __construct()
@@ -81,7 +92,7 @@ class BasePage
 		}
 
 		// Buffer settings/DB connection.
-		$this->settings = new \nzedb\db\Settings();
+		$this->settings = new Settings();
 
 		$this->smarty = new Smarty();
 

@@ -1,5 +1,8 @@
 <?php
 
+use nzedb\Releases;
+use nzedb\Users;
+
 $releases = new Releases(['Settings' => $page->settings]);
 $users = new Users();
 $page = new Page();

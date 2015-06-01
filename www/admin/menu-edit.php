@@ -1,6 +1,8 @@
 <?php
 require_once './config.php';
 
+use nzedb\Menu;
+
 $page = new AdminPage();
 $menu = new Menu($page->settings);
 $id   = 0;
@@ -28,12 +30,17 @@ switch ($action) {
 
 	case 'view':
 	default:
+		$menuRow = [
+			'id' => '', 'title' => '', 'href' => '', 'tooltip' => '',
+			'menueval' => '', 'role' => 0, 'ordinal' => 0, 'newwindow' => 0
+		];
 		if (isset($_GET["id"])) {
-			$page->title = "Menu Edit";
+
 			$id          = $_GET["id"];
-			$menurow     = $menu->getByID($id);
-			$page->smarty->assign('menu', $menurow);
+			$menuRow     = $menu->getByID($id);
 		}
+		$page->title = "Menu Edit";
+		$page->smarty->assign('menu', $menuRow);
 		break;
 }
 

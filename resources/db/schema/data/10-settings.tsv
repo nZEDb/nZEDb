@@ -13,6 +13,7 @@ section,subsection,name,value,hint,setting
 		delaytime	2	The time in hours to wait, since last activity, before releases without parts counts in the subject are are created<br \\> Setting this below 2 hours could create incomplete releases.	delaytime
 		deletepasswordedrelease	0	Whether to delete releases which are passworded.	deletepasswordedrelease
 		deletepossiblerelease	0	Whether to delete releases which are potentially passworded.	deletepossiblerelease
+		disablebackfillgroup	0	Whether to disable backfill on a group if the target date has been reached.	disablebackfillgroup
 		extractusingrarinfo	0	Whether to use rarinfo or 7zip/unrar directly to decompress zip/rar files.	extractusingrarinfo
 		ffmpeg_duration	5	The maximum duration (In Seconds) for ffmpeg to generate the sample for. (Default 5)	ffmpeg_duration
 		ffmpeg_image_time	5		ffmpeg_image_time
@@ -76,7 +77,9 @@ indexer	ppa	innerfileblacklist	/setup\.exe|password\.url/i	You can add a regex h
 		predbversion	1		predbversion
 		processaudiosample	0	Whether to attempt to process a audio sample, they will be up to 30 seconds, in ogg format. You must have ffmpeg for this.	processaudiosample
 		processjpg	0	Whether to attempt to retrieve a JPG file while additional post processing, these are usually on XXX releases.	processjpg
+		processthumbnails	0	Whether to attempt to process a video thumbnail image. You must have ffmpeg for this.	processthumbnails
 		processvideos	0	Whether to attempt to process a video sample, these videos are very short 1-3 seconds, 100KB on average, in ogv format. You must have ffmpeg for this.	processvideos
+		privateprofiles	1	Hide profiles from other users (admin/mod can still access).	privateprofiles
 		registerstatus	0	The status of registrations to the site.	registerstatus
 		releasecompletion	95	The minimum completion % to keep a release. Set to 0 to disable.	releasecompletion
 		releaseretentiondays	0	!!THIS IS NOT HEADER RETENTION!! The number of days releases will be retained for use throughout site. Set to 0 to disable.	releaseretentiondays
@@ -105,13 +108,14 @@ APIs		giantbombkey		The giantbomb api key. Used for game lookups.	giantbombkey
 APIs		anidbkey		The Anidb api key. Used for Anime lookups.	anidbkey
 APIs		fanarttvkey		The Fanart.tv api key. Used for Fanart.tv lookups. Fanart.tv would appreciate it if you use this service to help them out by adding high quality images not already available on TMDB.	fanarttvkey
 APIs		rottentomatokey	qxbxyngtujprvw7jxam2m6na	The api key used for access to rotten tomatoes.	rottentomatokey
-APIs		rottentomatoquality	profile	Select the quality of the images to display in Upcoming.	rottentomatoquality
 APIs		tmdbkey	9a4e16adddcd1e86da19bcaf5ff3c2a3	The API key used for access to TMDb.	tmdbkey
 APIs		trakttvkey		The trakt.tv api key. Used for movie and tv lookups.	trakttvkey
+APIs		recaptchasitekey		ReCaptcha SiteKey for generating the captcha block for input forms.	recaptchasitekey
+APIs		recaptchasecretkey		ReCaptcha SecretKey for verifying submitted captcha results.	recaptchasecretkey
 APIs	APIKeys	section-label	3<sup>rd.</sup> Party API Keys		""
 apps	indexer	magic_file_path		Path to magic number database. Windows&apos; users should set this if they have installed GNUWin &lsquo;file&rsquo;. *nix users can optionally set this to a file of their choice.	magic_file_path
 apps		7zippath		The path to the 7za (7zip command line in windows) binary, used for grabbing nfos from compressed zip files. Use forward slashes in windows c:/path/to/7z.exe	zippath
-apps		ffmpegpath		The path to the ffmpeg or avconv binary. Used for making thumbnails and video/audio previews. Use empty path to disable thumbnailing. Use forward slashes in windows c:/path/to/ffmpeg.exe	ffmpegpath
+apps		ffmpegpath		The path to the ffmpeg or avconv binary. Used for making thumbnails and video/audio previews. Use forward slashes in windows c:/path/to/ffmpeg.exe	ffmpegpath
 apps		mediainfopath		The path to the mediainfo binary. Used for deep file media analysis. Use empty path to disable mediainfo checks Use forward slashes in windows c:/path/to/mediainfo.exe	mediainfopath
 apps		unrarpath		The path to an unrar binary, used in deep password detection and media info grabbing. Use forward slashes in windows c:/path/to/unrar.exe	unrarpath
 apps		timeoutpath		The path to the timeout binary. This is used to limit the amount of time unrar/7zip/mediainfo/ffmpeg/avconv can run. You can the time limit in the process additional section. You can leave this empty to disable this. Use forward slashes in windows c:/path/to/timeout.exe	timeoutpath

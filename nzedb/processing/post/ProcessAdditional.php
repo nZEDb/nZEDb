@@ -4,6 +4,18 @@ namespace nzedb\processing\post;
 require_once nZEDb_LIBS . 'rarinfo/archiveinfo.php';
 require_once nZEDb_LIBS . 'rarinfo/par2info.php';
 
+use nzedb\Categorize;
+use nzedb\Category;
+use nzedb\Groups;
+use nzedb\NameFixer;
+use nzedb\Nfo;
+use nzedb\NNTP;
+use nzedb\NZB;
+use nzedb\ReleaseExtra;
+use nzedb\ReleaseFiles;
+use nzedb\ReleaseImage;
+use nzedb\Releases;
+use nzedb\SphinxSearch;
 use nzedb\db\Settings;
 use nzedb\utility\Utility;
 
@@ -45,7 +57,7 @@ class ProcessAdditional
 	protected $_release;
 
 	/**
-	 * @var \NZB
+	 * @var \nzedb\NZB
 	 */
 	protected $_nzb;
 
@@ -56,7 +68,7 @@ class ProcessAdditional
 	protected $_nzbContents;
 
 	/**
-	 * @var \Groups
+	 * @var \nzedb\Groups
 	 */
 	protected $_groups;
 
@@ -133,7 +145,7 @@ class ProcessAdditional
 	/**
 	 * @var bool
 	 */
-	protected $_processSample;
+	protected $_processThumbnails;
 
 	/**
 	 * @var string
@@ -151,37 +163,37 @@ class ProcessAdditional
 	protected $_echoCLI;
 
 	/**
-	 * @var \NNTP
+	 * @var \nzedb\NNTP
 	 */
 	protected $_nntp;
 
 	/**
-	 * @var \ReleaseFiles
+	 * @var \nzedb\ReleaseFiles
 	 */
 	protected $_releaseFiles;
 
 	/**
-	 * @var \Categorize
+	 * @var \nzedb\Categorize
 	 */
 	protected $_categorize;
 
 	/**
-	 * @var \NameFixer
+	 * @var \nzedb\NameFixer
 	 */
 	protected $_nameFixer;
 
 	/**
-	 * @var \ReleaseExtra
+	 * @var \nzedb\ReleaseExtra
 	 */
 	protected $_releaseExtra;
 
 	/**
-	 * @var \ReleaseImage
+	 * @var \nzedb\ReleaseImage
 	 */
 	protected $_releaseImage;
 
 	/**
-	 * @var \Nfo
+	 * @var \nzedb\Nfo
 	 */
 	protected $_nfo;
 
@@ -249,7 +261,6 @@ class ProcessAdditional
 	 * @var string
 	 */
 	protected $_videoFileRegex;
-
 
 
 	/**
@@ -378,19 +389,19 @@ class ProcessAdditional
 		$this->_echoDebug = nZEDb_DEBUG;
 
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
-		$this->_nntp = ($options['NNTP'] instanceof \NNTP ? $options['NNTP'] : new \NNTP(['Echo' => $this->_echoCLI, 'Settings' => $this->pdo]));
+		$this->_nntp = ($options['NNTP'] instanceof NNTP ? $options['NNTP'] : new NNTP(['Echo' => $this->_echoCLI, 'Settings' => $this->pdo]));
 
-		$this->_nzb = ($options['NZB'] instanceof \NZB ? $options['NZB'] : new \NZB($this->pdo));
-		$this->_groups = ($options['Groups'] instanceof \Groups ? $options['Groups'] : new \Groups(['Settings' => $this->pdo]));
+		$this->_nzb = ($options['NZB'] instanceof NZB ? $options['NZB'] : new NZB($this->pdo));
+		$this->_groups = ($options['Groups'] instanceof Groups ? $options['Groups'] : new Groups(['Settings' => $this->pdo]));
 		$this->_archiveInfo = new \ArchiveInfo();
-		$this->_releaseFiles = ($options['ReleaseFiles'] instanceof \ReleaseFiles ? $options['ReleaseFiles'] : new \ReleaseFiles($this->pdo));
-		$this->_categorize = ($options['Categorize'] instanceof \Categorize ? $options['Categorize'] : new \Categorize(['Settings' => $this->pdo]));
-		$this->_nameFixer = ($options['NameFixer'] instanceof \NameFixer ? $options['NameFixer'] : new \NameFixer(['Echo' =>$this->_echoCLI, 'Groups' => $this->_groups, 'Settings' => $this->pdo, 'Categorize' => $this->_categorize]));
-		$this->_releaseExtra = ($options['ReleaseExtra'] instanceof \ReleaseExtra ? $options['ReleaseExtra'] : new \ReleaseExtra($this->pdo));
-		$this->_releaseImage = ($options['ReleaseImage'] instanceof \ReleaseImage ? $options['ReleaseImage'] : new \ReleaseImage($this->pdo));
+		$this->_releaseFiles = ($options['ReleaseFiles'] instanceof ReleaseFiles ? $options['ReleaseFiles'] : new ReleaseFiles($this->pdo));
+		$this->_categorize = ($options['Categorize'] instanceof Categorize ? $options['Categorize'] : new Categorize(['Settings' => $this->pdo]));
+		$this->_nameFixer = ($options['NameFixer'] instanceof NameFixer ? $options['NameFixer'] : new NameFixer(['Echo' =>$this->_echoCLI, 'Groups' => $this->_groups, 'Settings' => $this->pdo, 'Categorize' => $this->_categorize]));
+		$this->_releaseExtra = ($options['ReleaseExtra'] instanceof ReleaseExtra ? $options['ReleaseExtra'] : new ReleaseExtra($this->pdo));
+		$this->_releaseImage = ($options['ReleaseImage'] instanceof ReleaseImage ? $options['ReleaseImage'] : new ReleaseImage($this->pdo));
 		$this->_par2Info = new \Par2Info();
-		$this->_nfo = ($options['Nfo'] instanceof \Nfo ? $options['Nfo'] : new \Nfo(['Echo' => $this->_echoCLI, 'Settings' => $this->pdo]));
-		$this->sphinx = ($options['SphinxSearch'] instanceof \SphinxSearch ? $options['SphinxSearch'] : new \SphinxSearch());
+		$this->_nfo = ($options['Nfo'] instanceof Nfo ? $options['Nfo'] : new Nfo(['Echo' => $this->_echoCLI, 'Settings' => $this->pdo]));
+		$this->sphinx = ($options['SphinxSearch'] instanceof SphinxSearch ? $options['SphinxSearch'] : new SphinxSearch());
 
 		$this->_innerFileBlacklist = ($this->pdo->getSetting('innerfileblacklist') == '' ? false : $this->pdo->getSetting('innerfileblacklist'));
 		$this->_maxNestedLevels = ($this->pdo->getSetting('maxnestedlevels') == 0 ? 3 : $this->pdo->getSetting('maxnestedlevels'));
@@ -456,10 +467,15 @@ class ProcessAdditional
 
 		$this->_addPAR2Files = ($this->pdo->getSetting('addpar2') === '0') ? false : true;
 
-		$this->_processSample = ($this->pdo->getSetting('ffmpegpath') == '' ? false : true);
-		$this->_processVideo = ($this->pdo->getSetting('processvideos') == 0) ? false : true;
+		if (!$this->pdo->getSetting('ffmpegpath')) {
+			$this->_processAudioSample = $this->_processThumbnails = $this->_processVideo = false;
+		} else {
+			$this->_processAudioSample = ($this->pdo->getSetting('processaudiosample') == 0) ? false : true;
+			$this->_processThumbnails = ($this->pdo->getSetting('processthumbnails') == 0 ? false : true);
+			$this->_processVideo = ($this->pdo->getSetting('processvideos') == 0) ? false : true;
+		}
+
 		$this->_processJPGSample = ($this->pdo->getSetting('processjpg') == 0) ? false : true;
-		$this->_processAudioSample = ($this->pdo->getSetting('processaudiosample') == 0) ? false : true;
 		$this->_processMediaInfo = ($this->pdo->getSetting('mediainfopath') == '') ? false : true;
 		$this->_processAudioInfo = $this->_processMediaInfo;
 		$this->_processPasswords = (
@@ -569,9 +585,7 @@ class ProcessAdditional
 				// These are folders we don't want to delete.
 				[
 					// This is the actual temp folder.
-					$this->_mainTmpPath,
-					// This folder is used by misc/testing/Dev/rename_u4e.php
-					$this->_mainTmpPath . 'u4e'
+					$this->_mainTmpPath
 				]
 			);
 		}
@@ -677,7 +691,7 @@ class ProcessAdditional
 			}
 
 			if ($this->_processPasswords === true ||
-				$this->_processSample === true ||
+				$this->_processThumbnails === true ||
 				$this->_processMediaInfo === true ||
 				$this->_processAudioInfo === true ||
 				$this->_processVideo === true
@@ -851,7 +865,7 @@ class ProcessAdditional
 			}
 
 			// Look for a video sample, make sure it's not an image.
-			if ($this->_processSample === true &&
+			if ($this->_processThumbnails === true &&
 				empty($this->_sampleMessageIDs) &&
 				preg_match('/sample/i', $this->_currentNZBFile['title']) &&
 				!preg_match('/\.jpe?g/i', $this->_currentNZBFile['title'])
@@ -1022,7 +1036,7 @@ class ProcessAdditional
 		if (!empty($this->_archiveInfo->isEncrypted) || (isset($dataSummary['is_encrypted']) && $dataSummary['is_encrypted'] != 0)) {
 			$this->_debug('ArchiveInfo: Compressed file has a password.');
 			$this->_releaseHasPassword = true;
-			$this->_passwordStatus[] = \Releases::PASSWD_RAR;
+			$this->_passwordStatus[] = Releases::PASSWD_RAR;
 			return false;
 		}
 
@@ -1094,13 +1108,13 @@ class ProcessAdditional
 
 				if ($file['pass'] == true) {
 					$this->_releaseHasPassword = true;
-					$this->_passwordStatus[] = \Releases::PASSWD_RAR;
+					$this->_passwordStatus[] = Releases::PASSWD_RAR;
 					break;
 				}
 
 				if ($this->_innerFileBlacklist !== false && preg_match($this->_innerFileBlacklist, $file['name'])) {
 					$this->_releaseHasPassword = true;
-					$this->_passwordStatus[] = \Releases::PASSWD_POTENTIAL;
+					$this->_passwordStatus[] = Releases::PASSWD_POTENTIAL;
 					break;
 				}
 
@@ -1177,7 +1191,7 @@ class ProcessAdditional
 					) {
 						$this->_debug('Codec spam found, setting release to potentially passworded.' . PHP_EOL);
 						$this->_releaseHasPassword = true;
-						$this->_passwordStatus[] = \Releases::PASSWD_POTENTIAL;
+						$this->_passwordStatus[] = Releases::PASSWD_POTENTIAL;
 					} //Run a PreDB filename check on insert to try and match the release
 					else if (strpos($file['name'], '.') != 0 && strlen($file['name']) > 0) {
 						$this->_release['filename'] = $file['name'];
@@ -1276,7 +1290,7 @@ class ProcessAdditional
 					} // Check if it's alt.binaries.u4e file.
 					else if (in_array($this->_releaseGroupName, ['alt.binaries.u4e', 'alt.binaries.mom']) &&
 						preg_match('/Linux_2rename\.sh/i', $file) &&
-						($this->_release['categoryid'] == \Category::CAT_OTHER_HASHED || $this->_release['categoryid'] == \Category::CAT_MISC)
+						($this->_release['categoryid'] == Category::CAT_OTHER_HASHED || $this->_release['categoryid'] == Category::CAT_MISC)
 					) {
 						$this->_processU4ETitle($file);
 					}
@@ -1614,7 +1628,7 @@ class ProcessAdditional
 				'UPDATE releases
 				SET passwordstatus = %d, rarinnerfilecount = %d %s %s %s
 				WHERE id = %d',
-				($this->_processPasswords === true ? $this->_passwordStatus : \Releases::PASSWD_NONE),
+				($this->_processPasswords === true ? $this->_passwordStatus : Releases::PASSWD_NONE),
 				$releaseFiles['count'],
 				$iSQL,
 				$vSQL,
@@ -1691,14 +1705,14 @@ class ProcessAdditional
 			)
 		);
 
-		$musicParent = (string)\Category::CAT_PARENT_MUSIC;
+		$musicParent = (string)Category::CAT_PARENT_MUSIC;
 		if ($rQuery === false || !preg_match(
 				sprintf(
 					'/%d\d{3}|%d|%d|%d/',
 					$musicParent[0],
-					\Category::CAT_MISC,
-					\Category::CAT_MOVIE_OTHER,
-					\Category::CAT_TV_OTHER
+					Category::CAT_MISC,
+					Category::CAT_MOVIE_OTHER,
+					Category::CAT_TV_OTHER
 				),
 				$rQuery['id']
 			)
@@ -1739,9 +1753,9 @@ class ProcessAdditional
 
 									// Get the category or try to determine it.
 									if ($ext === 'MP3') {
-										$newCat = \Category::CAT_MUSIC_MP3;
+										$newCat = Category::CAT_MUSIC_MP3;
 									} else if ($ext === 'FLAC') {
-										$newCat = \Category::CAT_MUSIC_LOSSLESS;
+										$newCat = Category::CAT_MUSIC_LOSSLESS;
 									} else {
 										$newCat = $this->_categorize->determineCategory($rQuery['group_id'], $newName);
 									}
@@ -1763,7 +1777,7 @@ class ProcessAdditional
 
 									// Echo the changed name.
 									if ($this->_echoCLI) {
-										\NameFixer::echoChangedReleaseName(
+										NameFixer::echoChangedReleaseName(
 											[
 												'new_name' => $newName,
 												'old_name' => $rQuery['searchname'],
@@ -1936,7 +1950,7 @@ class ProcessAdditional
 	 */
 	protected function _getSample($fileLocation)
 	{
-		if (!$this->_processSample) {
+		if (!$this->_processThumbnails) {
 			return false;
 		}
 
@@ -2194,15 +2208,15 @@ class ProcessAdditional
 			in_array(
 				((int)$this->_release['categoryid']),
 				[
-					\Category::CAT_BOOKS_OTHER,
-					\Category::CAT_GAME_OTHER,
-					\Category::CAT_MOVIE_OTHER,
-					\Category::CAT_MUSIC_OTHER,
-					\Category::CAT_PC_PHONE_OTHER,
-					\Category::CAT_TV_OTHER,
-					\Category::CAT_OTHER_HASHED,
-					\Category::CAT_XXX_OTHER,
-					\Category::CAT_MISC
+					Category::CAT_BOOKS_OTHER,
+					Category::CAT_GAME_OTHER,
+					Category::CAT_MOVIE_OTHER,
+					Category::CAT_MUSIC_OTHER,
+					Category::CAT_PC_PHONE_OTHER,
+					Category::CAT_TV_OTHER,
+					Category::CAT_OTHER_HASHED,
+					Category::CAT_XXX_OTHER,
+					Category::CAT_MISC
 				]
 			)
 		) {
@@ -2352,7 +2366,7 @@ class ProcessAdditional
 
 					// Echo the changed name to CLI.
 					if ($this->_echoCLI) {
-						\NameFixer::echoChangedReleaseName(
+						NameFixer::echoChangedReleaseName(
 							[
 								'new_name' => $newName,
 								'old_name' => $this->_release['searchname'],
@@ -2465,11 +2479,11 @@ class ProcessAdditional
 		$this->_foundAudioInfo = ($this->_processAudioInfo ? false : true);
 		$this->_foundAudioSample = ($this->_processAudioSample ? false : true);
 		$this->_foundJPGSample = ($this->_processJPGSample ? false : true);
-		$this->_foundSample = ($this->_processSample ? false : true);
+		$this->_foundSample = ($this->_processThumbnails ? false : true);
 		$this->_foundSample = (($this->_release['disablepreview'] == 1) ? true : false);
 		$this->_foundPAR2Info = false;
 
-		$this->_passwordStatus = [\Releases::PASSWD_NONE];
+		$this->_passwordStatus = [Releases::PASSWD_NONE];
 		$this->_releaseHasPassword = false;
 
 		$this->_releaseGroupName = $this->_groups->getByNameByID($this->_release['group_id']);
@@ -2523,6 +2537,4 @@ class ProcessAdditional
 	}
 }
 
-class ProcessAdditionalException extends \Exception
-{
-}
+?>

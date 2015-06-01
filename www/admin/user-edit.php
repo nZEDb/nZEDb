@@ -1,6 +1,8 @@
 <?php
 require_once './config.php';
 
+use nzedb\Users;
+
 $page = new AdminPage();
 $id   = 0;
 

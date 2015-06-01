@@ -2,7 +2,9 @@
 
 namespace nzedb\processing\post;
 
-use \nzedb\db\Settings;
+use nzedb\Category;
+use nzedb\NZB;
+use nzedb\db\Settings;
 
 class AniDB
 {
@@ -70,8 +72,8 @@ class AniDB
 							AND categoryid = %d
 							ORDER BY postdate DESC
 							LIMIT %d',
-									 \NZB::NZB_ADDED,
-									 \Category::CAT_TV_ANIME,
+									 NZB::NZB_ADDED,
+									 Category::CAT_TV_ANIME,
 									 $this->aniqty
 							 )
 		);

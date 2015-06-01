@@ -20,6 +20,8 @@
  */
 require_once realpath(dirname(__DIR__) . '/../www/automated.config.php');
 
+use nzedb\ColorCLI;
+
 define('nZEDb_GIT', nZEDb_ROOT . '.git' . DS);
 define('nZEDb_HOOKS', nZEDb_GIT . 'hooks' . DS);
 define('PRE_COMMIT_HOOK', 'pre-commit');
@@ -45,7 +47,7 @@ if (preg_match('/^(?P<key>#version=)(?P<value>.*)$/', $file[1], $match)) {
 	$current = $match['value'];
 }
 
-$out = new \ColorCLI();
+$out = new ColorCLI();
 
 $versions = new \nzedb\utility\Versions();
 $version = $versions->getGitHookPrecommit();

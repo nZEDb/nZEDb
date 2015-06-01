@@ -1,8 +1,16 @@
 <?php
+
+use nzedb\Logging;
+use nzedb\Captcha;
+
+$page->smarty->assign(['error' => '', 'username' => '', 'rememberme' => '']);
+
+$captcha = new Captcha($page);
+
 if ($page->isPostBack()) {
 	if (!isset($_POST["username"]) || !isset($_POST["password"])) {
 		$page->smarty->assign('error', "Please enter your username and password.");
-	} else {
+	} elseif ($captcha->getError() === false) {
 		$username = htmlspecialchars($_POST["username"]);
 		$page->smarty->assign('username', $username);
 		$logging = new Logging(['Settings' => $page->settings]);

@@ -18,7 +18,9 @@
 	<a href="{$smarty.const.WWW_TOP}/upcoming/5">DVD Releases</a>
 </p>
 
-{if $data|@count > 0}
+{if isset($nodata)}
+	{$nodata}
+{elseif $data|@count > 0}
 	<table class="table table-condensed data icons" id="coverstable">
 		<thead>
 		<tr>
@@ -31,7 +33,7 @@
 			<tr>
 				<td style="width:150px;padding:10px;text-align:center;">
 					<div class="movcover">
-						<img class="shadow img-thumbnail" src="{replace_quality($result->posters->{$site->rottentomatoquality}, $site->rottentomatoquality)}"" width="120"
+						<img class="shadow img-thumbnail" src="{replace_url($result->posters->original)}" width="120"
 						border="0" alt="{$result->title|escape:"htmlall"}"/>
 
 						<div class="movextra">

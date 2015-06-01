@@ -1,6 +1,9 @@
 <?php
 require dirname(__FILE__) . '/../../www/config.php';
 
+use nzedb\ReleaseSearch;
+use nzedb\db\DB;
+
 if (!isset($argv[1]) || !in_array($argv[1], ['sphinx', 'standard'])) {
 	exit('Argument1 (required) is the method of search you would like to optimize for.  Choices are sphinx or standard.' . PHP_EOL .
 		'Argument2 (optional) is the storage engine and row_format you would like the release_search_data table to use. If not entered it will be left default.' . PHP_EOL .
@@ -10,14 +13,14 @@ if (!isset($argv[1]) || !in_array($argv[1], ['sphinx', 'standard'])) {
 
 switch ($argv[1]) {
 	case 'sphinx':
-		if (nZEDb_RELEASE_SEARCH_TYPE == \ReleaseSearch::SPHINX) {
-			optimizeForSphinx(new \nzedb\db\DB());
+		if (nZEDb_RELEASE_SEARCH_TYPE == ReleaseSearch::SPHINX) {
+			optimizeForSphinx(new DB());
 		} else {
 			echo PHP_EOL . $pdo->log->error('Error, nZEDb_RELEASE_SEARCH_TYPE in www/settings.php must be set to SPHINX to optimize for Sphinx!' . PHP_EOL);
 		}
 		break;
 	case 'standard':
-		revertToStandard(new \nzedb\db\DB());
+		revertToStandard(new DB());
 		break;
 }
 

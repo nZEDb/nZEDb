@@ -1,4 +1,7 @@
 <?php
+
+use nzedb\Contents;
+
 require_once './config.php';
 
 $contents = new Contents(['Settings' => $page->settings]);

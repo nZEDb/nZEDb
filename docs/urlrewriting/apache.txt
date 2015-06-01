@@ -1,2 +1,3 @@
+See .htaccess file in /www/
 
-#see .htaccess file in /www/
+https://github.com/nZEDb/nZEDb/blob/master/www/.htaccess

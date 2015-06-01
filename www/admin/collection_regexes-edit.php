@@ -1,6 +1,9 @@
 <?php
 require_once './config.php';
 
+use nzedb\Category;
+use nzedb\Regexes;
+
 $page    = new AdminPage();
 $regexes = new Regexes(['Settings' => $page->settings, 'Table_Name' => 'collection_regexes']);
 

@@ -2,7 +2,9 @@
 
 require_once dirname(dirname(dirname(__DIR__))) . '/www/config.php';
 
-$output = new \ColorCLI();
+use nzedb\ColorCLI;
+
+$output = new ColorCLI();
 echo $output->primary("Checking for files in the renamed directories.");
 $status = 0;
 
@@ -13,11 +15,11 @@ $dirs = [
 	],
 	[
 		'old' => 'misc/testing/Dev_testing/Subject_testing',
-		'newpath' => 'misc/testing/Dev/Subject'
+		'newpath' => 'misc/testing/Developers/Subject'
 	],
 	[
 		'old' => 'misc/testing/Dev_testing',
-		'newpath' => 'misc/testing/Dev'
+		'newpath' => 'misc/testing/Developers'
 	],
 	[
 		'old' => 'misc/testing/PostProc_testing',

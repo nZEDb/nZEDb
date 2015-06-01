@@ -1,6 +1,8 @@
 <?php
 require_once './config.php';
 
+use nzedb\Genres;
+
 $page   = new AdminPage();
 $genres = new Genres(['Settings' => $page->settings]);
 $id     = 0;

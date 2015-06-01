@@ -1,4 +1,8 @@
 <?php
+
+use nzedb\Books;
+use nzedb\Category;
+
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }

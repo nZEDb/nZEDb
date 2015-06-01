@@ -1,12 +1,13 @@
 <?php
 require_once realpath(__DIR__ . '/../../www/config.php');
 
-use \nzedb\db\Settings;
+use nzedb\db\populate\AniDB;
+use nzedb\db\Settings;
 
 $pdo = new Settings();
 
 if ($argc > 1 && $argv[1] == true) {
-	(new \nzedb\db\populate\AniDB(['Settings' => $pdo, 'Echo' => true]))->populateTable('full');
+	(new AniDB(['Settings' => $pdo, 'Echo' => true]))->populateTable('full');
 } else {
 	$pdo->log->doEcho(PHP_EOL . $pdo->log->error(
 				"To execute this script you must provide a boolean argument." . PHP_EOL .

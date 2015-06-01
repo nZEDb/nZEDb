@@ -1,4 +1,8 @@
 <?php
+
+use nzedb\ReleaseComments;
+use nzedb\SABnzbd;
+
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
@@ -6,16 +10,26 @@ if (!$page->users->isLoggedIn()) {
 $rc  = new ReleaseComments($page->settings);
 $sab = new SABnzbd($page);
 
-$userid = 0;
-if (isset($_GET["id"])) {
-	$userid = $_GET["id"] + 0;
-} elseif (isset($_GET["name"])) {
-	$res = $page->users->getByUsername($_GET["name"]);
-	if ($res) {
-		$userid = $res["id"];
+$userid = $page->users->currentUserId();
+$privileged = ($page->users->isAdmin($userid) || $page->users->isModerator($userid)) ? true : false;
+$privateProfiles = ($page->settings->getSetting('privateprofiles') == 1) ? true : false;
+$publicView = false;
+
+if (!$privateProfiles || $privileged) {
+
+	$altID = (isset($_GET['id']) && $_GET['id'] >= 0) ? (int) $_GET['id'] : false;
+	$altUsername = (isset($_GET['name']) && strlen($_GET['name']) > 0) ? $_GET['name'] : false;
+
+	// If both 'id' and 'name' are specified, 'id' should take precedence.
+	if ($altID === false && $altUsername !== false) {
+		$user = $page->users->getByUsername($altUsername);
+		if ($user) {
+			$altID = $user['id'];
+		}
+	} else if ($altID !== false) {
+		$userid = $altID;
+		$publicView = true;
 	}
-} else {
-	$userid = $page->users->currentUserId();
 }
 
 $data = $page->users->getById($userid);
@@ -42,6 +56,9 @@ if (!isset($data['style']) || $data['style'] == 'None') {
 
 $page->smarty->assign('userinvitedby', $invitedby);
 $page->smarty->assign('user', $data);
+$page->smarty->assign('privateprofiles', $privateProfiles);
+$page->smarty->assign('publicview', $publicView);
+$page->smarty->assign('privileged', $privileged);
 
 $commentcount = $rc->getCommentCountForUser($userid);
 $offset       = isset($_REQUEST["offset"]) ? $_REQUEST["offset"] : 0;

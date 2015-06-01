@@ -1,5 +1,6 @@
 <?php
 require_once './config.php';
+
 $page = new AdminPage();
 $page->title = 'Sharing Settings';
 

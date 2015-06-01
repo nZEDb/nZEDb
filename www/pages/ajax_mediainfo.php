@@ -1,4 +1,7 @@
 <?php
+
+use nzedb\ReleaseExtra;
+
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }

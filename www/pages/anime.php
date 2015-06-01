@@ -1,4 +1,8 @@
 <?php
+
+use nzedb\AniDB;
+use nzedb\Releases;
+
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }

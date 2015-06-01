@@ -24,7 +24,7 @@ spl_autoload_register(function($class) {
 	$base_dir = __DIR__ . DIRECTORY_SEPARATOR;
 
 	// If no namespace, add default;
-	$class = preg_match('#\\\#', $class) ? $class : $prefix . 'controllers\\' . $class;
+	$class = preg_match('#\\\#', $class) ? $class : $prefix . $class;
 
 	// does the class use the namespace prefix?
 	$len = strlen($prefix);

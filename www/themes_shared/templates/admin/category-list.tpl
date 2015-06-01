@@ -16,7 +16,7 @@
 			<td>{$category.id}</td>
 			<td><a href="{$smarty.const.WWW_TOP}/category-edit.php?id={$category.id}">{$category.title}</a></td>
 			<td>
-				{if $category.parentid != null}
+				{if $category.parentid != null && isset($category.parentName)}
 					{$category.parentName}
 				{else}
 					n/a

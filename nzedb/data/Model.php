@@ -20,7 +20,7 @@
  */
 namespace nzedb\data;
 
-use \nzedb\StaticObject;
+use nzedb\StaticObject;
 
 class Model extends StaticObject
 {
@@ -320,7 +320,7 @@ class Model extends StaticObject
 	 * @see  lithium\data\Model::find()
 	 * @see  lithium\data\Model::$_meta
 	 * @link http://php.net/manual/en/language.oop5.overloading.php PHP Manual: Overloading
-	 * @throws BadMethodCallException On unhandled call, will throw an exception.
+	 * @throws \BadMethodCallException On unhandled call, will throw an exception.
 	 *
 	 * @param string $method Method name caught by `__callStatic()`.
 	 * @param array  $params Arguments given to the above `$method` call.
@@ -346,7 +346,7 @@ class Model extends StaticObject
 
 		if (!$args) {
 			$message = "Method `%s` not defined or handled in class `%s`.";
-			throw new BadMethodCallException(sprintf($message, $method, get_class($self)));
+			throw new \BadMethodCallException(sprintf($message, $method, get_class($self)));
 		}
 
 		$field   = Inflector::underscore($args['field'] ? $args['field'] : $args['fields']);

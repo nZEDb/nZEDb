@@ -1,6 +1,12 @@
 <?php
 require_once dirname(__FILE__) . '/../../../../www/config.php';
 
+use nzedb\Binaries;
+use nzedb\Categorize;
+use nzedb\ConsoleTools;
+use nzedb\NZB;
+use nzedb\ReleaseCleaning;
+use nzedb\Releases;
 use nzedb\db\Settings;
 
 $pdo = new Settings();
@@ -11,14 +17,14 @@ if (!isset($argv[1])) {
 			. "php $argv[0] /path/to/import false                ...: To import using the subject as release searchname\n"));
 }
 
-$consoleTools = new \ConsoleTools(['ColorCLI' => $pdo->log]);
-$binaries = new \Binaries(['Settings' => $pdo]);
+$consoleTools = new ConsoleTools(['ColorCLI' => $pdo->log]);
+$binaries = new Binaries(['Settings' => $pdo]);
 $crosspostt = $pdo->getSetting('crossposttime');
 $crosspostt = (!empty($crosspostt)) ? $crosspostt : 2;
-$releasecleaning = new \ReleaseCleaning($pdo);
-$categorize = new \Categorize(['Settings' => $pdo]);
-$nzb = new \NZB($pdo);
-$releases = new \Releases(['Settings' => $pdo]);
+$releasecleaning = new ReleaseCleaning($pdo);
+$categorize = new Categorize(['Settings' => $pdo]);
+$nzb = new NZB($pdo);
+$releases = new Releases(['Settings' => $pdo]);
 $nzbsperhour = $nzbSkipped = $maxtoprocess = 0;
 
 if (isset($argv[2]) && is_numeric($argv[2])) {
@@ -220,7 +226,7 @@ if (!isset($groups) || count($groups) == 0) {
 						'isrenamed' => 1,
 						'reqidstatus' => 0,
 						'preid' => 0,
-						'nzbstatus' => \NZB::NZB_ADDED
+						'nzbstatus' => NZB::NZB_ADDED
 					]
 				);
 			}

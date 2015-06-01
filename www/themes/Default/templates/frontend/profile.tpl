@@ -3,16 +3,16 @@
 
 <table class="data">
 	<tr><th>Username:</th><td>{$user.username|escape:"htmlall"}</td></tr>
-	{if $user.id==$userdata.id || $userdata.role==2}<tr><th title="Not public">Email:</th><td>{$user.email}</td></tr>{/if}
+	{if $isadmin || !$publicview}<tr><th title="Not public">Email:</th><td>{$user.email}</td></tr>{/if}
 	<tr><th>Registered:</th><td title="{$user.createddate}">{$user.createddate|date_format}  ({$user.createddate|timeago} ago)</td></tr>
 	<tr><th>Last Login:</th><td title="{$user.lastlogin}">{$user.lastlogin|date_format}  ({$user.lastlogin|timeago} ago)</td></tr>
 	<tr><th>Role:</th><td>{$user.rolename}</td></tr>
 	<tr><th>Theme:</th><td>{$user.style}</td></tr>
-	{if $user.id==$userdata.id || $userdata.role==2}<tr><th title="Not public">Site Api/Rss Key:</th><td><a href="{$smarty.const.WWW_TOP}/rss?t=0&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">{$user.rsstoken}</a></td></tr>{/if}
+	{if $isadmin || !$publicview}<tr><th title="Not public">Site Api/Rss Key:</th><td><a href="{$smarty.const.WWW_TOP}/rss?t=0&amp;dl=1&amp;i={$user.id}&amp;r={$user.rsstoken}">{$user.rsstoken}</a></td></tr>{/if}
 	<tr><th>Grabs:</th><td>{$user.grabs}</td></tr>
 	<tr><th>API Requests Today:</th><td>{$apirequests}</td></tr>
 
-	{if ($user.id==$userdata.id || $userdata.role==2) && $site->registerstatus==1}
+	{if (!$publicview || $isadmin) && $site->registerstatus==1}
 	<tr>
 		<th title="Not public">Invites:</th>
 		<td>{$user.invites}
@@ -33,7 +33,13 @@
 	{/if}
 
 	{if $userinvitedby && $userinvitedby.username != ""}
-	<tr><th>Invited By:</th><td><a title="View {$userinvitedby.username}'s profile" href="{$smarty.const.WWW_TOP}/profile?name={$userinvitedby.username}">{$userinvitedby.username}</a></td>
+	<tr><th>Invited By:</th><td>
+			{if $privileged || !$privateprofiles}
+				<a title="View {$userinvitedby.username}'s profile" href="{$smarty.const.WWW_TOP}/profile?name={$userinvitedby.username}">{$userinvitedby.username}</a>
+			{else}
+				{$userinvitedby.username}
+			{/if}
+		</td>
 	{/if}
 
 	<tr><th>UI Preferences:</th>
@@ -46,8 +52,8 @@
 			{if $user.bookview == "1"}View book covers{else}View standard book category{/if}
 		</td>
 	</tr>
-	{if $user.id==$userdata.id || $userdata.role==2}<tr><th title="Not public">Excluded Categories:</th><td>{$exccats|replace:",":"<br/>"}</td></tr>{/if}
-	{if $page->settings->getSetting('sabintegrationtype') == 2 && $user.id==$userdata.id}
+	{if !$publicview || $isadmin}<tr><th title="Not public">Excluded Categories:</th><td>{$exccats|replace:",":"<br/>"}</td></tr>{/if}
+	{if $page->settings->getSetting('sabintegrationtype') == 2 && (!$publicview || $isadmin)}
 		<tr><th>SABnzbd Integration:</th>
 		<td>
 			Url: {if $saburl == ''}N/A{else}{$saburl}{/if}<br/>
@@ -57,19 +63,21 @@
 			Storage: {if $sabsetting == ''}N/A{else}{$sabsetting}{/if}
 		</td>
 	{/if}
+
+	{if !$publicview || $isadmin}
 	<tr><th>CouchPotato Integration:</th>
 	<td>
 		Url: {if $user.cp_url == ''}N/A{else}{$user.cp_url}{/if}<br/>
 		Key: {if $user.cp_api == ''}N/A{else}{$user.cp_api}{/if}<br/>
 	</td>
-
-	{if $user.id==$userdata.id}
-			<tr><th>My TV Shows:</th><td><a href="{$smarty.const.WWW_TOP}/myshows">Manage my shows</a></td></tr>
-			<tr><th>My Movies:</th><td><a href="{$smarty.const.WWW_TOP}/mymovies">Manage my movies</a></td></tr>
 	{/if}
 
+	{if !$publicview}
+	<tr><th>My TV Shows:</th><td><a href="{$smarty.const.WWW_TOP}/myshows">Manage my shows</a></td></tr>
+	<tr><th>My Movies:</th><td><a href="{$smarty.const.WWW_TOP}/mymovies">Manage my movies</a></td></tr>
 
-	{if $user.id==$userdata.id}<tr><th></th><td><a href="{$smarty.const.WWW_TOP}/profileedit">Edit</a></td></tr>{/if}
+	<tr><th></th><td><a href="{$smarty.const.WWW_TOP}/profileedit">Edit</a></td></tr>
+	{/if}
 </table>
 
 {if $commentslist|@count > 0}

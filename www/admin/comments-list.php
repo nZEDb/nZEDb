@@ -1,6 +1,8 @@
 <?php
 require_once './config.php';
 
+use nzedb\ReleaseComments;
+
 $page     = new AdminPage();
 $releases = new ReleaseComments($page->settings);
 

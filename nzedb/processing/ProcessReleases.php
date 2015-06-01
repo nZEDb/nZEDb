@@ -1,7 +1,19 @@
 <?php
 namespace nzedb\processing;
 
-use \nzedb\db\Settings;
+use nzedb\Categorize;
+use nzedb\Category;
+use nzedb\ConsoleTools;
+use nzedb\Genres;
+use nzedb\Groups;
+use nzedb\NZB;
+use nzedb\PreDb;
+use nzedb\ReleaseCleaning;
+use nzedb\ReleaseImage;
+use nzedb\Releases;
+use nzedb\RequestIDLocal;
+use nzedb\RequestIDWeb;
+use nzedb\db\Settings;
 
 class ProcessReleases
 {
@@ -18,7 +30,7 @@ class ProcessReleases
 	const FILE_COMPLETE   = 1; // We have all the parts for the file (binaries table partcheck column).
 
 	/**
-	 * @var \Groups
+	 * @var \nzedb\Groups
 	 */
 	public $groups;
 
@@ -63,27 +75,27 @@ class ProcessReleases
 	public $pdo;
 
 	/**
-	 * @var \ConsoleTools
+	 * @var \nzedb\ConsoleTools
 	 */
 	public $consoleTools;
 
 	/**
-	 * @var \NZB
+	 * @var \nzedb\NZB
 	 */
 	public $nzb;
 
 	/**
-	 * @var \ReleaseCleaning
+	 * @var \nzedb\ReleaseCleaning
 	 */
 	public $releaseCleaning;
 
 	/**
-	 * @var \Releases
+	 * @var \nzedb\Releases
 	 */
 	public $releases;
 
 	/**
-	 * @var \ReleaseImage
+	 * @var \nzedb\ReleaseImage
 	 */
 	public $releaseImage;
 
@@ -107,12 +119,12 @@ class ProcessReleases
 		$this->echoCLI = ($options['Echo'] && nZEDb_ECHOCLI);
 
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
-		$this->consoleTools = ($options['ConsoleTools'] instanceof \ConsoleTools ? $options['ConsoleTools'] : new \ConsoleTools(['ColorCLI' => $this->pdo->log]));
-		$this->groups = ($options['Groups'] instanceof \Groups ? $options['Groups'] : new \Groups(['Settings' => $this->pdo]));
-		$this->nzb = ($options['NZB'] instanceof \NZB ? $options['NZB'] : new \NZB($this->pdo));
-		$this->releaseCleaning = ($options['ReleaseCleaning'] instanceof \ReleaseCleaning ? $options['ReleaseCleaning'] : new \ReleaseCleaning($this->pdo));
-		$this->releases = ($options['Releases'] instanceof \Releases ? $options['Releases'] : new \Releases(['Settings' => $this->pdo, 'Groups' => $this->groups]));
-		$this->releaseImage = ($options['ReleaseImage'] instanceof \ReleaseImage ? $options['ReleaseImage'] : new \ReleaseImage($this->pdo));
+		$this->consoleTools = ($options['ConsoleTools'] instanceof ConsoleTools ? $options['ConsoleTools'] : new ConsoleTools(['ColorCLI' => $this->pdo->log]));
+		$this->groups = ($options['Groups'] instanceof Groups ? $options['Groups'] : new Groups(['Settings' => $this->pdo]));
+		$this->nzb = ($options['NZB'] instanceof NZB ? $options['NZB'] : new NZB($this->pdo));
+		$this->releaseCleaning = ($options['ReleaseCleaning'] instanceof ReleaseCleaning ? $options['ReleaseCleaning'] : new ReleaseCleaning($this->pdo));
+		$this->releases = ($options['Releases'] instanceof Releases ? $options['Releases'] : new Releases(['Settings' => $this->pdo, 'Groups' => $this->groups]));
+		$this->releaseImage = ($options['ReleaseImage'] instanceof ReleaseImage ? $options['ReleaseImage'] : new ReleaseImage($this->pdo));
 
 		$this->tablePerGroup = ($this->pdo->getSetting('tablepergroup') == 0 ? false : true);
 		$this->collectionDelayTime = ($this->pdo->getSetting('delaytime') != '' ? (int)$this->pdo->getSetting('delaytime') : 2);
@@ -132,7 +144,7 @@ class ProcessReleases
 	 * @param int    $categorize
 	 * @param int    $postProcess
 	 * @param string $groupName (optional)
-	 * @param \NNTP   $nntp
+	 * @param \nzedb\NNTP   $nntp
 	 * @param bool   $echooutput
 	 *
 	 * @return int
@@ -168,10 +180,10 @@ class ProcessReleases
 		$PYTHON = shell_exec('which python3 2>/dev/null');
 		$PYTHON = (empty($PYTHON) ? 'python -OOu' : 'python3 -OOu');
 
-		$totalReleasesAdded = $loops = 0;
+		$totalReleasesAdded = 0;
 		do {
-			$releasesAdded = $this->createReleases($groupID);
-			$totalReleasesAdded += $releasesAdded;
+			$releasesCount = $this->createReleases($groupID);
+			$totalReleasesAdded += $releasesCount['added'];
 
 			$nzbFilesAdded = $this->createNZBs($groupID);
 			if ($this->processRequestIDs === 0) {
@@ -199,8 +211,8 @@ class ProcessReleases
 			$this->postProcessReleases($postProcess, $nntp);
 			$this->deleteCollections($groupID);
 
-			// This loops as long as there were releases created or 3 loops, otherwise, you could loop indefinately
-		} while (($nzbFilesAdded > 0 || $releasesAdded > 0) && $loops++ < 3);
+			// This loops as long as the number of releases or nzbs added was >= the limit (meaning there are more waiting to be created)
+		} while (($releasesCount['added'] + $releasesCount['dupes']) >= $this->releaseCreationLimit || $nzbFilesAdded >= $this->releaseCreationLimit);
 
 
 
@@ -237,7 +249,7 @@ class ProcessReleases
 	public function resetCategorize($where = '')
 	{
 		$this->pdo->queryExec(
-			sprintf('UPDATE releases SET categoryid = %d, iscategorized = 0 %s', \Category::CAT_MISC, $where)
+			sprintf('UPDATE releases SET categoryid = %d, iscategorized = 0 %s', Category::CAT_MISC, $where)
 		);
 	}
 
@@ -252,7 +264,7 @@ class ProcessReleases
 	 */
 	public function categorizeRelease($type, $where = '')
 	{
-		$cat = new \Categorize(['Settings' => $this->pdo]);
+		$cat = new Categorize(['Settings' => $this->pdo]);
 		$categorized = $total = 0;
 		$releases = $this->pdo->queryDirect(sprintf('SELECT id, %s, group_id FROM releases %s', $type, $where));
 		if ($releases && $releases->rowCount()) {
@@ -491,7 +503,7 @@ class ProcessReleases
 		$startTime = time();
 		$group = $this->groups->getCBPTableNames($this->tablePerGroup, $groupID);
 
-		$categorize = new \Categorize(['Settings' => $this->pdo]);
+		$categorize = new Categorize(['Settings' => $this->pdo]);
 		$returnCount = $duplicate = 0;
 
 		if ($this->echoCLI) {
@@ -522,7 +534,7 @@ class ProcessReleases
 		}
 
 		if ($collections instanceof \Traversable) {
-			$preDB = new \PreDb(['Echo' => $this->echoCLI, 'Settings' => $this->pdo]);
+			$preDB = new PreDb(['Echo' => $this->echoCLI, 'Settings' => $this->pdo]);
 
 			foreach ($collections as $collection) {
 
@@ -592,7 +604,7 @@ class ProcessReleases
 							'isrenamed' => ($properName === true ? 1 : 0),
 							'reqidstatus' => ($isReqID === true ? 1 : 0),
 							'preid' => ($preID === false ? 0 : $preID),
-							'nzbstatus' => \NZB::NZB_NONE
+							'nzbstatus' => NZB::NZB_NONE
 						]
 					);
 
@@ -644,7 +656,7 @@ class ProcessReleases
 			);
 		}
 
-		return $returnCount;
+		return ['added' => $returnCount, 'dupes' => $duplicate];
 	}
 
 	/**
@@ -658,7 +670,6 @@ class ProcessReleases
 	public function createNZBs($groupID)
 	{
 		$startTime = time();
-		$group = $this->groups->getCBPTableNames($this->tablePerGroup, $groupID);
 
 		if ($this->echoCLI) {
 			$this->pdo->log->doEcho($this->pdo->log->header("Process Releases -> Create the NZB, delete collections/binaries/parts."));
@@ -676,7 +687,7 @@ class ProcessReleases
 			)
 		);
 
-		$deleted = $nzbCount = 0;
+		$nzbCount = 0;
 
 		if ($releases && $releases->rowCount()) {
 			$total = $releases->rowCount();
@@ -687,47 +698,20 @@ class ProcessReleases
 				if ($this->nzb->writeNZBforReleaseId($release['id'], $release['guid'], $release['name'], $release['title']) === true) {
 					$nzbCount++;
 					if ($this->echoCLI) {
-						echo $this->pdo->log->primaryOver("Creating NZBs:\t" . $nzbCount . '/' . $total . "\r");
+						echo $this->pdo->log->primaryOver("Creating NZBs and deleting Collections:\t" . $nzbCount . '/' . $total . "\r");
 					}
 				}
 			}
 		}
 
-		$nzbEnd = time();
-
-		if ($nzbCount > 0) {
-			if ($this->echoCLI) {
-				$this->pdo->log->doEcho(
-					$this->pdo->log->primary(
-						PHP_EOL . 'Deleting collections/binaries/parts, be patient.'
-					)
-				);
-			}
-
-			$deleteQuery = $this->pdo->queryExec(
-				sprintf('
-					DELETE c FROM %s c
-					INNER JOIN releases r ON r.id = c.releaseid
-					WHERE r.nzbstatus = %d
-					AND c.filecheck = %d',
-					$group['cname'],
-					\NZB::NZB_ADDED,
-					self::COLLFC_INSERTED
-				)
-			);
-			if ($deleteQuery !== false) {
-				$deleted = $deleteQuery->rowCount();
-			}
-		}
-
-		$deleteEnd = time();
+		$totalTime = (time() - $startTime);
 
 		if ($this->echoCLI) {
 			$this->pdo->log->doEcho(
 				$this->pdo->log->primary(
-					number_format($nzbCount) . ' NZBs created in ' . ($nzbEnd - $startTime) . ' seconds.' . PHP_EOL .
-					'Deleted ' . number_format($deleted) . ' collections in ' . ($deleteEnd - $nzbEnd) . ' seconds.' . PHP_EOL .
-					'Total time: ' . $this->pdo->log->primary($this->consoleTools->convertTime(time() - $startTime))
+					number_format($nzbCount) . ' NZBs created/Collections deleted in ' .
+					$totalTime . ' seconds.' . PHP_EOL .
+					'Total time: ' . $this->pdo->log->primary($this->consoleTools->convertTime($totalTime))
 				)
 			);
 		}
@@ -766,14 +750,14 @@ class ProcessReleases
 
 		if ($local === true) {
 			$foundRequestIDs = (
-				new \RequestIDLocal(
+				new RequestIDLocal(
 					['Echo' => $this->echoCLI, 'ConsoleTools' => $this->consoleTools,
 					 'Groups' => $this->groups, 'Settings' => $this->pdo]
 				)
 			)->lookupRequestIDs(['GroupID' => $groupID, 'limit' => $limit, 'time' => 168]);
 		} else {
 			$foundRequestIDs = (
-				new \RequestIDWeb(
+				new RequestIDWeb(
 					['Echo' => $this->echoCLI, 'ConsoleTools' => $this->consoleTools,
 					 'Groups' => $this->groups, 'Settings' => $this->pdo]
 				)
@@ -829,7 +813,7 @@ class ProcessReleases
 	 * Post-process releases.
 	 *
 	 * @param int        $postProcess
-	 * @param NNTP       $nntp
+	 * @param \nzedb\NNTP       $nntp
 	 *
 	 * @void
 	 * @access public
@@ -1142,8 +1126,8 @@ class ProcessReleases
 	public function deleteReleases()
 	{
 		$startTime = time();
-		$category = new \Category(['Settings' => $this->pdo]);
-		$genres = new \Genres(['Settings' => $this->pdo]);
+		$category = new Category(['Settings' => $this->pdo]);
+		$genres = new Genres(['Settings' => $this->pdo]);
 		$passwordDeleted = $duplicateDeleted = $retentionDeleted = $completionDeleted = $disabledCategoryDeleted = 0;
 		$disabledGenreDeleted = $miscRetentionDeleted = $miscHashedDeleted = $categoryMinSizeDeleted = 0;
 
@@ -1173,7 +1157,7 @@ class ProcessReleases
 			$releases = $this->pdo->queryDirect(
 				sprintf(
 					'SELECT id, guid FROM releases WHERE passwordstatus = %d',
-					\Releases::PASSWD_RAR
+					Releases::PASSWD_RAR
 				)
 			);
 			if ($releases instanceof \Traversable) {
@@ -1189,7 +1173,7 @@ class ProcessReleases
 			$releases = $this->pdo->queryDirect(
 				sprintf(
 					'SELECT id, guid FROM releases WHERE passwordstatus = %d',
-					\Releases::PASSWD_POTENTIAL
+					Releases::PASSWD_POTENTIAL
 				)
 			);
 			if ($releases instanceof \Traversable) {
@@ -1310,7 +1294,7 @@ class ProcessReleases
 					FROM releases
 					WHERE categoryid = %d
 					AND adddate <= NOW() - INTERVAL %d HOUR',
-					\Category::CAT_MISC,
+					Category::CAT_MISC,
 					$this->pdo->getSetting('miscotherretentionhours')
 				)
 			);
@@ -1330,7 +1314,7 @@ class ProcessReleases
 					FROM releases
 					WHERE categoryid = %d
 					AND adddate <= NOW() - INTERVAL %d HOUR',
-					\Category::CAT_OTHER_HASHED,
+					Category::CAT_OTHER_HASHED,
 					$this->pdo->getSetting('mischashedretentionhours')
 				)
 			);
@@ -1504,31 +1488,14 @@ class ProcessReleases
 				UPDATE %s b INNER JOIN
 					(SELECT b.id FROM %s b
 					INNER JOIN %s c ON c.id = b.collection_id
-					WHERE c.filecheck = %d AND b.partcheck = %d %s
-					AND b.currentparts = b.totalparts
+					WHERE c.filecheck IN (%d, %d) AND b.partcheck = %d %s
+					AND b.currentparts >= b.totalparts
 					GROUP BY b.id, b.totalparts)
 				r ON b.id = r.id SET b.partcheck = %d',
 				$group['bname'],
 				$group['bname'],
 				$group['cname'],
 				self::COLLFC_TEMPCOMP,
-				self::FILE_INCOMPLETE,
-				$where,
-				self::FILE_COMPLETE
-			)
-		);
-		$this->pdo->queryExec(
-			sprintf('
-				UPDATE %s b INNER JOIN
-					(SELECT b.id FROM %s b
-					INNER JOIN %s c ON c.id = b.collection_id
-					WHERE c.filecheck = %d AND b.partcheck = %d %s
-					AND b.currentparts >= (b.totalparts + 1)
-					GROUP BY b.id, b.totalparts)
-				r ON b.id = r.id SET b.partcheck = %d',
-				$group['bname'],
-				$group['bname'],
-				$group['cname'],
 				self::COLLFC_ZEROPART,
 				self::FILE_INCOMPLETE,
 				$where,

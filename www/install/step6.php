@@ -1,6 +1,9 @@
 <?php
 require_once realpath(__DIR__ . '/../automated.config.php');
 
+use nzedb\Install;
+use nzedb\Users;
+
 $page = new InstallPage();
 $page->title = "Setup Admin User";
 
@@ -25,7 +28,6 @@ if ($page->isPostBack()) {
 	if ($cfg->ADMIN_USER == '' || $cfg->ADMIN_PASS == '' || $cfg->ADMIN_EMAIL == '') {
 		$cfg->error = true;
 	} else {
-		require_once nZEDb_LIB . 'controllers/Users.php';
 		$user = new Users();
 		if (!$user->isValidUsername($cfg->ADMIN_USER)) {
 			$cfg->error = true;

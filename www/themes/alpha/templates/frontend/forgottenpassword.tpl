@@ -16,6 +16,7 @@
 						<label class="sr-only" for="email">E-mail Address</label>
 						<input type="email" class="form-control" placeholder="E-mail Address" id="email" value="{$email}" name="email">
 					</div>
+					{$page->smarty->fetch('captcha.tpl')}
 					<button class="btn btn-success" type="submit" value="Request Password Reset">Request Password Reset</button>
 				</form>
 			</div>

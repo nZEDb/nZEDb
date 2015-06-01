@@ -2,6 +2,10 @@
 /* Deletes releases in categories you have disabled here : http://localhost/admin/category-list.php */
 require dirname(__FILE__) . '/../../../www/config.php';
 
+use nzedb\Category;
+use nzedb\NZB;
+use nzedb\ReleaseImage;
+use nzedb\Releases;
 use nzedb\db\Settings;
 
 $pdo = new Settings();
@@ -9,10 +13,10 @@ $pdo = new Settings();
 if (isset($argv[1]) && $argv[1] == "true") {
 
 	$timestart = TIME();
-	$releases = new \Releases(['Settings' => $pdo]);
-	$category = new \Category(['Settings' => $pdo]);
-	$nzb = new \NZB($pdo);
-	$releaseImage = new \ReleaseImage($pdo);
+	$releases = new Releases(['Settings' => $pdo]);
+	$category = new Category(['Settings' => $pdo]);
+	$nzb = new NZB($pdo);
+	$releaseImage = new ReleaseImage($pdo);
 	$catlist = $category->getDisabledIDs();
 	$relsdeleted = 0;
 	if (count($catlist > 0)) {

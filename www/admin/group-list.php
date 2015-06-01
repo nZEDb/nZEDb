@@ -1,35 +1,28 @@
 <?php
 require_once './config.php';
 
+use nzedb\Groups;
+
 $page   = new AdminPage();
 $groups = new Groups(['Settings' => $page->settings]);
 
-$gname = "";
-if (isset($_REQUEST['groupname']) && !empty($_REQUEST['groupname'])) {
-	$gname = $_REQUEST['groupname'];
-}
+$groupName = (isset($_REQUEST['groupname']) && !empty($_REQUEST['groupname']) ? $_REQUEST['groupname'] : '');
+$offset    = (isset($_REQUEST['offset']) ? $_REQUEST['offset'] : 0);
 
-$groupcount = $groups->getCount($gname);
+$page->smarty->assign(
+	[
+		'groupname' => $groupName,
+		'pagertotalitems' => $groups->getCount($groupName),
+		'pageroffset' => $offset,
+		'pageritemsperpage' => ITEMS_PER_PAGE,
+		'pagerquerybase' =>
+			WWW_TOP . "/group-list.php?" . (($groupName != '') ? "groupname=$groupName&amp;": '') . 'offset=',
+		'pagerquerysuffix' => '',
+		'grouplist' => $groups->getRange($offset, ITEMS_PER_PAGE, $groupName)
+	]
+);
+$page->smarty->assign('pager', $page->smarty->fetch('pager.tpl'));
 
-$offset    = isset($_REQUEST["offset"]) ? $_REQUEST["offset"] : 0;
-$groupname = (isset($_REQUEST['groupname']) && !empty($_REQUEST['groupname'])) ?
-	$_REQUEST['groupname'] : '';
-
-$page->smarty->assign('groupname', $groupname);
-$page->smarty->assign('pagertotalitems', $groupcount);
-$page->smarty->assign('pageroffset', $offset);
-$page->smarty->assign('pageritemsperpage', ITEMS_PER_PAGE);
-
-$groupsearch = ($gname != "") ? 'groupname=' . $gname . '&amp;' : '';
-$page->smarty->assign('pagerquerybase', WWW_TOP . "/group-list.php?" . $groupsearch . "offset=");
-$pager = $page->smarty->fetch("pager.tpl");
-$page->smarty->assign('pager', $pager);
-
-$grouplist = $groups->getRange($offset, ITEMS_PER_PAGE, $gname);
-
-$page->smarty->assign('grouplist', $grouplist);
-
-$page->title = "Group List";
-
+$page->title = 'Group List';
 $page->content = $page->smarty->fetch('group-list.tpl');
 $page->render();

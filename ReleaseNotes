@@ -1,16 +1,69 @@
 This file details which changes to the code are in which release version. It is a complement to the ChangeLog file which list *when* changes are made to the dev branch.
 
 
-0.4.21 2015-05-04
-New:
-	* Added X-DNZB-Failure header support.
+0.4.22 2015-06-01
+Added:
+	* Captcha feature.
+	* Collection regexes from issue 1668 (part 1).
+	* Temporary caching for Amazon lookup failures. This prevents a title being repeatedly checked during the same loop.
+	* New cleanup script .../misc/testing/PostProcess/check_previews.php Run without parameters to see usage info.
+	* Matching for "release" and "author" when finding audio name. PR 1686.
+	* Additional audiobook regexes. PR 1689.
+	* DEViANCE and PLAZA to PC Game categorisation.
+	* Thumbnail creation setting.
 
-Changes:
+Changed:
+	* Update documentation.
+	* Removed obsolete files.
+	* Deprecated predb_dump script from the misc tree. Use the predb import and export scripts in .../cli/data instead.
+	* Altered ProcessReleases to better process the set limit. Addresses Issue 1630.
+	* settings.php.example
+		***NOTE*** Update your settings.php file to add the new settings.
+	* Changes to DB.
+	* Removed Rotten Tomatoes quality settings as they are no longer required.
+	* Corrected the RottenTomatoes image url - fixes Issue 1649.
+	* Move files around in misc/testing folder.
+		***NOTE*** this may break any custom scripts you have written.
+	* Refactored all files previously in the .../nzedb/controllers directory (which were NOT namespaced) to be in the /nzedb/ name-space.
+		This allows the namespace autoloader to be simplified and moves us closer to compliance with PSR standards.
+	* Improvements to the way Collections/Binaries/Parts are deleted, which should speed thingsup for some users.
+	* Updated .../cli/data/populate_tvrage.php. PR 1682.
+	* Updated the audioNFO regex to be slightly less rubbish. PR 1685.
+	* Improved release creation loop.
+	* Updated a.b.cd.image collection regex.
+	* Improvements to daytopost accuracy and speed. PR 1698
+
+Fixed:
+	* Renamed $pdo to $predb that was missed in refactoring.
+	* 2 issues with regexes relating to Issues 1635 and 1647.
+	* Fix issues with collection regexes relating to issue 1647.
+		***NOTE*** see http://tinyurl.com/k7vwc35 for details.
+	* Genre display in music pages
+		***NOTE*** Clear your smarty cache to correct.
+	* Popporn error causing XXX to not post process - also fixes Issue 1655.
+	* Notices in various web pages.
+	* Do urldecode before working on category to avoid possible errors. - PR 1669
+	* SABnzbd integration for 'verifycert' behaviour.
+	* An issue where the wrong cookie could be destroyed. PR 1671.
+	* Broken pager on search page. PR 1673.
+	* Some issues with the install process.
+	* Issues with IRCScraper. PR 1681.
+	* Error with GiantBomb API if empty result was returned.
+	* Fix typo in "Admin Home". PR 1688.
+	* Alternate USP not being set in config.php on install. Issue 1695. PR 1696.
+	* Incorrect php opening tag in anime page. PR 1703.
+	* Logged in users can view others profiles. PR 1705 and PR 1709.
+
+0.4.21 2015-05-04
+Added:
+	* X-DNZB-Failure header support.
+
+Changed:
 	* PR 1636 - Added admin menu state changes.
 	* Improved TV Posterwall query.
 	* Increase column sizes for bookinfo.overview, consoleinfo.review and musicinfo.review due to truncation.
 
-Fixes:
+Fixed:
 	* PR 1620 - Switch to fanart.tv v3 api
 	* PR 1623 - Fix oversized fanart images when viewing movie info popup.
 	* Class not found error in Movie.php.
@@ -26,23 +79,23 @@ Fixes:
 
 
 0.4.20 2015-04-06
-New
-	* Added a list of licenses used by nZEDb.
-	* Added support for in DB collections (grouping) regex.
-	* Added "regex" sub-menu to admin menu.
-	* Added a "collections" menu item to the new regex menu.
-	* Added support for category regexes in the DB.
-	* Added support for alt.binaries.b4e.erotica.
-	* Added FULLTEXT indexes on bookinfo, consoleinfo, and musicinfo for better existing title matching.
+Added:
+	* List of licenses used by nZEDb.
+	* Support for in DB collections (grouping) regex.
+	* "regex" sub-menu to admin menu.
+	* A "collections" menu item to the new regex menu.
+	* Support for category regexes in the DB.
+	* Support for alt.binaries.b4e.erotica.
+	* FULLTEXT indexes on bookinfo, consoleinfo, and musicinfo for better existing title matching.
 
-Changes:
+Changed:
 	* Move the blacklist menu into new "Regex" menu item.
 	* Convert collections regex to db.
 	* Better handling of .vol in regex extensions.
 	* Improvements to parsing nfo files for source.
 	* Switch to fanart.tv v3 api
 
-Fixes:
+Fixed:
 	* Correcting tmp_pre table references to predb_imports in dump_predb script.
 	* Fixes for compressed NZB reading and return.
 	* Don't ignore renamed releases for local requestID lookup.
@@ -51,13 +104,13 @@ Fixes:
 
 
 0.4.19	2015-03-02
-New
-	* Add XXX WEB-DL category to XXX releases.
-	* Add XXX-SD category.
+Added:
+	* XXX WEB-DL category to XXX releases.
+	* XXX-SD category.
 		***NOTE*** run "php /misc/testing/Dev/recategorize.php all" to re-categorize existing releases.
-	* Add new XXX categories to posterwall.
+	* New XXX categories to posterwall.
 
-Changes:
+Changed:
 	* Make ReleaseRemover more informative of the type it is processing.
 	* Ignore PC > Mac category for removeExecutable (Core Releases include their exe file for some reason).
 	* Changing defaults for 'show passworded releases' (now shows potentially passworded) and 'NZB split level' (now 4) for new installs.
@@ -67,7 +120,7 @@ Changes:
 	* Changes to install templates.
 	* Updated regex for codec poster.
 
-Fixes:
+Fixed:
 	* RottenTomatoes high-res images - clear your smarty cache.
 	* Group XXX pack releases in a.b.erotica correctly.
 	* Missing binaries from releases due to collection_id not being set.
@@ -82,6 +135,7 @@ Fixes:
 
 0.4.0	2014-09-08 niel
 	NOTE: This version forward targets PHP 5.5 and later.
+
 
 0.3.13	2014-09-01
 	NOTE: This is the last version of nZEDb to target PHP 5.4 which has reached its EOL.

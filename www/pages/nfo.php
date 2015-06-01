@@ -1,6 +1,7 @@
 <?php
 
-use nzedb\utility;
+use nzedb\Releases;
+use nzedb\utility\Utility;
 
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
@@ -16,7 +17,7 @@ if (isset($_GET["id"])) {
 	}
 
 	$nfo = $releases->getReleaseNfo($rel['id']);
-	$nfo['nfoUTF'] = nzedb\utility\Utility::cp437toUTF($nfo['nfo']);
+	$nfo['nfoUTF'] = Utility::cp437toUTF($nfo['nfo']);
 
 	$page->smarty->assign('rel', $rel);
 	$page->smarty->assign('nfo', $nfo);

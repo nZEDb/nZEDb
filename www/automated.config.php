@@ -65,11 +65,17 @@ define('WWW_TOP', $www_top);
 
 define('nZEDb_VERSIONS', nZEDb_LIB . 'build' . DS . 'nZEDb.xml');
 
-if (is_file(__DIR__ . DS . 'settings.php')) {
-	require_once(__DIR__ . DS . 'settings.php');
-	// Remove this in the future, here for those not updating settings.php
-	if (!defined('nZEDb_MAX_PAGER_RESULTS')) {
-		define('nZEDb_MAX_PAGER_RESULTS', '125000');
+$settings_file = __DIR__ . DS . 'settings.php';
+if (is_file($settings_file)) {
+	require_once($settings_file);
+	if (php_sapi_name() == 'cli') {
+		$current_settings_file_version = 2; // Update this when updating settings.php.example
+		if (!defined('nZEDb_SETTINGS_FILE_VERSION') || nZEDb_SETTINGS_FILE_VERSION != $current_settings_file_version) {
+			echo ("\033[0;31mNotice: Your $settings_file file is either out of date or you have not updated" .
+				" nZEDb_SETTINGS_FILE_VERSION to $current_settings_file_version in that file.\033[0m" . PHP_EOL
+			);
+		}
+		unset($current_settings_file_version);
 	}
 } else {
 	define('ITEMS_PER_PAGE', '50');
@@ -98,6 +104,7 @@ if (is_file(__DIR__ . DS . 'settings.php')) {
 	define('nZEDb_RELEASE_SEARCH_TYPE', 0);
 	define('nZEDb_MAX_PAGER_RESULTS', '125000');
 }
+unset($settings_file);
 
 require_once nZEDb_CORE . 'autoloader.php';
 require_once nZEDb_LIBS . 'autoloader.php';

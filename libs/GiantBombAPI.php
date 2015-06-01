@@ -396,7 +396,8 @@ class GiantBomb
 		}
 
 		if (empty($result) || !empty($result->error) && strtoupper($result->error) != "OK") {
-			throw new \GiantBombException("Following error encountered: " . $result->error);
+			$result = !empty($result) ? $result->error : "Empty Result";
+			throw new \GiantBombException("Following error encountered: " . $result);
 		}
 
 		return $result;
