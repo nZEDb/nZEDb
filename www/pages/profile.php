@@ -17,18 +17,18 @@ $publicView = false;
 
 if (!$privateProfiles || $privileged) {
 
-	$altID = (isset($_GET['id'])) ? (int) $_GET['id'] : false;
+	$altID = (isset($_GET['id']) && $_GET['id'] >= 0) ? (int) $_GET['id'] : false;
 	$altUsername = (isset($_GET['name']) && strlen($_GET['name']) > 0) ? $_GET['name'] : false;
 
 	// If both 'id' and 'name' are specified, 'id' should take precedence.
-	if (!$altID && $altUsername) {
+	if ($altID === false && $altUsername) {
 		$user = $page->users->getByUsername($altUsername);
 		if ($user) {
 			$altID = $user['id'];
 		}
 	}
 
-	if ($altID) {
+	if ($altID !== false) {
 		$userid = $altID;
 		$publicView = true;
 	}
