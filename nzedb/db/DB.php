@@ -1,11 +1,14 @@
 <?php
 namespace nzedb\db;
 
-use \nzedb\utility\Utility;
-use \nzedb\libraries\Cache;
-use \nzedb\libraries\CacheException;
+use nzedb\ColorCLI;
+use nzedb\ConsoleTools;
+use nzedb\Logger;
+use nzedb\LoggerException;
+use nzedb\utility\Utility;
+use nzedb\libraries\Cache;
+use nzedb\libraries\CacheException;
 
-//use nzedb\controllers\ColorCLI;
 
 /**
  * Class for handling connection to MySQL database using PDO.
@@ -27,12 +30,12 @@ class DB extends \PDO
 	public $cli;
 
 	/**
-	 * @var object Instance of ConsoleTools class.
+	 * @var object Instance of \nzedb\ConsoleTools class.
 	 */
 	public $ct;
 
 	/**
-	 * @var \ColorCLI	Instance variable for logging object. Currently only ColorCLI supported,
+	 * @var \nzedb\ColorCLI	Instance variable for logging object. Currently only ColorCLI supported,
 	 * but expanding for full logging with agnostic API planned.
 	 */
 	public $log;
@@ -85,6 +88,16 @@ class DB extends \PDO
 	private $cacheEnabled = false;
 
 	/**
+	 * @var string MySQL LOW_PRIORITY DELETE option.
+	 */
+	private $DELETE_LOW_PRIORITY = '';
+
+	/**
+	 * @var string MYSQL QUICK DELETE option.
+	 */
+	private $DELETE_QUICK = '';
+
+	/**
 	 * Constructor. Sets up all necessary properties. Instantiates a PDO object
 	 * if needed, otherwise returns the current one.
 	 *
@@ -97,7 +110,7 @@ class DB extends \PDO
 		$defaults = [
 			'checkVersion'	=> false,
 			'createDb'		=> false, // create dbname if it does not exist?
-			'ct'			=> new \ConsoleTools(),
+			'ct'			=> new ConsoleTools(),
 			'dbhost'		=> defined('DB_HOST') ? DB_HOST : '',
 			'dbname' 		=> defined('DB_NAME') ? DB_NAME : '',
 			'dbpass' 		=> defined('DB_PASSWORD') ? DB_PASSWORD : '',
@@ -105,7 +118,7 @@ class DB extends \PDO
 			'dbsock'		=> defined('DB_SOCKET') ? DB_SOCKET : '',
 			'dbtype'		=> defined('DB_SYSTEM') ? DB_SYSTEM : '',
 			'dbuser' 		=> defined('DB_USER') ? DB_USER : '',
-			'log'			=> new \ColorCLI(),
+			'log'			=> new ColorCLI(),
 			'persist'		=> false,
 		];
 		$options += $defaults;
@@ -140,8 +153,8 @@ class DB extends \PDO
 		$this->_debug = (nZEDb_DEBUG || nZEDb_LOGGING);
 		if ($this->_debug) {
 			try {
-				$this->debugging = new \Logger(['ColorCLI' => $this->log]);
-			} catch (\LoggerException $error) {
+				$this->debugging = new Logger(['ColorCLI' => $this->log]);
+			} catch (LoggerException $error) {
 				$this->_debug = false;
 			}
 		}
@@ -149,6 +162,14 @@ class DB extends \PDO
 
 		if ($this->opts['checkVersion']) {
 			$this->fetchDbVersion();
+		}
+
+		if (defined('nZEDb_SQL_DELETE_LOW_PRIORITY') && nZEDb_SQL_DELETE_LOW_PRIORITY) {
+			$this->DELETE_LOW_PRIORITY = ' LOW_PRIORITY ';
+		}
+
+		if (defined('nZEDb_SQL_DELETE_QUICK') && nZEDb_SQL_DELETE_QUICK) {
+			$this->DELETE_QUICK = ' QUICK ';
 		}
 
 		return $this->pdo;
@@ -226,8 +247,8 @@ class DB extends \PDO
 	{
 		$this->_debug = true;
 		try {
-			$this->debugging = new \Logger(['ColorCLI' => $this->log]);
-		} catch (\LoggerException $error) {
+			$this->debugging = new Logger(['ColorCLI' => $this->log]);
+		} catch (LoggerException $error) {
 			$this->_debug = false;
 		}
 	}
@@ -416,12 +437,8 @@ class DB extends \PDO
 	 */
 	public function queryInsert($query)
 	{
-		if (empty($query)) {
+		if (!$this->parseQuery($query)) {
 			return false;
-		}
-
-		if (nZEDb_QUERY_STRIP_WHITESPACE) {
-			$query = Utility::collapseWhiteSpace($query);
 		}
 
 		$i = 2;
@@ -449,9 +466,26 @@ class DB extends \PDO
 		}
 		if ($this->_debug) {
 			$this->echoError($error, 'queryInsert', 4);
-			$this->debugging->log('\nzedb\db\DB', "queryInsert", $query, \Logger::LOG_SQL);
+			$this->debugging->log('\nzedb\db\DB', "queryInsert", $query, Logger::LOG_SQL);
 		}
 		return false;
+	}
+
+	/**
+	 * Delete rows from MySQL.
+	 *
+	 * @param string $query
+	 * @param bool   $silent Echo or log errors?
+	 *
+	 * @return bool|\PDOStatement
+	 */
+	public function queryDelete($query, $silent = false)
+	{
+		// Accommodate for chained queries (SELECT 1;DELETE x FROM y)
+		if (preg_match('#(.*?[^a-z0-9]|^)DELETE\s+(.+?)$#is', $query, $matches)) {
+			$query = $matches[1] . 'DELETE ' . $this->DELETE_LOW_PRIORITY . $this->DELETE_QUICK . $matches[2];
+		}
+		return $this->queryExec($query, $silent);
 	}
 
 	/**
@@ -464,12 +498,8 @@ class DB extends \PDO
 	 */
 	public function queryExec($query, $silent = false)
 	{
-		if (empty($query)) {
+		if (!$this->parseQuery($query)) {
 			return false;
-		}
-
-		if (nZEDb_QUERY_STRIP_WHITESPACE) {
-			$query = Utility::collapseWhiteSpace($query);
 		}
 
 		$i = 2;
@@ -494,7 +524,7 @@ class DB extends \PDO
 		}
 		if ($silent === false && $this->_debug) {
 			$this->echoError($error, 'queryExec', 4);
-			$this->debugging->log('\nzedb\db\DB', "queryExec", $query, \Logger::LOG_SQL);
+			$this->debugging->log('\nzedb\db\DB', "queryExec", $query, Logger::LOG_SQL);
 		}
 		return false;
 	}
@@ -562,12 +592,8 @@ class DB extends \PDO
 	 */
 	public function exec($query, $silent = false)
 	{
-		if (empty($query)) {
+		if (!$this->parseQuery($query)) {
 			return false;
-		}
-
-		if (nZEDb_QUERY_STRIP_WHITESPACE) {
-			$query = Utility::collapseWhiteSpace($query);
 		}
 
 		try {
@@ -593,7 +619,7 @@ class DB extends \PDO
 				$this->echoError($e->getMessage(), 'Exec', 4, false);
 
 				if ($this->_debug) {
-					$this->debugging->log('\nzedb\db\DB', "Exec", $query, \Logger::LOG_SQL);
+					$this->debugging->log('\nzedb\db\DB', "Exec", $query, Logger::LOG_SQL);
 				}
 			}
 
@@ -613,12 +639,8 @@ class DB extends \PDO
 	 */
 	public function query($query, $cache = false, $cacheExpiry = 600)
 	{
-		if (empty($query)) {
+		if (!$this->parseQuery($query)) {
 			return false;
-		}
-
-		if (nZEDb_QUERY_STRIP_WHITESPACE) {
-			$query = Utility::collapseWhiteSpace($query);
 		}
 
 		if ($cache === true && $this->cacheEnabled === true) {
@@ -700,12 +722,8 @@ class DB extends \PDO
 	 */
 	public function queryDirect($query, $ignore = false)
 	{
-		if (empty($query)) {
+		if (!$this->parseQuery($query)) {
 			return false;
-		}
-
-		if (nZEDb_QUERY_STRIP_WHITESPACE) {
-			$query = Utility::collapseWhiteSpace($query);
 		}
 
 		try {
@@ -730,7 +748,7 @@ class DB extends \PDO
 				if ($ignore === false) {
 					$this->echoError($e->getMessage(), 'queryDirect', 4, false);
 					if ($this->_debug) {
-						$this->debugging->log('\nzedb\db\DB', "queryDirect", $query, \Logger::LOG_SQL);
+						$this->debugging->log('\nzedb\db\DB', "queryDirect", $query, Logger::LOG_SQL);
 					}
 				}
 				$result = false;
@@ -906,7 +924,7 @@ class DB extends \PDO
 
 		}
 		if ($this->_debug) {
-			$this->debugging->log('\nzedb\db\DB', 'optimise', $message, \Logger::LOG_INFO);
+			$this->debugging->log('\nzedb\db\DB', 'optimise', $message, Logger::LOG_INFO);
 		}
 	}
 
@@ -1046,7 +1064,7 @@ class DB extends \PDO
 			$PDOstatement = $this->pdo->prepare($query, $options);
 		} catch (\PDOException $e) {
 			if ($this->_debug) {
-				$this->debugging->log('\nzedb\db\DB', "Prepare", $e->getMessage(), \Logger::LOG_INFO);
+				$this->debugging->log('\nzedb\db\DB', "Prepare", $e->getMessage(), Logger::LOG_INFO);
 			}
 			echo $this->log->error("\n" . $e->getMessage());
 			$PDOstatement = false;
@@ -1069,7 +1087,7 @@ class DB extends \PDO
 				$result = $this->pdo->getAttribute($attribute);
 			} catch (\PDOException $e) {
 				if ($this->_debug) {
-					$this->debugging->log('\nzedb\db\DB', "getAttribute", $e->getMessage(), \Logger::LOG_INFO);
+					$this->debugging->log('\nzedb\db\DB', "getAttribute", $e->getMessage(), Logger::LOG_INFO);
 				}
 				echo $this->log->error("\n" . $e->getMessage());
 				$result = false;
@@ -1113,6 +1131,25 @@ class DB extends \PDO
 			$dummy = explode('-', $result['version'], 2);
 			$this->dbVersion = $dummy[0];
 		}
+	}
+
+	/**
+	 * Checks if the query is empty. Cleans the query of whitespace is needed.
+	 *
+	 * @param reference string $query
+	 *
+	 * @return bool
+	 */
+	private function parseQuery(&$query)
+	{
+		if (empty($query)) {
+			return false;
+		}
+
+		if (nZEDb_QUERY_STRIP_WHITESPACE) {
+			$query = Utility::collapseWhiteSpace($query);
+		}
+		return true;
 	}
 
 }

@@ -1,6 +1,8 @@
 <?php
 
-use \nzedb\db\Settings;
+use nzedb\Users;
+use nzedb\db\Settings;
+use nzedb\Captcha;
 
 if ($page->users->isLoggedIn()) {
 	$page->show404();
@@ -21,58 +23,69 @@ if ($showregister == 0) {
 } else {
 	$action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
 
+	//Be sure to persist the invite code in the event of multiple form submissions. (errors)
+	if (isset($_REQUEST['invitecode'])) {
+		$page->smarty->assign('invite_code_query', '&invitecode='.htmlspecialchars($_REQUEST["invitecode"]));
+	} else {
+		$page->smarty->assign('invite_code_query', '');
+	}
+
+	$captcha = new Captcha($page);
+
 	switch ($action) {
 		case 'submit':
-			$firstName = (isset($_POST['firstname']) ? htmlspecialchars($_POST['firstname']) : '');
-			$lastName = (isset($_POST['lastname']) ? htmlspecialchars($_POST['lastname']) : '');
-			$username = htmlspecialchars($_POST['username']);
-			$password = htmlspecialchars($_POST['password']);
-			$confirmpassword = htmlspecialchars($_POST['confirmpassword']);
-			$email = htmlspecialchars($_POST['email']);
-			$invitecode = htmlspecialchars($_POST["invitecode"]);
+			if ($captcha->getError() === false) {
+				$firstName = (isset($_POST['firstname']) ? htmlspecialchars($_POST['firstname']) : '');
+				$lastName = (isset($_POST['lastname']) ? htmlspecialchars($_POST['lastname']) : '');
+				$username = htmlspecialchars($_POST['username']);
+				$password = htmlspecialchars($_POST['password']);
+				$confirmpassword = htmlspecialchars($_POST['confirmpassword']);
+				$email = htmlspecialchars($_POST['email']);
+				$invitecode = htmlspecialchars($_POST["invitecode"]);
 
-			$page->smarty->assign('username', $username);
-			$page->smarty->assign('firstname', $firstName);
-			$page->smarty->assign('lastname', $lastName);
-			$page->smarty->assign('password', $password);
-			$page->smarty->assign('confirmpassword', $confirmpassword);
-			$page->smarty->assign('email', $email);
-			$page->smarty->assign('invitecode', $invitecode);
+				$page->smarty->assign('username', $username);
+				$page->smarty->assign('firstname', $firstName);
+				$page->smarty->assign('lastname', $lastName);
+				$page->smarty->assign('password', $password);
+				$page->smarty->assign('confirmpassword', $confirmpassword);
+				$page->smarty->assign('email', $email);
+				$page->smarty->assign('invitecode', $invitecode);
 
-			// Check uname/email isn't in use, password valid. If all good create new user account and redirect back to home page.
-			if ($password != $confirmpassword) {
-				$page->smarty->assign('error', "Password Mismatch");
-			} else {
-				// Get the default user role.
-				$userdefault = $page->users->getDefaultRole();
-
-				$ret = $page->users->signUp($username, $firstname, $lastname, $password, $email, $_SERVER['REMOTE_ADDR'], $userdefault['id'], $userdefault['defaultinvites'], $invitecode);
-				if ($ret > 0) {
-					$page->users->login($ret, $_SERVER['REMOTE_ADDR']);
-					header("Location: " . WWW_TOP . "/");
+				// Check uname/email isn't in use, password valid. If all good create new user account and redirect back to home page.
+				if ($password != $confirmpassword) {
+					$page->smarty->assign('error', "Password Mismatch");
 				} else {
-					switch ($ret) {
-						case Users::ERR_SIGNUP_BADUNAME:
-							$page->smarty->assign('error', "Your username must be at least five characters.");
-							break;
-						case Users::ERR_SIGNUP_BADPASS:
-							$page->smarty->assign('error', "Your password must be longer than eight characters.");
-							break;
-						case Users::ERR_SIGNUP_BADEMAIL:
-							$page->smarty->assign('error', "Your email is not a valid format.");
-							break;
-						case Users::ERR_SIGNUP_UNAMEINUSE:
-							$page->smarty->assign('error', "Sorry, the username is already taken.");
-							break;
-						case Users::ERR_SIGNUP_EMAILINUSE:
-							$page->smarty->assign('error', "Sorry, the email is already in use.");
-							break;
-						case Users::ERR_SIGNUP_BADINVITECODE:
-							$page->smarty->assign('error', "Sorry, the invite code is old or has been used.");
-							break;
-						default:
-							$page->smarty->assign('error', "Failed to register.");
-							break;
+					// Get the default user role.
+					$userdefault = $page->users->getDefaultRole();
+
+					$ret = $page->users->signUp($username, $firstname, $lastname, $password, $email, $_SERVER['REMOTE_ADDR'], $userdefault['id'], $userdefault['defaultinvites'], $invitecode);
+					if ($ret > 0) {
+						$page->users->login($ret, $_SERVER['REMOTE_ADDR']);
+						header("Location: " . WWW_TOP . "/");
+					} else {
+						switch ($ret) {
+							case Users::ERR_SIGNUP_BADUNAME:
+								$page->smarty->assign('error', "Your username must be at least five characters.");
+								break;
+							case Users::ERR_SIGNUP_BADPASS:
+								$page->smarty->assign('error', "Your password must be longer than eight characters.");
+								break;
+							case Users::ERR_SIGNUP_BADEMAIL:
+								$page->smarty->assign('error', "Your email is not a valid format.");
+								break;
+							case Users::ERR_SIGNUP_UNAMEINUSE:
+								$page->smarty->assign('error', "Sorry, the username is already taken.");
+								break;
+							case Users::ERR_SIGNUP_EMAILINUSE:
+								$page->smarty->assign('error', "Sorry, the email is already in use.");
+								break;
+							case Users::ERR_SIGNUP_BADINVITECODE:
+								$page->smarty->assign('error', "Sorry, the invite code is old or has been used.");
+								break;
+							default:
+								$page->smarty->assign('error', "Failed to register.");
+								break;
+						}
 					}
 				}
 			}

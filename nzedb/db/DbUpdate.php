@@ -20,9 +20,9 @@
  */
 namespace nzedb\db;
 
-use \nzedb\db\Settings;
-use \nzedb\utility\Git;
-use \nzedb\utility\Utility;
+use nzedb\ColorCLI;
+use nzedb\utility\Git;
+use nzedb\utility\Utility;
 
 
 class DbUpdate
@@ -66,7 +66,7 @@ class DbUpdate
 			'backup' => true,
 			'db'     => null,
 			'git'    => new Git(),
-			'logger' => new \ColorCLI(),
+			'logger' => new ColorCLI(),
 		];
 		$options += $defaults;
 		unset($defaults);
@@ -179,8 +179,8 @@ class DbUpdate
 							   $matches['table'] . '.sql';
 					rename($matches[0], $newName);
 					$this->git->add($newName);
-					if ($this->git->isCommited($matches[0])) {
-						$this->git->run("add -uv {$matches[0]}"); // add updates to old filename, this should remove the temp file from the index.
+					if ($this->git->isCommited($this->git->getBranch() . ':' . $matches[0])) {
+						$this->git->rm("{$matches[0]}"); // remove old filename from the index.
 					}
 				}
 			}

@@ -1,5 +1,8 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
+
+use nzedb\IRCScraper;
+
 if (!is_file(nZEDb_ROOT . 'misc/testing/IRCScraper/settings.php')) {
 	exit('Copy settings_example.php to settings.php and change the settings.' . PHP_EOL);
 }
@@ -31,4 +34,4 @@ $silent = ((isset($argv[2]) && $argv[2] === 'true') ? true : false);
 $debug = ((isset($argv[3]) && $argv[3] === 'true') ? true : false);
 
 // Start scraping.
-new \IRCScraper($silent, $debug);
+new IRCScraper($silent, $debug);

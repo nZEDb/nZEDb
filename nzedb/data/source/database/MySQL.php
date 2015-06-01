@@ -22,7 +22,7 @@ namespace nzedb\data\model\source\database;
 use \PDO;
 use \PDOException;
 
-use \nzedb\data\source\Database;
+use nzedb\data\source\Database;
 
 /**
  * Extends the `Database` class to implement the necessary SQL-formatting and resultset-fetching

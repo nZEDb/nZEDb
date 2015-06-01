@@ -1,4 +1,9 @@
 <?php
+
+use nzedb\Category;
+use nzedb\Console;
+use nzedb\Genres;
+
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }

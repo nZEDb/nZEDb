@@ -1,6 +1,6 @@
 <?php
 
-use \nzedb\db\Settings;
+use nzedb\db\Settings;
 
 if (is_file("config.php")) {
 	require_once './config.php';

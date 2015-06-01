@@ -41,7 +41,7 @@ if ($tvshows !== false) {
 if ($updated != 0) {
 	echo $pdo->log->info("Inserted " . $updated .
 						 " new shows into the TvRage table.  To fill out the newly populated TvRage table\n"
-						 . "php misc/testing/PostProc/updateTvRage.php\n");
+						 . "php misc/testing/PostProcess/updateTvRage.php\n");
 } else {
 	echo "\n";
 	echo $pdo->log->info("TvRage database is already up to date!\n");

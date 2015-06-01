@@ -1,6 +1,9 @@
 <?php
 require_once './config.php';
 
+use nzedb\Console;
+use nzedb\Genres;
+
 $page    = new AdminPage();
 $console = new Console(['Settings' => $page->settings]);
 $gen     = new Genres(['Settings' => $page->settings]);

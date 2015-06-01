@@ -2,6 +2,8 @@
 
 require_once './config.php';
 
+use nzedb\Logger;
+
 $page        = new AdminPage();
 $page->title = 'View Logs';
 

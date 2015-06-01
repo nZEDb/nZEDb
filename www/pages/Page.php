@@ -1,6 +1,11 @@
 <?php
 /* This is a smarty/www file and should be moved to the nZEDb_WWW/pages directory? */
 
+use nzedb\Category;
+use nzedb\Contents;
+use nzedb\Menu;
+use nzedb\Users;
+
 class Page extends BasePage
 {
 	public function __construct()
@@ -30,7 +35,7 @@ class Page extends BasePage
 		}
 
 		// Add in system types to console categories to make the boot strap drop down list less long.
-		$consoleCatList = array();
+		$consoleCatList = [];
 		foreach ($parentcatlist as $parent) {
 			if ($parent['title'] === 'Console') {
 				foreach ($parent['subcatlist'] as $consoleCat) {

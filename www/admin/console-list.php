@@ -1,6 +1,8 @@
 <?php
 require_once './config.php';
 
+use nzedb\Console;
+
 $page = new AdminPage();
 $con  = new Console(['Settings' => $page->settings]);
 

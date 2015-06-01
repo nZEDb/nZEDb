@@ -1,4 +1,8 @@
 <?php
+
+use nzedb\Contents;
+use nzedb\SiteMap;
+
 $te = $page->smarty;
 $arPages = array();
 $arPages[] = buildURL("Home", "Home Page", "/", 'daily', '1.0');

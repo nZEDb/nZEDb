@@ -1,4 +1,7 @@
 <?php
+
+use nzedb\Movie;
+
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
@@ -16,7 +19,7 @@ $page->smarty->assign('cpurl', $cpurl);
 
 $data = $m->getUpcoming($_GET["id"]);
 //print_r(json_decode($data["info"])->movies);die();
-if ($data["info"] == "") {
+if (!$data || $data["info"] == "") {
 	$page->smarty->assign("nodata", "No upcoming data.");
 } else {
 
@@ -53,20 +56,18 @@ if ($data["info"] == "") {
 }
 
 /**
- * Replace _tmb.jpg with user setting from site edit.
+ * extract just the cloudfront image url.
  *
  * @param string $imageURL    The url to change.
- * @param string $userSetting The users's setting.
  *
  * @return string
  */
-function replace_quality($imageURL, $userSetting)
+function replace_url($imageURL)
 {
-	$types = ['thumbnail' => '_tmb.', 'profile' => '_pro.', 'detailed' => '_det.', 'original' => '_ori.'];
 	return preg_replace(
-		'#http://resizing\.flixster\.com(/[\w=+-]+){3}\.cloudfront\.net#i',
-		'https://content6.flixster.com',
-		str_replace('_ori.', $types[$userSetting], $imageURL)
+		'/^.*?\/[\d]+x[\d]+\//',
+		'https://',
+		$imageURL
 	);
 }
 

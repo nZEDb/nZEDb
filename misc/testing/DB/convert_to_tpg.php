@@ -1,6 +1,8 @@
 <?php
 require_once(dirname(__FILE__) . '/../../../www/config.php');
 
+use nzedb\ConsoleTools;
+use nzedb\Groups;
 use nzedb\db\Settings;
 
 /* This script will allow you to move from single collections/binaries/parts tables to TPG without having to run reset_truncate.
@@ -12,8 +14,8 @@ use nzedb\db\Settings;
  */
 $debug = false;
 $pdo = new Settings();
-$groups = new \Groups(['Settings' => $pdo]);
-$consoletools = new \ConsoleTools(['ColorCLI' => $pdo->log]);
+$groups = new Groups(['Settings' => $pdo]);
+$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 $DoPartRepair = ($pdo->getSetting('partrepair') == '0') ? false : true;
 
 if ((!isset($argv[1])) || $argv[1] != 'true') {

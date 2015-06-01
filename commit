@@ -1,4 +1,6 @@
-#!/usr/bin/env bash
+#!/bin/sh
+
+EXIT_STATUS=0
 
 # Add changes.
 git add -i
@@ -8,6 +10,15 @@ nano Changelog
 
 # Add changes to changelog.
 git add Changelog
+
+php build/NewPatches.php
+
+EXIT_STATUS=$?
+
+if [ ${EXIT_STATUS} -gt 0 ]
+then
+	exit ${EXIT_STATUS}
+fi
 
 # Commit changes.
 git commit

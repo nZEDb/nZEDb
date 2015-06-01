@@ -1,6 +1,8 @@
 <?php
 require_once './config.php';
 
+use nzedb\Releases;
+
 $page     = new AdminPage();
 $releases = new Releases(['Settings' => $page->settings]);
 

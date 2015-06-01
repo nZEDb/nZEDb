@@ -163,7 +163,7 @@
 				<div class="{if $site->menuposition == 1 or $site->menuposition == 0}col-xs-10{else}col-xs-12{/if}">
 					<div class="panel nzedb-panel">
 						<div class="panel-heading nzedb-panel-heading">
-							<h3 class="panel-title"><strong>{$page->meta_title|regex_replace:'/Nzbs/i':$catname|escape:"htmlall"}</strong></h3>
+							<h3 class="panel-title"><strong>{if isset($catname)}{$page->meta_title|regex_replace:'/Nzbs/i':$catname|escape:"htmlall"}{else}{$page->meta_title|escape:"htmlall"}{/if}</strong></h3>
 						</div><!--/.panel-heading -->
 						<div class="panel-body grey-frame">
 							<div class="grey-box">

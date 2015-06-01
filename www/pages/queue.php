@@ -1,4 +1,8 @@
 <?php
+
+use nzedb\NZBGet;
+use nzedb\SABnzbd;
+
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }

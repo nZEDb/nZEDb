@@ -1,6 +1,8 @@
 <?php
 require_once './config.php';
 
+use nzedb\Category;
+
 $page = new AdminPage();
 $category = new Category(['Settings' => $page->settings]);
 $id = 0;

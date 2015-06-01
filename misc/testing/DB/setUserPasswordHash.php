@@ -8,6 +8,7 @@
  */
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
+use nzedb\Users;
 use nzedb\db\Settings;
 
 $pdo = new Settings();
@@ -38,7 +39,7 @@ $user = $pdo->queryOneRow(
 );
 
 if ($user !== false) {
-	$users = new \Users(['Settings' => $pdo]);
+	$users = new Users(['Settings' => $pdo]);
 	$hash = $users->hashPassword($password);
 	$result = false;
 	if ($hash !== false) {

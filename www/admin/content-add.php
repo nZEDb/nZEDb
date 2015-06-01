@@ -1,6 +1,10 @@
 <?php
 require_once './config.php';
 
+use nzedb\Content;
+use nzedb\Contents;
+use nzedb\Users;
+
 $page     = new AdminPage();
 $contents = new Contents(['Settings' => $page->settings]);
 $id       = 0;

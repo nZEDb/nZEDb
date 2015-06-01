@@ -1,289 +1,142 @@
 <?php
 
+use nzedb\Category;
+use nzedb\Groups;
+use nzedb\ReleaseSearch;
+use nzedb\Releases;
+
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
-$grp      = new Groups(['Settings' => $page->settings]);
-$releases = new Releases(['Groups' => $grp, 'Settings' => $page->settings]);
-$c        = new Category(['Settings' => $page->settings]);
+$groups      = new Groups(['Settings' => $page->settings]);
+$releases = new Releases(['Groups' => $groups, 'Settings' => $page->settings]);
 
 $page->meta_title       = "Search Nzbs";
 $page->meta_keywords    = "search,nzb,description,details";
 $page->meta_description = "Search for Nzbs";
 
 $results    = [];
-$searchtype = "basic";
-$searchStr  = "";
 
+$searchType = "basic";
 if (isset($_REQUEST["search_type"]) && $_REQUEST["search_type"] == "adv") {
-	$searchtype = "advanced";
+	$searchType = "advanced";
 }
 
-if (isset($_REQUEST["id"]) && !isset($_REQUEST["searchadvr"]) && !isset($_REQUEST["subject"])) {
-	$offset   = (isset($_REQUEST["offset"]) && ctype_digit($_REQUEST['offset'])) ?
-		$_REQUEST["offset"] : 0;
-	$ordering = $releases->getBrowseOrdering();
-	$orderby  = isset($_REQUEST["ob"]) && in_array($_REQUEST['ob'], $ordering) ? $_REQUEST["ob"] : '';
+$ordering = $releases->getBrowseOrdering();
+$orderBy  = (isset($_REQUEST["ob"]) && in_array($_REQUEST['ob'], $ordering) ? $_REQUEST["ob"] : '');
+$offset   = (isset($_REQUEST["offset"]) && ctype_digit($_REQUEST['offset'])) ? $_REQUEST["offset"] : 0;
 
-	if ($searchtype == "basic") {
-		$searchStr  = (string)$_REQUEST["id"];
-		$categoryId = [];
-		if (isset($_REQUEST["t"])) {
-			$categoryId = explode(",", $_REQUEST["t"]);
-		} else {
-			$categoryId[] = -1;
-		}
+$page->smarty->assign(
+	[
+		'subject' => '', 'search' => '', 'category' => [0], 'pagertotalitems' => 0,
+		'pageritemsperpage' => 1, 'pageroffset' => 1, 'covgroup' => ''
+	]
+);
 
-		foreach ($ordering as $ordertype) {
-			$page->smarty->assign('orderby' . $ordertype,
-								  WWW_TOP . "/search/" . htmlentities($searchStr) . "?t=" .
-								  (implode(',', $categoryId)) . "&amp;ob=" . $ordertype);
-		}
+if ((isset($_REQUEST["id"]) || isset($_REQUEST["subject"])) && !isset($_REQUEST["searchadvr"]) && $searchType == "basic") {
 
-		$page->smarty->assign('category', $categoryId);
-		$page->smarty->assign('pagerquerybase',
-							  WWW_TOP . "/search/" . htmlentities($searchStr) . "?t=" .
-							  (implode(',', $categoryId)) . "&amp;ob=" . $orderby . "&amp;offset=");
-		$page->smarty->assign('search', $searchStr);
-		if (isset ($_REQUEST['subject'])) {
-			$page->smarty->assign('subject', $_REQUEST['subject']);
-		}
-		$results = $releases->search($searchStr,
-									 -1,
-									 -1,
-									 -1,
-									 -1,
-									 -1,
-									 0,
-									 0,
-									 -1,
-									 -1,
-									 $offset,
-									 ITEMS_PER_PAGE,
-									 $orderby,
-									 -1,
-									 $page->userdata["categoryexclusions"],
-									 "basic",
-									 $categoryId);
+	$searchString = '';
+	switch (true) {
+		case isset($_REQUEST["subject"]):
+			$searchString = (string) $_REQUEST["subject"];
+			$page->smarty->assign('subject', $searchString);
+			break;
+		case isset($_REQUEST["id"]):
+			$searchString =(string) $_REQUEST["id"];
+			$page->smarty->assign('search', $searchString);
+			break;
 	}
 
-	$page->smarty->assign('lastvisit', $page->userdata['lastlogin']);
-	if (sizeof($results) > 0) {
-		$totalRows = $results[0]['_totalrows'];
-	} else {
-		$totalRows = 0;
+	$categoryID[] = -1;
+	if (isset($_REQUEST['t'])) {
+		$categoryID = explode(',', $_REQUEST['t']);
+	}
+	foreach ($releases->getBrowseOrdering() as $orderType) {
+		$page->smarty->assign(
+			"orderby$orderType",
+			WWW_TOP . '/search/' . htmlentities($searchString) . '?t=' . (implode(',', $categoryID)) . "&amp;ob=$orderType"
+		);
 	}
 
-	$page->smarty->assign('pagertotalitems', $totalRows);
-	$page->smarty->assign('pageroffset', $offset);
-	$page->smarty->assign('pageritemsperpage', ITEMS_PER_PAGE);
-	$page->smarty->assign('pagerquerysuffix', "#results");
+	$results = $releases->search(
+		$searchString, -1, -1, -1, -1, -1, 0, 0, -1, -1, $offset, ITEMS_PER_PAGE,
+		$orderBy, -1, $page->userdata["categoryexclusions"], "basic", $categoryID
+	);
 
-	$pager = $page->smarty->fetch("pager.tpl");
-	$page->smarty->assign('pager', $pager);
+	$page->smarty->assign(
+		[
+			'lastvisit' => $page->userdata['lastlogin'],
+			'pagertotalitems' => (count($results) > 0 ? $results[0]['_totalrows'] : 0),
+			'pageroffset' => $offset,
+			'pageritemsperpage' => ITEMS_PER_PAGE,
+			'pagerquerysuffix' => "#results",
+			'pagerquerybase' =>
+				WWW_TOP . "/search/" . htmlentities($searchString) . "?t=" .
+				(implode(',', $categoryID)) . "&amp;ob=$orderBy&amp;offset=",
+			'category' => $categoryID
+		]
+	);
+
 }
 
-if (isset($_REQUEST["subject"]) && !isset($_REQUEST["searchadvr"]) && !isset($_REQUEST["id"])) {
-	$offset   = (isset($_REQUEST["offset"]) && ctype_digit($_REQUEST['offset'])) ?
-		$_REQUEST["offset"] : 0;
-	$ordering = $releases->getBrowseOrdering();
-	$orderby  = isset($_REQUEST["ob"]) && in_array($_REQUEST['ob'], $ordering) ? $_REQUEST["ob"] : '';
-
-	if ($searchtype == "basic") {
-		$searchStr = (string)$_REQUEST["subject"];
-
-		$categoryId = [];
-		if (isset($_REQUEST["t"])) {
-			$categoryId = explode(",", $_REQUEST["t"]);
-		} else {
-			$categoryId[] = -1;
-		}
-
-		foreach ($ordering as $ordertype) {
-			$page->smarty->assign('orderby' . $ordertype,
-								  WWW_TOP . "/search/" . htmlentities($searchStr) . "?t=" .
-								  (implode(',', $categoryId)) . "&amp;ob=" . $ordertype);
-		}
-
-		$page->smarty->assign('category', $categoryId);
-		$page->smarty->assign('pagerquerybase',
-							  WWW_TOP . "/search/" . htmlentities($searchStr) . "?t=" .
-							  (implode(',', $categoryId)) . "&amp;ob=" . $orderby . "&amp;offset=");
-		$page->smarty->assign('subject', $searchStr);
-		$results = $releases->search($searchStr,
-									 -1,
-									 -1,
-									 -1,
-									 -1,
-									 -1,
-									 0,
-									 0,
-									 -1,
-									 -1,
-									 $offset,
-									 ITEMS_PER_PAGE,
-									 $orderby,
-									 -1,
-									 $page->userdata["categoryexclusions"],
-									 "basic",
-									 $categoryId);
-	}
-
-	$page->smarty->assign('lastvisit', $page->userdata['lastlogin']);
-	if (sizeof($results) > 0) {
-		$totalRows = $results[0]['_totalrows'];
-	} else {
-		$totalRows = 0;
-	}
-
-	$page->smarty->assign('pagertotalitems', $totalRows);
-	$page->smarty->assign('pageroffset', $offset);
-	$page->smarty->assign('pageritemsperpage', ITEMS_PER_PAGE);
-	$page->smarty->assign('pagerquerysuffix', "#results");
-
-	$pager = $page->smarty->fetch("pager.tpl");
-	$page->smarty->assign('pager', $pager);
-}
-
-if (isset($_REQUEST["searchadvr"]) && !isset($_REQUEST["id"]) && !isset($_REQUEST["subject"])) {
-	$offset   = (isset($_REQUEST["offset"]) && ctype_digit($_REQUEST['offset'])) ?
-		$_REQUEST["offset"] : 0;
-	$ordering = $releases->getBrowseOrdering();
-	$orderby  = isset($_REQUEST["ob"]) && in_array($_REQUEST['ob'], $ordering) ? $_REQUEST["ob"] : '';
-
-	if ($searchtype !== "basic") {
-
-		$searchSearchName  = (string)$_REQUEST["searchadvr"];
-		$searchUsenetName  = (string)$_REQUEST["searchadvsubject"];
-		$searchPoster      = (string)$_REQUEST["searchadvposter"];
-		$searchdaysnew     = (string)$_REQUEST["searchadvdaysnew"];
-		$searchdaysold     = (string)$_REQUEST["searchadvdaysold"];
-		$searchGroups      = (string)$_REQUEST["searchadvgroups"];
-		$searchCat         = (string)$_REQUEST["searchadvcat"];
-		$searchSizeFrom    = (string)$_REQUEST["searchadvsizefrom"];
-		$searchSizeTo      = (string)$_REQUEST["searchadvsizeto"];
-		$searchHasNFO      = (string)$_REQUEST["searchadvhasnfo"];
-		$searchHascomments = (string)$_REQUEST["searchadvhascomments"];
-
-		$page->smarty->assign('searchadvr', $searchSearchName);
-		$page->smarty->assign('searchadvsubject', $searchUsenetName);
-		$page->smarty->assign('searchadvposter', $searchPoster);
-		$page->smarty->assign('searchadvdaysnew', $searchdaysnew);
-		$page->smarty->assign('searchadvdaysold', $searchdaysold);
-		$page->smarty->assign('selectedgroup', $searchGroups);
-		$page->smarty->assign('selectedcat', $searchCat);
-		$page->smarty->assign('selectedsizefrom', $searchSizeFrom);
-		$page->smarty->assign('selectedsizeto', $searchSizeTo);
-		$page->smarty->assign('searchadvhasnfo', $searchHasNFO);
-		$page->smarty->assign('searchadvhascomments', $searchHascomments);
-		foreach ($ordering as $ordertype) {
-			$page->smarty->assign('orderby' . $ordertype,
-								  WWW_TOP . "/search?searchadvr=" .
-								  htmlentities($searchSearchName) . "&searchadvsubject=" .
-								  htmlentities($searchUsenetName) . "&searchadvposter=" .
-								  htmlentities($searchPoster) . "&searchadvdaysnew=" .
-								  htmlentities($searchdaysnew) . "&searchadvdaysold=" .
-								  htmlentities($searchdaysold) . "&searchadvgroups=" .
-								  htmlentities($searchGroups) . "&searchadvcat=" .
-								  htmlentities($searchCat) . "&searchadvsizefrom=" .
-								  htmlentities($searchSizeFrom) . "&searchadvsizeto=" .
-								  htmlentities($searchSizeTo) . "&searchadvhasnfo=" .
-								  htmlentities($searchHasNFO) . "&searchadvhascomments=" .
-								  htmlentities($searchHascomments) . "&search_type=adv" .
-								  "&amp;ob=" . $ordertype);
-		}
-
-		$page->smarty->assign('pagerquerybase',
-							  WWW_TOP . "/search?searchadvr=" . htmlentities($searchSearchName) .
-							  "&searchadvsubject=" . htmlentities($searchUsenetName) .
-							  "&searchadvposter=" . htmlentities($searchPoster) .
-							  "&searchadvdaysnew=" . htmlentities($searchdaysnew) .
-							  "&searchadvdaysold=" . htmlentities($searchdaysold) .
-							  "&searchadvgroups=" . htmlentities($searchGroups) . "&searchadvcat=" .
-							  htmlentities($searchCat) . "&searchadvsizefrom=" .
-							  htmlentities($searchSizeFrom) . "&searchadvsizeto=" .
-							  htmlentities($searchSizeTo) . "&searchadvhasnfo=" .
-							  htmlentities($searchHasNFO) . "&searchadvhascomments=" .
-							  htmlentities($searchHascomments) . "&search_type=adv" . "&amp;ob=" .
-							  $orderby . "&amp;offset=");
-		if ($_REQUEST["searchadvr"] == "") {
-			$searchSearchName = -1;
-		}
-		if ($_REQUEST["searchadvsubject"] == "") {
-			$searchUsenetName = -1;
-		}
-		if ($_REQUEST["searchadvposter"] == "") {
-			$searchPoster = -1;
-		}
-		if ($_REQUEST["searchadvdaysnew"] == "") {
-			$searchdaysnew = -1;
-		}
-		if ($_REQUEST["searchadvdaysold"] == "") {
-			$searchdaysold = -1;
-		}
-		if ($_REQUEST["searchadvcat"] == "") {
-			$searchCat = -1;
-		}
-		$results = $releases->search($searchSearchName,
-									 $searchUsenetName,
-									 $searchPoster,
-									 $searchGroups,
-									 $searchSizeFrom,
-									 $searchSizeTo,
-									 $searchHasNFO,
-									 $searchHascomments,
-									 $searchdaysnew,
-									 $searchdaysold,
-									 $offset,
-									 ITEMS_PER_PAGE,
-									 $orderby,
-									 -1,
-									 $page->userdata["categoryexclusions"],
-									 "advanced",
-									 [$searchCat]);
-	}
-
-	$page->smarty->assign('lastvisit', $page->userdata['lastlogin']);
-	if (sizeof($results) > 0) {
-		$totalRows = $results[0]['_totalrows'];
-	} else {
-		$totalRows = 0;
-	}
-
-	$page->smarty->assign('pagertotalitems', $totalRows);
-	$page->smarty->assign('pageroffset', $offset);
-	$page->smarty->assign('pageritemsperpage', ITEMS_PER_PAGE);
-	$page->smarty->assign('pagerquerysuffix', "#results");
-
-	$pager = $page->smarty->fetch("pager.tpl");
-	$page->smarty->assign('pager', $pager);
-}
-
-$grouplist = $grp->getGroupsForSelect();
-$page->smarty->assign('grouplist', $grouplist);
-
-$catlist = $c->getForSelect();
-$page->smarty->assign('catlist', $catlist);
-
-$sizelist = [
-	-1 => '--Select--',
-	1  => '100MB',
-	2  => '250MB',
-	3  => '500MB',
-	4  => '1GB',
-	5  => '2GB',
-	6  => '3GB',
-	7  => '4GB',
-	8  => '8GB',
-	9  => '16GB',
-	10 => '32GB',
-	11 => '64GB'
+$searchVars = [
+	'searchadvr' => '', 'searchadvsubject' => '', 'searchadvposter' => '',
+	'searchadvdaysnew' => '', 'searchadvdaysold' => '', 'searchadvgroups' => '',
+	'searchadvcat' => '', 'searchadvsizefrom' => '', 'searchadvsizeto' => '',
+	'searchadvhasnfo' => '', 'searchadvhascomments' => ''
 ];
 
-$page->smarty->assign('sizelist', $sizelist);
-$page->smarty->assign('results', $results);
-$page->smarty->assign('sadvanced', ($searchtype != "basic"));
+foreach($searchVars as $searchVarKey => $searchVar) {
+	$searchVars[$searchVarKey] = (isset($_REQUEST[$searchVarKey]) ? (string) $_REQUEST[$searchVarKey] : '');
+}
+
+$searchVars['selectedgroup'] = $searchVars['searchadvgroups'];
+$searchVars['selectedcat'] = $searchVars['searchadvcat'];
+$searchVars['selectedsizefrom'] = $searchVars['searchadvsizefrom'];
+$searchVars['selectedsizeto'] = $searchVars['searchadvsizeto'];
+foreach($searchVars as $searchVarKey => $searchVar) {
+	$page->smarty->assign($searchVarKey, $searchVars[$searchVarKey]);
+}
+
+if (isset($_REQUEST["searchadvr"]) && !isset($_REQUEST["id"]) && !isset($_REQUEST["subject"]) && $searchType != "basic") {
+
+	$orderByString = '';
+	foreach ($searchVars as $searchVarKey => $searchVar) {
+		$orderByString .= "&$searchVarKey=" . htmlentities($searchVar);
+	}
+	$orderByString = ltrim($orderByString, '&');
+
+	foreach ($ordering as $orderType) {
+		$page->smarty->assign(
+			'orderby' . $orderType,
+			WWW_TOP . "/search?$orderByString&search_type=adv&amp;ob=$orderType"
+		);
+	}
+
+	$results = $releases->search(
+		($searchVars['searchadvr'] == '' ? -1 : $searchVars['searchadvr']),
+		($searchVars['searchadvsubject'] == '' ? -1 : $searchVars['searchadvsubject']),
+		($searchVars['searchadvposter'] == '' ? -1 : $searchVars['searchadvposter']),
+		$searchVars['searchadvgroups'], $searchVars['searchadvsizefrom'], $searchVars['searchadvsizeto'],
+		$searchVars['searchadvhasnfo'], $searchVars['searchadvhascomments'],
+		($searchVars['searchadvdaysnew'] == '' ? -1 : $searchVars['searchadvdaysnew']),
+		($searchVars['searchadvdaysold'] == '' ? -1 : $searchVars['searchadvdaysold']),
+		$offset, ITEMS_PER_PAGE, $orderBy, -1, $page->userdata["categoryexclusions"], "advanced",
+		[($searchVars['searchadvcat'] == '' ? -1 : $searchVars['searchadvcat'])]
+	);
+
+	$page->smarty->assign(
+		[
+			'lastvisit' => $page->userdata['lastlogin'],
+			'pagertotalitems' => (count($results) > 0 ? $results[0]['_totalrows'] : 0),
+			'pageroffset' => $offset,
+			'pageritemsperpage' => ITEMS_PER_PAGE,
+			'pagerquerysuffix' => "#results",
+			'pagerquerybase' => WWW_TOP . "/search?$orderByString&search_type=adv&amp;ob=$orderBy&amp;offset="
+		]
+	);
+}
 
 $ft1 = $page->settings->checkIndex('releases', 'ix_releases_name_searchname_ft');
 $ft2 = $page->settings->checkIndex('releases', 'ix_releases_name_ft');
@@ -319,7 +172,20 @@ You can enclose words using paranthesis. ie: (^game*|^dex*)s03*(x264<&lt;nogrp$)
 You can combine some of these rules, but not all.<br />';
 		break;
 }
-$page->smarty->assign('search_description', $search_description);
+
+$page->smarty->assign(
+	[
+		'sizelist' => [
+			-1 => '--Select--', 1  => '100MB', 2  => '250MB', 3  => '500MB', 4  => '1GB', 5  => '2GB',
+			6  => '3GB', 7  => '4GB', 8  => '8GB', 9  => '16GB', 10 => '32GB', 11 => '64GB'
+		],
+		'results' => $results, 'sadvanced' => ($searchType != "basic"),
+		'grouplist' => $groups->getGroupsForSelect(),
+		'catlist' => (new Category(['Settings' => $page->settings]))->getForSelect(),
+		'search_description' => $search_description,
+		'pager' => $page->smarty->fetch("pager.tpl")
+	]
+);
 
 $page->content = $page->smarty->fetch('search.tpl');
 $page->render();

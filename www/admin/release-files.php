@@ -1,6 +1,10 @@
 <?php
 require_once './config.php';
 
+use nzedb\Releases;
+use nzedb\NZB;
+use nzedb\utility\Utility;
+
 $page = new AdminPage;
 
 if (!$page->users->isLoggedIn()) {
@@ -20,7 +24,7 @@ if (isset($_GET['id'])) {
 		$page->show404();
 	}
 
-	$nzbFile = nzedb\utility\Utility::unzipGzipFile($nzbPath);
+	$nzbFile = Utility::unzipGzipFile($nzbPath);
 
 	$files = $nzb->nzbFileList($nzbFile);
 

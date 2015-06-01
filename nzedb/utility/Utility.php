@@ -1,8 +1,8 @@
 <?php
 namespace nzedb\utility;
 
-
-use \nzedb\db\Settings;
+use nzedb\ColorCLI;
+use nzedb\db\Settings;
 
 
 /*
@@ -16,7 +16,30 @@ class Utility
 	 */
 	const PATH_REGEX = '(?P<drive>[A-Za-z]:|)(?P<path>[\\/\w .-]+|)';
 
-	static public function clearScreen()
+	/**
+	 * Checks all levels of the supplied path are readable and executable by current user.
+	 *
+	 * @todo Make this recursive with a switch to only check end point.
+	 * @param $path	*nix path to directory or file
+	 *
+	 * @return bool|string True is successful, otherwise the part of the path that failed testing.
+	 */
+	public static function canExecuteRead($path)
+	{
+		$paths = preg_split('#/#', $path);
+		$fullPath = DS;
+		foreach ($paths as $path) {
+			if ($path !== '') {
+				$fullPath .= $path . DS;
+				if (!is_readable($fullPath) || !is_executable($fullPath)) {
+					return "The '$fullPath' directory must be readable and executable by all ." .PHP_EOL;
+				}
+			}
+		}
+		return true;
+	}
+
+	public static function clearScreen()
 	{
 		if (self::isCLI()) {
 			if (self::isWin()) {
@@ -37,7 +60,7 @@ class Utility
 	 * @static
 	 * @access public
 	 */
-	static public function collapseWhiteSpace($text)
+	public static function collapseWhiteSpace($text)
 	{
 		// Strip leading/trailing white space.
 		return trim(
@@ -61,7 +84,7 @@ class Utility
 	 * @static
 	 * @access public
 	 */
-	static public function curlSslContextOptions($verify = true)
+	public static function curlSslContextOptions($verify = true)
 	{
 		$options = [];
 		if ($verify && nZEDb_SSL_VERIFY_HOST) {
@@ -95,7 +118,7 @@ class Utility
 	 *
 	 * @return string
 	 */
-	static public function cutStringUsingLast($character, $string, $side, $keepCharacter = true)
+	public static function cutStringUsingLast($character, $string, $side, $keepCharacter = true)
 	{
 		$offset = ($keepCharacter ? 1 : 0);
 		$wholeLength = strlen($string);
@@ -149,7 +172,7 @@ class Utility
 	 *
 	 * @return array    Always returns array of path-names in unix format (even on Windows).
 	 */
-	static public function getDirFiles(array $options = null)
+	public static function getDirFiles(array $options = null)
 	{
 		$defaults = [
 			'dir'   => false,
@@ -194,7 +217,7 @@ class Utility
 	 * @access public
 	 * @static
 	 */
-	static public function getUrl(array $options = [])
+	public static function getUrl(array $options = [])
 	{
 		$defaults = [
 			'url'        => '', // The URL to download.
@@ -280,7 +303,7 @@ class Utility
 		}
 	}
 
-	static public function getValidVersionsFile()
+	public static function getValidVersionsFile()
 	{
 		$versions = new Versions();
 
@@ -294,7 +317,7 @@ class Utility
 	 *
 	 * @return bool|null Returns true if found, false if not found, and null if which is not detected.
 	 */
-	static public function hasCommand($cmd)
+	public static function hasCommand($cmd)
 	{
 		if (HAS_WHICH) {
 			$returnVal = shell_exec("which $cmd");
@@ -308,7 +331,7 @@ class Utility
 	/**
 	 * Check for availability of which command
 	 */
-	static public function hasWhich()
+	public static function hasWhich()
 	{
 		exec('which which', $output, $error);
 
@@ -320,12 +343,12 @@ class Utility
 	 *
 	 * @return bool
 	 */
-	static public function isCLI()
+	public static function isCLI()
 	{
 		return ((strtolower(PHP_SAPI) === 'cli') ? true : false);
 	}
 
-	static public function isGZipped($filename)
+	public static function isGZipped($filename)
 	{
 		$gzipped = null;
 		if (($fp = fopen($filename, 'r')) !== false) {
@@ -342,7 +365,7 @@ class Utility
 		return ($gzipped);
 	}
 
-	static public function isPatched(Settings $pdo = null)
+	public static function isPatched(Settings $pdo = null)
 	{
 		$versions = self::getValidVersionsFile();
 
@@ -357,7 +380,7 @@ class Utility
 			$message = "\nYour database is not up to date. Reported patch levels\n   Db: $patch\nfile: $ver\nPlease update.\n php " .
 				nZEDb_ROOT . "cli/update_db.php true\n";
 			if (self::isCLI()) {
-				echo (new \ColorCLI())->error($message);
+				echo (new ColorCLI())->error($message);
 			}
 			throw new \RuntimeException($message);
 		}
@@ -365,12 +388,12 @@ class Utility
 		return true;
 	}
 
-	static public function isWin()
+	public static function isWin()
 	{
 		return (strtolower(substr(PHP_OS, 0, 3)) === 'win');
 	}
 
-	static public function setCoversConstant($path)
+	public static function setCoversConstant($path)
 	{
 		if (!defined('nZEDb_COVERS')) {
 			switch (true) {
@@ -400,7 +423,7 @@ class Utility
 	 * @static
 	 * @access public
 	 */
-	static public function streamSslContextOptions($forceIgnore = false)
+	public static function streamSslContextOptions($forceIgnore = false)
 	{
 		$options = [
 			'verify_peer'       => ($forceIgnore ? false : (bool)nZEDb_SSL_VERIFY_PEER),
@@ -419,7 +442,7 @@ class Utility
 		return ['tls' => $options, 'ssl' => $options];
 	}
 
-	static public function stripBOM(&$text)
+	public static function stripBOM(&$text)
 	{
 		$bom = pack("CCC", 0xef, 0xbb, 0xbf);
 		if (0 == strncmp($text, $bom, 3)) {
@@ -437,7 +460,7 @@ class Utility
 	 *
 	 * @return string    The stripped variable.
 	 */
-	static public function stripNonPrintingChars(&$text)
+	public static function stripNonPrintingChars(&$text)
 	{
 		$lowChars = [
 			"\x00", "\x01", "\x02", "\x03", "\x04", "\x05", "\x06", "\x07",
@@ -450,7 +473,7 @@ class Utility
 		return $text;
 	}
 
-	static public function trailingSlash($path)
+	public static function trailingSlash($path)
 	{
 		if (substr($path, strlen($path) - 1) != '/') {
 			$path .= '/';
@@ -466,7 +489,7 @@ class Utility
 	 *
 	 * @return string|false
 	 */
-	static public function unzipGzipFile($filePath)
+	public static function unzipGzipFile($filePath)
 	{
 		/* Potential issues with this, so commenting out.
 		$length = Utility::isGZipped($filePath);
@@ -500,7 +523,7 @@ class Utility
 	 *
 	 * @return string File info. Empty string on failure.
 	 */
-	static public function fileInfo($path)
+	public static function fileInfo($path)
 	{
 		$output = '';
 		$magicPath = (new Settings())->getSetting('apps.indexer.magic_file_path');
@@ -524,7 +547,7 @@ class Utility
 				$output = '';
 			}
 		} else {
-			$fileInfo = empty($magicPath) ? new finfo(FILEINFO_RAW) : new finfo(FILEINFO_RAW, $magicPath);
+			$fileInfo = empty($magicPath) ? new \finfo(FILEINFO_RAW) : new \finfo(FILEINFO_RAW, $magicPath);
 
 			$output = $fileInfo->file($path);
 			if (empty($output)) {
@@ -544,7 +567,7 @@ class Utility
 	 *
 	 * @return array
 	 */
-	static public function runCmd($command, $debug = false)
+	public static function runCmd($command, $debug = false)
 	{
 		if ($debug) {
 			echo '-Running Command: ' . PHP_EOL . '   ' . $command . PHP_EOL;
@@ -568,7 +591,7 @@ class Utility
 	 *
 	 * @return string
 	 */
-	static public function safeFilename($filename)
+	public static function safeFilename($filename)
 	{
 		return trim(preg_replace('/[^\w\s.-]*/i', '', $filename));
 	}
@@ -581,7 +604,7 @@ class Utility
 	 *
 	 * @return string
 	 */
-	static public function bytesToSizeString($bytes, $precision = 0)
+	public static function bytesToSizeString($bytes, $precision = 0)
 	{
 		if ($bytes == 0) {
 			return '0B';
@@ -594,405 +617,13 @@ class Utility
 	/**
 	 * Convert Code page 437 chars to UTF.
 	 *
-	 * @param string $str
+	 * @param string $string
 	 *
 	 * @return string
 	 */
-	static public function cp437toUTF($str)
+	public static function cp437toUTF($string)
 	{
-		$out = '';
-		for ($i = 0; $i < strlen($str); $i++) {
-			$ch = ord($str{$i});
-			switch ($ch) {
-				case 128:
-					$out .= 'Ç';
-					break;
-				case 129:
-					$out .= 'ü';
-					break;
-				case 130:
-					$out .= 'é';
-					break;
-				case 131:
-					$out .= 'â';
-					break;
-				case 132:
-					$out .= 'ä';
-					break;
-				case 133:
-					$out .= 'à';
-					break;
-				case 134:
-					$out .= 'å';
-					break;
-				case 135:
-					$out .= 'ç';
-					break;
-				case 136:
-					$out .= 'ê';
-					break;
-				case 137:
-					$out .= 'ë';
-					break;
-				case 138:
-					$out .= 'è';
-					break;
-				case 139:
-					$out .= 'ï';
-					break;
-				case 140:
-					$out .= 'î';
-					break;
-				case 141:
-					$out .= 'ì';
-					break;
-				case 142:
-					$out .= 'Ä';
-					break;
-				case 143:
-					$out .= 'Å';
-					break;
-				case 144:
-					$out .= 'É';
-					break;
-				case 145:
-					$out .= 'æ';
-					break;
-				case 146:
-					$out .= 'Æ';
-					break;
-				case 147:
-					$out .= 'ô';
-					break;
-				case 148:
-					$out .= 'ö';
-					break;
-				case 149:
-					$out .= 'ò';
-					break;
-				case 150:
-					$out .= 'û';
-					break;
-				case 151:
-					$out .= 'ù';
-					break;
-				case 152:
-					$out .= 'ÿ';
-					break;
-				case 153:
-					$out .= 'Ö';
-					break;
-				case 154:
-					$out .= 'Ü';
-					break;
-				case 155:
-					$out .= '¢';
-					break;
-				case 156:
-					$out .= '£';
-					break;
-				case 157:
-					$out .= '¥';
-					break;
-				case 158:
-					$out .= '₧';
-					break;
-				case 159:
-					$out .= 'ƒ';
-					break;
-				case 160:
-					$out .= 'á';
-					break;
-				case 161:
-					$out .= 'í';
-					break;
-				case 162:
-					$out .= 'ó';
-					break;
-				case 163:
-					$out .= 'ú';
-					break;
-				case 164:
-					$out .= 'ñ';
-					break;
-				case 165:
-					$out .= 'Ñ';
-					break;
-				case 166:
-					$out .= 'ª';
-					break;
-				case 167:
-					$out .= 'º';
-					break;
-				case 168:
-					$out .= '¿';
-					break;
-				case 169:
-					$out .= '⌐';
-					break;
-				case 170:
-					$out .= '¬';
-					break;
-				case 171:
-					$out .= '½';
-					break;
-				case 172:
-					$out .= '¼';
-					break;
-				case 173:
-					$out .= '¡';
-					break;
-				case 174:
-					$out .= '«';
-					break;
-				case 175:
-					$out .= '»';
-					break;
-				case 176:
-					$out .= '░';
-					break;
-				case 177:
-					$out .= '▒';
-					break;
-				case 178:
-					$out .= '▓';
-					break;
-				case 179:
-					$out .= '│';
-					break;
-				case 180:
-					$out .= '┤';
-					break;
-				case 181:
-					$out .= '╡';
-					break;
-				case 182:
-					$out .= '╢';
-					break;
-				case 183:
-					$out .= '╖';
-					break;
-				case 184:
-					$out .= '╕';
-					break;
-				case 185:
-					$out .= '╣';
-					break;
-				case 186:
-					$out .= '║';
-					break;
-				case 187:
-					$out .= '╗';
-					break;
-				case 188:
-					$out .= '╝';
-					break;
-				case 189:
-					$out .= '╜';
-					break;
-				case 190:
-					$out .= '╛';
-					break;
-				case 191:
-					$out .= '┐';
-					break;
-				case 192:
-					$out .= '└';
-					break;
-				case 193:
-					$out .= '┴';
-					break;
-				case 194:
-					$out .= '┬';
-					break;
-				case 195:
-					$out .= '├';
-					break;
-				case 196:
-					$out .= '─';
-					break;
-				case 197:
-					$out .= '┼';
-					break;
-				case 198:
-					$out .= '╞';
-					break;
-				case 199:
-					$out .= '╟';
-					break;
-				case 200:
-					$out .= '╚';
-					break;
-				case 201:
-					$out .= '╔';
-					break;
-				case 202:
-					$out .= '╩';
-					break;
-				case 203:
-					$out .= '╦';
-					break;
-				case 204:
-					$out .= '╠';
-					break;
-				case 205:
-					$out .= '═';
-					break;
-				case 206:
-					$out .= '╬';
-					break;
-				case 207:
-					$out .= '╧';
-					break;
-				case 208:
-					$out .= '╨';
-					break;
-				case 209:
-					$out .= '╤';
-					break;
-				case 210:
-					$out .= '╥';
-					break;
-				case 211:
-					$out .= '╙';
-					break;
-				case 212:
-					$out .= '╘';
-					break;
-				case 213:
-					$out .= '╒';
-					break;
-				case 214:
-					$out .= '╓';
-					break;
-				case 215:
-					$out .= '╫';
-					break;
-				case 216:
-					$out .= '╪';
-					break;
-				case 217:
-					$out .= '┘';
-					break;
-				case 218:
-					$out .= '┌';
-					break;
-				case 219:
-					$out .= '█';
-					break;
-				case 220:
-					$out .= '▄';
-					break;
-				case 221:
-					$out .= '▌';
-					break;
-				case 222:
-					$out .= '▐';
-					break;
-				case 223:
-					$out .= '▀';
-					break;
-				case 224:
-					$out .= 'α';
-					break;
-				case 225:
-					$out .= 'ß';
-					break;
-				case 226:
-					$out .= 'Γ';
-					break;
-				case 227:
-					$out .= 'π';
-					break;
-				case 228:
-					$out .= 'Σ';
-					break;
-				case 229:
-					$out .= 'σ';
-					break;
-				case 230:
-					$out .= 'µ';
-					break;
-				case 231:
-					$out .= 'τ';
-					break;
-				case 232:
-					$out .= 'Φ';
-					break;
-				case 233:
-					$out .= 'Θ';
-					break;
-				case 234:
-					$out .= 'Ω';
-					break;
-				case 235:
-					$out .= 'δ';
-					break;
-				case 236:
-					$out .= '∞';
-					break;
-				case 237:
-					$out .= 'φ';
-					break;
-				case 238:
-					$out .= 'ε';
-					break;
-				case 239:
-					$out .= '∩';
-					break;
-				case 240:
-					$out .= '≡';
-					break;
-				case 241:
-					$out .= '±';
-					break;
-				case 242:
-					$out .= '≥';
-					break;
-				case 243:
-					$out .= '≤';
-					break;
-				case 244:
-					$out .= '⌠';
-					break;
-				case 245:
-					$out .= '⌡';
-					break;
-				case 246:
-					$out .= '÷';
-					break;
-				case 247:
-					$out .= '≈';
-					break;
-				case 248:
-					$out .= '°';
-					break;
-				case 249:
-					$out .= '∙';
-					break;
-				case 250:
-					$out .= '·';
-					break;
-				case 251:
-					$out .= '√';
-					break;
-				case 252:
-					$out .= 'ⁿ';
-					break;
-				case 253:
-					$out .= '²';
-					break;
-				case 254:
-					$out .= '■';
-					break;
-				case 255:
-					$out .= ' ';
-					break;
-				default :
-					$out .= chr($ch);
-			}
-		}
-		return $out;
+		return iconv('CP437', 'UTF-8//IGNORE//TRANSLIT', $string);
 	}
 
 	/**
@@ -1002,7 +633,7 @@ class Utility
 	 *
 	 * @return string
 	 */
-	static public function imdb_trailers($imdbID)
+	public static function imdb_trailers($imdbID)
 	{
 		$xml = Utility::getUrl(['url' => 'http://api.traileraddict.com/?imdb=' . $imdbID]);
 		if ($xml !== false) {
@@ -1014,7 +645,7 @@ class Utility
 	}
 
 	// Convert obj to array.
-	static public function objectsIntoArray($arrObjData, $arrSkipIndices = [])
+	public static function objectsIntoArray($arrObjData, $arrSkipIndices = [])
 	{
 		$arrData = [];
 
@@ -1064,6 +695,8 @@ class Utility
 
 		if (defined('PHPMAILER_ENABLED') && PHPMAILER_ENABLED == true) {
 			$mail = new \PHPMailer;
+		} else {
+			$mail = null;
 		}
 
 		// If the mailer couldn't instantiate there's a good chance the user has an incomplete update & we should fallback to php mail()

@@ -1,6 +1,8 @@
 <?php
 require_once realpath(__DIR__ . '/../automated.config.php');
 
+use nzedb\Install;
+
 $page = new InstallPage();
 $page->title = "News Server Setup";
 
@@ -22,6 +24,13 @@ if ($page->isPostBack()) {
 	$cfg->NNTP_PORT = (trim($_POST['port']) == '') ? 119 : trim($_POST['port']);
 	$cfg->NNTP_SSLENABLED = (isset($_POST['ssl']) ? (trim($_POST['ssl']) == '1' ? true : false) : false);
 	$cfg->NNTP_SOCKET_TIMEOUT = (is_numeric(trim($_POST['socket_timeout'])) ? (int)trim($_POST['socket_timeout']) : 120);
+
+	$cfg->NNTP_SERVER_A = trim($_POST['servera']);
+	$cfg->NNTP_USERNAME_A = trim($_POST['usera']);
+	$cfg->NNTP_PASSWORD_A = trim($_POST['passa']);
+	$cfg->NNTP_PORT_A = (trim($_POST['porta']) == '') ? 119 : trim($_POST['porta']);
+	$cfg->NNTP_SSLENABLED_A = (isset($_POST['ssla']) ? (trim($_POST['ssla']) == '1' ? true : false) : false);
+	$cfg->NNTP_SOCKET_TIMEOUT_A = (is_numeric(trim($_POST['socket_timeouta'])) ? (int)trim($_POST['socket_timeouta']) : 120);
 
 	require_once nZEDb_LIBS . 'Net_NNTP/NNTP/Client.php';
 	$test = new Net_NNTP_Client();

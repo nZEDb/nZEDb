@@ -1,6 +1,15 @@
 <?php
 
-use \nzedb\processing\PostProcess;
+use nzedb\Backfill;
+use nzedb\Binaries;
+use nzedb\Groups;
+use nzedb\Nfo;
+use nzedb\NNTP;
+use nzedb\RequestIDLocal;
+use nzedb\processing\ProcessReleases;
+use nzedb\processing\PostProcess;
+use nzedb\processing\post\ProcessAdditional;
+use nzedb\db\Settings;
 
 if (!isset($argv[1])) {
 	exit("This script is not intended to be run manually." . PHP_EOL);
@@ -19,11 +28,11 @@ switch ($options[1]) {
 	// $options[3] => (int)   backfill type from tmux settings. 1 = Backfill interval , 2 = Bakfill all
 	case 'backfill':
 		if (in_array((int)$options[3], [1, 2])) {
-			$pdo = new \nzedb\db\Settings();
+			$pdo = new Settings();
 			$value = $pdo->queryOneRow("SELECT value FROM tmux WHERE setting = 'backfill_qty'");
 			if ($value !== false) {
 				$nntp = nntp($pdo);
-				(new \Backfill(['NNTP' => $nntp, 'Settings' => $pdo]))->backfillAllGroups($options[2], ($options[3] == 1 ? '' : $value['value']));
+				(new Backfill(['NNTP' => $nntp, 'Settings' => $pdo]))->backfillAllGroups($options[2], ($options[3] == 1 ? '' : $value['value']));
 			}
 		}
 		break;
@@ -34,17 +43,17 @@ switch ($options[1]) {
 	 * $options[3] => (int)    Quantity of articles to download.
 	 */
 	case 'backfill_all_quantity':
-		$pdo = new \nzedb\db\Settings();
+		$pdo = new Settings();
 		$nntp = nntp($pdo);
-		(new \Backfill(['NNTP' => $nntp, 'Settings' => $pdo]))->backfillAllGroups($options[2], $options[3]);
+		(new Backfill(['NNTP' => $nntp, 'Settings' => $pdo]))->backfillAllGroups($options[2], $options[3]);
 		break;
 
 	// BackFill a single group, 10000 parts.
 	// $options[2] => (string)group name, Name of group to work on.
 	case 'backfill_all_quick':
-		$pdo = new \nzedb\db\Settings();
+		$pdo = new Settings();
 		$nntp = nntp($pdo);
-		(new \Backfill(['NNTP' => $nntp, 'Settings' => $pdo], true))->backfillAllGroups($options[2], 10000, 'normal');
+		(new Backfill(['NNTP' => $nntp, 'Settings' => $pdo], true))->backfillAllGroups($options[2], 10000, 'normal');
 		break;
 
 	/* Get a range of article headers for a group.
@@ -56,16 +65,16 @@ switch ($options[1]) {
 	 * $options[6] => (int)    Number of threads.
 	 */
 	case 'get_range':
-		$pdo = new \nzedb\db\Settings();
+		$pdo = new Settings();
 		$nntp = nntp($pdo);
-		$groups = new \Groups(['Settings' => $pdo]);
+		$groups = new Groups(['Settings' => $pdo]);
 		$groupMySQL = $groups->getByName($options[3]);
 		if ($nntp->isError($nntp->selectGroup($groupMySQL['name']))) {
 			if ($nntp->isError($nntp->dataError($nntp, $groupMySQL['name']))) {
 				return;
 			}
 		}
-		$binaries = new \Binaries(['NNTP' => $nntp, 'Settings' => $pdo, 'Groups' => $groups]);
+		$binaries = new Binaries(['NNTP' => $nntp, 'Settings' => $pdo, 'Groups' => $groups]);
 		$return = $binaries->scan($groupMySQL, $options[4], $options[5], ($pdo->getSetting('safepartrepair') == 1 ? 'update' : 'backfill'));
 		if (empty($return)) {
 			exit();
@@ -121,8 +130,8 @@ switch ($options[1]) {
 	 * $options[2] => (string) Group name.
 	 */
 	case 'part_repair':
-		$pdo = new \nzedb\db\Settings();
-		$groups = new \Groups(['Settings' => $pdo]);
+		$pdo = new Settings();
+		$groups = new Groups(['Settings' => $pdo]);
 		$groupMySQL = $groups->getByName($options[2]);
 		$nntp = nntp($pdo);
 		// Select group, here, only once
@@ -132,14 +141,14 @@ switch ($options[1]) {
 				exit();
 			}
 		}
-		(new \Binaries(['NNTP' => $nntp, 'Groups' => $groups, 'Settings' => $pdo]))->partRepair($groupMySQL);
+		(new Binaries(['NNTP' => $nntp, 'Groups' => $groups, 'Settings' => $pdo]))->partRepair($groupMySQL);
 		break;
 
 	// Process releases.
 	// $options[2] => (string)groupCount, number of groups terminated by _ | (int)groupID, group to work on
 	case 'releases':
-		$pdo = new \nzedb\db\Settings();
-		$releases = new \nzedb\processing\ProcessReleases(['Settings' => $pdo]);
+		$pdo = new Settings();
+		$releases = new ProcessReleases(['Settings' => $pdo]);
 
 		//Runs function that are per group
 		if (is_numeric($options[2])) {
@@ -148,7 +157,7 @@ switch ($options[1]) {
 				collectionCheck($pdo, $options[2]);
 			}
 
-			processReleases($releases, $options[2]);
+			processReleases($pdo, $releases, $options[2]);
 
 		} else {
 
@@ -169,7 +178,7 @@ switch ($options[1]) {
 	// $options[2] => (int)groupID, group to work on
 	case 'requestid':
 		if (is_numeric($options[2])) {
-			(new \RequestIDLocal(['Echo' => true]))->lookupRequestIDs(['GroupID' => $options[2], 'limit' => 5000]);
+			(new RequestIDLocal(['Echo' => true]))->lookupRequestIDs(['GroupID' => $options[2], 'limit' => 5000]);
 		}
 		break;
 
@@ -178,11 +187,11 @@ switch ($options[1]) {
 	 * $options[2] => (string) Group name.
 	 */
 	case 'update_group_headers':
-		$pdo = new \nzedb\db\Settings();
+		$pdo = new Settings();
 		$nntp = nntp($pdo);
-		$groups = new \Groups(['Settings' => $pdo]);
+		$groups = new Groups(['Settings' => $pdo]);
 		$groupMySQL = $groups->getByName($options[2]);
-		(new \Binaries(['NNTP' => $nntp, 'Groups' => $groups, 'Settings' => $pdo]))->updateGroup($groupMySQL);
+		(new Binaries(['NNTP' => $nntp, 'Groups' => $groups, 'Settings' => $pdo]))->updateGroup($groupMySQL);
 		break;
 
 
@@ -191,7 +200,7 @@ switch ($options[1]) {
 	case 'update_per_group':
 		if (is_numeric($options[2])) {
 
-			$pdo = new \nzedb\db\Settings();
+			$pdo = new Settings();
 
 			// Get the group info from MySQL.
 			$groupMySQL = $pdo->queryOneRow(sprintf('SELECT * FROM groups WHERE id = %d', $options[2]));
@@ -202,10 +211,10 @@ switch ($options[1]) {
 
 			// Connect to NNTP.
 			$nntp = nntp($pdo);
-			$backFill = new \Backfill(['NNTP' => $nntp, 'Settings' => $pdo], true);
+			$backFill = new Backfill(['NNTP' => $nntp, 'Settings' => $pdo], true);
 
 			// Update the group for new binaries.
-			(new \Binaries(['NNTP' => $nntp, 'Settings' => $pdo]))->updateGroup($groupMySQL);
+			(new Binaries(['NNTP' => $nntp, 'Settings' => $pdo]))->updateGroup($groupMySQL);
 
 			// BackFill the group with 20k articles.
 			$backFill->backfillAllGroups($groupMySQL['name'], 20000, 'normal');
@@ -214,11 +223,11 @@ switch ($options[1]) {
 			collectionCheck($pdo, $options[2]);
 
 			// Create releases.
-			processReleases(new \nzedb\processing\ProcessReleases(['Settings' => $pdo]), $options[2]);
+			processReleases($pdo, new ProcessReleases(['Settings' => $pdo]), $options[2]);
 
 			// Post process the releases.
-			(new \nzedb\processing\post\ProcessAdditional(['Echo' => true, 'NNTP' => $nntp, 'Settings' => $pdo]))->start($options[2]);
-			(new \Nfo(['Echo' => true, 'Settings' => $pdo]))->processNfoFiles($nntp, $options[2]);
+			(new ProcessAdditional(['Echo' => true, 'NNTP' => $nntp, 'Settings' => $pdo]))->start($options[2]);
+			(new Nfo(['Echo' => true, 'Settings' => $pdo]))->processNfoFiles($nntp, $options[2]);
 
 		}
 		break;
@@ -228,15 +237,15 @@ switch ($options[1]) {
 	case 'pp_additional':
 	case 'pp_nfo':
 		if (charCheck($options[2])) {
-			$pdo = new \nzedb\db\Settings();
+			$pdo = new Settings();
 
 			// Create the connection here and pass, this is for post processing, so check for alternate.
 			$nntp = nntp($pdo, true);
 
 			if ($options[1] === 'pp_nfo') {
-				(new \Nfo(['Echo' => true, 'Settings' => $pdo]))->processNfoFiles($nntp, '', $options[2]);
+				(new Nfo(['Echo' => true, 'Settings' => $pdo]))->processNfoFiles($nntp, '', $options[2]);
 			} else {
-				(new \nzedb\processing\post\ProcessAdditional(['Echo' => true, 'NNTP' => $nntp, 'Settings' => $pdo]))->start('', $options[2]);
+				(new ProcessAdditional(['Echo' => true, 'NNTP' => $nntp, 'Settings' => $pdo]))->start('', $options[2]);
 			}
 		}
 		break;
@@ -248,8 +257,8 @@ switch ($options[1]) {
 	 */
 	case 'pp_movie':
 		if (charCheck($options[2])) {
-			$pdo = new \nzedb\db\Settings();
-			(new \nzedb\processing\PostProcess(['Settings' => $pdo]))->processMovies('', $options[2], (isset($options[3]) ? $options[3] : ''));
+			$pdo = new Settings();
+			(new PostProcess(['Settings' => $pdo]))->processMovies('', $options[2], (isset($options[3]) ? $options[3] : ''));
 		}
 		break;
 
@@ -260,8 +269,8 @@ switch ($options[1]) {
 	 */
 	case 'pp_tv':
 		if (charCheck($options[2])) {
-			$pdo = new \nzedb\db\Settings();
-			(new \nzedb\processing\PostProcess(['Settings' => $pdo]))->processTv('', $options[2], (isset($options[3]) ? $options[3] : ''));
+			$pdo = new Settings();
+			(new PostProcess(['Settings' => $pdo]))->processTv('', $options[2], (isset($options[3]) ? $options[3] : ''));
 		}
 		break;
 }
@@ -269,16 +278,23 @@ switch ($options[1]) {
 /**
  * Create / process releases for a groupID.
  *
- * @param \nzedb\processing\ProcessReleases $releases
+ * @param Settings        $pdo
+ * @param ProcessReleases $releases
  * @param int             $groupID
  */
-function processReleases($releases, $groupID)
+function processReleases($pdo, $releases, $groupID)
 {
+	$releaseCreationLimit = ($pdo->getSetting('maxnzbsprocessed') != '' ? (int)$pdo->getSetting('maxnzbsprocessed') : 1000);
 	$releases->processIncompleteCollections($groupID);
 	$releases->processCollectionSizes($groupID);
 	$releases->deleteUnwantedCollections($groupID);
-	$releases->createReleases($groupID);
-	$releases->createNZBs($groupID);
+
+	do {
+		$releasesCount = $releases->createReleases($groupID);
+		$nzbFilesAdded = $releases->createNZBs($groupID);
+
+		// This loops as long as the number of releases or nzbs added was >= the limit (meaning there are more waiting to be created)
+	} while (($releasesCount['added'] + $releasesCount['dupes']) >= $releaseCreationLimit || $nzbFilesAdded >= $releaseCreationLimit);
 	$releases->deleteCollections($groupID);
 }
 
@@ -300,7 +316,7 @@ function charCheck($char)
 /**
  * Check if the group should be processed.
  *
- * @param \nzedb\db\Settings $pdo
+ * @param Settings $pdo
  * @param int                $groupID
  */
 function collectionCheck(&$pdo, $groupID)
@@ -313,14 +329,14 @@ function collectionCheck(&$pdo, $groupID)
 /**
  * Connect to usenet, return NNTP object.
  *
- * @param \nzedb\db\Settings $pdo
+ * @param Settings $pdo
  * @param bool               $alternate Use alternate NNTP provider.
  *
  * @return NNTP
  */
 function &nntp(&$pdo, $alternate = false)
 {
-	$nntp = new \NNTP(['Settings' => $pdo]);
+	$nntp = new NNTP(['Settings' => $pdo]);
 	if (($alternate && $pdo->getSetting('alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
 		exit("ERROR: Unable to connect to usenet." . PHP_EOL);
 	}

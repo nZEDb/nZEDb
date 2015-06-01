@@ -106,10 +106,7 @@
 							title="{$result.title|stripslashes|escape:"htmlall"}"
 							href="{$smarty.const.WWW_TOP}/movies/?imdb={$result.imdbid}">{$result.title|stripslashes|escape:"htmlall"}
 						</a>
-						(<a
-							class="title" title="{$result.year}"
-							href="{$smarty.const.WWW_TOP}/movies?year={$result.year}">{$result.year}
-						</a>)
+						(<a class="title" title="{$result.year}" href="{$smarty.const.WWW_TOP}/movies?year={$result.year}">{$result.year}</a>)
 						{if $result.rating != ''}
 							{$result.rating}/10
 						{/if}
