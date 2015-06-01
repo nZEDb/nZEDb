@@ -26,9 +26,7 @@ if (!$privateProfiles || $privileged) {
 		if ($user) {
 			$altID = $user['id'];
 		}
-	}
-
-	if ($altID !== false) {
+	} else if ($altID !== false) {
 		$userid = $altID;
 		$publicView = true;
 	}
