@@ -22,6 +22,7 @@
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php';
 
 use nzedb\db\DbUpdate;
+use nzedb\utility\Git;
 use nzedb\utility\Utility;
 
 if (!Utility::isCLI()) {
