@@ -1234,6 +1234,13 @@
 					<div class="hint">Whether to store the users ip address when they signup or login.</div>
 				</td>
 			</tr>
+			<tr>
+				<td style="width:180px;"><label for="privateprofiles">Private Profiles:</label></td>
+				<td>
+					{html_radios id="privateprofiles" name='privateprofiles' values=$yesno_ids output=$yesno_names selected=$site->privateprofiles separator='<br />'}
+					<div class="hint">Should we <strong>disallow</strong> users from accessing profiles other than their own? (regardless of this setting admin/mod can access).</div>
+				</td>
+			</tr>
 		</table>
 	</fieldset>
 	<input type="submit" value="Save Site Settings"/>
