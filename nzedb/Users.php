@@ -1428,7 +1428,7 @@ class Users
 	public function roleCheck($roleID, $user) {
 		if (is_string($user) && strlen($user) > 0) {
 			$querySuffix = "username = '$user'";
-		} elseif (is_int($user) && $user > 0) {
+		} elseif (is_int($user) && $user >= 0) {
 			$querySuffix = "id = $user";
 		} else {
 			return false;
