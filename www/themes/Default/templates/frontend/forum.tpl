@@ -26,7 +26,11 @@
 				</div>
 			</td>
 			<td>
-				<a title="View profile" href="{$smarty.const.WWW_TOP}/profile/?name={$result.username}">{$result.username}</a>
+				{if !$privateprofiles || $isadmin || $ismod}
+					<a title="View profile" href="{$smarty.const.WWW_TOP}/profile/?name={$result.username}">{$result.username}</a>
+				{else}
+					{$result.username}
+				{/if}
 				<br/>
 				on <span title="{$result.createddate}">{$result.createddate|date_format}</span> <div class="hint">({$result.createddate|timeago})</div>
 			</td>

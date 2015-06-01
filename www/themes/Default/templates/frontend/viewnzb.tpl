@@ -459,7 +459,14 @@
 			</tr>
 		{foreach from=$comments item=comment}
 			<tr>
-				<td class="less" title="{$comment.createddate}"><a title="View {$comment.username}'s profile" href="{$smarty.const.WWW_TOP}/profile?name={$comment.username}">{$comment.username}</a><br/>{$comment.createddate|date_format}</td>
+
+				<td class="less" title="{$comment.createddate}">
+					{if !$privateprofiles || $isadmin || $ismod}
+						<a title="View {$comment.username}'s profile" href="{$smarty.const.WWW_TOP}/profile?name={$comment.username}">{$comment.username}</a>
+					{else}
+						{$comment.username}
+					{/if}
+					<br/>{$comment.createddate|date_format}</td>
 				{if $comment.shared == 2}
 					<td style="color:#6B2447">{$comment.text|escape:"htmlall"|nl2br}</td>
 				{else}
