@@ -1443,7 +1443,7 @@ class Users
 			)
 		);
 
-		return ((int)$result['role'] == (int)$roleID) ? true : false;
+		return ((integer)$result['role'] == (integer) $roleID) ? true : false;
 	}
 
 	/**
@@ -1453,7 +1453,7 @@ class Users
 	 * @return bool
 	 */
 	public function isAdmin($userID) {
-		return $this->roleCheck(self::ROLE_ADMIN, (int) $userID);
+		return $this->roleCheck(self::ROLE_ADMIN, (integer) $userID);
 	}
 
 	/**
@@ -1463,6 +1463,6 @@ class Users
 	 * @return bool
 	 */
 	public function isModerator($userId) {
-		return $this->roleCheck(self::ROLE_MODERATOR, (int) $userId);
+		return $this->roleCheck(self::ROLE_MODERATOR, (integer) $userId);
 	}
 }
