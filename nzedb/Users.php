@@ -1426,9 +1426,9 @@ class Users
 	 * @return bool
 	 */
 	public function roleCheck($roleID, $user) {
-		$user = $this->pdo->escapeString($user);
 
 		if (is_string($user) && strlen($user) > 0) {
+			$user = $this->pdo->escapeString($user);
 			$querySuffix = "username = '$user'";
 		} elseif (is_int($user) && $user >= 0) {
 			$querySuffix = "id = $user";
