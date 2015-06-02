@@ -186,7 +186,7 @@ class DbUpdate
 					rename($matches[0], $newName);
 					$this->git->add($newName);
 					if ($this->git->isCommited($this->git->getBranch() . ':' . $matches[0])) {
-						$this->git->rm("{$matches[0]}"); // remove old filename from the index.
+						$this->git->rm(" --cached {$matches[0]}"); // remove old filename from the index.
 					}
 				}
 			}

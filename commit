@@ -14,7 +14,6 @@ git add Changelog
 php build/NewPatches.php
 
 EXIT_STATUS=$?
-
 if [ ${EXIT_STATUS} -gt 0 ]
 then
 	exit ${EXIT_STATUS}
