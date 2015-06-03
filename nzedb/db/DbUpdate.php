@@ -93,12 +93,16 @@ class DbUpdate
 		];
 		$options += $defaults;
 
+		$show = (Utility::isCLI() || nZEDb_DEBUG);
+
 		$files = empty($options['files']) ? Utility::getDirFiles($options) : $options['files'];
 		natsort($files);
 		$local = $this->pdo->isLocalDb() ? '' : 'LOCAL ';
 		$sql = 'LOAD DATA ' . $local . 'INFILE "%s" IGNORE INTO TABLE `%s` FIELDS TERMINATED BY "\t" OPTIONALLY ENCLOSED BY "\"" IGNORE 1 LINES (%s)';
 		foreach ($files as $file) {
-			echo "File: $file\n";
+			if ($show === true) {
+				echo "File: $file\n";
+			}
 
 			if (is_readable($file)) {
 				if (preg_match($options['regex'], $file, $matches)) {
@@ -114,7 +118,9 @@ class DbUpdate
 						}
 						$fields = trim($line);
 
-						echo "Inserting data into table: '$table'\n";
+						if ($show === true) {
+							echo "Inserting data into table: '$table'\n";
+						}
 						if (Utility::isWin()) {
 							$file = str_replace("\\", '\/', $file);
 						}
@@ -180,7 +186,7 @@ class DbUpdate
 					rename($matches[0], $newName);
 					$this->git->add($newName);
 					if ($this->git->isCommited($this->git->getBranch() . ':' . $matches[0])) {
-						$this->git->rm("{$matches[0]}"); // remove old filename from the index.
+						$this->git->rm(" --cached {$matches[0]}"); // remove old filename from the index.
 					}
 				}
 			}

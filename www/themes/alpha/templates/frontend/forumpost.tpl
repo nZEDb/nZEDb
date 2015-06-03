@@ -19,7 +19,12 @@
 		{foreach from=$results item=result name=result}
 			<tr>
 				<td>
-					<a {if $smarty.foreach.result.last}id="last"{/if} title="View profile" href="{$smarty.const.WWW_TOP}/profile/?name={$result.username}">{$result.username}</a> on<br>
+					{if !$privateprofiles || $isadmin || $ismod}
+						<a {if $smarty.foreach.result.last}id="last"{/if} title="View profile" href="{$smarty.const.WWW_TOP}/profile/?name={$result.username}">{$result.username}</a>
+					{else}
+						{$result.username}
+					{/if}
+					 on<br>
 					<span title="{$result.createddate}">{$result.createddate|date_format}</span> ({$result.createddate|timeago})
 					{if $isadmin || $ismod}
 						<div>

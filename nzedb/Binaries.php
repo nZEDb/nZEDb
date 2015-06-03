@@ -1192,7 +1192,7 @@ class Binaries
 			// Keep a note of the last articles we checked
 			$reallyOldArticle = $oldArticle;
 			$oldArticle = $wantedArticle;
-			
+
 			// Get the date of this article
 			$articleTime = $this->postdate($wantedArticle, $data);
 

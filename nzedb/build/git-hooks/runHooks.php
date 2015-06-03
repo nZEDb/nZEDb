@@ -43,16 +43,7 @@ if ($error === false) {
 	$git = new Git();
 	$branch = $git->active_branch();
 	if (in_array($branch, $git->mainBranches())) {
-		// Only update versions, patches, etc. on specific branches to lessen conflicts
-		try {
-			// Run DbUpdates to make sure we're up to date.
-			$DbUpdater = new DbUpdate(['git' => $git]);
-			$DbUpdater->newPatches(['safe' => false]);
-		} catch (\Exception $e) {
-			$error = 1;
-			echo "Error while checking patches!\n";
-			echo $e->getMessage() . "\n";
-		}
+		// Only update versions, etc. on specific branches to lessen conflicts
 
 		if ($error === false) {
 			try {
