@@ -26,7 +26,7 @@ class ReleaseComments
 
 	public function getComments($id)
 	{
-		return $this->pdo->query(sprintf("SELECT release_comments.* FROM release_comments WHERE releaseid = %d", $id));
+		return $this->pdo->query(sprintf("SELECT release_comments.* FROM release_comments WHERE releaseid = %d ORDER BY createddate DESC", $id));
 	}
 
 	public function getCommentCount()
