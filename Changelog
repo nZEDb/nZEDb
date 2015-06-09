@@ -7,6 +7,8 @@ All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 
+2015-06-09 bart39
+	* Mrg: PR 1716 from enverex - Pick up additional RAR names and match both functions.
 2015-06-06 bart39
 	* Fix: from rainje - Select all + delete in adv search not working #1713 #1715.
 2015-06-01 niel
