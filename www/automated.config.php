@@ -13,6 +13,8 @@ define('nZEDb_ROOT', realpath(dirname(dirname(__FILE__))) . DS);
 define('nZEDb_LIB', nZEDb_ROOT . 'nzedb' . DS);
 define('nZEDb_CORE', nZEDb_LIB);
 
+define('nZEDb_CONFIGS', nZEDB_CORE . 'config' . DS);
+
 // Used to refer to the third party library files.
 define('nZEDb_LIBS', nZEDb_ROOT . 'libs' . DS);
 
