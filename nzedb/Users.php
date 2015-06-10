@@ -1429,7 +1429,7 @@ class Users
 
 		if (is_string($user) && strlen($user) > 0) {
 			$user = $this->pdo->escapeString($user);
-			$querySuffix = "username = '$user'";
+			$querySuffix = "username = $user";
 		} elseif (is_int($user) && $user >= 0) {
 			$querySuffix = "id = $user";
 		} else {
