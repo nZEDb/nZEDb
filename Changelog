@@ -9,6 +9,8 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2015-06-10 niel
 	* Mrg: PR 1712 from zetas - Ordering comments by created date. Showing newest on top.
+2015-06-09 bart39
+	* Mrg: PR 1716 from enverex - Pick up additional RAR names and match both functions.
 2015-06-06 bart39
 	* Fix: from rainje - Select all + delete in adv search not working #1713 #1715.
 
