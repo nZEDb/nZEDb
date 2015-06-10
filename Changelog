@@ -10,6 +10,9 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 2015-06-10 niel
 	* Mrg: PR 1712 from zetas - Ordering comments by created date. Showing newest on top.
 	* Mrg: PR 1719 from enverex - Add matching for hyphenated music scene release names.
+	* New: Added a config directory under .../nzedb to contain configuration/settings files, so they're all together and don't need paths changing when code moves. I'll gradually move older config/settings files here, with some exceptions TBD.
+	* Chg: Moved IRCScraper example settings file to the .../nzedb/config directory
+	* Chg: Refactored the IRCScraper scrape script to look in .../nzedb/config for the renamed ircscraper_settings.php file. (it will move the old one from testing/IRCScraper if it finds it.
 2015-06-09 bart39
 	* Mrg: PR 1716 from enverex - Pick up additional RAR names and match both functions.
 2015-06-06 bart39
