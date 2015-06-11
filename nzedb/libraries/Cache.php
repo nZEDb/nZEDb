@@ -37,12 +37,6 @@ class Cache
 	private $socketFile;
 
 	/**
-	 * Serializer type.
-	 * @var bool|int
-	 */
-	private $serializerType;
-
-	/**
 	 * Does the user have igBinary support and wants to use it?
 	 * @var bool
 	 */
@@ -80,7 +74,7 @@ class Cache
 	 */
 	private function serializeData(&$data)
 	{
-		switch ($this->serializerType) {
+		switch (nZEDb_CACHE_SERIALIZER) {
 			case self::SERIALIZER_IGBINARY:
 				if ($this->IgBinarySupport) {
 					$data = igbinary_serialize($data);
@@ -131,7 +125,7 @@ class Cache
 	 */
 	private function unserializeData(&$data)
 	{
-		switch ($this->serializerType) {
+		switch (nZEDb_CACHE_SERIALIZER) {
 			case self::SERIALIZER_IGBINARY:
 				if ($this->IgBinarySupport) {
 					$data = igbinary_unserialize($data);
@@ -392,7 +386,6 @@ class Cache
 	 */
 	private function verifySerializer()
 	{
-		$this->serializerType = nZEDb_CACHE_SERIALIZER;
 		switch (nZEDb_CACHE_SERIALIZER) {
 			case self::SERIALIZER_IGBINARY:
 				if (!extension_loaded('igbinary')) {
