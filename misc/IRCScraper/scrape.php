@@ -3,7 +3,7 @@ require_once __DIR__ . '/../../www/config.php';
 
 use nzedb\IRCScraper;
 
-if (!defined(IRC_SCRAPER_CONFIG)) {
+if (!defined('IRC_SCRAPER_CONFIG')) {
 	define('IRC_SCRAPER_CONFIG', nZEDb_CONFIGS . 'ircscraper_settings.php');
 }
 
@@ -16,7 +16,7 @@ switch (true) {
 	default:
 		exit(
 			'Copy ' . nZEDb_CONFIGS . 'ircscraper_settings_example.php to ' .
-			nZEDb_CONFIGS . 'ircscraper_settings.php and change the settings.' . PHP_EOL
+			IRC_SCRAPER_CONFIG . ' and change the settings.' . PHP_EOL
 		);
 }
 

@@ -373,9 +373,17 @@ while ($runVar['counts']['iterations'] > 0) {
 		$tRun->runPane('notrunning', $runVar);
 	}
 
-	$runVar['counts']['iterations']++;
-	sleep(10);
+	$exit = $pdo->getSetting('tmux.run.exit');
+	if ($exit == 0) {
+		$runVar['counts']['iterations']++;
+		sleep(10);
+	} else {
+		// Set counter to less than one so the loop will exit.
+		$runVar['counts']['iterations'] = ($exit < 0) ? $exit : 0;
+	}
 }
+
+// TODO add code here to handle all panes shutting down before closing.
 
 function errorOnSQL($pdo)
 {
