@@ -70,7 +70,7 @@ class Cache
 	/**
 	 * Serialize data, or not based on admin setting.
 	 *
-	 * @param string $data
+	 * @param string|array $data
 	 */
 	private function serializeData(&$data)
 	{
@@ -156,7 +156,7 @@ class Cache
 			switch (nZEDb_CACHE_TYPE) {
 				case self::TYPE_REDIS:
 				case self::TYPE_MEMCACHED:
-					return (bool) $this->server->delete($key);
+					return (bool)$this->server->delete($key);
 				case self::TYPE_APC:
 					return apc_delete($key);
 			}
@@ -354,8 +354,9 @@ class Cache
 		switch (nZEDb_CACHE_TYPE) {
 			case self::TYPE_REDIS:
 				try {
-					return (bool) $this->server->ping();
+					return (bool)$this->server->ping();
 				} catch (\RedisException $error) {
+					// nothing to see here, move along
 				}
 				break;
 			case self::TYPE_MEMCACHED:
@@ -405,7 +406,6 @@ class Cache
 					default:
 						return null;
 				}
-				break;
 
 			case self::SERIALIZER_NONE:
 				// Only redis supports this.
