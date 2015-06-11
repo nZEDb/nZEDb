@@ -544,6 +544,8 @@ define('PHPMAILER_SMTP_PASSWORD', '');
 //////////////////////////////////////////////// Change log ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+2015-06-11       v3  Add support for APC or APCu extensions for caching data. Search for @version 3 for the changes.
+
 2015-05-10       v2  Update path to find_password_hash_cost.php in comments. Search for @version 2 for the changes.
 
 2015-05-03       v1  Track settings.php.example changes.
