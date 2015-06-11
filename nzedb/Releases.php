@@ -174,7 +174,7 @@ class Releases
 				$this->categorySQL($cat),
 				($maxAge > 0 ? (' AND r.postdate > NOW() - INTERVAL ' . $maxAge . ' DAY ') : ''),
 				(count($excludedCats) ? (' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')') : '')
-			), true, nZEDb_CACHE_EXPIRY_MEDIUM
+			)
 		);
 	}
 
@@ -666,7 +666,7 @@ class Releases
 				NZB::NZB_ADDED,
 				$this->showPasswords(),
 				($maxAge > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxAge) : '')
-			), true, nZEDb_CACHE_EXPIRY_MEDIUM
+			)
 		);
 	}
 
