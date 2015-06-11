@@ -213,7 +213,7 @@ class Movie
 						implode(',', $imdbIDs)
 					)
 				)
-			)
+			), true, nZEDb_CACHE_EXPIRY_MEDIUM
 		);
 	}
 
@@ -341,7 +341,7 @@ class Movie
 			$order[1],
 			($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
 		);
-		return $this->pdo->queryDirect($sql);
+		return $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
 	}
 
 	/**

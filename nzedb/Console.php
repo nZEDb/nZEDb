@@ -214,7 +214,7 @@ class Console
 				. "r.passwordstatus <= (SELECT value FROM settings WHERE setting='showpasswordedrelease') AND %s %s
 				%s "
 				. "GROUP BY con.id ORDER BY %s %s" . $limit, $browseby, $catsrch, $exccatlist, $order[0], $order[1]
-			)
+			), true, nZEDb_CACHE_EXPIRY_MEDIUM
 		);
 	}
 

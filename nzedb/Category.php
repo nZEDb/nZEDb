@@ -164,12 +164,11 @@ class Category
 	 */
 	public function isParent($cid)
 	{
-		$ret = $this->pdo->queryOneRow(sprintf("SELECT * FROM category WHERE id = %d AND parentid IS NULL", $cid));
-		if ($ret) {
-			return true;
-		} else {
-			return false;
-		}
+		$ret = $this->pdo->query(
+			sprintf("SELECT id FROM category WHERE id = %d AND parentid IS NULL", $cid),
+			true, nZEDb_CACHE_EXPIRY_LONG
+		);
+		return (isset($ret[0]['id']));
 	}
 
 	/**
@@ -195,7 +194,10 @@ class Category
 	 */
 	public function getChildren($cid)
 	{
-		return $this->pdo->query(sprintf("SELECT c.* FROM category c WHERE parentid = %d", $cid));
+		return $this->pdo->query(
+			sprintf("SELECT c.* FROM category c WHERE parentid = %d", $cid),
+			true, nZEDb_CACHE_EXPIRY_LONG
+		);
 	}
 
 	/**
@@ -204,7 +206,10 @@ class Category
 	 */
 	public function getEnabledParentNames()
 	{
-		return $this->pdo->query("SELECT title FROM category WHERE parentid IS NULL AND status = 1");
+		return $this->pdo->query(
+			"SELECT title FROM category WHERE parentid IS NULL AND status = 1",
+			true, nZEDb_CACHE_EXPIRY_LONG
+		);
 	}
 
 	/**
@@ -214,7 +219,10 @@ class Category
 	 */
 	public function getDisabledIDs()
 	{
-		return $this->pdo->query("SELECT id FROM category WHERE status = 2 OR parentid IN (SELECT id FROM category WHERE status = 2 AND parentid IS NULL)");
+		return $this->pdo->query(
+			"SELECT id FROM category WHERE status = 2 OR parentid IN (SELECT id FROM category WHERE status = 2 AND parentid IS NULL)",
+			true, nZEDb_CACHE_EXPIRY_LONG
+		);
 	}
 
 	/**
@@ -255,7 +263,7 @@ class Category
 					FROM category c
 					INNER JOIN category cp ON cp.id = c.parentid
 					WHERE c.id IN (%s)", implode(',', $ids)
-				)
+				), true, nZEDb_CACHE_EXPIRY_LONG
 			);
 		} else {
 			return false;
@@ -297,7 +305,10 @@ class Category
 			$exccatlist = ' AND id NOT IN (' . implode(',', $excludedcats) . ')';
 		}
 
-		$arr = $this->pdo->query(sprintf('SELECT * FROM category WHERE status = %d %s', Category::STATUS_ACTIVE, $exccatlist));
+		$arr = $this->pdo->query(
+			sprintf('SELECT * FROM category WHERE status = %d %s', Category::STATUS_ACTIVE, $exccatlist),
+			true, nZEDb_CACHE_EXPIRY_LONG
+		);
 		foreach ($arr as $a) {
 			if ($a['parentid'] == '') {
 				$ret[] = $a;

@@ -244,7 +244,7 @@ class Games
 				$exccatlist,
 				$order[0],
 				$order[1]
-			)
+			), true, nZEDb_CACHE_EXPIRY_MEDIUM
 		);
 	}
 
