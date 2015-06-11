@@ -392,6 +392,7 @@ class Cache
 	 */
 	private function verifySerializer()
 	{
+		$this->serializerType = nZEDb_CACHE_SERIALIZER;
 		switch (nZEDb_CACHE_SERIALIZER) {
 			case self::SERIALIZER_IGBINARY:
 				if (!extension_loaded('igbinary')) {
