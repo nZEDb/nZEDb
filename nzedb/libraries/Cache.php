@@ -130,7 +130,7 @@ class Cache
 				if ($this->IgBinarySupport) {
 					$data = igbinary_unserialize($data);
 				} else {
-					$data = serialize($data);
+					$data = unserialize($data);
 				}
 				break;
 			case self::SERIALIZER_PHP:
