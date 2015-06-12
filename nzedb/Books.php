@@ -146,26 +146,6 @@ class Books
 
 	public function getBookCount($cat, $maxage = -1, $excludedcats = [])
 	{
-
-		$browseby = $this->getBrowseBy();
-
-		$catsrch = '';
-		if (count($cat) > 0 && $cat[0] != -1) {
-			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
-		}
-
-
-		if ($maxage > 0) {
-			$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
-		} else {
-			$maxage = '';
-		}
-
-		$exccatlist = '';
-		if (count($excludedcats) > 0) {
-			$exccatlist = ' AND r.categoryid NOT IN (' . implode(',', $excludedcats) . ')';
-		}
-
 		$res = $this->pdo->queryOneRow(
 			sprintf(
 				"SELECT COUNT(DISTINCT r.bookinfoid) AS num FROM releases r
@@ -173,7 +153,10 @@ class Books
 				WHERE r.nzbstatus = 1 AND  r.passwordstatus %s
 				AND %s %s %s %s",
 				Releases::showPasswords($this->pdo),
-				$browseby, $catsrch, $maxage, $exccatlist
+				$this->getBrowseBy(),
+				(count($cat) > 0 && $cat[0] != -1 ? (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat) : ''),
+				($maxage > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage) : ''),
+				(count($excludedcats) > 0 ? ' AND r.categoryid NOT IN (' . implode(',', $excludedcats) . ')' : '')
 			)
 		);
 		return $res['num'];

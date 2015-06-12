@@ -172,35 +172,19 @@ class Music
 	 */
 	public function getMusicCount($cat, $maxage = -1, $excludedcats = [])
 	{
-
-
-		$browseby = $this->getBrowseBy();
-
-		$catsrch = '';
-		if (count($cat) > 0 && $cat[0] != -1) {
-			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
-		}
-
-		if ($maxage > 0) {
-			$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
-		} else {
-			$maxage = '';
-		}
-
-		$exccatlist = "";
-		if (count($excludedcats) > 0) {
-			$exccatlist = " AND r.categoryid NOT IN (" . implode(",", $excludedcats) . ")";
-		}
-
-		$sql = sprintf(
-			"SELECT COUNT(DISTINCT r.musicinfoid) AS num
-			FROM releases r
-			INNER JOIN musicinfo m ON m.id = r.musicinfoid AND m.title != '' AND m.cover = 1
-			WHERE nzbstatus = 1 AND r.passwordstatus %s AND %s %s %s %s",
-			Releases::showPasswords($this->pdo),
-			$browseby, $catsrch, $maxage, $exccatlist
+		$res = $this->pdo->queryOneRow(
+			sprintf(
+				"SELECT COUNT(DISTINCT r.musicinfoid) AS num
+				FROM releases r
+				INNER JOIN musicinfo m ON m.id = r.musicinfoid AND m.title != '' AND m.cover = 1
+				WHERE nzbstatus = 1 AND r.passwordstatus %s AND %s %s %s %s",
+				Releases::showPasswords($this->pdo),
+				$this->getBrowseBy(),
+				(count($cat) > 0 && $cat[0] != -1 ? (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat) : ''),
+				($maxage > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage) : ''),
+				(count($excludedcats) > 0 ? " AND r.categoryid NOT IN (" . implode(",", $excludedcats) . ")" : '')
+			)
 		);
-		$res = $this->pdo->queryOneRow($sql);
 		return $res["num"];
 	}
 
