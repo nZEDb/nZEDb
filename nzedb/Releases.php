@@ -12,9 +12,9 @@ use nzedb\utility\Utility;
 class Releases
 {
 	// RAR/ZIP Passworded indicator.
-	const PASSWD_NONE      =  0; // No password.
-	const PASSWD_POTENTIAL =  1; // Might have a password.
-	const BAD_FILE         =  2; // Possibly broken RAR/ZIP.
+	const PASSWD_NONE      = 0; // No password.
+	const PASSWD_POTENTIAL = 1; // Might have a password.
+	const BAD_FILE         = 2; // Possibly broken RAR/ZIP.
 	const PASSWD_RAR       = 10; // Definitely passworded.
 
 	/**
