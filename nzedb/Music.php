@@ -192,7 +192,14 @@ class Music
 			$exccatlist = " AND r.categoryid NOT IN (" . implode(",", $excludedcats) . ")";
 		}
 
-		$sql = sprintf("SELECT COUNT(DISTINCT r.musicinfoid) AS num FROM releases r INNER JOIN musicinfo m ON m.id = r.musicinfoid AND m.title != '' AND m.cover = 1 WHERE nzbstatus = 1 AND r.passwordstatus <= (SELECT value FROM settings WHERE setting='showpasswordedrelease') AND %s %s %s %s", $browseby, $catsrch, $maxage, $exccatlist);
+		$sql = sprintf(
+			"SELECT COUNT(DISTINCT r.musicinfoid) AS num
+			FROM releases r
+			INNER JOIN musicinfo m ON m.id = r.musicinfoid AND m.title != '' AND m.cover = 1
+			WHERE nzbstatus = 1 AND r.passwordstatus %s AND %s %s %s %s",
+			Releases::showPasswords($this->pdo),
+			$browseby, $catsrch, $maxage, $exccatlist
+		);
 		$res = $this->pdo->queryOneRow($sql);
 		return $res["num"];
 	}
@@ -246,9 +253,11 @@ class Music
 					. "LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id "
 					. "INNER JOIN musicinfo m ON m.id = r.musicinfoid "
 					. "WHERE r.nzbstatus = 1 AND m.title != '' AND "
-					. "r.passwordstatus <= (SELECT value FROM settings WHERE setting='showpasswordedrelease') AND %s %s %s "
-					. "GROUP BY m.id ORDER BY %s %s" . $limit, $browseby, $catsrch, $exccatlist, $order[0], $order[1]),
-			true, nZEDb_CACHE_EXPIRY_MEDIUM
+					. "r.passwordstatus %s AND %s %s %s "
+					. "GROUP BY m.id ORDER BY %s %s" . $limit,
+				Releases::showPasswords($this->pdo),
+				$browseby, $catsrch, $exccatlist, $order[0], $order[1]
+			), true, nZEDb_CACHE_EXPIRY_MEDIUM
 		);
 	}
 

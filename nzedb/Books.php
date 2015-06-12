@@ -168,10 +168,12 @@ class Books
 
 		$res = $this->pdo->queryOneRow(
 			sprintf(
-				"SELECT COUNT(DISTINCT r.bookinfoid) AS num FROM releases r "
-				. "INNER JOIN bookinfo boo ON boo.id = r.bookinfoid AND boo.title != '' and boo.cover = 1 "
-				. "WHERE r.nzbstatus = 1 AND  r.passwordstatus <= (SELECT value FROM settings WHERE setting='showpasswordedrelease') "
-				. "AND %s %s %s %s", $browseby, $catsrch, $maxage, $exccatlist
+				"SELECT COUNT(DISTINCT r.bookinfoid) AS num FROM releases r
+				INNER JOIN bookinfo boo ON boo.id = r.bookinfoid AND boo.title != '' and boo.cover = 1
+				WHERE r.nzbstatus = 1 AND  r.passwordstatus %s
+				AND %s %s %s %s",
+				Releases::showPasswords($this->pdo),
+				$browseby, $catsrch, $maxage, $exccatlist
 			)
 		);
 		return $res['num'];
@@ -223,8 +225,10 @@ class Books
 			. "LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id "
 			. "INNER JOIN bookinfo boo ON boo.id = r.bookinfoid "
 			. "WHERE r.nzbstatus = 1 AND boo.cover = 1 AND boo.title != '' AND "
-			. "r.passwordstatus <= (SELECT value FROM settings WHERE setting='showpasswordedrelease') AND %s %s %s %s "
-			. "GROUP BY boo.id ORDER BY %s %s" . $limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]
+			. "r.passwordstatus %s AND %s %s %s %s "
+			. "GROUP BY boo.id ORDER BY %s %s" . $limit,
+			Releases::showPasswords($this->pdo),
+			$browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]
 		);
 
 		return $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
