@@ -246,11 +246,11 @@ class Releases
 			true, nZEDb_CACHE_EXPIRY_LONG
 		);
 		switch ((isset($setting[0]['value']) && is_numeric($setting[0]['value']) ? $setting[0]['value'] : 10)) {
-			case 0: // Show releases that may have passwords (does not hide unprocessed releases).
-				return ('<= ' . Releases::PASSWD_POTENTIAL);
-			case 1: // Show releases that definitely have no passwords (hides unprocessed releases).
+			case 0: // Hide releases with a password or a potential password (Hide unprocessed releases).
 				return ('= ' . Releases::PASSWD_NONE);
-			case 2: // Show releases that definitely have no passwords (does not hide unprocessed releases).
+			case 1: // Show releases with no password or a potential password (Show unprocessed releases).
+				return ('<= ' . Releases::PASSWD_POTENTIAL);
+			case 2: // Hide releases with a password or a potential password (Show unprocessed releases).
 				return ('<= ' . Releases::PASSWD_NONE);
 			case 10: // Shows everything.
 			default:
