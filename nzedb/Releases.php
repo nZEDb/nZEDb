@@ -12,9 +12,9 @@ use nzedb\utility\Utility;
 class Releases
 {
 	// RAR/ZIP Passworded indicator.
-	const PASSWD_NONE      =  0; // No password.
-	const PASSWD_POTENTIAL =  1; // Might have a password.
-	const BAD_FILE         =  2; // Possibly broken RAR/ZIP.
+	const PASSWD_NONE      = 0; // No password.
+	const PASSWD_POTENTIAL = 1; // Might have a password.
+	const BAD_FILE         = 2; // Possibly broken RAR/ZIP.
 	const PASSWD_RAR       = 10; // Definitely passworded.
 
 	/**
@@ -43,6 +43,11 @@ class Releases
 	public $sphinxSearch;
 
 	/**
+	 * @var string
+	 */
+	private $showPasswords;
+
+	/**
 	 * @var array $options Class instances.
 	 */
 	public function __construct(array $options = [])
@@ -59,6 +64,7 @@ class Releases
 		$this->passwordStatus = ($this->pdo->getSetting('checkpasswordedrar') == 1 ? -1 : 0);
 		$this->sphinxSearch = new SphinxSearch();
 		$this->releaseSearch = new ReleaseSearch($this->pdo, $this->sphinxSearch);
+		$this->showPasswords = self::showPasswords($this->pdo);
 	}
 
 	/**
@@ -169,7 +175,7 @@ class Releases
 				%s %s %s %s',
 				($groupName != '' ? 'INNER JOIN groups g ON g.id = r.group_id' : ''),
 				NZB::NZB_ADDED,
-				$this->showPasswords(),
+				$this->showPasswords,
 				($groupName != '' ? sprintf(' AND g.name = %s', $this->pdo->escapeString($groupName)) : ''),
 				$this->categorySQL($cat),
 				($maxAge > 0 ? (' AND r.postdate > NOW() - INTERVAL ' . $maxAge . ' DAY ') : ''),
@@ -214,7 +220,7 @@ class Releases
 				%s %s %s %s
 				ORDER BY %s %s %s",
 				NZB::NZB_ADDED,
-				$this->showPasswords(),
+				$this->showPasswords,
 				$this->categorySQL($cat),
 				($maxAge > 0 ? (" AND postdate > NOW() - INTERVAL " . $maxAge . ' DAY ') : ''),
 				(count($excludedCats) ? (' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')') : ''),
@@ -227,39 +233,29 @@ class Releases
 	}
 
 	/**
-	 * Buffer of the password status string to form part of the query.
-	 * @var null|string
-	 */
-	private $passwordSettingBuffer = null;
-
-	/**
 	 * Return site setting for hiding/showing passworded releases.
+	 *
+	 * @param Settings $pdo
 	 *
 	 * @return string
 	 */
-	public function showPasswords()
+	public static function showPasswords(Settings $pdo)
 	{
-		if (!is_null($this->passwordSettingBuffer)) {
-			return $this->passwordSettingBuffer;
-		}
-
-		$passwordStatus = ('= ' . Releases::PASSWD_NONE);
-		$setting = $this->pdo->query(
+		$setting = $pdo->query(
 			"SELECT value FROM settings WHERE setting = 'showpasswordedrelease'",
 			true, nZEDb_CACHE_EXPIRY_LONG
 		);
-		if (isset($setting[0]['value']) && is_numeric($setting[0]['value'])) {
-			switch ($setting[0]['value']) {
-				case 1:
-					$passwordStatus = ('<= ' . Releases::PASSWD_POTENTIAL);
-					break;
-				case 10:
-					$passwordStatus = ('<= ' . Releases::PASSWD_RAR);
-					break;
-			}
+		switch ((isset($setting[0]['value']) && is_numeric($setting[0]['value']) ? $setting[0]['value'] : 10)) {
+			case 0: // Hide releases with a password or a potential password (Hide unprocessed releases).
+				return ('= ' . Releases::PASSWD_NONE);
+			case 1: // Show releases with no password or a potential password (Show unprocessed releases).
+				return ('<= ' . Releases::PASSWD_POTENTIAL);
+			case 2: // Hide releases with a password or a potential password (Show unprocessed releases).
+				return ('<= ' . Releases::PASSWD_NONE);
+			case 10: // Shows everything.
+			default:
+				return ('<= ' . Releases::PASSWD_RAR);
 		}
-		$this->passwordSettingBuffer = $passwordStatus;
-		return $passwordStatus;
 	}
 
 	/**
@@ -507,7 +503,7 @@ class Releases
 				ORDER BY postdate DESC %s",
 				$this->getConcatenatedCategoryIDs(),
 				$cartSearch,
-				$this->showPasswords(),
+				$this->showPasswords,
 				NZB::NZB_ADDED,
 				$catSearch,
 				($rageID > -1 ? sprintf(' AND r.rageid = %d %s ', $rageID, ($catSearch == '' ? $catLimit : '')) : ''),
@@ -551,7 +547,7 @@ class Releases
 				(count($excludedCats) ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : ''),
 				($airDate > -1 ? sprintf(' AND r.tvairdate >= DATE_SUB(CURDATE(), INTERVAL %d DAY) ', $airDate) : ''),
 				NZB::NZB_ADDED,
-				$this->showPasswords(),
+				$this->showPasswords,
 				(' LIMIT ' . ($limit > 100 ? 100 : $limit) . ' OFFSET 0')
 			), true, nZEDb_CACHE_EXPIRY_MEDIUM
 		);
@@ -588,7 +584,7 @@ class Releases
 				$this->uSQL($this->pdo->query(sprintf('SELECT imdbid, categoryid FROM user_movies WHERE user_id = %d', $userID), true), 'imdbid'),
 				(count($excludedCats) ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : ''),
 				NZB::NZB_ADDED,
-				$this->showPasswords(),
+				$this->showPasswords,
 				(' LIMIT ' . ($limit > 100 ? 100 : $limit) . ' OFFSET 0')
 			), true, nZEDb_CACHE_EXPIRY_MEDIUM
 		);
@@ -632,7 +628,7 @@ class Releases
 				$this->uSQL($userShows, 'rageid'),
 				(count($excludedCats) ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : ''),
 				NZB::NZB_ADDED,
-				$this->showPasswords(),
+				$this->showPasswords,
 				($maxAge > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxAge) : ''),
 				$orderBy[0],
 				$orderBy[1],
@@ -664,7 +660,7 @@ class Releases
 				$this->uSQL($userShows, 'rageid'),
 				(count($excludedCats) ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : ''),
 				NZB::NZB_ADDED,
-				$this->showPasswords(),
+				$this->showPasswords,
 				($maxAge > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxAge) : '')
 			)
 		);
@@ -995,7 +991,7 @@ class Releases
 			"%s
 			WHERE r.passwordstatus %s AND r.nzbstatus = %d %s %s %s %s %s %s %s %s %s %s %s",
 			$this->releaseSearch->getFullTextJoinString(),
-			$this->showPasswords(),
+			$this->showPasswords,
 			NZB::NZB_ADDED,
 			($maxAge > 0 ? sprintf(' AND r.postdate > (NOW() - INTERVAL %d DAY) ', $maxAge) : ''),
 			($groupName != -1 ? sprintf(' AND r.group_id = %d ', $this->groups->getIDByName($groupName)) : ''),
@@ -1069,7 +1065,7 @@ class Releases
 			AND r.passwordstatus %s %s %s %s %s %s %s",
 			($name !== '' ? $this->releaseSearch->getFullTextJoinString() : ''),
 			NZB::NZB_ADDED,
-			$this->showPasswords(),
+			$this->showPasswords,
 			($rageId != -1 ? sprintf(' AND rageid = %d ', $rageId) : ''),
 			($series != '' ? sprintf(' AND UPPER(r.season) = UPPER(%s)', $this->pdo->escapeString(((is_numeric($series) && strlen($series) != 4) ? sprintf('S%02d', $series) : $series))) : ''),
 			($episode != '' ? sprintf(' AND r.episode %s', $this->pdo->likeString((is_numeric($episode) ? sprintf('E%02d', $episode) : $episode))) : ''),
@@ -1128,7 +1124,7 @@ class Releases
 			"%s
 			WHERE r.passwordstatus %s AND r.nzbstatus = %d %s %s %s %s %s",
 			($name !== '' ? $this->releaseSearch->getFullTextJoinString() : ''),
-			$this->showPasswords(),
+			$this->showPasswords,
 			NZB::NZB_ADDED,
 			($aniDbID > -1 ? sprintf(' AND anidbid = %d ', $aniDbID) : ''),
 			(is_numeric($episodeNumber) ? sprintf(" AND r.episode '%s' ", $this->pdo->likeString($episodeNumber)) : ''),
@@ -1188,7 +1184,7 @@ class Releases
 			%s %s %s %s",
 			($name !== '' ? $this->releaseSearch->getFullTextJoinString() : ''),
 			NZB::NZB_ADDED,
-			$this->showPasswords(),
+			$this->showPasswords,
 			($name !== '' ? $this->releaseSearch->getSearchSQL(['searchname' => $name]) : ''),
 			(($imDbId != '-1' && is_numeric($imDbId)) ? sprintf(' AND imdbid = %d ', str_pad($imDbId, 7, '0', STR_PAD_LEFT)) : ''),
 			$this->categorySQL($cat),
@@ -1385,7 +1381,7 @@ class Releases
 				WHERE r.categoryid BETWEEN 5000 AND 5999
 				AND r.passwordstatus %s
 				AND rageid = %d %s %s",
-				$this->showPasswords(),
+				$this->showPasswords,
 				$rageID,
 				$series,
 				$episode
