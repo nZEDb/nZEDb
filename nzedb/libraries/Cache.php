@@ -350,12 +350,7 @@ class Cache
 							return \Memcached::SERIALIZER_IGBINARY;
 						}
 						throw new CacheException('Error: You have not compiled Memcached with igbinary support!');
-					case self::TYPE_APC:
-						$setting = ini_get('apc.serializer');
-						if (!$setting || strtolower($setting) != 'igbinary') {
-							throw new CacheException('Error: You have not set apc.serializer=igbinary in php.ini!');
-						}
-						return null;
+					case self::TYPE_APC: // Ignore - set by apc.serializer setting.
 					default:
 						return null;
 				}

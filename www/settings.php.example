@@ -230,6 +230,7 @@ define('nZEDb_CACHE_COMPRESSION', false);
  * 2 - [Redis Only] Use no serializer.
  *
  * @note igbinary must be compiled and enabled in php.ini
+ * @note APC/APCu: This setting is ignored, set this in php.ini with apc.serializer
  * @note Memcached/Redis must be compiled with igbinary support as well to use igbinary.
  * @note Read the igbinary page how to compile / enable.
  * @see https://github.com/phadej/igbinary
