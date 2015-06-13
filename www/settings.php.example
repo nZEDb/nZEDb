@@ -162,6 +162,7 @@ define('nZEDb_RENAME_MUSIC_MEDIAINFO', true);
  * 2 - redis      ; Redis server(s) will be used for caching.
  * 3 - apc/apcu   ; APC or APCu will be used for caching.
  *
+ * @see https://github.com/nZEDb/nZEDb_Misc/blob/master/Guides/Various/Cache/Guide.md
  * @note Memcahed: The Memcached PHP extension must be installed.
  * @note Redis:    We use the Redis PHP extension by nicolasff. https://github.com/nicolasff/phpredis
  * @note APC:      The APC or APCu PHP extension must be installed.
