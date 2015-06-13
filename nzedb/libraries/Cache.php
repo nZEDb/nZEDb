@@ -340,7 +340,10 @@ class Cache
 
 				switch (nZEDb_CACHE_TYPE) {
 					case self::TYPE_REDIS:
-						// No way to check since phpredis has no constants or functions for this.
+						// If this is not defined, it means phpredis was not compiled with --enable-redis-igbinary
+						if (!defined('\Redis::SERIALIZER_IGBINARY')) {
+							throw new CacheException('Error: phpredis was not compiled with igbinary support!');
+						}
 						return \Redis::SERIALIZER_IGBINARY;
 					case self::TYPE_MEMCACHED:
 						if (\Memcached::HAVE_IGBINARY > 0) {
