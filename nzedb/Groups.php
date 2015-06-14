@@ -26,6 +26,44 @@ class Groups
 	}
 
 	/**
+	 * Add a new group.
+	 *
+	 * @param array $group
+	 *
+	 * @return bool
+	 */
+	public function add($group)
+	{
+		$minFileString =
+			($group["minfilestoformrelease"] == '' ? "NULL" :
+				sprintf("%d", $this->formatNumberString($group["minfilestoformrelease"], false))
+			);
+
+		$minSizeString =
+			($group["minsizetoformrelease"] == '' ? "NULL" :
+				sprintf("%d", $this->formatNumberString($group["minsizetoformrelease"], false))
+			);
+
+		return $this->pdo->queryInsert(
+			sprintf("
+				INSERT INTO groups
+					(name, description, backfill_target, first_record, last_record, last_updated,
+					active, backfill, minfilestoformrelease, minsizetoformrelease)
+				VALUES (%s, %s, %s, %s, %s, NOW(), %s, %s, %s, %s)",
+					$this->pdo->escapeString(trim($group["name"])),
+					$this->pdo->escapeString(trim($group["description"])),
+					$this->formatNumberString($group["backfill_target"]),
+					$this->formatNumberString($group["first_record"]),
+					$this->formatNumberString($group["last_record"]),
+					$this->formatNumberString($group["active"]),
+					$this->formatNumberString($group["backfill"]),
+					$minFileString,
+					$minSizeString
+			)
+		);
+	}
+
+	/**
 	 * @return array
 	 */
 	public function getAll()
@@ -383,42 +421,6 @@ class Groups
 				$minFileString,
 				$minSizeString,
 				$group["id"]
-			)
-		);
-	}
-
-	/**
-	 * Add a new group.
-	 *
-	 * @param array $group
-	 *
-	 * @return bool
-	 */
-	public function add($group)
-	{
-		$minFileString =
-			($group["minfilestoformrelease"] == '' ? "NULL" : sprintf("%d", $this->formatNumberString($group["minfilestoformrelease"], false))
-			);
-
-		$minSizeString =
-			($group["minsizetoformrelease"] == '' ? "NULL" : sprintf("%d", $this->formatNumberString($group["minsizetoformrelease"], false))
-			);
-
-		return $this->pdo->queryInsert(
-			sprintf("
-				INSERT INTO groups
-					(name, description, backfill_target, first_record, last_record, last_updated,
-					active, backfill, minfilestoformrelease, minsizetoformrelease)
-				VALUES (%s, %s, %s, %s, %s, NOW(), %s, %s, %s, %s)",
-					$this->pdo->escapeString(trim($group["name"])),
-					$this->pdo->escapeString(trim($group["description"])),
-					$this->formatNumberString($group["backfill_target"]),
-					$this->formatNumberString($group["first_record"]),
-					$this->formatNumberString($group["last_record"]),
-					$this->formatNumberString($group["active"]),
-					$this->formatNumberString($group["backfill"]),
-					$minFileString,
-					$minSizeString
 			)
 		);
 	}
