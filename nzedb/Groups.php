@@ -37,7 +37,8 @@ class Groups
 			LEFT OUTER JOIN
 				(SELECT group_id, COUNT(id) AS num FROM releases GROUP BY group_id) rel
 			ON rel.group_id = groups.id
-			ORDER BY groups.name"
+			ORDER BY groups.name",
+			true, nZEDb_CACHE_EXPIRY_LONG
 		);
 	}
 
@@ -46,7 +47,10 @@ class Groups
 	 */
 	public function getGroupsForSelect()
 	{
-		$categories = $this->pdo->query("SELECT * FROM groups WHERE active = 1 ORDER BY name");
+		$categories = $this->pdo->query(
+			"SELECT * FROM groups WHERE active = 1 ORDER BY name",
+			true, nZEDb_CACHE_EXPIRY_LONG
+		);
 		$temp_array = [];
 
 		$temp_array[-1] = "--Please Select--";
@@ -73,7 +77,10 @@ class Groups
 	 */
 	public function getActive()
 	{
-		return $this->pdo->query("SELECT * FROM groups WHERE active = 1 ORDER BY name");
+		return $this->pdo->query(
+			"SELECT * FROM groups WHERE active = 1 ORDER BY name",
+			true, nZEDb_CACHE_EXPIRY_SHORT
+		);
 	}
 
 	/**
@@ -81,7 +88,10 @@ class Groups
 	 */
 	public function getActiveBackfill()
 	{
-		return $this->pdo->query("SELECT * FROM groups WHERE backfill = 1 AND last_record != 0 ORDER BY name");
+		return $this->pdo->query(
+			"SELECT * FROM groups WHERE backfill = 1 AND last_record != 0 ORDER BY name",
+			true, nZEDb_CACHE_EXPIRY_SHORT
+		);
 	}
 
 	/**
@@ -89,7 +99,10 @@ class Groups
 	 */
 	public function getActiveByDateBackfill()
 	{
-		return $this->pdo->query("SELECT * FROM groups WHERE backfill = 1 AND last_record != 0 ORDER BY first_record_postdate DESC");
+		return $this->pdo->query(
+			"SELECT * FROM groups WHERE backfill = 1 AND last_record != 0 ORDER BY first_record_postdate DESC",
+			true, nZEDb_CACHE_EXPIRY_SHORT
+		);
 	}
 
 	/**
@@ -97,7 +110,10 @@ class Groups
 	 */
 	public function getActiveIDs()
 	{
-		return $this->pdo->query("SELECT id FROM groups WHERE active = 1 ORDER BY name");
+		return $this->pdo->query(
+			"SELECT id FROM groups WHERE active = 1 ORDER BY name",
+			true, nZEDb_CACHE_EXPIRY_SHORT
+		);
 	}
 
 	/**
@@ -107,8 +123,9 @@ class Groups
 	 */
 	public function getByName($grp)
 	{
-		return $this->pdo->queryOneRow(sprintf("SELECT * FROM groups WHERE name = %s",
-											   $this->pdo->escapeString($grp)));
+		return $this->pdo->queryOneRow(
+			sprintf("SELECT * FROM groups WHERE name = %s", $this->pdo->escapeString($grp))
+		);
 	}
 
 	/**
@@ -134,8 +151,9 @@ class Groups
 	 */
 	public function getIDByName($name)
 	{
-		$res = $this->pdo->queryOneRow(sprintf("SELECT id FROM groups WHERE name = %s",
-											   $this->pdo->escapeString($name)));
+		$res = $this->pdo->queryOneRow(
+			sprintf("SELECT id FROM groups WHERE name = %s", $this->pdo->escapeString($name))
+		);
 
 		return ($res === false ? '' : $res["id"]);
 	}
@@ -147,8 +165,9 @@ class Groups
 	 */
 	public function disableForPost($name)
 	{
-		$this->pdo->queryExec(sprintf("UPDATE groups SET backfill = 0 WHERE name = %s",
-									  $this->pdo->escapeString($name)));
+		$this->pdo->queryExec(
+			sprintf("UPDATE groups SET backfill = 0 WHERE name = %s", $this->pdo->escapeString($name))
+		);
 	}
 
 	/**
@@ -253,7 +272,7 @@ class Groups
 					)
 					: ''
 				)
-			)
+			), true, nZEDb_CACHE_EXPIRY_SHORT
 		);
 	}
 
@@ -288,7 +307,7 @@ class Groups
 					)
 					: ''
 				)
-			)
+			), true, nZEDb_CACHE_EXPIRY_SHORT
 		);
 	}
 
@@ -322,7 +341,7 @@ class Groups
 					)
 					: ''
 				)
-			)
+			), true, nZEDb_CACHE_EXPIRY_SHORT
 		);
 	}
 

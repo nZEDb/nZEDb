@@ -3,6 +3,7 @@ namespace nzedb;
 
 use nzedb\db\Settings;
 use nzedb\utility\Utility;
+use nzedb\Groups;
 
 /**
  * Import NZB files into the database.
@@ -85,6 +86,13 @@ class NZBImport
 	public $nzb;
 
 	/**
+	 * Access point to add new groups.
+	 *
+	 * @var Groups $groups
+	 */
+	private $groups;
+
+	/**
 	 * Construct.
 	 *
 	 * @param array $options Class instances / various options.
@@ -116,6 +124,7 @@ class NZBImport
 		$this->crossPostt = ($this->pdo->getSetting('crossposttime') != '') ? $this->pdo->getSetting('crossposttime') : 2;
 		$this->browser = $options['Browser'];
 		$this->retVal = '';
+		$this->groups = new Groups(['Settings' => $this->pdo]);
 	}
 
 	/**
@@ -290,6 +299,19 @@ class NZBImport
 						if (!$groupName) {
 							$groupName = $group;
 						}
+					} else {
+						$groupID = $this->groups->add([
+							'name' => $group,
+							'description' => 'Added by NZBimport script.',
+							'backfill_target' => 0,
+							'first_record' => 0,
+							'last_record' => 0,
+							'active' => 0,
+							'backfill' => 0
+						]);
+						$this->allGroups[$group] = $groupID;
+
+						$this->echoOut("Adding missing group: ($group)");
 					}
 				}
 				// Add all the found groups to an array.

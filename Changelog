@@ -7,6 +7,15 @@ All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 
+2015-06-14 niel
+	* Mrg: PR 1725 from kingcat/zetas - NZBImport add missing group (inactive) instead of skipping nzb.
+2015-06-13 bart39
+	* Fix: Undefined offset: 1 in MiscSorter.php #1714.
+2015-06-12 bart39
+	* Mrg: PR 1723 from kevin123 - Changes to showpasswordedrelease.
+	* Mrg: PR 1722 from kevin123 - Add support for APCu or APC for caching.
+2015-06-11 niel
+	* Mrg: PR from kevin123 - Cache various queries.
 2015-06-10 niel
 	* Mrg: PR 1712 from zetas - Ordering comments by created date. Showing newest on top.
 	* Mrg: PR 1719 from enverex - Add matching for hyphenated music scene release names.

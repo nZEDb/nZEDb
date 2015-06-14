@@ -172,28 +172,19 @@ class Music
 	 */
 	public function getMusicCount($cat, $maxage = -1, $excludedcats = [])
 	{
-
-
-		$browseby = $this->getBrowseBy();
-
-		$catsrch = '';
-		if (count($cat) > 0 && $cat[0] != -1) {
-			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
-		}
-
-		if ($maxage > 0) {
-			$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
-		} else {
-			$maxage = '';
-		}
-
-		$exccatlist = "";
-		if (count($excludedcats) > 0) {
-			$exccatlist = " AND r.categoryid NOT IN (" . implode(",", $excludedcats) . ")";
-		}
-
-		$sql = sprintf("SELECT COUNT(DISTINCT r.musicinfoid) AS num FROM releases r INNER JOIN musicinfo m ON m.id = r.musicinfoid AND m.title != '' AND m.cover = 1 WHERE nzbstatus = 1 AND r.passwordstatus <= (SELECT value FROM settings WHERE setting='showpasswordedrelease') AND %s %s %s %s", $browseby, $catsrch, $maxage, $exccatlist);
-		$res = $this->pdo->queryOneRow($sql);
+		$res = $this->pdo->queryOneRow(
+			sprintf(
+				"SELECT COUNT(DISTINCT r.musicinfoid) AS num
+				FROM releases r
+				INNER JOIN musicinfo m ON m.id = r.musicinfoid AND m.title != '' AND m.cover = 1
+				WHERE nzbstatus = 1 AND r.passwordstatus %s AND %s %s %s %s",
+				Releases::showPasswords($this->pdo),
+				$this->getBrowseBy(),
+				(count($cat) > 0 && $cat[0] != -1 ? (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat) : ''),
+				($maxage > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage) : ''),
+				(count($excludedcats) > 0 ? " AND r.categoryid NOT IN (" . implode(",", $excludedcats) . ")" : '')
+			)
+		);
 		return $res["num"];
 	}
 
@@ -208,8 +199,6 @@ class Music
 	 */
 	public function getMusicRange($cat, $start, $num, $orderby, $excludedcats = [])
 	{
-
-
 		$browseby = $this->getBrowseBy();
 
 		if ($start === false) {
@@ -229,7 +218,8 @@ class Music
 		}
 
 		$order = $this->getMusicOrder($orderby);
-		return $this->pdo->query(sprintf("SELECT GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id, "
+		return $this->pdo->query(
+			sprintf("SELECT GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id, "
 					. "GROUP_CONCAT(r.rarinnerfilecount ORDER BY r.postdate DESC SEPARATOR ',') as grp_rarinnerfilecount, "
 					. "GROUP_CONCAT(r.haspreview ORDER BY r.postdate DESC SEPARATOR ',') AS grp_haspreview, "
 					. "GROUP_CONCAT(r.passwordstatus ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_password, "
@@ -247,8 +237,12 @@ class Music
 					. "LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id "
 					. "INNER JOIN musicinfo m ON m.id = r.musicinfoid "
 					. "WHERE r.nzbstatus = 1 AND m.title != '' AND "
-					. "r.passwordstatus <= (SELECT value FROM settings WHERE setting='showpasswordedrelease') AND %s %s %s "
-					. "GROUP BY m.id ORDER BY %s %s" . $limit, $browseby, $catsrch, $exccatlist, $order[0], $order[1]));
+					. "r.passwordstatus %s AND %s %s %s "
+					. "GROUP BY m.id ORDER BY %s %s" . $limit,
+				Releases::showPasswords($this->pdo),
+				$browseby, $catsrch, $exccatlist, $order[0], $order[1]
+			), true, nZEDb_CACHE_EXPIRY_MEDIUM
+		);
 	}
 
 	/**
