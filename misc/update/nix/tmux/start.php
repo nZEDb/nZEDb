@@ -19,7 +19,10 @@ $tmux_session = (isset($tmux_settings->tmux_session)) ? $tmux_settings->tmux_ses
 $path = __DIR__;
 
 // Set running value to on.
-$tmux->startRunning();
+#$tmux->startRunning();
+if ($pdo->getSetting('tmux.running.exit') != 0) {
+	$pdo->setSetting(['tmux.running.exit' => 0]);
+}
 
 // Create a placeholder session so tmux commands do not throw server not found errors.
 exec('tmux new-session -ds placeholder 2>/dev/null');
