@@ -302,7 +302,7 @@ class NZBImport
 					} else {
 						$groupID = $this->groups->add([
 							'name' => $group,
-							'description' => 'Added via import',
+							'description' => 'Added by NZBimport script.',
 							'backfill_target' => 0,
 							'first_record' => 0,
 							'last_record' => 0,
