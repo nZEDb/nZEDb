@@ -7,6 +7,8 @@ All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 
+2015-06-15 niel
+	* Mrg: PR 1724 from kevin123, Changes to cache use.
 2015-06-14 niel
 	* Mrg: PR 1725 from kingcat/zetas - NZBImport add missing group (inactive) instead of skipping nzb.
 2015-06-13 bart39
