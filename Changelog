@@ -10,7 +10,8 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 2015-06-15 niel
 	* Mrg: PR 1724 from kevin123, Changes to cache use.
 	* NEW: Adding a limit to the maximum number of headers a single group can grab per iteration of the main loop. This allows for a reasonably safe catchup ability on out of date groups, without completely choking the database with one groups headers ;-)
-		***NOTE*** this may slow thing down for some users of *very* active groups.
+		***NOTE*** this may slow things down for some users of *very* active groups.
+		There is an entry in the Settings table (max=>headers=>iteration) to set the value (default 1,000,000), an entry in admin => Edit Site to make this easier will come when someone can be coerced into doing smarty work ;-)
 2015-06-14 niel
 	* Mrg: PR 1725 from kingcat/zetas - NZBImport add missing group (inactive) instead of skipping nzb.
 2015-06-13 bart39
