@@ -325,13 +325,17 @@ class NZB
 	 * Retrieve various information on a NZB file (the subject, # of pars,
 	 * file extensions, file sizes, file completion, group names, # of parts).
 	 *
-	 * @param string $nzb The NZB contents in a string.
+	 * @param string $nzb          The NZB contents in a string.
+	 * @param array $numericKeys [
+	 *                             0 => True: Use a number for the array keys. False: Use file name for the array keys.,
+	 *                             1 => True: Strip file/part count from file name for the array key. False: Leave file name as is.
+	 *                           ]
 	 *
 	 * @return array $result Empty if not an NZB or the contents of the NZB.
 	 *
 	 * @access public
 	 */
-	public function nzbFileList($nzb)
+	public function nzbFileList($nzb, $numericKeys = [0 => true, 1 => false])
 	{
 		$num_pars = $i = 0;
 		$result = [];
@@ -352,6 +356,20 @@ class NZB
 			// Amount of pars.
 			if (stripos($title, '.par2')) {
 				$num_pars++;
+			}
+
+			if (!$numericKeys[0]) {
+				$i = $title;
+				if ($numericKeys[1]) {
+					// Strip file / part count to get proper sorting.
+					$i = preg_replace('#\d+[- ._]?(/|\||[o0]f)[- ._]?\d+?(?![- ._]\d)#i', '', $i);
+					// Change .rar and .par2 to be sorted before .part0x.rar and .volxxx+xxx.par2
+					if (strpos($i, '.par2') !== false && !preg_match('#\.vol\d+\+\d+\.par2#i', $i)) {
+						$i = str_replace('.par2', '.vol0.par2', $i);
+					} else if (strpos($i, '.rar') !== false && !preg_match('#\.part\d+\.rar#i', $i)) {
+						$i = str_replace('.rar', '.part0.rar', $i);
+					}
+				}
 			}
 
 			$result[$i]['title'] = $title;
@@ -408,7 +426,9 @@ class NZB
 			}
 
 			unset($result[$i]['segments']['@attributes']);
-			$i++;
+			if ($numericKeys[0]) {
+				$i++;
+			}
 		}
 		return $result;
 	}
