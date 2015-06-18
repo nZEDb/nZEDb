@@ -848,6 +848,14 @@
 				</td>
 			</tr>
 			<tr>
+				<td style="width:180px;"><label for="fetchlastcompressedfiles">Download last compressed file:</label></td>
+				<td>
+					{html_radios id="fetchlastcompressedfiles" name='fetchlastcompressedfiles' values=$yesno_ids output=$yesno_names selected=$site->fetchlastcompressedfiles separator='<br />'}
+					<div class="hint">Try to download the last rar or zip file? (This is good if most of the files are at the end.) Note: The first rar/zip is still downloaded.
+					</div>
+				</td>
+			</tr>
+			<tr>
 				<td style="width:180px;"><label for="processaudiosample">Process Audio Samples:</label></td>
 				<td>
 					{html_radios id="processaudiosample" name='processaudiosample' values=$yesno_ids output=$yesno_names selected=$site->processaudiosample separator='<br />'}
