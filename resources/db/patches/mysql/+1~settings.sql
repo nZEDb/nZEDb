@@ -4,6 +4,6 @@ VALUES (
 '',
 'fetchlastcompressedfiles',
 0,
-'Download/process the last rar or zip file(s) to check for a password and get the file names inside?',
+'Try to download the last rar or zip file? (This is good if most of the files are at the end.) Note: The first rar/zip is still downloaded.',
 'fetchlastcompressedfiles'
 );
