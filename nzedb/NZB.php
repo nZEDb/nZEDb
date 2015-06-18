@@ -366,8 +366,8 @@ class NZB
 					// Change .rar and .par2 to be sorted before .part0x.rar and .volxxx+xxx.par2
 					if (strpos($i, '.par2') !== false && !preg_match('#\.vol\d+\+\d+\.par2#i', $i)) {
 						$i = str_replace('.par2', '.vol0.par2', $i);
-					} else if (strpos($i, '.rar') !== false && !preg_match('#\.part\d+\.rar#i', $i)) {
-						$i = str_replace('.rar', '.part0.rar', $i);
+					} else if (preg_match('#\.rar[^a-z0-9]#i', $i) && !preg_match('#\.part\d+\.rar#i', $i)) {
+						$i = preg_replace('#\.rar(?:[^a-z0-9])#', '.part0.rar', $i);
 					}
 				}
 			}
