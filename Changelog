@@ -7,6 +7,8 @@ All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 
+2015-06-17 niel
+	* NEW: PR 1726 from kevin123 - Support for downloading last rar/zip file when post processing.
 2015-06-15 niel
 	* Mrg: PR 1724 from kevin123, Changes to cache use.
 	* NEW: Adding a limit to the maximum number of headers a single group can grab per iteration of the main loop. This allows for a reasonably safe catchup ability on out of date groups, without completely choking the database with one groups headers ;-)
