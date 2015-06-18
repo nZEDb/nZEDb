@@ -1003,7 +1003,7 @@ class ProcessAdditional
 				$mID[] = $segment;
 			}
 			// Nothing to download.
-			if (!$mID) {
+			if (empty($mID)) {
 				continue;
 			}
 
