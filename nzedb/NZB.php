@@ -325,18 +325,23 @@ class NZB
 	 * Retrieve various information on a NZB file (the subject, # of pars,
 	 * file extensions, file sizes, file completion, group names, # of parts).
 	 *
-	 * @param string $nzb          The NZB contents in a string.
-	 * @param array $numericKeys [
-	 *                             0 => True: Use a number for the array keys. False: Use file name for the array keys.,
-	 *                             1 => True: Strip file/part count from file name for the array key. False: Leave file name as is.
-	 *                           ]
+	 * @param string	$nzb		The NZB contents in a string.
+	 * @param array		$options
+	 * 					'no-file-key'	=> True - use numeric array key; False - Use filename as array key.
+	 * 					'strip-count'	=> True - Strip file/part count from file name to make the array key; False - Leave file name as is.
 	 *
 	 * @return array $result Empty if not an NZB or the contents of the NZB.
 	 *
 	 * @access public
 	 */
-	public function nzbFileList($nzb, $numericKeys = [0 => true, 1 => false])
+	public function nzbFileList($nzb, array $options = null)
 	{
+		$defaults = [
+				'no-file-key' => true,
+				'strip-count' => false,
+			];
+		$options += $defaults;
+
 		$num_pars = $i = 0;
 		$result = [];
 
@@ -358,9 +363,9 @@ class NZB
 				$num_pars++;
 			}
 
-			if (!$numericKeys[0]) {
+			if ($options['no-file-key'] == false) {
 				$i = $title;
-				if ($numericKeys[1]) {
+				if ($options['strip-count']) {
 					// Strip file / part count to get proper sorting.
 					$i = preg_replace('#\d+[- ._]?(/|\||[o0]f)[- ._]?\d+?(?![- ._]\d)#i', '', $i);
 					// Change .rar and .par2 to be sorted before .part0x.rar and .volxxx+xxx.par2
@@ -426,7 +431,7 @@ class NZB
 			}
 
 			unset($result[$i]['segments']['@attributes']);
-			if ($numericKeys[0]) {
+			if ($options['no-file-key']) {
 				$i++;
 			}
 		}
