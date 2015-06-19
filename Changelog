@@ -8,6 +8,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 
 2015-06-19 bart39
+	* Mrg: PR 1728 from kevin123, Add support for trakt.tv API v2.
 	* Mrg: PR 1727 from darius, Fix the nzbFileList function.
 2015-06-17 niel
 	* NEW: PR 1726 from kevin123 - Support for downloading last rar/zip file when post processing.
