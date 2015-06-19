@@ -87,13 +87,17 @@ class Utility
 	public static function curlSslContextOptions($verify = true)
 	{
 		$options = [];
-		if ($verify && nZEDb_SSL_VERIFY_HOST) {
+		if ($verify && nZEDb_SSL_VERIFY_HOST && (!empty(nZEDb_SSL_CAFILE) || !empty(nZEDb_SSL_CAPATH))) {
 			$options += [
-				CURLOPT_CAINFO         => nZEDb_SSL_CAFILE,
-				CURLOPT_CAPATH         => nZEDb_SSL_CAPATH,
 				CURLOPT_SSL_VERIFYPEER => (bool)nZEDb_SSL_VERIFY_PEER,
 				CURLOPT_SSL_VERIFYHOST => (nZEDb_SSL_VERIFY_HOST ? 2 : 0),
 			];
+			if (!empty(nZEDb_SSL_CAFILE)) {
+				$options += [CURLOPT_CAINFO => nZEDb_SSL_CAFILE];
+			}
+			if (!empty(nZEDb_SSL_CAPATH)) {
+				$options += [CURLOPT_CAPATH => nZEDb_SSL_CAPATH];
+			}
 		} else {
 			$options += [
 				CURLOPT_SSL_VERIFYPEER => false,
@@ -430,16 +434,24 @@ class Utility
 	 */
 	public static function streamSslContextOptions($forceIgnore = false)
 	{
-		$options = [
-			'verify_peer'       => ($forceIgnore ? false : (bool)nZEDb_SSL_VERIFY_PEER),
-			'verify_peer_name'  => ($forceIgnore ? false : (bool)nZEDb_SSL_VERIFY_HOST),
-			'allow_self_signed' => ($forceIgnore ? true : (bool)nZEDb_SSL_ALLOW_SELF_SIGNED),
-		];
-		if (nZEDb_SSL_CAFILE) {
-			$options['cafile'] = nZEDb_SSL_CAFILE;
-		}
-		if (nZEDb_SSL_CAPATH) {
-			$options['capath'] = nZEDb_SSL_CAPATH;
+		if (empty(nZEDb_SSL_CAFILE) && empty(nZEDb_SSL_CAPATH)) {
+			$options = [
+				'verify_peer'       => false,
+				'verify_peer_name'  => false,
+				'allow_self_signed' => true,
+			];
+		} else {
+			$options = [
+				'verify_peer'       => ($forceIgnore ? false : (bool)nZEDb_SSL_VERIFY_PEER),
+				'verify_peer_name'  => ($forceIgnore ? false : (bool)nZEDb_SSL_VERIFY_HOST),
+				'allow_self_signed' => ($forceIgnore ? true : (bool)nZEDb_SSL_ALLOW_SELF_SIGNED),
+			];
+			if (!empty(nZEDb_SSL_CAFILE)) {
+				$options['cafile'] = nZEDb_SSL_CAFILE;
+			}
+			if (!empty(nZEDb_SSL_CAPATH)) {
+				$options['capath'] = nZEDb_SSL_CAPATH;
+			}
 		}
 		// If we set the transport to tls and the server falls back to ssl,
 		// the context options would be for tls and would not apply to ssl,
