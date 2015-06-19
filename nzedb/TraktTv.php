@@ -86,7 +86,7 @@ class TraktTv
 	 * Accept a title (the-big-lebowski-1998), a IMDB id, or a TMDB id.
 	 *
 	 * @param string $movie Title or IMDB id.
-	 * @param bool $array   Return the full array or just the IMDB id.
+	 * @param bool $imdbID  Return only the IMDB id ?
 	 *
 	 * @see http://docs.trakt.apiary.io/#reference/movies/summary/get-a-movie
 	 *
@@ -94,7 +94,7 @@ class TraktTv
 	 *
 	 * @access public
 	 */
-	public function movieSummary($movie = '', $array = false)
+	public function movieSummary($movie = '', $imdbID = false)
 	{
 		if (!empty($this->clientID)) {
 			$json = Utility::getUrl([
@@ -108,11 +108,10 @@ class TraktTv
 				$json = json_decode($json, true);
 				if (isset($json['status']) && $json['status'] === 'failure') {
 					return false;
-				} else if ($array) {
-					return $json;
-				} elseif (isset($json["imdb_id"])) {
+				} else if ($imdbID && isset($json["imdb_id"])) {
 					return $json["imdb_id"];
 				}
+				return $json;
 			}
 		}
 		return false;
