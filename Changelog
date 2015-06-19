@@ -8,6 +8,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 
 2015-06-19 bart39
+	* Mrg: PR 1730 from kevin123, Fix for changes in Trakt API v2.
 	* Mrg: PR 1729 from kevin123, Fix issues if nZEDb_SSL_CAFILE is empty.
 	* Mrg: PR 1728 from kevin123, Add support for trakt.tv API v2.
 	* Mrg: PR 1727 from darius, Fix the nzbFileList function.
