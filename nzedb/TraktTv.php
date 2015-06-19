@@ -65,7 +65,7 @@ class TraktTv
 					'url' =>
 						'https://api-v2launch.trakt.tv/shows/' .
 						str_replace([' ', '_', '.'], '-', $title) .
-						'/season/' .
+						'/seasons/' .
 						str_replace(['S', 's'], '', $season) .
 						'/episodes/' .
 						str_replace(['E', 'e'], '', $ep),
