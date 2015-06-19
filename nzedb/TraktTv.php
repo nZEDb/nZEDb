@@ -62,7 +62,7 @@ class TraktTv
 	 */
 	public function episodeSummary($title = '', $season = '', $ep = '')
 	{
-		$json = $this->getJsonArray(
+		$array = $this->getJsonArray(
 			'https://api-v2launch.trakt.tv/shows/' .
 			str_replace([' ', '_', '.'], '-', $title) .
 			'/seasons/' .
@@ -70,10 +70,10 @@ class TraktTv
 			'/episodes/' .
 			str_replace(['E', 'e'], '', $ep)
 		);
-		if (!$json) {
+		if (!$array) {
 			return false;
 		}
-		return $json;
+		return $array;
 	}
 
 	/**
@@ -91,16 +91,16 @@ class TraktTv
 	 */
 	public function movieSummary($movie = '', $imdbID = false)
 	{
-		$json = $this->getJsonArray(
+		$array = $this->getJsonArray(
 			'https://api-v2launch.trakt.tv/movies/' .
 			str_replace([' ', '_', '.'], '-', str_replace(['(', ')'], '', $movie))
 		);
-		if (!$json) {
+		if (!$array) {
 			return false;
-		} else if ($imdbID && isset($json["imdb_id"])) {
-			return $json["imdb_id"];
+		} else if ($imdbID && isset($array["imdb_id"])) {
+			return $array["imdb_id"];
 		}
-		return $json;
+		return $array;
 	}
 
 	/**
