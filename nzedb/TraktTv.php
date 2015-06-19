@@ -68,7 +68,8 @@ class TraktTv
 			'/seasons/' .
 			str_replace(['S', 's'], '', $season) .
 			'/episodes/' .
-			str_replace(['E', 'e'], '', $ep)
+			str_replace(['E', 'e'], '', $ep),
+			'full'
 		);
 		if (!$array) {
 			return false;
@@ -81,7 +82,8 @@ class TraktTv
 	 * Accept a title (the-big-lebowski-1998), a IMDB id, or a TMDB id.
 	 *
 	 * @param string $movie Title or IMDB id.
-	 * @param bool $imdbID  Return only the IMDB id ?
+	 * @param string $type  imdbID:     Return only the IMDB ID (returns string)
+	 *                      full:       Return all extended properties (minus images). (returns array)
 	 *
 	 * @see http://docs.trakt.apiary.io/#reference/movies/summary/get-a-movie
 	 *
@@ -89,16 +91,24 @@ class TraktTv
 	 *
 	 * @access public
 	 */
-	public function movieSummary($movie = '', $imdbID = false)
+	public function movieSummary($movie = '', $type = 'imdbID')
 	{
+		switch($type) {
+			case 'full':
+				$extended = $type;
+				break;
+			case 'imdbID':
+			default:
+				$extended = 'min';
+		}
 		$array = $this->getJsonArray(
-			'https://api-v2launch.trakt.tv/movies/' .
-			str_replace([' ', '_', '.'], '-', str_replace(['(', ')'], '', $movie))
+			'https://api-v2launch.trakt.tv/movies/' . str_replace([' ', '_', '.'], '-', str_replace(['(', ')'], '', $movie)),
+			$extended
 		);
 		if (!$array) {
 			return false;
-		} else if ($imdbID && isset($array["imdb_id"])) {
-			return $array["imdb_id"];
+		} else if ($type === 'imdbID' && isset($array['ids']['imdb'])) {
+			return $array['ids']['imdb'];
 		}
 		return $array;
 	}
@@ -107,14 +117,20 @@ class TraktTv
 	 * Download JSON from Trakt, convert to array.
 	 *
 	 * @param string $URI URI to download.
+	 * @param string $extended Extended info from trakt tv.
+	 *                         Valid values:
+	 *                         'min'         Returns enough info to match locally. (Default)
+	 *                         'images'      Minimal info and all images.
+	 *                         'full'        Complete info for an item.
+	 *                         'full,images' Complete info and all images.
 	 *
 	 * @return bool|mixed
 	 */
-	private function getJsonArray($URI)
+	private function getJsonArray($URI, $extended = 'min')
 	{
 		if (!empty($this->clientID)) {
 			$json = Utility::getUrl([
-					'url'            => $URI,
+					'url'            => $URI . "?extended=$extended",
 					'requestheaders' => $this->requestHeaders
 				]
 			);
