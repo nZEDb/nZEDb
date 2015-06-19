@@ -1008,7 +1008,7 @@ class Movie
 					}
 
 					// Check on trakt.
-					$getIMDBid = $trakTv->traktMoviesummary($movieName);
+					$getIMDBid = $trakTv->movieSummary($movieName, true);
 					if ($getIMDBid !== false) {
 						$imdbID = $this->doMovieUpdate($getIMDBid, 'Trakt', $arr['id']);
 						if ($imdbID !== false) {
