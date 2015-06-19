@@ -62,21 +62,16 @@ class TraktTv
 	 */
 	public function episodeSummary($title = '', $season = '', $ep = '')
 	{
-		if (!empty($this->clientID)) {
-			$json = Utility::getUrl([
-					'url' =>
-						'https://api-v2launch.trakt.tv/shows/' .
-						str_replace([' ', '_', '.'], '-', $title) .
-						'/seasons/' .
-						str_replace(['S', 's'], '', $season) .
-						'/episodes/' .
-						str_replace(['E', 'e'], '', $ep),
-					'requestheaders' => $this->requestHeaders
-				]
-			);
-			if ($json !== false) {
-				return json_decode($json, true);
-			}
+		$json = $this->getJsonArray(
+			'https://api-v2launch.trakt.tv/shows/' .
+			str_replace([' ', '_', '.'], '-', $title) .
+			'/seasons/' .
+			str_replace(['S', 's'], '', $season) .
+			'/episodes/' .
+			str_replace(['E', 'e'], '', $ep)
+		);
+		if (is_array($json)) {
+			return $json;
 		}
 		return false;
 	}
@@ -96,22 +91,37 @@ class TraktTv
 	 */
 	public function movieSummary($movie = '', $imdbID = false)
 	{
+		$json = $this->getJsonArray(
+			'https://api-v2launch.trakt.tv/movies/' .
+			str_replace([' ', '_', '.'], '-', str_replace(['(', ')'], '', $movie))
+		);
+		if (!is_array($json)) {
+			return false;
+		} else if (isset($json['status']) && $json['status'] === 'failure') {
+			return false;
+		} else if ($imdbID && isset($json["imdb_id"])) {
+			return $json["imdb_id"];
+		}
+		return $json;
+	}
+
+	/**
+	 * Download JSON from Trakt, convert to array.
+	 *
+	 * @param string $URI URI to download.
+	 *
+	 * @return bool|mixed
+	 */
+	private function getJsonArray($URI)
+	{
 		if (!empty($this->clientID)) {
 			$json = Utility::getUrl([
-					'url' =>
-						'https://api-v2launch.trakt.tv/movies/' .
-						str_replace([' ', '_', '.'], '-', str_replace(['(', ')'], '', $movie)),
+					'url'            => $URI,
 					'requestheaders' => $this->requestHeaders
 				]
 			);
 			if ($json !== false) {
-				$json = json_decode($json, true);
-				if (isset($json['status']) && $json['status'] === 'failure') {
-					return false;
-				} else if ($imdbID && isset($json["imdb_id"])) {
-					return $json["imdb_id"];
-				}
-				return $json;
+				return json_decode($json, true);
 			}
 		}
 		return false;
