@@ -11,13 +11,15 @@ use nzedb\utility\Utility;
 class TraktTv
 {
 	/**
-	 * Trakt Client ID, used for V2 API.
+	 * The Trakt.tv API v2 Client ID (SHA256 hash - 64 characters long string). Used for movie and tv lookups.
+	 * Create one here: https://trakt.tv/oauth/applications/new
 	 * @var array|bool|string
 	 */
 	private $clientID;
 
 	/**
-	 * List of headers to send to Trakt when making a request.
+	 * List of headers to send to Trakt.tv when making a request.
+	 * @see http://docs.trakt.apiary.io/#introduction/required-headers
 	 * @var array
 	 */
 	private $requestHeaders;

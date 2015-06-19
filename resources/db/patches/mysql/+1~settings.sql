@@ -4,6 +4,6 @@ VALUES (
   '',
   'trakttvclientkey',
   '',
-  'The trakt.tv API v2 client key (PIN authentication). Used for movie and tv lookups.',
+  'The Trakt.tv API v2 Client ID (SHA256 hash - 64 characters long string). Used for movie and tv lookups.',
   'trakttvclientkey'
 );

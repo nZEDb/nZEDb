@@ -295,10 +295,10 @@
 					</td>
 				</tr>
 			<tr>
-				<td style="width:180px;"><label for="trakttvclientkey">Trakt.tv API key:</label></td>
+				<td style="width:180px;"><label for="trakttvclientkey">Trakt.tv API Client ID:</label></td>
 				<td>
 					<input id="trakttvclientkey" class="long" name="trakttvclientkey" type="text" value="{$site->trakttvclientkey}"/>
-					<div class="hint">The trakt.tv API v2 client key (PIN authentication). Used for movie and tv lookups.</div>
+					<div class="hint">The Trakt.tv API v2 Client ID (SHA256 hash - 64 characters long string). Used for movie and tv lookups.</div>
 				</td>
 			</tr>
 			<tr>
