@@ -56,7 +56,7 @@ class TraktTv
 	 *
 	 * @see http://docs.trakt.apiary.io/#reference/episodes/summary/get-a-single-episode-for-a-show
 	 *
-	 * @return bool|mixed
+	 * @return bool|array
 	 *
 	 * @access public
 	 */
@@ -70,10 +70,10 @@ class TraktTv
 			'/episodes/' .
 			str_replace(['E', 'e'], '', $ep)
 		);
-		if (is_array($json)) {
-			return $json;
+		if (!$json) {
+			return false;
 		}
-		return false;
+		return $json;
 	}
 
 	/**
@@ -85,7 +85,7 @@ class TraktTv
 	 *
 	 * @see http://docs.trakt.apiary.io/#reference/movies/summary/get-a-movie
 	 *
-	 * @return bool|mixed
+	 * @return bool|array|string
 	 *
 	 * @access public
 	 */
@@ -95,9 +95,7 @@ class TraktTv
 			'https://api-v2launch.trakt.tv/movies/' .
 			str_replace([' ', '_', '.'], '-', str_replace(['(', ')'], '', $movie))
 		);
-		if (!is_array($json)) {
-			return false;
-		} else if (isset($json['status']) && $json['status'] === 'failure') {
+		if (!$json) {
 			return false;
 		} else if ($imdbID && isset($json["imdb_id"])) {
 			return $json["imdb_id"];
@@ -121,7 +119,11 @@ class TraktTv
 				]
 			);
 			if ($json !== false) {
-				return json_decode($json, true);
+				$json = json_decode($json, true);
+				if (!is_array($json) || (isset($json['status']) && $json['status'] === 'failure')) {
+					return false;
+				}
+				return $json;
 			}
 		}
 		return false;
