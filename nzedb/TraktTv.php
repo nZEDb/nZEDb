@@ -10,7 +10,17 @@ use nzedb\utility\Utility;
  */
 class TraktTv
 {
-	private $APIKEY;
+	/**
+	 * Trakt Client ID, used for V2 API.
+	 * @var array|bool|string
+	 */
+	private $clientID;
+
+	/**
+	 * List of headers to send to Trakt when making a request.
+	 * @var array
+	 */
+	private $requestHeaders;
 
 	/**
 	 * Construct. Set up API key.
@@ -27,7 +37,12 @@ class TraktTv
 		$options += $defaults;
 
 		$settings = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
-		$this->APIKEY = $settings->getSetting('trakttvkey');
+		$this->clientID = $settings->getSetting('trakttvclientkey');
+		$this->requestHeaders = [
+			'Content-Type: application/json',
+			'trakt-api-version: 2',
+			'trakt-api-key: ' . $this->clientID
+		];
 	}
 
 	/**
@@ -37,25 +52,28 @@ class TraktTv
 	 * @param string $season
 	 * @param string $ep
 	 *
+	 * @see http://docs.trakt.apiary.io/#reference/episodes/summary/get-a-single-episode-for-a-show
+	 *
 	 * @return bool|mixed
 	 *
 	 * @access public
 	 */
-	public function traktTVSEsummary($title = '', $season = '', $ep = '')
+	public function episodeSummary($title = '', $season = '', $ep = '')
 	{
-		if (!empty($this->APIKEY)) {
-			$TVjson = Utility::getUrl([
+		if (!empty($this->clientID)) {
+			$json = Utility::getUrl([
 					'url' =>
-						'http://api.trakt.tv/show/episode/summary.json/' .
-						$this->APIKEY . '/' .
-						str_replace([' ', '_', '.'], '-', $title) . '/' .
-						str_replace(['S', 's'], '', $season) . '/' .
-						str_replace(['E', 'e'], '', $ep)
+						'https://api-v2launch.trakt.tv/shows/' .
+						str_replace([' ', '_', '.'], '-', $title) .
+						'/season/' .
+						str_replace(['S', 's'], '', $season) .
+						'/episodes/' .
+						str_replace(['E', 'e'], '', $ep),
+					'requestheaders' => $this->requestHeaders
 				]
 			);
-
-			if ($TVjson !== false) {
-				return json_decode($TVjson, true);
+			if ($json !== false) {
+				return json_decode($json, true);
 			}
 		}
 		return false;
@@ -68,32 +86,30 @@ class TraktTv
 	 * @param string $movie Title or IMDB id.
 	 * @param bool $array   Return the full array or just the IMDB id.
 	 *
+	 * @see http://docs.trakt.apiary.io/#reference/movies/summary/get-a-movie
+	 *
 	 * @return bool|mixed
 	 *
 	 * @access public
 	 */
-	public function traktMoviesummary($movie = '', $array = false)
+	public function movieSummary($movie = '', $array = false)
 	{
-		if (!empty($this->APIKEY)) {
-			$MovieJson = Utility::getUrl([
+		if (!empty($this->clientID)) {
+			$json = Utility::getUrl([
 					'url' =>
-						'http://api.trakt.tv/movie/summary.json/' .
-						$this->APIKEY .
-						'/' .
-						str_replace([' ', '_', '.'], '-', str_replace(['(', ')'], '', $movie))
+						'https://api-v2launch.trakt.tv/movies/' .
+						str_replace([' ', '_', '.'], '-', str_replace(['(', ')'], '', $movie)),
+					'requestheaders' => $this->requestHeaders
 				]
 			);
-
-			if ($MovieJson !== false) {
-				$MovieJson = json_decode($MovieJson, true);
-				if (isset($MovieJson['status']) && $MovieJson['status'] === 'failure') {
+			if ($json !== false) {
+				$json = json_decode($json, true);
+				if (isset($json['status']) && $json['status'] === 'failure') {
 					return false;
-				}
-
-				if ($array) {
-					return $MovieJson;
-				} elseif (isset($MovieJson["imdb_id"])) {
-					return $MovieJson["imdb_id"];
+				} else if ($array) {
+					return $json;
+				} elseif (isset($json["imdb_id"])) {
+					return $json["imdb_id"];
 				}
 			}
 		}

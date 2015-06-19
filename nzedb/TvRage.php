@@ -722,7 +722,7 @@ class TvRage
 						$this->updateRageInfo($tvrShow['showid'], $show, $tvrShow, $arr['id']);
 					} else if ($tvrShow === false) {
 						// If tvrage fails, try trakt.
-						$traktArray = $trakt->traktTVSEsummary($show['name'], $show['season'], $show['episode']);
+						$traktArray = $trakt->episodeSummary($show['name'], $show['season'], $show['episode']);
 						if ($traktArray !== false) {
 							if (isset($traktArray['show']['tvrage_id']) && $traktArray['show']['tvrage_id'] !== 0) {
 								if ($this->echooutput) {

@@ -78,7 +78,7 @@ OPTIONAL REQUIREMENTS
 		tmdb            http://api.themoviedb.org/2.1/
 		amazon          https://affiliate-program.amazon.com/gp/advertising/api/detail/main.html
 		rottentomatoes  http://developer.rottentomatoes.com
-		trakt.tv        https://trakt.tv/api-docs
+		trakt.tv        http://docs.trakt.apiary.io/
 		anidb           http://anidb.net
 
 	Executable programs in PATH
