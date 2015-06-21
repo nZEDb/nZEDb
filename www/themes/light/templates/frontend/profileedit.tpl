@@ -26,11 +26,13 @@
 	<legend>Site Preferences</legend>
 	<table class="input">
 		<tr>
+			{if $page->settings->getSetting('userselstyle') == 1}
 			<th>Site theme:</th>
 			<td>
 				{html_options id="style" name='style' values=$themelist output=$themelist selected=$user.style}
 				<span class="help-block">Change the site theme, None will use the theme the administrator set.</span>
 			</td>
+			{/if}
 		</tr>
 		<tr>
 			<th>View Movie Page:</th>

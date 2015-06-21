@@ -1,0 +1,1 @@
+INSERT INTO settings (section, subsection, name, value, hint, setting) VALUES ('site', 'main', 'userselstyle', '0', 'Allow users to change the site theme or not.', 'userselstyle');

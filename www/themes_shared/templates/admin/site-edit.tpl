@@ -110,6 +110,13 @@
 				</td>
 			</tr>
 			<tr>
+				<td style="width:180px;"><label for="userselstyle">User selectable theme:</label></td>
+				<td>
+					{html_radios style="width:180px;" class="siteeditstyle" id="userselstyle" name='userselstyle' values=$yesno_ids output=$yesno_names selected=$site->userselstyle}
+					<div class="hint">Should users be allowed to change their site theme or not.</div>
+				</td>
+			</tr>
+			<tr>
 				<td style="width:180px;"><label for="style">User Menu Position:</label></td>
 				<td>
 					{html_options style="width:180px;" class="siteeditmenuposition" id="menuposition" name='menuposition' values=$menupos_ids output=$menupos_names selected=$site->menuposition}
