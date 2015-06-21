@@ -107,12 +107,14 @@ switch ($action) {
 		break;
 }
 
+if ($page->settings->getSetting('userselstyle') ==1) {
 // Get the list of themes.
-$themeList[] = 'None';
-$themes = scandir(nZEDb_WWW . '/themes');
-foreach ($themes as $theme) {
-	if (strpos($theme, ".") === false && $theme[0] !== '_' && is_dir(nZEDb_WWW . '/themes/' . $theme)) {
-		$themeList[] = $theme;
+	$themeList[] = 'None';
+	$themes = scandir(nZEDb_WWW . '/themes');
+	foreach ($themes as $theme) {
+		if (strpos($theme, ".") === false && $theme[0] !== '_' && is_dir(nZEDb_WWW . '/themes/' . $theme)) {
+			$themeList[] = $theme;
+		}
 	}
 }
 

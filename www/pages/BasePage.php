@@ -123,14 +123,16 @@ class BasePage
 			$this->userdata = $this->users->getById($this->users->currentUserId());
 			$this->userdata['categoryexclusions'] = $this->users->getCategoryExclusion($this->users->currentUserId());
 
-			// Change the theme to user's selected theme if they selected one, else use the admin one.
-			if (isset($this->userdata['style']) && $this->userdata['style'] !== 'None') {
-				$this->smarty->setTemplateDir(
-					array(
-						'user_frontend' => nZEDb_WWW . 'themes/' . $this->userdata['style'] . '/templates/frontend',
-						'frontend'      => nZEDb_WWW . 'themes/Default/templates/frontend'
-					)
-				);
+			// Change the theme to user's selected theme if they selected one and admin has set that users can select their own theme, else use the admin one.
+			if ($this->settings->getSetting('userselstyle') == 1) {
+				if (isset($this->userdata['style']) && $this->userdata['style'] !== 'None') {
+					$this->smarty->setTemplateDir(
+						array(
+							'user_frontend' => nZEDb_WWW . 'themes/' . $this->userdata['style'] . '/templates/frontend',
+							'frontend'      => nZEDb_WWW . 'themes/Default/templates/frontend'
+						)
+					);
+				}
 			}
 
 			// Update last login every 15 mins.
