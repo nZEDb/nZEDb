@@ -15,6 +15,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	* Chg: Use get_class / __FUNCTION__ for nzedb\Logger->Log usage.
 	* Upd: Update smarty to 3.1.27
 	* Fix: Add check for string on nzedb\Movie::doMovieUpdate #1742
+	* Fix: #1742 (Notices in movie.php, remove old smarty files)
 2015-06-22 niel
 	* Mrg: PR 1738 from Enverex - Avoid MySQL caching on transient content
 2015-06-19 bart39
