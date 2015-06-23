@@ -1211,20 +1211,21 @@ class Users
 		);
 	}
 	
-        /**
-         * Get list of user signups by month.
-         *
-         * @return array
-         */
-        public function getUsersByMonth()
-        {
-                return $this->pdo->query("SELECT DATE_FORMAT(createddate, '%M %Y') AS mth, COUNT(*) AS num
-                                                        FROM users
-                                                        WHERE createddate IS NOT NULL AND createddate != '0000-00-00 00:00:00'
-                                                        GROUP BY DATE_FORMAT(createddate, '%M %Y')
-                                                        ORDER BY createddate DESC"
-                );
-        }
+	/**
+	 * Get list of user signups by month.
+	 *
+	 * @return array
+	*/
+	public function getUsersByMonth()
+	{
+		return $this->pdo->query("
+			SELECT DATE_FORMAT(createddate, '%M %Y') AS mth, COUNT(*) AS num
+			FROM users
+			WHERE createddate IS NOT NULL AND createddate != '0000-00-00 00:00:00'
+			GROUP BY DATE_FORMAT(createddate, '%M %Y')
+			ORDER BY createddate DESC"
+		);
+	}
 
 
 	/**
