@@ -2,37 +2,44 @@
 /**
  * Smarty plugin
  *
- * @package Smarty
+ * @package    Smarty
  * @subpackage PluginsFunction
  */
+
 /**
  * Smarty {fetch} plugin
- *
  * Type:     function<br>
  * Name:     fetch<br>
  * Purpose:  fetch file, web or ftp data and display results
  *
- * @link http://www.smarty.net/manual/en/language.function.fetch.php {fetch}
- *       (Smarty online manual)
+ * @link   http://www.smarty.net/manual/en/language.function.fetch.php {fetch}
+ *         (Smarty online manual)
  * @author Monte Ohrt <monte at ohrt dot com>
+ *
  * @param array                    $params   parameters
  * @param Smarty_Internal_Template $template template object
+ *
+ * @throws SmartyException
  * @return string|null if the assign parameter is passed, Smarty assigns the result to a template variable
  */
 function smarty_function_fetch($params, $template)
 {
     if (empty($params['file'])) {
-        trigger_error("[plugin] fetch parameter 'file' cannot be empty",E_USER_NOTICE);
+        trigger_error("[plugin] fetch parameter 'file' cannot be empty", E_USER_NOTICE);
+
         return;
     }
+
     // strip file protocol
     if (stripos($params['file'], 'file://') === 0) {
         $params['file'] = substr($params['file'], 7);
     }
+
     $protocol = strpos($params['file'], '://');
     if ($protocol !== false) {
         $protocol = strtolower(substr($params['file'], 0, $protocol));
     }
+
     if (isset($template->smarty->security_policy)) {
         if ($protocol) {
             // remote resource (or php stream, …)
@@ -46,6 +53,7 @@ function smarty_function_fetch($params, $template)
             }
         }
     }
+
     $content = '';
     if ($protocol == 'http') {
         // http fetch
@@ -54,7 +62,7 @@ function smarty_function_fetch($params, $template)
             $host = $server_name = $uri_parts['host'];
             $timeout = 30;
             $accept = "image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, */*";
-            $agent = "Smarty Template Engine ". Smarty::SMARTY_VERSION;
+            $agent = "Smarty Template Engine " . Smarty::SMARTY_VERSION;
             $referer = "";
             $uri = !empty($uri_parts['path']) ? $uri_parts['path'] : '/';
             $uri .= !empty($uri_parts['query']) ? '?' . $uri_parts['query'] : '';
@@ -94,8 +102,9 @@ function smarty_function_fetch($params, $template)
                         break;
                     case "header":
                         if (!empty($param_value)) {
-                            if (!preg_match('![\w\d-]+: .+!',$param_value)) {
-                                trigger_error("[plugin] invalid header format '".$param_value."'",E_USER_NOTICE);
+                            if (!preg_match('![\w\d-]+: .+!', $param_value)) {
+                                trigger_error("[plugin] invalid header format '" . $param_value . "'", E_USER_NOTICE);
+
                                 return;
                             } else {
                                 $extra_headers[] = $param_value;
@@ -111,7 +120,8 @@ function smarty_function_fetch($params, $template)
                         if (!preg_match('!\D!', $param_value)) {
                             $proxy_port = (int) $param_value;
                         } else {
-                            trigger_error("[plugin] invalid value for attribute '".$param_key."'",E_USER_NOTICE);
+                            trigger_error("[plugin] invalid value for attribute '" . $param_key . "'", E_USER_NOTICE);
+
                             return;
                         }
                         break;
@@ -129,23 +139,27 @@ function smarty_function_fetch($params, $template)
                         if (!preg_match('!\D!', $param_value)) {
                             $timeout = (int) $param_value;
                         } else {
-                            trigger_error("[plugin] invalid value for attribute '".$param_key."'",E_USER_NOTICE);
+                            trigger_error("[plugin] invalid value for attribute '" . $param_key . "'", E_USER_NOTICE);
+
                             return;
                         }
                         break;
                     default:
-                        trigger_error("[plugin] unrecognized attribute '".$param_key."'",E_USER_NOTICE);
+                        trigger_error("[plugin] unrecognized attribute '" . $param_key . "'", E_USER_NOTICE);
+
                         return;
                 }
             }
             if (!empty($proxy_host) && !empty($proxy_port)) {
                 $_is_proxy = true;
-                $fp = fsockopen($proxy_host,$proxy_port,$errno,$errstr,$timeout);
+                $fp = fsockopen($proxy_host, $proxy_port, $errno, $errstr, $timeout);
             } else {
-                $fp = fsockopen($server_name,$port,$errno,$errstr,$timeout);
+                $fp = fsockopen($server_name, $port, $errno, $errstr, $timeout);
             }
+
             if (!$fp) {
-                trigger_error("[plugin] unable to fetch: $errstr ($errno)",E_USER_NOTICE);
+                trigger_error("[plugin] unable to fetch: $errstr ($errno)", E_USER_NOTICE);
+
                 return;
             } else {
                 if ($_is_proxy) {
@@ -167,33 +181,38 @@ function smarty_function_fetch($params, $template)
                 }
                 if (isset($extra_headers) && is_array($extra_headers)) {
                     foreach ($extra_headers as $curr_header) {
-                        fputs($fp, $curr_header."\r\n");
+                        fputs($fp, $curr_header . "\r\n");
                     }
                 }
                 if (!empty($user) && !empty($pass)) {
-                    fputs($fp, "Authorization: BASIC ".base64_encode("$user:$pass")."\r\n");
+                    fputs($fp, "Authorization: BASIC " . base64_encode("$user:$pass") . "\r\n");
                 }
+
                 fputs($fp, "\r\n");
                 while (!feof($fp)) {
-                    $content .= fgets($fp,4096);
+                    $content .= fgets($fp, 4096);
                 }
                 fclose($fp);
-                $csplit = preg_split("!\r\n\r\n!",$content,2);
+                $csplit = preg_split("!\r\n\r\n!", $content, 2);
+
                 $content = $csplit[1];
+
                 if (!empty($params['assign_headers'])) {
-                    $template->assign($params['assign_headers'],preg_split("!\r\n!",$csplit[0]));
+                    $template->assign($params['assign_headers'], preg_split("!\r\n!", $csplit[0]));
                 }
             }
         } else {
-            trigger_error("[plugin fetch] unable to parse URL, check syntax",E_USER_NOTICE);
+            trigger_error("[plugin fetch] unable to parse URL, check syntax", E_USER_NOTICE);
+
             return;
         }
     } else {
         $content = @file_get_contents($params['file']);
         if ($content === false) {
-            throw new SmartyException("{fetch} cannot read resource '" . $params['file'] ."'");
+            throw new SmartyException("{fetch} cannot read resource '" . $params['file'] . "'");
         }
     }
+
     if (!empty($params['assign'])) {
         $template->assign($params['assign'], $content);
     } else {

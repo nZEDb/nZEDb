@@ -1,17 +1,18 @@
 <?php
+
 /**
  * Smarty Internal Plugin Compile Modifier
- *
  * Compiles code for modifier execution
  *
- * @package Smarty
+ * @package    Smarty
  * @subpackage Compiler
- * @author Uwe Tews
+ * @author     Uwe Tews
  */
+
 /**
  * Smarty Internal Plugin Compile Modifier Class
  *
- * @package Smarty
+ * @package    Smarty
  * @subpackage Compiler
  */
 class Smarty_Internal_Compile_Private_Modifier extends Smarty_Internal_CompileBase
@@ -22,6 +23,7 @@ class Smarty_Internal_Compile_Private_Modifier extends Smarty_Internal_CompileBa
      * @param  array  $args      array with attributes from parser
      * @param  object $compiler  compiler object
      * @param  array  $parameter array with compilation parameter
+     *
      * @return string compiled code
      */
     public function compile($args, $compiler, $parameter)
@@ -131,6 +133,7 @@ class Smarty_Internal_Compile_Private_Modifier extends Smarty_Internal_CompileBa
                 $compiler->trigger_template_error("unknown modifier \"" . $modifier . "\"", $compiler->lex->taglineno);
             }
         }
+
         return $output;
     }
 }
