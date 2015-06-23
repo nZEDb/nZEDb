@@ -8,6 +8,8 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 
 2015-06-23 kevinlekiller
+	* Chg: If NNTP compression fails to enable, retry.
+	       If NNTP returns status code 0, do not show message (issue #1735).
 	* Fix: Notices. Issue #1737
 	* Fix: Various notices.
 2015-06-22 niel
