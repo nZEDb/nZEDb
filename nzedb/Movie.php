@@ -734,8 +734,8 @@ class Movie
 			if ($percent < 40) {
 				if ($this->debug) {
 					$this->debugging->log(
-						'Movie',
-						'fetchTmdbProperties',
+						get_class(),
+						__FUNCTION__,
 						'Found (' .
 						$ret['title'] .
 						') from TMDB, but it\'s only ' .
@@ -843,8 +843,8 @@ class Movie
 				if ($percent < 40) {
 					if ($this->debug) {
 						$this->debugging->log(
-							'Movie',
-							'fetchImdbProperties',
+							get_class(),
+							__FUNCTION__,
 							'Found (' .
 							$ret['title'] .
 							') from IMDB, but it\'s only ' .
