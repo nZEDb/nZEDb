@@ -9,6 +9,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2015-06-23 kevinlekiller
 	* Fix: Notices. Issue #1737
+	* Fix: Various notices.
 2015-06-22 niel
 	* Mrg: PR 1738 from Enverex - Avoid MySQL caching on transient content
 2015-06-19 bart39

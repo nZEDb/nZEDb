@@ -886,7 +886,7 @@ class Releases
 	public function categorySQL($categories)
 	{
 		$sql = '';
-		if (count($categories) > 0 && $categories[0] != -1) {
+		if (is_array($categories) && $categories[0] != -1) {
 			$Category = new Category(['Settings' => $this->pdo]);
 			$sql = ' AND (';
 			foreach ($categories as $category) {

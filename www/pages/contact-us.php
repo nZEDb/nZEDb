@@ -4,7 +4,7 @@ use nzedb\utility\Utility;
 use nzedb\Captcha;
 
 $captcha = new Captcha($page);
-
+$msg = '';
 if (isset($_POST["useremail"])) {
 
 	if ($captcha->getError() === false) {
@@ -26,11 +26,10 @@ if (isset($_POST["useremail"])) {
 		if (!preg_match("/\n/i", $_POST["useremail"])) {
 			Utility::sendEmail($mailto, $mailsubj, $mailbody, $email);
 		}
-
-		$page->smarty->assign("msg", "<h2 style='text-align:center;'>Thank you for getting in touch with " . $page->settings->getSetting('title') . ".</h2>");
+		$msg = "<h2 style='text-align:center;'>Thank you for getting in touch with " . $page->settings->getSetting('title') . ".</h2>";
 	}
 }
-
+$page->smarty->assign("msg", $msg);
 $page->title = "Contact " . $page->settings->getSetting('title');
 $page->meta_title = "Contact " . $page->settings->getSetting('title');
 $page->meta_keywords = "contact us,contact,get in touch,email";
