@@ -13,6 +13,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	* Fix: Notices. Issue #1737
 	* Fix: Various notices.
 	* Chg: Use get_class / __FUNCTION__ for nzedb\Logger->Log usage.
+	* Upd: Update smarty to 3.1.27
 2015-06-22 niel
 	* Mrg: PR 1738 from Enverex - Avoid MySQL caching on transient content
 2015-06-19 bart39
