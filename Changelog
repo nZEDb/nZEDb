@@ -7,6 +7,8 @@ All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 
+2015-06-22 niel
+	* Mrg: PR 1738 from Enverex - Avoid MySQL caching on transient content
 2015-06-19 bart39
 	* Mrg: PR 1730 from kevin123, Fix for changes in Trakt API v2.
 	* Mrg: PR 1729 from kevin123, Fix issues if nZEDb_SSL_CAFILE is empty.
