@@ -1203,20 +1203,20 @@ class NNTP extends \Net_NNTP_Client
 	 * Try to see if the NNTP server implements XFeature GZip Compression,
 	 * change the compression bool object if so.
 	 *
+	 * @param bool $secondTry     This is only used if enabling compression fails, the function will call itself to retry.
 	 * @return mixed On success : (bool)   True:  The server understood and compression is enabled.
 	 *                            (bool)   False: The server did not understand, compression is not enabled.
 	 *               On failure : (object) PEAR_Error.
 	 *
 	 * @access protected
 	 */
-	protected function _enableCompression()
+	protected function _enableCompression($secondTry = false)
 	{
 		if ($this->_compressionEnabled === true) {
 			return true;
 		} else if ($this->_compressionSupported === false) {
 			return false;
 		}
-
 
 		// Send this command to the usenet server.
 		$response = $this->_sendCommand('XFEATURE COMPRESS GZIP');
@@ -1229,16 +1229,21 @@ class NNTP extends \Net_NNTP_Client
 			$this->_compressionSupported = false;
 			return $response;
 		} else if ($response !== 290) {
-			$msg = "XFeature GZip Compression not supported. Consider disabling compression in site settings.";
+			if ($secondTry === false) {
+				// Retry.
+				$this->cmdQuit();
+				if ($this->_checkConnection()) {
+					return $this->_enableCompression(true);
+				}
+			}
+			$msg = "Sent 'XFEATURE COMPRESS GZIP' to server, got '$response: " . $this->_currentStatusResponse() . "'";
 			if ($this->_debugBool) {
 				$this->_debugging->log('NNTP', "_enableCompression", $msg, Logger::LOG_NOTICE);
 			}
-
-			if ($this->_echo) {
-				$this->pdo->log->doEcho($this->pdo->log->error($msg), true);
-			}
 			$this->_compressionSupported = false;
+
 			return false;
+
 		}
 
 		$this->_compressionEnabled = true;
