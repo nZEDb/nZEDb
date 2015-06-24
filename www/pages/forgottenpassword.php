@@ -31,8 +31,10 @@ switch ($action) {
 			$to = $ret["email"];
 			$subject = $page->settings->getSetting('title') . " Password Reset";
 			$contents = "Your password has been reset to " . $newpass;
+			$onscreen = "Your password has been reset to <strong>" . $newpass ."</strong> and sent to your e-mail address.";
 			Utility::sendEmail($to, $subject, $contents, $page->settings->getSetting('email'));
 
+			$page->smarty->assign('notice',  $onscreen);
 			$page->smarty->assign('confirmed', "true");
 
 			break;
