@@ -7,6 +7,8 @@ All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 
+2015-06-25 kevinlekiller
+	* Fix: Notices in register page.
 2015-06-24 kevinlekiller
 	* Fix: Notices in password reset page.
 2015-06-23 kevinlekiller
