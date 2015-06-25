@@ -1,7 +1,4 @@
 <h1>{$page->title}</h1>
-{if $error != ''}
-	<div class="error">{$error}</div>
-{/if}
 <form action="{$SCRIPT_NAME}?action=submit" method="POST">
 	<table class="input">
 		<tr>

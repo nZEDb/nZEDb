@@ -11,6 +11,7 @@ require_once './config.php';
 $page = new AdminPage();
 
 $filesToProcess = [];
+$output = '';
 if ($page->isPostBack()) {
 
 	$useNzbName = false;
@@ -43,15 +44,13 @@ if ($page->isPostBack()) {
 	}
 
 	if (count($filesToProcess) > 0) {
-
 		// Create a new instance of NZBImport and send it the file locations.
-		$NZBImport = new NZBImport(['Browser' => true, 'Settings' => $page->settings]);
-
-		$page->smarty->assign('output',
-							  $NZBImport->beginImport($filesToProcess, $useNzbName, $deleteNZB));
+		$output = (new NZBImport(['Browser' => true, 'Settings' => $page->settings]))->beginImport(
+			$filesToProcess, $useNzbName, $deleteNZB
+		);
 	}
 }
-
+$page->smarty->assign('output', $output);
 $page->title   = "Import Nzbs";
 $page->content = $page->smarty->fetch('nzb-import.tpl');
 $page->render();

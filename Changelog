@@ -9,6 +9,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2015-06-25 kevinlekiller
 	* Fix: Notices in register page.
+	* Fix: Notices in admin pages.
 2015-06-24 kevinlekiller
 	* Fix: Notices in password reset page.
 2015-06-23 kevinlekiller
