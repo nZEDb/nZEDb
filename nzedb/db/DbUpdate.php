@@ -185,8 +185,8 @@ class DbUpdate
 							   $matches['table'] . '.sql';
 					rename($matches[0], $newName);
 					$this->git->add($newName);
-					if ($this->git->isCommited($this->git->getBranch() . ':' . $matches[0])) {
-						$this->git->rm(" --cached {$matches[0]}"); // remove old filename from the index.
+					if ($this->git->isCommited($this->git->getBranch() . ':' . str_replace(nZEDb_ROOT, '',$matches[0]))) {
+						$this->git->add(" -u {$matches[0]}"); // remove old filename from the index.
 					}
 				}
 			}

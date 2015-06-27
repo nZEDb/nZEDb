@@ -37,12 +37,6 @@ class Cache
 	private $socketFile;
 
 	/**
-	 * Does the user have igBinary support and wants to use it?
-	 * @var bool
-	 */
-	private $IgBinarySupport = false;
-
-	/**
 	 * Store data on the cache server.
 	 *
 	 * @param string       $key        Key we can use to retrieve the data.
@@ -55,7 +49,6 @@ class Cache
 	public function set($key, $data, $expiration)
 	{
 		if ($this->ping()) {
-			$this->serializeData($data);
 			switch (nZEDb_CACHE_TYPE) {
 				case self::TYPE_REDIS:
 				case self::TYPE_MEMCACHED:
@@ -65,30 +58,6 @@ class Cache
 			}
 		}
 		return false;
-	}
-
-	/**
-	 * Serialize data, or not based on admin setting.
-	 *
-	 * @param string|array $data
-	 */
-	private function serializeData(&$data)
-	{
-		switch (nZEDb_CACHE_SERIALIZER) {
-			case self::SERIALIZER_IGBINARY:
-				if ($this->IgBinarySupport) {
-					$data = igbinary_serialize($data);
-				} else {
-					$data = serialize($data);
-				}
-				break;
-			case self::SERIALIZER_PHP:
-				$data = serialize($data);
-				break;
-			case self::SERIALIZER_NONE:
-			default:
-				break;
-		}
 	}
 
 	/**
@@ -112,34 +81,9 @@ class Cache
 					$data = apc_fetch($key);
 					break;
 			}
-			$this->unserializeData($data);
 			return $data;
 		}
 		return false;
-	}
-
-	/**
-	 * Un-serialize data, or not based on admin setting.
-	 *
-	 * @param string $data
-	 */
-	private function unserializeData(&$data)
-	{
-		switch (nZEDb_CACHE_SERIALIZER) {
-			case self::SERIALIZER_IGBINARY:
-				if ($this->IgBinarySupport) {
-					$data = igbinary_unserialize($data);
-				} else {
-					$data = unserialize($data);
-				}
-				break;
-			case self::SERIALIZER_PHP:
-				$data = unserialize($data);
-				break;
-			case self::SERIALIZER_NONE:
-			default:
-				break;
-		}
 	}
 
 	/**
@@ -272,8 +216,9 @@ class Cache
 				break;
 
 			case self::TYPE_APC:
-				if (!function_exists('apc_set')) {
-					throw new CacheException('The APC extension is not loaded!');
+				// Faster than checking if apcu or apc is loaded.
+				if (!function_exists('apc_add')) {
+					throw new CacheException('The APCu extension is not loaded or enabled!');
 				}
 				$this->connect();
 				break;
@@ -395,14 +340,17 @@ class Cache
 
 				switch (nZEDb_CACHE_TYPE) {
 					case self::TYPE_REDIS:
-						// No way to check since phpredis has no constants or functions for this.
+						// If this is not defined, it means phpredis was not compiled with --enable-redis-igbinary
+						if (!defined('\Redis::SERIALIZER_IGBINARY')) {
+							throw new CacheException('Error: phpredis was not compiled with igbinary support!');
+						}
 						return \Redis::SERIALIZER_IGBINARY;
 					case self::TYPE_MEMCACHED:
 						if (\Memcached::HAVE_IGBINARY > 0) {
 							return \Memcached::SERIALIZER_IGBINARY;
 						}
 						throw new CacheException('Error: You have not compiled Memcached with igbinary support!');
-					case self::TYPE_APC: // No way to check, since apc.serializer can not be fetched using ini_get.
+					case self::TYPE_APC: // Ignore - set by apc.serializer setting.
 					default:
 						return null;
 				}

@@ -7,6 +7,34 @@ All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 
+2015-06-25 kevinlekiller
+	* Fix: Notices in register page.
+	* Fix: Notices in admin pages.
+2015-06-24 kevinlekiller
+	* Fix: Notices in password reset page.
+2015-06-23 kevinlekiller
+	* Chg: If NNTP compression fails to enable, retry.
+	       If NNTP returns status code 0, do not show message (issue #1735).
+	* Fix: Notices. Issue #1737
+	* Fix: Various notices.
+	* Chg: Use get_class / __FUNCTION__ for nzedb\Logger->Log usage.
+	* Upd: Update smarty to 3.1.27
+	* Fix: Add check for string on nzedb\Movie::doMovieUpdate #1742
+	* Fix: #1742 (Notices in movie.php, remove old smarty files)
+2015-06-22 niel
+	* Mrg: PR 1738 from Enverex - Avoid MySQL caching on transient content
+2015-06-19 bart39
+	* Mrg: PR 1730 from kevin123, Fix for changes in Trakt API v2.
+	* Mrg: PR 1729 from kevin123, Fix issues if nZEDb_SSL_CAFILE is empty.
+	* Mrg: PR 1728 from kevin123, Add support for trakt.tv API v2.
+	* Mrg: PR 1727 from darius, Fix the nzbFileList function.
+2015-06-17 niel
+	* NEW: PR 1726 from kevin123 - Support for downloading last rar/zip file when post processing.
+2015-06-15 niel
+	* Mrg: PR 1724 from kevin123, Changes to cache use.
+	* NEW: Adding a limit to the maximum number of headers a single group can grab per iteration of the main loop. This allows for a reasonably safe catchup ability on out of date groups, without completely choking the database with one groups headers ;-)
+		***NOTE*** this may slow things down for some users of *very* active groups.
+		There is an entry in the Settings table (max=>headers=>iteration) to set the value (default 1,000,000), an entry in admin => Edit Site to make this easier will come when someone can be coerced into doing smarty work ;-)
 2015-06-14 niel
 	* Mrg: PR 1725 from kingcat/zetas - NZBImport add missing group (inactive) instead of skipping nzb.
 2015-06-13 bart39

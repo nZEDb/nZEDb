@@ -79,27 +79,18 @@ $page->smarty->assign('rsstoken', $apiKey);
 if ($uid != '') {
 	$page->users->updateApiAccessed($uid);
 	$apiRequests = $page->users->getApiRequests($uid);
-	if ($apiRequests['num'] > $maxRequests) {
-		showApiError(500, 'Request limit reached (' . $apiRequests['num'] . '/' . $maxRequests . ')');
+	if ($apiRequests > $maxRequests) {
+		showApiError(500, 'Request limit reached (' . $apiRequests . '/' . $maxRequests . ')');
 	}
 }
 
 $releases = new Releases(['Settings' => $page->settings]);
 
-if (isset($_GET['extended']) && $_GET['extended'] == 1) {
-	$page->smarty->assign('extended', '1');
-}
-if (isset($_GET['del']) && $_GET['del'] == 1) {
-	$page->smarty->assign('del', '1');
-}
+$page->smarty->assign('extended', (isset($_GET['extended']) && $_GET['extended'] == 1 ? '1' : '0'));
+$page->smarty->assign('del', (isset($_GET['del']) && $_GET['del'] == 1 ? '1' : '0'));
 
 // Output is either json or xml.
-$outputXML = true;
-if (isset($_GET['o'])) {
-	if ($_GET['o'] == 'json') {
-		$outputXML = false;
-	}
-}
+$outputXML = (isset($_GET['o']) && $_GET['o'] == 'json' ? false : true);
 
 switch ($function) {
 	// Search releases.

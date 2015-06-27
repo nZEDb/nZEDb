@@ -1,4 +1,4 @@
-{if $error != ''}
+{if isset($error) && $error != ''}
 	<div class="alert alert-danger">{$error}</div>
 {/if}
 
@@ -8,7 +8,6 @@
 		<div class="col-sm-6 col-sm-offset-3">
 			<div class="well">
 				<form class="form-signin" action="forgottenpassword?action=submit" method="post">
-					<h2 class="form-signin-heading">Please Sign In</h2>
 					<p>
 						Please enter the email address you used to register and we will send an email to reset your password. If you cannot remember your email, or no longer have access to it, please <a href="{$smarty.const.WWW_TOP}/contact-us">contact us</a>.
 					</p>

@@ -734,8 +734,8 @@ class Movie
 			if ($percent < 40) {
 				if ($this->debug) {
 					$this->debugging->log(
-						'Movie',
-						'fetchTmdbProperties',
+						get_class(),
+						__FUNCTION__,
 						'Found (' .
 						$ret['title'] .
 						') from TMDB, but it\'s only ' .
@@ -843,8 +843,8 @@ class Movie
 				if ($percent < 40) {
 					if ($this->debug) {
 						$this->debugging->log(
-							'Movie',
-							'fetchImdbProperties',
+							get_class(),
+							__FUNCTION__,
 							'Found (' .
 							$ret['title'] .
 							') from IMDB, but it\'s only ' .
@@ -894,7 +894,7 @@ class Movie
 	public function doMovieUpdate($buffer, $service, $id, $processImdb = 1)
 	{
 		$imdbID = false;
-		if (preg_match('/(?:imdb.*?)?(?:tt|Title\?)(?P<imdbid>\d{5,7})/i', $buffer, $matches)) {
+		if (is_string($buffer) && preg_match('/(?:imdb.*?)?(?:tt|Title\?)(?P<imdbid>\d{5,7})/i', $buffer, $matches)) {
 			$imdbID = $matches['imdbid'];
 		}
 
@@ -1008,7 +1008,7 @@ class Movie
 					}
 
 					// Check on trakt.
-					$getIMDBid = $trakTv->traktMoviesummary($movieName);
+					$getIMDBid = $trakTv->movieSummary($movieName);
 					if ($getIMDBid !== false) {
 						$imdbID = $this->doMovieUpdate($getIMDBid, 'Trakt', $arr['id']);
 						if ($imdbID !== false) {

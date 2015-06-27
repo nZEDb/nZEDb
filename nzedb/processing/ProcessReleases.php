@@ -410,7 +410,7 @@ class ProcessReleases
 		foreach ($groupIDs as $groupID) {
 			if ($this->pdo->queryOneRow(
 					sprintf(
-						'SELECT id FROM %s WHERE filecheck = %d AND filesize > 0 AND group_id = %d LIMIT 1',
+						'SELECT SQL_NO_CACHE id FROM %s WHERE filecheck = %d AND filesize > 0 AND group_id = %d LIMIT 1',
 						$group['cname'],
 						self::COLLFC_SIZED,
 						$groupID['id']
@@ -514,7 +514,7 @@ class ProcessReleases
 
 		$collections = $this->pdo->queryDirect(
 			sprintf('
-				SELECT %s.*, groups.name AS gname
+				SELECT SQL_NO_CACHE %s.*, groups.name AS gname
 				FROM %s
 				INNER JOIN groups ON %s.group_id = groups.id
 				WHERE %s %s.filecheck = %d
@@ -551,7 +551,7 @@ class ProcessReleases
 				// A 1% variance in size is considered the same size when the subject and poster are the same
 				$dupeCheck = $this->pdo->queryOneRow(
 					sprintf("
-						SELECT id
+						SELECT SQL_NO_CACHE id
 						FROM releases
 						WHERE name = %s
 						AND fromname = %s
@@ -677,7 +677,7 @@ class ProcessReleases
 
 		$releases = $this->pdo->queryDirect(
 			sprintf("
-				SELECT CONCAT(COALESCE(cp.title,'') , CASE WHEN cp.title IS NULL THEN '' ELSE ' > ' END , c.title) AS title,
+				SELECT SQL_NO_CACHE CONCAT(COALESCE(cp.title,'') , CASE WHEN cp.title IS NULL THEN '' ELSE ' > ' END , c.title) AS title,
 					r.name, r.id, r.guid
 				FROM releases r
 				INNER JOIN category c ON r.categoryid = c.id
@@ -953,7 +953,7 @@ class ProcessReleases
 		// Collections that somehow have no binaries.
 		$collectionIDs = $this->pdo->queryDirect(
 			sprintf(
-				'SELECT id FROM %s WHERE id NOT IN (SELECT collection_id FROM %s) %s',
+				'SELECT SQL_NO_CACHE id FROM %s WHERE id NOT IN (SELECT collection_id FROM %s) %s',
 				$group['cname'], $group['bname'], $this->minMaxQueryFormulator($group['cname'], 10000)
 			)
 		);
@@ -976,10 +976,9 @@ class ProcessReleases
 
 		$deleted = 0;
 		// Collections that were missing on NZB creation.
-
 		$collections = $this->pdo->queryDirect(
 			sprintf('
-				SELECT c.id
+				SELECT SQL_NO_CACHE c.id
 				FROM %s c
 				INNER JOIN releases r ON r.id = c.releaseid
 				WHERE r.nzbstatus = 1',
@@ -1045,7 +1044,7 @@ class ProcessReleases
 		foreach ($groupIDs as $groupID) {
 			$releases = $this->pdo->queryDirect(
 				sprintf("
-					SELECT r.guid, r.id
+					SELECT SQL_NO_CACHE r.guid, r.id
 					FROM releases r
 					INNER JOIN groups g ON g.id = r.group_id
 					WHERE r.group_id = %d
@@ -1066,7 +1065,7 @@ class ProcessReleases
 			if ($maxSizeSetting > 0) {
 				$releases = $this->pdo->queryDirect(
 					sprintf('
-						SELECT id, guid
+						SELECT SQL_NO_CACHE id, guid
 						FROM releases
 						WHERE group_id = %d
 						AND size > %d',
@@ -1084,7 +1083,7 @@ class ProcessReleases
 
 			$releases = $this->pdo->queryDirect(
 				sprintf("
-					SELECT r.id, r.guid
+					SELECT SQL_NO_CACHE r.id, r.guid
 					FROM releases r
 					INNER JOIN groups g ON g.id = r.group_id
 					WHERE r.group_id = %d
@@ -1140,7 +1139,7 @@ class ProcessReleases
 		if ($this->pdo->getSetting('releaseretentiondays') != 0) {
 			$releases = $this->pdo->queryDirect(
 				sprintf(
-					'SELECT id, guid FROM releases WHERE postdate < (NOW() - INTERVAL %d DAY)',
+					'SELECT SQL_NO_CACHE id, guid FROM releases WHERE postdate < (NOW() - INTERVAL %d DAY)',
 					$this->pdo->getSetting('releaseretentiondays')
 				)
 			);
@@ -1156,7 +1155,7 @@ class ProcessReleases
 		if ($this->pdo->getSetting('deletepasswordedrelease') == 1) {
 			$releases = $this->pdo->queryDirect(
 				sprintf(
-					'SELECT id, guid FROM releases WHERE passwordstatus = %d',
+					'SELECT SQL_NO_CACHE id, guid FROM releases WHERE passwordstatus = %d',
 					Releases::PASSWD_RAR
 				)
 			);
@@ -1172,7 +1171,7 @@ class ProcessReleases
 		if ($this->pdo->getSetting('deletepossiblerelease') == 1) {
 			$releases = $this->pdo->queryDirect(
 				sprintf(
-					'SELECT id, guid FROM releases WHERE passwordstatus = %d',
+					'SELECT SQL_NO_CACHE id, guid FROM releases WHERE passwordstatus = %d',
 					Releases::PASSWD_POTENTIAL
 				)
 			);
@@ -1189,7 +1188,7 @@ class ProcessReleases
 			do {
 				$releases = $this->pdo->queryDirect(
 					sprintf(
-						'SELECT id, guid FROM releases WHERE adddate > (NOW() - INTERVAL %d HOUR) GROUP BY name HAVING COUNT(name) > 1',
+						'SELECT SQL_NO_CACHE id, guid FROM releases WHERE adddate > (NOW() - INTERVAL %d HOUR) GROUP BY name HAVING COUNT(name) > 1',
 						$this->crossPostTime
 					)
 				);
@@ -1206,7 +1205,7 @@ class ProcessReleases
 
 		if ($this->completion > 0) {
 			$releases = $this->pdo->queryDirect(
-				sprintf('SELECT id, guid FROM releases WHERE completion < %d AND completion > 0', $this->completion)
+				sprintf('SELECT SQL_NO_CACHE id, guid FROM releases WHERE completion < %d AND completion > 0', $this->completion)
 			);
 			if ($releases instanceof \Traversable) {
 				foreach ($releases as $release) {
@@ -1221,7 +1220,7 @@ class ProcessReleases
 		if (count($disabledCategories) > 0) {
 			foreach ($disabledCategories as $disabledCategory) {
 				$releases = $this->pdo->queryDirect(
-					sprintf('SELECT id, guid FROM releases WHERE categoryid = %d', $disabledCategory['id'])
+					sprintf('SELECT SQL_NO_CACHE id, guid FROM releases WHERE categoryid = %d', $disabledCategory['id'])
 				);
 				if ($releases instanceof \Traversable) {
 					foreach ($releases as $release) {
@@ -1234,7 +1233,7 @@ class ProcessReleases
 
 		// Delete smaller than category minimum sizes.
 		$categories = $this->pdo->queryDirect('
-			SELECT c.id AS id,
+			SELECT SQL_NO_CACHE c.id AS id,
 			CASE WHEN c.minsize = 0 THEN cp.minsize ELSE c.minsize END AS minsize
 			FROM category c
 			INNER JOIN category cp ON cp.id = c.parentid
@@ -1246,7 +1245,7 @@ class ProcessReleases
 				if ($category['minsize'] > 0) {
 					$releases = $this->pdo->queryDirect(
 						sprintf('
-							SELECT r.id, r.guid
+							SELECT SQL_NO_CACHE r.id, r.guid
 							FROM releases r
 							WHERE r.categoryid = %d
 							AND r.size < %d',
@@ -1270,7 +1269,7 @@ class ProcessReleases
 			foreach ($genrelist as $genre) {
 				$releases = $this->pdo->queryDirect(
 					sprintf('
-						SELECT id, guid
+						SELECT SQL_NO_CACHE id, guid
 						FROM releases
 						INNER JOIN (SELECT id AS mid FROM musicinfo WHERE musicinfo.genre_id = %d) mi
 						ON musicinfoid = mid',
@@ -1290,7 +1289,7 @@ class ProcessReleases
 		if ($this->pdo->getSetting('miscotherretentionhours') > 0) {
 			$releases = $this->pdo->queryDirect(
 				sprintf('
-					SELECT id, guid
+					SELECT SQL_NO_CACHE id, guid
 					FROM releases
 					WHERE categoryid = %d
 					AND adddate <= NOW() - INTERVAL %d HOUR',
@@ -1310,7 +1309,7 @@ class ProcessReleases
 		if ($this->pdo->getSetting('mischashedretentionhours') > 0) {
 			$releases = $this->pdo->queryDirect(
 				sprintf('
-					SELECT id, guid
+					SELECT SQL_NO_CACHE id, guid
 					FROM releases
 					WHERE categoryid = %d
 					AND adddate <= NOW() - INTERVAL %d HOUR',
