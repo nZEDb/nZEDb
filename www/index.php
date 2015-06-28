@@ -10,7 +10,12 @@ if (is_file("config.php")) {
 		exit();
 	}
 }
-require_once 'automated.config.php';
+
+require_once SMARTY_DIR . 'Autoloader.php';
+
+Smarty_Autoloader::register();
+
+require_once 'pages' . DS . 'autoloader.php';
 
 $page = new Page();
 
