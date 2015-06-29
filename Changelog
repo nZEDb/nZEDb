@@ -13,6 +13,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 			Removes our code from the Smarty library tree, making it possible to no longer have the whole library included in the repo.
 			Allows us to separate out the Smarty framework autoloading from the smarty page autoloading.
 			Removes autoloaders for smarty stuff completely from the indexer code.
+	* Fix: Admin section now works with the Smarty autoloading changes.
 2015-06-25 kevinlekiller
 	* Fix: Notices in register page.
 	* Fix: Notices in admin pages.
