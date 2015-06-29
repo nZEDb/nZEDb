@@ -2,11 +2,7 @@
 
 require_once realpath(__DIR__ . DIRECTORY_SEPARATOR . 'config.php');
 
-require_once SMARTY_DIR . 'Autoloader.php';
-
-Smarty_Autoloader::register();
-
-require_once 'autoloader.php';
+require_once nZEDb_WWW . 'autoloader.php';
 
 $page = new AdminPage();
 

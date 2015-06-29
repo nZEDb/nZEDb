@@ -15,7 +15,7 @@ require_once SMARTY_DIR . 'Autoloader.php';
 
 Smarty_Autoloader::register();
 
-require_once 'pages' . DS . 'autoloader.php';
+require_once nZEDb_WWW . 'autoloader.php';
 
 $page = new Page();
 
