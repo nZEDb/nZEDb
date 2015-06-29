@@ -8,6 +8,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2015-06-29 niel
 	* Chg: Combining web page autoloaders into a single file.
+	* Chg: Streamlined the autoloader process for Smarty files/pages.
 2015-06-28 niel
 	* Chg: Moved smarty page files autoloader script to.../pages/autoload.php and moved Smarty framework autoload code initialisation into the .../www/index.php - This has a several advantages:
 			Prevents problems on Windows and other case-insenstive file-systems (and applications) from not being able to have ours and smarty's in the same directory.
