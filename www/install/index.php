@@ -1,10 +1,6 @@
 <?php
 @session_start();
-require_once realpath(__DIR__ . '/../automated.config.php');
-
-#require_once SMARTY_DIR . 'Autoloader.php';
-
-#Smarty_Autoloader::register();
+require_once realpath('config.php');
 
 require_once nZEDb_WWW . 'autoloader.php';
 
