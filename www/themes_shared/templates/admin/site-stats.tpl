@@ -12,6 +12,23 @@
 		</tr>
 	{/foreach}
 </table>
+<br /><br />
+<h2>Signups</h2>
+<table style="width:100%;margin-top:10px;" class="data highlight Sortable">
+	<tr>
+		<th>Month</th>
+		<th>Signups</th>
+	</tr>
+
+	{foreach from=$usersbymonth item=result}
+		{assign var="totusers" value=$totusers+$result.num}
+		<tr class="{cycle values=",alt"}">
+			<td width="75%">{$result.mth}</td>
+			<td>{$result.num}</td>
+	</tr>
+	{/foreach}
+	<tr><td><strong>Total</strong></td><td><strong>{$totusers}</strong></td></tr>
+</table>
 <br/><br/>
 <h2>Top Downloads</h2>
 <table style="width:100%;margin-top:10px;" class="data highlight">
