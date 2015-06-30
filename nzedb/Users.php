@@ -1325,13 +1325,16 @@ class Users
 	 *
 	 * @param int $userID
 	 *
-	 * @return array|bool
+	 * @return int
 	 */
 	public function getApiRequests($userID)
 	{
 		// Clear old requests.
 		$this->clearApiRequests($userID);
-		return $this->pdo->queryOneRow(sprintf('SELECT COUNT(id) AS num FROM user_requests WHERE user_id = %d', $userID));
+		$requests = $this->pdo->queryOneRow(
+			sprintf('SELECT COUNT(id) AS num FROM user_requests WHERE user_id = %d', $userID)
+		);
+		return (!$requests ? 0 : (int)$requests['num']);
 	}
 
 	/**
@@ -1429,7 +1432,7 @@ class Users
 
 		if (is_string($user) && strlen($user) > 0) {
 			$user = $this->pdo->escapeString($user);
-			$querySuffix = "username = '$user'";
+			$querySuffix = "username = $user";
 		} elseif (is_int($user) && $user >= 0) {
 			$querySuffix = "id = $user";
 		} else {

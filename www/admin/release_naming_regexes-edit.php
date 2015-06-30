@@ -6,19 +6,18 @@ use nzedb\Regexes;
 
 $page    = new AdminPage();
 $regexes = new Regexes(['Settings' => $page->settings, 'Table_Name' => 'release_naming_regexes']);
+$error = '';
+$regex = ['id' => '', 'group_regex' => '', 'regex' => '', 'description' => '', 'ordinal' => ''];
 
-// Set the current action.
-$action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
-
-switch ($action) {
+switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
 	case 'submit':
-		if ($_POST["group_regex"] == "") {
-			$page->smarty->assign('error', "Group regex must not be empty!");
+		if ($_POST["group_regex"] == '') {
+			$error = "Group regex must not be empty!";
 			break;
 		}
 
-		if ($_POST["regex"] == "") {
-			$page->smarty->assign('error', "Regex cannot be empty");
+		if ($_POST["regex"] == '') {
+			$error = "Regex cannot be empty";
 			break;
 		}
 
@@ -27,11 +26,11 @@ switch ($action) {
 		}
 
 		if (!is_numeric($_POST['ordinal']) || $_POST['ordinal'] < 0) {
-			$page->smarty->assign('error', "Ordinal must be a number, 0 or higher.");
+			$error = "Ordinal must be a number, 0 or higher.";
 			break;
 		}
 
-		if ($_POST["id"] == "") {
+		if ($_POST["id"] == '') {
 			$regexes->addRegex($_POST);
 		} else {
 			$regexes->updateRegex($_POST);
@@ -44,16 +43,16 @@ switch ($action) {
 	default:
 		if (isset($_GET["id"])) {
 			$page->title = "Release Naming Regex Edit";
-			$id          = $_GET["id"];
-			$r           = $regexes->getRegexByID($id);
+			$regex = $regexes->getRegexByID($_GET["id"]);
 		} else {
 			$page->title = "Release Naming Regex Add";
-			$r           = ['status' => 1];
+			$regex += ['status' => 1];
 		}
-		$page->smarty->assign('regex', $r);
 		break;
 }
 
+$page->smarty->assign('regex', $regex);
+$page->smarty->assign('error', $error);
 $page->smarty->assign('status_ids', [Category::STATUS_ACTIVE, Category::STATUS_INACTIVE]);
 $page->smarty->assign('status_names', ['Yes', 'No']);
 

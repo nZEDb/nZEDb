@@ -142,12 +142,13 @@ $page->smarty->assign('registerstatus_ids',
 						  Settings::REGISTER_STATUS_INVITE, Settings::REGISTER_STATUS_CLOSED
 					  ]);
 $page->smarty->assign('registerstatus_names', ['API Only', 'Open', 'Invite', 'Closed']);
-$page->smarty->assign('passworded_ids', [0, 1, 10]);
-$page->smarty->assign('passworded_names',
-					  [
-						  'Don\'t show passworded or potentially passworded',
-						  'Don\'t show passworded', 'Show everything'
-					  ]);
+$page->smarty->assign('passworded_ids', [0, 2, 1, 10]);
+$page->smarty->assign('passworded_names', [
+	'Hide passworded or potentially passworded (*yes)',
+	'Hide passworded or potentially passworded (*no)',
+	'Show non-passworded and potentially passworded (*no)',
+	'Show everything (*no)'
+]);
 
 //$page->smarty->assign('grabnzbs_ids', array(0,1,2));
 //$page->smarty->assign('grabnzbs_names', array('Disabled', 'Primary NNTP Provider', 'Alternate NNTP Provider'));

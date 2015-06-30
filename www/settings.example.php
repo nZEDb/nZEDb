@@ -15,9 +15,9 @@
  *
  * @note Developers: When updating settings.php.example, up this version
  *                   and $current_settings_file_version in automated.config.php
- * @version 2
+ * @version 3
  */
-define('nZEDb_SETTINGS_FILE_VERSION', 2);
+define('nZEDb_SETTINGS_FILE_VERSION', 3);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////// Web Settings //////////////////////////////////////////////////////////
@@ -160,10 +160,15 @@ define('nZEDb_RENAME_MUSIC_MEDIAINFO', true);
  * 0 - disabled   ; No cache server(s) will be used.
  * 1 - memcached  ; Memcached server(s) will be used for caching.
  * 2 - redis      ; Redis server(s) will be used for caching.
+ * 3 - apc/apcu   ; APC or APCu will be used for caching.
  *
- * @note We use the Redis extension by nicolasff.
- * @see https://github.com/nicolasff/phpredis
+ * @see https://github.com/nZEDb/nZEDb_Misc/blob/master/Guides/Various/Cache/Guide.md
+ * @note Memcahed: The Memcached PHP extension must be installed.
+ * @note Redis:    We use the Redis PHP extension by nicolasff. https://github.com/nicolasff/phpredis
+ * @note APC:      The APC or APCu PHP extension must be installed.
+ * @note APC:      Ignore these settings: nZEDb_CACHE_HOSTS / nZEDb_CACHE_SOCKET_FILE / nZEDb_CACHE_TIMEOUT
  * @default 0
+ * @version 3
  */
 define('nZEDb_CACHE_TYPE', 0);
 
@@ -217,15 +222,20 @@ define('nZEDb_CACHE_TIMEOUT', 10);
 define('nZEDb_CACHE_COMPRESSION', false);
 
 /**
- * 0 - Use the PHP serializer.
- * 1 - [Requires igbinary] Use igbinary serializer which is faster and uses less memory, works on both Memcached and Redis.
+ * Serialization is a way of converting data in PHP into strings of text which can be stored on the cache server.
+ *
+ * 0 - Use the PHP serializer. Recommended for most people.
+ * 1 - [Requires igbinary] Use igbinary serializer which is faster and uses less memory, works
+ *                         on Memcached / Redis / APC, read the notes below.
  * 2 - [Redis Only] Use no serializer.
  *
  * @note igbinary must be compiled and enabled in php.ini
+ * @note APC/APCu: This setting is ignored, set this in php.ini with apc.serializer
  * @note Memcached/Redis must be compiled with igbinary support as well to use igbinary.
+ * @note Read the igbinary page how to compile / enable.
  * @see https://github.com/phadej/igbinary
- * @see https://github.com/nicolasff/phpredis
  * @default 0
+ * @version 3
  */
 define('nZEDb_CACHE_SERIALIZER', 0);
 
@@ -535,6 +545,8 @@ define('PHPMAILER_SMTP_PASSWORD', '');
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////// Change log ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+2015-06-11       v3  Add support for APC or APCu extensions for caching data. Search for @version 3 for the changes.
 
 2015-05-10       v2  Update path to find_password_hash_cost.php in comments. Search for @version 2 for the changes.
 

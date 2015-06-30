@@ -87,13 +87,17 @@ class Utility
 	public static function curlSslContextOptions($verify = true)
 	{
 		$options = [];
-		if ($verify && nZEDb_SSL_VERIFY_HOST) {
+		if ($verify && nZEDb_SSL_VERIFY_HOST && (!empty(nZEDb_SSL_CAFILE) || !empty(nZEDb_SSL_CAPATH))) {
 			$options += [
-				CURLOPT_CAINFO         => nZEDb_SSL_CAFILE,
-				CURLOPT_CAPATH         => nZEDb_SSL_CAPATH,
 				CURLOPT_SSL_VERIFYPEER => (bool)nZEDb_SSL_VERIFY_PEER,
 				CURLOPT_SSL_VERIFYHOST => (nZEDb_SSL_VERIFY_HOST ? 2 : 0),
 			];
+			if (!empty(nZEDb_SSL_CAFILE)) {
+				$options += [CURLOPT_CAINFO => nZEDb_SSL_CAFILE];
+			}
+			if (!empty(nZEDb_SSL_CAPATH)) {
+				$options += [CURLOPT_CAPATH => nZEDb_SSL_CAPATH];
+			}
 		} else {
 			$options += [
 				CURLOPT_SSL_VERIFYPEER => false,
@@ -220,16 +224,18 @@ class Utility
 	public static function getUrl(array $options = [])
 	{
 		$defaults = [
-			'url'        => '', // The URL to download.
-			'method'     => 'get', // Http method, get/post/etc..
-			'postdata'   => '', // Data to send on post method.
-			'language'   => '', // Language in header string.
-			'debug'      => false, // Show curl debug information.
-			'useragent'  => '', // User agent string.
-			'cookie'     => '', // Cookie string.
-			'verifycert' => true, /* Verify certificate authenticity?
-									  Since curl does not have a verify self signed certs option,
-									  you should use this instead if your cert is self signed. */
+			'url'            => '',    // String ; The URL to download.
+			'method'         => 'get', // String ; Http method, get/post/etc..
+			'postdata'       => '',    // String ; Data to send on post method.
+			'language'       => '',    // String ; Language in request header string.
+			'debug'          => false, // Bool   ; Show curl debug information.
+			'useragent'      => '',    // String ; User agent string.
+			'cookie'         => '',    // String ; Cookie string.
+			'requestheaders' => [],    // Array  ; List of request headers.
+			                           //          Example: ["Content-Type: application/json", "DNT: 1"]
+			'verifycert'     => true,  // Bool   ; Verify certificate authenticity?
+			                           //          Since curl does not have a verify self signed certs option,
+			                           //          you should use this instead if your cert is self signed.
 		];
 
 		$options += $defaults;
@@ -241,24 +247,27 @@ class Utility
 		switch ($options['language']) {
 			case 'fr':
 			case 'fr-fr':
-				$language = "fr-fr";
+				$options['language'] = "fr-fr";
 				break;
 			case 'de':
 			case 'de-de':
-				$language = "de-de";
+				$options['language'] = "de-de";
 				break;
 			case 'en-us':
-				$language = "en-us";
+				$options['language'] = "en-us";
 				break;
 			case 'en-gb':
-				$language = "en-gb";
+				$options['language'] = "en-gb";
 				break;
 			case '':
 			case 'en':
 			default:
-				$language = 'en';
+				$options['language'] = 'en';
 		}
-		$header[] = "Accept-Language: " . $language;
+		$header[] = "Accept-Language: " . $options['language'];
+		if (is_array($options['requestheaders'])) {
+			$header += $options['requestheaders'];
+		}
 
 		$ch = curl_init();
 
@@ -270,10 +279,10 @@ class Utility
 			CURLOPT_TIMEOUT        => 15
 		];
 		$context += self::curlSslContextOptions($options['verifycert']);
-		if ($options['useragent'] !== '') {
+		if (!empty($options['useragent'])) {
 			$context += [CURLOPT_USERAGENT => $options['useragent']];
 		}
-		if ($options['cookie'] !== '') {
+		if (!empty($options['cookie'])) {
 			$context += [CURLOPT_COOKIE => $options['cookie']];
 		}
 		if ($options['method'] === 'post') {
@@ -425,16 +434,24 @@ class Utility
 	 */
 	public static function streamSslContextOptions($forceIgnore = false)
 	{
-		$options = [
-			'verify_peer'       => ($forceIgnore ? false : (bool)nZEDb_SSL_VERIFY_PEER),
-			'verify_peer_name'  => ($forceIgnore ? false : (bool)nZEDb_SSL_VERIFY_HOST),
-			'allow_self_signed' => ($forceIgnore ? true : (bool)nZEDb_SSL_ALLOW_SELF_SIGNED),
-		];
-		if (nZEDb_SSL_CAFILE) {
-			$options['cafile'] = nZEDb_SSL_CAFILE;
-		}
-		if (nZEDb_SSL_CAPATH) {
-			$options['capath'] = nZEDb_SSL_CAPATH;
+		if (empty(nZEDb_SSL_CAFILE) && empty(nZEDb_SSL_CAPATH)) {
+			$options = [
+				'verify_peer'       => false,
+				'verify_peer_name'  => false,
+				'allow_self_signed' => true,
+			];
+		} else {
+			$options = [
+				'verify_peer'       => ($forceIgnore ? false : (bool)nZEDb_SSL_VERIFY_PEER),
+				'verify_peer_name'  => ($forceIgnore ? false : (bool)nZEDb_SSL_VERIFY_HOST),
+				'allow_self_signed' => ($forceIgnore ? true : (bool)nZEDb_SSL_ALLOW_SELF_SIGNED),
+			];
+			if (!empty(nZEDb_SSL_CAFILE)) {
+				$options['cafile'] = nZEDb_SSL_CAFILE;
+			}
+			if (!empty(nZEDb_SSL_CAPATH)) {
+				$options['capath'] = nZEDb_SSL_CAPATH;
+			}
 		}
 		// If we set the transport to tls and the server falls back to ssl,
 		// the context options would be for tls and would not apply to ssl,

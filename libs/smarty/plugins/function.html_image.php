@@ -2,12 +2,12 @@
 /**
  * Smarty plugin
  *
- * @package Smarty
+ * @package    Smarty
  * @subpackage PluginsFunction
  */
+
 /**
  * Smarty {html_image} function plugin
- *
  * Type:     function<br>
  * Name:     html_image<br>
  * Date:     Feb 24, 2003<br>
@@ -23,19 +23,23 @@
  * - path_prefix - prefix for path output (optional, default empty)
  * </pre>
  *
- * @link http://www.smarty.net/manual/en/language.function.html.image.php {html_image}
- *      (Smarty online manual)
- * @author Monte Ohrt <monte at ohrt dot com>
- * @author credits to Duda <duda@big.hu>
+ * @link    http://www.smarty.net/manual/en/language.function.html.image.php {html_image}
+ *          (Smarty online manual)
+ * @author  Monte Ohrt <monte at ohrt dot com>
+ * @author  credits to Duda <duda@big.hu>
  * @version 1.0
+ *
  * @param array                    $params   parameters
  * @param Smarty_Internal_Template $template template object
+ *
+ * @throws SmartyException
  * @return string
- * @uses smarty_function_escape_special_chars()
+ * @uses    smarty_function_escape_special_chars()
  */
 function smarty_function_html_image($params, $template)
 {
     require_once(SMARTY_PLUGINS_DIR . 'shared.escape_special_chars.php');
+
     $alt = '';
     $file = '';
     $height = '';
@@ -55,6 +59,7 @@ function smarty_function_html_image($params, $template)
             case 'basedir':
                 $$_key = $_val;
                 break;
+
             case 'alt':
                 if (!is_array($_val)) {
                     $$_key = smarty_function_escape_special_chars($_val);
@@ -62,11 +67,13 @@ function smarty_function_html_image($params, $template)
                     throw new SmartyException ("html_image: extra attribute '$_key' cannot be an array", E_USER_NOTICE);
                 }
                 break;
+
             case 'link':
             case 'href':
                 $prefix = '<a href="' . $_val . '">';
                 $suffix = '</a>';
                 break;
+
             default:
                 if (!is_array($_val)) {
                     $extra .= ' ' . $_key . '="' . smarty_function_escape_special_chars($_val) . '"';
@@ -76,23 +83,29 @@ function smarty_function_html_image($params, $template)
                 break;
         }
     }
+
     if (empty($file)) {
         trigger_error("html_image: missing 'file' parameter", E_USER_NOTICE);
+
         return;
     }
+
     if ($file[0] == '/') {
         $_image_path = $basedir . $file;
     } else {
         $_image_path = $file;
     }
+
     // strip file protocol
     if (stripos($params['file'], 'file://') === 0) {
         $params['file'] = substr($params['file'], 7);
     }
+
     $protocol = strpos($params['file'], '://');
     if ($protocol !== false) {
         $protocol = strtolower(substr($params['file'], 0, $protocol));
     }
+
     if (isset($template->smarty->security_policy)) {
         if ($protocol) {
             // remote resource (or php stream, …)
@@ -101,25 +114,30 @@ function smarty_function_html_image($params, $template)
             }
         } else {
             // local file
-            if (!$template->smarty->security_policy->isTrustedResourceDir($params['file'])) {
+            if (!$template->smarty->security_policy->isTrustedResourceDir($_image_path)) {
                 return;
             }
         }
     }
+
     if (!isset($params['width']) || !isset($params['height'])) {
         // FIXME: (rodneyrehm) getimagesize() loads the complete file off a remote resource, use custom [jpg,png,gif]header reader!
         if (!$_image_data = @getimagesize($_image_path)) {
             if (!file_exists($_image_path)) {
                 trigger_error("html_image: unable to find '$_image_path'", E_USER_NOTICE);
+
                 return;
             } elseif (!is_readable($_image_path)) {
                 trigger_error("html_image: unable to read '$_image_path'", E_USER_NOTICE);
+
                 return;
             } else {
                 trigger_error("html_image: '$_image_path' is not a valid image file", E_USER_NOTICE);
+
                 return;
             }
         }
+
         if (!isset($params['width'])) {
             $width = $_image_data[0];
         }
@@ -127,6 +145,7 @@ function smarty_function_html_image($params, $template)
             $height = $_image_data[1];
         }
     }
+
     if (isset($params['dpi'])) {
         if (strstr($_SERVER['HTTP_USER_AGENT'], 'Mac')) {
             // FIXME: (rodneyrehm) wrong dpi assumption
@@ -139,5 +158,6 @@ function smarty_function_html_image($params, $template)
         $width = round($width * $_resize);
         $height = round($height * $_resize);
     }
+
     return $prefix . '<img src="' . $path_prefix . $file . '" alt="' . $alt . '" width="' . $width . '" height="' . $height . '"' . $extra . ' />' . $suffix;
 }

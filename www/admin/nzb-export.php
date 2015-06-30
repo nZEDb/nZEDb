@@ -6,62 +6,42 @@ use nzedb\Releases;
 use nzedb\utility\Utility;
 
 if (Utility::isCLI()) {
-	exit ('This script is only for exporting from the web, use the script in misc/testing' .
-		  PHP_EOL);
+	exit ('This script is only for exporting from the web, use the script in misc/testing' . PHP_EOL);
 }
 
 $page = new AdminPage();
 $rel  = new Releases(['Settings' => $page->settings]);
 
+$folder = $group = $fromDate = $toDate = $gzip = $output = '';
 if ($page->isPostBack()) {
-	$retVal = $path = '';
+	$folder = $_POST["folder"];
+	$fromDate = (isset($_POST["postfrom"]) ? $_POST["postfrom"] : '');
+	$toDate   = (isset($_POST["postto"]) ? $_POST["postto"] : '');
+	$group = $_POST["group"];
+	$gzip = $_POST["gzip"];
 
-	$path     = $_POST["folder"];
-	$postFrom = (isset($_POST["postfrom"]) ? $_POST["postfrom"] : '');
-	$postTo   = (isset($_POST["postto"]) ? $_POST["postto"] : '');
-	$group    = ($_POST["group"] === '-1' ? 0 : (int)$_POST["group"]);
-	$gzip     = ($_POST["gzip"] === '1' ? true : false);
-
-	if ($path !== "") {
-		$NE = new NZBExport([
-								'Browser'  => true, 'Settings' => $page->settings,
-								'Releases' => $rel
-							]);
-		$retVal = $NE->beginExport(
-			[
-				$path,
-				$postFrom,
-				$postTo,
-				$group,
-				$gzip
+	if ($folder != '') {
+		$output = (new NZBExport(['Browser'  => true, 'Settings' => $page->settings, 'Releases' => $rel]))->beginExport([
+				$folder, $fromDate, $toDate, ($_POST["group"] === '-1' ? 0 : (int)$_POST["group"]),
+				($_POST["gzip"] === '1' ? true : false)
 			]
 		);
 	} else {
-		$retVal = 'Error, a path is required!';
+		$output = 'Error, a path is required!';
 	}
-
-	$page->smarty->assign(
-		[
-			'folder'   => $path,
-			'output'   => $retVal,
-			'fromdate' => $postFrom,
-			'todate'   => $postTo,
-			'group'    => $_POST["group"],
-			'gzip'     => $_POST["gzip"]
-		]
-	);
 } else {
-	$page->smarty->assign(
-		[
-			'fromdate' => $rel->getEarliestUsenetPostDate(),
-			'todate'   => $rel->getLatestUsenetPostDate()
-		]
-	);
+	$fromDate = $rel->getEarliestUsenetPostDate();
+	$toDate = $rel->getLatestUsenetPostDate();
 }
 
 $page->title = "Export Nzbs";
-$page->smarty->assign(
-	[
+$page->smarty->assign([
+		'output'    => $output,
+		'folder'    => $folder,
+		'fromdate'  => $fromDate,
+		'todate'    => $toDate,
+		'group'     => $group,
+		'gzip'      => $gzip,
 		'gziplist'  => [1 => 'True', 0 => 'False'],
 		'grouplist' => $rel->getReleasedGroupsForSelect(true)
 	]

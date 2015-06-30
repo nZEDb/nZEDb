@@ -13,6 +13,8 @@ $tOut = new TmuxOutput($pdo);
 
 $runVar['paths']['misc'] = nZEDb_MISC;
 $runVar['paths']['cli'] = nZEDb_ROOT . 'cli/';
+$runVar['paths']['scraper'] = nZEDb_MISC . 'IRCScraper' . DS . 'scrape.php';
+
 $db_name = DB_NAME;
 $dbtype = DB_SYSTEM;
 $tmux = $tRun->get('niceness');
@@ -371,9 +373,17 @@ while ($runVar['counts']['iterations'] > 0) {
 		$tRun->runPane('notrunning', $runVar);
 	}
 
-	$runVar['counts']['iterations']++;
-	sleep(10);
+	$exit = $pdo->getSetting('tmux.run.exit');
+	if ($exit == 0) {
+		$runVar['counts']['iterations']++;
+		sleep(10);
+	} else {
+		// Set counter to less than one so the loop will exit.
+		$runVar['counts']['iterations'] = ($exit < 0) ? $exit : 0;
+	}
 }
+
+// TODO add code here to handle all panes shutting down before closing.
 
 function errorOnSQL($pdo)
 {

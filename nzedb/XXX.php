@@ -45,6 +45,9 @@ class XXX
 
 	protected $movieqty;
 
+	/**
+	 * @var string
+	 */
 	protected $showPasswords;
 
 	protected $cookie;
@@ -65,7 +68,7 @@ class XXX
 		$this->releaseImage = ($options['ReleaseImage'] instanceof ReleaseImage ? $options['ReleaseImage'] : new ReleaseImage($this->pdo));
 
 		$this->movieqty = ($this->pdo->getSetting('maxxxxprocessed') != '') ? $this->pdo->getSetting('maxxxxprocessed') : 100;
-		$this->showPasswords = ($this->pdo->getSetting('showpasswordedrelease') != '') ? $this->pdo->getSetting('showpasswordedrelease') : 0;
+		$this->showPasswords = Releases::showPasswords($this->pdo);
 		$this->debug = nZEDb_DEBUG;
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
 		$this->imgSavePath = nZEDb_COVERS . 'xxx' . DS;
@@ -148,7 +151,7 @@ class XXX
 				INNER JOIN xxxinfo xxx ON xxx.id = r.xxxinfo_id
 				WHERE r.nzbstatus = 1
 				AND xxx.title != ''
-				AND r.passwordstatus <= %d
+				AND r.passwordstatus %s
 				AND %s %s %s %s ",
 				$this->showPasswords,
 				$this->getBrowseBy(),
@@ -204,7 +207,7 @@ class XXX
 			INNER JOIN xxxinfo xxx ON xxx.id = r.xxxinfo_id
 			WHERE r.nzbstatus = 1
 			AND xxx.title != ''
-			AND r.passwordstatus <= %d AND %s %s %s %s
+			AND r.passwordstatus %s AND %s %s %s %s
 			GROUP BY xxx.id ORDER BY %s %s %s",
 			$this->showPasswords,
 			$this->getBrowseBy(),

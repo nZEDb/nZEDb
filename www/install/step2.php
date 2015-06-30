@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../automated.config.php';
+require_once realpath('config.php');
 
 use nzedb\db\Settings;
 use nzedb\Install;
@@ -38,7 +38,7 @@ function databaseCheck($dbName, $dbType, $pdo)
 	$tables = $stmt->fetchAll();
 
 	// Store the query result as an array.
-	$tablearr = array();
+	$tablearr = [];
 	foreach ($tables as $table) {
 		$tablearr[] = $table;
 	}
@@ -80,14 +80,14 @@ if ($page->isPostBack()) {
 	$cfg->error = false;
 
 	// Check if user selected right DB type.
-	if (!in_array($cfg->DB_SYSTEM, array('mysql'))) {
+	if (!in_array($cfg->DB_SYSTEM, ['mysql'])) {
 		$cfg->emessage = 'Invalid database system. Must be: mysql ; Not: ' . $cfg->DB_SYSTEM;
 		$cfg->error = true;
 	} else {
 		// Connect to the SQL server.
 		try {
 			$pdo = new Settings(
-				array(
+				[
 					'checkVersion' => true,
 					'createDb'     => true,
 					'dbhost'       => $cfg->DB_HOST,
@@ -97,7 +97,7 @@ if ($page->isPostBack()) {
 					'dbsock'       => $cfg->DB_SOCKET,
 					'dbtype'       => $cfg->DB_SYSTEM,
 					'dbuser'       => $cfg->DB_USER,
-				)
+				]
 			);
 			$cfg->dbConnCheck = true;
 		} catch (\PDOException $e) {
@@ -145,19 +145,19 @@ if ($page->isPostBack()) {
 		$cfg->setSession();
 
 		$DbSetup = new \nzedb\db\DbUpdate(
-			array(
+			[
 				'backup' => false,
 				'db'     => $pdo,
-			)
+			]
 		);
 
 		try {
 			$DbSetup->processSQLFile(); // Setup default schema
 			$DbSetup->loadTables(); // Load default data files
 			$DbSetup->processSQLFile( // Process any custom stuff.
-					array(
+					[
 						 'filepath' =>	nZEDb_RES . 'db' . DS . 'schema' . DS . 'mysql-data.sql'
-					)
+					]
 			);
 		} catch (\PDOException $err) {
 			$cfg->error = true;

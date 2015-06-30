@@ -705,6 +705,11 @@ class ProcessAdditional
 					// Download the RARs/ZIPs, extract the files inside them and insert the file info into the DB.
 					$this->_processNZBCompressedFiles();
 
+					// Download rar/zip in reverse order, to get the last rar or zip file.
+					if ($this->pdo->getSetting('fetchlastcompressedfiles') == 1) {
+						$this->_processNZBCompressedFiles(true);
+					}
+
 					if ($this->_releaseHasPassword === false) {
 						// Process the extracted files to get video/audio samples/etc.
 						$this->_processExtractedFiles();
@@ -796,14 +801,13 @@ class ProcessAdditional
 		}
 
 		// Get a list of files in the nzb.
-		$this->_nzbContents = $this->_nzb->nzbFileList($nzbContents);
+		$this->_nzbContents = $this->_nzb->nzbFileList($nzbContents, ['no-file-key' => false, 'strip-count' => true]);
 		if (count($this->_nzbContents) === 0) {
 			$this->_echo('NZB is potentially broken for GUID: ' . $this->_release['guid'], 'warning');
 			return $this->_decrementPasswordStatus();
 		}
-
-		// Sort the files inside the NZB.
-		usort($this->_nzbContents, ['\nzedb\processing\post\ProcessAdditional', '_sortNZB']);
+		// Sort keys.
+		ksort($this->_nzbContents, SORT_NATURAL);
 
 		return true;
 	}
@@ -857,7 +861,7 @@ class ProcessAdditional
 			// Check if it's a rar/zip.
 			if ($this->_NZBHasCompressedFile === false &&
 				preg_match(
-					'/\.(part0*1|part0+|r0+|r0*1|rar|0+|0*10?|zip)(\s*\.rar)*($|[ ")\]-])|"[a-f0-9]{32}\.[1-9]\d{1,2}".*\(\d+\/\d{2,}\)$/i',
+					'/\.(part\d+|r\d+|rar|0+|0*10?|zipr\d{2,3}|zipx?)(\s*\.rar)*($|[ ")\]-])|"[a-f0-9]{32}\.[1-9]\d{1,2}".*\(\d+\/\d{2,}\)$/i',
 					$this->_currentNZBFile['title']
 				)
 			) {
@@ -938,10 +942,26 @@ class ProcessAdditional
 	}
 
 	/**
-	 * Process the NZB contents, find RAR/ZIP files, download them and extract them.
+	 * List of message-id's we have tried for rar/zip files.
+	 * @var array
 	 */
-	protected function _processNZBCompressedFiles()
+	protected $_triedCompressedMids = [];
+
+	/**
+	 * Process the NZB contents, find RAR/ZIP files, download them and extract them.
+	 *
+	 * @param bool $reverse Reverse sort $this->_nzbContents ? - To find the largest rar / zip file first.
+	 */
+	protected function _processNZBCompressedFiles($reverse = false)
 	{
+		if ($reverse) {
+			if (!krsort($this->_nzbContents)) {
+				return;
+			}
+		} else {
+			$this->_triedCompressedMids = [];
+		}
+
 		$failed = $downloaded = 0;
 		// Loop through the files, attempt to find if password-ed and files. Starting with what not to process.
 		foreach ($this->_nzbContents as $nzbFile) {
@@ -959,7 +979,7 @@ class ProcessAdditional
 
 			// Probably not a rar/zip.
 			if (!preg_match(
-				'/\.\b(part\d+|part00\.rar|part01\.rar|rar|r00|r01|zipr\d{2,3}|zip|zipx)($|[ ")\]-])|"[a-f0-9]{32}\.[1-9]\d{1,2}".*\(\d+\/\d{2,}\)$/i',
+				'/\.(part\d+|r\d+|rar|0+|0*10?|zipr\d{2,3}|zipx?)(\s*\.rar)*($|[ ")\]-])|"[a-f0-9]{32}\.[1-9]\d{1,2}".*\(\d+\/\d{2,}\)$/i',
 				$nzbFile['title']
 			)
 			) {
@@ -973,7 +993,18 @@ class ProcessAdditional
 				if ($i > $segCount) {
 					break;
 				}
-				$mID[] = (string)$nzbFile['segments'][$i];
+				$segment = (string)$nzbFile['segments'][$i];
+				if (!$reverse) {
+					$this->_triedCompressedMids[] = $segment;
+				} else if (in_array($segment, $this->_triedCompressedMids)) {
+					// We already downloaded this file.
+					continue 2;
+				}
+				$mID[] = $segment;
+			}
+			// Nothing to download.
+			if (empty($mID)) {
+				continue;
 			}
 
 			// Download the article(s) from usenet.

@@ -17,6 +17,7 @@ class Cache
 	const TYPE_DISABLED  = 0;
 	const TYPE_MEMCACHED = 1;
 	const TYPE_REDIS     = 2;
+	const TYPE_APC       = 3;
 
 	/**
 	 * @var \Memcached|\Redis
@@ -36,24 +37,6 @@ class Cache
 	private $socketFile;
 
 	/**
-	 * Serializer type.
-	 * @var bool|int
-	 */
-	private $serializerType;
-
-	/**
-	 * Are we using redis or memcached?
-	 * @var bool
-	 */
-	private $isRedis = true;
-
-	/**
-	 * Does the user have igBinary support and wants to use it?
-	 * @var bool
-	 */
-	private $IgBinarySupport = false;
-
-	/**
 	 * Store data on the cache server.
 	 *
 	 * @param string       $key        Key we can use to retrieve the data.
@@ -65,12 +48,14 @@ class Cache
 	 */
 	public function set($key, $data, $expiration)
 	{
-		if ($this->connected === true && $this->ping() === true) {
-			return $this->server->set(
-				$key,
-				($this->isRedis ? ($this->IgBinarySupport ? igbinary_serialize($data) : serialize($data)) : $data),
-				$expiration
-			);
+		if ($this->ping()) {
+			switch (nZEDb_CACHE_TYPE) {
+				case self::TYPE_REDIS:
+				case self::TYPE_MEMCACHED:
+					return $this->server->set($key, $data, $expiration);
+				case self::TYPE_APC:
+					return apc_add($key, $data, $expiration);
+			}
 		}
 		return false;
 	}
@@ -85,9 +70,18 @@ class Cache
 	 */
 	public function get($key)
 	{
-		if ($this->connected === true && $this->ping() === true) {
-			$data = $this->server->get($key);
-			return ($this->isRedis ? ($this->IgBinarySupport ? igbinary_unserialize($data) : unserialize($data)) : $data);
+		if ($this->ping()) {
+			$data = '';
+			switch (nZEDb_CACHE_TYPE) {
+				case self::TYPE_REDIS:
+				case self::TYPE_MEMCACHED:
+					$data = $this->server->get($key);
+					break;
+				case self::TYPE_APC:
+					$data = apc_fetch($key);
+					break;
+			}
+			return $data;
 		}
 		return false;
 	}
@@ -102,8 +96,14 @@ class Cache
 	 */
 	public function delete($key)
 	{
-		if ($this->connected === true && $this->ping() === true) {
-			return (bool)$this->server->delete($key);
+		if ($this->ping()) {
+			switch (nZEDb_CACHE_TYPE) {
+				case self::TYPE_REDIS:
+				case self::TYPE_MEMCACHED:
+					return (bool)$this->server->delete($key);
+				case self::TYPE_APC:
+					return apc_delete($key);
+			}
 		}
 		return false;
 	}
@@ -113,11 +113,18 @@ class Cache
 	 */
 	public function flush()
 	{
-		if ($this->connected === true && $this->ping() === true) {
-			if ($this->isRedis === true) {
-				$this->server->flushAll();
-			} else {
-				$this->server->flush();
+		if ($this->ping()) {
+			switch (nZEDb_CACHE_TYPE) {
+				case self::TYPE_REDIS:
+					$this->server->flushAll();
+					break;
+				case self::TYPE_MEMCACHED:
+					$this->server->flush();
+					break;
+				case self::TYPE_APC:
+					apc_clear_cache("user");
+					apc_clear_cache();
+					break;
 			}
 		}
 	}
@@ -138,16 +145,19 @@ class Cache
 	/**
 	 * Get cache server statistics.
 	 *
-	 * @return array|string
+	 * @return array
 	 * @access public
 	 */
 	public function serverStatistics()
 	{
-		if ($this->connected === true && $this->ping() === true) {
-			if ($this->isRedis === true) {
-				return $this->server->info();
-			} else {
-				return $this->server->getStats();
+		if ($this->ping()) {
+			switch (nZEDb_CACHE_TYPE) {
+				case self::TYPE_REDIS:
+					return $this->server->info();
+				case self::TYPE_MEMCACHED:
+					return $this->server->getStats();
+				case self::TYPE_APC:
+					return apc_cache_info();
 			}
 		}
 		return array();
@@ -175,9 +185,9 @@ class Cache
 			$this->socketFile = true;
 		}
 
-		$this->serializerType = false;
+		$serializer = false;
 		if (defined('nZEDb_CACHE_SERIALIZER')) {
-			$this->serializerType = true;
+			$serializer = true;
 		}
 
 		switch (nZEDb_CACHE_TYPE) {
@@ -187,11 +197,9 @@ class Cache
 					throw new CacheException('The redis extension is not loaded!');
 				}
 				$this->server = new \Redis();
-				$this->isRedis = true;
 				$this->connect();
-				if ($this->serializerType !== false) {
-					$this->serializerType = $this->verifySerializer();
-					$this->server->setOption(\Redis::OPT_SERIALIZER, $this->serializerType);
+				if ($serializer) {
+					$this->server->setOption(\Redis::OPT_SERIALIZER, $this->verifySerializer());
 				}
 				break;
 
@@ -200,18 +208,24 @@ class Cache
 					throw new CacheException('The memcached extension is not loaded!');
 				}
 				$this->server = new \Memcached();
-				$this->isRedis = false;
-				if ($this->serializerType !== false) {
-					$this->serializerType = $this->verifySerializer();
-					$this->server->setOption(\Memcached::OPT_SERIALIZER, $this->serializerType);
+				if ($serializer) {
+					$this->server->setOption(\Memcached::OPT_SERIALIZER, $this->verifySerializer());
 				}
 				$this->server->setOption(\Memcached::OPT_COMPRESSION, (defined('nZEDb_CACHE_COMPRESSION') ? nZEDb_CACHE_COMPRESSION : false));
 				$this->connect();
 				break;
 
+			case self::TYPE_APC:
+				// Faster than checking if apcu or apc is loaded.
+				if (!function_exists('apc_add')) {
+					throw new CacheException('The APCu extension is not loaded or enabled!');
+				}
+				$this->connect();
+				break;
+
 			case self::TYPE_DISABLED:
 			default:
-				return;
+				break;
 		}
 	}
 
@@ -239,54 +253,74 @@ class Cache
 	private function connect()
 	{
 		$this->connected = false;
-		if ($this->isRedis === true) {
-			if ($this->socketFile === false) {
-				$servers = unserialize(nZEDb_CACHE_HOSTS);
-				foreach ($servers as $server) {
-					if ($this->server->connect($server['host'], $server['port'], (float)nZEDb_CACHE_TIMEOUT) === false) {
+		switch (nZEDb_CACHE_TYPE) {
+			case self::TYPE_REDIS:
+				if ($this->socketFile === false) {
+					$servers = unserialize(nZEDb_CACHE_HOSTS);
+					foreach ($servers as $server) {
+						if ($this->server->connect($server['host'], $server['port'], (float)nZEDb_CACHE_TIMEOUT) === false) {
+							throw new CacheException('Error connecting to the Redis server!');
+						} else {
+							$this->connected = true;
+						}
+					}
+				} else {
+					if ($this->server->connect(nZEDb_CACHE_SOCKET_FILE) === false) {
 						throw new CacheException('Error connecting to the Redis server!');
 					} else {
 						$this->connected = true;
 					}
 				}
-			} else {
-				if ($this->server->connect(nZEDb_CACHE_SOCKET_FILE) === false) {
-					throw new CacheException('Error connecting to the Redis server!');
-				} else {
-					$this->connected = true;
-				}
-			}
-		} else {
-			if ($this->socketFile === false) {
-				if ($this->server->addServers(unserialize(nZEDb_CACHE_HOSTS)) === false) {
+				break;
+			case self::TYPE_MEMCACHED:
+				$params = ($this->socketFile === false ? unserialize(nZEDb_CACHE_HOSTS) : [[nZEDb_CACHE_SOCKET_FILE, 'port' => 0]]);
+				if ($this->server->addServers($params) === false) {
 					throw new CacheException('Error connecting to the Memcached server!');
 				} else {
 					$this->connected = true;
 				}
-			} else {
-				if ($this->server->addServers(array(array(nZEDb_CACHE_SOCKET_FILE, 'port' => 0))) === false) {
-					throw new CacheException('Error connecting to the Memcached server!');
-				} else {
-					$this->connected = true;
-				}
-			}
+				break;
+			case self::TYPE_APC:
+				$this->connected = true;
+				break;
 		}
 	}
 
 	/**
-	 * Redis supports ping'ing the server, so use it.
+	 * Check if we are still connected to the cache server, reconnect if not.
+	 *
+	 * @return bool
 	 */
 	private function ping()
 	{
-		if ($this->isRedis === true) {
-			try {
-				return (bool)$this->server->ping();
-			} catch (\RedisException $error) {
-				$this->connect();
-				return $this->connected;
-			}
+		if (!$this->connected) {
+			return false;
 		}
-		return true;
+		switch (nZEDb_CACHE_TYPE) {
+			case self::TYPE_REDIS:
+				try {
+					return (bool)$this->server->ping();
+				} catch (\RedisException $error) {
+					// nothing to see here, move along
+				}
+				break;
+			case self::TYPE_MEMCACHED:
+				$versions = $this->server->getVersion();
+				if ($versions) {
+					foreach ($versions as $version) {
+						if ($version != "255.255.255") {
+							return true;
+						}
+					}
+				}
+				break;
+			case self::TYPE_APC:
+				return true;
+			default:
+				return false;
+		}
+		$this->connect();
+		return $this->connected;
 	}
 
 	/**
@@ -300,32 +334,43 @@ class Cache
 	{
 		switch (nZEDb_CACHE_SERIALIZER) {
 			case self::SERIALIZER_IGBINARY:
-				if (extension_loaded('igbinary')) {
-					$this->IgBinarySupport = true;
-					if ($this->isRedis === true) {
-						return \Redis::SERIALIZER_IGBINARY;
-					} else {
-						if (\Memcached::HAVE_IGBINARY > 0) {
-							return \Memcached::SERIALIZER_IGBINARY;
-						} else {
-							throw new CacheException('Error: You have not compiled Memcached with igbinary support!');
-						}
-					}
-				} else {
+				if (!extension_loaded('igbinary')) {
 					throw new CacheException('Error: The igbinary extension is not loaded!');
 				}
-			case self::SERIALIZER_NONE:
-				if ($this->isRedis === true) {
-					return \Redis::SERIALIZER_NONE;
-				} else {
-					throw new CacheException('Error: Disabled serialization is not available on Memcached!');
+
+				switch (nZEDb_CACHE_TYPE) {
+					case self::TYPE_REDIS:
+						// If this is not defined, it means phpredis was not compiled with --enable-redis-igbinary
+						if (!defined('\Redis::SERIALIZER_IGBINARY')) {
+							throw new CacheException('Error: phpredis was not compiled with igbinary support!');
+						}
+						return \Redis::SERIALIZER_IGBINARY;
+					case self::TYPE_MEMCACHED:
+						if (\Memcached::HAVE_IGBINARY > 0) {
+							return \Memcached::SERIALIZER_IGBINARY;
+						}
+						throw new CacheException('Error: You have not compiled Memcached with igbinary support!');
+					case self::TYPE_APC: // Ignore - set by apc.serializer setting.
+					default:
+						return null;
 				}
+
+			case self::SERIALIZER_NONE:
+				// Only redis supports this.
+				if (nZEDb_CACHE_TYPE != self::TYPE_REDIS) {
+					throw new CacheException('Error: Disabled serialization is only available on Redis!');
+				}
+				return \Redis::SERIALIZER_NONE;
+
 			case self::SERIALIZER_PHP:
 			default:
-				if ($this->isRedis === true) {
-					return \Redis::SERIALIZER_PHP;
-				} else {
-					return \Memcached::SERIALIZER_PHP;
+				switch (nZEDb_CACHE_TYPE) {
+					case self::TYPE_REDIS:
+						return \Redis::SERIALIZER_PHP;
+					case self::TYPE_MEMCACHED:
+						return \Memcached::SERIALIZER_PHP;
+					default:
+						return null;
 				}
 		}
 	}
