@@ -4,6 +4,7 @@ use nzedb\Category;
 use nzedb\Releases;
 use nzedb\db\Settings;
 use nzedb\utility\Utility;
+use nzedb\Caps;
 
 
 // API functions.
@@ -225,11 +226,33 @@ switch ($function) {
 	// Capabilities request.
 	case 'c':
 		$category = new Category(['Settings' => $page->settings]);
-		$page->smarty->assign('parentcatlist', $category->getForMenu());
-		header('Content-type: text/xml');
-		echo $page->smarty->fetch('apicaps.tpl');
-		break;
+		$caps = new Caps(['Settings' => $page->settings]);
 
+		$data = $caps->getForMenu();
+
+		//serverconfig
+		$page->smarty->assign('serverconf', $data["server"]);
+		//limits
+		$page->smarty->assign('limit', $data["limits"]);
+		//registration
+		$page->smarty->assign('registration', $data["registration"]);
+		//searching capabilities
+		$page->smarty->assign('searchcap', $data["searching"]);
+		//categorylist
+		$page->smarty->assign('parentcatlist', $data["categories"]);
+
+
+		if ($outputXML) {
+			//use apicaps.tpl if xml is requested
+			header('Content-type: text/xml');
+			echo $page->smarty->fetch('apicaps.tpl');
+		}
+		else {
+			//use json_encode for everything else
+			header('Content-type: application/json');
+			echo json_encode($data);
+		}
+		break;
 	// Register request.
 	case 'r':
 		verifyEmptyParameter('email');
