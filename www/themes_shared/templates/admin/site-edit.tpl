@@ -295,10 +295,10 @@
 					</td>
 				</tr>
 			<tr>
-				<td style="width:180px;"><label for="trakttvkey">Trakt.tv API key:</label></td>
+				<td style="width:180px;"><label for="trakttvclientkey">Trakt.tv API Client ID:</label></td>
 				<td>
-					<input id="trakttvkey" class="long" name="trakttvkey" type="text" value="{$site->trakttvkey}"/>
-					<div class="hint">The trakt.tv api key. Used for movie and tv lookups.</div>
+					<input id="trakttvclientkey" class="long" name="trakttvclientkey" type="text" value="{$site->trakttvclientkey}"/>
+					<div class="hint">The Trakt.tv API v2 Client ID (SHA256 hash - 64 characters long string). Used for movie and tv lookups.</div>
 				</td>
 			</tr>
 			<tr>
@@ -530,8 +530,7 @@
 					{html_options style="width:180px;" id="showpasswordedrelease" name='showpasswordedrelease' values=$passworded_ids output=$passworded_names selected=$site->showpasswordedrelease}
 					<div class="hint">Whether to show passworded or potentially passworded releases in browse, search, api and rss
 						feeds. Potentially passworded means releases which contain .cab or .ace files which are
-						typically password protected and will also exclude anything not processed by PostProcess
-						Additional.
+						typically password protected. (*yes): Unprocessed releases are hidden. (*no): Unprocessed releases are displayed.
 					</div>
 				</td>
 			</tr>
@@ -846,6 +845,14 @@
 				<td>
 					{html_radios id="checkpasswordedrar" name='checkpasswordedrar' values=$passwd_ids output=$passwd_names selected=$site->checkpasswordedrar separator='<br />'}
 					<div class="hint">Whether to attempt to peek into every release, to see if rar/zip files are password protected.<br/></div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="fetchlastcompressedfiles">Download last compressed file:</label></td>
+				<td>
+					{html_radios id="fetchlastcompressedfiles" name='fetchlastcompressedfiles' values=$yesno_ids output=$yesno_names selected=$site->fetchlastcompressedfiles separator='<br />'}
+					<div class="hint">Try to download the last rar or zip file? (This is good if most of the files are at the end.) Note: The first rar/zip is still downloaded.
+					</div>
 				</td>
 			</tr>
 			<tr>

@@ -146,32 +146,17 @@ class Books
 
 	public function getBookCount($cat, $maxage = -1, $excludedcats = [])
 	{
-
-		$browseby = $this->getBrowseBy();
-
-		$catsrch = '';
-		if (count($cat) > 0 && $cat[0] != -1) {
-			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
-		}
-
-
-		if ($maxage > 0) {
-			$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
-		} else {
-			$maxage = '';
-		}
-
-		$exccatlist = '';
-		if (count($excludedcats) > 0) {
-			$exccatlist = ' AND r.categoryid NOT IN (' . implode(',', $excludedcats) . ')';
-		}
-
 		$res = $this->pdo->queryOneRow(
 			sprintf(
-				"SELECT COUNT(DISTINCT r.bookinfoid) AS num FROM releases r "
-				. "INNER JOIN bookinfo boo ON boo.id = r.bookinfoid AND boo.title != '' and boo.cover = 1 "
-				. "WHERE r.nzbstatus = 1 AND  r.passwordstatus <= (SELECT value FROM settings WHERE setting='showpasswordedrelease') "
-				. "AND %s %s %s %s", $browseby, $catsrch, $maxage, $exccatlist
+				"SELECT COUNT(DISTINCT r.bookinfoid) AS num FROM releases r
+				INNER JOIN bookinfo boo ON boo.id = r.bookinfoid AND boo.title != '' and boo.cover = 1
+				WHERE r.nzbstatus = 1 AND  r.passwordstatus %s
+				AND %s %s %s %s",
+				Releases::showPasswords($this->pdo),
+				$this->getBrowseBy(),
+				(count($cat) > 0 && $cat[0] != -1 ? (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat) : ''),
+				($maxage > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage) : ''),
+				(count($excludedcats) > 0 ? ' AND r.categoryid NOT IN (' . implode(',', $excludedcats) . ')' : '')
 			)
 		);
 		return $res['num'];
@@ -223,11 +208,13 @@ class Books
 			. "LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id "
 			. "INNER JOIN bookinfo boo ON boo.id = r.bookinfoid "
 			. "WHERE r.nzbstatus = 1 AND boo.cover = 1 AND boo.title != '' AND "
-			. "r.passwordstatus <= (SELECT value FROM settings WHERE setting='showpasswordedrelease') AND %s %s %s %s "
-			. "GROUP BY boo.id ORDER BY %s %s" . $limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]
+			. "r.passwordstatus %s AND %s %s %s %s "
+			. "GROUP BY boo.id ORDER BY %s %s" . $limit,
+			Releases::showPasswords($this->pdo),
+			$browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]
 		);
 
-		return $this->pdo->queryDirect($sql);
+		return $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
 	}
 
 	public function getBookOrder($orderby)

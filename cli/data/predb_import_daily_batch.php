@@ -32,7 +32,7 @@ if (!isset($argv[1]) || !is_numeric($argv[1]) && $argv[1] != 'progress' || !isse
 		 'You can put in progress to track progress of the imports and only import newer ones.' .
 		 PHP_EOL .
 		 'Argument 2: If your MySQL server is local, type local else type remote.' . PHP_EOL .
-		 'Argument 3: Show output of dump_predb.php or not, true | false' . PHP_EOL
+		 'Argument 3: Show output of queries or not, true | false' . PHP_EOL
 	);
 }
 

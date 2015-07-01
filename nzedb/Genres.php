@@ -32,7 +32,7 @@ class Genres
 
 	public function getGenres($type = '', $activeonly = false)
 	{
-		return $this->pdo->query($this->getListQuery($type, $activeonly));
+		return $this->pdo->query($this->getListQuery($type, $activeonly), true, nZEDb_CACHE_EXPIRY_LONG);
 	}
 
 	private function getListQuery($type = '', $activeonly = false)
@@ -44,26 +44,7 @@ class Genres
 		}
 
 		if ($activeonly) {
-			$sql = sprintf("
-						SELECT g.*
-						FROM genres g
-						INNER JOIN
-							(SELECT DISTINCT genre_id FROM musicinfo) x
-							ON x.genre_id = g.id %1\$s
-						UNION
-						SELECT g.*
-						FROM genres g
-						INNER JOIN
-							(SELECT DISTINCT genre_id FROM consoleinfo) x
-							ON x.genre_id = g.id %1\$s
-						UNION
-						SELECT g.*
-						FROM genres g
-						INNER JOIN
-							(SELECT DISTINCT genre_id FROM gamesinfo) x
-							ON x.genre_id = g.id %1\$s
-							ORDER BY title",
-						$typesql
+			$sql = sprintf("SELECT g.* FROM genres g WHERE 1 %s AND g.disabled != 1 ORDER BY g.title", $typesql
 			);
 		} else {
 			$sql = sprintf("SELECT g.* FROM genres g WHERE 1 %s ORDER BY g.title", $typesql);
@@ -88,28 +69,10 @@ class Genres
 		}
 
 		if ($activeonly) {
-			$sql = sprintf("
-						SELECT COUNT(*) AS num
-						FROM genres g
-						INNER JOIN
-							(SELECT DISTINCT genre_id FROM musicinfo) x
-							ON x.genre_id = g.id %1\$s
-						+
-						SELECT COUNT(*) AS num
-						FROM genres g
-						INNER JOIN
-							(SELECT DISTINCT genre_id FROM consoleinfo) y
-							ON y.genre_id = g.id %1\$s
-						+
-						SELECT COUNT(*) AS num
-						FROM genres g
-						INNER JOIN
-							(SELECT DISTINCT genre_id FROM gamesinfo) x
-							ON x.genre_id = g.id %1\$s",
-						   $typesql
+			$sql = sprintf("SELECT COUNT(*) AS num FROM genres g WHERE 1 %s AND g.disabled != 1", $typesql
 			);
 		} else {
-			$sql = sprintf("SELECT COUNT(g.id) AS num FROM genres g WHERE 1 %s ORDER BY g.title", $typesql);
+			$sql = sprintf("SELECT COUNT(*) AS num FROM genres g WHERE 1 %s", $typesql);
 		}
 
 		$res = $this->pdo->queryOneRow($sql);
@@ -128,6 +91,6 @@ class Genres
 
 	public function getDisabledIDs()
 	{
-		return $this->pdo->query("SELECT id FROM genres WHERE disabled = 1");
+		return $this->pdo->query("SELECT id FROM genres WHERE disabled = 1", true, nZEDb_CACHE_EXPIRY_LONG);
 	}
 }

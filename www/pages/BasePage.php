@@ -1,5 +1,9 @@
 <?php
-require_once SMARTY_DIR . 'Smarty.class.php';
+
+require_once SMARTY_DIR . 'Autoloader.php';
+
+Smarty_Autoloader::register();
+
 require_once nZEDb_LIB . 'utility' . DS . 'SmartyUtils.php';
 
 use nzedb\SABnzbd;
@@ -43,7 +47,7 @@ class BasePage
 	 * User settings from the MySQL DB.
 	 * @var array|bool
 	 */
-	public $userdata = array();
+	public $userdata = [];
 
 	/**
 	 * URL of the server. ie http://localhost/
@@ -97,10 +101,10 @@ class BasePage
 		$this->smarty = new Smarty();
 
 		$this->smarty->setTemplateDir(
-			array(
+			[
 				'user_frontend' => nZEDb_WWW . 'themes/' . $this->settings->getSetting('style') . '/templates/frontend',
 				'frontend' => nZEDb_WWW . 'themes/Default/templates/frontend'
-			)
+			]
 		);
 		$this->smarty->setCompileDir(SMARTY_DIR . 'templates_c/');
 		$this->smarty->setConfigDir(SMARTY_DIR . 'configs/');
@@ -126,10 +130,10 @@ class BasePage
 			// Change the theme to user's selected theme if they selected one, else use the admin one.
 			if (isset($this->userdata['style']) && $this->userdata['style'] !== 'None') {
 				$this->smarty->setTemplateDir(
-					array(
+					[
 						'user_frontend' => nZEDb_WWW . 'themes/' . $this->userdata['style'] . '/templates/frontend',
 						'frontend'      => nZEDb_WWW . 'themes/Default/templates/frontend'
-					)
+					]
 				);
 			}
 

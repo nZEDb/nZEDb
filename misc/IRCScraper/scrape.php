@@ -1,23 +1,26 @@
 <?php
-require_once dirname(__FILE__) . '/../../www/config.php';
+require_once __DIR__ . '/../../www/config.php';
 
 use nzedb\IRCScraper;
 
-$settings_file = nZEDb_ROOT . 'misc/IRCScraper/settings.php';
+if (!defined('IRC_SCRAPER_CONFIG')) {
+	define('IRC_SCRAPER_CONFIG', nZEDb_CONFIGS . 'ircscraper_settings.php');
+}
+
 switch (true) {
-	case is_file($settings_file):
+	case is_file(IRC_SCRAPER_CONFIG):
 		break;
 	case is_file(nZEDb_ROOT . 'misc/testing/IRCScraper/settings.php'):
-		$settings_file = nZEDb_ROOT . 'misc/testing/IRCScraper/settings.php';
+		rename(nZEDb_ROOT . 'misc/testing/IRCScraper/settings.php', IRC_SCRAPER_CONFIG);
 		break;
 	default:
 		exit(
-			'Copy ' . nZEDb_ROOT . 'misc/IRCScraper/settings_example.php to ' .
-			nZEDb_ROOT . 'misc/IRCScraper/settings.php and change the settings.' . PHP_EOL
+			'Copy ' . nZEDb_CONFIGS . 'ircscraper_settings_example.php to ' .
+			IRC_SCRAPER_CONFIG . ' and change the settings.' . PHP_EOL
 		);
 }
 
-if (!isset($argv[1]) || $argv[1] !== 'true') {
+if (!isset($argv[1]) || $argv[1] != 'true') {
 	exit(
 		'Argument 1: (required) false|true  ; false prints this help screen, true runs the scraper.' . PHP_EOL .
 		'Argument 2: (optional) false|true  ; true runs in silent mode (no text output)' . PHP_EOL .
@@ -30,7 +33,7 @@ if (!isset($argv[1]) || $argv[1] !== 'true') {
 	);
 }
 
-require_once $settings_file;
+require_once IRC_SCRAPER_CONFIG;
 
 if (!defined('SCRAPE_IRC_NICKNAME')) {
 	exit('ERROR! You must update settings.php using settings_example.php.');

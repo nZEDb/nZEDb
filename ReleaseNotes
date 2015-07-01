@@ -54,6 +54,7 @@ Fixed:
 	* Incorrect php opening tag in anime page. PR 1703.
 	* Logged in users can view others profiles. PR 1705 and PR 1709.
 
+
 0.4.21 2015-05-04
 Added:
 	* X-DNZB-Failure header support.

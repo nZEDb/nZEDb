@@ -698,7 +698,7 @@ class TmuxRun extends Tmux
 			if (shell_exec("tmux list-panes -t{$runVar['constants']['tmux_session']}:${pane} | grep ^0 | grep -c dead") == 1) {
 				shell_exec(
 					"tmux respawnp -t{$runVar['constants']['tmux_session']}:${pane}.0 ' \
-					{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}testing/IRCScraper/scrape.php true'"
+					{$runVar['commands']['_phpn']} {$runVar['paths']['scraper']} true'"
 				);
 			}
 		} else {

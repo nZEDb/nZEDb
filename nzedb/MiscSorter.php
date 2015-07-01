@@ -598,7 +598,7 @@ class MiscSorter
 		if (preg_match('/(a\s?r\s?t\s?i\s?s\s?t|l\s?a\s?b\s?e\s?l|mp3|e\s?n\s?c\s?o\s?d\s?e\s?r|rip|stereo|mono|single charts)/i', $nfo)
 			&& !preg_match('/(\bavi\b|x\.?264|divx|mvk|xvid|install(?!ation)|Setup\.exe|unzip|unrar)/i', $nfo)) {
 			$artist = preg_split('/(?:a\s?r\s?t\s?i\s?s\s?t\s?s?\b[^ \.\:]*|a\s?u\s?t\s?h\s?o\s?r\s?s?\b[^ \.\:]*) *?(?!(?:[^\s\.\:\}\]\*\x{2500}-\x{3000}\?] ?){2,}?\b)(?:[\*\?\-\=\|\;\:\.\[\}\]\(\s\x{2500}-\x{3000}\?]+?)[\s\.\>\:\(\)\x{2500}-\x{3000}\?]((?!\:) ?\w.+)(?:\n|$|\s{3}|\.{3})/Uuim', $nfo, 0, PREG_SPLIT_DELIM_CAPTURE);
-			if($artist[1]) {
+			if(isset($artist[1])) {
 				$title = preg_split('/(?:t+\s?i+\s?t+\s?l+\s?e+\b|a\s?l\s?b\s?u\s?m\b|r\s?e\s?l\s?e\s?a\s?s\s?e\b) *?(?!(?:[^\s\.\:\}\]\*\x{2500}-\x{3000}\?] ?){2,}?\b)(?:[\*\?\-\=\|\;\:\.\[\}\]\(\s\x{2500}-\x{3000}\?]+?)[\s\.\>\:\(\)\x{2500}-\x{3000}\?]((?!\:) ?\w.+)(?:\n|$|\s{3}|\.{3})/Uuim', $nfo, 0, PREG_SPLIT_DELIM_CAPTURE);
 			}
 

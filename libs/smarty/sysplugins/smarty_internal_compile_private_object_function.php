@@ -1,17 +1,17 @@
 <?php
 /**
- * Smarty Internal Plugin Compile Object Funtion
- *
+ * Smarty Internal Plugin Compile Object Function
  * Compiles code for registered objects as function
  *
- * @package Smarty
+ * @package    Smarty
  * @subpackage Compiler
- * @author Uwe Tews
+ * @author     Uwe Tews
  */
+
 /**
  * Smarty Internal Plugin Compile Object Function Class
  *
- * @package Smarty
+ * @package    Smarty
  * @subpackage Compiler
  */
 class Smarty_Internal_Compile_Private_Object_Function extends Smarty_Internal_CompileBase
@@ -23,14 +23,16 @@ class Smarty_Internal_Compile_Private_Object_Function extends Smarty_Internal_Co
      * @see Smarty_Internal_CompileBase
      */
     public $optional_attributes = array('_any');
+
     /**
      * Compiles code for the execution of function plugin
      *
-     * @param  array $args      array with attributes from parser
+     * @param  array  $args      array with attributes from parser
      * @param  object $compiler  compiler object
-     * @param  array $parameter array with compilation parameter
+     * @param  array  $parameter array with compilation parameter
      * @param  string $tag       name of function
      * @param  string $method    name of method to call
+     *
      * @return string compiled code
      */
     public function compile($args, $compiler, $parameter, $tag, $method)
@@ -68,6 +70,7 @@ class Smarty_Internal_Compile_Private_Object_Function extends Smarty_Internal_Co
             // object property
             $return = "\$_smarty_tpl->smarty->registered_objects['{$tag}'][0]->{$method}";
         }
+
         if (empty($_assign)) {
             // This tag does create output
             $compiler->has_output = true;
@@ -75,6 +78,7 @@ class Smarty_Internal_Compile_Private_Object_Function extends Smarty_Internal_Co
         } else {
             $output = "<?php \$_smarty_tpl->assign({$_assign},{$return});?>\n";
         }
+
         return $output;
     }
 }

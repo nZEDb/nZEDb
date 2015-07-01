@@ -1,5 +1,5 @@
 <?php
-// YOU SHOULD NOT EDIT ANYTHING IN THIS FILE, COPY settings.php.example TO settings.php AND EDIT THAT FILE!
+// YOU SHOULD NOT EDIT ANYTHING IN THIS FILE, COPY settings.example.php TO settings.php AND EDIT THAT FILE!
 
 define('nZEDb_MINIMUM_PHP_VERSION', '5.5.0');
 define('nZEDb_MINIMUM_MYSQL_VERSION', '5.5');
@@ -12,6 +12,8 @@ define('nZEDb_ROOT', realpath(dirname(dirname(__FILE__))) . DS);
 // Used to refer to the main lib class files.
 define('nZEDb_LIB', nZEDb_ROOT . 'nzedb' . DS);
 define('nZEDb_CORE', nZEDb_LIB);
+
+define('nZEDb_CONFIGS', nZEDb_CORE . 'config' . DS);
 
 // Used to refer to the third party library files.
 define('nZEDb_LIBS', nZEDb_ROOT . 'libs' . DS);
@@ -69,7 +71,7 @@ $settings_file = __DIR__ . DS . 'settings.php';
 if (is_file($settings_file)) {
 	require_once($settings_file);
 	if (php_sapi_name() == 'cli') {
-		$current_settings_file_version = 2; // Update this when updating settings.php.example
+		$current_settings_file_version = 3; // Update this when updating settings.example.php
 		if (!defined('nZEDb_SETTINGS_FILE_VERSION') || nZEDb_SETTINGS_FILE_VERSION != $current_settings_file_version) {
 			echo ("\033[0;31mNotice: Your $settings_file file is either out of date or you have not updated" .
 				" nZEDb_SETTINGS_FILE_VERSION to $current_settings_file_version in that file.\033[0m" . PHP_EOL
@@ -108,7 +110,6 @@ unset($settings_file);
 
 require_once nZEDb_CORE . 'autoloader.php';
 require_once nZEDb_LIBS . 'autoloader.php';
-require_once SMARTY_DIR . 'autoloader.php';
 
 define('HAS_WHICH', nzedb\utility\Utility::hasWhich() ? true : false);
 

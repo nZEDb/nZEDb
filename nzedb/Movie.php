@@ -85,7 +85,7 @@ class Movie
 	protected $yahooLimit = 0;
 
 	/**
-	 * @var int
+	 * @var string
 	 */
 	protected $showPasswords;
 
@@ -160,7 +160,7 @@ class Movie
 		$this->imdburl = ($this->pdo->getSetting('imdburl') == 0 ? false : true);
 		$this->movieqty = ($this->pdo->getSetting('maximdbprocessed') != '') ? $this->pdo->getSetting('maximdbprocessed') : 100;
 		$this->searchEngines = true;
-		$this->showPasswords = ($this->pdo->getSetting('showpasswordedrelease') != '') ? $this->pdo->getSetting('showpasswordedrelease') : 0;
+		$this->showPasswords = Releases::showPasswords($this->pdo);
 
 		$this->debug = nZEDb_DEBUG;
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI && $this->pdo->cli);
@@ -213,7 +213,7 @@ class Movie
 						implode(',', $imdbIDs)
 					)
 				)
-			)
+			), true, nZEDb_CACHE_EXPIRY_MEDIUM
 		);
 	}
 
@@ -273,7 +273,7 @@ class Movie
 				AND r.imdbid != '0000000'
 				AND m.cover = 1
 				AND m.title != ''
-				AND r.passwordstatus <= %d
+				AND r.passwordstatus %s
 				AND %s %s %s %s ",
 				$this->showPasswords,
 				$this->getBrowseBy(),
@@ -327,7 +327,7 @@ class Movie
 			INNER JOIN movieinfo m ON m.imdbid = r.imdbid
 			WHERE r.nzbstatus = 1 AND r.imdbid != '0000000'
 			AND m.title != ''
-			AND r.passwordstatus <= %d AND %s %s %s %s
+			AND r.passwordstatus %s AND %s %s %s %s
 			GROUP BY m.imdbid ORDER BY %s %s %s",
 			$this->showPasswords,
 			$this->getBrowseBy(),
@@ -341,7 +341,7 @@ class Movie
 			$order[1],
 			($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
 		);
-		return $this->pdo->queryDirect($sql);
+		return $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
 	}
 
 	/**
@@ -734,8 +734,8 @@ class Movie
 			if ($percent < 40) {
 				if ($this->debug) {
 					$this->debugging->log(
-						'Movie',
-						'fetchTmdbProperties',
+						get_class(),
+						__FUNCTION__,
 						'Found (' .
 						$ret['title'] .
 						') from TMDB, but it\'s only ' .
@@ -843,8 +843,8 @@ class Movie
 				if ($percent < 40) {
 					if ($this->debug) {
 						$this->debugging->log(
-							'Movie',
-							'fetchImdbProperties',
+							get_class(),
+							__FUNCTION__,
 							'Found (' .
 							$ret['title'] .
 							') from IMDB, but it\'s only ' .
@@ -894,7 +894,7 @@ class Movie
 	public function doMovieUpdate($buffer, $service, $id, $processImdb = 1)
 	{
 		$imdbID = false;
-		if (preg_match('/(?:imdb.*?)?(?:tt|Title\?)(?P<imdbid>\d{5,7})/i', $buffer, $matches)) {
+		if (is_string($buffer) && preg_match('/(?:imdb.*?)?(?:tt|Title\?)(?P<imdbid>\d{5,7})/i', $buffer, $matches)) {
 			$imdbID = $matches['imdbid'];
 		}
 
@@ -1008,7 +1008,7 @@ class Movie
 					}
 
 					// Check on trakt.
-					$getIMDBid = $trakTv->traktMoviesummary($movieName);
+					$getIMDBid = $trakTv->movieSummary($movieName);
 					if ($getIMDBid !== false) {
 						$imdbID = $this->doMovieUpdate($getIMDBid, 'Trakt', $arr['id']);
 						if ($imdbID !== false) {

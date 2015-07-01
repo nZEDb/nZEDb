@@ -29,6 +29,9 @@ $page->smarty->assign('topcomments', $topcomments);
 $recent = $releases->getRecentlyAdded();
 $page->smarty->assign('recent', $recent);
 
+$usersbymonth = $page->users->getUsersByMonth();
+$page->smarty->assign('usersbymonth', $usersbymonth);
+
 if ($loggingon == '1') {
 	$toplogincombined = $logging->getTopCombined();
 	$page->smarty->assign('toplogincombined', $toplogincombined);
