@@ -1,3 +1,4 @@
+
 * Note *
 Pull requests will be accepted *only* against the dev branch.
 Please make sure any PR's comply with our coding standards policy: http://li3.me/docs/specs/accepted/LSR-0-coding.md
@@ -270,7 +271,9 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	* Fix: Issue 1575 - Notice: Undefined variable: consoletools in /home/schwick/www/nZEDb/misc/update/predbftmatch.php on line 84
 2015-01-28 niel
 	* Fix: Removing extra tab from innerfileblacklist row that causes the setting to not work.
-
+2015-01-05 niel
+	* Msg: HAPPY NEW YEAR From now on I'll be releasing to master monthly, unless and important bug fix needs merging.
+	* New: Merged and tagged v0.4.17 to master branch.
 2014-12-31 bart39
 	* Mrg: PR 1573 from dariusIII - Changed trakt.tv imdb search to new format.
 2014-12-30 niel
@@ -362,7 +365,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	* Chg: Use wordwrap instead of truncate to fix formatting issues with name/searchnames in browse, search, viewnzb
 	* Fix: Table formatting for cover views when searchnames are too large for auto column settings
 	* Fix: Movie covers not standard causing other formatting issues
-2014-10-02 bart39
+014-10-02 bart39
 	* Mrg: Merge pull request #1518 from tasky.
 2014-09-30 ruhllatio
 	* Fix: Issue #1477 - MySQL Full-Text Search broken after implementation of Sphinx
@@ -483,7 +486,6 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	* Chg: Force ignore cert checking on irc scraper, as all the synirc certs are either expired or self signed or invalid in some other way.
 	* Add: Support for openssl remote certificate checking on streams/CURL. Please update www/config.php using this guide: https://github.com/nZEDb/nZEDb/wiki/Setting-up-openssl
 	* Fix: Namespacing issue in DB.
-2014-09-01 niel
 	* Mrg: Merging PR 1479 from tasky
 	* Fix: More name spacing issues.
 2014-08-31 ruhllatio
@@ -550,6 +552,8 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	* Chg: Behavior of updateSingleColumn in NameFixer
 	* Fix: A few bugs in various scripts
 	* Chg: Revamp console post processing and improve matching
+2014-08-21 niel
+    * Fix: Cherry-pick commit e5e49153 to master to fix the 'driver not found' issue in install Step 2.
 2014-08-20 ruhllatio
 	* Chg: More optimizations to MiscSorter
 	* Fix: test_misc_sorter script errors due to removed functions
@@ -571,6 +575,8 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 2014-08-19 kevin
 	* Add: Regex support for alt.binaries.e-book.magazines
 	* Fix: Wrong array used in queue.php, reported/solution by user gaz_az.
+2014-08-19 niel
+	* Fix: Manually updated versions.
 2014-08-18 bart39
 	* Fix: Typo.
 	* Fix: Typo in site edit.
@@ -876,6 +882,8 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	* Chg: Re-use more class instances, save memory and process time.
 	* Fix: Use update_db.php on autopatcher/tmux optimize/patchDB
 	* Chg: Move postprocess_new.php into switch.php
+2014-07-21 niel
+	* New: Merged and tagged v0.3.8 to master branch
 2014-07-21 ruhllatio
 	* Fix: NNTP being called in update_releases threaded removed -- much faster per thread
 2014-07-21 kevin
@@ -976,6 +984,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	* Fix: Undefined variable $site in requestID.php
 	* Add: CollectionsCleaning regex additions.
 2014-07-14 niel
+	* New: Merged and tagged v0.3.7 to master branch.
 	* Chg: Modified install step 2, to set sqlpatch setting using the value of the highest patch file found.
 2014-07-14 ruhllatio
 	* Chg: RequestID.php multi lookup (last chance match) much more accurate
@@ -1250,6 +1259,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 2014-06-09 kevin
 	* Add: Catch and reconnect lost MySQL connections.
 2014-06-09 niel
+	* Rvt: Reverting change to nginx config example. It doesn't work for me as it no longer includes jpg suffixes, only jpeg.
 	* Add: Persistent connections option for DB. Defaults to false because of https://bugs.php.net/bug.php?id=63176
 2014-06-07 niel
 	* Fix: Problem with mixing instance/static, that caused search to fail.

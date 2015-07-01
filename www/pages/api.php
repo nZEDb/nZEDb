@@ -4,6 +4,7 @@ use nzedb\Category;
 use nzedb\Releases;
 use nzedb\db\Settings;
 use nzedb\utility\Utility;
+use nzedb\Caps;
 
 
 // API functions.
@@ -79,18 +80,27 @@ $page->smarty->assign('rsstoken', $apiKey);
 if ($uid != '') {
 	$page->users->updateApiAccessed($uid);
 	$apiRequests = $page->users->getApiRequests($uid);
-	if ($apiRequests > $maxRequests) {
-		showApiError(500, 'Request limit reached (' . $apiRequests . '/' . $maxRequests . ')');
+	if ($apiRequests['num'] > $maxRequests) {
+		showApiError(500, 'Request limit reached (' . $apiRequests['num'] . '/' . $maxRequests . ')');
 	}
 }
 
 $releases = new Releases(['Settings' => $page->settings]);
 
-$page->smarty->assign('extended', (isset($_GET['extended']) && $_GET['extended'] == 1 ? '1' : '0'));
-$page->smarty->assign('del', (isset($_GET['del']) && $_GET['del'] == 1 ? '1' : '0'));
+if (isset($_GET['extended']) && $_GET['extended'] == 1) {
+	$page->smarty->assign('extended', '1');
+}
+if (isset($_GET['del']) && $_GET['del'] == 1) {
+	$page->smarty->assign('del', '1');
+}
 
 // Output is either json or xml.
-$outputXML = (isset($_GET['o']) && $_GET['o'] == 'json' ? false : true);
+$outputXML = true;
+if (isset($_GET['o'])) {
+	if ($_GET['o'] == 'json') {
+		$outputXML = false;
+	}
+}
 
 switch ($function) {
 	// Search releases.
@@ -216,11 +226,33 @@ switch ($function) {
 	// Capabilities request.
 	case 'c':
 		$category = new Category(['Settings' => $page->settings]);
-		$page->smarty->assign('parentcatlist', $category->getForMenu());
-		header('Content-type: text/xml');
-		echo $page->smarty->fetch('apicaps.tpl');
-		break;
+		$caps = new Caps(['Settings' => $page->settings]);
 
+		$data = $caps->getForMenu();
+
+		//serverconfig
+		$page->smarty->assign('serverconf', $data["server"]);
+		//limits
+		$page->smarty->assign('limit', $data["limits"]);
+		//registration
+		$page->smarty->assign('registration', $data["registration"]);
+		//searching capabilities
+		$page->smarty->assign('searchcap', $data["searching"]);
+		//categorylist
+		$page->smarty->assign('parentcatlist', $data["categories"]);
+
+
+		if ($outputXML) {
+			//use apicaps.tpl if xml is requested
+			header('Content-type: text/xml');
+			echo $page->smarty->fetch('apicaps.tpl');
+		}
+		 else {
+			//use json_encode for everything else
+			 header('Content-type: application/json');
+			 echo json_encode($data);
+		}
+		break;
 	// Register request.
 	case 'r':
 		verifyEmptyParameter('email');
