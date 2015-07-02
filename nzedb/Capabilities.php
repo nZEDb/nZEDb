@@ -26,7 +26,7 @@ class Capabilities
 	}
 
 	/**
-	 * @param array $excludedcats
+	 * Collect and return various capability information for usage in API
 	 *
 	 * @return array
 	 */
