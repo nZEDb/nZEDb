@@ -4,7 +4,7 @@ use nzedb\Category;
 use nzedb\Releases;
 use nzedb\db\Settings;
 use nzedb\utility\Utility;
-use nzedb\Caps;
+use nzedb\Capabilities;
 
 
 // API functions.
@@ -225,22 +225,12 @@ switch ($function) {
 
 	// Capabilities request.
 	case 'c':
+		//get categories
 		$category = new Category(['Settings' => $page->settings]);
-		$caps = new Caps(['Settings' => $page->settings]);
+		$cats = $category->getForMenu();
 
-		$data = $caps->getForMenu();
-
-		//serverconfig
-		$page->smarty->assign('serverconf', $data["server"]);
-		//limits
-		$page->smarty->assign('limit', $data["limits"]);
-		//registration
-		$page->smarty->assign('registration', $data["registration"]);
-		//searching capabilities
-		$page->smarty->assign('searchcap', $data["searching"]);
-		//categorylist
-		$page->smarty->assign('parentcatlist', $data["categories"]);
-
+		//insert cats into template variable
+		$page->smarty->assign('parentcatlist', $cats);
 
 		if ($outputXML) {
 			//use apicaps.tpl if xml is requested
@@ -248,9 +238,21 @@ switch ($function) {
 			echo $page->smarty->fetch('apicaps.tpl');
 		}
 		 else {
-			//use json_encode for everything else
+			 //otherwise construct array of capabilities and categories
+
+			 //get capabilities
+			 $capability = new Capabilities(['Settings' => $page->settings]);
+			 $caps = $capability->getForMenu();
+
+			 //create array
+			 $retJson = array();
+			 //write capability information
+			 $retJson = $caps;
+			 //append category information
+			 $retJson["categories"] = $cats;
+			//use json_encode
 			 header('Content-type: application/json');
-			 echo json_encode($data);
+			 echo json_encode($retJson);
 		}
 		break;
 	// Register request.
