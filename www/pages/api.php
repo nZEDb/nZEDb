@@ -80,27 +80,19 @@ $page->smarty->assign('rsstoken', $apiKey);
 if ($uid != '') {
 	$page->users->updateApiAccessed($uid);
 	$apiRequests = $page->users->getApiRequests($uid);
-	if ($apiRequests['num'] > $maxRequests) {
-		showApiError(500, 'Request limit reached (' . $apiRequests['num'] . '/' . $maxRequests . ')');
+	if ($apiRequests > $maxRequests) {
+		showApiError(500, 'Request limit reached (' . $apiRequests . '/' . $maxRequests . ')');
 	}
 }
 
 $releases = new Releases(['Settings' => $page->settings]);
 
-if (isset($_GET['extended']) && $_GET['extended'] == 1) {
-	$page->smarty->assign('extended', '1');
-}
-if (isset($_GET['del']) && $_GET['del'] == 1) {
-	$page->smarty->assign('del', '1');
-}
+$page->smarty->assign('extended', (isset($_GET['extended']) && $_GET['extended'] == 1 ? '1' : '0'));
+$page->smarty->assign('del', (isset($_GET['del']) && $_GET['del'] == 1 ? '1' : '0'));
+
 
 // Output is either json or xml.
-$outputXML = true;
-if (isset($_GET['o'])) {
-	if ($_GET['o'] == 'json') {
-		$outputXML = false;
-	}
-}
+$outputXML = (isset($_GET['o']) && $_GET['o'] == 'json' ? false : true);
 
 switch ($function) {
 	// Search releases.
@@ -237,22 +229,15 @@ switch ($function) {
 			header('Content-type: text/xml');
 			echo $page->smarty->fetch('apicaps.tpl');
 		}
-		 else {
+		else {
 			 //otherwise construct array of capabilities and categories
 
 			 //get capabilities
-			 $capability = new Capabilities(['Settings' => $page->settings]);
-			 $caps = $capability->getForMenu();
-
-			 //create array
-			 $retJson = array();
-			 //write capability information
-			 $retJson = $caps;
-			 //append category information
-			 $retJson["categories"] = $cats;
+			$caps = (new Capabilities(['Settings' => $page->settings]))->getForMenu();
+			$caps['categories'] = $cats;
 			//use json_encode
-			 header('Content-type: application/json');
-			 echo json_encode($retJson);
+			header('Content-type: application/json');
+			echo json_encode($caps);
 		}
 		break;
 	// Register request.
@@ -489,3 +474,5 @@ function addLanguage(&$releases, Settings $settings)
 		}
 	}
 }
+
+
