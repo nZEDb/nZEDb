@@ -32,10 +32,7 @@ class Capabilities
 	 */
 	public function getForMenu()
 	{
-
-		$ret = array();
-
-		$serverroot = "";
+		$serverroot = '';
 		$https = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? true : false);
 
 		if (isset($_SERVER['SERVER_NAME'])) {
@@ -46,38 +43,30 @@ class Capabilities
 			);
 		}
 
-		$conf = array(
-			"appversion" => (new Versions())->getTagVersion(),
-			"version" => "0.1",
-			"title" => $this->pdo->getSetting('title'),
-			"strapline" => $this->pdo->getSetting('strapline'),
-			"email" => $this->pdo->getSetting('email'),
-			"url" => $serverroot,
-			"image" => $serverroot . "themes_shared/images/logo.png"
-		);
-
-		$limit =array(
-			"max" => 100,
-			"default" => 100
-		);
-
-		$search = array(
-			"search" => "yes",
-			"tv-search" => "yes",
-			"movie-search" => "yes",
-			"audio-search" => "yes"
-		);
-
-		$registration = array(
-			"available"=>"yes",
-			"open"=> $this->pdo->getSetting('registerstatus')==0?"yes":"no"
-		);
-
-		$ret["server"] = $conf;
-		$ret["limits"] = $limit;
-		$ret["registration"] = $registration;
-		$ret["searching"] = $search;
-
-		return $ret;
+		return [
+			'server' => [
+				'appversion' => (new Versions())->getTagVersion(),
+				'version'    => '0.1',
+				'title'      => $this->pdo->getSetting('title'),
+				'strapline'  => $this->pdo->getSetting('strapline'),
+				'email'      => $this->pdo->getSetting('email'),
+				'url'        => $serverroot,
+				'image'      => $serverroot . 'themes_shared/images/logo.png'
+			],
+			'limits' => [
+				'max'     => 100,
+				'default' => 100
+			],
+			'registration' => [
+				'available' => 'yes',
+				'open'      => $this->pdo->getSetting('registerstatus') == 0 ? 'yes' : 'no'
+			],
+			'searching' => [
+				'search'       => 'yes',
+				'tv-search'    => 'yes',
+				'movie-search' => 'yes',
+				'audio-search' => 'yes'
+			]
+		];
 	}
 }
