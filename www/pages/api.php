@@ -236,8 +236,7 @@ switch ($function) {
 			//use apicaps.tpl if xml is requested
 			header('Content-type: text/xml');
 			echo $page->smarty->fetch('apicaps.tpl');
-		}
-		 else {
+		} else {
 			 //otherwise construct array of capabilities and categories
 
 			 //get capabilities
@@ -245,11 +244,11 @@ switch ($function) {
 			 $caps = $capability->getForMenu();
 
 			 //create array
-			 $retJson = array();
+			 $retJson = [];
 			 //write capability information
 			 $retJson = $caps;
 			 //append category information
-			 $retJson["categories"] = $cats;
+			 $retJson['categories'] = $cats;
 			//use json_encode
 			 header('Content-type: application/json');
 			 echo json_encode($retJson);
