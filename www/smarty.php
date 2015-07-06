@@ -23,8 +23,17 @@ require_once 'autoloader.php';
 
 use nzedb\config\Config;
 
-
-$config = new Config('smarty');
+try {
+	$config = new Config('smarty');
+} catch (\RuntimeException $e) {
+	if ($e->getMessage() ==
+		"Unable to load configuration file 'config.php'. Make sure it has been created and contains correct settings.") {
+		if (is_dir("install")) {
+			header("location: install");
+			exit();
+		}
+	}
+}
 
 if (function_exists('ini_set') && function_exists('ini_get')) {
 	ini_set('include_path', nZEDb_WWW . PATH_SEPARATOR . ini_get('include_path'));
