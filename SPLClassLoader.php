@@ -1,5 +1,4 @@
 <?php
-require_once 'constants.php';
 
 /**
  * SplClassLoader implementation that implements the technical interoperability
@@ -126,7 +125,7 @@ class SplClassLoader
 	{
 		if (preg_match('#\\\#', $className)) {
 			// Looks like it's a namespaced class. just clean pathsepearator for now.
-			$className = str_replace('#\\#', DS, $className);
+			$className = str_replace('#\\#', DIRECTORY_SEPARATOR, $className);
 		}
 		if ($className == 'Smarty') {
 			require_once SMARTY_DIR . 'Smarty.class.php';
