@@ -20,6 +20,7 @@
  */
 require_once 'SPLClassLoader.php';
 require_once 'constants.php';
+require_once nZEDb_LIBS . 'autoloader.php';
 
 use nzedb\config\Config;
 
