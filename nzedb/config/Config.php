@@ -43,7 +43,7 @@ class Config
 				if (file_exists($file)) {
 					require_once $file;
 				} else {
-					throw new \RuntimeException("Unable to load configuration file '$file'. Make sure it has been created and contains correct settings.");
+					throw new \RuntimeException("Unable to load configuration file '$settings'. Make sure it has been created and contains correct settings.");
 				}
 			}
 		}
