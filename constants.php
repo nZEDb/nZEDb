@@ -7,7 +7,7 @@ define('nZEDb_MINIMUM_MYSQL_VERSION', '5.5');
 define('DS', DIRECTORY_SEPARATOR);
 
 // These are file path constants
-define('nZEDb_ROOT', realpath(dirname(dirname(__FILE__))) . DS);
+define('nZEDb_ROOT', realpath(__DIR__) . DS);
 
 // Used to refer to the main lib class files.
 define('nZEDb_LIB', nZEDb_ROOT . 'nzedb' . DS);
