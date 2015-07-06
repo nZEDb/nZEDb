@@ -49,8 +49,7 @@ define('nZEDb_THEMES_SHARED', nZEDb_WWW . 'themes_shared' . DS);
 define('nZEDb_LOGS', nZEDb_RES . 'logs' . DS);
 
 if (function_exists('ini_set') && function_exists('ini_get')) {
-	$ps = (strtolower(PHP_OS) == 'windows') ? ';' : ':';
-	ini_set('include_path', nZEDb_WWW . $ps . ini_get('include_path'));
+	ini_set('include_path', nZEDb_WWW . PATH_SEPARATOR . ini_get('include_path'));
 }
 
 // Path to smarty files. (not prefixed with nZEDb as the name is needed in smarty files).
