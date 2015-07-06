@@ -18,8 +18,14 @@
  * @author niel
  * @copyright 2015 nZEDb
  */
+require_once 'SPLClassLoader.php';
 
-require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'constants.php');
+use nzedb\config\Initiate;
+
+$classLoader = new SplClassLoader('nzedb', [__DIR__ . DIRECTORY_SEPARATOR . 'nzedb']);
+$classLoader->register();
+
+$config = new Initiate('smarty');
 
 if (function_exists('ini_set') && function_exists('ini_get')) {
 	ini_set('include_path', nZEDb_WWW . PATH_SEPARATOR . ini_get('include_path'));
