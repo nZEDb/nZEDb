@@ -1,4 +1,6 @@
 <?php
+require_once 'constants.php';
+
 /**
  * SplClassLoader implementation that implements the technical interoperability
  * standards for PHP 5.3 namespaces and class names.
@@ -27,7 +29,7 @@ class SplClassLoader
 	 *
 	 * @param string $ns The namespace to use.
 	 */
-	public function __construct($ns = null, array $includePath = array())
+	public function __construct($ns = null, array $includePath = [])
 	{
 		$this->_namespace = $ns;
 		foreach ($includePath as &$path) {
@@ -103,7 +105,7 @@ class SplClassLoader
 	 */
 	public function register()
 	{
-		spl_autoload_register(array($this, 'loadClass'));
+		spl_autoload_register([$this, 'loadClass']);
 	}
 
 	/**
@@ -111,7 +113,7 @@ class SplClassLoader
 	 */
 	public function unregister()
 	{
-		spl_autoload_unregister(array($this, 'loadClass'));
+		spl_autoload_unregister([$this, 'loadClass']);
 	}
 
 	/**
