@@ -1,6 +1,40 @@
 This file details which changes to the code are in which release version. It is a complement to the ChangeLog file which list *when* changes are made to the dev branch.
 
 
+0.4.23 2015-07-06
+Added:
+	* Created a config directory under .../nzedb to contain configuration/settings files, so they are all together and don't need paths changing when code moves. I'll gradually move older config/settings files here, with some exceptions TBD.
+	* Matching for hyphenated music scene release names. (PR 1719)
+	* Support for APCu or APC for caching. (PR 1722)
+	* Option to show non-passworded releases AND unprocessed releases.
+	* Adding a limit to the maximum number of headers a single group can grab per iteration of the main loop. This allows for a reasonably safe catchup ability on out of date groups, without completely choking the database with one group's headers ;-)
+		***NOTE*** this may slow things down for some users of *very* active groups.
+		There is an entry in the Settings table (max=>headers=>iteration) to set the value (default 1,000,000), an entry in admin => Edit Site to make this easier will come when someone can be coerced into doing smarty work ;-)
+	* Support for post-prossessing to download the last RAR/Zip file, in order to find filenames.
+	* Add support for trakt.tv API v2. (PR 1728)
+
+Changed:
+	* Updated Smarty to v3.1.27
+	* Moved IRCScraper example settings file to the .../nzedb/config directory
+	* Ordering comments by created date. Showing newest on top. (PR 1712)
+	* Improvements to query caching.
+	* NZBImport now adds groups if they don't exist in the database instead of skipping the release.
+	* Avoid MySQL caching on transient content. This prevents useless data from filling the cache in place of useful data. (PR 1738)
+	* Allow NNTP to retry if compression fails to initialise.
+	* Autoloading for Smarty framework uses its Autoloader. Web pages now use a streamlined version of the previous autoloader, which is now removed from the Smarty tree. (Install process hasn't been tested yet. Let us know of any problems).
+
+Fixed:
+	* Issues 1713 and 1715. Select all + delete in advanced search.
+	* Problems with users being unable to log in due to double quoting in the db lookup query.
+	* Undefined offset: 1 in MiscSorter.php - Issue 1714.
+	* Fix the nzbFileList function. (PR 1727)
+	* Fix for changes in Trakt API v2. (PR 1730)
+	* Fix issues if nZEDb_SSL_CAFILE is empty. (PR 1729)
+	* Various Error Notices/Warning from PHP. (Issue #1737) and others.
+	* Users by month restored to site stats.
+	* API capabilites in JSON format.
+
+
 0.4.22 2015-06-01
 Added:
 	* Captcha feature.
@@ -53,6 +87,7 @@ Fixed:
 	* Alternate USP not being set in config.php on install. Issue 1695. PR 1696.
 	* Incorrect php opening tag in anime page. PR 1703.
 	* Logged in users can view others profiles. PR 1705 and PR 1709.
+
 
 0.4.21 2015-05-04
 Added:

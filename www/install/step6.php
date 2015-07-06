@@ -1,5 +1,5 @@
 <?php
-require_once realpath(__DIR__ . '/../automated.config.php');
+require_once realpath('config.php');
 
 use nzedb\Install;
 use nzedb\Users;

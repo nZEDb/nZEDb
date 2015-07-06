@@ -38,7 +38,7 @@ jQuery(function ($) {
     });
 
     $('.nzb_check_all').change(function () {
-        $('table.data tr td input:checkbox').prop('checked', $(this).prop('checked'));
+        $('table#browsetable tr td input:checkbox').prop('checked', $(this).prop('checked'));
     });
 
     $('.nzb_check_all_season').change(function () {

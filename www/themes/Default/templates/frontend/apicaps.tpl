@@ -4,12 +4,14 @@
 	<limits max="100" default="100"/>
 
 	<registration available="yes" open="{if $site->registerstatus == 0}yes{else}no{/if}" />
+
 	<searching>
 		<search available="yes"/>
 		<tv-search available="yes"/>
 		<movie-search available="yes"/>
 		<audio-search available="yes"/>
 	</searching>
+
 	<categories>
 		{foreach from=$parentcatlist item=parentcat}
 			<category id="{$parentcat.id}" name="{$parentcat.title|escape:html}"{if $parentcat.description != ""} description="{$parentcat.description|escape:html}"{/if}>

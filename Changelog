@@ -8,6 +8,70 @@ All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 
+2015-07-06 niel
+	* Mrg: PR 1747, from sebst3r - API-Change regarding JSON-Output
+2015-06-30 niel
+	* Mrg: PR 1740, from Fossil01 - Added user signups by month view back to site-stats.
+2015-06-29 niel
+	* Chg: Combining web page autoloaders into a single file.
+	* Chg: Streamlined the autoloader process for Smarty files/pages.
+2015-06-28 niel
+	* Chg: Moved smarty page files autoloader script to.../pages/autoload.php and moved Smarty framework autoload code initialisation into the .../www/index.php - This has a several advantages:
+			Prevents problems on Windows and other case-insenstive file-systems (and applications) from not being able to have ours and smarty's in the same directory.
+			Removes our code from the Smarty library tree, making it possible to no longer have the whole library included in the repo.
+			Allows us to separate out the Smarty framework autoloading from the smarty page autoloading.
+			Removes autoloaders for smarty stuff completely from the indexer code.
+	* Fix: Admin section now works with the Smarty autoloading changes.
+2015-06-25 kevinlekiller
+	* Fix: Notices in register page.
+	* Fix: Notices in admin pages.
+2015-06-24 kevinlekiller
+	* Fix: Notices in password reset page.
+2015-06-23 kevinlekiller
+	* Chg: If NNTP compression fails to enable, retry.
+	       If NNTP returns status code 0, do not show message (issue #1735).
+	* Fix: Notices. Issue #1737
+	* Fix: Various notices.
+	* Chg: Use get_class / __FUNCTION__ for nzedb\Logger->Log usage.
+	* Upd: Update smarty to 3.1.27
+	* Fix: Add check for string on nzedb\Movie::doMovieUpdate #1742
+	* Fix: #1742 (Notices in movie.php, remove old smarty files)
+2015-06-22 niel
+	* Mrg: PR 1738 from Enverex - Avoid MySQL caching on transient content
+2015-06-19 bart39
+	* Mrg: PR 1730 from kevin123, Fix for changes in Trakt API v2.
+	* Mrg: PR 1729 from kevin123, Fix issues if nZEDb_SSL_CAFILE is empty.
+	* Mrg: PR 1728 from kevin123, Add support for trakt.tv API v2.
+	* Mrg: PR 1727 from darius, Fix the nzbFileList function.
+2015-06-17 niel
+	* NEW: PR 1726 from kevin123 - Support for downloading last rar/zip file when post processing.
+2015-06-15 niel
+	* Mrg: PR 1724 from kevin123, Changes to cache use.
+	* NEW: Adding a limit to the maximum number of headers a single group can grab per iteration of the main loop. This allows for a reasonably safe catchup ability on out of date groups, without completely choking the database with one groups headers ;-)
+		***NOTE*** this may slow things down for some users of *very* active groups.
+		There is an entry in the Settings table (max=>headers=>iteration) to set the value (default 1,000,000), an entry in admin => Edit Site to make this easier will come when someone can be coerced into doing smarty work ;-)
+2015-06-14 niel
+	* Mrg: PR 1725 from kingcat/zetas - NZBImport add missing group (inactive) instead of skipping nzb.
+2015-06-13 bart39
+	* Fix: Undefined offset: 1 in MiscSorter.php #1714.
+2015-06-12 bart39
+	* Mrg: PR 1723 from kevin123 - Changes to showpasswordedrelease.
+	* Mrg: PR 1722 from kevin123 - Add support for APCu or APC for caching.
+2015-06-11 niel
+	* Mrg: PR from kevin123 - Cache various queries.
+2015-06-10 niel
+	* Mrg: PR 1712 from zetas - Ordering comments by created date. Showing newest on top.
+	* Mrg: PR 1719 from enverex - Add matching for hyphenated music scene release names.
+	* New: Added a config directory under .../nzedb to contain configuration/settings files, so they're all together and don't need paths changing when code moves. I'll gradually move older config/settings files here, with some exceptions TBD.
+	* Chg: Moved IRCScraper example settings file to the .../nzedb/config directory
+	* Chg: Refactored the IRCScraper scrape script to look in .../nzedb/config for the renamed ircscraper_settings.php file. (it will move the old one from testing/IRCScraper if it finds it.
+	* New: Added tmux.running.exit to settings table. This is read during the tmux monitor script's loop to see if it should exit or not. I'll add a means to set this from the Tmux settings page once the rest is finished.
+	* Fix: Removing superfluous quotes around $user variable as they are adding by the escaping in the previous line.
+2015-06-09 bart39
+	* Mrg: PR 1716 from enverex - Pick up additional RAR names and match both functions.
+2015-06-06 bart39
+	* Fix: from rainje - Select all + delete in adv search not working #1713 #1715.
+
 2015-06-01 niel
 	* Mrg: PR 1709 from zetas - Implementing private profiles and the ability to turn them on or off via the ACP.
 2015-05-29 bart39

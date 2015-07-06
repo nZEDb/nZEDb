@@ -15,6 +15,7 @@ section,subsection,name,value,hint,setting
 		deletepossiblerelease	0	Whether to delete releases which are potentially passworded.	deletepossiblerelease
 		disablebackfillgroup	0	Whether to disable backfill on a group if the target date has been reached.	disablebackfillgroup
 		extractusingrarinfo	0	Whether to use rarinfo or 7zip/unrar directly to decompress zip/rar files.	extractusingrarinfo
+archive	fetch	end	0	Download/process the last rar or zip file(s) to check for a password and get the file names inside?	fetchlastcompressedfiles
 		ffmpeg_duration	5	The maximum duration (In Seconds) for ffmpeg to generate the sample for. (Default 5)	ffmpeg_duration
 		ffmpeg_image_time	5		ffmpeg_image_time
 		fixnamesperrun	10	The maximum number of releases to check per run(threaded script only).	fixnamesperrun
@@ -93,7 +94,7 @@ indexer	ppa	innerfileblacklist	/setup\.exe|password\.url/i	You can add a regex h
 		segmentstodownload	2	The maximum number of segments to download to generate the sample video file. (Default 2)	segmentstodownload
 		showbacks	0		showbacks
 		showdroppedyencparts	0	For developers. Whether to log all headers that have 'yEnc' and are dropped. Logged to not_yenc/groupname.dropped.txt.	showdroppedyencparts
-		showpasswordedrelease	10	Whether to show passworded or potentially passworded releases in browse, search, api and rss feeds. Potentially passworded means releases which contain .cab or .ace files which are typically password protected.	showpasswordedrelease
+		showpasswordedrelease	10	Whether to show passworded or potentially passworded releases in browse, search, api and rss feeds. Potentially passworded means releases which contain .cab or .ace files which are typically password protected. (*yes): Unprocessed releases are hidden. (*no): Unprocessed releases are displayed.	showpasswordedrelease
 		sqlpatch	0		sqlpatch
 		storeuserips	0	Whether to store the users ip address when they signup or login.	storeuserips
 		tablepergroup	0	This uses separate tables for collections, binaries and parts for each group.<br />This requires you to run convert_to_tpg.php or reset_truncate.php.<br />This requires that you also run releases_threaded.py.<br />Run: show variables like '%open%f	tablepergroup
@@ -109,7 +110,7 @@ APIs		anidbkey		The Anidb api key. Used for Anime lookups.	anidbkey
 APIs		fanarttvkey		The Fanart.tv api key. Used for Fanart.tv lookups. Fanart.tv would appreciate it if you use this service to help them out by adding high quality images not already available on TMDB.	fanarttvkey
 APIs		rottentomatokey	qxbxyngtujprvw7jxam2m6na	The api key used for access to rotten tomatoes.	rottentomatokey
 APIs		tmdbkey	9a4e16adddcd1e86da19bcaf5ff3c2a3	The API key used for access to TMDb.	tmdbkey
-APIs		trakttvkey		The trakt.tv api key. Used for movie and tv lookups.	trakttvkey
+APIs		trakttvclientkey		The Trakt.tv API v2 Client ID (SHA256 hash - 64 characters long string). Used for movie and tv lookups.	trakttvclientkey
 APIs		recaptchasitekey		ReCaptcha SiteKey for generating the captcha block for input forms.	recaptchasitekey
 APIs		recaptchasecretkey		ReCaptcha SecretKey for verifying submitted captcha results.	recaptchasecretkey
 APIs	APIKeys	section-label	3<sup>rd.</sup> Party API Keys		""
@@ -152,3 +153,5 @@ site	main	style	alpha	The theme folder which will be loaded for css and images. 
 site	main	tandc	<p>All information within this database is indexed by an automated process, without any human intervention. It is obtained from global Usenet newsgroups over which this site has no control. We cannot prevent that you might find obscene or objectionable material by using this service. If you do come across obscene, incorrect or objectionable results, let us know by using the contact form.</p>	Text displayed in the terms and conditions page.	tandc
 site	main	title	nZEDb	Displayed around the site and contact form as the name for the site.	title
 shell	date	format	%Y-%m-%d %T	Format string to use in shell's date command output. See `man date` for acceptable format.\nDefault: %Y-%m-%d %T	shell.date.format
+tmux	running	exit	0	Determines if the running tmux monitor script should exit. If 0 nothing changes; if positive the script should exit gracefully (allowing all panes to finish); if negative the script should die as soon as possible.	tmux.running.exit
+max	headers	iteration	1000000	Determines if the running tmux monitor script should exit. If 0 nothing changes; if positive the script should exit gracefully (allowing all panes to finish); if negative the script should die as soon as possible.	tmux.running.exit

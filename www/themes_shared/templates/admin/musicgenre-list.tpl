@@ -7,7 +7,7 @@
 		<div>
 			{$pager}
 		</div>
-		<a href="{$smarty.const.WWW_TOP}/musicgenre-list.php?activeonly=1">Genres With Releases</a> | <a href="{$smarty.const.WWW_TOP}/musicgenre-list.php">All Genres</a>
+		<a href="{$smarty.const.WWW_TOP}/musicgenre-list.php?activeonly=1">Enabled Genres</a> | <a href="{$smarty.const.WWW_TOP}/musicgenre-list.php">All Genres</a>
 	</div>
 </div>
 <table style="margin-top:10px;" class="data Sortable highlight">

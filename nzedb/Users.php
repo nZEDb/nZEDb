@@ -1212,6 +1212,23 @@ class Users
 	}
 
 	/**
+	 * Get list of user signups by month.
+	 *
+	 * @return array
+	*/
+	public function getUsersByMonth()
+	{
+		return $this->pdo->query("
+			SELECT DATE_FORMAT(createddate, '%M %Y') AS mth, COUNT(*) AS num
+			FROM users
+			WHERE createddate IS NOT NULL AND createddate != '0000-00-00 00:00:00'
+			GROUP BY DATE_FORMAT(createddate, '%M %Y')
+			ORDER BY createddate DESC"
+		);
+	}
+
+
+	/**
 	 * Get list of user roles.
 	 *
 	 * @return array
@@ -1325,13 +1342,16 @@ class Users
 	 *
 	 * @param int $userID
 	 *
-	 * @return array|bool
+	 * @return int
 	 */
 	public function getApiRequests($userID)
 	{
 		// Clear old requests.
 		$this->clearApiRequests($userID);
-		return $this->pdo->queryOneRow(sprintf('SELECT COUNT(id) AS num FROM user_requests WHERE user_id = %d', $userID));
+		$requests = $this->pdo->queryOneRow(
+			sprintf('SELECT COUNT(id) AS num FROM user_requests WHERE user_id = %d', $userID)
+		);
+		return (!$requests ? 0 : (int)$requests['num']);
 	}
 
 	/**
@@ -1429,7 +1449,7 @@ class Users
 
 		if (is_string($user) && strlen($user) > 0) {
 			$user = $this->pdo->escapeString($user);
-			$querySuffix = "username = '$user'";
+			$querySuffix = "username = $user";
 		} elseif (is_int($user) && $user >= 0) {
 			$querySuffix = "id = $user";
 		} else {

@@ -4,6 +4,7 @@ use nzedb\Category;
 use nzedb\Releases;
 use nzedb\db\Settings;
 use nzedb\utility\Utility;
+use nzedb\Capabilities;
 
 
 // API functions.
@@ -79,27 +80,19 @@ $page->smarty->assign('rsstoken', $apiKey);
 if ($uid != '') {
 	$page->users->updateApiAccessed($uid);
 	$apiRequests = $page->users->getApiRequests($uid);
-	if ($apiRequests['num'] > $maxRequests) {
-		showApiError(500, 'Request limit reached (' . $apiRequests['num'] . '/' . $maxRequests . ')');
+	if ($apiRequests > $maxRequests) {
+		showApiError(500, 'Request limit reached (' . $apiRequests . '/' . $maxRequests . ')');
 	}
 }
 
 $releases = new Releases(['Settings' => $page->settings]);
 
-if (isset($_GET['extended']) && $_GET['extended'] == 1) {
-	$page->smarty->assign('extended', '1');
-}
-if (isset($_GET['del']) && $_GET['del'] == 1) {
-	$page->smarty->assign('del', '1');
-}
+$page->smarty->assign('extended', (isset($_GET['extended']) && $_GET['extended'] == 1 ? '1' : '0'));
+$page->smarty->assign('del', (isset($_GET['del']) && $_GET['del'] == 1 ? '1' : '0'));
+
 
 // Output is either json or xml.
-$outputXML = true;
-if (isset($_GET['o'])) {
-	if ($_GET['o'] == 'json') {
-		$outputXML = false;
-	}
-}
+$outputXML = (isset($_GET['o']) && $_GET['o'] == 'json' ? false : true);
 
 switch ($function) {
 	// Search releases.
@@ -224,12 +217,25 @@ switch ($function) {
 
 	// Capabilities request.
 	case 'c':
+		//get categories
 		$category = new Category(['Settings' => $page->settings]);
-		$page->smarty->assign('parentcatlist', $category->getForMenu());
-		header('Content-type: text/xml');
-		echo $page->smarty->fetch('apicaps.tpl');
-		break;
+		$cats = $category->getForMenu();
 
+		//insert cats into template variable
+		$page->smarty->assign('parentcatlist', $cats);
+
+		if ($outputXML) { //use apicaps.tpl if xml is requested
+			header('Content-type: text/xml');
+			echo $page->smarty->fetch('apicaps.tpl');
+		} else { //otherwise construct array of capabilities and categories
+			//get capabilities
+			$caps = (new Capabilities(['Settings' => $page->settings]))->getForMenu();
+			$caps['categories'] = $cats;
+			//use json_encode
+			header('Content-type: application/json');
+			echo json_encode($caps);
+		}
+		break;
 	// Register request.
 	case 'r':
 		verifyEmptyParameter('email');

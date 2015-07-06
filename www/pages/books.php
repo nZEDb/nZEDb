@@ -36,17 +36,15 @@ $results = $books = array();
 $results = $book->getBookRange($catarray, $offset, ITEMS_PER_COVER_PAGE, $orderby, $page->userdata["categoryexclusions"]);
 
 $maxwords = 50;
-if ($results instanceof Traversable) {
-	foreach ($results as $result) {
-		if (!empty($result['overview'])) {
-			$words = explode(' ', $result['overview']);
-			if (sizeof($words) > $maxwords) {
-				$newwords = array_slice($words, 0, $maxwords);
-				$result['overview'] = implode(' ', $newwords) . '...';
-			}
+foreach ($results as $result) {
+	if (!empty($result['overview'])) {
+		$words = explode(' ', $result['overview']);
+		if (sizeof($words) > $maxwords) {
+			$newwords = array_slice($words, 0, $maxwords);
+			$result['overview'] = implode(' ', $newwords) . '...';
 		}
-		$books[] = $result;
 	}
+	$books[] = $result;
 }
 
 $author = (isset($_REQUEST['author']) && !empty($_REQUEST['author'])) ? stripslashes($_REQUEST['author']) : '';

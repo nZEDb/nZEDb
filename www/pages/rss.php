@@ -24,21 +24,21 @@ if (!isset($_GET["t"]) && !isset($_GET["rage"]) && !isset($_GET["anidb"])) {
 	$page->meta_keywords = "view,nzb,description,details,rss,atom";
 	$page->meta_description = "View available Rss Nzb feeds.";
 
-	$categorylist = $category->get(true, $page->userdata["categoryexclusions"]);
-	$page->smarty->assign('categorylist', $categorylist);
-
-	$parentcategorylist = $category->getForMenu($page->userdata["categoryexclusions"]);
-	$page->smarty->assign('parentcategorylist', $parentcategorylist);
+	$page->smarty->assign([
+			'categorylist'       => $category->get(true, $page->userdata["categoryexclusions"]),
+			'parentcategorylist' => $category->getForMenu($page->userdata["categoryexclusions"])
+		]
+	);
 
 	$page->content = $page->smarty->fetch('rssdesc.tpl');
 	$page->render();
 } else {
-	$rsstoken = $uid = -1;
+	$rssToken = $uid = -1;
 	// User requested a feed, ensure either logged in or passing a valid token.
 	if ($page->users->isLoggedIn()) {
 		$uid = $page->userdata["id"];
-		$rsstoken = $page->userdata["rsstoken"];
-		$maxrequests = $page->userdata['apirequests'];
+		$rssToken = $page->userdata["rsstoken"];
+		$maxRequests = $page->userdata['apirequests'];
 	} else {
 		if ($page->settings->getSetting('registerstatus') == Settings::REGISTER_STATUS_API_ONLY) {
 			$res = $page->users->getById(0);
@@ -57,68 +57,46 @@ if (!isset($_GET["t"]) && !isset($_GET["rage"]) && !isset($_GET["anidb"])) {
 		}
 
 		$uid = $res["id"];
-		$rsstoken = $res['rsstoken'];
-		$maxrequests = $res['apirequests'];
+		$rssToken = $res['rsstoken'];
+		$maxRequests = $res['apirequests'];
 	}
 
-	$apirequests = $page->users->getApiRequests($uid);
-	if ($apirequests['num'] > $maxrequests) {
+	if ($page->users->getApiRequests($uid) > $maxRequests) {
 		header('X-nZEDb: ERROR: You have reached your daily limit for API requests!');
 		$page->show503();
 	} else {
 		$page->users->addApiRequest($uid, $_SERVER['REQUEST_URI']);
 	}
-
 	// Valid or logged in user, get them the requested feed.
-	if (isset($_GET["dl"]) && $_GET["dl"] == "1") {
-		$page->smarty->assign("dl", "1");
-	}
 
-	$usercat = -1;
-	if (isset($_GET["t"])) {
-		$usercat = ($_GET["t"] == 0 ? -1 : $_GET["t"]);
-	}
-
-	$userrage = $useranidb = $userseries = -1;
+	$userRage = $userAnidb = -1;
 	if (isset($_GET["rage"])) {
-		$userrage = ($_GET["rage"] == 0 ? -1 : $_GET["rage"] + 0);
+		$userRage = ($_GET["rage"] == 0 ? -1 : $_GET["rage"] + 0);
 	} elseif (isset($_GET["anidb"])) {
-		$useranidb = ($_GET["anidb"] == 0 ? -1 : $_GET["anidb"] + 0);
+		$userAnidb = ($_GET["anidb"] == 0 ? -1 : $_GET["anidb"] + 0);
 	}
 
-	$usernum = 100;
-	if (isset($_GET["num"])) {
-		$usernum = $_GET["num"] + 0;
-	}
+	$userCat = (isset($_GET['t']) ? ($_GET['t'] == 0 ? -1 : $_GET['t']) : -1);
+	$userNum = (isset($_GET["num"]) && is_numeric($_GET['num']) ? abs($_GET['num']) : 100);
+	$userAirDate = (isset($_GET["airdate"]) && is_numeric($_GET['airdate']) ? abs($_GET["airdate"]) : -1);
 
-	if (isset($_GET["del"]) && $_GET["del"] == "1") {
-		$page->smarty->assign("del", "1");
-	}
+	$page->smarty->assign([
+			'dl'       => (isset($_GET['dl']) && $_GET['dl'] == '1' ? '1' : '0'),
+			'del'      => (isset($_GET['del']) && $_GET['del'] == '1' ? '1' : '0'),
+			'uid'      => $uid,
+			'rsstoken' => $rssToken
+		]
+	);
 
-	$userairdate = -1;
-	if (isset($_GET["airdate"])) {
-		$userairdate = $_GET["airdate"] + 0;
-	}
-
-	$page->smarty->assign('uid', $uid);
-	$page->smarty->assign('rsstoken', $rsstoken);
-
-	if ($usercat == -3) {
-		$catexclusions = $page->users->getCategoryExclusion($uid);
-		$reldata = $releases->getShowsRss($usernum, $uid, $catexclusions, $userairdate);
-	} elseif ($usercat == -4) {
-		$catexclusions = $page->users->getCategoryExclusion($uid);
-		$reldata = $releases->getMyMoviesRss($usernum, $uid, $catexclusions);
+	if ($userCat == -3) {
+		$relData = $releases->getShowsRss($userNum, $uid, $page->users->getCategoryExclusion($uid), $userAirDate);
+	} elseif ($userCat == -4) {
+		$relData = $releases->getMyMoviesRss($userNum, $uid, $page->users->getCategoryExclusion($uid));
 	} else {
-		$reldata = $releases->getRss(explode(",", $usercat),
-									 $usernum,
-									 $userrage,
-									 $useranidb,
-									 $uid,
-									 $userairdate);
+		$relData = $releases->getRss(explode(',', $userCat), $userNum, $userRage, $userAnidb, $uid, $userAirDate);
 	}
 
-	$page->smarty->assign('releases', $reldata);
+	$page->smarty->assign('releases', $relData);
 	header("Content-type: text/xml");
 	echo trim($page->smarty->fetch('rss.tpl'));
 }
