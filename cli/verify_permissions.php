@@ -17,7 +17,7 @@ $www_path = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR
 if (is_file($www_path . 'config.php')) {
 	require($www_path . 'config.php');
 } else {
-	require($www_path . 'automated.config.php');
+	require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'constants.php');
 }
 
 define('R', 1);
