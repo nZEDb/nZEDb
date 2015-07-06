@@ -18,28 +18,34 @@
  * @author niel
  * @copyright 2015 nZEDb
  */
-require_once 'SPLClassLoader.php';
+namespace nzedb\config;
 
-use nzedb\config\Config;
 
-$classLoader = new SplClassLoader('nzedb', [__DIR__ . DIRECTORY_SEPARATOR . 'nzedb']);
-$classLoader->register();
+class Config
+{
+	private $environments = [
+		'indexer'	=> [],
+		'shared'	=> [],
+		'smarty'	=> [],
+	];
 
-$config = new Config('smarty');
+	public function __construct($environment = 'indexer')
+	{
+		$this->loadEnvironment('shared');
+		$this->loadEnvironment($environment);
+	}
 
-if (function_exists('ini_set') && function_exists('ini_get')) {
-	ini_set('include_path', nZEDb_WWW . PATH_SEPARATOR . ini_get('include_path'));
+	private function loadEnvironment($environment)
+	{
+		if (array_key_exists($environment, $this->environments)) {
+			foreach ($this->environments[$environment] as $settings) {
+				$file = nZEDb_CONFIGS . $settings;
+				if (file_exists($file)) {
+					require_once $file;
+				} else {
+					throw new \RuntimeException("Unable to load configuration file '$file'. Make sure it has been created and contains correct settings.");
+				}
+			}
+		}
+	}
 }
-
-// Path to smarty files. (not prefixed with nZEDb as the name is needed in smarty files).
-define('SMARTY_DIR', nZEDb_LIBS . 'smarty' . DS);
-
-$www_top = str_replace("\\", "/", dirname($_SERVER['PHP_SELF']));
-if (strlen($www_top) == 1) {
-	$www_top = "";
-}
-
-// Used everywhere an href is output, includes the full path to the nZEDb install.
-define('WWW_TOP', $www_top);
-
-?>
