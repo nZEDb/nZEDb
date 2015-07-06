@@ -18,35 +18,22 @@
  * @author niel
  * @copyright 2015 nZEDb
  */
-namespace nzedb\config;
+require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'initialise.php');
+require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'autoloader.php');
 
+use nzedb\config\Config;
 
-class Config
-{
-	private $environments = [
-		'indexer'	=> ['config'],
-		'install'	=> [],
-		'shared'	=> [],
-		'smarty'	=> ['config'],
-	];
+$config = new Config('install');
 
-	public function __construct($environment = 'indexer')
-	{
-		$this->loadEnvironment('shared');
-		$this->loadEnvironment($environment);
-	}
+// Path to smarty files. (not prefixed with nZEDb as the name is needed in smarty files).
+define('SMARTY_DIR', nZEDb_LIBS . 'smarty' . DS);
 
-	private function loadEnvironment($environment)
-	{
-		if (array_key_exists($environment, $this->environments)) {
-			foreach ($this->environments[$environment] as $settings) {
-				$file = nZEDb_CONFIGS . $settings . '.php';
-				if (file_exists($file)) {
-					require_once $file;
-				} else {
-					throw new \RuntimeException("Unable to load configuration file '$settings'. Make sure it has been created and contains correct settings.");
-				}
-			}
-		}
-	}
+$www_top = str_replace("\\", "/", dirname($_SERVER['PHP_SELF']));
+if (strlen($www_top) == 1) {
+	$www_top = "";
 }
+
+// Used everywhere an href is output, includes the full path to the nZEDb install.
+define('WWW_TOP', $www_top);
+
+?>
