@@ -48,25 +48,9 @@ define('nZEDb_THEMES_SHARED', nZEDb_WWW . 'themes_shared' . DS);
 // Path where log files are stored.
 define('nZEDb_LOGS', nZEDb_RES . 'logs' . DS);
 
-if (function_exists('ini_set') && function_exists('ini_get')) {
-	ini_set('include_path', nZEDb_WWW . PATH_SEPARATOR . ini_get('include_path'));
-}
-
-// Path to smarty files. (not prefixed with nZEDb as the name is needed in smarty files).
-define('SMARTY_DIR', nZEDb_LIBS . 'smarty' . DS);
-
-// These are site constants
-$www_top = str_replace("\\", "/", dirname($_SERVER['PHP_SELF']));
-if (strlen($www_top) == 1) {
-	$www_top = "";
-}
-
-// Used everywhere an href is output, includes the full path to the nZEDb install.
-define('WWW_TOP', $www_top);
-
 define('nZEDb_VERSIONS', nZEDb_LIB . 'build' . DS . 'nZEDb.xml');
 
-$settings_file = __DIR__ . DS . 'settings.php';
+$settings_file = nZEDb_CONFIGS . 'settings.php';
 if (is_file($settings_file)) {
 	require_once($settings_file);
 	if (php_sapi_name() == 'cli') {
