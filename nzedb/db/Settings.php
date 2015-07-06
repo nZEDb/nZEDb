@@ -20,10 +20,6 @@
  */
 namespace nzedb\db;
 
-if (!defined('nZEDb_INSTALLER')) {
-	require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php';
-}
-
 use nzedb\utility\Misc;
 use nzedb\utility\Text;
 use nzedb\utility\Versions;
