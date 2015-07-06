@@ -25,7 +25,7 @@ class Config
 {
 	private $environments = [
 		'indexer'	=> [],
-		'shared'	=> ['config'],
+		'shared'	=> ['config.php'],
 		'smarty'	=> [],
 	];
 
