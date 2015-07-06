@@ -224,14 +224,11 @@ switch ($function) {
 		//insert cats into template variable
 		$page->smarty->assign('parentcatlist', $cats);
 
-		if ($outputXML) {
-			//use apicaps.tpl if xml is requested
+		if ($outputXML) { //use apicaps.tpl if xml is requested
 			header('Content-type: text/xml');
 			echo $page->smarty->fetch('apicaps.tpl');
-		} else {
-			 //otherwise construct array of capabilities and categories
-
-			 //get capabilities
+		} else { //otherwise construct array of capabilities and categories
+			//get capabilities
 			$caps = (new Capabilities(['Settings' => $page->settings]))->getForMenu();
 			$caps['categories'] = $cats;
 			//use json_encode
