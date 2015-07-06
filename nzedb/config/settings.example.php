@@ -14,7 +14,7 @@
  * is out of date, you will need to update it and change the version number.
  *
  * @note Developers: When updating settings.php.example, up this version
- *                   and $current_settings_file_version in automated.config.php
+ *                   and $current_settings_file_version in constants.php
  * @version 3
  */
 define('nZEDb_SETTINGS_FILE_VERSION', 3);
