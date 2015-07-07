@@ -21,10 +21,10 @@
 require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'initialise.php');
 require_once 'autoloader.php';
 
-use nzedb\config\Config;
+use nzedb\config\Configure;
 
 try {
-	$config = new Config('smarty');
+	$config = new Configure('smarty');
 } catch (\RuntimeException $e) {
 	if ($e->getMessage() ==
 		"Unable to load configuration file 'config.php'. Make sure it has been created and contains correct settings.") {
