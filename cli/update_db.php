@@ -19,6 +19,8 @@
  * @copyright 2014 nZEDb
  */
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php';
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'libs' . DIRECTORY_SEPARATOR . 'smarty' .
+			 DIRECTORY_SEPARATOR . 'Autoloader.php';
 
 use nzedb\db\DbUpdate;
 use nzedb\utility\Utility;
@@ -48,6 +50,5 @@ if (isset($argc) && $argc > 1 && isset($argv[1]) && $argv[1] == true) {
 } else {
 	echo "Usage: php update_db.php true";
 }
-
 
 ?>
