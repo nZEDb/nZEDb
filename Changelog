@@ -6,7 +6,8 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
-
+2015-07-07 niel
+	* Fix: Require of 'config.php' for installing.
 2015-07-06 niel
 	* Mrg: PR 1747, from sebst3r - API-Change regarding JSON-Output
 2015-06-30 niel
