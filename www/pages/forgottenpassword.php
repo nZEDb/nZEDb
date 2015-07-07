@@ -29,7 +29,11 @@ switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
 			Utility::sendEmail($ret["email"], ($page->settings->getSetting('title') . " Password Reset"),
 				"Your password has been reset to $newPassword", $page->settings->getSetting('email')
 			);
-
+			
+                        // Show password to the user so they don't have to check their e-mail.
+                        $onscreen = "Your password has been reset to <strong>" .  $newPassword ."</strong> and sent to your e-mail address.";
+                        $page->smarty->assign('notice',  $onscreen);
+                        
 			$confirmed = "true";
 			break;
 		}
