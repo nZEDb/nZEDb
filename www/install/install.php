@@ -21,9 +21,9 @@
 require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'initialise.php');
 require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'autoloader.php');
 
-use nzedb\config\Config;
+use nzedb\config\Configure;
 
-$config = new Config('install');
+$config = new Configure('install');
 
 // Path to smarty files. (not prefixed with nZEDb as the name is needed in smarty files).
 define('SMARTY_DIR', nZEDb_LIBS . 'smarty' . DS);

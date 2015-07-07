@@ -21,7 +21,7 @@
 namespace nzedb\config;
 
 
-class Config
+class Configure
 {
 	private $environments = [
 		'indexer'	=> ['config'],

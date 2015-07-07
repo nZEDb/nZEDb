@@ -21,10 +21,10 @@
 require_once 'initialise.php';
 require_once nZEDb_LIBS . 'autoloader.php';
 
-use nzedb\config\Config;
+use nzedb\config\Configure;
 
 
-$config = new Config('indexer');
+$config = new Configure('indexer');
 
 define('HAS_WHICH', nzedb\utility\Utility::hasWhich() ? true : false);
 
