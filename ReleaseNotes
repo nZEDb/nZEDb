@@ -33,6 +33,7 @@ Fixed:
 	* Various Error Notices/Warning from PHP. (Issue #1737) and others.
 	* Users by month restored to site stats.
 	* API capabilites in JSON format.
+	* Installation file requiring corrected.
 
 
 0.4.22 2015-06-01

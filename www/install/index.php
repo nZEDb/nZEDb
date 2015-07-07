@@ -1,6 +1,6 @@
 <?php
 @session_start();
-require_once realpath('config.php');
+require_once realpath(dirname(__DIR__ . 'automated.config.php'));
 
 require_once nZEDb_WWW . 'autoloader.php';
 
