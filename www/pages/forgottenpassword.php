@@ -28,7 +28,15 @@ switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
 			Utility::sendEmail($ret["email"], ($page->settings->getSetting('title') . " Password Reset"),
 				"Your password has been reset to $newPassword", $page->settings->getSetting('email')
 			);
-			// Show password to the user so they don't have to check their e-mail.
+
+			/** Provide the password in a message to so the user does not have to check their e-mail.
+			 * The theme needs to implement this for it to be seen. Using code something like:
+			 * 	{if $notice != ''}
+			 * 		<div class="alert alert-info">{$notice}</div>
+			 * 	{/if}
+			 *
+			 * We do not include it in the supplied themes, as this is a potential security problem.
+			 */
 			$onscreen = "Your password has been reset to <strong>" .  $newPassword ."</strong> and sent to your e-mail address.";
 			$page->smarty->assign('notice',  $onscreen);
 			$confirmed = "true";
