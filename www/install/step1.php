@@ -4,7 +4,8 @@
  * No point having a check for PHP version if we can't get to that page because of higher version
  * requirements.
  */
-require_once realpath('config.php');
+require_once realpath(dirname(__DIR__ . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR .
+							  'automated.config.php'));
 
 use nzedb\Install;
 
