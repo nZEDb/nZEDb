@@ -1,6 +1,5 @@
 <?php
-require_once realpath(dirname(__DIR__ . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR .
-							  'automated.config.php'));
+require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'automated.config.php');
 
 use nzedb\Install;
 use nzedb\Users;
