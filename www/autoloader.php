@@ -1,4 +1,6 @@
 <?php
+require_once realpath(__DIR__ . DIRECTORY_SEPARATOR . 'automated.config.php');
+require_once realpath(dirname(__DIR__) . DS . 'autoloaders.php');
 
 spl_autoload_register(
 	function ($className) {
