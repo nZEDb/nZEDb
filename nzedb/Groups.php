@@ -18,11 +18,13 @@ class Groups
 	public function __construct(array $options = [])
 	{
 		$defaults = [
-			'Settings' => null
+			'Settings' => null,
+			'ColorCLI' => null
 		];
 		$options += $defaults;
 
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->colorCLI = ($options['ColorCLI'] instanceof ColorCLI ? $options['ColorCLI'] : new ColorCLI());
 	}
 
 	/**
@@ -718,5 +720,21 @@ class Groups
 		}
 
 		return true;
+	}
+
+	/**
+	 * @note Disable group that does not exist on USP server
+	 * @param $id
+	 *
+	 * @return string
+	 */
+	public function disableIfNotExist($id)
+	{
+		$this->pdo->queryExec(sprintf("UPDATE groups SET active = 0 WHERE id = %d", $id));
+		$this->colorCLI->doEcho(
+			$this->colorCLI->error(
+				'Group does not exist on server, disabling'
+			)
+		);
 	}
 }
