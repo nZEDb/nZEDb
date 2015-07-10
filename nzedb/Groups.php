@@ -726,7 +726,6 @@ class Groups
 	 * @note Disable group that does not exist on USP server
 	 * @param $id
 	 *
-	 * @return string
 	 */
 	public function disableIfNotExist($id)
 	{
