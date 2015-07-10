@@ -7,7 +7,7 @@ All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 2015-07-09 niel
-	* Fix: Installation requires problems. No, really this time, I even tested it on a VM.
+	* Fix: Installation require_once problems. No, really this time, I even tested it on a VM.
 2015-07-08 niel
 	* Fix: Path of require for installation's config. Plus additional requires in step files.
 	* Mrg: PR 1753, from Fossil01 - Show password on screen after reset.
