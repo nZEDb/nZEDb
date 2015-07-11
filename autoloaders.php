@@ -22,7 +22,7 @@
 require_once nZEDb_CORE . 'autoloader.php';
 require_once nZEDb_LIBS . 'autoloader.php';
 
-require_once nZEDb_WWW . '/SPLClassLoader.php';
+require_once nZEDb_WWW . 'SPLClassLoader.php';
 
 $paths = array(nZEDb_ROOT, nZEDb_WWW . 'pages', SMARTY_DIR, SMARTY_DIR . 'plugins', SMARTY_DIR . 'sysplugins');
 $classLoader = new \SplClassLoader(null, $paths);
