@@ -5,9 +5,9 @@ require_once realpath(dirname(__DIR__) . DS . 'autoloaders.php');
 spl_autoload_register(
 	function ($className) {
 		$paths = [
-			nZEDb_WWW . 'pages' . DS . 'install' . DS,
-			nZEDb_WWW . 'pages' . DS . 'admin' . DS,
 			nZEDb_WWW . 'pages' . DS,
+			nZEDb_WWW . 'pages' . DS . 'admin' . DS,
+			nZEDb_WWW . 'pages' . DS . 'install' . DS,
 		];
 
 		foreach ($paths as $path) {
@@ -20,7 +20,8 @@ spl_autoload_register(
 				var_dump($spec);
 			}
 		}
-	}
+	},
+	true
 );
 
 ?>
