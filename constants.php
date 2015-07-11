@@ -7,7 +7,7 @@ define('nZEDb_MINIMUM_MYSQL_VERSION', '5.5');
 define('DS', DIRECTORY_SEPARATOR);
 
 // These are file path constants
-define('nZEDb_ROOT', realpath(dirname(dirname(__FILE__))) . DS);
+define('nZEDb_ROOT', realpath(__DIR__) . DS);
 
 // Used to refer to the main lib class files.
 define('nZEDb_LIB', nZEDb_ROOT . 'nzedb' . DS);
@@ -48,26 +48,9 @@ define('nZEDb_THEMES_SHARED', nZEDb_WWW . 'themes_shared' . DS);
 // Path where log files are stored.
 define('nZEDb_LOGS', nZEDb_RES . 'logs' . DS);
 
-if (function_exists('ini_set') && function_exists('ini_get')) {
-	$ps = (strtolower(PHP_OS) == 'windows') ? ';' : ':';
-	ini_set('include_path', nZEDb_WWW . $ps . ini_get('include_path'));
-}
-
-// Path to smarty files. (not prefixed with nZEDb as the name is needed in smarty files).
-define('SMARTY_DIR', nZEDb_LIBS . 'smarty' . DS);
-
-// These are site constants
-$www_top = str_replace("\\", "/", dirname($_SERVER['PHP_SELF']));
-if (strlen($www_top) == 1) {
-	$www_top = "";
-}
-
-// Used everywhere an href is output, includes the full path to the nZEDb install.
-define('WWW_TOP', $www_top);
-
 define('nZEDb_VERSIONS', nZEDb_LIB . 'build' . DS . 'nZEDb.xml');
 
-$settings_file = __DIR__ . DS . 'settings.php';
+$settings_file = nZEDb_CONFIGS . 'settings.php';
 if (is_file($settings_file)) {
 	require_once($settings_file);
 	if (php_sapi_name() == 'cli') {
@@ -107,21 +90,3 @@ if (is_file($settings_file)) {
 	define('nZEDb_MAX_PAGER_RESULTS', '125000');
 }
 unset($settings_file);
-
-require_once nZEDb_CORE . 'autoloader.php';
-require_once nZEDb_LIBS . 'autoloader.php';
-
-define('HAS_WHICH', nzedb\utility\Utility::hasWhich() ? true : false);
-
-if (file_exists(__DIR__ . DS . 'config.php')) {
-	require_once __DIR__ . DS . 'config.php';
-}
-
-// Check if they updated config.php for the openssl changes. Only check 1 to save speed.
-if (!defined('nZEDb_SSL_VERIFY_PEER')) {
-	define('nZEDb_SSL_CAFILE', '');
-	define('nZEDb_SSL_CAPATH', '');
-	define('nZEDb_SSL_VERIFY_PEER', '0');
-	define('nZEDb_SSL_VERIFY_HOST', '0');
-	define('nZEDb_SSL_ALLOW_SELF_SIGNED', '1');
-}

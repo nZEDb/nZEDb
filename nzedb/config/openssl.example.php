@@ -16,16 +16,13 @@
  *
  * @link <http://www.gnu.org/licenses/>.
  * @author niel
- * @copyright 2014 nZEDb
+ * @copyright 2015 nZEDb
  */
 
-require_once nZEDb_CORE . 'autoloader.php';
-require_once nZEDb_LIBS . 'autoloader.php';
-
-require_once nZEDb_WWW . '/SPLClassLoader.php';
-
-$paths = array(nZEDb_ROOT, nZEDb_WWW . 'pages', SMARTY_DIR, SMARTY_DIR . 'plugins', SMARTY_DIR . 'sysplugins');
-$classLoader = new \SplClassLoader(null, $paths);
-$classLoader->register();
+define('nZEDb_SSL_ALLOW_SELF_SIGNED', '1');
+define('nZEDb_SSL_CAFILE', '');
+define('nZEDb_SSL_CAPATH', '');
+define('nZEDb_SSL_VERIFY_HOST', '0');
+define('nZEDb_SSL_VERIFY_PEER', '0');
 
 ?>
