@@ -7,6 +7,8 @@ All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 
+2015-07-17 bart39
+	* Mrg: PR 1760 from darius - Add omicron and charisma Bootstrap 3 based templates.
 2015-07-16 niel
 	* Fix: Finally have a work around for the register.page not loading. Thanks to Bart39../com
 2015-07-14 bart39
