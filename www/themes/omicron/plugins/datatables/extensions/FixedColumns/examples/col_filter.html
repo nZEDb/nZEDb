@@ -34,7 +34,7 @@ $(document).ready(function() {
 		var title = $('#example thead th').eq( $(this).index() ).text();
 		$(this).html( '<input type="text" placeholder="Search '+title+'" />' );
 	} );
-
+ 
 	// DataTable
 	var table = $('#example').DataTable( {
 		scrollY:        "300px",
@@ -42,7 +42,7 @@ $(document).ready(function() {
 		scrollCollapse: true,
 		paging:         false
 	} );
-
+	 
 	// Apply the filter
 	table.columns().indexes().each( function (idx) {
 		$( 'input', table.column( idx ).footer() ).on( 'keyup change', function () {
@@ -746,7 +746,7 @@ $(document).ready(function() {
 		var title = $('#example thead th').eq( $(this).index() ).text();
 		$(this).html( '&lt;input type=&quot;text&quot; placeholder=&quot;Search '+title+'&quot; /&gt;' );
 	} );
-
+ 
 	// DataTable
 	var table = $('#example').DataTable( {
 		scrollY:        &quot;300px&quot;,
@@ -754,7 +754,7 @@ $(document).ready(function() {
 		scrollCollapse: true,
 		paging:         false
 	} );
-
+	 
 	// Apply the filter
 	table.columns().indexes().each( function (idx) {
 		$( 'input', table.column( idx ).footer() ).on( 'keyup change', function () {

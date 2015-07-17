@@ -7,7 +7,7 @@ $(document).ready( function () {
 	$('#example thead tr').append( '<th>8</th>' );
 	$('#example thead tr').append( '<th>9</th>' );
 	$('#example thead tr').append( '<th>10</th>' );
-
+	
 	var aDataSet = [
     [
         "1",
@@ -30,8 +30,7 @@ $(document).ready( function () {
         "etc2",
         [
             [ "test2@daum.net", "2009-09-26" ],
-            [ "test2@naver.com", "2009-05-21,hide" ],
-
+            [ "test2@naver.com", "2009-05-21,hide" ], 
             [ "lsb@naver.com", "2010-03-05" ],
             [ "lsb3@naver.com", ",hide" ],
             [ "sooboklee9@daum.net", "2010-03-05" ]
@@ -40,7 +39,7 @@ $(document).ready( function () {
         "show"
     ]
 ]
-
+	
     var oTable = $('#example').dataTable({
         "aaData": aDataSet,
         "aoColumns": [
@@ -56,19 +55,17 @@ $(document).ready( function () {
           { "mDataProp": "6"}
         ]
     });
-
-
-	oTest.fnTest(
-
+	
+	
+	oTest.fnTest( 
 		"Initialisation",
 		null,
 		function () {
 			return $('#example tbody tr:eq(0) td:eq(0)').html() == '1';
 		}
 	);
-
-	oTest.fnTest(
-
+	
+	oTest.fnTest( 
 		"Update row",
 		function () {
       $('#example').dataTable().fnUpdate( [
@@ -78,8 +75,7 @@ $(document).ready( function () {
           "etc2",
           [
               [ "test2@daum.net", "2009-09-26" ],
-              [ "test2@naver.com", "2009-05-21,hide" ],
-
+              [ "test2@naver.com", "2009-05-21,hide" ], 
               [ "lsb@naver.com", "2010-03-05" ],
               [ "lsb3@naver.com", ",hide" ],
               [ "sooboklee9@daum.net", "2010-03-05" ]
@@ -92,17 +88,16 @@ $(document).ready( function () {
 			return $('#example tbody tr:eq(0) td:eq(0)').html() == '0';
 		}
 	);
-
-	oTest.fnTest(
-
+	
+	oTest.fnTest( 
 		"Original row preserved",
 		null,
 		function () {
 			return $('#example tbody tr:eq(1) td:eq(0)').html() == '1';
 		}
 	);
-
-
-
+	
+	
+	
 	oTest.fnComplete();
 } );

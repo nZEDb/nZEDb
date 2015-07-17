@@ -3,9 +3,8 @@ oTest.fnStart( "fnServerData for Ajax sourced data" );
 
 $(document).ready( function () {
 	var mPass;
-
-	oTest.fnTest(
-
+	
+	oTest.fnTest( 
 		"Argument length",
 		function () {
 			$('#example').dataTable( {
@@ -18,9 +17,8 @@ $(document).ready( function () {
 		},
 		function () { return mPass == 4; }
 	);
-
-	oTest.fnTest(
-
+	
+	oTest.fnTest( 
 		"Url",
 		function () {
 			$('#example').dataTable( {
@@ -34,9 +32,8 @@ $(document).ready( function () {
 		},
 		function () { return mPass; }
 	);
-
-	oTest.fnTest(
-
+	
+	oTest.fnTest( 
 		"Data array",
 		function () {
 			$('#example').dataTable( {
@@ -50,9 +47,8 @@ $(document).ready( function () {
 		},
 		function () { return mPass; }
 	);
-
-	oTest.fnTest(
-
+	
+	oTest.fnTest( 
 		"Callback function",
 		function () {
 			$('#example').dataTable( {
@@ -66,7 +62,7 @@ $(document).ready( function () {
 		},
 		function () { return mPass; }
 	);
-
-
+	
+	
 	oTest.fnComplete();
 } );

@@ -35,7 +35,7 @@ for ( i=0, iLen=DataTable.settings.length ; i<iLen ; i++ )
 			return;
 		}
 	}
-
+	
 	/* If the element we are initialising has the same ID as a table which was previously
 	 * initialised, but the table nodes don't match (from before) then we destroy the old
 	 * instance by simply deleting it. This is under the assumption that the table has been
@@ -155,11 +155,11 @@ else if ( oSettings.oFeatures.bDeferRender )
 
 if ( oInit.bJQueryUI )
 {
-	/* Use the JUI classes object for display. You could clone the oStdClasses object if
-	 * you want to have multiple tables with multiple independent classes
+	/* Use the JUI classes object for display. You could clone the oStdClasses object if 
+	 * you want to have multiple tables with multiple independent classes 
 	 */
 	$.extend( oSettings.oClasses, DataTable.ext.oJUIClasses );
-
+	
 	if ( oInit.sDom === DataTable.defaults.sDom && DataTable.defaults.sDom === "lfrtip" )
 	{
 		/* Set the DOM to use a layout suitable for jQuery UI's theming */
@@ -210,7 +210,7 @@ if ( oInit.aaData !== null )
 if ( oInit.oLanguage.sUrl !== "" )
 {
 	/* Get the language definitions from a file - because this Ajax call makes the language
-	 * get async to the remainder of this function we use bInitHandedOff to indicate that
+	 * get async to the remainder of this function we use bInitHandedOff to indicate that 
 	 * _fnInitialise will be fired by the returned Ajax handler, rather than the constructor
 	 */
 	oSettings.oLanguage.sUrl = oInit.oLanguage.sUrl;
@@ -250,12 +250,12 @@ if (iLen)
 		if ( anRows.hasClass( oSettings.asStripeClasses[i] ) )
 		{
 			bStripeRemove = true;
-
+			
 			/* Store the classes which we are about to remove so they can be re-added on destroy */
 			oSettings.asDestroyStripes.push( oSettings.asStripeClasses[i] );
 		}
 	}
-
+	
 	if ( bStripeRemove )
 	{
 		anRows.removeClass( oSettings.asStripeClasses.join(' ') );
@@ -301,7 +301,7 @@ for ( i=0, iLen=aoColumnsInit.length ; i<iLen ; i++ )
 		}
 		aoColumnsInit[i].bVisible = oInit.saved_aoColumns[i].bVisible;
 	}
-
+	
 	_fnAddColumn( oSettings, anThs ? anThs[i] : null );
 }
 
@@ -322,19 +322,19 @@ for ( i=0, iLen=oSettings.aaSorting.length ; i<iLen ; i++ )
 		oSettings.aaSorting[i][0] = 0;
 	}
 	var oColumn = oSettings.aoColumns[ oSettings.aaSorting[i][0] ];
-
+	
 	/* Add a default sorting index */
 	if ( oSettings.aaSorting[i][2] === undefined )
 	{
 		oSettings.aaSorting[i][2] = 0;
 	}
-
+	
 	/* If aaSorting is not defined, then we use the first indicator in asSorting */
 	if ( oInit.aaSorting === undefined && oSettings.saved_aaSorting === undefined )
 	{
 		oSettings.aaSorting[i][1] = oColumn.asSorting[0];
 	}
-
+	
 	/* Set the current sorting index based on aoColumns.asSorting */
 	for ( j=0, jLen=oColumn.asSorting.length ; j<jLen ; j++ )
 	{
@@ -345,7 +345,7 @@ for ( i=0, iLen=oSettings.aaSorting.length ; i<iLen ; i++ )
 		}
 	}
 }
-
+	
 /* Do a first pass on the sorting classes (allows any size changes to be taken into
  * account, and also will apply sorting disabled classes if disabled
  */

@@ -4,10 +4,13 @@
 	<!--
 		===
 		This comment should NOT be removed.
+
 		Charisma v2.0.0
+
 		Copyright 2012-2014 Muhammad Usman
 		Licensed under the Apache License v2.0
 		http://www.apache.org/licenses/LICENSE-2.0
+
 		http://usman.it
 		http://twitter.com/halalit_usman
 		===
@@ -22,10 +25,10 @@
 	</script>
 	<meta charset="utf-8">
 	<title>{$site->title}</title>
-	<!-- Newposterwall -->
-	<link href="{$smarty.const.WWW_TOP}/themes/charisma/styles/posterwall.css" rel="stylesheet" type="text/css" media="screen" />
+
 	<!-- The styles -->
 	<link id="bs-css" href="{$smarty.const.WWW_TOP}/themes/charisma/css/bootstrap-spacelab.min.css" rel="stylesheet">
+
 	<link href="{$smarty.const.WWW_TOP}/themes/charisma/css/charisma-app.css" rel="stylesheet">
 	<link href='{$smarty.const.WWW_TOP}/themes/charisma/bower_components/chosen/chosen.min.css' rel='stylesheet'>
 	<link href='{$smarty.const.WWW_TOP}/themes/charisma/bower_components/colorbox/example3/colorbox.css'
@@ -40,13 +43,16 @@
 	<link href='{$smarty.const.WWW_TOP}/themes/charisma/css/animate.min.css' rel='stylesheet'>
 	<!-- Normalize.css -->
 	<link href="{$smarty.const.WWW_TOP}/themes_shared/styles/normalize.css" rel="stylesheet" type="text/css">
+
 	<!-- The fav icon -->
 	<link rel="shortcut icon" href="{$smarty.const.WWW_TOP}/themes/charisma/img/favicon.ico">
+
 </head>
 {if ($loggedin)=="true"}
 	<body>
 	<!-- topbar starts -->
 	<div class="navbar navbar-default" role="navigation">
+
 		<div class="navbar-inner">
 			<button type="button" class="navbar-toggle pull-left animated flip">
 				<span class="sr-only">Toggle navigation</span>
@@ -54,8 +60,8 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a class="navbar-brand" href="{$site->home_link}"> <img alt="nZEDb logo"
-															   src="{$smarty.const.WWW_TOP}/themes/charisma/img/logo-nzedb.png"
+			<a class="navbar-brand" href="{$serverroot}"> <img alt="newznab-tmux logo"
+															   src="{$smarty.const.WWW_TOP}/themes/charisma/img/logo-tmux.png"
 						/></a>
 			{$header_menu}
 			<!-- user dropdown starts -->
@@ -69,8 +75,7 @@
 					<li><a href="{$serverroot}profile"><i class="fa fa-user"></i><span> My Profile</span></a></li>
 					<li><a href="{$serverroot}cart"><i class="fa fa-shopping-cart"></i><span> My Cart</span></a></li>
 					<li><a href="{$serverroot}queue"><i class="fa fa-cloud-download"></i><span> My Queue</span></a></li>
-					<li><a href="{$serverroot}mymovies"><i class="fa fa-film"></i><span> My Movies</span></a></li>
-					<li><a href="{$serverroot}myshows"><i class="fa fa-television"></i><span> My Shows</span></a></li>
+					<li><a href="{$serverroot}mymovies"><i class="fa fa-film"></i><span> My movies</span></a></li>
 					<li><a href="{$serverroot}profileedit"><i class="fa fa-cog fa-spin"></i><span> Account Settings</span></a>
 					</li>
 					{if isset($isadmin)}
@@ -90,12 +95,13 @@
 				<div class="sidebar-nav">
 					<div class="nav-canvas">
 						<div class="nav-sm nav nav-stacked">
+
 						</div>
 						<ul class="nav nav-pills nav-stacked main-menu">
 							<!-- search form -->
 							<form id="headsearch_form" action="{$smarty.const.WWW_TOP}/search/" method="get">
 								<input id="headsearch" name="search" value="{if $header_menu_search == ""}Search...{else}{$header_menu_search|escape:"htmlall"}{/if}" class="form-control" type="text" tabindex="1$" />
-								<div class="row" style="padding-top:3px;">
+								<div class="row no-gutter" style="padding-top:3px;">
 									<div class="col-md-8">
 										<select id="headcat" name="t" class="form-control" data-search="true">
 											<option class="grouping" value="-1">All</option>
@@ -107,7 +113,7 @@
 											{/foreach}
 										</select>
 									</div>
-									<div class="col-md-3">
+									<div class="col-md-3 no-gutter">
 										<input id="headsearch_go" type="submit" class="btn btn-dark" style="margin-top:0px; margin-left:4px;" value="Go"/>
 									</div>
 								</div>
@@ -115,13 +121,11 @@
 							<!-- /.search form -->
 							<li class="nav-header">Main</li>
 							{if ($loggedin)=="true"}
-							<li><a href="{$site->home_link}"><i class="fa fa-home"></i><span> Home</span> <span
+							<li><a href="{$serverroot}"><i class="fa fa-home"></i><span> Home</span> <span
 											class="fa arrow"></span></a></li>
 							<li class="accordion">
 								<a href="#"><i class="fa fa-list-ol"></i><span> Browse</span></a>
 								<ul class="nav nav-pills nav-stacked">
-									<li><a href="{$serverroot}newposterwall"><i
-													class="fa fa-file-image-o"></i><span> New Releases</span></a></li>
 									<li><a href="{$serverroot}console"><i
 													class="fa fa-gamepad"></i><span> Console</span></a></li>
 									<li><a href="{$serverroot}movies"><i
@@ -129,10 +133,8 @@
 									<li><a href="{$serverroot}music"><i
 													class="fa fa-music"></i><span> Music</span></a></li>
 									<li><a href="{$serverroot}games"><i
-													class="fa fa-gamepad"></i><span> Games</span></a>
-									<li><a href="{$serverroot}series"><i
-													class="fa fa-television"></i><span> TV</span></a></li>
-									<li><a href="{$serverroot}xxx"><i class="fa fa-venus-mars"></i><span> Adult</span></a></li>
+													class="fa fa-gamepad"></i><span> Games</span></a></li>
+									<li><a href="{$serverroot}xxx"><i class="fa fa-ban"></i><span> XXX</span></a></li>
 									<li><a href="{$serverroot}books"><i class="fa fa-book"></i><span> Books</span></a>
 									</li>
 									<li><a href="{$serverroot}browse"><i class="fa fa-list-ul"></i><span> Browse All Releases</span></a>
@@ -162,15 +164,20 @@
 			</div>
 			<!--/span-->
 			<!-- left menu ends -->
+
 			<noscript>
 				<div class="alert alert-block col-md-12">
 					<h4 class="alert-heading">Warning!</h4>
+
 					<p>You need to have <a href="http://en.wikipedia.org/wiki/JavaScript" target="_blank">JavaScript</a>
 						enabled to use this site.</p>
 				</div>
 			</noscript>
+
 			<div id="content" class="col-lg-10 col-sm-10">
 				<!-- content starts -->
+
+
 				<div class="row">
 					<div class="box col-md-12">
 						<div class="box-inner">
@@ -182,20 +189,26 @@
 					</div>
 				</div>
 				<!--/row-->
+
+
 				<!-- content ends -->
 			</div>
 			<!--/#content.col-md-0-->
 		</div>
 		<!--/fluid-row-->
+
 		<hr>
+
 		<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
 			 aria-hidden="true">
 		</div>
+
 		<footer class="row">
 			<div class="box col-md-12">
-				<p class="col-md-9 col-sm-9 col-xs-12">Copyright &copy; </i><a
-							href="{$smarty.const.WWW_TOP}{$site->home_link}">{if $site->title == ''}nZEDb{else}{$site->title}{/if}</a> all rights reserved {$smarty.now|date_format:"%Y"}</p>
+				<p class="col-md-9 col-sm-9 col-xs-12 copyright">&copy; <i class="fa fa-github-alt"></i><a
+							href="https://github.com/DariusIII/" target="_blank"> DariusIII</a> newznab-tmux {$smarty.now|date_format:"%Y"}</p>
 		</footer>
+
 	</div>
 	<!--/.fluid-container-->
 	<!-- Scripts-->
@@ -241,6 +254,7 @@
 	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/charisma/js/jquery.history.js"></script>
 	<!-- Charisma functions -->
 	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/charisma/js/charisma.js"></script>
+
 	<!-- Functions with noty -->
 	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/charisma/js/functions.js"></script>
 	<!-- nZEDb default scripts, needed for stuff to work -->
@@ -248,11 +262,16 @@
 	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes_shared/scripts/jquery.autosize-min.js"></script>
 	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes_shared/scripts/jquery.qtip2.js"></script>
 	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes_shared/scripts/sorttable.js"></script>
+
+	<!-- Newznab utils.js -->
+	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes_shared/scripts/utils.js"></script>
+
 	<!-- The HTML5 shim, for IE6-8 support of HTML5 elements -->
 	<!--[if lt IE 9]>
 	<script type="text/javascript" src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
 	<![endif]-->
 	</body>
+
 	{* Start Login/Register Page *}
 {elseif $smarty.server.REQUEST_URI == "/register" || $smarty.server.REQUEST_URI eq '/register?action=submit'}
 	{include file="register.tpl"}

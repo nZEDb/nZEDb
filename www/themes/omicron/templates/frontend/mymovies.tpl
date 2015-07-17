@@ -1,18 +1,22 @@
 <div class="header">
 	<h2>My > <strong>Movies</strong></h2>
+
 	<div class="breadcrumb-wrapper">
 		<ol class="breadcrumb">
 			<li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li>
 			/ My Movies
 	</div>
 </div>
+
+
 <div class="row">
 	<div class="box col-md-12">
 		<div class="box-content">
 			<div class="row">
 				<div class="col-xlg-12 portlets">
-					<div class="panel panel-default">
-						<div class="panel-body pagination2">
+					<div class="panel">
+						<div class="panel-content pagination2">
+
 							<div class="alert alert-info">
 								Using 'My Movies' you can search for movies, and add them to a wishlist. If the movie
 								becomes available it will be added to an <strong><a
@@ -31,6 +35,8 @@
 								</form>
 							</div>
 						</div>
+
+
 						<div id="divMovResults">
 						</div>
 					</div>

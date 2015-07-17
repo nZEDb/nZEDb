@@ -17,27 +17,27 @@
 	p { font-size: 13px; font-size: 1.3rem; line-height: 1.25; margin: 0 0 18px; }
 	p img { margin: 0; }
 	p.lead { font-size: 18px; font-size: 1.8rem; line-height: 1.5;  }
-
+	
 	em, i { font-style: italic; line-height: inherit; }
 	strong, b { font-weight: bold; line-height: inherit; }
 	small { font-size: 60%; line-height: inherit; }
-
+	
 	h1 small, h2 small, h3 small, h4 small, h5 small { color: #777; }
-
+	
 	/*	Blockquotes  */
 	blockquote, blockquote p { line-height: 20px; color: #777; }
 	blockquote { margin: 0 0 18px; padding: 9px 20px 0 19px; border-left: 1px solid #ddd; }
 	blockquote cite { display: block; font-size: 12px; font-size: 1.2rem; color: #555; }
 	blockquote cite:before { content: "\2014 \0020"; }
 	blockquote cite a, blockquote cite a:visited { color: #555; }
-
+	
 	hr { border: solid #ddd; border-width: 1px 0 0; clear: both; margin: 12px 0 18px; height: 0; }
-
+	
 	abbr, acronym { text-transform: uppercase; font-size: 90%; color: #222; border-bottom: 1px solid #ddd; cursor: help; }
 	abbr { text-transform: none; }
 
 	/**
-	 * Print styles.
+ 	 * Print styles.
 	 *
 	 * Inlined to avoid required HTTP connection: www.phpied.com/delay-loading-your-print-css/
 	 * Credit to Paul Irish and HTML5 Boilerplate (html5boilerplate.com)

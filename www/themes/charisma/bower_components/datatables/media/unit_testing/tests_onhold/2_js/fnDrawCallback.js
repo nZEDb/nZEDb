@@ -10,21 +10,19 @@ $(document).ready( function () {
 	} );
 	var oSettings = oTable.fnSettings();
 	var mPass;
-
-	oTest.fnTest(
-
+	
+	oTest.fnTest( 
 		"Default should be null",
 		null,
 		function () { return oSettings.fnDrawCallback == null; }
 	);
-
-
-	oTest.fnTest(
-
+	
+	
+	oTest.fnTest( 
 		"One argument passed",
 		function () {
 			oSession.fnRestore();
-
+			
 			mPass = -1;
 			$('#example').dataTable( {
 				"aaData": gaaData,
@@ -35,14 +33,13 @@ $(document).ready( function () {
 		},
 		function () { return mPass == 1; }
 	);
-
-
-	oTest.fnTest(
-
+	
+	
+	oTest.fnTest( 
 		"That one argument is the settings object",
 		function () {
 			oSession.fnRestore();
-
+			
 			oTable = $('#example').dataTable( {
 				"aaData": gaaData,
 				"fnDrawCallback": function ( oSettings ) {
@@ -52,14 +49,13 @@ $(document).ready( function () {
 		},
 		function () { return oTable.fnSettings() == mPass; }
 	);
-
-
-	oTest.fnTest(
-
+	
+	
+	oTest.fnTest( 
 		"fnRowCallback called once on first draw",
 		function () {
 			oSession.fnRestore();
-
+			
 			mPass = 0;
 			$('#example').dataTable( {
 				"aaData": gaaData,
@@ -70,9 +66,8 @@ $(document).ready( function () {
 		},
 		function () { return mPass == 1; }
 	);
-
-	oTest.fnTest(
-
+	
+	oTest.fnTest( 
 		"fnRowCallback called once on each draw there after as well",
 		function () {
 			$('#example_next').click();
@@ -81,10 +76,10 @@ $(document).ready( function () {
 		},
 		function () { return mPass == 4; }
 	);
-
-
-
-
-
+	
+	
+	
+	
+	
 	oTest.fnComplete();
 } );

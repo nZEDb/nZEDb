@@ -40,3 +40,4 @@ Note that rows in the table must all be the same height. Information in a cell w
 # GitHub
 
 If you fancy getting involved with the development of Scroller and help make it better, please refer to its GitHub repo: https://github.com/DataTables/Scroller
+

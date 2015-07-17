@@ -3,7 +3,7 @@
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<link rel="shortcut icon" type="image/ico" href="http://www.datatables.net/media/images/favicon.ico" />
-
+		
 		<title>DataTables example</title>
 		<style type="text/css" title="currentStyle">
 			@import "../../media/css/demo_page.css";
@@ -34,27 +34,27 @@ $.fn.dataTableExt.oPagination.scrolling = {
 			'<a class="'+oSettings.oClasses.sPagePrevDisabled+'" tabindex="'+oSettings.iTabIndex+'" role="button"><span class="'+oSettings.oClasses.sPageJUIPrev+'"></span></a>'+
 			'<a class="'+oSettings.oClasses.sPageNextDisabled+'" tabindex="'+oSettings.iTabIndex+'" role="button"><span class="'+oSettings.oClasses.sPageJUINext+'"></span></a>';
 		$(nPaging).append( sAppend );
-
+		
 		var els = $('a', nPaging);
 		var nPrevious = els[0],
 			nNext = els[1];
-
+		
 		oSettings.oApi._fnBindAction( nPrevious, {action: "previous"}, function() {
 			/* Disallow paging event during a current paging event */
 			if ( typeof oSettings.iPagingLoopStart != 'undefined' && oSettings.iPagingLoopStart != -1 )
 			{
 				return;
 			}
-
+			
 			oSettings.iPagingLoopStart = oSettings._iDisplayStart;
 			oSettings.iPagingEnd = oSettings._iDisplayStart - oSettings._iDisplayLength;
-
+			
 			/* Correct for underrun */
 			if ( oSettings.iPagingEnd < 0 )
 			{
 			  oSettings.iPagingEnd = 0;
 			}
-
+			
 			var iTween = $.fn.dataTableExt.oPagination.iTweenTime;
 			var innerLoop = function () {
 				if ( oSettings.iPagingLoopStart > oSettings.iPagingEnd ) {
@@ -75,15 +75,15 @@ $.fn.dataTableExt.oPagination.scrolling = {
 			{
 				return;
 			}
-
+			
 			oSettings.iPagingLoopStart = oSettings._iDisplayStart;
-
+			
 			/* Make sure we are not over running the display array */
 			if ( oSettings._iDisplayStart + oSettings._iDisplayLength < oSettings.fnRecordsDisplay() )
 			{
 				oSettings.iPagingEnd = oSettings._iDisplayStart + oSettings._iDisplayLength;
 			}
-
+			
 			var iTween = $.fn.dataTableExt.oPagination.iTweenTime;
 			var innerLoop = function () {
 				if ( oSettings.iPagingLoopStart < oSettings.iPagingEnd ) {
@@ -98,32 +98,32 @@ $.fn.dataTableExt.oPagination.scrolling = {
 			innerLoop();
 		} );
 	},
-
+	
 	"fnUpdate": function ( oSettings, fnCallbackDraw )
 	{
 		if ( !oSettings.aanFeatures.p )
 		{
 			return;
 		}
-
+		
 		/* Loop over each instance of the pager */
 		var an = oSettings.aanFeatures.p;
 		for ( var i=0, iLen=an.length ; i<iLen ; i++ )
 		{
 			if ( an[i].childNodes.length !== 0 )
 			{
-				an[i].childNodes[0].className =
-					( oSettings._iDisplayStart === 0 ) ?
+				an[i].childNodes[0].className = 
+					( oSettings._iDisplayStart === 0 ) ? 
 					oSettings.oClasses.sPagePrevDisabled : oSettings.oClasses.sPagePrevEnabled;
-
-				an[i].childNodes[1].className =
-					( oSettings.fnDisplayEnd() == oSettings.fnRecordsDisplay() ) ?
+				
+				an[i].childNodes[1].className = 
+					( oSettings.fnDisplayEnd() == oSettings.fnRecordsDisplay() ) ? 
 					oSettings.oClasses.sPageNextDisabled : oSettings.oClasses.sPageNextEnabled;
 			}
 		}
 	}
 }
-
+			
 			$(document).ready(function() {
 				$('#example').dataTable( {
 					"sPaginationType": "scrolling"
@@ -136,10 +136,10 @@ $.fn.dataTableExt.oPagination.scrolling = {
 			<div class="full_width big">
 				DataTables custom pagination plug-in example
 			</div>
-
+			
 			<h1>Preamble</h1>
 			<p>The two default pagination styles that DataTables comes with are great for basic tables, but you might which to add extra customisation or a bit of 'glitz'. This plug-in will scroll the table in an animated style.</p>
-
+			
 			<h1>Live example</h1>
 			<div id="demo">
 <table cellpadding="0" cellspacing="0" border="0" class="display" id="example">
@@ -569,8 +569,8 @@ $.fn.dataTableExt.oPagination.scrolling = {
 </table>
 			</div>
 			<div class="spacer"></div>
-
-
+			
+			
 			<h1>Initialisation code</h1>
 			<pre class="brush: js;">/* Time between each scrolling frame */
 $.fn.dataTableExt.oPagination.iTweenTime = 100;
@@ -583,39 +583,39 @@ $.fn.dataTableExt.oPagination.scrolling = {
 		 */
 		var nPrevious = document.createElement( 'div' );
 		var nNext = document.createElement( 'div' );
-
+		
 		if ( oSettings.sTableId !== '' )
 		{
 			nPaging.setAttribute( 'id', oSettings.sTableId+'_paginate' );
 			nPrevious.setAttribute( 'id', oSettings.sTableId+'_previous' );
 			nNext.setAttribute( 'id', oSettings.sTableId+'_next' );
 		}
-
+		
 		nPrevious.className = "paginate_disabled_previous";
 		nNext.className = "paginate_disabled_next";
-
+		
 		nPrevious.title = oSettings.oLanguage.oPaginate.sPrevious;
 		nNext.title = oSettings.oLanguage.oPaginate.sNext;
-
+		
 		nPaging.appendChild( nPrevious );
 		nPaging.appendChild( nNext );
-
+		
 		$(nPrevious).click( function() {
 			/* Disallow paging event during a current paging event */
 			if ( typeof oSettings.iPagingLoopStart != 'undefined' &amp;&amp; oSettings.iPagingLoopStart != -1 )
 			{
 				return;
 			}
-
+			
 			oSettings.iPagingLoopStart = oSettings._iDisplayStart;
 			oSettings.iPagingEnd = oSettings._iDisplayStart - oSettings._iDisplayLength;
-
+			
 			/* Correct for underrun */
 			if ( oSettings.iPagingEnd &lt; 0 )
 			{
 			  oSettings.iPagingEnd = 0;
 			}
-
+			
 			var iTween = $.fn.dataTableExt.oPagination.iTweenTime;
 			var innerLoop = function () {
 				if ( oSettings.iPagingLoopStart &gt; oSettings.iPagingEnd ) {
@@ -629,22 +629,22 @@ $.fn.dataTableExt.oPagination.scrolling = {
 			};
 			innerLoop();
 		} );
-
+		
 		$(nNext).click( function() {
 			/* Disallow paging event during a current paging event */
 			if ( typeof oSettings.iPagingLoopStart != 'undefined' &amp;&amp; oSettings.iPagingLoopStart != -1 )
 			{
 				return;
 			}
-
+			
 			oSettings.iPagingLoopStart = oSettings._iDisplayStart;
-
+			
 			/* Make sure we are not over running the display array */
 			if ( oSettings._iDisplayStart + oSettings._iDisplayLength &lt; oSettings.fnRecordsDisplay() )
 			{
 				oSettings.iPagingEnd = oSettings._iDisplayStart + oSettings._iDisplayLength;
 			}
-
+			
 			var iTween = $.fn.dataTableExt.oPagination.iTweenTime;
 			var innerLoop = function () {
 				if ( oSettings.iPagingLoopStart &lt; oSettings.iPagingEnd ) {
@@ -658,31 +658,31 @@ $.fn.dataTableExt.oPagination.scrolling = {
 			};
 			innerLoop();
 		} );
-
+		
 		/* Take the brutal approach to cancelling text selection */
 		$(nPrevious).bind( 'selectstart', function () { return false; } );
 		$(nNext).bind( 'selectstart', function () { return false; } );
 	},
-
+	
 	"fnUpdate": function ( oSettings, fnCallbackDraw )
 	{
 		if ( !oSettings.aanFeatures.p )
 		{
 			return;
 		}
-
+		
 		/* Loop over each instance of the pager */
 		var an = oSettings.aanFeatures.p;
 		for ( var i=0, iLen=an.length ; i&lt;iLen ; i++ )
 		{
 			if ( an[i].childNodes.length !== 0 )
 			{
-				an[i].childNodes[0].className =
-					( oSettings._iDisplayStart === 0 ) ?
+				an[i].childNodes[0].className = 
+					( oSettings._iDisplayStart === 0 ) ? 
 					oSettings.oClasses.sPagePrevDisabled : oSettings.oClasses.sPagePrevEnabled;
-
-				an[i].childNodes[1].className =
-					( oSettings.fnDisplayEnd() == oSettings.fnRecordsDisplay() ) ?
+				
+				an[i].childNodes[1].className = 
+					( oSettings.fnDisplayEnd() == oSettings.fnRecordsDisplay() ) ? 
 					oSettings.oClasses.sPageNextDisabled : oSettings.oClasses.sPageNextEnabled;
 			}
 		}
@@ -698,8 +698,8 @@ $(document).ready(function() {
 				@import "../examples_support/syntax/css/shCore.css";
 			</style>
 			<script type="text/javascript" language="javascript" src="../examples_support/syntax/js/shCore.js"></script>
-
-
+			
+			
 			<h1>Other examples</h1>
 			<div class="demo_links">
 				<h2>Basic initialisation</h2>
@@ -716,21 +716,21 @@ $(document).ready(function() {
 					<li><a href="../basic_init/state_save.html">State saving</a></li>
 					<li><a href="../basic_init/alt_pagination.html">Alternative pagination styles</a></li>
 					<li>Scrolling: <br>
-						<a href="../basic_init/scroll_x.html">Horizontal</a> /
-						<a href="../basic_init/scroll_y.html">Vertical</a> /
-						<a href="../basic_init/scroll_xy.html">Both</a> /
-						<a href="../basic_init/scroll_y_theme.html">Themed</a> /
+						<a href="../basic_init/scroll_x.html">Horizontal</a> / 
+						<a href="../basic_init/scroll_y.html">Vertical</a> / 
+						<a href="../basic_init/scroll_xy.html">Both</a> / 
+						<a href="../basic_init/scroll_y_theme.html">Themed</a> / 
 						<a href="../basic_init/scroll_y_infinite.html">Infinite</a>
 					</li>
 					<li><a href="../basic_init/language.html">Change language information (internationalisation)</a></li>
 					<li><a href="../basic_init/themes.html">ThemeRoller themes (Smoothness)</a></li>
 				</ul>
-
+				
 				<h2>Advanced initialisation</h2>
 				<ul>
 					<li>Events: <br>
-						<a href="../advanced_init/events_live.html">Live events</a> /
-						<a href="../advanced_init/events_pre_init.html">Pre-init</a> /
+						<a href="../advanced_init/events_live.html">Live events</a> / 
+						<a href="../advanced_init/events_pre_init.html">Pre-init</a> / 
 						<a href="../advanced_init/events_post_init.html">Post-init</a>
 					</li>
 					<li><a href="../advanced_init/column_render.html">Column rendering</a></li>
@@ -749,7 +749,7 @@ $(document).ready(function() {
 					<li><a href="../advanced_init/localstorage.html">State saving with localStorage</a></li>
 					<li><a href="../advanced_init/dt_events.html">Custom events</a></li>
 				</ul>
-
+				
 				<h2>API</h2>
 				<ul>
 					<li><a href="../api/add_row.html">Dynamically add a new row</a></li>
@@ -768,7 +768,7 @@ $(document).ready(function() {
 					<li><a href="../api/regex.html">Regular expression filtering</a></li>
 				</ul>
 			</div>
-
+			
 			<div class="demo_links">
 				<h2>Data sources</h2>
 				<ul>
@@ -777,7 +777,7 @@ $(document).ready(function() {
 					<li><a href="../data_sources/ajax.html">Ajax source</a></li>
 					<li><a href="../data_sources/server_side.html">Server side processing</a></li>
 				</ul>
-
+				
 				<h2>Server-side processing</h2>
 				<ul>
 					<li><a href="../server_side/server_side.html">Obtain server-side data</a></li>
@@ -792,7 +792,7 @@ $(document).ready(function() {
 					<li><a href="../server_side/defer_loading.html">Deferred loading of Ajax data</a></li>
 					<li><a href="../server_side/pipeline.html">Pipelining data (reduce Ajax calls for paging)</a></li>
 				</ul>
-
+				
 				<h2>Ajax data source</h2>
 				<ul>
 					<li><a href="../ajax/ajax.html">Ajax sourced data (array of arrays)</a></li>
@@ -803,7 +803,7 @@ $(document).ready(function() {
 					<li><a href="../ajax/objects_subarrays.html">Read column data from sub-arrays</a></li>
 					<li><a href="../ajax/deep.html">Read column data from deeply nested properties</a></li>
 				</ul>
-
+				
 				<h2>Plug-ins</h2>
 				<ul>
 					<li><a href="../plug-ins/plugin_api.html">Add custom API functions</a></li>
@@ -815,14 +815,14 @@ $(document).ready(function() {
 					<li><a href="../plug-ins/html_sort.html">Automatic HTML type detection</a></li>
 				</ul>
 			</div>
-
-
+			
+			
 			<div id="footer" class="clear" style="text-align:center;">
 				<p>
 					Please refer to the <a href="http://www.datatables.net/usage">DataTables documentation</a> for full information about its API properties and methods.<br>
 					Additionally, there are a wide range of <a href="http://www.datatables.net/extras">extras</a> and <a href="http://www.datatables.net/plug-ins">plug-ins</a> which extend the capabilities of DataTables.
 				</p>
-
+				
 				<span style="font-size:10px;">
 					DataTables designed and created by <a href="http://www.sprymedia.co.uk">Allan Jardine</a> &copy; 2007-2011<br>
 					DataTables is dual licensed under the <a href="http://www.datatables.net/license_gpl2">GPL v2 license</a> or a <a href="http://www.datatables.net/license_bsd">BSD (3-point) license</a>.

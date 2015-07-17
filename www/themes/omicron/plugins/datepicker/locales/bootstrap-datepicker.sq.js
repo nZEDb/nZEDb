@@ -12,3 +12,4 @@
 		today: "Sot"
 	};
 }(jQuery));
+

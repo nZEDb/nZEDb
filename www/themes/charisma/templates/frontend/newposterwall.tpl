@@ -61,22 +61,123 @@
 											 src="{$smarty.const.WWW_TOP}/covers/games/{$result.gamesinfo_id}.jpg"/>
 									{elseif $type == 'TV'}
 										<img height="130px" width="130px" alt=""
-											 src="{$smarty.const.WWW_TOP}/covers/tvshows/{$result.videos_id}.jpg"/>
-									{elseif $type == 'Anime'}
-										<img width="130px" height="130px" alt=""
-											 src="{$smarty.const.WWW_TOP}/covers/anime/{$result.anidbid}.jpg"/>
+											 src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$result.tvid}"/>
 									{/if}
 								</a>
 							</div>
 							<div class="rating-pod" id="guid{$result.guid}">
-								<div class="icons divlink col-lg-4">
-									<span class="btn btn-hover btn-default btn-sm icon_nzb text-muted"><a title="Download Nzb"
-																										  href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}">
-											<i class="glyphicon glyphicon-download"></i></a>
-									</span>
-									<span class="btn btn-hover btn-default btn-sm icon_cart text-muted" title="Add to Cart"><i class="glyphicon glyphicon-shopping-cart"></i></span>
+								<div class="icons">
+									<div class="icon icon_nzb"><a class="divlink" title="Download Nzb"
+																  href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"htmlall"}"></a>
+									</div>
+									<div class="icon icon_cart" title="Add to Cart"></div>
 									{if isset($sabintegrated)}
-										<span class="btn btn-hover btn-default btn-sm icon_sab text-muted" title="Send to my Queue"><i class="glyphicon glyphicon-send"></i></span>
+										<div class="icon icon_sab" title="Send to my Queue"></div>
+									{/if}
+								</div>
+								<br>
+								<hr>
+								<div class="icons">
+									{if $type == 'Console'}
+										<div class="icon icon_ign">
+											<a class="divlink" title="Find on IGN"
+											   href="{$site->dereferrer_link}http://ign.com/search?q={$result.searchname|escape:"url"}&page=0&count=10&type=object&objectType=game&filter=games&"
+											   target="_blank"></a>
+										</div>
+										<div class="icon icon_gamespot">
+											<a class="divlink" title="Find on Gamespot"
+											   href="{$site->dereferrer_link}http://www.gamespot.com/search/?q={$result.searchname|escape:"url"}"
+											   target="_blank"></a>
+										</div>
+										<div class="icon icon_predbme">
+											<a class="divlink" title="Find on Predb.me"
+											   href="{$site->dereferrer_link}http://predb.me/?cats=games&search={$result.searchname|escape:"url"}"
+											   target="_blank"></a>
+										</div>
+									{elseif $type == 'Movies'}
+										<div class="icon icon_imdb">
+											<a class="divlink" target="_blank" title="View on IMDB"
+											   href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/"></a>
+										</div>
+										<div class="icon icon_trakt">
+											<a class="divlink" target="_blank" title="View on Trakt"
+											   href="{$site->dereferrer_link}http://trakt.tv/search/imdb/tt{$result.imdbid}/"></a>
+										</div>
+										{if $cpapi != '' && $cpurl != ''}
+											<div class="icon icon_cp">
+												<a class="divlink sendtocouch" target="_blank"
+												   title="Send to CouchPotato" href="javascript:;"
+												   rel="{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.searchname|escape:"url"}"></a>
+											</div>
+										{/if}
+									{elseif $type == 'XXX'}
+										<div class="icon icon_ade">
+											<a class="divlink" target="_blank" title="View on AdultDVDEmpire"
+											   href="{$site->dereferrer_link}http://www.adultdvdempire.com/dvd/search?q={$result.title|escape:"url"}/"></a>
+										</div>
+										<div class="icon icon_popporn">
+											<a class="divlink" target="_blank" title="View on PopPorn"
+											   href="{$site->dereferrer_link}http://dereferer.org/?http://www.popporn.com/results/index.cfm?v=4&g=0&searchtext={$result.title|escape:"url"}/"></a>
+										</div>
+										<div class="icon icon_iafd">
+											<a class="divlink" target="_blank"
+											   title="View on Internet Adult Film Database"
+											   href="{$site->dereferrer_link}http://www.iafd.com/results.asp?searchtype=title&searchstring={$result.title|escape:"url"}/"></a>
+										</div>
+									{elseif $type == 'PC'}
+										<div class="icon icon_ign">
+											<a class="divlink" title="Find on IGN"
+											   href="{$site->dereferrer_link}http://ign.com/search?q={$result.searchname|escape:"url"}&page=0&count=10&type=object&objectType=game&filter=games&"
+											   target="_blank"></a>
+										</div>
+										<div class="icon icon_gamespot">
+											<a class="divlink" title="Find on Gamespot"
+											   href="{$site->dereferrer_link}http://www.gamespot.com/search/?q={$result.searchname|escape:"url"}"
+											   target="_blank"></a>
+										</div>
+										<div class="icon icon_predbme">
+											<a class="divlink" title="Find on Predb.me"
+											   href="{$site->dereferrer_link}http://predb.me/?cats=games&search={$result.searchname|escape:"url"}"
+											   target="_blank"></a>
+										</div>
+									{elseif $type == 'Audio'}
+										<div class="icon icon_discogs">
+											<a class="divlink" title="Find on Discogs"
+											   href="{$site->dereferrer_link}http://www.discogs.com/search/?q={$result.searchname|regex_replace:"/ ?(\(?\d\d\d\d\)?)? ?(MP3|FLAC)/i":""|escape:"url"}"
+											   target="_blank"></a>
+										</div>
+										<div class="icon icon_allmusic">
+											<a class="divlink" title="Find on AllMusic"
+											   href="{$site->dereferrer_link}http://www.allmusic.com/search/all/{$result.searchname|regex_replace:"/ ?(\(?\d\d\d\d\)?)? ?(MP3|FLAC)/i":""|escape:"url"}"
+											   target="_blank"></a>
+										</div>
+										<div class="icon icon_lastfm">
+											<a class="divlink" title="Find on Last.FM"
+											   href="{$site->dereferrer_link}http://www.last.fm/search?q={$result.searchname|regex_replace:"/ ?(\(?\d\d\d\d\)?)? ?(MP3|FLAC)/i":""|escape:"url"}&from=ac/"
+											   target="_blank"></a>
+										</div>
+									{elseif $type == 'Books'}
+										<div class="icon icon_amazon">
+											<a class="divlink" title="View Amazon Page"
+											   href="{$site->dereferrer_link}{$result.url}"
+											   target="_blank"></a>
+										</div>
+										<div class="icon icon_goodreads">
+											<a class="divlink" title="Find on Goodreads"
+											   href="{$site->dereferrer_link}http://www.goodreads.com/search?query={if $result.author != ""}{$result.author|escape:"url"}{"+-+"}{/if}{$result.booktitle|escape:"url"}"
+											   target="_blank"></a>
+										</div>
+										<div class="icon icon_shelfari">
+											<a class="divlink" title="Find on Shelfari"
+											   href="{$site->dereferrer_link}http://www.shelfari.com/search/books?Keywords={if $result.author != ""}{$result.author|escape:"url"}{"+-+"}{/if}{$result.booktitle|escape:"url"}"
+											   target="_blank"></a>
+										</div>
+									{elseif $type == 'TV'}
+										<div class="icon icon_tvrage">
+											<a class="divlink" title="View in TvRage"
+											   href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$result.rageid}"
+											   target="_blank"></a>
+										</div>
 									{/if}
 								</div>
 							</div>

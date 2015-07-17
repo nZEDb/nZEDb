@@ -38,11 +38,11 @@
 		cursor: pointer;
 		border: none;
 	}
-
-	/* Don't use native buttons on iOS */
+	
+  	/* Don't use native buttons on iOS */
 	input[type=submit].button, button.button { -webkit-appearance: none; }
-
-	.button.nice {
+	
+	.button.nice { 
 		background: #00a6fc url(../images/misc/button-gloss.png) repeat-x 0 -34px;
 		-moz-box-shadow: inset 0 1px 0 rgba(255,255,255,.5);
 		-webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,.5);
@@ -77,35 +77,35 @@
 		text-align: left;
 		text-indent: 12px;
 	}
-
+	
 	/* Sizes ---------- */
-	.small.button			{ font-size: 11px; padding: 8px 20px 10px; width: auto; }
-	.medium.button			{ font-size: 13px; width: auto; }
-	.large.button			{ font-size: 18px; padding: 11px 48px 13px; width: auto; }
+	.small.button 			{ font-size: 11px; padding: 8px 20px 10px; width: auto; }
+	.medium.button 			{ font-size: 13px; width: auto; }
+	.large.button 			{ font-size: 18px; padding: 11px 48px 13px; width: auto; }
 
 	/* Nice Sizes ---------- */
-	.nice.small.button		{ background-position: 0 -36px; }
-	.nice.large.button		{ background-position: 0 -30px; }
+	.nice.small.button 		{ background-position: 0 -36px; }
+	.nice.large.button 		{ background-position: 0 -30px; }
 
 	/* Colors ---------- */
 	.blue.button			{ background-color: #00a6fc;  }
 	.red.button				{ background-color: #e91c21; }
 	.white.button			{ background-color: #e9e9e9; color: #333; }
 	.black.button			{ background-color: #141414; }
-
+	
 	/* Nice Colors ---------- */
 	.nice.blue.button		{ border: 1px solid #0593dc;  }
 	.nice.red.button		{ border: 1px solid #b90b0b;  }
 	.nice.white.button		{ border: 1px solid #cacaca; text-shadow: none !important; }
 	.nice.black.button		{ border: 1px solid #000; }
-
+	
 	/* Hovers ---------- */
-	.button:hover, .button:focus				{ background-color: #0192dd; color: #fff; }
-	.blue.button:hover, .blue.button:focus		{ background-color: #0192dd;	}
-	.red.button:hover, .red.button:focus		{ background-color: #d01217;	}
+	.button:hover, .button:focus 				{ background-color: #0192dd; color: #fff; }
+	.blue.button:hover, .blue.button:focus		{ background-color: #0192dd; 	}
+	.red.button:hover, .red.button:focus 		{ background-color: #d01217; 	}
 	.white.button:hover, .white.button:focus	{ background-color: #dadada; color: #333; }
 	.black.button:hover, .black.button:focus	{ background-color: #000; }
-
+	
 	/* Disabled ---------- */
 	.button.disabled, .button[disabled] { opacity: 0.6; cursor: default; }
 
@@ -119,7 +119,7 @@
 	.alert-box.success { background-color: #7fae00; color: #fff; text-shadow: 0 -1px rgba(0,0,0,0.3); }
 	.alert-box.warning { background-color: #c08c00; color: #fff; text-shadow: 0 -1px rgba(0,0,0,0.3); }
 	.alert-box.error { background-color: #c00000; color: #fff; text-shadow: 0 -1px rgba(0,0,0,0.3); }
-
+	
 	.alert-box a.close { color: #000; position: absolute; right: 4px; top: 0; font-size: 18px; opacity: 0.2; padding: 4px; }
 	.alert-box a.close:hover,.alert-box a.close:focus { opacity: 0.4; }
 
@@ -138,21 +138,21 @@
 		.nice.tabs dd a { padding: 7px 18px 9px; font-size: 15px; font-size: 1.5rem; color: #555555; background: none; border: none; }
 		.nice.tabs dd a.active { font-weight: bold; color: #333; background: #fff; border-left: 1px solid #eee; border-right: 1px solid #eee; border-top: 3px solid #00a6fc; margin: 0 10px; position: relative; top: -5px; }
 		.nice.tabs dd:first-child a.active { margin-left: 0; }
-
+		
 	dl.tabs.vertical { height: auto; }
 	dl.tabs.vertical dt, dl.tabs.vertical dd, dl.nice.tabs.vertical dt, dl.nice.tabs.vertical dd { float: none; height: auto; }
 	dl.tabs.vertical dd a { display: block; width: auto; height: auto; padding: 15px 20px; line-height: 1; border: solid 0 #ccc; border-width: 1px 1px 0; margin: 0; color: #555; background: #eee; font-size: 15px; font-size: 1.5rem; }
 	dl.tabs.vertical dd a.active { height: auto; margin: 0; border-width: 1px 0 0; background: #fff; }
-
+	
 		.nice.tabs.vertical { border-bottom: solid 1px #eee; height: auto; }
 		.nice.tabs.vertical dd a { padding: 15px 20px; border: none; border-left: 1px solid #eee; border-right: 1px solid #eee; border-top: 1px solid #eee; background: #fff; }
 		.nice.tabs.vertical dd a.active { border: none; background: #00a6fc; color: #fff; margin: 0; position: static; top: 0; height: auto; }
 		.nice.tabs.vertical dd:first-child a.active { margin: 0; }
-
+    
     ul.tabs-content { margin: 0; display: block; }
     ul.tabs-content>li { display:none; }
     ul.tabs-content>li.active { display: block; }
-
+    
     dl.contained, dl.nice.contained { margin-bottom: 0; }
     dl.contained.tabs dd a { padding: 0 14px; }
     dl.nice.contained.tabs dd a { padding: 7px 18px 9px; }
@@ -160,7 +160,7 @@
     ul.contained.tabs-content { padding: 0; }
 	ul.contained.tabs-content>li { padding: 20px; border: solid 0 #ddd; border-width: 0 1px 1px 1px; }
 	ul.nice.contained.tabs-content>li { border-color: #eee; }
-
+	
 /*  --------------------------------------------------
     Pagination
     -------------------------------------------------- */
@@ -170,7 +170,7 @@
     ul.pagination li.current a, ul.pagination li:hover a, ul.pagination li a:focus { border-bottom: solid 2px #00a6fc; color: #141414; }
     ul.pagination li.unavailable a { cursor: default; color: #999; }
     ul.pagination li.unavailable:hover a, ul.pagination li.unavailable a:focus { border-bottom: none; }
-
+    
 /*  --------------------------------------------------
     Lists
     -------------------------------------------------- */
@@ -194,10 +194,10 @@
 	}
 
 /*	--------------------------------------------------
-	Nav Bar with Dropdowns
+   	Nav Bar with Dropdowns
 	-------------------------------------------------- */
-
-	.nav-bar { height: 45px; background: #fff; margin-top: 20px; border: 1px solid #ddd; }
+	
+	.nav-bar { height: 45px; background: #fff; margin-top: 20px; border: 1px solid #ddd; }	
 	.nav-bar>li { float: left; display: block; position: relative; padding: 0; margin: 0; border-right: 1px solid #ddd; line-height: 45px; }
 	.nav-bar>li>a { position: relative; font-size: 14px; padding: 0 20px; display: block; text-decoration: none; font-size: 15px; font-size: 1.5rem; }
 	.nav-bar>li>input { margin: 0 16px; }
@@ -218,10 +218,10 @@
 
 
 /*	--------------------------------------------------
-	Video
-	Mad props to http://www.alistapart.com/articles/creating-intrinsic-ratios-for-video/
+   	Video
+   	Mad props to http://www.alistapart.com/articles/creating-intrinsic-ratios-for-video/
 	-------------------------------------------------- */
-
+	
 	.flex-video {
 		position: relative;
 		padding-top: 25px;
@@ -230,10 +230,10 @@
 		margin-bottom: 16px;
 		overflow: hidden;
 	}
-
+	
 	.flex-video.widescreen { padding-bottom: 57.25%; }
 	.flex-video.vimeo { padding-top: 0; }
-
+	
 	.flex-video iframe,
 	.flex-video object,
 	.flex-video embed {
@@ -247,13 +247,18 @@
 
 
 /*	--------------------------------------------------
-	Microformats
+   	Microformats
 	-------------------------------------------------- */
-
+	
 	/* hCard */
 	ul.vcard { display: inline-block; margin: 0 0 12px 0; border: 1px solid #ddd; padding: 10px; }
 	ul.vcard li { margin: 0; display: block; }
 	ul.vcard li.fn { font-weight: bold; font-size: 15px; font-size: 1.5rem; }
-
+	
 	p.vevent span.summary { font-weight: bold; }
 	p.vevent abbr { cursor: default; text-decoration: none; font-weight: bold; border: none; padding: 0 1px; }
+	
+	
+	
+	
+	

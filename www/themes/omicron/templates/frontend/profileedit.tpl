@@ -1,5 +1,6 @@
 <div class="header">
 	<h2>Edit Profile > <strong>{$user.username|escape:"htmlall"}</strong></h2>
+
 	<div class="breadcrumb-wrapper">
 		<ol class="breadcrumb">
 			<li><a href="{$smarty.const.WWW_TOP}">Home</a></li>
@@ -12,8 +13,8 @@
 		<div class="box-content">
 			<div class="row">
 				<div class="col-xlg-12 portlets">
-					<div class="panel panel-default">
-						<div class="panel-body pagination2">
+					<div class="panel">
+						<div class="panel-content pagination2">
 							{if $error != ''}
 								<div class="alert alert-danger">{$error}</div>
 							{/if}
@@ -30,9 +31,9 @@
 											<tbody>
 											<tr valign="top">
 												<td>
-													<table class="data table table-condensed table-striped table-responsive">
+													<table class="table table-condensed table-striped responsive">
 														<tbody>
-														<tr class="bg-aqua-active">
+														<tr class="bg-primary">
 															<td colspan="2" style="padding-left: 8px;">
 																<strong>Profile</strong></td>
 														</tr>
@@ -47,6 +48,7 @@
 															<td>
 																<input autocomplete="off" id="password" name="password"
 																	   type="password" class="form-control" value="">
+
 																<div class="hint">Only enter your password if you want
 																	to change it.
 																</div>
@@ -68,9 +70,9 @@
 														</tr>
 														</tbody>
 													</table>
-													<table class="data table table-condensed table-striped table-responsive">
+													<table class="table table-condensed table-striped responsive">
 														<tbody>
-														<tr class="bg-aqua-active">
+														<tr class="bg-primary">
 															<td colspan="2" style="padding-left: 8px;"><strong>Excluded
 																	Categories</strong></td>
 														</tr>
@@ -82,9 +84,9 @@
 														</tr>
 														</tbody>
 													</table>
-													<table class="data table table-condensed table-striped table-responsive">
+													<table class="table table-condensed table-striped responsive">
 														<tbody>
-														<tr class="bg-aqua-active">
+														<tr class="bg-primary">
 															<td colspan="2" style="padding-left: 8px;"><strong>UI
 																	Preferences</strong></td>
 														</tr>
@@ -154,9 +156,9 @@
 													function.
 													<br/>
 													{if $page->settings->getSetting('sabintegrationtype') != 1}
-														<table class="data table table-condensed table-striped table-responsive">
+														<table class="table table-condensed table-striped responsive">
 															<tbody>
-															<tr class="bg-aqua-active">
+															<tr class="bg-primary">
 																<td colspan="2" style="padding-left: 8px;"><strong>Queue
 																		type
 																		<small>(NZBGet or SABnzbd)</small>
@@ -173,9 +175,9 @@
 														</table>
 													{/if}
 													{if $user.queuetype == 1 && $page->settings->getSetting('sabintegrationtype') == 2}
-														<table class="data table table-condensed table-striped table-responsive">
+														<table class="table table-condensed table-striped responsive">
 															<tbody>
-															<tr class="bg-aqua-active">
+															<tr class="bg-primary">
 																<td colspan="2" style="padding-left: 8px;"><strong>SABnzbd</strong>
 																</td>
 															</tr>
@@ -232,9 +234,9 @@
 														</table>
 													{/if}
 													{if $user.queuetype == 2 && ($page->settings->getSetting('sabintegrationtype') == 0 || $page->settings->getSetting('sabintegrationtype') == 2)}
-														<table class="data table table-condensed table-striped table-responsive">
+														<table class="table table-condensed table-striped responsive">
 															<tbody>
-															<tr class="bg-aqua-active">
+															<tr class="bg-primary">
 																<td colspan="2" style="padding-left: 8px;"><strong>NZBget</strong>
 																</td>
 															</tr>
@@ -245,6 +247,7 @@
 																		   type="text" value="{$user.nzbgeturl}"/></td>
 															</tr>
 															<tr>
+
 																<th width="200">Username / Password</th>
 																<td>
 																	<div class="form-inline">
@@ -261,6 +264,7 @@
 																			   value="{$user.nzbgetpassword}"/>
 																	</div>
 																</td>
+
 															</tr>
 															</tbody>
 														</table>
@@ -272,13 +276,14 @@
 										</table>
 									</div>
 								</div>
-								<table class="data table table-condensed table-striped table-responsive">
+								<table class="table table-condensed table-striped responsive">
 									<tbody>
-									<tr class="bg-aqua-active">
+									<tr class="bg-primary">
 										<td colspan="2" style="padding-left: 8px;"><strong>Couchpotato</strong>
 										</td>
 									</tr>
 									<tr>
+
 										<th width="200">API / URL</th>
 										<td>
 											<div class="form-inline">
@@ -295,17 +300,17 @@
 													   value="{$cp_url_selected}"/>
 											</div>
 										</td>
+
 									</tr>
 									</tbody>
 								</table>
-								<table class="data table table-condensed table-striped table-responsive">
+								<table class="table table-condensed table-striped responsive">
 									<tbody>
-									<tr class="bg-aqua-active">
-										<td colspan="2" style="padding-left: 8px;"><strong>Site theme</strong></td>
-									</tr>
-									<tr>
-										<td>
-											{html_options id="style" name='style' values=$themelist output=$themelist selected=$user.style}
+									<tr class="bg-primary">
+										<td colspan="2" style="padding-left: 8px;"><strong>Site theme</strong>
+										<div>
+										{html_options id="style" name='style' values=$themelist output=$themelist selected=$user.style}
+										</div>
 										</td>
 									</tr>
 									</tbody>

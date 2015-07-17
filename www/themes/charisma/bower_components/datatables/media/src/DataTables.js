@@ -12,11 +12,11 @@
  * BSD style license, available at:
  *   http://datatables.net/license_gpl2
  *   http://datatables.net/license_bsd
- *
- * This source file is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * 
+ * This source file is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
  * or FITNESS FOR A PARTICULAR PURPOSE. See the license files for details.
- *
+ * 
  * For details please refer to: http://www.datatables.net
  */
 
@@ -43,35 +43,35 @@
 }
 (/** @lends <global> */function( $ ) {
 	"use strict";
-	/**
-	 * DataTables is a plug-in for the jQuery Javascript library. It is a
-	 * highly flexible tool, based upon the foundations of progressive
-	 * enhancement, which will add advanced interaction controls to any
+	/** 
+	 * DataTables is a plug-in for the jQuery Javascript library. It is a 
+	 * highly flexible tool, based upon the foundations of progressive 
+	 * enhancement, which will add advanced interaction controls to any 
 	 * HTML table. For a full list of features please refer to
 	 * <a href="http://datatables.net">DataTables.net</a>.
 	 *
 	 * Note that the <i>DataTable</i> object is not a global variable but is
-	 * aliased to <i>jQuery.fn.DataTable</i> and <i>jQuery.fn.dataTable</i> through which
+	 * aliased to <i>jQuery.fn.DataTable</i> and <i>jQuery.fn.dataTable</i> through which 
 	 * it may be  accessed.
 	 *
 	 *  @class
 	 *  @param {object} [oInit={}] Configuration object for DataTables. Options
 	 *    are defined by {@link DataTable.defaults}
 	 *  @requires jQuery 1.3+
-	 *
+	 * 
 	 *  @example
 	 *    // Basic initialisation
 	 *    $(document).ready( function {
 	 *      $('#example').dataTable();
 	 *    } );
-	 *
+	 *  
 	 *  @example
 	 *    // Initialisation with configuration options - in this case, disable
 	 *    // pagination and sorting.
 	 *    $(document).ready( function {
 	 *      $('#example').dataTable( {
 	 *        "bPaginate": false,
-	 *        "bSort": false
+	 *        "bSort": false 
 	 *      } );
 	 *    } );
 	 */
@@ -95,7 +95,7 @@
 
 		require('api.methods.js');
 		require('api.internal.js');
-
+		
 		var _that = this;
 		this.each(function() {
 			require('core.constructor.js');
@@ -119,8 +119,8 @@
 	/**
 	 * Private data store, containing all of the settings objects that are created for the
 	 * tables on a given page.
-	 *
-	 * Note that the <i>DataTable.settings</i> object is aliased to <i>jQuery.fn.dataTableExt</i>
+	 * 
+	 * Note that the <i>DataTable.settings</i> object is aliased to <i>jQuery.fn.dataTableExt</i> 
 	 * through which it may be accessed and manipulated, or <i>jQuery.fn.dataTable.settings</i>.
 	 *  @member
 	 *  @type array
@@ -131,7 +131,7 @@
 
 	/**
 	 * Object models container, for the various models that DataTables has available
-	 * to it. These models define the objects that are used to hold the active state
+	 * to it. These models define the objects that are used to hold the active state 
 	 * and configuration of the table.
 	 *  @namespace
 	 */
@@ -146,7 +146,7 @@
 
 	/**
 	 * Extension object for DataTables that is used to provide all extension options.
-	 *
+	 * 
 	 * Note that the <i>DataTable.ext</i> object is available through
 	 * <i>jQuery.fn.dataTable.ext</i> where it may be accessed and manipulated. It is
 	 * also aliased to <i>jQuery.fn.dataTableExt</i> for historic reasons.
@@ -258,7 +258,7 @@
 	 */
 
 	/**
-	 * Ajax (XHR) event, fired whenever an Ajax request is completed from a request to
+	 * Ajax (XHR) event, fired whenever an Ajax request is completed from a request to 
 	 * made to the server for new data (note that this trigger is called in fnServerData,
 	 * if you override fnServerData and which to use this event, you need to trigger it in
 	 * you success function).
@@ -281,3 +281,4 @@
 }));
 
 }(window, document));
+

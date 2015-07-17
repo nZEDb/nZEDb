@@ -35,3 +35,4 @@ $.noty.layouts.bottomCenter = {
     },
     addClass : ''
 };
+

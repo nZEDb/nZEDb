@@ -2,34 +2,34 @@
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 * Easy set variables
 	 */
-
+	
 	/* Array of database columns which should be read and sent back to DataTables. Use a space where
 	 * you want to insert a non-database field (for example a counter or static image)
 	 */
 	$aColumns = array( 'engine', 'browser', 'platform', 'version', 'grade' );
-
+	
 	/* Indexed column (used for fast and accurate table cardinality) */
 	$sIndexColumn = "id";
-
+	
 	/* DB table to use */
 	$sTable = "ajax";
-
+	
 	/* Database connection information */
 	$gaSql['user']       = "";
 	$gaSql['password']   = "";
 	$gaSql['db']         = "";
 	$gaSql['server']     = "localhost";
-
+	
 	/* REMOVE THIS LINE (it just includes my SQL connection user/pass) */
 	include( $_SERVER['DOCUMENT_ROOT']."/datatables/mysql.php" );
-
-
+	
+	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 * If you just want to use the basic configuration for DataTables with PHP server-side, there is
 	 * no need to edit below this line
 	 */
-
-	/*
+	
+	/* 
 	 * Local functions
 	 */
 	function fatal_error ( $sErrorMessage = '' )
@@ -38,8 +38,8 @@
 		die( $sErrorMessage );
 	}
 
-
-	/*
+	
+	/* 
 	 * MySQL connection
 	 */
 	if ( ! $gaSql['link'] = mysql_pconnect( $gaSql['server'], $gaSql['user'], $gaSql['password']  ) )
@@ -51,9 +51,9 @@
 	{
 		fatal_error( 'Could not select database ' );
 	}
-
-
-	/*
+	
+	
+	/* 
 	 * Paging
 	 */
 	$sLimit = "";
@@ -62,8 +62,8 @@
 		$sLimit = "LIMIT ".mysql_real_escape_string( $_POST['iDisplayStart'] ).", ".
 			mysql_real_escape_string( $_POST['iDisplayLength'] );
 	}
-
-
+	
+	
 	/*
 	 * Ordering
 	 */
@@ -75,19 +75,19 @@
 			if ( $_POST[ 'bSortable_'.intval($_POST['iSortCol_'.$i]) ] == "true" )
 			{
 				$sOrder .= $aColumns[ intval( $_POST['iSortCol_'.$i] ) ]."
-					".mysql_real_escape_string( $_POST['sSortDir_'.$i] ) .", ";
+				 	".mysql_real_escape_string( $_POST['sSortDir_'.$i] ) .", ";
 			}
 		}
-
+		
 		$sOrder = substr_replace( $sOrder, "", -2 );
 		if ( $sOrder == "ORDER BY" )
 		{
 			$sOrder = "";
 		}
 	}
-
-
-	/*
+	
+	
+	/* 
 	 * Filtering
 	 * NOTE this does not match the built-in DataTables filtering which does it
 	 * word by word on any field. It's possible to do here, but concerned about efficiency
@@ -107,7 +107,7 @@
 		$sWhere = substr_replace( $sWhere, "", -3 );
 		$sWhere .= ')';
 	}
-
+	
 	/* Individual column filtering */
 	for ( $i=0 ; $i<count($aColumns) ; $i++ )
 	{
@@ -124,8 +124,8 @@
 			$sWhere .= $aColumns[$i]." LIKE '%".mysql_real_escape_string($_POST['sSearch_'.$i])."%' ";
 		}
 	}
-
-
+	
+	
 	/*
 	 * SQL queries
 	 * Get data to display
@@ -138,7 +138,7 @@
 		$sLimit
 	";
 	$rResult = mysql_query( $sQuery, $gaSql['link'] ) or fatal_error( 'MySQL Error: ' . mysql_errno() );
-
+	
 	/* Data set length after filtering */
 	$sQuery = "
 		SELECT FOUND_ROWS()
@@ -146,7 +146,7 @@
 	$rResultFilterTotal = mysql_query( $sQuery, $gaSql['link'] ) or fatal_error( 'MySQL Error: ' . mysql_errno() );
 	$aResultFilterTotal = mysql_fetch_array($rResultFilterTotal);
 	$iFilteredTotal = $aResultFilterTotal[0];
-
+	
 	/* Total data set length */
 	$sQuery = "
 		SELECT COUNT(".$sIndexColumn.")
@@ -155,8 +155,8 @@
 	$rResultTotal = mysql_query( $sQuery, $gaSql['link'] ) or fatal_error( 'MySQL Error: ' . mysql_errno() );
 	$aResultTotal = mysql_fetch_array($rResultTotal);
 	$iTotal = $aResultTotal[0];
-
-
+	
+	
 	/*
 	 * Output
 	 */
@@ -183,19 +183,19 @@
 				$sOutput .= '"'.str_replace('"', '\"', $aRow[ $aColumns[$i] ]).'",';
 			}
 		}
-
+		
 		/*
 		 * Optional Configuration:
 		 * If you need to add any extra columns (add/edit/delete etc) to the table, that aren't in the
 		 * database - you can do it here
 		 */
-
-
+		
+		
 		$sOutput = substr_replace( $sOutput, "", -1 );
 		$sOutput .= "],";
 	}
 	$sOutput = substr_replace( $sOutput, "", -1 );
 	$sOutput .= '] }';
-
+	
 	echo $sOutput;
 ?>

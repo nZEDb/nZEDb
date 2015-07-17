@@ -6,9 +6,8 @@ $(document).ready( function () {
 	$('#example').dataTable( {
 		"aaData": gaaData
 	} );
-
-	oTest.fnTest(
-
+	
+	oTest.fnTest( 
 		"Default row striping is applied",
 		null,
 		function () {
@@ -18,9 +17,8 @@ $(document).ready( function () {
 			       $('#example tbody tr:eq(3)').hasClass('even');
 		}
 	);
-
-	oTest.fnTest(
-
+	
+	oTest.fnTest( 
 		"Row striping on the second page",
 		function () { $('#example_next').click(); },
 		function () {
@@ -30,10 +28,9 @@ $(document).ready( function () {
 			       $('#example tbody tr:eq(3)').hasClass('even');
 		}
 	);
-
+	
 	/* No striping */
-	oTest.fnTest(
-
+	oTest.fnTest( 
 		"No row striping",
 		function () {
 			oSession.fnRestore();
@@ -49,10 +46,9 @@ $(document).ready( function () {
 			       $('#example tbody tr:eq(3)')[0].className == "";
 		}
 	);
-
+	
 	/* Custom striping */
-	oTest.fnTest(
-
+	oTest.fnTest( 
 		"Custom striping [2]",
 		function () {
 			oSession.fnRestore();
@@ -68,11 +64,10 @@ $(document).ready( function () {
 			       $('#example tbody tr:eq(3)').hasClass('test2');
 		}
 	);
-
-
+	
+	
 	/* long array of striping */
-	oTest.fnTest(
-
+	oTest.fnTest( 
 		"Custom striping [4]",
 		function () {
 			oSession.fnRestore();
@@ -88,9 +83,8 @@ $(document).ready( function () {
 			       $('#example tbody tr:eq(3)').hasClass('test4');
 		}
 	);
-
-	oTest.fnTest(
-
+	
+	oTest.fnTest( 
 		"Custom striping is restarted on second page [2]",
 		function () { $('#example_next').click(); },
 		function () {
@@ -100,7 +94,7 @@ $(document).ready( function () {
 			       $('#example tbody tr:eq(3)').hasClass('test4');
 		}
 	);
-
-
+	
+	
 	oTest.fnComplete();
 } );

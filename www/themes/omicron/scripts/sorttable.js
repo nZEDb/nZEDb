@@ -35,7 +35,7 @@ function ts_makeSortable(table) {
 		// adjust the first column so it displays as selected
 		if ( i==0 ) {
 			cell.className = "Selected";
-			str_HTML += ' sortdir="down"><img src="' + WWW_TOP + '/themes/omicron/images/sorting/arrow_down.gif" alt="" />';
+			str_HTML += ' sortdir="down"><img src="' + WWW_TOP + '/templates/nntmux/images/sorting/arrow_down.gif" alt="" />';
 		}
 		else str_HTML += '>';
 
@@ -105,14 +105,14 @@ function ts_resortTable(lnk,clid) {
     if (span.getAttribute("sortdir") == 'down')
     {
         // ARROW = '&nbsp;&nbsp;&uarr;';
-		ARROW = '<img src="' + WWW_TOP + '/themes/omicron/images/sorting/arrow_up.gif" />';
+		ARROW = '<img src="' + WWW_TOP + '/templates/nntmux/images/sorting/arrow_up.gif" />';
         newRows.reverse();
         span.setAttribute('sortdir','up');
     }
     else
     {
         //ARROW = '&nbsp;&nbsp;&darr;';
-		ARROW = '<img src="' + WWW_TOP + '/themes/omicron/images/sorting/arrow_down.gif" alt="" />';
+		ARROW = '<img src="' + WWW_TOP + '/templates/nntmux/images/sorting/arrow_down.gif" alt="" />';
         span.setAttribute('sortdir','down');
     }
 

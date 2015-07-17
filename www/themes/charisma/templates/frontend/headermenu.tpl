@@ -6,13 +6,14 @@
 					<li class="nav-parent">
 						<a href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"
 						   data-delay="30">
-							<i class="fa fa-television"></i> {$parentcat.title}<i class="fa fa-angle-down"></i>
+							<i class="fa fa-desktop"></i> {$parentcat.title}<i class="icons-arrows-06"></i>
 						</a>
 						<ul class="dropdown-menu">
 							<li><a href="{$smarty.const.WWW_TOP}/browse?t={$parentcat.id}">TV</a></li>
 							<hr>
 							<li><a href="{$smarty.const.WWW_TOP}/series">TV Series</a></li>
-							<li><a href="{$smarty.const.WWW_TOP}/anime">Anime Series</a></li>
+							<li><a href="{$smarty.const.WWW_TOP}/calendar">TV Calendar</a></li>
+							<li><a href="{$smarty.const.WWW_TOP}/myshows">My Shows</a></li>
 							<hr>
 							{foreach from=$parentcat.subcatlist item=subcat}
 								<li><a href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a></li>
@@ -23,7 +24,7 @@
 					<li class="nav-parent">
 						<a href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"
 						   data-delay="30">
-							<i class="fa fa-film"></i> {$parentcat.title}<i class="fa fa-angle-down"></i>
+							<i class="fa fa-film"></i> {$parentcat.title}<i class="icons-arrows-06"></i>
 						</a>
 						<ul class="dropdown-menu">
 							{if $userdata.movieview == "1"}
@@ -31,6 +32,7 @@
 							{elseif $userdata.movieview != "1"}
 								<li><a href="{$smarty.const.WWW_TOP}/browse?t=2000">{$parentcat.title}</a></li>
 							{/if}
+
 							<hr>
 							<li><a href="{$smarty.const.WWW_TOP}/upcoming">In Theatre</a></li>
 							<li><a href="{$smarty.const.WWW_TOP}/mymovies">My Movies</a></li>
@@ -44,13 +46,14 @@
 									<li><a href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a></li>
 								{/foreach}
 							{/if}
+
 						</ul>
 					</li>
 				{elseif $parentcat.id == 1000}
 					<li class="nav-parent">
 						<a href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"
 						   data-delay="30">
-							<i class="fa fa-gamepad"></i> {$parentcat.title}<i class="fa fa-angle-down"></i>
+							<i class="fa fa-gamepad"></i> {$parentcat.title}<i class="icons-arrows-06"></i>
 						</a>
 						<ul class="dropdown-menu">
 							{if $userdata.consoleview == "1"}
@@ -69,13 +72,14 @@
 									<li><a href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a></li>
 								{/foreach}
 							{/if}
+
 						</ul>
 					</li>
 				{elseif $parentcat.id == 4000}
 					<li class="nav-parent">
 						<a href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"
 						   data-delay="30">
-							<i class="fa fa-gamepad"></i> {$parentcat.title}<i class="fa fa-angle-down"></i>
+							<i class="fa fa-gamepad"></i> {$parentcat.title}<i class="icons-arrows-06"></i>
 						</a>
 						<ul class="dropdown-menu">
 							{if $userdata.gameview == "1"}
@@ -99,13 +103,14 @@
 									<li><a href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a></li>
 								{/foreach}
 							{/if}
+
 						</ul>
 					</li>
 				{elseif $parentcat.id == 3000}
 					<li class="nav-parent">
 						<a href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"
 						   data-delay="30">
-							<i class="fa fa-music"></i> {$parentcat.title}<i class="fa fa-angle-down"></i>
+							<i class="fa fa-music"></i> {$parentcat.title}<i class="icons-arrows-06"></i>
 						</a>
 						<ul class="dropdown-menu">
 							{if $userdata.musicview == "1"}
@@ -129,7 +134,7 @@
 					<li class="nav-parent">
 						<a href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"
 						   data-delay="30">
-							<i class="fa fa-book"></i> Books<i class="fa fa-angle-down"></i>
+							<i class="fa fa-book"></i> Books<i class="icons-arrows-06"></i>
 						</a>
 						<ul class="dropdown-menu">
 							{if $userdata.bookview == "1"}
@@ -147,7 +152,7 @@
 					<li class="nav-parent">
 						<a href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"
 						   data-delay="30">
-							<i class="fa fa-venus-mars"></i> Adult<i class="fa fa-angle-down"></i>
+							<i class="fa fa-ban"></i> Adult<i class="icons-arrows-06"></i>
 						</a>
 						<ul class="dropdown-menu">
 							{if $userdata.xxxview == "1"}
@@ -177,12 +182,12 @@
 			{/foreach}
 			<li class="nav-parent">
 				<a href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true" data-delay="30">
-					<i class="fa fa-bolt"></i> Misc<i class="fa fa-angle-down"></i>
+					<i class="fa fa-bolt"></i> Misc<i class="icons-arrows-06"></i>
 				</a>
 				<ul class="dropdown-menu">
-					<li><a href="/browse?t=7000">Misc</a></li>
-					<li><a href="/browse?t=7020">Hashed</a></li>
-					<li><a href="/browse?t=7010">Other</a></li>
+					<li><a href="/browse?t=8000">Misc</a></li>
+					<li><a href="/browse?t=8020">Hashed</a></li>
+					<li><a href="/browse?t=8010">Other</a></li>
 					<hr>
 					<li><a href="/browse">All</a></li>
 					<li><a href="/browsegroup">Browse Groups</a></li>

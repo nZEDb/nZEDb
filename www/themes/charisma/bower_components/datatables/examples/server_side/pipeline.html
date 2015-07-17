@@ -3,7 +3,7 @@
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<link rel="shortcut icon" type="image/ico" href="http://www.datatables.net/media/images/favicon.ico" />
-
+		
 		<title>DataTables example</title>
 		<style type="text/css" title="currentStyle">
 			@import "../../media/css/demo_page.css";
@@ -15,7 +15,7 @@
 			var oCache = {
 				iCacheLower: -1
 			};
-
+			
 			function fnSetKey( aoData, sKey, mValue )
 			{
 				for ( var i=0, iLen=aoData.length ; i<iLen ; i++ )
@@ -26,7 +26,7 @@
 					}
 				}
 			}
-
+			
 			function fnGetKey( aoData, sKey )
 			{
 				for ( var i=0, iLen=aoData.length ; i<iLen ; i++ )
@@ -38,23 +38,23 @@
 				}
 				return null;
 			}
-
+			
 			function fnDataTablesPipeline ( sSource, aoData, fnCallback, oSettings ) {
 				var iPipe = 5; /* Ajust the pipe size */
-
+				
 				var bNeedServer = false;
 				var sEcho = fnGetKey(aoData, "sEcho");
 				var iRequestStart = fnGetKey(aoData, "iDisplayStart");
 				var iRequestLength = fnGetKey(aoData, "iDisplayLength");
 				var iRequestEnd = iRequestStart + iRequestLength;
 				oCache.iDisplayStart = iRequestStart;
-
+				
 				/* outside pipeline? */
 				if ( oCache.iCacheLower < 0 || iRequestStart < oCache.iCacheLower || iRequestEnd > oCache.iCacheUpper )
 				{
 					bNeedServer = true;
 				}
-
+				
 				/* sorting etc changed? */
 				if ( oCache.lastRequest && !bNeedServer )
 				{
@@ -70,10 +70,10 @@
 						}
 					}
 				}
-
+				
 				/* Store the request for checking next time around */
 				oCache.lastRequest = aoData.slice();
-
+				
 				if ( bNeedServer )
 				{
 					if ( iRequestStart < oCache.iCacheLower )
@@ -84,23 +84,23 @@
 							iRequestStart = 0;
 						}
 					}
-
+					
 					oCache.iCacheLower = iRequestStart;
 					oCache.iCacheUpper = iRequestStart + (iRequestLength * iPipe);
 					oCache.iDisplayLength = fnGetKey( aoData, "iDisplayLength" );
 					fnSetKey( aoData, "iDisplayStart", iRequestStart );
 					fnSetKey( aoData, "iDisplayLength", iRequestLength*iPipe );
-
-					oSettings.jqXHR = $.getJSON( sSource, aoData, function (json) {
+					
+					oSettings.jqXHR = $.getJSON( sSource, aoData, function (json) { 
 						/* Callback processing */
 						oCache.lastJson = jQuery.extend(true, {}, json);
-
+						
 						if ( oCache.iCacheLower != oCache.iDisplayStart )
 						{
 							json.aaData.splice( 0, oCache.iDisplayStart-oCache.iCacheLower );
 						}
 						json.aaData.splice( oCache.iDisplayLength, json.aaData.length );
-
+						
 						fnCallback(json)
 					} );
 				}
@@ -114,7 +114,7 @@
 					return;
 				}
 			}
-
+			
 			$(document).ready(function() {
 				$('#example').dataTable( {
 					"bProcessing": true,
@@ -130,11 +130,11 @@
 			<div class="full_width big">
 				DataTables server-side processing with pipelining example
 			</div>
-
+			
 			<h1>Preamble</h1>
 			<p>When using server-side processing with DataTables, it can be quite intensive on your server having an Ajax call every time the user performs some kind of interaction - you can effectively DDOS your server with your own application!</p>
 			<p>This example shows how you might over-come this by modifying the request set to the server to retrieve more information than is actually required for a single page's display. This means that the user can page multiple times (5 times the display size is the default) before a request must be made of the server. Paging is typically the most common interaction performed with a DataTable, so this can be most beneficial to your server's resource usage. Of course the pipeline must be cleared for interactions other than paging (sorting, filtering etc), but that's the trade off that can be made (sending extra information is cheap - while another XHR is expensive).</p>
-
+			
 			<h1>Live example</h1>
 			<div id="dynamic">
 <table cellpadding="0" cellspacing="0" border="0" class="display" id="example">
@@ -164,8 +164,8 @@
 </table>
 			</div>
 			<div class="spacer"></div>
-
-
+			
+			
 			<h1>Initialisation code</h1>
 			<pre class="brush: js;">var oCache = {
 	iCacheLower: -1
@@ -196,20 +196,20 @@ function fnGetKey( aoData, sKey )
 
 function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	var iPipe = 5; /* Ajust the pipe size */
-
+	
 	var bNeedServer = false;
 	var sEcho = fnGetKey(aoData, "sEcho");
 	var iRequestStart = fnGetKey(aoData, "iDisplayStart");
 	var iRequestLength = fnGetKey(aoData, "iDisplayLength");
 	var iRequestEnd = iRequestStart + iRequestLength;
 	oCache.iDisplayStart = iRequestStart;
-
+	
 	/* outside pipeline? */
 	if ( oCache.iCacheLower &lt; 0 || iRequestStart &lt; oCache.iCacheLower || iRequestEnd &gt; oCache.iCacheUpper )
 	{
 		bNeedServer = true;
 	}
-
+	
 	/* sorting etc changed? */
 	if ( oCache.lastRequest &amp;&amp; !bNeedServer )
 	{
@@ -225,10 +225,10 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			}
 		}
 	}
-
+	
 	/* Store the request for checking next time around */
 	oCache.lastRequest = aoData.slice();
-
+	
 	if ( bNeedServer )
 	{
 		if ( iRequestStart &lt; oCache.iCacheLower )
@@ -239,23 +239,23 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 				iRequestStart = 0;
 			}
 		}
-
+		
 		oCache.iCacheLower = iRequestStart;
 		oCache.iCacheUpper = iRequestStart + (iRequestLength * iPipe);
 		oCache.iDisplayLength = fnGetKey( aoData, "iDisplayLength" );
 		fnSetKey( aoData, "iDisplayStart", iRequestStart );
 		fnSetKey( aoData, "iDisplayLength", iRequestLength*iPipe );
-
-		$.getJSON( sSource, aoData, function (json) {
+		
+		$.getJSON( sSource, aoData, function (json) { 
 			/* Callback processing */
 			oCache.lastJson = jQuery.extend(true, {}, json);
-
+			
 			if ( oCache.iCacheLower != oCache.iDisplayStart )
 			{
 				json.aaData.splice( 0, oCache.iDisplayStart-oCache.iCacheLower );
 			}
 			json.aaData.splice( oCache.iDisplayLength, json.aaData.length );
-
+			
 			fnCallback(json)
 		} );
 	}
@@ -286,8 +286,8 @@ $(document).ready(function() {
 			<h1>Server response</h1>
 			<p>The code below shows the latest JSON data that has been returned from the server in response to the Ajax request made by DataTables. This will update as further requests are made.</p>
 			<pre id="latest_xhr" class="brush: js;"></pre>
-
-
+			
+			
 			<h1>Other examples</h1>
 			<div class="demo_links">
 				<h2>Basic initialisation</h2>
@@ -304,21 +304,21 @@ $(document).ready(function() {
 					<li><a href="../basic_init/state_save.html">State saving</a></li>
 					<li><a href="../basic_init/alt_pagination.html">Alternative pagination styles</a></li>
 					<li>Scrolling: <br>
-						<a href="../basic_init/scroll_x.html">Horizontal</a> /
-						<a href="../basic_init/scroll_y.html">Vertical</a> /
-						<a href="../basic_init/scroll_xy.html">Both</a> /
-						<a href="../basic_init/scroll_y_theme.html">Themed</a> /
+						<a href="../basic_init/scroll_x.html">Horizontal</a> / 
+						<a href="../basic_init/scroll_y.html">Vertical</a> / 
+						<a href="../basic_init/scroll_xy.html">Both</a> / 
+						<a href="../basic_init/scroll_y_theme.html">Themed</a> / 
 						<a href="../basic_init/scroll_y_infinite.html">Infinite</a>
 					</li>
 					<li><a href="../basic_init/language.html">Change language information (internationalisation)</a></li>
 					<li><a href="../basic_init/themes.html">ThemeRoller themes (Smoothness)</a></li>
 				</ul>
-
+				
 				<h2>Advanced initialisation</h2>
 				<ul>
 					<li>Events: <br>
-						<a href="../advanced_init/events_live.html">Live events</a> /
-						<a href="../advanced_init/events_pre_init.html">Pre-init</a> /
+						<a href="../advanced_init/events_live.html">Live events</a> / 
+						<a href="../advanced_init/events_pre_init.html">Pre-init</a> / 
 						<a href="../advanced_init/events_post_init.html">Post-init</a>
 					</li>
 					<li><a href="../advanced_init/column_render.html">Column rendering</a></li>
@@ -337,7 +337,7 @@ $(document).ready(function() {
 					<li><a href="../advanced_init/localstorage.html">State saving with localStorage</a></li>
 					<li><a href="../advanced_init/dt_events.html">Custom events</a></li>
 				</ul>
-
+				
 				<h2>API</h2>
 				<ul>
 					<li><a href="../api/add_row.html">Dynamically add a new row</a></li>
@@ -356,7 +356,7 @@ $(document).ready(function() {
 					<li><a href="../api/regex.html">Regular expression filtering</a></li>
 				</ul>
 			</div>
-
+			
 			<div class="demo_links">
 				<h2>Data sources</h2>
 				<ul>
@@ -365,7 +365,7 @@ $(document).ready(function() {
 					<li><a href="../data_sources/ajax.html">Ajax source</a></li>
 					<li><a href="../data_sources/server_side.html">Server side processing</a></li>
 				</ul>
-
+				
 				<h2>Server-side processing</h2>
 				<ul>
 					<li><a href="../server_side/server_side.html">Obtain server-side data</a></li>
@@ -380,7 +380,7 @@ $(document).ready(function() {
 					<li><a href="../server_side/defer_loading.html">Deferred loading of Ajax data</a></li>
 					<li><a href="../server_side/pipeline.html">Pipelining data (reduce Ajax calls for paging)</a></li>
 				</ul>
-
+				
 				<h2>Ajax data source</h2>
 				<ul>
 					<li><a href="../ajax/ajax.html">Ajax sourced data (array of arrays)</a></li>
@@ -391,7 +391,7 @@ $(document).ready(function() {
 					<li><a href="../ajax/objects_subarrays.html">Read column data from sub-arrays</a></li>
 					<li><a href="../ajax/deep.html">Read column data from deeply nested properties</a></li>
 				</ul>
-
+				
 				<h2>Plug-ins</h2>
 				<ul>
 					<li><a href="../plug-ins/plugin_api.html">Add custom API functions</a></li>
@@ -403,14 +403,14 @@ $(document).ready(function() {
 					<li><a href="../plug-ins/html_sort.html">Automatic HTML type detection</a></li>
 				</ul>
 			</div>
-
-
+			
+			
 			<div id="footer" class="clear" style="text-align:center;">
 				<p>
 					Please refer to the <a href="http://www.datatables.net/usage">DataTables documentation</a> for full information about its API properties and methods.<br>
 					Additionally, there are a wide range of <a href="http://www.datatables.net/extras">extras</a> and <a href="http://www.datatables.net/plug-ins">plug-ins</a> which extend the capabilities of DataTables.
 				</p>
-
+				
 				<span style="font-size:10px;">
 					DataTables designed and created by <a href="http://www.sprymedia.co.uk">Allan Jardine</a> &copy; 2007-2011<br>
 					DataTables is dual licensed under the <a href="http://www.datatables.net/license_gpl2">GPL v2 license</a> or a <a href="http://www.datatables.net/license_bsd">BSD (3-point) license</a>.

@@ -1,4 +1,7 @@
 <div class="header">
+	{assign var="catsplit" value=">"|explode:$catname}
+	<h2>{$catsplit[0]} > <strong>{if isset($catsplit[1])} {$catsplit[1]}{/if}</strong></h2>
+
 	<div class="breadcrumb-wrapper">
 		<ol class="breadcrumb">
 			<li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li>
@@ -6,14 +9,16 @@
 		</ol>
 	</div>
 </div>
+
 {$site->adbrowse}
+
 {if $results|@count > 0}
 	<form id="nzb_multi_operations_form" action="get">
 		<div class="box-body"
 		<div class="row">
 			<div class="col-xlg-12 portlets">
-				<div class="panel panel-default">
-					<div class="panel-body pagination2">
+				<div class="panel">
+					<div class="panel-content pagination2">
 						<div class="row">
 							<div class="col-md-8">
 								{if isset($shows)}
@@ -69,7 +74,7 @@
 							</div>
 						</div>
 						<hr>
-						<table class="data table table-condensed table-striped table-responsive table-hover" cellspacing="0"
+						<table class="data table table-condensed table-striped" cellspacing="0"
 							   cellpadding="0" style="table-layout: auto;">
 							<thead>
 							<tr>
@@ -96,7 +101,7 @@
 															 value="{$result.guid}"/></td>
 									<td>
 										<a href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}"
-										   class="title">{$result.searchname|escape:"htmlall"|replace:".":" "}</a>{if $result.failed > 0} <i class="fa fa-exclamation-circle" style="color: red" title="This release has failed to download for some users"></i>{/if}
+										   class="title">{$result.searchname|escape:"htmlall"|replace:".":" "}</a>
 										<br/>
 													<span class="label label-default">{$result.grabs}
 														Grab{if $result.grabs != 1}s{/if}</span>
@@ -109,14 +114,13 @@
 										{if $result.haspreview == 1 && $userdata.canpreview == 1}<span><a
 													href="{$smarty.const.WWW_TOP}/covers/preview/{$result.guid}_thumb.jpg"
 													name="name{$result.guid}" class="modal_prev label label-default" rel="preview">Preview</a></span>{/if}
-										{if $result.videos_id > 0}<span class="label label-default"><a
-													href="{$smarty.const.WWW_TOP}/series/{$result.videos_id}">View TV</a></span>{/if}
-										{if isset($result.firstaired) && $result.firstaired != ""}<span class="label label-default" title="{$result.guid}">
-											Aired {if $result.firstaired|strtotime > $smarty.now}in future{else}{$result.firstaired|daysago}{/if}</span>{/if}
+										{if $result.rageid > 0}<span class="label label-default"><a
+													href="{$smarty.const.WWW_TOP}/series/{$result.rageid}"
+													class="text-muted">View TV</a></span>{/if}
 										{if $result.anidbid > 0}<span class="label label-default"><a
-													href="{$smarty.const.WWW_TOP}/anime/{$result.anidbid}">View Anime</a></span>{/if}
-										{if $result.failed > 0}<span class="label label-default">
-											<i class ="fa fa-thumbs-o-up"></i> {$result.grabs} Grab{if $result.grabs != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$result.failed} Failed Download{if $result.failed != 1}s{/if}</span>{/if}									</td>
+													href="{$smarty.const.WWW_TOP}/anime/{$result.anidbid}"
+													class="text-muted">View Anime</a></span>{/if}
+									</td>
 									<td><span class="label label-default">{$result.category_name}</span>
 									</td>
 									<td>{$result.postdate|timeago}</td>

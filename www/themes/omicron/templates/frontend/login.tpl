@@ -26,6 +26,7 @@
     <link href="{$smarty.const.WWW_TOP}/themes/omicron/dist/css/AdminLTE.min.css" rel="stylesheet" type="text/css" />
     <!-- iCheck -->
     <link href="{$smarty.const.WWW_TOP}/themes/omicron/plugins/iCheck/square/blue.css" rel="stylesheet" type="text/css" />
+
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -61,11 +62,14 @@
             </div><!-- /.col -->
             <div class="col-xs-4">
               <button type="submit" class="btn btn-primary btn-block btn-flat">Sign In</button>
+
             </div><!-- /.col -->
           </div>
         </form>
+
 		  <a href="{$serverroot}forgottenpassword" class="text-center">I forgot my password</a><br>
         <a href="{$serverroot}register" class="text-center">Register a new membership</a>
+
     <!-- jQuery 2.1.4 -->
     <script src="{$smarty.const.WWW_TOP}/themes/omicron/plugins/jQuery/jQuery-2.1.4.min.js"></script>
     <!-- Bootstrap 3.3.2 JS -->

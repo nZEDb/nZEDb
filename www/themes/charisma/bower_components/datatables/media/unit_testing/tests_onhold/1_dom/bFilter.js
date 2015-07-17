@@ -4,17 +4,15 @@ oTest.fnStart( "bFilter" );
 $(document).ready( function () {
 	/* Check the default */
 	$('#example').dataTable();
-
-	oTest.fnTest(
-
+	
+	oTest.fnTest( 
 		"Filtering div exists by default",
 		null,
 		function () { return document.getElementById('example_filter') != null; }
 	);
-
+	
 	/* Check can disable */
-	oTest.fnTest(
-
+	oTest.fnTest( 
 		"Fltering can be disabled",
 		function () {
 			oSession.fnRestore();
@@ -24,10 +22,9 @@ $(document).ready( function () {
 		},
 		function () { return document.getElementById('example_filter') == null; }
 	);
-
+	
 	/* Enable makes no difference */
-	oTest.fnTest(
-
+	oTest.fnTest( 
 		"Filtering enabled override",
 		function () {
 			oSession.fnRestore();
@@ -37,7 +34,7 @@ $(document).ready( function () {
 		},
 		function () { return document.getElementById('example_filter') != null; }
 	);
-
-
+	
+	
 	oTest.fnComplete();
 } );

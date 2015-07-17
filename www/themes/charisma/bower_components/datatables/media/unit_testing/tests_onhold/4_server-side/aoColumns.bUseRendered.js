@@ -8,7 +8,7 @@ oTest.fnStart( "aoColumns.bUseRendered" );
 $(document).ready( function () {
 	/* Check the default */
 	var mTmp = 0;
-
+	
 	var oTable = $('#example').dataTable( {
 		"bServerSide": true,
 		"sAjaxSource": "../../../examples/server_side/scripts/server_processing.php",
@@ -27,18 +27,17 @@ $(document).ready( function () {
 		]
 	} );
 	var oSettings = oTable.fnSettings();
-
-	oTest.fnWaitTest(
-
+	
+	oTest.fnWaitTest( 
 		"Default for bUseRendered is true - rendered data is used for sorting",
 		function () { $('#example thead th:eq(1)').click(); },
 		function () { return $('#example tbody tr:eq(0) td:eq(1)').html() == 'aaa'; }
 	);
-
+	
 	/* Limited to what we can do here as the sorting is done on the server side. So stop here. */
-
-
-
-
+	
+	
+	
+	
 	oTest.fnComplete();
 } );

@@ -18,16 +18,14 @@ $(document).ready( function () {
 		]
 	} );
 	var oSettings = oTable.fnSettings();
-
-	oTest.fnWaitTest(
-
+	
+	oTest.fnWaitTest( 
 		"Single column - fnRender is called twice for each row",
 		null,
 		function () { return mTmp == 57; }
 	);
-
-	oTest.fnWaitTest(
-
+	
+	oTest.fnWaitTest( 
 		"Confirm that fnRender passes two arguments with four parameters",
 		function () {
 			mTmp = true;
@@ -38,8 +36,8 @@ $(document).ready( function () {
 					null,
 					{ "fnRender": function (a) {
 						if ( arguments.length != 2 || typeof a.iDataRow=='undefined' ||
-							typeof a.iDataColumn=='undefined' || typeof a.aData=='undefined' ||
-							typeof a.mDataProp=='undefined' )
+						 	typeof a.iDataColumn=='undefined' || typeof a.aData=='undefined' ||
+						 	typeof a.mDataProp=='undefined' )
 						{
 							mTmp = false;
 						}
@@ -53,9 +51,8 @@ $(document).ready( function () {
 		},
 		function () { return mTmp; }
 	);
-
-	oTest.fnWaitTest(
-
+	
+	oTest.fnWaitTest( 
 		"fnRender iDataColumn is the column",
 		function () {
 			mTmp = true;
@@ -79,9 +76,8 @@ $(document).ready( function () {
 		},
 		function () { return mTmp; }
 	);
-
-	oTest.fnWaitTest(
-
+	
+	oTest.fnWaitTest( 
 		"fnRender aData is data array of correct size",
 		function () {
 			mTmp = true;
@@ -105,9 +101,8 @@ $(document).ready( function () {
 		},
 		function () { return mTmp; }
 	);
-
-	oTest.fnWaitTest(
-
+	
+	oTest.fnWaitTest( 
 		"Passed back data is put into the DOM",
 		function () {
 			oSession.fnRestore();
@@ -126,9 +121,8 @@ $(document).ready( function () {
 		},
 		function () { return $('#example tbody tr:eq(0) td:eq(1)').html() == 'unittest'; }
 	);
-
-	oTest.fnWaitTest(
-
+	
+	oTest.fnWaitTest( 
 		"Passed back data is put into the DOM",
 		function () {
 			oSession.fnRestore();
@@ -148,16 +142,15 @@ $(document).ready( function () {
 			} );
 		},
 		function () {
-			var bReturn =
-
+			var bReturn = 
 				$('#example tbody tr:eq(0) td:eq(2)').html() == 'unittest1' &&
 				$('#example tbody tr:eq(0) td:eq(3)').html() == 'unittest2';
 			return bReturn; }
 	);
-
-
-
-
-
+	
+	
+	
+	
+	
 	oTest.fnComplete();
 } );

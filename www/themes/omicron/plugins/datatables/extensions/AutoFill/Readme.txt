@@ -35,3 +35,4 @@ $(document).ready( function () {
 # GitHub
 
 If you fancy getting involved with the development of AutoFill and help make it better, please refer to its GitHub repo: https://github.com/DataTables/AutoFill
+

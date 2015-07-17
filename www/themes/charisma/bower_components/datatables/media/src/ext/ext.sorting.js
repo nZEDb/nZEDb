@@ -15,16 +15,13 @@ $.extend( DataTable.ext.oSort, {
 	{
 		return ((x < y) ? -1 : ((x > y) ? 1 : 0));
 	},
-
-
+	
 	"string-desc": function ( x, y )
 	{
 		return ((x < y) ? 1 : ((x > y) ? -1 : 0));
 	},
-
-
-
-
+	
+	
 	/*
 	 * html sorting (ignore html tags)
 	 */
@@ -32,30 +29,25 @@ $.extend( DataTable.ext.oSort, {
 	{
 		return a.replace( /<.*?>/g, "" ).toLowerCase();
 	},
-
-
+	
 	"html-asc": function ( x, y )
 	{
 		return ((x < y) ? -1 : ((x > y) ? 1 : 0));
 	},
-
-
+	
 	"html-desc": function ( x, y )
 	{
 		return ((x < y) ? 1 : ((x > y) ? -1 : 0));
 	},
-
-
-
-
+	
+	
 	/*
 	 * date sorting
 	 */
 	"date-pre": function ( a )
 	{
 		var x = Date.parse( a );
-
-
+		
 		if ( isNaN(x) || x==="" )
 		{
 			x = Date.parse( "01/01/1970 00:00:00" );
@@ -67,16 +59,13 @@ $.extend( DataTable.ext.oSort, {
 	{
 		return x - y;
 	},
-
-
+	
 	"date-desc": function ( x, y )
 	{
 		return y - x;
 	},
-
-
-
-
+	
+	
 	/*
 	 * numerical sorting
 	 */
@@ -89,8 +78,7 @@ $.extend( DataTable.ext.oSort, {
 	{
 		return x - y;
 	},
-
-
+	
 	"numeric-desc": function ( x, y )
 	{
 		return y - x;

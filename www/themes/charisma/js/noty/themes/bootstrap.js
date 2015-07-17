@@ -55,3 +55,4 @@ $.noty.themes.bootstrapTheme = {
         onClose: function() {  }
     }
 };
+

@@ -11,20 +11,20 @@ function _fnConvertToWidth ( sWidth, nParent )
 	{
 		return 0;
 	}
-
+	
 	if ( !nParent )
 	{
 		nParent = document.body;
 	}
-
+	
 	var iWidth;
 	var nTmp = document.createElement( "div" );
 	nTmp.style.width = _fnStringToCss( sWidth );
-
+	
 	nParent.appendChild( nTmp );
 	iWidth = nTmp.offsetWidth;
 	nParent.removeChild( nTmp );
-
+	
 	return ( iWidth );
 }
 
@@ -45,33 +45,30 @@ function _fnCalculateColumnWidths ( oSettings )
 	var oHeaders = $('th', oSettings.nTHead);
 	var widthAttr = oSettings.nTable.getAttribute('width');
 	var nWrapper = oSettings.nTable.parentNode;
-
+	
 	/* Convert any user input sizes into pixel sizes */
 	for ( i=0 ; i<iColums ; i++ )
 	{
 		if ( oSettings.aoColumns[i].bVisible )
 		{
 			iVisibleColumns++;
-
+			
 			if ( oSettings.aoColumns[i].sWidth !== null )
 			{
-				iTmpWidth = _fnConvertToWidth( oSettings.aoColumns[i].sWidthOrig,
-
+				iTmpWidth = _fnConvertToWidth( oSettings.aoColumns[i].sWidthOrig, 
 					nWrapper );
 				if ( iTmpWidth !== null )
 				{
 					oSettings.aoColumns[i].sWidth = _fnStringToCss( iTmpWidth );
 				}
-
+					
 				iUserInputs++;
 			}
 		}
 	}
-
-	/* If the number of columns in the DOM equals the number that we have to process in
-
-	 * DataTables, then we can use the offsets that are created by the web-browser. No custom
-
+	
+	/* If the number of columns in the DOM equals the number that we have to process in 
+	 * DataTables, then we can use the offsets that are created by the web-browser. No custom 
 	 * sizes can be set in order for this to happen, nor scrolling used
 	 */
 	if ( iColums == oHeaders.length && iUserInputs === 0 && iVisibleColumns == iColums &&
@@ -99,7 +96,7 @@ function _fnCalculateColumnWidths ( oSettings )
 			nBody = document.createElement( 'tbody' ),
 			nTr = document.createElement( 'tr' ),
 			nDivSizing;
-
+		
 		nCalcTmp.removeAttribute( "id" );
 		nCalcTmp.appendChild( nTheadClone );
 		if ( oSettings.nTFoot !== null )
@@ -109,10 +106,10 @@ function _fnCalculateColumnWidths ( oSettings )
 				n.style.width = "";
 			}, nCalcTmp.getElementsByTagName('tr') );
 		}
-
+		
 		nCalcTmp.appendChild( nBody );
 		nBody.appendChild( nTr );
-
+		
 		/* Remove any sizing that was previously applied by the styles */
 		var jqColSizing = $('thead th', nCalcTmp);
 		if ( jqColSizing.length === 0 )
@@ -157,10 +154,10 @@ function _fnCalculateColumnWidths ( oSettings )
 				}
 			}
 		}
-
+		
 		/* Build the table and 'display' it */
 		nWrapper.appendChild( nCalcTmp );
-
+		
 		/* When scrolling (X or Y) we want to set the width of the table as appropriate. However,
 		 * when not scrolling leave the table width as it is. This results in slightly different,
 		 * but I think correct behaviour
@@ -186,10 +183,10 @@ function _fnCalculateColumnWidths ( oSettings )
 			nCalcTmp.style.width = _fnStringToCss( widthAttr );
 		}
 		nCalcTmp.style.visibility = "hidden";
-
+		
 		/* Scrolling considerations */
 		_fnScrollingWidthAdjust( oSettings, nCalcTmp );
-
+		
 		/* Read the width's calculated by the browser and store them for use by the caller. We
 		 * first of all try to use the elements in the body, but it is possible that there are
 		 * no elements there, under which circumstances we use the header elements
@@ -200,8 +197,7 @@ function _fnCalculateColumnWidths ( oSettings )
 			oNodes = _fnGetUniqueThs( oSettings, $('thead', nCalcTmp)[0] );
 		}
 
-		/* Browsers need a bit of a hand when a width is assigned to any columns when
-
+		/* Browsers need a bit of a hand when a width is assigned to any columns when 
 		 * x-scrolling as they tend to collapse the table to the min-width, even if
 		 * we sent the column widths. So we need to keep track of what the table width
 		 * should be by summing the user given values, and the automatic values
@@ -226,7 +222,7 @@ function _fnCalculateColumnWidths ( oSettings )
 					iCorrector++;
 				}
 			}
-
+			
 			nCalcTmp.style.width = _fnStringToCss( iTotal );
 			oSettings.nTable.style.width = _fnStringToCss( iTotal );
 		}
@@ -318,7 +314,7 @@ function _fnGetMaxLenString( oSettings, iCol )
 {
 	var iMax = -1;
 	var iMaxIndex = -1;
-
+	
 	for ( var i=0 ; i<oSettings.aoData.length ; i++ )
 	{
 		var s = _fnGetCellData( oSettings, i, iCol, 'display' )+"";
@@ -329,7 +325,7 @@ function _fnGetMaxLenString( oSettings, iCol )
 			iMaxIndex = i;
 		}
 	}
-
+	
 	return iMaxIndex;
 }
 
@@ -347,7 +343,7 @@ function _fnStringToCss( s )
 	{
 		return "0px";
 	}
-
+	
 	if ( typeof s == 'number' )
 	{
 		if ( s < 0 )
@@ -356,7 +352,7 @@ function _fnStringToCss( s )
 		}
 		return s+"px";
 	}
-
+	
 	/* Check if the last character is not 0-9 */
 	var c = s.charCodeAt( s.length-1 );
 	if (c < 0x30 || c > 0x39)
@@ -373,14 +369,13 @@ function _fnStringToCss( s )
  *  @memberof DataTable#oApi
  */
 function _fnScrollBarWidth ()
-{
-
+{  
 	var inner = document.createElement('p');
 	var style = inner.style;
 	style.width = "100%";
 	style.height = "200px";
 	style.padding = "0px";
-
+	
 	var outer = document.createElement('div');
 	style = outer.style;
 	style.position = "absolute";
@@ -392,7 +387,7 @@ function _fnScrollBarWidth ()
 	style.padding = "0px";
 	style.overflow = "hidden";
 	outer.appendChild(inner);
-
+	
 	document.body.appendChild(outer);
 	var w1 = inner.offsetWidth;
 	outer.style.overflow = 'scroll';
@@ -401,8 +396,8 @@ function _fnScrollBarWidth ()
 	{
 		w2 = outer.clientWidth;
 	}
-
+	
 	document.body.removeChild(outer);
-	return (w1 - w2);
-
+	return (w1 - w2);  
 }
+

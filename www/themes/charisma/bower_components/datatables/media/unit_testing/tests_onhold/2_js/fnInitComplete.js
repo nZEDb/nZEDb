@@ -10,21 +10,19 @@ $(document).ready( function () {
 	} );
 	var oSettings = oTable.fnSettings();
 	var mPass;
-
-	oTest.fnTest(
-
+	
+	oTest.fnTest( 
 		"Default should be null",
 		null,
 		function () { return oSettings.fnInitComplete == null; }
 	);
-
-
-	oTest.fnTest(
-
+	
+	
+	oTest.fnTest( 
 		"Two arguments passed",
 		function () {
 			oSession.fnRestore();
-
+			
 			mPass = -1;
 			$('#example').dataTable( {
 				"aaData": gaaData,
@@ -35,14 +33,13 @@ $(document).ready( function () {
 		},
 		function () { return mPass; }
 	);
-
-
-	oTest.fnTest(
-
+	
+	
+	oTest.fnTest( 
 		"That one argument is the settings object",
 		function () {
 			oSession.fnRestore();
-
+			
 			oTable = $('#example').dataTable( {
 				"aaData": gaaData,
 				"fnInitComplete": function ( oSettings ) {
@@ -52,14 +49,13 @@ $(document).ready( function () {
 		},
 		function () { return oTable.fnSettings() == mPass; }
 	);
-
-
-	oTest.fnTest(
-
+	
+	
+	oTest.fnTest( 
 		"fnInitComplete called once on first draw",
 		function () {
 			oSession.fnRestore();
-
+			
 			mPass = 0;
 			$('#example').dataTable( {
 				"aaData": gaaData,
@@ -70,9 +66,8 @@ $(document).ready( function () {
 		},
 		function () { return mPass == 1; }
 	);
-
-	oTest.fnTest(
-
+	
+	oTest.fnTest( 
 		"fnInitComplete never called there after",
 		function () {
 			$('#example_next').click();
@@ -81,8 +76,8 @@ $(document).ready( function () {
 		},
 		function () { return mPass == 1; }
 	);
-
-
-
+	
+	
+	
 	oTest.fnComplete();
 } );

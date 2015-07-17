@@ -29,6 +29,7 @@
     <link href="{$smarty.const.WWW_TOP}/themes/omicron/dist/css/AdminLTE.min.css" rel="stylesheet" type="text/css" />
     <!-- iCheck -->
     <link href="{$smarty.const.WWW_TOP}/themes/omicron/plugins/iCheck/square/blue.css" rel="stylesheet" type="text/css" />
+
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -42,6 +43,7 @@
       <div class="register-logo">
         <a href="{$serverroot}"><b>{$site->title}</b></a>
       </div>
+
       <div class="register-box-body">
         <p class="login-box-msg">Register a new membership</p>
         <form method="post" action="register?action=submit{$invite_code_query}">
@@ -57,6 +59,7 @@
           <div class="form-group has-feedback">
             <input id="password" autocomplete="off" name="password" value="{$password}" type="password" class="form-control" placeholder="Password"/>
             <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+
 			  <div class="hint">Should be at least six characters long.</div>
           </div>
           <div class="form-group has-feedback">
@@ -79,8 +82,10 @@
           </div>
 			<a href="{$serverroot}login" class="text-center">I already have a membership</a>
         </form>
+
       </div><!-- /.form-box -->
     </div><!-- /.register-box -->
+
     <!-- jQuery 2.1.4 -->
     <script src="{$smarty.const.WWW_TOP}/themes/omicron/plugins/jQuery/jQuery-2.1.4.min.js"></script>
     <!-- Bootstrap 3.3.2 JS -->

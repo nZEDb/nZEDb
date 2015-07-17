@@ -36,3 +36,4 @@ $(document).ready( function () {
 # GitHub
 
 If you fancy getting involved with the development of ColReorder and help make it better, please refer to its GitHub repo: https://github.com/DataTables/ColReorder
+
