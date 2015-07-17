@@ -19,8 +19,8 @@
  * @copyright 2014 nZEDb
  */
 define('GIT_PRE_COMMIT', true);
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'www' .
-					  DIRECTORY_SEPARATOR . 'automated.config.php');
+
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
 use nzedb\db\DbUpdate;
 use nzedb\utility\Git;
