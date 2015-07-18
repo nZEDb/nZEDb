@@ -205,8 +205,8 @@
 
 		<footer class="row">
 			<div class="box col-md-12">
-				<p class="col-md-9 col-sm-9 col-xs-12 copyright">&copy; <i class="fa fa-github-alt"></i><a
-							href="https://github.com/nZEDb/nZEDb" target="_blank"> nZEDb</a> nZEDb {$smarty.now|date_format:"%Y"}</p>
+				<p class="col-md-9 col-sm-9 col-xs-12">Copyright &copy; </i><a
+							href="{$smarty.const.WWW_TOP}{$site->home_link}">{if $site->title == ''}nZEDb{else}{$site->title}{/if}</a> all rights reserved {$smarty.now|date_format:"%Y"}</p>
 		</footer>
 
 	</div>

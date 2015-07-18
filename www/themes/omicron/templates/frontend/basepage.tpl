@@ -249,8 +249,8 @@
 				Times change!
 			</div>
 			<!-- Default to the left -->
-			<strong>Copyright &copy; {$smarty.now|date_format:"%Y"} <a
-						href="https://github.com/nZEDb/nZEDb/">nZEDb</a>.</strong> This software is open source.
+			<strong>Copyright &copy; <a
+						href="{$smarty.const.WWW_TOP}{$site->home_link}">{if $site->title == ''}nZEDb{else}{$site->title}{/if}</a> all rights reserved {$smarty.now|date_format:"%Y"}
 		</footer>
 
 		<!-- Control Sidebar -->
