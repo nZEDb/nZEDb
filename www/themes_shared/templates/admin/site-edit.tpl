@@ -995,7 +995,7 @@
 			<tr>
 				<td><label for="max.headers.iteration">Max headers iteration</label>:</td>
 				<td>
-					<input class="small" id="max.headers.iteration" name="max.headers.iteration" type="text" value="{$site->max.header.siteration}" />
+					<input class="small" id="max.headers.iteration" name="max.headers.iteration" type="text" value="{$site->max.headers.iteration}" />
 					<div class="hint">The maximum number of headers that update binaries sees as the total range. This ensure that a total of no more than this is attempted to be downloaded at one time per group.</div>
 				</td>
 			</tr>
