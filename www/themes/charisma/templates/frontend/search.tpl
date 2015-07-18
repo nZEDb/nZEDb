@@ -2,7 +2,7 @@
 	{$site->adbrowse}
 {/if}
 <div class="header">
-	<h2>newznab-tmux > <strong>Search</strong></h2>
+	<h2>{$site->title} > <strong>Search</strong></h2>
 
 	<div class="breadcrumb-wrapper">
 		<ol class="breadcrumb">
