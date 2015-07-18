@@ -1,1 +1,0 @@
-UPDATE settings SET setting = 'maxheadersiteration' WHERE settings.section = 'max' AND settings.subsection = 'headers' AND settings.name = 'iteration';
