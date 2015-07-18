@@ -8,6 +8,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 
 2015-07-18 bart39
+	* Mrg: PR 1763 from darius - Fix the reference to Tabula-Rasa test site.
 	* Chg: Change baseplate text to be consistant across all themes.
 	* Mrg: PR 1762 from darius - Change references to nZEDb.
 	* Mrg: PR 1757 from darius - Move $options before the $message to prevent undefined index options.
