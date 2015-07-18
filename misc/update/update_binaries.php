@@ -12,7 +12,7 @@ use nzedb\db\Settings;
 
 $pdo = new Settings();
 
-$maxHeaders = $pdo->getSetting('max.headers.iteration') ?: 1000000;
+$maxHeaders = $pdo->getSetting('maxheadersiteration');
 
 // Create the connection here and pass
 $nntp = new NNTP(['Settings' => $pdo]);
