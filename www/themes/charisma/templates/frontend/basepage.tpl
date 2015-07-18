@@ -60,8 +60,8 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a class="navbar-brand" href="{$serverroot}"> <img alt="newznab-tmux logo"
-															   src="{$smarty.const.WWW_TOP}/themes/charisma/img/logo-tmux.png"
+			<a class="navbar-brand" href="{$serverroot}"> <img alt="nZEDb logo"
+															   src="{$smarty.const.WWW_TOP}/themes/charisma/img/logo-nzedb.png"
 						/></a>
 			{$header_menu}
 			<!-- user dropdown starts -->
@@ -206,7 +206,7 @@
 		<footer class="row">
 			<div class="box col-md-12">
 				<p class="col-md-9 col-sm-9 col-xs-12 copyright">&copy; <i class="fa fa-github-alt"></i><a
-							href="https://github.com/DariusIII/" target="_blank"> DariusIII</a> newznab-tmux {$smarty.now|date_format:"%Y"}</p>
+							href="https://github.com/nZEDb/nZEDb" target="_blank"> nZEDb</a> nZEDb {$smarty.now|date_format:"%Y"}</p>
 		</footer>
 
 	</div>
