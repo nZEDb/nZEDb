@@ -7,6 +7,8 @@ All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 
+2015-07-18 bart39
+	* Mrg: PR 1755 from bfincher - Fix interval defined in timeother to be 6 hours instead of 0 hours.
 2015-07-17 bart39
 	* Mrg: PR 1760 from darius - Add omicron and charisma Bootstrap 3 based templates.
 2015-07-16 niel
