@@ -8,6 +8,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 
 2015-07-18 bart39
+	* Mrg: PR 1757 from darius - Move $options before the $message to prevent undefined index options.
 	* Mrg: PR 1756 from darius - Group will be disabled on update if USP server responds with code 411.
 	* Mrg: PR 1755 from bfincher - Fix interval defined in timeother to be 6 hours instead of 0 hours.
 2015-07-17 bart39
