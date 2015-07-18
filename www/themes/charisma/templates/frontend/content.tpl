@@ -1,7 +1,7 @@
 {if $smarty.server.REQUEST_URI == "/"}
 	{foreach from=$content item=c}
 		<div class="header">
-			<h2>Tabula-Rasa.pw > <strong>{$c->title}</strong></h2>
+			<h2>{$site->title} > <strong>{$c->title}</strong></h2>
 
 			<div class="breadcrumb-wrapper">
 				<ol class="breadcrumb">
