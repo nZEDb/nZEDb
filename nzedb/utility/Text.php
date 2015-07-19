@@ -46,6 +46,18 @@ class Text
 	}
 
 	/**
+	 * Convert Code page 437 chars to UTF.
+	 *
+	 * @param string $string
+	 *
+	 * @return string
+	 */
+	public static function cp437toUTF($string)
+	{
+		return iconv('CP437', 'UTF-8//IGNORE//TRANSLIT', $string);
+	}
+
+	/**
 	 * Removes the preceeding or proceeding portion of a string
 	 * relative to the last occurrence of the specified character.
 	 * The character selected may be retained or discarded.

@@ -549,17 +549,6 @@ class Misc
 		return round($bytes / pow(1024, ($index = floor(log($bytes, 1024)))), $precision) . $unit[(int)$index];
 	}
 
-	/**
-	 * Convert Code page 437 chars to UTF.
-	 *
-	 * @param string $string
-	 *
-	 * @return string
-	 */
-	public static function cp437toUTF($string)
-	{
-		return iconv('CP437', 'UTF-8//IGNORE//TRANSLIT', $string);
-	}
 
 	/**
 	 * Fetches an embeddable video to a IMDB trailer from http://www.traileraddict.com
