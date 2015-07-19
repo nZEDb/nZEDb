@@ -3,7 +3,7 @@ namespace nzedb;
 
 use nzedb\db\Settings;
 use nzedb\processing\PostProcess;
-use nzedb\utility\Utility;
+use nzedb\utility\Text;
 
 /**
  * Class NameFixer
@@ -108,9 +108,9 @@ class NameFixer
 	public $category;
 
 	/**
-	 * @var \nzedb\utility\Utility
+	 * @var \nzedb\utility\Text
 	 */
-	public $utility;
+	public $text;
 
 	/**
 	 * @var \nzedb\Groups
@@ -132,7 +132,7 @@ class NameFixer
 			'Categorize'   => null,
 			'ConsoleTools' => null,
 			'Groups'       => null,
-			'Utility'      => null,
+			'Misc'      => null,
 			'Settings'     => null,
 			'SphinxSearch' => null,
 		];
@@ -149,7 +149,7 @@ class NameFixer
 		$this->done = $this->matched = false;
 		$this->consoletools = ($options['ConsoleTools'] instanceof ConsoleTools ? $options['ConsoleTools'] : new ConsoleTools(['ColorCLI' => $this->pdo->log]));
 		$this->category = ($options['Categorize'] instanceof Categorize ? $options['Categorize'] : new Categorize(['Settings' => $this->pdo]));
-		$this->utility = ($options['Utility'] instanceof Utility ? $options['Utility'] : new Utility());
+		$this->text = ($options['Misc'] instanceof Text ? $options['Misc'] : new Text());
 		$this->_groups = ($options['Groups'] instanceof Groups ? $options['Groups'] : new Groups(['Settings' => $this->pdo]));
 		$this->sphinx = ($options['SphinxSearch'] instanceof SphinxSearch ? $options['SphinxSearch'] : new SphinxSearch());
 	}
@@ -809,29 +809,29 @@ class NameFixer
 	{
 
 		// first strip all non-printing chars  from filename
-		$this->_fileName = $this->utility->stripNonPrintingChars($fileName);
+		$this->_fileName = $this->text->stripNonPrintingChars($fileName);
 
 		if (strlen($this->_fileName) !== false && strlen($this->_fileName) > 0 && strpos($this->_fileName, '.') !== 0) {
 			switch (true) {
 
 				case strpos($this->_fileName, '.') !== false:
 					//some filenames start with a period that ends up creating bad matches so we don't process them
-					$this->_fileName = $this->utility->cutStringUsingLast('.', $this->_fileName, "left", false);
+					$this->_fileName = $this->text->cutStringUsingLast('.', $this->_fileName, "left", false);
 					continue;
 
 				//if filename has a .part001, send it back to the function to cut the next period
 				case preg_match('/\.part\d+$/', $this->_fileName):
-					$this->_fileName = $this->utility->cutStringUsingLast('.', $this->_fileName, "left", false);
+					$this->_fileName = $this->text->cutStringUsingLast('.', $this->_fileName, "left", false);
 					continue;
 
 				//if filename has a .vol001, send it back to the function to cut the next period
 				case preg_match('/\.vol\d+(\+\d+)?$/', $this->_fileName):
-					$this->_fileName = $this->utility->cutStringUsingLast('.', $this->_fileName, "left", false);
+					$this->_fileName = $this->text->cutStringUsingLast('.', $this->_fileName, "left", false);
 					continue;
 
 				//if filename contains a slash, cut the string and keep string to the right of the last slash to remove dir
 				case strpos($this->_fileName, '\\') !== false:
-					$this->_fileName = $this->utility->cutStringUsingLast('\\', $this->_fileName, "right", false);
+					$this->_fileName = $this->text->cutStringUsingLast('\\', $this->_fileName, "right", false);
 					continue;
 
 				// A lot of obscured releases have one NFO file properly named with a track number (Audio) at the front of it

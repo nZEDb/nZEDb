@@ -22,9 +22,9 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATO
 require_once nZEDb_LIBS . DIRECTORY_SEPARATOR . 'smarty' . DIRECTORY_SEPARATOR . 'Smarty.class.php';
 
 use nzedb\db\DbUpdate;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
-if (!Utility::isCLI()) {
+if (!Misc::isCLI()) {
 	exit("This utility can only be run from a shell\n");
 }
 

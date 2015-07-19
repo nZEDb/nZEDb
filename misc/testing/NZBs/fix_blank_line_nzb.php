@@ -19,7 +19,7 @@ if (isset($argv[1]) && $argv[1] == "true") {
 			$nzbpath = $nzb->NZBPath($guid["guid"]);
 			if ($nzbpath !== false) {
 				$nzbcount++;
-				$nzbfile = nzedb\utility\Utility::unzipGzipFile($nzbpath);
+				$nzbfile = nzedb\utility\Misc::unzipGzipFile($nzbpath);
 
 				if ($nzbfile && preg_match('/^[\r\n]+<\?xml/', $nzbfile)) {
 					$brokencount++;
