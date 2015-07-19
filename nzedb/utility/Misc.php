@@ -51,29 +51,6 @@ class Misc
 	}
 
 	/**
-	 * Replace all white space chars for a single space.
-	 *
-	 * @param string $text
-	 *
-	 * @return string
-	 *
-	 * @static
-	 * @access public
-	 */
-	public static function collapseWhiteSpace($text)
-	{
-		// Strip leading/trailing white space.
-		return trim(
-		// Replace 2 or more white space for a single space.
-			preg_replace('/\s{2,}/',
-				' ',
-				// Replace new lines and carriage returns. DO NOT try removing '\r' or '\n' as they are valid in queries which uses this method.
-				str_replace(["\n", "\r"], ' ', $text)
-			)
-		);
-	}
-
-	/**
 	 * Set curl context options for verifying SSL certificates.
 	 *
 	 * @param bool $verify false = Ignore config.php and do not verify the openssl cert.

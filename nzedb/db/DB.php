@@ -1147,7 +1147,7 @@ class DB extends \PDO
 		}
 
 		if (nZEDb_QUERY_STRIP_WHITESPACE) {
-			$query = Misc::collapseWhiteSpace($query);
+			$query = Text::collapseWhiteSpace($query);
 		}
 		return true;
 	}
