@@ -6,10 +6,10 @@
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php';
 
 use nzedb\db\PreDb;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
-if (!Utility::isWin()) {
-	$canExeRead = Utility::canExecuteRead(nZEDb_RES);
+if (!Misc::isWin()) {
+	$canExeRead = Misc::canExecuteRead(nZEDb_RES);
 	if (is_string($canExeRead)) {
 		exit($canExeRead);
 	}
@@ -40,13 +40,13 @@ $fileName = '_predb_dump.csv.gz';
 $innerUrl = 'fb2pffwwriruyco';
 $baseUrl  = 'https://www.dropbox.com/sh/' . $innerUrl;
 
-$result = Utility::getUrl(['url' => $baseUrl . '/AACy9Egno_v2kcziVHuvWbbxa']);
+$result = Misc::getUrl(['url' => $baseUrl . '/AACy9Egno_v2kcziVHuvWbbxa']);
 
 if (!$result) {
 	exit('Error connecting to dropbox.com, try again later?' . PHP_EOL);
 }
 
-Utility::clearScreen();
+Misc::clearScreen();
 
 $result = preg_match_all(
 	'/<a href="https:\/\/www.dropbox.com\/sh\/' . $innerUrl . '\/(\S+\/\d+' . $fileName . '\?dl=0)"/',
@@ -79,7 +79,7 @@ if ($result) {
 			}
 
 			// Download the dump.
-			$dump = Utility::getUrl(['url' => "$baseUrl/{$match[1]}/{$match[2]}$fileName?dl=1"]);
+			$dump = Misc::getUrl(['url' => "$baseUrl/{$match[1]}/{$match[2]}$fileName?dl=1"]);
 
 			if (!$dump) {
 				echo "Error downloading dump {$match[2]} you can try manually importing it." . PHP_EOL;

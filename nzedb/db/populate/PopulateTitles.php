@@ -21,7 +21,7 @@
 namespace nzedb\db\populate;
 
 use nzedb\db\Settings;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
 class PopulateTitles
 {
@@ -136,7 +136,7 @@ class PopulateTitles
 	protected function saveSourceFile($pathname)
 	{
 		$result = false;
-		$file = Utility::getUrl(['url' => $this->sourceURL]);
+		$file = Misc::getUrl(['url' => $this->sourceURL]);
 		if ($file !== false) {
 			$result = file_put_contents($pathname, $file);
 		}

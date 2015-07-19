@@ -2,7 +2,7 @@
 namespace nzedb;
 
 use nzedb\db\Settings;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 use nzedb\Groups;
 
 /**
@@ -159,7 +159,7 @@ class NZBImport
 
 				// Get the contents of the NZB file as a string.
 				if (strtolower(substr($nzbFile, -7)) === '.nzb.gz') {
-					$nzbString = Utility::unzipGzipFile($nzbFile);
+					$nzbString = Misc::unzipGzipFile($nzbFile);
 				} else {
 					$nzbString = file_get_contents($nzbFile);
 				}

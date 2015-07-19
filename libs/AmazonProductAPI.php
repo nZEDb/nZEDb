@@ -438,7 +438,7 @@ class AmazonProductAPI
 			curl_setopt($ch, CURLOPT_URL,$request);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 			curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-			curl_setopt_array($ch, nzedb\utility\Utility::curlSslContextOptions());
+			curl_setopt_array($ch, nzedb\utility\Misc::curlSslContextOptions());
 
 			$xml_response = curl_exec($ch);
 			if ($xml_response === False) {

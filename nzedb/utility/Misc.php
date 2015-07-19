@@ -509,7 +509,7 @@ class Misc
 	public static function unzipGzipFile($filePath)
 	{
 		/* Potential issues with this, so commenting out.
-		$length = Utility::isGZipped($filePath);
+		$length = Misc::isGZipped($filePath);
 		if ($length === false || $length === null) {
 			return false;
 		}*/
@@ -652,7 +652,7 @@ class Misc
 	 */
 	public static function imdb_trailers($imdbID)
 	{
-		$xml = Utility::getUrl(['url' => 'http://api.traileraddict.com/?imdb=' . $imdbID]);
+		$xml = Misc::getUrl(['url' => 'http://api.traileraddict.com/?imdb=' . $imdbID]);
 		if ($xml !== false) {
 			if (preg_match('/(<iframe.+?<\/iframe>)/i', $xml, $html)) {
 				return $html[1];

@@ -4,7 +4,7 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 use nzedb\ColorCLI;
 use nzedb\Tmux;
 use nzedb\db\Settings;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
 $pdo = new Settings();
 $DIR = nZEDb_MISC;
@@ -17,7 +17,7 @@ if (isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "safe")) {
 
 	system("cd $DIR && git pull");
 
-	if (Utility::hasCommand("php5")) {
+	if (Misc::hasCommand("php5")) {
 		$PHP = "php5";
 	} else {
 		$PHP = "php";

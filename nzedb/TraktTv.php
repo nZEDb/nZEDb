@@ -2,7 +2,7 @@
 namespace nzedb;
 
 use nzedb\db\Settings;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
 /**
  * Class TraktTv
@@ -129,7 +129,7 @@ class TraktTv
 	private function getJsonArray($URI, $extended = 'min')
 	{
 		if (!empty($this->clientID)) {
-			$json = Utility::getUrl([
+			$json = Misc::getUrl([
 					'url'            => $URI . "?extended=$extended",
 					'requestheaders' => $this->requestHeaders
 				]

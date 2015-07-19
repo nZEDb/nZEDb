@@ -2,7 +2,7 @@
 namespace nzedb;
 
 use nzedb\db\Settings;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
 /**
  * Class Users
@@ -1117,7 +1117,7 @@ class Users
 				" to this email address.<br>To accept the invitation click <a href=\"$url\">this link</a>\n";
 		}
 
-		Utility::sendEmail($emailTo, $subject, $contents, $siteEmail);
+		Misc::sendEmail($emailTo, $subject, $contents, $siteEmail);
 		$this->addInvite($userID, $token);
 
 		return $url;
