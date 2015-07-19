@@ -7,6 +7,9 @@ All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 
+2015-07-18 niel
+	* Chg: Renamed Uitility class to Misc. It should only contain odd methods that do not fit in anywhere else.
+	* Chg: Created a new utility class 'Text' and moved various text based methods into it from Misc.
 2015-07-18 bart39
 	* Mrg: PR 1763 from darius - Fix the reference to Tabula-Rasa test site.
 	* Chg: Change baseplate text to be consistant across all themes.
