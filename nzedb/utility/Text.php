@@ -93,6 +93,14 @@ class Text
 		return ($piece);
 	}
 
+	public static function stripBOM(&$text)
+	{
+		$bom = pack("CCC", 0xef, 0xbb, 0xbf);
+		if (0 == strncmp($text, $bom, 3)) {
+			$text = substr($text, 3);
+		}
+	}
+
 	/**
 	 * Strips non-printing characters from a string.
 	 *

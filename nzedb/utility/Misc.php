@@ -400,14 +400,6 @@ class Misc
 		return ['tls' => $options, 'ssl' => $options];
 	}
 
-	public static function stripBOM(&$text)
-	{
-		$bom = pack("CCC", 0xef, 0xbb, 0xbf);
-		if (0 == strncmp($text, $bom, 3)) {
-			$text = substr($text, 3);
-		}
-	}
-
 	public static function trailingSlash($path)
 	{
 		if (substr($path, strlen($path) - 1) != '/') {
