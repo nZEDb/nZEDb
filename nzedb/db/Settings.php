@@ -301,18 +301,28 @@ class Settings extends DB
 
 	protected function _validate(array $fields)
 	{
+		$defaults = [
+			'checkpasswordedrar' => false,
+			'ffmpegpath'         => '',
+			'mediainfopath'      => '',
+			'nzbpath'            => '',
+			'tmpunrarpath'       => '',
+			'unrarpath'          => '',
+			'yydecoderpath'      => '',
+		];
+		$fields += $defaults;    // Make sure keys exist to avoid error notices.
 		ksort($fields);
 		// Validate settings
 		$fields['nzbpath'] = Utility::trailingSlash($fields['nzbpath']);
 		$error             = null;
 		switch (true) {
-			case ($fields['mediainfopath'] != "" && !is_file($fields['mediainfopath'])):
+			case ($fields['mediainfopath'] != '' && !is_file($fields['mediainfopath'])):
 				$error = Settings::ERR_BADMEDIAINFOPATH;
 				break;
-			case ($fields['ffmpegpath'] != "" && !is_file($fields['ffmpegpath'])):
+			case ($fields['ffmpegpath'] != '' && !is_file($fields['ffmpegpath'])):
 				$error = Settings::ERR_BADFFMPEGPATH;
 				break;
-			case ($fields['unrarpath'] != "" && !is_file($fields['unrarpath'])):
+			case ($fields['unrarpath'] != '' && !is_file($fields['unrarpath'])):
 				$error = Settings::ERR_BADUNRARPATH;
 				break;
 			case (empty($fields['nzbpath'])):
@@ -327,10 +337,10 @@ class Settings extends DB
 			case ($fields['checkpasswordedrar'] == 1 && !is_file($fields['unrarpath'])):
 				$error = Settings::ERR_DEEPNOUNRAR;
 				break;
-			case ($fields['tmpunrarpath'] != "" && !file_exists($fields['tmpunrarpath'])):
+			case ($fields['tmpunrarpath'] != '' && !file_exists($fields['tmpunrarpath'])):
 				$error = Settings::ERR_BADTMPUNRARPATH;
 				break;
-			case ($fields['yydecoderpath'] != "" &&
+			case ($fields['yydecoderpath'] != '' &&
 				  $fields['yydecoderpath'] !== 'simple_php_yenc_decode' &&
 				  !file_exists($fields['yydecoderpath'])):
 				$error = Settings::ERR_BAD_YYDECODER_PATH;
