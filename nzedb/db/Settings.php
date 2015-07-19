@@ -24,7 +24,7 @@ if (!defined('nZEDb_INSTALLER')) {
 	require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php';
 }
 
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 use nzedb\utility\Versions;
 
 class Settings extends DB
@@ -146,7 +146,7 @@ class Settings extends DB
 				'name' 			=> 'coverspath',
 				'setting' 		=> 'coverspath',
 			]);
-		Utility::setCoversConstant($path);
+		Misc::setCoversConstant($path);
 	}
 
 	/**
@@ -313,7 +313,7 @@ class Settings extends DB
 		$fields += $defaults;    // Make sure keys exist to avoid error notices.
 		ksort($fields);
 		// Validate settings
-		$fields['nzbpath'] = Utility::trailingSlash($fields['nzbpath']);
+		$fields['nzbpath'] = Misc::trailingSlash($fields['nzbpath']);
 		$error             = null;
 		switch (true) {
 			case ($fields['mediainfopath'] != '' && !is_file($fields['mediainfopath'])):
@@ -354,7 +354,7 @@ class Settings extends DB
  * Putting procedural stuff inside class scripts like this is BAD. Do not use this as an excuse to do more.
  * This is a temporary measure until a proper frontend for cli stuff can be implemented with li3.
  */
-if (Utility::isCLI() && isset($argv[1])) {
+if (Misc::isCLI() && isset($argv[1])) {
 	echo (new Settings())->getSetting($argv[1]);
 }
 

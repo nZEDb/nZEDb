@@ -97,7 +97,7 @@ foreach ($folders as $folder => $check) {
 
 echo 'Your permissions seem right for this user. Note, this script does not verify all paths, only the most important ones.' . PHP_EOL;
 
-if (!nzedb\utility\Utility::isWin()) {
+if (!nzedb\utility\Misc::isWin()) {
 	$user = posix_getpwuid(posix_geteuid());
 	if ($user['name'] !== 'www-data') {
 		echo 'If you have not already done so, please rerun this script using the www-data user: sudo -u www-data php verify_permissions.php yes' . PHP_EOL;

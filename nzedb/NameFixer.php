@@ -3,7 +3,7 @@ namespace nzedb;
 
 use nzedb\db\Settings;
 use nzedb\processing\PostProcess;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
 /**
  * Class NameFixer
@@ -132,7 +132,7 @@ class NameFixer
 			'Categorize'   => null,
 			'ConsoleTools' => null,
 			'Groups'       => null,
-			'Utility'      => null,
+			'Misc'      => null,
 			'Settings'     => null,
 			'SphinxSearch' => null,
 		];
@@ -149,7 +149,7 @@ class NameFixer
 		$this->done = $this->matched = false;
 		$this->consoletools = ($options['ConsoleTools'] instanceof ConsoleTools ? $options['ConsoleTools'] : new ConsoleTools(['ColorCLI' => $this->pdo->log]));
 		$this->category = ($options['Categorize'] instanceof Categorize ? $options['Categorize'] : new Categorize(['Settings' => $this->pdo]));
-		$this->utility = ($options['Utility'] instanceof Utility ? $options['Utility'] : new Utility());
+		$this->utility = ($options['Misc'] instanceof Misc ? $options['Misc'] : new Misc());
 		$this->_groups = ($options['Groups'] instanceof Groups ? $options['Groups'] : new Groups(['Settings' => $this->pdo]));
 		$this->sphinx = ($options['SphinxSearch'] instanceof SphinxSearch ? $options['SphinxSearch'] : new SphinxSearch());
 	}
