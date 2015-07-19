@@ -9,7 +9,7 @@ use nzedb\db\Settings;
  * General util functions.
  * Class Util
  */
-class Utility
+class Misc
 {
 	/**
 	 *  Regex for detecting multi-platform path. Use it where needed so it can be updated in one location as required characters get added.
