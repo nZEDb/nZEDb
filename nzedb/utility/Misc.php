@@ -350,11 +350,11 @@ class Misc
 				case (substr($path, 0, 1) == '/' ||
 					substr($path, 1, 1) == ':' ||
 					substr($path, 0, 1) == '\\'):
-					define('nZEDb_COVERS', self::trailingSlash($path));
+					define('nZEDb_COVERS', Text::trailingSlash($path));
 					break;
 				case (strlen($path) > 0 && substr($path, 0, 1) != '/' && substr($path, 1, 1) != ':' &&
 					substr($path, 0, 1) != '\\'):
-					define('nZEDb_COVERS', realpath(nZEDb_ROOT . self::trailingSlash($path)));
+					define('nZEDb_COVERS', realpath(nZEDb_ROOT . Text::trailingSlash($path)));
 					break;
 				case empty($path): // Default to resources location.
 				default:
@@ -398,15 +398,6 @@ class Misc
 		// the context options would be for tls and would not apply to ssl,
 		// so set both tls and ssl context in case the server does not support tls.
 		return ['tls' => $options, 'ssl' => $options];
-	}
-
-	public static function trailingSlash($path)
-	{
-		if (substr($path, strlen($path) - 1) != '/') {
-			$path .= '/';
-		}
-
-		return $path;
 	}
 
 	/**

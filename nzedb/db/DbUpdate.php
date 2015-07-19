@@ -23,6 +23,7 @@ namespace nzedb\db;
 use nzedb\ColorCLI;
 use nzedb\utility\Git;
 use nzedb\utility\Misc;
+use nzedb\utility\Text;
 
 
 class DbUpdate
@@ -387,7 +388,7 @@ class DbUpdate
 		$options += $default;
 
 		$file = [];
-		$filespec = Misc::trailingSlash($options['path']) . $options['path'];
+		$filespec = Text::trailingSlash($options['path']) . $options['path'];
 		if (file_exists($filespec) && ($file = file($filespec, FILE_IGNORE_NEW_LINES))) {
 			$count = count($file);
 			$index = 0;

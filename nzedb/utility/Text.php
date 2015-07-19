@@ -124,4 +124,13 @@ class Text
 		return $text;
 	}
 
+	public static function trailingSlash($path)
+	{
+		if (substr($path, strlen($path) - 1) != '/') {
+			$path .= '/';
+		}
+
+		return $path;
+	}
+
 }

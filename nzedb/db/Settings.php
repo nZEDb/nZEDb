@@ -25,6 +25,7 @@ if (!defined('nZEDb_INSTALLER')) {
 }
 
 use nzedb\utility\Misc;
+use nzedb\utility\Text;
 use nzedb\utility\Versions;
 
 class Settings extends DB
@@ -313,7 +314,7 @@ class Settings extends DB
 		$fields += $defaults;    // Make sure keys exist to avoid error notices.
 		ksort($fields);
 		// Validate settings
-		$fields['nzbpath'] = Misc::trailingSlash($fields['nzbpath']);
+		$fields['nzbpath'] = Text::trailingSlash($fields['nzbpath']);
 		$error             = null;
 		switch (true) {
 			case ($fields['mediainfopath'] != '' && !is_file($fields['mediainfopath'])):
