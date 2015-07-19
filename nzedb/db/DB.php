@@ -6,6 +6,7 @@ use nzedb\ConsoleTools;
 use nzedb\Logger;
 use nzedb\LoggerException;
 use nzedb\utility\Misc;
+use nzedb\utility\Text;
 use nzedb\libraries\Cache;
 use nzedb\libraries\CacheException;
 
