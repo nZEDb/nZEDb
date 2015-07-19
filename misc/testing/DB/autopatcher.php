@@ -1,5 +1,8 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DS . 'libs' . DS . 'smarty' . DS . 'Autoloader.php');
+
+Smarty_Autoloader::register();
 
 use nzedb\ColorCLI;
 use nzedb\Tmux;

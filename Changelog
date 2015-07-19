@@ -7,6 +7,8 @@ All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 
+2015-07-19 niel
+	* Fix: Quick fix for Smarty class not loading in .../misc/testing/DB/autopatcher.php
 2015-07-18 niel
 	* Chg: Renamed Uitility class to Misc. It should only contain odd methods that do not fit in anywhere else.
 	* Chg: Created a new utility class 'Text' and moved various text based methods into it from Misc.
