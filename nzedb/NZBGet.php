@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
 /**
  * Class NZBGet
@@ -110,7 +110,7 @@ class NZBGet
 	{
 		$relData = $this->Releases->getByGuid($guid);
 
-		$string  = Utility::unzipGzipFile($this->NZB->getNZBPath($guid));
+		$string  = Misc::unzipGzipFile($this->NZB->getNZBPath($guid));
 		$string  = ($string === false ? '' : $string);
 		$encoded = base64_encode($string);
 
@@ -142,7 +142,7 @@ $encoded
 </methodCall>
 NZBGet_NZB;
 
-		Utility::getUrl([
+		Misc::getUrl([
 										  'url'        => $this->fullURL . 'append',
 										  'method'     => 'post', 'postdata' => $header,
 										  'verifycert' => false
@@ -187,7 +187,7 @@ NZBGet_NZB;
 	</params>
 </methodCall>
 NZBGet_URL;
-		Utility::getUrl([
+		Misc::getUrl([
 						  'url'        => $this->fullURL . 'appendurl',
 						  'method'     => 'post', 'postdata' => $header,
 						  'verifycert' => false
@@ -215,7 +215,7 @@ NZBGet_URL;
 </methodCall>
 NZBGet_PAUSE_ALL;
 
-		Utility::getUrl([
+		Misc::getUrl([
 										  'url'        => $this->fullURL . 'pausedownload2',
 										  'method'     => 'post', 'postdata' => $header,
 										  'verifycert' => false
@@ -243,7 +243,7 @@ NZBGet_PAUSE_ALL;
 </methodCall>'
 NZBGet_RESUME_ALL;
 
-		Utility::getUrl([
+		Misc::getUrl([
 										  'url'        => $this->fullURL . 'resumedownload2',
 										  'method'     => 'post', 'postdata' => $header,
 										  'verifycert' => false
@@ -284,7 +284,7 @@ NZBGet_RESUME_ALL;
 </methodCall>
 NZBGet_PAUSE_FROM_QUEUE;
 
-		Utility::getUrl([
+		Misc::getUrl([
 										  'url'        => $this->fullURL . 'editqueue',
 										  'method'     => 'post', 'postdata' => $header,
 										  'verifycert' => false
@@ -325,7 +325,7 @@ NZBGet_PAUSE_FROM_QUEUE;
 </methodCall>
 NZBGet_RESUME_FROM_QUEUE;
 
-		Utility::getUrl([
+		Misc::getUrl([
 										  'url'        => $this->fullURL . 'editqueue',
 										  'method'     => 'post', 'postdata' => $header,
 										  'verifycert' => false
@@ -366,7 +366,7 @@ NZBGet_RESUME_FROM_QUEUE;
 </methodCall>
 NZBGet_DELETE_FROM_QUEUE;
 
-		Utility::getUrl([
+		Misc::getUrl([
 										  'url'        => $this->fullURL . 'editqueue',
 										  'method'     => 'post', 'postdata' => $header,
 										  'verifycert' => false
@@ -396,7 +396,7 @@ NZBGet_DELETE_FROM_QUEUE;
 </methodCall>
 NZBGet_RATE;
 
-		Utility::getUrl([
+		Misc::getUrl([
 										  'url'      => $this->fullURL . 'rate', 'method' => 'post',
 										  'postdata' => $header, 'verifycert' => false
 									  ]);
@@ -411,7 +411,7 @@ NZBGet_RATE;
 	 */
 	public function getQueue()
 	{
-		$data = Utility::getUrl([
+		$data = Misc::getUrl([
 													'url'        => $this->fullURL . 'listgroups',
 													'verifycert' => false
 												]);
@@ -446,7 +446,7 @@ NZBGet_RATE;
 	 */
 	public function status()
 	{
-		$data = Utility::getUrl([
+		$data = Misc::getUrl([
 													'url'        => $this->fullURL . 'status',
 													'verifycert' => false
 											  ]);

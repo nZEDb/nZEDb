@@ -3,7 +3,8 @@
 use nzedb\Category;
 use nzedb\Releases;
 use nzedb\db\Settings;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
+use nzedb\Capabilities;
 
 
 // API functions.
@@ -89,6 +90,7 @@ $releases = new Releases(['Settings' => $page->settings]);
 $page->smarty->assign('extended', (isset($_GET['extended']) && $_GET['extended'] == 1 ? '1' : '0'));
 $page->smarty->assign('del', (isset($_GET['del']) && $_GET['del'] == 1 ? '1' : '0'));
 
+
 // Output is either json or xml.
 $outputXML = (isset($_GET['o']) && $_GET['o'] == 'json' ? false : true);
 
@@ -164,7 +166,7 @@ switch ($function) {
 
 		addCoverURL($relData,
 			function($release) {
-				return Utility::getCoverURL(['type' => 'movies', 'id' => $release['imdbid']]);
+				return Misc::getCoverURL(['type' => 'movies', 'id' => $release['imdbid']]);
 			}
 		);
 
@@ -215,12 +217,25 @@ switch ($function) {
 
 	// Capabilities request.
 	case 'c':
+		//get categories
 		$category = new Category(['Settings' => $page->settings]);
-		$page->smarty->assign('parentcatlist', $category->getForMenu());
-		header('Content-type: text/xml');
-		echo $page->smarty->fetch('apicaps.tpl');
-		break;
+		$cats = $category->getForMenu();
 
+		//insert cats into template variable
+		$page->smarty->assign('parentcatlist', $cats);
+
+		if ($outputXML) { //use apicaps.tpl if xml is requested
+			header('Content-type: text/xml');
+			echo $page->smarty->fetch('apicaps.tpl');
+		} else { //otherwise construct array of capabilities and categories
+			//get capabilities
+			$caps = (new Capabilities(['Settings' => $page->settings]))->getForMenu();
+			$caps['categories'] = $cats;
+			//use json_encode
+			header('Content-type: application/json');
+			echo json_encode($caps);
+		}
+		break;
 	// Register request.
 	case 'r':
 		verifyEmptyParameter('email');

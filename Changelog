@@ -6,8 +6,42 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+
+2015-07-19 niel
+	* Fix: Quick fix for Smarty class not loading in .../misc/testing/DB/autopatcher.php
+	* Mrg: PR 1764, from Darius - Make max.headers.iteration editable in admin => site-edit.
+	* Fix: Had to rename the 'setting' for max.headers.iteration to allow it to work with smarty template.
+	* Fix: Removing unneccessary require_once for Utility.php. No longer needed as autoloading covers it and Utility is gone. ;-)
+2015-07-18 niel
+	* Chg: Renamed Uitility class to Misc. It should only contain odd methods that do not fit in anywhere else.
+	* Chg: Created a new utility class 'Text' and moved various text based methods into it from Misc.
+2015-07-18 bart39
+	* Mrg: PR 1763 from darius - Fix the reference to Tabula-Rasa test site.
+	* Chg: Change baseplate text to be consistant across all themes.
+	* Mrg: PR 1762 from darius - Change references to nZEDb.
+	* Mrg: PR 1757 from darius - Move $options before the $message to prevent undefined index options.
+	* Mrg: PR 1756 from darius - Group will be disabled on update if USP server responds with code 411.
+	* Mrg: PR 1755 from bfincher - Fix interval defined in timeother to be 6 hours instead of 0 hours.
+2015-07-17 bart39
+	* Mrg: PR 1760 from darius - Add omicron and charisma Bootstrap 3 based templates.
+2015-07-16 niel
+	* Fix: Finally have a work around for the register.page not loading. Thanks to Bart39../com
+2015-07-14 bart39
+	* Mrg: PR 1759 from darius - Update ReleaseRemover with new variant of codec installer file.
+2015-07-09 niel
+	* Fix: Installation require_once problems. No, really this time, I even tested it on a VM.
+2015-07-08 niel
+	* Fix: Path of require for installation's config. Plus additional requires in step files.
+	* Mrg: PR 1753, from Fossil01 - Show password on screen after reset.
+2015-07-07 niel
+	* Fix: Require of 'config.php' for installing.
+2015-07-06 niel
+	* Mrg: PR 1747, from sebst3r - API-Change regarding JSON-Output
+2015-06-30 niel
+	* Mrg: PR 1740, from Fossil01 - Added user signups by month view back to site-stats.
 2015-06-29 niel
 	* Chg: Combining web page autoloaders into a single file.
+	* Chg: Streamlined the autoloader process for Smarty files/pages.
 2015-06-28 niel
 	* Chg: Moved smarty page files autoloader script to.../pages/autoload.php and moved Smarty framework autoload code initialisation into the .../www/index.php - This has a several advantages:
 			Prevents problems on Windows and other case-insenstive file-systems (and applications) from not being able to have ours and smarty's in the same directory.
@@ -153,11 +187,12 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 2015-04-30 niel
 	* Mrg: Merged in Db script changes from March.
 		Added two scripts to .../cli/data for importing/exporting predb data. They're intended to replace the predb_dump script which will no longer be maintained.
+
+
 2015-04-29 bart39
 	* Fix: Invalid type check for Forking PPA min / max sizes when set to 0.
 2015-04-29 niel
 	* Mrg: PR 1643 from Enverex - Empty database field negation and Alpha theme readability cleanups.
-
 2015-04-28 bart39
 	* Fix: Invalid type check for PPA min / max sizes when set to 0.
 2015-04-17 niel

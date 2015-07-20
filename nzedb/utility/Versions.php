@@ -200,10 +200,10 @@ class Versions
 			'ext'   => 'sql',
 			'path'  => nZEDb_RES . 'db' . DS . 'patches' . DS . 'mysql',
 			'regex' =>
-				'#^' . Utility::PATH_REGEX . '(?P<patch>\d{4})~(?P<table>\w+)\.sql$#',
+				'#^' . Misc::PATH_REGEX . '(?P<patch>\d{4})~(?P<table>\w+)\.sql$#',
 			'safe'  => true,
 		];
-		$files = Utility::getDirFiles($options);
+		$files = Misc::getDirFiles($options);
 		natsort($files);
 
 		$last = (preg_match($options['regex'], end($files), $matches)) ? (int)$matches['patch'] : false;
@@ -257,7 +257,7 @@ class Versions
 		libxml_use_internal_errors($temp);
 
 		if ($this->_xml === false) {
-			if (Utility::isCLI()) {
+			if (Misc::isCLI()) {
 				$this->out->error("Your versions XML file ($filepath) is broken, try updating from git.");
 			}
 			throw new \Exception("Failed to open versions XML file '$filepath'");

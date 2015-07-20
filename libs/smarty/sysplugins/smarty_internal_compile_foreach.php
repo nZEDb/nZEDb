@@ -77,7 +77,7 @@ class Smarty_Internal_Compile_Foreach extends Smarty_Internal_CompileBase
         }
         $ItemVarName = '$' . trim($item, '\'"') . '@';
         // evaluates which Smarty variables and properties have to be computed
-        
+
         if ($has_name) {
             $useSmartyForeach = $usesSmartyFirst = strpos($compiler->lex->data, $SmartyVarName . 'first') !== false;
             $useSmartyForeach = ($usesSmartyLast = strpos($compiler->lex->data, $SmartyVarName . 'last') !== false) || $useSmartyForeach;

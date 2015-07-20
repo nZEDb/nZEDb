@@ -963,6 +963,7 @@ class ReleaseRemover
 		$regex = "rf.name REGEXP 'x264.*\.(wmv|avi)$'";
 		$regex2 = "rf.name REGEXP '\\\\.*((DVDrip|BRRip)[. ].*[. ](R[56]|HQ)|720p[ .](DVDrip|HQ)|Webrip.*[. ](R[56]|Xvid|AC3|US)|720p.*[. ]WEB-DL[. ]Xvid[. ]AC3[. ]US|HDRip.*[. ]Xvid[. ]DD5).*[. ]avi$'";
 		$codec = '%\\Codec%Setup.exe%';
+		$codec2 ='%\\Codec%Installer.exe%';
 		$iferror = '%If_you_get_error.txt%';
 		$ifnotplaying = '%read me if the movie not playing.txt%';
 		$frenchv = '%Lisez moi si le film ne demarre pas.txt%';
@@ -983,7 +984,7 @@ class ReleaseRemover
 		);
 		$codeclike = sprintf("UNION SELECT r.guid, r.searchname, r.id FROM releases r
 			LEFT JOIN release_files rf ON r.id = rf.releaseid
-			WHERE %s rf.name LIKE '%s' OR rf.name LIKE '%s' OR rf.name LIKE '%s' OR rf.name LIKE '%s' OR rf.name LIKE '%s' OR rf.name LIKE '%s'", $categories, $codec, $iferror, $ifnotplaying, $frenchv, $nl, $german
+			WHERE %s rf.name LIKE '%s' OR rf.name LIKE '%s' OR rf.name LIKE '%s' OR rf.name LIKE '%s' OR rf.name LIKE '%s' OR rf.name LIKE '%s' OR rf.name LIKE '%s'", $categories, $codec, $codec2, $iferror, $ifnotplaying, $frenchv, $nl, $german
 		);
 		$this->query = sprintf(
 			"SELECT r.guid, r.searchname, r.id FROM releases

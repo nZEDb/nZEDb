@@ -3,17 +3,13 @@
 use nzedb\db\Settings;
 
 if (is_file("config.php")) {
-	require_once './config.php';
+	require_once realpath('config.php');
 } else {
 	if (is_dir("install")) {
 		header("location: install");
 		exit();
 	}
 }
-
-require_once SMARTY_DIR . 'Autoloader.php';
-
-Smarty_Autoloader::register();
 
 require_once nZEDb_WWW . 'autoloader.php';
 

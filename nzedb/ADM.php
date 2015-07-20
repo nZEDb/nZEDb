@@ -3,7 +3,7 @@ namespace nzedb;
 
 require_once nZEDb_LIBS . 'simple_html_dom.php';
 
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
 class ADM
 {
@@ -307,7 +307,7 @@ class ADM
 			curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookie);
 		}
 
-		curl_setopt_array($ch, Utility::curlSslContextOptions());
+		curl_setopt_array($ch, Misc::curlSslContextOptions());
 		$this->_response = curl_exec($ch);
 
 		if (!$this->_response) {

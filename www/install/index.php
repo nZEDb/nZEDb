@@ -1,12 +1,6 @@
 <?php
 @session_start();
-require_once realpath(__DIR__ . '/../automated.config.php');
-
-#require_once SMARTY_DIR . 'Autoloader.php';
-
-#Smarty_Autoloader::register();
-
-require_once nZEDb_WWW . 'autoloader.php';
+require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'autoloader.php');
 
 use nzedb\Install;
 

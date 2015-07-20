@@ -2,7 +2,7 @@
 namespace nzedb;
 
 use nzedb\db\Settings;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
 /**
  * Class TvRage
@@ -216,7 +216,7 @@ class TvRage
 		$url = $this->showQuickInfoURL . urlencode($show);
 		$url .= !empty($options['episode']) ? '&ep=' . urlencode($options['episode']) : '';
 		$url .= !empty($options['exact']) ? '&exact=' . urlencode($options['exact']) : '';
-		$fp = fopen($url, "r", false, stream_context_create(Utility::streamSslContextOptions()));
+		$fp = fopen($url, "r", false, stream_context_create(Misc::streamSslContextOptions()));
 		if ($fp) {
 			while (!feof($fp)) {
 				$line = fgets($fp, 1024);
@@ -366,7 +366,7 @@ class TvRage
 				echo $this->pdo->log->headerOver('Updating schedule for: ') . $this->pdo->log->primary($country['country']);
 			}
 
-			$sched = Utility::getURL(['url' => $this->xmlFullScheduleUrl . $country['country']]);
+			$sched = Misc::getURL(['url' => $this->xmlFullScheduleUrl . $country['country']]);
 			if ($sched !== false && ($xml = @simplexml_load_string($sched))) {
 				$tzOffset = 60 * 60 * 6;
 				$yesterday = strtotime("-1 day") - $tzOffset;
@@ -463,14 +463,14 @@ class TvRage
 
 		$series = str_ireplace("s", "", $series);
 		$episode = str_ireplace("e", "", $episode);
-		$xml = Utility::getUrl(['url' => $this->xmlEpisodeInfoUrl . "&sid=" . $rageid . "&ep=" . $series . "x" . $episode]);
+		$xml = Misc::getUrl(['url' => $this->xmlEpisodeInfoUrl . "&sid=" . $rageid . "&ep=" . $series . "x" . $episode]);
 		if ($xml !== false) {
 			if (preg_match('/no show found/i', $xml)) {
 				return false;
 			}
 
 			$xmlObj = @simplexml_load_string($xml);
-			$arrXml = Utility::objectsIntoArray($xmlObj);
+			$arrXml = Misc::objectsIntoArray($xmlObj);
 			if (is_array($arrXml)) {
 				if (isset($arrXml['episode']['airdate']) && $arrXml['episode']['airdate'] != '0000-00-00') {
 					$result['airdate'] = $arrXml['episode']['airdate'];
@@ -489,7 +489,7 @@ class TvRage
 	public function getRageInfoFromPage($rageid)
 	{
 		$result = ['desc' => '', 'imgurl' => ''];
-		$page = Utility::getUrl(['url' => $this->showInfoUrl . $rageid]);
+		$page = Misc::getUrl(['url' => $this->showInfoUrl . $rageid]);
 		$matches = '';
 		if ($page !== false) {
 			// Description.
@@ -525,9 +525,9 @@ class TvRage
 	{
 		$result = ['genres' => '', 'country' => '', 'showid' => $rageid];
 		// Full search gives us the akas.
-		$xml = Utility::getUrl(['url' => $this->xmlShowInfoUrl . $rageid]);
+		$xml = Misc::getUrl(['url' => $this->xmlShowInfoUrl . $rageid]);
 		if ($xml !== false) {
-			$arrXml = Utility::objectsIntoArray(simplexml_load_string($xml));
+			$arrXml = Misc::objectsIntoArray(simplexml_load_string($xml));
 			if (is_array($arrXml)) {
 				$result['genres'] = (isset($arrXml['genres'])) ? $arrXml['genres'] : '';
 				$result['country'] = (isset($arrXml['origin_country'])) ? $arrXml['origin_country'] : '';
@@ -610,7 +610,7 @@ class TvRage
 
 		$imgbytes = '';
 		if (isset($rInfo['imgurl']) && !empty($rInfo['imgurl'])) {
-			$img = Utility::getUrl(['url' => $rInfo['imgurl']]);
+			$img = Misc::getUrl(['url' => $rInfo['imgurl']]);
 			if ($img !== false) {
 				$im = @imagecreatefromstring($img);
 				if ($im !== false) {
@@ -643,7 +643,7 @@ class TvRage
 
 		$imgbytes = '';
 		if (isset($rInfo['imgurl']) && !empty($rInfo['imgurl'])) {
-			$img = Utility::getUrl(['url' => $rInfo['imgurl']]);
+			$img = Misc::getUrl(['url' => $rInfo['imgurl']]);
 			if ($img !== false) {
 				$im = @imagecreatefromstring($img);
 				if ($im !== false) {
@@ -776,9 +776,9 @@ class TvRage
 	{
 		$title = $showInfo['cleanname'];
 		// Full search gives us the akas.
-		$xml = Utility::getUrl(['url' => $this->xmlFullSearchUrl . urlencode(strtolower($title))]);
+		$xml = Misc::getUrl(['url' => $this->xmlFullSearchUrl . urlencode(strtolower($title))]);
 		if ($xml !== false) {
-			$arrXml = @Utility::objectsIntoArray(simplexml_load_string($xml));
+			$arrXml = @Misc::objectsIntoArray(simplexml_load_string($xml));
 			if (isset($arrXml['show']) && is_array($arrXml)) {
 				// We got a valid xml response
 				$titleMatches = $urlMatches = $akaMatches = [];

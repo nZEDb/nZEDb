@@ -45,5 +45,3 @@ abstract class Smarty_Internal_ParseTree
      */
     abstract public function to_smarty_php();
 }
-
-

@@ -111,7 +111,7 @@ unset($settings_file);
 require_once nZEDb_CORE . 'autoloader.php';
 require_once nZEDb_LIBS . 'autoloader.php';
 
-define('HAS_WHICH', nzedb\utility\Utility::hasWhich() ? true : false);
+define('HAS_WHICH', nzedb\utility\Misc::hasWhich() ? true : false);
 
 if (file_exists(__DIR__ . DS . 'config.php')) {
 	require_once __DIR__ . DS . 'config.php';

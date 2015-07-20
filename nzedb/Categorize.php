@@ -891,6 +891,7 @@ class Categorize extends Category
 			case $this->isXxxWMV():
 			case $this->isXxxDVD():
 			case $this->isXxxOther():
+			case $this->isXxxSD():
 				return true;
 			default:
 				$this->tmpCat = Category::CAT_XXX_OTHER;

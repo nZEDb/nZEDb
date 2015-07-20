@@ -1798,7 +1798,7 @@ class Smarty_Internal_Templateparser
             $smarty_var = $this->compiler->compileTag('private_special_variable', array(), $this->yystack[$this->yyidx + 0]->minor['smarty_internal_index']);
             $this->_retvalue = $smarty_var;
         } else {
-            // used for array reset,next,prev,end,current 
+            // used for array reset,next,prev,end,current
             $this->last_variable = $this->yystack[$this->yyidx + 0]->minor['var'];
             $this->last_index = $this->yystack[$this->yyidx + 0]->minor['smarty_internal_index'];
             $this->_retvalue = $this->compiler->compileVariable($this->yystack[$this->yyidx + 0]->minor['var']) . $this->yystack[$this->yyidx + 0]->minor['smarty_internal_index'];
@@ -2406,4 +2406,3 @@ class Smarty_Internal_Templateparser
         } while ($yymajor != self::YYNOCODE && $this->yyidx >= 0);
     }
 }
-

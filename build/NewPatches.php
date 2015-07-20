@@ -23,9 +23,9 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATO
 
 use nzedb\db\DbUpdate;
 use nzedb\utility\Git;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
-if (!Utility::isCLI()) {
+if (!Misc::isCLI()) {
 	exit;
 }
 

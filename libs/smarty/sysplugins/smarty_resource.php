@@ -281,4 +281,3 @@ abstract class Smarty_Resource
         return Smarty_Template_Source::load($_template, $smarty, $template_resource);
     }
 }
-
