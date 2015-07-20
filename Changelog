@@ -11,6 +11,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	* Fix: Quick fix for Smarty class not loading in .../misc/testing/DB/autopatcher.php
 	* Mrg: PR 1764, from Darius - Make max.headers.iteration editable in admin => site-edit.
 	* Fix: Had to rename the 'setting' for max.headers.iteration to allow it to work with smarty template.
+	* Fix: Removing unneccessary require_once for Utility.php. No longer needed as autoloading covers it and Utility is gone. ;-)
 2015-07-18 niel
 	* Chg: Renamed Uitility class to Misc. It should only contain odd methods that do not fit in anywhere else.
 	* Chg: Created a new utility class 'Text' and moved various text based methods into it from Misc.
