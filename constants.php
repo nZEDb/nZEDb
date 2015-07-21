@@ -1,6 +1,8 @@
 <?php
 // YOU SHOULD NOT EDIT ANYTHING IN THIS FILE, COPY settings.example.php TO settings.php AND EDIT THAT FILE!
 
+use nzedb\utility\Misc;
+
 define('nZEDb_MINIMUM_PHP_VERSION', '5.5.0');
 define('nZEDb_MINIMUM_MYSQL_VERSION', '5.5');
 
@@ -91,14 +93,7 @@ if (is_file($settings_file)) {
 }
 unset($settings_file);
 
-require_once nZEDb_CORE . 'autoloader.php';
-require_once nZEDb_LIBS . 'autoloader.php';
-
-define('HAS_WHICH', nzedb\utility\Misc::hasWhich() ? true : false);
-
-if (file_exists(__DIR__ . DS . 'config.php')) {
-	require_once __DIR__ . DS . 'config.php';
-}
+define('HAS_WHICH', Misc::hasWhich() ? true : false);
 
 // Check if they updated config.php for the openssl changes. Only check 1 to save speed.
 if (!defined('nZEDb_SSL_VERIFY_PEER')) {
