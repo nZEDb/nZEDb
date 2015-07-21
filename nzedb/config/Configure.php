@@ -25,9 +25,15 @@ require_once nZEDb_LIBS . 'autoloader.php';
 class Configure
 {
 	private $environments = [
-		'indexer'	=> ['config'],
+		'indexer'	=> [
+			'config' => true,
+			'settings' => false
+		],
 		'install'	=> [],
-		'smarty'	=> ['config'],
+		'smarty'	=> [
+			'config' => true,
+			'settings' => false
+		],
 	];
 
 	public function __construct($environment = 'indexer')
@@ -38,32 +44,42 @@ class Configure
 	private function loadEnvironment($environment)
 	{
 		if (array_key_exists($environment, $this->environments)) {
-			foreach ($this->environments[$environment] as $settings) {
-				$file = nZEDb_CONFIGS . $settings . '.php';
-				if (file_exists($file)) {
-					require_once $file;
-				} else {
-					$errorCode = (int)($settings === 'config');
-					throw new \RuntimeException(
-						"Unable to load configuration file '$file'. Make sure it has been created and contains correct settings.",
-						$errorCode
-					);
-				}
-				switch ($settings) {
-					case 'config':
-							// Check if they updated config.php for the openssl changes. Only check 1 to save speed.
-							if (!defined('nZEDb_SSL_VERIFY_PEER')) {
-								define('nZEDb_SSL_CAFILE', '');
-								define('nZEDb_SSL_CAPATH', '');
-								define('nZEDb_SSL_VERIFY_PEER', '0');
-								define('nZEDb_SSL_VERIFY_HOST', '0');
-								define('nZEDb_SSL_ALLOW_SELF_SIGNED', '1');
-							}
-						break;
-				}
+			foreach ($this->environments[$environment] as $config => $throwException) {
+				$this->loadSettings($config, $throwException);
 			}
 		} else {
 			throw new \RuntimeException("Unknown environment passed to Configure class!");
+		}
+	}
+
+	public function loadSettings($filename, $throwException = true)
+	{
+		$file = nZEDb_CONFIGS . $filename . '.php';
+		if (!file_exists($file)) {
+			if ($throwException) {
+				$errorCode = (int)($filename === 'config');
+				throw new \RuntimeException(
+					"Unable to load configuration file '$file'. Make sure it has been created and contains correct settings.",
+					$errorCode
+				);
+			}
+		} else {
+			require_once $file;
+		}
+
+		switch ($filename) {
+			case 'config':
+				// Check if they updated config.php for the openssl changes. Only check 1 to save speed.
+				if (!defined('nZEDb_SSL_VERIFY_PEER')) {
+					define('nZEDb_SSL_CAFILE', '');
+					define('nZEDb_SSL_CAPATH', '');
+					define('nZEDb_SSL_VERIFY_PEER', '0');
+					define('nZEDb_SSL_VERIFY_HOST', '0');
+					define('nZEDb_SSL_ALLOW_SELF_SIGNED', '1');
+				}
+				break;
+			case 'settings':
+				break;
 		}
 	}
 }
