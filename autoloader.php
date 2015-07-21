@@ -19,8 +19,20 @@
  * @copyright 2014 nZEDb
  */
 
-$paths = array(nZEDb_ROOT, nZEDb_WWW . 'pages', SMARTY_DIR, SMARTY_DIR . 'plugins', SMARTY_DIR . 'sysplugins');
-$classLoader = new \SplClassLoader(null, $paths);
-$classLoader->register();
+spl_autoload_register(function ($class) {
+	// Only continue if the class is in our namespace.
+	if (strpos($class, 'nzedb\\') === 0) {
+		// Replace namespace separators with directory separators in the class name, append
+		// with .php
+		$file = nZEDb_ROOT . str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
+
+		// if the file exists, require it
+		if (file_exists($file)) {
+			require_once $file;
+		} elseif (nZEDb_LOGAUTOLOADER) {
+			var_dump($file);
+		}
+	}
+});
 
 ?>
