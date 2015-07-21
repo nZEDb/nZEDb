@@ -22,9 +22,11 @@ require_once 'constants.php';
 require_once 'autoloader.php';
 
 use nzedb\config\Configure;
-
+use nzedb\utility\Misc;
 
 $config = new Configure('indexer');
+
+define('HAS_WHICH', Misc::hasWhich() ? true : false);
 
 // TODO Move this to Configure class
 // Check if they updated config.php for the openssl changes. Only check 1 to save speed.
