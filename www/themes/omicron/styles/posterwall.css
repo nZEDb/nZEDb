@@ -34,41 +34,11 @@ div.poster a{
 
 div.icons {
     white-space:nowrap;
-    padding-left:0px;
-    padding-right:0px;
-    width:65px;
+    padding-left:0;
+    padding-right:0;
+    width:40px;
     margin: 0 auto;
 }
-
-.icon_allmusic       { background-image:url('../images/icons/allmusic.png'); }
-.icon_allmusic2      { content:url('../images/icons/allmusic.png'); }
-.icon_amazon         { background-image:url('../images/icons/amazon.png'); }
-.icon_amazon2        { content:url('../images/icons/amazon.png'); }
-.icon_giantbomb      { background-image:url('../images/icons/giantbomb.png');}
-.icon_cart           { background-image:url('../images/icons/cartup.png'); }
-.icon_cart_clicked   { background-image:url('../images/icons/cartdown.png'); }
-.icon_couch          { background-image:url('../images/icons/couch.png'); }
-.icon_couch2         { content:url('../images/icons/couch.png'); }
-.icon_discogs        { background-image:url('../images/icons/discogs.png'); }
-.icon_gamespot       { background-image:url('../images/icons/gamespot.png'); }
-.icon_ign            { background-image:url('../images/icons/ign.png'); }
-.icon_lastfm         { background-image:url('../images/icons/lastfm.png'); }
-.icon_nzb            { background-image:url('../images/icons/nzbup.png'); }
-.icon_nzb_clicked    { background-image:url('../images/icons/nzbdown.png'); }
-.icon_nzb a          { text-decoration:none; padding-bottom:2px; padding-right:12px; }
-.icon_predbme        { background-image:url('../images/icons/predbme.png'); }
-.icon_imdb           { background-image:url('../images/icons/imdb.png'); }
-.icon_imdb2          { content:url('../images/icons/imdb.png'); }
-.icon_imdb a         { text-decoration:none; padding-bottom:2px; padding-right:12px; }
-.icon_sab            { background-image:url('../images/icons/sabup.png'); }
-.icon_sab_clicked    { background-image:url('../images/icons/sabdown.png'); }
-.icon_trakt          { background-image:url('../images/icons/trakt.png'); }
-.icon_trakt2         { content:url('../images/icons/trakt.png'); }
-.icon_tvrage         { background-image:url('../images/icons/tvrage.png'); }
-.icon_check          { background-image:url('../images/icons/check.png'); }
-.icon_cp             { background-image:url('../images/icons/couch.png'); }
-.icon_goodreads      { background-image:url('../images/icons/goodreads.png'); }
-.icon_shelfari       { background-image:url('../images/icons/shelfari.png'); }
 
 a.divlink {
     display:block;
@@ -102,7 +72,6 @@ h3 a.see-more{
     border-radius:8px;
     color:#000;
     padding:5px 7px;
-    display:block;
     float:right;
     font-size:12px;
     font-weight:normal;

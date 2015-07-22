@@ -26,6 +26,8 @@
 	<meta charset="utf-8">
 	<title>{$site->title}</title>
 
+	<!-- Newposterwall -->
+	<link href="{$smarty.const.WWW_TOP}/themes/charisma/styles/posterwall.css" rel="stylesheet" type="text/css" media="screen" />
 	<!-- The styles -->
 	<link id="bs-css" href="{$smarty.const.WWW_TOP}/themes/charisma/css/bootstrap-spacelab.min.css" rel="stylesheet">
 
@@ -46,8 +48,6 @@
 
 	<!-- The fav icon -->
 	<link rel="shortcut icon" href="{$smarty.const.WWW_TOP}/themes/charisma/img/favicon.ico">
-	<!-- Newposterwall -->
-	<link href="{$smarty.const.WWW_TOP}/themes/charisma/styles/posterwall.css" rel="stylesheet" type="text/css" media="screen" />
 
 </head>
 {if ($loggedin)=="true"}
