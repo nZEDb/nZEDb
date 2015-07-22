@@ -31,6 +31,8 @@
 	-->
 	<link href="{$smarty.const.WWW_TOP}/themes/omicron/dist/css/skins/skin-blue.min.css" rel="stylesheet"
 		  type="text/css"/>
+	<!-- Newposterwall -->
+	<link href="{$smarty.const.WWW_TOP}/themes/omicron/styles/posterwall.css" rel="stylesheet" type="text/css" media="screen" />
 
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -189,6 +191,8 @@
 					<li class="treeview">
 						<a href="#"><i class="fa fa-list-ol"></i><span> Browse</span></a>
 						<ul class="treeview-menu">
+							<li><a href="{$serverroot}newposterwall"><i
+											class="fa fa-file-image-o"></i><span> New Releases</span></a></li>
 							<li><a href="{$serverroot}console"><i
 											class="fa fa-gamepad"></i><span> Console</span></a></li>
 							<li><a href="{$serverroot}movies"><i

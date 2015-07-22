@@ -2,7 +2,7 @@
 	{$site->adbrowse}
 {/if}
 <div class="header">
-	<h2>{$site->title} > <strong>Search</strong></h2>
+	<h2>newznab-tmux > <strong>Search</strong></h2>
 
 	<div class="breadcrumb-wrapper">
 		<ol class="breadcrumb">
@@ -168,7 +168,7 @@
 				{$pager}
 			</div>
 		</div>
-		<table class="data table table-condensed table-striped responsive" id="browsetable">
+		<table class="data table table-condensed table-striped table-responsive table-hover" id="browsetable">
 			<tr>
 				<th></th>
 				<th>

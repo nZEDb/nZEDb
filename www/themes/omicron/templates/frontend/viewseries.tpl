@@ -135,7 +135,7 @@
 											{foreach $seasons as $seasonnum => $season name=tv}
 												<div class="tab-pane{if $smarty.foreach.tv.first} active{/if} fade in"
 													 id="{$seasonnum}">
-													<table class="tb_{$seasonnum} data table table-condensed table-striped table-layout"
+													<table class="tb_{$seasonnum} data table table-condensed table-bordered table-responsive table-hover"
 														   id="browsetable">
 														<thead>
 														<tr>
@@ -221,6 +221,22 @@
 																					 src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/sabup.png">
 																			</a>
 																		{/if}
+																		{if $weHasVortex}
+																			<a class="icon icon_nzbvortex" href="#"
+																			   title="Send to NZBVortex">
+																				<img class="icon icon_nzbvortex"
+																					 alt="Send to my NZBVortex"
+																					 src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/vortex/bigsmile.png">
+																			</a>
+																		{/if}
+																		{if isset($nzbgetintegrated)}<a
+																				class="icon icon_nzbget"
+																				title="Send to NZBGet"
+																				href="#"><img
+																					class="icon icon_nzbget"
+																					alt="Send to NZBget"
+																					src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/nzbgetup.png">
+																			</a>{/if}
 																		{if isset($isadmin)}
 																			<br/>
 																			<a class="label label-warning"

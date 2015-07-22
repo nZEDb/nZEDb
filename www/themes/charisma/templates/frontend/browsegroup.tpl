@@ -17,7 +17,7 @@
 					<div class="col-lg-12 portlets">
 						<div class="panel">
 							<div class="panel-content pagination2">
-								<table class="table table-condensed table-striped sortable responsive"
+								<table class="data table table-condensed table-striped sortable table-responsive table-hover"
 									   style="table-layout: auto;" data-sort-order="desc">
 									<thead>
 									<tr>

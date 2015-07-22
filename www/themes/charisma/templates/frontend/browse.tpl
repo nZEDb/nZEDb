@@ -74,7 +74,7 @@
 							</div>
 						</div>
 						<hr>
-						<table class="data table table-condensed table-striped" cellspacing="0"
+						<table class="data table table-condensed table-striped table-responsive table-hover" cellspacing="0"
 							   cellpadding="0" style="table-layout: auto;">
 							<thead>
 							<tr>

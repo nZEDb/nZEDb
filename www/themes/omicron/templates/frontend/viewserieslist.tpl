@@ -25,7 +25,7 @@
 
 {if $serieslist|@count > 0}
 
-	<table class="dataTable data highlight icons table table-striped table-responsive" id="browsetable">
+	<table class="data table table-condensed table-striped table-responsive table-hover icons" id="browsetable">
 		{foreach $serieslist as $sletter => $series}
 			<tr>
 				<td colspan="10">
