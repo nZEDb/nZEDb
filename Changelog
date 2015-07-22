@@ -8,6 +8,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 
 2015-07-22 bart39
+	* Mrg: PR 1769 from darius - Partial fix for newposterwall, remove newznab-tmux reference from search page.
 	* Mrg: PR 1768 from darius - Fix styling of new themes, add back new releases posterwall.
 2015-07-19 niel
 	* Fix: Quick fix for Smarty class not loading in .../misc/testing/DB/autopatcher.php
