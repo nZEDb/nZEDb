@@ -4,7 +4,7 @@
 	<a href="{$smarty.const.WWW_TOP}/details/{$rel.guid}/{$rel.searchname|escape:"htmlall"}">{$rel.searchname|escape:'htmlall'}</a>
 </h2>
 
-<table style="width:100%;margin-bottom:10px;" class="data Sortable highlight">
+<table class="data table table-striped table-responsive sortable table-condensed table-hover">
 
 	<tr>
 		<th>#</th>

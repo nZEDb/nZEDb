@@ -23,7 +23,7 @@
 {$site->adbrowse}
 
 {if isset($data) && $data|@count > 0}
-	<table class="data highlight icons table table-striped" id="coverstable">
+	<table class="data highlight icons table table-condensed table-striped table-responsive table-hover" id="coverstable">
 		{foreach $data as $result}
 			<tr class="{cycle values=",alt"}">
 				<td class="mid">
@@ -65,7 +65,7 @@
 						<br/>
 					{/if}
 
-					{if isset ($ourmovies) && $ourmovies[$result->alternate_ids->imdb] != ""}
+					{if isset($ourmovies) && $ourmovies[$result->alternate_ids->imdb] != ""}
 						<a class="rndbtn btn btn-sm btn-success"
 						   href="{$smarty.const.WWW_TOP}/movies?imdb={$result->alternate_ids->imdb}">Download</a>
 					{else}

@@ -23,7 +23,7 @@
 {$site->adbrowse}
 
 {if $animelist|@count > 0}
-	<table style="width:100%;" class="data highlight icons table table-striped" id="browsetable">
+	<table style="width:100%;" class="data table table-condensed table-striped table-responsive table-hover" id="browsetable">
 		{foreach $animelist as $aletter => $anime}
 			<tr>
 				<td colspan="10">
