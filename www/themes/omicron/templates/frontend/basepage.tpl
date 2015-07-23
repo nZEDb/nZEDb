@@ -69,9 +69,9 @@
 		<header class="main-header">
 
 			<!-- Logo -->
-			<a href="{$serverroot}" class="logo">
+			<a href="{$site->home_link}" class="logo">
 				<!-- mini logo for sidebar mini 50x50 pixels -->
-				<span class="logo-mini"><b>N</b>Tm</span>
+				<span class="logo-mini"><b>z</b>Ed</span>
 				<!-- logo for regular state and mobile devices -->
 				<span class="logo-lg"><b>{$site->title}</b></span>
 			</a>
@@ -186,7 +186,7 @@
 					<li class="header">Main</li>
 					{if ($loggedin)=="true"}
 					<!-- Optionally, you can add icons to the links -->
-					<li><a href="{$serverroot}"><i class="fa fa-home"></i><span> Home</span> <span
+					<li><a href="{$site->home_link}"><i class="fa fa-home"></i><span> Home</span> <span
 									class="fa arrow"></span></a></li>
 					<li class="treeview">
 						<a href="#"><i class="fa fa-list-ol"></i><span> Browse</span></a>
