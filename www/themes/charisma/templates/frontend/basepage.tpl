@@ -267,8 +267,8 @@
 	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes_shared/scripts/jquery.qtip2.js"></script>
 	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes_shared/scripts/sorttable.js"></script>
 
-	<!-- Newznab utils.js -->
-	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes_shared/scripts/utils.js"></script>
+	<!-- Charisma utils.js -->
+	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/charisma/scripts/utils.js"></script>
 
 	<!-- The HTML5 shim, for IE6-8 support of HTML5 elements -->
 	<!--[if lt IE 9]>

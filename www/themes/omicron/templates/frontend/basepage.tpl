@@ -14,7 +14,7 @@
 	<title>{$site->title}</title>
 	<meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
 	<!-- Newposterwall -->
-	<link href="{$smarty.const.WWW_TOP}/themes/omicron/styles/posterwall.css" rel="stylesheet" type="text/css" media="screen" />
+	<link href="{$smarty.const.WWW_TOP}/themes/omicron/styles/posterwall.css" rel="stylesheet" type="text/css" media="screen"/>
 	<!-- Bootstrap 3.3.4 -->
 	<link href="{$smarty.const.WWW_TOP}/themes/omicron/bootstrap/css/bootstrap.min.css" rel="stylesheet"
 		  type="text/css"/>
@@ -22,7 +22,7 @@
 	<link href="{$smarty.const.WWW_TOP}/themes/omicron/bootstrap/css/font-awesome.min.css" rel="stylesheet"
 		  type="text/css"/>
 	<!-- Normalize.css -->
-	<link href="{$smarty.const.WWW_TOP}/themes_shared/styles/normalize.css" rel="stylesheet" type="text/css">
+	<link href="{$smarty.const.WWW_TOP}/themes_shared/styles/normalize.css" rel="stylesheet" type="text/css"/>
 	<!-- Ionicons -->
 	<link href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet" type="text/css"/>
 	<!-- Theme style -->
@@ -366,8 +366,8 @@
 	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes_shared/scripts/jquery.autosize-min.js"></script>
 	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes_shared/scripts/jquery.qtip2.js"></script>
 	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes_shared/scripts/sorttable.js"></script>
-	<!-- nZEDb utils.js -->
-	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes_shared/scripts/utils.js"></script>
+	<!-- Omicron utils.js -->
+	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/omicron/scripts/utils.js"></script>
 
 	<!-- Optionally, you can add Slimscroll and FastClick plugins.
 		  Both of these plugins are recommended to enhance the

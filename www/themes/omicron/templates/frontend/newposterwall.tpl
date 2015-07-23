@@ -66,7 +66,7 @@
 								</a>
 							</div>
 							<div class="rating-pod" id="guid{$result.guid}">
-								<div class="icons divlink displ">
+								<div class="icons divlink">
 									<span class="icon_nzb text-muted"><a title="Download Nzb"
 																		 href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"htmlall"}">
 											<i class="glyphicon glyphicon-download"></i></a>
