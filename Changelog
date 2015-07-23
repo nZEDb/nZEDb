@@ -8,6 +8,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 
 2015-07-23 bart39
+	* Mrg: PR 1772 from darius - Home buttons and menu will now load the site home link setup in admin>site edit area.
 	* Mrg: PR 1771 from darius - Add new german variant of codecposter spam releases.
 	* Mrg: PR 1770 from darius - Fix search in new templates, final fix for posterwall and update the base of Omicron template (AdminLTE) to version 2.2.0.
 2015-07-22 bart39
