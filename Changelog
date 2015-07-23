@@ -7,6 +7,8 @@ All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 
+2015-07-23 bart39
+	* Mrg: PR 1770 from darius - Fix search in new templates, final fix for posterwall and update the base of Omicron template (AdminLTE) to version 2.2.0.
 2015-07-22 bart39
 	* Fix: Bad regex causing preg_match errors.
 	* Mrg: PR 1769 from darius - Partial fix for newposterwall, remove newznab-tmux reference from search page.
