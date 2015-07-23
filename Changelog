@@ -8,6 +8,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 
 2015-07-23 bart39
+	* Mrg: PR 1774 from darius - Change the color of posterwall in charisma template.
 	* Mrg: PR 1773 from darius - Fix errors in usefullinksmenu.tpl.
 	* Mrg: PR 1772 from darius - Home buttons and menu will now load the site home link setup in admin>site edit area.
 	* Mrg: PR 1771 from darius - Add new german variant of codecposter spam releases.
