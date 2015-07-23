@@ -36,7 +36,7 @@ div.icons {
     white-space:nowrap;
     padding-left:0;
     padding-right:0;
-    width:40px;
+    width:65px;
     margin: 0 auto;
 }
 
@@ -696,12 +696,12 @@ br.clear{
 
 
 .rating-pod{
-    background-color:steelblue;
+    background-color:cadetblue;
     padding:5px 10px 5px 7px;
     border-radius:0 0 6px 6px;
     overflow:hidden;
     margin:1px;
-    color:#ccc;
+    color:#0c0c0c;
     position:relative;
 }
 
