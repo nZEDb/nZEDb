@@ -68,7 +68,7 @@ jQuery(function($){
         if ($(this).hasClass('icon_cart_clicked')) return false;
         var guid = $(this).parent().parent().attr('id').substring(4);
         $.post( SERVERROOT + "cart?add=" + guid, function(resp){
-            $(e.target).addClass('icon_cart_clicked').attr('title','Added to Cart');
+            $(e.target).addClass('icon_cart_clicked').attr('title',' Release added to Cart');
             cart_notify();
         });
         return false;
@@ -201,8 +201,8 @@ jQuery(function($){
         var nzburl = SERVERROOT + "sendtoqueue/" + guid;
 
         $.post(nzburl, function(resp){
-            $(e.target).addClass('icon_sab_clicked').attr('title','Added to Queue');
-            notify('NZB added to queue', 'top');
+            $(e.target).addClass('icon_sab_clicked').attr('title','Release added to Queue');
+            notify('Release added to queue', 'topCenter');
         });
         return false;
     });
@@ -215,7 +215,7 @@ jQuery(function($){
 
         $.post(nzburl, function(resp){
             $(e.target).addClass('icon_nzbget_clicked').attr('title','Added to Queue');
-            notify('NZB added to queue', 'top');
+            notify('Release added to queue', 'topCenter');
         });
         return false;
     });
@@ -311,7 +311,7 @@ jQuery(function($){
                 // alert(nzburl);
                 $.post( nzburl, function(resp){
                     $sabIcon.addClass('icon_sab_clicked').attr('title','Added to Queue');
-                    notify('NZB added to queue', 'top');
+                    notify('Release added to queue', 'topCenter');
                 });
             }
             $(this).attr('checked', false);
@@ -325,7 +325,7 @@ jQuery(function($){
                 var nzburl = SERVERROOT + "sendtoqueue/" + guid;
                 $.post( nzburl, function(resp){
                     $nzbgetIcon.addClass('icon_nzbget_clicked').attr('title','Added to Queue');
-                    notify('NZB added to queue', 'top');
+                    notify('Release added to queue', 'topCenter');
                 });
             }
             $(this).attr('checked', false);
@@ -394,7 +394,7 @@ jQuery(function($){
             var guid = $(row).val();
             var nzburl = SERVERROOT + "sendtoqueue/" + guid;
             $.post( nzburl, function(resp){
-                notify('NZB added to queue', 'top');
+                notify('Release added to queue', 'topCenter');
             });
         });
     });

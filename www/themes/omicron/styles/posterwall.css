@@ -36,8 +36,11 @@ div.icons {
     white-space:nowrap;
     padding-left:0;
     padding-right:0;
-    width:65px;
-    margin: 0 auto;
+    width:100%;
+    margin: auto;
+    display:inline-block;
+    vertical-align: middle;
+    align-items: center;
 }
 
 a.divlink {
