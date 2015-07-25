@@ -1,5 +1,5 @@
 <?php
-require dirname(__FILE__) . '/../../www/config.php';
+require_once realpath(dirname(dirname(__DIR__)) . 'indexer.php');
 
 use nzedb\ReleaseSearch;
 use nzedb\db\DB;
