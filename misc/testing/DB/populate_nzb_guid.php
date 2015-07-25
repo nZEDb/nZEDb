@@ -1,7 +1,6 @@
 <?php
 // This script updates all releases with the guid from the nzb file.
-
-require_once dirname(__FILE__) . '/../../../www/config.php';
+require_once realpath(dirname(dirname(dirname(__DIR__))) . 'indexer.php');
 
 use nzedb\ColorCLI;
 use nzedb\ConsoleTools;
