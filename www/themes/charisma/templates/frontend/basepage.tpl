@@ -26,6 +26,8 @@
 	<meta charset="utf-8">
 	<title>{$site->title}</title>
 
+	<!-- Newposterwall -->
+	<link href="{$smarty.const.WWW_TOP}/themes/charisma/styles/posterwall.css" rel="stylesheet" type="text/css" media="screen" />
 	<!-- The styles -->
 	<link id="bs-css" href="{$smarty.const.WWW_TOP}/themes/charisma/css/bootstrap-spacelab.min.css" rel="stylesheet">
 
@@ -60,7 +62,7 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a class="navbar-brand" href="{$serverroot}"> <img alt="nZEDb logo"
+			<a class="navbar-brand" href="{$site->home_link}"> <img alt="nZEDb logo"
 															   src="{$smarty.const.WWW_TOP}/themes/charisma/img/logo-nzedb.png"
 						/></a>
 			{$header_menu}
@@ -121,11 +123,13 @@
 							<!-- /.search form -->
 							<li class="nav-header">Main</li>
 							{if ($loggedin)=="true"}
-							<li><a href="{$serverroot}"><i class="fa fa-home"></i><span> Home</span> <span
+							<li><a href="{$site->home_link}"><i class="fa fa-home"></i><span> Home</span> <span
 											class="fa arrow"></span></a></li>
 							<li class="accordion">
 								<a href="#"><i class="fa fa-list-ol"></i><span> Browse</span></a>
 								<ul class="nav nav-pills nav-stacked">
+									<li><a href="{$serverroot}newposterwall"><i
+													class="fa fa-file-image-o"></i><span> New Releases</span></a></li>
 									<li><a href="{$serverroot}console"><i
 													class="fa fa-gamepad"></i><span> Console</span></a></li>
 									<li><a href="{$serverroot}movies"><i
@@ -263,8 +267,8 @@
 	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes_shared/scripts/jquery.qtip2.js"></script>
 	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes_shared/scripts/sorttable.js"></script>
 
-	<!-- Newznab utils.js -->
-	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes_shared/scripts/utils.js"></script>
+	<!-- Charisma utils.js -->
+	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/charisma/scripts/utils.js"></script>
 
 	<!-- The HTML5 shim, for IE6-8 support of HTML5 elements -->
 	<!--[if lt IE 9]>

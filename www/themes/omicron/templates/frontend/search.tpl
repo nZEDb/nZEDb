@@ -168,7 +168,7 @@
 				{$pager}
 			</div>
 		</div>
-		<table class="data table table-condensed table-striped responsive" id="browsetable">
+		<table class="data table table-condensed table-striped table-responsive table-hover" id="browsetable">
 			<tr>
 				<th></th>
 				<th>

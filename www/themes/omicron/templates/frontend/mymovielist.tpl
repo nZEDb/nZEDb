@@ -1,5 +1,5 @@
 {if $data|@count > 0}
-	<table class="table table-striped table-condensed" id="coverstable">
+	<table class="data table table-striped table-condensed table-responsive table-hover" id="coverstable">
 		<tr>
 			<th></th>
 			<th>Name</th>

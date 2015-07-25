@@ -16,7 +16,7 @@
 
 	{$pager}
 
-<table class="table table-striped table-bordered bootstrap-datatable datatable responsive">
+<table class="data table table-condensed table-striped table-responsive table-hover">
 	<tr>
 		<th width="125" class="mid">Date</th>
 		<th class="left">Directory</th>

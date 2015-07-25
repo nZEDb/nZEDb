@@ -27,7 +27,7 @@
 												<tbody>
 												<tr valign="top">
 													<td>
-														<table class="table table-condensed table-striped responsive">
+														<table class="table table-condensed table-striped table-responsive table-hover">
 															<tbody>
 															<tr class="bg-primary">
 																<td colspan="2" style="padding-left: 8px;"><strong>General</strong>
@@ -67,7 +67,7 @@
 															</tr>
 															</tbody>
 														</table>
-														<table class="table table-condensed table-striped responsive">
+														<table class="data table table-condensed table-striped table-responsive table-hover">
 															<tbody>
 															<tr class="bg-primary">
 																<td colspan="2" style="padding-left: 8px;"><strong>API &
