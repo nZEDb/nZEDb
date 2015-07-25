@@ -14,6 +14,8 @@ test.php
 
 /.idea/
 /app/resources/tmp/*
+/nzedb/config/config.php
+/nzedb/config/settings.php
 
 /nbproject/
 /nbproject/private/

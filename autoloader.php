@@ -16,36 +16,23 @@
  *
  * @link <http://www.gnu.org/licenses/>.
  * @author niel
- * @copyright 2015 nZEDb
+ * @copyright 2014 nZEDb
  */
 
-require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'indexer.php';
+spl_autoload_register(function ($class) {
+	// Only continue if the class is in our namespace.
+	if (strpos($class, 'nzedb\\') === 0) {
+		// Replace namespace separators with directory separators in the class name, append
+		// with .php
+		$file = nZEDb_ROOT . str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
 
-use nzedb\db\DbUpdate;
-use nzedb\utility\Git;
-use nzedb\utility\Misc;
-
-if (!Misc::isCLI()) {
-	exit;
-}
-
-$error = false;
-$git = new Git();
-$branch = $git->active_branch();
-
-if (in_array($branch, $git->mainBranches())) {
-	// Only update patches, etc. on specific branches to lessen conflicts
-	try {
-		// Run DbUpdates to make sure we're up to date.
-		$DbUpdater = new DbUpdate(['git' => $git]);
-		$DbUpdater->newPatches(['safe' => false]);
-	} catch (\Exception $e) {
-		$error = 1;
-		echo "Error while checking patches!\n";
-		echo $e->getMessage() . "\n";
+		// if the file exists, require it
+		if (file_exists($file)) {
+			require_once $file;
+		} elseif (nZEDb_LOGAUTOLOADER) {
+			var_dump($file);
+		}
 	}
-}
-
-exit($error);
+});
 
 ?>

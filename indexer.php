@@ -18,34 +18,14 @@
  * @author niel
  * @copyright 2015 nZEDb
  */
+require_once 'constants.php';
+require_once 'autoloader.php';
 
-require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'indexer.php';
-
-use nzedb\db\DbUpdate;
-use nzedb\utility\Git;
+use nzedb\config\Configure;
 use nzedb\utility\Misc;
 
-if (!Misc::isCLI()) {
-	exit;
-}
+$config = new Configure('indexer');
 
-$error = false;
-$git = new Git();
-$branch = $git->active_branch();
-
-if (in_array($branch, $git->mainBranches())) {
-	// Only update patches, etc. on specific branches to lessen conflicts
-	try {
-		// Run DbUpdates to make sure we're up to date.
-		$DbUpdater = new DbUpdate(['git' => $git]);
-		$DbUpdater->newPatches(['safe' => false]);
-	} catch (\Exception $e) {
-		$error = 1;
-		echo "Error while checking patches!\n";
-		echo $e->getMessage() . "\n";
-	}
-}
-
-exit($error);
+define('HAS_WHICH', Misc::hasWhich() ? true : false);
 
 ?>

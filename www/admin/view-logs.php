@@ -70,7 +70,7 @@ $page->smarty->assign(
 	[
 		'data'  => $data,
 		'types' => ['all', 'info', 'notice', 'warning', 'error', 'fatal', 'sql'],
-		'path'  => nZEDb_WWW . 'automated.config.php'
+		'path'  => nZEDb_WWW . 'smarty.php'
 	]
 );
 

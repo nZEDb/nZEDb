@@ -18,34 +18,22 @@
  * @author niel
  * @copyright 2015 nZEDb
  */
+require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'initialise.php');
+require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'autoloader.php');
 
-require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'indexer.php';
+use nzedb\config\Configure;
 
-use nzedb\db\DbUpdate;
-use nzedb\utility\Git;
-use nzedb\utility\Misc;
+$config = new Configure('install');
 
-if (!Misc::isCLI()) {
-	exit;
+// Path to smarty files. (not prefixed with nZEDb as the name is needed in smarty files).
+define('SMARTY_DIR', nZEDb_LIBS . 'smarty' . DS);
+
+$www_top = str_replace("\\", "/", dirname($_SERVER['PHP_SELF']));
+if (strlen($www_top) == 1) {
+	$www_top = "";
 }
 
-$error = false;
-$git = new Git();
-$branch = $git->active_branch();
-
-if (in_array($branch, $git->mainBranches())) {
-	// Only update patches, etc. on specific branches to lessen conflicts
-	try {
-		// Run DbUpdates to make sure we're up to date.
-		$DbUpdater = new DbUpdate(['git' => $git]);
-		$DbUpdater->newPatches(['safe' => false]);
-	} catch (\Exception $e) {
-		$error = 1;
-		echo "Error while checking patches!\n";
-		echo $e->getMessage() . "\n";
-	}
-}
-
-exit($error);
+// Used everywhere an href is output, includes the full path to the nZEDb install.
+define('WWW_TOP', $www_top);
 
 ?>

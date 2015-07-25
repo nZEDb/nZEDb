@@ -24,20 +24,20 @@
 </div>
 <br>
 <div class="well well-sm">
-	<form method="get" action="{$smarty.const.WWW_TOP}/search">
-		<div id="sbasic" class="row" style="text-align:center;{if $sadvanced} display:none;{/if}">
-			<div class="col-md-6">
-				<input id="search" class="form-control" maxlength="50" name="search" value="{$search|escape:'html'}"
-					   type="search" placeholder="What are you looking for?"/>
-			</div>
-			<div class="col-md-6">
-				<input type="hidden" name="t" value="{if $category[0]!=""}{$category[0]}{else}-1{/if}" id="search_cat"/>
-				<input type="hidden" name="search_type" value="basic" id="search_type"/>
-				<input id="search_search_button" class="btn btn-primary" type="submit" value="Search"/>
-			</div>
+<form method="get" action="{$smarty.const.WWW_TOP}/search">
+	<div id="sbasic" class="row" style="text-align:center;{if $sadvanced} display:none;{/if}">
+		<div class="col-md-6">
+			<input id="search" class="form-control" maxlength="50" name="search" value="{$search|escape:'html'}"
+				   type="search" placeholder="What are you looking for?"/>
 		</div>
-	</form>
-</div>
+		<div class="col-md-6">
+			<input type="hidden" name="t" value="{if $category[0]!=""}{$category[0]}{else}-1{/if}" id="search_cat"/>
+			<input type="hidden" name="search_type" value="basic" id="search_type"/>
+			<input id="search_search_button" class="btn btn-primary" type="submit" value="Search"/>
+		</div>
+	</div>
+</form>
+	</div>
 <form method="get" action="{$smarty.const.WWW_TOP}/search">
 	<div id="sadvanced" {if not $sadvanced}style="display:none"{/if}>
 		<center>
@@ -168,60 +168,60 @@
 				{$pager}
 			</div>
 		</div>
-		<table class="data table table-condensed table-striped responsive" id="browsetable">
+		<table class="data table table-condensed table-striped table-responsive table-hover" id="browsetable">
 			<tr>
 				<th></th>
 				<th>
 					name<br>
 					<a title="Sort Descending" href="{$orderbyname_desc}">
-						<img src="{$smarty.const.WWW_TOP}/themes/charisma/images/sorting/arrow_down.gif" alt="Sort Descending">
+						<img src="{$smarty.const.WWW_TOP}/themes/omicron/images/sorting/arrow_down.gif" alt="Sort Descending">
 					</a>
 					<a title="Sort Ascending" href="{$orderbyname_asc}">
-						<img src="{$smarty.const.WWW_TOP}/themes/charisma/images/sorting/arrow_up.gif" alt="Sort Ascending">
+						<img src="{$smarty.const.WWW_TOP}/themes/omicron/images/sorting/arrow_up.gif" alt="Sort Ascending">
 					</a>
 				</th>
 				<th style="text-align:center;">
 					category<br>
 					<a title="Sort Descending" href="{$orderbycat_desc}">
-						<img src="{$smarty.const.WWW_TOP}/themes/charisma/images/sorting/arrow_down.gif" alt="Sort Descending">
+						<img src="{$smarty.const.WWW_TOP}/themes/omicron/images/sorting/arrow_down.gif" alt="Sort Descending">
 					</a>
 					<a title="Sort Ascending" href="{$orderbycat_asc}">
-						<img src="{$smarty.const.WWW_TOP}/themes/charisma/images/sorting/arrow_up.gif" alt="Sort Ascending">
+						<img src="{$smarty.const.WWW_TOP}/themes/omicron/images/sorting/arrow_up.gif" alt="Sort Ascending">
 					</a>
 				</th>
 				<th style="text-align:center;">
 					posted<br>
 					<a title="Sort Descending" href="{$orderbyposted_desc}">
-						<img src="{$smarty.const.WWW_TOP}/themes/charisma/images/sorting/arrow_down.gif" alt="Sort Descending">
+						<img src="{$smarty.const.WWW_TOP}/themes/omicron/images/sorting/arrow_down.gif" alt="Sort Descending">
 					</a>
 					<a title="Sort Ascending" href="{$orderbyposted_asc}">
-						<img src="{$smarty.const.WWW_TOP}/themes/charisma/images/sorting/arrow_up.gif" alt="Sort Ascending">
+						<img src="{$smarty.const.WWW_TOP}/themes/omicron/images/sorting/arrow_up.gif" alt="Sort Ascending">
 					</a>
 				</th>
 				<th style="text-align:center;">
 					size<br>
 					<a title="Sort Descending" href="{$orderbysize_desc}">
-						<img src="{$smarty.const.WWW_TOP}/themes/charisma/images/sorting/arrow_down.gif" alt="Sort Descending">
+						<img src="{$smarty.const.WWW_TOP}/themes/omicron/images/sorting/arrow_down.gif" alt="Sort Descending">
 					</a>
 					<a title="Sort Ascending" href="{$orderbysize_asc}">
-						<img src="{$smarty.const.WWW_TOP}/themes/charisma/images/sorting/arrow_up.gif" alt="Sort Ascending">
+						<img src="{$smarty.const.WWW_TOP}/themes/omicron/images/sorting/arrow_up.gif" alt="Sort Ascending">
 					</a>
 				</th>
 				<th style="text-align:center;">
 					files<br>
 					<a title="Sort Descending" href="{$orderbyfiles_desc}">
-						<img src="{$smarty.const.WWW_TOP}/themes/charisma/images/sorting/arrow_down.gif" alt="Sort Descending">
+						<img src="{$smarty.const.WWW_TOP}/themes/omicron/images/sorting/arrow_down.gif" alt="Sort Descending">
 					</a>
 					<a title="Sort Ascending" href="{$orderbyfiles_asc}">
-						<img src="{$smarty.const.WWW_TOP}/themes/charisma/images/sorting/arrow_up.gif" alt="Sort Ascending">
+						<img src="{$smarty.const.WWW_TOP}/themes/omicron/images/sorting/arrow_up.gif" alt="Sort Ascending">
 					</a>
 				</th>
 				<th style="text-align:center;">stats<br>
 					<a title="Sort Descending" href="{$orderbystats_desc}">
-						<img src="{$smarty.const.WWW_TOP}/themes/charisma/images/sorting/arrow_down.gif" alt="Sort Descending">
+						<img src="{$smarty.const.WWW_TOP}/themes/omicron/images/sorting/arrow_down.gif" alt="Sort Descending">
 					</a>
 					<a title="Sort Ascending" href="{$orderbystats_asc}">
-						<img src="{$smarty.const.WWW_TOP}/themes/charisma/images/sorting/arrow_up.gif" alt="Sort Ascending">
+						<img src="{$smarty.const.WWW_TOP}/themes/omicron/images/sorting/arrow_up.gif" alt="Sort Ascending">
 					</a>
 				</th>
 				<th>
@@ -251,11 +251,11 @@
 							<div class="btns" style="float:right">
 								{release_flag($result.searchname, browse)}
 								{if $result.passwordstatus == 1}
-									<img title="RAR/ZIP Possibly Passworded." src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/lock2.png" alt="RAR/ZIP Possibly Passworded.">
+									<img title="RAR/ZIP Possibly Passworded." src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/lock2.png" alt="RAR/ZIP Possibly Passworded.">
 								{elseif $result.passwordstatus == 2}
-									<img title="RAR/ZIP Possibly Damaged." src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/broken.png" alt="RAR/ZIP Possibly Damaged.">
+									<img title="RAR/ZIP Possibly Damaged." src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/broken.png" alt="RAR/ZIP Possibly Damaged.">
 								{elseif $result.passwordstatus == 10}
-									<img title="RAR/ZIP is Passworded." src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/lock.gif" alt="RAR/ZIP is Passworded.">
+									<img title="RAR/ZIP is Passworded." src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/lock.gif" alt="RAR/ZIP is Passworded.">
 								{/if}
 								{if $result.videostatus > 0}
 									<a
@@ -318,7 +318,7 @@
 						<a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$result.guid}">{$result.totalpart}</a>
 						{if $result.rarinnerfilecount > 0}
 							<div class="rarfilelist">
-								<img src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/magnifier.png" alt="{$result.guid}">
+								<img src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/magnifier.png" alt="{$result.guid}">
 							</div>
 						{/if}
 					</td>

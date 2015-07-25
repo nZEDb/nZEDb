@@ -11,14 +11,9 @@ if (!isset($argv[1]) || $argv[1] !== 'yes') {
 	);
 }
 
-use nzedb\ReleaseImage;
+require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'indexer.php');
 
-$www_path = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR;
-if (is_file($www_path . 'config.php')) {
-	require($www_path . 'config.php');
-} else {
-	require($www_path . 'automated.config.php');
-}
+use nzedb\ReleaseImage;
 
 define('R', 1);
 define('W', 2);

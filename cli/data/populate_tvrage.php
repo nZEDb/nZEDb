@@ -1,5 +1,5 @@
 <?php
-require_once dirname(dirname(__DIR__)) . '/www/config.php';
+require_once dirname(dirname(__DIR__)) . 'indexer.php';
 
 use nzedb\db\Settings;
 
