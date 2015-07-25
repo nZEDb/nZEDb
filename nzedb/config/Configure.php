@@ -98,7 +98,7 @@ class Configure
 					define('ITEMS_PER_PAGE', '50');
 					define('ITEMS_PER_COVER_PAGE', '20');
 					define('nZEDb_ECHOCLI', true);
-					define('nZEDb_DEBUG', true);
+					define('nZEDb_DEBUG', false);
 					define('nZEDb_LOGGING', false);
 					define('nZEDb_LOGINFO', false);
 					define('nZEDb_LOGNOTICE', false);
