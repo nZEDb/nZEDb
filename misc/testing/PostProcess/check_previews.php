@@ -2,7 +2,7 @@
 // --------------------------------------------------------------
 //          Scan for releases missing previews on disk
 // --------------------------------------------------------------
-require_once realpath(dirname(dirname(dirname(__DIR__))) . 'indexer.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
 use nzedb\ConsoleTools;
 use nzedb\NZB;
