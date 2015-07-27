@@ -88,7 +88,7 @@
 
 													<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"><img
 																class="cover"
-																src="{if $result.cover == 1}{$serverroot}covers/xxx/{$result.id}-cover.jpg{else}{$serverroot}themes/omicron/images/nocover.png{/if}"
+																src="{if $result.cover == 1}{$serverroot}covers/xxx/{$result.id}-cover.jpg{else}{$serverroot}templates/omicron/images/nocover.png{/if}"
 																width="100" border="0"
 																alt="{$result.title|escape:"htmlall"}"/></a>
 													{if $result.classused == "ade"}
@@ -98,7 +98,7 @@
 																name="viewade{$result.title}"
 																title="View AdultdvdEmpire page"
 																><img
-																	src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/ade.png"></a>
+																	src="{$smarty.const.WWW_TOP}/templates/omicron/images/icons/ade.png"></a>
 													{else}
 														<a
 																target="_blank"
@@ -106,7 +106,7 @@
 																name="viewade{$result.title}"
 																title="Search AdultdvdEmpire page"
 																><img
-																	src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/ade.png"></a>
+																	src="{$smarty.const.WWW_TOP}/templates/omicron/images/icons/ade.png"></a>
 													{/if}
 													{if $result.classused == "hm"}
 														<a
@@ -115,7 +115,7 @@
 																name="viewhm{$result.title}"
 																title="View Hot Movies page"
 																><img
-																	src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/hotmovies.png"></a>
+																	src="{$smarty.const.WWW_TOP}/templates/omicron/images/icons/hotmovies.png"></a>
 													{else}
 														<a
 																target="_blank"
@@ -123,7 +123,7 @@
 																name="viewhm{$result.title}"
 																title="Search Hot Movies page"
 																><img
-																	src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/hotmovies.png"></a>
+																	src="{$smarty.const.WWW_TOP}/templates/omicron/images/icons/hotmovies.png"></a>
 													{/if}
 													{if $result.classused == "pop"}
 														<a
@@ -132,7 +132,7 @@
 																name="viewpop{$result.id}"
 																title="View Popporn page"
 																><img
-																	src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/popporn.png"></a>
+																	src="{$smarty.const.WWW_TOP}/templates/omicron/images/icons/popporn.png"></a>
 													{else}
 														<a
 																target="_blank"
@@ -140,7 +140,7 @@
 																name="viewpop{$result.id}"
 																title="Search Popporn page"
 																><img
-																	src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/popporn.png"></a>
+																	src="{$smarty.const.WWW_TOP}/templates/omicron/images/icons/popporn.png"></a>
 													{/if}
 													<a
 															target="_blank"
@@ -148,7 +148,7 @@
 															name="viewiafd{$result.title}"
 															title="Search Internet Adult Film Database"
 															><img
-																src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/iafd.png"></a>
+																src="{$smarty.const.WWW_TOP}/templates/omicron/images/icons/iafd.png"></a>
 													{if $mnfo[$m@index] > 0}<a
 														href="{$smarty.const.WWW_TOP}/nfo/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"
 														title="View NFO" class="label label-default"
@@ -162,10 +162,10 @@
 																							   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">{$result.title|escape:"htmlall"}</a></span>
 
 													<div class="release-subtitle">{if $result.genre != ''}{$result.genre}, {/if}</div>
-													<div>
+													<div id="guid{$mguid[$m@index]}">
 														<span class="label label-primary">{if isset($catsplit[0])} {$catsplit[0]}{/if}</span>
 														<span class="label label-danger">{if isset($catsplit[1])} {$catsplit[1]}{/if}</span>
-														<span class="label label-default">{if isset($result.year)} {$result.year}{/if}</span>
+														<span class="label label-default">{$result.year}</span>
 
 														<span class="label label-default">{$msize[$m@index]|fsize_format:"MB"}</span>
 																	<span class="label label-default">Posted {$mpostdate[$m@index]|timeago}
@@ -173,7 +173,7 @@
 														<br/><br/><br/>
 
 														<div class="release-name text-muted"><a
-																	href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">{$mname[$m@index]|escape:"htmlall"}</a>
+																	href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$mname[$m@index]|escape:"htmlall"}</a>
 														</div>
 														<div>
 															<a role="button" class="btn btn-default btn-xs"
@@ -186,10 +186,18 @@
 																		class="fa fa-comment-o"></i><span
 																		class="badge"> {$mcomments[$m@index]}
 																	Comment{if $mcomments[$m@index] != 1}s{/if}</span></a>
+															<span class="btn btn-hover btn-default btn-xs icon icon_cart text-muted"
+																  title="Add to Cart"><i
+																		class="fa fa-shopping-cart"></i></span>
+															{if isset($sabintegrated)}
+																<span class="btn btn-hover btn-default btn-xs icon icon_sab text-muted"
+																	  title="Send to my Queue"><i
+																			class="fa fa-send"></i></span>
+															{/if}
 														</div>
-														{/if}
-														{/foreach}
 													</div>
+													{/if}
+													{/foreach}
 												</div>
 											</div>
 										</div>
@@ -220,7 +228,7 @@
 													{if $smarty.foreach.loop.first}
 													<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"><img
 																class="cover"
-																src="{if $result.cover == 1}{$serverroot}covers/xxx/{$result.id}-cover.jpg{else}{$serverroot}themes/omicron/images/nocover.png{/if}"
+																src="{if $result.cover == 1}{$serverroot}covers/xxx/{$result.id}-cover.jpg{else}{$serverroot}templates/omicron/images/nocover.png{/if}"
 																width="100" border="0"
 																alt="{$result.title|escape:"htmlall"}"/></a>
 													{if $result.classused == "ade"}
@@ -230,7 +238,7 @@
 																name="viewade{$result.title}"
 																title="View AdultdvdEmpire page"
 																><img
-																	src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/ade.png"></a>
+																	src="{$smarty.const.WWW_TOP}/templates/omicron/images/icons/ade.png"></a>
 													{else}
 														<a
 																target="_blank"
@@ -238,7 +246,7 @@
 																name="viewade{$result.title}"
 																title="Search AdultdvdEmpire page"
 																><img
-																	src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/ade.png"></a>
+																	src="{$smarty.const.WWW_TOP}/templates/omicron/images/icons/ade.png"></a>
 													{/if}
 													{if $result.classused == "hm"}
 														<a
@@ -247,7 +255,7 @@
 																name="viewhm{$result.title}"
 																title="View Hot Movies page"
 																><img
-																	src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/hotmovies.png"></a>
+																	src="{$smarty.const.WWW_TOP}/templates/omicron/images/icons/hotmovies.png"></a>
 													{else}
 														<a
 																target="_blank"
@@ -255,7 +263,7 @@
 																name="viewhm{$result.title}"
 																title="Search Hot Movies page"
 																><img
-																	src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/hotmovies.png"></a>
+																	src="{$smarty.const.WWW_TOP}/templates/omicron/images/icons/hotmovies.png"></a>
 													{/if}
 													{if $result.classused == "pop"}
 														<a
@@ -264,7 +272,7 @@
 																name="viewpop{$result.id}"
 																title="View Popporn page"
 																><img
-																	src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/popporn.png"></a>
+																	src="{$smarty.const.WWW_TOP}/templates/omicron/images/icons/popporn.png"></a>
 													{else}
 														<a
 																target="_blank"
@@ -272,7 +280,7 @@
 																name="viewpop{$result.id}"
 																title="Search Popporn page"
 																><img
-																	src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/popporn.png"></a>
+																	src="{$smarty.const.WWW_TOP}/templates/omicron/images/icons/popporn.png"></a>
 													{/if}
 													<a
 															target="_blank"
@@ -280,7 +288,7 @@
 															name="viewiafd{$result.title}"
 															title="Search Internet Adult Film Database"
 															><img
-																src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/iafd.png"></a>
+																src="{$smarty.const.WWW_TOP}/templates/omicron/images/icons/iafd.png"></a>
 													{if $mnfo[$m@index] > 0}<a
 														href="{$smarty.const.WWW_TOP}/nfo/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"
 														title="View NFO" class="label label-default"
@@ -294,10 +302,10 @@
 																							   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">{$result.title|escape:"htmlall"}</a></span>
 
 													<div class="release-subtitle">{if $result.genre != ''}{$result.genre}, {/if}</div>
-													<div>
+													<div id="guid{$mguid[$m@index]}">
 														<span class="label label-primary">{if isset($catsplit[0])} {$catsplit[0]}{/if}</span>
 														<span class="label label-danger">{if isset($catsplit[1])} {$catsplit[1]}{/if}</span>
-														<span class="label label-default">{if isset($result.year)} {$result.year}{/if}</span>
+														<span class="label label-default">{$result.year}</span>
 
 														<span class="label label-default">{$msize[$m@index]|fsize_format:"MB"}</span>
 																	<span class="label label-default">Posted {$mpostdate[$m@index]|timeago}
@@ -318,10 +326,18 @@
 																		class="fa fa-comment-o"></i><span
 																		class="badge"> {$mcomments[$m@index]}
 																	Comment{if $mcomments[$m@index] != 1}s{/if}</span></a>
+															<span class="btn btn-hover btn-default btn-xs icon icon_cart text-muted"
+																  title="Add to Cart"><i
+																		class="fa fa-shopping-cart"></i></span>
+															{if isset($sabintegrated)}
+																<span class="btn btn-hover btn-default btn-xs icon icon_sab text-muted"
+																	  title="Send to my Queue"><i
+																			class="fa fa-send"></i></span>
+															{/if}
 														</div>
-														{/if}
-														{/foreach}
 													</div>
+													{/if}
+													{/foreach}
 												</div>
 											</div>
 										</div>
