@@ -13,7 +13,8 @@ Most of this guide is done from the command line (terminal).
 		sudo /etc/init.d/apparmor teardown
 		sudo update-rc.d -f apparmor remove
 
-	# NOTE:  Both Python 2.7 & Python 3.4 are available by default on 14.04.2
+	# NOTE:  Both Python 2.7 & Python 3.4 are available by default on 14.04.2 
+	# The instructions I have done here are Python 3.4 based.
 	# I have commented out everything I did not test with.  
 	# For the threaded scripts you will require the Python cymysql module for mysql:
 		# Python 2.*
@@ -137,7 +138,7 @@ Most of this guide is done from the command line (terminal).
 
 	# Disable the default site, enable nZEDb, enable rewrite, restart apache:
 
-	sudo a2dissite default
+	sudo a2dissite 000-default
 	sudo a2ensite nZEDb
 	sudo a2enmod rewrite
 	sudo service apache2 restart
@@ -173,41 +174,68 @@ Most of this guide is done from the command line (terminal).
 	git clone https://github.com/nZEDb/nZEDb.git
 
 	# Set the perms.
-	sudo chmod 777 nZEDb
+	#sudo chmod 777 nZEDb
+	#cd nZEDb
+	#sudo chmod -R 755 .
+	#sudo chmod 777 /var/www/nZEDb/libs/smarty/templates_c
+	#sudo chmod -R 777 /var/www/nZEDb/www/covers
+	#sudo chmod 777 /var/www/nZEDb/www
+	#sudo chmod 777 /var/www/nZEDb/www/install
+	#sudo chmod -R 777 /var/www/nZEDb/nzbfiles
+
+	# More secured apporach (not fully tested)
+	sudo chgrp www-data nZEDb
+	sudo chmod 775 nZEDb
 	cd nZEDb
 	sudo chmod -R 755 .
-	sudo chmod 777 /var/www/nZEDb/www/lib/smarty/templates_c
-	sudo chmod -R 777 /var/www/nZEDb/www/covers
-	sudo chmod 777 /var/www/nZEDb/www
-	sudo chmod 777 /var/www/nZEDb/www/install
-	sudo chmod -R 777 /var/www/nZEDb/nzbfiles
-
+	sudo chgrp www-data /var/www/nZEDb/libs/smarty/templates_c
+	sudo chmod 775 /var/www/nZEDb/libs/smarty/templates_c
+	sudo chgrp -R www-data /var/www/nZEDb/www/covers
+	sudo chmod -R 775 /var/www/nZEDb/www/covers
+	sudo chgrp www-data /var/www/nZEDb/www
+	sudo chmod 775 /var/www/nZEDb/www
+	sudo chgrp www-data /var/www/nZEDb/www/install
+	sudo chmod 775 /var/www/nZEDb/www/install
+	sudo chgrp -R www-data /var/www/nZEDb/resources/nzb
+	sudo chmod -R 775 /var/www/nZEDb/resources/nzb
+	
+	
+	
+	
 7. Install memcache / apc.
 	# APC:
 		sudo apt-get install php-apc
 		sudo service apache2 restart
 		sudo cp /usr/share/doc/php5-apcu/apc.php /var/www/nZEDb/www/admin
 
+		# Opcache can be validated it is working right by looking at the output of a phpinfo() call
+		# ###  Opcode Caching                 Up and Running
+		# ###  Optimization                   Enabled
+		
 		# In the future you can go to localhost/admin/apc.php in your browser to view apc stats.
 
 	# Memcache:
 		sudo apt-get install memcached php5-memcache
 
 		# Edit php.ini, add   extension=memcache.so   in the dynamic extensions section (if you get warnings on apache start you can remove this).
-			sudo nano /etc/php5/apache2/php.ini
-
+		#	sudo nano /etc/php5/apache2/php.ini
+		
 		sudo service apache2 restart
+
+	# Configure /var/lib/php5
+		sudo chod o+r /var/lib/php5
+		
+8. Run the installer.
+
+	# Change localhost for the server's IP if you are browsing on another computer.
+	http://localhost/install
 
 		#############################################################
 		# AFTER git cloning and seting up the indexer (step 7 & 8), #
 		#    edit config.php and change MEMCACHE_ENABLED to true.   #
 		#############################################################
-			sudo nano /var/www/nZEDb/www/config.php
+		#	sudo nano /var/www/nZEDb/www/config.php
 
-8. Run the installer.
-
-	# Change localhost for the server's IP if you are browsing on another computer.
-	http://localhost/install
 
 9. Configure the site.
 
