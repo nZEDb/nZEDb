@@ -122,6 +122,7 @@
 														<span class="label label-primary">{if isset($catsplit[0])} {$catsplit[0]}{/if}</span>
 														<span class="label label-danger">{if isset($catsplit[1])} {$catsplit[1]}{/if}</span>
 														<span class="label label-default">{$result.year}</span>
+														<span class="label label-default">{if $result.rating != ''}{$result.rating}/10{/if}</span>
 
 														<span class="label label-default">{$msize[$m@index]|fsize_format:"MB"}</span>
 																	<span class="label label-default">Posted {$mpostdate[$m@index]|timeago}
@@ -210,6 +211,7 @@
 														<span class="label label-primary">{if isset($catsplit[0])} {$catsplit[0]}{/if}</span>
 														<span class="label label-danger">{if isset($catsplit[1])} {$catsplit[1]}{/if}</span>
 														<span class="label label-default">{$result.year}</span>
+														<span class="label label-default">{if $result.rating != ''}{$result.rating}/10{/if}</span>
 
 														<span class="label label-default">{$msize[$m@index]|fsize_format:"MB"}</span>
 																	<span class="label label-default">Posted {$mpostdate[$m@index]|timeago}
@@ -277,7 +279,7 @@
 												name="CP{$result.imdbid}"
 												title="Add to CouchPotato"
 												><img
-													src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/couch.png"></a>
+													src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/couch.png"></a>
 									{/if}
 									{if isset($isadmin)}
 										<input type="button"

@@ -98,7 +98,7 @@
 																name="viewade{$result.title}"
 																title="View AdultdvdEmpire page"
 																><img
-																	src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/ade.png"></a>
+																	src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/ade.png"></a>
 													{else}
 														<a
 																target="_blank"
@@ -106,7 +106,7 @@
 																name="viewade{$result.title}"
 																title="Search AdultdvdEmpire page"
 																><img
-																	src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/ade.png"></a>
+																	src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/ade.png"></a>
 													{/if}
 													{if $result.classused == "hm"}
 														<a
@@ -115,7 +115,7 @@
 																name="viewhm{$result.title}"
 																title="View Hot Movies page"
 																><img
-																	src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/hotmovies.png"></a>
+																	src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/hotmovies.png"></a>
 													{else}
 														<a
 																target="_blank"
@@ -123,7 +123,7 @@
 																name="viewhm{$result.title}"
 																title="Search Hot Movies page"
 																><img
-																	src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/hotmovies.png"></a>
+																	src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/hotmovies.png"></a>
 													{/if}
 													{if $result.classused == "pop"}
 														<a
@@ -132,7 +132,7 @@
 																name="viewpop{$result.id}"
 																title="View Popporn page"
 																><img
-																	src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/popporn.png"></a>
+																	src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/popporn.png"></a>
 													{else}
 														<a
 																target="_blank"
@@ -140,7 +140,7 @@
 																name="viewpop{$result.id}"
 																title="Search Popporn page"
 																><img
-																	src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/popporn.png"></a>
+																	src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/popporn.png"></a>
 													{/if}
 													<a
 															target="_blank"
@@ -148,7 +148,7 @@
 															name="viewiafd{$result.title}"
 															title="Search Internet Adult Film Database"
 															><img
-																src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/iafd.png"></a>
+																src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/iafd.png"></a>
 													{if $mnfo[$m@index] > 0}<a
 														href="{$smarty.const.WWW_TOP}/nfo/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"
 														title="View NFO" class="label label-default"
@@ -165,7 +165,6 @@
 													<div>
 														<span class="label label-primary">{if isset($catsplit[0])} {$catsplit[0]}{/if}</span>
 														<span class="label label-danger">{if isset($catsplit[1])} {$catsplit[1]}{/if}</span>
-														<span class="label label-default">{if isset($result.year)} {$result.year}{/if}</span>
 
 														<span class="label label-default">{$msize[$m@index]|fsize_format:"MB"}</span>
 																	<span class="label label-default">Posted {$mpostdate[$m@index]|timeago}
@@ -230,7 +229,7 @@
 																name="viewade{$result.title}"
 																title="View AdultdvdEmpire page"
 																><img
-																	src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/ade.png"></a>
+																	src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/ade.png"></a>
 													{else}
 														<a
 																target="_blank"
@@ -238,7 +237,7 @@
 																name="viewade{$result.title}"
 																title="Search AdultdvdEmpire page"
 																><img
-																	src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/ade.png"></a>
+																	src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/ade.png"></a>
 													{/if}
 													{if $result.classused == "hm"}
 														<a
@@ -247,7 +246,7 @@
 																name="viewhm{$result.title}"
 																title="View Hot Movies page"
 																><img
-																	src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/hotmovies.png"></a>
+																	src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/hotmovies.png"></a>
 													{else}
 														<a
 																target="_blank"
@@ -255,7 +254,7 @@
 																name="viewhm{$result.title}"
 																title="Search Hot Movies page"
 																><img
-																	src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/hotmovies.png"></a>
+																	src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/hotmovies.png"></a>
 													{/if}
 													{if $result.classused == "pop"}
 														<a
@@ -264,7 +263,7 @@
 																name="viewpop{$result.id}"
 																title="View Popporn page"
 																><img
-																	src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/popporn.png"></a>
+																	src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/popporn.png"></a>
 													{else}
 														<a
 																target="_blank"
@@ -272,7 +271,7 @@
 																name="viewpop{$result.id}"
 																title="Search Popporn page"
 																><img
-																	src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/popporn.png"></a>
+																	src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/popporn.png"></a>
 													{/if}
 													<a
 															target="_blank"
@@ -280,7 +279,7 @@
 															name="viewiafd{$result.title}"
 															title="Search Internet Adult Film Database"
 															><img
-																src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/iafd.png"></a>
+																src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/iafd.png"></a>
 													{if $mnfo[$m@index] > 0}<a
 														href="{$smarty.const.WWW_TOP}/nfo/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"
 														title="View NFO" class="label label-default"
