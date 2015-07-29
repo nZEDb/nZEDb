@@ -8,6 +8,8 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2015-07-25 niel
 	* Chg: Merging in dev-configs branch. This adds a new Configure class and streamlines autoloading further.
+		***NOTE*** This will require moving config.php and settings.php from .../www/ to .../nzedb/config.
+			You will also have to remove the require_once line from the bottom of config.php
 2015-07-24 niel
 	* Fix: updated regex for predb_import_daily_batch script to account for Dropbox's changes to link HTML.
 2015-07-24 bart39
