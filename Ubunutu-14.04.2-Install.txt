@@ -210,6 +210,12 @@ Most of this guide is done from the command line (terminal).
 	Enable some groups in view groups.
 
 	Change settings in edit site (set api keys, set paths to unrar etc..)
+	
+	# For the majority of the functionality you most likely will want to install these also
+	# 7z
+	sudo apt-get install p7zip-full
+	# par2
+	sudo apt-get install par2
 
 10. Start indexing groups.
 
