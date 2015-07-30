@@ -162,10 +162,10 @@
 																							   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">{$result.title|escape:"htmlall"}</a></span>
 
 													<div class="release-subtitle">{if $result.genre != ''}{$result.genre}, {/if}</div>
-													<div>
+													<div id="guid{$mguid[$m@index]}">
 														<span class="label label-primary">{if isset($catsplit[0])} {$catsplit[0]}{/if}</span>
 														<span class="label label-danger">{if isset($catsplit[1])} {$catsplit[1]}{/if}</span>
-														<span class="label label-default">{if isset($result.year)} {$result.year}{/if}</span>
+														<span class="label label-default">{$result.year}</span>
 
 														<span class="label label-default">{$msize[$m@index]|fsize_format:"MB"}</span>
 																	<span class="label label-default">Posted {$mpostdate[$m@index]|timeago}
@@ -173,7 +173,7 @@
 														<br/><br/><br/>
 
 														<div class="release-name text-muted"><a
-																	href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">{$mname[$m@index]|escape:"htmlall"}</a>
+																	href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$mname[$m@index]|escape:"htmlall"}</a>
 														</div>
 														<div>
 															<a role="button" class="btn btn-default btn-xs"
@@ -186,10 +186,18 @@
 																		class="fa fa-comment-o"></i><span
 																		class="badge"> {$mcomments[$m@index]}
 																	Comment{if $mcomments[$m@index] != 1}s{/if}</span></a>
+															<span class="btn btn-hover btn-default btn-xs icon icon_cart text-muted"
+																  title="Add to Cart"><i
+																		class="fa fa-shopping-cart"></i></span>
+															{if isset($sabintegrated)}
+																<span class="btn btn-hover btn-default btn-xs icon icon_sab text-muted"
+																	  title="Send to my Queue"><i
+																			class="fa fa-send"></i></span>
+															{/if}
 														</div>
-														{/if}
-														{/foreach}
 													</div>
+													{/if}
+													{/foreach}
 												</div>
 											</div>
 										</div>
@@ -294,10 +302,10 @@
 																							   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">{$result.title|escape:"htmlall"}</a></span>
 
 													<div class="release-subtitle">{if $result.genre != ''}{$result.genre}, {/if}</div>
-													<div>
+													<div id="guid{$mguid[$m@index]}">
 														<span class="label label-primary">{if isset($catsplit[0])} {$catsplit[0]}{/if}</span>
 														<span class="label label-danger">{if isset($catsplit[1])} {$catsplit[1]}{/if}</span>
-														<span class="label label-default">{if isset($result.year)} {$result.year}{/if}</span>
+														<span class="label label-default">{$result.year}</span>
 
 														<span class="label label-default">{$msize[$m@index]|fsize_format:"MB"}</span>
 																	<span class="label label-default">Posted {$mpostdate[$m@index]|timeago}
@@ -318,10 +326,18 @@
 																		class="fa fa-comment-o"></i><span
 																		class="badge"> {$mcomments[$m@index]}
 																	Comment{if $mcomments[$m@index] != 1}s{/if}</span></a>
+															<span class="btn btn-hover btn-default btn-xs icon icon_cart text-muted"
+																  title="Add to Cart"><i
+																		class="fa fa-shopping-cart"></i></span>
+															{if isset($sabintegrated)}
+																<span class="btn btn-hover btn-default btn-xs icon icon_sab text-muted"
+																	  title="Send to my Queue"><i
+																			class="fa fa-send"></i></span>
+															{/if}
 														</div>
-														{/if}
-														{/foreach}
 													</div>
+													{/if}
+													{/foreach}
 												</div>
 											</div>
 										</div>
