@@ -1,0 +1,224 @@
+Guide based on newznab 11.10 & Ubuntu 13 guide.
+
+Most of this guide is done from the command line (terminal).
+
+0. Misc.
+
+	# For those using an older version of ubuntu, php 5.4 is required. (Ubuntu 12.04 requires backports for php 5.4 a user reported.)
+
+	# If you are using a VMware virtual machine be sure to install the VMware Tools
+		sudo apt-get install open-vm-tools
+	# Apparmor interferes with some of our files, here is how to disable it:
+		sudo /etc/init.d/apparmor stop
+		sudo /etc/init.d/apparmor teardown
+		sudo update-rc.d -f apparmor remove
+
+	# NOTE:  Both Python 2.7 & Python 3.4 are available by default on 14.04.2 
+	# The instructions I have done here are Python 3.4 based.
+	# I have commented out everything I did not test with.  
+	# For the threaded scripts you will require the Python cymysql module for mysql:
+		# Python 2.*
+			#sudo apt-get install python-setuptools python-pip
+			#sudo python -m easy_install
+			#sudo easy_install cymysql
+			#pip list
+		# Python 3.* - If Python 3 is installed, the module also must be installed
+			sudo apt-get install python3-setuptools python3-pip
+			sudo python3 -m easy_install pip
+			sudo easy_install3 cymysql
+
+
+1. Update and upgrade the operating system.
+
+	# Update the sources.
+		sudo apt-get update
+	# Upgrade the applications.
+		sudo apt-get upgrade
+	# (OPTIONAL) Optionally run sudo apt-get dist-upgrade to upgrade the kernel.
+	# Reboot.
+		sudo reboot
+
+2. Install PHP and extensions.
+
+	# Install PHP and the required extensions:
+		sudo apt-get install -y php5 php5-dev php-pear php5-gd php5-mysql php5-curl
+
+3. Install MySQL
+
+	# MySQL (Percona)
+	# Instructions from https://www.percona.com/doc/percona-server/5.6/installation/apt_repo.html
+		sudo apt-key adv --keyserver keys.gnupg.net --recv-keys 1C4CBDCDCD2EFD2A
+		sudo echo -n "deb http://repo.percona.com/apt trusty main" >> /etc/apt/sources.list.d/percona.list
+		sudo echo -n "deb-src http://repo.percona.com/apt trusty main" >> /etc/apt/sources.list.d/percona.list
+		
+		sudo apt-get update
+		sudo apt-get install percona-server-server-5.6 percona-server-client-5.6
+
+4. Install and configure Apache.
+
+	# Install apache:
+		sudo apt-get install apache2
+
+	# Configure PHP CLI ini file using the nano text editor:
+		sudo nano /etc/php5/cli/php.ini
+
+	## To search in nano, use control+w
+
+	# Change the following settings:
+		register_globals = Off
+		max_execution_time = 120
+	# You can set 1024M to -1 if you have RAM to spare.
+		memory_limit = 1024M
+	# Change Europe/London to your local timezone, see here for a list: http://php.net/manual/en/timezones.php
+	# remove the ; if there is one preceding date.timezone
+		date.timezone = Europe/London
+
+	# Press control+x when you are done to save and exit.
+
+	# Configure the PHP apache2 ini file (use the above settings):
+		sudo nano /etc/php5/apache2/php.ini
+
+	################
+	## Apache 2.4 ##
+	################
+
+	You must do the following change to /etc/apache2/apache2.conf:
+	Under <Directory /var/www/>, change AllowOverride None to AllowOverride All
+
+	# Create the site config:
+	sudo nano /etc/apache2/sites-available/nZEDb.conf
+
+	# NOTE: Removed Apache 2.2 
+	
+	# Paste the following:
+
+<VirtualHost *:80>
+	ServerAdmin webmaster@localhost
+	ServerName localhost
+
+	# These paths should be fine
+	DocumentRoot /var/www/nZEDb/www
+	ErrorLog /var/log/apache2/error.log
+	LogLevel warn
+</VirtualHost>
+
+	# Save and exit nano.
+
+	# Disable the default site, enable nZEDb, enable rewrite, restart apache:
+
+	sudo a2dissite 000-default
+	sudo a2ensite nZEDb
+	sudo a2enmod rewrite
+	sudo service apache2 restart
+
+	*****If you get the following error:**********
+	(Could not reliably determine the server's fully qualified domain name, using 127.0.1.1 for ServerName)
+
+	sudo sh -c 'echo "ServerName localhost" >> /etc/apache2/conf-available/name.conf' 
+	sudo a2enconf name
+	sudo service apache2 restart
+	
+	(Should still get an error about /var/www/nZEDb/www does not exist)
+	**********************************************
+
+5. Install unrar / ffmpeg / mediainfo / lame.
+
+	sudo apt-get install software-properties-common
+	sudo apt-get install unrar python-software-properties lame
+
+	sudo apt-get install mediainfo
+	
+
+
+6. Git clone the nZEDb source.
+
+	# If /var/www/ does not exist, create it : mkdir /var/www/  (This should exist)
+	cd /var/www/
+	#sudo chmod 777 .
+
+	# Install git.
+	sudo apt-get install git
+	# Clone the git.
+	git clone https://github.com/nZEDb/nZEDb.git
+
+	# Set the perms.
+	#sudo chmod 777 nZEDb
+	#cd nZEDb
+	#sudo chmod -R 755 .
+	#sudo chmod 777 /var/www/nZEDb/libs/smarty/templates_c
+	#sudo chmod -R 777 /var/www/nZEDb/www/covers
+	#sudo chmod 777 /var/www/nZEDb/www
+	#sudo chmod 777 /var/www/nZEDb/www/install
+	#sudo chmod -R 777 /var/www/nZEDb/nzbfiles
+
+	# More secured apporach (not fully tested)
+	sudo chgrp www-data nZEDb
+	sudo chmod 775 nZEDb
+	cd nZEDb
+	sudo chmod -R 755 .
+	sudo chgrp www-data /var/www/nZEDb/libs/smarty/templates_c
+	sudo chmod 775 /var/www/nZEDb/libs/smarty/templates_c
+	sudo chgrp -R www-data /var/www/nZEDb/resources/covers
+	sudo chmod -R 775 /var/www/nZEDb/resources/covers
+	sudo chgrp www-data /var/www/nZEDb/www
+	sudo chmod 775 /var/www/nZEDb/www
+	sudo chgrp www-data /var/www/nZEDb/www/install
+	sudo chmod 775 /var/www/nZEDb/www/install
+	sudo chgrp -R www-data /var/www/nZEDb/resources/nzb
+	sudo chmod -R 775 /var/www/nZEDb/resources/nzb
+	
+	
+	
+	
+7. Install memcache / apc.
+	# APC:
+		sudo apt-get install php-apc
+		sudo service apache2 restart
+		sudo cp /usr/share/doc/php5-apcu/apc.php /var/www/nZEDb/www/admin
+
+		# Opcache can be validated it is working right by looking at the output of a phpinfo() call
+		# ###  Opcode Caching                 Up and Running
+		# ###  Optimization                   Enabled
+		
+		# In the future you can go to localhost/admin/apc.php in your browser to view apc stats.
+
+	# Memcache:
+		sudo apt-get install memcached php5-memcache
+
+		# Edit php.ini, add   extension=memcache.so   in the dynamic extensions section (if you get warnings on apache start you can remove this).
+		#	sudo nano /etc/php5/apache2/php.ini
+		
+		sudo service apache2 restart
+
+	# Configure /var/lib/php5
+		sudo chod o+r /var/lib/php5
+		
+8. Run the installer.
+
+	# Change localhost for the server's IP if you are browsing on another computer.
+	http://localhost/install
+
+		#############################################################
+		# AFTER git cloning and seting up the indexer (step 7 & 8), #
+		#    edit config.php and change MEMCACHE_ENABLED to true.   #
+		#############################################################
+		#	sudo nano /var/www/nZEDb/www/config.php
+
+
+9. Configure the site.
+
+	Enable some groups in view groups.
+
+	Change settings in edit site (set api keys, set paths to unrar etc..)
+	
+	# For the majority of the functionality you most likely will want to install these also
+	# 7z
+	sudo apt-get install p7zip-full
+	# par2
+	sudo apt-get install par2
+
+10. Start indexing groups.
+
+	Use scripts in misc/update_scripts (update_binaries to get article headers, update_releases to create releases).
+
+	Use scripts in misc/update_scipts/nix_scripts to automate it.
