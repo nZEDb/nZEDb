@@ -7,6 +7,7 @@ All entries are dated according to merging into the code in dev branch.
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 2015-07-30 bart39
+	* Mrg: PR 1784 from iguyking - Create a new Ubuntu 14.04.02 install instructions.
 	* Mrg: PR 1780 from darius - Add send to cart and send to my queue buttons to rest of the pages.
 	* Mrg: PR 1779 from darius - Change the search page and results display, add send to cart and send to my queue buttons to movies page.
 2015-07-25 niel
