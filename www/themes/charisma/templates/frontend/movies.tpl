@@ -91,7 +91,7 @@
 
 													<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"><img
 																class="cover"
-																src="{if $result.cover == 1}{$serverroot}covers/movies/{$result.imdbid}-cover.jpg{else}{$serverroot}themes/charisma/images/nocover.png{/if}"
+																src="{if $result.cover == 1}{$serverroot}covers/movies/{$result.imdbid}-cover.jpg{else}{$serverroot}themes/omicron/images/nocover.png{/if}"
 																width="100" border="0"
 																alt="{$result.title|escape:"htmlall"}"/></a>
 													<a target="_blank"
@@ -114,11 +114,16 @@
 																<span class="release-title"><a class="text-muted"
 																							   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">{$result.title|escape:"htmlall"}</a></span>
 
-													<div class="release-subtitle">{if $result.genre != ''}<b>Genre: </b>{$result.genre}, {/if}</div>
+													<div class="release-subtitle">{if $result.genre != ''}
+															<b>Genre: </b>
+															{$result.genre}, {/if}</div>
 													<div class="release-subtitle">{if $result.plot != ''}{$result.plot} {/if}</div>
-													<div class="release-subtitle">{if $result.director != ''}<b>Director: </b>{$result.director} {/if}</div>
-													<div class="release-subtitle">{if $result.actors != ''}<b>Starring: </b>{$result.actors} {/if}</div>
-													<div>
+													<div class="release-subtitle">{if $result.director != ''}<b>Director: </b>{$result.director} {/if}
+													</div>
+													<div class="release-subtitle">{if $result.actors != ''}
+															<b>Starring: </b>
+															{$result.actors} {/if}</div>
+													<div id="guid{$mguid[$m@index]}">
 														<span class="label label-primary">{if isset($catsplit[0])} {$catsplit[0]}{/if}</span>
 														<span class="label label-danger">{if isset($catsplit[1])} {$catsplit[1]}{/if}</span>
 														<span class="label label-default">{$result.year}</span>
@@ -143,10 +148,18 @@
 																		class="fa fa-comment-o"></i><span
 																		class="badge"> {$mcomments[$m@index]}
 																	Comment{if $mcomments[$m@index] != 1}s{/if}</span></a>
+															<span class="btn btn-hover btn-default btn-xs icon_cart text-muted"
+																  title="Add to Cart"><i
+																		class="fa fa-shopping-cart"></i></span>
+															{if isset($sabintegrated)}
+																<span class="btn btn-hover btn-default btn-xs icon_sab text-muted"
+																	  title="Send to my Queue"><i
+																			class="fa fa-send"></i></span>
+															{/if}
 														</div>
-														{/if}
-														{/foreach}
 													</div>
+													{/if}
+													{/foreach}
 												</div>
 											</div>
 										</div>
@@ -180,7 +193,7 @@
 													{if $smarty.foreach.loop.first}
 													<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"><img
 																class="cover"
-																src="{if $result.cover == 1}{$serverroot}covers/movies/{$result.imdbid}-cover.jpg{else}{$serverroot}themes/charisma/images/nocover.png{/if}"
+																src="{if $result.cover == 1}{$serverroot}covers/movies/{$result.imdbid}-cover.jpg{else}{$serverroot}themes/omicron/images/nocover.png{/if}"
 																width="100" border="0"
 																alt="{$result.title|escape:"htmlall"}"/></a>
 													<a target="_blank"
@@ -203,11 +216,16 @@
 																<span class="release-title"><a class="text-muted"
 																							   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">{$result.title|escape:"htmlall"}</a></span>
 
-													<div class="release-subtitle">{if $result.genre != ''}<b>Genre: </b>{$result.genre}, {/if}</div>
+													<div class="release-subtitle">{if $result.genre != ''}
+															<b>Genre: </b>
+															{$result.genre}, {/if}</div>
 													<div class="release-subtitle">{if $result.plot != ''}{$result.plot} {/if}</div>
-													<div class="release-subtitle">{if $result.director != ''}<b>Director: </b>{$result.director} {/if}</div>
-													<div class="release-subtitle">{if $result.actors != ''}<b>Starring: </b>{$result.actors} {/if}</div>
-													<div>
+													<div class="release-subtitle">{if $result.director != ''}<b>Director: </b>{$result.director} {/if}
+													</div>
+													<div class="release-subtitle">{if $result.actors != ''}
+															<b>Starring: </b>
+															{$result.actors} {/if}</div>
+													<div id="guid{$mguid[$m@index]}">
 														<span class="label label-primary">{if isset($catsplit[0])} {$catsplit[0]}{/if}</span>
 														<span class="label label-danger">{if isset($catsplit[1])} {$catsplit[1]}{/if}</span>
 														<span class="label label-default">{$result.year}</span>
@@ -232,10 +250,18 @@
 																		class="fa fa-comment-o"></i><span
 																		class="badge"> {$mcomments[$m@index]}
 																	Comment{if $mcomments[$m@index] != 1}s{/if}</span></a>
+															<span class="btn btn-hover btn-default btn-xs icon icon_cart text-muted"
+																  title="Add to Cart"><i
+																		class="fa fa-shopping-cart"></i></span>
+															{if isset($sabintegrated)}
+																<span class="btn btn-hover btn-default btn-xs icon icon_sab text-muted"
+																	  title="Send to my Queue"><i
+																			class="fa fa-send"></i></span>
+															{/if}
 														</div>
-														{/if}
-														{/foreach}
 													</div>
+													{/if}
+													{/foreach}
 												</div>
 											</div>
 										</div>
@@ -279,7 +305,7 @@
 												name="CP{$result.imdbid}"
 												title="Add to CouchPotato"
 												><img
-													src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/couch.png"></a>
+													src="{$smarty.const.WWW_TOP}/templates/omicron/images/icons/couch.png"></a>
 									{/if}
 									{if isset($isadmin)}
 										<input type="button"
