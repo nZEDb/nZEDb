@@ -42,7 +42,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 2015-07-17 bart39
 	* Mrg: PR 1760 from darius - Add omicron and charisma Bootstrap 3 based templates.
 2015-07-16 niel
-	* Fix: Finally have a work around for the register.page not loading. Thanks to Bart39../com
+	* Fix: Finally have a work around for the register page not loading. Thanks to Bart39.
 2015-07-14 bart39
 	* Mrg: PR 1759 from darius - Update ReleaseRemover with new variant of codec installer file.
 2015-07-09 niel
@@ -54,6 +54,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	* Fix: Require of 'config.php' for installing.
 2015-07-06 niel
 	* Mrg: PR 1747, from sebst3r - API-Change regarding JSON-Output
+
 2015-06-30 niel
 	* Mrg: PR 1740, from Fossil01 - Added user signups by month view back to site-stats.
 2015-06-29 niel
