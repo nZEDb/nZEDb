@@ -218,7 +218,7 @@
 																			   title="Send to Sab">
 																				<img class="icon icon_sab"
 																					 alt="Send to my Sabnzbd"
-																					 src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/sabup.png">
+																					 src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/sabup.png">
 																			</a>
 																		{/if}
 																		{if $weHasVortex}
@@ -226,7 +226,7 @@
 																			   title="Send to NZBVortex">
 																				<img class="icon icon_nzbvortex"
 																					 alt="Send to my NZBVortex"
-																					 src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/vortex/bigsmile.png">
+																					 src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/vortex/bigsmile.png">
 																			</a>
 																		{/if}
 																		{if isset($nzbgetintegrated)}<a
@@ -235,7 +235,7 @@
 																				href="#"><img
 																					class="icon icon_nzbget"
 																					alt="Send to NZBget"
-																					src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/nzbgetup.png">
+																					src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/nzbgetup.png">
 																			</a>{/if}
 																		{if isset($isadmin)}
 																			<br/>

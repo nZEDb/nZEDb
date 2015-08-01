@@ -137,6 +137,12 @@
 									{if $reVideo.releaseid|@count > 0 || $reAudio|@count > 0}
 										<li><a href="#pane8" data-toggle="tab">MediaInfo</a></li>
 									{/if}
+									{if $xxx.backdrop == 1}
+										<li><a href="#pane9" data-toggle="tab">Back Cover</a></li>
+									{/if}
+									{if $game.backdrop == 1}
+										<li><a href="#pane10" data-toggle="tab">Screenshot</a></li>
+									{/if}
 
 								</ul>
 								<div class="tab-content">
@@ -769,6 +775,22 @@
 											</table>
 										</div>
 									{/if}
+									{if $xxx.backdrop == 1}
+										<div id="pane9" class="tab-pane">
+											<img src="{$smarty.const.WWW_TOP}/covers/xxx/{$xxx.id}-backdrop.jpg"
+												 alt="{$xxx.title|escape:"htmlall"}"
+												 data-toggle="modal"
+												 data-target="#modal-image"/>
+										</div>
+									{/if}
+									{if $game.backdrop == 1}
+										<div id="pane10" class="tab-pane">
+											<img src="{$smarty.const.WWW_TOP}/covers/games/{$game.id}-backdrop.jpg"
+												 alt="{$game.title|escape:"htmlall"}"
+												 data-toggle="modal"
+												 data-target="#modal-image"/>
+										</div>
+									{/if}
 
 								</div>
 							</div>
@@ -814,12 +836,18 @@
 					<img src="{$smarty.const.WWW_TOP}/covers/book/{$book.id}.jpg"
 						 alt="{$book.title|escape:"htmlall"}"/>
 				{/if}
-				{if $xxx && $xxx.cover == 1}
+				{if $xxx && $xxx.backdrop == 1}
+					<a href="{$smarty.const.WWW_TOP}/covers/xxx/{$xxx.id}-backdrop.jpg"
+					   class="modal-image_back"><img class="modal-image_back"
+													 src="{$smarty.const.WWW_TOP}/covers/xxx/{$xxx.id}-backdrop.jpg"
+													 alt="{$xxx.title|escape:"htmlall"}"/></a>
+				{elseif $xxx && $xxx.cover == 1}
 					<a href="{$smarty.const.WWW_TOP}/covers/xxx/{$xxx.id}-cover.jpg"
 					   class="modal-image"><img class="modal-image"
 												src="{$smarty.const.WWW_TOP}/covers/xxx/{$xxx.id}-cover.jpg"
 												alt="{$xxx.title|escape:"htmlall"}"/></a>
 				{/if}
+
 
 			</div>
 		</div>

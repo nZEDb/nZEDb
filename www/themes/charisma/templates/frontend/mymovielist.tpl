@@ -12,7 +12,7 @@
 
 						<div>
 							<img class="shadow"
-								 src="{if $result['cover'] ==""}{$serverroot}themes/omicron/images/nocover.png{else}{$result['cover']}{/if}"
+								 src="{if $result['cover'] ==""}{$serverroot}themes/charisma/images/nocover.png{else}{$result['cover']}{/if}"
 								 width="120" border="0" alt="{$result['title']|escape:"htmlall"}"/>
 
 							<div>
