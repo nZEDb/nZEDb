@@ -20,11 +20,8 @@
  */
 namespace nzedb\db;
 
-if (!defined('nZEDb_INSTALLER')) {
-	require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php';
-}
-
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
+use nzedb\utility\Text;
 use nzedb\utility\Versions;
 
 class Settings extends DB
@@ -146,7 +143,7 @@ class Settings extends DB
 				'name' 			=> 'coverspath',
 				'setting' 		=> 'coverspath',
 			]);
-		Utility::setCoversConstant($path);
+		Misc::setCoversConstant($path);
 	}
 
 	/**
@@ -301,18 +298,28 @@ class Settings extends DB
 
 	protected function _validate(array $fields)
 	{
+		$defaults = [
+			'checkpasswordedrar' => false,
+			'ffmpegpath'         => '',
+			'mediainfopath'      => '',
+			'nzbpath'            => '',
+			'tmpunrarpath'       => '',
+			'unrarpath'          => '',
+			'yydecoderpath'      => '',
+		];
+		$fields += $defaults;    // Make sure keys exist to avoid error notices.
 		ksort($fields);
 		// Validate settings
-		$fields['nzbpath'] = Utility::trailingSlash($fields['nzbpath']);
+		$fields['nzbpath'] = Text::trailingSlash($fields['nzbpath']);
 		$error             = null;
 		switch (true) {
-			case ($fields['mediainfopath'] != "" && !is_file($fields['mediainfopath'])):
+			case ($fields['mediainfopath'] != '' && !is_file($fields['mediainfopath'])):
 				$error = Settings::ERR_BADMEDIAINFOPATH;
 				break;
-			case ($fields['ffmpegpath'] != "" && !is_file($fields['ffmpegpath'])):
+			case ($fields['ffmpegpath'] != '' && !is_file($fields['ffmpegpath'])):
 				$error = Settings::ERR_BADFFMPEGPATH;
 				break;
-			case ($fields['unrarpath'] != "" && !is_file($fields['unrarpath'])):
+			case ($fields['unrarpath'] != '' && !is_file($fields['unrarpath'])):
 				$error = Settings::ERR_BADUNRARPATH;
 				break;
 			case (empty($fields['nzbpath'])):
@@ -327,10 +334,10 @@ class Settings extends DB
 			case ($fields['checkpasswordedrar'] == 1 && !is_file($fields['unrarpath'])):
 				$error = Settings::ERR_DEEPNOUNRAR;
 				break;
-			case ($fields['tmpunrarpath'] != "" && !file_exists($fields['tmpunrarpath'])):
+			case ($fields['tmpunrarpath'] != '' && !file_exists($fields['tmpunrarpath'])):
 				$error = Settings::ERR_BADTMPUNRARPATH;
 				break;
-			case ($fields['yydecoderpath'] != "" &&
+			case ($fields['yydecoderpath'] != '' &&
 				  $fields['yydecoderpath'] !== 'simple_php_yenc_decode' &&
 				  !file_exists($fields['yydecoderpath'])):
 				$error = Settings::ERR_BAD_YYDECODER_PATH;
@@ -344,7 +351,7 @@ class Settings extends DB
  * Putting procedural stuff inside class scripts like this is BAD. Do not use this as an excuse to do more.
  * This is a temporary measure until a proper frontend for cli stuff can be implemented with li3.
  */
-if (Utility::isCLI() && isset($argv[1])) {
+if (Misc::isCLI() && isset($argv[1])) {
 	echo (new Settings())->getSetting($argv[1]);
 }
 

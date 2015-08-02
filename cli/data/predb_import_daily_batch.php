@@ -3,19 +3,25 @@
 /* TODO better tune the queries for performance, including pre-fetching group_id and other data for
 	faster inclusion in the main query.
 */
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php';
+require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'indexer.php');
 
 use nzedb\db\PreDb;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
-if (!Utility::isWin()) {
-	$canExeRead = Utility::canExecuteRead(nZEDb_RES);
+if (!Misc::isWin()) {
+	if (nZEDb_DEBUG) {
+		echo "Checking resource path\n";
+	}
+	$canExeRead = Misc::canExecuteRead(nZEDb_RES);
 	if (is_string($canExeRead)) {
 		exit($canExeRead);
 	}
 	unset($canExeRead);
 }
 
+if (nZEDb_DEBUG) {
+	echo "Checking directory is writable\n";
+}
 if (!is_writable(nZEDb_RES)) {
 	exit('The (' . nZEDb_RES . ') folder must be writable.' . PHP_EOL);
 }
@@ -35,28 +41,38 @@ if (!isset($argv[1]) || !is_numeric($argv[1]) && $argv[1] != 'progress' || !isse
 		 'Argument 3: Show output of queries or not, true | false' . PHP_EOL
 	);
 }
+if (nZEDb_DEBUG) {
+	echo "Parrameter check completed\n";
+}
 
 $fileName = '_predb_dump.csv.gz';
 $innerUrl = 'fb2pffwwriruyco';
 $baseUrl  = 'https://www.dropbox.com/sh/' . $innerUrl;
 
-$result = Utility::getUrl(['url' => $baseUrl . '/AACy9Egno_v2kcziVHuvWbbxa']);
+if (nZEDb_DEBUG) {
+	echo "Fetching predb_dump list from DropBox\n";
+}
+$result = Misc::getUrl(['url' => $baseUrl . '/AACy9Egno_v2kcziVHuvWbbxa']);
 
 if (!$result) {
 	exit('Error connecting to dropbox.com, try again later?' . PHP_EOL);
 }
 
-Utility::clearScreen();
+Misc::clearScreen();
 
+if (nZEDb_DEBUG) {
+	echo "Extracting filenames from list.\n";
+}
 $result = preg_match_all(
-	'/<a href="https:\/\/www.dropbox.com\/sh\/' . $innerUrl . '\/(\S+\/\d+' . $fileName . '\?dl=0)"/',
+	'#<a [\w"=-]+ href="https://www.dropbox.com/sh/' . $innerUrl . '/(\S+/\d+' . $fileName .
+	'\?dl=0)"#',
 	$result,
 	$links);
 
 if ($result) {
-	$links      = array_unique($links[1]);
-	$total      = count($links);
-	$predb      = new PreDb();
+	$links = array_unique($links[1]);
+	$total = count($links);
+	$predb = new PreDb();
 
 	$progress = $predb->progress(settings_array());
 
@@ -79,10 +95,11 @@ if ($result) {
 			}
 
 			// Download the dump.
-			$dump = Utility::getUrl(['url' => "$baseUrl/{$match[1]}/{$match[2]}$fileName?dl=1"]);
+			$dump = Misc::getUrl(['url' => "$baseUrl/{$match[1]}/{$match[2]}$fileName?dl=1"]);
 
 			if (!$dump) {
-				echo "Error downloading dump {$match[2]} you can try manually importing it." . PHP_EOL;
+				echo "Error downloading dump {$match[2]} you can try manually importing it." .
+					 PHP_EOL;
 				continue;
 			}
 
@@ -110,7 +127,7 @@ if ($result) {
 
 			// Make sure it's readable by all.
 			chmod($dumpFile, 0777);
-			$local   = strtolower($argv[2]) == 'local' ? true : false;
+			$local = strtolower($argv[2]) == 'local' ? true : false;
 			$verbose = $argv[3] == true ? true : false;
 
 			if ($verbose) {
@@ -124,8 +141,8 @@ if ($result) {
 			$predb->executeLoadData([
 										'fields' => '\\t\\t',
 										'lines'  => '\\r\\n',
-										'local' => $local,
-										'path' => $dumpFile,
+										'local'  => $local,
+										'path'   => $dumpFile,
 									]);
 
 			// Remove any titles where length <=8
@@ -146,13 +163,15 @@ if ($result) {
 			// Delete the dump.
 			unlink($dumpFile);
 
-			$progress = $predb->progress(settings_array($match[2] + 1, $progress), ['read' => false]);
+			$progress = $predb->progress(settings_array($match[2] + 1, $progress),
+										 ['read' => false]);
 			echo "Successfully imported PreDB dump {$match[2]} " . (--$total) .
 				 ' dumps remaining to import.' . PHP_EOL;
 		}
 	}
+} else {
+	echo "Failed to create list of filenames, aborting\n";
 }
-
 
 function settings_array($last = null, $settings = null)
 {

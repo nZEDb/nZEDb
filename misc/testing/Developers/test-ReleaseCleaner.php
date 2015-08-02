@@ -1,4 +1,5 @@
 <?php
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
 use nzedb\ReleaseCleaning;
 use nzedb\SphinxSearch;
@@ -32,8 +33,6 @@ $rename = false;
 if ($argv[3] === 'true') {
 	$rename = true;
 }
-
-require_once dirname(__FILE__) . '/../../../www/config.php';
 
 $pdo = new Settings();
 

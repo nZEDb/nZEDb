@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
 /**
  * Attempts to find a PRE name for a release using a request ID from our local pre database,
@@ -150,7 +150,7 @@ class RequestIDWeb extends RequestID
 		$requestArray[0] = ['ident' => 0, 'group' => 'none', 'reqid' => 0];
 
 		// Do a web lookup.
-		$returnXml = Utility::getUrl([
+		$returnXml = Misc::getUrl([
 				'url' => $this->pdo->getSetting('request_url'),
 				'method' => 'post',
 				'postdata' => 'data=' . serialize($requestArray),

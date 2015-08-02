@@ -13,10 +13,10 @@ if (!isset($argv[1]) || !in_array($argv[1], ['ama', 'add', 'mov', 'nfo', 'sha', 
 	);
 }
 
+require('.do_not_run/require.php');
+
 use nzedb\libraries\Forking;
 
 declare(ticks = 1);
-
-require('.do_not_run/require.php');
 
 (new Forking())->processWorkType('postProcess_' . $argv[1], (isset($argv[2]) && $argv[2] === 'true' ? [0 => true] : []));

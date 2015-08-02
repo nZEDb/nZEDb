@@ -3,7 +3,7 @@
 use nzedb\Category;
 use nzedb\Releases;
 use nzedb\db\Settings;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 use nzedb\Capabilities;
 
 
@@ -166,7 +166,7 @@ switch ($function) {
 
 		addCoverURL($relData,
 			function($release) {
-				return Utility::getCoverURL(['type' => 'movies', 'id' => $release['imdbid']]);
+				return Misc::getCoverURL(['type' => 'movies', 'id' => $release['imdbid']]);
 			}
 		);
 

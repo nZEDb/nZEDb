@@ -1,11 +1,11 @@
 <?php
 namespace nzedb;
 
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
 /**
  * Show log message to CLI/Web and log it to a file.
- * Turn these on in automated.config.php
+ * Turn these on in constants.php
  *
  * @example usage:
  *
@@ -204,7 +204,7 @@ class Logger
 		$this->setLogFile();
 
 		$this->outputCLI = (strtolower(PHP_SAPI) === 'cli');
-		$this->isWindows = Utility::isWin();
+		$this->isWindows = Misc::isWin();
 		$this->timeStart = time();
 	}
 

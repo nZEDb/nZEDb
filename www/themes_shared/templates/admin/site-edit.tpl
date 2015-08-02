@@ -993,6 +993,18 @@
 				</td>
 			</tr>
 			<tr>
+				<td><label for="max_headers_iteration">Max headers iteration</label>:</td>
+				<td>
+					<input class="small"
+						id="max_headers_iteration"
+						name="max_headers_iteration"
+						type="text"
+						value="{$site->max_headers_iteration}" />
+
+					<div class="hint">The maximum number of headers that update binaries sees as the total range. This ensure that a total of no more than this is attempted to be downloaded at one time per group.</div>
+				</td>
+			</tr>
+			<tr>
 				<td style="width:180px;"><label for="maxmssgs">Max Headers:</label></td>
 				<td>
 					<input class="short" id="maxmssgs" name="maxmssgs" type="text" value="{$site->maxmssgs}"/>

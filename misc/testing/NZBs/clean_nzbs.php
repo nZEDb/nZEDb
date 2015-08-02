@@ -1,12 +1,12 @@
 <?php
-require_once dirname(__FILE__) . '/../../../www/config.php';
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
 use nzedb\ConsoleTools;
 use nzedb\NZB;
 use nzedb\ReleaseImage;
 use nzedb\Releases;
 use nzedb\db\Settings;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
 $pdo = new Settings();
 
@@ -23,7 +23,7 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete")) {
 	$itr = new \RecursiveIteratorIterator($dirItr, \RecursiveIteratorIterator::LEAVES_ONLY);
 	foreach ($itr as $filePath) {
 		if (is_file($filePath) && preg_match('/([a-f-0-9]+)\.nzb\.gz/', $filePath, $guid)) {
-			$nzbfile = Utility::unzipGzipFile($filePath);
+			$nzbfile = Misc::unzipGzipFile($filePath);
 			if ($nzbfile) {
 				$nzbfile = @simplexml_load_string($nzbfile);
 			}

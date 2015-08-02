@@ -1,10 +1,10 @@
 <?php
 //This script downloads covert art for Tv Shows -- it is intended to be run at interval, generally after the TvRage database is populated
-require_once dirname(__FILE__) . '/../../../www/config.php';
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
 use nzedb\TvRage;
 use nzedb\db\Settings;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
 $pdo = new Settings();
 $tvrage = new TvRage(['Settings' => $pdo, 'Echo' => true]);
@@ -45,7 +45,7 @@ if ($shows instanceof \Traversable) {
 
 		$imgbytes = '';
 		if (isset($rInfo['imgurl']) && !empty($rInfo['imgurl'])) {
-			$img = Utility::getUrl(['url' => $rInfo['imgurl']]);
+			$img = Misc::getUrl(['url' => $rInfo['imgurl']]);
 			if ($img !== false) {
 				$im = @imagecreatefromstring($img);
 				if ($im !== false) {

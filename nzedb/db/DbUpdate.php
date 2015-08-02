@@ -22,7 +22,8 @@ namespace nzedb\db;
 
 use nzedb\ColorCLI;
 use nzedb\utility\Git;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
+use nzedb\utility\Text;
 
 
 class DbUpdate
@@ -89,13 +90,13 @@ class DbUpdate
 			'ext'	=> 'tsv',
 			'files'	=> [],
 			'path'	=> nZEDb_RES . 'db' . DS . 'schema' . DS . 'data',
-			'regex'	=> '#^' . Utility::PATH_REGEX . '(?P<order>\d+)-(?P<table>\w+)\.tsv$#',
+			'regex'	=> '#^' . Misc::PATH_REGEX . '(?P<order>\d+)-(?P<table>\w+)\.tsv$#',
 		];
 		$options += $defaults;
 
-		$show = (Utility::isCLI() || nZEDb_DEBUG);
+		$show = (Misc::isCLI() || nZEDb_DEBUG);
 
-		$files = empty($options['files']) ? Utility::getDirFiles($options) : $options['files'];
+		$files = empty($options['files']) ? Misc::getDirFiles($options) : $options['files'];
 		natsort($files);
 		$local = $this->pdo->isLocalDb() ? '' : 'LOCAL ';
 		$sql = 'LOAD DATA ' . $local . 'INFILE "%s" IGNORE INTO TABLE `%s` FIELDS TERMINATED BY "\t" OPTIONALLY ENCLOSED BY "\"" IGNORE 1 LINES (%s)';
@@ -121,7 +122,7 @@ class DbUpdate
 						if ($show === true) {
 							echo "Inserting data into table: '$table'\n";
 						}
-						if (Utility::isWin()) {
+						if (Misc::isWin()) {
 							$file = str_replace("\\", '\/', $file);
 						}
 						$this->pdo->exec(sprintf($sql, $file, $table, $fields));
@@ -154,7 +155,7 @@ class DbUpdate
 			'data'	=> nZEDb_RES . 'db' . DS . 'schema' . DS . 'data' . DS,
 			'ext'	=> 'sql',
 			'path'	=> nZEDb_RES . 'db' . DS . 'patches' . DS . $this->_DbSystem,
-			'regex'	=> '#^' . Utility::PATH_REGEX . '\+(?P<order>\d+)~(?P<table>\w+)\.sql$#',
+			'regex'	=> '#^' . Misc::PATH_REGEX . '\+(?P<order>\d+)~(?P<table>\w+)\.sql$#',
 			'safe'	=> true,
 		];
 		$options += $defaults;
@@ -162,7 +163,7 @@ class DbUpdate
 		$this->processPatches(['safe' => $options['safe']]); // Make sure we are completely up to date!
 
 		echo $this->log->primaryOver('Looking for new patches...');
-		$files = Utility::getDirFiles($options);
+		$files = Misc::getDirFiles($options);
 
 		$count = count($files);
 		echo $this->log->header(" $count found");
@@ -200,7 +201,7 @@ class DbUpdate
 			'data'	=> nZEDb_RES . 'db' . DS . 'schema' . DS . 'data' . DS,
 			'ext'	=> 'sql',
 			'path'	=> nZEDb_RES . 'db' . DS . 'patches' . DS . $this->_DbSystem,
-			'regex'	=> '#^' . Utility::PATH_REGEX . '(?P<patch>\d{4})~(?P<table>\w+)\.sql$#',
+			'regex'	=> '#^' . Misc::PATH_REGEX . '(?P<patch>\d{4})~(?P<table>\w+)\.sql$#',
 			'safe'	=> true,
 		];
 		$options += $defaults;
@@ -210,7 +211,7 @@ class DbUpdate
 			exit("Bad sqlpatch value: '$currentVersion'\n");
 		}
 
-		$files = empty($options['files']) ? Utility::getDirFiles($options) : $options['files'];
+		$files = empty($options['files']) ? Misc::getDirFiles($options) : $options['files'];
 
 		if (count($files)) {
 			natsort($files);
@@ -387,7 +388,7 @@ class DbUpdate
 		$options += $default;
 
 		$file = [];
-		$filespec = Utility::trailingSlash($options['path']) . $options['path'];
+		$filespec = Text::trailingSlash($options['path']) . $options['path'];
 		if (file_exists($filespec) && ($file = file($filespec, FILE_IGNORE_NEW_LINES))) {
 			$count = count($file);
 			$index = 0;
@@ -419,7 +420,7 @@ class DbUpdate
 
 	protected function _backupDb()
 	{
-		if (Utility::hasCommand("php5")) {
+		if (Misc::hasCommand("php5")) {
 			$PHP = "php5";
 		} else {
 			$PHP = "php";

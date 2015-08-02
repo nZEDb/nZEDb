@@ -3,7 +3,7 @@ require_once './config.php';
 
 use nzedb\Releases;
 use nzedb\NZB;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
 $page = new AdminPage;
 
@@ -24,7 +24,7 @@ if (isset($_GET['id'])) {
 		$page->show404();
 	}
 
-	$nzbFile = Utility::unzipGzipFile($nzbPath);
+	$nzbFile = Misc::unzipGzipFile($nzbPath);
 
 	$files = $nzb->nzbFileList($nzbFile);
 
