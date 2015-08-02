@@ -6,9 +6,9 @@ if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
-if (isset($_GET["add"])) {
+if (isset($_REQUEST["add"])) {
 	$releases = new Releases(['Settings' => $page->settings]);
-	$guids = explode(',', $_GET['add']);
+	$guids = explode(',', $_REQUEST['add']);
 	$data = $releases->getByGuid($guids);
 
 	if (!$data) {
