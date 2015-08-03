@@ -3,7 +3,7 @@ namespace nzedb;
 
 use nzedb\db\Settings;
 use nzedb\processing\PostProcess;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
 require_once nZEDb_LIBS . 'getid3/getid3/getid3.php';
 require_once nZEDb_LIBS . 'rarinfo/par2info.php';
@@ -143,7 +143,7 @@ class Nfo
 			$tmpPath = $this->tmpPath . $guid . '.nfo';
 			file_put_contents($tmpPath, $possibleNFO);
 
-			$result = Utility::fileInfo($tmpPath);
+			$result = Misc::fileInfo($tmpPath);
 			if (!empty($result)) {
 
 				// Check if it's text.

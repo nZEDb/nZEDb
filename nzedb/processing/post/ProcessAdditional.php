@@ -17,7 +17,7 @@ use nzedb\ReleaseImage;
 use nzedb\Releases;
 use nzedb\SphinxSearch;
 use nzedb\db\Settings;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
 class ProcessAdditional
 {
@@ -794,7 +794,7 @@ class ProcessAdditional
 			return $this->_decrementPasswordStatus();
 		}
 
-		$nzbContents = Utility::unzipGzipFile($nzbPath);
+		$nzbContents = Misc::unzipGzipFile($nzbPath);
 		if (!$nzbContents) {
 			$this->_echo('NZB is empty or broken for GUID: ' . $this->_release['guid'], 'warning');
 			return $this->_decrementPasswordStatus();
@@ -1080,7 +1080,7 @@ class ProcessAdditional
 				if ($this->_extractUsingRarInfo === false && $this->_unrarPath !== false) {
 					$fileName = $this->tmpPath . uniqid() . '.rar';
 					file_put_contents($fileName, $compressedData);
-					Utility::runCmd(
+					Misc::runCmd(
 						$this->_killString . $this->_unrarPath .
 						'" e -ai -ep -c- -id -inul -kb -or -p- -r -y "' .
 						$fileName . '" "' . $this->tmpPath . 'unrar/"'
@@ -1096,7 +1096,7 @@ class ProcessAdditional
 				if ($this->_extractUsingRarInfo === false && $this->_7zipPath !== false) {
 					$fileName = $this->tmpPath . uniqid() . '.zip';
 					file_put_contents($fileName, $compressedData);
-					Utility::runCmd(
+					Misc::runCmd(
 						$this->_killString . $this->_7zipPath . '" x "' .
 						$fileName . '" -bd -y -o"' . $this->tmpPath . 'unzip/"'
 					);
@@ -1328,7 +1328,7 @@ class ProcessAdditional
 
 					// Check file's magic info.
 					else {
-						$output = Utility::fileInfo($file);
+						$output = Misc::fileInfo($file);
 						if (!empty($output)) {
 
 							switch (true) {
@@ -1757,13 +1757,13 @@ class ProcessAdditional
 			if ($retVal === false) {
 
 				// Get the media info for the file.
-				$xmlArray = Utility::runCmd(
+				$xmlArray = Misc::runCmd(
 					$this->_killString . $this->pdo->getSetting('mediainfopath') . '" --Output=XML "' . $fileLocation . '"'
 				);
 				if (is_array($xmlArray)) {
 
 					// Convert to array.
-					$arrXml = Utility::objectsIntoArray(@simplexml_load_string(implode("\n", $xmlArray)));
+					$arrXml = Misc::objectsIntoArray(@simplexml_load_string(implode("\n", $xmlArray)));
 
 					if (isset($arrXml['File']['track'])) {
 
@@ -1844,7 +1844,7 @@ class ProcessAdditional
 				$audioFileName = ($this->_release['guid'] . '.ogg');
 
 				// Create an audio sample.
-				Utility::runCmd(
+				Misc::runCmd(
 					$this->_killString .
 					$this->pdo->getSetting('ffmpegpath') .
 					'" -t 30 -i "' .
@@ -1947,7 +1947,7 @@ class ProcessAdditional
 
 		$tmpVideo = ($this->tmpPath . uniqid() . $extension);
 		// Get the real duration of the file.
-		$time = Utility::runCmd(
+		$time = Misc::runCmd(
 			$this->_killString .
 			$this->pdo->getSetting('ffmpegpath') .
 			'" -i "' . $videoLocation .
@@ -1993,7 +1993,7 @@ class ProcessAdditional
 			$time = $this->getVideoTime($fileLocation);
 
 			// Create the image.
-			Utility::runCmd(
+			Misc::runCmd(
 				$this->_killString .
 				$this->pdo->getSetting('ffmpegpath') .
 				'" -i "' .
@@ -2086,7 +2086,7 @@ class ProcessAdditional
 					}
 
 					// Try to get the sample (from the end instead of the start).
-					Utility::runCmd(
+					Misc::runCmd(
 						$this->_killString .
 						$this->pdo->getSetting('ffmpegpath') .
 						'" -i "' .
@@ -2103,7 +2103,7 @@ class ProcessAdditional
 
 			if ($newMethod === false) {
 				// If longer than 60 or we could not get the video length, run the old way.
-				Utility::runCmd(
+				Misc::runCmd(
 					$this->_killString .
 					$this->pdo->getSetting('ffmpegpath') .
 					'" -i "' .
@@ -2178,7 +2178,7 @@ class ProcessAdditional
 		if (is_file($fileLocation)) {
 
 			// Run media info on it.
-			$xmlArray = Utility::runCmd(
+			$xmlArray = Misc::runCmd(
 				$this->_killString . $this->pdo->getSetting('mediainfopath') . '" --Output=XML "' . $fileLocation . '"'
 			);
 

@@ -9,13 +9,13 @@ use nzedb\NZB;
 use nzedb\ReleaseImage;
 use nzedb\Releases;
 use nzedb\db\Settings;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
 $pdo = new Settings();
 
 $row = $pdo->queryOneRow("SELECT value FROM settings WHERE setting = 'coverspath'");
 if ($row !== false) {
-	Utility::setCoversConstant($row['value']);
+	Misc::setCoversConstant($row['value']);
 } else {
 	die("Unable to determine covers path!\n");
 }

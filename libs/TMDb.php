@@ -1051,7 +1051,7 @@ class TMDb
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
 			$this->incRequests();
-			curl_setopt_array($ch, nzedb\utility\Utility::curlSslContextOptions());
+			curl_setopt_array($ch, nzedb\utility\Misc::curlSslContextOptions());
 			$response = curl_exec($ch);
 
 			$header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);

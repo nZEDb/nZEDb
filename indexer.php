@@ -18,16 +18,17 @@
  * @author niel
  * @copyright 2015 nZEDb
  */
-require_once 'initialise.php';
-require_once nZEDb_LIBS . 'autoloader.php';
+require_once 'constants.php';
+require_once 'autoloader.php';
 
 use nzedb\config\Configure;
-
+use nzedb\utility\Misc;
 
 $config = new Configure('indexer');
 
-define('HAS_WHICH', nzedb\utility\Utility::hasWhich() ? true : false);
+define('HAS_WHICH', Misc::hasWhich() ? true : false);
 
+// TODO Move this to Configure class
 // Check if they updated config.php for the openssl changes. Only check 1 to save speed.
 if (!defined('nZEDb_SSL_VERIFY_PEER')) {
 	define('nZEDb_SSL_CAFILE', '');

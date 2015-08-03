@@ -3,7 +3,7 @@ namespace nzedb;
 
 require_once nZEDb_LIBS . 'simple_html_dom.php';
 
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
 /**
  * Class adultdvdempire
@@ -339,7 +339,7 @@ class ADE
 		curl_setopt($this->_ch, CURLOPT_VERBOSE, 0);
 		curl_setopt($this->_ch, CURLOPT_USERAGENT, "Firefox/2.0.0.1");
 		curl_setopt($this->_ch, CURLOPT_FAILONERROR, 1);
-		curl_setopt_array($this->_ch, Utility::curlSslContextOptions());
+		curl_setopt_array($this->_ch, Misc::curlSslContextOptions());
 		$this->_response = curl_exec($this->_ch);
 		if (!$this->_response) {
 			curl_close($this->_ch);

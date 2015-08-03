@@ -135,7 +135,7 @@ class Git {
 		}
 
 		if (strpos($binPath, ' ') !== false) {
-			$binPath = nzedb\utility\Utility::isWin() ? '"' . $binPath . '"'
+			$binPath = nzedb\utility\Misc::isWin() ? '"' . $binPath . '"'
 				: str_replace(' ', '\ ', $binPath);
 		}
 

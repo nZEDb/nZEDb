@@ -13,6 +13,9 @@ test.php
 *.orig
 
 /.idea/
+/nzedb/config/config.php
+/nzedb/config/settings.php
+
 /nbproject/
 /nbproject/private/
 /resources/covers/*

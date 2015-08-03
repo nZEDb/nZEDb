@@ -20,19 +20,18 @@
  */
 namespace nzedb\config;
 
+require_once nZEDb_LIBS . 'autoloader.php';
 
 class Configure
 {
 	private $environments = [
 		'indexer'	=> ['config'],
 		'install'	=> [],
-		'shared'	=> [],
 		'smarty'	=> ['config'],
 	];
 
 	public function __construct($environment = 'indexer')
 	{
-		$this->loadEnvironment('shared');
 		$this->loadEnvironment($environment);
 	}
 
@@ -44,9 +43,27 @@ class Configure
 				if (file_exists($file)) {
 					require_once $file;
 				} else {
-					throw new \RuntimeException("Unable to load configuration file '$settings'. Make sure it has been created and contains correct settings.");
+					$errorCode = (int)($settings === 'config');
+					throw new \RuntimeException(
+						"Unable to load configuration file '$file'. Make sure it has been created and contains correct settings.",
+						$errorCode
+					);
+				}
+				switch ($settings) {
+					case 'config':
+							// Check if they updated config.php for the openssl changes. Only check 1 to save speed.
+							if (!defined('nZEDb_SSL_VERIFY_PEER')) {
+								define('nZEDb_SSL_CAFILE', '');
+								define('nZEDb_SSL_CAPATH', '');
+								define('nZEDb_SSL_VERIFY_PEER', '0');
+								define('nZEDb_SSL_VERIFY_HOST', '0');
+								define('nZEDb_SSL_ALLOW_SELF_SIGNED', '1');
+							}
+						break;
 				}
 			}
+		} else {
+			throw new \RuntimeException("Unknown environment passed to Configure class!");
 		}
 	}
 }

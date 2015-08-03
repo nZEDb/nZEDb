@@ -9,7 +9,7 @@ use nzedb\NZB;
 use nzedb\ReleaseImage;
 use nzedb\Releases;
 use nzedb\db\Settings;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
 $cli = new ColorCLI();
 if (isset($argv[1])) {
@@ -51,7 +51,7 @@ function create_guids($live, $delete = false)
 				$reccnt++;
 				$nzbpath = $nzb->NZBPath($relrec['guid']);
 				if ($nzbpath !== false) {
-					$nzbfile = Utility::unzipGzipFile($nzbpath);
+					$nzbfile = Misc::unzipGzipFile($nzbpath);
 					if ($nzbfile) {
 						$nzbfile = @simplexml_load_string($nzbfile);
 					}
