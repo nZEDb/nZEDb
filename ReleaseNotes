@@ -1,6 +1,17 @@
 This file details which changes to the code are in which release version. It is a complement to the ChangeLog file which list *when* changes are made to the dev branch.
 
 
+0.4.24 2015-08-03
+Added:
+	*
+
+Changed:
+	*
+
+Fixed:
+	*
+
+
 0.4.23 2015-07-06
 Added:
 	* Created a config directory under .../nzedb to contain configuration/settings files, so they are all together and don't need paths changing when code moves. I'll gradually move older config/settings files here, with some exceptions TBD.
