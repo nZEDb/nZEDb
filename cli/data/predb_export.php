@@ -19,7 +19,7 @@
  * @copyright 2015 nZEDb
  */
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php';
+require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'indexer.php');
 
 use nzedb\db\PreDb;
 use nzedb\utility\Misc;

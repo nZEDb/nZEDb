@@ -1,6 +1,6 @@
 <?php
 /* Deletes releases in categories you have disabled here : http://localhost/admin/category-list.php */
-require dirname(__FILE__) . '/../../../www/config.php';
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
 use nzedb\Category;
 use nzedb\NZB;

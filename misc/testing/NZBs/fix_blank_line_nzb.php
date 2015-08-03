@@ -1,6 +1,6 @@
 <?php
 /* Fixes NZB files with a blank first line. */
-require dirname(__FILE__) . '/../../../www/config.php';
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
 use nzedb\NZB;
 use nzedb\db\Settings;
