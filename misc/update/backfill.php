@@ -1,5 +1,5 @@
 <?php
-require dirname(__FILE__) . '/config.php';
+require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'indexer.php');
 
 use nzedb\Backfill;
 use nzedb\NNTP;

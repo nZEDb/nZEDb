@@ -22,6 +22,8 @@
 $start = ['start', 'run', 'resume', 'continue'];
 $stop  = ['stop', 'end', 'finish', 'halt'];
 
+$options = implode(' | ', $start) . ' | ' . implode(' | ', $stop);
+
 $message = <<<HELP_TEXT
   Usage: {$argv[0]} [$options]
 Start or stop the processing of tmux scripts. This is functionally equivalent to (un)setting the
@@ -29,7 +31,6 @@ Start or stop the processing of tmux scripts. This is functionally equivalent to
 HELP_TEXT;
 
 if ($argc == 1) {
-	$options = implode(' | ', $start) . ' | ' . implode(' | ', $stop);
 	exit($message);
 }
 

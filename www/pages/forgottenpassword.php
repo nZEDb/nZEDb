@@ -1,6 +1,6 @@
 <?php
 
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 use nzedb\Captcha;
 
 if ($page->users->isLoggedIn()) {
@@ -25,7 +25,7 @@ switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
 			$page->users->updatePassResetGuid($ret["id"], '');
 			$newPassword = $page->users->generatePassword();
 			$page->users->updatePassword($ret["id"], $newPassword);
-			Utility::sendEmail($ret["email"], ($page->settings->getSetting('title') . " Password Reset"),
+			Misc::sendEmail($ret["email"], ($page->settings->getSetting('title') . " Password Reset"),
 				"Your password has been reset to $newPassword", $page->settings->getSetting('email')
 			);
 
@@ -61,7 +61,7 @@ switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
 					$page->users->updatePassResetGuid($ret["id"], $guid);
 
 					// Send the email
-					Utility::sendEmail(
+					Misc::sendEmail(
 						$ret["email"],
 						($page->settings->getSetting('title') . " Forgotten Password Request"),
 						("Someone has requested a password reset for this email address.<br>To reset the password use <a href=\"" .

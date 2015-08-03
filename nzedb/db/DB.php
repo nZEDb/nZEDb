@@ -5,7 +5,8 @@ use nzedb\ColorCLI;
 use nzedb\ConsoleTools;
 use nzedb\Logger;
 use nzedb\LoggerException;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
+use nzedb\utility\Text;
 use nzedb\libraries\Cache;
 use nzedb\libraries\CacheException;
 
@@ -105,7 +106,7 @@ class DB extends \PDO
 	 */
 	public function __construct(array $options = [])
 	{
-		$this->cli = Utility::isCLI();
+		$this->cli = Misc::isCLI();
 
 		$defaults = [
 			'checkVersion'	=> false,
@@ -1147,7 +1148,7 @@ class DB extends \PDO
 		}
 
 		if (nZEDb_QUERY_STRIP_WHITESPACE) {
-			$query = Utility::collapseWhiteSpace($query);
+			$query = Text::collapseWhiteSpace($query);
 		}
 		return true;
 	}

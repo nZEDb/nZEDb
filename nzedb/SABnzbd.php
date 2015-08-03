@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
 /**
  * Class SABnzbd
@@ -150,7 +150,7 @@ class SABnzbd
 	 */
 	public function sendToSab($guid)
 	{
-		return Utility::getUrl([
+		return Misc::getUrl([
 				'url' => $this->url .
 					'api?mode=addurl&priority=' .
 					$this->priority .
@@ -178,7 +178,7 @@ class SABnzbd
 	 */
 	public function getQueue()
 	{
-		return Utility::getUrl([
+		return Misc::getUrl([
 				'url' =>
 					$this->url .
 					"api?mode=qstatus&output=json&apikey=" .
@@ -195,7 +195,7 @@ class SABnzbd
 	 */
 	public function getAdvQueue()
 	{
-		return Utility::getUrl([
+		return Misc::getUrl([
 				'url' =>
 					$this->url .
 					"api?mode=queue&start=START&limit=LIMIT&output=json&apikey=" .
@@ -214,7 +214,7 @@ class SABnzbd
 	 */
 	public function delFromQueue($id)
 	{
-		return Utility::getUrl([
+		return Misc::getUrl([
 				'url' =>
 					$this->url .
 					"api?mode=queue&name=delete&value=" .
@@ -235,7 +235,7 @@ class SABnzbd
 	 */
 	public function pauseFromQueue($id)
 	{
-		return Utility::getUrl([
+		return Misc::getUrl([
 				'url' =>
 					$this->url .
 					"api?mode=queue&name=pause&value=" .
@@ -256,7 +256,7 @@ class SABnzbd
 	 */
 	public function resumeFromQueue($id)
 	{
-		return Utility::getUrl([
+		return Misc::getUrl([
 				'url' =>
 					$this->url .
 					"api?mode=queue&name=resume&value=" .
@@ -275,7 +275,7 @@ class SABnzbd
 	 */
 	public function pauseAll()
 	{
-		return Utility::getUrl([
+		return Misc::getUrl([
 				'url' =>
 					$this->url .
 					"api?mode=pause" .
@@ -293,7 +293,7 @@ class SABnzbd
 	 */
 	public function resumeAll()
 	{
-		return Utility::getUrl([
+		return Misc::getUrl([
 				'url' =>
 					$this->url .
 					"api?mode=resume" .

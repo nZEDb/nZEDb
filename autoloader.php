@@ -16,16 +16,23 @@
  *
  * @link <http://www.gnu.org/licenses/>.
  * @author niel
- * @copyright 2015 nZEDb
+ * @copyright 2014 nZEDb
  */
-require_once 'constants.php';
-require_once 'autoloader.php';
 
-use nzedb\config\Configure;
-use nzedb\utility\Misc;
+spl_autoload_register(function ($class) {
+	// Only continue if the class is in our namespace.
+	if (strpos($class, 'nzedb\\') === 0) {
+		// Replace namespace separators with directory separators in the class name, append
+		// with .php
+		$file = nZEDb_ROOT . str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
 
-$config = new Configure('indexer');
-
-define('HAS_WHICH', Misc::hasWhich() ? true : false);
+		// if the file exists, require it
+		if (file_exists($file)) {
+			require_once $file;
+		} elseif (nZEDb_LOGAUTOLOADER) {
+			var_dump($file);
+		}
+	}
+});
 
 ?>

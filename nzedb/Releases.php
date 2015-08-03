@@ -4,7 +4,7 @@ namespace nzedb;
 require_once nZEDb_LIBS . 'ZipFile.php';
 
 use nzedb\db\Settings;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
 /**
  * Class Releases
@@ -1329,7 +1329,7 @@ class Releases
 			$nzbPath = $nzb->NZBPath($guid);
 
 			if ($nzbPath) {
-				$nzbContents = Utility::unzipGzipFile($nzbPath);
+				$nzbContents = Misc::unzipGzipFile($nzbPath);
 
 				if ($nzbContents) {
 					$filename = $guid;

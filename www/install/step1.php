@@ -184,8 +184,8 @@ if (preg_match('/apache/i', $_SERVER['SERVER_SOFTWARE'])) {
 }
 
 // Load previous config.php.
-if (file_exists(nZEDb_WWW . 'config.php') && is_readable(nZEDb_WWW . 'config.php')) {
-	$tmpCfg = file_get_contents(nZEDb_WWW . 'config.php');
+if (file_exists(nZEDb_CONFIGS . 'config.php') && is_readable(nZEDb_CONFIGS . 'config.php')) {
+	$tmpCfg = file_get_contents(nZEDb_CONFIGS . 'config.php');
 	$cfg->setConfig($tmpCfg);
 }
 

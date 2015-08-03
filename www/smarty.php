@@ -18,7 +18,8 @@
  * @author niel
  * @copyright 2015 nZEDb
  */
-require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'initialise.php');
+require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'autoloader.php');
+require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'constants.php');
 require_once 'autoloader.php';
 
 use nzedb\config\Configure;
@@ -26,9 +27,14 @@ use nzedb\config\Configure;
 try {
 	$config = new Configure('smarty');
 } catch (\RuntimeException $e) {
-	if ($e->getMessage() ==
-		"Unable to load configuration file 'config.php'. Make sure it has been created and contains correct settings.") {
-		if (is_dir("install")) {
+	if ($e->getCode() == 1) {
+		if (file_exists(nZEDb_WWW . 'config.php')) {
+			echo "Move: .../www/config.php to .../nzedb/config/config.php<br />\n Remove any line that says require_once 'automated.config.php';<br />\n";
+			if (file_exists(nZEDb_WWW . 'settings.php')) {
+				echo "Move: .../www/settings.php to  .../nzedb/config/settings.php<br />\n";
+			}
+			exit();
+		} else if (is_dir("install")) {
 			header("location: install");
 			exit();
 		}

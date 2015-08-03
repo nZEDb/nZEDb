@@ -4,7 +4,7 @@ namespace nzedb;
 require_once nZEDb_LIBS . 'TMDb.php';
 
 use nzedb\db\Settings;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
 /**
  * Class Movie
@@ -670,7 +670,7 @@ class Movie
 	protected function fetchFanartTVProperties($imdbId)
 	{
 		if ($this->fanartapikey != '') {
-			$buffer = Utility::getUrl(['url' => 'https://webservice.fanart.tv/v3/movies/tt' . $imdbId . '?api_key=' . $this->fanartapikey, 'verifycert' => false]);
+			$buffer = Misc::getUrl(['url' => 'https://webservice.fanart.tv/v3/movies/tt' . $imdbId . '?api_key=' . $this->fanartapikey, 'verifycert' => false]);
 			if ($buffer !== false) {
 				$art = json_decode($buffer, true);
 				if (isset($art['status']) && $art['status'] === 'error') {
@@ -806,7 +806,7 @@ class Movie
 		];
 
 		$buffer =
-			Utility::getUrl([
+			Misc::getUrl([
 					'url' => 'http://' . ($this->imdburl === false ? 'www' : 'akas') . '.imdb.com/title/tt' . $imdbId . '/',
 					'language' => (($this->pdo->getSetting('imdblanguage') != '') ? $this->pdo->getSetting('imdblanguage') : 'en'),
 					'useragent' => 'Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) ' .
@@ -988,7 +988,7 @@ class Movie
 
 					// Check OMDB api.
 					$buffer =
-						Utility::getUrl([
+						Misc::getUrl([
 								'url' => 'http://www.omdbapi.com/?t=' .
 									urlencode($this->currentTitle) .
 									($this->currentYear !== false ? ('&y=' . $this->currentYear) : '') .
@@ -1141,7 +1141,7 @@ class Movie
 	 */
 	protected function googleSearch()
 	{
-		$buffer = Utility::getUrl([
+		$buffer = Misc::getUrl([
 				'url' =>
 					'https://www.google.com/search?hl=en&as_q=&as_epq=' .
 					urlencode(
@@ -1177,7 +1177,7 @@ class Movie
 	 */
 	protected function bingSearch()
 	{
-		$buffer = Utility::getUrl([
+		$buffer = Misc::getUrl([
 				'url' =>
 					"http://www.bing.com/search?q=" .
 					urlencode(
@@ -1208,7 +1208,7 @@ class Movie
 	 */
 	protected function yahooSearch()
 	{
-		$buffer = Utility::getUrl([
+		$buffer = Misc::getUrl([
 				'url' =>
 					"http://search.yahoo.com/search?n=10&ei=UTF-8&va_vt=title&vo_vt=any&ve_vt=any&vp_vt=any&vf=all&vm=p&fl=0&fr=fp-top&p=intitle:" .
 					urlencode(

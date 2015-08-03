@@ -2,7 +2,7 @@
 namespace nzedb;
 
 use nzedb\db\Settings;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
 class ReleaseExtra
 {
@@ -89,7 +89,7 @@ class ReleaseExtra
 	public function addFromXml($releaseID, $xml)
 	{
 		$xmlObj = @simplexml_load_string($xml);
-		$arrXml = Utility::objectsIntoArray($xmlObj);
+		$arrXml = Misc::objectsIntoArray($xmlObj);
 		$containerformat = '';
 		$overallbitrate = '';
 
