@@ -18,13 +18,13 @@
  * @author niel
  * @copyright 2014 nZEDb
  */
-require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php';
+require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'indexer.php');
 require_once nZEDb_LIBS . DIRECTORY_SEPARATOR . 'smarty' . DIRECTORY_SEPARATOR . 'Smarty.class.php';
 
 use nzedb\db\DbUpdate;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
-if (!Utility::isCLI()) {
+if (!Misc::isCLI()) {
 	exit("This utility can only be run from a shell\n");
 }
 

@@ -18,12 +18,12 @@
  * @author niel
  * @copyright 2014 nZEDb
  */
-require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php';
+require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'indexer.php');
 
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 use nzedb\utility\Versions;
 
-if (!Utility::isCLI()) {
+if (!Misc::isCLI()) {
 	exit;
 }
 

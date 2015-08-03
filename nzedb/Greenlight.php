@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
 require_once nZEDb_LIBS . 'simple_html_dom.php';
 
@@ -258,7 +258,7 @@ class Greenlight
 			curl_setopt($this->_ch, CURLOPT_COOKIEJAR, $this->cookie);
 			curl_setopt($this->_ch, CURLOPT_COOKIEFILE, $this->cookie);
 		}
-		curl_setopt_array($this->_ch, Utility::curlSslContextOptions());
+		curl_setopt_array($this->_ch, Misc::curlSslContextOptions());
 		$this->_response = curl_exec($this->_ch);
 		if (!$this->_response) {
 			curl_close($this->_ch);

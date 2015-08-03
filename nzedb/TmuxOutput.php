@@ -2,7 +2,7 @@
 namespace nzedb;
 
 use nzedb\db\Settings;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
 /**
  * Tmux output functions for printing monitor data
@@ -36,7 +36,7 @@ class TmuxOutput extends Tmux
 	{
 		parent::__construct($pdo);
 		$this->_git = new \nzedb\utility\Git(); // Do not remove the full namespace/ PHP gets confused for some reason without it.
-		$this->_vers = Utility::getValidVersionsFile();
+		$this->_vers = Misc::getValidVersionsFile();
 
 		$this->_setColourMasks();
 	}

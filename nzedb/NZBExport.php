@@ -2,7 +2,7 @@
 namespace nzedb;
 
 use nzedb\db\Settings;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
 /**
  * Export NZB's to a folder.
@@ -184,7 +184,7 @@ class NZBExport
 					}
 				// If not, decompress it and create a file to store it in.
 				} else {
-					$nzbContents = Utility::unzipGzipFile($nzbFile);
+					$nzbContents = Misc::unzipGzipFile($nzbFile);
 					if (!$nzbContents) {
 						if ($this->echoCLI) {
 							echo 'Unable to export NZB with GUID: ' . $release['guid'];

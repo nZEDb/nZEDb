@@ -1,6 +1,6 @@
 <?php
 /* Fixes NZB files with a blank first line. */
-require dirname(__FILE__) . '/../../../www/config.php';
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
 use nzedb\NZB;
 use nzedb\db\Settings;
@@ -19,7 +19,7 @@ if (isset($argv[1]) && $argv[1] == "true") {
 			$nzbpath = $nzb->NZBPath($guid["guid"]);
 			if ($nzbpath !== false) {
 				$nzbcount++;
-				$nzbfile = nzedb\utility\Utility::unzipGzipFile($nzbpath);
+				$nzbfile = nzedb\utility\Misc::unzipGzipFile($nzbpath);
 
 				if ($nzbfile && preg_match('/^[\r\n]+<\?xml/', $nzbfile)) {
 					$brokencount++;

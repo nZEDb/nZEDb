@@ -19,13 +19,13 @@
  * @copyright 2015 nZEDb
  */
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php';
+require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'indexer.php');
 
 use nzedb\db\PreDb;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
-if (!Utility::isWin()) {
-	$canExeRead = Utility::canExecuteRead(nZEDb_RES);
+if (!Misc::isWin()) {
+	$canExeRead = Misc::canExecuteRead(nZEDb_RES);
 	if (is_string($canExeRead)) {
 		exit($canExeRead);
 	}
@@ -49,7 +49,7 @@ HELP;
 }
 $argv[1] = strtolower($argv[1]);
 
-Utility::clearScreen();
+Misc::clearScreen();
 
 $table = isset($argv[3]) ? $argv[3] : 'predb';
 

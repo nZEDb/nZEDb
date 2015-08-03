@@ -1,8 +1,8 @@
 <?php
-require_once dirname(__FILE__) . '/../../../www/config.php';
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
 use nzedb\db\Settings;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
 $pdo = new Settings();
 $covers = $updated = $deleted = 0;
@@ -13,7 +13,7 @@ if ($argc == 1 || $argv[1] != 'true') {
 
 $row = $pdo->queryOneRow("SELECT value FROM settings WHERE setting = 'coverspath'");
 if ($row !== false) {
-	Utility::setCoversConstant($row['value']);
+	Misc::setCoversConstant($row['value']);
 } else {
 	die("Unable to set Covers' constant!\n");
 }

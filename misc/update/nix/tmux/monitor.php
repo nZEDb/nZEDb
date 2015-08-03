@@ -1,11 +1,11 @@
 <?php
-require_once dirname(__FILE__) . '/../../../../www/config.php';
+require_once realpath(dirname(dirname(dirname(dirname(__DIR__)))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
 use nzedb\Category;
 use nzedb\TmuxOutput;
 use nzedb\TmuxRun;
 use nzedb\db\Settings;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
 $pdo = new Settings();
 $tRun = new TmuxRun($pdo);
@@ -54,7 +54,7 @@ $runVar['timers']['query']['tpg1_time'] = 0;
 // Analyze tables
 printf($pdo->log->info("\nAnalyzing your tables to refresh your indexes."));
 $pdo->optimise(false, 'analyze', false, ['releases']);
-Utility::clearScreen();
+Misc::clearScreen();
 
 $runVar['settings']['monitor'] = 0;
 $runVar['counts']['iterations'] = 1;

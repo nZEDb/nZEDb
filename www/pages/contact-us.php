@@ -1,6 +1,6 @@
 <?php
 
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 use nzedb\Captcha;
 
 $captcha = new Captcha($page);
@@ -24,7 +24,7 @@ if (isset($_POST["useremail"])) {
 		}
 
 		if (!preg_match("/\n/i", $_POST["useremail"])) {
-			Utility::sendEmail($mailto, $mailsubj, $mailbody, $email);
+			Misc::sendEmail($mailto, $mailsubj, $mailbody, $email);
 		}
 		$msg = "<h2 style='text-align:center;'>Thank you for getting in touch with " . $page->settings->getSetting('title') . ".</h2>";
 	}

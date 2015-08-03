@@ -154,4 +154,4 @@ site	main	tandc	<p>All information within this database is indexed by an automat
 site	main	title	nZEDb	Displayed around the site and contact form as the name for the site.	title
 shell	date	format	%Y-%m-%d %T	Format string to use in shell's date command output. See `man date` for acceptable format.\nDefault: %Y-%m-%d %T	shell.date.format
 tmux	running	exit	0	Determines if the running tmux monitor script should exit. If 0 nothing changes; if positive the script should exit gracefully (allowing all panes to finish); if negative the script should die as soon as possible.	tmux.running.exit
-max	headers	iteration	1000000	Determines if the running tmux monitor script should exit. If 0 nothing changes; if positive the script should exit gracefully (allowing all panes to finish); if negative the script should die as soon as possible.	tmux.running.exit
+max	headers	iteration	1000000	The maximum number of headers that update binaries is given as the total range. This ensures that a total of no more than this amount is attempted to be downloaded per group.	max_headers_iteration

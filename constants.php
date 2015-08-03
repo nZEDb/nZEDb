@@ -1,5 +1,5 @@
 <?php
-// YOU SHOULD NOT EDIT ANYTHING IN THIS FILE, COPY settings.example.php TO settings.php AND EDIT THAT FILE!
+// YOU SHOULD NOT EDIT ANYTHING IN THIS FILE, COPY .../nzedb/config/settings.example.php TO .../nzedb/config/settings.php AND EDIT THAT FILE!
 
 define('nZEDb_MINIMUM_PHP_VERSION', '5.5.0');
 define('nZEDb_MINIMUM_MYSQL_VERSION', '5.5');
@@ -49,44 +49,3 @@ define('nZEDb_THEMES_SHARED', nZEDb_WWW . 'themes_shared' . DS);
 define('nZEDb_LOGS', nZEDb_RES . 'logs' . DS);
 
 define('nZEDb_VERSIONS', nZEDb_LIB . 'build' . DS . 'nZEDb.xml');
-
-$settings_file = nZEDb_CONFIGS . 'settings.php';
-if (is_file($settings_file)) {
-	require_once($settings_file);
-	if (php_sapi_name() == 'cli') {
-		$current_settings_file_version = 3; // Update this when updating settings.example.php
-		if (!defined('nZEDb_SETTINGS_FILE_VERSION') || nZEDb_SETTINGS_FILE_VERSION != $current_settings_file_version) {
-			echo ("\033[0;31mNotice: Your $settings_file file is either out of date or you have not updated" .
-				" nZEDb_SETTINGS_FILE_VERSION to $current_settings_file_version in that file.\033[0m" . PHP_EOL
-			);
-		}
-		unset($current_settings_file_version);
-	}
-} else {
-	define('ITEMS_PER_PAGE', '50');
-	define('ITEMS_PER_COVER_PAGE', '20');
-	define('nZEDb_ECHOCLI', true);
-	define('nZEDb_DEBUG', false);
-	define('nZEDb_LOGGING', false);
-	define('nZEDb_LOGINFO', false);
-	define('nZEDb_LOGNOTICE', false);
-	define('nZEDb_LOGWARNING', false);
-	define('nZEDb_LOGERROR', false);
-	define('nZEDb_LOGFATAL', false);
-	define('nZEDb_LOGQUERIES', false);
-	define('nZEDb_LOGAUTOLOADER', false);
-	define('nZEDb_QUERY_STRIP_WHITESPACE', false);
-	define('nZEDb_RENAME_PAR2', true);
-	define('nZEDb_RENAME_MUSIC_MEDIAINFO', true);
-	define('nZEDb_CACHE_EXPIRY_SHORT', 300);
-	define('nZEDb_CACHE_EXPIRY_MEDIUM', 600);
-	define('nZEDb_CACHE_EXPIRY_LONG', 900);
-	define('nZEDb_PREINFO_OPEN', false);
-	define('nZEDb_FLOOD_CHECK', false);
-	define('nZEDb_FLOOD_WAIT_TIME', 5);
-	define('nZEDb_FLOOD_MAX_REQUESTS_PER_SECOND', 5);
-	define('nZEDb_USE_SQL_TRANSACTIONS', true);
-	define('nZEDb_RELEASE_SEARCH_TYPE', 0);
-	define('nZEDb_MAX_PAGER_RESULTS', '125000');
-}
-unset($settings_file);
