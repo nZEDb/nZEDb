@@ -79,7 +79,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	* Chg: Use get_class / __FUNCTION__ for nzedb\Logger->Log usage.
 	* Upd: Update smarty to 3.1.27
 	* Fix: Add check for string on nzedb\Movie::doMovieUpdate #1742
-	* Fix: #1742 (Notices in movie.php, remove old smarty files)
+	* Fix: PR 1742 (Notices in movie.php, remove old smarty files)
 2015-06-22 niel
 	* Mrg: PR 1738 from Enverex - Avoid MySQL caching on transient content
 2015-06-19 bart39
@@ -110,7 +110,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	* Chg: Moved IRCScraper example settings file to the .../nzedb/config directory
 	* Chg: Refactored the IRCScraper scrape script to look in .../nzedb/config for the renamed ircscraper_settings.php file. (it will move the old one from testing/IRCScraper if it finds it.
 	* New: Added tmux.running.exit to settings table. This is read during the tmux monitor script's loop to see if it should exit or not. I'll add a means to set this from the Tmux settings page once the rest is finished.
-	* Fix: Removing superfluous quotes around $user variable as they are adding by the escaping in the previous line.
+	* Fix: Removing superfluous quotes around $user variable as they are added by the escaping in the previous line.
 2015-06-09 bart39
 	* Mrg: PR 1716 from enverex - Pick up additional RAR names and match both functions.
 2015-06-06 bart39
