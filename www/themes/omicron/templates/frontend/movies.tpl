@@ -2,7 +2,6 @@
 	 xmlns="http://www.w3.org/1999/html">
 	{assign var="catsplit" value=">"|explode:$catname}
 	<h2>{$catsplit[0]} > <strong>{if isset($catsplit[1])} {$catsplit[1]}{/if}</strong></h2>
-
 	<div class="breadcrumb-wrapper">
 		<ol class="breadcrumb">
 			<li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li>
@@ -10,7 +9,6 @@
 		</ol>
 	</div>
 </div>
-
 <form id="nzb_multi_operations_form" action="get">
 	<div class="box-body"
 	<div class="row">
@@ -88,7 +86,6 @@
 													{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
 													{foreach from=$msplits item=m name=loop}
 													{if $smarty.foreach.loop.first}
-
 													<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"><img
 																class="cover"
 																src="{if $result.cover == 1}{$serverroot}covers/movies/{$result.imdbid}-cover.jpg{else}{$serverroot}themes/omicron/images/nocover.png{/if}"
@@ -113,7 +110,6 @@
 												<div class="col-md-9 no-gutter">
 																<span class="release-title"><a class="text-muted"
 																							   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">{$result.title|escape:"htmlall"}</a></span>
-
 													<div class="release-subtitle">{if $result.genre != ''}
 															<b>Genre: </b>
 															{$result.genre}, {/if}</div>
@@ -128,12 +124,10 @@
 														<span class="label label-danger">{if isset($catsplit[1])} {$catsplit[1]}{/if}</span>
 														<span class="label label-default">{$result.year}</span>
 														<span class="label label-default">{if $result.rating != ''}{$result.rating}/10{/if}</span>
-
 														<span class="label label-default">{$msize[$m@index]|fsize_format:"MB"}</span>
 																	<span class="label label-default">Posted {$mpostdate[$m@index]|timeago}
 																		ago</span>
 														<br/><br/><br/>
-
 														<div class="release-name text-muted"><a
 																	href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">{$mname[$m@index]|escape:"htmlall"}</a>
 														</div>
@@ -215,7 +209,6 @@
 												<div class="col-md-9 no-gutter">
 																<span class="release-title"><a class="text-muted"
 																							   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">{$result.title|escape:"htmlall"}</a></span>
-
 													<div class="release-subtitle">{if $result.genre != ''}
 															<b>Genre: </b>
 															{$result.genre}, {/if}</div>
@@ -230,12 +223,10 @@
 														<span class="label label-danger">{if isset($catsplit[1])} {$catsplit[1]}{/if}</span>
 														<span class="label label-default">{$result.year}</span>
 														<span class="label label-default">{if $result.rating != ''}{$result.rating}/10{/if}</span>
-
 														<span class="label label-default">{$msize[$m@index]|fsize_format:"MB"}</span>
 																	<span class="label label-default">Posted {$mpostdate[$m@index]|timeago}
 																		ago</span>
 														<br/><br/><br/>
-
 														<div class="release-name text-muted"><a
 																	href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$mname[$m@index]|escape:"htmlall"}</a>
 														</div>

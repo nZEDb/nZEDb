@@ -4,17 +4,14 @@
 			<th></th>
 			<th>Name</th>
 		</tr>
-
 		{foreach $data as $result}
 			{if $result['imdb_id'] != ""}
 				<tr>
 					<td>
-
 						<div>
 							<img class="shadow"
 								 src="{if $result['cover'] ==""}{$serverroot}themes/omicron/images/nocover.png{else}{$result['cover']}{/if}"
 								 width="120" border="0" alt="{$result['title']|escape:"htmlall"}"/>
-
 							<div>
 								<a class="label label-default" target="_blank"
 								   href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result['imdb_id']}"

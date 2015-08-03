@@ -28,7 +28,6 @@
 				<enclosure
 						url="{$serverroot}getnzb/{$release.guid}.nzb&amp;i={$uid}&amp;r={$rsstoken}{if $del=="1"}&amp;del=1{/if}"
 						length="{$release.size}" type="application/x-nzb"/>
-
 				{foreach from=$release.category_ids|parray:"," item=cat}
 					<newznab:attr name="category" value="{$cat}"/>
 				{/foreach}
@@ -134,9 +133,7 @@
 				<newznab:attr name="password" value="{$release.passwordstatus}"/>
 				<newznab:attr name="usenetdate" value="{$release.postdate|phpdate_format:"DATE_RSS"}"/>
 				<newznab:attr name="group" value="{$release.group_name|escape:html}"/>
-
 			</item>
 		{/foreach}
-
 	</channel>
 </rss>

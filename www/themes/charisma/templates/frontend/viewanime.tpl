@@ -1,7 +1,6 @@
 <div class="header">
 	{assign var="catsplit" value=">"|explode:$catname}
 	<h2>View > <strong>Anime</strong></h2>
-
 	<div class="breadcrumb-wrapper">
 		<ol class="breadcrumb">
 			<li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li>
@@ -9,14 +8,12 @@
 		</ol>
 	</div>
 </div>
-
 <h1>
 	{$animeTitle}{if isset($isadmin)}<a class="btn btn-xs btn-warning" title="Edit AniDB data"
 										href="{$smarty.const.WWW_TOP}/admin/anidb-edit.php?id={$animeanidbid}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}">
 			Edit</a>{/if}
 </h1>
 {if $catname != ''}<span class="text-info h5">Current category shown: {$catname|escape:"htmlall"}</span>{/if}
-
 <div>
 	{if animePicture != ""}
 		<center>
@@ -31,14 +28,11 @@
 			{if $animeDescription|strlen > 1500}<span
 					class="descfull">{$animeDescription|escape:"htmlall"|nl2br|magicurl}</span>{else}</span>{/if}
 	</p>
-
 	<p>
 		{if $animeRating != ''}<br><b>AniDB Rating: {$animeRating|escape:"htmlall"}</b>{/if}
 		{if $animeRelated != ''}<br><i>Related Anime: {$animeRelated|escape:"htmlall"}</i><br/>{/if}
 	</p>
 </div>
-
-
 <center>
 	<div class="btn-group">
 		<a class="btn btn-sm btn-default"
@@ -55,9 +49,7 @@
 			feed for this Anime <i class="fa fa-rss"></i></a>
 	</div>
 </center>
-
 <form id="nzb_multi_operations_form" action="get">
-
 	<div class="well well-small">
 		<div class="nzb_multi_operations">
 			With Selected:
@@ -73,7 +65,6 @@
 						   value="Send to NZBGet"/>
 				{/if}
 			</div>
-
 			{if isset($isadmin)}
 				<div class="pull-right">
 					Admin:
@@ -89,7 +80,6 @@
 		<div class="col-xlg-12 portlets">
 			<div class="panel">
 				<div class="panel-content pagination2">
-
 					<table style="width:100%;" class="data table table-condensed table-striped table-responsive table-hover"
 						   id="browsetable">
 						{foreach $animeEpisodeTitles as $animeEpno => $animeEpisodeTitle}
@@ -109,7 +99,6 @@
 									<td>
 										<a title="View details"
 										   href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.searchname|escape:"htmlall"|replace:".":" "}</a>
-
 										<div>
 											<div>
 												{if $result.nfoid > 0}<span class="label label-default"><a
@@ -136,7 +125,6 @@
 									<td><span class="label label-default">{$result.category_name}</span></td>
 									<td width="40" title="{$result.postdate}">{$result.postdate|timeago}</td>
 									<td>{$result.size|fsize_format:"MB"}</td>
-
 									<td class="icons" style='width:100px;'>
 										<a title="Download Nzb"
 										   href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"htmlall"}"><i

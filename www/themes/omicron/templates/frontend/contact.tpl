@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html>
 <head>
 	<script type="text/javascript">
@@ -29,7 +28,6 @@
 		  type="text/css"/>
 	<!-- Newznab utils.js -->
 	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/omicron/scripts/utils.js"></script>
-
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 	<!--[if lt IE 9]>
@@ -41,7 +39,6 @@
 <div class="wrapper">
 	<div class="header">
 		<h2>Contact Us</h2>
-
 		<div class="breadcrumb-wrapper">
 			<ol class="breadcrumb">
 				<li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li>
@@ -49,7 +46,6 @@
 			</ol>
 		</div>
 	</div>
-
 	<div class="box-body">
 		<div class="box-content"
 			<div class="row">
@@ -95,7 +91,6 @@
 												</form>
 											</div>
 										</div>
-
 									</div>
 								</div>
 							</div>
@@ -108,9 +103,7 @@
 		</div>
 	</div>
 </body>
-
 <!-- REQUIRED JS SCRIPTS -->
-
 <!-- jQuery 2.1.4 -->
 <script src="{$smarty.const.WWW_TOP}/themes/omicron/plugins/jQuery/jQuery-2.1.4.min.js"></script>
 <!-- Bootstrap 3.3.2 JS -->

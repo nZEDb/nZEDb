@@ -1,6 +1,5 @@
 <div class="header">
 	<h2>TV > <strong>Calendar</strong></h2>
-
 	<div class="breadcrumb-wrapper">
 		<ol class="breadcrumb">
 			<li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li>
@@ -8,18 +7,15 @@
 		</ol>
 	</div>
 </div>
-
 	<div class="well well-small">
 		{foreach $cal as $c}
 			<a href="{$smarty.const.WWW_TOP}/calendar?date={$c}">{$c}</a>
 			&nbsp;&nbsp
 		{/foreach}
 	</div>
-
 <table width="100%;">
 	<tr valign="top">
 		<td width="33%" ;>
-
 			<table class="dataTable data highlight icons table table-striped table-responsive" id="browsetable">
 				<tr class="error">
 					{if $predata|@count > 0}
@@ -36,10 +32,8 @@
 				<td style="padding-top:15px;" colspan="10"><h2>No results</h2></td>
 				{/if}
 			</table>
-
 		</td>
 		<td width="33%" ;>
-
 			<table class="dataTable data highlight icons table table-striped table-responsive" id="browsetable">
 				<tr class="success">
 					{if $daydata|@count > 0}
@@ -56,7 +50,6 @@
 				<td style="padding-top:15px;" colspan="10"><h2>No results</h2></td>
 				{/if}
 			</table>
-
 		</td>
 		<td width="33%" ;>
 			<table class="dataTable data highlight icons table table-striped table-responsive" id="browsetable">

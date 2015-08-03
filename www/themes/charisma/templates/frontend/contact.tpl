@@ -1,6 +1,5 @@
 <div class="header">
 	<h2>Contact Us</h2>
-
 	<div class="breadcrumb-wrapper">
 		<ol class="breadcrumb">
 			<li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li>
@@ -52,12 +51,10 @@
 								<div class="col-sm-4 col-sm-offset-1">
 									<div class="additional">
 										<h3>Need Help?</h3>
-
 										<p>Don’t hesitate to ask us something. Email us via this contact form.</p>
 									</div>
 								</div>
 							</div>
-
 						</div>
 					</div>
 				</div>
