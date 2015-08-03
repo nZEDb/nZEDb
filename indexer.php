@@ -28,14 +28,4 @@ $config = new Configure('indexer');
 
 define('HAS_WHICH', Misc::hasWhich() ? true : false);
 
-// TODO Move this to Configure class
-// Check if they updated config.php for the openssl changes. Only check 1 to save speed.
-if (!defined('nZEDb_SSL_VERIFY_PEER')) {
-	define('nZEDb_SSL_CAFILE', '');
-	define('nZEDb_SSL_CAPATH', '');
-	define('nZEDb_SSL_VERIFY_PEER', '0');
-	define('nZEDb_SSL_VERIFY_HOST', '0');
-	define('nZEDb_SSL_ALLOW_SELF_SIGNED', '1');
-}
-
 ?>
