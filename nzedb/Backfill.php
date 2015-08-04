@@ -226,7 +226,7 @@ class Backfill
 		$startGroup = microtime(true);
 
 		// Log the date we last downloaded headers.
-		$this->_pdo->queryExec("UPDATE settings SET value = NOW() WHERE setting = 'last_run_time'");
+		$this->pdo->queryExec("UPDATE settings SET value = NOW() WHERE setting = 'last_run_time'");
 
 		$groupName = str_replace('alt.binaries', 'a.b', $groupArr['name']);
 
