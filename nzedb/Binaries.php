@@ -255,6 +255,9 @@ class Binaries
 	{
 		$startGroup = microtime(true);
 
+		// Log the date we last downloaded headers.
+		$this->_pdo->queryExec("UPDATE settings SET value = NOW() WHERE setting = 'last_run_time'");
+
 		// Select the group on the NNTP server, gets the latest info on it.
 		$groupNNTP = $this->_nntp->selectGroup($groupMySQL['name']);
 		if ($this->_nntp->isError($groupNNTP)) {
