@@ -98,6 +98,11 @@ class ProcessReleases
 	 * @var \nzedb\ReleaseImage
 	 */
 	public $releaseImage;
+	
+	/**
+	 * @var int Time to wait before creating a stuck collection into a release.
+	 */
+	private $collectionTimeout;
 
 	/**
 	 * @param array $options Class instances / Echo to cli ?
@@ -136,6 +141,7 @@ class ProcessReleases
 			$this->completion = 100;
 			echo $this->pdo->log->error(PHP_EOL . 'You have an invalid setting for completion. It cannot be higher than 100.');
 		}
+		$this->collectionTimeout = intval($this->pdo->getSetting('collection_timeout'));
 	}
 
 	/**
@@ -306,6 +312,7 @@ class ProcessReleases
 
 		$where = (!empty($groupID) ? ' AND c.group_id = ' . $groupID . ' ' : ' ');
 
+		$this->processStuckCollections($group, $where)
 		$this->collectionFileCheckStage1($group, $where);
 		$this->collectionFileCheckStage2($group, $where);
 		$this->collectionFileCheckStage3($group, $where);
@@ -1584,6 +1591,33 @@ class ProcessReleases
 				$this->collectionDelayTime,
 				self::COLLFC_DEFAULT,
 				self::COLLFC_COMPCOLL,
+				$where
+			)
+		);
+	}
+	
+	/**
+	 * If a collection has been stuck for $this->collectionTimeout days, force it to become a release.
+	 *
+	 * @param array $group
+	 * @param string $where
+	 *
+	 * @void
+	 * @access private
+	 */
+	private function processStuckCollections(array $group, $where)
+	{
+		$this->pdo->queryExec(
+			sprintf("
+				UPDATE %s c
+				SET c.filecheck = %d
+				WHERE 
+					c.date_initial <
+					DATE_SUB(SELECT value FROM settings WHERE setting = "last_run_time", INTERVAL %d day)
+				%s",
+				$group['cname'],
+				self::COLLFC_COMPCOLL,
+				$this->collectionTimeout,
 				$where
 			)
 		);
