@@ -29,16 +29,23 @@ if (!$pdo->getSetting('tablepergroup')) {
 }
 
 // Doing it this way in case there are tables existing not related to the active/backfill list (i.e. I don't have a clue when these tables get deleted so I'm doing any that are there).
-$tables = $pdo->queryDirect("SELECT SUBSTR(TABLE_NAME, 12) AS suffix FROM information_schema.TABLES WHERE TABLE_SCHEMA = (SELECT DATABASE()) AND TABLE_NAME LIKE 'collections%' ORDER BY TABLE_NAME");
+$tables1 = $pdo->queryDirect("SELECT SUBSTR(TABLE_NAME, 12) AS suffix FROM information_schema.TABLES WHERE TABLE_SCHEMA = (SELECT DATABASE()) AND TABLE_NAME LIKE 'collections%' ORDER BY TABLE_NAME");
+$tables2 = $pdo->queryDirect("SELECT SUBSTR(TABLE_NAME, 9) AS suffix FROM information_schema.TABLES WHERE TABLE_SCHEMA = (SELECT DATABASE()) AND TABLE_NAME LIKE 'binaries%' ORDER BY TABLE_NAME");
 
 $query1 = "ALTER TABLE collections%s ADD COLUMN date_initial TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER fromname";
 $query2 = "ALTER TABLE collections%s ADD INDEX ix_collections_date_initial (date_initial)";
 
-if ($tables instanceof \Traversable) {
-	foreach ($tables as $table) {
-		echo "Updating table collections{$table['suffix']}" . PHP_EOL;
-		$pdo->queryExec(sprintf($query1, $table['suffix']), true);
-		$pdo->queryExec(sprintf($query2, $table['suffix']), true);
+$query3 = "ALTER TABLE binaries%s MODIFY COLUMN partcheck TINYINT(1) NOT NULL DEFAULT '0'";
+
+if ($tables1 instanceof \Traversable && $tables2 instanceof \Traversable) {
+	foreach ($tables1 as $table1) {
+		echo "Updating table collections{$table1['suffix']}" . PHP_EOL;
+		$pdo->queryExec(sprintf($query1, $table1['suffix']), true);
+		$pdo->queryExec(sprintf($query2, $table1['suffix']), true);
+	}
+	foreach ($tables2 as $table2) {
+		echo "Updating table binaries{$table2['suffix']}" . PHP_EOL;
+		$pdo->queryExec(sprintf($query3, $table2['suffix']), true);
 	}
 	echo 'All done!' . PHP_EOL;
 }
