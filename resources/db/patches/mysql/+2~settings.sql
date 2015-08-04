@@ -10,7 +10,7 @@ VALUES (
   'indexer',
   'processing',
   'last_run_time',
-  '0',
+  '3015-08-04 15:58:23',
   'Last date the indexer (update_binaries or backfill) was run.',
   'last_run_time'
 );
