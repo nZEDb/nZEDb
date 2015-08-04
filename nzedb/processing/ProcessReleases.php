@@ -100,7 +100,7 @@ class ProcessReleases
 	public $releaseImage;
 	
 	/**
-	 * @var int Time to wait before creating a stuck collection into a release.
+	 * @var int Time (hours) to wait before creating a stuck collection into a release.
 	 */
 	private $collectionTimeout;
 
@@ -1597,7 +1597,7 @@ class ProcessReleases
 	}
 	
 	/**
-	 * If a collection has been stuck for $this->collectionTimeout days, force it to become a release.
+	 * If a collection has been stuck for $this->collectionTimeout hours, force it to become a release.
 	 *
 	 * @param array $group
 	 * @param string $where
@@ -1613,7 +1613,7 @@ class ProcessReleases
 				SET c.filecheck = %d
 				WHERE 
 					c.date_initial <
-					DATE_SUB(SELECT value FROM settings WHERE setting = "last_run_time", INTERVAL %d day)
+					DATE_SUB((SELECT value FROM settings WHERE setting = "last_run_time"), INTERVAL %d HOUR)
 				%s",
 				$group['cname'],
 				self::COLLFC_COMPCOLL,
