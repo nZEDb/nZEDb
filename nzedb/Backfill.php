@@ -224,6 +224,10 @@ class Backfill
 	{
 		// Start time for this group.
 		$startGroup = microtime(true);
+
+		// Log the date we last downloaded headers.
+		$this->_pdo->queryExec("UPDATE settings SET value = NOW() WHERE setting = 'last_run_time'");
+
 		$groupName = str_replace('alt.binaries', 'a.b', $groupArr['name']);
 
 		// If our local oldest article 0, it means we never ran update_binaries on the group.
