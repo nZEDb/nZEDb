@@ -11,6 +11,6 @@ VALUES (
   'processing',
   'last_run_time',
   '0',
-  'Last (unix)time the indexer (update_binaries or backfill) was run.',
+  'Last date the indexer (update_binaries or backfill) was run.',
   'last_run_time'
 );
