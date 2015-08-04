@@ -130,6 +130,7 @@ indexer	categorise	categorizeforeign	1	This only works if the above is set to en
 indexer	categorise	catwebdl	0	Whether to send WEB-DL to the WEB-DL section or not. If set to true they will go in WEB-DL category, false will send them in HD TV.<br/>This will also make them inaccessible to Sickbeard and possibly Couchpotato.	catwebdl
 indexer	categorise	imdblanguage	en	Which language to lookup when sending requests to IMDB/Tmdb. (If akas.imdb.com is set, imdb still returns the original titles.)	imdblanguage
 indexer	categorise	imdburl	0	akas.imdb.com returns titles in their original title, imdb.com returns titles based on your IP address (if you are in france, you will get french titles).	imdburl
+indexer	processing	collection_timeout	2	How many days to wait before converting a collection into a release that is considered "stuck".	collection_timeout
 site	google	adbrowse		The banner slot in the header.	adbrowse
 site	google	addetail		The banner slot in the release details view.	addetail
 site	google	adheader		The banner slot in the header.	adheader
