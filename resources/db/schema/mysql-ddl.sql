@@ -116,7 +116,7 @@ CREATE TABLE binaries (
   totalparts    INT(11) UNSIGNED    NOT NULL DEFAULT 0,
   currentparts  INT UNSIGNED        NOT NULL DEFAULT 0,
   binaryhash    VARCHAR(255)        NOT NULL DEFAULT '0',
-  partcheck     BIT                 NOT NULL DEFAULT 0,
+  partcheck     TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
   partsize      BIGINT UNSIGNED     NOT NULL DEFAULT 0,
   PRIMARY KEY (id),
   UNIQUE INDEX ix_binary_binaryhash (binaryhash),
