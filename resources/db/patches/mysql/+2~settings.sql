@@ -6,4 +6,11 @@ VALUES (
   '2',
   'How many days to wait before converting a collection into a release that is considered "stuck".',
   'collection_timeout'
+), (
+  'indexer',
+  'processing',
+  'last_run_time',
+  '0',
+  'Last (unix)time the indexer (update_binaries or backfill) was run.',
+  'last_run_time'
 );
