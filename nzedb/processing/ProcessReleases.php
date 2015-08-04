@@ -312,7 +312,7 @@ class ProcessReleases
 
 		$where = (!empty($groupID) ? ' AND c.group_id = ' . $groupID . ' ' : ' ');
 
-		$this->processStuckCollections($group, $where)
+		$this->processStuckCollections($group, $where);
 		$this->collectionFileCheckStage1($group, $where);
 		$this->collectionFileCheckStage2($group, $where);
 		$this->collectionFileCheckStage3($group, $where);
