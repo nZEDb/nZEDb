@@ -985,7 +985,7 @@ class ReleaseRemover
 		);
 		$codeclike = sprintf("UNION SELECT r.guid, r.searchname, r.id FROM releases r
 			LEFT JOIN release_files rf ON r.id = rf.releaseid
-			WHERE %s rf.name LIKE '%s' OR rf.name LIKE '%s' OR rf.name LIKE '%s' OR rf.name LIKE '%s' OR rf.name LIKE '%s' OR rf.name LIKE '%s' OR rf.name LIKE '%s' OR rf.name LIKE '%s'", $categories, $codec, $codec2, $iferror, $ifnotplaying, $frenchv, $nl, $german, $german2
+			WHERE %s (rf.name LIKE '%s' OR rf.name LIKE '%s' OR rf.name LIKE '%s' OR rf.name LIKE '%s' OR rf.name LIKE '%s' OR rf.name LIKE '%s' OR rf.name LIKE '%s' OR rf.name LIKE '%s')", $categories, $codec, $codec2, $iferror, $ifnotplaying, $frenchv, $nl, $german, $german2
 		);
 		$this->query = sprintf(
 			"SELECT r.guid, r.searchname, r.id FROM releases
