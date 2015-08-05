@@ -1620,7 +1620,9 @@ class ProcessReleases
 			)
 		);
 		if ($this->echoCLI && $obj->rowCount()) {
-			$this->pdo->log->primary('Deleted ' . $obj->rowCount() . ' broken/stuck collections.');
+			$this->pdo->log->doEcho(
+				$this->pdo->log->primary('Deleted ' . $obj->rowCount() . ' broken/stuck collections.')
+			);
 		}
 	}
 }
