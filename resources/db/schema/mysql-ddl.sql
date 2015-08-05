@@ -109,15 +109,15 @@ CREATE TABLE audio_data (
 
 DROP TABLE IF EXISTS binaries;
 CREATE TABLE binaries (
-  id            BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  name          VARCHAR(1000)       NOT NULL DEFAULT '',
-  collection_id INT(11) UNSIGNED    NOT NULL DEFAULT 0,
-  filenumber    INT UNSIGNED        NOT NULL DEFAULT '0',
-  totalparts    INT(11) UNSIGNED    NOT NULL DEFAULT 0,
-  currentparts  INT UNSIGNED        NOT NULL DEFAULT 0,
-  binaryhash    VARCHAR(255)        NOT NULL DEFAULT '0',
-  partcheck     BIT                 NOT NULL DEFAULT 0,
-  partsize      BIGINT UNSIGNED     NOT NULL DEFAULT 0,
+  id            BIGINT(20) UNSIGNED              NOT NULL AUTO_INCREMENT,
+  name          VARCHAR(1000)                    NOT NULL DEFAULT '',
+  collection_id INT(11) UNSIGNED                 NOT NULL DEFAULT 0,
+  filenumber    INT UNSIGNED                     NOT NULL DEFAULT '0',
+  totalparts    INT(11) UNSIGNED                 NOT NULL DEFAULT 0,
+  currentparts  INT UNSIGNED                     NOT NULL DEFAULT 0,
+  binaryhash    VARCHAR(32) CHARACTER SET latin1 NOT NULL DEFAULT '0',
+  partcheck     BIT                              NOT NULL DEFAULT 0,
+  partsize      BIGINT UNSIGNED                  NOT NULL DEFAULT 0,
   PRIMARY KEY (id),
   UNIQUE INDEX ix_binary_binaryhash (binaryhash),
   INDEX ix_binary_partcheck  (partcheck),
@@ -775,7 +775,6 @@ CREATE TABLE release_files (
   PRIMARY KEY (id),
   UNIQUE INDEX ix_releasefiles_name_releaseid (name, releaseid),
   INDEX ix_releasefiles_releaseid      (releaseid),
-  INDEX ix_releasefiles_name           (name),
   INDEX ix_releasefiles_ishashed       (ishashed)
 )
   ENGINE = MYISAM
