@@ -17,7 +17,7 @@
 		<li>It is recommended to use the Socket path if you are using a unix based operating system, you can find the socket path in my.cnf</li>
 		<li>Entering the Socket path will ignore the Hostname and Port.</li>
 		<li>Using the root MySQL user is not recommended. Please create a MySQL user, read <a href="https://dev.mysql.com/doc/refman/5.6/en/adding-users.html">this</a> manual page for information.</li>
-		<li>Granting the FILE permission to your user is <span style="text-decoration:underline">required/span>, GRANT ALL does not give you the FILE permission.</li>
+		<li>Granting the FILE permission to your user is <span style="text-decoration:underline">required</span>, GRANT ALL does not give you the FILE permission.</li>
 		<li>It is recommended to secure your MySQL installation, please read <a href="https://dev.mysql.com/doc/refman/5.6/en/mysql-secure-installation.html">this</a> page.</li>
 	</ul>
 
