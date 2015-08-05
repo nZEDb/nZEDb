@@ -10,6 +10,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	* Fix: Install process to use install.php instead of smarty.php
 	* Fix: Bad span end tag is install step 2 template file.
 	* Fix: Reverted kevin's earlier 'fix' for Step 2 of install. The constant must exist or the bug is elsewhere. The bug was not having 'settings' as part of install configuration.
+	* Mrg: PR 1789, from darius - Remove getQueue function from utils.js as it was conflicting with a function in our JS. Cleanup trailing whitespace.
 2015-08-05 kevin
 	* Fix: Step 2 of install.
 	* Mrg: PR 1795 from terbonium - group OR operators () properly for proper index usage on date column and prevent full table scans when not needed
