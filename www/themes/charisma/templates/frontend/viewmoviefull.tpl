@@ -1,7 +1,6 @@
 <div class="header">
 	{assign var="catsplit" value=">"|explode:$catname}
 	<h2>View > <strong>Movie</strong></h2>
-
 	<div class="breadcrumb-wrapper">
 		<ol class="breadcrumb">
 			<li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li>
@@ -9,7 +8,6 @@
 		</ol>
 	</div>
 </div>
-
 {if $results|@count > 0}
 	<div class="box-body">
 		{foreach from=$results item=result}
@@ -71,7 +69,6 @@
 									   value="Send to Queue"/>
 							{/if}
 						</div>
-
 						{if isset($isadmin)}
 							<div class="pull-right">
 								Admin:
@@ -96,7 +93,6 @@
 											<input id="chkSelectAll" type="checkbox" class="nntmux_check_all"/>
 											<label for="chkSelectAll" style="display:none;">Select All</label>
 										</th>
-
 										<th>Name<br/>
 											<a title="Sort Descending" href="{$orderbyname_desc}">
 												<i class="fa fa-icon-caret-down"></i>
@@ -105,7 +101,6 @@
 												<i class="fa fa-icon-caret-up"></i>
 											</a>
 										</th>
-
 										<th>Category<br/>
 											<a title="Sort Descending" href="{$orderbycat_desc}">
 												<i class="fa fa-icon-caret-down"></i>
@@ -114,7 +109,6 @@
 												<i class="fa fa-icon-caret-up"></i>
 											</a>
 										</th>
-
 										<th>Posted<br/>
 											<a title="Sort Descending" href="{$orderbyposted_desc}">
 												<i class="fa fa-icon-caret-down"></i>
@@ -123,7 +117,6 @@
 												<i class="fa fa-icon-caret-up"></i>
 											</a>
 										</th>
-
 										<th>Size<br/>
 											<a title="Sort Descending" href="{$orderbysize_desc}">
 												<i class="fa fa-icon-caret-down"></i>
@@ -134,7 +127,6 @@
 										</th>
 										<th>Action</th>
 									</tr>
-
 									{assign var="msplits" value=","|explode:$result.grp_release_id}
 									{assign var="mguid" value=","|explode:$result.grp_release_guid}
 									{assign var="mnfo" value=","|explode:$result.grp_release_nfoid}
@@ -189,10 +181,8 @@
 											</td>
 										</tr>
 									{/foreach}
-
 								</table>
 								<hr>
-
 								{if $results|@count > 10}
 									<div class="row">
 										<div class="col-md-8">

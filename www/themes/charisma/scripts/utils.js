@@ -882,25 +882,6 @@ function resetapireq(uid, type)
     $.post( SERVERROOT + "ajax_resetusergrabs-admin?id=" + uid + "&action=" + type, function(resp){ });
 }
 
-
-function getQueue()
-{
-    $.ajax({
-        url: "queuedata?id=" + $.now(),
-        cache: false,
-        success: function(html)
-        {
-            $(".sab_queue").html(html);
-            setTimeout("getQueue()", 2500);
-        },
-        error: function ()
-        {
-            $(".sab_queue").html("Could not contact your queue. <a href=\"javascript:location.reload(true)\">Refresh</a>");
-        },
-        timeout:5000
-    });
-}
-
 function getNzbGetQueue()
 {
     $.ajax({

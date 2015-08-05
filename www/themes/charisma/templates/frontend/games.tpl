@@ -2,7 +2,6 @@
 	 xmlns="http://www.w3.org/1999/html">
 	{assign var="catsplit" value=">"|explode:$catname}
 	<h2>{$catsplit[0]} > <strong>{if isset($catsplit[1])} {$catsplit[1]}{/if}</strong></h2>
-
 	<div class="breadcrumb-wrapper">
 		<ol class="breadcrumb">
 			<li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li>
@@ -10,8 +9,6 @@
 		</ol>
 	</div>
 </div>
-
-
 <form id="nzb_multi_operations_form" action="get">
 	<div class="box-body"
 	<div class="row">

@@ -2,7 +2,6 @@
 	<div class="header">
 		{assign var="catsplit" value=">"|explode:$catname}
 		<h2>View > <strong>TV Series</strong></h2>
-
 		<div class="breadcrumb-wrapper">
 			<ol class="breadcrumb">
 				<li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li>
@@ -19,7 +18,6 @@
 	<div class="header">
 		{assign var="catsplit" value=">"|explode:$catname}
 		<h2>View > <strong>TV Series</strong></h2>
-
 		<div class="breadcrumb-wrapper">
 			<ol class="breadcrumb">
 				<li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li>
@@ -48,7 +46,6 @@
 			{if $seriesGenre != ''}<b>{$seriesgenre}</b><br/>{/if}
 			<span class="descinitial">{$seriesdescription|escape:"htmlall"|nl2br|magicurl}</span>
 		</p>
-
 	</div>
 	<div class="btn-group">
 		{if $rage|@count == 1 && $isadmin}
@@ -66,7 +63,6 @@
 	<br/>
 		<div class="box-body"
 				<form id="nzb_multi_operations_form" action="get">
-
 					<div class="well well-small">
 						<div class="nzb_multi_operations">
 							With Selected:
@@ -80,7 +76,6 @@
 										   value="Send to Queue"/>
 								{/if}
 							</div>
-
 							{if isset($isadmin)}
 								<div class="pull-right">
 									Admin:
@@ -113,11 +108,8 @@
 							</div>
 						</div>
 					</div>
-
 					<br clear="all"/>
-
 					<a id="latest"></a>
-
 					<div class="row">
 						<div class="col-xlg-12 portlets">
 							<div class="panel">
@@ -130,7 +122,6 @@
 															data-toggle="tab">{$seasonnum}</a></li>
 											{/foreach}
 										</ul>
-
 										<div class="tab-content">
 											{foreach $seasons as $seasonnum => $season name=tv}
 												<div class="tab-pane{if $smarty.foreach.tv.first} active{/if} fade in"
@@ -166,7 +157,6 @@
 																	<td>
 																		<a title="View details"
 																		   href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.searchname|escape:"htmlall"|replace:".":" "}</a>
-
 																		<div>
 																			{if $result.nfoid > 0}<span
 																					class="label label-default">
@@ -201,7 +191,6 @@
 																	</td>
 																	<td width="40"
 																		title="{$result.postdate}">{$result.postdate|timeago}</td>
-
 																	<td>
 																		{$result.size|fsize_format:"MB"}
 																	</td>

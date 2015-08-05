@@ -32,7 +32,6 @@
 							{elseif $userdata.movieview != "1"}
 								<li><a href="{$smarty.const.WWW_TOP}/browse?t=2000">{$parentcat.title}</a></li>
 							{/if}
-
 							<hr>
 							<li><a href="{$smarty.const.WWW_TOP}/upcoming">In Theatre</a></li>
 							<li><a href="{$smarty.const.WWW_TOP}/mymovies">My Movies</a></li>
@@ -46,7 +45,6 @@
 									<li><a href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a></li>
 								{/foreach}
 							{/if}
-
 						</ul>
 					</li>
 				{elseif $parentcat.id == 1000}
@@ -72,7 +70,6 @@
 									<li><a href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a></li>
 								{/foreach}
 							{/if}
-
 						</ul>
 					</li>
 				{elseif $parentcat.id == 4000}
@@ -103,7 +100,6 @@
 									<li><a href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a></li>
 								{/foreach}
 							{/if}
-
 						</ul>
 					</li>
 				{elseif $parentcat.id == 3000}
