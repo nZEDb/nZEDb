@@ -552,16 +552,16 @@ CREATE TABLE page_contents (
 
 DROP TABLE IF EXISTS parts;
 CREATE TABLE parts (
-  id            BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  binaryid      BIGINT(20) UNSIGNED NOT NULL DEFAULT '0',
-  collection_id INT(11) UNSIGNED    NOT NULL DEFAULT '0',
-  messageid     VARCHAR(255)        NOT NULL DEFAULT '',
-  number        BIGINT UNSIGNED     NOT NULL DEFAULT '0',
-  partnumber    INT UNSIGNED        NOT NULL DEFAULT '0',
-  size          BIGINT UNSIGNED     NOT NULL DEFAULT '0',
+  id            BIGINT(20) UNSIGNED                      NOT NULL AUTO_INCREMENT,
+  binaryid      BIGINT(20) UNSIGNED                      NOT NULL DEFAULT '0',
+  collection_id INT(11) UNSIGNED                         NOT NULL DEFAULT '0',
+  messageid     VARCHAR(255)        CHARACTER SET latin1 NOT NULL DEFAULT '',
+  number        BIGINT UNSIGNED                          NOT NULL DEFAULT '0',
+  partnumber    INT UNSIGNED                             NOT NULL DEFAULT '0',
+  size          BIGINT UNSIGNED                          NOT NULL DEFAULT '0',
   PRIMARY KEY (id),
-  KEY binaryid               (binaryid),
-  KEY ix_parts_collection_id (collection_id)
+  KEY binaryid (binaryid,partnumber),
+  KEY ix_parts_collection_id (collection_id,number)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
