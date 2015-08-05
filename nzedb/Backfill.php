@@ -225,8 +225,7 @@ class Backfill
 		// Start time for this group.
 		$startGroup = microtime(true);
 
-		// Log the date we last downloaded headers.
-		$this->pdo->queryExec("UPDATE settings SET value = NOW() WHERE setting = 'last_run_time'");
+		$this->_binaries->logIndexerStart();
 
 		$groupName = str_replace('alt.binaries', 'a.b', $groupArr['name']);
 
