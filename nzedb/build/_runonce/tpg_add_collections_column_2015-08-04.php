@@ -32,8 +32,8 @@ if (!$pdo->getSetting('tablepergroup')) {
 $tables1 = $pdo->queryDirect("SELECT SUBSTR(TABLE_NAME, 12) AS suffix FROM information_schema.TABLES WHERE TABLE_SCHEMA = (SELECT DATABASE()) AND TABLE_NAME LIKE 'collections%' ORDER BY TABLE_NAME");
 $tables2 = $pdo->queryDirect("SELECT SUBSTR(TABLE_NAME, 9) AS suffix FROM information_schema.TABLES WHERE TABLE_SCHEMA = (SELECT DATABASE()) AND TABLE_NAME LIKE 'binaries%' ORDER BY TABLE_NAME");
 
-$query1 = "ALTER TABLE collections%s ADD COLUMN date_initial TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER fromname";
-$query2 = "ALTER TABLE collections%s ADD INDEX ix_collections_date_initial (date_initial)";
+$query1 = "ALTER TABLE collections%s ADD COLUMN added TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER fromname";
+$query2 = "ALTER TABLE collections%s ADD INDEX ix_collections_added (added)";
 
 $query3 = "ALTER TABLE binaries%s MODIFY COLUMN partcheck TINYINT(1) NOT NULL DEFAULT '0'";
 

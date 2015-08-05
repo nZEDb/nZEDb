@@ -227,7 +227,7 @@ CREATE TABLE         collections (
   group_id       INT(11) UNSIGNED    NOT NULL DEFAULT '0',
   collectionhash VARCHAR(255)        NOT NULL DEFAULT '0',
   dateadded      DATETIME            DEFAULT NULL,
-  date_initial   DATETIME            NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  added          DATETIME            NOT NULL DEFAULT CURRENT_TIMESTAMP,
   filecheck      TINYINT(3) UNSIGNED NOT NULL DEFAULT '0',
   filesize       BIGINT UNSIGNED     NOT NULL DEFAULT '0',
   releaseid      INT                 NULL,

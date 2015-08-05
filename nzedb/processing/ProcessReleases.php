@@ -1611,7 +1611,7 @@ class ProcessReleases
 			sprintf("
 				DELETE %s c
 				WHERE
-					c.date_initial <
+					c.added <
 					DATE_SUB((SELECT value FROM settings WHERE setting = 'last_run_time'), INTERVAL %d HOUR)
 				%s",
 				$group['cname'],
