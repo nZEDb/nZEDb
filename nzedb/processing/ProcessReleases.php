@@ -1607,7 +1607,7 @@ class ProcessReleases
 	 */
 	private function processStuckCollections(array $group, $where)
 	{
-		$this->pdo->queryExec(
+		$obj = $this->pdo->queryExec(
 			sprintf("
 				DELETE %s c
 				WHERE
@@ -1619,5 +1619,8 @@ class ProcessReleases
 				$where
 			)
 		);
+		if ($this->echoCLI && $obj->rowCount()) {
+			$this->pdo->log->primary('Deleted ' . $obj->rowCount() . ' broken/stuck collections.');
+		}
 	}
 }
