@@ -14,8 +14,8 @@
  * along with this program (see LICENSE.txt in the base directory.  If
  * not, see:
  *
- * @link <http://www.gnu.org/licenses/>.
- * @author niel
+ * @link      <http://www.gnu.org/licenses/>.
+ * @author    niel
  * @copyright 2015 nZEDb
  */
 namespace nzedb\config;
@@ -25,13 +25,15 @@ require_once nZEDb_LIBS . 'autoloader.php';
 class Configure
 {
 	private $environments = [
-		'indexer'	=> [
-			'config' => true,
+		'indexer' => [
+			'config'   => true,
 			'settings' => false
 		],
-		'install'	=> [],
-		'smarty'	=> [
-			'config' => true,
+		'install' => [
+			'settings' => false
+		],
+		'smarty'  => [
+			'config'   => true,
 			'settings' => false
 		],
 	];
