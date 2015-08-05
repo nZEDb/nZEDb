@@ -4,7 +4,7 @@ VALUES (
   'processing',
   'collection_timeout',
   '48',
-  'How many hours to wait before converting a collection into a release that is considered "stuck".',
+  'How many hours to wait before deleting a stuck/broken collection. (This is to prevent the MySQL tables from swelling up.)',
   'collection_timeout'
 ), (
   'indexer',
