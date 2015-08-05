@@ -14,25 +14,25 @@
  * along with this program (see LICENSE.txt in the base directory.  If
  * not, see:
  *
- * @link <http://www.gnu.org/licenses/>.
- * @author niel
+ * @link      <http://www.gnu.org/licenses/>.
+ * @author    niel
  * @copyright 2014 nZEDb
  */
 
-spl_autoload_register(function ($class) {
-	// Only continue if the class is in our namespace.
-	if (strpos($class, 'nzedb\\') === 0) {
-		// Replace namespace separators with directory separators in the class name, append
-		// with .php
-		$file = nZEDb_ROOT . str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
+spl_autoload_register(
+	function ($class) {
+		// Only continue if the class is in our namespace.
+		if (strpos($class, 'nzedb\\') === 0) {
+			// Replace namespace separators with directory separators in the class name, append
+			// with .php
+			$file = nZEDb_ROOT . str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
 
-		// if the file exists, require it
-		if (file_exists($file)) {
-			require_once $file;
-		} elseif (nZEDb_LOGAUTOLOADER) {
-			var_dump($file);
+			// if the file exists, require it
+			if (file_exists($file)) {
+				require_once $file;
+			}
 		}
 	}
-});
+);
 
 ?>
