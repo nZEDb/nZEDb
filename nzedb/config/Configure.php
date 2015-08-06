@@ -26,15 +26,16 @@ class Configure
 {
 	private $environments = [
 		'indexer' => [
-			'config'   => true,
-			'settings' => false
+			'config'	=> true,
+			'settings'	=> false
 		],
 		'install' => [
-			'settings' => false
+			'config'	=> false,
+			'settings'	=> false
 		],
 		'smarty'  => [
-			'config'   => true,
-			'settings' => false
+			'config'	=> true,
+			'settings'	=> false
 		],
 	];
 
@@ -71,9 +72,6 @@ class Configure
 
 		switch ($filename) {
 			case 'config':
-				$this->defaultSSL();
-				break;
-			case 'install':
 				$this->defaultSSL();
 				break;
 			case 'settings':
