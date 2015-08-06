@@ -32,7 +32,7 @@ BEGIN
                           "_tmp (id, name, collection_id, filenumber, totalparts, currentparts, binaryhash, partcheck, partsize) (SELECT id, name, collection_id, filenumber, totalparts, currentparts, UNHEX(binaryhash), partcheck, partsize FROM ",
                           _table, ")");
       SET @sql5 := CONCAT("DROP TABLE IF EXISTS ", _table, "_old");
-      SET @sql6 := CONCAT("RENAME TABLE ", _table," TO ", _table, "_old, ", _table, "_tmp TO ", _table);
+      SET @sql6 := CONCAT("RENAME TABLE ", _table, " TO ", _table, "_old, ", _table, "_tmp TO ", _table);
       SET @sql7 := CONCAT("DROP TABLE IF EXISTS ", _table, "_old");
 
       PREPARE _stmt FROM @sql1; EXECUTE _stmt; DROP PREPARE _stmt;
