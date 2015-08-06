@@ -1609,7 +1609,7 @@ class ProcessReleases
 	{
 		$obj = $this->pdo->queryExec(
 			sprintf("
-				DELETE %s c
+				DELETE c FROM %s c
 				WHERE
 					c.added <
 					DATE_SUB((SELECT value FROM settings WHERE setting = 'last_run_time'), INTERVAL %d HOUR)
