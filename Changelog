@@ -9,7 +9,8 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 2015-08-06 ruhllatio
 	* Fix: Delete query for stuck collections
 2015-08-06 kevin
-	* Fix: nzedb\db\DbUpdate::splitSQL ; Properly parse delimiters for patches.
+	* Fix: nzedb\db\DbUpdate::splitSQL ; Properly parse delimiters for patches. ; Parse comments.
+	* Mrg: PR 1796, by terbonium - SQL optimizations.
 	* Mrg: PR 1793, by kevinlekiller/ruhllatio/Dariusiii - Delete collections that are broken after a timeout period. Issue #1791
 2015-08-05 niel
 	* Fix: Install process to use install.php instead of smarty.php
