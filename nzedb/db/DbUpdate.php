@@ -293,11 +293,22 @@ class DbUpdate
 				$oldDelimiter = '';
 				while (!feof($file)) {
 					$line = fgets($file);
+
+					// Check for DELIMITER $$, set delimiter to $$ to send query as is to MySQL.
+					if (preg_match('#^\s*DELIMITER\s+(?P<delimiter>.+)\s*$#i', $line, $matches)) {
+						$oldDelimiter = $options['delimiter'];
+						$options['delimiter'] = $matches['delimiter'];
+						continue;
+					} elseif ($oldDelimiter != '' && $options['delimiter'] != $oldDelimiter
+							&& preg_match('#' . preg_quote($options['delimiter']) . '\s*$#', $line)) {
+						// Replace the last delimiter ($$) with ;
+						$line = str_replace($options['delimiter'], ';', $line);
+						// Reset the delimiter back to ;
+						$options['delimiter'] = $oldDelimiter;
+					}
 					$query[] = $line;
 
-					if (preg_match('~' . preg_quote($options['delimiter'], '~') . '\s*$~iS',
-								   end($query)) == 1
-					) {
+					if (preg_match('~' . preg_quote($options['delimiter'], '~') . '\s*$~iS', end($query)) == 1) {
 						$query = trim(implode('', $query));
 						if ($options['local'] !== null) {
 							$query = str_replace('{:local:}', $options['local'], $query);
@@ -356,14 +367,6 @@ class DbUpdate
 							ob_end_flush();
 						}
 						flush();
-						if ($oldDelimiter != '') {
-							$options['delimiter'] = $oldDelimiter;
-							$oldDelimiter = '';
-						}
-					}
-					if (preg_match('#^\s*DELIMITER\s+(?P<delimiter>.+)$#i', $line, $matches)) {
-						$oldDelimiter = $options['delimiter'];
-						$options['delimiter'] = $matches['delimiter'];
 					}
 
 					if (is_string($query) === true) {
