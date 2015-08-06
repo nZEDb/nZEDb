@@ -72,12 +72,12 @@ while ($cdone < $clen['total']) {
 			$consoletools->overWrite('Collections Completed: ' . $consoletools->percentString($ccount, $clen['total']));
 
 			//Get binaries and split to correct group tables.
-			$binaries = $pdo->queryAssoc('SELECT * FROM binaries WHERE collection_id = ' . $oldcid . ';');
+			$binaries = $pdo->queryAssoc('SELECT name, collection_id, filenumber, totalparts, currentparts, HEX(binaryhash) AS binaryhash, partcheck, partsize FROM binaries WHERE collection_id = ' . $oldcid . ';');
 
 			if ($binaries instanceof \Traversable) {
 				foreach ($binaries as $binary) {
 					$binary['name'] = $pdo->escapeString($binary['name']);
-					$binary['binaryhash'] = $pdo->escapeString($binary['binaryhash']);
+					$binary['binaryhash'] = "UNHEX(" . $pdo->escapeString($binary['binaryhash']) . ")";
 					$oldbid = array_shift($binary);
 					$binarynew = array_replace($binary, $newcid);
 					if ($debug) {

@@ -747,7 +747,7 @@ class Binaries
 				$binaryID = $this->_pdo->queryInsert(
 					sprintf("
 						INSERT INTO %s (binaryhash, name, collection_id, totalparts, currentparts, filenumber, partsize)
-						VALUES ('%s', %s, %d, %d, 1, %d, %d)
+						VALUES (UNHEX('%s'), %s, %d, %d, 1, %d, %d)
 						ON DUPLICATE KEY UPDATE currentparts = currentparts + 1, partsize = partsize + %d",
 						$tableNames['bname'],
 						md5($matches[1] . $header['From'] . $groupMySQL['id']),
