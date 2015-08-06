@@ -27,8 +27,9 @@ BEGIN
       SET @sql1 := CONCAT("DROP TABLE IF EXISTS ", _table, "_tmp");
       SET @sql2 := CONCAT("CREATE TABLE ", _table, "_tmp LIKE ", _table);
       SET @sql3 := CONCAT("ALTER TABLE ", _table, "_tmp MODIFY binaryhash BINARY(16) NOT NULL DEFAULT '0'");
-      SET @sql4 := CONCAT("INSERT INTO ", _table,
-                          "_tmp VALUES( id, name, collection_id, filenumber, totalparts, currentparts, binaryhash, partcheck, partsize) SELECT id, name, collection_id, filenumber, totalparts, currentparts, UNHEX(binaryhash), partcheck, partsize FROM ",
+      SET @sql4 := CONCAT("INSERT INTO ",
+                          _table,
+                          "_tmp VALUES (id, name, collection_id, filenumber, totalparts, currentparts, binaryhash, partcheck, partsize) SELECT id, name, collection_id, filenumber, totalparts, currentparts, UNHEX(binaryhash), partcheck, partsize FROM ",
                           _table);
       SET @sql5 := CONCAT("RENAME TABLE ", _table," TO ", _table, "_old, ", _table, "_tmp TO ", _table);
       SET @sql6 := CONCAT("DROP TABLE IF EXISTS ", _table, "_old");
