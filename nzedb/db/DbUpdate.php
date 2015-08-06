@@ -294,6 +294,12 @@ class DbUpdate
 				while (!feof($file)) {
 					$line = fgets($file);
 
+					// Skip comments.
+					if (preg_match('!^\s*(#|--|//)!', $line)) {
+						echo $this->pdo->log->info("COMMENT: " . $line);
+						continue;
+					}
+
 					// Check for DELIMITER $$, set delimiter to $$ to send query as is to MySQL.
 					if (preg_match('#^\s*DELIMITER\s+(?P<delimiter>.+)\s*$#i', $line, $matches)) {
 						$oldDelimiter = $options['delimiter'];
