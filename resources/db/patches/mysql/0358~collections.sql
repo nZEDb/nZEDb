@@ -1,7 +1,7 @@
 DROP PROCEDURE IF EXISTS tpg_change;
 
 DELIMITER $$
-CREATE PROCEDURE tpg_change(I)
+CREATE PROCEDURE tpg_change()
 BEGIN
   DECLARE done INT DEFAULT false;
   DECLARE _table CHAR(255);
@@ -23,7 +23,7 @@ BEGIN
 END $$
 DELIMITER ;
 
-CALL tpg_change( DATABASE() );
+CALL tpg_change();
 DROP PROCEDURE tpg_change;
 
 DELIMITER $$
