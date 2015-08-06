@@ -244,6 +244,14 @@ class Binaries
 	}
 
 	/**
+	 * When the indexer is started, log the date/time.
+	 */
+	public function logIndexerStart()
+	{
+		$this->_pdo->queryExec("UPDATE settings SET value = NOW() WHERE setting = 'last_run_time'");
+	}
+
+	/**
 	 * Download new headers for a single group.
 	 *
 	 * @param array $groupMySQL Array of MySQL results for a single group.
@@ -254,6 +262,8 @@ class Binaries
 	public function updateGroup($groupMySQL, $maxHeaders = 0)
 	{
 		$startGroup = microtime(true);
+
+		$this->logIndexerStart();
 
 		// Select the group on the NNTP server, gets the latest info on it.
 		$groupNNTP = $this->_nntp->selectGroup($groupMySQL['name']);
