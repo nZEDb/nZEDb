@@ -1,3 +1,13 @@
+# tpg_change procedure runs the following on binaries and binaries_(tpg) tables
+#
+# CREATE TABLE binaries_tmp LIKE binaries;
+# ALTER TABLE binaries_tmp MODIFY `binaryhash` binary(16) NOT NULL DEFAULT '0';
+# INSERT INTO binaries_tmp 
+#   SELECT id, name, collection_id, filenumber, totalparts, currentparts, UNHEX(binaryhash), partcheck, partsize 
+#   FROM binaries;
+# RENAME TABLE binaries TO binaries_old, binaries_tmp TO binaries;
+# DROP TABLE binaries_old;
+
 DROP PROCEDURE IF EXISTS tpg_change;
 
 DELIMITER $$
