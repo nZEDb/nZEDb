@@ -71,14 +71,10 @@ class Configure
 
 		switch ($filename) {
 			case 'config':
-				// Check if they updated config.php for the openssl changes. Only check 1 to save speed.
-				if (!defined('nZEDb_SSL_VERIFY_PEER')) {
-					define('nZEDb_SSL_CAFILE', '');
-					define('nZEDb_SSL_CAPATH', '');
-					define('nZEDb_SSL_VERIFY_PEER', '0');
-					define('nZEDb_SSL_VERIFY_HOST', '0');
-					define('nZEDb_SSL_ALLOW_SELF_SIGNED', '1');
-				}
+				$this->defaultSSL();
+				break;
+			case 'install':
+				$this->defaultSSL();
 				break;
 			case 'settings':
 				$settings_file = nZEDb_CONFIGS . 'settings.php';
@@ -125,6 +121,18 @@ class Configure
 				}
 				unset($settings_file);
 				break;
+		}
+	}
+
+	private function defaultSSL()
+	{
+		// Check if they updated config.php for the openssl changes. Only check 1 to save speed.
+		if (!defined('nZEDb_SSL_VERIFY_PEER')) {
+			define('nZEDb_SSL_CAFILE', '');
+			define('nZEDb_SSL_CAPATH', '');
+			define('nZEDb_SSL_VERIFY_PEER', '0');
+			define('nZEDb_SSL_VERIFY_HOST', '0');
+			define('nZEDb_SSL_ALLOW_SELF_SIGNED', '1');
 		}
 	}
 }
