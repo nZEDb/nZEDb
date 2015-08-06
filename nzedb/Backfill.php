@@ -224,6 +224,9 @@ class Backfill
 	{
 		// Start time for this group.
 		$startGroup = microtime(true);
+
+		$this->_binaries->logIndexerStart();
+
 		$groupName = str_replace('alt.binaries', 'a.b', $groupArr['name']);
 
 		// If our local oldest article 0, it means we never ran update_binaries on the group.

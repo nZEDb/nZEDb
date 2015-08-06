@@ -1064,6 +1064,14 @@
 					</div>
 				</td>
 			</tr>
+			<tr>
+			<td style="width:180px;"><label for="collection_timeout">Collection Timeout Check:</label></td>
+			<td>
+				<input class="short" id="collection_timeout" name="collection_timeout" type="text" value="{$site->collection_timeout}"/>
+				<div class="hint">How many hours to wait before converting a collection into a release that is considered "stuck". <br \> Default value is 48 hours.
+				</div>
+			</td>
+		</tr>
 		</table>
 	</fieldset>
 

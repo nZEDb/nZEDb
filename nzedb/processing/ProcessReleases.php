@@ -100,6 +100,11 @@ class ProcessReleases
 	public $releaseImage;
 
 	/**
+	 * @var int Time (hours) to wait before delete a stuck/broken collection.
+	 */
+	private $collectionTimeout;
+
+	/**
 	 * @param array $options Class instances / Echo to cli ?
 	 */
 	public function __construct(array $options = [])
@@ -136,6 +141,7 @@ class ProcessReleases
 			$this->completion = 100;
 			echo $this->pdo->log->error(PHP_EOL . 'You have an invalid setting for completion. It cannot be higher than 100.');
 		}
+		$this->collectionTimeout = intval($this->pdo->getSetting('collection_timeout'));
 	}
 
 	/**
@@ -306,6 +312,7 @@ class ProcessReleases
 
 		$where = (!empty($groupID) ? ' AND c.group_id = ' . $groupID . ' ' : ' ');
 
+		$this->processStuckCollections($group, $where);
 		$this->collectionFileCheckStage1($group, $where);
 		$this->collectionFileCheckStage2($group, $where);
 		$this->collectionFileCheckStage3($group, $where);
@@ -1587,5 +1594,35 @@ class ProcessReleases
 				$where
 			)
 		);
+	}
+
+	/**
+	 * If a collection has been stuck for $this->collectionTimeout hours, delete it, it's bad.
+	 *
+	 * @param array $group
+	 * @param string $where
+	 *
+	 * @void
+	 * @access private
+	 */
+	private function processStuckCollections(array $group, $where)
+	{
+		$obj = $this->pdo->queryExec(
+			sprintf("
+				DELETE %s c
+				WHERE
+					c.added <
+					DATE_SUB((SELECT value FROM settings WHERE setting = 'last_run_time'), INTERVAL %d HOUR)
+				%s",
+				$group['cname'],
+				$this->collectionTimeout,
+				$where
+			)
+		);
+		if ($this->echoCLI && $obj->rowCount()) {
+			$this->pdo->log->doEcho(
+				$this->pdo->log->primary('Deleted ' . $obj->rowCount() . ' broken/stuck collections.')
+			);
+		}
 	}
 }
