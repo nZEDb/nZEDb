@@ -56,30 +56,21 @@ if (isset($_GET['id'])) {
 	if ($data['imdbid'] != '' && $data['imdbid'] != 0000000) {
 		$movie = new Movie(['Settings' => $page->settings]);
 		$mov   = $movie->getMovieInfo($data['imdbid']);
-		$traktSummary = (new TraktTv(['Settings' => $page->settings]))->movieSummary('tt' . $data['imdbid'], 'full');
-		if ($traktSummary !== false &&
-			isset($traktSummary['trailer']) &&
-			$traktSummary['trailer'] !== '' &&
-			preg_match('/[\/?]v[\/\=](\w+)$/i', $traktSummary['trailer'], $youtubeM)
-		) {
-			$mov['trailer'] =
-				'<embed width="480" height="345" src="' .
-				'https://www.youtube.com/v/' . $youtubeM[1] .
-				'" type="application/x-shockwave-flash"></embed>';
-		} else {
-			$mov['trailer'] = nzedb\utility\Misc::imdb_trailers($data['imdbid']);
-		}
-
 		if ($mov && isset($mov['title'])) {
 			$mov['title']    = str_replace(['/', '\\'], '', $mov['title']);
 			$mov['actors']   = $movie->makeFieldLinks($mov, 'actors');
 			$mov['genre']    = $movie->makeFieldLinks($mov, 'genre');
 			$mov['director'] = $movie->makeFieldLinks($mov, 'director');
-		} else {
-			if ($traktSummary !== false) {
-				$mov['title'] = str_replace(['/', '\\'], '', $traktSummary['title']);
-			} else {
-				$mov = false;
+			if ($page->settings->getSetting('trailers_display')) {
+				$trailer = (!isset($mov['trailer']) || empty($mov['trailer']) ? $movie->getTrailer($data['imdbid']) : $mov['trailer']);
+				if ($trailer) {
+					$mov['trailer'] = sprintf(
+						"<iframe width=\"%d\" height=\"%d\" src=\"%s\"></iframe>",
+						$page->settings->getSetting('trailers_size_x'),
+						$page->settings->getSetting('trailers_size_y'),
+						$trailer
+					);
+				}
 			}
 		}
 	}
@@ -104,11 +95,11 @@ if (isset($_GET['id'])) {
 	$re  = new ReleaseExtra($page->settings);
 
 	$page->smarty->assign([
-		'ani'   => ($data['anidbid'] > 0 ? (new AniDB(['Settings' => $page->settings]))->getAnimeInfo($data['anidbid']) : ''),
+		'anidb'   => ($data['anidbid'] > 0 ? (new AniDB(['Settings' => $page->settings]))->getAnimeInfo($data['anidbid']) : ''),
 		'boo'   => ($data['bookinfoid'] != '' ? (new Books(['Settings' => $page->settings]))->getBookInfo($data['bookinfoid']) : ''),
 		'con'   => ($data['consoleinfoid'] != '' ? (new Console(['Settings' => $page->settings]))->getConsoleInfo($data['consoleinfoid']) : ''),
 		'game'  => ($data['gamesinfo_id'] != '' ? (new Games(['Settings' => $page->settings]))->getgamesInfo($data['gamesinfo_id']) : ''),
-		'mov'   => $mov,
+		'movie'   => $mov,
 		'music' => ($data['musicinfoid'] != '' ? (new Music(['Settings' => $page->settings]))->getMusicInfo($data['musicinfoid']) : ''),
 		'pre'   => (new PreDb(['Settings' => $page->settings]))->getForRelease($data['preid']),
 		'rage'  => $rage,
