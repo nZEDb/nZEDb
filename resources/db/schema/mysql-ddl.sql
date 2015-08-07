@@ -493,6 +493,7 @@ CREATE TABLE movieinfo (
   backdrop    TINYINT(1) UNSIGNED            NOT NULL DEFAULT '0',
   createddate DATETIME                       NOT NULL,
   updateddate DATETIME                       NOT NULL,
+  trailer     VARCHAR(255)                   NOT NULL DEFAULT '',
   PRIMARY KEY (id),
   INDEX ix_movieinfo_title  (title),
   UNIQUE INDEX ix_movieinfo_imdbid (imdbid)
