@@ -36,7 +36,7 @@ if (isset($_GET['id'])) {
 	if ($data['rageid'] != '') {
 		$rageInfo = (new TvRage(['Settings' => $page->settings]))->getByRageID($data['rageid']);
 		if (count($rageInfo) > 0) {
-			$rage = ['releasetitle' => '', 'description' => '', 'country' => '', 'genre' => '', 'imgdata' => ''];
+			$rage = ['releasetitle' => '', 'description' => '', 'country' => '', 'genre' => '', 'imgdata' => '', 'id' => ''];
 			$done = 1;
 			$needed = count($rage);
 			foreach ($rageInfo as $info) {
