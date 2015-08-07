@@ -150,7 +150,7 @@
 																	 value="{$mguid[$m@index]}"/></td>
 											<td class="item">
 												<a title="View details"
-												   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">{$mname[$m@index]|escape:"htmlall"|replace:".":" "}</a>
+												   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$mname[$m@index]|escape:"htmlall"|replace:".":" "}</a>
 												<br/>
 						<span class="label label-default">{$mgrabs[$m@index]}
 							grab{if $mgrabs[$m@index] != 1}s{/if}</span>

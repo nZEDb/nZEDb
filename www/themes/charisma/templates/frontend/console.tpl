@@ -74,7 +74,7 @@
 										<div class="row">
 											<div class="col-md-2 no-gutter">
 												<a title="View details"
-												   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">
+												   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">
 													<img src="{$smarty.const.WWW_TOP}/covers/console/{if $result.cover == 1}{$result.consoleinfoid}.jpg{else}no-cover.jpg{/if}"
 														 width="140" border="0"
 														 alt="{$result.title|escape:"htmlall"}"/>
@@ -95,7 +95,7 @@
 											</div>
 											<div class="col-md-10 no-gutter">
 												<h4><a title="View details"
-													   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">{$result.title|escape:"htmlall"}</a>
+													   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$result.title|escape:"htmlall"}</a>
 												</h4>
 												<table>
 													<tr>
@@ -145,7 +145,7 @@
 																			class="badge">{$mgrabs[$m@index]}
 																		Grab{if $mgrabs[$m@index] != 1}s{/if}</span></a>
 																<a role="button" class="btn btn-default btn-xs"
-																   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}#comments"><i
+																   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}#comments"><i
 																			class="fa fa-comment-o"></i><span
 																			class="badge">{$mcomments[$m@index]}
 																		Comment{if $mcomments[$m@index] != 1}s{/if}</span></a>

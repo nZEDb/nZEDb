@@ -39,7 +39,7 @@
 	</tr>
 	{foreach from=$topdownloads item=result}
 		<tr class="{cycle values=",alt"}">
-			<td style="width:75%"><a href="{$smarty.const.WWW_TOP}/../details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.searchname|escape:"htmlall"|replace:".":" "}</a>
+			<td style="width:75%"><a href="{$smarty.const.WWW_TOP}/../details/{$result.guid}">{$result.searchname|escape:"htmlall"|replace:".":" "}</a>
 			{if $isadmin}<a href="{$smarty.const.WWW_TOP}/release-edit.php?id={$result.id}">[Edit]</a>{/if}</td>
 			<td>{$result.grabs}</td>
 			<td>{$result.adddate|timeago}</td>
@@ -124,7 +124,7 @@
 	</tr>
 	{foreach from=$topcomments item=result}
 		<tr class="{cycle values=",alt"}">
-			<td style="width:75%;"><a href="{$smarty.const.WWW_TOP}/../details/{$result.guid}/{$result.searchname|escape:"htmlall"}#comments">{$result.searchname|escape:"htmlall"|replace:".":" "}</a></td>
+			<td style="width:75%;"><a href="{$smarty.const.WWW_TOP}/../details/{$result.guid}#comments">{$result.searchname|escape:"htmlall"|replace:".":" "}</a></td>
 			<td>{$result.comments}</td>
 			<td>{$result.adddate|timeago}</td>
 		</tr>

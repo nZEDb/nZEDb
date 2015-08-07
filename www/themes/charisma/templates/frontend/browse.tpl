@@ -97,7 +97,7 @@
 															 type="checkbox" class="nzb_check"
 															 value="{$result.guid}"/></td>
 									<td>
-										<a href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}"
+										<a href="{$smarty.const.WWW_TOP}/details/{$result.guid}"
 										   class="title">{$result.searchname|escape:"htmlall"|replace:".":" "}</a>
 										<br/>
 													<span class="label label-default">{$result.grabs}

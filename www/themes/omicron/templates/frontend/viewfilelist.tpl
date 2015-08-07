@@ -1,6 +1,6 @@
 <h1>{$page->title}</h1>
 <h2>For
-	<a href="{$smarty.const.WWW_TOP}/details/{$rel.guid}/{$rel.searchname|escape:"htmlall"}">{$rel.searchname|escape:'htmlall'}</a>
+	<a href="{$smarty.const.WWW_TOP}/details/{$rel.guid}">{$rel.searchname|escape:'htmlall'}</a>
 </h2>
 <table class="data table table-striped table-responsive sortable table-condensed table-hover">
 	<tr>

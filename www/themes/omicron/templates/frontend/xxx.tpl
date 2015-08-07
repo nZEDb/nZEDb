@@ -83,7 +83,7 @@
 													{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
 													{foreach from=$msplits item=m name=loop}
 													{if $smarty.foreach.loop.first}
-													<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"><img
+													<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}"><img
 																class="cover"
 																src="{if $result.cover == 1}{$serverroot}covers/xxx/{$result.id}-cover.jpg{else}{$serverroot}themes/omicron/images/nocover.png{/if}"
 																width="100" border="0"
@@ -156,7 +156,7 @@
 												</div>
 												<div class="col-md-9 no-gutter">
 																<span class="release-title"><a class="text-muted"
-																							   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">{$result.title|escape:"htmlall"}</a></span>
+																							   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$result.title|escape:"htmlall"}</a></span>
 													<div class="release-subtitle">{if $result.genre != ''}{$result.genre}, {/if}</div>
 													<div id="guid{$mguid[$m@index]}">
 														<span class="label label-primary">{if isset($catsplit[0])} {$catsplit[0]}{/if}</span>
@@ -220,7 +220,7 @@
 													{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
 													{foreach from=$msplits item=m name=loop}
 													{if $smarty.foreach.loop.first}
-													<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"><img
+													<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}"><img
 																class="cover"
 																src="{if $result.cover == 1}{$serverroot}covers/xxx/{$result.id}-cover.jpg{else}{$serverroot}themes/omicron/images/nocover.png{/if}"
 																width="100" border="0"
@@ -293,7 +293,7 @@
 												</div>
 												<div class="col-md-9 no-gutter">
 																<span class="release-title"><a class="text-muted"
-																							   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">{$result.title|escape:"htmlall"}</a></span>
+																							   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$result.title|escape:"htmlall"}</a></span>
 													<div class="release-subtitle">{if $result.genre != ''}{$result.genre}, {/if}</div>
 													<div id="guid{$mguid[$m@index]}">
 														<span class="label label-primary">{if isset($catsplit[0])} {$catsplit[0]}{/if}</span>
