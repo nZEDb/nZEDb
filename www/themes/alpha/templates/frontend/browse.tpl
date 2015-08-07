@@ -89,7 +89,7 @@
 							<a
 								class="title"
 								title="View details"
-								href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}"
+								href="{$smarty.const.WWW_TOP}/details/{$result.guid}"
 							>{$result.searchname|escape:"htmlall"|wordwrap:60:"\n":true}</a>
 						</label>
 						<div class="resextra">
@@ -103,7 +103,7 @@
 							{if $result.videostatus > 0}
 								<a
 									class="label label-default model_prev"
-									href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}"
+									href="{$smarty.const.WWW_TOP}/details/{$result.guid}"
 									title="This release has a video preview"
 									rel="preview"
 								><i class="icon-youtube-play"></i></a>

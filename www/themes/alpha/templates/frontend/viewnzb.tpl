@@ -4,15 +4,17 @@
 			<fieldset class="adbanner div-center">
 				<legend class="adbanner">Advertisement</legend>
 				{$site->addetail}
-			</fieldset></div></div>
-	<br>
+			</fieldset>
+		</div>
+	</div>
+	<br />
 {/if}
 
 <h2>{$release.searchname|escape:"htmlall"|truncate:100:"...":true}</h2><br>
 <div class="container">
 	<div class="col-xs-8">
 		<span class="label label-default">{$release.category_name}</span> <span class="label label-default">{$release.group_name}</span>
-		<br>
+		<br />
 		<table class="table table-condensed data" id="detailstable" >
 
 			{if $isadmin || $ismod}
@@ -575,7 +577,7 @@
 {if $similars|@count > 1}
 	<tr>
 		<th style="vertical-align:top">Similar:</th>
-		<td>{foreach from=$similars item=similar}<a title="View similar Nzb details" href="{$smarty.const.WWW_TOP}/details/{$similar.guid}/{$similar.searchname|escape:"htmlall"}">{$similar.searchname|escape:"htmlall"}</a><br/>
+		<td>{foreach from=$similars item=similar}<a title="View similar Nzb details" href="{$smarty.const.WWW_TOP}/details/{$similar.guid}">{$similar.searchname|escape:"htmlall"}</a><br/>
 			{/foreach}
 			<br/>
 			<a title="Search for similar Nzbs" href="{$smarty.const.WWW_TOP}/search/{$searchname|escape:"htmlall"}">Search for similar NZBs...</a><br/>

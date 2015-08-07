@@ -1,6 +1,6 @@
 {if not $modal}
 	<h1>{$page->title}</h1>
-	<h3>For <a href="{$smarty.const.WWW_TOP}/details/{$rel.guid}/{$rel.searchname|escape:'htmlall'}">{$rel.searchname|escape:'htmlall'}</a></h3>
+	<h3>For <a href="{$smarty.const.WWW_TOP}/details/{$rel.guid}">{$rel.searchname|escape:'htmlall'}</a></h3>
 {/if}
 
 <div id="xxxbackdrop"><img src="{$smarty.const.WWW_TOP}/covers/xxx/{if $movie.backdrop == 1}{$movie.id}{else}no{/if}-backdrop.jpg" alt=""></div>
