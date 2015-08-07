@@ -6,6 +6,8 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2015-08-07 kevin
+	* Fix: #1782 Unused title parameter in getnzb and details page intermittently caused them not to load.
 2015-08-07 terbonium
 	* Fix: Escape the "_" character in LIKE clause of query of patch 360. #1801 http://git.io/vOFcf
 2015-08-06 niel
