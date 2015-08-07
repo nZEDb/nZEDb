@@ -24,7 +24,7 @@ BEGIN
   OPEN cur1;
     myloop: loop FETCH cur1 INTO _table;
       IF done THEN LEAVE myloop; END IF;
-      SET @sql0 := "DELETE FROM _table WHERE binaryhash = NULL";
+      SET @sql0 := CONCAT("DELETE FROM ", _table, " WHERE binaryhash = NULL";
       SET @sql1 := CONCAT("DROP TABLE IF EXISTS ", _table, "_tmp");
       SET @sql2 := CONCAT("CREATE TABLE ", _table, "_tmp LIKE ", _table);
       SET @sql3 := CONCAT("ALTER TABLE ", _table, "_tmp MODIFY binaryhash BINARY(16) NOT NULL DEFAULT '0'");
