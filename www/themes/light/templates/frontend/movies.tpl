@@ -135,7 +135,7 @@
 													</div>
 												</td>
 												<td class="icons">
-													<div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">&nbsp;</a></div>
+													<div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}">&nbsp;</a></div>
 													<div class="icon icon_cart" title="Add to Cart"></div>
 													{if $sabintegrated}<div class="icon icon_sab" title="Send to my Queue"></div>{/if}
 												</td>

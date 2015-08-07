@@ -25,7 +25,7 @@
 			{/if}
 
 			<tr id="guid{$release.guid}"><th>Download:</th>
-				<td><div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$release.guid}/{$release.searchname|escape:"htmlall"}">&nbsp;</a></div>
+				<td><div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$release.guid}">&nbsp;</a></div>
 					{if $sabintegrated}<div class="icon icon_sab" title="Send to my Queue"></div>{/if}
 					<div class="icon icon_cart" title="Add to Cart"></div>
 				</td>

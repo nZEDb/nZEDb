@@ -301,7 +301,7 @@
 					<td class="icons" nowrap="nowrap">
 						<div class="icon_nzb text-muted">
 							<a title="Download Nzb"
-							   href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"htmlall"}">
+							   href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}">
 								&nbsp;<i class="fa fa-download"></i></a>
 						</div>
 						<div class="icon_cart text-muted" title="Add to Cart"><i class="fa fa-shopping-cart"></i></div>

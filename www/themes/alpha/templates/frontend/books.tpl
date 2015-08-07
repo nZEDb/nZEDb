@@ -214,7 +214,7 @@
 												<div class="icon icon_nzb float-right">
 													<a
 														title="Download Nzb"
-														href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"
+														href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}"
 													></a>
 												</div>
 												{if $sabintegrated}

@@ -204,7 +204,7 @@
 												<br/><br/>
 												<div class="btn-group btn-group-vertical">
 													<a class="btn btn-primary btn-sm btn-success btn-transparent"
-													   href="{$smarty.const.WWW_TOP}/getnzb/{$release.guid}/{$release.searchname|escape:"htmlall"}"><i
+													   href="{$smarty.const.WWW_TOP}/getnzb/{$release.guid}"><i
 																class="fa fa-download"></i>
 														Download</a>
 													<button type="button"

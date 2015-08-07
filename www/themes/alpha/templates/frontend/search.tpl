@@ -338,7 +338,7 @@
 						{$result.grabs} grab{if $result.grabs != 1}s{/if}
 					</td>
 					<td class="icons" style="width:60px;text-align:center;white-space:nowrap;">
-						<div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"htmlall"}">&nbsp;</a></div>
+						<div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}">&nbsp;</a></div>
 						{if $sabintegrated}
 							<div class="icon icon_sab" title="Send to my Queue"></div>
 						{/if}

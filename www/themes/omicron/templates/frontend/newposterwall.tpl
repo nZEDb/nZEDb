@@ -68,7 +68,7 @@
 							<div class="rating-pod" id="guid{$result.guid}">
 								<div class="icons divlink col-lg-4">
 									<span class="btn btn-hover btn-default btn-sm icon_nzb text-muted"><a title="Download Nzb"
-																										  href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"htmlall"}">
+																										  href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}">
 											<i class="glyphicon glyphicon-download"></i></a>
 									</span>
 									<span class="btn btn-hover btn-default btn-sm icon_cart text-muted" title="Add to Cart"><i class="glyphicon glyphicon-shopping-cart"></i></span>

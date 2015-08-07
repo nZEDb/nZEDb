@@ -68,7 +68,7 @@
 							<div class="rating-pod" id="guid{$result.guid}">
 								<div class="icons">
 									<div class="icon icon_nzb"><a class="divlink" title="Download Nzb"
-																  href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"url"}"></a>
+																  href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}"></a>
 									</div>
 									<div class="icon icon_cart" title="Add to Cart"></div>
 									{if $sabintegrated}

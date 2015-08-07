@@ -239,7 +239,7 @@
 					</td>
 					<td class="icons" style="width:80px;text-align:center;white-space:nowrap;">
 						<div class="icon icon_nzb">
-							<a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"htmlall"}"></a>
+							<a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}"></a>
 						</div>
 						{if $sabintegrated}
 							<div class="icon icon_sab" title="Send to my Queue"></div>

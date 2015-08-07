@@ -267,7 +267,7 @@
 										<div class="icon icon_nzb float-right">
 											<a
 												title="Download Nzb"
-												href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"
+												href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}"
 											></a>
 										</div>
 										{if $sabintegrated}
@@ -319,7 +319,7 @@
 			<br>This might mean the Administrator's has file permission issues, or he has disabled looking up XXX covers.
 			<br>This could also mean there are no movie releases.
 			<br>Please try looking in the
-			<a href="{$smarty.const.WWW_TOP}/browse?t={$category}" style="font-weight:strong;text-decoration:underline;"
+			<a href="{$smarty.const.WWW_TOP}/browse?t={$category}" style="font-weight:bold;text-decoration:underline;"
 			>list view</a>, which does not require XXX covers.
 		</p>
 	</div>
