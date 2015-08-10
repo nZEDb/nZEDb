@@ -2,7 +2,6 @@
 
 use nzedb\Releases;
 use nzedb\NZB;
-
 $uid = 0;
 
 use nzedb\db\Settings;
@@ -42,9 +41,9 @@ if ($requests > $maxDownloads) {
 	$page->show503();
 }
 
-if (!isset($_GET['id']) || !ctype_xdigit($_GET['id'])) {
+if (!isset($_GET['id'])) {
 	header("X-DNZB-RCode: 400");
-	header("X-DNZB-RText: Bad request! (parameter id is required and must be hexadecimal or numeric)");
+	header("X-DNZB-RText: Bad request! (parameter id is required)");
 	$page->show403();
 }
 
