@@ -8,6 +8,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2015-08-10 kevin
 	* Fix: Issue where youtube trailer URL's would get overwritten with the wrong URL.
+	* Fix: Issue where API NZB downloads would fail.
 2015-08-10 Darius
 	* Fix: Typo in nzedb\Movies.
 2015-08-07 kevin
