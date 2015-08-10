@@ -435,15 +435,9 @@ class Movie
 
 		$data = $this->traktTv->movieSummary('tt' . $imdbID, 'full');
 		if ($data) {
-			$trailer = false;
-			if (isset($data['trailer']) && !empty($data['trailer'])) {
-				$data['trailer'] = $trailer = str_ireplace(
-					'http://', 'https://', str_ireplace('watch?v=', 'embed/', $data['trailer'])
-				);
-			}
 			$this->parseTraktTv($data);
-			if ($trailer) {
-				return $trailer;
+			if (isset($data['trailer']) && !empty($data['trailer'])) {
+				return $data['trailer'];
 			}
 		}
 
@@ -462,8 +456,13 @@ class Movie
 	 *
 	 * @param array $data
 	 */
-	public function parseTraktTv($data)
+	public function parseTraktTv(&$data)
 	{
+		if (isset($data['trailer']) && !empty($data['trailer'])) {
+			$data['trailer'] = str_ireplace(
+				'http://', 'https://', str_ireplace('watch?v=', 'embed/', $data['trailer'])
+			);
+		}
 		$this->update([
 			'genres'   => $this->checkTraktValue($data['genres']),
 			'imdbid'   => $this->checkTraktValue(str_ireplace('tt', '', $data['ids']['imdb'])),
