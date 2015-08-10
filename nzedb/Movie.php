@@ -1022,7 +1022,7 @@ class Movie
 
 		if ($movieCount > 0) {
 			if (is_null($this->traktTv)) {
-				$this->trakTv = new TraktTv(['Settings' => $this->pdo]);
+				$this->traktTv = new TraktTv(['Settings' => $this->pdo]);
 			}
 			if ($this->echooutput && $movieCount > 1) {
 				$this->pdo->log->doEcho($this->pdo->log->header("Processing " . $movieCount . " movie releases."));
@@ -1080,7 +1080,7 @@ class Movie
 					}
 
 					// Check on trakt.
-					$data = $this->trakTv->movieSummary($movieName, 'full');
+					$data = $this->traktTv->movieSummary($movieName, 'full');
 					if ($data !== false) {
 						$this->parseTraktTv($data);
 						if (isset($data['ids']['imdb'])) {
