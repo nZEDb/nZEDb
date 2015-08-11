@@ -10,8 +10,8 @@
 <div class="box-body">
 	<div class="row">
 		<div class="col-xlg-12 portlets">
-			<div class="panel">
-				<div class="panel-content pagination2">
+			<div class="panel panel-default">
+				<div class="panel-body pagination2">
 					<h1>{$release.searchname|escape:"htmlall"}</h1>
 					{if isset($isadmin)}
 						<a class="label label-warning"

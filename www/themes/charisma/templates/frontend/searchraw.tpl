@@ -9,8 +9,8 @@
 </div>
 <div class="row">
 	<div class="col-xlg-12 portlets">
-		<div class="panel">
-			<div class="panel-content pagination2">
+		<div class="panel panel-default">
+			<div class="panel-body pagination2">
 				<form method="get" action="{$serverroot}searchraw">
 					<div style="text-align:center;">
 						<label for="search" style="display:none;">Search</label>

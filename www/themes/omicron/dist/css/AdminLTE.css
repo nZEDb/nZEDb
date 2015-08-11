@@ -4210,3 +4210,9 @@ table.text-center th {
     white-space: normal!important;
   }
 }
+.release-name {
+  font-size: 10px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}

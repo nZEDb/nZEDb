@@ -13,8 +13,8 @@
 	<div class="box-body"
 	<div class="row">
 		<div class="col-xlg-12 portlets">
-			<div class="panel">
-				<div class="panel-content pagination2">
+			<div class="panel panel-default">
+				<div class="panel-body pagination2">
 					<div class="row">
 						<div class="col-md-8">
 							<div class="nzb_multi_operations">
@@ -64,8 +64,8 @@
 							<div class="row">
 								<!-- Left -->
 								<div class="col-md-6 small-gutter-right movie-height">
-									<div class="panel">
-										<div class="panel-content">
+									<div class="panel panel-default">
+										<div class="panel-body">
 											<div class="row no-gutter">
 												<div class="col-md-3 no-gutter">
 													{foreach from=$result.languages item=movielanguage}
@@ -163,8 +163,8 @@
 								{else}
 								<!-- Right -->
 								<div class="col-md-6 small-gutter-left movie-height">
-									<div class="panel">
-										<div class="panel-content">
+									<div class="panel panel-default">
+										<div class="panel-body">
 											<div class="row no-gutter">
 												<div class="col-md-3 no-gutter">
 													{foreach from=$result.languages item=movielanguage}
