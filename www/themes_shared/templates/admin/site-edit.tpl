@@ -1154,14 +1154,14 @@
 				</td>
 			</tr>
 			<tr>
-				<td style="width:180px;"><label for="trailers_size_x">Maximum NZBs stage5:</label></td>
+				<td style="width:180px;"><label for="trailers_size_x">Max trailer width:</label></td>
 				<td>
 					<input class="short" id="trailers_size_x" name="trailers_size_x" type="text" value="{$site->trailers_size_x}"/>
 					<div class="hint">Maximum width in pixels for the trailer window. (Default: 480)</div>
 				</td>
 			</tr>
 			<tr>
-				<td style="width:180px;"><label for="trailers_size_y">Maximum NZBs stage5:</label></td>
+				<td style="width:180px;"><label for="trailers_size_y">Max trailer height:</label></td>
 				<td>
 					<input class="short" id="trailers_size_y" name="trailers_size_y" type="text" value="{$site->trailers_size_y}"/>
 					<div class="hint">Maximum height in pixels for the trailer window. (Default: 345)</div>
