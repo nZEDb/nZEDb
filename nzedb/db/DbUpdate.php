@@ -299,8 +299,8 @@ class DbUpdate
 					}
 
 					// Skip comments.
-					if (preg_match('!^\s*(#|--|//)!', $line)) {
-						echo $this->pdo->log->info("COMMENT: " . $line);
+					if (preg_match('!^\s*(#|--|//)\s*(.+?)\s*$!', $line, $matches)) {
+						echo $this->pdo->log->info("COMMENT: " . $matches[2]);
 						continue;
 					}
 
