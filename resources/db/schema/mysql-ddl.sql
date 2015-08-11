@@ -604,11 +604,9 @@ CREATE TABLE predb (
 
 DROP TABLE IF EXISTS predb_hashes;
 CREATE TABLE predb_hashes (
+  hash VARBINARY(20)      NOT NULL DEFAULT '',
   pre_id INT(11) UNSIGNED NOT NULL DEFAULT '0',
-  hashes VARCHAR(512)     NOT NULL DEFAULT '',
-  PRIMARY KEY (pre_id),
-  FULLTEXT INDEX ix_predb_hashes_ft (hashes),
-  UNIQUE INDEX ix_predb_hashes    (hashes(32))
+  PRIMARY KEY (hash)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8mb4
@@ -1297,19 +1295,21 @@ CREATE TRIGGER delete_search AFTER DELETE ON releases FOR EACH ROW
 
 CREATE TRIGGER insert_hashes AFTER INSERT ON predb FOR EACH ROW
   BEGIN
-    INSERT INTO predb_hashes (pre_id, hashes) VALUES (NEW.id, CONCAT_WS(',', MD5(NEW.title), MD5(MD5(NEW.title)), SHA1(NEW.title)));
+    INSERT INTO predb_hashes (hash, pre_id) VALUES (MD5(NEW.title), NEW.id), (MD5(MD5(NEW.title)), NEW.id), (SHA1(NEW.title), NEW.id);
   END; $$
 
 CREATE TRIGGER update_hashes AFTER UPDATE ON predb FOR EACH ROW
   BEGIN
     IF NEW.title != OLD.title
-      THEN UPDATE predb_hashes SET hashes = CONCAT_WS(',', MD5(NEW.title), MD5(MD5(NEW.title)), SHA1(NEW.title)) WHERE pre_id = OLD.id;
+      THEN 
+         DELETE FROM predb_hashes WHERE hash IN ( UNHEX(md5(OLD.title)), UNHEX(md5(md5(OLD.title))), UNHEX(sha1(OLD.title)) ) AND pre_id = OLD.id;
+         INSERT INTO predb_hashes (hash, pre_id) VALUES ( UNHEX(MD5(NEW.title)), NEW.id ), ( UNHEX(MD5(MD5(NEW.title))), NEW.id ), ( UNHEX(SHA1(NEW.title)), NEW.id );
     END IF;
   END; $$
 
 CREATE TRIGGER delete_hashes AFTER DELETE ON predb FOR EACH ROW
   BEGIN
-    DELETE FROM predb_hashes WHERE pre_id = OLD.id;
+    DELETE FROM predb_hashes WHERE hash IN ( UNHEX(md5(OLD.title)), UNHEX(md5(md5(OLD.title))), UNHEX(sha1(OLD.title)) ) AND pre_id = OLD.id;
   END; $$
 
 CREATE TRIGGER delete_collections BEFORE DELETE ON collections FOR EACH ROW
