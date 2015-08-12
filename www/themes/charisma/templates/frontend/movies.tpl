@@ -88,7 +88,7 @@
 													{if $smarty.foreach.loop.first}
 													<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}"><img
 																class="cover"
-																src="{if $result.cover == 1}{$serverroot}covers/movies/{$result.imdbid}-cover.jpg{else}{$serverroot}themes/omicron/images/nocover.png{/if}"
+																src="{if $result.cover == 1}{$serverroot}covers/movies/{$result.imdbid}-cover.jpg{else}{$serverroot}themes/charisma/images/nocover.png{/if}"
 																width="100" border="0"
 																alt="{$result.title|escape:"htmlall"}"/></a>
 													<a target="_blank"
@@ -187,7 +187,7 @@
 													{if $smarty.foreach.loop.first}
 													<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}"><img
 																class="cover"
-																src="{if $result.cover == 1}{$serverroot}covers/movies/{$result.imdbid}-cover.jpg{else}{$serverroot}themes/omicron/images/nocover.png{/if}"
+																src="{if $result.cover == 1}{$serverroot}covers/movies/{$result.imdbid}-cover.jpg{else}{$serverroot}themes/charisma/images/nocover.png{/if}"
 																width="100" border="0"
 																alt="{$result.title|escape:"htmlall"}"/></a>
 													<a target="_blank"
@@ -296,7 +296,7 @@
 												name="CP{$result.imdbid}"
 												title="Add to CouchPotato"
 												><img
-													src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/couch.png"></a>
+													src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/couch.png"></a>
 									{/if}
 									{if isset($isadmin)}
 										<input type="button"
