@@ -523,8 +523,8 @@ class Sharing
 		if ($this->pdo->queryExec(
 			sprintf('
 				INSERT INTO release_comments
-				(text, createddate, shareid, UNHEX(nzb_guid), siteid, username, user_id, releaseid, shared, host)
-				VALUES (%s, %s, %s, %s, %s, %s, 0, 0, 2, "")',
+				(text, createddate, shareid, nzb_guid, siteid, username, user_id, releaseid, shared, host)
+				VALUES (%s, %s, %s, UNHEX(%s), %s, %s, 0, 0, 2, "")',
 				$this->pdo->escapeString($body['BODY']),
 				$this->pdo->from_unixtime(($body['TIME'] > time() ? time() : $body['TIME'])),
 				$this->pdo->escapeString($body['SID']),
