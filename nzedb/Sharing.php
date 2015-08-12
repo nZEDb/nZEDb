@@ -267,14 +267,14 @@ class Sharing
 	 */
 	protected function matchComments()
 	{
-		$res = $this->pdo->query('
-				UPDATE releases r
-				INNER JOIN release_comments rc USING (nzb_guid)
-				SET rc.releaseid = r.id, r.comments = r.comments + 1
-				WHERE rc.releaseid = 0'
+		$res = $this->pdo->queryDirect('
+			UPDATE releases r
+			INNER JOIN release_comments rc USING (nzb_guid)
+			SET rc.releaseid = r.id, r.comments = r.comments + 1
+			WHERE rc.releaseid = 0'
 		);
 
-		$found = count($res);
+		$found = $res->rowCount();
 		if ($found > 0) {
 			if (nZEDb_ECHOCLI) {
 				echo '(Sharing) Matched ' . $found . ' comments.' . PHP_EOL;
