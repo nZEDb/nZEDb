@@ -4216,3 +4216,25 @@ table.text-center th {
   overflow: hidden;
   white-space: nowrap;
 }
+
+.release-title {
+  font-family: 'Lato', 'Open Sans', Helvetica, sans-serif;
+  font-weight: 100;
+  font-size: 16px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.release-title:hover {
+  text-overflow: inherit;
+  overflow: visible;
+}
+.release-subtitle {
+  font-family: 'Lato', 'Open Sans', Helvetica, sans-serif;
+  font-weight: 100;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
