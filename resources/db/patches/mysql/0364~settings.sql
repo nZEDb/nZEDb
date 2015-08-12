@@ -1,3 +1,4 @@
+-- Adds the default settings for movie trailers.
 INSERT IGNORE INTO settings (section, subsection, name, value, hint, setting)
 VALUES (
   'site',
