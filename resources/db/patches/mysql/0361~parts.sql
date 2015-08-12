@@ -5,6 +5,8 @@
 
 DROP PROCEDURE IF EXISTS tpg_change;
 
+-- This might be long - patience.
+
 DELIMITER $$
 CREATE PROCEDURE tpg_change()
 BEGIN
