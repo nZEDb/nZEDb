@@ -19,8 +19,8 @@
 	<div class="box-inner">
 		<div class="row">
 			<div class="col-xlg-12 portlets">
-				<div class="panel">
-					<div class="panel-content pagination2">
+				<div class="panel panel-default">
+					<div class="panel-body pagination2">
 						<div class="row">
 							<div class="col-md-8">
 								<table class="data table table-condensed table-striped table-responsive table-hover">
@@ -314,7 +314,7 @@
 														href="{$site->dereferrer_link}http://nzbindex.com/search/?q={$result.title}"
 														target="_blank"
 														>
-													<img src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/nzbindex.png"/>
+													<img src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/nzbindex.png"/>
 													&nbsp;
 												</a>
 											</td>
@@ -325,7 +325,7 @@
 														href="{$site->dereferrer_link}http://binsearch.info/?q={$result.title}"
 														target="_blank"
 														>
-													<img src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/binsearch.png"/>
+													<img src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/binsearch.png"/>
 													&nbsp;
 												</a>
 											</td>

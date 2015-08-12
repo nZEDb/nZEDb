@@ -23,8 +23,8 @@
 {if $shows|@count > 0}
 <div class="row">
 	<div class="col-lg-12 portlets">
-		<div class="panel">
-			<div class="panel-content pagination2">
+		<div class="panel panel-default">
+			<div class="panel-body pagination2">
 				<table class="table table-striped table-condensed">
 					<tr>
 						<th>Name</th>

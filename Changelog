@@ -6,6 +6,10 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2015-08-11 DariusIII
+	* Fix: Issues on Omicron/Charisma themes.
+2015-08-11 terbonium
+	* Chg: Improve performance of predb_hash table and queries by storing hashes as binary.
 2015-08-11 kevin
 	* Chg: Better support for DELIMITER in DbUpdate.
 2015-08-10 kevin

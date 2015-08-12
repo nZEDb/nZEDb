@@ -1,3 +1,6 @@
+-- This should be a quick patch.
+-- You can verify them by running this command in MySQL: SHOW TRIGGERS LIKE 'predb' \g
+
 DELIMITER $$
 
 DROP TRIGGER IF EXISTS insert_hashes $$
@@ -10,7 +13,7 @@ DROP TRIGGER IF EXISTS update_hashes $$
 CREATE TRIGGER update_hashes AFTER UPDATE ON predb FOR EACH ROW
   BEGIN
     IF NEW.title != OLD.title
-      THEN 
+      THEN
          DELETE FROM predb_hashes WHERE hash IN ( UNHEX(md5(OLD.title)), UNHEX(md5(md5(OLD.title))), UNHEX(sha1(OLD.title)) ) AND pre_id = OLD.id;
          INSERT INTO predb_hashes (hash, pre_id) VALUES ( UNHEX(MD5(NEW.title)), NEW.id ), ( UNHEX(MD5(MD5(NEW.title))), NEW.id ), ( UNHEX(SHA1(NEW.title)), NEW.id );
     END IF;

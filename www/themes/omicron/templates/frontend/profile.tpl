@@ -12,9 +12,9 @@
 		<div class="box-content">
 			<div class="row">
 				<div class="col-lg-12 portlets">
-					<div class="panel">
-						<div class="panel-content pagination2">
-							<div class="panel-content">
+					<div class="panel panel-default">
+						<div class="panel-body pagination2">
+							<div class="panel-body">
 								<ul class="nav nav-tabs nav-primary">
 									<li class="active"><a href="#tab2_1" data-toggle="tab"><i class="fa fa-user"></i>
 											Main</a></li>
@@ -36,10 +36,12 @@
 																<th width="200">Username</th>
 																<td>{$user.username|escape:"htmlall"}</td>
 															</tr>
+															{if $isadmin || !$publicview}
 															<tr>
-																<th width="200">E-mail</th>
+																<th width="200" title="Not public">E-mail</th>
 																<td>{$user.email}</td>
 															</tr>
+															{/if}
 															<tr>
 																<th width="200">Registered</th>
 																<td>{$user.createddate|date_format}
@@ -59,9 +61,15 @@
 															{if $userinvitedby && $userinvitedby.username != ""}
 															<tr>
 																<th width="200">Invited By</th>
+																{if $privileged || !$privateprofiles}
 																<td><a title="View {$userinvitedby.username}'s profile"
 																	   href="{$smarty.const.WWW_TOP}/profile?name={$userinvitedby.username}">{$userinvitedby.username}</a>
 																</td>
+																{else}
+																	<td>
+																	{$userinvitedby.username}
+																	</td>
+																	{/if}
 																{/if}
 															</tr>
 															</tbody>
@@ -98,14 +106,16 @@
 																<th>Downloads Total</th>
 																<td>{$user.grabs}</td>
 															</tr>
+															{if $isadmin || !$publicview}
 															<tr>
-																<th>API/RSS Key</th>
+																<th title="Not public">API/RSS Key</th>
 																<td>
-																	<a href="{$serverroot}rss?t=0&amp;dl=1&amp;i={$user.id}&amp;r={$user.rsstoken}">{$user.rsstoken}</a>
-																	<a href="{$serverroot}profileedit?action=newapikey"
+																	<a href="{$smarty.const.WWW_TOP}rss?t=0&amp;dl=1&amp;i={$user.id}&amp;r={$user.rsstoken}">{$user.rsstoken}</a>
+																	<a href="{$smarty.const.WWW_TOP}profileedit?action=newapikey"
 																	   class="label label-danger">GENERATE NEW KEY</a>
 																</td>
 															</tr>
+															{/if}
 															</tbody>
 														</table>
 													</td>
@@ -115,7 +125,7 @@
 										</div>
 									</div>
 								</div>
-								<a class="btn btn-primary" href="{$serverroot}profileedit">Edit Profile</a>
+								<a class="btn btn-primary" href="{$smarty.const.WWW_TOP}profileedit">Edit Profile</a>
 							</div>
 						</div>
 					</div>

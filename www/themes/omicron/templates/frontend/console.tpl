@@ -12,8 +12,8 @@
 	<div class="box-body"
 	<div class="row">
 		<div class="col-xlg-12 portlets">
-			<div class="panel">
-				<div class="panel-content pagination2">
+			<div class="panel panel-default">
+				<div class="panel-body pagination2">
 					<div class="row">
 						<div class="col-md-8">
 							<div class="nzb_multi_operations">
@@ -69,8 +69,8 @@
 						{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
 						{foreach from=$msplits item=m name=loop}
 							{if $smarty.foreach.loop.first}
-								<div class="panel">
-									<div class="panel-content">
+								<div class="panel panel-default">
+									<div class="panel-body">
 										<div class="row">
 											<div class="col-md-2 no-gutter">
 												<a title="View details"

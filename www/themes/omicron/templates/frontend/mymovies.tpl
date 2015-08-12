@@ -11,8 +11,8 @@
 		<div class="box-content">
 			<div class="row">
 				<div class="col-xlg-12 portlets">
-					<div class="panel">
-						<div class="panel-content pagination2">
+					<div class="panel panel-default">
+						<div class="panel-body pagination2">
 							<div class="alert alert-info">
 								Using 'My Movies' you can search for movies, and add them to a wishlist. If the movie
 								becomes available it will be added to an <strong><a

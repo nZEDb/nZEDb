@@ -14,8 +14,8 @@
 		<div class="box-body"
 		<div class="row">
 			<div class="col-xlg-12 portlets">
-				<div class="panel">
-					<div class="panel-content pagination2">
+				<div class="panel panel-default">
+					<div class="panel-body pagination2">
 						<div class="row">
 							<div class="col-md-8">
 								{if isset($shows)}

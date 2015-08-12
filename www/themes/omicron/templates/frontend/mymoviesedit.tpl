@@ -9,8 +9,8 @@
 </div>
 <div class="row">
 	<div class="col-lg-12 portlets">
-		<div class="panel">
-			<div class="panel-content pagination2">
+		<div class="panel panel-default">
+			<div class="panel-body pagination2">
 				<p>
 					Use this page to manage movies added to your personal list. If the movie becomes available it will
 					be added to an <a
