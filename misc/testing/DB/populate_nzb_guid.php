@@ -81,7 +81,7 @@ function create_guids($live, $delete = false)
 							$segment = $file->segments->segment;
 							$nzb_guid = md5($segment);
 
-							$pdo->queryExec("UPDATE releases set nzb_guid = " . $pdo->escapestring($nzb_guid) . " WHERE id = " . $relrec["id"]);
+							$pdo->queryExec("UPDATE releases set nzb_guid = UNHEX(" . $pdo->escapestring($nzb_guid) . ") WHERE id = " . $relrec["id"]);
 							$relcount++;
 							$consoletools->overWritePrimary("Created: [" . $deleted . "] " . $consoletools->percentString($reccnt, $total) . " Time:" . $consoletools->convertTimer(TIME() - $timestart));
 							break;

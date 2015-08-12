@@ -173,7 +173,7 @@ class Sharing
 		// Get all comments that we have no posted yet.
 		$newComments = $this->pdo->query(
 			sprintf(
-				'SELECT rc.text, rc.id, %s, u.username, r.nzb_guid
+				'SELECT rc.text, rc.id, %s, u.username, HEX(r.nzb_guid) AS nzb_guid
 				FROM release_comments rc
 				INNER JOIN users u ON rc.user_id = u.id
 				INNER JOIN releases r on rc.releaseid = r.id
@@ -523,7 +523,7 @@ class Sharing
 		if ($this->pdo->queryExec(
 			sprintf('
 				INSERT INTO release_comments
-				(text, createddate, shareid, nzb_guid, siteid, username, user_id, releaseid, shared, host)
+				(text, createddate, shareid, UNHEX(nzb_guid), siteid, username, user_id, releaseid, shared, host)
 				VALUES (%s, %s, %s, %s, %s, %s, 0, 0, 2, "")',
 				$this->pdo->escapeString($body['BODY']),
 				$this->pdo->from_unixtime(($body['TIME'] > time() ? time() : $body['TIME'])),
