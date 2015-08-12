@@ -242,7 +242,7 @@ class NZB
 						UPDATE releases SET nzbstatus = %d %s WHERE id = %d;
 						DELETE FROM %s WHERE releaseid = %d',
 						NZB::NZB_ADDED,
-						($nzb_guid === '' ? '' : ', nzb_guid = UNHEX( ' . $this->pdo->escapestring(md5($nzb_guid)) . ' )',
+						($nzb_guid === '' ? '' : ', nzb_guid = UNHEX( ' . $this->pdo->escapestring(md5($nzb_guid)) . ' )'),
 						$relID, $this->_tableNames['cName'], $relID
 					)
 				);
