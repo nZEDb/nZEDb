@@ -109,7 +109,7 @@ class TvRage
 		// example theatre and theater
 		$title3 = str_replace('er', 're', $title);
 		if ($title != $title3) {
-			$res = $this->pdo->queryOneRow(sprintf("SELECT rageid FROM tvrage_titles WHERE releasetitle) = %s", $this->pdo->escapeString($title3)));
+			$res = $this->pdo->queryOneRow(sprintf("SELECT rageid FROM tvrage_titles WHERE releasetitle = %s", $this->pdo->escapeString($title3)));
 			if (isset($res['rageid'])) {
 				return $res['rageid'];
 			}
