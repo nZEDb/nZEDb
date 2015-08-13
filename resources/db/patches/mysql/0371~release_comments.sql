@@ -6,7 +6,7 @@
 
 CREATE TABLE release_comments_tmp LIKE release_comments;
 ALTER TABLE release_comments_tmp MODIFY nzb_guid BINARY(16) NOT NULL DEFAULT '0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0';
-INSERT INTO release_comments_tmp (SELECT id, releaseid, text, username, user_id, createddate, host, shared, shareid, siteid, UNHEX(nzb_guid) FROM release_comments); 
+INSERT INTO release_comments_tmp (SELECT id, releaseid, text, username, user_id, createddate, host, shared, shareid, siteid, UNHEX(nzb_guid) FROM release_comments);
 
 DROP TABLE release_comments;
 ALTER TABLE release_comments_tmp RENAME release_comments;
