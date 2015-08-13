@@ -294,7 +294,7 @@ convertTable($pdo,
 			 "releases",
 			 "INSERT INTO " . $nZEDB_schema .
 			 ".releases (adddate, anidbid, bookinfoid, categoryid, comments, completion, consoleinfoid, episode, fromname, grabs, group_id, guid, haspreview, id, imdbid, musicinfoid, name, passwordstatus, postdate, rageid, rarinnerfilecount, searchname, season, seriesfull, size, totalpart, tvairdate, tvtitle, nzb_guid) " .
-			 "SELECT adddate, anidbID, bookinfoID, case categoryID when 7030 then 8020 when 7020 then 8010 when 7010 then 8030 when 6050 then 6070 when 2060 then 2050 when 2050 then 2060 when 7000 then 8000 when 6070 then 6050 when 8010 then 8050 else categoryID end, comments, completion, consoleinfoID, episode, fromname, grabs, group_id, guid, haspreview, ID, imdbID, musicinfoID, name, passwordstatus, postdate, rageID, rarinnerfilecount, searchname, season, seriesfull, size, totalpart, tvairdate, tvtitle, gid FROM " .
+			 "SELECT adddate, anidbID, bookinfoID, case categoryID when 7030 then 8020 when 7020 then 8010 when 7010 then 8030 when 6050 then 6070 when 2060 then 2050 when 2050 then 2060 when 7000 then 8000 when 6070 then 6050 when 8010 then 8050 else categoryID end, comments, completion, consoleinfoID, episode, fromname, grabs, group_id, guid, haspreview, ID, imdbID, musicinfoID, name, passwordstatus, postdate, rageID, rarinnerfilecount, searchname, season, seriesfull, size, totalpart, tvairdate, tvtitle, UNHEX(gid) FROM " .
 			 $nn_schema . ".releases",
 			 $runQueries);
 

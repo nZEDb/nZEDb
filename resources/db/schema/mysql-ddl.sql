@@ -688,7 +688,7 @@ CREATE TABLE         releases (
   audiostatus       TINYINT(1)                     NOT NULL DEFAULT '0',
   dehashstatus      TINYINT(1)                     NOT NULL DEFAULT '0',
   reqidstatus       TINYINT(1)                     NOT NULL DEFAULT '0',
-  nzb_guid          VARCHAR(32)                    NULL,
+  nzb_guid          BINARY(16)                     NULL,
   nzbstatus         TINYINT(1)                     NOT NULL DEFAULT '0',
   iscategorized     TINYINT(1)                     NOT NULL DEFAULT '0',
   isrenamed         TINYINT(1)                     NOT NULL DEFAULT '0',
@@ -752,7 +752,7 @@ CREATE TABLE release_comments (
   shared      TINYINT(1)       NOT NULL DEFAULT '0',
   shareid     VARCHAR(40)      NOT NULL DEFAULT '',
   siteid      VARCHAR(40)      NOT NULL DEFAULT '',
-  nzb_guid    VARCHAR(32)      NOT NULL DEFAULT '',
+  nzb_guid    BINARY(16)       NOT NULL DEFAULT '0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0',
   PRIMARY KEY (id),
   INDEX ix_releasecomment_releaseid (releaseid),
   INDEX ix_releasecomment_userid    (user_id)
