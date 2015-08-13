@@ -83,14 +83,14 @@ class TvRage
 		$string = '"\'"';
 
 		// Check if we already have an entry for this show.
-		$res = $this->pdo->queryOneRow(sprintf("SELECT rageid FROM tvrage_titles WHERE LOWER(releasetitle) = LOWER(%s)", $this->pdo->escapeString($title)));
+		$res = $this->pdo->queryOneRow(sprintf("SELECT rageid FROM tvrage_titles WHERE releasetitle = %s", $this->pdo->escapeString($title)));
 		if (isset($res['rageid'])) {
 			return $res['rageid'];
 		}
 
 		$title2 = str_replace(' and ', ' & ', $title);
 		if ($title != $title2) {
-			$res = $this->pdo->queryOneRow(sprintf("SELECT rageid FROM tvrage_titles WHERE LOWER(releasetitle) = LOWER(%s)", $this->pdo->escapeString($title2)));
+			$res = $this->pdo->queryOneRow(sprintf("SELECT rageid FROM tvrage_titles WHERE releasetitle = %s", $this->pdo->escapeString($title2)));
 			if (isset($res['rageid'])) {
 				return $res['rageid'];
 			}
@@ -109,7 +109,7 @@ class TvRage
 		// example theatre and theater
 		$title3 = str_replace('er', 're', $title);
 		if ($title != $title3) {
-			$res = $this->pdo->queryOneRow(sprintf("SELECT rageid FROM tvrage_titles WHERE LOWER(releasetitle) = LOWER(%s)", $this->pdo->escapeString($title3)));
+			$res = $this->pdo->queryOneRow(sprintf("SELECT rageid FROM tvrage_titles WHERE releasetitle) = %s", $this->pdo->escapeString($title3)));
 			if (isset($res['rageid'])) {
 				return $res['rageid'];
 			}
@@ -153,7 +153,7 @@ class TvRage
 	{
 		if (!is_array($country) && strlen($country) > 2) {
 			$code = $this->pdo->queryOneRow(
-				'SELECT code FROM countries WHERE LOWER(name) = LOWER(' . $this->pdo->escapeString($country) . ')'
+				'SELECT code FROM countries WHERE name = ' . $this->pdo->escapeString($country)
 			);
 			if (isset($code['code'])) {
 				return $code['code'];
