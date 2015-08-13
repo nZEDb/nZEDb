@@ -267,35 +267,44 @@ class Sharing
 	 */
 	protected function matchComments()
 	{
-		$res = $this->pdo->queryDirect('
-			UPDATE releases r
-			INNER JOIN release_comments rc USING (nzb_guid)
-			SET rc.releaseid = r.id, r.comments = r.comments + 1
+		$res = $this->pdo->query('
+			SELECT r.id
+			FROM release_comments rc
+			INNER JOIN releases r USING (nzb_guid)
 			WHERE rc.releaseid = 0'
 		);
-
-		$found = $res->rowCount();
+		$found = count($res);
 		if ($found > 0) {
+			foreach ($res as $row) {
+				$this->pdo->queryExec(
+					sprintf("
+						UPDATE release_comments rc
+						INNER JOIN releases r USING (nzb_guid)
+						SET rc.releaseid = %d, r.comments = r.comments + 1
+						WHERE r.id = %d
+						AND rc.releaseid = 0",
+						$row['id'],
+						$row['id']
+					)
+				);
+			}
 			if (nZEDb_ECHOCLI) {
-				echo '(Sharing) Matched ' . $found . ' comments.' . PHP_EOL;
+				echo "(Sharing) Matched $found  comments." . PHP_EOL;
 			}
 		}
 
 		// Update first time seen.
-		$siteTimes = $this->pdo->queryDirect(
-			'SELECT createddate, siteid FROM release_comments WHERE createddate > \'2005-01-01\' GROUP BY siteid ORDER BY createddate ASC'
+		$this->pdo->queryExec(
+			sprintf("
+					UPDATE sharing_sites ss
+					INNER JOIN release_comments rc ON rc.siteid = ss.site_guid
+					SET ss.first_time = rc.createddate
+					WHERE rc.createddate > '2005-01-01'
+					GROUP BY rc.siteid
+					ORDER BY rc.createddate ASC
+				"
+			)
 		);
-		if ($siteTimes instanceof \Traversable && $siteTimes->rowCount()) {
-			foreach ($siteTimes as $site) {
-				$this->pdo->queryExec(
-					sprintf(
-						'UPDATE sharing_sites SET first_time = %s WHERE site_guid = %s',
-						$this->pdo->escapeString($site['createddate']),
-						$this->pdo->escapeString($site['siteid'])
-					)
-				);
-			}
-		}
 	}
 
 	/**
