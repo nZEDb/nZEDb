@@ -297,12 +297,15 @@ class Sharing
 		$this->pdo->queryExec(
 			sprintf("
 					UPDATE sharing_sites ss
-					INNER JOIN release_comments rc ON rc.siteid = ss.site_guid
+					INNER JOIN
+						(SELECT siteid, createddate
+						FROM release_comments
+						WHERE createddate > '2005-01-01'
+						GROUP BY siteid
+						ORDER BY createddate ASC) rc
+					ON ss.site_guid = rc.siteid
 					SET ss.first_time = rc.createddate
-					WHERE rc.createddate > '2005-01-01'
-					GROUP BY rc.siteid
-					ORDER BY rc.createddate ASC
-				"
+					WHERE ss.first_time IS NULL OR ss.first_time > rc.createddate"
 			)
 		);
 	}
