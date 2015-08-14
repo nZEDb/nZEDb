@@ -607,7 +607,7 @@ class Binaries
 		$headersRepaired = $articles = $rangeNotReceived = $collectionIDs = $binariesUpdate = $headersReceived = $headersNotInserted = [];
 		$notYEnc = $headersBlackListed = 0;
 
-		$partsQuery = $partsCheck = sprintf('INSERT INTO %s (binaryid, number, messageid, partnumber, size, collection_id) VALUES ', $tableNames['pname']);
+		$partsQuery = $partsCheck = sprintf('INSERT INTO %s (binaryid, number, messageid, partnumber, size) VALUES ', $tableNames['pname']);
 
 		$this->_pdo->beginTransaction();
 		// Loop articles, figure out files/parts.
@@ -787,7 +787,7 @@ class Binaries
 
 			$partsQuery .=
 				'(' . $binaryID . ',' . $header['Number'] . ',' . rtrim($header['Message-ID'], '>') . "'," .
-				$matches[2] . ',' . $header['Bytes'] . ',' . $collectionID . '),';
+				$matches[2] . ',' . $header['Bytes'] . '),';
 
 		}
 		unset($headers); // Reclaim memory.
@@ -1081,11 +1081,14 @@ class Binaries
 				$local = $this->_pdo->queryOneRow(
 					sprintf('
 						SELECT c.date AS date
-						FROM %s c, %s p
-						WHERE c.id = p.collection_id
+						FROM %s c
+						INNER JOIN %s b ON(c.id=b.collection_id)
+						INNER JOIN %s p ON(b.id=p.binaryid)
+						WHERE
 						AND c.group_id = %s
 						AND p.number = %s LIMIT 1',
 						$group['cname'],
+						$group['bname'],
 						$group['pname'],
 						$groupID,
 						$currentPost
