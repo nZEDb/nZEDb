@@ -1,5 +1,5 @@
 # This patch adds back missing triggers
-# from releases and release_comments tables
+# from releases table
 # it will be over fast
 
 DELIMITER $$
