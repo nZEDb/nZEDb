@@ -167,6 +167,8 @@ class Movie
 		$this->imgSavePath = nZEDb_COVERS . 'movies' . DS;
 		$this->service = '';
 
+		$this->catWhere = 'AND categoryid BETWEEN 2000 AND 2999 ';
+
 		if (nZEDb_DEBUG || nZEDb_LOGGING) {
 			$this->debug = true;
 			try {
@@ -976,14 +978,14 @@ class Movie
 				$this->pdo->log->doEcho($this->pdo->log->headerOver($service . ' found IMDBid: ') . $this->pdo->log->primary('tt' . $imdbID));
 			}
 
-			$this->pdo->queryExec(sprintf('UPDATE releases SET imdbid = %s WHERE id = %d', $this->pdo->escapeString($imdbID), $id));
+			$this->pdo->queryExec(sprintf('UPDATE releases SET imdbid = %s WHERE id = %d %s', $this->pdo->escapeString($imdbID), $id, $this->catWhere));
 
 			// If set, scan for imdb info.
 			if ($processImdb == 1) {
 				$movCheck = $this->getMovieInfo($imdbID);
 				if ($movCheck === false || (isset($movCheck['updateddate']) && (time() - strtotime($movCheck['updateddate'])) > 2592000)) {
 					if ($this->updateMovieInfo($imdbID) === false) {
-						$this->pdo->queryExec(sprintf('UPDATE releases SET imdbid = %s WHERE id = %d', 0000000, $id));
+						$this->pdo->queryExec(sprintf('UPDATE releases SET imdbid = %s WHERE id = %d %s', 0000000, $id, $this->catWhere));
 					}
 				}
 			}
@@ -1011,9 +1013,9 @@ class Movie
 				FROM releases r
 				WHERE r.imdbid IS NULL
 				AND r.nzbstatus = 1
-				AND r.categoryid BETWEEN 2000 AND 2999
-				%s %s %s
+				%s %s %s %s
 				LIMIT %d",
+				$this->catWhere,
 				($groupID === '' ? '' : ('AND r.group_id = ' . $groupID)),
 				($guidChar === '' ? '' : ('AND r.guid ' . $this->pdo->likeString($guidChar, false, true))),
 				($lookupIMDB == 2 ? 'AND r.isrenamed = 1' : ''),
@@ -1035,7 +1037,7 @@ class Movie
 				// Try to get a name/year.
 				if ($this->parseMovieSearchName($arr['searchname']) === false) {
 					//We didn't find a name, so set to all 0's so we don't parse again.
-					$this->pdo->queryExec(sprintf("UPDATE releases SET imdbid = 0000000 WHERE id = %d", $arr["id"]));
+					$this->pdo->queryExec(sprintf("UPDATE releases SET imdbid = 0000000 WHERE id = %d %s", $arr["id"], $this->catWhere));
 					continue;
 
 				} else {
@@ -1101,7 +1103,7 @@ class Movie
 					}
 
 					// We failed to get an IMDB id from all sources.
-					$this->pdo->queryExec(sprintf("UPDATE releases SET imdbid = 0000000 WHERE id = %d", $arr["id"]));
+					$this->pdo->queryExec(sprintf("UPDATE releases SET imdbid = 0000000 WHERE id = %d %s", $arr["id"], $this->catWhere));
 				}
 			}
 		}

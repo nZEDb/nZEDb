@@ -6,6 +6,9 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2015-08-14 ruhllatio
+	Chg: Make UPDATE queries in postproc use partitioning
+	Chg: Improve TV matching a bit
 2015-08-14 kevin
 	Chg: Add default values for movieinfo table.
 	Fix: Check if trakt data has a imdb ID.
