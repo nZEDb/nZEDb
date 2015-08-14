@@ -74,7 +74,7 @@ class XXX
 		$this->imgSavePath = nZEDb_COVERS . 'xxx' . DS;
 		$this->cookie = nZEDb_TMP . 'xxx.cookie';
 
-		$this->catWhere = 'AND r.categoryid IN (6010, 6020, 6030, 6040, 6080, 6090) ';
+		$this->catWhere = 'AND categoryid IN (6010, 6020, 6030, 6040, 6080, 6090) ';
 
 		if (nZEDb_DEBUG || nZEDb_LOGGING) {
 			$this->debug = true;
