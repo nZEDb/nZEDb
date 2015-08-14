@@ -458,6 +458,9 @@ class Movie
 	 */
 	public function parseTraktTv(&$data)
 	{
+		if (!isset($data['ids']['imdb']) || empty($data['ids']['imdb'])) {
+			return;
+		}
 		if (isset($data['trailer']) && !empty($data['trailer'])) {
 			$data['trailer'] = str_ireplace(
 				'http://', 'https://', str_ireplace('watch?v=', 'embed/', $data['trailer'])
