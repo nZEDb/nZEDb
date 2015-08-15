@@ -29,25 +29,14 @@ if (!$pdo->getSetting('tablepergroup')) {
 }
 
 // Doing it this way in case there are tables existing not related to the active/backfill list (i.e. I don't have a clue when these tables get deleted so I'm doing any that are there).
-$tables = $pdo->queryDirect("SELECT SUBSTR(TABLE_NAME, 9) AS suffix FROM information_schema.TABLES WHERE TABLE_SCHEMA = (SELECT DATABASE()) AND TABLE_NAME LIKE 'binaries%' ORDER BY TABLE_NAME");
+$tables = $pdo->queryDirect("SELECT SUBSTR(TABLE_NAME, 12) AS suffix FROM information_schema.TABLES WHERE TABLE_SCHEMA = (SELECT DATABASE()) AND TABLE_NAME LIKE 'collections_%' ORDER BY TABLE_NAME");
 
-$query1 = "ALTER TABLE binaries%s DROP INDEX ix_binary_collection";
-$query2 = "DROP TRIGGER IF EXISTS delete_collections%s";
-$query3 = "CREATE TRIGGER delete_collections%s BEFORE DELETE ON collections%s FOR EACH ROW BEGIN DELETE FROM binaries%s WHERE collection_id = OLD.id; DELETE FROM parts%s WHERE collection_id = OLD.id; END";
-$query4 = "ALTER TABLE binaries%s ADD INDEX ix_parts_collection_id(collection_id)";
+$query1 = "DROP TRIGGER IF EXISTS delete_collections%s";
 
 if ($tables instanceof \Traversable) {
 	foreach ($tables as $table) {
-		echo "Updating table binaries{$table['suffix']}" . PHP_EOL;
+		echo "Updating table collections{$table['suffix']}" . PHP_EOL;
 		$pdo->queryExec(sprintf($query1, $table['suffix']), true);
-		$pdo->queryExec(sprintf($query2, $table['suffix']), true);
-		$pdo->queryExec(sprintf($query3,
-								$table['suffix'],
-								$table['suffix'],
-								$table['suffix'],
-								$table['suffix']),
-						true);
-		$pdo->queryExec(sprintf($query4, $table['suffix']), true);
 	}
 	echo 'All done!' . PHP_EOL;
 }

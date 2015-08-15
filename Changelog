@@ -7,6 +7,9 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 2015-08-14 bart39
+	Mrg: PR 1817, by terbonium - reworked patch to get around duplicate data in parts table.
+		***NOTE*** run this sql to reset sqlpatch if you already ran patch 374 and failed before patching:
+		'update settings set sqlpatch = 373 where sqlpatch = 374;'
 	Mrg: PR 1816, by terbonium - removed id and collectionid from parts table, updated primary key to (binaryid,partnumber).
 	Fix: Set NULL tmdbid values to 0 before altering the default value in patch 372.
 	Mrg: PR 1813, by darius - Add back missing triggers into releases table.
@@ -16,6 +19,9 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Chg: Make UPDATE queries in postproc use partitioning
 	Chg: Improve TV matching a bit
 	Fix: Issue 1814 Bad XXX processing query
+	Fix: Patch 374 typo and add CALL and DROP
+	Add: *** MUST RUN *** TPG Script to DROP old collections TRIGGERS after Patch 374 /nzedb/build/_runonce/tpg_delete_triggers_2015-08-14.php
+	Chg: Permissions on TPG scripts
 2015-08-14 kevin
 	Chg: Add default values for movieinfo table.
 	Fix: Check if trakt data has a imdb ID.
