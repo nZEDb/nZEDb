@@ -559,7 +559,7 @@ CREATE TABLE parts (
   number        BIGINT UNSIGNED                          NOT NULL DEFAULT '0',
   partnumber    MEDIUMINT UNSIGNED                       NOT NULL DEFAULT '0',
   size          MEDIUMINT UNSIGNED                       NOT NULL DEFAULT '0',
-  PRIMARY KEY (binaryid,number),
+  PRIMARY KEY (binaryid,number)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
