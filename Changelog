@@ -9,6 +9,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 2015-08-15 ruhllatio
 	Fix: DELETE Query missing collections alias
 2015-08-15 bart39
+	Fix: Fix movieinfo insert errors with long ratings (mainly from trakt).
 	Chg: Alpha theme updates for newposterwall / word wrapping.
 	Chg: Categorize updates.
 	Chg: When starting tmux monitor don't analyze releases table if engine = InnoDB (InnoDB uses online analysis).
