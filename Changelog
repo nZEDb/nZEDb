@@ -21,6 +21,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Fix: Issue 1814 Bad XXX processing query
 	Fix: Patch 374 typo and add CALL and DROP
 	Add: *** MUST RUN *** TPG Script to DROP old collections TRIGGERS after Patch 374 /nzedb/build/_runonce/tpg_delete_triggers_2015-08-14.php
+	Chg: Permissions on TPG scripts
 2015-08-14 kevin
 	Chg: Add default values for movieinfo table.
 	Fix: Check if trakt data has a imdb ID.
