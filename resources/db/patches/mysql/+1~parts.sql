@@ -34,3 +34,5 @@ DELIMITER ;
 
 CALL tpg_change();
 DROP PROCEDURE tpg_change;
+
+DROP TRIGGER IF EXISTS delete_collections;
