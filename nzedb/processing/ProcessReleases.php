@@ -879,7 +879,7 @@ class ProcessReleases
 		// CBP older than retention OR collection orphaned with no binaries.
 		$deleteQuery = $this->pdo->queryExec(
 			sprintf(
-				'DELETE c, b, p FROM %s
+				'DELETE c, b, p FROM %s c
 				LEFT JOIN %s b ON (c.id=b.collection_id)
 				LEFT JOIN %s p ON (b.id=p.binaryid)
 				WHERE (b.id IS NULL OR p.binaryid IS NULL OR c.dateadded < NOW() - INTERVAL %d HOUR) %s',
