@@ -426,7 +426,9 @@ class ProcessReleases
 			) {
 				$deleteQuery = $this->pdo->queryExec(
 					sprintf('
-						DELETE c FROM %s c
+						DELETE c, b, p FROM %s c
+						INNER JOIN %s b ON (c.id=b.collection_id)
+						INNER JOIN %s p ON (b.id=p.binaryid)
 						INNER JOIN groups g ON g.id = c.group_id
 						WHERE c.group_id = %d
 						AND c.filecheck = %d
@@ -434,6 +436,8 @@ class ProcessReleases
 						AND greatest(IFNULL(g.minsizetoformrelease, 0), %d) > 0
 						AND c.filesize < greatest(IFNULL(g.minsizetoformrelease, 0), %d)',
 						$group['cname'],
+						$group['bname'],
+						$group['pname'],
 						$groupID['id'],
 						self::COLLFC_SIZED,
 						$minSizeSetting,
@@ -448,11 +452,15 @@ class ProcessReleases
 				if ($maxSizeSetting > 0) {
 					$deleteQuery = $this->pdo->queryExec(
 						sprintf('
-							DELETE FROM %s
-							WHERE filecheck = %d
-							AND group_id = %d
-							AND filesize > %d',
+							DELETE c, b, p FROM %s c
+							INNER JOIN %s b ON (c.id=b.collection_id)
+							INNER JOIN %s p ON (b.id=p.binaryid)
+							WHERE c.filecheck = %d
+							AND c.group_id = %d
+							AND c.filesize > %d',
 							$group['cname'],
+							$group['bname'],
+							$group['pname'],
 							self::COLLFC_SIZED,
 							$groupID['id'],
 							$maxSizeSetting
@@ -465,13 +473,17 @@ class ProcessReleases
 
 				$deleteQuery = $this->pdo->queryExec(
 					sprintf('
-						DELETE c FROM %s c
+						DELETE c, b, p FROM %s c
+						INNER JOIN %s b ON (c.id=b.collection_id)
+						INNER JOIN %s p ON (b.id=p.binaryid)
 						INNER JOIN groups g ON g.id = c.group_id
 						WHERE c.group_id = %d
 						AND c.filecheck = %d
 						AND greatest(IFNULL(g.minfilestoformrelease, 0), %d) > 0
 						AND c.totalfiles < greatest(IFNULL(g.minfilestoformrelease, 0), %d)',
 						$group['cname'],
+						$group['bname'],
+						$group['pname'],
 						$groupID['id'],
 						self::COLLFC_SIZED,
 						$minFilesSetting,
@@ -639,9 +651,9 @@ class ProcessReleases
 					// The release was already in the DB, so delete the collection.
 					$this->pdo->queryExec(
 						sprintf('
-							DELETE FROM %s
-							WHERE collectionhash = %s',
-							$group['cname'],
+							DELETE c, b, p FROM %s c INNER JOIN %s b ON(c.id=b.collection_id) INNER JOIN %s p ON(b.id=p.binaryid)
+							WHERE c.collectionhash = %s',
+							$group['cname'], $group['bname'], $group['pname'],
 							$this->pdo->escapeString($collection['collectionhash'])
 						)
 					);
@@ -718,7 +730,7 @@ class ProcessReleases
 				$this->pdo->log->primary(
 					number_format($nzbCount) . ' NZBs created/Collections deleted in ' .
 					$totalTime . ' seconds.' . PHP_EOL .
-					'Total time: ' . $this->pdo->log->primary($this->consoleTools->convertTime($totalTime))
+					'Total time: ' . $this->pdo->log->primary($this->consoleTools->convertTime($totalTime)) . PHP_EOL 
 				)
 			);
 		}
@@ -859,124 +871,100 @@ class ProcessReleases
 		if ($this->echoCLI) {
 			echo (
 				$this->pdo->log->header("Process Releases -> Delete finished collections." . PHP_EOL) .
-				$this->pdo->log->primary('Deleting old collections/binaries/parts.')
+				$this->pdo->log->primary('Deleting old collections/binaries/parts and orphaned collections.')
 			);
 		}
 
 		$deleted = 0;
-		// CBP older than retention.
+		// CBP older than retention OR collection orphaned with no binaries.
 		$deleteQuery = $this->pdo->queryExec(
 			sprintf(
-				'DELETE FROM %s WHERE dateadded < (NOW() - INTERVAL %d HOUR) %s',
+				'DELETE c, b, p FROM %s
+				LEFT JOIN %s b ON (c.id=b.collection_id)
+				LEFT JOIN %s p ON (b.id=p.binaryid)
+				WHERE (b.id IS NULL OR p.binaryid IS NULL OR c.dateadded < NOW() - INTERVAL %d HOUR) %s',
 				$group['cname'],
+				$group['bname'],
+				$group['pname'],
 				$this->pdo->getSetting('partretentionhours'),
-				(!empty($groupID) && $this->tablePerGroup === false ? ' AND group_id = ' . $groupID : '')
+				(!empty($groupID) && $this->tablePerGroup === false ? ' AND c.group_id = ' . $groupID : '')
 			)
 		);
 		if ($deleteQuery !== false) {
 			$deleted = $deleteQuery->rowCount();
 			$deletedCount += $deleted;
 		}
-		$firstQuery = time();
+
+		$firstQuery = $thirdQuery = time();
 
 		if ($this->echoCLI) {
 			echo $this->pdo->log->primary(
-				'Finished deleting ' . $deleted . ' old collections/binaries/parts in ' .
-				($firstQuery - $startTime) . ' seconds.' . PHP_EOL .
-				'Deleting binaries/parts with no collections.'
+				'Finished deleting ' . $deleted . ' old collections/binaries/parts and orphaned collections in ' .
+				($firstQuery - $startTime) . ' seconds.' . PHP_EOL
 			);
 		}
 
-		$deleted = 0;
-		// Binaries/parts that somehow have no collection.
-		$deleteQuery = $this->pdo->queryExec(
-			sprintf(
-				'DELETE %s, %s FROM %s, %s WHERE %s.collection_id = 0 AND %s.id = %s.binaryid',
-				$group['bname'], $group['pname'], $group['bname'], $group['pname'],
-				$group['bname'], $group['bname'], $group['pname']
-			)
-		);
-		if ($deleteQuery !== false) {
-			$deleted = $deleteQuery->rowCount();
-			$deletedCount += $deleted;
-		}
-		$secondQuery = time();
+		// Cleanup orphaned binaries and parts
+		// this really shouldn't happen, but just incase - so we only run 1/200 of the time
+		if (mt_rand(0, 200) <= 1 ) {
+			// orphaned binaries - binaries with no parts or binaries with no collection
+			// Don't delete currently inserting binaries by checking the max id.
+			if ($this->echoCLI) {
+				echo $this->pdo->log->primary('Deleting binaries/parts with no collection.');
+			}
 
-		if ($this->echoCLI) {
-			echo $this->pdo->log->primary(
-				'Finished deleting ' . $deleted . ' binaries/parts with no collections in ' .
-				($secondQuery - $firstQuery) . ' seconds.' . PHP_EOL .
-				'Deleting parts with no binaries.'
+			$deleted = 0;
+			$deleteQuery = $this->pdo->queryExec(
+								sprintf(
+									'DELETE b, p FROM %s b
+									LEFT JOIN %s p ON(b.id=p.binaryid)
+									LEFT JOIN %s c ON(b.collection_id=c.id)
+									WHERE (p.binaryid IS NULL OR c.id IS NULL) AND b.id < %d ',
+					$group['bname'], $group['pname'], $group['cname'], $this->minMaxQueryFormulator($group['bname'], 20000)['max']
+				)
 			);
-		}
 
-		$deleted = 0;
-		// Parts that somehow have no binaries. Don't delete parts currently inserting, by checking the max ID.
-		if (mt_rand(0, 100) <= 5) {
+			if ($deleteQuery !== false) {
+				$deleted = $deleteQuery->rowCount();
+				$deletedCount += $deleted;
+			}
+
+			$secondQuery = time();
+
+			if ($this->echoCLI) {
+				echo $this->pdo->log->primary(
+					'Finished deleting ' . $deleted . ' binaries with no collections or parts in ' .
+					($secondQuery - $firstQuery) . ' seconds.' . PHP_EOL .
+					'Deleting parts with no binaries.'
+				);
+			}
+
+			$deleted = 0;
+			// orphaned parts - parts with no binary
+			// Don't delete currently inserting parts by checking the max id.
 			$deleteQuery = $this->pdo->queryExec(
 				sprintf(
-					'DELETE FROM %s WHERE binaryid NOT IN (SELECT id FROM %s) %s',
-					$group['pname'], $group['bname'], $this->minMaxQueryFormulator($group['pname'], 40000)
+					'DELETE p FROM %s p LEFT JOIN %s b ON (p.binaryid=b.id) WHERE b.id IS NULL AND b.id < %d',
+					$group['pname'], $group['bname'], $this->minMaxQueryFormulator($group['bname'], 20000)['max']
 				)
 			);
 			if ($deleteQuery !== false) {
 				$deleted = $deleteQuery->rowCount();
 				$deletedCount += $deleted;
 			}
-		}
-		$thirdQuery = time();
 
-		if ($this->echoCLI) {
-			echo $this->pdo->log->primary(
-				'Finished deleting ' . $deleted . ' parts with no binaries in ' .
-				($thirdQuery - $secondQuery) . ' seconds.' . PHP_EOL .
-				'Deleting binaries with no collections.'
-			);
-		}
+			$thirdQuery = time();
 
-		$deleted = 0;
-		// Binaries that somehow have no collection. Don't delete currently inserting binaries by checking the max id.
-		$deleteQuery = $this->pdo->queryExec(
-			sprintf(
-				'DELETE FROM %s WHERE collection_id NOT IN (SELECT id FROM %s) %s',
-				$group['bname'], $group['cname'], $this->minMaxQueryFormulator($group['bname'], 20000)
-			)
-		);
-		if ($deleteQuery !== false) {
-			$deleted = $deleteQuery->rowCount();
-			$deletedCount += $deleted;
-		}
-		$fourthQuery = time();
-
-		if ($this->echoCLI) {
-			echo $this->pdo->log->primary(
-				'Finished deleting ' . $deleted . ' binaries with no collections in ' .
-				($fourthQuery - $thirdQuery) . ' seconds.' . PHP_EOL .
-				'Deleting collections with no binaries.'
-			);
-		}
-
-		$deleted = 0;
-		// Collections that somehow have no binaries.
-		$collectionIDs = $this->pdo->queryDirect(
-			sprintf(
-				'SELECT SQL_NO_CACHE id FROM %s WHERE id NOT IN (SELECT collection_id FROM %s) %s',
-				$group['cname'], $group['bname'], $this->minMaxQueryFormulator($group['cname'], 10000)
-			)
-		);
-		if ($collectionIDs instanceof \Traversable) {
-			foreach ($collectionIDs as $collectionID) {
-				$deleted++;
-				$this->pdo->queryExec(sprintf('DELETE FROM %s WHERE id = %d', $group['cname'], $collectionID['id']));
+			if ($this->echoCLI) {
+					echo $this->pdo->log->primary(
+						'Finished deleting ' . $deleted . ' parts with no binaries in ' .
+						($thirdQuery - $secondQuery) . ' seconds.' . PHP_EOL
+					);
 			}
-			$deletedCount += $deleted;
-		}
-		$fifthQuery = time();
+		} // done cleaning up Binaries/Parts orphans
 
 		if ($this->echoCLI) {
 			echo $this->pdo->log->primary(
-				'Finished deleting ' . $deleted . ' collections with no binaries in ' .
-				($fifthQuery - $fourthQuery) . ' seconds.' . PHP_EOL .
 				'Deleting collections that were missed after NZB creation.'
 			);
 		}
@@ -1010,11 +998,11 @@ class ProcessReleases
 			$this->pdo->log->doEcho(
 				$this->pdo->log->primary(
 					'Finished deleting ' . $deleted . ' collections missed after NZB creation in ' .
-					(time() - $fifthQuery) . ' seconds.' . PHP_EOL .
+					(time() - $thirdQuery) . ' seconds.' . PHP_EOL .
 					'Removed ' .
 					number_format($deletedCount) .
 					' parts/binaries/collection rows in ' .
-					$this->consoleTools->convertTime(($fifthQuery - $startTime)) . PHP_EOL
+					$this->consoleTools->convertTime(($thirdQuery - $startTime)) . PHP_EOL
 				)
 			);
 		}
@@ -1386,12 +1374,7 @@ class ProcessReleases
 	 */
 	private function minMaxQueryFormulator($groupName, $difference)
 	{
-		$minMaxId = $this->pdo->queryOneRow(sprintf('SELECT MIN(id) AS min, MAX(id) AS max FROM %s', $groupName));
-		if ($minMaxId === false) {
-			$minMaxId = '';
-		} else {
-			$minMaxId = ' AND id < ' . ((($minMaxId['max'] - $minMaxId['min']) >= $difference) ? ($minMaxId['max'] - $difference) : 1);
-		}
+		$minMaxId = $this->pdo->queryOneRow(sprintf('SELECT MIN(id) - %d AS min, MAX(id) - %d AS max FROM %s', $difference, $difference, $groupName ));
 		return $minMaxId;
 	}
 
@@ -1609,12 +1592,16 @@ class ProcessReleases
 	{
 		$obj = $this->pdo->queryExec(
 			sprintf("
-				DELETE c FROM %s c
+				DELETE c, b, p FROM %s c
+				LEFT JOIN %s b ON (c.id=b.collection_id)
+				LEFT JOIN %s p ON (b.id=p.binaryid)
 				WHERE
 					c.added <
 					DATE_SUB((SELECT value FROM settings WHERE setting = 'last_run_time'), INTERVAL %d HOUR)
 				%s",
 				$group['cname'],
+				$group['bname'],
+				$group['pname'],
 				$this->collectionTimeout,
 				$where
 			)
