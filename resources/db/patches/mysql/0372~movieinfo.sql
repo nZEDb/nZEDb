@@ -1,4 +1,5 @@
 -- Adds default values to movieinfo columns.
+UPDATE movieinfo SET tmdbid = 0 WHERE tmdbid IS NULL;
 ALTER TABLE movieinfo MODIFY tmdbid   INT(10) UNSIGNED NOT NULL DEFAULT 0;
 ALTER TABLE movieinfo MODIFY title    VARCHAR(255)     NOT NULL DEFAULT '';
 ALTER TABLE movieinfo MODIFY tagline  VARCHAR(1024)    NOT NULL DEFAULT '';
