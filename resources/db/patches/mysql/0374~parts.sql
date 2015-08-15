@@ -33,7 +33,6 @@ BEGIN
 		SET @sql2 := CONCAT("INSERT IGNORE INTO parts_tmp SELECT binaryid, messageid, number, partnumber, size FROM ", _table);
 		SET @sql3 := CONCAT("RENAME TABLE ", _table, " TO ", _table, "_old, parts_tmp TO ", _table);
 		SET @sql4 := CONCAT("DROP TABLE IF EXISTS ", _table, "_old");
-
 		PREPARE _stmt FROM @sql1; EXECUTE _stmt; DROP PREPARE _stmt;
 		PREPARE _stmt FROM @sql2; EXECUTE _stmt; DROP PREPARE _stmt;
 		PREPARE _stmt FROM @sql3; EXECUTE _stmt; DROP PREPARE _stmt;
