@@ -1555,7 +1555,7 @@ class Releases
 			AND xxx.cover = 1
 			AND r.id in (select max(id) from releases where xxxinfo_id > 0 group by xxxinfo_id)
 			ORDER BY r.postdate DESC
-			LIMIT 24", true, nZEDb_CACHE_EXPIRY_LONG
+			LIMIT 20", true, nZEDb_CACHE_EXPIRY_LONG
 		);
 	}
 
@@ -1577,7 +1577,7 @@ class Releases
 			AND con.cover > 0
 			AND r.id in (select max(id) from releases where consoleinfoid > 0 group by consoleinfoid)
 			ORDER BY r.postdate DESC
-			LIMIT 35", true, nZEDb_CACHE_EXPIRY_LONG
+			LIMIT 35"
 		);
 	}
 
@@ -1599,7 +1599,7 @@ class Releases
 			AND gi.cover > 0
 			AND r.id in (select max(id) from releases where gamesinfo_id > 0 group by gamesinfo_id)
 			ORDER BY r.postdate DESC
-			LIMIT 35", true, nZEDb_CACHE_EXPIRY_LONG
+			LIMIT 24", true, nZEDb_CACHE_EXPIRY_LONG
 		);
 	}
 
