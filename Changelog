@@ -7,6 +7,7 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 2015-08-14 bart39
+	Mrg: PR 1816, by terbonium - removed id and collectionid from parts table, updated primary key to (binaryid,partnumber).
 	Fix: Set NULL tmdbid values to 0 before altering the default value in patch 372.
 	Mrg: PR 1813, by darius - Add back missing triggers into releases table.
 		***NOTE*** if using sphinxsearch then run 'php misc/sphinxsearch/toggle_search_type.php sphinx' to remove unnecessary release_search_data triggers.

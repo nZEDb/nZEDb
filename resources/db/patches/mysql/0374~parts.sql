@@ -16,7 +16,7 @@ BEGIN
 	OPEN cur1;
 	myloop: loop FETCH cur1 INTO _table;
 		IF done THEN LEAVE myloop; END IF;
-		SET @sql1 := 
+		SET @sql1 :=
 			CONCAT("ALTER TABLE ", _table,
 			" DROP INDEX binaryid,
 			DROP INDEX ix_parts_collection_id,
