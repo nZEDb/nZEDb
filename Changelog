@@ -16,7 +16,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 2015-08-14 bart39
 	Mrg: PR 1817, by terbonium - reworked patch to get around duplicate data in parts table.
 		***NOTE*** run this sql to reset sqlpatch if you already ran patch 374 and failed before patching:
-		'update settings set value = 373 where setting = "sqlpatch" and value = 374;'
+		UPDATE settings SET `value` = 373 WHERE setting = 'sqlpatch' AND `value` = 374;
 	Mrg: PR 1816, by terbonium - removed id and collectionid from parts table, updated primary key to (binaryid,partnumber).
 	Fix: Set NULL tmdbid values to 0 before altering the default value in patch 372.
 	Mrg: PR 1813, by darius - Add back missing triggers into releases table.
