@@ -173,7 +173,7 @@ class Sharing
 		// Get all comments that we have no posted yet.
 		$newComments = $this->pdo->query(
 			sprintf(
-				'SELECT rc.text, rc.id, %s, u.username, r.nzb_guid
+				'SELECT rc.text, rc.id, %s, u.username, HEX(r.nzb_guid) AS nzb_guid
 				FROM release_comments rc
 				INNER JOIN users u ON rc.user_id = u.id
 				INNER JOIN releases r on rc.releaseid = r.id
@@ -268,44 +268,46 @@ class Sharing
 	protected function matchComments()
 	{
 		$res = $this->pdo->query('
-			SELECT r.id, r.nzb_guid
-			FROM releases r
-			INNER JOIN release_comments rc ON rc.nzb_guid = r.nzb_guid
+			SELECT r.id
+			FROM release_comments rc
+			INNER JOIN releases r USING (nzb_guid)
 			WHERE rc.releaseid = 0'
 		);
-
 		$found = count($res);
 		if ($found > 0) {
 			foreach ($res as $row) {
 				$this->pdo->queryExec(
-					sprintf(
-						"UPDATE release_comments SET releaseid = %d WHERE nzb_guid = %s",
+					sprintf("
+						UPDATE release_comments rc
+						INNER JOIN releases r USING (nzb_guid)
+						SET rc.releaseid = %d, r.comments = r.comments + 1
+						WHERE r.id = %d
+						AND rc.releaseid = 0",
 						$row['id'],
-						$this->pdo->escapeString($row['nzb_guid'])
+						$row['id']
 					)
 				);
-				$this->pdo->queryExec(sprintf('UPDATE releases SET comments = comments + 1 WHERE id = %d', $row['id']));
 			}
 			if (nZEDb_ECHOCLI) {
-				echo '(Sharing) Matched ' . $found . ' comments.' . PHP_EOL;
+				echo "(Sharing) Matched $found  comments." . PHP_EOL;
 			}
 		}
 
 		// Update first time seen.
-		$siteTimes = $this->pdo->queryDirect(
-			'SELECT createddate, siteid FROM release_comments WHERE createddate > \'2005-01-01\' GROUP BY siteid ORDER BY createddate ASC'
+		$this->pdo->queryExec(
+			sprintf("
+					UPDATE sharing_sites ss
+					INNER JOIN
+						(SELECT siteid, createddate
+						FROM release_comments
+						WHERE createddate > '2005-01-01'
+						GROUP BY siteid
+						ORDER BY createddate ASC) rc
+					ON ss.site_guid = rc.siteid
+					SET ss.first_time = rc.createddate
+					WHERE ss.first_time IS NULL OR ss.first_time > rc.createddate"
+			)
 		);
-		if ($siteTimes instanceof \Traversable && $siteTimes->rowCount()) {
-			foreach ($siteTimes as $site) {
-				$this->pdo->queryExec(
-					sprintf(
-						'UPDATE sharing_sites SET first_time = %s WHERE site_guid = %s',
-						$this->pdo->escapeString($site['createddate']),
-						$this->pdo->escapeString($site['siteid'])
-					)
-				);
-			}
-		}
 	}
 
 	/**
@@ -524,7 +526,7 @@ class Sharing
 			sprintf('
 				INSERT INTO release_comments
 				(text, createddate, shareid, nzb_guid, siteid, username, user_id, releaseid, shared, host)
-				VALUES (%s, %s, %s, %s, %s, %s, 0, 0, 2, "")',
+				VALUES (%s, %s, %s, UNHEX(%s), %s, %s, 0, 0, 2, "")',
 				$this->pdo->escapeString($body['BODY']),
 				$this->pdo->from_unixtime(($body['TIME'] > time() ? time() : $body['TIME'])),
 				$this->pdo->escapeString($body['SID']),

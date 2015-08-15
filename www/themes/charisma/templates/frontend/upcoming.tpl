@@ -1,7 +1,6 @@
 <div class="header">
 	{assign var="catsplit" value=">"|explode:$catname}
 	<h2>Upcoming > <strong>Movies</strong></h2>
-
 	<div class="breadcrumb-wrapper">
 		<ol class="breadcrumb">
 			<li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li>
@@ -9,7 +8,6 @@
 		</ol>
 	</div>
 </div>
-
 <center>
 	<div class="btn-group">
 		<a class="btn btn-sm btn-primary btn-transparent" href="{$smarty.const.WWW_TOP}/upcoming/1">Box Office</a>
@@ -21,7 +19,6 @@
 </center>
 <br/>
 {$site->adbrowse}
-
 {if isset($data) && $data|@count > 0}
 	<table class="data highlight icons table table-condensed table-striped table-responsive table-hover" id="coverstable">
 		{foreach $data as $result}
@@ -30,7 +27,6 @@
 					<div class="movcover">
 						<img class="shadow" src="{replace_url($result->posters->original)}" width="120" border="0"
 							 alt="{$result->title|escape:"htmlall"}"/>
-
 						<div class="movextra">
 							<a class="rndbtn badge badge-success" target="_blank"
 							   href="{$site->dereferrer_link}{$result->links->alternate}"
@@ -64,7 +60,6 @@
 						<br/>
 						<br/>
 					{/if}
-
 					{if isset($ourmovies) && $ourmovies[$result->alternate_ids->imdb] != ""}
 						<a class="rndbtn btn btn-sm btn-success"
 						   href="{$smarty.const.WWW_TOP}/movies?imdb={$result->alternate_ids->imdb}">Download</a>
@@ -77,8 +72,6 @@
 					   onclick="mymovie_del('{$result->alternate_ids->imdb}', this);return false;" href="#"
 					   class="rndbtn btn btn-sm btn-danger">Remove From My Movies</a>
 					<br/>
-
-
 				</td>
 			</tr>
 		{/foreach}

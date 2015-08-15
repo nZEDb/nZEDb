@@ -1,7 +1,6 @@
 <div class="header">
 	{assign var="catsplit" value=">"|explode:$catname}
 	<h2>View > <strong>Movie</strong></h2>
-
 	<div class="breadcrumb-wrapper">
 		<ol class="breadcrumb">
 			<li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li>
@@ -9,7 +8,6 @@
 		</ol>
 	</div>
 </div>
-
 {if $results|@count > 0}
 	<div class="box-body">
 		{foreach from=$results item=result}
@@ -21,7 +19,7 @@
 				{else}
 					<img class="pull-right" style="margin-right:50px; max-height:278px;"
 						 alt="{$result.title|escape:"htmlall"} Logo"
-						 src="{$serverroot}themes/omicron/images/nomoviecover.jpg"/>
+						 src="{$serverroot}themes/charisma/images/nomoviecover.jpg"/>
 				{/if}
 				<span class="h1" style="display:inline;">{$result.title|escape:"htmlall"} ({$result.year})</span><a
 						class="btn btn-transparent btn-primary" target="_blank"
@@ -71,7 +69,6 @@
 									   value="Send to Queue"/>
 							{/if}
 						</div>
-
 						{if isset($isadmin)}
 							<div class="pull-right">
 								Admin:
@@ -87,8 +84,8 @@
 				</div>
 				<div class="row">
 					<div class="col-xlg-12 portlets">
-						<div class="panel">
-							<div class="panel-content pagination2">
+						<div class="panel panel-default">
+							<div class="panel-body pagination2">
 								<table style="width:100%;"
 									   class="data table table-condensed table-striped table-responsive table-hover">
 									<tr>
@@ -96,7 +93,6 @@
 											<input id="chkSelectAll" type="checkbox" class="nntmux_check_all"/>
 											<label for="chkSelectAll" style="display:none;">Select All</label>
 										</th>
-
 										<th>Name<br/>
 											<a title="Sort Descending" href="{$orderbyname_desc}">
 												<i class="fa fa-icon-caret-down"></i>
@@ -105,7 +101,6 @@
 												<i class="fa fa-icon-caret-up"></i>
 											</a>
 										</th>
-
 										<th>Category<br/>
 											<a title="Sort Descending" href="{$orderbycat_desc}">
 												<i class="fa fa-icon-caret-down"></i>
@@ -114,7 +109,6 @@
 												<i class="fa fa-icon-caret-up"></i>
 											</a>
 										</th>
-
 										<th>Posted<br/>
 											<a title="Sort Descending" href="{$orderbyposted_desc}">
 												<i class="fa fa-icon-caret-down"></i>
@@ -123,7 +117,6 @@
 												<i class="fa fa-icon-caret-up"></i>
 											</a>
 										</th>
-
 										<th>Size<br/>
 											<a title="Sort Descending" href="{$orderbysize_desc}">
 												<i class="fa fa-icon-caret-down"></i>
@@ -134,7 +127,6 @@
 										</th>
 										<th>Action</th>
 									</tr>
-
 									{assign var="msplits" value=","|explode:$result.grp_release_id}
 									{assign var="mguid" value=","|explode:$result.grp_release_guid}
 									{assign var="mnfo" value=","|explode:$result.grp_release_nfoid}
@@ -158,7 +150,7 @@
 																	 value="{$mguid[$m@index]}"/></td>
 											<td class="item">
 												<a title="View details"
-												   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">{$mname[$m@index]|escape:"htmlall"|replace:".":" "}</a>
+												   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$mname[$m@index]|escape:"htmlall"|replace:".":" "}</a>
 												<br/>
 						<span class="label label-default">{$mgrabs[$m@index]}
 							grab{if $mgrabs[$m@index] != 1}s{/if}</span>
@@ -180,7 +172,7 @@
 											<td class="less right">{$msize[$m@index]|fsize_format:"MB"}</td>
 											<td class="icons">
 												<a title="Download NZB"
-												   href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"><i
+												   href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}"><i
 															class="icon icon_nzb fa fa-download text-muted"></i></a>
 												<a href="#" class="icon_cart text-muted"><i class="fa fa-shopping-cart"
 																							title="Add to Cart"></i></a>
@@ -189,10 +181,8 @@
 											</td>
 										</tr>
 									{/foreach}
-
 								</table>
 								<hr>
-
 								{if $results|@count > 10}
 									<div class="row">
 										<div class="col-md-8">

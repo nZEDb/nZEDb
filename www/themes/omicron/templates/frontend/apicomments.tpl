@@ -24,6 +24,5 @@
 				<description>{$comm.text|escape:"htmlall"}</description>
 			</item>
 		{/foreach}
-
 	</channel>
 </rss>

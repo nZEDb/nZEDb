@@ -24,6 +24,5 @@
 			<enclosure url="{$serverroot}api?t=getnfo&amp;id={$release.guid}&amp;raw=1&amp;i={$uid}&amp;r={$rsstoken}"
 					   length="{$nfoutf|count_characters:true}" type="text/x-nfo"/>
 		</item>
-
 	</channel>
 </rss>

@@ -1,6 +1,5 @@
 <div class="header">
 	<h2>Browse > <strong>Groups</strong></h2>
-
 	<div class="breadcrumb-wrapper">
 		<ol class="breadcrumb">
 			<li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li>
@@ -15,8 +14,8 @@
 			<div class="box-content">
 				<div class="row">
 					<div class="col-lg-12 portlets">
-						<div class="panel">
-							<div class="panel-content pagination2">
+						<div class="panel panel-default">
+							<div class="panel-body pagination2">
 								<table class="data table table-condensed table-striped sortable table-responsive table-hover"
 									   style="table-layout: auto;" data-sort-order="desc">
 									<thead>

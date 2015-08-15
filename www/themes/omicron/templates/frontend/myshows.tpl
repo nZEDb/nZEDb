@@ -1,7 +1,6 @@
 <div class="header">
 	{assign var="catsplit" value=">"|explode:$catname}
 	<h2>My > <strong>TV Shows</strong></h2>
-
 	<div class="breadcrumb-wrapper">
 		<ol class="breadcrumb">
 			<li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li>
@@ -9,7 +8,6 @@
 		</ol>
 	</div>
 </div>
-
 <center>
 	<div class="btn-group">
 		<a class="btn btn-sm btn-default" title="View available TV series" href="{$smarty.const.WWW_TOP}/series">View
@@ -22,12 +20,11 @@
 	</div>
 </center>
 <br>
-
 {if $shows|@count > 0}
 <div class="row">
 	<div class="col-lg-12 portlets">
-		<div class="panel">
-			<div class="panel-content pagination2">
+		<div class="panel panel-default">
+			<div class="panel-body pagination2">
 				<table class="table table-striped table-condensed">
 					<tr>
 						<th>Name</th>
@@ -35,7 +32,6 @@
 						<th width="110">Added</th>
 						<th width="130" class="mid">Options</th>
 					</tr>
-
 					{foreach from=$shows item=show}
 						<tr>
 							<td>
@@ -58,9 +54,7 @@
 							</td>
 						</tr>
 					{/foreach}
-
 				</table>
-
 				{else}
 				<div class="alert alert-danger">
 					<strong>Sorry!</strong> No shows bookmarked yet!

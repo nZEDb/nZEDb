@@ -1,7 +1,6 @@
 <div class="header">
 	{assign var="catsplit" value=">"|explode:$catname}
 	<h2>{$catsplit[0]} > <strong>{if isset($catsplit[1])} {$catsplit[1]}{/if}</strong></h2>
-
 	<div class="breadcrumb-wrapper">
 		<ol class="breadcrumb">
 			<li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li>
@@ -9,13 +8,12 @@
 		</ol>
 	</div>
 </div>
-
 <form id="nzb_multi_operations_form" action="get">
 	<div class="box-body"
 	<div class="row">
 		<div class="col-xlg-12 portlets">
-			<div class="panel">
-				<div class="panel-content pagination2">
+			<div class="panel panel-default">
+				<div class="panel-body pagination2">
 					<div class="row">
 						<div class="col-md-8">
 							<div class="nzb_multi_operations">
@@ -71,12 +69,12 @@
 						{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
 						{foreach from=$msplits item=m name=loop}
 							{if $smarty.foreach.loop.first}
-								<div class="panel">
-									<div class="panel-content">
+								<div class="panel panel-default">
+									<div class="panel-body">
 										<div class="row">
 											<div class="col-md-2 no-gutter">
 												<a title="View details"
-												   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">
+												   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">
 													<img src="{$smarty.const.WWW_TOP}/covers/music/{if $result.cover == 1}{$result.musicinfoid}.jpg{else}no-cover.jpg{/if}"
 														 width="140" border="0"
 														 alt="{$result.artist|escape:"htmlall"} - {$result.title|escape:"htmlall"}"/>
@@ -97,17 +95,19 @@
 											</div>
 											<div class="col-md-10 no-gutter">
 												<h4><a title="View details"
-													   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">{$result.artist|escape:"htmlall"}
+													   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$result.artist|escape:"htmlall"}
 														- {$result.title|escape:"htmlall"}</a> (<a class="title"
 																								   title="{$result.year}"
 																								   href="{$smarty.const.WWW_TOP}/music?year={$result.year}">{$result.year}</a>)
 												</h4>
 												<table>
 													<tr>
-														<td>
-															<input type="checkbox"
-																   class="nzb_check"
-																   value="{$mguid[$m@index]}" id="chksingle"/>
+														<td id="guid{$mguid[$m@index]}">
+															<label>
+																<input type="checkbox"
+																	   class="nzb_check"
+																	   value="{$mguid[$m@index]}" id="chksingle"/>
+															</label>
 															<span class="label label-default">{$msize[$m@index]|fsize_format:"MB"}</span>
 																	<span class="label label-default">Posted {$mpostdate[$m@index]|timeago}
 																		ago</span>
@@ -133,15 +133,23 @@
 															{/if}
 															<div>
 																<a role="button" class="btn btn-default btn-xs"
-																   href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"><i
+																   href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}"><i
 																			class="fa fa-download"></i><span
 																			class="badge">{$mgrabs[$m@index]}
 																		Grab{if $mgrabs[$m@index] != 1}s{/if}</span></a>
 																<a role="button" class="btn btn-default btn-xs"
-																   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}#comments"><i
+																   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}#comments"><i
 																			class="fa fa-comment-o"></i><span
 																			class="badge">{$mcomments[$m@index]}
 																		Comment{if $mcomments[$m@index] != 1}s{/if}</span></a>
+																<span class="btn btn-hover btn-default btn-xs icon icon_cart text-muted"
+																	  title="Add to Cart"><i
+																			class="fa fa-shopping-cart"></i></span>
+																{if isset($sabintegrated)}
+																	<span class="btn btn-hover btn-default btn-xs icon icon_sab text-muted"
+																		  title="Send to my Queue"><i
+																				class="fa fa-send"></i></span>
+																{/if}
 															</div>
 														</td>
 													</tr>
@@ -192,7 +200,6 @@
 							{$pager}
 						</div>
 					</div>
-
 				</div>
 			</div>
 		</div>

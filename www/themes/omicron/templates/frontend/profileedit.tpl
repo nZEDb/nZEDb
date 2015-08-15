@@ -1,6 +1,5 @@
 <div class="header">
 	<h2>Edit Profile > <strong>{$user.username|escape:"htmlall"}</strong></h2>
-
 	<div class="breadcrumb-wrapper">
 		<ol class="breadcrumb">
 			<li><a href="{$smarty.const.WWW_TOP}">Home</a></li>
@@ -13,8 +12,8 @@
 		<div class="box-content">
 			<div class="row">
 				<div class="col-xlg-12 portlets">
-					<div class="panel">
-						<div class="panel-content pagination2">
+					<div class="panel panel-default">
+						<div class="panel-body pagination2">
 							{if $error != ''}
 								<div class="alert alert-danger">{$error}</div>
 							{/if}
@@ -48,7 +47,6 @@
 															<td>
 																<input autocomplete="off" id="password" name="password"
 																	   type="password" class="form-control" value="">
-
 																<div class="hint">Only enter your password if you want
 																	to change it.
 																</div>
@@ -247,7 +245,6 @@
 																		   type="text" value="{$user.nzbgeturl}"/></td>
 															</tr>
 															<tr>
-
 																<th width="200">Username / Password</th>
 																<td>
 																	<div class="form-inline">
@@ -264,7 +261,6 @@
 																			   value="{$user.nzbgetpassword}"/>
 																	</div>
 																</td>
-
 															</tr>
 															</tbody>
 														</table>
@@ -283,7 +279,6 @@
 										</td>
 									</tr>
 									<tr>
-
 										<th width="200">API / URL</th>
 										<td>
 											<div class="form-inline">
@@ -300,7 +295,6 @@
 													   value="{$cp_url_selected}"/>
 											</div>
 										</td>
-
 									</tr>
 									</tbody>
 								</table>

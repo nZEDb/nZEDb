@@ -1,6 +1,5 @@
 <div class="header">
 	<h2>Your > <strong>Cart</strong></h2>
-
 	<div class="breadcrumb-wrapper">
 		<ol class="breadcrumb">
 			<li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li>
@@ -8,18 +7,14 @@
 		</ol>
 	</div>
 </div>
-
-
 <div class="alert alert-info" role="alert">
 	<strong>RSS Feed</strong> <br/>
 	Your cart can also be accessed via an <a
 			href="{$smarty.const.WWW_TOP}/rss?t=-2&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}&amp;del=1">RSS
 		feed</a>. Some NZB downloaders can read this feed and automatically start downloading.
 </div>
-
 {if $results|@count > 0}
 	<form id="nzb_multi_operations_form" action="get">
-
 		<div class="nzb_multi_operations">
 			<small>With Selected:</small>
 			<div class="btn-group">
@@ -33,8 +28,8 @@
 		</div>
 		<div class="row">
 			<div class="col-lg-12 portlets">
-				<div class="panel">
-					<div class="panel-content pagination2">
+				<div class="panel panel-default">
+					<div class="panel-body pagination2">
 						<table style="width:100%;" class="data table table-condensed table-striped table-responsive table-hover" id="browsetable">
 							<tr>
 								<th width="50"><input id="chkSelectAll" type="checkbox" class="nzb_check_all"/><label
@@ -43,7 +38,6 @@
 								<th>Added</th>
 								<th>Action</th>
 							</tr>
-
 							{foreach from=$results item=result}
 								<tr class="{cycle values=",alt"}">
 									<td class="check">
@@ -52,7 +46,7 @@
 									</td>
 									<td>
 										<a title="View details"
-										   href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.searchname|escape:"htmlall"|wordwrap:75:"\n":true}</a>
+										   href="{$smarty.const.WWW_TOP}/details/{$result.guid}">{$result.searchname|escape:"htmlall"|wordwrap:75:"\n":true}</a>
 									</td>
 									<td class="less"
 										title="Added on {$result.createddate}">{$result.createddate|date_format}</td>
@@ -60,7 +54,6 @@
 										   class="btn btn-danger btn-sm" style="padding-bottom:2px;">Delete</a></td>
 								</tr>
 							{/foreach}
-
 						</table>
 	</form>
 {else}

@@ -4,7 +4,7 @@
  * No point having a check for PHP version if we can't get to that page because of higher version
  * requirements.
  */
-require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'smarty.php');
+require_once realpath(__DIR__ . DIRECTORY_SEPARATOR . 'install.php');
 
 use nzedb\Install;
 

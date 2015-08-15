@@ -14,12 +14,13 @@
  * along with this program (see LICENSE.txt in the base directory.  If
  * not, see:
  *
- * @link <http://www.gnu.org/licenses/>.
- * @author niel
+ * @link      <http://www.gnu.org/licenses/>.
+ * @author    niel
  * @copyright 2015 nZEDb
  */
-require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'initialise.php');
-require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'autoloader.php');
+require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'constants.php');
+require_once realpath(dirname(dirname(__DIR__)) . DS . 'autoloader.php');
+require_once realpath(dirname(__DIR__) . DS . 'autoloader.php');
 
 use nzedb\config\Configure;
 

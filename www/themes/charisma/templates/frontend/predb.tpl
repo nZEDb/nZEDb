@@ -19,8 +19,8 @@
 	<div class="box-inner">
 		<div class="row">
 			<div class="col-xlg-12 portlets">
-				<div class="panel">
-					<div class="panel-content pagination2">
+				<div class="panel panel-default">
+					<div class="panel-body pagination2">
 						<div class="row">
 							<div class="col-md-8">
 								<table class="data table table-condensed table-striped table-responsive table-hover">
@@ -44,7 +44,7 @@
 												{if isset($result.guid)}
 													<a style="font-style:italic;text-decoration:underline;color:#{if $result.nuked == 1}009933{elseif $result.nuked > 1}990000{/if};"
 													   class="title" title="View details"
-													   href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.title|escape:"htmlall"}">
+													   href="{$smarty.const.WWW_TOP}/details/{$result.guid}">
 														<span title="{if $result.nuked == 1}UNNUKED: {$result.nukereason|escape:"htmlall"}{elseif $result.nuked > 1}NUKED: {$result.nukereason|escape:"htmlall"}{else}{$result.title|escape:"htmlall"}{/if}">{$result.title|escape:"htmlall"}</span>
 													</a>
 												{else}
@@ -314,7 +314,7 @@
 														href="{$site->dereferrer_link}http://nzbindex.com/search/?q={$result.title}"
 														target="_blank"
 														>
-													<img src="{$smarty.const.WWW_TOP}/templates/omicron/images/icons/nzbindex.png"/>
+													<img src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/nzbindex.png"/>
 													&nbsp;
 												</a>
 											</td>
@@ -325,7 +325,7 @@
 														href="{$site->dereferrer_link}http://binsearch.info/?q={$result.title}"
 														target="_blank"
 														>
-													<img src="{$smarty.const.WWW_TOP}/templates/omicron/images/icons/binsearch.png"/>
+													<img src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/binsearch.png"/>
 													&nbsp;
 												</a>
 											</td>

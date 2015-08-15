@@ -4,16 +4,13 @@
 			strapline="{$site->strapline|escape}" email="{$site->email}" url="{$serverroot}"
 			image="{if $site->style != "" && $site->style != "/"}{$serverroot}theme/{$site->style}/images/banner.jpg{else}{$serverroot}images/banner.jpg{/if}"/>
 	<limits max="100" default="100"/>
-
 	<registration available="yes" open="{if $site->registerstatus == 0}yes{else}no{/if}"/>
-
 	<searching>
 		<search available="yes"/>
 		<tv-search available="yes"/>
 		<movie-search available="yes"/>
 		<audio-search available="yes"/>
 	</searching>
-
 	<categories>
 		{foreach from=$parentcatlist item=parentcat}
 			<category id="{$parentcat.id}"
@@ -25,7 +22,6 @@
 			</category>
 		{/foreach}
 	</categories>
-
 	<groups>
 		{foreach from=$grps item=grp}
 			<group id="{$grp.id}"
@@ -33,7 +29,6 @@
 				   lastupdate="{$grp.last_updated|phpdate_format:"DATE_RSS"}"/>
 		{/foreach}
 	</groups>
-
 	<genres>
 		{foreach from=$genres item=genre}
 			<genre id="{$genre.id}" categoryid="{$genre.type}" name="{$genre.title|escape:html}"/>

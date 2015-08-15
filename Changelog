@@ -3,11 +3,80 @@ Pull requests will be accepted *only* against the dev branch.
 Please make sure any PR's comply with our coding standards policy: http://li3.me/docs/specs/accepted/LSR-0-coding.md
 
 New updates are grouped by person (committer/merger), at the top of the file.
-All entries are dated according to merging into the code in dev branch.
+All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
+
+2015-08-14 bart39
+	Mrg: PR 1817, by terbonium - reworked patch to get around duplicate data in parts table.
+		***NOTE*** run this sql to reset sqlpatch if you already ran patch 374 and failed before patching:
+		'update settings set sqlpatch = 373 where sqlpatch = 374;'
+	Mrg: PR 1816, by terbonium - removed id and collectionid from parts table, updated primary key to (binaryid,partnumber).
+	Fix: Set NULL tmdbid values to 0 before altering the default value in patch 372.
+	Mrg: PR 1813, by darius - Add back missing triggers into releases table.
+		***NOTE*** if using sphinxsearch then run 'php misc/sphinxsearch/toggle_search_type.php sphinx' to remove unnecessary release_search_data triggers.
+	Fix: Correct default value for tmdbid to '0'
+2015-08-14 ruhllatio
+	Chg: Make UPDATE queries in postproc use partitioning
+	Chg: Improve TV matching a bit
+	Fix: Issue 1814 Bad XXX processing query
+	Fix: Patch 374 typo and add CALL and DROP
+	Add: *** MUST RUN *** TPG Script to DROP old collections TRIGGERS after Patch 374 /nzedb/build/_runonce/tpg_delete_triggers_2015-08-14.php
+	Chg: Permissions on TPG scripts
+	Fix: TPG Creation function called when adding a new group in Site Admin no longer adds the delete triggers
+2015-08-14 kevin
+	Chg: Add default values for movieinfo table.
+	Fix: Check if trakt data has a imdb ID.
+2015-08-13 ruhllatio
+	* Chg: DB optimization: Change nzb_guid to BINARY(16)
+2015-08-12 DariusIII
+	* Fix: Issues on Omicron/Charisma themes.
+2015-08-11 terbonium
+	* Chg: Improve performance of predb_hash table and queries by storing hashes as binary.
+2015-08-11 kevin
+	* Chg: Better support for DELIMITER in DbUpdate.
+2015-08-10 kevin
+	* Fix: Issue where youtube trailer URL's would get overwritten with the wrong URL.
+	* Fix: Issue where API NZB downloads would fail.
+2015-08-10 Darius
+	* Fix: Typo in nzedb\Movies.
+2015-08-07 kevin
+	* Chg: Parse most of the TraktTV details for movies.
+	* Chg: Store movie trailer URL's in the database.
+	* Chg: Add movie trailer configurable settings to Admin section of site.
+	* Chg: Refactor some methods in Movie.php
+	* Fix: #1782 Unused title parameter in getnzb and details page intermittently caused them not to load.
+2015-08-07 terbonium
+	* Fix: Escape the "_" character in LIKE clause of query of patch 360. #1801 http://git.io/vOFcf
+2015-08-06 niel
+	* Fix: Added default SSL values check for installation process.
+2015-08-06 ruhllatio
+	* Fix: Delete query for stuck collections
+2015-08-06 kevin
+	* Fix: nzedb\db\DbUpdate::splitSQL ; Properly parse delimiters for patches. ; Parse comments.
+	* Mrg: PR 1796, by terbonium - SQL optimizations.
+	* Mrg: PR 1793, by kevinlekiller/ruhllatio/DariusIII - Delete collections that are broken after a timeout period. Issue #1791
+	* Mrg: PR 1797, by DariusIII - Change buttons in viewseries.tpl to be in line with the other pages.
+2015-08-05 niel
+	* Fix: Install process to use install.php instead of smarty.php
+	* Fix: Bad span end tag is install step 2 template file.
+	* Fix: Reverted kevin's earlier 'fix' for Step 2 of install. The constant must exist or the bug is elsewhere. The bug was not having 'settings' as part of install configuration.
+	* Mrg: PR 1789, from darius - Remove getQueue function from utils.js as it was conflicting with a function in our JS. Cleanup trailing whitespace.
+2015-08-05 kevin
+	* Fix: Step 2 of install.
+	* Mrg: PR 1795 from terbonium - group OR operators () properly for proper index usage on date column and prevent full table scans when not needed
+2015-07-31 bart39
+	* Mrg: PR 1786 from darius - Add XXX back cover view and games screenshot view to release details.
+	* Mrg: PR 1781 from darius - Add movie rating to movies page, remove year from xxx template.
+2015-07-30 bart39
+	* Mrg: PR 1784 from iguyking - Create a new Ubuntu 14.04.02 install instructions.
+	* Mrg: PR 1780 from darius - Add send to cart and send to my queue buttons to rest of the pages.
+	* Mrg: PR 1779 from darius - Change the search page and results display, add send to cart and send to my queue buttons to movies page.
+
 
 2015-07-25 niel
 	* Chg: Merging in dev-configs branch. This adds a new Configure class and streamlines autoloading further.
+		***NOTE*** This will require moving config.php and settings.php from .../www/ to .../nzedb/config.
+			You will also have to remove the require_once line from the bottom of config.php
 2015-07-24 niel
 	* Fix: updated regex for predb_import_daily_batch script to account for Dropbox's changes to link HTML.
 2015-07-24 bart39
@@ -28,7 +97,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	* Fix: Had to rename the 'setting' for max.headers.iteration to allow it to work with smarty template.
 	* Fix: Removing unneccessary require_once for Utility.php. No longer needed as autoloading covers it and Utility is gone. ;-)
 2015-07-18 niel
-	* Chg: Renamed Uitility class to Misc. It should only contain odd methods that do not fit in anywhere else.
+	* Chg: Renamed Utility class to Misc. It should only contain odd methods that do not fit in anywhere else.
 	* Chg: Created a new utility class 'Text' and moved various text based methods into it from Misc.
 2015-07-18 bart39
 	* Mrg: PR 1763 from darius - Fix the reference to Tabula-Rasa test site.
@@ -40,7 +109,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 2015-07-17 bart39
 	* Mrg: PR 1760 from darius - Add omicron and charisma Bootstrap 3 based templates.
 2015-07-16 niel
-	* Fix: Finally have a work around for the register.page not loading. Thanks to Bart39../com
+	* Fix: Finally have a work around for the register page not loading. Thanks to Bart39.
 2015-07-14 bart39
 	* Mrg: PR 1759 from darius - Update ReleaseRemover with new variant of codec installer file.
 2015-07-09 niel
@@ -52,6 +121,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	* Fix: Require of 'config.php' for installing.
 2015-07-06 niel
 	* Mrg: PR 1747, from sebst3r - API-Change regarding JSON-Output
+
 2015-06-30 niel
 	* Mrg: PR 1740, from Fossil01 - Added user signups by month view back to site-stats.
 2015-06-29 niel
@@ -77,7 +147,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	* Chg: Use get_class / __FUNCTION__ for nzedb\Logger->Log usage.
 	* Upd: Update smarty to 3.1.27
 	* Fix: Add check for string on nzedb\Movie::doMovieUpdate #1742
-	* Fix: #1742 (Notices in movie.php, remove old smarty files)
+	* Fix: PR 1742 (Notices in movie.php, remove old smarty files)
 2015-06-22 niel
 	* Mrg: PR 1738 from Enverex - Avoid MySQL caching on transient content
 2015-06-19 bart39
@@ -107,8 +177,8 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	* New: Added a config directory under .../nzedb to contain configuration/settings files, so they're all together and don't need paths changing when code moves. I'll gradually move older config/settings files here, with some exceptions TBD.
 	* Chg: Moved IRCScraper example settings file to the .../nzedb/config directory
 	* Chg: Refactored the IRCScraper scrape script to look in .../nzedb/config for the renamed ircscraper_settings.php file. (it will move the old one from testing/IRCScraper if it finds it.
-	* New: Added tmux.running.exit to settings table. This is read during the tmux monitor script's loop to see if it should exit or not. I'll add a means to set this from the Tmux settings page once the rest is finished.
-	* Fix: Removing superfluous quotes around $user variable as they are adding by the escaping in the previous line.
+	* NEW: Added tmux.running.exit to settings table. This is read during the tmux monitor script's loop to see if it should exit or not. I'll add a means to set this from the Tmux settings page once the rest is finished.
+	* Fix: Removing superfluous quotes around $user variable as they are added by the escaping in the previous line.
 2015-06-09 bart39
 	* Mrg: PR 1716 from enverex - Pick up additional RAR names and match both functions.
 2015-06-06 bart39

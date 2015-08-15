@@ -32,7 +32,7 @@
 			</td>
 			<td class="predb-left" style="text-align:center;">
 				{if isset($result.guid)}
-					<a style="font-style:italic;text-decoration:underline;color:#{if $result.nuked == 1}009933{elseif $result.nuked > 1}990000{/if};" class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.title|escape:"htmlall"}">
+					<a style="font-style:italic;text-decoration:underline;color:#{if $result.nuked == 1}009933{elseif $result.nuked > 1}990000{/if};" class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}">
 						<span title="{if $result.nuked == 1}UNNUKED: {$result.nukereason|escape:"htmlall"}{elseif $result.nuked > 1}NUKED: {$result.nukereason|escape:"htmlall"}{else}{$result.title|escape:"htmlall"}{/if}">{$result.title|escape:"htmlall"|truncate:50}</span>
 					</a>
 				{else}

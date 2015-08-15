@@ -1,5 +1,4 @@
 <h1>{$page->title}</h1>
-
 {if $site->apienabled != "1"}
 	<p>
 		The api is currently disabled. <a href="{$smarty.const.WWW_TOP}/contact-us">Contact us</a> if you require api

@@ -544,8 +544,8 @@ class Misc
 	{
 		$xml = Misc::getUrl(['url' => 'http://api.traileraddict.com/?imdb=' . $imdbID]);
 		if ($xml !== false) {
-			if (preg_match('/(<iframe.+?<\/iframe>)/i', $xml, $html)) {
-				return $html[1];
+			if (preg_match('#(v\.traileraddict\.com/\d+)#i', $xml, $html)) {
+				return 'https://' . $html[1];
 			}
 		}
 		return '';

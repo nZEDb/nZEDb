@@ -1,7 +1,6 @@
 <div class="header">
 	{assign var="catsplit" value=">"|explode:$catname}
 	<h2>{$catsplit[0]} > <strong>{if isset($catsplit[1])} {$catsplit[1]}{/if}</strong></h2>
-
 	<div class="breadcrumb-wrapper">
 		<ol class="breadcrumb">
 			<li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li>
@@ -9,16 +8,14 @@
 		</ol>
 	</div>
 </div>
-
 {$site->adbrowse}
-
 {if $results|@count > 0}
 	<form id="nzb_multi_operations_form" action="get">
 		<div class="box-body"
 		<div class="row">
 			<div class="col-xlg-12 portlets">
-				<div class="panel">
-					<div class="panel-content pagination2">
+				<div class="panel panel-default">
+					<div class="panel-body pagination2">
 						<div class="row">
 							<div class="col-md-8">
 								{if isset($shows)}
@@ -100,7 +97,7 @@
 															 type="checkbox" class="nzb_check"
 															 value="{$result.guid}"/></td>
 									<td>
-										<a href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}"
+										<a href="{$smarty.const.WWW_TOP}/details/{$result.guid}"
 										   class="title">{$result.searchname|escape:"htmlall"|replace:".":" "}</a>
 										<br/>
 													<span class="label label-default">{$result.grabs}
@@ -126,7 +123,7 @@
 									<td>{$result.postdate|timeago}</td>
 									<td>{$result.size|fsize_format:"MB"}</td>
 									<td class="icon_nzb"><a
-												href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"htmlall"}"><i
+												href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}"><i
 													class="fa fa-download text-muted"
 													title="Download NZB"></i></a>
 										<a href="{$smarty.const.WWW_TOP}/details/{$result.guid}/#comments"><i

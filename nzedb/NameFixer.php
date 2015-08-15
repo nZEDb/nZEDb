@@ -871,9 +871,9 @@ class NameFixer
 					sprintf("
 						SELECT p.id AS preid, p.title, p.source
 						FROM predb p INNER JOIN predb_hashes h ON h.pre_id = p.id
-						WHERE MATCH (h.hashes) AGAINST (%s)
+						WHERE h.hash = UNHEX(%s)
 						LIMIT 1",
-						$pdo->escapeString(strtolower($hash))
+						$pdo->escapeString($hash)
 					)
 		);
 

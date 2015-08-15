@@ -2,7 +2,6 @@
 	 xmlns="http://www.w3.org/1999/html">
 	{assign var="catsplit" value=">"|explode:$catname}
 	<h2>{$catsplit[0]} > <strong>{if isset($catsplit[1])} {$catsplit[1]}{/if}</strong></h2>
-
 	<div class="breadcrumb-wrapper">
 		<ol class="breadcrumb">
 			<li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li>
@@ -10,14 +9,12 @@
 		</ol>
 	</div>
 </div>
-
-
 <form id="nzb_multi_operations_form" action="get">
 	<div class="box-body"
 	<div class="row">
 		<div class="col-xlg-12 portlets">
-			<div class="panel">
-				<div class="panel-content pagination2">
+			<div class="panel panel-default">
+				<div class="panel-body pagination2">
 					<div class="row">
 						<div class="col-md-8">
 							<div class="nzb_multi_operations">
@@ -73,12 +70,12 @@
 						{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
 						{foreach from=$msplits item=m name=loop}
 							{if $smarty.foreach.loop.first}
-								<div class="panel">
-									<div class="panel-content">
+								<div class="panel panel-default">
+									<div class="panel-body">
 										<div class="row">
 											<div class="col-md-2 no-gutter">
 												<a title="View details"
-												   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">
+												   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">
 													<img src="{$smarty.const.WWW_TOP}/covers/games/{if $result.cover == 1}{$result.gamesinfo_id}.jpg{else}no-cover.jpg{/if}"
 														 width="140" border="0"
 														 alt="{$result.title|escape:"htmlall"}"/>
@@ -117,7 +114,7 @@
 											</div>
 											<div class="col-md-10 no-gutter">
 												<h4><a title="View details"
-													   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">{$result.title|escape:"htmlall"}</a>
+													   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$result.title|escape:"htmlall"}</a>
 													(<a class="title" title="{$result.year}"
 														href="{$smarty.const.WWW_TOP}/games?year={$result.year}">{$result.year}</a>)
 												</h4>
@@ -162,12 +159,12 @@
 															{/if}
 															<div>
 																<a role="button" class="btn btn-default btn-xs"
-																   href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"><i
+																   href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}"><i
 																			class="fa fa-download"></i><span
 																			class="badge">{$mgrabs[$m@index]}
 																		Grab{if $mgrabs[$m@index] != 1}s{/if}</span></a>
 																<a role="button" class="btn btn-default btn-xs"
-																   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}#comments"><i
+																   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}#comments"><i
 																			class="fa fa-comment-o"></i><span
 																			class="badge">{$mcomments[$m@index]}
 																		Comment{if $mcomments[$m@index] != 1}s{/if}</span></a>

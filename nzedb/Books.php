@@ -92,6 +92,7 @@ class Books
 			$this->renamed = 'AND isrenamed = 1';
 		}
 
+		$this->catWhere = 'AND (categoryid BETWEEN 8000 AND 8999 OR categoryid = 3030) ';
 		$this->failCache = array();
 	}
 
@@ -381,10 +382,10 @@ class Books
 					}
 
 					// Update release.
-					$this->pdo->queryExec(sprintf('UPDATE releases SET bookinfoid = %d WHERE id = %d', $bookId, $arr['id']));
+					$this->pdo->queryExec(sprintf('UPDATE releases SET bookinfoid = %d WHERE id = %d %s', $bookId, $arr['id'], $this->catWhere));
 				} else {
 					// Could not parse release title.
-					$this->pdo->queryExec(sprintf('UPDATE releases SET bookinfoid = %d WHERE id = %d', -2, $arr['id']));
+					$this->pdo->queryExec(sprintf('UPDATE releases SET bookinfoid = %d WHERE id = %d %s', -2, $arr['id'], $this->catWhere));
 					if ($this->echooutput) {
 						echo '.';
 					}

@@ -718,3 +718,31 @@ ul.github-buttons li {
 .mc_embed_signup #mce-success-response {color:#529214; display:none;}
 .mc_embed_signup label.error {display:block; float:none; width:auto; margin-left:1.05em; text-align:left; padding:.5em 0;}
 
+.release-name {
+    font-size: 10px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.release-title {
+    font-family: 'Lato', 'Open Sans', Helvetica, sans-serif;
+    font-weight: 100;
+    font-size: 16px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.release-title:hover {
+    text-overflow: inherit;
+    overflow: visible;
+}
+.release-subtitle {
+    font-family: 'Lato', 'Open Sans', Helvetica, sans-serif;
+    font-weight: 100;
+    font-size: 12px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}

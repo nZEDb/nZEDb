@@ -2,7 +2,6 @@
 	 xmlns="http://www.w3.org/1999/html">
 	{assign var="catsplit" value=">"|explode:$catname}
 	<h2>{$catsplit[0]} > <strong>{if isset($catsplit[1])} {$catsplit[1]}{/if}</strong></h2>
-
 	<div class="breadcrumb-wrapper">
 		<ol class="breadcrumb">
 			<li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li>
@@ -10,13 +9,12 @@
 		</ol>
 	</div>
 </div>
-
 <form id="nzb_multi_operations_form" action="get">
 	<div class="box-body"
 	<div class="row">
 		<div class="col-xlg-12 portlets">
-			<div class="panel">
-				<div class="panel-content pagination2">
+			<div class="panel panel-default">
+				<div class="panel-body pagination2">
 					<div class="row">
 						<div class="col-md-8">
 							<div class="nzb_multi_operations">
@@ -66,8 +64,8 @@
 							<div class="row">
 								<!-- Left -->
 								<div class="col-md-6 small-gutter-right movie-height">
-									<div class="panel">
-										<div class="panel-content">
+									<div class="panel panel-default">
+										<div class="panel-body">
 											<div class="row no-gutter">
 												<div class="col-md-3 no-gutter">
 													{assign var="msplits" value=","|explode:$result.grp_release_id}
@@ -85,10 +83,9 @@
 													{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
 													{foreach from=$msplits item=m name=loop}
 													{if $smarty.foreach.loop.first}
-
-													<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"><img
+													<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}"><img
 																class="cover"
-																src="{if $result.cover == 1}{$serverroot}covers/xxx/{$result.id}-cover.jpg{else}{$serverroot}themes/omicron/images/nocover.png{/if}"
+																src="{if $result.cover == 1}{$serverroot}covers/xxx/{$result.id}-cover.jpg{else}{$serverroot}themes/charisma/images/nocover.png{/if}"
 																width="100" border="0"
 																alt="{$result.title|escape:"htmlall"}"/></a>
 													{if $result.classused == "ade"}
@@ -159,25 +156,22 @@
 												</div>
 												<div class="col-md-9 no-gutter">
 																<span class="release-title"><a class="text-muted"
-																							   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">{$result.title|escape:"htmlall"}</a></span>
-
+																							   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$result.title|escape:"htmlall"}</a></span>
 													<div class="release-subtitle">{if $result.genre != ''}{$result.genre}, {/if}</div>
-													<div>
+													<div id="guid{$mguid[$m@index]}">
 														<span class="label label-primary">{if isset($catsplit[0])} {$catsplit[0]}{/if}</span>
 														<span class="label label-danger">{if isset($catsplit[1])} {$catsplit[1]}{/if}</span>
 														<span class="label label-default">{if isset($result.year)} {$result.year}{/if}</span>
-
 														<span class="label label-default">{$msize[$m@index]|fsize_format:"MB"}</span>
 																	<span class="label label-default">Posted {$mpostdate[$m@index]|timeago}
 																		ago</span>
 														<br/><br/><br/>
-
 														<div class="release-name text-muted"><a
-																	href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">{$mname[$m@index]|escape:"htmlall"}</a>
+																	href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$mname[$m@index]|escape:"htmlall"}</a>
 														</div>
 														<div>
 															<a role="button" class="btn btn-default btn-xs"
-															   href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"><i
+															   href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}"><i
 																		class="fa fa-download"></i><span
 																		class="badge"> {$mgrabs[$m@index]}
 																	Grab{if $mgrabs[$m@index] != 1}s{/if}</span></a>
@@ -186,10 +180,18 @@
 																		class="fa fa-comment-o"></i><span
 																		class="badge"> {$mcomments[$m@index]}
 																	Comment{if $mcomments[$m@index] != 1}s{/if}</span></a>
+															<span class="btn btn-hover btn-default btn-xs icon icon_cart text-muted"
+																  title="Add to Cart"><i
+																		class="fa fa-shopping-cart"></i></span>
+															{if isset($sabintegrated)}
+																<span class="btn btn-hover btn-default btn-xs icon icon_sab text-muted"
+																	  title="Send to my Queue"><i
+																			class="fa fa-send"></i></span>
+															{/if}
 														</div>
-														{/if}
-														{/foreach}
 													</div>
+													{/if}
+													{/foreach}
 												</div>
 											</div>
 										</div>
@@ -199,8 +201,8 @@
 								{else}
 								<!-- Right -->
 								<div class="col-md-6 small-gutter-left movie-height">
-									<div class="panel">
-										<div class="panel-content">
+									<div class="panel panel-default">
+										<div class="panel-body">
 											<div class="row no-gutter">
 												<div class="col-md-3 no-gutter">
 													{assign var="msplits" value=","|explode:$result.grp_release_id}
@@ -218,9 +220,9 @@
 													{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
 													{foreach from=$msplits item=m name=loop}
 													{if $smarty.foreach.loop.first}
-													<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"><img
+													<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}"><img
 																class="cover"
-																src="{if $result.cover == 1}{$serverroot}covers/xxx/{$result.id}-cover.jpg{else}{$serverroot}themes/omicron/images/nocover.png{/if}"
+																src="{if $result.cover == 1}{$serverroot}covers/xxx/{$result.id}-cover.jpg{else}{$serverroot}themes/charisma/images/nocover.png{/if}"
 																width="100" border="0"
 																alt="{$result.title|escape:"htmlall"}"/></a>
 													{if $result.classused == "ade"}
@@ -291,25 +293,22 @@
 												</div>
 												<div class="col-md-9 no-gutter">
 																<span class="release-title"><a class="text-muted"
-																							   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">{$result.title|escape:"htmlall"}</a></span>
-
+																							   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$result.title|escape:"htmlall"}</a></span>
 													<div class="release-subtitle">{if $result.genre != ''}{$result.genre}, {/if}</div>
-													<div>
+													<div id="guid{$mguid[$m@index]}">
 														<span class="label label-primary">{if isset($catsplit[0])} {$catsplit[0]}{/if}</span>
 														<span class="label label-danger">{if isset($catsplit[1])} {$catsplit[1]}{/if}</span>
-														<span class="label label-default">{if isset($result.year)} {$result.year}{/if}</span>
-
+														<span class="label label-default">{$result.year}</span>
 														<span class="label label-default">{$msize[$m@index]|fsize_format:"MB"}</span>
 																	<span class="label label-default">Posted {$mpostdate[$m@index]|timeago}
 																		ago</span>
 														<br/><br/><br/>
-
 														<div class="release-name text-muted"><a
 																	href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$mname[$m@index]|escape:"htmlall"}</a>
 														</div>
 														<div>
 															<a role="button" class="btn btn-default btn-xs"
-															   href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"><i
+															   href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}"><i
 																		class="fa fa-download"></i><span
 																		class="badge"> {$mgrabs[$m@index]}
 																	Grab{if $mgrabs[$m@index] != 1}s{/if}</span></a>
@@ -318,10 +317,18 @@
 																		class="fa fa-comment-o"></i><span
 																		class="badge"> {$mcomments[$m@index]}
 																	Comment{if $mcomments[$m@index] != 1}s{/if}</span></a>
+															<span class="btn btn-hover btn-default btn-xs icon icon_cart text-muted"
+																  title="Add to Cart"><i
+																		class="fa fa-shopping-cart"></i></span>
+															{if isset($sabintegrated)}
+																<span class="btn btn-hover btn-default btn-xs icon icon_sab text-muted"
+																	  title="Send to my Queue"><i
+																			class="fa fa-send"></i></span>
+															{/if}
 														</div>
-														{/if}
-														{/foreach}
 													</div>
+													{/if}
+													{/foreach}
 												</div>
 											</div>
 										</div>
