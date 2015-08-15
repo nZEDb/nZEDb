@@ -7,6 +7,7 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 2015-08-14 bart39
+	Mrg: PR 1813, by darius - Add back missing triggers into releases table.
 	Fix: Correct default value for tmdbid to '0'
 2015-08-14 ruhllatio
 	Chg: Make UPDATE queries in postproc use partitioning
