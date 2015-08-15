@@ -1,4 +1,6 @@
 DROP PROCEDURE IF EXISTS tpg_change;
+DROP TABLE IF EXISTS parts_tmp;
+DROP TABLE IF EXISTS parts_old;
 
 -- This might be long - patience.
 
@@ -30,10 +32,11 @@ BEGIN
 			);
 		SET @sql2 := CONCAT("INSERT IGNORE INTO parts_tmp SELECT binaryid, messageid, number, partnumber, size FROM ", _table);
 		SET @sql3 := CONCAT("RENAME TABLE ", _table, " TO ", _table, "_old, parts_tmp TO ", _table);
-		SET @sql3 := CONCAT("DROP TABLE ", _table, "_old");
+		SET @sql4 := CONCAT("DROP TABLE IF EXISTS ", _table, "_old");
 		PREPARE _stmt FROM @sql1; EXECUTE _stmt; DROP PREPARE _stmt;
 		PREPARE _stmt FROM @sql2; EXECUTE _stmt; DROP PREPARE _stmt;
 		PREPARE _stmt FROM @sql3; EXECUTE _stmt; DROP PREPARE _stmt;
+		PREPARE _stmt FROM @sql4; EXECUTE _stmt; DROP PREPARE _stmt;
 	END loop;
 	CLOSE cur1;
 END $$
@@ -41,5 +44,3 @@ DELIMITER ;
 
 CALL tpg_change();
 DROP PROCEDURE tpg_change;
-
-DROP TRIGGER IF EXISTS delete_collections;
