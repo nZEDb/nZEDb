@@ -426,8 +426,8 @@ class Movie
 			return false;
 		}
 
-		$trailer = $this->pdo->queryOneRow("SELECT trailer FROM movieinfo WHERE imdbid = 'tt$imdbID'");
-		if ($trailer) {
+		$trailer = $this->pdo->queryOneRow("SELECT trailer FROM movieinfo WHERE imdbid = $imdbID");
+		if ($trailer != '') {
 			return $trailer['trailer'];
 		}
 
@@ -475,7 +475,7 @@ class Movie
 			$link = $this->checkTraktValue($data['images']['poster']['thumb']);
 			if ($link) {
 				$cover = $this->releaseImage->saveImage($data['ids']['imdb'] . '-cover', $link, $this->imgSavePath);
-			}	
+			}
 		}
 		$this->update([
 			'genres'   => $this->checkTraktValue($data['genres']),
