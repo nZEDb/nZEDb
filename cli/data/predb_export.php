@@ -55,7 +55,7 @@ $table = isset($argv[2]) ? $argv[2] : 'predb';
 
 $predb = new PreDb();
 if (nZEDb_ECHOCLI) {
-	echo "Exporting to '$path\n";
+	echo "Exporting to '$path'\n";
 }
 $predb->executeExport([
 		'enclosed'	=> " ENCLOSED BY \"'\" ",
