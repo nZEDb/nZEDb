@@ -435,7 +435,7 @@ class Movie
 			$this->traktTv = new TraktTv(['Settings' => $this->pdo]);
 		}
 
-		$data = $this->traktTv->movieSummary('tt' . $imdbID, 'full');
+		$data = $this->traktTv->movieSummary('tt' . $imdbID, 'full,images');
 		if ($data) {
 			$this->parseTraktTv($data);
 			if (isset($data['trailer']) && !empty($data['trailer'])) {
@@ -603,19 +603,22 @@ class Movie
 	}
 
 	/**
-	 * Returns a tmdb or imdb variable, the one that is set. Empty string if both not set.
+	 * Returns a tmdb, imdb or trakt variable, the one that is set. Empty string if both not set.
 	 *
 	 * @param string $variable1
 	 * @param string $variable2
+	 * @param string $variable3
 	 *
 	 * @return string
 	 */
-	protected function  setTmdbImdbVar(&$variable1, &$variable2)
+	protected function setTmdbImdbTraktVar(&$variable1, &$variable2, &$variable3)
 	{
 		if ($this->checkVariable($variable1)) {
 			return $variable1;
 		} elseif ($this->checkVariable($variable2)) {
 			return $variable2;
+		} elseif ($this->checkVariable($variable3)) {
+			return $variable3;
 		}
 		return '';
 	}
@@ -674,12 +677,12 @@ class Movie
 			$mov['backdrop'] = $this->releaseImage->saveImage($imdbId . '-backdrop', $tmdb['backdrop'], $this->imgSavePath, 1920, 1024);
 		}
 
-		$mov['title']   = $this->setTmdbImdbVar($imdb['title']  , $tmdb['title']);
-		$mov['rating']  = $this->setTmdbImdbVar($imdb['rating'] , $tmdb['rating']);
-		$mov['plot']    = $this->setTmdbImdbVar($imdb['plot']   , $tmdb['plot']);
-		$mov['tagline'] = $this->setTmdbImdbVar($imdb['tagline'], $tmdb['tagline']);
-		$mov['year']    = $this->setTmdbImdbVar($imdb['year']   , $tmdb['year']);
-		$mov['genre']   = $this->setTmdbImdbVar($imdb['genre']  , $tmdb['genre']);
+		$mov['title']   = $this->setTmdbImdbTraktVar($imdb['title']  , $tmdb['title'], $trakt['title']);
+		$mov['rating']  = $this->setTmdbImdbTraktVar($imdb['rating'] , $tmdb['rating'], $trakt['rating']);
+		$mov['plot']    = $this->setTmdbImdbTraktVar($imdb['plot']   , $tmdb['plot'], $trakt['overview']);
+		$mov['tagline'] = $this->setTmdbImdbTraktVar($imdb['tagline'], $tmdb['tagline'], $trakt['tagline']);
+		$mov['year']    = $this->setTmdbImdbTraktVar($imdb['year']   , $tmdb['year'], $trakt['year']);
+		$mov['genre']   = $this->setTmdbImdbTraktVar($imdb['genre']  , $tmdb['genre'], $trakt['genres']);
 
 		if ($this->checkVariable($imdb['type'])) {
 			$mov['type'] = $imdb['type'];
@@ -1122,7 +1125,7 @@ class Movie
 					}
 
 					// Check on trakt.
-					$data = $this->traktTv->movieSummary($movieName, 'full');
+					$data = $this->traktTv->movieSummary($movieName, 'full,images');
 					if ($data !== false) {
 						$this->parseTraktTv($data);
 						if (isset($data['ids']['imdb'])) {
