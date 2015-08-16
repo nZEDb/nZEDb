@@ -478,6 +478,7 @@ class Movie
 			'title'    => $this->checkTraktValue($data['title']),
 			'tmdbid'   => $this->checkTraktValue($data['ids']['tmdb']),
 			'trailer'  => $this->checkTraktValue($data['trailer']),
+			'cover'    => $this->checkTraktValue($data['images']['poster']['thumb']),
 			'year'     => $this->checkTraktValue($data['year'])
 		]);
 	}
@@ -637,7 +638,10 @@ class Movie
 
 		// Check IMDB for movie info.
 		$imdb = $this->fetchIMDBProperties($imdbId);
-		if (!$imdb && !$tmdb) {
+
+		// Check TRAKT for movie info
+		$trakt = $this->fetchTraktTVProperties($imdbId);
+		if (!$imdb && !$tmdb && !$trakt) {
 			return false;
 		}
 
@@ -646,15 +650,17 @@ class Movie
 
 		$mov = [];
 
-		$mov['cover'] = $mov['backdrop'] = $movieID = 0;
+		$mov['cover'] = $mov['backdrop'] = $mov['banner'] = $movieID = 0;
 		$mov['type'] = $mov['director'] = $mov['actors'] = $mov['language'] = '';
 
-		$mov['imdb_id'] = $imdbId;
-		$mov['tmdb_id'] = (!isset($tmdb['tmdb_id']) || $tmdb['tmdb_id'] == '') ? 0 : $tmdb['tmdb_id'];
+		$mov['imdbid'] = $imdbId;
+		$mov['tmdbid'] = (!isset($tmdb['tmdbid']) || $tmdb['tmdbid'] == '') ? 0 : $tmdb['tmdbid'];
 
-		// Prefer FanArt.tv cover over TMDB. And TMDB over IMDB.
+		// Prefer Fanart.tv cover over TRAKT, TRAKT over TMDB and TMDB over IMDB.
 		if ($this->checkVariable($fanart['cover'])) {
 			$mov['cover'] = $this->releaseImage->saveImage($imdbId . '-cover', $fanart['cover'], $this->imgSavePath);
+		} else if ($this->checkVariable($trakt['cover'])) {
+			$mov['cover'] = $this->releaseImage->saveImage($imdbId . '-cover', $trakt['cover'], $this->imgSavePath);
 		} else if ($this->checkVariable($tmdb['cover'])) {
 			$mov['cover'] = $this->releaseImage->saveImage($imdbId . '-cover', $tmdb['cover'], $this->imgSavePath);
 		} else if ($this->checkVariable($imdb['cover'])) {
@@ -953,6 +959,38 @@ class Movie
 			return $ret;
 		}
 		return false;
+	}
+
+	/**
+	 * Fetch TraktTV backdrop / cover / title.
+	 *
+	 * @param $imdbId
+	 *
+	 * @return bool|array
+	 */
+	protected function fetchTraktTVProperties($imdbId)
+	{
+		if (is_null($this->traktTv)) {
+			$this->traktTv = new TraktTv(['Settings' => $this->pdo]);
+		}
+		$resp = $this->traktTv->movieSummary('tt' . $imdbId, 'full,images');
+		if ($resp !== false) {
+			$ret = [];
+			if (isset($resp['images']['poster']['thumb'])) {
+				$ret['cover'] = $resp['images']['poster']['thumb'];
+			}
+			if (isset($resp['images']['banner']['full'])) {
+				$ret['banner'] = $resp['images']['banner']['full'];
+			}
+
+			if (isset($ret['cover'])) {
+				$ret['title'] = $resp['title'];
+			}
+			if ($this->echooutput) {
+				$this->pdo->log->doEcho($this->pdo->log->alternateOver("Trakt Found ") . $this->pdo->log->headerOver($ret['title']), true);
+			}
+			return $ret;
+		}
 	}
 
 	/**
