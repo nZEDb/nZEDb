@@ -656,8 +656,8 @@ class Movie
 		$mov['cover'] = $mov['backdrop'] = $mov['banner'] = $movieID = 0;
 		$mov['type'] = $mov['director'] = $mov['actors'] = $mov['language'] = '';
 
-		$mov['imdbid'] = $imdbId;
-		$mov['tmdbid'] = (!isset($tmdb['tmdbid']) || $tmdb['tmdbid'] == '') ? 0 : $tmdb['tmdbid'];
+		$mov['imdb_id'] = $imdbId;
+		$mov['tmdb_id'] = (!isset($tmdb['tmdb_id']) || $tmdb['tmdb_id'] == '') ? 0 : $tmdb['tmdb_id'];
 
 		// Prefer Fanart.tv cover over TRAKT, TRAKT over TMDB and TMDB over IMDB.
 		if ($this->checkVariable($fanart['cover'])) {
