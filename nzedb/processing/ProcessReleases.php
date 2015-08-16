@@ -730,7 +730,7 @@ class ProcessReleases
 				$this->pdo->log->primary(
 					number_format($nzbCount) . ' NZBs created/Collections deleted in ' .
 					$totalTime . ' seconds.' . PHP_EOL .
-					'Total time: ' . $this->pdo->log->primary($this->consoleTools->convertTime($totalTime)) . PHP_EOL 
+					'Total time: ' . $this->pdo->log->primary($this->consoleTools->convertTime($totalTime)) . PHP_EOL
 				)
 			);
 		}
