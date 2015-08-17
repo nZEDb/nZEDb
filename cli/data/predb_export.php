@@ -58,7 +58,7 @@ if (nZEDb_ECHOCLI) {
 	echo "Exporting to '$path'\n";
 }
 $predb->executeExport([
-		'enclosed'	=> " ENCLOSED BY \"'\" ",
+		'enclosed'	=> '',
 		'fields'	=> '\\t\\t',
 		'lines'		=> '\\r\\n',
 		'path'		=> $path,
