@@ -436,7 +436,6 @@ class Movie
 		}
 
 		$data = $this->traktTv->movieSummary('tt' . $imdbID, 'full,images');
-		var_dump($data);
 		if ($data) {
 			$this->parseTraktTv($data);
 			if (isset($data['trailer']) && !empty($data['trailer'])) {
