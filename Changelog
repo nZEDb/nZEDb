@@ -10,6 +10,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Add: Blacklist regex for 16 character hash floods in kenpsx and frogs (Remove +1 patch -- whoops)
 	Fix: Blacklist regex not matching properly
 2015-08-17 bart39
+	Fix: predb_export / getImdb scripts typo's
 	Fix: various links to testing/PostProc corrected to testing/PostProcess.
 	Mrg: PR 1825, by terbonium - part.id column no longer exists.. match on non-recent binaryid's.
 	Mrg: PR 1824, by darius - Add TRAKT link to details page.
