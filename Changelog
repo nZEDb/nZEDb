@@ -7,8 +7,8 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 2015-08-17 bart39
+	Mrg: PR 1822, by terbonium - select was matching against releases already marked NFO_FAILED which then executed a duplicate DELETE on releases_nfo.
 	Fix: Display of movie trailers #1811.
-		***NOTE*** Trailers from Trakt are dynamically linked on the nzb details page rather than saved to database.
 2015-08-16 bart39
 	Fix: Checking for existing movie trailers.
 	Fix: Typo in Movie.php.
