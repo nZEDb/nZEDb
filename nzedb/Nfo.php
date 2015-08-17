@@ -383,8 +383,9 @@ class Nfo
 				'SELECT r.id
 				FROM releases r
 				WHERE r.nzbstatus = %d
-				AND r.nfostatus < %d %s %s',
+				AND r.nfostatus < %d AND r.nfostatus > %d %s %s',
 				NZB::NZB_ADDED,
+				self::NFO_FAILED,
 				$this->maxRetries,
 				$groupIDQuery,
 				$guidCharQuery
