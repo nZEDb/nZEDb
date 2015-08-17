@@ -80,11 +80,10 @@ class PreDb extends DB
 		}
 
 		if (!isset($this->ps['Export'])) {
-			$this->prepareSQLExport();
+			$this->prepareSQLExport($options['enclosed']);
 		}
 
 		return $this->ps['Export']->execute([
-				':enclosed'	=> $options['enclosed'],
 				':fields'	=> $options['fields'],
 				':lines'	=> $options['lines'],
 				':path'		=> $options['path'],
@@ -220,14 +219,14 @@ SQL_ADD_GROUPS;
 		$this->prepareSQLStatement('DELETE FROM predb_imports WHERE LENGTH(title) <= 8', 'DeleteShort');
 	}
 
-	protected function prepareSQLExport()
+	protected function prepareSQLExport($enclosedby = null)
 	{
 		$sql = <<<SQL_EXPORT
 SELECT title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, g.name
 	FROM {$this->tableMain} p LEFT OUTER JOIN groups g ON p.group_id = g.id
 	INTO OUTFILE :path
-	FIELDS TERMINATED BY :field
-	:enclosed
+	FIELDS TERMINATED BY :fields
+	$enclosedby
 	LINES TERMINATED BY :lines;
 SQL_EXPORT;
 

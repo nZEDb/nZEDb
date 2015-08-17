@@ -607,7 +607,7 @@ class Binaries
 		$headersRepaired = $articles = $rangeNotReceived = $collectionIDs = $binariesUpdate = $headersReceived = $headersNotInserted = [];
 		$notYEnc = $headersBlackListed = 0;
 
-		$partsQuery = $partsCheck = sprintf('INSERT INTO %s (binaryid, number, messageid, partnumber, size) VALUES ', $tableNames['pname']);
+		$partsQuery = $partsCheck = sprintf('INSERT IGNORE INTO %s (binaryid, number, messageid, partnumber, size) VALUES ', $tableNames['pname']);
 
 		$this->_pdo->beginTransaction();
 		// Loop articles, figure out files/parts.

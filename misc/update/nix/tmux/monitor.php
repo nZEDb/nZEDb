@@ -51,10 +51,13 @@ $runVar['timers']['query']['proc2_time'] = $runVar['timers']['query']['proc3_tim
 $runVar['timers']['query']['proc11_time'] = $runVar['timers']['query']['proc21_time'] = $runVar['timers']['query']['proc31_time'] = $runVar['timers']['query']['tpg_time'] =
 $runVar['timers']['query']['tpg1_time'] = 0;
 
-// Analyze tables
-printf($pdo->log->info("\nAnalyzing your tables to refresh your indexes."));
-$pdo->optimise(false, 'analyze', false, ['releases']);
-Misc::clearScreen();
+// Analyze release table if not using innoDB (innoDB uses online analysis)
+$engine = $pdo->queryOneRow(sprintf("SELECT ENGINE FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = %s AND TABLE_NAME = 'releases'", $pdo->escapeString($db_name)));
+if ($engine['engine'] != 'InnoDB') {
+	printf($pdo->log->info("\nAnalyzing your tables to refresh your indexes."));
+	$pdo->optimise(false, 'analyze', false, ['releases']);
+	Misc::clearScreen();
+}
 
 $runVar['settings']['monitor'] = 0;
 $runVar['counts']['iterations'] = 1;

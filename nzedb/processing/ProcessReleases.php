@@ -730,7 +730,7 @@ class ProcessReleases
 				$this->pdo->log->primary(
 					number_format($nzbCount) . ' NZBs created/Collections deleted in ' .
 					$totalTime . ' seconds.' . PHP_EOL .
-					'Total time: ' . $this->pdo->log->primary($this->consoleTools->convertTime($totalTime)) . PHP_EOL 
+					'Total time: ' . $this->pdo->log->primary($this->consoleTools->convertTime($totalTime)) . PHP_EOL
 				)
 			);
 		}
@@ -879,7 +879,7 @@ class ProcessReleases
 		// CBP older than retention OR collection orphaned with no binaries.
 		$deleteQuery = $this->pdo->queryExec(
 			sprintf(
-				'DELETE c, b, p FROM %s
+				'DELETE c, b, p FROM %s c
 				LEFT JOIN %s b ON (c.id=b.collection_id)
 				LEFT JOIN %s p ON (b.id=p.binaryid)
 				WHERE (b.id IS NULL OR p.binaryid IS NULL OR c.dateadded < NOW() - INTERVAL %d HOUR) %s',
@@ -920,7 +920,7 @@ class ProcessReleases
 									LEFT JOIN %s p ON(b.id=p.binaryid)
 									LEFT JOIN %s c ON(b.collection_id=c.id)
 									WHERE (p.binaryid IS NULL OR c.id IS NULL) AND b.id < %d ',
-					$group['bname'], $group['pname'], $group['cname'], $this->minMaxQueryFormulator($group['bname'], 20000)['max']
+					$group['bname'], $group['pname'], $group['cname'], $this->maxQueryFormulator($group['bname'], 20000)['max']
 				)
 			);
 
@@ -945,7 +945,7 @@ class ProcessReleases
 			$deleteQuery = $this->pdo->queryExec(
 				sprintf(
 					'DELETE p FROM %s p LEFT JOIN %s b ON (p.binaryid=b.id) WHERE b.id IS NULL AND b.id < %d',
-					$group['pname'], $group['bname'], $this->minMaxQueryFormulator($group['bname'], 20000)['max']
+					$group['pname'], $group['bname'], $this->maxQueryFormulator($group['bname'], 20000)['max']
 				)
 			);
 			if ($deleteQuery !== false) {
@@ -1372,10 +1372,10 @@ class ProcessReleases
 	 * @return string
 	 * @access private
 	 */
-	private function minMaxQueryFormulator($groupName, $difference)
+	private function maxQueryFormulator($groupName, $difference)
 	{
-		$minMaxId = $this->pdo->queryOneRow(sprintf('SELECT MIN(id) - %d AS min, MAX(id) - %d AS max FROM %s', $difference, $difference, $groupName ));
-		return $minMaxId;
+		$maxId = $this->pdo->queryOneRow(sprintf('SELECT MAX(id) - %d AS max FROM %s', $difference, $groupName ));
+		return $maxId;
 	}
 
 	/**

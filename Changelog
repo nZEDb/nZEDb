@@ -6,10 +6,25 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2015-08-16 bart39
+	Fix: Checking for existing movie trailers.
+	Fix: Typo in Movie.php.
+	Fix: Add missing quote for echo in predb_export.
+	Chg: minMaxQueryFormulator to maxQueryFormulator - min not required.
+	Mrg: PR 1820, by darius - Add TraktTv cover support for movies.
+2015-08-15 niel
+	Fix: PreDb export script. Typo prevented executing prepared statement. Had to put ENCLOSED BY clause into prepared statement, instead of passing it as a parameter.
+2015-08-15 ruhllatio
+	Fix: DELETE Query missing collections alias
+2015-08-15 bart39
+	Fix: Fix movieinfo insert errors with long ratings (mainly from trakt).
+	Chg: Alpha theme updates for newposterwall / word wrapping.
+	Chg: Categorize updates.
+	Chg: When starting tmux monitor don't analyze releases table if engine = InnoDB (InnoDB uses online analysis).
 2015-08-14 bart39
 	Mrg: PR 1817, by terbonium - reworked patch to get around duplicate data in parts table.
 		***NOTE*** run this sql to reset sqlpatch if you already ran patch 374 and failed before patching:
-		'update settings set sqlpatch = 373 where sqlpatch = 374;'
+		UPDATE settings SET `value` = 373 WHERE setting = 'sqlpatch' AND `value` = 374;
 	Mrg: PR 1816, by terbonium - removed id and collectionid from parts table, updated primary key to (binaryid,partnumber).
 	Fix: Set NULL tmdbid values to 0 before altering the default value in patch 372.
 	Mrg: PR 1813, by darius - Add back missing triggers into releases table.
