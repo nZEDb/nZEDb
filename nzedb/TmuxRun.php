@@ -493,7 +493,7 @@ class TmuxRun extends Tmux
 						{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/update_theaters.php $log; \
 						{$runVar['commands']['_phpn']} {$runVar['paths']['cli']}data/populate_tvrage.php true $log; \
 						{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/update_tvschedule.php $log; \
-						{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}testing/PostProc/updateTvRage.php $log; date +\"{$this->_dateFormat}\"' 2>&1 1> /dev/null"
+						{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}testing/PostProcess/updateTvRage.php $log; date +\"{$this->_dateFormat}\"' 2>&1 1> /dev/null"
 				);
 				$runVar['timers']['timer4'] = time();
 				break;
@@ -518,7 +518,7 @@ class TmuxRun extends Tmux
 				{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/update_theaters.php $log; \
 				{$runVar['commands']['_phpn']} {$runVar['paths']['cli']}data/populate_tvrage.php true $log; \
 				{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/update_tvschedule.php $log; \
-				{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}testing/PostProc/updateTvRage.php $log; date +\"{$this->_dateFormat}\"' 2>&1 1> /dev/null"
+				{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}testing/PostProcess/updateTvRage.php $log; date +\"{$this->_dateFormat}\"' 2>&1 1> /dev/null"
 			);
 			$runVar['timers']['timer4'] = time();
 

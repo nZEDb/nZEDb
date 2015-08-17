@@ -40,7 +40,7 @@ $dirs = array(
 	], [
 		'basemv' => false,
 		'source' => nZEDb_MISC . 'testing/PostProc_testing',
-		'target' => nZEDb_MISC . 'testing/PostProc'
+		'target' => nZEDb_MISC . 'testing/PostProcess'
 	], [
 		'basemv' => false,
 		'source' => nZEDb_MISC . 'testing/Regex_testing',
