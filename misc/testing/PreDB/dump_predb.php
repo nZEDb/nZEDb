@@ -32,7 +32,7 @@ if (isset($argv[1]) && $argv[1] == 'export' && isset($argv[2])) {
 		$table = 'predb';
 	}
 	echo  $pdo->log->header("SELECT title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, g.name FROM " . $table . " p LEFT OUTER JOIN groups g ON p.group_id = g.id INTO OUTFILE '" . $path . "' FIELDS TERMINATED BY '\\t\\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\\r\\n';n");
-	$pdo->queryExec("SELECT title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, g.name FROM " . $table . " p LEFT OUTER JOIN groups g ON p.group_id = g.id INTO OUTFILE '" . $path . "' FIELDS TERMINATED BY '\t\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\r\n'");
+	$pdo->queryExec("SELECT title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, g.name FROM " . $table . " p LEFT OUTER JOIN groups g ON p.group_id = g.id INTO OUTFILE '" . $path . "' FIELDS TERMINATED BY '\t\t' LINES TERMINATED BY '\r\n'");
 } else if (isset($argv[1]) && ($argv[1] == 'local' || $argv[1] == 'remote') && isset($argv[2]) && is_file($argv[2])) {
 	if (!preg_match('/^\//', $path)) {
 		$path = require_once getcwd() . '/' . $argv[2];
@@ -49,10 +49,10 @@ if (isset($argv[1]) && $argv[1] == 'export' && isset($argv[2])) {
 	// Import file into predb_imports
 	if ($argv[1] == 'remote') {
 		echo  $pdo->log->header("LOAD DATA LOCAL INFILE '" . $path . "' IGNORE into table predb_imports FIELDS TERMINATED BY '\\t\\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\\r\\n' (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, groupname);");
-		$pdo->queryExec("LOAD DATA LOCAL INFILE '" . $path . "' IGNORE into table predb_imports FIELDS TERMINATED BY '\t\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\r\n' (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, groupname)");
+		$pdo->queryExec("LOAD DATA LOCAL INFILE '" . $path . "' IGNORE into table predb_imports FIELDS TERMINATED BY '\t\t' OPTIONALLY ENCLOSED BY \"'\" LINES TERMINATED BY '\r\n' (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, groupname)");
 	} else {
 		echo  $pdo->log->header("LOAD DATA INFILE '" . $path . "' IGNORE into table predb_imports FIELDS TERMINATED BY '\\t\\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\\r\\n' (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, groupname);");
-		$pdo->queryExec("LOAD DATA INFILE '" . $path . "' IGNORE into table predb_imports FIELDS TERMINATED BY '\t\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\r\n' (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, groupname)");
+		$pdo->queryExec("LOAD DATA INFILE '" . $path . "' IGNORE into table predb_imports FIELDS TERMINATED BY '\t\t' OPTIONALLY ENCLOSED BY \"'\" LINES TERMINATED BY '\r\n' (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, groupname)");
 	}
 
 	// Remove any titles where length <=8
