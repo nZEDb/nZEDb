@@ -7,6 +7,8 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 2015-08-16 bart39
+	Fix: Checking for existing movie trailers.
+	Fix: Typo in Movie.php.
 	Fix: Add missing quote for echo in predb_export.
 	Chg: minMaxQueryFormulator to maxQueryFormulator - min not required.
 	Mrg: PR 1820, by darius - Add TraktTv cover support for movies.

@@ -426,8 +426,8 @@ class Movie
 			return false;
 		}
 
-		$trailer = $this->pdo->queryOneRow("SELECT trailer FROM movieinfo WHERE imdbid = 'tt$imdbID'");
-		if ($trailer) {
+		$trailer = $this->pdo->queryOneRow("SELECT trailer FROM movieinfo WHERE imdbid = $imdbID");
+		if ($trailer != '') {
 			return $trailer['trailer'];
 		}
 
@@ -468,6 +468,15 @@ class Movie
 				'http://', 'https://', str_ireplace('watch?v=', 'embed/', $data['trailer'])
 			);
 		}
+		$cover = 0;
+		if (is_file($this->imgSavePath . $data['ids']['imdb'] . '-cover.jpg')) {
+			$cover = 1;
+		} else {
+			$link = $this->checkTraktValue($data['images']['poster']['thumb']);
+			if ($link) {
+				$cover = $this->releaseImage->saveImage($data['ids']['imdb'] . '-cover', $link, $this->imgSavePath);
+			}
+		}
 		$this->update([
 			'genres'   => $this->checkTraktValue($data['genres']),
 			'imdbid'   => $this->checkTraktValue(str_ireplace('tt', '', $data['ids']['imdb'])),
@@ -478,7 +487,7 @@ class Movie
 			'title'    => $this->checkTraktValue($data['title']),
 			'tmdbid'   => $this->checkTraktValue($data['ids']['tmdb']),
 			'trailer'  => $this->checkTraktValue($data['trailer']),
-			'cover'    => $this->checkTraktValue($data['images']['poster']['thumb']),
+			'cover'    => $cover,
 			'year'     => $this->checkTraktValue($data['year'])
 		]);
 	}
@@ -656,8 +665,8 @@ class Movie
 		$mov['cover'] = $mov['backdrop'] = $mov['banner'] = $movieID = 0;
 		$mov['type'] = $mov['director'] = $mov['actors'] = $mov['language'] = '';
 
-		$mov['imdbid'] = $imdbId;
-		$mov['tmdbid'] = (!isset($tmdb['tmdbid']) || $tmdb['tmdbid'] == '') ? 0 : $tmdb['tmdbid'];
+		$mov['imdb_id'] = $imdbId;
+		$mov['tmdb_id'] = (!isset($tmdb['tmdb_id']) || $tmdb['tmdb_id'] == '') ? 0 : $tmdb['tmdb_id'];
 
 		// Prefer Fanart.tv cover over TRAKT, TRAKT over TMDB and TMDB over IMDB.
 		if ($this->checkVariable($fanart['cover'])) {
