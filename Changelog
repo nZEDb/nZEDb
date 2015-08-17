@@ -8,6 +8,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2015-08-17 ruhllatio
 	Add: Blacklist regex for 16 character hash floods in kenpsx and frogs (Remove +1 patch -- whoops)
+	Fix: Blacklist regex not matching properly
 2015-08-17 bart39
 	Fix: various links to testing/PostProc corrected to testing/PostProcess.
 	Mrg: PR 1825, by terbonium - part.id column no longer exists.. match on non-recent binaryid's.
