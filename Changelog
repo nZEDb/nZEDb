@@ -8,6 +8,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2015-08-17 bart39
 	Fix: Display of movie trailers #1811.
+		***NOTE*** Trailers from Trakt are dynamically linked on the nzb details page rather than saved to database.
 2015-08-16 bart39
 	Fix: Checking for existing movie trailers.
 	Fix: Typo in Movie.php.
