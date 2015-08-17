@@ -986,7 +986,7 @@ class ProcessReleases
 			$deleted = 0;
 			$deleteQuery = $this->pdo->queryExec(
 				sprintf(
-					'DELETE p FROM %s p LEFT JOIN %s b ON (p.binaryid=b.id) WHERE b.id IS NULL AND p.id < %d',
+					'DELETE p FROM %s p LEFT JOIN %s b ON (p.binaryid=b.id) WHERE b.id IS NULL AND p.binaryid < %d',
 					$group['pname'], $group['bname'], $this->maxQueryFormulator($group['bname'], 20000)
 				)
 			);
