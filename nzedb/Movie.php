@@ -426,8 +426,8 @@ class Movie
 			return false;
 		}
 
-		$trailer = $this->pdo->queryOneRow("SELECT trailer FROM movieinfo WHERE imdbid = $imdbID");
-		if ($trailer != '') {
+		$trailer = $this->pdo->queryOneRow("SELECT trailer FROM movieinfo WHERE imdbid = $imdbID and trailer != ''");
+		if ($trailer) {
 			return $trailer['trailer'];
 		}
 
@@ -436,6 +436,7 @@ class Movie
 		}
 
 		$data = $this->traktTv->movieSummary('tt' . $imdbID, 'full,images');
+		var_dump($data);
 		if ($data) {
 			$this->parseTraktTv($data);
 			if (isset($data['trailer']) && !empty($data['trailer'])) {
