@@ -39,7 +39,7 @@ if (!(isset($argv[1]) && in_array(strtolower($argv[1]), $db) && isset($argv[2]) 
 This script can import a predb dump file. You may use the full path, or a relative path.
 For importing, the script insert new rows and update existing matched rows. For databases not on the local system, use remote, else use local.
 
-php {$argv[0]} [remote | local] /path/to/filename
+php {$argv[0]} [remote | local] /path/with/filename
 
 HELP;
 	exit($message);
@@ -63,12 +63,13 @@ $predb->executeTruncate();
 
 // Import file into predb_imports
 $predb->executeLoadData([
-		'fields'	=> '\\t\\t',
-		'lines'		=> '\\r\\n',
-		'local'		=> $local,
-		'path'		=> $path,
+		'enclosedby'	=> "'",
+		'fields'		=> '\t\t',
+		'lines'			=> '\r\n',
+		'local'			=> $local,
+		'optional'		=> true,
+		'path'			=> $path,
 	]);
-//$predb->executeLoadData($path, $local);
 
 // Remove any titles where length <=8
 echo $predb->log->info("Deleting any records where title <=8 from Temporary Table");
