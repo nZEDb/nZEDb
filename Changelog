@@ -7,7 +7,7 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 2015-08-18 niel
-	Fix: PreDb::executeExport now does the query directly instead of via a prepared statement. This prevent '\t', '\r', '\n', and the like being escaped and ruined.
+	Fix: PreDb import and export scripts to work as expected.
 2015-08-18 bart39
 	Fix: Amend ab.moovee collection regex that was splitting subs out separately.
 	Mrg: PR 1827, by terbonium - moved releases update into foreach of matching releases.
