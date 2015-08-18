@@ -385,8 +385,8 @@ class Nfo
 				WHERE r.nzbstatus = %d
 				AND r.nfostatus < %d AND r.nfostatus > %d %s %s',
 				NZB::NZB_ADDED,
-				self::NFO_FAILED,
 				$this->maxRetries,
+				self::NFO_FAILED,
 				$groupIDQuery,
 				$guidCharQuery
 			)
@@ -394,26 +394,22 @@ class Nfo
 
 		if ($releases instanceof \Traversable) {
 			foreach ($releases as $release) {
-				$this->pdo->queryExec(
-					sprintf('DELETE FROM release_nfos WHERE nfo IS NULL AND releaseid = %d', $release['id'])
+				// remove any release_nfos for failed
+				$this->pdo->queryExec(sprintf('
+					DELETE FROM release_nfos WHERE nfo IS NULL AND releaseid = %d',
+					$release['id']
+					)
+				);
+
+				// set release.nfostatus to failed
+				$this->pdo->queryExec(sprintf('
+					UPDATE releases r SET r.nfostatus = %d WHERE r.id = %d',
+					self::NFO_FAILED,
+					$release['id']
+					)
 				);
 			}
 		}
-
-		// Set releases with no NFO.
-		$this->pdo->queryExec(
-			sprintf('
-				UPDATE releases r
-				SET r.nfostatus = %d
-				WHERE r.nzbstatus = %d
-				AND r.nfostatus < %d %s %s',
-				self::NFO_FAILED,
-				NZB::NZB_ADDED,
-				$this->maxRetries,
-				$groupIDQuery,
-				$guidCharQuery
-			)
-		);
 
 		if ($this->echo) {
 			if ($nfoCount > 0) {
