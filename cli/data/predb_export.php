@@ -60,7 +60,7 @@ if (nZEDb_ECHOCLI) {
 $result = $predb->executeExport([
 		'enclosed'	=> '',
 		'fields'	=> '\t\t',
-		'limit'		=> 10,
+		'limit'		=> 0,
 		'lines'		=> '\r\n',
 		'path'		=> $path,
 	]);

@@ -8,6 +8,20 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2015-08-18 niel
 	Fix: PreDb::executeExport now does the query directly instead of via a prepared statement. This prevent '\t', '\r', '\n', and the like being escaped and ruined.
+2015-08-18 bart39
+	Fix: Amend ab.moovee collection regex that was splitting subs out separately.
+	Mrg: PR 1827, by terbonium - moved releases update into foreach of matching releases.
+2015-08-17 ruhllatio
+	Add: Blacklist regex for 16 character hash floods in kenpsx and frogs (Remove +1 patch -- whoops)
+	Fix: Blacklist regex not matching properly
+2015-08-17 bart39
+	Fix: predb_export / getImdb scripts typo's
+	Fix: various links to testing/PostProc corrected to testing/PostProcess.
+	Mrg: PR 1825, by terbonium - part.id column no longer exists.. match on non-recent binaryid's.
+	Mrg: PR 1824, by darius - Add TRAKT link to details page.
+	Mrg: PR 1823, by terbonium - set collections orphan cleanup to run only 1/200 of the time.
+	Mrg: PR 1822, by terbonium - select was matching against releases already marked NFO_FAILED which then executed a duplicate DELETE on releases_nfo.
+	Fix: Display of movie trailers #1811.
 2015-08-16 bart39
 	Fix: Checking for existing movie trailers.
 	Fix: Typo in Movie.php.

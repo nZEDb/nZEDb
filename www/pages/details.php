@@ -62,7 +62,7 @@ if (isset($_GET['id'])) {
 			$mov['genre']    = $movie->makeFieldLinks($mov, 'genre');
 			$mov['director'] = $movie->makeFieldLinks($mov, 'director');
 			if ($page->settings->getSetting('trailers_display')) {
-				$trailer = (!isset($mov['trailer']) || empty($mov['trailer']) ? $movie->getTrailer($data['imdbid']) : $mov['trailer']);
+				$trailer = (!isset($mov['trailer']) || empty($mov['trailer']) || $mov['trailer'] == '' ? $movie->getTrailer($data['imdbid']) : $mov['trailer']);
 				if ($trailer) {
 					$mov['trailer'] = sprintf(
 						"<iframe width=\"%d\" height=\"%d\" src=\"%s\"></iframe>",
