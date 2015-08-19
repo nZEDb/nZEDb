@@ -428,7 +428,7 @@ class ProcessReleases
 					sprintf('
 						DELETE c, b, p FROM %s c
 						INNER JOIN %s b ON (c.id=b.collection_id)
-						INNER JOIN %s p ON (b.id=p.binaryid)
+						STRAIGHT_JOIN %s p ON (b.id=p.binaryid)
 						INNER JOIN groups g ON g.id = c.group_id
 						WHERE c.group_id = %d
 						AND c.filecheck = %d
@@ -454,7 +454,7 @@ class ProcessReleases
 						sprintf('
 							DELETE c, b, p FROM %s c
 							INNER JOIN %s b ON (c.id=b.collection_id)
-							INNER JOIN %s p ON (b.id=p.binaryid)
+							STRAIGHT_JOIN %s p ON (b.id=p.binaryid)
 							WHERE c.filecheck = %d
 							AND c.group_id = %d
 							AND c.filesize > %d',
@@ -475,7 +475,7 @@ class ProcessReleases
 					sprintf('
 						DELETE c, b, p FROM %s c
 						INNER JOIN %s b ON (c.id=b.collection_id)
-						INNER JOIN %s p ON (b.id=p.binaryid)
+						STRAIGHT_JOIN %s p ON (b.id=p.binaryid)
 						INNER JOIN groups g ON g.id = c.group_id
 						WHERE c.group_id = %d
 						AND c.filecheck = %d
@@ -651,7 +651,9 @@ class ProcessReleases
 					// The release was already in the DB, so delete the collection.
 					$this->pdo->queryExec(
 						sprintf('
-							DELETE c, b, p FROM %s c INNER JOIN %s b ON(c.id=b.collection_id) INNER JOIN %s p ON(b.id=p.binaryid)
+							DELETE c, b, p FROM %s c
+							INNER JOIN %s b ON(c.id=b.collection_id)
+							STRAIGHT_JOIN %s p ON(b.id=p.binaryid)
 							WHERE c.collectionhash = %s',
 							$group['cname'], $group['bname'], $group['pname'],
 							$this->pdo->escapeString($collection['collectionhash'])
@@ -1285,7 +1287,7 @@ class ProcessReleases
 							SELECT SQL_NO_CACHE r.id, r.guid
 							FROM releases r
 							WHERE r.categoryid = %d
-							AND r.size < %d',
+							AND r.size < %d LIMIT 1000',
 							$category['id'],
 							$category['minsize']
 						)
