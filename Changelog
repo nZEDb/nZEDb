@@ -8,6 +8,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2015-08-19 ruhllatio
 	Chg: Re-work queries for faster CBP deletion and greatly improve page load times/dehash work queries
+	Fix: Another failing query in ProcessReleases which could almost certainly DB swell
 2015-08-18 bart39
 	Fix: Amend ab.moovee collection regex that was splitting subs out separately.
 	Mrg: PR 1827, by terbonium - moved releases update into foreach of matching releases.

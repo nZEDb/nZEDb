@@ -1030,7 +1030,7 @@ class ProcessReleases
 				$deleted++;
 				$this->pdo->queryExec(
 					sprintf('
-						DELETE FROM %s c WHERE c.id = %d',
+						DELETE c FROM %s c WHERE c.id = %d',
 						$group['cname'], $collection['id']
 					)
 				);
