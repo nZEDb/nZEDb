@@ -875,7 +875,7 @@ class ProcessReleases
 			echo (
 				$this->pdo->log->header("Process Releases -> Delete finished collections." . PHP_EOL) .
 				$this->pdo->log->primary(sprintf(
-					'Deleting collections/binaries/parts older than %d hours.', 
+					'Deleting collections/binaries/parts older than %d hours.',
 					$this->pdo->getSetting('partretentionhours')
 				))
 			);
@@ -1650,7 +1650,7 @@ class ProcessReleases
 				$where
 			)
 		);
-		if ($this->echoCLI && $obj->rowCount()) {
+		if ($this->echoCLI && $obj->rowCount() > 0) {
 			$this->pdo->log->doEcho(
 				$this->pdo->log->primary('Deleted ' . $obj->rowCount() . ' broken/stuck collections.')
 			);
