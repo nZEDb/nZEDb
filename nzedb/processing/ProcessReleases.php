@@ -417,29 +417,28 @@ class ProcessReleases
 		foreach ($groupIDs as $groupID) {
 			if ($this->pdo->queryOneRow(
 					sprintf(
-						'SELECT SQL_NO_CACHE id FROM %s WHERE filecheck = %d AND filesize > 0 AND group_id = %d LIMIT 1',
+						'SELECT SQL_NO_CACHE id FROM %s c WHERE c.filecheck = %d AND c.filesize > 0 %s LIMIT 1',
 						$group['cname'],
 						self::COLLFC_SIZED,
-						$groupID['id']
+						$this->tablePerGroup === false ? sprintf('AND c.group_id = %d', $groupID['id']) : ''
 					)
 				) !== false
 			) {
 				$deleteQuery = $this->pdo->queryExec(
 					sprintf('
 						DELETE c, b, p FROM %s c
-						INNER JOIN %s b ON (c.id=b.collection_id)
-						STRAIGHT_JOIN %s p ON (b.id=p.binaryid)
-						INNER JOIN groups g ON g.id = c.group_id
-						WHERE c.group_id = %d
-						AND c.filecheck = %d
+						LEFT JOIN %s b ON (c.id=b.collection_id)
+						LEFT JOIN %s p ON (b.id=p.binaryid)
+						LEFT JOIN groups g ON g.id = c.group_id
+						WHERE c.filecheck = %d %s
 						AND c.filesize > 0
 						AND greatest(IFNULL(g.minsizetoformrelease, 0), %d) > 0
 						AND c.filesize < greatest(IFNULL(g.minsizetoformrelease, 0), %d)',
 						$group['cname'],
 						$group['bname'],
 						$group['pname'],
-						$groupID['id'],
 						self::COLLFC_SIZED,
+						$this->tablePerGroup === false ? sprintf('AND c.group_id = %d', $groupID['id']) : '',
 						$minSizeSetting,
 						$minSizeSetting
 					)
@@ -453,16 +452,15 @@ class ProcessReleases
 					$deleteQuery = $this->pdo->queryExec(
 						sprintf('
 							DELETE c, b, p FROM %s c
-							INNER JOIN %s b ON (c.id=b.collection_id)
-							STRAIGHT_JOIN %s p ON (b.id=p.binaryid)
-							WHERE c.filecheck = %d
-							AND c.group_id = %d
+							LEFT JOIN %s b ON (c.id=b.collection_id)
+							LEFT JOIN %s p ON (b.id=p.binaryid)
+							WHERE c.filecheck = %d %s
 							AND c.filesize > %d',
 							$group['cname'],
 							$group['bname'],
 							$group['pname'],
 							self::COLLFC_SIZED,
-							$groupID['id'],
+							$this->tablePerGroup === false ? sprintf('AND c.group_id = %d', $groupID['id']) : '',
 							$maxSizeSetting
 						)
 					);
@@ -474,18 +472,17 @@ class ProcessReleases
 				$deleteQuery = $this->pdo->queryExec(
 					sprintf('
 						DELETE c, b, p FROM %s c
-						INNER JOIN %s b ON (c.id=b.collection_id)
-						STRAIGHT_JOIN %s p ON (b.id=p.binaryid)
-						INNER JOIN groups g ON g.id = c.group_id
-						WHERE c.group_id = %d
-						AND c.filecheck = %d
+						LEFT JOIN %s b ON (c.id=b.collection_id)
+						LEFT JOIN %s p ON (b.id=p.binaryid)
+						JOIN groups g ON g.id = c.group_id
+						WHERE c.filecheck = %d %s
 						AND greatest(IFNULL(g.minfilestoformrelease, 0), %d) > 0
 						AND c.totalfiles < greatest(IFNULL(g.minfilestoformrelease, 0), %d)',
 						$group['cname'],
 						$group['bname'],
 						$group['pname'],
-						$groupID['id'],
 						self::COLLFC_SIZED,
+						$this->tablePerGroup === false ? sprintf('AND c.group_id = %d', $groupID['id']) : '',
 						$minFilesSetting,
 						$minFilesSetting
 					)
@@ -1030,8 +1027,15 @@ class ProcessReleases
 				$deleted++;
 				$this->pdo->queryExec(
 					sprintf('
-						DELETE c FROM %s c WHERE c.id = %d',
-						$group['cname'], $collection['id']
+						DELETE c, b, p
+						FROM %s c
+						LEFT JOIN %s b ON(c.id=b.collection_id)
+						LEFT JOIN %s p ON(b.id=p.binaryid)
+						WHERE c.id = %d',
+						$group['cname'],
+						$group['bname'],
+						$group['pname'],
+						$collection['id']
 					)
 				);
 			}
