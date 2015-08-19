@@ -1650,7 +1650,7 @@ class ProcessReleases
 				$where
 			)
 		);
-		if ($this->echoCLI && $obj->rowCount() > 0) {
+		if ($this->echoCLI && is_object($obj) && $obj->rowCount()) {
 			$this->pdo->log->doEcho(
 				$this->pdo->log->primary('Deleted ' . $obj->rowCount() . ' broken/stuck collections.')
 			);
