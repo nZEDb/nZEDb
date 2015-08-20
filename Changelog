@@ -9,6 +9,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 2015-08-20 ruhllatio
 	Fix: Anime covers not showing properly
 	Chg: Add Anime Series view to header menu->TV
+	Fix: Omicron Anime view not honoring $nodata when no releases match the AniDBID
 2015-08-19 bart39
 	Fix: PHP error if rowCount() is null #1834.
 2015-08-19 ruhllatio
