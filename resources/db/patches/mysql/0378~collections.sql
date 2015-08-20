@@ -1,4 +1,4 @@
-# improve performance of CBP cleanup of OLD collections 
+# improve performance of CBP cleanup of OLD collections
 # nzedb/processing/ProcessReleases.php L1639-L1648
 DROP PROCEDURE IF EXISTS tpg_change;
 
