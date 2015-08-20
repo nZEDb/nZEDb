@@ -1,4 +1,4 @@
-<div class="header">
+s<div class="header">
 	{assign var="catsplit" value=">"|explode:$catname}
 	<h2>View > <strong>Anime</strong></h2>
 	<div class="breadcrumb-wrapper">
@@ -18,7 +18,7 @@
 	{if animePicture != ""}
 		<center>
 			<img class="shadow img img-polaroid" alt="{$animeTitle} Picture"
-				 src="{$smarty.const.WWW_TOP}/covers/anime/{$animeanidbid}.jpg"/>
+				 src="{$smarty.const.WWW_TOP}/covers/anime/{$animeAnidbID}.jpg"/>
 		</center>
 		<br/>
 	{/if}
@@ -36,7 +36,7 @@
 <center>
 	<div class="btn-group">
 		<a class="btn btn-sm btn-default"
-		   href="{$site->dereferrer_link}http://anidb.net/perl-bin/animedb.pl?show=anime&amp;aid={$animeanidbid}"
+		   href="{$site->dereferrer_link}http://anidb.net/perl-bin/animedb.pl?show=anime&amp;aid={$animeAnidbID}"
 		   title="View AniDB">View AniDB</a>
 		{if $animetvdbid > 0}<a class="btn btn-sm btn-default" target="_blank"
 								href="{$site->dereferrer_link}http://thetvdb.com/?tab=series&id={$animetvdbid}"
