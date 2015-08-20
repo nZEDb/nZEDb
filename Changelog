@@ -6,6 +6,12 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2015-08-20 ruhllatio
+	Fix: Anime covers not showing properly
+	Chg: Add Anime Series view to header menu->TV
+	Fix: Omicron Anime view not honoring $nodata when no releases match the AniDBID
+2015-08-19 bart39
+	Fix: PHP error if rowCount() is null #1834.
 2015-08-19 ruhllatio
 	Chg: Re-work queries for faster CBP deletion and greatly improve page load times/dehash work queries
 	Fix: Another failing query in ProcessReleases which could almost certainly DB swell
