@@ -1085,13 +1085,13 @@ class Binaries
 						INNER JOIN %s b ON(c.id=b.collection_id)
 						INNER JOIN %s p ON(b.id=p.binaryid)
 						WHERE
-						AND c.group_id = %s
-						AND p.number = %s LIMIT 1',
+						AND p.number = %s
+						%s LIMIT 1',
 						$group['cname'],
 						$group['bname'],
 						$group['pname'],
-						$groupID,
-						$currentPost
+						$currentPost,
+						$this->tablePerGroup === false ? sprintf('AND c.group_id = %d', $groupID) : ''
 					)
 				);
 				if ($local !== false) {

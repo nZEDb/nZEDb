@@ -1,3 +1,11 @@
+{if $nodata != ""}
+	<div class="header">
+		{assign var="catsplit" value=">"|explode:$catname}
+		<h2>View > <strong>Anime</strong></h2>
+		<p>{$nodata}</p>
+	</div>
+{else}
+
 <div class="header">
 	{assign var="catsplit" value=">"|explode:$catname}
 	<h2>View > <strong>Anime</strong></h2>
@@ -9,16 +17,20 @@
 	</div>
 </div>
 <h1>
-	{$animeTitle}{if isset($isadmin)}<a class="btn btn-xs btn-warning" title="Edit AniDB data"
-										href="{$smarty.const.WWW_TOP}/admin/anidb-edit.php?id={$animeanidbid}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}">
-			Edit</a>{/if}
+	{$animeTitle}
+				{if isset($isadmin)}
+					<a class="btn btn-xs btn-warning"
+					title="Edit AniDB data"
+					href="{$smarty.const.WWW_TOP}/admin/anidb-edit.php?id={$animeanidbid}&amp;
+					from={$smarty.server.REQUEST_URI|escape:"url"}">Edit</a>
+				{/if}
 </h1>
 {if $catname != ''}<span class="text-info h5">Current category shown: {$catname|escape:"htmlall"}</span>{/if}
 <div>
 	{if animePicture != ""}
 		<center>
 			<img class="shadow img img-polaroid" alt="{$animeTitle} Picture"
-				 src="{$smarty.const.WWW_TOP}/covers/anime/{$animeanidbid}.jpg"/>
+			src="{$smarty.const.WWW_TOP}/covers/anime/{$animeAnidbID}.jpg"/>
 		</center>
 		<br/>
 	{/if}
@@ -36,7 +48,7 @@
 <center>
 	<div class="btn-group">
 		<a class="btn btn-sm btn-default"
-		   href="{$site->dereferrer_link}http://anidb.net/perl-bin/animedb.pl?show=anime&amp;aid={$animeanidbid}"
+		   href="{$site->dereferrer_link}http://anidb.net/perl-bin/animedb.pl?show=anime&amp;aid={$animeAnidbID}"
 		   title="View AniDB">View AniDB</a>
 		{if $animetvdbid > 0}<a class="btn btn-sm btn-default" target="_blank"
 								href="{$site->dereferrer_link}http://thetvdb.com/?tab=series&id={$animetvdbid}"
@@ -164,3 +176,4 @@
 						{/foreach}
 					</table>
 </form>
+{/if}

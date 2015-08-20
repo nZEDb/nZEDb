@@ -194,6 +194,8 @@
 											class="fa fa-music"></i><span> Music</span></a></li>
 							<li><a href="{$serverroot}games"><i
 											class="fa fa-gamepad"></i><span> Games</span></a></li>
+							<li><a href="{$serverroot}series"><i
+											class="fa fa-desktop"></i><span> TV</span></a></li>
 							<li><a href="{$serverroot}xxx"><i class="fa fa-ban"></i><span> XXX</span></a></li>
 							<li><a href="{$serverroot}books"><i class="fa fa-book"></i><span> Books</span></a></li>
 							<li><a href="{$serverroot}browse"><i
