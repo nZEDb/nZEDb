@@ -55,13 +55,18 @@ $table = isset($argv[2]) ? $argv[2] : 'predb';
 
 $predb = new PreDb();
 if (nZEDb_ECHOCLI) {
-	echo "Exporting to '$path'\n";
+	echo "Exporting table: $table to '$path'\n";
 }
-$predb->executeExport([
-		'enclosed'	=> " ENCLOSED BY \"'\" ",
-		'fields'	=> '\\t\\t',
-		'lines'		=> '\\r\\n',
+$result = $predb->executeExport([
+		'enclosed'	=> '',
+		'fields'	=> '\t\t',
+		'limit'		=> 0,
+		'lines'		=> '\r\n',
 		'path'		=> $path,
 	]);
+
+if ($result == false) {
+	echo "ERROR: Failed to export file!\n";
+}
 
 ?>

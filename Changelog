@@ -6,6 +6,36 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2015-08-20 bart39
+	Mrg: PR 1838, by terbonium - removed "AND" from SQL query which cause a syntax error.
+	Mrg: PR 1837, by terbonium - cbp delete fix.
+2015-08-20 ruhllatio
+	Fix: Anime covers not showing properly
+	Chg: Add Anime Series view to header menu->TV
+	Fix: Omicron Anime view not honoring $nodata when no releases match the AniDBID
+	Chg: Single table scan for expensive tmux monitor queries (6-8x reduction in time required to loop) thanks to @terbonium
+	Add: TV to Omicron side bar menu
+2015-08-19 bart39
+	Fix: PHP error if rowCount() is null #1834.
+2015-08-19 ruhllatio
+	Chg: Re-work queries for faster CBP deletion and greatly improve page load times/dehash work queries
+	Fix: Another failing query in ProcessReleases which could almost certainly DB swell
+2015-08-18 niel
+	Fix: PreDb import and export scripts to work as expected.
+2015-08-18 bart39
+	Fix: Amend ab.moovee collection regex that was splitting subs out separately.
+	Mrg: PR 1827, by terbonium - moved releases update into foreach of matching releases.
+2015-08-17 ruhllatio
+	Add: Blacklist regex for 16 character hash floods in kenpsx and frogs (Remove +1 patch -- whoops)
+	Fix: Blacklist regex not matching properly
+2015-08-17 bart39
+	Fix: predb_export / getImdb scripts typo's
+	Fix: various links to testing/PostProc corrected to testing/PostProcess.
+	Mrg: PR 1825, by terbonium - part.id column no longer exists.. match on non-recent binaryid's.
+	Mrg: PR 1824, by darius - Add TRAKT link to details page.
+	Mrg: PR 1823, by terbonium - set collections orphan cleanup to run only 1/200 of the time.
+	Mrg: PR 1822, by terbonium - select was matching against releases already marked NFO_FAILED which then executed a duplicate DELETE on releases_nfo.
+	Fix: Display of movie trailers #1811.
 2015-08-16 bart39
 	Fix: Checking for existing movie trailers.
 	Fix: Typo in Movie.php.
