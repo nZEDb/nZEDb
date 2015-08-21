@@ -336,7 +336,7 @@ class Console
 			}
 		}
 
-		if ($amaz != false) {
+		if ($amaz) {
 			$gameInfo['platform'] = $this->_replacePlatform($gameInfo['platform']);
 
 			$con = $this->_setConBeforeMatch($amaz, $gameInfo);
