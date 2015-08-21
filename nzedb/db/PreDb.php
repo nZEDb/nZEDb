@@ -281,9 +281,9 @@ LOAD DATA $local INFILE :path
   LINES TERMINATED BY '{$options['lines']}'
   (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, groupname);
 SQL_LOAD_DATA;
-//		if (nZEDb_DEBUG) {
+		if (nZEDb_DEBUG) {
 			echo "$sql\n";
-//		}
+		}
 
 		$this->prepareSQLStatement($sql, 'LoadData');
 	}
