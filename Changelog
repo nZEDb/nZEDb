@@ -8,6 +8,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2015-08-21 ruhllatio
 	Fix: Issue #1819 - Console Processing failing to validate Amazon API Return
+	Chg: Console Processing Local will now require an exact platform match just like the Amazon lookups to prevent incorrect platform matches
 2015-08-21 niel
 	Fix: predb_import_daily_batch script to properly calculate last timestamp for progress mode.
 2015-08-20 bart39
