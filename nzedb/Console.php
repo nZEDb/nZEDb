@@ -312,7 +312,7 @@ class Console
 				$salesrank,
 				$this->pdo->escapeString($platform),
 				$this->pdo->escapeString($publisher),
-				$this->pdo->escapeString($releasedate),
+				($releasedate != "" ? $this->pdo->escapeString($releasedate) : "null"),
 				$this->pdo->escapeString($esrb),
 				$cover,
 				$genreID,
