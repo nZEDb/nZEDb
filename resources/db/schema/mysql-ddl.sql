@@ -696,28 +696,25 @@ CREATE TABLE         releases (
   proc_nfo          TINYINT(1)                     NOT NULL DEFAULT '0',
   proc_files        TINYINT(1)                     NOT NULL DEFAULT '0',
   PRIMARY KEY                                 (id, categoryid),
-  INDEX ix_releases_adddate                   (adddate),
+  INDEX ix_releases_name                      (name),
+  INDEX ix_releases_group_id                  (group_id,passwordstatus),
+  INDEX ix_releases_postdate_searchname       (postdate,searchname),
+  INDEX ix_releases_guid                      (guid),
+  INDEX ix_releases_nzb_guid                  (nzb_guid),
   INDEX ix_releases_rageid                    (rageid),
   INDEX ix_releases_imdbid                    (imdbid),
-  INDEX ix_releases_guid                      (guid),
-  INDEX ix_releases_name                      (name),
-  INDEX ix_releases_groupid                   (group_id),
-  INDEX ix_releases_dehashstatus              (dehashstatus),
-  INDEX ix_releases_reqidstatus               (reqidstatus),
-  INDEX ix_releases_nfostatus                 (nfostatus),
   INDEX ix_releases_xxxinfo_id                (xxxinfo_id),
-  INDEX ix_releases_musicinfoid               (musicinfoid),
+  INDEX ix_releases_musicinfoid               (musicinfoid,passwordstatus),
   INDEX ix_releases_consoleinfoid             (consoleinfoid),
   INDEX ix_releases_gamesinfo_id              (gamesinfo_id),
   INDEX ix_releases_bookinfoid                (bookinfoid),
-  INDEX ix_releases_haspreview_passwordstatus (haspreview, passwordstatus),
-  INDEX ix_releases_postdate_searchname       (postdate, searchname),
-  INDEX ix_releases_nzb_guid                  (nzb_guid),
-  INDEX ix_releases_preid_searchname          (preid, searchname),
-  INDEX ix_releases_status                    (nzbstatus, iscategorized, isrenamed, nfostatus, ishashed, isrequestid,
-                                               passwordstatus, dehashstatus, reqidstatus, musicinfoid, consoleinfoid,
-                                               bookinfoid, haspreview, categoryid, imdbid, rageid),
-  INDEX ix_passwordstatus                     (passwordstatus)
+  INDEX ix_releases_anidbid                   (anidbid),
+  INDEX ix_releases_preid_searchname          (preid,searchname),
+  INDEX ix_releases_haspreview_passwordstatus (haspreview,passwordstatus),
+  INDEX ix_releases_passwordstatus            (passwordstatus),
+  INDEX ix_releases_nfostatus                 (nfostatus,size),
+  INDEX ix_releases_dehashstatus              (dehashstatus,ishashed),
+  INDEX ix_releases_reqidstatus               (adddate,reqidstatus,isrequestid)
 )
   ENGINE          = MYISAM
   DEFAULT CHARSET = utf8
@@ -1285,11 +1282,5 @@ CREATE TRIGGER update_hashes AFTER UPDATE ON predb FOR EACH ROW
 CREATE TRIGGER delete_hashes AFTER DELETE ON predb FOR EACH ROW
   BEGIN
     DELETE FROM predb_hashes WHERE hash IN ( UNHEX(md5(OLD.title)), UNHEX(md5(md5(OLD.title))), UNHEX(sha1(OLD.title)) ) AND pre_id = OLD.id;
-  END; $$
-
-CREATE TRIGGER delete_collections BEFORE DELETE ON collections FOR EACH ROW
-  BEGIN
-    DELETE FROM binaries WHERE collection_id = OLD.id;
-    DELETE FROM parts WHERE collection_id = OLD.id;
   END; $$
 DELIMITER ;
