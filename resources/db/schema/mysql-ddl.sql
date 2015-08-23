@@ -1283,10 +1283,3 @@ CREATE TRIGGER delete_hashes AFTER DELETE ON predb FOR EACH ROW
   BEGIN
     DELETE FROM predb_hashes WHERE hash IN ( UNHEX(md5(OLD.title)), UNHEX(md5(md5(OLD.title))), UNHEX(sha1(OLD.title)) ) AND pre_id = OLD.id;
   END; $$
-
-CREATE TRIGGER delete_collections BEFORE DELETE ON collections FOR EACH ROW
-  BEGIN
-    DELETE FROM binaries WHERE collection_id = OLD.id;
-    DELETE FROM parts WHERE collection_id = OLD.id;
-  END; $$
-DELIMITER ;
