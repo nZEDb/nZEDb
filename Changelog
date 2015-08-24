@@ -6,6 +6,10 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+
+2015-08-24 niel
+	Mrg: dev => next-master to prepare for updating master.
+
 2015-08-23 bart39
 	Fix: Drop trigger from collections that got missed with recent changes.
 2015-08-22 bart39
