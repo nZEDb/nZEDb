@@ -118,7 +118,8 @@ class ReleaseFiles
 						'id'        => $insert,
 						'releaseid' => $id,
 						'filename'  => utf8_encode($name)
-					];
+					]
+				);
 
 				return $insert;
 			}
