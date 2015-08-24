@@ -63,10 +63,10 @@ class SphinxSearch
 		if (!is_null($this->sphinxQL) && $parameters['id']) {
 			$this->sphinxQL->queryExec(
 				sprintf(
-					'REPLACE INTO release_files_rt (id, releaseid, name) VALUES (%s, %s, %s)',
+					'REPLACE INTO release_files_rt (id, releaseid, filename) VALUES (%s, %s, %s)',
 					$parameters['id'],
 					$parameters['releaseid'],
-					$parameters['name']
+					$parameters['filename']
 				)
 			);
 		}
