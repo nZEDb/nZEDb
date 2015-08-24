@@ -1084,8 +1084,7 @@ class Binaries
 						FROM %s c
 						INNER JOIN %s b ON(c.id=b.collection_id)
 						INNER JOIN %s p ON(b.id=p.binaryid)
-						WHERE
-						AND p.number = %s
+						WHERE p.number = %s
 						%s LIMIT 1',
 						$group['cname'],
 						$group['bname'],
