@@ -226,10 +226,10 @@ if (isset($_GET['type'])) {
 
 		case 'm':
 		case 'md5':
-			if (isset($_GET['md5']) && strlen($_GET['title']) === 32) {
+			if (isset($_GET['md5']) && strlen($_GET['md5']) === 32) {
 				$pdo = new DB;
 				$preData = $pdo->query(
-					sprintf('SELECT * FROM predb p INNER JOIN predb_hashes ph ON ph.pre_id = p.id WHERE MATCH(hashes) AGAINST (%s) %s %s %s LIMIT %d OFFSET %d',
+					sprintf('SELECT p.*, HEX(ph.hash) AS md5 FROM predb p INNER JOIN predb_hashes ph ON ph.pre_id = p.id WHERE hash = UNHEX(%s) %s %s %s LIMIT %d OFFSET %d',
 						$pdo->escapeString($_GET['md5']),
 						$newer,
 						$older,
@@ -246,7 +246,7 @@ if (isset($_GET['type'])) {
 			if (isset($_GET['sha1']) && strlen($_GET['sha1']) === 40) {
 				$pdo = new DB;
 				$preData = $pdo->query(
-					sprintf('SELECT * FROM predb p INNER JOIN predb_hashes ph ON ph.pre_id = p.id WHERE MATCH(hashes) AGAINST (%s) %s %s %s LIMIT %d OFFSET %d',
+					sprintf('SELECT p.*, HEX(ph.hash) AS sha1 FROM predb p INNER JOIN predb_hashes ph ON ph.pre_id = p.id WHERE hash = UNHEX(%s) %s %s %s LIMIT %d OFFSET %d',
 						$pdo->escapeString($_GET['sha1']),
 						$newer,
 						$older,

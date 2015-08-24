@@ -23,7 +23,7 @@ $dirs = [
 	],
 	[
 		'old' => 'misc/testing/PostProc_testing',
-		'newpath' => 'misc/testing/PostProc'
+		'newpath' => 'misc/testing/PostProcess'
 	],
 	[
 		'old' => 'misc/testing/Regex_testing',

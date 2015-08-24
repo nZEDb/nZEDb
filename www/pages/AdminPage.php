@@ -1,6 +1,6 @@
 <?php
 /* This is a smarty/www file and should be moved to the nZEDb_WWW/pages directory? */
-require_once './config.php';
+#require_once './config.php';
 
 use nzedb\Users;
 

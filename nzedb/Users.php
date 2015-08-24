@@ -1401,7 +1401,7 @@ class Users
 	 *
 	 * @param int $userID
 	 *
-	 * @return array|bool
+	 * @return int
 	 */
 	public function getDownloadRequests($userID)
 	{
@@ -1412,12 +1412,13 @@ class Users
 				$userID
 			)
 		);
-		return $this->pdo->queryOneRow(
+		$value = $this->pdo->queryOneRow(
 			sprintf(
 				'SELECT COUNT(id) AS num FROM user_downloads WHERE user_id = %d AND timestamp > DATE_SUB(NOW(), INTERVAL 1 DAY)',
 				$userID
 			)
 		);
+		return ($value === false ? 0 : (int) $value['num']);
 	}
 
 	/**

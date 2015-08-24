@@ -74,6 +74,8 @@ class XXX
 		$this->imgSavePath = nZEDb_COVERS . 'xxx' . DS;
 		$this->cookie = nZEDb_TMP . 'xxx.cookie';
 
+		$this->catWhere = 'AND categoryid IN (6010, 6020, 6030, 6040, 6080, 6090) ';
+
 		if (nZEDb_DEBUG || nZEDb_LOGGING) {
 			$this->debug = true;
 			try {
@@ -561,15 +563,15 @@ class XXX
 	 */
 	public function processXXXReleases()
 	{
-				$res = $this->pdo->query(sprintf("
+		$res = $this->pdo->query(sprintf("
 				SELECT r.searchname, r.id
 				FROM releases r
 				WHERE r.nzbstatus = 1
-				AND r.xxxinfo_id = 0
-				AND r.categoryid IN (6010, 6020, 6030, 6040, 6080, 6090)
+				AND r.xxxinfo_id = 0 %s
 				LIMIT %d",
+				$this->catWhere,
 				$this->movieqty
-						 )
+			)
 		);
 		$movieCount = count($res);
 
@@ -604,7 +606,7 @@ class XXX
 				} else {
 					$this->pdo->log->doEcho(".", true);
 				}
-				$this->pdo->queryExec(sprintf('UPDATE releases SET xxxinfo_id = %d WHERE id = %d', $idcheck, $arr['id']));
+				$this->pdo->queryExec(sprintf('UPDATE releases SET xxxinfo_id = %d WHERE id = %d %s', $idcheck, $arr['id'], $this->catWhere));
 			}
 		} elseif ($this->echooutput) {
 			$this->pdo->log->doEcho($this->pdo->log->header('No xxx releases to process.'));

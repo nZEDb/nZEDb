@@ -15,6 +15,9 @@ test.php
 /.idea/
 /nzedb/config/config.php
 /nzedb/config/settings.php
+/nzedb/config/ircscraper_settings.php
+/nzedb/config/ircscraper.php
+/nzedb/config/opensssl.php
 
 /nbproject/
 /nbproject/private/

@@ -29,164 +29,96 @@ if (isset($_GET['id'])) {
 
 	$rc = new ReleaseComments($page->settings);
 	if ($page->isPostBack()) {
-		$rc->addComment($data['id'],
-						$_POST['txtAddComment'],
-						$page->users->currentUserId(),
-						$_SERVER['REMOTE_ADDR']);
+		$rc->addComment($data['id'], $_POST['txtAddComment'], $page->users->currentUserId(), $_SERVER['REMOTE_ADDR']);
 	}
 
-	$nfo      = $releases->getReleaseNfo($data['id'], false);
-	$re       = new ReleaseExtra($page->settings);
-	$reVideo  = $re->getVideo($data['id']);
-	$reAudio  = $re->getAudio($data['id']);
-	$reSubs   = $re->getSubs($data['id']);
-	$comments = $rc->getComments($data['id']);
-	$similars = $releases->searchSimilar($data['id'],
-										 $data['searchname'],
-										 6,
-										 $page->userdata['categoryexclusions']);
-
-	$rage = $ani = $mov = $mus = $con = $game = $xxx = $boo = '';
+	$rage = $mov = $xxx = '';
 	if ($data['rageid'] != '') {
-		$tvrage   = new TvRage(['Settings' => $page->settings]);
-		$rageinfo = $tvrage->getByRageID($data['rageid']);
-		if (count($rageinfo) > 0) {
-			$seriesnames = $seriesdescription = $seriescountry = $seriesgenre = $seriesimg = $seriesid = [];
-			foreach ($rageinfo as $r) {
-				$seriesnames[] = $r['releasetitle'];
-				if (!empty($r['description'])) {
-					$seriesdescription[] = $r['description'];
+		$rageInfo = (new TvRage(['Settings' => $page->settings]))->getByRageID($data['rageid']);
+		if (count($rageInfo) > 0) {
+			$rage = ['releasetitle' => '', 'description' => '', 'country' => '', 'genre' => '', 'imgdata' => '', 'id' => ''];
+			$done = 1;
+			$needed = count($rage);
+			foreach ($rageInfo as $info) {
+				foreach($rage as $key => $value) {
+					if (empty($value) && !empty($info[$key])) {
+						$rage[$key] = $info[$key];
+						$done++;
+					}
 				}
-
-				if (!empty($r['country'])) {
-					$seriescountry[] = $r['country'];
-				}
-
-				if (!empty($r['genre'])) {
-					$seriesgenre[] = $r['genre'];
-				}
-
-				if (!empty($r['imgdata'])) {
-					$seriesimg[] = $r['imgdata'];
-					$seriesid[]  = $r['id'];
+				if ($done == $needed) {
+					break;
 				}
 			}
-			$rage = [
-				'releasetitle' => array_shift($seriesnames),
-				'description'  => array_shift($seriesdescription),
-				'country'      => array_shift($seriescountry),
-				'genre'        => array_shift($seriesgenre),
-				'imgdata'      => array_shift($seriesimg),
-				'id'           => array_shift($seriesid)
-			];
 		}
-	}
-
-	if ($data['anidbid'] > 0) {
-		$AniDB = new AniDB(['Settings' => $releases->pdo]);
-		$ani   = $AniDB->getAnimeInfo($data['anidbid']);
 	}
 
 	if ($data['imdbid'] != '' && $data['imdbid'] != 0000000) {
 		$movie = new Movie(['Settings' => $page->settings]);
 		$mov   = $movie->getMovieInfo($data['imdbid']);
-
-		$trakt        = new TraktTv(['Settings' => $page->settings]);
-		$traktSummary = $trakt->movieSummary('tt' . $data['imdbid'], 'full');
-		if ($traktSummary !== false &&
-			isset($traktSummary['trailer']) &&
-			$traktSummary['trailer'] !== '' &&
-			preg_match('/[\/?]v[\/\=](\w+)$/i', $traktSummary['trailer'], $youtubeM)
-		) {
-			$mov['trailer'] =
-				'<embed width="480" height="345" src="' .
-				'https://www.youtube.com/v/' . $youtubeM[1] .
-				'" type="application/x-shockwave-flash"></embed>';
-		} else {
-			$mov['trailer'] = nzedb\utility\Misc::imdb_trailers($data['imdbid']);
-		}
-
 		if ($mov && isset($mov['title'])) {
 			$mov['title']    = str_replace(['/', '\\'], '', $mov['title']);
 			$mov['actors']   = $movie->makeFieldLinks($mov, 'actors');
 			$mov['genre']    = $movie->makeFieldLinks($mov, 'genre');
 			$mov['director'] = $movie->makeFieldLinks($mov, 'director');
-		} else {
-			if ($traktSummary !== false) {
-				$mov['title'] = str_replace(['/', '\\'], '', $traktSummary['title']);
-			} else {
-				$mov = false;
+			if ($page->settings->getSetting('trailers_display')) {
+				$trailer = (!isset($mov['trailer']) || empty($mov['trailer']) || $mov['trailer'] == '' ? $movie->getTrailer($data['imdbid']) : $mov['trailer']);
+				if ($trailer) {
+					$mov['trailer'] = sprintf(
+						"<iframe width=\"%d\" height=\"%d\" src=\"%s\"></iframe>",
+						$page->settings->getSetting('trailers_size_x'),
+						$page->settings->getSetting('trailers_size_y'),
+						$trailer
+					);
+				}
 			}
 		}
 	}
 
 	if ($data['xxxinfo_id'] != '' && $data['xxxinfo_id'] != 0) {
-		$x   = new XXX(['Settings' => $page->settings]);
-		$xxx = $x->getXXXInfo($data['xxxinfo_id']);
-
-		if (isset($xxx['trailers'])) {
-			$xxx['trailers'] = $x->insertSwf($xxx['classused'], $xxx['trailers']);
-		}
-
-		if ($xxx && isset($xxx['title'])) {
+		$XXX   = new XXX(['Settings' => $page->settings]);
+		$xxx = $XXX->getXXXInfo($data['xxxinfo_id']);
+		if ($xxx && isset($xInfo['title'])) {
 			$xxx['title']    = str_replace(['/', '\\'], '', $xxx['title']);
-			$xxx['actors']   = $x->makeFieldLinks($xxx, 'actors');
-			$xxx['genre']    = $x->makeFieldLinks($xxx, 'genre');
-			$xxx['director'] = $x->makeFieldLinks($xxx, 'director');
+			$xxx['actors']   = $XXX->makeFieldLinks($xxx, 'actors');
+			$xxx['genre']    = $XXX->makeFieldLinks($xxx, 'genre');
+			$xxx['director'] = $XXX->makeFieldLinks($xxx, 'director');
+			if (isset($xxx['trailers'])) {
+				$xxx['trailers'] = $XXX->insertSwf($xxx['classused'], $xxx['trailers']);
+			}
 		} else {
 			$xxx = false;
 		}
 	}
 
-	if ($data['musicinfoid'] != '') {
-		$music = new Music(['Settings' => $page->settings]);
-		$mus   = $music->getMusicInfo($data['musicinfoid']);
-	}
-
-	if ($data['consoleinfoid'] != '') {
-		$c   = new Console(['Settings' => $page->settings]);
-		$con = $c->getConsoleInfo($data['consoleinfoid']);
-	}
-
-	if ($data['gamesinfo_id'] != '') {
-		$g    = new Games(['Settings' => $page->settings]);
-		$game = $g->getgamesInfo($data['gamesinfo_id']);
-	}
-
-	if ($data['bookinfoid'] != '') {
-		$b   = new Books(['Settings' => $page->settings]);
-		$boo = $b->getBookInfo($data['bookinfoid']);
-	}
-
-	$rf           = new ReleaseFiles($page->settings);
-	$releasefiles = $rf->get($data['id']);
-
-	$predb = new PreDb(['Settings' => $page->settings]);
-	$pre   = $predb->getForRelease($data['preid']);
-
 	$user = $page->users->getById($page->users->currentUserId());
+	$re  = new ReleaseExtra($page->settings);
 
-	$page->smarty->assign('cpapi', $user['cp_api']);
-	$page->smarty->assign('cpurl', $user['cp_url']);
-	$page->smarty->assign('releasefiles', $releasefiles);
-	$page->smarty->assign('release', $data);
-	$page->smarty->assign('reVideo', $reVideo);
-	$page->smarty->assign('reAudio', $reAudio);
-	$page->smarty->assign('reSubs', $reSubs);
-	$page->smarty->assign('nfo', $nfo);
+	$page->smarty->assign([
+		'anidb'   => ($data['anidbid'] > 0 ? (new AniDB(['Settings' => $page->settings]))->getAnimeInfo($data['anidbid']) : ''),
+		'boo'   => ($data['bookinfoid'] != '' ? (new Books(['Settings' => $page->settings]))->getBookInfo($data['bookinfoid']) : ''),
+		'con'   => ($data['consoleinfoid'] != '' ? (new Console(['Settings' => $page->settings]))->getConsoleInfo($data['consoleinfoid']) : ''),
+		'game'  => ($data['gamesinfo_id'] != '' ? (new Games(['Settings' => $page->settings]))->getgamesInfo($data['gamesinfo_id']) : ''),
+		'movie'   => $mov,
+		'music' => ($data['musicinfoid'] != '' ? (new Music(['Settings' => $page->settings]))->getMusicInfo($data['musicinfoid']) : ''),
+		'pre'   => (new PreDb(['Settings' => $page->settings]))->getForRelease($data['preid']),
+		'rage'  => $rage,
+		'xxx'   => $xxx,
+		'comments' => $rc->getComments($data['id']),
+		'cpapi'    => $user['cp_api'],
+		'cpurl'    => $user['cp_url'],
+		'nfo'      => $releases->getReleaseNfo($data['id'], false),
+		'release'  => $data,
+		'reAudio'  => $re->getAudio($data['id']),
+		'reSubs'   => $re->getSubs($data['id']),
+		'reVideo'  => $re->getVideo($data['id']),
+		'similars' => $releases->searchSimilar($data['id'], $data['searchname'], 6, $page->userdata['categoryexclusions']),
+		'privateprofiles' => ($page->settings->getSetting('privateprofiles') == 1 ? true : false),
+		'releasefiles'    => (new ReleaseFiles($page->settings))->get($data['id']),
+		'searchname'      => $releases->getSimilarName($data['searchname']),
+	]);
+
 	$page->smarty->assign('rage', $rage);
-	$page->smarty->assign('movie', $mov);
-	$page->smarty->assign('xxx', $xxx);
-	$page->smarty->assign('anidb', $ani);
-	$page->smarty->assign('music', $mus);
-	$page->smarty->assign('con', $con);
-	$page->smarty->assign('game', $game);
-	$page->smarty->assign('boo', $boo);
-	$page->smarty->assign('pre', $pre);
-	$page->smarty->assign('comments', $comments);
-	$page->smarty->assign('similars', $similars);
-	$page->smarty->assign('searchname', $releases->getSimilarName($data['searchname']));
-	$page->smarty->assign('privateprofiles', ($page->settings->getSetting('privateprofiles') == 1) ? true : false );
 
 	$page->meta_title       = 'View NZB';
 	$page->meta_keywords    = 'view,nzb,description,details';

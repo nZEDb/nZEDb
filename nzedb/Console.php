@@ -86,7 +86,7 @@ class Console
 			$this->renamed = 'AND isrenamed = 1';
 		}
 		//$this->cleanconsole = ($this->pdo->getSetting('lookupgames') == 2) ? 'AND isrenamed = 1' : '';
-
+		$this->catWhere = 'AND categoryid BETWEEN 1000 AND 1999 ';
 		$this->failCache = array();
 	}
 
@@ -122,7 +122,7 @@ class Console
 				}
 			}
 			$searchwords = trim($searchwords);
-			$searchsql .= sprintf(" MATCH(title, platform) AGAINST(%s IN BOOLEAN MODE)", $this->pdo->escapeString($searchwords));
+			$searchsql .= sprintf(" MATCH(title, platform) AGAINST(%s IN BOOLEAN MODE) AND platform = %s", $this->pdo->escapeString($searchwords), $this->pdo->escapeString($platform));
 		}
 		return $this->pdo->queryOneRow(sprintf("SELECT * FROM consoleinfo WHERE %s", $searchsql));
 	}
@@ -312,7 +312,7 @@ class Console
 				$salesrank,
 				$this->pdo->escapeString($platform),
 				$this->pdo->escapeString($publisher),
-				$this->pdo->escapeString($releasedate),
+				($releasedate != "" ? $this->pdo->escapeString($releasedate) : "null"),
 				$this->pdo->escapeString($esrb),
 				$cover,
 				$genreID,
@@ -336,7 +336,7 @@ class Console
 			}
 		}
 
-		if ($amaz != false) {
+		if ($amaz) {
 			$gameInfo['platform'] = $this->_replacePlatform($gameInfo['platform']);
 
 			$con = $this->_setConBeforeMatch($amaz, $gameInfo);
@@ -697,12 +697,12 @@ class Console
 							SELECT searchname, id
 							FROM releases
 							WHERE nzbstatus = %d %s
-							AND consoleinfoid IS NULL
-							AND categoryid BETWEEN 1000 AND 1999
+							AND consoleinfoid IS NULL %s
 							ORDER BY postdate DESC
 							LIMIT %d',
 							NZB::NZB_ADDED,
 							$this->renamed,
+							$this->catWhere,
 							$this->gameqty
 						)
 		);
@@ -767,9 +767,10 @@ class Console
 							sprintf('
 								UPDATE releases
 								SET consoleinfoid = %d
-								WHERE id = %d',
+								WHERE id = %d %s',
 								$gameId,
-								$arr['id']
+								$arr['id'],
+								$this->catWhere
 							)
 				);
 

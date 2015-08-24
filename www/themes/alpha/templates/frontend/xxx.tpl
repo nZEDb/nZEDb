@@ -173,7 +173,7 @@
 										<input type="checkbox" class="nzb_check" value="{$mguid[$m@index]}">
 									</td>
 									<td class="name">
-										<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">
+										<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">
 											<b>{$mname[$m@index]|escape:"htmlall"|wordwrap:80:"\n":true}</b>
 										</a>
 										<br>
@@ -190,7 +190,7 @@
 												<i class="icon-comments"></i>
 												<a
 													title="View comments for {$mname[$m@index]|escape:"htmlall"}"
-													href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}#comments">{$mcomments[$m@index]}
+													href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}#comments">{$mcomments[$m@index]}
 													cmt{if $mcomments[$m@index] != 1}s{/if}
 												</a> |
 												<i class="icon-download"></i> {$mgrabs[$m@index]} grab{if $mgrabs[$m@index] != 1}s{/if}
@@ -245,7 +245,7 @@
 										<div class="icon icon_nzb float-right">
 											<a
 												title="Download Nzb"
-												href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"
+												href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}"
 											></a>
 										</div>
 										{if $sabintegrated}

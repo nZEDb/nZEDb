@@ -14,8 +14,8 @@
  * along with this program (see LICENSE.txt in the base directory.  If
  * not, see:
  *
- * @link <http://www.gnu.org/licenses/>.
- * @author niel
+ * @link      <http://www.gnu.org/licenses/>.
+ * @author    niel
  * @copyright 2015 nZEDb
  */
 namespace nzedb\config;
@@ -25,14 +25,17 @@ require_once nZEDb_LIBS . 'autoloader.php';
 class Configure
 {
 	private $environments = [
-		'indexer'	=> [
-			'config' => true,
-			'settings' => false
+		'indexer' => [
+			'config'	=> true,
+			'settings'	=> false
 		],
-		'install'	=> [],
-		'smarty'	=> [
-			'config' => true,
-			'settings' => false
+		'install' => [
+			'config'	=> false,
+			'settings'	=> false
+		],
+		'smarty'  => [
+			'config'	=> true,
+			'settings'	=> false
 		],
 	];
 
@@ -69,14 +72,7 @@ class Configure
 
 		switch ($filename) {
 			case 'config':
-				// Check if they updated config.php for the openssl changes. Only check 1 to save speed.
-				if (!defined('nZEDb_SSL_VERIFY_PEER')) {
-					define('nZEDb_SSL_CAFILE', '');
-					define('nZEDb_SSL_CAPATH', '');
-					define('nZEDb_SSL_VERIFY_PEER', '0');
-					define('nZEDb_SSL_VERIFY_HOST', '0');
-					define('nZEDb_SSL_ALLOW_SELF_SIGNED', '1');
-				}
+				$this->defaultSSL();
 				break;
 			case 'settings':
 				$settings_file = nZEDb_CONFIGS . 'settings.php';
@@ -123,6 +119,18 @@ class Configure
 				}
 				unset($settings_file);
 				break;
+		}
+	}
+
+	private function defaultSSL()
+	{
+		// Check if they updated config.php for the openssl changes. Only check 1 to save speed.
+		if (!defined('nZEDb_SSL_VERIFY_PEER')) {
+			define('nZEDb_SSL_CAFILE', '');
+			define('nZEDb_SSL_CAPATH', '');
+			define('nZEDb_SSL_VERIFY_PEER', '0');
+			define('nZEDb_SSL_VERIFY_HOST', '0');
+			define('nZEDb_SSL_ALLOW_SELF_SIGNED', '1');
 		}
 	}
 }

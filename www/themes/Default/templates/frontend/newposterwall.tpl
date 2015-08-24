@@ -42,7 +42,7 @@
 								<a class="titleinfo" title="{$result.guid}"
 								   href="{$smarty.const.WWW_TOP}/details/{$result.guid}">
 									{if $type == 'Console'}
-										<img width="130px" alt=""
+										<img width="130px" height="195px" alt=""
 											 src="{$smarty.const.WWW_TOP}/covers/console/{$result.consoleinfoid}.jpg"/>
 									{elseif $type == 'Movies'}
 										<img width="140px" height="205px" alt=""
@@ -51,16 +51,16 @@
 										<img width="140px" height="205px" alt=""
 											 src="{$smarty.const.WWW_TOP}/covers/xxx/{$result.xxxinfo_id}-cover.jpg"/>
 									{elseif $type == 'Audio'}
-										<img height="250px" width="250px" alt=""
+										<img width="250px" height="250px" alt=""
 											 src="{$smarty.const.WWW_TOP}/covers/music/{$result.musicinfoid}.jpg"/>
 									{elseif $type == 'Books'}
-										<img height="140px" width="205px" alt=""
+										<img width="140px" height="205px" alt=""
 											 src="{$smarty.const.WWW_TOP}/covers/book/{$result.bookinfoid}.jpg"/>
 									{elseif $type == 'PC'}
-										<img height="130px" width="130px" alt=""
+										<img width="130px" height="195px" alt=""
 											 src="{$smarty.const.WWW_TOP}/covers/games/{$result.gamesinfo_id}.jpg"/>
 									{elseif $type == 'TV'}
-										<img height="130px" width="130px" alt=""
+										<img width="130px" height="195px" alt=""
 											 src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$result.tvid}"/>
 									{/if}
 								</a>
@@ -68,7 +68,7 @@
 							<div class="rating-pod" id="guid{$result.guid}">
 								<div class="icons">
 									<div class="icon icon_nzb"><a class="divlink" title="Download Nzb"
-																  href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"url"}"></a>
+																  href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}"></a>
 									</div>
 									<div class="icon icon_cart" title="Add to Cart"></div>
 									{if $sabintegrated}
