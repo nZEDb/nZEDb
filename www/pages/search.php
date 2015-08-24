@@ -60,7 +60,7 @@ if ((isset($_REQUEST["id"]) || isset($_REQUEST["subject"])) && !isset($_REQUEST[
 	}
 
 	$results = $releases->search(
-		$searchString, -1, -1, -1, -1, -1, 0, 0, -1, -1, $offset, ITEMS_PER_PAGE,
+		$searchString, -1, -1, -1, -1, -1, -1, 0, 0, -1, -1, $offset, ITEMS_PER_PAGE,
 		$orderBy, -1, $page->userdata["categoryexclusions"], "basic", $categoryID
 	);
 
@@ -82,9 +82,9 @@ if ((isset($_REQUEST["id"]) || isset($_REQUEST["subject"])) && !isset($_REQUEST[
 
 $searchVars = [
 	'searchadvr' => '', 'searchadvsubject' => '', 'searchadvposter' => '',
-	'searchadvdaysnew' => '', 'searchadvdaysold' => '', 'searchadvgroups' => '',
-	'searchadvcat' => '', 'searchadvsizefrom' => '', 'searchadvsizeto' => '',
-	'searchadvhasnfo' => '', 'searchadvhascomments' => ''
+	'searchadvfilename' => '', 'searchadvdaysnew' => '', 'searchadvdaysold' => '',
+	'searchadvgroups' => '', 'searchadvcat' => '', 'searchadvsizefrom' => '',
+	'searchadvsizeto' => '', 'searchadvhasnfo' => '', 'searchadvhascomments' => ''
 ];
 
 foreach($searchVars as $searchVarKey => $searchVar) {
@@ -118,6 +118,7 @@ if (isset($_REQUEST["searchadvr"]) && !isset($_REQUEST["id"]) && !isset($_REQUES
 		($searchVars['searchadvr'] == '' ? -1 : $searchVars['searchadvr']),
 		($searchVars['searchadvsubject'] == '' ? -1 : $searchVars['searchadvsubject']),
 		($searchVars['searchadvposter'] == '' ? -1 : $searchVars['searchadvposter']),
+		($searchVars['searchadvfilename'] == '' ? -1 : $searchVars['searchadvfilename']),
 		$searchVars['searchadvgroups'], $searchVars['searchadvsizefrom'], $searchVars['searchadvsizeto'],
 		$searchVars['searchadvhasnfo'], $searchVars['searchadvhascomments'],
 		($searchVars['searchadvdaysnew'] == '' ? -1 : $searchVars['searchadvdaysnew']),
