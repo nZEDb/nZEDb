@@ -27,7 +27,7 @@ function populate_rt($table = '')
 			break;
 		case 'release_files_rt':
 			$rows = $pdo->queryExec('SELECT id, releaseid, name FROM release_files');
-			$rtvalues = '(id, releaseid, name)';
+			$rtvalues = '(id, releaseid, filename)';
 			break;
 	}
 
@@ -56,7 +56,7 @@ function populate_rt($table = '')
 					$tempString .= sprintf(
 						'(%d, %d, %s),',
 						$row['id'],
-						$sphinx->sphinxQL->escapeString($row['releaseid']),
+						$row['releaseid'],
 						$sphinx->sphinxQL->escapeString($row['name'])
 					);
 					break;

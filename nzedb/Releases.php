@@ -918,6 +918,7 @@ class Releases
 	 * @param string $usenetName
 	 * @param string $posterName
 	 * @param string $groupName
+	 * @param string $fileName
 	 * @param int    $sizeFrom
 	 * @param int    $sizeTo
 	 * @param int    $hasNfo
@@ -938,6 +939,7 @@ class Releases
 		$searchName,
 		$usenetName,
 		$posterName,
+		$fileName,
 		$groupName,
 		$sizeFrom,
 		$sizeTo,
@@ -984,6 +986,9 @@ class Releases
 		}
 		if ($posterName != -1) {
 			$searchOptions['fromname'] = $posterName;
+		}
+		if ($fileName != -1) {
+			$searchOptions['filename'] = $fileName;
 		}
 
 		$whereSql = sprintf(
@@ -1036,6 +1041,7 @@ class Releases
 			$limit,
 			$offset
 		);
+		var_dump($sql);
 		$releases = $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
 		if ($releases && count($releases)) {
 			$releases[0]['_totalrows'] = $this->getPagerCount($baseSql);
@@ -1259,7 +1265,7 @@ class Releases
 		$parentCat = $catRow['parentid'];
 
 		$results = $this->search(
-			$this->getSimilarName($name), -1, -1, -1, -1, -1, 0, 0, -1, -1, 0, $limit, '', -1, $excludedCats, null, [$parentCat]
+			$this->getSimilarName($name), -1, -1, -1, -1, -1, -1, 0, 0, -1, -1, 0, $limit, '', -1, $excludedCats, null, [$parentCat]
 		);
 		if (!$results) {
 			return $results;

@@ -33,26 +33,14 @@ CREATE TABLE releases_se
 	guid        VARCHAR(40) NOT NULL,
 	name        VARCHAR(255) NOT NULL DEFAULT '',
 	searchname  VARCHAR(255) NOT NULL DEFAULT '',
-	fromname    VARCHAR(255) NULL,
+	fromname    VARCHAR(255) NOT NULL DEFAULT '',
+	filename    VARCHAR(255) NOT NULL DEFAULT '',
 	INDEX(query)
 ) ENGINE=SPHINX CONNECTION="%sreleases_rt"
 DDLSQL;
 
-$tableSQL_release_files = <<<DDLSQL
-CREATE TABLE release_files_se
-(
-	id          BIGINT UNSIGNED NOT NULL,
-	weight      INTEGER NOT NULL,
-	query       VARCHAR(1024) NOT NULL,
-	releaseid   BIGINT UNSIGNED NOT NULL,
-	name        VARCHAR(255) NOT NULL DEFAULT '',
-	INDEX(query)
-) ENGINE=SPHINX CONNECTION="%srelease_files_rt"
-DDLSQL;
-
 $tables                     = [];
 $tables['releases_se']      = sprintf($tableSQL_releases, $sphinxConnection);
-$tables['release_files_se'] = sprintf($tableSQL_release_files, $sphinxConnection);
 
 foreach ($tables as $table => $query) {
 	$pdo->queryExec(sprintf('DROP TABLE IF EXISTS %s', $table));
