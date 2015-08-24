@@ -71,7 +71,9 @@ class ReleaseFiles
 	 */
 	public function delete($id)
 	{
-		return $this->pdo->queryExec(sprintf("DELETE FROM release_files WHERE releaseid = %d", $id));
+		$res = $this->pdo->queryExec(sprintf("DELETE FROM release_files WHERE releaseid = %d", $id));
+		$this->sphinxSearch->deleteReleaseFiles($id);
+		return $res;
 	}
 
 	/**
@@ -115,7 +117,7 @@ class ReleaseFiles
 					[
 						'id'        => $insert,
 						'releaseid' => $id,
-						'name'      => name
+						'filename'  => utf8_encode($name)
 					];
 
 				return $insert;

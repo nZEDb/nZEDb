@@ -90,9 +90,14 @@ class SphinxSearch
 			}
 			if ($identifiers['i'] !== false) {
 				$this->sphinxQL->queryExec(sprintf('DELETE FROM releases_rt WHERE id = %s', $identifiers['i']));
-				$this->sphinxQL->queryExec(sprintf('DELETE FROM release_files_rt WHERE releaseid = %s', $identifiers['i']));
+				$this->deleteReleaseFiles($identifiers['i']);
 			}
 		}
+	}
+
+	public function deleteReleaseFiles($id)
+	{
+		$this->sphinxQL->queryExec(sprintf('DELETE FROM release_files_rt WHERE releaseid = %s', $id));
 	}
 
 	public static function escapeString($string)
