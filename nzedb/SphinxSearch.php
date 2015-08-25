@@ -52,7 +52,7 @@ class SphinxSearch
 					$this->sphinxQL->escapeString($parameters['name']),
 					$this->sphinxQL->escapeString($parameters['searchname']),
 					$this->sphinxQL->escapeString($parameters['fromname']),
-					$this->sphinxQL->escapeString($parameters['filename'])
+					empty($parameters['filename']) ? "''" : $this->sphinxQL->escapeString($parameters['filename'])
 				)
 			);
 		}
@@ -76,54 +76,47 @@ class SphinxSearch
 			}
 			if ($identifiers['i'] !== false) {
 				$this->sphinxQL->queryExec(sprintf('DELETE FROM releases_rt WHERE id = %d', $identifiers['i']));
-				$this->deleteReleaseFiles($identifiers['i']);
 			}
 		}
-	}
-
-	public function deleteReleaseFiles($id)
-	{
-		$this->sphinxQL->queryExec(sprintf('DELETE FROM release_files_rt WHERE id = %d', $id));
 	}
 
 	public static function escapeString($string)
 	{
 		$from = [
 			'\\', '(', ')', '|', '---', '--', '-', '!', '@', '~', '"', '&', '/', '^', '$', '=', "'",
-			"\x00", "\n", "\r", "\x1a"
+			"\x00", "\n", "\r", "\x1a", 'NULL'
 		];
 		$to = [
 			'\\\\\\\\', '\\\\\\\\(', '\\\\\\\\)', '\\\\\\\\|', '-', '-', '\\\\\\\\-', '\\\\\\\\!',
 			'\\\\\\\\@', '\\\\\\\\~',
 			'\\\\\\\\"', '\\\\\\\\&', '\\\\\\\\/', '\\\\\\\\^', '\\\\\\\\$', '\\\\\\\\=', "\\'",
-			"\\x00", "\\n", "\\r", "\\x1a"
+			"\\x00", "\\n", "\\r", "\\x1a", "''"
 		];
 
 		return str_replace($from, $to, $string);
 	}
 
 	/**
-	 * Update the search name of a release.
+	 * Update Sphinx Relases index for given releaseid.
 	 *
 	 * @param int $releaseID
-	 * @param string $searchName
 	 */
-	public function updateReleaseSearchName($releaseID, $searchName)
+	public function updateRelease($releaseID)
 	{
 		if (!is_null($this->sphinxQL)) {
 			$pdo->queryDirect('SET SESSION group_concat_max_len=8192');
-			$old = $pdo->queryDirect(
+			$new = $pdo->queryDirect(
 				sprintf('SELECT r.id, r.name, r.searchname, r.fromname, IFNULL(GROUP_CONCAT(rf.name SEPARATOR " "),"") filename
 					FROM releases r LEFT JOIN release_files rf ON(r.id=rf.releaseid) WHERE r.id = %d GROUP BY r.id LIMIT 1', $releaseID)
 				);
-			if ($old !== false) {
+			if ($new !== false) {
 				$this->insertRelease(
 					[
 						'id' => $releaseID,
-						'name' => $old['name'],
-						'searchname' => $searchName,
-						'fromname' => $old['fromname'],
-						'filename' => $old['filename']
+						'name' => $new['name'],
+						'searchname' => $new['searchname'],
+						'fromname' => $new['fromname'],
+						'filename' => $new['filename']
 					]
 				);
 			}
