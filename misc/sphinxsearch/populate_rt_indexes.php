@@ -7,8 +7,8 @@ use nzedb\db\DB;
 
 if (nZEDb_RELEASE_SEARCH_TYPE != ReleaseSearch::SPHINX) {
 	exit('Error, nZEDb_RELEASE_SEARCH_TYPE in nzedb/config/settings.php must be set to SPHINX!' . PHP_EOL);
-} else if (!isset($argv[1]) || !in_array($argv[1], ['releases_rt', 'release_files_rt'])) {
-	exit('Argument1 is the index name, releases_rt/release_files_rt are the only supported ones currently.' . PHP_EOL);
+} else if (!isset($argv[1]) || !in_array($argv[1], ['releases_rt'])) {
+	exit('Argument1 is the index name, releases_rt are the only supported ones currently.' . PHP_EOL);
 } else {
 	populate_rt($argv[1]);
 }
@@ -27,10 +27,6 @@ function populate_rt($table = '')
 				FROM releases r LEFT JOIN release_files rf ON(r.id=rf.releaseid) GROUP BY r.id'
 			);
 			$rtvalues = '(id, name, searchname, fromname, filename)';
-			break;
-		case 'release_files_rt':
-			$rows = $pdo->queryExec('SELECT releaseid, name AS filename FROM release_files');
-			$rtvalues = '(releaseid, filename)';
 			break;
 	}
 
@@ -52,13 +48,6 @@ function populate_rt($table = '')
 						$sphinx->sphinxQL->escapeString($row['name']),
 						$sphinx->sphinxQL->escapeString($row['searchname']),
 						$sphinx->sphinxQL->escapeString($row['fromname']),
-						$sphinx->sphinxQL->escapeString($row['filename'])
-					);
-					break;
-				case 'release_files_rt':
-					$tempString .= sprintf(
-						'(%d, %s),',
-						$row['releaseid'],
 						$sphinx->sphinxQL->escapeString($row['filename'])
 					);
 					break;

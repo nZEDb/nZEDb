@@ -58,19 +58,6 @@ class SphinxSearch
 		}
 	}
 
-	public function insertReleaseFiles($parameters)
-	{
-		if (!is_null($this->sphinxQL) && $parameters['id']) {
-			$this->sphinxQL->queryExec(
-				sprintf(
-					'REPLACE INTO release_files_rt (id, filename) VALUES (%d, %s)',
-					$parameters['id'],
-					$this->sphinxQL->escapeString($parameters['filename'])
-				)
-			);
-		}
-	}
-
 	/**
 	 * Delete release from Sphinx RT tables.
 	 * @param array $identifiers ['g' => Release GUID(mandatory), 'id' => ReleaseID(optional, pass false)]
@@ -125,7 +112,7 @@ class SphinxSearch
 	{
 		if (!is_null($this->sphinxQL)) {
 			$pdo->queryDirect('SET SESSION group_concat_max_len=8192');
-			$old = $this->sphinxQL->queryOneRow(
+			$old = $pdo->queryDirect(
 				sprintf('SELECT r.id, r.name, r.searchname, r.fromname, IFNULL(GROUP_CONCAT(rf.name SEPARATOR " "),"") filename
 					FROM releases r LEFT JOIN release_files rf ON(r.id=rf.releaseid) WHERE r.id = %d GROUP BY r.id LIMIT 1', $releaseID)
 				);
@@ -133,10 +120,10 @@ class SphinxSearch
 				$this->insertRelease(
 					[
 						'id' => $releaseID,
-						'name' => $this->sphinxQL->escapeString($old['name']),
+						'name' => $old['name'],
 						'searchname' => $searchName,
-						'fromname' => $this->sphinxQL->escapeString($old['fromname'])
-						'filename' => $this->sphinxQL->escapeString($old['filename'])
+						'fromname' => $old['fromname'],
+						'filename' => $old['filename']
 					]
 				);
 			}
