@@ -84,13 +84,13 @@ class SphinxSearch
 	{
 		$from = [
 			'\\', '(', ')', '|', '---', '--', '-', '!', '@', '~', '"', '&', '/', '^', '$', '=', "'",
-			"\x00", "\n", "\r", "\x1a", 'NULL'
+			"\x00", "\n", "\r", "\x1a"
 		];
 		$to = [
 			'\\\\\\\\', '\\\\\\\\(', '\\\\\\\\)', '\\\\\\\\|', '-', '-', '\\\\\\\\-', '\\\\\\\\!',
 			'\\\\\\\\@', '\\\\\\\\~',
 			'\\\\\\\\"', '\\\\\\\\&', '\\\\\\\\/', '\\\\\\\\^', '\\\\\\\\$', '\\\\\\\\=', "\\'",
-			"\\x00", "\\n", "\\r", "\\x1a", "''"
+			"\\x00", "\\n", "\\r", "\\x1a"
 		];
 
 		return str_replace($from, $to, $string);
@@ -105,7 +105,7 @@ class SphinxSearch
 	{
 		if (!is_null($this->sphinxQL)) {
 			$pdo->queryDirect('SET SESSION group_concat_max_len=8192');
-			$new = $pdo->queryDirect(
+			$new = $pdo->queryOneRow(
 				sprintf('SELECT r.id, r.name, r.searchname, r.fromname, IFNULL(GROUP_CONCAT(rf.name SEPARATOR " "),"") filename
 					FROM releases r LEFT JOIN release_files rf ON(r.id=rf.releaseid) WHERE r.id = %d GROUP BY r.id LIMIT 1', $releaseID)
 				);
