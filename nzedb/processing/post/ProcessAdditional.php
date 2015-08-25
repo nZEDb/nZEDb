@@ -1804,7 +1804,7 @@ class ProcessAdditional
 											$this->_release['id']
 										)
 									);
-									$this->sphinx->updateRelease($this->_release['id']);
+									$this->sphinx->updateRelease($this->_release['id'], $this->pdo);
 
 									// Echo the changed name.
 									if ($this->_echoCLI) {
@@ -2393,7 +2393,7 @@ class ProcessAdditional
 							$this->_release['id']
 						)
 					);
-					$this->sphinx->updateRelease($this->_release['id']);
+					$this->sphinx->updateRelease($this->_release['id'], $this->pdo);
 
 					// Echo the changed name to CLI.
 					if ($this->_echoCLI) {

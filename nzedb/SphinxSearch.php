@@ -100,8 +100,9 @@ class SphinxSearch
 	 * Update Sphinx Relases index for given releaseid.
 	 *
 	 * @param int $releaseID
+	 * @param \nzedb\db\Settings $pdo
 	 */
-	public function updateRelease($releaseID)
+	public function updateRelease($releaseID, Settings $pdo)
 	{
 		if (!is_null($this->sphinxQL)) {
 			$pdo->queryDirect('SET SESSION group_concat_max_len=8192');

@@ -793,7 +793,7 @@ class Releases
 				$ID
 			)
 		);
-		$this->sphinxSearch->updateRelease($ID);
+		$this->sphinxSearch->updateRelease($ID, $this->pdo);
 	}
 
 	/**

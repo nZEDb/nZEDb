@@ -574,7 +574,7 @@ class NameFixer
 								$release['releaseid']
 							)
 						);
-						$this->sphinx->updateRelease($release['releaseid']);
+						$this->sphinx->updateRelease($release['releaseid'], $this->pdo);
 					} else {
 						$newTitle = $this->pdo->escapeString(substr($newName, 0, 255));
 						$this->pdo->queryExec(
@@ -591,7 +591,7 @@ class NameFixer
 								$release['releaseid']
 							)
 						);
-						$this->sphinx->updateRelease($release['releaseid']);
+						$this->sphinx->updateRelease($release['releaseid'], $this->pdo);
 					}
 				}
 			}
