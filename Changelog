@@ -6,6 +6,8 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2015-08-25 niel
+	Chg: Added note to copy nZEDb/nzedb/config/settings.exmple.php to nZEDb/nzedb/config/settings.php on opening Install page.
 2015-08-24 bart39
 	Fix: Removed another "AND" from SQL query which cause a syntax error.
 2015-08-24 niel
