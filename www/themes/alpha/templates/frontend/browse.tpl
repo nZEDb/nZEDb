@@ -90,7 +90,7 @@
 								class="title"
 								title="View details"
 								href="{$smarty.const.WWW_TOP}/details/{$result.guid}"
-							>{$result.searchname|escape:"htmlall"|wordwrap:60:"\n":true}</a>
+							>{$result.searchname|escape:"htmlall"|truncate:75}</a>
 						</label>
 						<div class="resextra">
 							{if $result.passwordstatus == 1}
