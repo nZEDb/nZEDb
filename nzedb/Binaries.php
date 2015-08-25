@@ -1090,7 +1090,7 @@ class Binaries
 						$group['bname'],
 						$group['pname'],
 						$currentPost,
-						$this->tablePerGroup === false ? sprintf('AND c.group_id = %d', $groupID) : ''
+						$this->_tablePerGroup === false ? sprintf('AND c.group_id = %d', $groupID) : ''
 					)
 				);
 				if ($local !== false) {

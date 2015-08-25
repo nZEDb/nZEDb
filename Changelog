@@ -8,6 +8,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2015-08-25 niel
 	Chg: Added note to copy nZEDb/nzedb/config/settings.exmple.php to nZEDb/nzedb/config/settings.php on opening Install page.
+	Fix: Typo $this->tablePerGroup to $this->_tablePerGroup.
 2015-08-24 bart39
 	Fix: Removed another "AND" from SQL query which cause a syntax error.
 2015-08-24 niel
