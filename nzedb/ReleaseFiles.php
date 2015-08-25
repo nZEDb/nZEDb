@@ -113,7 +113,7 @@ class ReleaseFiles
 						$hasPassword)
 					);
 			if ($insert) {
-				$this->sphinxSearch->updateRelease($insert, $this->pdo);
+				$this->sphinxSearch->updateRelease($id, $this->pdo);
 				return $insert;
 			}
 		}

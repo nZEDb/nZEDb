@@ -111,15 +111,7 @@ class SphinxSearch
 					FROM releases r LEFT JOIN release_files rf ON(r.id=rf.releaseid) WHERE r.id = %d GROUP BY r.id LIMIT 1', $releaseID)
 				);
 			if ($new !== false) {
-				$this->insertRelease(
-					[
-						'id' => $releaseID,
-						'name' => $new['name'],
-						'searchname' => $new['searchname'],
-						'fromname' => $new['fromname'],
-						'filename' => $new['filename']
-					]
-				);
+				$this->insertRelease($new);
 			}
 		}
 	}
