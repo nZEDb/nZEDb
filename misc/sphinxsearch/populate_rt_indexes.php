@@ -22,12 +22,12 @@ function populate_rt($table = '')
 
 	switch ($table) {
 		case 'releases_rt':
-			$rows = $pdo->queryExec('SELECT id, guid, name, searchname, fromname FROM releases');
-			$rtvalues = '(id, guid, name, searchname, fromname)';
+			$rows = $pdo->queryExec('SELECT id, name, searchname, fromname FROM releases');
+			$rtvalues = '(id, name, searchname, fromname)';
 			break;
 		case 'release_files_rt':
-			$rows = $pdo->queryExec('SELECT id, releaseid, name FROM release_files');
-			$rtvalues = '(id, releaseid, filename)';
+			$rows = $pdo->queryExec('SELECT releaseid AS id, name AS filename FROM release_files');
+			$rtvalues = '(id, filename)';
 			break;
 	}
 
@@ -44,9 +44,8 @@ function populate_rt($table = '')
 			switch ($table) {
 				case 'releases_rt':
 					$tempString .= sprintf(
-						'(%d, %s, %s, %s, %s),',
+						'(%d, %s, %s, %s),',
 						$row['id'],
-						$sphinx->sphinxQL->escapeString($row['guid']),
 						$sphinx->sphinxQL->escapeString($row['name']),
 						$sphinx->sphinxQL->escapeString($row['searchname']),
 						$sphinx->sphinxQL->escapeString($row['fromname'])
@@ -54,10 +53,9 @@ function populate_rt($table = '')
 					break;
 				case 'release_files_rt':
 					$tempString .= sprintf(
-						'(%d, %d, %s),',
+						'(%d, %s),',
 						$row['id'],
-						$row['releaseid'],
-						$sphinx->sphinxQL->escapeString($row['name'])
+						$sphinx->sphinxQL->escapeString($row['filename'])
 					);
 					break;
 			}

@@ -47,9 +47,8 @@ class SphinxSearch
 		if (!is_null($this->sphinxQL) && $parameters['id']) {
 			$this->sphinxQL->queryExec(
 				sprintf(
-					'REPLACE INTO releases_rt (id, guid, name, searchname, fromname) VALUES (%s, %s, %s, %s, %s)',
+					'REPLACE INTO releases_rt (id, name, searchname, fromname) VALUES (%d, %s, %s, %s)',
 					$parameters['id'],
-					$parameters['guid'],
 					$parameters['name'],
 					$parameters['searchname'],
 					$parameters['fromname']
@@ -63,10 +62,9 @@ class SphinxSearch
 		if (!is_null($this->sphinxQL) && $parameters['id']) {
 			$this->sphinxQL->queryExec(
 				sprintf(
-					'REPLACE INTO release_files_rt (id, releaseid, filename) VALUES (%s, %s, %s)',
-					$parameters['id'],
+					'REPLACE INTO release_files_rt (id, releaseid) VALUES (%d, %s)',
 					$parameters['releaseid'],
-					$parameters['filename']
+					$parameters['name']
 				)
 			);
 		}
@@ -89,7 +87,7 @@ class SphinxSearch
 				}
 			}
 			if ($identifiers['i'] !== false) {
-				$this->sphinxQL->queryExec(sprintf('DELETE FROM releases_rt WHERE id = %s', $identifiers['i']));
+				$this->sphinxQL->queryExec(sprintf('DELETE FROM releases_rt WHERE id = %d', $identifiers['i']));
 				$this->deleteReleaseFiles($identifiers['i']);
 			}
 		}
@@ -97,7 +95,7 @@ class SphinxSearch
 
 	public function deleteReleaseFiles($id)
 	{
-		$this->sphinxQL->queryExec(sprintf('DELETE FROM release_files_rt WHERE releaseid = %s', $id));
+		$this->sphinxQL->queryExec(sprintf('DELETE FROM release_files_rt WHERE id = %d', $id));
 	}
 
 	public static function escapeString($string)
@@ -130,8 +128,6 @@ class SphinxSearch
 				$this->insertRelease(
 					[
 						'id' => $releaseID,
-						'guid' => $this->sphinxQL->escapeString($old['guid']),
-						'name' => $this->sphinxQL->escapeString($old['name']),
 						'searchname' => $searchName,
 						'fromname' => $this->sphinxQL->escapeString($old['fromname'])
 					]
@@ -158,6 +154,7 @@ class SphinxSearch
 	public function optimizeRTIndex($indexName)
 	{
 		if (!is_null($this->sphinxQL)) {
+			$this->sphinxQL->queryExec(sprintf('FLUSH RTINDEX %s', $indexName));
 			$this->sphinxQL->queryExec(sprintf('OPTIMIZE INDEX %s', $indexName));
 		}
 	}
