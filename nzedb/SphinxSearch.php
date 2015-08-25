@@ -47,11 +47,12 @@ class SphinxSearch
 		if (!is_null($this->sphinxQL) && $parameters['id']) {
 			$this->sphinxQL->queryExec(
 				sprintf(
-					'REPLACE INTO releases_rt (id, name, searchname, fromname) VALUES (%d, %s, %s, %s)',
+					'REPLACE INTO releases_rt (id, name, searchname, fromname, filename) VALUES (%d, %s, %s, %s, %s)',
 					$parameters['id'],
-					$parameters['name'],
-					$parameters['searchname'],
-					$parameters['fromname']
+					$this->sphinxQL->escapeString($parameters['name']),
+					$this->sphinxQL->escapeString($parameters['searchname']),
+					$this->sphinxQL->escapeString($parameters['fromname']),
+					$this->sphinxQL->escapeString($parameters['filename'])
 				)
 			);
 		}
@@ -62,9 +63,9 @@ class SphinxSearch
 		if (!is_null($this->sphinxQL) && $parameters['id']) {
 			$this->sphinxQL->queryExec(
 				sprintf(
-					'REPLACE INTO release_files_rt (id, releaseid) VALUES (%d, %s)',
-					$parameters['releaseid'],
-					$parameters['name']
+					'REPLACE INTO release_files_rt (id, filename) VALUES (%d, %s)',
+					$parameters['id'],
+					$this->sphinxQL->escapeString($parameters['filename'])
 				)
 			);
 		}
@@ -123,13 +124,19 @@ class SphinxSearch
 	public function updateReleaseSearchName($releaseID, $searchName)
 	{
 		if (!is_null($this->sphinxQL)) {
-			$old = $this->sphinxQL->queryOneRow(sprintf('SELECT * FROM releases_rt WHERE id = %s', $releaseID));
+			$pdo->queryDirect('SET SESSION group_concat_max_len=8192');
+			$old = $this->sphinxQL->queryOneRow(
+				sprintf('SELECT r.id, r.name, r.searchname, r.fromname, IFNULL(GROUP_CONCAT(rf.name SEPARATOR " "),"") filename
+					FROM releases r LEFT JOIN release_files rf ON(r.id=rf.releaseid) WHERE r.id = %d GROUP BY r.id LIMIT 1', $releaseID)
+				);
 			if ($old !== false) {
 				$this->insertRelease(
 					[
 						'id' => $releaseID,
+						'name' => $this->sphinxQL->escapeString($old['name']),
 						'searchname' => $searchName,
 						'fromname' => $this->sphinxQL->escapeString($old['fromname'])
+						'filename' => $this->sphinxQL->escapeString($old['filename'])
 					]
 				);
 			}

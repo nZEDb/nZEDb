@@ -22,12 +22,15 @@ function populate_rt($table = '')
 
 	switch ($table) {
 		case 'releases_rt':
-			$rows = $pdo->queryExec('SELECT id, name, searchname, fromname FROM releases');
-			$rtvalues = '(id, name, searchname, fromname)';
+			$pdo->queryDirect('SET SESSION group_concat_max_len=8192');
+			$rows = $pdo->queryExec('SELECT r.id, r.name, r.searchname, r.fromname, IFNULL(GROUP_CONCAT(rf.name SEPARATOR " "),"") filename
+				FROM releases r LEFT JOIN release_files rf ON(r.id=rf.releaseid) GROUP BY r.id'
+			);
+			$rtvalues = '(id, name, searchname, fromname, filename)';
 			break;
 		case 'release_files_rt':
-			$rows = $pdo->queryExec('SELECT releaseid AS id, name AS filename FROM release_files');
-			$rtvalues = '(id, filename)';
+			$rows = $pdo->queryExec('SELECT releaseid, name AS filename FROM release_files');
+			$rtvalues = '(releaseid, filename)';
 			break;
 	}
 
@@ -44,17 +47,18 @@ function populate_rt($table = '')
 			switch ($table) {
 				case 'releases_rt':
 					$tempString .= sprintf(
-						'(%d, %s, %s, %s),',
+						'(%d, %s, %s, %s, %s),',
 						$row['id'],
 						$sphinx->sphinxQL->escapeString($row['name']),
 						$sphinx->sphinxQL->escapeString($row['searchname']),
-						$sphinx->sphinxQL->escapeString($row['fromname'])
+						$sphinx->sphinxQL->escapeString($row['fromname']),
+						$sphinx->sphinxQL->escapeString($row['filename'])
 					);
 					break;
 				case 'release_files_rt':
 					$tempString .= sprintf(
 						'(%d, %s),',
-						$row['id'],
+						$row['releaseid'],
 						$sphinx->sphinxQL->escapeString($row['filename'])
 					);
 					break;
