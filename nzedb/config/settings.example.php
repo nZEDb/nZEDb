@@ -14,10 +14,10 @@
  * is out of date, you will need to update it and change the version number.
  *
  * @note Developers: When updating settings.php.example, up this version
- *                   and $current_settings_file_version in constants.php
- * @version 3
+ *                   and $current_settings_file_version in nzedb\config\Configure.php
+ * @version 4
  */
-define('nZEDb_SETTINGS_FILE_VERSION', 3);
+define('nZEDb_SETTINGS_FILE_VERSION', 4);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////// Web Settings //////////////////////////////////////////////////////////
@@ -541,10 +541,243 @@ define('PHPMAILER_SMTP_USER','');
  */
 define('PHPMAILER_SMTP_PASSWORD', '');
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////// PHP CLI Settings ///////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+if (stripos(PHP_SAPI, 'cli') !== false) {
+
+	/**
+	 * Your server's local timezone.
+	 * @note Uncomment to enable.
+	 * @see https://secure.php.net/manual/en/timezones.php
+	 * @version 4
+	 */
+	//ini_set('date.timezone', 'America/New_York');
+
+	/**
+	 * Maximum amount of memory a PHP script can consume before being terminated.
+	 * @note Uncomment to enable.
+	 * @default '1024M'
+	 * @version 4
+	 */
+	//ini_set('memory_limit', '1024M');
+
+	/**
+	 * Show PHP errors on CLI output.
+	 * @note Set to '1' for development.
+	 * @default '0'
+	 * @version 4
+	 */
+	ini_set('display_errors', '0');
+
+	/**
+	 * Show startup errors on CLI output.
+	 * @note Set to '1' for development/debugging.
+	 * @default '0'
+	 * @version 4
+	 */
+	ini_set('display_startup_errors', '0');
+
+	/**
+	 * Type of errors to display.
+	 * @note For development/debugging set to E_ALL
+	 * @default E_ALL & ~E_DEPRECATED & ~E_STRICT
+	 * @see https://secure.php.net/manual/en/errorfunc.constants.php
+	 * @version 4
+	 */
+	ini_set('error_reporting', E_ALL & ~E_DEPRECATED & ~E_STRICT);
+
+	/**
+	 * Turn off HTML tags in error messages.
+	 * @default '1'
+	 * @version 4
+	 */
+	ini_set('html_errors', '1');
+
+	/**
+	 * Set the location to log PHP errors.
+	 * @default nZEDb_LOGS . 'php_errors.log'
+	 * @note To log to syslog, put in 'syslog'
+	 * @version 4
+	 */
+	ini_set('error_log', nZEDb_LOGS . 'php_errors.log');
+
+	/**
+	 * Log errors to error_log?
+	 * @default '1'
+	 * @version 4
+	 */
+	ini_set('log_errors', '1');
+
+	/**
+	 * Max line length for a error.
+	 * @default 1024
+	 * @version 4
+	 */
+	ini_set('log_errors_max_len', '1024');
+
+	/**
+	 * Store the last PHP error in $php_errormsg
+	 * @default '0'
+	 * @note This is a development/debugging option.
+	 * @version 4
+	 */
+	ini_set('track_errors', '0');
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////// PHP Web Settings ///////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+} else {
+
+	/**
+	 * Your server's local timezone.
+	 * @note Uncomment to enable.
+	 * @see https://secure.php.net/manual/en/timezones.php
+	 * @version 4
+	 */
+	//ini_set('date.timezone', 'America/New_York');
+
+	/**
+	 * Maximum amount of seconds a script can run before being terminated.
+	 * @default '120'
+	 * @version 4
+	 */
+	ini_set('max_execution_time', '120');
+
+	/**
+	 * Maximum amount of memory a PHP script can consume before being terminated.
+	 * @note Uncomment to enable.
+	 * @default '1024M'
+	 * @version 4
+	 */
+	//ini_set('memory_limit', '1024M');
+
+	/**
+	 * Show PHP errors on web browser.
+	 * @note Set to '1' for development.
+	 * @default '0'
+	 * @version 4
+	 */
+	ini_set('display_errors', '0');
+
+	/**
+	 * Show startup errors on web browser.
+	 * @note Set to '1' for development/debugging.
+	 * @default '0'
+	 * @version 4
+	 */
+	ini_set('display_startup_errors', '0');
+
+	/**
+	 * Type of errors to display.
+	 * @note For development/debugging set to E_ALL
+	 * @default E_ALL & ~E_DEPRECATED & ~E_STRICT
+	 * @see https://secure.php.net/manual/en/errorfunc.constants.php
+	 * @version 4
+	 */
+	ini_set('error_reporting', E_ALL & ~E_DEPRECATED & ~E_STRICT);
+
+	/**
+	 * Turn off HTML tags in error messages.
+	 * @default '1'
+	 * @version 4
+	 */
+	ini_set('html_errors', '1');
+
+	/**
+	 * Set the location to log PHP errors.
+	 * @default nZEDb_LOGS . 'php_errors.log'
+	 * @note To log to syslog, put in 'syslog'
+	 * @version 4
+	 */
+	ini_set('error_log', nZEDb_LOGS . 'php_errors.log');
+
+	/**
+	 * Log errors to error_log?
+	 * @default '1'
+	 * @version 4
+	 */
+	ini_set('log_errors', '1');
+
+	/**
+	 * Max line length for a error.
+	 * @default 1024
+	 * @version 4
+	 */
+	ini_set('log_errors_max_len', '1024');
+
+	/**
+	 * Store the last PHP error in $php_errormsg
+	 * @default '0'
+	 * @note This is a development/debugging option.
+	 * @version 4
+	 */
+	ini_set('track_errors', '0');
+
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////// PHP Xdebug Settings //////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+if (extension_loaded('xdebug')) {
+
+	/**
+	 * Uncomment this to disable xdebug.
+	 * @version 4
+	 */
+	//xdebug_disable();
+
+	/**
+	 * Display colors on xdebug CLI output?
+	 * 0 - off, 1 - on only if on a TTY with ansi support, 2 - on regardless of TTY or ansi support.
+	 * @default 0
+	 * @version 4
+	 */
+	ini_set('xdebug.cli_color', '0');
+
+	/**
+	 * Replace PHP's var_dump with xdebug's own?
+	 * @default '1'
+	 * @version 4
+	 */
+	ini_set('xdebug.overload_var_dump', '1');
+
+	/**
+	 * How many items in a array or object to display on var_dump.
+	 * @note Set to '-1' for no limit.
+	 * @default '128'
+	 * @version 4
+	 */
+	ini_set('xdebug.var_display_max_children', '128');
+
+	/**
+	 * Maximum string length on var_dump. (anything over is truncated)
+	 * @note Set to '-1' for no limit.
+	 * @default '512'
+	 * @version 4
+	 */
+	ini_set('xdebug.var_display_max_data', '512');
+
+	/**
+	 * How many nested arrays / objects deep to display on var_dump.
+	 * @note Set to '-1' for no limit.
+	 * @note Maximum value is '1023'
+	 * @default '3'
+	 * @version 4
+	 */
+	ini_set('xdebug.var_display_max_depth', '3');
+}
+
 /***********************************************************************************************************************
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////// Change log ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+2015-08-26       v4  Add settings for PHP web/CLI SAPI's.
+Add settings for Xdebug.
+All new settings start from the "PHP CLI Settings" up to the "Change log",
+lines ~544 to ~768
 
 2015-06-11       v3  Add support for APC or APCu extensions for caching data. Search for @version 3 for the changes.
 
