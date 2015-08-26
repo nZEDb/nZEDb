@@ -267,7 +267,7 @@ class RequestIDLocal extends RequestID
 					$this->_release['id']
 				)
 			);
-			$this->sphinx->updateReleaseSearchName($this->_release['id'], $newTitle);
+			$this->sphinx->updateRelease($this->_release['id'], $this->pdo);
 		} else {
 			$newTitle = $this->pdo->escapeString($this->_newTitle['title']);
 			$this->pdo->queryExec(
@@ -285,7 +285,7 @@ class RequestIDLocal extends RequestID
 					$this->_release['id']
 				)
 			);
-			$this->sphinx->updateReleaseSearchName($this->_release['id'], $newTitle);
+			$this->sphinx->updateRelease($this->_release['id'], $this->pdo);
 		}
 
 		if ($this->_release['name'] !== $this->_newTitle['title'] && $this->_show == 1) {
