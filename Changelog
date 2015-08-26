@@ -8,6 +8,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2015-08-26 bart39
 	Mrg: PR 1843, by ruhllatio - Sphinx Full-Text Search for Filenames.
+	*** NOTE *** - follow the readme in the sphinxsearch folder for copying over the changed Sphinx.conf and create_se_tables / repopulate the index again
 2015-08-26 kevin
 	Add: Xdebug and PHP settings to nzedb\config\settings.php
 2015-08-25 bart39
