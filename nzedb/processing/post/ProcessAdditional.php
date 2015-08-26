@@ -1169,8 +1169,10 @@ class ProcessAdditional
 					}
 				}
 			}
-
 			$this->_addFileInfo($file);
+		}
+		if ($this->_addedFileInfo > 0) {
+			$this->sphinx->updateRelease($this->_release['id'], $this->pdo);
 		}
 		return ($this->_totalFileInfo > 0 ? true : false);
 	}

@@ -89,6 +89,8 @@ class ReleaseFiles
 	 */
 	public function add($id, $name, $size, $createdTime, $hasPassword)
 	{
+		$insert = 0;
+
 		$duplicateCheck = $this->pdo->queryOneRow(
 			sprintf('
 				SELECT id
@@ -110,13 +112,10 @@ class ReleaseFiles
 						$this->pdo->escapeString(utf8_encode($name)),
 						$this->pdo->escapeString($size),
 						$this->pdo->from_unixtime($createdTime),
-						$hasPassword)
-					);
-			if ($insert) {
-				$this->sphinxSearch->updateRelease($id, $this->pdo);
-				return $insert;
-			}
+						$hasPassword
+					)
+			);
 		}
-		return 0;
+		return $insert;
 	}
 }

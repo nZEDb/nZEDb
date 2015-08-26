@@ -44,7 +44,7 @@ class ReleaseSearch
 				break;
 		}
 
-		$this->sphinxQueryOpt = ";index=releases_rt;limit=10000;maxmatches=10000;sort=relevance;mode=extended";
+		$this->sphinxQueryOpt = ";limit=10000;maxmatches=10000;sort=relevance;mode=extended";
 		$this->pdo = ($settings instanceof Settings ? $settings : new Settings());
 	}
 
