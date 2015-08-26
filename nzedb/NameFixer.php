@@ -688,7 +688,7 @@ class NameFixer
 				$titlematch = SphinxSearch::escapeString($preTitle);
 				$join = sprintf(
 						'INNER JOIN releases_se rse ON rse.id = r.id
-						WHERE rse.query = "@(name,searchname) %s;mode=extended"',
+						WHERE rse.query = "@(name,searchname,filename) %s;mode=extended"',
 						$titlematch
 				);
 				break;

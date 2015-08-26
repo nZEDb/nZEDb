@@ -5,7 +5,7 @@ use nzedb\ReleaseSearch;
 use nzedb\db\DB;
 
 if (nZEDb_RELEASE_SEARCH_TYPE != ReleaseSearch::SPHINX) {
-	exit('Error, nZEDb_RELEASE_SEARCH_TYPE in nzed/config/settings.php must be set to SPHINX!' . PHP_EOL);
+	exit('Error, nZEDb_RELEASE_SEARCH_TYPE in nzedb/config/settings.php must be set to SPHINX!' . PHP_EOL);
 }
 
 $sphinxConnection = '';

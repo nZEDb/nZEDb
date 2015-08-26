@@ -89,15 +89,6 @@ class ReleaseSearch
 	}
 
 	/**
-	 * Returns the string for joining the release search table to the releases table.
-	 * @return string
-	 */
-	public function getFullTextJoinFileString()
-	{
-		return $this->fullTextJoinFileString;
-	}
-
-	/**
 	 * Create SQL sub-query for full text searching.
 	 *
 	 * @return string
