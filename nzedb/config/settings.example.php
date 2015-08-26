@@ -775,9 +775,8 @@ if (extension_loaded('xdebug')) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 2015-08-26       v4  Add settings for PHP web/CLI SAPI's.
-Add settings for Xdebug.
-All new settings start from the "PHP CLI Settings" up to the "Change log",
-lines ~544 to ~768
+                     Add settings for Xdebug.
+                     All new settings start from the "PHP CLI Settings" up to the "Change log", lines ~544 to ~768
 
 2015-06-11       v3  Add support for APC or APCu extensions for caching data. Search for @version 3 for the changes.
 
