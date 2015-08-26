@@ -723,12 +723,6 @@ if (stripos(PHP_SAPI, 'cli') !== false) {
 if (extension_loaded('xdebug')) {
 
 	/**
-	 * Uncomment this to disable xdebug.
-	 * @version 4
-	 */
-	//xdebug_disable();
-
-	/**
 	 * Display colors on xdebug CLI output?
 	 * 0 - off, 1 - on only if on a TTY with ansi support, 2 - on regardless of TTY or ansi support.
 	 * @default 0
