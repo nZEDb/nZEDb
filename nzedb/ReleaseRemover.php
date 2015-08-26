@@ -770,7 +770,7 @@ class ReleaseRemover
 					}
 
 					$ftMatch = (nZEDb_RELEASE_SEARCH_TYPE == ReleaseSearch::SPHINX
-						? sprintf('rse.query = "@(name,searchname) %s;limit=10000;maxmatches=10000;mode=any" AND', str_replace('|', ' ', str_replace('"', '', $regexMatch)))
+						? sprintf('rse.query = "@(name,searchname,filename) %s;limit=10000;maxmatches=10000;mode=any" AND', str_replace('|', ' ', str_replace('"', '', $regexMatch)))
 						: sprintf("(MATCH (rs.name) AGAINST ('%1\$s') OR MATCH (rs.searchname) AGAINST ('%1\$s')) AND", str_replace('|', ' ', $regexMatch))
 					);
 				}

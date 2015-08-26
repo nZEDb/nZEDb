@@ -44,6 +44,7 @@ class ReleaseSearch
 				break;
 		}
 
+		$this->sphinxQueryOpt = ";limit=10000;maxmatches=10000;sort=relevance;mode=extended";
 		$this->pdo = ($settings instanceof Settings ? $settings : new Settings());
 	}
 
@@ -156,29 +157,30 @@ class ReleaseSearch
 	 */
 	private function sphinxSQL()
 	{
-		$return = '';
+		$searchQuery = $fullReturn = '';
+
 		foreach ($this->searchOptions as $columnName => $searchString) {
 			$searchWords = '';
 			$words = explode(' ', $searchString);
 			foreach ($words as $word) {
 				$word = str_replace("'", "\\'", trim($word, "\n\t\r\0\x0B "));
-
 				if ($word !== '') {
 					$searchWords .= ($word . ' ');
 				}
 			}
 			$searchWords = rtrim($searchWords, "\n\t\r\0\x0B ");
 			if ($searchWords !== '') {
-				$return .= sprintf("@%s %s ", $columnName, $searchWords);
+				$searchQuery .= sprintf("@%s %s ",
+							$columnName,
+							$searchWords
+				);
 			}
 		}
-		if ($return === '') {
-			return $this->likeSQL();
+		if ($searchQuery !== '') {
+			$fullReturn = sprintf("AND (rse.query = '@@relaxed %s')", trim($searchQuery) . $this->sphinxQueryOpt);
 		} else {
-			return sprintf(
-				" AND rse.query = '%s;limit=10000;maxmatches=10000;sort=relevance;mode=extended'",
-				trim($return)
-			);
+			$fullReturn = $this->likeSQL();
 		}
+		return $fullReturn;
 	}
 }

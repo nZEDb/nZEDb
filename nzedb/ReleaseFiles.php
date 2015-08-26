@@ -16,11 +16,17 @@ class ReleaseFiles
 	protected $pdo;
 
 	/**
+	 * @var SphinxSearch
+	 */
+	public $sphinxSearch;
+
+	/**
 	 * @param \nzedb\db\Settings $settings
 	 */
 	public function __construct($settings = null)
 	{
 		$this->pdo = ($settings instanceof Settings ? $settings : new Settings());
+		$this->sphinxSearch = new SphinxSearch();
 	}
 
 	/**
@@ -65,7 +71,9 @@ class ReleaseFiles
 	 */
 	public function delete($id)
 	{
-		return $this->pdo->queryExec(sprintf("DELETE FROM release_files WHERE releaseid = %d", $id));
+		$res = $this->pdo->queryExec(sprintf("DELETE FROM release_files WHERE releaseid = %d", $id));
+		$this->sphinxSearch->updateRelease($id, $this->pdo);
+		return $res;
 	}
 
 	/**
@@ -81,6 +89,8 @@ class ReleaseFiles
 	 */
 	public function add($id, $name, $size, $createdTime, $hasPassword)
 	{
+		$insert = 0;
+
 		$duplicateCheck = $this->pdo->queryOneRow(
 			sprintf('
 				SELECT id
@@ -92,18 +102,20 @@ class ReleaseFiles
 		);
 
 		if ($duplicateCheck === false) {
-			return $this->pdo->queryInsert(
-				sprintf("
-					INSERT INTO release_files
-					(releaseid, name, size, createddate, passworded)
-					VALUES
-					(%d, %s, %s, %s, %d)",
-					$id,
-					$this->pdo->escapeString(utf8_encode($name)),
-					$this->pdo->escapeString($size),
-					$this->pdo->from_unixtime($createdTime),
-					$hasPassword));
+			$insert = $this->pdo->queryInsert(
+					sprintf("
+						INSERT INTO release_files
+						(releaseid, name, size, createddate, passworded)
+						VALUES
+						(%d, %s, %s, %s, %d)",
+						$id,
+						$this->pdo->escapeString(utf8_encode($name)),
+						$this->pdo->escapeString($size),
+						$this->pdo->from_unixtime($createdTime),
+						$hasPassword
+					)
+			);
 		}
-		return 0;
+		return $insert;
 	}
 }
