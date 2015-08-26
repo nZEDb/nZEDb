@@ -7,8 +7,8 @@ use nzedb\db\DB;
 
 if (nZEDb_RELEASE_SEARCH_TYPE != ReleaseSearch::SPHINX) {
 	exit('Error, nZEDb_RELEASE_SEARCH_TYPE in nzedb/config/settings.php must be set to SPHINX!' . PHP_EOL);
-} else if (!isset($argv[1]) || !in_array($argv[1], ['releases_rt', 'release_files_rt'])) {
-	exit('Argument1 is the index name, releases_rt/release_files_rt are the only supported ones currently.' . PHP_EOL);
+} else if (!isset($argv[1]) || !in_array($argv[1], ['releases_rt'])) {
+	exit('Argument1 is the index name, releases_rt are the only supported ones currently.' . PHP_EOL);
 } else {
 	populate_rt($argv[1]);
 }
@@ -22,12 +22,11 @@ function populate_rt($table = '')
 
 	switch ($table) {
 		case 'releases_rt':
-			$rows = $pdo->queryExec('SELECT id, guid, name, searchname, fromname FROM releases');
-			$rtvalues = '(id, guid, name, searchname, fromname)';
-			break;
-		case 'release_files_rt':
-			$rows = $pdo->queryExec('SELECT id, releaseid, name FROM release_files');
-			$rtvalues = '(id, releaseid, filename)';
+			$pdo->queryDirect('SET SESSION group_concat_max_len=8192');
+			$rows = $pdo->queryExec('SELECT r.id, r.name, r.searchname, r.fromname, IFNULL(GROUP_CONCAT(rf.name SEPARATOR " "),"") filename
+				FROM releases r LEFT JOIN release_files rf ON(r.id=rf.releaseid) GROUP BY r.id'
+			);
+			$rtvalues = '(id, name, searchname, fromname, filename)';
 			break;
 	}
 
@@ -46,18 +45,10 @@ function populate_rt($table = '')
 					$tempString .= sprintf(
 						'(%d, %s, %s, %s, %s),',
 						$row['id'],
-						$sphinx->sphinxQL->escapeString($row['guid']),
 						$sphinx->sphinxQL->escapeString($row['name']),
 						$sphinx->sphinxQL->escapeString($row['searchname']),
-						$sphinx->sphinxQL->escapeString($row['fromname'])
-					);
-					break;
-				case 'release_files_rt':
-					$tempString .= sprintf(
-						'(%d, %d, %s),',
-						$row['id'],
-						$row['releaseid'],
-						$sphinx->sphinxQL->escapeString($row['name'])
+						$sphinx->sphinxQL->escapeString($row['fromname']),
+						$sphinx->sphinxQL->escapeString($row['filename'])
 					);
 					break;
 			}

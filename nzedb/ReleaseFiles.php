@@ -72,7 +72,7 @@ class ReleaseFiles
 	public function delete($id)
 	{
 		$res = $this->pdo->queryExec(sprintf("DELETE FROM release_files WHERE releaseid = %d", $id));
-		$this->sphinxSearch->deleteReleaseFiles($id);
+		$this->sphinxSearch->updateRelease($id, $this->pdo);
 		return $res;
 	}
 
@@ -113,14 +113,7 @@ class ReleaseFiles
 						$hasPassword)
 					);
 			if ($insert) {
-				$this->sphinxSearch->insertReleaseFiles(
-					[
-						'id'        => $insert,
-						'releaseid' => $id,
-						'filename'  => utf8_encode($name)
-					]
-				);
-
+				$this->sphinxSearch->updateRelease($id, $this->pdo);
 				return $insert;
 			}
 		}
