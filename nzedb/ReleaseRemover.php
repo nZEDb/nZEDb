@@ -108,6 +108,16 @@ class ReleaseRemover
 	private $nzb;
 
 	/**
+	 * @var ReleaseSearch
+	 */
+	private $releaseSearch;
+
+	/**
+	 * @var SphinxSearch
+	 */
+	private $sphinxSearch;
+
+	/**
 	 * Construct.
 	 *
 	 * @param array $options Class instances / various options.
@@ -115,13 +125,15 @@ class ReleaseRemover
 	public function __construct(array $options = [])
 	{
 		$defaults = [
-			'Browser'      => false, // Are we coming from the web script.
-			'ConsoleTools' => null,
-			'Echo'         => true, // Echo to CLI?
-			'NZB'          => null,
-			'ReleaseImage' => null,
-			'Releases'     => null,
-			'Settings'     => null,
+			'Browser'       => false, // Are we coming from the web script.
+			'ConsoleTools'  => null,
+			'Echo'          => true, // Echo to CLI?
+			'NZB'           => null,
+			'ReleaseImage'  => null,
+			'ReleaseSearch' => null,
+			'Releases'      => null,
+			'Settings'      => null,
+			'SphinxSearch'  => null,
 		];
 		$options += $defaults;
 
@@ -130,6 +142,8 @@ class ReleaseRemover
 		$this->releases = ($options['Releases'] instanceof Releases ? $options['Releases'] : new Releases(['Settings' => $this->pdo]));
 		$this->nzb = ($options['NZB'] instanceof NZB ? $options['NZB'] : new NZB($this->pdo));
 		$this->releaseImage = ($options['ReleaseImage'] instanceof ReleaseImage ? $options['ReleaseImage'] : new ReleaseImage($this->pdo));
+		$this->sphinxSearch = ($options['SphinxSearch'] instanceof SphinxSearch ? $options['SphinxSearch'] : new SphinxSearch());
+		$this->releaseSearch = ($options['ReleaseSearch'] instanceof ReleaseSearch ? $options['ReleaseSearch'] : new ReleaseSearch($this->pdo, $this->sphinxSearch));
 
 		$this->query = '';
 		$this->error = '';
@@ -378,7 +392,9 @@ class ReleaseRemover
 			AND r.categoryid NOT IN (%d, %d)
 			AND r.searchname REGEXP '[a-zA-Z0-9]{25,}'
 			%s",
-			Category::CAT_MISC, Category::CAT_OTHER_HASHED, $this->crapTime
+			Category::CAT_MISC,
+			Category::CAT_OTHER_HASHED,
+			$this->crapTime
 		);
 
 		if ($this->checkSelectQuery() === false) {
@@ -423,14 +439,17 @@ class ReleaseRemover
 	protected function removeExecutable()
 	{
 		$this->method = 'Executable';
+		$searchOptions = ['searchname' => '!".exe"', 'filename' => '.exe'];
 		$this->query = sprintf(
 			"SELECT r.guid, r.searchname, r.id
-			FROM releases r
+			FROM releases r %s
 			INNER JOIN release_files rf ON rf.releaseid = r.id
-			WHERE r.searchname NOT LIKE %s
+			WHERE r.searchname NOT LIKE %s %s
 			AND rf.name LIKE %s
 			AND r.categoryid NOT IN (%d, %d, %d, %d, %d, %d) %s",
+			$this->releaseSearch->getFullTextJoinString(),
 			"'%.exes%'",
+			$this->releaseSearch->getSearchSQL($searchOptions),
 			"'%.exe%'",
 			Category::CAT_PC_0DAY,
 			Category::CAT_PC_GAMES,
@@ -456,12 +475,16 @@ class ReleaseRemover
 	protected function removeInstallBin()
 	{
 		$this->method = 'Install.bin';
+		$searchOptions = ['filename' => 'install << bin'];
 		$this->query = sprintf(
 			"SELECT r.guid, r.searchname, r.id
-			FROM releases r
+			FROM releases r %s
 			INNER JOIN release_files rf ON rf.releaseid = r.id
-			WHERE rf.name LIKE %s %s",
+			WHERE rf.name LIKE %s
+			%s %s",
+			$this->releaseSearch->getFullTextJoinString(),
 			"'%install.bin%'",
+			$this->releaseSearch->getSearchSQL($searchOptions),
 			$this->crapTime
 		);
 
@@ -480,12 +503,15 @@ class ReleaseRemover
 	protected function removePasswordURL()
 	{
 		$this->method = 'Password.url';
+		$searchOptions = ['filename' => 'password.url'];
 		$this->query = sprintf(
 			"SELECT r.guid, r.searchname, r.id
-			FROM releases r
+			FROM releases r %s
 			INNER JOIN release_files rf ON rf.releaseid = r.id
-			WHERE rf.name LIKE %s %s",
+			WHERE rf.name LIKE %s %s %s",
+			$this->releaseSearch->getFullTextJoinString(),
 			"'%password.url%'",
+			$this->releaseSearch->getSearchSQL($searchOptions),
 			$this->crapTime
 		);
 
@@ -504,9 +530,10 @@ class ReleaseRemover
 	protected function removePassworded()
 	{
 		$this->method = 'Passworded';
+		$searchOptions = ['searchname' => 'passwor* !advanced !"no password*" !"not password*" !recovery !reset !unlocker'];
 		$this->query = sprintf(
 			"SELECT r.guid, r.searchname, r.id
-			FROM releases r
+			FROM releases r %s
 			WHERE r.searchname LIKE %s
 			AND r.searchname NOT LIKE %s
 			AND r.searchname NOT LIKE %s
@@ -515,8 +542,9 @@ class ReleaseRemover
 			AND r.searchname NOT LIKE %s
 			AND r.searchname NOT LIKE %s
 			AND r.nzbstatus = 1
-			AND r.categoryid NOT IN (%d, %d, %d, %d, %d, %d, %d, %d, %d) %s",
+			AND r.categoryid NOT IN (%d, %d, %d, %d, %d, %d, %d, %d, %d) %s %s",
 			// Matches passwort / passworded / etc also.
+			$this->releaseSearch->getFullTextJoinString(),
 			"'%passwor%'",
 			"'%advanced%'",
 			"'%no password%'",
@@ -533,6 +561,7 @@ class ReleaseRemover
 			Category::CAT_PC_PHONE_OTHER,
 			Category::CAT_MISC,
 			Category::CAT_OTHER_HASHED,
+			$this->releaseSearch->getSearchSQL($searchOptions),
 			$this->crapTime
 		);
 
@@ -609,13 +638,15 @@ class ReleaseRemover
 	protected function removeSample()
 	{
 		$this->method = 'Sample';
+		$searchOptions = ['name' => 'sample'];
 		$this->query = sprintf(
 			"SELECT r.guid, r.searchname, r.id
-			FROM releases r
+			FROM releases r %s
 			WHERE r.totalpart > 1
 			AND r.size < 40000000
 			AND r.name LIKE %s
-			AND r.categoryid IN (%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d) %s",
+			AND r.categoryid IN (%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d) %s %s",
+			$this->releaseSearch->getFullTextJoinString(),
 			"'%sample%'",
 			Category::CAT_TV_ANIME,
 			Category::CAT_TV_DOCUMENTARY,
@@ -632,6 +663,7 @@ class ReleaseRemover
 			Category::CAT_MOVIE_HD,
 			Category::CAT_MOVIE_OTHER,
 			Category::CAT_MOVIE_SD,
+			$this->releaseSearch->getSearchSQL($searchOptions),
 			$this->crapTime
 		);
 
@@ -652,10 +684,12 @@ class ReleaseRemover
 		$this->method = '.scr';
 		$this->query = sprintf(
 			"SELECT r.guid, r.searchname, r.id
-			FROM releases r
+			FROM releases r %s
 			LEFT JOIN release_files rf on rf.releaseid = r.id
 			WHERE (rf.name REGEXP '[.]scr[$ \"]' OR r.name REGEXP '[.]scr[$ \"]')
-			%s",
+			%s %s",
+			$this->releaseSearch->getFullTextJoinString(),
+			$this->releaseSearch->getSearchSQL($searchOptions),
 			$this->crapTime
 		);
 
@@ -770,7 +804,7 @@ class ReleaseRemover
 					}
 
 					$ftMatch = (nZEDb_RELEASE_SEARCH_TYPE == ReleaseSearch::SPHINX
-						? sprintf('rse.query = "@(name,searchname,filename) %s;limit=10000;maxmatches=10000;mode=any" AND', str_replace('|', ' ', str_replace('"', '', $regexMatch)))
+						? sprintf('rse.query = "@(name,searchname,filename) %s;limit=10000000;maxmatches=10000000;mode=any" AND', str_replace('|', ' ', str_replace('"', '', $regexMatch)))
 						: sprintf("(MATCH (rs.name) AGAINST ('%1\$s') OR MATCH (rs.searchname) AGAINST ('%1\$s')) AND", str_replace('|', ' ', $regexMatch))
 					);
 				}
