@@ -10,7 +10,14 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Add: predb export script now has a default filename (predb_export_YYYYMMDDhhmmss.tsv) if only a path is specified.
 2015-08-26 bart39
 	Mrg: PR 1843, by ruhllatio - Sphinx Full-Text Search for Filenames.
-	*** NOTE *** - follow the readme in the sphinxsearch folder for copying over the changed Sphinx.conf and create_se_tables / repopulate the index again
+	*** NOTE *** - you will need to do the following to update the sphinx index:
+		1) stop sphinxsearch - `sudo service sphinxsearch stop`
+		2) clear old index - `rm /var/lib/sphinxsearch/data/*`
+		3) copy updated conf file - `sudo cp /var/www/nZEDb/misc/sphinxsearch/sphinx.conf /etc/sphinxsearch/sphinx.conf`
+		4) If you had previously edited the conf file - you will need to re-edit again.
+		5) start sphinxsearch - `sudo service sphinxsearch start`
+		6) recreate the tables - `php /var/www/nZEDb/misc/sphinxsearch/create_se_tables.php 0 9312`
+		7) populate the index - `php /var/www/nZEDb/misc/sphinxsearch/populate_rt_indexes.php releases_rt`
 2015-08-26 kevin
 	Add: Xdebug and PHP settings to nzedb\config\settings.php
 2015-08-25 bart39
