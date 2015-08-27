@@ -6,6 +6,8 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2015-08-27 niel
+	Add: predb export script now has a default filename (predb_export_YYYYMMDDhhmmss.tsv) if only a path is specified.
 2015-08-26 bart39
 	Mrg: PR 1843, by ruhllatio - Sphinx Full-Text Search for Filenames.
 	*** NOTE *** - follow the readme in the sphinxsearch folder for copying over the changed Sphinx.conf and create_se_tables / repopulate the index again
