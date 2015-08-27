@@ -225,15 +225,19 @@ switch ($function) {
 		$page->smarty->assign('parentcatlist', $cats);
 
 		if ($outputXML) { //use apicaps.tpl if xml is requested
+			$response = $page->smarty->fetch('apicaps.tpl');
 			header('Content-type: text/xml');
-			echo $page->smarty->fetch('apicaps.tpl');
+			header('Content-Length: ' . strlen($response) );
+			echo $response;
 		} else { //otherwise construct array of capabilities and categories
 			//get capabilities
 			$caps = (new Capabilities(['Settings' => $page->settings]))->getForMenu();
 			$caps['categories'] = $cats;
 			//use json_encode
+			$response = json_encode($caps);
 			header('Content-type: application/json');
-			echo json_encode($caps);
+			header('Content-Length: ' . strlen($response) );
+			echo $response;
 		}
 		break;
 	// Register request.
@@ -271,13 +275,15 @@ switch ($function) {
 			showApiError(107);
 		}
 
-		header('Content-type: text/xml');
-		echo
+		$response =
 			"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" .
 			'<register username="' . $username .
 			'" password="' . $password .
 			'" apikey="' . $userdata['rsstoken'] .
 			"\"/>\n";
+		header('Content-type: text/xml');
+		header('Content-Length: ' . strlen($response) );
+		echo $response;
 		break;
 }
 
@@ -341,9 +347,13 @@ function showApiError($errorCode = 900, $errorText = '')
 		}
 	}
 
+	$response =
+		"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" .
+		'<error code="' . $errorCode .  '" description="' . $errorText . "\"/>\n";
 	header('Content-type: text/xml');
+	header('Content-Length: ' . strlen($response) );
 	header('X-nZEDb: API ERROR [' . $errorCode . '] ' . $errorText);
-	exit("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<error code=\"$errorCode\" description=\"$errorText\"/>\n");
+	echo $response;
 }
 
 /**
@@ -422,10 +432,14 @@ function printOutput($data, $xml = true, $page, $offset = 0)
 	if ($xml) {
 		$page->smarty->assign('offset', $offset);
 		$page->smarty->assign('releases', $data);
+		$response = trim($page->smarty->fetch('apiresult.tpl'));
 		header('Content-type: text/xml');
-		echo trim($page->smarty->fetch('apiresult.tpl'));
+		header('Content-Length: ' . strlen($response) );
+		echo $response;
 	} else {
+		$response = json_encode($data);
 		header('Content-type: application/json');
+		header('Content-Length: ' . strlen($response) );
 		echo json_encode($data);
 	}
 }
