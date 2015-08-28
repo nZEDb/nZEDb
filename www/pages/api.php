@@ -354,6 +354,7 @@ function showApiError($errorCode = 900, $errorText = '')
 	header('Content-Length: ' . strlen($response) );
 	header('X-nZEDb: API ERROR [' . $errorCode . '] ' . $errorText);
 	echo $response;
+	exit;
 }
 
 /**
