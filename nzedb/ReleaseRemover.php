@@ -1065,6 +1065,7 @@ class ReleaseRemover
 	protected function checkSelectQuery()
 	{
 		// Run the query, check if it picked up anything.
+		var_dump($this->query);
 		$result = $this->pdo->query($this->cleanSpaces($this->query));
 		if (count($result) <= 0) {
 			if ($this->method === 'userCriteria') {
