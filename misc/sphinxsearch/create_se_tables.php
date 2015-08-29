@@ -30,6 +30,10 @@ CREATE TABLE releases_se
 	id          BIGINT UNSIGNED NOT NULL,
 	weight      INTEGER NOT NULL,
 	query       VARCHAR(1024) NOT NULL,
+	name        VARCHAR(255) NOT NULL DEFAULT '',
+	searchname  VARCHAR(255) NOT NULL DEFAULT '',
+	fromname    VARCHAR(255) NULL,
+	filename    VARCHAR(1000) NULL,
 	INDEX(query)
 ) ENGINE=SPHINX CONNECTION="%sreleases_rt"
 DDLSQL;
