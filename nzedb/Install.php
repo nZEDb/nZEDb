@@ -24,6 +24,7 @@ class Install
 	public $NNTP_SSLENABLED_A;
 	public $NNTP_SOCKET_TIMEOUT_A;
 	public $COVERS_PATH;
+	public $CONFIG_PATH;
 	public $coverPathCheck = false;
 	public $SMARTY_DIR;
 	public $DB_DIR;
@@ -96,6 +97,7 @@ class Install
 
 	public function __construct()
 	{
+		$this->CONFIG_PATH = nZEDb_CONFIGS;
 		$this->COVERS_PATH = nZEDb_RES . 'covers' . DS;
 		$this->DB_DIR = nZEDb_RES . 'db' . DS . 'schema' . DS;
 		$this->INSTALL_DIR = nZEDb_WWW . 'install';
