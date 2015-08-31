@@ -31,6 +31,7 @@ Fixed:
 	* predb_import_daily_batch script to properly calculate last timestamp for progress mode.
 	* Console Processing failing to validate Amazon API Return (Issue 1819).
 	* Invalid date-time format when updating consoleinfo if releasedate is blank.
+	* Issue with NZBDrone/Sonarr not having content-length header set on API calls.
 
 
 0.4.24 2015-08-03
