@@ -21,6 +21,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 2015-08-26 bart39
 	Mrg: PR 1843, by ruhllatio - Sphinx Full-Text Search for Filenames.
 	*** NOTE *** - you will need to do the following to update the sphinx index:
+		0) Minimum Sphinx v2.2.9
 		1) stop sphinxsearch - `sudo service sphinxsearch stop`
 		2) clear old index - `rm /var/lib/sphinxsearch/data/*`
 		3) copy updated conf file - `sudo cp /var/www/nZEDb/misc/sphinxsearch/sphinx.conf /etc/sphinxsearch/sphinx.conf`
