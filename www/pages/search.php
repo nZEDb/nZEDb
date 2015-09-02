@@ -119,11 +119,19 @@ if (isset($_REQUEST["searchadvr"]) && !isset($_REQUEST["id"]) && !isset($_REQUES
 		($searchVars['searchadvsubject'] == '' ? -1 : $searchVars['searchadvsubject']),
 		($searchVars['searchadvposter'] == '' ? -1 : $searchVars['searchadvposter']),
 		($searchVars['searchadvfilename'] == '' ? -1 : $searchVars['searchadvfilename']),
-		$searchVars['searchadvgroups'], $searchVars['searchadvsizefrom'], $searchVars['searchadvsizeto'],
-		$searchVars['searchadvhasnfo'], $searchVars['searchadvhascomments'],
+		$searchVars['searchadvgroups'],
+		$searchVars['searchadvsizefrom'],
+		$searchVars['searchadvsizeto'],
+		$searchVars['searchadvhasnfo'],
+		$searchVars['searchadvhascomments'],
 		($searchVars['searchadvdaysnew'] == '' ? -1 : $searchVars['searchadvdaysnew']),
 		($searchVars['searchadvdaysold'] == '' ? -1 : $searchVars['searchadvdaysold']),
-		$offset, ITEMS_PER_PAGE, $orderBy, -1, $page->userdata["categoryexclusions"], "advanced",
+		$offset,
+		ITEMS_PER_PAGE,
+		$orderBy,
+		-1,
+		$page->userdata["categoryexclusions"],
+		"advanced",
 		[($searchVars['searchadvcat'] == '' ? -1 : $searchVars['searchadvcat'])]
 	);
 
