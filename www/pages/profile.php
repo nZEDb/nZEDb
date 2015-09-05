@@ -45,6 +45,7 @@ if (!isset($data['style']) || $data['style'] == 'None') {
 $offset       = isset($_REQUEST["offset"]) ? $_REQUEST["offset"] : 0;
 $page->smarty->assign([
 		'apirequests'       => $page->users->getApiRequests($userID),
+		'grabstoday'        => $page->users->getDownloadRequests($userID),
 		'userinvitedby'     => ($data['invitedby'] != '' ? $page->users->getById($data['invitedby']) : ''),
 		'user'              => $data,
 		'privateprofiles'   => $privateProfiles,
