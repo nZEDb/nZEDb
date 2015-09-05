@@ -96,7 +96,7 @@
 																		<small>(Next DL
 																		in {($grabstoday.nextdl/3600)|intval}
 																		h {($grabstoday.nextdl/60) % 60}
-																		m)</small>{/if}{if $isadmin && $user.grabs > 0}
+																		m)</small>{/if}{if $isadmin && $grabstoday > 0}
 																	<a
 																			onclick="resetapireq({$user.id}, 'grabs'); document.getElementById('ugrtd').innerHTML='0'; return false;"
 																			href="#" class="label label-danger">
