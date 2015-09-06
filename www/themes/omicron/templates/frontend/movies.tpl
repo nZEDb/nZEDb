@@ -20,6 +20,7 @@
 							<div class="nzb_multi_operations">
 								View: <strong>Covers</strong> | <a
 										href="{$smarty.const.WWW_TOP}/browse?t={$category}">List</a><br/>
+								Check all: <input type="checkbox" class="nntmux_check_all"/> <br/>
 								With Selected:
 								<div class="btn-group">
 									<input type="button"
@@ -120,6 +121,12 @@
 															<b>Starring: </b>
 															{$result.actors} {/if}</div>
 													<div id="guid{$mguid[$m@index]}">
+														<label>
+															<input type="checkbox"
+																   class="nzb_check"
+																   value="{$mguid[$m@index]}"
+																   id="chksingle"/>
+														</label>
 														<span class="label label-primary">{if isset($catsplit[0])} {$catsplit[0]}{/if}</span>
 														<span class="label label-danger">{if isset($catsplit[1])} {$catsplit[1]}{/if}</span>
 														<span class="label label-default">{$result.year}</span>
@@ -219,6 +226,12 @@
 															<b>Starring: </b>
 															{$result.actors} {/if}</div>
 													<div id="guid{$mguid[$m@index]}">
+														<label>
+															<input type="checkbox"
+																   class="nzb_check"
+																   value="{$mguid[$m@index]}"
+																   id="chksingle"/>
+														</label>
 														<span class="label label-primary">{if isset($catsplit[0])} {$catsplit[0]}{/if}</span>
 														<span class="label label-danger">{if isset($catsplit[1])} {$catsplit[1]}{/if}</span>
 														<span class="label label-default">{$result.year}</span>
@@ -269,6 +282,7 @@
 							<div class="nzb_multi_operations">
 								View: <strong>Covers</strong> | <a
 										href="{$smarty.const.WWW_TOP}/browse?t={$category}">List</a><br/>
+								Check all: <input type="checkbox" class="nntmux_check_all"/> <br/>
 								With Selected:
 								<div class="btn-group">
 									<input type="button"

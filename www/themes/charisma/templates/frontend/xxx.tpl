@@ -20,6 +20,7 @@
 							<div class="nzb_multi_operations">
 								View: <strong>Covers</strong> | <a
 										href="{$smarty.const.WWW_TOP}/browse?t={$category}">List</a><br/>
+								Check all: <input type="checkbox" class="nntmux_check_all"/> <br/>
 								With Selected:
 								<div class="btn-group">
 									<input type="button"
@@ -159,6 +160,12 @@
 																							   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$result.title|escape:"htmlall"}</a></span>
 													<div class="release-subtitle">{if $result.genre != ''}{$result.genre}, {/if}</div>
 													<div id="guid{$mguid[$m@index]}">
+														<label>
+															<input type="checkbox"
+																   class="nzb_check"
+																   value="{$mguid[$m@index]}"
+																   id="chksingle"/>
+														</label>
 														<span class="label label-primary">{if isset($catsplit[0])} {$catsplit[0]}{/if}</span>
 														<span class="label label-danger">{if isset($catsplit[1])} {$catsplit[1]}{/if}</span>
 														<span class="label label-default">{if isset($result.year)} {$result.year}{/if}</span>
@@ -296,6 +303,12 @@
 																							   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$result.title|escape:"htmlall"}</a></span>
 													<div class="release-subtitle">{if $result.genre != ''}{$result.genre}, {/if}</div>
 													<div id="guid{$mguid[$m@index]}">
+														<label>
+															<input type="checkbox"
+																   class="nzb_check"
+																   value="{$mguid[$m@index]}"
+																   id="chksingle"/>
+														</label>
 														<span class="label label-primary">{if isset($catsplit[0])} {$catsplit[0]}{/if}</span>
 														<span class="label label-danger">{if isset($catsplit[1])} {$catsplit[1]}{/if}</span>
 														<span class="label label-default">{$result.year}</span>
@@ -345,6 +358,7 @@
 							<div class="nzb_multi_operations">
 								View: <strong>Covers</strong> | <a
 										href="{$smarty.const.WWW_TOP}/browse?t={$category}">List</a><br/>
+								Check all: <input type="checkbox" class="nntmux_check_all"/> <br/>
 								With Selected:
 								<div class="btn-group">
 									<input type="button"
