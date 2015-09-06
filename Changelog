@@ -6,6 +6,46 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2015-09-05 niel
+	Mrg: PR 1856, from DariusIII - Fix display of api/download hits, in omicron and charisma templates, in last 24 hours.
+	Mrg: PR 1857, from DariusIII - Fix background colors on profile and profile edit pages.
+2015-08-31 bart39
+	Fix: Return false if trakt title is not set when fetching properties.
+2015-08-30 bart39
+	Fix: collection regex edit page not showing the result.
+2015-08-29 rullatio
+	Mrg: PR #1849 Fix RSS Content Length Response
+2015-08-28 ruhllatio
+	Fix: Sphinx Search broken for MariaDB installs (re-run create_se_tables script)
+2015-08-27 ruhllatio
+	Fix: API Search function not including -1 for fileName parameter breaking API search
+2015-08-27 niel
+	Add: predb export script now has a default filename (predb_export_YYYYMMDDhhmmss.tsv) if only a path is specified.
+2015-08-26 bart39
+	Mrg: PR 1843, by ruhllatio - Sphinx Full-Text Search for Filenames.
+	*** NOTE *** - you will need to do the following to update the sphinx index:
+		0) Minimum Sphinx v2.2.9
+		1) stop sphinxsearch - `sudo service sphinxsearch stop`
+		2) clear old index - `rm /var/lib/sphinxsearch/data/*`
+		3) copy updated conf file - `sudo cp /var/www/nZEDb/misc/sphinxsearch/sphinx.conf /etc/sphinxsearch/sphinx.conf`
+		4) If you had previously edited the conf file - you will need to re-edit again.
+		5) start sphinxsearch - `sudo service sphinxsearch start`
+		6) recreate the tables - `php /var/www/nZEDb/misc/sphinxsearch/create_se_tables.php 0 9312`
+		7) populate the index - `php /var/www/nZEDb/misc/sphinxsearch/populate_rt_indexes.php releases_rt`
+2015-08-26 kevin
+	Add: Xdebug and PHP settings to nzedb\config\settings.php
+2015-08-25 bart39
+	Fix: Truncate rather than word-wrap #1846 - clear your smarty cache.
+	Fix: Revert word-wrap change that caused a space to appear in release titles (alpha theme) #1846 - clear your smarty cache.
+2015-08-25 niel
+	Chg: Added note to copy nZEDb/nzedb/config/settings.exmple.php to nZEDb/nzedb/config/settings.php on opening Install page.
+	Fix: Typo $this->tablePerGroup to $this->_tablePerGroup.
+	Fix: Predb import dailies script does not have an OPTIONALLY ENCLOSED BY value (and there wasn't a default one) so group names were loaded quoted and consequently inserted into the groups table that way.
+2015-08-24 bart39
+	Fix: Removed another "AND" from SQL query which cause a syntax error.
+2015-08-24 niel
+	Mrg: dev => next-master to prepare for updating master.
+
 2015-08-23 bart39
 	Fix: Drop trigger from collections that got missed with recent changes.
 2015-08-22 bart39

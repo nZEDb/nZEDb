@@ -600,8 +600,8 @@ CREATE TABLE predb (
 
 DROP TABLE IF EXISTS predb_hashes;
 CREATE TABLE predb_hashes (
-  hash VARBINARY(20)      NOT NULL DEFAULT '',
   pre_id INT(11) UNSIGNED NOT NULL DEFAULT '0',
+  hash VARBINARY(20)      NOT NULL DEFAULT '',
   PRIMARY KEY (hash)
 )
   ENGINE = MYISAM

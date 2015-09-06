@@ -261,7 +261,7 @@ SQL_INSERT;
 	{
 		$enclosedby = '';
 		$defaults = [
-			'enclosedby'	=> '',
+			'enclosedby'	=> "'",
 			'fields'		=> '\t',
 			'lines'			=> '\r\n',    // Windows' style EOL to allow \n to be used in text.
 			'local'			=> false,

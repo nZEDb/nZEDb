@@ -995,8 +995,10 @@ class Movie
 				$ret['banner'] = $resp['images']['banner']['full'];
 			}
 
-			if (isset($ret['cover'])) {
+			if (isset($resp['title'])) {
 				$ret['title'] = $resp['title'];
+			} else {
+				return false;
 			}
 			if ($this->echooutput) {
 				$this->pdo->log->doEcho($this->pdo->log->alternateOver("Trakt Found ") . $this->pdo->log->headerOver($ret['title']), true);

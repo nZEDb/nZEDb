@@ -5,7 +5,7 @@ use nzedb\ReleaseSearch;
 use nzedb\db\DB;
 
 if (nZEDb_RELEASE_SEARCH_TYPE != ReleaseSearch::SPHINX) {
-	exit('Error, nZEDb_RELEASE_SEARCH_TYPE in www/settings.php must be set to SPHINX!' . PHP_EOL);
+	exit('Error, nZEDb_RELEASE_SEARCH_TYPE in nzedb/config/settings.php must be set to SPHINX!' . PHP_EOL);
 }
 
 $sphinxConnection = '';
@@ -24,22 +24,22 @@ if ($argc == 3 && is_numeric($argv[2])) {
 
 $pdo = new DB();
 
-$tableSQL = <<<DDLSQL
+$tableSQL_releases = <<<DDLSQL
 CREATE TABLE releases_se
 (
 	id          BIGINT UNSIGNED NOT NULL,
 	weight      INTEGER NOT NULL,
 	query       VARCHAR(1024) NOT NULL,
-	guid        VARCHAR(40) NOT NULL,
 	name        VARCHAR(255) NOT NULL DEFAULT '',
 	searchname  VARCHAR(255) NOT NULL DEFAULT '',
 	fromname    VARCHAR(255) NULL,
+	filename    VARCHAR(1000) NULL,
 	INDEX(query)
 ) ENGINE=SPHINX CONNECTION="%sreleases_rt"
 DDLSQL;
 
-$tables                = [];
-$tables['releases_se'] = sprintf($tableSQL, $sphinxConnection);
+$tables                     = [];
+$tables['releases_se']      = sprintf($tableSQL_releases, $sphinxConnection);
 
 foreach ($tables as $table => $query) {
 	$pdo->queryExec(sprintf('DROP TABLE IF EXISTS %s', $table));

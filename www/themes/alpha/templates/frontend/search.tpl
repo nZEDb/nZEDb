@@ -50,6 +50,10 @@
 					<td><input class="searchadv" id="searchadvposter" name="searchadvposter" value="{$searchadvposter|escape:'html'}" type="text"/></td>
 				</tr>
 				<tr>
+					<th><label for="searchadvfilename">Filename:</label></th>
+					<td><input class="searchadv" id="searchadvfilename" name="searchadvfilename" value="{$searchadvfilename|escape:'html'}" type="text"/></td>
+				</tr>
+				<tr>
 					<th><label for="searchadvdaysnew">Min age(days):</label></th>
 					<td>
 						<input class="searchdaysinput" id="searchadvdaysnew" name="searchadvdaysnew" value="{$searchadvdaysnew|escape:'html'}" type="text"/>
@@ -100,7 +104,7 @@
 				<center><li>Try fewer keywords.</li></center>
 			</ul>
 		</div></center>
-{elseif ($search || $subject || $searchadvr || $searchadvsubject || $selectedgroup || $selectedsizefrom || $searchadvdaysold) == ""}
+{elseif ($search || $subject || $searchadvr || $searchadvsubject || $searchadvfilename || $selectedgroup || $selectedsizefrom || $searchadvdaysold) == ""}
 {else}
 	<form id="nzb_multi_operations_form" method="get" action="{$smarty.const.WWW_TOP}/search">
 		<div class="container nzb_multi_operations" style="text-align:right;margin-bottom:5px;">
