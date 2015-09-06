@@ -8,6 +8,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2015-09-05 niel
 	Mrg: PR 1856, from DariusIII - Fix display of api/download hits, in omicron and charisma templates, in last 24 hours.
+	Mrg: PR 1857, from DariusIII - Fix background colors on profile and profile edit pages.
 2015-08-31 bart39
 	Fix: Return false if trakt title is not set when fetching properties.
 2015-08-30 bart39
