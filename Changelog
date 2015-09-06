@@ -26,7 +26,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	*** NOTE *** - you will need to do the following to update the sphinx index:
 		0) Minimum Sphinx v2.2.9
 		1) stop sphinxsearch - `sudo service sphinxsearch stop`
-		2) clear old index - `rm /var/lib/sphinxsearch/data/*`
+		2) clear old index - `sudo rm /var/lib/sphinxsearch/data/*`
 		3) copy updated conf file - `sudo cp /var/www/nZEDb/misc/sphinxsearch/sphinx.conf /etc/sphinxsearch/sphinx.conf`
 		4) If you had previously edited the conf file - you will need to re-edit again.
 		5) start sphinxsearch - `sudo service sphinxsearch start`
