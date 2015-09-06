@@ -28,7 +28,7 @@
 													<td>
 														<table class="table table-condensed table-striped table-responsive table-hover">
 															<tbody>
-															<tr class="bg-primary">
+															<tr class="bg-aqua-active">
 																<td colspan="2" style="padding-left: 8px;"><strong>General</strong>
 																</td>
 															</tr>
@@ -76,7 +76,7 @@
 														</table>
 														<table class="data table table-condensed table-striped table-responsive table-hover">
 															<tbody>
-															<tr class="bg-primary">
+															<tr class="bg-aqua-active">
 																<td colspan="2" style="padding-left: 8px;"><strong>API &
 																		Downloads</strong></td>
 															</tr>
