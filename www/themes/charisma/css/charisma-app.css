@@ -746,3 +746,5 @@ ul.github-buttons li {
     overflow: hidden;
     white-space: nowrap;
 }
+.invitesuccess {display:none; font-weight:bold; padding-left:10px; color:green;}
+.invitefailed {display:none; font-weight:bold; padding-left:10px; color:red;}
