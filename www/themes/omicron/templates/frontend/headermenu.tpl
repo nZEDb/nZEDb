@@ -6,7 +6,7 @@
 					<li class="nav-parent">
 						<a href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"
 						   data-delay="30">
-							<i class="fa fa-desktop"></i> {$parentcat.title}<i class="icons-arrows-06"></i>
+							<i class="fa fa-television"></i> {$parentcat.title}<i class="icons-arrows-06"></i>
 						</a>
 						<ul class="dropdown-menu">
 							<li><a href="{$smarty.const.WWW_TOP}/browse?t={$parentcat.id}">TV</a></li>
