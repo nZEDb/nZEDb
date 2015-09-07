@@ -51,10 +51,13 @@ $runVar['timers']['query']['proc2_time'] = $runVar['timers']['query']['proc3_tim
 $runVar['timers']['query']['proc11_time'] = $runVar['timers']['query']['proc21_time'] = $runVar['timers']['query']['proc31_time'] = $runVar['timers']['query']['tpg_time'] =
 $runVar['timers']['query']['tpg1_time'] = 0;
 
-// Analyze tables
-printf($pdo->log->info("\nAnalyzing your tables to refresh your indexes."));
-$pdo->optimise(false, 'analyze', false, ['releases']);
-Misc::clearScreen();
+// Analyze release table if not using innoDB (innoDB uses online analysis)
+$engine = $pdo->queryOneRow(sprintf("SELECT ENGINE FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = %s AND TABLE_NAME = 'releases'", $pdo->escapeString($db_name)));
+if (!in_array($engine['engine'], ['InnoDB', 'TokuDB'])) {
+	printf($pdo->log->info("\nAnalyzing your tables to refresh your indexes."));
+	$pdo->optimise(false, 'analyze', false, ['releases']);
+	Misc::clearScreen();
+}
 
 $runVar['settings']['monitor'] = 0;
 $runVar['counts']['iterations'] = 1;
@@ -183,9 +186,8 @@ while ($runVar['counts']['iterations'] > 0) {
 		$runVar['timers']['query']['proc2_time'] = (time() - $timer05);
 		$runVar['timers']['query']['proc21_time'] = (time() - $timer01);
 
+		// Need to remove this
 		$timer06 = time();
-		$proc3qry = $tRun->proc_query(3, $runVar['settings']['book_reqids'], $runVar['settings']['request_hours'], $db_name);
-		$proc3res = $pdo->queryOneRow(($proc3qry !== false ? $proc3qry : ''), $tRun->rand_bool($runVar['counts']['iterations']));
 		$runVar['timers']['query']['proc3_time'] = (time() - $timer06);
 		$runVar['timers']['query']['proc31_time'] = (time() - $timer01);
 
@@ -268,16 +270,9 @@ while ($runVar['counts']['iterations'] > 0) {
 		} else {
 			errorOnSQL($pdo);
 		}
-		if (is_array($proc3res)) {
-			foreach ($proc3res as $proc3key => $proc3) {
-				$runVar['counts']['now'][$proc3key] = $proc3;
-			}
-		} else {
-			errorOnSQL($pdo);
-		}
 
 		// now that we have merged our query data we can unset these to free up memory
-		unset($proc1res, $proc2res, $proc3res, $splitres);
+		unset($proc1res, $proc2res, $splitres);
 
 		// Zero out any post proc counts when that type of pp has been turned off
 		foreach ($runVar['settings'] as $settingkey => $setting) {

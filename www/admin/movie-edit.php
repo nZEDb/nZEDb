@@ -42,18 +42,20 @@ if (isset($_REQUEST["id"])) {
 			$_POST['cover']    = (file_exists($coverLoc)) ? 1 : 0;
 			$_POST['backdrop'] = (file_exists($backdropLoc)) ? 1 : 0;
 
-			$movie->update($id,
-						   $_POST["title"],
-						   $_POST['tagline'],
-						   $_POST["plot"],
-						   $_POST["year"],
-						   $_POST["rating"],
-						   $_POST["genre"],
-						   $_POST["director"],
-						   $_POST["actors"],
-						   $_POST["language"],
-						   $_POST["cover"],
-						   $_POST['backdrop']);
+			$movie->update([
+				'actors'   => $_POST["actors"],
+				'backdrop' => $_POST['backdrop'],
+				'cover'    => $_POST["cover"],
+				'director' => $_POST["director"],
+				'genre'    => $_POST["genre"],
+				'imdbid'   => $id,
+				'language' => $_POST["language"],
+				'plot'     => $_POST["plot"],
+				'rating'   => $_POST["rating"],
+				'tagline'  => $_POST['tagline'],
+				'title'    => $_POST["title"],
+				'year'     => $_POST["year"]
+			]);
 
 			header("Location:" . WWW_TOP . "/movie-list.php");
 			die();

@@ -115,6 +115,7 @@ class Games
 		if ($this->pdo->getSetting('lookupgames') == 2) {
 			$this->renamed = 'AND isrenamed = 1';
 		}
+		$this->catWhere = 'AND categoryid = 4050 ';
 		//$this->cleangames = ($this->pdo->getSetting('lookupgames') == 2) ? 'AND isrenamed = 1' : '';
 	}
 
@@ -236,7 +237,7 @@ class Games
 				. "LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id "
 				. "INNER JOIN gamesinfo con ON con.id = r.gamesinfo_id "
 				. "WHERE r.nzbstatus = 1 AND con.title != '' AND "
-				. "r.passwordstatus %s AND %s %s %s %s "
+				. "r.passwordstatus %s AND %s %s %s %s"
 				. "GROUP BY con.id ORDER BY %s %s" . $limit,
 				Releases::showPasswords($this->pdo),
 				$browseby,
@@ -813,11 +814,11 @@ class Games
 				SELECT searchname, id
 				FROM releases
 				WHERE nzbstatus = 1 %s
-				AND gamesinfo_id = 0
-				AND categoryid = 4050
+				AND gamesinfo_id = 0 %s
 				ORDER BY postdate DESC
 				LIMIT %d',
 				$this->renamed,
+				$this->catWhere,
 				$this->gameQty
 			)
 		);
@@ -861,10 +862,10 @@ class Games
 						$gameId = $gameCheck['id'];
 					}
 					// Update release.
-					$this->pdo->queryExec(sprintf('UPDATE releases SET gamesinfo_id = %d WHERE id = %d', $gameId, $arr['id']));
+					$this->pdo->queryExec(sprintf('UPDATE releases SET gamesinfo_id = %d WHERE id = %d %s', $gameId, $arr['id'], $this->catWhere));
 				} else {
 					// Could not parse release title.
-					$this->pdo->queryExec(sprintf('UPDATE releases SET gamesinfo_id = %d WHERE id = %d', -2, $arr['id']));
+					$this->pdo->queryExec(sprintf('UPDATE releases SET gamesinfo_id = %d WHERE id = %d %s', -2, $arr['id'], $this->catWhere));
 
 					if ($this->echoOutput) {
 						echo '.';

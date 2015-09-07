@@ -72,7 +72,7 @@
 			{foreach $animeEpisodeTitle as $result}
 				<tr id="guid{$result.guid}">
 					<td>
-						<a title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.searchname|escape:"htmlall"|replace:".":" "}</a>
+						<a title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}">{$result.searchname|escape:"htmlall"|replace:".":" "}</a>
 
 						<div class="resextra">
 							<div class="btns pull-left">
@@ -102,9 +102,9 @@
 							</div>
 						{/if}
 					</td>
-					<td style="text-align:center;"><a title="View comments for {$result.searchname|escape:"htmlall"}" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}#comments">{$result.comments} cmt{if $result.comments != 1}s{/if}</a><br/>{$result.grabs} grab{if $result.grabs != 1}s{/if}</td>
+					<td style="text-align:center;"><a title="View comments for {$result.searchname|escape:"htmlall"}" href="{$smarty.const.WWW_TOP}/details/{$result.guid}#comments">{$result.comments} cmt{if $result.comments != 1}s{/if}</a><br/>{$result.grabs} grab{if $result.grabs != 1}s{/if}</td>
 					<td class="icons" style="text-align:center;">
-						<div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"htmlall"}">&nbsp;</a></div>
+						<div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}">&nbsp;</a></div>
 						{if $sabintegrated}<div class="icon icon_sab" title="Send to my Queue"></div>{/if}
 						<div class="icon icon_cart" title="Add to Cart"></div>
 					</td>

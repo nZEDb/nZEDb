@@ -193,7 +193,7 @@
 							<a
 								class="title"
 								title="View details"
-								href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}"
+								href="{$smarty.const.WWW_TOP}/details/{$result.guid}"
 							>{$result.searchname|escape:"htmlall"|wordwrap:70:"\n":true}</a>
 						</label>
 						<div class="resextra">
@@ -207,7 +207,7 @@
 							{if $result.videostatus > 0}
 								<a
 									class="model_prev label label-default"
-									href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}"
+									href="{$smarty.const.WWW_TOP}/details/{$result.guid}"
 									title="This release has a video preview."
 									rel="preview"
 								><i class="icon-youtube-play"></i>
@@ -338,7 +338,7 @@
 						{$result.grabs} grab{if $result.grabs != 1}s{/if}
 					</td>
 					<td class="icons" style="width:60px;text-align:center;white-space:nowrap;">
-						<div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"htmlall"}">&nbsp;</a></div>
+						<div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}">&nbsp;</a></div>
 						{if $sabintegrated}
 							<div class="icon icon_sab" title="Send to my Queue"></div>
 						{/if}

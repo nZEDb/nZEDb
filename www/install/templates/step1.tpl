@@ -206,9 +206,7 @@
 		<td>Checking if the config.php file is writable:
 			{if !$cfg->configCheck}<br />
 				<span class="error">
-						The installer cannot write to {$cfg->WWW_TOP}.<br />
-						A quick solution is to run:<br />
-						chmod 777 {$cfg->WWW_TOP}
+						The installer cannot write to {$cfg->CONFIG_PATH}.<br />A quick solution is to run:<br />chmod 777 {$cfg->CONFIG_PATH}
 					{$fixString}
 					</span>
 			{/if}

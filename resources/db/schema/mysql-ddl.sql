@@ -115,8 +115,8 @@ CREATE TABLE binaries (
   filenumber    INT UNSIGNED        NOT NULL DEFAULT '0',
   totalparts    INT(11) UNSIGNED    NOT NULL DEFAULT 0,
   currentparts  INT UNSIGNED        NOT NULL DEFAULT 0,
-  binaryhash    VARCHAR(255)        NOT NULL DEFAULT '0',
-  partcheck     BIT                 NOT NULL DEFAULT 0,
+  binaryhash    BINARY(16)          NOT NULL DEFAULT '0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0',
+  partcheck     TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
   partsize      BIGINT UNSIGNED     NOT NULL DEFAULT 0,
   PRIMARY KEY (id),
   UNIQUE INDEX ix_binary_binaryhash (binaryhash),
@@ -227,6 +227,7 @@ CREATE TABLE         collections (
   group_id       INT(11) UNSIGNED    NOT NULL DEFAULT '0',
   collectionhash VARCHAR(255)        NOT NULL DEFAULT '0',
   dateadded      DATETIME            DEFAULT NULL,
+  added          TIMESTAMP           NOT NULL DEFAULT CURRENT_TIMESTAMP,
   filecheck      TINYINT(3) UNSIGNED NOT NULL DEFAULT '0',
   filesize       BIGINT UNSIGNED     NOT NULL DEFAULT '0',
   releaseid      INT                 NULL,
@@ -477,21 +478,22 @@ DROP TABLE IF EXISTS movieinfo;
 CREATE TABLE movieinfo (
   id          INT(10) UNSIGNED               NOT NULL AUTO_INCREMENT,
   imdbid      MEDIUMINT(7) UNSIGNED ZEROFILL NOT NULL,
-  tmdbid      INT(10) UNSIGNED DEFAULT NULL,
-  title       VARCHAR(255)                   NOT NULL,
-  tagline     VARCHAR(1024)                  NOT NULL,
-  rating      VARCHAR(4)                     NOT NULL,
-  plot        VARCHAR(1024)                  NOT NULL,
-  year        VARCHAR(4)                     NOT NULL,
-  genre       VARCHAR(64)                    NOT NULL,
-  type        VARCHAR(32)                    NOT NULL,
-  director    VARCHAR(64)                    NOT NULL,
-  actors      VARCHAR(2000)                  NOT NULL,
-  language    VARCHAR(64)                    NOT NULL,
+  tmdbid      INT(10) UNSIGNED               NOT NULL DEFAULT 0,
+  title       VARCHAR(255)                   NOT NULL DEFAULT '',
+  tagline     VARCHAR(1024)                  NOT NULL DEFAULT '',
+  rating      VARCHAR(4)                     NOT NULL DEFAULT '',
+  plot        VARCHAR(1024)                  NOT NULL DEFAULT '',
+  year        VARCHAR(4)                     NOT NULL DEFAULT '',
+  genre       VARCHAR(64)                    NOT NULL DEFAULT '',
+  type        VARCHAR(32)                    NOT NULL DEFAULT '',
+  director    VARCHAR(64)                    NOT NULL DEFAULT '',
+  actors      VARCHAR(2000)                  NOT NULL DEFAULT '',
+  language    VARCHAR(64)                    NOT NULL DEFAULT '',
   cover       TINYINT(1) UNSIGNED            NOT NULL DEFAULT '0',
   backdrop    TINYINT(1) UNSIGNED            NOT NULL DEFAULT '0',
   createddate DATETIME                       NOT NULL,
   updateddate DATETIME                       NOT NULL,
+  trailer     VARCHAR(255)                   NOT NULL DEFAULT '',
   PRIMARY KEY (id),
   INDEX ix_movieinfo_title  (title),
   UNIQUE INDEX ix_movieinfo_imdbid (imdbid)
@@ -552,16 +554,12 @@ CREATE TABLE page_contents (
 
 DROP TABLE IF EXISTS parts;
 CREATE TABLE parts (
-  id            BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  binaryid      BIGINT(20) UNSIGNED NOT NULL DEFAULT '0',
-  collection_id INT(11) UNSIGNED    NOT NULL DEFAULT '0',
-  messageid     VARCHAR(255)        NOT NULL DEFAULT '',
-  number        BIGINT UNSIGNED     NOT NULL DEFAULT '0',
-  partnumber    INT UNSIGNED        NOT NULL DEFAULT '0',
-  size          BIGINT UNSIGNED     NOT NULL DEFAULT '0',
-  PRIMARY KEY (id),
-  KEY binaryid               (binaryid),
-  KEY ix_parts_collection_id (collection_id)
+  binaryid      BIGINT(20) UNSIGNED                      NOT NULL DEFAULT '0',
+  messageid     VARCHAR(255)        CHARACTER SET latin1 NOT NULL DEFAULT '',
+  number        BIGINT UNSIGNED                          NOT NULL DEFAULT '0',
+  partnumber    MEDIUMINT UNSIGNED                       NOT NULL DEFAULT '0',
+  size          MEDIUMINT UNSIGNED                       NOT NULL DEFAULT '0',
+  PRIMARY KEY (binaryid,number)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
@@ -602,11 +600,9 @@ CREATE TABLE predb (
 
 DROP TABLE IF EXISTS predb_hashes;
 CREATE TABLE predb_hashes (
+  hash VARBINARY(20)      NOT NULL DEFAULT '',
   pre_id INT(11) UNSIGNED NOT NULL DEFAULT '0',
-  hashes VARCHAR(512)     NOT NULL DEFAULT '',
-  PRIMARY KEY (pre_id),
-  FULLTEXT INDEX ix_predb_hashes_ft (hashes),
-  UNIQUE INDEX ix_predb_hashes    (hashes(32))
+  PRIMARY KEY (hash)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8mb4
@@ -688,7 +684,7 @@ CREATE TABLE         releases (
   audiostatus       TINYINT(1)                     NOT NULL DEFAULT '0',
   dehashstatus      TINYINT(1)                     NOT NULL DEFAULT '0',
   reqidstatus       TINYINT(1)                     NOT NULL DEFAULT '0',
-  nzb_guid          VARCHAR(32)                    NULL,
+  nzb_guid          BINARY(16)                     NULL,
   nzbstatus         TINYINT(1)                     NOT NULL DEFAULT '0',
   iscategorized     TINYINT(1)                     NOT NULL DEFAULT '0',
   isrenamed         TINYINT(1)                     NOT NULL DEFAULT '0',
@@ -700,28 +696,25 @@ CREATE TABLE         releases (
   proc_nfo          TINYINT(1)                     NOT NULL DEFAULT '0',
   proc_files        TINYINT(1)                     NOT NULL DEFAULT '0',
   PRIMARY KEY                                 (id, categoryid),
-  INDEX ix_releases_adddate                   (adddate),
+  INDEX ix_releases_name                      (name),
+  INDEX ix_releases_group_id                  (group_id,passwordstatus),
+  INDEX ix_releases_postdate_searchname       (postdate,searchname),
+  INDEX ix_releases_guid                      (guid),
+  INDEX ix_releases_nzb_guid                  (nzb_guid),
   INDEX ix_releases_rageid                    (rageid),
   INDEX ix_releases_imdbid                    (imdbid),
-  INDEX ix_releases_guid                      (guid),
-  INDEX ix_releases_name                      (name),
-  INDEX ix_releases_groupid                   (group_id),
-  INDEX ix_releases_dehashstatus              (dehashstatus),
-  INDEX ix_releases_reqidstatus               (reqidstatus),
-  INDEX ix_releases_nfostatus                 (nfostatus),
   INDEX ix_releases_xxxinfo_id                (xxxinfo_id),
-  INDEX ix_releases_musicinfoid               (musicinfoid),
+  INDEX ix_releases_musicinfoid               (musicinfoid,passwordstatus),
   INDEX ix_releases_consoleinfoid             (consoleinfoid),
   INDEX ix_releases_gamesinfo_id              (gamesinfo_id),
   INDEX ix_releases_bookinfoid                (bookinfoid),
-  INDEX ix_releases_haspreview_passwordstatus (haspreview, passwordstatus),
-  INDEX ix_releases_postdate_searchname       (postdate, searchname),
-  INDEX ix_releases_nzb_guid                  (nzb_guid),
-  INDEX ix_releases_preid_searchname          (preid, searchname),
-  INDEX ix_releases_status                    (nzbstatus, iscategorized, isrenamed, nfostatus, ishashed, isrequestid,
-                                               passwordstatus, dehashstatus, reqidstatus, musicinfoid, consoleinfoid,
-                                               bookinfoid, haspreview, categoryid, imdbid, rageid),
-  INDEX ix_passwordstatus                     (passwordstatus)
+  INDEX ix_releases_anidbid                   (anidbid),
+  INDEX ix_releases_preid_searchname          (preid,searchname),
+  INDEX ix_releases_haspreview_passwordstatus (haspreview,passwordstatus),
+  INDEX ix_releases_passwordstatus            (passwordstatus),
+  INDEX ix_releases_nfostatus                 (nfostatus,size),
+  INDEX ix_releases_dehashstatus              (dehashstatus,ishashed),
+  INDEX ix_releases_reqidstatus               (adddate,reqidstatus,isrequestid)
 )
   ENGINE          = MYISAM
   DEFAULT CHARSET = utf8
@@ -752,7 +745,7 @@ CREATE TABLE release_comments (
   shared      TINYINT(1)       NOT NULL DEFAULT '0',
   shareid     VARCHAR(40)      NOT NULL DEFAULT '',
   siteid      VARCHAR(40)      NOT NULL DEFAULT '',
-  nzb_guid    VARCHAR(32)      NOT NULL DEFAULT '',
+  nzb_guid    BINARY(16)       NOT NULL DEFAULT '0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0',
   PRIMARY KEY (id),
   INDEX ix_releasecomment_releaseid (releaseid),
   INDEX ix_releasecomment_userid    (user_id)
@@ -761,6 +754,17 @@ CREATE TABLE release_comments (
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci
   AUTO_INCREMENT = 1;
+
+
+DROP TABLE IF EXISTS releaseextrafull;
+CREATE TABLE releaseextrafull (
+  releaseid INT(11) UNSIGNED NOT NULL,
+  mediainfo TEXT NULL,
+  PRIMARY KEY (releaseid)
+)
+  ENGINE = MYISAM
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 
 DROP TABLE IF EXISTS release_files;
@@ -775,7 +779,6 @@ CREATE TABLE release_files (
   PRIMARY KEY (id),
   UNIQUE INDEX ix_releasefiles_name_releaseid (name, releaseid),
   INDEX ix_releasefiles_releaseid      (releaseid),
-  INDEX ix_releasefiles_name           (name),
   INDEX ix_releasefiles_ishashed       (ishashed)
 )
   ENGINE = MYISAM
@@ -922,27 +925,6 @@ CREATE TABLE short_groups (
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci
   AUTO_INCREMENT = 1;
-
-
-CREATE TABLE `tmp_pre` (
-  `title`      VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `nfo`        VARCHAR(255) COLLATE utf8_unicode_ci          DEFAULT NULL,
-  `size`       VARCHAR(50)  COLLATE utf8_unicode_ci          DEFAULT NULL,
-  `category`   VARCHAR(255) COLLATE utf8_unicode_ci          DEFAULT NULL,
-  `predate`    DATETIME                                      DEFAULT NULL,
-  `source`     VARCHAR(50)  COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `requestid`  INT(10) UNSIGNED                     NOT NULL DEFAULT '0',
-  `group_id`   INT(10) UNSIGNED                     NOT NULL DEFAULT '0' COMMENT 'FK to groups',
-  `nuked`      TINYINT(1)                           NOT NULL DEFAULT '0' COMMENT 'Is this pre nuked? 0 no 2 yes 1 un nuked 3 mod nuked',
-  `nukereason` VARCHAR(255) COLLATE utf8_unicode_ci          DEFAULT NULL COMMENT 'If this pre is nuked, what is the reason?',
-  `files`      VARCHAR(50)  COLLATE utf8_unicode_ci          DEFAULT NULL COMMENT 'How many files does this pre have ?',
-  `filename`   VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `searched`   TINYINT(1)                           NOT NULL DEFAULT '0',
-  `groupname`  VARCHAR(255) COLLATE utf8_unicode_ci          DEFAULT NULL
-)
-  ENGINE =MYISAM
-  DEFAULT CHARSET =utf8
-  COLLATE =utf8_unicode_ci;
 
 
 DROP TABLE IF EXISTS tmux;
@@ -1196,17 +1178,6 @@ CREATE TABLE video_data (
   COLLATE = utf8_unicode_ci;
 
 
-DROP TABLE IF EXISTS releaseextrafull;
-CREATE TABLE releaseextrafull (
-  releaseid INT(11) UNSIGNED NOT NULL,
-  mediainfo TEXT NULL,
-  PRIMARY KEY (releaseid)
-)
-  ENGINE = MYISAM
-  DEFAULT CHARSET = utf8
-  COLLATE = utf8_unicode_ci;
-
-
 DROP TABLE IF EXISTS xxxinfo;
 CREATE TABLE         xxxinfo (
   id          INT(10) UNSIGNED               NOT NULL AUTO_INCREMENT,
@@ -1296,24 +1267,20 @@ CREATE TRIGGER delete_search AFTER DELETE ON releases FOR EACH ROW
 
 CREATE TRIGGER insert_hashes AFTER INSERT ON predb FOR EACH ROW
   BEGIN
-    INSERT INTO predb_hashes (pre_id, hashes) VALUES (NEW.id, CONCAT_WS(',', MD5(NEW.title), MD5(MD5(NEW.title)), SHA1(NEW.title)));
+    INSERT INTO predb_hashes (hash, pre_id) VALUES (MD5(NEW.title), NEW.id), (MD5(MD5(NEW.title)), NEW.id), (SHA1(NEW.title), NEW.id);
   END; $$
 
 CREATE TRIGGER update_hashes AFTER UPDATE ON predb FOR EACH ROW
   BEGIN
     IF NEW.title != OLD.title
-      THEN UPDATE predb_hashes SET hashes = CONCAT_WS(',', MD5(NEW.title), MD5(MD5(NEW.title)), SHA1(NEW.title)) WHERE pre_id = OLD.id;
+      THEN
+         DELETE FROM predb_hashes WHERE hash IN ( UNHEX(md5(OLD.title)), UNHEX(md5(md5(OLD.title))), UNHEX(sha1(OLD.title)) ) AND pre_id = OLD.id;
+         INSERT INTO predb_hashes (hash, pre_id) VALUES ( UNHEX(MD5(NEW.title)), NEW.id ), ( UNHEX(MD5(MD5(NEW.title))), NEW.id ), ( UNHEX(SHA1(NEW.title)), NEW.id );
     END IF;
   END; $$
 
 CREATE TRIGGER delete_hashes AFTER DELETE ON predb FOR EACH ROW
   BEGIN
-    DELETE FROM predb_hashes WHERE pre_id = OLD.id;
-  END; $$
-
-CREATE TRIGGER delete_collections BEFORE DELETE ON collections FOR EACH ROW
-  BEGIN
-    DELETE FROM binaries WHERE collection_id = OLD.id;
-    DELETE FROM parts WHERE collection_id = OLD.id;
+    DELETE FROM predb_hashes WHERE hash IN ( UNHEX(md5(OLD.title)), UNHEX(md5(md5(OLD.title))), UNHEX(sha1(OLD.title)) ) AND pre_id = OLD.id;
   END; $$
 DELIMITER ;

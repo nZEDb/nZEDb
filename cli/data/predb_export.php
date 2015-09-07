@@ -54,12 +54,19 @@ Misc::clearScreen();
 $table = isset($argv[2]) ? $argv[2] : 'predb';
 
 $predb = new PreDb();
-
-$predb->executeExport([
-		'enclosed'	=> " ENCLOSED BY \"'\" ",
-		'fields'	=> '\\t\\t',
-		'lines'		=> '\\r\\n',
+if (nZEDb_ECHOCLI) {
+	echo "Exporting table: $table to '$path'\n";
+}
+$result = $predb->executeExport([
+		'enclosed'	=> '',
+		'fields'	=> '\t\t',
+		'limit'		=> 0,
+		'lines'		=> '\r\n',
 		'path'		=> $path,
 	]);
+
+if ($result == false) {
+	echo "ERROR: Failed to export file!\n";
+}
 
 ?>

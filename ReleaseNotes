@@ -1,6 +1,39 @@
 This file details which changes to the code are in which release version. It is a complement to the ChangeLog file which list *when* changes are made to the dev branch.
 
 
+0.4.25 2015-09-07
+Added:
+	* Two new templates from Darius: Charisma and Omicron.
+	* New Ubuntu 14.04.02 install instructions (PR 1784).
+	* Movie trailer configurable settings to Admin section of site.
+
+Changed:
+	* Wide spread changes to Database indexes and queries, to improve overall performance.
+		*** MUST RUN *** TPG Script to DROP old collections TRIGGERS after Patch 374 /nzedb/build/_runonce/tpg_delete_triggers_2015-08-14.php
+		***NOTE*** if using sphinxsearch then run 'php misc/sphinxsearch/toggle_search_type.php sphinx' to remove unnecessary release_search_data triggers.
+	* Parse most of the TraktTV details for movies.
+	* Add default values for movieinfo table.
+	* Tmux no longer analyses InnoDb tables on start up, as InnoDb uses online analasis (No change for MyISAM tables).
+	* Updates to Categorizing.
+	* Updates to Alpha theme.
+	* Console Processing Local now requires an exact platform match just like the Amazon lookups to prevent incorrect platform matches
+
+Fixed:
+	* Problem during install not loading settings.php from configuration.
+	* Delete collections that are broken after a timeout period (Issue 1791 + PR 1793).
+	* Error causing details and getnzb pages to intermiiently not load (Issue 1782).
+	* Issue where YouTube trailer URL's would get overwritten with the wrong URL.
+	* Issue where API NZB downloads would fail.
+	* Predb export scripts had a typo which prevented it working correctly.
+	* Display of movie trailers (Issue 1811).
+	* a.b.moovee collection regex, that was splitting subs out separately.
+	* PHP error if rowCount() is null (Issue 1834).
+	* predb_import_daily_batch script to properly calculate last timestamp for progress mode.
+	* Console Processing failing to validate Amazon API Return (Issue 1819).
+	* Invalid date-time format when updating consoleinfo if releasedate is blank.
+	* Issue with NZBDrone/Sonarr not having content-length header set on API calls.
+
+
 0.4.24 2015-08-03
 Added:
 	* Pick up additional RAR names (PR 1716).

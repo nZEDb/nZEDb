@@ -84,7 +84,7 @@ if ($result) {
 
 	foreach ($links as $link) {
 		if (preg_match('#^(.+)/(\d+)_#', $link, $match)) {
-			$timematch = -1 + $progress['last'];
+			$timematch = $progress['last'];
 
 			// Skip patches the user does not want.
 			if ($match[2] < $timematch) {
@@ -163,8 +163,7 @@ if ($result) {
 			// Delete the dump.
 			unlink($dumpFile);
 
-			$progress = $predb->progress(settings_array($match[2] + 1, $progress),
-										 ['read' => false]);
+			$progress = $predb->progress(settings_array($match[2] + 1, $progress), ['read' => false]);
 			echo "Successfully imported PreDB dump {$match[2]} " . (--$total) .
 				 ' dumps remaining to import.' . PHP_EOL;
 		}

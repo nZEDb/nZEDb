@@ -214,7 +214,6 @@ class Releases
 				INNER JOIN category cp ON cp.id = c.parentid
 				LEFT OUTER JOIN video_data re ON re.releaseid = r.id
 				LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
-				AND rn.nfo IS NOT NULL
 				WHERE r.nzbstatus = %d
 				AND r.passwordstatus %s
 				%s %s %s %s
@@ -615,7 +614,7 @@ class Releases
 				FROM releases r
 				LEFT OUTER JOIN video_data re ON re.releaseid = r.id
 				INNER JOIN groups ON groups.id = r.group_id
-				LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
+				LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
 				INNER JOIN category c ON c.id = r.categoryid
 				INNER JOIN category cp ON cp.id = c.parentid
 				WHERE %s %s
@@ -1085,7 +1084,7 @@ class Releases
 			INNER JOIN category c ON c.id = r.categoryid
 			INNER JOIN groups ON groups.id = r.group_id
 			LEFT OUTER JOIN video_data re ON re.releaseid = r.id
-			LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
+			LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
 			INNER JOIN category cp ON cp.id = c.parentid
 			%s",
 			$this->getConcatenatedCategoryIDs(),
@@ -1142,7 +1141,7 @@ class Releases
 			FROM releases r
 			INNER JOIN category c ON c.id = r.categoryid
 			INNER JOIN groups ON groups.id = r.group_id
-			LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
+			LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
 			INNER JOIN category cp ON cp.id = c.parentid
 			%s",
 			$this->getConcatenatedCategoryIDs(),
@@ -1200,7 +1199,7 @@ class Releases
 			FROM releases r
 			INNER JOIN groups g ON g.id = r.group_id
 			INNER JOIN category c ON c.id = r.categoryid
-			LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
+			LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
 			INNER JOIN category cp ON cp.id = c.parentid
 			%s",
 			$this->getConcatenatedCategoryIDs(),
@@ -1555,7 +1554,7 @@ class Releases
 			AND xxx.cover = 1
 			AND r.id in (select max(id) from releases where xxxinfo_id > 0 group by xxxinfo_id)
 			ORDER BY r.postdate DESC
-			LIMIT 24", true, nZEDb_CACHE_EXPIRY_LONG
+			LIMIT 20", true, nZEDb_CACHE_EXPIRY_LONG
 		);
 	}
 
@@ -1577,7 +1576,7 @@ class Releases
 			AND con.cover > 0
 			AND r.id in (select max(id) from releases where consoleinfoid > 0 group by consoleinfoid)
 			ORDER BY r.postdate DESC
-			LIMIT 35", true, nZEDb_CACHE_EXPIRY_LONG
+			LIMIT 35"
 		);
 	}
 
@@ -1599,7 +1598,7 @@ class Releases
 			AND gi.cover > 0
 			AND r.id in (select max(id) from releases where gamesinfo_id > 0 group by gamesinfo_id)
 			ORDER BY r.postdate DESC
-			LIMIT 35", true, nZEDb_CACHE_EXPIRY_LONG
+			LIMIT 24", true, nZEDb_CACHE_EXPIRY_LONG
 		);
 	}
 

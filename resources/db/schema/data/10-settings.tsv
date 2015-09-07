@@ -130,6 +130,8 @@ indexer	categorise	categorizeforeign	1	This only works if the above is set to en
 indexer	categorise	catwebdl	0	Whether to send WEB-DL to the WEB-DL section or not. If set to true they will go in WEB-DL category, false will send them in HD TV.<br/>This will also make them inaccessible to Sickbeard and possibly Couchpotato.	catwebdl
 indexer	categorise	imdblanguage	en	Which language to lookup when sending requests to IMDB/Tmdb. (If akas.imdb.com is set, imdb still returns the original titles.)	imdblanguage
 indexer	categorise	imdburl	0	akas.imdb.com returns titles in their original title, imdb.com returns titles based on your IP address (if you are in france, you will get french titles).	imdburl
+indexer	processing	collection_timeout	48	How many hours to wait before deleting a stuck/broken collection. (This is to prevent the MySQL tables from swelling up.)	collection_timeout
+indexer	processing	last_run_time	3015-08-04 15:58:23	Last date the indexer (update_binaries or backfill) was run.	last_run_time
 site	google	adbrowse		The banner slot in the header.	adbrowse
 site	google	addetail		The banner slot in the release details view.	addetail
 site	google	adheader		The banner slot in the header.	adheader
@@ -152,6 +154,9 @@ site	main	strapline	A great usenet indexer	Displayed in the header on every publ
 site	main	style	alpha	The theme folder which will be loaded for css and images. (Use / for default)	style
 site	main	tandc	<p>All information within this database is indexed by an automated process, without any human intervention. It is obtained from global Usenet newsgroups over which this site has no control. We cannot prevent that you might find obscene or objectionable material by using this service. If you do come across obscene, incorrect or objectionable results, let us know by using the contact form.</p>	Text displayed in the terms and conditions page.	tandc
 site	main	title	nZEDb	Displayed around the site and contact form as the name for the site.	title
+site	trailers	trailers_display	1	Display trailers on the details page?	trailers_display
+site	trailers	trailers_size_x	480	Width of the displayed trailer. 480 by default.	trailers_size_x
+site	trailers	trailers_size_y	345	Height of the displayed trailer. 345 by default.	trailers_size_y
 shell	date	format	%Y-%m-%d %T	Format string to use in shell's date command output. See `man date` for acceptable format.\nDefault: %Y-%m-%d %T	shell.date.format
 tmux	running	exit	0	Determines if the running tmux monitor script should exit. If 0 nothing changes; if positive the script should exit gracefully (allowing all panes to finish); if negative the script should die as soon as possible.	tmux.running.exit
 max	headers	iteration	1000000	The maximum number of headers that update binaries is given as the total range. This ensures that a total of no more than this amount is attempted to be downloaded per group.	max_headers_iteration

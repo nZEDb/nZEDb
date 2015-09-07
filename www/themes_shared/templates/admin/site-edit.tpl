@@ -12,6 +12,7 @@
 					<option value="site_googlestatbanner">Google Adsense, Analytics and 3rd Party Banners</option>
 					<option value="site_languagecat">Language/Categorization options</option>
 					<option value="site_main">Main Site Settings, Html layout, Tags</option>
+					<option value="site_movietrailerset">Movie Trailer Settings</option>
 					<option value="site_nfoprocessing">NFO Processing Settings</option>
 					<option value="site_nzbsettings">NZB Settings</option>
 					<option value="site_partrepair">Part Repair Settings</option>
@@ -1064,6 +1065,14 @@
 					</div>
 				</td>
 			</tr>
+			<tr>
+			<td style="width:180px;"><label for="collection_timeout">Collection Timeout Check:</label></td>
+			<td>
+				<input class="short" id="collection_timeout" name="collection_timeout" type="text" value="{$site->collection_timeout}"/>
+				<div class="hint">How many hours to wait before converting a collection into a release that is considered "stuck". <br \> Default value is 48 hours.
+				</div>
+			</td>
+		</tr>
 		</table>
 	</fieldset>
 
@@ -1129,6 +1138,33 @@
 				<td>
 					<input class="short" id="maxnzbsprocessed" name="maxnzbsprocessed" type="text" value="{$site->maxnzbsprocessed}"/>
 					<div class="hint">The maximum amount of NZB files to create on stage 5 at a time in update_releases. If more are to be created it will loop stage 5 until none remain.</div>
+				</td>
+			</tr>
+		</table>
+	</fieldset>
+
+	<fieldset id="site_movietrailerset">
+		<legend>Movie Trailer settings</legend>
+		<table class="input">
+			<tr>
+				<td style="width:180px;"><label for="trailers_display">Fetch/Display Movie Trailers:</label></td>
+				<td>
+					{html_radios id="trailers_display" name='trailers_display' values=$yesno_ids output=$yesno_names selected=$site->trailers_display separator='<br />'}
+					<div class="hint">Fetch and display trailers from TraktTV (Requires API key) and/or TrailerAddict on the details page?</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="trailers_size_x">Max trailer width:</label></td>
+				<td>
+					<input class="short" id="trailers_size_x" name="trailers_size_x" type="text" value="{$site->trailers_size_x}"/>
+					<div class="hint">Maximum width in pixels for the trailer window. (Default: 480)</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="trailers_size_y">Max trailer height:</label></td>
+				<td>
+					<input class="short" id="trailers_size_y" name="trailers_size_y" type="text" value="{$site->trailers_size_y}"/>
+					<div class="hint">Maximum height in pixels for the trailer window. (Default: 345)</div>
 				</td>
 			</tr>
 		</table>

@@ -398,18 +398,25 @@ class Tmux
 		switch ((int)$qry) {
 			case 1:
 				return sprintf("SELECT
-					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 5000 AND 5999 AND rageid = -1) AS processtvrage,
-					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid = 5070 AND anidbid IS NULL) AS processanime,
-					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 2000 AND 2999 AND imdbid IS NULL) AS processmovies,
-					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid IN (3010, 3040, 3050) AND musicinfoid IS NULL) AS processmusic,
-					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 1000 AND 1999 AND consoleinfoid IS NULL) AS processconsole,
-					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid IN (%s) AND bookinfoid IS NULL) AS processbooks,
-					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid = 4050 AND gamesinfo_id = 0) AS processgames,
-					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 6000 AND 6040 AND xxxinfo_id = 0) AS processxxx,
-					(SELECT COUNT(*) FROM releases r WHERE 1=1 %s) AS processnfo", $bookreqids, Nfo::NfoQueryString($this->pdo));
+					SUM(IF(nzbstatus = 1 AND categoryid BETWEEN 5000 AND 5999 AND rageid = -1,1,0)) AS processtvrage,
+					SUM(IF(nzbstatus = 1 AND categoryid = 5070 AND anidbid IS NULL,1,0)) AS processanime,
+					SUM(IF(nzbstatus = 1 AND categoryid BETWEEN 2000 AND 2999 AND imdbid IS NULL,1,0)) AS processmovies,
+					SUM(IF(nzbstatus = 1 AND categoryid IN (3010, 3040, 3050) AND musicinfoid IS NULL,1,0)) AS processmusic,
+					SUM(IF(nzbstatus = 1 AND categoryid BETWEEN 1000 AND 1999 AND consoleinfoid IS NULL,1,0)) AS processconsole,
+					SUM(IF(nzbstatus = 1 AND categoryid IN (%s) AND bookinfoid IS NULL,1,0)) AS processbooks,
+					SUM(IF(nzbstatus = 1 AND categoryid = 4050 AND gamesinfo_id = 0,1,0)) AS processgames,
+					SUM(IF(nzbstatus = 1 AND categoryid BETWEEN 6000 AND 6040 AND xxxinfo_id = 0,1,0)) AS processxxx,
+					SUM(IF(1=1 %s,1,0)) AS processnfo,
+					SUM(IF(nzbstatus = 1 AND nfostatus = 1,1,0)) AS nfo,
+					SUM(IF(nzbstatus = 1 AND isrequestid = 1 AND preid = 0 AND
+						((reqidstatus = 0) OR (reqidstatus = -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL %s HOUR)),1,0)) AS requestid_inprogress,
+					SUM(IF(preid > 0 AND nzbstatus = 1 AND isrequestid = 1 AND reqidstatus = 1,1,0)) AS requestid_matched,
+					SUM(IF(preid > 0 AND searchname IS NOT NULL,1,0)) AS predb_matched,
+					COUNT(DISTINCT(preid)) AS distinct_predb_matched
+					FROM releases r", $bookreqids, Nfo::NfoQueryString($this->pdo), $request_hours);
+
 			case 2:
 				return "SELECT
-					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND nfostatus = 1) AS nfo,
 					(SELECT COUNT(*) FROM releases r
 						INNER JOIN category c ON c.id = r.categoryid
 						WHERE r.nzbstatus = 1
@@ -417,17 +424,7 @@ class Tmux
 					) AS work,
 					(SELECT COUNT(*) FROM groups WHERE active = 1) AS active_groups,
 					(SELECT COUNT(*) FROM groups WHERE name IS NOT NULL) AS all_groups";
-			case 3:
-				return sprintf("SELECT
-					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND isrequestid = 1 AND preid = 0 AND reqidstatus = 0) +
-					(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND isrequestid = 1 AND preid = 0 AND reqidstatus = -1) +
-					(SELECT COUNT(*) FROM releases
-						WHERE nzbstatus = 1
-						AND isrequestid = 1 AND preid = 0 AND reqidstatus = -3 AND adddate > NOW() - INTERVAL %s HOUR
-					) AS requestid_inprogress,
-					(SELECT COUNT(*) FROM releases WHERE preid > 0 AND nzbstatus = 1 AND isrequestid = 1 AND reqidstatus = 1) AS requestid_matched,
-					(SELECT COUNT(*) FROM releases WHERE preid > 0 AND searchname IS NOT NULL) AS predb_matched,
-					(SELECT COUNT(DISTINCT(preid)) FROM releases WHERE preid > 0 AND searchname IS NOT NULL) AS distinct_predb_matched", $request_hours);
+
 			case 4:
 				return sprintf("
 					SELECT

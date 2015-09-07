@@ -244,6 +244,14 @@ class Binaries
 	}
 
 	/**
+	 * When the indexer is started, log the date/time.
+	 */
+	public function logIndexerStart()
+	{
+		$this->_pdo->queryExec("UPDATE settings SET value = NOW() WHERE setting = 'last_run_time'");
+	}
+
+	/**
 	 * Download new headers for a single group.
 	 *
 	 * @param array $groupMySQL Array of MySQL results for a single group.
@@ -254,6 +262,8 @@ class Binaries
 	public function updateGroup($groupMySQL, $maxHeaders = 0)
 	{
 		$startGroup = microtime(true);
+
+		$this->logIndexerStart();
 
 		// Select the group on the NNTP server, gets the latest info on it.
 		$groupNNTP = $this->_nntp->selectGroup($groupMySQL['name']);
@@ -597,7 +607,7 @@ class Binaries
 		$headersRepaired = $articles = $rangeNotReceived = $collectionIDs = $binariesUpdate = $headersReceived = $headersNotInserted = [];
 		$notYEnc = $headersBlackListed = 0;
 
-		$partsQuery = $partsCheck = sprintf('INSERT INTO %s (binaryid, number, messageid, partnumber, size, collection_id) VALUES ', $tableNames['pname']);
+		$partsQuery = $partsCheck = sprintf('INSERT IGNORE INTO %s (binaryid, number, messageid, partnumber, size) VALUES ', $tableNames['pname']);
 
 		$this->_pdo->beginTransaction();
 		// Loop articles, figure out files/parts.
@@ -737,7 +747,7 @@ class Binaries
 				$binaryID = $this->_pdo->queryInsert(
 					sprintf("
 						INSERT INTO %s (binaryhash, name, collection_id, totalparts, currentparts, filenumber, partsize)
-						VALUES ('%s', %s, %d, %d, 1, %d, %d)
+						VALUES (UNHEX('%s'), %s, %d, %d, 1, %d, %d)
 						ON DUPLICATE KEY UPDATE currentparts = currentparts + 1, partsize = partsize + %d",
 						$tableNames['bname'],
 						md5($matches[1] . $header['From'] . $groupMySQL['id']),
@@ -777,7 +787,7 @@ class Binaries
 
 			$partsQuery .=
 				'(' . $binaryID . ',' . $header['Number'] . ',' . rtrim($header['Message-ID'], '>') . "'," .
-				$matches[2] . ',' . $header['Bytes'] . ',' . $collectionID . '),';
+				$matches[2] . ',' . $header['Bytes'] . '),';
 
 		}
 		unset($headers); // Reclaim memory.
@@ -1071,14 +1081,16 @@ class Binaries
 				$local = $this->_pdo->queryOneRow(
 					sprintf('
 						SELECT c.date AS date
-						FROM %s c, %s p
-						WHERE c.id = p.collection_id
-						AND c.group_id = %s
-						AND p.number = %s LIMIT 1',
+						FROM %s c
+						INNER JOIN %s b ON(c.id=b.collection_id)
+						INNER JOIN %s p ON(b.id=p.binaryid)
+						WHERE p.number = %s
+						%s LIMIT 1',
 						$group['cname'],
+						$group['bname'],
 						$group['pname'],
-						$groupID,
-						$currentPost
+						$currentPost,
+						$this->_tablePerGroup === false ? sprintf('AND c.group_id = %d', $groupID) : ''
 					)
 				);
 				if ($local !== false) {

@@ -182,7 +182,7 @@
 				<tr class="{cycle values=",alt"}{if $lastvisit|strtotime<$result.adddate|strtotime} new{/if}" id="guid{$result.guid}">
 					<td class="icons">
 						<div class="icon icon_nzb">
-							<a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"htmlall"}">&nbsp;</a>
+							<a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}">&nbsp;</a>
 						</div>
 						<div class="icon icon_cart" title="Add to Cart"></div>
 						{if $sabintegrated}
@@ -191,10 +191,10 @@
 					</td>
 					<td class="item">
 						<label for="chk{$result.guid|substr:0:7}">
-							<a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.searchname|escape:"htmlall"|truncate:150:"...":true}</a></label value="Searchname">
+							<a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}">{$result.searchname|escape:"htmlall"|truncate:150:"...":true}</a></label value="Searchname">
 
 						<div class="resextra">
-							<a class="browsename" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">
+							<a class="browsename" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}">
 								{$result.name|escape:"htmlall"|truncate:150:"...":true}
 							</a>
 							<div class="btns" style="float:right">
@@ -207,7 +207,7 @@
 									<img title="RAR/ZIP is Passworded." src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/lock.gif" alt="RAR/ZIP is Passworded.">
 								{/if}
 								{if $result.videostatus == 1}
-									<a href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}" title="This release has a video preview." class="model_prev rndbtn" rel="preview">
+									<a href="{$smarty.const.WWW_TOP}/details/{$result.guid}" title="This release has a video preview." class="model_prev rndbtn" rel="preview">
 										<img src="{$smarty.const.WWW_TOP}/themes_shared/images/multimedia/video.png">
 									</a>
 								{/if}
