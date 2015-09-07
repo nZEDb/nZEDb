@@ -82,9 +82,6 @@
 														   title="View at Hot Movies">HotMovies</a>
 						{/if}
 					{/if}
-					<a class="label label-default"
-					   href="http://www.google.com/search?q={$release.name|escape:"htmlall"}"
-					   target="_blank">Google</a>
 					<p>
 						{if $movie && $release.rageid < 0 && $movie.plot != ''}<span
 								class="descinitial">{$movie.plot|escape:"htmlall"|truncate:500:"...":true}</span>
