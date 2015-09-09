@@ -146,7 +146,7 @@ class Binaries
 	 * An array of binaryblacklist IDs that should have their activity date updated
 	 * @var array(int)
 	 */
-	protected $_binaryblacklistIdsToUpdate = array();
+	protected $_binaryBlacklistIdsToUpdate = array();
 
 	/**
 	 * Constructor.
@@ -846,7 +846,11 @@ class Binaries
 			);
 		}
 
-		$this->updateBlacklistActivity();
+		$this->_pdo->queryExec(
+			sprintf('UPDATE binaryblacklist set last_activity = NOW() where id in (%s)',
+					implode(',', $this->_binaryBlacklistIdsToUpdate)));
+
+		$this->_binaryBlacklistIdsToUpdate = [];
 
 		// Start of part repair.
 		$startPR = microtime(true);
@@ -1338,19 +1342,6 @@ class Binaries
 	}
 
 	/**
-	 * Update the last_activity date on the blacklist
-	 * @param int $blackListId The ID of the blacklist entry
-	 * @return void
-	 */
-	public function updateBlacklistActivity()
-	{
-		$this->_pdo->queryExec(sprintf('UPDATE binaryblacklist set last_activity = NOW() where id in (%s)', 
-			implode(',', $this->_binaryblacklistIdsToUpdate)));
-
-		$this->_binaryblacklistIdsToUpdate = array();
-	}
-
-	/**
 	 * Check if an article is blacklisted.
 	 *
 	 * @param array  $msg       The article header (OVER format).
@@ -1383,7 +1374,7 @@ class Binaries
 				if (preg_match('/' . $whiteList['regex'] . '/i', $field[$whiteList['msgcol']])) {
 					// This field matched a white list, so it might not be black listed.
 					$blackListed = false;
-					$this->_binaryblacklistIdsToUpdate[$whiteList['id']] = $whiteList['id'];
+					$this->_binaryBlacklistIdsToUpdate[$whiteList['id']] = $whiteList['id'];
 					break;
 				}
 			}
@@ -1394,7 +1385,7 @@ class Binaries
 			foreach ($this->blackList[$groupName] as $blackList) {
 				if (preg_match('/' . $blackList['regex'] . '/i', $field[$blackList['msgcol']])) {
 					$blackListed = true;
-					$this->_binaryblacklistIdsToUpdate[$blackList['id']] = $blackList['id'];
+					$this->_binaryBlacklistIdsToUpdate[$blackList['id']] = $blackList['id'];
 					break;
 				}
 			}
