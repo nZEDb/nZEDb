@@ -196,7 +196,7 @@
 											class="fa fa-gamepad"></i><span> Games</span></a></li>
 							<li><a href="{$serverroot}series"><i
 											class="fa fa-television"></i><span> TV</span></a></li>
-							<li><a href="{$serverroot}xxx"><i class="fa fa-ban"></i><span> XXX</span></a></li>
+							<li><a href="{$serverroot}xxx"><i class="fa fa-venus-mars"></i><span> Adult</span></a></li>
 							<li><a href="{$serverroot}books"><i class="fa fa-book"></i><span> Books</span></a></li>
 							<li><a href="{$serverroot}browse"><i
 											class="fa fa-list-ul"></i><span> Browse All Releases</span></a></li>
