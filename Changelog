@@ -6,6 +6,8 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2015-09-09 niel
+	Mrg: PR 1871, from bfincher - Display the date which a binary black list was last used.
 2015-09-08 niel
 	Mrg: PR 1869, from DariusIII - Add back missing invites in profile page of charisma/omicron templates.
 	Mrg: PR 1870, from DariusIII - Change sidebar menu XXX into Adult to match headermenu, change the icon.
