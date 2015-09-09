@@ -143,6 +143,12 @@ class Binaries
 	protected $_partRepairMaxTries;
 
 	/**
+	 * An array of binaryblacklist IDs that should have their activity date updated
+	 * @var array(int)
+	 */
+	protected $_binaryblacklistIdsToUpdate = array();
+
+	/**
 	 * Constructor.
 	 *
 	 * @param array $options Class instances / echo to CLI?
@@ -840,6 +846,8 @@ class Binaries
 			);
 		}
 
+		$this->updateBlacklistActivity();
+
 		// Start of part repair.
 		$startPR = microtime(true);
 
@@ -1330,6 +1338,20 @@ class Binaries
 	}
 
 	/**
+	 * Update the last_activity date on the blacklist
+	 * @param int $blackListId The ID of the blacklist entry
+	 * @return void
+	 */
+	public function updateBlacklistActivity()
+	{
+		foreach ($this->_binaryblacklistIdsToUpdate as $bid) {
+			$this->_pdo->queryExec(sprintf('UPDATE binaryblacklist set last_activity = NOW() where id = %d', $bid));
+		}
+
+		$this->_binaryblacklistIdsToUpdate = array();
+	}
+
+	/**
 	 * Check if an article is blacklisted.
 	 *
 	 * @param array  $msg       The article header (OVER format).
@@ -1362,6 +1384,7 @@ class Binaries
 				if (preg_match('/' . $whiteList['regex'] . '/i', $field[$whiteList['msgcol']])) {
 					// This field matched a white list, so it might not be black listed.
 					$blackListed = false;
+					$this->_binaryblacklistIdsToUpdate[$whiteList['id']] = $whiteList['id'];
 					break;
 				}
 			}
@@ -1372,6 +1395,7 @@ class Binaries
 			foreach ($this->blackList[$groupName] as $blackList) {
 				if (preg_match('/' . $blackList['regex'] . '/i', $field[$blackList['msgcol']])) {
 					$blackListed = true;
+					$this->_binaryblacklistIdsToUpdate[$blackList['id']] = $blackList['id'];
 					break;
 				}
 			}
@@ -1406,7 +1430,8 @@ class Binaries
 			sprintf('
 				SELECT
 					binaryblacklist.id, binaryblacklist.optype, binaryblacklist.status, binaryblacklist.description,
-					binaryblacklist.groupname AS groupname, binaryblacklist.regex, groups.id AS group_id, binaryblacklist.msgcol
+					binaryblacklist.groupname AS groupname, binaryblacklist.regex, groups.id AS group_id, binaryblacklist.msgcol,
+					binaryblacklist.last_activity as last_activity
 				FROM binaryblacklist
 				LEFT OUTER JOIN groups ON groups.name %s binaryblacklist.groupname
 				WHERE 1=1 %s %s %s
