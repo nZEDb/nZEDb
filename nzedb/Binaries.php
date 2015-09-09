@@ -1344,9 +1344,8 @@ class Binaries
 	 */
 	public function updateBlacklistActivity()
 	{
-		foreach ($this->_binaryblacklistIdsToUpdate as $bid) {
-			$this->_pdo->queryExec(sprintf('UPDATE binaryblacklist set last_activity = NOW() where id = %d', $bid));
-		}
+		$this->_pdo->queryExec(sprintf('UPDATE binaryblacklist set last_activity = NOW() where id in (%s)', 
+			implode(',', $this->_binaryblacklistIdsToUpdate)));
 
 		$this->_binaryblacklistIdsToUpdate = array();
 	}
