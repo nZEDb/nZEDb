@@ -59,17 +59,18 @@ if ($page->users->isLoggedIn()) {
 	if ($function != 'c' && $function != 'r') {
 		if (!isset($_GET['apikey'])) {
 			showApiError(200, 'Missing parameter (apikey)');
-		}
-		$res = $page->users->getByRssToken($_GET['apikey']);
-		$apiKey = $_GET['apikey'];
+		} else {
+			$res    = $page->users->getByRssToken($_GET['apikey']);
+			$apiKey = $_GET['apikey'];
 
-		if (!$res) {
-			showApiError(100, 'Incorrect user credentials (wrong API key)');
-		}
+			if (!$res) {
+				showApiError(100, 'Incorrect user credentials (wrong API key)');
+			}
 
-		$uid = $res['id'];
-		$catExclusions = $page->users->getCategoryExclusion($uid);
-		$maxRequests = $res['apirequests'];
+			$uid           = $res['id'];
+			$catExclusions = $page->users->getCategoryExclusion($uid);
+			$maxRequests   = $res['apirequests'];
+		}
 	}
 }
 
