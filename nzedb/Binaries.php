@@ -846,11 +846,14 @@ class Binaries
 			);
 		}
 
-		$this->_pdo->queryExec(
-			sprintf('UPDATE binaryblacklist set last_activity = NOW() where id in (%s)',
-					implode(',', $this->_binaryBlacklistIdsToUpdate)));
-
-		$this->_binaryBlacklistIdsToUpdate = [];
+		if ($this->_binaryBlacklistIdsToUpdate) {
+			$this->_pdo->queryExec(
+				sprintf('UPDATE binaryblacklist SET last_activity = NOW() WHERE id IN (%s)',
+					implode(',', $this->_binaryBlacklistIdsToUpdate)
+				)
+			);
+			$this->_binaryBlacklistIdsToUpdate = [];
+		}
 
 		// Start of part repair.
 		$startPR = microtime(true);
