@@ -267,6 +267,14 @@ define('nZEDb_DEBUG', false);
 define('nZEDb_LOGGING', false);
 
 /**
+ * var_dump missing autoloader files.
+ *
+ * @note Dev setting.
+ * @default false
+ */
+define('nZEDb_LOGAUTOLOADER', false);
+
+/**
  * How many log files to keep in the log folder.
  *
  * @default 20

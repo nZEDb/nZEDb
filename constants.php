@@ -49,11 +49,3 @@ define('nZEDb_THEMES_SHARED', nZEDb_WWW . 'themes_shared' . DS);
 define('nZEDb_LOGS', nZEDb_RES . 'logs' . DS);
 
 define('nZEDb_VERSIONS', nZEDb_LIB . 'build' . DS . 'nZEDb.xml');
-
-/**
- * var_dump missing autoloader files.
- *
- * @note    Dev setting.
- * @default false
- */
-define('nZEDb_LOGAUTOLOADER', false);
