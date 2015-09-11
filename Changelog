@@ -8,6 +8,8 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2015-09-11 niel
 	Mrg: PR 1870, from DariusIII - Change font used in omicron and charisma templates, adjust layout of coverview pages.
+2015-09-11 bart39
+	Mrg: PR 1854, from rainje - Fix issue #1850 - Three Arrows when viewing movie upper right corner.
 2015-09-10 kevin
 	Fix: Issue with empty array causing query to fail in PR 1871
 2015-09-09 niel
