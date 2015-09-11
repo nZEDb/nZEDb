@@ -1,6 +1,6 @@
 @import url(https://fonts.googleapis.com/css?family=Shojumaru);
 @import url('font-awesome.min.css');
-@import url(https://fonts.googleapis.com/css?family=Lato:300,400,700,900);
+@import url(https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900);
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700);
 
 select {
@@ -743,7 +743,7 @@ ul.github-buttons li {
 }
 
 .release-title {
-    font-family: 'Lato', 'Open Sans', Helvetica, sans-serif;
+    font-family: 'Roboto Condensed', 'Open Sans', Helvetica, sans-serif;
     font-weight: 100;
     font-size: 16px;
     text-overflow: ellipsis;
@@ -756,12 +756,27 @@ ul.github-buttons li {
     overflow: visible;
 }
 .release-subtitle {
-    font-family: 'Lato', 'Open Sans', Helvetica, sans-serif;
+    font-family: 'Roboto Condensed', 'Open Sans', Helvetica, sans-serif;
     font-weight: 100;
     font-size: 12px;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
 }
+
+.cover {
+    max-width: 100px;
+    max-height: 147px;
+    height: auto;
+}
+
+.movie-height {
+    height:199px;
+}
+
+.descfull {
+    display:none;
+}
+
 .invitesuccess {display:none; font-weight:bold; padding-left:10px; color:green;}
 .invitefailed {display:none; font-weight:bold; padding-left:10px; color:red;}
