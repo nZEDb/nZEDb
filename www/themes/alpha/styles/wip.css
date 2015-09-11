@@ -130,6 +130,7 @@ div.icon_check          { background-image:url('../../../themes_shared/images/ic
 /*
     Use colorbox example 2 css for movieinfo popups
 */
+/*
 .cboxMovie{}
     .cboxMovie #cboxContent{background:#fff;}
     .cboxMovie #cboxTopLeft{width:25px; height:25px; background:url(../../../themes_shared/images/colorbox/border1.png) 0 0 no-repeat;}
@@ -141,7 +142,7 @@ div.icon_check          { background-image:url('../../../themes_shared/images/ic
     .cboxMovie #cboxMiddleLeft{width:25px; background:url(../../../themes_shared/images/colorbox/border2.png) 0 0 repeat-y;}
     .cboxMovie #cboxMiddleRight{width:25px; background:url(../../../themes_shared/images/colorbox/border2.png) -25px 0 repeat-y;}
         .cboxMovie #cboxLoadedContent{background:#fff; margin-top:32px; padding:1px; }
-        /*.cboxMovie #cboxLoadingGraphic{background:url(../../../themes_shared/images/loading.gif) center center no-repeat;}*/
+        .cboxMovie #cboxLoadingGraphic{background:url(../../../themes_shared/images/loading.gif) center center no-repeat;}
         .cboxMovie #cboxLoadingOverlay{background:#fff;}
         .cboxMovie #cboxTitle{position:absolute; font-size:125%; top:-2px; left:0; color:#000; margin-top:-10px;}
         .cboxMovie #cboxCurrent{position:absolute; top:-1px; right:205px; text-indent:-9999px;}
@@ -184,3 +185,4 @@ div.icon_check          { background-image:url('../../../themes_shared/images/ic
     .cboxXXX .cboxSlideshow_on #cboxSlideshow.hover{background-position:-100px -25px;}
     .cboxXXX .cboxSlideshow_off #cboxSlideshow{background-position:-100px 0px; right:44px;}
     .cboxXXX .cboxSlideshow_off #cboxSlideshow.hover{background-position:-75px -25px;}
+*/
