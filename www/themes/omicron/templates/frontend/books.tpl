@@ -73,7 +73,7 @@
 										<div class="panel panel-default">
 											<div class="panel-body">
 												<div class="row">
-													<div class="col-md-2 no-gutter">
+													<div class="col-md-2 small-gutter-left">
 														<a title="View details"
 														   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">
 															<img src="{$smarty.const.WWW_TOP}/covers/book/{if $result.cover == 1}{$result.bookinfoid}.jpg{else}no-cover.jpg{/if}"
@@ -93,7 +93,7 @@
 														   href="{$smarty.const.WWW_TOP}/browse?g={$mgrp[$m@index]}"
 														   title="Browse releases in {$mgrp[$m@index]|replace:"alt.binaries":"a.b"}">Group</a>
 													</div>
-													<div class="col-md-10 no-gutter">
+													<div class="col-md-10 small-gutter-left">
 														<h4><a title="View details"
 															   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$result.author|escape:"htmlall"}
 																- {$result.title|escape:"htmlall"}</a></h4>

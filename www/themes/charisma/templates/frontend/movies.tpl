@@ -67,8 +67,8 @@
 								<div class="col-md-6 small-gutter-right movie-height">
 									<div class="panel panel-default">
 										<div class="panel-body">
-											<div class="row no-gutter">
-												<div class="col-md-3 no-gutter">
+											<div class="row">
+												<div class="col-md-3">
 													{foreach from=$result.languages item=movielanguage}
 														{release_flag($movielanguage, browse)}
 													{/foreach}
@@ -108,7 +108,7 @@
 													   href="{$smarty.const.WWW_TOP}/browse?g={$result.grp_release_grpname}"
 													   title="Browse releases in {$result.grp_release_grpname|replace:"alt.binaries":"a.b"}">Group</a>
 												</div>
-												<div class="col-md-9 no-gutter">
+												<div class="col-md-9">
 																<span class="release-title"><a class="text-muted"
 																							   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$result.title|escape:"htmlall"}</a></span>
 													<div class="release-subtitle">{if $result.genre != ''}
@@ -172,8 +172,8 @@
 								<div class="col-md-6 small-gutter-left movie-height">
 									<div class="panel panel-default">
 										<div class="panel-body">
-											<div class="row no-gutter">
-												<div class="col-md-3 no-gutter">
+											<div class="row">
+												<div class="col-md-3">
 													{foreach from=$result.languages item=movielanguage}
 														{release_flag($movielanguage, browse)}
 													{/foreach}
@@ -213,7 +213,7 @@
 													   href="{$smarty.const.WWW_TOP}/browse?g={$result.grp_release_grpname}"
 													   title="Browse releases in {$result.grp_release_grpname|replace:"alt.binaries":"a.b"}">Group</a>
 												</div>
-												<div class="col-md-9 no-gutter">
+												<div class="col-md-9">
 																<span class="release-title"><a class="text-muted"
 																							   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$result.title|escape:"htmlall"}</a></span>
 													<div class="release-subtitle">{if $result.genre != ''}

@@ -94,7 +94,7 @@
 							<!-- search form -->
 							<form id="headsearch_form" action="{$smarty.const.WWW_TOP}/search/" method="get">
 								<input id="headsearch" name="search" value="{if $header_menu_search == ""}Search...{else}{$header_menu_search|escape:"htmlall"}{/if}" class="form-control" type="text" tabindex="1$" />
-								<div class="row no-gutter" style="padding-top:3px;">
+								<div class="row" style="padding-top:3px;">
 									<div class="col-md-8">
 										<select id="headcat" name="t" class="form-control" data-search="true">
 											<option class="grouping" value="-1">All</option>
@@ -106,7 +106,7 @@
 											{/foreach}
 										</select>
 									</div>
-									<div class="col-md-3 no-gutter">
+									<div class="col-md-3">
 										<input id="headsearch_go" type="submit" class="btn btn-dark" style="margin-top:0px; margin-left:4px;" value="Go"/>
 									</div>
 								</div>

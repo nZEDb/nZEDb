@@ -1,4 +1,6 @@
 @import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic);
+@import url(https://fonts.googleapis.com/css?family=Lato:300,400,700,900);
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700);
 /*!
  *   AdminLTE v2.1.2
  *   Author: Almsaeed Studio
@@ -151,7 +153,7 @@ h6,
 .h4,
 .h5,
 .h6 {
-  font-family: 'Source Sans Pro', sans-serif;
+  font-family: 'Lato', 'Open Sans', Helvetica, sans-serif;
 }
 /* General Links */
 a {
@@ -4210,6 +4212,22 @@ table.text-center th {
     white-space: normal!important;
   }
 }
+
+.no-gutter  {
+  padding-left:0;
+  padding-right:0;
+}
+
+.small-gutter-right  {
+  padding-left:0;
+  padding-right:5px;
+}
+
+.small-gutter-left  {
+  padding-right:0;
+  padding-left:5px;
+}
+
 .release-name {
   font-size: 10px;
   text-overflow: ellipsis;
@@ -4238,5 +4256,20 @@ table.text-center th {
   overflow: hidden;
   white-space: nowrap;
 }
+
+.cover {
+  max-width: 100px;
+  max-height: 147px;
+  height: auto;
+}
+
+.movie-height {
+  height:199px;
+}
+
+.descfull {
+  display:none;
+}
+
 .invitesuccess {display:none; font-weight:bold; padding-left:10px; color:green;}
 .invitefailed {display:none; font-weight:bold; padding-left:10px; color:red;}

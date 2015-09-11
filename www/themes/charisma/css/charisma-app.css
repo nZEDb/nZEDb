@@ -1,5 +1,7 @@
 @import url(https://fonts.googleapis.com/css?family=Shojumaru);
 @import url('font-awesome.min.css');
+@import url(https://fonts.googleapis.com/css?family=Lato:300,400,700,900);
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700);
 
 select {
     background-color: #fff;
@@ -717,6 +719,21 @@ ul.github-buttons li {
 .mc_embed_signup #mce-error-response {display:none;}
 .mc_embed_signup #mce-success-response {color:#529214; display:none;}
 .mc_embed_signup label.error {display:block; float:none; width:auto; margin-left:1.05em; text-align:left; padding:.5em 0;}
+
+.no-gutter  {
+    padding-left:0;
+    padding-right:0;
+}
+
+.small-gutter-right  {
+    padding-left:0;
+    padding-right:5px;
+}
+
+.small-gutter-left  {
+    padding-right:0;
+    padding-left:5px;
+}
 
 .release-name {
     font-size: 10px;

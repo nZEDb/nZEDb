@@ -141,8 +141,8 @@
 								</ul>
 								<div class="tab-content">
 									<div id="pane1" class="tab-pane active">
-										<div class="row no-gutter">
-											<div class="col-md-3 no-gutter">
+										<div class="row small-gutter-left">
+											<div class="col-md-3 small-gutter-left">
 												{if $movie && $release.rageid < 0 && $movie.cover == 1}
 													<img src="{$smarty.const.WWW_TOP}/covers/movies/{$movie.imdbid}-cover.jpg"
 														 width="185"
@@ -231,7 +231,7 @@
 													<p id="demo"></p>
 												</div>
 											</div>
-											<div class="col-md-9 no-gutter">
+											<div class="col-md-9 small-gutter-left">
 												<table cellpadding="0" cellspacing="0"
 													   width="100%">
 													<tbody>
