@@ -1,7 +1,7 @@
 @import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic);
 @import url(https://fonts.googleapis.com/css?family=Lato:300,400,700,900);
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700);
-@import url(https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900,300italic,400italic,700italic,900italic);
+@import url(https://fonts.googleapis.com/css?family=Roboto:300,400,700,900,300italic,400italic,700italic,900italic);
 /*!
  *   AdminLTE v2.1.2
  *   Author: Almsaeed Studio
@@ -24,7 +24,7 @@ body {
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-family: 'Roboto Condensed', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-weight: 400;
   overflow-x: hidden;
   overflow-y: auto;
@@ -154,7 +154,7 @@ h6,
 .h4,
 .h5,
 .h6 {
-  font-family: 'Roboto Condensed', 'Open Sans', Helvetica, sans-serif;
+  font-family: 'Roboto', 'Open Sans', Helvetica, sans-serif;
 }
 /* General Links */
 a {
@@ -4237,7 +4237,7 @@ table.text-center th {
 }
 
 .release-title {
-  font-family: 'Roboto Condensed', 'Open Sans', Helvetica, sans-serif;
+  font-family: 'Roboto', 'Open Sans', Helvetica, sans-serif;
   font-weight: 100;
   font-size: 16px;
   text-overflow: ellipsis;
@@ -4250,7 +4250,7 @@ table.text-center th {
   overflow: visible;
 }
 .release-subtitle {
-  font-family: 'Roboto Condensed', 'Open Sans', Helvetica, sans-serif;
+  font-family: 'Roboto', 'Open Sans', Helvetica, sans-serif;
   font-weight: 100;
   font-size: 12px;
   text-overflow: ellipsis;
