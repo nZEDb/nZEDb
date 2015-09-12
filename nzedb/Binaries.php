@@ -846,7 +846,7 @@ class Binaries
 			);
 		}
 
-		if ($this->_binaryBlacklistIdsToUpdate) {
+		if (!empty($this->_binaryBlacklistIdsToUpdate)) {
 			$this->_pdo->queryExec(
 				sprintf('UPDATE binaryblacklist SET last_activity = NOW() WHERE id IN (%s)',
 					implode(',', $this->_binaryBlacklistIdsToUpdate)
