@@ -9,6 +9,19 @@
 		</ol>
 	</div>
 </div>
+<div class="well well-sm">
+	<form class="form-inline" role="form" name="browseby" action="books">
+		<div class="form-group form-group-sm">
+			<label class="sr-only" for="title">Title:</label>
+			<input type="text" class="form-control" id="title" name="title" value="{$title}" placeholder="Title">
+		</div>
+		<div class="form-group form-group-sm">
+			<label class="sr-only" for="author">Author:</label>
+			<input type="text" class="form-control" id="author" name="author" value="{$author}" placeholder="Author">
+		</div>
+		<input type="submit" class="btn btn-primary" value="Search!"/>
+	</form>
+</div>
 <form id="nzb_multi_operations_form" action="get">
 	<div class="box-body"
 	<div class="row">
