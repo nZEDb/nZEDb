@@ -126,7 +126,7 @@ class TvRage extends TV
 		// Only search if the title contains more than one word to prevent incorrect matches
 		$pieces = explode(' ', $title);
 		if (count($pieces) > 1) {
-			$title5 = '%';
+			$title4 = '%';
 			foreach ($pieces as $piece) {
 				$title4 .= str_replace(["'", "!"], "", $piece) . '%';
 			}

@@ -6,6 +6,8 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2015-09-15 niel
+	Fix: Typo in variable name which causes a missing index warning.
 2015-09-14 ruhllatio
 	Add: Base TV Class to make the addition of a new TV scraper easier
 	Chg: Re-organize and trim some fat out of TvRage.php in preparation for its glorious return
