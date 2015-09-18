@@ -453,7 +453,6 @@ function printOutput($data, $xml = true, $page, $offset = 0)
  * @param $d
  * @return array|string
  */
-
 function utf8ize($d)
 {
 	if (is_array($d)) {
