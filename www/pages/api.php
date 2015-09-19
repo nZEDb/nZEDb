@@ -439,11 +439,30 @@ function printOutput($data, $xml = true, $page, $offset = 0)
 		header('Content-Length: ' . strlen($response) );
 		echo $response;
 	} else {
-		$response = json_encode($data);
+		$response = json_encode(utf8ize($data));
 		header('Content-type: application/json');
 		header('Content-Length: ' . strlen($response));
 		echo $response;
 	}
+}
+
+/**
+ * @note: Convert non-UTF-8 characters from
+ * xml into UTF-8
+ * Function taken from http://stackoverflow.com/a/19366999
+ * @param $d
+ * @return array|string
+ */
+function utf8ize($d)
+{
+	if (is_array($d)) {
+		foreach ($d as $k => $v) {
+			$d[$k] = utf8ize($v);
+		}
+	} else if (is_string ($d)) {
+		return utf8_encode($d);
+	}
+	return $d;
 }
 
 /**
