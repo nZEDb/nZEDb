@@ -441,7 +441,7 @@ function printOutput($data, $xml = true, $page, $offset = 0)
 	} else {
 		$response = json_encode($data);
 		header('Content-type: application/json');
-		header('Content-Length: ' . strlen($response) );
+		header('Content-Length: ' . strlen($response));
 		echo $response;
 	}
 }
