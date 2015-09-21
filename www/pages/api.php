@@ -1,11 +1,11 @@
 <?php
 
+use nzedb\Capabilities;
 use nzedb\Category;
 use nzedb\Releases;
 use nzedb\db\Settings;
 use nzedb\utility\Misc;
-use nzedb\Capabilities;
-
+use nzedb\utility\Text;
 
 // API functions.
 $function = 's';
@@ -235,7 +235,7 @@ switch ($function) {
 			$caps = (new Capabilities(['Settings' => $page->settings]))->getForMenu();
 			$caps['categories'] = $cats;
 			//use json_encode
-			$response = json_encode($caps);
+			$response = encodeAsJSON($caps);
 			header('Content-type: application/json');
 			header('Content-Length: ' . strlen($response) );
 			echo $response;
@@ -439,10 +439,10 @@ function printOutput($data, $xml = true, $page, $offset = 0)
 		header('Content-Length: ' . strlen($response) );
 		echo $response;
 	} else {
-		$response = json_encode($data);
+		$response = encodeAsJSON($data);
 		header('Content-type: application/json');
-		header('Content-Length: ' . strlen($response) );
-		echo json_encode($data);
+		header('Content-Length: ' . strlen($response));
+		echo $response;
 	}
 }
 
@@ -485,4 +485,13 @@ function addLanguage(&$releases, Settings $settings)
 			}
 		}
 	}
+}
+
+function encodeAsJSON($data)
+{
+	$json = json_encode(Text::encodeAsUTF8($data));
+	if ($json === false) {
+		showApiError(201);
+	}
+	return $json;
 }
