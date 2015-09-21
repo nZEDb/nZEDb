@@ -145,7 +145,7 @@ class Text
 	{
 		if (is_array($data)) {
 			foreach ($data as $key => $value) {
-				$data[$key] = utf8ize($value);
+				$data[$key] = Text::encodeAsUTF8($value);
 			}
 		} else {
 			if (is_string($data)) {
