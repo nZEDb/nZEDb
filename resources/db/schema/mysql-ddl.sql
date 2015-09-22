@@ -942,6 +942,53 @@ CREATE TABLE tmux (
   COLLATE = utf8_unicode_ci
   AUTO_INCREMENT = 1;
 
+DROP TABLE IF EXISTS tv_episodes;
+CREATE TABLE tv_episodes (
+  -- Store current episode info here?
+  -- The summary/title of the episode for example?
+)
+  ENGINE = MYISAM
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci
+  AUTO_INCREMENT = 1;
+
+DROP TABLE IF EXISTS tv_info;
+CREATE TABLE tv_info (
+  id           INT UNSIGNED         NOT NULL AUTO_INCREMENT,
+  rage_id      INT UNSIGNED         NOT NULL DEFAULT 0,
+  tvdb_id      INT UNSIGNED         NOT NULL DEFAULT 0,
+  trakt_id     INT UNSIGNED         NOT NULL DEFAULT 0,
+  tvmaze_id    INT UNSIGNED         NOT NULL DEFAULT 0,
+  title        VARCHAR(255)         NOT NULL DEFAULT '',
+  rating       VARCHAR(25)          NOT NULL DEFAULT '',
+  genres       VARCHAR(255)         NOT NULL DEFAULT '',
+  run_time     SMALLINT UNSIGNED    NOT NULL DEFAULT 0  COMMENT 'How long is an episode in minutes?',
+  status       TINYINT(1) UNSIGNED  NOT NULL DEFAULT 0  COMMENT 'Is this series still on the air?',
+  network      INT UNSIGNED         NOT NULL DEFAULT 0  COMMENT 'What TV network does this air on?',
+  image        TINYINT(1) UNSIGNED  NOT NULL DEFAULT 0  COMMENT 'Does this series have an image?',
+  description  VARCHAR(10000)       NOT NULL DEFAULT '' COMMENT 'Description/summary of this series.',
+  country      VARCHAR(2)           NOT NULL DEFAULT '',
+  next_date    DATETIME             NULL                COMMENT 'Next Episode date.',
+  prev_date    DATETIME             NULL                COMMENT 'Previous Episode date.',
+  start_date   DATETIME             NULL                COMMENT 'When did this series start airing?',
+  PRIMARY KEY (id)
+)
+  ENGINE = MYISAM
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci
+  AUTO_INCREMENT = 1;
+
+DROP TABLE IF EXISTS tv_networks;
+CREATE TABLE tv_networks (
+  id    INT UNSIGNED NOT NULL DEFAULT AUTO_INCREMENT,
+  title VARCHAR(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (id),
+  UNIQUE INDEX ix_tv_networks_title (title)
+)
+  ENGINE = MYISAM
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci
+  AUTO_INCREMENT = 1;
 
 DROP TABLE IF EXISTS tvrage_titles;
 CREATE TABLE tvrage_titles (
