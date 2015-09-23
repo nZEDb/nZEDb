@@ -1696,7 +1696,7 @@ class Releases
 
 		$alternate = $this->pdo->queryOneRow(sprintf('SELECT * FROM releases r
 			WHERE r.searchname %s
-			AND r.guid NOT IN (SELECT guid FROM failed_downloads WHERE userid = %d)',
+			AND r.guid NOT IN (SELECT guid FROM dnzb_failures WHERE userid = %d)',
 			$this->pdo->likeString($searchname),
 			$userid
 			)
