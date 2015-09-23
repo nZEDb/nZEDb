@@ -133,4 +133,27 @@ class Text
 		return $path;
 	}
 
+	/**
+	 * @note: Convert non-UTF-8 characters into UTF-8
+	 * Function taken from http://stackoverflow.com/a/19366999
+	 *
+	 * @param $data
+	 *
+	 * @return array|string
+	 */
+	public static function encodeAsUTF8($data)
+	{
+		if (is_array($data)) {
+			foreach ($data as $key => $value) {
+				$data[$key] = Text::encodeAsUTF8($value);
+			}
+		} else {
+			if (is_string($data)) {
+				return utf8_encode($data);
+			}
+		}
+
+		return $data;
+	}
+
 }
