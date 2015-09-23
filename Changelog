@@ -7,6 +7,7 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 2015-09-22 bart39
+	Mrg: PR 1884, from DariusIII - Reorganize X-DNZB-Failure header support related pages (failed.php and getnzb.php)
 	Mrg: PR 1883, from DariusIII - Add filters to cover pages.
 2015-09-21 bart39
 	Mrg: PR 1882, from DariusIII - Fix the encodeAsUTF8 function.
