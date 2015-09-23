@@ -6,6 +6,8 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2015-09-22 bart39
+	Mrg: PR 1883, from DariusIII - Add filters to cover pages.
 2015-09-21 bart39
 	Mrg: PR 1882, from DariusIII - Fix the encodeAsUTF8 function.
 2015-09-19 niel
