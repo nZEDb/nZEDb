@@ -66,7 +66,7 @@ If you do not see the above, or could not log in to sphinxQL, look at the log fi
 ### MAKE SURE ALL RELEASE CREATION / IMPORT SCRIPTS ARE STOPPED.
 
 ### Edit the settings.php file:
-Open up the www/settings.php file with a text editor, if you do not have it copy the www/settings.php.example file to www/settings.php
+Open up the nzedb/config/settings.php file with a text editor, if you do not have it copy the nzedb/config/settings.example.php file to nzedb/config/settings.php
 
 Change the `nZEDb_RELEASE_SEARCH_TYPE` to `2`
 
