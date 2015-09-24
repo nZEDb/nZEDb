@@ -79,6 +79,7 @@
 									{assign var="mtotalparts" value=","|explode:$result.grp_release_totalparts}
 									{assign var="mcomments" value=","|explode:$result.grp_release_comments}
 									{assign var="mgrabs" value=","|explode:$result.grp_release_grabs}
+									{assign var="mfailed" value=","|explode:$result.grp_release_failed}
 									{assign var="mpass" value=","|explode:$result.grp_release_password}
 									{assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
 									{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
@@ -88,10 +89,10 @@
 												<div class="row">
 													<div class="col-md-2 small-gutter-left">
 														<a title="View details"
-														   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">
+														   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">
 															<img src="{$smarty.const.WWW_TOP}/covers/book/{if $result.cover == 1}{$result.bookinfoid}.jpg{else}no-cover.jpg{/if}"
 																 width="140" border="0"
-																 alt="{$result.author|escape:"htmlall"} - {$result.title|escape:"htmlall"}"/>
+																 alt="{$result.author|escape:"htmlall"} - {$result.title|escape:"htmlall"}"/>{if $mfailed[$m@index] > 0} <i class="fa fa-exclamation-circle" style="color: red" title="This release has failed to download for some users"></i>{/if}
 														</a>
 														{if isset($resulturl) && $result.url != ""}<a
 															class="label label-default" target="_blank"
@@ -105,10 +106,15 @@
 														<a class="label label-default"
 														   href="{$smarty.const.WWW_TOP}/browse?g={$mgrp[$m@index]}"
 														   title="Browse releases in {$mgrp[$m@index]|replace:"alt.binaries":"a.b"}">Group</a>
+														{if $mfailed[$m@index] > 0}
+														<span class="btn btn-hover btn-default btn-xs"><i class="fa fa-thumbs-o-down"></i><span
+																	class="badge"> {$mfailed[$m@index]}
+																Failed Download{if $mfailed[$m@index] != 1}s{/if}</span>
+															{/if}
 													</div>
 													<div class="col-md-10 small-gutter-left">
 														<h4><a title="View details"
-															   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$result.author|escape:"htmlall"}
+															   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">{$result.author|escape:"htmlall"}
 																- {$result.title|escape:"htmlall"}</a></h4>
 														<table>
 															<tr>
@@ -146,12 +152,12 @@
 																	{/if}
 																	<div>
 																		<a role="button" class="btn btn-default btn-xs"
-																		   href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}"><i
+																		   href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"><i
 																					class="fa fa-download"></i><span
 																					class="badge">{$mgrabs[$m@index]}
 																				Grab{if $mgrabs[$m@index] != 1}s{/if}</span></a>
 																		<a role="button" class="btn btn-default btn-xs"
-																		   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}#comments"><i
+																		   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}#comments"><i
 																					class="fa fa-comment-o"></i><span
 																					class="badge">{$mcomments[$m@index]}
 																				Comment{if $mcomments[$m@index] != 1}s{/if}</span></a>

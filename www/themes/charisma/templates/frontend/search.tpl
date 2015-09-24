@@ -61,6 +61,7 @@
 					<td><input class="searchadv" id="searchadvfilename" name="searchadvfilename" value="{$searchadvfilename|escape:'html'}" type="text"/></td>
 				</tr>
 				<tr>
+				<tr>
 					<th><label for="searchadvdaysnew">Min age(days):</label></th>
 					<td>
 						<input class="searchdaysinput" id="searchadvdaysnew" name="searchadvdaysnew"
@@ -186,66 +187,6 @@
 		</div>
 		<hr>
 		<table class="data table table-condensed table-striped table-responsive table-hover" id="browsetable">
-			<tr>
-				<th></th>
-				<th>
-					name<br>
-					<a title="Sort Descending" href="{$orderbyname_desc}">
-						<img src="{$smarty.const.WWW_TOP}/themes/charisma/images/sorting/arrow_down.gif" alt="Sort Descending">
-					</a>
-					<a title="Sort Ascending" href="{$orderbyname_asc}">
-						<img src="{$smarty.const.WWW_TOP}/themes/charisma/images/sorting/arrow_up.gif" alt="Sort Ascending">
-					</a>
-				</th>
-				<th style="text-align:center;">
-					category<br>
-					<a title="Sort Descending" href="{$orderbycat_desc}">
-						<img src="{$smarty.const.WWW_TOP}/themes/charisma/images/sorting/arrow_down.gif" alt="Sort Descending">
-					</a>
-					<a title="Sort Ascending" href="{$orderbycat_asc}">
-						<img src="{$smarty.const.WWW_TOP}/themes/charisma/images/sorting/arrow_up.gif" alt="Sort Ascending">
-					</a>
-				</th>
-				<th style="text-align:center;">
-					posted<br>
-					<a title="Sort Descending" href="{$orderbyposted_desc}">
-						<img src="{$smarty.const.WWW_TOP}/themes/charisma/images/sorting/arrow_down.gif" alt="Sort Descending">
-					</a>
-					<a title="Sort Ascending" href="{$orderbyposted_asc}">
-						<img src="{$smarty.const.WWW_TOP}/themes/charisma/images/sorting/arrow_up.gif" alt="Sort Ascending">
-					</a>
-				</th>
-				<th style="text-align:center;">
-					size<br>
-					<a title="Sort Descending" href="{$orderbysize_desc}">
-						<img src="{$smarty.const.WWW_TOP}/themes/charisma/images/sorting/arrow_down.gif" alt="Sort Descending">
-					</a>
-					<a title="Sort Ascending" href="{$orderbysize_asc}">
-						<img src="{$smarty.const.WWW_TOP}/themes/charisma/images/sorting/arrow_up.gif" alt="Sort Ascending">
-					</a>
-				</th>
-				<th style="text-align:center;">
-					files<br>
-					<a title="Sort Descending" href="{$orderbyfiles_desc}">
-						<img src="{$smarty.const.WWW_TOP}/themes/charisma/images/sorting/arrow_down.gif" alt="Sort Descending">
-					</a>
-					<a title="Sort Ascending" href="{$orderbyfiles_asc}">
-						<img src="{$smarty.const.WWW_TOP}/themes/charisma/images/sorting/arrow_up.gif" alt="Sort Ascending">
-					</a>
-				</th>
-				<th style="text-align:center;">stats<br>
-					<a title="Sort Descending" href="{$orderbystats_desc}">
-						<img src="{$smarty.const.WWW_TOP}/themes/charisma/images/sorting/arrow_down.gif" alt="Sort Descending">
-					</a>
-					<a title="Sort Ascending" href="{$orderbystats_asc}">
-						<img src="{$smarty.const.WWW_TOP}/themes/charisma/images/sorting/arrow_up.gif" alt="Sort Ascending">
-					</a>
-				</th>
-				<th>
-					<input id="chkSelectAll" type="checkbox" class="nzb_check_all">
-					<label for="chkSelectAll" style="display:none;">Select All</label>
-				</th>
-			</tr>
 			{foreach from=$results item=result}
 				<tr class="{cycle values=",alt"}{if $lastvisit|strtotime<$result.adddate|strtotime} new{/if}"
 					id="guid{$result.guid}">
@@ -256,21 +197,27 @@
 					<td class="item">
 						<label for="chk{$result.guid|substr:0:7}">
 							<a class="title" title="View details"
-							   href="{$smarty.const.WWW_TOP}/details/{$result.guid}">{$result.searchname|escape:"htmlall"|truncate:150:"...":true}</a></label value="Searchname">
+							   href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.searchname|escape:"htmlall"|truncate:150:"...":true}</a>{if $result.failed > 0} <i class="fa fa-exclamation-circle" style="color: red" title="This release has failed to download for some users"></i>{/if}</label value="Searchname">
 						<div class="resextra">
 							<div class="btns" style="float:right">
 								{release_flag($result.searchname, browse)}
 								{if $result.passwordstatus == 1}
-									<img title="RAR/ZIP Possibly Passworded." src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/lock2.png" alt="RAR/ZIP Possibly Passworded.">
+									<img title="RAR/ZIP Possibly Passworded."
+										 src="{$smarty.const.WWW_TOP}/templates_shared/images/icons/lock2.png"
+										 alt="RAR/ZIP Possibly Passworded.">
 								{elseif $result.passwordstatus == 2}
-									<img title="RAR/ZIP Possibly Damaged." src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/broken.png" alt="RAR/ZIP Possibly Damaged.">
+									<img title="RAR/ZIP Possibly Damaged."
+										 src="{$smarty.const.WWW_TOP}/templates_shared/images/icons/broken.png"
+										 alt="RAR/ZIP Possibly Damaged.">
 								{elseif $result.passwordstatus == 10}
-									<img title="RAR/ZIP is Passworded." src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/lock.gif" alt="RAR/ZIP is Passworded.">
+									<img title="RAR/ZIP is Passworded."
+										 src="{$smarty.const.WWW_TOP}/templates_shared/images/icons/lock.gif"
+										 alt="RAR/ZIP is Passworded.">
 								{/if}
 								{if $result.videostatus > 0}
 									<a
 											class="model_prev label label-default"
-											href="{$smarty.const.WWW_TOP}/details/{$result.guid}"
+											href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}"
 											title="This release has a video preview."
 											rel="preview"
 											><i class="icon-youtube-play"></i>
@@ -319,6 +266,8 @@
 									   href="{$smarty.const.WWW_TOP}/browse?g={$result.group_name|escape:"htmlall"}"
 									   title="Browse {$result.group_name}">{$result.group_name|escape:"htmlall"|replace:"alt.binaries.":"a.b."}</a>
 								{/if}
+								{if $result.failed > 0}<span class="label label-default">
+									<i class ="fa fa-thumbs-o-up"></i> {$result.grabs} Grab{if $result.grabs != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$result.failed} Failed Download{if $result.failed != 1}s{/if}</span>{/if}
 							</div>
 						</div>
 					</td>
@@ -345,7 +294,8 @@
 						   href="{$smarty.const.WWW_TOP}/filelist/{$result.guid}">{$result.totalpart}</a>
 						{if $result.rarinnerfilecount > 0}
 							<div class="rarfilelist">
-								<img src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/magnifier.png" alt="{$result.guid}">
+								<img src="{$smarty.const.WWW_TOP}/templates_shared/images/icons/magnifier.png"
+									 alt="{$result.guid}">
 							</div>
 						{/if}
 					</td>
@@ -358,7 +308,7 @@
 					<td class="icons" nowrap="nowrap">
 						<div class="icon_nzb text-muted">
 							<a title="Download Nzb"
-							   href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}">
+							   href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"htmlall"}">
 								&nbsp;<i class="fa fa-download"></i></a>
 						</div>
 						<div class="icon_cart text-muted" title="Add to Cart"><i class="fa fa-shopping-cart"></i></div>

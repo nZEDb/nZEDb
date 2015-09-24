@@ -12,7 +12,8 @@
 		<div class="col-xlg-12 portlets">
 			<div class="panel panel-default">
 				<div class="panel-body pagination2">
-					<h1>{$release.searchname|escape:"htmlall"}</h1>
+					<h1>{$release.searchname|escape:"htmlall"} {if $release.failed > 0}<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
+							<i class ="fa fa-thumbs-o-up"></i> {$release.grabs} Grabs / <i class ="fa fa-thumbs-o-down"></i> {$release.failed} Failed Downloads</span>{/if}</h1>
 					{if isset($isadmin)}
 						<a class="label label-warning"
 						   href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$release.id}&amp;from={$smarty.server.REQUEST_URI}"
@@ -22,8 +23,6 @@
 						   title="Delete release">Delete</a>
 					{/if}
 					{if $movie && $release.rageid < 0}
-						<a class="label label-default" href="{$smarty.const.WWW_TOP}movies?imdb={$release.imdbid}"
-						   title="View all releases for this movie">Movie View</a>
 						<a class="label label-default" target="_blank"
 						   href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$release.imdbid}/"
 						   title="View at IMDB">IMDB</a>
@@ -38,7 +37,7 @@
 						{/if}
 					{/if}
 					{if $anidb && $release.anidbid > 0}
-						<a class="label label-default" href="{$smarty.const.WWW_TOP}anime/{$release.anidbid}"
+						<a class="label label-default" href="{$serverroot}anime/{$release.anidbid}"
 						   title="View all releases from this anime">View all episodes</a>
 						<a class="label label-default"
 						   href="{$site->dereferrer_link}http://anidb.net/perl-bin/animedb.pl?show=anime&aid={$anidb.anidbid}"
@@ -50,7 +49,7 @@
 					{if $rage && $release.rageid > 0}
 						<a href="{$smarty.const.WWW_TOP}/myshows/add/{$release.rageid}?from={$smarty.server.REQUEST_URI|escape:"url"}"
 						   class="label label-success">Add to My Shows</a>
-						<a class="label label-default" href="{$smarty.const.WWW_TOP}series/{$release.rageid}"
+						<a class="label label-default" href="{$serverroot}series/{$release.rageid}"
 						   title="View all releases for this series">View all episodes</a>
 						<a class="label label-default" target="_blank"
 						   href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$release.rageid}"
@@ -116,7 +115,7 @@
 									{if isset($xxx.trailers) && $xxx.trailers != ''}
 										<li><a href="#pane2" data-toggle="tab">Trailer</a></li>
 									{/if}
-									{if isset($nfo.nfo) && $nfo.nfo != ""}
+									{if isset($nfo.nfo) && $nfo.nfo != ''}
 										<li><a href="#pane3" data-toggle="tab">NFO</a></li>
 									{/if}
 									{if isset($similars) && $similars|@count > 1}
@@ -450,6 +449,11 @@
 																	<th width="140">Grabs</th>
 																	<td>{$release.grabs}
 																		time{if $release.grabs==1}{else}s{/if}</td>
+																</tr>
+																<tr>
+																	<th width="140">Failed Download</th>
+																	<td>{$release.failed}
+																		time{if $release.failed==1}{else}s{/if}</td>
 																</tr>
 																<tr>
 																	<th width="140">Password

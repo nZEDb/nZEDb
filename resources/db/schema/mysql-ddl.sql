@@ -675,6 +675,7 @@ CREATE TABLE         releases (
   anidbid           INT                            NULL,
   preid             INT UNSIGNED                   NOT NULL DEFAULT '0',
   grabs             INT UNSIGNED                   NOT NULL DEFAULT '0',
+  failed            INT UNSIGNED                   NOT NULL DEFAULT '0',
   comments          INT                            NOT NULL DEFAULT '0',
   passwordstatus    TINYINT                        NOT NULL DEFAULT '0',
   rarinnerfilecount INT                            NOT NULL DEFAULT '0',

@@ -1475,6 +1475,16 @@ class Releases
 	}
 
 	/**
+	 * @param string $guid
+	 */
+	public function updateFail($guid)
+	{
+		$this->pdo->queryExec(
+			sprintf('UPDATE releases SET failed = failed + 1 WHERE guid = %s', $this->pdo->escapeString($guid))
+		);
+	}
+
+	/**
 	 * @return array
 	 */
 	public function getTopDownloads()
@@ -1675,7 +1685,7 @@ class Releases
 		);
 	}
 
-   /**
+	/**
 	 * Retrieve alternate release with same or similar searchname
 	 *
 	 * @param string $guid
@@ -1691,14 +1701,16 @@ class Releases
 		$this->pdo->queryInsert(sprintf("INSERT IGNORE INTO dnzb_failures (userid, guid) VALUES (%d, %s)",
 				$userid,
 				$this->pdo->escapeString($guid)
-				)
+			)
 		);
+
+		$this->updateFail($guid);
 
 		$alternate = $this->pdo->queryOneRow(sprintf('SELECT * FROM releases r
 			WHERE r.searchname %s
 			AND r.guid NOT IN (SELECT guid FROM dnzb_failures WHERE userid = %d)',
-			$this->pdo->likeString($searchname),
-			$userid
+				$this->pdo->likeString($searchname),
+				$userid
 			)
 		);
 		return $alternate;
