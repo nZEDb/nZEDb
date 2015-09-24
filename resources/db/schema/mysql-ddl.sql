@@ -959,6 +959,8 @@ CREATE TABLE tv_info (
   tvdb_id      INT UNSIGNED         NOT NULL DEFAULT 0,
   trakt_id     INT UNSIGNED         NOT NULL DEFAULT 0,
   tvmaze_id    INT UNSIGNED         NOT NULL DEFAULT 0,
+  imdb_id      INT UNSIGNED         NOT NULL DEFAULT 0,
+  tmdb_id      INT UNSIGNED         NOT NULL DEFAULT 0,
   title        VARCHAR(255)         NOT NULL DEFAULT '',
   rating       VARCHAR(25)          NOT NULL DEFAULT '',
   genres       VARCHAR(255)         NOT NULL DEFAULT '',
