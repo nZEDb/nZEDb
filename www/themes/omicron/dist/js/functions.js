@@ -1,20 +1,32 @@
 function cart_notify() {
 	var n = noty({
-		text        : '<div class="alert alert-success"><p><strong>Release added to cart!</p></div>',
+		text        : '<div class="alert alert-success"><p><center>Release added to cart!</center></p></div>',
+        animation: {
+            open: 'animated flipInX', // Animate.css class names
+            close: 'animated flipOutX', // Animate.css class names
+            easing: 'swing', // unavailable - no need
+            speed: 500 // unavailable - no need
+        },
 	    layout      : 'topCenter', //or left, right, bottom-right...
 	    theme       : 'bootstrap',
 	    maxVisible  : 10,
-	    timeout: 3000,
+	    timeout: 3000
 	});
 }
 
 function notify(message, position) {
 	var n = noty({
-		text        : '<div class="alert alert-success"><p><strong>' + message + '</p></div>',
+		text        : '<div class="alert alert-success"><p><center>' + message + '</center></p></div>',
+        animation: {
+            open: 'animated flipInX', // Animate.css class names
+            close: 'animated flipOutX', // Animate.css class names
+            easing: 'swing', // unavailable - no need
+            speed: 500 // unavailable - no need
+        },
 	    layout      : position, //or left, right, bottom-right...
 	    theme       : 'bootstrap',
 	    maxVisible  : 10,
-	    timeout: 3000,
+	    timeout: 3000
 	});
 }
 
