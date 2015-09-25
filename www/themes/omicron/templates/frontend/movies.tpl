@@ -143,7 +143,7 @@
 													{if $smarty.foreach.loop.first}
 													<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"><img
 																class="cover"
-																src="{if $result.cover == 1}{$smarty.const.WWW_TOP}covers/movies/{$result.imdbid}-cover.jpg{else}{$smarty.const.WWW_TOP}themes/omicron/images/no-cover.png{/if}"
+																src="{if $result.cover == 1}{$smarty.const.WWW_TOP}covers/movies/{$result.imdbid}-cover.jpg{else}{$smarty.const.WWW_TOP}templates_shared/images/nocover.png{/if}"
 																width="100" border="0"
 																alt="{$result.title|escape:"htmlall"}"/> {if $mfailed[$m@index]} <i class="fa fa-exclamation-circle" style="color: red" title="This release has failed for some users"></i>{/if}</a>
 													<a target="_blank"
@@ -222,8 +222,7 @@
 															{/if}
 															{if $mfailed[$m@index] > 0}
 																<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
-																	<i class ="fa fa-thumbs-o-up"></i> {$mgrabs[$m@index]} Grabs / <i class ="fa fa-thumbs-o-down"></i> {$mfailed[$m@index]} Failed Downloads</span>
-															{/if}
+																	<i class ="fa fa-thumbs-o-up"></i> {$mgrabs[$m@index]} Grab{if {$mgrabs[$m@index]} != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$mfailed[$m@index]} Failed Download{if {$mfailed[$m@index]} != 1}s{/if}</span>															{/if}
 														</div>
 													</div>
 													{/if}
@@ -262,7 +261,7 @@
 													{if $smarty.foreach.loop.first}
 													<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"><img
 																class="cover"
-																src="{if $result.cover == 1}{$smarty.const.WWW_TOP}covers/movies/{$result.imdbid}-cover.jpg{else}{$smarty.const.WWW_TOP}themes/omicron/images/no-cover.png{/if}"
+																src="{if $result.cover == 1}{$smarty.const.WWW_TOP}covers/movies/{$result.imdbid}-cover.jpg{else}{$smarty.const.WWW_TOP}templates_shared/images/nocover.png{/if}"
 																width="100" border="0"
 																alt="{$result.title|escape:"htmlall"}"/> {if $mfailed[$m@index] > 0} <i class="fa fa-exclamation-circle" style="color: red" title="This release has failed to download for some users"></i>{/if}</a>
 													<a target="_blank"
@@ -341,8 +340,7 @@
 															{/if}
 															{if $mfailed[$m@index] > 0}
 																<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
-																	<i class ="fa fa-thumbs-o-up"></i> {$mgrabs[$m@index]} Grabs / <i class ="fa fa-thumbs-o-down"></i> {$mfailed[$m@index]} Failed Downloads</span>
-																{/if}
+																	<i class ="fa fa-thumbs-o-up"></i> {$mgrabs[$m@index]} Grab{if {$mgrabs[$m@index]} != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$mfailed[$m@index]} Failed Download{if {$mfailed[$m@index]} != 1}s{/if}</span>																{/if}
 														</div>
 													</div>
 													{/if}
@@ -391,7 +389,7 @@
 												name="CP{$result.imdbid}"
 												title="Add to CouchPotato"
 												><img
-													src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/couch.png"></a>
+													src="{$smarty.const.WWW_TOP}/templates_shared/images/icons/couch.png"></a>
 									{/if}
 									{if isset($isadmin)}
 										<input type="button"

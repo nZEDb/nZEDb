@@ -118,8 +118,7 @@
 										{if $result.anidbid > 0}<span class="label label-default"><a
 													href="{$smarty.const.WWW_TOP}/anime/{$result.anidbid}">View Anime</a></span>{/if}
 										{if $result.failed > 0}<span class="label label-default">
-											<i class ="fa fa-thumbs-o-up"></i> {$result.grabs} Grabs / <i class ="fa fa-thumbs-o-down"></i> {$result.failed} Failed Downloads</span>{/if}
-									</td>
+											<i class ="fa fa-thumbs-o-up"></i> {$result.grabs} Grab{if $result.grabs != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$result.failed} Failed Download{if $result.failed != 1}s{/if}</span>{/if}									</td>
 									<td><span class="label label-default">{$result.category_name}</span>
 									</td>
 									<td>{$result.postdate|timeago}</td>
