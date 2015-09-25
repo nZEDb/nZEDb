@@ -13,7 +13,7 @@
 			<div class="panel panel-default">
 				<div class="panel-body pagination2">
 					<h1>{$release.searchname|escape:"htmlall"} {if $release.failed > 0}<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
-							<i class ="fa fa-thumbs-o-up"></i> {$release.grabs} Grabs / <i class ="fa fa-thumbs-o-down"></i> {$release.failed} Failed Downloads</span>{/if}</h1>
+							<i class ="fa fa-thumbs-o-up"></i> {$release.grabs} Grab{if $release.grabs != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$release.failed} Failed Download{if $release.failed != 1}s{/if}</span>{/if}</h1>
 					{if isset($isadmin)}
 						<a class="label label-warning"
 						   href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$release.id}&amp;from={$smarty.server.REQUEST_URI}"
