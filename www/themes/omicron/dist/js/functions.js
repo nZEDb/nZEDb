@@ -1,4 +1,4 @@
-$('head').append('<link rel="stylesheet" href="../css/animate.css" type="text/css" />');
+$('head').append('<link rel="stylesheet" href="themes/omicron/dist/css/animate.css" type="text/css" />');
 
 // event bindings
 jQuery(function($){
