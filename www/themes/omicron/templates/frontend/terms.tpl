@@ -26,8 +26,6 @@
 	-->
 	<link href="{$smarty.const.WWW_TOP}/themes/omicron/dist/css/skins/skin-blue.min.css" rel="stylesheet"
 		  type="text/css"/>
-	<!-- Newznab utils.js -->
-	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/omicron/scripts/utils.js"></script>
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 	<!--[if lt IE 9]>
@@ -96,6 +94,4 @@
 <script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/omicron/scripts/jquery.autosize-min.js"></script>
 <script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/omicron/scripts/jquery.qtip2.js"></script>
 <script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/omicron/scripts/sorttable.js"></script>
-<!-- Newznab utils.js -->
-<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/omicron/scripts/utils.js"></script>
 </html>
