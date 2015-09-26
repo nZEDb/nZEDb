@@ -118,6 +118,64 @@ class TraktTv
 	}
 
 	/**
+	 * Fetches shows calendar from trakt.tv .
+	 *
+	 * @param string     $start Start date of calendar ie. 2015-09-01.Default value is today.
+	 * @param int $days  Number of days to lookup ahead. Default value is 7 days
+	 *
+	 * @return array|bool|string
+	 * @see    http://docs.trakt.apiary.io/#reference/calendars/all-shows/get-shows
+	 *
+	 * @access public
+	 */
+	public function getCalendar($start = '', $days = 7)
+	{
+		$array = $this->getJsonArray(
+			'https://api-v2launch.trakt.tv/calendars/all/shows/' . $start . '/' . $days
+		);
+		if (!$array){
+			return false;
+		}
+		return $array;
+	}
+
+	/**
+	 * Fetches summary from trakt.tv for the show.
+	 * Accept a trakt slug (game-of-thrones), a IMDB id, or Trakt id.
+	 *
+	 * @param string $show Title or IMDB id.
+	 * @param string $type  full:        Return all extended properties (minus images). (returns array)
+	 *                      images:      Return extended images properties (returns array)
+	 *                      full,images: Return all extended properties (plus images). (returns array)
+	 *
+	 * @see http://docs.trakt.apiary.io/#reference/shows/summary/get-a-single-show
+	 *
+	 * @return bool|array|string
+	 *
+	 * @access public
+	 */
+	public function showSummary($show = '', $type = 'full')
+	{
+		switch($type) {
+			case 'full':
+			case 'images':
+			case 'full,images':
+				$extended = $type;
+				break;
+			default:
+				$extended = 'full';
+		}
+		$array = $this->getJsonArray(
+			'https://api-v2launch.trakt.tv/shows/' . str_replace([' ', '_', '.'], '-', str_replace(['(', ')'], '', $show)),
+			$extended
+		);
+		if (!$array){
+			return false;
+		}
+		return $array;
+	}
+
+	/**
 	 * Download JSON from Trakt, convert to array.
 	 *
 	 * @param string $URI URI to download.

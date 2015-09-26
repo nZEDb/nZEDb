@@ -143,6 +143,12 @@ class Binaries
 	protected $_partRepairMaxTries;
 
 	/**
+	 * An array of binaryblacklist IDs that should have their activity date updated
+	 * @var array(int)
+	 */
+	protected $_binaryBlacklistIdsToUpdate = array();
+
+	/**
 	 * Constructor.
 	 *
 	 * @param array $options Class instances / echo to CLI?
@@ -840,6 +846,15 @@ class Binaries
 			);
 		}
 
+		if (!empty($this->_binaryBlacklistIdsToUpdate)) {
+			$this->_pdo->queryExec(
+				sprintf('UPDATE binaryblacklist SET last_activity = NOW() WHERE id IN (%s)',
+					implode(',', $this->_binaryBlacklistIdsToUpdate)
+				)
+			);
+			$this->_binaryBlacklistIdsToUpdate = [];
+		}
+
 		// Start of part repair.
 		$startPR = microtime(true);
 
@@ -1362,6 +1377,7 @@ class Binaries
 				if (preg_match('/' . $whiteList['regex'] . '/i', $field[$whiteList['msgcol']])) {
 					// This field matched a white list, so it might not be black listed.
 					$blackListed = false;
+					$this->_binaryBlacklistIdsToUpdate[$whiteList['id']] = $whiteList['id'];
 					break;
 				}
 			}
@@ -1372,6 +1388,7 @@ class Binaries
 			foreach ($this->blackList[$groupName] as $blackList) {
 				if (preg_match('/' . $blackList['regex'] . '/i', $field[$blackList['msgcol']])) {
 					$blackListed = true;
+					$this->_binaryBlacklistIdsToUpdate[$blackList['id']] = $blackList['id'];
 					break;
 				}
 			}
@@ -1406,7 +1423,8 @@ class Binaries
 			sprintf('
 				SELECT
 					binaryblacklist.id, binaryblacklist.optype, binaryblacklist.status, binaryblacklist.description,
-					binaryblacklist.groupname AS groupname, binaryblacklist.regex, groups.id AS group_id, binaryblacklist.msgcol
+					binaryblacklist.groupname AS groupname, binaryblacklist.regex, groups.id AS group_id, binaryblacklist.msgcol,
+					binaryblacklist.last_activity as last_activity
 				FROM binaryblacklist
 				LEFT OUTER JOIN groups ON groups.name %s binaryblacklist.groupname
 				WHERE 1=1 %s %s %s

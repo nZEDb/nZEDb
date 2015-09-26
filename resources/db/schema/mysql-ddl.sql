@@ -131,13 +131,14 @@ CREATE TABLE binaries (
 
 DROP TABLE IF EXISTS binaryblacklist;
 CREATE TABLE binaryblacklist (
-  id          INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  groupname   VARCHAR(255)     NULL,
-  regex       VARCHAR(2000)    NOT NULL,
-  msgcol      INT(11) UNSIGNED NOT NULL DEFAULT '1',
-  optype      INT(11) UNSIGNED NOT NULL DEFAULT '1',
-  status      INT(11) UNSIGNED NOT NULL DEFAULT '1',
-  description VARCHAR(1000)    NULL,
+  id            INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  groupname     VARCHAR(255)     NULL,
+  regex         VARCHAR(2000)    NOT NULL,
+  msgcol        INT(11) UNSIGNED NOT NULL DEFAULT '1',
+  optype        INT(11) UNSIGNED NOT NULL DEFAULT '1',
+  status        INT(11) UNSIGNED NOT NULL DEFAULT '1',
+  description   VARCHAR(1000)    NULL,
+  last_activity	DATE             NULL,
   PRIMARY KEY (id),
   INDEX ix_binaryblacklist_groupname (groupname),
   INDEX ix_binaryblacklist_status    (status)

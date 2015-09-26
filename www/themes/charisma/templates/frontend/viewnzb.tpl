@@ -82,9 +82,6 @@
 														   title="View at Hot Movies">HotMovies</a>
 						{/if}
 					{/if}
-					<a class="label label-default"
-					   href="http://www.google.com/search?q={$release.name|escape:"htmlall"}"
-					   target="_blank">Google</a>
 					<p>
 						{if $movie && $release.rageid < 0 && $movie.plot != ''}<span
 								class="descinitial">{$movie.plot|escape:"htmlall"|truncate:500:"...":true}</span>
@@ -144,8 +141,8 @@
 								</ul>
 								<div class="tab-content">
 									<div id="pane1" class="tab-pane active">
-										<div class="row no-gutter">
-											<div class="col-md-3 no-gutter">
+										<div class="row">
+											<div class="col-md-3">
 												{if $movie && $release.rageid < 0 && $movie.cover == 1}
 													<img src="{$smarty.const.WWW_TOP}/covers/movies/{$movie.imdbid}-cover.jpg"
 														 width="185"
@@ -234,7 +231,7 @@
 													<p id="demo"></p>
 												</div>
 											</div>
-											<div class="col-md-9 no-gutter">
+											<div class="col-md-9">
 												<table cellpadding="0" cellspacing="0"
 													   width="100%">
 													<tbody>
