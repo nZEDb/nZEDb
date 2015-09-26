@@ -5,6 +5,8 @@
 ///////////////////////////////// Scroll down to the bottom for a change log. //////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+use nzedb\utility\Misc;
+
 /**********************************************************************************************************************/
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////// MISC //////////////////////////////////////////////////////////////
@@ -428,7 +430,7 @@ define('nZEDb_SQL_DELETE_QUICK', false);
  * Simple constant to let us know this file is included and we should use PHPMailer library.
  * Uncomment the line below after setting the other constants.
  */
-//define('PHPMAILER_ENABLED', false);
+define('PHPMAILER_ENABLED', false);
 
 /**
  * Global "From" Address.
@@ -535,7 +537,7 @@ define('PHPMAILER_SMTP_PASSWORD', '');
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////// PHP CLI Settings ///////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-if (stripos(PHP_SAPI, 'cli') !== false) {
+if (Misc::isCLI()) {
 
 	/**
 	 * Your server's local timezone.
@@ -576,7 +578,7 @@ if (stripos(PHP_SAPI, 'cli') !== false) {
 	 * @see     https://secure.php.net/manual/en/errorfunc.constants.php
 	 * @version 4
 	 */
-	ini_set('error_reporting', E_ALL & ~E_NOTICE);
+	ini_set('error_reporting', E_ALL);
 
 	/**
 	 * Turn off HTML tags in error messages.
@@ -666,7 +668,7 @@ if (stripos(PHP_SAPI, 'cli') !== false) {
 	 * @see     https://secure.php.net/manual/en/errorfunc.constants.php
 	 * @version 4
 	 */
-	ini_set('error_reporting', E_ALL & ~E_DEPRECATED & ~E_STRICT);
+	ini_set('error_reporting', E_ALL);
 
 	/**
 	 * Turn off HTML tags in error messages.
