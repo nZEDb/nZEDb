@@ -204,7 +204,6 @@ class Books
 			. "GROUP_CONCAT(r.totalpart ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_totalparts, "
 			. "GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments, "
 			. "GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs, "
-			. "GROUP_CONCAT(r.failed ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_failed,"
 			. "boo.*, r.bookinfoid, groups.name AS group_name, rn.id as nfoid FROM releases r "
 			. "LEFT OUTER JOIN groups ON groups.id = r.group_id "
 			. "LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id "
