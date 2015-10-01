@@ -150,6 +150,7 @@
 							{assign var="mtotalparts" value=","|explode:$result.grp_release_totalparts}
 							{assign var="mcomments" value=","|explode:$result.grp_release_comments}
 							{assign var="mgrabs" value=","|explode:$result.grp_release_grabs}
+							{assign var="mfailed" value=","|explode:$result.failed}
 							{assign var="mpass" value=","|explode:$result.grp_release_password}
 							{assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
 							{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
@@ -161,7 +162,7 @@
 									</td>
 									<td class="name">
 										<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">
-											<b>{$mname[$m@index]|escape:"htmlall"|wordwrap:80:"\n":true}</b>
+											<b>{$mname[$m@index]|escape:"htmlall"|wordwrap:80:"\n":true}</b>{if $mfailed[$m@index] > 0} <i class="fa fa-exclamation-circle" style="color: red" title="This release has failed to download for some users"></i>{/if}
 										</a>
 										<br>
 										<div class="resextra">
@@ -223,6 +224,10 @@
 													<span class="icon-stack" title="Broken Post"><i class="icon-check-empty icon-stack-base"></i><i class="icon-unlink"></i></span>
 												{elseif $mpass[$m@index] == 10}
 													<span class="icon-stack" title="Passworded Archive"><i class="icon-check-empty icon-stack-base"></i><i class="icon-lock"></i></span>
+												{/if}
+												{if $mfailed[$m@index] > 0}
+													<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
+														<i class ="fa fa-thumbs-o-up"></i> {$mgrabs[$m@index]} Grab{if {$mgrabs[$m@index]} != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$mfailed[$m@index]} Failed Download{if {$mfailed[$m@index]} != 1}s{/if}</span>
 												{/if}
 											</div>
 										</div>
