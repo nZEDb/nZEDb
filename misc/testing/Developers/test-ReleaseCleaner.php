@@ -63,7 +63,7 @@ foreach ($releases as $release) {
 		if ($rename === true) {
 			$newName = $pdo->escapeString($newName);
 			$pdo->queryExec(sprintf('UPDATE releases SET searchname = %s WHERE id = %d', $newName, $release['id']));
-			$sphinx->updateReleaseSearchName($release['id'], $newName);
+			$sphinx->updateRelease($release['id']);
 		}
 	}
 }

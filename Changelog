@@ -6,6 +6,70 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2015-10-01 bart39
+	Fix: updated predb insert trigger that got missed for new installs, fixes #1875.
+2015-09-26 niel
+	Chg: Altered settings.example.php
+			Corrected erroneous references to settings.php.example (formatting was altered as a side effect of copy/pasting).
+			Changed default value of PHPMAILER_ENABLED constant to 'false' instead of undefined (it was commented out).
+			Changed error reporting level to not exclude any messages, as our code should run clean and therefore *any* messages should be investigated.
+				**NOTE** Generating messages slows down the running code and hiding them does not stop them being generated, just displayed.
+2015-09-22 bart39
+	Mrg: PR 1884, from DariusIII - Reorganize X-DNZB-Failure header support related pages (failed.php and getnzb.php)
+	Mrg: PR 1883, from DariusIII - Add filters to cover pages.
+2015-09-21 bart39
+	Mrg: PR 1882, from DariusIII - Fix the encodeAsUTF8 function.
+2015-09-19 niel
+	Mrg: PR 1878, from DariusIII - Fix api json output.
+	Fix: Adding failure test for JSON encoding, which returns an API error.
+2015-09-15 niel
+	Fix: Typo in variable name which causes a missing index warning.
+2015-09-14 ruhllatio
+	Add: Base TV Class to make the addition of a new TV scraper easier
+	Chg: Re-organize and trim some fat out of TvRage.php in preparation for its glorious return
+2015-09-11 niel
+	Mrg: PR 1870, from DariusIII - Change font used in omicron and charisma templates, adjust layout of coverview pages.
+2015-09-11 bart39
+	Mrg: PR 1854, from rainje - Fix issue #1850 - Three Arrows when viewing movie upper right corner.
+2015-09-10 kevin
+	Fix: Issue with empty array causing query to fail in PR 1871
+2015-09-09 niel
+	Mrg: PR 1871, from bfincher - Display the date which a binary black list was last used.
+2015-09-08 niel
+	Mrg: PR 1869, from DariusIII - Add back missing invites in profile page of charisma/omicron templates.
+	Mrg: PR 1870, from DariusIII - Change sidebar menu XXX into Adult to match headermenu, change the icon.
+2015-09-05 niel
+	Mrg: PR 1856, from DariusIII - Fix display of api/download hits, in omicron and charisma templates, in last 24 hours.
+	Mrg: PR 1857, from DariusIII - Fix background colors on profile and profile edit pages.
+	Mrg: PR 1858, from DariusIII - Adjustments and fixes in charisma and omicron templates.
+2015-08-31 bart39
+	Fix: Return false if trakt title is not set when fetching properties.
+2015-08-30 bart39
+	Fix: collection regex edit page not showing the result.
+2015-08-29 rullatio
+	Mrg: PR #1849 Fix RSS Content Length Response
+2015-08-28 ruhllatio
+	Fix: Sphinx Search broken for MariaDB installs (re-run create_se_tables script)
+2015-08-27 ruhllatio
+	Fix: API Search function not including -1 for fileName parameter breaking API search
+2015-08-27 niel
+	Add: predb export script now has a default filename (predb_export_YYYYMMDDhhmmss.tsv) if only a path is specified.
+2015-08-26 bart39
+	Mrg: PR 1843, by ruhllatio - Sphinx Full-Text Search for Filenames.
+	*** NOTE *** - you will need to do the following to update the sphinx index:
+		0) Minimum Sphinx v2.2.9
+		1) stop sphinxsearch - `sudo service sphinxsearch stop`
+		2) clear old index - `sudo rm /var/lib/sphinxsearch/data/*`
+		3) copy updated conf file - `sudo cp /var/www/nZEDb/misc/sphinxsearch/sphinx.conf /etc/sphinxsearch/sphinx.conf`
+		4) If you had previously edited the conf file - you will need to re-edit again.
+		5) start sphinxsearch - `sudo service sphinxsearch start`
+		6) recreate the tables - `php /var/www/nZEDb/misc/sphinxsearch/create_se_tables.php 0 9312`
+		7) populate the index - `php /var/www/nZEDb/misc/sphinxsearch/populate_rt_indexes.php releases_rt`
+2015-08-26 kevin
+	Add: Xdebug and PHP settings to nzedb\config\settings.php
+2015-08-25 bart39
+	Fix: Truncate rather than word-wrap #1846 - clear your smarty cache.
+	Fix: Revert word-wrap change that caused a space to appear in release titles (alpha theme) #1846 - clear your smarty cache.
 2015-08-25 niel
 	Chg: Added note to copy nZEDb/nzedb/config/settings.exmple.php to nZEDb/nzedb/config/settings.php on opening Install page.
 	Fix: Typo $this->tablePerGroup to $this->_tablePerGroup.
@@ -140,7 +204,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 2015-07-25 niel
 	* Chg: Merging in dev-configs branch. This adds a new Configure class and streamlines autoloading further.
 		***NOTE*** This will require moving config.php and settings.php from .../www/ to .../nzedb/config.
-		You will also have to remove the require_once line from the bottom of config.php
+			You will also have to remove the require_once line from the bottom of config.php
 2015-07-24 niel
 	* Fix: updated regex for predb_import_daily_batch script to account for Dropbox's changes to link HTML.
 2015-07-24 bart39
@@ -419,9 +483,9 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 2015-02-20 bart39
 	* Fix: Group XXX pack releases in a.b.erotica correctly.
 	* Fix: Missing binaries from releases due to collection_id not being set.
-		Suggest that you run reset_truncate after this update.
-		NB: IMPORTANT - TPG users (that means you McFuzz) must run "php /nzedb/build/_runonce/tpg_add_collections_column_2015-02-20.php"
-		FAILURE TO DO SO WILL CAUSE INSERT ERRORS
+		We suggest that you run reset_truncate after this update.
+		NB: IMPORTANT - TPG users (that means you McFuzz) should run "php /nzedb/build/_runonce/tpg_add_collections_column_2015-02-20.php" if
+		patch 0313 doesn't succeed. - FAILURE TO DO SO WILL CAUSE INSERT ERRORS
 2015-02-17 bart39
 	* Chg: Regex updates / categorize fixes for SD XXX
 	* Chg: Update sphinxsearch RT index when manually editing release searchname.

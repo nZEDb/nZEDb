@@ -32,7 +32,7 @@
 												<td>
 													<table class="data table table-condensed table-striped table-responsive">
 														<tbody>
-														<tr class="bg-primary">
+														<tr class="bg-aqua-active">
 															<td colspan="2" style="padding-left: 8px;">
 																<strong>Profile</strong></td>
 														</tr>
@@ -70,7 +70,7 @@
 													</table>
 													<table class="data table table-condensed table-striped table-responsive">
 														<tbody>
-														<tr class="bg-primary">
+														<tr class="bg-aqua-active">
 															<td colspan="2" style="padding-left: 8px;"><strong>Excluded
 																	Categories</strong></td>
 														</tr>
@@ -84,7 +84,7 @@
 													</table>
 													<table class="data table table-condensed table-striped table-responsive">
 														<tbody>
-														<tr class="bg-primary">
+														<tr class="bg-aqua-active">
 															<td colspan="2" style="padding-left: 8px;"><strong>UI
 																	Preferences</strong></td>
 														</tr>
@@ -156,7 +156,7 @@
 													{if $page->settings->getSetting('sabintegrationtype') != 1}
 														<table class="data table table-condensed table-striped table-responsive">
 															<tbody>
-															<tr class="bg-primary">
+															<tr class="bg-aqua-active">
 																<td colspan="2" style="padding-left: 8px;"><strong>Queue
 																		type
 																		<small>(NZBGet or SABnzbd)</small>
@@ -175,7 +175,7 @@
 													{if $user.queuetype == 1 && $page->settings->getSetting('sabintegrationtype') == 2}
 														<table class="data table table-condensed table-striped table-responsive">
 															<tbody>
-															<tr class="bg-primary">
+															<tr class="bg-aqua-active">
 																<td colspan="2" style="padding-left: 8px;"><strong>SABnzbd</strong>
 																</td>
 															</tr>
@@ -234,7 +234,7 @@
 													{if $user.queuetype == 2 && ($page->settings->getSetting('sabintegrationtype') == 0 || $page->settings->getSetting('sabintegrationtype') == 2)}
 														<table class="data table table-condensed table-striped table-responsive">
 															<tbody>
-															<tr class="bg-primary">
+															<tr class="bg-aqua-active">
 																<td colspan="2" style="padding-left: 8px;"><strong>NZBget</strong>
 																</td>
 															</tr>
@@ -274,7 +274,7 @@
 								</div>
 								<table class="data table table-condensed table-striped table-responsive">
 									<tbody>
-									<tr class="bg-primary">
+									<tr class="bg-aqua-active">
 										<td colspan="2" style="padding-left: 8px;"><strong>Couchpotato</strong>
 										</td>
 									</tr>
@@ -300,11 +300,12 @@
 								</table>
 								<table class="data table table-condensed table-striped table-responsive">
 									<tbody>
-									<tr class="bg-primary">
-										<td colspan="2" style="padding-left: 8px;"><strong>Site theme</strong>
-											<div>
-												{html_options id="style" name='style' values=$themelist output=$themelist selected=$user.style}
-											</div>
+									<tr class="bg-aqua-active">
+										<td colspan="2" style="padding-left: 8px;"><strong>Site theme</strong></td>
+									</tr>
+									<tr>
+										<td>
+											{html_options id="style" name='style' values=$themelist output=$themelist selected=$user.style}
 										</td>
 									</tr>
 									</tbody>

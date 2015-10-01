@@ -8,6 +8,37 @@
 		</ol>
 	</div>
 </div>
+<div class="well well-sm">
+	<form class="form-inline" role="form" name="browseby" action="console">
+		<div class="form-group form-group-sm">
+			<label class="sr-only" for="title">Title:</label>
+			<input type="text" class="form-control" id="title" name="title" value="{$title}" placeholder="Title">
+		</div>
+		<div class="form-group form-group-sm">
+			<label class="sr-only" for="platform">Platform:</label>
+			<input type="text" class="form-control" id="platform" name="platform" value="{$platform}" placeholder="Platform">
+		</div>
+		<div class="form-group form-group-sm">
+			<label class="sr-only" for="genre">Genre:</label>
+			<select id="genre" name="genre" class="form-control">
+				<option class="grouping" value="" selected>Genre</option>
+				{foreach from=$genres item=gen}
+					<option {if $gen.id == $genre}selected="selected"{/if} value="{$gen.id}">{$gen.title|escape:"htmlall"}</option>
+				{/foreach}
+			</select>
+		</div>
+		<div class="form-group form-group-sm">
+			<label class="sr-only" for="category">Category:</label>
+			<select id="category" name="t" class="form-control">
+				<option class="grouping" value="" selected>Category</option>
+				{foreach from=$catlist item=ct}
+					<option {if $ct.id==$category}selected="selected"{/if} value="{$ct.id}">{$ct.title}</option>
+				{/foreach}
+			</select>
+		</div>
+		<input type="submit" class="btn btn-primary" value="Search!"/>
+	</form>
+</div>
 <form id="nzb_multi_operations_form" action="get">
 	<div class="box-body"
 	<div class="row">
@@ -19,6 +50,7 @@
 							<div class="nzb_multi_operations">
 								View: <strong>Covers</strong> | <a
 										href="{$smarty.const.WWW_TOP}/browse?t={$category}">List</a><br/>
+								Check all: <input type="checkbox" class="nntmux_check_all"/> <br/>
 								With Selected:
 								<div class="btn-group">
 									<input type="button"
@@ -72,7 +104,7 @@
 								<div class="panel panel-default">
 									<div class="panel-body">
 										<div class="row">
-											<div class="col-md-2 no-gutter">
+											<div class="col-md-2 small-gutter-left">
 												<a title="View details"
 												   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">
 													<img src="{$smarty.const.WWW_TOP}/covers/console/{if $result.cover == 1}{$result.consoleinfoid}.jpg{else}no-cover.jpg{/if}"
@@ -93,7 +125,7 @@
 												   href="{$smarty.const.WWW_TOP}/browse?g={$result.group_name}"
 												   title="Browse releases in {$result.group_name|replace:"alt.binaries":"a.b"}">Group</a>
 											</div>
-											<div class="col-md-10 no-gutter">
+											<div class="col-md-10 small-gutter-left">
 												<h4><a title="View details"
 													   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$result.title|escape:"htmlall"}</a>
 												</h4>
@@ -174,6 +206,7 @@
 							<div class="nzb_multi_operations">
 								View: <strong>Covers</strong> | <a
 										href="{$smarty.const.WWW_TOP}/browse?t={$category}">List</a><br/>
+								Check all: <input type="checkbox" class="nntmux_check_all"/> <br/>
 								With Selected:
 								<div class="btn-group">
 									<input type="button"

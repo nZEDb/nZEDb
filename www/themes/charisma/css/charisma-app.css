@@ -1,5 +1,7 @@
 @import url(https://fonts.googleapis.com/css?family=Shojumaru);
 @import url('font-awesome.min.css');
+@import url(https://fonts.googleapis.com/css?family=Roboto:300,400,700,900,300italic,400italic,700italic,900italic);
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700);
 
 select {
     background-color: #fff;
@@ -718,6 +720,21 @@ ul.github-buttons li {
 .mc_embed_signup #mce-success-response {color:#529214; display:none;}
 .mc_embed_signup label.error {display:block; float:none; width:auto; margin-left:1.05em; text-align:left; padding:.5em 0;}
 
+.no-gutter  {
+    padding-left:0;
+    padding-right:0;
+}
+
+.small-gutter-right  {
+    padding-left:0;
+    padding-right:5px;
+}
+
+.small-gutter-left  {
+    padding-right:0;
+    padding-left:5px;
+}
+
 .release-name {
     font-size: 10px;
     text-overflow: ellipsis;
@@ -726,7 +743,7 @@ ul.github-buttons li {
 }
 
 .release-title {
-    font-family: 'Lato', 'Open Sans', Helvetica, sans-serif;
+    font-family: 'Roboto', 'Open Sans', Helvetica, sans-serif;
     font-weight: 100;
     font-size: 16px;
     text-overflow: ellipsis;
@@ -739,10 +756,27 @@ ul.github-buttons li {
     overflow: visible;
 }
 .release-subtitle {
-    font-family: 'Lato', 'Open Sans', Helvetica, sans-serif;
+    font-family: 'Roboto', 'Open Sans', Helvetica, sans-serif;
     font-weight: 100;
     font-size: 12px;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
 }
+
+.cover {
+    max-width: 100px;
+    max-height: 147px;
+    height: auto;
+}
+
+.movie-height {
+    height:199px;
+}
+
+.descfull {
+    display:none;
+}
+
+.invitesuccess {display:none; font-weight:bold; padding-left:10px; color:green;}
+.invitefailed {display:none; font-weight:bold; padding-left:10px; color:red;}

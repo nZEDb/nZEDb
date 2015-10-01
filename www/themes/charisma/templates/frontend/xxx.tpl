@@ -9,6 +9,41 @@
 		</ol>
 	</div>
 </div>
+<div class="well well-sm">
+	<form class="form-inline" role="form" name="browseby" action="xxx">
+		<div class="form-group form-group-sm">
+			<label class="sr-only" for="title">Title:</label>
+			<input type="text" class="form-control" id="title" name="title" value="{$title}" placeholder="Title">
+		</div>
+		<div class="form-group form-group-sm">
+			<label class="sr-only" for="actors">Actor:</label>
+			<input type="text" class="form-control" id="actors" name="actors" value="{$actors}" placeholder="Actor">
+		</div>
+		<div class="form-group form-group-sm">
+			<label class="sr-only" for="director">Director:</label>
+			<input type="text" class="form-control col-xs-3" id="director" name="director" value="{$director}" placeholder="Director">
+		</div>
+		<div class="form-group form-group-sm">
+			<label class="sr-only" for="genre">Genre:</label>
+			<select id="genre" name="genre" class="form-control">
+				<option class="grouping" value="" selected>Genre</option>
+				{foreach from=$genres item=gen}
+					<option {if $gen==$genre}selected="selected"{/if} value="{$gen}">{$gen}</option>
+				{/foreach}
+			</select>
+		</div>
+		<div class="form-group form-group-sm">
+			<label class="sr-only" for="category">Category:</label>
+			<select id="category" name="t" class="form-control">
+				<option class="grouping" value="" selected>Category</option>
+				{foreach from=$catlist item=ct}
+					<option {if $ct.id==$category}selected="selected"{/if} value="{$ct.id}">{$ct.title}</option>
+				{/foreach}
+			</select>
+		</div>
+		<input type="submit" class="btn btn-primary" value="Search!"/>
+	</form>
+</div>
 <form id="nzb_multi_operations_form" action="get">
 	<div class="box-body"
 	<div class="row">
@@ -20,6 +55,7 @@
 							<div class="nzb_multi_operations">
 								View: <strong>Covers</strong> | <a
 										href="{$smarty.const.WWW_TOP}/browse?t={$category}">List</a><br/>
+								Check all: <input type="checkbox" class="nntmux_check_all"/> <br/>
 								With Selected:
 								<div class="btn-group">
 									<input type="button"
@@ -66,8 +102,8 @@
 								<div class="col-md-6 small-gutter-right movie-height">
 									<div class="panel panel-default">
 										<div class="panel-body">
-											<div class="row no-gutter">
-												<div class="col-md-3 no-gutter">
+											<div class="row">
+												<div class="col-md-3">
 													{assign var="msplits" value=","|explode:$result.grp_release_id}
 													{assign var="mguid" value=","|explode:$result.grp_release_guid}
 													{assign var="mnfo" value=","|explode:$result.grp_release_nfoid}
@@ -154,11 +190,17 @@
 													   href="{$smarty.const.WWW_TOP}/browse?g={$result.grp_release_grpname}"
 													   title="Browse releases in {$result.grp_release_grpname|replace:"alt.binaries":"a.b"}">Group</a>
 												</div>
-												<div class="col-md-9 no-gutter">
+												<div class="col-md-9">
 																<span class="release-title"><a class="text-muted"
 																							   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$result.title|escape:"htmlall"}</a></span>
 													<div class="release-subtitle">{if $result.genre != ''}{$result.genre}, {/if}</div>
 													<div id="guid{$mguid[$m@index]}">
+														<label>
+															<input type="checkbox"
+																   class="nzb_check"
+																   value="{$mguid[$m@index]}"
+																   id="chksingle"/>
+														</label>
 														<span class="label label-primary">{if isset($catsplit[0])} {$catsplit[0]}{/if}</span>
 														<span class="label label-danger">{if isset($catsplit[1])} {$catsplit[1]}{/if}</span>
 														<span class="label label-default">{if isset($result.year)} {$result.year}{/if}</span>
@@ -203,8 +245,8 @@
 								<div class="col-md-6 small-gutter-left movie-height">
 									<div class="panel panel-default">
 										<div class="panel-body">
-											<div class="row no-gutter">
-												<div class="col-md-3 no-gutter">
+											<div class="row">
+												<div class="col-md-3">
 													{assign var="msplits" value=","|explode:$result.grp_release_id}
 													{assign var="mguid" value=","|explode:$result.grp_release_guid}
 													{assign var="mnfo" value=","|explode:$result.grp_release_nfoid}
@@ -291,11 +333,17 @@
 													   href="{$smarty.const.WWW_TOP}/browse?g={$result.grp_release_grpname}"
 													   title="Browse releases in {$result.grp_release_grpname|replace:"alt.binaries":"a.b"}">Group</a>
 												</div>
-												<div class="col-md-9 no-gutter">
+												<div class="col-md-9">
 																<span class="release-title"><a class="text-muted"
 																							   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$result.title|escape:"htmlall"}</a></span>
 													<div class="release-subtitle">{if $result.genre != ''}{$result.genre}, {/if}</div>
 													<div id="guid{$mguid[$m@index]}">
+														<label>
+															<input type="checkbox"
+																   class="nzb_check"
+																   value="{$mguid[$m@index]}"
+																   id="chksingle"/>
+														</label>
 														<span class="label label-primary">{if isset($catsplit[0])} {$catsplit[0]}{/if}</span>
 														<span class="label label-danger">{if isset($catsplit[1])} {$catsplit[1]}{/if}</span>
 														<span class="label label-default">{$result.year}</span>
@@ -345,6 +393,7 @@
 							<div class="nzb_multi_operations">
 								View: <strong>Covers</strong> | <a
 										href="{$smarty.const.WWW_TOP}/browse?t={$category}">List</a><br/>
+								Check all: <input type="checkbox" class="nntmux_check_all"/> <br/>
 								With Selected:
 								<div class="btn-group">
 									<input type="button"

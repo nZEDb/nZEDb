@@ -34,7 +34,7 @@ if (isset($argv[1]) && $argv[1] == "full") {
 			}
 			$newname = $pdo->escapeString($newname);
 			$pdo->queryExec(sprintf("UPDATE releases SET searchname = %s WHERE id = %d", $newname, $row['id']));
-			$sphinx->updateReleaseSearchName($newname, $row['id']);
+			$sphinx->updateRelease($row['id']);
 			$done++;
 			$consoletools->overWritePrimary("Renaming:" . $consoletools->percentString($done, count($res)));
 		}
@@ -72,7 +72,7 @@ if (isset($argv[1]) && $argv[1] == "full") {
 			}
 			$newname = $pdo->escapeString($newname);
 			$pdo->queryExec(sprintf("UPDATE releases SET searchname = %s WHERE id = %d", $newname, $row['id']));
-			$sphinx->updateReleaseSearchName($newname, $row['id']);
+			$sphinx->updateRelease($row['id']);
 			$done++;
 			$consoletools->overWritePrimary("Renaming:" . $consoletools->percentString($done, count($res)));
 		}
@@ -110,7 +110,7 @@ if (isset($argv[1]) && $argv[1] == "full") {
 			}
 			$newname = $pdo->escapeString($newname);
 			$pdo->queryExec(sprintf("UPDATE releases SET searchname = %s where id = %d", $newname, $row['id']));
-			$sphinx->updateReleaseSearchName($newname, $row['id']);
+			$sphinx->updateRelease($row['id']);
 			$done++;
 			$consoletools->overWritePrimary("Renaming:" . $consoletools->percentString($done, count($res)));
 		}

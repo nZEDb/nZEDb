@@ -131,13 +131,14 @@ CREATE TABLE binaries (
 
 DROP TABLE IF EXISTS binaryblacklist;
 CREATE TABLE binaryblacklist (
-  id          INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  groupname   VARCHAR(255)     NULL,
-  regex       VARCHAR(2000)    NOT NULL,
-  msgcol      INT(11) UNSIGNED NOT NULL DEFAULT '1',
-  optype      INT(11) UNSIGNED NOT NULL DEFAULT '1',
-  status      INT(11) UNSIGNED NOT NULL DEFAULT '1',
-  description VARCHAR(1000)    NULL,
+  id            INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  groupname     VARCHAR(255)     NULL,
+  regex         VARCHAR(2000)    NOT NULL,
+  msgcol        INT(11) UNSIGNED NOT NULL DEFAULT '1',
+  optype        INT(11) UNSIGNED NOT NULL DEFAULT '1',
+  status        INT(11) UNSIGNED NOT NULL DEFAULT '1',
+  description   VARCHAR(1000)    NULL,
+  last_activity	DATE             NULL,
   PRIMARY KEY (id),
   INDEX ix_binaryblacklist_groupname (groupname),
   INDEX ix_binaryblacklist_status    (status)
@@ -600,8 +601,8 @@ CREATE TABLE predb (
 
 DROP TABLE IF EXISTS predb_hashes;
 CREATE TABLE predb_hashes (
-  hash VARBINARY(20)      NOT NULL DEFAULT '',
   pre_id INT(11) UNSIGNED NOT NULL DEFAULT '0',
+  hash VARBINARY(20)      NOT NULL DEFAULT '',
   PRIMARY KEY (hash)
 )
   ENGINE = MYISAM
@@ -1267,7 +1268,7 @@ CREATE TRIGGER delete_search AFTER DELETE ON releases FOR EACH ROW
 
 CREATE TRIGGER insert_hashes AFTER INSERT ON predb FOR EACH ROW
   BEGIN
-    INSERT INTO predb_hashes (hash, pre_id) VALUES (MD5(NEW.title), NEW.id), (MD5(MD5(NEW.title)), NEW.id), (SHA1(NEW.title), NEW.id);
+    INSERT INTO predb_hashes (hash, pre_id) VALUES (UNHEX(MD5(NEW.title)), NEW.id), (UNHEX(MD5(MD5(NEW.title))), NEW.id), ( UNHEX(SHA1(NEW.title)), NEW.id);
   END; $$
 
 CREATE TRIGGER update_hashes AFTER UPDATE ON predb FOR EACH ROW

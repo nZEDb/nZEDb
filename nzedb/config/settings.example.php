@@ -5,19 +5,21 @@
 ///////////////////////////////// Scroll down to the bottom for a change log. //////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+use nzedb\utility\Misc;
+
 /**********************************************************************************************************************/
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////// MISC //////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
- * When we update settings.php.example, we will raise this version, you will get a message saying your settings.php
+ * When we update settings.example.php, we will raise this version, you will get a message saying your settings.php
  * is out of date, you will need to update it and change the version number.
  *
- * @note Developers: When updating settings.php.example, up this version
- *                   and $current_settings_file_version in constants.php
- * @version 3
+ * @note    Developers: When updating settings.example.php, up this version
+ *                   and $current_settings_file_version in nzedb\config\Configure.php
+ * @version 4
  */
-define('nZEDb_SETTINGS_FILE_VERSION', 3);
+define('nZEDb_SETTINGS_FILE_VERSION', 4);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////// Web Settings //////////////////////////////////////////////////////////
@@ -41,7 +43,7 @@ define('ITEMS_PER_COVER_PAGE', '20');
  * If you have ITEMS_PER_PAGE set to 50, and nZEDb_MAX_PAGER_RESULTS set to 125000, you would get a maximum of
  * 2,500 pages of results in searches/browse.
  *
- * @note This setting can speed up browsing releases tremendously if you have millions of releases and you keep it
+ * @note    This setting can speed up browsing releases tremendously if you have millions of releases and you keep it
  * a relatively low value.
  *
  * @default '125000'
@@ -83,10 +85,8 @@ define('nZEDb_FLOOD_MAX_REQUESTS_PER_SECOND', 5);
  * of server resources.
  * To find a good number for your server, run the misc/testing/Various/find_password_hash_cost.php script.
  *
- * @note It is not recommended to set this under 11.
+ * @note    It is not recommended to set this under 11.
  * @default 11
- *
- * @version 2
  */
 define('nZEDb_PASSWORD_HASH_COST', 11);
 
@@ -108,8 +108,8 @@ define('nZEDb_RELEASE_SEARCH_TYPE', 0);
 /**
  * This is the hostname to use when connecting to the SphinxQL server,
  *
- * @note Using localhost / 127.0.0.1 has caused me issues and only 0 worked on my local server.
- * @note See misc/sphinxsearch/README.md for installation details.
+ * @note    Using localhost / 127.0.0.1 has caused me issues and only 0 worked on my local server.
+ * @note    See misc/sphinxsearch/README.md for installation details.
  * @default '0'
  */
 define('nZEDb_SPHINXQL_HOST_NAME', '0');
@@ -162,13 +162,13 @@ define('nZEDb_RENAME_MUSIC_MEDIAINFO', true);
  * 2 - redis      ; Redis server(s) will be used for caching.
  * 3 - apc/apcu   ; APC or APCu will be used for caching.
  *
- * @see https://github.com/nZEDb/nZEDb_Misc/blob/master/Guides/Various/Cache/Guide.md
- * @note Memcahed: The Memcached PHP extension must be installed.
- * @note Redis:    We use the Redis PHP extension by nicolasff. https://github.com/nicolasff/phpredis
- * @note APC:      The APC or APCu PHP extension must be installed.
- * @note APC:      Ignore these settings: nZEDb_CACHE_HOSTS / nZEDb_CACHE_SOCKET_FILE / nZEDb_CACHE_TIMEOUT
- * @default 0
- * @version 3
+ * @see        https://github.com/nZEDb/nZEDb_Misc/blob/master/Guides/Various/Cache/Guide.md
+ * @note       Memcahed: The Memcached PHP extension must be installed.
+ * @note       Redis:    We use the Redis PHP extension by nicolasff. https://github.com/nicolasff/phpredis
+ * @note       APC:      The APC or APCu PHP extension must be installed.
+ * @note       APC:      Ignore these settings: nZEDb_CACHE_HOSTS / nZEDb_CACHE_SOCKET_FILE / nZEDb_CACHE_TIMEOUT
+ * @default    0
+ * @version    3
  */
 define('nZEDb_CACHE_TYPE', 0);
 
@@ -181,18 +181,15 @@ define('nZEDb_CACHE_TYPE', 0);
  *                   If you have more than 1 memcached server, see the memcached documentation for more info:
  *                   http://php.net/manual/en/memcached.addserver.php
  */
-define(
-	'nZEDb_CACHE_HOSTS',
-	serialize(
-		[
-			'Server1' => [
-				'host'   => '127.0.0.1',
-				'port'   => 11211,
-				'weight' => 0
-			],
-		]
-	)
-);
+define('nZEDb_CACHE_HOSTS', serialize(
+	[
+		'Server1' => [
+			'host'   => '127.0.0.1',
+			'port'   => 11211,
+			'weight' => 0
+		],
+	]
+));
 
 /**
  * Optional path to unix socket file, leave '' if to not use.
@@ -200,8 +197,8 @@ define(
  * This should be faster than using the host/port if your cache server is local.
  *
  * @example '/var/run/redis/redis.sock'
- * @note By default, redis and memcached do not have a socket file, you must configure them.
- * @note Read and write access is required to the socket file.
+ * @note    By default, redis and memcached do not have a socket file, you must configure them.
+ * @note    Read and write access is required to the socket file.
  * @default ''
  */
 define('nZEDb_CACHE_SOCKET_FILE', '');
@@ -216,7 +213,7 @@ define('nZEDb_CACHE_TIMEOUT', 10);
 /**
  * Memcached allows to compress the data, saving RAM at the expense of CPU time.
  *
- * @note Does nothing on redis.
+ * @note    Does nothing on redis.
  * @default false
  */
 define('nZEDb_CACHE_COMPRESSION', false);
@@ -229,13 +226,13 @@ define('nZEDb_CACHE_COMPRESSION', false);
  *                         on Memcached / Redis / APC, read the notes below.
  * 2 - [Redis Only] Use no serializer.
  *
- * @note igbinary must be compiled and enabled in php.ini
- * @note APC/APCu: This setting is ignored, set this in php.ini with apc.serializer
- * @note Memcached/Redis must be compiled with igbinary support as well to use igbinary.
- * @note Read the igbinary page how to compile / enable.
- * @see https://github.com/phadej/igbinary
- * @default 0
- * @version 3
+ * @note       igbinary must be compiled and enabled in php.ini
+ * @note       APC/APCu: This setting is ignored, set this in php.ini with apc.serializer
+ * @note       Memcached/Redis must be compiled with igbinary support as well to use igbinary.
+ * @note       Read the igbinary page how to compile / enable.
+ * @see        https://github.com/phadej/igbinary
+ * @default    0
+ * @version    3
  */
 define('nZEDb_CACHE_SERIALIZER', 0);
 
@@ -269,7 +266,7 @@ define('nZEDb_LOGGING', false);
 /**
  * var_dump missing autoloader files.
  *
- * @note Dev setting.
+ * @note    Dev setting.
  * @default false
  */
 define('nZEDb_LOGAUTOLOADER', false);
@@ -386,7 +383,7 @@ define('nZEDb_LOGQUERIES', false);
  * Strip white space (space, carriage return, new line, tab, etc) from queries before sending to MySQL.
  * This is useful if you use the MySQL slow query log.
  *
- * @note This slows down query processing, leave it false unless you turn on the MySQL slow query log.
+ * @note    This slows down query processing, leave it false unless you turn on the MySQL slow query log.
  * @default false
  */
 define('nZEDb_QUERY_STRIP_WHITESPACE', false);
@@ -397,7 +394,7 @@ define('nZEDb_QUERY_STRIP_WHITESPACE', false);
  * If there's a problem during a transaction, MySQL can revert the row inserts which is beneficial.
  * Transactions can cause deadlocks however if you are trying to insert into the same table from another process.
  *
- * @note If all your tables are MyISAM you can set this to false, as MyISAM does not support transactions.
+ * @note    If all your tables are MyISAM you can set this to false, as MyISAM does not support transactions.
  * @default true
  */
 define('nZEDb_USE_SQL_TRANSACTIONS', true);
@@ -407,8 +404,8 @@ define('nZEDb_USE_SQL_TRANSACTIONS', true);
  * This prevents table locks by deleting only when no SELECT queries are active on the table.
  * This works on MyISAM/ARIA, not INNODB.
  *
- * @note Does not cause any errors or warnings if enabled on INNODB.
- * @link https://dev.mysql.com/doc/refman/5.7/en/delete.html
+ * @note    Does not cause any errors or warnings if enabled on INNODB.
+ * @link    https://dev.mysql.com/doc/refman/5.7/en/delete.html
  * @default false
  * @version 1
  */
@@ -419,8 +416,8 @@ define('nZEDb_SQL_DELETE_LOW_PRIORITY', false);
  * This makes DELETE queries faster on MyISAM/ARIA tables by not merging index leaves.
  * Only supported on MyISAM/ARIA
  *
- * @note Does not cause any errors or warnings if enabled on INNODB.
- * @link https://dev.mysql.com/doc/refman/5.7/en/delete.html
+ * @note    Does not cause any errors or warnings if enabled on INNODB.
+ * @link    https://dev.mysql.com/doc/refman/5.7/en/delete.html
  * @default false
  * @version 1
  */
@@ -433,14 +430,14 @@ define('nZEDb_SQL_DELETE_QUICK', false);
  * Simple constant to let us know this file is included and we should use PHPMailer library.
  * Uncomment the line below after setting the other constants.
  */
-//define('PHPMAILER_ENABLED', true);
+define('PHPMAILER_ENABLED', false);
 
 /**
  * Global "From" Address.
  * This address will be set as the From: address on every email sent by nZEDb.
  *
  * @example 'noreply@example.com'
- * @note Depending on server configurations, it may not respect this value.
+ * @note    Depending on server configurations, it may not respect this value.
  * @default '' (uses the contact email configured in 'Edit Site' settings)
  */
 define('PHPMAILER_FROM_EMAIL', '');
@@ -450,7 +447,7 @@ define('PHPMAILER_FROM_EMAIL', '');
  * Along with the email above, this will display as the name.
  *
  * @example 'KingCat'
- * @note Depending on server configurations, it may not respect this value.
+ * @note    Depending on server configurations, it may not respect this value.
  * @default '' (uses the site title configured in 'Edit Site' settings)
  */
 define('PHPMAILER_FROM_NAME', '');
@@ -460,7 +457,7 @@ define('PHPMAILER_FROM_NAME', '');
  * This address will be set as the Reply-to: address on every email sent by nZEDb.
  *
  * @example 'support@example.com'
- * @note It's a good idea to set this to your support email account (if possible)
+ * @note    It's a good idea to set this to your support email account (if possible)
  * @default '' (uses the contact email configured in 'Edit Site' settings)
  */
 define('PHPMAILER_REPLYTO', '');
@@ -469,7 +466,7 @@ define('PHPMAILER_REPLYTO', '');
  * Always BCC.
  * This email address will be blind carbon copied on every email sent from this site.
  *
- * @note This has very specific uses, don't enable unless you're sure you want to get the deluge.
+ * @note    This has very specific uses, don't enable unless you're sure you want to get the deluge.
  * @default ''
  */
 define('PHPMAILER_BCC', '');
@@ -478,21 +475,19 @@ define('PHPMAILER_BCC', '');
  * Should we use a SMTP server to send mail?
  * If false, it will use your default settings from php.ini.
  *
- * @note If set to true, be sure to set the server settings below.
+ * @note    If set to true, be sure to set the server settings below.
  * @default false
  */
 define('PHPMAILER_USE_SMTP', false);
-
 
 /*********************************************************************************
  * The following options require PHPMAILER_USE_SMTP to be true: *
  *********************************************************************************/
 
-
 /**
  * This is the hostname to use if connecting to a SMTP server.
  *
- * @note You can specify main and backup hosts, delimit with a semicolon. (i.e. 'main.host.com;backup.host.com')
+ * @note    You can specify main and backup hosts, delimit with a semicolon. (i.e. 'main.host.com;backup.host.com')
  * @default ''
  */
 define('PHPMAILER_SMTP_HOST', '');
@@ -500,15 +495,15 @@ define('PHPMAILER_SMTP_HOST', '');
 /**
  * TLS & SSL Support for your SMTP server.
  *
- * @note Possible values: false, 'tls', 'ssl'
+ * @note    Possible values: false, 'tls', 'ssl'
  * @default 'tls'
  */
-define('PHPMAILER_SMTP_SECURE','tls');
+define('PHPMAILER_SMTP_SECURE', 'tls');
 
 /**
  * SMTP Port
  *
- * @note Usually this is 25, 465, or 587
+ * @note    Usually this is 25, 465, or 587
  * @default 587
  */
 define('PHPMAILER_SMTP_PORT', 587);
@@ -516,23 +511,21 @@ define('PHPMAILER_SMTP_PORT', 587);
 /**
  * Does your SMTP host require authentication?
  *
- * @note Be sure to set credentials below if changing to true.
+ * @note    Be sure to set credentials below if changing to true.
  * @default false
  */
 define('PHPMAILER_SMTP_AUTH', false);
 
-
 /*********************************************************************************
  * The following options require both PHPMAILER_USE_SMTP & PHPMAILER_SMTP_AUTH to be true: *
  *********************************************************************************/
-
 
 /**
  * SMTP username for authentication.
  *
  * @default ''
  */
-define('PHPMAILER_SMTP_USER','');
+define('PHPMAILER_SMTP_USER', '');
 
 /**
  * SMTP password for authentication.
@@ -541,17 +534,241 @@ define('PHPMAILER_SMTP_USER','');
  */
 define('PHPMAILER_SMTP_PASSWORD', '');
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////// PHP CLI Settings ///////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+if (Misc::isCLI()) {
+
+	/**
+	 * Your server's local timezone.
+	 * @note    Uncomment to enable.
+	 * @see     https://secure.php.net/manual/en/timezones.php
+	 * @version 4
+	 */
+	//ini_set('date.timezone', 'America/New_York');
+
+	/**
+	 * Maximum amount of memory a PHP script can consume before being terminated.
+	 * @note    Uncomment to enable.
+	 * @default '1024M'
+	 * @version 4
+	 */
+	//ini_set('memory_limit', '1024M');
+
+	/**
+	 * Show PHP errors on CLI output.
+	 * @note    Set to '1' for development.
+	 * @default '0'
+	 * @version 4
+	 */
+	ini_set('display_errors', '0');
+
+	/**
+	 * Show startup errors on CLI output.
+	 * @note    Set to '1' for development/debugging.
+	 * @default '0'
+	 * @version 4
+	 */
+	ini_set('display_startup_errors', '0');
+
+	/**
+	 * Type of errors to display.
+	 * @note    For development/debugging set to E_ALL
+	 * @default E_ALL & ~E_DEPRECATED & ~E_STRICT
+	 * @see     https://secure.php.net/manual/en/errorfunc.constants.php
+	 * @version 4
+	 */
+	ini_set('error_reporting', E_ALL);
+
+	/**
+	 * Turn off HTML tags in error messages.
+	 * @default '1'
+	 * @version 4
+	 */
+	ini_set('html_errors', '1');
+
+	/**
+	 * Set the location to log PHP errors.
+	 * @default nZEDb_LOGS . 'php_errors.log'
+	 * @note    To log to syslog, put in 'syslog'
+	 * @version 4
+	 */
+	ini_set('error_log', nZEDb_LOGS . 'php_errors.log');
+
+	/**
+	 * Log errors to error_log?
+	 * @default '1'
+	 * @version 4
+	 */
+	ini_set('log_errors', '1');
+
+	/**
+	 * Max line length for a error.
+	 * @default 1024
+	 * @version 4
+	 */
+	ini_set('log_errors_max_len', '1024');
+
+	/**
+	 * Store the last PHP error in $php_errormsg
+	 * @default '0'
+	 * @note    This is a development/debugging option.
+	 * @version 4
+	 */
+	ini_set('track_errors', '0');
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////// PHP Web Settings ///////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+} else {
+
+	/**
+	 * Your server's local timezone.
+	 * @note    Uncomment to enable.
+	 * @see     https://secure.php.net/manual/en/timezones.php
+	 * @version 4
+	 */
+	//ini_set('date.timezone', 'America/New_York');
+
+	/**
+	 * Maximum amount of seconds a script can run before being terminated.
+	 * @default '120'
+	 * @version 4
+	 */
+	ini_set('max_execution_time', '120');
+
+	/**
+	 * Maximum amount of memory a PHP script can consume before being terminated.
+	 * @note    Uncomment to enable.
+	 * @default '1024M'
+	 * @version 4
+	 */
+	//ini_set('memory_limit', '1024M');
+
+	/**
+	 * Show PHP errors on web browser.
+	 * @note    Set to '1' for development.
+	 * @default '0'
+	 * @version 4
+	 */
+	ini_set('display_errors', '0');
+
+	/**
+	 * Show startup errors on web browser.
+	 * @note    Set to '1' for development/debugging.
+	 * @default '0'
+	 * @version 4
+	 */
+	ini_set('display_startup_errors', '0');
+
+	/**
+	 * Type of errors to display.
+	 * @note    For development/debugging set to E_ALL
+	 * @default E_ALL & ~E_DEPRECATED & ~E_STRICT
+	 * @see     https://secure.php.net/manual/en/errorfunc.constants.php
+	 * @version 4
+	 */
+	ini_set('error_reporting', E_ALL);
+
+	/**
+	 * Turn off HTML tags in error messages.
+	 * @default '1'
+	 * @version 4
+	 */
+	ini_set('html_errors', '1');
+
+	/**
+	 * Set the location to log PHP errors.
+	 * @default nZEDb_LOGS . 'php_errors.log'
+	 * @note    To log to syslog, put in 'syslog'
+	 * @version 4
+	 */
+	ini_set('error_log', nZEDb_LOGS . 'php_errors.log');
+
+	/**
+	 * Log errors to error_log?
+	 * @default '1'
+	 * @version 4
+	 */
+	ini_set('log_errors', '1');
+
+	/**
+	 * Max line length for a error.
+	 * @default 1024
+	 * @version 4
+	 */
+	ini_set('log_errors_max_len', '1024');
+
+	/**
+	 * Store the last PHP error in $php_errormsg
+	 * @default '0'
+	 * @note    This is a development/debugging option.
+	 * @version 4
+	 */
+	ini_set('track_errors', '0');
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////// PHP Xdebug Settings //////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+if (extension_loaded('xdebug')) {
+
+	/**
+	 * Display colors on xdebug CLI output?
+	 * 0 - off, 1 - on only if on a TTY with ansi support, 2 - on regardless of TTY or ansi support.
+	 * @default 0
+	 * @version 4
+	 */
+	ini_set('xdebug.cli_color', '0');
+
+	/**
+	 * Replace PHP's var_dump with xdebug's own?
+	 * @default '1'
+	 * @version 4
+	 */
+	ini_set('xdebug.overload_var_dump', '1');
+
+	/**
+	 * How many items in a array or object to display on var_dump.
+	 * @note    Set to '-1' for no limit.
+	 * @default '128'
+	 * @version 4
+	 */
+	ini_set('xdebug.var_display_max_children', '128');
+
+	/**
+	 * Maximum string length on var_dump. (anything over is truncated)
+	 * @note    Set to '-1' for no limit.
+	 * @default '512'
+	 * @version 4
+	 */
+	ini_set('xdebug.var_display_max_data', '512');
+
+	/**
+	 * How many nested arrays / objects deep to display on var_dump.
+	 * @note    Set to '-1' for no limit.
+	 * @note    Maximum value is '1023'
+	 * @default '3'
+	 * @version 4
+	 */
+	ini_set('xdebug.var_display_max_depth', '3');
+}
+
 /***********************************************************************************************************************
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////// Change log ////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-2015-06-11       v3  Add support for APC or APCu extensions for caching data. Search for @version 3 for the changes.
-
-2015-05-10       v2  Update path to find_password_hash_cost.php in comments. Search for @version 2 for the changes.
-
-2015-05-03       v1  Track settings.php.example changes.
-                     Add support for quick and low_priority on MySQL DELETE queries.
-                     Search for @version 1 in this file to quickly find these additions.
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+ * ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ * //////////////////////////////////////////////// Change log ////////////////////////////////////////////////////////////
+ * ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ *
+ * 2015-08-26       v4  Add settings for PHP web/CLI SAPI's.
+ *                        Add settings for Xdebug.
+ *                        All new settings start from the "PHP CLI Settings" up to the "Change log", lines ~544 to ~768
+ *
+ * 2015-06-11       v3  Add support for APC or APCu extensions for caching data. Search for @version 3 for the changes.
+ *
+ * 2015-05-10       v2  Update path to find_password_hash_cost.php in comments. Search for @version 2 for the changes.
+ *
+ * 2015-05-03       v1  Track settings.php.example changes.
+ *                        Add support for quick and low_priority on MySQL DELETE queries.
+ *                        Search for @version 1 in this file to quickly find these additions.
+ *
+ * //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/

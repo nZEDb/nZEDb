@@ -43,6 +43,10 @@
 					<td><input class="searchadv" id="searchadvposter" name="searchadvposter" value="{$searchadvposter|escape:'html'}" type="text"></td>
 				</tr>
 				<tr>
+					<th><label for="searchadvfilename">Filename:</label></th>
+					<td><input class="searchadv" id="searchadvfilename" name="searchadvfilename" value="{$searchadvfilename|escape:'html'}" type="text"/></td>
+				</tr>
+				<tr>
 					<th><label for="searchadvdaysnew">Min age(days):</label></th>
 					<td>
 						<input class="searchdaysinput" id="searchadvdaysnew" name="searchadvdaysnew" value="{$searchadvdaysnew|escape:'html'}" type="text">

@@ -793,7 +793,7 @@ class Releases
 				$ID
 			)
 		);
-		$this->sphinxSearch->updateReleaseSearchName($ID, $searchName);
+		$this->sphinxSearch->updateRelease($ID, $this->pdo);
 	}
 
 	/**
@@ -918,6 +918,7 @@ class Releases
 	 * @param string $usenetName
 	 * @param string $posterName
 	 * @param string $groupName
+	 * @param string $fileName
 	 * @param int    $sizeFrom
 	 * @param int    $sizeTo
 	 * @param int    $hasNfo
@@ -938,6 +939,7 @@ class Releases
 		$searchName,
 		$usenetName,
 		$posterName,
+		$fileName,
 		$groupName,
 		$sizeFrom,
 		$sizeTo,
@@ -984,6 +986,9 @@ class Releases
 		}
 		if ($posterName != -1) {
 			$searchOptions['fromname'] = $posterName;
+		}
+		if ($fileName != -1) {
+			$searchOptions['filename'] = $fileName;
 		}
 
 		$whereSql = sprintf(
@@ -1259,7 +1264,7 @@ class Releases
 		$parentCat = $catRow['parentid'];
 
 		$results = $this->search(
-			$this->getSimilarName($name), -1, -1, -1, -1, -1, 0, 0, -1, -1, 0, $limit, '', -1, $excludedCats, null, [$parentCat]
+			$this->getSimilarName($name), -1, -1, -1, -1, -1, -1, 0, 0, -1, -1, 0, $limit, '', -1, $excludedCats, null, [$parentCat]
 		);
 		if (!$results) {
 			return $results;
@@ -1691,7 +1696,7 @@ class Releases
 
 		$alternate = $this->pdo->queryOneRow(sprintf('SELECT * FROM releases r
 			WHERE r.searchname %s
-			AND r.guid NOT IN (SELECT guid FROM failed_downloads WHERE userid = %d)',
+			AND r.guid NOT IN (SELECT guid FROM dnzb_failures WHERE userid = %d)',
 			$this->pdo->likeString($searchname),
 			$userid
 			)

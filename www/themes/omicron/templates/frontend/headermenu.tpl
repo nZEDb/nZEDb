@@ -6,7 +6,7 @@
 					<li class="nav-parent">
 						<a href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"
 						   data-delay="30">
-							<i class="fa fa-desktop"></i> {$parentcat.title}<i class="icons-arrows-06"></i>
+							<i class="fa fa-television"></i> {$parentcat.title}<i class="fa fa-angle-down"></i>
 						</a>
 						<ul class="dropdown-menu">
 							<li><a href="{$smarty.const.WWW_TOP}/browse?t={$parentcat.id}">TV</a></li>
@@ -25,7 +25,7 @@
 					<li class="nav-parent">
 						<a href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"
 						   data-delay="30">
-							<i class="fa fa-film"></i> {$parentcat.title}<i class="icons-arrows-06"></i>
+							<i class="fa fa-film"></i> {$parentcat.title}<i class="fa fa-angle-down"></i>
 						</a>
 						<ul class="dropdown-menu">
 							{if $userdata.movieview == "1"}
@@ -52,7 +52,7 @@
 					<li class="nav-parent">
 						<a href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"
 						   data-delay="30">
-							<i class="fa fa-gamepad"></i> {$parentcat.title}<i class="icons-arrows-06"></i>
+							<i class="fa fa-gamepad"></i> {$parentcat.title}<i class="fa fa-angle-down"></i>
 						</a>
 						<ul class="dropdown-menu">
 							{if $userdata.consoleview == "1"}
@@ -77,7 +77,7 @@
 					<li class="nav-parent">
 						<a href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"
 						   data-delay="30">
-							<i class="fa fa-gamepad"></i> {$parentcat.title}<i class="icons-arrows-06"></i>
+							<i class="fa fa-gamepad"></i> {$parentcat.title}<i class="fa fa-angle-down"></i>
 						</a>
 						<ul class="dropdown-menu">
 							{if $userdata.gameview == "1"}
@@ -107,7 +107,7 @@
 					<li class="nav-parent">
 						<a href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"
 						   data-delay="30">
-							<i class="fa fa-music"></i> {$parentcat.title}<i class="icons-arrows-06"></i>
+							<i class="fa fa-music"></i> {$parentcat.title}<i class="fa fa-angle-down"></i>
 						</a>
 						<ul class="dropdown-menu">
 							{if $userdata.musicview == "1"}
@@ -131,7 +131,7 @@
 					<li class="nav-parent">
 						<a href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"
 						   data-delay="30">
-							<i class="fa fa-book"></i> Books<i class="icons-arrows-06"></i>
+							<i class="fa fa-book"></i> Books<i class="fa fa-angle-down"></i>
 						</a>
 						<ul class="dropdown-menu">
 							{if $userdata.bookview == "1"}
@@ -149,7 +149,7 @@
 					<li class="nav-parent">
 						<a href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"
 						   data-delay="30">
-							<i class="fa fa-ban"></i> Adult<i class="icons-arrows-06"></i>
+							<i class="fa fa-venus-mars"></i> Adult<i class="fa fa-angle-down"></i>
 						</a>
 						<ul class="dropdown-menu">
 							{if $userdata.xxxview == "1"}
@@ -179,7 +179,7 @@
 			{/foreach}
 			<li class="nav-parent">
 				<a href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true" data-delay="30">
-					<i class="fa fa-bolt"></i> Misc<i class="icons-arrows-06"></i>
+					<i class="fa fa-bolt"></i> Misc<i class="fa fa-angle-down"></i>
 				</a>
 				<ul class="dropdown-menu">
 					<li><a href="/browse?t=7000">Misc</a></li>
