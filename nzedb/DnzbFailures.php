@@ -3,6 +3,7 @@
 namespace nzedb;
 
 use nzedb\db\Settings;
+use nzedb\ReleaseComments;
 
 
 class DnzbFailures
@@ -11,6 +12,11 @@ class DnzbFailures
 	 * @var \nzedb\db\Settings
 	 */
 	public $pdo;
+
+	/**
+	 * @var \nzedb\ReleaseComments
+	 */
+	public $rc;
 
 	/**
 	 * @var array $options Class instances.
@@ -23,6 +29,7 @@ class DnzbFailures
 		$options += $defaults;
 
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->rc = new ReleaseComments(['Settings' => $this->pdo]);
 	}
 
 	/**
@@ -49,6 +56,10 @@ class DnzbFailures
 				$this->pdo->escapeString($guid)
 			)
 		);
+
+		$rel = $this->pdo->queryOneRow(sprintf('SELECT id FROM releases WHERE guid = %s', $this->pdo->escapeString($guid)));
+		$this->postComment($rel['id'], $userid);
+
 		$alternate = $this->pdo->queryOneRow(sprintf('SELECT * FROM releases r
 			WHERE r.searchname %s
 			AND r.guid NOT IN (SELECT guid FROM dnzb_failures WHERE userid = %d)',
@@ -57,5 +68,16 @@ class DnzbFailures
 			)
 		);
 		return $alternate;
+	}
+
+	/**
+	 * @param $relid
+	 * @param $uid
+	 */
+	public function postComment($relid, $uid)
+	{
+		$text = 'This release has failed to download properly. It might fail for other users too.
+		This comment is automatically generated.';
+		$this->rc->addComment($relid, $text, $uid, '');
 	}
 }
