@@ -205,6 +205,7 @@ class Releases
 				"SELECT r.*,
 					CONCAT(cp.title, ' > ', c.title) AS category_name,
 					CONCAT(cp.id, ',', c.id) AS category_ids,
+					(SELECT COUNT(userid) FROM dnzb_failures WHERE guid = r.guid) AS failed,
 					g.name AS group_name,
 					rn.id AS nfoid,
 					re.releaseid AS reid
@@ -1014,6 +1015,7 @@ class Releases
 			"SELECT r.*,
 				CONCAT(cp.title, ' > ', c.title) AS category_name,
 				%s AS category_ids,
+				(SELECT COUNT(userid) FROM dnzb_failures WHERE guid = r.guid) AS failed,
 				groups.name AS group_name,
 				rn.id AS nfoid,
 				re.releaseid AS reid,
@@ -1673,34 +1675,5 @@ class Releases
 			ORDER BY r.postdate DESC
 			LIMIT 24", true, nZEDb_CACHE_EXPIRY_LONG
 		);
-	}
-
-   /**
-	 * Retrieve alternate release with same or similar searchname
-	 *
-	 * @param string $guid
-	 * @param string $searchname
-	 * @param string $userid
-	 * @return string
-	 */
-	public function getAlternate($guid, $searchname, $userid)
-	{
-		//status values
-		// 0/false 	= successfully downloaded
-		// 1/true 	= failed download
-		$this->pdo->queryInsert(sprintf("INSERT IGNORE INTO dnzb_failures (userid, guid) VALUES (%d, %s)",
-				$userid,
-				$this->pdo->escapeString($guid)
-				)
-		);
-
-		$alternate = $this->pdo->queryOneRow(sprintf('SELECT * FROM releases r
-			WHERE r.searchname %s
-			AND r.guid NOT IN (SELECT guid FROM dnzb_failures WHERE userid = %d)',
-			$this->pdo->likeString($searchname),
-			$userid
-			)
-		);
-		return $alternate;
 	}
 }

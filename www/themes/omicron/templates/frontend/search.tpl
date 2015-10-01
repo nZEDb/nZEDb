@@ -61,6 +61,7 @@
 					<td><input class="searchadv" id="searchadvfilename" name="searchadvfilename" value="{$searchadvfilename|escape:'html'}" type="text"/></td>
 				</tr>
 				<tr>
+				<tr>
 					<th><label for="searchadvdaysnew">Min age(days):</label></th>
 					<td>
 						<input class="searchdaysinput" id="searchadvdaysnew" name="searchadvdaysnew"
@@ -196,27 +197,27 @@
 					<td class="item">
 						<label for="chk{$result.guid|substr:0:7}">
 							<a class="title" title="View details"
-							   href="{$smarty.const.WWW_TOP}/details/{$result.guid}">{$result.searchname|escape:"htmlall"|truncate:150:"...":true}</a></label value="Searchname">
+							   href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.searchname|escape:"htmlall"|truncate:150:"...":true}</a>{if $result.failed > 0} <i class="fa fa-exclamation-circle" style="color: red" title="This release has failed to download for some users"></i>{/if}</label value="Searchname">
 						<div class="resextra">
 							<div class="btns" style="float:right">
 								{release_flag($result.searchname, browse)}
 								{if $result.passwordstatus == 1}
 									<img title="RAR/ZIP Possibly Passworded."
-										 src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/lock2.png"
+										 src="{$smarty.const.WWW_TOP}/templates_shared/images/icons/lock2.png"
 										 alt="RAR/ZIP Possibly Passworded.">
 								{elseif $result.passwordstatus == 2}
 									<img title="RAR/ZIP Possibly Damaged."
-										 src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/broken.png"
+										 src="{$smarty.const.WWW_TOP}/templates_shared/images/icons/broken.png"
 										 alt="RAR/ZIP Possibly Damaged.">
 								{elseif $result.passwordstatus == 10}
 									<img title="RAR/ZIP is Passworded."
-										 src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/lock.gif"
+										 src="{$smarty.const.WWW_TOP}/templates_shared/images/icons/lock.gif"
 										 alt="RAR/ZIP is Passworded.">
 								{/if}
 								{if $result.videostatus > 0}
 									<a
 											class="model_prev label label-default"
-											href="{$smarty.const.WWW_TOP}/details/{$result.guid}"
+											href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}"
 											title="This release has a video preview."
 											rel="preview"
 											><i class="icon-youtube-play"></i>
@@ -265,6 +266,9 @@
 									   href="{$smarty.const.WWW_TOP}/browse?g={$result.group_name|escape:"htmlall"}"
 									   title="Browse {$result.group_name}">{$result.group_name|escape:"htmlall"|replace:"alt.binaries.":"a.b."}</a>
 								{/if}
+								{if $result.failed > 0}<span class="label label-default">
+									<i class ="fa fa-thumbs-o-up"></i> {$result.grabs} Grab{if $result.grabs != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$result.failed} Failed Download{if $result.failed != 1}s{/if}</span>
+								{/if}
 							</div>
 						</div>
 					</td>
@@ -291,7 +295,7 @@
 						   href="{$smarty.const.WWW_TOP}/filelist/{$result.guid}">{$result.totalpart}</a>
 						{if $result.rarinnerfilecount > 0}
 							<div class="rarfilelist">
-								<img src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/magnifier.png"
+								<img src="{$smarty.const.WWW_TOP}/templates_shared/images/icons/magnifier.png"
 									 alt="{$result.guid}">
 							</div>
 						{/if}
@@ -305,7 +309,7 @@
 					<td class="icons" nowrap="nowrap">
 						<div class="icon_nzb text-muted">
 							<a title="Download Nzb"
-							   href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}">
+							   href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"htmlall"}">
 								&nbsp;<i class="fa fa-download"></i></a>
 						</div>
 						<div class="icon_cart text-muted" title="Add to Cart"><i class="fa fa-shopping-cart"></i></div>

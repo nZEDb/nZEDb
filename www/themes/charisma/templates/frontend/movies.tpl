@@ -120,8 +120,8 @@
 								<div class="col-md-6 small-gutter-right movie-height">
 									<div class="panel panel-default">
 										<div class="panel-body">
-											<div class="row">
-												<div class="col-md-3">
+											<div class="row small-gutter-left">
+												<div class="col-md-3 small-gutter-left">
 													{foreach from=$result.languages item=movielanguage}
 														{release_flag($movielanguage, browse)}
 													{/foreach}
@@ -135,16 +135,17 @@
 													{assign var="mtotalparts" value=","|explode:$result.grp_release_totalparts}
 													{assign var="mcomments" value=","|explode:$result.grp_release_comments}
 													{assign var="mgrabs" value=","|explode:$result.grp_release_grabs}
+													{assign var="mfailed" value=","|explode:$result.failed}
 													{assign var="mpass" value=","|explode:$result.grp_release_password}
 													{assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
 													{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
 													{foreach from=$msplits item=m name=loop}
 													{if $smarty.foreach.loop.first}
-													<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}"><img
+													<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"><img
 																class="cover"
-																src="{if $result.cover == 1}{$serverroot}covers/movies/{$result.imdbid}-cover.jpg{else}{$serverroot}themes/charisma/images/nocover.png{/if}"
+																src="{if $result.cover == 1}{$smarty.const.WWW_TOP}covers/movies/{$result.imdbid}-cover.jpg{else}{$smarty.const.WWW_TOP}templates_shared/images/no-cover.png{/if}"
 																width="100" border="0"
-																alt="{$result.title|escape:"htmlall"}"/></a>
+																alt="{$result.title|escape:"htmlall"}"/> {if $mfailed[$m@index]} <i class="fa fa-exclamation-circle" style="color: red" title="This release has failed for some users"></i>{/if}</a>
 													<a target="_blank"
 													   href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/"
 													   name="imdb{$result.imdbid}" title="View IMDB page"
@@ -161,9 +162,9 @@
 													   href="{$smarty.const.WWW_TOP}/browse?g={$result.grp_release_grpname}"
 													   title="Browse releases in {$result.grp_release_grpname|replace:"alt.binaries":"a.b"}">Group</a>
 												</div>
-												<div class="col-md-9">
+												<div class="col-md-9 small-gutter-left">
 																<span class="release-title"><a class="text-muted"
-																							   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$result.title|escape:"htmlall"}</a></span>
+																							   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">{$result.title|escape:"htmlall"}</a></span>
 													<div class="release-subtitle">{if $result.genre != ''}
 															<b>Genre: </b>
 															{$result.genre}, {/if}</div>
@@ -189,11 +190,11 @@
 																		ago</span>
 														<br/><br/><br/>
 														<div class="release-name text-muted"><a
-																	href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$mname[$m@index]|escape:"htmlall"}</a>
+																	href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">{$mname[$m@index]|escape:"htmlall"}</a>
 														</div>
 														<div>
 															<a role="button" class="btn btn-default btn-xs"
-															   href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}"><i
+															   href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"><i
 																		class="fa fa-download"></i><span
 																		class="badge"> {$mgrabs[$m@index]}
 																	Grab{if $mgrabs[$m@index] != 1}s{/if}</span></a>
@@ -210,6 +211,18 @@
 																	  title="Send to my Queue"><i
 																			class="fa fa-send"></i></span>
 															{/if}
+															{if $cpurl != '' && $cpapi != ''}
+																<span class="btn btn-hover btn-default btn-xs sendtocouch text-muted"
+																	  target="blackhole"
+																	  href="javascript:"
+																	  rel="{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}"
+																	  name="CP{$result.imdbid}"
+																	  title="Add to CouchPotato"
+																		><i class="fa fa-send-o"></i></span>
+															{/if}
+															{if $mfailed[$m@index] > 0}
+																<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
+																	<i class ="fa fa-thumbs-o-up"></i> {$mgrabs[$m@index]} Grab{if {$mgrabs[$m@index]} != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$mfailed[$m@index]} Failed Download{if {$mfailed[$m@index]} != 1}s{/if}</span>															{/if}
 														</div>
 													</div>
 													{/if}
@@ -225,8 +238,8 @@
 								<div class="col-md-6 small-gutter-left movie-height">
 									<div class="panel panel-default">
 										<div class="panel-body">
-											<div class="row">
-												<div class="col-md-3">
+											<div class="row small-gutter-left">
+												<div class="col-md-3 small-gutter-left">
 													{foreach from=$result.languages item=movielanguage}
 														{release_flag($movielanguage, browse)}
 													{/foreach}
@@ -240,16 +253,17 @@
 													{assign var="mtotalparts" value=","|explode:$result.grp_release_totalparts}
 													{assign var="mcomments" value=","|explode:$result.grp_release_comments}
 													{assign var="mgrabs" value=","|explode:$result.grp_release_grabs}
+													{assign var="mfailed" value=","|explode:$result.failed}
 													{assign var="mpass" value=","|explode:$result.grp_release_password}
 													{assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
 													{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
 													{foreach from=$msplits item=m name=loop}
 													{if $smarty.foreach.loop.first}
-													<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}"><img
+													<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"><img
 																class="cover"
-																src="{if $result.cover == 1}{$serverroot}covers/movies/{$result.imdbid}-cover.jpg{else}{$serverroot}themes/charisma/images/nocover.png{/if}"
+																src="{if $result.cover == 1}{$smarty.const.WWW_TOP}covers/movies/{$result.imdbid}-cover.jpg{else}{$smarty.const.WWW_TOP}templates_shared/images/no-cover.png{/if}"
 																width="100" border="0"
-																alt="{$result.title|escape:"htmlall"}"/></a>
+																alt="{$result.title|escape:"htmlall"}"/> {if $mfailed[$m@index] > 0} <i class="fa fa-exclamation-circle" style="color: red" title="This release has failed to download for some users"></i>{/if}</a>
 													<a target="_blank"
 													   href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/"
 													   name="imdb{$result.imdbid}" title="View IMDB page"
@@ -266,9 +280,9 @@
 													   href="{$smarty.const.WWW_TOP}/browse?g={$result.grp_release_grpname}"
 													   title="Browse releases in {$result.grp_release_grpname|replace:"alt.binaries":"a.b"}">Group</a>
 												</div>
-												<div class="col-md-9">
+												<div class="col-md-9 small-gutter-left">
 																<span class="release-title"><a class="text-muted"
-																							   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$result.title|escape:"htmlall"}</a></span>
+																							   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">{$result.title|escape:"htmlall"}</a></span>
 													<div class="release-subtitle">{if $result.genre != ''}
 															<b>Genre: </b>
 															{$result.genre}, {/if}</div>
@@ -298,7 +312,7 @@
 														</div>
 														<div>
 															<a role="button" class="btn btn-default btn-xs"
-															   href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}"><i
+															   href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"><i
 																		class="fa fa-download"></i><span
 																		class="badge"> {$mgrabs[$m@index]}
 																	Grab{if $mgrabs[$m@index] != 1}s{/if}</span></a>
@@ -315,6 +329,18 @@
 																	  title="Send to my Queue"><i
 																			class="fa fa-send"></i></span>
 															{/if}
+															{if $cpurl != '' && $cpapi != ''}
+																<span class="btn btn-hover btn-default btn-xs sendtocouch text-muted"
+																		target="blackhole"
+																		href="javascript:"
+																		rel="{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}"
+																		name="CP{$result.imdbid}"
+																		title="Add to CouchPotato"
+																		><i class="fa fa-send-o"></i></span>
+															{/if}
+															{if $mfailed[$m@index] > 0}
+																<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
+																	<i class ="fa fa-thumbs-o-up"></i> {$mgrabs[$m@index]} Grab{if {$mgrabs[$m@index]} != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$mfailed[$m@index]} Failed Download{if {$mfailed[$m@index]} != 1}s{/if}</span>																{/if}
 														</div>
 													</div>
 													{/if}
@@ -363,7 +389,7 @@
 												name="CP{$result.imdbid}"
 												title="Add to CouchPotato"
 												><img
-													src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/couch.png"></a>
+													src="{$smarty.const.WWW_TOP}/templates_shared/images/icons/couch.png"></a>
 									{/if}
 									{if isset($isadmin)}
 										<input type="button"
