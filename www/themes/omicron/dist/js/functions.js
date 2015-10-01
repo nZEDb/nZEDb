@@ -1,20 +1,22 @@
-$('head').append('<link rel="stylesheet" href="templates/omicron/dist/css/animate.css" type="text/css" />');
+$('head').append('<link rel="stylesheet" href="templates/charisma/css/animate.min.css" type="text/css" />');
+jQuery.getScript("templates/charisma/js/noty/packaged/jquery.noty.packaged.min.js");
 
 // event bindings
 jQuery(function($){
 
-    function notify(message, position) {
+    function notify(message, position, type) {
         var n = noty({
-            text        : '<div class="alert alert-info"><p><center>' + message + '</center></p></div>',
+            layout: position, //or left, right, bottom-right...
+            type: type,
+            theme: 'bootstrapTheme',
+            text: message,
             animation: {
                 open: 'animated flipInX', // Animate.css class names
                 close: 'animated flipOutX', // Animate.css class names
                 easing: 'swing', // unavailable - no need
                 speed: 500 // unavailable - no need
             },
-            layout      : position, //or left, right, bottom-right...
-            theme       : 'bootstrap',
-            maxVisible  : 10,
+            maxVisible: 10,
             timeout: 3000
         });
     }
@@ -24,7 +26,7 @@ jQuery(function($){
         var guid = $(".guid").attr('id').substring(4);
         $.post( SERVERROOT + "cart?add=" + guid, function(resp){
             $(e.target).addClass('icon_cart_clicked').attr('title','Added to Cart');
-            notify('Release added to cart!', 'topCenter');
+            notify('Release added to cart!', 'topCenter', 'information');
         });
         return false;
     });
@@ -38,7 +40,7 @@ jQuery(function($){
 
         $.post(nzburl, function(resp){
             $(e.target).addClass('icon_sab_clicked').attr('title','Added to Queue');
-            notify('Release added to queue', 'topCenter');
+            notify('Release added to queue', 'topCenter', 'success');
         });
         return false;
     });
@@ -51,7 +53,7 @@ jQuery(function($){
 
         $.post(nzburl, function(resp){
             $(e.target).addClass('icon_nzbget_clicked').attr('title','Added to Queue');
-            notify('NZB sent to NZBGet', 'topCenter');
+            notify('NZB sent to NZBGet', 'topCenter', 'success');
         });
         return false;
     });
@@ -72,7 +74,7 @@ jQuery(function($){
             {
                 var message = 'Added ' + guid + ' to queue.';
                 $(event.target).addClass('icon_nzbvortex_clicked').attr('title', message);
-                notify(message, 'topCenter');
+                notify(message, 'topCenter', 'information');
             }).fail(function(response)
             {
                 alert(response.responseText);
@@ -120,7 +122,7 @@ jQuery(function($){
             if (guid && !$cartIcon.hasClass('icon_cart_clicked')){
                 $cartIcon.addClass('icon_cart_clicked').attr('title','Added to Cart');	// consider doing this only upon success
                 guids.push(guid);
-                notify('Release added to cart!', 'topCenter');
+                notify('Release added to cart!', 'topCenter', 'information');
             }
             $(this).attr('checked', false);
         });
@@ -135,7 +137,7 @@ jQuery(function($){
                 var nzburl = SERVERROOT + "sendtoqueue/" + guid;
                 $.post( nzburl, function(resp){
                     $sabIcon.addClass('icon_sab_clicked').attr('title','Added to Queue');
-                    notify('NZB added to queue', 'topCenter');
+                    notify('Releases sent to queue', 'topCenter', 'success');
                 });
             }
             $(this).attr('checked', false);
@@ -150,7 +152,7 @@ jQuery(function($){
                 var nzburl = SERVERROOT + "sendtoqueue/" + guid;
                 $.post( nzburl, function(resp){
                     $nzbgetIcon.addClass('icon_nzbget_clicked').attr('title','Added to Queue');
-                    notify('NZB added to queue', 'topCenter');
+                    notify('Releases sent to queue', 'topCenter', 'success');
                 });
             }
             $(this).attr('checked', false);
@@ -271,7 +273,7 @@ jQuery(function($){
         var guid = $(this).parent().parent().attr('id').substring(4);
         $.post( SERVERROOT + "cart?add=" + guid, function(resp){
             $(e.target).addClass('icon_cart_clicked').attr('title',' Release added to Cart');
-            notify('Release added to cart!', 'topCenter');
+            notify('Release added to cart!', 'topCenter', 'information');
         });
         return false;
     });
@@ -291,7 +293,7 @@ jQuery(function($){
             {
                 var message = 'Added ' + guid + ' to queue.';
                 $(event.target).addClass('icon_nzbvortex_clicked').attr('title', message);
-                notify(message, 'top');
+                notify(message, 'top', 'information');
             }).fail(function(response)
             {
                 alert(response.responseText);
@@ -404,7 +406,7 @@ jQuery(function($){
 
         $.post(nzburl, function(resp){
             $(e.target).addClass('icon_sab_clicked').attr('title','Release added to Queue');
-            notify('Release added to queue', 'topCenter');
+            notify('Release added to queue', 'topCenter', 'success');
         });
         return false;
     });
@@ -417,7 +419,7 @@ jQuery(function($){
 
         $.post(nzburl, function(resp){
             $(e.target).addClass('icon_nzbget_clicked').attr('title','Added to Queue');
-            notify('Release added to queue', 'topCenter');
+            notify('Release added to queue', 'topCenter', 'success');
         });
         return false;
     });
@@ -495,7 +497,7 @@ jQuery(function($){
             if (guid && !$cartIcon.hasClass('icon_cart_clicked')){
                 $cartIcon.addClass('icon_cart_clicked').attr('title','Added to Cart');
                 guids.push(guid);
-                notify('Release added to cart!', 'topCenter'); // consider doing this only upon success and maybe placing it outside of the loop
+                notify('Releases added to cart!', 'topCenter', 'information'); // consider doing this only upon success and maybe placing it outside of the loop
             }
             $(this).attr('checked', false);
         });
@@ -513,7 +515,7 @@ jQuery(function($){
                 // alert(nzburl);
                 $.post( nzburl, function(resp){
                     $sabIcon.addClass('icon_sab_clicked').attr('title','Added to Queue');
-                    notify('Release added to queue', 'topCenter');
+                    notify('Release added to queue', 'topCenter', 'success');
                 });
             }
             $(this).attr('checked', false);
@@ -527,7 +529,7 @@ jQuery(function($){
                 var nzburl = SERVERROOT + "sendtoqueue/" + guid;
                 $.post( nzburl, function(resp){
                     $nzbgetIcon.addClass('icon_nzbget_clicked').attr('title','Added to Queue');
-                    notify('Release added to queue', 'topCenter');
+                    notify('Releases sent to queue', 'topCenter', 'success');
                 });
             }
             $(this).attr('checked', false);
@@ -596,7 +598,7 @@ jQuery(function($){
             var guid = $(row).val();
             var nzburl = SERVERROOT + "sendtoqueue/" + guid;
             $.post( nzburl, function(resp){
-                notify('Release added to queue', 'topCenter');
+                notify('Releases sent to queue', 'topCenter', 'success');
             });
         });
     });

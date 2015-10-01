@@ -94,7 +94,6 @@ if (isset($_GET['id'])) {
 	}
 
 	$user = $page->users->getById($page->users->currentUserId());
-	$failed = $fail->getFailedCount($data['guid']);
 	$re  = new ReleaseExtra($page->settings);
 
 	$page->smarty->assign([
@@ -119,7 +118,7 @@ if (isset($_GET['id'])) {
 		'privateprofiles' => ($page->settings->getSetting('privateprofiles') == 1 ? true : false),
 		'releasefiles'    => (new ReleaseFiles($page->settings))->get($data['id']),
 		'searchname'      => $releases->getSimilarName($data['searchname']),
-		'failed'          => $failed,
+		'failed'          => $fail->getFailedCount($data['guid']),
 	]);
 
 	$page->smarty->assign('rage', $rage);
