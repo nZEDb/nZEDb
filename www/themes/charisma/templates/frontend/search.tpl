@@ -203,15 +203,15 @@
 								{release_flag($result.searchname, browse)}
 								{if $result.passwordstatus == 1}
 									<img title="RAR/ZIP Possibly Passworded."
-										 src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/lock2.png"
+										 src="{$smarty.const.WWW_TOP}/templates_shared/images/icons/lock2.png"
 										 alt="RAR/ZIP Possibly Passworded.">
 								{elseif $result.passwordstatus == 2}
 									<img title="RAR/ZIP Possibly Damaged."
-										 src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/broken.png"
+										 src="{$smarty.const.WWW_TOP}/templates_shared/images/icons/broken.png"
 										 alt="RAR/ZIP Possibly Damaged.">
 								{elseif $result.passwordstatus == 10}
 									<img title="RAR/ZIP is Passworded."
-										 src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/lock.gif"
+										 src="{$smarty.const.WWW_TOP}/templates_shared/images/icons/lock.gif"
 										 alt="RAR/ZIP is Passworded.">
 								{/if}
 								{if $result.videostatus > 0}
@@ -267,7 +267,8 @@
 									   title="Browse {$result.group_name}">{$result.group_name|escape:"htmlall"|replace:"alt.binaries.":"a.b."}</a>
 								{/if}
 								{if $result.failed > 0}<span class="label label-default">
-									<i class ="fa fa-thumbs-o-up"></i> {$result.grabs} Grab{if $result.grabs != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$result.failed} Failed Download{if $result.failed != 1}s{/if}</span>{/if}
+									<i class ="fa fa-thumbs-o-up"></i> {$result.grabs} Grab{if $result.grabs != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$result.failed} Failed Download{if $result.failed != 1}s{/if}</span>
+								{/if}
 							</div>
 						</div>
 					</td>
@@ -294,7 +295,7 @@
 						   href="{$smarty.const.WWW_TOP}/filelist/{$result.guid}">{$result.totalpart}</a>
 						{if $result.rarinnerfilecount > 0}
 							<div class="rarfilelist">
-								<img src="{$smarty.const.WWW_TOP}/themes/charisma/images/icons/magnifier.png"
+								<img src="{$smarty.const.WWW_TOP}/templates_shared/images/icons/magnifier.png"
 									 alt="{$result.guid}">
 							</div>
 						{/if}

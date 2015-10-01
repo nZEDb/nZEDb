@@ -12,8 +12,8 @@
 		<div class="col-xlg-12 portlets">
 			<div class="panel panel-default">
 				<div class="panel-body pagination2">
-					<h1>{$release.searchname|escape:"htmlall"} {if $release.failed > 0}<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
-							<i class ="fa fa-thumbs-o-up"></i> {$release.grabs} Grab{if $release.grabs != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$release.failed} Failed Download{if $release.failed != 1}s{/if}</span>{/if}</h1>
+					<h1>{$release.searchname|escape:"htmlall"} {if $failed > 0}<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
+							<i class ="fa fa-thumbs-o-up"></i> {$release.grabs} Grab{if $release.grabs != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$failed} Failed Download{if $failed != 1}s{/if}</span>{/if}</h1>
 					{if isset($isadmin)}
 						<a class="label label-warning"
 						   href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$release.id}&amp;from={$smarty.server.REQUEST_URI}"
@@ -124,7 +124,7 @@
 									{if $release.jpgstatus == 1 && $userdata.canpreview == 1}
 										<li><a href="#pane6" data-toggle="tab">Sample</a></li>
 									{/if}
-									<li><a href="#pane5" data-toggle="tab">Comments</a></li>
+									<li><a href="#comments" data-toggle="tab">Comments</a></li>
 									{if ($release.haspreview == 1 && $userdata.canpreview == 1) || ($release.haspreview == 2 && $userdata.canpreview == 1)}
 										<li><a href="#pane7" data-toggle="tab">Preview</a></li>
 									{/if}
@@ -452,8 +452,8 @@
 																</tr>
 																<tr>
 																	<th width="140">Failed Download</th>
-																	<td>{$release.failed}
-																		time{if $release.failed==1}{else}s{/if}</td>
+																	<td>{$failed}
+																		time{if $failed==1}{else}s{/if}</td>
 																</tr>
 																<tr>
 																	<th width="140">Password
@@ -477,8 +477,7 @@
 																	</td>
 																</tr>
 																<tr>
-																	<th width="140">RAR
-																		Contains
+																	<th width="140">RAR Contains
 																	</th>
 																	<td>
 																		<strong>Files:</strong><br/>
@@ -573,35 +572,28 @@
 						</tr>
 						{/if}
 									</div>
-									<div id="pane5" class="tab-pane">
+									<div id="comments" class="tab-pane">
 										{if $comments|@count > 0}
 											<table class="tdata table table-condensed table-striped table-responsive table-hover">
-												<tr>
-													<th width="100">User</th>
+												<tr class="{cycle values=",alt"}">
+													<th width="80">User</th>
 													<th>Comment</th>
 												</tr>
-												{foreach from=$comments item=comment}
+												{foreach from=$comments|@array_reverse:true item=comment}
 													<tr>
-														<td width="150">
-															{if $comment.sourceid == 0}
+														<td class="less" title="{$comment.createddate}">
 															{if !$privateprofiles || $isadmin || $ismod}
-																<a
-																title="View {$comment.username}'s profile"
-																href="{$smarty.const.WWW_TOP}/profile?name={$comment.username}">{$comment.username}</a>
+																<a title="View {$comment.username}'s profile" href="{$smarty.const.WWW_TOP}/profile?name={$comment.username}">{$comment.username}</a>
 															{else}
 																{$comment.username}
-																<br/>
-																<span style="color: #ce0000;">(syndicated)</span>
 															{/if}
-															<br/>{$comment.createddate|date_format} ({$comment.createddate|timeago} ago)
+															<br/>{$comment.createddate|daysago}
 														</td>
-															{if $comment.shared == 2}
-														<td style="color:#6B2447">{$comment.text|escape:"htmlall"|nl2br}</td>
+														{if $comment.shared == 2}
+															<td style="color:#6B2447">{$comment.text|escape:"htmlall"|nl2br}</td>
 														{else}
-														<td>{$comment.text|escape:"htmlall"|nl2br}</td>
+															<td>{$comment.text|escape:"htmlall"|nl2br}</td>
 														{/if}
-														{/if}
-													</tr>
 												{/foreach}
 											</table>
 										{else}
@@ -610,11 +602,10 @@
 											</div>
 										{/if}
 										<form action="" method="post">
-											<label for="txtAddComment">Add Comment</label>:<br/>
-														<textarea class="form-control" id="txtAddComment"
-																  name="txtAddComment" rows="6" cols="100"></textarea>
+											<label for="txtAddComment">Add Comment:</label><br/>
+											<textarea id="txtAddComment" name="txtAddComment" rows="6" cols="60"></textarea>
 											<br/>
-											<input type="submit" value="submit"/>
+											<input class="btn" type="submit" value="Submit"/>
 										</form>
 									</div>
 									{if $release.jpgstatus == 1 && $userdata.canpreview == 1}

@@ -3,6 +3,7 @@
 use nzedb\Category;
 use nzedb\Games;
 use nzedb\Genres;
+use nzedb\DnzbFailures;
 
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
@@ -11,6 +12,7 @@ if (!$page->users->isLoggedIn()) {
 $games = new Games(['Settings' => $page->settings]);
 $cat = new Category(['Settings' => $page->settings]);
 $gen = new Genres(['Settings' => $page->settings]);
+$fail = new DnzbFailures(['Settings' => $page->settings]);
 
 $concats = $cat->getChildren(Category::CAT_PARENT_PC);
 $ctmp = array();
@@ -50,6 +52,7 @@ foreach ($results as $result) {
 			$result['review'] = implode(' ', $newwords) . '...';
 		}
 	}
+	$result['failed'] = $fail->getFailedCount($result['grp_release_guid']);
 	$games2[] = $result;
 }
 
