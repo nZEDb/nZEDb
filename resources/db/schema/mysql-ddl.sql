@@ -1268,7 +1268,7 @@ CREATE TRIGGER delete_search AFTER DELETE ON releases FOR EACH ROW
 
 CREATE TRIGGER insert_hashes AFTER INSERT ON predb FOR EACH ROW
   BEGIN
-    INSERT INTO predb_hashes (hash, pre_id) VALUES (MD5(NEW.title), NEW.id), (MD5(MD5(NEW.title)), NEW.id), (SHA1(NEW.title), NEW.id);
+    INSERT INTO predb_hashes (hash, pre_id) VALUES (UNHEX(MD5(NEW.title)), NEW.id), (UNHEX(MD5(MD5(NEW.title))), NEW.id), ( UNHEX(SHA1(NEW.title)), NEW.id);
   END; $$
 
 CREATE TRIGGER update_hashes AFTER UPDATE ON predb FOR EACH ROW

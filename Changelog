@@ -6,6 +6,14 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2015-10-01 bart39
+	Fix: updated predb insert trigger that got missed for new installs, fixes #1875.
+2015-09-26 niel
+	Chg: Altered settings.example.php
+			Corrected erroneous references to settings.php.example (formatting was altered as a side effect of copy/pasting).
+			Changed default value of PHPMAILER_ENABLED constant to 'false' instead of undefined (it was commented out).
+			Changed error reporting level to not exclude any messages, as our code should run clean and therefore *any* messages should be investigated.
+				**NOTE** Generating messages slows down the running code and hiding them does not stop them being generated, just displayed.
 2015-09-22 bart39
 	Mrg: PR 1884, from DariusIII - Reorganize X-DNZB-Failure header support related pages (failed.php and getnzb.php)
 	Mrg: PR 1883, from DariusIII - Add filters to cover pages.
@@ -475,9 +483,9 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 2015-02-20 bart39
 	* Fix: Group XXX pack releases in a.b.erotica correctly.
 	* Fix: Missing binaries from releases due to collection_id not being set.
-		Suggest that you run reset_truncate after this update.
-		NB: IMPORTANT - TPG users (that means you McFuzz) must run "php /nzedb/build/_runonce/tpg_add_collections_column_2015-02-20.php"
-		FAILURE TO DO SO WILL CAUSE INSERT ERRORS
+		We suggest that you run reset_truncate after this update.
+		NB: IMPORTANT - TPG users (that means you McFuzz) should run "php /nzedb/build/_runonce/tpg_add_collections_column_2015-02-20.php" if
+		patch 0313 doesn't succeed. - FAILURE TO DO SO WILL CAUSE INSERT ERRORS
 2015-02-17 bart39
 	* Chg: Regex updates / categorize fixes for SD XXX
 	* Chg: Update sphinxsearch RT index when manually editing release searchname.
