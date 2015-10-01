@@ -8,6 +8,11 @@ use nzedb\db\Settings;
 class DnzbFailures
 {
 	/**
+	 * @var \nzedb\db\Settings
+	 */
+	public $pdo;
+
+	/**
 	 * @var array $options Class instances.
 	 */
 	public function __construct(array $options = [])
