@@ -1,8 +1,8 @@
 <?php
-namespace Moinax\TvDb\Http;
+namespace nzedb\libraries\TVDB\Http;
 
-use Moinax\TvDb\CurlException;
-use Moinax\TvDb\Http\Cache\Cache;
+use nzedb\libraries\TVDB\CurlException;
+use nzedb\libraries\TVDB\Http\Cache\Cache;
 
 class CacheClient implements HttpClient
 {

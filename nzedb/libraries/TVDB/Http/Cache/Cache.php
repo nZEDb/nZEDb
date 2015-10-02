@@ -1,5 +1,6 @@
 <?php
-namespace Moinax\TvDb\Http\Cache;
+
+namespace nzedb\libraries\TVDB\Http\Cache;
 
 interface Cache
 {

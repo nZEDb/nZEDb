@@ -1,5 +1,5 @@
 <?php
-namespace Moinax\TvDb\Http\Cache;
+namespace nzedb\libraries\TVDB\Http\Cache;
 
 class FilesystemCache implements Cache
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Moinax\TvDb;
+namespace nzedb\libraries\TVDB;
 
 
 class CurlException extends \Exception

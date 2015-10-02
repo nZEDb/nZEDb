@@ -1,5 +1,5 @@
 <?php
-namespace Moinax\TvDb\Http;
+namespace nzedb\libraries\TVDB\Http;
 
 interface HttpClient
 {

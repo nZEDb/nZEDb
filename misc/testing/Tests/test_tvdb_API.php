@@ -3,20 +3,20 @@
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
 use nzedb\db\Settings;
-use nzedb\TVDB; 
+use nzedb\TVDB;
 
 // Test if your TvDB API key and configuration are working.
 // If it works you should get a var dumped array of the Walking Dead's first episode
 
-$tvdb = (new TVDB())->Client(TVDB::TVDB_URL, TVDB::TVDB_API_KEY);
+$tvdb = new TVDB();
 
-$serverTime = $tvdb->getServerTime();
+$serverTime = $tvdb->client->getServerTime();
 
 // Search for a show
-$data = $tvdb->getSeries('Walking Dead');
+$data = $tvdb->client->getSeries('Walking Dead');
 
 // Use the first show found and get the S01E01 episode
-$episode = $tvdb->getEpisode($data[0]->id, 1, 1, 'en');
+$episode = $tvdb->client->getEpisode($data[0]->id, 1, 1, 'en');
 var_dump($episode);
 
 
