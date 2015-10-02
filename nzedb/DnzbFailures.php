@@ -42,6 +42,40 @@ class DnzbFailures
 	}
 
 	/**
+	 * Get a count of failed releases for pager. used in admin manage failed releases list
+	 */
+	public function getCount()
+	{
+		$res = $this->pdo->queryOneRow("SELECT count(id) AS num FROM dnzb_failures");
+		return $res["num"];
+	}
+
+	/**
+	 * Get a range of releases. used in admin manage list
+	 *
+	 * @param $start
+	 * @param $num
+	 *
+	 * @return array
+	 */
+	public function getFailedRange($start, $num)
+	{
+		if ($start === false) {
+			$limit = '';
+		} else {
+			$limit = ' LIMIT ' . $start . ',' . $num;
+		}
+
+		return $this->pdo->query("SELECT r.*, concat(cp.title, ' > ', c.title) AS category_name
+ 									FROM releases r
+ 									RIGHT JOIN dnzb_failures df ON df.guid = r.guid
+ 									LEFT OUTER JOIN category c ON c.id = r.categoryid
+ 									LEFT OUTER JOIN category cp ON cp.id = c.parentid
+ 									ORDER BY postdate DESC" . $limit
+		);
+	}
+
+	/**
 	 * Retrieve alternate release with same or similar searchname
 	 *
 	 * @param string $guid
