@@ -6,7 +6,7 @@
 			<th>user</th>
 			<th>date</th>
 			<th>comment</th>
-			{if $comment.host}<th>host</th>{/if}
+			<th>host</th>
 			<th>options</th>
 		</tr>
 		{foreach from=$commentslist item=comment}
@@ -24,7 +24,7 @@
 				{else}
 					<td>{$comment.text|escape:"htmlall"|nl2br}</td>
 				{/if}
-				{if $comment.host}<td>{$comment.host}</td>{/if}
+				{if $comment.host}<td>{$comment.host}</td> {else} <td> </td>{/if}
 				<td>
 					{if $comment.guid}<a href="{$smarty.const.WWW_TOP}/../details/{$comment.guid}#comments">view</a> |{/if}
 					<a href="{$smarty.const.WWW_TOP}/comments-delete.php?id={$comment.id}">delete</a>
