@@ -1,8 +1,8 @@
 <?php
-namespace libs\TVDB\Http;
+namespace libs\Moinax\TVDB\Http;
 
-use libs\TVDB\CurlException;
-use libs\TVDB\Http\Cache\Cache;
+use libs\Moinax\TVDB\CurlException;
+use libs\Moinax\TVDB\Http\Cache\Cache;
 
 class CacheClient implements HttpClient
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace libs\TVDB;
+namespace libs\Moinax\TVDB;
 
 /**
  * Episode class. Class for single tv episode for a TV serie.

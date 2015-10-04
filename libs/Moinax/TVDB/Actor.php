@@ -1,6 +1,6 @@
 <?php
 
-namespace libs\TVDB;
+namespace libs\Moinax\TVDB;
 
 /**
  * Actor object

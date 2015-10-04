@@ -1,7 +1,7 @@
 <?php
-namespace libs\TVDB\Http;
+namespace libs\Moinax\TVDB\Http;
 
-use libs\TVDB\CurlException;
+use libs\Moinax\TVDB\CurlException;
 
 class CurlClient implements HttpClient
 {
