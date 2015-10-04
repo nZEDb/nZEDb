@@ -36,7 +36,7 @@ class ReleaseSearch
 				$this->fullTextJoinString = '';
 				break;
 			case self::SPHINX:
-				$this->fullTextJoinString = 'INNER JOIN releases_se rse ON rse.id = r.id';
+				$this->fullTextJoinString = 'INNER JOIN releases_se rse USING (id)';
 				break;
 			case self::FULLTEXT:
 			default:
@@ -97,28 +97,30 @@ class ReleaseSearch
 	{
 		$return = '';
 		foreach ($this->searchOptions as $columnName => $searchString) {
-			$searchWords = '';
+			if ($columnName !== 'filename') {
+				$searchWords = '';
 
-			// At least 1 search term needs to be mandatory.
-			$words = explode(' ', (!preg_match('/[+!^]/', $searchString) ? '+' : '') . $searchString);
-			foreach ($words as $word) {
-				$word = str_replace("'", "\\'", str_replace(['!', '^'], '+', trim($word, "\n\t\r\0\x0B- ")));
+				// At least 1 search term needs to be mandatory.
+				$words = explode(' ', (!preg_match('/[+!^]/', $searchString) ? '+' : '') . $searchString);
+				foreach ($words as $word) {
+					$word = str_replace("'", "\\'", str_replace(['!', '^'], '+', trim($word, "\n\t\r\0\x0B- ")));
 
-				if ($word !== '' && $word !== '-' && strlen($word) > 1) {
-					$searchWords .= ($word . ' ');
+					if ($word !== '' && $word !== '-' && strlen($word) > 1) {
+						$searchWords .= ($word . ' ');
+					}
 				}
-			}
-			$searchWords = trim($searchWords);
-			if ($searchWords !== '') {
-				$return .= sprintf(" AND MATCH(rs.%s) AGAINST('%s' IN BOOLEAN MODE)", $columnName, $searchWords);
-			}
+				$searchWords = trim($searchWords);
+				if ($searchWords !== '') {
+					$return .= sprintf(" AND MATCH(rs.%s) AGAINST('%s' IN BOOLEAN MODE)", $columnName, $searchWords);
+				}
 
-		}
-		// If we didn't get anything, try the LIKE method.
-		if ($return === '') {
-			return ($this->likeSQL());
-		} else {
-			return $return;
+			}
+			// If we didn't get anything, try the LIKE method.
+			if ($return === '') {
+				return ($this->likeSQL());
+			} else {
+				return $return;
+			}
 		}
 	}
 
@@ -131,19 +133,21 @@ class ReleaseSearch
 	{
 		$return = '';
 		foreach ($this->searchOptions as $columnName => $searchString) {
-			$wordCount = 0;
-			$words = explode(' ', $searchString);
-			foreach ($words as $word) {
-				if ($word != '') {
-					$word = trim($word, "-\n\t\r\0\x0B ");
-					if ($wordCount == 0 && (strpos($word, '^') === 0)) {
-						$return .= sprintf(' AND r.%s %s', $columnName, $this->pdo->likeString(substr($word, 1), false));
-					} else if (substr($word, 0, 2) == '--') {
-						$return .= sprintf(' AND r.%s NOT %s', $columnName, $this->pdo->likeString(substr($word, 2)));
-					} else {
-						$return .= sprintf(' AND r.%s %s', $columnName, $this->pdo->likeString($word));
+			if ($columnName !== 'filename') {
+				$wordCount = 0;
+				$words = explode(' ', $searchString);
+				foreach ($words as $word) {
+					if ($word != '') {
+						$word = trim($word, "-\n\t\r\0\x0B ");
+						if ($wordCount == 0 && (strpos($word, '^') === 0)) {
+							$return .= sprintf(' AND r.%s %s', $columnName, $this->pdo->likeString(substr($word, 1), false));
+						} else if (substr($word, 0, 2) == '--') {
+							$return .= sprintf(' AND r.%s NOT %s', $columnName, $this->pdo->likeString(substr($word, 2)));
+						} else {
+							$return .= sprintf(' AND r.%s %s', $columnName, $this->pdo->likeString($word));
+						}
+						$wordCount++;
 					}
-					$wordCount++;
 				}
 			}
 		}

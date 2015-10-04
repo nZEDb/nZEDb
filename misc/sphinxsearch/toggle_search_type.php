@@ -44,7 +44,7 @@ function revertToStandard($pdo)
 	if (isset($argv[2]) && in_array($argv[2], ['cinnodb', 'dinnodb', 'cmyisam', 'dmyisam'])) {
 
 		switch ($argv[2]) {
-			case 'cinnnodb':
+			case 'cinnodb':
 				$engFormat = 'ENGINE = InnoDB ROW_FORMAT = Compressed';
 				break;
 			case 'dinnodb':
