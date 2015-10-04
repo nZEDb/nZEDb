@@ -739,6 +739,7 @@ CREATE TABLE release_comments (
   id          INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   releaseid   INT(11) UNSIGNED NOT NULL,
   text        VARCHAR(2000)    NOT NULL DEFAULT '',
+  text_hash   VARCHAR(32)      NOT NULL DEFAULT '',
   username    VARCHAR(255)     NOT NULL DEFAULT '',
   user_id     INT(11) UNSIGNED NOT NULL,
   createddate DATETIME DEFAULT NULL,
@@ -748,6 +749,7 @@ CREATE TABLE release_comments (
   siteid      VARCHAR(40)      NOT NULL DEFAULT '',
   nzb_guid    BINARY(16)       NOT NULL DEFAULT '0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0',
   PRIMARY KEY (id),
+  UNIQUE INDEX ix_release_comments_hash_releaseid(text_hash, releaseid),
   INDEX ix_releasecomment_releaseid (releaseid),
   INDEX ix_releasecomment_userid    (user_id)
 )
@@ -1284,4 +1286,10 @@ CREATE TRIGGER delete_hashes AFTER DELETE ON predb FOR EACH ROW
   BEGIN
     DELETE FROM predb_hashes WHERE hash IN ( UNHEX(md5(OLD.title)), UNHEX(md5(md5(OLD.title))), UNHEX(sha1(OLD.title)) ) AND pre_id = OLD.id;
   END; $$
+
+CREATE TRIGGER insert_MD5 BEFORE INSERT ON release_comments FOR EACH ROW
+  SET
+    NEW.text_hash = MD5(NEW.text);
+    $$
+
 DELIMITER ;
