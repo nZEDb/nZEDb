@@ -8,6 +8,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2015-10-04
 	Add: PSR-0 compliant autoloader for libs namespace.
+	Mrg: PR 1890, from Darius - Fix host column misplacement in admin comments list when user ip tracking is enabled.
 2015-10-02 bart39
 	Fix: invalid icon links in omicron / charisma themes.
 2015-10-01 niel
