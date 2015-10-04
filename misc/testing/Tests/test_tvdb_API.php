@@ -17,6 +17,4 @@ $data = $tvdb->client->getSeries('Walking Dead');
 
 // Use the first show found and get the S01E01 episode
 $episode = $tvdb->client->getEpisode($data[0]->id, 1, 1, 'en');
-var_dump($episode);
-
-
+print_r($episode);

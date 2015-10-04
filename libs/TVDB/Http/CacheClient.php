@@ -1,8 +1,8 @@
 <?php
-namespace nzedb\libraries\TVDB\Http;
+namespace libs\TVDB\Http;
 
-use nzedb\libraries\TVDB\CurlException;
-use nzedb\libraries\TVDB\Http\Cache\Cache;
+use libs\TVDB\CurlException;
+use libs\TVDB\Http\Cache\Cache;
 
 class CacheClient implements HttpClient
 {

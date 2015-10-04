@@ -1,5 +1,5 @@
 <?php
-namespace nzedb\libraries\TVDB\Http;
+namespace libs\TVDB\Http;
 
 interface HttpClient
 {

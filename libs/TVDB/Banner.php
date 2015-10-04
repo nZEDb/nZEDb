@@ -1,6 +1,6 @@
 <?php
 
-namespace nzedb\libraries\TVDB;
+namespace libs\TVDB;
 
 /**
  * Simple banner object

@@ -1,6 +1,6 @@
 <?php
 
-namespace nzedb\libraries\TVDB;
+namespace libs\TVDB;
 
 /**
  * Episode class. Class for single tv episode for a TV serie.

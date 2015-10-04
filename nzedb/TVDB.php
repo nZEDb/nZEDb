@@ -2,7 +2,7 @@
 namespace nzedb;
 
 use nzedb\utility\Misc;
-use nzedb\libraries\TVDB\Client;
+use libs\TVDB\Client;
 
 /**
  * Class TVDB
@@ -19,7 +19,6 @@ class TVDB extends TV
 	public function __construct(array $options = [])
 	{
 		parent::__construct($options);
-
-		$this->client = new \nzedb\libraries\TVDB\Client(self::TVDB_URL, self::TVDB_API_KEY);
+		$this->client = new \libs\TVDB\Client\Client(self::TVDB_URL, self::TVDB_API_KEY);
 	}
 }

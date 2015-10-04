@@ -1,6 +1,6 @@
 <?php
 
-namespace nzedb\libraries\TVDB;
+namespace libs\TVDB;
 
 
 class CurlException extends \Exception

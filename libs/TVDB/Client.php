@@ -1,10 +1,10 @@
 <?php
 
-namespace nzedb\libraries\TVDB;
+namespace libs\TVDB;
 
-use nzedb\libraries\TVDB\CurlException;
-use nzedb\libraries\TVDB\Http\CurlClient;
-use nzedb\libraries\TVDB\Http\HttpClient;
+use libs\TVDB\CurlException;
+use libs\TVDB\Http\CurlClient;
+use libs\TVDB\Http\HttpClient;
 
 /**
  * Base TVDB library class, provides universal functions and variables

@@ -1,5 +1,5 @@
 <?php
-namespace nzedb\libraries\TVDB\Http\Cache;
+namespace libs\TVDB\Http\Cache;
 
 class FilesystemCache implements Cache
 {

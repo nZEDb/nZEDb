@@ -1,7 +1,7 @@
 <?php
-namespace nzedb\libraries\TVDB\Http;
+namespace libs\TVDB\Http;
 
-use nzedb\libraries\TVDB\CurlException;
+use libs\TVDB\CurlException;
 
 class CurlClient implements HttpClient
 {
