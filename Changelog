@@ -6,10 +6,11 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
-2015-10-04
+2015-10-04 niel
 	Add: PSR-0 compliant autoloader for libs namespace.
 	Mrg: PR 1890, from Darius - Fix host column misplacement in admin comments list when user ip tracking is enabled.
 	Mrg: PR 1891, from Darius - Add text_hash column, triggers, and index to release_comments to prevent insertion of duplicated comments originating from automated messages, sharing etc.
+	Mrg: PR 1892, from Darius - Add list of releases failed to download reported by X-DNZB-Failure headers to admin area.
 2015-10-02 bart39
 	Fix: invalid icon links in omicron / charisma themes.
 2015-10-01 niel
