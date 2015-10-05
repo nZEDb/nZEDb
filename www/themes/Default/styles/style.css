@@ -101,7 +101,7 @@ browse by category top menu
 select#headcat {width:120px; float:right; margin-left:5px; height:25px;}
 select#headcat option { padding-left: 10px; }
 select#headcat option.grouping { padding-left: 5px; font-weight: bold; }
-#headsearch{float:right;heiiconght:15px;}
+#headsearch{float:right;height:15px;}
 
 .gobutton {display:inline;float:right;margin-left:5px;}
 .gobutton input { background:url('../../../themes_shared/images/icons/go.png') no-repeat; cursor:pointer; border: none;	 width:30px; height:25px; }
