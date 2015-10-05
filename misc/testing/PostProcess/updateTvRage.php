@@ -9,7 +9,7 @@ use nzedb\ReleaseImage;
 $pdo = new Settings();
 $tvrage = new TvRage(['Settings' => $pdo, 'Echo' => true]);
 
-$shows = $pdo->queryDirect("SELECT rageid, releasetitle FROM tvrage_titles WHERE imgdata IS NULL ORDER BY rageid DESC LIMIT 2000");
+$shows = $pdo->queryDirect("SELECT rageid, releasetitle FROM tvrage_titles WHERE hascover = 0 ORDER BY rageid DESC LIMIT 2000");
 if ($shows->rowCount() > 0) {
 	echo "\n";
 	echo $pdo->log->header("Updating " . number_format($shows->rowCount()) . " tv shows.\n");
