@@ -25,7 +25,7 @@
 
 		</div>
 		<div class="col-xs-3" style="text-align:center">
-			{if $rage[0].imgdata != ""}<img class="shadow img-thumbnail" alt="{$rage[0].releasetitle} Logo" src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$rage[0].id}">{/if}
+			{if $rage[0].hascover != 0}<img class="shadow img-thumbnail" alt="{$rage[0].releasetitle} Logo" src="{$smarty.const.WWW_TOP}/covers/tvrage/{$rage[0].rageid}.jpg">{/if}
 		</div>
 		<b>My Shows</b>:
 

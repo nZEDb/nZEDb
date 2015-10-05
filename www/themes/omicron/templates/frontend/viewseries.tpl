@@ -35,10 +35,10 @@
 	</h1>
 	{if $catname != ''}<span class="text-info h5">Current category shown: {$catname|escape:"htmlall"}</span>{/if}
 	<div class="tvseriesheading">
-		{if $rage[0].imgdata != ""}
+		{if $rage[0].hascover != 0}
 			<center>
 				<img class="shadow img img-polaroid" style="max-height:300px;" alt="{$rage[0].releasetitle} Logo"
-					 src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$rage[0].id}"/>
+					 src="{$smarty.const.WWW_TOP}/covers/tvrage/{$rage[0].rageid}"/>
 			</center>
 			<br/>
 		{/if}

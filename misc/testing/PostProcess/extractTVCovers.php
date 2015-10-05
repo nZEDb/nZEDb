@@ -32,6 +32,14 @@ if ($shows instanceof \Traversable) {
 				$failCnt++;
 				echo "#";
 			} else {
+				$pdo->queryExec(
+						sprintf("
+							UPDATE tvrage_titles
+							SET hascover = 1
+							WHERE rageid = %d,
+							$show['rageid']
+						)
+				);
 				$succCnt++;
 				echo "!";
 			}

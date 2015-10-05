@@ -1665,12 +1665,11 @@ class Releases
 		return $this->pdo->query(
 			"SELECT r.rageid, r.guid, r.name, r.searchname, r.size, r.completion,
 				r.postdate, r.categoryid, r.comments, r.grabs,
-				tv.id as tvid, tv.imgdata, tv.releasetitle as tvtitle
+				tv.id AS tvid, tv.releasetitle AS tvtitle, t.hascover
 			FROM releases r
 			INNER JOIN tvrage_titles tv USING (rageid)
 			WHERE r.categoryid BETWEEN 5000 AND 5999
 			AND tv.rageid > 0
-			AND length(tv.imgdata) > 0
 			AND r.id in (select max(id) from releases where rageid > 0 group by rageid)
 			ORDER BY r.postdate DESC
 			LIMIT 24", true, nZEDb_CACHE_EXPIRY_LONG
