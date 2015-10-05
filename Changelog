@@ -12,6 +12,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Fix: Error in extract script and a query error for new poster wall for TV
 	Del: getimage.php as it was only used for displaying TV images... TV now adopts the standard cover method
 	Chg: updateTvRage script now looks for hascover = 0 instead... which still won't work because TVR is down
+	Mrg: PR #1897 Anime new poster wall view
 2015-10-04 ruhllatio
 	Mrg: PR #1893 Integrate Moinax TVDB API
 2015-10-04 niel
