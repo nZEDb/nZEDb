@@ -1,5 +1,48 @@
 This file details which changes to the code are in which release version. It is a complement to the ChangeLog file which list *when* changes are made to the dev branch.
 
+0.4.26 2015-10-05
+Added:
+	* Xdebug and PHP settings to nzedb\config\settings.example.php
+		Changed default value of PHPMAILER_ENABLED constant to 'false' instead of undefined (it was commented out).
+		Changed error reporting level to not exclude any messages, as our code should run clean and therefore *any* messages should be investigated.
+		Update your settings.php if you want these.
+        **NOTE** Generating messages slows down the running code and hiding them does not stop them being generated, just displayed.
+	* Sphinx Full-Text Search for Filenames.
+		*** NOTE *** - you will need to do the following to update the sphinx index:
+			0) Minimum Sphinx v2.2.9
+			1) stop sphinxsearch - `sudo service sphinxsearch stop`
+			2) clear old index - `sudo rm /var/lib/sphinxsearch/data/*`
+			3) copy updated conf file - `sudo cp /var/www/nZEDb/misc/sphinxsearch/sphinx.conf /etc/sphinxsearch/sphinx.conf`
+			4) If you had previously edited the conf file - you will need to re-edit again.
+			5) start sphinxsearch - `sudo service sphinxsearch start`
+			6) recreate the tables - `php /var/www/nZEDb/misc/sphinxsearch/create_se_tables.php 0 9312`
+			7) populate the index - `php /var/www/nZEDb/misc/sphinxsearch/populate_rt_indexes.php releases_rt`
+	* Predb export script now has a default filename (predb_export_YYYYMMDDhhmmss.tsv) if only a path is specified.
+	* Display the date which a binary black list was last used (PR 1871).
+	* Base TV Class to make the addition of a new TV scraper easier (Still a WIP).
+	* Add filters to cover pages (PR 1883).
+
+Changed:
+	* More SQL fixes and optimisations (including PR 1871).
+    * Change sidebar menu XXX into Adult to match headermenu, change the icon (PR 1870).
+    * Three Arrows when viewing movie upper right corner (Issue 1850; PR 1854).
+    * Change font used in omicron and charisma templates, adjust layout of coverview pages (PR 1870).
+    * Re-organize and trim some fat out of TvRage.php in preparation for its *glorious* return.
+
+Fixed:
+	* Stopped PreDb import script from creating new groups with quotes around them.
+	* Reverted word-wrap change that caused a space to appear in release titles (alpha theme) Issue 1846 - clear your smarty cache.
+	* API search broken because of missing parameter.
+	* Sphinx Search broken for MariaDB installs (re-run create_se_tables script).
+	* Fix RSS Content Length Response (PR 1849).
+	* Collection regex edit page not showing the result.
+	* Display of api/download hits, in omicron and charisma templates, in last 24 hours (PR 1856).
+    * Background colors on profile and profile edit pages (PR 1857).
+    * Adjustments and fixes in charisma and omicron templates (PR 1858).
+    * Add back missing invites in profile page of charisma/omicron templates (PR 1869).
+    * Fix api json output (PR 1878).
+    * Updated predb insert trigger that got missed for new installs, (Issue 1875).
+
 
 0.4.25 2015-09-07
 Added:

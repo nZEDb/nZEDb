@@ -15,6 +15,7 @@
 		<th>field</th>
 		<th>status</th>
 		<th>regex</th>
+		<th>last activity</th>
 	</tr>
 	{foreach from=$binlist item=bin}
 		<tr id="row-{$bin.id}" class="{cycle values=",alt"}">
@@ -31,6 +32,7 @@
 				<td style="color:#FF0000">Disabled</td>
 			{/if}
 			<td title="Edit this blacklist"><a href="{$smarty.const.WWW_TOP}/binaryblacklist-edit.php?id={$bin.id}">{$bin.regex|escape:html|truncate:50:"...":true}</a></td>
+			<td>{$bin.last_activity}</td>
 		</tr>
 	{/foreach}
 </table>

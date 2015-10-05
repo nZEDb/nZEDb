@@ -20,7 +20,7 @@ Assuming you are on ubuntu, you would:
 `sudo apt-get install sphinxsearch`
 
 ## _Configuration_:
-#####Replace the default sphinx.conf file with our included sphinx.conf file:
+### Replace the default sphinx.conf file with our included sphinx.conf file:
 
 If you are on linux, you can copy over our sphinx.conf, on other operating systems you will need to edit yours using ours as a guide.
 
@@ -30,7 +30,7 @@ Assuming you are on ubuntu:
 
 `sudo cp /var/www/nZEDb/misc/sphinxsearch/sphinx.conf /etc/sphinxsearch/sphinx.conf`
 
-##### Edit the sphinx.conf file:
+### Edit the sphinx.conf file:
 Everything should be good by default for linux, but you can get better performance by changing some settings. Specifically the rt_mem_limit and mem_limit settings, setting those to 2048M if you have the RAM will make a difference.
 
 Read the sphinx manual for detailed information on various settings to get the best performance for your server: http://sphinxsearch.com/docs/current.html#conf-reference
@@ -63,30 +63,30 @@ If you do not see the above, or could not log in to sphinxQL, look at the log fi
 
 ## _Setting up nZEDb for sphinx support_:
 
-#### MAKE SURE ALL RELEASE CREATION / IMPORT SCRIPTS ARE STOPPED.
+### MAKE SURE ALL RELEASE CREATION / IMPORT SCRIPTS ARE STOPPED.
 
-##### Edit the settings.php file:
-Open up the www/settings.php file with a text editor, if you do not have it copy the www/settings.php.example file to www/settings.php
+### Edit the settings.php file:
+Open up the nzedb/config/settings.php file with a text editor, if you do not have it copy the nzedb/config/settings.example.php file to nzedb/config/settings.php
 
 Change the `nZEDb_RELEASE_SEARCH_TYPE` to `2`
 
 If you changed the `listen` setting in sphinx.conf you will need to change the `nZEDb_SPHINXQL_HOST_NAME` / `nZEDb_SPHINXQL_PORT` / `nZEDb_SPHINXQL_SOCK_FILE` settings accordingly, otherwise it's fine.
 
-##### Create the SphinxSE table:
+### Create the SphinxSE table:
 In this folder (.../misc/sphinxsearch) there is a create_se_tables.php file, run the file using your hostname / port to the sphinx server you set in sphinx.conf (by default this should be 0 and 9312).
 
-##### Populate the Sphinx RT index with data:
+### Populate the Sphinx RT index with data:
 In this folder (.../misc/sphinxsearch) there is a populate_rt_indexes.php file, run the file and wait until it is complete.
 
 You are now done with this guide, sphinx search should work. The index will populate itself from now on, you do not need to rerun this script unless you disable sphinx.
 
 ## _Misc_:
 
-##### Optimizing: You can optimize the rt index(es) by running optimize.php
+### Optimizing: You can optimize the rt index(es) by running optimize.php
 
 Read about the benefits/drawbacks of optimizing here: http://sphinxsearch.com/docs/current.html#sphinxql-optimize-index
 
-##### Compiling SphinxSE Plugin for Percona:
+### Compiling SphinxSE Plugin for Percona:
 
 Please STOP mysql during the build process.
 

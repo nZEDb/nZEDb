@@ -1,11 +1,11 @@
 <?php
 
+use nzedb\Capabilities;
 use nzedb\Category;
 use nzedb\Releases;
 use nzedb\db\Settings;
 use nzedb\utility\Misc;
-use nzedb\Capabilities;
-
+use nzedb\utility\Text;
 
 // API functions.
 $function = 's';
@@ -59,17 +59,18 @@ if ($page->users->isLoggedIn()) {
 	if ($function != 'c' && $function != 'r') {
 		if (!isset($_GET['apikey'])) {
 			showApiError(200, 'Missing parameter (apikey)');
-		}
-		$res = $page->users->getByRssToken($_GET['apikey']);
-		$apiKey = $_GET['apikey'];
+		} else {
+			$res    = $page->users->getByRssToken($_GET['apikey']);
+			$apiKey = $_GET['apikey'];
 
-		if (!$res) {
-			showApiError(100, 'Incorrect user credentials (wrong API key)');
-		}
+			if (!$res) {
+				showApiError(100, 'Incorrect user credentials (wrong API key)');
+			}
 
-		$uid = $res['id'];
-		$catExclusions = $page->users->getCategoryExclusion($uid);
-		$maxRequests = $res['apirequests'];
+			$uid           = $res['id'];
+			$catExclusions = $page->users->getCategoryExclusion($uid);
+			$maxRequests   = $res['apirequests'];
+		}
 	}
 }
 
@@ -106,7 +107,7 @@ switch ($function) {
 
 		if (isset($_GET['q'])) {
 			$relData = $releases->search(
-				$_GET['q'], -1, -1, -1, -1, -1, 0, 0, -1, -1, $offset, $limit, '', $maxAge, $catExclusions,
+				$_GET['q'], -1, -1, -1, -1, -1, -1, 0, 0, -1, -1, $offset, $limit, '', $maxAge, $catExclusions,
 				"basic", $categoryID
 			);
 		} else {
@@ -234,7 +235,7 @@ switch ($function) {
 			$caps = (new Capabilities(['Settings' => $page->settings]))->getForMenu();
 			$caps['categories'] = $cats;
 			//use json_encode
-			$response = json_encode($caps);
+			$response = encodeAsJSON($caps);
 			header('Content-type: application/json');
 			header('Content-Length: ' . strlen($response) );
 			echo $response;
@@ -438,10 +439,10 @@ function printOutput($data, $xml = true, $page, $offset = 0)
 		header('Content-Length: ' . strlen($response) );
 		echo $response;
 	} else {
-		$response = json_encode($data);
+		$response = encodeAsJSON($data);
 		header('Content-type: application/json');
-		header('Content-Length: ' . strlen($response) );
-		echo json_encode($data);
+		header('Content-Length: ' . strlen($response));
+		echo $response;
 	}
 }
 
@@ -484,4 +485,13 @@ function addLanguage(&$releases, Settings $settings)
 			}
 		}
 	}
+}
+
+function encodeAsJSON($data)
+{
+	$json = json_encode(Text::encodeAsUTF8($data));
+	if ($json === false) {
+		showApiError(201);
+	}
+	return $json;
 }

@@ -281,7 +281,7 @@ class NZBImport
 				$posterName = (string)$file->attributes()->poster;
 			}
 			if ($postDate === false) {
-				$postDate = date("Y-m-d H:i:s", (string)$file->attributes()->date);
+				$postDate = date("Y-m-d H:i:s", (int)$file->attributes()->date);
 			}
 
 			// Make a fake message array to use to check the blacklist.

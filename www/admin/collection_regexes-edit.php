@@ -43,7 +43,7 @@ switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
 	default:
 		if (isset($_GET["id"])) {
 			$page->title = "Collections Regex Edit";
-			$regex += $regexes->getRegexByID($_GET["id"]);
+			$regex = $regexes->getRegexByID($_GET["id"]);
 		} else {
 			$page->title = "Collections Regex Add";
 			$regex += ['status' => 1];
