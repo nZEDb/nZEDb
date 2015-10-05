@@ -62,6 +62,9 @@
 									{elseif $type == 'TV'}
 										<img height="130px" width="130px" alt=""
 											 src="{$smarty.const.WWW_TOP}/covers/tvrage/{$result.rageid}.jpg"/>
+									{elseif $type == 'Anime'}
+										<img width="130px" height="130px" alt=""
+											 src="{$smarty.const.WWW_TOP}/covers/anime/{$result.anidbid}.jpg"/>
 									{/if}
 								</a>
 							</div>
