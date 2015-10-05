@@ -14,8 +14,10 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 2015-10-02 bart39
 	Fix: invalid icon links in omicron / charisma themes.
 2015-10-01 niel
+	Mrg: dev => next-master to prepare for updating master.
 	Mrg: PR 1885, from Darius - Add statistical info for grabbed/failed releases to cover, browse and search pages.
 	Mrg: PR 1889, from Darius - Automatically generate comment on failed download.
+
 2015-10-01 bart39
 	Fix: updated predb insert trigger that got missed for new installs, fixes #1875.
 2015-09-26 niel
