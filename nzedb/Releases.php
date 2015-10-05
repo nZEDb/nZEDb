@@ -1676,4 +1676,27 @@ class Releases
 			LIMIT 24", true, nZEDb_CACHE_EXPIRY_LONG
 		);
 	}
+
+	/**
+	 * Get all newest anime with covers for poster wall.
+	 *
+	 * @return array
+	 */
+	public function getNewestAnime()
+	{
+		return $this->pdo->query(
+			"SELECT r.anidbid, r.guid, r.name, r.searchname, r.size, r.completion,
+				r.postdate, r.categoryid, r.comments, r.grabs, at.title
+			FROM releases r
+			INNER JOIN anidb_titles at USING (anidbid)
+			INNER JOIN anidb_info ai USING (anidbid)
+			WHERE r.categoryid = 5070
+			AND at.anidbid > 0
+			AND at.lang = 'en'
+			AND ai.picture != ''
+			AND r.id IN (SELECT MAX(id) FROM releases WHERE anidbid > 0 GROUP BY anidbid)
+			ORDER BY r.postdate DESC
+			LIMIT 24", true, nZEDb_CACHE_EXPIRY_LONG
+		);
+	}
 }
