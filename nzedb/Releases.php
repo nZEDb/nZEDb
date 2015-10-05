@@ -1695,6 +1695,7 @@ class Releases
 			AND at.lang = 'en'
 			AND ai.picture != ''
 			AND r.id IN (SELECT MAX(id) FROM releases WHERE anidbid > 0 GROUP BY anidbid)
+			GROUP BY r.id
 			ORDER BY r.postdate DESC
 			LIMIT 24", true, nZEDb_CACHE_EXPIRY_LONG
 		);
