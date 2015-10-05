@@ -198,7 +198,7 @@
 								class="title"
 								title="View details"
 								href="{$smarty.const.WWW_TOP}/details/{$result.guid}"
-							>{$result.searchname|escape:"htmlall"|wordwrap:70:"\n":true}</a>
+							>{$result.searchname|escape:"htmlall"|wordwrap:70:"\n":true}</a>{if $result.failed > 0} <i class="fa fa-exclamation-circle" style="color: red" title="This release has failed to download for some users"></i>{/if}
 						</label>
 						<div class="resextra">
 							{if $result.passwordstatus == 1}
@@ -309,6 +309,9 @@
 								><i class="icon-share-alt"></i></a>
 							{/if}
 							{release_flag($result.searchname, browse)}
+							{if $result.failed > 0}<span class="label label-default">
+								<i class ="fa fa-thumbs-o-up"></i> {$result.grabs} Grab{if $result.grabs != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$result.failed} Failed Download{if $result.failed != 1}s{/if}</span>
+							{/if}
 						</div>
 					</td>
 					<td class="category" style="width:auto;text-align:center;white-space:nowrap;">

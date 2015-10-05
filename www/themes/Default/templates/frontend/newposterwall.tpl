@@ -61,7 +61,7 @@
 											 src="{$smarty.const.WWW_TOP}/covers/games/{$result.gamesinfo_id}.jpg"/>
 									{elseif $type == 'TV'}
 										<img width="130px" height="195px" alt=""
-											 src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$result.tvid}"/>
+											 src="{$smarty.const.WWW_TOP}/covers/tvrage/{$result.rageid}.jpg"/>
 									{/if}
 								</a>
 							</div>
