@@ -9,6 +9,8 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 2015-10-05 ruhllatio
 	Add: Script to extract TV covers from the database and save them to the tvrage directory in covers
 	Chg: Set TV cover images to pull from /covers/tvrage/ ***NOTE*** Run the extractTVCovers script in misc/testing/PostProcess/ ***
+	Fix: Error in extract script and a query error for new poster wall for TV
+	Del: getimage.php as it was only used for displaying TV images... TV now adopts the standard cover method
 2015-10-04 ruhllatio
 	Mrg: PR #1893 Integrate Moinax TVDB API
 2015-10-04 niel

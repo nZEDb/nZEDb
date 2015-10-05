@@ -36,7 +36,7 @@ if ($shows instanceof \Traversable) {
 						sprintf("
 							UPDATE tvrage_titles
 							SET hascover = 1
-							WHERE rageid = %d,
+							WHERE rageid = %d",
 							$show['rageid']
 						)
 				);
