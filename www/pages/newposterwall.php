@@ -101,8 +101,8 @@ if (!$error) {
 			break;
 
 		case 'Anime':
-			$getnewesttv = $releases->getNewestAnime();
-			$page->smarty->assign('newest', $getnewesttv);
+			$getnewestanime = $releases->getNewestAnime();
+			$page->smarty->assign('newest', $getnewestanime);
 			$page->smarty->assign('goto', 'anime');
 			break;			
 
