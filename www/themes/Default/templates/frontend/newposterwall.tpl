@@ -35,7 +35,7 @@
 								{elseif $type == 'PC'}
 									class="library-games"
 								{elseif $type == 'TV'}
-									class="library-show"
+									class="library-games"
 								{elseif $type == 'Anime'}
 									class="library-show"
 								{/if}

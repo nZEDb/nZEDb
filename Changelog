@@ -16,6 +16,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Mrg: PR #1894 Change TVDB client class call
 	Fix: Forgot to add untracked anidb icon for poster wall
 	Fix: AniDB poster wall query not grouping by release
+	Fix: Attempt to fix AniDB icon not showing in multiple themes
 2015-10-04 ruhllatio
 	Mrg: PR #1893 Integrate Moinax TVDB API
 2015-10-04 niel
