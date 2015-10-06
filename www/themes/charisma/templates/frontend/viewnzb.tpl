@@ -149,8 +149,8 @@
 														 data-toggle="modal"
 														 data-target="#modal-image"/>
 												{/if}
-												{if $rage && $release.rageid > 0 && $rage.imgdata != ""}
-													<img src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$rage.id}"
+												{if $rage && $release.rageid > 0 && $rage.hascover != "0"}
+													<img src="{$smarty.const.WWW_TOP}/covers/tvrage/{$rage.id}.jpg"
 														 width="185"
 														 alt="{$rage.releasetitle|escape:"htmlall"}"
 														 data-toggle="modal"
@@ -809,8 +809,8 @@
 					<img src="{$smarty.const.WWW_TOP}/covers/movies/{$movie.imdbid}-cover.jpg"
 						 alt="{$movie.title|escape:"htmlall"}">
 				{/if}
-				{if $rage && $release.rageid > 0 && $rage.imgdata != ""}
-					<img src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$rage.id}"
+				{if $rage && $release.rageid > 0 && $rage.hascover != "0"}
+					<img src="{$smarty.const.WWW_TOP}/covers/tvrage/{$rage.id}.jpg"
 						 alt="{$rage.releasetitle|escape:"htmlall"}"/>
 				{/if}
 				{if $anidb && $release.anidbid > 0 && $anidb.picture != ""}
