@@ -11,7 +11,6 @@ class TvRage extends TV
 	const APIKEY = '7FwjZ8loweFcOhHfnU3E';
 	const MATCH_PROBABILITY = 75;
 
-	public $echooutput;
 	public $rageqty;
 	public $showInfoUrl         = 'http://www.tvrage.com/shows/id-';
 	public $showQuickInfoURL    = 'http://services.tvrage.com/tools/quickinfo.php?show=';
@@ -29,7 +28,6 @@ class TvRage extends TV
 	{
 		parent::__construct($options);
 		$this->rageqty = ($this->pdo->getSetting('maxrageprocessed') != '') ? $this->pdo->getSetting('maxrageprocessed') : 75;
-		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
 		$this->xmlEpisodeInfoUrl    =  "http://services.tvrage.com/myfeeds/episodeinfo.php?key=" . TvRage::APIKEY;
 		$this->imgSavePath = nZEDb_COVERS . 'tvrage' . DS;
 	}
