@@ -9,6 +9,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 2015-10-06 ruhllatio
 	Mrg: PR #1898 Adjust templates for tvrage images change.
 	Mrg: PR #1899 Remove echooutput from TvRage class and move it to parent TV class 
+	Fix: ReleaseRemover not honoring LIKE search types causing blacklist removal issues and not producing enough matches in SPHINX mode
 2015-10-05 niel
 	* Mrg: PR 1895, from Darius - Add view release option to failed releases list. Do not post comment for user, if that user already posted the failure automated comment.
 2015-10-05 ruhllatio
