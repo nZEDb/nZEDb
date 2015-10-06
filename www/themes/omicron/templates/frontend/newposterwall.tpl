@@ -68,7 +68,6 @@
 										<img width="130px" height="130px" alt=""
 											 src="{$smarty.const.WWW_TOP}/covers/anime/{$result.anidbid}.jpg"/>
 									{/if}
-									{/if}
 								</a>
 							</div>
 							<div class="rating-pod" id="guid{$result.guid}">
