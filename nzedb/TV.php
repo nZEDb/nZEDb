@@ -14,6 +14,11 @@ class TV
 	public $pdo;
 
 	/**
+	 * @var bool
+	 */
+	public $echooutput;
+
+	/**
 	 * @param array $options Class instances / Echo to CLI.
 	 */
 	public function __construct(array $options = [])
@@ -24,6 +29,7 @@ class TV
 		];
 		$options += $defaults;
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
 		$this->catWhere = 'categoryid BETWEEN 5000 AND 5999';
 	}
 
