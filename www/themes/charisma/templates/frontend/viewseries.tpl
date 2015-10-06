@@ -1,4 +1,4 @@
-{if $nodata != ""}
+{if isset($nodata)}
 	<div class="header">
 		{assign var="catsplit" value=">"|explode:$catname}
 		<h2>View > <strong>TV Series</strong></h2>
@@ -43,7 +43,7 @@
 			<br/>
 		{/if}
 		<p>
-			{if $seriesGenre != ''}<b>{$seriesgenre}</b><br/>{/if}
+			{if $seriesgenre != ''}<b>{$seriesgenre}</b><br/>{/if}
 			<span class="descinitial">{$seriesdescription|escape:"htmlall"|nl2br|magicurl}</span>
 		</p>
 	</div>
