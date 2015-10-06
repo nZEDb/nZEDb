@@ -237,7 +237,7 @@
 	</div>
 	<div class="col-xs-4" style="text-align:center" >
 		{if $rage && $release.rageid > 0 && $rage.hascover != "0"}
-			<img src="{$smarty.const.WWW_TOP}/covers/tvrage/{$rage.id}.jpg"
+			<img src="{$smarty.const.WWW_TOP}/covers/tvrage/{$release.rageid}.jpg"
 					alt="{$rage.releasetitle|escape:"htmlall"}">
 		{/if}
 		{*src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$rage.id}" alt="{$rage.releasetitle|escape:"htmlall"}"*}
