@@ -21,6 +21,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Fix: Attempt to fix AniDB icon not showing in multiple themes
 	Fix: Omicron poster wall typo, wrong script name in patch file 384
 	Add: updateTvRage.php in misc/testing/PostProc will now run in check mode to reconcile image files against the DB if you imported
+	Fix: Alpha TV New Poster Wall missing div tag
 2015-10-04 ruhllatio
 	Mrg: PR #1893 Integrate Moinax TVDB API
 2015-10-04 niel
