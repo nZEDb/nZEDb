@@ -100,7 +100,7 @@
 				{/if}
 				{if $result.release.rage_imgdata != ""}
 					<img width="120" class="shadow" alt="{$result.release.showtitle} Logo"
-						 src="{$smarty.const.WWW_TOP}/covers/tvrage/{$result.release.rg_id}"/>
+						 src="{$smarty.const.WWW_TOP}/covers/tvrage/{$result.release.rg_id}.jpg"/>
 				{/if}
 				{if $result.release.mu_cover == "1"}
 					<img class="shadow"
