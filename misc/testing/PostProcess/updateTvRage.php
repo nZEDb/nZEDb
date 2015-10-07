@@ -44,7 +44,6 @@ function updateTvImages($pdo, $tvrage)
 	if ($shows instanceof \Traversable) {
 		foreach ($shows as $show) {
 			$starttime = microtime(true);
-			$showid = $show['id'];
 			$rageid = $show['rageid'];
 			$tvrShow = $tvrage->getRageInfoFromService($rageid);
 			$genre = '';

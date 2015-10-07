@@ -9,6 +9,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 2015-10-07 ruhllatio
 	Mrg: PR #1902 Make TraktTv class extend TV class, add box office support into class.
 	Mrg: PR #1901 Add deletion of dnzb_failures to deleteSingle
+	Fix: Issue #1900 Undefined index error in updateTvRage.php
 2015-10-06 ruhllatio
 	Mrg: PR #1898 Adjust templates for tvrage images change.
 	Mrg: PR #1899 Remove echooutput from TvRage class and move it to parent TV class 
