@@ -1267,7 +1267,6 @@ CREATE TRIGGER update_search AFTER UPDATE ON releases FOR EACH ROW
 CREATE TRIGGER delete_search AFTER DELETE ON releases FOR EACH ROW
   BEGIN
     DELETE FROM release_search_data WHERE releaseid = OLD.id;
-    DELETE FROM dnzb_failures WHERE guid = OLD.guid;
   END; $$
 
 CREATE TRIGGER insert_hashes AFTER INSERT ON predb FOR EACH ROW
