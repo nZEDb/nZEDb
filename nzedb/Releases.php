@@ -729,7 +729,7 @@ class Releases
 		// Delete from DB.
 		$this->pdo->queryExec(
 			sprintf('
-				DELETE r, rn, rc, uc, rf, ra, rs, rv, re
+				DELETE r, rn, rc, uc, rf, ra, rs, rv, re, df
 				FROM releases r
 				LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
 				LEFT OUTER JOIN release_comments rc ON rc.releaseid = r.id
@@ -739,6 +739,7 @@ class Releases
 				LEFT OUTER JOIN release_subtitles rs ON rs.releaseid = r.id
 				LEFT OUTER JOIN video_data rv ON rv.releaseid = r.id
 				LEFT OUTER JOIN releaseextrafull re ON re.releaseid = r.id
+				LEFT OUTER JOIN dnzb_failures df ON df.guid = r.guid
 				WHERE r.guid = %s',
 				$this->pdo->escapeString($identifiers['g'])
 			)
