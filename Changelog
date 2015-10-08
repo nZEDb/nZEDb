@@ -6,6 +6,8 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2015-10-08 ruhllatio
+	Chg: Improve Codec Poster removal query times by incorporating Sphinx FT if enabled
 2015-10-07 ruhllatio
 	Mrg: PR #1902 Make TraktTv class extend TV class, add box office support into class.
 	Mrg: PR #1901 Add deletion of dnzb_failures to deleteSingle
