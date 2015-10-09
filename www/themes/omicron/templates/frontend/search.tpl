@@ -187,6 +187,26 @@
 		</div>
 		<hr>
 		<table class="data table table-condensed table-striped table-responsive table-hover" id="browsetable">
+			<thead>
+			<tr>
+				<th><input id="chkSelectAll" type="checkbox" class="nzb_check_all"/></th>
+				<th>Name
+					<a title="Sort Descending" href="{$orderbyname_desc}">
+						<i class="fa-icon-caret-down text-muted"> </i>
+					</a>
+					<a title="Sort Ascending" href="{$orderbyname_asc}">
+						<i class="fa-icon-caret-up text-muted"> </i>
+					</a>
+				</th>
+				<th>Category</th>
+				<th>Posted</th>
+				<th>Size</th>
+				<th>Files</th>
+				<th>Downloads</th>
+				<th>Action</th>
+			</tr>
+			</thead>
+			<tbody>
 			{foreach from=$results item=result}
 				<tr class="{cycle values=",alt"}{if $lastvisit|strtotime<$result.adddate|strtotime} new{/if}"
 					id="guid{$result.guid}">
@@ -306,19 +326,27 @@
 							cmt{if $result.comments != 1}s{/if}</a>
 						<br>{$result.grabs} grab{if $result.grabs != 1}s{/if}
 					</td>
-					<td class="icons" nowrap="nowrap">
-						<div class="icon_nzb text-muted">
-							<a title="Download Nzb"
-							   href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"htmlall"}">
-								&nbsp;<i class="fa fa-download"></i></a>
-						</div>
-						<div class="icon_cart text-muted" title="Add to Cart"><i class="fa fa-shopping-cart"></i></div>
-						{if $sabintegrated}
-							<div class="icon_sab text-muted" title="Send to my Queue"><i class="fa fa-send-o"></i></div>
+					<td class="icon_nzb"><a
+								href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"htmlall"}"><i
+									class="fa fa-download text-muted"
+									title="Download NZB"></i></a>
+						<a href="{$smarty.const.WWW_TOP}/details/{$result.guid}/#comments"><i
+									class="fa fa-comments-o text-muted"
+									title="Comments"></i></a>
+						<a href="#" class="icon_cart text-muted"><i
+									class="fa fa-shopping-cart" title="Send to my Cart"></i></a>
+						{if isset($sabintegrated)}
+							<a href="#" class="icon_sab text-muted"><i class="fa fa-send-o"
+																	   title="Send to my Queue"></i></a>
+						{/if}
+						{if $weHasVortex}
+							<a href="#" class="icon_vortex text-muted"><i
+										class="fa fa-send-o" title="Send to NZBVortex"></i></a>
 						{/if}
 					</td>
 				</tr>
 			{/foreach}
+			</tbody>
 		</table>
 		<br/>
 		<div class="row">
