@@ -423,21 +423,35 @@ class ReleaseRemover
 	protected function removeExecutable()
 	{
 		$this->method = 'Executable';
+
+		switch (nZEDb_RELEASE_SEARCH_TYPE) {
+			case ReleaseSearch::SPHINX:
+				$rs = new ReleaseSearch($this->pdo);
+				$execFT = str_replace('=10000;', '=10000000;', $rs->getSearchSQL(['filename' => 'exe']));
+				$ftJoin = $rs->getFullTextJoinString();
+				break;
+			default:
+				$execFT = $ftJoin = '';
+				break;
+		}
+
 		$this->query = sprintf(
 			"SELECT r.guid, r.searchname, r.id
-			FROM releases r
+			FROM releases r %s
 			INNER JOIN release_files rf ON rf.releaseid = r.id
-			WHERE r.searchname NOT LIKE %s
-			AND rf.name LIKE %s
-			AND r.categoryid NOT IN (%d, %d, %d, %d, %d, %d) %s",
-			"'%.exes%'",
-			"'%.exe%'",
+			WHERE r.searchname NOT REGEXP %s
+			AND rf.name %s
+			AND r.categoryid NOT IN (%d, %d, %d, %d, %d, %d) %s %s",
+			$ftJoin,
+			$this->pdo->escapeString('\.exe[sc]'),
+			$this->pdo->likeString('.exe', true, true),
 			Category::CAT_PC_0DAY,
 			Category::CAT_PC_GAMES,
 			Category::CAT_PC_ISO,
 			Category::CAT_PC_MAC,
 			Category::CAT_MISC,
 			Category::CAT_OTHER_HASHED,
+			$execFT,
 			$this->crapTime
 		);
 
