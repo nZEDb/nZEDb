@@ -205,6 +205,7 @@ class Releases
 				"SELECT r.*,
 					CONCAT(cp.title, ' > ', c.title) AS category_name,
 					CONCAT(cp.id, ',', c.id) AS category_ids,
+					(SELECT COUNT(userid) FROM dnzb_failures WHERE guid = r.guid) AS failed,
 					g.name AS group_name,
 					rn.id AS nfoid,
 					re.releaseid AS reid
@@ -728,7 +729,7 @@ class Releases
 		// Delete from DB.
 		$this->pdo->queryExec(
 			sprintf('
-				DELETE r, rn, rc, uc, rf, ra, rs, rv, re
+				DELETE r, rn, rc, uc, rf, ra, rs, rv, re, df
 				FROM releases r
 				LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
 				LEFT OUTER JOIN release_comments rc ON rc.releaseid = r.id
@@ -738,6 +739,7 @@ class Releases
 				LEFT OUTER JOIN release_subtitles rs ON rs.releaseid = r.id
 				LEFT OUTER JOIN video_data rv ON rv.releaseid = r.id
 				LEFT OUTER JOIN releaseextrafull re ON re.releaseid = r.id
+				LEFT OUTER JOIN dnzb_failures df ON df.guid = r.guid
 				WHERE r.guid = %s',
 				$this->pdo->escapeString($identifiers['g'])
 			)
@@ -1014,6 +1016,7 @@ class Releases
 			"SELECT r.*,
 				CONCAT(cp.title, ' > ', c.title) AS category_name,
 				%s AS category_ids,
+				(SELECT COUNT(userid) FROM dnzb_failures WHERE guid = r.guid) AS failed,
 				groups.name AS group_name,
 				rn.id AS nfoid,
 				re.releaseid AS reid,
@@ -1663,44 +1666,39 @@ class Releases
 		return $this->pdo->query(
 			"SELECT r.rageid, r.guid, r.name, r.searchname, r.size, r.completion,
 				r.postdate, r.categoryid, r.comments, r.grabs,
-				tv.id as tvid, tv.imgdata, tv.releasetitle as tvtitle
+				tv.id AS tvid, tv.releasetitle AS tvtitle, tv.hascover
 			FROM releases r
 			INNER JOIN tvrage_titles tv USING (rageid)
 			WHERE r.categoryid BETWEEN 5000 AND 5999
 			AND tv.rageid > 0
-			AND length(tv.imgdata) > 0
+			AND tv.hascover = 1
 			AND r.id in (select max(id) from releases where rageid > 0 group by rageid)
 			ORDER BY r.postdate DESC
 			LIMIT 24", true, nZEDb_CACHE_EXPIRY_LONG
 		);
 	}
 
-   /**
-	 * Retrieve alternate release with same or similar searchname
+	/**
+	 * Get all newest anime with covers for poster wall.
 	 *
-	 * @param string $guid
-	 * @param string $searchname
-	 * @param string $userid
-	 * @return string
+	 * @return array
 	 */
-	public function getAlternate($guid, $searchname, $userid)
+	public function getNewestAnime()
 	{
-		//status values
-		// 0/false 	= successfully downloaded
-		// 1/true 	= failed download
-		$this->pdo->queryInsert(sprintf("INSERT IGNORE INTO dnzb_failures (userid, guid) VALUES (%d, %s)",
-				$userid,
-				$this->pdo->escapeString($guid)
-				)
+		return $this->pdo->query(
+			"SELECT r.anidbid, r.guid, r.name, r.searchname, r.size, r.completion,
+				r.postdate, r.categoryid, r.comments, r.grabs, at.title
+			FROM releases r
+			INNER JOIN anidb_titles at USING (anidbid)
+			INNER JOIN anidb_info ai USING (anidbid)
+			WHERE r.categoryid = 5070
+			AND at.anidbid > 0
+			AND at.lang = 'en'
+			AND ai.picture != ''
+			AND r.id IN (SELECT MAX(id) FROM releases WHERE anidbid > 0 GROUP BY anidbid)
+			GROUP BY r.id
+			ORDER BY r.postdate DESC
+			LIMIT 24", true, nZEDb_CACHE_EXPIRY_LONG
 		);
-
-		$alternate = $this->pdo->queryOneRow(sprintf('SELECT * FROM releases r
-			WHERE r.searchname %s
-			AND r.guid NOT IN (SELECT guid FROM failed_downloads WHERE userid = %d)',
-			$this->pdo->likeString($searchname),
-			$userid
-			)
-		);
-		return $alternate;
 	}
 }

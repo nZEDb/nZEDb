@@ -36,6 +36,8 @@
 									class="library-games"
 								{elseif $type == 'TV'}
 									class="library-games"
+								{elseif $type == 'Anime'}
+									class="library-show"
 								{/if}
 								>
 							<div class="poster">
@@ -60,8 +62,11 @@
 										<img width="130px" height="195px" alt=""
 											 src="{$smarty.const.WWW_TOP}/covers/games/{$result.gamesinfo_id}.jpg"/>
 									{elseif $type == 'TV'}
+										<img width="130px" height="150px" alt=""
+											 src="{$smarty.const.WWW_TOP}/covers/tvrage/{$result.rageid}.jpg"/>
+									{elseif $type == 'Anime'}
 										<img width="130px" height="195px" alt=""
-											 src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$result.tvid}"/>
+											 src="{$smarty.const.WWW_TOP}/covers/anime/{$result.anidbid}.jpg"/>
 									{/if}
 								</a>
 							</div>
@@ -173,9 +178,15 @@
 											   target="_blank"></a>
 										</div>
 									{elseif $type == 'TV'}
-									<div class="icon icon_tvrage">
-										<a class="divlink" title="View in TvRage"
-										   href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$result.rageid}"
+										<div class="icon icon_tvrage">
+											<a class="divlink" title="View in TvRage"
+											href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$result.rageid}"
+											target="_blank"></a>
+										</div>
+									{elseif $type == 'Anime'}
+									<div class="icon icon_anidb">
+										<a class="divlink" title="View in AniDB"
+										   href="{$site->dereferrer_link}http://anidb.net/perl-bin/animedb.pl?show=anime&aid={$result.anidbid}"
 										   target="_blank"></a>
 									</div>
 									{/if}

@@ -2,6 +2,7 @@
 
 use nzedb\Category;
 use nzedb\XXX;
+use nzedb\DnzbFailures;
 
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
@@ -9,6 +10,7 @@ if (!$page->users->isLoggedIn()) {
 
 $movie = new XXX(['Settings' => $page->settings]);
 $cat = new Category(['Settings' => $page->settings]);
+$fail = new DnzbFailures(['Settings' => $page->settings]);
 
 $moviecats = $cat->getChildren(Category::CAT_PARENT_XXX);
 $mtmp = array();
@@ -37,6 +39,7 @@ foreach ($results as $result) {
 	$result['genre'] = $movie->makeFieldLinks($result, 'genre');
 	$result['actors'] = $movie->makeFieldLinks($result, 'actors');
 	$result['director'] = $movie->makeFieldLinks($result, 'director');
+	$result['failed'] = $fail->getFailedCount($result['grp_release_guid']);
 	$movies[] = $result;
 }
 $title = (isset($_REQUEST['title']) && !empty($_REQUEST['title'])) ? stripslashes($_REQUEST['title']) : '';

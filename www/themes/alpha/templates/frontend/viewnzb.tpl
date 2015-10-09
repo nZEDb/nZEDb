@@ -10,7 +10,8 @@
 	<br />
 {/if}
 
-<h2>{$release.searchname|escape:"htmlall"|truncate:100:"...":true}</h2><br>
+<h2>{$release.searchname|escape:"htmlall"|truncate:100:"...":true}{if $failed > 0}<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
+		<i class ="fa fa-thumbs-o-up"></i> {$release.grabs} Grab{if $release.grabs != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$failed} Failed Download{if $failed != 1}s{/if}</span>{/if}</h2><br>
 <div class="container">
 	<div class="col-xs-8">
 		<span class="label label-default">{$release.category_name}</span> <span class="label label-default">{$release.group_name}</span>
@@ -235,10 +236,8 @@
 		</table>
 	</div>
 	<div class="col-xs-4" style="text-align:center" >
-		{if $rage && $release.rageid > 0 && $rage.imgdata != ""}
-			<img
-					class="shadow img-thumbnail"
-					style="vertical-align:top" src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$rage.id}"
+		{if $rage && $release.rageid > 0 && $rage.hascover != "0"}
+			<img src="{$smarty.const.WWW_TOP}/covers/tvrage/{$release.rageid}.jpg"
 					alt="{$rage.releasetitle|escape:"htmlall"}">
 		{/if}
 		{*src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$rage.id}" alt="{$rage.releasetitle|escape:"htmlall"}"*}
@@ -483,6 +482,11 @@
 	<td>{$release.grabs} time{if $release.grabs==1}{else}s{/if}
 	</td>
 </tr>
+	<tr>
+		<th width="140">Failed Download</th>
+		<td>{$failed}
+			time{if $failed==1}{else}s{/if}</td>
+	</tr>
 <tr>
 	<th style="vertical-align:top">Files:</th>
 	<td><a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$release.guid}">{$release.totalpart} file{if $release.totalpart==1}{else}s{/if}</a>

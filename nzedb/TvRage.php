@@ -11,7 +11,6 @@ class TvRage extends TV
 	const APIKEY = '7FwjZ8loweFcOhHfnU3E';
 	const MATCH_PROBABILITY = 75;
 
-	public $echooutput;
 	public $rageqty;
 	public $showInfoUrl         = 'http://www.tvrage.com/shows/id-';
 	public $showQuickInfoURL    = 'http://services.tvrage.com/tools/quickinfo.php?show=';
@@ -20,6 +19,7 @@ class TvRage extends TV
 	public $xmlFullShowInfoUrl  = 'http://services.tvrage.com/feeds/full_show_info.php?sid=';
 	public $xmlEpisodeInfoUrl;
 	public $xmlFullScheduleUrl  = 'http://services.tvrage.com/feeds/fullschedule.php?country=';
+	public $imgSavePath;
 
 	/**
 	 * @param array $options Class instances / Echo to cli?
@@ -28,8 +28,8 @@ class TvRage extends TV
 	{
 		parent::__construct($options);
 		$this->rageqty = ($this->pdo->getSetting('maxrageprocessed') != '') ? $this->pdo->getSetting('maxrageprocessed') : 75;
-		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
 		$this->xmlEpisodeInfoUrl    =  "http://services.tvrage.com/myfeeds/episodeinfo.php?key=" . TvRage::APIKEY;
+		$this->imgSavePath = nZEDb_COVERS . 'tvrage' . DS;
 	}
 
 	/**
@@ -200,9 +200,9 @@ class TvRage extends TV
 	 * @param string $desc
 	 * @param $genre
 	 * @param $country
-	 * @param $imgbytes
+	 * @param $hascover
 	 */
-	public function add($rageid, $releasename, $desc, $genre, $country, $imgbytes)
+	public function add($rageid, $releasename, $desc, $genre, $country, $hascover)
 	{
 		$releasename = str_replace(['.', '_'], [' ', ' '], $releasename);
 		$country = $this->countryCode($country);
@@ -216,26 +216,27 @@ class TvRage extends TV
 		if (!isset($ckid['id'])) {
 			$this->pdo->queryExec(
 					sprintf('
-						INSERT INTO tvrage_titles (rageid, releasetitle, description, genre, country, createddate, imgdata)
-						VALUES (%s, %s, %s, %s, %s, NOW(), %s)',
+						INSERT INTO tvrage_titles (rageid, releasetitle, description, genre, country, createddate, hascover)
+						VALUES (%s, %s, %s, %s, %s, NOW(), %d)',
 						$rageid,
 						$this->pdo->escapeString($releasename),
 						$this->pdo->escapeString(substr($desc, 0, 10000)),
 						$this->pdo->escapeString(substr($genre, 0, 64)),
 						$this->pdo->escapeString($country),
-						$this->pdo->escapeString($imgbytes)
+						$hascover
 					)
 			);
 		} else {
-			$this->update($ckid['id'], $rageid, $releasename, $desc, $genre, $country, $imgbytes);
+			$this->update($ckid['id'], $rageid, $releasename, $desc, $genre, $country, $hascover);
 		}
 	}
 
-	public function update($id, $rageid, $releasename, $desc, $genre, $country, $imgbytes)
+	public function update($id, $rageid, $releasename, $desc, $genre, $country, $hascover = 0)
 	{
 		$country = $this->countryCode($country);
-		if ($imgbytes != '') {
-			$imgbytes = ', imgdata = ' . $this->pdo->escapeString($imgbytes);
+		$coverString = '';
+		if ($hascover != 0) {
+			$coverString = ', hascover = ' . $hascover;
 		}
 
 		$this->pdo->queryExec(
@@ -248,7 +249,7 @@ class TvRage extends TV
 					$this->pdo->escapeString(substr($desc, 0, 10000)),
 					$this->pdo->escapeString($genre),
 					$this->pdo->escapeString($country),
-					$imgbytes,
+					$coverString,
 					$id
 				)
 		);
@@ -742,6 +743,7 @@ class TvRage extends TV
 
 	public function updateRageInfo($rageid, $show, $tvrShow, $relid)
 	{
+		$hasCover = 0;
 		// Try and get the episode specific info from tvrage.
 		$epinfo = $this->getEpisodeInfo($rageid, $show['season'], $show['episode']);
 		if ($epinfo !== false) {
@@ -791,21 +793,15 @@ class TvRage extends TV
 			$desc = $rInfo['desc'];
 		}
 
-		$imgbytes = '';
 		if (isset($rInfo['imgurl']) && !empty($rInfo['imgurl'])) {
-			$img = Misc::getUrl(['url' => $rInfo['imgurl']]);
-			if ($img !== false) {
-				$im = @imagecreatefromstring($img);
-				if ($im !== false) {
-					$imgbytes = $img;
-				}
-			}
+			$hasCover = (new ReleaseImage($this->pdo))->saveImage($rageid, $rInfo['imgurl'], $this->imgSavePath, '', '');
 		}
-		$this->add($rageid, $show['cleanname'], $desc, $genre, $country, $imgbytes);
+		$this->add($rageid, $show['cleanname'], $desc, $genre, $country, $hasCover);
 	}
 
 	public function updateRageInfoTrakt($rageid, $show, $traktArray, $relid)
 	{
+		$hasCover = 0;
 		// Try and get the episode specific info from tvrage.
 		$epinfo = $this->getEpisodeInfo($rageid, $show['season'], $show['episode']);
 		if ($epinfo !== false) {
@@ -846,18 +842,10 @@ class TvRage extends TV
 			$desc = $rInfo['desc'];
 		}
 
-		$imgbytes = '';
 		if (isset($rInfo['imgurl']) && !empty($rInfo['imgurl'])) {
-			$img = Misc::getUrl(['url' => $rInfo['imgurl']]);
-			if ($img !== false) {
-				$im = @imagecreatefromstring($img);
-				if ($im !== false) {
-					$imgbytes = $img;
-				}
-			}
+			$hasCover = (new ReleaseImage($this->pdo))->saveImage($rageid, $rInfo['imgurl'], $this->imgSavePath, '', '');
 		}
-
-		$this->add($rageid, $show['cleanname'], $desc, $genre, $country, $imgbytes);
+		$this->add($rageid, $show['cleanname'], $desc, $genre, $country, $hasCover);
 	}
 
 	public function processTvReleases($groupID = '', $guidChar = '', $lookupTvRage = 1, $local = false)

@@ -12,7 +12,8 @@
 		<div class="col-xlg-12 portlets">
 			<div class="panel panel-default">
 				<div class="panel-body pagination2">
-					<h1>{$release.searchname|escape:"htmlall"}</h1>
+					<h1>{$release.searchname|escape:"htmlall"} {if $failed > 0}<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
+							<i class ="fa fa-thumbs-o-up"></i> {$release.grabs} Grab{if $release.grabs != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$failed} Failed Download{if $failed != 1}s{/if}</span>{/if}</h1>
 					{if isset($isadmin)}
 						<a class="label label-warning"
 						   href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$release.id}&amp;from={$smarty.server.REQUEST_URI}"
@@ -22,8 +23,6 @@
 						   title="Delete release">Delete</a>
 					{/if}
 					{if $movie && $release.rageid < 0}
-						<a class="label label-default" href="{$smarty.const.WWW_TOP}movies?imdb={$release.imdbid}"
-						   title="View all releases for this movie">Movie View</a>
 						<a class="label label-default" target="_blank"
 						   href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$release.imdbid}/"
 						   title="View at IMDB">IMDB</a>
@@ -38,7 +37,7 @@
 						{/if}
 					{/if}
 					{if $anidb && $release.anidbid > 0}
-						<a class="label label-default" href="{$smarty.const.WWW_TOP}anime/{$release.anidbid}"
+						<a class="label label-default" href="{$serverroot}anime/{$release.anidbid}"
 						   title="View all releases from this anime">View all episodes</a>
 						<a class="label label-default"
 						   href="{$site->dereferrer_link}http://anidb.net/perl-bin/animedb.pl?show=anime&aid={$anidb.anidbid}"
@@ -50,7 +49,7 @@
 					{if $rage && $release.rageid > 0}
 						<a href="{$smarty.const.WWW_TOP}/myshows/add/{$release.rageid}?from={$smarty.server.REQUEST_URI|escape:"url"}"
 						   class="label label-success">Add to My Shows</a>
-						<a class="label label-default" href="{$smarty.const.WWW_TOP}series/{$release.rageid}"
+						<a class="label label-default" href="{$serverroot}series/{$release.rageid}"
 						   title="View all releases for this series">View all episodes</a>
 						<a class="label label-default" target="_blank"
 						   href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$release.rageid}"
@@ -116,7 +115,7 @@
 									{if isset($xxx.trailers) && $xxx.trailers != ''}
 										<li><a href="#pane2" data-toggle="tab">Trailer</a></li>
 									{/if}
-									{if isset($nfo.nfo) && $nfo.nfo != ""}
+									{if isset($nfo.nfo) && $nfo.nfo != ''}
 										<li><a href="#pane3" data-toggle="tab">NFO</a></li>
 									{/if}
 									{if isset($similars) && $similars|@count > 1}
@@ -125,7 +124,7 @@
 									{if $release.jpgstatus == 1 && $userdata.canpreview == 1}
 										<li><a href="#pane6" data-toggle="tab">Sample</a></li>
 									{/if}
-									<li><a href="#pane5" data-toggle="tab">Comments</a></li>
+									<li><a href="#comments" data-toggle="tab">Comments</a></li>
 									{if ($release.haspreview == 1 && $userdata.canpreview == 1) || ($release.haspreview == 2 && $userdata.canpreview == 1)}
 										<li><a href="#pane7" data-toggle="tab">Preview</a></li>
 									{/if}
@@ -141,8 +140,8 @@
 								</ul>
 								<div class="tab-content">
 									<div id="pane1" class="tab-pane active">
-										<div class="row">
-											<div class="col-md-3">
+										<div class="row small-gutter-left">
+											<div class="col-md-3 small-gutter-left">
 												{if $movie && $release.rageid < 0 && $movie.cover == 1}
 													<img src="{$smarty.const.WWW_TOP}/covers/movies/{$movie.imdbid}-cover.jpg"
 														 width="185"
@@ -150,8 +149,8 @@
 														 data-toggle="modal"
 														 data-target="#modal-image"/>
 												{/if}
-												{if $rage && $release.rageid > 0 && $rage.imgdata != ""}
-													<img src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$rage.id}"
+												{if $rage && $release.rageid > 0 && $rage.hascover != "0"}
+													<img src="{$smarty.const.WWW_TOP}/covers/tvrage/{$release.rageid}.jpg"
 														 width="185"
 														 alt="{$rage.releasetitle|escape:"htmlall"}"
 														 data-toggle="modal"
@@ -231,7 +230,7 @@
 													<p id="demo"></p>
 												</div>
 											</div>
-											<div class="col-md-9">
+											<div class="col-md-9 small-gutter-left">
 												<table cellpadding="0" cellspacing="0"
 													   width="100%">
 													<tbody>
@@ -452,6 +451,11 @@
 																		time{if $release.grabs==1}{else}s{/if}</td>
 																</tr>
 																<tr>
+																	<th width="140">Failed Download</th>
+																	<td>{$failed}
+																		time{if $failed==1}{else}s{/if}</td>
+																</tr>
+																<tr>
 																	<th width="140">Password
 																	</th>
 																	<td>{if $release.passwordstatus == 0}None{elseif $release.passwordstatus == 2}Passworded Rar Archive{elseif $release.passwordstatus == 1}Contains Cab/Ace/Rar Inside Archive{else}Unknown{/if}</td>
@@ -473,8 +477,7 @@
 																	</td>
 																</tr>
 																<tr>
-																	<th width="140">RAR
-																		Contains
+																	<th width="140">RAR Contains
 																	</th>
 																	<td>
 																		<strong>Files:</strong><br/>
@@ -569,35 +572,28 @@
 						</tr>
 						{/if}
 									</div>
-									<div id="pane5" class="tab-pane">
+									<div id="comments" class="tab-pane">
 										{if $comments|@count > 0}
 											<table class="tdata table table-condensed table-striped table-responsive table-hover">
-												<tr>
-													<th width="100">User</th>
+												<tr class="{cycle values=",alt"}">
+													<th width="80">User</th>
 													<th>Comment</th>
 												</tr>
-												{foreach from=$comments item=comment}
+												{foreach from=$comments|@array_reverse:true item=comment}
 													<tr>
-														<td width="150">
-															{if $comment.sourceid == 0}
+														<td class="less" title="{$comment.createddate}">
 															{if !$privateprofiles || $isadmin || $ismod}
-																<a
-																title="View {$comment.username}'s profile"
-																href="{$smarty.const.WWW_TOP}/profile?name={$comment.username}">{$comment.username}</a>
+																<a title="View {$comment.username}'s profile" href="{$smarty.const.WWW_TOP}/profile?name={$comment.username}">{$comment.username}</a>
 															{else}
 																{$comment.username}
-																<br/>
-																<span style="color: #ce0000;">(syndicated)</span>
 															{/if}
-															<br/>{$comment.createddate|date_format} ({$comment.createddate|timeago} ago)
+															<br/>{$comment.createddate|daysago}
 														</td>
-															{if $comment.shared == 2}
-														<td style="color:#6B2447">{$comment.text|escape:"htmlall"|nl2br}</td>
+														{if $comment.shared == 2}
+															<td style="color:#6B2447">{$comment.text|escape:"htmlall"|nl2br}</td>
 														{else}
-														<td>{$comment.text|escape:"htmlall"|nl2br}</td>
+															<td>{$comment.text|escape:"htmlall"|nl2br}</td>
 														{/if}
-														{/if}
-													</tr>
 												{/foreach}
 											</table>
 										{else}
@@ -606,11 +602,10 @@
 											</div>
 										{/if}
 										<form action="" method="post">
-											<label for="txtAddComment">Add Comment</label>:<br/>
-														<textarea class="form-control" id="txtAddComment"
-																  name="txtAddComment" rows="6" cols="100"></textarea>
+											<label for="txtAddComment">Add Comment:</label><br/>
+											<textarea id="txtAddComment" name="txtAddComment" rows="6" cols="60"></textarea>
 											<br/>
-											<input type="submit" value="submit"/>
+											<input class="btn" type="submit" value="Submit"/>
 										</form>
 									</div>
 									{if $release.jpgstatus == 1 && $userdata.canpreview == 1}
@@ -814,8 +809,8 @@
 					<img src="{$smarty.const.WWW_TOP}/covers/movies/{$movie.imdbid}-cover.jpg"
 						 alt="{$movie.title|escape:"htmlall"}">
 				{/if}
-				{if $rage && $release.rageid > 0 && $rage.imgdata != ""}
-					<img src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$rage.id}"
+				{if $rage && $release.rageid > 0 && $rage.hascover != "0"}
+					<img src="{$smarty.const.WWW_TOP}/covers/tvrage/{$release.rageid}.jpg"
 						 alt="{$rage.releasetitle|escape:"htmlall"}"/>
 				{/if}
 				{if $anidb && $release.anidbid > 0 && $anidb.picture != ""}

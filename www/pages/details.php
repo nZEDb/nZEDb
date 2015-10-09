@@ -14,6 +14,7 @@ use nzedb\Releases;
 use nzedb\TraktTv;
 use nzedb\TvRage;
 use nzedb\XXX;
+use nzedb\DnzbFailures;
 
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
@@ -28,6 +29,7 @@ if (isset($_GET['id'])) {
 	}
 
 	$rc = new ReleaseComments($page->settings);
+	$fail = new DnzbFailures(['Settings' => $page->settings]);
 	if ($page->isPostBack()) {
 		$rc->addComment($data['id'], $_POST['txtAddComment'], $page->users->currentUserId(), $_SERVER['REMOTE_ADDR']);
 	}
@@ -36,7 +38,7 @@ if (isset($_GET['id'])) {
 	if ($data['rageid'] != '') {
 		$rageInfo = (new TvRage(['Settings' => $page->settings]))->getByRageID($data['rageid']);
 		if (count($rageInfo) > 0) {
-			$rage = ['releasetitle' => '', 'description' => '', 'country' => '', 'genre' => '', 'imgdata' => '', 'id' => ''];
+			$rage = ['releasetitle' => '', 'description' => '', 'country' => '', 'genre' => '', 'hascover' => '', 'id' => ''];
 			$done = 1;
 			$needed = count($rage);
 			foreach ($rageInfo as $info) {
@@ -116,6 +118,7 @@ if (isset($_GET['id'])) {
 		'privateprofiles' => ($page->settings->getSetting('privateprofiles') == 1 ? true : false),
 		'releasefiles'    => (new ReleaseFiles($page->settings))->get($data['id']),
 		'searchname'      => $releases->getSimilarName($data['searchname']),
+		'failed'          => $fail->getFailedCount($data['guid']),
 	]);
 
 	$page->smarty->assign('rage', $rage);

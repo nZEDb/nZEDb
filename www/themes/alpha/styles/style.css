@@ -56,6 +56,7 @@ div.icon { width:16px; height:16px; background-repeat:no-repeat; cursor:pointer;
 .icon_cp             { background-image:url('../../../themes_shared/images/icons/couch.png'); }
 .icon_goodreads      { background-image:url('../../../themes_shared/images/icons/goodreads.png'); }
 .icon_shelfari       { background-image:url('../../../themes_shared/images/icons/shelfari.png'); }
+.icon_anidb          { background-image:url('../../../themes_shared/images/icons/anidb.png'); }
 
 /* Custom adjustments for Conent Panels */
 .nzedb-panel-heading
