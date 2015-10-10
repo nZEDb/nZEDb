@@ -1,5 +1,5 @@
 <?php
-namespace nzedb;
+namespace nzedb\processing\tv;
 
 use nzedb\utility\Misc;
 

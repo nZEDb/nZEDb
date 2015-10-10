@@ -1,6 +1,6 @@
 <?php
 
-namespace libs\Moinax\TVDB;
+namespace nzedb\processing\tv\Moinax\TVDB;
 
 /**
  * Episode class. Class for single tv episode for a TV serie.
@@ -100,7 +100,7 @@ class Episode
      * Constructor
      *
      * @access public
-     * @return \Moinax\TvDb\Episode
+     * @return \nzedb\processing\tv\Moinax\TvDb\Episode
      * @param \SimpleXMLElement $data simplexml element created from thetvdb.com's xml data for the tv episode
      */
     public function __construct($data)

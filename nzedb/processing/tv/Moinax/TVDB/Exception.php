@@ -1,6 +1,6 @@
 <?php
 
-namespace libs\Moinax\TVDB;
+namespace nzedb\processing\tv\Moinax\TVDB;
 
 
 class Exception extends \Exception

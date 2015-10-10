@@ -1,8 +1,8 @@
 <?php
-namespace nzedb;
+namespace nzedb\processing\tv;
 
 use nzedb\utility\Misc;
-use libs\Moinax\TVDB\Client;
+use nzedb\processing\tv\Moinax\TVDB\Client;
 
 /**
  * Class TVDB
@@ -14,7 +14,7 @@ class TVDB extends TV
 	const MATCH_PROBABILITY = 75;
 
 	/**
-	 * @var \libs\Moinax\TVDB\Client
+	 * @var \nzedb\processing\tv\Moinax\TVDB\Client
 	 */
 	public $client;
 

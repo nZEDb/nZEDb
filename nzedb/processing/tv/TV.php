@@ -1,5 +1,5 @@
 <?php
-namespace nzedb;
+namespace nzedb\processing\tv;
 
 use nzedb\db\Settings;
 
@@ -19,6 +19,11 @@ class TV
 	public $echooutput;
 
 	/**
+	 * @var int
+	 */
+	public $rageqty;
+
+	/**
 	 * @param array $options Class instances / Echo to CLI.
 	 */
 	public function __construct(array $options = [])
@@ -31,6 +36,147 @@ class TV
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
 		$this->catWhere = 'categoryid BETWEEN 5000 AND 5999';
+		$this->tvqty = ($this->pdo->getSetting('maxrageprocessed') != '') ? $this->pdo->getSetting('maxrageprocessed') : 75;
+		$this->tvrage = new TvRage();
+	}
+
+	public function processTvReleases($groupID = '', $guidChar = '', $lookupTvRage = 1, $local = false)
+	{
+		$ret = 0;
+		if ($lookupTvRage == 0) {
+			return $ret;
+		}
+		$trakt = new TraktTv(['Settings' => $this->pdo]);
+
+		// Get all releases without a rageid which are in a tv category.
+
+		$res = $this->pdo->query(
+			sprintf("
+				SELECT r.searchname, r.id
+				FROM releases r
+				WHERE r.nzbstatus = 1
+				AND r.rageid = -1
+				AND r.size > 1048576
+				AND %s
+				%s %s %s
+				ORDER BY r.postdate DESC
+				LIMIT %d",
+				$this->catWhere,
+				($groupID === '' ? '' : 'AND r.group_id = ' . $groupID),
+				($guidChar === '' ? '' : 'AND r.guid ' . $this->pdo->likeString($guidChar, false, true)),
+				($lookupTvRage == 2 ? 'AND r.isrenamed = 1' : ''),
+				$this->tvqty
+			)
+		);
+		$tvcount = count($res);
+
+		if ($this->echooutput && $tvcount > 1) {
+			echo $this->pdo->log->header("Processing TV for " . $tvcount . " release(s).");
+		}
+
+		foreach ($res as $arr) {
+			$show = $this->parseNameEpSeason($arr['searchname']);
+			if (is_array($show) && $show['name'] != '') {
+				// Update release with season, ep, and airdate info (if available) from releasetitle.
+				$this->tvrage->updateEpInfo($show, $arr['id']);
+
+				// Find the rageID.
+				$id = $this->tvrage->getByTitle($show['cleanname']);
+
+				// Force local lookup only
+				if ($local == true) {
+					$lookupTvRage = false;
+				}
+
+				if ($id === false && $lookupTvRage) {
+					// If it doesnt exist locally and lookups are allowed lets try to get it.
+					if ($this->echooutput) {
+						echo 	$this->pdo->log->primaryOver("TVRage ID for ") .
+							$this->pdo->log->headerOver($show['cleanname']) .
+							$this->pdo->log->primary(" not found in local db, checking web.");
+					}
+
+					$tvrShow = $this->tvrage->getRageMatch($show);
+					if ($tvrShow !== false && is_array($tvrShow)) {
+						// Get all tv info and add show.
+						$this->tvrage->updateRageInfo($tvrShow['showid'], $show, $tvrShow, $arr['id']);
+					} else if ($tvrShow === false) {
+						// If tvrage fails, try trakt.
+						$traktArray = $trakt->episodeSummary($show['name'], $show['season'], $show['episode']);
+						if ($traktArray !== false) {
+							if (isset($traktArray['ids']['tvrage']) && $traktArray['ids']['tvrage'] !== 0) {
+								if ($this->echooutput) {
+									echo $this->pdo->log->primary('Found TVRage ID on trakt:' . $traktArray['ids']['tvrage']);
+								}
+								$this->tvrage->updateRageInfoTrakt($traktArray['ids']['tvrage'], $show, $traktArray, $arr['id']);
+							}
+							// No match, add to tvrage with rageID = -2 and $show['cleanname'] title only.
+							else {
+								$this->tvrage->add(-2, $show['cleanname'], '', '', '', '');
+							}
+						}
+						// No match, add to tvrage with rageID = -2 and $show['cleanname'] title only.
+						else {
+							$this->tvrage->add(-2, $show['cleanname'], '', '', '', '');
+						}
+					}
+				} else if ($id > 0) {
+					$tvtitle = "NULL";
+					$tvairdate = (isset($show['airdate']) && !empty($show['airdate']))
+						? $this->pdo->escapeString($this->tvrage->checkDate($show['airdate']))
+						: "NULL";
+
+					if ($lookupTvRage) {
+						$epinfo = $this->tvrage->getEpisodeInfo($id, $show['season'], $show['episode']);
+						if ($epinfo !== false) {
+							if (isset($epinfo['airdate'])) {
+								$tvairdate = $this->pdo->escapeString($this->tvrage->checkDate($epinfo['airdate']));
+							}
+
+							if (!empty($epinfo['title'])) {
+								$tvtitle = $this->pdo->escapeString(trim($epinfo['title']));
+							}
+						}
+					}
+					if ($tvairdate == "NULL") {
+						$this->pdo->queryExec(
+							sprintf('
+									UPDATE releases
+									SET tvtitle = %s, rageid = %d
+									WHERE %s
+									AND id = %d',
+								$tvtitle,
+								$id,
+								$this->catWhere,
+								$arr['id']
+							)
+						);
+					} else {
+						$this->pdo->queryExec(
+							sprintf('
+									UPDATE releases
+									SET tvtitle = %s, tvairdate = %s, rageid = %d
+									WHERE %s
+									AND id = %d',
+								$tvtitle,
+								$tvairdate,
+								$id,
+								$this->catWhere,
+								$arr['id']
+							)
+						);
+					}
+					// Cant find rageid, so set rageid to n/a.
+				} else {
+					$this->tvrage->setRageNotFound($arr['id']);
+				}
+				// Not a tv episode, so set rageid to n/a.
+			} else {
+				$this->tvrage->setRageNotFound($arr['id']);
+			}
+			$ret++;
+		}
+		return $ret;
 	}
 
 	public function cleanName($str)

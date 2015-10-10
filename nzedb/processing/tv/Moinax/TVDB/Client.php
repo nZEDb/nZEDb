@@ -1,10 +1,10 @@
 <?php
 
-namespace libs\Moinax\TVDB;
+namespace nzedb\processing\tv\Moinax\TVDB;
 
-use libs\Moinax\TVDB\CurlException;
-use libs\Moinax\TVDB\Http\CurlClient;
-use libs\Moinax\TVDB\Http\HttpClient;
+use nzedb\processing\tv\Moinax\TVDB\CurlException;
+use nzedb\processing\tv\Moinax\TVDB\Http\CurlClient;
+use nzedb\processing\tv\Moinax\TVDB\Http\HttpClient;
 
 /**
  * Base TVDB library class, provides universal functions and variables
