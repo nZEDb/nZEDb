@@ -17,7 +17,7 @@
 </h1>
 
 <div class="tvseriesheading">
-	{if $rage[0].imgdata != ""}<img class="shadow" alt="{$rage[0].releasetitle} Logo" src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$rage[0].id}" />{/if}
+	{if $rage[0].hascover != 0}<img class="shadow" alt="{$rage[0].releasetitle} Logo" src="{$smarty.const.WWW_TOP}/covers/{$rage[0].rageid}.jpg" />{/if}
 	<p>
 		{if $seriesgenre != ''}<b>{$seriesgenre}</b><br />{/if}
 		<span class="descinitial">{$seriesdescription|escape:"htmlall"|nl2br|magicurl|truncate:"1500":" <a class=\"descmore\" href=\"#\">more...</a>"}</span>
@@ -74,11 +74,11 @@
 				<tr class="{cycle values=",alt"}" id="guid{$result.guid}">
 					{if $result@total>1 && $result@index == 0}
 						<td width="20" rowspan="{$result@total}" class="static">{$episodes@key}</td>
-					{else if $result@total == 1}
+					{elseif $result@total == 1}
 						<td width="20" class="static">{$episodes@key}</td>
 					{/if}
 					<td>
-						<a title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.searchname|escape:"htmlall"|replace:".":" "}</a>
+						<a title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}">{$result.searchname|escape:"htmlall"|replace:".":" "}</a>
 
 						<div class="resextra">
 							<div class="btns">
@@ -107,9 +107,9 @@
 							</div>
 						{/if}
 					</td>
-					<td width="40" class="less" nowrap="nowrap"><a title="View comments for {$result.searchname|escape:"htmlall"}" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}#comments">{$result.comments} cmt{if $result.comments != 1}s{/if}</a><br/>{$result.grabs} grab{if $result.grabs != 1}s{/if}</td>
+					<td width="40" class="less" nowrap="nowrap"><a title="View comments for {$result.searchname|escape:"htmlall"}" href="{$smarty.const.WWW_TOP}/details/{$result.guid}#comments">{$result.comments} cmt{if $result.comments != 1}s{/if}</a><br/>{$result.grabs} grab{if $result.grabs != 1}s{/if}</td>
 					<td class="icons">
-						<div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"htmlall"}">&nbsp;</a></div>
+						<div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}">&nbsp;</a></div>
 						{if $sabintegrated}<div class="icon icon_sab" title="Send to my Queue"></div>{/if}
 						<div class="icon icon_cart" title="Add to Cart"></div>
 					</td>

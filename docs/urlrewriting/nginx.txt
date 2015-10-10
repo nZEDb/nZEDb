@@ -1,1 +1,1 @@
-See examples on the wiki. i.e. https://github.com/nZEDb/nZEDb/wiki/Install-Guide:-Ubuntu
+See here: https://github.com/nZEDb/nZEDb/blob/dev/INSTALL.txt#L188

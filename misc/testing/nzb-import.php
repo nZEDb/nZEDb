@@ -1,11 +1,14 @@
 <?php
-require_once dirname(__FILE__) . '/../../www/config.php';
+require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'indexer.php');
+
+use nzedb\NZBImport;
+
 $n = PHP_EOL;
 
 // Print usage.
 if (count($argv) !== 6) {
 	exit(
-		'This will import NZB files(.nzb or .nzb.gz), into your nZEDb site from a folder recursively(it will go down into sub-folders).'. $n .
+		'This will import NZB files(.nzb or .nzb.gz), into your nZEDb site from a folder recursively(it will go down into sub-folders).' . $n .
 		'Please use arg5, something sensible like 100k, if you have millions of NZB files the initial scan will be VERY slow otherwise.' . $n . $n .
 		'Usage: ' . $n .
 		$_SERVER['_'] . ' ' . __FILE__ . ' arg1 arg2 arg3 arg4 arg5' . $n . $n .
@@ -71,7 +74,7 @@ if ($i > 1) {
 	$useNzbName = ($argv[4] == 'true') ? true : false;
 
 	// Create a new instance of NZBImport and send it the file locations.
-	$NZBImport = new \NZBImport();
+	$NZBImport = new NZBImport();
 
 	$NZBImport->beginImport($nzbFiles, $useNzbName, $deleteNZB, $deleteFailedNZB);
 } else {

@@ -1,5 +1,9 @@
 <?php
 
+use nzedb\Category;
+use nzedb\Releases;
+use nzedb\UserSeries;
+
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
@@ -32,7 +36,7 @@ switch ($action) {
 		if ($show) {
 			$page->show404('Already subscribed');
 		} else {
-			$show = $us->pdo->queryOneRow(sprintf("SELECT releasetitle FROM tvrage WHERE rageid = %d", $rid));
+			$show = $us->pdo->queryOneRow(sprintf("SELECT releasetitle FROM tvrage_titles WHERE rageid = %d", $rid));
 			if (!$show) {
 				$page->show404('Seriously?');
 			}

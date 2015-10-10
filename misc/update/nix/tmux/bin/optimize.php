@@ -1,6 +1,7 @@
 <?php
-require_once dirname(__FILE__) . '/../../../config.php';
+require_once realpath(dirname(dirname(dirname(dirname(dirname(__DIR__))))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
+use nzedb\Tmux;
 use nzedb\db\Settings;
 
 $pdo = new Settings();
@@ -22,10 +23,10 @@ if (command_exist('php5')) {
 }
 
 if (isset($argv[1])) {
-	$tmux = new \Tmux();
+	$tmux = new Tmux();
 	$restart = false;
 	if ($argv[1] === 'true') {
-		$restart = $tmux->isRunning();
+		$restart = $tmux->stopIfRunning();
 	}
 
 	if ($tmux->get()->patchdb == '1') {

@@ -1,10 +1,42 @@
-<h1>{$page->title}</h1>
-<form action="{$SCRIPT_NAME}?action=submit" method="post">
+<div>
+<table border="0" width="100%">
+	<tr>
+		<td><h1>{$page->title}</h1></td>
+		<td></td>
+		<td align="right" class="top-nav">
+			<form id="site_jumpbox" action="#">
+				<select>
+					<option value="site_externalapis">3rd Party API Keys</option>
+					<option value="site_externalapps">3rd Party Application Paths</option>
+					<option value="site_developerset">Developer Settings</option>
+					<option value="site_googlestatbanner">Google Adsense, Analytics and 3rd Party Banners</option>
+					<option value="site_languagecat">Language/Categorization options</option>
+					<option value="site_main">Main Site Settings, Html layout, Tags</option>
+					<option value="site_movietrailerset">Movie Trailer Settings</option>
+					<option value="site_nfoprocessing">NFO Processing Settings</option>
+					<option value="site_nzbsettings">NZB Settings</option>
+					<option value="site_partrepair">Part Repair Settings</option>
+					<option value="site_postadditional">Post Process Additional Settings - Rar/ZIP file processing</option>
+					<option value="site_postsettings">Post Process Settings</option>
+					<option value="site_releaseset">Release Settings</option>
+					<option value="site_requidset">RequestID Settings</option>
+					<option value="site_sabnzbd">SABnzbd Integration Settings</option>
+					<option value="site_threadsettings">Threaded Settings</option>
+					<option value="site_usenetset">Usenet Settings</option>
+					<option value="site_usersettings">User Settings</option>
+					<option value="site_variousset">Various Settings</option>
+				</select>
+			</form>
+		</td>
+	</tr>
+</table>
+</div>
+<form id="site_settings" action="{$SCRIPT_NAME}?action=submit" method="post">
 	{if $error != ''}
 		<div class="error">{$error}</div>
 	{/if}
 
-	<fieldset>
+	<fieldset id="site_main">
 		<legend>Main Site Settings, Html Layout, Tags</legend>
 		<table class="input">
 			<tr>
@@ -125,7 +157,7 @@
 		</table>
 	</fieldset>
 
-	<fieldset>
+	<fieldset id="site_languagecat">
 		<legend>Language/Categorization options</legend>
 		<table class="input">
 			<tr>
@@ -168,7 +200,7 @@
 		</table>
 	</fieldset>
 
-	<fieldset>
+	<fieldset id="site_googlestatbanner">
 		<legend>Google Adsense, Analytics and 3rd Party Banners</legend>
 		<table class="input">
 			<tr>
@@ -216,7 +248,7 @@
 		</table>
 	</fieldset>
 
-	<fieldset>
+	<fieldset id="site_externalapis">
 		<legend>3<sup>rd</sup> Party API Keys</legend>
 		<table class="input">
 			<tr>
@@ -231,9 +263,7 @@
 				<td style="width:180px;"><label for="rottentomatokey">Rotten Tomatoes Key:</label></td>
 				<td>
 					<input id="rottentomatokey" class="long" name="rottentomatokey" type="text" value="{$site->rottentomatokey}"/>
-					{html_options style="width:180px;" id="rottentomatoquality" name='rottentomatoquality' values=$rottentomatoquality_ids output=$rottentomatoquality_names selected=$site->rottentomatoquality}
-					<div class="hint">The api key used for access to rotten tomatoes. Select the quality of the images to
-						display in Upcoming.
+					<div class="hint">The api key used for access to rotten tomatoes.
 					</div>
 				</td>
 			</tr>
@@ -266,10 +296,10 @@
 					</td>
 				</tr>
 			<tr>
-				<td style="width:180px;"><label for="trakttvkey">Trakt.tv API key:</label></td>
+				<td style="width:180px;"><label for="trakttvclientkey">Trakt.tv API Client ID:</label></td>
 				<td>
-					<input id="trakttvkey" class="long" name="trakttvkey" type="text" value="{$site->trakttvkey}"/>
-					<div class="hint">The trakt.tv api key. Used for movie and tv lookups.</div>
+					<input id="trakttvclientkey" class="long" name="trakttvclientkey" type="text" value="{$site->trakttvclientkey}"/>
+					<div class="hint">The Trakt.tv API v2 Client ID (SHA256 hash - 64 characters long string). Used for movie and tv lookups.</div>
 				</td>
 			</tr>
 			<tr>
@@ -288,10 +318,27 @@
 					</div>
 				</td>
 			</tr>
+			<tr>
+				<td style="width:180px;"><label for="recaptchasitekey">ReCaptcha Site Key:</label></td>
+				<td>
+					<input id="recaptchasitekey" class="long" name="recaptchasitekey" type="text" value="{$site->recaptchasitekey}"/>
+					<div class="hint">Register your application with ReCaptcha <a href="https://www.google.com/recaptcha" target="_blank">here</a>
+						to get your site and secret keys. Adding these keys will place ReCaptch's on all user-input forms. (Login, Register, Contact Us, Forgot Password)
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="recaptchasecretkey">ReCaptcha Secret key:</label></td>
+				<td>
+					<input id="recaptchasecretkey" class="long" name="recaptchasecretkey" type="text" value="{$site->recaptchasecretkey}"/>
+					<div class="hint">This is the required secret key for ReCaptcha to work, see the above setting hint for further information.
+					</div>
+				</td>
+			</tr>
 		</table>
 	</fieldset>
 
-	<fieldset>
+	<fieldset id="site_externalapps">
 		<legend>3<sup>rd</sup> Party Application Paths</legend>
 		<table class="input">
 			<tr>
@@ -355,7 +402,7 @@
 					<input id="ffmpegpath" class="long" name="ffmpegpath" type="text" value="{$site->ffmpegpath}"/>
 					<div class="hint">The path to the <a href="http://www.ffmpeg.org/">ffmpeg</a> or <a
 								href="https://libav.org/">avconv</a> binary. Used for making thumbnails and video/audio
-						previews. Use empty path to disable thumbnailing.
+						previews.
 						<br/>Use forward slashes in windows <span style="font-family:courier;">c:/path/to/ffmpeg.exe</span>
 					</div>
 				</td>
@@ -372,10 +419,22 @@
 					</div>
 				</td>
 			</tr>
+			<tr>
+				<td style="width:180px;"><label for="magic_file_path">Magic Numbers file:</label></td>
+				<td>
+					<input id="magic_file_path"
+						class="long"
+						name="magic_file_path"
+						type="text"
+						value="{$settings['apps']['indexer']['magic_file_path']['value']}" />
+
+					<div class="hint">{$settings['apps']['indexer']['magic_file_path']['hint']}</div>
+				</td>
+			</tr>
 		</table>
 	</fieldset>
 
-	<fieldset>
+	<fieldset id="site_sabnzbd">
 		<legend>SABnzbd Integration Settings</legend>
 		<table class="input">
 			<tr>
@@ -422,7 +481,7 @@
 		</table>
 	</fieldset>
 
-	<fieldset>
+	<fieldset id="site_releaseset">
 	<legend>Release Settings</legend>
 		<table class="input">
 			<tr>
@@ -472,8 +531,7 @@
 					{html_options style="width:180px;" id="showpasswordedrelease" name='showpasswordedrelease' values=$passworded_ids output=$passworded_names selected=$site->showpasswordedrelease}
 					<div class="hint">Whether to show passworded or potentially passworded releases in browse, search, api and rss
 						feeds. Potentially passworded means releases which contain .cab or .ace files which are
-						typically password protected and will also exclude anything not processed by PostProcess
-						Additional.
+						typically password protected. (*yes): Unprocessed releases are hidden. (*no): Unprocessed releases are displayed.
 					</div>
 				</td>
 			</tr>
@@ -522,7 +580,7 @@
 		</table>
 	</fieldset>
 
-	<fieldset>
+	<fieldset id="site_requidset">
 		<legend>RequestID Settings</legend>
 		<table class="input">
 			<tr>
@@ -551,7 +609,7 @@
 		</table>
 	</fieldset>
 
-	<fieldset>
+	<fieldset id="site_nzbsettings">
 	<legend>NZB Settings</legend>
 		<table class="input">
 			<tr>
@@ -568,14 +626,14 @@
 				<td>
 					<input id="nzbsplitlevel" class="short" name="nzbsplitlevel" type="text" value="{$site->nzbsplitlevel}"/>
 					<div class="hint">Levels deep to store the nzb Files.
-						<br /><strong>If you change this you must run the misc/testing/DB/nzb-reorg.php script!</strong>
+						<br /><strong>If you change this you must run the misc/testing/NZBs/nzb-reorg.php script!</strong>
 					</div>
 				</td>
 			</tr>
 		</table>
 	</fieldset>
 
-	<fieldset>
+	<fieldset id="site_postsettings">
 	<legend>Post Process Settings</legend>
 		<table class="input">
 			<tr>
@@ -721,7 +779,7 @@
 		</table>
 	</fieldset>
 
-	<fieldset>
+	<fieldset id="site_nfoprocessing">
 	<legend>NFO Processing Settings</legend>
 		<table class="input">
 			<tr>
@@ -766,7 +824,7 @@
 		</table>
 	</fieldset>
 
-	<fieldset>
+	<fieldset id="site_postadditional">
 	<legend>Post Process Additional Settings - Rar/ZIP file processing</legend>
 		<table class="input">
 			<tr>
@@ -791,6 +849,14 @@
 				</td>
 			</tr>
 			<tr>
+				<td style="width:180px;"><label for="fetchlastcompressedfiles">Download last compressed file:</label></td>
+				<td>
+					{html_radios id="fetchlastcompressedfiles" name='fetchlastcompressedfiles' values=$yesno_ids output=$yesno_names selected=$site->fetchlastcompressedfiles separator='<br />'}
+					<div class="hint">Try to download the last rar or zip file? (This is good if most of the files are at the end.) Note: The first rar/zip is still downloaded.
+					</div>
+				</td>
+			</tr>
+			<tr>
 				<td style="width:180px;"><label for="processaudiosample">Process Audio Samples:</label></td>
 				<td>
 					{html_radios id="processaudiosample" name='processaudiosample' values=$yesno_ids output=$yesno_names selected=$site->processaudiosample separator='<br />'}
@@ -802,6 +868,13 @@
 				<td>
 					{html_radios id="processjpg" name='processjpg' values=$yesno_ids output=$yesno_names selected=$site->processjpg separator='<br />'}
 					<div class="hint">Whether to attempt to retrieve a JPG file while additional post processing, these are usually on XXX releases.<br/></div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="processthumbnails">Process Video Thumbnails:</label></td>
+				<td>
+					{html_radios id="processthumbnails" name='processthumbnails' values=$yesno_ids output=$yesno_names selected=$site->processthumbnails separator='<br />'}
+					<div class="hint">Whether to attempt to process a video thumbnail image. You must have ffmpeg for this.<br/></div>
 				</td>
 			</tr>
 			<tr>
@@ -887,7 +960,7 @@
 		</table>
 	</fieldset>
 
-	<fieldset>
+	<fieldset id="site_usenetset">
 		<legend>Usenet Settings</legend>
 		<table class="input">
 			<tr>
@@ -907,10 +980,29 @@
 				</td>
 			</tr>
 			<tr>
+				<td style="width:180px;"><label for="disablebackfillgroup">Auto disable groups during Backfill:</label></td>
+				<td>
+					{html_radios id="disablebackfillgroup" name='disablebackfillgroup' values=$yesno_ids output=$yesno_names selected=$site->disablebackfillgroup separator='<br />'}
+					<div class="hint">Whether to disable a group automatically during backfill if the target date has been reached.</div>
+				</td>
+			</tr>
+			<tr>
 				<td style="width:180px;"><label for="partretentionhours">Part Retention Hours:</label></td>
 				<td>
 					<input class="short" id="partretentionhours" name="partretentionhours" type="text" value="{$site->partretentionhours}"/>
 					<div class="hint">The number of hours incomplete parts and binaries will be retained.</div>
+				</td>
+			</tr>
+			<tr>
+				<td><label for="max_headers_iteration">Max headers iteration</label>:</td>
+				<td>
+					<input class="small"
+						id="max_headers_iteration"
+						name="max_headers_iteration"
+						type="text"
+						value="{$site->max_headers_iteration}" />
+
+					<div class="hint">The maximum number of headers that update binaries sees as the total range. This ensure that a total of no more than this is attempted to be downloaded at one time per group.</div>
 				</td>
 			</tr>
 			<tr>
@@ -973,10 +1065,18 @@
 					</div>
 				</td>
 			</tr>
+			<tr>
+			<td style="width:180px;"><label for="collection_timeout">Collection Timeout Check:</label></td>
+			<td>
+				<input class="short" id="collection_timeout" name="collection_timeout" type="text" value="{$site->collection_timeout}"/>
+				<div class="hint">How many hours to wait before converting a collection into a release that is considered "stuck". <br \> Default value is 48 hours.
+				</div>
+			</td>
+		</tr>
 		</table>
 	</fieldset>
 
-	<fieldset>
+	<fieldset id="site_partrepair">
 		<legend>Part Repair Settings</legend>
 		<table class="input">
 			<tr>
@@ -991,7 +1091,7 @@
 				<td style="width:180px;"><label for="safepartrepair">Part Repair for Backfill Scripts:</label></td>
 				<td>
 					{html_radios id="safepartrepair" name='safepartrepair' values=$yesno_ids output=$yesno_names selected=$site->safepartrepair separator='<br />'}
-					<div class="hint">Whether to put unreceived parts into partrepair table when running binaries(safe) or backfill scripts.</div>
+					<div class="hint">Whether to put unreceived parts into missed_parts table when running binaries(safe) or backfill scripts.</div>
 				</td>
 			</tr>
 			<tr>
@@ -999,7 +1099,7 @@
 				<td>
 					<input class="short" id="maxpartrepair" name="maxpartrepair" type="text" value="{$site->maxpartrepair}"/>
 					<div class="hint">The maximum amount of articles to attempt to repair at a time. If you notice that you
-						are getting a lot of parts into the partrepair table, it is possible that you USP is not keeping up
+						are getting a lot of parts into the missed_parts table, it is possible that you USP is not keeping up
 						with the requests. Try to reduce the threads to safe scripts, stop using safe scripts or stop using
 						nntpproxy until improves. Ar least until the cause can be determined.
 					</div>
@@ -1015,7 +1115,7 @@
 		</table>
 	</fieldset>
 
-	<fieldset>
+	<fieldset id="site_variousset">
 		<legend>Various settings</legend>
 		<table class="input">
 			<tr>
@@ -1024,7 +1124,7 @@
 					{html_radios id="tablepergroup" name='tablepergroup' values=$yesno_ids output=$yesno_names selected=$site->tablepergroup separator='<br />'}
 					<div class="hint">This uses separate tables for collections, binaries and parts for each group.<br/>This
 						requires you to run convert_to_tpg.php or reset_truncate.php.<br/>This requires that you also run
-						releases_threaded.py.
+						.../misc/update/nix/multiprocessing/releases.php (tmux does this automatically).
 						<br/>Run: show variables like '%open%files%'; results should be higher than 10k, twice that if you
 						are using TokuDB.;
 						<br/><b>You may need to increase table_open_cache, open_files_limit and max_allowed_packet in
@@ -1037,13 +1137,40 @@
 				<td style="width:180px;"><label for="maxnzbsprocessed">Maximum NZBs stage5:</label></td>
 				<td>
 					<input class="short" id="maxnzbsprocessed" name="maxnzbsprocessed" type="text" value="{$site->maxnzbsprocessed}"/>
-					<div class="hint">The maximum amount of NZB files to create on stage 5 in update_releases.</div>
+					<div class="hint">The maximum amount of NZB files to create on stage 5 at a time in update_releases. If more are to be created it will loop stage 5 until none remain.</div>
 				</td>
 			</tr>
 		</table>
 	</fieldset>
 
-	<fieldset>
+	<fieldset id="site_movietrailerset">
+		<legend>Movie Trailer settings</legend>
+		<table class="input">
+			<tr>
+				<td style="width:180px;"><label for="trailers_display">Fetch/Display Movie Trailers:</label></td>
+				<td>
+					{html_radios id="trailers_display" name='trailers_display' values=$yesno_ids output=$yesno_names selected=$site->trailers_display separator='<br />'}
+					<div class="hint">Fetch and display trailers from TraktTV (Requires API key) and/or TrailerAddict on the details page?</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="trailers_size_x">Max trailer width:</label></td>
+				<td>
+					<input class="short" id="trailers_size_x" name="trailers_size_x" type="text" value="{$site->trailers_size_x}"/>
+					<div class="hint">Maximum width in pixels for the trailer window. (Default: 480)</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="trailers_size_y">Max trailer height:</label></td>
+				<td>
+					<input class="short" id="trailers_size_y" name="trailers_size_y" type="text" value="{$site->trailers_size_y}"/>
+					<div class="hint">Maximum height in pixels for the trailer window. (Default: 345)</div>
+				</td>
+			</tr>
+		</table>
+	</fieldset>
+
+	<fieldset id="site_developerset">
 		<legend>Developer Settings</legend>
 		<table class="input">
 			<tr>
@@ -1056,7 +1183,7 @@
 		</table>
 	</fieldset>
 
-	<fieldset>
+	<fieldset id="site_threadsettings">
 		<legend>Threaded Settings</legend>
 		<table class="input">
 			<tr>
@@ -1064,7 +1191,7 @@
 				<td>
 					<input class="short" id="binarythreads" name="binarythreads" type="text" value="{$site->binarythreads}"/>
 					<div class="hint">The number of threads for update_binaries. If you notice that you are getting a lot of
-						parts into the partrepair table, it is possible that you USP is not keeping up with the requests.
+						parts into the missed_parts table, it is possible that you USP is not keeping up with the requests.
 						Try to reduce the threads to safe scripts, stop using safe scripts or stop using nntpproxy until
 						improves. Ar least until the cause can be determined.
 					</div>
@@ -1145,7 +1272,7 @@
 		</table>
 	</fieldset>
 
-	<fieldset>
+	<fieldset id="site_usersettings">
 		<legend>User Settings</legend>
 		<table class="input">
 			<tr>
@@ -1160,6 +1287,13 @@
 				<td>
 					{html_radios id="storeuserips" name='storeuserips' values=$yesno_ids output=$yesno_names selected=$site->storeuserips separator='<br />'}
 					<div class="hint">Whether to store the users ip address when they signup or login.</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="privateprofiles">Private Profiles:</label></td>
+				<td>
+					{html_radios id="privateprofiles" name='privateprofiles' values=$yesno_ids output=$yesno_names selected=$site->privateprofiles separator='<br />'}
+					<div class="hint">Should we <strong>disallow</strong> users from accessing profiles other than their own? (regardless of this setting admin/mod can access).</div>
 				</td>
 			</tr>
 		</table>

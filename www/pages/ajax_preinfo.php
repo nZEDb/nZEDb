@@ -1,4 +1,7 @@
 <?php
+
+use nzedb\PreDb;
+
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
@@ -16,7 +19,7 @@ if (!$predata) {
 	print "<table>\n";
 		if (isset($predata['nuked'])) {
 			$nuked = '';
-			switch($predata['nuked']) {
+			switch ($predata['nuked']) {
 				case PreDb::PRE_NUKED:
 					$nuked = 'NUKED';
 					break;

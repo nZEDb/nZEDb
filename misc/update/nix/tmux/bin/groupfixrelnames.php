@@ -1,15 +1,20 @@
 <?php
-require_once dirname(__FILE__) . '/../../../config.php';
+require_once realpath(dirname(dirname(dirname(dirname(dirname(__DIR__))))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
-use \nzedb\db\Settings;
-use \nzedb\processing\PostProcess;
+use nzedb\MiscSorter;
+use nzedb\NameFixer;
+use nzedb\Nfo;
+use nzedb\NNTP;
+use nzedb\NZBContents;
+use nzedb\db\Settings;
+use nzedb\processing\PostProcess;
 
 $pdo = new Settings();
 
 if (!isset($argv[1])) {
 	exit($pdo->log->error("This script is not intended to be run manually, it is called from groupfixrelnames_threaded.py."));
 } else if (isset($argv[1])) {
-	$namefixer = new \NameFixer(['Settings' => $pdo]);
+	$namefixer = new NameFixer(['Settings' => $pdo]);
 	$pieces = explode(' ', $argv[1]);
 	$guidChar = $pieces[1];
 	$maxperrun = $pieces[2];
@@ -22,7 +27,7 @@ if (!isset($argv[1])) {
 								SELECT r.id AS releaseid, r.guid, r.group_id, r.categoryid, r.name, r.searchname,
 									uncompress(nfo) AS textstring
 								FROM releases r
-								INNER JOIN releasenfo rn ON r.id = rn.releaseid
+								INNER JOIN release_nfos rn ON r.id = rn.releaseid
 								WHERE r.guid %s
 								AND r.nzbstatus = 1
 								AND r.proc_nfo = 0
@@ -58,7 +63,7 @@ if (!isset($argv[1])) {
 								SELECT rf.name AS textstring, rf.releaseid AS fileid,
 									r.id AS releaseid, r.name, r.searchname, r.categoryid, r.group_id
 								FROM releases r
-								INNER JOIN releasefiles rf ON r.id = rf.releaseid
+								INNER JOIN release_files rf ON r.id = rf.releaseid
 								WHERE r.guid %s
 								AND r.nzbstatus = 1 AND r.proc_files = 0
 								AND r.preid = 0
@@ -85,7 +90,7 @@ if (!isset($argv[1])) {
 								SELECT DISTINCT r.id AS releaseid, r.name, r.searchname, r.categoryid, r.group_id, r.dehashstatus,
 									rf.name AS filename
 								FROM releases r
-								LEFT OUTER JOIN releasefiles rf ON r.id = rf.releaseid AND rf.ishashed = 1
+								LEFT OUTER JOIN release_files rf ON r.id = rf.releaseid AND rf.ishashed = 1
 								WHERE r.guid %s
 								AND nzbstatus = 1 AND r.ishashed = 1
 								AND r.dehashstatus BETWEEN -6 AND 0
@@ -127,17 +132,17 @@ if (!isset($argv[1])) {
 			);
 
 			if ($releases instanceof \Traversable) {
-				$nntp = new \NNTP(['Settings' => $pdo]);
+				$nntp = new NNTP(['Settings' => $pdo]);
 				if (($pdo->getSetting('alternate_nntp') == '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
 					exit($pdo->log->error("Unable to connect to usenet."));
 				}
 
-				$Nfo = new \Nfo(['Settings' => $pdo, 'Echo' => true]);
-				$nzbcontents = new \NZBContents(
-					array(
+				$Nfo = new Nfo(['Settings' => $pdo, 'Echo' => true]);
+				$nzbcontents = new NZBContents(
+					[
 						'Echo' => true, 'NNTP' => $nntp, 'Nfo' => $Nfo, 'Settings' => $pdo,
 						'PostProcess' => new PostProcess(['Settings' => $pdo, 'Nfo' => $Nfo, 'NameFixer' => $namefixer])
-					)
+					]
 				);
 				foreach ($releases as $release) {
 					$res = $nzbcontents->checkPAR2($release['guid'], $release['releaseid'], $release['group_id'], 1, 1);
@@ -164,7 +169,7 @@ if (!isset($argv[1])) {
 			);
 
 			if ($releases instanceof \Traversable) {
-				$sorter = new \MiscSorter(true, $pdo);
+				$sorter = new MiscSorter(true, $pdo);
 				foreach ($releases as $release) {
 					$res = $sorter->nfosorter(null, $release['releaseid']);
 				}

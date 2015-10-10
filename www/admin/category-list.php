@@ -1,13 +1,11 @@
 <?php
 require_once './config.php';
 
-$page = new AdminPage();
-$category = new Category(['Settings' => $page->settings]);
+use nzedb\Category;
 
+$page     = new AdminPage();
 $page->title = "Category List";
-
-$categorylist = $category->getFlat();
-$page->smarty->assign('categorylist',$categorylist);
+$page->smarty->assign('categorylist', (new Category(['Settings' => $page->settings]))->getFlat());
 
 $page->content = $page->smarty->fetch('category-list.tpl');
 $page->render();

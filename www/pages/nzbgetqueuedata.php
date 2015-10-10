@@ -1,7 +1,12 @@
 <?php
+
+use nzedb\NZBGet;
+use nzedb\utility\Misc;
+
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
+
 
 $nzbget = new NZBGet($page);
 
@@ -16,11 +21,11 @@ if ($data !== false) {
 		if ($status !== false) {
 			$output .=
 			"<div class='container text-center' style='display:block;'>
-				<div style='width:16.666666667%;float:left;'><b>Avg Speed:</b><br /> " . nzedb\utility\bytesToSizeString($status['AverageDownloadRate'], 2) . "/s </div>
-				<div style='width:16.666666667%;float:left;'><b>Speed:</b><br /> " . nzedb\utility\bytesToSizeString($status['DownloadRate'], 2) . "/s </div>
-				<div style='width:16.666666667%;float:left;'><b>Limit:</b><br /> " . nzedb\utility\bytesToSizeString($status['DownloadLimit'], 2) . "/s </div>
-				<div style='width:16.666666667%;float:left;'><b>Queue Left(no pars):</b><br /> " . nzedb\utility\bytesToSizeString($status['RemainingSizeLo'], 2) . " </div>
-				<div style='width:16.666666667%;float:left;'><b>Free Space:</b><br /> " . nzedb\utility\bytesToSizeString($status['FreeDiskSpaceMB'] * 1024000, 2) . " </div>
+				<div style='width:16.666666667%;float:left;'><b>Avg Speed:</b><br /> " . Misc::bytesToSizeString($status['AverageDownloadRate'], 2) . "/s </div>
+				<div style='width:16.666666667%;float:left;'><b>Speed:</b><br /> " . Misc::bytesToSizeString($status['DownloadRate'], 2) . "/s </div>
+				<div style='width:16.666666667%;float:left;'><b>Limit:</b><br /> " . Misc::bytesToSizeString($status['DownloadLimit'], 2) . "/s </div>
+				<div style='width:16.666666667%;float:left;'><b>Queue Left(no pars):</b><br /> " . Misc::bytesToSizeString($status['RemainingSizeLo'], 2) . " </div>
+				<div style='width:16.666666667%;float:left;'><b>Free Space:</b><br /> " . Misc::bytesToSizeString($status['FreeDiskSpaceMB'] * 1024000, 2) . " </div>
 				<div style='width:16.666666667%;float:left;'><b>Status:</b><br /> " . ($status['Download2Paused'] == 1 ? 'Paused' : 'Downloading') . " </div>
 			</div>";
 		}
@@ -52,7 +57,7 @@ if ($data !== false) {
 				"<td style='text-align:center;'>" . $item['RemainingSizeMB'] . " MB</td>" .
 				"<td style='text-align:center;'>" . ($item['FileSizeMB'] == 0 ? 0 : round(100 - ($item['RemainingSizeMB'] / $item['FileSizeMB']) * 100)) . "%</td>" .
 				"<td style='text-align:center;'>" . ($item['ActiveDownloads'] > 0 ? 'Downloading' : 'Paused') . "</td>" .
-				"<td style='text-align:center;'><a  onclick=\"return confirm('Are you sure?');\" href='?del=" .  $item['LastID'] . "'>Delete</a></td>" .
+				"<td style='text-align:center;'><a  onclick=\"return confirm('Are you sure?');\" href='?del=" . $item['LastID'] . "'>Delete</a></td>" .
 				"<td style='text-align:center;'><a href='?pause=" . $item['LastID'] . "'>Pause</a></td>" .
 				"<td style='text-align:center;'><a href='?resume=" . $item['LastID'] . "'>Resume</a></td>" .
 				"</tr>";

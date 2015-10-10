@@ -1,15 +1,24 @@
 <?php
+
+use nzedb\Logging;
+use nzedb\Captcha;
+
+$page->smarty->assign(['error' => '', 'username' => '', 'rememberme' => '']);
+
+$captcha = new Captcha($page);
+
 if ($page->isPostBack()) {
 	if (!isset($_POST["username"]) || !isset($_POST["password"])) {
 		$page->smarty->assign('error', "Please enter your username and password.");
-	} else {
-		$page->smarty->assign('username', $_POST["username"]);
+	} elseif ($captcha->getError() === false) {
+		$username = htmlspecialchars($_POST["username"]);
+		$page->smarty->assign('username', $username);
 		$logging = new Logging(['Settings' => $page->settings]);
-		$res = $page->users->getByUsername($_POST["username"]);
-		$dis = $page->users->isDisabled($_POST["username"]);
+		$res = $page->users->getByUsername($username);
+		$dis = $page->users->isDisabled($username);
 
 		if (!$res) {
-			$res = $page->users->getByEmail($_POST["username"]);
+			$res = $page->users->getByEmail($username);
 		}
 
 		if ($res) {
@@ -27,11 +36,11 @@ if ($page->isPostBack()) {
 				die();
 			} else {
 				$page->smarty->assign('error', "Incorrect username or password.");
-				$logging->LogBadPasswd($_POST["username"], $_SERVER['REMOTE_ADDR']);
+				$logging->LogBadPasswd($username, $_SERVER['REMOTE_ADDR']);
 			}
 		} else {
 			$page->smarty->assign('error', "Incorrect username or password.");
-			$logging->LogBadPasswd($_POST["username"], $_SERVER['REMOTE_ADDR']);
+			$logging->LogBadPasswd($username, $_SERVER['REMOTE_ADDR']);
 		}
 	}
 }

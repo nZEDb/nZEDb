@@ -10,14 +10,14 @@
     <table class="data">
         <tr><th><label for="username">Username<br/> or Email:</label></th>
             <td>
-                <input style="width:150px;" id="username" value="{$username}" name="username" type="text"/>
+                <input style="width:150px;" id="username" value="{$username|escape:"htmlall"}" name="username" type="text"/>
             </td></tr>
         <tr><th><label for="password">Password:</label></th>
             <td>
                 <input style="width:150px;" id="password" name="password" type="password"/>
             </td></tr>
         <tr><th><label for="rememberme">Remember Me:</label></th><td><input id="rememberme" {if $rememberme == 1}checked="checked"{/if} name="rememberme" type="checkbox"/></td></tr>
-        <tr><th></th><td><input class="rndbtn" type="submit" value="Login"/></td></tr>
+        <tr><th></th><td>{$page->smarty->fetch('captcha.tpl')}<input class="rndbtn" type="submit" value="Login"/></td></tr>
     </table>
 </form>
 <br/>

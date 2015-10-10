@@ -1,5 +1,12 @@
 <?php
-require_once realpath(__DIR__ . '/../automated.config.php');
+/**
+ * Remember!! Keeps these files simple until after the requirements checks are met.
+ * No point having a check for PHP version if we can't get to that page because of higher version
+ * requirements.
+ */
+require_once realpath(__DIR__ . DIRECTORY_SEPARATOR . 'install.php');
+
+use nzedb\Install;
 
 $page = new InstallPage();
 $page->title = "Preflight Checklist";
@@ -15,6 +22,20 @@ $cfg->setSession();
 $cfg = $cfg->getSession();
 
 // Start checks.
+$cfg->sessionsPathPermissions = true;
+$sessionPath = session_save_path();
+$sessionPath = empty($sessionPath) ? sys_get_temp_dir() : $sessionPath;
+$page->smarty->assign('sessionsSavePath', $sessionPath);
+if (!is_readable($sessionPath) || !is_writable($sessionPath)) {
+	$cfg->error = true;
+	$cfg->sessionsPathPermissions = false;
+}
+
+$cfg->iconvCheck = function_exists('iconv');
+if ($cfg->iconvCheck === false) {
+	$cfg->error = true;
+}
+
 $cfg->cryptCheck = function_exists('crypt');
 if ($cfg->cryptCheck === false) {
 	$cfg->error = true;
@@ -41,7 +62,7 @@ $cfg->curlCheck = function_exists('curl_init');
 
 if (extension_loaded('posix') && strtolower(substr(PHP_OS, 0, 3)) !== 'win') {
 	$group = posix_getgrgid(posix_getgid());
-	$fixString = '<br /><br />Another solution is to run:<br />chown -R YourUnixUserName:' . $group['name']  . ' ' . nZEDb_ROOT .
+	$fixString = '<br /><br />Another solution is to run:<br />chown -R YourUnixUserName:' . $group['name'] . ' ' . nZEDb_ROOT .
 		'<br />Then give your user access to the group:<br />usermod -a -G ' . $group['name'] . ' YourUnixUserName' .
 		'<br />Finally give read/write access to your user/group:<br />chmod -R 774 ' . nZEDb_ROOT;
 	$page->smarty->assign('fixString', $fixString);
@@ -106,14 +127,14 @@ if ($cfg->videoCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->configCheck = is_writable(nZEDb_WWW);
+$cfg->configCheck = is_writable(nZEDb_CONFIGS);
 if ($cfg->configCheck === false) {
-	$cfg->configCheck = is_file(nZEDb_WWW);
+	$cfg->configCheck = is_file(nZEDb_CONFIGS);
 	if ($cfg->configCheck === true) {
 		$cfg->configCheck = false;
 		$cfg->error = true;
 	} else {
-		$cfg->configCheck = is_writable(nZEDb_WWW);
+		$cfg->configCheck = is_writable(nZEDb_CONFIGS);
 		if ($cfg->configCheck === false) {
 			$cfg->error = true;
 		}
@@ -163,8 +184,8 @@ if (preg_match('/apache/i', $_SERVER['SERVER_SOFTWARE'])) {
 }
 
 // Load previous config.php.
-if (file_exists(nZEDb_WWW . 'config.php') && is_readable(nZEDb_WWW . 'config.php')) {
-	$tmpCfg = file_get_contents(nZEDb_WWW . 'config.php');
+if (file_exists(nZEDb_CONFIGS . 'config.php') && is_readable(nZEDb_CONFIGS . 'config.php')) {
+	$tmpCfg = file_get_contents(nZEDb_CONFIGS . 'config.php');
 	$cfg->setConfig($tmpCfg);
 }
 

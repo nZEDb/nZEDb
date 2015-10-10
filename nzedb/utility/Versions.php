@@ -1,11 +1,11 @@
 <?php
 namespace nzedb\utility;
 
-use nzedb\db\Settings;
-
 if (!defined('GIT_PRE_COMMIT')) {
 	define('GIT_PRE_COMMIT', false);
 }
+
+use nzedb\ColorCLI;
 
 class Versions
 {
@@ -51,7 +51,9 @@ class Versions
 	/**
 	 * Class constructor initialises the SimpleXML object and sets a few properties.
 	 * @param string $filepath Optional filespec for the XML file to use. Will use default otherwise.
+	 *
 	 * @throws \Exception If the XML is invalid.
+	 * @throws \RuntimeException If version file does not exist.
 	 */
 	public function __construct($filepath = null)
 	{
@@ -66,33 +68,10 @@ class Versions
 		}
 		$this->_filespec = $filepath;
 
-		$this->out = new \ColorCLI();
+		$this->out = new ColorCLI();
 		$this->git = new Git();
 
-		$temp = libxml_use_internal_errors(true);
-		$this->_xml = simplexml_load_file($filepath);
-		libxml_use_internal_errors($temp);
-
-		if ($this->_xml === false) {
-			if (Utility::isCLI()) {
-				$this->out->error("Your versions XML file ({nZEDb_VERSIONS}) is broken, try updating from git.");
-			}
-			throw new \Exception("Failed to open versions XML file '$filepath'");
-		}
-
-		if ($this->_xml->count() > 0) {
-			$vers = $this->_xml->xpath('/nzedb/versions');
-
-			if ($vers[0]->count() == 0) {
-				$this->out->error("Your versions XML file ({nZEDb_VERSIONS}) does not contain version info, try updating from git.");
-				throw new \Exception("Failed to find versions node in XML file '$filepath'");
-			} else {
-				$this->out->primary("Your versions XML file ({nZEDb_VERSIONS}) looks okay, continuing.");
-				$this->_vers = &$this->_xml->versions;
-			}
-		} else {
-			throw new \RuntimeException("No elements in file!\n");
-		}
+		$this->getValidVersionsFile();
 	}
 
 	public function changes()
@@ -117,14 +96,22 @@ class Versions
 	/**
 	 * Checks the git commit number against the XML's stored value.
 	 * @param boolean $update Whether the XML should be updated by the check.
-	 * @return integer The new git commit number, or false.
+	 * @return integer|boolean The new git commit number, or false.
 	 */
 	public function checkGitCommit($update = true)
 	{
+		// Since Dec 2014 we no longer maintain the git commit count in the XML file, as it is no
+		// longer used in the code base.
+		if ((int)$this->_vers->sql->db >= 307) {
+			return 0;
+		}
+
 		$count = $this->git->commits();
-		if ($this->_vers->git->commit->__toString() < $count || GIT_PRE_COMMIT === true) {	// Allow pre-commit to override the commit number (often branch number is higher than dev's)
+		if ($this->_vers->git->commit->__toString() < $count || GIT_PRE_COMMIT === true) {
+			// Allow pre-commit to override the commit number (often branch number is higher than dev's)
 			if ($update) {
-				if (GIT_PRE_COMMIT === true) { // only the pre-commit script is allowed to set the NEXT commit number
+				if (GIT_PRE_COMMIT === true) {
+					// only the pre-commit script is allowed to set the NEXT commit number
 					$count += 1;
 				}
 				if ($count != $this->_vers->git->commit) {
@@ -148,6 +135,14 @@ class Versions
 	{
 		$latest = $this->git->tagLatest();
 		$ver = preg_match('#v(\d+\.\d+\.\d+).*#', $latest, $matches) ? $matches[1] : $latest;
+
+		if ($this->git->getBranch() === 'dev') {
+			if (version_compare($this->_vers->git->tag, '0.0.0', '!=')) {
+				$this->_vers->git->tag = '0.0.0';
+				$this->_changes |= self::UPDATED_GIT_TAG;
+			}
+			return $this->_vers->git->tag;
+		}
 
 		// Check if version file's entry is the same as current branch's tag
 		if (version_compare($this->_vers->git->tag, $latest, '!=')) {
@@ -200,15 +195,15 @@ class Versions
 	 */
 	public function checkSQLFileLatest($update = true)
 	{
-		$options = array(
+		$options = [
 			'data'  => nZEDb_RES . 'db' . DS . 'schema' . DS . 'data' . DS,
 			'ext'   => 'sql',
 			'path'  => nZEDb_RES . 'db' . DS . 'patches' . DS . 'mysql',
 			'regex' =>
-				'#^' . Utility::PATH_REGEX . '(?P<patch>\d{4})~(?P<table>\w+)\.sql$#',
+				'#^' . Misc::PATH_REGEX . '(?P<patch>\d{4})~(?P<table>\w+)\.sql$#',
 			'safe'  => true,
-		);
-		$files = Utility::getDirFiles($options);
+		];
+		$files = Misc::getDirFiles($options);
 		natsort($files);
 
 		$last = (preg_match($options['regex'], end($files), $matches)) ? (int)$matches['patch'] : false;
@@ -251,6 +246,38 @@ class Versions
 	public function getTagVersion()
 	{
 		return $this->_vers->git->tag->__toString();
+	}
+
+	public function getValidVersionsFile($filepath = null)
+	{
+		$filepath = empty($filepath) ? $this->_filespec : $filepath;
+
+		$temp = libxml_use_internal_errors(true);
+		$this->_xml = simplexml_load_file($filepath);
+		libxml_use_internal_errors($temp);
+
+		if ($this->_xml === false) {
+			if (Misc::isCLI()) {
+				$this->out->error("Your versions XML file ($filepath) is broken, try updating from git.");
+			}
+			throw new \Exception("Failed to open versions XML file '$filepath'");
+		}
+
+		if ($this->_xml->count() > 0) {
+			$vers = $this->_xml->xpath('/nzedb/versions');
+
+			if ($vers[0]->count() == 0) {
+				$this->out->error("Your versions XML file ({nZEDb_VERSIONS}) does not contain version info, try updating from git.");
+				throw new \Exception("Failed to find versions node in XML file '$filepath'");
+			} else {
+				$this->out->primary("Your versions XML file ({nZEDb_VERSIONS}) looks okay, continuing.");
+				$this->_vers = &$this->_xml->versions;
+			}
+		} else {
+			throw new \RuntimeException("No elements in file!\n");
+		}
+
+		return $this->_xml;
 	}
 
 	/**

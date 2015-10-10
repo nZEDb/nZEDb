@@ -1,6 +1,8 @@
 <?php
-require_once(dirname(__FILE__) . '/../../../www/config.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
+use nzedb\ConsoleTools;
+use nzedb\Groups;
 use nzedb\db\Settings;
 
 /* This script will allow you to move from single collections/binaries/parts tables to TPG without having to run reset_truncate.
@@ -12,8 +14,8 @@ use nzedb\db\Settings;
  */
 $debug = false;
 $pdo = new Settings();
-$groups = new \Groups(['Settings' => $pdo]);
-$consoletools = new \ConsoleTools(['ColorCLI' => $pdo->log]);
+$groups = new Groups(['Settings' => $pdo]);
+$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 $DoPartRepair = ($pdo->getSetting('partrepair') == '0') ? false : true;
 
 if ((!isset($argv[1])) || $argv[1] != 'true') {
@@ -66,24 +68,24 @@ while ($cdone < $clen['total']) {
 				print_r($collection);
 				echo sprintf("\nINSERT INTO collections_%d (subject, fromname, date, xref, totalfiles, group_id, collectionhash, dateadded, filecheck, filesize, releaseid) VALUES (%s)\n\n", $collection['group_id'], implode(', ', $collection));
 			}
-			$newcid = array('collectionid' => $pdo->queryInsert(sprintf('INSERT INTO collections_%d (subject, fromname, date, xref, totalfiles, group_id, collectionhash, dateadded, filecheck, filesize, releaseid) VALUES (%s);', $collection['group_id'], implode(', ', $collection))));
+			$newcid = array('collection_id' => $pdo->queryInsert(sprintf('INSERT INTO collections_%d (subject, fromname, date, xref, totalfiles, group_id, collectionhash, dateadded, filecheck, filesize, releaseid) VALUES (%s);', $collection['group_id'], implode(', ', $collection))));
 			$consoletools->overWrite('Collections Completed: ' . $consoletools->percentString($ccount, $clen['total']));
 
 			//Get binaries and split to correct group tables.
-			$binaries = $pdo->queryAssoc('SELECT * FROM binaries WHERE collectionID = ' . $oldcid . ';');
+			$binaries = $pdo->queryAssoc('SELECT name, collection_id, filenumber, totalparts, currentparts, HEX(binaryhash) AS binaryhash, partcheck, partsize FROM binaries WHERE collection_id = ' . $oldcid . ';');
 
 			if ($binaries instanceof \Traversable) {
 				foreach ($binaries as $binary) {
 					$binary['name'] = $pdo->escapeString($binary['name']);
-					$binary['binaryhash'] = $pdo->escapeString($binary['binaryhash']);
+					$binary['binaryhash'] = "UNHEX(" . $pdo->escapeString($binary['binaryhash']) . ")";
 					$oldbid = array_shift($binary);
 					$binarynew = array_replace($binary, $newcid);
 					if ($debug) {
 						echo "\n\nBinary insert:\n";
 						print_r($binarynew);
-						echo sprintf("\nINSERT INTO binaries_%d (name, collectionid, filenumber, totalparts, currentparts, binaryhash, partcheck, partsize) VALUES (%s)\n\n", $collection['group_id'], implode(', ', $binarynew));
+						echo sprintf("\nINSERT INTO binaries_%d (name, collection_id, filenumber, totalparts, currentparts, binaryhash, partcheck, partsize) VALUES (%s)\n\n", $collection['group_id'], implode(', ', $binarynew));
 					}
-					$newbid = array('binaryid' => $pdo->queryInsert(sprintf('INSERT INTO binaries_%d (name, collectionid, filenumber, totalparts, currentparts, binaryhash, partcheck, partsize) VALUES (%s);', $collection['group_id'], implode(', ', $binarynew))));
+					$newbid = array('binaryid' => $pdo->queryInsert(sprintf('INSERT INTO binaries_%d (name, collection_id, filenumber, totalparts, currentparts, binaryhash, partcheck, partsize) VALUES (%s);', $collection['group_id'], implode(', ', $binarynew))));
 
 					//Get parts and split to correct group tables.
 					$parts = $pdo->queryAssoc('SELECT * FROM parts WHERE binaryID = ' . $oldbid . ';');
@@ -116,11 +118,11 @@ if ($DoPartRepair === true) {
 	foreach ($actgroups as $group) {
 		$pcount = 1;
 		$pdone = 0;
-		$sql = sprintf('SELECT COUNT(*) AS total FROM partrepair where group_id = %d;', $group['id']);
+		$sql = sprintf('SELECT COUNT(*) AS total FROM missed_parts where group_id = %d;', $group['id']);
 		$plen = $pdo->queryOneRow($sql);
 		while ($pdone < $plen['total']) {
 			// Only load 10000 partrepair records per loop to not overload memory.
-			$partrepairs = $pdo->queryAssoc(sprintf('select * from partrepair where group_id = %d limit %d, 10000;', $group['id'], $pdone));
+			$partrepairs = $pdo->queryAssoc(sprintf('select * from missed_parts where group_id = %d limit %d, 10000;', $group['id'], $pdone));
 			if ($partrepairs instanceof \Traversable) {
 				foreach ($partrepairs as $partrepair) {
 					$partrepair['numberid'] = $pdo->escapeString($partrepair['numberid']);
@@ -129,9 +131,9 @@ if ($DoPartRepair === true) {
 					if ($debug) {
 						echo "\n\nPart Repair insert:\n";
 						print_r($partrepair);
-						echo sprintf("\nINSERT INTO partrepair_%d (numberid, group_id, attempts) VALUES (%s, %s, %s)\n\n", $group['id'], $partrepair['numberid'], $partrepair['group_id'], $partrepair['attempts']);
+						echo sprintf("\nINSERT INTO missed_parts_%d (numberid, group_id, attempts) VALUES (%s, %s, %s)\n\n", $group['id'], $partrepair['numberid'], $partrepair['group_id'], $partrepair['attempts']);
 					}
-					$pdo->queryExec(sprintf('INSERT INTO partrepair_%d (numberid, group_id, attempts) VALUES (%s, %s, %s);', $group['id'], $partrepair['numberid'], $partrepair['group_id'], $partrepair['attempts']));
+					$pdo->queryExec(sprintf('INSERT INTO missed_parts_%d (numberid, group_id, attempts) VALUES (%s, %s, %s);', $group['id'], $partrepair['numberid'], $partrepair['group_id'], $partrepair['attempts']));
 					$consoletools->overWrite('Part Repairs Completed for ' . $group['name'] . ':' . $consoletools->percentString($pcount, $plen['total']));
 					$pcount++;
 				}
@@ -150,7 +152,7 @@ if (isset($argv[2]) && $argv[2] == 'delete') {
 	$pdo->queryDirect('TRUNCATE TABLE collections;');
 	$pdo->queryDirect('TRUNCATE TABLE binaries;');
 	$pdo->queryDirect('TRUNCATE TABLE parts');
-	$pdo->queryDirect('TRUNCATE TABLE partrepair');
+	$pdo->queryDirect('TRUNCATE TABLE missed_parts');
 	echo "Complete.\n";
 }
 // Update TPG setting in site-edit.

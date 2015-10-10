@@ -1,43 +1,63 @@
 <?php
+
 /**
- * An example of a project-specific implementation.
- *
- * After registering this autoload function with SPL, the following line
- * would cause the function to attempt to load the \Foo\Bar\Baz\Qux class
- * from /path/to/project/src/Baz/Qux.php:
- *
- *      new \Foo\Bar\Baz\Qux;
+ * PSR-0 compliant autoloader for libs
  *
  * @param string $class The fully-qualified class name.
+ *
  * @return void
  */
-spl_autoload_register(function ($class) {
+spl_autoload_register(
+	function ($class) {
+		// Only continue if the class is in our namespace.
+		if (strpos($class, 'libs\\') === 0) {
+			// Replace namespace separators with directory separators in the class name, append
+			// with .php
+			$file = nZEDb_ROOT . str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
 
-    // project-specific namespace prefix
-    $prefix = 'libs\\';
+			// if the file exists, require it
+			if (file_exists($file)) {
+				require_once $file;
+			}
+		}
+	}
+);
 
-    // base directory for the namespace prefix
-    $base_dir = __DIR__ . DIRECTORY_SEPARATOR;
+/**
+ *
+ * @param string $class The fully-qualified class name.
+ *
+ * @return void
+ */
+spl_autoload_register(
+	function($class) {
+		// base directory for the namespace prefix
+		$base_dir = __DIR__ . DIRECTORY_SEPARATOR;
 
-    // does the class use the namespace prefix?
-    $len = strlen($prefix);
-    if (strncmp($prefix, $class, $len) !== 0) {
-        // no, move to the next registered autoloader
-        return;
-    }
+		// replace the namespace prefix with the base directory, replace namespace
+		// separators with directory separators in the relative class name, append
+		// with .php
+		$file = $base_dir . str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
 
-    // get the relative class name
-    $relative_class = substr($class, $len);
+		// if the file exists, require it
+		if (file_exists($file) && is_readable($file)) {
+			require_once $file;
+		} else {
+			// Let's try the old style format with 'class.' prefixed to the lower-cased filename.
+			// This bypasses the concept of a Vendor namespace as older libs don't use it.
 
-    // replace the namespace prefix with the base directory, replace namespace
-    // separators with directory separators in the relative class name, append
-    // with .php
-    $file = $base_dir . str_replace('\\', DIRECTORY_SEPARATOR, $relative_class) . '.php';
-
-    // if the file exists, require it
-    if (file_exists($file)) {
-        require_once $file;
-    }
-});
+			$filename    = 'class.' . strtolower($class) . '.php';
+			$DirIterator = new \DirectoryIterator($base_dir);
+			foreach ($DirIterator as $fileInfo) {
+				if ($fileInfo->isDir() && !$fileInfo->isDot()) {
+					$file = $fileInfo->getPathname() . DIRECTORY_SEPARATOR . $filename;
+					if (file_exists($file) && is_readable($file)) {
+						require_once $file;
+					}
+				}
+			}
+		}
+	}
+);
 
 ?>

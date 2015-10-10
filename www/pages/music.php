@@ -1,4 +1,10 @@
 <?php
+
+use nzedb\Category;
+use nzedb\Genres;
+use nzedb\Music;
+use nzedb\DnzbFailures;
+
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
@@ -6,6 +12,7 @@ if (!$page->users->isLoggedIn()) {
 $music = new Music(['Settings' => $page->settings]);
 $cat = new Category(['Settings' => $page->settings]);
 $gen = new Genres(['Settings' => $page->settings]);
+$fail = new DnzbFailures(['Settings' => $page->settings]);
 
 $musiccats = $cat->getChildren(Category::CAT_PARENT_MUSIC);
 $mtmp = array();
@@ -31,10 +38,6 @@ $orderby = isset($_REQUEST['ob']) && in_array($_REQUEST['ob'], $ordering) ? $_RE
 
 $results = $musics = array();
 $results = $music->getMusicRange($catarray, $offset, ITEMS_PER_COVER_PAGE, $orderby, $page->userdata['categoryexclusions']);
-foreach ($results as $result) {
-	//$result['genre'] = $music->makeFieldLinks($result, 'genre');
-	$musics[] = $result;
-}
 
 $artist = (isset($_REQUEST['artist']) && !empty($_REQUEST['artist'])) ? stripslashes($_REQUEST['artist']) : '';
 $page->smarty->assign('artist', $artist);
@@ -46,6 +49,12 @@ $genres = $gen->getGenres(Genres::MUSIC_TYPE, true);
 $tmpgnr = array();
 foreach ($genres as $gn) {
 	$tmpgnr[$gn['id']] = $gn['title'];
+}
+
+foreach ($results as $result) {
+	$result['genre'] = $tmpgnr[$result["genre_id"]];
+	$result['failed'] = $fail->getFailedCount($result['grp_release_guid']);
+	$musics[] = $result;
 }
 $genre = (isset($_REQUEST['genre']) && array_key_exists($_REQUEST['genre'], $tmpgnr)) ? $_REQUEST['genre'] : '';
 $page->smarty->assign('genres', $genres);

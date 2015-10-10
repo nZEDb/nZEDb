@@ -1,70 +1,61 @@
 <?php
 require_once './config.php';
 
-$page = new AdminPage();
-$tvrage = new TvRage(['Settings' => $page->settings]);
-$id = 0;
+use nzedb\TvRage;
 
-// Set the current action.
-$action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
+$page   = new AdminPage();
+$tvRage = new TvRage(['Settings' => $page->settings]);
 
-switch($action) {
+$rage = [
+	'id' => '', 'description' => '', 'releasetitle' => '', 'genre' => '',
+	'rageid' => '', 'country' => '', 'imgdata' => ''
+];
+
+switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
 	case 'submit':
-		if ($_POST["id"] == "") {
-			$imgbytes = "";
-			if($_FILES['imagedata']['size'] > 0) {
-				$fileName = $_FILES['imagedata']['name'];
-				$tmpName  = $_FILES['imagedata']['tmp_name'];
-				$fileSize = $_FILES['imagedata']['size'];
-				$fileType = $_FILES['imagedata']['type'];
-
-				// Check the uploaded file is actually an image.
-				$file_info = getimagesize($tmpName);
-				if(!empty($file_info)) {
-					$fp = fopen($tmpName, 'r');
-					$imgbytes = fread($fp, filesize($tmpName));
-					fclose($fp);
-				}
-			}
-			$tvrage->add($_POST["rageid"], $_POST["releasetitle"], $_POST["description"], $_POST["genre"], $_POST['country'], $imgbytes);
+		if ($_POST["id"] == '') {
+			$tvRage->add($_POST["rageid"], $_POST["releasetitle"], $_POST["description"],
+				$_POST["genre"], $_POST['country'], getImage()
+			);
 		} else {
-			$imgbytes = "";
-			if($_FILES['imagedata']['size'] > 0) {
-				$fileName = $_FILES['imagedata']['name'];
-				$tmpName  = $_FILES['imagedata']['tmp_name'];
-				$fileSize = $_FILES['imagedata']['size'];
-				$fileType = $_FILES['imagedata']['type'];
-
-				// Check the uploaded file is actually an image.
-				$file_info = getimagesize($tmpName);
-				if(!empty($file_info)) {
-					$fp = fopen($tmpName, 'r');
-					$imgbytes = fread($fp, filesize($tmpName));
-					fclose($fp);
-				}
-			}
-			$tvrage->update($_POST["id"], $_POST["rageid"], $_POST["releasetitle"], $_POST["description"], $_POST["genre"], $_POST['country'], $imgbytes);
+			$tvRage->update($_POST["id"], $_POST["rageid"], $_POST["releasetitle"],
+				$_POST["description"], $_POST["genre"], $_POST['country'], getImage()
+			);
 		}
 
-		if(isset($_POST['from']) && !empty($_POST['from'])) {
-			header("Location:".$_POST['from']);
+		if (isset($_POST['from']) && !empty($_POST['from'])) {
+			header("Location:" . $_POST['from']);
 			exit;
 		}
 
-		header("Location:".WWW_TOP."/rage-list.php");
+		header("Location:" . WWW_TOP . "/rage-list.php");
 		break;
 
 	case 'view':
 	default:
 		if (isset($_GET["id"])) {
 			$page->title = "Tv Rage Edit";
-			$id = $_GET["id"];
-			$rage = $tvrage->getByID($id);
-			$page->smarty->assign('rage', $rage);
+			$rage = $tvRage->getByID($_GET["id"]);
 		}
 		break;
 }
 
-$page->title="Add/Edit TV Rage Show Data";
+$page->smarty->assign('rage', $rage);
+
+$page->title   = "Add/Edit TV Rage Show Data";
 $page->content = $page->smarty->fetch('rage-edit.tpl');
 $page->render();
+
+function getImage() {
+	$imgBytes = '';
+	if ($_FILES['imagedata']['size'] > 0) {
+		$tmpName = $_FILES['imagedata']['tmp_name'];
+		// Check the uploaded file is actually an image.
+		if (!empty(getimagesize($tmpName))) {
+			$fp       = fopen($tmpName, 'r');
+			$imgBytes = fread($fp, filesize($tmpName));
+			fclose($fp);
+		}
+	}
+	return $imgBytes;
+}

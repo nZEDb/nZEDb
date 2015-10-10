@@ -1,4 +1,7 @@
 <?php
+
+use nzedb\Forum;
+
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
@@ -21,6 +24,7 @@ $page->smarty->assign('pageroffset', $offset);
 $page->smarty->assign('pageritemsperpage', ITEMS_PER_PAGE);
 $page->smarty->assign('pagerquerybase', WWW_TOP . "/forum?offset=");
 $page->smarty->assign('pagerquerysuffix', "#results");
+$page->smarty->assign('privateprofiles', ($page->settings->getSetting('privateprofiles') == 1) ? true : false);
 
 $pager = $page->smarty->fetch("pager.tpl");
 $page->smarty->assign('pager', $pager);

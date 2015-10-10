@@ -127,35 +127,35 @@ do
 #	$PHP ${TEST_PATH}/removeCrapReleases.php true full executable
 #	$PHP ${TEST_PATH}/removeCrapReleases.php true full short
 #	$PHP ${NZEDB_PATH}/update_binaries.php alt.binaries.classic.tv.shows
-#   $PYTHON -OOu ${THREADED_PATH}/binaries_safe_threaded.py
+#	$PYTHON -OOu ${THREADED_PATH}/binaries_safe_threaded.py
 #	$PYTHON -OOu ${THREADED_PATH}/binaries_threaded.py
 #	$PYTHON -OOu ${THREADED_PATH}/backfill_threaded.py all
 #	$PYTHON -OOu ${THREADED_PATH}/backfill_safe_threaded.py
-#	$PYTHON -OOu ${THREADED_PATH}/releases_threaded.py
-#	$PHP ${NZEDB_PATH}/update_releases.php 1 false
-#	$PHP ${NZEDB_PATH}/decrypt_hashes.php full
+	$PYTHON -OOu ${THREADED_PATH}/releases_threaded.py
+	$PHP ${NZEDB_PATH}/update_releases.php 1 false
+	$PHP ${NZEDB_PATH}/decrypt_hashes.php full
 #	$PHP ${DEV_PATH}/renametopre.php 4
-#	$PHP ${TEST_PATH}/fixReleaseNames.php 6 true all yes					#This is faster than threaded and uses less load
-#	$PHP ${TEST_PATH}/fixReleaseNames.php 4 true all yes					#Threaded is faster but uses more load
-#	$PHP ${TEST_PATH}/fixReleaseNames.php 2 true all yes					#decrypt_hashes.php is faster, but this uses filenames also and should be run after
-#	$PHP ${TEST_PATH}/fixReleaseNames.php 8 true all yes					#This should only be run after all pp additional has been completed
+	$PHP ${TEST_PATH}/fixReleaseNames.php 6 true all yes					#This is faster than threaded and uses less load
+	$PHP ${TEST_PATH}/fixReleaseNames.php 4 true all yes					#Threaded is faster but uses more load
+	$PHP ${TEST_PATH}/fixReleaseNames.php 2 true all yes					#decrypt_hashes.php is faster, but this uses filenames also and should be run after
+	$PHP ${TEST_PATH}/fixReleaseNames.php 8 true all yes					#This should only be run after all pp additional has been completed
 #	$PHP ${NZEDB_PATH}/nix/tmux/bin/postprocess_pre.php						#This is better run in a dedicated screen instance, 24x7
 #	$PYTHON -OOu ${THREADED_PATH}/postprocess_threaded.py nfo
-#	$PHP ${NZEDB_PATH}/requestid.php full									#This runs a local lookup only and is much faster, should be run before threaded
+	$PHP ${NZEDB_PATH}/requestid.php full									#This runs a local lookup only and is much faster, should be run before threaded
 #   $PYTHON -OOu ${THREADED_PATH}/requestid_threaded.py						#This is much slower for local lookup, but is faster for remote lookup
 #	$PHP ${DB_PATH}/populate_nzb_guid.php limited
 #	$PHP ${DB_PATH}/populate_nzb_guid.php true
-#	$PYTHON -OOu ${THREADED_PATH}/postprocess_threaded.py additional		#you can run per group_id, categoryid or parentid
-#	$PYTHON -OOu ${THREADED_PATH}/postprocess_threaded.py nfo
-#	$PYTHON -OOu ${THREADED_PATH}/fixreleasenames_threaded.py md5			#fixReleaseNames.php should be used instead
-#	$PYTHON -OOu ${THREADED_PATH}/fixreleasenames_threaded.py nfo
-#	$PYTHON -OOu ${THREADED_PATH}/fixreleasenames_threaded.py filename		#fixReleaseNames.php should be used instead
-#   $PYTHON -OOu ${THREADED_PATH}/fixreleasenames_threaded.py par2			#fixReleaseNames.php should be used instead
-#   $PYTHON -OOu ${THREADED_PATH}/fixreleasenames_threaded.py miscsorter	#This works, but I do not know how well
-#	$PYTHON -OOu ${THREADED_PATH}/postprocess_threaded.py movie clean
-#	$PYTHON -OOu ${THREADED_PATH}/postprocess_threaded.py tv clean
-#	$PYTHON -OOu ${THREADED_PATH}/postprocess_old_threaded.py amazon
-#	$PHP ${NZEDB_PATH}/nix/tmux/bin/showsleep.php $NZEDB_SLEEP_TIME
+	$PYTHON -OOu ${THREADED_PATH}/postprocess_threaded.py additional		#you can run per group_id, categoryid or parentid
+	$PYTHON -OOu ${THREADED_PATH}/postprocess_threaded.py nfo
+	$PYTHON -OOu ${THREADED_PATH}/fixreleasenames_threaded.py md5			#fixReleaseNames.php should be used instead
+	$PYTHON -OOu ${THREADED_PATH}/fixreleasenames_threaded.py nfo
+	$PYTHON -OOu ${THREADED_PATH}/fixreleasenames_threaded.py filename		#fixReleaseNames.php should be used instead
+	$PYTHON -OOu ${THREADED_PATH}/fixreleasenames_threaded.py par2			#fixReleaseNames.php should be used instead
+	$PYTHON -OOu ${THREADED_PATH}/fixreleasenames_threaded.py miscsorter	#This works, but I do not know how well
+	$PYTHON -OOu ${THREADED_PATH}/postprocess_threaded.py movie clean
+	$PYTHON -OOu ${THREADED_PATH}/postprocess_threaded.py tv clean
+	$PYTHON -OOu ${THREADED_PATH}/postprocess_old_threaded.py amazon
+	$PHP ${NZEDB_PATH}/nix/tmux/bin/showsleep.php $NZEDB_SLEEP_TIME
 	date2=`date +%s`
 	diff=$(($date2-$date1))
 	echo "Total Running Time: $(($diff / 60)) minutes and $(($diff % 60)) seconds."

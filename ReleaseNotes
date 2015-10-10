@@ -1,0 +1,250 @@
+This file details which changes to the code are in which release version. It is a complement to the ChangeLog file which list *when* changes are made to the dev branch.
+
+0.4.26 2015-10-05
+Added:
+	* Xdebug and PHP settings to nzedb\config\settings.example.php
+		Changed default value of PHPMAILER_ENABLED constant to 'false' instead of undefined (it was commented out).
+		Changed error reporting level to not exclude any messages, as our code should run clean and therefore *any* messages should be investigated.
+		Update your settings.php if you want these.
+        **NOTE** Generating messages slows down the running code and hiding them does not stop them being generated, just displayed.
+	* Sphinx Full-Text Search for Filenames.
+		*** NOTE *** - you will need to do the following to update the sphinx index:
+			0) Minimum Sphinx v2.2.9
+			1) stop sphinxsearch - `sudo service sphinxsearch stop`
+			2) clear old index - `sudo rm /var/lib/sphinxsearch/data/*`
+			3) copy updated conf file - `sudo cp /var/www/nZEDb/misc/sphinxsearch/sphinx.conf /etc/sphinxsearch/sphinx.conf`
+			4) If you had previously edited the conf file - you will need to re-edit again.
+			5) start sphinxsearch - `sudo service sphinxsearch start`
+			6) recreate the tables - `php /var/www/nZEDb/misc/sphinxsearch/create_se_tables.php 0 9312`
+			7) populate the index - `php /var/www/nZEDb/misc/sphinxsearch/populate_rt_indexes.php releases_rt`
+	* Predb export script now has a default filename (predb_export_YYYYMMDDhhmmss.tsv) if only a path is specified.
+	* Display the date which a binary black list was last used (PR 1871).
+	* Base TV Class to make the addition of a new TV scraper easier (Still a WIP).
+	* Add filters to cover pages (PR 1883).
+
+Changed:
+	* More SQL fixes and optimisations (including PR 1871).
+    * Change sidebar menu XXX into Adult to match headermenu, change the icon (PR 1870).
+    * Three Arrows when viewing movie upper right corner (Issue 1850; PR 1854).
+    * Change font used in omicron and charisma templates, adjust layout of coverview pages (PR 1870).
+    * Re-organize and trim some fat out of TvRage.php in preparation for its *glorious* return.
+
+Fixed:
+	* Stopped PreDb import script from creating new groups with quotes around them.
+	* Reverted word-wrap change that caused a space to appear in release titles (alpha theme) Issue 1846 - clear your smarty cache.
+	* API search broken because of missing parameter.
+	* Sphinx Search broken for MariaDB installs (re-run create_se_tables script).
+	* Fix RSS Content Length Response (PR 1849).
+	* Collection regex edit page not showing the result.
+	* Display of api/download hits, in omicron and charisma templates, in last 24 hours (PR 1856).
+    * Background colors on profile and profile edit pages (PR 1857).
+    * Adjustments and fixes in charisma and omicron templates (PR 1858).
+    * Add back missing invites in profile page of charisma/omicron templates (PR 1869).
+    * Fix api json output (PR 1878).
+    * Updated predb insert trigger that got missed for new installs, (Issue 1875).
+
+
+0.4.24 2015-08-03
+Added:
+	* Pick up additional RAR names (PR 1716).
+	* Support for downloading last rar/zip file when post processing (PR 1726).
+	* Matching for hyphenated music scene release names (PR 1719).
+	* Ordering comments by created date. Showing newest on top (PR 1712).
+	* Support for APCu or APC for caching (PR 1722).
+	* Adding a limit to the maximum number of headers a single group can grab per iteration of the main loop (default 1,000,000).
+
+Changed:
+	* All configuration files should now reside in .../nzedb/config.
+		*** IMPORTANT *** This will require manually moving some files, such as .../www/config.php and .../www/settings.php Keving has written a script to handle this for those that are too lazy ;-)
+		https://gist.github.com/kevinlekiller/233052179689512a5f58
+		You will also have to remove the require_once line from the bottom of config.php (handled by the script also).
+	* Query caching changes.
+	* Updated Smarty to v3.1.27
+	* Improvement in NNTP compression handling (Issue 1735).
+	* Returned user signups by month view, back to site-stats (PR 1740).
+	* Update ReleaseRemover with new variant of codec installer file (PR 1759).
+
+Fixed:
+	* Select All and Delete, in Advanced Search, not working (Issues 1713 1715).
+	* IRCScraper script (scrape.php) now looks in the correct location for its configuration file.
+	* Various Error Notices/Warnings (Issue 1714, 1737; PR 1742).
+	* Support for trakt.tv API v2 (PR 1728 and PR 1730).
+	* Issue if nZEDb_SSL_CAFILE is empty (PR 1729).
+	* API regarding JSON-Output (PR 1747).
+	* Updated regex for predb_import_daily_batch script to account for Dropbox's changes to link HTML.
+
+
+0.4.23 2015-07-06
+Added:
+	* Created a config directory under .../nzedb to contain configuration/settings files, so they are all together and don't need paths changing when code moves. I'll gradually move older config/settings files here, with some exceptions TBD.
+	* Matching for hyphenated music scene release names. (PR 1719)
+	* Support for APCu or APC for caching. (PR 1722)
+	* Option to show non-passworded releases AND unprocessed releases.
+	* Adding a limit to the maximum number of headers a single group can grab per iteration of the main loop. This allows for a reasonably safe catchup ability on out of date groups, without completely choking the database with one group's headers ;-)
+		***NOTE*** this may slow things down for some users of *very* active groups.
+		There is an entry in the Settings table (max=>headers=>iteration) to set the value (default 1,000,000), an entry in admin => Edit Site to make this easier will come when someone can be coerced into doing smarty work ;-)
+	* Support for post-prossessing to download the last RAR/Zip file, in order to find filenames.
+	* Add support for trakt.tv API v2. (PR 1728)
+
+Changed:
+	* Updated Smarty to v3.1.27
+	* Moved IRCScraper example settings file to the .../nzedb/config directory
+	* Ordering comments by created date. Showing newest on top. (PR 1712)
+	* Improvements to query caching.
+	* NZBImport now adds groups if they don't exist in the database instead of skipping the release.
+	* Avoid MySQL caching on transient content. This prevents useless data from filling the cache in place of useful data. (PR 1738)
+	* Allow NNTP to retry if compression fails to initialise.
+	* Autoloading for Smarty framework uses its Autoloader. Web pages now use a streamlined version of the previous autoloader, which is now removed from the Smarty tree. (Install process hasn't been tested yet. Let us know of any problems).
+
+Fixed:
+	* Issues 1713 and 1715. Select all + delete in advanced search.
+	* Problems with users being unable to log in due to double quoting in the db lookup query.
+	* Undefined offset: 1 in MiscSorter.php - Issue 1714.
+	* Fix the nzbFileList function. (PR 1727)
+	* Fix for changes in Trakt API v2. (PR 1730)
+	* Fix issues if nZEDb_SSL_CAFILE is empty. (PR 1729)
+	* Various Error Notices/Warning from PHP. (Issue #1737) and others.
+	* Users by month restored to site stats.
+	* API capabilites in JSON format.
+	* Installation file requiring corrected.
+
+
+0.4.22 2015-06-01
+Added:
+	* Captcha feature.
+	* Collection regexes from issue 1668 (part 1).
+	* Temporary caching for Amazon lookup failures. This prevents a title being repeatedly checked during the same loop.
+	* New cleanup script .../misc/testing/PostProcess/check_previews.php Run without parameters to see usage info.
+	* Matching for "release" and "author" when finding audio name. PR 1686.
+	* Additional audiobook regexes. PR 1689.
+	* DEViANCE and PLAZA to PC Game categorisation.
+	* Thumbnail creation setting.
+
+Changed:
+	* Update documentation.
+	* Removed obsolete files.
+	* Deprecated predb_dump script from the misc tree. Use the predb import and export scripts in .../cli/data instead.
+	* Altered ProcessReleases to better process the set limit. Addresses Issue 1630.
+	* settings.php.example
+		***NOTE*** Update your settings.php file to add the new settings.
+	* Changes to DB.
+	* Removed Rotten Tomatoes quality settings as they are no longer required.
+	* Corrected the RottenTomatoes image url - fixes Issue 1649.
+	* Move files around in misc/testing folder.
+		***NOTE*** this may break any custom scripts you have written.
+	* Refactored all files previously in the .../nzedb/controllers directory (which were NOT namespaced) to be in the /nzedb/ name-space.
+		This allows the namespace autoloader to be simplified and moves us closer to compliance with PSR standards.
+	* Improvements to the way Collections/Binaries/Parts are deleted, which should speed thingsup for some users.
+	* Updated .../cli/data/populate_tvrage.php. PR 1682.
+	* Updated the audioNFO regex to be slightly less rubbish. PR 1685.
+	* Improved release creation loop.
+	* Updated a.b.cd.image collection regex.
+	* Improvements to daytopost accuracy and speed. PR 1698
+
+Fixed:
+	* Renamed $pdo to $predb that was missed in refactoring.
+	* 2 issues with regexes relating to Issues 1635 and 1647.
+	* Fix issues with collection regexes relating to issue 1647.
+		***NOTE*** see http://tinyurl.com/k7vwc35 for details.
+	* Genre display in music pages
+		***NOTE*** Clear your smarty cache to correct.
+	* Popporn error causing XXX to not post process - also fixes Issue 1655.
+	* Notices in various web pages.
+	* Do urldecode before working on category to avoid possible errors. - PR 1669
+	* SABnzbd integration for 'verifycert' behaviour.
+	* An issue where the wrong cookie could be destroyed. PR 1671.
+	* Broken pager on search page. PR 1673.
+	* Some issues with the install process.
+	* Issues with IRCScraper. PR 1681.
+	* Error with GiantBomb API if empty result was returned.
+	* Fix typo in "Admin Home". PR 1688.
+	* Alternate USP not being set in config.php on install. Issue 1695. PR 1696.
+	* Incorrect php opening tag in anime page. PR 1703.
+	* Logged in users can view others profiles. PR 1705 and PR 1709.
+
+
+0.4.21 2015-05-04
+Added:
+	* X-DNZB-Failure header support.
+
+Changed:
+	* PR 1636 - Added admin menu state changes.
+	* Improved TV Posterwall query.
+	* Increase column sizes for bookinfo.overview, consoleinfo.review and musicinfo.review due to truncation.
+
+Fixed:
+	* PR 1620 - Switch to fanart.tv v3 api
+	* PR 1623 - Fix oversized fanart images when viewing movie info popup.
+	* Class not found error in Movie.php.
+	* PR 1634 - Fix typo that caused : PHP Notice: Undefined variable: in Binaries.php line 543.
+	* PR 1637 - Call to releases::search missing one parameter for basic searches in search.php
+	* Corrected 'see more' link on TV posterwall to point to /series.
+	* API query issue raised in comments for Issue 1637.
+	* PR 1638 - Fix the wrong table name in Regexes.php.  Was using release naming regexes to create collections.
+	* Fix issues with web RequestID lookups failing.
+	* Undefined offset in ProcessAdditional.
+	* Adding a check to see if the sqlpatch file was previously committed, before trying to update the commit.
+	* Problem behaviour when min/max sizes are both zero.
+
+
+0.4.20 2015-04-06
+Added:
+	* List of licenses used by nZEDb.
+	* Support for in DB collections (grouping) regex.
+	* "regex" sub-menu to admin menu.
+	* A "collections" menu item to the new regex menu.
+	* Support for category regexes in the DB.
+	* Support for alt.binaries.b4e.erotica.
+	* FULLTEXT indexes on bookinfo, consoleinfo, and musicinfo for better existing title matching.
+
+Changed:
+	* Move the blacklist menu into new "Regex" menu item.
+	* Convert collections regex to db.
+	* Better handling of .vol in regex extensions.
+	* Improvements to parsing nfo files for source.
+	* Switch to fanart.tv v3 api
+
+Fixed:
+	* Correcting tmp_pre table references to predb_imports in dump_predb script.
+	* Fixes for compressed NZB reading and return.
+	* Don't ignore renamed releases for local requestID lookup.
+	* Fix oversized fanart images when viewing movie info popup.
+	* Fix Class not found error in Movie.php.
+
+
+0.4.19	2015-03-02
+Added:
+	* XXX WEB-DL category to XXX releases.
+	* XXX-SD category.
+		***NOTE*** run "php /misc/testing/Dev/recategorize.php all" to re-categorize existing releases.
+	* New XXX categories to posterwall.
+
+Changed:
+	* Make ReleaseRemover more informative of the type it is processing.
+	* Ignore PC > Mac category for removeExecutable (Core Releases include their exe file for some reason).
+	* Changing defaults for 'show passworded releases' (now shows potentially passworded) and 'NZB split level' (now 4) for new installs.
+	* Regex updates / categorize fixes for SD XXX
+	* Update sphinxsearch RT index when manually editing release searchname.
+	* Optimize queries for new release posterwall.
+	* Changes to install templates.
+	* Updated regex for codec poster.
+
+Fixed:
+	* RottenTomatoes high-res images - clear your smarty cache.
+	* Group XXX pack releases in a.b.erotica correctly.
+	* Missing binaries from releases due to collection_id not being set.
+		Suggest that you run reset_truncate after this update.
+		NB: IMPORTANT - TPG users (that means you McFuzz) must run "php /nzedb/build/_runonce/tpg_add_collections_column_205-02-20.php"
+		FAILURE TO DO SO WILL CAUSE INSERT ERRORS
+	* Issue 1594 - Fix word wrap on alpha theme.
+	* Reading a corrupt nzb would hang on 100% cpu.
+	* Dupecheck when inserting tvrage titles.
+	* Issues with mysqldump_tables.php when using socket.
+
+
+0.4.0	2014-09-08 niel
+	NOTE: This version forward targets PHP 5.5 and later.
+
+
+0.3.13	2014-09-01
+	NOTE: This is the last version of nZEDb to target PHP 5.4 which has reached its EOL.

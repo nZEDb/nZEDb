@@ -120,7 +120,7 @@ class GiantBomb
 
 		// Set URL
 		curl_setopt($this->ch, CURLOPT_URL, $url);
-		curl_setopt_array($this->ch, nzedb\utility\Utility::curlSslContextOptions());
+		curl_setopt_array($this->ch, nzedb\utility\Misc::curlSslContextOptions());
 
 		// Send the request & save response to $resp
 		$resp["data"] = curl_exec($this->ch);
@@ -396,7 +396,8 @@ class GiantBomb
 		}
 
 		if (empty($result) || !empty($result->error) && strtoupper($result->error) != "OK") {
-			throw new \GiantBombException("Following error encountered: " . $result->error);
+			$result = !empty($result) ? $result->error : "Empty Result";
+			throw new \GiantBombException("Following error encountered: " . $result);
 		}
 
 		return $result;

@@ -1,6 +1,8 @@
 <?php
 require_once './config.php';
 
+use nzedb\Releases;
+
 $page = new AdminPage(true);
 
 if (isset($_GET['id'])) {

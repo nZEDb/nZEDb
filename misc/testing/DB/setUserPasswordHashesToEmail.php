@@ -15,11 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-require_once dirname(__FILE__) . '/../../../www/config.php';
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
+use nzedb\ColorCLI;
+use nzedb\Users;
 use nzedb\db\Settings;
 
-$colorCLI = new \ColorCLI();
+$colorCLI = new ColorCLI();
 
 $warning = <<<WARNING
 This script will (re)set the password hashes for older hashes (pre Db patch
@@ -42,9 +44,9 @@ $pdo = new Settings();
 $users = $pdo->query("SELECT id, username, email, password FROM users");
 $update = $pdo->Prepare('UPDATE users SET password = :password WHERE id = :id');
 
-$Users = new \Users(['Settings' => $pdo]);
+$Users = new Users(['Settings' => $pdo]);
 
-foreach($users as $user) {
+foreach ($users as $user) {
 	if (needUpdate($user)) {
 		$hash = $Users->hashPassword($user['email']);
 		if ($hash !== false) {

@@ -1,4 +1,8 @@
 <?php
+
+use nzedb\Contents;
+use nzedb\SiteMap;
+
 $te = $page->smarty;
 $arPages = array();
 $arPages[] = buildURL("Home", "Home Page", "/", 'daily', '1.0');
@@ -48,7 +52,11 @@ if ($page->userdata != null) {
 
 // Echo appropriate site map.
 asort($arPages);
-$page->smarty->assign('sitemaps', $arPages);
+$page->smarty->assign([
+		'sitemaps' => $arPages,
+		'last_type' => ''
+	]
+);
 
 if (isset($_GET["type"]) && $_GET["type"] == "xml") {
 	echo $page->smarty->fetch('sitemap-xml.tpl');

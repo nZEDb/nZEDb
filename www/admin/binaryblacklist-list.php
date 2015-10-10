@@ -1,8 +1,10 @@
 <?php
 require_once './config.php';
 
+use nzedb\Binaries;
+
 $page = new AdminPage();
-$bin = new Binaries(['Settings' => $page->settings]);
+$bin  = new Binaries(['Settings' => $page->settings]);
 
 $page->title = "Binary Black/Whitelist List";
 

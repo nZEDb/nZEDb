@@ -1,3 +1,0 @@
-#!/bin/bash
-
-php nzedb/DEV/tvrage-id-check.php;

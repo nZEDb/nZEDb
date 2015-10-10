@@ -1,5 +1,7 @@
 <?php
-require_once __DIR__ . '/../automated.config.php';
+require_once realpath(__DIR__ . DIRECTORY_SEPARATOR . 'install.php');
+
+use nzedb\Install;
 
 $page = new InstallPage();
 $page->title = "OpenSSL Setup";
@@ -61,7 +63,8 @@ $page->smarty->assign('page', $page);
 $page->content = $page->smarty->fetch('step3.tpl');
 $page->render();
 
-function checkPathsReadable($location) {
+function checkPathsReadable($location)
+{
 	$paths = preg_split('#\/#', $location);
 	$directory = '';
 	if ($paths && count($paths)) {

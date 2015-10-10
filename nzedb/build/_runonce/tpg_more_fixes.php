@@ -26,7 +26,7 @@ if (!isset($argv[1]) || !in_array($argv[1], ['1'])) {
 	);
 }
 
-require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php';
+require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php';
 
 use nzedb\db\Settings;
 
@@ -75,7 +75,7 @@ if ($groups === false) {
 						break;
 				}
 			}
-			echo 'Finished fixing group ' . $group['id'] . ', ' . (--$groupCount) . ' to go!' .PHP_EOL;
+			echo 'Finished fixing group ' . $group['id'] . ', ' . (--$groupCount) . ' to go!' . PHP_EOL;
 		}
 	}
 	echo 'All done!' . PHP_EOL;

@@ -29,15 +29,15 @@ require_once nZEDb_LIBS . 'Git.php' . DS . 'Git.php';
 class Git extends \GitRepo
 {
 	private $branch;
-	private $mainBranches = ['dev', 'next-master', 'master'];
+	private $mainBranches = ['dev', 'next-master', 'master', 'dev-test'];
 
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
-		$defaults = array(
+		$defaults = [
 			'create'		=> false,
 			'initialise'	=> false,
 			'filepath'		=> nZEDb_ROOT,
-		);
+		];
 		$options += $defaults;
 
 		parent::__construct($options['filepath'], $options['create'], $options['initialise']);
@@ -51,7 +51,7 @@ class Git extends \GitRepo
 	{
 		$count = 0;
 		$log = explode("\n", $this->log());
-		foreach($log as $line) {
+		foreach ($log as $line) {
 			if (preg_match('#^commit#', $line)) {
 				++$count;
 			}
@@ -59,6 +59,11 @@ class Git extends \GitRepo
 		return $count;
 	}
 
+	/**
+	 * @param string $options
+	 *
+	 * @return string
+	 */
 	public function describe($options = null)
 	{
 		return $this->run("describe $options");
@@ -67,6 +72,29 @@ class Git extends \GitRepo
 	public function getBranch()
 	{
 		return $this->branch;
+	}
+
+	/**
+	 * @param $gitObject
+	 *
+	 * @return bool
+	 * @throws \Exception
+	 */
+	public function isCommited($gitObject)
+	{
+		$cmd = "cat-file -e $gitObject";
+
+		try {
+			$result = $this->run($cmd);
+		} catch (\Exception $e) {
+			$message = explode("\n", $e->getMessage());
+			if ($message[0] === "fatal: Not a valid object name $gitObject") {
+				$result = false;
+			} else {
+				throw new \Exception($message);
+			}
+		}
+		return ($result === '');
 	}
 
 	public function log($options = null)
@@ -79,6 +107,11 @@ class Git extends \GitRepo
 		return $this->mainBranches;
 	}
 
+	/**
+	 * @param string $options
+	 *
+	 * @return string
+	 */
 	public function tag($options = null)
 	{
 		return $this->run("tag $options");

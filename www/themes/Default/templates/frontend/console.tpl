@@ -81,7 +81,7 @@
 					<td class="mid">
 						<div class="movcover">
 							<a class="title" title="View details"
-							   href="{$smarty.const.WWW_TOP}/details/{$result.grp_release_guid}/{$result.grp_release_name|escape:"htmlall"}">
+							   href="{$smarty.const.WWW_TOP}/details/{$result.grp_release_guid}">
 								<img class="shadow"
 									 src="{$smarty.const.WWW_TOP}/covers/console/{if $result.cover == 1}{$result.consoleinfoid}.jpg{else}no-cover.jpg{/if}"
 									 width="120" border="0" alt="{$result.title|escape:"htmlall"}"/>
@@ -107,7 +107,7 @@
 					</td>
 					<td colspan="8" class="left" id="guid{$result.grp_release_guid}">
 						<h2><a class="title" title="View details"
-							   href="{$smarty.const.WWW_TOP}/details/{$result.grp_release_guid}/{$result.grp_release_name|escape:"htmlall"}">{$result.title|stripslashes|escape:"htmlall"}
+							   href="{$smarty.const.WWW_TOP}/details/{$result.grp_release_guid}">{$result.title|stripslashes|escape:"htmlall"}
 								- {$result.platform|escape:"htmlall"}</a></h2>
 						{if $result.genre != ""}<b>Genre:</b>{$result.genre}<br/>{/if}
 						{if $result.esrb != ""}<b>Rating:</b>{$result.esrb}<br/>{/if}
@@ -138,7 +138,7 @@
 																	 value="{$mguid[$m@index]}"/></div>
 										</td>
 										<td>
-											<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">{$mname[$m@index]|escape:"htmlall"}</a>
+											<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$mname[$m@index]|escape:"htmlall"}</a>
 
 											<div>
 												<i class="icon-calendar"></i> Posted {$mpostdate[$m@index]|timeago} | <i
@@ -147,7 +147,7 @@
 																				  href="{$smarty.const.WWW_TOP}/filelist/{$mguid[$m@index]}">{$mtotalparts[$m@index]}
 													files</a> | <i class="icon-comments"></i> <a
 														title="View comments for {$mname[$m@index]|escape:"htmlall"}"
-														href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}#comments">{$mcomments[$m@index]}
+														href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}#comments">{$mcomments[$m@index]}
 													cmt{if $mcomments[$m@index] != 1}s{/if}</a> | <i
 														class="icon-download"></i> {$mgrabs[$m@index]}
 												grab{if $mgrabs[$m@index] != 1}s{/if} |
@@ -170,7 +170,7 @@
 										</td>
 										<td class="icons">
 											<div class="icon icon_nzb"><a title="Download Nzb"
-																		  href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">
+																		  href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}">
 													&nbsp;</a></div>
 											<div class="icon icon_cart" title="Add to Cart"></div>
 											{if $sabintegrated}

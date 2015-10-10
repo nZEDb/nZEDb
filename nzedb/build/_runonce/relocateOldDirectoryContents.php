@@ -1,27 +1,29 @@
 <?php
 
-require_once dirname(__FILE__) . '/../www/config.php';
+require_once dirname(dirname(dirname(__DIR__))) . '/www/config.php';
 
-$output = new \ColorCLI();
+use nzedb\ColorCLI;
+
+$output = new ColorCLI();
 echo $output->primary("Checking for files in the renamed directories.");
 $status = 0;
 
-$dirs = array(
+$dirs = [
 	[
 		'old' => 'misc/testing/DB_scripts',
 		'newpath' => 'misc/testing/DB'
 	],
 	[
 		'old' => 'misc/testing/Dev_testing/Subject_testing',
-		'newpath' => 'misc/testing/Dev/Subject'
+		'newpath' => 'misc/testing/Developers/Subject'
 	],
 	[
 		'old' => 'misc/testing/Dev_testing',
-		'newpath' => 'misc/testing/Dev'
+		'newpath' => 'misc/testing/Developers'
 	],
 	[
 		'old' => 'misc/testing/PostProc_testing',
-		'newpath' => 'misc/testing/PostProc'
+		'newpath' => 'misc/testing/PostProcess'
 	],
 	[
 		'old' => 'misc/testing/Regex_testing',
@@ -67,7 +69,7 @@ $dirs = array(
 		'old' => 'misc/update_scripts',
 		'newpath' => 'misc/update'
 	],
-);
+];
 
 $tatus = 0;
 foreach ($dirs as $dir) {
@@ -97,4 +99,4 @@ foreach ($dirs as $dir) {
 	}
 }
 
-exit((int) $status);
+exit((int)$status);

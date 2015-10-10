@@ -2,7 +2,9 @@
 
 require_once './config.php';
 
-$page = new AdminPage();
+use nzedb\Logger;
+
+$page        = new AdminPage();
 $page->title = 'View Logs';
 
 $type = isset($_GET['t']) ? $_GET['t'] : 'all';
@@ -14,7 +16,7 @@ $logPath = $logPath['LogPath'];
 
 $regex = false;
 
-switch($type) {
+switch ($type) {
 	case 'info':
 		$regex = '/\[INFO\]/';
 		break;
@@ -47,7 +49,7 @@ if ($file !== false) {
 	rsort($file);
 	$data = [];
 	foreach ($file as $line) {
-		$line = str_replace(array('>', '<'), '', $line);
+		$line = str_replace(['>', '<'], '', $line);
 		if ($regex !== false) {
 			if (preg_match($regex, $line)) {
 				$data[] = $line;
@@ -60,16 +62,16 @@ if ($file !== false) {
 		$data = false;
 	} else {
 		$total = count($data);
-		$data = array_slice($data, $offset, ITEMS_PER_PAGE);
+		$data  = array_slice($data, $offset, ITEMS_PER_PAGE);
 	}
 }
 
 $page->smarty->assign(
-	array(
-		'data' => $data,
-		'types' => array('all', 'info', 'notice', 'warning', 'error', 'fatal', 'sql'),
-		'path' => nZEDb_WWW . 'automated.config.php'
-	)
+	[
+		'data'  => $data,
+		'types' => ['all', 'info', 'notice', 'warning', 'error', 'fatal', 'sql'],
+		'path'  => nZEDb_WWW . 'smarty.php'
+	]
 );
 
 $page->smarty->assign('pagertotalitems', $total);

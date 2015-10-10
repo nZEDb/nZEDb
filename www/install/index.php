@@ -1,6 +1,8 @@
 <?php
 @session_start();
-require_once realpath(__DIR__ . '/../automated.config.php');
+require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'smarty.php');
+
+use nzedb\Install;
 
 $page_title = "Welcome";
 
@@ -43,6 +45,8 @@ if (!$cfg->error) {
 		<li>Your database credentials.</li>
 		<li>Your news server credentials.</li>
 		<li>SSH & root ability on your server (in case you need to install missing packages).</li>
+		<li>You should consider copying nZEDb/nzedb/config/settings.example.php to
+			nZEDb/nzedb/config/settings.php (Default settngs should be fine for installing).</li>
 	</ol>
 	<br/><br/>
 	<p>
@@ -69,7 +73,7 @@ if (!$cfg->error) {
 					if (extension_loaded('posix') && strtolower(substr(PHP_OS, 0, 3)) !== 'win') {
 						$group = posix_getgrgid(posix_getgid());
 						echo
-						'<br /><br />Another solution is to run:<br />chown -R YourUnixUserName:' . $group['name']  . ' ' . nZEDb_ROOT .
+						'<br /><br />Another solution is to run:<br />chown -R YourUnixUserName:' . $group['name'] . ' ' . nZEDb_ROOT .
 						'<br />Then give your user access to the group:<br />usermod -a -G ' . $group['name'] . ' YourUnixUserName' .
 						'<br />Finally give read/write access to your user/group:<br />chmod -R 774 ' . nZEDb_ROOT;
 					}

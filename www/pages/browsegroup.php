@@ -1,4 +1,7 @@
 <?php
+
+use nzedb\Groups;
+
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }

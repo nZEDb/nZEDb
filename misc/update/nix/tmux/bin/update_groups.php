@@ -1,14 +1,16 @@
 <?php
-require_once dirname(__FILE__) . '/../../../config.php';
+require_once realpath(dirname(dirname(dirname(dirname(dirname(__DIR__))))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
+use nzedb\ConsoleTools;
+use nzedb\NNTP;
 use nzedb\db\Settings;
 
 $start = TIME();
 $pdo = new Settings();
-$consoleTools = new \ConsoleTools(['ColorCLI' => $pdo->log]);
+$consoleTools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 
 // Create the connection here and pass
-$nntp = new \NNTP(['Settings' => $pdo]);
+$nntp = new NNTP(['Settings' => $pdo]);
 if ($nntp->doConnect() !== true) {
 	exit($pdo->log->error("Unable to connect to usenet."));
 }
@@ -19,16 +21,16 @@ if ($nntp->isError($data)) {
 	exit($pdo->log->error("Failed to getGroups() from nntp server."));
 }
 
-echo $pdo->log->header("Inserting new values into shortgroups table.");
+echo $pdo->log->header("Inserting new values into short_groups table.");
 
-$pdo->queryExec('TRUNCATE TABLE shortgroups');
+$pdo->queryExec('TRUNCATE TABLE short_groups');
 
 // Put into an array all active groups
 $res = $pdo->query('SELECT name FROM groups WHERE active = 1 OR backfill = 1');
 
 foreach ($data as $newgroup) {
 	if (myInArray($res, $newgroup['group'], 'name')) {
-		$pdo->queryInsert(sprintf('INSERT INTO shortgroups (name, first_record, last_record, updated) VALUES (%s, %s, %s, NOW())', $pdo->escapeString($newgroup['group']), $pdo->escapeString($newgroup['first']), $pdo->escapeString($newgroup['last'])));
+		$pdo->queryInsert(sprintf('INSERT INTO short_groups (name, first_record, last_record, updated) VALUES (%s, %s, %s, NOW())', $pdo->escapeString($newgroup['group']), $pdo->escapeString($newgroup['first']), $pdo->escapeString($newgroup['last'])));
 		echo $pdo->log->primary('Updated ' . $newgroup['group']);
 	}
 }

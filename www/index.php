@@ -1,16 +1,7 @@
 <?php
+require_once 'smarty.php';
 
-use \nzedb\db\Settings;
-
-if (is_file("config.php")) {
-	require_once './config.php';
-} else {
-	if (is_dir("install")) {
-		header("location: install");
-		exit();
-	}
-}
-require_once 'automated.config.php';
+use nzedb\db\Settings;
 
 $page = new Page();
 
@@ -75,6 +66,7 @@ switch ($page->page) {
 			break;
 		}
 	case 'api':
+	case 'failed':
 	case 'getnzb':
 	case 'login':
 	case 'preinfo':

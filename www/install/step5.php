@@ -1,5 +1,7 @@
 <?php
-require_once realpath(__DIR__ . '/../automated.config.php');
+require_once realpath(__DIR__ . DIRECTORY_SEPARATOR . 'install.php');
+
+use nzedb\Install;
 
 $page = new InstallPage();
 $page->title = "Save Settings";

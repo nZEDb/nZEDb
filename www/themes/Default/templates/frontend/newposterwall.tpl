@@ -34,13 +34,17 @@
 									class="library-show"
 								{elseif $type == 'PC'}
 									class="library-games"
+								{elseif $type == 'TV'}
+									class="library-games"
+								{elseif $type == 'Anime'}
+									class="library-show"
 								{/if}
 								>
 							<div class="poster">
 								<a class="titleinfo" title="{$result.guid}"
 								   href="{$smarty.const.WWW_TOP}/details/{$result.guid}">
 									{if $type == 'Console'}
-										<img width="130px" alt=""
+										<img width="130px" height="195px" alt=""
 											 src="{$smarty.const.WWW_TOP}/covers/console/{$result.consoleinfoid}.jpg"/>
 									{elseif $type == 'Movies'}
 										<img width="140px" height="205px" alt=""
@@ -49,21 +53,27 @@
 										<img width="140px" height="205px" alt=""
 											 src="{$smarty.const.WWW_TOP}/covers/xxx/{$result.xxxinfo_id}-cover.jpg"/>
 									{elseif $type == 'Audio'}
-										<img height="250px" width="250px" alt=""
+										<img width="250px" height="250px" alt=""
 											 src="{$smarty.const.WWW_TOP}/covers/music/{$result.musicinfoid}.jpg"/>
 									{elseif $type == 'Books'}
-										<img height="140px" width="205px" alt=""
+										<img width="140px" height="205px" alt=""
 											 src="{$smarty.const.WWW_TOP}/covers/book/{$result.bookinfoid}.jpg"/>
 									{elseif $type == 'PC'}
-										<img height="130px" width="130px" alt=""
+										<img width="130px" height="195px" alt=""
 											 src="{$smarty.const.WWW_TOP}/covers/games/{$result.gamesinfo_id}.jpg"/>
+									{elseif $type == 'TV'}
+										<img width="130px" height="150px" alt=""
+											 src="{$smarty.const.WWW_TOP}/covers/tvrage/{$result.rageid}.jpg"/>
+									{elseif $type == 'Anime'}
+										<img width="130px" height="195px" alt=""
+											 src="{$smarty.const.WWW_TOP}/covers/anime/{$result.anidbid}.jpg"/>
 									{/if}
 								</a>
 							</div>
 							<div class="rating-pod" id="guid{$result.guid}">
 								<div class="icons">
 									<div class="icon icon_nzb"><a class="divlink" title="Download Nzb"
-																  href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"url"}"></a>
+																  href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}"></a>
 									</div>
 									<div class="icon icon_cart" title="Add to Cart"></div>
 									{if $sabintegrated}
@@ -96,7 +106,7 @@
 										</div>
 										<div class="icon icon_trakt">
 											<a class="divlink" target="_blank" title="View on Trakt"
-											   href="{$site->dereferrer_link}http://trakt.tv/search/imdb?q=tt{$result.imdbid}/"></a>
+											   href="{$site->dereferrer_link}http://trakt.tv/search/imdb/tt{$result.imdbid}/"></a>
 										</div>
 										{if $cpapi != '' && $cpurl != ''}
 											<div class="icon icon_cp">
@@ -167,6 +177,18 @@
 											   href="{$site->dereferrer_link}http://www.shelfari.com/search/books?Keywords={if $result.author != ""}{$result.author|escape:"url"}{"+-+"}{/if}{$result.booktitle|escape:"url"}"
 											   target="_blank"></a>
 										</div>
+									{elseif $type == 'TV'}
+										<div class="icon icon_tvrage">
+											<a class="divlink" title="View in TvRage"
+											href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$result.rageid}"
+											target="_blank"></a>
+										</div>
+									{elseif $type == 'Anime'}
+									<div class="icon icon_anidb">
+										<a class="divlink" title="View in AniDB"
+										   href="{$site->dereferrer_link}http://anidb.net/perl-bin/animedb.pl?show=anime&aid={$result.anidbid}"
+										   target="_blank"></a>
+									</div>
 									{/if}
 								</div>
 							</div>

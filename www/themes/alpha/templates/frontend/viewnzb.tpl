@@ -4,15 +4,18 @@
 			<fieldset class="adbanner div-center">
 				<legend class="adbanner">Advertisement</legend>
 				{$site->addetail}
-			</fieldset></div></div>
-	<br>
+			</fieldset>
+		</div>
+	</div>
+	<br />
 {/if}
 
-<h2>{$release.searchname|escape:"htmlall"}</h2>
+<h2>{$release.searchname|escape:"htmlall"|truncate:100:"...":true}{if $failed > 0}<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
+		<i class ="fa fa-thumbs-o-up"></i> {$release.grabs} Grab{if $release.grabs != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$failed} Failed Download{if $failed != 1}s{/if}</span>{/if}</h2><br>
 <div class="container">
 	<div class="col-xs-8">
 		<span class="label label-default">{$release.category_name}</span> <span class="label label-default">{$release.group_name}</span>
-		<br>
+		<br />
 		<table class="table table-condensed data" id="detailstable" >
 
 			{if $isadmin || $ismod}
@@ -23,7 +26,7 @@
 			{/if}
 
 			<tr id="guid{$release.guid}"><th>Download:</th>
-				<td><div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$release.guid}/{$release.searchname|escape:"htmlall"}">&nbsp;</a></div>
+				<td><div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$release.guid}">&nbsp;</a></div>
 					{if $sabintegrated}<div class="icon icon_sab" title="Send to my Queue"></div>{/if}
 					<div class="icon icon_cart" title="Add to Cart"></div>
 				</td>
@@ -153,7 +156,7 @@
 			{if $game}
 				<tr>
 					<th style="vertical-align:top">PC Game Info:</th>
-					<td><strong>{$game.title|escape:"htmlall"} ({$game.releasedate|date_format:"%Y"})</strong><br>
+					<td><strong>{$game.title|escape:"htmlall"} {if $game.releasedate != ""}({$game.releasedate|date_format:"%Y"}){/if}</strong><br>
 						{if $game.review != ""}<span class="descinitial">{$game.review|escape:"htmlall"|nl2br|magicurl|truncate:"350":" <a class=\"descmore\" href=\"#\">more...</a>"}</span>{if $game.review|strlen > 350}<span class="descfull">{$game.review|escape:"htmlall"|nl2br|magicurl}</span>{/if}<br><br>{/if}
 						{if $game.esrb != ""}<strong>ESRB:</strong> {$game.esrb|escape:"htmlall"}<br>{/if}
 						{if $game.genres != ""}<strong>Genre:</strong> {$game.genres|escape:"htmlall"}<br>{/if}
@@ -167,6 +170,12 @@
 							{/if}
 							{if $game.classused == "steam"}
 								<a target="_blank" href="{$site->dereferrer_link}{$game.url}" title="View game at Steam">Steam</a>
+							{/if}
+							{if $game.classused == "gl"}
+								<a target="_blank" href="{$site->dereferrer_link}{$game.url}" title="View game at Greenlight">Greenlight</a>
+							{/if}
+							{if $game.classused == "desura"}
+								<a target="_blank" href="{$site->dereferrer_link}{$game.url}" title="View game at Desura">Desura</a>
 							{/if}
 							</span>
 						</div>
@@ -227,10 +236,8 @@
 		</table>
 	</div>
 	<div class="col-xs-4" style="text-align:center" >
-		{if $rage && $release.rageid > 0 && $rage.imgdata != ""}
-			<img
-					class="shadow img-thumbnail"
-					style="vertical-align:top" src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$rage.id}"
+		{if $rage && $release.rageid > 0 && $rage.hascover != "0"}
+			<img src="{$smarty.const.WWW_TOP}/covers/tvrage/{$release.rageid}.jpg"
 					alt="{$rage.releasetitle|escape:"htmlall"}">
 		{/if}
 		{*src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$rage.id}" alt="{$rage.releasetitle|escape:"htmlall"}"*}
@@ -262,7 +269,7 @@
 <table class="table table-condensed table-striped data">
 <tr>
 	<th style="vertical-align:top">Name:</th>
-	<td>{$release.name|escape:"htmlall"}</td>
+	<td>{$release.name|escape:"htmlall"|wordwrap:80:"\n":true}</td>
 </tr>
 
 <tr>
@@ -475,6 +482,11 @@
 	<td>{$release.grabs} time{if $release.grabs==1}{else}s{/if}
 	</td>
 </tr>
+	<tr>
+		<th width="140">Failed Download</th>
+		<td>{$failed}
+			time{if $failed==1}{else}s{/if}</td>
+	</tr>
 <tr>
 	<th style="vertical-align:top">Files:</th>
 	<td><a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$release.guid}">{$release.totalpart} file{if $release.totalpart==1}{else}s{/if}</a>
@@ -569,7 +581,7 @@
 {if $similars|@count > 1}
 	<tr>
 		<th style="vertical-align:top">Similar:</th>
-		<td>{foreach from=$similars item=similar}<a title="View similar Nzb details" href="{$smarty.const.WWW_TOP}/details/{$similar.guid}/{$similar.searchname|escape:"htmlall"}">{$similar.searchname|escape:"htmlall"}</a><br/>
+		<td>{foreach from=$similars item=similar}<a title="View similar Nzb details" href="{$smarty.const.WWW_TOP}/details/{$similar.guid}">{$similar.searchname|escape:"htmlall"}</a><br/>
 			{/foreach}
 			<br/>
 			<a title="Search for similar Nzbs" href="{$smarty.const.WWW_TOP}/search/{$searchname|escape:"htmlall"}">Search for similar NZBs...</a><br/>
@@ -604,7 +616,11 @@
 				{foreach from=$comments item=comment}
 					<tr>
 						<td class="less" title="{$comment.createddate}">
-							<a title="View {$comment.username}'s profile" href="{$smarty.const.WWW_TOP}/profile?name={$comment.username}">{$comment.username}</a>
+							{if !$privateprofiles || $isadmin || $ismod}
+								<a title="View {$comment.username}'s profile" href="{$smarty.const.WWW_TOP}/profile?name={$comment.username}">{$comment.username}</a>
+							{else}
+								{$comment.username}
+							{/if}
 							<br/>{$comment.createddate|date_format} ({$comment.createddate|timeago} ago)
 						</td>
 						{if $comment.shared == 2}

@@ -18,14 +18,14 @@
  * @author niel
  * @copyright 2014 nZEDb
  */
-require_once
-	dirname(__DIR__) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php';
+require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once nZEDb_LIBS . DIRECTORY_SEPARATOR . 'smarty' . DIRECTORY_SEPARATOR . 'Smarty.class.php';
 
 use nzedb\db\DbUpdate;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
-if (!Utility::isCLI()) {
-	exit;
+if (!Misc::isCLI()) {
+	exit("This utility can only be run from a shell\n");
 }
 
 if (isset($argc) && $argc > 1 && isset($argv[1]) && $argv[1] == true) {
@@ -37,19 +37,17 @@ if (isset($argc) && $argc > 1 && isset($argv[1]) && $argv[1] == true) {
 	if ($patched > 0) {
 		echo $updater->log->info("$patched patch(es) applied.");
 
-		$smarty  = new \Smarty();
+		$smarty  = new Smarty();
 		$cleared = $smarty->clearCompiledTemplate();
 		if ($cleared) {
 			$msg = "The smarty template cache has been cleaned for you\n";
 		} else {
-			$msg = "You should clear your smarty template cache at: " .
-				   SMARTY_DIR . "templates_c\n";
+			$msg = "You should clear your smarty template cache at: " . SMARTY_DIR . "templates_c\n";
 		}
 		$updater->log->info($msg);
 	}
 } else {
-	echo "Usage: php update_db.php true";
+	echo "Usage: php update_db.php true\n";
 }
-
 
 ?>

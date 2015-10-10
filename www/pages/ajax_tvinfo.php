@@ -1,4 +1,8 @@
 <?php
+
+use nzedb\Releases;
+use nzedb\TvRage;
+
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }

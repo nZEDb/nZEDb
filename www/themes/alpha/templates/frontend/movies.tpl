@@ -39,7 +39,7 @@
 		{/if}
 	</div>
 	{include file='multi-operations.tpl'}
-	<table class="table table-striped table-condensed data" id="coverstable">
+	<table class="table table-striped table-condensed table-hover data icons" id="coverstable">
 		<thead>
 			<tr>
 				<th><input type="checkbox" class="nzb_check_all"></th>
@@ -54,7 +54,7 @@
 		<tbody>
 		{foreach from=$results item=result}
 			<tr>
-				<td style="vertical-align:top;text-align:center;width:150px;padding:10px;">
+				<td colspan="1" style="vertical-align:top;text-align:center;width:160px;padding:10px;">
 					<div class="movcover">
 						<a
 							target="_blank"
@@ -75,7 +75,7 @@
 								title="View imdb page"><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/imdb.png"></a>
 							<a
 								target="_blank"
-								href="{$site->dereferrer_link}http://trakt.tv/search/imdb?q=tt{$result.imdbid}/"
+								href="{$site->dereferrer_link}http://trakt.tv/search/imdb/tt{$result.imdbid}/"
 								name="trakt{$result.imdbid}"
 								title="View trakt page"
 							><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/trakt.png"></a>
@@ -100,16 +100,13 @@
 						</div>
 					</div>
 				</td>
-				<td colspan="3" class="left">
+				<td colspan="3" class="left" style="width:auto;white-space:normal;">
 					<h2>
 						<a
 							title="{$result.title|stripslashes|escape:"htmlall"}"
 							href="{$smarty.const.WWW_TOP}/movies/?imdb={$result.imdbid}">{$result.title|stripslashes|escape:"htmlall"}
 						</a>
-						(<a
-							class="title" title="{$result.year}"
-							href="{$smarty.const.WWW_TOP}/movies?year={$result.year}">{$result.year}
-						</a>)
+						(<a class="title" title="{$result.year}" href="{$smarty.const.WWW_TOP}/movies?year={$result.year}">{$result.year}</a>)
 						{if $result.rating != ''}
 							{$result.rating}/10
 						{/if}
@@ -154,6 +151,7 @@
 							{assign var="mtotalparts" value=","|explode:$result.grp_release_totalparts}
 							{assign var="mcomments" value=","|explode:$result.grp_release_comments}
 							{assign var="mgrabs" value=","|explode:$result.grp_release_grabs}
+							{assign var="mfailed" value=","|explode:$result.failed}
 							{assign var="mpass" value=","|explode:$result.grp_release_password}
 							{assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
 							{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
@@ -164,8 +162,8 @@
 										<input type="checkbox" class="nzb_check" value="{$mguid[$m@index]}">
 									</td>
 									<td class="name">
-										<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">
-											<b>{$mname[$m@index]|escape:"htmlall"}</b>
+										<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">
+											<b>{$mname[$m@index]|escape:"htmlall"|wordwrap:80:"\n":true}</b>{if $mfailed[$m@index]} <i class="fa fa-exclamation-circle" style="color: red" title="This release has failed for some users"></i>{/if}
 										</a>
 										<br>
 										<div class="resextra">
@@ -181,7 +179,7 @@
 												<i class="icon-comments"></i>
 												<a
 													title="View comments for {$mname[$m@index]|escape:"htmlall"}"
-													href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}#comments">{$mcomments[$m@index]}
+													href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}#comments">{$mcomments[$m@index]}
 													cmt{if $mcomments[$m@index] != 1}s{/if}
 												</a> |
 												<i class="icon-download"></i> {$mgrabs[$m@index]} grab{if $mgrabs[$m@index] != 1}s{/if}
@@ -229,6 +227,10 @@
 												{elseif $mpass[$m@index] == 10}
 													<span class="icon-stack" title="Passworded Archive"><i class="icon-check-empty icon-stack-base"></i><i class="icon-lock"></i></span>
 												{/if}
+												{if $mfailed[$m@index] > 0}
+													<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
+																	<i class ="fa fa-thumbs-o-up"></i> {$mgrabs[$m@index]} Grab{if {$mgrabs[$m@index]} != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$mfailed[$m@index]} Failed Download{if {$mfailed[$m@index]} != 1}s{/if}</span>
+												{/if}
 											</div>
 										</div>
 									</td>
@@ -236,7 +238,7 @@
 										<div class="icon icon_nzb float-right">
 											<a
 												title="Download Nzb"
-												href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"
+												href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}"
 											></a>
 										</div>
 										{if $sabintegrated}

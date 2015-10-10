@@ -6,8 +6,9 @@
  * reason, it will allow the password hash on the account to be changed.
  * Hopefully that will allow admin access to fix any further problems.
  */
-require_once dirname(__FILE__) . '/../../../www/config.php';
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
+use nzedb\Users;
 use nzedb\db\Settings;
 
 $pdo = new Settings();
@@ -38,7 +39,7 @@ $user = $pdo->queryOneRow(
 );
 
 if ($user !== false) {
-	$users = new \Users(['Settings' => $pdo]);
+	$users = new Users(['Settings' => $pdo]);
 	$hash = $users->hashPassword($password);
 	$result = false;
 	if ($hash !== false) {

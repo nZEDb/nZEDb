@@ -1,7 +1,37 @@
 Some of the plugins/sysplugins are custom and must be added back when updating.
 
-outputfilter.trimwhitespaces.php has been modified to remove multiple spaces/tabs/newlines/etc,
-fixing certain issues where text would be miss-aligned.
+The following files must be edited:
+
+plugins/outputfilter.trimwhitespaces.php
+Modified to remove multiple spaces/tabs/newlines/etc, fixing certain issues where text would be miss-aligned.
 Add this before the return when updating :
 // (mod by nZEDb) Strip multiple new lines / spaces.
 $source = preg_replace("/\s+/ms", " ", $source);
+
+plugins/modifier.phpdate_format.php
+Fix non working require. Line ~12+
+// Fix by nZEDb
+if (!isset($smarty)) {
+	$smarty = new Smarty();
+}
+switch (true) {
+	case is_string($smarty->plugins_dir) && is_dir($smarty->plugins_dir):
+		$plugins_dir = $smarty->plugins_dir;
+		break;
+	case is_array($smarty->plugins_dir):
+		$plugins_dir = '';
+		foreach ($smarty->plugins_dir as $dir) {
+			if (is_string($dir) && is_dir($dir)) {
+				$plugins_dir = $dir;
+				break;
+			}
+		}
+		break;
+	default:
+		$plugins_dir = '';
+}
+if (!is_dir($plugins_dir)) {
+	exit('Fatal: Unable to find smarty plugins directory.' . PHP_EOL);
+}
+// End fix by nZEDb.
+require_once ($plugins_dir . 'shared.make_timestamp.php');

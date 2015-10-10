@@ -89,8 +89,8 @@
 							<a
 								class="title"
 								title="View details"
-								href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}"
-							>{$result.searchname|escape:"htmlall"|truncate:150:"...":true}</a>
+								href="{$smarty.const.WWW_TOP}/details/{$result.guid}"
+							>{$result.searchname|escape:"htmlall"|truncate:70}</a>{if $result.failed > 0} <i class="fa fa-exclamation-circle" style="color: red" title="This release has failed to download for some users"></i>{/if}
 						</label>
 						<div class="resextra">
 							{if $result.passwordstatus == 1}
@@ -103,7 +103,7 @@
 							{if $result.videostatus > 0}
 								<a
 									class="label label-default model_prev"
-									href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}"
+									href="{$smarty.const.WWW_TOP}/details/{$result.guid}"
 									title="This release has a video preview"
 									rel="preview"
 								><i class="icon-youtube-play"></i></a>
@@ -199,6 +199,10 @@
 								><i class="icon-share-alt"></i></a>
 							{/if}
 							{release_flag($result.searchname, browse)}
+							{if $result.failed > 0}<span class="label label-default">
+								<i class ="fa fa-thumbs-o-up"></i> {$result.grabs} Grab{if $result.grabs != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$result.failed} Failed Download{if $result.failed != 1}s{/if}
+								</span>
+							{/if}
 						</div>
 					</td>
 					<td style="width:auto;text-align:center;white-space:nowrap;">
@@ -239,7 +243,7 @@
 					</td>
 					<td class="icons" style="width:80px;text-align:center;white-space:nowrap;">
 						<div class="icon icon_nzb">
-							<a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"htmlall"}"></a>
+							<a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}"></a>
 						</div>
 						{if $sabintegrated}
 							<div class="icon icon_sab" title="Send to my Queue"></div>

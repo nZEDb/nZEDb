@@ -1,9 +1,11 @@
 <?php
-require_once dirname(__FILE__) . '/config.php';
+require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'indexer.php');
 
-use \nzedb\processing\PostProcess;
+use nzedb\NNTP;
+use nzedb\db\Settings;
+use nzedb\processing\PostProcess;
 
-$pdo = new \nzedb\db\Settings();
+$pdo = new Settings();
 
 /**
   Array with possible arguments for run and
@@ -59,7 +61,7 @@ if (!isset($argv[1]) || !in_array($argv[1], $args) || !isset($argv[2]) || !in_ar
 
 $nntp = null;
 if ($args[$argv[1]] === true) {
-	$nntp = new \NNTP(['Settings' => $pdo]);
+	$nntp = new NNTP(['Settings' => $pdo]);
 	if (($pdo->getSetting('alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
 		exit($pdo->log->error("Unable to connect to usenet." . PHP_EOL));
 	}
@@ -67,7 +69,7 @@ if ($args[$argv[1]] === true) {
 
 $postProcess = new PostProcess(['Settings' => $pdo, 'Echo' => ($argv[2] === 'true' ? true : false)]);
 
-$charArray = ['a','b','c','d','e','f','0','1','2','3','4','5','6','7','8','9'];
+$charArray = ['a', 'b', 'c', 'd', 'e', 'f', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
 switch ($argv[1]) {
 
@@ -92,9 +94,8 @@ switch ($argv[1]) {
 		$postProcess->processXXX();
 		break;
 	case 'anime':
-		exit;
-		//$postProcess->processAnime();
-		//break;
+		$postProcess->processAnime();
+		break;
 	case 'book':
 		$postProcess->processBooks();
 		break;

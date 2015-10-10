@@ -1,4 +1,7 @@
 <?php
+
+use nzedb\Console;
+
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }

@@ -1,5 +1,7 @@
 <?php
-require_once realpath(__DIR__ . '/../automated.config.php');
+require_once realpath(__DIR__ . DIRECTORY_SEPARATOR . 'install.php');
+
+use nzedb\Install;
 
 use nzedb\db\Settings;
 
@@ -27,7 +29,7 @@ if ($page->isPostBack()) {
 
 	if (extension_loaded('posix') && strtolower(substr(PHP_OS, 0, 3)) !== 'win') {
 		$group = posix_getgrgid(posix_getgid());
-		$fixString = '<br /><br />Another solution is to run:<br />chown -R YourUnixUserName:' . $group['name']  . ' ' . nZEDb_ROOT .
+		$fixString = '<br /><br />Another solution is to run:<br />chown -R YourUnixUserName:' . $group['name'] . ' ' . nZEDb_ROOT .
 		'<br />Then give your user access to the group:<br />usermod -a -G ' . $group['name'] . ' YourUnixUserName' .
 		'<br />Finally give read/write access to your user/group:<br />chmod -R 774 ' . nZEDb_ROOT;
 		$page->smarty->assign('fixString', $fixString);
@@ -64,7 +66,7 @@ if ($page->isPostBack()) {
 		if ($cfg->COVERS_PATH == '') {
 			$cfg->error = true;
 		} else {
-			\nzedb\utility\Utility::trailingSlash($cfg->COVERS_PATH);
+			\nzedb\utility\Misc::trailingSlash($cfg->COVERS_PATH);
 
 			$cfg->coverPathCheck = is_writable($cfg->COVERS_PATH);
 			if ($cfg->coverPathCheck === false) {

@@ -1,7 +1,6 @@
- 
 <h1>{$page->title}</h1>
 
-{if $error != ''}
+{if isset($error) && $error != ''}
     <div class="error">{$error}</div>
 {/if}
 
@@ -18,7 +17,7 @@
                     <input id="email" autocomplete="off" name="email" value="{$email}" type="email"/>
                 </td>
             </tr>
-            <tr><th></th><td><input class="rndbtn" type="submit" value="Request Password Reset" /><br /><br /><div style="float:left;" class="hint"><em>*</em> Indicates mandatory field.</div></td></tr>
+            <tr><th></th><td>{$page->smarty->fetch('captcha.tpl')}<input class="rndbtn" type="submit" value="Request Password Reset" /><br /><br /><div style="float:left;" class="hint"><em>*</em> Indicates mandatory field.</div></td></tr>
         </table>
     </form>
 {elseif $sent != ''}

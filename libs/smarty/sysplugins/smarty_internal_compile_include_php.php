@@ -1,17 +1,17 @@
 <?php
 /**
  * Smarty Internal Plugin Compile Include PHP
- *
  * Compiles the {include_php} tag
  *
- * @package Smarty
+ * @package    Smarty
  * @subpackage Compiler
- * @author Uwe Tews
+ * @author     Uwe Tews
  */
+
 /**
  * Smarty Internal Plugin Compile Insert Class
  *
- * @package Smarty
+ * @package    Smarty
  * @subpackage Compiler
  */
 class Smarty_Internal_Compile_Include_Php extends Smarty_Internal_CompileBase
@@ -37,11 +37,14 @@ class Smarty_Internal_Compile_Include_Php extends Smarty_Internal_CompileBase
      * @see Smarty_Internal_CompileBase
      */
     public $optional_attributes = array('once', 'assign');
+
     /**
      * Compiles code for the {include_php} tag
      *
      * @param  array  $args     array with attributes from parser
      * @param  object $compiler compiler object
+     *
+     * @throws SmartyException
      * @return string compiled code
      */
     public function compile($args, $compiler)
@@ -51,7 +54,10 @@ class Smarty_Internal_Compile_Include_Php extends Smarty_Internal_CompileBase
         }
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
-        $_output = '<?php ';
+
+        /** @var Smarty_Internal_Template $_smarty_tpl
+         * used in evaluated code
+         */
         $_smarty_tpl = $compiler->template;
         $_filepath = false;
         eval('$_file = ' . $_attr['file'] . ';');
@@ -67,7 +73,7 @@ class Smarty_Internal_Compile_Include_Php extends Smarty_Internal_CompileBase
                 foreach ((array) $_dir as $_script_dir) {
                     $_script_dir = rtrim($_script_dir, '/\\') . DS;
                     if (file_exists($_script_dir . $_file)) {
-                        $_filepath = $_script_dir .  $_file;
+                        $_filepath = $_script_dir . $_file;
                         break;
                     }
                 }
@@ -76,9 +82,11 @@ class Smarty_Internal_Compile_Include_Php extends Smarty_Internal_CompileBase
         if ($_filepath == false) {
             $compiler->trigger_template_error("{include_php} file '{$_file}' is not readable", $compiler->lex->taglineno);
         }
+
         if (isset($compiler->smarty->security_policy)) {
             $compiler->smarty->security_policy->isTrustedPHPDir($_filepath);
         }
+
         if (isset($_attr['assign'])) {
             // output will be stored in a smarty variable instead of being displayed
             $_assign = $_attr['assign'];
@@ -89,6 +97,7 @@ class Smarty_Internal_Compile_Include_Php extends Smarty_Internal_CompileBase
                 $_once = '';
             }
         }
+
         if (isset($_assign)) {
             return "<?php ob_start(); include{$_once} ('{$_filepath}'); \$_smarty_tpl->assign({$_assign},ob_get_contents()); ob_end_clean();?>";
         } else {

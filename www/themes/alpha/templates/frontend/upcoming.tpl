@@ -18,7 +18,9 @@
 	<a href="{$smarty.const.WWW_TOP}/upcoming/5">DVD Releases</a>
 </p>
 
-{if $data|@count > 0}
+{if isset($nodata)}
+	{$nodata}
+{elseif $data|@count > 0}
 	<table class="table table-condensed data icons" id="coverstable">
 		<thead>
 		<tr>
@@ -31,7 +33,7 @@
 			<tr>
 				<td style="width:150px;padding:10px;text-align:center;">
 					<div class="movcover">
-						<img class="shadow img-thumbnail" src="{replace_quality($result->posters->{$site->rottentomatoquality}, $site->rottentomatoquality)}"" width="120"
+						<img class="shadow img-thumbnail" src="{replace_url($result->posters->original)}" width="120"
 						border="0" alt="{$result->title|escape:"htmlall"}"/>
 
 						<div class="movextra">
@@ -56,7 +58,7 @@
 									src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/imdb.png"></a>
 							<a
 									target="_blank"
-									href="{$site->dereferrer_link}http://trakt.tv/search/imdb?q=tt{$result->alternate_ids->imdb}/"
+									href="{$site->dereferrer_link}http://trakt.tv/search/imdb/tt{$result->alternate_ids->imdb}/"
 									name="trakt{$result->alternate_ids->imdb}"
 									title="View trakt page"><img
 									src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/trakt.png"></a>

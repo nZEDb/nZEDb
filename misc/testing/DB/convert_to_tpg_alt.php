@@ -1,6 +1,8 @@
 <?php
-require_once(dirname(__FILE__) . '/../../../www/config.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
+use nzedb\ConsoleTools;
+use nzedb\Groups;
 use nzedb\db\Settings;
 
 $pdo = new Settings();
@@ -12,8 +14,8 @@ if (!isset($argv[1]) || $argv[1] != 'true') {
 }
 
 $start = time();
-$consoleTools = new \ConsoleTools(['ColorCLI' => $pdo->log]);
-$groups = new \Groups(['Settings' => $pdo]);
+$consoleTools = new ConsoleTools(['ColorCLI' => $pdo->log]);
+$groups = new Groups(['Settings' => $pdo]);
 
 $actgroups = $pdo->query("SELECT DISTINCT group_id from collections");
 
@@ -46,11 +48,11 @@ if ($collections_rows instanceof \Traversable) {
 		echo $pdo->log->primary("Group ${groupName}, Collections = ${collections['cnt']} [${ncollections['cnt']}]");
 
 		//binaries
-		$pdo->queryExec("INSERT IGNORE INTO binaries_${row['group_id']} (name, filenumber, totalparts, currentparts, binaryhash, partcheck, partsize, collectionid) "
+		$pdo->queryExec("INSERT IGNORE INTO binaries_${row['group_id']} (name, filenumber, totalparts, currentparts, binaryhash, partcheck, partsize, collection_id) "
 			. "SELECT name, filenumber, totalparts, currentparts, binaryhash, partcheck, partsize, n.id FROM binaries b "
-			. "INNER JOIN collections c ON b.collectionid = c.id "
+			. "INNER JOIN collections c ON b.collection_id = c.id "
 			. "INNER JOIN collections_${row['group_id']} n ON c.collectionhash = n.collectionhash AND c.group_id = ${row['group_id']}");
-		$binaries = $pdo->queryOneRow("SELECT COUNT(*) AS cnt FROM binaries b INNER JOIN collections c ON  b.collectionid = c.id where c.group_id = ${row['group_id']}");
+		$binaries = $pdo->queryOneRow("SELECT COUNT(*) AS cnt FROM binaries b INNER JOIN collections c ON  b.collection_id = c.id where c.group_id = ${row['group_id']}");
 		$nbinaries = $pdo->queryOneRow("SELECT COUNT(*) AS cnt FROM binaries_${row['group_id']}");
 		echo $pdo->log->primary("Group ${groupName}, Binaries = ${binaries['cnt']} [${nbinaries['cnt']}]");
 
@@ -59,8 +61,8 @@ if ($collections_rows instanceof \Traversable) {
 			. "SELECT messageid, number, partnumber, size, n.id, c.id FROM parts p "
 			. "INNER JOIN binaries b ON p.binaryid = b.id "
 			. "INNER JOIN binaries_${row['group_id']} n ON b.binaryhash = n.binaryhash "
-			. "INNER JOIN collections_${row['group_id']} c on c.id = n.collectionid AND c.group_id = ${row['group_id']}");
-		$parts = $pdo->queryOneRow("SELECT COUNT(*) AS cnt FROM parts p INNER JOIN binaries b ON p.binaryid = b.id INNER JOIN collections c ON b.collectionid = c.id WHERE c.group_id = ${row['group_id']}");
+			. "INNER JOIN collections_${row['group_id']} c on c.id = n.collection_id AND c.group_id = ${row['group_id']}");
+		$parts = $pdo->queryOneRow("SELECT COUNT(*) AS cnt FROM parts p INNER JOIN binaries b ON p.binaryid = b.id INNER JOIN collections c ON b.collection_id = c.id WHERE c.group_id = ${row['group_id']}");
 		$nparts = $pdo->queryOneRow("SELECT COUNT(*) AS cnt FROM parts_${row['group_id']}");
 		echo $pdo->log->primary("Group ${groupName}, Parts = ${parts['cnt']} [${nparts['cnt']}]\n");
 		$i++;

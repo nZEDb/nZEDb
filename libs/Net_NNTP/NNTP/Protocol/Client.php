@@ -67,11 +67,6 @@
  * @see
  */
 
-// Warn about PHP bugs
-if (version_compare(PHP_VERSION, '5.2.11') === 0) {
-	trigger_error('PHP bug #16657 breaks feof() on socket streams! Connection consistency might be compromised!', E_USER_WARNING);
-}
-
 require_once 'PEAR.php';
 require_once 'Responsecode.php';
 
@@ -449,9 +444,9 @@ class Net_NNTP_Protocol_Client extends PEAR
 	 * Return the last received response message.
 	 *
 	 * @return string The response message.
-	 * @access private
+	 * @access protected
 	 */
-	private function _currentStatusResponse()
+	protected function _currentStatusResponse()
 	{
 		return $this->_currentStatusResponse[1];
 	}
@@ -516,7 +511,7 @@ class Net_NNTP_Protocol_Client extends PEAR
 		$socket = stream_socket_client(
 			$transport . '://' . $host . ':' . $port,
 			$errorNumber, $errorString, $timeout, STREAM_CLIENT_CONNECT,
-			stream_context_create(nzedb\utility\Utility::streamSslContextOptions())
+			stream_context_create(nzedb\utility\Misc::streamSslContextOptions())
 		);
 
 		if ($socket === false) {

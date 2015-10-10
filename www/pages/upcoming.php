@@ -1,4 +1,7 @@
 <?php
+
+use nzedb\Movie;
+
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
@@ -16,27 +19,36 @@ $page->smarty->assign('cpurl', $cpurl);
 
 $data = $m->getUpcoming($_GET["id"]);
 //print_r(json_decode($data["info"])->movies);die();
-if ($data["info"] == "") {
+if (!$data || $data["info"] == "") {
 	$page->smarty->assign("nodata", "No upcoming data.");
 } else {
-	$page->smarty->assign('data', json_decode($data["info"])->movies);
 
-	switch ($_GET["id"]) {
-		case Movie::SRC_BOXOFFICE;
-			$page->title = "Box Office";
-			break;
-		case Movie::SRC_INTHEATRE;
-			$page->title = "In Theater";
-			break;
-		case Movie::SRC_OPENING;
-			$page->title = "Opening";
-			break;
-		case Movie::SRC_UPCOMING;
-			$page->title = "Upcoming";
-			break;
-		case Movie::SRC_DVD;
-			$page->title = "DVD Releases";
-			break;
+	$data = json_decode($data["info"]);
+
+	if (isset($data->error)) {
+		$page->smarty->assign("nodata", $data->error);
+	} else if (!isset($data->movies)) {
+		$page->smarty->assign("nodata", 'Unspecified error.');
+	} else {
+		$page->smarty->assign('data', $data->movies);
+
+		switch ($_GET["id"]) {
+			case Movie::SRC_BOXOFFICE;
+				$page->title = "Box Office";
+				break;
+			case Movie::SRC_INTHEATRE;
+				$page->title = "In Theater";
+				break;
+			case Movie::SRC_OPENING;
+				$page->title = "Opening";
+				break;
+			case Movie::SRC_UPCOMING;
+				$page->title = "Upcoming";
+				break;
+			case Movie::SRC_DVD;
+				$page->title = "DVD Releases";
+				break;
+		}
 	}
 	$page->meta_title = "View upcoming theatre releases";
 	$page->meta_keywords = "view,series,theatre,dvd";
@@ -44,17 +56,19 @@ if ($data["info"] == "") {
 }
 
 /**
- * Replace _tmb.jpg with user setting from site edit.
+ * extract just the cloudfront image url.
  *
  * @param string $imageURL    The url to change.
- * @param string $userSetting The users's setting.
  *
  * @return string
  */
-function replace_quality($imageURL, $userSetting)
+function replace_url($imageURL)
 {
-	$types = array('thumbnail' => '_tmb.', 'profile' => '_pro.', 'detailed' => '_det.', 'original' => '_ori.');
-	return str_replace('_tmb.', $types[$userSetting], $imageURL);
+	return preg_replace(
+		'/^.*?\/[\d]+x[\d]+\//',
+		'https://',
+		$imageURL
+	);
 }
 
 $page->content = $page->smarty->fetch('upcoming.tpl');

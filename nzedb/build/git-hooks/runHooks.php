@@ -19,8 +19,12 @@
  * @copyright 2014 nZEDb
  */
 define('GIT_PRE_COMMIT', true);
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'www' .
-					  DIRECTORY_SEPARATOR . 'automated.config.php');
+
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
+
+use nzedb\db\DbUpdate;
+use nzedb\utility\Git;
+use nzedb\utility\Versions;
 
 echo "Running pre-commit hooks\n";
 
@@ -36,21 +40,14 @@ $error = false;
  * Add all hooks BEFORE the versions are updated so they can be skipped on any errors
  */
 if ($error === false) {
-	$git = new \nzedb\utility\Git();
+	$git = new Git();
 	$branch = $git->active_branch();
-	if (in_array($branch, $git->mainBranches())) { // Only update versions, patches, etc. on specific branches to lessen conflicts
-		try {
-			// Run DbUpdates to make sure we're up to date.
-			$DbUpdater = new \nzedb\db\DbUpdate(['git' => $git]);
-			$DbUpdater->newPatches(['safe' => false]);
-		} catch (\Exception $e) {
-			$error = 1;
-			echo "Error while checking patches!\n";
-		}
+	if (in_array($branch, $git->mainBranches())) {
+		// Only update versions, etc. on specific branches to lessen conflicts
 
 		if ($error === false) {
 			try {
-				$vers = new \nzedb\utility\Versions();
+				$vers = new Versions();
 				$vers->checkAll();
 				$vers->save();
 				$git->add(nZEDb_VERSIONS);

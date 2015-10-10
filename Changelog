@@ -1,8 +1,738 @@
 * Note *
-No pull requests will be accepted without this file being updated to reflect what you changed and when.
-No pull requests will be accepted to any branch except the dev branch.
-New updates are grouped by person, at the top of the file.
+Pull requests will be accepted *only* against the dev branch.
+Please make sure any PR's comply with our coding standards policy: http://li3.me/docs/specs/accepted/LSR-0-coding.md
 
+New updates are grouped by person (committer/merger), at the top of the file.
+All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
+For details of when a commit makes it into the master branch see the ReleaseNotes file.
+
+2015-10-08 ruhllatio
+	Chg: Improve Codec Poster removal query times by incorporating Sphinx FT if enabled
+	Chg: Lots more love for Sphinx FT in ReleaseRemover.  Greatly improves query times on big databases.
+	Chg: Few more changes to RR
+2015-10-07 ruhllatio
+	Mrg: PR #1902 Make TraktTv class extend TV class, add box office support into class.
+	Mrg: PR #1901 Add deletion of dnzb_failures to deleteSingle
+	Fix: Issue #1900 Undefined index error in updateTvRage.php
+2015-10-06 ruhllatio
+	Mrg: PR #1898 Adjust templates for tvrage images change.
+	Mrg: PR #1899 Remove echooutput from TvRage class and move it to parent TV class 
+	Fix: ReleaseRemover not honoring LIKE search types causing blacklist removal issues and not producing enough matches in SPHINX mode
+2015-10-05 niel
+	* Mrg: PR 1895, from Darius - Add view release option to failed releases list. Do not post comment for user, if that user already posted the failure automated comment.
+2015-10-05 ruhllatio
+	Add: Script to extract TV covers from the database and save them to the tvrage directory in covers
+	Chg: Set TV cover images to pull from /covers/tvrage/ ***NOTE*** Run the extractTVCovers script in misc/testing/PostProcess/ ***
+	Fix: Error in extract script and a query error for new poster wall for TV
+	Del: getimage.php as it was only used for displaying TV images... TV now adopts the standard cover method
+	Chg: updateTvRage script now looks for hascover = 0 instead... which still won't work because TVR is down
+	Mrg: PR #1897 Anime new poster wall view
+	Mrg: PR #1894 Change TVDB client class call
+	Fix: Forgot to add untracked anidb icon for poster wall
+	Fix: AniDB poster wall query not grouping by release
+	Fix: Attempt to fix AniDB icon not showing in multiple themes
+	Fix: Omicron poster wall typo, wrong script name in patch file 384
+	Add: updateTvRage.php in misc/testing/PostProc will now run in check mode to reconcile image files against the DB if you imported
+	Fix: Alpha TV New Poster Wall missing div tag
+2015-10-04 ruhllatio
+	Mrg: PR #1893 Integrate Moinax TVDB API
+2015-10-04 niel
+	Add: PSR-0 compliant autoloader for libs namespace.
+	Mrg: PR 1890, from Darius - Fix host column misplacement in admin comments list when user ip tracking is enabled.
+	Mrg: PR 1891, from Darius - Add text_hash column, triggers, and index to release_comments to prevent insertion of duplicated comments originating from automated messages, sharing etc.
+	Mrg: PR 1892, from Darius - Add list of releases failed to download reported by X-DNZB-Failure headers to admin area.
+2015-10-02 bart39
+	Fix: invalid icon links in omicron / charisma themes.
+2015-10-01 niel
+	Mrg: dev => next-master to prepare for updating master.
+	Mrg: PR 1885, from Darius - Add statistical info for grabbed/failed releases to cover, browse and search pages.
+	Mrg: PR 1889, from Darius - Automatically generate comment on failed download.
+
+2015-10-01 bart39
+	Fix: updated predb insert trigger that got missed for new installs, fixes #1875.
+2015-09-26 niel
+	Chg: Altered settings.example.php
+			Corrected erroneous references to settings.php.example (formatting was altered as a side effect of copy/pasting).
+			Changed default value of PHPMAILER_ENABLED constant to 'false' instead of undefined (it was commented out).
+			Changed error reporting level to not exclude any messages, as our code should run clean and therefore *any* messages should be investigated.
+				**NOTE** Generating messages slows down the running code and hiding them does not stop them being generated, just displayed.
+2015-09-22 bart39
+	Mrg: PR 1884, from DariusIII - Reorganize X-DNZB-Failure header support related pages (failed.php and getnzb.php)
+	Mrg: PR 1883, from DariusIII - Add filters to cover pages.
+2015-09-21 bart39
+	Mrg: PR 1882, from DariusIII - Fix the encodeAsUTF8 function.
+2015-09-19 niel
+	Mrg: PR 1878, from DariusIII - Fix api json output.
+	Fix: Adding failure test for JSON encoding, which returns an API error.
+2015-09-15 niel
+	Fix: Typo in variable name which causes a missing index warning.
+2015-09-14 ruhllatio
+	Add: Base TV Class to make the addition of a new TV scraper easier
+	Chg: Re-organize and trim some fat out of TvRage.php in preparation for its glorious return
+2015-09-11 niel
+	Mrg: PR 1870, from DariusIII - Change font used in omicron and charisma templates, adjust layout of coverview pages.
+2015-09-11 bart39
+	Mrg: PR 1854, from rainje - Fix issue #1850 - Three Arrows when viewing movie upper right corner.
+2015-09-10 kevin
+	Fix: Issue with empty array causing query to fail in PR 1871
+2015-09-09 niel
+	Mrg: PR 1871, from bfincher - Display the date which a binary black list was last used.
+2015-09-08 niel
+	Mrg: PR 1869, from DariusIII - Add back missing invites in profile page of charisma/omicron templates.
+	Mrg: PR 1870, from DariusIII - Change sidebar menu XXX into Adult to match headermenu, change the icon.
+2015-09-05 niel
+	Mrg: PR 1856, from DariusIII - Fix display of api/download hits, in omicron and charisma templates, in last 24 hours.
+	Mrg: PR 1857, from DariusIII - Fix background colors on profile and profile edit pages.
+	Mrg: PR 1858, from DariusIII - Adjustments and fixes in charisma and omicron templates.
+2015-08-31 bart39
+	Fix: Return false if trakt title is not set when fetching properties.
+2015-08-30 bart39
+	Fix: collection regex edit page not showing the result.
+2015-08-29 rullatio
+	Mrg: PR #1849 Fix RSS Content Length Response
+2015-08-28 ruhllatio
+	Fix: Sphinx Search broken for MariaDB installs (re-run create_se_tables script)
+2015-08-27 ruhllatio
+	Fix: API Search function not including -1 for fileName parameter breaking API search
+2015-08-27 niel
+	Add: predb export script now has a default filename (predb_export_YYYYMMDDhhmmss.tsv) if only a path is specified.
+2015-08-26 bart39
+	Mrg: PR 1843, by ruhllatio - Sphinx Full-Text Search for Filenames.
+	*** NOTE *** - you will need to do the following to update the sphinx index:
+		0) Minimum Sphinx v2.2.9
+		1) stop sphinxsearch - `sudo service sphinxsearch stop`
+		2) clear old index - `sudo rm /var/lib/sphinxsearch/data/*`
+		3) copy updated conf file - `sudo cp /var/www/nZEDb/misc/sphinxsearch/sphinx.conf /etc/sphinxsearch/sphinx.conf`
+		4) If you had previously edited the conf file - you will need to re-edit again.
+		5) start sphinxsearch - `sudo service sphinxsearch start`
+		6) recreate the tables - `php /var/www/nZEDb/misc/sphinxsearch/create_se_tables.php 0 9312`
+		7) populate the index - `php /var/www/nZEDb/misc/sphinxsearch/populate_rt_indexes.php releases_rt`
+2015-08-26 kevin
+	Add: Xdebug and PHP settings to nzedb\config\settings.php
+2015-08-25 bart39
+	Fix: Truncate rather than word-wrap #1846 - clear your smarty cache.
+	Fix: Revert word-wrap change that caused a space to appear in release titles (alpha theme) #1846 - clear your smarty cache.
+2015-08-25 niel
+	Chg: Added note to copy nZEDb/nzedb/config/settings.exmple.php to nZEDb/nzedb/config/settings.php on opening Install page.
+	Fix: Typo $this->tablePerGroup to $this->_tablePerGroup.
+	Fix: Predb import dailies script does not have an OPTIONALLY ENCLOSED BY value (and there wasn't a default one) so group names were loaded quoted and consequently inserted into the groups table that way.
+2015-08-24 bart39
+	Fix: Removed another "AND" from SQL query which cause a syntax error.
+2015-08-24 niel
+	Mrg: dev => next-master to prepare for updating master.
+
+2015-08-23 bart39
+	Fix: Drop trigger from collections that got missed with recent changes.
+2015-08-22 bart39
+	Mrg: PR 1841, by ruhllatio - Refresh all releases indexes to align with new schema.
+	Fix: Invalid datetime format when updating consoleinfo if releasedate is blank.
+2015-08-21 ruhllatio
+	Fix: Issue #1819 - Console Processing failing to validate Amazon API Return
+	Chg: Console Processing Local will now require an exact platform match just like the Amazon lookups to prevent incorrect platform matches
+2015-08-21 niel
+	Fix: predb_import_daily_batch script to properly calculate last timestamp for progress mode.
+2015-08-20 bart39
+	Mrg: PR 1838, by terbonium - removed "AND" from SQL query which cause a syntax error.
+	Mrg: PR 1837, by terbonium - cbp delete fix.
+2015-08-20 ruhllatio
+	Fix: Anime covers not showing properly
+	Chg: Add Anime Series view to header menu->TV
+	Fix: Omicron Anime view not honoring $nodata when no releases match the AniDBID
+	Chg: Single table scan for expensive tmux monitor queries (6-8x reduction in time required to loop) thanks to @terbonium
+	Add: TV to Omicron side bar menu
+2015-08-19 bart39
+	Fix: PHP error if rowCount() is null #1834.
+2015-08-19 ruhllatio
+	Chg: Re-work queries for faster CBP deletion and greatly improve page load times/dehash work queries
+	Fix: Another failing query in ProcessReleases which could almost certainly DB swell
+2015-08-18 niel
+	Fix: PreDb import and export scripts to work as expected.
+2015-08-18 bart39
+	Fix: Amend ab.moovee collection regex that was splitting subs out separately.
+	Mrg: PR 1827, by terbonium - moved releases update into foreach of matching releases.
+2015-08-17 ruhllatio
+	Add: Blacklist regex for 16 character hash floods in kenpsx and frogs (Remove +1 patch -- whoops)
+	Fix: Blacklist regex not matching properly
+2015-08-17 bart39
+	Fix: predb_export / getImdb scripts typo's
+	Fix: various links to testing/PostProc corrected to testing/PostProcess.
+	Mrg: PR 1825, by terbonium - part.id column no longer exists.. match on non-recent binaryid's.
+	Mrg: PR 1824, by darius - Add TRAKT link to details page.
+	Mrg: PR 1823, by terbonium - set collections orphan cleanup to run only 1/200 of the time.
+	Mrg: PR 1822, by terbonium - select was matching against releases already marked NFO_FAILED which then executed a duplicate DELETE on releases_nfo.
+	Fix: Display of movie trailers #1811.
+2015-08-16 bart39
+	Fix: Checking for existing movie trailers.
+	Fix: Typo in Movie.php.
+	Fix: Add missing quote for echo in predb_export.
+	Chg: minMaxQueryFormulator to maxQueryFormulator - min not required.
+	Mrg: PR 1820, by darius - Add TraktTv cover support for movies.
+2015-08-15 niel
+	Fix: PreDb export script. Typo prevented executing prepared statement. Had to put ENCLOSED BY clause into prepared statement, instead of passing it as a parameter.
+2015-08-15 ruhllatio
+	Fix: DELETE Query missing collections alias
+2015-08-15 bart39
+	Fix: Fix movieinfo insert errors with long ratings (mainly from trakt).
+	Chg: Alpha theme updates for newposterwall / word wrapping.
+	Chg: Categorize updates.
+	Chg: When starting tmux monitor don't analyze releases table if engine = InnoDB (InnoDB uses online analysis).
+2015-08-14 bart39
+	Mrg: PR 1817, by terbonium - reworked patch to get around duplicate data in parts table.
+		***NOTE*** run this sql to reset sqlpatch if you already ran patch 374 and failed before patching:
+		UPDATE settings SET `value` = 373 WHERE setting = 'sqlpatch' AND `value` = 374;
+	Mrg: PR 1816, by terbonium - removed id and collectionid from parts table, updated primary key to (binaryid,partnumber).
+	Fix: Set NULL tmdbid values to 0 before altering the default value in patch 372.
+	Mrg: PR 1813, by darius - Add back missing triggers into releases table.
+		***NOTE*** if using sphinxsearch then run 'php misc/sphinxsearch/toggle_search_type.php sphinx' to remove unnecessary release_search_data triggers.
+	Fix: Correct default value for tmdbid to '0'
+2015-08-14 ruhllatio
+	Chg: Make UPDATE queries in postproc use partitioning
+	Chg: Improve TV matching a bit
+	Fix: Issue 1814 Bad XXX processing query
+	Fix: Patch 374 typo and add CALL and DROP
+	Add: *** MUST RUN *** TPG Script to DROP old collections TRIGGERS after Patch 374 /nzedb/build/_runonce/tpg_delete_triggers_2015-08-14.php
+	Chg: Permissions on TPG scripts
+	Fix: TPG Creation function called when adding a new group in Site Admin no longer adds the delete triggers
+2015-08-14 kevin
+	Chg: Add default values for movieinfo table.
+	Fix: Check if trakt data has a imdb ID.
+2015-08-13 ruhllatio
+	* Chg: DB optimization: Change nzb_guid to BINARY(16)
+2015-08-12 DariusIII
+	* Fix: Issues on Omicron/Charisma themes.
+2015-08-11 terbonium
+	* Chg: Improve performance of predb_hash table and queries by storing hashes as binary.
+2015-08-11 kevin
+	* Chg: Better support for DELIMITER in DbUpdate.
+2015-08-10 kevin
+	* Fix: Issue where youtube trailer URL's would get overwritten with the wrong URL.
+	* Fix: Issue where API NZB downloads would fail.
+2015-08-10 Darius
+	* Fix: Typo in nzedb\Movies.
+2015-08-07 kevin
+	* Chg: Parse most of the TraktTV details for movies.
+	* Chg: Store movie trailer URL's in the database.
+	* Chg: Add movie trailer configurable settings to Admin section of site.
+	* Chg: Refactor some methods in Movie.php
+	* Fix: #1782 Unused title parameter in getnzb and details page intermittently caused them not to load.
+2015-08-07 terbonium
+	* Fix: Escape the "_" character in LIKE clause of query of patch 360. #1801 http://git.io/vOFcf
+2015-08-06 niel
+	* Fix: Added default SSL values check for installation process.
+2015-08-06 ruhllatio
+	* Fix: Delete query for stuck collections
+2015-08-06 kevin
+	* Fix: nzedb\db\DbUpdate::splitSQL ; Properly parse delimiters for patches. ; Parse comments.
+	* Mrg: PR 1796, by terbonium - SQL optimizations.
+	* Mrg: PR 1793, by kevinlekiller/ruhllatio/DariusIII - Delete collections that are broken after a timeout period. Issue #1791
+	* Mrg: PR 1797, by DariusIII - Change buttons in viewseries.tpl to be in line with the other pages.
+2015-08-05 niel
+	* Fix: Install process to use install.php instead of smarty.php
+	* Fix: Bad span end tag is install step 2 template file.
+	* Fix: Reverted kevin's earlier 'fix' for Step 2 of install. The constant must exist or the bug is elsewhere. The bug was not having 'settings' as part of install configuration.
+	* Mrg: PR 1789, from darius - Remove getQueue function from utils.js as it was conflicting with a function in our JS. Cleanup trailing whitespace.
+2015-08-05 kevin
+	* Fix: Step 2 of install.
+	* Mrg: PR 1795 from terbonium - group OR operators () properly for proper index usage on date column and prevent full table scans when not needed
+2015-07-31 bart39
+	* Mrg: PR 1786 from darius - Add XXX back cover view and games screenshot view to release details.
+	* Mrg: PR 1781 from darius - Add movie rating to movies page, remove year from xxx template.
+2015-07-30 bart39
+	* Mrg: PR 1784 from iguyking - Create a new Ubuntu 14.04.02 install instructions.
+	* Mrg: PR 1780 from darius - Add send to cart and send to my queue buttons to rest of the pages.
+	* Mrg: PR 1779 from darius - Change the search page and results display, add send to cart and send to my queue buttons to movies page.
+
+
+2015-07-25 niel
+	* Chg: Merging in dev-configs branch. This adds a new Configure class and streamlines autoloading further.
+		***NOTE*** This will require moving config.php and settings.php from .../www/ to .../nzedb/config.
+			You will also have to remove the require_once line from the bottom of config.php
+2015-07-24 niel
+	* Fix: updated regex for predb_import_daily_batch script to account for Dropbox's changes to link HTML.
+2015-07-24 bart39
+	* Mrg: PR 1775 from darius - Add buttons for actions in posterwall.
+2015-07-23 bart39
+	* Mrg: PR 1774 from darius - Change the color of posterwall in charisma template.
+	* Mrg: PR 1773 from darius - Fix errors in usefullinksmenu.tpl.
+	* Mrg: PR 1772 from darius - Home buttons and menu will now load the site home link setup in admin>site edit area.
+	* Mrg: PR 1771 from darius - Add new german variant of codecposter spam releases.
+	* Mrg: PR 1770 from darius - Fix search in new templates, final fix for posterwall and update the base of Omicron template (AdminLTE) to version 2.2.0.
+2015-07-22 bart39
+	* Fix: Bad regex causing preg_match errors.
+	* Mrg: PR 1769 from darius - Partial fix for newposterwall, remove newznab-tmux reference from search page.
+	* Mrg: PR 1768 from darius - Fix styling of new themes, add back new releases posterwall.
+2015-07-19 niel
+	* Fix: Quick fix for Smarty class not loading in .../misc/testing/DB/autopatcher.php
+	* Mrg: PR 1764, from Darius - Make max.headers.iteration editable in admin => site-edit.
+	* Fix: Had to rename the 'setting' for max.headers.iteration to allow it to work with smarty template.
+	* Fix: Removing unneccessary require_once for Utility.php. No longer needed as autoloading covers it and Utility is gone. ;-)
+2015-07-18 niel
+	* Chg: Renamed Utility class to Misc. It should only contain odd methods that do not fit in anywhere else.
+	* Chg: Created a new utility class 'Text' and moved various text based methods into it from Misc.
+2015-07-18 bart39
+	* Mrg: PR 1763 from darius - Fix the reference to Tabula-Rasa test site.
+	* Chg: Change baseplate text to be consistant across all themes.
+	* Mrg: PR 1762 from darius - Change references to nZEDb.
+	* Mrg: PR 1757 from darius - Move $options before the $message to prevent undefined index options.
+	* Mrg: PR 1756 from darius - Group will be disabled on update if USP server responds with code 411.
+	* Mrg: PR 1755 from bfincher - Fix interval defined in timeother to be 6 hours instead of 0 hours.
+2015-07-17 bart39
+	* Mrg: PR 1760 from darius - Add omicron and charisma Bootstrap 3 based templates.
+2015-07-16 niel
+	* Fix: Finally have a work around for the register page not loading. Thanks to Bart39.
+2015-07-14 bart39
+	* Mrg: PR 1759 from darius - Update ReleaseRemover with new variant of codec installer file.
+2015-07-09 niel
+	* Fix: Installation require_once problems. No, really this time, I even tested it on a VM.
+2015-07-08 niel
+	* Fix: Path of require for installation's config. Plus additional requires in step files.
+	* Mrg: PR 1753, from Fossil01 - Show password on screen after reset.
+2015-07-07 niel
+	* Fix: Require of 'config.php' for installing.
+2015-07-06 niel
+	* Mrg: PR 1747, from sebst3r - API-Change regarding JSON-Output
+
+2015-06-30 niel
+	* Mrg: PR 1740, from Fossil01 - Added user signups by month view back to site-stats.
+2015-06-29 niel
+	* Chg: Combining web page autoloaders into a single file.
+	* Chg: Streamlined the autoloader process for Smarty files/pages.
+2015-06-28 niel
+	* Chg: Moved smarty page files autoloader script to.../pages/autoload.php and moved Smarty framework autoload code initialisation into the .../www/index.php - This has a several advantages:
+			Prevents problems on Windows and other case-insenstive file-systems (and applications) from not being able to have ours and smarty's in the same directory.
+			Removes our code from the Smarty library tree, making it possible to no longer have the whole library included in the repo.
+			Allows us to separate out the Smarty framework autoloading from the smarty page autoloading.
+			Removes autoloaders for smarty stuff completely from the indexer code.
+	* Fix: Admin section now works with the Smarty autoloading changes.
+2015-06-25 kevinlekiller
+	* Fix: Notices in register page.
+	* Fix: Notices in admin pages.
+2015-06-24 kevinlekiller
+	* Fix: Notices in password reset page.
+2015-06-23 kevinlekiller
+	* Chg: If NNTP compression fails to enable, retry.
+	       If NNTP returns status code 0, do not show message (issue #1735).
+	* Fix: Notices. Issue #1737
+	* Fix: Various notices.
+	* Chg: Use get_class / __FUNCTION__ for nzedb\Logger->Log usage.
+	* Upd: Update smarty to 3.1.27
+	* Fix: Add check for string on nzedb\Movie::doMovieUpdate #1742
+	* Fix: PR 1742 (Notices in movie.php, remove old smarty files)
+2015-06-22 niel
+	* Mrg: PR 1738 from Enverex - Avoid MySQL caching on transient content
+2015-06-19 bart39
+	* Mrg: PR 1730 from kevin123, Fix for changes in Trakt API v2.
+	* Mrg: PR 1729 from kevin123, Fix issues if nZEDb_SSL_CAFILE is empty.
+	* Mrg: PR 1728 from kevin123, Add support for trakt.tv API v2.
+	* Mrg: PR 1727 from darius, Fix the nzbFileList function.
+2015-06-17 niel
+	* NEW: PR 1726 from kevin123 - Support for downloading last rar/zip file when post processing.
+2015-06-15 niel
+	* Mrg: PR 1724 from kevin123, Changes to cache use.
+	* NEW: Adding a limit to the maximum number of headers a single group can grab per iteration of the main loop. This allows for a reasonably safe catchup ability on out of date groups, without completely choking the database with one groups headers ;-)
+		***NOTE*** this may slow things down for some users of *very* active groups.
+		There is an entry in the Settings table (max=>headers=>iteration) to set the value (default 1,000,000), an entry in admin => Edit Site to make this easier will come when someone can be coerced into doing smarty work ;-)
+2015-06-14 niel
+	* Mrg: PR 1725 from kingcat/zetas - NZBImport add missing group (inactive) instead of skipping nzb.
+2015-06-13 bart39
+	* Fix: Undefined offset: 1 in MiscSorter.php #1714.
+2015-06-12 bart39
+	* Mrg: PR 1723 from kevin123 - Changes to showpasswordedrelease.
+	* Mrg: PR 1722 from kevin123 - Add support for APCu or APC for caching.
+2015-06-11 niel
+	* Mrg: PR from kevin123 - Cache various queries.
+2015-06-10 niel
+	* Mrg: PR 1712 from zetas - Ordering comments by created date. Showing newest on top.
+	* Mrg: PR 1719 from enverex - Add matching for hyphenated music scene release names.
+	* New: Added a config directory under .../nzedb to contain configuration/settings files, so they're all together and don't need paths changing when code moves. I'll gradually move older config/settings files here, with some exceptions TBD.
+	* Chg: Moved IRCScraper example settings file to the .../nzedb/config directory
+	* Chg: Refactored the IRCScraper scrape script to look in .../nzedb/config for the renamed ircscraper_settings.php file. (it will move the old one from testing/IRCScraper if it finds it.
+	* NEW: Added tmux.running.exit to settings table. This is read during the tmux monitor script's loop to see if it should exit or not. I'll add a means to set this from the Tmux settings page once the rest is finished.
+	* Fix: Removing superfluous quotes around $user variable as they are added by the escaping in the previous line.
+2015-06-09 bart39
+	* Mrg: PR 1716 from enverex - Pick up additional RAR names and match both functions.
+2015-06-06 bart39
+	* Fix: from rainje - Select all + delete in adv search not working #1713 #1715.
+
+2015-06-01 niel
+	* Mrg: PR 1709 from zetas - Implementing private profiles and the ability to turn them on or off via the ACP.
+2015-05-29 bart39
+	* Add: Add option to disable a group during backfill if target date reached (site edit > usenet settings).
+2015-05-28 bart39
+	* Mrg: PR 1705 from zetas - [Security Bug] Fix for: Logged in users can view others profiles.
+	* Mrg: PR 1705 from kevin123 - Add requested regexes.
+	* Mrg: PR 1704 from kevin123 - Fix bad namespace in populate_anidb.php.
+2015-05-24 bart39
+	* Mrg: PR 1703 from kevin123 - Use full php tag in anime page.
+2015-05-23 bart39
+	* Mrg: PR 1701 from kevin123 - Update API docs.
+	* Mrg: PR 1700 from kevin123 - Fix broken install on step 6.
+	* Mrg: PR 1702 from enverex - Ensure all variables are set.
+2015-05-22 bart39
+	* Mrg: PR 1698 from enverex - Improve daytopost accuracy and speed.
+	* Mrg: PR 1696 from kevin123 - Fix alternate provider not being set in config.php on install. #1695
+	* Mrg: PR 1693 from kevin123 - Add thumbnail creation setting.
+	* Mrg: PR 1692 from kevin123 - Update documentation. Remove obsolete files.
+2015-05-20 bart39
+	* Chg: another update ab.cd.image collection regex.
+	* Chg: add DEViANCE and PLAZA to PC Game categorization.
+	* Chg: update ab.cd.image collection regex.
+	* Mrg: PR 1689 from enverex - Add additional audiobook regexes.
+	* Mrg: PR 1688 from sebst3r - Fix typo in "Admin Home".
+	* Mrg: PR 1686 from enverex - Add match for "release" and "author" when finding audio name.
+2015-05-18 bart39
+	* Chg: Improved release creation loop even further and added same logic to multiprocessing.
+2015-05-17 bart39
+	* Fix: Giantbomb api error if empty result returned.
+	* Mrg: PR 1685 from enverex - Update the audioNFO regex to be slightly less rubbish.
+	* Mrg: PR 1683 from kevin123 - Fix namespace issues. Fixes broken install on step 6.
+	* Mrg: PR 1682 from wally73 - Update populate_tvrage.php.
+	* Mrg: PR 1681 from kevin123 - IRCScraper fixes.
+2015-05-16 niel
+	* Mrg: PR 1680 from kevin123 - Use iconv for converting CP437, fix broking install.
+	* Add: PR 1679 from kaibosh - Add check_previews script, cleanup tool.
+2015-05-15 niel
+	* Fix: Minor coding standards fixes.
+2015-05-15 bart39
+	* Mrg: PR 1678 from kevin123 - Move CBP deletion.
+	* Mrg: PR 1677 from kevin123 - Fix on advanced search page.
+	* Fix: correct collection regexes that caused Regex.php Line 344 error issue #1675.
+2015-05-14 niel
+	* Mrg: PR 1673 from kevin123 - Fix broken pager on search page.
+	* Mrg: PR 1672 from Enverex - Implement local temporary caching for Amazon lookup failures.
+2015-05-14 bart39
+	* Add: Collection regexes part 1 from issue #1668
+	* Mrg: PR 1671 from enverex - Make sure that the destroyed cookie matches the created cookie.
+2015-05-11 niel
+	* Fix: Namespace issues - Thanks to Darius for compiling the list.
+	* Fix: Captcha namespace issue.
+	* Chg: Dropping initial backslash from most use statements.
+	* Fix: ReleaseExtra namespace issue in ajax_mediainfo - Thanks Greg.
+	* Mrg: PR 1664 from zetas - Captcha Refactor. Moving logic from BasePage into Captcha class.
+	* Fix: Changing 'verifypeer' to 'verifycert' in SABnzbd class to fix integration. Thanks to zetas.
+	* Fix: Console's 'Invalid xml response.' exception.
+	* Mrg: PR 1669 from tyldum - Do urldecode before working on 'cat'
+2015-05-10 niel
+	* Mrg: Bringing in dev-namespace branch.
+2015-04-10 bart39
+	* Mrg: PR 1657 from kevin123 - Fix notices in various web pages.
+	* Mrg: PR 1650 from zetas - Adding ReCaptcha support.
+	* Mrg: PR 1656 from kevin123 - Move files around in misc/testing folder.
+		***NOTE*** this may break any custom scripts you have written.
+	* Mrg: PR 1654 from tasky - Fix Popporn error - causing xxx not to post process, also fixes #1655.
+	* Fix: Genre display in music pages, clear your smarty cache to correct.
+2015-05-09 niel
+	* Mrg: PR 1653 from kevin123 - Fix an issue in query, add regexes.
+2015-05-08 bart39
+	* Mrg: PR 1652 from kevin123 - Fix issues with collection regexes relating to #1647.
+		***NOTE*** see http://tinyurl.com/k7vwc35 for details
+2015-05-07 bart39
+	* Chg: Remove Rotten Tomatoes quality settings as no longer required, correct the image url - fixes #1649.
+2015-05-05 bart39
+	* Mrg: PR 1648 from kevin123 - Fix 2 issues with regexes relating to #1635 / #1647.
+2015-05-04 niel
+	* Mrg: PR 1646 from kevin123 - Changes to settings.php.example, Changes to DB.
+2015-05-03 bart39
+	* Chg: Alter ProcessReleases to loop as long as the number of releases or nzbs added was >= the limit
+		(meaning there are more waiting to be created). Addresses Issue #1630
+2015-05-02 niel
+	* Fix: Renamed $pdo to $predb that was missed in refactoring - Thanks to tasky.
+2015-05-01 niel
+	* Chg: Changed handling of nZEDb.xml tag checks for dev branch. Forces tag element of '0.0.0'.
+2015-04-30 niel
+	* Mrg: Merged in Db script changes from March.
+		Added two scripts to .../cli/data for importing/exporting predb data. They're intended to replace the predb_dump script which will no longer be maintained.
+
+
+2015-04-29 bart39
+	* Fix: Invalid type check for Forking PPA min / max sizes when set to 0.
+2015-04-29 niel
+	* Mrg: PR 1643 from Enverex - Empty database field negation and Alpha theme readability cleanups.
+2015-04-28 bart39
+	* Fix: Invalid type check for PPA min / max sizes when set to 0.
+2015-04-17 niel
+	* Fix: Adding a check to see if the sqlpatch file was previously committed, before trying to update the commit.
+2015-04-16 bart39
+	* Fix: Increase column sizes for bookinfo.overview, consoleinfo.review and musicinfo.review due to truncation.
+	* Fix: undefined offset in ProcessAdditional.
+	* Fix: Fix issues with web RequestID lookups failing.
+2015-04-14 bart39
+	* Mrg: PR #1638 from darius - Fix the wrong table name in Regexes.php.  Was using release naming regexes to create collections.
+2015-04-11 bart39
+	* Fix: Fix api query issue raised in comments for #1637.
+	* Fix: Correct see more link on TV posterwall to point to /series.
+	* Chg: Optimize TV Posterwall query.
+2015-04-11 bart39
+	* Fix: Call to releases::search missing one parameter for basic searches in search.php #1637
+	* Mrg: PR #1636 from tasky - Added admin menu state changes.
+	* Mrg: PR #1634 from dariusIII - Fix typo that caused : PHP Notice: Undefined variable: in Binaries.php line 543.
+	* Fix: fix sql patch.
+	* Mrg: PR #1632 from dariusIII - Add X-DNZB-Failure header support.
+2015-03-24 niel
+	* Chg: Merging in dev-scrutinizer branch which addresses a lot of code style issues.
+2015-03-21 bart39
+	* Fix: Fix Class not found error in Movie.php.
+2015-03-20 niel
+	* New: Added scrutinizer configuration file.
+2015-03-20 bart39
+	* Mrg: PR #1623 from darius - Fix oversized fanart images when viewing movie info popup.
+	* Mrg: PR #1622 from darius - Switch to fanart.tv v3 api, closes #1620.
+2015-03-18 bart39
+	* Fix: Fix patch 0321, if your mysql version < 5.6 then bookinfo, consoleinfo and musicinfo will be converted to myisam to support the FT indexes.
+2015-03-17 niel
+	* New: Added two scripts to .../cli/data for importing/exporting predb data. They're intended to replace the predb_dump script which will no longer be maintained.
+2015-03-17 bart39
+	* Add: Add naming regex for a.b.b4e.erotica
+	* Mrg: PR #1617 from kevin - Convert naming regexes.
+	* Chg: Better matching on whether to ignore lines in nfo beginning with Source.
+	* Add: FULLTEXT indexes on bookinfo, consoleinfo and musicinfo for better existing title matching.
+	* Add: add categorization for alt.binaries.b4e.erotica.
+	* Fix: Don't ignore renamed releases for local requestID lookup.
+2015-03-06 bart39
+	* Chg: Better handling of .vol in regex extensions.
+	* Mrg: PR #1618 from kevin - Convert collections regex to db.
+2015-03-07 bart39
+	* Fix: Min/Max sizes on Adv Search.
+2015-03-06 niel
+	* Fix: Correcting tmp_pre table references to predb_imports in dump_predb script.
+2015-03-06 bart39
+	* Mrg: PR #1616 from kevin - Changes _tmb to _ori, to fix user setting, fixes #1613.
+	* Mrg: PR #1615 from kevin - Rename tmp_pre to predb_imports.
+	* Mrg: PR #1614 from kevin - Parsing black lists on white listed fields.
+2015-03-05 bart39
+	* Mrg: PR #1612 from kevin - Add support for category regexes in the DB.
+2015-03-04 bart39
+	* Mrg: PR #1610 from kevin - Dev regexes.
+2015-03-02 bart39
+	* Mrg: PR #1608 from kevin - Faster / more random hex string gen (for release guid and binary hash).
+	* Mrg: PR #1607 from kevin - Fixes for compressed NZB reading and return.
+2015-02-27 bart39
+	* Mrg: PR #1606 from kevin - Add database release naming regex support.
+	* Mrg: PR #1605 from kevin - Update opcache-gui to v2.0.1.
+2015-02-26 bart39
+	* Mrg: PR #1603 from kevin - Remove unneeded PHP version checks. Remove password compat library.
+	* Mrg: PR #1604 from kevin - Move all php ajax receiver files into 1 file.
+2015-02-25 bart39
+	* Chg: Add number of nzbs to import per process to tmux settings - Feaure Request #1287.
+	* Chg: Add new XXX categories to posterwall.
+	* Mrg: PR #1600 from kevin - Add support for in DB collections (grouping) regex.
+	* Mrg: PR #1599 from kevin - Changes to install templates.
+	* Mrg: PR #1602 from dariusIII - Add XXX WEB-DL category to XXX releases.
+		***NOTE*** run "php /misc/testing/Dev/recategorize.php all" to re-categorize existing releases.
+	* Fix: RottenTomatoes high-res images - clear your smarty cache.
+2015-02-21 niel
+	* Chg: Changing defaults for 'show passworded releases' (now shows potentially passworded) and 'NZB split level' (now 4) for new installs.
+2015-02-20 bart39
+	* Fix: Group XXX pack releases in a.b.erotica correctly.
+	* Fix: Missing binaries from releases due to collection_id not being set.
+		We suggest that you run reset_truncate after this update.
+		NB: IMPORTANT - TPG users (that means you McFuzz) should run "php /nzedb/build/_runonce/tpg_add_collections_column_2015-02-20.php" if
+		patch 0313 doesn't succeed. - FAILURE TO DO SO WILL CAUSE INSERT ERRORS
+2015-02-17 bart39
+	* Chg: Regex updates / categorize fixes for SD XXX
+	* Chg: Update sphinxsearch RT index when manually editing release searchname.
+	* Chg: Optimize queries for new release posterwall.
+	* Fix: Issue 1594 - Fix word wrap on alpha theme.
+2015-02-13 bart39
+	* Fix: Reading a corrupt nzb would hang on 100% cpu.
+2015-02-12 bart39
+	* Fix: Fix dupecheck when inserting tvrage titles.
+2015-02-09 bart39
+	* Fix: Fix another issue with mysqldump_tables.php when using sockets.
+	* Chg: Make ReleaseRemover more informative of the type it is processing.
+	* Chg: Ignore PC > Mac category for removeExecutable (Core Releases include their exe file for some reason).
+2015-02-07 bart39
+	* Fix: Fix issue with mysqldump_tables.php when using socket.
+	* Mrg: PR 1589 from dariusIII - Updated regex for codec poster.
+2015-02-06 bart39
+	* Mrg: PR 1590 from dariusIII - Add XXX-SD category.
+		***NOTE*** run "php /misc/testing/Dev/recategorize.php all" to re-categorize existing releases.
+2015-01-28 niel
+	* Fix: Removing text literals from whitespace collapsing as they screw up DB::queryDirect().
+2015-01-08 niel
+	* Chg: Added tmp_pre to schema as permanent table and changed predb scripts accordingly.
+2015-01-07 niel
+	* Fix: Issue 1575 - Notice: Undefined variable: consoletools in /home/schwick/www/nZEDb/misc/update/predbftmatch.php on line 84
+2015-01-28 niel
+	* Fix: Removing extra tab from innerfileblacklist row that causes the setting to not work.
+
+2014-12-31 bart39
+	* Mrg: PR 1573 from dariusIII - Changed trakt.tv imdb search to new format.
+2014-12-30 niel
+	* Mrg: PR 1571 from kevinlekiller - Fix lighthttpd rewrite rule.
+		***NOTE*** Nginx users need to manually change the rewrite rule for file extensions as described in the Ubuntu install guide.
+2014-12-28 niel
+	* Fix: Query in dump_predb.php to add new groups had a typo. Thanks to makkbe on github for the fix.
+2014-12-24 ruhllatio
+	* Del: Deprecated AniDB cron script that won't work.  Use the populate_anidb script instead, then resume postproc.
+2014-12-23 niel
+	* Fix: Adding work-around to prevent tmux throwing Server not found errors.
+	* Chg: Renamed tmux's start script to run, to allow using start for starting the running flag as stop turns it off.
+			Users running 'start.php' from cron or other scripts shouldn't notice a difference as the replacement also calls run if it detects that no nZEDb session is running.
+2014-12-21 niel
+	* Mrg: PR 1566 from NZBmets - Adds a stop.php script to allow stopping tmux scripts from continuing.
+2014-12-20 bart39
+	* Add: Add Indexes.
+2014-12-17 bart39
+	* Fix: Don't rename from source in NFO processing.
+	* Fix: Missing quote in convert_mysql_tables.php.
+	* Fix: Missing genres for consoles.
+	* Fix: Missing parameter for tmux nzb import.
+	* Add: Additional regex for TV categorization.
+	* Add: Regex additions for CollectionsCLeaning and ReleaseCleaning.
+	* Fix: Don't match abTeevee releases against predb if it is just the season name.
+2014-12-14 niel
+	* Mrg: PR 1562 from zetas/kingcat - Mail: Use supplied from address as reply-to.
+	* Fix: NZBGet was being sent incorrect URLs for NZB files, which resulted in it being redirected to the login page.
+2014-12-12 niel
+	* Adding script to batch import predb daily dumps without repeatedly calling the dump_predb script, which drops and readds triggers.
+2014-12-01 ruhllatio
+	* Fix: Contact us form erroring due to PHP Mailer class not found
+2014-11-20 niel
+	* Mrg: PR 1545 from zetas/kingcat - Add PHPMailer Support.
+2014-11-18 niel
+	* Mrg: Bringing badly merged removeCrapReleases WMV method into dev from next-master.
+	* Chg: Removing WMV removeCrap method from ALL.
+	* Mrg: PR 1551 from zetas - XSS Fix for Login & Register.
+2014-11-17 niel
+	* Fix: Allowing unsupported PHP versions to make it as far as the requirements page, before using minimum version specific behaviour.
+2014-11-15 niel
+	* Fix: Adding escaping to username in login page templates, to avoid XSS attacks. Alternative to PR 1549 from zetas.
+2014-11-14 niel
+	* Fix: Broken tvrage updating in tmux. Closes issue 1548.
+2014-11-14 bart39
+	* Fix: Fix PreDB Search - Closes issue 1547.
+2014-11-12 niel
+	* Chg: Moved and updated populate_tvrage script to be more easily accessible.
+2014-11-10 niel
+	* Mrg: josh4trunks' PR 1534, which implements Issue 1519 - Add Unix domain socket support to create_se_tables.php.
+2014-11-07 niel
+	* Mrg: Merging in PR 1543 from gregorystorme, which implements Issue 1530 - Feature Request: Add to My Movies.
+2014-11-06 niel
+	* Fix: Setting default release completion value to 95.
+	* Fix: Replacing some 'partrepair' references with 'missed_parts' that were omitted previously due to excessive caution ;-)
+	* Fix: TPG Only - Tmux monitor showing incorrect Part Repair (possibly others) numbers.
+	* Chg: TPG Only - Slight improvement in Tmux monitor's updating numbers. Probably too small to notice for most users.
+2014-10-31 niel
+	* Fix: Changing the triggers for releases_files table that were missed with the others.
+2014-10-30 niel
+	* Fix: Correcting some output fornatting for amazon lookups.
+2014-10-28 niel
+	* Fix: Incorrectly changed table releaseaudio to release_audio, when it should have been audio_data.
+2014-10-27 niel
+	* Chg: Database table renaming to bring our schema more inline with our naming conventions. Still some to do.
+	!!NOTE!! Db updates may take a long time, depending on your ammount of releases
+2014-10-25 bart39
+	* Fix: Missing parameter for binaries.php in /threaded/start.sh
+2014-10-23 niel
+	* Fix: page_contents and forum_posts tables were not being filled during install step 2.
+2014-10-20 niel
+	* Fix: Copied couple javascripts over to alpha theme from Default, to fix the Sending to NZBGet issue some users were having.
+	NOTE: This is a temporary fix! Someone with better understanding of the alpha theme (kevin?) needs to take a proper look at this.
+	* Fix: Adding sanity checking for game's release dates.
+2014-10-15 niel
+	* Fix: Issue 1526. Preventing empty path being used for checking permissions for sessionSavePath.
+2014-10-11 niel
+	* Mrg: Merging PR 1528 from bfincher, Correct error in blacklist query by poster.
+	* Chg: Cleaning tmux startup checks, so that no messages about checks not being an error is needed.
+2014-10-10 ruhllatio
+	* Mrg: Merge dev-api into dev for nzb360 movie cover compatibility
+2014-10-10 bart39
+	* Mrg: Merge pull request #1527 from kaibosh.
+2014-10-09 niel
+	* New: Added basic support for coverurl attribute in API output.
+2014-10-07 niel
+	* Fix: Misnamed constant. Closes issue 1522.
+2014-10-06 ruhllatio
+	* Chg: Use wordwrap instead of truncate to fix formatting issues with name/searchnames in browse, search, viewnzb
+	* Fix: Table formatting for cover views when searchnames are too large for auto column settings
+	* Fix: Movie covers not standard causing other formatting issues
+2014-10-02 bart39
+	* Mrg: Merge pull request #1518 from tasky.
+2014-09-30 ruhllatio
+	* Fix: Issue #1477 - MySQL Full-Text Search broken after implementation of Sphinx
+	* Fix: Whitespace\New line EOF (second try weirdness) and change SQL patch file perms to 0755
+2014-09-30 niel
+	* Fix: Column definition of collection_id in binaries* tables.
+2014-09-30 bart39
+	* Fix: Monitor counts for pp types when that type of pp has been turned off.
+	* Chg: Add Misc->Other category for alt.binaries.u4e file renaming.
+	* Chg: Update Monitor explanation for Tmux edit page.
+	* Fix: Add missing NZB Import to Tmux Complete Sequential.
+	* Chg: ReleaseCleaning regex additions for a.b.frogs, a.b.kenpsx and various other updates.
+	* Chg: CollectionsCleaning regex additions / fixes.
+2014-09-26 niel
+	* Chg: Convert binaries tables and code to use collection_id column;
+	!!IMPORTANT!! TPG users: After running DbUpdate to process the patch, you MUST run php nzedb/build/_runonce/tpg_triggers_update_2014-09-25.php to convert the triggers.
+2014-09-25 bart39
+	* Mrg: Merge PR 1510 from tasky.
+2014-09-25 niel
+	* Cng: Refactored Git.php Git::check_bin to check for spaces in the path and deal with them appropriately.
+2014-09-24 kevin
+	* Chg: Use PHP's finfo for magic file checking, falling back on O/S's file binary executable. Move all file usage to Utility function.
+2014-09-24 bart39
+	* Chg: use multiprocessing binaries / backfill instead of python in screen/threaded/start.sh script
+	* Fix: fix screen/threaded/start.sh script
+	* Fix: Blank content page when logged out.
+	* Fix: Remove "see more..." from logged out content page.
+	* Fix: More fixes to content page, to adhere to "Logged in / Admin / Everyone".
+	* Chg: Move all remaining utility functions into Utility class.
+	* Fix: fix screen/threaded/start.sh script
+2014-09-23 kevin
+	* Fix: Missing comma in mysql-ddl.sql
+	* Fix: Fixes for windows operating system installation issues.
+	* Fix: Issue where Theaters page dies fatally on new installs if update_theaters.php is not run first.
+	* Add: Catch Rotten Tomato API errors on upcoming page.
+2014-09-22 kevin
+	* Add: Check sessions path for read/write permissions on step 1 of install.
+2014-09-15 bart39
+	* Mrg: Merge PR 1503 from tasky.
+	* Fix: fix potential cause of corrupt nzb's
+	* Chg: reduce size of tv images on posterwall.
+	* Add: More regex additions
+2014-09-15 ruhllatio
+	* Fix: Force updated column in anidb_info to be populated on INSERT and updated on UPDATE scenarios to prevent API bans
+	* Fix: Anime title view displays language type (main, official) instead of anime type (Movie, TV Show, etc.)
+	* Fix: Bad copy/paste in reset_postprocessing for anime
+	* Add: Initial sleep for AniDB post process in case user respawns script too fast
+	* Add: Additional debug output if searchname can't be matched
+2014-09-15 niel
+	* Fix: User cart problem. Changing userid to user_id in usercart table.
+	* New: Added reporting reason for pre-commit hook refusing to commit.
+	* New: Added setting to settings table to record the timestamp of the last time AniDB returned a 'ban' message.
+2014-09-14 bart39
+	* Mrg: Merge PR 1502 from tasky.
+2014-09-13 bart39
+	* Fix: another attempt at fixing scnzbefnet collections
+2014-09-13 DariusIII
+	* Upd: Updated regexes for codecposter
+2014-09-12 bart39
+	* Add: More regex magic.
+	* Fix: possible fix for boneless splitting scnzbefnet par2 releases.
+	* Mrg: Merge PR 1499 from tasky.
+	* Fix: XXX / TV Posterwall
+2014-09-12 ruhllatio
+	* Mrg: dev-anime into dev for Anime Post processing support
+	* Fix: SQL patch doesn't drop new anidb_titles table if it exists
+	* Fix: File permissions for Desura/Greenlight and some SQL patches
+	* Del: +\d patches from dev-anime merge
+	* Fix: Dupe check query in AniDB population
+	* Fix: Missing column that didn't make it to branch / Fix file perm for patch
+	* Fix: Regex constant errors in ReleaseCleaning due to shitty merge
+	* Add: Anime SQL patch fix to SQL schema
+2014-09-11 ruhllatio
+	* Chg: Re-work New Poster Wall queries - should improve response
+2014-09-11 Bart39
+	* Add: Add TV to new release posterwall.
+	* Add: Regex for a.b.amazing.
+	* Chg: Amend regex to cater for german characters.
+	* Add: Videoot XXX Xvid dvd rips in NameFixer
+2014-09-10 Bart39
+	* Mrg: Merging in PR 1497 from tasky.
+2014-09-10 kevin
+	* Fix: Issue where empty nzb would show on API when no results were returned.
+2014-09-10 kaibosh
+	* Fix: Fix for issue 1489 - Specify session name when selecting pane
 2014-09-09 DariusIII
 	* Upd: Updated codecposter removal with german, french and dutch variants of txt file.
 2014-09-09 bart39

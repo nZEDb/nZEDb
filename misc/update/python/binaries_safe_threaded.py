@@ -30,12 +30,12 @@ dbgrab = cur[0].fetchall()
 run_threads = int(dbgrab[0][0])
 maxmssgs = int(dbgrab[0][1])
 
-#before we get the groups, lets update shortgroups
+#before we get the groups, lets update short_groups
 subprocess.call(["php", pathname+"/../nix/tmux/bin/update_groups.php", ""])
 
 #query to grab all active groups
 cur = info.connect()
-cur[0].execute("SELECT g.name AS groupname, g.last_record AS our_last, a.last_record AS their_last FROM groups g INNER JOIN shortgroups a ON g.active = 1 AND g.name = a.name ORDER BY a.last_record DESC")
+cur[0].execute("SELECT g.name AS groupname, g.last_record AS our_last, a.last_record AS their_last FROM groups g INNER JOIN short_groups a ON g.active = 1 AND g.name = a.name ORDER BY a.last_record DESC")
 datas = cur[0].fetchall()
 
 #close connection to mysql

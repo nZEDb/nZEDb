@@ -1,12 +1,17 @@
 <?php
 /* This script runs the subject names through namecleaner to create a clean search name, it also recategorizes and runs the releases through namefixer.
  * Type php resetSearchname.php to see detailed info. */
-require_once dirname(__FILE__) . '/../../../www/config.php';
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
+use nzedb\ConsoleTools;
+use nzedb\NameFixer;
+use nzedb\processing\ProcessReleases;
+use nzedb\ReleaseCleaning;
+use nzedb\SphinxSearch;
 use nzedb\db\Settings;
 
 $pdo = new Settings();
-$sphinx = new \SphinxSearch();
+$sphinx = new SphinxSearch();
 
 $show = 2;
 if (isset($argv[2]) && $argv[2] === 'show') {
@@ -20,8 +25,8 @@ if (isset($argv[1]) && $argv[1] == "full") {
 		echo $pdo->log->header("Going to recreate all search names, recategorize them and fix the names with namefixer, this can take a while.");
 		$done = 0;
 		$timestart = time();
-		$consoletools = new \ConsoleTools(['ColorCLI' => $pdo->log]);
-		$rc = new \ReleaseCleaning($pdo);
+		$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
+		$rc = new ReleaseCleaning($pdo);
 		foreach ($res as $row) {
 			$newname = $rc->releaseCleaner($row['name'], $row['fromname'], $row['size'], $row['gname']);
 			if (is_array($newname)) {
@@ -29,20 +34,20 @@ if (isset($argv[1]) && $argv[1] == "full") {
 			}
 			$newname = $pdo->escapeString($newname);
 			$pdo->queryExec(sprintf("UPDATE releases SET searchname = %s WHERE id = %d", $newname, $row['id']));
-			$sphinx->updateReleaseSearchName($newname, $row['id']);
+			$sphinx->updateRelease($row['id']);
 			$done++;
 			$consoletools->overWritePrimary("Renaming:" . $consoletools->percentString($done, count($res)));
 		}
 		$timenc = $consoletools->convertTime(time() - $timestart);
 		echo $pdo->log->primary("\n" . $done . " releases renamed in " . $timenc . ".\nNow the releases will be recategorized.");
 
-		$releases = new \ProcessReleases(['Settings' => $pdo, 'ConsoleTools' => $consoletools, 'ReleaseCleaning' => $rc]);
+		$releases = new ProcessReleases(['Settings' => $pdo, 'ConsoleTools' => $consoletools, 'ReleaseCleaning' => $rc]);
 		$releases->resetCategorize();
 		$categorized = $releases->categorizeRelease("name", "");
 		$timecat = $consoletools->convertTime(time() - $timestart);
 		echo $pdo->log->primary("\nFinished categorizing " . $categorized . " releases in " . $timecat . ".\nFinally, the releases will be fixed using the NFO/filenames.");
 
-		$namefixer = new \NameFixer(['Settings' => $pdo, 'ConsoleTools' => $consoletools]);
+		$namefixer = new NameFixer(['Settings' => $pdo, 'ConsoleTools' => $consoletools]);
 		$namefixer->fixNamesWithNfo(2, 1, 1, 1, $show);
 		$namefixer->fixNamesWithFiles(2, 1, 1, 1, $show);
 		$timetotal = $consoletools->convertTime(time() - $timestart);
@@ -58,8 +63,8 @@ if (isset($argv[1]) && $argv[1] == "full") {
 		echo $pdo->log->header("Going to recreate search names that have not been fixed with namefixer, recategorize them, and fix them with namefixer, this can take a while.");
 		$done = 0;
 		$timestart = TIME();
-		$consoletools = new \ConsoleTools(['ColorCLI' => $pdo->log]);
-		$rc = new \ReleaseCleaning($pdo);
+		$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
+		$rc = new ReleaseCleaning($pdo);
 		foreach ($res as $row) {
 			$newname = $rc->releaseCleaner($row['name'], $row['fromname'], $row['size'], $row['gname']);
 			if (is_array($newname)) {
@@ -67,20 +72,20 @@ if (isset($argv[1]) && $argv[1] == "full") {
 			}
 			$newname = $pdo->escapeString($newname);
 			$pdo->queryExec(sprintf("UPDATE releases SET searchname = %s WHERE id = %d", $newname, $row['id']));
-			$sphinx->updateReleaseSearchName($newname, $row['id']);
+			$sphinx->updateRelease($row['id']);
 			$done++;
 			$consoletools->overWritePrimary("Renaming:" . $consoletools->percentString($done, count($res)));
 		}
 		$timenc = $consoletools->convertTime(time() - $timestart);
 		echo $pdo->log->header($done . " releases renamed in " . $timenc . ".\nNow the releases will be recategorized.");
 
-		$releases = new \ProcessReleases(['Settings' => $pdo, 'ConsoleTools' => $consoletools, 'ReleaseCleaning' => $rc]);
+		$releases = new ProcessReleases(['Settings' => $pdo, 'ConsoleTools' => $consoletools, 'ReleaseCleaning' => $rc]);
 		$releases->resetCategorize("WHERE isrenamed = 0");
 		$categorized = $releases->categorizeRelease("name", "WHERE isrenamed = 0");
 		$timecat = $consoletools->convertTime(time() - $timestart);
 		echo $pdo->log->header("Finished categorizing " . $categorized . " releases in " . $timecat . ".\nFinally, the releases will be fixed using the NFO/filenames.");
 
-		$namefixer = new \NameFixer(['Settings' => $pdo, 'ConsoleTools' => $consoletools]);
+		$namefixer = new NameFixer(['Settings' => $pdo, 'ConsoleTools' => $consoletools]);
 		$namefixer->fixNamesWithNfo(2, 1, 1, 1, $show);
 		$namefixer->fixNamesWithFiles(2, 1, 1, 1, $show);
 		$timetotal = $consoletools->convertTime(time() - $timestart);
@@ -96,16 +101,16 @@ if (isset($argv[1]) && $argv[1] == "full") {
 		echo $pdo->log->header("Going to reset search names, this can take a while.");
 		$done = 0;
 		$timestart = time();
-		$consoletools = new \ConsoleTools(['ColorCLI' => $pdo->log]);
+		$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 		foreach ($res as $row) {
-			$rc = new \ReleaseCleaning($pdo);
+			$rc = new ReleaseCleaning($pdo);
 			$newname = $rc->releaseCleaner($row['name'], $row['fromname'], $row['size'], $row['gname']);
 			if (is_array($newname)) {
 				$newname = $newname['cleansubject'];
 			}
 			$newname = $pdo->escapeString($newname);
 			$pdo->queryExec(sprintf("UPDATE releases SET searchname = %s where id = %d", $newname, $row['id']));
-			$sphinx->updateReleaseSearchName($newname, $row['id']);
+			$sphinx->updateRelease($row['id']);
 			$done++;
 			$consoletools->overWritePrimary("Renaming:" . $consoletools->percentString($done, count($res)));
 		}

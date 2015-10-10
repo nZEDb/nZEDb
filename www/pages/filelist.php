@@ -1,4 +1,9 @@
 <?php
+
+use nzedb\NZB;
+use nzedb\Releases;
+use nzedb\utility\Misc;
+
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
@@ -16,7 +21,7 @@ if (isset($_GET["id"])) {
 		$page->show404();
 	}
 
-	$nzbfile = nzedb\utility\Utility::unzipGzipFile($nzbpath);
+	$nzbfile = Misc::unzipGzipFile($nzbpath);
 
 	$ret = $nzb->nzbFileList($nzbfile);
 

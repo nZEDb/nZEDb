@@ -1,6 +1,8 @@
 <?php
-require_once dirname(__FILE__) . '/config.php';
+require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'indexer.php');
 
+use nzedb\ConsoleTools;
+use nzedb\NameFixer;
 use nzedb\db\Settings;
 
 $pdo = new Settings();
@@ -24,16 +26,16 @@ function getPreName($argv)
 {
 	global $pdo;
 	$timestart = time();
-	$consoletools = new \ConsoleTools(['ColorCLI' => $pdo->log]);
-	$namefixer = new \NameFixer(['Settings' => $pdo, 'ConsoleTools' => $consoletools]);
+	$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
+	$namefixer = new NameFixer(['Settings' => $pdo, 'ConsoleTools' => $consoletools]);
 
 	$res = false;
 	if (isset($argv[1]) && $argv[1] === "all") {
 		$res = $pdo->queryDirect('SELECT id AS releaseid, name, searchname, group_id, categoryid, dehashstatus FROM releases WHERE preid = 0 AND ishashed = 1');
 	} else if (isset($argv[1]) && $argv[1] === "full") {
-		$res = $pdo->queryDirect('SELECT id AS releaseid, name, searchname, group_id, categoryid, dehashstatus FROM releases WHERE categoryid = 7020 AND dehashstatus BETWEEN -6 AND 0');
+		$res = $pdo->queryDirect('SELECT id AS releaseid, name, searchname, group_id, categoryid, dehashstatus FROM releases WHERE categoryid = 7020 AND ishashed = 1 AND dehashstatus BETWEEN -6 AND 0');
 	} else if (isset($argv[1]) && is_numeric($argv[1])) {
-		$res = $pdo->queryDirect('SELECT id AS releaseid, name, searchname, group_id, categoryid, dehashstatus FROM releases WHERE categoryid = 7020 AND dehashstatus BETWEEN -6 AND 0 ORDER BY postdate DESC LIMIT ' . $argv[1]);
+		$res = $pdo->queryDirect('SELECT id AS releaseid, name, searchname, group_id, categoryid, dehashstatus FROM releases WHERE categoryid = 7020 AND ishashed = 1 AND dehashstatus BETWEEN -6 AND 0 ORDER BY postdate DESC LIMIT ' . $argv[1]);
 	}
 
 	$counter = $counted = $total = 0;

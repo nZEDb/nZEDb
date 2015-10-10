@@ -8,4 +8,4 @@ if (isset($_GET['id'])) {
 }
 
 $referrer = $_SERVER['HTTP_REFERER'];
-header("Location: ".$referrer);
+header("Location: " . $referrer);

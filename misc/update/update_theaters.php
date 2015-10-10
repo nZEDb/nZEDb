@@ -1,7 +1,9 @@
 <?php
 
 // Run this once per day.
-require_once dirname(__FILE__) . '/config.php';
+require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'indexer.php');
 
-$m = new \Movie(['Echo' => true]);
+use nzedb\Movie;
+
+$m = new Movie(['Echo' => true]);
 $m->updateUpcoming();

@@ -1,6 +1,11 @@
 <?php
 
-use \nzedb\db\Settings;
+use nzedb\Capabilities;
+use nzedb\Category;
+use nzedb\Releases;
+use nzedb\db\Settings;
+use nzedb\utility\Misc;
+use nzedb\utility\Text;
 
 // API functions.
 $function = 's';
@@ -54,17 +59,18 @@ if ($page->users->isLoggedIn()) {
 	if ($function != 'c' && $function != 'r') {
 		if (!isset($_GET['apikey'])) {
 			showApiError(200, 'Missing parameter (apikey)');
-		}
-		$res = $page->users->getByRssToken($_GET['apikey']);
-		$apiKey = $_GET['apikey'];
+		} else {
+			$res    = $page->users->getByRssToken($_GET['apikey']);
+			$apiKey = $_GET['apikey'];
 
-		if (!$res) {
-			showApiError(100, 'Incorrect user credentials (wrong API key)');
-		}
+			if (!$res) {
+				showApiError(100, 'Incorrect user credentials (wrong API key)');
+			}
 
-		$uid = $res['id'];
-		$catExclusions = $page->users->getCategoryExclusion($uid);
-		$maxRequests = $res['apirequests'];
+			$uid           = $res['id'];
+			$catExclusions = $page->users->getCategoryExclusion($uid);
+			$maxRequests   = $res['apirequests'];
+		}
 	}
 }
 
@@ -75,27 +81,19 @@ $page->smarty->assign('rsstoken', $apiKey);
 if ($uid != '') {
 	$page->users->updateApiAccessed($uid);
 	$apiRequests = $page->users->getApiRequests($uid);
-	if ($apiRequests['num'] > $maxRequests) {
-		showApiError(500, 'Request limit reached (' . $apiRequests['num'] . '/' . $maxRequests . ')');
+	if ($apiRequests > $maxRequests) {
+		showApiError(500, 'Request limit reached (' . $apiRequests . '/' . $maxRequests . ')');
 	}
 }
 
 $releases = new Releases(['Settings' => $page->settings]);
 
-if (isset($_GET['extended']) && $_GET['extended'] == 1) {
-	$page->smarty->assign('extended', '1');
-}
-if (isset($_GET['del']) && $_GET['del'] == 1) {
-	$page->smarty->assign('del', '1');
-}
+$page->smarty->assign('extended', (isset($_GET['extended']) && $_GET['extended'] == 1 ? '1' : '0'));
+$page->smarty->assign('del', (isset($_GET['del']) && $_GET['del'] == 1 ? '1' : '0'));
+
 
 // Output is either json or xml.
-$outputXML = true;
-if (isset($_GET['o'])) {
-	if ($_GET['o'] == 'json') {
-		$outputXML = false;
-	}
-}
+$outputXML = (isset($_GET['o']) && $_GET['o'] == 'json' ? false : true);
 
 switch ($function) {
 	// Search releases.
@@ -109,7 +107,8 @@ switch ($function) {
 
 		if (isset($_GET['q'])) {
 			$relData = $releases->search(
-				$_GET['q'], -1, -1, -1, $categoryID, -1, -1, 0, 0, -1, -1, $offset, $limit, '', $maxAge, $catExclusions
+				$_GET['q'], -1, -1, -1, -1, -1, -1, 0, 0, -1, -1, $offset, $limit, '', $maxAge, $catExclusions,
+				"basic", $categoryID
 			);
 		} else {
 			$totalRows = $releases->getBrowseCount($categoryID, $maxAge, $catExclusions);
@@ -155,13 +154,21 @@ switch ($function) {
 		$page->users->addApiRequest($uid, $_SERVER['REQUEST_URI']);
 		$offset = offset();
 
+		$imdbId = (isset($_GET['imdbid']) ? $_GET['imdbid'] : '-1');
+
 		$relData = $releases->searchbyImdbId(
-			(isset($_GET['imdbid']) ? $_GET['imdbid'] : '-1'),
+			$imdbId,
 			$offset,
 			limit(),
 			(isset($_GET['q']) ? $_GET['q'] : ''),
 			categoryID(),
 			$maxAge
+		);
+
+		addCoverURL($relData,
+			function($release) {
+				return Misc::getCoverURL(['type' => 'movies', 'id' => $release['imdbid']]);
+			}
 		);
 
 		addLanguage($relData, $page->settings);
@@ -211,12 +218,29 @@ switch ($function) {
 
 	// Capabilities request.
 	case 'c':
+		//get categories
 		$category = new Category(['Settings' => $page->settings]);
-		$page->smarty->assign('parentcatlist', $category->getForMenu());
-		header('Content-type: text/xml');
-		echo $page->smarty->fetch('apicaps.tpl');
-		break;
+		$cats = $category->getForMenu();
 
+		//insert cats into template variable
+		$page->smarty->assign('parentcatlist', $cats);
+
+		if ($outputXML) { //use apicaps.tpl if xml is requested
+			$response = $page->smarty->fetch('apicaps.tpl');
+			header('Content-type: text/xml');
+			header('Content-Length: ' . strlen($response) );
+			echo $response;
+		} else { //otherwise construct array of capabilities and categories
+			//get capabilities
+			$caps = (new Capabilities(['Settings' => $page->settings]))->getForMenu();
+			$caps['categories'] = $cats;
+			//use json_encode
+			$response = encodeAsJSON($caps);
+			header('Content-type: application/json');
+			header('Content-Length: ' . strlen($response) );
+			echo $response;
+		}
+		break;
 	// Register request.
 	case 'r':
 		verifyEmptyParameter('email');
@@ -252,13 +276,15 @@ switch ($function) {
 			showApiError(107);
 		}
 
-		header('Content-type: text/xml');
-		echo
+		$response =
 			"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" .
 			'<register username="' . $username .
 			'" password="' . $password .
 			'" apikey="' . $userdata['rsstoken'] .
 			"\"/>\n";
+		header('Content-type: text/xml');
+		header('Content-Length: ' . strlen($response) );
+		echo $response;
 		break;
 }
 
@@ -278,7 +304,7 @@ function showApiError($errorCode = 900, $errorText = '')
 				$errorText = 'Account suspended';
 				break;
 			case 102:
-				$errorText = 'Insufficient priviledges/not authorized';
+				$errorText = 'Insufficient privileges/not authorized';
 				break;
 			case 103:
 				$errorText = 'Registration denied';
@@ -322,9 +348,14 @@ function showApiError($errorCode = 900, $errorText = '')
 		}
 	}
 
+	$response =
+		"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" .
+		'<error code="' . $errorCode .  '" description="' . $errorText . "\"/>\n";
 	header('Content-type: text/xml');
+	header('Content-Length: ' . strlen($response) );
 	header('X-nZEDb: API ERROR [' . $errorCode . '] ' . $errorText);
-	exit("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<error code=\"$errorCode\" description=\"$errorText\"/>\n");
+
+	exit($response);
 }
 
 /**
@@ -354,10 +385,10 @@ function categoryID()
 {
 	$categoryID[] = -1;
 	if (isset($_GET['cat'])) {
-		$categoryIDs = $_GET['cat'];
+		$categoryIDs = urldecode($_GET['cat']);
 		// Append Web-DL category ID if HD present for SickBeard / NZBDrone compatibility.
-		if (strpos($_GET['cat'], (string)Category::CAT_TV_HD) !== false &&
-			strpos($_GET['cat'], (string)Category::CAT_TV_WEBDL) === false) {
+		if (strpos($categoryIDs, (string)Category::CAT_TV_HD) !== false &&
+			strpos($categoryIDs, (string)Category::CAT_TV_WEBDL) === false) {
 			$categoryIDs .= (',' . Category::CAT_TV_WEBDL);
 		}
 		$categoryID = explode(',', $categoryIDs);
@@ -403,11 +434,15 @@ function printOutput($data, $xml = true, $page, $offset = 0)
 	if ($xml) {
 		$page->smarty->assign('offset', $offset);
 		$page->smarty->assign('releases', $data);
+		$response = trim($page->smarty->fetch('apiresult.tpl'));
 		header('Content-type: text/xml');
-		echo trim($page->smarty->fetch('apiresult.tpl'));
+		header('Content-Length: ' . strlen($response) );
+		echo $response;
 	} else {
+		$response = encodeAsJSON($data);
 		header('Content-type: application/json');
-		echo json_encode($data);
+		header('Content-Length: ' . strlen($response));
+		echo $response;
 	}
 }
 
@@ -422,6 +457,16 @@ function verifyEmptyParameter($parameter)
 	}
 }
 
+function addCoverURL(&$releases, callable $getCoverURL)
+{
+	if ($releases && count($releases)) {
+		foreach ($releases as $key => $release) {
+			$coverURL = $getCoverURL($release);
+			$releases[$key]['coverurl'] = $coverURL;
+		}
+	}
+}
+
 /**
  * Add language from media info XML to release search names.
  * @param array             $releases
@@ -433,11 +478,20 @@ function addLanguage(&$releases, Settings $settings)
 	if ($releases && count($releases)) {
 		foreach ($releases as $key => $release) {
 			if (isset($release['id'])) {
-				$language = $settings->queryOneRow(sprintf('SELECT audiolanguage FROM releaseaudio WHERE releaseid = %d', $release['id']));
+				$language = $settings->queryOneRow(sprintf('SELECT audiolanguage FROM audio_data WHERE releaseid = %d', $release['id']));
 				if ($language !== false) {
 					$releases[$key]['searchname'] = $releases[$key]['searchname'] . ' ' . $language['audiolanguage'];
 				}
 			}
 		}
 	}
+}
+
+function encodeAsJSON($data)
+{
+	$json = json_encode(Text::encodeAsUTF8($data));
+	if ($json === false) {
+		showApiError(201);
+	}
+	return $json;
 }

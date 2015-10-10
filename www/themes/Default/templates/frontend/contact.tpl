@@ -34,6 +34,7 @@
 			<tr>
 				<td></td>
 				<td>
+					{$page->smarty->fetch('captcha.tpl')}
 					<input type="submit" value="Submit" />
 				</td>
 			</tr>

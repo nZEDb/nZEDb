@@ -1,39 +1,39 @@
 <?php
 require_once './config.php';
 
-$page = new AdminPage();
+use nzedb\ReleaseRemover;
+
+$page        = new AdminPage();
 $page->title = "Delete Releases";
-$page->smarty->assign(array('error', 'done'), '');
+$error = $done = '';
+$release = [];
 
-// Set the current action.
-$action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
-
-switch($action) {
+switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
 	case 'submit':
 		$values = parseResponse($_POST);
 		if ($values === false) {
 			$page->smarty->assign('error', 'Your search criteria is wrong.');
 		} else {
-			$RR = new ReleaseRemover(['Browser' => true, 'Settings' => $page->settings]);
+			$RR        = new ReleaseRemover(['Browser' => true, 'Settings' => $page->settings]);
 			$succeeded = $RR->removeByCriteria($values);
 			if (is_string($succeeded) && substr($succeeded, 0, 7) === 'Success') {
-				$page->smarty->assign('done', $succeeded);
+				$done = $succeeded;
+
 			} else {
-				$page->smarty->assign('error', $succeeded);
+				$error = $succeeded;
 			}
 		}
 
-		$release = array();
+		$release = [];
 		foreach ($_POST as $key => $value) {
 			$release[$key] = $value;
 		}
-		$page->smarty->assign('release', $release);
 
 		break;
 
 	case 'view':
 	default:
-		$release = array(
+		$release = [
 			'name'         => '',
 			'searchname'   => '',
 			'fromname'     => '',
@@ -50,22 +50,28 @@ switch($action) {
 			'sizetypesel'  => '0',
 			'adatetypesel' => '0',
 			'pdatetypesel' => '0'
-		);
-		$page->smarty->assign('release', $release);
+		];
 		break;
 }
 
-$page->smarty->assign('type1_ids',   array(0, 1));
-$page->smarty->assign('type2_ids',   array(0, 1, 2));
-$page->smarty->assign('type1_names', array('Like', 'Equals'));
-$page->smarty->assign('type2_names', array('Bigger', 'Smaller', 'Equals'));
-$page->smarty->assign('type3_names', array('Bigger', 'Smaller'));
+$page->smarty->assign([
+		'release'     => $release,
+		'error'       => $error,
+		'done'        => $done,
+		'type1_ids'   => [0, 1],
+		'type2_ids'   => [0, 1, 2],
+		'type1_names' => ['Like', 'Equals'],
+		'type2_names' => ['Bigger', 'Smaller', 'Equals'],
+		'type3_names' => ['Bigger', 'Smaller']
+	]
+);
 
 $page->content = $page->smarty->fetch('delete-releases.tpl');
 $page->render();
 
-function parseResponse($response) {
-	$options = array();
+function parseResponse($response)
+{
+	$options = [];
 	foreach ($response as $key => $value) {
 		switch ($key) {
 			case 'name':
@@ -81,7 +87,7 @@ function parseResponse($response) {
 				break;
 			case 'relguid':
 				$options['guid']['value'] = $value;
-				$options['guid']['type'] = 'equals';
+				$options['guid']['type']  = 'equals';
 				break;
 			case 'nametypesel':
 				switch ($value) {
@@ -173,22 +179,22 @@ function parseResponse($response) {
 			case 'completion':
 				$options['completion']['value'] = '';
 				if (is_numeric($value) && $value > 0 && $value < 100) {
-					$options['completion']['type'] = 'smaller';
+					$options['completion']['type']  = 'smaller';
 					$options['completion']['value'] = $value;
 				}
 				break;
 		}
 	}
-	$retVal = array();
+	$retVal = [];
 	foreach ($options as $key => $value) {
 		if ($value['value'] === '') {
 			continue;
 		}
 		$retVal[] = $key . '=' . $value['type'] . '=' . $value['value'];
-
 	}
 	if (count($retVal) === 0) {
 		return false;
 	}
+
 	return $retVal;
 }

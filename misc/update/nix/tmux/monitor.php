@@ -1,13 +1,20 @@
 <?php
-require_once dirname(__FILE__) . '/../../../../www/config.php';
+require_once realpath(dirname(dirname(dirname(dirname(__DIR__)))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
+use nzedb\Category;
+use nzedb\TmuxOutput;
+use nzedb\TmuxRun;
 use nzedb\db\Settings;
+use nzedb\utility\Misc;
 
 $pdo = new Settings();
-$tRun = new \TmuxRun($pdo);
-$tOut = new \TmuxOutput($pdo);
+$tRun = new TmuxRun($pdo);
+$tOut = new TmuxOutput($pdo);
 
 $runVar['paths']['misc'] = nZEDb_MISC;
+$runVar['paths']['cli'] = nZEDb_ROOT . 'cli/';
+$runVar['paths']['scraper'] = nZEDb_MISC . 'IRCScraper' . DS . 'scrape.php';
+
 $db_name = DB_NAME;
 $dbtype = DB_SYSTEM;
 $tmux = $tRun->get('niceness');
@@ -44,15 +51,21 @@ $runVar['timers']['query']['proc2_time'] = $runVar['timers']['query']['proc3_tim
 $runVar['timers']['query']['proc11_time'] = $runVar['timers']['query']['proc21_time'] = $runVar['timers']['query']['proc31_time'] = $runVar['timers']['query']['tpg_time'] =
 $runVar['timers']['query']['tpg1_time'] = 0;
 
-// Analyze tables
-printf($pdo->log->info("\nAnalyzing your tables to refresh your indexes."));
-$pdo->optimise(false, 'analyze', false, ['releases']);
-passthru('clear');
+// Analyze release table if not using innoDB (innoDB uses online analysis)
+$engine = $pdo->queryOneRow(sprintf("SELECT ENGINE FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = %s AND TABLE_NAME = 'releases'", $pdo->escapeString($db_name)));
+if (!in_array($engine['engine'], ['InnoDB', 'TokuDB'])) {
+	printf($pdo->log->info("\nAnalyzing your tables to refresh your indexes."));
+	$pdo->optimise(false, 'analyze', false, ['releases']);
+	Misc::clearScreen();
+}
 
 $runVar['settings']['monitor'] = 0;
 $runVar['counts']['iterations'] = 1;
 $runVar['modsettings']['fc']['firstrun'] = true;
 $runVar['modsettings']['fc']['num'] = 0;
+
+$tblCount = "SELECT TABLE_ROWS AS count FROM information_schema.TABLES WHERE TABLE_NAME = :table AND TABLE_SCHEMA = " . $pdo->escapeString($db_name);
+$psTableRowCount = $pdo->Prepare($tblCount);
 
 while ($runVar['counts']['iterations'] > 0) {
 
@@ -68,7 +81,7 @@ while ($runVar['counts']['iterations'] > 0) {
 	$runVar['timers']['query']['tmux_time'] = (time() - $timer01);
 
 	$runVar['settings']['book_reqids'] = (!empty($runVar['settings']['book_reqids'])
-		? $runVar['settings']['book_reqids'] : \Category::CAT_PARENT_BOOKS);
+		? $runVar['settings']['book_reqids'] : Category::CAT_PARENT_BOOKS);
 
 	//get usenet connection info
 	$runVar['connections'] = $tOut->getConnectionsInfo($runVar['constants']);
@@ -82,7 +95,7 @@ while ($runVar['counts']['iterations'] > 0) {
 		: "{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/releases.php"
 	);
 
-	switch((int) $runVar['settings']['binaries_run']) {
+	switch ((int)$runVar['settings']['binaries_run']) {
 		case 1:
 			$runVar['scripts']['binaries'] = "{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/binaries.php 0";
 			break;
@@ -93,7 +106,7 @@ while ($runVar['counts']['iterations'] > 0) {
 			$runVar['scripts']['binaries'] = 0;
 	}
 
-	switch ((int) $runVar['settings']['backfill']) {
+	switch ((int)$runVar['settings']['backfill']) {
 		case 1:
 			$runVar['scripts']['backfill'] = "{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/backfill.php";
 			break;
@@ -124,15 +137,15 @@ while ($runVar['counts']['iterations'] > 0) {
 
 		$splitqry = $newOldqry = '';
 
-		$splitqry = $tRun->proc_query(4, $runVar['settings']['book_reqids'], $runVar['settings']['request_hours'], $db_name);
-		$newOldqry = $tRun->proc_query(6, $runVar['settings']['book_reqids'], $runVar['settings']['request_hours'], $db_name);
+		$splitqry = $tRun->proc_query(4, null, null, $db_name);
+		$newOldqry = $tRun->proc_query(6, null, null, null);
 
 		$splitres = $pdo->queryOneRow($splitqry, false);
 		$runVar['timers']['newOld'] = $pdo->queryOneRow($newOldqry, false);
 
 		//assign split query results to main var
 		if (is_array($splitres)) {
-			foreach ($splitres AS $splitkey => $split) {
+			foreach ($splitres as $splitkey => $split) {
 				$runVar['counts']['now'][$splitkey] = $split;
 			}
 		}
@@ -146,7 +159,7 @@ while ($runVar['counts']['iterations'] > 0) {
 		$partitions = $pdo->queryDirect(
 			sprintf("
 				SELECT SUM(TABLE_ROWS) AS count, PARTITION_NAME AS category
-				FROM INFORMATION_SCHEMA.PARTITIONS
+				FROM information_schema.PARTITIONS
 				WHERE TABLE_NAME = 'releases'
 				AND TABLE_SCHEMA = %s
 				GROUP BY PARTITION_NAME",
@@ -173,9 +186,8 @@ while ($runVar['counts']['iterations'] > 0) {
 		$runVar['timers']['query']['proc2_time'] = (time() - $timer05);
 		$runVar['timers']['query']['proc21_time'] = (time() - $timer01);
 
+		// Need to remove this
 		$timer06 = time();
-		$proc3qry = $tRun->proc_query(3, $runVar['settings']['book_reqids'], $runVar['settings']['request_hours'], $db_name);
-		$proc3res = $pdo->queryOneRow(($proc3qry !== false ? $proc3qry : ''), $tRun->rand_bool($runVar['counts']['iterations']));
 		$runVar['timers']['query']['proc3_time'] = (time() - $timer06);
 		$runVar['timers']['query']['proc31_time'] = (time() - $timer01);
 
@@ -189,70 +201,62 @@ while ($runVar['counts']['iterations'] > 0) {
 			$runVar['counts']['now']['collections_table'] = $runVar['counts']['now']['binaries_table'] = 0;
 			$runVar['counts']['now']['parts_table'] = $runVar['counts']['now']['parterpair_table'] = 0;
 
-			if ($tables instanceof \Traversable) {
-				foreach ($tables as $row) {
-					$cntsql = '';
+			if ($psTableRowCount === false) {
+				echo "Unable to prepare statement, skipping monitor updates!";
+			} else {
+				if ($tables instanceof \Traversable) {
+					foreach ($tables as $row) {
+						$tbl   = $row['name'];
+						$stamp = 'UNIX_TIMESTAMP(MIN(dateadded))';
 
-					$tbl = $row['name'];
-					$stamp = 'UNIX_TIMESTAMP(MIN(dateadded))';
-					$orderlim = '';
-					$cntsql = sprintf('
-							SELECT TABLE_ROWS AS count
-							FROM INFORMATION_SCHEMA.TABLES
-							WHERE TABLE_NAME = %s
-							AND TABLE_SCHEMA = %s',
-							$pdo->escapeString($tbl),
-							$pdo->escapeString($db_name)
-					);
+						switch (true) {
+							case strpos($tbl, 'collections_') !== false:
+								$runVar['counts']['now']['collections_table'] += getTableRowCount($psTableRowCount,
+																								  $tbl);
+								$added = $pdo->queryOneRow(
+									sprintf('SELECT %s AS dateadded FROM %s',
+											$stamp,
+											$tbl
+									)
+								);
+								if (isset($added['dateadded']) && is_numeric($added['dateadded']) &&
+									$added['dateadded'] < $age
+								) {
+									$age = $added['dateadded'];
+								}
+								break;
+							case strpos($tbl, 'binaries_') !== false:
+								$runVar['counts']['now']['binaries_table'] += getTableRowCount($psTableRowCount,
+																							   $tbl);
+								break;
+							// This case must come before the 'parts_' one.
+							case strpos($tbl, 'missed_parts_') !== false:
+								$runVar['counts']['now']['missed_parts_table'] += getTableRowCount($psTableRowCount,
+																								   $tbl);
 
-					if (strpos($tbl, 'collections_') !== false) {
-						$run = $pdo->queryOneRow($cntsql, $tRun->rand_bool($runVar['counts']['iterations']));
-						$runVar['counts']['now']['collections_table'] += $run['count'];
-						$run1 =
-							$pdo->queryOneRow(
-									sprintf('
-										SELECT %s AS dateadded
-										FROM %s %s',
-										$stamp,
-										$tbl,
-										$orderlim
-									),
-							$tRun->rand_bool($runVar['counts']['iterations'])
-						);
-						if (isset($run1['dateadded']) && is_numeric($run1['dateadded']) && $run1['dateadded'] < $age) {
-							$age = $run1['dateadded'];
-						}
-					} else if (strpos($tbl, 'binaries_') !== false) {
-						$run = $pdo->queryOneRow($cntsql, $tRun->rand_bool($runVar['counts']['iterations']));
-						if (isset($run['count']) && is_numeric($run['count'])) {
-							$runVar['counts']['now']['binaries_table'] += $run['count'];
-						}
-					} else if (strpos($tbl, 'parts_') !== false) {
-						$run = $pdo->queryOneRow($cntsql, $tRun->rand_bool($runVar['counts']['iterations']));
-						if (isset($run['count']) && is_numeric($run['count'])) {
-							$runVar['counts']['now']['parts_table'] += $run['count'];
-						}
-					} else if (strpos($tbl, 'partrepair_') !== false) {
-						$run = $pdo->queryOneRow($cntsql, $tRun->rand_bool($runVar['counts']['iterations']));
-						if (isset($run['count']) && is_numeric($run['count'])) {
-							$runVar['counts']['now']['partrepair_table'] += $run['count'];
+								break;
+							case strpos($tbl, 'parts_') !== false:
+								$runVar['counts']['now']['parts_table'] += getTableRowCount($psTableRowCount,
+																							$tbl);
+								break;
+							default:
 						}
 					}
+					$runVar['timers']['newOld']['oldestcollection'] = $age;
+
+					//free up memory used by now stale data
+					unset($age, $added, $tables);
+
+					$runVar['timers']['query']['tpg_time']  = (time() - $timer07);
+					$runVar['timers']['query']['tpg1_time'] = (time() - $timer01);
 				}
-				$runVar['timers']['newOld']['oldestcollection'] = $age;
-
-				//free up memory used by now stale data
-				unset($age, $run, $run1, $tables);
-
-				$runVar['timers']['query']['tpg_time'] = (time() - $timer07);
-				$runVar['timers']['query']['tpg1_time'] = (time() - $timer01);
 			}
 		}
 		$runVar['timers']['timer2'] = time();
 
 		//assign postprocess values from $proc
 		if (is_array($proc1res)) {
-			foreach ($proc1res AS $proc1key => $proc1) {
+			foreach ($proc1res as $proc1key => $proc1) {
 				$runVar['counts']['now'][$proc1key] = $proc1;
 			}
 		} else {
@@ -260,26 +264,19 @@ while ($runVar['counts']['iterations'] > 0) {
 		}
 
 		if (is_array($proc2res)) {
-			foreach ($proc2res AS $proc2key => $proc2) {
+			foreach ($proc2res as $proc2key => $proc2) {
 				$runVar['counts']['now'][$proc2key] = $proc2;
-			}
-		} else {
-			errorOnSQL($pdo);
-		}
-		if (is_array($proc3res)) {
-			foreach ($proc3res AS $proc3key => $proc3) {
-				$runVar['counts']['now'][$proc3key] = $proc3;
 			}
 		} else {
 			errorOnSQL($pdo);
 		}
 
 		// now that we have merged our query data we can unset these to free up memory
-		unset($proc1res, $proc2res, $proc3res, $splitres);
+		unset($proc1res, $proc2res, $splitres);
 
 		// Zero out any post proc counts when that type of pp has been turned off
 		foreach ($runVar['settings'] as $settingkey => $setting) {
-			if (strpos($settingkey, 'process') === 0 && $setting === 0) {
+			if (strpos($settingkey, 'process') == 0 && $setting == 0) {
 				$runVar['counts']['now'][$settingkey] = $runVar['counts']['start'][$settingkey] = 0;
 			}
 		}
@@ -371,12 +368,32 @@ while ($runVar['counts']['iterations'] > 0) {
 		$tRun->runPane('notrunning', $runVar);
 	}
 
-	$runVar['counts']['iterations']++;
-	sleep(10);
+	$exit = $pdo->getSetting('tmux.run.exit');
+	if ($exit == 0) {
+		$runVar['counts']['iterations']++;
+		sleep(10);
+	} else {
+		// Set counter to less than one so the loop will exit.
+		$runVar['counts']['iterations'] = ($exit < 0) ? $exit : 0;
+	}
 }
+
+// TODO add code here to handle all panes shutting down before closing.
 
 function errorOnSQL($pdo)
 {
 	echo $pdo->log->error(PHP_EOL . "Monitor encountered severe errors retrieving process data from MySQL.  Please diagnose and try running again." . PHP_EOL);
 	exit;
+}
+
+function getTableRowCount(\PDOStatement &$ps, $table)
+{
+	$success = $ps->execute([':table' => $table]);
+	if ($success) {
+		$result = $ps->fetch();
+
+		return is_numeric($result['count']) ? $result['count'] : 0;
+	}
+
+	return false;
 }

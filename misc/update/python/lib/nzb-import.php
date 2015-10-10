@@ -1,6 +1,12 @@
 <?php
-require_once dirname(__FILE__) . '/../../../../www/config.php';
+require_once realpath(dirname(dirname(dirname(dirname(__DIR__)))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
+use nzedb\Binaries;
+use nzedb\Categorize;
+use nzedb\ConsoleTools;
+use nzedb\NZB;
+use nzedb\ReleaseCleaning;
+use nzedb\Releases;
 use nzedb\db\Settings;
 
 $pdo = new Settings();
@@ -11,14 +17,14 @@ if (!isset($argv[1])) {
 			. "php $argv[0] /path/to/import false                ...: To import using the subject as release searchname\n"));
 }
 
-$consoleTools = new \ConsoleTools(['ColorCLI' => $pdo->log]);
-$binaries = new \Binaries(['Settings' => $pdo]);
+$consoleTools = new ConsoleTools(['ColorCLI' => $pdo->log]);
+$binaries = new Binaries(['Settings' => $pdo]);
 $crosspostt = $pdo->getSetting('crossposttime');
 $crosspostt = (!empty($crosspostt)) ? $crosspostt : 2;
-$releasecleaning = new \ReleaseCleaning($pdo);
-$categorize = new \Categorize(['Settings' => $pdo]);
-$nzb = new \NZB($pdo);
-$releases = new \Releases(['Settings' => $pdo]);
+$releasecleaning = new ReleaseCleaning($pdo);
+$categorize = new Categorize(['Settings' => $pdo]);
+$nzb = new NZB($pdo);
+$releases = new Releases(['Settings' => $pdo]);
 $nzbsperhour = $nzbSkipped = $maxtoprocess = 0;
 
 if (isset($argv[2]) && is_numeric($argv[2])) {
@@ -44,11 +50,12 @@ if (substr($path, strlen($path) - 1) != '/') {
 
 function relativeTime($_time)
 {
-	$d[0] = array(1, "sec");
-	$d[1] = array(60, "min");
-	$d[2] = array(3600, "hr");
-	$d[3] = array(86400, "day");
-	$d[4] = array(31104000, "yr");
+	$d = [];
+	$d[0] = [1, "sec"];
+	$d[1] = [60, "min"];
+	$d[2] = [3600, "hr"];
+	$d[3] = [86400, "day"];
+	$d[4] = [31104000, "yr"];
 
 	$w = [];
 
@@ -61,7 +68,7 @@ function relativeTime($_time)
 		$w[$i] = intval($secondsLeft / $d[$i][0]);
 		$secondsLeft -= ($w[$i] * $d[$i][0]);
 		if ($w[$i] != 0) {
-			$return.= $w[$i] . " " . $d[$i][1] . (($w[$i] > 1) ? 's' : '') . " ";
+			$return .= $w[$i] . " " . $d[$i][1] . (($w[$i] > 1) ? 's' : '') . " ";
 		}
 	}
 	return $return;
@@ -119,13 +126,13 @@ if (!isset($groups) || count($groups) == 0) {
 		foreach ($xml->file as $file) {
 			// File info.
 			$groupID = -1;
-			$name = (string) $file->attributes()->subject;
+			$name = (string)$file->attributes()->subject;
 			$firstname[] = $name;
-			$fromname = (string) $file->attributes()->poster;
+			$fromname = (string)$file->attributes()->poster;
 			$postername[] = $fromname;
-			$unixdate = (string) $file->attributes()->date;
+			$unixdate = (string)$file->attributes()->date;
 			$totalFiles++;
-			$date = date("Y-m-d H:i:s", (string) ($file->attributes()->date));
+			$date = date("Y-m-d H:i:s", (string)($file->attributes()->date));
 			$postdate[] = $date;
 			//removes everything after yEnc in subject
 			$partless = preg_replace('/(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?$/', 'yEnc', $firstname['0']);
@@ -133,12 +140,12 @@ if (!isset($groups) || count($groups) == 0) {
 			$subject = utf8_encode(trim($partless));
 
 			// Make a fake message object to use to check the blacklist.
-			$msg = array("Subject" => $subject, "From" => $fromname, "Message-ID" => "");
+			$msg = ["Subject" => $subject, "From" => $fromname, "Message-ID" => ""];
 
 			// Groups.
 			$groupArr = [];
 			foreach ($file->groups->group as $group) {
-				$group = (string) $group;
+				$group = (string)$group;
 				if (array_key_exists($group, $siteGroups)) {
 					$groupName = $group;
 					$groupID = $siteGroups[$group];
@@ -152,7 +159,7 @@ if (!isset($groups) || count($groups) == 0) {
 			}
 			if ($groupID != -1 && !$isBlackListed) {
 				if ($usenzbname) {
-					$usename = str_replace(array('.nzb.gz', '.nzb'), '', basename($nzbFile));
+					$usename = str_replace(['.nzb.gz', '.nzb'], '', basename($nzbFile));
 				}
 				if (count($file->segments->segment) > 0) {
 					foreach ($file->segments->segment as $segment) {
@@ -196,7 +203,7 @@ if (!isset($groups) || count($groups) == 0) {
 			} else {
 				$posteddate = $postdate[0];
 			}
-			$category = $categorize->determineCategory($cleanName, $groupID);
+			$category = $categorize->determineCategory($groupID, $cleanName);
 
 			// A 1% variance in size is considered the same size when the subject and poster are the same
 			$minsize = $totalsize * .99;
@@ -219,7 +226,7 @@ if (!isset($groups) || count($groups) == 0) {
 						'isrenamed' => 1,
 						'reqidstatus' => 0,
 						'preid' => 0,
-						'nzbstatus' => \NZB::NZB_ADDED
+						'nzbstatus' => NZB::NZB_ADDED
 					]
 				);
 			}
@@ -233,11 +240,11 @@ if (!isset($groups) || count($groups) == 0) {
 				if ($relid !== false) {
 					$nzbCount++;
 				}
-				if (( $nzbCount % 100 == 0) && ( $nzbCount != 0 )) {
+				if (($nzbCount % 100 == 0) && ($nzbCount != 0)) {
 					$seconds = TIME() - $time;
 					$nzbsperhour = number_format(round($nzbCount / $seconds * 3600), 0);
 				}
-				if (( $nzbCount >= $maxtoprocess) && ( $maxtoprocess != 0 )) {
+				if (($nzbCount >= $maxtoprocess) && ($maxtoprocess != 0)) {
 					$nzbsperhour = number_format(round($nzbCount / $seconds * 3600), 0);
 					exit($pdo->log->header("\nProcessed " . number_format($nzbCount) . " nzbs in " . relativeTime($time) . "\nAveraged " . $nzbsperhour . " imports per hour from " . $path));
 				}
@@ -265,7 +272,7 @@ exit($pdo->log->header("\nRunning Time: " . relativeTime($time) . "\n"
  * @param string $relguid    The guid of the release.
  * @param string $nzb        String containing the imported NZB.
  * @param NZB    $NZB
- * @param object $site
+ * @param object $pdo
  *
  * @return bool
  *

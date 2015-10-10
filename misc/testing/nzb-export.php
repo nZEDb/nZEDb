@@ -1,11 +1,14 @@
 <?php
-require_once dirname(__FILE__) . '/../../www/config.php';
+require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'indexer.php');
+
+use nzedb\NZBExport;
+
 $n = PHP_EOL;
 
 // Print usage.
 if (count($argv) !== 6) {
 	exit(
-		'This will export NZB files(to .nzb or .nzb.gz) into sub folders (using group name) of the specified folder.'. $n . $n .
+		'This will export NZB files(to .nzb or .nzb.gz) into sub folders (using group name) of the specified folder.' . $n . $n .
 		'Usage: ' . $n .
 		$_SERVER['_'] . ' ' . __FILE__ . ' arg1 arg2 arg3 arg4 arg5' . $n . $n .
 		'arg1 : Path to folder where NZB files are to be stored.          | a folder path' . $n .
@@ -14,12 +17,12 @@ if (count($argv) !== 6) {
 		'arg4 : Group ID for the group or false                           | number/false' . $n .
 		'arg5 : Gzip the NZB files (recommended, faster/takes less space) | true/false' . $n . $n .
 		'Examples: ' . $n .
-		$_SERVER['_'] . ' ' .$argv[0] . ' ' . nZEDb_ROOT . 'exportFolder' . DS . ' 01/01/2012 01/01/2014 false true' . $n .
-		$_SERVER['_'] . ' ' .$argv[0] . ' ' . nZEDb_ROOT . 'exportFolder' . DS . ' false 01/01/2014 12 false' . $n
+		$_SERVER['_'] . ' ' . $argv[0] . ' ' . nZEDb_ROOT . 'exportFolder' . DS . ' 01/01/2012 01/01/2014 false true' . $n .
+		$_SERVER['_'] . ' ' . $argv[0] . ' ' . nZEDb_ROOT . 'exportFolder' . DS . ' false 01/01/2014 12 false' . $n
 	);
 }
 
-$NE = new \NZBExport();
+$NE = new NZBExport();
 $NE->beginExport(
 	array(
 		// Path.

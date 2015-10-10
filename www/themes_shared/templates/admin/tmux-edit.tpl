@@ -1,9 +1,37 @@
-<h1>{$page->title}</h1>
+<div>
+<table border="0" width="100%">
+	<tr>
+		<td><h1>{$page->title}</h1></td>
+		<td></td>
+		<td align="right" class="top-nav">
+			<form action="#">
+				<select>
+					<option value="tmux_backfill">Backfill</option>
+					<option value="tmux_commentsharing">Comment Sharing</option>
+					<option value="tmux_decrypthashes">Decrypt Hashes</option>
+					<option value="tmux_fixreleasenames">Fix Release Names</option>
+					<option value="tmux_importnzbs">Import Nzbs</option>
+					<option value="tmux_misc">Miscellaneous</option>
+					<option value="tmux_monitor">Monitor</option>
+					<option value="tmux_postprocessing">Postprocessing</option>
+					<option value="tmux_ircscraper">PreDb IRC Scraper</option>
+					<option value="tmux_removecrapreleases">Remove Crap Releases</option>
+					<option value="tmux_sequential">Sequential</option>
+					<option value="tmux_servermonitors">Server Monitors</option>
+					<option value="tmux_updatebinaries">Update Binaries</option>
+					<option value="tmux_updatereleases">Update Releases</option>
+					<option value="tmux_updatetvtheater">Update TV/Theater</option>
+				</select>
+			</form>
+		</td>
+	</tr>
+</table>
+</div>
 <form action="{$SCRIPT_NAME}?action=submit" method="post">
 {if $error != ''}
 	<div class="error">{$error}</div>
 {/if}
-<fieldset>
+<fieldset id="tmux_how">
 	<legend>Tmux - How It Works</legend>
 	<table class="input">
 		<tr>
@@ -28,7 +56,7 @@
 		</tr>
 	</table>
 </fieldset>
-<fieldset>
+<fieldset id="tmux_monitor">
 	<legend>Monitor</legend>
 	<table class="input">
 		<tr>
@@ -37,7 +65,7 @@
 				{html_radios id="running" name='running' values=$yesno_ids output=$yesno_names selected=$ftmux->running separator='<br />'}
 				<div class="hint">This is the shutdown, true/on, it runs, false/off and all scripts are terminated. This
 					will start/stop all panes without terminating the monitor pane. This is not instant, it does not
-					kill any panes, it simply does not aloow any pane to restart if set to false.
+					kill any panes, it simply does not allow any pane to restart if set to false.
 				</div>
 			</td>
 		</tr>
@@ -86,7 +114,7 @@
 			<td style="width:180px;"><label for="explain">Information:</label></td>
 			<td>
 				<div class="explanation">
-					Monitor is the name of the script that monitors all of the tmux panes and windows. It stops/stops
+					Monitor is the name of the script that monitors all of the tmux panes and windows. It starts/stops
 					scripts based on user settings. It queries the database to provide stats from your nZEDb
 					database.<br/><br/>
 					There are 2 columns of numbers, 'In Process' and 'In Database'. The 'In Process' is all releases
@@ -115,15 +143,18 @@
 					number changed since the script started. The 'In Database' is the total matches of releases to
 					requestIDs and inside the parenthesis is percentage of total releases that you have matched to a
 					requestID.<br/><br/>
-					The 'In Process' rows PC and Pron are simply subsets of the 'In Process' row Misc. There is no
-					postprocessing specifically for these categories. The 'In Database' is the actual count for the
+					The 'In Process' PC is the number waiting to be processed and inside the parenthesis is the
+					number changed since the script started. The 'In Database' is the actual count for the
+					category.<br/><br/>
+					The 'In Process' XXX is the number waiting to be processed and inside the parenthesis is the
+					number changed since the script started. The 'In Database' is the actual count for the
 					category.
 				</div>
 			</td>
 		</tr>
 	</table>
 </fieldset>
-<fieldset>
+<fieldset id="tmux_sequential">
 	<legend>Sequential</legend>
 	<table class="input">
 		<tr>
@@ -152,7 +183,7 @@
 		</tr>
 	</table>
 </fieldset>
-<fieldset>
+<fieldset id="tmux_updatebinaries">
 	<legend>Update Binaries</legend>
 	<table class="input">
 		<tr>
@@ -175,7 +206,7 @@
 		</tr>
 	</table>
 </fieldset>
-<fieldset>
+<fieldset id="tmux_backfill">
 	<legend>Backfill</legend>
 	<table class="input">
 		<tr>
@@ -247,7 +278,7 @@
 		</tr>
 	</table>
 </fieldset>
-<fieldset>
+<fieldset id="tmux_importnzbs">
 	<legend>Import nzbs</legend>
 	<table class="input">
 		<tr>
@@ -261,7 +292,7 @@
 			</td>
 		</tr>
 		<tr>
-			<td style="width:180px;"><label for="nzbs">Nzbs:</label></td>
+			<td style="width:180px;"><label for="nzbs">Nzbs Folder:</label></td>
 			<td>
 				<input id="nzbs" class="long" name="nzbs" type="text" value="{$ftmux->nzbs}"/>
 
@@ -269,6 +300,13 @@
 					files folder of nzbs. This is by default, recursive and threaded. You set the threads in edit site,
 					Advanced Settings.
 				</div>
+			</td>
+		</tr>
+		<tr>
+			<td style="width:180px;"><label for="import_count">Import nzbs per process:</label></td>
+			<td>
+				<input id="import_count" name="import_count" class="short" type="text" value="{$ftmux->import_count}"/>
+				<div class="hint">How many NZB files to import per process.</div>
 			</td>
 		</tr>
 		<tr>
@@ -289,7 +327,7 @@
 		</tr>
 	</table>
 </fieldset>
-<fieldset>
+<fieldset id="tmux_updatereleases">
 	<legend>Update Releases</legend>
 	<table class="input">
 		<tr>
@@ -312,7 +350,7 @@
 		</tr>
 	</table>
 </fieldset>
-<fieldset>
+<fieldset id="tmux_postprocessing">
 	<legend>Postprocessing</legend>
 	<table class="input">
 		<tr>
@@ -374,7 +412,7 @@
 		</tr>
 	</table>
 </fieldset>
-<fieldset>
+<fieldset id="tmux_commentsharing">
 	<legend>Comment Sharing</legend>
 	<table class="input">
 		<tr>
@@ -397,7 +435,7 @@
 		</tr>
 	</table>
 </fieldset>
-<fieldset>
+<fieldset id="tmux_fixreleasenames">
 	<legend>Fix Release Names</legend>
 	<table class="input">
 		<tr>
@@ -418,22 +456,22 @@
 		</tr>
 	</table>
 </fieldset>
-<fieldset>
+<fieldset id="tmux_removecrapreleases">
 	<legend>Remove Crap Releases</legend>
 	<table class="input">
 		<tr>
 			<td style="width:180px;"><label for="fix_crap">Remove Crap Releases:</label></td>
 			<td>
-				{html_radios id="fix_crap_opt" name='fix_crap_opt' onchange="enableFixCrapCustom()" values=$fix_crap_radio_ids output=$fix_crap_radio_names selected=$ftmux->fix_crap_opt separator='<br />'}
+				{html_radios id="fix_crap_opt" name='fix_crap_opt' onchange="enableFixCrapCustom()" values=$fix_crap_radio_names output=$fix_crap_radio_names selected=$ftmux->fix_crap_opt separator='<br />'}
 				<br>
 				<div class="checkbox-grid">
 					{if $ftmux->fix_crap_opt == "Custom"}
-						{html_checkboxes id="fix_crap" name='fix_crap' values=$fix_crap_check_ids output=$fix_crap_check_names selected=explode(', ', $ftmux->fix_crap)}
+						{html_checkboxes id="fix_crap" name='fix_crap' values=$fix_crap_check_names output=$fix_crap_check_names selected=explode(', ', $ftmux->fix_crap)}
 					{else}
-						{html_checkboxes id="fix_crap" name='fix_crap' disabled="true" readonly="true" values=$fix_crap_check_ids output=$fix_crap_check_names selected=explode(', ', $ftmux->fix_crap)}
+						{html_checkboxes id="fix_crap" name='fix_crap' disabled="true" readonly="true" values=$fix_crap_check_names output=$fix_crap_check_names selected=explode(', ', $ftmux->fix_crap)}
 					{/if}
 				</div>
-				<div class="hint">Choose to run Remove Crap Releases. You can all or some.</div>
+				<div class="hint">Choose to run Remove Crap Releases. You can enable all or some.</div>
 			</td>
 		</tr>
 		<tr>
@@ -445,7 +483,7 @@
 		</tr>
 	</table>
 </fieldset>
-<fieldset>
+<fieldset id="tmux_decrypthashes">
 	<legend>Decrypt Hashes</legend>
 	<table class="input">
 		<tr>
@@ -470,13 +508,13 @@
 					Included in the same pane is Update Predb. This scrapes several predb sites and then tries to match
 					against releases.<br/>
 					This should be run along with fixReleasenames.php, this is faster, but only looks at releases.names.
-					fixReleasenames.php goes further and looks at releasefiles.name.
+					fixReleasenames.php goes further and looks at release_files.name.
 				</div>
 			</td>
 		</tr>
 	</table>
 </fieldset>
-<fieldset>
+<fieldset id="tmux_updatetvtheater">
 	<legend>Update TV/Theater</legend>
 	<table class="input">
 		<tr>
@@ -497,7 +535,7 @@
 		</tr>
 	</table>
 </fieldset>
-<fieldset>
+<fieldset id="tmux_ircscraper">
 	<legend>PreDb IRC Scraper</legend>
 	<table class="input">
 		<tr>
@@ -520,7 +558,7 @@
 		</tr>
 	</table>
 </fieldset>
-<fieldset>
+<fieldset id="tmux_misc">
 	<legend>Miscellaneous</legend>
 	<table class="input">
 		<tr>
@@ -576,7 +614,7 @@
 		</tr>
 	</table>
 </fieldset>
-<fieldset>
+<fieldset id="tmux_servermonitors">
 	<legend>Server Monitors</legend>
 	<table class="input">
 		<tr>

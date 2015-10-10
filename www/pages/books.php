@@ -1,10 +1,16 @@
 <?php
+
+use nzedb\Books;
+use nzedb\Category;
+use nzedb\DnzbFailures;
+
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
 $book = new Books(['Settings' => $page->settings]);
 $cat = new Category(['Settings' => $page->settings]);
+$fail = new DnzbFailures(['Settings' => $page->settings]);
 
 $boocats = $cat->getChildren(Category::CAT_PARENT_BOOKS);
 $btmp = array();
@@ -32,17 +38,16 @@ $results = $books = array();
 $results = $book->getBookRange($catarray, $offset, ITEMS_PER_COVER_PAGE, $orderby, $page->userdata["categoryexclusions"]);
 
 $maxwords = 50;
-if ($results instanceof Traversable) {
-	foreach ($results as $result) {
-		if (!empty($result['overview'])) {
-			$words = explode(' ', $result['overview']);
-			if (sizeof($words) > $maxwords) {
-				$newwords = array_slice($words, 0, $maxwords);
-				$result['overview'] = implode(' ', $newwords) . '...';
-			}
+foreach ($results as $result) {
+	if (!empty($result['overview'])) {
+		$words = explode(' ', $result['overview']);
+		if (sizeof($words) > $maxwords) {
+			$newwords = array_slice($words, 0, $maxwords);
+			$result['overview'] = implode(' ', $newwords) . '...';
 		}
-		$books[] = $result;
 	}
+	$result['failed'] = $fail->getFailedCount($result['grp_release_guid']);
+	$books[] = $result;
 }
 
 $author = (isset($_REQUEST['author']) && !empty($_REQUEST['author'])) ? stripslashes($_REQUEST['author']) : '';

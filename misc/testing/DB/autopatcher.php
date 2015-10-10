@@ -1,20 +1,26 @@
 <?php
-require_once dirname(__FILE__) . '/../../../www/config.php';
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DS . 'libs' . DS . 'smarty' . DS . 'Autoloader.php');
 
+Smarty_Autoloader::register();
+
+use nzedb\ColorCLI;
+use nzedb\Tmux;
 use nzedb\db\Settings;
+use nzedb\utility\Misc;
 
 $pdo = new Settings();
 $DIR = nZEDb_MISC;
 $smarty = new Smarty;
 $dbname = DB_NAME;
-$cli = new \ColorCLI();
+$cli = new ColorCLI();
 
 if (isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "safe")) {
-	$restart = (new \Tmux())->isRunning();
+	$restart = (new Tmux())->stopIfRunning();
 
 	system("cd $DIR && git pull");
 
-	if (\nzedb\utility\Utility::hasCommand("php5")) {
+	if (Misc::hasCommand("php5")) {
 		$PHP = "php5";
 	} else {
 		$PHP = "php";

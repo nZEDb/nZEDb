@@ -26,13 +26,13 @@ Your cart can be downloaded as an <a href="{$smarty.const.WWW_TOP}/rss?t=-2&amp;
 		<tr class="{cycle values=",alt"}">
 			<td class="check"><input id="chk{$result.guid|substr:0:7}" type="checkbox" class="nzb_check" value="{$result.id}" /></td>
 			<td>
-				<a title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.searchname|escape:"htmlall"|wordwrap:75:"\n":true}</a>
+				<a title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}">{$result.searchname|escape:"htmlall"|wordwrap:75:"\n":true}</a>
 			</td>
 			<td class="less" title="Added on {$result.createddate}">{$result.createddate|date_format}</td>
 			<td><a title="Delete from your cart" href="?delete={$result.id}">delete</a></td>
 		</tr>
 	{/foreach}
-	
+
 </table>
 </form>
 

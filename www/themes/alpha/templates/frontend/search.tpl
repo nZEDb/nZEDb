@@ -50,6 +50,10 @@
 					<td><input class="searchadv" id="searchadvposter" name="searchadvposter" value="{$searchadvposter|escape:'html'}" type="text"/></td>
 				</tr>
 				<tr>
+					<th><label for="searchadvfilename">Filename:</label></th>
+					<td><input class="searchadv" id="searchadvfilename" name="searchadvfilename" value="{$searchadvfilename|escape:'html'}" type="text"/></td>
+				</tr>
+				<tr>
 					<th><label for="searchadvdaysnew">Min age(days):</label></th>
 					<td>
 						<input class="searchdaysinput" id="searchadvdaysnew" name="searchadvdaysnew" value="{$searchadvdaysnew|escape:'html'}" type="text"/>
@@ -100,20 +104,25 @@
 				<center><li>Try fewer keywords.</li></center>
 			</ul>
 		</div></center>
-{elseif ($search || $subject || $searchadvr || $searchadvsubject || $selectedgroup || $selectedsizefrom || $searchadvdaysold) == ""}
+{elseif ($search || $subject || $searchadvr || $searchadvsubject || $searchadvfilename || $selectedgroup || $selectedsizefrom || $searchadvdaysold) == ""}
 {else}
 	<form id="nzb_multi_operations_form" method="get" action="{$smarty.const.WWW_TOP}/search">
-		<div class="container nzb_multi_operations">
-			<div class="col-12" style="text-align: right; padding-bottom: 4px;">
-				View:
-				<a href="{$smarty.const.WWW_TOP}/{$section}?t={$category}"><i class="icon-th-list"></i></a>&nbsp;&nbsp;
-				<span><i class="icon-align-justify"></i></span>
+		<div class="container nzb_multi_operations" style="text-align:right;margin-bottom:5px;">
+			{if $covgroup != ''}View:
+				<a href="{$smarty.const.WWW_TOP}/{$covgroup}?t={$category}">
+					<i class="icon-th-list"></i>
+				</a>
 				&nbsp;&nbsp;
-				{if $isadmin || $ismod}
-					Admin: <input type="button" class="btn btn-warning btn-small nzb_multi_operations_edit" value="Edit">
-					<input type="button" class="btn btn-danger btn-small nzb_multi_operations_delete" value="Delete">
-				{/if}
-			</div>
+				<span>
+					<i class="icon-align-justify"></i>
+				</span>
+			{/if}
+			{if $isadmin || $ismod}
+				&nbsp;&nbsp;
+				Admin:
+				<button type="button" class="btn btn-warning btn-sm nzb_multi_operations_edit">Edit</button>
+				<button type="button" class="btn btn-danger btn-sm nzb_multi_operations_delete">Delete</button>
+			{/if}
 		</div>
 		{include file='multi-operations.tpl'}
 
@@ -180,7 +189,7 @@
 			<tbody>
 			{foreach from=$results item=result}
 				<tr class="{if $lastvisit|strtotime<$result.adddate|strtotime}success{/if}" id="guid{$result.guid}">
-					<td class="check" style="text-align:center;">
+					<td class="check" style="width:26px;text-align:center;white-space:nowrap;">
 						<input id="chk{$result.guid|substr:0:7}" type="checkbox" class="nzb_check" value="{$result.guid}">
 					</td>
 					<td class="item" style="width:100%;text-align:left;">
@@ -188,8 +197,8 @@
 							<a
 								class="title"
 								title="View details"
-								href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}"
-							>{$result.searchname|escape:"htmlall"|truncate:150:"...":true}</a>
+								href="{$smarty.const.WWW_TOP}/details/{$result.guid}"
+							>{$result.searchname|escape:"htmlall"|wordwrap:70:"\n":true}</a>{if $result.failed > 0} <i class="fa fa-exclamation-circle" style="color: red" title="This release has failed to download for some users"></i>{/if}
 						</label>
 						<div class="resextra">
 							{if $result.passwordstatus == 1}
@@ -202,7 +211,7 @@
 							{if $result.videostatus > 0}
 								<a
 									class="model_prev label label-default"
-									href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}"
+									href="{$smarty.const.WWW_TOP}/details/{$result.guid}"
 									title="This release has a video preview."
 									rel="preview"
 								><i class="icon-youtube-play"></i>
@@ -300,6 +309,9 @@
 								><i class="icon-share-alt"></i></a>
 							{/if}
 							{release_flag($result.searchname, browse)}
+							{if $result.failed > 0}<span class="label label-default">
+								<i class ="fa fa-thumbs-o-up"></i> {$result.grabs} Grab{if $result.grabs != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$result.failed} Failed Download{if $result.failed != 1}s{/if}</span>
+							{/if}
 						</div>
 					</td>
 					<td class="category" style="width:auto;text-align:center;white-space:nowrap;">
@@ -333,7 +345,7 @@
 						{$result.grabs} grab{if $result.grabs != 1}s{/if}
 					</td>
 					<td class="icons" style="width:60px;text-align:center;white-space:nowrap;">
-						<div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"htmlall"}">&nbsp;</a></div>
+						<div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}">&nbsp;</a></div>
 						{if $sabintegrated}
 							<div class="icon icon_sab" title="Send to my Queue"></div>
 						{/if}

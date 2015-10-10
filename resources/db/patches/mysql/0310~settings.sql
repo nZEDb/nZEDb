@@ -1,0 +1,1 @@
+UPDATE settings SET value = "/setup\.exe|password\.url/i", hint = "You can add a regex here to set releases to potentially passworded when a file name inside a rar/zip matches this regex.", setting = "innerfileblacklist" WHERE section = 'indexer' AND subsection = 'ppa' AND name = 'innerfileblacklist' AND setting != 'innerfileblacklist';

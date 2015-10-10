@@ -1,6 +1,9 @@
 <?php
-declare(ticks=1);
+declare(ticks = 1)
+
 require('.do_not_run/require.php');
+
+use nzedb\libraries\ForkingImportNZB;
 
 if (!isset($argv[1]) || !is_dir($argv[1])) {
 	exit(
@@ -22,7 +25,7 @@ if (!isset($argv[1]) || !is_dir($argv[1])) {
 
 	);
 }
-(new \nzedb\libraries\ForkingImportNZB())->start(
+(new ForkingImportNZB())->start(
 	$argv[1],
 	(isset($argv[2]) && is_numeric($argv[2]) && $argv[2] > 0 ? $argv[2] : 1),
 	(isset($argv[3]) && $argv[3] === 'true' ? 'true' : 'false'),
