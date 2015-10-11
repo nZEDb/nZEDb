@@ -1217,6 +1217,7 @@ CREATE TABLE videos (
   countries_id CHAR(2) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Two character country code (FK to countries table).',
   started      DATE                    NOT NULL COMMENT 'Date (UTC) of production''s first airing.',
   imdb         MEDIUMINT(11) UNSIGNED  NOT NULL DEFAULT '0' COMMENT 'ID number for IMDB site (without the ''tt'' prefix).',
+  tmdb         MEDIUMINT(11) UNSIGNED  NOT NULL DEFAULT '0' COMMENT 'ID number for TMDB site.',
   trakt        MEDIUMINT(11) UNSIGNED  NOT NULL DEFAULT '0' COMMENT 'ID number for TraktTV site.',
   tvdb         MEDIUMINT(11) UNSIGNED  NOT NULL DEFAULT '0' COMMENT 'ID number for TVDB site',
   tvmaze       MEDIUMINT(11) UNSIGNED  NOT NULL DEFAULT '0' COMMENT 'ID number for TVMaze site.',
