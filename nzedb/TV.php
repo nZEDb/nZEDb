@@ -13,7 +13,8 @@ class TV
 	const SOURCE_TVRAGE = 3; // Scrape source was TvRage
 	const SOURCE_TVMAZE = 4; // Scrape source was TVMAZE
 	const SOURCE_IMDB =   5; // Scrape source was IMDB
-	
+	const SOURCE_TMDB =   6; // Scrape source was TMDB
+
 	/**
 	 * @var \nzedb\db\Settings
 	 */
