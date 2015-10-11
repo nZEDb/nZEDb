@@ -663,12 +663,8 @@ CREATE TABLE         releases (
   fromname          VARCHAR(255)                   NULL,
   completion        FLOAT                          NOT NULL DEFAULT '0',
   categoryid        INT                            NOT NULL DEFAULT '7010',
-  rageid            INT                            NULL,
-  seriesfull        VARCHAR(15)                    NULL,
-  season            VARCHAR(10)                    NULL,
-  episode           VARCHAR(10)                    NULL,
-  tvtitle           VARCHAR(255)                   NULL,
-  tvairdate         DATETIME                       NULL,
+  videos_id         MEDIUMINT(11) UNSIGNED         NOT NULL COMMENT 'FK to videos.id of the parent series.',
+  tv_episodes_id    MEDIUMINT(11) UNSIGNED         NOT NULL COMMENT 'FK to tv_episodes.id for the episode.',
   imdbid            MEDIUMINT(7) UNSIGNED ZEROFILL NULL,
   xxxinfo_id        INT SIGNED                     NOT NULL DEFAULT '0',
   musicinfoid       INT                            NULL,
@@ -705,7 +701,8 @@ CREATE TABLE         releases (
   INDEX ix_releases_postdate_searchname       (postdate,searchname),
   INDEX ix_releases_guid                      (guid),
   INDEX ix_releases_nzb_guid                  (nzb_guid),
-  INDEX ix_releases_rageid                    (rageid),
+  INDEX ix_releases_videos_id                 (videos_id),
+  INDEX ix_releases_tv_episodes_id            (tv_episodes_id),
   INDEX ix_releases_imdbid                    (imdbid),
   INDEX ix_releases_xxxinfo_id                (xxxinfo_id),
   INDEX ix_releases_musicinfoid               (musicinfoid,passwordstatus),
@@ -949,18 +946,20 @@ CREATE TABLE tmux (
 
 DROP TABLE IF EXISTS tv_episodes;
 CREATE TABLE tv_episodes (
+  id           INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   videos_id    MEDIUMINT(11) UNSIGNED  NOT NULL COMMENT 'FK to videos.id of the parent series.',
-  series      SMALLINT(5) UNSIGNED    NOT NULL DEFAULT '0' COMMENT 'Number of series/season.',
-  episode     SMALLINT(5) UNSIGNED    NOT NULL DEFAULT '0' COMMENT 'Number of episode within series',
-  se_complete VARCHAR(10) COLLATE utf8_unicode_ci NOT NULL COMMENT 'String version of Series/Episode as taken from release subject (i.e. S02E21+22).',
-  title       VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Title of the episode.',
-  firstaired  DATE NOT NULL COMMENT 'Date of original airing/release.',
-  summary     VARCHAR(1000) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Description/summary of the episode.',
+  series       SMALLINT(5) UNSIGNED    NOT NULL DEFAULT '0' COMMENT 'Number of series/season.',
+  episode      SMALLINT(5) UNSIGNED    NOT NULL DEFAULT '0' COMMENT 'Number of episode within series',
+  se_complete  VARCHAR(10) COLLATE utf8_unicode_ci NOT NULL COMMENT 'String version of Series/Episode as taken from release subject (i.e. S02E21+22).',
+  title        VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Title of the episode.',
+  firstaired   DATE NOT NULL COMMENT 'Date of original airing/release.',
+  summary      VARCHAR(1000) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Description/summary of the episode.',
   PRIMARY KEY (video_id, se_complete, firstaired)
 )
   ENGINE = MyISAM
   DEFAULT CHARSET = utf8
-  COLLATE = utf8_unicode_ci;
+  COLLATE = utf8_unicode_ci
+  AUTO_INCREMENT  = 1;
 
 DROP TABLE IF EXISTS tv_info;
 CREATE TABLE tv_info (
