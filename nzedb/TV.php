@@ -8,6 +8,12 @@ use nzedb\db\Settings;
  */
 class TV
 {
+	const SOURCE_TVDB =   1; // Scrape source was TVDB
+	const SOURCE_TRAKT =  2; // Scrape source was TraktTV
+	const SOURCE_TVRAGE = 3; // Scrape source was TvRage
+	const SOURCE_TVMAZE = 4; // Scrape source was TVMAZE
+	const SOURCE_IMDB =   5; // Scrape source was IMDB
+	
 	/**
 	 * @var \nzedb\db\Settings
 	 */
