@@ -949,7 +949,7 @@ CREATE TABLE tmux (
 
 DROP TABLE IF EXISTS tv_episodes;
 CREATE TABLE tv_episodes (
-  video_id    MEDIUMINT(11) UNSIGNED  NOT NULL COMMENT 'FK to videos.id of the parent series.',
+  videos_id    MEDIUMINT(11) UNSIGNED  NOT NULL COMMENT 'FK to videos.id of the parent series.',
   series      SMALLINT(5) UNSIGNED    NOT NULL DEFAULT '0' COMMENT 'Number of series/season.',
   episode     SMALLINT(5) UNSIGNED    NOT NULL DEFAULT '0' COMMENT 'Number of episode within series',
   se_complete VARCHAR(10) COLLATE utf8_unicode_ci NOT NULL COMMENT 'String version of Series/Episode as taken from release subject (i.e. S02E21+22).',
@@ -960,18 +960,18 @@ CREATE TABLE tv_episodes (
 )
   ENGINE = MyISAM
   DEFAULT CHARSET = utf8
-  COLLATE = utf8_unicode_ci
+  COLLATE = utf8_unicode_ci;
 
 DROP TABLE IF EXISTS tv_info;
 CREATE TABLE tv_info (
   videos_id MEDIUMINT(11) UNSIGNED  NOT NULL DEFAULT '0' COMMENT 'FK to video.id',
-  summary   VARCHAR(1000) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Description/summary of the show.',
+  summary   VARCHAR(10000) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Description/summary of the show.',
   publisher VARCHAR(255)  COLLATE utf8_unicode_ci NOT NULL COMMENT 'The channel/network of production/release (ABC, BBC, Showtime, etc.).',
   PRIMARY KEY titles (videos_id)
 )
   ENGINE = MyISAM
   DEFAULT CHARSET = utf8
-  COLLATE = utf8_unicode_ci
+  COLLATE = utf8_unicode_ci;
 
 DROP TABLE IF EXISTS tvrage_titles;
 CREATE TABLE tvrage_titles (
@@ -1223,13 +1223,14 @@ CREATE TABLE videos (
   tvmaze       MEDIUMINT(11) UNSIGNED  NOT NULL DEFAULT '0' COMMENT 'ID number for TVMaze site.',
   tvrage       MEDIUMINT(11) UNSIGNED  NOT NULL DEFAULT '0' COMMENT 'ID number for TVRage site.',
   source       TINYINT(1)    UNSIGNED  NOT NULL DEFAULT '0' COMMENT 'Which site did we use for info?',
-  PRIMARY KEY (id),
-  UNIQUE KEY title (title, type, started, countries_id)
+  PRIMARY KEY                  (id),
+  UNIQUE KEY  title            (title, type, started, countries_id),
+  INDEX       ix_videos_tvrage (tvrage)
 )
   ENGINE = MyISAM
-  AUTO_INCREMENT = 43772
+  AUTO_INCREMENT = 1
   DEFAULT CHARSET = utf8
-  COLLATE = utf8_unicode_ci
+  COLLATE = utf8_unicode_ci;
 
 
 DROP TABLE IF EXISTS xxxinfo;
