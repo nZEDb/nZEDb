@@ -295,11 +295,14 @@ CREATE TABLE consoleinfo (
 
 DROP TABLE IF EXISTS countries;
 CREATE TABLE countries (
-  code CHAR(2)      NOT NULL DEFAULT '',
-  name VARCHAR(255) NOT NULL DEFAULT '',
-  PRIMARY KEY (name)
+  id      CHAR(2) COLLATE utf8_unicode_ci NOT NULL COMMENT '2 character code.',
+  iso3    CHAR(3) COLLATE utf8_unicode_ci NOT NULL COMMENT '3 character code.',
+  country VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Name of the country.',
+  PRIMARY KEY (id),
+  UNIQUE KEY code3 (iso3),
+  UNIQUE KEY country (country)
 )
-  ENGINE = MYISAM
+  ENGINE = MyISAM
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci;
 
@@ -660,12 +663,8 @@ CREATE TABLE         releases (
   fromname          VARCHAR(255)                   NULL,
   completion        FLOAT                          NOT NULL DEFAULT '0',
   categoryid        INT                            NOT NULL DEFAULT '7010',
-  rageid            INT                            NULL,
-  seriesfull        VARCHAR(15)                    NULL,
-  season            VARCHAR(10)                    NULL,
-  episode           VARCHAR(10)                    NULL,
-  tvtitle           VARCHAR(255)                   NULL,
-  tvairdate         DATETIME                       NULL,
+  videos_id         MEDIUMINT(11) UNSIGNED         NOT NULL COMMENT 'FK to videos.id of the parent series.',
+  tv_episodes_id    MEDIUMINT(11) UNSIGNED         NOT NULL COMMENT 'FK to tv_episodes.id for the episode.',
   imdbid            MEDIUMINT(7) UNSIGNED ZEROFILL NULL,
   xxxinfo_id        INT SIGNED                     NOT NULL DEFAULT '0',
   musicinfoid       INT                            NULL,
@@ -702,7 +701,8 @@ CREATE TABLE         releases (
   INDEX ix_releases_postdate_searchname       (postdate,searchname),
   INDEX ix_releases_guid                      (guid),
   INDEX ix_releases_nzb_guid                  (nzb_guid),
-  INDEX ix_releases_rageid                    (rageid),
+  INDEX ix_releases_videos_id                 (videos_id),
+  INDEX ix_releases_tv_episodes_id            (tv_episodes_id),
   INDEX ix_releases_imdbid                    (imdbid),
   INDEX ix_releases_xxxinfo_id                (xxxinfo_id),
   INDEX ix_releases_musicinfoid               (musicinfoid,passwordstatus),
@@ -946,53 +946,31 @@ CREATE TABLE tmux (
 
 DROP TABLE IF EXISTS tv_episodes;
 CREATE TABLE tv_episodes (
-  -- Store current episode info here?
-  -- The summary/title of the episode for example?
+  id           INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  videos_id    MEDIUMINT(11) UNSIGNED  NOT NULL COMMENT 'FK to videos.id of the parent series.',
+  series       SMALLINT(5) UNSIGNED    NOT NULL DEFAULT '0' COMMENT 'Number of series/season.',
+  episode      SMALLINT(5) UNSIGNED    NOT NULL DEFAULT '0' COMMENT 'Number of episode within series',
+  se_complete  VARCHAR(10) COLLATE utf8_unicode_ci NOT NULL COMMENT 'String version of Series/Episode as taken from release subject (i.e. S02E21+22).',
+  title        VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Title of the episode.',
+  firstaired   DATE NOT NULL COMMENT 'Date of original airing/release.',
+  summary      VARCHAR(1000) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Description/summary of the episode.',
+  PRIMARY KEY (video_id, se_complete, firstaired)
 )
-  ENGINE = MYISAM
+  ENGINE = MyISAM
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci
-  AUTO_INCREMENT = 1;
+  AUTO_INCREMENT  = 1;
 
 DROP TABLE IF EXISTS tv_info;
 CREATE TABLE tv_info (
-  id           INT UNSIGNED         NOT NULL AUTO_INCREMENT,
-  rage_id      INT UNSIGNED         NOT NULL DEFAULT 0,
-  tvdb_id      INT UNSIGNED         NOT NULL DEFAULT 0,
-  trakt_id     INT UNSIGNED         NOT NULL DEFAULT 0,
-  tvmaze_id    INT UNSIGNED         NOT NULL DEFAULT 0,
-  imdb_id      INT UNSIGNED         NOT NULL DEFAULT 0,
-  tmdb_id      INT UNSIGNED         NOT NULL DEFAULT 0,
-  title        VARCHAR(255)         NOT NULL DEFAULT '',
-  rating       VARCHAR(25)          NOT NULL DEFAULT '',
-  genres       VARCHAR(255)         NOT NULL DEFAULT '',
-  run_time     SMALLINT UNSIGNED    NOT NULL DEFAULT 0  COMMENT 'How long is an episode in minutes?',
-  status       TINYINT(1) UNSIGNED  NOT NULL DEFAULT 0  COMMENT 'Is this series still on the air?',
-  network      INT UNSIGNED         NOT NULL DEFAULT 0  COMMENT 'What TV network does this air on?',
-  image        TINYINT(1) UNSIGNED  NOT NULL DEFAULT 0  COMMENT 'Does this series have an image?',
-  description  VARCHAR(10000)       NOT NULL DEFAULT '' COMMENT 'Description/summary of this series.',
-  country      VARCHAR(2)           NOT NULL DEFAULT '',
-  next_date    DATETIME             NULL                COMMENT 'Next Episode date.',
-  prev_date    DATETIME             NULL                COMMENT 'Previous Episode date.',
-  start_date   DATETIME             NULL                COMMENT 'When did this series start airing?',
-  PRIMARY KEY (id)
+  videos_id MEDIUMINT(11) UNSIGNED  NOT NULL DEFAULT '0' COMMENT 'FK to video.id',
+  summary   TEXT COLLATE utf8_unicode_ci NOT NULL COMMENT 'Description/summary of the show.',
+  publisher VARCHAR(255)  COLLATE utf8_unicode_ci NOT NULL COMMENT 'The channel/network of production/release (ABC, BBC, Showtime, etc.).',
+  PRIMARY KEY titles (videos_id)
 )
-  ENGINE = MYISAM
+  ENGINE = MyISAM
   DEFAULT CHARSET = utf8
-  COLLATE = utf8_unicode_ci
-  AUTO_INCREMENT = 1;
-
-DROP TABLE IF EXISTS tv_networks;
-CREATE TABLE tv_networks (
-  id    INT UNSIGNED NOT NULL DEFAULT AUTO_INCREMENT,
-  title VARCHAR(255) NOT NULL DEFAULT '',
-  PRIMARY KEY (id),
-  UNIQUE INDEX ix_tv_networks_title (title)
-)
-  ENGINE = MYISAM
-  DEFAULT CHARSET = utf8
-  COLLATE = utf8_unicode_ci
-  AUTO_INCREMENT = 1;
+  COLLATE = utf8_unicode_ci;
 
 DROP TABLE IF EXISTS tvrage_titles;
 CREATE TABLE tvrage_titles (
@@ -1227,6 +1205,29 @@ CREATE TABLE video_data (
   PRIMARY KEY (releaseid)
 )
   ENGINE = MYISAM
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
+
+
+DROP TABLE IF EXISTS videos;
+CREATE TABLE videos (
+  id           MEDIUMINT(11) UNSIGNED  NOT NULL AUTO_INCREMENT COMMENT 'Show''s ID to be used in other tables as reference.',
+  type         TINYINT(1) UNSIGNED     NOT NULL DEFAULT '0' COMMENT '0 = TV, 1 = Film, 2 = Anime',
+  title        VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Name of the video.',
+  countries_id CHAR(2) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Two character country code (FK to countries table).',
+  started      DATE                    NOT NULL COMMENT 'Date of production''s first airing.',
+  imdb         MEDIUMINT(11) UNSIGNED  NOT NULL DEFAULT '0' COMMENT 'ID number for IMDB site (without the ''tt'' prefix).',
+  trakt        MEDIUMINT(11) UNSIGNED  NOT NULL DEFAULT '0' COMMENT 'ID number for TraktTV site.',
+  tvdb         MEDIUMINT(11) UNSIGNED  NOT NULL DEFAULT '0' COMMENT 'ID number for TVDB site',
+  tvmaze       MEDIUMINT(11) UNSIGNED  NOT NULL DEFAULT '0' COMMENT 'ID number for TVMaze site.',
+  tvrage       MEDIUMINT(11) UNSIGNED  NOT NULL DEFAULT '0' COMMENT 'ID number for TVRage site.',
+  source       TINYINT(1)    UNSIGNED  NOT NULL DEFAULT '0' COMMENT 'Which site did we use for info?',
+  PRIMARY KEY                  (id),
+  UNIQUE KEY  title            (title, type, started, countries_id),
+  INDEX       ix_videos_tvrage (tvrage)
+)
+  ENGINE = MyISAM
+  AUTO_INCREMENT = 1
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci;
 
