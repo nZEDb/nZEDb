@@ -8,6 +8,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2015-10-12 niel
 	* Mrg: PR 1904, from Darius - Update parseTraktTv function, as it was occasionally inserting covers with tt prefix.
+	* Mrg: PR 1905, from Darius - Fix the layout of tv->anime page.
 2015-10-08 ruhllatio
 	Chg: Improve Codec Poster removal query times by incorporating Sphinx FT if enabled
 	Chg: Lots more love for Sphinx FT in ReleaseRemover.  Greatly improves query times on big databases.
