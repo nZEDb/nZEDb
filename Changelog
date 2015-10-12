@@ -6,6 +6,8 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2015-10-12 niel
+	* Mrg: PR 1904, from Darius - Update parseTraktTv function, as it was occasionally inserting covers with tt prefix.
 2015-10-08 ruhllatio
 	Chg: Improve Codec Poster removal query times by incorporating Sphinx FT if enabled
 	Chg: Lots more love for Sphinx FT in ReleaseRemover.  Greatly improves query times on big databases.
@@ -16,7 +18,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Fix: Issue #1900 Undefined index error in updateTvRage.php
 2015-10-06 ruhllatio
 	Mrg: PR #1898 Adjust templates for tvrage images change.
-	Mrg: PR #1899 Remove echooutput from TvRage class and move it to parent TV class 
+	Mrg: PR #1899 Remove echooutput from TvRage class and move it to parent TV class
 	Fix: ReleaseRemover not honoring LIKE search types causing blacklist removal issues and not producing enough matches in SPHINX mode
 2015-10-05 niel
 	* Mrg: PR 1895, from Darius - Add view release option to failed releases list. Do not post comment for user, if that user already posted the failure automated comment.
