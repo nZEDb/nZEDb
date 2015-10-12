@@ -4,7 +4,7 @@
 ALTER TABLE release_comments DROP text_hash;
 
 #Drop the trigger
-DROP TRIGGER IF EXISTS insert_MD5:
+DROP TRIGGER IF EXISTS insert_MD5;
 
 #Drop the index
 ALTER TABLE release_comments DROP INDEX ix_release_comments_hash_releaseid;
