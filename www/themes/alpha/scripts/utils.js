@@ -575,7 +575,7 @@ jQuery(function ($) {
     // titleinfo tooltip
 	$(".titleinfo").each(function() {
 		var guid = $(this).attr('title');
-	  	$(this).qtip({
+		$(this).qtip({
 			content: {
 			  title: {
 				  text: 'Release info...'
@@ -596,9 +596,9 @@ jQuery(function ($) {
 				tip: { // Now an object instead of a string
 					corner: 'topLeft', // We declare our corner within the object using the corner sub-option
 					size: {
-				    	x: 8, // Be careful that the x and y values refer to coordinates on screen, not height or width.
-				    	y : 8 // Depending on which corner your tooltip is at, x and y could mean either height or width!
-				 	}
+					x: 8, // Be careful that the x and y values refer to coordinates on screen, not height or width.
+					y : 8 // Depending on which corner your tooltip is at, x and y could mean either height or width!
+					}
 				}
 			}
 		});
@@ -660,5 +660,3 @@ function mymovie_add(imdbid, btn)
 
         return false;
 }
-
-
