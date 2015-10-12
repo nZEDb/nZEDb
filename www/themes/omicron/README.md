@@ -1,1 +1,0 @@
-This template is based on Admin LTE template.
