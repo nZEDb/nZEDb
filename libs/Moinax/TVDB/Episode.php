@@ -100,7 +100,7 @@ class Episode
      * Constructor
      *
      * @access public
-     * @return \Moinax\TvDb\Episode
+     * @return \libs\Moinax\TvDb\Episode
      * @param \SimpleXMLElement $data simplexml element created from thetvdb.com's xml data for the tv episode
      */
     public function __construct($data)
