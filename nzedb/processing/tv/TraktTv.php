@@ -9,6 +9,8 @@ use nzedb\utility\Misc;
  */
 class TraktTv extends TV
 {
+	const API_URL = 'https://api-v2launch.trakt.tv/';
+
 	/**
 	 * The Trakt.tv API v2 Client ID (SHA256 hash - 64 characters long string). Used for movie and tv lookups.
 	 * Create one here: https://trakt.tv/oauth/applications/new
@@ -67,7 +69,7 @@ class TraktTv extends TV
 		}
 
 		$array = $this->getJsonArray(
-			'https://api-v2launch.trakt.tv/shows/' .
+			self::API_URL . 'shows/' .
 			str_replace([' ', '_', '.'], '-', $title) .
 			'/seasons/' .
 			str_replace(['S', 's'], '', $season) .
@@ -110,7 +112,7 @@ class TraktTv extends TV
 				$extended = 'min';
 		}
 		$array = $this->getJsonArray(
-			'https://api-v2launch.trakt.tv/movies/' . str_replace([' ', '_', '.'], '-', str_replace(['(', ')'], '', $movie)),
+			self::API_URL . 'movies/' . str_replace([' ', '_', '.'], '-', str_replace(['(', ')'], '', $movie)),
 			$extended
 		);
 		if (!$array) {
@@ -135,7 +137,7 @@ class TraktTv extends TV
 	public function getCalendar($start = '', $days = 7)
 	{
 		$array = $this->getJsonArray(
-			'https://api-v2launch.trakt.tv/calendars/all/shows/' . $start . '/' . $days
+			self::API_URL . 'calendars/all/shows/' . $start . '/' . $days
 		);
 		if (!$array){
 			return false;
@@ -154,7 +156,7 @@ class TraktTv extends TV
 	public function getBoxOffice()
 	{
 		$array = $this->getJsonArray(
-			'https://api-v2launch.trakt.tv/movies/boxoffice'
+			self::API_URL . 'movies/boxoffice'
 		);
 		if (!$array){
 			return false;
@@ -180,16 +182,16 @@ class TraktTv extends TV
 	public function showSummary($show = '', $type = 'full')
 	{
 		switch($type) {
-			case 'full':
 			case 'images':
 			case 'full,images':
 				$extended = $type;
 				break;
+			case 'full':
 			default:
 				$extended = 'full';
 		}
 		$array = $this->getJsonArray(
-			'https://api-v2launch.trakt.tv/shows/' . str_replace([' ', '_', '.'], '-', str_replace(['(', ')'], '', $show)),
+			self::API_URL . 'shows/' . str_replace([' ', '_', '.'], '-', str_replace(['(', ')'], '', $show)),
 			$extended
 		);
 		if (!$array){
