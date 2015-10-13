@@ -1,6 +1,6 @@
 <?php
 
-namespace nzedb\processing\tv\Moinax\TVDB;
+namespace libs\Moinax\TVDB;
 
 /**
  * Actor object
@@ -42,7 +42,7 @@ class Actor
 	 *
 	 * @access public
 	 * @param \SimpleXMLElement $data A simplexml element created from thetvdb.com's xml data for the actor
-	 * @return \nzedb\processing\tv\Moinax\TvDb\Actor
+	 * @return \libs\Moinax\TvDb\Actor
 	 */
 	public function __construct($data)
 	{

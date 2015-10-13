@@ -1,6 +1,6 @@
 <?php
 
-namespace nzedb\processing\tv\Moinax\TVDB;
+namespace libs\Moinax\TVDB;
 
 /**
  * Simple banner object
@@ -76,7 +76,7 @@ class Banner
      *
      * @access public
      * @param \SimpleXMLElement $data A simplexml element created from thetvdb.com's xml data for the tv serie banner
-     * @return \nzedb\processing\tv\Moinax\TvDb\Banner
+     * @return \libs\Moinax\TvDb\Banner
      */
     public function __construct($data)
     {

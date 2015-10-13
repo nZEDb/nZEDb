@@ -1,7 +1,7 @@
 <?php
-namespace nzedb\processing\tv\Moinax\TVDB\Http;
+namespace libs\Moinax\TVDB\Http;
 
-use nzedb\processing\tv\Moinax\TVDB\CurlException;
+use libs\Moinax\TVDB\CurlException;
 
 class CurlClient implements HttpClient
 {
