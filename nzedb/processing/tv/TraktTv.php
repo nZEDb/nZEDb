@@ -47,15 +47,25 @@ class TraktTv extends TV
 	 * @param string $title
 	 * @param string $season
 	 * @param string $ep
+	 * @param string $type
 	 *
-	 * @see http://docs.trakt.apiary.io/#reference/episodes/summary/get-a-single-episode-for-a-show
-	 *
-	 * @return bool|array
+	 * @return array|bool
+	 * @see    http://docs.trakt.apiary.io/#reference/episodes/summary/get-a-single-episode-for-a-show
 	 *
 	 * @access public
 	 */
-	public function episodeSummary($title = '', $season = '', $ep = '')
+	public function episodeSummary($title = '', $season = '', $ep = '', $type = 'min')
 	{
+		switch($type) {
+			case 'full':
+			case 'images':
+			case 'full,images':
+				$extended = $type;
+				break;
+			default:
+				$extended = 'min';
+		}
+
 		$array = $this->getJsonArray(
 			'https://api-v2launch.trakt.tv/shows/' .
 			str_replace([' ', '_', '.'], '-', $title) .
@@ -63,7 +73,7 @@ class TraktTv extends TV
 			str_replace(['S', 's'], '', $season) .
 			'/episodes/' .
 			str_replace(['E', 'e'], '', $ep),
-			'full'
+			$extended
 		);
 		if (!$array) {
 			return false;

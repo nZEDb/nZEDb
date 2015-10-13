@@ -8,19 +8,21 @@ $(document).ready( function () {
 	var oTable = $('#example').dataTable();
 	var oSettings = oTable.fnSettings();
 	var mPass;
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
+
 		"Default should be null",
 		null,
 		function () { return oSettings.fnRowCallback == null; }
 	);
-	
-	
-	oTest.fnTest( 
+
+
+	oTest.fnTest(
+
 		"Four arguments passed",
 		function () {
 			oSession.fnRestore();
-			
+
 			mPass = -1;
 			$('#example').dataTable( {
 				"fnRowCallback": function ( nTr ) {
@@ -31,13 +33,14 @@ $(document).ready( function () {
 		},
 		function () { return mPass == 4; }
 	);
-	
-	
-	oTest.fnTest( 
+
+
+	oTest.fnTest(
+
 		"fnRowCallback called once for each drawn row",
 		function () {
 			oSession.fnRestore();
-			
+
 			mPass = 0;
 			$('#example').dataTable( {
 				"fnRowCallback": function ( nTr, asData, iDrawIndex, iDataIndex ) {
@@ -48,8 +51,9 @@ $(document).ready( function () {
 		},
 		function () { return mPass == 10; }
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
+
 		"fnRowCallback allows us to alter row information",
 		function () {
 			oSession.fnRestore();
@@ -62,12 +66,13 @@ $(document).ready( function () {
 		},
 		function () { return $('#example tbody tr:eq(1)').hasClass('unit_test'); }
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
+
 		"Data array has length matching columns",
 		function () {
 			oSession.fnRestore();
-			
+
 			mPass = true;
 			$('#example').dataTable( {
 				"fnRowCallback": function ( nTr, asData, iDrawIndex, iDataIndex ) {
@@ -79,12 +84,13 @@ $(document).ready( function () {
 		},
 		function () { return mPass; }
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
+
 		"Data array has length matching columns",
 		function () {
 			oSession.fnRestore();
-			
+
 			mPass = true;
 			var iCount = 0;
 			$('#example').dataTable( {
@@ -98,8 +104,8 @@ $(document).ready( function () {
 		},
 		function () { return mPass; }
 	);
-	
-	
-	
+
+
+
 	oTest.fnComplete();
 } );

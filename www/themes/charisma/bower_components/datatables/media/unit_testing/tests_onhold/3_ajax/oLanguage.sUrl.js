@@ -11,15 +11,17 @@ $(document).ready( function () {
 		"sAjaxSource": "../../../examples/ajax/sources/arrays.txt"
 	} );
 	var oSettings = oTable.fnSettings();
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
+
 		"sUrl is blank by default",
 		null,
 		function () { return oSettings.oLanguage.sUrl == ""; }
 	);
-	
-	
-	oTest.fnWaitTest( 
+
+
+	oTest.fnWaitTest(
+
 		"Loading of German file loads language information",
 		function () {
 			oSession.fnRestore();
@@ -32,7 +34,8 @@ $(document).ready( function () {
 			oSettings = oTable.fnSettings();
 		},
 		function () {
-			var bReturn = 
+			var bReturn =
+
 				oSettings.oLanguage.sProcessing == "Bitte warten..." &&
 				oSettings.oLanguage.sLengthMenu == "_MENU_ Einträge anzeigen" &&
 				oSettings.oLanguage.sZeroRecords == "Keine Einträge vorhanden." &&
@@ -45,18 +48,18 @@ $(document).ready( function () {
 				oSettings.oLanguage.oPaginate.sPrevious == "Zurück" &&
 				oSettings.oLanguage.oPaginate.sNext == "Nächster" &&
 				oSettings.oLanguage.oPaginate.sLast == "Letzter";
-				
+
 			return bReturn;
 		}
 	);
-	
+
 	/* One DOM check just to ensure that they go into the DOM */
 	oTest.fnTest(
 		"Loaded language goes into the DOM",
 		null,
 		function () { return document.getElementById('example_info').innerHTML = "1 bis 10 von 57 Einträgen"; }
 	);
-	
-	
+
+
 	oTest.fnComplete();
 } );

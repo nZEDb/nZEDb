@@ -8,28 +8,31 @@ $(document).ready( function () {
 		"sAjaxSource": "../../../examples/server_side/scripts/server_processing.php"
 	} );
 	var oSettings = oTable.fnSettings();
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
+
 		"Search language is 'Search:' by default",
 		null,
 		function () { return oSettings.oLanguage.sSearch == "Search:"; }
 	);
-	
+
 	oTest.fnTest(
 		"A label input is used",
 		null,
 		function () { return $('label', oSettings.aanFeatures.f[0]).length == 1 }
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
+
 		"Search language default is in the DOM",
 		null,
 		function () { return $('label', oSettings.aanFeatures.f[0]).text()
-		 	== "Search: "; }
+			== "Search: "; }
 	);
-	
-	
-	oTest.fnWaitTest( 
+
+
+	oTest.fnWaitTest(
+
 		"Search language can be defined",
 		function () {
 			oSession.fnRestore();
@@ -44,15 +47,17 @@ $(document).ready( function () {
 		},
 		function () { return oSettings.oLanguage.sSearch == "unit test"; }
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
+
 		"Info language definition is in the DOM",
 		null,
 		function () { return $('label', oSettings.aanFeatures.f[0]).text().indexOf('unit test') !== -1; }
 	);
-	
-	
-	oTest.fnWaitTest( 
+
+
+	oTest.fnWaitTest(
+
 		"Blank search has no space (separator) inserted",
 		function () {
 			oSession.fnRestore();
@@ -67,7 +72,7 @@ $(document).ready( function () {
 		},
 		function () { return document.getElementById('example_filter').childNodes.length == 1; }
 	);
-	
-	
+
+
 	oTest.fnComplete();
 } );

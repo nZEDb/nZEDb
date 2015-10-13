@@ -1,9 +1,9 @@
-{if $nodata != ""}
-	<div class="header">
-		{assign var="catsplit" value=">"|explode:$catname}
-		<h2>View > <strong>Anime</strong></h2>
-		<p>{$nodata}</p>
-	</div>
+{if isset($nodata)}
+<div class="header">
+	{assign var="catsplit" value=">"|explode:$catname}
+	<h2>View > <strong>Anime</strong></h2>
+	<p>{$nodata}</p>
+</div>
 {else}
 
 <div class="header">
@@ -18,19 +18,19 @@
 </div>
 <h1>
 	{$animeTitle}
-				{if isset($isadmin)}
-					<a class="btn btn-xs btn-warning"
-					title="Edit AniDB data"
-					href="{$smarty.const.WWW_TOP}/admin/anidb-edit.php?id={$animeanidbid}&amp;
+	{if isset($isadmin)}
+		<a class="btn btn-xs btn-warning"
+		   title="Edit AniDB data"
+		   href="{$smarty.const.WWW_TOP}/admin/anidb-edit.php?id={$animeanidbid}&amp;
 					from={$smarty.server.REQUEST_URI|escape:"url"}">Edit</a>
-				{/if}
+	{/if}
 </h1>
 {if $catname != ''}<span class="text-info h5">Current category shown: {$catname|escape:"htmlall"}</span>{/if}
 <div>
 	{if animePicture != ""}
 		<center>
 			<img class="shadow img img-polaroid" alt="{$animeTitle} Picture"
-			src="{$smarty.const.WWW_TOP}/covers/anime/{$animeAnidbID}.jpg"/>
+				 src="{$smarty.const.WWW_TOP}/covers/anime/{$animeAnidbID}.jpg"/>
 		</center>
 		<br/>
 	{/if}
@@ -48,14 +48,8 @@
 <center>
 	<div class="btn-group">
 		<a class="btn btn-sm btn-default"
-		   href="{$site->dereferrer_link}http://anidb.net/perl-bin/animedb.pl?show=anime&amp;aid={$animeAnidbID}"
+		   href="{$site->dereferrer_link}http://anidb.net/perl-bin/animedb.pl?show=anime&amp;aid={$animeanidbid}"
 		   title="View AniDB">View AniDB</a>
-		{if $animetvdbid > 0}<a class="btn btn-sm btn-default" target="_blank"
-								href="{$site->dereferrer_link}http://thetvdb.com/?tab=series&id={$animetvdbid}"
-								title="View TheTVDB">View TheTVDB</a> | {/if}
-		{if $animeimdbid > 0}<a class="btn btn-sm btn-default" target="_blank"
-								href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$animeimdbid}"
-								title="View IMDb">View IMDb</a> | {/if}
 		<a class="btn btn-sm btn-default"
 		   href="{$smarty.const.WWW_TOP}/rss?anidb={$animeanidbid}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">RSS
 			feed for this Anime <i class="fa fa-rss"></i></a>
@@ -96,11 +90,11 @@
 						   id="browsetable">
 						{foreach $animeEpisodeTitles as $animeEpno => $animeEpisodeTitle}
 							<tr>
-								<td style="padding-top:15px;" colspan="10"><h3>{$animeEpno}</h2></td>
+								<td style="padding-top:15px;" colspan="10"><h2>{$animeEpno}</h2></td>
 							</tr>
 							<tr>
+								<th><input id="chkSelectAll" type="checkbox" class="nzb_check_all"/></th>
 								<th>Name</th>
-								<th></th>
 								<th>Category</th>
 								<th>Posted</th>
 								<th>Size</th>
@@ -108,9 +102,12 @@
 							</tr>
 							{foreach $animeEpisodeTitle as $result}
 								<tr class="{cycle values=",alt"}" id="guid{$result.guid}">
+									<td class="check"><input id="chk{$result.guid|substr:0:7}"
+															 type="checkbox" class="nzb_check"
+															 value="{$result.guid}"/></td>
 									<td>
 										<a title="View details"
-										   href="{$smarty.const.WWW_TOP}/details/{$result.guid}">{$result.searchname|escape:"htmlall"|replace:".":" "}</a>
+										   href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.searchname|escape:"htmlall"|replace:".":" "}</a>
 										<div>
 											<div>
 												{if $result.nfoid > 0}<span class="label label-default"><a
@@ -126,49 +123,30 @@
 												{if $result.tvairdate != ""}<span class="label label-success"
 																				  title="{$result.tvtitle} Aired on {$result.tvairdate|date_format}">
 													Aired {if $result.tvairdate|strtotime > $smarty.now}in future{else}{$result.tvairdate|daysago}{/if}</span>{/if}
-												{if $result.reid > 0}<span class="mediainfo label label-default"
+												{if isset($result.reis) && $result.reid > 0}<span class="mediainfo label label-default"
 																		   title="{$result.guid}">Media</span>{/if}
 											</div>
 										</div>
 									</td>
-									<td class="check"><input id="chk{$result.guid|substr:0:7}" type="checkbox"
-															 class="nzb_check" name="{$seasonnum}"
-															 value="{$result.guid}"/></td>
 									<td><span class="label label-default">{$result.category_name}</span></td>
 									<td width="40" title="{$result.postdate}">{$result.postdate|timeago}</td>
 									<td>{$result.size|fsize_format:"MB"}</td>
-									<td class="icons" style='width:100px;'>
-										<a title="Download Nzb"
-										   href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}"><i
-													class="fa fa-download text-muted"></i></a>
-										<a class="fa fa-shopping-cart icon_cart text-muted" href="#"
-										   title="Add to Cart">
-										</a>
+									<td class="icon_nzb"><a
+												href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"htmlall"}"><i
+													class="fa fa-download text-muted"
+													title="Download NZB"></i></a>
+										<a href="{$smarty.const.WWW_TOP}/details/{$result.guid}/#comments"><i
+													class="fa fa-comments-o text-muted"
+													title="Comments"></i></a>
+										<a href="#" class="icon_cart text-muted"><i
+													class="fa fa-shopping-cart" title="Send to my Cart"></i></a>
 										{if isset($sabintegrated)}
-											<a class="icon icon_sab" href="#" title="Send to Sab">
-												<img class="icon icon_sab" alt="Send to my Sabnzbd"
-													 src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/sabup.png">
-											</a>
+											<a href="#" class="icon_sab text-muted"><i class="fa fa-send-o"
+																					   title="Send to my Queue"></i></a>
 										{/if}
 										{if $weHasVortex}
-											<a class="icon icon_nzbvortex" href="#" title="Send to NZBVortex">
-												<img class="icon icon_nzbvortex" alt="Send to my NZBVortex"
-													 src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/vortex/bigsmile.png">
-											</a>
-										{/if}
-										{if isset($nzbgetintegrated)}<a class="icon icon_nzbget" title="Send to NZBGet"
-																		href="#"><img class="icon icon_nzbget"
-																					  alt="Send to NZBget"
-																					  src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/nzbgetup.png">
-											</a>{/if}
-										{if isset($isadmin)}
-											<br/>
-											<a class="label label-warning"
-											   href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$result.id}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}"
-											   title="Edit Release">Edit</a>
-											<a class="label label-danger"
-											   href="{$smarty.const.WWW_TOP}/admin/release-delete.php?id={$result.id}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}"
-											   title="Delete Release">Delete</a>
+											<a href="#" class="icon_vortex text-muted"><i
+														class="fa fa-send-o" title="Send to NZBVortex"></i></a>
 										{/if}
 									</td>
 								</tr>

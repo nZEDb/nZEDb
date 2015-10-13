@@ -9,12 +9,13 @@ $(document).ready( function () {
 		"aaData": gaaData
 	} );
 	var oSettings = oTable.fnSettings();
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
+
 		"Server side is off by default",
 		null,
 		function () { return oSettings.oFeatures.bServerSide == false; }
 	);
-	
+
 	oTest.fnComplete();
 } );

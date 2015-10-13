@@ -1,8 +1,8 @@
 <?php
   /* MySQL connection */
 	include( $_SERVER['DOCUMENT_ROOT']."/datatables/mysql.php" ); /* ;-) */
-	
-	/* 
+
+	/*
 	 * Local functions
 	 */
 	function fatal_error ( $sErrorMessage = '' )
@@ -11,8 +11,8 @@
 		die( $sErrorMessage );
 	}
 
-	
-	/* 
+
+	/*
 	 * MySQL connection
 	 */
 	if ( ! $gaSql['link'] = mysql_pconnect( $gaSql['server'], $gaSql['user'], $gaSql['password']  ) )
@@ -26,7 +26,7 @@
 	}
 
 
-	
+
 	/* Paging */
 	$sLimit = "";
 	if ( isset( $_GET['iDisplayStart'] ) && $_GET['iDisplayLength'] != '-1' )
@@ -34,7 +34,7 @@
 		$sLimit = "LIMIT ".mysql_real_escape_string( $_GET['iDisplayStart'] ).", ".
 			mysql_real_escape_string( $_GET['iDisplayLength'] );
 	}
-	
+
 	/* Ordering */
 	if ( isset( $_GET['iSortCol_0'] ) )
 	{
@@ -42,11 +42,11 @@
 		for ( $i=0 ; $i<mysql_real_escape_string( $_GET['iSortingCols'] ) ; $i++ )
 		{
 			$sOrder .= fnColumnToField(mysql_real_escape_string( $_GET['iSortCol_'.$i] ))."
-			 	".mysql_real_escape_string( $_GET['sSortDir_'.$i] ) .", ";
+				".mysql_real_escape_string( $_GET['sSortDir_'.$i] ) .", ";
 		}
 		$sOrder = substr_replace( $sOrder, "", -2 );
 	}
-	
+
 	/* Filtering - NOTE this does not match the built-in DataTables filtering which does it
 	 * word by word on any field. It's possible to do here, but concerned about efficiency
 	 * on very large tables, and MySQL's regex functionality is very limited
@@ -60,7 +60,7 @@
 		                "version LIKE '%".mysql_real_escape_string( $_GET['sSearch'] )."%' OR ".
 		                "grade LIKE '%".mysql_real_escape_string( $_GET['sSearch'] )."%' )";
 	}
-	
+
 	for ( $i=0 ; $i<$_GET['iColumns'] ; $i++ )
 	{
 		if ( $_GET['sSearch_'.$i] != '' )
@@ -76,7 +76,7 @@
 			$sWhere .= fnColumnToField($i) ." LIKE '%".mysql_real_escape_string( $_GET['sSearch_'.$i] )."%'";
 		}
 	}
-	
+
 	$sQuery = "
 		SELECT SQL_CALC_FOUND_ROWS id, engine, browser, platform, version, grade
 		FROM   ajax
@@ -85,14 +85,14 @@
 		$sLimit
 	";
 	$rResult = mysql_query( $sQuery, $gaSql['link'] ) or fatal_error( 'MySQL Error: ' . mysql_errno() );
-	
+
 	$sQuery = "
 		SELECT FOUND_ROWS()
 	";
 	$rResultFilterTotal = mysql_query( $sQuery, $gaSql['link'] ) or fatal_error( 'MySQL Error: ' . mysql_errno() );
 	$aResultFilterTotal = mysql_fetch_array($rResultFilterTotal);
 	$iFilteredTotal = $aResultFilterTotal[0];
-	
+
 	$sQuery = "
 		SELECT COUNT(id)
 		FROM   ajax
@@ -100,7 +100,7 @@
 	$rResultTotal = mysql_query( $sQuery, $gaSql['link'] ) or fatal_error( 'MySQL Error: ' . mysql_errno() );
 	$aResultTotal = mysql_fetch_array($rResultTotal);
 	$iTotal = $aResultTotal[0];
-	
+
 	$sOutput = '{';
 	$sOutput .= '"sEcho": '.intval($_GET['sEcho']).', ';
 	$sOutput .= '"iTotalRecords": '.$iTotal.', ';
@@ -121,10 +121,10 @@
 	}
 	$sOutput = substr_replace( $sOutput, "", -1 );
 	$sOutput .= '] }';
-	
+
 	echo $sOutput;
-	
-	
+
+
 	function fnColumnToField( $i )
 	{
 		if ( $i == 0 )

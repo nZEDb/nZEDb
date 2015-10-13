@@ -72,7 +72,7 @@ Allows for using regular expressions as a mask
                                         }
                                         break;
                                     default:
-                                        // Vertical bar (alternator) 
+                                        // Vertical bar (alternator)
                                         // ^ or $ anchor
                                         // Dot (.)
                                         // Literal character sequence

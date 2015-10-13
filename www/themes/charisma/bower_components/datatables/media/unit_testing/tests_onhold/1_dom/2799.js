@@ -3,12 +3,13 @@ oTest.fnStart( "Initialise two tables" );
 
 $(document).ready( function () {
 	$('table.display').dataTable();
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
+
 		"Check that initialisation was okay",
 		null,
 		function () { return true; }
 	);
-	
+
 	oTest.fnComplete();
 } );

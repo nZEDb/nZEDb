@@ -35,37 +35,37 @@ $(document).ready(function() {
 	keys.event.focus( 4, null, function( node, x, y ) {
 		eventMsg( "Cell "+x+","+y+" focused ('live' event - column)" );
 	} );
-	
+
 	/* Focus handler for all cells in 8th row */
 	keys.event.focus( null, 7, function( node, x, y ) {
 		eventMsg( "Cell "+x+","+y+" focused ('live' event - row)" );
 	} );
-	
+
 	/* Focus using coords. */
 	keys.event.focus( 1, 0, function( node ) {
 		keys.event.remove.focus( node );
 		eventMsg( "Cell 1,0 focus - this event has now been removed" );
 	} );
-	
+
 	keys.event.focus( 1, 3, function() {
 		eventMsg( "Cell 1,3 focus" );
 	} );
-	
+
 	/* focus with a node */
 	keys.event.focus( $('#example tbody tr:eq(2) td:eq(0)')[0], function() {
 		eventMsg( "Cell 0,2 focus" );
 	} );
-	
+
 	/* Blur using a node */
 	keys.event.blur( $('#example tbody tr:eq(1) td:eq(2)')[0], function() {
 		eventMsg( "Cell 1,2 blur" );
 	} );
-	
+
 	/* Blur using coords */
 	keys.event.blur( 2, 4, function() {
 		eventMsg( "Cell 2,4 blur" );
 	} );
-	
+
 	/* Action */
 	keys.event.action( 2, 2, function( node ) {
 		eventMsg( "Cell 2,2 action" );
@@ -76,7 +76,7 @@ $(document).ready(function() {
 			node.style.fontWeight = "normal";
 		}
 	} );
-	
+
 	keys.event.action( 2, 5, function( node ) {
 		eventMsg( "Cell 2,5 action" );
 		if ( node.style.fontStyle == "" ) {
@@ -618,37 +618,37 @@ $(document).ready(function() {
 	keys.event.focus( 4, null, function( node, x, y ) {
 		eventMsg( &quot;Cell &quot;+x+&quot;,&quot;+y+&quot; focused ('live' event - column)&quot; );
 	} );
-	
+
 	/* Focus handler for all cells in 8th row */
 	keys.event.focus( null, 7, function( node, x, y ) {
 		eventMsg( &quot;Cell &quot;+x+&quot;,&quot;+y+&quot; focused ('live' event - row)&quot; );
 	} );
-	
+
 	/* Focus using coords. */
 	keys.event.focus( 1, 0, function( node ) {
 		keys.event.remove.focus( node );
 		eventMsg( &quot;Cell 1,0 focus - this event has now been removed&quot; );
 	} );
-	
+
 	keys.event.focus( 1, 3, function() {
 		eventMsg( &quot;Cell 1,3 focus&quot; );
 	} );
-	
+
 	/* focus with a node */
 	keys.event.focus( $('#example tbody tr:eq(2) td:eq(0)')[0], function() {
 		eventMsg( &quot;Cell 0,2 focus&quot; );
 	} );
-	
+
 	/* Blur using a node */
 	keys.event.blur( $('#example tbody tr:eq(1) td:eq(2)')[0], function() {
 		eventMsg( &quot;Cell 1,2 blur&quot; );
 	} );
-	
+
 	/* Blur using coords */
 	keys.event.blur( 2, 4, function() {
 		eventMsg( &quot;Cell 2,4 blur&quot; );
 	} );
-	
+
 	/* Action */
 	keys.event.action( 2, 2, function( node ) {
 		eventMsg( &quot;Cell 2,2 action&quot; );
@@ -659,7 +659,7 @@ $(document).ready(function() {
 			node.style.fontWeight = &quot;normal&quot;;
 		}
 	} );
-	
+
 	keys.event.action( 2, 5, function( node ) {
 		eventMsg( &quot;Cell 2,5 action&quot; );
 		if ( node.style.fontStyle == &quot;&quot; ) {

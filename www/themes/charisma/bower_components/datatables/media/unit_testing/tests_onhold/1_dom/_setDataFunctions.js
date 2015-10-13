@@ -7,7 +7,8 @@ $(document).ready( function () {
 	// get at the functions!
 	var table = $('#example').dataTable();
 	var fn, test, o;
-	
+
+
 	// Object property access
 	oTest.fnTest(
 		"Create property",
@@ -19,7 +20,8 @@ $(document).ready( function () {
 		},
 		function () { return o.test }
 	);
-	
+
+
 	oTest.fnTest(
 		"Single property doesn't kill other properties",
 		function () {
@@ -32,7 +34,8 @@ $(document).ready( function () {
 		},
 		function () { return o.test && o.test2===false; }
 	);
-	
+
+
 	oTest.fnTest(
 		"Single property overwrite old property",
 		function () {
@@ -72,7 +75,8 @@ $(document).ready( function () {
 		},
 		function () { return o.test.inner }
 	);
-	
+
+
 	oTest.fnTest(
 		"Nested property doesn't kill other properties",
 		function () {
@@ -87,7 +91,8 @@ $(document).ready( function () {
 		},
 		function () { return o.test.inner && o.test.test2===false; }
 	);
-	
+
+
 	oTest.fnTest(
 		"Single property overwrite old property",
 		function () {
@@ -185,6 +190,7 @@ $(document).ready( function () {
 	);
 
 
-	
+
+
 	oTest.fnComplete();
 } );

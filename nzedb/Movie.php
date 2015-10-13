@@ -457,29 +457,35 @@ class Movie
 	 * Parse trakt info, insert into DB.
 	 *
 	 * @param array $data
+	 *
+	 * @return mixed|void
 	 */
 	public function parseTraktTv(&$data)
 	{
 		if (!isset($data['ids']['imdb']) || empty($data['ids']['imdb'])) {
-			return;
+			return false;
 		}
+
 		if (isset($data['trailer']) && !empty($data['trailer'])) {
 			$data['trailer'] = str_ireplace(
 				'http://', 'https://', str_ireplace('watch?v=', 'embed/', $data['trailer'])
 			);
+			return $data['trailer'];
 		}
+
+		$imdbid = (strpos($data['ids']['imdb'], 'tt') === 0) ? substr($data['ids']['imdb'], 2) : $data['ids']['imdb'];
 		$cover = 0;
-		if (is_file($this->imgSavePath . $data['ids']['imdb'] . '-cover.jpg')) {
+		if (is_file($this->imgSavePath . $imdbid) . '-cover.jpg') {
 			$cover = 1;
 		} else {
 			$link = $this->checkTraktValue($data['images']['poster']['thumb']);
 			if ($link) {
-				$cover = $this->releaseImage->saveImage($data['ids']['imdb'] . '-cover', $link, $this->imgSavePath);
+				$cover = $this->releaseImage->saveImage($imdbid . '-cover', $link, $this->imgSavePath);
 			}
 		}
 		$this->update([
 			'genres'   => $this->checkTraktValue($data['genres']),
-			'imdbid'   => $this->checkTraktValue(str_ireplace('tt', '', $data['ids']['imdb'])),
+			'imdbid'   => $this->checkTraktValue($imdbid),
 			'language' => $this->checkTraktValue($data['language']),
 			'plot'     => $this->checkTraktValue($data['overview']),
 			'rating'   => round($this->checkTraktValue($data['rating']), 1),

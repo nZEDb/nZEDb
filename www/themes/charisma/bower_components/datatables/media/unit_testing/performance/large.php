@@ -1,11 +1,11 @@
 <?php
   /* MySQL connection */
 	include( $_SERVER['DOCUMENT_ROOT']."/datatables/mysql.php" ); /* ;-) */
-	
+
 	$gaSql['link'] =  mysql_pconnect( $gaSql['server'], $gaSql['user'], $gaSql['password']  ) or
 		die( 'Could not open connection to server' );
-	
-	mysql_select_db( $gaSql['db'], $gaSql['link'] ) or 
+
+	mysql_select_db( $gaSql['db'], $gaSql['link'] ) or
 		die( 'Could not select database '. $gaSql['db'] );
 
 ?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
@@ -13,7 +13,7 @@
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<link rel="shortcut icon" type="image/ico" href="http://www.datatables.net/favicon.ico" />
-		
+
 		<title>DataTables example</title>
 		<style type="text/css" title="currentStyle">
 			@import "../../css/demo_page.css";
@@ -25,7 +25,7 @@
 			$(document).ready(function() {
 				var oTable = $('#example').dataTable();
 				var iStart = new Date().getTime();
-				
+
 				//if ( typeof console != 'undefined' ) {
 				//	console.profile();
 				//}
@@ -36,13 +36,13 @@
 				//if ( typeof console != 'undefined' ) {
 				//	console.profileEnd();
 				//}
-				
+
 				//oTable.fnSort( [[ 1, 'asc' ]] );
 				//oTable.fnSort( [[ 1, 'asc' ]] );
 				//oTable.fnSort( [[ 2, 'asc' ]] );
 				//oTable.fnSort( [[ 1, 'asc' ]] );
 				//oTable.fnSort( [[ 2, 'asc' ]] );
-				
+
 				var iEnd = new Date().getTime();
 				document.getElementById('output').innerHTML = "Test took "+(iEnd-iStart)+" mS";
 			} );
@@ -97,7 +97,7 @@
 </table>
 			</div>
 			<div class="spacer"></div>
-			
+
 			<div id="footer" style="text-align:center;">
 				<span style="font-size:10px;">
 					DataTables &copy; Allan Jardine 2008-2009.

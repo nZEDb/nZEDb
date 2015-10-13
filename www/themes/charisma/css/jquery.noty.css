@@ -7,17 +7,17 @@
 		display: none;
 		z-index: 9999999;
 	}
-	
+
 	/* noty_message */
 	.noty_bar .noty_message {
 		text-align: center;
 	}
-	
+
 	/* noty close button */
 	.noty_bar .noty_close {
 		cursor: pointer;
 	}
-	
+
 	/* noty modal */
 	.noty_modal {
 		position: fixed;
@@ -30,7 +30,7 @@
 		left: 0;
 		top: 0;
 	}
-	
+
 	/* noty container for noty_layout_topLeft & noty_layout_topRight */
 	ul.noty_cont {
 		position: fixed;
@@ -81,9 +81,9 @@
 	.noty_bar.noty_layout_center {
 		top: 40%;
 	}
-	
+
 	/* noty_layout_topLeft & noty_layout_topRight */
-	.noty_bar.noty_layout_topLeft, 
+	.noty_bar.noty_layout_topLeft,
 	.noty_bar.noty_layout_topRight,
 	.noty_bar.noty_layout_bottomLeft,
 	.noty_bar.noty_layout_bottomRight {
@@ -91,14 +91,14 @@
 		clear: both;
 		position: relative;
 	}
-	
-	.noty_bar.noty_layout_topLeft .noty_message, 
+
+	.noty_bar.noty_layout_topLeft .noty_message,
 	.noty_bar.noty_layout_topRight .noty_message,
 	.noty_bar.noty_layout_bottomLeft .noty_message,
 	.noty_bar.noty_layout_bottomRight .noty_message {
 		text-align: left;
 	}
-	
+
 	/* noty_layout_topCenter */
 	.noty_bar.noty_layout_topCenter {
 		top: 20px;

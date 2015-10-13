@@ -3,7 +3,7 @@
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<link rel="shortcut icon" type="image/ico" href="http://www.datatables.net/media/images/favicon.ico" />
-		
+
 		<title>DataTables example</title>
 		<style type="text/css" title="currentStyle">
 			@import "../../media/css/demo_page.css";
@@ -17,14 +17,14 @@
 			$(document).ready(function() {
 				/* Init DataTables */
 				$('#example').dataTable();
-				
+
 				/* Add events */
 				$('#example tbody tr').live('click', function () {
 					var sTitle;
 					var nTds = $('td', this);
 					var sBrowser = $(nTds[1]).text();
 					var sGrade = $(nTds[4]).text();
-					
+
 					if ( sGrade == "A" )
 						sTitle =  sBrowser+' will provide a first class (A) level of CSS support.';
 					else if ( sGrade == "C" )
@@ -33,7 +33,7 @@
 						sTitle = sBrowser+' does not provide CSS support or has a broken implementation. Block CSS.';
 					else
 						sTitle = sBrowser+' will provide an undefined level of CSS support.';
-					
+
 					alert( sTitle )
 				} );
 			} );
@@ -44,10 +44,10 @@
 			<div class="full_width big">
 				DataTables - live events example
 			</div>
-			
+
 			<h1>Preamble</h1>
 			<p>Events assigned to the table can be exceptionally useful for user interaction, however you must be aware that DataTables will add and remove rows from the DOM as they are needed (i.e. when paging only the visible elements are actually available in the DOM). As such, this can lead to the odd hiccup when working with events. One of the best ways of dealing with this is through the use of live events, as shown in this example.</p>
-			
+
 			<h1>Live example</h1>
 			<div id="demo">
 <table cellpadding="0" cellspacing="0" border="0" class="display" id="example">
@@ -64,7 +64,7 @@
 		<tr class="gradeX">
 			<td>Trident</td>
 			<td>Internet
-				 Explorer 
+				 Explorer
 				4.0
 				</td>
 			<td>Win 95+</td>
@@ -479,20 +479,20 @@
 </table>
 			</div>
 			<div class="spacer"></div>
-			
-			
+
+
 			<h1>Initialisation code</h1>
 			<pre class="brush: js;">$(document).ready(function() {
 	/* Init DataTables */
 	$('#example').dataTable();
-	
+
 	/* Add events */
 	$('#example tbody tr').live('click', function () {
 		var sTitle;
 		var nTds = $('td', this);
 		var sBrowser = $(nTds[1]).text();
 		var sGrade = $(nTds[4]).text();
-		
+
 		if ( sGrade == "A" )
 			sTitle =  sBrowser+' will provide a first class (A) level of CSS support.';
 		else if ( sGrade == "C" )
@@ -501,7 +501,7 @@
 			sTitle = sBrowser+' does not provide CSS support or has a broken implementation. Block CSS.';
 		else
 			sTitle = sBrowser+' will provide an undefined level of CSS support.';
-		
+
 		alert( sTitle )
 	} );
 } );</pre>
@@ -509,8 +509,8 @@
 				@import "../examples_support/syntax/css/shCore.css";
 			</style>
 			<script type="text/javascript" language="javascript" src="../examples_support/syntax/js/shCore.js"></script>
-			
-			
+
+
 			<h1>Other examples</h1>
 			<div class="demo_links">
 				<h2>Basic initialisation</h2>
@@ -527,21 +527,21 @@
 					<li><a href="../basic_init/state_save.html">State saving</a></li>
 					<li><a href="../basic_init/alt_pagination.html">Alternative pagination styles</a></li>
 					<li>Scrolling: <br>
-						<a href="../basic_init/scroll_x.html">Horizontal</a> / 
-						<a href="../basic_init/scroll_y.html">Vertical</a> / 
-						<a href="../basic_init/scroll_xy.html">Both</a> / 
-						<a href="../basic_init/scroll_y_theme.html">Themed</a> / 
+						<a href="../basic_init/scroll_x.html">Horizontal</a> /
+						<a href="../basic_init/scroll_y.html">Vertical</a> /
+						<a href="../basic_init/scroll_xy.html">Both</a> /
+						<a href="../basic_init/scroll_y_theme.html">Themed</a> /
 						<a href="../basic_init/scroll_y_infinite.html">Infinite</a>
 					</li>
 					<li><a href="../basic_init/language.html">Change language information (internationalisation)</a></li>
 					<li><a href="../basic_init/themes.html">ThemeRoller themes (Smoothness)</a></li>
 				</ul>
-				
+
 				<h2>Advanced initialisation</h2>
 				<ul>
 					<li>Events: <br>
-						<a href="../advanced_init/events_live.html">Live events</a> / 
-						<a href="../advanced_init/events_pre_init.html">Pre-init</a> / 
+						<a href="../advanced_init/events_live.html">Live events</a> /
+						<a href="../advanced_init/events_pre_init.html">Pre-init</a> /
 						<a href="../advanced_init/events_post_init.html">Post-init</a>
 					</li>
 					<li><a href="../advanced_init/column_render.html">Column rendering</a></li>
@@ -560,7 +560,7 @@
 					<li><a href="../advanced_init/localstorage.html">State saving with localStorage</a></li>
 					<li><a href="../advanced_init/dt_events.html">Custom events</a></li>
 				</ul>
-				
+
 				<h2>API</h2>
 				<ul>
 					<li><a href="../api/add_row.html">Dynamically add a new row</a></li>
@@ -579,7 +579,7 @@
 					<li><a href="../api/regex.html">Regular expression filtering</a></li>
 				</ul>
 			</div>
-			
+
 			<div class="demo_links">
 				<h2>Data sources</h2>
 				<ul>
@@ -588,7 +588,7 @@
 					<li><a href="../data_sources/ajax.html">Ajax source</a></li>
 					<li><a href="../data_sources/server_side.html">Server side processing</a></li>
 				</ul>
-				
+
 				<h2>Server-side processing</h2>
 				<ul>
 					<li><a href="../server_side/server_side.html">Obtain server-side data</a></li>
@@ -603,7 +603,7 @@
 					<li><a href="../server_side/defer_loading.html">Deferred loading of Ajax data</a></li>
 					<li><a href="../server_side/pipeline.html">Pipelining data (reduce Ajax calls for paging)</a></li>
 				</ul>
-				
+
 				<h2>Ajax data source</h2>
 				<ul>
 					<li><a href="../ajax/ajax.html">Ajax sourced data (array of arrays)</a></li>
@@ -614,7 +614,7 @@
 					<li><a href="../ajax/objects_subarrays.html">Read column data from sub-arrays</a></li>
 					<li><a href="../ajax/deep.html">Read column data from deeply nested properties</a></li>
 				</ul>
-				
+
 				<h2>Plug-ins</h2>
 				<ul>
 					<li><a href="../plug-ins/plugin_api.html">Add custom API functions</a></li>
@@ -626,14 +626,14 @@
 					<li><a href="../plug-ins/html_sort.html">Automatic HTML type detection</a></li>
 				</ul>
 			</div>
-			
-			
+
+
 			<div id="footer" class="clear" style="text-align:center;">
 				<p>
 					Please refer to the <a href="http://www.datatables.net/usage">DataTables documentation</a> for full information about its API properties and methods.<br>
 					Additionally, there are a wide range of <a href="http://www.datatables.net/extras">extras</a> and <a href="http://www.datatables.net/plug-ins">plug-ins</a> which extend the capabilities of DataTables.
 				</p>
-				
+
 				<span style="font-size:10px;">
 					DataTables designed and created by <a href="http://www.sprymedia.co.uk">Allan Jardine</a> &copy; 2007-2011<br>
 					DataTables is dual licensed under the <a href="http://www.datatables.net/license_gpl2">GPL v2 license</a> or a <a href="http://www.datatables.net/license_bsd">BSD (3-point) license</a>.

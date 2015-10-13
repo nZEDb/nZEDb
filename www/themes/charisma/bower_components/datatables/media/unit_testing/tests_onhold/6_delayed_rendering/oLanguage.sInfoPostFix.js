@@ -8,21 +8,24 @@ $(document).ready( function () {
 		"bDeferRender": true
 	} );
 	var oSettings = oTable.fnSettings();
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
+
 		"Info post fix language is '' (blank) by default",
 		null,
 		function () { return oSettings.oLanguage.sInfoPostFix == ""; }
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
+
 		"Width no post fix, the basic info shows",
 		null,
 		function () { return document.getElementById('example_info').innerHTML = "Showing 1 to 10 of 57 entries"; }
 	);
-	
-	
-	oTest.fnWaitTest( 
+
+
+	oTest.fnWaitTest(
+
 		"Info post fix language can be defined",
 		function () {
 			oSession.fnRestore();
@@ -37,15 +40,17 @@ $(document).ready( function () {
 		},
 		function () { return oSettings.oLanguage.sInfoPostFix == "unit test"; }
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
+
 		"Info empty language default is in the DOM",
 		null,
 		function () { return document.getElementById('example_info').innerHTML = "Showing 1 to 10 of 57 entries unit test"; }
 	);
-	
-	
-	oTest.fnWaitTest( 
+
+
+	oTest.fnWaitTest(
+
 		"Macros have no effect in the post fix",
 		function () {
 			oSession.fnRestore();
@@ -59,9 +64,10 @@ $(document).ready( function () {
 		},
 		function () { return document.getElementById('example_info').innerHTML = "Showing 1 to 10 of 57 entries unit _START_ _END_ _TOTAL_ test"; }
 	);
-	
-	
-	oTest.fnWaitTest( 
+
+
+	oTest.fnWaitTest(
+
 		"Post fix is applied after fintering info",
 		function () {
 			oSession.fnRestore();
@@ -76,7 +82,7 @@ $(document).ready( function () {
 		},
 		function () { return document.getElementById('example_info').innerHTML = "Showing 0 to 0 of 0 entries unit (filtered from 57 total entries) test"; }
 	);
-	
-	
+
+
 	oTest.fnComplete();
 } );

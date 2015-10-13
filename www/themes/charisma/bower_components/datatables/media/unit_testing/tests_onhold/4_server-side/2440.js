@@ -12,21 +12,23 @@ $(document).ready( function () {
 		"bServerSide": true,
 		"sAjaxSource": "../../../examples/server_side/scripts/server_processing.php"
 	} );
-	
+
 	oTable.fnSettings()._iDisplayLength = -1;
 	oTable.oApi._fnCalculateEnd( oTable.fnSettings() );
 	oTable.fnDraw();
-	
-	
+
+
 	/* Basic checks */
-	oTest.fnWaitTest( 
+	oTest.fnWaitTest(
+
 		"Check length is correct when -1 length given",
 		null,
 		function () {
-			return document.getElementById('example_info').innerHTML == 
+			return document.getElementById('example_info').innerHTML ==
+
 				"Showing 1 to 57 of 57 entries";
 		}
 	);
-	
+
 	oTest.fnComplete();
 } );
