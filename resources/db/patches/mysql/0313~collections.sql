@@ -5,6 +5,7 @@ CREATE PROCEDURE update_collections()
   LANGUAGE SQL DETERMINISTIC CONTAINS SQL READS SQL DATA COMMENT 'Adds column definition "noise" for collections% tables'
   BEGIN
     DECLARE done INT DEFAULT 0;
+    DECLARE tname VARCHAR(255) DEFAULT '';
     DECLARE cur1 CURSOR FOR SELECT TABLE_NAME
                           FROM information_schema.TABLES
                           WHERE
