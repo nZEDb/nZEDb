@@ -15,6 +15,14 @@ class TV
 	const SOURCE_IMDB =   5; // Scrape source was IMDB
 	const SOURCE_TMDB =   6; // Scrape source was TMDB
 
+	const PROCESS_TVDB = -1;
+	const PROCESS_TRAKT = -2;
+	const PROCESS_TVRAGE = -3;
+	const PROCESS_TVMAZE = -4;
+	const PROCESS_IMDB = -5;
+	const PROCESS_TMDB = -6;
+	const NO_MATCH_FOUND = -7;
+
 	/**
 	 * @var \nzedb\db\Settings
 	 */
@@ -45,145 +53,215 @@ class TV
 		$this->catWhere = 'categoryid BETWEEN 5000 AND 5999';
 		$this->tvqty = ($this->pdo->getSetting('maxrageprocessed') != '') ? $this->pdo->getSetting('maxrageprocessed') : 75;
 		$this->tvrage = new TvRage();
+		$this->tvdb = new TVDB();
+		$this->trakt = new TraktTv();
 	}
 
-	public function processTvReleases($groupID = '', $guidChar = '', $lookupTvRage = 1, $local = false)
+	public function getTvReleases($groupID = '', $guidChar = '', $lookupSetting = 1, $local = false, $status = 0)
 	{
 		$ret = 0;
-		if ($lookupTvRage == 0) {
+		if ($lookupSetting == 0) {
 			return $ret;
 		}
-		$trakt = new TraktTv(['Settings' => $this->pdo]);
 
-		// Get all releases without a rageid which are in a tv category.
+		// Get all releases with processing status of $status which are in a tv category.
 
 		$res = $this->pdo->query(
 			sprintf("
 				SELECT r.searchname, r.id
 				FROM releases r
 				WHERE r.nzbstatus = 1
-				AND r.rageid = -1
+				AND r.videos_id = %d
 				AND r.size > 1048576
 				AND %s
 				%s %s %s
 				ORDER BY r.postdate DESC
 				LIMIT %d",
+				$status,
 				$this->catWhere,
 				($groupID === '' ? '' : 'AND r.group_id = ' . $groupID),
 				($guidChar === '' ? '' : 'AND r.guid ' . $this->pdo->likeString($guidChar, false, true)),
-				($lookupTvRage == 2 ? 'AND r.isrenamed = 1' : ''),
+				($lookupSetting == 2 ? 'AND r.isrenamed = 1' : ''),
 				$this->tvqty
 			)
 		);
-		$tvcount = count($res);
+		return $res;
+	}
+	
+	public function setVideoIdFound($videoId, $releaseId, $episodeId = 0) {
+		if ($videoId > 0 && $releaseId > 0) {
+			$this->pdo->queryExec(
+					sprintf('
+						UPDATE releases
+						SET videos_id = %d, tv_episodes_id = %d
+						WHERE %s
+						AND id = %d',
+						$videoId,
+						$episodeId,
+						$this->catWhere,
+						$releaseId
+					)
+			);
+		}
+	}
 
-		if ($this->echooutput && $tvcount > 1) {
-			echo $this->pdo->log->header("Processing TV for " . $tvcount . " release(s).");
+	public function setVideoNotFound($status, $Id)
+	{
+		if ($status && $Id) {
+			$this->pdo->queryExec(
+					sprintf('
+						UPDATE releases
+						SET videos_id = %d
+						WHERE %s
+						AND id = %d',
+						$status,
+						$this->catWhere,
+						$Id
+					)
+			);
+		}
+	}
+
+	public function getByTitleQuery($title)
+	{
+		if ($title) {
+			return $this->pdo->queryOneRow(
+						sprintf("
+							SELECT videos_id
+							FROM videos
+							WHERE title = %s",
+							$this->pdo->escapeString($title)
+						)
+			);
+		}
+	}
+
+	public function getByTitleLikeQuery($title)
+	{
+		$string = '"\'"';
+		if ($title) {
+			return $this->pdo->queryOneRow(
+						sprintf("
+							SELECT videos_id
+							FROM videos
+							WHERE REPLACE(REPLACE(title, %s, ''), '!', '') %s",
+							$string,
+							$this->pdo->likeString($title, false, true)
+						)
+			);
+		}
+	}
+
+	/**
+	 * Get videos info for a title.
+	 *
+	 * @param $title
+	 *
+	 * @return bool
+	 */
+	public function getByTitle($title)
+	{
+		// Check if we already have an entry for this show.
+		$res = $this->getByTitleQuery($title);
+		if (isset($res['videos_id'])) {
+			return $res['videos_id'];
 		}
 
-		foreach ($res as $arr) {
-			$show = $this->parseNameEpSeason($arr['searchname']);
-			if (is_array($show) && $show['name'] != '') {
-				// Update release with season, ep, and airdate info (if available) from releasetitle.
-				$this->tvrage->updateEpInfo($show, $arr['id']);
-
-				// Find the rageID.
-				$id = $this->tvrage->getByTitle($show['cleanname']);
-
-				// Force local lookup only
-				if ($local == true) {
-					$lookupTvRage = false;
-				}
-
-				if ($id === false && $lookupTvRage) {
-					// If it doesnt exist locally and lookups are allowed lets try to get it.
-					if ($this->echooutput) {
-						echo 	$this->pdo->log->primaryOver("TVRage ID for ") .
-							$this->pdo->log->headerOver($show['cleanname']) .
-							$this->pdo->log->primary(" not found in local db, checking web.");
-					}
-
-					$tvrShow = $this->tvrage->getRageMatch($show);
-					if ($tvrShow !== false && is_array($tvrShow)) {
-						// Get all tv info and add show.
-						$this->tvrage->updateRageInfo($tvrShow['showid'], $show, $tvrShow, $arr['id']);
-					} else if ($tvrShow === false) {
-						// If tvrage fails, try trakt.
-						$traktArray = $trakt->episodeSummary($show['name'], $show['season'], $show['episode']);
-						if ($traktArray !== false) {
-							if (isset($traktArray['ids']['tvrage']) && $traktArray['ids']['tvrage'] !== 0) {
-								if ($this->echooutput) {
-									echo $this->pdo->log->primary('Found TVRage ID on trakt:' . $traktArray['ids']['tvrage']);
-								}
-								$this->tvrage->updateRageInfoTrakt($traktArray['ids']['tvrage'], $show, $traktArray, $arr['id']);
-							}
-							// No match, add to tvrage with rageID = -2 and $show['cleanname'] title only.
-							else {
-								$this->tvrage->add(-2, $show['cleanname'], '', '', '', '');
-							}
-						}
-						// No match, add to tvrage with rageID = -2 and $show['cleanname'] title only.
-						else {
-							$this->tvrage->add(-2, $show['cleanname'], '', '', '', '');
-						}
-					}
-				} else if ($id > 0) {
-					$tvtitle = "NULL";
-					$tvairdate = (isset($show['airdate']) && !empty($show['airdate']))
-						? $this->pdo->escapeString($this->tvrage->checkDate($show['airdate']))
-						: "NULL";
-
-					if ($lookupTvRage) {
-						$epinfo = $this->tvrage->getEpisodeInfo($id, $show['season'], $show['episode']);
-						if ($epinfo !== false) {
-							if (isset($epinfo['airdate'])) {
-								$tvairdate = $this->pdo->escapeString($this->tvrage->checkDate($epinfo['airdate']));
-							}
-
-							if (!empty($epinfo['title'])) {
-								$tvtitle = $this->pdo->escapeString(trim($epinfo['title']));
-							}
-						}
-					}
-					if ($tvairdate == "NULL") {
-						$this->pdo->queryExec(
-							sprintf('
-									UPDATE releases
-									SET tvtitle = %s, rageid = %d
-									WHERE %s
-									AND id = %d',
-								$tvtitle,
-								$id,
-								$this->catWhere,
-								$arr['id']
-							)
-						);
-					} else {
-						$this->pdo->queryExec(
-							sprintf('
-									UPDATE releases
-									SET tvtitle = %s, tvairdate = %s, rageid = %d
-									WHERE %s
-									AND id = %d',
-								$tvtitle,
-								$tvairdate,
-								$id,
-								$this->catWhere,
-								$arr['id']
-							)
-						);
-					}
-					// Cant find rageid, so set rageid to n/a.
-				} else {
-					$this->tvrage->setRageNotFound($arr['id']);
-				}
-				// Not a tv episode, so set rageid to n/a.
-			} else {
-				$this->tvrage->setRageNotFound($arr['id']);
+		$title2 = str_replace(' and ', ' & ', $title);
+		if ($title != $title2) {
+			$res = $this->getByTitleQuery($title2);
+			if (isset($res['videos_id'])) {
+				return $res['videos_id'];
 			}
-			$ret++;
+			$pieces = explode(' ', $title2);
+			$title4 = '%';
+			foreach ($pieces as $piece) {
+				$title4 .= str_replace(["'", "!"], "", $piece) . '%';
+			}
+			$res = $this->getByTitleLikeQuery($title4 . '%');
+			if (isset($res['videos_id'])) {
+				return $res['videos_id'];
+			}
 		}
-		return $ret;
+
+		// Some words are spelled correctly 2 ways
+		// example theatre and theater
+		$title3 = str_replace('er', 're', $title);
+		if ($title != $title3) {
+			$res = $this->getByTitleQuery($title3);
+			if (isset($res['videos_id'])) {
+				return $res['videos_id'];
+			}
+			$pieces = explode(' ', $title3);
+			$title4 = '%';
+			foreach ($pieces as $piece) {
+				$title4 .= str_replace(["'", "!"], "", $piece) . '%';
+			}
+			$res = $this->getByTitleLikeQuery($title4);
+			if (isset($res['videos_id'])) {
+				return $res['videos_id'];
+			}
+		}
+
+		// If there was not an exact title match, look for title with missing chars
+		// example release name :Zorro 1990, tvrage name Zorro (1990)
+		// Only search if the title contains more than one word to prevent incorrect matches
+		$pieces = explode(' ', $title);
+		if (count($pieces) > 1) {
+			$title4 = '%';
+			foreach ($pieces as $piece) {
+				$title4 .= str_replace(["'", "!"], "", $piece) . '%';
+			}
+			$res = $this->getByTitleLikeQuery($title4);
+			if (isset($res['videos_id'])) {
+				return $res['videos_id'];
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Get video info for a ID.
+	 *
+	 * @param int $id
+	 *
+	 * @return array|bool
+	 */
+	public function getByID($id)
+	{
+		return $this->pdo->queryOneRow(
+						sprintf("
+							SELECT *
+							FROM videos
+							WHERE id = %d",
+							$id
+						)
+		);
+	}
+
+	/**
+	 * Get a country code for a country name.
+	 *
+	 * @param string $country
+	 *
+	 * @return mixed
+	 */
+	public function countryCode($country)
+	{
+		if (!is_array($country) && strlen($country) > 2) {
+			$code = $this->pdo->queryOneRow(
+							sprintf('
+								SELECT code
+								FROM countries
+								WHERE name = %s',
+								$this->pdo->escapeString($country)
+							)
+			);
+			if (isset($code['code'])) {
+				return $code['code'];
+			}
+		}
+		return $country;
 	}
 
 	public function cleanName($str)

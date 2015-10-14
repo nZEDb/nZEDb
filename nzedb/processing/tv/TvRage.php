@@ -32,23 +32,77 @@ class TvRage extends TV
 		$this->imgSavePath = nZEDb_COVERS . 'tvrage' . DS;
 	}
 
-	/**
-	 * Get rage info for a ID.
-	 *
-	 * @param int $id
-	 *
-	 * @return array|bool
-	 */
-	public function getByID($id)
+	public function processTvRage($groupID = '', $guidChar = '', $lookupSetting = 1, $local = false)
 	{
-		return $this->pdo->queryOneRow(
-						sprintf("
-							SELECT *
-							FROM tvrage_titles
-							WHERE id = %d",
-							$id
-						)
-		);
+		$res = $this->getTvReleases($groupID, $guidChar, $lookupSetting, $local, parent::PROCESS_TVRAGE);
+
+		$tvcount = count($res);
+
+		if ($this->echooutput && $tvcount > 1) {
+			echo $this->pdo->log->header("Processing TV for " . $tvcount . " release(s).");
+		}
+
+		if ($res instanceof \Traversable) {
+			foreach ($res as $arr) {
+				$show = $this->parseNameEpSeason($arr['searchname']);
+				if (is_array($show) && $show['name'] != '') {
+					// Update release with season, ep, and airdate info (if available) from releasetitle.
+					$this->updateEpInfo($show, $arr['id']);
+
+					// Find the rageID.
+					$id = $this->getByTitle($show['cleanname']);
+
+					// Force local lookup only
+					if ($local == true) {
+						$lookupSetting = false;
+					}
+
+					if ($id === false && $lookupSetting) {
+						// If it doesnt exist locally and lookups are allowed lets try to get it.
+						if ($this->echooutput) {
+							echo $this->pdo->log->primaryOver("TVRage ID for ") .
+								 $this->pdo->log->headerOver($show['cleanname']) .
+								 $this->pdo->log->primary(" not found in local db, checking web.");
+						}
+
+						$tvrShow = $this->tvrage->getRageMatch($show);
+						if ($tvrShow !== false && is_array($tvrShow)) {
+							// Get all tv info and add show.
+							$this->updateRageInfo($tvrShow['showid'], $show, $tvrShow, $arr['id']);
+						} else if ($tvrShow === false) {
+							$this->tvrage->add(-2, $show['cleanname'], '', '', '', '');
+						}
+					} else if ($id > 0) {
+						$tvtitle = "NULL";
+						$tvairdate = (isset($show['airdate']) && !empty($show['airdate']))
+							? $this->pdo->escapeString($this->checkDate($show['airdate']))
+							: "NULL";
+
+						if ($lookupSetting) {
+							$epinfo = $this->tvrage->getEpisodeInfo($id, $show['season'], $show['episode']);
+							if ($epinfo !== false) {
+								if (isset($epinfo['airdate'])) {
+									$tvairdate = $this->pdo->escapeString($this->tvrage->checkDate($epinfo['airdate']));
+								}
+
+								if (!empty($epinfo['title'])) {
+									$tvtitle = $this->pdo->escapeString(trim($epinfo['title']));
+								}
+							}
+						}
+						$this->setVideoIdFound($id, $arr['id']);
+					// Cant find videos_id, so set videos_id to n/a.
+					} else {
+						$this->setVideoNotFound(parent::PROCESS_TVMAZE, $arr['id']);
+					}
+				// Not a tv episode, so set videos_id to n/a.
+				} else {
+					$this->setVideoNotFound(parent::PROCESS_TVMAZE, $arr['id']);
+				}
+				$ret++;
+			}
+		}
+		return $ret;
 	}
 
 	/**
@@ -63,135 +117,11 @@ class TvRage extends TV
 		return $this->pdo->query(
 					sprintf("
 						SELECT *
-						FROM tvrage_titles
-						WHERE rageid = %d",
+						FROM videos
+						WHERE tvrage = %d",
 						$id
 					)
 		);
-	}
-
-	/**
-	 * Get rage info for a title.
-	 *
-	 * @param $title
-	 *
-	 * @return bool
-	 */
-	public function getByTitle($title)
-	{
-		// Check if we already have an entry for this show.
-		$res = $this->getByTitleQuery($title);
-		if (isset($res['rageid'])) {
-			return $res['rageid'];
-		}
-
-		$title2 = str_replace(' and ', ' & ', $title);
-		if ($title != $title2) {
-			$res = $this->getByTitleQuery($title2);
-			if (isset($res['rageid'])) {
-				return $res['rageid'];
-			}
-			$pieces = explode(' ', $title2);
-			$title4 = '%';
-			foreach ($pieces as $piece) {
-				$title4 .= str_replace(["'", "!"], "", $piece) . '%';
-			}
-			$res = $this->getByTitleLikeQuery($title4 . '%');
-			if (isset($res['rageid'])) {
-				return $res['rageid'];
-			}
-		}
-
-		// Some words are spelled correctly 2 ways
-		// example theatre and theater
-		$title3 = str_replace('er', 're', $title);
-		if ($title != $title3) {
-			$res = $this->getByTitleQuery($title3);
-			if (isset($res['rageid'])) {
-				return $res['rageid'];
-			}
-			$pieces = explode(' ', $title3);
-			$title4 = '%';
-			foreach ($pieces as $piece) {
-				$title4 .= str_replace(["'", "!"], "", $piece) . '%';
-			}
-			$res = $this->getByTitleLikeQuery($title4);
-			if (isset($res['rageid'])) {
-				return $res['rageid'];
-			}
-		}
-
-		// If there was not an exact title match, look for title with missing chars
-		// example release name :Zorro 1990, tvrage name Zorro (1990)
-		// Only search if the title contains more than one word to prevent incorrect matches
-		$pieces = explode(' ', $title);
-		if (count($pieces) > 1) {
-			$title4 = '%';
-			foreach ($pieces as $piece) {
-				$title4 .= str_replace(["'", "!"], "", $piece) . '%';
-			}
-			$res = $this->getByTitleLikeQuery($title4);
-			if (isset($res['rageid'])) {
-				return $res['rageid'];
-			}
-		}
-
-		return false;
-	}
-
-	public function getByTitleQuery($title)
-	{
-		if ($title) {
-			return $this->pdo->queryOneRow(
-						sprintf("
-							SELECT rageid
-							FROM tvrage_titles
-							WHERE releasetitle = %s",
-							$this->pdo->escapeString($title)
-						)
-			);
-		}
-	}
-
-	public function getByTitleLikeQuery($title)
-	{
-		$string = '"\'"';
-		if ($title) {
-			return $this->pdo->queryOneRow(
-						sprintf("
-							SELECT rageid
-							FROM tvrage_titles
-							WHERE REPLACE(REPLACE(releasetitle, %s, ''), '!', '') LIKE %s",
-							$string,
-							$this->pdo->escapeString($title . '%')
-						)
-			);
-		}
-	}
-
-	/**
-	 * Get a country code for a country name.
-	 *
-	 * @param string $country
-	 *
-	 * @return mixed
-	 */
-	public function countryCode($country)
-	{
-		if (!is_array($country) && strlen($country) > 2) {
-			$code = $this->pdo->queryOneRow(
-							sprintf('
-								SELECT code
-								FROM countries
-								WHERE name = %s',
-								$this->pdo->escapeString($country)
-							)
-			);
-			if (isset($code['code'])) {
-				return $code['code'];
-			}
-		}
-		return $country;
 	}
 
 	/**
@@ -846,22 +776,6 @@ class TvRage extends TV
 			$hasCover = (new ReleaseImage($this->pdo))->saveImage($rageid, $rInfo['imgurl'], $this->imgSavePath, '', '');
 		}
 		$this->add($rageid, $show['cleanname'], $desc, $genre, $country, $hasCover);
-	}
-
-	public function setRageNotFound($Id)
-	{
-		if ($Id) {
-			$this->pdo->queryExec(
-					sprintf('
-						UPDATE releases
-						SET rageid = -2
-						WHERE %s
-						AND id = %d',
-						$this->catWhere,
-						$Id
-					)
-			);
-		}
 	}
 
 	public function getRageMatch($showInfo)
