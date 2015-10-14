@@ -126,7 +126,7 @@ class TV
 	 * @param string $summary
 	 * @param $country
 	 */
-	public function add($column, $siteid, $title, $summary, $country)
+	public function add($column, $siteid, $title, $summary, $country, $started, $publisher, $hasCover = 0, $source)
 	{
 		$title = str_replace(['.', '_'], [' ', ' '], $title);
 		$country = $this->countryCode($country);
@@ -134,32 +134,36 @@ class TV
 		// Check if title already exists, one by exact and the other by close wildcard
 		// if that fails just to be sure
 		$ckid = $this->getBySiteId($column, $siteid);
-		if (!ckid) {
+		if (!$ckid) {
 			$ckid = $this->getByTitleQuery($title);
 		}
 
 		if (!isset($ckid['id'])) {
 			$videoId = $this->pdo->queryInsert(
 										sprintf('
-											INSERT INTO videos (%s, title, summary, country, started)
-											VALUES (%s, %s, %s, %s, %d)',
+											INSERT INTO videos (%s, type, title, summary, country, started, source)
+											VALUES (%s, 0, %s, %s, %s, %d, %d)',
 											$column,
 											$siteid,
 											$this->pdo->escapeString($title),
 											$this->pdo->escapeString($summary),
-											$this->pdo->escapeString($country)
+											$this->pdo->escapeString($country),
+											$this->pdo->escapeString($started),
+											$source
 										)
 			);
 			$this->pdo->queryInsert(
 										sprintf("
-											INSERT INTO tv_info (videos_id, summary, publisher)
-											VALUES (%d, %s, '')",
+											INSERT INTO tv_info (videos_id, summary, publisher, image)
+											VALUES (%d, %s, %s, %d)",
 											$videoId,
-											$this->pdo->escapeString($summary)
+											$this->pdo->escapeString($summary),
+											$this->pdo->escapeString($publisher),
+											$hasCover
 										)
 			);
 		} else {
-			$this->update($ckid['id'], $column, $siteid, $title, $summary, $country);
+			$this->update($ckid['id'], $column, $siteid);
 		}
 	}
 
@@ -187,25 +191,18 @@ class TV
 		return $episodeId;
 	}
 
-	public function update($videoId, $column, $siteId, $title, $summary, $country, $image = 0)
+	// If the video already exists, update the site specific column to collect its ID for that scrape
+	public function update($videoId, $column, $siteId)
 	{
 		$country = $this->countryCode($country);
-		$coverString = '';
-		if ($image != 0) {
-			$coverString = ', image = ' . $image;
-		}
 
 		$this->pdo->queryExec(
 				sprintf('
-					UPDATE tvrage_titles
-					SET %s = %d, title = %s, summary = %s, country = %s %s
+					UPDATE videos
+					SET %s = %d
 					WHERE id = %d',
 					$column,
 					$siteId,
-					$this->pdo->escapeString($title),
-					$this->pdo->escapeString($summary),
-					$this->pdo->escapeString($country),
-					$coverString,
 					$videoId
 				)
 		);

@@ -160,7 +160,7 @@ class TvRage extends TV
 		if (isset($rInfo['imgurl']) && !empty($rInfo['imgurl'])) {
 			$hasCover = (new ReleaseImage($this->pdo))->saveImage($rageid, $rInfo['imgurl'], $this->imgSavePath, '', '');
 		}
-		$this->add('tvrage', $rageid, $tvrShow['title'], $summary, $country, $hasCover, $relid);
+		$this->add('tvrage', $rageid, $tvrShow['title'], $summary, $country, $tvrShow['publisher'], $hascover, parent::SOURCE_TVRAGE);
 	}
 
 	public function getEpisodeInfo($rageid, $series, $episode)
@@ -240,86 +240,6 @@ class TvRage extends TV
 		return $result;
 	}
 
-	public function fetchShowQuickInfo($show, array $options = [])
-	{
-		$defaults = ['exact' => '', 'episode' => ''];
-		$options += $defaults;
-		$ret = [];
-
-		if (!$show) {
-			return false;
-		}
-
-		$url = $this->showQuickInfoURL . urlencode($show);
-		$url .= !empty($options['episode']) ? '&ep=' . urlencode($options['episode']) : '';
-		$url .= !empty($options['exact']) ? '&exact=' . urlencode($options['exact']) : '';
-		$fp = fopen($url, "r", false, stream_context_create(Misc::streamSslContextOptions()));
-		if ($fp) {
-			while (!feof($fp)) {
-				$line = fgets($fp, 1024);
-				list ($sec, $val) = explode('@', $line, 2);
-				$val = trim($val);
-
-				switch ($sec) {
-					case 'Show ID':
-						$ret['rageid'] = $val;
-						break;
-					case 'Show Name':
-						$ret['name'] = $val;
-						break;
-					case 'Show URL':
-						$ret['url'] = $val;
-						break;
-					case 'Premiered':
-						$ret['premier'] = $val;
-						break;
-					case 'Country':
-						$ret['country'] = $val;
-						break;
-					case 'Status':
-						$ret['status'] = $val;
-						break;
-					case 'Classification':
-						$ret['classification'] = $val;
-						break;
-					case 'Genres':
-						$ret['genres'] = $val;
-						break;
-					case 'Network':
-						$ret['network'] = $val;
-						break;
-					case 'Airtime':
-						$ret['airtime'] = $val;
-						break;
-					case 'Latest Episode':
-						list ($ep, $title, $airdate) = explode('^', $val);
-						$ret['episode']['latest'] =
-								$ep . ", \"" . $title . "\" aired on " . $airdate;
-						break;
-					case 'Next Episode':
-						list ($ep, $title, $airdate) = explode('^', $val);
-						$ret['episode']['next'] = $ep . ", \"" . $title . "\" airs on " . $airdate;
-						break;
-					case 'Episode Info':
-						list ($ep, $title, $airdate) = explode('^', $val);
-						$ret['episode']['info'] = $ep . ", \"" . $title . "\" aired on " . $airdate;
-						break;
-					case 'Episode URL':
-						$ret['episode']['url'] = $val;
-						break;
-					case '':
-						break;
-
-					default:
-						break;
-				}
-			}
-			fclose($fp);
-			return $ret;
-		}
-		return false;
-	}
-
 	public function getRageMatch($showInfo)
 	{
 		$title = $showInfo['cleanname'];
@@ -349,7 +269,8 @@ class TvRage extends TV
 											'title' => $arr['name'],
 											'showid' => $arr['showid'],
 											'country' => $this->countryCode($arr['country']),
-											'genres' => $arr['genres'],
+											'publisher' => $arr['network'],
+											'started' => date('m-d-Y', strtotime($arr['started'])),
 											'tvr' => $arr
 										];
 					}
@@ -363,7 +284,8 @@ class TvRage extends TV
 												'title' => $urltitle,
 												'showid' => $arr['showid'],
 												'country' => $this->countryCode($arr['country']),
-												'genres' => $arr['genres'],
+												'publisher' => $arr['network'],
+												'started' => date('m-d-Y', strtotime($arr['started'])),
 												'tvr' => $arr
 											];
 						}
@@ -380,7 +302,8 @@ class TvRage extends TV
 														'title' => $aka,
 														'showid' => $arr['showid'],
 														'country' => $this->countryCode($arr['country']),
-														'genres' => $arr['genres'],
+														'publisher' => $arr['network'],
+														'started' => date('m-d-Y', strtotime($arr['started'])),
 														'tvr' => $arr
 													];
 								}
@@ -393,7 +316,8 @@ class TvRage extends TV
 													'title' => $arr['akas']['aka'],
 													'showid' => $arr['showid'],
 													'country' => $this->countryCode($arr['country']),
-													'genres' => $arr['genres'],
+													'publisher' => $arr['network'],
+													'started' => date('m-d-Y', strtotime($arr['started'])),
 													'tvr' => $arr
 												];
 							}
