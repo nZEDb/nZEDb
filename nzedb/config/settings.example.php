@@ -585,7 +585,7 @@ if (Misc::isCLI()) {
 	 * @default '1'
 	 * @version 4
 	 */
-	ini_set('html_errors', '1');
+	ini_set('html_errors', '0');
 
 	/**
 	 * Set the location to log PHP errors.
