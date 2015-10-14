@@ -52,9 +52,6 @@ class TV
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
 		$this->catWhere = 'categoryid BETWEEN 5000 AND 5999';
 		$this->tvqty = ($this->pdo->getSetting('maxrageprocessed') != '') ? $this->pdo->getSetting('maxrageprocessed') : 75;
-		$this->tvrage = new TvRage();
-		$this->tvdb = new TVDB();
-		$this->trakt = new TraktTv();
 	}
 
 	public function getTvReleases($groupID = '', $guidChar = '', $lookupSetting = 1, $local = false, $status = 0)
