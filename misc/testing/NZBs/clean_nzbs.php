@@ -30,15 +30,16 @@ $dirItr = new \RecursiveDirectoryIterator($pdo->getSetting('nzbpath'));
 $itr = new \RecursiveIteratorIterator($dirItr, \RecursiveIteratorIterator::LEAVES_ONLY);
 
 foreach ($itr as $filePath) {
-	if (is_file($filePath) && preg_match('/([a-f-0-9]+)\.nzb\.gz/', $filePath, $guid)) {
+	$guid = stristr($filePath->getFilename(), '.nzb.gz', true);
+	if (is_file($filePath) && $guid) {
 		$nzbfile = Misc::unzipGzipFile($filePath);
 		if ($nzbfile && @simplexml_load_string($nzbfile)) {
-			$res = $pdo->queryOneRow(sprintf("SELECT id, guid FROM releases WHERE guid = %s", $pdo->escapeString(stristr($filePath->getFilename(), '.nzb.gz', true))));
+			$res = $pdo->queryOneRow("SELECT id, guid FROM releases WHERE guid = '$guid'");
 			if ($res === false) {
 				$moved++;
 				if ($argv[1] === "move") {
-					@rename($filePath, nZEDb_ROOT . "movednzbs/" . $guid[1] . ".nzb.gz");
-					$releases->deleteSingle(['g' => $guid[1], 'i' => false], $nzb, $releaseImage);
+					@rename($filePath, nZEDb_ROOT . "movednzbs/" . $guid . ".nzb.gz");
+					$releases->deleteSingle(['g' => $guid, 'i' => false], $nzb, $releaseImage);
 				}
 			} else {
 				$pdo->queryExec(sprintf("UPDATE releases SET nzbstatus = 1 WHERE id = %s", $res['id']));
@@ -46,7 +47,7 @@ foreach ($itr as $filePath) {
 		} else {
 			$moved++;
 			if ($argv[1] === "move") {
-				@rename($filePath, nZEDb_ROOT . "movednzbs/" . $guid[1] . ".nzb.gz");
+				@rename($filePath, nZEDb_ROOT . "movednzbs/" . $guid . ".nzb.gz");
 			}
 		}
 		++$checked;
