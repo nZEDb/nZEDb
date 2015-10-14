@@ -98,7 +98,7 @@ class DbUpdate
 
 		$files = empty($options['files']) ? Misc::getDirFiles($options) : $options['files'];
 		natsort($files);
-		$local = $this->pdo->isLocalDb() ? '' : 'LOCAL ';
+		$local = $this->pdo->isLocalDb() ? 'LOCAL ' : '';
 		$sql = 'LOAD DATA ' . $local . 'INFILE "%s" IGNORE INTO TABLE `%s` FIELDS TERMINATED BY "\t" OPTIONALLY ENCLOSED BY "\"" IGNORE 1 LINES (%s)';
 		foreach ($files as $file) {
 			if ($show === true) {
