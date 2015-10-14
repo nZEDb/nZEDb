@@ -68,7 +68,7 @@ class TV
 				SELECT r.searchname, r.id
 				FROM releases r
 				WHERE r.nzbstatus = 1
-				AND r.videos_id = %d
+				AND r.tv_episodes_id = %d
 				AND r.size > 1048576
 				AND %s
 				%s %s %s
@@ -84,7 +84,7 @@ class TV
 		);
 		return $res;
 	}
-	
+
 	public function setVideoIdFound($videoId, $releaseId, $episodeId = 0) {
 		if ($videoId > 0 && $releaseId > 0) {
 			$this->pdo->queryExec(
