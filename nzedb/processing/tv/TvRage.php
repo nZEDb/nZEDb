@@ -2,6 +2,7 @@
 namespace nzedb\processing\tv;
 
 use nzedb\utility\Misc;
+use libs\TvRage;
 
 /**
  * Class TvRage
@@ -18,7 +19,6 @@ class TvRage extends TV
 	public $xmlShowInfoUrl      = 'http://services.tvrage.com/feeds/showinfo.php?sid=';
 	public $xmlFullShowInfoUrl  = 'http://services.tvrage.com/feeds/full_show_info.php?sid=';
 	public $xmlEpisodeInfoUrl;
-	public $xmlFullScheduleUrl  = 'http://services.tvrage.com/feeds/fullschedule.php?country=';
 	public $imgSavePath;
 
 	/**
@@ -80,10 +80,10 @@ class TvRage extends TV
 							$tvtitle = $this->pdo->escapeString(trim($epinfo['title']));
 							$seComplete = 'S' . $show['season'] . 'E' . $show['episode'];
 
-							$this->addEpisode($video['id'], $show['season'], $show['episode'], $seComplete, $tvairdate, $tvtitle, '')
+							$this->addEpisode($video['id'], $show['season'], $show['episode'], $seComplete, $tvairdate, $tvtitle, '');
 						}
 						$this->setVideoIdFound($video, $arr['id']);
-					// Cant find videos_id, so set videos_id to n/a.
+					// Cant find videos_id, so set tv_episodes_id to PROCESS_TVMAZE.
 					} else {
 						$this->setVideoNotFound(parent::PROCESS_TVMAZE, $arr['id']);
 					}
@@ -114,6 +114,129 @@ class TvRage extends TV
 						$id
 					)
 		);
+	}
+
+	public function getRange($start, $num, $showname = "")
+	{
+		if ($start === false) {
+			$limit = "";
+		} else {
+			$limit = "LIMIT " . $num . " OFFSET " . $start;
+		}
+
+		$rsql = '';
+		if ($showname != "") {
+			$rsql .= sprintf("AND v.title LIKE %s ", $this->pdo->escapeString("%" . $showname . "%"));
+		}
+
+		return $this->pdo->query(
+					sprintf("
+						SELECT v.id, v.tvrage, v.title, v.summary, v.started
+						FROM videos v
+						WHERE 1=1 %s
+						ORDER BY v.tvrage ASC %s",
+						$rsql,
+						$limit
+					)
+		);
+	}
+
+	public function updateRageInfo($rageid, $show, $tvrShow, $relid)
+	{
+		$hasCover = 0;
+
+		$country = '';
+		if (isset($tvrShow['country']) && !empty($tvrShow['country'])) {
+			$country = $this->countryCode($tvrShow['country']);
+		}
+
+		$rInfo = $this->getRageInfoFromPage($rageid);
+		$summary = '';
+		if (isset($rInfo['desc']) && !empty($rInfo['desc'])) {
+			$summary = $rInfo['desc'];
+		}
+
+		if (isset($rInfo['imgurl']) && !empty($rInfo['imgurl'])) {
+			$hasCover = (new ReleaseImage($this->pdo))->saveImage($rageid, $rInfo['imgurl'], $this->imgSavePath, '', '');
+		}
+		$this->add('tvrage', $rageid, $tvrShow['title'], $summary, $country, $hasCover, $relid);
+	}
+
+	public function getEpisodeInfo($rageid, $series, $episode)
+	{
+		$result = false;
+
+		$series = str_ireplace("s", "", $series);
+		$episode = str_ireplace("e", "", $episode);
+		$xml = Misc::getUrl(['url' => $this->xmlEpisodeInfoUrl . "&sid=" . $rageid . "&ep=" . $series . "x" . $episode]);
+		if ($xml !== false) {
+			if (stripos($xml, 'no show found') === false) {
+				$xmlObj = @simplexml_load_string($xml);
+				$arrXml = Misc::objectsIntoArray($xmlObj);
+				if (is_array($arrXml)) {
+					$result = [];
+					if (isset($arrXml['episode']['airdate']) && $arrXml['episode']['airdate'] != '0000-00-00') {
+						$result['airdate'] = $arrXml['episode']['airdate'];
+					}
+					if (isset($arrXml['episode']['title'])) {
+						$result['title'] = $arrXml['episode']['title'];
+					}
+				}
+			}
+		}
+		return $result;
+	}
+
+	/**
+	 * @param string $rageid
+	 *
+	 * @return array|bool|mixed
+	 */
+	public function getRageInfoFromService($rageid)
+	{
+		$result = false;
+		// Full search gives us the akas.
+		$xml = Misc::getUrl(['url' => $this->xmlShowInfoUrl . $rageid]);
+		if ($xml !== false) {
+			$arrXml = Misc::objectsIntoArray(simplexml_load_string($xml));
+			if (is_array($arrXml)) {
+				$result = ['showid' => $rageid];
+				$result['country'] = (isset($arrXml['origin_country'])) ? $arrXml['origin_country'] : '';
+				$result['firstaired'] = (isset($arrXml['startdate'])) ? date('m-d-Y', strtotime($arrXml['startdate'])) : '';
+				$result = $this->countryCode($result);
+			}
+		}
+		return $result;
+	}
+
+	public function getRageInfoFromPage($rageid)
+	{
+		$result = ['desc' => '', 'imgurl' => ''];
+		$page = Misc::getUrl(['url' => $this->showInfoUrl . $rageid]);
+		$matches = '';
+		if ($page !== false) {
+			// Description.
+			preg_match('@<div class="show_synopsis">(.*?)</div>@is', $page, $matches);
+			if (isset($matches[1])) {
+				$desc = $matches[1];
+				$desc = preg_replace('/<hr>.*/s', '', $desc);
+				$desc = preg_replace('/&nbsp;?/', '', $desc);
+				$desc = preg_replace('/<br>(\n)?<br>/', ' / ', $desc);
+				$desc = preg_replace('/\n/', ' ', $desc);
+				$desc = preg_replace('/<a href.*?<\/a>/', '', $desc);
+				$desc = preg_replace('/<script.*?<\/script>/', '', $desc);
+				$desc = preg_replace('/<.*?>/', '', $desc);
+				$desc = str_replace('()', '', $desc);
+				$desc = trim(preg_replace('/\s{2,}/', ' ', $desc));
+				$result['desc'] = $desc;
+			}
+			// Image.
+			preg_match("@src=[\"'](http://images.tvrage.com/shows.*?)[\"']@i", $page, $matches);
+			if (isset($matches[1])) {
+				$result['imgurl'] = $matches[1];
+			}
+		}
+		return $result;
 	}
 
 	public function fetchShowQuickInfo($show, array $options = [])
@@ -191,203 +314,9 @@ class TvRage extends TV
 				}
 			}
 			fclose($fp);
-
 			return $ret;
 		}
 		return false;
-	}
-
-	public function getRange($start, $num, $showname = "")
-	{
-		if ($start === false) {
-			$limit = "";
-		} else {
-			$limit = "LIMIT " . $num . " OFFSET " . $start;
-		}
-
-		$rsql = '';
-		if ($showname != "") {
-			$rsql .= sprintf("AND v.title LIKE %s ", $this->pdo->escapeString("%" . $showname . "%"));
-		}
-
-		return $this->pdo->query(
-					sprintf("
-						SELECT v.id, v.tvrage, v.title, v.summary, v.started
-						FROM videos v
-						WHERE 1=1 %s
-						ORDER BY v.tvrage ASC %s",
-						$rsql,
-						$limit
-					)
-		);
-	}
-
-	public function getCount($showname = "")
-	{
-		$rsql = '';
-		if ($showname != "") {
-			$rsql .= sprintf("AND v.title LIKE %s ", $this->pdo->escapeString("%" . $showname . "%"));
-		}
-
-		$res = $this->pdo->queryOneRow(
-					sprintf("
-						SELECT COUNT(v.id) AS num
-						FROM videos v
-						WHERE 1=1 %s",
-						$rsql
-					)
-		);
-		return $res["num"];
-	}
-
-	public function getEpisodeInfo($rageid, $series, $episode)
-	{
-		$result = false;
-
-		$series = str_ireplace("s", "", $series);
-		$episode = str_ireplace("e", "", $episode);
-		$xml = Misc::getUrl(['url' => $this->xmlEpisodeInfoUrl . "&sid=" . $rageid . "&ep=" . $series . "x" . $episode]);
-		if ($xml !== false) {
-			if (stripos($xml, 'no show found') === false) {
-				$xmlObj = @simplexml_load_string($xml);
-				$arrXml = Misc::objectsIntoArray($xmlObj);
-				if (is_array($arrXml)) {
-					$result = [];
-					if (isset($arrXml['episode']['airdate']) && $arrXml['episode']['airdate'] != '0000-00-00') {
-						$result['airdate'] = $arrXml['episode']['airdate'];
-					}
-					if (isset($arrXml['episode']['title'])) {
-						$result['title'] = $arrXml['episode']['title'];
-					}
-				}
-			}
-		}
-		return $result;
-	}
-
-	public function getRageInfoFromPage($rageid)
-	{
-		$result = ['desc' => '', 'imgurl' => ''];
-		$page = Misc::getUrl(['url' => $this->showInfoUrl . $rageid]);
-		$matches = '';
-		if ($page !== false) {
-			// Description.
-			preg_match('@<div class="show_synopsis">(.*?)</div>@is', $page, $matches);
-			if (isset($matches[1])) {
-				$desc = $matches[1];
-				$desc = preg_replace('/<hr>.*/s', '', $desc);
-				$desc = preg_replace('/&nbsp;?/', '', $desc);
-				$desc = preg_replace('/<br>(\n)?<br>/', ' / ', $desc);
-				$desc = preg_replace('/\n/', ' ', $desc);
-				$desc = preg_replace('/<a href.*?<\/a>/', '', $desc);
-				$desc = preg_replace('/<script.*?<\/script>/', '', $desc);
-				$desc = preg_replace('/<.*?>/', '', $desc);
-				$desc = str_replace('()', '', $desc);
-				$desc = trim(preg_replace('/\s{2,}/', ' ', $desc));
-				$result['desc'] = $desc;
-			}
-			// Image.
-			preg_match("@src=[\"'](http://images.tvrage.com/shows.*?)[\"']@i", $page, $matches);
-			if (isset($matches[1])) {
-				$result['imgurl'] = $matches[1];
-			}
-		}
-		return $result;
-	}
-
-	/**
-	 * @param string $rageid
-	 *
-	 * @return array|bool|mixed
-	 */
-	public function getRageInfoFromService($rageid)
-	{
-		$result = false;
-		// Full search gives us the akas.
-		$xml = Misc::getUrl(['url' => $this->xmlShowInfoUrl . $rageid]);
-		if ($xml !== false) {
-			$arrXml = Misc::objectsIntoArray(simplexml_load_string($xml));
-			if (is_array($arrXml)) {
-				$result = ['showid' => $rageid];
-				$result['country'] = (isset($arrXml['origin_country'])) ? $arrXml['origin_country'] : '';
-				$result = $this->countryCode($result);
-			}
-		}
-		return $result;
-	}
-
-	//
-	/**
-	 * Convert 2012-24-07 to 2012-07-24, there is probably a better way
-	 *
-	 * This shouldn't ever happen as I've never heard of a date starting with year being followed by day value.
-	 * Could this be a mistake? i.e. trying to solve the mm-dd-yyyy/dd-mm-yyyy confusion into a yyyy-mm-dd?
-	 *
-	 * @param string $date
-	 *
-	 * @return string
-	 */
-	public function checkDate($date)
-	{
-		if (!empty($date)) {
-			$chk = explode(" ", $date);
-			$chkd = explode("-", $chk[0]);
-			if ($chkd[1] > 12) {
-				$date = date('Y-m-d H:i:s', strtotime($chkd[1] . " " . $chkd[2] . " " . $chkd[0]));
-			}
-		} else {
-			$date = null;
-		}
-
-		return $date;
-	}
-
-	public function updateEpInfo($show, $relid)
-	{
-		if ($this->echooutput) {
-			echo 	$this->pdo->log->headerOver("Updating Episode: ") .
-				$this->pdo->log->primary($show['cleanname'] . " " .
-					$show['seriesfull'] . (($show['year'] != '') ? ' ' .
-					$show['year'] : '') . (($show['country'] != '') ? ' [' .
-					$show['country'] . ']' : '')
-				);
-		}
-
-		$tvairdate = (isset($show['airdate']) && !empty($show['airdate'])) ? $this->pdo->escapeString($this->checkDate($show['airdate'])) : "NULL";
-		$this->pdo->queryExec(
-				sprintf("
-					UPDATE releases
-					SET seriesfull = %s, season = %s, episode = %s, tvairdate = %s
-					WHERE %s AND id = %d",
-					$this->pdo->escapeString($show['seriesfull']),
-					$this->pdo->escapeString($show['season']),
-					$this->pdo->escapeString($show['episode']),
-					$tvairdate,
-					$this->catWhere,
-					$relid
-				)
-		);
-	}
-
-	public function updateRageInfo($rageid, $show, $tvrShow, $relid)
-	{
-		$hasCover = 0;
-
-		$country = '';
-		if (isset($tvrShow['country']) && !empty($tvrShow['country'])) {
-			$country = $this->countryCode($tvrShow['country']);
-		}
-
-		$rInfo = $this->getRageInfoFromPage($rageid);
-		$summary = '';
-		if (isset($rInfo['desc']) && !empty($rInfo['desc'])) {
-			$summary = $rInfo['desc'];
-		}
-
-		if (isset($rInfo['imgurl']) && !empty($rInfo['imgurl'])) {
-			$hasCover = (new ReleaseImage($this->pdo))->saveImage($rageid, $rInfo['imgurl'], $this->imgSavePath, '', '');
-		}
-		$this->add('tvrage', $rageid, $tvrShow['title'], $summary, $country, $hasCover, $relid);
 	}
 
 	public function getRageMatch($showInfo)

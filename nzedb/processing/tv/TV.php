@@ -108,7 +108,7 @@ class TV
 			$this->pdo->queryExec(
 					sprintf('
 						UPDATE releases
-						SET videos_id = %d
+						SET tv_episodes_id = %d
 						WHERE %s
 						AND id = %d',
 						$status,
@@ -120,91 +120,89 @@ class TV
 	}
 
 	/**
-	 * @param $$siteid
+	 * @param $column
+	 * @param $siteid
 	 * @param $title
-	 * @param string $desc
-	 * @param $genre
+	 * @param string $summary
 	 * @param $country
-	 * @param $hascover
 	 */
-	public function add($column, $siteid, $title, $desc, $genre, $country, $hascover)
+	public function add($column, $siteid, $title, $summary, $country)
 	{
 		$title = str_replace(['.', '_'], [' ', ' '], $title);
 		$country = $this->countryCode($country);
 
+		// Check if title already exists, one by exact and the other by close wildcard
+		// if that fails just to be sure
 		$ckid = $this->getBySiteId($column, $siteid);
-
 		if (!ckid) {
 			$ckid = $this->getByTitleQuery($title);
 		}
 
 		if (!isset($ckid['id'])) {
+			$videoId = $this->pdo->queryInsert(
+										sprintf('
+											INSERT INTO videos (%s, title, summary, country, started)
+											VALUES (%s, %s, %s, %s, %d)',
+											$column,
+											$siteid,
+											$this->pdo->escapeString($title),
+											$this->pdo->escapeString($summary),
+											$this->pdo->escapeString($country)
+										)
+			);
 			$this->pdo->queryInsert(
-					sprintf('
-						INSERT INTO videos (%s, title, summary, genre, country, started, hascover)
-						VALUES (%s, %s, %s, %s, %s, NOW(), %d)',
-						$column,
-						$siteid,
-						$this->pdo->escapeString($title),
-						$this->pdo->escapeString(substr($desc, 0, 10000)),
-						$this->pdo->escapeString(substr($genre, 0, 64)),
-						$this->pdo->escapeString($country),
-						$hascover
-					)
+										sprintf('
+											INSERT INTO tv_info (videos_id, summary, publisher)
+											VALUES (%d, %s, '')',
+											$videoId,
+											$this->pdo->escapeString($summary)
+										)
 			);
 		} else {
-			$this->update($ckid['id'], $siteid, $title, $desc, $genre, $country, $hascover);
+			$this->update($ckid['id'], $column, $siteid, $title, $summary, $country);
 		}
 	}
 
 	public function addEpisode($videoId, $seriesNo, $episodeNo, $seComplete, $title, $firstaired, $summary)
 	{
 		$title = str_replace(['.', '_'], [' ', ' '], $title);
-		$country = $this->countryCode($country);
 
-		if ($siteid != -2) {
-			$ckid = $this->getById($siteid);
-		} else {
-			$ckid = $this->getByTitleQuery($title);
-		}
+		$ckid = $this->getBySeasonEp($videoId, $seriesNo, $episodeNo);
 
 		if (!isset($ckid['id'])) {
-			$this->pdo->queryExec(
-					sprintf('
-						INSERT INTO tvrage_titles (%s, releasetitle, description, genre, country, createddate, hascover)
-						VALUES (%s, %s, %s, %s, %s, NOW(), %d)',
-						$column,
-						$siteid,
-						$this->pdo->escapeString($title),
-						$this->pdo->escapeString(substr($desc, 0, 10000)),
-						$this->pdo->escapeString(substr($genre, 0, 64)),
-						$this->pdo->escapeString($country),
-						$hascover
-					)
+			$episodeId = $this->pdo->queryInsert(
+											sprintf('
+												INSERT INTO tv_episodes (videos_id, series, episode, se_complete, title, firstaired, summary)
+												VALUES (%d, %d, %d, %s, %s, %s, %s)',
+												$videoId,
+												$seriesNo,
+												$episodeNo,
+												$this->pdo->escapeString($seComplete),
+												$this->pdo->escapeString($title),
+												$this->pdo->escapeString($firstaired),
+												$this->pdo->escapeString($summary)
+											)
 			);
-		} else {
-			$this->update($ckid['id'], $siteid, $title, $desc, $genre, $country, $hascover);
 		}
 	}
 
-	public function update($videoId, $column, $siteId, $title, $desc, $genre, $country, $hascover = 0)
+	public function update($videoId, $column, $siteId, $title, $summary, $country, $image = 0)
 	{
 		$country = $this->countryCode($country);
 		$coverString = '';
-		if ($hascover != 0) {
-			$coverString = ', image = ' . $hascover;
+		if ($image != 0) {
+			$coverString = ', image = ' . $image;
 		}
 
 		$this->pdo->queryExec(
 				sprintf('
 					UPDATE tvrage_titles
-					SET %s = %d, title = %s, summary = %s, genre = %s, country = %s %s
+					SET %s = %d, title = %s, summary = %s, country = %s %s
 					WHERE id = %d',
 					$column,
 					$siteId,
 					$this->pdo->escapeString($title),
-					$this->pdo->escapeString(substr($desc, 0, 10000)),
-					$this->pdo->escapeString($genre),
+					$this->pdo->escapeString($summary),
 					$this->pdo->escapeString($country),
 					$coverString,
 					$videoId
@@ -342,6 +340,31 @@ class TV
 		);
 	}
 
+	/**
+	 * Get episode info with a video/series/episode ID.
+	 *
+	 * @param int $id
+	 * @param int $season
+	 * @param int $episode
+	 *
+	 * @return array|bool
+	 */
+	public function getBySeasonEp($id, $series, $episode)
+	{
+		return $this->pdo->queryOneRow(
+						sprintf("
+							SELECT id
+							FROM tv_episodes
+							WHERE videos_id = %d
+							AND series = %d
+							AND episode = %d",
+							$id,
+							$series,
+							$episode
+						)
+		);
+	}
+	
 	/**
 	 * Get a country code for a country name.
 	 *
@@ -619,6 +642,31 @@ class TV
 		} else {
 			return false;
 		}
+	}
+
+	//
+	/**
+	 * Convert 2012-24-07 to 2012-07-24, there is probably a better way
+	 *
+	 * This shouldn't ever happen as I've never heard of a date starting with year being followed by day value.
+	 * Could this be a mistake? i.e. trying to solve the mm-dd-yyyy/dd-mm-yyyy confusion into a yyyy-mm-dd?
+	 *
+	 * @param string $date
+	 *
+	 * @return string
+	 */
+	public function checkDate($date)
+	{
+		if (!empty($date)) {
+			$chk = explode(" ", $date);
+			$chkd = explode("-", $chk[0]);
+			if ($chkd[1] > 12) {
+				$date = date('Y-m-d H:i:s', strtotime($chkd[1] . " " . $chkd[2] . " " . $chkd[0]));
+			}
+		} else {
+			$date = null;
+		}
+		return $date;
 	}
 
 	public function getSeriesList($uid, $letter = "", $showname = "")
