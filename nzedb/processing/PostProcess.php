@@ -12,7 +12,7 @@ use nzedb\Music;
 use nzedb\NameFixer;
 use nzedb\Nfo;
 use nzedb\Sharing;
-use nzedb\TvRage;
+use nzedb\processing\tv\TvRage;
 use nzedb\XXX;
 use nzedb\ReleaseFiles;
 use nzedb\db\Settings;
@@ -255,7 +255,7 @@ class PostProcess
 	{
 		$processTV = (is_numeric($processTV) ? $processTV : $this->pdo->getSetting('lookuptvrage'));
 		if ($processTV > 0) {
-			(new TvRage(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->processTvReleases($groupID, $guidChar, $processTV);
+			(new TvRage(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->processTvRage($groupID, $guidChar, $processTV);
 		}
 	}
 

@@ -2,7 +2,6 @@
 namespace nzedb\processing\tv;
 
 use nzedb\utility\Misc;
-use libs\TvRage;
 
 /**
  * Class TvRage
@@ -65,6 +64,8 @@ class TvRage extends TV
 						if ($tvrShow !== false && is_array($tvrShow)) {
 							// Get all tv info and add show.
 							$this->updateRageInfo($tvrShow['showid'], $show, $tvrShow, $arr['id']);
+						} else {
+							$this->setVideoNotFound(parent::PROCESS_TVMAZE, $arr['id']);
 						}
 					} else if ($video > 0) {
 						if ($this->echooutput) {
@@ -72,17 +73,17 @@ class TvRage extends TV
 								 $this->pdo->log->headerOver($show['cleanname']) .
 								 $this->pdo->log->primary(" found in local db, setting tvrage ID and attempting episode lookup.");
 						}
-
-						$epinfo = $this->getEpisodeInfo($video['tvrage'], $show['season'], $show['episode']);
-
-						if ($epinfo !== false && isset($epinfo['airdate']) && !empty($epinfo['title'])) {
-							$tvairdate = $this->pdo->escapeString($this->checkDate($epinfo['airdate']));
-							$tvtitle = $this->pdo->escapeString(trim($epinfo['title']));
-							$seComplete = 'S' . $show['season'] . 'E' . $show['episode'];
-
-							$this->addEpisode($video['id'], $show['season'], $show['episode'], $seComplete, $tvairdate, $tvtitle, '');
+						$episodeId = $this->getBySeasonEp($video['id'],  $show['season'], $show['episode']);
+						if ($episodeId === false) {
+							$epinfo = $this->getEpisodeInfo($video['tvrage'], $show['season'], $show['episode']);
+							if ($epinfo !== false && isset($epinfo['airdate']) && !empty($epinfo['title'])) {
+								$tvairdate = $this->pdo->escapeString($this->checkDate($epinfo['airdate']));
+								$tvtitle = $this->pdo->escapeString(trim($epinfo['title']));
+								$seComplete = 'S' . $show['season'] . 'E' . $show['episode'];
+								$episodeId = $this->addEpisode($video['id'], $show['season'], $show['episode'], $seComplete, $tvairdate, $tvtitle, '');
+							}
 						}
-						$this->setVideoIdFound($video, $arr['id']);
+						$this->setVideoIdFound($video, $arr['id'], $episodeId);
 					// Cant find videos_id, so set tv_episodes_id to PROCESS_TVMAZE.
 					} else {
 						$this->setVideoNotFound(parent::PROCESS_TVMAZE, $arr['id']);
@@ -144,8 +145,8 @@ class TvRage extends TV
 	public function updateRageInfo($rageid, $show, $tvrShow, $relid)
 	{
 		$hasCover = 0;
-
 		$country = '';
+
 		if (isset($tvrShow['country']) && !empty($tvrShow['country'])) {
 			$country = $this->countryCode($tvrShow['country']);
 		}

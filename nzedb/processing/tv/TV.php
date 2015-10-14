@@ -151,9 +151,9 @@ class TV
 										)
 			);
 			$this->pdo->queryInsert(
-										sprintf('
+										sprintf("
 											INSERT INTO tv_info (videos_id, summary, publisher)
-											VALUES (%d, %s, '')',
+											VALUES (%d, %s, '')",
 											$videoId,
 											$this->pdo->escapeString($summary)
 										)
@@ -167,7 +167,7 @@ class TV
 	{
 		$title = str_replace(['.', '_'], [' ', ' '], $title);
 
-		$ckid = $this->getBySeasonEp($videoId, $seriesNo, $episodeNo);
+		$episodeId = $this->getBySeasonEp($videoId, $seriesNo, $episodeNo);
 
 		if (!isset($ckid['id'])) {
 			$episodeId = $this->pdo->queryInsert(
@@ -184,6 +184,7 @@ class TV
 											)
 			);
 		}
+		return $episodeId;
 	}
 
 	public function update($videoId, $column, $siteId, $title, $summary, $country, $image = 0)
@@ -351,18 +352,19 @@ class TV
 	 */
 	public function getBySeasonEp($id, $series, $episode)
 	{
-		return $this->pdo->queryOneRow(
-						sprintf("
-							SELECT id
-							FROM tv_episodes
-							WHERE videos_id = %d
-							AND series = %d
-							AND episode = %d",
-							$id,
-							$series,
-							$episode
-						)
+		$episodeArr = $this->pdo->queryOneRow(
+							sprintf("
+								SELECT id
+								FROM tv_episodes
+								WHERE videos_id = %d
+								AND series = %d
+								AND episode = %d",
+								$id,
+								$series,
+								$episode
+							)
 		);
+		return (isset($episodeArr['id']) ? $episodeArr['id'] : $episodeArr);
 	}
 	
 	/**
