@@ -8,13 +8,14 @@ use nzedb\Releases;
 use nzedb\db\Settings;
 use nzedb\utility\Misc;
 
+$pdo = new Settings();
+
 if (!isset($argv[1]) || !in_array($argv[1], ["true", "move"])) {
 	exit($pdo->log->error("\nThis script can remove all nzbs not found in the db and all releases with no nzbs found. It can also move invalid nzbs.\n\n"
 		. "php $argv[0] true     ...: For a dry run, to see how many would be moved.\n"
 		. "php $argv[0] move     ...: Move NZBs that are possibly bad or have no release. They are moved into this folder: " . (nZEDb_ROOT . "movednzbs/") . "\n"));
 }
 
-$pdo = new Settings();
 $releases = new Releases(['Settings' => $pdo]);
 $nzb = new NZB($pdo);
 $releaseImage = new ReleaseImage($pdo);
