@@ -46,51 +46,43 @@ class TvRage extends TV
 			foreach ($res as $arr) {
 				$show = $this->parseNameEpSeason($arr['searchname']);
 				if (is_array($show) && $show['name'] != '') {
-					// Update release with season, ep, and airdate info (if available) from releasetitle.
-					$this->updateEpInfo($show, $arr['id']);
-
-					// Find the rageID.
-					$id = $this->getByTitle($show['cleanname']);
+					// Find the Video ID if it already exists by checking the title.
+					$video = $this->getByTitle($show['cleanname']);
 
 					// Force local lookup only
 					if ($local == true) {
 						$lookupSetting = false;
 					}
 
-					if ($id === false && $lookupSetting) {
+					if ($video === false && $lookupSetting) {
 						// If it doesnt exist locally and lookups are allowed lets try to get it.
 						if ($this->echooutput) {
-							echo $this->pdo->log->primaryOver("TVRage ID for ") .
+							echo $this->pdo->log->primaryOver("Video ID for ") .
 								 $this->pdo->log->headerOver($show['cleanname']) .
 								 $this->pdo->log->primary(" not found in local db, checking web.");
 						}
-
-						$tvrShow = $this->tvrage->getRageMatch($show);
+						$tvrShow = $this->getRageMatch($show);
 						if ($tvrShow !== false && is_array($tvrShow)) {
 							// Get all tv info and add show.
 							$this->updateRageInfo($tvrShow['showid'], $show, $tvrShow, $arr['id']);
-						} else if ($tvrShow === false) {
-							$this->tvrage->add(-2, $show['cleanname'], '', '', '', '');
 						}
-					} else if ($id > 0) {
-						$tvtitle = "NULL";
-						$tvairdate = (isset($show['airdate']) && !empty($show['airdate']))
-							? $this->pdo->escapeString($this->checkDate($show['airdate']))
-							: "NULL";
-
-						if ($lookupSetting) {
-							$epinfo = $this->tvrage->getEpisodeInfo($id, $show['season'], $show['episode']);
-							if ($epinfo !== false) {
-								if (isset($epinfo['airdate'])) {
-									$tvairdate = $this->pdo->escapeString($this->tvrage->checkDate($epinfo['airdate']));
-								}
-
-								if (!empty($epinfo['title'])) {
-									$tvtitle = $this->pdo->escapeString(trim($epinfo['title']));
-								}
-							}
+					} else if ($video > 0) {
+						if ($this->echooutput) {
+							echo $this->pdo->log->primaryOver("Video ID for ") .
+								 $this->pdo->log->headerOver($show['cleanname']) .
+								 $this->pdo->log->primary(" found in local db, setting tvrage ID and attempting episode lookup.");
 						}
-						$this->setVideoIdFound($id, $arr['id']);
+
+						$epinfo = $this->getEpisodeInfo($video['tvrage'], $show['season'], $show['episode']);
+
+						if ($epinfo !== false && isset($epinfo['airdate']) && !empty($epinfo['title'])) {
+							$tvairdate = $this->pdo->escapeString($this->checkDate($epinfo['airdate']));
+							$tvtitle = $this->pdo->escapeString(trim($epinfo['title']));
+							$seComplete = 'S' . $show['season'] . 'E' . $show['episode'];
+
+							$this->addEpisode($video['id'], $show['season'], $show['episode'], $seComplete, $tvairdate, $tvtitle, '')
+						}
+						$this->setVideoIdFound($video, $arr['id']);
 					// Cant find videos_id, so set videos_id to n/a.
 					} else {
 						$this->setVideoNotFound(parent::PROCESS_TVMAZE, $arr['id']);
@@ -119,79 +111,6 @@ class TvRage extends TV
 						SELECT *
 						FROM videos
 						WHERE tvrage = %d",
-						$id
-					)
-		);
-	}
-
-	/**
-	 * @param $rageid
-	 * @param $releasename
-	 * @param string $desc
-	 * @param $genre
-	 * @param $country
-	 * @param $hascover
-	 */
-	public function add($rageid, $releasename, $desc, $genre, $country, $hascover)
-	{
-		$releasename = str_replace(['.', '_'], [' ', ' '], $releasename);
-		$country = $this->countryCode($country);
-
-		if ($rageid != -2) {
-			$ckid = $this->getById($rageid);
-		} else {
-			$ckid = $this->getByTitleQuery($releasename);
-		}
-
-		if (!isset($ckid['id'])) {
-			$this->pdo->queryExec(
-					sprintf('
-						INSERT INTO tvrage_titles (rageid, releasetitle, description, genre, country, createddate, hascover)
-						VALUES (%s, %s, %s, %s, %s, NOW(), %d)',
-						$rageid,
-						$this->pdo->escapeString($releasename),
-						$this->pdo->escapeString(substr($desc, 0, 10000)),
-						$this->pdo->escapeString(substr($genre, 0, 64)),
-						$this->pdo->escapeString($country),
-						$hascover
-					)
-			);
-		} else {
-			$this->update($ckid['id'], $rageid, $releasename, $desc, $genre, $country, $hascover);
-		}
-	}
-
-	public function update($id, $rageid, $releasename, $desc, $genre, $country, $hascover = 0)
-	{
-		$country = $this->countryCode($country);
-		$coverString = '';
-		if ($hascover != 0) {
-			$coverString = ', hascover = ' . $hascover;
-		}
-
-		$this->pdo->queryExec(
-				sprintf('
-					UPDATE tvrage_titles
-					SET rageid = %d, releasetitle = %s, description = %s, genre = %s, country = %s %s
-					WHERE id = %d',
-					$rageid,
-					$this->pdo->escapeString($releasename),
-					$this->pdo->escapeString(substr($desc, 0, 10000)),
-					$this->pdo->escapeString($genre),
-					$this->pdo->escapeString($country),
-					$coverString,
-					$id
-				)
-		);
-	}
-
-	public function delete($id)
-	{
-		return $this->pdo->queryExec(
-					sprintf("
-						DELETE
-						FROM tvrage_titles
-						WHERE id = %d",
 						$id
 					)
 		);
@@ -278,7 +197,7 @@ class TvRage extends TV
 		return false;
 	}
 
-	public function getRange($start, $num, $ragename = "")
+	public function getRange($start, $num, $showname = "")
 	{
 		if ($start === false) {
 			$limit = "";
@@ -287,33 +206,33 @@ class TvRage extends TV
 		}
 
 		$rsql = '';
-		if ($ragename != "") {
-			$rsql .= sprintf("AND tvrage_titles.releasetitle LIKE %s ", $this->pdo->escapeString("%" . $ragename . "%"));
+		if ($showname != "") {
+			$rsql .= sprintf("AND v.title LIKE %s ", $this->pdo->escapeString("%" . $showname . "%"));
 		}
 
 		return $this->pdo->query(
 					sprintf("
-						SELECT id, rageid, releasetitle, description, createddate
-						FROM tvrage_titles
+						SELECT v.id, v.tvrage, v.title, v.summary, v.started
+						FROM videos v
 						WHERE 1=1 %s
-						ORDER BY rageid ASC %s",
+						ORDER BY v.tvrage ASC %s",
 						$rsql,
 						$limit
 					)
 		);
 	}
 
-	public function getCount($ragename = "")
+	public function getCount($showname = "")
 	{
 		$rsql = '';
-		if ($ragename != "") {
-			$rsql .= sprintf("AND tvrage_titles.releasetitle LIKE %s ", $this->pdo->escapeString("%" . $ragename . "%"));
+		if ($showname != "") {
+			$rsql .= sprintf("AND v.title LIKE %s ", $this->pdo->escapeString("%" . $showname . "%"));
 		}
 
 		$res = $this->pdo->queryOneRow(
 					sprintf("
-						SELECT COUNT(id) AS num
-						FROM tvrage_titles
+						SELECT COUNT(v.id) AS num
+						FROM videos v
 						WHERE 1=1 %s",
 						$rsql
 					)
@@ -321,248 +240,29 @@ class TvRage extends TV
 		return $res["num"];
 	}
 
-	public function getCalendar($date = "")
-	{
-		if (!preg_match('/\d{4}-\d{2}-\d{2}/', $date)) {
-			$date = date("Y-m-d");
-		}
-		$sql = $this->pdo->queryDirect(
-					sprintf("
-						SELECT *
-						FROM tvrage_episodes
-						WHERE DATE(airdate) = %s
-						ORDER BY airdate ASC",
-						$this->pdo->escapeString($date)
-					)
-		);
-		return $sql;
-	}
-
-	public function getSeriesList($uid, $letter = "", $ragename = "")
-	{
-		$rsql = '';
-		if ($letter != "") {
-			if ($letter == '0-9') {
-				$letter = '[0-9]';
-			}
-
-			$rsql .= sprintf("AND tvrage_titles.releasetitle REGEXP %s", $this->pdo->escapeString('^' . $letter));
-		}
-		$tsql = '';
-		if ($ragename != '') {
-			$tsql .= sprintf("AND tvrage_titles.releasetitle LIKE %s", $this->pdo->escapeString("%" . $ragename . "%"));
-		}
-
-		return $this->pdo->query(
-			sprintf("
-				SELECT tvrage_titles.id, tvrage_titles.rageid, tvrage_titles.releasetitle, tvrage_titles.genre, tvrage_titles.country,
-					tvrage_titles.createddate, tvrage_titles.prevdate, tvrage_titles.nextdate,
-					user_series.id AS userseriesid
-				FROM tvrage_titles
-				LEFT OUTER JOIN user_series ON user_series.user_id = %d
-					AND user_series.rageid = tvrage_titles.rageid
-				WHERE tvrage_titles.rageid IN (
-								SELECT DISTINCT rageid
-								FROM releases
-								WHERE %s
-								AND rageid > 0)
-				AND tvrage_titles.rageid > 0 %s %s
-				GROUP BY tvrage_titles.rageid
-				ORDER BY tvrage_titles.releasetitle ASC",
-				$this->catWhere,
-				$uid,
-				$rsql,
-				$tsql
-			)
-		);
-	}
-
-	public function updateSchedule()
-	{
-		$countries = $this->pdo->query("
-						SELECT DISTINCT(country) AS country
-						FROM tvrage_titles
-						WHERE country != ''"
-		);
-		$showsindb = $this->pdo->query("
-						SELECT DISTINCT(rageid) AS rageid
-						FROM tvrage_titles"
-		);
-		$showarray = [];
-		foreach ($showsindb as $show) {
-			$showarray[] = $show['rageid'];
-		}
-		foreach ($countries as $country) {
-			if ($this->echooutput) {
-				echo $this->pdo->log->headerOver('Updating schedule for: ') . $this->pdo->log->primary($country['country']);
-			}
-
-			$sched = Misc::getURL(['url' => $this->xmlFullScheduleUrl . $country['country']]);
-			if ($sched !== false && ($xml = @simplexml_load_string($sched))) {
-				$tzOffset = 60 * 60 * 6;
-				$yesterday = strtotime("-1 day") - $tzOffset;
-				$xmlSchedule = [];
-
-				foreach ($xml->DAY as $sDay) {
-					$currDay = strtotime($sDay['attr']);
-					foreach ($sDay as $sTime) {
-						$currTime = (string)$sTime['attr'];
-						foreach ($sTime as $sShow) {
-							$currShowName = (string)$sShow['name'];
-							$currShowId = (string)$sShow->sid;
-							$day_time = strtotime($sDay['attr'] . ' ' . $currTime);
-							$tag = ($currDay < $yesterday) ? 'prev' : 'next';
-							if ($tag == 'prev' || ($tag == 'next' && !isset($xmlSchedule[$currShowId]['next']))) {
-								$xmlSchedule[$currShowId][$tag] = [
-												'name'     => $currShowName,
-												'day'      => $currDay,
-												'time'     => $currTime,
-												'day_time' => $day_time,
-												'day_date' => date("Y-m-d H:i:s", $day_time),
-												'title'    => html_entity_decode((string)$sShow->title, ENT_QUOTES, 'UTF-8'), 													'episode'  => html_entity_decode((string)$sShow->ep, ENT_QUOTES, 'UTF-8')
-												];
-								$xmlSchedule[$currShowId]['showname'] = $currShowName;
-							}
-
-							// Only add it here, no point adding it to tvrage aswell that will automatically happen when an ep gets posted.
-							if ($sShow->ep == "01x01") {
-								$showarray[] = $sShow->sid;
-							}
-
-							// Only stick current shows and new shows in there.
-							if (in_array($currShowId, $showarray)) {
-								$this->pdo->queryExec(
-										sprintf("
-											INSERT INTO tvrage_episodes (rageid, showtitle, fullep, airdate, link, eptitle)
-											VALUES (%d, %s, %s, %s, %s, %s)
-											ON DUPLICATE KEY UPDATE
-												showtitle = %2\$s, airdate = %4\$s, link = %5\$s ,eptitle = %6\$s",
-											$sShow->sid,
-											$this->pdo->escapeString($currShowName),
-											$this->pdo->escapeString($sShow->ep),
-											$this->pdo->escapeString(date("Y-m-d H:i:s", $day_time)),
-											$this->pdo->escapeString($sShow->link),
-											$this->pdo->escapeString($sShow->title),
-											$this->pdo->escapeString(date("Y-m-d H:i:s", $day_time))
-										)
-								);
-							}
-						}
-					}
-				}
-				// Update series info.
-				foreach ($xmlSchedule as $showId => $epInfo) {
-					$res = $this->pdo->query(sprintf("SELECT * FROM tvrage_titles WHERE rageid = %d", $showId));
-					if (sizeof($res) > 0) {
-						foreach ($res as $arr) {
-							$prev_ep = $next_ep = "";
-							$query = [];
-
-							// Previous episode.
-							if (isset($epInfo['prev']) && $epInfo['prev']['episode'] != '') {
-								$prev_ep = $epInfo['prev']['episode'] . ', "' . $epInfo['prev']['title'] . '"';
-								$query[] = sprintf("prevdate = %s, previnfo = %s",
-										$this->pdo->from_unixtime($epInfo['prev']['day_time']),
-										$this->pdo->escapeString($prev_ep)
-								);
-							}
-
-							// Next episode.
-							if (isset($epInfo['next']) && $epInfo['next']['episode'] != '') {
-								if ($prev_ep == "" && $arr['nextinfo'] != '' && $epInfo['next']['day_time'] > strtotime($arr["nextdate"])
-									&& strtotime(date('Y-m-d', strtotime($arr["nextdate"]))) < $yesterday) {
-									$this->pdo->queryExec(
-											sprintf("
-												UPDATE tvrage_titles
-												SET prevdate = nextdate, previnfo = nextinfo
-												WHERE id = %d",
-												$arr['id']
-											)
-									);
-									$prev_ep = "SWAPPED with: " . $arr['nextinfo'] . " - " . date("r", strtotime($arr["nextdate"]));
-								}
-								$next_ep = $epInfo['next']['episode'] . ', "' . $epInfo['next']['title'] . '"';
-								$query[] = sprintf("nextdate = %s, nextinfo = %s",
-										$this->pdo->from_unixtime($epInfo['next']['day_time']),
-										$this->pdo->escapeString($next_ep)
-								);
-							} else {
-								$query[] = "nextdate = NULL, nextinfo = NULL";
-							}
-
-							// Output.
-							if ($this->echooutput) {
-								echo $this->pdo->log->primary($epInfo['showname'] . " (" . $showId . "):");
-								if (isset($epInfo['prev']['day_time'])) {
-									echo 	$this->pdo->log->headerOver("Prev EP: ") .
-										$this->pdo->log->primary("{$prev_ep} - " .
-											date("m/d/Y H:i T", $epInfo['prev']['day_time'])
-										);
-								}
-								if (isset($epInfo['next']['day_time'])) {
-									echo 	$this->pdo->log->headerOver("Next EP: ") .
-										$this->pdo->log->primary("{$next_ep} - " .
-											date("m/d/Y H:i T", $epInfo['next']['day_time'])
-										);
-								}
-								echo "\n";
-							}
-
-							// Update info.
-							if (count($query) > 0) {
-								$sqlQry = join(", ", $query);
-								$this->pdo->queryExec(
-										sprintf("
-											UPDATE tvrage_titles
-											SET %s
-											WHERE id = %d",
-											$sqlQry,
-											$arr['id']
-										)
-								);
-							}
-						}
-					}
-				}
-			} else {
-				// No response from tvrage.
-				if ($this->echooutput) {
-					echo $this->pdo->log->info("Schedule not found.");
-				}
-			}
-		}
-		if ($this->echooutput) {
-			echo $this->pdo->log->primary("Updated the TVRage schedule succesfully.");
-		}
-	}
-
 	public function getEpisodeInfo($rageid, $series, $episode)
 	{
-		$result = ['title' => '', 'airdate' => ''];
+		$result = false;
 
 		$series = str_ireplace("s", "", $series);
 		$episode = str_ireplace("e", "", $episode);
 		$xml = Misc::getUrl(['url' => $this->xmlEpisodeInfoUrl . "&sid=" . $rageid . "&ep=" . $series . "x" . $episode]);
 		if ($xml !== false) {
-			if (preg_match('/no show found/i', $xml)) {
-				return false;
-			}
-
-			$xmlObj = @simplexml_load_string($xml);
-			$arrXml = Misc::objectsIntoArray($xmlObj);
-			if (is_array($arrXml)) {
-				if (isset($arrXml['episode']['airdate']) && $arrXml['episode']['airdate'] != '0000-00-00') {
-					$result['airdate'] = $arrXml['episode']['airdate'];
+			if (stripos($xml, 'no show found') === false) {
+				$xmlObj = @simplexml_load_string($xml);
+				$arrXml = Misc::objectsIntoArray($xmlObj);
+				if (is_array($arrXml)) {
+					$result = [];
+					if (isset($arrXml['episode']['airdate']) && $arrXml['episode']['airdate'] != '0000-00-00') {
+						$result['airdate'] = $arrXml['episode']['airdate'];
+					}
+					if (isset($arrXml['episode']['title'])) {
+						$result['title'] = $arrXml['episode']['title'];
+					}
 				}
-				if (isset($arrXml['episode']['title'])) {
-					$result['title'] = $arrXml['episode']['title'];
-				}
-
-				return $result;
 			}
-			return false;
 		}
-		return false;
+		return $result;
 	}
 
 	public function getRageInfoFromPage($rageid)
@@ -602,20 +302,18 @@ class TvRage extends TV
 	 */
 	public function getRageInfoFromService($rageid)
 	{
-		$result = ['genres' => '', 'country' => '', 'showid' => $rageid];
+		$result = false;
 		// Full search gives us the akas.
 		$xml = Misc::getUrl(['url' => $this->xmlShowInfoUrl . $rageid]);
 		if ($xml !== false) {
 			$arrXml = Misc::objectsIntoArray(simplexml_load_string($xml));
 			if (is_array($arrXml)) {
-				$result['genres'] = (isset($arrXml['genres'])) ? $arrXml['genres'] : '';
+				$result = ['showid' => $rageid];
 				$result['country'] = (isset($arrXml['origin_country'])) ? $arrXml['origin_country'] : '';
 				$result = $this->countryCode($result);
-				return $result;
 			}
-			return false;
 		}
-		return false;
+		return $result;
 	}
 
 	//
@@ -674,43 +372,6 @@ class TvRage extends TV
 	public function updateRageInfo($rageid, $show, $tvrShow, $relid)
 	{
 		$hasCover = 0;
-		// Try and get the episode specific info from tvrage.
-		$epinfo = $this->getEpisodeInfo($rageid, $show['season'], $show['episode']);
-		if ($epinfo !== false) {
-			$tvairdate = (!empty($epinfo['airdate'])) ? $this->pdo->escapeString($epinfo['airdate']) : "NULL";
-			$tvtitle = (!empty($epinfo['title'])) ? $this->pdo->escapeString($epinfo['title']) : "NULL";
-
-			$this->pdo->queryExec(
-					sprintf("
-						UPDATE releases
-						SET tvtitle = %s, tvairdate = %s, rageid = %d
-						WHERE id = %d",
-						$this->pdo->escapeString(trim($tvtitle)),
-						$tvairdate,
-						$tvrShow['showid'],
-						$relid
-					)
-			);
-		} else {
-			$this->pdo->queryExec(
-					sprintf("
-						UPDATE releases
-						SET rageid = %d
-						WHERE id = %d",
-						$tvrShow['showid'],
-						$relid
-					)
-			);
-		}
-
-		$genre = '';
-		if (isset($tvrShow['genres']) && is_array($tvrShow['genres']) && !empty($tvrShow['genres'])) {
-			if (is_array($tvrShow['genres']['genre'])) {
-				$genre = implode('|', $tvrShow['genres']['genre']);
-			} else {
-				$genre = $tvrShow['genres']['genre'];
-			}
-		}
 
 		$country = '';
 		if (isset($tvrShow['country']) && !empty($tvrShow['country'])) {
@@ -718,64 +379,15 @@ class TvRage extends TV
 		}
 
 		$rInfo = $this->getRageInfoFromPage($rageid);
-		$desc = '';
+		$summary = '';
 		if (isset($rInfo['desc']) && !empty($rInfo['desc'])) {
-			$desc = $rInfo['desc'];
+			$summary = $rInfo['desc'];
 		}
 
 		if (isset($rInfo['imgurl']) && !empty($rInfo['imgurl'])) {
 			$hasCover = (new ReleaseImage($this->pdo))->saveImage($rageid, $rInfo['imgurl'], $this->imgSavePath, '', '');
 		}
-		$this->add($rageid, $show['cleanname'], $desc, $genre, $country, $hasCover);
-	}
-
-	public function updateRageInfoTrakt($rageid, $show, $traktArray, $relid)
-	{
-		$hasCover = 0;
-		// Try and get the episode specific info from tvrage.
-		$epinfo = $this->getEpisodeInfo($rageid, $show['season'], $show['episode']);
-		if ($epinfo !== false) {
-			$tvairdate = (!empty($epinfo['airdate'])) ? $this->pdo->escapeString($epinfo['airdate']) : "NULL";
-			$tvtitle = (!empty($epinfo['title'])) ? $this->pdo->escapeString($epinfo['title']) : "NULL";
-			$this->pdo->queryExec(
-					sprintf("
-						UPDATE releases
-						SET tvtitle = %s, tvairdate = %s, rageid = %d
-						WHERE %s
-						AND id = %d",
-						$this->pdo->escapeString(trim($tvtitle)),
-						$tvairdate,
-						$traktArray['ids']['tvrage'],
-						$this->catWhere,
-						$relid
-					)
-			);
-		} else {
-			$this->pdo->queryExec(
-					sprintf("
-						UPDATE releases
-						SET rageid = %d
-						WHERE %s
-						AND id = %d",
-						$traktArray['ids']['tvrage'],
-						$this->catWhere,
-						$relid
-					)
-			);
-		}
-
-		$genre = $country = '';
-
-		$rInfo = $this->getRageInfoFromPage($rageid);
-		$desc = '';
-		if (isset($rInfo['desc']) && !empty($rInfo['desc'])) {
-			$desc = $rInfo['desc'];
-		}
-
-		if (isset($rInfo['imgurl']) && !empty($rInfo['imgurl'])) {
-			$hasCover = (new ReleaseImage($this->pdo))->saveImage($rageid, $rInfo['imgurl'], $this->imgSavePath, '', '');
-		}
-		$this->add($rageid, $show['cleanname'], $desc, $genre, $country, $hasCover);
+		$this->add('tvrage', $rageid, $tvrShow['title'], $summary, $country, $hasCover, $relid);
 	}
 
 	public function getRageMatch($showInfo)
@@ -917,9 +529,6 @@ class TvRage extends TV
 					return $akaMatches[$ak][0];
 				}
 
-				if ($this->echooutput) {
-					echo $this->pdo->log->primary('No match found on TVRage trying Trakt.');
-				}
 				return false;
 			} else {
 				if ($this->echooutput) {

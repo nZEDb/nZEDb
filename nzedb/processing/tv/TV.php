@@ -119,12 +119,117 @@ class TV
 		}
 	}
 
+	/**
+	 * @param $$siteid
+	 * @param $title
+	 * @param string $desc
+	 * @param $genre
+	 * @param $country
+	 * @param $hascover
+	 */
+	public function add($column, $siteid, $title, $desc, $genre, $country, $hascover)
+	{
+		$title = str_replace(['.', '_'], [' ', ' '], $title);
+		$country = $this->countryCode($country);
+
+		$ckid = $this->getBySiteId($column, $siteid);
+
+		if (!ckid) {
+			$ckid = $this->getByTitleQuery($title);
+		}
+
+		if (!isset($ckid['id'])) {
+			$this->pdo->queryInsert(
+					sprintf('
+						INSERT INTO videos (%s, title, summary, genre, country, started, hascover)
+						VALUES (%s, %s, %s, %s, %s, NOW(), %d)',
+						$column,
+						$siteid,
+						$this->pdo->escapeString($title),
+						$this->pdo->escapeString(substr($desc, 0, 10000)),
+						$this->pdo->escapeString(substr($genre, 0, 64)),
+						$this->pdo->escapeString($country),
+						$hascover
+					)
+			);
+		} else {
+			$this->update($ckid['id'], $siteid, $title, $desc, $genre, $country, $hascover);
+		}
+	}
+
+	public function addEpisode($videoId, $seriesNo, $episodeNo, $seComplete, $title, $firstaired, $summary)
+	{
+		$title = str_replace(['.', '_'], [' ', ' '], $title);
+		$country = $this->countryCode($country);
+
+		if ($siteid != -2) {
+			$ckid = $this->getById($siteid);
+		} else {
+			$ckid = $this->getByTitleQuery($title);
+		}
+
+		if (!isset($ckid['id'])) {
+			$this->pdo->queryExec(
+					sprintf('
+						INSERT INTO tvrage_titles (%s, releasetitle, description, genre, country, createddate, hascover)
+						VALUES (%s, %s, %s, %s, %s, NOW(), %d)',
+						$column,
+						$siteid,
+						$this->pdo->escapeString($title),
+						$this->pdo->escapeString(substr($desc, 0, 10000)),
+						$this->pdo->escapeString(substr($genre, 0, 64)),
+						$this->pdo->escapeString($country),
+						$hascover
+					)
+			);
+		} else {
+			$this->update($ckid['id'], $siteid, $title, $desc, $genre, $country, $hascover);
+		}
+	}
+
+	public function update($videoId, $column, $siteId, $title, $desc, $genre, $country, $hascover = 0)
+	{
+		$country = $this->countryCode($country);
+		$coverString = '';
+		if ($hascover != 0) {
+			$coverString = ', image = ' . $hascover;
+		}
+
+		$this->pdo->queryExec(
+				sprintf('
+					UPDATE tvrage_titles
+					SET %s = %d, title = %s, summary = %s, genre = %s, country = %s %s
+					WHERE id = %d',
+					$column,
+					$siteId,
+					$this->pdo->escapeString($title),
+					$this->pdo->escapeString(substr($desc, 0, 10000)),
+					$this->pdo->escapeString($genre),
+					$this->pdo->escapeString($country),
+					$coverString,
+					$videoId
+				)
+		);
+	}
+
+	public function delete($id)
+	{
+		return $this->pdo->queryExec(
+					sprintf("
+						DELETE
+						FROM videos
+						WHERE id = %d",
+						$id
+					)
+		);
+	}
+
 	public function getByTitleQuery($title)
 	{
 		if ($title) {
 			return $this->pdo->queryOneRow(
 						sprintf("
-							SELECT videos_id
+							SELECT id, tvdb, tvrage, tvmaze, trakt, imdb, tmbd
 							FROM videos
 							WHERE title = %s",
 							$this->pdo->escapeString($title)
@@ -139,7 +244,7 @@ class TV
 		if ($title) {
 			return $this->pdo->queryOneRow(
 						sprintf("
-							SELECT videos_id
+							SELECT id, tvdb, tvrage, tvmaze, trakt, imdb, tmbd
 							FROM videos
 							WHERE REPLACE(REPLACE(title, %s, ''), '!', '') %s",
 							$string,
@@ -224,13 +329,14 @@ class TV
 	 *
 	 * @return array|bool
 	 */
-	public function getByID($id)
+	public function getBySiteID($column, $id)
 	{
 		return $this->pdo->queryOneRow(
 						sprintf("
 							SELECT *
 							FROM videos
-							WHERE id = %d",
+							WHERE %s = %d",
+							$column,
 							$id
 						)
 		);
@@ -515,23 +621,40 @@ class TV
 		}
 	}
 
-	public function getGenres()
+	public function getSeriesList($uid, $letter = "", $showname = "")
 	{
-		return [
-				'Action', 'Adult/Porn', 'Adventure', 'Anthology',
-				'Arts & Crafts', 'Automobiles', 'Buy, Sell & Trade',
-				'Celebrities', 'Children', 'Cinema/Theatre', 'Comedy',
-				'Cooking/Food', 'Crime', 'Current Events', 'Dance',
-				'Debate', 'Design/Decorating', 'Discovery/Science', 'Drama',
-				'Educational', 'Family', 'Fantasy', 'Fashion/Make-up',
-				'Financial/Business', 'Fitness', 'Garden/Landscape', 'History',
-				'Horror/Supernatural', 'Housing/Building', 'How To/Do It Yourself', 'Interview',
-				'Lifestyle', 'Literature', 'Medical', 'Military/War',
-				'Music', 'Mystery', 'Pets/Animals', 'Politics',
-				'Puppets', 'Religion', 'Romance/Dating', 'Sci-Fi',
-				'Sketch/Improv', 'Soaps', 'Sports', 'Super Heroes',
-				'Talent', 'Tech/Gaming', 'Teens', 'Thriller',
-				'Travel', 'Western', 'Wildlife'
-			];
+		$rsql = '';
+		if ($letter != "") {
+			if ($letter == '0-9') {
+				$letter = '[0-9]';
+			}
+
+			$rsql .= sprintf("AND v.title REGEXP %s", $this->pdo->escapeString('^' . $letter));
+		}
+		$tsql = '';
+		if ($showname != '') {
+			$tsql .= sprintf("AND v.title LIKE %s", $this->pdo->escapeString("%" . $showname . "%"));
+		}
+
+		return $this->pdo->query(
+			sprintf("
+				SELECT v.*
+				FROM videos v
+				LEFT OUTER JOIN user_series ON user_series.user_id = %d
+					AND user_series.rageid = v.tvrage
+				WHERE v.rageid IN (
+								SELECT DISTINCT videos_id
+								FROM releases
+								WHERE %s
+								AND videos_id > 0)
+				AND v.tvrage > 0 %s %s
+				GROUP BY v.tvrage
+				ORDER BY v.title ASC",
+				$this->catWhere,
+				$uid,
+				$rsql,
+				$tsql
+			)
+		);
 	}
 }
