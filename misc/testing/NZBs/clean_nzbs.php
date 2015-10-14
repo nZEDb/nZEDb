@@ -56,9 +56,9 @@ foreach ($itr as $filePath) {
 
 echo $pdo->log->header("\n" . number_format($checked) . ' nzbs checked, ' . number_format($moved) . ' nzbs ' . $couldbe . 'moved.');
 echo $pdo->log->header("Getting List of releases to check against nzbs.");
-echo $pdo->log->header("Checked / {$couldbe}moved\n");
+echo $pdo->log->header("Checked / releases deleted\n");
 
-$checked = $moved = 0;
+$checked = $deleted = 0;
 
 $res = $pdo->queryDirect('SELECT id, guid FROM releases');
 if ($res instanceof \Traversable) {
@@ -67,15 +67,12 @@ if ($res instanceof \Traversable) {
 		if (is_file($nzbpath)) {
 			$pdo->queryExec(sprintf("UPDATE releases SET nzbstatus = 1 WHERE id = %d", $row['id']));
 		} else {
-			$moved++;
-			if ($argv[1] === "move") {
-				@rename($nzbpath, nZEDb_ROOT . "pooped/" . $row["guid"] . ".nzb.gz");
-				$releases->deleteSingle(['g' => $row['guid'], 'i' => $row['id']], $nzb, $releaseImage);
-			}
+			++$deleted;
+			$releases->deleteSingle(['g' => $row['guid'], 'i' => $row['id']], $nzb, $releaseImage);
 		}
 		++$checked;
-		echo "$checked / $moved\r";
+		echo "$checked / $deleted\r";
 	}
 }
-echo $pdo->log->header("\n" . number_format($checked) . " releases checked, " . number_format($moved) . " releases " . $couldbe . "moved.");
+echo $pdo->log->header("\n" . number_format($checked) . " releases checked, " . number_format($deleted) . " releases deleted.");
 echo $pdo->log->header("Script started at [$timestart], finished at [" . date("r") . "]");
