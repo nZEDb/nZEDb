@@ -35,10 +35,10 @@ foreach ($itr as $filePath) {
 		if ($nzbfile && @simplexml_load_string($nzbfile)) {
 			$res = $pdo->queryOneRow(sprintf("SELECT id, guid FROM releases WHERE guid = %s", $pdo->escapeString(stristr($filePath->getFilename(), '.nzb.gz', true))));
 			if ($res === false) {
+				$deleted++;
 				if ($argv[1] === "delete") {
 					@copy($filePath, nZEDb_ROOT . "pooped/" . $guid[1] . ".nzb.gz");
 					$releases->deleteSingle(['g' => $guid[1], 'i' => false], $nzb, $releaseImage);
-					$deleted++;
 				}
 			} else {
 				$pdo->queryExec(sprintf("UPDATE releases SET nzbstatus = 1 WHERE id = %s", $res['id']));
@@ -47,7 +47,6 @@ foreach ($itr as $filePath) {
 			$deleted++;
 			if ($argv[1] === "delete") {
 				@copy($filePath, nZEDb_ROOT . "pooped/" . $guid[1] . ".nzb.gz");
-				unlink($filePath);
 			}
 		}
 		++$checked;
