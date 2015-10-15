@@ -54,7 +54,7 @@ class TV
 		$this->tvqty = ($this->pdo->getSetting('maxrageprocessed') != '') ? $this->pdo->getSetting('maxrageprocessed') : 75;
 	}
 
-	public function getTvReleases($groupID = '', $guidChar = '', $lookupSetting = 1, $local = false, $status = 0)
+	public function getTvReleases($groupID = '', $guidChar = '', $lookupSetting = 1, $local, $status = 0)
 	{
 		$ret = 0;
 		if ($lookupSetting == 0) {
@@ -128,14 +128,13 @@ class TV
 	 */
 	public function add($column, $siteid, $title, $summary, $country, $started, $publisher, $hasCover = 0, $source)
 	{
-		$title = str_replace(['.', '_'], [' ', ' '], $title);
 		$country = $this->countryCode($country);
 
 		// Check if title already exists, one by exact and the other by close wildcard
 		// if that fails just to be sure
-		$ckid = $this->getBySiteId($column, $siteid);
-		if (!$ckid) {
-			$ckid = $this->getByTitleQuery($title);
+		$videoId = $this->getBySiteId($column, $siteid);
+		if (!$videoId) {
+			$videoId = $this->getByTitleQuery($title);
 		}
 
 		if (!isset($ckid['id'])) {
@@ -163,29 +162,29 @@ class TV
 										)
 			);
 		} else {
-			$this->update($ckid['id'], $column, $siteid);
+			$this->update($videoId['id'], $column, $siteid);
+			$videoId = $videoId['id'];
 		}
+		return $videoId;
 	}
 
 	public function addEpisode($videoId, $seriesNo, $episodeNo, $seComplete, $title, $firstaired, $summary)
 	{
-		$title = str_replace(['.', '_'], [' ', ' '], $title);
-
 		$episodeId = $this->getBySeasonEp($videoId, $seriesNo, $episodeNo);
 
 		if (!isset($ckid['id'])) {
 			$episodeId = $this->pdo->queryInsert(
-											sprintf('
-												INSERT INTO tv_episodes (videos_id, series, episode, se_complete, title, firstaired, summary)
-												VALUES (%d, %d, %d, %s, %s, %s, %s)',
-												$videoId,
-												$seriesNo,
-												$episodeNo,
-												$this->pdo->escapeString($seComplete),
-												$this->pdo->escapeString($title),
-												$this->pdo->escapeString($firstaired),
-												$this->pdo->escapeString($summary)
-											)
+							sprintf('
+								INSERT INTO tv_episodes (videos_id, series, episode, se_complete, title, firstaired, summary)
+								VALUES (%d, %d, %d, %s, %s, %s, %s)',
+								$videoId,
+								$seriesNo,
+								$episodeNo,
+								$this->pdo->escapeString($seComplete),
+								$this->pdo->escapeString($title),
+								$this->pdo->escapeString($firstaired),
+								$this->pdo->escapeString($summary)
+							)
 			);
 		}
 		return $episodeId;

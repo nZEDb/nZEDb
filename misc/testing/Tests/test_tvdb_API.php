@@ -3,7 +3,7 @@
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
 use nzedb\db\Settings;
-use nzedb\TVDB;
+use nzedb\processing\tv\TVDB;
 
 $c = new nzedb\ColorCLI();
 $tvdb = new TVDB();
@@ -15,15 +15,16 @@ if (!empty($argv[1]) && is_numeric($argv[2]) && is_numeric($argv[3])) {
 
 	$serverTime = $tvdb->client->getServerTime();
 
-	// Search for a show
-	$data = $tvdb->client->getSeries((string)$argv[1]);
+	// oSearch for a show
+	$series = $tvdb->client->getSeries((string)$argv[1]);
 
 	// Use the first show found and get the requested season/episode from $argv
 
 	echo PHP_EOL . $c->info("Server Time: " . $serverTime) .  PHP_EOL;
 
-	$episode = $tvdb->client->getEpisode($data[0]->id, (int)$argv[2], (int)$argv[3], 'en');
-	
+	$episode = $tvdb->client->getEpisode($series[0]->id, (int)$argv[2], (int)$argv[3], 'en');
+
+	print_r($series[0]);
 	print_r($episode);
 
 } else {

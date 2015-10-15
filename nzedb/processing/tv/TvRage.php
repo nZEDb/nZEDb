@@ -38,7 +38,7 @@ class TvRage extends TV
 		$tvcount = count($res);
 
 		if ($this->echooutput && $tvcount > 1) {
-			echo $this->pdo->log->header("Processing TV for " . $tvcount . " release(s).");
+			echo $this->pdo->log->header("Processing TV Rage lookup for " . number_format($tvcount) . " release(s).");
 		}
 
 		if ($res instanceof \Traversable) {
@@ -160,7 +160,7 @@ class TvRage extends TV
 		if (isset($rInfo['imgurl']) && !empty($rInfo['imgurl'])) {
 			$hasCover = (new ReleaseImage($this->pdo))->saveImage($rageid, $rInfo['imgurl'], $this->imgSavePath, '', '');
 		}
-		$this->add('tvrage', $rageid, $tvrShow['title'], $summary, $country, $tvrShow['publisher'], $hascover, parent::SOURCE_TVRAGE);
+		$this->add('tvrage', $rageid, $tvrShow['title'], $summary, $country, $tvrShow['publisher'], $hasCover, parent::SOURCE_TVRAGE);
 	}
 
 	public function getEpisodeInfo($rageid, $series, $episode)
