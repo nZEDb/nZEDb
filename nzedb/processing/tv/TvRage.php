@@ -2,6 +2,7 @@
 namespace nzedb\processing\tv;
 
 use nzedb\utility\Misc;
+use nzedb\ReleaseImage;
 
 /**
  * Class TvRage

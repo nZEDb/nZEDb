@@ -15,10 +15,10 @@ if (!empty($argv[1]) && is_numeric($argv[2]) && is_numeric($argv[3])) {
 
 	$serverTime = $tvdb->client->getServerTime();
 
-	// oSearch for a show
+	// Search for a show
 	$series = $tvdb->client->getSeries((string)$argv[1]);
 
-	// Use the first show found and get the requested season/episode from $argv
+	// Use the first show found (highest match) and get the requested season/episode from $argv
 
 	echo PHP_EOL . $c->info("Server Time: " . $serverTime) .  PHP_EOL;
 

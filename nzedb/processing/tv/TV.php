@@ -83,7 +83,7 @@ class TV
 			)
 		);
 		return $res;
-	}
+	}	
 
 	public function setVideoIdFound($videoId, $releaseId, $episodeId = 0) {
 		if ($videoId > 0 && $releaseId > 0) {
@@ -130,14 +130,16 @@ class TV
 	{
 		$country = $this->countryCode($country);
 
-		// Check if title already exists, one by exact and the other by close wildcard
-		// if that fails just to be sure
+		// Check if video already exists based on site info
+		// if that fails be sure we're not inserting duplicates by checking the title
+
 		$videoId = $this->getBySiteId($column, $siteid);
-		if (!$videoId) {
+
+		if ($videoId === false) {
 			$videoId = $this->getByTitleQuery($title);
 		}
 
-		if (!isset($ckid['id'])) {
+		if ($videoId === false) {
 			$videoId = $this->pdo->queryInsert(
 										sprintf('
 											INSERT INTO videos (%s, type, title, summary, country, started, source)
@@ -170,23 +172,19 @@ class TV
 
 	public function addEpisode($videoId, $seriesNo, $episodeNo, $seComplete, $title, $firstaired, $summary)
 	{
-		$episodeId = $this->getBySeasonEp($videoId, $seriesNo, $episodeNo);
-
-		if (!isset($ckid['id'])) {
-			$episodeId = $this->pdo->queryInsert(
-							sprintf('
-								INSERT INTO tv_episodes (videos_id, series, episode, se_complete, title, firstaired, summary)
-								VALUES (%d, %d, %d, %s, %s, %s, %s)',
-								$videoId,
-								$seriesNo,
-								$episodeNo,
-								$this->pdo->escapeString($seComplete),
-								$this->pdo->escapeString($title),
-								$this->pdo->escapeString($firstaired),
-								$this->pdo->escapeString($summary)
-							)
-			);
-		}
+		$episodeId = $this->pdo->queryInsert(
+						sprintf('
+							INSERT INTO tv_episodes (videos_id, series, episode, se_complete, title, firstaired, summary)
+							VALUES (%d, %d, %d, %s, %s, %s, %s)',
+							$videoId,
+							$seriesNo,
+							$episodeNo,
+							$this->pdo->escapeString($seComplete),
+							$this->pdo->escapeString($title),
+							$this->pdo->escapeString($firstaired),
+							$this->pdo->escapeString($summary)
+						)
+		);
 		return $episodeId;
 	}
 
@@ -224,9 +222,10 @@ class TV
 		if ($title) {
 			return $this->pdo->queryOneRow(
 						sprintf("
-							SELECT id, tvdb, tvrage, tvmaze, trakt, imdb, tmbd
+							SELECT id
 							FROM videos
-							WHERE title = %s",
+							WHERE title = %s
+							AND type = 0",
 							$this->pdo->escapeString($title)
 						)
 			);
@@ -239,9 +238,10 @@ class TV
 		if ($title) {
 			return $this->pdo->queryOneRow(
 						sprintf("
-							SELECT id, tvdb, tvrage, tvmaze, trakt, imdb, tmbd
+							SELECT id
 							FROM videos
-							WHERE REPLACE(REPLACE(title, %s, ''), '!', '') %s",
+							WHERE REPLACE(REPLACE(title, %s, ''), '!', '') %s
+							AND type = 0",
 							$string,
 							$this->pdo->likeString($title, false, true)
 						)
@@ -260,15 +260,15 @@ class TV
 	{
 		// Check if we already have an entry for this show.
 		$res = $this->getByTitleQuery($title);
-		if (isset($res['videos_id'])) {
-			return $res['videos_id'];
+		if (isset($res['id'])) {
+			return $res['id'];
 		}
 
 		$title2 = str_replace(' and ', ' & ', $title);
 		if ($title != $title2) {
 			$res = $this->getByTitleQuery($title2);
-			if (isset($res['videos_id'])) {
-				return $res['videos_id'];
+			if (isset($res['id'])) {
+				return $res['id'];
 			}
 			$pieces = explode(' ', $title2);
 			$title4 = '%';
@@ -276,8 +276,8 @@ class TV
 				$title4 .= str_replace(["'", "!"], "", $piece) . '%';
 			}
 			$res = $this->getByTitleLikeQuery($title4 . '%');
-			if (isset($res['videos_id'])) {
-				return $res['videos_id'];
+			if (isset($res['id'])) {
+				return $res['id'];
 			}
 		}
 
@@ -286,8 +286,8 @@ class TV
 		$title3 = str_replace('er', 're', $title);
 		if ($title != $title3) {
 			$res = $this->getByTitleQuery($title3);
-			if (isset($res['videos_id'])) {
-				return $res['videos_id'];
+			if (isset($res['id'])) {
+				return $res['id'];
 			}
 			$pieces = explode(' ', $title3);
 			$title4 = '%';
@@ -295,8 +295,8 @@ class TV
 				$title4 .= str_replace(["'", "!"], "", $piece) . '%';
 			}
 			$res = $this->getByTitleLikeQuery($title4);
-			if (isset($res['videos_id'])) {
-				return $res['videos_id'];
+			if (isset($res['id'])) {
+				return $res['id'];
 			}
 		}
 
@@ -310,31 +310,55 @@ class TV
 				$title4 .= str_replace(["'", "!"], "", $piece) . '%';
 			}
 			$res = $this->getByTitleLikeQuery($title4);
-			if (isset($res['videos_id'])) {
-				return $res['videos_id'];
+			if (isset($res['id'])) {
+				return $res['id'];
 			}
 		}
 		return false;
 	}
 
 	/**
-	 * Get video info for a ID.
+	 * Get video info from a Site ID and column.
 	 *
+	 * @param string $column
 	 * @param int $id
 	 *
 	 * @return array|bool
 	 */
 	public function getBySiteID($column, $id)
 	{
-		return $this->pdo->queryOneRow(
+		$videoArr = $this->pdo->queryOneRow(
 						sprintf("
-							SELECT *
+							SELECT id
 							FROM videos
 							WHERE %s = %d",
 							$column,
 							$id
 						)
 		);
+		return (isset($videoArr['id']) ? $videoArr['id'] : 0);
+	}
+
+	/**
+	 * Get site column from a Video ID.
+	 *
+	 * @param string $column
+	 * @param int $id
+	 *
+	 * @return array|bool
+	 */
+	public function getSiteByID($column, $id)
+	{
+		$videoArr = $this->pdo->queryOneRow(
+						sprintf("
+							SELECT %s
+							FROM videos
+							WHERE id = %d",
+							$column,
+							$id
+						)
+		);
+		return (isset($videoArr[$column]) ? $videoArr[$column] : 0);
 	}
 
 	/**
@@ -360,7 +384,7 @@ class TV
 								$episode
 							)
 		);
-		return (isset($episodeArr['id']) ? $episodeArr['id'] : $episodeArr);
+		return (isset($episodeArr['id']) ? $episodeArr['id'] : 0);
 	}
 	
 	/**
