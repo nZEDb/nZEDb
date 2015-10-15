@@ -574,7 +574,7 @@ if (Misc::isCLI()) {
 	/**
 	 * Type of errors to display.
 	 * @note    For development/debugging set to E_ALL
-	 * @default E_ALL & ~E_DEPRECATED & ~E_STRICT
+	 * @default E_ALL
 	 * @see     https://secure.php.net/manual/en/errorfunc.constants.php
 	 * @version 4
 	 */
@@ -582,7 +582,7 @@ if (Misc::isCLI()) {
 
 	/**
 	 * Turn off HTML tags in error messages.
-	 * @default '1'
+	 * @default '0'
 	 * @version 4
 	 */
 	ini_set('html_errors', '0');
@@ -664,7 +664,7 @@ if (Misc::isCLI()) {
 	/**
 	 * Type of errors to display.
 	 * @note    For development/debugging set to E_ALL
-	 * @default E_ALL & ~E_DEPRECATED & ~E_STRICT
+	 * @default E_ALL
 	 * @see     https://secure.php.net/manual/en/errorfunc.constants.php
 	 * @version 4
 	 */
@@ -759,6 +759,8 @@ if (extension_loaded('xdebug')) {
  * //////////////////////////////////////////////// Change log ////////////////////////////////////////////////////////////
  * ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
  *
+ * 2015-10-14       v4  Change defaults html_errors default to 0
+ * 
  * 2015-08-26       v4  Add settings for PHP web/CLI SAPI's.
  *                        Add settings for Xdebug.
  *                        All new settings start from the "PHP CLI Settings" up to the "Change log", lines ~544 to ~768
