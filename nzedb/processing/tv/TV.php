@@ -8,20 +8,21 @@ use nzedb\db\Settings;
  */
 class TV
 {
-	const SOURCE_TVDB =   1; // Scrape source was TVDB
-	const SOURCE_TRAKT =  2; // Scrape source was TraktTV
+	const SOURCE_NONE   = 0; // No Scrape source
+	const SOURCE_TVDB   = 1; // Scrape source was TVDB
+	const SOURCE_TRAKT  = 2; // Scrape source was TraktTV
 	const SOURCE_TVRAGE = 3; // Scrape source was TvRage
 	const SOURCE_TVMAZE = 4; // Scrape source was TVMAZE
-	const SOURCE_IMDB =   5; // Scrape source was IMDB
-	const SOURCE_TMDB =   6; // Scrape source was TMDB
+	const SOURCE_IMDB   = 5; // Scrape source was IMDB
+	const SOURCE_TMDB   = 6; // Scrape source was TMDB
 
-	const PROCESS_TVDB = -1;
-	const PROCESS_TRAKT = -2;
-	const PROCESS_TVRAGE = -3;
-	const PROCESS_TVMAZE = -4;
-	const PROCESS_IMDB = -5;
-	const PROCESS_TMDB = -6;
-	const NO_MATCH_FOUND = -7;
+	const PROCESS_TVDB   =  0; // Process TVDB First
+	const PROCESS_TRAKT  = -1; // Process Trakt Second
+	const PROCESS_TVRAGE = -2; // Process TvRage Third
+	const PROCESS_TVMAZE = -3; // Process TVMaze Fourth
+	const PROCESS_IMDB   = -4; // Process IMDB Fifth
+	const PROCESS_TMDB   = -5; // Process TMDB Sixth
+	const NO_MATCH_FOUND = -6; // Failed All Methods
 
 	/**
 	 * @var \nzedb\db\Settings
@@ -54,7 +55,7 @@ class TV
 		$this->tvqty = ($this->pdo->getSetting('maxrageprocessed') != '') ? $this->pdo->getSetting('maxrageprocessed') : 75;
 	}
 
-	public function getTvReleases($groupID = '', $guidChar = '', $lookupSetting = 1, $local, $status = 0)
+	public function getTvReleases($groupID = '', $guidChar = '', $lookupSetting = 1, $local = false, $status = 0)
 	{
 		$ret = 0;
 		if ($lookupSetting == 0) {
@@ -440,7 +441,7 @@ class TV
 		$matches = '';
 
 		$following = 	'[^a-z0-9](\d\d-\d\d|\d{1,2}x\d{2,3}|(19|20)\d\d|(480|720|1080)[ip]|AAC2?|BDRip|BluRay|D0?\d' .
-				'|DD5|DiVX|DLMux|DTS|DVD(Rip)?|E\d{2,3}|[HX][-_. ]?264|ITA(-ENG)?|[HPS]DTV|PROPER|REPACK|' .
+				'|DD5|DiVX|DLMux|DTS|DVD(Rip)?|E\d{2,3}|[HX][-_. ]?264|ITA(-ENG)?|[HPS]DTV|PROPER|REPACK|Season|Episode|' .
 				'S\d+[^a-z0-9]?(E\d+)?|WEB[-_. ]?(DL|Rip)|XViD)[^a-z0-9]';
 
 		// For names that don't start with the title.
@@ -712,7 +713,7 @@ class TV
 				FROM videos v
 				LEFT OUTER JOIN user_series ON user_series.user_id = %d
 					AND user_series.rageid = v.tvrage
-				WHERE v.rageid IN (
+				WHERE v.tvrage IN (
 								SELECT DISTINCT videos_id
 								FROM releases
 								WHERE %s

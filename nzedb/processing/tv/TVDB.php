@@ -75,10 +75,11 @@ class TVDB extends TV
 
 						if ($tvdbShow !== false && is_array($tvdbShow)) {
 
-							$tvdbShow['hascover'] = getTVDBPoster($tvdbShow);
+							$tvdbShow['hascover'] = $this->getTVDBPoster($tvdbShow);
+							$tvdbShow['country']  = (empty($release['country']) ? '' : (string)$show['country'];
 
 							$video = $this->add(
-										'tvdb',
+										$tvdbShow['column'],
 										$tvdbShow['siteid'],
 										$tvdbShow['title'],
 										$tvdbShow['summary'],
@@ -86,11 +87,11 @@ class TVDB extends TV
 										$tvdbShow['started'],
 										$tvdbShow['publisher'],
 										$tvdbShow['hascover'],
-										parent::SOURCE_TVDB
+										$tvdbShow['source']
 							);
 							$tvdbid = $tvdbShow['siteid'];
 						}
-					}					
+					}
 
 					if (is_numeric($video) && $video > 0 && is_numeric($tvdbid) && $tvdbid > 0) {
 
@@ -98,25 +99,29 @@ class TVDB extends TV
 						$episode = $this->getBySeasonEp($video, $release['season'], $release['episode']);
 
 						if ($episode === false && $lookupSetting) {
+							// Send the request for the episode
+							$tvdbEpisode = $this->getTVDBEpisode($tvdbid, $release['season'], $release['episode']);
 
-							$episode = $this->getTVDBEpisode($tvdbid, $release['season'], $release['episode']);
-
-							if (is_array($episode)) {
-								$this->addEpisode(
-											$video,
-											$release['season'],
-											$release['episode'],
-											'S' . $release['season'] . 'E' . $release['episode'],
-											$episode['title'],
-											$episode['firstaired'],
-											$episode['summary']
+							if (is_array($tvdbEpisode)) {
+								$episode = $this->addEpisode(
+												$video,
+												$tvdbEpisode['season'],
+												$tvdbEpisode['episode'],
+												$tvdbEpisode['se_complete'],
+												$tvdbEpisode['title'],
+												$tvdbEpisode['firstaired'],
+												$tvdbEpisode['summary']
 								);
 							}
 						}
+
 						if (is_numeric($episode) && $episode > 0) {
+							// Mark the releases video and episode IDs
 							$this->setVideoIdFound($video, $row['id'], $episode);
 						}
+
 					} else {
+						// Processing failed, set the episode ID to the next processing group
 						$this->setVideoNotFound(parent::PROCESS_TRAKT, $row['id']);
 					}
 				}
@@ -130,7 +135,7 @@ class TVDB extends TV
 		$highestMatch = 0;
 		$response = $this->client->getSeries($release['searchname']);
 
-		if ($response instanceof Traversable) {
+		if ($response instanceof \Traversable) {
 			foreach ($response as $show) {
 
 				// Check for exact title match first and then terminate if found
@@ -141,11 +146,9 @@ class TVDB extends TV
 
 				// Check each show title for similarity and then find the highest similar value
 				$matchProb = similartext($show['name'], $release['searchname']);
-				if ($matchProb >= self::MATCH_PROBABILITY) {
-					if ($matchProb > $highestMatch) {
-						$highestMatch = $matchProb;
-						$return = $show;
-					}
+				if ($matchProb >= self::MATCH_PROBABILITY && $matchProb > $highestMatch) {
+					$highestMatch = $matchProb;
+					$return = $show;
 				}
 			}
 			$return = $this->formatShowArr($return);
@@ -163,7 +166,7 @@ class TVDB extends TV
 		$return = false;
 		$response = $this->client->getEpisode($tvbdid, $season, $episode);
 
-		if ($response instanceof Traversable) {
+		if ($response instanceof \Traversable) {
 			$return = formatEpisodeArr($response);
 		}
 		return $return;
@@ -172,23 +175,26 @@ class TVDB extends TV
 	private function formatShowArr($show)
 	{
 		return	[
-				'column'    => (string)'tvdb',
-				'siteid'    => (int)$show['id'],
-				'title'     => (string)$show['name'],
-				'summary'   => (string)$show['overview'],
-				'country'   => (string)'',
-				'started'   => (string)date('m-d-Y', strtotime($show['firstAired']['date'])),
-				'publisher' => (string)$show['network'],
-				'imgurl'    => (string)sprintf($this->posterUrl, $show['id'])
-			];
+					'column'    => (string)'tvdb',
+					'siteid'    => (int)$show['id'],
+					'title'     => (string)$show['name'],
+					'summary'   => (string)$show['overview'],
+					'started'   => (string)date('m-d-Y', strtotime($show['firstAired']['date'])),
+					'publisher' => (string)$show['network'],
+					'source'    => (int)parent::SOURCE_TVDB,
+					'imgurl'    => (string)sprintf($this->posterUrl, $show['id'])
+				];
 	}
 
 	private function formatEpisodeArr($episode)
 	{
 		return	[
-					'title'      => $response['name'],
-					'firstaired' => date('m-d-Y', strtotime($response['firstAired']['date'])),
-					'summary'    => $response['overview']
+					'title'       => (string)$response['name'],
+					'season'	  => (int)$response['season'],
+					'episode'	  => (int)$response['number'],
+					'se_complete' => (string)'S' . sprintf('%03d', $episode['season']) . 'E' . sprintf('%03d', $episode['episode']),
+					'firstaired'  => (string)date('m-d-Y', strtotime($response['firstAired']['date'])),
+					'summary'     => (string)$response['overview']
 				];
 	}
 }
