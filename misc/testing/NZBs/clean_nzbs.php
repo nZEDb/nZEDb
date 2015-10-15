@@ -19,8 +19,8 @@ if (!isset($argv[1]) || !in_array($argv[1], ["true", "move"])) {
 }
 
 
-if (!is_dir($dir)) {
-	mkdir($dir);
+if (!is_dir($dir) && !mkdir($dir)) {
+	exit("ERROR: Could not create folder [$dir]." . PHP_EOL);
 }
 
 $releases = new Releases(['Settings' => $pdo]);
