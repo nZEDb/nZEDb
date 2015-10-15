@@ -106,7 +106,7 @@ class TVDB extends TV
 											$video,
 											$release['season'],
 											$release['episode'],
-											'S' . $show['season'] . 'E' . $show['episode'],
+											'S' . $release['season'] . 'E' . $release['episode'],
 											$episode['title'],
 											$episode['firstaired'],
 											$episode['summary']
@@ -186,21 +186,9 @@ class TVDB extends TV
 	private function formatEpisodeArr($episode)
 	{
 		return	[
-				'title' => $response['name'],
-				'firstaired' => date('m-d-Y', strtotime($response['firstAired']['date'])),
-				'summary' => $response['overview']
-			];
-	}
-
-	private function getByVideoID($videoId)
-	{
-		return $this->pdo->queryOneRow(
-					sprintf('
-						SELECT tvdb
-						FROM videos
-						WHERE id = %d',
-						$videoId
-					)
-		);
+					'title'      => $response['name'],
+					'firstaired' => date('m-d-Y', strtotime($response['firstAired']['date'])),
+					'summary'    => $response['overview']
+				];
 	}
 }

@@ -83,7 +83,7 @@ class TV
 			)
 		);
 		return $res;
-	}	
+	}
 
 	public function setVideoIdFound($videoId, $releaseId, $episodeId = 0) {
 		if ($videoId > 0 && $releaseId > 0) {
