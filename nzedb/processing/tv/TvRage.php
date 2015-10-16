@@ -34,6 +34,7 @@ class TvRage extends TV
 
 	public function processTvRage($groupID = '', $guidChar = '', $lookupSetting = 1, $local = false)
 	{
+		$ret = 0;
 		$res = $this->getTvReleases($groupID, $guidChar, $lookupSetting, $local, parent::PROCESS_TVRAGE);
 
 		$tvcount = count($res);
@@ -64,7 +65,7 @@ class TvRage extends TV
 						$tvrShow = $this->getRageMatch($show);
 						if ($tvrShow !== false && is_array($tvrShow)) {
 							// Get all tv info and add show.
-							$this->updateRageInfo($tvrShow['showid'], $show, $tvrShow, $arr['id']);
+							$this->updateRageInfo($tvrShow['showid'], $tvrShow, $arr['id']);
 						} else {
 							$this->setVideoNotFound(parent::PROCESS_TVMAZE, $arr['id']);
 						}
@@ -102,7 +103,7 @@ class TvRage extends TV
 	/**
 	 * Get rage info for a rage ID.
 	 *
-	 * @param int $id
+	 * @param $id
 	 *
 	 * @return array
 	 */
@@ -143,7 +144,7 @@ class TvRage extends TV
 		);
 	}
 
-	public function updateRageInfo($rageid, $show, $tvrShow, $relid)
+	public function updateRageInfo($rageid, $tvrShow, $relid)
 	{
 		$hasCover = 0;
 		$country = '';

@@ -1,8 +1,8 @@
 <?php
 namespace nzedb\processing\tv;
 
-use nzedb\utility\Misc;
 use libs\Moinax\TVDB\Client;
+use nzedb\ReleaseImage;
 
 /**
  * Class TVDB
@@ -53,7 +53,6 @@ class TVDB extends TV
 			foreach ($res as $row) {
 
 				$tvdbid = false;
-				$video = 0;
 
 				// Clean the show name for better match probability
 				$release = $this->parseNameEpSeason($row['searchname']);
@@ -106,7 +105,7 @@ class TVDB extends TV
 						}
 					} else if ($this->echooutput) {
 							echo $this->pdo->log->primaryOver("Video ID for ") .
-								 $this->pdo->log->headerOver($show['cleanname']) .
+								 $this->pdo->log->headerOver($release['cleanname']) .
 								 $this->pdo->log->primary(" found in local db, only attempting episode lookup.");
 					}
 
@@ -160,12 +159,12 @@ class TVDB extends TV
 
 				// Check for exact title match first and then terminate if found
 				if ($show['name'] === $release['searchname']) {
-					$return = show;
+					$return = $show;
 					break;
 				}
 
 				// Check each show title for similarity and then find the highest similar value
-				$matchProb = similartext($show['name'], $release['searchname']);
+				similar_text($show['name'], $release['searchname'], $matchProb);
 
 				if (nZEDb_DEBUG) {
 					echo PHP_EOL . sprintf('Match Percentage: %d% between "%s" and "%s"', $matchProb, $show['name'], $release['searchname']) . PHP_EOL;
@@ -177,6 +176,8 @@ class TVDB extends TV
 				}
 			}
 			$return = $this->formatShowArr($return);
+		} else if (is_object($response) && similar_text($response['name'], $release['searchname']) >= self::MATCH_PROBABILITY) {
+				$return = $response;
 		}
 		return $return;
 	}
@@ -191,7 +192,7 @@ class TVDB extends TV
 		$return = false;
 		$response = $this->client->getEpisode($tvdbid, $season, $episode);
 
-		if (is_array($response)) {
+		if (is_object($response)) {
 			$return = $this->formatEpisodeArr($response);
 		}
 		return $return;
