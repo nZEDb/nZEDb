@@ -954,7 +954,7 @@ CREATE TABLE tv_episodes (
   title        VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Title of the episode.',
   firstaired   DATE NOT NULL COMMENT 'Date of original airing/release.',
   summary      VARCHAR(1000) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Description/summary of the episode.',
-  PRIMARY KEY (id, videos_id),
+  PRIMARY KEY (id),
   UNIQUE KEY (videos_id, series, episode)
 )
   ENGINE = MyISAM

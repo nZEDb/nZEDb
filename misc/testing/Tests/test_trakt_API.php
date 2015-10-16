@@ -2,7 +2,6 @@
 
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
-use nzedb\db\Settings;
 use nzedb\processing\tv\TraktTv;
 
 $c = new nzedb\ColorCLI();
@@ -14,12 +13,12 @@ if (!empty($argv[1]) && is_numeric($argv[2]) && is_numeric($argv[3])) {
 	// If it works you should get a printed array of the show/season/episode entered
 
 	// Search for a show
-	$series = $trakt->showSearch((string)$argv[1], 'show');
+	$series = $trakt->client->showSearch((string)$argv[1], 'show');
 
 	// Use the first show found (highest match) and get the requested season/episode from $argv
 	if (is_array($series)) {
 
-		$episode = $trakt->episodeSummary((int)$series[0]['show']['ids']['trakt'], (int)$argv[2], (int)$argv[3], 'full');
+		$episode = $trakt->client->episodeSummary((int)$series[0]['show']['ids']['trakt'], (int)$argv[2], (int)$argv[3], 'full');
 
 		print_r($series[0]);
 		print_r($episode);

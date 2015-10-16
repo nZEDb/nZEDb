@@ -5,6 +5,7 @@ require_once nZEDb_LIBS . 'TMDb.php';
 
 use nzedb\db\Settings;
 use nzedb\utility\Misc;
+use nzedb\processing\tv\TraktTv;
 
 /**
  * Class Movie
@@ -435,7 +436,7 @@ class Movie
 			$this->traktTv = new TraktTv(['Settings' => $this->pdo]);
 		}
 
-		$data = $this->traktTv->movieSummary('tt' . $imdbID, 'full,images');
+		$data = $this->traktTv->client->movieSummary('tt' . $imdbID, 'full,images');
 		if ($data) {
 			$this->parseTraktTv($data);
 			if (isset($data['trailer']) && !empty($data['trailer'])) {
