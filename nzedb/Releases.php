@@ -79,10 +79,10 @@ class Releases
 		$parameters['id'] = $this->pdo->queryInsert(
 			sprintf(
 				"INSERT INTO releases
-					(name, searchname, totalpart, group_id, adddate, guid, rageid, postdate, fromname,
-					size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus,
+					(name, searchname, totalpart, group_id, adddate, guid, postdate, fromname,
+				  	size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus,
 					isrenamed, iscategorized, reqidstatus, preid)
-				 VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, %d, %d, 1, %d, %d)",
+				 VALUES (%s, %s, %d, %d, NOW(), %s, %s, %s, %s, %d, -1, %d, -1, %d, %d, 1, %d, %d)",
 				$parameters['name'],
 				$parameters['searchname'],
 				$parameters['totalpart'],
