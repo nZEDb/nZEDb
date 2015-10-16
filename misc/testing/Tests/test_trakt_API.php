@@ -19,7 +19,7 @@ if (!empty($argv[1]) && is_numeric($argv[2]) && is_numeric($argv[3])) {
 	// Use the first show found (highest match) and get the requested season/episode from $argv
 	if (is_array($series)) {
 
-		$episode = $trakt->episodeSummary($series[0]['show']['ids']['trakt'], (int)$argv[2], (int)$argv[3]);
+		$episode = $trakt->episodeSummary((int)$series[0]['show']['ids']['trakt'], (int)$argv[2], (int)$argv[3], 'full');
 
 		print_r($series[0]);
 		print_r($episode);

@@ -19,6 +19,16 @@ class TVDB extends TV
 	public $client;
 
 	/**
+	 * @string
+	 */
+	public $posterUrl;
+
+	/**
+	 * @string
+	 */
+	public $imgSavePath;
+
+	/**
 	 * @param array $options Class instances / Echo to cli?
 	 */
 	public function __construct(array $options = [])
@@ -31,7 +41,7 @@ class TVDB extends TV
 
 	public function processTVDB ($groupID, $guidChar, $processTV, $local = false)
 	{
-		$res = $this->getTvReleases($groupID, $guidChar, $lookupSetting, $local, parent::PROCESS_TVDB);
+		$res = $this->getTvReleases($groupID, $guidChar, $processTV, $local, parent::PROCESS_TVDB);
 
 		$tvcount = count($res);
 
@@ -42,7 +52,8 @@ class TVDB extends TV
 		if ($res instanceof \Traversable) {
 			foreach ($res as $row) {
 
-				$tvdbid = $video = false;
+				$tvdbid = false;
+				$video = 0;
 
 				// Clean the show name for better match probability
 				$release = $this->parseNameEpSeason($row['searchname']);
@@ -52,13 +63,15 @@ class TVDB extends TV
 					// Find the Video ID if it already exists by checking the title.
 					$video = $this->getByTitle($release['cleanname']);
 
-					if ($video != false) {
+					if ($video !== 0) {
 						$tvdbid = $this->getSiteByID('tvdb', $video);
 					}
 
 					// Force local lookup only
 					if ($local == true) {
 						$lookupSetting = false;
+					} else {
+						$lookupSetting = true;
 					}
 
 					if ($tvdbid == false && $lookupSetting) {
@@ -76,7 +89,7 @@ class TVDB extends TV
 						if ($tvdbShow !== false && is_array($tvdbShow)) {
 
 							$tvdbShow['hascover'] = $this->getTVDBPoster($tvdbShow);
-							$tvdbShow['country']  = (empty($release['country']) ? '' : (string)$show['country']);
+							$tvdbShow['country']  = (empty($release['country']) ? '' : (string)$tvdbShow['country']);
 
 							$video = $this->add(
 										$tvdbShow['column'],
@@ -123,9 +136,7 @@ class TVDB extends TV
 							// Mark the releases video and episode IDs
 							$this->setVideoIdFound($video, $row['id'], $episode);
 							if ($this->echooutput) {
-								echo	$this->pdo->log->primaryOver("Found Match: ") .
-										$this->pdo->log->headerOver($tvdbShow['title'] . ' - ') .
-										$this->pdo->log->primary($tvdbEpisode['title'] . '.');
+								echo	$this->pdo->log->primaryOver("Found TVDB Match!")
 							}
 						}
 
@@ -178,10 +189,10 @@ class TVDB extends TV
 	private function getTVDBEpisode($tvdbid, $season, $episode)
 	{
 		$return = false;
-		$response = $this->client->getEpisode($tvbdid, $season, $episode);
+		$response = $this->client->getEpisode($tvdbid, $season, $episode);
 
 		if (is_array($response)) {
-			$return = formatEpisodeArr($response);
+			$return = $this->formatEpisodeArr($response);
 		}
 		return $return;
 	}
@@ -203,12 +214,12 @@ class TVDB extends TV
 	private function formatEpisodeArr($episode)
 	{
 		return	[
-					'title'       => (string)$response['name'],
-					'season'      => (int)$response['season'],
-					'episode'     => (int)$response['number'],
+					'title'       => (string)$episode['name'],
+					'season'      => (int)$episode['season'],
+					'episode'     => (int)$episode['number'],
 					'se_complete' => (string)'S' . sprintf('%03d', $episode['season']) . 'E' . sprintf('%03d', $episode['episode']),
-					'firstaired'  => (string)date('m-d-Y', strtotime($response['firstAired']['date'])),
-					'summary'     => (string)$response['overview']
+					'firstaired'  => (string)date('m-d-Y', strtotime($episode['firstAired']['date'])),
+					'summary'     => (string)$episode['overview']
 				];
 	}
 }
