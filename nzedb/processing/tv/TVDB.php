@@ -65,9 +65,9 @@ class TVDB extends TV
 
 						// If it doesnt exist locally and lookups are allowed lets try to get it.
 						if ($this->echooutput) {
-							echo     $this->pdo->log->primaryOver("Video ID for ") .
-								 $this->pdo->log->headerOver($release['cleanname']) .
-								 $this->pdo->log->primary(" not found in local db, checking web.");
+							echo	$this->pdo->log->primaryOver("Video ID for ") .
+									$this->pdo->log->headerOver($release['cleanname']) .
+									$this->pdo->log->primary(" not found in local db, checking web.");
 						}
 
 						// Get the show from TVDB
@@ -76,7 +76,7 @@ class TVDB extends TV
 						if ($tvdbShow !== false && is_array($tvdbShow)) {
 
 							$tvdbShow['hascover'] = $this->getTVDBPoster($tvdbShow);
-							$tvdbShow['country']  = (empty($release['country']) ? '' : (string)$show['country'];
+							$tvdbShow['country']  = (empty($release['country']) ? '' : (string)$show['country']);
 
 							$video = $this->add(
 										$tvdbShow['column'],
@@ -91,6 +91,10 @@ class TVDB extends TV
 							);
 							$tvdbid = $tvdbShow['siteid'];
 						}
+					} else if ($this->echooutput) {
+							echo $this->pdo->log->primaryOver("Video ID for ") .
+								 $this->pdo->log->headerOver($show['cleanname']) .
+								 $this->pdo->log->primary(" found in local db, only attempting episode lookup.");
 					}
 
 					if (is_numeric($video) && $video > 0 && is_numeric($tvdbid) && $tvdbid > 0) {
@@ -118,6 +122,11 @@ class TVDB extends TV
 						if (is_numeric($episode) && $episode > 0) {
 							// Mark the releases video and episode IDs
 							$this->setVideoIdFound($video, $row['id'], $episode);
+							if ($this->echooutput) {
+								echo	$this->pdo->log->primaryOver("Found Match: ") .
+										$this->pdo->log->headerOver($tvdbShow['title'] . ' - ') .
+										$this->pdo->log->primary($tvdbEpisode['title'] . '.');
+							}
 						}
 
 					} else {
@@ -146,6 +155,11 @@ class TVDB extends TV
 
 				// Check each show title for similarity and then find the highest similar value
 				$matchProb = similartext($show['name'], $release['searchname']);
+
+				if (nZEDb_DEBUG) {
+					echo PHP_EOL . sprintf('Match Percentage: %d% between "%s" and "%s"', $matchProb, $show['name'], $release['searchname']) . PHP_EOL;
+				}
+
 				if ($matchProb >= self::MATCH_PROBABILITY && $matchProb > $highestMatch) {
 					$highestMatch = $matchProb;
 					$return = $show;
@@ -190,8 +204,8 @@ class TVDB extends TV
 	{
 		return	[
 					'title'       => (string)$response['name'],
-					'season'	  => (int)$response['season'],
-					'episode'	  => (int)$response['number'],
+					'season'      => (int)$response['season'],
+					'episode'     => (int)$response['number'],
 					'se_complete' => (string)'S' . sprintf('%03d', $episode['season']) . 'E' . sprintf('%03d', $episode['episode']),
 					'firstaired'  => (string)date('m-d-Y', strtotime($response['firstAired']['date'])),
 					'summary'     => (string)$response['overview']
