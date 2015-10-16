@@ -1,31 +1,24 @@
 # This patch will create the videos_id column
-# It will also update this column to reflect the new videos_id
 # It will then create the tv_episodes_id column
+# Then it will drop the old columns
+# Followed by creating the new indexes
+# And finally resetting TV releases to be processed again
 
-# First add the new columns
+# Add the new columns and drop the old old columns
+# Then add the new indexes in one pass (saves time)
+
 ALTER TABLE releases
 	DROP INDEX ix_releases_rageid,
-	ADD COLUMN videos_id MEDIUMINT(11) UNSIGNED NOT NULL COMMENT 'FK to videos.id of the parent series.' AFTER rageid,
-	ADD COLUMN tv_episodes_id MEDIUMINT(11) UNSIGNED NOT NULL COMMENT 'FK to tv_episodes.id of the episode' AFTER videos_id;
-
-# Now update the videos_id column with the new videos ID
-UPDATE releases r INNER JOIN videos_id v ON r.rageid = v.tvrage SET r.videos_id = v.id WHERE r.rageid > 0 AND r.categoryid BETWEEN 5000 AND 5999;
-
-# Now update the episode ID column with the new episode ID
-UPDATE releases r INNER JOIN tv_episodes tve ON r.videos_id = tve.videos_id AND r.seriesfull = tve.se_complete SET r.tv_episodes_id = tve.id WHERE r.categoryid BETWEEN 5000 AND 5999;
-
-# Reset all -1,-2 TV shows to undergo new processing
-UPDATE releases r SET videos_id = 0 WHERE videos_id < 0;
-
-# Drop the old columns and indexes we no longer need from releases
-ALTER TABLE releases
+	ADD COLUMN videos_id MEDIUMINT(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'FK to videos.id of the parent series.' AFTER categoryid,
+	ADD COLUMN tv_episodes_id MEDIUMINT(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'FK to tv_episodes.id of the episode' AFTER videos_id,
 	DROP COLUMN rageid,
 	DROP COLUMN season,
 	DROP COLUMN episode,
 	DROP COLUMN seriesfull,
 	DROP COLUMN tvtitle,
-	DROP COLUMN tvairdate
-	DROP INDEX ix_releases_rageid;
+	DROP COLUMN tvairdate,
+	ADD INDEX ix_releases_videos_id (videos_id),
+	ADD INDEX ix_releases_tv_episodes_id (tv_episodes_id);
 
 # Analyze to refresh our indexes
 ANALYZE TABLE releases;
