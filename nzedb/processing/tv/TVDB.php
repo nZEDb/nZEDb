@@ -136,7 +136,7 @@ class TVDB extends TV
 							// Mark the releases video and episode IDs
 							$this->setVideoIdFound($video, $row['id'], $episode);
 							if ($this->echooutput) {
-								echo	$this->pdo->log->primaryOver("Found TVDB Match!")
+								echo	$this->pdo->log->primaryOver("Found TVDB Match!");
 							}
 						}
 
