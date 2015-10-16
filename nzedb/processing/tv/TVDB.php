@@ -180,7 +180,7 @@ class TVDB extends TV
 		$return = false;
 		$response = $this->client->getEpisode($tvbdid, $season, $episode);
 
-		if ($response instanceof \Traversable) {
+		if (is_array($response)) {
 			$return = formatEpisodeArr($response);
 		}
 		return $return;

@@ -139,7 +139,7 @@ class TraktTv extends TV
 		$array = $this->getJsonArray(
 			self::API_URL . 'calendars/all/shows/' . $start . '/' . $days
 		);
-		if (!$array){
+		if (!$array) {
 			return false;
 		}
 		return $array;
@@ -158,7 +158,7 @@ class TraktTv extends TV
 		$array = $this->getJsonArray(
 			self::API_URL . 'movies/boxoffice'
 		);
-		if (!$array){
+		if (!$array) {
 			return false;
 		}
 		return $array;
@@ -181,6 +181,8 @@ class TraktTv extends TV
 	 */
 	public function showSummary($show = '', $type = 'full')
 	{
+		$showUrl = self::API_URL . 'shows/' . str_replace([' ', '_', '.'], '-', str_replace(['(', ')'], '', $show));
+
 		switch($type) {
 			case 'images':
 			case 'full,images':
@@ -190,11 +192,31 @@ class TraktTv extends TV
 			default:
 				$extended = 'full';
 		}
-		$array = $this->getJsonArray(
-			self::API_URL . 'shows/' . str_replace([' ', '_', '.'], '-', str_replace(['(', ')'], '', $show)),
-			$extended
-		);
-		if (!$array){
+		$array = $this->getJsonArray($showUrl, $extended);
+		if (!$array) {
+			return false;
+		}
+		return $array;
+	}
+
+	/**
+	 * Fetches summary from trakt.tv for the show by doing a search.
+	 * Accepts a search string
+	 *
+	 * @param string $show title
+	 * @param string $type show
+	 *
+	 * @see http://docs.trakt.apiary.io/#reference/search/get-text-query-results
+	 *
+	 * @return bool|array|string
+	 *
+	 * @access public
+	 */
+	public function showSearch($show = '', $type = 'show')
+	{
+		$searchUrl = self::API_URL . 'search?query=' . str_replace([' ', '_', '.'], '-', str_replace(['(', ')'], '', $show)) . '&type=' . $type;
+		$array = $this->getJsonArray($searchUrl, '');
+		if (!$array) {
 			return false;
 		}
 		return $array;
@@ -215,12 +237,19 @@ class TraktTv extends TV
 	 */
 	private function getJsonArray($URI, $extended = 'min')
 	{
+		if ($extended === '') {
+			$extendedString = '';
+		} else {
+			$extendedString = "?extended=" . $extended;
+		}
+
 		if (!empty($this->clientID)) {
 			$json = Misc::getUrl([
-					'url'            => $URI . "?extended=$extended",
+					'url'            => $URI . $extendedString,
 					'requestheaders' => $this->requestHeaders
 				]
 			);
+
 			if ($json !== false) {
 				$json = json_decode($json, true);
 				if (!is_array($json) || (isset($json['status']) && $json['status'] === 'failure')) {
