@@ -25,7 +25,7 @@ if (!empty($argv[1]) && is_numeric($argv[2]) && is_numeric($argv[3])) {
 		print_r($series[0]);
 
 		$episode = $tvdb->client->getEpisode($series[0]->id, (int)$argv[2], (int)$argv[3], 'en');
-		if ($episode) {	
+		if ($episode) {
 			print_r($episode);
 		} else {
 			exit($c->error("Invalid episode data returned from TVDB API."));

@@ -62,25 +62,7 @@ class TV
 			return $ret;
 		}
 
-		// Get all releases with processing status of $status which are in a tv category.
-var_dump(			sprintf("
-				SELECT r.searchname, r.id
-				FROM releases r
-				WHERE r.nzbstatus = 1
-				AND r.tv_episodes_id = %d
-				AND r.size > 1048576
-				AND %s
-				%s %s %s
-				ORDER BY r.postdate DESC
-				LIMIT %d",
-	$status,
-	$this->catWhere,
-	($groupID === '' ? '' : 'AND r.group_id = ' . $groupID),
-	($guidChar === '' ? '' : 'AND r.guid ' . $this->pdo->likeString($guidChar, false, true)),
-	($lookupSetting == 2 ? 'AND r.isrenamed = 1' : ''),
-	$this->tvqty
-));
-		$res = $this->pdo->query(
+		$res = $this->pdo->queryDirect(
 			sprintf("
 				SELECT r.searchname, r.id
 				FROM releases r

@@ -36,7 +36,7 @@ class TvRage extends TV
 	{
 		$res = $this->getTvReleases($groupID, $guidChar, $lookupSetting, $local, parent::PROCESS_TVRAGE);
 
-		$tvcount = count($res);
+		$tvcount = $res->rowCount();
 
 		if ($this->echooutput && $tvcount > 1) {
 			echo $this->pdo->log->header("Processing TV Rage lookup for " . number_format($tvcount) . " release(s).");
@@ -106,7 +106,7 @@ class TvRage extends TV
 	 */
 	public function getByRageID($id)
 	{
-		return $this->pdo->query(
+		return $this->pdo->queryOneRow(
 					sprintf("
 						SELECT *
 						FROM videos

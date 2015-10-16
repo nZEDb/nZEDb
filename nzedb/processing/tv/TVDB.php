@@ -29,6 +29,11 @@ class TVDB extends TV
 	public $imgSavePath;
 
 	/**
+	 * @string
+	 */
+	public $serverTime;
+
+	/**
 	 * @param array $options Class instances / Echo to cli?
 	 */
 	public function __construct(array $options = [])
@@ -37,13 +42,20 @@ class TVDB extends TV
 		$this->client = new Client(self::TVDB_URL, self::TVDB_API_KEY);
 		$this->posterUrl = self::TVDB_URL . DS . 'banners/_cache/posters/%s-1.jpg';
 		$this->imgSavePath = nZEDb_COVERS . 'tvdb' . DS;
+		$this->serverTime = $this->client->getServerTime();
 	}
 
+	/**
+	 * @param            $groupID
+	 * @param            $guidChar
+	 * @param            $processTV
+	 * @param bool|false $local
+	 */
 	public function processTVDB ($groupID, $guidChar, $processTV, $local = false)
 	{
-		$res = $this->getTvReleases($groupID, $guidChar, $processTV, $local, parent::PROCESS_TVDB);
+		$res = $this->getTvReleases($groupID, $guidChar, $processTV, parent::PROCESS_TVDB);
 
-		$tvcount = count($res);
+		$tvcount = $res->rowCount();
 
 		if ($this->echooutput && $tvcount > 1) {
 			echo $this->pdo->log->header("Processing TVDB lookup for " . number_format($tvcount) . " release(s).");
@@ -83,12 +95,11 @@ class TVDB extends TV
 						}
 
 						// Get the show from TVDB
-						$tvdbShow = $this->getTVDBShow($release);
+						$tvdbShow = $this->getTVDBShow((string)$release['cleanname']);
 
-						if ($tvdbShow !== false && is_array($tvdbShow)) {
-
+						if (is_array($tvdbShow)) {
 							$tvdbShow['hascover'] = $this->getTVDBPoster($tvdbShow);
-							$tvdbShow['country']  = (empty($release['country']) ? '' : (string)$tvdbShow['country']);
+							$tvdbShow['country']  = (isset($release['country']) ? (string) $release['country'] : '');
 
 							$video = $this->add(
 										$tvdbShow['column'],
@@ -148,45 +159,62 @@ class TVDB extends TV
 		}
 	}
 
-	private function getTVDBShow($release)
+	/**
+	 * @param $cleanName
+	 *
+	 * @return array|bool
+	 */
+	private function getTVDBShow($cleanName)
 	{
 		$return = false;
 		$highestMatch = 0;
-		$response = $this->client->getSeries($release['searchname']);
+		$response = (array)$this->client->getSeries($cleanName);
+		usleep(500);
 
-		if ($response instanceof \Traversable) {
+		if (is_array($response)) {
 			foreach ($response as $show) {
-
 				// Check for exact title match first and then terminate if found
-				if ($show['name'] === $release['searchname']) {
-					$return = $show;
+				if ($show->name === $cleanName) {
+					$highest = $show;
 					break;
 				}
 
 				// Check each show title for similarity and then find the highest similar value
-				similar_text($show['name'], $release['searchname'], $matchProb);
+				similar_text($show->name, $cleanName, $matchProb);
 
 				if (nZEDb_DEBUG) {
-					echo PHP_EOL . sprintf('Match Percentage: %d% between "%s" and "%s"', $matchProb, $show['name'], $release['searchname']) . PHP_EOL;
+					echo PHP_EOL . sprintf('Match Percentage: %d percent between %s and %s', $matchProb, $show->name, $cleanName) . PHP_EOL;
 				}
 
 				if ($matchProb >= self::MATCH_PROBABILITY && $matchProb > $highestMatch) {
 					$highestMatch = $matchProb;
-					$return = $show;
+					$highest = $show;
 				}
 			}
-			$return = $this->formatShowArr($return);
-		} else if (is_object($response) && similar_text($response['name'], $release['searchname']) >= self::MATCH_PROBABILITY) {
-				$return = $response;
+			if (isset($highest)) {
+				$return = $this->formatShowArr($highest);
+			}
 		}
 		return $return;
 	}
 
+	/**
+	 * @param $show
+	 *
+	 * @return int
+	 */
 	private function getTVDBPoster($show)
 	{
 		return (new ReleaseImage($this->pdo))->saveImage($show['siteid'], $show['imgurl'], $this->imgSavePath, '', '');
 	}
 
+	/**
+	 * @param $tvdbid
+	 * @param $season
+	 * @param $episode
+	 *
+	 * @return array|bool
+	 */
 	private function getTVDBEpisode($tvdbid, $season, $episode)
 	{
 		$return = false;
@@ -198,29 +226,39 @@ class TVDB extends TV
 		return $return;
 	}
 
+	/**
+	 * @param $show
+	 *
+	 * @return array
+	 */
 	private function formatShowArr($show)
 	{
 		return	[
 					'column'    => (string)'tvdb',
-					'siteid'    => (int)$show['id'],
-					'title'     => (string)$show['name'],
-					'summary'   => (string)$show['overview'],
-					'started'   => (string)date('m-d-Y', strtotime($show['firstAired']['date'])),
-					'publisher' => (string)$show['network'],
+					'siteid'    => (int)$show->id,
+					'title'     => (string)$show->name,
+					'summary'   => (string)$show->overview,
+					'started'   => (string)$show->firstAired->format('m-d-Y'),
+					'publisher' => (string)$show->network,
 					'source'    => (int)parent::SOURCE_TVDB,
-					'imgurl'    => (string)sprintf($this->posterUrl, $show['id'])
+					'imgurl'    => (string)sprintf($this->posterUrl, $show->id)
 				];
 	}
 
+	/**
+	 * @param $episode
+	 *
+	 * @return array
+	 */
 	private function formatEpisodeArr($episode)
 	{
-		return	[
-					'title'       => (string)$episode['name'],
-					'season'      => (int)$episode['season'],
-					'episode'     => (int)$episode['number'],
-					'se_complete' => (string)'S' . sprintf('%03d', $episode['season']) . 'E' . sprintf('%03d', $episode['episode']),
-					'firstaired'  => (string)date('m-d-Y', strtotime($episode['firstAired']['date'])),
-					'summary'     => (string)$episode['overview']
-				];
+		return [
+			'title'       => (string)$episode->name,
+			'season'      => (int)$episode->season,
+			'episode'     => (int)$episode->number,
+			'se_complete' => (string)'S' . sprintf('%03d', $episode->season) . 'E' . sprintf('%03d', $episode->number),
+			'firstaired'  => (string)$episode->firstAired->format('m-d-Y'),
+			'summary'     => (string)$episode->overview
+		];
 	}
 }
