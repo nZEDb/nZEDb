@@ -118,8 +118,7 @@ class TV
 	 */
 	public function setVideoNotFound($status, $Id)
 	{
-		if ($status && $Id) {
-			$this->pdo->queryExec(
+		$this->pdo->queryExec(
 					sprintf('
 						UPDATE releases
 						SET tv_episodes_id = %d
@@ -129,8 +128,7 @@ class TV
 						$this->catWhere,
 						$Id
 					)
-			);
-		}
+		);
 	}
 
 	/**
@@ -146,7 +144,7 @@ class TV
 	 *
 	 * @return int
 	 */
-	public function add($column, $siteid, $title, $summary, $country, $started, $publisher, $source, $hasCover = 0)
+	public function add($column, $siteId, $title, $summary, $country, $started, $publisher, $source, $hasCover = 0)
 	{
 		if ($country !== '') {
 			$country = $this->countryCode($country);
@@ -167,7 +165,7 @@ class TV
 											INSERT INTO videos (%s, type, title, countries_id, started, source)
 											VALUES (%s, 0, %s, %s, %s, %d)',
 											$column,
-											$siteid,
+											$siteId,
 											$this->pdo->escapeString($title),
 											$this->pdo->escapeString($country),
 											$this->pdo->escapeString($started),
@@ -185,7 +183,7 @@ class TV
 					)
 			);
 		} else {
-			$this->update($videoId, $column, $siteid, $country);
+			$this->update($videoId, $column, $siteId, $country);
 		}
 		return (int)$videoId;
 	}
@@ -478,7 +476,7 @@ class TV
 				return $code['code'];
 			}
 		}
-		return $country;
+		return '';
 	}
 
 	/**

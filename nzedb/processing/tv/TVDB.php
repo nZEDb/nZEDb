@@ -52,6 +52,7 @@ class TVDB extends TV
 		$this->client = new Client(self::TVDB_URL, self::TVDB_API_KEY);
 		$this->posterUrl = self::TVDB_URL . DS . 'banners/_cache/posters/%s-1.jpg';
 		$this->imgSavePath = nZEDb_COVERS . 'tvshows' . DS;
+
 		$this->serverTime = $this->client->getServerTime();
 		$this->timeZone = new \DateTimeZone('UTC');
 		$this->timeFormat = 'Y-m-d H:i:s';
@@ -109,7 +110,10 @@ class TVDB extends TV
 						$tvdbShow = $this->getTVDBShow((string)$release['cleanname']);
 
 						if (is_array($tvdbShow)) {
-							$tvdbShow['country']  = (isset($release['country']) ? (string)$release['country'] : '');
+							$tvdbShow['country']  = (isset($release['country']) && strlen($release['country']) == 2
+												? (string)$release['country']
+												: ''
+							);
 
 							$videoId = $this->add(
 										$tvdbShow['column'],
@@ -126,7 +130,7 @@ class TVDB extends TV
 					} else if ($this->echooutput) {
 							echo $this->pdo->log->primaryOver("Video ID for ") .
 								 $this->pdo->log->headerOver($release['cleanname']) .
-								 $this->pdo->log->primary(" found in local db, only attempting episode lookup.");
+								 $this->pdo->log->primary(" found in local db, attempting episode match.");
 					}
 
 					if (is_numeric($videoId) && $videoId > 0 && is_numeric($tvdbid) && $tvdbid > 0) {
@@ -136,12 +140,12 @@ class TVDB extends TV
 						$seasonNo = preg_replace('/^S0*/', '', $release['season']);
 						$episodeNo = preg_replace('/^E0*/', '', $release['episode']);
 
-						// Check first if we have the episode for this video
+						// Check first if we have the episode for this video ID
 						$episode = $this->getBySeasonEp($videoId, $seasonNo, $episodeNo);
 
 						if ($episode === false && $lookupSetting) {
 
-							// Send the request for the episode
+							// Send the request for the episode to TVDB
 							$tvdbEpisode = $this->getTVDBEpisode($tvdbid, $seasonNo, $episodeNo);
 
 							if ($tvdbEpisode) {
@@ -157,19 +161,17 @@ class TVDB extends TV
 							}
 						}
 
-						if (is_numeric($episode) && $episode > 0) {
+						if ($episode !== false && is_numeric($episode) && $episode > 0) {
 							// Mark the releases video and episode IDs
 							$this->setVideoIdFound($videoId, $row['id'], $episode);
 							if ($this->echooutput) {
 								echo	$this->pdo->log->primary("Found TVDB Match!");
 							}
+							continue;
 						}
-
-					} else {
-						// Processing failed, set the episode ID to the next processing group
-						$this->setVideoNotFound(parent::PROCESS_TRAKT, $row['id']);
 					}
-				}
+				} //Processing failed, set the episode ID to the next processing group
+				$this->setVideoNotFound(parent::PROCESS_TRAKT, $row['id']);
 			}
 		}
 	}
@@ -181,7 +183,7 @@ class TVDB extends TV
 	 */
 	private function getTVDBShow($cleanName)
 	{
-		$return = false;
+		$return = $response = false;
 		$highestMatch = 0;
 		try {
 			$response = (array)$this->client->getSeries($cleanName);
@@ -191,22 +193,33 @@ class TVDB extends TV
 
 		if (is_array($response)) {
 			foreach ($response as $show) {
-				// Check for exact title match first and then terminate if found
-				if ($show->name === $cleanName) {
-					$highest = $show;
-					break;
-				}
+				if ($this->checkRequired($show, 1)) {
+					// Check for exact title match first and then terminate if found
+					if ($show->name === $cleanName) {
+						$highest = $show;
+						break;
+					}
 
-				// Check each show title for similarity and then find the highest similar value
-				similar_text($show->name, $cleanName, $matchProb);
+					// Check each show title for similarity and then find the highest similar value
+					similar_text($show->name, $cleanName, $matchProb);
 
-				if (nZEDb_DEBUG) {
-					echo PHP_EOL . sprintf('Match Percentage: %d percent between %s and %s', $matchProb, $show->name, $cleanName) . PHP_EOL;
-				}
+					if (nZEDb_DEBUG) {
+						echo PHP_EOL . sprintf('Match Percentage: %d percent between %s and %s', $matchProb, $show->name, $cleanName) . PHP_EOL;
+					}
 
-				if ($matchProb >= self::MATCH_PROBABILITY && $matchProb > $highestMatch) {
-					$highestMatch = $matchProb;
-					$highest = $show;
+					if ($matchProb >= self::MATCH_PROBABILITY && $matchProb > $highestMatch) {
+						$highestMatch = $matchProb;
+						$highest = $show;
+					}
+					if (is_array($show->aliasNames) && !empty($show->aliasNames)) {
+						foreach ($show->aliasNames as $key => $name) {
+							similar_text($name, $cleanName, $matchProb);
+							if ($matchProb >= self::MATCH_PROBABILITY && $matchProb > $highestMatch) {
+								$highestMatch = $matchProb;
+								$highest = $show;
+							}
+						}
+					}
 				}
 			}
 			if (isset($highest)) {
@@ -243,18 +256,18 @@ class TVDB extends TV
 	 */
 	private function getTVDBEpisode($tvdbid, $season, $episode)
 	{
-		$return = false;
+		$return = $response = false;
 
 		try {
 			$response = $this->client->getEpisode($tvdbid, $season, $episode);
-		} catch (\Exception $error) {
-
-		}
+		} catch (\Exception $error) { }
 
 		sleep(1);
 
 		if (is_object($response)) {
-			$return = $this->formatEpisodeArr($response);
+			if ($this->checkRequired($response, 2)) {
+				$return = $this->formatEpisodeArr($response);
+			}
 		}
 		return $return;
 	}
@@ -296,5 +309,34 @@ class TVDB extends TV
 			'firstaired'  => (string)$episode->firstAired->format($this->timeFormat),
 			'summary'     => (string)$episode->overview
 		];
+	}
+
+	/**
+	 * @param $array
+	 * @param $type
+	 *
+	 * @return bool
+	 */
+	private function checkRequired($array, $type)
+	{
+		$required = false;
+
+		switch ($type) {
+			case 1:
+				$required = ['id', 'name', 'overview', 'firstAired'];
+				break;
+			case 2:
+				$required = ['name', 'season', 'number', 'firstAired', 'overview'];
+				break;
+		}
+
+		if (is_array($required)) {
+			foreach ($required as $req) {
+				if (!isset($array->$req)) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 }
