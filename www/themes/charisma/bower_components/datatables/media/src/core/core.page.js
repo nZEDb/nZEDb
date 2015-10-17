@@ -1,7 +1,8 @@
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Note that most of the paging logic is done in 
+ * Note that most of the paging logic is done in
+
  * DataTable.ext.oPagination
  */
 
@@ -17,17 +18,18 @@ function _fnFeatureHtmlPaginate ( oSettings )
 	{
 		return null;
 	}
-	
+
 	var nPaginate = document.createElement( 'div' );
 	nPaginate.className = oSettings.oClasses.sPaging+oSettings.sPaginationType;
-	
-	DataTable.ext.oPagination[ oSettings.sPaginationType ].fnInit( oSettings, nPaginate, 
+
+	DataTable.ext.oPagination[ oSettings.sPaginationType ].fnInit( oSettings, nPaginate,
+
 		function( oSettings ) {
 			_fnCalculateEnd( oSettings );
 			_fnDraw( oSettings );
 		}
 	);
-	
+
 	/* Add a draw callback for the pagination on first instance, to update the paging display */
 	if ( !oSettings.aanFeatures.p )
 	{
@@ -56,7 +58,7 @@ function _fnFeatureHtmlPaginate ( oSettings )
 function _fnPageChange ( oSettings, mAction )
 {
 	var iOldStart = oSettings._iDisplayStart;
-	
+
 	if ( typeof mAction === "number" )
 	{
 		oSettings._iDisplayStart = mAction * oSettings._iDisplayLength;
@@ -74,7 +76,7 @@ function _fnPageChange ( oSettings, mAction )
 		oSettings._iDisplayStart = oSettings._iDisplayLength>=0 ?
 			oSettings._iDisplayStart - oSettings._iDisplayLength :
 			0;
-		
+
 		/* Correct for under-run */
 		if ( oSettings._iDisplayStart < 0 )
 		{
@@ -113,7 +115,6 @@ function _fnPageChange ( oSettings, mAction )
 		_fnLog( oSettings, 0, "Unknown paging action: "+mAction );
 	}
 	$(oSettings.oInstance).trigger('page', oSettings);
-	
+
 	return iOldStart != oSettings._iDisplayStart;
 }
-

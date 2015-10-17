@@ -6,19 +6,21 @@ $(document).ready( function () {
 	var oTable = $('#example').dataTable();
 	var oSettings = oTable.fnSettings();
 	var mPass;
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
+
 		"Default should be null",
 		null,
 		function () { return oSettings.fnHeaderCallback == null; }
 	);
-	
-	
-	oTest.fnTest( 
+
+
+	oTest.fnTest(
+
 		"Five arguments passed",
 		function () {
 			oSession.fnRestore();
-			
+
 			mPass = -1;
 			$('#example').dataTable( {
 				"fnHeaderCallback": function ( ) {
@@ -28,13 +30,14 @@ $(document).ready( function () {
 		},
 		function () { return mPass == 5; }
 	);
-	
-	
-	oTest.fnTest( 
+
+
+	oTest.fnTest(
+
 		"fnRowCallback called once per draw",
 		function () {
 			oSession.fnRestore();
-			
+
 			mPass = 0;
 			$('#example').dataTable( {
 				"fnHeaderCallback": function ( nHead, aasData, iStart, iEnd, aiDisplay ) {
@@ -44,15 +47,17 @@ $(document).ready( function () {
 		},
 		function () { return mPass == 1; }
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
+
 		"fnRowCallback called on paging (i.e. another draw)",
 		function () { $('#example_next').click(); },
 		function () { return mPass == 2; }
 	);
-	
-	
-	oTest.fnTest( 
+
+
+	oTest.fnTest(
+
 		"fnRowCallback allows us to alter row information",
 		function () {
 			oSession.fnRestore();
@@ -64,13 +69,14 @@ $(document).ready( function () {
 		},
 		function () { return $('#example thead th:eq(0)').html() == "Displaying 10 records"; }
 	);
-	
-	
-	oTest.fnTest( 
+
+
+	oTest.fnTest(
+
 		"Data array has length matching original data",
 		function () {
 			oSession.fnRestore();
-			
+
 			mPass = true;
 			$('#example').dataTable( {
 				"fnHeaderCallback": function ( nHead, aasData, iStart, iEnd, aiDisplay ) {
@@ -83,12 +89,13 @@ $(document).ready( function () {
 		},
 		function () { return mPass; }
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
+
 		"Data array's column lengths match original data",
 		function () {
 			oSession.fnRestore();
-			
+
 			mPass = true;
 			$('#example').dataTable( {
 				"fnHeaderCallback": function ( nHead, aasData, iStart, iEnd, aiDisplay ) {
@@ -104,13 +111,14 @@ $(document).ready( function () {
 		},
 		function () { return mPass; }
 	);
-	
-	
-	oTest.fnTest( 
+
+
+	oTest.fnTest(
+
 		"iStart correct on first page",
 		function () {
 			oSession.fnRestore();
-			
+
 			mPass = true;
 			$('#example').dataTable( {
 				"fnHeaderCallback": function ( nHead, aasData, iStart, iEnd, aiDisplay ) {
@@ -123,13 +131,14 @@ $(document).ready( function () {
 		},
 		function () { return mPass; }
 	);
-	
-	
-	oTest.fnTest( 
+
+
+	oTest.fnTest(
+
 		"iStart correct on second page",
 		function () {
 			oSession.fnRestore();
-			
+
 			mPass = false;
 			$('#example').dataTable( {
 				"fnHeaderCallback": function ( nHead, aasData, iStart, iEnd, aiDisplay ) {
@@ -143,13 +152,14 @@ $(document).ready( function () {
 		},
 		function () { return mPass; }
 	);
-	
-	
-	oTest.fnTest( 
+
+
+	oTest.fnTest(
+
 		"iEnd correct on first page",
 		function () {
 			oSession.fnRestore();
-			
+
 			mPass = true;
 			$('#example').dataTable( {
 				"fnHeaderCallback": function ( nHead, aasData, iStart, iEnd, aiDisplay ) {
@@ -162,13 +172,14 @@ $(document).ready( function () {
 		},
 		function () { return mPass; }
 	);
-	
-	
-	oTest.fnTest( 
+
+
+	oTest.fnTest(
+
 		"iEnd correct on second page",
 		function () {
 			oSession.fnRestore();
-			
+
 			mPass = false;
 			$('#example').dataTable( {
 				"fnHeaderCallback": function ( nHead, aasData, iStart, iEnd, aiDisplay ) {
@@ -182,13 +193,14 @@ $(document).ready( function () {
 		},
 		function () { return mPass; }
 	);
-	
-	
-	oTest.fnTest( 
+
+
+	oTest.fnTest(
+
 		"aiDisplay length is full data when not filtered",
 		function () {
 			oSession.fnRestore();
-			
+
 			mPass = false;
 			$('#example').dataTable( {
 				"fnHeaderCallback": function ( nHead, aasData, iStart, iEnd, aiDisplay ) {
@@ -201,12 +213,13 @@ $(document).ready( function () {
 		},
 		function () { return mPass; }
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
+
 		"aiDisplay length is 9 when filtering on 'Mozilla'",
 		function () {
 			oSession.fnRestore();
-			
+
 			mPass = false;
 			oTable = $('#example').dataTable( {
 				"fnHeaderCallback": function ( nHead, aasData, iStart, iEnd, aiDisplay ) {
@@ -220,8 +233,8 @@ $(document).ready( function () {
 		},
 		function () { return mPass; }
 	);
-	
-	
-	
+
+
+
 	oTest.fnComplete();
 } );

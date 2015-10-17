@@ -5,7 +5,7 @@
  * Language:    Javascript
  * License:     GPL v2 / 3 point BSD
  * Project:     DataTables
- * 
+ *
  * Copyright 2009-2012 Allan Jardine, all rights reserved.
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -90,7 +90,7 @@ button.DTTT_button {
 	padding: 3px 8px;
 }
 
-.DTTT_button embed { 
+.DTTT_button embed {
 	outline: none;
 }
 
@@ -272,7 +272,7 @@ div.DTTT_collection {
 	    -ms-border-radius: 5px;
 	     -o-border-radius: 5px;
 	        border-radius: 5px;
-	
+
 	-webkit-box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
 	   -moz-box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
 	    -ms-box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
@@ -295,7 +295,7 @@ div.DTTT_collection a.DTTT_button {
 	display: block;
 	float: none;
 	margin-bottom: 4px;
-	
+
 	-webkit-box-shadow: 1px 1px 3px #999;
 	   -moz-box-shadow: 1px 1px 3px #999;
 	    -ms-box-shadow: 1px 1px 3px #999;
@@ -328,18 +328,18 @@ div.DTTT_collection a.DTTT_button {
 	background:      -o-linear-gradient(top, #ffffff 0%,#f3f3f3 89%,#f9f9f9 100%); /* Opera 11.10+ */
 	background:         linear-gradient(top, #ffffff 0%,#f3f3f3 89%,#f9f9f9 100%); /* W3C */
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#f9f9f9',GradientType=0 ); /* IE6-9 */
-	
+
 	opacity: 0.95;
 
 	border: 1px solid black;
 	border: 1px solid rgba(0, 0, 0, 0.5);
-	
+
 	-webkit-border-radius: 6px;
 	   -moz-border-radius: 6px;
 	    -ms-border-radius: 6px;
 	     -o-border-radius: 6px;
 	        border-radius: 6px;
-	
+
 	-webkit-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.5);
 	   -moz-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.5);
 	    -ms-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.5);
@@ -358,4 +358,3 @@ div.DTTT_collection a.DTTT_button {
 	font-size: 14px;
 	line-height: 20px;
 }
-

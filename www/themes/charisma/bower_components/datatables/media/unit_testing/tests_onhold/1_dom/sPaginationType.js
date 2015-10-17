@@ -5,54 +5,62 @@ $(document).ready( function () {
 	/* Check the default */
 	var oTable = $('#example').dataTable();
 	var oSettings = oTable.fnSettings();
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
+
 		"Check two button paging is the default",
 		null,
 		function () { return oSettings.sPaginationType == "two_button"; }
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
+
 		"Check class is applied",
 		null,
 		function () { return $('#example_paginate').hasClass('paging_two_button'); }
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
+
 		"Two A elements are in the wrapper",
 		null,
 		function () { return $('#example_paginate a').length == 2; }
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
+
 		"We have the previous button",
 		null,
 		function () { return document.getElementById('example_previous'); }
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
+
 		"We have the next button",
 		null,
 		function () { return document.getElementById('example_next'); }
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
+
 		"Previous button is disabled",
 		null,
 		function () { return $('#example_previous').hasClass('paginate_disabled_previous'); }
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
+
 		"Next button is enabled",
 		null,
 		function () { return $('#example_next').hasClass('paginate_enabled_next'); }
 	);
-	
+
 	/* Don't test paging - that's done by the zero config test script. */
-	
-	
+
+
 	/* Two buttons paging */
-	oTest.fnTest( 
+	oTest.fnTest(
+
 		"Can enabled full numbers paging",
 		function () {
 			oSession.fnRestore();
@@ -63,16 +71,18 @@ $(document).ready( function () {
 		},
 		function () { return oSettings.sPaginationType == "full_numbers"; }
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
+
 		"Check full numbers class is applied",
 		null,
 		function () { return $('#example_paginate').hasClass('paging_full_numbers'); }
 	);
-	
-	
+
+
 	var nFirst, nPrevious, nNext, nLast;
-	oTest.fnTest( 
+	oTest.fnTest(
+
 		"Jump to last page",
 		function () {
 			nFirst = $('div.dataTables_paginate a.first');
@@ -85,8 +95,9 @@ $(document).ready( function () {
 			return document.getElementById('example_info').innerHTML == "Showing 51 to 57 of 57 entries";
 		}
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
+
 		"Go to two pages previous",
 		function () {
 			nPrevious.click();
@@ -96,8 +107,9 @@ $(document).ready( function () {
 			return document.getElementById('example_info').innerHTML == "Showing 31 to 40 of 57 entries";
 		}
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
+
 		"Next (second last) page",
 		function () {
 			nNext.click();
@@ -106,8 +118,9 @@ $(document).ready( function () {
 			return document.getElementById('example_info').innerHTML == "Showing 41 to 50 of 57 entries";
 		}
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
+
 		"Jump to first page",
 		function () {
 			nFirst.click();
@@ -116,7 +129,7 @@ $(document).ready( function () {
 			return document.getElementById('example_info').innerHTML == "Showing 1 to 10 of 57 entries";
 		}
 	);
-	
-	
+
+
 	oTest.fnComplete();
 } );

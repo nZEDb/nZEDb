@@ -15,13 +15,14 @@ $(document).ready( function () {
 		]
 	} );
 	var oSettings = oTable.fnSettings();
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
+
 		"Names are stored in the columns object",
 		null,
 		function () { return oSettings.aoColumns[3].sName =="unit test"; }
 	);
-	
-	
+
+
 	oTest.fnComplete();
 } );

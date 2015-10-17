@@ -112,6 +112,9 @@ class DnzbFailures
 	{
 		$text = 'This release has failed to download properly. It might fail for other users too.
 		This comment is automatically generated.';
-		$this->rc->addComment($relid, $text, $uid, '');
+		$dbl = $this->pdo->queryOneRow(sprintf('SELECT text FROM release_comments WHERE releaseid = %d AND userid = %d', $relid, $uid));
+		if ($dbl['text'] != $text) {
+			$this->rc->addComment($relid, $text, $uid, '');
+		}
 	}
 }

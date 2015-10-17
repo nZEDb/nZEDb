@@ -25,7 +25,9 @@
 				<td class="less">{$release.postdate|date_format}</td>
 				<td class="less">{$release.adddate|date_format}</td>
 				<td class="less mid">{$release.grabs}</td>
-				<td><a href="{$smarty.const.WWW_TOP}/release-delete.php?id={$release.id}">delete</a></td>
+				<td>
+					{if $release.guid}<a href="{$smarty.const.WWW_TOP}/../details/{$release.guid}">view</a> |{/if}
+					<a href="{$smarty.const.WWW_TOP}/release-delete.php?id={$release.id}">delete</a></td>
 			</tr>
 		{/foreach}
 

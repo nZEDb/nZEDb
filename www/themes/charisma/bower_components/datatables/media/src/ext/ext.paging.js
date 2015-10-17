@@ -1,6 +1,7 @@
 /*
  * Variable: oPagination
- * Purpose:  
+ * Purpose:
+
  * Scope:    jQuery.fn.dataTableExt
  */
 $.extend( DataTable.ext.oPagination, {
@@ -36,14 +37,14 @@ $.extend( DataTable.ext.oPagination, {
 				'<a class="'+oSettings.oClasses.sPagePrevDisabled+'" tabindex="'+oSettings.iTabIndex+'" role="button"><span class="'+oSettings.oClasses.sPageJUIPrev+'"></span></a>'+
 				'<a class="'+oSettings.oClasses.sPageNextDisabled+'" tabindex="'+oSettings.iTabIndex+'" role="button"><span class="'+oSettings.oClasses.sPageJUINext+'"></span></a>';
 			$(nPaging).append( sAppend );
-			
+
 			var els = $('a', nPaging);
 			var nPrevious = els[0],
 				nNext = els[1];
-			
+
 			oSettings.oApi._fnBindAction( nPrevious, {action: "previous"}, fnClickHandler );
 			oSettings.oApi._fnBindAction( nNext,     {action: "next"},     fnClickHandler );
-			
+
 			/* ID the first elements only */
 			if ( !oSettings.aanFeatures.p )
 			{
@@ -55,7 +56,7 @@ $.extend( DataTable.ext.oPagination, {
 				nNext.setAttribute('aria-controls', oSettings.sTableId);
 			}
 		},
-		
+
 		/*
 		 * Function: oPagination.two_button.fnUpdate
 		 * Purpose:  Update the two button pagination at the end of the draw
@@ -69,7 +70,7 @@ $.extend( DataTable.ext.oPagination, {
 			{
 				return;
 			}
-			
+
 			var oClasses = oSettings.oClasses;
 			var an = oSettings.aanFeatures.p;
 			var nNode;
@@ -83,7 +84,8 @@ $.extend( DataTable.ext.oPagination, {
 					/* Previous page */
 					nNode.className = ( oSettings._iDisplayStart === 0 ) ?
 					    oClasses.sPagePrevDisabled : oClasses.sPagePrevEnabled;
-					    
+
+
 					/* Next page */
 					nNode = nNode.nextSibling;
 					nNode.className = ( oSettings.fnDisplayEnd() == oSettings.fnRecordsDisplay() ) ?
@@ -92,15 +94,15 @@ $.extend( DataTable.ext.oPagination, {
 			}
 		}
 	},
-	
-	
+
+
 	/*
 	 * Variable: iFullNumbersShowPages
 	 * Purpose:  Change the number of pages which can be seen
 	 * Scope:    jQuery.fn.dataTableExt.oPagination
 	 */
 	"iFullNumbersShowPages": 5,
-	
+
 	/*
 	 * Variable: full_numbers
 	 * Purpose:  Full numbers pagination
@@ -138,12 +140,12 @@ $.extend( DataTable.ext.oPagination, {
 				nPrev = els[1],
 				nNext = els[2],
 				nLast = els[3];
-			
+
 			oSettings.oApi._fnBindAction( nFirst, {action: "first"},    fnClickHandler );
 			oSettings.oApi._fnBindAction( nPrev,  {action: "previous"}, fnClickHandler );
 			oSettings.oApi._fnBindAction( nNext,  {action: "next"},     fnClickHandler );
 			oSettings.oApi._fnBindAction( nLast,  {action: "last"},     fnClickHandler );
-			
+
 			/* ID the first elements only */
 			if ( !oSettings.aanFeatures.p )
 			{
@@ -154,7 +156,7 @@ $.extend( DataTable.ext.oPagination, {
 				nLast.id =oSettings.sTableId+'_last';
 			}
 		},
-		
+
 		/*
 		 * Function: oPagination.full_numbers.fnUpdate
 		 * Purpose:  Update the list of page buttons shows
@@ -168,7 +170,7 @@ $.extend( DataTable.ext.oPagination, {
 			{
 				return;
 			}
-			
+
 			var iPageCount = DataTable.ext.oPagination.iFullNumbersShowPages;
 			var iPageCountHalf = Math.floor(iPageCount / 2);
 			var iPages = Math.ceil((oSettings.fnRecordsDisplay()) / oSettings._iDisplayLength);
@@ -186,7 +188,7 @@ $.extend( DataTable.ext.oPagination, {
 					e.preventDefault();
 				} );
 			};
-			
+
 			/* Pages calculation */
 			if ( oSettings._iDisplayLength === -1 )
 			{
@@ -215,7 +217,7 @@ $.extend( DataTable.ext.oPagination, {
 				iEndButton = iStartButton + iPageCount - 1;
 			}
 
-			
+
 			/* Build the dynamic list */
 			for ( i=iStartButton ; i<=iEndButton ; i++ )
 			{
@@ -223,7 +225,7 @@ $.extend( DataTable.ext.oPagination, {
 					'<a tabindex="'+oSettings.iTabIndex+'" class="'+oClasses.sPageButton+'">'+oSettings.fnFormatNumber(i)+'</a>' :
 					'<a tabindex="'+oSettings.iTabIndex+'" class="'+oClasses.sPageButtonActive+'">'+oSettings.fnFormatNumber(i)+'</a>';
 			}
-			
+
 			/* Loop over each instance of the pager */
 			for ( i=0, iLen=an.length ; i<iLen ; i++ )
 			{
@@ -232,21 +234,23 @@ $.extend( DataTable.ext.oPagination, {
 				{
 					continue;
 				}
-				
+
 				/* Build up the dynamic list first - html and listeners */
 				$('span:eq(0)', nNode)
 					.html( sList )
 					.children('a').each( fnBind );
-				
+
 				/* Update the permanent button's classes */
 				anButtons = nNode.getElementsByTagName('a');
 				anStatic = [
-					anButtons[0], anButtons[1], 
+					anButtons[0], anButtons[1],
+
 					anButtons[anButtons.length-2], anButtons[anButtons.length-1]
 				];
 
 				$(anStatic).removeClass( oClasses.sPageButton+" "+oClasses.sPageButtonActive+" "+oClasses.sPageButtonStaticDisabled );
-				$([anStatic[0], anStatic[1]]).addClass( 
+				$([anStatic[0], anStatic[1]]).addClass(
+
 					(iCurrentPage==1) ?
 						oClasses.sPageButtonStaticDisabled :
 						oClasses.sPageButton

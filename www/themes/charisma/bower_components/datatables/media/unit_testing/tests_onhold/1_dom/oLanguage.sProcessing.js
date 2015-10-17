@@ -7,21 +7,24 @@ $(document).ready( function () {
 		"bProcessing": true
 	} );
 	var oSettings = oTable.fnSettings();
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
+
 		"Processing language is 'Processing...' by default",
 		null,
 		function () { return oSettings.oLanguage.sProcessing == "Processing..."; }
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
+
 		"Processing language default is in the DOM",
 		null,
 		function () { return document.getElementById('example_processing').innerHTML = "Processing..."; }
 	);
-	
-	
-	oTest.fnTest( 
+
+
+	oTest.fnTest(
+
 		"Processing language can be defined",
 		function () {
 			oSession.fnRestore();
@@ -35,13 +38,14 @@ $(document).ready( function () {
 		},
 		function () { return oSettings.oLanguage.sProcessing == "unit test"; }
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
+
 		"Processing language definition is in the DOM",
 		null,
 		function () { return document.getElementById('example_processing').innerHTML = "unit test"; }
 	);
-	
-	
+
+
 	oTest.fnComplete();
 } );

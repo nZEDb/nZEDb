@@ -15,7 +15,8 @@ function _fnAjaxUpdate( oSettings )
 		var iColumns = oSettings.aoColumns.length;
 		var aoData = _fnAjaxParameters( oSettings );
 		_fnServerParams( oSettings, aoData );
-		
+
+
 		oSettings.fnServerData.call( oSettings.oInstance, oSettings.sAjaxSource, aoData,
 			function(json) {
 				_fnAjaxUpdateDraw( oSettings, json );
@@ -40,20 +41,23 @@ function _fnAjaxParameters( oSettings )
 	var iColumns = oSettings.aoColumns.length;
 	var aoData = [], mDataProp, aaSort, aDataSort;
 	var i, j;
-	
+
+
 	aoData.push( { "name": "sEcho",          "value": oSettings.iDraw } );
 	aoData.push( { "name": "iColumns",       "value": iColumns } );
 	aoData.push( { "name": "sColumns",       "value": _fnColumnOrdering(oSettings) } );
 	aoData.push( { "name": "iDisplayStart",  "value": oSettings._iDisplayStart } );
 	aoData.push( { "name": "iDisplayLength", "value": oSettings.oFeatures.bPaginate !== false ?
 		oSettings._iDisplayLength : -1 } );
-		
+
+
 	for ( i=0 ; i<iColumns ; i++ )
 	{
 	  mDataProp = oSettings.aoColumns[i].mData;
 		aoData.push( { "name": "mDataProp_"+i, "value": typeof(mDataProp)==="function" ? 'function' : mDataProp } );
 	}
-	
+
+
 	/* Filtering */
 	if ( oSettings.oFeatures.bFilter !== false )
 	{
@@ -66,7 +70,8 @@ function _fnAjaxParameters( oSettings )
 			aoData.push( { "name": "bSearchable_"+i, "value": oSettings.aoColumns[i].bSearchable } );
 		}
 	}
-	
+
+
 	/* Sorting */
 	if ( oSettings.oFeatures.bSort !== false )
 	{
@@ -75,11 +80,13 @@ function _fnAjaxParameters( oSettings )
 		aaSort = ( oSettings.aaSortingFixed !== null ) ?
 			oSettings.aaSortingFixed.concat( oSettings.aaSorting ) :
 			oSettings.aaSorting.slice();
-		
+
+
 		for ( i=0 ; i<aaSort.length ; i++ )
 		{
 			aDataSort = oSettings.aoColumns[ aaSort[i][0] ].aDataSort;
-			
+
+
 			for ( j=0 ; j<aDataSort.length ; j++ )
 			{
 				aoData.push( { "name": "iSortCol_"+iCounter,  "value": aDataSort[j] } );
@@ -88,13 +95,15 @@ function _fnAjaxParameters( oSettings )
 			}
 		}
 		aoData.push( { "name": "iSortingCols",   "value": iCounter } );
-		
+
+
 		for ( i=0 ; i<iColumns ; i++ )
 		{
 			aoData.push( { "name": "bSortable_"+i,  "value": oSettings.aoColumns[i].bSortable } );
 		}
 	}
-	
+
+
 	return aoData;
 }
 
@@ -138,7 +147,8 @@ function _fnAjaxUpdateDraw ( oSettings, json )
 			oSettings.iDraw = json.sEcho * 1;
 		}
 	}
-	
+
+
 	if ( !oSettings.oScroll.bInfinite ||
 		   (oSettings.oScroll.bInfinite && (oSettings.bSorted || oSettings.bFiltered)) )
 	{
@@ -146,7 +156,8 @@ function _fnAjaxUpdateDraw ( oSettings, json )
 	}
 	oSettings._iRecordsTotal = parseInt(json.iTotalRecords, 10);
 	oSettings._iRecordsDisplay = parseInt(json.iTotalDisplayRecords, 10);
-	
+
+
 	/* Determine if reordering is required */
 	var sOrdering = _fnColumnOrdering(oSettings);
 	var bReOrder = (json.sColumns !== undefined && sOrdering !== "" && json.sColumns != sOrdering );
@@ -155,7 +166,8 @@ function _fnAjaxUpdateDraw ( oSettings, json )
 	{
 		aiIndex = _fnReOrderIndex( oSettings, json.sColumns );
 	}
-	
+
+
 	var aData = _fnGetObjectDataFn( oSettings.sAjaxDataProp )( json );
 	for ( var i=0, iLen=aData.length ; i<iLen ; i++ )
 	{
@@ -176,10 +188,10 @@ function _fnAjaxUpdateDraw ( oSettings, json )
 		}
 	}
 	oSettings.aiDisplay = oSettings.aiDisplayMaster.slice();
-	
+
+
 	oSettings.bAjaxDataGet = false;
 	_fnDraw( oSettings );
 	oSettings.bAjaxDataGet = true;
 	_fnProcessingDisplay( oSettings, false );
 }
-

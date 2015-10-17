@@ -13,15 +13,17 @@ $(document).ready( function () {
 			{ "mData": "grade" }
 		]
 	} );
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
+
 		"Info div exists by default",
 		null,
 		function () { return document.getElementById('example_info') != null; }
 	);
-	
+
 	/* Check can disable */
-	oTest.fnWaitTest( 
+	oTest.fnWaitTest(
+
 		"Info can be disabled",
 		function () {
 			oSession.fnRestore();
@@ -39,9 +41,10 @@ $(document).ready( function () {
 		},
 		function () { return document.getElementById('example_info') == null; }
 	);
-	
+
 	/* Enable makes no difference */
-	oTest.fnWaitTest( 
+	oTest.fnWaitTest(
+
 		"Info enabled override",
 		function () {
 			oSession.fnRestore();
@@ -59,7 +62,7 @@ $(document).ready( function () {
 		},
 		function () { return document.getElementById('example_info') != null; }
 	);
-	
-	
+
+
 	oTest.fnComplete();
 } );

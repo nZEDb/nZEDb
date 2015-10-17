@@ -27,7 +27,7 @@ $(document).ready(function() {
 	new $.fn.dataTable.AutoFill( table, {
 		complete: function ( altered ) {
 			var last = altered[ altered.length-1 ];
-			alert( 
+			alert(
 				altered.length+' cells were altered in this auto-fill. The '+
 				'value of the last cell altered was: '+last.oldValue+' and is '+
 				'now '+last.newValue
@@ -555,7 +555,7 @@ $(document).ready(function() {
 	new $.fn.dataTable.AutoFill( table, {
 		complete: function ( altered ) {
 			var last = altered[ altered.length-1 ];
-			alert( 
+			alert(
 				altered.length+' cells were altered in this auto-fill. The '+
 				'value of the last cell altered was: '+last.oldValue+' and is '+
 				'now '+last.newValue

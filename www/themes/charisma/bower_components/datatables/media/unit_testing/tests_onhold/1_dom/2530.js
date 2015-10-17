@@ -16,14 +16,15 @@ $(document).ready( function () {
 			{ "sTitle": "Grade", "sClass": "center" }
 		]
 	} );
-	
+
 	/* Basic checks */
-	oTest.fnTest( 
+	oTest.fnTest(
+
 		"Check calculated widths",
 		null,
 		function () { return $('#example tbody tr td:eq(0)').width() < 100; }
 	);
-	
-	
+
+
 	oTest.fnComplete();
 } );

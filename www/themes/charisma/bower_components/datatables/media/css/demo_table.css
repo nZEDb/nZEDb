@@ -134,9 +134,9 @@ table.display {
 	margin: 0 auto;
 	clear: both;
 	width: 100%;
-	
+
 	/* Note Firefox 3.5 and before have a bug with border-collapse
-	 * ( https://bugzilla.mozilla.org/show%5Fbug.cgi?id=155955 ) 
+	 * ( https://bugzilla.mozilla.org/show%5Fbug.cgi?id=155955 )
 	 * border-spacing: 0; is one possible option. Conditional-css.com is
 	 * useful for this kind of thing
 	 *
@@ -144,7 +144,7 @@ table.display {
 	 * It subtracts one px relative to the other browsers from the first column, and
 	 * adds one to the end...
 	 *
-	 * If you want that effect I'd suggest setting a border-top/left on th/td's and 
+	 * If you want that effect I'd suggest setting a border-top/left on th/td's and
 	 * then filling in the gaps with other borders.
 	 */
 }
@@ -200,7 +200,7 @@ table.display td.center {
 .sorting_desc_disabled {
 	background: url('../images/sort_desc_disabled.png') no-repeat center right;
 }
- 
+
 table.display thead th:active,
 table.display thead td:active {
 	outline: none;
@@ -328,7 +328,7 @@ td.details {
 }
 
 .paging_full_numbers a.paginate_button,
- 	.paging_full_numbers a.paginate_active {
+	.paging_full_numbers a.paginate_active {
 	border: 1px solid #aaa;
 	-webkit-border-radius: 5px;
 	-moz-border-radius: 5px;
@@ -392,7 +392,7 @@ tr.even td.sorting_3 {
 
 /* For the Conditional-CSS grading rows */
 /*
- 	Colour calculations (based off the main row colours)
+	Colour calculations (based off the main row colours)
   Level 1:
 		dd > c4
 		ee > d5

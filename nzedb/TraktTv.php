@@ -1,14 +1,13 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
 use nzedb\utility\Misc;
 
 /**
  * Class TraktTv
  * Lookup information from trakt.tv using their API.
  */
-class TraktTv
+class TraktTv extends TV
 {
 	/**
 	 * The Trakt.tv API v2 Client ID (SHA256 hash - 64 characters long string). Used for movie and tv lookups.
@@ -33,13 +32,8 @@ class TraktTv
 	 */
 	public function __construct(array $options = [])
 	{
-		$defaults = [
-			'Settings' => null,
-		];
-		$options += $defaults;
-
-		$settings = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
-		$this->clientID = $settings->getSetting('trakttvclientkey');
+		parent::__construct($options);
+		$this->clientID = $this->pdo->getSetting('trakttvclientkey');
 		$this->requestHeaders = [
 			'Content-Type: application/json',
 			'trakt-api-version: 2',
@@ -53,15 +47,25 @@ class TraktTv
 	 * @param string $title
 	 * @param string $season
 	 * @param string $ep
+	 * @param string $type
 	 *
-	 * @see http://docs.trakt.apiary.io/#reference/episodes/summary/get-a-single-episode-for-a-show
-	 *
-	 * @return bool|array
+	 * @return array|bool
+	 * @see    http://docs.trakt.apiary.io/#reference/episodes/summary/get-a-single-episode-for-a-show
 	 *
 	 * @access public
 	 */
-	public function episodeSummary($title = '', $season = '', $ep = '')
+	public function episodeSummary($title = '', $season = '', $ep = '', $type = 'min')
 	{
+		switch($type) {
+			case 'full':
+			case 'images':
+			case 'full,images':
+				$extended = $type;
+				break;
+			default:
+				$extended = 'min';
+		}
+
 		$array = $this->getJsonArray(
 			'https://api-v2launch.trakt.tv/shows/' .
 			str_replace([' ', '_', '.'], '-', $title) .
@@ -69,7 +73,7 @@ class TraktTv
 			str_replace(['S', 's'], '', $season) .
 			'/episodes/' .
 			str_replace(['E', 'e'], '', $ep),
-			'full'
+			$extended
 		);
 		if (!$array) {
 			return false;
@@ -123,7 +127,7 @@ class TraktTv
 	 * @param string     $start Start date of calendar ie. 2015-09-01.Default value is today.
 	 * @param int $days  Number of days to lookup ahead. Default value is 7 days
 	 *
-	 * @return array|bool|string
+	 * @return array|bool
 	 * @see    http://docs.trakt.apiary.io/#reference/calendars/all-shows/get-shows
 	 *
 	 * @access public
@@ -132,6 +136,25 @@ class TraktTv
 	{
 		$array = $this->getJsonArray(
 			'https://api-v2launch.trakt.tv/calendars/all/shows/' . $start . '/' . $days
+		);
+		if (!$array){
+			return false;
+		}
+		return $array;
+	}
+
+	/**
+	 * Fetches weekend box office data from trakt.tv, updated every monday.
+	 *
+	 * @return array|bool
+	 * @see    http://docs.trakt.apiary.io/#reference/movies/box-office/get-the-weekend-box-office
+	 *
+	 * @access public
+	 */
+	public function getBoxOffice()
+	{
+		$array = $this->getJsonArray(
+			'https://api-v2launch.trakt.tv/movies/boxoffice'
 		);
 		if (!$array){
 			return false;

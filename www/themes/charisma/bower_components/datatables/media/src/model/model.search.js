@@ -37,4 +37,3 @@ DataTable.models.oSearch = {
 	 */
 	"bSmart": true
 };
-

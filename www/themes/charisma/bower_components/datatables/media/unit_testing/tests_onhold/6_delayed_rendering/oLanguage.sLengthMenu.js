@@ -8,25 +8,26 @@ $(document).ready( function () {
 		"bDeferRender": true
 	} );
 	var oSettings = oTable.fnSettings();
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
+
 		"Menu language is 'Show _MENU_ entries' by default",
 		null,
 		function () { return oSettings.oLanguage.sLengthMenu == "Show _MENU_ entries"; }
 	);
-	
+
 	oTest.fnTest(
 		"_MENU_ macro is replaced by select menu in DOM",
 		null,
 		function () { return $('select', oSettings.aanFeatures.l[0]).length == 1 }
 	);
-	
+
 	oTest.fnTest(
 		"A label input is used",
 		null,
 		function () { return $('label', oSettings.aanFeatures.l[0]).length == 1 }
 	);
-	
+
 	oTest.fnTest(
 		"Default is put into DOM",
 		null,
@@ -38,9 +39,10 @@ $(document).ready( function () {
 			return bReturn;
 		}
 	);
-	
-	
-	oTest.fnWaitTest( 
+
+
+	oTest.fnWaitTest(
+
 		"Menu length language can be defined - no _MENU_ macro",
 		function () {
 			oSession.fnRestore();
@@ -55,17 +57,19 @@ $(document).ready( function () {
 		},
 		function () { return oSettings.oLanguage.sLengthMenu == "unit test"; }
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
+
 		"Menu length language definition is in the DOM",
 		null,
 		function () {
 			return $('label', oSettings.aanFeatures.l[0]).text() == "unit test";
 		}
 	);
-	
-	
-	oTest.fnWaitTest( 
+
+
+	oTest.fnWaitTest(
+
 		"Menu length language can be defined - with _MENU_ macro",
 		function () {
 			oSession.fnRestore();
@@ -86,9 +90,10 @@ $(document).ready( function () {
 			return bReturn;
 		}
 	);
-	
-	
-	oTest.fnWaitTest( 
+
+
+	oTest.fnWaitTest(
+
 		"Only the _MENU_ macro",
 		function () {
 			oSession.fnRestore();
@@ -109,7 +114,7 @@ $(document).ready( function () {
 			return bReturn;
 		}
 	);
-	
-	
+
+
 	oTest.fnComplete();
 } );

@@ -729,7 +729,7 @@ class Releases
 		// Delete from DB.
 		$this->pdo->queryExec(
 			sprintf('
-				DELETE r, rn, rc, uc, rf, ra, rs, rv, re
+				DELETE r, rn, rc, uc, rf, ra, rs, rv, re, df
 				FROM releases r
 				LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
 				LEFT OUTER JOIN release_comments rc ON rc.releaseid = r.id
@@ -739,6 +739,7 @@ class Releases
 				LEFT OUTER JOIN release_subtitles rs ON rs.releaseid = r.id
 				LEFT OUTER JOIN video_data rv ON rv.releaseid = r.id
 				LEFT OUTER JOIN releaseextrafull re ON re.releaseid = r.id
+				LEFT OUTER JOIN dnzb_failures df ON df.guid = r.guid
 				WHERE r.guid = %s',
 				$this->pdo->escapeString($identifiers['g'])
 			)
@@ -1672,6 +1673,30 @@ class Releases
 			AND tv.rageid > 0
 			AND tv.hascover = 1
 			AND r.id in (select max(id) from releases where rageid > 0 group by rageid)
+			ORDER BY r.postdate DESC
+			LIMIT 24", true, nZEDb_CACHE_EXPIRY_LONG
+		);
+	}
+
+	/**
+	 * Get all newest anime with covers for poster wall.
+	 *
+	 * @return array
+	 */
+	public function getNewestAnime()
+	{
+		return $this->pdo->query(
+			"SELECT r.anidbid, r.guid, r.name, r.searchname, r.size, r.completion,
+				r.postdate, r.categoryid, r.comments, r.grabs, at.title
+			FROM releases r
+			INNER JOIN anidb_titles at USING (anidbid)
+			INNER JOIN anidb_info ai USING (anidbid)
+			WHERE r.categoryid = 5070
+			AND at.anidbid > 0
+			AND at.lang = 'en'
+			AND ai.picture != ''
+			AND r.id IN (SELECT MAX(id) FROM releases WHERE anidbid > 0 GROUP BY anidbid)
+			GROUP BY r.id
 			ORDER BY r.postdate DESC
 			LIMIT 24", true, nZEDb_CACHE_EXPIRY_LONG
 		);

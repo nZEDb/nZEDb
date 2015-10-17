@@ -584,13 +584,14 @@ div.icon_cart_clicked	{ background-image:url('../../../themes_shared/images/icon
 div.icon_nzb			{ background-image:url('../../../themes_shared/images/icons/nzbup.png'); }
 div.icon_nzb_clicked	{ background-image:url('../../../themes_shared/images/icons/nzbdown.png'); }
 div.icon_nzb a			{ text-decoration:none; padding-bottom:2px; padding-right:12px; }
-div.icon_imdb           { background-image:url('../../../themes_shared/images/icons/imdb.png'); }
-div.icon_imdb a         { text-decoration:none; padding-bottom:2px; padding-right:12px; }
+div.icon_imdb			{ background-image:url('../../../themes_shared/images/icons/imdb.png'); }
+div.icon_imdb a			{ text-decoration:none; padding-bottom:2px; padding-right:12px; }
 div.icon_sab			{ background-image:url('../../../themes_shared/images/icons/queueup.png'); }
 div.icon_sab_clicked	{ background-image:url('../../../themes_shared/images/icons/queuedown.png'); }
 div.icon_tvrage			{ background-image:url('../../../themes_shared/images/icons/tvrage.png'); }
 div.icon_check			{ background-image:url('../../../themes_shared/images/icons/check.png'); }
 div.icon_cp				{ background-image:url('../../../themes_shared/images/icons/couch.png'); }
+div.icon_anidb			{ background-image:url('../../../themes_shared/images/icons/anidb.png'); }
 
 /*
     ColorBox Core Style
@@ -678,4 +679,3 @@ div.icon_cp				{ background-image:url('../../../themes_shared/images/icons/couch
         .cboxMovie .cboxSlideshow_on #cboxSlideshow.hover{background-position:-100px -25px;}
         .cboxMovie .cboxSlideshow_off #cboxSlideshow{background-position:-100px 0px; right:44px;}
         .cboxMovie .cboxSlideshow_off #cboxSlideshow.hover{background-position:-75px -25px;}
-
