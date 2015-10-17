@@ -80,7 +80,6 @@ class TVDB extends TV
 
 				// Clean the show name for better match probability
 				$release = $this->parseNameEpSeason($row['searchname']);
-
 				if (is_array($release) && $release['name'] != '') {
 
 					// Find the Video ID if it already exists by checking the title.
@@ -184,8 +183,11 @@ class TVDB extends TV
 	{
 		$return = false;
 		$highestMatch = 0;
-		$response = (array)$this->client->getSeries($cleanName);
-		usleep(500);
+		try {
+			$response = (array)$this->client->getSeries($cleanName);
+		} catch (\Exception $error) { }
+
+		sleep(1);
 
 		if (is_array($response)) {
 			foreach ($response as $show) {
@@ -227,7 +229,7 @@ class TVDB extends TV
 							'',
 							''
 		);
-		if ($hascover = 1) {
+		if ($hascover == 1) {
 			$this->setCoverFound($videoId);
 		}
 	}
@@ -242,7 +244,14 @@ class TVDB extends TV
 	private function getTVDBEpisode($tvdbid, $season, $episode)
 	{
 		$return = false;
-		$response = $this->client->getEpisode($tvdbid, $season, $episode);
+
+		try {
+			$response = $this->client->getEpisode($tvdbid, $season, $episode);
+		} catch (\Exception $error) {
+
+		}
+
+		sleep(1);
 
 		if (is_object($response)) {
 			$return = $this->formatEpisodeArr($response);

@@ -72,7 +72,7 @@ class TV
 
 		$res = $this->pdo->queryDirect(
 			sprintf("
-				SELECT r.searchname, r.id
+				SELECT SQL_NO_CACHE r.searchname, r.id
 				FROM releases r
 				WHERE r.nzbstatus = 1
 				AND r.tv_episodes_id = %d
@@ -97,21 +97,19 @@ class TV
 	 * @param     $releaseId
 	 * @param int $episodeId
 	 */
-	public function setVideoIdFound($videoId, $releaseId, $episodeId = 0) {
-		if ($videoId > 0 && $releaseId > 0) {
-			$this->pdo->queryExec(
-					sprintf('
-						UPDATE releases
-						SET videos_id = %d, tv_episodes_id = %d
-						WHERE %s
-						AND id = %d',
-						$videoId,
-						$episodeId,
-						$this->catWhere,
-						$releaseId
-					)
-			);
-		}
+	public function setVideoIdFound($videoId, $releaseId, $episodeId) {
+		$this->pdo->queryExec(
+				sprintf('
+					UPDATE releases
+					SET videos_id = %d, tv_episodes_id = %d
+					WHERE %s
+					AND id = %d',
+					$videoId,
+					$episodeId,
+					$this->catWhere,
+					$releaseId
+				)
+		);
 	}
 
 	/**
@@ -686,12 +684,12 @@ class TV
 					$showInfo['year'] = $yearMatch[1] . $yearMatch[2];
 				}
 
-				$showInfo['season'] = sprintf('S%02d', $showInfo['season']);
+				$showInfo['season'] = sprintf('S%03d', $showInfo['season']);
 				// Check for multi episode release.
 				if (is_array($showInfo['episode'])) {
 					$tmpArr = [];
 					foreach ($showInfo['episode'] as $ep) {
-						$tmpArr[] = sprintf('E%02d', $ep);
+						$tmpArr[] = sprintf('E%03d', $ep);
 					}
 					$showInfo['episode'] = implode('', $tmpArr);
 				} else {
