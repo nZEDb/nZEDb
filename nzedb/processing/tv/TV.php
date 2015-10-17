@@ -167,7 +167,7 @@ class TV
 											$column,
 											$siteId,
 											$this->pdo->escapeString($title),
-											$this->pdo->escapeString($country),
+											$this->pdo->escapeString((isset($country) ? $country : '')),
 											$this->pdo->escapeString($started),
 											$source
 										)
