@@ -234,11 +234,11 @@ class TV
 		$this->pdo->queryExec(
 				sprintf('
 					UPDATE videos
-					SET %s = %d, countries_id = %s,
+					SET %s = %d, countries_id = %s
 					WHERE id = %d',
 					$column,
 					$siteId,
-					$country,
+					$this->pdo->escapeString((isset($country) ? $country : '')),
 					$videoId
 				)
 		);
@@ -437,18 +437,21 @@ class TV
 	 *
 	 * @return bool
 	 */
-	public function getBySeasonEp($id, $series, $episode)
+	public function getBySeasonEp($id, $series, $episode, $airdate = '')
 	{
+		if ($airdate === '') {
+			$queryString = sprintf('series = %d AND episode = %d', $series, $episode);
+		} else {
+			$queryString = sprintf('DATE(firstaired) = %s', $this->pdo->escapeString($airdate));
+		}
 		$episodeArr = $this->pdo->queryOneRow(
 							sprintf("
 								SELECT id
 								FROM tv_episodes
 								WHERE videos_id = %d
-								AND series = %d
-								AND episode = %d",
+								AND %s",
 								$id,
-								$series,
-								$episode
+								$queryString
 							)
 		);
 		return (isset($episodeArr['id']) ? $episodeArr['id'] : false);
@@ -560,10 +563,10 @@ class TV
 				$showInfo['episode'] = intval($matches[3]);
 			}
 			// 2009.01.01 and 2009-01-01
-			else if (preg_match('/^(.*?)[^a-z0-9](19|20)(\d{2})[^a-z0-9](\d{2})[^a-z0-9](\d{2})[^a-z0-9]/i', $relname, $matches)) {
+			else if (preg_match('/^(.*?)[^a-z0-9](?P<airdate>(19|20)(\d{2})[.\/-](\d{2})[.\/-](\d{2}))[^a-z0-9]/i', $relname, $matches)) {
 				$showInfo['season'] = $matches[2] . $matches[3];
 				$showInfo['episode'] = $matches[4] . '/' . $matches[5];
-				$showInfo['airdate'] = $matches[2] . $matches[3] . '-' . $matches[4] . '-' . $matches[5]; //yy-m-d
+				$showInfo['airdate'] = date('Y-m-d', strtotime(preg_replace('/[^0-9]/i', '/', $matches['airdate']))); //yyyy-mm-dd
 			}
 			// 01.01.2009
 			else if (preg_match('/^(.*?)[^a-z0-9](\d{2})[^a-z0-9](\d{2})[^a-z0-9](19|20)(\d{2})[^a-z0-9]/i', $relname, $matches)) {
@@ -682,12 +685,12 @@ class TV
 					$showInfo['year'] = $yearMatch[1] . $yearMatch[2];
 				}
 
-				$showInfo['season'] = sprintf('S%03d', $showInfo['season']);
+				$showInfo['season'] = sprintf('S%02d', $showInfo['season']);
 				// Check for multi episode release.
 				if (is_array($showInfo['episode'])) {
 					$tmpArr = [];
 					foreach ($showInfo['episode'] as $ep) {
-						$tmpArr[] = sprintf('E%03d', $ep);
+						$tmpArr[] = sprintf('E%02d', $ep);
 					}
 					$showInfo['episode'] = implode('', $tmpArr);
 				} else {
@@ -696,7 +699,7 @@ class TV
 
 				$showInfo['seriesfull'] = $showInfo['season'] . $showInfo['episode'];
 			}
-			$showInfo['airdate'] = (!empty($showInfo['airdate'])) ? $showInfo['airdate'] . ' 00:00:00' : '';
+			$showInfo['airdate'] = (!empty($showInfo['airdate']) ? $showInfo['airdate'] : '');
 			return $showInfo;
 		}
 		return false;

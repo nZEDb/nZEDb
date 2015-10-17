@@ -141,12 +141,17 @@ class TVDB extends TV
 						$episodeNo = preg_replace('/^E0*/', '', $release['episode']);
 
 						// Check first if we have the episode for this video ID
-						$episode = $this->getBySeasonEp($videoId, $seasonNo, $episodeNo);
+						$episode = $this->getBySeasonEp($videoId, $seasonNo, $episodeNo, $release['airdate']);
 
 						if ($episode === false && $lookupSetting) {
 
 							// Send the request for the episode to TVDB
-							$tvdbEpisode = $this->getTVDBEpisode($tvdbid, $seasonNo, $episodeNo);
+							$tvdbEpisode = $this->getTVDBEpisode(
+										$tvdbid,
+										$seasonNo,
+										$episodeNo,
+										$release['airdate']
+							);
 
 							if ($tvdbEpisode) {
 								$episode = $this->addEpisode(
@@ -248,19 +253,29 @@ class TVDB extends TV
 	}
 
 	/**
-	 * @param $tvdbid
-	 * @param $season
-	 * @param $episode
+	 * @param        $tvdbid
+	 * @param        $season
+	 * @param        $episode
+	 *
+	 * @param string $airdate
 	 *
 	 * @return array|bool
 	 */
-	private function getTVDBEpisode($tvdbid, $season, $episode)
+	private function getTVDBEpisode($tvdbid, $season, $episode, $airdate = '')
 	{
 		$return = $response = false;
 
-		try {
-			$response = $this->client->getEpisode($tvdbid, $season, $episode);
-		} catch (\Exception $error) { }
+		if ($airdate !== '') {
+			try {
+				$response = $this->client->getEpisodeByAirDate($tvdbid, $airdate);
+			} catch (\Exception $error) {
+			}
+		} else {
+			try {
+				$response = $this->client->getEpisode($tvdbid, $season, $episode);
+			} catch (\Exception $error) {
+			}
+		}
 
 		sleep(1);
 
