@@ -55,6 +55,14 @@ class TV
 		$this->tvqty = ($this->pdo->getSetting('maxrageprocessed') != '') ? $this->pdo->getSetting('maxrageprocessed') : 75;
 	}
 
+	/**
+	 * @param string $groupID
+	 * @param string $guidChar
+	 * @param int    $lookupSetting
+	 * @param int    $status
+	 *
+	 * @return bool|int|\PDOStatement
+	 */
 	public function getTvReleases($groupID = '', $guidChar = '', $lookupSetting = 1, $status = 0)
 	{
 		$ret = 0;
@@ -84,6 +92,11 @@ class TV
 		return $res;
 	}
 
+	/**
+	 * @param     $videoId
+	 * @param     $releaseId
+	 * @param int $episodeId
+	 */
 	public function setVideoIdFound($videoId, $releaseId, $episodeId = 0) {
 		if ($videoId > 0 && $releaseId > 0) {
 			$this->pdo->queryExec(
@@ -101,6 +114,10 @@ class TV
 		}
 	}
 
+	/**
+	 * @param $status
+	 * @param $Id
+	 */
 	public function setVideoNotFound($status, $Id)
 	{
 		if ($status && $Id) {
@@ -119,15 +136,23 @@ class TV
 	}
 
 	/**
-	 * @param $column
-	 * @param $siteid
-	 * @param $title
-	 * @param string $summary
-	 * @param $country
+	 * @param     $column
+	 * @param     $siteid
+	 * @param     $title
+	 * @param     $summary
+	 * @param     $country
+	 * @param     $started
+	 * @param     $publisher
+	 * @param     $source
+	 * @param int $hasCover
+	 *
+	 * @return int
 	 */
-	public function add($column, $siteid, $title, $summary, $country, $started, $publisher, $hasCover = 0, $source)
+	public function add($column, $siteid, $title, $summary, $country, $started, $publisher, $source, $hasCover = 0)
 	{
-		$country = $this->countryCode($country);
+		if ($country !== '') {
+			$country = $this->countryCode($country);
+		}
 
 		// Check if video already exists based on site info
 		// if that fails be sure we're not inserting duplicates by checking the title
@@ -141,111 +166,118 @@ class TV
 		if ($videoId === false) {
 			$videoId = $this->pdo->queryInsert(
 										sprintf('
-											INSERT INTO videos (%s, type, title, summary, country, started, source)
-											VALUES (%s, 0, %s, %s, %s, %d, %d)',
+											INSERT INTO videos (%s, type, title, countries_id, started, source)
+											VALUES (%s, 0, %s, %s, %s, %d)',
 											$column,
 											$siteid,
 											$this->pdo->escapeString($title),
-											$this->pdo->escapeString($summary),
 											$this->pdo->escapeString($country),
 											$this->pdo->escapeString($started),
 											$source
 										)
 			);
 			$this->pdo->queryInsert(
-										sprintf("
-											INSERT INTO tv_info (videos_id, summary, publisher, image)
-											VALUES (%d, %s, %s, %d)",
-											$videoId,
-											$this->pdo->escapeString($summary),
-											$this->pdo->escapeString($publisher),
-											$hasCover
-										)
+					sprintf("
+						INSERT INTO tv_info (videos_id, summary, publisher, image)
+						VALUES (%d, %s, %s, %d)",
+						$videoId,
+						$this->pdo->escapeString($summary),
+						$this->pdo->escapeString($publisher),
+						$hasCover
+					)
 			);
 		} else {
-			$this->update($videoId['id'], $column, $siteid);
-			$videoId = $videoId['id'];
+			$this->update($videoId, $column, $siteid, $country);
 		}
-		return $videoId;
+		return (int)$videoId;
 	}
 
+	/**
+	 * @param $videoId
+	 * @param $seriesNo
+	 * @param $episodeNo
+	 * @param $seComplete
+	 * @param $title
+	 * @param $firstaired
+	 * @param $summary
+	 *
+	 * @return false|int|string
+	 */
 	public function addEpisode($videoId, $seriesNo, $episodeNo, $seComplete, $title, $firstaired, $summary)
 	{
 		$episodeId = $this->pdo->queryInsert(
-						sprintf('
-							INSERT INTO tv_episodes (videos_id, series, episode, se_complete, title, firstaired, summary)
-							VALUES (%d, %d, %d, %s, %s, %s, %s)',
-							$videoId,
-							$seriesNo,
-							$episodeNo,
-							$this->pdo->escapeString($seComplete),
-							$this->pdo->escapeString($title),
-							$this->pdo->escapeString($firstaired),
-							$this->pdo->escapeString($summary)
-						)
+					sprintf('
+						INSERT INTO tv_episodes (videos_id, series, episode, se_complete, title, firstaired, summary)
+						VALUES (%d, %d, %d, %s, %s, %s, %s)',
+						$videoId,
+						$seriesNo,
+						$episodeNo,
+						$this->pdo->escapeString($seComplete),
+						$this->pdo->escapeString($title),
+						$this->pdo->escapeString($firstaired),
+						$this->pdo->escapeString($summary)
+					)
 		);
 		return $episodeId;
 	}
 
 	// If the video already exists, update the site specific column to collect its ID for that scrape
-	public function update($videoId, $column, $siteId)
+	/**
+	 * @param        $videoId
+	 * @param        $column
+	 * @param        $siteId
+	 * @param string $country
+	 * @param int    $hascover
+	 */
+	public function update($videoId, $column, $siteId, $country = '', $hascover = 0)
 	{
-		$country = $this->countryCode($country);
+		if ($country !== '') {
+			$country = $this->countryCode($country);
+		}
 
 		$this->pdo->queryExec(
 				sprintf('
 					UPDATE videos
-					SET %s = %d
+					SET %s = %d, countries_id = %s,
 					WHERE id = %d',
 					$column,
 					$siteId,
+					$country,
 					$videoId
 				)
 		);
 	}
 
+	/**
+	 * @param $id
+	 *
+	 * @return bool|\PDOStatement
+	 */
 	public function delete($id)
 	{
 		return $this->pdo->queryExec(
-					sprintf("
-						DELETE
-						FROM videos
-						WHERE id = %d",
-						$id
-					)
+				sprintf("
+					DELETE
+					FROM videos
+					WHERE id = %d",
+					$id
+				)
 		);
 	}
 
-	public function getByTitleQuery($title)
+	/**
+	 * @param $videoId
+	 */
+	public function setCoverFound($videoId)
 	{
-		if ($title) {
-			return $this->pdo->queryOneRow(
-						sprintf("
-							SELECT id
-							FROM videos
-							WHERE title = %s
-							AND type = 0",
-							$this->pdo->escapeString($title)
-						)
-			);
-		}
-	}
-
-	public function getByTitleLikeQuery($title)
-	{
-		$string = '"\'"';
-		if ($title) {
-			return $this->pdo->queryOneRow(
-						sprintf("
-							SELECT id
-							FROM videos
-							WHERE REPLACE(REPLACE(title, %s, ''), '!', '') %s
-							AND type = 0",
-							$string,
-							$this->pdo->likeString($title, false, true)
-						)
-			);
-		}
+		$this->pdo->queryExec(
+			sprintf("
+					UPDATE tv_info
+					SET image = 1
+					WHERE videos_id = %d",
+					$videoId
+			)
+		);
 	}
 
 	/**
@@ -317,6 +349,48 @@ class TV
 	}
 
 	/**
+	 * @param $title
+	 *
+	 * @return array|bool
+	 */
+	public function getByTitleQuery($title)
+	{
+		if ($title) {
+			return $this->pdo->queryOneRow(
+						sprintf("
+							SELECT id
+							FROM videos
+							WHERE title = %s
+							AND type = 0",
+							$this->pdo->escapeString($title)
+						)
+			);
+		}
+	}
+
+	/**
+	 * @param $title
+	 *
+	 * @return array|bool
+	 */
+	public function getByTitleLikeQuery($title)
+	{
+		$string = '"\'"';
+		if ($title) {
+			return $this->pdo->queryOneRow(
+						sprintf("
+							SELECT id
+							FROM videos
+							WHERE REPLACE(REPLACE(title, %s, ''), '!', '') %s
+							AND type = 0",
+							$string,
+							$this->pdo->likeString($title, false, true)
+						)
+			);
+		}
+	}
+
+	/**
 	 * Get video info from a Site ID and column.
 	 *
 	 * @param string $column
@@ -335,7 +409,7 @@ class TV
 							$id
 						)
 		);
-		return (isset($videoArr['id']) ? $videoArr['id'] : 0);
+		return (isset($videoArr['id']) ? $videoArr['id'] : false);
 	}
 
 	/**
@@ -357,17 +431,15 @@ class TV
 							$id
 						)
 		);
-		return (isset($videoArr[$column]) ? $videoArr[$column] : 0);
+		return (isset($videoArr[$column]) ? $videoArr[$column] : false);
 	}
 
 	/**
-	 * Get episode info with a video/series/episode ID.
+	 * @param $id
+	 * @param $series
+	 * @param $episode
 	 *
-	 * @param int $id
-	 * @param int $season
-	 * @param int $episode
-	 *
-	 * @return array|bool
+	 * @return bool
 	 */
 	public function getBySeasonEp($id, $series, $episode)
 	{
@@ -383,7 +455,7 @@ class TV
 								$episode
 							)
 		);
-		return (isset($episodeArr['id']) ? $episodeArr['id'] : 0);
+		return (isset($episodeArr['id']) ? $episodeArr['id'] : false);
 	}
 
 	/**
@@ -411,6 +483,11 @@ class TV
 		return $country;
 	}
 
+	/**
+	 * @param $str
+	 *
+	 * @return string
+	 */
 	public function cleanName($str)
 	{
 		$str = str_replace(['.', '_'], ' ', $str);
@@ -433,6 +510,11 @@ class TV
 		return trim($str);
 	}
 
+	/**
+	 * @param $relname
+	 *
+	 * @return array|bool
+	 */
 	public function parseNameEpSeason($relname)
 	{
 		$showInfo = ['name' => '', 'season' => '', 'episode' => '', 'seriesfull' => '', 'airdate' => '', 'country' => '', 'year' => '', 'cleanname' => ''];
@@ -624,6 +706,12 @@ class TV
 		return false;
 	}
 
+	/**
+	 * @param $ourName
+	 * @param $tvrName
+	 *
+	 * @return bool|float
+	 */
 	public function checkMatch($ourName, $tvrName)
 	{
 		// Clean up name ($ourName is already clean).
@@ -690,6 +778,13 @@ class TV
 		return $date;
 	}
 
+	/**
+	 * @param        $uid
+	 * @param string $letter
+	 * @param string $showname
+	 *
+	 * @return array
+	 */
 	public function getSeriesList($uid, $letter = "", $showname = "")
 	{
 		$rsql = '';
