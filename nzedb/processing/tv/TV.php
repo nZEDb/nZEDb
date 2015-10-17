@@ -133,7 +133,7 @@ class TV
 
 	/**
 	 * @param     $column
-	 * @param     $siteid
+	 * @param     $siteId
 	 * @param     $title
 	 * @param     $summary
 	 * @param     $country
@@ -153,7 +153,7 @@ class TV
 		// Check if video already exists based on site info
 		// if that fails be sure we're not inserting duplicates by checking the title
 
-		$videoId = $this->getBySiteId($column, $siteid);
+		$videoId = $this->getBySiteId($column, $siteId);
 
 		if ($videoId === false) {
 			$videoId = $this->getByTitleQuery($title);
