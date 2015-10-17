@@ -811,7 +811,7 @@ class Forking extends \fork_daemon
 						FROM releases
 						WHERE nzbstatus = %d
 						AND size > 1048576
-						AND rageid = -1
+						AND tv_episodes_id BETWEEN 0 and -2
 						AND categoryid BETWEEN 5000 AND 5999
 						%s %s
 						LIMIT 1',
@@ -836,7 +836,7 @@ class Forking extends \fork_daemon
 					SELECT LEFT(guid, 1) AS id, %d AS renamed
 					FROM releases
 					WHERE nzbstatus = %d
-					AND rageid = -1
+					AND tv_episodes_id BETWEEN 0 and -2
 					AND size > 1048576
 					AND categoryid BETWEEN 5000 AND 5999
 					%s %s

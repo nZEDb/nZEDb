@@ -10,7 +10,7 @@
 ALTER TABLE releases
 	DROP INDEX ix_releases_rageid,
 	ADD COLUMN videos_id MEDIUMINT(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'FK to videos.id of the parent series.' AFTER categoryid,
-	ADD COLUMN tv_episodes_id MEDIUMINT(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'FK to tv_episodes.id of the episode' AFTER videos_id,
+	ADD COLUMN tv_episodes_id MEDIUMINT(11) SIGNED NOT NULL DEFAULT '0' COMMENT 'FK to tv_episodes.id of the episode' AFTER videos_id,
 	DROP COLUMN rageid,
 	DROP COLUMN season,
 	DROP COLUMN episode,
