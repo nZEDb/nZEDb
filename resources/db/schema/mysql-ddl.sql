@@ -664,7 +664,7 @@ CREATE TABLE         releases (
   completion        FLOAT                          NOT NULL DEFAULT '0',
   categoryid        INT                            NOT NULL DEFAULT '7010',
   videos_id         MEDIUMINT(11) UNSIGNED         NOT NULL COMMENT 'FK to videos.id of the parent series.',
-  tv_episodes_id    MEDIUMINT(11) UNSIGNED         NOT NULL COMMENT 'FK to tv_episodes.id for the episode.',
+  tv_episodes_id    MEDIUMINT(11) SIGNED         NOT NULL COMMENT 'FK to tv_episodes.id for the episode.',
   imdbid            MEDIUMINT(7) UNSIGNED ZEROFILL NULL,
   xxxinfo_id        INT SIGNED                     NOT NULL DEFAULT '0',
   musicinfoid       INT                            NULL,
@@ -953,7 +953,7 @@ CREATE TABLE tv_episodes (
   se_complete  VARCHAR(10)   COLLATE utf8_unicode_ci NOT NULL COMMENT 'String version of Series/Episode as taken from release subject (i.e. S02E21+22).',
   title        VARCHAR(255)  COLLATE utf8_unicode_ci NOT NULL COMMENT 'Title of the episode.',
   firstaired   DATETIME      NOT NULL COMMENT 'Date of original airing/release.',
-  summary      VARCHAR(1000) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Description/summary of the episode.',
+  summary      VARCHAR(10000) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Description/summary of the episode.',
   PRIMARY KEY (id),
   UNIQUE KEY (videos_id, series, episode)
 )
