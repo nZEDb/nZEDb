@@ -3,37 +3,22 @@
 	<p>{$nodata}</p>
 {else}
 
-	<h1>
-		{if $isadmin || $ismod}
-			<a title="Edit Video data" href="{$smarty.const.WWW_TOP}/admin/rage-edit.php?id={$show.id}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}">{$show.title} </a>
-		{else}
-			{$show.title} /
-		{/if}
+	{$pager = false}
 
-		{if $catname != ''} in {$catname|escape:"htmlall"}{/if}
+	<div class="tvseriesheading container-fluid">
+		<div class="row">
+			<div class="col-xs-9">
+				<h1>
+					{if $isadmin || $ismod}
+						<a title="Edit Video data" href="{$smarty.const.WWW_TOP}/admin/rage-edit.php?id={$show.id}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}">{$show.title} </a>
+					{else}
+						{$show.title}
+					{/if}
 
-	</h1>
-	<div class="tvseriesheading">
-		<div class="col-xs-9">
-			<p>
-				<span class="descinitial">{$seriessummary|escape:"htmlall"|nl2br|magicurl|truncate:"1500":" <a class=\"descmore\" href=\"#\">more...</a>"}</span>   {if $seriessummary|strlen > 1500}<span class="descfull">{$seriessummary|escape:"htmlall"|nl2br|magicurl}</span>{/if}
-			</p>
-
-		</div>
-		<div class="col-xs-3" style="text-align:center">
-			{if $show.image != 0}<img class="shadow img-thumbnail" alt="{$show.title} Logo" src="{$smarty.const.WWW_TOP}/covers/tvshows/{$show.id}.jpg">{/if}
-		</div>
-		<b>My Shows</b>:
-
-		{if $myshows.id != ''}
-			&nbsp;[ <a href="{$smarty.const.WWW_TOP}/myshows/edit/{$show.id}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows" rel="edit" name="series{$show.id}" title="Edit">Edit</a> ]
-																																																					&nbsp;[ <a href="{$smarty.const.WWW_TOP}/myshows/delete/{$show.id}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows" rel="remove" name="series{$show.id}" title="Remove from My Shows">Remove</a> ]
-		{else}
-			&nbsp;[ <a href="{$smarty.const.WWW_TOP}/myshows/add/{$show.id}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows" rel="add" name="series{$show.id}" title="Add to My Shows">Add</a> ]
-		{/if}
-
-		<form id="nzb_multi_operations_form" action="get">
-			<div class="container nzb_multi_operations text-right" style="padding-bottom: 4px;">
+					{if $catname != ''} in {$catname|escape:"htmlall"}{/if}
+				</h1>
+			</div>
+			<form id="col-xs-3 nzb_multi_operations_form" action="get">
 				View:
 				<span><i class="icon-th-list"></i></span>&nbsp;&nbsp;
 				<a href="{$smarty.const.WWW_TOP}/browse?t={$category}"><i class="icon-align-justify"></i></a>
@@ -42,11 +27,31 @@
 					Admin: <button type="button" class="btn btn-warning btn-sm nzb_multi_operations_edit">Edit</button>
 					<button type="button" class="btn btn-danger btn-sm nzb_multi_operations_delete">Delete</button>
 				{/if}
+		</div>
+		<div class="row">
+			<div class="col-xs-9 text-left" style="margin:10px 0px 0px 0px">
+				<p>
+					<span class="descinitial">{$seriessummary|escape:"htmlall"|nl2br|magicurl|truncate:"1500":" <a class=\"descmore\" href=\"#\">more...</a>"}</span>   {if $seriessummary|strlen > 1500}<span class="descfull">{$seriessummary|escape:"htmlall"|nl2br|magicurl}</span>{/if}
+				</p>
 			</div>
-
-			{include file='multi-operations.tpl'}
-
-	</div>
+			<div class="col-xs-3 text-center">
+				{if $show.image != 0}<img class="shadow img-thumbnail" alt="{$show.title} Logo" src="{$smarty.const.WWW_TOP}/covers/tvshows/{$show.id}.jpg">{/if}
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-6 text-left" style="margin:5px 0px 0px 0px">
+			<b>My Shows</b>:
+			{if $myshows.id != ''}
+				&nbsp;[ <a href="{$smarty.const.WWW_TOP}/myshows/edit/{$show.id}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows" rel="edit" name="series{$show.id}" title="Edit">Edit</a> ]
+																																																						&nbsp;[ <a href="{$smarty.const.WWW_TOP}/myshows/delete/{$show.id}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows" rel="remove" name="series{$show.id}" title="Remove from My Shows">Remove</a> ]
+			{else}
+				&nbsp;[ <a href="{$smarty.const.WWW_TOP}/myshows/add/{$show.id}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows" rel="add" name="series{$show.id}" title="Add to My Shows">Add</a> ]
+			{/if}
+			</div>
+			<div class="col-xs-6 text-right" style="margin:5px 0px 0px 0px">
+				{include file='multi-operations.tpl'}
+			</div>
+		</div>
 
 	<a id="latest"></a>
 	<table class="table table-hover table-condensed table-highlight data" id="browsetable">
@@ -107,7 +112,7 @@
 						{/if}
 					</td>
 					<td style="text-align:center;"><a title="View comments for {$result.searchname|escape:"htmlall"}" href="{$smarty.const.WWW_TOP}/details/{$result.guid}#comments">{$result.comments} cmt{if $result.comments != 1}s{/if}</a><br/>{$result.grabs} grab{if $result.grabs != 1}s{/if}</td>
-					<td class="icons" style="text-align:center;">
+					<td class="icons text-center">
 						<div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}">&nbsp;</a></div>
 						{if $sabintegrated}<div class="icon icon_sab" title="Send to my Queue"></div>{/if}
 						<div class="icon icon_cart" title="Add to Cart"></div>
