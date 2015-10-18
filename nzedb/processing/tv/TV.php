@@ -201,19 +201,23 @@ class TV
 	 */
 	public function addEpisode($videoId, $seriesNo, $episodeNo, $seComplete, $title, $firstaired, $summary)
 	{
-		$episodeId = $this->pdo->queryInsert(
-					sprintf('
+		$episodeId = $this->getBySeasonEp($videoId, $seriesNo, $episodeNo, $firstaired);
+
+		if ($episodeId === false) {
+			$episodeId = $this->pdo->queryInsert(
+				sprintf('
 						INSERT INTO tv_episodes (videos_id, series, episode, se_complete, title, firstaired, summary)
 						VALUES (%d, %d, %d, %s, %s, %s, %s)',
-						$videoId,
-						$seriesNo,
-						$episodeNo,
-						$this->pdo->escapeString($seComplete),
-						$this->pdo->escapeString($title),
-						$this->pdo->escapeString($firstaired),
-						$this->pdo->escapeString($summary)
-					)
-		);
+					$videoId,
+					$seriesNo,
+					$episodeNo,
+					$this->pdo->escapeString($seComplete),
+					$this->pdo->escapeString($title),
+					$this->pdo->escapeString($firstaired),
+					$this->pdo->escapeString($summary)
+				)
+			);
+		}
 		return $episodeId;
 	}
 
