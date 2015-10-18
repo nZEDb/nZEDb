@@ -1052,7 +1052,7 @@ class Releases
 	}
 
 	/**
-	 * @param        $rageId
+	 * @param        $videosId
 	 * @param string $series
 	 * @param string $episode
 	 * @param int    $offset
@@ -1062,6 +1062,7 @@ class Releases
 	 * @param int    $maxAge
 	 *
 	 * @return array
+	 * @internal param $rageId
 	 */
 	public function searchbyRageId($videosId, $series = '', $episode = '', $offset = 0, $limit = 100, $name = '', $cat = [-1], $maxAge = -1)
 	{
@@ -1074,7 +1075,7 @@ class Releases
 			($name !== '' ? $this->releaseSearch->getFullTextJoinString() : ''),
 			NZB::NZB_ADDED,
 			$this->showPasswords,
-			($videosId != -1 ? sprintf(' AND videos_id = %d ', $videosId) : ''),
+			($videosId != -1 ? sprintf(' AND v.id = %d ', $videosId) : ''),
 			($series != '' ? sprintf(' AND UPPER(tve.series) = UPPER(%s)', $this->pdo->escapeString(((is_numeric($series) && strlen($series) != 4) ? sprintf('S%02d', $series) : $series))) : ''),
 			($episode != '' ? sprintf(' AND tve.episode = %s', $episode) : ''),
 			($name !== '' ? $this->releaseSearch->getSearchSQL(['searchname' => $name]) : ''),
@@ -1084,9 +1085,9 @@ class Releases
 
 		$baseSql = sprintf(
 			"SELECT r.*,
-					v.title, v.countries_id, v.started, v.imdb, v.tmdb, v.tvmaze, v.tvrage, v.source
-					tvi.summary, tvi.publisher, tvi.image
-					tve.series, tve.episode, tve.se_complete, tve.title, tve.firstaired, tve.summary
+					v.title, v.countries_id, v.started, v.imdb, v.tmdb, v.tvmaze, v.tvrage, v.source,
+					tvi.summary, tvi.publisher, tvi.image,
+					tve.series, tve.episode, tve.se_complete, tve.title, tve.firstaired, tve.summary,
 					concat(cp.title, ' > ', c.title) AS category_name,
 				%s AS category_ids,
 				groups.name AS group_name,
@@ -1114,6 +1115,7 @@ class Releases
 			$limit,
 			$offset
 		);
+		var_dump($sql);
 		$releases = $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
 		if ($releases && count($releases)) {
 			$releases[0]['_totalrows'] = $this->getPagerCount($baseSql);

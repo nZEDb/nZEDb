@@ -320,7 +320,7 @@ class TVDB extends TV
 			'title'       => (string)$episode->name,
 			'season'      => (int)$episode->season,
 			'episode'     => (int)$episode->number,
-			'se_complete' => (string)'S' . sprintf('%03d', $episode->season) . 'E' . sprintf('%03d', $episode->number),
+			'se_complete' => (string)'S' . sprintf('%02d', $episode->season) . 'E' . sprintf('%02d', $episode->number),
 			'firstaired'  => (string)$episode->firstAired->format($this->timeFormat),
 			'summary'     => (string)$episode->overview
 		];

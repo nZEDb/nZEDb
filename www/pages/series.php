@@ -31,7 +31,7 @@ if (isset($_GET["id"]) && ctype_digit($_GET['id'])) {
 	} elseif (!$rel) {
 		$page->smarty->assign("nodata", "No releases for this series.");
 	} else {
-		$myshows = $us->getShow($page->users->currentUserId(), $show[0]['videos_id']);
+		$myshows = $us->getShow($page->users->currentUserId(), $show['id']);
 
 		// Sort releases by season, episode, date posted.
 		$series = $episode = $posted = array();
@@ -44,10 +44,10 @@ if (isset($_GET["id"]) && ctype_digit($_GET['id'])) {
 
 		$seasons = array();
 		foreach ($rel as $r) {
-			$seasons[$r['season']][$r['episode']][] = $r;
+			$series[$r['series']][$r['episode']][] = $r;
 		}
 
-		$page->smarty->assign('seasons', $seasons);
+		$page->smarty->assign('seasons', $series);
 		$page->smarty->assign('show', $show);
 		$page->smarty->assign('myshows', $myshows);
 
@@ -116,7 +116,7 @@ if (isset($_GET["id"]) && ctype_digit($_GET['id'])) {
 	$page->smarty->assign('serieslist', $serieslist);
 	$page->smarty->assign('seriesrange', range('A', 'Z'));
 	$page->smarty->assign('seriesletter', $letter);
-	$page->smarty->assign('ragename', $showname);
+	$page->smarty->assign('showname', $showname);
 
 	$page->content = $page->smarty->fetch('viewserieslist.tpl');
 	$page->render();
