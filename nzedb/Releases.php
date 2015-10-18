@@ -1063,19 +1063,20 @@ class Releases
 	 *
 	 * @return array
 	 */
-	public function searchbyRageId($rageId, $series = '', $episode = '', $offset = 0, $limit = 100, $name = '', $cat = [-1], $maxAge = -1)
+	public function searchbyRageId($videosId, $series = '', $episode = '', $offset = 0, $limit = 100, $name = '', $cat = [-1], $maxAge = -1)
 	{
 		$whereSql = sprintf(
 			"%s
 			WHERE r.categoryid BETWEEN 5000 AND 5999
+			AND v.type = 0
 			AND r.nzbstatus = %d
 			AND r.passwordstatus %s %s %s %s %s %s %s",
 			($name !== '' ? $this->releaseSearch->getFullTextJoinString() : ''),
 			NZB::NZB_ADDED,
 			$this->showPasswords,
-			($rageId != -1 ? sprintf(' AND rageid = %d ', $rageId) : ''),
-			($series != '' ? sprintf(' AND UPPER(r.season) = UPPER(%s)', $this->pdo->escapeString(((is_numeric($series) && strlen($series) != 4) ? sprintf('S%02d', $series) : $series))) : ''),
-			($episode != '' ? sprintf(' AND r.episode %s', $this->pdo->likeString((is_numeric($episode) ? sprintf('E%02d', $episode) : $episode))) : ''),
+			($videosId != -1 ? sprintf(' AND videos_id = %d ', $videosId) : ''),
+			($series != '' ? sprintf(' AND UPPER(tve.series) = UPPER(%s)', $this->pdo->escapeString(((is_numeric($series) && strlen($series) != 4) ? sprintf('S%02d', $series) : $series))) : ''),
+			($episode != '' ? sprintf(' AND tve.episode = %s', $episode) : ''),
 			($name !== '' ? $this->releaseSearch->getSearchSQL(['searchname' => $name]) : ''),
 			$this->categorySQL($cat),
 			($maxAge > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxAge) : '')
@@ -1083,12 +1084,18 @@ class Releases
 
 		$baseSql = sprintf(
 			"SELECT r.*,
-				concat(cp.title, ' > ', c.title) AS category_name,
+					v.title, v.countries_id, v.started, v.imdb, v.tmdb, v.tvmaze, v.tvrage, v.source
+					tvi.summary, tvi.publisher, tvi.image
+					tve.series, tve.episode, tve.se_complete, tve.title, tve.firstaired, tve.summary
+					concat(cp.title, ' > ', c.title) AS category_name,
 				%s AS category_ids,
 				groups.name AS group_name,
 				rn.id AS nfoid,
 				re.releaseid AS reid
 			FROM releases r
+			INNER JOIN videos v ON r.videos_id = v.id
+			INNER JOIN tv_info tvi ON v.id = tvi.videos_id
+			INNER JOIN tv_episodes tve ON r.tv_episodes_id = tve.id
 			INNER JOIN category c ON c.id = r.categoryid
 			INNER JOIN groups ON groups.id = r.group_id
 			LEFT OUTER JOIN video_data re ON re.releaseid = r.id

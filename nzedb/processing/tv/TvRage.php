@@ -34,7 +34,7 @@ class TvRage extends TV
 
 	public function processTvRage($groupID = '', $guidChar = '', $lookupSetting = 1, $local = false)
 	{
-		$res = $this->getTvReleases($groupID, $guidChar, $lookupSetting, $local, parent::PROCESS_TVRAGE);
+		$res = $this->getTvReleases($groupID, $guidChar, $local, parent::PROCESS_TVRAGE);
 
 		$tvcount = $res->rowCount();
 
@@ -95,50 +95,6 @@ class TvRage extends TV
 				}
 			}
 		}
-	}
-
-	/**
-	 * Get rage info for a rage ID.
-	 *
-	 * @param $id
-	 *
-	 * @return array
-	 */
-	public function getByRageID($id)
-	{
-		return $this->pdo->queryOneRow(
-					sprintf("
-						SELECT *
-						FROM videos
-						WHERE tvrage = %d",
-						$id
-					)
-		);
-	}
-
-	public function getRange($start, $num, $showname = "")
-	{
-		if ($start === false) {
-			$limit = "";
-		} else {
-			$limit = "LIMIT " . $num . " OFFSET " . $start;
-		}
-
-		$rsql = '';
-		if ($showname != "") {
-			$rsql .= sprintf("AND v.title LIKE %s ", $this->pdo->escapeString("%" . $showname . "%"));
-		}
-
-		return $this->pdo->query(
-					sprintf("
-						SELECT v.id, v.tvrage, v.title, v.summary, v.started
-						FROM videos v
-						WHERE 1=1 %s
-						ORDER BY v.tvrage ASC %s",
-						$rsql,
-						$limit
-					)
-		);
 	}
 
 	public function updateRageInfo($rageid, $tvrShow)
