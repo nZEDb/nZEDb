@@ -80,7 +80,7 @@ if (isset($_GET['id'])) {
 	if ($data['xxxinfo_id'] != '' && $data['xxxinfo_id'] != 0) {
 		$XXX   = new XXX(['Settings' => $page->settings]);
 		$xxx = $XXX->getXXXInfo($data['xxxinfo_id']);
-		if ($xxx && isset($xInfo['title'])) {
+		if ($xxx && isset($xxx['title'])) {
 			$xxx['title']    = str_replace(['/', '\\'], '', $xxx['title']);
 			$xxx['actors']   = $XXX->makeFieldLinks($xxx, 'actors');
 			$xxx['genre']    = $XXX->makeFieldLinks($xxx, 'genre');
