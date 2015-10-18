@@ -23,7 +23,7 @@ if (isset($_GET["id"]) && ctype_digit($_GET['id'])) {
 	$catarray = array();
 	$catarray[] = $category;
 
-	$rel = $releases->searchbyRageId($_GET["id"], '', '', 0, 1000, "", $catarray, -1);
+	$rel = $releases->searchbyVideoId($_GET["id"], '', '', 0, 1000, "", $catarray, -1);
 	$show = $tvshow->getByVideoID($_GET['id']);
 
 	if (!$show) {
@@ -42,7 +42,7 @@ if (isset($_GET["id"]) && ctype_digit($_GET['id'])) {
 		}
 		array_multisort($series, SORT_DESC, $episode, SORT_DESC, $posted, SORT_DESC, $rel);
 
-		$seasons = array();
+		$series = array();
 		foreach ($rel as $r) {
 			$series[$r['series']][$r['episode']][] = $r;
 		}
@@ -53,16 +53,16 @@ if (isset($_GET["id"]) && ctype_digit($_GET['id'])) {
 
 		//get series name(s), description, country and genre
 		$seriestitles = $seriesdescription = $seriescountry = array();
-		foreach ($show as $r) {
-			$seriestitles[] = $r['title'];
-			if (!empty($r['summary'])) {
-				$seriessummary[] = $r['summary'];
-			}
+		$seriestitles[] = $show['title'];
 
-			if (!empty($r['countries_id'])) {
-				$seriescountry[] = $r['countries_id'];
-			}
+		if (!empty($show['summary'])) {
+			$seriessummary[] = $show['summary'];
 		}
+
+		if (!empty($show['countries_id'])) {
+			$seriescountry[] = $show['countries_id'];
+		}
+
 		$seriestitles = implode('/', array_map("trim", $seriestitles));
 		$page->smarty->assign('seriestitles', $seriestitles);
 		$page->smarty->assign('seriessummary', array_shift($seriessummary));
@@ -82,6 +82,7 @@ if (isset($_GET["id"]) && ctype_digit($_GET['id'])) {
 		}
 		$page->smarty->assign('catname', $cdata['title']);
 		$page->smarty->assign('category', $catid);
+		$page->smarty->assign("nodata", '');
 	}
 	$page->content = $page->smarty->fetch('viewseries.tpl');
 	$page->render();

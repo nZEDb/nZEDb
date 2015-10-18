@@ -1064,7 +1064,7 @@ class Releases
 	 * @return array
 	 * @internal param $rageId
 	 */
-	public function searchbyRageId($videosId, $series = '', $episode = '', $offset = 0, $limit = 100, $name = '', $cat = [-1], $maxAge = -1)
+	public function searchbyVideoId($videosId, $series = '', $episode = '', $offset = 0, $limit = 100, $name = '', $cat = [-1], $maxAge = -1)
 	{
 		$whereSql = sprintf(
 			"%s
@@ -1115,7 +1115,7 @@ class Releases
 			$limit,
 			$offset
 		);
-		var_dump($sql);
+
 		$releases = $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
 		if ($releases && count($releases)) {
 			$releases[0]['_totalrows'] = $this->getPagerCount($baseSql);
