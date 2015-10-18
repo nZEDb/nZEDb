@@ -1673,15 +1673,18 @@ class Releases
 	public function getNewestTV()
 	{
 		return $this->pdo->query(
-			"SELECT r.rageid, r.guid, r.name, r.searchname, r.size, r.completion,
+			"SELECT r.videos_id, r.guid, r.name, r.searchname, r.size, r.completion,
 				r.postdate, r.categoryid, r.comments, r.grabs,
-				tv.id AS tvid, tv.releasetitle AS tvtitle, tv.hascover
+				v.id AS tvid, v.title AS tvtitle, v.tvdb, v.tvrage,
+				tvi.image
 			FROM releases r
-			INNER JOIN tvrage_titles tv USING (rageid)
+			INNER JOIN videos v ON r.videos_id = v.id
+			INNER JOIN tv_info tvi ON r.videos_id = tvi.videos_id
 			WHERE r.categoryid BETWEEN 5000 AND 5999
-			AND tv.rageid > 0
-			AND tv.hascover = 1
-			AND r.id in (select max(id) from releases where rageid > 0 group by rageid)
+			AND v.id > 0
+			AND v.type = 0
+			AND tvi.image = 1
+			AND r.id in (select max(id) from releases where videos_id > 0 group by videos_id)
 			ORDER BY r.postdate DESC
 			LIMIT 24", true, nZEDb_CACHE_EXPIRY_LONG
 		);
