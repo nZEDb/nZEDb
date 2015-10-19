@@ -25,7 +25,7 @@ Class Videos
 	}
 
 	/**
-	 * Get rage info for a rage ID.
+	 * Get info from tables for the provided ID.
 	 *
 	 * @param $id
 	 *
