@@ -208,11 +208,13 @@ class Releases
 					(SELECT COUNT(userid) FROM dnzb_failures WHERE guid = r.guid) AS failed,
 					g.name AS group_name,
 					rn.id AS nfoid,
-					re.releaseid AS reid
+					re.releaseid AS reid,
+					tve.title, tve.firstaired
 				FROM releases r
 				STRAIGHT_JOIN groups g ON g.id = r.group_id
 				STRAIGHT_JOIN category c ON c.id = r.categoryid
 				INNER JOIN category cp ON cp.id = c.parentid
+				LEFT OUTER JOIN tv_episodes tve ON r.tv_episodes_id = tve.id
 				LEFT OUTER JOIN video_data re ON re.releaseid = r.id
 				LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
 				WHERE r.nzbstatus = %d
@@ -455,13 +457,13 @@ class Releases
 	 * @param     $cat
 	 * @param int $offset
 	 * @param int $userID
-	 * @param int $rageID
+	 * @param int $videosId
 	 * @param int $aniDbID
 	 * @param int $airDate
 	 *
 	 * @return array
 	 */
-	public function getRss($cat, $offset, $rageID, $aniDbID, $userID = 0, $airDate = -1)
+	public function getRss($cat, $offset, $videosId, $aniDbID, $userID = 0, $airDate = -1)
 	{
 		$catSearch = $cartSearch = '';
 
@@ -506,7 +508,7 @@ class Releases
 				$this->showPasswords,
 				NZB::NZB_ADDED,
 				$catSearch,
-				($rageID > -1 ? sprintf(' AND r.rageid = %d %s ', $rageID, ($catSearch == '' ? $catLimit : '')) : ''),
+				($videosId > -1 ? sprintf(' AND r.videos_id = %d %s ', $videosId, ($catSearch == '' ? $catLimit : '')) : ''),
 				($aniDbID > -1 ? sprintf(' AND r.anidbid = %d %s ', $aniDbID, ($catSearch == '' ? $catLimit : '')) : ''),
 				($airDate > -1 ? sprintf(' AND r.tvairdate >= DATE_SUB(CURDATE(), INTERVAL %d DAY) ', $airDate) : ''),
 				(' LIMIT 0,' . ($offset > 100 ? 100 : $offset))
@@ -1318,11 +1320,16 @@ class Releases
 			$gSql = sprintf('r.guid = %s', $this->pdo->escapeString($guid));
 		}
 		$sql = sprintf(
-			"SELECT r.*, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids,
-				g.name AS group_name FROM releases r
+			"SELECT r.*,
+				CONCAT(cp.title, ' > ', c.title) AS category_name,
+				CONCAT(cp.id, ',', c.id) AS category_ids,
+				g.name AS group_name,
+				tve.title, tve.firstaired
+				FROM releases r
 			INNER JOIN groups g ON g.id = r.group_id
 			INNER JOIN category c ON c.id = r.categoryid
 			INNER JOIN category cp ON cp.id = c.parentid
+			LEFT OUTER JOIN tv_episodes tve ON r.tv_episodes_id = tve.id
 			WHERE %s",
 			$gSql
 		);
