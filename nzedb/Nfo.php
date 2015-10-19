@@ -339,7 +339,6 @@ class Nfo
 				]
 			);
 			$movie = new Movie(['Echo' => $this->echo, 'Settings' => $this->pdo]);
-			$tvRage = new TvRage(['Echo' => $this->echo, 'Settings' => $this->pdo]);
 
 			foreach ($res as $arr) {
 				$fetchedBinary = $nzbContents->getNFOfromNZB($arr['guid'], $arr['id'], $arr['group_id'], $groups->getByNameByID($arr['group_id']));
@@ -356,8 +355,9 @@ class Nfo
 					$ret++;
 					$movie->doMovieUpdate($fetchedBinary, 'nfo', $arr['id'], $processImdb);
 
-					// If set scan for tvrage info.
-					if ($processTvrage == 1) {
+					// If set scan for tvrage info. Disabled for now while TvRage is down TODO: Add Other Scraper Checks
+					/*if ($processTvrage == 1) {
+						$tvRage = new TvRage(['Echo' => $this->echo, 'Settings' => $this->pdo]);
 						$rageId = $this->parseRageId($fetchedBinary);
 						if ($rageId !== false) {
 							$show = $tvRage->parseNameEpSeason($arr['name']);
@@ -372,7 +372,7 @@ class Nfo
 								}
 							}
 						}
-					}
+					} */
 				}
 			}
 		}
