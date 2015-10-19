@@ -257,8 +257,10 @@ class TV
 	{
 		return $this->pdo->queryExec(
 				sprintf("
-					DELETE
-					FROM videos
+					DELETE v, tvi, tve
+					FROM videos v
+					LEFT JOIN tv_info tvi ON v.id = tvi.videos_id
+					LEFT JOIN tv_episodes tve ON v.id = tve.videos_id
 					WHERE id = %d",
 					$id
 				)

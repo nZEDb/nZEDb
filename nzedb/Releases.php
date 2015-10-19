@@ -1022,9 +1022,11 @@ class Releases
 				groups.name AS group_name,
 				rn.id AS nfoid,
 				re.releaseid AS reid,
-				cp.id AS categoryparentid
+				cp.id AS categoryparentid,
+				tve.firstaired
 			FROM releases r
 			LEFT OUTER JOIN video_data re ON re.releaseid = r.id
+			LEFT OUTER JOIN tv_episodes tve ON r.tv_episodes_id = tve.id
 			LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
 			INNER JOIN groups ON groups.id = r.group_id
 			INNER JOIN category c ON c.id = r.categoryid
@@ -1413,20 +1415,20 @@ class Releases
 	}
 
 	/**
-	 * @param int $rageID
+	 * @param $videoId
 	 *
-	 * @return int
+	 * @return bool|\PDOStatement
 	 */
-	public function removeRageIdFromReleases($rageID)
+	public function removeRageIdFromReleases($videoId)
 	{
-		$res = $this->pdo->queryOneRow(
-			sprintf('SELECT COUNT(r.id) AS num FROM releases r WHERE rageid = %d', $rageID)
+		return $this->pdo->queryExec(
+				sprintf('
+					UPDATE releases
+					SET videos_id = 0, tv_episodes_id = 0
+					WHERE videos_id = %d',
+					$videoId
+				)
 		);
-		$this->pdo->queryExec(
-			sprintf('UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL WHERE rageid = %d', $rageID)
-		);
-
-		return ($res === false ? 0 : $res['num']);
 	}
 
 	/**

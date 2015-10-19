@@ -66,15 +66,38 @@ Class Videos
 
 		return $this->pdo->query(
 			sprintf("
-						SELECT v.id, v.tvrage, v.title, tvi.summary, v.started
+						SELECT v.*,
+							tvi.summary, tvi.publisher, tvi.image
 						FROM videos v
 						INNER JOIN tv_info tvi ON v.id = tvi.videos_id
 						WHERE 1=1 %s
-						ORDER BY v.tvrage ASC %s",
+						ORDER BY v.id ASC %s",
 				$rsql,
 				$limit
 			)
 		);
+	}
+
+	/**
+	 * @param string $showname
+	 *
+	 * @return mixed
+	 */
+	public function getCount($showname = "")
+	{
+		$rsql = '';
+		if ($showname != "") {
+			$rsql .= sprintf("AND v.title LIKE %s ", $this->pdo->escapeString("%" . $showname . "%"));
+		}
+		$res = $this->pdo->queryOneRow(
+			sprintf("
+						SELECT COUNT(v.id) AS num
+						FROM videos v
+						WHERE 1=1 %s",
+				$rsql
+			)
+		);
+		return $res["num"];
 	}
 
 	/**

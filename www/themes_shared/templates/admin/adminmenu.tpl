@@ -69,10 +69,10 @@
 						<li class="last"><a href="{$smarty.const.WWW_TOP}/movie-list.php">View</a></li>
 					</ul>
 				</li>
-				<li class="has-sub"><a href="#">TVRage</a>
+				<li class="has-sub"><a href="#">TV Shows</a>
 					<ul>
-						<li><a href="{$smarty.const.WWW_TOP}/rage-edit.php?action=add">Add</a></li>
-						<li class="last"><a href="{$smarty.const.WWW_TOP}/rage-list.php">View</a></li>
+						<li><a href="{$smarty.const.WWW_TOP}/show-edit.php?action=add">Add</a></li>
+						<li class="last"><a href="{$smarty.const.WWW_TOP}/show-list.php">View</a></li>
 					</ul>
 				</li>
 				<li><a href="{$smarty.const.WWW_TOP}/anidb-list.php">View AniDB</a></li>
