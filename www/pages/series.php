@@ -23,7 +23,7 @@ if (isset($_GET["id"]) && ctype_digit($_GET['id'])) {
 	$catarray = array();
 	$catarray[] = $category;
 
-	$rel = $releases->searchbyVideoId($_GET["id"], '', '', 0, 1000, "", $catarray, -1);
+	$rel = $releases->searchbyVideoId($_GET["id"], '', 0, '', '', 0, 1000, "", $catarray, -1);
 	$show = $tvshow->getByVideoID($_GET['id']);
 
 	if (!$show) {

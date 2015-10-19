@@ -43,7 +43,7 @@
 			<b>My Shows</b>:
 			{if $myshows.id != ''}
 				&nbsp;[ <a href="{$smarty.const.WWW_TOP}/myshows/edit/{$show.id}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows" rel="edit" name="series{$show.id}" title="Edit">Edit</a> ]
-																																																						&nbsp;[ <a href="{$smarty.const.WWW_TOP}/myshows/delete/{$show.id}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows" rel="remove" name="series{$show.id}" title="Remove from My Shows">Remove</a> ]
+				&nbsp;[ <a href="{$smarty.const.WWW_TOP}/myshows/delete/{$show.id}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows" rel="remove" name="series{$show.id}" title="Remove from My Shows">Remove</a> ]
 			{else}
 				&nbsp;[ <a href="{$smarty.const.WWW_TOP}/myshows/add/{$show.id}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows" rel="add" name="series{$show.id}" title="Add to My Shows">Add</a> ]
 			{/if}

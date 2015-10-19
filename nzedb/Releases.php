@@ -1057,6 +1057,8 @@ class Releases
 
 	/**
 	 * @param        $videosId
+	 * @param string $column
+	 * @param int    $siteID
 	 * @param string $series
 	 * @param string $episode
 	 * @param int    $offset
@@ -1066,21 +1068,21 @@ class Releases
 	 * @param int    $maxAge
 	 *
 	 * @return array
-	 * @internal param $rageId
 	 */
-	public function searchbyVideoId($videosId, $series = '', $episode = '', $offset = 0, $limit = 100, $name = '', $cat = [-1], $maxAge = -1)
+	public function searchbyVideoId($videosId, $column = '', $siteID = 0, $series = '', $episode = '', $offset = 0, $limit = 100, $name = '', $cat = [-1], $maxAge = -1)
 	{
 		$whereSql = sprintf(
 			"%s
 			WHERE r.categoryid BETWEEN 5000 AND 5999
 			AND v.type = 0
 			AND r.nzbstatus = %d
-			AND r.passwordstatus %s %s %s %s %s %s %s",
+			AND r.passwordstatus %s %s %s %s %s %s %s %s",
 			($name !== '' ? $this->releaseSearch->getFullTextJoinString() : ''),
 			NZB::NZB_ADDED,
 			$this->showPasswords,
-			($videosId != -1 ? sprintf(' AND v.id = %d ', $videosId) : ''),
-			($series != '' ? sprintf(' AND UPPER(tve.series) = UPPER(%s)', $this->pdo->escapeString(((is_numeric($series) && strlen($series) != 4) ? sprintf('S%02d', $series) : $series))) : ''),
+			($videosId != -10 ? sprintf(' AND v.id = %d ', $videosId) : ''),
+			($column !== '' && $siteID !== 0 ? sprintf(' AND %s = %d', $column, $siteID) : ''),
+			($series != '' ? sprintf(' AND tve.series = %s', $this->pdo->escapeString($series)): ''),
 			($episode != '' ? sprintf(' AND tve.episode = %s', $episode) : ''),
 			($name !== '' ? $this->releaseSearch->getSearchSQL(['searchname' => $name]) : ''),
 			$this->categorySQL($cat),
@@ -1370,44 +1372,41 @@ class Releases
 	}
 
 	/**
-	 * @param        $rageID
+	 * @param        $videoId
 	 * @param string $series
 	 * @param string $episode
 	 *
 	 * @return array|bool
 	 */
-	public function getbyRageId($rageID, $series = '', $episode = '')
+	public function getbyVideoId($videoId, $series = '', $episode = '')
 	{
+		$tvWhere = '';
 		if ($series != '') {
-			// Exclude four digit series, which will be the year 2010 etc.
-			if (is_numeric($series) && strlen($series) != 4) {
-				$series = sprintf('S%02d', $series);
-			}
-
-			$series = sprintf(' AND UPPER(r.season) = UPPER(%s)', $this->pdo->escapeString($series));
+			$tvWhere = 'INNER JOIN tv_episodes tve ON r.tv_episodes_id = tve.id';
+			$series = sprintf(' AND tve.series = %s', $this->pdo->escapeString($series));
 		}
 
 		if ($episode != '') {
-			if (is_numeric($episode)) {
-				$episode = sprintf('E%02d', $episode);
-			}
-
-			$episode = sprintf(' AND UPPER(r.episode) = UPPER(%s)', $this->pdo->escapeString($episode));
+			$episode = sprintf(' AND tve.episode = %s', $this->pdo->escapeString($episode));
 		}
 
 		return $this->pdo->queryOneRow(
 			sprintf(
-				"SELECT r.*, CONCAT(cp.title, ' > ', c.title) AS category_name,
-				groups.name AS group_name
+				"SELECT r.*,
+					CONCAT(cp.title, ' > ', c.title) AS category_name,
+					g.name AS group_name
 				FROM releases r
-				INNER JOIN groups ON groups.id = r.group_id
+				INNER JOIN groups g ON g.id = r.group_id
 				INNER JOIN category c ON c.id = r.categoryid
 				INNER JOIN category cp ON cp.id = c.parentid
+				INNER JOIN videos v ON r.videos_id = v.id
+				%s
 				WHERE r.categoryid BETWEEN 5000 AND 5999
 				AND r.passwordstatus %s
-				AND rageid = %d %s %s",
+				AND v.id = %d %s %s",
+				$tvWhere,
 				$this->showPasswords,
-				$rageID,
+				$videoId,
 				$series,
 				$episode
 			)
@@ -1432,20 +1431,20 @@ class Releases
 	}
 
 	/**
-	 * @param int $anidbID
+	 * @param $anidbID
 	 *
-	 * @return mixed
+	 * @return bool|\PDOStatement
 	 */
 	public function removeAnidbIdFromReleases($anidbID)
 	{
-		$res = $this->pdo->queryOneRow(
-			sprintf('SELECT COUNT(r.id) AS num FROM releases r WHERE anidbid = %d', $anidbID)
+		return	$this->pdo->queryExec(
+					sprintf('
+						UPDATE releases
+						SET anidbid = -1,
+						WHERE anidbid = %d',
+						$anidbID
+					)
 		);
-		$this->pdo->queryExec(
-			sprintf('UPDATE releases SET anidbid = -1, episode = NULL, tvtitle = NULL, tvairdate = NULL WHERE anidbid = %d', $anidbID)
-		);
-
-		return ($res === false ? 0 : $res['num']);
 	}
 
 	/**
