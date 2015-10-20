@@ -21,7 +21,7 @@
 namespace nzedb\processing;
 
 /**
- * Parent class for TV/Film and any other children classes.
+ * Parent class for TV/Film and any similar classes to inherit from.
  *
  * @package nzedb\processing
  */
