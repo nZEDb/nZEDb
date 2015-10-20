@@ -19,7 +19,7 @@ class TV extends Videos
 	const SOURCE_TMDB    = 6; // Scrape source was TMDB
 
 	// Anime Sources
-	const SOURCE_ANIDB   = 10 // Scrape source was AniDB
+	const SOURCE_ANIDB   = 10; // Scrape source was AniDB
 
 	const PROCESS_TVDB   =  0; // Process TVDB First
 	const PROCESS_TRAKT  = -1; // Process Trakt Second
@@ -146,11 +146,10 @@ class TV extends Videos
 	 * @param     $started
 	 * @param     $publisher
 	 * @param     $source
-	 * @param int $hasCover
 	 *
 	 * @return int
 	 */
-	public function add($column, $siteId, $title, $summary, $country, $started, $publisher, $source, $hasCover = 0)
+	public function add($column, $siteId, $title, $summary, $country, $started, $publisher, $source)
 	{
 		if ($country !== '') {
 			$country = $this->countryCode($country);
@@ -180,12 +179,11 @@ class TV extends Videos
 			);
 			$this->pdo->queryInsert(
 					sprintf("
-						INSERT INTO tv_info (videos_id, summary, publisher, image)
+						INSERT INTO tv_info (videos_id, summary, publisher)
 						VALUES (%d, %s, %s, %d)",
 						$videoId,
 						$this->pdo->escapeString($summary),
-						$this->pdo->escapeString($publisher),
-						$hasCover
+						$this->pdo->escapeString($publisher)
 					)
 			);
 		} else {
@@ -233,9 +231,8 @@ class TV extends Videos
 	 * @param        $column
 	 * @param        $siteId
 	 * @param string $country
-	 * @param int    $hascover
 	 */
-	public function update($videoId, $column, $siteId, $country = '', $hascover = 0)
+	public function update($videoId, $column, $siteId, $country = '')
 	{
 		if ($country !== '') {
 			$country = $this->countryCode($country);
@@ -392,7 +389,7 @@ class TV extends Videos
 							WHERE REPLACE(REPLACE(title, %s, ''), '!', '') %s
 							AND type = 0",
 							$string,
-							$this->pdo->likeString($title, false, true)
+							$this->pdo->likeString(rtrim($title, '%'), false, false)
 						)
 			);
 		}
