@@ -40,7 +40,13 @@
 				<tr>
 					<td><label for="rageID">Tv Rage Id:</label></td>
 					<td>
-						<input id="rageID" class="short" name="rageID" type="text" value="{$release.rageid}" />
+						<input id="rageID" class="short" name="rageID" type="text" value="{$release.videos_id}" />
+					</td>
+				</tr>
+				<tr>
+					<td><label for="episodeID">TV Episode Id:</label></td>
+					<td>
+						<input id="episodeID" class="short" name="episodeID" type="text" value="{$release.tv_episodes_id}" />
 					</td>
 				</tr>
 				<tr>
@@ -50,19 +56,7 @@
 					</td>
 				</tr>
 				<tr>
-					<td><label for="season">Season:</label></td>
-					<td>
-						<input id="season" class="short" name="season" type="text" value="{$release.season}" />
-					</td>
-				</tr>
-				<tr>
-					<td><label for="episode">Episode:</label></td>
-					<td>
-						<input id="episode" class="short" name="episode" type="text" value="{$release.episode}" />
-					</td>
-				</tr>
-				<tr>
-					<td><label for="episode">IMDB Id:</label></td>
+					<td><label for="imdbID">IMDB Id:</label></td>
 					<td>
 						<input id="imdbID" class="short" name="imdbID" type="text" value="{$release.imdbid}" />
 					</td>

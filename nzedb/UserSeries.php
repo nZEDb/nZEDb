@@ -62,7 +62,7 @@ class UserSeries
 			sprintf("
 				SELECT us.*, v.title
 				FROM user_series us
-				INNER JOIN videos ON v.id = us.videos_id
+				INNER JOIN videos v ON v.id = us.videos_id
 				WHERE user_id = %d
 				ORDER BY v.title ASC",
 				$uID

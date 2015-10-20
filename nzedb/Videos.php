@@ -134,7 +134,6 @@ Class Videos
 					INNER JOIN tv_info tvi ON r.videos_id = tvi.videos_id
 					INNER JOIN tv_episodes tve ON v.id = tve.videos_id
 					LEFT OUTER JOIN user_series us ON us.user_id = %d
-						AND us.rageid = v.tvrage
 					WHERE %s
 					%s %s
 					ORDER BY tve.firstaired DESC) v

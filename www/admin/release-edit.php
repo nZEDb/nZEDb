@@ -24,10 +24,8 @@ switch ($action) {
 						  $_POST["size"],
 						  $_POST["postdate"],
 						  $_POST["adddate"],
-						  $_POST["rageid"],
-						  $_POST["seriesfull"],
-						  $_POST["season"],
-						  $_POST["episode"],
+						  $_POST["videos_id"],
+						  $_POST["tv_episodes_id"],
 						  $_POST["imdbid"],
 						  $_POST["anidbid"]);
 		if (isset($_POST['from']) && !empty($_POST['from'])) {

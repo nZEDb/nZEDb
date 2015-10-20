@@ -23,9 +23,9 @@
 	<a class="btn btn-default" href="{$smarty.const.WWW_TOP}/myshows" title="List my watched shows">My Shows</a>&nbsp;&nbsp;
 	<a class="btn btn-default" href="{$smarty.const.WWW_TOP}/myshows/browse" title="browse your shows">Browse My Shows</a>
 
-	<form name="ragesearch" action="" method="get" id="custom-search-form" class="form-search form-horizontal col-4 col-lg-4 pull-right">
+	<form name="showsearch" action="" method="get" id="custom-search-form" class="form-search form-horizontal col-4 col-lg-4 pull-right">
 		<div class="input-group col-12 col-lg-12">
-			<input type="text" class="form-control" placeholder="Search" id="title" name="title" value="{$ragename}">
+			<input type="text" class="form-control" placeholder="Search" id="title" name="title" value="{$showname}">
 			<span class="input-group-btn">
 				<button type="submit" value="Go" class="btn btn-default">
 					<i class="icon-search"></i>
