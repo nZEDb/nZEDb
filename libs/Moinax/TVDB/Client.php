@@ -246,7 +246,7 @@ class Client
                 break;
             case self::FORMAT_ZIP:
                 if (!in_array('zip', stream_get_wrappers())) {
-                    throw new \ErrorException('Your PHP does nort support ZIP stream wrappers');
+                    throw new \ErrorException('Your PHP does not support ZIP stream wrappers');
                 }
                 $data = $this->fetchZIP('series/' . $serieId . '/all/' . $language . '.' . $format, array(), self::GET, $language.".xml");
                 break;

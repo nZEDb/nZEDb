@@ -21,6 +21,7 @@ class TV extends Videos
 	// Anime Sources
 	const SOURCE_ANIDB   = 10; // Scrape source was AniDB
 
+	// Processing signifiers
 	const PROCESS_TVDB   =  0; // Process TVDB First
 	const PROCESS_TRAKT  = -1; // Process Trakt Second
 	const PROCESS_TVRAGE = -2; // Process TvRage Third
@@ -28,6 +29,11 @@ class TV extends Videos
 	const PROCESS_IMDB   = -4; // Process IMDB Fifth
 	const PROCESS_TMDB   = -5; // Process TMDB Sixth
 	const NO_MATCH_FOUND = -6; // Failed All Methods
+
+	// Video Type Identifiers
+	const TYPE_TV        =  0; // Type of video is a TV Show
+	const TYPE_FILM      =  1; // Type of video is a TV Show
+	const TYPE_ANIME     =  2; // Type of video is a TV Show
 
 	/**
 	 * @var \nzedb\db\Settings
@@ -180,7 +186,7 @@ class TV extends Videos
 			$this->pdo->queryInsert(
 					sprintf("
 						INSERT INTO tv_info (videos_id, summary, publisher)
-						VALUES (%d, %s, %s, %d)",
+						VALUES (%d, %s, %s)",
 						$videoId,
 						$this->pdo->escapeString($summary),
 						$this->pdo->escapeString($publisher)
@@ -489,6 +495,24 @@ class TV extends Videos
 			}
 		}
 		return '';
+	}
+
+	/**
+	 * @param $videoID
+	 *
+	 * @return array|bool
+	 */
+	public function checkIfNoEpisodes($videoId)
+	{
+		$count = $this->pdo->queryOneRow(
+					sprintf('
+						SELECT count(id) AS num
+						FROM tv_episodes
+						WHERE videos_id = %d',
+						$videoId
+					)
+		);
+		return (isset($count['num']) && (int)$count['num'] > 0 ? true : false);
 	}
 
 	/**

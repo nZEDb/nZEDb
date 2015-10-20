@@ -2,7 +2,6 @@
 
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
-use nzedb\db\Settings;
 use nzedb\processing\tv\TVDB;
 
 $c = new nzedb\ColorCLI();
@@ -12,6 +11,9 @@ if (!empty($argv[1]) && is_numeric($argv[2]) && is_numeric($argv[3])) {
 
 	// Test if your TvDB API key and configuration are working
 	// If it works you should get a var dumped array of the show/season/episode entered
+
+	$season = (int)$argv[2];
+	$episode = (int)$argv[3];
 
 	$serverTime = $tvdb->client->getServerTime();
 
@@ -24,9 +26,18 @@ if (!empty($argv[1]) && is_numeric($argv[2]) && is_numeric($argv[3])) {
 		echo PHP_EOL . $c->info("Server Time: " . $serverTime) .  PHP_EOL;
 		print_r($series[0]);
 
-		$episode = $tvdb->client->getEpisode($series[0]->id, (int)$argv[2], (int)$argv[3], 'en');
-		if ($episode) {
-			print_r($episode);
+		if ($season > 0 AND $episode > 0) {
+			$episodeObj = $tvdb->client->getEpisode($series[0]->id, $season, $episode, 'en');
+			if ($episodeObj) {
+				print_r($episodeObj);
+			}
+		} else if ($season == 0 && $episode == 0) {
+			$episodeObj = $tvdb->client->getSerieEpisodes($series[0]->id, 'en');
+			if ($episodeObj['episodes'] instanceof \Traversable) {
+				foreach ($episodeObj['episodes'] AS $ep) {
+					print_r($ep);
+				}
+			}
 		} else {
 			exit($c->error("Invalid episode data returned from TVDB API."));
 		}

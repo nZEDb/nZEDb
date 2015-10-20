@@ -140,11 +140,16 @@ class TVDB extends TV
 						$seasonNo = preg_replace('/^S0*/', '', $release['season']);
 						$episodeNo = preg_replace('/^E0*/', '', $release['episode']);
 
-						// Check first if we have the episode for this video ID
+						// Download all episodes if new show to reduce API/bandwidth usage
+						if ($this->checkIfNoEpisodes($videoId) === false) {
+							$this->getTVDBEpisode($tvdbid, -1, -1, '', $videoId);
+						}
+
+						// Check if we have the episode for this video ID
 						$episode = $this->getBySeasonEp($videoId, $seasonNo, $episodeNo, $release['airdate']);
 
-						if ($episode === false && $lookupSetting) {
 
+						if ($episode === false && $lookupSetting) {
 							// Send the request for the episode to TVDB
 							$tvdbEpisode = $this->getTVDBEpisode(
 										$tvdbid,
@@ -191,7 +196,7 @@ class TVDB extends TV
 		$return = $response = false;
 		$highestMatch = 0;
 		try {
-			$response = (array)$this->client->getSeries($cleanName);
+			$response = (array)$this->client->getSeries($cleanName, 'en');
 		} catch (\Exception $error) { }
 
 		sleep(1);
@@ -259,15 +264,22 @@ class TVDB extends TV
 	 *
 	 * @param string $airdate
 	 *
+	 * @param int    $videoId
+	 *
 	 * @return array|bool
 	 */
-	private function getTVDBEpisode($tvdbid, $season, $episode, $airdate = '')
+	private function getTVDBEpisode($tvdbid, $season, $episode, $airdate = '', $videoId = 0)
 	{
 		$return = $response = false;
 
 		if ($airdate !== '') {
 			try {
 				$response = $this->client->getEpisodeByAirDate($tvdbid, $airdate);
+			} catch (\Exception $error) {
+			}
+		} else if ($videoId > 0) {
+			try {
+				$response = $this->client->getSerieEpisodes($tvdbid, 'en');
 			} catch (\Exception $error) {
 			}
 		} else {
@@ -282,6 +294,21 @@ class TVDB extends TV
 		if (is_object($response)) {
 			if ($this->checkRequired($response, 2)) {
 				$return = $this->formatEpisodeArr($response);
+			}
+		} else if (is_array($response) && isset($response['episodes']) && $videoId > 0) {
+			foreach($response['episodes'] as $singleEpisode) {
+				if ($this->checkRequired($singleEpisode, 2)) {
+					$newEpisode = $this->formatEpisodeArr($singleEpisode);
+					$this->addEpisode(
+						$videoId,
+						$newEpisode['season'],
+						$newEpisode['episode'],
+						$newEpisode['se_complete'],
+						$newEpisode['title'],
+						$newEpisode['firstaired'],
+						$newEpisode['summary']
+					);
+				}
 			}
 		}
 		return $return;
