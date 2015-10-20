@@ -2,11 +2,12 @@
 namespace nzedb\processing\tv;
 
 use nzedb\db\Settings;
+use nzedb\processing\Videos;
 
 /**
  * Class TV
  */
-class TV
+class TV extends Videos
 {
 	const SOURCE_NONE   = 0; // No Scrape source
 	const SOURCE_TVDB   = 1; // Scrape source was TVDB
@@ -44,6 +45,7 @@ class TV
 	 */
 	public function __construct(array $options = [])
 	{
+		parent::__construct($options);
 		$defaults = [
 			'Echo'     => false,
 			'Settings' => null,
