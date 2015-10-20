@@ -8,13 +8,17 @@ use nzedb\db\Settings;
  */
 class TV
 {
-	const SOURCE_NONE   = 0; // No Scrape source
-	const SOURCE_TVDB   = 1; // Scrape source was TVDB
-	const SOURCE_TRAKT  = 2; // Scrape source was TraktTV
-	const SOURCE_TVRAGE = 3; // Scrape source was TvRage
-	const SOURCE_TVMAZE = 4; // Scrape source was TVMAZE
-	const SOURCE_IMDB   = 5; // Scrape source was IMDB
-	const SOURCE_TMDB   = 6; // Scrape source was TMDB
+	// Television Sources
+	const SOURCE_NONE    = 0; // No Scrape source
+	const SOURCE_TVDB    = 1; // Scrape source was TVDB
+	const SOURCE_TRAKT   = 2; // Scrape source was TraktTV
+	const SOURCE_TVRAGE  = 3; // Scrape source was TvRage
+	const SOURCE_TVMAZE  = 4; // Scrape source was TVMAZE
+	const SOURCE_IMDB    = 5; // Scrape source was IMDB
+	const SOURCE_TMDB    = 6; // Scrape source was TMDB
+
+	// Anime Sources
+	const SOURCE_ANIDB   = 10 // Scrape source was AniDB
 
 	const PROCESS_TVDB   =  0; // Process TVDB First
 	const PROCESS_TRAKT  = -1; // Process Trakt Second
