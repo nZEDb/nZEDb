@@ -1134,8 +1134,8 @@ CREATE TABLE user_roles (
 DROP TABLE IF EXISTS user_series;
 CREATE TABLE user_series (
   id          INT(16) UNSIGNED NOT NULL AUTO_INCREMENT,
-  user_id INT(16)          NOT NULL,
-  rageid      INT(16)          NOT NULL,
+  user_id     INT(16)          NOT NULL,
+  videos_id   INT(16)          NOT NULL COMMENT 'FK to videos.id',
   categoryid  VARCHAR(64)      NULL DEFAULT NULL,
   createddate DATETIME         NOT NULL,
   PRIMARY KEY (id),
