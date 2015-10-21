@@ -48,7 +48,6 @@ switch ($page->page) {
 	case 'profileedit':
 	case 'queue':
 	case 'register':
-	case 'rss-info':
 	case 'sabqueuedata':
 	case 'search':
 	case 'sendtoqueue':

@@ -1,11 +1,11 @@
 <?php
 
 use nzedb\Category;
-use nzedb\Releases;
+use nzedb\RSS;
 use nzedb\db\Settings;
 
 $category = new Category(['Settings' => $page->settings]);
-$releases = new Releases(['Settings' => $page->settings]);
+$rss = new RSS(['Settings' => $page->settings]);
 
 // If no content id provided then show user the rss selection page.
 if (!isset($_GET["t"]) && !isset($_GET["show"]) && !isset($_GET["anidb"])) {
@@ -19,10 +19,25 @@ if (!isset($_GET["t"]) && !isset($_GET["show"]) && !isset($_GET["anidb"])) {
 		}
 	}
 
-	$page->title = "Rss Feeds";
-	$page->meta_title = "Rss Nzb Feeds";
+	$page->title = "Rss Info";
+	$page->meta_title = "Rss Nzb Info";
 	$page->meta_keywords = "view,nzb,description,details,rss,atom";
-	$page->meta_description = "View available Rss Nzb feeds.";
+	$page->meta_description = "View information about nZEDb RSS Feeds.";
+
+	$firstShow = $rss->getFirstInstance('id', 'videos');
+	$firstAni = $rss->getFirstInstance('anidbid', 'releases');
+
+	if (isset($firstShow['id'])) {
+		$page->smarty->assign('show', $firstShow['id']);
+	} else {
+		$page->smarty->assign('show', -1);
+	}
+
+	if (isset($firstAni['anidb'])) {
+		$page->smarty->assign('anidb', $firstAni['id']);
+	} else {
+		$page->smarty->assign('anidb', -1);
+	}
 
 	$page->smarty->assign([
 			'categorylist'       => $category->get(true, $page->userdata["categoryexclusions"]),
@@ -89,11 +104,11 @@ if (!isset($_GET["t"]) && !isset($_GET["show"]) && !isset($_GET["anidb"])) {
 	);
 
 	if ($userCat == -3) {
-		$relData = $releases->getShowsRss($userNum, $uid, $page->users->getCategoryExclusion($uid), $userAirDate);
+		$relData = $rss->getShowsRss($userNum, $uid, $page->users->getCategoryExclusion($uid), $userAirDate);
 	} elseif ($userCat == -4) {
-		$relData = $releases->getMyMoviesRss($userNum, $uid, $page->users->getCategoryExclusion($uid));
+		$relData = $rss->getMyMoviesRss($userNum, $uid, $page->users->getCategoryExclusion($uid));
 	} else {
-		$relData = $releases->getRss(explode(',', $userCat), $userNum, $userShow, $userAnidb, $uid, $userAirDate);
+		$relData = $rss->getRss(explode(',', $userCat), $userNum, $userShow, $userAnidb, $uid, $userAirDate);
 	}
 
 	$page->smarty->assign('releases', $relData);
