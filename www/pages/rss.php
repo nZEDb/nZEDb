@@ -30,13 +30,13 @@ if (!isset($_GET["t"]) && !isset($_GET["show"]) && !isset($_GET["anidb"])) {
 	if (isset($firstShow['id'])) {
 		$page->smarty->assign('show', $firstShow['id']);
 	} else {
-		$page->smarty->assign('show', -1);
+		$page->smarty->assign('show', 1);
 	}
 
 	if (isset($firstAni['anidb'])) {
 		$page->smarty->assign('anidb', $firstAni['id']);
 	} else {
-		$page->smarty->assign('anidb', -1);
+		$page->smarty->assign('anidb', 1);
 	}
 
 	$page->smarty->assign([

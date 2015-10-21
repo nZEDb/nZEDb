@@ -39,7 +39,6 @@ switch ($action) {
 	case 'add':
 	case 'doadd':
 		$show = $us->getShow($page->users->currentUserId(), $videoId);
-		var_dump($action, $videoId);
 		if ($show) {
 			$page->show404('Already subscribed');
 		} else {

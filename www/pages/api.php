@@ -91,7 +91,6 @@ $releases = new Releases(['Settings' => $page->settings]);
 $page->smarty->assign('extended', (isset($_GET['extended']) && $_GET['extended'] == 1 ? '1' : '0'));
 $page->smarty->assign('del', (isset($_GET['del']) && $_GET['del'] == 1 ? '1' : '0'));
 
-
 // Output is either json or xml.
 $outputXML = (isset($_GET['o']) && $_GET['o'] == 'json' ? false : true);
 
@@ -131,10 +130,14 @@ switch ($function) {
 		$page->users->addApiRequest($uid, $_SERVER['REQUEST_URI']);
 		$offset = offset();
 
-		$relData = $releases->searchbyVideoId(
-			(isset($_GET['vid']) ? $_GET['vid'] : '-10'),
-			(isset($_GET['rid']) ? 'tvrage' : ''),
-			(isset($_GET['rid']) ? $_GET['rid'] : '-10'),
+		$relData = $releases->searchShows(
+			(isset($_GET['vid']) ? $_GET['vid'] : '0'),
+			(isset($_GET['tvdbid']) ? $_GET['tvdbid'] : '0'),
+			(isset($_GET['traktid']) ? $_GET['traktid'] : '0'),
+			(isset($_GET['rid']) ? $_GET['rid'] : '0'),
+			(isset($_GET['tvmazeid']) ? $_GET['tvmazeid'] : '0'),
+			(isset($_GET['imdbid']) ? $_GET['imdbid'] : '0'),
+			(isset($_GET['tmdbid']) ? $_GET['tmdbid'] : '0'),
 			(isset($_GET['season']) ? $_GET['season'] : ''),
 			(isset($_GET['ep']) ? $_GET['ep'] : ''),
 			$offset,

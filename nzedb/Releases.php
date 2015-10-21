@@ -934,21 +934,27 @@ class Releases
 	 *
 	 * @return array
 	 */
-	public function searchbyVideoId($videosId, $column = '', $siteID = 0, $series = '', $episode = '', $offset = 0, $limit = 100, $name = '', $cat = [-1], $maxAge = -1)
+	public function searchShows($videosId, $tvdbId, $traktId, $tvrageId, $tvmazeId, $imdbId, $tmdbId, $series = '',
+								$episode = '', $offset = 0, $limit = 100, $name = '', $cat = [-1], $maxAge = -1)
 	{
 		$whereSql = sprintf(
 			"%s
 			WHERE r.categoryid BETWEEN 5000 AND 5999
 			AND v.type = 0
 			AND r.nzbstatus = %d
-			AND r.passwordstatus %s %s %s %s %s %s %s %s",
+			AND r.passwordstatus %s %s %s %s %s %s %s %s %s %s %s %s %s",
 			($name !== '' ? $this->releaseSearch->getFullTextJoinString() : ''),
 			NZB::NZB_ADDED,
 			$this->showPasswords,
-			($videosId != -10 ? sprintf(' AND v.id = %d ', $videosId) : ''),
-			($column !== '' && $siteID !== 0 ? sprintf(' AND %s = %d', $column, $siteID) : ''),
-			($series != '' ? sprintf(' AND tve.series = %s', $this->pdo->escapeString($series)): ''),
-			($episode != '' ? sprintf(' AND tve.episode = %s', $episode) : ''),
+			($videosId !== 0 ? sprintf(' AND v.id = %d ', $videosId) : ''),
+			($tvdbId !== 0 ? sprintf(' AND v.tvdb = %d ', $tvdbId) : ''),
+			($traktId !== 0 ? sprintf(' AND v.trakt = %d ', $traktId) : ''),
+			($tvrageId !== 0 ? sprintf(' AND v.tvrage = %d ', $tvrageId) : ''),
+			($tvmazeId !== 0 ? sprintf(' AND v.tvmaze = %d ', $tvmazeId) : ''),
+			($imdbId !== 0 ? sprintf(' AND v.imdb = %d ', $imdbId) : ''),
+			($tmdbId !== 0 ? sprintf(' AND v.tmdb = %d ', $tmdbId) : ''),
+			($series != '' ? sprintf(' AND tve.series = %d', (int)preg_replace('/^s0*/i', '', $series)): ''),
+			($episode != '' ? sprintf(' AND tve.episode = %d', (int)preg_replace('/^e0*/i', '', $episode)): ''),
 			($name !== '' ? $this->releaseSearch->getSearchSQL(['searchname' => $name]) : ''),
 			$this->categorySQL($cat),
 			($maxAge > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxAge) : '')

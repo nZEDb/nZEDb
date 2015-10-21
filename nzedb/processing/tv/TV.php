@@ -1,6 +1,7 @@
 <?php
 namespace nzedb\processing\tv;
 
+use nzedb\db\Settings;
 use nzedb\processing\Videos;
 
 /**
