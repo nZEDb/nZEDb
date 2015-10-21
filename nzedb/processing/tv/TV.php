@@ -1,7 +1,6 @@
 <?php
 namespace nzedb\processing\tv;
 
-use nzedb\db\Settings;
 use nzedb\processing\Videos;
 
 /**
@@ -216,7 +215,7 @@ abstract class TV extends Videos
 			$this->pdo->queryInsert(
 					sprintf("
 						INSERT INTO tv_info (videos_id, summary, publisher)
-						VALUES (%d, %s, %s, %d)",
+						VALUES (%d, %s, %s)",
 						$videoId,
 						$this->pdo->escapeString($summary),
 						$this->pdo->escapeString($publisher)

@@ -29,7 +29,7 @@ class TraktTv extends TV
 	/**
 	 * Library for Trakt API
 	 *
-	 * @var \libs\TraktAPI
+	 * @var \nzedb\libraries\TraktAPI
 	 */
 	public $client;
 

@@ -1,5 +1,5 @@
 <?php
-namespace libs;
+namespace nzedb\libraries;
 
 use nzedb\utility\Misc;
 
