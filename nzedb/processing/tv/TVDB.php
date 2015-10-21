@@ -7,7 +7,7 @@ use nzedb\ReleaseImage;
 /**
  * Class TVDB
  */
-class TVDB extends TV
+class TVDB extends TV implements iTV
 {
 	const TVDB_URL = 'http://thetvdb.com';
 	const TVDB_API_KEY = '5296B37AEC35913D';
@@ -192,7 +192,7 @@ class TVDB extends TV
 	 *
 	 * @return array|bool
 	 */
-	private function getTVDBShow($cleanName)
+	protected function getTVDBShow($cleanName)
 	{
 		$return = $response = false;
 		$highestMatch = 0;
@@ -244,7 +244,7 @@ class TVDB extends TV
 	 * @param $videoId
 	 * @param $showId
 	 */
-	private function getTVDBPoster($videoId, $showId)
+	protected function getTVDBPoster($videoId, $showId)
 	{
 		$hascover = (new ReleaseImage($this->pdo))->saveImage(
 							$videoId,
@@ -269,7 +269,7 @@ class TVDB extends TV
 	 *
 	 * @return array|bool
 	 */
-	private function getTVDBEpisode($tvdbid, $season, $episode, $airdate = '', $videoId = 0)
+	protected function getTVDBEpisode($tvdbid, $season, $episode, $airdate = '', $videoId = 0)
 	{
 		$return = $response = false;
 
