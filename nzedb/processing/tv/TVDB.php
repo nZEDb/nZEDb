@@ -248,6 +248,8 @@ class TVDB extends TV
 	/**
 	 * @param $videoId
 	 * @param $showId
+	 *
+	 * @return null
 	 */
 	protected function getPoster($videoId, $showId)
 	{
@@ -264,13 +266,11 @@ class TVDB extends TV
 	}
 
 	/**
-	 * @param        $tvdbid
-	 * @param        $season
-	 * @param        $episode
-	 *
-	 * @param string $airdate
-	 *
-	 * @param int    $videoId
+	 * @param integer	$tvdbid
+	 * @param integer	$season
+	 * @param integer	$episode
+	 * @param string	$airdate
+	 * @param integer	$videoId
 	 *
 	 * @return array|bool
 	 */

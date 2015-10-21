@@ -70,10 +70,8 @@ abstract class TV extends Videos
 	 * @param integer	$siteId
 	 * @param integer	$series
 	 * @param integer	$episode
-	 * @param string 	$aired
-	 * @param integer	$videoId
 	 *
-	 * @return mixed
+	 * @return array|false    False on failure, an array of information fields otherwise.
 	 */
 	abstract protected function getEpisodeInfo($siteId, $series, $episode);
 
@@ -90,7 +88,7 @@ abstract class TV extends Videos
 	/**
 	 * Retrieve info of TV programme from site using it's API.
 	 *
-	 * @param $name		Name of programme to look up. Usually a cleaned up version from releases table.
+	 * @param string $name		Title of programme to look up. Usually a cleaned up version from releases table.
 	 *
 	 * @return array|false	False on failure, an array of information fields otherwise.
 	 */
