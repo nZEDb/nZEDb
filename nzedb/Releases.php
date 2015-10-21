@@ -922,8 +922,12 @@ class Releases
 
 	/**
 	 * @param        $videosId
-	 * @param string $column
-	 * @param int    $siteID
+	 * @param        $tvdbId
+	 * @param        $traktId
+	 * @param        $tvrageId
+	 * @param        $tvmazeId
+	 * @param        $imdbId
+	 * @param        $tmdbId
 	 * @param string $series
 	 * @param string $episode
 	 * @param int    $offset
@@ -933,6 +937,8 @@ class Releases
 	 * @param int    $maxAge
 	 *
 	 * @return array
+	 * @internal param string $column
+	 * @internal param int $siteID
 	 */
 	public function searchShows($videosId, $tvdbId, $traktId, $tvrageId, $tvmazeId, $imdbId, $tmdbId, $series = '',
 								$episode = '', $offset = 0, $limit = 100, $name = '', $cat = [-1], $maxAge = -1)
