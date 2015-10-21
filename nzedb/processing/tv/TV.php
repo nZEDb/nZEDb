@@ -36,11 +36,6 @@ abstract class TV extends Videos
 	const TYPE_ANIME     =  2; // Type of video is a TV Show
 
 	/**
-	 * @var \nzedb\db\Settings
-	 */
-	public $pdo;
-
-	/**
 	 * @var bool
 	 */
 	public $echooutput;
@@ -61,7 +56,7 @@ abstract class TV extends Videos
 			'Settings' => null,
 		];
 		$options += $defaults;
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
 		$this->catWhere = 'categoryid BETWEEN 5000 AND 5999 AND categoryid NOT IN (5070)';
 		$this->tvqty = ($this->pdo->getSetting('maxrageprocessed') != '') ? $this->pdo->getSetting('maxrageprocessed') : 75;
@@ -200,7 +195,7 @@ abstract class TV extends Videos
 		// Check if video already exists based on site info
 		// if that fails be sure we're not inserting duplicates by checking the title
 
-		$videoId = $this->getBySiteId($column, $siteId);
+		$videoId = $this->getVideoIDFromSiteID($column, $siteId);
 
 		if ($videoId === false) {
 			$videoId = $this->getByTitleQuery($title);
@@ -438,28 +433,6 @@ abstract class TV extends Videos
 						)
 			);
 		}
-	}
-
-	/**
-	 * Get video info from a Site ID and column.
-	 *
-	 * @param string	$column
-	 * @param integer	$id
-	 *
-	 * @return array|bool
-	 */
-	public function getBySiteID($column, $id)
-	{
-		$videoArr = $this->pdo->queryOneRow(
-						sprintf("
-							SELECT id
-							FROM videos
-							WHERE %s = %d",
-							$column,
-							$id
-						)
-		);
-		return (isset($videoArr['id']) ? $videoArr['id'] : false);
 	}
 
 	/**

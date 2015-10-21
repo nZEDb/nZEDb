@@ -27,9 +27,65 @@ namespace nzedb\processing;
  */
 abstract class Videos
 {
+	/**
+	 * @var \nzedb\db\Settings
+	 */
+	public $pdo;
+
+	/**
+	 * @var array	sites	The sites that we have an ID columns for in our video table.
+	 */
+	private $sites = ['imdb', 'tmdb', 'trakt', 'tvdb', 'tvmaze', 'tvrage'];
+
+
 	public function __construct(array $options = [])
 	{
+		$defaults = [
+			'Echo'     => false,
+			'Settings' => null,
+		];
+		$options += $defaults;
+
 		// Sets the default timezone for this script (and its children).
 		date_default_timezone_set('UTC');
+
+		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+	}
+
+	/**
+	 * Get video info from a Site ID and column.
+	 *
+	 * @param string  $siteColumn
+	 * @param integer $videoID
+	 *
+	 * @return array|false    False if invalid site, or ID not found; Site id value otherwise.
+	 */
+	protected function getSiteIDFromVideoID($siteColumn, $videoID)
+	{
+		if (in_array($siteColumn, $this->sites)) {
+			$result = $this->pdo->queryOneRow(("SELECT $siteColumn FROM videos WHERE id = $videoID");
+
+			return isset($result[$siteColumn]) ? $result[$siteColumn] : false;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get video info from a Site ID and column.
+	 *
+	 * @param string	$siteColumn
+	 * @param integer	$siteID
+	 *
+	 * @return array|false	False if invalid site, or ID not found; video.id value otherwise.
+	 */
+	protected function getVideoIDFromSiteID($siteColumn, $siteID)
+	{
+		if (in_array($siteColumn, $this->sites)) {
+			$result = $this->pdo->queryOneRow("SELECT id FROM videos WHERE $siteColumn = $siteID");
+
+			return isset($result['id']) ? $result['id'] : false;
+		}
+		return false;
 	}
 }
