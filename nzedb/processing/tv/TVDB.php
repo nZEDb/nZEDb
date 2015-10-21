@@ -7,7 +7,7 @@ use nzedb\ReleaseImage;
 /**
  * Class TVDB
  */
-class TVDB extends TV implements iTV
+class TVDB extends TV
 {
 	const TVDB_URL = 'http://thetvdb.com';
 	const TVDB_API_KEY = '5296B37AEC35913D';
@@ -107,7 +107,7 @@ class TVDB extends TV implements iTV
 						}
 
 						// Get the show from TVDB
-						$tvdbShow = $this->getTVDBShow((string)$release['cleanname']);
+						$tvdbShow = $this->getShowInfo((string)$release['cleanname']);
 
 						if (is_array($tvdbShow)) {
 							$tvdbShow['country']  = (isset($release['country']) && strlen($release['country']) == 2
@@ -136,14 +136,14 @@ class TVDB extends TV implements iTV
 
 					if (is_numeric($videoId) && $videoId > 0 && is_numeric($tvdbid) && $tvdbid > 0) {
 						// Now that we have valid video and tvdb ids, try to get the poster
-						$this->getTVDBPoster($videoId, $tvdbid);
+						$this->getPoster($videoId, $tvdbid);
 
 						$seasonNo = preg_replace('/^S0*/', '', $release['season']);
 						$episodeNo = preg_replace('/^E0*/', '', $release['episode']);
 
 						// Download all episodes if new show to reduce API/bandwidth usage
 						if ($this->checkIfNoEpisodes($videoId) === false) {
-							$this->getTVDBEpisode($tvdbid, -1, -1, '', $videoId);
+							$this->getEpisodeInfo($tvdbid, -1, -1, '', $videoId);
 						}
 
 						// Check if we have the episode for this video ID
@@ -152,7 +152,7 @@ class TVDB extends TV implements iTV
 
 						if ($episode === false && $lookupSetting) {
 							// Send the request for the episode to TVDB
-							$tvdbEpisode = $this->getTVDBEpisode(
+							$tvdbEpisode = $this->getEpisodeInfo(
 										$tvdbid,
 										$seasonNo,
 										$episodeNo,
@@ -192,7 +192,7 @@ class TVDB extends TV implements iTV
 	 *
 	 * @return array|bool
 	 */
-	protected function getTVDBShow($cleanName)
+	protected function getShowInfo($cleanName)
 	{
 		$return = $response = false;
 		$highestMatch = 0;
@@ -244,7 +244,7 @@ class TVDB extends TV implements iTV
 	 * @param $videoId
 	 * @param $showId
 	 */
-	protected function getTVDBPoster($videoId, $showId)
+	protected function getPoster($videoId, $showId)
 	{
 		$hascover = (new ReleaseImage($this->pdo))->saveImage(
 							$videoId,
@@ -269,7 +269,7 @@ class TVDB extends TV implements iTV
 	 *
 	 * @return array|bool
 	 */
-	protected function getTVDBEpisode($tvdbid, $season, $episode, $airdate = '', $videoId = 0)
+	protected function getEpisodeInfo($tvdbid, $season, $episode, $airdate = '', $videoId = 0)
 	{
 		$return = $response = false;
 
