@@ -123,7 +123,13 @@ switch ($function) {
 	// Search tv releases.
 	case 'tv':
 		verifyEmptyParameter('q');
+		verifyEmptyParameter('vid');
+		verifyEmptyParameter('tvdbid');
+		verifyEmptyParameter('traktid');
 		verifyEmptyParameter('rid');
+		verifyEmptyParameter('tvmazeid');
+		verifyEmptyParameter('imdbid');
+		verifyEmptyParameter('tmdbid');
 		verifyEmptyParameter('season');
 		verifyEmptyParameter('ep');
 		$maxAge = maxAge();

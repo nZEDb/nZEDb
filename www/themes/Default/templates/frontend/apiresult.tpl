@@ -35,20 +35,20 @@
 				{if $extended == "1"}
 					<newznab:attr name="files" value="{$release.totalpart}" />
 					<newznab:attr name="poster" value="{$release.fromname|escape:html}" />
-					{if $release.season != ""}
-						<newznab:attr name="season" value="{$release.season}" />
-					{/if}
+					{if $release.series != ""}
+						<newznab:attr name="series" value="{$release.series}" />
+				{/if}
 					{if $release.episode != ""}
 						<newznab:attr name="episode" value="{$release.episode}" />
 					{/if}
-					{if $release.rageid != "-1" && $release.rageid != "-2"}
-						<newznab:attr name="rageid" value="{$release.rageid}" />
+					{if $release.videos_id > 0}
+						<newznab:attr name="videos_id" value="{$release.videos_id}" />
 					{/if}
-					{if $release.tvtitle != ""}
-						<newznab:attr name="tvtitle" value="{$release.tvtitle|escape:html}" />
+					{if $release.title != ""}
+						<newznab:attr name="title" value="{$release.title|escape:html}" />
 					{/if}
-					{if $release.tvairdate != ""}
-						<newznab:attr name="tvairdate" value="{$release.tvairdate|phpdate_format:"DATE_RSS"}" />
+					{if $release.firstaired != ""}
+						<newznab:attr name="firstaired" value="{$release.firstaired|phpdate_format:"DATE_RSS"}" />
 					{/if}
 					{if $release.imdbid != ""}
 						<newznab:attr name="imdb" value="{$release.imdbid}" />
