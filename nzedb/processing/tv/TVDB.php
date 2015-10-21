@@ -123,7 +123,8 @@ class TVDB extends TV
 										$tvdbShow['country'],
 										$tvdbShow['started'],
 										$tvdbShow['publisher'],
-										$tvdbShow['source']
+										$tvdbShow['source'],
+										$tvdbShow['imdbid']
 							);
 							$tvdbid = (int)$tvdbShow['siteid'];
 						}
@@ -322,6 +323,7 @@ class TVDB extends TV
 	private function formatShowArr($show)
 	{
 		$show->firstAired->setTimezone($this->timeZone);
+		preg_match('/tt(?P<imdbid>\d{7})$/i', $show->imdbId, $imdb);
 
 		return	[
 					'column'    => (string)'tvdb',
@@ -330,7 +332,8 @@ class TVDB extends TV
 					'summary'   => (string)$show->overview,
 					'started'   => (string)$show->firstAired->format($this->timeFormat),
 					'publisher' => (string)$show->network,
-					'source'    => (int)parent::SOURCE_TVDB
+					'source'    => (int)parent::SOURCE_TVDB,
+					'imdbid'    => (int)(isset($imdb['imdbid']) ? $imdb['imdbid'] : 0)
 				];
 	}
 

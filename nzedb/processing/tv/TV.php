@@ -63,7 +63,7 @@ class TV extends Videos
 		$options += $defaults;
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
-		$this->catWhere = 'categoryid BETWEEN 5000 AND 5999';
+		$this->catWhere = 'categoryid BETWEEN 5000 AND 5999 AND categoryid NOT IN (5070)';
 		$this->tvqty = ($this->pdo->getSetting('maxrageprocessed') != '') ? $this->pdo->getSetting('maxrageprocessed') : 75;
 	}
 
@@ -153,9 +153,11 @@ class TV extends Videos
 	 * @param     $publisher
 	 * @param     $source
 	 *
+	 * @param int $imdbId
+	 *
 	 * @return int
 	 */
-	public function add($column, $siteId, $title, $summary, $country, $started, $publisher, $source)
+	public function add($column, $siteId, $title, $summary, $country, $started, $publisher, $source, $imdbId = 0)
 	{
 		if ($country !== '') {
 			$country = $this->countryCode($country);
@@ -173,27 +175,28 @@ class TV extends Videos
 		if ($videoId === false) {
 			$videoId = $this->pdo->queryInsert(
 										sprintf('
-											INSERT INTO videos (%s, type, title, countries_id, started, source)
-											VALUES (%s, 0, %s, %s, %s, %d)',
+											INSERT INTO videos (%s, type, title, countries_id, started, source, imdb)
+											VALUES (%s, 0, %s, %s, %s, %d, %d)',
 											$column,
 											$siteId,
 											$this->pdo->escapeString($title),
 											$this->pdo->escapeString((isset($country) ? $country : '')),
 											$this->pdo->escapeString($started),
-											$source
+											$source,
+											$imdbId
 										)
 			);
 			$this->pdo->queryInsert(
 					sprintf("
 						INSERT INTO tv_info (videos_id, summary, publisher)
-						VALUES (%d, %s, %s)",
+						VALUES (%d, %s, %s, %d)",
 						$videoId,
 						$this->pdo->escapeString($summary),
 						$this->pdo->escapeString($publisher)
 					)
 			);
 		} else {
-			$this->update($videoId, $column, $siteId, $country);
+			$this->update($videoId, $column, $siteId, $country, $imdbId);
 		}
 		return (int)$videoId;
 	}
@@ -237,8 +240,9 @@ class TV extends Videos
 	 * @param        $column
 	 * @param        $siteId
 	 * @param string $country
+	 * @param        $imdbId
 	 */
-	public function update($videoId, $column, $siteId, $country = '')
+	public function update($videoId, $column, $siteId, $country = '', $imdbId = 0)
 	{
 		if ($country !== '') {
 			$country = $this->countryCode($country);
@@ -247,11 +251,12 @@ class TV extends Videos
 		$this->pdo->queryExec(
 				sprintf('
 					UPDATE videos
-					SET %s = %d, countries_id = %s
+					SET %s = %d, countries_id = %s, imdb = %d
 					WHERE id = %d',
 					$column,
 					$siteId,
 					$this->pdo->escapeString((isset($country) ? $country : '')),
+					($imdbId > 0 ? $imdbId : 0),
 					$videoId
 				)
 		);
