@@ -187,6 +187,11 @@ class TVDB extends TV
 		}
 	}
 
+	protected function getBanner($videoID, $siteId)
+	{
+		return false;
+	}
+
 	/**
 	 * @param $cleanName
 	 *

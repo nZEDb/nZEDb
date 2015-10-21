@@ -67,6 +67,8 @@ abstract class TV extends Videos
 		$this->tvqty = ($this->pdo->getSetting('maxrageprocessed') != '') ? $this->pdo->getSetting('maxrageprocessed') : 75;
 	}
 
+	abstract protected function getBanner($videoID, $siteId);
+
 	/**
 	 * Retrieve info of TV episode from site using its API.
 	 *
