@@ -1,7 +1,7 @@
 <?php
 namespace nzedb\processing\tv;
 
-use libs\TraktAPI;
+use nzedb\libraries\TraktAPI;
 
 /**
  * Class TraktTv
