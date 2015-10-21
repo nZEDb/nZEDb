@@ -20,6 +20,8 @@
  */
 namespace nzedb\processing;
 
+use nzedb\db\Settings;
+
 /**
  * Parent class for TV/Film and any similar classes to inherit from.
  *
