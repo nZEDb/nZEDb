@@ -5,6 +5,7 @@ use libs\TraktAPI;
 
 /**
  * Class TraktTv
+ *
  * Process information retrieved from the Trakt API.
  */
 class TraktTv extends TV
@@ -54,5 +55,49 @@ class TraktTv extends TV
 					'clientID' => $this->clientID
 				]
 		);
+	}
+
+	public function getBanner($videoId, $siteID)
+	{
+		return false;
+	}
+
+	/**
+	 * Retrieve info of TV episode from site using its API.
+	 *
+	 * @param integer $siteId
+	 * @param integer $series
+	 * @param integer $episode
+	 *
+	 * @return array|false    False on failure, an array of information fields otherwise.
+	 */
+	public function getEpisodeInfo($siteId, $series, $episode)
+	{
+		;
+	}
+
+	/**
+	 * Retrieve poster image for TV episode from site using its API.
+	 *
+	 * @param integer $videoId ID from videos table.
+	 * @param integer $siteId  ID that this site uses for the programme.
+	 *
+	 * @return null
+	 */
+	public function getPoster($videoId, $siteId)
+	{
+		;
+	}
+
+	/**
+	 * Retrieve info of TV programme from site using it's API.
+	 *
+	 * @param string $name Title of programme to look up. Usually a cleaned up version from releases table.
+	 *
+	 * @return array|false    False on failure, an array of information fields otherwise.
+	 */
+	public function getShowInfo($name)
+	{
+		;
 	}
 }
