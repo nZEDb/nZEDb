@@ -7,7 +7,7 @@ use nzedb\processing\Videos;
 /**
  * Class TV
  */
-class TV extends Videos
+abstract class TV extends Videos
 {
 	// Television Sources
 	const SOURCE_NONE    = 0; // No Scrape source
@@ -66,6 +66,38 @@ class TV extends Videos
 		$this->catWhere = 'categoryid BETWEEN 5000 AND 5999 AND categoryid NOT IN (5070)';
 		$this->tvqty = ($this->pdo->getSetting('maxrageprocessed') != '') ? $this->pdo->getSetting('maxrageprocessed') : 75;
 	}
+
+	/**
+	 * Retrieve info of TV episode from site using its API.
+	 *
+	 * @param integer	$siteId
+	 * @param integer	$series
+	 * @param integer	$episode
+	 * @param string 	$aired
+	 * @param integer	$videoId
+	 *
+	 * @return mixed
+	 */
+	abstract protected function getEpisodeInfo($siteId, $series, $episode, $aired = '', $videoId = 0);
+
+	/**
+	 * Retrieve poster image for TV episode from site using its API.
+	 *
+	 * @param integer $videoId ID from videos table.
+	 * @param integer $siteId  ID that this site uses for the programme.
+	 *
+	 * @return null
+	 */
+	abstract protected function getPoster($videoId, $siteId);
+
+	/**
+	 * Retrieve info of TV programme from site using it's API.
+	 *
+	 * @param $name		Name of programme to look up. Usually a cleaned up version from releases table.
+	 *
+	 * @return array|false	False on failure, an array of information fields otherwise.
+	 */
+	abstract protected function getShowInfo($name);
 
 	/**
 	 * @param string $groupID
