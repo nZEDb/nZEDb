@@ -114,20 +114,11 @@
 				<nZEDb:attr name="size" value="{$release.size}" />
 				<nZEDb:attr name="files" value="{$release.totalpart}" />
 				<nZEDb:attr name="poster" value="{$release.fromname|escape:html}" />
-				{if $release.season != ""}
-					<nZEDb:attr name="season" value="{$release.season}" />
+				{if $release.videos_id > 0}
+					<nZEDb:attr name="videos_id" value="{$release.videos_id}" />
 				{/if}
-				{if $release.episode != ""}
-					<nZEDb:attr name="episode" value="{$release.episode}" />
-				{/if}
-				{if $release.rageid != "-1" && $release.rageid != "-2"}
-					<nZEDb:attr name="rageid" value="{$release.rageid}" />
-				{/if}
-				{if $release.tvtitle != ""}
-					<nZEDb:attr name="tvtitle" value="{$release.tvtitle|escape:html}" />
-				{/if}
-				{if $release.tvairdate != ""}
-					<nZEDb:attr name="tvairdate" value="{$release.tvairdate|phpdate_format:"DATE_RSS"}" />
+				{if $release.tv_episodes_id > 0}
+					<nZEDb:attr name="episode" value="{$release.tv_episodes_id}" />
 				{/if}
 				{if $release.imdbid != ""}
 					<nZEDb:attr name="imdb" value="{$release.imdbid}" />

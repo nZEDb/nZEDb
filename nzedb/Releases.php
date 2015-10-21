@@ -477,7 +477,7 @@ class Releases
 			}
 		}
 
-		return $this->pdo->query(
+		$sql = $this->pdo->query(
 			sprintf(
 				"SELECT r.*, m.cover, m.imdbid, m.rating, m.plot,
 					m.year, m.genre, m.director, m.actors, g.name AS group_name,
@@ -509,12 +509,14 @@ class Releases
 				$this->showPasswords,
 				NZB::NZB_ADDED,
 				$catSearch,
-				($videosId > -1 ? sprintf(' AND r.videos_id = %d %s ', $videosId, ($catSearch == '' ? $catLimit : '')) : ''),
-				($aniDbID > -1 ? sprintf(' AND r.anidbid = %d %s ', $aniDbID, ($catSearch == '' ? $catLimit : '')) : ''),
+				($videosId > 0 ? sprintf(' AND r.videos_id = %d %s ', $videosId, ($catSearch == '' ? $catLimit : '')) : ''),
+				($aniDbID > 0 ? sprintf(' AND r.anidbid = %d %s ', $aniDbID, ($catSearch == '' ? $catLimit : '')) : ''),
 				($airDate > -1 ? sprintf(' AND tve.firstaired >= DATE_SUB(CURDATE(), INTERVAL %d DAY) ', $airDate) : ''),
 				(' LIMIT 0,' . ($offset > 100 ? 100 : $offset))
 			), true, nZEDb_CACHE_EXPIRY_MEDIUM
 		);
+		var_dump($sql);
+		return $sql;
 	}
 
 	/**

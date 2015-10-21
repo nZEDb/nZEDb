@@ -818,48 +818,4 @@ abstract class TV extends Videos
 		}
 		return $date;
 	}
-
-	/**
-	 * @param        $uid
-	 * @param string $letter
-	 * @param string $showname
-	 *
-	 * @return array
-	 */
-	public function getSeriesList($uid, $letter = "", $showname = "")
-	{
-		$rsql = '';
-		if ($letter != "") {
-			if ($letter == '0-9') {
-				$letter = '[0-9]';
-			}
-
-			$rsql .= sprintf("AND v.title REGEXP %s", $this->pdo->escapeString('^' . $letter));
-		}
-		$tsql = '';
-		if ($showname != '') {
-			$tsql .= sprintf("AND v.title LIKE %s", $this->pdo->escapeString("%" . $showname . "%"));
-		}
-
-		return $this->pdo->query(
-			sprintf("
-				SELECT v.*
-				FROM videos v
-				LEFT OUTER JOIN user_series ON user_series.user_id = %d
-					AND user_series.rageid = v.tvrage
-				WHERE v.tvrage IN (
-								SELECT DISTINCT videos_id
-								FROM releases
-								WHERE %s
-								AND videos_id > 0)
-				AND v.tvrage > 0 %s %s
-				GROUP BY v.tvrage
-				ORDER BY v.title ASC",
-				$this->catWhere,
-				$uid,
-				$rsql,
-				$tsql
-			)
-		);
-	}
 }

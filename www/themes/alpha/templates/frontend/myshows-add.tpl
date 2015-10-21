@@ -1,4 +1,4 @@
-<h3>{$type|ucwords} {$show.releasetitle|escape:"htmlall"} in:</h3>
+<h3>{$type|ucwords} {$show.title|escape:"htmlall"} in:</h3>
 <form id="myshows" action="{$smarty.const.WWW_TOP}/myshows/do{$type}" method="post">
 	<input type="hidden" name="subpage" value="{$rid}" />
 	{if $from}<input type="hidden" name="from" value="{$from}" />{/if}

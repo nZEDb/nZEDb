@@ -8,7 +8,7 @@ $category = new Category(['Settings' => $page->settings]);
 $releases = new Releases(['Settings' => $page->settings]);
 
 // If no content id provided then show user the rss selection page.
-if (!isset($_GET["t"]) && !isset($_GET["rage"]) && !isset($_GET["anidb"])) {
+if (!isset($_GET["t"]) && !isset($_GET["show"]) && !isset($_GET["anidb"])) {
 	// User has to either be logged in, or using rsskey.
 	if (!$page->users->isLoggedIn()) {
 		if ($page->settings->getSetting('registerstatus') != Settings::REGISTER_STATUS_API_ONLY) {
@@ -69,9 +69,9 @@ if (!isset($_GET["t"]) && !isset($_GET["rage"]) && !isset($_GET["anidb"])) {
 	}
 	// Valid or logged in user, get them the requested feed.
 
-	$userRage = $userAnidb = -1;
-	if (isset($_GET["rage"])) {
-		$userRage = ($_GET["rage"] == 0 ? -1 : $_GET["rage"] + 0);
+	$userShow = $userAnidb = -1;
+	if (isset($_GET["show"])) {
+		$userShow = ($_GET["show"] == 0 ? -1 : $_GET["show"] + 0);
 	} elseif (isset($_GET["anidb"])) {
 		$userAnidb = ($_GET["anidb"] == 0 ? -1 : $_GET["anidb"] + 0);
 	}
@@ -93,7 +93,7 @@ if (!isset($_GET["t"]) && !isset($_GET["rage"]) && !isset($_GET["anidb"])) {
 	} elseif ($userCat == -4) {
 		$relData = $releases->getMyMoviesRss($userNum, $uid, $page->users->getCategoryExclusion($uid));
 	} else {
-		$relData = $releases->getRss(explode(',', $userCat), $userNum, $userRage, $userAnidb, $uid, $userAirDate);
+		$relData = $releases->getRss(explode(',', $userCat), $userNum, $userShow, $userAnidb, $uid, $userAirDate);
 	}
 
 	$page->smarty->assign('releases', $relData);

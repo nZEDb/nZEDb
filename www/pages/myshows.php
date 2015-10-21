@@ -3,24 +3,26 @@
 use nzedb\Category;
 use nzedb\Releases;
 use nzedb\UserSeries;
+use nzedb\Videos;
 
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
 $us = new UserSeries(['Settings' => $page->settings]);
+$tv = new Videos(['Settings' => $page->settings]);
 
 $action = isset($_REQUEST['id']) ? $_REQUEST['id'] : '';
-$rid = isset($_REQUEST['subpage']) ? $_REQUEST['subpage'] : '';
+$videoId = isset($_REQUEST['subpage']) ? $_REQUEST['subpage'] : '';
 
 switch ($action) {
 	case 'delete':
-		$show = $us->getShow($page->users->currentUserId(), $rid);
+		$show = $us->getShow($page->users->currentUserId(), $videoId);
 
 		if (!$show) {
 			$page->show404('Not subscribed');
 		} else {
-			$us->delShow($page->users->currentUserId(), $rid);
+			$us->delShow($page->users->currentUserId(), $videoId);
 		}
 
 		if (isset($_REQUEST['from'])) {
@@ -31,12 +33,12 @@ switch ($action) {
 		break;
 	case 'add':
 	case 'doadd':
-		$show = $us->getShow($page->users->currentUserId(), $rid);
+		$show = $us->getShow($page->users->currentUserId(), $videoId);
 
 		if ($show) {
 			$page->show404('Already subscribed');
 		} else {
-			$show = $us->pdo->queryOneRow(sprintf("SELECT releasetitle FROM tvrage_titles WHERE rageid = %d", $rid));
+			$show = $tv->getByVideoID($videoId);
 			if (!$show) {
 				$page->show404('Seriously?');
 			}
@@ -44,7 +46,7 @@ switch ($action) {
 
 		if ($action == 'doadd') {
 			$category = (isset($_REQUEST['category']) && is_array($_REQUEST['category']) && !empty($_REQUEST['category'])) ? $_REQUEST['category'] : array();
-			$us->addShow($page->users->currentUserId(), $rid, $category);
+			$us->addShow($page->users->currentUserId(), $videoId, $category);
 			if (isset($_REQUEST['from'])) {
 				header("Location:" . $_REQUEST['from']);
 			} else {
@@ -62,7 +64,7 @@ switch ($action) {
 			$page->smarty->assign('cat_ids', array_keys($categories));
 			$page->smarty->assign('cat_names', $categories);
 			$page->smarty->assign('cat_selected', array());
-			$page->smarty->assign('rid', $rid);
+			$page->smarty->assign('rid', $videoId);
 			$page->smarty->assign('show', $show);
 			if (isset($_REQUEST['from'])) {
 				$page->smarty->assign('from', $_REQUEST['from']);
@@ -73,7 +75,7 @@ switch ($action) {
 		break;
 	case 'edit':
 	case 'doedit':
-		$show = $us->getShow($page->users->currentUserId(), $rid);
+		$show = $us->getShow($page->users->currentUserId(), $videoId);
 
 		if (!$show) {
 			$page->show404();
@@ -81,7 +83,7 @@ switch ($action) {
 
 		if ($action == 'doedit') {
 			$category = (isset($_REQUEST['category']) && is_array($_REQUEST['category']) && !empty($_REQUEST['category'])) ? $_REQUEST['category'] : array();
-			$us->updateShow($page->users->currentUserId(), $rid, $category);
+			$us->updateShow($page->users->currentUserId(), $videoId, $category);
 			if (isset($_REQUEST['from'])) {
 				header("Location:" . WWW_TOP . $_REQUEST['from']);
 			} else {
@@ -100,7 +102,7 @@ switch ($action) {
 			$page->smarty->assign('cat_ids', array_keys($categories));
 			$page->smarty->assign('cat_names', $categories);
 			$page->smarty->assign('cat_selected', explode('|', $show['categoryid']));
-			$page->smarty->assign('rid', $rid);
+			$page->smarty->assign('video', $videoId);
 			$page->smarty->assign('show', $show);
 			if (isset($_REQUEST['from'])) {
 				$page->smarty->assign('from', $_REQUEST['from']);
