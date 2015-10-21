@@ -141,7 +141,6 @@ class Client
      *
      * @param string $seriesName
      * @param string $language
-     * @internal param string $seriesName the show name to search for
      * @return array
      */
     public function getSeries($seriesName, $language = null)

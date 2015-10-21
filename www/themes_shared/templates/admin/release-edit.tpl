@@ -40,9 +40,15 @@
 			</td>
 		</tr>
 		<tr>
-			<td><label for="rageid">TvRage Id:</label></td>
+			<td><label for="videosID">Video Id:</label></td>
 			<td>
-				<input id="rageid" class="short" name="rageid" type="text" value="{$release.rageid}" />
+				<input id="videosID" class="short" name="videosID" type="text" value="{$release.videos_id}" />
+			</td>
+		</tr>
+		<tr>
+			<td><label for="episodeID">TV Episode Id:</label></td>
+			<td>
+				<input id="episodeID" class="short" name="episodeID" type="text" value="{$release.tv_episodes_id}" />
 			</td>
 		</tr>
 		<tr>
@@ -55,24 +61,6 @@
 			<td><label for="anidbid">AniDB Id:</label></td>
 			<td>
 				<input id="anidbid" class="short" name="anidbid" type="text" value="{$release.anidbid}" />
-			</td>
-		</tr>
-		<tr>
-			<td><label for="seriesfull">Series Full:</label></td>
-			<td>
-				<input id="seriesfull" class="long" name="seriesfull" type="text" value="{$release.seriesfull}" />
-			</td>
-		</tr>
-		<tr>
-			<td><label for="season">Season:</label></td>
-			<td>
-				<input id="season" class="short" name="season" type="text" value="{$release.season}" />
-			</td>
-		</tr>
-		<tr>
-			<td><label for="episode">Episode:</label></td>
-			<td>
-				<input id="episode" class="short" name="episode" type="text" value="{$release.episode}" />
 			</td>
 		</tr>
 		<tr>

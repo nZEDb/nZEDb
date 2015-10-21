@@ -38,9 +38,9 @@
 					</td>
 				</tr>
 				<tr>
-					<td><label for="rageID">Tv Rage Id:</label></td>
+					<td><label for="videosID">Video Id:</label></td>
 					<td>
-						<input id="rageID" class="short" name="rageID" type="text" value="{$release.videos_id}" />
+						<input id="videosID" class="short" name="videosID" type="text" value="{$release.videos_id}" />
 					</td>
 				</tr>
 				<tr>
