@@ -25,7 +25,7 @@ namespace nzedb\processing;
  *
  * @package nzedb\processing
  */
-class Videos
+abstract class Videos
 {
 	public function __construct(array $options = [])
 	{
