@@ -80,7 +80,7 @@ abstract class TV extends Videos
 	 *
 	 * @return mixed
 	 */
-	abstract protected function getEpisodeInfo($siteId, $series, $episode, $aired = '', $videoId = 0);
+	abstract protected function getEpisodeInfo($siteId, $series, $episode);
 
 	/**
 	 * Retrieve poster image for TV episode from site using its API.
@@ -443,8 +443,8 @@ abstract class TV extends Videos
 	/**
 	 * Get video info from a Site ID and column.
 	 *
-	 * @param string $column
-	 * @param int $id
+	 * @param string	$column
+	 * @param integer	$id
 	 *
 	 * @return array|bool
 	 */
