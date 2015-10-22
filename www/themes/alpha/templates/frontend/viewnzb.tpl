@@ -55,7 +55,7 @@
 				</tr>
 			{/if}
 
-			{if $movie && $release.videos_id < 0}
+			{if $movie && $release.videos_id <= 0}
 				<tr>
 					<th style="vertical-align:top">Movie Info:</th>
 					<td><strong>{$movie.title|stripslashes|escape:"htmlall"} ({$movie.year}) {if $movie.rating !== ''}{$movie.rating}/10{/if}</strong>

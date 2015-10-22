@@ -267,9 +267,9 @@
 									<a href="#" name="name{$result.consoleinfoid}" title="View console info"
 									   class="modal_console label label-default" rel="console">Cover</a>
 								{/if}
-								{if $result.rageid > 0}
+								{if $result.videos_id > 0}
 									<a class="label label-default"
-									   href="{$smarty.const.WWW_TOP}/series/{$result.rageid}" title="View all episodes">View
+									   href="{$smarty.const.WWW_TOP}/series/{$result.videos_id}" title="View all episodes">View
 										Series</a>
 								{/if}
 								{if $result.anidbid > 0}
@@ -277,9 +277,9 @@
 									   href="{$smarty.const.WWW_TOP}/anime/{$result.anidbid}" title="View all episodes">View
 										Anime</a>
 								{/if}
-								{if $result.tvairdate != ""}
+								{if isset($result.firstaired) && $result.firstaired != ''}
 									<span class="seriesinfo label label-default"
-										  title="{$result.guid}">Aired {if $result.tvairdate|strtotime > $smarty.now}in future{else}{$result.tvairdate|daysago}{/if}</span>
+										  title="{$result.guid}">Aired {if $result.firstaired|strtotime > $smarty.now}in future{else}{$result.firstaired|daysago}{/if}</span>
 								{/if}
 								{if $result.group_name != ""}
 									<a class="label label-default"
