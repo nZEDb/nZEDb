@@ -131,7 +131,7 @@ Class Videos
 					FROM videos v
 					INNER JOIN releases r ON r.videos_id = v.id
 					INNER JOIN tv_info tvi ON r.videos_id = tvi.videos_id
-					INNER JOIN tv_episodes tve ON v.id = tve.videos_id AND DATE(tve.firstaired) <= DATE(NOW())
+					INNER JOIN tv_episodes tve ON v.id = tve.videos_id AND tve.firstaired <= NOW()
 					LEFT OUTER JOIN user_series us ON v.id = us.videos_id AND us.user_id = %d
 					WHERE %s
 					%s %s
