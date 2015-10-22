@@ -77,7 +77,7 @@
 					</td>
 					<td>
 						<div class="text-center">
-							{if $s.userseriesid != ''}
+							{if $s.userseriesid != null}
 								<span class="label label-warning">
 									<a href="{$smarty.const.WWW_TOP}/myshows/edit/{$s.id}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows" rel="edit" name="series{$s.id}" title="Edit">Edit</a>
 								</span>&nbsp;&nbsp;
