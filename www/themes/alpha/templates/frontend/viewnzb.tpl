@@ -130,7 +130,7 @@
 					<td><strong>{if $release.title != ""}{$release.title|escape:"htmlall"}{/if}</strong><br>
 						{if $anidb.description != ""}<span class="descinitial">{$anidb.description|escape:"htmlall"|nl2br|magicurl|truncate:"350":" <a class=\"descmore\" href=\"#\">more...</a>"}</span>{if $anidb.description|strlen > 350}<span class="descfull">{$anidb.description|escape:"htmlall"|nl2br|magicurl}</span>{/if}<br><br>{/if}
 						{if $anidb.categories != ""}<strong>Categories:</strong> {$anidb.categories|escape:"htmlall"|replace:"|":", "}<br>{/if}
-						{if $release.tvairdate != "0000-00-00 00:00:00"}<strong>Aired:</strong> {$release.tvairdate|date_format}<br/>{/if}
+						{if $release.firstaired != null}<strong>Aired:</strong> {$release.firstaired|date_format}<br/>{/if}
 						<div style="margin-top:10px;">
 							<span class="label label-default"><a title="View all episodes from this anime" href="{$smarty.const.WWW_TOP}/anime/{$release.anidbid}">All Episodes</a></span>
 							<span class="label label-default"><a target="_blank" href="{$site->dereferrer_link}http://anidb.net/perl-bin/animedb.pl?show=anime&aid={$anidb.anidbid}" title="View at AniDB">AniDB</a></span>
