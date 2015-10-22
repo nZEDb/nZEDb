@@ -116,17 +116,20 @@ class TVDB extends TV
 							);
 
 							$videoId = $this->add(
+										$tvdbShow['title'],
 										$tvdbShow['column'],
 										$tvdbShow['siteid'],
-										$tvdbShow['title'],
 										$tvdbShow['summary'],
 										$tvdbShow['country'],
 										$tvdbShow['started'],
 										$tvdbShow['publisher'],
 										$tvdbShow['source'],
-										$tvdbShow['imdbid']
+										$tvdbShow['tvdbid'],
+										0, 0, 0,
+										$tvdbShow['imdbid'],
+										0
 							);
-							$tvdbid = (int)$tvdbShow['siteid'];
+							$tvdbid = (int)$tvdbShow['tvdbid'];
 						}
 					} else if ($this->echooutput) {
 							echo $this->pdo->log->primaryOver("Video ID for ") .
@@ -328,10 +331,11 @@ class TVDB extends TV
 	private function formatShowArr($show)
 	{
 		$show->firstAired->setTimezone($this->timeZone);
-		preg_match('/tt(?P<imdbid>\d{7})$/i', $show->imdbId, $imdb);
+		preg_match('/tt(?P<imdbid>\d{6,7})$/i', $show->imdbId, $imdb);
 
 		return	[
-					'column'    => (string)'tvdb',
+					'tvdbid'    => (int)$show->id,
+					'column'    => 'tvdb',
 					'siteid'    => (int)$show->id,
 					'title'     => (string)$show->name,
 					'summary'   => (string)$show->overview,
