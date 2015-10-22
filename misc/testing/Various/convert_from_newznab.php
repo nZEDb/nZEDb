@@ -8,16 +8,11 @@ if (!isset($argv[1]) || !isset($argv[2]) || !isset($argv[3])) {
 	passthru("clear");
 	echo "Usage: newznab_schema nZEDB_schema true/false\n"
 		 . "example: php convert_from_newznab.php newznab nzedb true\n\n"
-		 .
-		 "newznab_schema: Schema where your newznab install is located. The database name. The current user in your config.php file must have access to this schema\n"
-		 .
-		 "nZEDB_schema: Schema where you want the newznab data converted too. The database name. The schema must be populated and will be wiped clean except the sites and categories tables\n"
-		 .
-		 "true/false: false = Show the queries but do not run.  true means you understand the risks and want to convert the data (Your old data will not be touched\n\n"
-		 .
-		 "NOTE: This is experimental and there is a possibility that this will not work correctly.  Please let us know if it doesn't work correctly, but we are not responsible for any lost data.\n"
-		 .
-		 "      You will have to start any backfilling and processing over again since we use a different mechanism for processing releases\n\n";
+		 . "newznab_schema: Schema where your newznab install is located. The database name. The current user in your config.php file must have access to this schema\n"
+		 . "nZEDB_schema: Schema where you want the newznab data converted too. The database name. The schema must be populated and will be wiped clean except the sites and categories tables\n"
+		 . "true/false: false = Show the queries but do not run.  true means you understand the risks and want to convert the data (Your old data will not be touched\n\n"
+		 . "NOTE: This is experimental and there is a possibility that this will not work correctly.  Please let us know if it doesn't work correctly, but we are not responsible for any lost data.\n"
+		 . "      You will have to start any backfilling and processing over again since we use a different mechanism for processing releases\n\n";
 	exit(1);
 }
 
@@ -415,8 +410,6 @@ convertTable($pdo,
 			 $runQueries);
 
 exit("Due to some issues moving roles we've used INSERT IGNORE... Please check your user roles in your nZEDb install\n"
-	 .
-	 "You now need to run copy_from_newznab.php to copy nzbs, covers, previews, set the nzbstatus and nzb path level\n\n"
-	 .
-	 "DO NOT run update_releases.php before running copy_from_newznab.php, you will have to start over.\n");
+	 . "You now need to run copy_from_newznab.php to copy nzbs, covers, previews, set the nzbstatus and nzb path level\n\n"
+	 . "DO NOT run update_releases.php before running copy_from_newznab.php, you will have to start over.\n");
 ?>
