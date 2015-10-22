@@ -1,6 +1,5 @@
-{if isset($nodata)}
+{if isset($nodata) && $nodata !=''}
 <div class="header">
-	{assign var="catsplit" value=">"|explode:$catname}
 	<h2>View > <strong>Anime</strong></h2>
 	<p>{$nodata}</p>
 </div>
@@ -90,7 +89,7 @@
 						   id="browsetable">
 						{foreach $animeEpisodeTitles as $animeEpno => $animeEpisodeTitle}
 							<tr>
-								<td style="padding-top:15px;" colspan="10"><h2>{$animeEpno}</h2></td>
+								<td style="padding-top:15px;" colspan="10"><h3>{$animeEpno}</h2></td>
 							</tr>
 							<tr>
 								<th><input id="chkSelectAll" type="checkbox" class="nzb_check_all"/></th>
@@ -120,9 +119,9 @@
 													class="label label-default" rel="preview">Preview</a>{/if}
 												<span class="label label-default">{$result.grabs}
 													Grab{if $result.grabs != 1}s{/if}</span>
-												{if $result.tvairdate != ""}<span class="label label-success"
-																				  title="{$result.tvtitle} Aired on {$result.tvairdate|date_format}">
-													Aired {if $result.tvairdate|strtotime > $smarty.now}in future{else}{$result.tvairdate|daysago}{/if}</span>{/if}
+												{if $result.firstaired != ""}<span class="label label-success"
+																				  title="{$result.tvtitle} Aired on {$result.firstaired|date_format}">
+													Aired {if $result.firstaired|strtotime > $smarty.now}in future{else}{$result.firstaired|daysago}{/if}</span>{/if}
 												{if isset($result.reis) && $result.reid > 0}<span class="mediainfo label label-default"
 																		   title="{$result.guid}">Media</span>{/if}
 											</div>

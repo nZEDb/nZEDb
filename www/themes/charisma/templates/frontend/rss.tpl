@@ -10,7 +10,7 @@
 		<webMaster>{$site->email} ({$site->title|escape})</webMaster>
 		<category>{$site->meta_keywords}</category>
 		<image>
-			<url>{$serverroot}themes/charisma/images/logo.png</url>
+			<url>{$serverroot}themes_shared/images/logo.png</url>
 			<title>{$site->title|escape}</title>
 			<link href="{$serverroot}"/>
 			<description>Visit {$site->title|escape} - {$site->strapline|escape}</description>
@@ -153,20 +153,11 @@
 				<newznab:attr name="size" value="{$release.size}"/>
 				<newznab:attr name="files" value="{$release.totalpart}"/>
 				<newznab:attr name="poster" value="{$release.fromname|escape:html}"/>
-				{if $release.season != ""}
-					<newznab:attr name="season" value="{$release.season}"/>
+				{if $release.videos_id > 0}
+					<newznab:attr name="videos_id" value="{$release.videos_id}" />
 				{/if}
-				{if $release.episode != ""}
-					<newznab:attr name="episode" value="{$release.episode}"/>
-				{/if}
-				{if $release.rageid != "-1" && $release.rageid != "-2"}
-					<newznab:attr name="rageid" value="{$release.rageid}"/>
-				{/if}
-				{if $release.tvtitle != ""}
-					<newznab:attr name="tvtitle" value="{$release.tvtitle|escape:html}"/>
-				{/if}
-				{if $release.tvairdate != ""}
-					<newznab:attr name="tvairdate" value="{$release.tvairdate|phpdate_format:"DATE_RSS"}"/>
+				{if $release.tv_episodes_id > 0}
+					<newznab:attr name="episode" value="{$release.tv_episodes_id}" />
 				{/if}
 				{if $release.imdbid != ""}
 					<newznab:attr name="imdb" value="{$release.imdbid}"/>

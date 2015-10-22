@@ -1,7 +1,5 @@
 <div class="header" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html"
 	 xmlns="http://www.w3.org/1999/html">
-	{assign var="catsplit" value=">"|explode:$catname}
-	<h2>{$catsplit[0]} > <strong>{if isset($catsplit[1])} {$catsplit[1]}{/if}</strong></h2>
 	<div class="breadcrumb-wrapper">
 		<ol class="breadcrumb">
 			<li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li>
@@ -89,7 +87,7 @@
 												<div class="row">
 													<div class="col-md-2 small-gutter-left">
 														<a title="View details"
-														   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">
+														   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">
 															<img src="{$smarty.const.WWW_TOP}/covers/book/{if $result.cover == 1}{$result.bookinfoid}.jpg{else}no-cover.jpg{/if}"
 																 width="140" border="0"
 																 alt="{$result.author|escape:"htmlall"} - {$result.title|escape:"htmlall"}"/>{if $mfailed[$m@index] > 0} <i class="fa fa-exclamation-circle" style="color: red" title="This release has failed to download for some users"></i>{/if}
@@ -114,7 +112,7 @@
 													</div>
 													<div class="col-md-10 small-gutter-left">
 														<h4><a title="View details"
-															   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">{$result.author|escape:"htmlall"}
+															   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$result.author|escape:"htmlall"}
 																- {$result.title|escape:"htmlall"}</a></h4>
 														<table>
 															<tr>
@@ -152,12 +150,12 @@
 																	{/if}
 																	<div>
 																		<a role="button" class="btn btn-default btn-xs"
-																		   href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"><i
+																		   href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}|escape:"htmlall"}"><i
 																					class="fa fa-download"></i><span
 																					class="badge">{$mgrabs[$m@index]}
 																				Grab{if $mgrabs[$m@index] != 1}s{/if}</span></a>
 																		<a role="button" class="btn btn-default btn-xs"
-																		   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}#comments"><i
+																		   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}#comments"><i
 																					class="fa fa-comment-o"></i><span
 																					class="badge">{$mcomments[$m@index]}
 																				Comment{if $mcomments[$m@index] != 1}s{/if}</span></a>
