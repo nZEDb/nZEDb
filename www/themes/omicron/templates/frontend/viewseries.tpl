@@ -1,6 +1,5 @@
 {if isset($nodata) && $nodata != ""}
 	<div class="header">
-		<h2>View > <strong>TV Series</strong></h2>
 		<div class="breadcrumb-wrapper">
 			<ol class="breadcrumb">
 				<li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li>
@@ -15,7 +14,6 @@
 	</div>
 {else}
 	<div class="header">
-		<h2>View > <strong>TV Series</strong></h2>
 		<div class="breadcrumb-wrapper">
 			<ol class="breadcrumb">
 				<li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li>
@@ -41,8 +39,16 @@
 	</div>
 	<div class="btn-group">
 		<a class="btn btn-sm btn-default"
-		   href="{$smarty.const.WWW_TOP}/rss?show={$show.id}{if $category != ''}&amp;t={$category}{/if}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">RSS
-			for TV Show <i class="fa fa-rss"></i></a>
+		   href="{$smarty.const.WWW_TOP}/rss?show={$show.id}{if $category != ''}&amp;t={$category}{/if}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">RSS for TV Show <i class="fa fa-rss"></i></a>
+		{if $result.source = 1}
+			{if $show.tvdb > 0}<a class="btn btn-sm btn-info" target="_blank"
+									 href="{$site->dereferrer_link}http://thetvdb.com/?tab=series&id={$show.tvdb}&lid=7"
+									 title="View at TheTVDB">TheTVDB</a>{/if}
+		{elseif $result.source = 3}
+			<a class="btn btn-sm btn-info" target="_blank"
+			   href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$show.id}"
+			   title="View at TV Rage">TV Rage</a>
+		{/if}
 	</div>
 	<br/>
 	<div class="box-body"
@@ -101,14 +107,14 @@
 					<div class="panel-body pagination2">
 						<div class="tabbable">
 							<ul class="nav nav-tabs">
-								{foreach $seasons as $seasonnum => $season name="seas"}
+								{foreach $seasons as $seasonnum => $season}
 									<li {if $smarty.foreach.seas.first}class="active"{/if}><a
 												title="View Season {$seasonnum}" href="#{$seasonnum}"
 												data-toggle="tab">{$seasonnum}</a></li>
 								{/foreach}
 							</ul>
 							<div class="tab-content">
-								{foreach $seasons as $seasonnum => $season name=tv}
+								{foreach $seasons as $seasonnum => $season}
 									<div class="tab-pane{if $smarty.foreach.tv.first} active{/if} fade in"
 										 id="{$seasonnum}">
 										<table class="tb_{$seasonnum} data table table-condensed table-bordered table-responsive table-hover"
@@ -136,7 +142,7 @@
 														{if $result@total>1 && $result@index == 0}
 															<td rowspan="{$result@total}" width="30">
 																<h4>{$episodes@key}</h4></td>
-														{else if $result@total == 1}
+														{elseif $result@total == 1}
 															<td><h4>{$episodes@key}</h4></td>
 														{/if}
 														<td>
@@ -149,7 +155,7 @@
 																	<a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}"
 																	   class="text-muted">NFO</a>
 																	</span>{/if}
-																{if $result.haspreview == 1 && $userdata.canpreview == 1}
+																{if $result.image == 1 && $userdata.canpreview == 1}
 																<a
 																		href="{$smarty.const.WWW_TOP}/covers/preview/{$result.guid}_thumb.jpg"
 																		name="name{$result.guid}"

@@ -313,7 +313,7 @@
 																	</tr>
 																{/if}
 																{if $show && $release.videos_id > 0}
-																	{if $release.firstaired != ""}
+																	{if $release.firstaired != null}
 																		<tr>
 																			<th width="140">
 																				Aired
