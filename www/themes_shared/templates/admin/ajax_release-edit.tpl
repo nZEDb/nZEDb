@@ -38,15 +38,15 @@
 					</td>
 				</tr>
 				<tr>
-					<td><label for="videosID">Video Id:</label></td>
+					<td><label for="videosid">Video Id:</label></td>
 					<td>
-						<input id="videosID" class="short" name="videosID" type="text" value="{$release.videos_id}" />
+						<input id="videosid" class="short" name="videosid" type="text" value="{$release.videos_id}" />
 					</td>
 				</tr>
 				<tr>
-					<td><label for="episodeID">TV Episode Id:</label></td>
+					<td><label for="episodesid">TV Episode Id:</label></td>
 					<td>
-						<input id="episodeID" class="short" name="episodeID" type="text" value="{$release.tv_episodes_id}" />
+						<input id="episodesid" class="short" name="episodesid" type="text" value="{$release.tv_episodes_id}" />
 					</td>
 				</tr>
 				<tr>
