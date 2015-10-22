@@ -47,7 +47,7 @@ foreach ($itr as $filePath) {
 				$moved++;
 				if ($argv[1] === "move") {
 					@rename($filePath, $dir . $guid . ".nzb.gz");
-					$releases->deleteSingle(['g' => $guid, 'i' => false], $nzb, $releaseImage);
+					$releases->deleteSingle(['g' => $guid, 'i' => $res['id']], $nzb, $releaseImage);
 				}
 			} elseif ($res["nzbstatus"] != 1) {
 				$pdo->queryExec(sprintf("UPDATE releases SET nzbstatus = 1 WHERE id = %s", $res['id']));
