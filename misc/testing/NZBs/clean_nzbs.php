@@ -42,14 +42,14 @@ foreach ($itr as $filePath) {
 	if (is_file($filePath) && $guid) {
 		$nzbfile = Misc::unzipGzipFile($filePath);
 		if ($nzbfile && @simplexml_load_string($nzbfile)) {
-			$res = $pdo->queryOneRow("SELECT id, guid FROM releases WHERE guid = '$guid'");
+			$res = $pdo->queryOneRow("SELECT id, guid, nzbstatus FROM releases WHERE guid = '$guid'");
 			if ($res === false) {
 				$moved++;
 				if ($argv[1] === "move") {
 					@rename($filePath, $dir . $guid . ".nzb.gz");
 					$releases->deleteSingle(['g' => $guid, 'i' => false], $nzb, $releaseImage);
 				}
-			} else {
+			} elseif ($res["nzbstatus"] != 1) {
 				$pdo->queryExec(sprintf("UPDATE releases SET nzbstatus = 1 WHERE id = %s", $res['id']));
 			}
 		} else {
@@ -69,15 +69,15 @@ echo $pdo->log->header("Checked / releases deleted\n");
 
 $checked = $deleted = 0;
 
-$res = $pdo->queryDirect('SELECT id, guid FROM releases');
+$res = $pdo->queryDirect('SELECT id, guid, nzbstatus FROM releases');
 if ($res instanceof \Traversable) {
 	foreach ($res as $row) {
 		$nzbpath = $nzb->getNZBPath($row["guid"]);
-		if (is_file($nzbpath)) {
-			$pdo->queryExec(sprintf("UPDATE releases SET nzbstatus = 1 WHERE id = %d", $row['id']));
-		} else {
+		if (!is_file($nzbpath)) {
 			++$deleted;
 			$releases->deleteSingle(['g' => $row['guid'], 'i' => $row['id']], $nzb, $releaseImage);
+		} elseif ($row["nzbstatus"] != 1) {
+			$pdo->queryExec(sprintf("UPDATE releases SET nzbstatus = 1 WHERE id = %d", $row['id']));
 		}
 		++$checked;
 		echo "$checked / $deleted\r";
