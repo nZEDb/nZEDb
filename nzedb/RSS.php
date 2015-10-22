@@ -11,6 +11,16 @@ use nzedb\db\Settings;
  */
 Class RSS
 {
+	/** Releases class
+	 * @var Releases
+	 */
+	public $releases;
+
+	/** Settings class
+	 * @var \nzedb\db\Settings
+	 */
+	public $pdo;
+
 	/**
 	 * @param array $options
 	 */
