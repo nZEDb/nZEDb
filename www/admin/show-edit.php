@@ -1,11 +1,10 @@
 <?php
 require_once './config.php';
 
-use nzedb\processing\tv\TV;
 use nzedb\Videos;
 
 $page   = new AdminPage();
-$tv = new TV(['Settings' => $page->settings]);
+$tv = new smartyTV(['Settings' => $page->settings]);
 $video = new Videos(['Settings' => $page->settings]);
 
 switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
