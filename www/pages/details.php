@@ -120,8 +120,6 @@ if (isset($_GET['id'])) {
 		'failed'          => $fail->getFailedCount($data['guid']),
 	]);
 
-	$page->smarty->assign('rage', $criteria);
-
 	$page->meta_title       = 'View NZB';
 	$page->meta_keywords    = 'view,nzb,description,details';
 	$page->meta_description = 'View NZB for' . $data['searchname'];

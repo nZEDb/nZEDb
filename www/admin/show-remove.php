@@ -6,13 +6,15 @@ use nzedb\Releases;
 $page     = new AdminPage();
 $releases = new Releases(['Settings' => $page->settings]);
 
-$num = 0;
+$success = false;
+
 if (isset($_GET["id"])) {
-	$num = $releases->removeRageIdFromReleases($_GET["id"]);
+	$success = $releases->removeRageIdFromReleases($_GET["id"]);
+	$page->smarty->assign('videoid', $_GET["id"]);
 }
 
-$page->smarty->assign('numtv', $num);
+$page->smarty->assign('success', $success);
 
-$page->title   = "Remove Rage Id from Releases";
+$page->title   = "Remove Video and Episode IDs from Releases";
 $page->content = $page->smarty->fetch('show-remove.tpl');
 $page->render();
