@@ -669,22 +669,23 @@ class Releases
 	 * @param $grabs
 	 * @param $videoId
 	 * @param $episodeId
-	 * @param $imdDbID
+	 * @param $imdbId
 	 *
 	 * @return array|bool|int
 	 */
-	public function updatemulti($guids, $category, $grabs, $videoId, $episodeId, $imdDbID)
+	public function updateMulti($guids, $category, $grabs, $videoId, $episodeId, $anidbId, $imdbId)
 	{
 		if (!is_array($guids) || count($guids) < 1) {
 			return false;
 		}
 
 		$update = [
-			'categoryid' => (($category == '-1') ? '' : $category),
-			'grabs'      => $grabs,
-			'videos_id'     => $videoId,
-			'tv_episodes_id'     => $episodeId,
-			'imdbid'     => $imdDbID
+			'categoryid'     => (($category == '-1') ? 'categoryid' : $category),
+			'grabs'          => $grabs,
+			'videos_id'      => $videoId,
+			'tv_episodes_id' => $episodeId,
+			'anidbid'        => $anidbId,
+			'imdbid'         => $imdbId
 		];
 
 		$updateSql = [];
@@ -703,7 +704,7 @@ class Releases
 			$updateGuids[] = $this->pdo->escapeString($guid);
 		}
 
-		return $this->pdo->query(
+		return $this->pdo->queryExec(
 			sprintf(
 				'UPDATE releases SET %s WHERE guid IN (%s)',
 				implode(', ', $updateSql),
