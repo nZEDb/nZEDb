@@ -29,6 +29,11 @@ use nzedb\db\Settings;
  */
 abstract class Videos
 {
+	// Video Type Identifiers
+	const TYPE_TV		= 0; // Type of video is a TV Programme/Show
+	const TYPE_FILM		= 1; // Type of video is a Film/Movie
+	const TYPE_ANIME	= 2; // Type of video is a Anime
+
 	/**
 	 * @var \nzedb\db\Settings
 	 */
