@@ -179,11 +179,7 @@ Class TraktAPI {
 			default:
 				$extended = 'full';
 		}
-		$array = $this->getJsonArray($showUrl, $extended);
-		if (!$array) {
-			return false;
-		}
-		return $array;
+		return $this->getJsonArray($showUrl, $extended);
 	}
 
 	/**
@@ -202,11 +198,7 @@ Class TraktAPI {
 	public function showSearch($show = '', $type = 'show')
 	{
 		$searchUrl = self::API_URL . 'search?query=' . str_replace([' ', '_', '.'], '-', str_replace(['(', ')'], '', $show)) . '&type=' . $type;
-		$array = $this->getJsonArray($searchUrl, '');
-		if (!$array) {
-			return false;
-		}
-		return $array;
+		return $this->getJsonArray($searchUrl, '');
 	}
 
 	/**
@@ -218,16 +210,16 @@ Class TraktAPI {
 	 *                         'min'         Returns enough info to match locally. (Default)
 	 *                         'images'      Minimal info and all images.
 	 *                         'full'        Complete info for an item.
-	*                         'full,images' Complete info and all images.
-	*
-	* @return bool|mixed
-	*/
+	 *                         'full,images' Complete info and all images.
+	 *
+	 * @return array|false
+	 */
 	private function getJsonArray($URI, $extended = 'min')
 	{
 		if ($extended === '') {
 			$extendedString = '';
 		} else {
-			$extendedString = "?extended=" . $extended;
+			$extendedString = "&extended=" . $extended;
 		}
 
 		if (!empty($this->clientID)) {
