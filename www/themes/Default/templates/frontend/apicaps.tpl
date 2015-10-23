@@ -6,10 +6,10 @@
 	<registration available="yes" open="{if $site->registerstatus == 0}yes{else}no{/if}" />
 
 	<searching>
-		<search available="yes"/>
-		<tv-search available="yes"/>
-		<movie-search available="yes"/>
-		<audio-search available="yes"/>
+		<search available="yes" supportedParams="q,group"/>
+		<tv-search available="yes" supportedParams="q,rid,tvdbid,vid,traktid,tvmazeid,imdbid,tmdbid,season,ep"/>
+		<movie-search available="yes" supportedParams="q,imdbid"/>
+		<audio-search available="yes" supportedParams="q,album,artist,label,trak,year,genre"/>
 	</searching>
 
 	<categories>

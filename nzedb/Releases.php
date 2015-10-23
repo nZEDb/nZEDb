@@ -209,11 +209,13 @@ class Releases
 					g.name AS group_name,
 					rn.id AS nfoid,
 					re.releaseid AS reid,
+					v.tvdb, v.trakt, v.tvrage, v.tvmaze, v.imdb, v.tmdb,
 					tve.title, tve.firstaired
 				FROM releases r
 				STRAIGHT_JOIN groups g ON g.id = r.group_id
 				STRAIGHT_JOIN category c ON c.id = r.categoryid
 				INNER JOIN category cp ON cp.id = c.parentid
+				LEFT OUTER JOIN videos v ON r.videos_id = v.id
 				LEFT OUTER JOIN tv_episodes tve ON r.tv_episodes_id = tve.id
 				LEFT OUTER JOIN video_data re ON re.releaseid = r.id
 				LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
@@ -885,9 +887,11 @@ class Releases
 				rn.id AS nfoid,
 				re.releaseid AS reid,
 				cp.id AS categoryparentid,
+				v.tvdb, v.trakt, v.tvrage, v.tvmaze, v.imdb, v.tmdb,
 				tve.firstaired
 			FROM releases r
 			LEFT OUTER JOIN video_data re ON re.releaseid = r.id
+			LEFT OUTER JOIN videos v ON r.videos_id = v.id
 			LEFT OUTER JOIN tv_episodes tve ON r.tv_episodes_id = tve.id
 			LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
 			INNER JOIN groups ON groups.id = r.group_id
@@ -935,25 +939,33 @@ class Releases
 	 *
 	 * @return array
 	 */
-	public function searchShows($videosId, $tvdbId, $traktId, $tvrageId, $tvmazeId, $imdbId, $tmdbId, $series = '',
-								$episode = '', $offset = 0, $limit = 100, $name = '', $cat = [-1], $maxAge = -1)
+	public function searchShows($siteIdArr = array(), $series = '', $episode = '', $offset = 0,
+								$limit = 100, $name = '', $cat = [-1], $maxAge = -1)
 	{
+		$siteSQL = array();
+
+		if (is_array($siteIdArr)) {
+			foreach ($siteIdArr as $column => $Id) {
+				if ($Id > 0) {
+					$siteSQL[] = sprintf('v.%s = %d', $column, $Id);
+				}
+			}
+		}
+
+		$siteCount = count($siteSQL);
+
 		$whereSql = sprintf(
 			"%s
 			WHERE r.categoryid BETWEEN 5000 AND 5999
 			AND v.type = 0
 			AND r.nzbstatus = %d
-			AND r.passwordstatus %s %s %s %s %s %s %s %s %s %s %s %s %s",
+			AND r.passwordstatus %s
+			AND (%s)
+			%s %s %s %s %s",
 			($name !== '' ? $this->releaseSearch->getFullTextJoinString() : ''),
 			NZB::NZB_ADDED,
 			$this->showPasswords,
-			($videosId > 0 ? sprintf(' AND v.id = %d ', $videosId) : ''),
-			($tvdbId > 0 ? sprintf(' AND v.tvdb = %d ', $tvdbId) : ''),
-			($traktId > 0 ? sprintf(' AND v.trakt = %d ', $traktId) : ''),
-			($tvrageId > 0 ? sprintf(' AND v.tvrage = %d ', $tvrageId) : ''),
-			($tvmazeId > 0 ? sprintf(' AND v.tvmaze = %d ', $tvmazeId) : ''),
-			($imdbId > 0 ? sprintf(' AND v.imdb = %d ', $imdbId) : ''),
-			($tmdbId > 0 ? sprintf(' AND v.tmdb = %d ', $tmdbId) : ''),
+			($siteCount > 0 ? implode(' OR ', $siteSQL) : '1=1'),
 			($series != '' ? sprintf(' AND tve.series = %d', (int)preg_replace('/^s0*/i', '', $series)): ''),
 			($episode != '' ? sprintf(' AND tve.episode = %d', (int)preg_replace('/^e0*/i', '', $episode)): ''),
 			($name !== '' ? $this->releaseSearch->getSearchSQL(['searchname' => $name]) : ''),
@@ -1318,7 +1330,7 @@ class Releases
 		return	$this->pdo->queryExec(
 					sprintf('
 						UPDATE releases
-						SET anidbid = -1,
+						SET anidbid = -1
 						WHERE anidbid = %d',
 						$anidbID
 					)
