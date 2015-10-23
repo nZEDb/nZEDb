@@ -6,7 +6,7 @@ use nzedb\Videos;
 $page   = new AdminPage();
 $tv = new Videos(['Settings' => $page->settings]);
 
-$page->title = "TV Rage List";
+$page->title = "TV Shows List";
 
 $tvshowname = (isset($_REQUEST['showname']) && !empty($_REQUEST['showname']) ? $_REQUEST['showname'] : '');
 $offset = isset($_REQUEST["offset"]) ? $_REQUEST["offset"] : 0;
@@ -19,7 +19,7 @@ $page->smarty->assign([
 		'pageritemsperpage' => ITEMS_PER_PAGE,
 		'pagerquerysuffix'  => '',
 		'pagerquerybase'    => (WWW_TOP . "/show-list.php?" .
-			($tvshowname != '' ? 'showname=' . $tvshowname . '&amp;' : '') . "&offset="
+		($tvshowname != '' ? 'showname=' . $tvshowname . '&amp;' : '') . "&offset="
 		)
 	]
 );

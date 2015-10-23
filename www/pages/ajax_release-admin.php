@@ -9,7 +9,15 @@ $category = new Category(['Settings' => $page->settings]);
 
 // Set the current action.
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : '';
-$id = (isset($_REQUEST['id']) && is_array($_REQUEST['id'])) ? $_REQUEST['id'] : '';
+
+// Request is for id, but guid is actually being provided
+if (isset($_REQUEST['id']) && is_array($_REQUEST['id'])) {
+	$id = $_REQUEST['id'];
+	//Get info for first guid to populate form
+	$rel = $releases->getByGuid($_REQUEST['id'][0]);
+} else	{
+	$id = $rel = '';
+}
 
 $page->smarty->assign('action', $action);
 $page->smarty->assign('idArr', $id);
@@ -19,16 +27,17 @@ switch ($action) {
 	case 'edit':
 		$success = false;
 		if ($action == 'doedit') {
-			$upd = $releases->updatemulti($_REQUEST["id"], $_REQUEST["category"], $_REQUEST["grabs"], $_REQUEST["rageid"], $_REQUEST["season"], $_REQUEST['imdbid']);
+			$upd = $releases->updatemulti($_REQUEST["id"], $_REQUEST["category"], $_REQUEST["grabs"], $_REQUEST["videosid"], $_REQUEST["episodesid"], $_REQUEST['imdbid']);
 			if ($upd !== false) {
 				$success = true;
 			} else {
 
 			}
 		}
+		$page->smarty->assign('release', $rel);
 		$page->smarty->assign('success', $success);
 		$page->smarty->assign('from', (isset($_REQUEST['from']) ? $_REQUEST['from'] : ''));
-		$page->smarty->assign('catlist', $category->getForSelect());
+		$page->smarty->assign('catlist', $category->getForSelect(false));
 		$page->content = $page->smarty->fetch('ajax_release-edit.tpl');
 		echo $page->content;
 

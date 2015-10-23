@@ -664,17 +664,14 @@ class Releases
 	}
 
 	/**
-	 * Used for updating releases on site.
-	 *
-	 * @param array $guids
-	 * @param int   $category
-	 * @param int   $grabs
-	 * @param int   $videoId
-	 * @param       $episodeId
-	 * @param int   $imdDbID
+	 * @param $guids
+	 * @param $category
+	 * @param $grabs
+	 * @param $videoId
+	 * @param $episodeId
+	 * @param $imdDbID
 	 *
 	 * @return array|bool|int
-	 * @internal param string $season
 	 */
 	public function updatemulti($guids, $category, $grabs, $videoId, $episodeId, $imdDbID)
 	{
@@ -1334,15 +1331,14 @@ class Releases
 	 */
 	public function getById($id)
 	{
-		return $this->pdo->queryOneRow(
-			sprintf(
-				'SELECT r.*, g.name AS group_name
+		$qry = sprintf('
+				SELECT r.*, g.name AS group_name
 				FROM releases r
 				INNER JOIN groups g ON g.id = r.group_id
 				WHERE r.id = %d',
 				$id
-			)
 		);
+		return $this->pdo->queryOneRow($qry);
 	}
 
 	/**

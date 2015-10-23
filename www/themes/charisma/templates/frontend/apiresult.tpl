@@ -10,12 +10,12 @@
 		<webMaster>{$site->email} ({$site->title|escape})</webMaster>
 		<category>{$site->meta_keywords}</category>
 		<image>
-			<url>{$serverroot}themes/charisma/images/logo.png</url>
+			<url>{$serverroot}themes_shared/images/logo.png</url>
 			<title>{$site->title|escape}</title>
 			<link>{$serverroot}</link>
 			<description>Visit {$site->title|escape} - {$site->strapline|escape}</description>
 		</image>
-		<newznab:response offset="{$offset}" total="{if $releases|@count > 0}{$releases[0]._totalrows}{else}0{/if}"/>
+		<newznab:response offset="{$offset}" total="{if $releases|@count > 0}{if isset($releases[0]._totalrows)}{$releases[0]._totalrows}{/if}{else}0{/if}"/>
 		{foreach from=$releases item=release}
 			<item>
 				<title>{$release.searchname|escape:html}</title>
@@ -37,20 +37,20 @@
 				{if $extended == "1"}
 					<newznab:attr name="files" value="{$release.totalpart}"/>
 					<newznab:attr name="poster" value="{$release.fromname|escape:html}"/>
-					{if $release.season != ""}
-						<newznab:attr name="season" value="{$release.season}"/>
+					{if $release.series != ""}
+						<newznab:attr name="series" value="{$release.series}" />
 					{/if}
 					{if $release.episode != ""}
-						<newznab:attr name="episode" value="{$release.episode}"/>
+						<newznab:attr name="episode" value="{$release.episode}" />
 					{/if}
-					{if $release.rageid != "-1" && $release.rageid != "-2"}
-						<newznab:attr name="rageid" value="{$release.rageid}"/>
+					{if $release.videos_id > 0}
+						<newznab:attr name="videos_id" value="{$release.videos_id}" />
 					{/if}
-					{if $release.tvtitle != ""}
-						<newznab:attr name="tvtitle" value="{$release.tvtitle|escape:html}"/>
+					{if $release.title != ""}
+						<newznab:attr name="title" value="{$release.title|escape:html}" />
 					{/if}
-					{if $release.tvairdate != ""}
-						<newznab:attr name="tvairdate" value="{$release.tvairdate|phpdate_format:"DATE_RSS"}"/>
+					{if $release.firstaired != ""}
+						<newznab:attr name="firstaired" value="{$release.firstaired|phpdate_format:"DATE_RSS"}" />
 					{/if}
 					{if $release.imdbid != ""}
 						<newznab:attr name="imdb" value="{$release.imdbid}"/>

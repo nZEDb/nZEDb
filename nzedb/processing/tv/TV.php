@@ -7,7 +7,7 @@ use nzedb\processing\Videos;
 /**
  * Class TV
  */
-abstract class TV extends Videos
+class TV extends Videos
 {
 	// Television Sources
 	const SOURCE_NONE    = 0; // No Scrape source
@@ -61,38 +61,6 @@ abstract class TV extends Videos
 		$this->catWhere = 'categoryid BETWEEN 5000 AND 5999 AND categoryid NOT IN (5070)';
 		$this->tvqty = ($this->pdo->getSetting('maxrageprocessed') != '') ? $this->pdo->getSetting('maxrageprocessed') : 75;
 	}
-
-	abstract protected function getBanner($videoID, $siteId);
-
-	/**
-	 * Retrieve info of TV episode from site using its API.
-	 *
-	 * @param integer	$siteId
-	 * @param integer	$series
-	 * @param integer	$episode
-	 *
-	 * @return array|false    False on failure, an array of information fields otherwise.
-	 */
-	abstract protected function getEpisodeInfo($siteId, $series, $episode);
-
-	/**
-	 * Retrieve poster image for TV episode from site using its API.
-	 *
-	 * @param integer $videoId ID from videos table.
-	 * @param integer $siteId  ID that this site uses for the programme.
-	 *
-	 * @return null
-	 */
-	abstract protected function getPoster($videoId, $siteId);
-
-	/**
-	 * Retrieve info of TV programme from site using it's API.
-	 *
-	 * @param string $name		Title of programme to look up. Usually a cleaned up version from releases table.
-	 *
-	 * @return array|false	False on failure, an array of information fields otherwise.
-	 */
-	abstract protected function getShowInfo($name);
 
 	/**
 	 * @param string $groupID
@@ -184,7 +152,8 @@ abstract class TV extends Videos
 	 *
 	 * @return int
 	 */
-	public function add($column, $siteId, $title, $summary, $country, $started, $publisher, $source, $imdbId = 0)
+	public function add($title, $column, $siteId, $summary, $country, $started, $publisher, $source, $tvdbId = 0, $traktId = 0, $tvrageId = 0,
+						$tvmazeId = 0, $imdbId = 0, $tmdbId = 0)
 	{
 		if ($country !== '') {
 			$country = $this->countryCode($country);
@@ -202,15 +171,19 @@ abstract class TV extends Videos
 		if ($videoId === false) {
 			$videoId = $this->pdo->queryInsert(
 										sprintf('
-											INSERT INTO videos (%s, type, title, countries_id, started, source, imdb)
-											VALUES (%s, 0, %s, %s, %s, %d, %d)',
-											$column,
-											$siteId,
+											INSERT INTO videos (type, title, countries_id, started, source,
+													tvdb, trakt, tvrage, tvmaze, imdb, tmdb)
+											VALUES (0, %s, %s, %s, %d, %d, %d, %d, %d, %d, %d)',
 											$this->pdo->escapeString($title),
 											$this->pdo->escapeString((isset($country) ? $country : '')),
 											$this->pdo->escapeString($started),
 											$source,
-											$imdbId
+											$tvdbId,
+											$traktId,
+											$tvrageId,
+											$tvmazeId,
+											$imdbId,
+											$tmdbId
 										)
 			);
 			$this->pdo->queryInsert(
@@ -223,7 +196,7 @@ abstract class TV extends Videos
 					)
 			);
 		} else {
-			$this->update($videoId, $column, $siteId, $country, $imdbId);
+			$this->update($videoId, $country, $tvdbId, $traktId, $tvrageId, $tvmazeId, $imdbId, $tmdbId);
 		}
 		return (int)$videoId;
 	}
@@ -269,21 +242,27 @@ abstract class TV extends Videos
 	 * @param string $country
 	 * @param        $imdbId
 	 */
-	public function update($videoId, $column, $siteId, $country = '', $imdbId = 0)
+	public function update($videoId, $country = '', $tvdbId = 0, $traktId = 0, $tvrageId = 0,
+						   $tvmazeId = 0, $imdbId = 0, $tmdbId = 0)
 	{
 		if ($country !== '') {
 			$country = $this->countryCode($country);
 		}
 
+		$ifString = 'IF(%s = 0, %s, %s)';
+
 		$this->pdo->queryExec(
 				sprintf('
 					UPDATE videos
-					SET %s = %d, countries_id = %s, imdb = %d
+					SET countries_id = %s, tvdb = %s, trakt = %s, tvrage = %s, tvmaze = %s, imdb = %s, tmdb = %s
 					WHERE id = %d',
-					$column,
-					$siteId,
 					$this->pdo->escapeString((isset($country) ? $country : '')),
-					($imdbId > 0 ? $imdbId : 0),
+					sprintf($ifString, 'tvdb', $tvdbId, 'tvdb'),
+					sprintf($ifString, 'trakt', $traktId, 'trakt'),
+					sprintf($ifString, 'tvrage', $tvrageId, 'tvrage'),
+					sprintf($ifString, 'tvmaze', $tvmazeId, 'tvmaze'),
+					sprintf($ifString, 'imdb', $imdbId, 'imdb'),
+					sprintf($ifString, 'tmdb', $tmdbId, 'tmdb'),
 					$videoId
 				)
 		);
@@ -302,7 +281,7 @@ abstract class TV extends Videos
 					FROM videos v
 					LEFT JOIN tv_info tvi ON v.id = tvi.videos_id
 					LEFT JOIN tv_episodes tve ON v.id = tve.videos_id
-					WHERE id = %d",
+					WHERE v.id = %d",
 					$id
 				)
 		);

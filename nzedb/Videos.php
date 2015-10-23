@@ -122,8 +122,7 @@ Class Videos
 			$tsql .= sprintf("AND v.title LIKE %s", $this->pdo->escapeString("%" . $showname . "%"));
 		}
 
-		return $this->pdo->query(
-			sprintf("
+		$qry = 	sprintf("
 				SELECT v.* FROM (
 					SELECT v.*,
 						tve.firstaired AS prevdate, tve.title AS previnfo,
@@ -132,18 +131,20 @@ Class Videos
 					FROM videos v
 					INNER JOIN releases r ON r.videos_id = v.id
 					INNER JOIN tv_info tvi ON r.videos_id = tvi.videos_id
-					INNER JOIN tv_episodes tve ON v.id = tve.videos_id
-					LEFT OUTER JOIN user_series us ON us.user_id = %d
+					INNER JOIN tv_episodes tve ON v.id = tve.videos_id AND tve.firstaired <= NOW()
+					LEFT OUTER JOIN user_series us ON v.id = us.videos_id AND us.user_id = %d
 					WHERE %s
 					%s %s
 					ORDER BY tve.firstaired DESC) v
 					GROUP BY v.id
 					ORDER BY v.title ASC",
-				$uid,
-				$this->catWhere,
-				$rsql,
-				$tsql
-			)
+			$uid,
+			$this->catWhere,
+			$rsql,
+			$tsql
 		);
+
+		$sql = $this->pdo->query($qry);
+		return $sql;
 	}
 }
