@@ -139,7 +139,16 @@ class TvRage extends TV
 								$tvairdate = $this->pdo->escapeString($this->checkDate($epinfo['airdate']));
 								$tvtitle = $this->pdo->escapeString(trim($epinfo['title']));
 								$seComplete = 'S' . sprintf('%02s', $show['season']) . 'E' . sprintf('%02s', $show['episode']);
-								$episodeId = $this->addEpisode($this->videoId, $show['season'], $show['episode'], $seComplete, $tvairdate, $tvtitle, '');
+								$episodeId = $this->addEpisode($this->videoId,
+									[
+										'series'      => $show['season'],
+										'episode'     => $show['episode'],
+										'se_complete' => $seComplete,
+										'firstaired'  => $tvairdate,
+										'title'       => $tvtitle,
+										'summary'     => ''
+									]
+								);
 							}
 						}
 						echo $this->pdo->log->primary("Found TV Rage Match!");
@@ -211,17 +220,22 @@ class TvRage extends TV
 			$summary = $rInfo['desc'];
 		}
 		$this->videoId = $this->add(
-			$tvrShow['title'],
-			'tvrage',
-			$rageid,
-			$summary,
-			$country,
-			$tvrShow['started'],
-			$tvrShow['publisher'],
-			parent::SOURCE_TVRAGE,
-			0,
-			0,
-			$rageid
+			[
+				'title'     => $tvrShow['title'],
+				'column'    => 'tvrage',
+				'siteid'    => $rageid,
+				'summary'   => $summary,
+				'country'   => $country,
+				'started'   => $tvrShow['started'],
+				'publisher' => $tvrShow['publisher'],
+				'source'    => parent::SOURCE_TVRAGE,
+				'tvdbid'    => 0,
+				'traktid'   => 0,
+				'tvrageid'  => $rageid,
+				'tvmazeid'  => 0,
+				'imdbid'    => 0,
+				'tmdbid'    => 0
+			]
 		);
 		if (isset($rInfo['imgurl']) && !empty($rInfo['imgurl'])) {
 			$this->posterUrl = $rInfo['imgurl'];

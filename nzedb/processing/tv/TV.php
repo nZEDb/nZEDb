@@ -99,6 +99,7 @@ abstract class TV extends Videos
 
 	/**
 	 * Retrieve releases for TV processing
+	 * Returns a PDO Object of rows or false if none found
 	 *
 	 * @param string $groupID -- ID of the usenet group to process
 	 * @param string $guidChar -- threading method by first guid character
@@ -183,37 +184,23 @@ abstract class TV extends Videos
 	 * Inserts a new video ID into the database for TV shows
 	 * If a duplicate is found it is handle by calling update instead
 	 *
-	 * @param     $title
-	 * @param     $column
-	 * @param     $siteId
-	 * @param     $summary
-	 * @param     $country
-	 * @param     $started
-	 * @param     $publisher
-	 * @param     $source
-	 * @param int $tvdbId
-	 * @param int $traktId
-	 * @param int $tvrageId
-	 * @param int $tvmazeId
-	 * @param int $imdbId
-	 * @param int $tmdbId
+	 * @param array $showArr
 	 *
 	 * @return int
 	 */
-	public function add($title, $column, $siteId, $summary, $country, $started, $publisher, $source, $tvdbId = 0,
-		$traktId = 0, $tvrageId = 0, $tvmazeId = 0, $imdbId = 0, $tmdbId = 0)
+	public function add($showArr = array())
 	{
-		if ($country !== '') {
-			$country = $this->countryCode($country);
+		if ($showArr['country'] !== '') {
+			$showArr['country'] = $this->countryCode($showArr['country']);
 		}
 
 		// Check if video already exists based on site info
 		// if that fails be sure we're not inserting duplicates by checking the title
 
-		$videoId = $this->getVideoIDFromSiteID($column, $siteId);
+		$videoId = $this->getVideoIDFromSiteID($showArr['column'], $showArr['siteid']);
 
 		if ($videoId === false) {
-			$videoId = $this->getByTitleQuery($title);
+			$videoId = $this->getByTitleQuery($showArr['$title']);
 		}
 
 		if ($videoId === false) {
@@ -222,16 +209,16 @@ abstract class TV extends Videos
 					INSERT INTO videos
 					(type, title, countries_id, started, source, tvdb, trakt, tvrage, tvmaze, imdb, tmdb)
 					VALUES (0, %s, %s, %s, %d, %d, %d, %d, %d, %d, %d)',
-					$this->pdo->escapeString($title),
-					$this->pdo->escapeString((isset($country) ? $country : '')),
-					$this->pdo->escapeString($started),
-					$source,
-					$tvdbId,
-					$traktId,
-					$tvrageId,
-					$tvmazeId,
-					$imdbId,
-					$tmdbId
+					$this->pdo->escapeString($showArr['$title']),
+					$this->pdo->escapeString((isset($showArr['country']) ? $showArr['country'] : '')),
+					$this->pdo->escapeString($showArr['$started']),
+					$showArr['source'],
+					$showArr['tvdbid'],
+					$showArr['traktid'],
+					$showArr['tvrageId'],
+					$showArr['tvmazeId'],
+					$showArr['imdbId'],
+					$showArr['tmdbId']
 				)
 			);
 			$this->pdo->queryInsert(
@@ -239,12 +226,12 @@ abstract class TV extends Videos
 					INSERT INTO tv_info (videos_id, summary, publisher)
 					VALUES (%d, %s, %s)",
 					$videoId,
-					$this->pdo->escapeString($summary),
-					$this->pdo->escapeString($publisher)
+					$this->pdo->escapeString($showArr['summary']),
+					$this->pdo->escapeString($showArr['publisher'])
 				)
 			);
 		} else {
-			$this->update($videoId, $country, $tvdbId, $traktId, $tvrageId, $tvmazeId, $imdbId, $tmdbId);
+			$this->update($videoId, $showArr);
 		}
 		return (int)$videoId;
 	}
@@ -252,19 +239,14 @@ abstract class TV extends Videos
 	/**
 	 * Inserts a new TV episode into the tv_episodes table following a match to a Video ID
 	 *
-	 * @param $videoId
-	 * @param $seriesNo
-	 * @param $episodeNo
-	 * @param $seComplete
-	 * @param $title
-	 * @param $firstaired
-	 * @param $summary
+	 * @param int   $videoId
+	 * @param array $episodeArr
 	 *
 	 * @return false|int|string
 	 */
-	public function addEpisode($videoId, $seriesNo, $episodeNo, $seComplete, $title, $firstaired, $summary)
+	public function addEpisode($videoId, $episodeArr = array())
 	{
-		$episodeId = $this->getBySeasonEp($videoId, $seriesNo, $episodeNo, $firstaired);
+		$episodeId = $this->getBySeasonEp($videoId, $episodeArr['series'], $episodeArr['episode'], $episodeArr['firstaired']);
 
 		if ($episodeId === false) {
 			$episodeId = $this->pdo->queryInsert(
@@ -273,13 +255,13 @@ abstract class TV extends Videos
 					VALUES (%d, %d, %d, %s, %s, %s, %s)
 					ON DUPLICATE KEY update se_complete = %s',
 					$videoId,
-					$seriesNo,
-					$episodeNo,
-					$this->pdo->escapeString($seComplete),
-					$this->pdo->escapeString($title),
-					$this->pdo->escapeString($firstaired),
-					$this->pdo->escapeString($summary),
-					$this->pdo->escapeString($seComplete)
+					$episodeArr['series'],
+					$episodeArr['episode'],
+					$this->pdo->escapeString($episodeArr['se_complete']),
+					$this->pdo->escapeString($episodeArr['title']),
+					$this->pdo->escapeString($episodeArr['firstaired']),
+					$this->pdo->escapeString($episodeArr['summary']),
+					$this->pdo->escapeString($episodeArr['seComplete'])
 				)
 			);
 		}
@@ -289,20 +271,16 @@ abstract class TV extends Videos
 	// If the video already exists, update the site specific column to collect its ID for that scrape
 
 	/**
-	 * @param        $videoId
-	 * @param string $country
-	 * @param int    $tvdbId
-	 * @param int    $traktId
-	 * @param int    $tvrageId
-	 * @param int    $tvmazeId
-	 * @param int    $imdbId
-	 * @param int    $tmdbId
+	 * Updates the show info with data from the supplied array
+	 * Only called when a duplicate show is found during insert
+	 *
+	 * @param int $videoId
+	 * @param array $showArr
 	 */
-	public function update($videoId, $country = '', $tvdbId = 0, $traktId = 0, $tvrageId = 0,
-						   $tvmazeId = 0, $imdbId = 0, $tmdbId = 0)
+	public function update($videoId, $showArr = array())
 	{
-		if ($country !== '') {
-			$country = $this->countryCode($country);
+		if ($showArr['country'] !== '') {
+			$showArr['country'] = $this->countryCode($showArr['country']);
 		}
 
 		$ifString = 'IF(%s = 0, %s, %s)';
@@ -312,13 +290,13 @@ abstract class TV extends Videos
 				UPDATE videos
 				SET countries_id = %s, tvdb = %s, trakt = %s, tvrage = %s, tvmaze = %s, imdb = %s, tmdb = %s
 				WHERE id = %d',
-				$this->pdo->escapeString((isset($country) ? $country : '')),
-				sprintf($ifString, 'tvdb', $tvdbId, 'tvdb'),
-				sprintf($ifString, 'trakt', $traktId, 'trakt'),
-				sprintf($ifString, 'tvrage', $tvrageId, 'tvrage'),
-				sprintf($ifString, 'tvmaze', $tvmazeId, 'tvmaze'),
-				sprintf($ifString, 'imdb', $imdbId, 'imdb'),
-				sprintf($ifString, 'tmdb', $tmdbId, 'tmdb'),
+				$this->pdo->escapeString((isset($showArr['country']) ? $showArr['country'] : '')),
+				sprintf($ifString, 'tvdb', $showArr['tvdbid'], 'tvdb'),
+				sprintf($ifString, 'trakt', $showArr['traktid'], 'trakt'),
+				sprintf($ifString, 'tvrage', $showArr['tvrageid'], 'tvrage'),
+				sprintf($ifString, 'tvmaze', $showArr['tvmazeid'], 'tvmaze'),
+				sprintf($ifString, 'imdb', $showArr['imdbid'], 'imdb'),
+				sprintf($ifString, 'tmdb', $showArr['tmdbid'], 'tmdb'),
 				$videoId
 			)
 		);

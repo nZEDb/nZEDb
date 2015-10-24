@@ -117,21 +117,7 @@ class TVDB extends TV
 								? (string)$release['country']
 								: ''
 							);
-
-							$videoId = $this->add(
-								$tvdbShow['title'],
-								$tvdbShow['column'],
-								$tvdbShow['siteid'],
-								$tvdbShow['summary'],
-								$tvdbShow['country'],
-								$tvdbShow['started'],
-								$tvdbShow['publisher'],
-								$tvdbShow['source'],
-								$tvdbShow['tvdbid'],
-								0, 0, 0,
-								$tvdbShow['imdbid'],
-								0
-							);
+							$videoId = $this->add($tvdbShow);
 							$tvdbid = (int)$tvdbShow['tvdbid'];
 						}
 					} else if ($this->echooutput) {
@@ -165,15 +151,7 @@ class TVDB extends TV
 							);
 
 							if ($tvdbEpisode) {
-								$episode = $this->addEpisode(
-									$videoId,
-									$tvdbEpisode['season'],
-									$tvdbEpisode['episode'],
-									$tvdbEpisode['se_complete'],
-									$tvdbEpisode['title'],
-									$tvdbEpisode['firstaired'],
-									$tvdbEpisode['summary']
-								);
+								$episode = $this->addEpisode($videoId, $tvdbEpisode);
 							}
 						}
 
@@ -328,16 +306,7 @@ class TVDB extends TV
 		} else if (is_array($response) && isset($response['episodes']) && $videoId > 0) {
 			foreach($response['episodes'] as $singleEpisode) {
 				if ($this->checkRequired($singleEpisode, 2)) {
-					$newEpisode = $this->formatEpisodeArr($singleEpisode);
-					$this->addEpisode(
-						$videoId,
-						$newEpisode['season'],
-						$newEpisode['episode'],
-						$newEpisode['se_complete'],
-						$newEpisode['title'],
-						$newEpisode['firstaired'],
-						$newEpisode['summary']
-					);
+					$this->addEpisode($videoId, $this->formatEpisodeArr($singleEpisode));
 				}
 			}
 		}
@@ -366,7 +335,11 @@ class TVDB extends TV
 			'started'   => (string)$show->firstAired->format($this->timeFormat),
 			'publisher' => (string)$show->network,
 			'source'    => (int)parent::SOURCE_TVDB,
-			'imdbid'    => (int)(isset($imdb['imdbid']) ? $imdb['imdbid'] : 0)
+			'imdbid'    => (int)(isset($imdb['imdbid']) ? $imdb['imdbid'] : 0),
+			'traktid'  => 0,
+			'tvrageid' => 0,
+			'tvmazeid' => 0,
+			'tmdbid'   => 0
 		];
 	}
 
@@ -396,12 +369,12 @@ class TVDB extends TV
 	 * Checks API response returns have all REQUIRED attributes set
 	 * Returns true or false
 	 *
-	 * @param $array
-	 * @param $type
+	 * @param array $array
+	 * @param int $type
 	 *
 	 * @return bool
 	 */
-	private function checkRequired($array, $type)
+	private function checkRequired($array = array(), $type)
 	{
 		$required = false;
 
