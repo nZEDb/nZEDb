@@ -922,15 +922,10 @@ class Releases
 	}
 
 	/**
-	 * @param        $videosId
-	 * @param        $tvdbId
-	 * @param        $traktId
-	 * @param        $tvrageId
-	 * @param        $tvmazeId
-	 * @param        $imdbId
-	 * @param        $tmdbId
+	 * @param array  $siteIdArr
 	 * @param string $series
 	 * @param string $episode
+	 * @param string $airdate
 	 * @param int    $offset
 	 * @param int    $limit
 	 * @param string $name
@@ -939,7 +934,7 @@ class Releases
 	 *
 	 * @return array
 	 */
-	public function searchShows($siteIdArr = array(), $series = '', $episode = '', $offset = 0,
+	public function searchShows($siteIdArr = array(), $series = '', $episode = '', $airdate = '', $offset = 0,
 								$limit = 100, $name = '', $cat = [-1], $maxAge = -1)
 	{
 		$siteSQL = array();
@@ -961,18 +956,19 @@ class Releases
 			AND r.nzbstatus = %d
 			AND r.passwordstatus %s
 			AND (%s)
-			%s %s %s %s %s",
+			%s %s %s %s %s %s",
 			($name !== '' ? $this->releaseSearch->getFullTextJoinString() : ''),
 			NZB::NZB_ADDED,
 			$this->showPasswords,
 			($siteCount > 0 ? implode(' OR ', $siteSQL) : '1=1'),
-			($series != '' ? sprintf(' AND tve.series = %d', (int)preg_replace('/^s0*/i', '', $series)): ''),
-			($episode != '' ? sprintf(' AND tve.episode = %d', (int)preg_replace('/^e0*/i', '', $episode)): ''),
+			($series != '' ? sprintf('AND tve.series = %d', (int)preg_replace('/^s0*/i', '', $series)): ''),
+			($episode != '' ? sprintf('AND tve.episode = %d', (int)preg_replace('/^e0*/i', '', $episode)): ''),
+			($airdate != '' ? sprintf('AND DATE(tve.firstaired) = %s', $this->pdo->escapeString($airdate)) : ''),
 			($name !== '' ? $this->releaseSearch->getSearchSQL(['searchname' => $name]) : ''),
 			$this->categorySQL($cat),
-			($maxAge > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxAge) : '')
+			($maxAge > 0 ? sprintf('AND r.postdate > NOW() - INTERVAL %d DAY', $maxAge) : '')
 		);
-
+-
 		$baseSql = sprintf(
 			"SELECT r.*,
 				v.title, v.countries_id, v.started, v.imdb, v.tmdb, v.tvmaze, v.tvrage, v.source,

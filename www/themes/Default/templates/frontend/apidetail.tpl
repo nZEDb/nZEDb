@@ -52,16 +52,17 @@
 					{/if}
 					{if $release.tvrage > 0}
 						<newznab:attr name="tvrageid" value="{$release.tvrage}" />
+						<newznab:attr name="rageid" value="{$release.tvrage}" />
 					{/if}
 					{if $release.tvmaze > 0}
 						<newznab:attr name="tvmazeid" value="{$release.tvmaze}" />
 					{/if}
+					{if $release.imdb > 0}
+						<newznab:attr name="imdbid" value="tt{$release.imdb}" />
+					{/if}
 				{/if}
 				{if $release.imdbid != ""}
 					<newznab:attr name="imdb" value="{$release.imdbid}" />
-				{/if}
-				{if $release.imdb > 0}
-					<newznab:attr name="imdbid" value="tt{$release.imdb}" />
 				{/if}
 				{if $release.tmdb > 0}
 					<newznab:attr name="tmdbid" value="tt{$release.tmdb}" />

@@ -146,10 +146,21 @@ switch ($function) {
 							'tmdb'   => (isset($_GET['tmdbid']) ? $_GET['tmdbid'] : '0')
 		];
 
+		if (isset($_GET['season']) && isset($_GET['ep'])) {
+			if (preg_match('#\d{4}#i', $_GET['season'], $year) && stripos($_GET['ep'], '/') !== false) {
+				$airdate = $year[0] . '/' . $_GET['ep'];
+				$series = $episode = null;
+			} else {
+				$series = $_GET['season'];
+				$episode = $_GET['ep'];
+			}
+		}
+
 		$relData = $releases->searchShows(
 			$siteIdArr,
-			(isset($_GET['season']) ? $_GET['season'] : ''),
-			(isset($_GET['ep']) ? $_GET['ep'] : ''),
+			(isset($series) ? $series : ''),
+			(isset($episode) ? $episode : ''),
+			(isset($airdate) ? $airdate : ''),
 			$offset,
 			limit(),
 			(isset($_GET['q']) ? $_GET['q'] : ''),
