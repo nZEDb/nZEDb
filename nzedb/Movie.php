@@ -25,6 +25,11 @@ class Movie
 	public $pdo;
 
 	/**
+	 * @var null|TraktTv
+	 */
+	public $traktTv = null;
+
+	/**
 	 * Current title being passed through various sites/api's.
 	 * @var string
 	 */
@@ -408,11 +413,6 @@ class Movie
 		}
 		return $browseBy;
 	}
-
-	/**
-	 * @var null|TraktTv
-	 */
-	public $traktTv = null;
 
 	/**
 	 * Get trailer using IMDB Id.
