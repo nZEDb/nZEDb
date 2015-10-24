@@ -1,6 +1,6 @@
 <h1>{$page->title}</h1>
 <form action="{$SCRIPT_NAME}?action=submit" method="POST">
-	<input type="hidden" name="from" value="{$smarty.get.from}" />
+	<input type="hidden" name="from" value="{$from}" />
 	<table class="input">
 		<tr>
 			<td><label for="name">Original Name:</label></td>
@@ -40,15 +40,15 @@
 			</td>
 		</tr>
 		<tr>
-			<td><label for="videosID">Video Id:</label></td>
+			<td><label for="videos_id">Video Id:</label></td>
 			<td>
-				<input id="videosID" class="short" name="videosID" type="text" value="{$release.videos_id}" />
+				<input id="videos_id" class="short" name="videos_id" type="text" value="{$release.videos_id}" />
 			</td>
 		</tr>
 		<tr>
-			<td><label for="episodeID">TV Episode Id:</label></td>
+			<td><label for="tv_episodes_id">TV Episode Id:</label></td>
 			<td>
-				<input id="episodeID" class="short" name="episodeID" type="text" value="{$release.tv_episodes_id}" />
+				<input id="tv_episodes_id" class="short" name="tv_episodes_id" type="text" value="{$release.tv_episodes_id}" />
 			</td>
 		</tr>
 		<tr>

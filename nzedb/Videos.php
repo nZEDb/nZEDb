@@ -93,6 +93,7 @@ Class Videos
 			sprintf("
 						SELECT COUNT(v.id) AS num
 						FROM videos v
+						INNER JOIN tv_info tvi ON v.id = tvi.videos_id
 						WHERE 1=1 %s",
 				$rsql
 			)

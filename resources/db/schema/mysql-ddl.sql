@@ -953,7 +953,7 @@ CREATE TABLE tv_episodes (
   se_complete  VARCHAR(10)    COLLATE utf8_unicode_ci NOT NULL COMMENT 'String version of Series/Episode as taken from release subject (i.e. S02E21+22).',
   title        VARCHAR(255)   COLLATE utf8_unicode_ci NOT NULL COMMENT 'Title of the episode.',
   firstaired   DATETIME       NOT NULL COMMENT 'Date of original airing/release.',
-  summary      VARCHAR(10000) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Description/summary of the episode.',
+  summary      TEXT           COLLATE utf8_unicode_ci NOT NULL COMMENT 'Description/summary of the episode.',
   PRIMARY KEY (id),
   UNIQUE KEY (videos_id, series, episode)
 )

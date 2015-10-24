@@ -35,23 +35,46 @@
 				{if $extended == "1"}
 					<newznab:attr name="files" value="{$release.totalpart}" />
 					<newznab:attr name="poster" value="{$release.fromname|escape:html}" />
-					{if $release.series != ""}
-						<newznab:attr name="series" value="{$release.series}" />
-				{/if}
-					{if $release.episode != ""}
-						<newznab:attr name="episode" value="{$release.episode}" />
-					{/if}
-					{if $release.videos_id > 0}
+					{if $release.videos_id > 0 && $release.tv_episodes_id > 0}
 						<newznab:attr name="videos_id" value="{$release.videos_id}" />
-					{/if}
-					{if $release.title != ""}
-						<newznab:attr name="title" value="{$release.title|escape:html}" />
-					{/if}
-					{if $release.firstaired != ""}
-						<newznab:attr name="firstaired" value="{$release.firstaired|phpdate_format:"DATE_RSS"}" />
+						<newznab:attr name="tv_episodes_id" value="{$release.tv_episodes_id}" />
+						{if $release.title != ""}
+							<newznab:attr name="title" value="{$release.title|escape:html}" />
+						{/if}
+						{if $release.series > 0}
+							<newznab:attr name="season" value="{$release.series}" />
+						{/if}
+						{if $release.episode > 0}
+							<newznab:attr name="episode" value="{$release.episode}" />
+						{/if}
+						{if $release.firstaired != ""}
+							<newznab:attr name="firstaired" value="{$release.firstaired|phpdate_format:"DATE_RSS"}" />
+						{/if}
+						{if $release.tvdb > 0}
+							<newznab:attr name="tvdbid" value="{$release.tvdb}" />
+						{/if}
+						{if $release.trakt > 0}
+							<newznab:attr name="traktid" value="{$release.trakt}" />
+						{/if}
+						{if $release.tvrage > 0}
+							<newznab:attr name="tvrageid" value="{$release.tvrage}" />
+							<newznab:attr name="rageid" value="{$release.tvrage}" />
+						{/if}
+						{if $release.tvmaze > 0}
+							<newznab:attr name="tvmazeid" value="{$release.tvmaze}" />
+						{/if}
+						{if $release.imdb > 0}
+							<newznab:attr name="imdbid" value="tt{$release.imdb}" />
+						{/if}
+						{if $release.tmdb > 0}
+							<newznab:attr name="tmdbid" value="tt{$release.tmdb}" />
+						{/if}
 					{/if}
 					{if $release.imdbid != ""}
 						<newznab:attr name="imdb" value="{$release.imdbid}" />
+					{/if}
+					{if $release.anidbid > 0}
+						<newznab:attr name="anidbid" value="tt{$release.anidb}" />
 					{/if}
 					<newznab:attr name="grabs" value="{$release.grabs}" />
 					<newznab:attr name="comments" value="{$release.comments}" />

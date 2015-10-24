@@ -2,7 +2,7 @@
 
 {$site->addetail}
 
-{if $rage && $release.rageid > 0 && $rage.imgdata != ""}<img class="shadow" src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$rage.id}" width="180" alt="{$rage.releasetitle|escape:"htmlall"}" style="float:right;" />{/if}
+{if $show && $release.rageid > 0 && $show.imgdata != ""}<img class="shadow" src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$show.id}" width="180" alt="{$show.releasetitle|escape:"htmlall"}" style="float:right;" />{/if}
 {if $movie && $release.rageid < 0 && $movie.cover == 1}<img class="shadow" src="{$smarty.const.WWW_TOP}/covers/movies/{$movie.imdbid}-cover.jpg" width="180" alt="{$movie.title|escape:"htmlall"}" style="float:right;" />{/if}
 {if $anidb && $release.anidbid > 0 && $anidb.picture != ""}<img class="shadow" src="{$smarty.const.WWW_TOP}/covers/anime/{$anidb.anidbid}.jpg" width="180" alt="{$anidb.title|escape:"htmlall"}" style="float:right;" />{/if}
 {if $con && $con.cover == 1}<img class="shadow" src="{$smarty.const.WWW_TOP}/covers/console/{$con.id}.jpg" width="160" alt="{$con.title|escape:"htmlall"}" style="float:right;" />{/if}
@@ -17,13 +17,13 @@
 	{/if}
 	<tr><th>Name:</th><td>{$release.name|escape:"htmlall"}</td></tr>
 
-	{if $rage && $release.rageid > 0}
+	{if $show && $release.rageid > 0}
 		<tr><th>Tv Info:</th><td>
 			<strong>{if $release.tvtitle != ""}{$release.tvtitle|escape:"htmlall"} - {/if}{$release.seriesfull|replace:"S":"Season "|replace:"E":" Episode "}</strong><br />
-			{if $rage.description != ""}<span class="descinitial">{$rage.description|escape:"htmlall"|nl2br|magicurl|truncate:"350":" <a class=\"descmore\" href=\"#\">more...</a>"}</span>{if $rage.description|strlen > 350}<span class="descfull">{$rage.description|escape:"htmlall"|nl2br|magicurl}</span>{/if}<br /><br />{/if}
-			{if $rage.genre != ""}<strong>Genre:</strong> {$rage.genre|escape:"htmlall"|replace:"|":", "}<br />{/if}
-			{if $release.tvairdate != ""}<strong>Aired:</strong> {$release.tvairdate|date_format}<br/>{/if}
-			{if $rage.country != ""}<strong>Country:</strong> {$rage.country}{/if}
+			{if $show.description != ""}<span class="descinitial">{$show.description|escape:"htmlall"|nl2br|magicurl|truncate:"350":" <a class=\"descmore\" href=\"#\">more...</a>"}</span>{if $show.description|strlen > 350}<span class="descfull">{$show.description|escape:"htmlall"|nl2br|magicurl}</span>{/if}<br /><br />{/if}
+			{if $show.genre != ""}<strong>Genre:</strong> {$show.genre|escape:"htmlall"|replace:"|":", "}<br />{/if}
+			{if $release.firstaired != ""}<strong>Aired:</strong> {$release.firstaired|date_format}<br/>{/if}
+			{if $show.countries_id != ""}<strong>Country:</strong> {$show.countries_id}{/if}
 			<div style="margin-top:10px;">
 				<a class="rndbtn" title="View all episodes from this series" href="{$smarty.const.WWW_TOP}/series/{$release.rageid}">All Episodes</a>
 				<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$release.rageid}" title="View at TV Rage">TV Rage</a>

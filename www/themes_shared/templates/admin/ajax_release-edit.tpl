@@ -11,10 +11,9 @@
 			<script type="text/javascript">
 				$('#release').submit(function(){return false;});
 				$('#save').click(function() {
-					var formData = $('#release').serialize();
-					$.post($('#release').attr('action') + '&' + formData, function(resp){
-						$('#updatePanel').html(resp);
-					});
+					var formData = $('#release');
+					var postUrl = formData.attr('action');
+					$.post(postUrl, '&' + formData.serialize(), function(data){ $('#updatePanel').html(data) });
 					location.reload();
 				});
 			</script>
@@ -50,15 +49,15 @@
 					</td>
 				</tr>
 				<tr>
-					<td><label for="anidbID">AniDB Id:</label></td>
+					<td><label for="anidbid">AniDB Id:</label></td>
 					<td>
-						<input id="anidbID" class="short" name="anidbID" type="text" value="{$release.anidbid}" />
+						<input id="anidbid" class="short" name="anidbid" type="text" value="{$release.anidbid}" />
 					</td>
 				</tr>
 				<tr>
-					<td><label for="imdbID">IMDB Id:</label></td>
+					<td><label for="imdbid">IMDB Id:</label></td>
 					<td>
-						<input id="imdbID" class="short" name="imdbID" type="text" value="{$release.imdbid}" />
+						<input id="imdbid" class="short" name="imdbid" type="text" value="{$release.imdbid}" />
 					</td>
 				</tr>
 				<tr>

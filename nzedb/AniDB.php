@@ -82,7 +82,7 @@ class AniDB
 						LEFT OUTER JOIN anidb_info ai USING (anidbid)
 						LEFT OUTER JOIN anidb_episodes ae USING (anidbid)
 						WHERE anidbid = %d',
-						  $anidbID
+						$anidbID
 					)
 		);
 	}

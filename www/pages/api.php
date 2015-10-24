@@ -136,16 +136,30 @@ switch ($function) {
 		$page->users->addApiRequest($uid, $_SERVER['REQUEST_URI']);
 		$offset = offset();
 
+		$siteIdArr = 	[
+							'id'     => (isset($_GET['vid']) ? $_GET['vid'] : '0'),
+							'tvdb'   => (isset($_GET['tvdbid']) ? $_GET['tvdbid'] : '0'),
+							'trakt'  => (isset($_GET['traktid']) ? $_GET['traktid'] : '0'),
+							'tvrage' => (isset($_GET['rid']) ? $_GET['rid'] : '0'),
+							'tvmaze' => (isset($_GET['tvmazeid']) ? $_GET['tvmazeid'] : '0'),
+							'imdb'   => (isset($_GET['imdbid']) ? $_GET['imdbid'] : '0'),
+							'tmdb'   => (isset($_GET['tmdbid']) ? $_GET['tmdbid'] : '0')
+		];
+
+		if (isset($_GET['season']) && isset($_GET['ep'])) {
+			if (preg_match('#\d{4}#i', $_GET['season'], $year) && stripos($_GET['ep'], '/') !== false) {
+				$airdate = $year[0] . '/' . $_GET['ep'];
+			} else {
+				$series = $_GET['season'];
+				$episode = $_GET['ep'];
+			}
+		}
+
 		$relData = $releases->searchShows(
-			(isset($_GET['vid']) ? $_GET['vid'] : '0'),
-			(isset($_GET['tvdbid']) ? $_GET['tvdbid'] : '0'),
-			(isset($_GET['traktid']) ? $_GET['traktid'] : '0'),
-			(isset($_GET['rid']) ? $_GET['rid'] : '0'),
-			(isset($_GET['tvmazeid']) ? $_GET['tvmazeid'] : '0'),
-			(isset($_GET['imdbid']) ? $_GET['imdbid'] : '0'),
-			(isset($_GET['tmdbid']) ? $_GET['tmdbid'] : '0'),
-			(isset($_GET['season']) ? $_GET['season'] : ''),
-			(isset($_GET['ep']) ? $_GET['ep'] : ''),
+			$siteIdArr,
+			(isset($series) ? $series : ''),
+			(isset($episode) ? $episode : ''),
+			(isset($airdate) ? $airdate : ''),
 			$offset,
 			limit(),
 			(isset($_GET['q']) ? $_GET['q'] : ''),
