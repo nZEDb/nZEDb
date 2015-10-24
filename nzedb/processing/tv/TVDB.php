@@ -152,7 +152,6 @@ class TVDB extends TV
 						// Check if we have the episode for this video ID
 						$episode = $this->getBySeasonEp($videoId, $seasonNo, $episodeNo, $release['airdate']);
 
-
 						if ($episode === false && $lookupSetting) {
 							// Send the request for the episode to TVDB
 							$tvdbEpisode = $this->getEpisodeInfo(
@@ -179,7 +178,7 @@ class TVDB extends TV
 							// Mark the releases video and episode IDs
 							$this->setVideoIdFound($videoId, $row['id'], $episode);
 							if ($this->echooutput) {
-								echo	$this->pdo->log->primary("Found TVDB Match!");
+								echo $this->pdo->log->primary("Found TVDB Match!");
 							}
 							continue;
 						}
@@ -190,6 +189,12 @@ class TVDB extends TV
 		}
 	}
 
+	/**
+	 * @param $videoID
+	 * @param $siteId
+	 *
+	 * @return bool
+	 */
 	protected function getBanner($videoID, $siteId)
 	{
 		return false;
@@ -220,21 +225,24 @@ class TVDB extends TV
 					}
 
 					// Check each show title for similarity and then find the highest similar value
-					similar_text($show->name, $cleanName, $matchProb);
+					$matchPercent = $this->checkMatch($show->name, $cleanName, self::MATCH_PROBABILITY);
 
 					if (nZEDb_DEBUG) {
-						echo PHP_EOL . sprintf('Match Percentage: %d percent between %s and %s', $matchProb, $show->name, $cleanName) . PHP_EOL;
+						echo PHP_EOL . sprintf('Match Percentage: %d percent between %s and %s', $matchPercent, $show->name, $cleanName) . PHP_EOL;
 					}
 
-					if ($matchProb >= self::MATCH_PROBABILITY && $matchProb > $highestMatch) {
-						$highestMatch = $matchProb;
+					// If new match has a higher percentage, set as new matched title
+					if ($matchPercent > $highestMatch) {
+						$highestMatch = $matchPercent;
 						$highest = $show;
 					}
+
+					// Check for show aliases and try match those too
 					if (is_array($show->aliasNames) && !empty($show->aliasNames)) {
 						foreach ($show->aliasNames as $key => $name) {
-							similar_text($name, $cleanName, $matchProb);
-							if ($matchProb >= self::MATCH_PROBABILITY && $matchProb > $highestMatch) {
-								$highestMatch = $matchProb;
+							$matchPercent = $this->CheckMatch($name, $cleanName, $matchPercent);
+							if ($matchPercent > $highestMatch) {
+								$highestMatch = $matchPercent;
 								$highest = $show;
 							}
 						}

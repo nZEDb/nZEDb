@@ -1,7 +1,6 @@
 <?php
 namespace nzedb\processing\tv;
 
-use nzedb\db\Settings;
 use nzedb\processing\Videos;
 
 /**
@@ -57,6 +56,12 @@ abstract class TV extends Videos
 		$this->tvqty = ($this->pdo->getSetting('maxrageprocessed') != '') ? $this->pdo->getSetting('maxrageprocessed') : 75;
 	}
 
+	/**
+	 * @param $videoID
+	 * @param $siteId
+	 *
+	 * @return mixed
+	 */
 	abstract protected function getBanner($videoID, $siteId);
 
 	/**
@@ -166,21 +171,25 @@ abstract class TV extends Videos
 	}
 
 	/**
+	 * @param     $title
 	 * @param     $column
 	 * @param     $siteId
-	 * @param     $title
 	 * @param     $summary
 	 * @param     $country
 	 * @param     $started
 	 * @param     $publisher
 	 * @param     $source
-	 *
+	 * @param int $tvdbId
+	 * @param int $traktId
+	 * @param int $tvrageId
+	 * @param int $tvmazeId
 	 * @param int $imdbId
+	 * @param int $tmdbId
 	 *
 	 * @return int
 	 */
-	public function add($title, $column, $siteId, $summary, $country, $started, $publisher, $source, $tvdbId = 0, $traktId = 0, $tvrageId = 0,
-						$tvmazeId = 0, $imdbId = 0, $tmdbId = 0)
+	public function add($title, $column, $siteId, $summary, $country, $started, $publisher, $source, $tvdbId = 0,
+		$traktId = 0, $tvrageId = 0, $tvmazeId = 0, $imdbId = 0, $tmdbId = 0)
 	{
 		if ($country !== '') {
 			$country = $this->countryCode($country);
@@ -264,12 +273,16 @@ abstract class TV extends Videos
 	}
 
 	// If the video already exists, update the site specific column to collect its ID for that scrape
+
 	/**
 	 * @param        $videoId
-	 * @param        $column
-	 * @param        $siteId
 	 * @param string $country
-	 * @param        $imdbId
+	 * @param int    $tvdbId
+	 * @param int    $traktId
+	 * @param int    $tvrageId
+	 * @param int    $tvmazeId
+	 * @param int    $imdbId
+	 * @param int    $tmdbId
 	 */
 	public function update($videoId, $country = '', $tvdbId = 0, $traktId = 0, $tvrageId = 0,
 						   $tvmazeId = 0, $imdbId = 0, $tmdbId = 0)
@@ -406,8 +419,9 @@ abstract class TV extends Videos
 	 */
 	public function getByTitleQuery($title)
 	{
+		$return = false;
 		if ($title) {
-			return $this->pdo->queryOneRow(
+			$return = $this->pdo->queryOneRow(
 						sprintf("
 							SELECT id
 							FROM videos
@@ -417,6 +431,7 @@ abstract class TV extends Videos
 						)
 			);
 		}
+		return $return;
 	}
 
 	/**
@@ -426,9 +441,10 @@ abstract class TV extends Videos
 	 */
 	public function getByTitleLikeQuery($title)
 	{
+		$return = false;
 		$string = '"\'"';
 		if ($title) {
-			return $this->pdo->queryOneRow(
+			$return = $this->pdo->queryOneRow(
 						sprintf("
 							SELECT id
 							FROM videos
@@ -439,6 +455,7 @@ abstract class TV extends Videos
 						)
 			);
 		}
+		return $return;
 	}
 
 	/**
@@ -464,9 +481,10 @@ abstract class TV extends Videos
 	}
 
 	/**
-	 * @param $id
-	 * @param $series
-	 * @param $episode
+	 * @param        $id
+	 * @param        $series
+	 * @param        $episode
+	 * @param string $airdate
 	 *
 	 * @return bool
 	 */
@@ -502,21 +520,22 @@ abstract class TV extends Videos
 		if (!is_array($country) && strlen($country) > 2) {
 			$code = $this->pdo->queryOneRow(
 							sprintf('
-								SELECT code
+								SELECT id
 								FROM countries
-								WHERE name = %s',
+								WHERE country = %s
+								OR iso3 = %1\$s',
 								$this->pdo->escapeString($country)
 							)
 			);
-			if (isset($code['code'])) {
-				return $code['code'];
+			if (isset($code['id'])) {
+				return $code['id'];
 			}
 		}
 		return '';
 	}
 
 	/**
-	 * @param $videoID
+	 * @param $videoId
 	 *
 	 * @return array|bool
 	 */
@@ -758,48 +777,19 @@ abstract class TV extends Videos
 
 	/**
 	 * @param $ourName
-	 * @param $tvrName
+	 * @param $scrapeName
+	 * @param $probability
 	 *
 	 * @return bool|float
 	 */
-	public function checkMatch($ourName, $tvrName)
+	public function checkMatch($ourName, $scrapeName, $probability)
 	{
-		// Clean up name ($ourName is already clean).
-		$tvrName = $this->cleanName($tvrName);
-		$tvrName = preg_replace('/ of /i', '', $tvrName);
-		$ourName = preg_replace('/ of /i', '', $ourName);
+		similar_text($ourName, $scrapeName, $matchpct);
 
-		// Create our arrays.
-		$ourArr = explode(' ', $ourName);
-		$tvrArr = explode(' ', $tvrName);
-
-		// Set our match counts.
-		$numMatches = 0;
-		$totalMatches = sizeof($ourArr) + sizeof($tvrArr);
-
-		// Loop through each array matching again the opposite value, if they match increment!
-		foreach ($ourArr as $oname) {
-			if (preg_match('/ ' . preg_quote($oname, '/') . ' /i', ' ' . $tvrName . ' ')) {
-				$numMatches++;
-			}
-		}
-		foreach ($tvrArr as $tname) {
-			if (preg_match('/ ' . preg_quote($tname, '/') . ' /i', ' ' . $ourName . ' ')) {
-				$numMatches++;
-			}
-		}
-
-		// Check what we're left with.
-		if ($numMatches <= 0) {
-			return false;
-		} else {
-			$matchpct = ($numMatches / $totalMatches) * 100;
-		}
-
-		if ($matchpct >= TvRage::MATCH_PROBABILITY) {
+		if ($matchpct >= $probability) {
 			return $matchpct;
 		} else {
-			return false;
+			return 0;
 		}
 	}
 
