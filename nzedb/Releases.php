@@ -968,7 +968,7 @@ class Releases
 			$this->categorySQL($cat),
 			($maxAge > 0 ? sprintf('AND r.postdate > NOW() - INTERVAL %d DAY', $maxAge) : '')
 		);
--
+
 		$baseSql = sprintf(
 			"SELECT r.*,
 				v.title, v.countries_id, v.started, v.imdb, v.tmdb, v.tvmaze, v.tvrage, v.source,

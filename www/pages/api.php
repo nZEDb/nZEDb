@@ -149,7 +149,6 @@ switch ($function) {
 		if (isset($_GET['season']) && isset($_GET['ep'])) {
 			if (preg_match('#\d{4}#i', $_GET['season'], $year) && stripos($_GET['ep'], '/') !== false) {
 				$airdate = $year[0] . '/' . $_GET['ep'];
-				$series = $episode = null;
 			} else {
 				$series = $_GET['season'];
 				$episode = $_GET['ep'];
