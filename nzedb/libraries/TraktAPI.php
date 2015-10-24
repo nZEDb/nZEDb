@@ -12,6 +12,22 @@ Class TraktAPI {
 	const API_URL = 'https://api-v2launch.trakt.tv/';
 
 	/**
+	 * The Trakt.tv API v2 Client ID (SHA256 hash - 64 characters long string). Used for movie and tv lookups.
+	 * Create one here: https://trakt.tv/oauth/applications/new
+	 *
+	 * @var array|bool|string
+	 */
+	private $clientID;
+
+	/**
+	 * List of headers to send to Trakt.tv when making a request.
+	 *
+	 * @see http://docs.trakt.apiary.io/#introduction/required-headers
+	 * @var array
+	 */
+	private $requestHeaders;
+
+	/**
 	 * Construct. Set up API key.
 	 *
 	 * @param array $options Class instances.
@@ -22,12 +38,19 @@ Class TraktAPI {
 	{
 		$defaults = [
 			'clientID' => '',
-			'headers'  => ''
 		];
 		$options += $defaults;
 
+		if (empty($options['clientID'])) {
+			// Can't work without an ID.
+			return null;
+		}
 		$this->clientID = $options['clientID'];
-		$this->requestHeaders = $options['headers'];
+		$this->requestHeaders = [
+			'Content-Type: application/json',
+			'trakt-api-version: 2',
+			'trakt-api-key: ' . $this->clientID
+		];
 	}
 
 	/**
