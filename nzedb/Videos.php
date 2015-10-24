@@ -45,6 +45,8 @@ Class Videos
 	}
 
 	/**
+	 * Retrieves a range of all shows for the show-edit admin list
+	 *
 	 * @param        $start
 	 * @param        $num
 	 * @param string $showname
@@ -79,6 +81,8 @@ Class Videos
 	}
 
 	/**
+	 * Returns a count of all shows -- usually used by pager
+	 *
 	 * @param string $showname
 	 *
 	 * @return mixed
@@ -102,6 +106,8 @@ Class Videos
 	}
 
 	/**
+	 * Retrieves and returns a list of shows with eligible releases
+	 *
 	 * @param        $uid
 	 * @param string $letter
 	 * @param string $showname
@@ -124,21 +130,21 @@ Class Videos
 		}
 
 		$qry = 	sprintf("
-				SELECT v.* FROM (
-					SELECT v.*,
-						tve.firstaired AS prevdate, tve.title AS previnfo,
-						tvi.publisher,
-						us.id AS userseriesid
-					FROM videos v
-					INNER JOIN releases r ON r.videos_id = v.id
-					INNER JOIN tv_info tvi ON r.videos_id = tvi.videos_id
-					INNER JOIN tv_episodes tve ON v.id = tve.videos_id AND tve.firstaired <= NOW()
-					LEFT OUTER JOIN user_series us ON v.id = us.videos_id AND us.user_id = %d
-					WHERE %s
-					%s %s
-					ORDER BY tve.firstaired DESC) v
-					GROUP BY v.id
-					ORDER BY v.title ASC",
+			SELECT v.* FROM
+				(SELECT v.*,
+					tve.firstaired AS prevdate, tve.title AS previnfo,
+					tvi.publisher,
+					us.id AS userseriesid
+				FROM videos v
+				INNER JOIN releases r ON r.videos_id = v.id
+				INNER JOIN tv_info tvi ON r.videos_id = tvi.videos_id
+				INNER JOIN tv_episodes tve ON v.id = tve.videos_id AND tve.firstaired <= NOW()
+				LEFT OUTER JOIN user_series us ON v.id = us.videos_id AND us.user_id = %d
+				WHERE %s
+				%s %s
+				ORDER BY tve.firstaired DESC) v
+			GROUP BY v.id
+			ORDER BY v.title ASC",
 			$uid,
 			$this->catWhere,
 			$rsql,

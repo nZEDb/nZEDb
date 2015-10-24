@@ -585,7 +585,7 @@ abstract class TV extends Videos
 	}
 
 	/**
-	 * Supplementary to
+	 * Supplementary to parseNameEpSeason
 	 * Cleans a derived local 'showname' for better matching probability
 	 * Returns the cleaned string
 	 *
@@ -616,7 +616,8 @@ abstract class TV extends Videos
 	}
 
 	/**
-	 *
+	 * Parses a release searchname for specific TV show data
+	 * Returns an array of show data
 	 *
 	 * @param $relname
 	 *
@@ -814,6 +815,9 @@ abstract class TV extends Videos
 	}
 
 	/**
+	 * Simple function that compares two strings of text
+	 * Returns percentage of similarity
+	 *
 	 * @param $ourName
 	 * @param $scrapeName
 	 * @param $probability

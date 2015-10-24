@@ -5,7 +5,7 @@ use nzedb\utility\Misc;
 use nzedb\ReleaseImage;
 
 /**
- * Class TvRage
+ * Class TvRage - functions used to post process releases against TvRage
  */
 class TvRage extends TV
 {
@@ -80,6 +80,8 @@ class TvRage extends TV
 	}
 
 	/**
+	 * Main function to begin TvRage processing
+	 *
 	 * @param string     $groupID
 	 * @param string     $guidChar
 	 * @param int        $lookupSetting
@@ -155,6 +157,8 @@ class TvRage extends TV
 	}
 
 	/**
+	 * Placeholder for Videos getBanner
+	 *
 	 * @param $videoID
 	 * @param $siteId
 	 *
@@ -166,6 +170,8 @@ class TvRage extends TV
 	}
 
 	/**
+	 * Retrieves poster image from TvRage through ReleaseImage
+	 *
 	 * @param int $videoId
 	 * @param int $siteId
 	 *
@@ -186,6 +192,8 @@ class TvRage extends TV
 	}
 
 	/**
+	 * Formats and inserts the TvRage match and calls the download of the cover image
+	 *
 	 * @param $rageid
 	 * @param $tvrShow
 	 */
@@ -222,6 +230,9 @@ class TvRage extends TV
 	}
 
 	/**
+	 * Retrieves episode specific information once a RageID is matched
+	 * Returns episode info array if matched, else false
+	 *
 	 * @param int $rageid
 	 * @param int $series
 	 * @param int $episode
@@ -254,6 +265,9 @@ class TvRage extends TV
 	}
 
 	/**
+	 * Scrapes additional fields not offered through the standard API
+	 * Returns an array of additional params or false if no matched response
+	 *
 	 * @param string $rageid
 	 *
 	 * @return array|bool|mixed
@@ -276,6 +290,9 @@ class TvRage extends TV
 	}
 
 	/**
+	 * Queries for show description and the cover image info
+	 * Returns an array of the additional parameters or seemingly useless array
+	 *
 	 * @param $rageid
 	 *
 	 * @return array
@@ -311,6 +328,9 @@ class TvRage extends TV
 	}
 
 	/**
+	 * Main function for matching a releae searchname to a TvRage title
+	 * Returns basic show information array or -1 int if no match
+	 *
 	 * @param $showInfo
 	 *
 	 * @return array|int

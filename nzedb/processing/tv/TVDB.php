@@ -5,7 +5,7 @@ use libs\Moinax\TVDB\Client;
 use nzedb\ReleaseImage;
 
 /**
- * Class TVDB
+ * Class TVDB -- functions used to post process releases against TVDB
  */
 class TVDB extends TV
 {
@@ -59,6 +59,9 @@ class TVDB extends TV
 	}
 
 	/**
+	 * Main processing director function for TVDB
+	 * Calls work query function and initiates processing
+	 *
 	 * @param            $groupID
 	 * @param            $guidChar
 	 * @param            $processTV
@@ -190,6 +193,8 @@ class TVDB extends TV
 	}
 
 	/**
+	 * Placeholder for Videos getBanner
+	 *
 	 * @param $videoID
 	 * @param $siteId
 	 *
@@ -201,6 +206,9 @@ class TVDB extends TV
 	}
 
 	/**
+	 * Calls the API to perform initial show name match to TVDB title
+	 * Returns a formatted array of show data or false if no match
+	 *
 	 * @param $cleanName
 	 *
 	 * @return array|bool
@@ -257,6 +265,8 @@ class TVDB extends TV
 	}
 
 	/**
+	 * Retrieves the poster art for the processed show
+	 *
 	 * @param $videoId
 	 * @param $showId
 	 *
@@ -277,6 +287,9 @@ class TVDB extends TV
 	}
 
 	/**
+	 * Gets the specific episode info for the parsed release after match
+	 * Returns a formatted array of episode data or false if no match
+	 *
 	 * @param integer	$tvdbid
 	 * @param integer	$season
 	 * @param integer	$episode
@@ -332,6 +345,9 @@ class TVDB extends TV
 	}
 
 	/**
+	 * Assigns API show response values to a formatted array for insertion
+	 * Returns the formatted array
+	 *
 	 * @param $show
 	 *
 	 * @return array
@@ -355,6 +371,9 @@ class TVDB extends TV
 	}
 
 	/**
+	 * Assigns API episode response values to a formatted array for insertion
+	 * Returns the formatted array
+	 *
 	 * @param $episode
 	 *
 	 * @return array
@@ -374,6 +393,9 @@ class TVDB extends TV
 	}
 
 	/**
+	 * Checks API response returns have all REQUIRED attributes set
+	 * Returns true or false
+	 *
 	 * @param $array
 	 * @param $type
 	 *
