@@ -145,7 +145,7 @@ class TVDB extends TV
 						$episodeNo = preg_replace('/^E0*/', '', $release['episode']);
 
 						// Download all episodes if new show to reduce API/bandwidth usage
-						if ($this->checkIfNoEpisodes($videoId) === false) {
+						if ($this->countEpsByVideoID($videoId) === false) {
 							$this->getEpisodeInfo($tvdbid, -1, -1, '', $videoId);
 						}
 

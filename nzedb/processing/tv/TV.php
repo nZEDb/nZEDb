@@ -4,7 +4,8 @@ namespace nzedb\processing\tv;
 use nzedb\processing\Videos;
 
 /**
- * Class TV
+ * Class TV -- abstract extension of Videos
+ * Contains functions suitable for re-use in all TV scrapers
  */
 abstract class TV extends Videos
 {
@@ -57,6 +58,8 @@ abstract class TV extends Videos
 	}
 
 	/**
+	 * Retrieve banner image from site using its API.
+	 *
 	 * @param $videoID
 	 * @param $siteId
 	 *
@@ -95,10 +98,12 @@ abstract class TV extends Videos
 	abstract protected function getShowInfo($name);
 
 	/**
-	 * @param string $groupID
-	 * @param string $guidChar
-	 * @param int    $lookupSetting
-	 * @param int    $status
+	 * Retrieve releases for TV processing
+	 *
+	 * @param string $groupID -- ID of the usenet group to process
+	 * @param string $guidChar -- threading method by first guid character
+	 * @param int    $lookupSetting -- whether or not to use the API
+	 * @param int    $status -- release processing status of tv_episodes_id
 	 *
 	 * @return bool|int|\PDOStatement
 	 */
@@ -132,6 +137,8 @@ abstract class TV extends Videos
 	}
 
 	/**
+	 * Updates the release when match for the current scraper is found
+	 *
 	 * @param     $videoId
 	 * @param     $releaseId
 	 * @param int $episodeId
@@ -152,6 +159,8 @@ abstract class TV extends Videos
 	}
 
 	/**
+	 * Updates the release tv_episodes_id status when scraper match is not found
+	 *
 	 * @param $status
 	 * @param $Id
 	 */
@@ -171,6 +180,9 @@ abstract class TV extends Videos
 	}
 
 	/**
+	 * Inserts a new video ID into the database for TV shows
+	 * If a duplicate is found it is handle by calling update instead
+	 *
 	 * @param     $title
 	 * @param     $column
 	 * @param     $siteId
@@ -238,6 +250,8 @@ abstract class TV extends Videos
 	}
 
 	/**
+	 * Inserts a new TV episode into the tv_episodes table following a match to a Video ID
+	 *
 	 * @param $videoId
 	 * @param $seriesNo
 	 * @param $episodeNo
@@ -311,6 +325,8 @@ abstract class TV extends Videos
 	}
 
 	/**
+	 * Deletes a TV show entirely from all child tables via the Video ID
+	 *
 	 * @param $id
 	 *
 	 * @return bool|\PDOStatement
@@ -330,6 +346,8 @@ abstract class TV extends Videos
 	}
 
 	/**
+	 * Sets the TV show's image column to found (1)
+	 *
 	 * @param $videoId
 	 */
 	public function setCoverFound($videoId)
@@ -345,7 +363,8 @@ abstract class TV extends Videos
 	}
 
 	/**
-	 * Get videos info for a title.
+	 * Attempt a local lookup via the title first by exact match and then by like.
+	 * Returns a false for no match or the Video ID of the match.
 	 *
 	 * @param $title
 	 *
@@ -413,6 +432,9 @@ abstract class TV extends Videos
 	}
 
 	/**
+	 * Supplementary function for getByTitle that queries for exact match
+	 *
+	 *
 	 * @param $title
 	 *
 	 * @return array|bool
@@ -435,6 +457,8 @@ abstract class TV extends Videos
 	}
 
 	/**
+	 * Supplementary function for getByTitle that queries for a like match
+	 *
 	 * @param $title
 	 *
 	 * @return array|bool
@@ -459,7 +483,8 @@ abstract class TV extends Videos
 	}
 
 	/**
-	 * Get site column from a Video ID.
+	 * Get site ID from a Video ID and the site's respective column.
+	 * Returns the ID value or false if none found
 	 *
 	 * @param string $column
 	 * @param int $id
@@ -481,12 +506,17 @@ abstract class TV extends Videos
 	}
 
 	/**
+	 * Retrieves the Episode ID using the Video ID and either:
+	 * season/episode numbers OR the airdate
+	 *
+	 * Returns the Episode ID or false if not found
+	 *
 	 * @param        $id
 	 * @param        $series
 	 * @param        $episode
 	 * @param string $airdate
 	 *
-	 * @return bool
+	 * @return int|bool
 	 */
 	public function getBySeasonEp($id, $series, $episode, $airdate = '')
 	{
@@ -535,11 +565,13 @@ abstract class TV extends Videos
 	}
 
 	/**
+	 * Returns (true) if episodes for a given Video ID exist or don't (false)
+	 *
 	 * @param $videoId
 	 *
-	 * @return array|bool
+	 * @return bool
 	 */
-	public function checkIfNoEpisodes($videoId)
+	public function countEpsByVideoID($videoId)
 	{
 		$count = $this->pdo->queryOneRow(
 			sprintf('
@@ -553,6 +585,10 @@ abstract class TV extends Videos
 	}
 
 	/**
+	 * Supplementary to
+	 * Cleans a derived local 'showname' for better matching probability
+	 * Returns the cleaned string
+	 *
 	 * @param $str
 	 *
 	 * @return string
@@ -580,6 +616,8 @@ abstract class TV extends Videos
 	}
 
 	/**
+	 *
+	 *
 	 * @param $relname
 	 *
 	 * @return array|bool
