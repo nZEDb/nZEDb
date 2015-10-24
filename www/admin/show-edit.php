@@ -1,5 +1,6 @@
 <?php
 require_once './config.php';
+require_once '../pages/smartyTV.php';
 
 use nzedb\Videos;
 
