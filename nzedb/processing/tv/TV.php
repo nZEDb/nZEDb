@@ -138,16 +138,16 @@ abstract class TV extends Videos
 	 */
 	public function setVideoIdFound($videoId, $releaseId, $episodeId) {
 		$this->pdo->queryExec(
-				sprintf('
-					UPDATE releases
-					SET videos_id = %d, tv_episodes_id = %d
-					WHERE %s
-					AND id = %d',
-					$videoId,
-					$episodeId,
-					$this->catWhere,
-					$releaseId
-				)
+			sprintf('
+				UPDATE releases
+				SET videos_id = %d, tv_episodes_id = %d
+				WHERE %s
+				AND id = %d',
+				$videoId,
+				$episodeId,
+				$this->catWhere,
+				$releaseId
+			)
 		);
 	}
 
@@ -158,15 +158,15 @@ abstract class TV extends Videos
 	public function setVideoNotFound($status, $Id)
 	{
 		$this->pdo->queryExec(
-					sprintf('
-						UPDATE releases
-						SET tv_episodes_id = %d
-						WHERE %s
-						AND id = %d',
-						$status,
-						$this->catWhere,
-						$Id
-					)
+			sprintf('
+				UPDATE releases
+				SET tv_episodes_id = %d
+				WHERE %s
+				AND id = %d',
+				$status,
+				$this->catWhere,
+				$Id
+			)
 		);
 	}
 
@@ -206,30 +206,30 @@ abstract class TV extends Videos
 
 		if ($videoId === false) {
 			$videoId = $this->pdo->queryInsert(
-										sprintf('
-											INSERT INTO videos (type, title, countries_id, started, source,
-													tvdb, trakt, tvrage, tvmaze, imdb, tmdb)
-											VALUES (0, %s, %s, %s, %d, %d, %d, %d, %d, %d, %d)',
-											$this->pdo->escapeString($title),
-											$this->pdo->escapeString((isset($country) ? $country : '')),
-											$this->pdo->escapeString($started),
-											$source,
-											$tvdbId,
-											$traktId,
-											$tvrageId,
-											$tvmazeId,
-											$imdbId,
-											$tmdbId
-										)
+				sprintf('
+					INSERT INTO videos
+					(type, title, countries_id, started, source, tvdb, trakt, tvrage, tvmaze, imdb, tmdb)
+					VALUES (0, %s, %s, %s, %d, %d, %d, %d, %d, %d, %d)',
+					$this->pdo->escapeString($title),
+					$this->pdo->escapeString((isset($country) ? $country : '')),
+					$this->pdo->escapeString($started),
+					$source,
+					$tvdbId,
+					$traktId,
+					$tvrageId,
+					$tvmazeId,
+					$imdbId,
+					$tmdbId
+				)
 			);
 			$this->pdo->queryInsert(
-					sprintf("
-						INSERT INTO tv_info (videos_id, summary, publisher)
-						VALUES (%d, %s, %s)",
-						$videoId,
-						$this->pdo->escapeString($summary),
-						$this->pdo->escapeString($publisher)
-					)
+				sprintf("
+					INSERT INTO tv_info (videos_id, summary, publisher)
+					VALUES (%d, %s, %s)",
+					$videoId,
+					$this->pdo->escapeString($summary),
+					$this->pdo->escapeString($publisher)
+				)
 			);
 		} else {
 			$this->update($videoId, $country, $tvdbId, $traktId, $tvrageId, $tvmazeId, $imdbId, $tmdbId);
@@ -255,9 +255,9 @@ abstract class TV extends Videos
 		if ($episodeId === false) {
 			$episodeId = $this->pdo->queryInsert(
 				sprintf('
-						INSERT INTO tv_episodes (videos_id, series, episode, se_complete, title, firstaired, summary)
-						VALUES (%d, %d, %d, %s, %s, %s, %s)
-						ON DUPLICATE KEY update se_complete = %s',
+					INSERT INTO tv_episodes (videos_id, series, episode, se_complete, title, firstaired, summary)
+					VALUES (%d, %d, %d, %s, %s, %s, %s)
+					ON DUPLICATE KEY update se_complete = %s',
 					$videoId,
 					$seriesNo,
 					$episodeNo,
@@ -294,19 +294,19 @@ abstract class TV extends Videos
 		$ifString = 'IF(%s = 0, %s, %s)';
 
 		$this->pdo->queryExec(
-				sprintf('
-					UPDATE videos
-					SET countries_id = %s, tvdb = %s, trakt = %s, tvrage = %s, tvmaze = %s, imdb = %s, tmdb = %s
-					WHERE id = %d',
-					$this->pdo->escapeString((isset($country) ? $country : '')),
-					sprintf($ifString, 'tvdb', $tvdbId, 'tvdb'),
-					sprintf($ifString, 'trakt', $traktId, 'trakt'),
-					sprintf($ifString, 'tvrage', $tvrageId, 'tvrage'),
-					sprintf($ifString, 'tvmaze', $tvmazeId, 'tvmaze'),
-					sprintf($ifString, 'imdb', $imdbId, 'imdb'),
-					sprintf($ifString, 'tmdb', $tmdbId, 'tmdb'),
-					$videoId
-				)
+			sprintf('
+				UPDATE videos
+				SET countries_id = %s, tvdb = %s, trakt = %s, tvrage = %s, tvmaze = %s, imdb = %s, tmdb = %s
+				WHERE id = %d',
+				$this->pdo->escapeString((isset($country) ? $country : '')),
+				sprintf($ifString, 'tvdb', $tvdbId, 'tvdb'),
+				sprintf($ifString, 'trakt', $traktId, 'trakt'),
+				sprintf($ifString, 'tvrage', $tvrageId, 'tvrage'),
+				sprintf($ifString, 'tvmaze', $tvmazeId, 'tvmaze'),
+				sprintf($ifString, 'imdb', $imdbId, 'imdb'),
+				sprintf($ifString, 'tmdb', $tmdbId, 'tmdb'),
+				$videoId
+			)
 		);
 	}
 
@@ -318,14 +318,14 @@ abstract class TV extends Videos
 	public function delete($id)
 	{
 		return $this->pdo->queryExec(
-				sprintf("
-					DELETE v, tvi, tve
-					FROM videos v
-					LEFT JOIN tv_info tvi ON v.id = tvi.videos_id
-					LEFT JOIN tv_episodes tve ON v.id = tve.videos_id
-					WHERE v.id = %d",
-					$id
-				)
+			sprintf("
+				DELETE v, tvi, tve
+				FROM videos v
+				LEFT JOIN tv_info tvi ON v.id = tvi.videos_id
+				LEFT JOIN tv_episodes tve ON v.id = tve.videos_id
+				WHERE v.id = %d",
+				$id
+			)
 		);
 	}
 
@@ -336,10 +336,10 @@ abstract class TV extends Videos
 	{
 		$this->pdo->queryExec(
 			sprintf("
-					UPDATE tv_info
-					SET image = 1
-					WHERE videos_id = %d",
-					$videoId
+				UPDATE tv_info
+				SET image = 1
+				WHERE videos_id = %d",
+				$videoId
 			)
 		);
 	}
@@ -422,13 +422,13 @@ abstract class TV extends Videos
 		$return = false;
 		if ($title) {
 			$return = $this->pdo->queryOneRow(
-						sprintf("
-							SELECT id
-							FROM videos
-							WHERE title = %s
-							AND type = 0",
-							$this->pdo->escapeString($title)
-						)
+				sprintf("
+					SELECT id
+					FROM videos
+					WHERE title = %s
+					AND type = 0",
+					$this->pdo->escapeString($title)
+				)
 			);
 		}
 		return $return;
@@ -445,14 +445,14 @@ abstract class TV extends Videos
 		$string = '"\'"';
 		if ($title) {
 			$return = $this->pdo->queryOneRow(
-						sprintf("
-							SELECT id
-							FROM videos
-							WHERE REPLACE(REPLACE(title, %s, ''), '!', '') %s
-							AND type = 0",
-							$string,
-							$this->pdo->likeString(rtrim($title, '%'), false, false)
-						)
+				sprintf("
+					SELECT id
+					FROM videos
+					WHERE REPLACE(REPLACE(title, %s, ''), '!', '') %s
+					AND type = 0",
+					$string,
+					$this->pdo->likeString(rtrim($title, '%'), false, false)
+				)
 			);
 		}
 		return $return;
@@ -469,13 +469,13 @@ abstract class TV extends Videos
 	public function getSiteByID($column, $id)
 	{
 		$videoArr = $this->pdo->queryOneRow(
-						sprintf("
-							SELECT %s
-							FROM videos
-							WHERE id = %d",
-							$column,
-							$id
-						)
+			sprintf("
+				SELECT %s
+				FROM videos
+				WHERE id = %d",
+				$column,
+				$id
+			)
 		);
 		return (isset($videoArr[$column]) ? $videoArr[$column] : false);
 	}
@@ -496,14 +496,14 @@ abstract class TV extends Videos
 			$queryString = sprintf('DATE(firstaired) = %s', $this->pdo->escapeString($airdate));
 		}
 		$episodeArr = $this->pdo->queryOneRow(
-							sprintf("
-								SELECT id
-								FROM tv_episodes
-								WHERE videos_id = %d
-								AND %s",
-								$id,
-								$queryString
-							)
+			sprintf("
+				SELECT id
+				FROM tv_episodes
+				WHERE videos_id = %d
+				AND %s",
+				$id,
+				$queryString
+			)
 		);
 		return (isset($episodeArr['id']) ? $episodeArr['id'] : false);
 	}
@@ -519,13 +519,13 @@ abstract class TV extends Videos
 	{
 		if (!is_array($country) && strlen($country) > 2) {
 			$code = $this->pdo->queryOneRow(
-							sprintf('
-								SELECT id
-								FROM countries
-								WHERE country = %s
-								OR iso3 = %1\$s',
-								$this->pdo->escapeString($country)
-							)
+				sprintf('
+					SELECT id
+					FROM countries
+					WHERE country = %s
+					OR iso3 = %1\$s',
+					$this->pdo->escapeString($country)
+				)
 			);
 			if (isset($code['id'])) {
 				return $code['id'];
@@ -542,12 +542,12 @@ abstract class TV extends Videos
 	public function checkIfNoEpisodes($videoId)
 	{
 		$count = $this->pdo->queryOneRow(
-					sprintf('
-						SELECT count(id) AS num
-						FROM tv_episodes
-						WHERE videos_id = %d',
-						$videoId
-					)
+			sprintf('
+				SELECT count(id) AS num
+				FROM tv_episodes
+				WHERE videos_id = %d',
+				$videoId
+			)
 		);
 		return (isset($count['num']) && (int)$count['num'] > 0 ? true : false);
 	}
