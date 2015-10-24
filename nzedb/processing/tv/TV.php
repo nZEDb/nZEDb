@@ -247,14 +247,16 @@ abstract class TV extends Videos
 			$episodeId = $this->pdo->queryInsert(
 				sprintf('
 						INSERT INTO tv_episodes (videos_id, series, episode, se_complete, title, firstaired, summary)
-						VALUES (%d, %d, %d, %s, %s, %s, %s)',
+						VALUES (%d, %d, %d, %s, %s, %s, %s)
+						ON DUPLICATE KEY update se_complete = %s',
 					$videoId,
 					$seriesNo,
 					$episodeNo,
 					$this->pdo->escapeString($seComplete),
 					$this->pdo->escapeString($title),
 					$this->pdo->escapeString($firstaired),
-					$this->pdo->escapeString($summary)
+					$this->pdo->escapeString($summary),
+					$this->pdo->escapeString($seComplete)
 				)
 			);
 		}
