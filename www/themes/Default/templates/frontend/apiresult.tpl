@@ -42,12 +42,12 @@
 							<newznab:attr name="title" value="{$release.title|escape:html}" />
 						{/if}
 						{if $release.series > 0}
-							<newznab:attr name="season" value="{$release.series}" />
+							<newznab:attr name="season" value="S{$release.series|str_pad:2:'0':STR_PAD_LEFT}" />
 						{/if}
 						{if $release.episode > 0}
-							<newznab:attr name="episode" value="{$release.episode}" />
+							<newznab:attr name="episode" value="E{$release.episode|str_pad:2:'0':STR_PAD_LEFT}" />
 						{/if}
-						{if $release.firstaired != ""}
+						{if $release.firstaired != ''}
 							<newznab:attr name="firstaired" value="{$release.firstaired|phpdate_format:"DATE_RSS"}" />
 						{/if}
 						{if $release.tvdb > 0}
@@ -64,17 +64,17 @@
 							<newznab:attr name="tvmazeid" value="{$release.tvmaze}" />
 						{/if}
 						{if $release.imdb > 0}
-							<newznab:attr name="imdbid" value="tt{$release.imdb}" />
+							<newznab:attr name="imdbid" value="tt{$release.imdb|str_pad:7:'0':STR_PAD_LEFT}" />
 						{/if}
 						{if $release.tmdb > 0}
-							<newznab:attr name="tmdbid" value="tt{$release.tmdb}" />
+							<newznab:attr name="tmdbid" value="tt{$release.tmdb|str_pad:7:'0':STR_PAD_LEFT}" />
 						{/if}
 					{/if}
 					{if $release.imdbid != ""}
 						<newznab:attr name="imdb" value="{$release.imdbid}" />
 					{/if}
 					{if $release.anidbid > 0}
-						<newznab:attr name="anidbid" value="tt{$release.anidb}" />
+						<newznab:attr name="anidbid" value="{$release.anidb}" />
 					{/if}
 					<newznab:attr name="grabs" value="{$release.grabs}" />
 					<newznab:attr name="comments" value="{$release.comments}" />
