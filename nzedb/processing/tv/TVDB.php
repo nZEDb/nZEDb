@@ -24,6 +24,11 @@ class TVDB extends TV
 	public $posterUrl;
 
 	/**
+	 * @var string URL for show fanart
+	 */
+	public $fanartUrl;
+
+	/**
 	 * @string Path to Save Images
 	 */
 	public $imgSavePath;
@@ -51,6 +56,7 @@ class TVDB extends TV
 		parent::__construct($options);
 		$this->client = new Client(self::TVDB_URL, self::TVDB_API_KEY);
 		$this->posterUrl = self::TVDB_URL . DS . 'banners/_cache/posters/%s-1.jpg';
+		$this->fanartUrl = self::TVDB_URL . DS . 'banners/_cache/fanart/original/%s-1.jpg';
 		$this->imgSavePath = nZEDb_COVERS . 'tvshows' . DS;
 
 		$this->serverTime = $this->client->getServerTime();
@@ -133,6 +139,13 @@ class TVDB extends TV
 						$seasonNo = preg_replace('/^S0*/', '', $release['season']);
 						$episodeNo = preg_replace('/^E0*/', '', $release['episode']);
 
+						if ($episodeNo === 'all') {
+							// Set the video ID and leave episode 0
+							$this->setVideoIdFound($videoId, $row['id'], 0);
+							echo $this->pdo->log->primary("Found TVDB Match for Full Season!");
+							continue;
+						}
+
 						// Download all episodes if new show to reduce API/bandwidth usage
 						if ($this->countEpsByVideoID($videoId) === false) {
 							$this->getEpisodeInfo($tvdbid, -1, -1, '', $videoId);
@@ -213,10 +226,6 @@ class TVDB extends TV
 					// Check each show title for similarity and then find the highest similar value
 					$matchPercent = $this->checkMatch($show->name, $cleanName, self::MATCH_PROBABILITY);
 
-					if (nZEDb_DEBUG) {
-						echo PHP_EOL . sprintf('Match Percentage: %d percent between %s and %s', $matchPercent, $show->name, $cleanName) . PHP_EOL;
-					}
-
 					// If new match has a higher percentage, set as new matched title
 					if ($matchPercent > $highestMatch) {
 						$highestMatch = $matchPercent;
@@ -245,20 +254,23 @@ class TVDB extends TV
 	/**
 	 * Retrieves the poster art for the processed show
 	 *
-	 * @param $videoId
-	 * @param $showId
+	 * @param int $videoId -- the local Video ID
+	 * @param int $showId -- the TVDB ID
 	 *
 	 * @return null
 	 */
 	protected function getPoster($videoId, $showId)
 	{
-		$hascover = (new ReleaseImage($this->pdo))->saveImage(
-			$videoId,
-			sprintf($this->posterUrl, $showId),
-			$this->imgSavePath,
-			'',
-			''
-		);
+		$ri = new ReleaseImage($this->pdo);
+
+		// Try to get the Poster
+		$hascover = $ri->saveImage($videoId, sprintf($this->posterUrl, $showId), $this->imgSavePath, '', '');
+
+		// Couldn't get poster, try fan art instead
+		if ($hascover !== 1) {
+			$hascover = $ri->saveImage($videoId, sprintf($this->fanartUrl, $showId), $this->imgSavePath, '', '');
+		}
+		// Mark it retrieved if we saved an image
 		if ($hascover == 1) {
 			$this->setCoverFound($videoId);
 		}

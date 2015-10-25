@@ -120,6 +120,7 @@ abstract class TV extends Videos
 				SELECT SQL_NO_CACHE r.searchname, r.id
 				FROM releases r
 				WHERE r.nzbstatus = 1
+				AND r.videos_id = 0
 				AND r.tv_episodes_id = %d
 				AND r.size > 1048576
 				AND %s
@@ -603,11 +604,20 @@ abstract class TV extends Videos
 	 */
 	public function parseNameEpSeason($relname)
 	{
-		$showInfo = ['name' => '', 'season' => '', 'episode' => '', 'seriesfull' => '', 'airdate' => '', 'country' => '', 'year' => '', 'cleanname' => ''];
+		$showInfo = [
+			'name'       => '',
+			'season'     => '',
+			'episode'    => '',
+			'seriesfull' => '',
+			'airdate'    => '',
+			'country'    => '',
+			'year'       => '',
+			'cleanname'  => ''
+		];
 		$matches = '';
 
-		$following = 	'[^a-z0-9](\d\d-\d\d|\d{1,2}x\d{2,3}|(19|20)\d\d|(480|720|1080)[ip]|AAC2?|BDRip|BluRay|D0?\d' .
-				'|DD5|DiVX|DLMux|DTS|DVD(Rip)?|E\d{2,3}|[HX][-_. ]?264|ITA(-ENG)?|[HPS]DTV|PROPER|REPACK|Season|Episode|' .
+		$following = 	'[^a-z0-9](\d\d-\d\d|\d{1,2}x\d{2,3}|\(?(19|20)\d{2}\)?|(480|720|1080)[ip]|AAC2?|BD-?Rip|Blu-?Ray|D0?\d' .
+				'|DD5|DiVX|DLMux|DTS|DVD(-?Rip)?|E\d{2,3}|[HX][-_. ]?26[45]|ITA(-ENG)?|HEVC|[HPS]DTV|PROPER|REPACK|Season|Episode|' .
 				'S\d+[^a-z0-9]?(E\d+)?|WEB[-_. ]?(DL|Rip)|XViD)[^a-z0-9]';
 
 		// For names that don't start with the title.
@@ -651,21 +661,23 @@ abstract class TV extends Videos
 			}
 			// 2009.01.01 and 2009-01-01
 			else if (preg_match('/^(.*?)[^a-z0-9](?P<airdate>(19|20)(\d{2})[.\/-](\d{2})[.\/-](\d{2}))[^a-z0-9]/i', $relname, $matches)) {
-				$showInfo['season'] = $matches[2] . $matches[3];
-				$showInfo['episode'] = $matches[4] . '/' . $matches[5];
+				$showInfo['season'] = $matches[4] . $matches[5];
+				$showInfo['episode'] = $matches[5] . '/' . $matches[6];
 				$showInfo['airdate'] = date('Y-m-d', strtotime(preg_replace('/[^0-9]/i', '/', $matches['airdate']))); //yyyy-mm-dd
 			}
 			// 01.01.2009
-			else if (preg_match('/^(.*?)[^a-z0-9](\d{2})[^a-z0-9](\d{2})[^a-z0-9](19|20)(\d{2})[^a-z0-9]/i', $relname, $matches)) {
-				$showInfo['season'] = $matches[4] . $matches[5];
-				$showInfo['episode'] = $matches[2] . '/' . $matches[3];
-				$showInfo['airdate'] = $matches[4] . $matches[5] . '-' . $matches[2] . '-' . $matches[3]; //yy-m-d
+			else if (preg_match('/^(.*?)[^a-z0-9](?P<airdate>(\d{2})[^a-z0-9](\d{2})[^a-z0-9](19|20)(\d{2}))[^a-z0-9]/i', $relname, $matches)) {
+				$showInfo['season'] = $matches[5] . $matches[6];
+				$showInfo['episode'] = $matches[3] . '/' . $matches[4];
+				$showInfo['airdate'] = date('Y-m-d', strtotime(preg_replace('/[^0-9]/i', '/', $matches['airdate']))); //yyyy-mm-dd
 			}
 			// 01.01.09
 			else if (preg_match('/^(.*?)[^a-z0-9](\d{2})[^a-z0-9](\d{2})[^a-z0-9](\d{2})[^a-z0-9]/i', $relname, $matches)) {
-				$showInfo['season'] = ($matches[4] <= 99 && $matches[4] > 15) ? '19' . $matches[4] : '20' . $matches[4];
+				// Add extra logic to capture the proper YYYY year
+				$showInfo['season'] = $matches[4] = ($matches[4] <= 99 && $matches[4] > 15) ? '19' . $matches[4] : '20' . $matches[5];
 				$showInfo['episode'] = $matches[2] . '/' . $matches[3];
-				$showInfo['airdate'] = $showInfo['season'] . '-' . $matches[2] . '-' . $matches[3]; //yy-m-d
+				$tmpAirdate = $showInfo['season'] . '/' . $showInfo['episode'];
+				$showInfo['airdate'] = date('Y-m-d', strtotime(preg_replace('/[^0-9]/i', '/', $tmpAirdate))); //yyyy-mm-dd
 			}
 			// 2009.E01
 			else if (preg_match('/^(.*?)[^a-z0-9]20(\d{2})[^a-z0-9](\d{1,3})[^a-z0-9]/i', $relname, $matches)) {
@@ -686,51 +698,7 @@ abstract class TV extends Videos
 			else if (preg_match('/^(.*?)[^a-z0-9](?:Part|Pt)[^a-z0-9]([ivx]+)/i', $relname, $matches)) {
 				$showInfo['season'] = 1;
 				$epLow = strtolower($matches[2]);
-				switch ($epLow) {
-					case 'i': $e = 1;
-						break;
-					case 'ii': $e = 2;
-						break;
-					case 'iii': $e = 3;
-						break;
-					case 'iv': $e = 4;
-						break;
-					case 'v': $e = 5;
-						break;
-					case 'vi': $e = 6;
-						break;
-					case 'vii': $e = 7;
-						break;
-					case 'viii': $e = 8;
-						break;
-					case 'ix': $e = 9;
-						break;
-					case 'x': $e = 10;
-						break;
-					case 'xi': $e = 11;
-						break;
-					case 'xii': $e = 12;
-						break;
-					case 'xiii': $e = 13;
-						break;
-					case 'xiv': $e = 14;
-						break;
-					case 'xv': $e = 15;
-						break;
-					case 'xvi': $e = 16;
-						break;
-					case 'xvii': $e = 17;
-						break;
-					case 'xviii': $e = 18;
-						break;
-					case 'xix': $e = 19;
-						break;
-					case 'xx': $e = 20;
-						break;
-					default:
-						$e = 0;
-				}
-				$showInfo['episode'] = $e;
+				$showInfo['episode'] = $this->convertRomanToInt($epLow);
 			}
 			// Band.Of.Brothers.EP06.Bastogne.DVDRiP.XviD-DEiTY
 			else if (preg_match('/^(.*?)[^a-z0-9]EP?[^a-z0-9]?(\d{1,3})/i', $relname, $matches)) {
@@ -793,6 +761,61 @@ abstract class TV extends Videos
 	}
 
 	/**
+	 * This function turns a roman numeral into an integer
+	 *
+	 * @param string $string
+	 *
+	 * @return int $e
+	 */
+	private function convertRomanToInt($string) {
+		switch ($string) {
+			case 'i': $e = 1;
+				break;
+			case 'ii': $e = 2;
+				break;
+			case 'iii': $e = 3;
+				break;
+			case 'iv': $e = 4;
+				break;
+			case 'v': $e = 5;
+				break;
+			case 'vi': $e = 6;
+				break;
+			case 'vii': $e = 7;
+				break;
+			case 'viii': $e = 8;
+				break;
+			case 'ix': $e = 9;
+				break;
+			case 'x': $e = 10;
+				break;
+			case 'xi': $e = 11;
+				break;
+			case 'xii': $e = 12;
+				break;
+			case 'xiii': $e = 13;
+				break;
+			case 'xiv': $e = 14;
+				break;
+			case 'xv': $e = 15;
+				break;
+			case 'xvi': $e = 16;
+				break;
+			case 'xvii': $e = 17;
+				break;
+			case 'xviii': $e = 18;
+				break;
+			case 'xix': $e = 19;
+				break;
+			case 'xx': $e = 20;
+				break;
+			default:
+				$e = 0;
+		}
+		return $e;
+	}
+
+	/**
 	 * Simple function that compares two strings of text
 	 * Returns percentage of similarity
 	 *
@@ -805,6 +828,10 @@ abstract class TV extends Videos
 	public function checkMatch($ourName, $scrapeName, $probability)
 	{
 		similar_text($ourName, $scrapeName, $matchpct);
+
+		if (nZEDb_DEBUG) {
+			echo PHP_EOL . sprintf('Match Percentage: %d percent between %s and %s', $matchpct, $ourName, $scrapeName) . PHP_EOL;
+		}
 
 		if ($matchpct >= $probability) {
 			return $matchpct;
