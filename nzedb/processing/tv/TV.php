@@ -209,16 +209,16 @@ abstract class TV extends Videos
 					INSERT INTO videos
 					(type, title, countries_id, started, source, tvdb, trakt, tvrage, tvmaze, imdb, tmdb)
 					VALUES (0, %s, %s, %s, %d, %d, %d, %d, %d, %d, %d)',
-					$this->pdo->escapeString($showArr['$title']),
+					$this->pdo->escapeString($showArr['title']),
 					$this->pdo->escapeString((isset($showArr['country']) ? $showArr['country'] : '')),
-					$this->pdo->escapeString($showArr['$started']),
+					$this->pdo->escapeString($showArr['started']),
 					$showArr['source'],
 					$showArr['tvdbid'],
 					$showArr['traktid'],
-					$showArr['tvrageId'],
-					$showArr['tvmazeId'],
-					$showArr['imdbId'],
-					$showArr['tmdbId']
+					$showArr['tvrageid'],
+					$showArr['tvmazeid'],
+					$showArr['imdbid'],
+					$showArr['tmdbid']
 				)
 			);
 			$this->pdo->queryInsert(
@@ -261,7 +261,7 @@ abstract class TV extends Videos
 					$this->pdo->escapeString($episodeArr['title']),
 					$this->pdo->escapeString($episodeArr['firstaired']),
 					$this->pdo->escapeString($episodeArr['summary']),
-					$this->pdo->escapeString($episodeArr['seComplete'])
+					$this->pdo->escapeString($episodeArr['se_complete'])
 				)
 			);
 		}
