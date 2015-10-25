@@ -149,17 +149,6 @@ convertTable($pdo,
 			 $nn_schema . ".content",
 			 $runQueries);
 
-echo "episodeinfo = tvrage_episodes in nZEDb\n";
-// Convert episodeinfo to tvrageepisodes - You loose (tvdbID, imdbID, director, gueststars, overview, rating, writer, epabsolute)
-convertTable($pdo,
-			 $nZEDB_schema,
-			 "tvrage_episodes",
-			 "INSERT INTO " . $nZEDB_schema .
-			 ".tvrage_episodes (id, rageid, showtitle, airdate, link, fullep, eptitle) " .
-			 "SELECT MIN(ID), rageID, showtitle, MIN(airdate), link, fullep, eptitle FROM " .
-			 $nn_schema . ".episodeinfo where rageID <> 0 GROUP BY rageID, fullep",
-			 $runQueries);
-
 convertTable($pdo,
 			 $nZEDB_schema,
 			 "forum_posts",
@@ -319,15 +308,6 @@ echo "Skipping sphinx table: Not in nZEDb\n";
 echo "Skipping spotnabsource table: Not in nZEDb\n";
 
 echo "Skipping thetvdb table: Not in nZEDb\n";
-
-convertTable($pdo,
-			 $nZEDB_schema,
-			 "tvrage_titles",
-			 "INSERT INTO " . $nZEDB_schema .
-			 ".tvrage_titles (country, createddate, description, genre, id, imgdata, nextdate, nextinfo, prevdate, previnfo, rageid, releasetitle, tvdbid) " .
-			 "SELECT country, createddate, description, genre, ID, imgdata, nextdate, nextinfo, prevdate, previnfo, rageID, releasetitle, tvdbID FROM " .
-			 $nn_schema . ".tvrage group by releasetitle",
-			 $runQueries);
 
 convertTable($pdo,
 			 $nZEDB_schema,
