@@ -5,21 +5,68 @@ use nzedb\utility\Misc;
 use nzedb\ReleaseImage;
 
 /**
- * Class TvRage
+ * Class TvRage - functions used to post process releases against TvRage
  */
 class TvRage extends TV
 {
+
 	const APIKEY = '7FwjZ8loweFcOhHfnU3E';
 	const MATCH_PROBABILITY = 75;
 
+	/**
+	 * @var array|bool|int|string
+	 */
 	public $rageqty;
+
+	/**
+	 * @var string
+	 */
 	public $showInfoUrl         = 'http://www.tvrage.com/shows/id-';
+
+	/**
+	 * @var string
+	 */
 	public $showQuickInfoURL    = 'http://services.tvrage.com/tools/quickinfo.php?show=';
+
+	/**
+	 * @var string
+	 */
 	public $xmlFullSearchUrl    = 'http://services.tvrage.com/feeds/full_search.php?show=';
+
+	/**
+	 * @var string
+	 */
 	public $xmlShowInfoUrl      = 'http://services.tvrage.com/feeds/showinfo.php?sid=';
+
+	/**
+	 * @var string
+	 */
 	public $xmlFullShowInfoUrl  = 'http://services.tvrage.com/feeds/full_show_info.php?sid=';
+
+	/**
+	 * @var string
+	 */
 	public $xmlEpisodeInfoUrl;
+
+	/**
+	 * @var string
+	 */
 	public $imgSavePath;
+
+	/**
+	 * @var int|bool
+	 */
+	private $videoId;
+
+	/**
+	 * @var string
+	 */
+	private $posterUrl;
+
+	/**
+	 * @var
+	 */
+	private $rageId;
 
 	/**
 	 * @param array $options Class instances / Echo to cli?
@@ -32,6 +79,14 @@ class TvRage extends TV
 		$this->imgSavePath = nZEDb_COVERS . 'tvrage' . DS;
 	}
 
+	/**
+	 * Main function to begin TvRage processing
+	 *
+	 * @param string     $groupID
+	 * @param string     $guidChar
+	 * @param int        $lookupSetting
+	 * @param bool|false $local
+	 */
 	public function processTvRage($groupID = '', $guidChar = '', $lookupSetting = 1, $local = false)
 	{
 		$res = $this->getTvReleases($groupID, $guidChar, $local, parent::PROCESS_TVRAGE);
@@ -44,47 +99,60 @@ class TvRage extends TV
 
 		if ($res instanceof \Traversable) {
 			foreach ($res as $arr) {
+				$this->rageId = $this->rageId = false;
 				$show = $this->parseNameEpSeason($arr['searchname']);
 				if (is_array($show) && $show['name'] != '') {
 					// Find the Video ID if it already exists by checking the title.
-					$video = $this->getByTitle($show['cleanname']);
+					$this->videoId = $this->getByTitle($show['cleanname']);
 
 					// Force local lookup only
 					if ($local == true) {
 						$lookupSetting = false;
 					}
 
-					if ($video === false && $lookupSetting) {
+					if ($this->videoId === false && $lookupSetting) {
 						// If it doesnt exist locally and lookups are allowed lets try to get it.
 						if ($this->echooutput) {
 							echo $this->pdo->log->primaryOver("Video ID for ") .
 								 $this->pdo->log->headerOver($show['cleanname']) .
 								 $this->pdo->log->primary(" not found in local db, checking web.");
 						}
-						$tvrShow = $this->getRageMatch($show);
+						$tvrShow = $this->getShowInfo($show);
 						if ($tvrShow !== false && is_array($tvrShow)) {
 							// Get all tv info and add show.
-							$this->updateRageInfo($tvrShow['showid'], $tvrShow);
+							$this->rageId = $tvrShow['showid'];
+							$this->updateRageInfo($this->rageId, $tvrShow);
 						} else {
 							$this->setVideoNotFound(parent::PROCESS_TVMAZE, $arr['id']);
 						}
-					} else if ($video > 0) {
+					}
+					if ($this->videoId > 0) {
 						if ($this->echooutput) {
 							echo $this->pdo->log->primaryOver("Video ID for ") .
 								 $this->pdo->log->headerOver($show['cleanname']) .
 								 $this->pdo->log->primary(" found in local db, setting tvrage ID and attempting episode lookup.");
 						}
-						$episodeId = $this->getBySeasonEp($video['id'],  $show['season'], $show['episode']);
+						$episodeId = $this->getBySeasonEp($this->videoId,  $show['season'], $show['episode']);
 						if ($episodeId === false) {
-							$epinfo = $this->getEpisodeInfo($video['tvrage'], $show['season'], $show['episode']);
+							$epinfo = $this->getEpisodeInfo($this->rageId, $show['season'], $show['episode']);
 							if ($epinfo !== false && isset($epinfo['airdate']) && !empty($epinfo['title'])) {
 								$tvairdate = $this->pdo->escapeString($this->checkDate($epinfo['airdate']));
 								$tvtitle = $this->pdo->escapeString(trim($epinfo['title']));
-								$seComplete = 'S' . $show['season'] . 'E' . $show['episode'];
-								$episodeId = $this->addEpisode($video['id'], $show['season'], $show['episode'], $seComplete, $tvairdate, $tvtitle, '');
+								$seComplete = 'S' . sprintf('%02s', $show['season']) . 'E' . sprintf('%02s', $show['episode']);
+								$episodeId = $this->addEpisode($this->videoId,
+									[
+										'series'      => $show['season'],
+										'episode'     => $show['episode'],
+										'se_complete' => $seComplete,
+										'firstaired'  => $tvairdate,
+										'title'       => $tvtitle,
+										'summary'     => ''
+									]
+								);
 							}
 						}
-						$this->setVideoIdFound($video, $arr['id'], $episodeId);
+						echo $this->pdo->log->primary("Found TV Rage Match!");
+						$this->setVideoIdFound($this->videoId, $arr['id'], $episodeId);
 					// Cant find videos_id, so set tv_episodes_id to PROCESS_TVMAZE.
 					} else {
 						$this->setVideoNotFound(parent::PROCESS_TVMAZE, $arr['id']);
@@ -97,9 +165,49 @@ class TvRage extends TV
 		}
 	}
 
+	/**
+	 * Placeholder for Videos getBanner
+	 *
+	 * @param $videoID
+	 * @param $siteId
+	 *
+	 * @return bool
+	 */
+	protected function getBanner($videoID, $siteId)
+	{
+		return false;
+	}
+
+	/**
+	 * Retrieves poster image from TvRage through ReleaseImage
+	 *
+	 * @param int $videoId
+	 * @param int $siteId
+	 *
+	 * @return null
+	 */
+	protected function getPoster($videoId, $siteId)
+	{
+		$hascover = (new ReleaseImage($this->pdo))->saveImage(
+			$videoId,
+			$this->posterUrl,
+			$this->imgSavePath,
+			'',
+			''
+		);
+		if ($hascover == 1) {
+			$this->setCoverFound($videoId);
+		}
+	}
+
+	/**
+	 * Formats and inserts the TvRage match and calls the download of the cover image
+	 *
+	 * @param $rageid
+	 * @param $tvrShow
+	 */
 	public function updateRageInfo($rageid, $tvrShow)
 	{
-		$hasCover = 0;
 		$country = '';
 
 		if (isset($tvrShow['country']) && !empty($tvrShow['country'])) {
@@ -111,13 +219,40 @@ class TvRage extends TV
 		if (isset($rInfo['desc']) && !empty($rInfo['desc'])) {
 			$summary = $rInfo['desc'];
 		}
-
+		$this->videoId = $this->add(
+			[
+				'title'     => $tvrShow['title'],
+				'column'    => 'tvrage',
+				'siteid'    => $rageid,
+				'summary'   => $summary,
+				'country'   => $country,
+				'started'   => $tvrShow['started'],
+				'publisher' => $tvrShow['publisher'],
+				'source'    => parent::SOURCE_TVRAGE,
+				'tvdbid'    => 0,
+				'traktid'   => 0,
+				'tvrageid'  => $rageid,
+				'tvmazeid'  => 0,
+				'imdbid'    => 0,
+				'tmdbid'    => 0
+			]
+		);
 		if (isset($rInfo['imgurl']) && !empty($rInfo['imgurl'])) {
-			$hasCover = (new ReleaseImage($this->pdo))->saveImage($rageid, $rInfo['imgurl'], $this->imgSavePath, '', '');
+			$this->posterUrl = $rInfo['imgurl'];
+			$this->getPoster($this->videoId, $this->rageId);
 		}
-		$this->add('tvrage', $rageid, $tvrShow['title'], $summary, $country, $tvrShow['publisher'], $hasCover, parent::SOURCE_TVRAGE);
 	}
 
+	/**
+	 * Retrieves episode specific information once a RageID is matched
+	 * Returns episode info array if matched, else false
+	 *
+	 * @param int $rageid
+	 * @param int $series
+	 * @param int $episode
+	 *
+	 * @return array|bool
+	 */
 	public function getEpisodeInfo($rageid, $series, $episode)
 	{
 		$result = false;
@@ -144,6 +279,9 @@ class TvRage extends TV
 	}
 
 	/**
+	 * Scrapes additional fields not offered through the standard API
+	 * Returns an array of additional params or false if no matched response
+	 *
 	 * @param string $rageid
 	 *
 	 * @return array|bool|mixed
@@ -151,7 +289,7 @@ class TvRage extends TV
 	public function getRageInfoFromService($rageid)
 	{
 		$result = false;
-		// Full search gives us the akas.
+		// Standard show info search as AKAs not needed.
 		$xml = Misc::getUrl(['url' => $this->xmlShowInfoUrl . $rageid]);
 		if ($xml !== false) {
 			$arrXml = Misc::objectsIntoArray(simplexml_load_string($xml));
@@ -165,6 +303,14 @@ class TvRage extends TV
 		return $result;
 	}
 
+	/**
+	 * Queries for show description and the cover image info
+	 * Returns an array of the additional parameters or seemingly useless array
+	 *
+	 * @param $rageid
+	 *
+	 * @return array
+	 */
 	public function getRageInfoFromPage($rageid)
 	{
 		$result = ['desc' => '', 'imgurl' => ''];
@@ -195,158 +341,104 @@ class TvRage extends TV
 		return $result;
 	}
 
-	public function getRageMatch($showInfo)
+	/**
+	 * Main function for matching a releae searchname to a TvRage title
+	 * Returns basic show information array or -1 int if no match
+	 *
+	 * @param $showInfo
+	 *
+	 * @return array|int
+	 */
+	public function getShowInfo($showInfo)
 	{
+		$matchedTitle = -1;
 		$title = $showInfo['cleanname'];
 		// Full search gives us the akas.
 		$xml = Misc::getUrl(['url' => $this->xmlFullSearchUrl . urlencode(strtolower($title))]);
 		if ($xml !== false) {
 			$arrXml = @Misc::objectsIntoArray(simplexml_load_string($xml));
-			if (isset($arrXml['show']) && is_array($arrXml)) {
-				// We got a valid xml response
-				$titleMatches = $urlMatches = $akaMatches = [];
 
+			// CheckXML Response is valid before processing
+			if (isset($arrXml['show']) && is_array($arrXml)) {
+
+				// We got exactly 1 match so lets convert it to an array so we can use it in the logic below.
 				if (isset($arrXml['show']['showid'])) {
-					// We got exactly 1 match so lets convert it to an array so we can use it in the logic below.
-					$newArr = [];
 					$newArr[] = $arrXml['show'];
 					unset($arrXml);
 					$arrXml['show'] = $newArr;
 				}
 
-				foreach ($arrXml['show'] as $arr) {
-					$tvrlink = '';
+				$highestPercent = 0;
 
-					// Get a match percentage based on our name and the name returned from tvr.
-					$titlepct = $this->checkMatch($title, $arr['name']);
-					if ($titlepct !== false) {
-						$titleMatches[$titlepct][] = 	[
-											'title' => $arr['name'],
-											'showid' => $arr['showid'],
-											'country' => $this->countryCode($arr['country']),
-											'publisher' => $arr['network'],
-											'started' => date('m-d-Y', strtotime($arr['started'])),
-											'tvr' => $arr
-										];
+				foreach ($arrXml['show'] as $arr) {
+
+					if ($title == $arr['name']) {
+						$matchedTitle = [
+							'title' => $arr['name'],
+							'showid' => $arr['showid'],
+							'country' => $this->countryCode($arr['country']),
+							'publisher' => $arr['network'],
+							'started' => date('Y-m-d', strtotime($arr['started'])),
+							'tvr' => $arr
+						];
+						break;
 					}
 
-					// Get a match percentage based on our name and the url returned from tvr.
-					if (isset($arr['link']) && preg_match('/tvrage\.com\/((?!shows)[^\/]*)$/i', $arr['link'], $tvrlink)) {
-						$urltitle = str_replace('_', ' ', $tvrlink[1]);
-						$urlpct = $this->checkMatch($title, $urltitle);
-						if ($urlpct !== false) {
-							$urlMatches[$urlpct][] = 	[
-												'title' => $urltitle,
-												'showid' => $arr['showid'],
-												'country' => $this->countryCode($arr['country']),
-												'publisher' => $arr['network'],
-												'started' => date('m-d-Y', strtotime($arr['started'])),
-												'tvr' => $arr
-											];
-						}
+					// Get a match percentage based on our name and the name returned from tvr.
+					$matchPercent = $this->checkMatch($title, $arr['name'], self::MATCH_PROBABILITY);
+					if ($matchPercent > $highestPercent) {
+						$matchedTitle = [
+							'title'     => $arr['name'],
+							'showid'    => $arr['showid'],
+							'country'   => $this->countryCode($arr['country']),
+							'publisher' => $arr['network'],
+							'started'   => date('Y-m-d', strtotime($arr['started'])),
+							'tvr'       => $arr
+						];
+						$highestPercent = $matchPercent;
 					}
 
 					// Check if there are any akas for this result and get a match percentage for them too.
 					if (isset($arr['akas']['aka'])) {
 						if (is_array($arr['akas']['aka'])) {
-							// Multuple akas.
+							// Multiple akas.
 							foreach ($arr['akas']['aka'] as $aka) {
-								$akapct = $this->checkMatch($title, $aka);
-								if ($akapct !== false) {
-									$akaMatches[$akapct][] = 	[
-														'title' => $aka,
-														'showid' => $arr['showid'],
-														'country' => $this->countryCode($arr['country']),
-														'publisher' => $arr['network'],
-														'started' => date('m-d-Y', strtotime($arr['started'])),
-														'tvr' => $arr
-													];
+								$matchPercent = $this->checkMatch($title, $aka, self::MATCH_PROBABILITY);
+								if ($matchPercent > $highestPercent) {
+									$matchedTitle = [
+										'title'     => $arr['name'],
+										'showid'    => $arr['showid'],
+										'country'   => $this->countryCode($arr['country']),
+										'publisher' => $arr['network'],
+										'started'   => date('Y-m-d', strtotime($arr['started'])),
+										'tvr'       => $arr
+									];
+									$highestPercent = $matchPercent;
 								}
 							}
 						} else {
 							// One aka.
-							$akapct = $this->checkMatch($title, $arr['akas']['aka']);
-							if ($akapct !== false) {
-								$akaMatches[$akapct][] = 	[
-													'title' => $arr['akas']['aka'],
-													'showid' => $arr['showid'],
-													'country' => $this->countryCode($arr['country']),
-													'publisher' => $arr['network'],
-													'started' => date('m-d-Y', strtotime($arr['started'])),
-													'tvr' => $arr
-												];
+							$matchPercent = $this->checkMatch($title, $arr['akas']['aka'], self::MATCH_PROBABILITY);
+							if ($matchPercent > $highestPercent) {
+								$matchedTitle = [
+									'title'     => $arr['name'],
+									'showid'    => $arr['showid'],
+									'country'   => $this->countryCode($arr['country']),
+									'publisher' => $arr['network'],
+									'started'   => date('Y-m-d', strtotime($arr['started'])),
+									'tvr'       => $arr
+								];
+								$highestPercent = $matchPercent;
 							}
 						}
 					}
 				}
-
-				// Reverse sort our matches so highest matches are first.
-				krsort($titleMatches);
-				krsort($urlMatches);
-				krsort($akaMatches);
-
-				// Look for 100% title matches first.
-				if (isset($titleMatches[100])) {
-					if ($this->echooutput) {
-						echo $this->pdo->log->primary('Found 100% match: "' . $titleMatches[100][0]['title'] . '"');
-					}
-					return $titleMatches[100][0];
-				}
-
-				// Look for 100% url matches next.
-				if (isset($urlMatches[100])) {
-					if ($this->echooutput) {
-						echo $this->pdo->log->primary('Found 100% url match: "' . $urlMatches[100][0]['title'] . '"');
-					}
-					return $urlMatches[100][0];
-				}
-
-				// Look for 100% aka matches next.
-				if (isset($akaMatches[100])) {
-					if ($this->echooutput) {
-						echo $this->pdo->log->primary('Found 100% aka match: "' . $akaMatches[100][0]['title'] . '"');
-					}
-					return $akaMatches[100][0];
-				}
-
-				// No 100% matches, loop through what we got and if our next closest match is more than TvRage::MATCH_PROBABILITY % of the title lets take it.
-				foreach ($titleMatches as $mk => $mv) {
-					// Since its not 100 match if we have country info lets use that to make sure we get the right show.
-					if (isset($showInfo['country']) && !empty($showInfo['country']) && !empty($mv[0]['country'])) {
-						if (strtolower($showInfo['country']) != strtolower($mv[0]['country'])) {
-							continue;
-						}
-					}
-
-					if ($this->echooutput) {
-						echo $this->pdo->log->primary('Found ' . $mk . '% match: "' . $titleMatches[$mk][0]['title'] . '"');
-					}
-					return $titleMatches[$mk][0];
-				}
-
-				// Same as above but for akas.
-				foreach ($akaMatches as $ak => $av) {
-					if (isset($showInfo['country']) && !empty($showInfo['country']) && !empty($av[0]['country'])) {
-						if (strtolower($showInfo['country']) != strtolower($av[0]['country'])) {
-							continue;
-						}
-					}
-
-					if ($this->echooutput) {
-						echo $this->pdo->log->primary('Found ' . $ak . '% aka match: "' . $akaMatches[$ak][0]['title'] . '"');
-					}
-					return $akaMatches[$ak][0];
-				}
-
-				return false;
 			} else {
 				if ($this->echooutput) {
 					echo $this->pdo->log->primary('Nothing returned from tvrage.');
 				}
-				return false;
 			}
-		} else {
-			return -1;
 		}
+		return $matchedTitle;
 	}
 }

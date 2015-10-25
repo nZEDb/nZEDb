@@ -9,7 +9,7 @@
 		<search available="yes" supportedParams="q,group"/>
 		<tv-search available="yes" supportedParams="q,rid,tvdbid,vid,traktid,tvmazeid,imdbid,tmdbid,season,ep"/>
 		<movie-search available="yes" supportedParams="q,imdbid"/>
-		<audio-search available="yes" supportedParams="q,album,artist,label,trak,year,genre"/>
+		<audio-search available="no" supportedParams=""/>
 	</searching>
 
 	<categories>
