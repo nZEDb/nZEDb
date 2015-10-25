@@ -9,7 +9,7 @@ $releases = new Releases(['Settings' => $page->settings]);
 $success = false;
 
 if (isset($_GET["id"])) {
-	$success = $releases->removeRageIdFromReleases($_GET["id"]);
+	$success = $releases->removeVideoIdFromReleases($_GET["id"]);
 	$page->smarty->assign('videoid', $_GET["id"]);
 }
 

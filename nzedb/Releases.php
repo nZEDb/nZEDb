@@ -1301,11 +1301,13 @@ class Releases
 	}
 
 	/**
+	 * Resets the videos_id and tv_episodes_id column on all releases to zero for a given Video ID
+	 *
 	 * @param $videoId
 	 *
 	 * @return bool|\PDOStatement
 	 */
-	public function removeRageIdFromReleases($videoId)
+	public function removeVideoIdFromReleases($videoId)
 	{
 		return $this->pdo->queryExec(
 				sprintf('

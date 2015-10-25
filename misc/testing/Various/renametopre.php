@@ -251,7 +251,7 @@ function resetSearchnames()
 	global $pdo;
 	echo $pdo->log->header("Resetting blank searchnames.");
 	$bad = $pdo->queryDirect(
-		"UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
+		"UPDATE releases SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
 		. "preid = 0, searchname = name, isrenamed = 0, iscategorized = 0 WHERE searchname = ''"
 	);
 	$tot = $bad->rowCount();
@@ -260,7 +260,7 @@ function resetSearchnames()
 	}
 	echo $pdo->log->header("Resetting searchnames that are 8 characters or less.");
 	$run = $pdo->queryDirect(
-		"UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
+		"UPDATE releases SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
 		. "preid = 0, searchname = name, isrenamed = 0, iscategorized = 0 WHERE LENGTH(searchname) <= 8 AND LENGTH(name) > 8"
 	);
 	$total = $run->rowCount();

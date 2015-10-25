@@ -69,8 +69,6 @@ class ReleaseImage
 		$this->bookImgPath    = nZEDb_COVERS . 'book'        . DS; // bookinfo    id
 		$this->consoleImgPath = nZEDb_COVERS . 'console'     . DS; // consoleinfo id
 		$this->musicImgPath   = nZEDb_COVERS . 'music'       . DS; // musicinfo   id
-		$this->tvRageImgPath  = nZEDb_COVERS . 'tvrage'      . DS; // tvrage      id (not rageid)
-
 		$this->audioImgPath   = nZEDb_COVERS . 'audio'       . DS; // unused folder, music folder already exists.
 		**/
 	}
