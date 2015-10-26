@@ -27,12 +27,7 @@ class TraktTv extends TV
 	public function __construct(array $options = [])
 	{
 		parent::__construct($options);
-		$this->client = new TraktAPI(
-				[
-					'clientID'	=> $this->pdo->getSetting('trakttvclientkey'),
-					'headers'	=> $this->requestHeaders,
-				]
-		);
+		$this->client = new TraktAPI(['clientID'	=> $this->pdo->getSetting('trakttvclientkey')]);
 	}
 
 	public function getBanner($videoId, $siteID)
