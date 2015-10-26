@@ -136,19 +136,19 @@ Class Videos
 					tvi.publisher,
 					us.id AS userseriesid
 				FROM videos v
-				INNER JOIN releases r ON r.videos_id = v.id
-				INNER JOIN tv_info tvi ON r.videos_id = tvi.videos_id
+				INNER JOIN tv_info tvi ON v.id = tvi.videos_id
 				INNER JOIN tv_episodes tve ON v.id = tve.videos_id AND tve.firstaired <= NOW()
 				LEFT OUTER JOIN user_series us ON v.id = us.videos_id AND us.user_id = %d
-				WHERE %s
-				%s %s
+				WHERE 1=1 %s %s
 				ORDER BY tve.firstaired DESC) v
+			INNER JOIN releases r ON r.videos_id = v.id
+			WHERE %s
 			GROUP BY v.id
 			ORDER BY v.title ASC",
 			$uid,
-			$this->catWhere,
 			$rsql,
-			$tsql
+			$tsql,
+			$this->catWhere
 		);
 
 		$sql = $this->pdo->query($qry);
