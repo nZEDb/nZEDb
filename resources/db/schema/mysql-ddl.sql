@@ -952,10 +952,10 @@ CREATE TABLE tv_episodes (
   episode      SMALLINT(5)    UNSIGNED    NOT NULL DEFAULT '0' COMMENT 'Number of episode within series',
   se_complete  VARCHAR(10)    COLLATE utf8_unicode_ci NOT NULL COMMENT 'String version of Series/Episode as taken from release subject (i.e. S02E21+22).',
   title        VARCHAR(180)   CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Title of the episode.',
-  firstaired   DATETIME       NOT NULL COMMENT 'Date of original airing/release.',
+  firstaired   DATE           NOT NULL COMMENT 'Date of original airing/release.',
   summary      TEXT           CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Description/summary of the episode.',
   PRIMARY KEY (id),
-  UNIQUE KEY (videos_id, series, episode)
+  UNIQUE KEY (videos_id, series, episode, firstaired)
 )
   ENGINE = MyISAM
   DEFAULT CHARSET = utf8
@@ -1195,7 +1195,9 @@ CREATE TABLE videos (
   ENGINE = MyISAM
   AUTO_INCREMENT = 1
   DEFAULT CHARSET = utf8
-  COLLATE = utf8_unicode_ci;
+  COLLATE = utf8_unicode_ci
+  AUTO_INCREMENT = 10000000;
+
 
 
 DROP TABLE IF EXISTS xxxinfo;
