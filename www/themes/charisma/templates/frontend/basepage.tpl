@@ -21,9 +21,9 @@
 		/* ]]> */
 	</script>
 	<meta charset="utf-8">
-	<title>{$page->meta_title}{if $page->meta_title != "" && $site->metatitle != ""} - {/if}{$site->metatitle}</title>
+	<title>{$site->title}</title>
 	<!-- Newposterwall -->
-	<link href="{$smarty.const.WWW_TOP}/themes_shared/styles/posterwall.css" rel="stylesheet" type="text/css" media="screen" />
+	<link href="{$smarty.const.WWW_TOP}/themes/charisma/styles/posterwall.css" rel="stylesheet" type="text/css" media="screen" />
 	<!-- The styles -->
 	<link id="bs-css" href="{$smarty.const.WWW_TOP}/themes/charisma/css/bootstrap-spacelab.min.css" rel="stylesheet">
 	<link href="{$smarty.const.WWW_TOP}/themes/charisma/css/charisma-app.css" rel="stylesheet">
@@ -41,7 +41,7 @@
 	<!-- Normalize.css -->
 	<link href="{$smarty.const.WWW_TOP}/themes_shared/styles/normalize.css" rel="stylesheet" type="text/css">
 	<!-- The fav icon -->
-	<link rel="shortcut icon" href="{$smarty.const.WWW_TOP}/themes_shared/images/favicon.ico">
+	<link rel="shortcut icon" href="{$smarty.const.WWW_TOP}/themes/charisma/img/favicon.ico">
 </head>
 {if ($loggedin)=="true"}
 	<body>
@@ -54,8 +54,8 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a class="navbar-brand" href="{$site->home_link}"> <img alt="newznab-tmux logo"
-																	src="{$smarty.const.WWW_TOP}/themes/charisma/img/logo-tmux.png"
+			<a class="navbar-brand" href="{$site->home_link}"> <img alt="nZEDb logo"
+															   src="{$smarty.const.WWW_TOP}/themes/charisma/img/logo-nzedb.png"
 						/></a>
 			{$header_menu}
 			<!-- user dropdown starts -->
@@ -120,7 +120,7 @@
 								<a href="#"><i class="fa fa-list-ol"></i><span> Browse</span></a>
 								<ul class="nav nav-pills nav-stacked">
 									<li><a href="{$serverroot}newposterwall"><i
-													class="fa fa-fire"></i><span> New Releases</span></a></li>
+													class="fa fa-file-image-o"></i><span> New Releases</span></a></li>
 									<li><a href="{$serverroot}console"><i
 													class="fa fa-gamepad"></i><span> Console</span></a></li>
 									<li><a href="{$serverroot}movies"><i
@@ -128,17 +128,15 @@
 									<li><a href="{$serverroot}music"><i
 													class="fa fa-music"></i><span> Music</span></a></li>
 									<li><a href="{$serverroot}games"><i
-													class="fa fa-gamepad"></i><span> Games</span></a></li>
+													class="fa fa-gamepad"></i><span> Games</span></a>
 									<li><a href="{$serverroot}series"><i
 													class="fa fa-television"></i><span> TV</span></a></li>
 									<li><a href="{$serverroot}xxx"><i class="fa fa-venus-mars"></i><span> Adult</span></a></li>
 									<li><a href="{$serverroot}books"><i class="fa fa-book"></i><span> Books</span></a>
 									</li>
 									<li><a href="{$serverroot}browse"><i class="fa fa-list-ul"></i><span> Browse All Releases</span></a>
-									<li><a href="{$serverroot}prehash"><i
-													class="fa fa-list-ol"></i><span> PreHash</span></a>
 									<li><a href="{$serverroot}predb"><i
-													class="fa fa-list-alt"></i><span> PreDB</span></a>
+													class="fa fa-list-ol"></i><span> PreDb</span></a>
 								</ul>
 							</li>
 							<li class="accordion">
@@ -194,8 +192,8 @@
 		</div>
 		<footer class="row">
 			<div class="box col-md-12">
-				<p class="col-md-9 col-sm-9 col-xs-12 copyright">&copy; <i class="fa fa-github-alt"></i><a
-							href="https://github.com/DariusIII/" target="_blank"> DariusIII</a> newznab-tmux {$smarty.now|date_format:"%Y"}</p>
+				<p class="col-md-9 col-sm-9 col-xs-12">Copyright &copy; </i><a
+							href="{$smarty.const.WWW_TOP}{$site->home_link}">{if $site->title == ''}nZEDb{else}{$site->title}{/if}</a> all rights reserved {$smarty.now|date_format:"%Y"}</p>
 		</footer>
 	</div>
 	<!--/.fluid-container-->
@@ -244,11 +242,11 @@
 	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/charisma/js/charisma.js"></script>
 	<!-- Functions with noty -->
 	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/charisma/js/functions.js"></script>
-	<!-- newznab default scripts, needed for stuff to work -->
-	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/charisma/scripts/jquery.colorbox-min.js"></script>
-	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/charisma/scripts/jquery.autosize-min.js"></script>
-	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/charisma/scripts/jquery.qtip2.js"></script>
-	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/charisma/scripts/sorttable.js"></script>
+	<!-- nZEDb default scripts, needed for stuff to work -->
+	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes_shared/scripts/jquery.colorbox-min.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes_shared/scripts/jquery.autosize-min.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes_shared/scripts/jquery.qtip2.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes_shared/scripts/sorttable.js"></script>
 	<!-- The HTML5 shim, for IE6-8 support of HTML5 elements -->
 	<!--[if lt IE 9]>
 	<script type="text/javascript" src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>

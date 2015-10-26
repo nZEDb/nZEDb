@@ -59,7 +59,7 @@
 	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
 	<![endif]-->
 	<!-- The fav icon -->
-	<link rel="shortcut icon" href="{$smarty.const.WWW_TOP}/themes_shared/images/favicon.ico">
+	<link rel="shortcut icon" href="{$smarty.const.WWW_TOP}/themes/charisma/img/favicon.ico">
 </head>
 <body>
 {if $showregister != "0"}
@@ -108,7 +108,7 @@
 							</p>
 							<button type="submit" class="btn btn-primary">Register</button>
 						</fieldset>
-						<a href="{$smarty.const.WWW_TOP}login" class="text-center">I already have a membership</a>
+						<a href="{$serverroot}login" class="text-center">I already have a membership</a>
 					</form>
 				</div>
 				<!--/span-->

@@ -59,7 +59,7 @@
 	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
 	<![endif]-->
 	<!-- The fav icon -->
-	<link rel="shortcut icon" href="{$smarty.const.WWW_TOP}/themes_shared/images/favicon.ico">
+	<link rel="shortcut icon" href="{$smarty.const.WWW_TOP}/themes/charisma/img/favicon.ico">
 </head>
 <body>
 <div class="ch-container">
@@ -77,7 +77,6 @@
 					Please login with your Username and Password.
 				</div>
 				<form class="form-horizontal" method="post" action="login">
-					<input type="hidden" name="redirect" value="{$redirect|escape:"htmlall"}" />
 					<fieldset>
 						<div class="input-group input-group-lg">
 							<span class="input-group-addon"><i class="glyphicon glyphicon-user red"></i></span>

@@ -6,6 +6,7 @@
 {else}
 
 <div class="header">
+	{assign var="catsplit" value=">"|explode:$catname}
 	<h2>View > <strong>Anime</strong></h2>
 	<div class="breadcrumb-wrapper">
 		<ol class="breadcrumb">
@@ -19,15 +20,16 @@
 	{if isset($isadmin)}
 		<a class="btn btn-xs btn-warning"
 		   title="Edit AniDB data"
-		   href="{$smarty.const.WWW_TOP}/admin/anidb-edit.php?id={$animeAnidbid}&amp;
+		   href="{$smarty.const.WWW_TOP}/admin/anidb-edit.php?id={$animeanidbid}&amp;
 					from={$smarty.server.REQUEST_URI|escape:"url"}">Edit</a>
 	{/if}
 </h1>
+{if $catname != ''}<span class="text-info h5">Current category shown: {$catname|escape:"htmlall"}</span>{/if}
 <div>
 	{if animePicture != ""}
 		<center>
 			<img class="shadow img img-polaroid" alt="{$animeTitle} Picture"
-				 src="{$smarty.const.WWW_TOP}/covers/anime/{$animeAnidbid}.jpg"/>
+				 src="{$smarty.const.WWW_TOP}/covers/anime/{$animeAnidbID}.jpg"/>
 		</center>
 		<br/>
 	{/if}
@@ -45,10 +47,10 @@
 <center>
 	<div class="btn-group">
 		<a class="btn btn-sm btn-default"
-		   href="{$site->dereferrer_link}http://anidb.net/perl-bin/animedb.pl?show=anime&amp;aid={$animeAnidbid}"
+		   href="{$site->dereferrer_link}http://anidb.net/perl-bin/animedb.pl?show=anime&amp;aid={$animeanidbid}"
 		   title="View AniDB">View AniDB</a>
 		<a class="btn btn-sm btn-default"
-		   href="{$smarty.const.WWW_TOP}/rss?anidb={$animeAnidbid}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">RSS
+		   href="{$smarty.const.WWW_TOP}/rss?anidb={$animeanidbid}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">RSS
 			feed for this Anime <i class="fa fa-rss"></i></a>
 	</div>
 </center>
@@ -87,7 +89,7 @@
 						   id="browsetable">
 						{foreach $animeEpisodeTitles as $animeEpno => $animeEpisodeTitle}
 							<tr>
-								<td style="padding-top:15px;" colspan="10"><h2>{$animeEpno}</h2></td>
+								<td style="padding-top:15px;" colspan="10"><h3>{$animeEpno}</h2></td>
 							</tr>
 							<tr>
 								<th><input id="chkSelectAll" type="checkbox" class="nzb_check_all"/></th>
@@ -104,20 +106,23 @@
 															 value="{$result.guid}"/></td>
 									<td>
 										<a title="View details"
-										   href="{$smarty.const.WWW_TOP}/details/{$result.guid}"></a>
+										   href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.searchname|escape:"htmlall"|replace:".":" "}</a>
 										<div>
 											<div>
-												{if isset($result.nfoid) && $result.nfoid > 0}<span class="label label-default"><a
+												{if $result.nfoid > 0}<span class="label label-default"><a
 															href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}"
 															class="text-muted">NFO</a></span>{/if}
-												{if isset($result.haspreview) && $result.haspreview == 1 && $userdata.canpreview == 1}<a
+												{if $result.haspreview == 1 && $userdata.canpreview == 1}<a
 													href="{$smarty.const.WWW_TOP}/covers/preview/{$result.guid}_thumb.jpg"
 													name="name{$result.guid}"
-													title="Screenshot of {$result.animeTitle|escape:"htmlall"}"
+													title="Screenshot of {$result.searchname|escape:"htmlall"}"
 													class="label label-default" rel="preview">Preview</a>{/if}
-												{if isset($result.grabs)}<span class="label label-default">{$result.grabs}
-													Grab{if $result.grabs != 1}s{/if}</span>{/if}
-												{if isset($result.reid) && $result.reid > 0}<span class="mediainfo label label-default"
+												<span class="label label-default">{$result.grabs}
+													Grab{if $result.grabs != 1}s{/if}</span>
+												{if $result.firstaired != ""}<span class="label label-success"
+																				  title="{$result.tvtitle} Aired on {$result.firstaired|date_format}">
+													Aired {if $result.firstaired|strtotime > $smarty.now}in future{else}{$result.firstaired|daysago}{/if}</span>{/if}
+												{if isset($result.reis) && $result.reid > 0}<span class="mediainfo label label-default"
 																		   title="{$result.guid}">Media</span>{/if}
 											</div>
 										</div>
@@ -126,7 +131,7 @@
 									<td width="40" title="{$result.postdate}">{$result.postdate|timeago}</td>
 									<td>{$result.size|fsize_format:"MB"}</td>
 									<td class="icon_nzb"><a
-												href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.animeTitle|escape:"htmlall"}"><i
+												href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"htmlall"}"><i
 													class="fa fa-download text-muted"
 													title="Download NZB"></i></a>
 										<a href="{$smarty.const.WWW_TOP}/details/{$result.guid}/#comments"><i
@@ -137,6 +142,10 @@
 										{if isset($sabintegrated)}
 											<a href="#" class="icon_sab text-muted"><i class="fa fa-send-o"
 																					   title="Send to my Queue"></i></a>
+										{/if}
+										{if $weHasVortex}
+											<a href="#" class="icon_vortex text-muted"><i
+														class="fa fa-send-o" title="Send to NZBVortex"></i></a>
 										{/if}
 									</td>
 								</tr>

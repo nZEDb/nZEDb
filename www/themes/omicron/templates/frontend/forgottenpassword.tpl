@@ -40,7 +40,7 @@
 <body class="login-page">
 <div class="login-box">
 	<div class="login-logo">
-		<a href="{$serverrroot}"><b{$site->title}</b></a>
+		<a href="{$serverrroot}"><b>{$site->title}</b></a>
 	</div><!-- /.login-logo -->
 	<div class="login-box-body">
 		<p class="login-box-msg">Please enter the email address you used to register and we will send an email to reset your password. If you

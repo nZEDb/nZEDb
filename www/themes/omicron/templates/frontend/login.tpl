@@ -10,7 +10,7 @@
 	  <script type="text/javascript">
 		  /* <![CDATA[ */
 		  var WWW_TOP = "{$smarty.const.WWW_TOP}";
-          var SERVERROOT = "{$serverroot}";
+		  var SERVERROOT = "{$serverroot}";
 		  var UID = "{if $loggedin=="true"}{$userdata.id}{else}{/if}";
 		  var RSSTOKEN = "{if $loggedin=="true"}{$userdata.rsstoken}{else}{/if}";
 		  /* ]]> */
@@ -36,12 +36,11 @@
   <body class="login-page">
     <div class="login-box">
 		<div class="login-logo">
-			<a href="{$serverrroot}"><b>{$site->title}</b></a>
+			<a href="{$serverrroot}"><b>{$site->title}</b> | Login</a>
 		</div><!-- /.login-logo -->
       <div class="login-box-body">
         <p class="login-box-msg">Please sign in to access the site</p>
         <form action="login" method="post">
-          <input type="hidden" name="redirect" value="{$redirect|escape:"htmlall"}" />
           <div class="form-group has-feedback">
             <input id="username" name="username" type="text" class="form-control" placeholder="Username"/>
             <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
@@ -65,8 +64,8 @@
             </div><!-- /.col -->
           </div>
         </form>
-		  <a href="{$smarty.const.WWW_TOP}forgottenpassword" class="text-center">I forgot my password</a><br>
-        <a href="{$smarty.const.WWW_TOP}register" class="text-center">Register a new membership</a>
+		  <a href="{$serverroot}forgottenpassword" class="text-center">I forgot my password</a><br>
+        <a href="{$serverroot}register" class="text-center">Register a new membership</a>
     <!-- jQuery 2.1.4 -->
     <script src="{$smarty.const.WWW_TOP}/themes/omicron/plugins/jQuery/jQuery-2.1.4.min.js"></script>
     <!-- Bootstrap 3.3.2 JS -->
