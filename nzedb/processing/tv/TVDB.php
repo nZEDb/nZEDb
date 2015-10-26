@@ -136,8 +136,8 @@ class TVDB extends TV
 						// Now that we have valid video and tvdb ids, try to get the poster
 						$this->getPoster($videoId, $tvdbid);
 
-						$seasonNo = preg_replace('/^S0*/', '', $release['season']);
-						$episodeNo = preg_replace('/^E0*/', '', $release['episode']);
+						$seasonNo = preg_replace('/^S0*/i', '', $release['season']);
+						$episodeNo = preg_replace('/^E0*/i', '', $release['episode']);
 
 						if ($episodeNo === 'all') {
 							// Set the video ID and leave episode 0
