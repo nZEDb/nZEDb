@@ -11,6 +11,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Fix: View TV Series query speedup caused incorrect join placement (2nd Attempt)
 	Fix: Trakt class instanciation not working to the API
 	Fix: Incorrect usage of date function (missing strtotime for int value)
+	Chg: Removed pager count from releases->searchShows.  It is only called by View Series List and API and neither use a pager function.
 2015-10-25 ruhllatio
 	Mrg: PR 1916 Replace TVRage Processing with TVDB
 	Note: 	We found a bug dating back to the beginning that caused bad titles to be inserted into the TvRage table
