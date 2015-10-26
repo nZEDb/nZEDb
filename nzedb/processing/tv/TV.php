@@ -201,7 +201,7 @@ abstract class TV extends Videos
 		$videoId = $this->getVideoIDFromSiteID($showArr['column'], $showArr['siteid']);
 
 		if ($videoId === false) {
-			$videoId = $this->getByTitleQuery($showArr['$title']);
+			$videoId = $this->getByTitleQuery($showArr['title']);
 		}
 
 		if ($videoId === false) {
