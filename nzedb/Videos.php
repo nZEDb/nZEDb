@@ -137,10 +137,11 @@ Class Videos
 					us.id AS userseriesid
 				FROM videos v
 				INNER JOIN tv_info tvi ON v.id = tvi.videos_id
-				INNER JOIN tv_episodes tve ON v.id = tve.videos_id AND tve.firstaired <= NOW()
+				INNER JOIN tv_episodes tve ON v.id = tve.videos_id
 				LEFT OUTER JOIN user_series us ON v.id = us.videos_id AND us.user_id = %d
-				WHERE 1=1 %s %s
-				GROUP BY v.id
+				WHERE 1=1
+				AND tve.firstaired <= NOW()
+				%s %s
 				ORDER BY tve.firstaired DESC) v
 			STRAIGHT_JOIN releases r ON r.videos_id = v.id
 			WHERE %s
