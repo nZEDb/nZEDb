@@ -17,7 +17,7 @@ Class TraktAPI {
 	 *
 	 * @var array|bool|string
 	 */
-	private $clientID;
+	private $clientId;
 
 	/**
 	 * List of headers to send to Trakt.tv when making a request.
@@ -37,20 +37,20 @@ Class TraktAPI {
 	public function __construct(array $options = [])
 	{
 		$defaults = [
-			'clientID' => '',
+			'clientId' => '',
 		];
 		$options += $defaults;
 
-		if (empty($options['clientID'])) {
+		if (empty($options['clientId'])) {
 			// Can't work without an ID.
 			return null;
 		}
-		$this->clientID = $options['clientID'];
-		$this->requestHeaders = [
-			'Content-Type: application/json',
-			'trakt-api-version: 2',
-			'trakt-api-key: ' . $this->clientID
-		];
+		$this->clientId = $options['clientId'];
+		$this->requestHeaders = <<<HEADERS
+Content-Type: application/json
+trakt-api-version: 2
+trakt-api-key: $this->clientId
+HEADERS;
 	}
 
 	/**
@@ -80,11 +80,9 @@ Class TraktAPI {
 
 		$array = $this->getJsonArray(
 			self::API_URL . 'shows/' .
-			str_replace([' ', '_', '.'], '-', $title) .
-			'/seasons/' .
-			str_replace(['S', 's'], '', $season) .
-			'/episodes/' .
-			str_replace(['E', 'e'], '', $ep),
+			$this->slugify($title) .
+			'/seasons/' . str_replace(['S', 's'], '', $season) .
+			'/episodes/' . str_replace(['E', 'e'], '', $ep),
 			$extended
 		);
 		if (!$array) {
@@ -92,6 +90,20 @@ Class TraktAPI {
 		}
 		return $array;
 	}
+
+/**
+ * Generate and return a slug for a given ``$phrase``.
+ */
+	public function slugify($phrase)
+	{
+		$result = strtolower($phrase);
+		$result = preg_replace('#[^a-z0-9\s-]#', '', $result);
+		$result = trim(preg_replace('#[\s-]+#', ' ', $result));
+		$result = preg_replace('#\s#', '-', $result);
+
+		return $result;
+	}
+
 
 	/**
 	 * Fetches summary from trakt.tv for the movie.
@@ -121,10 +133,7 @@ Class TraktAPI {
 			default:
 				$extended = 'min';
 		}
-		$array = $this->getJsonArray(
-			self::API_URL . 'movies/' . str_replace([' ', '_', '.'], '-', str_replace(['(', ')'], '', $movie)),
-			$extended
-		);
+		$array = $this->getJsonArray(self::API_URL . 'movies/' . $this->slugify($movie),	$extended);
 		if (!$array) {
 			return false;
 		} else if ($type === 'imdbID' && isset($array['ids']['imdb'])) {
@@ -191,7 +200,10 @@ Class TraktAPI {
 	 */
 	public function showSummary($show = '', $type = 'full')
 	{
-		$showUrl = self::API_URL . 'shows/' . str_replace([' ', '_', '.'], '-', str_replace(['(', ')'], '', $show));
+		if (empty($show)) {
+			return null;
+		}
+		$showUrl = self::API_URL . 'shows/' . $this->slugify($show);
 
 		switch($type) {
 			case 'images':
@@ -199,8 +211,10 @@ Class TraktAPI {
 				$extended = $type;
 				break;
 			case 'full':
-			default:
 				$extended = 'full';
+				break;
+			default:
+				$extended = '';
 		}
 		return $this->getJsonArray($showUrl, $extended);
 	}
@@ -239,13 +253,14 @@ Class TraktAPI {
 	 */
 	private function getJsonArray($URI, $extended = 'min')
 	{
+var_dump($extended);
 		if ($extended === '') {
 			$extendedString = '';
 		} else {
 			$extendedString = "&extended=" . $extended;
 		}
-
-		if (!empty($this->clientID)) {
+var_dump($URI . $extendedString);
+		if (!empty($this->clientId)) {
 			$json = Misc::getUrl([
 					'url'            => $URI . $extendedString,
 					'requestheaders' => $this->requestHeaders
