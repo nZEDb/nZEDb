@@ -231,14 +231,14 @@
 								{if $result.consoleinfoid > 0}
 									<a href="#" name="name{$result.consoleinfoid}" title="View console info" class="modal_console rndbtn" rel="console" >Cover</a>
 								{/if}
-								{if $result.rageid > 0}
-									<a class="rndbtn" href="{$smarty.const.WWW_TOP}/series/{$result.rageid}" title="View all episodes">View Series</a>
+								{if $result.videos_id > 0}
+									<a class="rndbtn" href="{$smarty.const.WWW_TOP}/series/{$result.videos_id}" title="View all episodes">View Series</a>
 								{/if}
 								{if $result.anidbid > 0}
 									<a class="rndbtn" href="{$smarty.const.WWW_TOP}/anime/{$result.anidbid}" title="View all episodes">View Anime</a>
 								{/if}
-								{if $result.tvairdate != ""}
-									<span class="seriesinfo rndbtn" title="{$result.guid}">Aired {if $result.tvairdate|strtotime > $smarty.now}in future{else}{$result.tvairdate|daysago}{/if}</span>
+								{if $result.firstaired != ""}
+									<span class="seriesinfo rndbtn" title="{$result.guid}">Aired {if $result.firstaired|strtotime > $smarty.now}in future{else}{$result.firstaired|daysago}{/if}</span>
 								{/if}
 								{if $result.reid > 0}
 									<span class="mediainfo rndbtn" title="{$result.guid}">Media</span>

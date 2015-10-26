@@ -5,6 +5,7 @@ require_once nZEDb_LIBS . 'TMDb.php';
 
 use nzedb\db\Settings;
 use nzedb\utility\Misc;
+use nzedb\processing\tv\TraktTv;
 
 /**
  * Class Movie
@@ -22,6 +23,11 @@ class Movie
 	 * @var \nzedb\db\Settings
 	 */
 	public $pdo;
+
+	/**
+	 * @var null|TraktTv
+	 */
+	public $traktTv = null;
 
 	/**
 	 * Current title being passed through various sites/api's.
@@ -409,11 +415,6 @@ class Movie
 	}
 
 	/**
-	 * @var null|TraktTv
-	 */
-	public $traktTv = null;
-
-	/**
 	 * Get trailer using IMDB Id.
 	 *
 	 * @param int $imdbID
@@ -435,7 +436,7 @@ class Movie
 			$this->traktTv = new TraktTv(['Settings' => $this->pdo]);
 		}
 
-		$data = $this->traktTv->movieSummary('tt' . $imdbID, 'full,images');
+		$data = $this->traktTv->client->movieSummary('tt' . $imdbID, 'full,images');
 		if ($data) {
 			$this->parseTraktTv($data);
 			if (isset($data['trailer']) && !empty($data['trailer'])) {
@@ -991,7 +992,7 @@ class Movie
 		if (is_null($this->traktTv)) {
 			$this->traktTv = new TraktTv(['Settings' => $this->pdo]);
 		}
-		$resp = $this->traktTv->movieSummary('tt' . $imdbId, 'full,images');
+		$resp = $this->traktTv->client->movieSummary('tt' . $imdbId, 'full,images');
 		if ($resp !== false) {
 			$ret = [];
 			if (isset($resp['images']['poster']['thumb'])) {
@@ -1142,7 +1143,7 @@ class Movie
 					}
 
 					// Check on trakt.
-					$data = $this->traktTv->movieSummary($movieName, 'full,images');
+					$data = $this->traktTv->client->movieSummary($movieName, 'full,images');
 					if ($data !== false) {
 						$this->parseTraktTv($data);
 						if (isset($data['ids']['imdb'])) {

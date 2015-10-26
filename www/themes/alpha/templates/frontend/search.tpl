@@ -269,10 +269,10 @@
 									rel="preview"
 								><i class="icon-picture"></i></a>
 							{/if}
-							{if $result.rageid > 0}
+							{if $result.videos_id > 0}
 								<a
 									class="label label-default"
-									href="{$smarty.const.WWW_TOP}/series/{$result.rageid}"
+									href="{$smarty.const.WWW_TOP}/series/{$result.videos_id}"
 									title="View all episodes"
 								><i class="icon-bookmark"></i></a>
 							{/if}
@@ -283,11 +283,11 @@
 									title="View all episodes"
 								><i class="icon-font"></i></a>
 							{/if}
-							{if $result.tvairdate != ""}
+							{if $result.firstaired != ""}
 								<span
 									class="seriesinfo label label-default"
 									title="{$result.guid}"
-								>Aired {if $result.tvairdate|strtotime > $smarty.now}in future{else}{$result.tvairdate|daysago}{/if}</span>
+								>Aired {if $result.firstaired|strtotime > $smarty.now}in future{else}{$result.firstaired|daysago}{/if}</span>
 							{/if}
 							{if $result.reid > 0}
 								<span

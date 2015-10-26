@@ -1,6 +1,4 @@
 <div class="header">
-	{assign var="catsplit" value=">"|explode:$catname}
-	<h2>{$catsplit[0]} > <strong>{if isset($catsplit[1])} {$catsplit[1]}{/if}</strong></h2>
 	<div class="breadcrumb-wrapper">
 		<ol class="breadcrumb">
 			<li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li>
@@ -111,10 +109,10 @@
 										{if $result.haspreview == 1 && $userdata.canpreview == 1}<span><a
 													href="{$smarty.const.WWW_TOP}/covers/preview/{$result.guid}_thumb.jpg"
 													name="name{$result.guid}" class="modal_prev label label-default" rel="preview">Preview</a></span>{/if}
-										{if $result.rageid > 0}<span class="label label-default"><a
-													href="{$smarty.const.WWW_TOP}/series/{$result.rageid}">View TV</a></span>{/if}
-										{if $result.tvairdate != ""}<span class="label label-default" title="{$result.guid}">
-											Aired {if $result.tvairdate|strtotime > $smarty.now}in future{else}{$result.tvairdate|daysago}{/if}</span>{/if}
+										{if $result.videos_id > 0}<span class="label label-default"><a
+													href="{$smarty.const.WWW_TOP}/series/{$result.videos_id}">View TV</a></span>{/if}
+										{if isset($result.firstaired) && $result.firstaired != ""}<span class="label label-default" title="{$result.guid}">
+											Aired {if $result.firstaired|strtotime > $smarty.now}in future{else}{$result.firstaired|daysago}{/if}</span>{/if}
 										{if $result.anidbid > 0}<span class="label label-default"><a
 													href="{$smarty.const.WWW_TOP}/anime/{$result.anidbid}">View Anime</a></span>{/if}
 										{if $result.failed > 0}<span class="label label-default">

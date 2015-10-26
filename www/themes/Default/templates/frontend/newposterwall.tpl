@@ -63,7 +63,7 @@
 											 src="{$smarty.const.WWW_TOP}/covers/games/{$result.gamesinfo_id}.jpg"/>
 									{elseif $type == 'TV'}
 										<img width="130px" height="150px" alt=""
-											 src="{$smarty.const.WWW_TOP}/covers/tvrage/{$result.rageid}.jpg"/>
+											 src="{$smarty.const.WWW_TOP}/covers/tvshows/{$result.videos_id}.jpg"/>
 									{elseif $type == 'Anime'}
 										<img width="130px" height="195px" alt=""
 											 src="{$smarty.const.WWW_TOP}/covers/anime/{$result.anidbid}.jpg"/>
@@ -178,11 +178,20 @@
 											   target="_blank"></a>
 										</div>
 									{elseif $type == 'TV'}
-										<div class="icon icon_tvrage">
-											<a class="divlink" title="View in TvRage"
-											href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$result.rageid}"
-											target="_blank"></a>
-										</div>
+										{if $result.tvdb > 0}
+											<div class="icon icon_tvdb">
+												<a class="divlink" title="View in TVDB"
+												   href="{$site->dereferrer_link}http://thetvdb.com/?tab=series&id={$result.tvdb}"
+												   target="_blank"></a>
+											</div>
+										{/if}
+										{if $result.tvrage > 0}
+											<div class="icon icon_tvrage">
+												<a class="divlink" title="View in TvRage"
+												   href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$result.tvrage}"
+												   target="_blank"></a>
+											</div>
+										{/if}
 									{elseif $type == 'Anime'}
 									<div class="icon icon_anidb">
 										<a class="divlink" title="View in AniDB"

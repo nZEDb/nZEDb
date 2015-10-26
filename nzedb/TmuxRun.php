@@ -516,12 +516,9 @@ class TmuxRun extends Tmux
 			$log = $this->writelog($runVar['panes']['one'][0]);
 			shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:1.0 ' \
 				{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/update_theaters.php $log; \
-				{$runVar['commands']['_phpn']} {$runVar['paths']['cli']}data/populate_tvrage.php true $log; \
-				{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/update_tvschedule.php $log; \
-				{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}testing/PostProcess/updateTvRage.php update $log; date +\"{$this->_dateFormat}\"' 2>&1 1> /dev/null"
+				date +\"{$this->_dateFormat}\"' 2>&1 1> /dev/null"
 			);
 			$runVar['timers']['timer4'] = time();
-
 		} else if ($runVar['settings']['update_tv'] == 1) {
 			$run_time = $this->relativeTime($runVar['settings']['tv_timer'] + $runVar['timers']['timer4']);
 			$color = $this->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);

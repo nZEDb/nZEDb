@@ -1,12 +1,11 @@
 <?php
 require_once './config.php';
-
-use nzedb\TvRage;
+require_once nZEDb_WWW . 'pages/smartyTV.php';
 
 $page = new AdminPage();
 
 if (isset($_GET['id'])) {
-	(new TvRage(['Settings' => $page->settings]))->delete($_GET['id']);
+	(new smartyTV(['Settings' => $page->settings]))->delete($_GET['id']);
 }
 
 $referrer = $_SERVER['HTTP_REFERER'];

@@ -61,6 +61,9 @@
 						href="{$smarty.const.WWW_TOP}/api?t=tvsearch&amp;rid=2204&amp;cat=1000,2000">?t=tvsearch&amp;rid=2204&amp;cat=1000,2000</a></span>.
 			Include <span style="font-family:courier;">&amp;extended=1</span> to return extended information in the
 			search results.
+			<br>
+			You can also supply the following parameters to do site specfic ID searches:
+			&amp;rid=25056 (TVRage) &amp;tvdbid=153021 (TVDB) &amp;traktid=1393 (Trakt) &amp;tvmazeid=73 (TVMaze) &amp;imdbid=1520211 (IMDB) &amp;tmdbid=1402 (TMDB).
 		</li>
 		<li>
 			<b>Movies</b> <span style="font-family:courier;"><a
@@ -158,9 +161,9 @@
 		<li>year</li>
 		<li>season</li>
 		<li>episode</li>
-		<li>rageid</li>
+		<li>videos_id</li>
 		<li>tvtitle</li>
-		<li>tvairdate</li>
+		<li>firstaired</li>
 		<li>video</li>
 		<li>audio</li>
 		<li>resolution</li>

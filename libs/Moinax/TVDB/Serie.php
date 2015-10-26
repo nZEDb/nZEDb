@@ -135,7 +135,7 @@ class Serie
      *
      * @access public
      * @param \SimpleXMLElement $data A simplexml element created from thetvdb.com's xml data for the tv show
-     * @return \Moinax\TvDb\Serie
+     * @return \libs\Moinax\TvDb\Serie
      */
     public function __construct($data)
     {

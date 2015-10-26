@@ -4,6 +4,7 @@ namespace nzedb;
 use nzedb\db\Settings;
 use nzedb\processing\PostProcess;
 use nzedb\utility\Misc;
+//use nzedb\processing\tv\TvRage;
 
 require_once nZEDb_LIBS . 'getid3/getid3/getid3.php';
 require_once nZEDb_LIBS . 'rarinfo/par2info.php';
@@ -101,21 +102,27 @@ class Nfo
 	}
 
 	/**
-	 * Look for a TvRage ID in a string.
+	 * Look for a TV Show ID in a string. TODO: Add other scrape sources
 	 *
-	 * @param string  $str   The string with a TvRage ID.
-	 * @return string The TVRage ID on success.
+	 * @param string  $str   The string with a Show ID.
 	 *
-	 * @return bool   False on failure.
+	 * @return array|bool   Return array with show ID and site source or false on failure.
 	 *
 	 * @access public
 	 */
-	public function parseRageId($str)
+	public function parseShowId($str)
 	{
+		$return = false;
+
 		if (preg_match('/tvrage\.com\/shows\/id-(\d{1,6})/i', $str, $matches)) {
-			return trim($matches[1]);
+			$return = (
+				[
+					'showid' => trim($matches[1]),
+					'site'   => 'tvrage'
+				]
+			);
 		}
-		return false;
+		return $return;
 	}
 
 	/**
@@ -339,7 +346,6 @@ class Nfo
 				]
 			);
 			$movie = new Movie(['Echo' => $this->echo, 'Settings' => $this->pdo]);
-			$tvRage = new TvRage(['Echo' => $this->echo, 'Settings' => $this->pdo]);
 
 			foreach ($res as $arr) {
 				$fetchedBinary = $nzbContents->getNFOfromNZB($arr['guid'], $arr['id'], $arr['group_id'], $groups->getByNameByID($arr['group_id']));
@@ -356,22 +362,22 @@ class Nfo
 					$ret++;
 					$movie->doMovieUpdate($fetchedBinary, 'nfo', $arr['id'], $processImdb);
 
-					// If set scan for tvrage info.
+					// If set scan for tvrage info. Disabled for now while TvRage is down. TODO: Add Other Scraper Checks
 					if ($processTvrage == 1) {
-						$rageId = $this->parseRageId($fetchedBinary);
-						if ($rageId !== false) {
+						/*$tvRage = new TvRage(['Echo' => $this->echo, 'Settings' => $this->pdo]);
+						$showId = $this->parseShowId($fetchedBinary);
+						if ($showId !== false) {
 							$show = $tvRage->parseNameEpSeason($arr['name']);
 							if (is_array($show) && $show['name'] != '') {
 								// Update release with season, ep, and air date info (if available) from release title.
 								$tvRage->updateEpInfo($show, $arr['id']);
-
 								$rid = $tvRage->getByRageID($rageId);
 								if (!$rid) {
 									$tvrShow = $tvRage->getRageInfoFromService($rageId);
 									$tvRage->updateRageInfo($rageId, $show, $tvrShow, $arr['id']);
 								}
 							}
-						}
+						}*/
 					}
 				}
 			}

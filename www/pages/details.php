@@ -11,8 +11,7 @@ use nzedb\ReleaseComments;
 use nzedb\ReleaseExtra;
 use nzedb\ReleaseFiles;
 use nzedb\Releases;
-use nzedb\TraktTv;
-use nzedb\TvRage;
+use nzedb\Videos;
 use nzedb\XXX;
 use nzedb\DnzbFailures;
 
@@ -34,17 +33,17 @@ if (isset($_GET['id'])) {
 		$rc->addComment($data['id'], $_POST['txtAddComment'], $page->users->currentUserId(), $_SERVER['REMOTE_ADDR']);
 	}
 
-	$rage = $mov = $xxx = '';
-	if ($data['rageid'] != '') {
-		$rageInfo = (new TvRage(['Settings' => $page->settings]))->getByRageID($data['rageid']);
-		if (count($rageInfo) > 0) {
-			$rage = ['releasetitle' => '', 'description' => '', 'country' => '', 'genre' => '', 'hascover' => '', 'id' => ''];
+	$criteria = $mov = $xxx = '';
+	if ($data['videos_id'] != 0) {
+		$showInfo = (new Videos(['Settings' => $page->settings]))->getByVideoID($data['videos_id']);
+		if (count($showInfo) > 0) {
+			$criteria = ['title' => '', 'summary' => '', 'countries_id' => '', 'image' => '', 'id' => ''];
 			$done = 1;
-			$needed = count($rage);
-			foreach ($rageInfo as $info) {
-				foreach($rage as $key => $value) {
+			$needed = count($criteria);
+			foreach ($showInfo as $info) {
+				foreach($criteria as $key => $value) {
 					if (empty($value) && !empty($info[$key])) {
-						$rage[$key] = $info[$key];
+						$criteria[$key] = $info[$key];
 						$done++;
 					}
 				}
@@ -104,7 +103,7 @@ if (isset($_GET['id'])) {
 		'movie'   => $mov,
 		'music' => ($data['musicinfoid'] != '' ? (new Music(['Settings' => $page->settings]))->getMusicInfo($data['musicinfoid']) : ''),
 		'pre'   => (new PreDb(['Settings' => $page->settings]))->getForRelease($data['preid']),
-		'rage'  => $rage,
+		'show'  => $criteria,
 		'xxx'   => $xxx,
 		'comments' => $rc->getComments($data['id']),
 		'cpapi'    => $user['cp_api'],
@@ -120,8 +119,6 @@ if (isset($_GET['id'])) {
 		'searchname'      => $releases->getSimilarName($data['searchname']),
 		'failed'          => $fail->getFailedCount($data['guid']),
 	]);
-
-	$page->smarty->assign('rage', $rage);
 
 	$page->meta_title       = 'View NZB';
 	$page->meta_keywords    = 'view,nzb,description,details';

@@ -1,5 +1,4 @@
 <div class="header">
-	{assign var="catsplit" value=">"|explode:$catname}
 	<h2>View > <strong>Movie</strong></h2>
 	<div class="breadcrumb-wrapper">
 		<ol class="breadcrumb">
