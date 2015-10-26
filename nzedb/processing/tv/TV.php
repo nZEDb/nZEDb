@@ -502,7 +502,7 @@ abstract class TV extends Videos
 		if ($episode > 0) {
 			$queryString = sprintf('series = %d AND episode = %d', $series, $episode);
 		} else if (!empty($airdate) && $airdate !== '') {
-			$queryString = sprintf('DATE(firstaired) = %s', $this->pdo->escapeString(date('Y-m-d', $airdate)));
+			$queryString = sprintf('DATE(firstaired) = %s', $this->pdo->escapeString(date('Y-m-d', strtotime($airdate))));
 		} else {
 			return false;
 		}
