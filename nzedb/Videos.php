@@ -140,8 +140,9 @@ Class Videos
 				INNER JOIN tv_episodes tve ON v.id = tve.videos_id AND tve.firstaired <= NOW()
 				LEFT OUTER JOIN user_series us ON v.id = us.videos_id AND us.user_id = %d
 				WHERE 1=1 %s %s
+				GROUP BY v.id
 				ORDER BY tve.firstaired DESC) v
-			INNER JOIN releases r ON r.videos_id = v.id
+			STRAIGHT_JOIN releases r ON r.videos_id = v.id
 			WHERE %s
 			GROUP BY v.id
 			ORDER BY v.title ASC",

@@ -8,6 +8,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2015-10-26 ruhllatio
 	Fix: Some local lookups were passing with invalid information causing them to show up as season 0.
+	Fix: View TV Series query speedup caused incorrect join placement
 2015-10-25 ruhllatio
 	Mrg: PR 1916 Replace TVRage Processing with TVDB
 	Note: 	We found a bug dating back to the beginning that caused bad titles to be inserted into the TvRage table
