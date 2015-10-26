@@ -35,6 +35,14 @@ class TraktTv extends TV
 		);
 	}
 
+	/**
+	 * Fetch banner from site.
+	 *
+	 * @param $videoId
+	 * @param $siteID
+	 *
+	 * @return bool
+	 */
 	public function getBanner($videoId, $siteID)
 	{
 		return false;
@@ -52,6 +60,11 @@ class TraktTv extends TV
 	public function getEpisodeInfo($siteId, $series, $episode)
 	{
 		;
+	}
+
+	public function getMovieInfo()
+	{
+
 	}
 
 	/**
