@@ -12,7 +12,6 @@
 							<li><a href="{$smarty.const.WWW_TOP}/browse?t={$parentcat.id}">TV</a></li>
 							<hr>
 							<li><a href="{$smarty.const.WWW_TOP}/series">TV Series</a></li>
-							<li><a href="{$smarty.const.WWW_TOP}/calendar">TV Calendar</a></li>
 							<li><a href="{$smarty.const.WWW_TOP}/anime">Anime Series</a></li>
 							<li><a href="{$smarty.const.WWW_TOP}/myshows">My Shows</a></li>
 							<hr>
@@ -127,7 +126,7 @@
 							{/if}
 						</ul>
 					</li>
-				{elseif $parentcat.id == 8000}
+				{elseif $parentcat.id == 7000}
 					<li class="nav-parent">
 						<a href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"
 						   data-delay="30">
@@ -182,9 +181,9 @@
 					<i class="fa fa-bolt"></i> Misc<i class="fa fa-angle-down"></i>
 				</a>
 				<ul class="dropdown-menu">
-					<li><a href="/browse?t=7000">Misc</a></li>
-					<li><a href="/browse?t=7020">Hashed</a></li>
-					<li><a href="/browse?t=7010">Other</a></li>
+					<li><a href="/browse?t=8000">Misc</a></li>
+					<li><a href="/browse?t=8020">Hashed</a></li>
+					<li><a href="/browse?t=8010">Other</a></li>
 					<hr>
 					<li><a href="/browse">All</a></li>
 					<li><a href="/browsegroup">Browse Groups</a></li>

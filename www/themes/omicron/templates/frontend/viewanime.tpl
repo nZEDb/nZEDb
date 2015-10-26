@@ -143,10 +143,6 @@
 											<a href="#" class="icon_sab text-muted"><i class="fa fa-send-o"
 																					   title="Send to my Queue"></i></a>
 										{/if}
-										{if $weHasVortex}
-											<a href="#" class="icon_vortex text-muted"><i
-														class="fa fa-send-o" title="Send to NZBVortex"></i></a>
-										{/if}
 									</td>
 								</tr>
 							{/foreach}

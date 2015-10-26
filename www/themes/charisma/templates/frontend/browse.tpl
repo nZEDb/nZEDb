@@ -28,7 +28,7 @@
 									</p>
 								{/if}
 								<div class="nzb_multi_operations">
-									{if $covgroup != ''}View:
+									{if isset($covgroup) && $covgroup != ''}View:
 										<a href="{$smarty.const.WWW_TOP}/{$covgroup}?t={$category}">Covers
 										</a>
 										|
@@ -96,7 +96,7 @@
 															 value="{$result.guid}"/></td>
 									<td>
 										<a href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}"
-										   class="title">{$result.searchname|escape:"htmlall"|replace:".":" "}</a>{if $result.failed > 0} <i class="fa fa-exclamation-circle" style="color: red" title="This release has failed to download for some users"></i>{/if}
+										   class="title">{$result.searchname|escape:"htmlall"|replace:".":" "}</a>{if isset($result.failed) && $result.failed > 0} <i class="fa fa-exclamation-circle" style="color: red" title="This release has failed to download for some users"></i>{/if}
 										<br/>
 													<span class="label label-default">{$result.grabs}
 														Grab{if $result.grabs != 1}s{/if}</span>
@@ -115,7 +115,7 @@
 											Aired {if $result.firstaired|strtotime > $smarty.now}in future{else}{$result.firstaired|daysago}{/if}</span>{/if}
 										{if $result.anidbid > 0}<span class="label label-default"><a
 													href="{$smarty.const.WWW_TOP}/anime/{$result.anidbid}">View Anime</a></span>{/if}
-										{if $result.failed > 0}<span class="label label-default">
+										{if isset($result.failed) && $result.failed > 0}<span class="label label-default">
 											<i class ="fa fa-thumbs-o-up"></i> {$result.grabs} Grab{if $result.grabs != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$result.failed} Failed Download{if $result.failed != 1}s{/if}</span>{/if}									</td>
 									<td><span class="label label-default">{$result.category_name}</span>
 									</td>
@@ -133,10 +133,6 @@
 										{if isset($sabintegrated)}
 											<a href="#" class="icon_sab text-muted"><i class="fa fa-send-o"
 																					   title="Send to my Queue"></i></a>
-										{/if}
-										{if $weHasVortex}
-											<a href="#" class="icon_vortex text-muted"><i
-														class="fa fa-send-o" title="Send to NZBVortex"></i></a>
 										{/if}
 									</td>
 								</tr>

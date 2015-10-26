@@ -14,7 +14,7 @@
 				<div class="col-xlg-12 portlets">
 					<div class="panel panel-default">
 						<div class="panel-body pagination2">
-							{if $error != ''}
+							{if isset($error) && $error != ''}
 								<div class="alert alert-danger">{$error}</div>
 							{/if}
 							<ul class="nav nav-tabs nav-primary">
@@ -30,7 +30,7 @@
 											<tbody>
 											<tr valign="top">
 												<td>
-													<table class="data table table-condensed table-striped table-responsive">
+													<table class="data table table-condensed table-striped table-responsive table-hover">
 														<tbody>
 														<tr class="bg-aqua-active">
 															<td colspan="2" style="padding-left: 8px;">
@@ -68,7 +68,7 @@
 														</tr>
 														</tbody>
 													</table>
-													<table class="data table table-condensed table-striped table-responsive">
+													<table class="data table table-condensed table-striped table-responsive table-hover">
 														<tbody>
 														<tr class="bg-aqua-active">
 															<td colspan="2" style="padding-left: 8px;"><strong>Excluded
@@ -82,7 +82,7 @@
 														</tr>
 														</tbody>
 													</table>
-													<table class="data table table-condensed table-striped table-responsive">
+													<table class="data table table-condensed table-striped table-responsive table-hover">
 														<tbody>
 														<tr class="bg-aqua-active">
 															<td colspan="2" style="padding-left: 8px;"><strong>UI
@@ -154,7 +154,7 @@
 													function.
 													<br/>
 													{if $page->settings->getSetting('sabintegrationtype') != 1}
-														<table class="data table table-condensed table-striped table-responsive">
+														<table class="data table table-condensed table-striped table-responsive table-hover">
 															<tbody>
 															<tr class="bg-aqua-active">
 																<td colspan="2" style="padding-left: 8px;"><strong>Queue
@@ -173,7 +173,7 @@
 														</table>
 													{/if}
 													{if $user.queuetype == 1 && $page->settings->getSetting('sabintegrationtype') == 2}
-														<table class="data table table-condensed table-striped table-responsive">
+														<table class="data table table-condensed table-striped table-responsive table-hover">
 															<tbody>
 															<tr class="bg-aqua-active">
 																<td colspan="2" style="padding-left: 8px;"><strong>SABnzbd</strong>
@@ -232,7 +232,7 @@
 														</table>
 													{/if}
 													{if $user.queuetype == 2 && ($page->settings->getSetting('sabintegrationtype') == 0 || $page->settings->getSetting('sabintegrationtype') == 2)}
-														<table class="data table table-condensed table-striped table-responsive">
+														<table class="data table table-condensed table-striped table-responsive table-hover">
 															<tbody>
 															<tr class="bg-aqua-active">
 																<td colspan="2" style="padding-left: 8px;"><strong>NZBget</strong>
@@ -265,6 +265,30 @@
 															</tbody>
 														</table>
 													{/if}
+													<table class="data table table-condensed table-striped table-responsive table-hover">
+														<tbody>
+														<tr class="bg-aqua-active">
+															<td colspan="2" style="padding-left: 8px;"><strong>NZB
+																	Vortex</strong></td>
+														</tr>
+														<tr>
+															<th width="200">Server URL</th>
+															<td><input id="nzbvortex_server_url"
+																	   placeholder="NZBVortex URL" class="form-control"
+																	   name="nzbvortex_server_url" maxlength="255"
+																	   type="text"
+																	   value="{$user.nzbvortex_server_url}"/></td>
+														</tr>
+														<tr>
+															<th width="200">API Key</th>
+															<td><input id="nzbvortex_api_key" class="form-control"
+																	   placeholder="NZBVortex API Key"
+																	   name="nzbvortex_api_key" maxlength="10"
+																	   type="text" value="{$user.nzbvortex_api_key}"/>
+															</td>
+														</tr>
+														</tbody>
+													</table>
 													<br/>
 												</td>
 											</tr>
@@ -272,7 +296,7 @@
 										</table>
 									</div>
 								</div>
-								<table class="data table table-condensed table-striped table-responsive">
+								<table class="data table table-condensed table-striped table-responsive table-hover">
 									<tbody>
 									<tr class="bg-aqua-active">
 										<td colspan="2" style="padding-left: 8px;"><strong>Couchpotato</strong>
@@ -305,7 +329,9 @@
 									</tr>
 									<tr>
 										<td>
-											{html_options id="style" name='style' values=$themelist output=$themelist selected=$user.style}
+											{if $page->settings->getSetting('userselstyle') == 1}
+												{html_options id="style" name='style' values=$themelist output=$themelist selected=$user.style}
+											{/if}
 										</td>
 									</tr>
 									</tbody>

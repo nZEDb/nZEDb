@@ -1,5 +1,6 @@
 <div class="header">
 	<h2>Profile > <strong>{$user.username|escape:"htmlall"}</strong></h2>
+
 	<div class="breadcrumb-wrapper">
 		<ol class="breadcrumb">
 			<li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li>
@@ -78,15 +79,16 @@
 															<tr>
 																<th>Downloads last 24 hours</th>
 																<td><span id="ugrtd">{$grabstoday}</span> /
-																	Unlimited {if $user.grabs >= $user.downloadrequests}&nbsp;&nbsp;
+																	{if $user.grabs >= $user.downloadrequests}&nbsp;&nbsp;
 																		<small>(Next DL
 																		in {($grabstoday.nextdl/3600)|intval}
 																		h {($grabstoday.nextdl/60) % 60}
-																		m)</small>{/if}{if $isadmin && $grabstoday > 0}
-																	<a
-																			onclick="resetapireq({$user.id}, 'grabs'); document.getElementById('ugrtd').innerHTML='0'; return false;"
+																		m)</small> {else} {$user.downloadrequests} {/if}
+																	{if $isadmin && $grabstoday > 0}
+																		<a onclick="resetapireq({$user.id}, 'grabs'); document.getElementById('ugrtd').innerHTML='0'; return false;"
 																			href="#" class="label label-danger">
-																			Reset</a>{/if}</td>
+																			Reset</a>
+																	{/if}</td>
 															</tr>
 															<tr>
 																<th>Downloads Total</th>
@@ -150,15 +152,38 @@
 																			{$userinvitedby.username}
 																		</td>
 																	{/if}
-																	{/if}
 																</tr>
+																	{/if}
 																</tbody>
 															</table>
+														{/if}
+														{if $isadmin && $downloadlist|@count > 0}
+														<table class="data table table-condensed table-striped table-responsive table-hover">
+															<tbody>
+															<tr class="bg-aqua-active">
+																<td colspan="2" style="padding-left: 8px;"><strong>Downloads for user</strong>
+																</td>
+															</tr>
+															<tr>
+																<th>date</th>
+																<th>release</th>
+															</tr>
+															{foreach from=$downloadlist item=download}
+																{if $download@iteration == 10}
+																	<tr class="more"><td colspan="3"><a onclick="$('tr.extra').toggle();$('tr.more').toggle();return false;" href="#">show all...</a></td></tr>
+																{/if}
+																<tr {if $download@iteration >= 10}class="extra" style="display:none;"{/if}>
+																	<td width="80" title="{$download.timestamp}">{$download.timestamp|date_format}</td>
+																	<td>{if $download.guid == ""}n/a{else}<a href="{$smarty.const.WWW_TOP}/details/{$download.guid}/{$download.searchname|escape:"htmlall"}">{$download.searchname}</a>{/if}</td>
+																</tr>
+															{/foreach}
+														</table>
 														{/if}
 													</td>
 												</tr>
 												</tbody>
 											</table>
+											</div>
 										</div>
 									</div>
 								</div>
@@ -173,4 +198,3 @@
 			</div>
 		</div>
 	</div>
-</div>

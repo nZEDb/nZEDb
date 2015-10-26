@@ -19,7 +19,7 @@
 							href="{$smarty.const.WWW_TOP}/mymovies">My Movies</a> search feature.
 				</p>
 				{if $movies|@count > 0}
-					<table class="table table-condensed table-striped table-sortable responsive" id="browsetable">
+					<table class="table table-condensed table-striped table-sortable table-responsive table-hover" id="browsetable">
 						<tr>
 							<th></th>
 							<th>name</th>

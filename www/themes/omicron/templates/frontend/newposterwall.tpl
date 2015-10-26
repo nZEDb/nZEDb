@@ -35,9 +35,7 @@
 								{elseif $type == 'PC'}
 									class="library-games"
 								{elseif $type == 'TV'}
-									class="library-show"
-								{elseif $type == 'Anime'}
-									class="library-show"
+									class="library-games"
 								{/if}
 								>
 							<div class="poster">
@@ -63,7 +61,7 @@
 											 src="{$smarty.const.WWW_TOP}/covers/games/{$result.gamesinfo_id}.jpg"/>
 									{elseif $type == 'TV'}
 										<img height="130px" width="130px" alt=""
-											 src="{$smarty.const.WWW_TOP}/covers/tvrage/{$result.rageid}.jpg"/>
+											 src="{$smarty.const.WWW_TOP}/covers/tvshows/{$result.videos_id}.jpg"/>
 									{elseif $type == 'Anime'}
 										<img width="130px" height="130px" alt=""
 											 src="{$smarty.const.WWW_TOP}/covers/anime/{$result.anidbid}.jpg"/>
