@@ -1,6 +1,6 @@
 <?php
 namespace nzedb\processing\tv;
-use \libs\JPinkney\Client;
+use \libs\JPinkney\TVMaze\Client;
 
 /**
  * Class TVMaze
@@ -12,7 +12,7 @@ class TVMaze extends TV
 	/**
 	 * Client for TVMaze API
 	 *
-	 * @var \libs\JPinkney\Client
+	 * @var \libs\JPinkney\TVMaze\Client
 	 */
 	public $client;
 

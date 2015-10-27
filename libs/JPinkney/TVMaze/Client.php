@@ -2,9 +2,27 @@
 
 namespace libs\JPinkney\TVMaze;
 
-class TVMaze {
+/**
+ * Class Client
+ *
+ * @package libs\JPinkney\TVMaze
+ */
+class Client {
 
 	CONST APIURL = 'http://api.tvmaze.com';
+
+	/**
+	 * @var array Embed Options for API Queries
+	 */
+	public $embed;
+
+	/**
+	 * @param array $options
+	 */
+	public function __construct($options = array())
+	{
+		$this->embed = $options['embed'];
+	}
 
 	/**
 	 * Takes in a show name
@@ -15,7 +33,7 @@ class TVMaze {
 	 * @return array
 	 */
 	function search($show_name){
-		$url = self::APIURL."/search/shows?q=".$show_name;
+		$url = self::APIURL . "/search/shows?q=" . $show_name;
 
 		$shows = $this->getFile($url);
 
@@ -63,7 +81,7 @@ class TVMaze {
 	 */
 	function getShowBySiteID($site, $ID){
 		$site = strtolower($site);
-		$url = self::APIURL.'/lookup/shows?'.$site.'='.$ID;
+		$url = self::APIURL . '/lookup/shows?' . $site . '=' . $ID;
 		$show = $this->getFile($url);
 
 		return new TVShow($show);
@@ -78,7 +96,7 @@ class TVMaze {
 	 */
 	function getPersonByName($name){
 		$name = strtolower($name);
-		$url = self::APIURL.'/search/people?q='.$name;
+		$url = self::APIURL . '/search/people?q=' . $name;
 		$person = $this->getFile($url);
 
 		$people = array();
@@ -130,9 +148,9 @@ class TVMaze {
 	 */
 	function getShowByShowID($ID, $embed_cast=null){
 		if($embed_cast === true){
-			$url = self::APIURL.'/shows/'.$ID.'?embed=cast';
+			$url = self::APIURL . '/shows/'. $ID . '?embed=cast';
 		}else{
-			$url = self::APIURL.'/shows/'.$ID;
+			$url = self::APIURL . '/shows/' . $ID;
 		}
 
 		$show = $this->getFile($url);
@@ -158,7 +176,7 @@ class TVMaze {
 	 */
 	function getEpisodesByShowID($ID){
 
-		$url = self::APIURL.'/shows/'.$ID.'/episodes';
+		$url = self::APIURL . '/shows/' . $ID . '/episodes';
 
 		$episodes = $this->getFile($url);
 
@@ -172,6 +190,25 @@ class TVMaze {
 	}
 
 	/**
+	 * Returns a single episodes information by its show ID, season and episode numbers
+	 *
+	 * @param $ID
+	 * @param $season
+	 * @param $episode
+	 *
+	 * @return Episode|mixed
+	 */
+	function getEpisodeByNumber($ID, $season, $episode)
+	{
+		$url = self::APIURL . '/shows/' . $ID . '/episodebynumber?season='. $season . '&number=' . $episode;
+		$episode = $this->getFile($url);
+
+		$episode = new Episode($episode);
+
+		return $episode;
+	}
+
+	/**
 	 * Takes in a show ID and outputs all of the cast members in the form (actor, character)
 	 *
 	 * @param $ID
@@ -179,7 +216,7 @@ class TVMaze {
 	 * @return array
 	 */
 	function getCastByShowID($ID){
-		$url = self::APIURL.'/shows/'.$ID.'/cast';
+		$url = self::APIURL . '/shows/' . $ID . '/cast';
 		$people = $this->getFile($url);
 
 		$cast = array();
@@ -201,9 +238,9 @@ class TVMaze {
 	 */
 	function getAllShowsByPage($page=null){
 		if($page == null){
-			$url = self::APIURL.'/shows';
+			$url = self::APIURL . '/shows';
 		}else{
-			$url = self::APIURL.'/shows?page'.$page;
+			$url = self::APIURL . '/shows?page' . $page;
 		}
 
 		$shows = $this->getFile($url);
@@ -224,7 +261,7 @@ class TVMaze {
 	 * @return Actor
 	 */
 	function getPersonByID($ID){
-		$url = self::APIURL.'/people/'.$ID;
+		$url = self::APIURL . '/people/' . $ID;
 		$show = $this->getFile($url);
 		return new Actor($show);
 	}
@@ -237,7 +274,7 @@ class TVMaze {
 	 * @return array
 	 */
 	function getCastCreditsByID($ID){
-		$url = self::APIURL.'/people/'.$ID.'/castcredits?embed=show';
+		$url = self::APIURL . '/people/' . $ID . '/castcredits?embed=show';
 		$castCredit = $this->getFile($url);
 
 		$shows_appeared = array();
@@ -256,7 +293,7 @@ class TVMaze {
 	 * @return array
 	 */
 	function getCrewCreditsByID($ID){
-		$url = self::APIURL.'/people/'.$ID.'/crewcredits?embed=show';
+		$url = self::APIURL . '/people/' . $ID . '/crewcredits?embed=show';
 		$crewCredit = $this->getFile($url);
 
 		$shows_appeared = array();
@@ -277,12 +314,15 @@ class TVMaze {
 	 */
 	private function getFile($url){
 		$json = file_get_contents($url);
-		$shows = json_decode($json, TRUE);
+		$response = json_decode($json, TRUE);
 
-		return $shows;
+		if ($response) {
+			return $response;
+		} else {
+			return false;
+		}
 	}
 
 };
-
 
 ?>
