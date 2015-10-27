@@ -30,6 +30,11 @@ Class TraktAPI {
 	private $requestHeaders;
 
 	/**
+	 * @var array	List of site IDs that trakt,tv supports. Only trakt is guaranteed to exist.
+	 */
+	private $types = ['imdb', 'tmdb', 'trakt', 'tvdb', 'tvrage'];
+
+	/**
 	 * Construct. Set up API key.
 	 *
 	 * @param array $options Class instances.
@@ -52,6 +57,7 @@ Class TraktAPI {
 Content-Type: application/json
 trakt-api-version: 2
 trakt-api-key: $this->clientId
+Content-Length: 0
 HEADERS;
 	}
 
@@ -216,6 +222,28 @@ HEADERS;
 		}
 
 		return $array;
+	}
+
+	/**
+	 * Search for entry using on of the supported site IDs.
+	 *
+	 * @param integer	$id		The ID to look for.
+	 * @param string	$type	Site whose ID should be searched for.
+	 *
+	 * @return bool
+	 */
+	public function searchId($id, $type = 'trakt')
+	{
+		if (!in_array($type, $this->types) || !ctype_digit($id)) {
+			return false;
+		}
+
+		if ($type == 'imdb') {
+			$id = 'tt' . $id;
+		}
+
+		$url = self::API_URL . "search?id_type=$type&id=$id";
+		return $this->getJsonArray($url, '');
 	}
 
 	/**
