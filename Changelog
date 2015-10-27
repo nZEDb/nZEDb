@@ -15,6 +15,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Mrg: PR 1922, from Darius - Add changes to omicron/charisma templates for new TV.
 	Fix: Massive non-cover view browse speedup due to query restructure.  Also helps some API/RSS functions.
 	Fix: Issue with last push breaking browse groups
+	Fix: Undefined offset in TV.php causing issues with season assignment for some airdate shows.
 2015-10-25 ruhllatio
 	Mrg: PR 1916 Replace TVRage Processing with TVDB
 	Note: 	We found a bug dating back to the beginning that caused bad titles to be inserted into the TvRage table

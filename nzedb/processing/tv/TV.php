@@ -677,7 +677,7 @@ abstract class TV extends Videos
 			// 01.01.09
 			else if (preg_match('/^(.*?)[^a-z0-9](\d{2})[^a-z0-9](\d{2})[^a-z0-9](\d{2})[^a-z0-9]/i', $relname, $matches)) {
 				// Add extra logic to capture the proper YYYY year
-				$showInfo['season'] = $matches[4] = ($matches[4] <= 99 && $matches[4] > 15) ? '19' . $matches[4] : '20' . $matches[5];
+				$showInfo['season'] = $matches[4] = ($matches[4] <= 99 && $matches[4] > 15) ? '19' . $matches[4] : '20' . $matches[4];
 				$showInfo['episode'] = $matches[2] . '/' . $matches[3];
 				$tmpAirdate = $showInfo['season'] . '/' . $showInfo['episode'];
 				$showInfo['airdate'] = date('Y-m-d', strtotime(preg_replace('/[^0-9]/i', '/', $tmpAirdate))); //yyyy-mm-dd
