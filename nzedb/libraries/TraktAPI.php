@@ -257,7 +257,7 @@ var_dump($extended);
 		if ($extended === '') {
 			$extendedString = '';
 		} else {
-			$extendedString = "&extended=" . $extended;
+			$extendedString = "?extended=" . $extended;
 		}
 var_dump($URI . $extendedString);
 		if (!empty($this->clientId)) {
