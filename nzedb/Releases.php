@@ -206,21 +206,20 @@ class Releases
 					CONCAT(cp.title, ' > ', c.title) AS category_name,
 					CONCAT(cp.id, ',', c.id) AS category_ids,
 					COUNT(df.id) AS failed,
-					g.name AS group_name,
 					rn.id AS nfoid,
 					re.releaseid AS reid,
 					v.tvdb, v.trakt, v.tvrage, v.tvmaze, v.imdb, v.tmdb,
 					tve.title, tve.firstaired
 				FROM
 				(
-					SELECT r.*
+					SELECT r.*, g.name AS group_name
 					FROM releases r
+					INNER JOIN groups g ON g.id = r.group_id
 					WHERE r.nzbstatus = %d
 					AND r.passwordstatus %s
 					%s %s %s %s
 					ORDER BY %s %s %s
 				) r
-				INNER JOIN groups g ON g.id = r.group_id
 				INNER JOIN category c ON c.id = r.categoryid
 				INNER JOIN category cp ON cp.id = c.parentid
 				LEFT OUTER JOIN videos v ON r.videos_id = v.id
