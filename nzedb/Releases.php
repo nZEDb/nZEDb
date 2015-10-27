@@ -227,7 +227,8 @@ class Releases
 				LEFT OUTER JOIN video_data re ON re.releaseid = r.id
 				LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
 				LEFT OUTER JOIN dnzb_failures df ON df.guid = r.guid
-				GROUP BY r.id",
+				GROUP BY r.id
+				ORDER BY %7\$s %8\$s",
 				NZB::NZB_ADDED,
 				$this->showPasswords,
 				$this->categorySQL($cat),
