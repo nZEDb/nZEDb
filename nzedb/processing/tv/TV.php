@@ -619,7 +619,7 @@ abstract class TV extends Videos
 		];
 		$matches = '';
 
-		$following = 	'[^a-z0-9](\d\d-\d\d|\d{1,2}x\d{2,3}|\(?(19|20)\d{2}\)?|(480|720|1080)[ip]|AAC2?|BD-?Rip|Blu-?Ray|D0?\d' .
+		$following = 	'[^a-z0-9](\d\d-\d\d|\d{1,3}x\d{2,3}|\(?(19|20)\d{2}\)?|(480|720|1080)[ip]|AAC2?|BD-?Rip|Blu-?Ray|D0?\d' .
 				'|DD5|DiVX|DLMux|DTS|DVD(-?Rip)?|E\d{2,3}|[HX][-_. ]?26[45]|ITA(-ENG)?|HEVC|[HPS]DTV|PROPER|REPACK|Season|Episode|' .
 				'S\d+[^a-z0-9]?(E\d+)?|WEB[-_. ]?(DL|Rip)|XViD)[^a-z0-9]';
 
@@ -716,7 +716,7 @@ abstract class TV extends Videos
 
 			$countryMatch = $yearMatch = '';
 			// Country or origin matching.
-			if (preg_match('/\W(US|UK|AU|NZ|CA|NL|Canada|Australia|America|United[^a-z0-9]States|United[^a-z0-9]Kingdom)\W/', $showInfo['name'], $countryMatch)) {
+			if (preg_match('/(US|UK|AU|NZ|CA|NL|Canada|Australia|America|United[^a-z0-9]States|United[^a-z0-9]Kingdom)$/i', $showInfo['name'], $countryMatch)) {
 				$currentCountry = strtolower($countryMatch[1]);
 				if ($currentCountry == 'canada') {
 					$showInfo['country'] = 'CA';
