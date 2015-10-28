@@ -32,9 +32,7 @@ if (!empty($argv[1]) && is_numeric($argv[2]) && is_numeric($argv[3])) {
 		} else if ($season == 0 && $episode == 0) {
 			$episodeObj = $tvmaze->client->getEpisodesByShowID($series[0]->id);
 			if (is_array($episodeObj)) {
-				foreach ($episodeObj AS $ep) {
-					print_r($ep);
-				}
+				print_r($episodeObj);
 			}
 		} else {
 			exit($c->error("Invalid episode data returned from TVMaze API."));

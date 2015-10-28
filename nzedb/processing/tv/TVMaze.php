@@ -311,18 +311,26 @@ class TVMaze extends TV
 
 		sleep(1);
 
+		//Handle Single Episode Lookups
 		if (is_object($response)) {
 			if ($this->checkRequired($response, 'tvmazeE')) {
 				$return = $this->formatEpisodeArr($response);
 			}
-		} else if (is_array($response) && isset($response['episodes']) && $videoId > 0) {
-			foreach ($response['episodes'] as $singleEpisode) {
-				if ($this->checkRequired($singleEpisode, 'tvmazeE')) {
-					$this->addEpisode($videoId, $this->formatEpisodeArr($singleEpisode));
+		} else if (is_array($response)) {
+			//Handle new show/all episodes
+			if ($videoId > 0) {
+				foreach ($response as $singleEpisode) {
+					if ($this->checkRequired($singleEpisode, 'tvmazeE')) {
+						$this->addEpisode($videoId, $this->formatEpisodeArr($singleEpisode));
+					}
+				}
+			//Handle airdate lookups -- return first response
+			} else {
+				if ($this->checkRequired($response[0], 'tvmazeE')) {
+					$return = $this->formatEpisodeArr($response[0]);
 				}
 			}
 		}
-
 		return $return;
 	}
 
