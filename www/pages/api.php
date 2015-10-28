@@ -112,9 +112,6 @@ switch ($function) {
 		} else {
 			$totalRows = $releases->getBrowseCount($categoryID, $maxAge, $catExclusions);
 			$relData = $releases->getBrowseRange($categoryID, $offset, $limit, '', $maxAge, $catExclusions);
-			if ($totalRows > 0 && count($relData) > 0) {
-				$relData[0]['_totalrows'] = $totalRows;
-			}
 		}
 
 		printOutput($relData, $outputXML, $page, $offset);
