@@ -173,7 +173,7 @@ class Releases
 				WHERE r.nzbstatus = %d
 				AND r.passwordstatus %s
 				%s %s %s %s',
-				($groupName != '' ? 'INNER JOIN groups g ON g.id = r.group_id' : ''),
+				($groupName != '' ? 'LEFT JOIN groups g ON g.id = r.group_id' : ''),
 				NZB::NZB_ADDED,
 				$this->showPasswords,
 				($groupName != '' ? sprintf(' AND g.name = %s', $this->pdo->escapeString($groupName)) : ''),
@@ -214,7 +214,7 @@ class Releases
 				(
 					SELECT r.*, g.name AS group_name
 					FROM releases r
-					INNER JOIN groups g ON g.id = r.group_id
+					LEFT JOIN groups g ON g.id = r.group_id
 					WHERE r.nzbstatus = %d
 					AND r.passwordstatus %s
 					%s %s %s %s
