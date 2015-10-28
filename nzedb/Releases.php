@@ -1211,7 +1211,7 @@ class Releases
 				CONCAT(cp.title, ' > ', c.title) AS category_name,
 				CONCAT(cp.id, ',', c.id) AS category_ids,
 				g.name AS group_name,
-				v.title AS showtitle, v.tvdb, v.trakt, v.tvrage, v.source,
+				v.title AS showtitle, v.tvdb, v.trakt, v.tvrage, v.tvmaze, v.source,
 				tvi.summary, tvi.image,
 				tve.title, tve.firstaired, tve.se_complete
 				FROM releases r
@@ -1574,7 +1574,7 @@ class Releases
 		return $this->pdo->query(
 			"SELECT r.videos_id, r.guid, r.name, r.searchname, r.size, r.completion,
 				r.postdate, r.categoryid, r.comments, r.grabs,
-				v.id AS tvid, v.title AS tvtitle, v.tvdb, v.tvrage,
+				v.id AS tvid, v.title AS tvtitle, v.tvdb, v.trakt, v.tvrage, v.tvmaze, v.imdb, v.tmdb,
 				tvi.image
 			FROM releases r
 			INNER JOIN videos v ON r.videos_id = v.id
