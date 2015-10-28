@@ -197,7 +197,7 @@ abstract class TV extends Videos
 	 */
 	public function add($showArr = array())
 	{
-		if ($showArr['country'] !== '') {
+		if ($showArr['country'] !== '' && strlen($showArr['country']) > 2) {
 			$showArr['country'] = $this->countryCode($showArr['country']);
 		}
 
@@ -540,8 +540,7 @@ abstract class TV extends Videos
 				sprintf('
 					SELECT id
 					FROM countries
-					WHERE country = %s
-					OR iso3 = %1\$s',
+					WHERE country = %1\$s',
 					$this->pdo->escapeString($country)
 				)
 			);

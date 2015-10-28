@@ -107,10 +107,6 @@ class TVMaze extends TV
 						$tvmazeShow = $this->getShowInfo((string)$release['cleanname']);
 
 						if (is_array($tvmazeShow)) {
-							$tvmazeShow['country']  = (isset($release['country']) && strlen($release['country']) == 2
-								? (string)$release['country']
-								: ''
-							);
 							$videoId = $this->add($tvmazeShow);
 							$tvmazeid = (int)$tvmazeShow['tvmazeid'];
 						}
@@ -350,6 +346,7 @@ class TVMaze extends TV
 			'summary'   => (string)$show->summary,
 			'started'   => (string)$show->premiered,
 			'publisher' => (string)$show->network,
+			'country'   => (string)$show->country,
 			'source'    => (int)parent::SOURCE_TVMAZE,
 			'imdbid'    => 0,
 			'tvdbid'    => (int)(isset($show->externalIDs['thetvdb']) ? $show->externalIDs['thetvdb'] : 0),
