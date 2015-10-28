@@ -8,6 +8,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2015-10-28 ruhllatio
 	Chg: Speed up series list view query by removing releases join
+	Mrg: PR #1930, From Darius - Remove totalrows count from functions, api and templates
 2015-10-27 ruhllatio
 	Mrg: PR #1925, From Darius - Fix anime pages in omicron/charisma. Fix a typo in mysql-ddl.sql
 	Mrg: PR #1928, From Darius - Move My Shows to account menu, remove links to calendar and add Anime Series link to charisma template
