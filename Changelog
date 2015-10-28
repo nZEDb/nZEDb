@@ -6,7 +6,9 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
-2015-10-27
+2015-10-28 ruhllatio
+	Chg: Speed up series list view query by removing releases join
+2015-10-27 ruhllatio
 	Mrg: PR #1925, From Darius - Fix anime pages in omicron/charisma. Fix a typo in mysql-ddl.sql
 	Mrg: PR #1928, From Darius - Move My Shows to account menu, remove links to calendar and add Anime Series link to charisma template
 	Fix: Country not being extracted from release / Improve TVDB matching when country exists
