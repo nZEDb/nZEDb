@@ -14,7 +14,6 @@
 			<link>{$serverroot}</link>
 			<description>Visit {$site->title|escape} - {$site->strapline|escape}</description>
 		</image>
-		<newznab:response offset="{$offset}" total="{if $releases|@count > 0}{$releases[0]._totalrows}{else}0{/if}" />
 		{foreach from=$releases item=release}
 			<item>
 				<title>{$release.searchname|escape:html}</title>
