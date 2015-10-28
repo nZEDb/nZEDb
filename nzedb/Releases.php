@@ -919,7 +919,9 @@ class Releases
 			$offset
 		);
 		$releases = $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
-
+		if ($releases && count($releases)) {
+			$releases[0]['_totalrows'] = $this->getPagerCount($baseSql);
+		}
 		return $releases;
 	}
 
