@@ -38,7 +38,12 @@ abstract class TV extends Videos
 	/**
 	 * @var int
 	 */
-	public $rageqty;
+	public $tvqty;
+
+	/**
+	 * @string Path to Save Images
+	 */
+	public $imgSavePath;
 
 	/**
 	 * @param array $options Class instances / Echo to CLI.
@@ -55,6 +60,7 @@ abstract class TV extends Videos
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
 		$this->catWhere = 'categoryid BETWEEN 5000 AND 5999 AND categoryid NOT IN (5070)';
 		$this->tvqty = ($this->pdo->getSetting('maxrageprocessed') != '') ? $this->pdo->getSetting('maxrageprocessed') : 75;
+		$this->imgSavePath = nZEDb_COVERS . 'tvshows' . DS;
 	}
 
 	/**
@@ -858,5 +864,43 @@ abstract class TV extends Videos
 			$date = null;
 		}
 		return $date;
+	}
+
+	/**
+	 * Checks API response returns have all REQUIRED attributes set
+	 * Returns true or false
+	 *
+	 * @param array $array
+	 * @param int $type
+	 *
+	 * @return bool
+	 */
+	public function checkRequired($array = array(), $type)
+	{
+		$required = ['failedToMatchType'];
+
+		switch ($type) {
+			case 'tvdbS':
+				$required = ['id', 'name', 'overview', 'firstAired'];
+				break;
+			case 'tvdbE':
+				$required = ['name', 'season', 'number', 'firstAired', 'overview'];
+				break;
+			case 'tvmazeS':
+				$required = ['id', 'name', 'summary', 'premiered', 'country'];
+				break;
+			case 'tvmazeE':
+				$required = ['name', 'season', 'number', 'airdate', 'summary'];
+				break;
+		}
+
+		if (is_array($required)) {
+			foreach ($required as $req) {
+				if (!isset($array->$req)) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 }

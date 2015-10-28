@@ -21,7 +21,7 @@ class Client {
 	 */
 	public function __construct($options = array())
 	{
-		$this->embed = $options['embed'];
+		;
 	}
 
 	/**
@@ -32,13 +32,14 @@ class Client {
 	 *
 	 * @return array
 	 */
-	function search($show_name){
-		$url = self::APIURL . "/search/shows?q=" . $show_name;
+	function search($show_name)
+	{
+		$url = self::APIURL . "/search/shows?q=" . urlencode($show_name);
 
 		$shows = $this->getFile($url);
 
 		$relevant_shows = array();
-		foreach($shows as $series){
+		foreach($shows as $series) {
 			$TVShow = new TVShow($series['show']);
 			array_push($relevant_shows, $TVShow);
 		}
@@ -46,20 +47,20 @@ class Client {
 	}
 
 	/**
-	 * Takes in a show name with optional modifiers (episodes)
-	 * Outputs array of the MOST related shows for that given name
+	 * Takes in a show name with optional modifiers (akas)
+	 * Outputs array of the MOST related show for that given name
 	 *
 	 * @param $show_name
 	 *
 	 * @return array
 	 */
-	function singleSearch($show_name){
-
-		$url = self::APIURL."/singlesearch/shows?q=".$show_name.'&embed=episodes';
+	function singleSearch($show_name)
+	{
+		$url = self::APIURL . "/singlesearch/shows?q=" . urlencode($show_name) . '&embed=akas';
 		$shows = $this->getFile($url);
 
 		$episode_list = array();
-		foreach($shows['_embedded']['episodes'] as $episode){
+		foreach($shows['_embedded']['episodes'] as $episode) {
 			$ep = new Episode($episode);
 			print_r($episode);
 			array_push($episode_list, $ep);
@@ -79,7 +80,8 @@ class Client {
 	 *
 	 * @return TVShow
 	 */
-	function getShowBySiteID($site, $ID){
+	function getShowBySiteID($site, $ID)
+	{
 		$site = strtolower($site);
 		$url = self::APIURL . '/lookup/shows?' . $site . '=' . $ID;
 		$show = $this->getFile($url);
@@ -94,14 +96,15 @@ class Client {
 	 *
 	 * @return array
 	 */
-	function getPersonByName($name){
+	function getPersonByName($name)
+	{
 		$name = strtolower($name);
 		$url = self::APIURL . '/search/people?q=' . $name;
 		$person = $this->getFile($url);
 
 		$people = array();
-		foreach($person as $peeps){
-		array_push($people, new Actor($peeps['person']));
+		foreach($person as $peeps) {
+			array_push($people, new Actor($peeps['person']));
 		}
 
 		return $people;
@@ -115,21 +118,21 @@ class Client {
 	 *
 	 * @return array
 	 */
-	function getSchedule($country=null, $date=null){
-		if($country != null && $date != null){
+	function getSchedule($country=null, $date=null) {
+		if($country != null && $date != null) {
 			$url = self::APIURL . '/schedule?country=' . $country .'&date='. $date;
-		}else if($country == null && $date != null){
+		} else if ($country == null && $date != null) {
 			$url = self::APIURL . '/schedule?date=' . $date;
-		}else if($country != null && $date == null){
+		} else if ($country != null && $date == null) {
 			$url = self::APIURL . '/schedule?country=' . $country;
-		}else{
+		} else {
 			$url = self::APIURL . '/schedule';
 		}
 
 		$schedule = $this->getFile($url);
 
 		$show_list = array();
-		foreach($schedule as $episode){
+		foreach($schedule as $episode) {
 			$ep = new Episode($episode);
 			$show = new TVShow($episode['show']);
 			array_push($show_list, $show, $ep);
@@ -146,17 +149,18 @@ class Client {
 	 *
 	 * @return array
 	 */
-	function getShowByShowID($ID, $embed_cast=null){
-		if($embed_cast === true){
+	function getShowByShowID($ID, $embed_cast=null)
+	{
+		if($embed_cast === true) {
 			$url = self::APIURL . '/shows/'. $ID . '?embed=cast';
-		}else{
+		} else {
 			$url = self::APIURL . '/shows/' . $ID;
 		}
 
 		$show = $this->getFile($url);
 
 		$cast = array();
-		foreach($show['_embedded']['cast'] as $person){
+		foreach($show['_embedded']['cast'] as $person) {
 			$actor = new Actor($person['person']);
 			$character = new Character($person['character']);
 			array_push($cast, array($actor, $character));
@@ -174,14 +178,15 @@ class Client {
 	 *
 	 * @return array
 	 */
-	function getEpisodesByShowID($ID){
+	function getEpisodesByShowID($ID)
+	{
 
 		$url = self::APIURL . '/shows/' . $ID . '/episodes';
 
 		$episodes = $this->getFile($url);
 
 		$allEpisodes = array();
-		foreach($episodes as $episode){
+		foreach($episodes as $episode) {
 			$ep = new Episode($episode);
 			array_push($allEpisodes, $ep);
 		}
@@ -209,18 +214,42 @@ class Client {
 	}
 
 	/**
+	 * Returns episodes for a given show ID and ISO 8601 airdate
+	 *
+	 * @param $ID
+	 * @param $season
+	 * @param $episode
+	 *
+	 * @return Episode|mixed
+	 */
+	function getEpisodesByAirdate($ID, $airdate)
+	{
+		$url = self::APIURL . '/shows/' . $ID . '/episodesbydate?date=' . date('Y-m-d', strtotime($airdate));
+		$episodes = $this->getFile($url);
+
+		$allEpisodes = array();
+		foreach($episodes as $episode) {
+			$ep = new Episode($episode);
+			array_push($allEpisodes, $ep);
+		}
+
+		return $allEpisodes;
+	}
+
+	/**
 	 * Takes in a show ID and outputs all of the cast members in the form (actor, character)
 	 *
 	 * @param $ID
 	 *
 	 * @return array
 	 */
-	function getCastByShowID($ID){
+	function getCastByShowID($ID)
+	{
 		$url = self::APIURL . '/shows/' . $ID . '/cast';
 		$people = $this->getFile($url);
 
 		$cast = array();
-		foreach($people as $person){
+		foreach($people as $person) {
 			$actor = new Actor($person['person']);
 			$character = new Character($person['character']);
 			array_push($cast, array($actor, $character));
@@ -236,7 +265,8 @@ class Client {
 	 *
 	 * @return array
 	 */
-	function getAllShowsByPage($page=null){
+	function getAllShowsByPage($page=null)
+	{
 		if($page == null){
 			$url = self::APIURL . '/shows';
 		}else{
@@ -260,7 +290,8 @@ class Client {
 	 *
 	 * @return Actor
 	 */
-	function getPersonByID($ID){
+	function getPersonByID($ID)
+	{
 		$url = self::APIURL . '/people/' . $ID;
 		$show = $this->getFile($url);
 		return new Actor($show);
@@ -273,12 +304,13 @@ class Client {
 	 *
 	 * @return array
 	 */
-	function getCastCreditsByID($ID){
+	function getCastCreditsByID($ID)
+	{
 		$url = self::APIURL . '/people/' . $ID . '/castcredits?embed=show';
 		$castCredit = $this->getFile($url);
 
 		$shows_appeared = array();
-		foreach($castCredit as $series){
+		foreach($castCredit as $series) {
 			$TVShow = new TVShow($series['_embedded']['show']);
 			array_push($shows_appeared, $TVShow);
 		}
@@ -292,12 +324,13 @@ class Client {
 	 *
 	 * @return array
 	 */
-	function getCrewCreditsByID($ID){
+	function getCrewCreditsByID($ID)
+	{
 		$url = self::APIURL . '/people/' . $ID . '/crewcredits?embed=show';
 		$crewCredit = $this->getFile($url);
 
 		$shows_appeared = array();
-		foreach($crewCredit as $series){
+		foreach($crewCredit as $series) {
 			$position = $series['type'];
 			$TVShow = new TVShow($series['_embedded']['show']);
 			array_push($shows_appeared, array($position, $TVShow));
@@ -312,9 +345,17 @@ class Client {
 	 *
 	 * @return mixed
 	 */
-	private function getFile($url){
-		$json = file_get_contents($url);
-		$response = json_decode($json, TRUE);
+	private function getFile($url)
+	{
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_HEADER, false);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+		$result = curl_exec($ch);
+		curl_close($ch);
+
+		$response = json_decode($result, TRUE);
 
 		if ($response) {
 			return $response;
@@ -322,7 +363,6 @@ class Client {
 			return false;
 		}
 	}
-
 };
 
 ?>

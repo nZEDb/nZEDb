@@ -9,10 +9,11 @@
 namespace libs\JPinkney\TVMaze;
 
 //Check back here if we can move the episode data to the episode class later
+
 /**
  * Class TVShow
  *
- * @package JPinkney\TVMaze
+ * @package libs\JPinkney\TVMaze
  */
 class TVShow extends TVProduction{
 
@@ -82,6 +83,11 @@ class TVShow extends TVProduction{
 	public $airDay;
 
 	/**
+	 * @var string
+	 */
+	public $country;
+
+	/**
 	 * @param $show_data
 	 */
 	function __construct($show_data){
@@ -96,9 +102,11 @@ class TVShow extends TVProduction{
 		$this->weight = $show_data['weight'];
 		$this->network_array = $show_data['network'];
 		$this->network = $show_data['network']['name'];
+		$this->country = $show_data['network']['country']['code'];
 		$this->webChannel = $show_data['webChannel'];
 		$this->externalIDs = $show_data['externals'];
 		$this->summary = strip_tags($show_data['summary']);
+		$this->akas = (isset($show_data['_embedded']['akas']) ? $show_data['_embedded']['akas'] : null);
 
 		$current_date = date("Y-m-d");
 		foreach($show_data['_embedded']['episodes'] as $episode){
@@ -120,7 +128,8 @@ class TVShow extends TVProduction{
 	/**
 	 * @return bool
 	 */
-	function isEmpty(){
+	function isEmpty()
+	{
 		return($this->id == null || $this->id == 0 && $this->url == null && $this->name == null);
 	}
 

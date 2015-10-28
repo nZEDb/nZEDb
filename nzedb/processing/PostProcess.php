@@ -14,6 +14,7 @@ use nzedb\Nfo;
 use nzedb\Sharing;
 //use nzedb\processing\tv\TvRage;
 use nzedb\processing\tv\TVDB;
+use nzedb\processing\tv\TVMaze;
 use nzedb\XXX;
 use nzedb\ReleaseFiles;
 use nzedb\db\Settings;
@@ -258,6 +259,7 @@ class PostProcess
 		if ($processTV > 0) {
 			(new TVDB(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->processTVDB($groupID, $guidChar, $processTV);
 			//(new TvRage(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->processTvRage($groupID, $guidChar, $processTV);
+			(new TVMaze(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->processTVMaze($groupID, $guidChar, $processTV);
 		}
 	}
 
