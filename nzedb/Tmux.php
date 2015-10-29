@@ -398,7 +398,8 @@ class Tmux
 		switch ((int)$qry) {
 			case 1:
 				return sprintf("SELECT
-					SUM(IF(nzbstatus = 1 AND categoryid BETWEEN 5000 AND 5999 AND tv_episodes_id BETWEEN -2 AND 0,1,0)) AS processtvrage,
+					SUM(IF(nzbstatus = 1 AND categoryid BETWEEN 5000 AND 5999 AND categoryid != 5070 AND videos_id = 0
+						AND tv_episodes_id BETWEEN -3 AND 0 AND size > 1048576,1,0)) AS processtv,
 					SUM(IF(nzbstatus = 1 AND categoryid = 5070 AND anidbid IS NULL,1,0)) AS processanime,
 					SUM(IF(nzbstatus = 1 AND categoryid BETWEEN 2000 AND 2999 AND imdbid IS NULL,1,0)) AS processmovies,
 					SUM(IF(nzbstatus = 1 AND categoryid IN (3010, 3040, 3050) AND musicinfoid IS NULL,1,0)) AS processmusic,
