@@ -53,7 +53,7 @@
 						   title="View all releases for this series">View all episodes</a>
 					{if $show.source == 1}
 						<a class="label label-default" target="_blank"
-						   href="{$site->dereferrer_link}http://thetvdb.com/?tab=series&id={$s.tvdb}">
+						   href="{$site->dereferrer_link}http://thetvdb.com/?tab=series&id={$s.tvdb}"
 						   title="View at TheTVDB">TheTVDB</a>
 					{elseif $show.source == 2}
 						<a class="label label-default" target="_blank"
@@ -321,12 +321,20 @@
 																	</tr>
 																{/if}
 																{if $show && $release.videos_id > 0}
-																	{if $release.firstaired != null}
+																	{if $release.firstaired != ""}
 																		<tr>
 																			<th width="140">
 																				Aired
 																			</th>
 																			<td>{$release.firstaired|date_format}</td>
+																		</tr>
+																	{/if}
+																	{if $show.publisher != ""}
+																		<tr>
+																			<th width="140">
+																				Network
+																			</th>
+																			<td>{$show.publisher}</td>
 																		</tr>
 																	{/if}
 																	{if $show.countries_id != ""}
