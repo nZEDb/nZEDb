@@ -1,21 +1,21 @@
 INSERT INTO release_naming_regexes (id, group_regex, regex, status, description, ordinal)
 VALUES (
 	1134,
-	'^(korea\\.binaries\\.music\\.videos|alt\\.binaries\\.multimedia\\.korean)$',
-	'/^\\[KoreanMusic\\] \\[(?P<match1>1080p)\\]\\.(?P<match0>.+? )\\[\\d+\\/\\d+\\] - ".+" yEnc$/',
+	'^korea\\.binaries\\.music\\.videos)$',
+	'/^\\[KoreanMusic\\] \\[(?P<match0>(뮤직뱅크|스케치북|음악중심|인기가요|더\\.쇼))\\](?P<match1>\\.\\d{6}\\..+?) \\[\\d+\\/\\d+\\] - ".+?" yEnc$/',
 	1,
-	'[KoreanMusic] [1080p].150505.더쇼.EXID.아.예 [3/26] - "[1080p].150505.더쇼.EXID.아.예.part02.rar" yEnc'
-	4
+	'[KoreanMusic] [더.쇼].150730.워너비.전체.차렷.ts [5/16] - "[더.쇼].150730.워너비.전체.차렷.part04.rar" yEnc',
+	0
 ), (
 	1135,
-	'^(korea\\.binaries\\.music\\.videos|alt\\.binaries\\.multimedia\\.korean)$',
-	'/^\\[KoreanMusic\\] (\\[.+?\\]\\.)?(?P<match0>.+?) \\[\\d+\\/\\d+\\] - ".+" yEnc$/',
+	'^korea\\.binaries\\.music\\.videos$',
+	'/^\\[KoreanMusic\\] (?P<match1>\\d{8}_)(?P<match0>(Simply\\.K-POP|쇼챔|더쇼|위열|음중|엠카)_)(?P<match2>.*?)_FHD_M2T \\[\\d+\\/\\d+\\] - ".+?" yEnc$/'
 	1,
-	'[KoreanMusic] 150719.인기가요.에이핑크-리멤버.1080i [1/18] - "150719.인기가요.에이핑크-리멤버.1080i.par2" yEnc',
-	5
+	'[KoreanMusic] 20151009_Simply.K-POP_GI-Doligo.Doligo_FHD_M2T [11/18] - "20151009_Simply.K-POP_GI-Doligo.Doligo_FHD_M2T.part09.rar" yEnc',
+	1
 ), (
 	1136,
-	'^(korea\\.binaries\\.movies|alt\\.binaries\\.multimedia\\.korean)$',
+	'^korea\\.binaries\\.movies$',
 	'/^\\[KoreanMovies\\] (?P<match0>.+?) \\[\\d+\\/\\d+\\] - ".+" yEnc$/',
 	1,
 	'[KoreanMovies] 12.Deep.Red.Nights.2013.AVC1.H264.720p-UNknown [11/69] - "12 Deep Red Nights 2013.AVC1.H264.720p-UNknown.part09.rar" yEnc',
@@ -125,4 +125,11 @@ VALUES (
 	1,
 	'"Queen.InHyun\'s.Man.E16.END.720p.HDTV.x264-AREA11.nzb" [00/40] yEnc',
 	25
+), (
+	1152,
+	'^korea\\.binaries\\.music\\.videos$',
+	'/^\\[KoreanMusic\\] \\[.+?\\]\\.(?P<match1>.+?)(?P<match0>(MCD|The\\.Show)\\.\\d{6}\\.)(?P<match2>1080i\\.HDMI) \\[\\d+\\/\\d+\\] - ".+?" yEnc$/',
+	1,
+	'[KoreanMusic] [Mnet].NS윤지-Wifey.MCD.150409.1080i.HDMI [5/16] - "[Mnet].NS윤지-Wifey.MCD.150409.1080i.HDMI.part04.rar" yEnc',
+	2
 );

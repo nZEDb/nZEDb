@@ -18,7 +18,7 @@ VALUES (
 ), (
 	16,
 	'^korea\\.binaries\\.movies$',
-	'^.(Kornet|SK|xpeed|KT)',
+	'^.\[?(Kornet|SK|xpeed|KT)\]?',
 	1,
 	1,
 	1,
