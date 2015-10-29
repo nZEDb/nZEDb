@@ -12,9 +12,7 @@
 							<li><a href="{$smarty.const.WWW_TOP}/browse?t={$parentcat.id}">TV</a></li>
 							<hr>
 							<li><a href="{$smarty.const.WWW_TOP}/series">TV Series</a></li>
-							<li><a href="{$smarty.const.WWW_TOP}/calendar">TV Calendar</a></li>
 							<li><a href="{$smarty.const.WWW_TOP}/anime">Anime Series</a></li>
-							<li><a href="{$smarty.const.WWW_TOP}/myshows">My Shows</a></li>
 							<hr>
 							{foreach from=$parentcat.subcatlist item=subcat}
 								<li><a href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a></li>

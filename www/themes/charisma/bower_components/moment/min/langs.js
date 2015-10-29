@@ -524,7 +524,8 @@
                 return symbolMap[match];
             });
         },
-        //Bengali is a vast language its spoken 
+        //Bengali is a vast language its spoken
+
         //in different forms in various parts of the world.
         //I have just generalized with most common one used
         meridiem : function (hour, minute, isLower) {
@@ -3386,7 +3387,8 @@
 // moment.js language configuration
 // language : korean (ko)
 //
-// authors 
+// authors
+
 //
 // - Kyungwook, Park : https://github.com/kyungw00k
 // - Jeeeyul Lee <jeeeyul@gmail.com>
@@ -5606,7 +5608,8 @@
         },
 
 
-// refer http://ta.wikipedia.org/s/1er1      
+// refer http://ta.wikipedia.org/s/1er1
+
 
         meridiem : function (hour, minute, isLower) {
             if (hour >= 6 && hour <= 10) {

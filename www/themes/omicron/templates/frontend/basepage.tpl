@@ -32,6 +32,8 @@
 	-->
 	<link href="{$smarty.const.WWW_TOP}/themes/omicron/dist/css/skins/skin-blue.min.css" rel="stylesheet"
 		  type="text/css"/>
+	<!-- Noty animation style -->
+	<link href="{$smarty.const.WWW_TOP}/templates/omicron/dist/css/animate.css" rel="stylesheet" type="text/css"/>
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 	<!--[if lt IE 9]>
@@ -113,6 +115,9 @@
 										<a href="{$serverroot}mymovies"><i class="fa fa-film"></i> My Movies</a>
 									</div>
 									<div class="col-xs-12 text-center">
+										<a href="{$serverroot}myshows"><i class="fa fa-television"></i> My Shows</a>
+									</div>
+									<div class="col-xs-12 text-center">
 										<a href="{$serverroot}profileedit"><i class="fa fa-cog fa-spin"></i> Account Settings</a>
 									</div>
 									{if isset($isadmin)}
@@ -156,7 +161,7 @@
 				<!-- search form -->
 				<form id="headsearch_form" action="{$smarty.const.WWW_TOP}/search/" method="get">
 					<input id="headsearch" name="search" value="{if $header_menu_search == ""}Search...{else}{$header_menu_search|escape:"htmlall"}{/if}" class="form-control" type="text" tabindex="1$" />
-					<div class="row no-gutter" style="padding-top:3px;">
+					<div class="row small-gutter-left" style="padding-top:3px;">
 						<div class="col-md-8">
 							<select id="headcat" name="t" class="form-control" data-search="true">
 								<option class="grouping" value="-1">All</option>
@@ -168,7 +173,7 @@
 								{/foreach}
 							</select>
 						</div>
-						<div class="col-md-3 no-gutter">
+						<div class="col-md-3 small-gutter-left">
 							<input id="headsearch_go" type="submit" class="btn btn-dark" style="margin-top:0px; margin-left:4px;" value="Go"/>
 						</div>
 					</div>
@@ -346,8 +351,6 @@
 	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes_shared/scripts/jquery.autosize-min.js"></script>
 	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes_shared/scripts/jquery.qtip2.js"></script>
 	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes_shared/scripts/sorttable.js"></script>
-	<!-- Omicron utils.js -->
-	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/omicron/scripts/utils.js"></script>
 	<!-- Optionally, you can add Slimscroll and FastClick plugins.
 		  Both of these plugins are recommended to enhance the
 		  user experience. Slimscroll is required when using the

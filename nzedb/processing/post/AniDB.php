@@ -239,11 +239,7 @@ class AniDB
 					}
 				}
 
-				$this->updateRelease($anidbId['anidbid'],
-									 $cleanArr['epno'],
-									 $updatedAni['episode_title'],
-									 $updatedAni['airdate'],
-									 $release['id']);
+				$this->updateRelease($anidbId['anidbid'], $release['id']);
 
 				$this->pdo->log->doEcho(
 							   $this->pdo->log->headerOver("Matched {$type} AniDB ID: ") .
@@ -270,32 +266,17 @@ class AniDB
 	}
 
 	/**
-	 * Updates releases based on matched Anime info
-	 *
-	 * @param int    $anidbId
-	 * @param int    $epno
-	 * @param string $title
-	 * @param string $airdate
-	 * @param int    $relId
-	 *
-	 * @return array|bool
+	 * @param $anidbId
+	 * @param $relId
 	 */
-	private function updateRelease($anidbId, $epno, $title, $airdate, $relId)
+	private function updateRelease($anidbId, $relId)
 	{
-
-		$epno = 'E' . ($epno < 10 ? '0' : '') . $epno;
-
 		$this->pdo->queryExec(
 				  sprintf("
 						UPDATE releases
-						SET anidbid = %d, seriesfull = %s, season = 'S01', episode = %s,
-							tvtitle = %s, tvairdate = %s
+						SET anidbid = %d
 						WHERE id = %d",
 						  $anidbId,
-						  $this->pdo->escapeString('S01' . $epno),
-						  $this->pdo->escapeString($epno),
-						  $this->pdo->escapeString($title),
-						  $this->pdo->escapeString($airdate),
 						  $relId
 				  )
 		);
@@ -311,13 +292,13 @@ class AniDB
 	private function updateTimeCheck($anidbId)
 	{
 		return $this->pdo->queryOneRow(
-						 sprintf("
+						sprintf("
 							SELECT anidbid
 							FROM anidb_info ai
 							WHERE DATEDIFF(NOW(), ai.updated) < 7
 							AND ai.anidbid = %d",
-								 $anidbId
-						 )
+							$anidbId
+						)
 		);
 	}
 }

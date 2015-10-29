@@ -20,6 +20,7 @@
  */
 require_once 'constants.php';
 require_once 'autoloader.php';
+require_once 'libs/autoloader.php';
 
 use nzedb\config\Configure;
 use nzedb\utility\Misc;

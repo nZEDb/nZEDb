@@ -16,12 +16,13 @@ $(document).ready( function () {
 		]
 	} );
 	var oSettings = oTable.fnSettings();
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
+
 		"Server side is off by default",
 		null,
 		function () { return oSettings.oFeatures.bServerSide == false; }
 	);
-	
+
 	oTest.fnComplete();
 } );

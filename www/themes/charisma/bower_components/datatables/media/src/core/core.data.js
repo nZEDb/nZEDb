@@ -1,5 +1,6 @@
 /**
- * Add a data array to the table, creating DOM node etc. This is the parallel to 
+ * Add a data array to the table, creating DOM node etc. This is the parallel to
+
  * _fnGatherData, but for adding rows from a Javascript source, rather than a
  * DOM source.
  *  @param {object} oSettings dataTables settings object
@@ -10,12 +11,12 @@
 function _fnAddData ( oSettings, aDataSupplied )
 {
 	var oCol;
-	
+
 	/* Take an independent copy of the data source so we can bash it about as we wish */
 	var aDataIn = ($.isArray(aDataSupplied)) ?
 		aDataSupplied.slice() :
 		$.extend( true, {}, aDataSupplied );
-	
+
 	/* Create the object for storing information about this new row */
 	var iRow = oSettings.aoData.length;
 	var oData = $.extend( true, {}, DataTable.models.oRow );
@@ -37,7 +38,7 @@ function _fnAddData ( oSettings, aDataSupplied )
 		{
 			_fnSetCellData( oSettings, iRow, i, _fnGetCellData( oSettings, iRow, i ) );
 		}
-		
+
 		/* See if we should auto-detect the column type */
 		if ( oCol._bAutoType && oCol.sType != 'string' )
 		{
@@ -58,7 +59,7 @@ function _fnAddData ( oSettings, aDataSupplied )
 			}
 		}
 	}
-	
+
 	/* Add to the display array */
 	oSettings.aiDisplayMaster.push( iRow );
 
@@ -80,10 +81,10 @@ function _fnAddData ( oSettings, aDataSupplied )
 function _fnGatherData( oSettings )
 {
 	var iLoop, i, iLen, j, jLen, jInner,
-	 	nTds, nTrs, nTd, nTr, aLocalData, iThisIndex,
+		nTds, nTrs, nTd, nTr, aLocalData, iThisIndex,
 		iRow, iRows, iColumn, iColumns, sNodeName,
 		oCol, oData;
-	
+
 	/*
 	 * Process by row first
 	 * Add the data object for the whole table - storing the tr node. Note - no point in getting
@@ -119,7 +120,7 @@ function _fnGatherData( oSettings )
 			nTr = nTr.nextSibling;
 		}
 	}
-	
+
 	/* Gather in the TD elements of the Table - note that this is basically the same as
 	 * fnGetTdNodes, but that function takes account of hidden columns, which we haven't yet
 	 * setup!
@@ -139,7 +140,7 @@ function _fnGatherData( oSettings )
 			nTd = nTd.nextSibling;
 		}
 	}
-	
+
 	/* Now process by column */
 	for ( iColumn=0, iColumns=oSettings.aoColumns.length ; iColumn<iColumns ; iColumn++ )
 	{
@@ -150,14 +151,14 @@ function _fnGatherData( oSettings )
 		{
 			oCol.sTitle = oCol.nTh.innerHTML;
 		}
-		
+
 		var
 			bAutoType = oCol._bAutoType,
 			bRender = typeof oCol.fnRender === 'function',
 			bClass = oCol.sClass !== null,
 			bVisible = oCol.bVisible,
 			nCell, sThisType, sRendered, sValType;
-		
+
 		/* A single loop to rule them all (and be more efficient) */
 		if ( bAutoType || bRender || bClass || !bVisible )
 		{
@@ -165,7 +166,7 @@ function _fnGatherData( oSettings )
 			{
 				oData = oSettings.aoData[iRow];
 				nCell = nTds[ (iRow*iColumns) + iColumn ];
-				
+
 				/* Type detection */
 				if ( bAutoType && oCol.sType != 'string' )
 				{
@@ -177,7 +178,7 @@ function _fnGatherData( oSettings )
 						{
 							oCol.sType = sThisType;
 						}
-						else if ( oCol.sType != sThisType && 
+						else if ( oCol.sType != sThisType &&
 						          oCol.sType != "html" )
 						{
 							/* String is always the 'fallback' option */
@@ -198,7 +199,7 @@ function _fnGatherData( oSettings )
 					// time setting the value that is already there!
 					nCell.innerHTML = _fnGetCellData( oSettings, iRow, iColumn, 'display' );
 				}
-				
+
 				/* Rendering */
 				if ( bRender )
 				{
@@ -210,13 +211,13 @@ function _fnGatherData( oSettings )
 						_fnSetCellData( oSettings, iRow, iColumn, sRendered );
 					}
 				}
-				
+
 				/* Classes */
 				if ( bClass )
 				{
 					nCell.className += ' '+oCol.sClass;
 				}
-				
+
 				/* Column visibility */
 				if ( !bVisible )
 				{
@@ -396,7 +397,7 @@ function _fnGetObjectDataFn( mSource )
 	}
 	else if ( typeof mSource === 'string' && (mSource.indexOf('.') !== -1 || mSource.indexOf('[') !== -1) )
 	{
-		/* If there is a . in the source string then the data source is in a 
+		/* If there is a . in the source string then the data source is in a
 		 * nested object so we loop over the data for each level to get the next
 		 * level down. On each loop we test for undefined, and if found immediately
 		 * return. This allows entire objects to be missing and sDefaultContent to
@@ -421,7 +422,7 @@ function _fnGetObjectDataFn( mSource )
 							data = data[ a[i] ];
 						}
 						out = [];
-						
+
 						// Get the remainder of the nested object to get
 						a.splice( 0, i+1 );
 						innerSrc = a.join('.');
@@ -460,7 +461,7 @@ function _fnGetObjectDataFn( mSource )
 	{
 		/* Array or flat object mapping */
 		return function (data, type) {
-			return data[mSource];	
+			return data[mSource];
 		};
 	}
 }
@@ -502,7 +503,7 @@ function _fnSetObjectDataFn( mSource )
 				{
 					a[i] = a[i].replace(__reArray, '');
 					data[ a[i] ] = [];
-					
+
 					// Get the remainder of the nested object to set so we can recurse
 					b = a.slice();
 					b.splice( 0, i+1 );
@@ -543,7 +544,7 @@ function _fnSetObjectDataFn( mSource )
 	{
 		/* Array or flat object mapping */
 		return function (data, val) {
-			data[mSource] = val;	
+			data[mSource] = val;
 		};
 	}
 }
@@ -582,7 +583,7 @@ function _fnClearTable( oSettings )
 
 
  /**
- * Take an array of integers (index array) and remove a target integer (value - not 
+ * Take an array of integers (index array) and remove a target integer (value - not
  * the key!)
  *  @param {array} a Index array to target
  *  @param {int} iTarget value to find
@@ -591,7 +592,7 @@ function _fnClearTable( oSettings )
 function _fnDeleteIndex( a, iTarget )
 {
 	var iTargetIndex = -1;
-	
+
 	for ( var i=0, iLen=a.length ; i<iLen ; i++ )
 	{
 		if ( a[i] == iTarget )
@@ -603,7 +604,7 @@ function _fnDeleteIndex( a, iTarget )
 			a[i]--;
 		}
 	}
-	
+
 	if ( iTargetIndex != -1 )
 	{
 		a.splice( iTargetIndex, 1 );

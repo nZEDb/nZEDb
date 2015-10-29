@@ -8,21 +8,24 @@ $(document).ready( function () {
 		"bDeferRender": true
 	} );
 	var oSettings = oTable.fnSettings();
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
+
 		"Default values should be blank",
 		null,
 		function () {
-			var bReturn = oSettings.oPreviousSearch.sSearch == "" && 
+			var bReturn = oSettings.oPreviousSearch.sSearch == "" &&
+
 			              !oSettings.oPreviousSearch.bRegex;
 			return bReturn;
 		}
 	);
-	
+
 	/* This test might be considered iffy since the full object isn't given, but it's reasonable to
 	 * expect DataTables to cope with this. It should just assumine regex false
 	 */
-	oTest.fnWaitTest( 
+	oTest.fnWaitTest(
+
 		"Search term only in object",
 		function () {
 			oSession.fnRestore();
@@ -36,16 +39,18 @@ $(document).ready( function () {
 		},
 		function () { return $('#example tbody tr:eq(0) td:eq(0)').html() == "Gecko"; }
 	);
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
+
 		"New search will kill old one",
 		function () {
 			oTable.fnFilter("Opera");
 		},
 		function () { return $('#example tbody tr:eq(0) td:eq(0)').html() == "Presto"; }
 	);
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
+
 		"Search plain text term and escape regex true",
 		function () {
 			oSession.fnRestore();
@@ -60,8 +65,9 @@ $(document).ready( function () {
 		},
 		function () { return $('#example tbody tr:eq(0) td:eq(1)').html() == "Nintendo DS browser"; }
 	);
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
+
 		"Search plain text term and escape regex false",
 		function () {
 			oSession.fnRestore();
@@ -76,8 +82,9 @@ $(document).ready( function () {
 		},
 		function () { return $('#example tbody tr:eq(0) td:eq(0)').html() == "Presto"; }
 	);
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
+
 		"Search regex text term and escape regex true",
 		function () {
 			oSession.fnRestore();
@@ -92,8 +99,9 @@ $(document).ready( function () {
 		},
 		function () { return $('#example tbody tr:eq(0) td:eq(0)').html() == "No matching records found"; }
 	);
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
+
 		"Search regex text term and escape regex false",
 		function () {
 			oSession.fnRestore();
@@ -108,7 +116,7 @@ $(document).ready( function () {
 		},
 		function () { return $('#example tbody tr:eq(0) td:eq(0)').html() == "Gecko"; }
 	);
-	
-	
+
+
 	oTest.fnComplete();
 } );

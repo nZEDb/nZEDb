@@ -5,8 +5,9 @@ $(document).ready( function () {
 	$('#example').dataTable( {
 		"bJQueryUI": true
 	} );
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
+
 		"Header elements are fully wrapped by DIVs",
 		null,
 		function () {
@@ -19,22 +20,24 @@ $(document).ready( function () {
 			return test;
 		}
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
+
 		"One div for each header element",
 		null,
 		function () {
 			return $('#example thead th div').length == 5;
 		}
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
+
 		"One span for each header element, nested as child of div",
 		null,
 		function () {
 			return $('#example thead th div>span').length == 5;
 		}
 	);
-	
+
 	oTest.fnComplete();
 } );

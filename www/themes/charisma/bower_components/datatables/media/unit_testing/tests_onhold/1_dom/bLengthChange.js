@@ -4,19 +4,20 @@ oTest.fnStart( "bLengthChange" );
 $(document).ready( function () {
 	/* Check the default */
 	$('#example').dataTable();
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
+
 		"Length div exists by default",
 		null,
 		function () { return document.getElementById('example_length') != null; }
 	);
-	
+
 	oTest.fnTest(
 		"Four default options",
 		null,
 		function () { return $("select[name=example_length] option").length == 4; }
 	);
-	
+
 	oTest.fnTest(
 		"Default options",
 		null,
@@ -26,16 +27,18 @@ $(document).ready( function () {
 				opts[2].getAttribute('value') == 50 && opts[3].getAttribute('value') == 100;
 		}
 	);
-	
+
 	oTest.fnTest(
 		"Info takes length into account",
 		null,
-		function () { return document.getElementById('example_info').innerHTML == 
+		function () { return document.getElementById('example_info').innerHTML ==
+
 			"Showing 1 to 10 of 57 entries"; }
 	);
-	
+
 	/* Check can disable */
-	oTest.fnTest( 
+	oTest.fnTest(
+
 		"Change length can be disabled",
 		function () {
 			oSession.fnRestore();
@@ -45,16 +48,18 @@ $(document).ready( function () {
 		},
 		function () { return document.getElementById('example_length') == null; }
 	);
-	
+
 	oTest.fnTest(
 		"Information takes length disabled into account",
 		null,
-		function () { return document.getElementById('example_info').innerHTML == 
+		function () { return document.getElementById('example_info').innerHTML ==
+
 			"Showing 1 to 10 of 57 entries"; }
 	);
-	
+
 	/* Enable makes no difference */
-	oTest.fnTest( 
+	oTest.fnTest(
+
 		"Length change enabled override",
 		function () {
 			oSession.fnRestore();
@@ -64,8 +69,8 @@ $(document).ready( function () {
 		},
 		function () { return document.getElementById('example_length') != null; }
 	);
-	
-	
-	
+
+
+
 	oTest.fnComplete();
 } );

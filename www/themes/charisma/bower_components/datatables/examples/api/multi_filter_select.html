@@ -3,7 +3,7 @@
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<link rel="shortcut icon" type="image/ico" href="http://www.datatables.net/media/images/favicon.ico" />
-		
+
 		<title>DataTables example</title>
 		<style type="text/css" title="currentStyle">
 			@import "../../media/css/demo_page.css";
@@ -16,7 +16,7 @@
 			/*
 			 * Function: fnGetColumnData
 			 * Purpose:  Return an array of table values from a particular column.
-			 * Returns:  array string: 1d data array 
+			 * Returns:  array string: 1d data array
 			 * Inputs:   object:oSettings - dataTable settings object. This is always the last argument past to the function
 			 *           int:iColumn - the id of the column to extract the data from
 			 *           bool:bUnique - optional - if set to false duplicated values are not filtered out
@@ -27,46 +27,46 @@
 			$.fn.dataTableExt.oApi.fnGetColumnData = function ( oSettings, iColumn, bUnique, bFiltered, bIgnoreEmpty ) {
 				// check that we have a column id
 				if ( typeof iColumn == "undefined" ) return new Array();
-				
+
 				// by default we only want unique data
 				if ( typeof bUnique == "undefined" ) bUnique = true;
-				
+
 				// by default we do want to only look at filtered data
 				if ( typeof bFiltered == "undefined" ) bFiltered = true;
-				
+
 				// by default we do not want to include empty values
 				if ( typeof bIgnoreEmpty == "undefined" ) bIgnoreEmpty = true;
-				
+
 				// list of rows which we're going to loop through
 				var aiRows;
-				
+
 				// use only filtered rows
-				if (bFiltered == true) aiRows = oSettings.aiDisplay; 
+				if (bFiltered == true) aiRows = oSettings.aiDisplay;
 				// use all rows
 				else aiRows = oSettings.aiDisplayMaster; // all row numbers
-			
-				// set up data array	
+
+				// set up data array
 				var asResultData = new Array();
-				
+
 				for (var i=0,c=aiRows.length; i<c; i++) {
 					iRow = aiRows[i];
 					var aData = this.fnGetData(iRow);
 					var sValue = aData[iColumn];
-					
+
 					// ignore empty values?
 					if (bIgnoreEmpty == true && sValue.length == 0) continue;
-			
+
 					// ignore unique values?
 					else if (bUnique == true && jQuery.inArray(sValue, asResultData) > -1) continue;
-					
+
 					// else push the value onto the result data array
 					else asResultData.push(sValue);
 				}
-				
+
 				return asResultData;
 			}}(jQuery));
-			
-			
+
+
 			function fnCreateSelect( aData )
 			{
 				var r='<select><option value=""></option>', i, iLen=aData.length;
@@ -76,8 +76,8 @@
 				}
 				return r+'</select>';
 			}
-			
-			
+
+
 			$(document).ready(function() {
 				/* Initialise the DataTable */
 				var oTable = $('#example').dataTable( {
@@ -85,7 +85,7 @@
 						"sSearch": "Search all columns:"
 					}
 				} );
-				
+
 				/* Add a select menu for each TH element in the table footer */
 				$("tfoot th").each( function ( i ) {
 					this.innerHTML = fnCreateSelect( oTable.fnGetColumnData(i) );
@@ -101,11 +101,11 @@
 			<div class="full_width big">
 				DataTables individual column filtering example (using select menus)
 			</div>
-			
+
 			<h1>Preamble</h1>
 			<p>This example is almost identical to <a href="multi_filter.html">individual column example</a> and provides the same functionality, but using &lt;select&gt; menus rather than input elements. The API plug-in function fnGetColumnData from Benedikt Forchhammer provides much of the logic processing required, and integration with a table is almost trivial.</p>
 			<p>One possible interaction chance would be to make use of fnGetColumnData's ability to get filtered data, so you could have the possible filtering values in the select menus to update to only those in the table, rather than all values.</p>
-			
+
 			<h1>Live example</h1>
 			<div id="demo">
 <table cellpadding="0" cellspacing="0" border="0" class="display" id="example">
@@ -535,14 +535,14 @@
 </table>
 			</div>
 			<div class="spacer"></div>
-			
-			
+
+
 			<h1>Initialisation code</h1>
 			<pre class="brush: js;">(function($) {
 /*
  * Function: fnGetColumnData
  * Purpose:  Return an array of table values from a particular column.
- * Returns:  array string: 1d data array 
+ * Returns:  array string: 1d data array
  * Inputs:   object:oSettings - dataTable settings object. This is always the last argument past to the function
  *           int:iColumn - the id of the column to extract the data from
  *           bool:bUnique - optional - if set to false duplicated values are not filtered out
@@ -553,42 +553,42 @@
 $.fn.dataTableExt.oApi.fnGetColumnData = function ( oSettings, iColumn, bUnique, bFiltered, bIgnoreEmpty ) {
 	// check that we have a column id
 	if ( typeof iColumn == "undefined" ) return new Array();
-	
+
 	// by default we only want unique data
 	if ( typeof bUnique == "undefined" ) bUnique = true;
-	
+
 	// by default we do want to only look at filtered data
 	if ( typeof bFiltered == "undefined" ) bFiltered = true;
-	
+
 	// by default we do not want to include empty values
 	if ( typeof bIgnoreEmpty == "undefined" ) bIgnoreEmpty = true;
-	
+
 	// list of rows which we're going to loop through
 	var aiRows;
-	
+
 	// use only filtered rows
-	if (bFiltered == true) aiRows = oSettings.aiDisplay; 
+	if (bFiltered == true) aiRows = oSettings.aiDisplay;
 	// use all rows
 	else aiRows = oSettings.aiDisplayMaster; // all row numbers
 
-	// set up data array	
+	// set up data array
 	var asResultData = new Array();
-	
+
 	for (var i=0,c=aiRows.length; i&lt;c; i++) {
 		iRow = aiRows[i];
 		var aData = this.fnGetData(iRow);
 		var sValue = aData[iColumn];
-		
+
 		// ignore empty values?
 		if (bIgnoreEmpty == true &amp;&amp; sValue.length == 0) continue;
 
 		// ignore unique values?
 		else if (bUnique == true &amp;&amp; jQuery.inArray(sValue, asResultData) &gt; -1) continue;
-		
+
 		// else push the value onto the result data array
 		else asResultData.push(sValue);
 	}
-	
+
 	return asResultData;
 }}(jQuery));
 
@@ -611,7 +611,7 @@ $(document).ready(function() {
 			"sSearch": "Search all columns:"
 		}
 	} );
-	
+
 	/* Add a select menu for each TH element in the table footer */
 	$("tfoot th").each( function ( i ) {
 		this.innerHTML = fnCreateSelect( oTable.fnGetColumnData(i) );
@@ -624,8 +624,8 @@ $(document).ready(function() {
 				@import "../examples_support/syntax/css/shCore.css";
 			</style>
 			<script type="text/javascript" language="javascript" src="../examples_support/syntax/js/shCore.js"></script>
-			
-			
+
+
 			<h1>Other examples</h1>
 			<div class="demo_links">
 				<h2>Basic initialisation</h2>
@@ -642,21 +642,21 @@ $(document).ready(function() {
 					<li><a href="../basic_init/state_save.html">State saving</a></li>
 					<li><a href="../basic_init/alt_pagination.html">Alternative pagination styles</a></li>
 					<li>Scrolling: <br>
-						<a href="../basic_init/scroll_x.html">Horizontal</a> / 
-						<a href="../basic_init/scroll_y.html">Vertical</a> / 
-						<a href="../basic_init/scroll_xy.html">Both</a> / 
-						<a href="../basic_init/scroll_y_theme.html">Themed</a> / 
+						<a href="../basic_init/scroll_x.html">Horizontal</a> /
+						<a href="../basic_init/scroll_y.html">Vertical</a> /
+						<a href="../basic_init/scroll_xy.html">Both</a> /
+						<a href="../basic_init/scroll_y_theme.html">Themed</a> /
 						<a href="../basic_init/scroll_y_infinite.html">Infinite</a>
 					</li>
 					<li><a href="../basic_init/language.html">Change language information (internationalisation)</a></li>
 					<li><a href="../basic_init/themes.html">ThemeRoller themes (Smoothness)</a></li>
 				</ul>
-				
+
 				<h2>Advanced initialisation</h2>
 				<ul>
 					<li>Events: <br>
-						<a href="../advanced_init/events_live.html">Live events</a> / 
-						<a href="../advanced_init/events_pre_init.html">Pre-init</a> / 
+						<a href="../advanced_init/events_live.html">Live events</a> /
+						<a href="../advanced_init/events_pre_init.html">Pre-init</a> /
 						<a href="../advanced_init/events_post_init.html">Post-init</a>
 					</li>
 					<li><a href="../advanced_init/column_render.html">Column rendering</a></li>
@@ -675,7 +675,7 @@ $(document).ready(function() {
 					<li><a href="../advanced_init/localstorage.html">State saving with localStorage</a></li>
 					<li><a href="../advanced_init/dt_events.html">Custom events</a></li>
 				</ul>
-				
+
 				<h2>API</h2>
 				<ul>
 					<li><a href="../api/add_row.html">Dynamically add a new row</a></li>
@@ -694,7 +694,7 @@ $(document).ready(function() {
 					<li><a href="../api/regex.html">Regular expression filtering</a></li>
 				</ul>
 			</div>
-			
+
 			<div class="demo_links">
 				<h2>Data sources</h2>
 				<ul>
@@ -703,7 +703,7 @@ $(document).ready(function() {
 					<li><a href="../data_sources/ajax.html">Ajax source</a></li>
 					<li><a href="../data_sources/server_side.html">Server side processing</a></li>
 				</ul>
-				
+
 				<h2>Server-side processing</h2>
 				<ul>
 					<li><a href="../server_side/server_side.html">Obtain server-side data</a></li>
@@ -718,7 +718,7 @@ $(document).ready(function() {
 					<li><a href="../server_side/defer_loading.html">Deferred loading of Ajax data</a></li>
 					<li><a href="../server_side/pipeline.html">Pipelining data (reduce Ajax calls for paging)</a></li>
 				</ul>
-				
+
 				<h2>Ajax data source</h2>
 				<ul>
 					<li><a href="../ajax/ajax.html">Ajax sourced data (array of arrays)</a></li>
@@ -729,7 +729,7 @@ $(document).ready(function() {
 					<li><a href="../ajax/objects_subarrays.html">Read column data from sub-arrays</a></li>
 					<li><a href="../ajax/deep.html">Read column data from deeply nested properties</a></li>
 				</ul>
-				
+
 				<h2>Plug-ins</h2>
 				<ul>
 					<li><a href="../plug-ins/plugin_api.html">Add custom API functions</a></li>
@@ -741,14 +741,14 @@ $(document).ready(function() {
 					<li><a href="../plug-ins/html_sort.html">Automatic HTML type detection</a></li>
 				</ul>
 			</div>
-			
-			
+
+
 			<div id="footer" class="clear" style="text-align:center;">
 				<p>
 					Please refer to the <a href="http://www.datatables.net/usage">DataTables documentation</a> for full information about its API properties and methods.<br>
 					Additionally, there are a wide range of <a href="http://www.datatables.net/extras">extras</a> and <a href="http://www.datatables.net/plug-ins">plug-ins</a> which extend the capabilities of DataTables.
 				</p>
-				
+
 				<span style="font-size:10px;">
 					DataTables designed and created by <a href="http://www.sprymedia.co.uk">Allan Jardine</a> &copy; 2007-2011<br>
 					DataTables is dual licensed under the <a href="http://www.datatables.net/license_gpl2">GPL v2 license</a> or a <a href="http://www.datatables.net/license_bsd">BSD (3-point) license</a>.

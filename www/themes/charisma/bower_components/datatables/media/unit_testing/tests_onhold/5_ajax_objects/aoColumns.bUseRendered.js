@@ -8,7 +8,7 @@ oTest.fnStart( "aoColumns.bUseRendered" );
 $(document).ready( function () {
 	/* Check the default */
 	var mTmp = 0;
-	
+
 	var oTable = $('#example').dataTable( {
 		"sAjaxSource": "../../../examples/ajax/sources/objects.txt",
 		"aoColumns": [
@@ -29,14 +29,16 @@ $(document).ready( function () {
 		]
 	} );
 	var oSettings = oTable.fnSettings();
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
+
 		"Default for bUseRendered is true - rendered data is used for sorting",
 		function () { $('#example thead th:eq(1)').click(); },
 		function () { return $('#example tbody tr:eq(0) td:eq(1)').html() == 'aaa'; }
 	);
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
+
 		"When bUseRendered is false, original data is used for sorting",
 		function () {
 			mTmp = 0;
@@ -45,7 +47,8 @@ $(document).ready( function () {
 				"sAjaxSource": "../../../examples/ajax/sources/objects.txt",
 				"aoColumns": [
 					{ "mData": "engine" },
-					{ 
+					{
+
 						"mData": "browser",
 						"bUseRendered": false,
 						"fnRender": function (a) {
@@ -66,15 +69,16 @@ $(document).ready( function () {
 		},
 		function () { return $('#example tbody tr:eq(0) td:eq(1)').html() == 'All others'; }
 	);
-	
-	
-	oTest.fnWaitTest( 
+
+
+	oTest.fnWaitTest(
+
 		"bUseRendered set to false on one columns and true (default) on two others",
 		function () {
 			mTmp = 0;
 			var mTmp2 = 0;
 			var mTmp3 = 0;
-			
+
 			oSession.fnRestore();
 			oTable = $('#example').dataTable( {
 				"sAjaxSource": "../../../examples/ajax/sources/objects.txt",
@@ -90,7 +94,8 @@ $(document).ready( function () {
 							}
 						}
 					},
-					{ 
+					{
+
 						"mData": "browser",
 						"bUseRendered": false,
 						"fnRender": function (a) {
@@ -120,14 +125,16 @@ $(document).ready( function () {
 		},
 		function () { return $('#example tbody tr:eq(0) td:eq(0)').html() == 'aaa1'; }
 	);
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
+
 		"Multi-column rendering - 2nd column sorting",
 		function () { $('#example thead th:eq(1)').click(); },
 		function () { return $('#example tbody tr:eq(0) td:eq(1)').html() == 'All others'; }
 	);
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
+
 		"Multi-column rendering - 3rd column sorting",
 		function () {
 			$('#example thead th:eq(2)').click();
@@ -135,21 +142,23 @@ $(document).ready( function () {
 		},
 		function () { return $('#example tbody tr:eq(0) td:eq(2)').html() == 'zzz3'; }
 	);
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
+
 		"Multi-column rendering - 4th column sorting",
 		function () { $('#example thead th:eq(3)').click(); },
 		function () { return $('#example tbody tr:eq(0) td:eq(3)').html() == '-'; }
 	);
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
+
 		"Multi-column rendering - 5th column sorting",
 		function () { $('#example thead th:eq(4)').click(); },
 		function () { return $('#example tbody tr:eq(0) td:eq(4)').html() == 'A'; }
 	);
-	
-	
-	
-	
+
+
+
+
 	oTest.fnComplete();
 } );

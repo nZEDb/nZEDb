@@ -6,18 +6,20 @@ $(document).ready( function () {
 		"sScrollY": "300px",
 		"bPaginate": false
 	} );
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
+
 		"Width of container 800px on init with scroll",
 		null,
 		function () { return $('div.dataTables_scrollBody').width() == 800; }
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
+
 		"Unaltered when filter applied",
 		function () { $('#example').dataTable().fnFilter('123'); },
 		function () { return $('div.dataTables_scrollBody').width() == 800; }
 	);
-	
+
 	oTest.fnComplete();
 } );

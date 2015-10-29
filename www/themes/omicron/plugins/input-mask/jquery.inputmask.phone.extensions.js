@@ -9,10 +9,10 @@ Phone extension.
 When using this extension make sure you specify the correct url to get the masks
 
  $(selector).inputmask("phone", {
-                url: "Scripts/jquery.inputmask/phone-codes/phone-codes.json", 
+                url: "Scripts/jquery.inputmask/phone-codes/phone-codes.json",
                 onKeyValidation: function () { //show some metadata in the console
                     console.log($(this).inputmask("getmetadata")["name_en"]);
-                } 
+                }
   });
 
 
@@ -41,7 +41,7 @@ When using this extension make sure you specify the correct url to get the masks
                         maskList = response;
                     }
                 });
-    
+
                 maskList.splice(0, 0, "+p(ppp)ppp-pppp");
                 return maskList;
             }

@@ -16,9 +16,8 @@ div.AutoFill_border {
 	position: absolute;
 	background-color: #0063dc;
 	z-index: 1001;
-	
+
 	box-shadow: 0px 0px 5px #76b4ff;
 	-moz-box-shadow: 0px 0px 5px #76b4ff;
 	-webkit-box-shadow: 0px 0px 5px #76b4ff;
 }
-

@@ -3,7 +3,7 @@
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<link rel="shortcut icon" type="image/ico" href="http://www.datatables.net/media/images/favicon.ico" />
-		
+
 		<title>DataTables example</title>
 		<style type="text/css" title="currentStyle">
 			@import "../../media/css/demo_page.css";
@@ -26,10 +26,10 @@
 			<div class="full_width big">
 				DataTables AJAX source example - with deferred rendering
 			</div>
-			
+
 			<h1>Preamble</h1>
 			<p>When working with large data sources, you might seek to improve the speed at which DataTables runs. One method to do this is to make use of the build in deferred rendering. Rather than have DataTables create all TR and TD nodes required for the table when the data is loaded, when deferred rendering is enabled, DataTables will only create the nodes required for each individual display - these nodes are then retained incase they are needed again. This can give a significant performance increase, since a lot less work is done at initialisation time.</p>
-			
+
 			<h1>Live example</h1>
 			<div id="dynamic">
 <table cellpadding="0" cellspacing="0" border="0" class="display" id="example">
@@ -43,7 +43,7 @@
 		</tr>
 	</thead>
 	<tbody>
-		
+
 	</tbody>
 	<tfoot>
 		<tr>
@@ -57,8 +57,8 @@
 </table>
 			</div>
 			<div class="spacer"></div>
-			
-			
+
+
 			<h1>Initialisation code</h1>
 			<pre class="brush: js;">$(document).ready(function() {
 	$('#example').dataTable( {
@@ -75,8 +75,8 @@
 			<h1>Server response</h1>
 			<p>The code below shows the latest JSON data that has been returned from the server in response to the Ajax request made by DataTables. This will update as further requests are made.</p>
 			<pre id="latest_xhr" class="brush: js;"></pre>
-			
-			
+
+
 			<h1>Other examples</h1>
 			<div class="demo_links">
 				<h2>Basic initialisation</h2>
@@ -93,21 +93,21 @@
 					<li><a href="../basic_init/state_save.html">State saving</a></li>
 					<li><a href="../basic_init/alt_pagination.html">Alternative pagination styles</a></li>
 					<li>Scrolling: <br>
-						<a href="../basic_init/scroll_x.html">Horizontal</a> / 
-						<a href="../basic_init/scroll_y.html">Vertical</a> / 
-						<a href="../basic_init/scroll_xy.html">Both</a> / 
-						<a href="../basic_init/scroll_y_theme.html">Themed</a> / 
+						<a href="../basic_init/scroll_x.html">Horizontal</a> /
+						<a href="../basic_init/scroll_y.html">Vertical</a> /
+						<a href="../basic_init/scroll_xy.html">Both</a> /
+						<a href="../basic_init/scroll_y_theme.html">Themed</a> /
 						<a href="../basic_init/scroll_y_infinite.html">Infinite</a>
 					</li>
 					<li><a href="../basic_init/language.html">Change language information (internationalisation)</a></li>
 					<li><a href="../basic_init/themes.html">ThemeRoller themes (Smoothness)</a></li>
 				</ul>
-				
+
 				<h2>Advanced initialisation</h2>
 				<ul>
 					<li>Events: <br>
-						<a href="../advanced_init/events_live.html">Live events</a> / 
-						<a href="../advanced_init/events_pre_init.html">Pre-init</a> / 
+						<a href="../advanced_init/events_live.html">Live events</a> /
+						<a href="../advanced_init/events_pre_init.html">Pre-init</a> /
 						<a href="../advanced_init/events_post_init.html">Post-init</a>
 					</li>
 					<li><a href="../advanced_init/column_render.html">Column rendering</a></li>
@@ -126,7 +126,7 @@
 					<li><a href="../advanced_init/localstorage.html">State saving with localStorage</a></li>
 					<li><a href="../advanced_init/dt_events.html">Custom events</a></li>
 				</ul>
-				
+
 				<h2>API</h2>
 				<ul>
 					<li><a href="../api/add_row.html">Dynamically add a new row</a></li>
@@ -145,7 +145,7 @@
 					<li><a href="../api/regex.html">Regular expression filtering</a></li>
 				</ul>
 			</div>
-			
+
 			<div class="demo_links">
 				<h2>Data sources</h2>
 				<ul>
@@ -154,7 +154,7 @@
 					<li><a href="../data_sources/ajax.html">Ajax source</a></li>
 					<li><a href="../data_sources/server_side.html">Server side processing</a></li>
 				</ul>
-				
+
 				<h2>Server-side processing</h2>
 				<ul>
 					<li><a href="../server_side/server_side.html">Obtain server-side data</a></li>
@@ -169,7 +169,7 @@
 					<li><a href="../server_side/defer_loading.html">Deferred loading of Ajax data</a></li>
 					<li><a href="../server_side/pipeline.html">Pipelining data (reduce Ajax calls for paging)</a></li>
 				</ul>
-				
+
 				<h2>Ajax data source</h2>
 				<ul>
 					<li><a href="../ajax/ajax.html">Ajax sourced data (array of arrays)</a></li>
@@ -180,7 +180,7 @@
 					<li><a href="../ajax/objects_subarrays.html">Read column data from sub-arrays</a></li>
 					<li><a href="../ajax/deep.html">Read column data from deeply nested properties</a></li>
 				</ul>
-				
+
 				<h2>Plug-ins</h2>
 				<ul>
 					<li><a href="../plug-ins/plugin_api.html">Add custom API functions</a></li>
@@ -192,14 +192,14 @@
 					<li><a href="../plug-ins/html_sort.html">Automatic HTML type detection</a></li>
 				</ul>
 			</div>
-			
-			
+
+
 			<div id="footer" class="clear" style="text-align:center;">
 				<p>
 					Please refer to the <a href="http://www.datatables.net/usage">DataTables documentation</a> for full information about its API properties and methods.<br>
 					Additionally, there are a wide range of <a href="http://www.datatables.net/extras">extras</a> and <a href="http://www.datatables.net/plug-ins">plug-ins</a> which extend the capabilities of DataTables.
 				</p>
-				
+
 				<span style="font-size:10px;">
 					DataTables designed and created by <a href="http://www.sprymedia.co.uk">Allan Jardine</a> &copy; 2007-2011<br>
 					DataTables is dual licensed under the <a href="http://www.datatables.net/license_gpl2">GPL v2 license</a> or a <a href="http://www.datatables.net/license_bsd">BSD (3-point) license</a>.

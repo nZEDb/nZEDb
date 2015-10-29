@@ -27,12 +27,12 @@ $(document).ready(function() {
         var title = $('#example thead th').eq( $(this).index() ).text();
         $(this).html( '<input type="text" placeholder="Search '+title+'" />' );
     } );
- 
+
     // DataTable
     var table = $('#example').DataTable( {
 		dom: 'Rlfrtip'
 	} );
-     
+
     // Apply the filter
     $("#example tfoot input").on( 'keyup change', function () {
         table
@@ -556,12 +556,12 @@ $(document).ready(function() {
         var title = $('#example thead th').eq( $(this).index() ).text();
         $(this).html( '&lt;input type=&quot;text&quot; placeholder=&quot;Search '+title+'&quot; /&gt;' );
     } );
- 
+
     // DataTable
     var table = $('#example').DataTable( {
 		dom: 'Rlfrtip'
 	} );
-     
+
     // Apply the filter
     $(&quot;#example tfoot input&quot;).on( 'keyup change', function () {
         table

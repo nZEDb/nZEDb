@@ -3,7 +3,7 @@
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<link rel="shortcut icon" type="image/ico" href="http://www.datatables.net/favicon.ico" />
-		
+
 		<title>DataTables example</title>
 		<style type="text/css" title="currentStyle">
 			@import "../../css/demo_page.css";
@@ -16,7 +16,7 @@
 				var oTable = $('#example').dataTable();
 				var oSettings = oTable.fnSettings();
 				var iStart = new Date().getTime();
-				
+
 				for ( var i=0, iLen=100 ; i<iLen ; i++ )
 				{
 				console.profile( );
@@ -24,7 +24,7 @@
 					oTable.fnSort( [[0, 'asc']] );
 				console.profileEnd( );
 				}
-				
+
 				var iEnd = new Date().getTime();
 				document.getElementById('output').innerHTML = "Test took "+(iEnd-iStart)+"mS";
 			} );
@@ -36,7 +36,7 @@
 				<i>DataTables</i> performance test - draw
 			</div>
 			<div id="output"></div>
-			
+
 			<div id="demo">
 <table cellpadding="0" cellspacing="0" border="0" class="display" id="example">
 	<thead>
@@ -465,8 +465,8 @@
 </table>
 			</div>
 			<div class="spacer"></div>
-			
-			
+
+
 			<div id="footer" style="text-align:center;">
 				<span style="font-size:10px;">
 					DataTables &copy; Allan Jardine 2008-2009.

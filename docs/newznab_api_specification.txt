@@ -1,7 +1,7 @@
                                     newznab Usenet Searching Web API
 
-                                                v0.4
-                                             2015-05-23
+                                                v0.5
+                                             2015-10-24
 
 Authors:
 ensi     ensisoft@gmail.com
@@ -116,11 +116,12 @@ nZEDb    https://github.com/nZEDb/nZEDb
                 Any conforming implementation should at least support the basic search.
                 Other search functions are optional.
             -->
-            <searching>
-               <search available="yes"/>
-               <tv-search available="yes"/>
-               <movie-search available="no"/>
-            </searching>
+             <searching>
+                 <search available="yes" supportedParams="q,group"/>
+                 <tv-search available="yes" supportedParams="q,rid,tvdbid,vid,traktid,tvmazeid,imdbid,tmdbid,season,ep"/>
+                 <movie-search available="yes" supportedParams="q,imdbid"/>
+                 <audio-search available="no" supportedParams=""/>
+             </searching>
 
             <!-- supported categories -->
             <categories>
@@ -322,6 +323,10 @@ nZEDb    https://github.com/nZEDb/nZEDb
       search matched nothing an empty but valid response is created and returned. This function
       requires passing the user credentials.
 
+      It is important to note, that all parameters are treated as AND operations execept for rid, tvdbid,
+      traktid, tvmazeid, imdbid, and tmdbid.  Supplying any combination (some, none, all) of these values will
+      return results applicable for each value respective to the other AND parameters.
+
       The returned XML data stream is RSS 2.0 compliant and also contains additional information
       in the extra namespace and optionally TV specific information
 
@@ -338,10 +343,15 @@ nZEDb    https://github.com/nZEDb/nZEDb
    Optional parameters:
       limit=123          Upper limit for the number of items to be returned, e.g. 123.
       rid=xxxx           TVRage id of the item being queried.
+      tvdbid=xxxx        TVDB id of the item being queried.
+      traktid=xxxx       TraktTV id of the item being queried.
+      tvmazeid=xxxx      TVMaze id of the item being queried.
+      imdbid=xxxx        IMDB id of the item being queried.
+      tmdbid=xxxx        TMDB id of the item being queried.
       cat=xxx            List of categories to search delimited by ","
-      season=xxxx        Season string, e.g S13 or 13 for the item being queried.
+      season=xxxx        Season string, e.g S13 or 13 for the item being queried. Can also be YYYY for Daily Show.
       q=xxxx             Search input (URL/UTF-8 encoded). Case insensitive.
-      ep=xxx             Episode string, e.g E13 or 13 for the item being queried.
+      ep=xxx             Episode string, e.g E13 or 13 for the item being queried.  Can also be MM/DD for Daily Show.
       o=xml              Output format, either "JSON" or "XML". Default is "XML".
       extended=1         Return extended information in the search results
       del=1              Delete the item from a users cart on download.
@@ -678,9 +688,18 @@ nZEDb    https://github.com/nZEDb/nZEDb
    year            ALL                     Release year                            "2009"
    season          TV                      Numeric season                          "1"
    episode         TV                      Numeric episode within the season       "1"
-   rageid          TV                      TVRage ID. (www.tvrage.com)             "2322"
-   tvtitle         TV                      TVRage Show Title. (www.tvrage.com)     "Duck and Cover"
-   tvairdate       TV                      TVRage Show Air date. (www.tvrage.com)  "Tue, 22 Jun 2010 06:54:22 +0100"
+   videos_id       TV, Movies, Anime       Local Video ID                          "1"
+   tv_episodes_id  TV                      Local TV Episode ID                     "1"
+   tvdbid          TV                      TVDB ID. (www.thetvdb.com)              "153021"
+   traktid         TV                      TraktTV ID. (www.trakt.tv)              "1393"
+   rageid          TV                      TVRage ID. (www.tvrage.com)             "25056"
+   tvrageid        TV                      TVRage ID. (www.tvrage.com)             "25056"
+   tvmazeid        TV                      TVMaze ID. (www.tvmaze.com)             "73"
+   imdbid          TV                      IMDB ID for show. (www.imdb.com)        "tt1520211"
+   tmdbid          TV                      TMDB ID for show. (www.themoviedb.com)  "1402"
+   title           TV                      TV Show Title. (www.tvrage.com)         "Duck and Cover"
+   firstaired      TV                      TV Show Air date. (www.tvrage.com)      "Tue, 22 Jun 2010 06:54:22 +0100"
+   anidbid         Anime                   AniDB.net ID. (www.anidb.net)           "10445"
    video           TV, Movies              Video codec                             "x264"
    audio           TV, Movies, Audio       Audio codec                             "AC3 2.0 @ 384 kbs"
    resolution      TV, Movies              Video resolution                        "1280x716 1.78:1"
@@ -748,6 +767,10 @@ nZEDb    https://github.com/nZEDb/nZEDb
 
 6  Changelog
 
+   2015-10-24 ruhllatio
+      Add new attribute returns.
+      Update supported tv-search methods.
+      Add audio-search capability and make it unavailable with no params.
    2015-05-23 kevinlekiller
       Fix spelling issues.
       Fix indentation issues.

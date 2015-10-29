@@ -8,30 +8,36 @@
 
 
 (function($) {
-  
+
+
   var ORBIT = {
-    
-    defaults: {  
-      animation: 'horizontal-push', 		// fade, horizontal-slide, vertical-slide, horizontal-push, vertical-push
-      animationSpeed: 600, 				// how fast animtions are
-      timer: true, 						// true or false to have the timer
-      advanceSpeed: 4000, 				// if timer is enabled, time between transitions 
-      pauseOnHover: false, 				// if you hover pauses the slider
-      startClockOnMouseOut: false, 		// if clock should start on MouseOut
-      startClockOnMouseOutAfter: 1000, 	// how long after MouseOut should the timer start again
-      directionalNav: true, 				// manual advancing directional navs
-      captions: true, 					// do you want captions?
-      captionAnimation: 'fade', 			// fade, slideOpen, none
-      captionAnimationSpeed: 600, 		// if so how quickly should they animate in
+
+
+    defaults: {
+
+      animation: 'horizontal-push',		// fade, horizontal-slide, vertical-slide, horizontal-push, vertical-push
+      animationSpeed: 600,				// how fast animtions are
+      timer: true,						// true or false to have the timer
+      advanceSpeed: 4000,				// if timer is enabled, time between transitions
+
+      pauseOnHover: false,				// if you hover pauses the slider
+      startClockOnMouseOut: false,		// if clock should start on MouseOut
+      startClockOnMouseOutAfter: 1000,	// how long after MouseOut should the timer start again
+      directionalNav: true,				// manual advancing directional navs
+      captions: true,					// do you want captions?
+      captionAnimation: 'fade',			// fade, slideOpen, none
+      captionAnimationSpeed: 600,		// if so how quickly should they animate in
       bullets: false,						// true or false to activate the bullet navigation
       bulletThumbs: false,				// thumbnails for the bullets
       bulletThumbLocation: '',			// location from this file where thumbs will be
-      afterSlideChange: $.noop,		// empty function 
+      afterSlideChange: $.noop,		// empty function
+
       fluid: true,
       centerBullets: true    // center bullet nav with js, turn this off if you want to position the bullet nav manually
- 	  },
- 	  
- 	  activeSlide: 0,
+	  },
+
+
+	  activeSlide: 0,
     numberSlides: 0,
     orbitWidth: null,
     orbitHeight: null,
@@ -43,12 +49,14 @@
     captionHTML: '<div class="orbit-caption"></div>',
     directionalNavHTML: '<div class="slider-nav"><span class="right">Right</span><span class="left">Left</span></div>',
     bulletHTML: '<ul class="orbit-bullets"></ul>',
-    
+
+
     init: function (element, options) {
       var $imageSlides,
           imagesLoadedCount = 0,
           self = this;
-      
+
+
       // Bind functions to correct context
       this.clickTimer = $.proxy(this.clickTimer, this);
       this.addBullet = $.proxy(this.addBullet, this);
@@ -57,38 +65,47 @@
       this.startTimerAfterMouseLeave = $.proxy(this.startTimerAfterMouseLeave, this);
       this.clearClockMouseLeaveTimer = $.proxy(this.clearClockMouseLeaveTimer, this);
       this.rotateTimer = $.proxy(this.rotateTimer, this);
-      
+
+
       this.options = $.extend({}, this.defaults, options);
       if (this.options.timer === 'false') this.options.timer = false;
       if (this.options.captions === 'false') this.options.captions = false;
       if (this.options.directionalNav === 'false') this.options.directionalNav = false;
-      
+
+
       this.$element = $(element);
       this.$wrapper = this.$element.wrap(this.wrapperHTML).parent();
       this.$slides = this.$element.children('img, a, div');
-      
+
+
       this.$element.bind('orbit.next', function () {
         self.shift('next');
       });
-      
+
+
       this.$element.bind('orbit.prev', function () {
         self.shift('prev');
       });
-      
+
+
       this.$element.bind('orbit.goto', function (event, index) {
         self.shift(index);
       });
-      
+
+
       this.$element.bind('orbit.start', function (event, index) {
         self.startClock();
       });
-      
+
+
       this.$element.bind('orbit.stop', function (event, index) {
         self.stopClock();
       });
-      
+
+
       $imageSlides = this.$slides.filter('img');
-      
+
+
       if ($imageSlides.length === 0) {
         this.loaded();
       } else {
@@ -100,50 +117,60 @@
         });
       }
     },
-    
+
+
     loaded: function () {
       this.$element
         .addClass('orbit')
         .css({width: '1px', height: '1px'});
-        
+
+
       this.setDimentionsFromLargestSlide();
       this.updateOptionsIfOnlyOneSlide();
       this.setupFirstSlide();
-      
+
+
       if (this.options.timer) {
         this.setupTimer();
         this.startClock();
       }
-      
+
+
       if (this.options.captions) {
         this.setupCaptions();
       }
-      
+
+
       if (this.options.directionalNav) {
         this.setupDirectionalNav();
       }
-      
+
+
       if (this.options.bullets) {
         this.setupBulletNav();
         this.setActiveBullet();
       }
     },
-    
+
+
     currentSlide: function () {
       return this.$slides.eq(this.activeSlide);
     },
-    
+
+
     setDimentionsFromLargestSlide: function () {
       //Collect all slides and set slider size of largest image
       var self = this,
           $fluidPlaceholder;
-          
+
+
       self.$element.add(self.$wrapper).width(this.$slides.first().width());
       self.$element.add(self.$wrapper).height(this.$slides.first().height());
       self.orbitWidth = this.$slides.first().width();
       self.orbitHeight = this.$slides.first().height();
       $fluidPlaceholder = this.$slides.first().clone();
-      
+
+
       this.$slides.each(function () {
         var slide = $(this),
             slideWidth = slide.width(),
@@ -151,7 +178,7 @@
 
         if (slideWidth > self.$element.width()) {
           self.$element.add(self.$wrapper).width(slideWidth);
-          self.orbitWidth = self.$element.width();	       			
+          self.orbitWidth = self.$element.width();
         }
         if (slideHeight > self.$element.height()) {
           self.$element.add(self.$wrapper).height(slideHeight);
@@ -160,74 +187,88 @@
 	      }
         self.numberSlides += 1;
       });
-      
+
+
       if (this.options.fluid) {
         if (typeof this.options.fluid === "string") {
           $fluidPlaceholder = $('<img src="http://placehold.it/' + this.options.fluid + '" />')
         }
-        
+
+
         self.$element.prepend($fluidPlaceholder);
         $fluidPlaceholder.addClass('fluid-placeholder');
         self.$element.add(self.$wrapper).css({width: 'inherit'});
         self.$element.add(self.$wrapper).css({height: 'inherit'});
-        
+
+
         $(window).bind('resize', function () {
           self.orbitWidth = self.$element.width();
           self.orbitHeight = self.$element.height();
         });
       }
     },
-    
+
+
     //Animation locking functions
     lock: function () {
       this.locked = true;
     },
-    
-    unlock: function () { 
+
+
+    unlock: function () {
+
       this.locked = false;
     },
-    
+
+
     updateOptionsIfOnlyOneSlide: function () {
       if(this.$slides.length === 1) {
-      	this.options.directionalNav = false;
-      	this.options.timer = false;
-      	this.options.bullets = false;
+	this.options.directionalNav = false;
+	this.options.timer = false;
+	this.options.bullets = false;
       }
     },
-    
+
+
     setupFirstSlide: function () {
       //Set initial front photo z-index and fades it in
       var self = this;
       this.$slides.first()
-      	.css({"z-index" : 3})
-      	.fadeIn(function() {
-      		//brings in all other slides IF css declares a display: none
-      		self.$slides.css({"display":"block"})
+	.css({"z-index" : 3})
+	.fadeIn(function() {
+		//brings in all other slides IF css declares a display: none
+		self.$slides.css({"display":"block"})
       });
     },
-    
+
+
     startClock: function () {
       var self = this;
-      
-      if(!this.options.timer) { 
-    		return false;
-    	} 
 
-    	if (this.$timer.is(':hidden')) {
+
+      if(!this.options.timer) {
+
+		return false;
+	}
+
+
+	if (this.$timer.is(':hidden')) {
         this.clock = setInterval(function () {
           this.$element.trigger('orbit.next');
-        }, this.options.advanceSpeed);            		
-    	} else {
+        }, this.options.advanceSpeed);
+	} else {
         this.timerRunning = true;
         this.$pause.removeClass('active')
         this.clock = setInterval(this.rotateTimer, this.options.advanceSpeed / 180);
       }
     },
-    
+
+
     rotateTimer: function () {
       var degreeCSS = "rotate(" + this.degrees + "deg)"
       this.degrees += 2;
-      this.$rotator.css({ 
+      this.$rotator.css({
+
         "-webkit-transform": degreeCSS,
         "-moz-transform": degreeCSS,
         "-o-transform": degreeCSS
@@ -243,17 +284,21 @@
         this.$element.trigger('orbit.next');
       }
     },
-    
+
+
     stopClock: function () {
-      if (!this.options.timer) { 
-        return false; 
+      if (!this.options.timer) {
+
+        return false;
+
       } else {
         this.timerRunning = false;
         clearInterval(this.clock);
         this.$pause.addClass('active');
       }
     },
-    
+
+
     setupTimer: function () {
       this.$timer = $(this.timerHTML);
       this.$wrapper.append(this.$timer);
@@ -261,19 +306,22 @@
       this.$rotator = this.$timer.find('.rotator');
       this.$mask = this.$timer.find('.mask');
       this.$pause = this.$timer.find('.pause');
-      
+
+
       this.$timer.click(this.clickTimer);
 
       if (this.options.startClockOnMouseOut) {
         this.$wrapper.mouseleave(this.startTimerAfterMouseLeave);
         this.$wrapper.mouseenter(this.clearClockMouseLeaveTimer);
       }
-      
+
+
       if (this.options.pauseOnHover) {
         this.$wrapper.mouseenter(this.stopClock);
       }
     },
-    
+
+
     startTimerAfterMouseLeave: function () {
       var self = this;
 
@@ -283,39 +331,47 @@
         }
       }, this.options.startClockOnMouseOutAfter)
     },
-    
+
+
     clearClockMouseLeaveTimer: function () {
       clearTimeout(this.outTimer);
     },
-    
+
+
     clickTimer: function () {
       if(!this.timerRunning) {
           this.startClock();
-      } else { 
+      } else {
+
           this.stopClock();
       }
     },
-    
+
+
     setupCaptions: function () {
       this.$caption = $(this.captionHTML);
       this.$wrapper.append(this.$caption);
-  	  this.setCaption();
+	  this.setCaption();
     },
-    
+
+
     setCaption: function () {
       var captionLocation = this.currentSlide().attr('data-caption'),
           captionHTML;
-    		
+
       if (!this.options.captions) {
-    		return false; 
-    	} 
-    	        		
-    	//Set HTML for the caption if it exists
-    	if (captionLocation) {
-    	  captionHTML = $(captionLocation).html(); //get HTML from the matching HTML entity
-    		this.$caption
-      		.attr('id', captionLocation) // Add ID caption TODO why is the id being set?
-          .html(captionHTML); // Change HTML in Caption 
+		return false;
+
+	}
+
+
+	//Set HTML for the caption if it exists
+	if (captionLocation) {
+	  captionHTML = $(captionLocation).html(); //get HTML from the matching HTML entity
+		this.$caption
+		.attr('id', captionLocation) // Add ID caption TODO why is the id being set?
+          .html(captionHTML); // Change HTML in Caption
+
           //Animations for Caption entrances
         switch (this.options.captionAnimation) {
           case 'none':
@@ -328,9 +384,9 @@
             this.$caption.slideDown(this.options.captionAnimationSpeed);
             break;
         }
-    	} else {
-    		//Animations for Caption exits
-    		switch (this.options.captionAnimation) {
+	} else {
+		//Animations for Caption exits
+		switch (this.options.captionAnimation) {
           case 'none':
             this.$caption.hide();
             break;
@@ -341,81 +397,93 @@
             this.$caption.slideUp(this.options.captionAnimationSpeed);
             break;
         }
-    	}
+	}
     },
-    
+
+
     setupDirectionalNav: function () {
       var self = this;
 
       this.$wrapper.append(this.directionalNavHTML);
-      
-      this.$wrapper.find('.left').click(function () { 
+
+
+      this.$wrapper.find('.left').click(function () {
+
         self.stopClock();
         self.$element.trigger('orbit.prev');
       });
-      
+
+
       this.$wrapper.find('.right').click(function () {
         self.stopClock();
         self.$element.trigger('orbit.next');
       });
     },
-    
+
+
     setupBulletNav: function () {
       this.$bullets = $(this.bulletHTML);
-    	this.$wrapper.append(this.$bullets);
-    	this.$slides.each(this.addBullet);
-    	this.$element.addClass('with-bullets');
-    	if (this.options.centerBullets) this.$bullets.css('margin-left', -this.$bullets.width() / 2);
+	this.$wrapper.append(this.$bullets);
+	this.$slides.each(this.addBullet);
+	this.$element.addClass('with-bullets');
+	if (this.options.centerBullets) this.$bullets.css('margin-left', -this.$bullets.width() / 2);
     },
-    
+
+
     addBullet: function (index, slide) {
       var position = index + 1,
           $li = $('<li>' + (position) + '</li>'),
           thumbName,
           self = this;
 
-  		if (this.options.bulletThumbs) {
-  			thumbName = $(slide).attr('data-thumb');
-  			if (thumbName) {
+		if (this.options.bulletThumbs) {
+			thumbName = $(slide).attr('data-thumb');
+			if (thumbName) {
           $li
             .addClass('has-thumb')
             .css({background: "url(" + this.options.bulletThumbLocation + thumbName + ") no-repeat"});;
-  			}
-  		}
-  		this.$bullets.append($li);
-  		$li.data('index', index);
-  		$li.click(function () {
-  			self.stopClock();
-  			self.$element.trigger('orbit.goto', [$li.data('index')])
-  		});
+			}
+		}
+		this.$bullets.append($li);
+		$li.data('index', index);
+		$li.click(function () {
+			self.stopClock();
+			self.$element.trigger('orbit.goto', [$li.data('index')])
+		});
     },
-    
+
+
     setActiveBullet: function () {
       if(!this.options.bullets) { return false; } else {
-    		this.$bullets.find('li')
-    		  .removeClass('active')
-    		  .eq(this.activeSlide)
-    		  .addClass('active');
-    	}
+		this.$bullets.find('li')
+		  .removeClass('active')
+		  .eq(this.activeSlide)
+		  .addClass('active');
+	}
     },
-    
+
+
     resetAndUnlock: function () {
       this.$slides
-      	.eq(this.prevActiveSlide)
-      	.css({"z-index" : 1});
+	.eq(this.prevActiveSlide)
+	.css({"z-index" : 1});
       this.unlock();
       this.options.afterSlideChange.call(this, this.$slides.eq(this.prevActiveSlide), this.$slides.eq(this.activeSlide));
     },
-    
+
+
     shift: function (direction) {
       var slideDirection = direction;
-      
+
+
       //remember previous activeSlide
       this.prevActiveSlide = this.activeSlide;
-      
+
+
       //exit function if bullet clicked is same as the current image
       if (this.prevActiveSlide == slideDirection) { return false; }
-      
+
+
       if (this.$slides.length == "1") { return false; }
       if (!this.locked) {
         this.lock();
@@ -432,21 +500,27 @@
           }
         } else {
           this.activeSlide = direction;
-          if (this.prevActiveSlide < this.activeSlide) { 
+          if (this.prevActiveSlide < this.activeSlide) {
+
             slideDirection = "next";
-          } else if (this.prevActiveSlide > this.activeSlide) { 
+          } else if (this.prevActiveSlide > this.activeSlide) {
+
             slideDirection = "prev"
           }
         }
 
         //set to correct bullet
-        this.setActiveBullet();  
-             
+        this.setActiveBullet();
+
+
+
         //set previous slide z-index to one below what new activeSlide will be
         this.$slides
           .eq(this.prevActiveSlide)
-          .css({"z-index" : 2});    
-            
+          .css({"z-index" : 2});
+
+
+
         //fade
         if (this.options.animation == "fade") {
           this.$slides
@@ -454,7 +528,8 @@
             .css({"opacity" : 0, "z-index" : 3})
             .animate({"opacity" : 1}, this.options.animationSpeed, this.resetAndUnlock);
         }
-        
+
+
         //horizontal-slide
         if (this.options.animation == "horizontal-slide") {
           if (slideDirection == "next") {
@@ -470,9 +545,11 @@
               .animate({"left" : 0}, this.options.animationSpeed, this.resetAndUnlock);
           }
         }
-            
+
+
         //vertical-slide
-        if (this.options.animation == "vertical-slide") { 
+        if (this.options.animation == "vertical-slide") {
+
           if (slideDirection == "prev") {
             this.$slides
               .eq(this.activeSlide)
@@ -486,7 +563,8 @@
               .animate({"top" : 0}, this.options.animationSpeed, this.resetAndUnlock);
           }
         }
-        
+
+
         //horizontal-push
         if (this.options.animation == "horizontal-push") {
           if (slideDirection == "next") {
@@ -508,7 +586,8 @@
               .animate({"left" : this.orbitWidth}, this.options.animationSpeed);
           }
         }
-        
+
+
         //vertical-push
         if (this.options.animation == "vertical-push") {
           if (slideDirection == "next") {
@@ -530,7 +609,8 @@
               .animate({top : -this.orbitHeight}, this.options.animationSpeed);
           }
         }
-        
+
+
         this.setCaption();
       }
     }
@@ -544,7 +624,8 @@
   };
 
 })(jQuery);
-        
+
+
 /*!
  * jQuery imageready Plugin
  * http://www.zurb.com/playground/
@@ -553,38 +634,42 @@
  * Released under the MIT License
  */
 (function ($) {
-  
+
+
   var options = {};
-  
+
+
   $.event.special.imageready = {
-    
+
+
     setup: function (data, namespaces, eventHandle) {
       options = data || options;
     },
-		
+
 		add: function (handleObj) {
 		  var $this = $(this),
 		      src;
-		      
+
+
 	    if ( this.nodeType === 1 && this.tagName.toLowerCase() === 'img' && this.src !== '' ) {
-  			if (options.forceLoad) {
-  			  src = $this.attr('src');
-  			  $this.attr('src', '');
-  			  bindToLoad(this, handleObj.handler);
+			if (options.forceLoad) {
+			  src = $this.attr('src');
+			  $this.attr('src', '');
+			  bindToLoad(this, handleObj.handler);
           $this.attr('src', src);
-  			} else if ( this.complete || this.readyState === 4 ) {
+			} else if ( this.complete || this.readyState === 4 ) {
           handleObj.handler.apply(this, arguments);
-  			} else {
-  			  bindToLoad(this, handleObj.handler);
-  			}
-  		}
+			} else {
+			  bindToLoad(this, handleObj.handler);
+			}
+		}
 		},
-		
+
 		teardown: function (namespaces) {
 		  $(this).unbind('.imageready');
 		}
 	};
-	
+
 	function bindToLoad(element, callback) {
 	  var $this = $(element);
 

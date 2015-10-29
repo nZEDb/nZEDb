@@ -14,34 +14,39 @@ $(document).ready( function () {
 		"sAjaxSource": "../../../examples/server_side/scripts/server_processing.php"
 	} );
 	var oSettings = oTable.fnSettings();
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
+
 		"Processing is off by default",
 		null,
 		function () { return oSettings.oFeatures.bProcessing == false; }
 	);
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
+
 		"Processing div is not in the DOM",
 		function () { oTable.oApi._fnProcessingDisplay( oSettings, true ); },
 		function () { return document.getElementById('example_processing') == null; }
 	);
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
+
 		"Processing div cannot be shown",
 		function () { oTable.oApi._fnProcessingDisplay( oSettings, true ); },
 		function () { return document.getElementById('example_processing') == null; }
 	);
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
+
 		"Processing div cannot be hidden",
 		function () { oTable.oApi._fnProcessingDisplay( oSettings, false ); },
 		function () { return document.getElementById('example_processing') == null; }
 	);
-	
-	
+
+
 	/* Check can disable */
-	oTest.fnWaitTest( 
+	oTest.fnWaitTest(
+
 		"Processing can be enabled",
 		function () {
 			oSession.fnRestore();
@@ -54,33 +59,38 @@ $(document).ready( function () {
 		},
 		function () { return oSettings.oFeatures.bProcessing == true; }
 	);
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
+
 		"Processing div is in the DOM",
 		function () { oTable.oApi._fnProcessingDisplay( oSettings, true ); },
 		function () { return document.getElementById('example_processing'); }
 	);
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
+
 		"Processing div is hidden by default",
 		function () { oTable.oApi._fnProcessingDisplay( oSettings, true ); },
 		function () { return document.getElementById('example_processing').style.visibility = "hidden"; }
 	);
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
+
 		"Processing div can be shown",
 		function () { oTable.oApi._fnProcessingDisplay( oSettings, true ); },
 		function () { return document.getElementById('example_processing').style.visibility = "visible"; }
 	);
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
+
 		"Processing div can be hidden",
 		function () { oTable.oApi._fnProcessingDisplay( oSettings, false ); },
 		function () { return document.getElementById('example_processing').style.visibility = "hidden"; }
 	);
-	
+
 	/* Enable makes no difference */
-	oTest.fnWaitTest( 
+	oTest.fnWaitTest(
+
 		"Processing disabled override",
 		function () {
 			oSession.fnRestore();
@@ -93,14 +103,15 @@ $(document).ready( function () {
 		},
 		function () { return oSettings.oFeatures.bProcessing == false; }
 	);
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
+
 		"Processing div is not in the DOM",
 		function () { oTable.oApi._fnProcessingDisplay( oSettings, true ); },
 		function () { return document.getElementById('example_processing') == null; }
 	);
-	
-	
-	
+
+
+
 	oTest.fnComplete();
 } );

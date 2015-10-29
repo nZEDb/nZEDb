@@ -19,7 +19,7 @@ function _fnAddColumn( oSettings, nTh )
 		"mData": oDefaults.mData ? oDefaults.oDefaults : iCol
 	} );
 	oSettings.aoColumns.push( oCol );
-	
+
 	/* Add a column specific filter */
 	if ( oSettings.aoPreSearchCols[ iCol ] === undefined || oSettings.aoPreSearchCols[ iCol ] === null )
 	{
@@ -28,24 +28,24 @@ function _fnAddColumn( oSettings, nTh )
 	else
 	{
 		var oPre = oSettings.aoPreSearchCols[ iCol ];
-		
+
 		/* Don't require that the user must specify bRegex, bSmart or bCaseInsensitive */
 		if ( oPre.bRegex === undefined )
 		{
 			oPre.bRegex = true;
 		}
-		
+
 		if ( oPre.bSmart === undefined )
 		{
 			oPre.bSmart = true;
 		}
-		
+
 		if ( oPre.bCaseInsensitive === undefined )
 		{
 			oPre.bCaseInsensitive = true;
 		}
 	}
-	
+
 	/* Use the column options function to initialise classes etc */
 	_fnColumnOptions( oSettings, iCol, null );
 }
@@ -61,7 +61,7 @@ function _fnAddColumn( oSettings, nTh )
 function _fnColumnOptions( oSettings, iCol, oOptions )
 {
 	var oCol = oSettings.aoColumns[ iCol ];
-	
+
 	/* User specified column options */
 	if ( oOptions !== undefined && oOptions !== null )
 	{
@@ -76,7 +76,7 @@ function _fnColumnOptions( oSettings, iCol, oOptions )
 			oCol.sType = oOptions.sType;
 			oCol._bAutoType = false;
 		}
-		
+
 		$.extend( oCol, oOptions );
 		_fnMap( oCol, oOptions, "sWidth", "sWidthOrig" );
 
@@ -104,13 +104,13 @@ function _fnColumnOptions( oSettings, iCol, oOptions )
 		return innerData;
 	};
 	oCol.fnSetData = _fnSetObjectDataFn( oCol.mData );
-	
+
 	/* Feature sorting overrides column specific when off */
 	if ( !oSettings.oFeatures.bSort )
 	{
 		oCol.bSortable = false;
 	}
-	
+
 	/* Check that the class assignment is correct for sorting */
 	if ( !oCol.bSortable ||
 		 ($.inArray('asc', oCol.asSorting) == -1 && $.inArray('desc', oCol.asSorting) == -1) )
@@ -137,7 +137,7 @@ function _fnColumnOptions( oSettings, iCol, oOptions )
 
 
 /**
- * Adjust the table column widths for new data. Note: you would probably want to 
+ * Adjust the table column widths for new data. Note: you would probably want to
  * do a redraw after calling this function!
  *  @param {object} oSettings dataTables settings object
  *  @memberof DataTable#oApi
@@ -149,7 +149,7 @@ function _fnAdjustColumnSizing ( oSettings )
 	{
 		return false;
 	}
-	
+
 	_fnCalculateColumnWidths( oSettings );
 	for ( var i=0 , iLen=oSettings.aoColumns.length ; i<iLen ; i++ )
 	{
@@ -208,7 +208,7 @@ function _fnVisbleColumns( oSettings )
 /**
  * Get an array of column indexes that match a given property
  *  @param {object} oSettings dataTables settings object
- *  @param {string} sParam Parameter in aoColumns to look for - typically 
+ *  @param {string} sParam Parameter in aoColumns to look for - typically
  *    bVisible or bSearchable
  *  @returns {array} Array of indexes with matched properties
  *  @memberof DataTable#oApi
@@ -237,7 +237,7 @@ function _fnDetectType( sData )
 {
 	var aTypes = DataTable.ext.aTypes;
 	var iLen = aTypes.length;
-	
+
 	for ( var i=0 ; i<iLen ; i++ )
 	{
 		var sType = aTypes[i]( sData );
@@ -246,7 +246,7 @@ function _fnDetectType( sData )
 			return sType;
 		}
 	}
-	
+
 	return 'string';
 }
 
@@ -261,7 +261,7 @@ function _fnReOrderIndex ( oSettings, sColumns )
 {
 	var aColumns = sColumns.split(',');
 	var aiReturn = [];
-	
+
 	for ( var i=0, iLen=oSettings.aoColumns.length ; i<iLen ; i++ )
 	{
 		for ( var j=0 ; j<iLen ; j++ )
@@ -273,7 +273,7 @@ function _fnReOrderIndex ( oSettings, sColumns )
 			}
 		}
 	}
-	
+
 	return aiReturn;
 }
 
@@ -370,4 +370,3 @@ function _fnApplyColumnDefs( oSettings, aoColDefs, aoCols, fn )
 		}
 	}
 }
-

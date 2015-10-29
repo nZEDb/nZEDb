@@ -245,7 +245,7 @@
           hideBar();
         });
 
-        if (window.navigator.msPointerEnabled) {          
+        if (window.navigator.msPointerEnabled) {
           // support for mobile
           me.bind('MSPointerDown', function (e, b) {
             if (e.originalEvent.targetTouches.length)
@@ -265,7 +265,7 @@
               // scroll content
               scrollContent(diff, true);
               touchDif = e.originalEvent.targetTouches[0].pageY;
-              
+
             }
           });
         } else {

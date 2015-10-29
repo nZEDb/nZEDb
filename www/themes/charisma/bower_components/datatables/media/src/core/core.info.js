@@ -9,7 +9,7 @@ function _fnFeatureHtmlInfo ( oSettings )
 {
 	var nInfo = document.createElement( 'div' );
 	nInfo.className = oSettings.oClasses.sInfo;
-	
+
 	/* Actions that are to be taken once only for this feature */
 	if ( !oSettings.aanFeatures.i )
 	{
@@ -18,12 +18,12 @@ function _fnFeatureHtmlInfo ( oSettings )
 			"fn": _fnUpdateInfo,
 			"sName": "information"
 		} );
-		
+
 		/* Add id */
 		nInfo.id = oSettings.sTableId+'_info';
 	}
 	oSettings.nTable.setAttribute( 'aria-describedby', oSettings.sTableId+'_info' );
-	
+
 	return nInfo;
 }
 
@@ -40,7 +40,7 @@ function _fnUpdateInfo ( oSettings )
 	{
 		return;
 	}
-	
+
 	var
 		oLang = oSettings.oLanguage,
 		iStart = oSettings._iDisplayStart+1,
@@ -48,7 +48,7 @@ function _fnUpdateInfo ( oSettings )
 		iMax = oSettings.fnRecordsTotal(),
 		iTotal = oSettings.fnRecordsDisplay(),
 		sOut;
-	
+
 	if ( iTotal === 0 )
 	{
 		/* Empty record set */
@@ -68,13 +68,14 @@ function _fnUpdateInfo ( oSettings )
 	// Convert the macros
 	sOut += oLang.sInfoPostFix;
 	sOut = _fnInfoMacros( oSettings, sOut );
-	
+
 	if ( oLang.fnInfoCallback !== null )
 	{
-		sOut = oLang.fnInfoCallback.call( oSettings.oInstance, 
+		sOut = oLang.fnInfoCallback.call( oSettings.oInstance,
+
 			oSettings, iStart, iEnd, iMax, iTotal, sOut );
 	}
-	
+
 	var n = oSettings.aanFeatures.i;
 	for ( var i=0, iLen=n.length ; i<iLen ; i++ )
 	{
@@ -108,4 +109,3 @@ function _fnInfoMacros ( oSettings, str )
 		replace(/_TOTAL_/g, sTotal).
 		replace(/_MAX_/g,   sMax);
 }
-
