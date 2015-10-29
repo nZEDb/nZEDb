@@ -8,6 +8,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2015-10-29 ruhllatio
 	Fix: Tmux counters not accurately reflecting TV work (still off until new scrapers are finished)
+	Fix: SCR in ReleaseRemover and improve query times for all release_files operations on larger databases
 2015-10-28 ruhllatio
 	Chg: Speed up series list view query by removing releases join
 	Mrg: PR #1930, From Darius - Remove totalrows count from functions, api and templates
