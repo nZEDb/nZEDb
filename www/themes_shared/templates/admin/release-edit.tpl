@@ -1,6 +1,6 @@
 <h1>{$page->title}</h1>
 <form action="{$SCRIPT_NAME}?action=submit" method="POST">
-	<input type="hidden" name="from" value="{$smarty.get.from}" />
+	<input type="hidden" name="from" value="{$from}" />
 	<table class="input">
 		<tr>
 			<td><label for="name">Original Name:</label></td>
@@ -40,9 +40,15 @@
 			</td>
 		</tr>
 		<tr>
-			<td><label for="rageid">TvRage Id:</label></td>
+			<td><label for="videos_id">Video Id:</label></td>
 			<td>
-				<input id="rageid" class="short" name="rageid" type="text" value="{$release.rageid}" />
+				<input id="videos_id" class="short" name="videos_id" type="text" value="{$release.videos_id}" />
+			</td>
+		</tr>
+		<tr>
+			<td><label for="tv_episodes_id">TV Episode Id:</label></td>
+			<td>
+				<input id="tv_episodes_id" class="short" name="tv_episodes_id" type="text" value="{$release.tv_episodes_id}" />
 			</td>
 		</tr>
 		<tr>
@@ -55,24 +61,6 @@
 			<td><label for="anidbid">AniDB Id:</label></td>
 			<td>
 				<input id="anidbid" class="short" name="anidbid" type="text" value="{$release.anidbid}" />
-			</td>
-		</tr>
-		<tr>
-			<td><label for="seriesfull">Series Full:</label></td>
-			<td>
-				<input id="seriesfull" class="long" name="seriesfull" type="text" value="{$release.seriesfull}" />
-			</td>
-		</tr>
-		<tr>
-			<td><label for="season">Season:</label></td>
-			<td>
-				<input id="season" class="short" name="season" type="text" value="{$release.season}" />
-			</td>
-		</tr>
-		<tr>
-			<td><label for="episode">Episode:</label></td>
-			<td>
-				<input id="episode" class="short" name="episode" type="text" value="{$release.episode}" />
 			</td>
 		</tr>
 		<tr>

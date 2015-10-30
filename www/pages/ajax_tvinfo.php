@@ -1,7 +1,7 @@
 <?php
 
 use nzedb\Releases;
-use nzedb\TvRage;
+use nzedb\Videos;
 
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
@@ -19,19 +19,18 @@ if (!$rel) {
 } else {
 	//print "<h3 class=\"tooltiphead\">episode info...</h3>\n";
 	print "<ul>\n";
-	if (isset($rel['tvtitle'])) {
-		print "<li>" . htmlentities($rel["tvtitle"], ENT_QUOTES) . "</li>\n";
+	if (isset($rel['title'])) {
+		print "<li>" . htmlentities($rel["title"], ENT_QUOTES) . "</li>\n";
 	}
-	print "<li>Aired on " . date("F j, Y", strtotime($rel["tvairdate"])) . "</li>\n";
+	print "<li>Aired on " . date("F j, Y", strtotime($rel["firstaired"])) . "</li>\n";
 	print "</ul>";
 
-
-	if ($rel["rageid"] > 0) {
-		$t = new TvRage(['Settings' => $page->settings]);
-		$rage = $t->getByRageID($rel["rageid"]);
-		if (count($rage) > 0) {
-			if ($rage[0]["imgdata"] != "") {
-				print "<img class=\"shadow\" src=\"" . WWW_TOP . "/getimage?type=tvrage&amp;id=" . $rage[0]["id"] . "\" width=\"180\"/>";
+	if ($rel["videos_id"] > 0) {
+		$t = new Videos(['Settings' => $page->settings]);
+		$show = $t->getByVideoID($rel["videos_id"]);
+		if (count($show) > 0) {
+			if ($show["image"] == 1) {
+				print "<img class=\"shadow\" src=\"/covers/tvshows/" . $show["id"] . ".jpg\" width=\"180\"/>";
 			}
 		}
 	}

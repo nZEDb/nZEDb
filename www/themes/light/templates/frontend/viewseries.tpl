@@ -3,13 +3,13 @@
 	<p>{$nodata}</p>
 {else}
 <h1>
-{foreach $rage as $r}
+{foreach $show as $s}
 	{if $isadmin}
-		<a title="Edit rage data" href="{$smarty.const.WWW_TOP}/admin/rage-edit.php?id={$r.id}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}">{$r.releasetitle} </a>
+		<a title="Edit Show data" href="{$smarty.const.WWW_TOP}/admin/show-edit.php?id={$s.id}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}">{$s.title} </a>
 	{else}
-		{$r.releasetitle}
+		{$s.title}
 	{/if}
-	{if !$r@last} / {/if}
+	{if !$s@last} / {/if}
 {/foreach}
 
 {if $catname != ''} in {$catname|escape:"htmlall"}{/if}
@@ -17,9 +17,8 @@
 </h1>
 
 <div class="tvseriesheading">
-	{if $rage[0].imgdata != ""}<img class="shadow" alt="{$rage[0].releasetitle} Logo" src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$rage[0].id}" />{/if}
+	{if $show.image != 0}<img class="shadow" alt="{$show.title} Logo" src="{$smarty.const.WWW_TOP}/covers/{$show.id}.jpg" />{/if}
 	<p>
-		{if $seriesgenre != ''}<b>{$seriesgenre}</b><br />{/if}
 		<span class="descinitial">{$seriesdescription|escape:"htmlall"|nl2br|magicurl|truncate:"1500":" <a class=\"descmore\" href=\"#\">more...</a>"}</span>
 		{if $seriesdescription|strlen > 1500}<span class="descfull">{$seriesdescription|escape:"htmlall"|nl2br|magicurl}</span>{/if}
 	</p>
@@ -28,18 +27,18 @@
 <b>My Shows</b>:
 <span>
 {if $myshows.id != ''}
-&nbsp;[ <a href="{$smarty.const.WWW_TOP}/myshows/edit/{$rage[0].rageid}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows" rel="edit" name="series{$rage[0].rageid}" title="Edit">Edit</a> ]
-&nbsp;[ <a href="{$smarty.const.WWW_TOP}/myshows/delete/{$rage[0].rageid}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows" rel="remove" name="series{$rage[0].rageid}" title="Remove from My Shows">Remove</a> ]
+&nbsp;[ <a href="{$smarty.const.WWW_TOP}/myshows/edit/{$show.id}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows" rel="edit" name="series{$show.id}" title="Edit">Edit</a> ]
+&nbsp;[ <a href="{$smarty.const.WWW_TOP}/myshows/delete/{$show.id}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows" rel="remove" name="series{$show.id}" title="Remove from My Shows">Remove</a> ]
 {else}
-&nbsp;[ <a href="{$smarty.const.WWW_TOP}/myshows/add/{$rage[0].rageid}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows" rel="add" name="series{$rage[0].rageid}" title="Add to My Shows">Add</a> ]
+&nbsp;[ <a href="{$smarty.const.WWW_TOP}/myshows/add/{$show.id}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows" rel="add" name="series{$show.id}" title="Add to My Shows">Add</a> ]
 {/if}
 
 <form id="nzb_multi_operations_form" action="get">
 
 <div class="nzb_multi_operations">
 	<div style="padding-bottom:10px;" >
-		<a target="_blank" href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$rage[0].rageid}" title="View in TvRage">View in Tv Rage</a> |
-		<a href="{$smarty.const.WWW_TOP}/rss?rage={$rage[0].rageid}{if $category != ''}&amp;t={$category}{/if}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">Rss Feed for this Series</a>
+		{if $show.tvrage !== 0}<a target="_blank" href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$show.tvrage}" title="View in TvRage">View in Tv Rage</a>{/if}
+		<a href="{$smarty.const.WWW_TOP}/rss?rage={$show.id}{if $category != ''}&amp;t={$category}{/if}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">Rss Feed for this Series</a>
 	</div>
 	<small>With Selected:</small>
 	<input type="button" class="nzb_multi_operations_download" value="Download NZBs" />
@@ -84,7 +83,7 @@
 							<div class="btns">
 								{if $result.nfoid > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}" title="View Nfo" class="modal_nfo rndbtnsml" rel="nfo">Nfo</a>{/if}
 								{if $result.haspreview == 1 && $userdata.canpreview == 1}<a href="{$smarty.const.WWW_TOP}/covers/preview/{$result.guid}_thumb.jpg" name="name{$result.guid}" title="Screenshot of {$result.searchname|escape:"htmlall"}" class="modal_prev rndbtnsml" rel="preview">Preview</a>{/if}
-								{if $result.tvairdate != ""}<span class="rndbtnsml" title="{$result.tvtitle} Aired on {$result.tvairdate|date_format}">Aired {if $result.tvairdate|strtotime > $smarty.now}in future{else}{$result.tvairdate|daysago}{/if}</span>{/if}
+								{if $result.firstaired != ""}<span class="rndbtnsml" title="{$result.title} Aired on {$result.firstaired|date_format}">Aired {if $result.firstaired|strtotime > $smarty.now}in future{else}{$result.firstaired|daysago}{/if}</span>{/if}
 								{if $result.reid > 0}<span class="mediainfo rndbtnsml" title="{$result.guid}">Media</span>{/if}
 							</div>
 
@@ -96,7 +95,7 @@
 						</div>
 					</td>
 					<td class="check"><input id="chk{$result.guid|substr:0:7}" type="checkbox" class="nzb_check" name="{$seasonnum}" value="{$result.guid}" /></td>
-					<td class="less"><a title="This series in {$result.category_name}" href="{$smarty.const.WWW_TOP}/series/{$result.rageid}?t={$result.categoryid}">{$result.category_name}</a></td>
+					<td class="less"><a title="This series in {$result.category_name}" href="{$smarty.const.WWW_TOP}/series/{$result.videos_id}?t={$result.categoryid}">{$result.category_name}</a></td>
 					<td class="less mid" width="40" title="{$result.postdate}">{$result.postdate|timeago}</td>
 					<td width="40" class="less right">{$result.size|fsize_format:"MB"}{if $result.completion > 0}<br />{if $result.completion < 100}<span class="warning">{$result.completion}%</span>{else}{$result.completion}%{/if}{/if}</td>
 					<td class="less mid">

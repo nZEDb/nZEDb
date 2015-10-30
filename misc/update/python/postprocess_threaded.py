@@ -142,10 +142,10 @@ elif sys.argv[1] == "movie":
 	cur[0].execute("SELECT LEFT(guid, 1) FROM releases WHERE nzbstatus = 1 AND searchname IS NOT NULL AND imdbid IS NULL AND categoryid BETWEEN 2000 AND 2999 GROUP BY LEFT(guid, 1) "+orderBY+" LIMIT 16")
 	datas = cur[0].fetchall()
 elif sys.argv[1] == "tv" and len(sys.argv) == 3 and sys.argv[2] == "clean":
-	cur[0].execute("SELECT LEFT(guid, 1) FROM releases WHERE nzbstatus = 1 AND isrenamed = 1 AND searchname IS NOT NULL AND rageid = -1 AND categoryid BETWEEN 5000 AND 5999 GROUP BY LEFT(guid, 1) "+orderBY+" LIMIT 16")
+	cur[0].execute("SELECT LEFT(guid, 1) FROM releases WHERE nzbstatus = 1 AND isrenamed = 1 AND searchname IS NOT NULL AND videos_id = 0 AND categoryid BETWEEN 5000 AND 5999 GROUP BY LEFT(guid, 1) "+orderBY+" LIMIT 16")
 	datas = cur[0].fetchall()
 elif sys.argv[1] == "tv":
-	cur[0].execute("SELECT LEFT(guid, 1) FROM releases WHERE nzbstatus = 1 AND searchname IS NOT NULL AND rageid = -1 AND categoryid BETWEEN 5000 AND 5999 GROUP BY LEFT(guid, 1) "+orderBY+" LIMIT 16")
+	cur[0].execute("SELECT LEFT(guid, 1) FROM releases WHERE nzbstatus = 1 AND searchname IS NOT NULL AND videos_id = 0 AND categoryid BETWEEN 5000 AND 5999 GROUP BY LEFT(guid, 1) "+orderBY+" LIMIT 16")
 	datas = cur[0].fetchall()
 
 #close connection to mysql

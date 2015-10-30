@@ -27,7 +27,7 @@
 	{/if}
 	{foreach from=$results item=result}
 		<tr class="{cycle values=",alt"}">
-			{assign var="icon" value='themes/charisma/images/fileicons/'|cat:$result.pathinfo.extension|cat:".png"}
+			{assign var="icon" value='themes_shared/images/fileicons/'|cat:$result.pathinfo.extension|cat:".png"}
 			{if $result.isdir == "1"}
 				{assign var="icon" value='folder'}
 			{elseif $result.pathinfo.extension == "" || !is_file("$icon")}
@@ -36,7 +36,7 @@
 				{assign var="icon" value=$result.pathinfo.extension}
 			{/if}
 			<td><img title=".{$result.pathinfo.extension}" alt="{$result.pathinfo.extension}"
-					 src="{$smarty.const.WWW_TOP}/themes/charisma/images/fileicons/{$icon}.png"/></td>
+					 src="{$smarty.const.WWW_TOP}/themes_shared/images/fileicons/{$icon}.png"/></td>
 			<td class="item">
 				{if $result.isdir == 1}
 					<a href="?sp={$subpath|escape:"url"}{$result.name|escape:"url"}&lm={if $lm}1{else}0{/if}">{$result.name|escape:"htmlall"}</a>
@@ -100,7 +100,7 @@
 				{/if}
 				{if $result.release.rage_imgdata != ""}
 					<img width="120" class="shadow" alt="{$result.release.showtitle} Logo"
-						 src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$result.release.rg_id}"/>
+						 src="{$smarty.const.WWW_TOP}/covers/tvrage/{$result.release.rg_id}.jpg"/>
 				{/if}
 				{if $result.release.mu_cover == "1"}
 					<img class="shadow"

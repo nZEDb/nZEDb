@@ -66,7 +66,16 @@ class AEBN
 	 *
 	 * @var array
 	 */
-	protected $_res = [];
+	protected $_res = [
+		'backcover'		=> [],
+		'boxcover'		=> [],
+		'cast'			=> [],
+		'director'		=> [],
+		'genres'		=> [],
+		'productinfo'	=> [],
+		'sypnosis'		=> [],
+		'trailers'		=> ['url' =>[]],
+	];
 
 	/**
 	 * If searchTerm is found
@@ -91,7 +100,6 @@ class AEBN
 	 * @var array - straight, gay
 	 */
 	protected $_whichSite = [];
-
 
 
 	/**

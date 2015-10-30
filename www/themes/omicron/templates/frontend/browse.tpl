@@ -1,6 +1,4 @@
 <div class="header">
-	{assign var="catsplit" value=">"|explode:$catname}
-	<h2>{$catsplit[0]} > <strong>{if isset($catsplit[1])} {$catsplit[1]}{/if}</strong></h2>
 	<div class="breadcrumb-wrapper">
 		<ol class="breadcrumb">
 			<li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li>
@@ -97,8 +95,8 @@
 															 type="checkbox" class="nzb_check"
 															 value="{$result.guid}"/></td>
 									<td>
-										<a href="{$smarty.const.WWW_TOP}/details/{$result.guid}"
-										   class="title">{$result.searchname|escape:"htmlall"|replace:".":" "}</a>
+										<a href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}"
+										   class="title">{$result.searchname|escape:"htmlall"|replace:".":" "}</a>{if $result.failed > 0} <i class="fa fa-exclamation-circle" style="color: red" title="This release has failed to download for some users"></i>{/if}
 										<br/>
 													<span class="label label-default">{$result.grabs}
 														Grab{if $result.grabs != 1}s{/if}</span>
@@ -111,19 +109,20 @@
 										{if $result.haspreview == 1 && $userdata.canpreview == 1}<span><a
 													href="{$smarty.const.WWW_TOP}/covers/preview/{$result.guid}_thumb.jpg"
 													name="name{$result.guid}" class="modal_prev label label-default" rel="preview">Preview</a></span>{/if}
-										{if $result.rageid > 0}<span class="label label-default"><a
-													href="{$smarty.const.WWW_TOP}/series/{$result.rageid}"
-													class="text-muted">View TV</a></span>{/if}
+										{if $result.videos_id > 0}<span class="label label-default"><a
+													href="{$smarty.const.WWW_TOP}/series/{$result.videos_id}">View TV</a></span>{/if}
+										{if isset($result.firstaired) && $result.firstaired != ""}<span class="label label-default" title="{$result.guid}">
+											Aired {if $result.firstaired|strtotime > $smarty.now}in future{else}{$result.firstaired|daysago}{/if}</span>{/if}
 										{if $result.anidbid > 0}<span class="label label-default"><a
-													href="{$smarty.const.WWW_TOP}/anime/{$result.anidbid}"
-													class="text-muted">View Anime</a></span>{/if}
-									</td>
+													href="{$smarty.const.WWW_TOP}/anime/{$result.anidbid}">View Anime</a></span>{/if}
+										{if $result.failed > 0}<span class="label label-default">
+											<i class ="fa fa-thumbs-o-up"></i> {$result.grabs} Grab{if $result.grabs != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$result.failed} Failed Download{if $result.failed != 1}s{/if}</span>{/if}									</td>
 									<td><span class="label label-default">{$result.category_name}</span>
 									</td>
 									<td>{$result.postdate|timeago}</td>
 									<td>{$result.size|fsize_format:"MB"}</td>
 									<td class="icon_nzb"><a
-												href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}"><i
+												href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"htmlall"}"><i
 													class="fa fa-download text-muted"
 													title="Download NZB"></i></a>
 										<a href="{$smarty.const.WWW_TOP}/details/{$result.guid}/#comments"><i

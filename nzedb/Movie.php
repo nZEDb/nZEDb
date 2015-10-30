@@ -5,6 +5,7 @@ require_once nZEDb_LIBS . 'TMDb.php';
 
 use nzedb\db\Settings;
 use nzedb\utility\Misc;
+use nzedb\processing\tv\TraktTv;
 
 /**
  * Class Movie
@@ -22,6 +23,11 @@ class Movie
 	 * @var \nzedb\db\Settings
 	 */
 	public $pdo;
+
+	/**
+	 * @var null|TraktTv
+	 */
+	public $traktTv = null;
 
 	/**
 	 * Current title being passed through various sites/api's.
@@ -409,11 +415,6 @@ class Movie
 	}
 
 	/**
-	 * @var null|TraktTv
-	 */
-	public $traktTv = null;
-
-	/**
 	 * Get trailer using IMDB Id.
 	 *
 	 * @param int $imdbID
@@ -435,7 +436,7 @@ class Movie
 			$this->traktTv = new TraktTv(['Settings' => $this->pdo]);
 		}
 
-		$data = $this->traktTv->movieSummary('tt' . $imdbID, 'full,images');
+		$data = $this->traktTv->client->movieSummary('tt' . $imdbID, 'full,images');
 		if ($data) {
 			$this->parseTraktTv($data);
 			if (isset($data['trailer']) && !empty($data['trailer'])) {
@@ -457,29 +458,35 @@ class Movie
 	 * Parse trakt info, insert into DB.
 	 *
 	 * @param array $data
+	 *
+	 * @return mixed|void
 	 */
 	public function parseTraktTv(&$data)
 	{
 		if (!isset($data['ids']['imdb']) || empty($data['ids']['imdb'])) {
-			return;
+			return false;
 		}
+
 		if (isset($data['trailer']) && !empty($data['trailer'])) {
 			$data['trailer'] = str_ireplace(
 				'http://', 'https://', str_ireplace('watch?v=', 'embed/', $data['trailer'])
 			);
+			return $data['trailer'];
 		}
+
+		$imdbid = (strpos($data['ids']['imdb'], 'tt') === 0) ? substr($data['ids']['imdb'], 2) : $data['ids']['imdb'];
 		$cover = 0;
-		if (is_file($this->imgSavePath . $data['ids']['imdb'] . '-cover.jpg')) {
+		if (is_file($this->imgSavePath . $imdbid) . '-cover.jpg') {
 			$cover = 1;
 		} else {
 			$link = $this->checkTraktValue($data['images']['poster']['thumb']);
 			if ($link) {
-				$cover = $this->releaseImage->saveImage($data['ids']['imdb'] . '-cover', $link, $this->imgSavePath);
+				$cover = $this->releaseImage->saveImage($imdbid . '-cover', $link, $this->imgSavePath);
 			}
 		}
 		$this->update([
 			'genres'   => $this->checkTraktValue($data['genres']),
-			'imdbid'   => $this->checkTraktValue(str_ireplace('tt', '', $data['ids']['imdb'])),
+			'imdbid'   => $this->checkTraktValue($imdbid),
 			'language' => $this->checkTraktValue($data['language']),
 			'plot'     => $this->checkTraktValue($data['overview']),
 			'rating'   => round($this->checkTraktValue($data['rating']), 1),
@@ -985,7 +992,7 @@ class Movie
 		if (is_null($this->traktTv)) {
 			$this->traktTv = new TraktTv(['Settings' => $this->pdo]);
 		}
-		$resp = $this->traktTv->movieSummary('tt' . $imdbId, 'full,images');
+		$resp = $this->traktTv->client->movieSummary('tt' . $imdbId, 'full,images');
 		if ($resp !== false) {
 			$ret = [];
 			if (isset($resp['images']['poster']['thumb'])) {
@@ -1136,7 +1143,7 @@ class Movie
 					}
 
 					// Check on trakt.
-					$data = $this->traktTv->movieSummary($movieName, 'full,images');
+					$data = $this->traktTv->client->movieSummary($movieName, 'full,images');
 					if ($data !== false) {
 						$this->parseTraktTv($data);
 						if (isset($data['ids']['imdb'])) {

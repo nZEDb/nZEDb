@@ -85,18 +85,15 @@
 <h2>Additional Feeds</h2>
 <ul style="text-align: left;">
 	<li>
-		Tv Series (Use the TVRage id)<br/>
-		<a href="{$smarty.const.WWW_TOP}/rss?rage=1234&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">{$smarty.const.WWW_TOP}
-			/rss/?rage=1234&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}</a>
+		Tv Series (Use the TVRage ID)<br/>
+		<a href="{$smarty.const.WWW_TOP}/rss?show={$show}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">{$smarty.const.WWW_TOP}/rss/?show={$show}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}</a>
 	</li>
 	<li>
-		Tv Series aired in last seven days (Using the TVRage id and airdate)<br/>
-		<a href="{$smarty.const.WWW_TOP}/rss?rage=1234&amp;airdate=7&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">{$smarty.const.WWW_TOP}
-			/rss/?rage=1234&amp;airdate=7&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}</a>
+		Tv Series aired in last seven days (Using the Video ID and airdate)<br/>
+		<a href="{$smarty.const.WWW_TOP}/rss?show={$show}&amp;airdate=7&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">{$smarty.const.WWW_TOP}/rss/?show={$show}&amp;airdate=7&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}</a>
 	</li>
 	<li>
-		Anime Feed (Use the AniDB id)<br/>
-		<a href="{$smarty.const.WWW_TOP}/rss?anidb=1234&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">{$smarty.const.WWW_TOP}
-			/rss/?anidb=1234&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}</a>
+		Anime Feed (Use the AniDB ID)<br/>
+		<a href="{$smarty.const.WWW_TOP}/rss?anidb={$anidb}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">{$smarty.const.WWW_TOP}/rss/?anidb={$anidb}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}</a>
 	</li>
 </ul>
