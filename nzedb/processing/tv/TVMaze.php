@@ -108,7 +108,7 @@ class TVMaze extends TV
 
 						if (is_array($tvmazeShow)) {
 							$videoId = $this->add($tvmazeShow);
-							$tvmazeid = (int)$tvmazeShow['tvmazeid'];
+							$tvmazeid = (int)$tvmazeShow['tvmaze'];
 						}
 					} else if ($this->echooutput) {
 						echo $this->pdo->log->primaryOver("Video ID for ") .
@@ -162,7 +162,7 @@ class TVMaze extends TV
 						}
 					}
 				} //Processing failed, set the episode ID to the next processing group
-				$this->setVideoNotFound(parent::PROCESS_IMDB, $row['id']);
+				$this->setVideoNotFound(parent::PROCESS_TRAKT, $row['id']);
 			}
 		}
 	}

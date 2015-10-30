@@ -121,7 +121,7 @@ class TVDB extends TV
 						if (is_array($tvdbShow)) {
 							$tvdbShow['country'] = $country;
 							$videoId = $this->add($tvdbShow);
-							$tvdbid = (int)$tvdbShow['tvdbid'];
+							$tvdbid = (int)$tvdbShow['tvdb'];
 						}
 
 					} else if ($this->echooutput) {
