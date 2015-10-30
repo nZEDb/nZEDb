@@ -6,6 +6,10 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2015-10-30 niel
+	Mrg: dev => next-master to prepare for updating master.
+
+
 2015-10-26 ruhllatio
 	Fix: Some local lookups were passing with invalid information causing them to show up as season 0.
 	Fix: View TV Series query speedup caused incorrect join placement (2nd Attempt)
@@ -68,6 +72,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Mrg: dev => next-master to prepare for updating master.
 	Mrg: PR 1885, from Darius - Add statistical info for grabbed/failed releases to cover, browse and search pages.
 	Mrg: PR 1889, from Darius - Automatically generate comment on failed download.
+
 
 2015-10-01 bart39
 	Fix: updated predb insert trigger that got missed for new installs, fixes #1875.
