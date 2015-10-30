@@ -35,7 +35,7 @@
 								{elseif $type == 'PC'}
 									class="library-games"
 								{elseif $type == 'TV'}
-									class="library-games"
+									class="library-show"
 								{elseif $type == 'Anime'}
 									class="library-show"
 								{/if}
@@ -189,6 +189,13 @@
 											<div class="icon icon_tvrage">
 												<a class="divlink" title="View in TvRage"
 												   href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$result.tvrage}"
+												   target="_blank"></a>
+											</div>
+										{/if}
+										{if $result.tvmaze > 0}
+											<div class="icon icon_tvmaze">
+												<a class="divlink" title="View in TVMaze"
+												   href="{$site->dereferrer_link}http://www.tvmaze.com/shows/{$result.tvmaze}"
 												   target="_blank"></a>
 											</div>
 										{/if}
