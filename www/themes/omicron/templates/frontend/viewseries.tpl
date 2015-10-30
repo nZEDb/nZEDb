@@ -40,13 +40,21 @@
 	<div class="btn-group">
 		<a class="btn btn-sm btn-default"
 		   href="{$smarty.const.WWW_TOP}/rss?show={$show.id}{if $category != ''}&amp;t={$category}{/if}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">RSS for TV Show <i class="fa fa-rss"></i></a>
-		{if $result.source = 1}
-			{if $show.tvdb > 0}<a class="btn btn-sm btn-info" target="_blank"
-									 href="{$site->dereferrer_link}http://thetvdb.com/?tab=series&id={$show.tvdb}&lid=7"
-									 title="View at TheTVDB">TheTVDB</a>{/if}
-		{elseif $result.source = 3}
+		{if $show.source == 1}
 			<a class="btn btn-sm btn-info" target="_blank"
-			   href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$show.id}"
+			   href="{$site->dereferrer_link}http://thetvdb.com/?tab=series&id={$show.tvdb}"
+			   title="View at TheTVDB">TheTVDB</a>
+		{elseif $show.source == 2}
+			<a class="btn btn-sm btn-info" target="_blank"
+			   href="{$site->dereferrer_link}http://tvmaze.com/shows/{$show.tvmaze}"
+			   title="View at TVMaze">TVMaze</a>
+		{elseif $show.source == 3}
+			<a class="btn btn-sm btn-info" target="_blank"
+			   href="{$site->dereferrer_link}http://www.trakt.tv/shows/{$show.trakt}"
+			   title="View at TraktTv">Trakt</a>
+		{elseif $show.source == 6}
+			<a class="btn btn-sm btn-info" target="_blank"
+			   href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$show.tvrage}"
 			   title="View at TV Rage">TV Rage</a>
 		{/if}
 	</div>
@@ -107,14 +115,14 @@
 					<div class="panel-body pagination2">
 						<div class="tabbable">
 							<ul class="nav nav-tabs">
-								{foreach $seasons as $seasonnum => $season}
+								{foreach $seasons as $seasonnum => $season name = "seas"}
 									<li {if $smarty.foreach.seas.first}class="active"{/if}><a
 												title="View Season {$seasonnum}" href="#{$seasonnum}"
 												data-toggle="tab">{$seasonnum}</a></li>
 								{/foreach}
 							</ul>
 							<div class="tab-content">
-								{foreach $seasons as $seasonnum => $season}
+								{foreach $seasons as $seasonnum => $season name = "tv"}
 									<div class="tab-pane{if $smarty.foreach.tv.first} active{/if} fade in"
 										 id="{$seasonnum}">
 										<table class="tb_{$seasonnum} data table table-condensed table-bordered table-responsive table-hover"
