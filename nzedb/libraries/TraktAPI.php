@@ -228,7 +228,7 @@ HEADERS;
 	 *
 	 * @param integer	$id		The ID to look for.
 	 * @param string	$site	One of the supported sites ('imdb', 'tmdb', 'trakt', 'tvdb', 'tvrage')
-	 * @param string	$type	videos.type flag (-1 for episodes).
+	 * @param integer	$type	videos.type flag (-1 for episodes).
 	 *
 	 * @return bool
 	 */
@@ -254,7 +254,7 @@ HEADERS;
 		}
 
 		$url = self::API_URL . "search?id_type=$type&id=$id";
-var_dump($url);
+
 		return $this->getJsonArray($url, '');
 	}
 
@@ -322,10 +322,8 @@ var_dump($url);
 	 */
 	public function slugify($phrase)
 	{
-		$result = strtolower($phrase);
-		$result = preg_replace('#[^a-z0-9\s-]#', '', $result);
-		$result = trim(preg_replace('#[\s-]+#', ' ', $result));
-		$result = preg_replace('#\s#', '-', $result);
+		$result = preg_replace('#[^a-z0-9\s-]#', '', strtolower($phrase));
+		$result = preg_replace('#\s#', '-', trim(preg_replace('#[\s-]+#', ' ', $result)));
 
 		return $result;
 	}
