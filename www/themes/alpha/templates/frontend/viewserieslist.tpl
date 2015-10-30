@@ -98,12 +98,12 @@
 								<span class="label label-danger">
 									{if $s.source == 1}
 										<a title="View at TVDB" target="_blank" href="{$site->dereferrer_link}http://thetvdb.com/?tab=series&id={$s.tvdb}">TVDB</a>
-									{else if $s.source == 2}
-										<a title="View at Trakt" target="_blank" href="{$site->dereferrer_link}http://www.trakt.tv/shows/{$s.trakt}">Trakt</a>
-									{else if $s.source == 3}
-										<a title="View at TVRage" target="_blank" href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$s.tvrage}">TVRage</a>
-									{else if $s.source == 4}
+										{else if $s.source == 2}
 										<a title="View at TVMaze" target="_blank" href="{$site->dereferrer_link}http://tvmaze.com/shows/{$s.tvmaze}">TVMaze</a>
+									{else if $s.source == 3}
+										<a title="View at Trakt" target="_blank" href="{$site->dereferrer_link}http://www.trakt.tv/shows/{$s.trakt}">Trakt</a>
+									{else if $s.source == 6}
+										<a title="View at TVRage" target="_blank" href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$s.tvrage}">TVRage</a>
 									{/if}
 								</span>
 								<span class="label label-warning">
