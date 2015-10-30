@@ -336,19 +336,17 @@ class TVDB extends TV
 		preg_match('/tt(?P<imdbid>\d{6,7})$/i', $show->imdbId, $imdb);
 
 		return [
-			'tvdbid'    => (int)$show->id,
-			'column'    => 'tvdb',
-			'siteid'    => (int)$show->id,
 			'title'     => (string)$show->name,
 			'summary'   => (string)$show->overview,
 			'started'   => (string)$show->firstAired->format($this->timeFormat),
 			'publisher' => (string)$show->network,
 			'source'    => (int)parent::SOURCE_TVDB,
-			'imdbid'    => (int)(isset($imdb['imdbid']) ? $imdb['imdbid'] : 0),
-			'traktid'   => 0,
-			'tvrageid'  => 0,
-			'tvmazeid'  => 0,
-			'tmdbid'    => 0
+			'imdb'    => (int)(isset($imdb['imdbid']) ? $imdb['imdbid'] : 0),
+			'tvdb'    => (int)$show->id,
+			'trakt'   => 0,
+			'tvrage'  => 0,
+			'tvmaze'  => 0,
+			'tmdb'    => 0
 		];
 	}
 

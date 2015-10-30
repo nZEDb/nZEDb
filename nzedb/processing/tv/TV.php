@@ -46,6 +46,11 @@ abstract class TV extends Videos
 	public $imgSavePath;
 
 	/**
+	 * @var array Site ID columns for TV
+	 */
+	public $siteColumns;
+
+	/**
 	 * @param array $options Class instances / Echo to CLI.
 	 */
 	public function __construct(array $options = [])
@@ -61,6 +66,7 @@ abstract class TV extends Videos
 		$this->catWhere = 'categoryid BETWEEN 5000 AND 5999 AND categoryid NOT IN (5070)';
 		$this->tvqty = ($this->pdo->getSetting('maxrageprocessed') != '') ? $this->pdo->getSetting('maxrageprocessed') : 75;
 		$this->imgSavePath = nZEDb_COVERS . 'tvshows' . DS;
+		$this->siteColumns = ['tvdb', 'trakt', 'tvrage', 'tvmaze', 'imdb', 'tmdb'];
 	}
 
 	/**
@@ -197,14 +203,23 @@ abstract class TV extends Videos
 	 */
 	public function add($showArr = array())
 	{
+		$videoId = false;
+
+		// Check if the country is not a proper code and retrieve if not
 		if ($showArr['country'] !== '' && strlen($showArr['country']) > 2) {
 			$showArr['country'] = $this->countryCode($showArr['country']);
 		}
 
-		// Check if video already exists based on site info
+		// Check if video already exists based on site ID info
 		// if that fails be sure we're not inserting duplicates by checking the title
-
-		$videoId = $this->getVideoIDFromSiteID($showArr['column'], $showArr['siteid']);
+		foreach ($this->siteColumns AS $column) {
+			if ($showArr[$column] > 0) {
+				$videoId = $this->getVideoIDFromSiteID($column, $showArr[$column]);
+			}
+			if ($videoId !== false) {
+				break;
+			}
+		}
 
 		if ($videoId === false) {
 			$videoId = $this->getByTitleQuery($showArr['title']);
@@ -220,12 +235,12 @@ abstract class TV extends Videos
 					$this->pdo->escapeString((isset($showArr['country']) ? $showArr['country'] : '')),
 					$this->pdo->escapeString($showArr['started']),
 					$showArr['source'],
-					$showArr['tvdbid'],
-					$showArr['traktid'],
-					$showArr['tvrageid'],
-					$showArr['tvmazeid'],
-					$showArr['imdbid'],
-					$showArr['tmdbid']
+					$showArr['tvdb'],
+					$showArr['trakt'],
+					$showArr['tvrage'],
+					$showArr['tvmaze'],
+					$showArr['imdb'],
+					$showArr['tmdb']
 				)
 			);
 			$this->pdo->queryInsert(
@@ -290,20 +305,26 @@ abstract class TV extends Videos
 			$showArr['country'] = $this->countryCode($showArr['country']);
 		}
 
-		$ifString = 'IF(%s = 0, %s, %s)';
+		$ifStringID = 'IF(%s = 0, %s, %s)';
+		$ifStringInfo = "IF(%s = '', %s, %s)";
 
 		$this->pdo->queryExec(
 			sprintf('
-				UPDATE videos
-				SET countries_id = %s, tvdb = %s, trakt = %s, tvrage = %s, tvmaze = %s, imdb = %s, tmdb = %s
-				WHERE id = %d',
-				$this->pdo->escapeString((isset($showArr['country']) ? $showArr['country'] : '')),
-				sprintf($ifString, 'tvdb', $showArr['tvdbid'], 'tvdb'),
-				sprintf($ifString, 'trakt', $showArr['traktid'], 'trakt'),
-				sprintf($ifString, 'tvrage', $showArr['tvrageid'], 'tvrage'),
-				sprintf($ifString, 'tvmaze', $showArr['tvmazeid'], 'tvmaze'),
-				sprintf($ifString, 'imdb', $showArr['imdbid'], 'imdb'),
-				sprintf($ifString, 'tmdb', $showArr['tmdbid'], 'tmdb'),
+				UPDATE videos v
+				LEFT JOIN tv_info tvi ON v.id = tvi.videos_id
+				SET v.countries_id = %s, v.tvdb = %s, v.trakt = %s, v.tvrage = %s,
+					v.tvmaze = %s, v.imdb = %s, v.tmdb = %s,
+					tvi.summary = %s, tvi.publisher = %s
+				WHERE v.id = %d',
+				sprintf($ifStringInfo, 'v.countries_id', $this->pdo->escapeString($showArr['country']), 'v.countries_id'),
+				sprintf($ifStringID, 'v.tvdb', $showArr['tvdb'], 'v.tvdb'),
+				sprintf($ifStringID, 'v.trakt', $showArr['trakt'], 'v.trakt'),
+				sprintf($ifStringID, 'v.tvrage', $showArr['tvrage'], 'v.tvrage'),
+				sprintf($ifStringID, 'v.tvmaze', $showArr['tvmaze'], 'v.tvmaze'),
+				sprintf($ifStringID, 'v.imdb', $showArr['imdb'], 'v.imdb'),
+				sprintf($ifStringID, 'v.tmdb', $showArr['tmdb'], 'v.tmdb'),
+				sprintf($ifStringInfo, 'tvi.summary', $this->pdo->escapeString($showArr['summary']), 'tvi.summary'),
+				sprintf($ifStringInfo, 'tvi.publisher', $this->pdo->escapeString($showArr['publisher']), 'tvi.publisher'),
 				$videoId
 			)
 		);
