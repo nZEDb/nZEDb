@@ -353,12 +353,12 @@ class TVDB extends TV
 			'started'   => (string)$show->firstAired->format($this->timeFormat),
 			'publisher' => (string)$show->network,
 			'source'    => (int)parent::SOURCE_TVDB,
-			'imdb'    => (int)(isset($imdb['imdbid']) ? $imdb['imdbid'] : 0),
-			'tvdb'    => (int)$show->id,
-			'trakt'   => 0,
-			'tvrage'  => 0,
-			'tvmaze'  => 0,
-			'tmdb'    => 0
+			'imdb'      => (int)(isset($imdb['imdbid']) ? $imdb['imdbid'] : 0),
+			'tvdb'      => (int)$show->id,
+			'trakt'     => 0,
+			'tvrage'    => 0,
+			'tvmaze'    => 0,
+			'tmdb'      => 0
 		];
 	}
 

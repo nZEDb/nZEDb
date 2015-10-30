@@ -353,12 +353,12 @@ class TVMaze extends TV
 			'publisher' => (string)$show->network,
 			'country'   => (string)$show->country,
 			'source'    => (int)parent::SOURCE_TVMAZE,
-			'imdb'    => 0,
-			'tvdb'    => (int)(isset($show->externalIDs['thetvdb']) ? $show->externalIDs['thetvdb'] : 0),
-			'tvmaze'  => (int)$show->id,
-			'trakt'   => 0,
-			'tvrage'  => (int)(isset($show->externalIDs['tvrage']) ? $show->externalIDs['tvrage'] : 0),
-			'tmdb'    => 0
+			'imdb'      => 0,
+			'tvdb'      => (int)(isset($show->externalIDs['thetvdb']) ? $show->externalIDs['thetvdb'] : 0),
+			'tvmaze'    => (int)$show->id,
+			'trakt'     => 0,
+			'tvrage'    => (int)(isset($show->externalIDs['tvrage']) ? $show->externalIDs['tvrage'] : 0),
+			'tmdb'      => 0
 		];
 	}
 

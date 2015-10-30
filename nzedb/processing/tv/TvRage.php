@@ -14,11 +14,6 @@ class TvRage extends TV
 	const MATCH_PROBABILITY = 75;
 
 	/**
-	 * @var array|bool|int|string
-	 */
-	public $rageqty;
-
-	/**
 	 * @var string
 	 */
 	public $showInfoUrl         = 'http://www.tvrage.com/shows/id-';
@@ -74,7 +69,6 @@ class TvRage extends TV
 	public function __construct(array $options = [])
 	{
 		parent::__construct($options);
-		$this->rageqty = ($this->pdo->getSetting('maxrageprocessed') != '') ? $this->pdo->getSetting('maxrageprocessed') : 75;
 		$this->xmlEpisodeInfoUrl    =  "http://services.tvrage.com/myfeeds/episodeinfo.php?key=" . TvRage::APIKEY;
 		$this->imgSavePath = nZEDb_COVERS . 'tvrage' . DS;
 	}
@@ -155,11 +149,11 @@ class TvRage extends TV
 						$this->setVideoIdFound($this->videoId, $arr['id'], $episodeId);
 					// Cant find videos_id, so set tv_episodes_id to PROCESS_TVMAZE.
 					} else {
-						$this->setVideoNotFound(parent::PROCESS_TVMAZE, $arr['id']);
+						$this->setVideoNotFound(parent::NO_MATCH_FOUND, $arr['id']);
 					}
 				// Not a tv episode, so set videos_id to n/a.
 				} else {
-					$this->setVideoNotFound(parent::PROCESS_TVMAZE, $arr['id']);
+					$this->setVideoNotFound(parent::NO_MATCH_FOUND, $arr['id']);
 				}
 			}
 		}
@@ -370,64 +364,36 @@ class TvRage extends TV
 
 				$highestPercent = 0;
 
-				foreach ($arrXml['show'] as $arr) {
+				foreach ($arrXml['show'] as $show) {
 
-					if ($title == $arr['name']) {
-						$matchedTitle = [
-							'title' => $arr['name'],
-							'showid' => $arr['showid'],
-							'country' => $this->countryCode($arr['country']),
-							'publisher' => $arr['network'],
-							'started' => date('Y-m-d', strtotime($arr['started'])),
-							'tvr' => $arr
-						];
+					if ($title == $show['name']) {
+						$matchedTitle = $show;
 						break;
 					}
 
 					// Get a match percentage based on our name and the name returned from tvr.
-					$matchPercent = $this->checkMatch($title, $arr['name'], self::MATCH_PROBABILITY);
+					$matchPercent = $this->checkMatch($title, $show['name'], self::MATCH_PROBABILITY);
 					if ($matchPercent > $highestPercent) {
-						$matchedTitle = [
-							'title'     => $arr['name'],
-							'showid'    => $arr['showid'],
-							'country'   => $this->countryCode($arr['country']),
-							'publisher' => $arr['network'],
-							'started'   => date('Y-m-d', strtotime($arr['started'])),
-							'tvr'       => $arr
-						];
+						$matchedTitle = $show;
 						$highestPercent = $matchPercent;
 					}
 
 					// Check if there are any akas for this result and get a match percentage for them too.
-					if (isset($arr['akas']['aka'])) {
-						if (is_array($arr['akas']['aka'])) {
+					if (isset($show['akas']['aka'])) {
+						if (is_array($show['akas']['aka'])) {
 							// Multiple akas.
-							foreach ($arr['akas']['aka'] as $aka) {
+							foreach ($show['akas']['aka'] as $aka) {
 								$matchPercent = $this->checkMatch($title, $aka, self::MATCH_PROBABILITY);
 								if ($matchPercent > $highestPercent) {
-									$matchedTitle = [
-										'title'     => $arr['name'],
-										'showid'    => $arr['showid'],
-										'country'   => $this->countryCode($arr['country']),
-										'publisher' => $arr['network'],
-										'started'   => date('Y-m-d', strtotime($arr['started'])),
-										'tvr'       => $arr
-									];
+									$matchedTitle = $show;
 									$highestPercent = $matchPercent;
 								}
 							}
 						} else {
 							// One aka.
-							$matchPercent = $this->checkMatch($title, $arr['akas']['aka'], self::MATCH_PROBABILITY);
+							$matchPercent = $this->checkMatch($title, $show['akas']['aka'], self::MATCH_PROBABILITY);
 							if ($matchPercent > $highestPercent) {
-								$matchedTitle = [
-									'title'     => $arr['name'],
-									'showid'    => $arr['showid'],
-									'country'   => $this->countryCode($arr['country']),
-									'publisher' => $arr['network'],
-									'started'   => date('Y-m-d', strtotime($arr['started'])),
-									'tvr'       => $arr
-								];
+								$matchedTitle = $show;
 								$highestPercent = $matchPercent;
 							}
 						}
@@ -439,6 +405,33 @@ class TvRage extends TV
 				}
 			}
 		}
-		return $matchedTitle;
+		return $this->formatShowArr($matchedTitle);
+	}
+
+	/**
+	 * Assigns API show response values to a formatted array for insertion
+	 * Returns the formatted array
+	 *
+	 * @param $show
+	 *
+	 * @return array
+	 */
+	private function formatShowArr($show)
+	{
+		return [
+			'title'     => (string)$show['name'],
+			'summary'   => (string)'',
+			'started'   => (string)date('Y-m-d', strtotime($show['started'])),
+			'publisher' => (string)$show['network'],
+			'country'   => (string)$show['country'],
+			'source'    => (int)parent::SOURCE_TVRAGE,
+			'imdb'      => 0,
+			'tvdb'      => 0,
+			'trakt'     => 0,
+			'tvrage'    => (int)$show['showid'],
+			'tvmaze'    => 0,
+			'tmdb'      => 0,
+			'tvr'       => $show
+		];
 	}
 }
