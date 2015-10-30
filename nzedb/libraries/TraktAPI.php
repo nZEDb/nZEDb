@@ -157,13 +157,12 @@ HEADERS;
 	 */
 	private function getJsonArray($URI, $extended = 'min')
 	{
-		var_dump($extended);
 		if ($extended === '') {
 			$extendedString = '';
 		} else {
 			$extendedString = "?extended=" . $extended;
 		}
-		var_dump($URI . $extendedString);
+
 		if (!empty($this->clientId)) {
 			$json = Misc::getUrl([
 									 'url'            => $URI . $extendedString,
@@ -228,21 +227,34 @@ HEADERS;
 	 * Search for entry using on of the supported site IDs.
 	 *
 	 * @param integer	$id		The ID to look for.
-	 * @param string	$type	Site whose ID should be searched for.
+	 * @param string	$site	One of the supported sites ('imdb', 'tmdb', 'trakt', 'tvdb', 'tvrage')
+	 * @param string	$type	videos.type flag (-1 for episodes).
 	 *
 	 * @return bool
 	 */
-	public function searchId($id, $type = 'trakt')
+	public function searchId($id, $site = 'trakt', $type = 0)
 	{
-		if (!in_array($type, $this->types) || !ctype_digit($id)) {
-			return false;
-		}
-
-		if ($type == 'imdb') {
+		if (!in_array($site, $this->types) || !ctype_digit($id)) {
+			return null;
+		} else if ($site == 'imdb') {
 			$id = 'tt' . $id;
 		}
 
+		switch (true) {
+			case $site == 'trakt' && ($type == 0 || $type == 2):
+				$type = $site . '-show';
+				break;
+			case $site == 'trakt' && $type == 1:
+				$type = $site . '-movie';
+				break;
+			case $site == 'trakt' && $type == -1:
+				$type = $site . '-episode';
+				break;
+			default:
+		}
+
 		$url = self::API_URL . "search?id_type=$type&id=$id";
+var_dump($url);
 		return $this->getJsonArray($url, '');
 	}
 
