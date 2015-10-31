@@ -360,7 +360,7 @@ class TVMaze extends TV
 			'trakt'     => 0,
 			'tvrage'    => (int)(isset($show->externalIDs['tvrage']) ? $show->externalIDs['tvrage'] : 0),
 			'tmdb'      => 0,
-			'aliases'   => (is_array($show->akas) ? $show->akas : '')
+			'aliases'   => (!empty($show->akas) ? (array)$show->akas : '')
 		];
 	}
 

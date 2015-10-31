@@ -435,7 +435,7 @@ class TvRage extends TV
 			'tvrage'    => (int)$show['showid'],
 			'tvmaze'    => 0,
 			'tmdb'      => 0,
-			'aliases'   => (is_array($show['akas']['aka']) ? $show['akas']['aka'] : ''),
+			'aliases'   => (!empty($show['akas']['aka']) ? (array)$show['akas']['aka'] : ''),
 			'tvr'       => $show
 		];
 	}

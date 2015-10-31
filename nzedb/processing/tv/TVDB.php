@@ -240,7 +240,7 @@ class TVDB extends TV
 					}
 
 					// Check for show aliases and try match those too
-					if (is_array($show->aliasNames) && !empty($show->aliasNames)) {
+					if (!empty($show->aliasNames)) {
 						foreach ($show->aliasNames as $key => $name) {
 							$matchPercent = $this->CheckMatch($name, $cleanName, $matchPercent);
 							if ($matchPercent > $highestMatch) {
@@ -360,7 +360,7 @@ class TVDB extends TV
 			'tvrage'    => 0,
 			'tvmaze'    => 0,
 			'tmdb'      => 0,
-			'aliases'   => (is_array($show->aliasNames) ? $show->aliasNames : '')
+			'aliases'   => (!empty($show->aliasNames) ? (array)$show->aliasNames : '')
 		];
 	}
 

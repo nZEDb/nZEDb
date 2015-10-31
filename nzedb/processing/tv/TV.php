@@ -256,7 +256,7 @@ abstract class TV extends Videos
 				)
 			);
 			// If we have AKAs\aliases, insert those as well
-			if (is_array($showArr['aliases'])) {
+			if (!empty($showArr['aliases'])) {
 				$this->addAliases($videoId, $showArr['aliases']);
 			}
 		} else {
@@ -334,6 +334,11 @@ abstract class TV extends Videos
 				$videoId
 			)
 		);
+		if (!empty($showArr['aliases'])) {
+			echo '***';
+			var_dump($showArr['aliases']);
+			$this->addAliases($videoId, $showArr['aliases']);
+		}
 	}
 
 	/**

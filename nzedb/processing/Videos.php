@@ -229,19 +229,20 @@ abstract class Videos
 	 */
 	public function addAliases($videoId, $aliasArr = array())
 	{
-		if (is_array($aliasArr) && $videoId > 0) {
-			foreach ($aliasArr AS $alias) {
+		if (!empty($aliasArr) && $videoId > 0) {
+			foreach ($aliasArr AS $key => $title) {
 				// Check if we have the AKA already
-				$check = $this->getAliases(0, $alias);
+				$check = $this->getAliases(0, $title);
 
+				var_dump($check);
 				if ($check === false) {
 					$this->pdo->queryInsert(
 						sprintf('
-							INSERT IGNORE INTO videos_akas
+							INSERT INTO videos_akas
 							(videos_id, title)
 							VALUES (%d, %s)',
 							$videoId,
-							$this->pdo->escapeString($alias)
+							$this->pdo->escapeString($title)
 						)
 					);
 				}
@@ -269,7 +270,7 @@ abstract class Videos
 		}
 
 		if ($sql !== '') {
-			$return = $this->pdo->queryDirect('
+			$return = $this->pdo->queryOneRow('
 				SELECT *
 				FROM videos_akas
 				WHERE ' . $sql
