@@ -95,4 +95,266 @@ abstract class Videos
 		}
 		return false;
 	}
+
+	/**
+	 * Attempt a local lookup via the title first by exact match and then by like.
+	 * Returns a false for no match or the Video ID of the match.
+	 *
+	 * @param $title
+	 * @param $type
+	 *
+	 * @return bool
+	 */
+	public function getByTitle($title, $type)
+	{
+		// Check if we already have an entry for this show.
+		$res = $this->getByTitleQuery($title, $type);
+		if (isset($res['id'])) {
+			return $res['id'];
+		}
+
+		$title2 = str_replace(' and ', ' & ', $title);
+		if ($title != $title2) {
+			$res = $this->getByTitleQuery($title2, $type);
+			if (isset($res['id'])) {
+				return $res['id'];
+			}
+			$pieces = explode(' ', $title2);
+			$title4 = '%';
+			foreach ($pieces as $piece) {
+				$title4 .= str_replace(["'", "!"], "", $piece) . '%';
+			}
+			$res = $this->getByTitleLikeQuery($title4, $type);
+			if (isset($res['id'])) {
+				return $res['id'];
+			}
+		}
+
+		// Some words are spelled correctly 2 ways
+		// example theatre and theater
+		$title3 = str_replace('er', 're', $title);
+		if ($title != $title3) {
+			$res = $this->getByTitleQuery($title3, $type);
+			if (isset($res['id'])) {
+				return $res['id'];
+			}
+			$pieces = explode(' ', $title3);
+			$title4 = '%';
+			foreach ($pieces as $piece) {
+				$title4 .= str_replace(["'", "!"], "", $piece) . '%';
+			}
+			$res = $this->getByTitleLikeQuery($title4, $type);
+			if (isset($res['id'])) {
+				return $res['id'];
+			}
+		}
+
+		// If there was not an exact title match, look for title with missing chars
+		// example release name :Zorro 1990, tvrage name Zorro (1990)
+		// Only search if the title contains more than one word to prevent incorrect matches
+		$pieces = explode(' ', $title);
+		if (count($pieces) > 1) {
+			$title4 = '%';
+			foreach ($pieces as $piece) {
+				$title4 .= str_replace(["'", "!"], "", $piece) . '%';
+			}
+			$res = $this->getByTitleLikeQuery($title4, $type);
+			if (isset($res['id'])) {
+				return $res['id'];
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Supplementary function for getByTitle that queries for exact match
+	 *
+	 * @param $title
+	 * @param $type
+	 *
+	 * @return array|bool
+	 */
+	public function getByTitleQuery($title, $type)
+	{
+		$return = false;
+		if ($title) {
+			$return = $this->pdo->queryOneRow(
+				sprintf("
+					SELECT v.id
+					FROM videos v
+					LEFT JOIN videos_akas va ON v.id = va.videos_id
+					WHERE (v.title = %1\$s OR va.title = %1\$s)
+					AND v.type = %d",
+					$this->pdo->escapeString($title),
+					$type
+				)
+			);
+		}
+		return $return;
+	}
+
+	/**
+	 * Supplementary function for getByTitle that queries for a like match
+	 *
+	 * @param $title
+	 * @param $type
+	 *
+	 * @return array|bool
+	 */
+	public function getByTitleLikeQuery($title, $type)
+	{
+		$return = false;
+		$string = '"\'"';
+		if ($title) {
+			$return = $this->pdo->queryOneRow(
+				sprintf("
+					SELECT id
+					FROM videos
+					WHERE REPLACE(REPLACE(title, %s, ''), '!', '') %s
+					AND type = %d",
+					$string,
+					$this->pdo->likeString(rtrim($title, '%'), false, false),
+					$type
+				)
+			);
+		}
+		return $return;
+	}
+
+	/**
+	 * Inserts aliases for videos
+	 *
+	 * @param       $videoId
+	 * @param array $aliasArr
+	 */
+	public function addAliases($videoId, $aliasArr = array())
+	{
+		if (is_array($aliasArr) && $videoId > 0) {
+			foreach ($aliasArr AS $alias) {
+				// Check if we have the AKA already
+				$check = $this->getAliases(0, $alias);
+
+				if ($check === false) {
+					$this->pdo->queryInsert(
+						sprintf('
+							INSERT IGNORE INTO videos_akas
+							(videos_id, title)
+							VALUES (%d, %s)',
+							$videoId,
+							$this->pdo->escapeString($alias)
+						)
+					);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Retrieves all aliases for given VideoID or VideoID for a given alias
+	 *
+	 * @param int    $videoId
+	 * @param string $alias
+	 *
+	 * @return bool|\PDOStatement
+	 */
+	public function getAliases($videoId = 0, $alias = '')
+	{
+		$return = false;
+		$sql = '';
+
+		if ($videoId > 0) {
+			$sql = 'videos_id = ' . $videoId;
+		} elseif ($alias !== '') {
+			$sql = 'title = ' . $this->pdo->escapeString($alias);
+		}
+
+		if ($sql !== '') {
+			$return = $this->pdo->queryDirect('
+				SELECT *
+				FROM videos_akas
+				WHERE ' . $sql
+			);
+		}
+		return $return;
+	}
+
+	/**
+	 * This function turns a roman numeral into an integer
+	 *
+	 * @param string $string
+	 *
+	 * @return int $e
+	 */
+	public function convertRomanToInt($string) {
+		switch ($string) {
+			case 'i': $e = 1;
+				break;
+			case 'ii': $e = 2;
+				break;
+			case 'iii': $e = 3;
+				break;
+			case 'iv': $e = 4;
+				break;
+			case 'v': $e = 5;
+				break;
+			case 'vi': $e = 6;
+				break;
+			case 'vii': $e = 7;
+				break;
+			case 'viii': $e = 8;
+				break;
+			case 'ix': $e = 9;
+				break;
+			case 'x': $e = 10;
+				break;
+			case 'xi': $e = 11;
+				break;
+			case 'xii': $e = 12;
+				break;
+			case 'xiii': $e = 13;
+				break;
+			case 'xiv': $e = 14;
+				break;
+			case 'xv': $e = 15;
+				break;
+			case 'xvi': $e = 16;
+				break;
+			case 'xvii': $e = 17;
+				break;
+			case 'xviii': $e = 18;
+				break;
+			case 'xix': $e = 19;
+				break;
+			case 'xx': $e = 20;
+				break;
+			default:
+				$e = 0;
+		}
+		return $e;
+	}
+
+	/**
+	 * Get a country code for a country name.
+	 *
+	 * @param string $country
+	 *
+	 * @return mixed
+	 */
+	public function countryCode($country)
+	{
+		if (!is_array($country) && strlen($country) > 2) {
+			$code = $this->pdo->queryOneRow(
+				sprintf('
+					SELECT id
+					FROM countries
+					WHERE country = %s',
+					$this->pdo->escapeString($country)
+				)
+			);
+			if (isset($code['id'])) {
+				return $code['id'];
+			}
+		}
+		return '';
+	}
 }

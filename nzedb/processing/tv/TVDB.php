@@ -87,7 +87,7 @@ class TVDB extends TV
 				if (is_array($release) && $release['name'] != '') {
 
 					// Find the Video ID if it already exists by checking the title.
-					$videoId = $this->getByTitle($release['cleanname']);
+					$videoId = $this->getByTitle($release['cleanname'], parent::TYPE_TV);
 
 					if ($videoId !== false) {
 						$tvdbid = $this->getSiteByID('tvdb', $videoId);
@@ -348,6 +348,7 @@ class TVDB extends TV
 		preg_match('/tt(?P<imdbid>\d{6,7})$/i', $show->imdbId, $imdb);
 
 		return [
+			'type'      => (int)parent::TYPE_TV,
 			'title'     => (string)$show->name,
 			'summary'   => (string)$show->overview,
 			'started'   => (string)$show->firstAired->format($this->timeFormat),
@@ -358,7 +359,8 @@ class TVDB extends TV
 			'trakt'     => 0,
 			'tvrage'    => 0,
 			'tvmaze'    => 0,
-			'tmdb'      => 0
+			'tmdb'      => 0,
+			'aliases'   => (is_array($show->aliasNames) ? $show->aliasNames : '')
 		];
 	}
 

@@ -222,15 +222,17 @@ abstract class TV extends Videos
 		}
 
 		if ($videoId === false) {
-			$videoId = $this->getByTitleQuery($showArr['title']);
+			$videoId = $this->getByTitleQuery($showArr['title'], $showArr['type']);
 		}
 
 		if ($videoId === false) {
+			// Insert the Show
 			$videoId = $this->pdo->queryInsert(
 				sprintf('
 					INSERT INTO videos
 					(type, title, countries_id, started, source, tvdb, trakt, tvrage, tvmaze, imdb, tmdb)
-					VALUES (0, %s, %s, %s, %d, %d, %d, %d, %d, %d, %d)',
+					VALUES (%d, %s, %s, %s, %d, %d, %d, %d, %d, %d, %d)',
+					$showArr['type'],
 					$this->pdo->escapeString($showArr['title']),
 					$this->pdo->escapeString((isset($showArr['country']) ? $showArr['country'] : '')),
 					$this->pdo->escapeString($showArr['started']),
@@ -243,6 +245,7 @@ abstract class TV extends Videos
 					$showArr['tmdb']
 				)
 			);
+			// Insert the supplementary show info
 			$this->pdo->queryInsert(
 				sprintf("
 					INSERT INTO tv_info (videos_id, summary, publisher)
@@ -252,7 +255,12 @@ abstract class TV extends Videos
 					$this->pdo->escapeString($showArr['publisher'])
 				)
 			);
+			// If we have AKAs\aliases, insert those as well
+			if (is_array($showArr['aliases'])) {
+				$this->addAliases($videoId, $showArr['aliases']);
+			}
 		} else {
+			// If a local match was found, just update missing video info
 			$this->update($videoId, $showArr);
 		}
 		return (int)$videoId;
@@ -289,8 +297,6 @@ abstract class TV extends Videos
 		}
 		return $episodeId;
 	}
-
-	// If the video already exists, update the site specific column to collect its ID for that scrape
 
 	/**
 	 * Updates the show info with data from the supplied array
@@ -345,6 +351,7 @@ abstract class TV extends Videos
 				FROM videos v
 				LEFT JOIN tv_info tvi ON v.id = tvi.videos_id
 				LEFT JOIN tv_episodes tve ON v.id = tve.videos_id
+				LEFT JOIN videos_akas va ON v.id = va.videos_id
 				WHERE v.id = %d",
 				$id
 			)
@@ -366,126 +373,6 @@ abstract class TV extends Videos
 				$videoId
 			)
 		);
-	}
-
-	/**
-	 * Attempt a local lookup via the title first by exact match and then by like.
-	 * Returns a false for no match or the Video ID of the match.
-	 *
-	 * @param $title
-	 *
-	 * @return bool
-	 */
-	public function getByTitle($title)
-	{
-		// Check if we already have an entry for this show.
-		$res = $this->getByTitleQuery($title);
-		if (isset($res['id'])) {
-			return $res['id'];
-		}
-
-		$title2 = str_replace(' and ', ' & ', $title);
-		if ($title != $title2) {
-			$res = $this->getByTitleQuery($title2);
-			if (isset($res['id'])) {
-				return $res['id'];
-			}
-			$pieces = explode(' ', $title2);
-			$title4 = '%';
-			foreach ($pieces as $piece) {
-				$title4 .= str_replace(["'", "!"], "", $piece) . '%';
-			}
-			$res = $this->getByTitleLikeQuery($title4 . '%');
-			if (isset($res['id'])) {
-				return $res['id'];
-			}
-		}
-
-		// Some words are spelled correctly 2 ways
-		// example theatre and theater
-		$title3 = str_replace('er', 're', $title);
-		if ($title != $title3) {
-			$res = $this->getByTitleQuery($title3);
-			if (isset($res['id'])) {
-				return $res['id'];
-			}
-			$pieces = explode(' ', $title3);
-			$title4 = '%';
-			foreach ($pieces as $piece) {
-				$title4 .= str_replace(["'", "!"], "", $piece) . '%';
-			}
-			$res = $this->getByTitleLikeQuery($title4);
-			if (isset($res['id'])) {
-				return $res['id'];
-			}
-		}
-
-		// If there was not an exact title match, look for title with missing chars
-		// example release name :Zorro 1990, tvrage name Zorro (1990)
-		// Only search if the title contains more than one word to prevent incorrect matches
-		$pieces = explode(' ', $title);
-		if (count($pieces) > 1) {
-			$title4 = '%';
-			foreach ($pieces as $piece) {
-				$title4 .= str_replace(["'", "!"], "", $piece) . '%';
-			}
-			$res = $this->getByTitleLikeQuery($title4);
-			if (isset($res['id'])) {
-				return $res['id'];
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Supplementary function for getByTitle that queries for exact match
-	 *
-	 *
-	 * @param $title
-	 *
-	 * @return array|bool
-	 */
-	public function getByTitleQuery($title)
-	{
-		$return = false;
-		if ($title) {
-			$return = $this->pdo->queryOneRow(
-				sprintf("
-					SELECT id
-					FROM videos
-					WHERE title = %s
-					AND type = 0",
-					$this->pdo->escapeString($title)
-				)
-			);
-		}
-		return $return;
-	}
-
-	/**
-	 * Supplementary function for getByTitle that queries for a like match
-	 *
-	 * @param $title
-	 *
-	 * @return array|bool
-	 */
-	public function getByTitleLikeQuery($title)
-	{
-		$return = false;
-		$string = '"\'"';
-		if ($title) {
-			$return = $this->pdo->queryOneRow(
-				sprintf("
-					SELECT id
-					FROM videos
-					WHERE REPLACE(REPLACE(title, %s, ''), '!', '') %s
-					AND type = 0",
-					$string,
-					$this->pdo->likeString(rtrim($title, '%'), false, false)
-				)
-			);
-		}
-		return $return;
 	}
 
 	/**
@@ -545,31 +432,6 @@ abstract class TV extends Videos
 			)
 		);
 		return (isset($episodeArr['id']) ? $episodeArr['id'] : false);
-	}
-
-	/**
-	 * Get a country code for a country name.
-	 *
-	 * @param string $country
-	 *
-	 * @return mixed
-	 */
-	public function countryCode($country)
-	{
-		if (!is_array($country) && strlen($country) > 2) {
-			$code = $this->pdo->queryOneRow(
-				sprintf('
-					SELECT id
-					FROM countries
-					WHERE country = %1\$s',
-					$this->pdo->escapeString($country)
-				)
-			);
-			if (isset($code['id'])) {
-				return $code['id'];
-			}
-		}
-		return '';
 	}
 
 	/**
@@ -781,61 +643,6 @@ abstract class TV extends Videos
 			return $showInfo;
 		}
 		return false;
-	}
-
-	/**
-	 * This function turns a roman numeral into an integer
-	 *
-	 * @param string $string
-	 *
-	 * @return int $e
-	 */
-	private function convertRomanToInt($string) {
-		switch ($string) {
-			case 'i': $e = 1;
-				break;
-			case 'ii': $e = 2;
-				break;
-			case 'iii': $e = 3;
-				break;
-			case 'iv': $e = 4;
-				break;
-			case 'v': $e = 5;
-				break;
-			case 'vi': $e = 6;
-				break;
-			case 'vii': $e = 7;
-				break;
-			case 'viii': $e = 8;
-				break;
-			case 'ix': $e = 9;
-				break;
-			case 'x': $e = 10;
-				break;
-			case 'xi': $e = 11;
-				break;
-			case 'xii': $e = 12;
-				break;
-			case 'xiii': $e = 13;
-				break;
-			case 'xiv': $e = 14;
-				break;
-			case 'xv': $e = 15;
-				break;
-			case 'xvi': $e = 16;
-				break;
-			case 'xvii': $e = 17;
-				break;
-			case 'xviii': $e = 18;
-				break;
-			case 'xix': $e = 19;
-				break;
-			case 'xx': $e = 20;
-				break;
-			default:
-				$e = 0;
-		}
-		return $e;
 	}
 
 	/**

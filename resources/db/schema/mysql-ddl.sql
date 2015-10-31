@@ -1197,6 +1197,7 @@ CREATE TABLE videos (
   COLLATE = utf8_unicode_ci
   AUTO_INCREMENT = 10000000;
 
+DROP TABLE IF EXISTS videos_akas;
 CREATE TABLE videos_akas (
   videos_id   MEDIUMINT(11) UNSIGNED  NOT NULL COMMENT 'FK to videos.id of the parent title.',
   title VARCHAR(180) CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'AKA of the video.',

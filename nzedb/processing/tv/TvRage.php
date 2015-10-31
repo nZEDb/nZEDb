@@ -97,7 +97,7 @@ class TvRage extends TV
 				$show = $this->parseNameEpSeason($arr['searchname']);
 				if (is_array($show) && $show['name'] != '') {
 					// Find the Video ID if it already exists by checking the title.
-					$this->videoId = $this->getByTitle($show['cleanname']);
+					$this->videoId = $this->getByTitle($show['cleanname'], parent::TYPE_TV);
 
 					// Force local lookup only
 					if ($local == true) {
@@ -215,6 +215,7 @@ class TvRage extends TV
 		}
 		$this->videoId = $this->add(
 			[
+				'type'      => parent::TYPE_TV,
 				'title'     => $tvrShow['title'],
 				'column'    => 'tvrage',
 				'siteid'    => $rageid,
@@ -228,7 +229,8 @@ class TvRage extends TV
 				'tvrageid'  => $rageid,
 				'tvmazeid'  => 0,
 				'imdbid'    => 0,
-				'tmdbid'    => 0
+				'tmdbid'    => 0,
+				'aliases'   => $tvrShow['aliases']
 			]
 		);
 		if (isset($rInfo['imgurl']) && !empty($rInfo['imgurl'])) {
@@ -393,6 +395,7 @@ class TvRage extends TV
 							// One aka.
 							$matchPercent = $this->checkMatch($title, $show['akas']['aka'], self::MATCH_PROBABILITY);
 							if ($matchPercent > $highestPercent) {
+								$show['akas']['aka'][] = $show['akas']['aka'];
 								$matchedTitle = $show;
 								$highestPercent = $matchPercent;
 							}
@@ -419,6 +422,7 @@ class TvRage extends TV
 	private function formatShowArr($show)
 	{
 		return [
+			'type'      => (int)parent::TYPE_TV,
 			'title'     => (string)$show['name'],
 			'summary'   => (string)'',
 			'started'   => (string)date('Y-m-d', strtotime($show['started'])),
@@ -431,6 +435,7 @@ class TvRage extends TV
 			'tvrage'    => (int)$show['showid'],
 			'tvmaze'    => 0,
 			'tmdb'      => 0,
+			'aliases'   => (is_array($show['akas']['aka']) ? $show['akas']['aka'] : ''),
 			'tvr'       => $show
 		];
 	}

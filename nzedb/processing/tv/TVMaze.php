@@ -81,7 +81,7 @@ class TVMaze extends TV
 				if (is_array($release) && $release['name'] != '') {
 
 					// Find the Video ID if it already exists by checking the title.
-					$videoId = $this->getByTitle($release['cleanname']);
+					$videoId = $this->getByTitle($release['cleanname'], parent::TYPE_TV);
 
 					if ($videoId !== false) {
 						$tvmazeid = $this->getSiteByID('tvmaze', $videoId);
@@ -347,6 +347,7 @@ class TVMaze extends TV
 		$this->posterUrl = (string)(isset($show->mediumImage) ? $show->mediumImage : '');
 
 		return [
+			'type'      => (int)parent::TYPE_TV,
 			'title'     => (string)$show->name,
 			'summary'   => (string)$show->summary,
 			'started'   => (string)$show->premiered,
@@ -358,7 +359,8 @@ class TVMaze extends TV
 			'tvmaze'    => (int)$show->id,
 			'trakt'     => 0,
 			'tvrage'    => (int)(isset($show->externalIDs['tvrage']) ? $show->externalIDs['tvrage'] : 0),
-			'tmdb'      => 0
+			'tmdb'      => 0,
+			'aliases'   => (is_array($show->akas) ? $show->akas : '')
 		];
 	}
 
