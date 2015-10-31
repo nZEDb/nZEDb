@@ -335,8 +335,6 @@ abstract class TV extends Videos
 			)
 		);
 		if (!empty($showArr['aliases'])) {
-			echo '***';
-			var_dump($showArr['aliases']);
 			$this->addAliases($videoId, $showArr['aliases']);
 		}
 	}
