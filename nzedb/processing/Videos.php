@@ -234,7 +234,6 @@ abstract class Videos
 				// Check if we have the AKA already
 				$check = $this->getAliases(0, $title);
 
-				var_dump($check);
 				if ($check === false) {
 					$this->pdo->queryInsert(
 						sprintf('
@@ -270,7 +269,7 @@ abstract class Videos
 		}
 
 		if ($sql !== '') {
-			$return = $this->pdo->queryOneRow('
+			$return = $this->pdo->query('
 				SELECT *
 				FROM videos_akas
 				WHERE ' . $sql
