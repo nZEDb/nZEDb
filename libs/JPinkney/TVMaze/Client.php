@@ -358,7 +358,7 @@ class Client {
 
 		$response = json_decode($result, TRUE);
 
-		if ($response) {
+		if (is_array($response) && count($response) > 0) {
 			return $response;
 		} else {
 			return false;
