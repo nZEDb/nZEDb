@@ -34,14 +34,17 @@ class Client {
 	 */
 	function search($show_name)
 	{
+		$relevant_shows = false;
 		$url = self::APIURL . "/search/shows?q=" . urlencode($show_name);
 
 		$shows = $this->getFile($url);
 
-		$relevant_shows = array();
-		foreach($shows as $series) {
-			$TVShow = new TVShow($series['show']);
-			array_push($relevant_shows, $TVShow);
+		if (is_array($shows)) {
+			$relevant_shows = array();
+			foreach ($shows as $series) {
+				$TVShow = new TVShow($series['show']);
+				array_push($relevant_shows, $TVShow);
+			}
 		}
 		return $relevant_shows;
 	}
@@ -56,11 +59,13 @@ class Client {
 	 */
 	function singleSearch($show_name)
 	{
+		$TVShow = false;
 		$url = self::APIURL . "/singlesearch/shows?q=" . urlencode($show_name) . '&embed=akas';
 		$shows = $this->getFile($url);
 
-		$TVShow = new TVShow($shows);
-
+		if (is_array($shows)) {
+			$TVShow = new TVShow($shows);
+		}
 		return array($TVShow);
 	}
 
@@ -179,11 +184,12 @@ class Client {
 		$episodes = $this->getFile($url);
 
 		$allEpisodes = array();
-		foreach($episodes as $episode) {
-			$ep = new Episode($episode);
-			array_push($allEpisodes, $ep);
+		if (is_array($episodes)) {
+			foreach ($episodes as $episode) {
+				$ep = new Episode($episode);
+				array_push($allEpisodes, $ep);
+			}
 		}
-
 		return $allEpisodes;
 	}
 
@@ -198,12 +204,14 @@ class Client {
 	 */
 	function getEpisodeByNumber($ID, $season, $episode)
 	{
+		$ep = false;
 		$url = self::APIURL . '/shows/' . $ID . '/episodebynumber?season='. $season . '&number=' . $episode;
-		$episode = $this->getFile($url);
+		$response = $this->getFile($url);
 
-		$episode = new Episode($episode);
-
-		return $episode;
+		if (is_array($episode)) {
+			$ep = new Episode($response);
+		}
+		return $ep;
 	}
 
 	/**
@@ -220,11 +228,12 @@ class Client {
 		$episodes = $this->getFile($url);
 
 		$allEpisodes = array();
-		foreach($episodes as $episode) {
-			$ep = new Episode($episode);
-			array_push($allEpisodes, $ep);
+		if (is_array($episodes)) {
+			foreach ($episodes as $episode) {
+				$ep = new Episode($episode);
+				array_push($allEpisodes, $ep);
+			}
 		}
-
 		return $allEpisodes;
 	}
 
