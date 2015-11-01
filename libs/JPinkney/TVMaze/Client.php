@@ -59,16 +59,9 @@ class Client {
 		$url = self::APIURL . "/singlesearch/shows?q=" . urlencode($show_name) . '&embed=akas';
 		$shows = $this->getFile($url);
 
-		$episode_list = array();
-		foreach($shows['_embedded']['episodes'] as $episode) {
-			$ep = new Episode($episode);
-			print_r($episode);
-			array_push($episode_list, $ep);
-		}
-
 		$TVShow = new TVShow($shows);
 
-		return array($TVShow, $episode_list);
+		return array($TVShow);
 	}
 
 	/**
@@ -217,8 +210,7 @@ class Client {
 	 * Returns episodes for a given show ID and ISO 8601 airdate
 	 *
 	 * @param $ID
-	 * @param $season
-	 * @param $episode
+	 * @param $airdate
 	 *
 	 * @return Episode|mixed
 	 */
