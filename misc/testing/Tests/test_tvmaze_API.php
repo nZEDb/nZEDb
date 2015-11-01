@@ -21,7 +21,6 @@ if (!empty($argv[1]) && is_numeric($argv[2]) && is_numeric($argv[3])) {
 	// Use the first show found (highest match) and get the requested season/episode from $argv
 	if ($series) {
 
-		echo PHP_EOL . $c->info("Server Time: " . $serverTime) .  PHP_EOL;
 		print_r($series[0]);
 
 		if ($season > 0 AND $episode > 0) {
