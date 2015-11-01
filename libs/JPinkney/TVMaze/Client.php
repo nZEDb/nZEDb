@@ -356,7 +356,7 @@ class Client {
 		$result = curl_exec($ch);
 		curl_close($ch);
 
-		$response = json_decode($result, TRUE)
+		$response = json_decode($result, TRUE);
 
 		if (is_array($response) && count($response) > 0 && !isset($response['status'])) {
 			return $response;
