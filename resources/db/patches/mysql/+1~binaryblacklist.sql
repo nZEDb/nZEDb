@@ -1,3 +1,5 @@
+ALTER TABLE binaryblacklist MODIFY COLUMN description VARCHAR(1000) CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL;
+
 INSERT INTO binaryblacklist (id, groupname, regex, msgcol, optype, status, description)
 VALUES (
 	14,

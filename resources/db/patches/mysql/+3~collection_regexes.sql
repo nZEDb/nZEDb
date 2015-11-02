@@ -1,3 +1,5 @@
+ALTER TABLE collection_regexes MODIFY COLUMN description VARCHAR(1000) CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL;
+
 INSERT INTO collection_regexes (id, group_regex, regex, status, description, ordinal)
 VALUES (
   592,
