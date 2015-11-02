@@ -21,7 +21,6 @@ Class Videos
 		];
 		$options += $defaults;
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
-		$this->catWhere = 'r.categoryid BETWEEN 5000 AND 5999';
 	}
 
 	/**
@@ -130,27 +129,24 @@ Class Videos
 		}
 
 		$qry = 	sprintf("
-			SELECT v.* FROM
+			SELECT v.*,
+				us.id AS userseriesid
+			FROM
 				(SELECT v.*,
 					tve.firstaired AS prevdate, tve.title AS previnfo,
-					tvi.publisher,
-					us.id AS userseriesid
+					tvi.publisher
 				FROM videos v
 				INNER JOIN tv_info tvi ON v.id = tvi.videos_id
 				INNER JOIN tv_episodes tve ON v.id = tve.videos_id
-				LEFT OUTER JOIN user_series us ON v.id = us.videos_id AND us.user_id = %d
-				WHERE 1=1
-				AND tve.firstaired <= NOW()
+				WHERE  tve.firstaired <= NOW()
 				%s %s
 				ORDER BY tve.firstaired DESC) v
-			STRAIGHT_JOIN releases r ON r.videos_id = v.id
-			WHERE %s
+			LEFT OUTER JOIN user_series us ON v.id = us.videos_id AND us.user_id = %d
 			GROUP BY v.id
 			ORDER BY v.title ASC",
-			$uid,
 			$rsql,
 			$tsql,
-			$this->catWhere
+			$uid
 		);
 
 		$sql = $this->pdo->query($qry);
