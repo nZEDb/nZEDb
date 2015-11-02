@@ -6,8 +6,74 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2015-10-30 niel
+	Mrg: dev => next-master to prepare for updating master.
+
+
+2015-10-26 ruhllatio
+	Fix: Some local lookups were passing with invalid information causing them to show up as season 0.
+	Fix: View TV Series query speedup caused incorrect join placement (2nd Attempt)
+	Fix: Trakt class instanciation not working to the API
+	Fix: Incorrect usage of date function (missing strtotime for int value)
+2015-10-25 ruhllatio
+	Mrg: PR 1916 Replace TVRage Processing with TVDB
+	Note: 	We found a bug dating back to the beginning that caused bad titles to be inserted into the TvRage table
+		As such, we decided not to incorporate the title data by migrating it to the new videos schema.  We are not dropping the tables yet
+		As there is still promise in joining the tables at a later date to populate some fields.
+2015-10-18 bart39
+	Fix: No covers shown on XXX /details pages #1918.
+2015-10-13 ruhllatio
+	* Mrg: PR 1912, Change the order of removal in Patch 385
+2015-10-12 niel
+	* Mrg: PR 1904, from Darius - Update parseTraktTv function, as it was occasionally inserting covers with tt prefix.
+	* Mrg: PR 1905, from Darius - Fix the layout of tv->anime page.
+	* Mrg: PR 1906, from Darius - Extend episodeSummary function with extended type switch for future use.
+	* Mrg: PR 1907, from Darius - Update the search page in omicron/charisma templates.
+	* Mrg: PR 1910, from Darius - Move all the TV related classes so nzedb/processing/tv folder. Move the processTvReleases function into main TV class.
+	* Mrg: PR 1911, from Darius - Remove text_hash column, trigger and index from release_comments.
+2015-10-08 ruhllatio
+	Chg: Improve Codec Poster removal query times by incorporating Sphinx FT if enabled
+	Chg: Lots more love for Sphinx FT in ReleaseRemover.  Greatly improves query times on big databases.
+	Chg: Few more changes to RR
+2015-10-07 ruhllatio
+	Mrg: PR #1902 Make TraktTv class extend TV class, add box office support into class.
+	Mrg: PR #1901 Add deletion of dnzb_failures to deleteSingle
+	Fix: Issue #1900 Undefined index error in updateTvRage.php
 2015-10-06 ruhllatio
+	Mrg: PR #1898 Adjust templates for tvrage images change.
+	Mrg: PR #1899 Remove echooutput from TvRage class and move it to parent TV class
 	Fix: ReleaseRemover not honoring LIKE search types causing blacklist removal issues and not producing enough matches in SPHINX mode
+2015-10-05 niel
+	* Mrg: PR 1895, from Darius - Add view release option to failed releases list. Do not post comment for user, if that user already posted the failure automated comment.
+2015-10-05 ruhllatio
+	Add: Script to extract TV covers from the database and save them to the tvrage directory in covers
+	Chg: Set TV cover images to pull from /covers/tvrage/ ***NOTE*** Run the extractTVCovers script in misc/testing/PostProcess/ ***
+	Fix: Error in extract script and a query error for new poster wall for TV
+	Del: getimage.php as it was only used for displaying TV images... TV now adopts the standard cover method
+	Chg: updateTvRage script now looks for hascover = 0 instead... which still won't work because TVR is down
+	Mrg: PR #1897 Anime new poster wall view
+	Mrg: PR #1894 Change TVDB client class call
+	Fix: Forgot to add untracked anidb icon for poster wall
+	Fix: AniDB poster wall query not grouping by release
+	Fix: Attempt to fix AniDB icon not showing in multiple themes
+	Fix: Omicron poster wall typo, wrong script name in patch file 384
+	Add: updateTvRage.php in misc/testing/PostProc will now run in check mode to reconcile image files against the DB if you imported
+	Fix: Alpha TV New Poster Wall missing div tag
+2015-10-04 ruhllatio
+	Mrg: PR #1893 Integrate Moinax TVDB API
+2015-10-04 niel
+	Add: PSR-0 compliant autoloader for libs namespace.
+	Mrg: PR 1890, from Darius - Fix host column misplacement in admin comments list when user ip tracking is enabled.
+	Mrg: PR 1891, from Darius - Add text_hash column, triggers, and index to release_comments to prevent insertion of duplicated comments originating from automated messages, sharing etc.
+	Mrg: PR 1892, from Darius - Add list of releases failed to download reported by X-DNZB-Failure headers to admin area.
+2015-10-02 bart39
+	Fix: invalid icon links in omicron / charisma themes.
+2015-10-01 niel
+	Mrg: dev => next-master to prepare for updating master.
+	Mrg: PR 1885, from Darius - Add statistical info for grabbed/failed releases to cover, browse and search pages.
+	Mrg: PR 1889, from Darius - Automatically generate comment on failed download.
+
+
 2015-10-01 bart39
 	Fix: updated predb insert trigger that got missed for new installs, fixes #1875.
 2015-09-26 niel
@@ -487,7 +553,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	* Fix: Missing binaries from releases due to collection_id not being set.
 		We suggest that you run reset_truncate after this update.
 		NB: IMPORTANT - TPG users (that means you McFuzz) should run "php /nzedb/build/_runonce/tpg_add_collections_column_2015-02-20.php" if
-		patch 0313 doesn't succeed. - FAILURE TO DO SO WILL CAUSE INSERT ERRORS
+		patch 0313 doesn't succeed. Then run this SQL: UPDATE settings SET value = '313' WHERE setting = 'sqlpatch'; - FAILURE TO DO SO WILL CAUSE INSERT ERRORS
 2015-02-17 bart39
 	* Chg: Regex updates / categorize fixes for SD XXX
 	* Chg: Update sphinxsearch RT index when manually editing release searchname.

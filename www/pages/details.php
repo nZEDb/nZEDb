@@ -11,9 +11,9 @@ use nzedb\ReleaseComments;
 use nzedb\ReleaseExtra;
 use nzedb\ReleaseFiles;
 use nzedb\Releases;
-use nzedb\TraktTv;
-use nzedb\TvRage;
+use nzedb\Videos;
 use nzedb\XXX;
+use nzedb\DnzbFailures;
 
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
@@ -28,21 +28,22 @@ if (isset($_GET['id'])) {
 	}
 
 	$rc = new ReleaseComments($page->settings);
+	$fail = new DnzbFailures(['Settings' => $page->settings]);
 	if ($page->isPostBack()) {
 		$rc->addComment($data['id'], $_POST['txtAddComment'], $page->users->currentUserId(), $_SERVER['REMOTE_ADDR']);
 	}
 
-	$rage = $mov = $xxx = '';
-	if ($data['rageid'] != '') {
-		$rageInfo = (new TvRage(['Settings' => $page->settings]))->getByRageID($data['rageid']);
-		if (count($rageInfo) > 0) {
-			$rage = ['releasetitle' => '', 'description' => '', 'country' => '', 'genre' => '', 'imgdata' => '', 'id' => ''];
+	$criteria = $mov = $xxx = '';
+	if ($data['videos_id'] != 0) {
+		$showInfo = (new Videos(['Settings' => $page->settings]))->getByVideoID($data['videos_id']);
+		if (count($showInfo) > 0) {
+			$criteria = ['title' => '', 'summary' => '', 'countries_id' => '', 'image' => '', 'id' => ''];
 			$done = 1;
-			$needed = count($rage);
-			foreach ($rageInfo as $info) {
-				foreach($rage as $key => $value) {
+			$needed = count($criteria);
+			foreach ($showInfo as $info) {
+				foreach($criteria as $key => $value) {
 					if (empty($value) && !empty($info[$key])) {
-						$rage[$key] = $info[$key];
+						$criteria[$key] = $info[$key];
 						$done++;
 					}
 				}
@@ -78,7 +79,7 @@ if (isset($_GET['id'])) {
 	if ($data['xxxinfo_id'] != '' && $data['xxxinfo_id'] != 0) {
 		$XXX   = new XXX(['Settings' => $page->settings]);
 		$xxx = $XXX->getXXXInfo($data['xxxinfo_id']);
-		if ($xxx && isset($xInfo['title'])) {
+		if ($xxx && isset($xxx['title'])) {
 			$xxx['title']    = str_replace(['/', '\\'], '', $xxx['title']);
 			$xxx['actors']   = $XXX->makeFieldLinks($xxx, 'actors');
 			$xxx['genre']    = $XXX->makeFieldLinks($xxx, 'genre');
@@ -102,7 +103,7 @@ if (isset($_GET['id'])) {
 		'movie'   => $mov,
 		'music' => ($data['musicinfoid'] != '' ? (new Music(['Settings' => $page->settings]))->getMusicInfo($data['musicinfoid']) : ''),
 		'pre'   => (new PreDb(['Settings' => $page->settings]))->getForRelease($data['preid']),
-		'rage'  => $rage,
+		'show'  => $criteria,
 		'xxx'   => $xxx,
 		'comments' => $rc->getComments($data['id']),
 		'cpapi'    => $user['cp_api'],
@@ -116,9 +117,8 @@ if (isset($_GET['id'])) {
 		'privateprofiles' => ($page->settings->getSetting('privateprofiles') == 1 ? true : false),
 		'releasefiles'    => (new ReleaseFiles($page->settings))->get($data['id']),
 		'searchname'      => $releases->getSimilarName($data['searchname']),
+		'failed'          => $fail->getFailedCount($data['guid']),
 	]);
-
-	$page->smarty->assign('rage', $rage);
 
 	$page->meta_title       = 'View NZB';
 	$page->meta_keywords    = 'view,nzb,description,details';

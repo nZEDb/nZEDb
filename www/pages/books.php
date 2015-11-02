@@ -2,6 +2,7 @@
 
 use nzedb\Books;
 use nzedb\Category;
+use nzedb\DnzbFailures;
 
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
@@ -9,6 +10,7 @@ if (!$page->users->isLoggedIn()) {
 
 $book = new Books(['Settings' => $page->settings]);
 $cat = new Category(['Settings' => $page->settings]);
+$fail = new DnzbFailures(['Settings' => $page->settings]);
 
 $boocats = $cat->getChildren(Category::CAT_PARENT_BOOKS);
 $btmp = array();
@@ -44,6 +46,7 @@ foreach ($results as $result) {
 			$result['overview'] = implode(' ', $newwords) . '...';
 		}
 	}
+	$result['failed'] = $fail->getFailedCount($result['grp_release_guid']);
 	$books[] = $result;
 }
 

@@ -1,7 +1,5 @@
 <div class="header" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html"
 	 xmlns="http://www.w3.org/1999/html">
-	{assign var="catsplit" value=">"|explode:$catname}
-	<h2>{$catsplit[0]} > <strong>{if isset($catsplit[1])} {$catsplit[1]}{/if}</strong></h2>
 	<div class="breadcrumb-wrapper">
 		<ol class="breadcrumb">
 			<li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li>
@@ -21,7 +19,8 @@
 		</div>
 		<div class="form-group form-group-sm">
 			<label class="sr-only" for="director">Director:</label>
-			<input type="text" class="form-control col-xs-3" id="director" name="director" value="{$director}" placeholder="Director">
+			<input type="text" class="form-control col-xs-3" id="director" name="director" value="{$director}"
+				   placeholder="Director">
 		</div>
 		<div class="form-group form-group-sm">
 			<label class="sr-only" for="genre">Genre:</label>
@@ -114,6 +113,7 @@
 													{assign var="mtotalparts" value=","|explode:$result.grp_release_totalparts}
 													{assign var="mcomments" value=","|explode:$result.grp_release_comments}
 													{assign var="mgrabs" value=","|explode:$result.grp_release_grabs}
+													{assign var="mfailed" value=","|explode:$result.failed}
 													{assign var="mpass" value=","|explode:$result.grp_release_password}
 													{assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
 													{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
@@ -121,9 +121,12 @@
 													{if $smarty.foreach.loop.first}
 													<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}"><img
 																class="cover"
-																src="{if $result.cover == 1}{$serverroot}covers/xxx/{$result.id}-cover.jpg{else}{$serverroot}themes/omicron/images/nocover.png{/if}"
+																src="{if $result.cover == 1}{$smarty.const.WWW_TOP}covers/xxx/{$result.id}-cover.jpg{else}{$smarty.const.WWW_TOP}themes_shared/images/no-cover.png{/if}"
 																width="100" border="0"
-																alt="{$result.title|escape:"htmlall"}"/></a>
+																alt="{$result.title|escape:"htmlall"}"/>{if $mfailed[$m@index] > 0}
+														<i class="fa fa-exclamation-circle" style="color: red"
+														   title="This release has failed to download for some users"></i>{/if}
+													</a>
 													{if $result.classused == "ade"}
 														<a
 																target="_blank"
@@ -131,7 +134,7 @@
 																name="viewade{$result.title}"
 																title="View AdultdvdEmpire page"
 																><img
-																	src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/ade.png"></a>
+																	src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/ade.png"></a>
 													{else}
 														<a
 																target="_blank"
@@ -139,7 +142,7 @@
 																name="viewade{$result.title}"
 																title="Search AdultdvdEmpire page"
 																><img
-																	src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/ade.png"></a>
+																	src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/ade.png"></a>
 													{/if}
 													{if $result.classused == "hm"}
 														<a
@@ -148,7 +151,7 @@
 																name="viewhm{$result.title}"
 																title="View Hot Movies page"
 																><img
-																	src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/hotmovies.png"></a>
+																	src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/hotmovies.png"></a>
 													{else}
 														<a
 																target="_blank"
@@ -156,7 +159,7 @@
 																name="viewhm{$result.title}"
 																title="Search Hot Movies page"
 																><img
-																	src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/hotmovies.png"></a>
+																	src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/hotmovies.png"></a>
 													{/if}
 													{if $result.classused == "pop"}
 														<a
@@ -165,7 +168,7 @@
 																name="viewpop{$result.id}"
 																title="View Popporn page"
 																><img
-																	src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/popporn.png"></a>
+																	src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/popporn.png"></a>
 													{else}
 														<a
 																target="_blank"
@@ -173,7 +176,7 @@
 																name="viewpop{$result.id}"
 																title="Search Popporn page"
 																><img
-																	src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/popporn.png"></a>
+																	src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/popporn.png"></a>
 													{/if}
 													<a
 															target="_blank"
@@ -181,18 +184,23 @@
 															name="viewiafd{$result.title}"
 															title="Search Internet Adult Film Database"
 															><img
-																src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/iafd.png"></a>
+																src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/iafd.png"></a>
 													{if $mnfo[$m@index] > 0}<a
-														href="{$smarty.const.WWW_TOP}/nfo/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"
+														href="{$smarty.const.WWW_TOP}/nfo/{$mguid[$m@index]}|escape:"htmlall"}"
 														title="View NFO" class="label label-default"
 														rel="nfo">NFO</a>{/if}
 													<a class="label label-default"
 													   href="{$smarty.const.WWW_TOP}/browse?g={$result.grp_release_grpname}"
 													   title="Browse releases in {$result.grp_release_grpname|replace:"alt.binaries":"a.b"}">Group</a>
+													{if $mfailed[$m@index] > 0}
+														<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
+															<i class="fa fa-thumbs-o-up"></i> {$mgrabs[$m@index]} Grab{if {$mgrabs[$m@index]} != 1}s{/if} / <i class="fa fa-thumbs-o-down"></i> {$mfailed[$m@index]}Failed Download{if {$mfailed[$m@index]} != 1}s{/if}</span>
+													{/if}
 												</div>
 												<div class="col-md-9 small-gutter-left">
 																<span class="release-title"><a class="text-muted"
 																							   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$result.title|escape:"htmlall"}</a></span>
+
 													<div class="release-subtitle">{if $result.genre != ''}{$result.genre}, {/if}</div>
 													<div id="guid{$mguid[$m@index]}">
 														<label>
@@ -203,17 +211,17 @@
 														</label>
 														<span class="label label-primary">{if isset($catsplit[0])} {$catsplit[0]}{/if}</span>
 														<span class="label label-danger">{if isset($catsplit[1])} {$catsplit[1]}{/if}</span>
-														<span class="label label-default">{if isset($result.year)} {$result.year}{/if}</span>
 														<span class="label label-default">{$msize[$m@index]|fsize_format:"MB"}</span>
 																	<span class="label label-default">Posted {$mpostdate[$m@index]|timeago}
 																		ago</span>
 														<br/><br/><br/>
+
 														<div class="release-name text-muted"><a
 																	href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$mname[$m@index]|escape:"htmlall"}</a>
 														</div>
 														<div>
 															<a role="button" class="btn btn-default btn-xs"
-															   href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}"><i
+															   href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}|escape:"htmlall"}"><i
 																		class="fa fa-download"></i><span
 																		class="badge"> {$mgrabs[$m@index]}
 																	Grab{if $mgrabs[$m@index] != 1}s{/if}</span></a>
@@ -257,6 +265,7 @@
 													{assign var="mtotalparts" value=","|explode:$result.grp_release_totalparts}
 													{assign var="mcomments" value=","|explode:$result.grp_release_comments}
 													{assign var="mgrabs" value=","|explode:$result.grp_release_grabs}
+													{assign var="mfailed" value=","|explode:$result.failed}
 													{assign var="mpass" value=","|explode:$result.grp_release_password}
 													{assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
 													{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
@@ -264,9 +273,12 @@
 													{if $smarty.foreach.loop.first}
 													<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}"><img
 																class="cover"
-																src="{if $result.cover == 1}{$serverroot}covers/xxx/{$result.id}-cover.jpg{else}{$serverroot}themes/omicron/images/nocover.png{/if}"
+																src="{if $result.cover == 1}{$smarty.const.WWW_TOP}covers/xxx/{$result.id}-cover.jpg{else}{$smarty.const.WWW_TOP}themes_shared/images/no-cover.png{/if}"
 																width="100" border="0"
-																alt="{$result.title|escape:"htmlall"}"/></a>
+																alt="{$result.title|escape:"htmlall"}"/>{if $mfailed[$m@index] > 0}
+														<i class="fa fa-exclamation-circle" style="color: red"
+														   title="This release has failed to download for some users"></i>{/if}
+													</a>
 													{if $result.classused == "ade"}
 														<a
 																target="_blank"
@@ -274,7 +286,7 @@
 																name="viewade{$result.title}"
 																title="View AdultdvdEmpire page"
 																><img
-																	src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/ade.png"></a>
+																	src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/ade.png"></a>
 													{else}
 														<a
 																target="_blank"
@@ -282,7 +294,7 @@
 																name="viewade{$result.title}"
 																title="Search AdultdvdEmpire page"
 																><img
-																	src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/ade.png"></a>
+																	src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/ade.png"></a>
 													{/if}
 													{if $result.classused == "hm"}
 														<a
@@ -291,7 +303,7 @@
 																name="viewhm{$result.title}"
 																title="View Hot Movies page"
 																><img
-																	src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/hotmovies.png"></a>
+																	src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/hotmovies.png"></a>
 													{else}
 														<a
 																target="_blank"
@@ -299,7 +311,7 @@
 																name="viewhm{$result.title}"
 																title="Search Hot Movies page"
 																><img
-																	src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/hotmovies.png"></a>
+																	src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/hotmovies.png"></a>
 													{/if}
 													{if $result.classused == "pop"}
 														<a
@@ -308,7 +320,7 @@
 																name="viewpop{$result.id}"
 																title="View Popporn page"
 																><img
-																	src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/popporn.png"></a>
+																	src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/popporn.png"></a>
 													{else}
 														<a
 																target="_blank"
@@ -316,7 +328,7 @@
 																name="viewpop{$result.id}"
 																title="Search Popporn page"
 																><img
-																	src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/popporn.png"></a>
+																	src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/popporn.png"></a>
 													{/if}
 													<a
 															target="_blank"
@@ -324,18 +336,23 @@
 															name="viewiafd{$result.title}"
 															title="Search Internet Adult Film Database"
 															><img
-																src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/iafd.png"></a>
+																src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/iafd.png"></a>
 													{if $mnfo[$m@index] > 0}<a
-														href="{$smarty.const.WWW_TOP}/nfo/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"
+														href="{$smarty.const.WWW_TOP}/nfo/{$mguid[$m@index]}|escape:"htmlall"}"
 														title="View NFO" class="label label-default"
 														rel="nfo">NFO</a>{/if}
 													<a class="label label-default"
 													   href="{$smarty.const.WWW_TOP}/browse?g={$result.grp_release_grpname}"
 													   title="Browse releases in {$result.grp_release_grpname|replace:"alt.binaries":"a.b"}">Group</a>
+													{if $mfailed[$m@index] > 0}
+														<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
+															<i class="fa fa-thumbs-o-up"></i> {$mgrabs[$m@index]} Grab{if {$mgrabs[$m@index]} != 1}s{/if} / <i class="fa fa-thumbs-o-down"></i> {$mfailed[$m@index]}Failed Download{if {$mfailed[$m@index]} != 1}s{/if}</span>
+													{/if}
 												</div>
 												<div class="col-md-9 small-gutter-left">
 																<span class="release-title"><a class="text-muted"
 																							   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$result.title|escape:"htmlall"}</a></span>
+
 													<div class="release-subtitle">{if $result.genre != ''}{$result.genre}, {/if}</div>
 													<div id="guid{$mguid[$m@index]}">
 														<label>
@@ -346,17 +363,17 @@
 														</label>
 														<span class="label label-primary">{if isset($catsplit[0])} {$catsplit[0]}{/if}</span>
 														<span class="label label-danger">{if isset($catsplit[1])} {$catsplit[1]}{/if}</span>
-														<span class="label label-default">{$result.year}</span>
 														<span class="label label-default">{$msize[$m@index]|fsize_format:"MB"}</span>
 																	<span class="label label-default">Posted {$mpostdate[$m@index]|timeago}
 																		ago</span>
 														<br/><br/><br/>
+
 														<div class="release-name text-muted"><a
 																	href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$mname[$m@index]|escape:"htmlall"}</a>
 														</div>
 														<div>
 															<a role="button" class="btn btn-default btn-xs"
-															   href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}"><i
+															   href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}|escape:"htmlall"}"><i
 																		class="fa fa-download"></i><span
 																		class="badge"> {$mgrabs[$m@index]}
 																	Grab{if $mgrabs[$m@index] != 1}s{/if}</span></a>

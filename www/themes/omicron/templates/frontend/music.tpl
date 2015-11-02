@@ -1,6 +1,4 @@
 <div class="header">
-	{assign var="catsplit" value=">"|explode:$catname}
-	<h2>{$catsplit[0]} > <strong>{if isset($catsplit[1])} {$catsplit[1]}{/if}</strong></h2>
 	<div class="breadcrumb-wrapper">
 		<ol class="breadcrumb">
 			<li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li>
@@ -105,6 +103,7 @@
 						{assign var="mtotalparts" value=","|explode:$result.grp_release_totalparts}
 						{assign var="mcomments" value=","|explode:$result.grp_release_comments}
 						{assign var="mgrabs" value=","|explode:$result.grp_release_grabs}
+						{assign var="mfailed" value=","|explode:$result.failed}
 						{assign var="mpass" value=","|explode:$result.grp_release_password}
 						{assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
 						{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
@@ -118,7 +117,7 @@
 												   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">
 													<img src="{$smarty.const.WWW_TOP}/covers/music/{if $result.cover == 1}{$result.musicinfoid}.jpg{else}no-cover.jpg{/if}"
 														 width="140" border="0"
-														 alt="{$result.artist|escape:"htmlall"} - {$result.title|escape:"htmlall"}"/>
+														 alt="{$result.artist|escape:"htmlall"} - {$result.title|escape:"htmlall"}"/>{if $mfailed[$m@index] > 0} <i class="fa fa-exclamation-circle" style="color: red" title="This release has failed to download for some users"></i>{/if}
 												</a>
 												{if $result.url != ""}<a class="label label-default"
 																		 target="_blank"
@@ -127,12 +126,15 @@
 																		 title="View Amazon page">
 														Amazon</a>{/if}
 												{if $result.nfoid > 0}<a
-													href="{$smarty.const.WWW_TOP}/nfo/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"
+													href="{$smarty.const.WWW_TOP}/nfo/{$mguid[$m@index]}|escape:"htmlall"}"
 													title="View NFO" class="label label-default" rel="nfo">
 														NFO</a>{/if}
 												<a class="label label-default"
 												   href="{$smarty.const.WWW_TOP}/browse?g={$result.group_name}"
 												   title="Browse releases in {$result.group_name|replace:"alt.binaries":"a.b"}">Group</a>
+												{if $mfailed[$m@index] > 0}
+													<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
+														<i class ="fa fa-thumbs-o-up"></i> {$mgrabs[$m@index]} Grab{if {$mgrabs[$m@index]} != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$mfailed[$m@index]} Failed Download{if {$mfailed[$m@index]} != 1}s{/if}</span>												{/if}
 											</div>
 											<div class="col-md-10 small-gutter-left">
 												<h4><a title="View details"
@@ -174,7 +176,7 @@
 															{/if}
 															<div>
 																<a role="button" class="btn btn-default btn-xs"
-																   href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}"><i
+																   href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}|escape:"htmlall"}"><i
 																			class="fa fa-download"></i><span
 																			class="badge">{$mgrabs[$m@index]}
 																		Grab{if $mgrabs[$m@index] != 1}s{/if}</span></a>

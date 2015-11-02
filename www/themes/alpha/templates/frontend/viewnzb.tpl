@@ -10,7 +10,8 @@
 	<br />
 {/if}
 
-<h2>{$release.searchname|escape:"htmlall"|truncate:100:"...":true}</h2><br>
+<h2>{$release.searchname|escape:"htmlall"|truncate:100:"...":true}{if $failed > 0}<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
+		<i class ="fa fa-thumbs-o-up"></i> {$release.grabs} Grab{if $release.grabs != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$failed} Failed Download{if $failed != 1}s{/if}</span>{/if}</h2><br>
 <div class="container">
 	<div class="col-xs-8">
 		<span class="label label-default">{$release.category_name}</span> <span class="label label-default">{$release.group_name}</span>
@@ -31,26 +32,30 @@
 				</td>
 			</tr>
 
-			{if $rage && $release.rageid > 0}
+			{if $show && $release.videos_id > 0}
 				<tr>
 					<th style="vertical-align:top">TV Info:</th>
-					<td><strong>{if $release.tvtitle != ""}{$release.tvtitle|escape:"htmlall"} - {/if}{$release.seriesfull|replace:"S":"Season "|replace:"E":" Episode "}</strong><br>
-						{if $rage.description != ""}<span class="descinitial">{$rage.description|escape:"htmlall"|nl2br|magicurl|truncate:"350":" <a class=\"descmore\" href=\"#\">more...</a>"}</span>{if $rage.description|strlen > 350}<span class="descfull">{$rage.description|escape:"htmlall"|nl2br|magicurl}</span>{/if}<br><br>{/if}
-						{if $rage.genre != ""}<strong>Genre:</strong> {$rage.genre|escape:"htmlall"|replace:"|":", "}<br>{/if}
-						{if $release.tvairdate != ""}<strong>Aired:</strong> {$release.tvairdate|date_format}<br>{/if}
-						{if $rage.country != ""}<strong>Country:</strong> {$rage.country}{/if}
+					<td><strong>{if $release.title != ""}{$release.title|escape:"htmlall"} - {/if}{$release.se_complete|replace:"S":"Season "|replace:"E":" Episode "}</strong><br>
+						{if $show.summary != ""}<span class="descinitial">{$show.summary|escape:"htmlall"|nl2br|magicurl|truncate:"350":" <a class=\"descmore\" href=\"#\">more...</a>"}</span>
+						{if $show.summary|strlen > 350}<span class="descfull">{$show.summary|escape:"htmlall"|nl2br|magicurl}</span>{/if}<br><br>{/if}
+						{if $release.firstaired != ""}<strong>Aired:</strong> {$release.firstaired|date_format}<br>{/if}
+						{if $show.countries_id != ""}<strong>Country:</strong> {$show.countries_id}{/if}
 						<div style="margin-top:10px;">
-							<span class="label label-default"><a title="View all episodes from this series" href="{$smarty.const.WWW_TOP}/series/{$release.rageid}">All Episodes</a></span>
-							<span class="label label-default"><a target="_blank" href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$release.rageid}" title="View at TV Rage">TV Rage</a></span>
-							<span class="label label-default"><a href="{$smarty.const.WWW_TOP}/rss?rage={$release.rageid}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}" title="Rss feed for this series">Series Rss Feed</a></span>
+							<span class="label label-default"><a title="View all episodes from this series" href="{$smarty.const.WWW_TOP}/series/{$release.videos_id}">All Episodes</a></span>
+							{if $release.source = 1}
+								<span class="label label-default"><a target="_blank" href="{$site->dereferrer_link}http://thetvdb.com/?tab=series&id={$release.tvdb}" title="View at TVDB">TVDB</a></span>
+							{elseif $release.source = 3}
+								<span class="label label-default"><a target="_blank" href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$release.tvrage}" title="View at TV Rage">TV Rage</a></span>
+							{/if}
+							<span class="label label-default"><a href="{$smarty.const.WWW_TOP}/rss?show={$release.videos_id}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}" title="Rss feed for this series">Series Rss Feed</a></span>
 							<br><strong>Subtitle Search:</strong>
-							<br><a target="_blank" href="http://www.addic7ed.com/search.php?search={$release.tvtitle}" title="Addic7ed">Addic7ed</a> <a target="_blank" href="http://www.opensubtitles.org/en/search2/sublanguageid-all/searchonlytvseries-on/moviename-{$release.tvtitle}" title="Opensubtitles">OpenSubtitles</a> <a target="_blank" href="http://www.subtitleseeker.com/search/MOVIE_TITLES/{$release.tvtitle|replace:"S":"Season "|replace:"E":" Episode "}"title="SubtitleSeeker">SubtitleSeeker</a>
+							<br><a target="_blank" href="http://www.addic7ed.com/search.php?search={$release.title}" title="Addic7ed">Addic7ed</a> <a target="_blank" href="http://www.opensubtitles.org/en/search2/sublanguageid-all/searchonlytvseries-on/moviename-{$release.title}" title="Opensubtitles">OpenSubtitles</a> <a target="_blank" href="http://www.subtitleseeker.com/search/MOVIE_TITLES/{$release.title|replace:"S":"Season "|replace:"E":" Episode "}"title="SubtitleSeeker">SubtitleSeeker</a>
 						</div>
 					</td>
 				</tr>
 			{/if}
 
-			{if $movie && $release.rageid < 0}
+			{if $movie && $release.videos_id <= 0}
 				<tr>
 					<th style="vertical-align:top">Movie Info:</th>
 					<td><strong>{$movie.title|stripslashes|escape:"htmlall"} ({$movie.year}) {if $movie.rating !== ''}{$movie.rating}/10{/if}</strong>
@@ -122,10 +127,10 @@
 			{if $anidb && $anidb.anidbid > 0}
 				<tr>
 					<th style="vertical-align:top">Anime Info:</th>
-					<td><strong>{if $release.tvtitle != ""}{$release.tvtitle|escape:"htmlall"}{/if}</strong><br>
+					<td><strong>{if $release.title != ""}{$release.title|escape:"htmlall"}{/if}</strong><br>
 						{if $anidb.description != ""}<span class="descinitial">{$anidb.description|escape:"htmlall"|nl2br|magicurl|truncate:"350":" <a class=\"descmore\" href=\"#\">more...</a>"}</span>{if $anidb.description|strlen > 350}<span class="descfull">{$anidb.description|escape:"htmlall"|nl2br|magicurl}</span>{/if}<br><br>{/if}
 						{if $anidb.categories != ""}<strong>Categories:</strong> {$anidb.categories|escape:"htmlall"|replace:"|":", "}<br>{/if}
-						{if $release.tvairdate != "0000-00-00 00:00:00"}<strong>Aired:</strong> {$release.tvairdate|date_format}<br/>{/if}
+						{if $release.firstaired != null}<strong>Aired:</strong> {$release.firstaired|date_format}<br/>{/if}
 						<div style="margin-top:10px;">
 							<span class="label label-default"><a title="View all episodes from this anime" href="{$smarty.const.WWW_TOP}/anime/{$release.anidbid}">All Episodes</a></span>
 							<span class="label label-default"><a target="_blank" href="{$site->dereferrer_link}http://anidb.net/perl-bin/animedb.pl?show=anime&aid={$anidb.anidbid}" title="View at AniDB">AniDB</a></span>
@@ -235,15 +240,11 @@
 		</table>
 	</div>
 	<div class="col-xs-4" style="text-align:center" >
-		{if $rage && $release.rageid > 0 && $rage.imgdata != ""}
-			<img
-					class="shadow img-thumbnail"
-					style="vertical-align:top" src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$rage.id}"
-					alt="{$rage.releasetitle|escape:"htmlall"}">
+		{if $show && $release.videos_id > 0 && $show.image != "0"}
+			<img src="{$smarty.const.WWW_TOP}/covers/tvshows/{$release.videos_id}.jpg" alt="{$show.title|escape:"htmlall"}">
 		{/if}
-		{*src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$rage.id}" alt="{$rage.releasetitle|escape:"htmlall"}"*}
 
-		{if $movie && $release.rageid < 0 && $movie.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/movies/{$movie.imdbid}-cover.jpg" alt="{$movie.title|escape:"htmlall"}">{/if}
+		{if $movie && $release.videos_id < 0 && $movie.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/movies/{$movie.imdbid}-cover.jpg" alt="{$movie.title|escape:"htmlall"}">{/if}
 		{*{$smarty.const.WWW_TOP}/covers/movies/{$movie.imdbid}-cover.jpg" alt="{$movie.title|escape:"htmlall"}"*}
 
 		{if $xxx && $xxx.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/xxx/{$xxx.id}-cover.jpg" alt="{$xxx.title|escape:"htmlall"}">{/if}
@@ -261,9 +262,7 @@
 
 		{if $boo && $boo.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/book/{$boo.id}.jpg" alt="{$boo.title|escape:"htmlall"}">{/if}
 		{*{$smarty.const.WWW_TOP}/covers/book/{$boo.id}.jpg" width="160" alt="{$boo.title|escape:"htmlall"}*}
-
 	</div>
-
 </div>
 <br>        <br>
 
@@ -483,6 +482,11 @@
 	<td>{$release.grabs} time{if $release.grabs==1}{else}s{/if}
 	</td>
 </tr>
+	<tr>
+		<th width="140">Failed Download</th>
+		<td>{$failed}
+			time{if $failed==1}{else}s{/if}</td>
+	</tr>
 <tr>
 	<th style="vertical-align:top">Files:</th>
 	<td><a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$release.guid}">{$release.totalpart} file{if $release.totalpart==1}{else}s{/if}</a>

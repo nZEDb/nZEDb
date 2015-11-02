@@ -138,6 +138,8 @@ GiantBombAPI.php => MIT
 
 TMDb PHP API class => BSD
 
+TVDB PHP API class => Moinax
+
 Zip file creation class => No license specified.
 
 simple_html_dom.php => MIT

@@ -1,5 +1,55 @@
 This file details which changes to the code are in which release version. It is a complement to the ChangeLog file which list *when* changes are made to the dev branch.
 
+0.5.0 2015-11-02
+Added:
+	* Statistical info for grabbed/failed releases to cover, browse and search pages. (PR 1885).
+	* Automatically generate comment on failed download. (PR 1889).
+	* text_hash column, triggers, and index to release_comments to prevent insertion of duplicated comments originating from automated messages, sharing etc. (PR 1891).
+	* List of releases failed to download reported by X-DNZB-Failure headers to admin area. (PR 1892).
+	* Script to extract TV covers from the database and save them to the tvrage directory in covers. .../misc/testing/PostProcess/extractTVCovers.php
+	* Anime new poster wall view. (PR 1897).
+	* updateTvRage.php in misc/testing/PostProc will now run in check mode to reconcile image files against the DB if you imported.
+	* Add view release option to failed releases list. Do not post comment for user, if that user already posted the failure automated comment.
+
+Changed:
+	* Completely refactored TV processing to use multiple sites instead of just TVRage.
+	* Replace TVRage Processing with TVDB
+		***	Note: We found a bug dating back to the beginning that caused bad titles to be inserted into the TvRage table
+          As such, we decided not to incorporate the title data by migrating it to the new videos schema.  We are not dropping the tables yet,
+          as there is still promise in joining the tables at a later date to populate some fields.
+	* Set TV cover images to pull from /covers/tvrage/ ***NOTE*** Run the extractTVCovers script in misc/testing/PostProcess/ ***
+	* Removed getimage.php as it was only used for displaying TV images... TV now adopts the standard cover method.
+	* updateTvRage script now looks for hascover = 0 instead... which still won't work because TVR is down.
+	* Change TVDB client class call. (PR 1894).
+	* Adjust templates for tvrage images change.
+	* Add deletion of dnzb_failures to deleteSingle. (1901).
+	* Improve Codec Poster removal query times by incorporating Sphinx FT if enabled.
+	* Lots more love for Sphinx FT in ReleaseRemover.  Greatly improves query times on big databases.
+	* Update parseTraktTv function, as it was occasionally inserting covers with tt prefix. (PR 1904).
+	* Update the search page in omicron/charisma templates. (PR 1907).
+	* Move all the TV related classes so nzedb/processing/tv folder. Move the processTvReleases function into main TV class. (PR 1910).
+	* Remove text_hash column, trigger and index from release_comments. (PR 1911).
+	* Change the order of removal in Patch 385. (PR 1912).
+
+Fixed:
+	* Invalid icon links in omicron / charisma themes.
+	* Host column misplacement in admin comments list when user ip tracking is enabled. (PR 1890).
+	* Error in extract script and a query error for new poster wall for TV.
+	* Forgot to add untracked anidb icon for poster wall.
+	* AniDB poster wall query not grouping by release.
+	* Attempt to fix AniDB icon not showing in multiple themes.
+	* Omicron poster wall typo, wrong script name in patch file 384.
+	* Alpha TV New Poster Wall missing div tag.
+	* ReleaseRemover not honoring LIKE search types causing blacklist removal issues and not producing enough matches in SPHINX mode.
+	* Undefined index error in updateTvRage.php (Issue 1900).
+	* Layout of tv->anime page. (PR 1905).
+	* Extend episodeSummary function with extended type switch for future use. (PR 1906).
+	* No covers shown on XXX /details pages. (PR 1918).
+	* Incorrect usage of date function (missing strtotime for int value).
+	* View TV Series query speedup caused incorrect join placement (2nd Attempt).
+	* Some local lookups were passing with invalid information causing them to show up as season 0.
+
+
 0.4.26-1 2015-10-07
 Fixed:
 	* Bug in ReleaseRemover which forced a Full Text search. This caused blacklist removal issues and not producing enough matches in SPHINX mode.

@@ -1,5 +1,7 @@
 <div class="container nzb_multi_operations">
-	{$pager}
+	{if $pager}
+		{$pager}
+	{/if}
 	<div class="pull-right">
 		With Selected: <button type="button" class="btn btn-info btn-sm nzb_multi_operations_download">Download NZBs</button>
 		<button type="button" class="btn btn-info btn-sm nzb_multi_operations_cart">Add to Cart</button>

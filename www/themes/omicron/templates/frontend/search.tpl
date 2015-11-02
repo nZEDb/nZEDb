@@ -61,6 +61,7 @@
 					<td><input class="searchadv" id="searchadvfilename" name="searchadvfilename" value="{$searchadvfilename|escape:'html'}" type="text"/></td>
 				</tr>
 				<tr>
+				<tr>
 					<th><label for="searchadvdaysnew">Min age(days):</label></th>
 					<td>
 						<input class="searchdaysinput" id="searchadvdaysnew" name="searchadvdaysnew"
@@ -186,6 +187,26 @@
 		</div>
 		<hr>
 		<table class="data table table-condensed table-striped table-responsive table-hover" id="browsetable">
+			<thead>
+			<tr>
+				<th><input id="chkSelectAll" type="checkbox" class="nzb_check_all"/></th>
+				<th>Name
+					<a title="Sort Descending" href="{$orderbyname_desc}">
+						<i class="fa-icon-caret-down text-muted"> </i>
+					</a>
+					<a title="Sort Ascending" href="{$orderbyname_asc}">
+						<i class="fa-icon-caret-up text-muted"> </i>
+					</a>
+				</th>
+				<th>Category</th>
+				<th>Posted</th>
+				<th>Size</th>
+				<th>Files</th>
+				<th>Downloads</th>
+				<th>Action</th>
+			</tr>
+			</thead>
+			<tbody>
 			{foreach from=$results item=result}
 				<tr class="{cycle values=",alt"}{if $lastvisit|strtotime<$result.adddate|strtotime} new{/if}"
 					id="guid{$result.guid}">
@@ -196,27 +217,27 @@
 					<td class="item">
 						<label for="chk{$result.guid|substr:0:7}">
 							<a class="title" title="View details"
-							   href="{$smarty.const.WWW_TOP}/details/{$result.guid}">{$result.searchname|escape:"htmlall"|truncate:150:"...":true}</a></label value="Searchname">
+							   href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.searchname|escape:"htmlall"|truncate:150:"...":true}</a>{if $result.failed > 0} <i class="fa fa-exclamation-circle" style="color: red" title="This release has failed to download for some users"></i>{/if}</label value="Searchname">
 						<div class="resextra">
 							<div class="btns" style="float:right">
 								{release_flag($result.searchname, browse)}
 								{if $result.passwordstatus == 1}
 									<img title="RAR/ZIP Possibly Passworded."
-										 src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/lock2.png"
+										 src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/lock2.png"
 										 alt="RAR/ZIP Possibly Passworded.">
 								{elseif $result.passwordstatus == 2}
 									<img title="RAR/ZIP Possibly Damaged."
-										 src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/broken.png"
+										 src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/broken.png"
 										 alt="RAR/ZIP Possibly Damaged.">
 								{elseif $result.passwordstatus == 10}
 									<img title="RAR/ZIP is Passworded."
-										 src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/lock.gif"
+										 src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/lock.gif"
 										 alt="RAR/ZIP is Passworded.">
 								{/if}
 								{if $result.videostatus > 0}
 									<a
 											class="model_prev label label-default"
-											href="{$smarty.const.WWW_TOP}/details/{$result.guid}"
+											href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}"
 											title="This release has a video preview."
 											rel="preview"
 											><i class="icon-youtube-play"></i>
@@ -246,9 +267,9 @@
 									<a href="#" name="name{$result.consoleinfoid}" title="View console info"
 									   class="modal_console label label-default" rel="console">Cover</a>
 								{/if}
-								{if $result.rageid > 0}
+								{if $result.videos_id > 0}
 									<a class="label label-default"
-									   href="{$smarty.const.WWW_TOP}/series/{$result.rageid}" title="View all episodes">View
+									   href="{$smarty.const.WWW_TOP}/series/{$result.videos_id}" title="View all episodes">View
 										Series</a>
 								{/if}
 								{if $result.anidbid > 0}
@@ -256,14 +277,17 @@
 									   href="{$smarty.const.WWW_TOP}/anime/{$result.anidbid}" title="View all episodes">View
 										Anime</a>
 								{/if}
-								{if $result.tvairdate != ""}
+								{if isset($result.firstaired) && $result.firstaired != ''}
 									<span class="seriesinfo label label-default"
-										  title="{$result.guid}">Aired {if $result.tvairdate|strtotime > $smarty.now}in future{else}{$result.tvairdate|daysago}{/if}</span>
+										  title="{$result.guid}">Aired {if $result.firstaired|strtotime > $smarty.now}in future{else}{$result.firstaired|daysago}{/if}</span>
 								{/if}
 								{if $result.group_name != ""}
 									<a class="label label-default"
 									   href="{$smarty.const.WWW_TOP}/browse?g={$result.group_name|escape:"htmlall"}"
 									   title="Browse {$result.group_name}">{$result.group_name|escape:"htmlall"|replace:"alt.binaries.":"a.b."}</a>
+								{/if}
+								{if $result.failed > 0}<span class="label label-default">
+									<i class ="fa fa-thumbs-o-up"></i> {$result.grabs} Grab{if $result.grabs != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$result.failed} Failed Download{if $result.failed != 1}s{/if}</span>
 								{/if}
 							</div>
 						</div>
@@ -291,7 +315,7 @@
 						   href="{$smarty.const.WWW_TOP}/filelist/{$result.guid}">{$result.totalpart}</a>
 						{if $result.rarinnerfilecount > 0}
 							<div class="rarfilelist">
-								<img src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/magnifier.png"
+								<img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/magnifier.png"
 									 alt="{$result.guid}">
 							</div>
 						{/if}
@@ -302,19 +326,27 @@
 							cmt{if $result.comments != 1}s{/if}</a>
 						<br>{$result.grabs} grab{if $result.grabs != 1}s{/if}
 					</td>
-					<td class="icons" nowrap="nowrap">
-						<div class="icon_nzb text-muted">
-							<a title="Download Nzb"
-							   href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}">
-								&nbsp;<i class="fa fa-download"></i></a>
-						</div>
-						<div class="icon_cart text-muted" title="Add to Cart"><i class="fa fa-shopping-cart"></i></div>
-						{if $sabintegrated}
-							<div class="icon_sab text-muted" title="Send to my Queue"><i class="fa fa-send-o"></i></div>
+					<td class="icon_nzb"><a
+								href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"htmlall"}"><i
+									class="fa fa-download text-muted"
+									title="Download NZB"></i></a>
+						<a href="{$smarty.const.WWW_TOP}/details/{$result.guid}/#comments"><i
+									class="fa fa-comments-o text-muted"
+									title="Comments"></i></a>
+						<a href="#" class="icon_cart text-muted"><i
+									class="fa fa-shopping-cart" title="Send to my Cart"></i></a>
+						{if isset($sabintegrated)}
+							<a href="#" class="icon_sab text-muted"><i class="fa fa-send-o"
+																	   title="Send to my Queue"></i></a>
+						{/if}
+						{if $weHasVortex}
+							<a href="#" class="icon_vortex text-muted"><i
+										class="fa fa-send-o" title="Send to NZBVortex"></i></a>
 						{/if}
 					</td>
 				</tr>
 			{/foreach}
+			</tbody>
 		</table>
 		<br/>
 		<div class="row">
