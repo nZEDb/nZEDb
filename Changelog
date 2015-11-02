@@ -17,7 +17,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Fix: Incorrect usage of date function (missing strtotime for int value)
 2015-10-25 ruhllatio
 	Mrg: PR 1916 Replace TVRage Processing with TVDB
-	Note: 	We found a bug dating back to the beginning that caused bad titles to be inserted into the TvRage table
+	Note: We found a bug dating back to the beginning that caused bad titles to be inserted into the TvRage table
 		As such, we decided not to incorporate the title data by migrating it to the new videos schema.  We are not dropping the tables yet
 		As there is still promise in joining the tables at a later date to populate some fields.
 2015-10-18 bart39
