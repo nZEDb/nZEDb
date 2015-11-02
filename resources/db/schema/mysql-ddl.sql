@@ -1139,7 +1139,7 @@ CREATE TABLE user_series (
   categoryid  VARCHAR(64)      NULL DEFAULT NULL,
   createddate DATETIME         NOT NULL,
   PRIMARY KEY (id),
-  INDEX ix_userseries_userid (user_id, videos_id)
+  INDEX ix_userseries_videos_id (user_id, videos_id)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
