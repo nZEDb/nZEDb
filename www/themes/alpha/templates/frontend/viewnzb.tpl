@@ -55,6 +55,9 @@
 							{if $show.tvmaze > 0}
 								<span class="label label-default"><a title="View at TVMaze" target="_blank" href="{$site->dereferrer_link}http://tvmaze.com/shows/{$show.tvmaze}">TVMaze</a></span>
 							{/if}
+							{if $show.tmdb > 0}
+								<span class="label label-default"><a title="View at TheMovieDB" target="_blank" href="{$site->dereferrer_link}https://www.themoviedb.org/tv/{$show.tmdb}">TMDB</a></span>
+							{/if}
 							<span class="label label-default"><a href="{$smarty.const.WWW_TOP}/rss?show={$release.videos_id}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}" title="Rss feed for this series">Series Rss Feed</a></span>
 							<br><strong>Subtitle Search:</strong>
 							<br><a target="_blank" href="http://www.addic7ed.com/search.php?search={$release.title}" title="Addic7ed">Addic7ed</a> <a target="_blank" href="http://www.opensubtitles.org/en/search2/sublanguageid-all/searchonlytvseries-on/moviename-{$release.title}" title="Opensubtitles">OpenSubtitles</a> <a target="_blank" href="http://www.subtitleseeker.com/search/MOVIE_TITLES/{$release.title|replace:"S":"Season "|replace:"E":" Episode "}"title="SubtitleSeeker">SubtitleSeeker</a>

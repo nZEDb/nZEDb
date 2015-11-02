@@ -51,22 +51,30 @@
 						   class="label label-success">Add to My Shows</a>
 						<a class="label label-default" href="{$serverroot}series/{$release.videos_id}"
 						   title="View all releases for this series">View all episodes</a>
-						{if $show.source == 1}
+							{if $show.tvdb > 0}
 							<a class="label label-default" target="_blank"
 							   href="{$site->dereferrer_link}http://thetvdb.com/?tab=series&id={$show.tvdb}"
 							   title="View at TheTVDB">TheTVDB</a>
-						{elseif $show.source == 2}
+							{/if}
+							{if $show.tvmaze > 0}
 							<a class="label label-default" target="_blank"
 							   href="{$site->dereferrer_link}http://tvmaze.com/shows/{$show.tvmaze}"
 							   title="View at TVMaze">TVMaze</a>
-						{elseif $show.source == 3}
+								{/if}
+							{if $show.trakt > 0}
 							<a class="label label-default" target="_blank"
 							   href="{$site->dereferrer_link}http://www.trakt.tv/shows/{$show.trakt}"
 							   title="View at TraktTv">Trakt</a>
-						{elseif $show.source == 6}
+								{/if}
+							{if $show.tvrage > 0}
 							<a class="label label-default" target="_blank"
 							   href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$show.tvrage}"
 							   title="View at TV Rage">TV Rage</a>
+								{/if}
+							{if $show.tmdb > 0}
+							<a class="label label-default" target="_blank"
+							   href="{$site->dereferrer_link}https://www.themoviedb.org/tv/{$show.tmdb}"
+							   title="View at TheMovieDB">Trakt</a>
 						{/if}
 					{/if}
 					{if $con && $con.url != ""}<a href="{$site->dereferrer_link}{$con.url}/"
