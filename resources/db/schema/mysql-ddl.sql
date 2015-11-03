@@ -297,7 +297,7 @@ DROP TABLE IF EXISTS countries;
 CREATE TABLE countries (
   id      CHAR(2) COLLATE utf8_unicode_ci NOT NULL COMMENT '2 character code.',
   iso3    CHAR(3) COLLATE utf8_unicode_ci NOT NULL COMMENT '3 character code.',
-  country VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Name of the country.',
+  country VARCHAR(255) CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Name of the country.',
   PRIMARY KEY (id),
   UNIQUE KEY code3 (iso3),
   UNIQUE KEY country (country)
@@ -1139,7 +1139,7 @@ CREATE TABLE user_series (
   categoryid  VARCHAR(64)      NULL DEFAULT NULL,
   createddate DATETIME         NOT NULL,
   PRIMARY KEY (id),
-  INDEX ix_userseries_userid (user_id, videos_id)
+  INDEX ix_userseries_videos_id (user_id, videos_id)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
