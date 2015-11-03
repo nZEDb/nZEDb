@@ -1193,7 +1193,6 @@ CREATE TABLE videos (
   KEY            ix_videos_type_source (type, source)
 )
   ENGINE = MyISAM
-  AUTO_INCREMENT = 1
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci
   AUTO_INCREMENT = 10000000;
