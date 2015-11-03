@@ -389,6 +389,7 @@ abstract class TV extends Videos
 	 */
 	public function getSiteByID($column, $id)
 	{
+		$return = false;
 		$videoArr = $this->pdo->queryOneRow(
 			sprintf("
 				SELECT %s
@@ -398,7 +399,12 @@ abstract class TV extends Videos
 				$id
 			)
 		);
-		return (isset($videoArr[$column]) ? $videoArr[$column] : false);
+		if ($column === '*') {
+			$return = $videoArr;
+		} else if ($column !== '*' && isset($videoArr[$column])) {
+			$return = $videoArr[$column];
+		}
+		return $return;
 	}
 
 	/**
