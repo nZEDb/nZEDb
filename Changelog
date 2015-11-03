@@ -7,6 +7,7 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 2015-11-03 bart39
+	Fix: Release-edit redirecting to wrong page #1940.
 	Fix: Change patch 391 to drop and recreate user_series table due to unknown issue on InnoDB.
 2015-11-02 bart39
 	Fix: index name on user series.
