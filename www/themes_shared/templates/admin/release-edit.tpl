@@ -1,6 +1,6 @@
 <h1>{$page->title}</h1>
 <form action="{$SCRIPT_NAME}?action=submit" method="POST">
-	<input type="hidden" name="from" value="{$from}" />
+	<input type="hidden" name="from" value="{$smarty.get.from}" />
 	<table class="input">
 		<tr>
 			<td><label for="name">Original Name:</label></td>
