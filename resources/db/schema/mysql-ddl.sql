@@ -297,7 +297,7 @@ DROP TABLE IF EXISTS countries;
 CREATE TABLE countries (
   id      CHAR(2) COLLATE utf8_unicode_ci NOT NULL COMMENT '2 character code.',
   iso3    CHAR(3) COLLATE utf8_unicode_ci NOT NULL COMMENT '3 character code.',
-  country VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Name of the country.',
+  country VARCHAR(255) CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Name of the country.',
   PRIMARY KEY (id),
   UNIQUE KEY code3 (iso3),
   UNIQUE KEY country (country)
@@ -1139,7 +1139,7 @@ CREATE TABLE user_series (
   categoryid  VARCHAR(64)      NULL DEFAULT NULL,
   createddate DATETIME         NOT NULL,
   PRIMARY KEY (id),
-  INDEX ix_userseries_userid (user_id, videos_id)
+  INDEX ix_userseries_videos_id (user_id, videos_id)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
@@ -1174,7 +1174,7 @@ CREATE TABLE videos (
   title        VARCHAR(180) CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Name of the video.',
   countries_id CHAR(2) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'Two character country code (FK to countries table).',
   started      DATETIME                NOT NULL COMMENT 'Date (UTC) of production''s first airing.',
-  anidb        MEDIUMINT(11) UNSIGNED NOT NULL DEFAULT '0'  COMMENT 'ID number for anidb site'
+  anidb        MEDIUMINT(11) UNSIGNED NOT NULL DEFAULT '0'  COMMENT 'ID number for anidb site',
   imdb         MEDIUMINT(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'ID number for IMDB site (without the ''tt'' prefix).',
   tmdb         MEDIUMINT(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'ID number for TMDB site.',
   trakt        MEDIUMINT(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'ID number for TraktTV site.',

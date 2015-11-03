@@ -6,15 +6,34 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
-2015-10-30 niel
-	Mrg: dev => next-master to prepare for updating master.
-
-
+2015-11-03 bart39
+	Fix: Release-edit redirecting to wrong page #1940.
+	Fix: Change patch 391 to drop and recreate user_series table due to unknown issue on InnoDB.
+2015-11-02 bart39
+	Fix: index name on user series.
+2015-10-30 ruhllatio
+	Fix: Attempt to fix Issue #1844 Pager counts not reflecting release availability
+2015-10-29 ruhllatio
+	Fix: Tmux counters not accurately reflecting TV work (still off until new scrapers are finished)
+	Fix: SCR in ReleaseRemover and improve query times for all release_files operations on larger databases
+2015-10-28 ruhllatio
+	Chg: Speed up series list view query by removing releases join
+	Mrg: PR #1930, From Darius - Remove totalrows count from functions, api and templates
+	Chg: Release Browse Queries not respecting table position on larger Databases with MariaDB
+2015-10-27 ruhllatio
+	Mrg: PR #1925, From Darius - Fix anime pages in omicron/charisma. Fix a typo in mysql-ddl.sql
+	Mrg: PR #1928, From Darius - Move My Shows to account menu, remove links to calendar and add Anime Series link to charisma template
+	Fix: Country not being extracted from release / Improve TVDB matching when country exists
 2015-10-26 ruhllatio
 	Fix: Some local lookups were passing with invalid information causing them to show up as season 0.
 	Fix: View TV Series query speedup caused incorrect join placement (2nd Attempt)
 	Fix: Trakt class instanciation not working to the API
 	Fix: Incorrect usage of date function (missing strtotime for int value)
+	Chg: Removed pager count from releases->searchShows.  It is only called by View Series List and API and neither use a pager function.
+	Mrg: PR 1922, from Darius - Add changes to omicron/charisma templates for new TV.
+	Fix: Massive non-cover view browse speedup due to query restructure.  Also helps some API/RSS functions.
+	Fix: Issue with last push breaking browse groups (Second fix -- second order by to preserve selected ordering)
+	Fix: Undefined offset in TV.php causing issues with season assignment for some airdate shows.
 2015-10-25 ruhllatio
 	Mrg: PR 1916 Replace TVRage Processing with TVDB
 	Note: We found a bug dating back to the beginning that caused bad titles to be inserted into the TvRage table
@@ -72,7 +91,6 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Mrg: dev => next-master to prepare for updating master.
 	Mrg: PR 1885, from Darius - Add statistical info for grabbed/failed releases to cover, browse and search pages.
 	Mrg: PR 1889, from Darius - Automatically generate comment on failed download.
-
 
 2015-10-01 bart39
 	Fix: updated predb insert trigger that got missed for new installs, fixes #1875.

@@ -330,8 +330,8 @@ class TmuxOutput extends Tmux
 						   "TV",
 						   sprintf(
 							   "%s(%s)",
-							   number_format($this->runVar['counts']['now']['processtvrage']),
-							   $this->runVar['counts']['diff']['processtvrage']
+							   number_format($this->runVar['counts']['now']['processtv']),
+							   $this->runVar['counts']['diff']['processtv']
 						   ),
 						   sprintf(
 							   "%s(%d%%)",
