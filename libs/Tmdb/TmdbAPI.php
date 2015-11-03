@@ -68,7 +68,7 @@
  * 		// Person images		https://api.themoviedb.org/3/person/287/images
  */
 
-namespace nzedb\libraries;
+namespace libs\Tmdb;
 
 use libs\Tmdb\Data\Collection;
 use libs\Tmdb\Data\Episode;

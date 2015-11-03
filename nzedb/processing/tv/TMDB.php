@@ -1,7 +1,7 @@
 <?php
 namespace nzedb\processing\tv;
 
-use nzedb\libraries\TmdbAPI;
+use libs\Tmdb\TmdbAPI;
 use nzedb\ReleaseImage;
 
 class TMDB extends TV
