@@ -6,6 +6,8 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2015-11-03 bart39
+	Fix: Change patch 391 to drop and recreate user_series table due to unknown issue on InnoDB.
 2015-11-02 bart39
 	Fix: index name on user series.
 2015-10-30 ruhllatio
