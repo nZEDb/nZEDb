@@ -154,6 +154,7 @@ class TMDB extends TV
 			}
 		}
 	}
+
 	/**
 	 * Calls the API to perform initial show name match to TMDB title
 	 * Returns a formatted array of show data or false if no match
