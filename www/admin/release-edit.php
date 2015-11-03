@@ -11,7 +11,7 @@ $id = 0;
 
 // Set the current action.
 $action = (isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view');
-$from = (isset($_REQUEST['from']) ? $_REQUEST['from'] : WWW_TOP . "/release-list.php");
+$from = (isset($_POST['from']) ? $_POST['from'] : WWW_TOP . "/release-list.php");
 
 switch ($action) {
 	case 'submit':
