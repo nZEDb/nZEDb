@@ -295,7 +295,7 @@ CREATE TABLE consoleinfo (
 
 DROP TABLE IF EXISTS countries;
 CREATE TABLE countries (
-  code    CHAR(2) COLLATE utf8_unicode_ci NOT NULL COMMENT '2 character code.',
+  id      CHAR(2) COLLATE utf8_unicode_ci NOT NULL COMMENT '2 character code.',
   iso3    CHAR(3) COLLATE utf8_unicode_ci NOT NULL COMMENT '3 character code.',
   country VARCHAR(180) CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Name of the country.',
   PRIMARY KEY (code),
