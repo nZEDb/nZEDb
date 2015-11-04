@@ -106,18 +106,19 @@ class TVMaze extends TV
 						$lookupSetting = true;
 					}
 
+					// If it doesn't exist locally and lookups are allowed lets try to get it.
 					if ($tvmazeid === false && $lookupSetting) {
 
-						// If it doesn't exist locally and lookups are allowed lets try to get it.
 						if ($this->echooutput) {
 							echo	$this->pdo->log->primaryOver("Video ID for ") .
 								$this->pdo->log->headerOver($release['cleanname']) .
 								$this->pdo->log->primary(" not found in local db, checking web.");
 						}
 
-						// Get the show from TVDB
+						// Get the show from TVMaze
 						$tvmazeShow = $this->getShowInfo((string)$release['cleanname']);
 
+					// If the show exists and we have a valid TVDB or TVRage ID then do the lookup that way
 					} else if ($tvmazeid === 0 && ($tvdbid > 0 || $tvrageid > 0)) {
 						if ($tvdbid > 0) {
 							$tvmazeShow = $this->getShowInfoBySiteID('thetvdb', $tvdbid);
@@ -154,7 +155,7 @@ class TVMaze extends TV
 						$episode = $this->getBySeasonEp($videoId, $seasonNo, $episodeNo, $release['airdate']);
 
 						if ($episode === false && $lookupSetting) {
-							// Send the request for the episode to TVDB
+							// Send the request for the episode to TVMaze
 							$tvmazeEpisode = $this->getEpisodeInfo(
 								$tvmazeid,
 								$seasonNo,
@@ -195,11 +196,8 @@ class TVMaze extends TV
 	{
 		$return = $response = false;
 
-		try {
-			//Try for the best match with AKAs embedded
-			$response = $this->client->getShowBySiteID($site, $siteId);
-		} catch (\Exception $error) {
-		}
+		//Try for the best match with AKAs embedded
+		$response = $this->client->getShowBySiteID($site, $siteId);
 
 		sleep(1);
 
@@ -221,11 +219,8 @@ class TVMaze extends TV
 	{
 		$return = $response = false;
 
-		try {
-			//Try for the best match with AKAs embedded
-			$response = $this->client->singleSearch($cleanName);
-		} catch (\Exception $error) {
-		}
+		//Try for the best match with AKAs embedded
+		$response = $this->client->singleSearch($cleanName);
 
 		sleep(1);
 
@@ -233,11 +228,8 @@ class TVMaze extends TV
 			$return = $this->matchShowInfo($response, $cleanName);
 		}
 		if ($return === false) {
-			try {
-				//Try for the best match via full search (no AKAs can be returned but the search is better)
-				$response = $this->client->search($cleanName);
-			} catch (\Exception $error) {
-			}
+			//Try for the best match via full search (no AKAs can be returned but the search is better)
+			$response = $this->client->search($cleanName);
 			if (is_array($response)) {
 				$return = $this->matchShowInfo($response, $cleanName);
 			}
@@ -329,20 +321,11 @@ class TVMaze extends TV
 		$return = $response = false;
 
 		if ($airdate !== '') {
-			try {
 				$response = $this->client->getEpisodesByAirdate($tvmazeid, $airdate);
-			} catch (\Exception $error) {
-			}
 		} else if ($videoId > 0) {
-			try {
 				$response = $this->client->getEpisodesByShowID($tvmazeid);
-			} catch (\Exception $error) {
-			}
 		} else {
-			try {
 				$response = $this->client->getEpisodeByNumber($tvmazeid, $season, $episode);
-			} catch (\Exception $error) {
-			}
 		}
 
 		sleep(1);
@@ -356,14 +339,19 @@ class TVMaze extends TV
 			//Handle new show/all episodes and airdate lookups
 			foreach ($response as $singleEpisode) {
 				if ($this->checkRequired($singleEpisode, 'tvmazeE')) {
-					// If this is an airdate lookup, set a return
+					// If this is an airdate lookup and it matches the airdate, set a return
 					if ($airdate !== '' && $airdate == $singleEpisode->airdate) {
 						$return = $this->formatEpisodeArr($singleEpisode);
 					} else {
+						// Insert the episode
 						$this->addEpisode($videoId, $this->formatEpisodeArr($singleEpisode));
 					}
 				}
 			}
+		}
+		//If we didn't get any aliases do a direct alias lookup
+		if (is_array($return) && empty($return['aliases']) && is_numeric($return['tvmazeid'])) {
+			$return['aliases'] = $this->client->getShowAKAs($return['tvmazeid']);
 		}
 		return $return;
 	}
