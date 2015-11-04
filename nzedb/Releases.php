@@ -173,7 +173,7 @@ class Releases
 				WHERE r.nzbstatus = %d
 				AND r.passwordstatus %s
 				%s %s %s %s',
-				($groupName != '' ? 'INNER JOIN groups g ON g.id = r.group_id' : ''),
+				($groupName != '' ? 'LEFT JOIN groups g ON g.id = r.group_id' : ''),
 				NZB::NZB_ADDED,
 				$this->showPasswords,
 				($groupName != '' ? sprintf(' AND g.name = %s', $this->pdo->escapeString($groupName)) : ''),
@@ -206,25 +206,29 @@ class Releases
 					CONCAT(cp.title, ' > ', c.title) AS category_name,
 					CONCAT(cp.id, ',', c.id) AS category_ids,
 					COUNT(df.id) AS failed,
-					g.name AS group_name,
 					rn.id AS nfoid,
 					re.releaseid AS reid,
 					v.tvdb, v.trakt, v.tvrage, v.tvmaze, v.imdb, v.tmdb,
 					tve.title, tve.firstaired
-				FROM releases r
-				STRAIGHT_JOIN groups g ON g.id = r.group_id
-				STRAIGHT_JOIN category c ON c.id = r.categoryid
+				FROM
+				(
+					SELECT r.*, g.name AS group_name
+					FROM releases r
+					LEFT JOIN groups g ON g.id = r.group_id
+					WHERE r.nzbstatus = %d
+					AND r.passwordstatus %s
+					%s %s %s %s
+					ORDER BY %s %s %s
+				) r
+				INNER JOIN category c ON c.id = r.categoryid
 				INNER JOIN category cp ON cp.id = c.parentid
 				LEFT OUTER JOIN videos v ON r.videos_id = v.id
 				LEFT OUTER JOIN tv_episodes tve ON r.tv_episodes_id = tve.id
 				LEFT OUTER JOIN video_data re ON re.releaseid = r.id
 				LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
 				LEFT OUTER JOIN dnzb_failures df ON df.guid = r.guid
-				WHERE r.nzbstatus = %d
-				AND r.passwordstatus %s
-				%s %s %s %s
 				GROUP BY r.id
-				ORDER BY %s %s %s",
+				ORDER BY %7\$s %8\$s",
 				NZB::NZB_ADDED,
 				$this->showPasswords,
 				$this->categorySQL($cat),
@@ -915,7 +919,7 @@ class Releases
 			$offset
 		);
 		$releases = $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
-		if ($releases && count($releases)) {
+		if (!empty($releases) && count($releases)) {
 			$releases[0]['_totalrows'] = $this->getPagerCount($baseSql);
 		}
 		return $releases;
@@ -1004,9 +1008,6 @@ class Releases
 		);
 
 		$releases = $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
-		if ($releases && count($releases)) {
-			$releases[0]['_totalrows'] = $this->getPagerCount($baseSql);
-		}
 		return $releases;
 	}
 
@@ -1063,9 +1064,7 @@ class Releases
 			$offset
 		);
 		$releases = $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
-		if ($releases && count($releases)) {
-			$releases[0]['_totalrows'] = $this->getPagerCount($baseSql);
-		}
+
 		return $releases;
 	}
 
@@ -1121,9 +1120,7 @@ class Releases
 			$offset
 		);
 		$releases = $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
-		if ($releases && count($releases)) {
-			$releases[0]['_totalrows'] = $this->getPagerCount($baseSql);
-		}
+
 		return $releases;
 	}
 

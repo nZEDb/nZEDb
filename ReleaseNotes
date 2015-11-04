@@ -1,5 +1,25 @@
 This file details which changes to the code are in which release version. It is a complement to the ChangeLog file which list *when* changes are made to the dev branch.
 
+
+0.5.1 2015-11-03
+Added:
+
+Changed:
+	* Move My Shows to account menu, remove links to calendar and add Anime Series link to charisma template. (PR 1928).
+	* Remove totalrows count from functions, api and templates. (PR 1930).
+	* Speed up series list view query by removing releases join.
+	* Change patch 391 to drop and recreate user_series table due to unknown issue on InnoDB.
+
+Fixed:
+	* Anime pages in omicron/charisma. (PR 1925).
+	* Release Browse Queries not respecting table position on larger Databases with MariaDB.
+	* Tmux counters not accurately reflecting TV work (still off until new scrapers are finished).
+	* SCR in ReleaseRemover and improve query times for all release_files operations on larger databases.
+	* Attempt to fix Issue 1844, Pager counts not reflecting release availability.
+	* Index name on user series.
+	* Release-edit redirecting to wrong page (Issue 1940).
+
+
 0.5.0 2015-11-02
 Added:
 	* Statistical info for grabbed/failed releases to cover, browse and search pages. (PR 1885).
