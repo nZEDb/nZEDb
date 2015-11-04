@@ -101,16 +101,20 @@ class ADM
 	 */
 	public function covers()
 	{
-		if ($ret = $this->_html->find('img[rel=license]', 0)) {
-			if (isset($ret->next_sibling()->href)) {
-				if (preg_match('/filename\=(?<covers>(.*))\'/i', $ret->next_sibling()->href, $matches)
+		$baseUrl = 'http://www.adultdvdmarketplace.com/';
+		if ($ret = $this->_html->find('a[rel=fancybox-button]', 0)) {
+			if (isset($ret->href)) {
+				if (preg_match('/images\/.*[0-9]+\.jpg/i', $ret->href, $matches)
 				) {
-					$this->_res['boxcover'] = $matches['covers'];
-					$this->_res['backcover'] = preg_replace('/front/i', 'back', $matches['covers']);
+					$this->_res['boxcover'] = $baseUrl . $matches[0];
+					$this->_res['backcover'] = $baseUrl . preg_replace('/front/i', 'back', $matches[0]);
 				}
 			}
+		} elseif ($ret = $this->_html->find('img[rel=license]', 0)) {
+			if (preg_match('/images\/.*[0-9]+\.jpg/i', $ret->src, $matches)) {
+				$this->_res['boxcover'] = $baseUrl . $matches[0];
+			}
 		}
-
 		return $this->_res;
 	}
 
