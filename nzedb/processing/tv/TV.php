@@ -730,6 +730,12 @@ abstract class TV extends Videos
 			case 'tvmazeE':
 				$required = ['name', 'season', 'number', 'airdate', 'summary'];
 				break;
+			case 'tmdbS':
+				$required = ['id', 'original_name', 'overview', 'first_air_date', 'origin_country'];
+				break;
+			case 'tmdbE':
+				$required = ['name', 'season_number', 'episode_number', 'air_date', 'overview'];
+				break;
 		}
 
 		if (is_array($required)) {
