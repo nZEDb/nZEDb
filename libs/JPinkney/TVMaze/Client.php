@@ -170,6 +170,24 @@ class Client {
 	}
 
 	/**
+	 * Takes in a show ID and outputs the AKA Object
+	 *
+	 * @param      $ID
+	 *
+	 * @return array
+	 */
+	function getShowAKAs($ID)
+	{
+		$url = self::APIURL . '/shows/' . $ID . '/akas';
+
+		$akas = $this->getFile($url);
+
+		$AKA = new AKA($akas);
+
+		return $AKA;
+	}
+
+	/**
 	 * Takes in a show ID and outputs all the episode objects for that show in an array
 	 *
 	 * @param $ID
