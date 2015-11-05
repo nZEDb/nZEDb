@@ -8,13 +8,19 @@ class TMDB extends TV
 {
 	const MATCH_PROBABILITY = 75;
 
-	/**
-	 * @var string The URL for the medium sized image for poster
-	 */
-	private $posterUrl;
 
 	/**
-	 * Construct. Instanciate TMDB Class
+	 * @string DateTimeZone Object - UTC
+	 */
+	private $timeZone;
+
+	/**
+	 * @string MySQL DATETIME Format
+	 */
+	private $timeFormat;
+
+	/**
+	 * Construct. Instantiate TMDB Class
 	 *
 	 * @param array $options Class instances.
 	 *
@@ -24,6 +30,8 @@ class TMDB extends TV
 	{
 		parent::__construct($options);
 		$this->client = new TmdbAPI($this->pdo->getSetting('tmdbkey'));
+		$this->timeZone = new \DateTimeZone('UTC');
+		$this->timeFormat = 'Y-m-d H:i:s';
 	}
 
 	/**
@@ -332,20 +340,19 @@ class TMDB extends TV
 		$this->posterUrl = (string)(isset($show->_data['poster_path']) ? $show->_data['poster_path'] : '');
 
 		return [
-			'tmdbid'    => (int)$show->_data['id'],
-			'column'    => 'tmdb',
-			'siteid'    => (int)$show->_data['id'],
-			'title'     => (string)$show->_data['name'],
-			'summary'   => (string)$show->_data['overview'],
-			'started'   => (string)$show->_data['first_air_date'],
-			'publisher' => (string)$show->_data['networks']->name,
-			'country'   => (string)$show->_data['origin_country'],
-			'source'    => (int)parent::SOURCE_TMDB,
-			'imdbid'    => 0,
-			'tvdbid'    => 0,
-			'traktid'   => 0,
-			'tvrageid'  => 0,
-			'tvmazeid'    => 0
+				'type'      => (int)parent::TYPE_TV,
+				'title'     => (string)$show->_data['name'],
+				'summary'   => (string)$show->_data['overview'],
+				'started'   => (string)$show->_data['first_air_date'],
+				'publisher' => (string)$show->_data['networks']->name,
+				'source'    => (int)parent::SOURCE_TMDB,
+				'imdb'      => 0,
+				'tvdb'      => 0,
+				'trakt'     => 0,
+				'tvrage'    => 0,
+				'tvmaze'    => 0,
+				'tmdb'      => (int)$show->_data['id'],
+				'aliases'   => (!empty($show->aliasNames) ? (array)$show->aliasNames : '')
 		];
 	}
 
