@@ -456,21 +456,20 @@ class XXX
 				return -2;
 			}
 		}
-
 		$mov = [];
 
-		$mov['trailers'] = (isset($res['trailers'])) ? serialize($res['trailers']) : '';
-		$mov['extras'] = (isset($res['extras'])) ? serialize($res['extras']) : '';
-		$mov['productinfo'] = (isset($res['productinfo'])) ? serialize($res['productinfo']) : '';
-		$mov['backdrop'] = (isset($res['backcover'])) ? $res['backcover'] : 0;
-		$mov['cover'] = (isset($res['boxcover'])) ? $res['boxcover'] : 0;
-		$res['cast'] = (isset($res['cast'])) ? join(",", $res['cast']) : '';
-		$res['genres'] = (isset($res['genres'])) ? $this->getgenreid($res['genres']) : '';
+		$mov['trailers'] = (!empty($res['trailers'])) ? serialize($res['trailers']) : '';
+		$mov['extras'] = (!empty($res['extras'])) ? serialize($res['extras']) : '';
+		$mov['productinfo'] = (!empty($res['productinfo'])) ? serialize($res['productinfo']) : '';
+		$mov['backdrop'] = (!empty($res['backcover'])) ? $res['backcover'] : 0;
+		$mov['cover'] = (!empty($res['boxcover'])) ? $res['boxcover'] : 0;
+		$res['cast'] = (!empty($res['cast'])) ? join(",", $res['cast']) : '';
+		$res['genres'] = (!empty($res['genres'])) ? $this->getgenreid($res['genres']) : '';
 		$mov['title'] = html_entity_decode($res['title'], ENT_QUOTES, 'UTF-8');
-		$mov['plot'] = (isset($res['sypnosis'])) ? html_entity_decode($res['sypnosis'], ENT_QUOTES, 'UTF-8') : '';
-		$mov['tagline'] = (isset($res['tagline'])) ? html_entity_decode($res['tagline'], ENT_QUOTES, 'UTF-8') : '';
+		$mov['plot'] = (!empty($res['sypnosis'])) ? html_entity_decode($res['sypnosis'], ENT_QUOTES, 'UTF-8') : '';
+		$mov['tagline'] = (!empty($res['tagline'])) ? html_entity_decode($res['tagline'], ENT_QUOTES, 'UTF-8') : '';
 		$mov['genre'] = html_entity_decode($res['genres'], ENT_QUOTES, 'UTF-8');
-		$mov['director'] = (isset($res['director'])) ? html_entity_decode($res['director'], ENT_QUOTES, 'UTF-8') : '';
+		$mov['director'] = (!empty($res['director'])) ? html_entity_decode($res['director'], ENT_QUOTES, 'UTF-8') : '';
 		$mov['actors'] = html_entity_decode($res['cast'], ENT_QUOTES, 'UTF-8');
 		$mov['directurl'] = html_entity_decode($res['directurl'], ENT_QUOTES, 'UTF-8');
 		$mov['classused'] = $this->whichclass;
