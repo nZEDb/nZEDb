@@ -273,7 +273,7 @@ class AEBN
 						similar_text(strtolower($this->searchTerm), strtolower($title), $p);
 						if ($p >= 90) {
 							$this->_title = trim($ret->title);
-							$this->_trailUrl = $ret->href;
+							$this->_trailUrl = html_entity_decode($ret->href);
 							$this->_directUrl = $this->_whichSite[$this->_currentSite] . $this->_trailUrl;
 							$this->getUrl(false, $this->_currentSite);
 							return true;
