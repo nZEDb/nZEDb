@@ -142,7 +142,6 @@ class ADM
 	 */
 	public function productInfo()
 	{
-
 		foreach ($this->_html->find('ul.list-unstyled li') as $li) {
 					$category = explode(":", $li->plaintext);
 					switch (trim($category[0])) {
@@ -156,22 +155,6 @@ class ADM
 							$this->_res['productinfo'][trim($category[0])] = trim($category[1]);
 					}
 				}
-
-//		foreach ($this->_html->find('.list-unstyled') as $category) {
-//			#var_dump($category);
-//			switch (trim($category->plaintext)) {
-//				case "DIRECTOR":
-//					$this->_res['director'] = trim($category->next_sibling()->plaintext);
-//					break;
-//				case "FORMAT":
-//				case "STUDIO":
-//				case "RELEASED":
-//				case "SKU":
-//					$this->_res['productinfo'][$category->plaintext] = trim($category->next_sibling()->plaintext);
-//					break;
-//			}
-//		}
-
 		return $this->_res;
 	}
 
