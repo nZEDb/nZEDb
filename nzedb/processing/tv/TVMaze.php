@@ -234,6 +234,10 @@ class TVMaze extends TV
 				$return = $this->matchShowInfo($response, $cleanName);
 			}
 		}
+		//If we didn't get any aliases do a direct alias lookup
+		if (is_array($return) && empty($return['aliases']) && is_numeric($return['tvmaze'])) {
+			$return['aliases'] = $this->client->getShowAKAs($return['tvmaze']);
+		}
 		return $return;
 	}
 
@@ -349,10 +353,7 @@ class TVMaze extends TV
 				}
 			}
 		}
-		//If we didn't get any aliases do a direct alias lookup
-		if (is_array($return) && empty($return['aliases']) && is_numeric($return['tvmazeid'])) {
-			$return['aliases'] = $this->client->getShowAKAs($return['tvmazeid']);
-		}
+
 		return $return;
 	}
 
