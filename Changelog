@@ -8,6 +8,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2015-11-06 bart39
 	Mrg: PR #1868, From izolight - Add regexes for korean newsgroups.
+	Add: ddl / tsv changes for izolight patch.
 2015-11-05 ruhllatio
 	Fix: Schema data for countries table using invalid column for private key
 2015-11-04 bart39
