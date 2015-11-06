@@ -9,6 +9,10 @@ Class AKA
 	 */
 	function __construct($aka_data)
 	{
-		$this->akas = $aka_data['name'];
+		if(!empty($aka_data['name'])) {
+			$this->akas = $aka_data['name'];
+		} else {
+			$this->akas = '';
+		}
 	}
 }

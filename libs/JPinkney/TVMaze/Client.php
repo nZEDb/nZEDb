@@ -184,7 +184,12 @@ class Client {
 
 		$AKA = new AKA($akas);
 
-		return $AKA;
+		if (!empty($akas['name'])) {
+
+			return $AKA;
+		}
+
+		return false;
 	}
 
 	/**
