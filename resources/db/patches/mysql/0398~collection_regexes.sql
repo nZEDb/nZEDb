@@ -21,14 +21,14 @@ VALUES (
   '/^(?P<match0>\\[KoreanMusic\\] .+) \\[\\d+\\/\\d+\\] - ".+?" yEnc$/',
   1,
   '[KoreanMusic] 151015.TWTV.MTV.Idols.of.Asia.Lovelyz [2/45] - "151015.TWTV.MTV.Idols.of.Asia.Lovelyz.part01.rar" yEnc',
-  5,
+  5
 ), (
   595,
   '^korea\\.binaries\\.movies$',
   '/^(?P<match0>\\[KoreanMovies\\] .+) \\[\\d+\\/\\d+\\] - ".+?" yEnc$/',
   1,
   '[KoreanMovies] Gangnam.Blues.2015.720p.BluRay.x264-WiKi [2/125] - "Gangnam.Blues.2015.720p.BluRay.x264-WiKi.part001.rar" yEnc',
-  5,
+  5
 ), (
   596,
   '^korea\\.binaries\\.tv$',

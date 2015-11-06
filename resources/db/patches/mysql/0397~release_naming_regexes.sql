@@ -13,7 +13,7 @@ VALUES (
 ), (
 	1135,
 	'^korea\\.binaries\\.music\\.videos$',
-	'/^\\[KoreanMusic\\] (?P<match1>\\d{8}_)(?P<match0>(Simply\\.K-POP|쇼챔|더쇼|위열|음중|엠카)_)(?P<match2>.*?)_FHD_M2T \\[\\d+\\/\\d+\\] - ".+?" yEnc$/'
+	'/^\\[KoreanMusic\\] (?P<match1>\\d{8}_)(?P<match0>(Simply\\.K-POP|쇼챔|더쇼|위열|음중|엠카)_)(?P<match2>.*?)_FHD_M2T \\[\\d+\\/\\d+\\] - ".+?" yEnc$/',
 	1,
 	'[KoreanMusic] 20151009_Simply.K-POP_GI-Doligo.Doligo_FHD_M2T [11/18] - "20151009_Simply.K-POP_GI-Doligo.Doligo_FHD_M2T.part09.rar" yEnc',
 	1
@@ -27,7 +27,7 @@ VALUES (
 ), (
 	1137,
 	'^(korea\\.binaries\\.tv|alt\\.binaries\\.multimedia\\.korean)$',
-	'/^\\[KoreanTV] (\\[.+?]\\.)?(?P<match0>.+?) \\[\\d+\\/\\d+\\] - ".+?" yEnc$/'
+	'/^\\[KoreanTV] (\\[.+?]\\.)?(?P<match0>.+?) \\[\\d+\\/\\d+\\] - ".+?" yEnc$/',
 	1,
 	'[KoreanTV] Hyde.Jekyll.Me.E15.150311.HDTV.H264.720p-WITH [20/31] - "Hyde.Jekyll.Me.E15.150311.HDTV.H264.720p-WITH.part19.rar" yEnc ::: [KoreanTV] [OCN].My.Beautiful.Bride.E16.END.150809.HDTV.H264.720p-WITH.mp4 [31/32] - "[OCN] 아름다운 나의신부.E16.END.150809.HDTV.H264.720p-WITH.vol15+16.par2" yEnc',
 	0
@@ -104,7 +104,7 @@ VALUES (
 ), (
 	1148,
 	'^alt\\.binaries\\.multimedia\\.korean$',
-	'/^\\(\\d+\\/\\d+\\) "(?P<match0>.+?)\\..+?" - \\d+\\.\\d+ .+ yEnc$/'
+	'/^\\(\\d+\\/\\d+\\) "(?P<match0>.+?)\\..+?" - \\d+\\.\\d+ .+ yEnc$/',
 	1,
 	'(1/1) "100612.MBC MusicCore.Just Married.Bye Bye Bye.60fps.x264-Izo.mkv" - 150.66 MB - 100612.MBC MusicCore.Double K.Favorite Music.60fps.x264-Izo yEnc',
 	35
