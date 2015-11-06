@@ -2,6 +2,7 @@
 namespace nzedb\processing\tv;
 
 use libs\Moinax\TVDB\Client;
+use libs\Moinax\TVDB\CurlException;
 use nzedb\ReleaseImage;
 
 /**
@@ -210,13 +211,20 @@ class TVDB extends TV
 		$highestMatch = 0;
 		try {
 			$response = (array)$this->client->getSeries($cleanName, 'en');
-		} catch (\Exception $error) {
+		} catch (CurlException $error) {
+			if (strpos($error->getMessage(), 'Cannot fetch') === 0) {
+				//Do nothing as there is a second chance
+			}
 		}
 
 		if ($response === false && $country !== '') {
 			try {
 				$response = (array)$this->client->getSeries(rtrim(str_replace($country, '', $cleanName)), 'en');
-			} catch (\Exception $error) { }
+			} catch (CurlException $error) {
+				if (strpos($error->getMessage(), 'Cannot fetch') === 0) {
+					return false;
+				}
+			}
 		}
 
 		sleep(1);
@@ -303,17 +311,26 @@ class TVDB extends TV
 		if ($airdate !== '') {
 			try {
 				$response = $this->client->getEpisodeByAirDate($tvdbid, $airdate);
-			} catch (\Exception $error) {
+			} catch (CurlException $error) {
+				if (strpos($error->getMessage(), 'Cannot fetch') === 0) {
+					return false;
+				}
 			}
 		} else if ($videoId > 0) {
 			try {
 				$response = $this->client->getSerieEpisodes($tvdbid, 'en');
-			} catch (\Exception $error) {
+			} catch (CurlException $error) {
+				if (strpos($error->getMessage(), 'Cannot fetch') === 0) {
+					return false;
+				}
 			}
 		} else {
 			try {
 				$response = $this->client->getEpisode($tvdbid, $season, $episode);
-			} catch (\Exception $error) {
+			} catch (CurlException $error) {
+				if (strpos($error->getMessage(), 'Cannot fetch') === 0) {
+					return false;
+				}
 			}
 		}
 

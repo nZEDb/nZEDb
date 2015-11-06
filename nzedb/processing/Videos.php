@@ -204,15 +204,16 @@ abstract class Videos
 	public function getByTitleLikeQuery($title, $type)
 	{
 		$return = false;
-		$string = '"\'"';
+
 		if ($title) {
 			$return = $this->pdo->queryOneRow(
 				sprintf("
-					SELECT id
-					FROM videos
-					WHERE REPLACE(REPLACE(title, %s, ''), '!', '') %s
-					AND type = %d",
-					$string,
+					SELECT v.id
+					FROM videos v
+					LEFT JOIN videos_akas va ON v.id = va.videos_id
+					WHERE (v.title %1\$s
+					OR va.title %1\$s)
+					AND type = %2\$d",
 					$this->pdo->likeString(rtrim($title, '%'), false, false),
 					$type
 				)
@@ -229,6 +230,7 @@ abstract class Videos
 	 */
 	public function addAliases($videoId, $aliasArr = array())
 	{
+		echo '***';
 		if (!empty($aliasArr) && $videoId > 0) {
 			foreach ($aliasArr AS $key => $title) {
 				// Check if we have the AKA already
@@ -264,7 +266,7 @@ abstract class Videos
 
 		if ($videoId > 0) {
 			$sql = 'videos_id = ' . $videoId;
-		} elseif ($alias !== '') {
+		} else if ($alias !== '') {
 			$sql = 'title = ' . $this->pdo->escapeString($alias);
 		}
 
@@ -272,10 +274,10 @@ abstract class Videos
 			$return = $this->pdo->query('
 				SELECT *
 				FROM videos_akas
-				WHERE ' . $sql
+				WHERE ' . $sql, true
 			);
 		}
-		return $return;
+		return (empty($return) ? false : $return);
 	}
 
 	/**
