@@ -7,6 +7,7 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 2015-11-07 bart39
+	Fix: Collection regex errors.
 	Mrg: PR #1948, From izolight - Regexes from request thread.
 	Add: ddl / tsv changes for izolight patch.
 2015-11-06 bart39
