@@ -44,7 +44,7 @@ foreach ($itr as $filePath) {
 			if ($argv[1] === "move") {
 				rename($filePath, $dir . $guid . ".nzb.gz");
 			}
-			$releases->deleteSingle(['g' => $guid, 'i' => false, $nzb, $releaseImage);
+			$releases->deleteSingle(['g' => $guid, 'i' => false], $nzb, $releaseImage);
 			$moved++;
 		}
 		++$checked;
