@@ -8,6 +8,8 @@ require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'indexer
 use nzedb\db\PreDb;
 use nzedb\utility\Misc;
 
+exit("Currently the file source is unavailable due to DropBox screwing with the links.\nWe're moving the files to another location and updating this script. Keep checking it until it works again ;-)");
+
 if (!Misc::isWin()) {
 	if (nZEDb_DEBUG) {
 		echo "Checking resource path\n";
