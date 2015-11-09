@@ -33,7 +33,7 @@ if (!empty($argv[1]) && is_numeric($argv[2]) && is_numeric($argv[3])) {
 			}
 		} else if ($season == 0 && $episode == 0) {
 			$episodeObj = $tvdb->client->getSerieEpisodes($series[0]->id, 'en');
-			if ($episodeObj['episodes'] instanceof \Traversable) {
+			if (is_array($episodeObj['episodes'])) {
 				foreach ($episodeObj['episodes'] AS $ep) {
 					print_r($ep);
 				}
