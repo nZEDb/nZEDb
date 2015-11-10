@@ -13,9 +13,9 @@ abstract class TV extends Videos
 	const SOURCE_NONE    = 0; // No Scrape source
 	const SOURCE_TVDB    = 1; // Scrape source was TVDB
 	const SOURCE_TVMAZE  = 2; // Scrape source was TVMAZE
-	const SOURCE_TRAKT   = 3; // Scrape source was TraktTV
-	const SOURCE_IMDB    = 4; // Scrape source was IMDB
-	const SOURCE_TMDB    = 5; // Scrape source was TMDB
+	const SOURCE_TMDB    = 3; // Scrape source was TMDB
+	const SOURCE_TRAKT   = 4; // Scrape source was Trakt
+	const SOURCE_IMDB    = 5; // Scrape source was IMDB
 	const SOURCE_TVRAGE  = 6; // Scrape source was TvRage
 
 	// Anime Sources
@@ -24,9 +24,9 @@ abstract class TV extends Videos
 	// Processing signifiers
 	const PROCESS_TVDB   =  0; // Process TVDB First
 	const PROCESS_TVMAZE = -1; // Process TVMaze Second
-	const PROCESS_TRAKT  = -2; // Process Trakt Third
-	const PROCESS_IMDB   = -3; // Process IMDB Fourth
-	const PROCESS_TMDB   = -4; // Process TMDB Fifth
+	const PROCESS_TMDB   = -2; // Process TMDB Third
+	const PROCESS_TRAKT  = -3; // Process Trakt Fourth
+	const PROCESS_IMDB   = -4; // Process IMDB Fifth
 	const PROCESS_TVRAGE = -5; // Process TvRage Sixth
 	const NO_MATCH_FOUND = -6; // Failed All Methods
 
@@ -725,6 +725,12 @@ abstract class TV extends Videos
 				break;
 			case 'tvmazeE':
 				$required = ['name', 'season', 'number', 'airdate', 'summary'];
+				break;
+			case 'tmdbS':
+				$required = ['id', 'original_name', 'overview', 'first_air_date', 'origin_country'];
+				break;
+			case 'tmdbE':
+				$required = ['name', 'season_number', 'episode_number', 'air_date', 'overview'];
 				break;
 		}
 
