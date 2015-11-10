@@ -233,13 +233,13 @@ class TVDB extends TV
 			foreach ($response as $show) {
 				if ($this->checkRequired($show, 'tvdbS')) {
 					// Check for exact title match first and then terminate if found
-					if ($show->name === $cleanName) {
+					if (strtolower($show->name) === strtolower($cleanName)) {
 						$highest = $show;
 						break;
 					}
 
 					// Check each show title for similarity and then find the highest similar value
-					$matchPercent = $this->checkMatch($show->name, $cleanName, self::MATCH_PROBABILITY);
+					$matchPercent = $this->checkMatch(strtolower($show->name), strtolower($cleanName), self::MATCH_PROBABILITY);
 
 					// If new match has a higher percentage, set as new matched title
 					if ($matchPercent > $highestMatch) {
@@ -250,7 +250,7 @@ class TVDB extends TV
 					// Check for show aliases and try match those too
 					if (!empty($show->aliasNames)) {
 						foreach ($show->aliasNames as $key => $name) {
-							$matchPercent = $this->CheckMatch($name, $cleanName, $matchPercent);
+							$matchPercent = $this->CheckMatch(strtolower($name), strtolower($cleanName), $matchPercent);
 							if ($matchPercent > $highestMatch) {
 								$highestMatch = $matchPercent;
 								$highest = $show;

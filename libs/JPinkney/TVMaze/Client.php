@@ -230,8 +230,7 @@ class Client {
 		$ep = false;
 		$url = self::APIURL . '/shows/' . $ID . '/episodebynumber?season='. $season . '&number=' . $episode;
 		$response = $this->getFile($url);
-
-		if (is_array($episode)) {
+		if (is_array($response)) {
 			$ep = new Episode($response);
 		}
 		return $ep;
