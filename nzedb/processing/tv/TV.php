@@ -222,10 +222,6 @@ abstract class TV extends Videos
 		}
 
 		if ($videoId === false) {
-			$videoId = $this->getByTitleQuery($showArr['title'], $showArr['type']);
-		}
-
-		if ($videoId === false) {
 			// Insert the Show
 			$videoId = $this->pdo->queryInsert(
 				sprintf('
