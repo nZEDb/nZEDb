@@ -6,6 +6,9 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2015-11-09 ruhllatio
+	Fix: Sonarr's "RSS" is just using the API with no parameters.  Left joining should 'fix' this until it can be addressed with the Sonarr team.
+	Fix: Wrong if condition for TVDB Test script return
 2015-11-07 bart39
 	Fix: Collection regex errors.
 	Mrg: PR #1948, From izolight - Regexes from request thread.
