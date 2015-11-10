@@ -312,6 +312,7 @@ CREATE TABLE dnzb_failures (
   id          INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   userid      INT(11) UNSIGNED NOT NULL,
   guid        VARCHAR(50)      NOT NULL,
+  failed      INT UNSIGNED     NOT NULL DEFAULT '0',
   PRIMARY KEY (id)
 )
   ENGINE =MYISAM
