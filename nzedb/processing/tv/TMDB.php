@@ -174,38 +174,12 @@ class TMDB extends TV
 	{
 		$return = $response = false;
 
-		try {
-			//Try for the best match
-			$response = $this->client->searchTVShow($cleanName);
-		} catch (\Exception $error) {
-		}
+		$response = $this->client->searchTVShow($cleanName);
 
 		sleep(1);
 
-		if (is_array($response)) {
-			$return = $this->processResponse($response, $cleanName);
-		}
-
-		return $return;
-	}
-
-	/**
-	 * @param $show
-	 * @param $cleanName
-	 *
-	 * @return array|bool
-	 */
-	private function processResponse ($show, $cleanName)
-	{
-		$return = false;
-
-		if ($this->checkRequired($show, 'tmdbS')) {
-			// Check for exact title match first and then terminate if found
-			if ($show->name === $cleanName) {
-				$return = $this->formatShowArr($show);
-			} else {
-				$return = $this->matchShowInfo($show, $cleanName);
-			}
+		if (is_array($response) && !empty($response)) {
+			$return = $this->matchShowInfo($response, $cleanName);
 		}
 		return $return;
 	}
@@ -255,7 +229,6 @@ class TMDB extends TV
 		}
 		return $return;
 	}
-
 
 	/**
 	 * Retrieves the poster art for the processed show
