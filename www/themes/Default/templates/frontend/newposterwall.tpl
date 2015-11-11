@@ -199,6 +199,13 @@
 												   target="_blank"></a>
 											</div>
 										{/if}
+										{if $result.tmdb > 0}
+											<div class="icon icon_tmdb">
+												<a class="divlink" title="View in TMDB"
+												   href="{$site->dereferrer_link}http://www.themoviedb.org/tv/{$result.tmdb}"
+												   target="_blank"></a>
+											</div>
+										{/if}
 									{elseif $type == 'Anime'}
 									<div class="icon icon_anidb">
 										<a class="divlink" title="View in AniDB"
