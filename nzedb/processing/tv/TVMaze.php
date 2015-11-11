@@ -74,10 +74,14 @@ class TVMaze extends TV
 			foreach ($res as $row) {
 
 				$this->posterUrl = '';
+				$tvmazeid = false;
 
 				// Clean the show name for better match probability
 				$release = $this->parseNameEpSeason($row['searchname']);
 				if (is_array($release) && $release['name'] != '') {
+
+					// Find the Video ID if it already exists by checking the title against stored TVMaze titles
+					$videoId = $this->getByTitle($release['cleanname'], parent::TYPE_TV, parent::SOURCE_TVMAZE);
 
 					// Force local lookup only
 					if ($local == true) {
@@ -86,8 +90,8 @@ class TVMaze extends TV
 						$lookupSetting = true;
 					}
 
-					// If lookups are allowed lets try to get it.
-					if ($lookupSetting) {
+					if ($videoId === false && $lookupSetting) {
+						// If lookups are allowed lets try to get it.
 						if ($this->echooutput) {
 							echo $this->pdo->log->primaryOver("Checking TVMaze for previously failed title: ") .
 									$this->pdo->log->headerOver($release['cleanname']) .
@@ -98,61 +102,70 @@ class TVMaze extends TV
 						$tvmazeShow = $this->getShowInfo((string)$release['cleanname']);
 
 						if (is_array($tvmazeShow)) {
+							$tvmazeid = (int)$tvmazeShow['tvmaze'];
 							// Check if we have the TVDB ID already, if we do use that Video ID
 							$dupeCheck = $this->getVideoIDFromSiteID('tvdb', $tvmazeShow['tvdb']);
 							if ($dupeCheck === false) {
 								$videoId = $this->add($tvmazeShow);
 							} else {
 								$videoId = $dupeCheck;
+								// Update any missing fields and add site IDs
+								$this->update($videoId, $tvmazeShow);
+								$tvmazeid = $this->getSiteIDFromVideoID('tvmaze', $videoId);
 							}
+						}
+					} else {
+						if ($this->echooutput) {
+							echo $this->pdo->log->primaryOver("Found local TVMaze match for: ") .
+									$this->pdo->log->headerOver($release['cleanname']) .
+									$this->pdo->log->primary(".  Attempting episode lookup!");
+						}
+						$tvmazeid = $this->getSiteIDFromVideoID('tvmaze', $videoId);
+					}
 
-							$tvmazeid = (int)$tvmazeShow['tvmaze'];
+					if (is_numeric($videoId) && $videoId > 0 && is_numeric($tvmazeid) && $tvmazeid > 0) {
+						// Now that we have valid video and tvmaze ids, try to get the poster
+						$this->getPoster($videoId, $tvmazeid);
 
-							if (is_numeric($videoId) && $videoId > 0 && is_numeric($tvmazeid) && $tvmazeid > 0) {
-								// Now that we have valid video and tvmaze ids, try to get the poster
-								$this->getPoster($videoId, $tvmazeid);
+						$seasonNo = preg_replace('/^S0*/i', '', $release['season']);
+						$episodeNo = preg_replace('/^E0*/i', '', $release['episode']);
 
-								$seasonNo = preg_replace('/^S0*/i', '', $release['season']);
-								$episodeNo = preg_replace('/^E0*/i', '', $release['episode']);
+						if ($episodeNo === 'all') {
+							// Set the video ID and leave episode 0
+							$this->setVideoIdFound($videoId, $row['id'], 0);
+							echo $this->pdo->log->primary("Found TVDB Match for Full Season!");
+							continue;
+						}
 
-								if ($episodeNo === 'all') {
-									// Set the video ID and leave episode 0
-									$this->setVideoIdFound($videoId, $row['id'], 0);
-									echo $this->pdo->log->primary("Found TVDB Match for Full Season!");
-									continue;
-								}
+						// Download all episodes if new show to reduce API usage
+						if ($this->countEpsByVideoID($videoId) === false) {
+							$this->getEpisodeInfo($tvmazeid, -1, -1, '', $videoId);
+						}
 
-								// Download all episodes if new show to reduce API usage
-								if ($this->countEpsByVideoID($videoId) === false) {
-									$this->getEpisodeInfo($tvmazeid, -1, -1, '', $videoId);
-								}
+						// Check if we have the episode for this video ID
+						$episode = $this->getBySeasonEp($videoId, $seasonNo, $episodeNo, $release['airdate']);
 
-								// Check if we have the episode for this video ID
-								$episode = $this->getBySeasonEp($videoId, $seasonNo, $episodeNo, $release['airdate']);
+						if ($episode === false) {
+							// Send the request for the episode to TVMaze
+							$tvmazeEpisode = $this->getEpisodeInfo(
+									$tvmazeid,
+									$seasonNo,
+									$episodeNo,
+									$release['airdate']
+							);
 
-								if ($episode === false) {
-									// Send the request for the episode to TVMaze
-									$tvmazeEpisode = $this->getEpisodeInfo(
-											$tvmazeid,
-											$seasonNo,
-											$episodeNo,
-											$release['airdate']
-									);
-
-									if ($tvmazeEpisode) {
-										$episode = $this->addEpisode($videoId, $tvmazeEpisode);
-									}
-								}
-
-								if ($episode !== false && is_numeric($episode) && $episode > 0) {
-									// Mark the releases video and episode IDs
-									$this->setVideoIdFound($videoId, $row['id'], $episode);
-									if ($this->echooutput) {
-										echo $this->pdo->log->primary("Found TVMaze Match!");
-									}
-									continue;
-								}
+							if ($tvmazeEpisode) {
+								$episode = $this->addEpisode($videoId, $tvmazeEpisode);
 							}
+						}
+
+						if ($episode !== false && is_numeric($episode) && $episode > 0) {
+							// Mark the releases video and episode IDs
+							$this->setVideoIdFound($videoId, $row['id'], $episode);
+							if ($this->echooutput) {
+								echo $this->pdo->log->primary("Found TVMaze Match!");
+							}
+							continue;
 						}
 					}
 				} //Processing failed, set the episode ID to the next processing group

@@ -75,10 +75,15 @@ class TMDB extends TV
 			foreach ($res as $row) {
 
 				$this->posterUrl = '';
+				$tmdbid = false;
 
 				// Clean the show name for better match probability
 				$release = $this->parseNameEpSeason($row['searchname']);
+
 				if (is_array($release) && $release['name'] != '') {
+
+					// Find the Video ID if it already exists by checking the title against stored TMDB titles
+					$videoId = $this->getByTitle($release['cleanname'], parent::TYPE_TV, parent::SOURCE_TMDB);
 
 					// Force local lookup only
 					if ($local == true) {
@@ -88,7 +93,7 @@ class TMDB extends TV
 					}
 
 					// If lookups are allowed lets try to get it.
-					if ($lookupSetting) {
+					if ($videoId === false && $lookupSetting) {
 						if ($this->echooutput) {
 							echo $this->pdo->log->primaryOver("Checking TMDB for previously failed title: ") .
 									$this->pdo->log->headerOver($release['cleanname']) .
@@ -100,64 +105,73 @@ class TMDB extends TV
 
 						if (is_array($tmdbShow)) {
 							// Check if we have the TMDB ID already, if we do use that Video ID
-							$dupeCheck = $this->getVideoIDFromSiteID('tmdb', $tmdbShow['tmdb']);
+							$dupeCheck = $this->getVideoIDFromSiteID('tvdb', $tmdbShow['tvdb']);
 							if ($dupeCheck === false) {
 								$videoId = $this->add($tmdbShow);
+								$tmdbid = $tmdbShow['tmdb'];
 							} else {
 								$videoId = $dupeCheck;
+								// Update any missing fields and add site IDs
+								$this->update($videoId, $tmdbShow);
+								$tmdbid = $this->getSiteIDFromVideoID('tmdb', $videoId);
 							}
+						}
+					} else {
+						if ($this->echooutput) {
+							echo $this->pdo->log->primaryOver("Found local TMDB match for: ") .
+									$this->pdo->log->headerOver($release['cleanname']) .
+									$this->pdo->log->primary(".  Attempting episode lookup!");
+						}
+						$tmdbid = $this->getSiteIDFromVideoID('tmdb', $videoId);
+					}
 
-							$tmdbid = (int)$tmdbShow['tmdb'];
+					if (is_numeric($videoId) && $videoId > 0 && is_numeric($tmdbid) && $tmdbid > 0) {
+						// Now that we have valid video and tmdb ids, try to get the poster
+						$this->getPoster($videoId, $tmdbid);
 
-							if (is_numeric($videoId) && $videoId > 0 && is_numeric($tmdbid) && $tmdbid > 0) {
-								// Now that we have valid video and tmdb ids, try to get the poster
-								$this->getPoster($videoId, $tmdbid);
+						$seasonNo = preg_replace('/^S0*/i', '', $release['season']);
+						$episodeNo = preg_replace('/^E0*/i', '', $release['episode']);
 
-								$seasonNo = preg_replace('/^S0*/i', '', $release['season']);
-								$episodeNo = preg_replace('/^E0*/i', '', $release['episode']);
+						if ($episodeNo === 'all') {
+							// Set the video ID and leave episode 0
+							$this->setVideoIdFound($videoId, $row['id'], 0);
+							echo $this->pdo->log->primary("Found TMDB Match for Full Season!");
+							continue;
+						}
 
-								if ($episodeNo === 'all') {
-									// Set the video ID and leave episode 0
-									$this->setVideoIdFound($videoId, $row['id'], 0);
-									echo $this->pdo->log->primary("Found TMDB Match for Full Season!");
-									continue;
-								}
+						// Download all episodes if new show to reduce API usage
+						if ($this->countEpsByVideoID($videoId) === false) {
+							$this->getEpisodeInfo($tmdbid, -1, -1, '', $videoId);
+						}
 
-								// Download all episodes if new show to reduce API usage
-								if ($this->countEpsByVideoID($videoId) === false) {
-									$this->getEpisodeInfo($tmdbid, -1, -1, '', $videoId);
-								}
+						// Check if we have the episode for this video ID
+						$episode = $this->getBySeasonEp($videoId, $seasonNo, $episodeNo, $release['airdate']);
 
-								// Check if we have the episode for this video ID
-								$episode = $this->getBySeasonEp($videoId, $seasonNo, $episodeNo, $release['airdate']);
+						if ($episode === false) {
+							// Send the request for the episode to TMDB
+							$tmdbEpisode = $this->getEpisodeInfo(
+									$tmdbid,
+									$seasonNo,
+									$episodeNo,
+									$release['airdate']
+							);
 
-								if ($episode === false) {
-									// Send the request for the episode to TMDB
-									$tmdbEpisode = $this->getEpisodeInfo(
-											$tmdbid,
-											$seasonNo,
-											$episodeNo,
-											$release['airdate']
-									);
-
-									if ($tmdbEpisode) {
-										$episode = $this->addEpisode($videoId, $tmdbEpisode);
-									}
-								}
-
-								if ($episode !== false && is_numeric($episode) && $episode > 0) {
-									// Mark the releases video and episode IDs
-									$this->setVideoIdFound($videoId, $row['id'], $episode);
-									if ($this->echooutput) {
-										echo $this->pdo->log->primary("Found TMDB Match!");
-									}
-									continue;
-								}
+							if ($tmdbEpisode) {
+								$episode = $this->addEpisode($videoId, $tmdbEpisode);
 							}
+						}
+
+						if ($episode !== false && is_numeric($episode) && $episode > 0) {
+							// Mark the releases video and episode IDs
+							$this->setVideoIdFound($videoId, $row['id'], $episode);
+							if ($this->echooutput) {
+								echo $this->pdo->log->primary("Found TMDB Match!");
+							}
+							continue;
 						}
 					}
 				} //Processing failed, set the episode ID to the next processing group
-				//$this->setVideoNotFound(parent::PROCESS_TRAKT, $row['id']);
+				$this->setVideoNotFound(parent::PROCESS_TRAKT, $row['id']);
 			}
 		}
 	}
@@ -196,35 +210,32 @@ class TMDB extends TV
 		$highestMatch = 0;
 
 		foreach ($showArr AS $show) {
-			if ($this->checkRequired($show, 'tmdbS')) {
+			if ($this->checkRequired($show->_data, 'tmdbS')) {
 				// Check for exact title match first and then terminate if found
-				if (strtolower($show->name) === strtolower($cleanName)) {
+				if (strtolower($show->_data['name']) === strtolower($cleanName)) {
 					$highest = $show;
 					break;
 				} else {
 					// Check each show title for similarity and then find the highest similar value
-					$matchPercent = $this->checkMatch(strtolower($show->name), strtolower($cleanName), self::MATCH_PROBABILITY);
+					$matchPercent = $this->checkMatch(strtolower($show->_data['name']), strtolower($cleanName), self::MATCH_PROBABILITY);
 
 					// If new match has a higher percentage, set as new matched title
 					if ($matchPercent > $highestMatch) {
 						$highestMatch = $matchPercent;
 						$highest = $show;
 					}
-
-					// Check for show aliases and try match those too
-					if (is_array($show->akas) && !empty($show->akas)) {
-						foreach ($show->akas as $key => $name) {
-							$matchPercent = $this->checkMatch(strtolower($name), strtolower($cleanName), $matchPercent);
-							if ($matchPercent > $highestMatch) {
-								$highestMatch = $matchPercent;
-								$highest = $show;
-							}
-						}
-					}
 				}
 			}
 		}
 		if (isset($highest)) {
+			$showAppends = $this->client->getTVShow($highest->_data['id'], 'append_to_response=alternative_titles,external_ids');
+			if ($showAppends) {
+				foreach ($showAppends->_data['alternative_titles']['results'] AS $aka) {
+					$highest->_data['alternative_titles'][] = $aka['title'];
+				}
+				$highest->_data['network'] = $showAppends->_data['networks'][0]['name'];
+				$highest->_data['external_ids'] = $showAppends->_data['external_ids'];
+			}
 			$return = $this->formatShowArr($highest);
 		}
 		return $return;
@@ -265,40 +276,16 @@ class TMDB extends TV
 	 */
 	protected function getEpisodeInfo($tmdbid, $season, $episode, $airdate = '', $videoId = 0)
 	{
-		$return = $response = false;
+		$return = false;
 
-		if ($videoId > 0) {
-			try {
-				$response = $this->client->getTVShow($tmdbid);
-			} catch (\Exception $error) {
-			}
-		} else {
-			try {
-				$response = $this->client->getEpisode($tmdbid, $season, $episode);
-			} catch (\Exception $error) {
-			}
-		}
+		$response = $this->client->getEpisode($tmdbid, $season, $episode);
 
 		sleep(1);
 
 		//Handle Single Episode Lookups
 		if (is_object($response)) {
-			if ($this->checkRequired($response, 'tmdbE')) {
+			if ($this->checkRequired($response->_data, 'tmdbE')) {
 				$return = $this->formatEpisodeArr($response);
-			}
-		} else if (is_array($response)) {
-			//Handle new show/all episodes
-			if ($videoId > 0) {
-				foreach ($response as $singleEpisode) {
-					if ($this->checkRequired($singleEpisode, 'tmdbE')) {
-						$this->addEpisode($videoId, $this->formatEpisodeArr($singleEpisode));
-					}
-				}
-				//Handle airdate lookups -- return first response
-			} else {
-				if ($this->checkRequired($response[0], 'tmdbE')) {
-					$return = $this->formatEpisodeArr($response[0]);
-				}
 			}
 		}
 		return $return;
@@ -314,22 +301,27 @@ class TMDB extends TV
 	 */
 	private function formatShowArr($show)
 	{
-		$this->posterUrl = (string)(isset($show->_data['poster_path']) ? $show->_data['poster_path'] : '');
+		$this->posterUrl = $this->client->getImageURL() . (string)(isset($show->_data['poster_path']) ? $show->_data['poster_path'] : '');
+
+		if (isset($show->_data['external_ids']['imdb_id'])) {
+			preg_match('/tt(?P<imdbid>\d{6,7})$/i', $show->_data['external_ids']['imdb_id'], $imdb);
+		}
 
 		return [
 				'type'      => (int)parent::TYPE_TV,
 				'title'     => (string)$show->_data['name'],
 				'summary'   => (string)$show->_data['overview'],
 				'started'   => (string)$show->_data['first_air_date'],
-				'publisher' => (string)$show->_data['networks']->name,
+				'publisher' => (isset($show->_data['network']) ? (string)$show->_data['network'] : ''),
+				'country'   => (string)$show->_data['origin_country'][0],
 				'source'    => (int)parent::SOURCE_TMDB,
-				'imdb'      => 0,
-				'tvdb'      => 0,
+				'imdb'      => (isset($imdb['imdbid']) ? (int)$imdb['imdbid'] : 0),
+				'tvdb'      => (isset($show->_data['external_ids']['tvdb_id']) ? (int)$show->_data['external_ids']['tvdb_id'] : 0),
 				'trakt'     => 0,
-				'tvrage'    => 0,
+				'tvrage'    => (isset($show->_data['external_ids']['tvrage_id']) ? (int)$show->_data['external_ids']['tvrage_id'] : 0),
 				'tvmaze'    => 0,
 				'tmdb'      => (int)$show->_data['id'],
-				'aliases'   => (!empty($show->aliasNames) ? (array)$show->aliasNames : '')
+				'aliases'   => (!empty($show->_data['alternative_titles']) ? (array)$show->_data['alternative_titles'] : '')
 		];
 	}
 

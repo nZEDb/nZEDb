@@ -20,6 +20,12 @@ if (!empty($argv[1]) && is_numeric($argv[2]) && is_numeric($argv[3])) {
 
 	// Use the first show found (highest match) and get the requested season/episode from $argv
 	if ($series) {
+		$seriesAppends = $tmdb->client->getTVShow($series[0]->_data['id'], 'append_to_response=alternative_titles,external_ids');
+		if ($seriesAppends) {
+			$series[0]->_data['networks'] = $seriesAppends->_data['networks'];
+			$series[0]->_data['alternative_titles'] = $seriesAppends->_data['alternative_titles']['results'];
+			$series[0]->_data['external_ids'] = $seriesAppends->_data['external_ids'];
+		}
 
 		print_r($series[0]);
 

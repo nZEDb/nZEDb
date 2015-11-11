@@ -517,11 +517,11 @@ abstract class TV extends Videos
 				'S\d+[^a-z0-9]?(E\d+)?[ab]?|WEB[-_. ]?(DL|Rip)|XViD)[^a-z0-9]';
 
 		// For names that don't start with the title.
-		if (preg_match('/[^a-z0-9]{2,}(?P<name>[\w .-]*?)' . $following . '/i', $relname, $matches)) {
-			$showInfo['name'] = $matches[1];
+		if (preg_match('/([^a-z0-9]{2,}|(sample|proof)-)(?P<name>[\w .-]*?)' . $following . '/i', $relname, $matches)) {
+			$showInfo['name'] = $matches['name'];
 		} else if (preg_match('/^(?P<name>[a-z0-9][\w .-]*?)' . $following . '/i', $relname, $matches)) {
 		// For names that start with the title.
-			$showInfo['name'] = $matches[1];
+			$showInfo['name'] = $matches['name'];
 		}
 
 		if (!empty($showInfo['name'])) {
@@ -530,8 +530,8 @@ abstract class TV extends Videos
 				$showInfo['season'] = intval($matches[2]);
 				$showInfo['episode'] = [intval($matches[3]), intval($matches[4])];
 			}
-			//S01E0102 - lame no delimit numbering, regex would collide if there was ever 1000 ep season.
-			else if (preg_match('/^(.*?)[^a-z0-9]s(\d{2})[^a-z0-9]?e(\d{2})(\d{2})[^a-z0-9]/i', $relname, $matches)) {
+			//S01E0102 and S01E01E02 - lame no delimit numbering, regex would collide if there was ever 1000 ep season.
+			else if (preg_match('/^(.*?)[^a-z0-9]s(\d{2})[^a-z0-9]?e(\d{2})e?(\d{2})[^a-z0-9]/i', $relname, $matches)) {
 				$showInfo['season'] = intval($matches[2]);
 				$showInfo['episode'] = [intval($matches[3]), intval($matches[4])];
 			}
@@ -550,8 +550,8 @@ abstract class TV extends Videos
 				$showInfo['season'] = intval($matches[2]);
 				$showInfo['episode'] = 'all';
 			}
-			// 1x01
-			else if (preg_match('/^(.*?)[^a-z0-9](\d{1,2})x(\d{1,3})[^a-z0-9]/i', $relname, $matches)) {
+			// 1x01 and 101
+			else if (preg_match('/^(.*?)[^a-z0-9](\d{1,2})x?(\d{1,3})[^a-z0-9]/i', $relname, $matches)) {
 				$showInfo['season'] = intval($matches[2]);
 				$showInfo['episode'] = intval($matches[3]);
 			}
@@ -736,8 +736,14 @@ abstract class TV extends Videos
 
 		if (is_array($required)) {
 			foreach ($required as $req) {
-				if (!isset($array->$req)) {
-					return false;
+				if (!in_array($type, ['tmdbS', 'tmdbE'])){
+					if (!isset($array->$req)) {
+						return false;
+					}
+				} else {
+					if (!isset($array[$req])) {
+						return false;
+					}
 				}
 			}
 		}
