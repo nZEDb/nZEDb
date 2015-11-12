@@ -233,7 +233,7 @@ class TMDB extends TV
 				foreach ($showAppends->_data['alternative_titles']['results'] AS $aka) {
 					$highest->_data['alternative_titles'][] = $aka['title'];
 				}
-				$highest->_data['network'] = $showAppends->_data['networks'][0]['name'];
+				$highest->_data['network'] = (isset($showAppends->_data['networks'][0]['name']) ? $showAppends->_data['networks'][0]['name'] : '');
 				$highest->_data['external_ids'] = $showAppends->_data['external_ids'];
 			}
 			$return = $this->formatShowArr($highest);
