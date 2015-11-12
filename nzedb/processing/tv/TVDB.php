@@ -35,11 +35,6 @@ class TVDB extends TV
 	private $serverTime;
 
 	/**
-	 * @string DateTimeZone Object - UTC
-	 */
-	private $timeZone;
-
-	/**
 	 * @string MySQL DATETIME Format
 	 */
 	private $timeFormat;
@@ -55,7 +50,6 @@ class TVDB extends TV
 		$this->fanartUrl = self::TVDB_URL . DS . 'banners/_cache/fanart/original/%s-1.jpg';
 
 		$this->serverTime = $this->client->getServerTime();
-		$this->timeZone = new \DateTimeZone('UTC');
 		$this->timeFormat = 'Y-m-d H:i:s';
 	}
 
@@ -361,7 +355,6 @@ class TVDB extends TV
 	 */
 	private function formatShowArr($show)
 	{
-		$show->firstAired->setTimezone($this->timeZone);
 		preg_match('/tt(?P<imdbid>\d{6,7})$/i', $show->imdbId, $imdb);
 
 		return [
@@ -391,8 +384,6 @@ class TVDB extends TV
 	 */
 	private function formatEpisodeArr($episode)
 	{
-		$episode->firstAired->setTimezone($this->timeZone);
-
 		return [
 			'title'       => (string)$episode->name,
 			'series'      => (int)$episode->season,
