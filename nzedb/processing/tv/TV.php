@@ -633,9 +633,9 @@ abstract class TV extends Videos
 			if (strlen($showInfo['season']) == 4) {
 				$showInfo['seriesfull'] = $showInfo['season'] . "/" . $showInfo['episode'];
 			} else {
-				// Get year if present (not for releases with dates as seasons).
-				if (preg_match('/[^a-z0-9](19|20)(\d{2})/i', $relname, $yearMatch)) {
-					$showInfo['year'] = $yearMatch[1] . $yearMatch[2];
+				// If year is present in the release name, add it to the cleaned name for title search
+				if (preg_match('/[^a-z0-9](?P<year>(19|20)(\d{2}))[^a-z0-9]/i', $relname, $yearMatch)) {
+					$showInfo['cleanname'] .= ' (' . $yearMatch['year'] . ')';
 				}
 				// Check for multi episode release.
 				if (is_array($showInfo['episode'])) {
