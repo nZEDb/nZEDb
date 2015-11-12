@@ -94,7 +94,7 @@ class TvRage extends TV
 		if ($res instanceof \Traversable) {
 			foreach ($res as $arr) {
 				$this->rageId = $this->rageId = false;
-				$show = $this->parseNameEpSeason($arr['searchname']);
+				$show = $this->parseShowInfo($arr['searchname']);
 				if (is_array($show) && $show['name'] != '') {
 					// Find the Video ID if it already exists by checking the title.
 					$this->videoId = $this->getByTitle($show['cleanname'], parent::TYPE_TV);

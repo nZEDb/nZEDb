@@ -78,7 +78,7 @@ class TMDB extends TV
 				$tmdbid = false;
 
 				// Clean the show name for better match probability
-				$release = $this->parseNameEpSeason($row['searchname']);
+				$release = $this->parseShowInfo($row['searchname']);
 
 				if (is_array($release) && $release['name'] != '') {
 

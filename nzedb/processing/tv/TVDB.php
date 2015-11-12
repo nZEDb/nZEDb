@@ -84,7 +84,7 @@ class TVDB extends TV
 				$tvdbid = false;
 
 				// Clean the show name for better match probability
-				$release = $this->parseNameEpSeason($row['searchname']);
+				$release = $this->parseShowInfo($row['searchname']);
 				if (is_array($release) && $release['name'] != '') {
 
 					// Find the Video ID if it already exists by checking the title.
