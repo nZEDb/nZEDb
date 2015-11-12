@@ -482,7 +482,7 @@ abstract class TV extends Videos
 			// Get the Season/Episode/Airdate
 			$showInfo += $this->parseShowSeasonEp($relname);
 
-			if ((!empty($showInfo['season']) && !empty($showInfo['episode'])) || !empty($showInfo['airdate'])) {
+			if ((isset($showInfo['season']) && isset($showInfo['episode'])) || !empty($showInfo['airdate'])) {
 				// Check for dates instead of seasons.
 				if (!isset($showInfo['airdate']) && !empty($showInfo['airdate'])) {
 					// If year is present in the release name, add it to the cleaned name for title search

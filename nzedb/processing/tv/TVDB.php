@@ -74,7 +74,7 @@ class TVDB extends TV
 
 		$tvcount = $res->rowCount();
 
-		if ($this->echooutput && $tvcount > 1) {
+		if ($this->echooutput && $tvcount > 0) {
 			echo $this->pdo->log->header("Processing TVDB lookup for " . number_format($tvcount) . " release(s).");
 		}
 
