@@ -549,7 +549,7 @@ abstract class TV extends Videos
 		//S01E0102 and S01E01E02 - lame no delimit numbering, regex would collide if there was ever 1000 ep season.
 		else if (preg_match('/^(.*?)[^a-z0-9]s(\d{2})[^a-z0-9]?e(\d{2})e?(\d{2})[^a-z0-9]/i', $relname, $matches)) {
 			$episodeArr['season'] = intval($matches[2]);
-			$episodeArr['episode'] = [intval($matches[3]), intval($matches[4])];
+			$episodeArr['episode'] = intval($matches[3]);
 		}
 		// S01E01 and S01.E01
 		else if (preg_match('/^(.*?)[^a-z0-9]s(\d{1,2})[^a-z0-9]?e(\d{1,3})[ab]?[^a-z0-9]/i', $relname, $matches)) {
