@@ -495,7 +495,6 @@ abstract class TV extends Videos
 					}
 					$showInfo['airdate'] = '';
 				}
-				var_dump($showInfo);
 
 				return $showInfo;
 			}
