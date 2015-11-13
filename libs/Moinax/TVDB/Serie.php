@@ -147,7 +147,7 @@ class Serie
         $this->name = (string)$data->SeriesName;
         $this->banner = (string)$data->banner;
         $this->overview = (string)$data->Overview;
-        $this->firstAired = new \DateTime((string)$data->FirstAired);
+        $this->firstAired = (string)$data->FirstAired;
         $this->imdbId = (string)$data->IMDB_ID;
         $this->actors = (array)Client::removeEmptyIndexes(explode('|', (string)$data->Actors));
         $this->airsDayOfWeek = (string)$data->Airs_DayOfWeek;
