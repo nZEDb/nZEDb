@@ -24,28 +24,28 @@ class ReleaseExtra
 		switch (true) {
 			case preg_match('#(?:^36$|HEVC)#i', $codec):
 				$codec = 'HEVC';
-				break;
+			break;
 			case preg_match('#(?:^(?:7|27|H264)$|AVC)#i', $codec);
 				$codec = 'h.264';
-				break;
+			break;
 			case preg_match('#(?:^(?:20|FMP4|MP42|MP43|MPG4)$|ASP)#i', $codec):
 				$codec = 'MPEG-4';
-				break;
+			break;
 			case preg_match('#^2$#i', $codec);
 				$codec = 'MPEG-2';
-				break;
+			break;
 			case preg_match('#^MPEG$#', $codec);
 				$codec = 'MPEG-1';
-				break;
+			break;
 			case preg_match('#DX50|DIVX|DIV3#i', $codec):
 				$codec = 'DivX';
-				break;
+			break;
 			case preg_match('#XVID#i', $codec):
 				$codec = 'XviD';
-				break;
+			break;
 			case preg_match('#(?:wmv|WVC1)#i', $codec);
 				$codec = 'wmv';
-				break;
+			break;
 			default;
 		}
 
