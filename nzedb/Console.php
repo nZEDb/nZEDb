@@ -1,9 +1,8 @@
 <?php
 namespace nzedb;
 
-require_once nZEDb_LIBS . 'AmazonProductAPI.php';
-
 use nzedb\db\Settings;
+use libs\AmazonProductAPI;
 
 class Console
 {
@@ -681,9 +680,9 @@ class Console
 
 	public function fetchAmazonProperties($title, $node)
 	{
-		$obj = new \AmazonProductAPI($this->pubkey, $this->privkey, $this->asstag);
+		$obj = new AmazonProductAPI($this->pubkey, $this->privkey, $this->asstag);
 		try {
-			$result = $obj->searchProducts($title, \AmazonProductAPI::GAMES, "NODE", $node);
+			$result = $obj->searchProducts($title, AmazonProductAPI::GAMES, "NODE", $node);
 		} catch (\Exception $e) {
 			$result = false;
 		}

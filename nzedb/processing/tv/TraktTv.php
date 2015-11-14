@@ -31,6 +31,20 @@ class TraktTv extends TV
 	}
 
 	/**
+	 * Main processing director function for scrapers
+	 * Calls work query function and initiates processing
+	 *
+	 * @param      $groupID
+	 * @param      $guidChar
+	 * @param      $process
+	 * @param bool $local
+	 */
+	public function processSite($groupID, $guidChar, $process, $local = false)
+	{
+		;
+	}
+
+	/**
 	 * Fetch banner from site.
 	 *
 	 * @param $videoId
@@ -59,7 +73,7 @@ class TraktTv extends TV
 
 	public function getMovieInfo()
 	{
-
+		;
 	}
 
 	/**
@@ -83,6 +97,32 @@ class TraktTv extends TV
 	 * @return array|false    False on failure, an array of information fields otherwise.
 	 */
 	public function getShowInfo($name)
+	{
+		;
+	}
+
+	/**
+	 * Assigns API show response values to a formatted array for insertion
+	 * Returns the formatted array
+	 *
+	 * @param $show
+	 *
+	 * @return array
+	 */
+	public function formatShowInfo($show)
+	{
+		;
+	}
+
+	/**
+	 * Assigns API episode response values to a formatted array for insertion
+	 * Returns the formatted array
+	 *
+	 * @param $episode
+	 *
+	 * @return array
+	 */
+	public function formatEpisodeInfo($episode)
 	{
 		;
 	}

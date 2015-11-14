@@ -9,6 +9,9 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 2015-11-14 ruhllatio
 	Mrg: PR #1953, Add TVMaze and TMDB Scrapers
 	Fix: Duplicate Alias Errors and cache alias lookups
+	Fix: TraktTv abstract errors from missing functions
+	Chg: AmazonProductAPI now namespaced and autoloads across project
+	Chg: Speedup Music Cover Views and cleanup a lot of the queries / fixed some issues
 2015-11-14 bart39
 	Fix: Collection regex errors noted in #1954.
 2015-11-09 ruhllatio

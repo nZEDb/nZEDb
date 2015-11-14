@@ -1,9 +1,8 @@
 <?php
 namespace nzedb;
 
-require_once nZEDb_LIBS . 'AmazonProductAPI.php';
-
 use nzedb\db\Settings;
+use libs\AmazonProductAPI;
 
 /*
  * Class for processing book info.
@@ -290,9 +289,9 @@ class Books
 
 	public function fetchAmazonProperties($title)
 	{
-		$obj = new \AmazonProductAPI($this->pubkey, $this->privkey, $this->asstag);
+		$obj = new AmazonProductAPI($this->pubkey, $this->privkey, $this->asstag);
 		try {
-			$result = $obj->searchProducts($title, \AmazonProductAPI::BOOKS, 'TITLE');
+			$result = $obj->searchProducts($title, AmazonProductAPI::BOOKS, 'TITLE');
 		} catch (\Exception $e) {
 			$result = false;
 		}

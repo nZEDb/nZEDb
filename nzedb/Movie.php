@@ -340,11 +340,11 @@ class Movie
 			), true, nZEDb_CACHE_EXPIRY_MEDIUM
 		);
 
-		$moviesArr = false;
+		$movieIDs = false;
 
 		if (is_array($movies)) {
 			foreach ($movies AS $movie => $id) {
-				$moviesArr[] = $id['imdbid'];
+				$movieIDs[] = $id['imdbid'];
 			}
 		}
 
@@ -377,7 +377,7 @@ class Movie
 			AND %s %s %s %s
 			GROUP BY m.imdbid
 			ORDER BY %s %s",
-			(is_array($moviesArr) ? implode(',', $moviesArr) : -1),
+			(is_array($movieIDs) ? implode(',', $movieIDs) : -1),
 			$this->showPasswords,
 			$this->getBrowseBy(),
 			$catsrch,
