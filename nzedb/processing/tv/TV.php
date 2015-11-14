@@ -12,25 +12,26 @@ use nzedb\utility\Text;
 abstract class TV extends Videos
 {
 	// Television Sources
-	const SOURCE_NONE    = 0; // No Scrape source
-	const SOURCE_TVDB    = 1; // Scrape source was TVDB
-	const SOURCE_TVMAZE  = 2; // Scrape source was TVMAZE
-	const SOURCE_TMDB    = 3; // Scrape source was TMDB
-	const SOURCE_TRAKT   = 4; // Scrape source was Trakt
-	const SOURCE_IMDB    = 5; // Scrape source was IMDB
-	const SOURCE_TVRAGE  = 6; // Scrape source was TvRage
+	const SOURCE_NONE    = 0;   // No Scrape source
+	const SOURCE_TVDB    = 1;   // Scrape source was TVDB
+	const SOURCE_TVMAZE  = 2;   // Scrape source was TVMAZE
+	const SOURCE_TMDB    = 3;   // Scrape source was TMDB
+	const SOURCE_TRAKT   = 4;   // Scrape source was Trakt
+	const SOURCE_IMDB    = 5;   // Scrape source was IMDB
+	const SOURCE_TVRAGE  = 6;   // Scrape source was TvRage
 
 	// Anime Sources
-	const SOURCE_ANIDB   = 10; // Scrape source was AniDB
+	const SOURCE_ANIDB   = 10;   // Scrape source was AniDB
 
 	// Processing signifiers
-	const PROCESS_TVDB   =  0; // Process TVDB First
-	const PROCESS_TVMAZE = -1; // Process TVMaze Second
-	const PROCESS_TMDB   = -2; // Process TMDB Third
-	const PROCESS_TRAKT  = -3; // Process Trakt Fourth
-	const PROCESS_IMDB   = -4; // Process IMDB Fifth
-	const PROCESS_TVRAGE = -5; // Process TvRage Sixth
-	const NO_MATCH_FOUND = -6; // Failed All Methods
+	const PROCESS_TVDB   =  0;   // Process TVDB First
+	const PROCESS_TVMAZE = -1;   // Process TVMaze Second
+	const PROCESS_TMDB   = -2;   // Process TMDB Third
+	const PROCESS_TRAKT  = -3;   // Process Trakt Fourth
+	const PROCESS_IMDB   = -4;   // Process IMDB Fifth
+	const PROCESS_TVRAGE = -5;   // Process TvRage Sixth
+	const NO_MATCH_FOUND = -6;   // Failed All Methods
+	const FAILED_PARSE   = -100; // Failed Parsing
 
 	/**
 	 * @var bool
@@ -543,7 +544,7 @@ abstract class TV extends Videos
 				'S\d+[^a-z0-9]?((E\d+)[ab]?)*|WEB[-_. ]?(DL|Rip)|XViD)[^a-z0-9]';
 
 		// For names that don't start with the title.
-		if (preg_match('/([^a-z0-9]{2,}|(sample|proof)-)(?P<name>[\w .-]*?)' . $following . '/i', $relname, $matches)) {
+		if (preg_match('/^([^a-z0-9]{2,}|(sample|proof|repost)-)(?P<name>[\w .-]*?)' . $following . '/i', $relname, $matches)) {
 			$showName = $matches['name'];
 		} else if (preg_match('/^(?P<name>[a-z0-9][\w .-]*?)' . $following . '/i', $relname, $matches)) {
 			// For names that start with the title.

@@ -16,6 +16,8 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Chg: Cache counts for Movies, Music, Games
 	Fix: Undefined offset and foreach errors in TMDB
 	Fix: SmartyTV class abstract errors / fix a few template issues
+	Chg: Releases that fail to parse for TV proc go into their own queue for review
+	Fix: First TV name processing Regex not enforcing the start of the string
 2015-11-14 bart39
 	Mrg: PR #1952, from Darius - Fix book related problems due to wrong var used.
 	Mrg: PR #1951, from Darius - Ignore duplicate comments.
