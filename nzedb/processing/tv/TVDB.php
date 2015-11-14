@@ -35,11 +35,6 @@ class TVDB extends TV
 	private $serverTime;
 
 	/**
-	 * @string MySQL DATETIME Format
-	 */
-	private $timeFormat;
-
-	/**
 	 * @param array $options Class instances / Echo to cli?
 	 */
 	public function __construct(array $options = [])
@@ -50,7 +45,6 @@ class TVDB extends TV
 		$this->fanartUrl = self::TVDB_URL . DS . 'banners/_cache/fanart/original/%s-1.jpg';
 
 		$this->serverTime = $this->client->getServerTime();
-		$this->timeFormat = 'Y-m-d H:i:s';
 	}
 
 	/**
@@ -361,7 +355,7 @@ class TVDB extends TV
 			'type'      => (int)parent::TYPE_TV,
 			'title'     => (string)$show->name,
 			'summary'   => (string)$show->overview,
-			'started'   => (string)$show->firstAired->format($this->timeFormat),
+			'started'   => (string)$show->firstAired,
 			'publisher' => (string)$show->network,
 			'source'    => (int)parent::SOURCE_TVDB,
 			'imdb'      => (int)(isset($imdb['imdbid']) ? $imdb['imdbid'] : 0),
@@ -389,7 +383,7 @@ class TVDB extends TV
 			'series'      => (int)$episode->season,
 			'episode'     => (int)$episode->number,
 			'se_complete' => (string)'S' . sprintf('%02d', $episode->season) . 'E' . sprintf('%02d', $episode->number),
-			'firstaired'  => (string)$episode->firstAired->format($this->timeFormat),
+			'firstaired'  => (string)$episode->firstAired,
 			'summary'     => (string)$episode->overview
 		];
 	}

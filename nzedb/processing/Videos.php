@@ -54,7 +54,7 @@ abstract class Videos
 		$options += $defaults;
 
 		// Sets the default timezone for this script (and its children).
-		date_default_timezone_set('UTC');
+		//date_default_timezone_set('UTC'); TODO: Make this a DTO instead and use as needed
 
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 	}
