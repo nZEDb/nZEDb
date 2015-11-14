@@ -27,23 +27,23 @@ class ReleaseExtra
 		if (preg_match('/XVID/i', $codec)) {
 			return 'XviD';
 		}
-		if (preg_match('/^27$/i', $codec)) {
-			return 'Blu-Ray';
-		}
-		if (preg_match('/V_MPEG4\/ISO\/AVC/i', $codec)) {
-			return 'x264';
-		}
 		if (preg_match('/wmv|WVC1/i', $codec)) {
 			return 'wmv';
 		}
-		if (preg_match('/^2$/i', $codec)) {
-			return 'HD.ts';
+		if (preg_match('/^2$/', $codec)) {
+			return 'MPEG-2';
 		}
-		if (preg_match('/avc1/i', $codec)) {
+		if (preg_match('/((^20|FMP4|MP42|MP43|MPG4$)|ASP)/i', $codec)) {
+			return 'MPEG-4';
+		}
+		if (preg_match('/(^36$|HEVC)/i', $codec)) {
+			return 'HEVC';
+		}
+		if (preg_match('/(^(7|27|H264)$|AVC)/i', $codec)) {
 			return 'h.264';
 		}
-		if (preg_match('/DX50|DIVX|DIV3/i', $codec)) {
-			return 'DivX';
+		if (preg_match('/^MPEG$/i', $codec)) {
+			return 'MPEG-1';
 		}
 		return $codec;
 	}
