@@ -181,7 +181,7 @@ class TVMaze extends TV
 	 * @param $site
 	 * @param $siteId
 	 *
-	 * @return array|bool
+	 * @return array|false
 	 */
 	protected function getShowInfoBySiteID($site, $siteId)
 	{
@@ -204,7 +204,7 @@ class TVMaze extends TV
 	 *
 	 * @param $cleanName
 	 *
-	 * @return array|bool
+	 * @return array|false
 	 */
 	protected function getShowInfo($cleanName)
 	{
@@ -309,7 +309,7 @@ class TVMaze extends TV
 	 * @param string  $airdate
 	 * @param integer $videoId
 	 *
-	 * @return array|bool
+	 * @return array|false
 	 */
 	protected function getEpisodeInfo($tvmazeid, $season, $episode, $airdate = '', $videoId = 0)
 	{
