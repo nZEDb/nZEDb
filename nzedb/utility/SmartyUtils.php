@@ -51,7 +51,7 @@ function release_flag($x, $t)
 	} else if (preg_match('/Finnish/i', $x)) {
 		$y = "fi";
 		$d = "Finnish";
-	} else if (preg_match('/French|Vostfr/i', $x)) {
+	} else if (preg_match('/French|Vostfr|Multi/i', $x)) {
 		$y = "fr";
 		$d = "French";
 	} else if (preg_match('/\bGreek\b/i', $x)) {

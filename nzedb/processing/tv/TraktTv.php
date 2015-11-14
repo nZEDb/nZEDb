@@ -27,9 +27,31 @@ class TraktTv extends TV
 	public function __construct(array $options = [])
 	{
 		parent::__construct($options);
-		$this->client = new TraktAPI(['clientID'	=> $this->pdo->getSetting('trakttvclientkey')]);
+		$this->client = new TraktAPI(['clientID' => $this->pdo->getSetting('trakttvclientkey')]);
 	}
 
+	/**
+	 * Main processing director function for scrapers
+	 * Calls work query function and initiates processing
+	 *
+	 * @param      $groupID
+	 * @param      $guidChar
+	 * @param      $process
+	 * @param bool $local
+	 */
+	public function processSite($groupID, $guidChar, $process, $local = false)
+	{
+		;
+	}
+
+	/**
+	 * Fetch banner from site.
+	 *
+	 * @param $videoId
+	 * @param $siteID
+	 *
+	 * @return bool
+	 */
 	public function getBanner($videoId, $siteID)
 	{
 		return false;
@@ -45,6 +67,11 @@ class TraktTv extends TV
 	 * @return array|false    False on failure, an array of information fields otherwise.
 	 */
 	public function getEpisodeInfo($siteId, $series, $episode)
+	{
+		;
+	}
+
+	public function getMovieInfo()
 	{
 		;
 	}
@@ -70,6 +97,32 @@ class TraktTv extends TV
 	 * @return array|false    False on failure, an array of information fields otherwise.
 	 */
 	public function getShowInfo($name)
+	{
+		;
+	}
+
+	/**
+	 * Assigns API show response values to a formatted array for insertion
+	 * Returns the formatted array
+	 *
+	 * @param $show
+	 *
+	 * @return array
+	 */
+	public function formatShowInfo($show)
+	{
+		;
+	}
+
+	/**
+	 * Assigns API episode response values to a formatted array for insertion
+	 * Returns the formatted array
+	 *
+	 * @param $episode
+	 *
+	 * @return array
+	 */
+	public function formatEpisodeInfo($episode)
 	{
 		;
 	}

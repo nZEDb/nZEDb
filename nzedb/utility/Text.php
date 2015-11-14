@@ -156,4 +156,58 @@ class Text
 		return $data;
 	}
 
+	/**
+	 * This function turns a roman numeral into an integer
+	 *
+	 * @param string $string
+	 *
+	 * @return int $e
+	 */
+	public static function convertRomanToInt($string) {
+		switch (strtolower($string)) {
+			case 'i': $e = 1;
+				break;
+			case 'ii': $e = 2;
+				break;
+			case 'iii': $e = 3;
+				break;
+			case 'iv': $e = 4;
+				break;
+			case 'v': $e = 5;
+				break;
+			case 'vi': $e = 6;
+				break;
+			case 'vii': $e = 7;
+				break;
+			case 'viii': $e = 8;
+				break;
+			case 'ix': $e = 9;
+				break;
+			case 'x': $e = 10;
+				break;
+			case 'xi': $e = 11;
+				break;
+			case 'xii': $e = 12;
+				break;
+			case 'xiii': $e = 13;
+				break;
+			case 'xiv': $e = 14;
+				break;
+			case 'xv': $e = 15;
+				break;
+			case 'xvi': $e = 16;
+				break;
+			case 'xvii': $e = 17;
+				break;
+			case 'xviii': $e = 18;
+				break;
+			case 'xix': $e = 19;
+				break;
+			case 'xx': $e = 20;
+				break;
+			default:
+				$e = 0;
+		}
+		return $e;
+	}
 }

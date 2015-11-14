@@ -51,19 +51,35 @@
 						   class="label label-success">Add to My Shows</a>
 						<a class="label label-default" href="{$serverroot}series/{$release.videos_id}"
 						   title="View all releases for this series">View all episodes</a>
-					{if $release.source = 1}
-						{if $release.tvdb > 0}<a class="label label-default" target="_blank"
-												href="{$site->dereferrer_link}http://thetvdb.com/?tab=series&id={$release.tvdb}&lid=7"
-												title="View at TheTVDB">TheTVDB</a>{/if}
-					{elseif $release.source = 3}
-						<a class="label label-default" target="_blank"
-						   href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$release.videos_id}"
-						   title="View at TV Rage">TV Rage</a>
-					{/if}
+							{if $show.tvdb > 0}
+							<a class="label label-default" target="_blank"
+							   href="{$site->dereferrer_link}http://thetvdb.com/?tab=series&id={$show.tvdb}"
+							   title="View at TheTVDB">TheTVDB</a>
+							{/if}
+							{if $show.tvmaze > 0}
+							<a class="label label-default" target="_blank"
+							   href="{$site->dereferrer_link}http://tvmaze.com/shows/{$show.tvmaze}"
+							   title="View at TVMaze">TVMaze</a>
+								{/if}
+							{if $show.trakt > 0}
+							<a class="label label-default" target="_blank"
+							   href="{$site->dereferrer_link}http://www.trakt.tv/shows/{$show.trakt}"
+							   title="View at TraktTv">Trakt</a>
+								{/if}
+							{if $show.tvrage > 0}
+							<a class="label label-default" target="_blank"
+							   href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$show.tvrage}"
+							   title="View at TV Rage">TV Rage</a>
+								{/if}
+							{if $show.tmdb > 0}
+							<a class="label label-default" target="_blank"
+							   href="{$site->dereferrer_link}https://www.themoviedb.org/tv/{$show.tmdb}"
+							   title="View at TheMovieDB">Trakt</a>
+						{/if}
 					{/if}
 					{if $con && $con.url != ""}<a href="{$site->dereferrer_link}{$con.url}/"
 												  class="label label-default" target="_blank">Amazon</a>{/if}
-					{if $book && $book.url != ""}<a href="{$site->dereferrer_link}{$book.url}/"
+					{if $boo && $boo.url != ""}<a href="{$site->dereferrer_link}{$boo.url}/"
 													class="label label-default" target="_blank">Amazon</a>{/if}
 					{if $music && $music.url != ""}<a href="{$site->dereferrer_link}{$music.url}/"
 													  class="label label-default" target="_blank">
@@ -103,7 +119,7 @@
 						{/if}
 						{if $anidb && $release.anidbid > 0 && $anidb.description != ""}{$anidb.description|escape:"htmlall"|nl2br|magicurl|truncate:500:"...":true}{/if}
 						{if $music && $music.review != ""}{$music.review|escape:"htmlall"|nl2br|magicurl|truncate:500:"...":true}{/if}
-						{if $book && $book.review != ""}{$book.review|escape:"htmlall"|nl2br|magicurl|truncate:500:"...":true}{/if}
+						{if $boo && $boo.review != ""}{$boo.review|escape:"htmlall"|nl2br|magicurl|truncate:500:"...":true}{/if}
 						{if $con &&$con.review != ""}{$con.review|escape:"htmlall"|nl2br|magicurl|truncate:500:"...":true}{/if}
 					</p>
 					<div class="box col-md-12">
@@ -187,10 +203,10 @@
 														 data-toggle="modal"
 														 data-target="#modal-image"/>
 												{/if}
-												{if $book && $book.cover == 1}
-													<img src="{$smarty.const.WWW_TOP}/covers/book/{$book.id}.jpg"
+												{if $boo && $boo.cover == 1}
+													<img src="{$smarty.const.WWW_TOP}/covers/book/{$boo.id}.jpg"
 														 width="185"
-														 alt="{$book.title|escape:"htmlall"}"
+														 alt="{$boo.title|escape:"htmlall"}"
 														 data-toggle="modal"
 														 data-target="#modal-image"/>
 												{/if}
@@ -313,12 +329,20 @@
 																	</tr>
 																{/if}
 																{if $show && $release.videos_id > 0}
-																	{if $release.firstaired != null}
+																	{if $release.firstaired != ""}
 																		<tr>
 																			<th width="140">
 																				Aired
 																			</th>
 																			<td>{$release.firstaired|date_format}</td>
+																		</tr>
+																	{/if}
+																	{if $show.publisher != ""}
+																		<tr>
+																			<th width="140">
+																				Network
+																			</th>
+																			<td>{$show.publisher}</td>
 																		</tr>
 																	{/if}
 																	{if $show.countries_id != ""}
@@ -358,63 +382,63 @@
 																		</tr>
 																	{/if}
 																{/if}
-																{if $book}
+																{if $boo}
 																	<tr>
 																		<th width="140">Name
 																		</th>
-																		<td>{$book.title|escape:"htmlall"}</td>
+																		<td>{$boo.title|escape:"htmlall"}</td>
 																	</tr>
 																	<tr>
 																		<th width="140">Author
 																		</th>
-																		<td>{$book.author|escape:"htmlall"}</td>
+																		<td>{$boo.author|escape:"htmlall"}</td>
 																	</tr>
-																	{if $book.ean != ""}
+																	{if $boo.ean != ""}
 																		<tr>
 																			<th width="140">
 																				EAN
 																			</th>
-																			<td>{$book.ean|escape:"htmlall"}</td>
+																			<td>{$boo.ean|escape:"htmlall"}</td>
 																		</tr>
 																	{/if}
-																	{if $book.isbn != ""}
+																	{if $boo.isbn != ""}
 																		<tr>
 																			<th width="140">
 																				ISBN
 																			</th>
-																			<td>{$book.isbn|escape:"htmlall"}</td>
+																			<td>{$boo.isbn|escape:"htmlall"}</td>
 																		</tr>
 																	{/if}
-																	{if $book.pages != ""}
+																	{if $boo.pages != ""}
 																		<tr>
 																			<th width="140">
 																				Pages
 																			</th>
-																			<td>{$book.pages|escape:"htmlall"}</td>
+																			<td>{$boo.pages|escape:"htmlall"}</td>
 																		</tr>
 																	{/if}
-																	{if $book.dewey != ""}
+																	{if $boo.dewey != ""}
 																		<tr>
 																			<th width="140">
 																				Dewey
 																			</th>
-																			<td>{$book.dewey|escape:"htmlall"}</td>
+																			<td>{$boo.dewey|escape:"htmlall"}</td>
 																		</tr>
 																	{/if}
-																	{if $book.publisher != ""}
+																	{if $boo.publisher != ""}
 																		<tr>
 																			<th width="140">
 																				Publisher
 																			</th>
-																			<td>{$book.publisher|escape:"htmlall"}</td>
+																			<td>{$boo.publisher|escape:"htmlall"}</td>
 																		</tr>
 																	{/if}
-																	{if $book.publishdate != ""}
+																	{if $boo.publishdate != ""}
 																		<tr>
 																			<th width="140">
 																				Released
 																			</th>
-																			<td>{$book.publishdate|date_format}</td>
+																			<td>{$boo.publishdate|date_format}</td>
 																		</tr>
 																	{/if}
 																{/if}
@@ -814,9 +838,9 @@
 					<img src="{$smarty.const.WWW_TOP}/covers/music/{$music.id}.jpg"
 						 alt="{$music.title|escape:"htmlall"}"/>
 				{/if}
-				{if $book && $book.cover == 1}
-					<img src="{$smarty.const.WWW_TOP}/covers/book/{$book.id}.jpg"
-						 alt="{$book.title|escape:"htmlall"}"/>
+				{if $boo && $boo.cover == 1}
+					<img src="{$smarty.const.WWW_TOP}/covers/book/{$boo.id}.jpg"
+						 alt="{$boo.title|escape:"htmlall"}"/>
 				{/if}
 				{if $xxx && $xxx.backdrop == 1}
 					<a href="{$smarty.const.WWW_TOP}/covers/xxx/{$xxx.id}-backdrop.jpg"

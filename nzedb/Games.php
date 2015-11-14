@@ -167,7 +167,7 @@ class Games
 			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
 		}
 
-		$res = $this->pdo->queryOneRow(
+		$res = $this->pdo->query(
 			sprintf("
 				SELECT COUNT(DISTINCT r.gamesinfo_id) AS num
 				FROM releases r
@@ -182,21 +182,14 @@ class Games
 				$catsrch,
 				($maxage > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage) : ''),
 				(count($excludedcats) > 0 ? " AND r.categoryid NOT IN (" . implode(",", $excludedcats) . ")" : '')
-			)
+			), true, nZEDb_CACHE_EXPIRY_MEDIUM
 		);
-
-		return ($res === false ? 0 : $res["num"]);
+		return (isset($res[0]["num"]) ? $res[0]["num"] : 0);
 	}
 
 	public function getGamesRange($cat, $start, $num, $orderby, $maxage = -1, $excludedcats = [])
 	{
 		$browseby = $this->getBrowseBy();
-
-		if ($start === false) {
-			$limit = "";
-		} else {
-			$limit = " LIMIT " . $num . " OFFSET " . $start;
-		}
 
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
@@ -216,29 +209,67 @@ class Games
 
 		$order = $this->getGamesOrder($orderby);
 
+		$games = $this->pdo->query(
+			sprintf("
+				SELECT con.id
+				FROM gamesinfo con
+				LEFT JOIN releases r ON con.id = r.gamesinfo_id
+				WHERE r.nzbstatus = 1
+				AND con.title != ''
+				AND con.cover = 1
+				AND r.passwordstatus %s
+				AND %s %s %s %s
+				GROUP BY con.id
+				ORDER BY %s %s %s",
+				Releases::showPasswords($this->pdo),
+				$browseby,
+				$catsrch,
+				$maxage,
+				$exccatlist,
+				$order[0],
+				$order[1],
+				($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
+			), true, nZEDb_CACHE_EXPIRY_MEDIUM
+		);
+
+		$gameIDs = false;
+
+		if (is_array($games)) {
+			foreach ($games AS $game => $id) {
+				$gameIDs[] = $id['id'];
+			}
+		}
+
 		return $this->pdo->query(
-			sprintf(
-				"SELECT GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id, "
-				. "GROUP_CONCAT(r.rarinnerfilecount ORDER BY r.postdate DESC SEPARATOR ',') as grp_rarinnerfilecount, "
-				. "GROUP_CONCAT(r.haspreview ORDER BY r.postdate DESC SEPARATOR ',') AS grp_haspreview, "
-				. "GROUP_CONCAT(r.passwordstatus ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_password, "
-				. "GROUP_CONCAT(r.guid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_guid, "
-				. "GROUP_CONCAT(rn.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid, "
-				. "GROUP_CONCAT(groups.name ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grpname, "
-				. "GROUP_CONCAT(r.searchname ORDER BY r.postdate DESC SEPARATOR '#') AS grp_release_name, "
-				. "GROUP_CONCAT(r.postdate ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_postdate, "
-				. "GROUP_CONCAT(r.size ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_size, "
-				. "GROUP_CONCAT(r.totalpart ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_totalparts, "
-				. "GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments, "
-				. "GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs, "
-				. "con.*, YEAR (con.releasedate) as year, r.gamesinfo_id, groups.name AS group_name,
-				rn.id as nfoid FROM releases r "
-				. "LEFT OUTER JOIN groups ON groups.id = r.group_id "
-				. "LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id "
-				. "INNER JOIN gamesinfo con ON con.id = r.gamesinfo_id "
-				. "WHERE r.nzbstatus = 1 AND con.title != '' AND "
-				. "r.passwordstatus %s AND %s %s %s %s"
-				. "GROUP BY con.id ORDER BY %s %s" . $limit,
+			sprintf("
+				SELECT
+					GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id,
+					GROUP_CONCAT(r.rarinnerfilecount ORDER BY r.postdate DESC SEPARATOR ',') as grp_rarinnerfilecount,
+					GROUP_CONCAT(r.haspreview ORDER BY r.postdate DESC SEPARATOR ',') AS grp_haspreview,
+					GROUP_CONCAT(r.passwordstatus ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_password,
+					GROUP_CONCAT(r.guid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_guid,
+					GROUP_CONCAT(rn.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid,
+					GROUP_CONCAT(groups.name ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grpname,
+					GROUP_CONCAT(r.searchname ORDER BY r.postdate DESC SEPARATOR '#') AS grp_release_name,
+					GROUP_CONCAT(r.postdate ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_postdate,
+					GROUP_CONCAT(r.size ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_size,
+					GROUP_CONCAT(r.totalpart ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_totalparts,
+					GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments,
+					GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs,
+				con.*, YEAR (con.releasedate) as year, r.gamesinfo_id, groups.name AS group_name,
+				rn.id as nfoid
+				FROM releases r
+				LEFT OUTER JOIN groups ON groups.id = r.group_id
+				LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
+				INNER JOIN gamesinfo con ON con.id = r.gamesinfo_id
+				WHERE r.nzbstatus = 1
+				AND con.id IN (%s)
+				AND con.title != ''
+				AND r.passwordstatus %s
+				AND %s %s %s %s
+				GROUP BY con.id
+				ORDER BY %s %s",
+				(is_array($gameIDs) ? implode(',', $gameIDs) : -1),
 				Releases::showPasswords($this->pdo),
 				$browseby,
 				$catsrch,

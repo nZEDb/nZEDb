@@ -205,7 +205,7 @@ class Releases
 				"SELECT r.*,
 					CONCAT(cp.title, ' > ', c.title) AS category_name,
 					CONCAT(cp.id, ',', c.id) AS category_ids,
-					COUNT(df.id) AS failed,
+					(SELECT df.failed) AS failed,
 					rn.id AS nfoid,
 					re.releaseid AS reid,
 					v.tvdb, v.trakt, v.tvrage, v.tvmaze, v.imdb, v.tmdb,
@@ -483,7 +483,7 @@ class Releases
 					groups.name AS group_name,
 					rn.id AS nfoid, re.releaseid AS reid,
 					tve.firstaired,
-					COUNT(df.id) AS failed
+					(SELECT df.failed) AS failed
 				FROM releases r
 				LEFT OUTER JOIN video_data re ON re.releaseid = r.id
 				INNER JOIN groups ON groups.id = r.group_id
@@ -886,7 +886,7 @@ class Releases
 			"SELECT r.*,
 				CONCAT(cp.title, ' > ', c.title) AS category_name,
 				%s AS category_ids,
-				(SELECT COUNT(userid) FROM dnzb_failures WHERE guid = r.guid) AS failed,
+				(SELECT failed FROM dnzb_failures WHERE guid = r.guid) AS failed,
 				groups.name AS group_name,
 				rn.id AS nfoid,
 				re.releaseid AS reid,
@@ -1208,7 +1208,7 @@ class Releases
 				CONCAT(cp.title, ' > ', c.title) AS category_name,
 				CONCAT(cp.id, ',', c.id) AS category_ids,
 				g.name AS group_name,
-				v.title AS showtitle, v.tvdb, v.trakt, v.tvrage, v.source,
+				v.title AS showtitle, v.tvdb, v.trakt, v.tvrage, v.tvmaze, v.source,
 				tvi.summary, tvi.image,
 				tve.title, tve.firstaired, tve.se_complete
 				FROM releases r
@@ -1571,7 +1571,7 @@ class Releases
 		return $this->pdo->query(
 			"SELECT r.videos_id, r.guid, r.name, r.searchname, r.size, r.completion,
 				r.postdate, r.categoryid, r.comments, r.grabs,
-				v.id AS tvid, v.title AS tvtitle, v.tvdb, v.tvrage,
+				v.id AS tvid, v.title AS tvtitle, v.tvdb, v.trakt, v.tvrage, v.tvmaze, v.imdb, v.tmdb,
 				tvi.image
 			FROM releases r
 			INNER JOIN videos v ON r.videos_id = v.id
