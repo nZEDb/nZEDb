@@ -505,9 +505,8 @@ abstract class TV extends Videos
 			// Get the Season/Episode/Airdate
 			$showInfo += $this->parseSeasonEp($relname);
 
-			if ((isset($showInfo['season']) && isset($showInfo['episode'])) || isset($showInfo['airdate'])) {
-				// Check for dates instead of seasons.
-				if (!isset($showInfo['airdate']) || empty($showInfo['airdate'])) {
+			if ((isset($showInfo['season']) && isset($showInfo['episode'])) || !isset($showInfo['airdate'])) {
+				if (!isset($showInfo['airdate'])) {
 					// If year is present in the release name, add it to the cleaned name for title search
 					if (preg_match('/[^a-z0-9](?P<year>(19|20)(\d{2}))[^a-z0-9]/i', $relname, $yearMatch)) {
 						$showInfo['cleanname'] .= ' (' . $yearMatch['year'] . ')';
@@ -562,7 +561,7 @@ abstract class TV extends Videos
 	 */
 	private function parseSeasonEp($relname)
 	{
-		$episodeArr['airdate'] = '';
+		$episodeArr = [];
 
 		// S01E01-E02 and S01E01-02
 		if (preg_match('/^(.*?)[^a-z0-9]s(\d{1,2})[^a-z0-9]?e(\d{1,3})(?:[e-])(\d{1,3})[^a-z0-9]/i', $relname, $matches)) {

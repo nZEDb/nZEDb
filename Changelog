@@ -18,7 +18,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Fix: SmartyTV class abstract errors / fix a few template issues
 	Chg: Releases that fail to parse for TV proc go into their own queue for review
 	Fix: First TV name processing Regex not enforcing the start of the string
-	Fix: Bad logic for airdate shows after cleanup of TV parsing
+	Fix: Bad logic for airdate shows after cleanup of TV parsing (2 tries)
 2015-11-14 bart39
 	Mrg: PR #1952, from Darius - Fix book related problems due to wrong var used.
 	Mrg: PR #1951, from Darius - Ignore duplicate comments.
