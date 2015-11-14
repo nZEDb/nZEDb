@@ -17,6 +17,9 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Fix: Undefined offset and foreach errors in TMDB
 	Fix: SmartyTV class abstract errors / fix a few template issues
 2015-11-14 bart39
+	Mrg: PR #1952, from Darius - Fix book related problems due to wrong var used.
+	Mrg: PR #1951, from Darius - Ignore duplicate comments.
+	Mrg: PR #1949, from rainje - Add french flag to "multi" releases.
 	Fix: Collection regex errors noted in #1954.
 2015-11-09 ruhllatio
 	Fix: Sonarr's "RSS" is just using the API with no parameters.  Left joining should 'fix' this until it can be addressed with the Sonarr team.
