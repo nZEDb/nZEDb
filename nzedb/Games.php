@@ -167,7 +167,7 @@ class Games
 			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
 		}
 
-		$res = $this->pdo->queryOneRow(
+		$res = $this->pdo->query(
 			sprintf("
 				SELECT COUNT(DISTINCT r.gamesinfo_id) AS num
 				FROM releases r
@@ -182,10 +182,9 @@ class Games
 				$catsrch,
 				($maxage > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage) : ''),
 				(count($excludedcats) > 0 ? " AND r.categoryid NOT IN (" . implode(",", $excludedcats) . ")" : '')
-			)
+			), true, nZEDb_CACHE_EXPIRY_MEDIUM
 		);
-
-		return ($res === false ? 0 : $res["num"]);
+		return (isset($res[0]["num"]) ? $res[0]["num"] : 0);
 	}
 
 	public function getGamesRange($cat, $start, $num, $orderby, $maxage = -1, $excludedcats = [])
@@ -233,11 +232,11 @@ class Games
 			), true, nZEDb_CACHE_EXPIRY_MEDIUM
 		);
 
-		$gamesArr = false;
+		$gameIDs = false;
 
 		if (is_array($games)) {
 			foreach ($games AS $game => $id) {
-				$gamesArr[] = $id['id'];
+				$gameIDs[] = $id['id'];
 			}
 		}
 
@@ -270,7 +269,7 @@ class Games
 				AND %s %s %s %s
 				GROUP BY con.id
 				ORDER BY %s %s",
-				(is_array($gamesArr) ? implode(',', $gamesArr) : -1),
+				(is_array($gameIDs) ? implode(',', $gameIDs) : -1),
 				Releases::showPasswords($this->pdo),
 				$browseby,
 				$catsrch,

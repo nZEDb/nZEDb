@@ -272,7 +272,7 @@ class Movie
 			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
 		}
 
-		$res = $this->pdo->queryOneRow(
+		$res = $this->pdo->query(
 			sprintf("
 				SELECT COUNT(DISTINCT r.imdbid) AS num
 				FROM releases r
@@ -287,10 +287,9 @@ class Movie
 				$catsrch,
 				($maxAge > 0 ? 'AND r.postdate > NOW() - INTERVAL ' . $maxAge . ' DAY' : ''),
 				(count($excludedCats) > 0 ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : '')
-			)
+			), true, nZEDb_CACHE_EXPIRY_MEDIUM
 		);
-
-		return ($res === false ? 0 : $res['num']);
+		return (isset($res[0]["num"]) ? $res[0]["num"] : 0);
 	}
 
 	/**

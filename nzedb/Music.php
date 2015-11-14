@@ -191,7 +191,7 @@ class Music
 	 */
 	public function getMusicCount($cat, $maxage = -1, array $excludedcats = [])
 	{
-		$res = $this->pdo->queryOneRow(
+		$res = $this->pdo->query(
 			sprintf("
 				SELECT COUNT(DISTINCT r.musicinfoid) AS num
 				FROM releases r
@@ -206,9 +206,9 @@ class Music
 				(count($cat) > 0 && $cat[0] != -1 ? (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat) : ''),
 				($maxage > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage) : ''),
 				(count($excludedcats) > 0 ? " AND r.categoryid NOT IN (" . implode(",", $excludedcats) . ")" : '')
-			)
+			), true, nZEDb_CACHE_EXPIRY_MEDIUM
 		);
-		return $res["num"];
+		return (isset($res[0]["num"]) ? $res[0]["num"] : 0);
 	}
 
 	/**
