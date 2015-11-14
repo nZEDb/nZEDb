@@ -761,12 +761,12 @@ abstract class TV extends Videos
 	 * Checks API response returns have all REQUIRED attributes set
 	 * Returns true or false
 	 *
-	 * @param array $array
+	 * @param $array
 	 * @param int $type
 	 *
 	 * @return bool
 	 */
-	public function checkRequiredAttr(array $array, $type)
+	public function checkRequiredAttr($array, $type)
 	{
 		$required = ['failedToMatchType'];
 
