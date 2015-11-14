@@ -189,11 +189,11 @@ class Music
 	 *
 	 * @return mixed
 	 */
-	public function getMusicCount($cat, $maxage = -1, $excludedcats = [])
+	public function getMusicCount($cat, $maxage = -1, array $excludedcats = [])
 	{
-		$res = $this->pdo->query(
-			sprintf(
-				"SELECT COUNT(DISTINCT r.musicinfoid) AS num
+		$res = $this->pdo->queryOneRow(
+			sprintf("
+				SELECT COUNT(DISTINCT r.musicinfoid) AS num
 				FROM releases r
 				INNER JOIN musicinfo m ON m.id = r.musicinfoid
 				AND m.title != ''
@@ -206,9 +206,9 @@ class Music
 				(count($cat) > 0 && $cat[0] != -1 ? (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat) : ''),
 				($maxage > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage) : ''),
 				(count($excludedcats) > 0 ? " AND r.categoryid NOT IN (" . implode(",", $excludedcats) . ")" : '')
-			), true, nZEDb_CACHE_EXPIRY_MEDIUM
+			)
 		);
-		return (isset($res[0]) ? (int)$res[0]["num"] : (int)0);
+		return $res["num"];
 	}
 
 	/**
@@ -262,48 +262,50 @@ class Music
 
 		if (is_array($music)) {
 			foreach ($music AS $mus => $id) {
-				$musicIDs[] = $id['imdbid'];
+				$musicIDs[] = $id['id'];
 			}
 		}
 
-		return $this->pdo->query(
-			sprintf("
-				SELECT
-					GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id,
-					GROUP_CONCAT(r.rarinnerfilecount ORDER BY r.postdate DESC SEPARATOR ',') as grp_rarinnerfilecount,
-					GROUP_CONCAT(r.haspreview ORDER BY r.postdate DESC SEPARATOR ',') AS grp_haspreview,
-					GROUP_CONCAT(r.passwordstatus ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_password,
-					GROUP_CONCAT(r.guid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_guid,
-					GROUP_CONCAT(rn.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid,
-					GROUP_CONCAT(groups.name ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grpname,
-					GROUP_CONCAT(r.searchname ORDER BY r.postdate DESC SEPARATOR '#') AS grp_release_name,
-					GROUP_CONCAT(r.postdate ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_postdate,
-					GROUP_CONCAT(r.size ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_size,
-					GROUP_CONCAT(r.totalpart ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_totalparts,
-					GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments,
-					GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs,
-					m.*, r.musicinfoid,
-					g.name AS group_name,
-					rn.id as nfoid
-				FROM releases r
-				LEFT OUTER JOIN groups g ON g.id = r.group_id
-				LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
-				INNER JOIN musicinfo m ON m.id = r.musicinfoid
-				WHERE r.nzbstatus = 1
-				AND m.title != ''
-				AND m.cover = 1
-				AND r.passwordstatus %s
-				AND %s %s %s
-				GROUP BY m.id
-				ORDER BY %s %s",
-				Releases::showPasswords($this->pdo),
-				$browseby,
-				$catsrch,
-				$exccatlist,
-				$order[0],
-				$order[1]
-			), true, nZEDb_CACHE_EXPIRY_MEDIUM
+		$sql = sprintf("
+			SELECT
+				GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id,
+				GROUP_CONCAT(r.rarinnerfilecount ORDER BY r.postdate DESC SEPARATOR ',') as grp_rarinnerfilecount,
+				GROUP_CONCAT(r.haspreview ORDER BY r.postdate DESC SEPARATOR ',') AS grp_haspreview,
+				GROUP_CONCAT(r.passwordstatus ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_password,
+				GROUP_CONCAT(r.guid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_guid,
+				GROUP_CONCAT(rn.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid,
+				GROUP_CONCAT(g.name ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grpname,
+				GROUP_CONCAT(r.searchname ORDER BY r.postdate DESC SEPARATOR '#') AS grp_release_name,
+				GROUP_CONCAT(r.postdate ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_postdate,
+				GROUP_CONCAT(r.size ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_size,
+				GROUP_CONCAT(r.totalpart ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_totalparts,
+				GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments,
+				GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs,
+				m.*,
+				r.musicinfoid, r.haspreview,
+				g.name AS group_name,
+				rn.id as nfoid
+			FROM releases r
+			LEFT OUTER JOIN groups g ON g.id = r.group_id
+			LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
+			INNER JOIN musicinfo m ON m.id = r.musicinfoid
+			WHERE r.nzbstatus = 1
+			AND m.id IN (%s)
+			AND m.title != ''
+			AND m.cover = 1
+			AND r.passwordstatus %s
+			AND %s %s %s
+			GROUP BY m.id
+			ORDER BY %s %s",
+			(is_array($musicIDs) ? implode(',', $musicIDs) : -1),
+			Releases::showPasswords($this->pdo),
+			$browseby,
+			$catsrch,
+			$exccatlist,
+			$order[0],
+			$order[1]
 		);
+		return $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
 	}
 
 	/**
