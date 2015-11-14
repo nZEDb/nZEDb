@@ -16,6 +16,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Chg: Cache counts for Movies, Music, Games
 	Fix: Undefined offset and foreach errors in TMDB
 2015-11-14 bart39
+	Mrg: PR #1952, from Darius - Fix book related problems due to wrong var used.
 	Mrg: PR #1951, from Darius - Ignore duplicate comments.
 	Mrg: PR #1949, from rainje - Add french flag to "multi" releases.
 	Fix: Collection regex errors noted in #1954.
