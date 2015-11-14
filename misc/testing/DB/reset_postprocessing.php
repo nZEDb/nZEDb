@@ -24,7 +24,7 @@ if (isset($argv[1]) && $argv[1] === "all") {
 			$pdo->queryExec("TRUNCATE TABLE releaseextrafull");
 			$pdo->queryExec("TRUNCATE TABLE xxxinfo");
 			$pdo->queryExec("TRUNCATE TABLE videos");
-			$pdo->queryExec("TRUNCATE TABLE videos_akas");
+			$pdo->queryExec("TRUNCATE TABLE videos_aliases");
 			$pdo->queryExec("TRUNCATE TABLE tv_info");
 			$pdo->queryExec("TRUNCATE TABLE tv_episodes");
 			$pdo->queryExec("TRUNCATE TABLE anidb_info");
@@ -188,7 +188,7 @@ if (isset($argv[1]) && ($argv[1] === "misc" || $argv[1] === "all")) {
 if (isset($argv[1]) && ($argv[1] === "tv" || $argv[1] === "all")) {
 	$ran = true;
 	if (isset($argv[3]) && $argv[3] === "truncate") {
-		$pdo->queryExec("DELETE v, va FROM videos v INNER JOIN videos_akas va ON v.id = va.videos_id WHERE type = 0");
+		$pdo->queryExec("DELETE v, va FROM videos v INNER JOIN videos_aliases va ON v.id = va.videos_id WHERE type = 0");
 		$pdo->queryExec("TRUNCATE TABLE tv_info");
 		$pdo->queryExec("TRUNCATE TABLE tv_episodes");
 	}

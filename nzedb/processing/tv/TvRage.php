@@ -2,6 +2,7 @@
 namespace nzedb\processing\tv;
 
 use nzedb\utility\Misc;
+use nzedb\utility\Country;
 use nzedb\ReleaseImage;
 
 /**
@@ -74,14 +75,15 @@ class TvRage extends TV
 	}
 
 	/**
-	 * Main function to begin TvRage processing
+	 * Main processing director function for scrapers
+	 * Calls work query function and initiates processing
 	 *
-	 * @param string     $groupID
-	 * @param string     $guidChar
-	 * @param int        $lookupSetting
-	 * @param bool|false $local
+	 * @param      $groupID
+	 * @param      $guidChar
+	 * @param      $process
+	 * @param bool $local
 	 */
-	public function processTvRage($groupID = '', $guidChar = '', $lookupSetting = 1, $local = false)
+	public function processSite($groupID = '', $guidChar = '', $process, $local = false)
 	{
 		$res = $this->getTvReleases($groupID, $guidChar, $local, parent::PROCESS_TVRAGE);
 
@@ -94,17 +96,17 @@ class TvRage extends TV
 		if ($res instanceof \Traversable) {
 			foreach ($res as $arr) {
 				$this->rageId = $this->rageId = false;
-				$show = $this->parseShowInfo($arr['searchname']);
+				$show = $this->parseInfo($arr['searchname']);
 				if (is_array($show) && $show['name'] != '') {
 					// Find the Video ID if it already exists by checking the title.
 					$this->videoId = $this->getByTitle($show['cleanname'], parent::TYPE_TV);
 
 					// Force local lookup only
 					if ($local == true) {
-						$lookupSetting = false;
+						$process = false;
 					}
 
-					if ($this->videoId === false && $lookupSetting) {
+					if ($this->videoId === false && $process) {
 						// If it doesnt exist locally and lookups are allowed lets try to get it.
 						if ($this->echooutput) {
 							echo $this->pdo->log->primaryOver("Video ID for ") .
@@ -205,7 +207,7 @@ class TvRage extends TV
 		$country = '';
 
 		if (isset($tvrShow['country']) && !empty($tvrShow['country'])) {
-			$country = $this->countryCode($tvrShow['country']);
+			$country = Country::countryCode($tvrShow['country'], $this->pdo);
 		}
 
 		$rInfo = $this->getRageInfoFromPage($rageid);
@@ -293,7 +295,7 @@ class TvRage extends TV
 				$result = ['showid' => $rageid];
 				$result['country'] = (isset($arrXml['origin_country'])) ? $arrXml['origin_country'] : '';
 				$result['firstaired'] = (isset($arrXml['startdate'])) ? date('m-d-Y', strtotime($arrXml['startdate'])) : '';
-				$result = $this->countryCode($result);
+				$result = Country::countryCode($result, $this->pdo);
 			}
 		}
 		return $result;
@@ -408,7 +410,7 @@ class TvRage extends TV
 				}
 			}
 		}
-		return $this->formatShowArr($matchedTitle);
+		return $this->formatShowInfo($matchedTitle);
 	}
 
 	/**
@@ -419,7 +421,7 @@ class TvRage extends TV
 	 *
 	 * @return array
 	 */
-	private function formatShowArr($show)
+	protected function formatShowInfo($show)
 	{
 		return [
 			'type'      => (int)parent::TYPE_TV,
@@ -438,5 +440,18 @@ class TvRage extends TV
 			'aliases'   => (!empty($show['akas']['aka']) ? (array)$show['akas']['aka'] : ''),
 			'tvr'       => $show
 		];
+	}
+
+	/**
+	 * Assigns API episode response values to a formatted array for insertion
+	 * Returns the formatted array
+	 *
+	 * @param $episode
+	 *
+	 * @return array
+	 */
+	protected function formatEpisodeInfo($episode)
+	{
+		return false;
 	}
 }

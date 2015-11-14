@@ -54,17 +54,17 @@ class TVDB extends TV
 	}
 
 	/**
-	 * Main processing director function for TVDB
+	 * Main processing director function for scrapers
 	 * Calls work query function and initiates processing
 	 *
-	 * @param            $groupID
-	 * @param            $guidChar
-	 * @param            $processTV
-	 * @param bool|false $local
+	 * @param      $groupID
+	 * @param      $guidChar
+	 * @param      $process
+	 * @param bool $local
 	 */
-	public function processTVDB($groupID, $guidChar, $processTV, $local = false)
+	public function processSite($groupID, $guidChar, $process, $local = false)
 	{
-		$res = $this->getTvReleases($groupID, $guidChar, $processTV, parent::PROCESS_TVDB);
+		$res = $this->getTvReleases($groupID, $guidChar, $process, parent::PROCESS_TVDB);
 
 		$tvcount = $res->rowCount();
 
@@ -78,7 +78,7 @@ class TVDB extends TV
 				$tvdbid = false;
 
 				// Clean the show name for better match probability
-				$release = $this->parseShowInfo($row['searchname']);
+				$release = $this->parseInfo($row['searchname']);
 				if (is_array($release) && $release['name'] != '') {
 
 					// Find the Video ID if it already exists by checking the title.
@@ -197,7 +197,7 @@ class TVDB extends TV
 	 *
 	 * @param string $country
 	 *
-	 * @return array|bool
+	 * @return array|false
 	 */
 	protected function getShowInfo($cleanName, $country = '')
 	{
@@ -225,7 +225,7 @@ class TVDB extends TV
 
 		if (is_array($response)) {
 			foreach ($response as $show) {
-				if ($this->checkRequired($show, 'tvdbS')) {
+				if ($this->checkRequiredAttr($show, 'tvdbS')) {
 					// Check for exact title match first and then terminate if found
 					if (strtolower($show->name) === strtolower($cleanName)) {
 						$highest = $show;
@@ -254,7 +254,7 @@ class TVDB extends TV
 				}
 			}
 			if (isset($highest)) {
-				$return = $this->formatShowArr($highest);
+				$return = $this->formatShowInfo($highest);
 			}
 		}
 
@@ -296,7 +296,7 @@ class TVDB extends TV
 	 * @param string  $airdate
 	 * @param integer $videoId
 	 *
-	 * @return array|bool
+	 * @return array|false
 	 */
 	protected function getEpisodeInfo($tvdbid, $season, $episode, $airdate = '', $videoId = 0)
 	{
@@ -331,13 +331,13 @@ class TVDB extends TV
 		sleep(1);
 
 		if (is_object($response)) {
-			if ($this->checkRequired($response, 'tvdbE')) {
-				$return = $this->formatEpisodeArr($response);
+			if ($this->checkRequiredAttr($response, 'tvdbE')) {
+				$return = $this->formatEpisodeInfo($response);
 			}
 		} else if (is_array($response) && isset($response['episodes']) && $videoId > 0) {
 			foreach ($response['episodes'] as $singleEpisode) {
-				if ($this->checkRequired($singleEpisode, 'tvdbE')) {
-					$this->addEpisode($videoId, $this->formatEpisodeArr($singleEpisode));
+				if ($this->checkRequiredAttr($singleEpisode, 'tvdbE')) {
+					$this->addEpisode($videoId, $this->formatEpisodeInfo($singleEpisode));
 				}
 			}
 		}
@@ -353,7 +353,7 @@ class TVDB extends TV
 	 *
 	 * @return array
 	 */
-	private function formatShowArr($show)
+	protected function formatShowInfo($show)
 	{
 		preg_match('/tt(?P<imdbid>\d{6,7})$/i', $show->imdbId, $imdb);
 
@@ -382,7 +382,7 @@ class TVDB extends TV
 	 *
 	 * @return array
 	 */
-	private function formatEpisodeArr($episode)
+	protected function formatEpisodeInfo($episode)
 	{
 		return [
 			'title'       => (string)$episode->name,

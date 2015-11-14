@@ -8,17 +8,6 @@ class TMDB extends TV
 {
 	const MATCH_PROBABILITY = 75;
 
-
-	/**
-	 * @string DateTimeZone Object - UTC
-	 */
-	private $timeZone;
-
-	/**
-	 * @string MySQL DATETIME Format
-	 */
-	private $timeFormat;
-
 	/**
 	 * @var string The URL for the image for poster
 	 */
@@ -35,8 +24,6 @@ class TMDB extends TV
 	{
 		parent::__construct($options);
 		$this->client = new TmdbAPI($this->pdo->getSetting('tmdbkey'));
-		$this->timeZone = new \DateTimeZone('UTC');
-		$this->timeFormat = 'Y-m-d H:i:s';
 	}
 
 	/**
@@ -56,14 +43,14 @@ class TMDB extends TV
 	 * Main processing director function for TMDB
 	 * Calls work query function and initiates processing
 	 *
-	 * @param            $groupID
-	 * @param            $guidChar
-	 * @param            $processTV
-	 * @param bool|false $local
+	 * @param      $groupID
+	 * @param      $guidChar
+	 * @param      $process
+	 * @param bool $local
 	 */
-	public function processTMDB ($groupID, $guidChar, $processTV, $local = false)
+	public function processSite ($groupID, $guidChar, $process, $local = false)
 	{
-		$res = $this->getTvReleases($groupID, $guidChar, $processTV, parent::PROCESS_TMDB);
+		$res = $this->getTvReleases($groupID, $guidChar, $process, parent::PROCESS_TMDB);
 
 		$tvcount = $res->rowCount();
 
@@ -78,7 +65,7 @@ class TMDB extends TV
 				$tmdbid = false;
 
 				// Clean the show name for better match probability
-				$release = $this->parseShowInfo($row['searchname']);
+				$release = $this->parseInfo($row['searchname']);
 
 				if (is_array($release) && $release['name'] != '') {
 
@@ -182,7 +169,7 @@ class TMDB extends TV
 	 *
 	 * @param $cleanName
 	 *
-	 * @return array|bool
+	 * @return array|false
 	 */
 	protected function getShowInfo($cleanName)
 	{
@@ -199,18 +186,18 @@ class TMDB extends TV
 	}
 
 	/**
-	 * @param $showArr
+	 * @param $shows
 	 * @param $cleanName
 	 *
-	 * @return array|bool
+	 * @return array|false
 	 */
-	private function matchShowInfo($showArr, $cleanName)
+	private function matchShowInfo($shows, $cleanName)
 	{
 		$return = false;
 		$highestMatch = 0;
 
-		foreach ($showArr AS $show) {
-			if ($this->checkRequired($show->_data, 'tmdbS')) {
+		foreach ($shows AS $show) {
+			if ($this->checkRequiredAttr($show->_data, 'tmdbS')) {
 				// Check for exact title match first and then terminate if found
 				if (strtolower($show->_data['name']) === strtolower($cleanName)) {
 					$highest = $show;
@@ -236,7 +223,7 @@ class TMDB extends TV
 				$highest->_data['network'] = (isset($showAppends->_data['networks'][0]['name']) ? $showAppends->_data['networks'][0]['name'] : '');
 				$highest->_data['external_ids'] = $showAppends->_data['external_ids'];
 			}
-			$return = $this->formatShowArr($highest);
+			$return = $this->formatShowInfo($highest);
 		}
 		return $return;
 	}
@@ -284,8 +271,8 @@ class TMDB extends TV
 
 		//Handle Single Episode Lookups
 		if (is_object($response)) {
-			if ($this->checkRequired($response->_data, 'tmdbE')) {
-				$return = $this->formatEpisodeArr($response);
+			if ($this->checkRequiredAttr($response->_data, 'tmdbE')) {
+				$return = $this->formatEpisodeInfo($response);
 			}
 		}
 		return $return;
@@ -299,7 +286,7 @@ class TMDB extends TV
 	 *
 	 * @return array
 	 */
-	private function formatShowArr($show)
+	protected function formatShowInfo($show)
 	{
 		$this->posterUrl = $this->client->getImageURL() . (string)(isset($show->_data['poster_path']) ? $show->_data['poster_path'] : '');
 
@@ -333,7 +320,7 @@ class TMDB extends TV
 	 *
 	 * @return array
 	 */
-	private function formatEpisodeArr($episode)
+	protected function formatEpisodeInfo($episode)
 	{
 		return [
 				'title'       => (string)$episode->_data['name'],
