@@ -164,7 +164,7 @@ class Text
 	 * @return int $e
 	 */
 	public static function convertRomanToInt($string) {
-		switch ($string) {
+		switch (strtolower($string)) {
 			case 'i': $e = 1;
 				break;
 			case 'ii': $e = 2;
