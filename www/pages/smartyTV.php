@@ -24,8 +24,23 @@ use nzedb\processing\tv\TV;
 
 class smartyTV extends TV
 {
+	/**
+	 * Main processing director function for scrapers
+	 * Calls work query function and initiates processing
+	 *
+	 * @param      $groupID
+	 * @param      $guidChar
+	 * @param      $process
+	 * @param bool $local
+	 */
+	protected function processSite($groupID, $guidChar, $process, $local = false)
+	{
+		;
+	}
+
 	protected function getBanner($videoID, $siteId)
 	{
+		;
 	}
 
 	/**
@@ -39,6 +54,7 @@ class smartyTV extends TV
 	 */
 	protected function getEpisodeInfo($siteId, $series, $episode)
 	{
+		;
 	}
 
 	/**
@@ -51,6 +67,7 @@ class smartyTV extends TV
 	 */
 	protected function getPoster($videoId, $siteId)
 	{
+		;
 	}
 
 	/**
@@ -62,6 +79,33 @@ class smartyTV extends TV
 	 */
 	protected function getShowInfo($name)
 	{
+		;
+	}
+
+	/**
+	 * Assigns API show response values to a formatted array for insertion
+	 * Returns the formatted array
+	 *
+	 * @param $show
+	 *
+	 * @return array
+	 */
+	protected function formatShowInfo($show)
+	{
+		;
+	}
+
+	/**
+	 * Assigns API episode response values to a formatted array for insertion
+	 * Returns the formatted array
+	 *
+	 * @param $episode
+	 *
+	 * @return array
+	 */
+	protected function formatEpisodeInfo($episode)
+	{
+		;
 	}
 }
 

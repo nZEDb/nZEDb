@@ -15,6 +15,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Fix: A few typos with the Music change
 	Chg: Cache counts for Movies, Music, Games
 	Fix: Undefined offset and foreach errors in TMDB
+	Fix: SmartyTV class abstract errors / fix a few template issues
 2015-11-14 bart39
 	Fix: Collection regex errors noted in #1954.
 2015-11-09 ruhllatio
