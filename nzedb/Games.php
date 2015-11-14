@@ -257,7 +257,7 @@ class Games
 					GROUP_CONCAT(r.totalpart ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_totalparts,
 					GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments,
 					GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs,
-				con.*, YEAR (con.releasedate) as year, r.gamesinfo_id, groups.name AS group_name
+				con.*, YEAR (con.releasedate) as year, r.gamesinfo_id, groups.name AS group_name,
 				rn.id as nfoid
 				FROM releases r
 				LEFT OUTER JOIN groups ON groups.id = r.group_id

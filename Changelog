@@ -10,7 +10,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Fix: Sonarr's "RSS" is just using the API with no parameters.  Left joining should 'fix' this until it can be addressed with the Sonarr team.
 	Fix: Wrong if condition for TVDB Test script return
 	Chg: Greatly improve movies cover view query time.  Depending upon others' findings it is easily adapted to the other views.
-	Chg: Greatly improve games cover view query time.
+	Chg: Greatly improve games cover view query time. Edit: missed a comma.
 2015-11-07 bart39
 	Fix: Collection regex errors.
 	Mrg: PR #1948, From izolight - Regexes from request thread.
