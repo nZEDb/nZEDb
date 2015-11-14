@@ -216,7 +216,7 @@ class TMDB extends TV
 		}
 		if (isset($highest)) {
 			$showAppends = $this->client->getTVShow($highest->_data['id'], 'append_to_response=alternative_titles,external_ids');
-			if ($showAppends) {
+			if (isset($showAppends->_data['alternative_titles']['results']) && is_array($showAppends->_data['alternative_titles']['results'])) {
 				foreach ($showAppends->_data['alternative_titles']['results'] AS $aka) {
 					$highest->_data['alternative_titles'][] = $aka['title'];
 				}
@@ -300,7 +300,7 @@ class TMDB extends TV
 				'summary'   => (string)$show->_data['overview'],
 				'started'   => (string)$show->_data['first_air_date'],
 				'publisher' => (isset($show->_data['network']) ? (string)$show->_data['network'] : ''),
-				'country'   => (string)$show->_data['origin_country'][0],
+				'country'   => (string)(isset($show->_data['origin_country'][0]) ? $show->_data['origin_country'][0] : ''),
 				'source'    => (int)parent::SOURCE_TMDB,
 				'imdb'      => (isset($imdb['imdbid']) ? (int)$imdb['imdbid'] : 0),
 				'tvdb'      => (isset($show->_data['external_ids']['tvdb_id']) ? (int)$show->_data['external_ids']['tvdb_id'] : 0),

@@ -14,6 +14,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Chg: Speedup Music Cover Views and cleanup a lot of the queries / fixed some issues
 	Fix: A few typos with the Music change
 	Chg: Cache counts for Movies, Music, Games
+	Fix: Undefined offset and foreach errors in TMDB
 2015-11-14 bart39
 	Fix: Collection regex errors noted in #1954.
 2015-11-09 ruhllatio
