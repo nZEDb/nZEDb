@@ -254,7 +254,7 @@ abstract class Videos
 				if ($check === false) {
 					$this->pdo->queryInsert(
 						sprintf('
-							INSERT INTO videos_aliases
+							INSERT IGNORE INTO videos_aliases
 							(videos_id, title)
 							VALUES (%d, %s)',
 							$videoId,
@@ -289,7 +289,7 @@ abstract class Videos
 			$return = $this->pdo->query('
 				SELECT *
 				FROM videos_aliases
-				WHERE ' . $sql, true
+				WHERE ' . $sql, true, nZEDb_CACHE_EXPIRY_MEDIUM
 			);
 		}
 		return (empty($return) ? false : $return);
