@@ -39,13 +39,24 @@
 						{if $show.summary != ""}<span class="descinitial">{$show.summary|escape:"htmlall"|nl2br|magicurl|truncate:"350":" <a class=\"descmore\" href=\"#\">more...</a>"}</span>
 						{if $show.summary|strlen > 350}<span class="descfull">{$show.summary|escape:"htmlall"|nl2br|magicurl}</span>{/if}<br><br>{/if}
 						{if $release.firstaired != ""}<strong>Aired:</strong> {$release.firstaired|date_format}<br>{/if}
+						{if $show.publisher != ""}<strong>Network:</strong> {$show.publisher}<br>{/if}
 						{if $show.countries_id != ""}<strong>Country:</strong> {$show.countries_id}{/if}
 						<div style="margin-top:10px;">
 							<span class="label label-default"><a title="View all episodes from this series" href="{$smarty.const.WWW_TOP}/series/{$release.videos_id}">All Episodes</a></span>
-							{if $release.source = 1}
-								<span class="label label-default"><a target="_blank" href="{$site->dereferrer_link}http://thetvdb.com/?tab=series&id={$release.tvdb}" title="View at TVDB">TVDB</a></span>
-							{elseif $release.source = 3}
-								<span class="label label-default"><a target="_blank" href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$release.tvrage}" title="View at TV Rage">TV Rage</a></span>
+							{if $show.tvdb > 0}
+								<span class="label label-default"><a title="View at TVDB" target="_blank" href="{$site->dereferrer_link}http://thetvdb.com/?tab=series&id={$show.tvdb}">TVDB</a></span>
+							{/if}
+							{if $show.trakt > 0}
+								<span class="label label-default"><a title="View at Trakt" target="_blank" href="{$site->dereferrer_link}http://www.trakt.tv/shows/{$show.trakt}">Trakt</a></span>
+							{/if}
+							{if $show.tvrage > 0}
+									<span class="label label-default"><a title="View at TVRage" target="_blank" href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$show.tvrage}">TVRage</a></span>
+							{/if}
+							{if $show.tvmaze > 0}
+								<span class="label label-default"><a title="View at TVMaze" target="_blank" href="{$site->dereferrer_link}http://tvmaze.com/shows/{$show.tvmaze}">TVMaze</a></span>
+							{/if}
+							{if $show.tmdb > 0}
+								<span class="label label-default"><a title="View at TheMovieDB" target="_blank" href="{$site->dereferrer_link}https://www.themoviedb.org/tv/{$show.tmdb}">TMDB</a></span>
 							{/if}
 							<span class="label label-default"><a href="{$smarty.const.WWW_TOP}/rss?show={$release.videos_id}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}" title="Rss feed for this series">Series Rss Feed</a></span>
 							<br><strong>Subtitle Search:</strong>

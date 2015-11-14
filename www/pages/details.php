@@ -33,25 +33,9 @@ if (isset($_GET['id'])) {
 		$rc->addComment($data['id'], $_POST['txtAddComment'], $page->users->currentUserId(), $_SERVER['REMOTE_ADDR']);
 	}
 
-	$criteria = $mov = $xxx = '';
-	if ($data['videos_id'] != 0) {
+	$mov = $xxx = $showInfo = '';
+	if ($data['videos_id'] > 0) {
 		$showInfo = (new Videos(['Settings' => $page->settings]))->getByVideoID($data['videos_id']);
-		if (count($showInfo) > 0) {
-			$criteria = ['title' => '', 'summary' => '', 'countries_id' => '', 'image' => '', 'id' => ''];
-			$done = 1;
-			$needed = count($criteria);
-			foreach ($showInfo as $info) {
-				foreach($criteria as $key => $value) {
-					if (empty($value) && !empty($info[$key])) {
-						$criteria[$key] = $info[$key];
-						$done++;
-					}
-				}
-				if ($done == $needed) {
-					break;
-				}
-			}
-		}
 	}
 
 	if ($data['imdbid'] != '' && $data['imdbid'] != 0000000) {
@@ -103,7 +87,7 @@ if (isset($_GET['id'])) {
 		'movie'   => $mov,
 		'music' => ($data['musicinfoid'] != '' ? (new Music(['Settings' => $page->settings]))->getMusicInfo($data['musicinfoid']) : ''),
 		'pre'   => (new PreDb(['Settings' => $page->settings]))->getForRelease($data['preid']),
-		'show'  => $criteria,
+		'show'  => $showInfo,
 		'xxx'   => $xxx,
 		'comments' => $rc->getComments($data['id']),
 		'cpapi'    => $user['cp_api'],
