@@ -33,12 +33,19 @@ class DnzbFailures
 	}
 
 	/**
+	 * @note Read failed downloads count for requested guid
+	 *
 	 * @param string $guid
+	 *
+	 * @return array|bool
 	 */
 	public function getFailedCount($guid)
 	{
-		$result = $this->pdo->query(sprintf('SELECT COUNT(userid) AS num FROM dnzb_failures WHERE guid = %s', $this->pdo->escapeString($guid)));
-		return $result[0]['num'];
+		$result = $this->pdo->query(sprintf('SELECT failed AS num FROM dnzb_failures WHERE guid = %s', $this->pdo->escapeString($guid)));
+		if (is_array($result) && !empty($result)) {
+			return $result[0]['num'];
+		}
+		return false;
 	}
 
 	/**
@@ -91,6 +98,7 @@ class DnzbFailures
 			)
 		);
 
+		$this->updateFailed($guid);
 		$rel = $this->pdo->queryOneRow(sprintf('SELECT id FROM releases WHERE guid = %s', $this->pdo->escapeString($guid)));
 		$this->postComment($rel['id'], $userid);
 
@@ -105,6 +113,10 @@ class DnzbFailures
 	}
 
 	/**
+	 * @note  Post comment for the release if that release has no comment for failure.
+	 *        Only one user is allowed to post comment for that release, rest will just
+	 *        update the failed count in dnzb_failures table
+	 *
 	 * @param $relid
 	 * @param $uid
 	 */
@@ -112,9 +124,21 @@ class DnzbFailures
 	{
 		$text = 'This release has failed to download properly. It might fail for other users too.
 		This comment is automatically generated.';
-		$dbl = $this->pdo->queryOneRow(sprintf('SELECT text FROM release_comments WHERE releaseid = %d AND userid = %d', $relid, $uid));
+		$dbl = $this->pdo->queryOneRow(sprintf('SELECT text FROM release_comments WHERE releaseid = %d', $relid));
 		if ($dbl['text'] != $text) {
 			$this->rc->addComment($relid, $text, $uid, '');
 		}
+	}
+
+	/**
+	 * @note Update count of failed downloads for guid
+	 *
+	 * @param string $guid
+	 */
+	public function updateFailed($guid)
+	{
+			$this->pdo->queryExec(
+					sprintf('UPDATE dnzb_failures SET failed = failed + 1 WHERE guid = %s', $this->pdo->escapeString($guid))
+			);
 	}
 }
