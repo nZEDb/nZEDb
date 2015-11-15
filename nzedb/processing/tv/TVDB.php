@@ -35,6 +35,11 @@ class TVDB extends TV
 	private $serverTime;
 
 	/**
+	 * @bool Do a local lookup only if server is down
+	 */
+	private $local;
+
+	/**
 	 * @param array $options Class instances / Echo to cli?
 	 */
 	public function __construct(array $options = [])
@@ -43,8 +48,17 @@ class TVDB extends TV
 		$this->client = new Client(self::TVDB_URL, self::TVDB_API_KEY);
 		$this->posterUrl = self::TVDB_URL . DS . 'banners/_cache/posters/%s-1.jpg';
 		$this->fanartUrl = self::TVDB_URL . DS . 'banners/_cache/fanart/original/%s-1.jpg';
+		$this->local = false;
 
-		$this->serverTime = $this->client->getServerTime();
+		// Check if we can get the time for API status
+		// If we can't then we set local to true
+		try {
+			$this->serverTime = $this->client->getServerTime();
+		} catch (CurlException $error) {
+			if (strpos($error->getMessage(), 'Cannot fetch') === 0) {
+				$this->local = true;
+			}
+		}
 	}
 
 	/**
@@ -96,7 +110,7 @@ class TVDB extends TV
 					}
 
 					// Force local lookup only
-					if ($local == true) {
+					if ($local === true || $this->local === true) {
 						$lookupSetting = false;
 					} else {
 						$lookupSetting = true;
