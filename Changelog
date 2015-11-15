@@ -8,6 +8,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2015-11-15 ruhllatio
 	Add: TV Failed Title Lookup Cache (Thread Persistent like Amazon)
+	Fix: Bad merge broke regex again
 2015-11-14 ruhllatio
 	Mrg: PR #1953, Add TVMaze and TMDB Scrapers
 	Fix: Duplicate Alias Errors and cache alias lookups

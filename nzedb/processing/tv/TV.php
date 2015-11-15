@@ -577,7 +577,7 @@ abstract class TV extends Videos
 			$episodeArr['episode'] = 'all';
 		}
 		// 1x01 and 101
-		else if (preg_match('/^(.*?)[^a-z0-9](\d{1,2})x?(\d{1,3})[^a-z0-9]/i', $relname, $matches)) {
+		else if (preg_match('/^(.*?)[^a-z0-9](\d{1,2})x(\d{1,3})[^a-z0-9]/i', $relname, $matches)) {
 			$episodeArr['season'] = intval($matches[2]);
 			$episodeArr['episode'] = intval($matches[3]);
 		}
