@@ -34,11 +34,6 @@ abstract class TV extends Videos
 	const FAILED_PARSE   = -100; // Failed Parsing
 
 	/**
-	 * @var bool
-	 */
-	public $echooutput;
-
-	/**
 	 * @var int
 	 */
 	public $tvqty;
@@ -59,13 +54,6 @@ abstract class TV extends Videos
 	public function __construct(array $options = [])
 	{
 		parent::__construct($options);
-		$defaults = [
-			'Echo'     => false,
-			'Settings' => null,
-		];
-		$options += $defaults;
-
-		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
 		$this->catWhere = 'categoryid BETWEEN 5000 AND 5999 AND categoryid NOT IN (5070)';
 		$this->tvqty = ($this->pdo->getSetting('maxrageprocessed') != '') ? $this->pdo->getSetting('maxrageprocessed') : 75;
 		$this->imgSavePath = nZEDb_COVERS . 'tvshows' . DS;
@@ -589,7 +577,7 @@ abstract class TV extends Videos
 			$episodeArr['episode'] = 'all';
 		}
 		// 1x01 and 101
-		else if (preg_match('/^(.*?)[^a-z0-9](\d{1,2})x(\d{1,3})[^a-z0-9]/i', $relname, $matches)) {
+		else if (preg_match('/^(.*?)[^a-z0-9](\d{1,2})x?(\d{1,3})[^a-z0-9]/i', $relname, $matches)) {
 			$episodeArr['season'] = intval($matches[2]);
 			$episodeArr['episode'] = intval($matches[3]);
 		}

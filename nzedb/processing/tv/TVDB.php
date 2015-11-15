@@ -67,6 +67,9 @@ class TVDB extends TV
 		}
 
 		if ($res instanceof \Traversable) {
+
+			$this->titleCache = [];
+
 			foreach ($res as $row) {
 
 				$tvdbid = false;
@@ -74,6 +77,16 @@ class TVDB extends TV
 				// Clean the show name for better match probability
 				$release = $this->parseInfo($row['searchname']);
 				if (is_array($release) && $release['name'] != '') {
+
+					if (in_array($release['cleanname'], $this->titleCache)) {
+						if ($this->echooutput) {
+							echo $this->pdo->log->headerOver("Title: ") .
+									$this->pdo->log->warningOver('"' . $release['cleanname'] . '"') .
+									$this->pdo->log->header(" already failed lookup for this site.  Skipping.");
+						}
+						$this->setVideoNotFound(parent::PROCESS_TVMAZE, $row['id']);
+						continue;
+					}
 
 					// Find the Video ID if it already exists by checking the title.
 					$videoId = $this->getByTitle($release['cleanname'], parent::TYPE_TV);
@@ -161,14 +174,20 @@ class TVDB extends TV
 							if ($this->echooutput) {
 								echo $this->pdo->log->primary("Found TVDB Match!");
 							}
-							continue;
+						} else {
+							//Processing failed, set the episode ID to the next processing group
+							$this->setVideoNotFound(parent::PROCESS_TVMAZE, $row['id']);
+							$this->titleCache[] = $release['cleanname'];
 						}
+					} else {
+						//Processing failed, set the episode ID to the next processing group
+						$this->setVideoNotFound(parent::PROCESS_TVMAZE, $row['id']);
+						$this->titleCache[] = $release['cleanname'];
 					}
-					//Processing failed, set the episode ID to the next processing group
-					$this->setVideoNotFound(parent::PROCESS_TVMAZE, $row['id']);
 				} else {
 					//Parsing failed, take it out of the queue for examination
 					$this->setVideoNotFound(parent::FAILED_PARSE, $row['id']);
+					$this->titleCache[] = $release['cleanname'];
 				}
 			}
 		}
