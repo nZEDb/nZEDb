@@ -3,6 +3,7 @@ namespace nzedb\processing\tv;
 
 use libs\Moinax\TVDB\Client;
 use libs\Moinax\TVDB\CurlException;
+use libs\Moinax\TVDB\XmlException;
 use nzedb\ReleaseImage;
 
 /**
@@ -56,6 +57,12 @@ class TVDB extends TV
 			$this->serverTime = $this->client->getServerTime();
 		} catch (CurlException $error) {
 			if (strpos($error->getMessage(), 'Cannot fetch') === 0) {
+				echo $this->pdo->log->warning('Could not reach TVDB API.  Running in local mode only!');
+				$this->local = true;
+			}
+		} catch (XmlException $error) {
+			if (strpos($error->getMessage(), 'Error in file') === 0) {
+				echo $this->pdo->log->warning('Could not reach TVDB API.  Running in local mode only!');
 				$this->local = true;
 			}
 		}
