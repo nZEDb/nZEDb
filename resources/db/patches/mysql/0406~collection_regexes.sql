@@ -6,4 +6,4 @@ VALUES (
   1,
   '"Jinsi_12187_v807.par2" [01/13] - The Elite Team Presents www.EliteNZB.net, Powered by 4UX.NL, Only The Best 4 You!!!! yEnc',
   20
-)
+);
