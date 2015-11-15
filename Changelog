@@ -6,6 +6,11 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2015-11-15 ruhllatio
+	Add: TV Failed Title Lookup Cache (Thread Persistent like Amazon)
+	Fix: Bad merge broke regex again
+	Chg: If TVDB cannot reach the API, catch the error and force local lookup
+	Fix: Add XmlException to try/catch
 2015-11-14 ruhllatio
 	Mrg: PR #1953, Add TVMaze and TMDB Scrapers
 	Fix: Duplicate Alias Errors and cache alias lookups
@@ -23,6 +28,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Mrg: PR #1952, from Darius - Fix book related problems due to wrong var used.
 	Mrg: PR #1951, from Darius - Ignore duplicate comments.
 	Mrg: PR #1949, from rainje - Add french flag to "multi" releases.
+	Fix: Another regex fix.
 	Fix: Collection regex errors noted in #1954.
 2015-11-09 ruhllatio
 	Fix: Sonarr's "RSS" is just using the API with no parameters.  Left joining should 'fix' this until it can be addressed with the Sonarr team.

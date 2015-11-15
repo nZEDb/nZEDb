@@ -3,6 +3,7 @@ namespace nzedb\processing\tv;
 
 use libs\Moinax\TVDB\Client;
 use libs\Moinax\TVDB\CurlException;
+use libs\Moinax\TVDB\XmlException;
 use nzedb\ReleaseImage;
 
 /**
@@ -35,6 +36,11 @@ class TVDB extends TV
 	private $serverTime;
 
 	/**
+	 * @bool Do a local lookup only if server is down
+	 */
+	private $local;
+
+	/**
 	 * @param array $options Class instances / Echo to cli?
 	 */
 	public function __construct(array $options = [])
@@ -43,8 +49,23 @@ class TVDB extends TV
 		$this->client = new Client(self::TVDB_URL, self::TVDB_API_KEY);
 		$this->posterUrl = self::TVDB_URL . DS . 'banners/_cache/posters/%s-1.jpg';
 		$this->fanartUrl = self::TVDB_URL . DS . 'banners/_cache/fanart/original/%s-1.jpg';
+		$this->local = false;
 
-		$this->serverTime = $this->client->getServerTime();
+		// Check if we can get the time for API status
+		// If we can't then we set local to true
+		try {
+			$this->serverTime = $this->client->getServerTime();
+		} catch (CurlException $error) {
+			if (strpos($error->getMessage(), 'Cannot fetch') === 0) {
+				echo $this->pdo->log->warning('Could not reach TVDB API.  Running in local mode only!');
+				$this->local = true;
+			}
+		} catch (XmlException $error) {
+			if (strpos($error->getMessage(), 'Error in file') === 0) {
+				echo $this->pdo->log->warning('Could not reach TVDB API.  Running in local mode only!');
+				$this->local = true;
+			}
+		}
 	}
 
 	/**
@@ -67,6 +88,9 @@ class TVDB extends TV
 		}
 
 		if ($res instanceof \Traversable) {
+
+			$this->titleCache = [];
+
 			foreach ($res as $row) {
 
 				$tvdbid = false;
@@ -74,6 +98,16 @@ class TVDB extends TV
 				// Clean the show name for better match probability
 				$release = $this->parseInfo($row['searchname']);
 				if (is_array($release) && $release['name'] != '') {
+
+					if (in_array($release['cleanname'], $this->titleCache)) {
+						if ($this->echooutput) {
+							echo $this->pdo->log->headerOver("Title: ") .
+									$this->pdo->log->warningOver('"' . $release['cleanname'] . '"') .
+									$this->pdo->log->header(" already failed lookup for this site.  Skipping.");
+						}
+						$this->setVideoNotFound(parent::PROCESS_TVMAZE, $row['id']);
+						continue;
+					}
 
 					// Find the Video ID if it already exists by checking the title.
 					$videoId = $this->getByTitle($release['cleanname'], parent::TYPE_TV);
@@ -83,7 +117,7 @@ class TVDB extends TV
 					}
 
 					// Force local lookup only
-					if ($local == true) {
+					if ($local === true || $this->local === true) {
 						$lookupSetting = false;
 					} else {
 						$lookupSetting = true;
@@ -161,14 +195,20 @@ class TVDB extends TV
 							if ($this->echooutput) {
 								echo $this->pdo->log->primary("Found TVDB Match!");
 							}
-							continue;
+						} else {
+							//Processing failed, set the episode ID to the next processing group
+							$this->setVideoNotFound(parent::PROCESS_TVMAZE, $row['id']);
+							$this->titleCache[] = $release['cleanname'];
 						}
+					} else {
+						//Processing failed, set the episode ID to the next processing group
+						$this->setVideoNotFound(parent::PROCESS_TVMAZE, $row['id']);
+						$this->titleCache[] = $release['cleanname'];
 					}
-					//Processing failed, set the episode ID to the next processing group
-					$this->setVideoNotFound(parent::PROCESS_TVMAZE, $row['id']);
 				} else {
 					//Parsing failed, take it out of the queue for examination
 					$this->setVideoNotFound(parent::FAILED_PARSE, $row['id']);
+					$this->titleCache[] = $release['cleanname'];
 				}
 			}
 		}

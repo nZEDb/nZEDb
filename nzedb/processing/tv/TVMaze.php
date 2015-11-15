@@ -71,6 +71,9 @@ class TVMaze extends TV
 		}
 
 		if ($res instanceof \Traversable) {
+
+			$this->titleCache = [];
+
 			foreach ($res as $row) {
 
 				$this->posterUrl = '';
@@ -79,6 +82,16 @@ class TVMaze extends TV
 				// Clean the show name for better match probability
 				$release = $this->parseInfo($row['searchname']);
 				if (is_array($release) && $release['name'] != '') {
+
+					if (in_array($release['cleanname'], $this->titleCache)) {
+						if ($this->echooutput) {
+							echo $this->pdo->log->headerOver("Title: ") .
+									$this->pdo->log->warningOver('"' . $release['cleanname'] . '"') .
+									$this->pdo->log->header(" already failed lookup for this site.  Skipping.");
+						}
+						$this->setVideoNotFound(parent::PROCESS_TMDB, $row['id']);
+						continue;
+					}
 
 					// Find the Video ID if it already exists by checking the title against stored TVMaze titles
 					$videoId = $this->getByTitle($release['cleanname'], parent::TYPE_TV, parent::SOURCE_TVMAZE);
@@ -166,10 +179,21 @@ class TVMaze extends TV
 								echo $this->pdo->log->primary("Found TVMaze Match!");
 							}
 							continue;
+						} else {
+							//Processing failed, set the episode ID to the next processing group
+							$this->setVideoNotFound(parent::PROCESS_TMDB, $row['id']);
+							$this->titleCache[] = $release['cleanname'];
 						}
+					} else {
+						//Processing failed, set the episode ID to the next processing group
+						$this->setVideoNotFound(parent::PROCESS_TMDB, $row['id']);
+						$this->titleCache[] = $release['cleanname'];
 					}
-				} //Processing failed, set the episode ID to the next processing group
-				$this->setVideoNotFound(parent::PROCESS_TMDB, $row['id']);
+				} else{
+					//Processing failed, set the episode ID to the next processing group
+					$this->setVideoNotFound(parent::PROCESS_TMDB, $row['id']);
+					$this->titleCache[] = $release['cleanname'];
+				}
 			}
 		}
 	}

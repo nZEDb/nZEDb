@@ -40,10 +40,19 @@ abstract class Videos
 	public $pdo;
 
 	/**
+	 * @var bool
+	 */
+	public $echooutput;
+
+	/**
 	 * @var array	sites	The sites that we have an ID columns for in our video table.
 	 */
 	private $sites = ['imdb', 'tmdb', 'trakt', 'tvdb', 'tvmaze', 'tvrage'];
 
+	/**
+	 * @var array Temp Array of cached failed lookups
+	 */
+	public $titleCache;
 
 	public function __construct(array $options = [])
 	{
@@ -56,7 +65,9 @@ abstract class Videos
 		// Sets the default timezone for this script (and its children).
 		//date_default_timezone_set('UTC'); TODO: Make this a DTO instead and use as needed
 
+		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->titleCache = [];
 	}
 
 	/**
