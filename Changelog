@@ -11,6 +11,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Fix: Bad merge broke regex again
 	Chg: If TVDB cannot reach the API, catch the error and force local lookup
 	Fix: Add XmlException to try/catch
+	Chg: Remove year tags from TVMaze lookup as it returns no results with them
 2015-11-14 ruhllatio
 	Mrg: PR #1953, Add TVMaze and TMDB Scrapers
 	Fix: Duplicate Alias Errors and cache alias lookups

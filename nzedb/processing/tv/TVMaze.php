@@ -234,6 +234,10 @@ class TVMaze extends TV
 	{
 		$return = $response = false;
 
+		// TVMaze does NOT like shows with the year in them even without the parentheses
+		// Do this for the API Search only as a local lookup should require it
+		$cleanName = preg_replace('# \((19|20)\d{2}\)$#', '', $cleanName);
+
 		//Try for the best match with AKAs embedded
 		$response = $this->client->singleSearch($cleanName);
 
