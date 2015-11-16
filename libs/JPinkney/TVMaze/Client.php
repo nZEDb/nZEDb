@@ -35,7 +35,7 @@ class Client {
 	function search($show_name)
 	{
 		$relevant_shows = false;
-		$url = self::APIURL . "/search/shows?q=" . urlencode($show_name);
+		$url = self::APIURL . "/search/shows?q=" . rawurlencode($show_name);
 
 		$shows = $this->getFile($url);
 
@@ -60,7 +60,7 @@ class Client {
 	function singleSearch($show_name)
 	{
 		$TVShow = false;
-		$url = self::APIURL . "/singlesearch/shows?q=" . urlencode($show_name) . '&embed=akas';
+		$url = self::APIURL . "/singlesearch/shows?q=" . rawurlencode($show_name) . '&embed=akas';
 		$shows = $this->getFile($url);
 
 		if (is_array($shows)) {
