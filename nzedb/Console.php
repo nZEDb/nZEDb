@@ -192,6 +192,7 @@ class Console
 				LEFT JOIN releases r ON con.id = r.consoleinfoid
 				WHERE r.nzbstatus = 1
 				AND con.title != ''
+				AND con.cover = 1
 				AND r.passwordstatus %s
 				AND %s %s %s
 				GROUP BY con.id
@@ -243,6 +244,7 @@ class Console
 				WHERE r.nzbstatus = 1
 				AND con.id IN (%s)
 				AND con.title != ''
+				AND con.cover = 1
 				AND r.passwordstatus %s
 				AND %s %s %s
 				GROUP BY con.id
