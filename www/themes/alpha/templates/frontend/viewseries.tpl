@@ -58,9 +58,7 @@
 		{foreach $seasons as $seasonnum => $season}
 		<thead>
 		<tr>
-			{if is_null($seasonnum)}
-				{$seasonnum} = 'Packs';
-			{/if}
+			{if empty($seasonnum)}{$seasonnum = 'Packs'}{/if}
 			<th colspan="10"><h2>Season {$seasonnum}</h2></th>
 		</tr>
 		<tr>
