@@ -7,6 +7,7 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 2015-11-17 bart39
+	Fix: tvmaze response status can return 404 which we want to exclude.
 	Fix: Tv name parsing regex.
 	Mrg: PR #1959, From izolight - Fixes for tvmaze lookup.
 2015-11-15 ruhllatio

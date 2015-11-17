@@ -379,8 +379,7 @@ class Client {
 		curl_close($ch);
 
 		$response = json_decode($result, TRUE);
-
-		if (is_array($response) && count($response) > 0) {
+		if (is_array($response) && count($response) > 0 && (!isset($response['status']) || $response['status'] != '404')) {
 			return $response;
 		} else {
 			return false;
