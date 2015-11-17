@@ -528,15 +528,21 @@ abstract class TV extends Videos
 
 		$following = 	'[^a-z0-9](\d\d-\d\d|\d{1,3}x\d{2,3}|\(?(19|20)\d{2}\)?|(480|720|1080)[ip]|AAC2?|BD-?Rip|Blu-?Ray|D0?\d' .
 				'|DD5|DiVX|DLMux|DTS|DVD(-?Rip)?|E\d{2,3}|[HX][-_. ]?26[45]|ITA(-ENG)?|HEVC|[HPS]DTV|PROPER|REPACK|Season|Episode|' .
-				'S\d+[^a-z0-9]?((E\d+)[ab]?)*|WEB[-_. ]?(DL|Rip)|XViD)[^a-z0-9]';
+				'S\d+[^a-z0-9]?((E\d+)[abr]?)*|WEB[-_. ]?(DL|Rip)|XViD)[^a-z0-9]?';
 
 		// For names that don't start with the title.
 		if (preg_match('/^([^a-z0-9]{2,}|(sample|proof|repost)-)(?P<name>[\w .-]*?)' . $following . '/i', $relname, $matches)) {
 			$showName = $matches['name'];
-		} else if (preg_match('/^(?P<name>[a-z0-9][\w .-]*?)' . $following . '/i', $relname, $matches)) {
+		} else if (preg_match('/^(?P<name>[a-z0-9][\w\' .-]*?)' . $following . '/i', $relname, $matches)) {
 			// For names that start with the title.
 			$showName = $matches['name'];
 		}
+		// If we still have any of the words in $following, remove them.
+		$showName = preg_replace('/' . $following . '/i', ' ', $showName);
+		// Remove periods, underscored, anything between parenthesis.
+		$showName = preg_replace('/\(.*?\)|[._]/i', ' ', $showName);
+		// Finally remove multiple spaces and trim leading spaces.
+		$showName = trim(preg_replace('/\s{2,}/', ' ', $showName));
 		return $showName;
 	}
 
@@ -562,7 +568,7 @@ abstract class TV extends Videos
 			$episodeArr['episode'] = intval($matches[3]);
 		}
 		// S01E01 and S01.E01
-		else if (preg_match('/^(.*?)[^a-z0-9]s(\d{1,2})[^a-z0-9]?e(\d{1,3})[ab]?[^a-z0-9]/i', $relname, $matches)) {
+		else if (preg_match('/^(.*?)[^a-z0-9]s(\d{1,2})[^a-z0-9]?e(\d{1,3})[abr]?[^a-z0-9]/i', $relname, $matches)) {
 			$episodeArr['season'] = intval($matches[2]);
 			$episodeArr['episode'] = intval($matches[3]);
 		}
