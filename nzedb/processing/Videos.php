@@ -259,6 +259,10 @@ abstract class Videos
 	{
 		if (!empty($aliases) && $videoId > 0) {
 			foreach ($aliases AS $key => $title) {
+				// Check for tvmaze style aka
+				if (is_array($title)) {
+					$title = $title['name'];
+				}
 				// Check if we have the AKA already
 				$check = $this->getAliases(0, $title);
 
