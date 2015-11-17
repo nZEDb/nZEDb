@@ -296,7 +296,7 @@ abstract class TV extends Videos
 						$episode['episode'],
 					$this->pdo->escapeString($episode['se_complete']),
 					$this->pdo->escapeString($episode['title']),
-					$this->pdo->escapeString($episode['firstaired']),
+					($episode['firstaired'] != "" ? $this->pdo->escapeString($episode['firstaired']) : "null"),
 					$this->pdo->escapeString($episode['summary']),
 					$this->pdo->escapeString($episode['se_complete'])
 				)
