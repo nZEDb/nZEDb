@@ -773,22 +773,18 @@ CREATE TABLE releaseextrafull (
 
 DROP TABLE IF EXISTS release_files;
 CREATE TABLE release_files (
-  id          INT(10)             NOT NULL AUTO_INCREMENT,
-  releaseid   INT(11) UNSIGNED    NOT NULL,
-  name        VARCHAR(255)        NULL,
-  size        BIGINT UNSIGNED     NOT NULL DEFAULT '0',
-  ishashed    TINYINT(1)          NOT NULL DEFAULT '0',
-  createddate DATETIME DEFAULT NULL,
-  passworded  TINYINT(1) UNSIGNED NOT NULL DEFAULT '0',
-  PRIMARY KEY (id),
-  UNIQUE INDEX ix_releasefiles_name_releaseid (name, releaseid),
-  INDEX ix_releasefiles_releaseid      (releaseid),
-  INDEX ix_releasefiles_ishashed       (ishashed)
+  releaseid int(11) unsigned NOT NULL,
+  name varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  size bigint(20) unsigned NOT NULL DEFAULT '0',
+  ishashed tinyint(1) NOT NULL DEFAULT '0',
+  createddate datetime DEFAULT NULL,
+  passworded tinyint(1) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (releaseid, name),
+  KEY ix_releasefiles_ishashed (ishashed)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
-  COLLATE = utf8_unicode_ci
-  AUTO_INCREMENT = 1;
+  COLLATE = utf8_unicode_ci;
 
 
 DROP TABLE IF EXISTS release_naming_regexes;
