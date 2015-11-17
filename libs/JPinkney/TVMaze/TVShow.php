@@ -103,6 +103,9 @@ class TVShow extends TVProduction{
 		$this->network_array = $show_data['network'];
 		$this->network = $show_data['network']['name'];
 		$this->country = $show_data['network']['country']['code'];
+		if (count($show_data['webChannel']) > 0) {
+			$this->country = $show_data['webChannel']['country']['code'];
+		}
 		$this->webChannel = $show_data['webChannel'];
 		$this->externalIDs = $show_data['externals'];
 		$this->summary = strip_tags($show_data['summary']);

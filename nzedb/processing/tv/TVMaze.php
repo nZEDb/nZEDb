@@ -289,8 +289,8 @@ class TVMaze extends TV
 
 					// Check for show aliases and try match those too
 					if (is_array($show->akas) && !empty($show->akas)) {
-						foreach ($show->akas as $key => $name) {
-							$matchPercent = $this->checkMatch(strtolower($name), strtolower($cleanName), $matchPercent);
+						foreach ($show->akas as $key => $aka) {
+							$matchPercent = $this->checkMatch(strtolower($aka['name']), strtolower($cleanName), $matchPercent);
 							if ($matchPercent > $highestMatch) {
 								$highestMatch = $matchPercent;
 								$highest = $show;
