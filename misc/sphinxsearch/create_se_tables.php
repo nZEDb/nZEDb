@@ -19,7 +19,7 @@ if ($argc == 3 && is_numeric($argv[2])) {
 		$sphinxConnection = sprintf('unix://%s:', $socket);
 	}
 } else {
-	exit("Argument 1 must the hostname or IP to the Sphinx searchd server, Argument 2 must be the port to the Sphinx searchd server (the default is 9312).\nAlternatively, Argument 1 can be a unix domain socket." . PHP_EOL);
+	exit("Argument 1 must the hostname or IP to the Sphinx searchd server ('sphinx' protocol), Argument 2 must be the port to the Sphinx searchd server ('sphinx' protocol) (the default is 9312).\nAlternatively, Argument 1 can be a unix domain socket." . PHP_EOL);
 }
 
 $pdo = new DB();
