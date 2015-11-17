@@ -1,4 +1,5 @@
 # Create the temp table
+DROP TABLE IF EXISTS release_files_new;
 CREATE TABLE release_files_new (
   releaseid int(11) unsigned NOT NULL,
   name varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
