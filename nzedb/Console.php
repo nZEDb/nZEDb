@@ -89,6 +89,11 @@ class Console
 		$this->failCache = array();
 	}
 
+	/**
+	 * @param $id
+	 *
+	 * @return array|bool
+	 */
 	public function getConsoleInfo($id)
 	{
 		return $this->pdo->queryOneRow(
@@ -99,6 +104,12 @@ class Console
 		);
 	}
 
+	/**
+	 * @param $title
+	 * @param $platform
+	 *
+	 * @return array|bool
+	 */
 	public function getConsoleInfoByName($title, $platform)
 	{
 		//only used to get a count of words
@@ -126,6 +137,12 @@ class Console
 		return $this->pdo->queryOneRow(sprintf("SELECT * FROM consoleinfo WHERE %s", $searchsql));
 	}
 
+	/**
+	 * @param $start
+	 * @param $num
+	 *
+	 * @return array
+	 */
 	public function getRange($start, $num)
 	{
 		return $this->pdo->query(
@@ -136,41 +153,26 @@ class Console
 		);
 	}
 
+	/**
+	 * @return int
+	 */
 	public function getCount()
 	{
 		$res = $this->pdo->queryOneRow("SELECT COUNT(id) AS num FROM consoleinfo");
 		return ($res === false ? 0 : $res['num']);
 	}
 
-	public function getConsoleCount($cat, $maxage = -1, $excludedcats = [])
-	{
-		$catsrch = '';
-		if (count($cat) > 0 && $cat[0] != -1) {
-			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
-		}
-
-		$res = $this->pdo->query(
-			sprintf("
-				SELECT COUNT(DISTINCT r.consoleinfoid) AS num
-				FROM releases r
-				INNER JOIN consoleinfo con ON con.id = r.consoleinfoid AND con.title != '' AND con.cover = 1
-				WHERE r.nzbstatus = 1
-				AND r.passwordstatus %s
-				AND con.title != ''
-				AND %s %s %s %s",
-				Releases::showPasswords($this->pdo),
-				$this->getBrowseBy(),
-				$catsrch,
-				($maxage > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage) : ''),
-				(count($excludedcats) > 0 ? (' AND r.categoryid NOT IN (' . implode(',', $excludedcats) . ')') : '')
-			), true, nZEDb_CACHE_EXPIRY_MEDIUM
-		);
-		return (isset($res[0]["num"]) ? $res[0]["num"] : 0);
-	}
-
+	/**
+	 * @param       $cat
+	 * @param       $start
+	 * @param       $num
+	 * @param       $orderby
+	 * @param array $excludedcats
+	 *
+	 * @return array
+	 */
 	public function getConsoleRange($cat, $start, $num, $orderby, $excludedcats = [])
 	{
-
 		$browseby = $this->getBrowseBy();
 
 		$catsrch = '';
@@ -185,37 +187,39 @@ class Console
 
 		$order = $this->getConsoleOrder($orderby);
 
-		$consoles = $this->pdo->query(
+		$consoles = $this->pdo->queryCalc(
 				sprintf("
-				SELECT con.id
-				FROM consoleinfo con
-				LEFT JOIN releases r ON con.id = r.consoleinfoid
-				WHERE r.nzbstatus = 1
-				AND con.title != ''
-				AND con.cover = 1
-				AND r.passwordstatus %s
-				AND %s %s %s
-				GROUP BY con.id
-				ORDER BY %s %s %s",
-				Releases::showPasswords($this->pdo),
-				$browseby,
-				$catsrch,
-				$exccatlist,
-				$order[0],
-				$order[1],
-				($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
+					SELECT SQL_CALC_FOUND_ROWS con.id,
+						GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id
+					FROM consoleinfo con
+					LEFT JOIN releases r ON con.id = r.consoleinfoid
+					WHERE r.nzbstatus = 1
+					AND con.title != ''
+					AND con.cover = 1
+					AND r.passwordstatus %s
+					AND %s %s %s
+					GROUP BY con.id
+					ORDER BY %s %s %s",
+					Releases::showPasswords($this->pdo),
+					$browseby,
+					$catsrch,
+					$exccatlist,
+					$order[0],
+					$order[1],
+					($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
 				), true, nZEDb_CACHE_EXPIRY_MEDIUM
 		);
 
-		$consoleIDs = false;
+		$consoleIDs = $releaseIDs = false;
 
-		if (is_array($consoles)) {
-			foreach ($consoles AS $console => $id) {
+		if (is_array($consoles['result'])) {
+			foreach ($consoles['result'] AS $console => $id) {
 				$consoleIDs[] = $id['id'];
+				$releaseIDs[] = $id['grp_release_id'];
 			}
 		}
 
-		return $this->pdo->query(
+		$return = $this->pdo->query(
 			sprintf("
 				SELECT
 					GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id,
@@ -241,25 +245,27 @@ class Console
 				LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
 				INNER JOIN consoleinfo con ON con.id = r.consoleinfoid
 				INNER JOIN genres ON con.genre_id = genres.id
-				WHERE r.nzbstatus = 1
-				AND con.id IN (%s)
-				AND con.title != ''
-				AND con.cover = 1
-				AND r.passwordstatus %s
-				AND %s %s %s
+				WHERE con.id IN (%s)
+				AND r.id IN (%s)
+				AND %s
 				GROUP BY con.id
 				ORDER BY %s %s",
 				(is_array($consoleIDs) ? implode(',', $consoleIDs) : -1),
-				Releases::showPasswords($this->pdo),
-				$browseby,
+				(is_array($releaseIDs) ? implode(',', $releaseIDs) : -1),
 				$catsrch,
-				$exccatlist,
 				$order[0],
 				$order[1]
 			), true, nZEDb_CACHE_EXPIRY_MEDIUM
 		);
+		$return[0]['_totalcount'] = (isset($consoles['total']) ? $consoles['total'] : 0);
+		return $return;
 	}
 
+	/**
+	 * @param $orderby
+	 *
+	 * @return array
+	 */
 	public function getConsoleOrder($orderby)
 	{
 		$order = ($orderby == '') ? 'r.postdate' : $orderby;
@@ -295,16 +301,25 @@ class Console
 		return [$orderfield, $ordersort];
 	}
 
+	/**
+	 * @return array
+	 */
 	public function getConsoleOrdering()
 	{
 		return ['title_asc', 'title_desc', 'posted_asc', 'posted_desc', 'size_asc', 'size_desc', 'files_asc', 'files_desc', 'stats_asc', 'stats_desc', 'platform_asc', 'platform_desc', 'releasedate_asc', 'releasedate_desc', 'genre_asc', 'genre_desc'];
 	}
 
+	/**
+	 * @return array
+	 */
 	public function getBrowseByOptions()
 	{
 		return ['platform' => 'platform', 'title' => 'title', 'genre' => 'genre_id'];
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getBrowseBy()
 	{
 		$browseby = ' ';
@@ -319,6 +334,12 @@ class Console
 		return $browseby;
 	}
 
+	/**
+	 * @param $data
+	 * @param $field
+	 *
+	 * @return string
+	 */
 	public function makeFieldLinks($data, $field)
 	{
 		$tmpArr = explode(', ', $data[$field]);
@@ -338,6 +359,20 @@ class Console
 		return implode(', ', $newArr);
 	}
 
+	/**
+	 * @param        $id
+	 * @param        $title
+	 * @param        $asin
+	 * @param        $url
+	 * @param        $salesrank
+	 * @param        $platform
+	 * @param        $publisher
+	 * @param        $releasedate
+	 * @param        $esrb
+	 * @param        $cover
+	 * @param        $genreID
+	 * @param string $review
+	 */
 	public function update($id, $title, $asin, $url, $salesrank, $platform, $publisher, $releasedate, $esrb, $cover, $genreID, $review = 'review')
 	{
 		$this->pdo->queryExec(
@@ -363,6 +398,12 @@ class Console
 		);
 	}
 
+	/**
+	 * @param $gameInfo
+	 *
+	 * @return false|int|string
+	 * @throws \Exception
+	 */
 	public function updateConsoleInfo($gameInfo)
 	{
 		$consoleId = self::CONS_NTFND;
@@ -422,6 +463,12 @@ class Console
 		return $consoleId;
 	}
 
+	/**
+	 * @param array $gameInfo
+	 * @param array $con
+	 *
+	 * @return bool
+	 */
 	protected function _matchConToGameInfo($gameInfo = [], $con = [])
 	{
 		$matched = false;
@@ -469,6 +516,12 @@ class Console
 		return $matched;
 	}
 
+	/**
+	 * @param $amaz
+	 * @param $gameInfo
+	 *
+	 * @return array
+	 */
 	protected function _setConBeforeMatch($amaz, $gameInfo)
 	{
 		$con = [];
@@ -492,6 +545,11 @@ class Console
 		return $con;
 	}
 
+	/**
+	 * @param array $amaz
+	 *
+	 * @return array
+	 */
 	protected function _setConAfterMatch($amaz = [])
 	{
 		$con = [];
@@ -524,6 +582,11 @@ class Console
 		return $con;
 	}
 
+	/**
+	 * @param array $amaz
+	 *
+	 * @return array
+	 */
 	protected function _matchGenre($amaz = [])
 	{
 
@@ -571,6 +634,11 @@ class Console
 		return ['consolegenre' => $genreName, 'consolegenreID' => $genreKey];
 	}
 
+	/**
+	 * @param $genreName
+	 *
+	 * @return false|int|mixed|string
+	 */
 	protected function _getGenreKey($genreName)
 	{
 		$genreassoc = $this->_loadGenres();
@@ -590,6 +658,9 @@ class Console
 		return $genreKey;
 	}
 
+	/**
+	 * @return array
+	 */
 	protected function _loadGenres()
 	{
 		$gen = new Genres(['Settings' => $this->pdo]);
@@ -670,6 +741,11 @@ class Console
 		return $platform;
 	}
 
+	/**
+	 * @param array $con
+	 *
+	 * @return false|int|string
+	 */
 	protected function _updateConsoleTable($con = [])
 	{
 		$ri = new ReleaseImage($this->pdo);
@@ -720,6 +796,12 @@ class Console
 		return $consoleId;
 	}
 
+	/**
+	 * @param $title
+	 * @param $node
+	 *
+	 * @return bool|mixed
+	 */
 	public function fetchAmazonProperties($title, $node)
 	{
 		$obj = new AmazonProductAPI($this->pubkey, $this->privkey, $this->asstag);
@@ -731,6 +813,9 @@ class Console
 		return $result;
 	}
 
+	/**
+	 * @throws \Exception
+	 */
 	public function processConsoleReleases()
 	{
 		$res = $this->pdo->queryDirect(
@@ -827,6 +912,11 @@ class Console
 		}
 	}
 
+	/**
+	 * @param $releasename
+	 *
+	 * @return array|bool
+	 */
 	public function parseTitle($releasename)
 	{
 		$releasename = preg_replace('/\sMulti\d?\s/i', '', $releasename);
@@ -893,6 +983,11 @@ class Console
 		return (isset($result['title']) && !empty($result['title']) && isset($result['platform'])) ? $result : false;
 	}
 
+	/**
+	 * @param $platform
+	 *
+	 * @return string
+	 */
 	public function getBrowseNode($platform)
 	{
 		switch ($platform) {
@@ -960,6 +1055,11 @@ class Console
 		return $nodeId;
 	}
 
+	/**
+	 * @param $nodeName
+	 *
+	 * @return bool|string
+	 */
 	public function matchBrowseNode($nodeName)
 	{
 		$str = '';

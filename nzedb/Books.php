@@ -251,11 +251,8 @@ class Books
 			LEFT OUTER JOIN groups g ON g.id = r.group_id
 			LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
 			INNER JOIN bookinfo boo ON boo.id = r.bookinfoid
-			WHERE r.nzbstatus = 1
-			AND boo.id IN (%s)
+			WHERE boo.id IN (%s)
 			AND r.id IN (%s)
-			AND boo.cover = 1
-			AND boo.title != ''
 			AND %s
 			GROUP BY boo.id
 			ORDER BY %s %s",
