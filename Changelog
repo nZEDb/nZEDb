@@ -16,7 +16,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Fix: Typo in queryCalc strpos / forgot to pass cache to query in queryCalc / cache the result instead of the array
 	Chg: Re-work movies cover view queries and make all data sets cacheable / remove count function for movies cover views
 	Fix: A ton of spacing issues I introduced and some others that were already existing in Movie class
-	Chg: Re-work books cover view queries and further improve the query
+	Chg: Re-work books cover view queries and further improve the query / Remove some lingering query stuff that isn't needed
 	Fix: Undefined offsets when accessing pre query for Books
 2015-11-17 ruhllatio
 	Chg: Move PK on release_files to releaseid/name.  Drastically improves query performance with optimizations to follow.

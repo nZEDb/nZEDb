@@ -256,17 +256,12 @@ class Books
 			AND r.id IN (%s)
 			AND boo.cover = 1
 			AND boo.title != ''
-			AND r.passwordstatus %s
-			AND %s %s %s %s
+			AND %s
 			GROUP BY boo.id
 			ORDER BY %s %s",
 			(is_array($bookIDs) ? implode(',', $bookIDs) : -1),
 			(is_array($releaseIDs) ? implode(',', $releaseIDs) : -1),
-			Releases::showPasswords($this->pdo),
-			$browseby,
 			$catsrch,
-			$maxage,
-			$exccatlist,
 			$order[0],
 			$order[1]
 		);
