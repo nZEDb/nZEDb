@@ -206,6 +206,13 @@
 												   target="_blank"></a>
 											</div>
 										{/if}
+										{if $result.imdb > 0}
+											<div class="icon icon_imdb">
+												<a class="divlink" title="View in IMDB"
+												   href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdb}"
+												   target="_blank"></a>
+											</div>
+										{/if}
 									{elseif $type == 'Anime'}
 									<div class="icon icon_anidb">
 										<a class="divlink" title="View in AniDB"

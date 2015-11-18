@@ -9,6 +9,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 2015-11-17 ruhllatio
 	Chg: Move PK on release_files to releaseid/name.  Drastically improves query performance with optimizations to follow.
 	Fix: Add DROP IF EXISTS for temp table in patch
+	Add: IMDB Icon to TV new poster wall
 2015-11-17 bart39
 	Fix: If episode airdate not set insert null.
 	Fix: tvmaze response status can return 404 which we want to exclude.
