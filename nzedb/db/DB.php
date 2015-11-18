@@ -665,6 +665,49 @@ class DB extends \PDO
 	}
 
 	/**
+	 * Returns a multidimensional array of result of the query function return and the count of found rows
+	 * Note: Query passed to this function SHOULD include SQL_CALC_FOUND_ROWS
+	 * Optional: Pass true to cache the result with a cache server.
+	 *
+	 * @param string $query       SQL to execute.
+	 * @param bool   $cache       Indicates if the query result should be cached.
+	 * @param int    $cacheExpiry The time in seconds before deleting the query result from the cache server.
+	 *
+	 * @return array Array of results (possibly empty) on success, empty array on failure.
+	 */
+	public function queryCalc($query, $cache = false, $cacheExpiry = 600)
+	{
+		$data = $this->query($query);
+
+		if (strpos($query, 'SQL_CALC_FOUNDS_ROWS') === false) {
+			return $data;
+		}
+
+		if ($cache === true && $this->cacheEnabled === true) {
+			try {
+				$count = $this->cacheServer->get($this->cacheServer->createKey($query . 'count'));
+				if ($count !== false) {
+					return ['total' => $count, 'result' => $data];
+				}
+			} catch (CacheException $error) {
+				$this->echoError($error->getMessage(), 'query', 4);
+			}
+		}
+
+		$result = $this->queryOneRow('SELECT FOUND_ROWS() AS total');
+
+		if ($result !== false && $cache === true && $this->cacheEnabled === true) {
+			$this->cacheServer->set($this->cacheServer->createKey($query . 'count'), $result, $cacheExpiry);
+		}
+
+		return
+				[
+					'total' => ($result === false ? 0 : $result['total']),
+					'result' => $data
+				];
+	}
+
+	/**
 	 * Main method for creating results as an array.
 	 *
 	 * @param string $query SQL to execute.
@@ -893,18 +936,6 @@ class DB extends \PDO
 		}
 
 		return $optimised;
-	}
-
-	/**
-	 * Get the amount of found rows after running a SELECT SQL_CALC_FOUND_ROWS query.
-	 *
-	 * @return int
-	 * @access public
-	 */
-	public function get_Found_Rows()
-	{
-		$totalCount = $this->queryOneRow('SELECT FOUND_ROWS() AS total');
-		return ($totalCount === false ? 0 : $totalCount['total']);
 	}
 
 	/**
