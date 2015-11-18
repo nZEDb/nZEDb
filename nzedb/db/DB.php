@@ -697,7 +697,7 @@ class DB extends \PDO
 		$result = $this->queryOneRow('SELECT FOUND_ROWS() AS total');
 
 		if ($result !== false && $cache === true && $this->cacheEnabled === true) {
-			$this->cacheServer->set($this->cacheServer->createKey($query . 'count'), $result, $cacheExpiry);
+			$this->cacheServer->set($this->cacheServer->createKey($query . 'count'), $result['total'], $cacheExpiry);
 		}
 
 		return
