@@ -253,12 +253,20 @@ switch ($function) {
 		$rel = $releases->getByGuid($_GET["id"]);
 		$data = $releases->getReleaseNfo($rel['id']);
 
-		if (isset($_GET['o']) && $_GET['o'] == 'file') {
-			header("Content-type: application/octet-stream");
-			header("Content-disposition: attachment; filename={$rel['searchname']}.nfo");
-			exit($data['nfo']);
+		if ($rel !== false && !empty($rel)) {
+			if ($data !== false) {
+				if (isset($_GET['o']) && $_GET['o'] == 'file') {
+					header("Content-type: application/octet-stream");
+					header("Content-disposition: attachment; filename={$rel['searchname']}.nfo");
+					exit($data['nfo']);
+				} else {
+					echo nl2br(Text::cp437toUTF($data['nfo']));
+				}
+			} else {
+				showApiError(300, 'Release does not have an NFO file associated.');
+			}
 		} else {
-			echo nl2br(Text::cp437toUTF($data['nfo']));
+			showApiError(300, 'Release does not exist.');
 		}
 
 		break;

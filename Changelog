@@ -11,6 +11,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Add: include NFOURL (if NFO exists) in extended=1 API information #1962 
 	Add: Make NFO file retrievable for a release via the API and update documentation
 	Chg: Update the alpha API description for NFO. Fixing bad copy paste.
+	Chg: Improve error reporting for API NFO.
 2015-11-17 ruhllatio
 	Chg: Move PK on release_files to releaseid/name.  Drastically improves query performance with optimizations to follow.
 	Fix: Add DROP IF EXISTS for temp table in patch
