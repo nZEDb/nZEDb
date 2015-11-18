@@ -679,7 +679,7 @@ class DB extends \PDO
 	{
 		$data = $this->query($query);
 
-		if (strpos($query, 'SQL_CALC_FOUNDS_ROWS') === false) {
+		if (strpos($query, 'SQL_CALC_FOUND_ROWS') === false) {
 			return $data;
 		}
 
