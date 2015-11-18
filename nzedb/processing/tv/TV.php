@@ -539,6 +539,8 @@ abstract class TV extends Videos
 		}
 		// If we still have any of the words in $following, remove them.
 		$showName = preg_replace('/' . $following . '/i', ' ', $showName);
+		// Remove leading date if present
+		$showName = preg_replace('/^\d{6}/', '', $showName);
 		// Remove periods, underscored, anything between parenthesis.
 		$showName = preg_replace('/\(.*?\)|[._]/i', ' ', $showName);
 		// Finally remove multiple spaces and trim leading spaces.
