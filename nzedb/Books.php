@@ -197,7 +197,8 @@ class Books
 
 		$books = $this->pdo->queryCalc(
 			sprintf("
-				SELECT SQL_CALC_FOUND_ROWS boo.id
+				SELECT SQL_CALC_FOUND_ROWS boo.id,
+					GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id
 				FROM bookinfo boo
 				LEFT JOIN releases r ON boo.id = r.bookinfoid
 				WHERE r.nzbstatus = 1
@@ -218,11 +219,12 @@ class Books
 			), true, nZEDb_CACHE_EXPIRY_MEDIUM
 		);
 
-		$bookIDs = false;
+		$bookIDs = $releaseIDs = false;
 
 		if (is_array($books['result'])) {
 			foreach ($books['result'] AS $book => $id) {
 				$bookIDs[] = $id['id'];
+				$releaseIDs[] = $id['grp_release_id'];
 			}
 		}
 
@@ -251,6 +253,7 @@ class Books
 			INNER JOIN bookinfo boo ON boo.id = r.bookinfoid
 			WHERE r.nzbstatus = 1
 			AND boo.id IN (%s)
+			AND r.id IN (%s)
 			AND boo.cover = 1
 			AND boo.title != ''
 			AND r.passwordstatus %s
@@ -258,6 +261,7 @@ class Books
 			GROUP BY boo.id
 			ORDER BY %s %s",
 			(is_array($bookIDs) ? implode(',', $bookIDs) : -1),
+			(is_array($releaseIDs) ? implode(',', $releaseIDs) : -1),
 			Releases::showPasswords($this->pdo),
 			$browseby,
 			$catsrch,
