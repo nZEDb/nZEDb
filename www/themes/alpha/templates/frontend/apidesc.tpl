@@ -33,10 +33,10 @@
 	<dd>Returns a list of nzbs matching a query, an imdbid and optionally a category. Filter by site category by including a comma separated list of categories as follows <span style="font-family:courier;"><a href="{$smarty.const.WWW_TOP}/api?t=movie&amp;imdbid=1418646&amp;cat=2030,2040">?t=movie&amp;imdbid=1418646&amp;cat=2030,2040</a></span>.  Include <span style="font-family:courier;">&amp;extended=1</span> to return extended information in the search results.</dd>
 	<br>
 	<dt>Details <span style="font-family:courier;"><a href="{$smarty.const.WWW_TOP}/api?t=details&amp;id=9ca52909ba9b9e5e6758d815fef4ecda">?t=details&amp;id=9ca52909ba9b9e5e6758d815fef4ecda</a></span></dt>
-	<dd>Returns detailed information about an nzb.  Retrieve the NFO as file by specifying o=file in the request URI.</dd>
+	<dd>Returns detailed information about an nzb.</dd>
 	<br>
-	<dt>Details <span style="font-family:courier;"><a href="{$smarty.const.WWW_TOP}/api?t=info&amp;id=9ca52909ba9b9e5e6758d815fef4ecda">?t=info&amp;id=9ca52909ba9b9e5e6758d815fef4ecda</a></span></dt>
-	<dd>Returns NFO contents for an NZB.</dd>
+	<dt>Info <span style="font-family:courier;"><a href="{$smarty.const.WWW_TOP}/api?t=info&amp;id=9ca52909ba9b9e5e6758d815fef4ecda">?t=info&amp;id=9ca52909ba9b9e5e6758d815fef4ecda</a></span></dt>
+	<dd>Returns NFO contents for an NZB.  Retrieve the NFO as file by specifying o=file in the request URI.</dd>
 	<br>
 	<dt>Get <span style="font-family:courier;"><a href="{$smarty.const.WWW_TOP}/api?t=get&amp;id=9ca52909ba9b9e5e6758d815fef4ecda">?t=get&amp;id=9ca52909ba9b9e5e6758d815fef4ecda</a></span></dt>
 	<dd>Downloads the nzb file associated with an Id.</dd>
