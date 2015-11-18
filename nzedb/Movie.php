@@ -257,42 +257,6 @@ class Movie
 	}
 
 	/**
-	 * Get count of movies for movies browse page.
-	 *
-	 * @param       $cat
-	 * @param       $maxAge
-	 * @param array $excludedCats
-	 *
-	 * @return int
-	 */
-	public function getMovieCount($cat, $maxAge = -1, $excludedCats = [])
-	{
-		$catsrch = '';
-		if (count($cat) > 0 && $cat[0] != -1) {
-			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
-		}
-
-		$res = $this->pdo->query(
-				sprintf("
-				SELECT COUNT(DISTINCT r.imdbid) AS num
-				FROM releases r
-				INNER JOIN movieinfo m ON m.imdbid = r.imdbid
-				WHERE r.nzbstatus = 1
-				AND r.imdbid != '0000000'
-				AND m.title != ''
-				AND r.passwordstatus %s
-				AND %s %s %s %s ",
-						$this->showPasswords,
-						$this->getBrowseBy(),
-						$catsrch,
-						($maxAge > 0 ? 'AND r.postdate > NOW() - INTERVAL ' . $maxAge . ' DAY' : ''),
-						(count($excludedCats) > 0 ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : '')
-				), true, nZEDb_CACHE_EXPIRY_MEDIUM
-		);
-		return (isset($res[0]["num"]) ? $res[0]["num"] : 0);
-	}
-
-	/**
 	 * Get movie releases with covers for movie browse page.
 	 *
 	 * @param       $cat
