@@ -677,13 +677,13 @@ class DB extends \PDO
 	 */
 	public function queryCalc($query, $cache = false, $cacheExpiry = 600)
 	{
-		$data = $this->query($query);
+		$data = $this->query($query, $cache, $cacheExpiry);
 
 		if (strpos($query, 'SQL_CALC_FOUND_ROWS') === false) {
 			return $data;
 		}
 
-		if ($cache === true && $this->cacheEnabled === true) {
+		if ($cache === true && $this->cacheEnabled === true ) {
 			try {
 				$count = $this->cacheServer->get($this->cacheServer->createKey($query . 'count'));
 				if ($count !== false) {
