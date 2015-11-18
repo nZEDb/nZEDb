@@ -167,11 +167,11 @@ if ($page->isPostBack()) {
 		if (!$cfg->error) {
 			// Check one of the standard tables was created and has data.
 			$dbInstallWorked = false;
-			$reschk = $pdo->query("SELECT COUNT(*) AS num FROM countries");
+			$reschk = $pdo->query("SELECT COUNT(*) AS num FROM tmux");
 			if ($reschk === false) {
 				$cfg->dbCreateCheck = false;
 				$cfg->error = true;
-				$cfg->emessage = 'Could not select data from your database.';
+				$cfg->emessage = 'Could not select data from your database, check that tables and data are properly created/inserted.';
 			} else {
 				foreach ($reschk as $row) {
 					if ($row['num'] > 0) {
