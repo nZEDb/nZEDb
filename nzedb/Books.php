@@ -95,11 +95,22 @@ class Books
 		$this->failCache = array();
 	}
 
+	/**
+	 * @param $id
+	 *
+	 * @return array|bool
+	 */
 	public function getBookInfo($id)
 	{
 		return $this->pdo->queryOneRow(sprintf('SELECT bookinfo.* FROM bookinfo WHERE bookinfo.id = %d', $id));
 	}
 
+	/**
+	 * @param $author
+	 * @param $title
+	 *
+	 * @return array|bool
+	 */
 	public function getBookInfoByName($author, $title)
 	{
 		//only used to get a count of words
@@ -127,6 +138,12 @@ class Books
 		return $this->pdo->queryOneRow(sprintf("SELECT * FROM bookinfo WHERE %s", $searchsql));
 	}
 
+	/**
+	 * @param $start
+	 * @param $num
+	 *
+	 * @return array
+	 */
 	public function getRange($start, $num)
 	{
 		if ($start === false) {
@@ -138,34 +155,24 @@ class Books
 		return $this->pdo->query('SELECT * FROM bookinfo ORDER BY createddate DESC' . $limit);
 	}
 
+	/**
+	 * @return mixed
+	 */
 	public function getCount()
 	{
 		$res = $this->pdo->queryOneRow('SELECT COUNT(id) AS num FROM bookinfo');
 		return $res['num'];
 	}
 
-	public function getBookCount($cat, $maxage = -1, $excludedcats = [])
-	{
-		$res = $this->pdo->query(
-			sprintf("
-				SELECT COUNT(DISTINCT r.bookinfoid) AS num
-				FROM releases r
-				INNER JOIN bookinfo boo ON boo.id = r.bookinfoid
-				WHERE r.nzbstatus = 1
-				AND  r.passwordstatus %s
-				AND boo.title != ''
-				AND boo.cover = 1
-				AND %s %s %s %s",
-				Releases::showPasswords($this->pdo),
-				$this->getBrowseBy(),
-				(count($cat) > 0 && $cat[0] != -1 ? (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat) : ''),
-				($maxage > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage) : ''),
-				(count($excludedcats) > 0 ? ' AND r.categoryid NOT IN (' . implode(',', $excludedcats) . ')' : '')
-			), true, nZEDb_CACHE_EXPIRY_MEDIUM
-		);
-		return (isset($res[0]["num"]) ? $res[0]["num"] : 0);
-	}
-
+	/**
+	 * @param       $cat
+	 * @param       $start
+	 * @param       $num
+	 * @param       $orderby
+	 * @param array $excludedcats
+	 *
+	 * @return array
+	 */
 	public function getBookRange($cat, $start, $num, $orderby, $excludedcats = [])
 	{
 
@@ -188,27 +195,27 @@ class Books
 
 		$order = $this->getBookOrder($orderby);
 
-		$books = $this->pdo->query(
-				sprintf("
-					SELECT boo.id
-					FROM bookinfo boo
-					LEFT JOIN releases r ON boo.id = r.bookinfoid
-					WHERE r.nzbstatus = 1
-					AND boo.cover = 1
-					AND boo.title != ''
-					AND r.passwordstatus %s
-					AND %s %s %s %s
-					GROUP BY boo.id
-					ORDER BY %s %s %s",
-					Releases::showPasswords($this->pdo),
-					$browseby,
-					$catsrch,
-					$maxage,
-					$exccatlist,
-					$order[0],
-					$order[1],
-					($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
-				), true, nZEDb_CACHE_EXPIRY_MEDIUM
+		$books = $this->pdo->queryCalc(
+			sprintf("
+				SELECT SQL_CALC_FOUND_ROWS boo.id
+				FROM bookinfo boo
+				LEFT JOIN releases r ON boo.id = r.bookinfoid
+				WHERE r.nzbstatus = 1
+				AND boo.cover = 1
+				AND boo.title != ''
+				AND r.passwordstatus %s
+				AND %s %s %s %s
+				GROUP BY boo.id
+				ORDER BY %s %s %s",
+				Releases::showPasswords($this->pdo),
+				$browseby,
+				$catsrch,
+				$maxage,
+				$exccatlist,
+				$order[0],
+				$order[1],
+				($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
+			), true, nZEDb_CACHE_EXPIRY_MEDIUM
 		);
 
 		$bookIDs = false;
@@ -259,10 +266,16 @@ class Books
 			$order[0],
 			$order[1]
 		);
-
-		return $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
+		$return = $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
+		$return[0]['_totalcount'] = (isset($books['total']) ? $books['total'] : 0);
+		return $return;
 	}
 
+	/**
+	 * @param $orderby
+	 *
+	 * @return array
+	 */
 	public function getBookOrder($orderby)
 	{
 		$order = ($orderby == '') ? 'r.postdate' : $orderby;
@@ -295,6 +308,9 @@ class Books
 		return [$orderfield, $ordersort];
 	}
 
+	/**
+	 * @return array
+	 */
 	public function getBookOrdering()
 	{
 		return [
@@ -315,11 +331,17 @@ class Books
 		];
 	}
 
+	/**
+	 * @return array
+	 */
 	public function getBrowseByOptions()
 	{
 		return ['author' => 'author', 'title' => 'title'];
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getBrowseBy()
 	{
 		$browseby = ' ';
@@ -333,6 +355,11 @@ class Books
 		return $browseby;
 	}
 
+	/**
+	 * @param $title
+	 *
+	 * @return bool|mixed
+	 */
 	public function fetchAmazonProperties($title)
 	{
 		$obj = new AmazonProductAPI($this->pubkey, $this->privkey, $this->asstag);
@@ -446,6 +473,13 @@ class Books
 		}
 	}
 
+	/**
+	 * @param $release_name
+	 * @param $releaseID
+	 * @param $releasetype
+	 *
+	 * @return bool|string
+	 */
 	public function parseTitle($release_name, $releaseID, $releasetype)
 	{
 		$a = preg_replace('/\d{1,2} \d{1,2} \d{2,4}|(19|20)\d\d|anybody got .+?[a-z]\? |[-._ ](Novel|TIA)([-._ ]|$)|( |\.)HQ(-|\.| )|[\(\)\.\-_ ](AVI|AZW3?|DOC|EPUB|LIT|MOBI|NFO|RETAIL|(si)?PDF|RTF|TXT)[\)\]\.\-_ ](?![a-z0-9])|compleet|DAGSTiDNiNGEN|DiRFiX|\+ extra|r?e ?Books?([\.\-_ ]English|ers)?|azw3?|ePu(b|p)s?|html|mobi|^NEW[\.\-_ ]|PDF([\.\-_ ]English)?|Please post more|Post description|Proper|Repack(fix)?|[\.\-_ ](Chinese|English|French|German|Italian|Retail|Scan|Swedish)|^R4 |Repost|Skytwohigh|TIA!+|TruePDF|V413HAV|(would someone )?please (re)?post.+? "|with the authors name right/i', '', $release_name);
@@ -494,6 +528,12 @@ class Books
 		return false;
 	}
 
+	/**
+	 * @param string $bookInfo
+	 * @param null   $amazdata
+	 *
+	 * @return false|int|string
+	 */
 	public function updateBookInfo($bookInfo = '', $amazdata = null)
 	{
 		$ri = new ReleaseImage($this->pdo);
