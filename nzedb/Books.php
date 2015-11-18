@@ -220,8 +220,8 @@ class Books
 
 		$bookIDs = false;
 
-		if (is_array($books)) {
-			foreach ($books AS $book => $id) {
+		if (is_array($books['result'])) {
+			foreach ($books['result'] AS $book => $id) {
 				$bookIDs[] = $id['id'];
 			}
 		}
