@@ -15,6 +15,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Add: queryCalc function to DB Class to allow cached SQL_CALC_FOUND_ROWS
 	Fix: Typo in queryCalc strpos / forgot to pass cache to query in queryCalc / cache the result instead of the array
 	Chg: Re-work movies cover view queries and make all data sets cacheable / remove count function for movies cover views
+	Fix: A ton of spacing issues I introduced and some others that were already existing in Movie class
 2015-11-17 ruhllatio
 	Chg: Move PK on release_files to releaseid/name.  Drastically improves query performance with optimizations to follow.
 	Fix: Add DROP IF EXISTS for temp table in patch
