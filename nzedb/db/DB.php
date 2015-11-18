@@ -690,7 +690,7 @@ class DB extends \PDO
 					return ['total' => $count, 'result' => $data];
 				}
 			} catch (CacheException $error) {
-				$this->echoError($error->getMessage(), 'query', 4);
+				$this->echoError($error->getMessage(), 'queryCalc', 4);
 			}
 		}
 
