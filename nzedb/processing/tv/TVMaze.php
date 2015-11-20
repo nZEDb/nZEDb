@@ -116,8 +116,11 @@ class TVMaze extends TV
 
 						if (is_array($tvmazeShow)) {
 							$tvmazeid = (int)$tvmazeShow['tvmaze'];
-							// Check if we have the TVDB ID already, if we do use that Video ID
-							$dupeCheck = $this->getVideoIDFromSiteID('tvdb', $tvmazeShow['tvdb']);
+							// Check if we have the TVDB ID already, if we do use that Video ID, unless it is 0
+							$dupeCheck = false;
+							if ($tvmazeShow['tvdb'] != 0) {
+								$dupeCheck = $this->getVideoIDFromSiteID('tvdb', $tvmazeShow['tvdb']);
+							}
 							if ($dupeCheck === false) {
 								$videoId = $this->add($tvmazeShow);
 							} else {
