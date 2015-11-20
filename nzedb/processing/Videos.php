@@ -260,7 +260,7 @@ abstract class Videos
 		if (!empty($aliases) && $videoId > 0) {
 			foreach ($aliases AS $key => $title) {
 				// Check for tvmaze style aka
-				if (is_array($title)) {
+				if (is_array($title) && !empty($title['name'])) {
 					$title = $title['name'];
 				}
 				// Check if we have the AKA already
