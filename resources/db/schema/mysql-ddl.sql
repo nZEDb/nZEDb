@@ -808,16 +808,13 @@ CREATE TABLE release_naming_regexes (
 
 DROP TABLE IF EXISTS release_nfos;
 CREATE TABLE release_nfos (
-  id        INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   releaseid INT(11) UNSIGNED NOT NULL,
   nfo       BLOB             NULL DEFAULT NULL,
-  PRIMARY KEY (id),
-  UNIQUE INDEX ix_releasenfo_releaseid (releaseid)
+  PRIMARY KEY (releaseid)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
-  COLLATE = utf8_unicode_ci
-  AUTO_INCREMENT = 1;
+  COLLATE = utf8_unicode_ci;
 
 
 DROP TABLE IF EXISTS release_search_data;
