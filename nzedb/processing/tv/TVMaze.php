@@ -185,7 +185,6 @@ class TVMaze extends TV
 						} else {
 							//Processing failed, set the episode ID to the next processing group
 							$this->setVideoNotFound(parent::PROCESS_TMDB, $row['id']);
-							$this->titleCache[] = $release['cleanname'];
 						}
 					} else {
 						//Processing failed, set the episode ID to the next processing group

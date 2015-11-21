@@ -9,6 +9,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 2015-11-20 ruhllatio
 	Chg: Move PK on release_nfos to releaseid.  Improves NFO joining operations and reduces overhead.
 	Fix: Update schema for release_nfos change
+	Fix: Don't cache failed TV lookups when the Episode didn't find a match but the show did
 2015-11-20 bart39
 	Mrg: PR #1960, From izolight - More tvmaze fixes.
 2015-11-18 ruhllatio
