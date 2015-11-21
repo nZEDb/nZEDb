@@ -206,7 +206,7 @@ class Releases
 					CONCAT(cp.title, ' > ', c.title) AS category_name,
 					CONCAT(cp.id, ',', c.id) AS category_ids,
 					(SELECT df.failed) AS failed,
-					rn.id AS nfoid,
+					rn.releaseid AS nfoid,
 					re.releaseid AS reid,
 					v.tvdb, v.trakt, v.tvrage, v.tvmaze, v.imdb, v.tmdb,
 					tve.title, tve.firstaired
@@ -481,7 +481,7 @@ class Releases
 					CONCAT(cp.title, '-', c.title) AS category_name,
 					%s AS category_ids,
 					groups.name AS group_name,
-					rn.id AS nfoid, re.releaseid AS reid,
+					rn.releaseid AS nfoid, re.releaseid AS reid,
 					tve.firstaired,
 					(SELECT df.failed) AS failed
 				FROM releases r
@@ -888,7 +888,7 @@ class Releases
 				%s AS category_ids,
 				(SELECT failed FROM dnzb_failures WHERE guid = r.guid) AS failed,
 				groups.name AS group_name,
-				rn.id AS nfoid,
+				rn.releaseid AS nfoid,
 				re.releaseid AS reid,
 				cp.id AS categoryparentid,
 				v.tvdb, v.trakt, v.tvrage, v.tvmaze, v.imdb, v.tmdb,
@@ -982,7 +982,7 @@ class Releases
 				CONCAT(cp.title, ' > ', c.title) AS category_name,
 				%s AS category_ids,
 				groups.name AS group_name,
-				rn.id AS nfoid,
+				rn.releaseid AS nfoid,
 				re.releaseid AS reid
 			FROM releases r
 			LEFT OUTER JOIN videos v ON r.videos_id = v.id
@@ -1042,7 +1042,7 @@ class Releases
 				CONCAT(cp.title, ' > ', c.title) AS category_name,
 				%s AS category_ids,
 				groups.name AS group_name,
-				rn.id AS nfoid,
+				rn.releaseid AS nfoid,
 				re.releaseid AS reid
 			FROM releases r
 			INNER JOIN category c ON c.id = r.categoryid
@@ -1100,7 +1100,7 @@ class Releases
 				concat(cp.title, ' > ', c.title) AS category_name,
 				%s AS category_ids,
 				g.name AS group_name,
-				rn.id AS nfoid
+				rn.releaseid AS nfoid
 			FROM releases r
 			INNER JOIN groups g ON g.id = r.group_id
 			INNER JOIN category c ON c.id = r.categoryid
@@ -1360,7 +1360,7 @@ class Releases
 	{
 		return $this->pdo->queryOneRow(
 			sprintf(
-				'SELECT id, releaseid %s FROM release_nfos WHERE releaseid = %d AND nfo IS NOT NULL',
+				'SELECT releaseid %s FROM release_nfos WHERE releaseid = %d AND nfo IS NOT NULL',
 				($getNfoString ? ", UNCOMPRESS(nfo) AS nfo" : ''),
 				$id
 			)

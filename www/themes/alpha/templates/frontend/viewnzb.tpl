@@ -293,7 +293,7 @@
 	<td><a title="Browse by {$release.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$release.categoryid}">{$release.category_name}</a>
 	</td>
 </tr>
-{if $nfo.id|@count > 0}
+{if $nfo.releaseid|@count > 0}
 	<tr><th>Nfo:</th><td><a href="{$smarty.const.WWW_TOP}/nfo/{$release.guid}" title="View Nfo">View Nfo</a></td></tr>
 {/if}
 
