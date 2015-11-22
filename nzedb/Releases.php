@@ -886,7 +886,7 @@ class Releases
 			"SELECT r.*,
 				CONCAT(cp.title, ' > ', c.title) AS category_name,
 				%s AS category_ids,
-				(SELECT failed FROM dnzb_failures WHERE guid = r.guid) AS failed,
+				(SELECT df.failed ) AS failed,
 				groups.name AS group_name,
 				rn.releaseid AS nfoid,
 				re.releaseid AS reid,
@@ -901,6 +901,7 @@ class Releases
 			INNER JOIN groups ON groups.id = r.group_id
 			INNER JOIN category c ON c.id = r.categoryid
 			INNER JOIN category cp ON cp.id = c.parentid
+			LEFT OUTER JOIN dnzb_failures df ON df.guid = r.guid
 			%s",
 			$this->getConcatenatedCategoryIDs(),
 			$whereSql
