@@ -103,7 +103,14 @@ class DnzbFailures
 	 */
 	public function getAlternate($guid, $searchname, $userid)
 	{
-		$rel = $this->pdo->queryOneRow(sprintf('SELECT id FROM releases WHERE guid = %s', $this->pdo->escapeString($guid)));
+		$rel = $this->pdo->queryOneRow(
+			sprintf('
+				SELECT id
+				FROM releases
+				WHERE guid = %s',
+				$this->pdo->escapeString($guid)
+			)
+		);
 
 		$insert = $this->pdo->queryInsert(
 			sprintf('
