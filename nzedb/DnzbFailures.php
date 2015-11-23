@@ -41,7 +41,14 @@ class DnzbFailures
 	 */
 	public function getFailedCount($relId)
 	{
-		$result = $this->pdo->query(sprintf('SELECT failed AS num FROM dnzb_failures WHERE releaseid = %s', $relId));
+		$result = $this->pdo->query(
+			sprintf('
+				SELECT failed AS num
+				FROM dnzb_failures
+				WHERE releaseid = %s',
+				$relId
+			)
+		);
 		if (is_array($result) && !empty($result)) {
 			return $result[0]['num'];
 		}
@@ -53,7 +60,10 @@ class DnzbFailures
 	 */
 	public function getCount()
 	{
-		$res = $this->pdo->queryOneRow("SELECT count(id) AS num FROM dnzb_failures");
+		$res = $this->pdo->queryOneRow("
+			SELECT count(id) AS num
+			FROM dnzb_failures"
+		);
 		return $res["num"];
 	}
 
@@ -73,12 +83,13 @@ class DnzbFailures
 			$limit = ' LIMIT ' . $start . ',' . $num;
 		}
 
-		return $this->pdo->query("SELECT r.*, concat(cp.title, ' > ', c.title) AS category_name
- 									FROM releases r
- 									RIGHT JOIN dnzb_failures df ON df.releaseid = r.id
- 									LEFT OUTER JOIN category c ON c.id = r.categoryid
- 									LEFT OUTER JOIN category cp ON cp.id = c.parentid
- 									ORDER BY postdate DESC" . $limit
+		return $this->pdo->query("
+			SELECT r.*, concat(cp.title, ' > ', c.title) AS category_name
+			FROM releases r
+			RIGHT JOIN dnzb_failures df ON df.release_id = r.id
+			LEFT OUTER JOIN category c ON c.id = r.categoryid
+			LEFT OUTER JOIN category cp ON cp.id = c.parentid
+			ORDER BY postdate DESC" . $limit
 		);
 	}
 
@@ -94,18 +105,27 @@ class DnzbFailures
 	{
 		$rel = $this->pdo->queryOneRow(sprintf('SELECT id FROM releases WHERE guid = %s', $this->pdo->escapeString($guid)));
 
-		$this->pdo->queryInsert(sprintf("INSERT IGNORE INTO dnzb_failures (userid, releaseid) VALUES (%d, %d)",
-				$userid,
-				$rel['id']
+		$insert = $this->pdo->queryInsert(
+			sprintf('
+				INSERT INTO dnzb_failures (release_id, userid, failed)
+				VALUES (LAST_INSERT_ID(%d), %d, 1)
+				ON DUPLICATE KEY UPDATE failed = failed + 1',
+				$rel['id'],
+				$userid
 			)
 		);
 
-		$this->updateFailed($rel['id']);
-		$this->postComment($rel['id'], $userid);
+		if ($insert > 0) {
+			$this->postComment($rel['id'], $userid);
+		}
 
-		$alternate = $this->pdo->queryOneRow(sprintf('SELECT * FROM releases r
-			WHERE r.searchname %s
-			AND r.id NOT IN (SELECT releaseid FROM dnzb_failures WHERE userid = %d)',
+		$alternate = $this->pdo->queryOneRow(
+			sprintf('
+				SELECT *
+				FROM releases r
+				LEFT JOIN dnzb_failures df ON r.id = df.release_id
+				WHERE r.searchname %s
+				AND df.release_id IS NULL',
 				$this->pdo->likeString($searchname),
 				$userid
 			)
@@ -125,21 +145,16 @@ class DnzbFailures
 	{
 		$text = 'This release has failed to download properly. It might fail for other users too.
 		This comment is automatically generated.';
-		$dbl = $this->pdo->queryOneRow(sprintf('SELECT text FROM release_comments WHERE releaseid = %d', $relid));
+		$dbl = $this->pdo->queryOneRow(
+			sprintf('
+				SELECT text
+				FROM release_comments
+				WHERE releaseid = %d',
+				$relid
+			)
+		);
 		if ($dbl['text'] != $text) {
 			$this->rc->addComment($relid, $text, $uid, '');
 		}
-	}
-
-	/**
-	 * @note Update count of failed downloads for release id
-	 *
-	 * @param string $relId
-	 */
-	public function updateFailed($relId)
-	{
-			$this->pdo->queryExec(
-					sprintf('UPDATE dnzb_failures SET failed = failed + 1 WHERE releaseid = %s', $relId)
-			);
 	}
 }
