@@ -13,6 +13,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Chg: A few more refinements for DNZB failures
 	Chg: Make some things public in TV to allow external script runs
 	Fix: XmlException errors in TVDB not being caught
+	Fix: Queries in DnzbFailures not working properly
 2015-11-23 bart39
 	Mrg: PR #1968, From darius - Fix the dnzb failures part of search query in Releases.php.
 	Mrg: PR #1965, From darius - Add changes for api and pager to charisma and omicron templates.
