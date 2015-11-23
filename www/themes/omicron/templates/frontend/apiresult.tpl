@@ -34,7 +34,7 @@
 				{if $extended == "1"}
 					<newznab:attr name="files" value="{$release.totalpart}" />
 					<newznab:attr name="poster" value="{$release.fromname|escape:html}" />
-					{if $release.videos_id > 0 && $release.tv_episodes_id > 0}
+					{if $release.videos_id > 0 || $release.tv_episodes_id > 0}
 						<newznab:attr name="videos_id" value="{$release.videos_id}" />
 						<newznab:attr name="tv_episodes_id" value="{$release.tv_episodes_id}" />
 						{if $release.title != ""}
@@ -66,7 +66,7 @@
 							<newznab:attr name="imdbid" value="tt{$release.imdb|str_pad:7:'0':STR_PAD_LEFT}" />
 						{/if}
 						{if $release.tmdb > 0}
-							<newznab:attr name="tmdbid" value="tt{$release.tmdb|str_pad:7:'0':STR_PAD_LEFT}" />
+							<newznab:attr name="tmdbid" value="{$release.tmdb}" />
 						{/if}
 					{/if}
 					{if $release.imdbid != ""}
@@ -74,6 +74,9 @@
 					{/if}
 					{if $release.anidbid > 0}
 						<newznab:attr name="anidbid" value="{$release.anidb}" />
+					{/if}
+					{if $release.nfostatus == 1}
+						<newznab:attr name="info" value="{$serverroot}api?t=info&amp;id={$release.guid}&amp;r={$rsstoken}" />
 					{/if}
 					<newznab:attr name="grabs" value="{$release.grabs}" />
 					<newznab:attr name="comments" value="{$release.comments}" />
