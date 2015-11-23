@@ -35,13 +35,13 @@ class DnzbFailures
 	/**
 	 * @note Read failed downloads count for requested guid
 	 *
-	 * @param string $guid
+	 * @param string $relId
 	 *
 	 * @return array|bool
 	 */
-	public function getFailedCount($guid)
+	public function getFailedCount($relId)
 	{
-		$result = $this->pdo->query(sprintf('SELECT failed AS num FROM dnzb_failures WHERE guid = %s', $this->pdo->escapeString($guid)));
+		$result = $this->pdo->query(sprintf('SELECT failed AS num FROM dnzb_failures WHERE releaseid = %s', $relId));
 		if (is_array($result) && !empty($result)) {
 			return $result[0]['num'];
 		}
@@ -75,7 +75,7 @@ class DnzbFailures
 
 		return $this->pdo->query("SELECT r.*, concat(cp.title, ' > ', c.title) AS category_name
  									FROM releases r
- 									RIGHT JOIN dnzb_failures df ON df.guid = r.guid
+ 									RIGHT JOIN dnzb_failures df ON df.releaseid = r.id
  									LEFT OUTER JOIN category c ON c.id = r.categoryid
  									LEFT OUTER JOIN category cp ON cp.id = c.parentid
  									ORDER BY postdate DESC" . $limit
@@ -92,19 +92,20 @@ class DnzbFailures
 	 */
 	public function getAlternate($guid, $searchname, $userid)
 	{
-		$this->pdo->queryInsert(sprintf("INSERT IGNORE INTO dnzb_failures (userid, guid) VALUES (%d, %s)",
+		$rel = $this->pdo->queryOneRow(sprintf('SELECT id FROM releases WHERE guid = %s', $this->pdo->escapeString($guid)));
+
+		$this->pdo->queryInsert(sprintf("INSERT IGNORE INTO dnzb_failures (userid, releaseid) VALUES (%d, %d)",
 				$userid,
-				$this->pdo->escapeString($guid)
+				$rel['id']
 			)
 		);
 
-		$this->updateFailed($guid);
-		$rel = $this->pdo->queryOneRow(sprintf('SELECT id FROM releases WHERE guid = %s', $this->pdo->escapeString($guid)));
+		$this->updateFailed($rel['id']);
 		$this->postComment($rel['id'], $userid);
 
 		$alternate = $this->pdo->queryOneRow(sprintf('SELECT * FROM releases r
 			WHERE r.searchname %s
-			AND r.guid NOT IN (SELECT guid FROM dnzb_failures WHERE userid = %d)',
+			AND r.id NOT IN (SELECT releaseid FROM dnzb_failures WHERE userid = %d)',
 				$this->pdo->likeString($searchname),
 				$userid
 			)
@@ -131,14 +132,14 @@ class DnzbFailures
 	}
 
 	/**
-	 * @note Update count of failed downloads for guid
+	 * @note Update count of failed downloads for release id
 	 *
-	 * @param string $guid
+	 * @param string $relId
 	 */
-	public function updateFailed($guid)
+	public function updateFailed($relId)
 	{
 			$this->pdo->queryExec(
-					sprintf('UPDATE dnzb_failures SET failed = failed + 1 WHERE guid = %s', $this->pdo->escapeString($guid))
+					sprintf('UPDATE dnzb_failures SET failed = failed + 1 WHERE releaseid = %s', $relId)
 			);
 	}
 }

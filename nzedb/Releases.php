@@ -226,7 +226,7 @@ class Releases
 				LEFT OUTER JOIN tv_episodes tve ON r.tv_episodes_id = tve.id
 				LEFT OUTER JOIN video_data re ON re.releaseid = r.id
 				LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
-				LEFT OUTER JOIN dnzb_failures df ON df.guid = r.guid
+				LEFT OUTER JOIN dnzb_failures df ON df.releaseid = r.id
 				GROUP BY r.id
 				ORDER BY %7\$s %8\$s",
 				NZB::NZB_ADDED,
@@ -491,7 +491,7 @@ class Releases
 				LEFT OUTER JOIN tv_episodes tve ON tve.videos_id = r.videos_id
 				INNER JOIN category c ON c.id = r.categoryid
 				INNER JOIN category cp ON cp.id = c.parentid
-				LEFT OUTER JOIN dnzb_failures df ON df.guid = r.guid
+				LEFT OUTER JOIN dnzb_failures df ON df.releaseid = r.id
 				WHERE %s %s
 				AND r.nzbstatus = %d
 				AND r.categoryid BETWEEN 5000 AND 5999
@@ -886,7 +886,7 @@ class Releases
 			"SELECT r.*,
 				CONCAT(cp.title, ' > ', c.title) AS category_name,
 				%s AS category_ids,
-				(SELECT failed FROM dnzb_failures WHERE guid = r.guid) AS failed,
+				(SELECT df.failed ) AS failed,
 				groups.name AS group_name,
 				rn.releaseid AS nfoid,
 				re.releaseid AS reid,
@@ -901,6 +901,7 @@ class Releases
 			INNER JOIN groups ON groups.id = r.group_id
 			INNER JOIN category c ON c.id = r.categoryid
 			INNER JOIN category cp ON cp.id = c.parentid
+			LEFT OUTER JOIN dnzb_failures df ON df.releaseid = r.id
 			%s",
 			$this->getConcatenatedCategoryIDs(),
 			$whereSql
