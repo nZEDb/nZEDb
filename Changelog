@@ -6,6 +6,8 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2015-11-23 ruhllatio
+	Mrg: PR #1969, From darius - Change dnzb_failures table layout, drop indexes, add new PK
 2015-11-23 bart39
 	Mrg: PR #1968, From darius - Fix the dnzb failures part of search query in Releases.php.
 	Mrg: PR #1965, From darius - Add changes for api and pager to charisma and omicron templates.
