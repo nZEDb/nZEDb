@@ -53,7 +53,7 @@ foreach ($genres as $gn) {
 
 foreach ($results as $result) {
 	$result['genre'] = $tmpgnr[$result["genre_id"]];
-	$result['failed'] = $fail->getFailedCount($result['grp_release_guid']);
+	$result['failed'] = $fail->getFailedCount($result['grp_release_id']);
 	$musics[] = $result;
 }
 $genre = (isset($_REQUEST['genre']) && array_key_exists($_REQUEST['genre'], $tmpgnr)) ? $_REQUEST['genre'] : '';

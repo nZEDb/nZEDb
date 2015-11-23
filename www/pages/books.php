@@ -44,7 +44,7 @@ foreach ($results as $result) {
 			$result['overview'] = implode(' ', $newwords) . '...';
 		}
 	}
-	$result['failed'] = $fail->getFailedCount($result['grp_release_guid']);
+	$result['failed'] = $fail->getFailedCount($result['grp_release_id']);
 	$books[] = $result;
 }
 
