@@ -145,11 +145,11 @@ class Client {
 	 * @param      $ID
 	 * @param null $embed_cast
 	 *
-	 * @return array
+	 * @return array|object
 	 */
-	function getShowByShowID($ID, $embed_cast=null)
+	function getShowByShowID($ID, $embed_cast = false)
 	{
-		if($embed_cast === true) {
+		if($embed_cast) {
 			$url = self::APIURL . '/shows/'. $ID . '?embed=cast';
 		} else {
 			$url = self::APIURL . '/shows/' . $ID;
@@ -158,15 +158,17 @@ class Client {
 		$show = $this->getFile($url);
 
 		$cast = array();
-		foreach($show['_embedded']['cast'] as $person) {
-			$actor = new Actor($person['person']);
-			$character = new Character($person['character']);
-			array_push($cast, array($actor, $character));
+		if ($embed_cast) {
+			foreach($show['_embedded']['cast'] as $person) {
+				$actor = new Actor($person['person']);
+				$character = new Character($person['character']);
+				array_push($cast, array($actor, $character));
+			}
 		}
 
 		$TVShow = new TVShow($show);
 
-		return $embed_cast === true ? array($TVShow, $cast) : array($TVShow);
+		return ($embed_cast === true ? array($TVShow, $cast) : $TVShow);
 	}
 
 	/**

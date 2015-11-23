@@ -57,12 +57,12 @@ class TVDB extends TV
 			$this->serverTime = $this->client->getServerTime();
 		} catch (CurlException $error) {
 			if (strpos($error->getMessage(), 'Cannot fetch') === 0) {
-				echo $this->pdo->log->warning('Could not reach TVDB API.  Running in local mode only!');
+				echo $this->pdo->log->warning('Could not reach TVDB API. Running in local mode only!');
 				$this->local = true;
 			}
 		} catch (XmlException $error) {
 			if (strpos($error->getMessage(), 'Error in file') === 0) {
-				echo $this->pdo->log->warning('Could not reach TVDB API.  Running in local mode only!');
+				echo $this->pdo->log->warning('Bad response from TVDB API. Running in local mode only!');
 				$this->local = true;
 			}
 		}
@@ -246,6 +246,10 @@ class TVDB extends TV
 			if (strpos($error->getMessage(), 'Cannot fetch') === 0) {
 				//Do nothing as there is a second chance
 			}
+		} catch (XmlException $error) {
+			if (strpos($error->getMessage(), 'Error in file') === 0) {
+				//Do nothing as there is a second chance
+			}
 		}
 
 		if ($response === false && $country !== '') {
@@ -253,6 +257,10 @@ class TVDB extends TV
 				$response = (array)$this->client->getSeries(rtrim(str_replace($country, '', $cleanName)), 'en');
 			} catch (CurlException $error) {
 				if (strpos($error->getMessage(), 'Cannot fetch') === 0) {
+					return false;
+				}
+			} catch (XmlException $error) {
+				if (strpos($error->getMessage(), 'Error in file') === 0) {
 					return false;
 				}
 			}
@@ -304,9 +312,9 @@ class TVDB extends TV
 	 * @param int $videoId -- the local Video ID
 	 * @param int $showId  -- the TVDB ID
 	 *
-	 * @return null
+	 * @return int
 	 */
-	protected function getPoster($videoId, $showId)
+	public function getPoster($videoId, $showId)
 	{
 		$ri = new ReleaseImage($this->pdo);
 
@@ -321,6 +329,7 @@ class TVDB extends TV
 		if ($hascover == 1) {
 			$this->setCoverFound($videoId);
 		}
+		return $hascover;
 	}
 
 	/**
@@ -346,6 +355,10 @@ class TVDB extends TV
 				if (strpos($error->getMessage(), 'Cannot fetch') === 0) {
 					return false;
 				}
+			} catch (XmlException $error) {
+				if (strpos($error->getMessage(), 'Error in file') === 0) {
+					return false;
+				}
 			}
 		} else if ($videoId > 0) {
 			try {
@@ -354,12 +367,20 @@ class TVDB extends TV
 				if (strpos($error->getMessage(), 'Cannot fetch') === 0) {
 					return false;
 				}
+			} catch (XmlException $error) {
+				if (strpos($error->getMessage(), 'Error in file') === 0) {
+					return false;
+				}
 			}
 		} else {
 			try {
 				$response = $this->client->getEpisode($tvdbid, $season, $episode);
 			} catch (CurlException $error) {
 				if (strpos($error->getMessage(), 'Cannot fetch') === 0) {
+					return false;
+				}
+			} catch (XmlException $error) {
+				if (strpos($error->getMessage(), 'Error in file') === 0) {
 					return false;
 				}
 			}

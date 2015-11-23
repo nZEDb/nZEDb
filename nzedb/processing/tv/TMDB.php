@@ -11,7 +11,7 @@ class TMDB extends TV
 	/**
 	 * @var string The URL for the image for poster
 	 */
-	private $posterUrl;
+	public $posterUrl;
 
 	/**
 	 * Construct. Instantiate TMDB Class
@@ -257,19 +257,20 @@ class TMDB extends TV
 	 * @param int $videoId -- the local Video ID
 	 * @param int $showId  -- the TMDB ID
 	 *
-	 * @return null
+	 * @return int
 	 */
-	protected function getPoster($videoId, $showId = 0)
+	public function getPoster($videoId, $showId = 0)
 	{
 		$ri = new ReleaseImage($this->pdo);
 
 		// Try to get the Poster
-		$hascover = $ri->saveImage($videoId, sprintf($this->posterUrl), $this->imgSavePath, '', '');
+		$hascover = $ri->saveImage($videoId, $this->posterUrl, $this->imgSavePath, '', '');
 
 		// Mark it retrieved if we saved an image
 		if ($hascover == 1) {
 			$this->setCoverFound($videoId);
 		}
+		return $hascover;
 	}
 
 	/**
