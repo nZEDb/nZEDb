@@ -309,18 +309,14 @@ CREATE TABLE countries (
 
 DROP TABLE IF EXISTS dnzb_failures;
 CREATE TABLE dnzb_failures (
-  id          INT(11) UNSIGNED  NOT NULL AUTO_INCREMENT,
+  release_id   INT(11) UNSIGNED  NOT NULL,
   userid      INT(11) UNSIGNED  NOT NULL,
-  releaseid   INT(11) UNSIGNED  NOT NULL
   failed      INT UNSIGNED      NOT NULL DEFAULT '0',
-  PRIMARY KEY (id),
-  UNIQUE INDEX  ux_dnzb_failures (userid, releaseid),
-  INDEX         ix_dnzb_releaseid (releaseid)
+  PRIMARY KEY (release_id, userid)
 )
   ENGINE =MYISAM
   DEFAULT CHARSET =utf8
-  COLLATE =utf8_unicode_ci
-  AUTO_INCREMENT =1;
+  COLLATE =utf8_unicode_ci;
 
 DROP TABLE IF EXISTS forum_posts;
 CREATE TABLE forum_posts (
