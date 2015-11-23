@@ -10,6 +10,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Mrg: PR #1969, From darius - Change dnzb_failures table layout, drop indexes, add new PK
 	Fix: Broken queries in DnzbFailures, change logic to reduce clutter and excess queries
 	Fix: Broken DF queries in Releases
+	Chg: A few more refinements for DNZB failures
 2015-11-23 bart39
 	Mrg: PR #1968, From darius - Fix the dnzb failures part of search query in Releases.php.
 	Mrg: PR #1965, From darius - Add changes for api and pager to charisma and omicron templates.

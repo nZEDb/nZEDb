@@ -3,8 +3,6 @@
 namespace nzedb;
 
 use nzedb\db\Settings;
-use nzedb\ReleaseComments;
-
 
 class DnzbFailures
 {
@@ -33,7 +31,7 @@ class DnzbFailures
 	}
 
 	/**
-	 * @note Read failed downloads count for requested guid
+	 * @note Read failed downloads count for requested release_id
 	 *
 	 * @param string $relId
 	 *
@@ -61,7 +59,7 @@ class DnzbFailures
 	public function getCount()
 	{
 		$res = $this->pdo->queryOneRow("
-			SELECT count(id) AS num
+			SELECT COUNT(release_id) AS num
 			FROM dnzb_failures"
 		);
 		return $res["num"];
@@ -105,13 +103,15 @@ class DnzbFailures
 	{
 		$rel = $this->pdo->queryOneRow(
 			sprintf('
-				SELECT id
+				SELECT id, categoryid
 				FROM releases
 				WHERE guid = %s',
 				$this->pdo->escapeString($guid)
 			)
 		);
 
+		// Specifying LAST_INSERT_ID on releaseid will return the releaseid
+		// if the row was actually inserted and not updated
 		$insert = $this->pdo->queryInsert(
 			sprintf('
 				INSERT INTO dnzb_failures (release_id, userid, failed)
@@ -122,18 +122,21 @@ class DnzbFailures
 			)
 		);
 
-		if ($insert > 0) {
+		// If we didn't actually insert the row, don't add a comment
+		if ((int)$insert > 0) {
 			$this->postComment($rel['id'], $userid);
 		}
 
 		$alternate = $this->pdo->queryOneRow(
 			sprintf('
-				SELECT *
+				SELECT r.*
 				FROM releases r
 				LEFT JOIN dnzb_failures df ON r.id = df.release_id
+				AND df.release_id IS NULL
 				WHERE r.searchname %s
-				AND df.release_id IS NULL',
-				$this->pdo->likeString($searchname),
+				AND r.categoryid = %d',
+				$this->pdo->likeString($searchname, true, true),
+				$rel['categoryid'],
 				$userid
 			)
 		);
@@ -150,9 +153,11 @@ class DnzbFailures
 	 */
 	public function postComment($relid, $uid)
 	{
+		$dupe = 0;
 		$text = 'This release has failed to download properly. It might fail for other users too.
 		This comment is automatically generated.';
-		$dbl = $this->pdo->queryOneRow(
+
+		$check = $this->pdo->queryDirect(
 			sprintf('
 				SELECT text
 				FROM release_comments
@@ -160,7 +165,16 @@ class DnzbFailures
 				$relid
 			)
 		);
-		if ($dbl['text'] != $text) {
+
+		if ($check instanceof \Traversable) {
+			foreach ($check AS $dbl) {
+				if ($dbl['text'] == $text) {
+					$dupe = 1;
+					break;
+				}
+			}
+		}
+		if ($dupe === 0) {
 			$this->rc->addComment($relid, $text, $uid, '');
 		}
 	}
