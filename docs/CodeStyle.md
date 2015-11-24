@@ -32,4 +32,4 @@ have been releases since PHP 5.3, or that are not mentioned in it at all.
 
 
 * Fields referencing fields in other tables (usually indexed fields), should use the table name followed by the field name separated by an underderscore.
-  i.e. video_id is a reference to video.id (the id field in the videos table).
+  i.e. videos_id is a reference to video.id (the id field in the videos table).
