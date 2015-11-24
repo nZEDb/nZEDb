@@ -203,7 +203,7 @@
 																	Comment{if $mcomments[$m@index] != 1}s{/if}</span></a>
 															<span class="btn btn-hover btn-default btn-xs icon_cart text-muted"
 																  title="Add to Cart"><i
-																		class="fa fa-shopping-cart"></i></span>
+																		class="fa fa-shopping-basket"></i></span>
 															{if isset($sabintegrated)}
 																<span class="btn btn-hover btn-default btn-xs icon_sab text-muted"
 																	  title="Send to my Queue"><i
@@ -321,7 +321,7 @@
 																	Comment{if $mcomments[$m@index] != 1}s{/if}</span></a>
 															<span class="btn btn-hover btn-default btn-xs icon icon_cart text-muted"
 																  title="Add to Cart"><i
-																		class="fa fa-shopping-cart"></i></span>
+																		class="fa fa-shopping-basket"></i></span>
 															{if isset($sabintegrated)}
 																<span class="btn btn-hover btn-default btn-xs icon icon_sab text-muted"
 																	  title="Send to my Queue"><i
