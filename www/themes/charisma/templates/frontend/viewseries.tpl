@@ -63,7 +63,7 @@
 			{if $show.tmdb > 0}
 				<a class="btn btn-sm btn-info" target="_blank"
 				   href="{$site->dereferrer_link}https://www.themoviedb.org/tv/{$show.tmdb}"
-				   title="View at TheMovieDB">TV Rage</a>
+				   title="View at TheMovieDB">TMDB</a>
 			{/if}
 	</div>
 	<br/>
@@ -206,7 +206,7 @@
 															<a title="Download Nzb"
 															   href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}"><i
 																		class="fa fa-download text-muted"></i></a>
-															<a class="fa fa-shopping-cart icon_cart text-muted"
+															<a class="fa fa-shopping-basket icon_cart text-muted"
 															   href="#"
 															   title="Add to Cart">
 															</a>

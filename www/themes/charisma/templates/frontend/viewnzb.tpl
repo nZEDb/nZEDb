@@ -74,7 +74,7 @@
 							{if $show.tmdb > 0}
 							<a class="label label-default" target="_blank"
 							   href="{$site->dereferrer_link}https://www.themoviedb.org/tv/{$show.tmdb}"
-							   title="View at TheMovieDB">Trakt</a>
+							   title="View at TheMovieDB">TMDB</a>
 						{/if}
 					{/if}
 					{if $con && $con.url != ""}<a href="{$site->dereferrer_link}{$con.url}/"
@@ -228,7 +228,7 @@
 														Download</a>
 													<button type="button"
 															class="btn btn-primary btn-sm btn-info btn-transparent cartadd">
-														<i class="icon icon_cart fa fa-shopping-cart guid"
+														<i class="icon icon_cart fa fa-shopping-basket guid"
 														   id="guid{$release.guid}"></i> Add to
 														Cart
 													</button>
