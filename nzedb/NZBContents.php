@@ -3,7 +3,7 @@ namespace nzedb;
 
 use nzedb\db\Settings;
 use nzedb\processing\PostProcess;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
 /**
  * Gets information contained within the NZB.
@@ -289,7 +289,7 @@ class NZBContents
 			return false;
 		}
 
-		$nzbContents = Utility::unzipGzipFile($nzbPath);
+		$nzbContents = Misc::unzipGzipFile($nzbPath);
 		if (!$nzbContents) {
 			if ($this->echooutput) {
 				echo

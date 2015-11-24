@@ -1,5 +1,5 @@
 <?php
-require_once dirname(__FILE__) . '/../../../www/config.php';
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
 use nzedb\ConsoleTools;
 use nzedb\NZB;
@@ -35,11 +35,13 @@ $pdo->queryExec("UPDATE groups SET first_record = 0, first_record_postdate = NUL
 echo $pdo->log->primary("Reseting all groups completed.");
 
 $arr = [
-		"tvrage_titles", "release_nfos", "release_comments", 'sharing', 'sharing_sites',
+		"videos", "tv_episodes", "tv_info", "release_nfos", "release_comments", 'sharing', 'sharing_sites',
 		"users_releases", "user_movies", "user_series", "movieinfo", "musicinfo", "release_files",
 		"audio_data", "release_subtitles", "video_data", "releaseextrafull", "parts",
-		"missed_parts", "binaries", "collections", "releases"
+		"missed_parts", "binaries", "collections", "releases", "anidb_titles", "anidb_info", "anidb_episodes"
 ];
+
+// Truncate applicable tables
 foreach ($arr as &$value) {
 	$rel = $pdo->queryExec("TRUNCATE TABLE $value");
 	if ($rel !== false) {
@@ -61,10 +63,13 @@ foreach ($tables as $row) {
 	}
 }
 
+// Truncate Sphinx Index
 (new SphinxSearch())->truncateRTIndex('releases_rt');
 
+// Optimize DB after Reset
 $pdo->optimise(false, 'full');
 
+// Delete NZBs
 echo $pdo->log->header("Deleting nzbfiles subfolders.");
 try {
 	$files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($pdo->getSetting('nzbpath'), \RecursiveDirectoryIterator::SKIP_DOTS), \RecursiveIteratorIterator::CHILD_FIRST);
@@ -78,6 +83,7 @@ try {
 	echo $pdo->log->error($e->getMessage());
 }
 
+// Delete all covers, previews, samples
 echo $pdo->log->header("Deleting all images, previews and samples that still remain.");
 try {
 	$dirItr = new \RecursiveDirectoryIterator(nZEDb_COVERS);
@@ -89,21 +95,6 @@ try {
 	}
 } catch (UnexpectedValueException $e) {
 	echo $pdo->log->error($e->getMessage());
-}
-
-echo $pdo->log->header("Getting Updated List of TV Shows from TVRage.");
-$tvshows = @simplexml_load_file('http://services.tvrage.com/feeds/show_list.php');
-if ($tvshows !== false) {
-	foreach ($tvshows->show as $rage) {
-		if (isset($rage->id) && isset($rage->name) && !empty($rage->id) && !empty($rage->name)) {
-			$pdo->queryInsert(sprintf('INSERT INTO tvrage_titles (rageid, releasetitle, country) VALUES (%s, %s, %s)',
-									  $pdo->escapeString($rage->id),
-									  $pdo->escapeString($rage->name),
-									  $pdo->escapeString($rage->country)));
-		}
-	}
-} else {
-	echo $pdo->log->error("TVRage site has a hard limit of 400 concurrent api requests. At the moment, they have reached that limit. Please wait before retrying again.");
 }
 
 echo $pdo->log->header("Deleted all releases, images, previews and samples. This script ran for " . $consoletools->convertTime(TIME() - $timestart));

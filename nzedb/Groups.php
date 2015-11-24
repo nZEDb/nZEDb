@@ -11,6 +11,11 @@ class Groups
 	public $pdo;
 
 	/**
+	 * @var ColorCLI
+	 */
+	public $colorCLI;
+
+	/**
 	 * Construct.
 	 *
 	 * @param array $options Class instances.
@@ -18,11 +23,13 @@ class Groups
 	public function __construct(array $options = [])
 	{
 		$defaults = [
-			'Settings' => null
+			'Settings' => null,
+			'ColorCLI' => null
 		];
 		$options += $defaults;
 
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->colorCLI = ($options['ColorCLI'] instanceof ColorCLI ? $options['ColorCLI'] : new ColorCLI());
 	}
 
 	/**
@@ -689,34 +696,31 @@ class Groups
 	 */
 	public function createNewTPGTables($groupID)
 	{
-		foreach (['collections', 'binaries', 'parts', 'missed_parts'] as $tableName) {
-			if ($this->pdo->queryExec(sprintf('SELECT * FROM %s_%s LIMIT 1', $tableName, $groupID),
-									  true) === false
-			) {
-				if ($this->pdo->queryExec(sprintf('CREATE TABLE %s_%s LIKE %s',
-												  $tableName,
-												  $groupID,
-												  $tableName),
-										  true) === false
-				) {
+		$cbpm = ['collections', 'binaries', 'parts', 'missed_parts'];
+
+		foreach ( $cbpm as $tableName) {
+			if ($this->pdo->queryExec(sprintf('SELECT * FROM %s_%s LIMIT 1', $tableName, $groupID), true) === false) {
+				if ($this->pdo->queryExec(sprintf('CREATE TABLE %s_%s LIKE %s', $tableName, $groupID, $tableName), true) === false) {
 					return false;
-				} else {
-					if ($tableName === 'collections') {
-						$this->pdo->queryExec(
-							sprintf(
-								'CREATE TRIGGER delete_collections_%s BEFORE DELETE ON collections_%s FOR EACH ROW BEGIN' .
-								' DELETE FROM binaries_%s WHERE collection_id = OLD.id; DELETE FROM parts_%s WHERE collection_id = OLD.id; END',
-								$groupID,
-								$groupID,
-								$groupID,
-								$groupID
-							)
-						);
-					}
 				}
 			}
 		}
 
 		return true;
+	}
+
+	/**
+	 * @note Disable group that does not exist on USP server
+	 * @param $id
+	 *
+	 */
+	public function disableIfNotExist($id)
+	{
+		$this->pdo->queryExec(sprintf("UPDATE groups SET active = 0 WHERE id = %d", $id));
+		$this->colorCLI->doEcho(
+			$this->colorCLI->error(
+				'Group does not exist on server, disabling'
+			)
+		);
 	}
 }

@@ -13,7 +13,7 @@ $AniDB = new AniDB(['Settings' => $page->settings]);
 if (isset($_GET['id']) && ctype_digit($_GET['id'])) {
 
 	# force the category to 5070 as it should be for anime, as $catarray was NULL and we know the category for sure for anime
-	$releases = $Releases->searchbyAnidbId($_GET['id'], '', 0, 1000, '', array('5070'), -1);
+	$releases = $Releases->searchbyAnidbId($_GET['id'], 0, 1000, '', array('5070'), -1);
 	$anidb = $AniDB->getAnimeInfo($_GET['id']);
 
 	if (!$releases && !$anidb) {
@@ -23,32 +23,10 @@ if (isset($_GET['id']) && ctype_digit($_GET['id'])) {
 	} elseif (!$releases) {
 		$page->smarty->assign('nodata', 'No releases for this series.');
 	} else {
-		// Sort releases by season, episode, date posted.
-		$season = $episode = $posted = array();
 
-		foreach ($releases as $rlk => $rlv) {
-			$season[$rlk] = $rlv['season'];
-			$episode[$rlk] = $rlv['episode'];
-			$posted[$rlk] = $rlv['postdate'];
-		}
-
-		array_multisort($episode, SORT_DESC, $posted, SORT_DESC, $releases);
-
-		$seasons = array();
-		foreach ($releases as $r) {
-			$seasons[$r['season']][$r['episode']][] = $r;
-		}
-
-		$page->smarty->assign('seasons', $seasons);
 		$page->smarty->assign('anidb', $anidb);
-
-		$animeEpisodeTitles = array();
-		foreach ($releases as $r) {
-			$animeEpisodeTitles[$r['tvtitle']][] = $r;
-		}
-
-		$page->smarty->assign('animeEpisodeTitlesSize', count($animeEpisodeTitles));
-		$page->smarty->assign('animeEpisodeTitles', $animeEpisodeTitles);
+		$page->smarty->assign('animeEpisodeTitlesSize', count($releases));
+		$page->smarty->assign('animeEpisodeTitles', $releases);
 		$page->smarty->assign('animeAnidbID', $anidb['anidbid']);
 		# case is off on old variable this resolves that, I do not think the other is ever used, but left if anyways
 		$page->smarty->assign('animeAnidbid', $anidb['anidbid']);
@@ -62,6 +40,8 @@ if (isset($_GET['id']) && ctype_digit($_GET['id'])) {
 		$page->smarty->assign('animeRelated', $anidb['related']);
 		$page->smarty->assign('animeSimilar', $anidb['similar']);
 		$page->smarty->assign('animeCategories', $anidb['categories']);
+
+		$page->smarty->assign('nodata', '');
 
 		$page->title = $anidb['title'];
 		$page->meta_title = 'View Anime ' . $anidb['title'];

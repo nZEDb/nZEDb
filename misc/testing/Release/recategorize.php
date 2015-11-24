@@ -1,5 +1,5 @@
 <?php
-require_once dirname(__FILE__) . '/../../../www/config.php';
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
 use nzedb\Categorize;
 use nzedb\ColorCLI;
@@ -83,12 +83,8 @@ function categorizeRelease($where, $update = true, $echooutput = false)
 						sprintf("
 							UPDATE releases
 							SET iscategorized = 1,
-								rageid = -1,
-								seriesfull = NULL,
-								season = NULL,
-								episode = NULL,
-								tvtitle = NULL,
-								tvairdate = NULL,
+								videos_id = 0,
+								tv_episodes_id = 0,
 								imdbid = NULL,
 								musicinfoid = NULL,
 								consoleinfoid = NULL,

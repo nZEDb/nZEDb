@@ -1,18 +1,18 @@
 <?php
-require_once dirname(__FILE__) . '/../../../../www/config.php';
+require_once realpath(dirname(dirname(dirname(dirname(__DIR__)))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
 use nzedb\Tmux;
 use nzedb\db\Settings;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
 $pdo = new Settings();
 $DIR = nZEDb_MISC;
 
 
 // Check that Db patch level is current. Also checks nZEDb.xml is valid.
-Utility::isPatched();
+Misc::isPatched();
 
-Utility::clearScreen();
+Misc::clearScreen();
 
 $patch = $pdo->getSetting('sqlpatch');
 $patch = ($patch != '') ? $patch : 0;

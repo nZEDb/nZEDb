@@ -1,16 +1,7 @@
 <?php
+require_once 'smarty.php';
 
 use nzedb\db\Settings;
-
-if (is_file("config.php")) {
-	require_once './config.php';
-} else {
-	if (is_dir("install")) {
-		header("location: install");
-		exit();
-	}
-}
-require_once 'automated.config.php';
 
 $page = new Page();
 
@@ -29,7 +20,6 @@ switch ($page->page) {
 	case 'books':
 	case 'browse':
 	case 'browsegroup':
-	case 'calendar':
 	case 'cart':
 	case 'console':
 	case 'consolemodal':
@@ -58,7 +48,6 @@ switch ($page->page) {
 	case 'profileedit':
 	case 'queue':
 	case 'register':
-	case 'rss-info':
 	case 'sabqueuedata':
 	case 'search':
 	case 'sendtoqueue':
@@ -75,6 +64,7 @@ switch ($page->page) {
 			break;
 		}
 	case 'api':
+	case 'failed':
 	case 'getnzb':
 	case 'login':
 	case 'preinfo':

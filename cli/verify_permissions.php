@@ -11,14 +11,9 @@ if (!isset($argv[1]) || $argv[1] !== 'yes') {
 	);
 }
 
-use nzedb\ReleaseImage;
+require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'indexer.php');
 
-$www_path = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR;
-if (is_file($www_path . 'config.php')) {
-	require($www_path . 'config.php');
-} else {
-	require($www_path . 'automated.config.php');
-}
+use nzedb\ReleaseImage;
 
 define('R', 1);
 define('W', 2);
@@ -97,7 +92,7 @@ foreach ($folders as $folder => $check) {
 
 echo 'Your permissions seem right for this user. Note, this script does not verify all paths, only the most important ones.' . PHP_EOL;
 
-if (!nzedb\utility\Utility::isWin()) {
+if (!nzedb\utility\Misc::isWin()) {
 	$user = posix_getpwuid(posix_geteuid());
 	if ($user['name'] !== 'www-data') {
 		echo 'If you have not already done so, please rerun this script using the www-data user: sudo -u www-data php verify_permissions.php yes' . PHP_EOL;

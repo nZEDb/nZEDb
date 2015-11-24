@@ -3,7 +3,8 @@ namespace nzedb;
 
 use nzedb\db\Settings;
 use nzedb\processing\PostProcess;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
+//use nzedb\processing\tv\TvRage;
 
 require_once nZEDb_LIBS . 'getid3/getid3/getid3.php';
 require_once nZEDb_LIBS . 'rarinfo/par2info.php';
@@ -101,21 +102,27 @@ class Nfo
 	}
 
 	/**
-	 * Look for a TvRage ID in a string.
+	 * Look for a TV Show ID in a string. TODO: Add other scrape sources
 	 *
-	 * @param string  $str   The string with a TvRage ID.
-	 * @return string The TVRage ID on success.
+	 * @param string  $str   The string with a Show ID.
 	 *
-	 * @return bool   False on failure.
+	 * @return array|bool   Return array with show ID and site source or false on failure.
 	 *
 	 * @access public
 	 */
-	public function parseRageId($str)
+	public function parseShowId($str)
 	{
+		$return = false;
+
 		if (preg_match('/tvrage\.com\/shows\/id-(\d{1,6})/i', $str, $matches)) {
-			return trim($matches[1]);
+			$return = (
+				[
+					'showid' => trim($matches[1]),
+					'site'   => 'tvrage'
+				]
+			);
 		}
-		return false;
+		return $return;
 	}
 
 	/**
@@ -143,7 +150,7 @@ class Nfo
 			$tmpPath = $this->tmpPath . $guid . '.nfo';
 			file_put_contents($tmpPath, $possibleNFO);
 
-			$result = Utility::fileInfo($tmpPath);
+			$result = Misc::fileInfo($tmpPath);
 			if (!empty($result)) {
 
 				// Check if it's text.
@@ -196,18 +203,35 @@ class Nfo
 	{
 		if ($release['id'] > 0 && $this->isNFO($nfo, $release['guid'])) {
 
-			$check = $this->pdo->queryOneRow(sprintf('SELECT id FROM release_nfos WHERE releaseid = %d', $release['id']));
+			$check = $this->pdo->queryOneRow(
+				sprintf('
+					SELECT releaseid
+					FROM release_nfos
+					WHERE releaseid = %d',
+					$release['id']
+				)
+			);
 
 			if ($check === false) {
 				$this->pdo->queryInsert(
-					sprintf('INSERT INTO release_nfos (nfo, releaseid) VALUES (compress(%s), %d)',
+					sprintf('
+						INSERT INTO release_nfos (nfo, releaseid)
+						VALUES (compress(%s), %d)',
 						$this->pdo->escapeString($nfo),
 						$release['id']
 					)
 				);
 			}
 
-			$this->pdo->queryExec(sprintf('UPDATE releases SET nfostatus = %d WHERE id = %d', self::NFO_FOUND, $release['id']));
+			$this->pdo->queryExec(
+				sprintf('
+					UPDATE releases
+					SET nfostatus = %d
+					WHERE id = %d',
+					self::NFO_FOUND,
+					$release['id']
+				)
+			);
 
 			if (!isset($release['completion'])) {
 				$release['completion'] = 0;
@@ -339,7 +363,6 @@ class Nfo
 				]
 			);
 			$movie = new Movie(['Echo' => $this->echo, 'Settings' => $this->pdo]);
-			$tvRage = new TvRage(['Echo' => $this->echo, 'Settings' => $this->pdo]);
 
 			foreach ($res as $arr) {
 				$fetchedBinary = $nzbContents->getNFOfromNZB($arr['guid'], $arr['id'], $arr['group_id'], $groups->getByNameByID($arr['group_id']));
@@ -348,30 +371,30 @@ class Nfo
 					$cp = 'COMPRESS(%s)';
 					$nc = $this->pdo->escapeString($fetchedBinary);
 
-					$ckreleaseid = $this->pdo->queryOneRow(sprintf('SELECT id FROM release_nfos WHERE releaseid = %d', $arr['id']));
-					if (!isset($ckreleaseid['id'])) {
+					$ckreleaseid = $this->pdo->queryOneRow(sprintf('SELECT releaseid FROM release_nfos WHERE releaseid = %d', $arr['id']));
+					if (!isset($ckreleaseid['releaseid'])) {
 						$this->pdo->queryInsert(sprintf('INSERT INTO release_nfos (nfo, releaseid) VALUES (' . $cp . ', %d)', $nc, $arr['id']));
 					}
 					$this->pdo->queryExec(sprintf('UPDATE releases SET nfostatus = %d WHERE id = %d', self::NFO_FOUND, $arr['id']));
 					$ret++;
 					$movie->doMovieUpdate($fetchedBinary, 'nfo', $arr['id'], $processImdb);
 
-					// If set scan for tvrage info.
+					// If set scan for tvrage info. Disabled for now while TvRage is down. TODO: Add Other Scraper Checks
 					if ($processTvrage == 1) {
-						$rageId = $this->parseRageId($fetchedBinary);
-						if ($rageId !== false) {
+						/*$tvRage = new TvRage(['Echo' => $this->echo, 'Settings' => $this->pdo]);
+						$showId = $this->parseShowId($fetchedBinary);
+						if ($showId !== false) {
 							$show = $tvRage->parseNameEpSeason($arr['name']);
 							if (is_array($show) && $show['name'] != '') {
 								// Update release with season, ep, and air date info (if available) from release title.
 								$tvRage->updateEpInfo($show, $arr['id']);
-
 								$rid = $tvRage->getByRageID($rageId);
 								if (!$rid) {
 									$tvrShow = $tvRage->getRageInfoFromService($rageId);
 									$tvRage->updateRageInfo($rageId, $show, $tvrShow, $arr['id']);
 								}
 							}
-						}
+						}*/
 					}
 				}
 			}
@@ -383,9 +406,10 @@ class Nfo
 				'SELECT r.id
 				FROM releases r
 				WHERE r.nzbstatus = %d
-				AND r.nfostatus < %d %s %s',
+				AND r.nfostatus < %d AND r.nfostatus > %d %s %s',
 				NZB::NZB_ADDED,
 				$this->maxRetries,
+				self::NFO_FAILED,
 				$groupIDQuery,
 				$guidCharQuery
 			)
@@ -393,26 +417,22 @@ class Nfo
 
 		if ($releases instanceof \Traversable) {
 			foreach ($releases as $release) {
-				$this->pdo->queryExec(
-					sprintf('DELETE FROM release_nfos WHERE nfo IS NULL AND releaseid = %d', $release['id'])
+				// remove any release_nfos for failed
+				$this->pdo->queryExec(sprintf('
+					DELETE FROM release_nfos WHERE nfo IS NULL AND releaseid = %d',
+					$release['id']
+					)
+				);
+
+				// set release.nfostatus to failed
+				$this->pdo->queryExec(sprintf('
+					UPDATE releases r SET r.nfostatus = %d WHERE r.id = %d',
+					self::NFO_FAILED,
+					$release['id']
+					)
 				);
 			}
 		}
-
-		// Set releases with no NFO.
-		$this->pdo->queryExec(
-			sprintf('
-				UPDATE releases r
-				SET r.nfostatus = %d
-				WHERE r.nzbstatus = %d
-				AND r.nfostatus < %d %s %s',
-				self::NFO_FAILED,
-				NZB::NZB_ADDED,
-				$this->maxRetries,
-				$groupIDQuery,
-				$guidCharQuery
-			)
-		);
 
 		if ($this->echo) {
 			if ($nfoCount > 0) {

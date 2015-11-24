@@ -22,7 +22,8 @@ namespace nzedb\db;
 
 use nzedb\ColorCLI;
 use nzedb\utility\Git;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
+use nzedb\utility\Text;
 
 
 class DbUpdate
@@ -89,13 +90,13 @@ class DbUpdate
 			'ext'	=> 'tsv',
 			'files'	=> [],
 			'path'	=> nZEDb_RES . 'db' . DS . 'schema' . DS . 'data',
-			'regex'	=> '#^' . Utility::PATH_REGEX . '(?P<order>\d+)-(?P<table>\w+)\.tsv$#',
+			'regex'	=> '#^' . Misc::PATH_REGEX . '(?P<order>\d+)-(?P<table>\w+)\.tsv$#',
 		];
 		$options += $defaults;
 
-		$show = (Utility::isCLI() || nZEDb_DEBUG);
+		$show = (Misc::isCLI() || nZEDb_DEBUG);
 
-		$files = empty($options['files']) ? Utility::getDirFiles($options) : $options['files'];
+		$files = empty($options['files']) ? Misc::getDirFiles($options) : $options['files'];
 		natsort($files);
 		$local = $this->pdo->isLocalDb() ? '' : 'LOCAL ';
 		$sql = 'LOAD DATA ' . $local . 'INFILE "%s" IGNORE INTO TABLE `%s` FIELDS TERMINATED BY "\t" OPTIONALLY ENCLOSED BY "\"" IGNORE 1 LINES (%s)';
@@ -121,7 +122,7 @@ class DbUpdate
 						if ($show === true) {
 							echo "Inserting data into table: '$table'\n";
 						}
-						if (Utility::isWin()) {
+						if (Misc::isWin()) {
 							$file = str_replace("\\", '\/', $file);
 						}
 						$this->pdo->exec(sprintf($sql, $file, $table, $fields));
@@ -154,7 +155,7 @@ class DbUpdate
 			'data'	=> nZEDb_RES . 'db' . DS . 'schema' . DS . 'data' . DS,
 			'ext'	=> 'sql',
 			'path'	=> nZEDb_RES . 'db' . DS . 'patches' . DS . $this->_DbSystem,
-			'regex'	=> '#^' . Utility::PATH_REGEX . '\+(?P<order>\d+)~(?P<table>\w+)\.sql$#',
+			'regex'	=> '#^' . Misc::PATH_REGEX . '\+(?P<order>\d+)~(?P<table>\w+)\.sql$#',
 			'safe'	=> true,
 		];
 		$options += $defaults;
@@ -162,7 +163,7 @@ class DbUpdate
 		$this->processPatches(['safe' => $options['safe']]); // Make sure we are completely up to date!
 
 		echo $this->log->primaryOver('Looking for new patches...');
-		$files = Utility::getDirFiles($options);
+		$files = Misc::getDirFiles($options);
 
 		$count = count($files);
 		echo $this->log->header(" $count found");
@@ -185,8 +186,8 @@ class DbUpdate
 							   $matches['table'] . '.sql';
 					rename($matches[0], $newName);
 					$this->git->add($newName);
-					if ($this->git->isCommited($this->git->getBranch() . ':' . $matches[0])) {
-						$this->git->rm(" --cached {$matches[0]}"); // remove old filename from the index.
+					if ($this->git->isCommited($this->git->getBranch() . ':' . str_replace(nZEDb_ROOT, '',$matches[0]))) {
+						$this->git->add(" -u {$matches[0]}"); // remove old filename from the index.
 					}
 				}
 			}
@@ -200,7 +201,7 @@ class DbUpdate
 			'data'	=> nZEDb_RES . 'db' . DS . 'schema' . DS . 'data' . DS,
 			'ext'	=> 'sql',
 			'path'	=> nZEDb_RES . 'db' . DS . 'patches' . DS . $this->_DbSystem,
-			'regex'	=> '#^' . Utility::PATH_REGEX . '(?P<patch>\d{4})~(?P<table>\w+)\.sql$#',
+			'regex'	=> '#^' . Misc::PATH_REGEX . '(?P<patch>\d{4})~(?P<table>\w+)\.sql$#',
 			'safe'	=> true,
 		];
 		$options += $defaults;
@@ -210,7 +211,7 @@ class DbUpdate
 			exit("Bad sqlpatch value: '$currentVersion'\n");
 		}
 
-		$files = empty($options['files']) ? Utility::getDirFiles($options) : $options['files'];
+		$files = empty($options['files']) ? Misc::getDirFiles($options) : $options['files'];
 
 		if (count($files)) {
 			natsort($files);
@@ -289,14 +290,44 @@ class DbUpdate
 			if (is_resource($file)) {
 				$query = [];
 
-				$oldDelimiter = '';
+				$delimiter = $options['delimiter'];
 				while (!feof($file)) {
 					$line = fgets($file);
+
+					if ($line === false) {
+						continue;
+					}
+
+					// Skip comments.
+					if (preg_match('!^\s*(#|--|//)\s*(.+?)\s*$!', $line, $matches)) {
+						echo $this->pdo->log->info("COMMENT: " . $matches[2]);
+						continue;
+					}
+
+					// Check for non default delimiters ($$ for example).
+					if (preg_match('#^\s*DELIMITER\s+(?P<delimiter>.+)\s*$#i', $line, $matches)) {
+						$delimiter = $matches['delimiter'];
+						if (nZEDb_DEBUG) {
+							echo $this->pdo->log->debug("DEBUG: Delimiter switched to $delimiter");
+						}
+						if ($delimiter != $options['delimiter']) {
+							continue;
+						}
+					}
+
+					// Check if the line has delimiter that is non default ($$ for example).
+					if ($delimiter != $options['delimiter'] && preg_match('#^(.+?)' . preg_quote($delimiter) . '\s*$#', $line, $matches)) {
+						// Check if the line has also the default delimiter (;), remove it.
+						if (preg_match('#^(.+?)' . preg_quote($options['delimiter']) . '\s*$#', $matches[1], $matches2)) {
+							$matches[1] = $matches2[1];
+						}
+						// Change the non default delimiter ($$) to the default one(;).
+						$line = $matches[1] . $options['delimiter'];
+					}
+
 					$query[] = $line;
 
-					if (preg_match('~' . preg_quote($options['delimiter'], '~') . '\s*$~iS',
-								   end($query)) == 1
-					) {
+					if (preg_match('~' . preg_quote($delimiter, '~') . '\s*$~iS', $line) == 1) {
 						$query = trim(implode('', $query));
 						if ($options['local'] !== null) {
 							$query = str_replace('{:local:}', $options['local'], $query);
@@ -308,8 +339,7 @@ class DbUpdate
 						try {
 							$qry = $this->pdo->prepare($query);
 							$qry->execute();
-							echo $this->log->alternateOver('SUCCESS: ') .
-								 $this->log->primary($query);
+							echo $this->log->alternateOver('SUCCESS: ') . $this->log->primary($query);
 						} catch (\PDOException $e) {
 							// Log the problem and the query.
 							file_put_contents(
@@ -323,25 +353,25 @@ class DbUpdate
 
 							if (
 								in_array($e->errorInfo[1], [1091, 1060, 1061, 1071, 1146]) ||
-								in_array($e->errorInfo[0],
-										[23505, 42701, 42703, '42P07', '42P16'])
+								in_array($e->errorInfo[0], [23505, 42701, 42703, '42P07', '42P16'])
 							) {
 								if ($e->errorInfo[1] == 1060) {
 									echo $this->log->warning(
-												   "$query The column already exists - No need to worry \{" .
-												   $e->errorInfo[1] . "}.\n");
+										"$query The column already exists - No need to worry \{" .
+										$e->errorInfo[1] . "}.\n"
+									);
 								} else {
 									echo $this->log->warning(
-												   "$query Skipped - No need to worry \{" .
-												   $e->errorInfo[1] . "}.\n");
+										"$query Skipped - No need to worry \{" .
+										$e->errorInfo[1] . "}.\n"
+									);
 								}
 							} else {
 								if (preg_match('/ALTER IGNORE/i', $query)) {
 									$this->pdo->queryExec("SET SESSION old_alter_table = 1");
 									try {
 										$this->pdo->exec($query);
-										echo $this->log->alternateOver('SUCCESS: ') .
-											 $this->log->primary($query);
+										echo $this->log->alternateOver('SUCCESS: ') . $this->log->primary($query);
 									} catch (\PDOException $e) {
 										exit($this->log->error("$query Failed \{" . $e->errorInfo[1] . "}\n\t" . $e->errorInfo[2]));
 									}
@@ -355,14 +385,6 @@ class DbUpdate
 							ob_end_flush();
 						}
 						flush();
-						if ($oldDelimiter != '') {
-							$options['delimiter'] = $oldDelimiter;
-							$oldDelimiter = '';
-						}
-					}
-					if (preg_match('#^\s*DELIMITER\s+(?P<delimiter>.+)$#i', $line, $matches)) {
-						$oldDelimiter = $options['delimiter'];
-						$options['delimiter'] = $matches['delimiter'];
 					}
 
 					if (is_string($query) === true) {
@@ -387,7 +409,7 @@ class DbUpdate
 		$options += $default;
 
 		$file = [];
-		$filespec = Utility::trailingSlash($options['path']) . $options['path'];
+		$filespec = Text::trailingSlash($options['path']) . $options['path'];
 		if (file_exists($filespec) && ($file = file($filespec, FILE_IGNORE_NEW_LINES))) {
 			$count = count($file);
 			$index = 0;
@@ -419,7 +441,7 @@ class DbUpdate
 
 	protected function _backupDb()
 	{
-		if (Utility::hasCommand("php5")) {
+		if (Misc::hasCommand("php5")) {
 			$PHP = "php5";
 		} else {
 			$PHP = "php";

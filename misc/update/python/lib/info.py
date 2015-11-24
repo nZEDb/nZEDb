@@ -50,7 +50,7 @@ def disconnect(cur, con):
 
 
 def readConfig():
-    Configfile = pathname+"/../../../www/config.php"
+    Configfile = pathname+"/../../../nzedb/config/config.php"
     file = open( Configfile, "r")
 
     # Match a config line

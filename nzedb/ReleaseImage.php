@@ -2,7 +2,7 @@
 namespace nzedb;
 
 use nzedb\db\Settings;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
 /**
  * Resize/save/delete images to disk.
@@ -69,8 +69,6 @@ class ReleaseImage
 		$this->bookImgPath    = nZEDb_COVERS . 'book'        . DS; // bookinfo    id
 		$this->consoleImgPath = nZEDb_COVERS . 'console'     . DS; // consoleinfo id
 		$this->musicImgPath   = nZEDb_COVERS . 'music'       . DS; // musicinfo   id
-		$this->tvRageImgPath  = nZEDb_COVERS . 'tvrage'      . DS; // tvrage      id (not rageid)
-
 		$this->audioImgPath   = nZEDb_COVERS . 'audio'       . DS; // unused folder, music folder already exists.
 		**/
 	}
@@ -86,8 +84,8 @@ class ReleaseImage
 	{
 		$img = false;
 
-		if (strpos(strtolower($imgLoc), 'http:') === 0) {
-			$img = Utility::getUrl(['url' => $imgLoc]);
+		if (strpos(strtolower($imgLoc), 'http:') === 0 || strpos(strtolower($imgLoc), 'https:') === 0) {
+			$img = Misc::getUrl(['url' => $imgLoc]);
 		} else if (is_file($imgLoc)) {
 			$img = @file_get_contents($imgLoc);
 		}

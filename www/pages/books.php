@@ -2,6 +2,7 @@
 
 use nzedb\Books;
 use nzedb\Category;
+use nzedb\DnzbFailures;
 
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
@@ -9,6 +10,7 @@ if (!$page->users->isLoggedIn()) {
 
 $book = new Books(['Settings' => $page->settings]);
 $cat = new Category(['Settings' => $page->settings]);
+$fail = new DnzbFailures(['Settings' => $page->settings]);
 
 $boocats = $cat->getChildren(Category::CAT_PARENT_BOOKS);
 $btmp = array();
@@ -26,8 +28,6 @@ $catarray[] = $category;
 $page->smarty->assign('catlist', $btmp);
 $page->smarty->assign('category', $category);
 
-$browsecount = $book->getBookCount($catarray, -1, $page->userdata["categoryexclusions"]);
-
 $offset = (isset($_REQUEST["offset"]) && ctype_digit($_REQUEST['offset'])) ? $_REQUEST["offset"] : 0;
 $ordering = $book->getBookOrdering();
 $orderby = isset($_REQUEST["ob"]) && in_array($_REQUEST['ob'], $ordering) ? $_REQUEST["ob"] : '';
@@ -44,6 +44,7 @@ foreach ($results as $result) {
 			$result['overview'] = implode(' ', $newwords) . '...';
 		}
 	}
+	$result['failed'] = $fail->getFailedCount($result['grp_release_guid']);
 	$books[] = $result;
 }
 
@@ -55,7 +56,7 @@ $page->smarty->assign('title', $title);
 
 $browseby_link = '&amp;title=' . $title . '&amp;author=' . $author;
 
-$page->smarty->assign('pagertotalitems', $browsecount);
+$page->smarty->assign('pagertotalitems', $results[0]['_totalcount']);
 $page->smarty->assign('pageroffset', $offset);
 $page->smarty->assign('pageritemsperpage', ITEMS_PER_COVER_PAGE);
 $page->smarty->assign('pagerquerybase', WWW_TOP . "/books?t=" . $category . $browseby_link . "&amp;ob=" . $orderby . "&amp;offset=");

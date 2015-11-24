@@ -1,7 +1,6 @@
 <?php
-
 /* This script deletes releases that match certain criteria, type php removeCrapReleases.php false for details. */
-require_once dirname(__FILE__) . '/../../../www/config.php';
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
 use nzedb\ColorCLI;
 use nzedb\ReleaseRemover;

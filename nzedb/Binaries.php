@@ -143,6 +143,12 @@ class Binaries
 	protected $_partRepairMaxTries;
 
 	/**
+	 * An array of binaryblacklist IDs that should have their activity date updated
+	 * @var array(int)
+	 */
+	protected $_binaryBlacklistIdsToUpdate = array();
+
+	/**
 	 * Constructor.
 	 *
 	 * @param array $options Class instances / echo to CLI?
@@ -210,7 +216,7 @@ class Binaries
 
 			$this->log(
 				'Updating: ' . $groupCount . ' group(s) - Using compression? ' . ($this->_compressedHeaders ? 'Yes' : 'No'),
-				'updateAllGroups',
+				__FUNCTION__,
 				Logger::LOG_INFO,
 				'header'
 			);
@@ -219,7 +225,7 @@ class Binaries
 			foreach ($groups as $group) {
 				$this->log(
 					'Starting group ' . $counter . ' of ' . $groupCount,
-					'updateAllGroups',
+					__FUNCTION__,
 					Logger::LOG_INFO,
 					'header'
 				);
@@ -229,18 +235,26 @@ class Binaries
 
 			$this->log(
 				'Updating completed in ' . number_format(microtime(true) - $allTime, 2) . ' seconds.',
-				'updateAllGroups',
+				__FUNCTION__,
 				Logger::LOG_INFO,
 				'primary'
 			);
 		} else {
 			$this->log(
 				'No groups specified. Ensure groups are added to nZEDb\'s database for updating.',
-				'updateAllGroups',
+				__FUNCTION__,
 				Logger::LOG_NOTICE,
 				'warning'
 			);
 		}
+	}
+
+	/**
+	 * When the indexer is started, log the date/time.
+	 */
+	public function logIndexerStart()
+	{
+		$this->_pdo->queryExec("UPDATE settings SET value = NOW() WHERE setting = 'last_run_time'");
 	}
 
 	/**
@@ -255,10 +269,15 @@ class Binaries
 	{
 		$startGroup = microtime(true);
 
+		$this->logIndexerStart();
+
 		// Select the group on the NNTP server, gets the latest info on it.
 		$groupNNTP = $this->_nntp->selectGroup($groupMySQL['name']);
 		if ($this->_nntp->isError($groupNNTP)) {
 			$groupNNTP = $this->_nntp->dataError($this->_nntp, $groupMySQL['name']);
+			if ($groupNNTP->code == 411) {
+				$this->_groups->disableIfNotExist($groupMySQL['id']);
+			}
 			if ($this->_nntp->isError($groupNNTP)) {
 				return;
 			}
@@ -542,9 +561,10 @@ class Binaries
 
 			// Check if the non-compression headers have an error.
 			if ($this->_nntp->isError($headers)) {
+				$message = ($headers->code == 0 ? 'Unknown error' : $headers->message);
 				$this->log(
-					"Code {$headers->code}: {$headers->message}\nSkipping group: {$groupMySQL['name']}",
-					'scan',
+					"Code {$headers->code}: $message\nSkipping group: {$groupMySQL['name']}",
+					__FUNCTION__,
 					Logger::LOG_WARNING,
 					'error'
 				);
@@ -593,7 +613,7 @@ class Binaries
 		$headersRepaired = $articles = $rangeNotReceived = $collectionIDs = $binariesUpdate = $headersReceived = $headersNotInserted = [];
 		$notYEnc = $headersBlackListed = 0;
 
-		$partsQuery = $partsCheck = sprintf('INSERT INTO %s (binaryid, number, messageid, partnumber, size, collection_id) VALUES ', $tableNames['pname']);
+		$partsQuery = $partsCheck = sprintf('INSERT IGNORE INTO %s (binaryid, number, messageid, partnumber, size) VALUES ', $tableNames['pname']);
 
 		$this->_pdo->beginTransaction();
 		// Loop articles, figure out files/parts.
@@ -733,7 +753,7 @@ class Binaries
 				$binaryID = $this->_pdo->queryInsert(
 					sprintf("
 						INSERT INTO %s (binaryhash, name, collection_id, totalparts, currentparts, filenumber, partsize)
-						VALUES ('%s', %s, %d, %d, 1, %d, %d)
+						VALUES (UNHEX('%s'), %s, %d, %d, 1, %d, %d)
 						ON DUPLICATE KEY UPDATE currentparts = currentparts + 1, partsize = partsize + %d",
 						$tableNames['bname'],
 						md5($matches[1] . $header['From'] . $groupMySQL['id']),
@@ -773,7 +793,7 @@ class Binaries
 
 			$partsQuery .=
 				'(' . $binaryID . ',' . $header['Number'] . ',' . rtrim($header['Message-ID'], '>') . "'," .
-				$matches[2] . ',' . $header['Bytes'] . ',' . $collectionID . '),';
+				$matches[2] . ',' . $header['Bytes'] . '),';
 
 		}
 		unset($headers); // Reclaim memory.
@@ -826,6 +846,15 @@ class Binaries
 			);
 		}
 
+		if (!empty($this->_binaryBlacklistIdsToUpdate)) {
+			$this->_pdo->queryExec(
+				sprintf('UPDATE binaryblacklist SET last_activity = NOW() WHERE id IN (%s)',
+					implode(',', $this->_binaryBlacklistIdsToUpdate)
+				)
+			);
+			$this->_binaryBlacklistIdsToUpdate = [];
+		}
+
 		// Start of part repair.
 		$startPR = microtime(true);
 
@@ -844,7 +873,7 @@ class Binaries
 
 				$this->log(
 					$notInsertedCount . ' articles failed to insert!',
-					'scan',
+					__FUNCTION__,
 					Logger::LOG_WARNING,
 					'warning'
 				);
@@ -1067,14 +1096,16 @@ class Binaries
 				$local = $this->_pdo->queryOneRow(
 					sprintf('
 						SELECT c.date AS date
-						FROM %s c, %s p
-						WHERE c.id = p.collection_id
-						AND c.group_id = %s
-						AND p.number = %s LIMIT 1',
+						FROM %s c
+						INNER JOIN %s b ON(c.id=b.collection_id)
+						INNER JOIN %s p ON(b.id=p.binaryid)
+						WHERE p.number = %s
+						%s LIMIT 1',
 						$group['cname'],
+						$group['bname'],
 						$group['pname'],
-						$groupID,
-						$currentPost
+						$currentPost,
+						$this->_tablePerGroup === false ? sprintf('AND c.group_id = %d', $groupID) : ''
 					)
 				);
 				if ($local !== false) {
@@ -1125,8 +1156,8 @@ class Binaries
 
 		if ($this->_debug) {
 			$this->_debugging->log(
-				'Binaries',
-				"postdate",
+				get_class(),
+				__FUNCTION__,
 				'Article (' .
 				$post .
 				"'s) date is (" .
@@ -1346,6 +1377,7 @@ class Binaries
 				if (preg_match('/' . $whiteList['regex'] . '/i', $field[$whiteList['msgcol']])) {
 					// This field matched a white list, so it might not be black listed.
 					$blackListed = false;
+					$this->_binaryBlacklistIdsToUpdate[$whiteList['id']] = $whiteList['id'];
 					break;
 				}
 			}
@@ -1356,6 +1388,7 @@ class Binaries
 			foreach ($this->blackList[$groupName] as $blackList) {
 				if (preg_match('/' . $blackList['regex'] . '/i', $field[$blackList['msgcol']])) {
 					$blackListed = true;
+					$this->_binaryBlacklistIdsToUpdate[$blackList['id']] = $blackList['id'];
 					break;
 				}
 			}
@@ -1390,7 +1423,8 @@ class Binaries
 			sprintf('
 				SELECT
 					binaryblacklist.id, binaryblacklist.optype, binaryblacklist.status, binaryblacklist.description,
-					binaryblacklist.groupname AS groupname, binaryblacklist.regex, groups.id AS group_id, binaryblacklist.msgcol
+					binaryblacklist.groupname AS groupname, binaryblacklist.regex, groups.id AS group_id, binaryblacklist.msgcol,
+					binaryblacklist.last_activity as last_activity
 				FROM binaryblacklist
 				LEFT OUTER JOIN groups ON groups.name %s binaryblacklist.groupname
 				WHERE 1=1 %s %s %s
@@ -1520,12 +1554,12 @@ class Binaries
 	{
 		if ($this->_echoCLI) {
 			$this->_colorCLI->doEcho(
-				$this->_colorCLI->$color($message), true
+				$this->_colorCLI->$color($message . ' [' . get_class() . "::$method]"), true
 			);
 		}
 
 		if ($this->_debug) {
-			$this->_debugging->log('Binaries', $method, $message, $level);
+			$this->_debugging->log(get_class(), $method, $message, $level);
 		}
 	}
 

@@ -35,14 +35,16 @@
 								{elseif $type == 'PC'}
 									class="library-games"
 								{elseif $type == 'TV'}
-									class="library-games"
+									class="library-show"
+								{elseif $type == 'Anime'}
+									class="library-show"
 								{/if}
 								>
 							<div class="poster">
 								<a class="titleinfo" title="{$result.guid}"
 								   href="{$smarty.const.WWW_TOP}/details/{$result.guid}">
 									{if $type == 'Console'}
-										<img width="130px" alt=""
+										<img width="130px" height="195px" alt=""
 											 src="{$smarty.const.WWW_TOP}/covers/console/{$result.consoleinfoid}.jpg"/>
 									{elseif $type == 'Movies'}
 										<img width="140px" height="205px" alt=""
@@ -51,24 +53,27 @@
 										<img width="140px" height="205px" alt=""
 											 src="{$smarty.const.WWW_TOP}/covers/xxx/{$result.xxxinfo_id}-cover.jpg"/>
 									{elseif $type == 'Audio'}
-										<img height="250px" width="250px" alt=""
+										<img width="250px" height="250px" alt=""
 											 src="{$smarty.const.WWW_TOP}/covers/music/{$result.musicinfoid}.jpg"/>
 									{elseif $type == 'Books'}
-										<img height="140px" width="205px" alt=""
+										<img width="140px" height="205px" alt=""
 											 src="{$smarty.const.WWW_TOP}/covers/book/{$result.bookinfoid}.jpg"/>
 									{elseif $type == 'PC'}
-										<img height="130px" width="130px" alt=""
+										<img width="130px" height="195px" alt=""
 											 src="{$smarty.const.WWW_TOP}/covers/games/{$result.gamesinfo_id}.jpg"/>
 									{elseif $type == 'TV'}
-										<img height="130px" width="130px" alt=""
-											 src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$result.tvid}"/>
+										<img width="130px" height="150px" alt=""
+											 src="{$smarty.const.WWW_TOP}/covers/tvshows/{$result.videos_id}.jpg"/>
+									{elseif $type == 'Anime'}
+										<img width="130px" height="195px" alt=""
+											 src="{$smarty.const.WWW_TOP}/covers/anime/{$result.anidbid}.jpg"/>
 									{/if}
 								</a>
 							</div>
 							<div class="rating-pod" id="guid{$result.guid}">
 								<div class="icons">
 									<div class="icon icon_nzb"><a class="divlink" title="Download Nzb"
-																  href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"url"}"></a>
+																  href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}"></a>
 									</div>
 									<div class="icon icon_cart" title="Add to Cart"></div>
 									{if $sabintegrated}
@@ -173,9 +178,45 @@
 											   target="_blank"></a>
 										</div>
 									{elseif $type == 'TV'}
-									<div class="icon icon_tvrage">
-										<a class="divlink" title="View in TvRage"
-										   href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$result.rageid}"
+										{if $result.tvdb > 0}
+											<div class="icon icon_tvdb">
+												<a class="divlink" title="View in TVDB"
+												   href="{$site->dereferrer_link}http://thetvdb.com/?tab=series&id={$result.tvdb}"
+												   target="_blank"></a>
+											</div>
+										{/if}
+										{if $result.tvrage > 0}
+											<div class="icon icon_tvrage">
+												<a class="divlink" title="View in TvRage"
+												   href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$result.tvrage}"
+												   target="_blank"></a>
+											</div>
+										{/if}
+										{if $result.tvmaze > 0}
+											<div class="icon icon_tvmaze">
+												<a class="divlink" title="View in TVMaze"
+												   href="{$site->dereferrer_link}http://www.tvmaze.com/shows/{$result.tvmaze}"
+												   target="_blank"></a>
+											</div>
+										{/if}
+										{if $result.tmdb > 0}
+											<div class="icon icon_tmdb">
+												<a class="divlink" title="View in TMDB"
+												   href="{$site->dereferrer_link}http://www.themoviedb.org/tv/{$result.tmdb}"
+												   target="_blank"></a>
+											</div>
+										{/if}
+										{if $result.imdb > 0}
+											<div class="icon icon_imdb">
+												<a class="divlink" title="View in IMDB"
+												   href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdb}"
+												   target="_blank"></a>
+											</div>
+										{/if}
+									{elseif $type == 'Anime'}
+									<div class="icon icon_anidb">
+										<a class="divlink" title="View in AniDB"
+										   href="{$site->dereferrer_link}http://anidb.net/perl-bin/animedb.pl?show=anime&aid={$result.anidbid}"
 										   target="_blank"></a>
 									</div>
 									{/if}

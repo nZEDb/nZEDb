@@ -1,6 +1,221 @@
 This file details which changes to the code are in which release version. It is a complement to the ChangeLog file which list *when* changes are made to the dev branch.
 
 
+0.5.1 2015-11-03
+Added:
+
+Changed:
+	* Move My Shows to account menu, remove links to calendar and add Anime Series link to charisma template. (PR 1928).
+	* Remove totalrows count from functions, api and templates. (PR 1930).
+	* Speed up series list view query by removing releases join.
+	* Change patch 391 to drop and recreate user_series table due to unknown issue on InnoDB.
+
+Fixed:
+	* Anime pages in omicron/charisma. (PR 1925).
+	* Release Browse Queries not respecting table position on larger Databases with MariaDB.
+	* Tmux counters not accurately reflecting TV work (still off until new scrapers are finished).
+	* SCR in ReleaseRemover and improve query times for all release_files operations on larger databases.
+	* Attempt to fix Issue 1844, Pager counts not reflecting release availability.
+	* Index name on user series.
+	* Release-edit redirecting to wrong page (Issue 1940).
+
+
+0.5.0 2015-11-02
+Added:
+	* Statistical info for grabbed/failed releases to cover, browse and search pages. (PR 1885).
+	* Automatically generate comment on failed download. (PR 1889).
+	* text_hash column, triggers, and index to release_comments to prevent insertion of duplicated comments originating from automated messages, sharing etc. (PR 1891).
+	* List of releases failed to download reported by X-DNZB-Failure headers to admin area. (PR 1892).
+	* Script to extract TV covers from the database and save them to the tvrage directory in covers. .../misc/testing/PostProcess/extractTVCovers.php
+	* Anime new poster wall view. (PR 1897).
+	* updateTvRage.php in misc/testing/PostProc will now run in check mode to reconcile image files against the DB if you imported.
+	* Add view release option to failed releases list. Do not post comment for user, if that user already posted the failure automated comment.
+
+Changed:
+	* Completely refactored TV processing to use multiple sites instead of just TVRage.
+	* Replace TVRage Processing with TVDB
+		***	Note: We found a bug dating back to the beginning that caused bad titles to be inserted into the TvRage table
+          As such, we decided not to incorporate the title data by migrating it to the new videos schema.  We are not dropping the tables yet,
+          as there is still promise in joining the tables at a later date to populate some fields.
+	* Set TV cover images to pull from /covers/tvrage/ ***NOTE*** Run the extractTVCovers script in misc/testing/PostProcess/ ***
+	* Removed getimage.php as it was only used for displaying TV images... TV now adopts the standard cover method.
+	* updateTvRage script now looks for hascover = 0 instead... which still won't work because TVR is down.
+	* Change TVDB client class call. (PR 1894).
+	* Adjust templates for tvrage images change.
+	* Add deletion of dnzb_failures to deleteSingle. (1901).
+	* Improve Codec Poster removal query times by incorporating Sphinx FT if enabled.
+	* Lots more love for Sphinx FT in ReleaseRemover.  Greatly improves query times on big databases.
+	* Update parseTraktTv function, as it was occasionally inserting covers with tt prefix. (PR 1904).
+	* Update the search page in omicron/charisma templates. (PR 1907).
+	* Move all the TV related classes so nzedb/processing/tv folder. Move the processTvReleases function into main TV class. (PR 1910).
+	* Remove text_hash column, trigger and index from release_comments. (PR 1911).
+	* Change the order of removal in Patch 385. (PR 1912).
+
+Fixed:
+	* Invalid icon links in omicron / charisma themes.
+	* Host column misplacement in admin comments list when user ip tracking is enabled. (PR 1890).
+	* Error in extract script and a query error for new poster wall for TV.
+	* Forgot to add untracked anidb icon for poster wall.
+	* AniDB poster wall query not grouping by release.
+	* Attempt to fix AniDB icon not showing in multiple themes.
+	* Omicron poster wall typo, wrong script name in patch file 384.
+	* Alpha TV New Poster Wall missing div tag.
+	* ReleaseRemover not honoring LIKE search types causing blacklist removal issues and not producing enough matches in SPHINX mode.
+	* Undefined index error in updateTvRage.php (Issue 1900).
+	* Layout of tv->anime page. (PR 1905).
+	* Extend episodeSummary function with extended type switch for future use. (PR 1906).
+	* No covers shown on XXX /details pages. (PR 1918).
+	* Incorrect usage of date function (missing strtotime for int value).
+	* View TV Series query speedup caused incorrect join placement (2nd Attempt).
+	* Some local lookups were passing with invalid information causing them to show up as season 0.
+
+
+0.4.26-1 2015-10-07
+Fixed:
+	* Bug in ReleaseRemover which forced a Full Text search. This caused blacklist removal issues and not producing enough matches in SPHINX mode.
+
+0.4.26 2015-10-05
+Added:
+	* Xdebug and PHP settings to nzedb\config\settings.example.php
+		Changed default value of PHPMAILER_ENABLED constant to 'false' instead of undefined (it was commented out).
+		Changed error reporting level to not exclude any messages, as our code should run clean and therefore *any* messages should be investigated.
+		Update your settings.php if you want these.
+        **NOTE** Generating messages slows down the running code and hiding them does not stop them being generated, just displayed.
+	* Sphinx Full-Text Search for Filenames.
+		*** NOTE *** - you will need to do the following to update the sphinx index:
+			0) Minimum Sphinx v2.2.9
+			1) stop sphinxsearch - `sudo service sphinxsearch stop`
+			2) clear old index - `sudo rm /var/lib/sphinxsearch/data/*`
+			3) copy updated conf file - `sudo cp /var/www/nZEDb/misc/sphinxsearch/sphinx.conf /etc/sphinxsearch/sphinx.conf`
+			4) If you had previously edited the conf file - you will need to re-edit again.
+			5) start sphinxsearch - `sudo service sphinxsearch start`
+			6) recreate the tables - `php /var/www/nZEDb/misc/sphinxsearch/create_se_tables.php 0 9312`
+			7) populate the index - `php /var/www/nZEDb/misc/sphinxsearch/populate_rt_indexes.php releases_rt`
+	* Predb export script now has a default filename (predb_export_YYYYMMDDhhmmss.tsv) if only a path is specified.
+	* Display the date which a binary black list was last used (PR 1871).
+	* Base TV Class to make the addition of a new TV scraper easier (Still a WIP).
+	* Add filters to cover pages (PR 1883).
+
+Changed:
+	* More SQL fixes and optimisations (including PR 1871).
+    * Change sidebar menu XXX into Adult to match headermenu, change the icon (PR 1870).
+    * Three Arrows when viewing movie upper right corner (Issue 1850; PR 1854).
+    * Change font used in omicron and charisma templates, adjust layout of coverview pages (PR 1870).
+    * Re-organize and trim some fat out of TvRage.php in preparation for its *glorious* return.
+
+Fixed:
+	* Stopped PreDb import script from creating new groups with quotes around them.
+	* Reverted word-wrap change that caused a space to appear in release titles (alpha theme) Issue 1846 - clear your smarty cache.
+	* API search broken because of missing parameter.
+	* Sphinx Search broken for MariaDB installs (re-run create_se_tables script).
+	* Fix RSS Content Length Response (PR 1849).
+	* Collection regex edit page not showing the result.
+	* Display of api/download hits, in omicron and charisma templates, in last 24 hours (PR 1856).
+    * Background colors on profile and profile edit pages (PR 1857).
+    * Adjustments and fixes in charisma and omicron templates (PR 1858).
+    * Add back missing invites in profile page of charisma/omicron templates (PR 1869).
+    * Fix api json output (PR 1878).
+    * Updated predb insert trigger that got missed for new installs, (Issue 1875).
+
+
+0.4.25 2015-09-07
+Added:
+	* Two new templates from Darius: Charisma and Omicron.
+	* New Ubuntu 14.04.02 install instructions (PR 1784).
+	* Movie trailer configurable settings to Admin section of site.
+
+Changed:
+	* Wide spread changes to Database indexes and queries, to improve overall performance.
+		*** MUST RUN *** TPG Script to DROP old collections TRIGGERS after Patch 374 /nzedb/build/_runonce/tpg_delete_triggers_2015-08-14.php
+		***NOTE*** if using sphinxsearch then run 'php misc/sphinxsearch/toggle_search_type.php sphinx' to remove unnecessary release_search_data triggers.
+	* Parse most of the TraktTV details for movies.
+	* Add default values for movieinfo table.
+	* Tmux no longer analyses InnoDb tables on start up, as InnoDb uses online analasis (No change for MyISAM tables).
+	* Updates to Categorizing.
+	* Updates to Alpha theme.
+	* Console Processing Local now requires an exact platform match just like the Amazon lookups to prevent incorrect platform matches
+
+Fixed:
+	* Problem during install not loading settings.php from configuration.
+	* Delete collections that are broken after a timeout period (Issue 1791 + PR 1793).
+	* Error causing details and getnzb pages to intermiiently not load (Issue 1782).
+	* Issue where YouTube trailer URL's would get overwritten with the wrong URL.
+	* Issue where API NZB downloads would fail.
+	* Predb export scripts had a typo which prevented it working correctly.
+	* Display of movie trailers (Issue 1811).
+	* a.b.moovee collection regex, that was splitting subs out separately.
+	* PHP error if rowCount() is null (Issue 1834).
+	* predb_import_daily_batch script to properly calculate last timestamp for progress mode.
+	* Console Processing failing to validate Amazon API Return (Issue 1819).
+	* Invalid date-time format when updating consoleinfo if releasedate is blank.
+	* Issue with NZBDrone/Sonarr not having content-length header set on API calls.
+
+
+0.4.24 2015-08-03
+Added:
+	* Pick up additional RAR names (PR 1716).
+	* Support for downloading last rar/zip file when post processing (PR 1726).
+	* Matching for hyphenated music scene release names (PR 1719).
+	* Ordering comments by created date. Showing newest on top (PR 1712).
+	* Support for APCu or APC for caching (PR 1722).
+	* Adding a limit to the maximum number of headers a single group can grab per iteration of the main loop (default 1,000,000).
+
+Changed:
+	* All configuration files should now reside in .../nzedb/config.
+		*** IMPORTANT *** This will require manually moving some files, such as .../www/config.php and .../www/settings.php Keving has written a script to handle this for those that are too lazy ;-)
+		https://gist.github.com/kevinlekiller/233052179689512a5f58
+		You will also have to remove the require_once line from the bottom of config.php (handled by the script also).
+	* Query caching changes.
+	* Updated Smarty to v3.1.27
+	* Improvement in NNTP compression handling (Issue 1735).
+	* Returned user signups by month view, back to site-stats (PR 1740).
+	* Update ReleaseRemover with new variant of codec installer file (PR 1759).
+
+Fixed:
+	* Select All and Delete, in Advanced Search, not working (Issues 1713 1715).
+	* IRCScraper script (scrape.php) now looks in the correct location for its configuration file.
+	* Various Error Notices/Warnings (Issue 1714, 1737; PR 1742).
+	* Support for trakt.tv API v2 (PR 1728 and PR 1730).
+	* Issue if nZEDb_SSL_CAFILE is empty (PR 1729).
+	* API regarding JSON-Output (PR 1747).
+	* Updated regex for predb_import_daily_batch script to account for Dropbox's changes to link HTML.
+
+
+0.4.23 2015-07-06
+Added:
+	* Created a config directory under .../nzedb to contain configuration/settings files, so they are all together and don't need paths changing when code moves. I'll gradually move older config/settings files here, with some exceptions TBD.
+	* Matching for hyphenated music scene release names. (PR 1719)
+	* Support for APCu or APC for caching. (PR 1722)
+	* Option to show non-passworded releases AND unprocessed releases.
+	* Adding a limit to the maximum number of headers a single group can grab per iteration of the main loop. This allows for a reasonably safe catchup ability on out of date groups, without completely choking the database with one group's headers ;-)
+		***NOTE*** this may slow things down for some users of *very* active groups.
+		There is an entry in the Settings table (max=>headers=>iteration) to set the value (default 1,000,000), an entry in admin => Edit Site to make this easier will come when someone can be coerced into doing smarty work ;-)
+	* Support for post-prossessing to download the last RAR/Zip file, in order to find filenames.
+	* Add support for trakt.tv API v2. (PR 1728)
+
+Changed:
+	* Updated Smarty to v3.1.27
+	* Moved IRCScraper example settings file to the .../nzedb/config directory
+	* Ordering comments by created date. Showing newest on top. (PR 1712)
+	* Improvements to query caching.
+	* NZBImport now adds groups if they don't exist in the database instead of skipping the release.
+	* Avoid MySQL caching on transient content. This prevents useless data from filling the cache in place of useful data. (PR 1738)
+	* Allow NNTP to retry if compression fails to initialise.
+	* Autoloading for Smarty framework uses its Autoloader. Web pages now use a streamlined version of the previous autoloader, which is now removed from the Smarty tree. (Install process hasn't been tested yet. Let us know of any problems).
+
+Fixed:
+	* Issues 1713 and 1715. Select all + delete in advanced search.
+	* Problems with users being unable to log in due to double quoting in the db lookup query.
+	* Undefined offset: 1 in MiscSorter.php - Issue 1714.
+	* Fix the nzbFileList function. (PR 1727)
+	* Fix for changes in Trakt API v2. (PR 1730)
+	* Fix issues if nZEDb_SSL_CAFILE is empty. (PR 1729)
+	* Various Error Notices/Warning from PHP. (Issue #1737) and others.
+	* Users by month restored to site stats.
+	* API capabilites in JSON format.
+	* Installation file requiring corrected.
+
+
 0.4.22 2015-06-01
 Added:
 	* Captcha feature.

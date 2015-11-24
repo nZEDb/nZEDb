@@ -3,6 +3,7 @@
 use nzedb\Category;
 use nzedb\Console;
 use nzedb\Genres;
+use nzedb\DnzbFailures;
 
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
@@ -11,6 +12,7 @@ if (!$page->users->isLoggedIn()) {
 $console = new Console(['Settings' => $page->settings]);
 $cat = new Category(['Settings' => $page->settings]);
 $gen = new Genres(['Settings' => $page->settings]);
+$fail = new DnzbFailures(['Settings' => $page->settings]);
 
 $concats = $cat->getChildren(Category::CAT_PARENT_GAME);
 $ctmp = array();
@@ -28,8 +30,6 @@ $catarray[] = $category;
 $page->smarty->assign('catlist', $ctmp);
 $page->smarty->assign('category', $category);
 
-$browsecount = $console->getConsoleCount($catarray, -1, $page->userdata["categoryexclusions"]);
-
 $offset = (isset($_REQUEST["offset"]) && ctype_digit($_REQUEST['offset'])) ? $_REQUEST["offset"] : 0;
 $ordering = $console->getConsoleOrdering();
 $orderby = isset($_REQUEST["ob"]) && in_array($_REQUEST['ob'], $ordering) ? $_REQUEST["ob"] : '';
@@ -46,6 +46,7 @@ foreach ($results as $result) {
 			$result['review'] = implode(' ', $newwords) . '...';
 		}
 	}
+	$result['failed'] = $fail->getFailedCount($result['grp_release_guid']);
 	$consoles[] = $result;
 }
 
@@ -66,7 +67,7 @@ $page->smarty->assign('genre', $genre);
 
 $browseby_link = '&amp;title=' . $title . '&amp;platform=' . $platform;
 
-$page->smarty->assign('pagertotalitems', $browsecount);
+$page->smarty->assign('pagertotalitems', $results[0]['_totalcount']);
 $page->smarty->assign('pageroffset', $offset);
 $page->smarty->assign('pageritemsperpage', ITEMS_PER_COVER_PAGE);
 $page->smarty->assign('pagerquerybase', WWW_TOP . "/console?t=" . $category . $browseby_link . "&amp;ob=" . $orderby . "&amp;offset=");

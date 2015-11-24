@@ -15,7 +15,7 @@ if (!isset($argv[1])) {
 	exit("This script is not intended to be run manually." . PHP_EOL);
 }
 
-require_once dirname(__FILE__) . '/../../../config.php';
+require_once realpath(dirname(dirname(dirname(dirname(dirname(__DIR__))))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
 // Are we coming from python or php ? $options[0] => (string): python|php
 // The type of process we want to do: $options[1] => (string): releases

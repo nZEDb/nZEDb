@@ -17,7 +17,7 @@ use nzedb\ReleaseImage;
 use nzedb\Releases;
 use nzedb\SphinxSearch;
 use nzedb\db\Settings;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
 class ProcessAdditional
 {
@@ -705,6 +705,11 @@ class ProcessAdditional
 					// Download the RARs/ZIPs, extract the files inside them and insert the file info into the DB.
 					$this->_processNZBCompressedFiles();
 
+					// Download rar/zip in reverse order, to get the last rar or zip file.
+					if ($this->pdo->getSetting('fetchlastcompressedfiles') == 1) {
+						$this->_processNZBCompressedFiles(true);
+					}
+
 					if ($this->_releaseHasPassword === false) {
 						// Process the extracted files to get video/audio samples/etc.
 						$this->_processExtractedFiles();
@@ -789,21 +794,20 @@ class ProcessAdditional
 			return $this->_decrementPasswordStatus();
 		}
 
-		$nzbContents = Utility::unzipGzipFile($nzbPath);
+		$nzbContents = Misc::unzipGzipFile($nzbPath);
 		if (!$nzbContents) {
 			$this->_echo('NZB is empty or broken for GUID: ' . $this->_release['guid'], 'warning');
 			return $this->_decrementPasswordStatus();
 		}
 
 		// Get a list of files in the nzb.
-		$this->_nzbContents = $this->_nzb->nzbFileList($nzbContents);
+		$this->_nzbContents = $this->_nzb->nzbFileList($nzbContents, ['no-file-key' => false, 'strip-count' => true]);
 		if (count($this->_nzbContents) === 0) {
 			$this->_echo('NZB is potentially broken for GUID: ' . $this->_release['guid'], 'warning');
 			return $this->_decrementPasswordStatus();
 		}
-
-		// Sort the files inside the NZB.
-		usort($this->_nzbContents, ['\nzedb\processing\post\ProcessAdditional', '_sortNZB']);
+		// Sort keys.
+		ksort($this->_nzbContents, SORT_NATURAL);
 
 		return true;
 	}
@@ -857,7 +861,7 @@ class ProcessAdditional
 			// Check if it's a rar/zip.
 			if ($this->_NZBHasCompressedFile === false &&
 				preg_match(
-					'/\.(part0*1|part0+|r0+|r0*1|rar|0+|0*10?|zipr\d{2,3}|zipx?)(\s*\.rar)*($|[ ")\]-])|"[a-f0-9]{32}\.[1-9]\d{1,2}".*\(\d+\/\d{2,}\)$/i',
+					'/\.(part\d+|r\d+|rar|0+|0*10?|zipr\d{2,3}|zipx?)(\s*\.rar)*($|[ ")\]-])|"[a-f0-9]{32}\.[1-9]\d{1,2}".*\(\d+\/\d{2,}\)$/i',
 					$this->_currentNZBFile['title']
 				)
 			) {
@@ -938,10 +942,26 @@ class ProcessAdditional
 	}
 
 	/**
-	 * Process the NZB contents, find RAR/ZIP files, download them and extract them.
+	 * List of message-id's we have tried for rar/zip files.
+	 * @var array
 	 */
-	protected function _processNZBCompressedFiles()
+	protected $_triedCompressedMids = [];
+
+	/**
+	 * Process the NZB contents, find RAR/ZIP files, download them and extract them.
+	 *
+	 * @param bool $reverse Reverse sort $this->_nzbContents ? - To find the largest rar / zip file first.
+	 */
+	protected function _processNZBCompressedFiles($reverse = false)
 	{
+		if ($reverse) {
+			if (!krsort($this->_nzbContents)) {
+				return;
+			}
+		} else {
+			$this->_triedCompressedMids = [];
+		}
+
 		$failed = $downloaded = 0;
 		// Loop through the files, attempt to find if password-ed and files. Starting with what not to process.
 		foreach ($this->_nzbContents as $nzbFile) {
@@ -959,7 +979,7 @@ class ProcessAdditional
 
 			// Probably not a rar/zip.
 			if (!preg_match(
-				'/\.(part0*1|part0+|r0+|r0*1|rar|0+|0*10?|zipr\d{2,3}|zipx?)(\s*\.rar)*($|[ ")\]-])|"[a-f0-9]{32}\.[1-9]\d{1,2}".*\(\d+\/\d{2,}\)$/i',
+				'/\.(part\d+|r\d+|rar|0+|0*10?|zipr\d{2,3}|zipx?)(\s*\.rar)*($|[ ")\]-])|"[a-f0-9]{32}\.[1-9]\d{1,2}".*\(\d+\/\d{2,}\)$/i',
 				$nzbFile['title']
 			)
 			) {
@@ -973,7 +993,18 @@ class ProcessAdditional
 				if ($i > $segCount) {
 					break;
 				}
-				$mID[] = (string)$nzbFile['segments'][$i];
+				$segment = (string)$nzbFile['segments'][$i];
+				if (!$reverse) {
+					$this->_triedCompressedMids[] = $segment;
+				} else if (in_array($segment, $this->_triedCompressedMids)) {
+					// We already downloaded this file.
+					continue 2;
+				}
+				$mID[] = $segment;
+			}
+			// Nothing to download.
+			if (empty($mID)) {
+				continue;
 			}
 
 			// Download the article(s) from usenet.
@@ -1049,7 +1080,7 @@ class ProcessAdditional
 				if ($this->_extractUsingRarInfo === false && $this->_unrarPath !== false) {
 					$fileName = $this->tmpPath . uniqid() . '.rar';
 					file_put_contents($fileName, $compressedData);
-					Utility::runCmd(
+					Misc::runCmd(
 						$this->_killString . $this->_unrarPath .
 						'" e -ai -ep -c- -id -inul -kb -or -p- -r -y "' .
 						$fileName . '" "' . $this->tmpPath . 'unrar/"'
@@ -1065,7 +1096,7 @@ class ProcessAdditional
 				if ($this->_extractUsingRarInfo === false && $this->_7zipPath !== false) {
 					$fileName = $this->tmpPath . uniqid() . '.zip';
 					file_put_contents($fileName, $compressedData);
-					Utility::runCmd(
+					Misc::runCmd(
 						$this->_killString . $this->_7zipPath . '" x "' .
 						$fileName . '" -bd -y -o"' . $this->tmpPath . 'unzip/"'
 					);
@@ -1138,8 +1169,10 @@ class ProcessAdditional
 					}
 				}
 			}
-
 			$this->_addFileInfo($file);
+		}
+		if ($this->_addedFileInfo > 0) {
+			$this->sphinx->updateRelease($this->_release['id'], $this->pdo);
 		}
 		return ($this->_totalFileInfo > 0 ? true : false);
 	}
@@ -1169,7 +1202,7 @@ class ProcessAdditional
 				$this->pdo->queryOneRow(
 					sprintf(
 						'
-						SELECT id FROM release_files
+						SELECT releaseid FROM release_files
 						WHERE releaseid = %d
 						AND name = %s
 						AND size = %d',
@@ -1297,7 +1330,7 @@ class ProcessAdditional
 
 					// Check file's magic info.
 					else {
-						$output = Utility::fileInfo($file);
+						$output = Misc::fileInfo($file);
 						if (!empty($output)) {
 
 							switch (true) {
@@ -1726,13 +1759,13 @@ class ProcessAdditional
 			if ($retVal === false) {
 
 				// Get the media info for the file.
-				$xmlArray = Utility::runCmd(
+				$xmlArray = Misc::runCmd(
 					$this->_killString . $this->pdo->getSetting('mediainfopath') . '" --Output=XML "' . $fileLocation . '"'
 				);
 				if (is_array($xmlArray)) {
 
 					// Convert to array.
-					$arrXml = Utility::objectsIntoArray(@simplexml_load_string(implode("\n", $xmlArray)));
+					$arrXml = Misc::objectsIntoArray(@simplexml_load_string(implode("\n", $xmlArray)));
 
 					if (isset($arrXml['File']['track'])) {
 
@@ -1773,7 +1806,7 @@ class ProcessAdditional
 											$this->_release['id']
 										)
 									);
-									$this->sphinx->updateReleaseSearchName($this->_release['id'], $newTitle);
+									$this->sphinx->updateRelease($this->_release['id'], $this->pdo);
 
 									// Echo the changed name.
 									if ($this->_echoCLI) {
@@ -1813,7 +1846,7 @@ class ProcessAdditional
 				$audioFileName = ($this->_release['guid'] . '.ogg');
 
 				// Create an audio sample.
-				Utility::runCmd(
+				Misc::runCmd(
 					$this->_killString .
 					$this->pdo->getSetting('ffmpegpath') .
 					'" -t 30 -i "' .
@@ -1916,7 +1949,7 @@ class ProcessAdditional
 
 		$tmpVideo = ($this->tmpPath . uniqid() . $extension);
 		// Get the real duration of the file.
-		$time = Utility::runCmd(
+		$time = Misc::runCmd(
 			$this->_killString .
 			$this->pdo->getSetting('ffmpegpath') .
 			'" -i "' . $videoLocation .
@@ -1962,7 +1995,7 @@ class ProcessAdditional
 			$time = $this->getVideoTime($fileLocation);
 
 			// Create the image.
-			Utility::runCmd(
+			Misc::runCmd(
 				$this->_killString .
 				$this->pdo->getSetting('ffmpegpath') .
 				'" -i "' .
@@ -2055,7 +2088,7 @@ class ProcessAdditional
 					}
 
 					// Try to get the sample (from the end instead of the start).
-					Utility::runCmd(
+					Misc::runCmd(
 						$this->_killString .
 						$this->pdo->getSetting('ffmpegpath') .
 						'" -i "' .
@@ -2072,7 +2105,7 @@ class ProcessAdditional
 
 			if ($newMethod === false) {
 				// If longer than 60 or we could not get the video length, run the old way.
-				Utility::runCmd(
+				Misc::runCmd(
 					$this->_killString .
 					$this->pdo->getSetting('ffmpegpath') .
 					'" -i "' .
@@ -2147,7 +2180,7 @@ class ProcessAdditional
 		if (is_file($fileLocation)) {
 
 			// Run media info on it.
-			$xmlArray = Utility::runCmd(
+			$xmlArray = Misc::runCmd(
 				$this->_killString . $this->pdo->getSetting('mediainfopath') . '" --Output=XML "' . $fileLocation . '"'
 			);
 
@@ -2242,7 +2275,7 @@ class ProcessAdditional
 				if ($filesAdded < 11 &&
 					$this->pdo->queryOneRow(
 						sprintf(
-							'SELECT id FROM release_files WHERE releaseid = %d AND name = %s',
+							'SELECT releaseid FROM release_files WHERE releaseid = %d AND name = %s',
 							$this->_release['id'], $this->pdo->escapeString($file['name'])
 						)
 					) === false
@@ -2352,17 +2385,16 @@ class ProcessAdditional
 					$this->pdo->queryExec(
 						sprintf(
 							'UPDATE releases
-							SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL,
-								tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL,
-								consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, preid = 0,
-								searchname = %s, isrenamed = 1, iscategorized = 1, proc_files = 1, categoryid = %d
+							SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL,
+							bookinfoid = NULL, anidbid = NULL, preid = 0, searchname = %s, isrenamed = 1, iscategorized = 1,
+							proc_files = 1, categoryid = %d
 							WHERE id = %d',
 							$newTitle,
 							$newCategory,
 							$this->_release['id']
 						)
 					);
-					$this->sphinx->updateReleaseSearchName($this->_release['id'], $newTitle);
+					$this->sphinx->updateRelease($this->_release['id'], $this->pdo);
 
 					// Echo the changed name to CLI.
 					if ($this->_echoCLI) {

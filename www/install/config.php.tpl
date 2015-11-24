@@ -38,5 +38,3 @@ define('nZEDb_SSL_VERIFY_PEER', '%%nZEDb_SSL_VERIFY_PEER%%');
 define('nZEDb_SSL_VERIFY_HOST', '%%nZEDb_SSL_VERIFY_HOST%%');
 // Allow self signed certificates. Note this does not work on CURL as CURL does not have this option.
 define('nZEDb_SSL_ALLOW_SELF_SIGNED', '%%nZEDb_SSL_ALLOW_SELF_SIGNED%%');
-
-require_once 'automated.config.php';

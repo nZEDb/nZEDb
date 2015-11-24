@@ -2,8 +2,8 @@
 
 {$site->addetail}
 
-{if $rage && $release.rageid > 0 && $rage.imgdata != ""}<img class="shadow" src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$rage.id}" width="180" alt="{$rage.releasetitle|escape:"htmlall"}" style="float:right;" />{/if}
-{if $movie && $release.rageid < 0 && $movie.cover == 1}<img class="shadow" src="{$smarty.const.WWW_TOP}/covers/movies/{$movie.imdbid}-cover.jpg" width="180" alt="{$movie.title|escape:"htmlall"}" style="float:right;" />{/if}
+{if $show && $release.videos_id > 0 && $show.imgdata != ""}<img class="shadow" src="{$smarty.const.WWW_TOP}/covers/shows/{$show.id}" width="180" alt="{$show.releasetitle|escape:"htmlall"}" style="float:right;" />{/if}
+{if $movie && $release.videos_id < 0 && $movie.cover == 1}<img class="shadow" src="{$smarty.const.WWW_TOP}/covers/movies/{$movie.imdbid}-cover.jpg" width="180" alt="{$movie.title|escape:"htmlall"}" style="float:right;" />{/if}
 {if $anidb && $release.anidbid > 0 && $anidb.picture != ""}<img class="shadow" src="{$smarty.const.WWW_TOP}/covers/anime/{$anidb.anidbid}.jpg" width="180" alt="{$anidb.title|escape:"htmlall"}" style="float:right;" />{/if}
 {if $con && $con.cover == 1}<img class="shadow" src="{$smarty.const.WWW_TOP}/covers/console/{$con.id}.jpg" width="160" alt="{$con.title|escape:"htmlall"}" style="float:right;" />{/if}
 {if $boo && $boo.cover == 1}<img class="shadow" src="{$smarty.const.WWW_TOP}/covers/book/{$boo.id}.jpg" width="160" alt="{$boo.title|escape:"htmlall"}" style="float:right;" />{/if}
@@ -17,23 +17,23 @@
 	{/if}
 	<tr><th>Name:</th><td>{$release.name|escape:"htmlall"}</td></tr>
 
-	{if $rage && $release.rageid > 0}
+	{if $show && $release.videos_id > 0}
 		<tr><th>Tv Info:</th><td>
-			<strong>{if $release.tvtitle != ""}{$release.tvtitle|escape:"htmlall"} - {/if}{$release.seriesfull|replace:"S":"Season "|replace:"E":" Episode "}</strong><br />
-			{if $rage.description != ""}<span class="descinitial">{$rage.description|escape:"htmlall"|nl2br|magicurl|truncate:"350":" <a class=\"descmore\" href=\"#\">more...</a>"}</span>{if $rage.description|strlen > 350}<span class="descfull">{$rage.description|escape:"htmlall"|nl2br|magicurl}</span>{/if}<br /><br />{/if}
-			{if $rage.genre != ""}<strong>Genre:</strong> {$rage.genre|escape:"htmlall"|replace:"|":", "}<br />{/if}
-			{if $release.tvairdate != ""}<strong>Aired:</strong> {$release.tvairdate|date_format}<br/>{/if}
-			{if $rage.country != ""}<strong>Country:</strong> {$rage.country}{/if}
+			<strong>{if $release.title != ""}{$release.title|escape:"htmlall"} - {/if}{$release.seriesfull|replace:"S":"Season "|replace:"E":" Episode "}</strong><br />
+			{if $show.description != ""}<span class="descinitial">{$show.description|escape:"htmlall"|nl2br|magicurl|truncate:"350":" <a class=\"descmore\" href=\"#\">more...</a>"}</span>{if $show.description|strlen > 350}<span class="descfull">{$show.description|escape:"htmlall"|nl2br|magicurl}</span>{/if}<br /><br />{/if}
+			{if $show.genre != ""}<strong>Genre:</strong> {$show.genre|escape:"htmlall"|replace:"|":", "}<br />{/if}
+			{if $release.firstaired != ""}<strong>Aired:</strong> {$release.firstaired|date_format}<br/>{/if}
+			{if $show.countries_id != ""}<strong>Country:</strong> {$show.countries_id}{/if}
 			<div style="margin-top:10px;">
-				<a class="rndbtn" title="View all episodes from this series" href="{$smarty.const.WWW_TOP}/series/{$release.rageid}">All Episodes</a>
-				<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$release.rageid}" title="View at TV Rage">TV Rage</a>
-				<a class="rndbtn" href="{$smarty.const.WWW_TOP}/rss?rage={$release.rageid}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}" title="Rss feed for this series">Series Rss Feed</a>
+				<a class="rndbtn" title="View all episodes from this series" href="{$smarty.const.WWW_TOP}/series/{$release.videos_id}">All Episodes</a>
+				{if $release.tvrage >0}<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$release.tvrage}" title="View at TV Rage">TV Rage</a>{/if}
+				<a class="rndbtn" href="{$smarty.const.WWW_TOP}/rss?show={$release.videos_id}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}" title="Rss feed for this series">Series Rss Feed</a>
 			</div>
 			</td>
 		</tr>
 	{/if}
 
-	{if $movie && $release.rageid < 0}
+	{if $movie && $release.videos_id < 0}
 	<tr><th>Movie Info:</th><td>
 		<strong>{$movie.title|stripslashes|escape:"htmlall"} ({$movie.year}) {if $movie.rating !== ''}{$movie.rating}/10{/if}</strong>
 		{if $movie.tagline != ''}<br />{$movie.tagline|stripslashes|escape:"htmlall"}{/if}
@@ -88,10 +88,10 @@
 
 	{if $anidb && $anidb.anidbid > 0}
 		<tr><th>Anime Info:</th><td>
-			<strong>{if $release.tvtitle != ""}{$release.tvtitle|escape:"htmlall"}{/if}</strong><br />
+			<strong>{if $release.title != ""}{$release.title|escape:"htmlall"}{/if}</strong><br />
 			{if $anidb.description != ""}<span class="descinitial">{$anidb.description|escape:"htmlall"|nl2br|magicurl|truncate:"350":" <a class=\"descmore\" href=\"#\">more...</a>"}</span>{if $anidb.description|strlen > 350}<span class="descfull">{$anidb.description|escape:"htmlall"|nl2br|magicurl}</span>{/if}<br /><br />{/if}
 			{if $anidb.categories != ""}<strong>Categories:</strong> {$anidb.categories|escape:"htmlall"|replace:"|":", "}<br />{/if}
-			{if $release.tvairdate != "0000-00-00 00:00:00"}<strong>Aired:</strong> {$release.tvairdate|date_format}<br/>{/if}
+			{if $release.firstaired != "0000-00-00 00:00:00"}<strong>Aired:</strong> {$release.firstaired|date_format}<br/>{/if}
 			<div style="margin-top:10px;">
 				<a class="rndbtn" title="View all episodes from this anime" href="{$smarty.const.WWW_TOP}/anime/{$release.anidbid}">All Episodes</a>
 				<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://anidb.net/perl-bin/animedb.pl?show=anime&aid={$anidb.anidbid}" title="View at AniDB">AniDB</a>
@@ -187,7 +187,7 @@
 
 	<tr><th>Group:</th><td title="{$release.group_name}"><a title="Browse {$release.group_name}" href="{$smarty.const.WWW_TOP}/browse?g={$release.group_name}">{$release.group_name|replace:"alt.binaries":"a.b"}</a></td></tr>
 	<tr><th>Category:</th><td><a title="Browse by {$release.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$release.categoryid}">{$release.category_name}</a></td></tr>
-	{if $nfo.id|@count > 0}
+	{if $nfo.releaseid|@count > 0}
 	<tr><th>Nfo:</th><td><a href="{$smarty.const.WWW_TOP}/nfo/{$release.guid}" title="View Nfo">View Nfo</a></td></tr>
 	{/if}
 
@@ -353,7 +353,7 @@
 
 	<tr><th>Size:</th><td>{$release.size|fsize_format:"MB"}{if $release.completion > 0}&nbsp;({if $release.completion < 100}<span class="warning">{$release.completion}%</span>{else}{$release.completion}%{/if}){/if}</td></tr>
 	<tr><th>ID:</th><td>{$release.id}</td></tr>
-	<tr><th>TvRage Id:</th><td>{$release.rageid}</td></tr>
+	<tr><th>Video Id:</th><td>{$release.videos_id}</td></tr>
 	<tr><th>IMDB Id:</th><td>{$release.imdbid}</td></tr>
 	<tr><th>TMDB Id:</th><td>{$release.tmdbid}</td></tr>
 	<tr><th>Anidb Id:</th><td>{$release.anidbid}</td></tr>
@@ -425,7 +425,7 @@
 	<tr><th>Posted:</th><td title="{$release.postdate}">{$release.postdate} ({$release.postdate|daysago})</td></tr>
 	<tr><th>Added:</th><td title="{$release.adddate}">{$release.adddate} ({$release.adddate|daysago})</td></tr>
 	<tr id="guid{$release.guid}"><th>Download:</th><td>
-		<div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$release.guid}/{$release.searchname|escape:"htmlall"}">&nbsp;</a></div>
+		<div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$release.guid}">&nbsp;</a></div>
 		<div class="icon icon_cart" title="Add to Cart"></div>
 		{if $sabintegrated}<div class="icon icon_sab" title="Send to my Queue"></div>{/if}
 	</td></tr>
@@ -435,7 +435,7 @@
 		<th>Similar:</th>
 		<td>
 			{foreach from=$similars item=similar}
-				<a title="View similar Nzb details" href="{$smarty.const.WWW_TOP}/details/{$similar.guid}/{$similar.searchname|escape:"htmlall"}">{$similar.searchname|escape:"htmlall"}</a><br/>
+				<a title="View similar Nzb details" href="{$smarty.const.WWW_TOP}/details/{$similar.guid}">{$similar.searchname|escape:"htmlall"}</a><br/>
 			{/foreach}
 			<br/>
 			<a title="Search for similar Nzbs" href="{$smarty.const.WWW_TOP}/search/{$searchname|escape:"htmlall"}">Search for similar NZBs...</a><br/>

@@ -3,7 +3,7 @@ namespace nzedb;
 
 require_once nZEDb_LIBS . 'simple_html_dom.php';
 
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
 class ADM
 {
@@ -101,16 +101,20 @@ class ADM
 	 */
 	public function covers()
 	{
-		if ($ret = $this->_html->find('img[rel=license]', 0)) {
-			if (isset($ret->next_sibling()->href)) {
-				if (preg_match('/filename\=(?<covers>(.*))\'/i', $ret->next_sibling()->href, $matches)
+		$baseUrl = 'http://www.adultdvdmarketplace.com/';
+		if ($ret = $this->_html->find('a[rel=fancybox-button]', 0)) {
+			if (isset($ret->href)) {
+				if (preg_match('/images\/.*[0-9]+\.jpg/i', $ret->href, $matches)
 				) {
-					$this->_res['boxcover'] = $matches['covers'];
-					$this->_res['backcover'] = preg_replace('/front/i', 'back', $matches['covers']);
+					$this->_res['boxcover'] = $baseUrl . $matches[0];
+					$this->_res['backcover'] = $baseUrl . preg_replace('/front/i', 'back', $matches[0]);
 				}
 			}
+		} elseif ($ret = $this->_html->find('img[rel=license]', 0)) {
+			if (preg_match('/images\/.*[0-9]+\.jpg/i', $ret->src, $matches)) {
+				$this->_res['boxcover'] = $baseUrl . $matches[0];
+			}
 		}
-
 		return $this->_res;
 	}
 
@@ -120,14 +124,11 @@ class ADM
 	 */
 	public function sypnosis()
 	{
-		if ($ret = $this->_html->find('span[itemprop=description]', 0)) {
-			if (preg_match('/(?<tagline>\<b\>(.*)\<\/b\>)/i', $ret->innertext, $matches)) {
-				$this->_res['tagline'] = trim(strip_tags($matches['tagline']));
-				$ret->plaintext = str_replace($matches['tagline'], '', $ret->innertext);
+		$this->_res['sypnosis'] = "N/A";
+		foreach ($this->_html->find('h3') as $heading) {
+			if (trim($heading->plaintext) == "Description") {
+				$this->_res['sypnosis'] = trim($heading->next_sibling()->plaintext);
 			}
-			$this->_res['sypnosis'] = trim(strip_tags($ret->plaintext, "<br>"));
-		} else {
-			$this->_res['sypnosis'] = "N/A";
 		}
 
 		return $this->_res;
@@ -141,20 +142,19 @@ class ADM
 	 */
 	public function productInfo()
 	{
-		foreach ($this->_html->find('td.DarkGrayTable') as $category) {
-			switch (trim($category->plaintext)) {
-				case "DIRECTOR":
-					$this->_res['director'] = trim($category->next_sibling()->plaintext);
-					break;
-				case "FORMAT":
-				case "STUDIO":
-				case "RELEASED":
-				case "SKU":
-					$this->_res['productinfo'][$category->plaintext] = trim($category->next_sibling()->plaintext);
-					break;
-			}
-		}
-
+		foreach ($this->_html->find('ul.list-unstyled li') as $li) {
+					$category = explode(":", $li->plaintext);
+					switch (trim($category[0])) {
+						case "Director":
+							$this->_res['director'] = trim($category[1]);
+							break;
+						case "Format":
+						case "Studio":
+						case "Released":
+						case "SKU":
+							$this->_res['productinfo'][trim($category[0])] = trim($category[1]);
+					}
+				}
 		return $this->_res;
 	}
 
@@ -165,13 +165,11 @@ class ADM
 	public function cast()
 	{
 		$cast = [];
-		foreach ($this->_html->find('td.section_heading') as $category) {
-			if (trim($category->plaintext) == "CAST") {
-				foreach ($this->_html->find('td.GrayDialogBody') as $td) {
-					foreach ($td->find('a') as $actor) {
-						if (preg_match_all('/search_performerid/', $actor->href, $matches)) {
-							$cast[] = trim($actor->plaintext);
-						}
+		foreach ($this->_html->find('h3') as $heading) {
+			if (trim($heading->plaintext) == "Cast") {
+				for ($next = $heading->next_sibling(); $next && $next->nodeName != 'h3'; $next = $next->next_sibling()) {
+					if (preg_match_all('/search_performerid/', $next->href, $matches)) {
+						$cast[] = trim($next->plaintext);
 					}
 				}
 			}
@@ -188,10 +186,12 @@ class ADM
 	public function genres()
 	{
 		$genres = [];
-		foreach ($this->_html->find('td.DarkGrayTable') as $category) {
-			if (trim($category->plaintext) == "CATEGORY") {
-				foreach ($category->next_sibling()->find('a') as $e) {
-					$genres[] = trim($e->plaintext);
+		foreach ($this->_html->find('ul.list-unstyled li') as $li) {
+			$category = explode(":", $li->plaintext);
+			if (trim($category[0]) == "Category") {
+				$g = explode(",", $category[1]);
+				foreach($g as $genre) {
+					$genres[] = trim($genre);
 				}
 				$this->_res['genres'] = & $genres;
 			}
@@ -307,7 +307,7 @@ class ADM
 			curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookie);
 		}
 
-		curl_setopt_array($ch, Utility::curlSslContextOptions());
+		curl_setopt_array($ch, Misc::curlSslContextOptions());
 		$this->_response = curl_exec($ch);
 
 		if (!$this->_response) {

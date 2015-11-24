@@ -1,4 +1,5 @@
 <?php
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
 use nzedb\ReleaseCleaning;
 use nzedb\SphinxSearch;
@@ -33,8 +34,6 @@ if ($argv[3] === 'true') {
 	$rename = true;
 }
 
-require_once dirname(__FILE__) . '/../../../www/config.php';
-
 $pdo = new Settings();
 
 $group = $pdo->queryOneRow(sprintf('SELECT id FROM groups WHERE name = %s', $pdo->escapeString($argv[1])));
@@ -64,7 +63,7 @@ foreach ($releases as $release) {
 		if ($rename === true) {
 			$newName = $pdo->escapeString($newName);
 			$pdo->queryExec(sprintf('UPDATE releases SET searchname = %s WHERE id = %d', $newName, $release['id']));
-			$sphinx->updateReleaseSearchName($release['id'], $newName);
+			$sphinx->updateRelease($release['id']);
 		}
 	}
 }

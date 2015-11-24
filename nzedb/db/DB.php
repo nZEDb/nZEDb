@@ -5,7 +5,8 @@ use nzedb\ColorCLI;
 use nzedb\ConsoleTools;
 use nzedb\Logger;
 use nzedb\LoggerException;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
+use nzedb\utility\Text;
 use nzedb\libraries\Cache;
 use nzedb\libraries\CacheException;
 
@@ -105,7 +106,7 @@ class DB extends \PDO
 	 */
 	public function __construct(array $options = [])
 	{
-		$this->cli = Utility::isCLI();
+		$this->cli = Misc::isCLI();
 
 		$defaults = [
 			'checkVersion'	=> false,
@@ -368,7 +369,7 @@ class DB extends \PDO
 	protected function echoError($error, $method, $severity, $exit = false)
 	{
 		if ($this->_debug) {
-			$this->debugging->log('\nzedb\db\DB', $method, $error, $severity);
+			$this->debugging->log(get_class(), $method, $error, $severity);
 
 			echo(
 				($this->cli ? $this->log->error($error) . PHP_EOL : '<div class="error">' . $error . '</div>')
@@ -466,7 +467,7 @@ class DB extends \PDO
 		}
 		if ($this->_debug) {
 			$this->echoError($error, 'queryInsert', 4);
-			$this->debugging->log('\nzedb\db\DB', "queryInsert", $query, Logger::LOG_SQL);
+			$this->debugging->log(get_class(), __FUNCTION__, $query, Logger::LOG_SQL);
 		}
 		return false;
 	}
@@ -524,7 +525,7 @@ class DB extends \PDO
 		}
 		if ($silent === false && $this->_debug) {
 			$this->echoError($error, 'queryExec', 4);
-			$this->debugging->log('\nzedb\db\DB', "queryExec", $query, Logger::LOG_SQL);
+			$this->debugging->log(get_class(), __FUNCTION__, $query, Logger::LOG_SQL);
 		}
 		return false;
 	}
@@ -619,7 +620,7 @@ class DB extends \PDO
 				$this->echoError($e->getMessage(), 'Exec', 4, false);
 
 				if ($this->_debug) {
-					$this->debugging->log('\nzedb\db\DB', "Exec", $query, Logger::LOG_SQL);
+					$this->debugging->log(get_class(), __FUNCTION__, $query, Logger::LOG_SQL);
 				}
 			}
 
@@ -661,6 +662,49 @@ class DB extends \PDO
 		}
 
 		return ($result === false) ? [] : $result;
+	}
+
+	/**
+	 * Returns a multidimensional array of result of the query function return and the count of found rows
+	 * Note: Query passed to this function SHOULD include SQL_CALC_FOUND_ROWS
+	 * Optional: Pass true to cache the result with a cache server.
+	 *
+	 * @param string $query       SQL to execute.
+	 * @param bool   $cache       Indicates if the query result should be cached.
+	 * @param int    $cacheExpiry The time in seconds before deleting the query result from the cache server.
+	 *
+	 * @return array Array of results (possibly empty) on success, empty array on failure.
+	 */
+	public function queryCalc($query, $cache = false, $cacheExpiry = 600)
+	{
+		$data = $this->query($query, $cache, $cacheExpiry);
+
+		if (strpos($query, 'SQL_CALC_FOUND_ROWS') === false) {
+			return $data;
+		}
+
+		if ($cache === true && $this->cacheEnabled === true ) {
+			try {
+				$count = $this->cacheServer->get($this->cacheServer->createKey($query . 'count'));
+				if ($count !== false) {
+					return ['total' => $count, 'result' => $data];
+				}
+			} catch (CacheException $error) {
+				$this->echoError($error->getMessage(), 'queryCalc', 4);
+			}
+		}
+
+		$result = $this->queryOneRow('SELECT FOUND_ROWS() AS total');
+
+		if ($result !== false && $cache === true && $this->cacheEnabled === true) {
+			$this->cacheServer->set($this->cacheServer->createKey($query . 'count'), $result['total'], $cacheExpiry);
+		}
+
+		return
+				[
+					'total' => ($result === false ? 0 : $result['total']),
+					'result' => $data
+				];
 	}
 
 	/**
@@ -748,7 +792,7 @@ class DB extends \PDO
 				if ($ignore === false) {
 					$this->echoError($e->getMessage(), 'queryDirect', 4, false);
 					if ($this->_debug) {
-						$this->debugging->log('\nzedb\db\DB', "queryDirect", $query, Logger::LOG_SQL);
+						$this->debugging->log(get_class(), __FUNCTION__, $query, Logger::LOG_SQL);
 					}
 				}
 				$result = false;
@@ -895,18 +939,6 @@ class DB extends \PDO
 	}
 
 	/**
-	 * Get the amount of found rows after running a SELECT SQL_CALC_FOUND_ROWS query.
-	 *
-	 * @return int
-	 * @access public
-	 */
-	public function get_Found_Rows()
-	{
-		$totalCount = $this->queryOneRow('SELECT FOUND_ROWS() AS total');
-		return ($totalCount === false ? 0 : $totalCount['total']);
-	}
-
-	/**
 	 * Log/echo repaired/optimized/analyzed tables.
 	 *
 	 * @param bool   $web    If we are on web, don't echo.
@@ -924,7 +956,7 @@ class DB extends \PDO
 
 		}
 		if ($this->_debug) {
-			$this->debugging->log('\nzedb\db\DB', 'optimise', $message, Logger::LOG_INFO);
+			$this->debugging->log(get_class(), __FUNCTION__, $message, Logger::LOG_INFO);
 		}
 	}
 
@@ -1064,7 +1096,7 @@ class DB extends \PDO
 			$PDOstatement = $this->pdo->prepare($query, $options);
 		} catch (\PDOException $e) {
 			if ($this->_debug) {
-				$this->debugging->log('\nzedb\db\DB', "Prepare", $e->getMessage(), Logger::LOG_INFO);
+				$this->debugging->log(get_class(), __FUNCTION__, $e->getMessage(), Logger::LOG_INFO);
 			}
 			echo $this->log->error("\n" . $e->getMessage());
 			$PDOstatement = false;
@@ -1087,7 +1119,7 @@ class DB extends \PDO
 				$result = $this->pdo->getAttribute($attribute);
 			} catch (\PDOException $e) {
 				if ($this->_debug) {
-					$this->debugging->log('\nzedb\db\DB', "getAttribute", $e->getMessage(), Logger::LOG_INFO);
+					$this->debugging->log(get_class(), __FUNCTION__, $e->getMessage(), Logger::LOG_INFO);
 				}
 				echo $this->log->error("\n" . $e->getMessage());
 				$result = false;
@@ -1147,7 +1179,7 @@ class DB extends \PDO
 		}
 
 		if (nZEDb_QUERY_STRIP_WHITESPACE) {
-			$query = Utility::collapseWhiteSpace($query);
+			$query = Text::collapseWhiteSpace($query);
 		}
 		return true;
 	}

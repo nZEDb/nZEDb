@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
 /**
  * Attempts to find a PRE name for a release using a request ID from our local pre database,
@@ -150,7 +150,7 @@ class RequestIDWeb extends RequestID
 		$requestArray[0] = ['ident' => 0, 'group' => 'none', 'reqid' => 0];
 
 		// Do a web lookup.
-		$returnXml = Utility::getUrl([
+		$returnXml = Misc::getUrl([
 				'url' => $this->pdo->getSetting('request_url'),
 				'method' => 'post',
 				'postdata' => 'data=' . serialize($requestArray),
@@ -289,10 +289,8 @@ class RequestIDWeb extends RequestID
 		$this->pdo->queryExec(
 			sprintf('
 				UPDATE releases
-				SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL,
-				tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL,
-				reqidstatus = %d, isrenamed = 1, proc_files = 1, searchname = %s, categoryid = %d,
-				preid = %d
+				SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL,
+				anidbid = NULL, reqidstatus = %d, isrenamed = 1, proc_files = 1, searchname = %s, categoryid = %d, preid = %d
 				WHERE id = %d',
 				self::REQID_FOUND,
 				$newTitle,
@@ -301,7 +299,7 @@ class RequestIDWeb extends RequestID
 				$this->_release['id']
 			)
 		);
-		$this->sphinx->updateReleaseSearchName($this->_release['id'], $newTitle);
+		$this->sphinx->updateRelease($this->_release['id'], $this->pdo);
 
 		if ($this->echoOutput) {
 			NameFixer::echoChangedReleaseName([

@@ -133,6 +133,7 @@
 									{assign var="mtotalparts" value=","|explode:$result.grp_release_totalparts}
 									{assign var="mcomments" value=","|explode:$result.grp_release_comments}
 									{assign var="mgrabs" value=","|explode:$result.grp_release_grabs}
+									{assign var="mfailed" value=","|explode:$result.failed}
 									{assign var="mpass" value=","|explode:$result.grp_release_password}
 									{assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
 									{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
@@ -143,7 +144,7 @@
 												<input type="checkbox" class="nzb_check" value="{$mguid[$m@index]}">
 											</td>
 											<td class="name">
-												<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">
+												<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">
 													<b>{$mname[$m@index]|escape:"htmlall"|wordwrap:80:"\n":true}</b>
 												</a>
 												<br>
@@ -160,7 +161,7 @@
 														<i class="icon-comments"></i>
 														<a
 															title="View comments for {$mname[$m@index]|escape:"htmlall"}"
-															href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}#comments">{$mcomments[$m@index]}
+															href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}#comments">{$mcomments[$m@index]}
 															cmt{if $mcomments[$m@index] != 1}s{/if}
 														</a> |
 														<i class="icon-download"></i> {$mgrabs[$m@index]} grab{if $mgrabs[$m@index] != 1}s{/if}
@@ -207,6 +208,11 @@
 														{elseif $mpass[$m@index] == 10}
 															<span class="icon-stack" title="Passworded Archive"><i class="icon-check-empty icon-stack-base"></i><i class="icon-lock"></i></span>
 														{/if}
+														{if $mfailed[$m@index] > 0}
+														<span class="btn btn-hover btn-default btn-xs"><i class="fa fa-thumbs-o-down"></i><span
+																	class="badge"> {$mfailed[$m@index]}
+																Failed Download{if $mfailed[$m@index] != 1}s{/if}</span>
+															{/if}
 													</div>
 												</div>
 											</td>
@@ -214,7 +220,7 @@
 												<div class="icon icon_nzb float-right">
 													<a
 														title="Download Nzb"
-														href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"
+														href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}"
 													></a>
 												</div>
 												{if $sabintegrated}

@@ -1,5 +1,5 @@
 <?php
-require_once dirname(__FILE__) . '/../../../www/config.php';
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
 use nzedb\db\Settings;
 
@@ -8,16 +8,11 @@ if (!isset($argv[1]) || !isset($argv[2]) || !isset($argv[3])) {
 	passthru("clear");
 	echo "Usage: newznab_schema nZEDB_schema true/false\n"
 		 . "example: php convert_from_newznab.php newznab nzedb true\n\n"
-		 .
-		 "newznab_schema: Schema where your newznab install is located. The database name. The current user in your config.php file must have access to this schema\n"
-		 .
-		 "nZEDB_schema: Schema where you want the newznab data converted too. The database name. The schema must be populated and will be wiped clean except the sites and categories tables\n"
-		 .
-		 "true/false: false = Show the queries but do not run.  true means you understand the risks and want to convert the data (Your old data will not be touched\n\n"
-		 .
-		 "NOTE: This is experimental and there is a possibility that this will not work correctly.  Please let us know if it doesn't work correctly, but we are not responsible for any lost data.\n"
-		 .
-		 "      You will have to start any backfilling and processing over again since we use a different mechanism for processing releases\n\n";
+		 . "newznab_schema: Schema where your newznab install is located. The database name. The current user in your config.php file must have access to this schema\n"
+		 . "nZEDB_schema: Schema where you want the newznab data converted too. The database name. The schema must be populated and will be wiped clean except the sites and categories tables\n"
+		 . "true/false: false = Show the queries but do not run.  true means you understand the risks and want to convert the data (Your old data will not be touched\n\n"
+		 . "NOTE: This is experimental and there is a possibility that this will not work correctly.  Please let us know if it doesn't work correctly, but we are not responsible for any lost data.\n"
+		 . "      You will have to start any backfilling and processing over again since we use a different mechanism for processing releases\n\n";
 	exit(1);
 }
 
@@ -154,17 +149,6 @@ convertTable($pdo,
 			 $nn_schema . ".content",
 			 $runQueries);
 
-echo "episodeinfo = tvrage_episodes in nZEDb\n";
-// Convert episodeinfo to tvrageepisodes - You loose (tvdbID, imdbID, director, gueststars, overview, rating, writer, epabsolute)
-convertTable($pdo,
-			 $nZEDB_schema,
-			 "tvrage_episodes",
-			 "INSERT INTO " . $nZEDB_schema .
-			 ".tvrage_episodes (id, rageid, showtitle, airdate, link, fullep, eptitle) " .
-			 "SELECT MIN(ID), rageID, showtitle, MIN(airdate), link, fullep, eptitle FROM " .
-			 $nn_schema . ".episodeinfo where rageID <> 0 GROUP BY rageID, fullep",
-			 $runQueries);
-
 convertTable($pdo,
 			 $nZEDB_schema,
 			 "forum_posts",
@@ -293,8 +277,8 @@ convertTable($pdo,
 			 $nZEDB_schema,
 			 "releases",
 			 "INSERT INTO " . $nZEDB_schema .
-			 ".releases (adddate, anidbid, bookinfoid, categoryid, comments, completion, consoleinfoid, episode, fromname, grabs, group_id, guid, haspreview, id, imdbid, musicinfoid, name, passwordstatus, postdate, rageid, rarinnerfilecount, searchname, season, seriesfull, size, totalpart, tvairdate, tvtitle, nzb_guid) " .
-			 "SELECT adddate, anidbID, bookinfoID, case categoryID when 7030 then 8020 when 7020 then 8010 when 7010 then 8030 when 6050 then 6070 when 2060 then 2050 when 2050 then 2060 when 7000 then 8000 when 6070 then 6050 when 8010 then 8050 else categoryID end, comments, completion, consoleinfoID, episode, fromname, grabs, group_id, guid, haspreview, ID, imdbID, musicinfoID, name, passwordstatus, postdate, rageID, rarinnerfilecount, searchname, season, seriesfull, size, totalpart, tvairdate, tvtitle, gid FROM " .
+			 ".releases (adddate, anidbid, bookinfoid, categoryid, comments, completion, consoleinfoid, fromname, grabs, group_id, guid, haspreview, id, imdbid, musicinfoid, name, passwordstatus, postdate, rarinnerfilecount, searchname, size, totalpart, nzb_guid) " .
+			 "SELECT adddate, anidbID, bookinfoID, case categoryID when 7030 then 8020 when 7020 then 8010 when 7010 then 8030 when 6050 then 6070 when 2060 then 2050 when 2050 then 2060 when 7000 then 8000 when 6070 then 6050 when 8010 then 8050 else categoryID end, comments, completion, consoleinfoID, fromname, grabs, group_id, guid, haspreview, ID, imdbID, musicinfoID, name, passwordstatus, postdate, rarinnerfilecount, searchname, size, totalpart, UNHEX(gid) FROM " .
 			 $nn_schema . ".releases",
 			 $runQueries);
 
@@ -324,15 +308,6 @@ echo "Skipping sphinx table: Not in nZEDb\n";
 echo "Skipping spotnabsource table: Not in nZEDb\n";
 
 echo "Skipping thetvdb table: Not in nZEDb\n";
-
-convertTable($pdo,
-			 $nZEDB_schema,
-			 "tvrage_titles",
-			 "INSERT INTO " . $nZEDB_schema .
-			 ".tvrage_titles (country, createddate, description, genre, id, imgdata, nextdate, nextinfo, prevdate, previnfo, rageid, releasetitle, tvdbid) " .
-			 "SELECT country, createddate, description, genre, ID, imgdata, nextdate, nextinfo, prevdate, previnfo, rageID, releasetitle, tvdbID FROM " .
-			 $nn_schema . ".tvrage group by releasetitle",
-			 $runQueries);
 
 convertTable($pdo,
 			 $nZEDB_schema,
@@ -415,8 +390,6 @@ convertTable($pdo,
 			 $runQueries);
 
 exit("Due to some issues moving roles we've used INSERT IGNORE... Please check your user roles in your nZEDb install\n"
-	 .
-	 "You now need to run copy_from_newznab.php to copy nzbs, covers, previews, set the nzbstatus and nzb path level\n\n"
-	 .
-	 "DO NOT run update_releases.php before running copy_from_newznab.php, you will have to start over.\n");
+	 . "You now need to run copy_from_newznab.php to copy nzbs, covers, previews, set the nzbstatus and nzb path level\n\n"
+	 . "DO NOT run update_releases.php before running copy_from_newznab.php, you will have to start over.\n");
 ?>

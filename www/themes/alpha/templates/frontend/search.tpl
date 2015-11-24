@@ -50,6 +50,10 @@
 					<td><input class="searchadv" id="searchadvposter" name="searchadvposter" value="{$searchadvposter|escape:'html'}" type="text"/></td>
 				</tr>
 				<tr>
+					<th><label for="searchadvfilename">Filename:</label></th>
+					<td><input class="searchadv" id="searchadvfilename" name="searchadvfilename" value="{$searchadvfilename|escape:'html'}" type="text"/></td>
+				</tr>
+				<tr>
 					<th><label for="searchadvdaysnew">Min age(days):</label></th>
 					<td>
 						<input class="searchdaysinput" id="searchadvdaysnew" name="searchadvdaysnew" value="{$searchadvdaysnew|escape:'html'}" type="text"/>
@@ -100,7 +104,7 @@
 				<center><li>Try fewer keywords.</li></center>
 			</ul>
 		</div></center>
-{elseif ($search || $subject || $searchadvr || $searchadvsubject || $selectedgroup || $selectedsizefrom || $searchadvdaysold) == ""}
+{elseif ($search || $subject || $searchadvr || $searchadvsubject || $searchadvfilename || $selectedgroup || $selectedsizefrom || $searchadvdaysold) == ""}
 {else}
 	<form id="nzb_multi_operations_form" method="get" action="{$smarty.const.WWW_TOP}/search">
 		<div class="container nzb_multi_operations" style="text-align:right;margin-bottom:5px;">
@@ -193,8 +197,8 @@
 							<a
 								class="title"
 								title="View details"
-								href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}"
-							>{$result.searchname|escape:"htmlall"|wordwrap:70:"\n":true}</a>
+								href="{$smarty.const.WWW_TOP}/details/{$result.guid}"
+							>{$result.searchname|escape:"htmlall"|wordwrap:70:"\n":true}</a>{if $result.failed > 0} <i class="fa fa-exclamation-circle" style="color: red" title="This release has failed to download for some users"></i>{/if}
 						</label>
 						<div class="resextra">
 							{if $result.passwordstatus == 1}
@@ -207,7 +211,7 @@
 							{if $result.videostatus > 0}
 								<a
 									class="model_prev label label-default"
-									href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}"
+									href="{$smarty.const.WWW_TOP}/details/{$result.guid}"
 									title="This release has a video preview."
 									rel="preview"
 								><i class="icon-youtube-play"></i>
@@ -265,10 +269,10 @@
 									rel="preview"
 								><i class="icon-picture"></i></a>
 							{/if}
-							{if $result.rageid > 0}
+							{if $result.videos_id > 0}
 								<a
 									class="label label-default"
-									href="{$smarty.const.WWW_TOP}/series/{$result.rageid}"
+									href="{$smarty.const.WWW_TOP}/series/{$result.videos_id}"
 									title="View all episodes"
 								><i class="icon-bookmark"></i></a>
 							{/if}
@@ -279,11 +283,11 @@
 									title="View all episodes"
 								><i class="icon-font"></i></a>
 							{/if}
-							{if $result.tvairdate != ""}
+							{if $result.firstaired != ""}
 								<span
 									class="seriesinfo label label-default"
 									title="{$result.guid}"
-								>Aired {if $result.tvairdate|strtotime > $smarty.now}in future{else}{$result.tvairdate|daysago}{/if}</span>
+								>Aired {if $result.firstaired|strtotime > $smarty.now}in future{else}{$result.firstaired|daysago}{/if}</span>
 							{/if}
 							{if $result.reid > 0}
 								<span
@@ -305,6 +309,9 @@
 								><i class="icon-share-alt"></i></a>
 							{/if}
 							{release_flag($result.searchname, browse)}
+							{if $result.failed > 0}<span class="label label-default">
+								<i class ="fa fa-thumbs-o-up"></i> {$result.grabs} Grab{if $result.grabs != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$result.failed} Failed Download{if $result.failed != 1}s{/if}</span>
+							{/if}
 						</div>
 					</td>
 					<td class="category" style="width:auto;text-align:center;white-space:nowrap;">
@@ -338,7 +345,7 @@
 						{$result.grabs} grab{if $result.grabs != 1}s{/if}
 					</td>
 					<td class="icons" style="width:60px;text-align:center;white-space:nowrap;">
-						<div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"htmlall"}">&nbsp;</a></div>
+						<div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}">&nbsp;</a></div>
 						{if $sabintegrated}
 							<div class="icon icon_sab" title="Send to my Queue"></div>
 						{/if}

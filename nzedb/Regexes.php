@@ -177,7 +177,7 @@ class Regexes
 		$rows = $this->pdo->query(
 			sprintf(
 				'SELECT
-					b.name, b.totalparts, b.currentparts, b.binaryhash,
+					b.name, b.totalparts, b.currentparts, HEX(b.binaryhash) AS binaryhash,
 					c.fromname, c.collectionhash
 				FROM %s b
 				INNER JOIN %s c ON c.id = b.collection_id',

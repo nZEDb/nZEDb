@@ -43,6 +43,10 @@
 					<td><input class="searchadv" id="searchadvposter" name="searchadvposter" value="{$searchadvposter|escape:'html'}" type="text"></td>
 				</tr>
 				<tr>
+					<th><label for="searchadvfilename">Filename:</label></th>
+					<td><input class="searchadv" id="searchadvfilename" name="searchadvfilename" value="{$searchadvfilename|escape:'html'}" type="text"/></td>
+				</tr>
+				<tr>
 					<th><label for="searchadvdaysnew">Min age(days):</label></th>
 					<td>
 						<input class="searchdaysinput" id="searchadvdaysnew" name="searchadvdaysnew" value="{$searchadvdaysnew|escape:'html'}" type="text">
@@ -182,7 +186,7 @@
 				<tr class="{cycle values=",alt"}{if $lastvisit|strtotime<$result.adddate|strtotime} new{/if}" id="guid{$result.guid}">
 					<td class="icons">
 						<div class="icon icon_nzb">
-							<a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"htmlall"}">&nbsp;</a>
+							<a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}">&nbsp;</a>
 						</div>
 						<div class="icon icon_cart" title="Add to Cart"></div>
 						{if $sabintegrated}
@@ -191,10 +195,10 @@
 					</td>
 					<td class="item">
 						<label for="chk{$result.guid|substr:0:7}">
-							<a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.searchname|escape:"htmlall"|truncate:150:"...":true}</a></label value="Searchname">
+							<a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}">{$result.searchname|escape:"htmlall"|truncate:150:"...":true}</a></label value="Searchname">
 
 						<div class="resextra">
-							<a class="browsename" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">
+							<a class="browsename" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}">
 								{$result.name|escape:"htmlall"|truncate:150:"...":true}
 							</a>
 							<div class="btns" style="float:right">
@@ -207,7 +211,7 @@
 									<img title="RAR/ZIP is Passworded." src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/lock.gif" alt="RAR/ZIP is Passworded.">
 								{/if}
 								{if $result.videostatus == 1}
-									<a href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}" title="This release has a video preview." class="model_prev rndbtn" rel="preview">
+									<a href="{$smarty.const.WWW_TOP}/details/{$result.guid}" title="This release has a video preview." class="model_prev rndbtn" rel="preview">
 										<img src="{$smarty.const.WWW_TOP}/themes_shared/images/multimedia/video.png">
 									</a>
 								{/if}
@@ -227,14 +231,14 @@
 								{if $result.consoleinfoid > 0}
 									<a href="#" name="name{$result.consoleinfoid}" title="View console info" class="modal_console rndbtn" rel="console" >Cover</a>
 								{/if}
-								{if $result.rageid > 0}
-									<a class="rndbtn" href="{$smarty.const.WWW_TOP}/series/{$result.rageid}" title="View all episodes">View Series</a>
+								{if $result.videos_id > 0}
+									<a class="rndbtn" href="{$smarty.const.WWW_TOP}/series/{$result.videos_id}" title="View all episodes">View Series</a>
 								{/if}
 								{if $result.anidbid > 0}
 									<a class="rndbtn" href="{$smarty.const.WWW_TOP}/anime/{$result.anidbid}" title="View all episodes">View Anime</a>
 								{/if}
-								{if $result.tvairdate != ""}
-									<span class="seriesinfo rndbtn" title="{$result.guid}">Aired {if $result.tvairdate|strtotime > $smarty.now}in future{else}{$result.tvairdate|daysago}{/if}</span>
+								{if $result.firstaired != ""}
+									<span class="seriesinfo rndbtn" title="{$result.guid}">Aired {if $result.firstaired|strtotime > $smarty.now}in future{else}{$result.firstaired|daysago}{/if}</span>
 								{/if}
 								{if $result.reid > 0}
 									<span class="mediainfo rndbtn" title="{$result.guid}">Media</span>

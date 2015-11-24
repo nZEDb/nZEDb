@@ -9,7 +9,31 @@
 /**
  * Include the {@link shared.make_timestamp.php} plugin
  */
-require_once ($smarty->plugins_dir.'shared.make_timestamp.php');
+// Fix by nZEDb
+if (!isset($smarty)) {
+	$smarty = new Smarty();
+}
+switch (true) {
+	case is_string($smarty->plugins_dir) && is_dir($smarty->plugins_dir):
+		$plugins_dir = $smarty->plugins_dir;
+		break;
+	case is_array($smarty->plugins_dir):
+		$plugins_dir = '';
+		foreach ($smarty->plugins_dir as $dir) {
+			if (is_string($dir) && is_dir($dir)) {
+				$plugins_dir = $dir;
+				break;
+			}
+		}
+		break;
+	default:
+		$plugins_dir = '';
+}
+if (!is_dir($plugins_dir)) {
+	exit('Fatal: Unable to find smarty plugins directory.' . PHP_EOL);
+}
+// End fix by nZEDb.
+require_once ($plugins_dir . 'shared.make_timestamp.php');
 /**
  * Smarty phpdate_format modifier plugin
  *

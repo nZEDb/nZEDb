@@ -1,10 +1,11 @@
 <?php
 
+use nzedb\Capabilities;
 use nzedb\Category;
 use nzedb\Releases;
 use nzedb\db\Settings;
-use nzedb\utility\Utility;
-
+use nzedb\utility\Misc;
+use nzedb\utility\Text;
 
 // API functions.
 $function = 's';
@@ -34,6 +35,11 @@ if (isset($_GET['t'])) {
 		case 'movie':
 			$function = 'm';
 			break;
+		case 'n':
+		case 'nfo':
+		case 'info':
+			$function = 'n';
+			break;
 		case 'r':
 		case 'register':
 			$function = 'r';
@@ -58,17 +64,18 @@ if ($page->users->isLoggedIn()) {
 	if ($function != 'c' && $function != 'r') {
 		if (!isset($_GET['apikey'])) {
 			showApiError(200, 'Missing parameter (apikey)');
-		}
-		$res = $page->users->getByRssToken($_GET['apikey']);
-		$apiKey = $_GET['apikey'];
+		} else {
+			$res    = $page->users->getByRssToken($_GET['apikey']);
+			$apiKey = $_GET['apikey'];
 
-		if (!$res) {
-			showApiError(100, 'Incorrect user credentials (wrong API key)');
-		}
+			if (!$res) {
+				showApiError(100, 'Incorrect user credentials (wrong API key)');
+			}
 
-		$uid = $res['id'];
-		$catExclusions = $page->users->getCategoryExclusion($uid);
-		$maxRequests = $res['apirequests'];
+			$uid           = $res['id'];
+			$catExclusions = $page->users->getCategoryExclusion($uid);
+			$maxRequests   = $res['apirequests'];
+		}
 	}
 }
 
@@ -79,27 +86,18 @@ $page->smarty->assign('rsstoken', $apiKey);
 if ($uid != '') {
 	$page->users->updateApiAccessed($uid);
 	$apiRequests = $page->users->getApiRequests($uid);
-	if ($apiRequests['num'] > $maxRequests) {
-		showApiError(500, 'Request limit reached (' . $apiRequests['num'] . '/' . $maxRequests . ')');
+	if ($apiRequests > $maxRequests) {
+		showApiError(500, 'Request limit reached (' . $apiRequests . '/' . $maxRequests . ')');
 	}
 }
 
 $releases = new Releases(['Settings' => $page->settings]);
 
-if (isset($_GET['extended']) && $_GET['extended'] == 1) {
-	$page->smarty->assign('extended', '1');
-}
-if (isset($_GET['del']) && $_GET['del'] == 1) {
-	$page->smarty->assign('del', '1');
-}
+$page->smarty->assign('extended', (isset($_GET['extended']) && $_GET['extended'] == 1 ? '1' : '0'));
+$page->smarty->assign('del', (isset($_GET['del']) && $_GET['del'] == 1 ? '1' : '0'));
 
 // Output is either json or xml.
-$outputXML = true;
-if (isset($_GET['o'])) {
-	if ($_GET['o'] == 'json') {
-		$outputXML = false;
-	}
-}
+$outputXML = (isset($_GET['o']) && $_GET['o'] == 'json' ? false : true);
 
 switch ($function) {
 	// Search releases.
@@ -113,15 +111,12 @@ switch ($function) {
 
 		if (isset($_GET['q'])) {
 			$relData = $releases->search(
-				$_GET['q'], -1, -1, -1, -1, -1, 0, 0, -1, -1, $offset, $limit, '', $maxAge, $catExclusions,
+				$_GET['q'], -1, -1, -1, -1, -1, -1, 0, 0, -1, -1, $offset, $limit, '', $maxAge, $catExclusions,
 				"basic", $categoryID
 			);
 		} else {
 			$totalRows = $releases->getBrowseCount($categoryID, $maxAge, $catExclusions);
 			$relData = $releases->getBrowseRange($categoryID, $offset, $limit, '', $maxAge, $catExclusions);
-			if ($totalRows > 0 && count($relData) > 0) {
-				$relData[0]['_totalrows'] = $totalRows;
-			}
 		}
 
 		printOutput($relData, $outputXML, $page, $offset);
@@ -130,17 +125,43 @@ switch ($function) {
 	// Search tv releases.
 	case 'tv':
 		verifyEmptyParameter('q');
+		verifyEmptyParameter('vid');
+		verifyEmptyParameter('tvdbid');
+		verifyEmptyParameter('traktid');
 		verifyEmptyParameter('rid');
+		verifyEmptyParameter('tvmazeid');
+		verifyEmptyParameter('imdbid');
+		verifyEmptyParameter('tmdbid');
 		verifyEmptyParameter('season');
 		verifyEmptyParameter('ep');
 		$maxAge = maxAge();
 		$page->users->addApiRequest($uid, $_SERVER['REQUEST_URI']);
 		$offset = offset();
 
-		$relData = $releases->searchbyRageId(
-			(isset($_GET['rid']) ? $_GET['rid'] : '-1'),
-			(isset($_GET['season']) ? $_GET['season'] : ''),
-			(isset($_GET['ep']) ? $_GET['ep'] : ''),
+		$siteIdArr = 	[
+							'id'     => (isset($_GET['vid']) ? $_GET['vid'] : '0'),
+							'tvdb'   => (isset($_GET['tvdbid']) ? $_GET['tvdbid'] : '0'),
+							'trakt'  => (isset($_GET['traktid']) ? $_GET['traktid'] : '0'),
+							'tvrage' => (isset($_GET['rid']) ? $_GET['rid'] : '0'),
+							'tvmaze' => (isset($_GET['tvmazeid']) ? $_GET['tvmazeid'] : '0'),
+							'imdb'   => (isset($_GET['imdbid']) ? $_GET['imdbid'] : '0'),
+							'tmdb'   => (isset($_GET['tmdbid']) ? $_GET['tmdbid'] : '0')
+		];
+
+		if (isset($_GET['season']) && isset($_GET['ep'])) {
+			if (preg_match('#\d{4}#i', $_GET['season'], $year) && stripos($_GET['ep'], '/') !== false) {
+				$airdate = $year[0] . '/' . $_GET['ep'];
+			} else {
+				$series = $_GET['season'];
+				$episode = $_GET['ep'];
+			}
+		}
+
+		$relData = $releases->searchShows(
+			$siteIdArr,
+			(isset($series) ? $series : ''),
+			(isset($episode) ? $episode : ''),
+			(isset($airdate) ? $airdate : ''),
 			$offset,
 			limit(),
 			(isset($_GET['q']) ? $_GET['q'] : ''),
@@ -173,7 +194,7 @@ switch ($function) {
 
 		addCoverURL($relData,
 			function($release) {
-				return Utility::getCoverURL(['type' => 'movies', 'id' => $release['imdbid']]);
+				return Misc::getCoverURL(['type' => 'movies', 'id' => $release['imdbid']]);
 			}
 		);
 
@@ -222,14 +243,59 @@ switch ($function) {
 		printOutput($relData, $outputXML, $page, offset());
 		break;
 
-	// Capabilities request.
-	case 'c':
-		$category = new Category(['Settings' => $page->settings]);
-		$page->smarty->assign('parentcatlist', $category->getForMenu());
-		header('Content-type: text/xml');
-		echo $page->smarty->fetch('apicaps.tpl');
+	// Get an NFO file for an individual release.
+	case 'n':
+		if (!isset($_GET['id'])) {
+			showApiError(200, 'Missing parameter (id is required for retrieving an NFO)');
+		}
+
+		$page->users->addApiRequest($uid, $_SERVER['REQUEST_URI']);
+		$rel = $releases->getByGuid($_GET["id"]);
+		$data = $releases->getReleaseNfo($rel['id']);
+
+		if ($rel !== false && !empty($rel)) {
+			if ($data !== false) {
+				if (isset($_GET['o']) && $_GET['o'] == 'file') {
+					header("Content-type: application/octet-stream");
+					header("Content-disposition: attachment; filename={$rel['searchname']}.nfo");
+					exit($data['nfo']);
+				} else {
+					echo nl2br(Text::cp437toUTF($data['nfo']));
+				}
+			} else {
+				showApiError(300, 'Release does not have an NFO file associated.');
+			}
+		} else {
+			showApiError(300, 'Release does not exist.');
+		}
+
 		break;
 
+	// Capabilities request.
+	case 'c':
+		//get categories
+		$category = new Category(['Settings' => $page->settings]);
+		$cats = $category->getForMenu();
+
+		//insert cats into template variable
+		$page->smarty->assign('parentcatlist', $cats);
+
+		if ($outputXML) { //use apicaps.tpl if xml is requested
+			$response = $page->smarty->fetch('apicaps.tpl');
+			header('Content-type: text/xml');
+			header('Content-Length: ' . strlen($response) );
+			echo $response;
+		} else { //otherwise construct array of capabilities and categories
+			//get capabilities
+			$caps = (new Capabilities(['Settings' => $page->settings]))->getForMenu();
+			$caps['categories'] = $cats;
+			//use json_encode
+			$response = encodeAsJSON($caps);
+			header('Content-type: application/json');
+			header('Content-Length: ' . strlen($response) );
+			echo $response;
+		}
+		break;
 	// Register request.
 	case 'r':
 		verifyEmptyParameter('email');
@@ -265,13 +331,15 @@ switch ($function) {
 			showApiError(107);
 		}
 
-		header('Content-type: text/xml');
-		echo
+		$response =
 			"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" .
 			'<register username="' . $username .
 			'" password="' . $password .
 			'" apikey="' . $userdata['rsstoken'] .
 			"\"/>\n";
+		header('Content-type: text/xml');
+		header('Content-Length: ' . strlen($response) );
+		echo $response;
 		break;
 }
 
@@ -335,9 +403,14 @@ function showApiError($errorCode = 900, $errorText = '')
 		}
 	}
 
+	$response =
+		"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" .
+		'<error code="' . $errorCode .  '" description="' . $errorText . "\"/>\n";
 	header('Content-type: text/xml');
+	header('Content-Length: ' . strlen($response) );
 	header('X-nZEDb: API ERROR [' . $errorCode . '] ' . $errorText);
-	exit("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<error code=\"$errorCode\" description=\"$errorText\"/>\n");
+
+	exit($response);
 }
 
 /**
@@ -368,7 +441,7 @@ function categoryID()
 	$categoryID[] = -1;
 	if (isset($_GET['cat'])) {
 		$categoryIDs = urldecode($_GET['cat']);
-		// Append Web-DL category ID if HD present for SickBeard / NZBDrone compatibility.
+		// Append Web-DL category ID if HD present for SickBeard / Sonarr compatibility.
 		if (strpos($categoryIDs, (string)Category::CAT_TV_HD) !== false &&
 			strpos($categoryIDs, (string)Category::CAT_TV_WEBDL) === false) {
 			$categoryIDs .= (',' . Category::CAT_TV_WEBDL);
@@ -416,11 +489,15 @@ function printOutput($data, $xml = true, $page, $offset = 0)
 	if ($xml) {
 		$page->smarty->assign('offset', $offset);
 		$page->smarty->assign('releases', $data);
+		$response = trim($page->smarty->fetch('apiresult.tpl'));
 		header('Content-type: text/xml');
-		echo trim($page->smarty->fetch('apiresult.tpl'));
+		header('Content-Length: ' . strlen($response) );
+		echo $response;
 	} else {
+		$response = encodeAsJSON($data);
 		header('Content-type: application/json');
-		echo json_encode($data);
+		header('Content-Length: ' . strlen($response));
+		echo $response;
 	}
 }
 
@@ -456,11 +533,25 @@ function addLanguage(&$releases, Settings $settings)
 	if ($releases && count($releases)) {
 		foreach ($releases as $key => $release) {
 			if (isset($release['id'])) {
-				$language = $settings->queryOneRow(sprintf('SELECT audiolanguage FROM audio_data WHERE releaseid = %d', $release['id']));
+				$language = $settings->queryOneRow('
+					SELECT audiolanguage
+					FROM audio_data
+					WHERE releaseid = ' .
+					$release['id']
+				);
 				if ($language !== false) {
 					$releases[$key]['searchname'] = $releases[$key]['searchname'] . ' ' . $language['audiolanguage'];
 				}
 			}
 		}
 	}
+}
+
+function encodeAsJSON($data)
+{
+	$json = json_encode(Text::encodeAsUTF8($data));
+	if ($json === false) {
+		showApiError(201);
+	}
+	return $json;
 }

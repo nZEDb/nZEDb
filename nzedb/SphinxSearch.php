@@ -47,20 +47,20 @@ class SphinxSearch
 		if (!is_null($this->sphinxQL) && $parameters['id']) {
 			$this->sphinxQL->queryExec(
 				sprintf(
-					'REPLACE INTO releases_rt (id, guid, name, searchname, fromname) VALUES (%s, %s, %s, %s, %s)',
+					'REPLACE INTO releases_rt (id, name, searchname, fromname, filename) VALUES (%d, %s, %s, %s, %s)',
 					$parameters['id'],
-					$parameters['guid'],
-					$parameters['name'],
-					$parameters['searchname'],
-					$parameters['fromname']
+					$this->sphinxQL->escapeString($parameters['name']),
+					$this->sphinxQL->escapeString($parameters['searchname']),
+					$this->sphinxQL->escapeString($parameters['fromname']),
+					empty($parameters['filename']) ? "''" : $this->sphinxQL->escapeString($parameters['filename'])
 				)
 			);
 		}
 	}
 
 	/**
-	 * Delete release from Sphinx RT table.
-	 * @param array $identifiers ['g' => Release GUID(mandatory), 'id => ReleaseID(optional, pass false)]
+	 * Delete release from Sphinx RT tables.
+	 * @param array $identifiers ['g' => Release GUID(mandatory), 'id' => ReleaseID(optional, pass false)]
 	 * @param \nzedb\db\Settings $pdo
 	 */
 	public function deleteRelease($identifiers, Settings $pdo)
@@ -75,7 +75,7 @@ class SphinxSearch
 				}
 			}
 			if ($identifiers['i'] !== false) {
-				$this->sphinxQL->queryExec(sprintf('DELETE FROM releases_rt WHERE id = %s', $identifiers['i']));
+				$this->sphinxQL->queryExec(sprintf('DELETE FROM releases_rt WHERE id = %d', $identifiers['i']));
 			}
 		}
 	}
@@ -97,25 +97,26 @@ class SphinxSearch
 	}
 
 	/**
-	 * Update the search name of a release.
+	 * Update Sphinx Relases index for given releaseid.
 	 *
 	 * @param int $releaseID
-	 * @param string $searchName
+	 * @param \nzedb\db\Settings $pdo
 	 */
-	public function updateReleaseSearchName($releaseID, $searchName)
+	public function updateRelease($releaseID, Settings $pdo)
 	{
 		if (!is_null($this->sphinxQL)) {
-			$old = $this->sphinxQL->queryOneRow(sprintf('SELECT * FROM releases_rt WHERE id = %s', $releaseID));
-			if ($old !== false) {
-				$this->insertRelease(
-					[
-						'id' => $releaseID,
-						'guid' => $this->sphinxQL->escapeString($old['guid']),
-						'name' => $this->sphinxQL->escapeString($old['name']),
-						'searchname' => $searchName,
-						'fromname' => $this->sphinxQL->escapeString($old['fromname'])
-					]
-				);
+			$new = $pdo->queryOneRow(
+						sprintf('
+							SELECT r.id, r.name, r.searchname, r.fromname, IFNULL(GROUP_CONCAT(rf.name SEPARATOR " "),"") filename
+							FROM releases r
+							LEFT JOIN release_files rf ON (r.id=rf.releaseid)
+							WHERE r.id = %d
+							GROUP BY r.id LIMIT 1',
+							$releaseID
+						)
+			);
+			if ($new !== false) {
+				$this->insertRelease($new);
 			}
 		}
 	}
@@ -138,6 +139,7 @@ class SphinxSearch
 	public function optimizeRTIndex($indexName)
 	{
 		if (!is_null($this->sphinxQL)) {
+			$this->sphinxQL->queryExec(sprintf('FLUSH RTINDEX %s', $indexName));
 			$this->sphinxQL->queryExec(sprintf('OPTIMIZE INDEX %s', $indexName));
 		}
 	}

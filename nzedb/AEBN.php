@@ -3,7 +3,7 @@ namespace nzedb;
 
 require_once nZEDb_LIBS . 'simple_html_dom.php';
 
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
 class AEBN
 {
@@ -66,7 +66,16 @@ class AEBN
 	 *
 	 * @var array
 	 */
-	protected $_res = [];
+	protected $_res = [
+		'backcover'		=> [],
+		'boxcover'		=> [],
+		'cast'			=> [],
+		'director'		=> [],
+		'genres'		=> [],
+		'productinfo'	=> [],
+		'sypnosis'		=> [],
+		'trailers'		=> ['url' =>[]],
+	];
 
 	/**
 	 * If searchTerm is found
@@ -91,7 +100,6 @@ class AEBN
 	 * @var array - straight, gay
 	 */
 	protected $_whichSite = [];
-
 
 
 	/**
@@ -265,7 +273,7 @@ class AEBN
 						similar_text(strtolower($this->searchTerm), strtolower($title), $p);
 						if ($p >= 90) {
 							$this->_title = trim($ret->title);
-							$this->_trailUrl = $ret->href;
+							$this->_trailUrl = html_entity_decode($ret->href);
 							$this->_directUrl = $this->_whichSite[$this->_currentSite] . $this->_trailUrl;
 							$this->getUrl(false, $this->_currentSite);
 							return true;
@@ -358,7 +366,7 @@ class AEBN
 			curl_setopt($ch, CURLOPT_COOKIEJAR, $this->cookie);
 			curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookie);
 		}
-		curl_setopt_array($ch, Utility::curlSslContextOptions());
+		curl_setopt_array($ch, Misc::curlSslContextOptions());
 		$this->_response = curl_exec($ch);
 		if (!$this->_response) {
 			curl_close($ch);

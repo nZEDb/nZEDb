@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
 /**
  * Basic IRC client for fetching IRCScraper.
@@ -631,7 +631,7 @@ class IRCClient
 			$error_string,
 			$this->_remote_connection_timeout,
 			STREAM_CLIENT_CONNECT,
-			stream_context_create(Utility::streamSslContextOptions(true))
+			stream_context_create(Misc::streamSslContextOptions(true))
 		);
 
 		if ($socket === false) {

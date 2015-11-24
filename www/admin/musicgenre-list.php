@@ -9,30 +9,19 @@ $genres = new Genres(['Settings' => $page->settings]);
 $page->title = "Music Genres";
 
 $activeOnly = isset($_REQUEST['activeonly']);
-
-$count = $genres->getCount(Genres::MUSIC_TYPE, $activeOnly);
-
 $offset = isset($_REQUEST["offset"]) ? $_REQUEST["offset"] : 0;
 
-$page->smarty->assign('pagertotalitems', $count);
-$page->smarty->assign('pageroffset', $offset);
-$page->smarty->assign('pageritemsperpage', ITEMS_PER_PAGE);
+$page->smarty->assign([
+		'genrelist'         => $genres->getRange($offset, ITEMS_PER_PAGE, Genres::MUSIC_TYPE, $activeOnly),
+		'pagertotalitems'   => $genres->getCount(Genres::MUSIC_TYPE, $activeOnly),
+		'pageroffset'       => $offset,
+		'pageritemsperpage' => ITEMS_PER_PAGE,
+		'pagerquerysuffix'  => '',
+		'pagerquerybase'    => WWW_TOP . "/musicgenre-list.php?" . ($activeOnly ? "activeonly=1&amp;" : '') . "offset="
 
-if ($activeOnly) {
-	$activeOnlySearch = "activeonly=1&amp;";
-} else {
-	$activeOnlySearch = "";
-}
-
-$page->smarty->assign('pagerquerybase',
-					  WWW_TOP . "/musicgenre-list.php?" . $activeOnlySearch . "offset=");
-
-$pager = $page->smarty->fetch('pager.tpl');
-$page->smarty->assign('pager', $pager);
-
-$genrelist = $genres->getRange($offset, ITEMS_PER_PAGE, Genres::MUSIC_TYPE, $activeOnly);
-
-$page->smarty->assign('genrelist', $genrelist);
+	]
+);
+$page->smarty->assign('pager', $page->smarty->fetch('pager.tpl'));
 
 $page->content = $page->smarty->fetch('musicgenre-list.tpl');
 $page->render();

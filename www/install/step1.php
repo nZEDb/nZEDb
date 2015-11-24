@@ -4,7 +4,7 @@
  * No point having a check for PHP version if we can't get to that page because of higher version
  * requirements.
  */
-require_once realpath(__DIR__ . '/../automated.config.php');
+require_once realpath(__DIR__ . DIRECTORY_SEPARATOR . 'install.php');
 
 use nzedb\Install;
 
@@ -127,14 +127,14 @@ if ($cfg->videoCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->configCheck = is_writable(nZEDb_WWW);
+$cfg->configCheck = is_writable(nZEDb_CONFIGS);
 if ($cfg->configCheck === false) {
-	$cfg->configCheck = is_file(nZEDb_WWW);
+	$cfg->configCheck = is_file(nZEDb_CONFIGS);
 	if ($cfg->configCheck === true) {
 		$cfg->configCheck = false;
 		$cfg->error = true;
 	} else {
-		$cfg->configCheck = is_writable(nZEDb_WWW);
+		$cfg->configCheck = is_writable(nZEDb_CONFIGS);
 		if ($cfg->configCheck === false) {
 			$cfg->error = true;
 		}
@@ -184,8 +184,8 @@ if (preg_match('/apache/i', $_SERVER['SERVER_SOFTWARE'])) {
 }
 
 // Load previous config.php.
-if (file_exists(nZEDb_WWW . 'config.php') && is_readable(nZEDb_WWW . 'config.php')) {
-	$tmpCfg = file_get_contents(nZEDb_WWW . 'config.php');
+if (file_exists(nZEDb_CONFIGS . 'config.php') && is_readable(nZEDb_CONFIGS . 'config.php')) {
+	$tmpCfg = file_get_contents(nZEDb_CONFIGS . 'config.php');
 	$cfg->setConfig($tmpCfg);
 }
 

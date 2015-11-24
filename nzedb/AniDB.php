@@ -82,7 +82,7 @@ class AniDB
 						LEFT OUTER JOIN anidb_info ai USING (anidbid)
 						LEFT OUTER JOIN anidb_episodes ae USING (anidbid)
 						WHERE anidbid = %d',
-						  $anidbID
+						$anidbID
 					)
 		);
 	}
@@ -113,7 +113,9 @@ class AniDB
 
 		return $this->pdo->queryDirect(
 			sprintf('SELECT at.anidbid, at.title, ai.type, ai.categories, ai.rating, ai.startdate, ai.enddate
-					FROM anidb_titles AS at LEFT JOIN anidb_info AS ai USING (anidbid)
+					FROM anidb_titles at
+					LEFT JOIN anidb_info ai USING (anidbid)
+					INNER JOIN releases r ON at.anidbid = r.anidbid
 					WHERE at.anidbid > 0 %s %s
 					GROUP BY at.anidbid
 					ORDER BY at.title ASC',
@@ -145,9 +147,11 @@ class AniDB
 		}
 
 		return $this->pdo->query(
-			sprintf('SELECT at.anidbid, at.title, ai.description
+			sprintf('SELECT at.anidbid, GROUP_CONCAT(at.title SEPARATOR ", ") AS title, ai.description
 					FROM anidb_titles AS at LEFT JOIN anidb_info AS ai USING (anidbid)
 					WHERE 1=1 %s
+					AND at.lang = "en"
+					GROUP BY at.anidbid
 					ORDER BY at.anidbid ASC %s',
 					$rsql,
 					$limit
@@ -169,9 +173,10 @@ class AniDB
 		}
 
 		$res = $this->pdo->queryOneRow(
-			sprintf('SELECT COUNT(at.anidbid) AS num
+			sprintf('SELECT COUNT(DISTINCT at.anidbid) AS num
 				FROM anidb_titles AS at LEFT JOIN anidb_info AS ai USING (anidbid)
-				WHERE 1=1 %s',
+				WHERE 1=1
+				%s',
 				$rsql
 			)
 		);
@@ -190,7 +195,7 @@ class AniDB
 		$animeInfo = $this->pdo->query(
 			sprintf('SELECT at.anidbid, at.lang, at.title,
 				ai.startdate, ai.enddate, ai.updated, ai.related, ai.creators, ai.description,
-				ai.rating, ai.picture, ai.categories, ai.characters, ai.type
+				ai.rating, ai.picture, ai.categories, ai.characters, ai.type, ai.similar
 				FROM anidb_titles AS at LEFT JOIN anidb_info ai USING (anidbid)
 				WHERE at.anidbid = %d',
 				$anidbID

@@ -115,8 +115,8 @@ CREATE TABLE binaries (
   filenumber    INT UNSIGNED        NOT NULL DEFAULT '0',
   totalparts    INT(11) UNSIGNED    NOT NULL DEFAULT 0,
   currentparts  INT UNSIGNED        NOT NULL DEFAULT 0,
-  binaryhash    VARCHAR(255)        NOT NULL DEFAULT '0',
-  partcheck     BIT                 NOT NULL DEFAULT 0,
+  binaryhash    BINARY(16)          NOT NULL DEFAULT '0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0',
+  partcheck     TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
   partsize      BIGINT UNSIGNED     NOT NULL DEFAULT 0,
   PRIMARY KEY (id),
   UNIQUE INDEX ix_binary_binaryhash (binaryhash),
@@ -131,13 +131,14 @@ CREATE TABLE binaries (
 
 DROP TABLE IF EXISTS binaryblacklist;
 CREATE TABLE binaryblacklist (
-  id          INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  groupname   VARCHAR(255)     NULL,
-  regex       VARCHAR(2000)    NOT NULL,
-  msgcol      INT(11) UNSIGNED NOT NULL DEFAULT '1',
-  optype      INT(11) UNSIGNED NOT NULL DEFAULT '1',
-  status      INT(11) UNSIGNED NOT NULL DEFAULT '1',
-  description VARCHAR(1000)    NULL,
+  id            INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  groupname     VARCHAR(255)     NULL,
+  regex         VARCHAR(2000)    NOT NULL,
+  msgcol        INT(11) UNSIGNED NOT NULL DEFAULT '1',
+  optype        INT(11) UNSIGNED NOT NULL DEFAULT '1',
+  status        INT(11) UNSIGNED NOT NULL DEFAULT '1',
+  description   VARCHAR(1000) CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci    NULL,
+  last_activity	DATE             NULL,
   PRIMARY KEY (id),
   INDEX ix_binaryblacklist_groupname (groupname),
   INDEX ix_binaryblacklist_status    (status)
@@ -227,6 +228,7 @@ CREATE TABLE         collections (
   group_id       INT(11) UNSIGNED    NOT NULL DEFAULT '0',
   collectionhash VARCHAR(255)        NOT NULL DEFAULT '0',
   dateadded      DATETIME            DEFAULT NULL,
+  added          TIMESTAMP           NOT NULL DEFAULT CURRENT_TIMESTAMP,
   filecheck      TINYINT(3) UNSIGNED NOT NULL DEFAULT '0',
   filesize       BIGINT UNSIGNED     NOT NULL DEFAULT '0',
   releaseid      INT                 NULL,
@@ -252,7 +254,7 @@ CREATE TABLE collection_regexes (
   group_regex VARCHAR(255)        NOT NULL DEFAULT ''  COMMENT 'This is a regex to match against usenet groups',
   regex       VARCHAR(5000)       NOT NULL DEFAULT ''  COMMENT 'Regex used for collection grouping',
   status      TINYINT(1) UNSIGNED NOT NULL DEFAULT '1' COMMENT '1=ON 0=OFF',
-  description VARCHAR(1000)       NOT NULL             COMMENT 'Optional extra details on this regex',
+  description VARCHAR(1000)       CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Optional extra details on this regex',
   ordinal     INT SIGNED          NOT NULL DEFAULT '0' COMMENT 'Order to run the regex in',
   PRIMARY KEY (id),
   INDEX ix_collection_regexes_group_regex (group_regex),
@@ -293,28 +295,28 @@ CREATE TABLE consoleinfo (
 
 DROP TABLE IF EXISTS countries;
 CREATE TABLE countries (
-  code CHAR(2)      NOT NULL DEFAULT '',
-  name VARCHAR(255) NOT NULL DEFAULT '',
-  PRIMARY KEY (name)
+  id      CHAR(2) COLLATE utf8_unicode_ci NOT NULL COMMENT '2 character code.',
+  iso3    CHAR(3) COLLATE utf8_unicode_ci NOT NULL COMMENT '3 character code.',
+  country VARCHAR(180) CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Name of the country.',
+  PRIMARY KEY (id),
+  UNIQUE KEY code3 (iso3),
+  UNIQUE KEY country (country)
 )
-  ENGINE = MYISAM
+  ENGINE = MyISAM
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci;
 
 
 DROP TABLE IF EXISTS dnzb_failures;
 CREATE TABLE dnzb_failures (
-  id          INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  userid      INT(11) UNSIGNED NOT NULL,
-  guid        VARCHAR(50)      NOT NULL,
-  PRIMARY KEY (id)
+  release_id   INT(11) UNSIGNED  NOT NULL,
+  userid      INT(11) UNSIGNED  NOT NULL,
+  failed      INT UNSIGNED      NOT NULL DEFAULT '0',
+  PRIMARY KEY (release_id, userid)
 )
   ENGINE =MYISAM
   DEFAULT CHARSET =utf8
-  COLLATE =utf8_unicode_ci
-  AUTO_INCREMENT =1;
-  CREATE UNIQUE INDEX ux_dnzb_failures ON dnzb_failures (userid, guid);
-
+  COLLATE =utf8_unicode_ci;
 
 DROP TABLE IF EXISTS forum_posts;
 CREATE TABLE forum_posts (
@@ -477,21 +479,22 @@ DROP TABLE IF EXISTS movieinfo;
 CREATE TABLE movieinfo (
   id          INT(10) UNSIGNED               NOT NULL AUTO_INCREMENT,
   imdbid      MEDIUMINT(7) UNSIGNED ZEROFILL NOT NULL,
-  tmdbid      INT(10) UNSIGNED DEFAULT NULL,
-  title       VARCHAR(255)                   NOT NULL,
-  tagline     VARCHAR(1024)                  NOT NULL,
-  rating      VARCHAR(4)                     NOT NULL,
-  plot        VARCHAR(1024)                  NOT NULL,
-  year        VARCHAR(4)                     NOT NULL,
-  genre       VARCHAR(64)                    NOT NULL,
-  type        VARCHAR(32)                    NOT NULL,
-  director    VARCHAR(64)                    NOT NULL,
-  actors      VARCHAR(2000)                  NOT NULL,
-  language    VARCHAR(64)                    NOT NULL,
+  tmdbid      INT(10) UNSIGNED               NOT NULL DEFAULT 0,
+  title       VARCHAR(255)                   NOT NULL DEFAULT '',
+  tagline     VARCHAR(1024)                  NOT NULL DEFAULT '',
+  rating      VARCHAR(4)                     NOT NULL DEFAULT '',
+  plot        VARCHAR(1024)                  NOT NULL DEFAULT '',
+  year        VARCHAR(4)                     NOT NULL DEFAULT '',
+  genre       VARCHAR(64)                    NOT NULL DEFAULT '',
+  type        VARCHAR(32)                    NOT NULL DEFAULT '',
+  director    VARCHAR(64)                    NOT NULL DEFAULT '',
+  actors      VARCHAR(2000)                  NOT NULL DEFAULT '',
+  language    VARCHAR(64)                    NOT NULL DEFAULT '',
   cover       TINYINT(1) UNSIGNED            NOT NULL DEFAULT '0',
   backdrop    TINYINT(1) UNSIGNED            NOT NULL DEFAULT '0',
   createddate DATETIME                       NOT NULL,
   updateddate DATETIME                       NOT NULL,
+  trailer     VARCHAR(255)                   NOT NULL DEFAULT '',
   PRIMARY KEY (id),
   INDEX ix_movieinfo_title  (title),
   UNIQUE INDEX ix_movieinfo_imdbid (imdbid)
@@ -552,16 +555,12 @@ CREATE TABLE page_contents (
 
 DROP TABLE IF EXISTS parts;
 CREATE TABLE parts (
-  id            BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  binaryid      BIGINT(20) UNSIGNED NOT NULL DEFAULT '0',
-  collection_id INT(11) UNSIGNED    NOT NULL DEFAULT '0',
-  messageid     VARCHAR(255)        NOT NULL DEFAULT '',
-  number        BIGINT UNSIGNED     NOT NULL DEFAULT '0',
-  partnumber    INT UNSIGNED        NOT NULL DEFAULT '0',
-  size          BIGINT UNSIGNED     NOT NULL DEFAULT '0',
-  PRIMARY KEY (id),
-  KEY binaryid               (binaryid),
-  KEY ix_parts_collection_id (collection_id)
+  binaryid      BIGINT(20) UNSIGNED                      NOT NULL DEFAULT '0',
+  messageid     VARCHAR(255)        CHARACTER SET latin1 NOT NULL DEFAULT '',
+  number        BIGINT UNSIGNED                          NOT NULL DEFAULT '0',
+  partnumber    MEDIUMINT UNSIGNED                       NOT NULL DEFAULT '0',
+  size          MEDIUMINT UNSIGNED                       NOT NULL DEFAULT '0',
+  PRIMARY KEY (binaryid,number)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
@@ -603,10 +602,8 @@ CREATE TABLE predb (
 DROP TABLE IF EXISTS predb_hashes;
 CREATE TABLE predb_hashes (
   pre_id INT(11) UNSIGNED NOT NULL DEFAULT '0',
-  hashes VARCHAR(512)     NOT NULL DEFAULT '',
-  PRIMARY KEY (pre_id),
-  FULLTEXT INDEX ix_predb_hashes_ft (hashes),
-  UNIQUE INDEX ix_predb_hashes    (hashes(32))
+  hash VARBINARY(20)      NOT NULL DEFAULT '',
+  PRIMARY KEY (hash)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8mb4
@@ -663,12 +660,8 @@ CREATE TABLE         releases (
   fromname          VARCHAR(255)                   NULL,
   completion        FLOAT                          NOT NULL DEFAULT '0',
   categoryid        INT                            NOT NULL DEFAULT '7010',
-  rageid            INT                            NULL,
-  seriesfull        VARCHAR(15)                    NULL,
-  season            VARCHAR(10)                    NULL,
-  episode           VARCHAR(10)                    NULL,
-  tvtitle           VARCHAR(255)                   NULL,
-  tvairdate         DATETIME                       NULL,
+  videos_id         MEDIUMINT(11) UNSIGNED         NOT NULL COMMENT 'FK to videos.id of the parent series.',
+  tv_episodes_id    MEDIUMINT(11) SIGNED           NOT NULL COMMENT 'FK to tv_episodes.id for the episode.',
   imdbid            MEDIUMINT(7) UNSIGNED ZEROFILL NULL,
   xxxinfo_id        INT SIGNED                     NOT NULL DEFAULT '0',
   musicinfoid       INT                            NULL,
@@ -688,7 +681,7 @@ CREATE TABLE         releases (
   audiostatus       TINYINT(1)                     NOT NULL DEFAULT '0',
   dehashstatus      TINYINT(1)                     NOT NULL DEFAULT '0',
   reqidstatus       TINYINT(1)                     NOT NULL DEFAULT '0',
-  nzb_guid          VARCHAR(32)                    NULL,
+  nzb_guid          BINARY(16)                     NULL,
   nzbstatus         TINYINT(1)                     NOT NULL DEFAULT '0',
   iscategorized     TINYINT(1)                     NOT NULL DEFAULT '0',
   isrenamed         TINYINT(1)                     NOT NULL DEFAULT '0',
@@ -700,28 +693,26 @@ CREATE TABLE         releases (
   proc_nfo          TINYINT(1)                     NOT NULL DEFAULT '0',
   proc_files        TINYINT(1)                     NOT NULL DEFAULT '0',
   PRIMARY KEY                                 (id, categoryid),
-  INDEX ix_releases_adddate                   (adddate),
-  INDEX ix_releases_rageid                    (rageid),
-  INDEX ix_releases_imdbid                    (imdbid),
-  INDEX ix_releases_guid                      (guid),
   INDEX ix_releases_name                      (name),
-  INDEX ix_releases_groupid                   (group_id),
-  INDEX ix_releases_dehashstatus              (dehashstatus),
-  INDEX ix_releases_reqidstatus               (reqidstatus),
-  INDEX ix_releases_nfostatus                 (nfostatus),
+  INDEX ix_releases_group_id                  (group_id,passwordstatus),
+  INDEX ix_releases_postdate_searchname       (postdate,searchname),
+  INDEX ix_releases_guid                      (guid),
+  INDEX ix_releases_nzb_guid                  (nzb_guid),
+  INDEX ix_releases_videos_id                 (videos_id),
+  INDEX ix_releases_tv_episodes_id            (tv_episodes_id),
+  INDEX ix_releases_imdbid                    (imdbid),
   INDEX ix_releases_xxxinfo_id                (xxxinfo_id),
-  INDEX ix_releases_musicinfoid               (musicinfoid),
+  INDEX ix_releases_musicinfoid               (musicinfoid,passwordstatus),
   INDEX ix_releases_consoleinfoid             (consoleinfoid),
   INDEX ix_releases_gamesinfo_id              (gamesinfo_id),
   INDEX ix_releases_bookinfoid                (bookinfoid),
-  INDEX ix_releases_haspreview_passwordstatus (haspreview, passwordstatus),
-  INDEX ix_releases_postdate_searchname       (postdate, searchname),
-  INDEX ix_releases_nzb_guid                  (nzb_guid),
-  INDEX ix_releases_preid_searchname          (preid, searchname),
-  INDEX ix_releases_status                    (nzbstatus, iscategorized, isrenamed, nfostatus, ishashed, isrequestid,
-                                               passwordstatus, dehashstatus, reqidstatus, musicinfoid, consoleinfoid,
-                                               bookinfoid, haspreview, categoryid, imdbid, rageid),
-  INDEX ix_passwordstatus                     (passwordstatus)
+  INDEX ix_releases_anidbid                   (anidbid),
+  INDEX ix_releases_preid_searchname          (preid,searchname),
+  INDEX ix_releases_haspreview_passwordstatus (haspreview,passwordstatus),
+  INDEX ix_releases_passwordstatus            (passwordstatus),
+  INDEX ix_releases_nfostatus                 (nfostatus,size),
+  INDEX ix_releases_dehashstatus              (dehashstatus,ishashed),
+  INDEX ix_releases_reqidstatus               (adddate,reqidstatus,isrequestid)
 )
   ENGINE          = MYISAM
   DEFAULT CHARSET = utf8
@@ -745,6 +736,7 @@ CREATE TABLE release_comments (
   id          INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   releaseid   INT(11) UNSIGNED NOT NULL,
   text        VARCHAR(2000)    NOT NULL DEFAULT '',
+  text_hash   VARCHAR(32)      NOT NULL DEFAULT '',
   username    VARCHAR(255)     NOT NULL DEFAULT '',
   user_id     INT(11) UNSIGNED NOT NULL,
   createddate DATETIME DEFAULT NULL,
@@ -752,8 +744,9 @@ CREATE TABLE release_comments (
   shared      TINYINT(1)       NOT NULL DEFAULT '0',
   shareid     VARCHAR(40)      NOT NULL DEFAULT '',
   siteid      VARCHAR(40)      NOT NULL DEFAULT '',
-  nzb_guid    VARCHAR(32)      NOT NULL DEFAULT '',
+  nzb_guid    BINARY(16)       NOT NULL DEFAULT '0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0',
   PRIMARY KEY (id),
+  UNIQUE INDEX ix_release_comments_hash_releaseid(text_hash, releaseid),
   INDEX ix_releasecomment_releaseid (releaseid),
   INDEX ix_releasecomment_userid    (user_id)
 )
@@ -763,34 +756,40 @@ CREATE TABLE release_comments (
   AUTO_INCREMENT = 1;
 
 
-DROP TABLE IF EXISTS release_files;
-CREATE TABLE release_files (
-  id          INT(10)             NOT NULL AUTO_INCREMENT,
-  releaseid   INT(11) UNSIGNED    NOT NULL,
-  name        VARCHAR(255)        NULL,
-  size        BIGINT UNSIGNED     NOT NULL DEFAULT '0',
-  ishashed    TINYINT(1)          NOT NULL DEFAULT '0',
-  createddate DATETIME DEFAULT NULL,
-  passworded  TINYINT(1) UNSIGNED NOT NULL DEFAULT '0',
-  PRIMARY KEY (id),
-  UNIQUE INDEX ix_releasefiles_name_releaseid (name, releaseid),
-  INDEX ix_releasefiles_releaseid      (releaseid),
-  INDEX ix_releasefiles_name           (name),
-  INDEX ix_releasefiles_ishashed       (ishashed)
+DROP TABLE IF EXISTS releaseextrafull;
+CREATE TABLE releaseextrafull (
+  releaseid INT(11) UNSIGNED NOT NULL,
+  mediainfo TEXT NULL,
+  PRIMARY KEY (releaseid)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
-  COLLATE = utf8_unicode_ci
-  AUTO_INCREMENT = 1;
+  COLLATE = utf8_unicode_ci;
+
+
+DROP TABLE IF EXISTS release_files;
+CREATE TABLE release_files (
+  releaseid int(11) unsigned NOT NULL,
+  name varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  size bigint(20) unsigned NOT NULL DEFAULT '0',
+  ishashed tinyint(1) NOT NULL DEFAULT '0',
+  createddate datetime DEFAULT NULL,
+  passworded tinyint(1) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (releaseid, name),
+  KEY ix_releasefiles_ishashed (ishashed)
+)
+  ENGINE = MYISAM
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 
 DROP TABLE IF EXISTS release_naming_regexes;
 CREATE TABLE release_naming_regexes (
   id          INT UNSIGNED        NOT NULL AUTO_INCREMENT,
   group_regex VARCHAR(255)        NOT NULL DEFAULT ''  COMMENT 'This is a regex to match against usenet groups',
-  regex       VARCHAR(5000)       NOT NULL DEFAULT ''  COMMENT 'Regex used for extracting name from subject',
+  regex       VARCHAR(5000)       CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT ''  COMMENT 'Regex used for extracting name from subject',
   status      TINYINT(1) UNSIGNED NOT NULL DEFAULT '1' COMMENT '1=ON 0=OFF',
-  description VARCHAR(1000)       NOT NULL DEFAULT ''  COMMENT 'Optional extra details on this regex',
+  description VARCHAR(1000)       CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT ''  COMMENT 'Optional extra details on this regex',
   ordinal     INT SIGNED          NOT NULL DEFAULT '0' COMMENT 'Order to run the regex in',
   PRIMARY KEY (id),
   INDEX ix_release_naming_regexes_group_regex (group_regex),
@@ -805,16 +804,13 @@ CREATE TABLE release_naming_regexes (
 
 DROP TABLE IF EXISTS release_nfos;
 CREATE TABLE release_nfos (
-  id        INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   releaseid INT(11) UNSIGNED NOT NULL,
   nfo       BLOB             NULL DEFAULT NULL,
-  PRIMARY KEY (id),
-  UNIQUE INDEX ix_releasenfo_releaseid (releaseid)
+  PRIMARY KEY (releaseid)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
-  COLLATE = utf8_unicode_ci
-  AUTO_INCREMENT = 1;
+  COLLATE = utf8_unicode_ci;
 
 
 DROP TABLE IF EXISTS release_search_data;
@@ -938,50 +934,36 @@ CREATE TABLE tmux (
   COLLATE = utf8_unicode_ci
   AUTO_INCREMENT = 1;
 
-
-DROP TABLE IF EXISTS tvrage_titles;
-CREATE TABLE tvrage_titles (
-  id           INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  rageid       INT              NOT NULL,
-  tvdbid       INT              NOT NULL DEFAULT '0',
-  releasetitle VARCHAR(255)     NOT NULL DEFAULT '',
-  description  VARCHAR(10000)   NULL,
-  genre        VARCHAR(64)      NULL DEFAULT NULL,
-  country      VARCHAR(2)       NULL DEFAULT NULL,
-  imgdata      MEDIUMBLOB       NULL,
-  createddate  DATETIME              DEFAULT NULL,
-  prevdate     DATETIME         NULL,
-  previnfo     VARCHAR(255)     NULL,
-  nextdate     DATETIME         NULL,
-  nextinfo     VARCHAR(255)     NULL,
-  PRIMARY KEY                                (id),
-  INDEX        ix_tvrage_rageid              (rageid),
-  INDEX        ix_tvrage_releasetitle        (releasetitle),
-  UNIQUE INDEX ux_tvrage_rageid_releasetitle (rageid, releasetitle)
-)
-  ENGINE          = MYISAM
-  DEFAULT CHARSET = utf8
-  COLLATE         = utf8_unicode_ci
-  AUTO_INCREMENT  = 1000001;
-
-
-DROP TABLE IF EXISTS tvrage_episodes;
-CREATE TABLE tvrage_episodes (
-  id        INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  rageid    INT(11) UNSIGNED NOT NULL,
-  showtitle VARCHAR(255) DEFAULT NULL,
-  airdate   DATETIME         NOT NULL,
-  link      VARCHAR(255) DEFAULT NULL,
-  fullep    VARCHAR(20)      NOT NULL,
-  eptitle   VARCHAR(255) DEFAULT NULL,
+DROP TABLE IF EXISTS tv_episodes;
+CREATE TABLE tv_episodes (
+  id           INT(11)        UNSIGNED NOT NULL AUTO_INCREMENT,
+  videos_id    MEDIUMINT(11)  UNSIGNED  NOT NULL COMMENT 'FK to videos.id of the parent series.',
+  series       SMALLINT(5)    UNSIGNED    NOT NULL DEFAULT '0' COMMENT 'Number of series/season.',
+  episode      SMALLINT(5)    UNSIGNED    NOT NULL DEFAULT '0' COMMENT 'Number of episode within series',
+  se_complete  VARCHAR(10)    COLLATE utf8_unicode_ci NOT NULL COMMENT 'String version of Series/Episode as taken from release subject (i.e. S02E21+22).',
+  title        VARCHAR(180)   CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Title of the episode.',
+  firstaired   DATE           NOT NULL COMMENT 'Date of original airing/release.',
+  summary      TEXT           CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Description/summary of the episode.',
   PRIMARY KEY (id),
-  UNIQUE INDEX ix_tvrageepisodes_rageid (rageid, fullep)
+  UNIQUE KEY (videos_id, series, episode, firstaired)
 )
-  ENGINE = MYISAM
+  ENGINE = MyISAM
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci
-  AUTO_INCREMENT = 1000001;
+  AUTO_INCREMENT  = 1;
 
+DROP TABLE IF EXISTS tv_info;
+CREATE TABLE tv_info (
+  videos_id MEDIUMINT(11) UNSIGNED  NOT NULL DEFAULT '0' COMMENT 'FK to video.id',
+  summary   TEXT          CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Description/summary of the show.',
+  publisher VARCHAR(50)  CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'The channel/network of production/release (ABC, BBC, Showtime, etc.).',
+  image     TINYINT(1)    UNSIGNED  NOT NULL DEFAULT '0' COMMENT 'Does the video have a cover image?',
+  PRIMARY KEY          (videos_id),
+  KEY ix_tv_info_image (image)
+)
+  ENGINE = MyISAM
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 DROP TABLE IF EXISTS upcoming_releases;
 CREATE TABLE upcoming_releases (
@@ -1142,12 +1124,12 @@ CREATE TABLE user_roles (
 DROP TABLE IF EXISTS user_series;
 CREATE TABLE user_series (
   id          INT(16) UNSIGNED NOT NULL AUTO_INCREMENT,
-  user_id INT(16)          NOT NULL,
-  rageid      INT(16)          NOT NULL,
+  user_id     INT(16)          NOT NULL,
+  videos_id   INT(16)          NOT NULL COMMENT 'FK to videos.id',
   categoryid  VARCHAR(64)      NULL DEFAULT NULL,
   createddate DATETIME         NOT NULL,
   PRIMARY KEY (id),
-  INDEX ix_userseries_userid (user_id, rageid)
+  INDEX ix_userseries_videos_id (user_id, videos_id)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
@@ -1175,16 +1157,46 @@ CREATE TABLE video_data (
   COLLATE = utf8_unicode_ci;
 
 
-DROP TABLE IF EXISTS releaseextrafull;
-CREATE TABLE releaseextrafull (
-  releaseid INT(11) UNSIGNED NOT NULL,
-  mediainfo TEXT NULL,
-  PRIMARY KEY (releaseid)
+DROP TABLE IF EXISTS videos;
+CREATE TABLE videos (
+  id           MEDIUMINT(11) UNSIGNED  NOT NULL AUTO_INCREMENT COMMENT 'Show\'s ID to be used in other tables as reference.',
+  type         TINYINT(1) UNSIGNED     NOT NULL DEFAULT '0' COMMENT '0 = TV, 1 = Film, 2 = Anime',
+  title        VARCHAR(180) CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Name of the video.',
+  countries_id CHAR(2) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'Two character country code (FK to countries table).',
+  started      DATETIME                NOT NULL COMMENT 'Date (UTC) of production''s first airing.',
+  anidb        MEDIUMINT(11) UNSIGNED NOT NULL DEFAULT '0'  COMMENT 'ID number for anidb site',
+  imdb         MEDIUMINT(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'ID number for IMDB site (without the ''tt'' prefix).',
+  tmdb         MEDIUMINT(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'ID number for TMDB site.',
+  trakt        MEDIUMINT(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'ID number for TraktTV site.',
+  tvdb         MEDIUMINT(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'ID number for TVDB site',
+  tvmaze       MEDIUMINT(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'ID number for TVMaze site.',
+  tvrage       MEDIUMINT(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'ID number for TVRage site.',
+  source       TINYINT(1)    UNSIGNED NOT NULL DEFAULT '0' COMMENT 'Which site did we use for info?',
+  PRIMARY KEY    (id),
+  UNIQUE KEY     ix_videos_title (title, type, started, countries_id),
+  KEY            ix_videos_imdb (imdb),
+  KEY            ix_videos_tmdb (tmdb),
+  KEY            ix_videos_trakt (trakt),
+  KEY            ix_videos_tvdb (tvdb),
+  KEY            ix_videos_tvmaze (tvmaze),
+  KEY            ix_videos_tvrage (tvrage),
+  KEY            ix_videos_type_source (type, source)
 )
-  ENGINE = MYISAM
+  ENGINE = MyISAM
   DEFAULT CHARSET = utf8
-  COLLATE = utf8_unicode_ci;
+  COLLATE = utf8_unicode_ci
+  AUTO_INCREMENT = 10000000;
 
+DROP TABLE IF EXISTS videos_aliases;
+CREATE TABLE videos_aliases (
+  videos_id   MEDIUMINT(11) UNSIGNED  NOT NULL COMMENT 'FK to videos.id of the parent title.',
+  title VARCHAR(180) CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'AKA of the video.',
+  PRIMARY KEY (videos_id, title)
+)
+  ENGINE = MyISAM
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci
+  AUTO_INCREMENT  = 10000000;
 
 DROP TABLE IF EXISTS xxxinfo;
 CREATE TABLE         xxxinfo (
@@ -1275,24 +1287,26 @@ CREATE TRIGGER delete_search AFTER DELETE ON releases FOR EACH ROW
 
 CREATE TRIGGER insert_hashes AFTER INSERT ON predb FOR EACH ROW
   BEGIN
-    INSERT INTO predb_hashes (pre_id, hashes) VALUES (NEW.id, CONCAT_WS(',', MD5(NEW.title), MD5(MD5(NEW.title)), SHA1(NEW.title)));
+    INSERT INTO predb_hashes (hash, pre_id) VALUES (UNHEX(MD5(NEW.title)), NEW.id), (UNHEX(MD5(MD5(NEW.title))), NEW.id), ( UNHEX(SHA1(NEW.title)), NEW.id);
   END; $$
 
 CREATE TRIGGER update_hashes AFTER UPDATE ON predb FOR EACH ROW
   BEGIN
     IF NEW.title != OLD.title
-      THEN UPDATE predb_hashes SET hashes = CONCAT_WS(',', MD5(NEW.title), MD5(MD5(NEW.title)), SHA1(NEW.title)) WHERE pre_id = OLD.id;
+      THEN
+         DELETE FROM predb_hashes WHERE hash IN ( UNHEX(md5(OLD.title)), UNHEX(md5(md5(OLD.title))), UNHEX(sha1(OLD.title)) ) AND pre_id = OLD.id;
+         INSERT INTO predb_hashes (hash, pre_id) VALUES ( UNHEX(MD5(NEW.title)), NEW.id ), ( UNHEX(MD5(MD5(NEW.title))), NEW.id ), ( UNHEX(SHA1(NEW.title)), NEW.id );
     END IF;
   END; $$
 
 CREATE TRIGGER delete_hashes AFTER DELETE ON predb FOR EACH ROW
   BEGIN
-    DELETE FROM predb_hashes WHERE pre_id = OLD.id;
+    DELETE FROM predb_hashes WHERE hash IN ( UNHEX(md5(OLD.title)), UNHEX(md5(md5(OLD.title))), UNHEX(sha1(OLD.title)) ) AND pre_id = OLD.id;
   END; $$
 
-CREATE TRIGGER delete_collections BEFORE DELETE ON collections FOR EACH ROW
-  BEGIN
-    DELETE FROM binaries WHERE collection_id = OLD.id;
-    DELETE FROM parts WHERE collection_id = OLD.id;
-  END; $$
+CREATE TRIGGER insert_MD5 BEFORE INSERT ON release_comments FOR EACH ROW
+  SET
+    NEW.text_hash = MD5(NEW.text);
+    $$
+
 DELIMITER ;

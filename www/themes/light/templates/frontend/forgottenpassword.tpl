@@ -1,7 +1,6 @@
- 
 <h1>{$page->title}</h1>
 
-{if $error != ''}
+{if isset($error) && $error != ''}
     <div class="error">{$error}</div>
 {/if}
 

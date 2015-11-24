@@ -19,13 +19,14 @@
  * @copyright 2015 nZEDb
  */
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php';
+require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'indexer.php');
 
 use nzedb\db\PreDb;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
+use nzedb\utility\Text;
 
-if (!Utility::isWin()) {
-	$canExeRead = Utility::canExecuteRead(nZEDb_RES);
+if (!Misc::isWin()) {
+	$canExeRead = Misc::canExecuteRead(nZEDb_RES);
 	if (is_string($canExeRead)) {
 		exit($canExeRead);
 	}
@@ -35,31 +36,42 @@ if (!Utility::isWin()) {
 if (!isset($argv[1])) {
 	$message = <<<HELP
 This script can export a predb dump file. You may use the full path, or a relative path.
-For exporting, the path must be writeable by mysql, any existing file [predb_dump.csv] will be overwritten.
+For exporting, the path must be writeable by mysql, any existing file will be overwritten.
+Filename is optional, if not included it defaults to predb_export_YYYYMMDDhhmmss.tsv where
+YYYYMMDDhhmmss is the current UTC date-time.
 
-php {$argv[0]} /path/to/write/to                     ...: To export.
+php {$argv[0]} /path/to/write/to/[<file-name>]                    ...: To export.
 
 HELP;
 	exit($message);
 } else {
-	$path = !preg_match('#^/#', $argv[1]) ? getcwd() . '/' . $argv[1] : $argv[1];
+	$path = !preg_match('#^/#', $argv[1]) ? realpath($argv[1]) : $argv[1];
 }
 
 if (file_exists($path) && is_file($path)) {
 	unlink($path);
+} else if (is_dir($path)) {
+	$path = Text::trailingSlash($path) . 'predb_export_' . strftime('%Y%m%d%H%M%S') . '.tsv';
 }
 
-Utility::clearScreen();
+Misc::clearScreen();
 
 $table = isset($argv[2]) ? $argv[2] : 'predb';
 
 $predb = new PreDb();
-
-$predb->executeExport([
-		'enclosed'	=> " ENCLOSED BY \"'\" ",
-		'fields'	=> '\\t\\t',
-		'lines'		=> '\\r\\n',
+if (nZEDb_ECHOCLI) {
+	echo "Exporting table: $table to '$path'\n";
+}
+$result = $predb->executeExport([
+		'enclosed'	=> '',
+		'fields'	=> '\t\t',
+		'limit'		=> 0,
+		'lines'		=> '\r\n',
 		'path'		=> $path,
 	]);
+
+if ($result == false) {
+	echo "ERROR: Failed to export file!\nMake sure the MySQL user has permission to write to the location.\n";
+}
 
 ?>

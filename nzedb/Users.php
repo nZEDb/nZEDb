@@ -2,7 +2,7 @@
 namespace nzedb;
 
 use nzedb\db\Settings;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
 /**
  * Class Users
@@ -1117,7 +1117,7 @@ class Users
 				" to this email address.<br>To accept the invitation click <a href=\"$url\">this link</a>\n";
 		}
 
-		Utility::sendEmail($emailTo, $subject, $contents, $siteEmail);
+		Misc::sendEmail($emailTo, $subject, $contents, $siteEmail);
 		$this->addInvite($userID, $token);
 
 		return $url;
@@ -1210,6 +1210,23 @@ class Users
 			LIMIT 10"
 		);
 	}
+
+	/**
+	 * Get list of user signups by month.
+	 *
+	 * @return array
+	*/
+	public function getUsersByMonth()
+	{
+		return $this->pdo->query("
+			SELECT DATE_FORMAT(createddate, '%M %Y') AS mth, COUNT(*) AS num
+			FROM users
+			WHERE createddate IS NOT NULL AND createddate != '0000-00-00 00:00:00'
+			GROUP BY DATE_FORMAT(createddate, '%M %Y')
+			ORDER BY createddate DESC"
+		);
+	}
+
 
 	/**
 	 * Get list of user roles.
@@ -1325,13 +1342,16 @@ class Users
 	 *
 	 * @param int $userID
 	 *
-	 * @return array|bool
+	 * @return int
 	 */
 	public function getApiRequests($userID)
 	{
 		// Clear old requests.
 		$this->clearApiRequests($userID);
-		return $this->pdo->queryOneRow(sprintf('SELECT COUNT(id) AS num FROM user_requests WHERE user_id = %d', $userID));
+		$requests = $this->pdo->queryOneRow(
+			sprintf('SELECT COUNT(id) AS num FROM user_requests WHERE user_id = %d', $userID)
+		);
+		return (!$requests ? 0 : (int)$requests['num']);
 	}
 
 	/**
@@ -1381,7 +1401,7 @@ class Users
 	 *
 	 * @param int $userID
 	 *
-	 * @return array|bool
+	 * @return int
 	 */
 	public function getDownloadRequests($userID)
 	{
@@ -1392,12 +1412,13 @@ class Users
 				$userID
 			)
 		);
-		return $this->pdo->queryOneRow(
+		$value = $this->pdo->queryOneRow(
 			sprintf(
 				'SELECT COUNT(id) AS num FROM user_downloads WHERE user_id = %d AND timestamp > DATE_SUB(NOW(), INTERVAL 1 DAY)',
 				$userID
 			)
 		);
+		return ($value === false ? 0 : (int) $value['num']);
 	}
 
 	/**

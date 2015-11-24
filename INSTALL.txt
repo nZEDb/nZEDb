@@ -47,6 +47,10 @@ REQUIREMENTS
 			Non root MySQL USER.
 			MySQL user with ALL permissions. (GRANT ALL ON *.* TO 'YourMySQLUsername'@'YourMySQLServerIPAddress';)
 			MySQL user with FILE permissions. (GRANT FILE ON *.* TO 'YourMySQLUsername'@'YourMySQLServerIPAddress';)
+			
+			If the database is remote:
+			[client]
+			loose-local-infile=1
 
 			MariaDB recommended. https://mariadb.org/
 
@@ -78,7 +82,7 @@ OPTIONAL REQUIREMENTS
 		tmdb            http://api.themoviedb.org/2.1/
 		amazon          https://affiliate-program.amazon.com/gp/advertising/api/detail/main.html
 		rottentomatoes  http://developer.rottentomatoes.com
-		trakt.tv        https://trakt.tv/api-docs
+		trakt.tv        http://docs.trakt.apiary.io/
 		anidb           http://anidb.net
 
 	Executable programs in PATH

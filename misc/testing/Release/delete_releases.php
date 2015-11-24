@@ -1,6 +1,6 @@
 <?php
 // Include config.php
-require_once dirname(__FILE__) . '/../../../www/config.php';
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
 use nzedb\ReleaseRemover;
 use nzedb\ColorCLI;
@@ -29,7 +29,7 @@ if ($totalArgs < 2) {
 		'completion : Look for completion (less than) (modifiers: smaller)' . $n .
 		'categoryid : Look for releases within specified category (modifiers: equals)' . $n .
 		'imdbid     : Look for releases with imdbid (modifiers: equals)' . $n .
-		'rageid     : Look for releases with rageid (modifiers: equals)' . $n .
+		'videos_id  : Look for releases with videos_id (modifiers: equals)' . $n .
 		'totalpart  : Look for releases with certain number of parts (modifiers: equals,bigger,smaller)' . $n .
 		'nzbstatus  : Look for releases with nzbstatus (modifiers: equals)' . $n . $n .
 		'List of Modifiers:' . $n .

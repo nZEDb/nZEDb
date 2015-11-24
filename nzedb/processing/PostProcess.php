@@ -12,7 +12,10 @@ use nzedb\Music;
 use nzedb\NameFixer;
 use nzedb\Nfo;
 use nzedb\Sharing;
-use nzedb\TvRage;
+//use nzedb\processing\tv\TvRage;
+use nzedb\processing\tv\TVDB;
+use nzedb\processing\tv\TVMaze;
+use nzedb\processing\tv\TMDB;
 use nzedb\XXX;
 use nzedb\ReleaseFiles;
 use nzedb\db\Settings;
@@ -255,7 +258,10 @@ class PostProcess
 	{
 		$processTV = (is_numeric($processTV) ? $processTV : $this->pdo->getSetting('lookuptvrage'));
 		if ($processTV > 0) {
-			(new TvRage(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->processTvReleases($groupID, $guidChar, $processTV);
+			(new TVDB(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->processSite($groupID, $guidChar, $processTV);
+			(new TVMaze(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->processSite($groupID, $guidChar, $processTV);
+			(new TMDB(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->processSite($groupID, $guidChar, $processTV);
+			//(new TvRage(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->processSite($groupID, $guidChar, $processTV);
 		}
 	}
 
@@ -373,7 +379,7 @@ class PostProcess
 					if ($filesAdded < 11 &&
 						$this->pdo->queryOneRow(
 							sprintf('
-								SELECT id
+								SELECT releaseid
 								FROM release_files
 								WHERE releaseid = %d
 								AND name = %s',
@@ -403,7 +409,7 @@ class PostProcess
 
 			// If we found some files.
 			if ($filesAdded > 0) {
-				$this->debugging->log('PostProcess', 'parsePAR2', 'Added ' . $filesAdded . ' release_files from PAR2 for ' . $query['searchname'], Logger::LOG_INFO);
+				$this->debugging->log(get_class(), __FUNCTION__, 'Added ' . $filesAdded . ' release_files from PAR2 for ' . $query['searchname'], Logger::LOG_INFO);
 
 				// Update the file count with the new file count + old file count.
 				$this->pdo->queryExec(

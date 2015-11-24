@@ -65,30 +65,50 @@ class PreDb extends DB
 		return $this->ps['DeleteShort']->execute();
 	}
 
+	/**
+	 * @param array|null $options array of parameter.
+	 *		'enclosedby'	- string for enclosed by clause. default: empty string,
+	 *		'fields'		- string for FIELDS SEPARATED BY clause. default: '\t',
+	 *		'limit'			- string for LIMIT clause. Zero indicate no clause. Default:  0,
+	 *		'lines'			- string for LINES TERMINATED BY. Default: '\r\n' (Windows style EOLs to allow \n to be used in text),
+	 *		'path'			- path (including filename) to write data to.
+	 *       All parameter will be escaped before use.
+	 *
+	 * @return false|\PDOStatement
+	 */
 	public function executeExport(array $options = null)
 	{
 		$defaults = [
-			'enclosed'	=> '',
-			'fields'	=> '\\t',
-			'lines'		=> '\\n',
+			'enclosedby' => '',
+			'fields'     => '\t',
+			'limit'      => 0,
+			'lines'      => '\r\n',    // use Windows style endings so that text can contain \n
 			'path'		=> null,
 		];
 		$options += $defaults;
 
 		if (empty($options['path'])) {
 			return null;
+		} else if (!is_numeric($options['limit'])) {
+			return null;
 		}
 
-		if (!isset($this->ps['Export'])) {
-			$this->prepareSQLExport();
+		$limit = $options['limit'] > 0 ? "LIMIT {$options['limit']}" : '';
+
+		$enclosedby = empty($options['enclosedby']) ? '' : "ENCLOSED BY {$this->escapeString($options['enclosedby'])}";
+
+		$sql   = <<<SQL_EXPORT
+SELECT title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, g.name
+	FROM {$this->tableMain} p LEFT OUTER JOIN groups g ON p.group_id = g.id $limit
+	INTO OUTFILE '{$options['path']}'
+	FIELDS TERMINATED BY '{$options['fields']}' $enclosedby
+	LINES TERMINATED BY '{$options['lines']}';
+SQL_EXPORT;
+		if (nZEDb_DEBUG) {
+			echo "$sql\n";
 		}
 
-		return $this->ps['Export']->execute([
-				':enclosed'	=> $options['enclosed'],
-				':fields'	=> $options['fields'],
-				':lines'	=> $options['lines'],
-				':path'		=> $options['path'],
-			]);
+		return $this->queryDirect($sql);
 	}
 
 	public function executeInsert()
@@ -103,9 +123,6 @@ class PreDb extends DB
 	public function executeLoadData(array $options = null)
 	{
 		$defaults = [
-			'fields'	=> '\\t',
-			'lines'		=> '\\n',
-			'local'		=> false,
 			'path'		=> null,
 		];
 		$options += $defaults;
@@ -116,7 +133,7 @@ class PreDb extends DB
 
 		if (!isset($this->ps['LoadData'])) {
 			// TODO detect LOCAL here and pass parameter as appropriate
-			$this->prepareSQLLoadData($options['local']);
+			$this->prepareSQLLoadData($options);
 		}
 
 		return $this->ps['LoadData']->execute([':path' => $options['path']]);
@@ -139,7 +156,7 @@ class PreDb extends DB
 		return $this->ps['UpdateGroupID']->execute();
 	}
 
-	public function import(\String $filespec, $localDB = false)
+	public function import($filespec, $localDB = false)
 	{
 		if (!($this->ps['AddGroups'] instanceof \PDOStatement)) {
 			$this->prepareImportSQL($localDB);
@@ -175,11 +192,11 @@ class PreDb extends DB
 		return $settings;
 	}
 
-	protected function prepareImportSQL($localDB = false)
+	protected function prepareImportSQL($localDB = false, $enclosedby = '')
 	{
 		$this->prepareSQLTruncate();
 
-		$this->prepareSQLLoadData($localDB);
+		$this->prepareSQLLoadData(['local' => $localDB, 'enclosedby' => $enclosedby, 'optional' => true]);
 
 		$this->prepareSQLDeleteShort();
 
@@ -220,20 +237,6 @@ SQL_ADD_GROUPS;
 		$this->prepareSQLStatement('DELETE FROM predb_imports WHERE LENGTH(title) <= 8', 'DeleteShort');
 	}
 
-	protected function prepareSQLExport()
-	{
-		$sql = <<<SQL_EXPORT
-SELECT title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, g.name
-	FROM {$this->tableMain} p LEFT OUTER JOIN groups g ON p.group_id = g.id
-	INTO OUTFILE :path
-	FIELDS TERMINATED BY :field
-	:enclosed
-	LINES TERMINATED BY :lines;
-SQL_EXPORT;
-
-		$this->prepareSQLStatement($sql, 'Export');
-	}
-
 	protected function prepareSQLInsert()
 	{
 		$sql = <<<SQL_INSERT
@@ -254,12 +257,34 @@ SQL_INSERT;
 		$this->prepareSQLStatement($sql, 'Insert');
 	}
 
-	protected function prepareSQLLoadData($local = true)
+	protected function prepareSQLLoadData(array $options = [])
 	{
-		$sql = sprintf(
-			"LOAD DATA %s INFILE :path IGNORE INTO TABLE predb_imports FIELDS TERMINATED BY '\\t\\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\\r\\n' (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, groupname);",
-			($local === false ? 'LOCAL' : '')
-		);
+		$enclosedby = '';
+		$defaults = [
+			'enclosedby'	=> "'",
+			'fields'		=> '\t',
+			'lines'			=> '\r\n',    // Windows' style EOL to allow \n to be used in text.
+			'local'			=> false,
+			'optional'		=> true,
+		];
+		$options += $defaults;
+
+		$local = $options['local'] === false ? 'LOCAL' : '';
+		if (!empty($options['enclosedby'])) {
+			$optional = $options['optional'] === true ? ' OPTIONALLY' : '';
+			$enclosedby = "$optional ENCLOSED BY \"{$options['enclosedby']}\"";
+		}
+		$sql = <<<SQL_LOAD_DATA
+LOAD DATA $local INFILE :path
+  IGNORE INTO TABLE predb_imports
+  FIELDS TERMINATED BY '{$options['fields']}' {$enclosedby}
+  LINES TERMINATED BY '{$options['lines']}'
+  (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, groupname);
+SQL_LOAD_DATA;
+		if (nZEDb_DEBUG) {
+			echo "$sql\n";
+		}
+
 		$this->prepareSQLStatement($sql, 'LoadData');
 	}
 

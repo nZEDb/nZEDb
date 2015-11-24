@@ -1,7 +1,6 @@
 <?php
 // This script updates all releases with the guid from the nzb file.
-
-require_once dirname(__FILE__) . '/../../../www/config.php';
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
 use nzedb\ColorCLI;
 use nzedb\ConsoleTools;
@@ -9,7 +8,7 @@ use nzedb\NZB;
 use nzedb\ReleaseImage;
 use nzedb\Releases;
 use nzedb\db\Settings;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
 $cli = new ColorCLI();
 if (isset($argv[1])) {
@@ -51,7 +50,7 @@ function create_guids($live, $delete = false)
 				$reccnt++;
 				$nzbpath = $nzb->NZBPath($relrec['guid']);
 				if ($nzbpath !== false) {
-					$nzbfile = Utility::unzipGzipFile($nzbpath);
+					$nzbfile = Misc::unzipGzipFile($nzbpath);
 					if ($nzbfile) {
 						$nzbfile = @simplexml_load_string($nzbfile);
 					}
@@ -82,7 +81,7 @@ function create_guids($live, $delete = false)
 							$segment = $file->segments->segment;
 							$nzb_guid = md5($segment);
 
-							$pdo->queryExec("UPDATE releases set nzb_guid = " . $pdo->escapestring($nzb_guid) . " WHERE id = " . $relrec["id"]);
+							$pdo->queryExec("UPDATE releases set nzb_guid = UNHEX(" . $pdo->escapestring($nzb_guid) . ") WHERE id = " . $relrec["id"]);
 							$relcount++;
 							$consoletools->overWritePrimary("Created: [" . $deleted . "] " . $consoletools->percentString($reccnt, $total) . " Time:" . $consoletools->convertTimer(TIME() - $timestart));
 							break;

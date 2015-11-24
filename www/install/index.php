@@ -1,6 +1,6 @@
 <?php
 @session_start();
-require_once realpath(__DIR__ . '/../automated.config.php');
+require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'smarty.php');
 
 use nzedb\Install;
 
@@ -45,6 +45,8 @@ if (!$cfg->error) {
 		<li>Your database credentials.</li>
 		<li>Your news server credentials.</li>
 		<li>SSH & root ability on your server (in case you need to install missing packages).</li>
+		<li>You should consider copying nZEDb/nzedb/config/settings.example.php to
+			nZEDb/nzedb/config/settings.php (Default settngs should be fine for installing).</li>
 	</ol>
 	<br/><br/>
 	<p>

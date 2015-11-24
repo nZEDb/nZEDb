@@ -2,20 +2,20 @@
 // --------------------------------------------------------------
 //          Scan for releases missing previews on disk
 // --------------------------------------------------------------
-require_once dirname(__FILE__) . '/../../../www/config.php';
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
 use nzedb\ConsoleTools;
 use nzedb\NZB;
 use nzedb\ReleaseImage;
 use nzedb\Releases;
 use nzedb\db\Settings;
-use nzedb\utility\Utility;
+use nzedb\utility\Misc;
 
 $pdo = new Settings();
 
 $row = $pdo->queryOneRow("SELECT value FROM settings WHERE setting = 'coverspath'");
 if ($row !== false) {
-	Utility::setCoversConstant($row['value']);
+	Misc::setCoversConstant($row['value']);
 } else {
 	die("Unable to determine covers path!\n");
 }
@@ -42,7 +42,16 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "check")) {
 				echo $pdo->log->warning("Missing preview " . $nzbpath);
 				if ($argv[1] === "true") {
 					$pdo->queryExec(
-						sprintf("UPDATE releases SET consoleinfoid = NULL, gamesinfo_id = 0, imdbid = NULL, musicinfoid = NULL,	bookinfoid = NULL, rageid = -1, xxxinfo_id = 0, passwordstatus = -1, haspreview = -1, jpgstatus = 0, videostatus = 0, audiostatus = 0, nfostatus = -1 WHERE id = %s", $row['id']));
+						sprintf("
+							UPDATE releases
+							SET consoleinfoid = NULL, gamesinfo_id = 0, imdbid = NULL, musicinfoid = NULL,
+								bookinfoid = NULL, videos_id = 0, tv_episodes_id = 0, xxxinfo_id = 0,
+								passwordstatus = -1, haspreview = -1, jpgstatus = 0, videostatus = 0,
+								audiostatus = 0, nfostatus = -1
+							WHERE id = %s",
+							$row['id']
+						)
+					);
 				}
 			}
 

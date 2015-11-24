@@ -5,12 +5,10 @@ use nzedb\ReleaseRemover;
 
 $page        = new AdminPage();
 $page->title = "Delete Releases";
-$page->smarty->assign(['error', 'done'], '');
+$error = $done = '';
+$release = [];
 
-// Set the current action.
-$action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
-
-switch ($action) {
+switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
 	case 'submit':
 		$values = parseResponse($_POST);
 		if ($values === false) {
@@ -19,9 +17,10 @@ switch ($action) {
 			$RR        = new ReleaseRemover(['Browser' => true, 'Settings' => $page->settings]);
 			$succeeded = $RR->removeByCriteria($values);
 			if (is_string($succeeded) && substr($succeeded, 0, 7) === 'Success') {
-				$page->smarty->assign('done', $succeeded);
+				$done = $succeeded;
+
 			} else {
-				$page->smarty->assign('error', $succeeded);
+				$error = $succeeded;
 			}
 		}
 
@@ -29,7 +28,6 @@ switch ($action) {
 		foreach ($_POST as $key => $value) {
 			$release[$key] = $value;
 		}
-		$page->smarty->assign('release', $release);
 
 		break;
 
@@ -53,15 +51,20 @@ switch ($action) {
 			'adatetypesel' => '0',
 			'pdatetypesel' => '0'
 		];
-		$page->smarty->assign('release', $release);
 		break;
 }
 
-$page->smarty->assign('type1_ids', [0, 1]);
-$page->smarty->assign('type2_ids', [0, 1, 2]);
-$page->smarty->assign('type1_names', ['Like', 'Equals']);
-$page->smarty->assign('type2_names', ['Bigger', 'Smaller', 'Equals']);
-$page->smarty->assign('type3_names', ['Bigger', 'Smaller']);
+$page->smarty->assign([
+		'release'     => $release,
+		'error'       => $error,
+		'done'        => $done,
+		'type1_ids'   => [0, 1],
+		'type2_ids'   => [0, 1, 2],
+		'type1_names' => ['Like', 'Equals'],
+		'type2_names' => ['Bigger', 'Smaller', 'Equals'],
+		'type3_names' => ['Bigger', 'Smaller']
+	]
+);
 
 $page->content = $page->smarty->fetch('delete-releases.tpl');
 $page->render();

@@ -6,19 +6,18 @@ use nzedb\Regexes;
 
 $page    = new AdminPage();
 $regexes = new Regexes(['Settings' => $page->settings, 'Table_Name' => 'category_regexes']);
+$error = '';
+$regex = ['id' => '', 'regex' => '', 'description' => '', 'group_regex' => '', 'ordinal' => '', 'category_id' => ''];
 
-// Set the current action.
-$action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
-
-switch ($action) {
+switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
 	case 'submit':
 		if ($_POST["group_regex"] == '') {
-			$page->smarty->assign('error', "Group regex must not be empty!");
+			$error = "Group regex must not be empty!";
 			break;
 		}
 
 		if ($_POST["regex"] == '') {
-			$page->smarty->assign('error', "Regex cannot be empty");
+			$error = "Regex cannot be empty";
 			break;
 		}
 
@@ -27,7 +26,7 @@ switch ($action) {
 		}
 
 		if (!is_numeric($_POST['ordinal']) || $_POST['ordinal'] < 0) {
-			$page->smarty->assign('error', "Ordinal must be a number, 0 or higher.");
+			$error = "Ordinal must be a number, 0 or higher.";
 			break;
 		}
 
@@ -44,18 +43,14 @@ switch ($action) {
 	default:
 		if (isset($_GET["id"])) {
 			$page->title = "Category Regex Edit";
-			$id          = $_GET["id"];
-			$r           = $regexes->getRegexByID($id);
+			$regex= $regexes->getRegexByID($_GET["id"]);
 		} else {
 			$page->title = "Category Regex Add";
-			$r           = ['status' => 1];
+			$regex += ['status' => 1];
 		}
-		$page->smarty->assign('regex', $r);
+
 		break;
 }
-
-$page->smarty->assign('status_ids', [Category::STATUS_ACTIVE, Category::STATUS_INACTIVE]);
-$page->smarty->assign('status_names', ['Yes', 'No']);
 
 $categories_db = $page->settings->queryDirect(
 	'SELECT c.id, c.title, cp.title AS parent_title
@@ -72,8 +67,16 @@ if ($categories_db) {
 		$categories['category_ids'][]   = $category_db['id'];
 	}
 }
-$page->smarty->assign('category_names', $categories['category_names']);
-$page->smarty->assign('category_ids', $categories['category_ids']);
+
+$page->smarty->assign([
+		'regex'          => $regex,
+		'error'          => $error,
+		'status_ids'     => [Category::STATUS_ACTIVE, Category::STATUS_INACTIVE],
+		'status_names'   => ['Yes', 'No'],
+		'category_names' => $categories['category_names'],
+		'category_ids'   => $categories['category_ids']
+	]
+);
 
 $page->content = $page->smarty->fetch('category_regexes-edit.tpl');
 $page->render();
