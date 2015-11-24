@@ -46,7 +46,7 @@ foreach ($results as $result) {
 			$result['review'] = implode(' ', $newwords) . '...';
 		}
 	}
-	$result['failed'] = $fail->getFailedCount($result['grp_release_guid']);
+	$result['failed'] = $fail->getFailedCount($result['grp_release_id']);
 	$consoles[] = $result;
 }
 

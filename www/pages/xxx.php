@@ -39,7 +39,7 @@ foreach ($results as $result) {
 	$result['genre'] = $movie->makeFieldLinks($result, 'genre');
 	$result['actors'] = $movie->makeFieldLinks($result, 'actors');
 	$result['director'] = $movie->makeFieldLinks($result, 'director');
-	$result['failed'] = $fail->getFailedCount($result['grp_release_guid']);
+	$result['failed'] = $fail->getFailedCount($result['grp_release_id']);
 	$movies[] = $result;
 }
 $title = (isset($_REQUEST['title']) && !empty($_REQUEST['title'])) ? stripslashes($_REQUEST['title']) : '';
