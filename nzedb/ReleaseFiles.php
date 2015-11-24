@@ -2,7 +2,6 @@
 namespace nzedb;
 
 use nzedb\db\Settings;
-use libs\ForceUTF8\Encoding;
 
 /**
  * Adds/fetches rar/zip/etc files for a release.
@@ -98,7 +97,7 @@ class ReleaseFiles
 				FROM release_files
 				WHERE releaseid = %d AND name = %s',
 				$id,
-				$this->pdo->escapeString(Encoding::toUTF8($name))
+				$this->pdo->escapeString($name)
 			)
 		);
 
@@ -110,7 +109,7 @@ class ReleaseFiles
 						VALUES
 						(%d, %s, %s, %s, %d)",
 						$id,
-						$this->pdo->escapeString(Encoding::toUTF8($name)),
+						$this->pdo->escapeString($name),
 						$this->pdo->escapeString($size),
 						$this->pdo->from_unixtime($createdTime),
 						$hasPassword

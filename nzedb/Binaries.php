@@ -2,7 +2,6 @@
 namespace nzedb;
 
 use nzedb\db\Settings;
-use libs\ForceUTF8\Encoding;
 
 /**
  * Class Binaries
@@ -727,8 +726,8 @@ class Binaries
 							VALUES (%s, %s, FROM_UNIXTIME(%s), %s, %d, %d, '%s', NOW())
 							ON DUPLICATE KEY UPDATE dateadded = NOW(), noise = '%s'",
 							$tableNames['cname'],
-							$this->_pdo->escapeString(substr(Encoding::toUTF8($matches[1]), 0, 255)),
-							$this->_pdo->escapeString(Encoding::toUTF8($header['From'])),
+							$this->_pdo->escapeString(substr($matches[1], 0, 255)),
+							$this->_pdo->escapeString($header['From']),
 							(is_numeric($header['Date']) ? ($header['Date'] > $now ? $now : $header['Date']) : $now),
 							$this->_pdo->escapeString(substr($header['Xref'], 0, 255)),
 							$groupMySQL['id'],
@@ -758,7 +757,7 @@ class Binaries
 						ON DUPLICATE KEY UPDATE currentparts = currentparts + 1, partsize = partsize + %d",
 						$tableNames['bname'],
 						md5($matches[1] . $header['From'] . $groupMySQL['id']),
-						$this->_pdo->escapeString(Encoding::toUTF8($matches[1])),
+						$this->_pdo->escapeString($matches[1]),
 						$collectionID,
 						$matches[3],
 						$fileCount[1],
