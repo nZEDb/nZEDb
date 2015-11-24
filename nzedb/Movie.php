@@ -350,7 +350,9 @@ class Movie
 			$order[1]
 		);
 		$return = $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
-		$return[0]['_totalcount'] = (isset($movies['total']) ? $movies['total'] : 0);
+		if (!empty($return)) {
+			$return[0]['_totalcount'] = (isset($movies['total']) ? $movies['total'] : 0);
+		}
 
 		return $return;
 	}

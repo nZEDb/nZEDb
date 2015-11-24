@@ -9,6 +9,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 2015-11-23 ruhllatio
 	Fix: Failed counts for cover views being lumped together instead of group_concat
 	Chg: Speed up Music, Games, and XXX cover views
+	Fix: Forgot to fix movies cover view not returning a single dimension array when none are found
 2015-11-24 bart39
 	Mrg: PR #1971, From darius - Update templates to font-awesome 4.5.0.
 	Mrg: PR #1970, From darius - Fix count of failed releases.
