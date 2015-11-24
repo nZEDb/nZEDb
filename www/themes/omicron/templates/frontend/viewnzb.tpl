@@ -12,7 +12,7 @@
 		<div class="col-xlg-12 portlets">
 			<div class="panel panel-default">
 				<div class="panel-body pagination2">
-					<h1>{$release.searchname|escape:"htmlall"} {if $failed > 0}<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
+					<h1>{$release.searchname|escape:"htmlall"} {if $failed != NULL && $failed > 0}<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
 							<i class ="fa fa-thumbs-o-up"></i> {$release.grabs} Grab{if $release.grabs != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$failed} Failed Download{if $failed != 1}s{/if}</span>{/if}</h1>
 					{if isset($isadmin)}
 						<a class="label label-warning"
@@ -463,11 +463,13 @@
 																	<td>{$release.grabs}
 																		time{if $release.grabs==1}{else}s{/if}</td>
 																</tr>
+																{if $failed != NULL && $failed > 0}
 																<tr>
 																	<th width="140">Failed Download</th>
 																	<td>{$failed}
 																		time{if $failed==1}{else}s{/if}</td>
 																</tr>
+																{/if}
 																<tr>
 																	<th width="140">Password
 																	</th>

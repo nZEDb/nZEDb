@@ -10,7 +10,7 @@
 	<br />
 {/if}
 
-<h2>{$release.searchname|escape:"htmlall"|truncate:100:"...":true}{if $failed > 0}<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
+<h2>{$release.searchname|escape:"htmlall"|truncate:100:"...":true}{if $failed != NULL && $failed > 0}<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
 		<i class ="fa fa-thumbs-o-up"></i> {$release.grabs} Grab{if $release.grabs != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$failed} Failed Download{if $failed != 1}s{/if}</span>{/if}</h2><br>
 <div class="container">
 	<div class="col-xs-8">
@@ -493,11 +493,13 @@
 	<td>{$release.grabs} time{if $release.grabs==1}{else}s{/if}
 	</td>
 </tr>
+	{if $failed != NULL && $failed > 0}
 	<tr>
 		<th width="140">Failed Download</th>
 		<td>{$failed}
 			time{if $failed==1}{else}s{/if}</td>
 	</tr>
+	{/if}
 <tr>
 	<th style="vertical-align:top">Files:</th>
 	<td><a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$release.guid}">{$release.totalpart} file{if $release.totalpart==1}{else}s{/if}</a>
