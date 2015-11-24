@@ -398,7 +398,7 @@
 		<tr>
 			<td style="width:180px;"><label for="post_non">Postprocess Non-Amazon:</label></td>
 			<td>
-				{html_options style="width:180px;" class="siteeditstyle" id="post_non" name='post_non' values=$post_non_ids output=$post_non_names selected=$ftmux->post_non}
+				{html_radios id="post_non" name='post_non' values=$yesno_ids output=$yesno_names selected=$ftmux->post_non separator='<br />'}
 				<div class="hint">Choose to do movies, anime and tv lookups. true/false</div>
 			</td>
 		</tr>
