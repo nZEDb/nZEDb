@@ -30,8 +30,6 @@ $catarray[] = $category;
 $page->smarty->assign('catlist', $mtmp);
 $page->smarty->assign('category', $category);
 
-$browsecount = $music->getMusicCount($catarray, -1, $page->userdata['categoryexclusions']);
-
 $offset = (isset($_REQUEST['offset']) && ctype_digit($_REQUEST['offset'])) ? $_REQUEST['offset'] : 0;
 $ordering = $music->getMusicOrdering();
 $orderby = isset($_REQUEST['ob']) && in_array($_REQUEST['ob'], $ordering) ? $_REQUEST['ob'] : '';
@@ -53,7 +51,6 @@ foreach ($genres as $gn) {
 
 foreach ($results as $result) {
 	$result['genre'] = $tmpgnr[$result["genre_id"]];
-	$result['failed'] = $fail->getFailedCount($result['grp_release_id']);
 	$musics[] = $result;
 }
 $genre = (isset($_REQUEST['genre']) && array_key_exists($_REQUEST['genre'], $tmpgnr)) ? $_REQUEST['genre'] : '';
@@ -68,7 +65,7 @@ $page->smarty->assign('year', $year);
 
 $browseby_link = '&amp;title=' . $title . '&amp;artist=' . $artist . '&amp;genre=' . $genre . '&amp;year=' . $year;
 
-$page->smarty->assign('pagertotalitems', $browsecount);
+$page->smarty->assign('pagertotalitems', $results[0]['_totalcount']);
 $page->smarty->assign('pageroffset', $offset);
 $page->smarty->assign('pageritemsperpage', ITEMS_PER_COVER_PAGE);
 $page->smarty->assign('pagerquerybase', WWW_TOP . "/music?t=" . $category . $browseby_link . "&amp;ob=" . $orderby . "&amp;offset=");

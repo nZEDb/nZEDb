@@ -30,8 +30,6 @@ $catarray[] = $category;
 $page->smarty->assign('catlist', $ctmp);
 $page->smarty->assign('category', $category);
 
-$browsecount = $games->getGamesCount($catarray, -1, $page->userdata["categoryexclusions"]);
-
 $offset = (isset($_REQUEST["offset"]) && ctype_digit($_REQUEST['offset'])) ? $_REQUEST["offset"] : 0;
 $ordering = $games->getGamesOrdering();
 
@@ -52,7 +50,6 @@ foreach ($results as $result) {
 			$result['review'] = implode(' ', $newwords) . '...';
 		}
 	}
-	$result['failed'] = $fail->getFailedCount($result['grp_release_id']);
 	$games2[] = $result;
 }
 
@@ -77,7 +74,7 @@ $page->smarty->assign('genre', $genre);
 
 $browseby_link = '&amp;title=' . $title . '&amp;year=' . $year;
 
-$page->smarty->assign('pagertotalitems', $browsecount);
+$page->smarty->assign('pagertotalitems', $results[0]['_totalcount']);
 $page->smarty->assign('pageroffset', $offset);
 $page->smarty->assign('pageritemsperpage', ITEMS_PER_COVER_PAGE);
 $page->smarty->assign('pagerquerybase', WWW_TOP . "/games?t=" . $category . $browseby_link . "&amp;ob=" . $orderby . "&amp;offset=");

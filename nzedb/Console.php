@@ -189,7 +189,8 @@ class Console
 
 		$consoles = $this->pdo->queryCalc(
 				sprintf("
-					SELECT SQL_CALC_FOUND_ROWS con.id,
+					SELECT SQL_CALC_FOUND_ROWS
+						con.id,
 						GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id
 					FROM consoleinfo con
 					LEFT JOIN releases r ON con.id = r.consoleinfoid
@@ -235,6 +236,7 @@ class Console
 					GROUP_CONCAT(r.totalpart ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_totalparts,
 					GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments,
 					GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs,
+					GROUP_CONCAT(df.failed ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_failed,
 				con.*,
 				r.consoleinfoid,
 				g.name AS group_name,
@@ -243,6 +245,7 @@ class Console
 				FROM releases r
 				LEFT OUTER JOIN groups g ON g.id = r.group_id
 				LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
+				LEFT OUTER JOIN dnzb_failures df ON df.release_id = r.id
 				INNER JOIN consoleinfo con ON con.id = r.consoleinfoid
 				INNER JOIN genres ON con.genre_id = genres.id
 				WHERE con.id IN (%s)
@@ -257,7 +260,9 @@ class Console
 				$order[1]
 			), true, nZEDb_CACHE_EXPIRY_MEDIUM
 		);
-		$return[0]['_totalcount'] = (isset($consoles['total']) ? $consoles['total'] : 0);
+		if (!empty($return)) {
+			$return[0]['_totalcount'] = (isset($consoles['total']) ? $consoles['total'] : 0);
+		}
 		return $return;
 	}
 
