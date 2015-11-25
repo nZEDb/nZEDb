@@ -94,7 +94,7 @@
 						{assign var="mtotalparts" value=","|explode:$result.grp_release_totalparts}
 						{assign var="mcomments" value=","|explode:$result.grp_release_comments}
 						{assign var="mgrabs" value=","|explode:$result.grp_release_grabs}
-						{assign var="mfailed" value=","|explode:$result.failed}
+						{assign var="mfailed" value=","|explode:$result.grp_release_failed}
 						{assign var="mpass" value=","|explode:$result.grp_release_password}
 						{assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
 						{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
@@ -125,7 +125,7 @@
 												   title="Browse releases in {$result.group_name|replace:"alt.binaries":"a.b"}">Group</a>
 												{if $mfailed[$m@index] > 0}
 													<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
-														<i class ="fa fa-thumbs-o-up"></i> {$mgrabs[$m@index]} Grab{if {$mgrabs[$m@index]} != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$mfailed[$m@index]} Failed Download{if {$mfailed[$m@index]} != 1}s{/if}</span>												{/if}
+														<i class ="fa fa-thumbs-o-up"></i> {$mgrabs[$m@index]} Grab{if {$mgrabs[$m@index]} != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$mfailed[$m@index]} Failed Download{if {$mfailed[$m@index]} > 1}s{/if}</span>												{/if}
 											</div>
 											<div class="col-md-10 small-gutter-left">
 												<h4><a title="View details"
