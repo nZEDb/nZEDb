@@ -2,7 +2,6 @@
 namespace nzedb;
 
 use nzedb\db\Settings;
-use libs\ForceUTF8\Encoding;
 
 /**
  * Cleans names for collections/imports/namefixer.
@@ -133,7 +132,7 @@ class CollectionsCleaning
 			// Random stuff.
 			$cleanSubject = preg_replace('/AutoRarPar\d{1,5}|\(\d+\)( |  )yEnc|\d+(Amateur|Classic)| \d{4,}[a-z]{4,} |part\d+/i', ' ', $cleanSubject);
 			// Multi spaces.
-			return Encoding::toUTF8(trim(preg_replace('/\s\s+/', ' ', $cleanSubject)));
+			return trim(preg_replace('/\s\s+/', ' ', $cleanSubject));
 		} // Music groups.
 		else {
 			// Try some music group regexes.
@@ -153,7 +152,7 @@ class CollectionsCleaning
 			// Random stuff.
 			$cleanSubject = preg_replace('/AutoRarPar\d{1,5}|\(\d+\)( |  )yEnc|\d+(Amateur|Classic)| \d{4,}[a-z]{4,} |part\d+/i', ' ', $cleanSubject);
 			// Multi spaces.
-			$cleanSubject = Encoding::toUTF8(trim(preg_replace('/\s\s+/i', ' ', $cleanSubject)));
+			$cleanSubject = trim(preg_replace('/\s\s+/i', ' ', $cleanSubject));
 			// If the subject is too similar to another because it is so short, try to extract info from the subject.
 			if (strlen($cleanSubject) <= 10 || preg_match('/^[-a-z0-9$ ]{1,7}yEnc$/i', $cleanSubject)) {
 				$x = '';
