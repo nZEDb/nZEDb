@@ -70,10 +70,10 @@ class TraktTv extends TV
 		parent::__construct($options);
 		$this->clientId = $this->pdo->getSetting('trakttvclientkey');
 		$this->requestHeaders = [
-				'Content-Type: application/json',
-				'trakt-api-version: 2',
-				'trakt-api-key: ' . $this->clientId,
-				'Content-Length: 0'
+			'Content-Type: application/json',
+			'trakt-api-version: 2',
+			'trakt-api-key: ' . $this->clientId,
+			'Content-Length: 0'
 		];
 		$this->client = new TraktAPI($this->requestHeaders);
 		$this->time = new Time();
@@ -111,8 +111,8 @@ class TraktTv extends TV
 					if (in_array($release['cleanname'], $this->titleCache)) {
 						if ($this->echooutput) {
 							echo $this->pdo->log->headerOver("Title: ") .
-									$this->pdo->log->warningOver('"' . $release['cleanname'] . '"') .
-									$this->pdo->log->header(" already failed lookup for this site.  Skipping.");
+								$this->pdo->log->warningOver('"' . $release['cleanname'] . '"') .
+								$this->pdo->log->header(" already failed lookup for this site.  Skipping.");
 						}
 						$this->setVideoNotFound(parent::PROCESS_IMDB, $row['id']);
 						continue;
@@ -133,8 +133,8 @@ class TraktTv extends TV
 						// If it doesn't exist locally and lookups are allowed lets try to get it.
 						if ($this->echooutput) {
 							echo $this->pdo->log->primaryOver("Checking Trakt for previously failed title: ") .
-									$this->pdo->log->headerOver($release['cleanname']) .
-									$this->pdo->log->primary(".");
+								$this->pdo->log->headerOver($release['cleanname']) .
+								$this->pdo->log->primary(".");
 						}
 
 						// Get the show from TRAKT
@@ -147,9 +147,9 @@ class TraktTv extends TV
 
 					} else {
 						if ($this->echooutput) {
-							echo $this->pdo->log->primaryOver("Found local TMDB match for: ") .
-									$this->pdo->log->headerOver($release['cleanname']) .
-									$this->pdo->log->primary(".  Attempting episode lookup!");
+							echo $this->pdo->log->primaryOver("Found local Trakt match for: ") .
+								$this->pdo->log->headerOver($release['cleanname']) .
+								$this->pdo->log->primary(".  Attempting episode lookup!");
 						}
 						$traktid = $this->getSiteIDFromVideoID('trakt', $videoId);
 						$this->localizedTZ = $this->getLocalZoneFromVideoID($videoId);
@@ -165,7 +165,7 @@ class TraktTv extends TV
 						if ($episodeNo === 'all') {
 							// Set the video ID and leave episode 0
 							$this->setVideoIdFound($videoId, $row['id'], 0);
-							echo $this->pdo->log->primary("Found TRAKT Match for Full Season!");
+							echo $this->pdo->log->primary("Found Trakt Match for Full Season!");
 							continue;
 						}
 
@@ -175,9 +175,9 @@ class TraktTv extends TV
 						if ($episode === false && $lookupSetting) {
 							// Send the request for the episode to TRAKT
 							$traktEpisode = $this->getEpisodeInfo(
-									$traktid,
-									$seasonNo,
-									$episodeNo
+								$traktid,
+								$seasonNo,
+								$episodeNo
 							);
 
 							if ($traktEpisode) {
@@ -189,7 +189,7 @@ class TraktTv extends TV
 							// Mark the releases video and episode IDs
 							$this->setVideoIdFound($videoId, $row['id'], $episode);
 							if ($this->echooutput) {
-								echo $this->pdo->log->primary("Found TRAKT Match!");
+								echo $this->pdo->log->primary("Found Trakt Match!");
 							}
 							continue;
 						} else {
@@ -236,7 +236,7 @@ class TraktTv extends TV
 	{
 		$return = false;
 
-		$response = $this->client->episodeSummary($siteId, $series, $episode);
+		$response = $this->client->episodeSummary($siteId, $series, $episode, 'full');
 
 		sleep(1);
 
@@ -245,7 +245,6 @@ class TraktTv extends TV
 				$return = $this->formatEpisodeInfo($response);
 			}
 		}
-
 		return $return;
 	}
 
@@ -331,7 +330,7 @@ class TraktTv extends TV
 				}
 			}
 		}
-		var_dump($return);
+
 		return $return;
 	}
 
@@ -367,7 +366,7 @@ class TraktTv extends TV
 			'summary'   => (string)$show['overview'],
 			'started'   => (string)$this->time->localizeAirdate($show['first_aired'], $this->localizedTZ),
 			'publisher' => (string)$show['network'],
-			'country'   => (string)$show['country'],
+			'country'   => (string)strtoupper($show['country']),
 			'source'    => (int)parent::SOURCE_TRAKT,
 			'imdb'      => (int)(isset($imdb['imdbid']) ? $imdb['imdbid'] : 0),
 			'tvdb'      => (int)(isset($show['ids']['tvdb']) ? $show['ids']['tvdb'] : 0),
@@ -393,8 +392,8 @@ class TraktTv extends TV
 		return [
 			'title'       => (string)$episode['title'],
 			'series'      => (int)$episode['season'],
-			'episode'     => (int)$episode['epsiode'],
-			'se_complete' => (string)'S' . sprintf('%02d', $episode['season']) . 'E' . sprintf('%02d', $episode['episode']),
+			'episode'     => (int)$episode['number'],
+			'se_complete' => (string)'S' . sprintf('%02d', $episode['season']) . 'E' . sprintf('%02d', $episode['number']),
 			'firstaired'  => (string)$this->time->localizeAirdate($episode['first_aired'], $this->localizedTZ),
 			'summary'     => (string)$episode['overview']
 		];

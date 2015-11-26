@@ -791,7 +791,7 @@ abstract class TV extends Videos
 				$required = ['title', 'ids', 'overview', 'first_aired', 'airs', 'country'];
 				break;
 			case 'traktE':
-				$required = ['title', 'season', 'episode', 'overview', 'first_aired'];
+				$required = ['title', 'season', 'number', 'overview', 'first_aired'];
 				break;
 		}
 
