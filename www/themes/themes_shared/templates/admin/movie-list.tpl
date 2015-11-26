@@ -15,7 +15,7 @@
 			<tr class="{cycle values=",alt"}">
 				<td class="less"><a href="http://www.imdb.com/title/tt{$movie.imdbid}" title="View in IMDB">{$movie.imdbid}</a></td>
 				<td class="less"><a href="http://www.themoviedb.org/movie/{$movie.tmdbid}" title="View in TMDb">{$movie.tmdbid}</a></td>
-				<td><a title="Edit" href="{$smarty.const.WWW_TOP}/movie-edit.php?id={$movie.imdbid}">{$movie.title} ({$movie.year})</a></td>
+				<td><a title="Edit" href="{$smarty.const.WWW_TOP}/movie-edit.php?id={$movie.imdbid}">{$movie.title}({$movie.year})</a></td>
 				<td class="less">{$movie.cover}</td>
 				<td class="less">{$movie.backdrop}</td>
 				<td class="less">{$movie.createddate|date_format}</td>

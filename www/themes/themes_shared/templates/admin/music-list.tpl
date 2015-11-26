@@ -11,7 +11,7 @@
 		{foreach from=$musiclist item=music}
 			<tr class="{cycle values=",alt"}">
 				<td class="less">{$music.id}</td>
-				<td><a title="Edit" href="{$smarty.const.WWW_TOP}/music-edit.php?id={$music.id}">{$music.title} ({$music.year})</a></td>
+				<td><a title="Edit" href="{$smarty.const.WWW_TOP}/music-edit.php?id={$music.id}">{$music.title}({$music.year})</a></td>
 				<td>{$music.artist}</td>
 				<td>{$music.createddate|date_format}</td>
 			</tr>

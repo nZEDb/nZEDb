@@ -2,7 +2,7 @@
 <div id="accordian">
 	<ul>
 		<li><a title="Home" href="{$smarty.const.WWW_TOP}/..{$site->home_link}"><span>Home</span></a></li>
-		<li class="active"><a title="Admin Home" href="{$smarty.const.WWW_TOP}/">Admin Home</a></li>
+		<li class="active"><a title="Admin Home" href="{$smarty.const.WWW_TOP}/docs">Admin Home</a></li>
 
 		<li class="has-sub"><a href="#">Site Settings</a>
 			<ul>
