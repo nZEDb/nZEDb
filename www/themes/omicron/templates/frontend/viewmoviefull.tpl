@@ -173,7 +173,7 @@
 												<a title="Download NZB"
 												   href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}"><i
 															class="icon icon_nzb fa fa-download text-muted"></i></a>
-												<a href="#" class="icon_cart text-muted"><i class="fa fa-shopping-cart"
+												<a href="#" class="icon_cart text-muted"><i class="fa fa-shopping-basket"
 																							title="Add to Cart"></i></a>
 												{if isset($sabintegrated)}<img class="icon_sab"
 																			   src="{$smarty.const.WWW_TOP}/themes/baffi/images/icons/sabup.png"/>{/if}

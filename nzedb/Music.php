@@ -236,9 +236,11 @@ class Music
 
 		$order = $this->getMusicOrder($orderby);
 
-		$music = $this->pdo->query(
+		$music = $this->pdo->queryCalc(
 				sprintf("
-				SELECT m.id
+				SELECT SQL_CALC_FOUND_ROWS
+					m.id,
+					GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id
 				FROM musicinfo m
 				LEFT JOIN releases r ON r.musicinfoid = m.id
 				WHERE r.nzbstatus = 1
@@ -258,11 +260,12 @@ class Music
 				), true, nZEDb_CACHE_EXPIRY_MEDIUM
 		);
 
-		$musicIDs = false;
+		$musicIDs = $releaseIDs = false;
 
-		if (is_array($music)) {
-			foreach ($music AS $mus => $id) {
+		if (is_array($music['result'])) {
+			foreach ($music['result'] AS $mus => $id) {
 				$musicIDs[] = $id['id'];
+				$releaseIDs[] = $id['grp_release_id'];
 			}
 		}
 
@@ -281,6 +284,7 @@ class Music
 				GROUP_CONCAT(r.totalpart ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_totalparts,
 				GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments,
 				GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs,
+				GROUP_CONCAT(df.failed ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_failed,
 				m.*,
 				r.musicinfoid, r.haspreview,
 				g.name AS group_name,
@@ -288,24 +292,25 @@ class Music
 			FROM releases r
 			LEFT OUTER JOIN groups g ON g.id = r.group_id
 			LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
+			LEFT OUTER JOIN dnzb_failures df ON df.release_id = r.id
 			INNER JOIN musicinfo m ON m.id = r.musicinfoid
-			WHERE r.nzbstatus = 1
-			AND m.id IN (%s)
-			AND m.title != ''
-			AND m.cover = 1
-			AND r.passwordstatus %s
-			AND %s %s %s
+			WHERE m.id IN (%s)
+			AND r.id IN (%s)
+			AND %s
 			GROUP BY m.id
 			ORDER BY %s %s",
 			(is_array($musicIDs) ? implode(',', $musicIDs) : -1),
-			Releases::showPasswords($this->pdo),
-			$browseby,
+			(is_array($releaseIDs) ? implode(',', $releaseIDs) : -1),
 			$catsrch,
-			$exccatlist,
 			$order[0],
 			$order[1]
 		);
-		return $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
+		$return = $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
+		if (!empty($return)) {
+			$return[0]['_totalcount'] = (isset($music['total']) ? $music['total'] : 0);
+		}
+
+		return $return;
 	}
 
 	/**

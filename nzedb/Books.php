@@ -243,6 +243,7 @@ class Books
 				GROUP_CONCAT(r.totalpart ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_totalparts,
 				GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments,
 				GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs,
+				GROUP_CONCAT(df.failed ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_failed,
 			boo.*,
 			r.bookinfoid,
 			g.name AS group_name,
@@ -250,6 +251,7 @@ class Books
 			FROM releases r
 			LEFT OUTER JOIN groups g ON g.id = r.group_id
 			LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
+			LEFT OUTER JOIN dnzb_failures df ON df.release_id = r.id
 			INNER JOIN bookinfo boo ON boo.id = r.bookinfoid
 			WHERE boo.id IN (%s)
 			AND r.id IN (%s)
@@ -263,7 +265,9 @@ class Books
 			$order[1]
 		);
 		$return = $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
-		$return[0]['_totalcount'] = (isset($books['total']) ? $books['total'] : 0);
+		if (!empty($return)) {
+			$return[0]['_totalcount'] = (isset($books['total']) ? $books['total'] : 0);
+		}
 		return $return;
 	}
 

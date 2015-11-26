@@ -77,7 +77,7 @@
 									{assign var="mtotalparts" value=","|explode:$result.grp_release_totalparts}
 									{assign var="mcomments" value=","|explode:$result.grp_release_comments}
 									{assign var="mgrabs" value=","|explode:$result.grp_release_grabs}
-									{assign var="mfailed" value=","|explode:$result.failed}
+									{assign var="mfailed" value=","|explode:$result.grp_release_failed}
 									{assign var="mpass" value=","|explode:$result.grp_release_password}
 									{assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
 									{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
@@ -161,7 +161,7 @@
 																				Comment{if $mcomments[$m@index] != 1}s{/if}</span></a>
 																		<span class="btn btn-hover btn-default btn-xs icon icon_cart text-muted"
 																			  title="Add to Cart"><i
-																					class="fa fa-shopping-cart"></i></span>
+																					class="fa fa-shopping-basket"></i></span>
 																		{if isset($sabintegrated)}
 																			<span class="btn btn-hover btn-default btn-xs icon icon_sab text-muted"
 																				  title="Send to my Queue"><i

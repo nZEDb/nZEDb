@@ -334,7 +334,7 @@
 									class="fa fa-comments-o text-muted"
 									title="Comments"></i></a>
 						<a href="#" class="icon_cart text-muted"><i
-									class="fa fa-shopping-cart" title="Send to my Cart"></i></a>
+									class="fa fa-shopping-basket" title="Send to my Cart"></i></a>
 						{if isset($sabintegrated)}
 							<a href="#" class="icon_sab text-muted"><i class="fa fa-send-o"
 																	   title="Send to my Queue"></i></a>

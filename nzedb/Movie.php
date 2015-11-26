@@ -329,12 +329,14 @@ class Movie
 				GROUP_CONCAT(r.totalpart ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_totalparts,
 				GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments,
 				GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs,
+				GROUP_CONCAT(df.failed ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_failed,
 			m.*,
 			g.name AS group_name,
 			rn.releaseid AS nfoid
 			FROM releases r
 			LEFT OUTER JOIN groups g ON g.id = r.group_id
 			LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
+			LEFT OUTER JOIN dnzb_failures df ON df.release_id = r.id
 			INNER JOIN movieinfo m ON m.imdbid = r.imdbid
 			WHERE m.imdbid IN (%s)
 			AND r.id IN (%s)
@@ -348,7 +350,9 @@ class Movie
 			$order[1]
 		);
 		$return = $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
-		$return[0]['_totalcount'] = (isset($movies['total']) ? $movies['total'] : 0);
+		if (!empty($return)) {
+			$return[0]['_totalcount'] = (isset($movies['total']) ? $movies['total'] : 0);
+		}
 
 		return $return;
 	}

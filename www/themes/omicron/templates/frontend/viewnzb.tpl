@@ -12,7 +12,7 @@
 		<div class="col-xlg-12 portlets">
 			<div class="panel panel-default">
 				<div class="panel-body pagination2">
-					<h1>{$release.searchname|escape:"htmlall"} {if $failed > 0}<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
+					<h1>{$release.searchname|escape:"htmlall"} {if $failed != NULL && $failed > 0}<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
 							<i class ="fa fa-thumbs-o-up"></i> {$release.grabs} Grab{if $release.grabs != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$failed} Failed Download{if $failed != 1}s{/if}</span>{/if}</h1>
 					{if isset($isadmin)}
 						<a class="label label-warning"
@@ -74,7 +74,7 @@
 							{if $show.tmdb > 0}
 							<a class="label label-default" target="_blank"
 							   href="{$site->dereferrer_link}https://www.themoviedb.org/tv/{$show.tmdb}"
-							   title="View at TheMovieDB">Trakt</a>
+							   title="View at TheMovieDB">TMDB</a>
 						{/if}
 					{/if}
 					{if $con && $con.url != ""}<a href="{$site->dereferrer_link}{$con.url}/"
@@ -228,7 +228,7 @@
 														Download</a>
 													<button type="button"
 															class="btn btn-primary btn-sm btn-info btn-transparent cartadd">
-														<i class="icon icon_cart fa fa-shopping-cart guid"
+														<i class="icon icon_cart fa fa-shopping-basket guid"
 														   id="guid{$release.guid}"></i> Add to
 														Cart
 													</button>
@@ -463,11 +463,13 @@
 																	<td>{$release.grabs}
 																		time{if $release.grabs==1}{else}s{/if}</td>
 																</tr>
+																{if $failed != NULL && $failed > 0}
 																<tr>
 																	<th width="140">Failed Download</th>
 																	<td>{$failed}
 																		time{if $failed==1}{else}s{/if}</td>
 																</tr>
+																{/if}
 																<tr>
 																	<th width="140">Password
 																	</th>
