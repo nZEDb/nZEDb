@@ -82,7 +82,7 @@ abstract class Videos
 	abstract protected function processSite($groupID, $guidChar, $process, $local = false);
 
 	/**
-	 * Get video info from a Site ID and column.
+	 * Get video info from a Video ID and column.
 	 *
 	 * @param string  $siteColumn
 	 * @param integer $videoID
@@ -116,6 +116,20 @@ abstract class Videos
 			return isset($result['id']) ? (int)$result['id'] : false;
 		}
 		return false;
+	}
+
+	/**
+	 * Get TV show local timezone from a Video ID
+	 *
+	 * @param integer $videoID
+	 *
+	 * @return string Empty string if no query return or tz style timezone
+	 */
+	protected function getLocalZoneFromVideoID($videoID)
+	{
+		$result = $this->pdo->queryOneRow("SELECT localzone FROM tv_info WHERE videos_id = $videoID");
+
+		return (isset($result['localzone']) ? $result['localzone'] : '');
 	}
 
 	/**

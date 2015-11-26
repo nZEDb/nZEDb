@@ -57,9 +57,11 @@ Class TraktAPI {
 	public function episodeSummary($id, $season = '', $ep = '', $type = 'min')
 	{
 		switch($type) {
+			case 'aliases':
 			case 'full':
 			case 'images':
 			case 'full,images':
+			case 'full,images,aliases':
 				$extended = $type;
 				break;
 			default:
@@ -67,8 +69,6 @@ Class TraktAPI {
 		}
 
 		$url = self::API_URL . "shows/{$id}/seasons/{$season}/episodes/{$ep}";
-
-		var_dump($url);
 
 		$array = $this->getJsonArray($url, $extended);
 		if (!is_array($array)) {
