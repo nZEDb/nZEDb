@@ -35,6 +35,11 @@ if (isset($_GET['t'])) {
 		case 'movie':
 			$function = 'm';
 			break;
+		case 'n':
+		case 'nfo':
+		case 'info':
+			$function = 'n';
+			break;
 		case 'r':
 		case 'register':
 			$function = 'r';
@@ -91,7 +96,6 @@ $releases = new Releases(['Settings' => $page->settings]);
 $page->smarty->assign('extended', (isset($_GET['extended']) && $_GET['extended'] == 1 ? '1' : '0'));
 $page->smarty->assign('del', (isset($_GET['del']) && $_GET['del'] == 1 ? '1' : '0'));
 
-
 // Output is either json or xml.
 $outputXML = (isset($_GET['o']) && $_GET['o'] == 'json' ? false : true);
 
@@ -113,9 +117,6 @@ switch ($function) {
 		} else {
 			$totalRows = $releases->getBrowseCount($categoryID, $maxAge, $catExclusions);
 			$relData = $releases->getBrowseRange($categoryID, $offset, $limit, '', $maxAge, $catExclusions);
-			if ($totalRows > 0 && count($relData) > 0) {
-				$relData[0]['_totalrows'] = $totalRows;
-			}
 		}
 
 		printOutput($relData, $outputXML, $page, $offset);
@@ -124,17 +125,43 @@ switch ($function) {
 	// Search tv releases.
 	case 'tv':
 		verifyEmptyParameter('q');
+		verifyEmptyParameter('vid');
+		verifyEmptyParameter('tvdbid');
+		verifyEmptyParameter('traktid');
 		verifyEmptyParameter('rid');
+		verifyEmptyParameter('tvmazeid');
+		verifyEmptyParameter('imdbid');
+		verifyEmptyParameter('tmdbid');
 		verifyEmptyParameter('season');
 		verifyEmptyParameter('ep');
 		$maxAge = maxAge();
 		$page->users->addApiRequest($uid, $_SERVER['REQUEST_URI']);
 		$offset = offset();
 
-		$relData = $releases->searchbyRageId(
-			(isset($_GET['rid']) ? $_GET['rid'] : '-1'),
-			(isset($_GET['season']) ? $_GET['season'] : ''),
-			(isset($_GET['ep']) ? $_GET['ep'] : ''),
+		$siteIdArr = 	[
+							'id'     => (isset($_GET['vid']) ? $_GET['vid'] : '0'),
+							'tvdb'   => (isset($_GET['tvdbid']) ? $_GET['tvdbid'] : '0'),
+							'trakt'  => (isset($_GET['traktid']) ? $_GET['traktid'] : '0'),
+							'tvrage' => (isset($_GET['rid']) ? $_GET['rid'] : '0'),
+							'tvmaze' => (isset($_GET['tvmazeid']) ? $_GET['tvmazeid'] : '0'),
+							'imdb'   => (isset($_GET['imdbid']) ? $_GET['imdbid'] : '0'),
+							'tmdb'   => (isset($_GET['tmdbid']) ? $_GET['tmdbid'] : '0')
+		];
+
+		if (isset($_GET['season']) && isset($_GET['ep'])) {
+			if (preg_match('#\d{4}#i', $_GET['season'], $year) && stripos($_GET['ep'], '/') !== false) {
+				$airdate = $year[0] . '/' . $_GET['ep'];
+			} else {
+				$series = $_GET['season'];
+				$episode = $_GET['ep'];
+			}
+		}
+
+		$relData = $releases->searchShows(
+			$siteIdArr,
+			(isset($series) ? $series : ''),
+			(isset($episode) ? $episode : ''),
+			(isset($airdate) ? $airdate : ''),
 			$offset,
 			limit(),
 			(isset($_GET['q']) ? $_GET['q'] : ''),
@@ -214,6 +241,34 @@ switch ($function) {
 		}
 
 		printOutput($relData, $outputXML, $page, offset());
+		break;
+
+	// Get an NFO file for an individual release.
+	case 'n':
+		if (!isset($_GET['id'])) {
+			showApiError(200, 'Missing parameter (id is required for retrieving an NFO)');
+		}
+
+		$page->users->addApiRequest($uid, $_SERVER['REQUEST_URI']);
+		$rel = $releases->getByGuid($_GET["id"]);
+		$data = $releases->getReleaseNfo($rel['id']);
+
+		if ($rel !== false && !empty($rel)) {
+			if ($data !== false) {
+				if (isset($_GET['o']) && $_GET['o'] == 'file') {
+					header("Content-type: application/octet-stream");
+					header("Content-disposition: attachment; filename={$rel['searchname']}.nfo");
+					exit($data['nfo']);
+				} else {
+					echo nl2br(Text::cp437toUTF($data['nfo']));
+				}
+			} else {
+				showApiError(300, 'Release does not have an NFO file associated.');
+			}
+		} else {
+			showApiError(300, 'Release does not exist.');
+		}
+
 		break;
 
 	// Capabilities request.
@@ -478,7 +533,12 @@ function addLanguage(&$releases, Settings $settings)
 	if ($releases && count($releases)) {
 		foreach ($releases as $key => $release) {
 			if (isset($release['id'])) {
-				$language = $settings->queryOneRow(sprintf('SELECT audiolanguage FROM audio_data WHERE releaseid = %d', $release['id']));
+				$language = $settings->queryOneRow('
+					SELECT audiolanguage
+					FROM audio_data
+					WHERE releaseid = ' .
+					$release['id']
+				);
 				if ($language !== false) {
 					$releases[$key]['searchname'] = $releases[$key]['searchname'] . ' ' . $language['audiolanguage'];
 				}

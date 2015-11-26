@@ -1,6 +1,6 @@
 
 <div class="header">
-	<h2>TV Series > <strong>List</strong></h2>
+	<h2> Series > <strong>List</strong></h2>
 	<div class="breadcrumb-wrapper">
 		<ol class="breadcrumb">
 			<li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li> / TV Series List
@@ -26,9 +26,9 @@
 				<td colspan="10">
 					<h2>{$sletter}...</h2>
 					<form class="form pull-right" style="margin-top:-35px;">
-						<form name="ragesearch" class="navbar-form" action="" method="get">
+						<form name="showsearch" class="navbar-form" action="" method="get">
 							<div class="input-append">
-								<input class="form-control" style="width: 150px;" id="title appendedInputButton" type="text" name="title" value="{$ragename}" placeholder="Search here"/>
+								<input class="form-control" style="width: 150px;" id="title appendedInputButton" type="text" name="title" value="{$showname}" placeholder="Search here"/>
 								<button type="submit" class="btn btn-default">GO</button>
 							</div>
 						</form>
@@ -36,32 +36,46 @@
 				</td>
 			</tr>
 			<tr>
-				<th width="35%">Name</th>
-				<th>Country</th>
-				<th width="35%">Genre</th>
-				<th class="mid">Option</th>
-				<th class="mid">View</th>
+				<th><div class="text-left">Name</div></th>
+				<th style="width:80px"><div class="text-center">Network</div></th>
+				<th style="width:80px"><div class="text-center">Country</div></th>
+				<th style="width:120px"><div class="text-center">Option</div></th>
+				<th style="width:180px"><div class="text-center">View</div></th>
 			</tr>
 			{foreach $series as $s}
 				<tr>
-					<td><a class="title" title="View series" href="{$smarty.const.WWW_TOP}/series/{$s.rageid}">{$s.releasetitle|escape:"htmlall"}</a>{if $s.prevdate != ''}<br /><span class="label label-info">Last: {$s.previnfo|escape:"htmlall"} aired {$s.prevdate|date_format}</span>{/if}</td>
-					<td>{$s.country|escape:"htmlall"}</td>
-					<td>{$s.genre|escape:"htmlall"|replace:'|':', '}</td>
+					<td><a class="title" title="View series" href="{$smarty.const.WWW_TOP}/series/{$s.id}">{$s.title|escape:"htmlall"}</a>{if $s.prevdate != ''}<br /><span class="label label-info">Last: {$s.previnfo|escape:"htmlall"} aired {$s.prevdate|date_format}</span>{/if}</td>
+					<td>{$s.countries_id|escape:"htmlall"}</td>
 					<td class="mid">
-						{if $s.userseriesid != ''}
-							<a href="{$smarty.const.WWW_TOP}/myshows/edit/{$s.rageid}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows btn btn-sm btn-warning" rel="edit" name="series{$s.rageid}" title="Edit">Edit</a>
+						{if $s.userseriesid != null}
+							<a href="{$smarty.const.WWW_TOP}/myshows/edit/{$s.id}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows btn btn-sm btn-warning" rel="edit" name="series{$s.id}" title="Edit">Edit</a>
 							<br />
-							<a href="{$smarty.const.WWW_TOP}/myshows/delete/{$s.rageid}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows btn btn-sm btn-danger" rel="remove" name="series{$s.rageid}" title="Remove from My Shows">Remove</a>
+							<a href="{$smarty.const.WWW_TOP}/myshows/delete/{$s.id}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows btn btn-sm btn-danger" rel="remove" name="series{$s.id}" title="Remove from My Shows">Remove</a>
 						{else}
-							<a href="{$smarty.const.WWW_TOP}/myshows/add/{$s.rageid}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows btn btn-sm btn-primary" rel="add" name="series{$s.rageid}" title="Add to My Shows">Add</a>
+							<a href="{$smarty.const.WWW_TOP}/myshows/add/{$s.id}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows btn btn-sm btn-primary" rel="add" name="series{$s.id}" title="Add to My Shows">Add</a>
 						{/if}
 					</td>
 					<td class="mid">
-						<a title="View series" href="{$smarty.const.WWW_TOP}/series/{$s.rageid}">Series</a><br />
-						{if $s.rageid > 0}
-							<a title="View at TVRage" target="_blank" href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$s.rageid}">TVRage</a>&nbsp;&nbsp;
-							<a title="RSS Feed for {$s.releasetitle|escape:"htmlall"}" href="{$smarty.const.WWW_TOP}/rss?rage={$s.rageid}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}"><i class="fa fa-rss"></i></a>
-						{/if}
+						<a title="View series" href="{$smarty.const.WWW_TOP}/series/{$s.id}">Series</a><br />
+							{if $s.id > 0}
+									{if $s.tvdb > 0}
+										<a title="View at TVDB" target="_blank" href="{$site->dereferrer_link}http://thetvdb.com/?tab=series&id={$s.tvdb}">TVDB</a>
+									{/if}
+									{if $s.tvmaze > 0}
+										<a title="View at TVMaze" target="_blank" href="{$site->dereferrer_link}http://tvmaze.com/shows/{$s.tvmaze}">TVMaze</a>
+										{/if}
+									{if $s.trakt > 0}
+										<a title="View at Trakt" target="_blank" href="{$site->dereferrer_link}http://www.trakt.tv/shows/{$s.trakt}">Trakt</a>
+										{/if}
+									{if $s.tvrage > 0}
+										<a title="View at TVRage" target="_blank" href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$s.tvrage}">TVRage</a>
+										{/if}
+									{if $s.tmdb > 0}
+										<a title="View at TheMovieDB" target="_blank" href="{$site->dereferrer_link}https://www.themoviedb.org/shows/{$s.tmdb}">TMDB</a>
+									{/if}
+								<a title="RSS Feed for {$s.title|escape:"htmlall"}" href="{$smarty.const.WWW_TOP}/rss?show={$s.id}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}"><i class="fa fa-rss"></i></a>
+							{/if}
+							<a title="RSS Feed for {$s.title|escape:"htmlall"}" href="{$smarty.const.WWW_TOP}/rss?show={$s.id}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}"><i class="fa fa-rss"></i></a>
 					</td>
 				</tr>
 			{/foreach}

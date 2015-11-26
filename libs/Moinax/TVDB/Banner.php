@@ -65,7 +65,7 @@ class Banner
      * @var string
      */
     public $vignettePath = '';
-    
+
     /**
      * @var int
      */
@@ -76,7 +76,7 @@ class Banner
      *
      * @access public
      * @param \SimpleXMLElement $data A simplexml element created from thetvdb.com's xml data for the tv serie banner
-     * @return \Moinax\TvDb\Banner
+     * @return \libs\Moinax\TvDb\Banner
      */
     public function __construct($data)
     {

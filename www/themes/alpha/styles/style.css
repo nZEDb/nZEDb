@@ -51,7 +51,10 @@ div.icon { width:16px; height:16px; background-repeat:no-repeat; cursor:pointer;
 .icon_sab_clicked    { background-image:url('../../../themes_shared/images/icons/queuedown.png'); }
 .icon_trakt          { background-image:url('../../../themes_shared/images/icons/trakt.png'); }
 .icon_trakt2         { content:url('../../../themes_shared/images/icons/trakt.png'); }
+.icon_tvdb           { background-image:url('../../../themes_shared/images/icons/tvdb.png'); }
 .icon_tvrage         { background-image:url('../../../themes_shared/images/icons/tvrage.png'); }
+.icon_tvmaze         { background-image:url('../../../themes_shared/images/icons/tvmaze.png'); }
+.icon_tmdb           { background-image:url('../../../themes_shared/images/icons/tmdb.png'); }
 .icon_check          { background-image:url('../../../themes_shared/images/icons/check.png'); }
 .icon_cp             { background-image:url('../../../themes_shared/images/icons/couch.png'); }
 .icon_goodreads      { background-image:url('../../../themes_shared/images/icons/goodreads.png'); }

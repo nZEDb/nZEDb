@@ -11,10 +11,9 @@
 			<script type="text/javascript">
 				$('#release').submit(function(){return false;});
 				$('#save').click(function() {
-					var formData = $('#release').serialize();
-					$.post($('#release').attr('action') + '&' + formData, function(resp){
-						$('#updatePanel').html(resp);
-					});
+					var formData = $('#release');
+					var postUrl = formData.attr('action');
+					$.post(postUrl, '&' + formData.serialize(), function(data){ $('#updatePanel').html(data) });
 					location.reload();
 				});
 			</script>
@@ -38,33 +37,27 @@
 					</td>
 				</tr>
 				<tr>
-					<td><label for="rageID">Tv Rage Id:</label></td>
+					<td><label for="videosid">Video Id:</label></td>
 					<td>
-						<input id="rageID" class="short" name="rageID" type="text" value="{$release.rageid}" />
+						<input id="videosid" class="short" name="videosid" type="text" value="{$release.videos_id}" />
 					</td>
 				</tr>
 				<tr>
-					<td><label for="anidbID">AniDB Id:</label></td>
+					<td><label for="episodesid">TV Episode Id:</label></td>
 					<td>
-						<input id="anidbID" class="short" name="anidbID" type="text" value="{$release.anidbid}" />
+						<input id="episodesid" class="short" name="episodesid" type="text" value="{$release.tv_episodes_id}" />
 					</td>
 				</tr>
 				<tr>
-					<td><label for="season">Season:</label></td>
+					<td><label for="anidbid">AniDB Id:</label></td>
 					<td>
-						<input id="season" class="short" name="season" type="text" value="{$release.season}" />
+						<input id="anidbid" class="short" name="anidbid" type="text" value="{$release.anidbid}" />
 					</td>
 				</tr>
 				<tr>
-					<td><label for="episode">Episode:</label></td>
+					<td><label for="imdbid">IMDB Id:</label></td>
 					<td>
-						<input id="episode" class="short" name="episode" type="text" value="{$release.episode}" />
-					</td>
-				</tr>
-				<tr>
-					<td><label for="episode">IMDB Id:</label></td>
-					<td>
-						<input id="imdbID" class="short" name="imdbID" type="text" value="{$release.imdbid}" />
+						<input id="imdbid" class="short" name="imdbid" type="text" value="{$release.imdbid}" />
 					</td>
 				</tr>
 				<tr>

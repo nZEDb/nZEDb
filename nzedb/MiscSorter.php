@@ -1,9 +1,8 @@
 <?php
 namespace nzedb;
 
-require_once nZEDb_LIBS . 'AmazonProductAPI.php';
-
 use nzedb\db\Settings;
+use libs\AmazonProductAPI;
 
 /**
  * Class MiscSorter
@@ -333,7 +332,7 @@ class MiscSorter
 
 	private function doAmazon($q, $name = '', $id = 0, $nfo = '', $region = 'com', $case = false, $row = '')
 	{
-		$amazon = new \AmazonProductAPI($this->pdo->getSetting('amazonpubkey'), $this->pdo->getSetting('amazonprivkey'), $this->pdo->getSetting('amazonassociatetag'));
+		$amazon = new AmazonProductAPI($this->pdo->getSetting('amazonpubkey'), $this->pdo->getSetting('amazonprivkey'), $this->pdo->getSetting('amazonassociatetag'));
 		$ok = false;
 
 		try {

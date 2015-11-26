@@ -1,6 +1,4 @@
 <div class="header">
-	{assign var="catsplit" value=">"|explode:$catname}
-	<h2>{$catsplit[0]} > <strong>{if isset($catsplit[1])} {$catsplit[1]}{/if}</strong></h2>
 	<div class="breadcrumb-wrapper">
 		<ol class="breadcrumb">
 			<li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li>
@@ -96,7 +94,7 @@
 						{assign var="mtotalparts" value=","|explode:$result.grp_release_totalparts}
 						{assign var="mcomments" value=","|explode:$result.grp_release_comments}
 						{assign var="mgrabs" value=","|explode:$result.grp_release_grabs}
-						{assign var="mfailed" value=","|explode:$result.failed}
+						{assign var="mfailed" value=","|explode:$result.grp_release_failed}
 						{assign var="mpass" value=","|explode:$result.grp_release_password}
 						{assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
 						{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
@@ -107,7 +105,7 @@
 										<div class="row">
 											<div class="col-md-2 small-gutter-left">
 												<a title="View details"
-												   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">
+												   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">
 													<img src="{$smarty.const.WWW_TOP}/covers/console/{if $result.cover == 1}{$result.consoleinfoid}.jpg{else}no-cover.jpg{/if}"
 														 width="140" border="0"
 														 alt="{$result.title|escape:"htmlall"}"/>{if $mfailed[$m@index] > 0} <i class="fa fa-exclamation-circle" style="color: red" title="This release has failed to download for some users"></i>{/if}
@@ -119,7 +117,7 @@
 																		 title="View Amazon page">
 														Amazon</a>{/if}
 												{if $result.nfoid > 0}<a
-													href="{$smarty.const.WWW_TOP}/nfo/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"
+													href="{$smarty.const.WWW_TOP}/nfo/{$mguid[$m@index]}|escape:"htmlall"}"
 													title="View NFO" class="label label-default" rel="nfo">
 														NFO</a>{/if}
 												<a class="label label-default"
@@ -127,12 +125,11 @@
 												   title="Browse releases in {$result.group_name|replace:"alt.binaries":"a.b"}">Group</a>
 												{if $mfailed[$m@index] > 0}
 													<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
-														<i class ="fa fa-thumbs-o-up"></i> {$mgrabs[$m@index]} Grab{if {$mgrabs[$m@index]} != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$mfailed[$m@index]} Failed Download{if {$mfailed[$m@index]} != 1}s{/if}</span>
-												{/if}
+														<i class ="fa fa-thumbs-o-up"></i> {$mgrabs[$m@index]} Grab{if {$mgrabs[$m@index]} != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$mfailed[$m@index]} Failed Download{if {$mfailed[$m@index]} > 1}s{/if}</span>												{/if}
 											</div>
 											<div class="col-md-10 small-gutter-left">
 												<h4><a title="View details"
-													   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">{$result.title|escape:"htmlall"}</a>
+													   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$result.title|escape:"htmlall"}</a>
 												</h4>
 												<table>
 													<tr>
@@ -177,18 +174,18 @@
 															{/if}
 															<div>
 																<a role="button" class="btn btn-default btn-xs"
-																   href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"><i
+																   href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}|escape:"htmlall"}"><i
 																			class="fa fa-download"></i><span
 																			class="badge">{$mgrabs[$m@index]}
 																		Grab{if $mgrabs[$m@index] != 1}s{/if}</span></a>
 																<a role="button" class="btn btn-default btn-xs"
-																   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}#comments"><i
+																   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}#comments"><i
 																			class="fa fa-comment-o"></i><span
 																			class="badge">{$mcomments[$m@index]}
 																		Comment{if $mcomments[$m@index] != 1}s{/if}</span></a>
 																<span class="btn btn-hover btn-default btn-xs icon icon_cart text-muted"
 																	  title="Add to Cart"><i
-																			class="fa fa-shopping-cart"></i></span>
+																			class="fa fa-shopping-basket"></i></span>
 																{if isset($sabintegrated)}
 																	<span class="btn btn-hover btn-default btn-xs icon icon_sab text-muted"
 																		  title="Send to my Queue"><i

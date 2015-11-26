@@ -100,7 +100,7 @@ class Episode
      * Constructor
      *
      * @access public
-     * @return \Moinax\TvDb\Episode
+     * @return \libs\Moinax\TvDb\Episode
      * @param \SimpleXMLElement $data simplexml element created from thetvdb.com's xml data for the tv episode
      */
     public function __construct($data)
@@ -110,7 +110,7 @@ class Episode
         $this->season = (int)$data->SeasonNumber;
         $this->directors = (array)Client::removeEmptyIndexes(explode('|', (string)$data->Director));
         $this->name = (string)$data->EpisodeName;
-        $this->firstAired = (string)$data->FirstAired !== '' ? new \DateTime((string)$data->FirstAired) : null;
+        $this->firstAired = (string)$data->FirstAired !== '' ? (string)$data->FirstAired : null;
         $this->guestStars = Client::removeEmptyIndexes(explode('|', (string)$data->GuestStars));
         $this->imdbId = (string)$data->IMDB_ID;
         $this->language = (string) $data->Language;

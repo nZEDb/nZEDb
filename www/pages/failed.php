@@ -1,12 +1,45 @@
 <?php
 
 use nzedb\DnzbFailures;
+use nzedb\db\Settings;
 
-if (isset($_GET['guid']) && isset($_GET['searchname']) && isset($_GET['userid']) && is_numeric($_GET['userid']) && isset($_GET['rsstoken'])) {
+// Page is accessible only by the rss token, or logged in users.
+if ($page->users->isLoggedIn()) {
+	$uid = $page->users->currentUserId();
+	$rssToken = $page->userdata['rsstoken'];
+} else {
+	if ($page->settings->getSetting('registerstatus') == Settings::REGISTER_STATUS_API_ONLY) {
+		if (!isset($_GET["rsstoken"])) {
+			header("X-DNZB-RCode: 400");
+			header("X-DNZB-RText: Bad request, please supply all parameters!");
+			$page->show403();
+		} else {
+			$res = $page->users->getByRssToken($_GET["rsstoken"]);
+		}
+	} else {
+		if (!isset($_GET["userid"]) || !isset($_GET["rsstoken"])) {
+			header("X-DNZB-RCode: 400");
+			header("X-DNZB-RText: Bad request, please supply all parameters!");
+			$page->show403();
+		} else {
+			$res = $page->users->getByIdAndRssToken($_GET["userid"], $_GET["rsstoken"]);
+		}
+	}
+	if (!isset($res)) {
+		header("X-DNZB-RCode: 401");
+		header("X-DNZB-RText: Unauthorised, wrong user ID or rss key!");
+		$page->show403();
+	} else {
+		$uid = $res['id'];
+		$rssToken = $res['rsstoken'];
+	}
+}
 
-	$alt = (new DnzbFailures(['Settings' => $page->settings]))->getAlternate($_GET['guid'], $_GET['searchname'], $_GET['userid']);
+if (isset($_GET['guid']) && isset($_GET['searchname']) && isset($uid) && is_numeric($uid) && isset($rssToken)) {
+
+	$alt = (new DnzbFailures(['Settings' => $page->settings]))->getAlternate($_GET['guid'], $_GET['searchname'], $uid);
 	if (!$alt) {
 		$page->show404();
 	}
-	header('Location: ' . $page->serverurl . 'getnzb/' . $alt['guid'] . '&i=' . $_GET['userid'] . '&r=' . $_GET['rsstoken']);
+	header('Location: ' . $page->serverurl . 'getnzb/' . $alt['guid'] . '&i=' . $uid . '&r=' . $rssToken);
 }

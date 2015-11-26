@@ -819,7 +819,9 @@ class ProcessReleases
 		}
 		$this->categorizeRelease(
 			$type,
-			(!empty($groupID) ? 'WHERE iscategorized = 0 AND group_id = ' . $groupID : 'WHERE iscategorized = 0')
+			(!empty($groupID)
+				? 'WHERE categoryid = ' . Category::CAT_MISC . ' AND iscategorized = 0 AND group_id = ' . $groupID
+				: 'WHERE categoryid = ' . Category::CAT_MISC . ' AND iscategorized = 0')
 		);
 
 		if ($this->echoCLI) {

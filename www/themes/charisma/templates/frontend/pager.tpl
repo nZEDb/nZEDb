@@ -1,4 +1,4 @@
-{assign var="pages" value=($pagertotalitems/$pageritemsperpage)|round}
+{assign var="pages" value=($pagertotalitems/$pageritemsperpage)|ceil}
 {assign var="currentpage" value=($pageroffset+$pageritemsperpage)/$pageritemsperpage}
 {assign var="upperhalfwaypoint" value=((($pages-$currentpage)/2)|round)+$currentpage}
 {if $pages > 1}

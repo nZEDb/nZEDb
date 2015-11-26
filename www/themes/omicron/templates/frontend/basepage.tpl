@@ -106,13 +106,16 @@
 								<!-- Menu Body -->
 								<li class="user-body">
 									<div class="col-xs-12 text-center">
-										<a href="{$serverroot}cart"><i class="fa fa-shopping-cart"></i> My Cart</a>
+										<a href="{$serverroot}cart"><i class="fa fa-shopping-basket"></i> My Cart</a>
 									</div>
 									<div class="col-xs-12 text-center">
 										<a href="{$serverroot}queue"><i class="fa fa-list-alt"></i> My Queue</a>
 									</div>
 									<div class="col-xs-12 text-center">
 										<a href="{$serverroot}mymovies"><i class="fa fa-film"></i> My Movies</a>
+									</div>
+									<div class="col-xs-12 text-center">
+										<a href="{$serverroot}myshows"><i class="fa fa-television"></i> My Shows</a>
 									</div>
 									<div class="col-xs-12 text-center">
 										<a href="{$serverroot}profileedit"><i class="fa fa-cog fa-spin"></i> Account Settings</a>

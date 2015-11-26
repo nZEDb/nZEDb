@@ -69,12 +69,7 @@
 						<li class="last"><a href="{$smarty.const.WWW_TOP}/movie-list.php">View</a></li>
 					</ul>
 				</li>
-				<li class="has-sub"><a href="#">TVRage</a>
-					<ul>
-						<li><a href="{$smarty.const.WWW_TOP}/rage-edit.php?action=add">Add</a></li>
-						<li class="last"><a href="{$smarty.const.WWW_TOP}/rage-list.php">View</a></li>
-					</ul>
-				</li>
+				<li><a href="{$smarty.const.WWW_TOP}/show-list.php">View Shows</a></li>
 				<li><a href="{$smarty.const.WWW_TOP}/anidb-list.php">View AniDB</a></li>
 				<li><a href="{$smarty.const.WWW_TOP}/console-list.php">View Consoles</a></li>
 				<li><a href="{$smarty.const.WWW_TOP}/game-list.php">View Games</a></li>

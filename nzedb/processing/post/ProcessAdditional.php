@@ -1202,7 +1202,7 @@ class ProcessAdditional
 				$this->pdo->queryOneRow(
 					sprintf(
 						'
-						SELECT id FROM release_files
+						SELECT releaseid FROM release_files
 						WHERE releaseid = %d
 						AND name = %s
 						AND size = %d',
@@ -2275,7 +2275,7 @@ class ProcessAdditional
 				if ($filesAdded < 11 &&
 					$this->pdo->queryOneRow(
 						sprintf(
-							'SELECT id FROM release_files WHERE releaseid = %d AND name = %s',
+							'SELECT releaseid FROM release_files WHERE releaseid = %d AND name = %s',
 							$this->_release['id'], $this->pdo->escapeString($file['name'])
 						)
 					) === false
@@ -2385,10 +2385,9 @@ class ProcessAdditional
 					$this->pdo->queryExec(
 						sprintf(
 							'UPDATE releases
-							SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL,
-								tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL,
-								consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, preid = 0,
-								searchname = %s, isrenamed = 1, iscategorized = 1, proc_files = 1, categoryid = %d
+							SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL,
+							bookinfoid = NULL, anidbid = NULL, preid = 0, searchname = %s, isrenamed = 1, iscategorized = 1,
+							proc_files = 1, categoryid = %d
 							WHERE id = %d',
 							$newTitle,
 							$newCategory,

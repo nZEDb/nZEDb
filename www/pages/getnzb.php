@@ -118,8 +118,8 @@ header("X-DNZB-Category: " . $relData["category_name"]);
 header("X-DNZB-Details: " . $page->serverurl . 'details/' . $_GET["id"]);
 if (!empty($relData['imdbid']) && $relData['imdbid'] > 0) {
 	header("X-DNZB-MoreInfo: http://www.imdb.com/title/tt" . $relData['imdbid']);
-} else if (!empty($relData['rageid']) && $relData['rageid'] > 0) {
-	header("X-DNZB-MoreInfo: http://www.tvrage.com/shows/id-" . $relData['rageid']);
+} else if (!empty($relData['tvrage']) && $relData['tvrage'] > 0) {
+	header("X-DNZB-MoreInfo: http://www.tvrage.com/shows/id-" . $relData['tvrage']);
 }
 header("X-DNZB-Name: " . $relData["searchname"]);
 if ($relData['nfostatus'] == 1) {

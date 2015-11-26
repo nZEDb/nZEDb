@@ -149,17 +149,6 @@ convertTable($pdo,
 			 $nn_schema . ".content",
 			 $runQueries);
 
-echo "episodeinfo = tvrage_episodes in nZEDb\n";
-// Convert episodeinfo to tvrageepisodes - You loose (tvdbID, imdbID, director, gueststars, overview, rating, writer, epabsolute)
-convertTable($pdo,
-			 $nZEDB_schema,
-			 "tvrage_episodes",
-			 "INSERT INTO " . $nZEDB_schema .
-			 ".tvrage_episodes (id, rageid, showtitle, airdate, link, fullep, eptitle) " .
-			 "SELECT MIN(ID), rageID, showtitle, MIN(airdate), link, fullep, eptitle FROM " .
-			 $nn_schema . ".episodeinfo where rageID <> 0 GROUP BY rageID, fullep",
-			 $runQueries);
-
 convertTable($pdo,
 			 $nZEDB_schema,
 			 "forum_posts",
@@ -288,8 +277,8 @@ convertTable($pdo,
 			 $nZEDB_schema,
 			 "releases",
 			 "INSERT INTO " . $nZEDB_schema .
-			 ".releases (adddate, anidbid, bookinfoid, categoryid, comments, completion, consoleinfoid, episode, fromname, grabs, group_id, guid, haspreview, id, imdbid, musicinfoid, name, passwordstatus, postdate, rageid, rarinnerfilecount, searchname, season, seriesfull, size, totalpart, tvairdate, tvtitle, nzb_guid) " .
-			 "SELECT adddate, anidbID, bookinfoID, case categoryID when 7030 then 8020 when 7020 then 8010 when 7010 then 8030 when 6050 then 6070 when 2060 then 2050 when 2050 then 2060 when 7000 then 8000 when 6070 then 6050 when 8010 then 8050 else categoryID end, comments, completion, consoleinfoID, episode, fromname, grabs, group_id, guid, haspreview, ID, imdbID, musicinfoID, name, passwordstatus, postdate, rageID, rarinnerfilecount, searchname, season, seriesfull, size, totalpart, tvairdate, tvtitle, UNHEX(gid) FROM " .
+			 ".releases (adddate, anidbid, bookinfoid, categoryid, comments, completion, consoleinfoid, fromname, grabs, group_id, guid, haspreview, id, imdbid, musicinfoid, name, passwordstatus, postdate, rarinnerfilecount, searchname, size, totalpart, nzb_guid) " .
+			 "SELECT adddate, anidbID, bookinfoID, case categoryID when 7030 then 8020 when 7020 then 8010 when 7010 then 8030 when 6050 then 6070 when 2060 then 2050 when 2050 then 2060 when 7000 then 8000 when 6070 then 6050 when 8010 then 8050 else categoryID end, comments, completion, consoleinfoID, fromname, grabs, group_id, guid, haspreview, ID, imdbID, musicinfoID, name, passwordstatus, postdate, rarinnerfilecount, searchname, size, totalpart, UNHEX(gid) FROM " .
 			 $nn_schema . ".releases",
 			 $runQueries);
 
@@ -319,15 +308,6 @@ echo "Skipping sphinx table: Not in nZEDb\n";
 echo "Skipping spotnabsource table: Not in nZEDb\n";
 
 echo "Skipping thetvdb table: Not in nZEDb\n";
-
-convertTable($pdo,
-			 $nZEDB_schema,
-			 "tvrage_titles",
-			 "INSERT INTO " . $nZEDB_schema .
-			 ".tvrage_titles (country, createddate, description, genre, id, imgdata, nextdate, nextinfo, prevdate, previnfo, rageid, releasetitle, tvdbid) " .
-			 "SELECT country, createddate, description, genre, ID, imgdata, nextdate, nextinfo, prevdate, previnfo, rageID, releasetitle, tvdbID FROM " .
-			 $nn_schema . ".tvrage group by releasetitle",
-			 $runQueries);
 
 convertTable($pdo,
 			 $nZEDB_schema,

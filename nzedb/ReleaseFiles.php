@@ -93,7 +93,7 @@ class ReleaseFiles
 
 		$duplicateCheck = $this->pdo->queryOneRow(
 			sprintf('
-				SELECT id
+				SELECT releaseid
 				FROM release_files
 				WHERE releaseid = %d AND name = %s',
 				$id,

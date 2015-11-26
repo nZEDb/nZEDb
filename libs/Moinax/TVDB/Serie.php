@@ -135,7 +135,7 @@ class Serie
      *
      * @access public
      * @param \SimpleXMLElement $data A simplexml element created from thetvdb.com's xml data for the tv show
-     * @return \Moinax\TvDb\Serie
+     * @return \libs\Moinax\TvDb\Serie
      */
     public function __construct($data)
     {
@@ -147,7 +147,7 @@ class Serie
         $this->name = (string)$data->SeriesName;
         $this->banner = (string)$data->banner;
         $this->overview = (string)$data->Overview;
-        $this->firstAired = new \DateTime((string)$data->FirstAired);
+        $this->firstAired = (string)$data->FirstAired;
         $this->imdbId = (string)$data->IMDB_ID;
         $this->actors = (array)Client::removeEmptyIndexes(explode('|', (string)$data->Actors));
         $this->airsDayOfWeek = (string)$data->Airs_DayOfWeek;

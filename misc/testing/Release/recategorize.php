@@ -83,12 +83,8 @@ function categorizeRelease($where, $update = true, $echooutput = false)
 						sprintf("
 							UPDATE releases
 							SET iscategorized = 1,
-								rageid = -1,
-								seriesfull = NULL,
-								season = NULL,
-								episode = NULL,
-								tvtitle = NULL,
-								tvairdate = NULL,
+								videos_id = 0,
+								tv_episodes_id = 0,
 								imdbid = NULL,
 								musicinfoid = NULL,
 								consoleinfoid = NULL,

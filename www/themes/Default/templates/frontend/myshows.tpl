@@ -21,15 +21,15 @@
 	{foreach from=$shows item=show}
 		<tr class="{cycle values=",alt"}">
 			<td>
-				<a title="View details" href="{$smarty.const.WWW_TOP}/series/{$show.rageid}{if $show.categoryid != ''}?t={$show.categoryid|replace:"|":","}{/if}">{$show.releasetitle|stripslashes|escape:"htmlall"|wordwrap:75:"\n":true}</a>
+				<a title="View details" href="{$smarty.const.WWW_TOP}/series/{$show.videos_id}{if $show.categoryid != ''}?t={$show.categoryid|replace:"|":","}{/if}">{$show.title|stripslashes|escape:"htmlall"|wordwrap:75:"\n":true}</a>
 			</td>
-			<td><a href="{$smarty.const.WWW_TOP}/rss?rage={$show.rageid}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}" title="RSS Feed for {$show.releasetitle|stripslashes|escape:"htmlall"} (All Categories)">RSS Feed</td>
+			<td><a href="{$smarty.const.WWW_TOP}/rss?show={$show.videos_id}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}" title="RSS Feed for {$show.title|stripslashes|escape:"htmlall"} (All Categories)">RSS Feed</td>
 			<td class="less">{if $show.categoryNames != ''}{$show.categoryNames|escape:"htmlall"}{else}All{/if}</td>
 			<td class="less" title="Added on {$show.createddate}">{$show.createddate|date_format}</td>
-			<td class="mid"><a href="{$smarty.const.WWW_TOP}/myshows/edit/{$show.rageid}" class="myshows" rel="edit" name="series{$show.rageid}" title="Edit Categories">Edit</a>&nbsp;&nbsp;<a href="{$smarty.const.WWW_TOP}/myshows/delete/{$show.rageid}" class="myshows" rel="remove" name="series{$show.rageid}" title="Remove from My Shows">Remove</a></td>
+			<td class="mid"><a href="{$smarty.const.WWW_TOP}/myshows/edit/{$show.videos_id}" class="myshows" rel="edit" name="series{$show.videos_id}" title="Edit Categories">Edit</a>&nbsp;&nbsp;<a href="{$smarty.const.WWW_TOP}/myshows/delete/{$show.videos_id}" class="myshows" rel="remove" name="series{$show.videos_id}" title="Remove from My Shows">Remove</a></td>
 		</tr>
 	{/foreach}
-	
+
 </table>
 
 {else}
