@@ -15,7 +15,7 @@
 		{*<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">*}
 		<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.0/css/font-awesome.min.css" rel="stylesheet">
 		<link href="{$smarty.const.WWW_TOP}/../themes/shared/styles/jquery.accordian.css" rel="stylesheet" media="screen">
-		<link href="{$smarty.const.WWW_TOP}/../themes/Default/styles/style.css" rel="stylesheet" media="screen">
+		<link href="{$smarty.const.WWW_TOP}/www/themes/Default/styles/style.css" rel="stylesheet" media="screen">
 		<link href="{$smarty.const.WWW_TOP}/../themes/shared/styles/admin.css" rel="stylesheet" media="screen">
 		<link href="{$smarty.const.WWW_TOP}/../themes/shared/styles/jquery.multiselect.css" rel="stylesheet" media="screen">
 		<link rel="shortcut icon" href="{$smarty.const.WWW_TOP}/../themes/shared/images/favicon.ico">
@@ -28,7 +28,7 @@
 	<body>
 		<div id="logo" style="cursor: pointer;">
 			<h1>
-				<a href="/"></a>
+				<a href="/docs"></a>
 			</h1>
 			<p> <em></em>
 			</p>
