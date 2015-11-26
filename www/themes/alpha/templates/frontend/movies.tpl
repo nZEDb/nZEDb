@@ -72,13 +72,13 @@
 								target="_blank"
 								href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/"
 								name="imdb{$result.imdbid}"
-								title="View imdb page"><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/imdb.png"></a>
+								title="View imdb page"><img src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/imdb.png"></a>
 							<a
 								target="_blank"
 								href="{$site->dereferrer_link}http://trakt.tv/search/imdb/tt{$result.imdbid}/"
 								name="trakt{$result.imdbid}"
 								title="View trakt page"
-							><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/trakt.png"></a>
+							><img src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/trakt.png"></a>
 							{if $cpurl != '' && $cpapi != ''}
 								<a
 									class="sendtocouch"
@@ -87,7 +87,7 @@
 									rel="{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}"
 									name="CP{$result.imdbid}"
 									title="Add to CouchPotato"
-								><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/couch.png"></a>
+								><img src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/couch.png"></a>
 							{/if}
 						</div>
 						<hr>

@@ -39,7 +39,7 @@
 	<link href='{$smarty.const.WWW_TOP}/themes/charisma/css/jquery.iphone.toggle.css' rel='stylesheet'>
 	<link href='{$smarty.const.WWW_TOP}/themes/charisma/css/animate.min.css' rel='stylesheet'>
 	<!-- Normalize.css -->
-	<link href="{$smarty.const.WWW_TOP}/themes_shared/styles/normalize.css" rel="stylesheet" type="text/css">
+	<link href="{$smarty.const.WWW_TOP}/themes/shared/styles/normalize.css" rel="stylesheet" type="text/css">
 	<!-- The fav icon -->
 	<link rel="shortcut icon" href="{$smarty.const.WWW_TOP}/themes/charisma/img/favicon.ico">
 </head>
@@ -244,10 +244,10 @@
 	<!-- Functions with noty -->
 	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/charisma/js/functions.js"></script>
 	<!-- nZEDb default scripts, needed for stuff to work -->
-	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes_shared/scripts/jquery.colorbox-min.js"></script>
-	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes_shared/scripts/jquery.autosize-min.js"></script>
-	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes_shared/scripts/jquery.qtip2.js"></script>
-	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes_shared/scripts/sorttable.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/shared/scripts/jquery.colorbox-min.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/shared/scripts/jquery.autosize-min.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/shared/scripts/jquery.qtip2.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/shared/scripts/sorttable.js"></script>
 	<!-- The HTML5 shim, for IE6-8 support of HTML5 elements -->
 	<!--[if lt IE 9]>
 	<script type="text/javascript" src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>

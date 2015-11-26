@@ -18,17 +18,17 @@
 		{/if}
 
 		<!-- nZEDb core CSS -->
-		<link href="{$smarty.const.WWW_TOP}/themes_shared/styles/bootstrap.min.css" rel="stylesheet" media="screen">
+		<link href="{$smarty.const.WWW_TOP}/themes/shared/styles/bootstrap.min.css" rel="stylesheet" media="screen">
 		<link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet" media="screen">
-		<link href="{$smarty.const.WWW_TOP}/themes_shared/styles/posterwall.css" rel="stylesheet" type="text/css" media="screen" />
+		<link href="{$smarty.const.WWW_TOP}/themes/shared/styles/posterwall.css" rel="stylesheet" type="text/css" media="screen" />
 		<link href="{$smarty.const.WWW_TOP}/themes/alpha/styles/style.css" rel="stylesheet" media="screen">
 		<link href="{$smarty.const.WWW_TOP}/themes/alpha/styles/wip.css" rel="stylesheet" media="screen">
 		<!-- nZEDb extras -->
 		{if $site->google_adsense_acc != ''}
 			<link href="//www.google.com/cse/api/branding.css" rel="stylesheet" media="screen">
 		{/if}
-		<link href="{$smarty.const.WWW_TOP}/themes_shared/styles/jquery.pnotify.default.css" rel="stylesheet" media="screen">
-		<link href="{$smarty.const.WWW_TOP}/themes_shared/styles/jquery.qtip.css" rel="stylesheet" media="screen">
+		<link href="{$smarty.const.WWW_TOP}/themes/shared/styles/jquery.pnotify.default.css" rel="stylesheet" media="screen">
+		<link href="{$smarty.const.WWW_TOP}/themes/shared/styles/jquery.qtip.css" rel="stylesheet" media="screen">
 
 		<style type="text/css">
 			/* Sticky footer styles
@@ -54,12 +54,12 @@
 		</style>
 
 		<!-- Favicons WWWIIIPPP Larger Icons-->
-		<link rel="shortcut icon" href="{$smarty.const.WWW_TOP}/themes_shared/images/favicon.ico">
+		<link rel="shortcut icon" href="{$smarty.const.WWW_TOP}/themes/shared/images/favicon.ico">
 
 		<!-- Additional nZEDb -->
 		<!--[if lt IE 9]>
-		<script src="{$smarty.const.WWW_TOP}/themes_shared/scripts/html5shiv.js"></script>
-		<script src="{$smarty.const.WWW_TOP}/themes_shared/scripts/respond.min.js"></script>
+		<script src="{$smarty.const.WWW_TOP}/themes/shared/scripts/html5shiv.js"></script>
+		<script src="{$smarty.const.WWW_TOP}/themes/shared/scripts/respond.min.js"></script>
 		<![endif]-->
 		{literal}
 		<script>
@@ -127,7 +127,7 @@
 					<div class="col-xs-7">
 						<div class="media">
 							<a class="pull-left logo" style="padding: 2px 10px;" title="{$site->title}" href="{$smarty.const.WWW_TOP}{$site->home_link}">
-								<img class="media-object" alt="{$site->title} Logo" src="{$smarty.const.WWW_TOP}/themes_shared/images/clearlogo.png"><!-- SITE LOGO -->
+								<img class="media-object" alt="{$site->title} Logo" src="{$smarty.const.WWW_TOP}/themes/shared/images/clearlogo.png"><!-- SITE LOGO -->
 							</a>
 							<div class="media-body" style="margin:0">
 								<h1 class="media-heading" style="margin:0"><a title="{$site->title}" href="{$smarty.const.WWW_TOP}{$site->home_link}"> {$site->title} </a></h1><!-- SITE TITLE -->
@@ -215,12 +215,12 @@
 		================================================== -->
 		<script src="//code.jquery.com/jquery-1.9.1.js"></script>
 		<script src="{$smarty.const.WWW_TOP}/themes/alpha/scripts/bootstrap.min.js"></script>
-		<script src="{$smarty.const.WWW_TOP}/themes_shared/scripts/holder.js"></script>
-		<script src="{$smarty.const.WWW_TOP}/themes_shared/scripts/jquery.pnotify.min.js"></script>
-		<script src="{$smarty.const.WWW_TOP}/themes_shared/scripts/jquery.qtip.min.js"></script>
-		<script src="{$smarty.const.WWW_TOP}/themes_shared/scripts/jquery.autosize-min.js"></script>
-		<script src="{$smarty.const.WWW_TOP}/themes_shared/scripts/jquery.colorbox-min.js"></script>
-		<script src="{$smarty.const.WWW_TOP}/themes_shared/scripts/sorttable.js"></script>
+		<script src="{$smarty.const.WWW_TOP}/themes/shared/scripts/holder.js"></script>
+		<script src="{$smarty.const.WWW_TOP}/themes/shared/scripts/jquery.pnotify.min.js"></script>
+		<script src="{$smarty.const.WWW_TOP}/themes/shared/scripts/jquery.qtip.min.js"></script>
+		<script src="{$smarty.const.WWW_TOP}/themes/shared/scripts/jquery.autosize-min.js"></script>
+		<script src="{$smarty.const.WWW_TOP}/themes/shared/scripts/jquery.colorbox-min.js"></script>
+		<script src="{$smarty.const.WWW_TOP}/themes/shared/scripts/sorttable.js"></script>
 		<script src="{$smarty.const.WWW_TOP}/themes/alpha/scripts/utils.js"></script>
 
 		<!-- Additional nZEDb JS -->

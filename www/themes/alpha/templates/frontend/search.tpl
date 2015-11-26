@@ -335,7 +335,7 @@
 						</a>
 						{if $result.rarinnerfilecount > 0}
 							<div class="rarfilelist">
-								<img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/magnifier.png" alt="{$result.guid}">
+								<img src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/magnifier.png" alt="{$result.guid}">
 							</div>
 						{/if}
 					</td>

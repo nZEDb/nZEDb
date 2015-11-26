@@ -74,21 +74,21 @@
 										href="{$site->dereferrer_link}{$result.url}"
 										name="amazon{$result.bookinfoid}"
 										title="View amazon page"
-									><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/amazon.png"></a>
+									><img src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/amazon.png"></a>
 									<a
 										class="label"
 										target="_blank"
 										href="{$site->dereferrer_link}http://www.goodreads.com/search?query={if $result.author != ""}{$result.author|escape:"url"}{"+-+"}{/if}{$result.title|escape:"url"}"
 										name="goodreads{$result.id}"
 										title="Find book on Goodreads"
-									><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/goodreads.png"></a>
+									><img src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/goodreads.png"></a>
 									<a
 										class="label"
 										target="_blank"
 										href="{$site->dereferrer_link}http://www.shelfari.com/search/books?Keywords={if $result.author != ""}{$result.author|escape:"url"}{"+-+"}{/if}{$result.title|escape:"url"}"
 										name="shelfari{$result.id}"
 										title="Find book on Shelfari"
-									><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/shelfari.png"></a>
+									><img src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/shelfari.png"></a>
 									<hr>
 									<div>
 										<a

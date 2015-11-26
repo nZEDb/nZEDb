@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <caps>
-	<server appversion="{$site->version}" version="0.1" title="{$site->title|escape}" strapline="{$site->strapline|escape}" email="{$site->email}" url="{$serverroot}" image="{$serverroot}themes_shared/images/logo.png" />
+	<server appversion="{$site->version}" version="0.1" title="{$site->title|escape}" strapline="{$site->strapline|escape}" email="{$site->email}" url="{$serverroot}" image="{$serverroot}themes/shared/images/logo.png" />
 	<limits max="100" default="100"/>
 
 	<registration available="yes" open="{if $site->registerstatus == 0}yes{else}no{/if}" />

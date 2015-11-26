@@ -43,7 +43,7 @@ define('nZEDb_TMP', nZEDb_RES . 'tmp' . DS);
 define('nZEDb_THEMES', nZEDb_WWW . 'themes' . DS);
 
 // Shared theme items (pictures, scripts).
-define('nZEDb_THEMES_SHARED', nZEDb_WWW . 'themes_shared' . DS);
+define('nZEDb_THEMES_SHARED', nZEDb_WWW . 'themes/shared' . DS);
 
 // Path where log files are stored.
 define('nZEDb_LOGS', nZEDb_RES . 'logs' . DS);

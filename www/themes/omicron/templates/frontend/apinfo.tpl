@@ -10,7 +10,7 @@
 		<webMaster>{$site->email} ({$site->title|escape})</webMaster>
 		<category>{$site->meta_keywords}</category>
 		<image>
-			<url>{$serverroot}themes_shared/images/logo.png</url>
+			<url>{$serverroot}themes/shared/images/logo.png</url>
 			<title>{$site->title|escape}</title>
 			<link>{$serverroot}</link>
 			<description>Visit {$site->title|escape} - {$site->strapline|escape}</description>
