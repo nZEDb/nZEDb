@@ -1,5 +1,5 @@
-body{ background:#282828 url(../../../themes_shared/images/body-bg.png); color:#ddd }
-.logo { background-image:url("../../../themes_shared/images/logo.png") }
+body{ background:#282828 url(../../../themes/shared/images/body-bg.png); color:#ddd }
+.logo { background-image:url("../../../themes/shared/images/logo.png") }
 
 .dropdown-submenu{position:relative;}
 .dropdown-submenu>.dropdown-menu{top:0;left:100%;margin-top:-6px;margin-left:-1px;-webkit-border-radius:0 6px 6px 6px;-moz-border-radius:0 6px 6px 6px;border-radius:0 6px 6px 6px;}
@@ -20,46 +20,46 @@ h3.heading             { margin-top: 0; }
 /* Icons */
 div.icon { width:16px; height:16px; background-repeat:no-repeat; cursor:pointer; position:relative; float:left; margin:2px; }
 .data .icons .icon   { opacity:.30; }
-.icon_allmusic       { background-image:url('../../../themes_shared/images/icons/allmusic.png'); }
-.icon_allmusic2      { content:url('../../../themes_shared/images/icons/allmusic.png'); }
-.icon_amazon         { background-image:url('../../../themes_shared/images/icons/amazon.png'); }
-.icon_amazon2        { content:url('../../../themes_shared/images/icons/amazon.png'); }
-.icon_cart           { background-image:url('../../../themes_shared/images/icons/cartup.png'); }
-.icon_cart_clicked   { background-image:url('../../../themes_shared/images/icons/cartdown.png'); }
-.icon_couch          { background-image:url('../../../themes_shared/images/icons/couch.png'); }
-.icon_couch2         { content:url('../../../themes_shared/images/icons/couch.png'); }
-.icon_discogs        { background-image:url('../../../themes_shared/images/icons/discogs.png'); }
-.icon_giantbomb      { background-image:url('../../../themes_shared/images/icons/giantbomb.png'); }
-.icon_steam          { background-image:url('../../../themes_shared/images/icons/steam.png'); }
-.icon_greenlight     { background-image:url('../../../themes_shared/images/icons/greenlight.png'); }
-.icon_desura         { background-image:url('../../../themes_shared/images/icons/desura.png'); }
-.icon_gamespot       { background-image:url('../../../themes_shared/images/icons/gamespot.png'); }
-.icon_ign            { background-image:url('../../../themes_shared/images/icons/ign.png'); }
-.icon_lastfm         { background-image:url('../../../themes_shared/images/icons/lastfm.png'); }
-.icon_nzb            { background-image:url('../../../themes_shared/images/icons/nzbup.png'); }
-.icon_nzb_clicked    { background-image:url('../../../themes_shared/images/icons/nzbdown.png'); }
+.icon_allmusic       { background-image:url('../../../themes/shared/images/icons/allmusic.png'); }
+.icon_allmusic2      { content:url('../../../themes/shared/images/icons/allmusic.png'); }
+.icon_amazon         { background-image:url('../../../themes/shared/images/icons/amazon.png'); }
+.icon_amazon2        { content:url('../../../themes/shared/images/icons/amazon.png'); }
+.icon_cart           { background-image:url('../../../themes/shared/images/icons/cartup.png'); }
+.icon_cart_clicked   { background-image:url('../../../themes/shared/images/icons/cartdown.png'); }
+.icon_couch          { background-image:url('../../../themes/shared/images/icons/couch.png'); }
+.icon_couch2         { content:url('../../../themes/shared/images/icons/couch.png'); }
+.icon_discogs        { background-image:url('../../../themes/shared/images/icons/discogs.png'); }
+.icon_giantbomb      { background-image:url('../../../themes/shared/images/icons/giantbomb.png'); }
+.icon_steam          { background-image:url('../../../themes/shared/images/icons/steam.png'); }
+.icon_greenlight     { background-image:url('../../../themes/shared/images/icons/greenlight.png'); }
+.icon_desura         { background-image:url('../../../themes/shared/images/icons/desura.png'); }
+.icon_gamespot       { background-image:url('../../../themes/shared/images/icons/gamespot.png'); }
+.icon_ign            { background-image:url('../../../themes/shared/images/icons/ign.png'); }
+.icon_lastfm         { background-image:url('../../../themes/shared/images/icons/lastfm.png'); }
+.icon_nzb            { background-image:url('../../../themes/shared/images/icons/nzbup.png'); }
+.icon_nzb_clicked    { background-image:url('../../../themes/shared/images/icons/nzbdown.png'); }
 .icon_nzb a          { text-decoration:none; padding-bottom:2px; padding-right:12px; }
-.icon_predbme        { background-image:url('../../../themes_shared/images/icons/predbme.png'); }
-.icon_ade            { background-image: url('../../../themes_shared/images/icons/ade.png');}
-.icon_aebn           { background-image: url('../../../themes_shared/images/icons/aebn.png');}
-.icon_popporn        { background-image: url('../../../themes_shared/images/icons/popporn.png');}
-.icon_iafd           { background-image: url('../../../themes_shared/images/icons/iafd.png');}
-.icon_imdb           { background-image:url('../../../themes_shared/images/icons/imdb.png'); }
-.icon_imdb2          { content:url('../../../themes_shared/images/icons/imdb.png'); }
+.icon_predbme        { background-image:url('../../../themes/shared/images/icons/predbme.png'); }
+.icon_ade            { background-image: url('../../../themes/shared/images/icons/ade.png');}
+.icon_aebn           { background-image: url('../../../themes/shared/images/icons/aebn.png');}
+.icon_popporn        { background-image: url('../../../themes/shared/images/icons/popporn.png');}
+.icon_iafd           { background-image: url('../../../themes/shared/images/icons/iafd.png');}
+.icon_imdb           { background-image:url('../../../themes/shared/images/icons/imdb.png'); }
+.icon_imdb2          { content:url('../../../themes/shared/images/icons/imdb.png'); }
 .icon_imdb a         { text-decoration:none; padding-bottom:2px; padding-right:12px; }
-.icon_sab            { background-image:url('../../../themes_shared/images/icons/queueup.png'); }
-.icon_sab_clicked    { background-image:url('../../../themes_shared/images/icons/queuedown.png'); }
-.icon_trakt          { background-image:url('../../../themes_shared/images/icons/trakt.png'); }
-.icon_trakt2         { content:url('../../../themes_shared/images/icons/trakt.png'); }
-.icon_tvdb           { background-image:url('../../../themes_shared/images/icons/tvdb.png'); }
-.icon_tvrage         { background-image:url('../../../themes_shared/images/icons/tvrage.png'); }
-.icon_tvmaze         { background-image:url('../../../themes_shared/images/icons/tvmaze.png'); }
-.icon_tmdb           { background-image:url('../../../themes_shared/images/icons/tmdb.png'); }
-.icon_check          { background-image:url('../../../themes_shared/images/icons/check.png'); }
-.icon_cp             { background-image:url('../../../themes_shared/images/icons/couch.png'); }
-.icon_goodreads      { background-image:url('../../../themes_shared/images/icons/goodreads.png'); }
-.icon_shelfari       { background-image:url('../../../themes_shared/images/icons/shelfari.png'); }
-.icon_anidb          { background-image:url('../../../themes_shared/images/icons/anidb.png'); }
+.icon_sab            { background-image:url('../../../themes/shared/images/icons/queueup.png'); }
+.icon_sab_clicked    { background-image:url('../../../themes/shared/images/icons/queuedown.png'); }
+.icon_trakt          { background-image:url('../../../themes/shared/images/icons/trakt.png'); }
+.icon_trakt2         { content:url('../../../themes/shared/images/icons/trakt.png'); }
+.icon_tvdb           { background-image:url('../../../themes/shared/images/icons/tvdb.png'); }
+.icon_tvrage         { background-image:url('../../../themes/shared/images/icons/tvrage.png'); }
+.icon_tvmaze         { background-image:url('../../../themes/shared/images/icons/tvmaze.png'); }
+.icon_tmdb           { background-image:url('../../../themes/shared/images/icons/tmdb.png'); }
+.icon_check          { background-image:url('../../../themes/shared/images/icons/check.png'); }
+.icon_cp             { background-image:url('../../../themes/shared/images/icons/couch.png'); }
+.icon_goodreads      { background-image:url('../../../themes/shared/images/icons/goodreads.png'); }
+.icon_shelfari       { background-image:url('../../../themes/shared/images/icons/shelfari.png'); }
+.icon_anidb          { background-image:url('../../../themes/shared/images/icons/anidb.png'); }
 
 /* Custom adjustments for Conent Panels */
 .nzedb-panel-heading
@@ -112,7 +112,7 @@ table tbody tr>td{ vertical-align: top; }
 table.table { margin-top: 10px; margin-bottom: 10px; }
 .table .table { background-color: transparent; }
 
-.navbar-inverse { background: url(../../../themes_shared/images/nav-tile.png) repeat-x; }
+.navbar-inverse { background: url(../../../themes/shared/images/nav-tile.png) repeat-x; }
 .nav-header {
 	color: #fff;
 	text-shadow: rgb(11, 11, 11) 0 -1px 1px !important;

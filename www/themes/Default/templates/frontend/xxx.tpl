@@ -92,14 +92,14 @@
 									href="{$site->dereferrer_link}{$result.directurl}"
 									name="viewade{$result.title}"
 									title="View AdultdvdEmpire page"
-									><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/ade.png"></a>
+									><img src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/ade.png"></a>
 								{else}
 								<a
 									target="_blank"
 									href="{$site->dereferrer_link}http://www.adultdvdempire.com/dvd/search?q={$result.title}"
 									name="viewade{$result.title}"
 									title="Search AdultdvdEmpire page"
-									><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/ade.png"></a>
+									><img src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/ade.png"></a>
 							{/if}
 							{if $result.classused == "aebn"}
 							<a
@@ -107,7 +107,7 @@
 								href="{$site->dereferrer_link}{$result.directurl}"
 								name="viewaebn{$result.id}"
 								title="View Adult Entertainment Broadcast Network page"
-								><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/aebn.png"></a>
+								><img src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/aebn.png"></a>
 							{/if}
 							{if $result.classused == "pop"}
 							<a
@@ -115,21 +115,21 @@
 								href="{$site->dereferrer_link}{$result.directurl}"
 								name="viewpop{$result.id}"
 								title="View Popporn page"
-								><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/popporn.png"></a>
+								><img src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/popporn.png"></a>
 							{else}
 							<a
 								target="_blank"
 								href="{$site->dereferrer_link}http://www.popporn.com/results/index.cfm?v=4&g=0&searchtext={$result.title}"
 								name="viewpop{$result.id}"
 								title="Search Popporn page"
-							><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/popporn.png"></a>
+							><img src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/popporn.png"></a>
 							{/if}
 							<a
 								target="_blank"
 								href="{$site->dereferrer_link}http://www.iafd.com/results.asp?searchtype=title&searchstring={$result.title}"
 								name="viewiafd{$result.title}"
 								title="Search Internet Adult Film Database"
-								><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/iafd.png"></a>
+								><img src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/iafd.png"></a>
 						</div>
 						<hr>
 						<div>

@@ -55,24 +55,24 @@
 			<tr>
 				<th width="130"><input type="checkbox" class="nzb_check_all"/></th>
 				<th>title<br/><a title="Sort Descending" href="{$orderbytitle_desc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif"
+								src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_down.gif"
 								alt=""/></a><a title="Sort Ascending" href="{$orderbytitle_asc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt=""/></a>
+								src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_up.gif" alt=""/></a>
 				</th>
 				<th>platform<br/><a title="Sort Descending" href="{$orderbyplatform_desc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif"
+								src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_down.gif"
 								alt=""/></a><a title="Sort Ascending" href="{$orderbyplatform_asc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt=""/></a>
+								src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_up.gif" alt=""/></a>
 				</th>
 				<th>genre<br/><a title="Sort Descending" href="{$orderbygenre_desc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif"
+								src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_down.gif"
 								alt=""/></a><a title="Sort Ascending" href="{$orderbygenre_asc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt=""/></a>
+								src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_up.gif" alt=""/></a>
 				</th>
 				<th>release date<br/><a title="Sort Descending" href="{$orderbyreleasedate_desc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif"
+								src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_down.gif"
 								alt=""/></a><a title="Sort Ascending" href="{$orderbyreleasedate_asc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt=""/></a>
+								src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_up.gif" alt=""/></a>
 				</th>
 			</tr>
 

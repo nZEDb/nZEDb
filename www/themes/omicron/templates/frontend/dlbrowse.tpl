@@ -27,7 +27,7 @@
 	{/if}
 	{foreach from=$results item=result}
 		<tr class="{cycle values=",alt"}">
-			{assign var="icon" value='themes_shared/images/fileicons/'|cat:$result.pathinfo.extension|cat:".png"}
+			{assign var="icon" value='themes/shared/images/fileicons/'|cat:$result.pathinfo.extension|cat:".png"}
 			{if $result.isdir == "1"}
 				{assign var="icon" value='folder'}
 			{elseif $result.pathinfo.extension == "" || !is_file("$icon")}
@@ -36,7 +36,7 @@
 				{assign var="icon" value=$result.pathinfo.extension}
 			{/if}
 			<td><img title=".{$result.pathinfo.extension}" alt="{$result.pathinfo.extension}"
-					 src="{$smarty.const.WWW_TOP}/themes_shared/images/fileicons/{$icon}.png"/></td>
+					 src="{$smarty.const.WWW_TOP}/themes/shared/images/fileicons/{$icon}.png"/></td>
 			<td class="item">
 				{if $result.isdir == 1}
 					<a href="?sp={$subpath|escape:"url"}{$result.name|escape:"url"}&lm={if $lm}1{else}0{/if}">{$result.name|escape:"htmlall"}</a>

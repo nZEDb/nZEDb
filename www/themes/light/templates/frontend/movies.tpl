@@ -70,9 +70,9 @@
 		<table style="width:100%;" class="data highlight icons" id="coverstable">
 			<tr>
 				<th width="5%" style="border-right: none;"><input type="checkbox" class="nzb_check_all" /></th>
-				<th style="border-left: none; border-right: none;">title&nbsp;&nbsp;&nbsp;<a title="Sort Descending" href="{$orderbytitle_desc}"><img src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbytitle_asc}"><img src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt="" /></a></th>
-				<th style="border-left: none; border-right: none;">year&nbsp;&nbsp;&nbsp;<a title="Sort Descending" href="{$orderbyyear_desc}"><img src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyyear_asc}"><img src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt="" /></a></th>
-				<th style="border-left: none;">rating&nbsp;&nbsp;&nbsp;<a title="Sort Descending" href="{$orderbyrating_desc}"><img src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyrating_asc}"><img src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt="" /></a></th>
+				<th style="border-left: none; border-right: none;">title&nbsp;&nbsp;&nbsp;<a title="Sort Descending" href="{$orderbytitle_desc}"><img src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbytitle_asc}"><img src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_up.gif" alt="" /></a></th>
+				<th style="border-left: none; border-right: none;">year&nbsp;&nbsp;&nbsp;<a title="Sort Descending" href="{$orderbyyear_desc}"><img src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyyear_asc}"><img src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_up.gif" alt="" /></a></th>
+				<th style="border-left: none;">rating&nbsp;&nbsp;&nbsp;<a title="Sort Descending" href="{$orderbyrating_desc}"><img src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyrating_asc}"><img src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_up.gif" alt="" /></a></th>
 			</tr>
 
 			{foreach from=$results item=result}
