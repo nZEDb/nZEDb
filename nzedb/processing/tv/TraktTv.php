@@ -50,12 +50,12 @@ class TraktTv extends TV
 	 *
 	 * @param            $groupID
 	 * @param            $guidChar
-	 * @param            $processTV
+	 * @param            $process
 	 * @param bool|false $local
 	 */
-	public function processSite($groupID, $guidChar, $processTV, $local = false)
+	public function processSite($groupID, $guidChar, $process, $local = false)
 	{
-		$res = $this->getTvReleases($groupID, $guidChar, $processTV, parent::PROCESS_TRAKT);
+		$res = $this->getTvReleases($groupID, $guidChar, $process, parent::PROCESS_TRAKT);
 
 		$tvcount = $res->rowCount();
 
@@ -214,7 +214,7 @@ class TraktTv extends TV
 	 * @param string  $airdate
 	 * @param integer $videoId
 	 *
-	 * @return array|bool
+	 * @return array|false
 	 */
 	protected function getEpisodeInfo($traktid, $season, $episode, $airdate = '', $videoId = 0)
 	{
