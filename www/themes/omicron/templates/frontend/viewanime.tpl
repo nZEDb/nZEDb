@@ -58,7 +58,7 @@
 			<div class="btn-group">
 				<input type="button" class="nzb_multi_operations_download btn btn-sm btn-success"
 					   value="Download NZBs"/>
-				<input type="button" class="nzb_multi_operations_cart btn btn-sm btn-info" value="Add to Cart"/>
+				<input type="button" class="nzb_multi_operations_cart btn btn-sm btn-info" value="Send to my Download Basket"/>
 				{if isset($sabintegrated)}
 					<input type="button" class="nzb_multi_operations_sab btn btn-sm btn-primary" value="Send to Queue"/>
 				{/if}
@@ -122,20 +122,20 @@
 									<td>{$result.size|fsize_format:"MB"}</td>
 									<td class="icon_nzb"><a
 												href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.animeTitle|escape:"htmlall"}"><i
-													class="fa fa-download text-muted"
+													class="fa fa-cloud-download text-muted"
 													title="Download NZB"></i></a>
 										<a href="{$smarty.const.WWW_TOP}/details/{$result.guid}/#comments"><i
 													class="fa fa-comments-o text-muted"
 													title="Comments"></i></a>
 										<a href="#" class="icon_cart text-muted"><i
-													class="fa fa-shopping-basket" title="Send to my Cart"></i></a>
+													class="fa fa-shopping-basket" title="Send to my Download Basket"></i></a>
 										{if isset($sabintegrated)}
-											<a href="#" class="icon_sab text-muted"><i class="fa fa-send-o"
+											<a href="#" class="icon_sab text-muted"><i class="fa fa-share-o"
 																					   title="Send to my Queue"></i></a>
 										{/if}
 										{if $weHasVortex}
 											<a href="#" class="icon_vortex text-muted"><i
-														class="fa fa-send-o" title="Send to NZBVortex"></i></a>
+														class="fa fa-share-o" title="Send to NZBVortex"></i></a>
 										{/if}
 									</td>
 								</tr>

@@ -106,7 +106,7 @@
 								<!-- Menu Body -->
 								<li class="user-body">
 									<div class="col-xs-12 text-center">
-										<a href="{$serverroot}cart"><i class="fa fa-shopping-basket"></i> My Cart</a>
+										<a href="{$serverroot}cart"><i class="fa fa-shopping-basket"></i> My Download Basket</a>
 									</div>
 									<div class="col-xs-12 text-center">
 										<a href="{$serverroot}queue"><i class="fa fa-list-alt"></i> My Queue</a>
