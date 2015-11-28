@@ -18,12 +18,15 @@
 				{else}
 					<img class="pull-right" style="margin-right:50px; max-height:278px;"
 						 alt="{$result.title|escape:"htmlall"} Logo"
-						 src="{$serverroot}themes/charisma/images/nomoviecover.jpg"/>
+						 src="{$serverroot}themes/omicron/images/nomoviecover.jpg"/>
 				{/if}
-				<span class="h1" style="display:inline;">{$result.title|escape:"htmlall"} ({$result.year})</span><a
-						class="btn btn-transparent btn-primary" target="_blank"
-						href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/"
-						name="imdb{$result.imdbid}" title="View IMDB page for this movie">View on IMDB</a>
+				<span class="h1" style="display:inline;">{$result.title|escape:"htmlall"} ({$result.year})</span>
+				<a class="btn btn-transparent btn-primary" target="_blank"
+				   href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/"
+				   name="imdb{$result.imdbid}" title="View IMDB page">IMDB</a>
+				<a class="btn btn-transparent btn-primary" target="_blank"
+				   href="{$site->dereferrer_link}http://trakt.tv/search/imdb/tt{$result.imdbid}/"
+				   name="trakt{$result.imdbid}" title="View Trakt page" rel="trakt">TRAKT</a>
 				<h4>{if $result.genre != ''}{$result.genre|replace:"|":" / "}{/if}</h4>
 				{if $result.tagline != ''}
 					<p class="lead" style="margin-right:300px;">"{$result.tagline|escape:"htmlall"}"</p>
@@ -36,7 +39,7 @@
 					{if $result.rating != ''}
 						<dt>Rating</dt>
 						<dd>{$result.rating}
-						/10 {if $result.ratingcount != ''}({$result.ratingcount|number_format} votes)</dd>{/if}
+						/10 {if isset($result.ratingcount) && $result.ratingcount != ''}({$result.ratingcount|number_format} votes)</dd>{/if}
 					{/if}
 					{if $result.director != ''}
 						<dt>Director</dt>
@@ -51,7 +54,7 @@
 			<form id="nzb_multi_operations_form" action="get">
 				<div class="well well-small">
 					<div class="nzb_multi_operations">
-						{if $section != ''}View:
+						{if isset($section) && $section != ''}View:
 							<a href="{$smarty.const.WWW_TOP}/{$section}?t={$category}">Covers</a>
 							|
 							<b>List</b>
@@ -62,7 +65,7 @@
 							<input type="button" class="nntmux_multi_operations_download btn btn-sm btn-success"
 								   value="Download NZBs"/>
 							<input type="button" class="nntmux_multi_operations_cart btn btn-sm btn-info"
-								   value="Add to Cart"/>
+								   value="Send to my Download Basket"/>
 							{if isset($sabintegrated)}
 								<input type="button" class="nzb_multi_operations_sab btn btn-sm btn-primary"
 									   value="Send to Queue"/>
@@ -139,8 +142,7 @@
 									{assign var="mpass" value=","|explode:$result.grp_release_password}
 									{assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
 									{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
-									{assign var="mcat" value=","|explode:$result.grp_release_categoryid}
-									{assign var="mcatname" value=","|explode:$result.grp_release_categoryName}
+									{assign var="mcatname" value=","|explode:$result.grp_release_catname}
 									{foreach from=$msplits item=m}
 										<tr class="{cycle values=",alt"}" id="guid{$mguid[$m@index]}">
 											<td class="check"><input id="chk{$mguid[$m@index]|substr:0:7}"
@@ -153,7 +155,7 @@
 												<br/>
 						<span class="label label-default">{$mgrabs[$m@index]}
 							grab{if $mgrabs[$m@index] != 1}s{/if}</span>
-												{if $mnfo[$m@index] > 0}<span class="label label-default"><a
+												{if isset($mnfo[$m@index]) && $mnfo[$m@index] > 0}<span class="label label-default"><a
 															href="{$smarty.const.WWW_TOP}/nfo/{$mguid[$m@index]}"
 															class="text-muted">NFO</a>
 													</span>{/if}
@@ -172,11 +174,14 @@
 											<td class="icons">
 												<a title="Download NZB"
 												   href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}"><i
-															class="icon icon_nzb fa fa-download text-muted"></i></a>
+															class="icon icon_nzb fa fa-cloud-download text-muted"></i></a>
 												<a href="#" class="icon_cart text-muted"><i class="fa fa-shopping-basket"
-																							title="Add to Cart"></i></a>
-												{if isset($sabintegrated)}<img class="icon_sab"
-																			   src="{$smarty.const.WWW_TOP}/themes/baffi/images/icons/sabup.png"/>{/if}
+																							title="Send to my Download Basket"></i></a>
+												{if isset($sabintegrated)}
+													<a href="#" class="icon icon_sab text-muted"
+													   title="Send to my Queue"><i
+																class="fa fa-share"></i></a>
+												{/if}
 											</td>
 										</tr>
 									{/foreach}
@@ -199,7 +204,7 @@
 														   value="Download NZBs"/>
 													<input type="button"
 														   class="nzb_multi_operations_cart btn btn-sm btn-info"
-														   value="Add to Cart"/>
+														   value="Send to my Download Basket"/>
 													{if isset($sabintegrated)}
 														<input type="button"
 															   class="nzb_multi_operations_sab btn btn-sm btn-primary"
