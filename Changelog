@@ -6,6 +6,10 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2015-11-28 ruhllatio
+	Mrg: PR #1977, from darius - Fix the full movie view in omicron/charisma templates
+	Mrg: PR #1979, from Wally73 - Update simple.sh to remove tv schedule script default
+	Mrg: PR #1980, from kaibosh - Change default to PHP version of scripts rather than python ones in threaded screen script
 2015-11-24 ruhllatio
 	Mrg: PR #1973, from darius - Adjust omicron/charisma templates to failed releases count fix
 2015-11-23 ruhllatio
