@@ -76,7 +76,7 @@
 					<input type="button" class="nzb_multi_operations_download btn btn-sm btn-success"
 						   value="Download NZBs"/>
 					<input type="button" class="nzb_multi_operations_cart btn btn-sm btn-info"
-						   value="Add to Cart"/>
+						   value="Send to my Download Basket"/>
 					{if isset($sabintegrated)}
 						<input type="button" class="nzb_multi_operations_sab btn btn-sm btn-primary"
 							   value="Send to Queue"/>
@@ -205,13 +205,13 @@
 														<td class="icons" style='width:100px;'>
 															<a title="Download Nzb"
 															   href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}"><i
-																		class="fa fa-download text-muted"></i></a>
+																		class="fa fa-cloud-download text-muted"></i></a>
 															<a class="fa fa-shopping-basket icon_cart text-muted"
 															   href="#"
-															   title="Add to Cart">
+															   title="Send to my Download Basket">
 															</a>
 															{if isset($sabintegrated)}
-																<a class="fa fa-send-o icon_sab text-muted"
+																<a class="fa fa-share-o icon_sab text-muted"
 																   href="#"
 																   title="Send to my Queue">
 																</a>

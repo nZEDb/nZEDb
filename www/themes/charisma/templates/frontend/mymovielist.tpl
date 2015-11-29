@@ -32,7 +32,7 @@
 						<br/>
 						{if $ourmovies[$result['imdb_id']] != ""}<a class="btn btn-sm btn-default"
 																	href="{$smarty.const.WWW_TOP}/movies?imdb={$result['imdb_id']}">
-								Download <i class="fa fa-download"></i></a>{/if}
+								Download <i class="fa fa-cloud-download"></i></a>{/if}
 						<a style="display:{if $userimdbs[$result['imdb_id']] == ""}inline{else}none;{/if}"
 						   onclick="mymovie_add('{$result['imdb_id']}', this);return false;"
 						   class="btn btn-sm btn-success" href="#">Add To My Movies</a>
