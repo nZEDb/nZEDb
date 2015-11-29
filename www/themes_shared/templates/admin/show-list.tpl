@@ -25,8 +25,8 @@
 				<td class="less">{$tvshow.started|date_format}</td>
 				<td class="less">
 					{if $tvshow.source == 1}tvdb
-						{elseif $tvshow.source == 2}trakt
-						{elseif $tvshow.source == 3}tvrage
+						{elseif $tvshow.source == 2}tvmaze
+						{elseif $tvshow.source == 3}tmdb
 					{/if}
 				</td>
 				<td class="right"><a title="delete this show entry" href="{$smarty.const.WWW_TOP}/show-delete.php?id={$tvshow.id}">delete</a> | <a title="remove this showid from all releases" href="{$smarty.const.WWW_TOP}/show-remove.php?id={$tvshow.id}">remove</a></td>

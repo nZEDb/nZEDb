@@ -524,7 +524,7 @@ class Sharing
 		// Insert the comment.
 		if ($this->pdo->queryExec(
 			sprintf('
-				INSERT INTO release_comments
+				INSERT IGNORE INTO release_comments
 				(text, createddate, shareid, nzb_guid, siteid, username, user_id, releaseid, shared, host)
 				VALUES (%s, %s, %s, UNHEX(%s), %s, %s, 0, 0, 2, "")',
 				$this->pdo->escapeString($body['BODY']),

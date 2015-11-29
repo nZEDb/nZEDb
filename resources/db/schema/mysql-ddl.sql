@@ -309,17 +309,14 @@ CREATE TABLE countries (
 
 DROP TABLE IF EXISTS dnzb_failures;
 CREATE TABLE dnzb_failures (
-  id          INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  userid      INT(11) UNSIGNED NOT NULL,
-  guid        VARCHAR(50)      NOT NULL,
-  PRIMARY KEY (id)
+  release_id   INT(11) UNSIGNED  NOT NULL,
+  userid      INT(11) UNSIGNED  NOT NULL,
+  failed      INT UNSIGNED      NOT NULL DEFAULT '0',
+  PRIMARY KEY (release_id, userid)
 )
   ENGINE =MYISAM
   DEFAULT CHARSET =utf8
-  COLLATE =utf8_unicode_ci
-  AUTO_INCREMENT =1;
-  CREATE UNIQUE INDEX ux_dnzb_failures ON dnzb_failures (userid, guid);
-
+  COLLATE =utf8_unicode_ci;
 
 DROP TABLE IF EXISTS forum_posts;
 CREATE TABLE forum_posts (
@@ -772,22 +769,18 @@ CREATE TABLE releaseextrafull (
 
 DROP TABLE IF EXISTS release_files;
 CREATE TABLE release_files (
-  id          INT(10)             NOT NULL AUTO_INCREMENT,
-  releaseid   INT(11) UNSIGNED    NOT NULL,
-  name        VARCHAR(255)        NULL,
-  size        BIGINT UNSIGNED     NOT NULL DEFAULT '0',
-  ishashed    TINYINT(1)          NOT NULL DEFAULT '0',
-  createddate DATETIME DEFAULT NULL,
-  passworded  TINYINT(1) UNSIGNED NOT NULL DEFAULT '0',
-  PRIMARY KEY (id),
-  UNIQUE INDEX ix_releasefiles_name_releaseid (name, releaseid),
-  INDEX ix_releasefiles_releaseid      (releaseid),
-  INDEX ix_releasefiles_ishashed       (ishashed)
+  releaseid int(11) unsigned NOT NULL,
+  name varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  size bigint(20) unsigned NOT NULL DEFAULT '0',
+  ishashed tinyint(1) NOT NULL DEFAULT '0',
+  createddate datetime DEFAULT NULL,
+  passworded tinyint(1) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (releaseid, name),
+  KEY ix_releasefiles_ishashed (ishashed)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
-  COLLATE = utf8_unicode_ci
-  AUTO_INCREMENT = 1;
+  COLLATE = utf8_unicode_ci;
 
 
 DROP TABLE IF EXISTS release_naming_regexes;
@@ -811,16 +804,13 @@ CREATE TABLE release_naming_regexes (
 
 DROP TABLE IF EXISTS release_nfos;
 CREATE TABLE release_nfos (
-  id        INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   releaseid INT(11) UNSIGNED NOT NULL,
   nfo       BLOB             NULL DEFAULT NULL,
-  PRIMARY KEY (id),
-  UNIQUE INDEX ix_releasenfo_releaseid (releaseid)
+  PRIMARY KEY (releaseid)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
-  COLLATE = utf8_unicode_ci
-  AUTO_INCREMENT = 1;
+  COLLATE = utf8_unicode_ci;
 
 
 DROP TABLE IF EXISTS release_search_data;
@@ -1197,7 +1187,16 @@ CREATE TABLE videos (
   COLLATE = utf8_unicode_ci
   AUTO_INCREMENT = 10000000;
 
-
+DROP TABLE IF EXISTS videos_aliases;
+CREATE TABLE videos_aliases (
+  videos_id   MEDIUMINT(11) UNSIGNED  NOT NULL COMMENT 'FK to videos.id of the parent title.',
+  title VARCHAR(180) CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'AKA of the video.',
+  PRIMARY KEY (videos_id, title)
+)
+  ENGINE = MyISAM
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci
+  AUTO_INCREMENT  = 10000000;
 
 DROP TABLE IF EXISTS xxxinfo;
 CREATE TABLE         xxxinfo (

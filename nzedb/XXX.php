@@ -131,44 +131,6 @@ class XXX
 	}
 
 	/**
-	 * Get count of movies for movies browse page.
-	 *
-	 * @param       $cat
-	 * @param       $maxAge
-	 * @param array $excludedCats
-	 *
-	 * @return int
-	 */
-	public function getXXXCount($cat, $maxAge = -1, $excludedCats = [])
-	{
-		$catsrch = '';
-		if (count($cat) > 0 && $cat[0] != -1) {
-			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
-		}
-
-		$res = $this->pdo->queryOneRow(
-			sprintf("
-				SELECT COUNT(DISTINCT r.xxxinfo_id) AS num
-				FROM releases r
-				INNER JOIN xxxinfo xxx ON xxx.id = r.xxxinfo_id
-				WHERE r.nzbstatus = 1
-				AND xxx.title != ''
-				AND r.passwordstatus %s
-				AND %s %s %s %s ",
-				$this->showPasswords,
-				$this->getBrowseBy(),
-				$catsrch,
-				($maxAge > 0
-					? 'AND r.postdate > NOW() - INTERVAL ' . $maxAge . 'DAY '
-					: ''
-				),
-				(count($excludedCats) > 0 ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : '')
-			)
-		);
-		return ($res === false ? 0 : $res['num']);
-	}
-
-	/**
 	 * Get movie releases with covers for xxx browse page.
 	 *
 	 * @param       $cat
@@ -188,29 +150,73 @@ class XXX
 		}
 
 		$order = $this->getXXXOrder($orderBy);
+
+		$xxxmovies = $this->pdo->queryCalc(
+			sprintf("
+				SELECT SQL_CALC_FOUND_ROWS
+					xxx.id,
+					GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id
+				FROM xxxinfo xxx
+				LEFT JOIN releases r ON xxx.id = r.xxxinfo_id
+				WHERE r.nzbstatus = 1
+				AND xxx.title != ''
+				AND r.passwordstatus %s
+				AND %s %s %s %s
+				GROUP BY xxx.id
+				ORDER BY %s %s %s",
+				$this->showPasswords,
+				$this->getBrowseBy(),
+				$catsrch,
+				($maxAge > 0
+						? 'AND r.postdate > NOW() - INTERVAL ' . $maxAge . 'DAY '
+						: ''
+				),
+				(count($excludedCats) > 0 ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : ''),
+				$order[0],
+				$order[1],
+				($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
+			), true, nZEDb_CACHE_EXPIRY_MEDIUM
+		);
+
+		$xxxIDs = $releaseIDs = false;
+
+		if (is_array($xxxmovies['result'])) {
+			foreach ($xxxmovies['result'] AS $xxx => $id) {
+				$xxxIDs[] = $id['id'];
+				$releaseIDs[] = $id['grp_release_id'];
+			}
+		}
+
 		$sql = sprintf("
 			SELECT
-			GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id,
-			GROUP_CONCAT(r.rarinnerfilecount ORDER BY r.postdate DESC SEPARATOR ',') as grp_rarinnerfilecount,
-			GROUP_CONCAT(r.haspreview ORDER BY r.postdate DESC SEPARATOR ',') AS grp_haspreview,
-			GROUP_CONCAT(r.passwordstatus ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_password,
-			GROUP_CONCAT(r.guid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_guid,
-			GROUP_CONCAT(rn.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid,
-			GROUP_CONCAT(groups.name ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grpname,
-			GROUP_CONCAT(r.searchname ORDER BY r.postdate DESC SEPARATOR '#') AS grp_release_name,
-			GROUP_CONCAT(r.postdate ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_postdate,
-			GROUP_CONCAT(r.size ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_size,
-			GROUP_CONCAT(r.totalpart ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_totalparts,
-			GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments,
-			GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs,
-			xxx.*, UNCOMPRESS(xxx.plot) AS plot, groups.name AS group_name, rn.id as nfoid FROM releases r
-			LEFT OUTER JOIN groups ON groups.id = r.group_id
+				GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id,
+				GROUP_CONCAT(r.rarinnerfilecount ORDER BY r.postdate DESC SEPARATOR ',') as grp_rarinnerfilecount,
+				GROUP_CONCAT(r.haspreview ORDER BY r.postdate DESC SEPARATOR ',') AS grp_haspreview,
+				GROUP_CONCAT(r.passwordstatus ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_password,
+				GROUP_CONCAT(r.guid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_guid,
+				GROUP_CONCAT(rn.releaseid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid,
+				GROUP_CONCAT(g.name ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grpname,
+				GROUP_CONCAT(r.searchname ORDER BY r.postdate DESC SEPARATOR '#') AS grp_release_name,
+				GROUP_CONCAT(r.postdate ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_postdate,
+				GROUP_CONCAT(r.size ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_size,
+				GROUP_CONCAT(r.totalpart ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_totalparts,
+				GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments,
+				GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs,
+			xxx.*, UNCOMPRESS(xxx.plot) AS plot,
+			g.name AS group_name,
+			rn.releaseid AS nfoid
+			FROM releases r
+			LEFT OUTER JOIN groups g ON g.id = r.group_id
 			LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
 			INNER JOIN xxxinfo xxx ON xxx.id = r.xxxinfo_id
 			WHERE r.nzbstatus = 1
+			AND xxx.id IN (%s)
 			AND xxx.title != ''
-			AND r.passwordstatus %s AND %s %s %s %s
-			GROUP BY xxx.id ORDER BY %s %s %s",
+			AND r.passwordstatus %s
+			AND %s %s %s %s
+			GROUP BY xxx.id
+			ORDER BY %s %s",
+			(is_array($xxxIDs) ? implode(',', $xxxIDs) : -1),
 			$this->showPasswords,
 			$this->getBrowseBy(),
 			$catsrch,
@@ -220,10 +226,13 @@ class XXX
 			),
 			(count($excludedCats) > 0 ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : ''),
 			$order[0],
-			$order[1],
-			($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
+			$order[1]
 		);
-		return $this->pdo->query($sql);
+		$return = $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
+		if (!empty($return)){
+			$return[0]['_totalcount'] = (isset($xxxmovies['total']) ? $xxxmovies['total'] : 0);
+		}
+		return $return;
 	}
 
 	/**

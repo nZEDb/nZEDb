@@ -205,8 +205,8 @@ class Releases
 				"SELECT r.*,
 					CONCAT(cp.title, ' > ', c.title) AS category_name,
 					CONCAT(cp.id, ',', c.id) AS category_ids,
-					COUNT(df.id) AS failed,
-					rn.id AS nfoid,
+					df.failed AS failed,
+					rn.releaseid AS nfoid,
 					re.releaseid AS reid,
 					v.tvdb, v.trakt, v.tvrage, v.tvmaze, v.imdb, v.tmdb,
 					tve.title, tve.firstaired
@@ -226,7 +226,7 @@ class Releases
 				LEFT OUTER JOIN tv_episodes tve ON r.tv_episodes_id = tve.id
 				LEFT OUTER JOIN video_data re ON re.releaseid = r.id
 				LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
-				LEFT OUTER JOIN dnzb_failures df ON df.guid = r.guid
+				LEFT OUTER JOIN dnzb_failures df ON df.release_id = r.id
 				GROUP BY r.id
 				ORDER BY %7\$s %8\$s",
 				NZB::NZB_ADDED,
@@ -481,9 +481,9 @@ class Releases
 					CONCAT(cp.title, '-', c.title) AS category_name,
 					%s AS category_ids,
 					groups.name AS group_name,
-					rn.id AS nfoid, re.releaseid AS reid,
+					rn.releaseid AS nfoid, re.releaseid AS reid,
 					tve.firstaired,
-					COUNT(df.id) AS failed
+					df.failed AS failed
 				FROM releases r
 				LEFT OUTER JOIN video_data re ON re.releaseid = r.id
 				INNER JOIN groups ON groups.id = r.group_id
@@ -491,7 +491,7 @@ class Releases
 				LEFT OUTER JOIN tv_episodes tve ON tve.videos_id = r.videos_id
 				INNER JOIN category c ON c.id = r.categoryid
 				INNER JOIN category cp ON cp.id = c.parentid
-				LEFT OUTER JOIN dnzb_failures df ON df.guid = r.guid
+				LEFT OUTER JOIN dnzb_failures df ON df.release_id = r.id
 				WHERE %s %s
 				AND r.nzbstatus = %d
 				AND r.categoryid BETWEEN 5000 AND 5999
@@ -614,7 +614,7 @@ class Releases
 				LEFT OUTER JOIN release_subtitles rs ON rs.releaseid = r.id
 				LEFT OUTER JOIN video_data rv ON rv.releaseid = r.id
 				LEFT OUTER JOIN releaseextrafull re ON re.releaseid = r.id
-				LEFT OUTER JOIN dnzb_failures df ON df.guid = r.guid
+				LEFT OUTER JOIN dnzb_failures df ON df.release_id = r.id
 				WHERE r.guid = %s',
 				$this->pdo->escapeString($identifiers['g'])
 			)
@@ -886,9 +886,9 @@ class Releases
 			"SELECT r.*,
 				CONCAT(cp.title, ' > ', c.title) AS category_name,
 				%s AS category_ids,
-				(SELECT COUNT(userid) FROM dnzb_failures WHERE guid = r.guid) AS failed,
+				df.failed AS failed,
 				groups.name AS group_name,
-				rn.id AS nfoid,
+				rn.releaseid AS nfoid,
 				re.releaseid AS reid,
 				cp.id AS categoryparentid,
 				v.tvdb, v.trakt, v.tvrage, v.tvmaze, v.imdb, v.tmdb,
@@ -901,6 +901,7 @@ class Releases
 			INNER JOIN groups ON groups.id = r.group_id
 			INNER JOIN category c ON c.id = r.categoryid
 			INNER JOIN category cp ON cp.id = c.parentid
+			LEFT OUTER JOIN dnzb_failures df ON df.release_id = r.id
 			%s",
 			$this->getConcatenatedCategoryIDs(),
 			$whereSql
@@ -982,7 +983,7 @@ class Releases
 				CONCAT(cp.title, ' > ', c.title) AS category_name,
 				%s AS category_ids,
 				groups.name AS group_name,
-				rn.id AS nfoid,
+				rn.releaseid AS nfoid,
 				re.releaseid AS reid
 			FROM releases r
 			LEFT OUTER JOIN videos v ON r.videos_id = v.id
@@ -1042,7 +1043,7 @@ class Releases
 				CONCAT(cp.title, ' > ', c.title) AS category_name,
 				%s AS category_ids,
 				groups.name AS group_name,
-				rn.id AS nfoid,
+				rn.releaseid AS nfoid,
 				re.releaseid AS reid
 			FROM releases r
 			INNER JOIN category c ON c.id = r.categoryid
@@ -1100,7 +1101,7 @@ class Releases
 				concat(cp.title, ' > ', c.title) AS category_name,
 				%s AS category_ids,
 				g.name AS group_name,
-				rn.id AS nfoid
+				rn.releaseid AS nfoid
 			FROM releases r
 			INNER JOIN groups g ON g.id = r.group_id
 			INNER JOIN category c ON c.id = r.categoryid
@@ -1208,7 +1209,7 @@ class Releases
 				CONCAT(cp.title, ' > ', c.title) AS category_name,
 				CONCAT(cp.id, ',', c.id) AS category_ids,
 				g.name AS group_name,
-				v.title AS showtitle, v.tvdb, v.trakt, v.tvrage, v.source,
+				v.title AS showtitle, v.tvdb, v.trakt, v.tvrage, v.tvmaze, v.source,
 				tvi.summary, tvi.image,
 				tve.title, tve.firstaired, tve.se_complete
 				FROM releases r
@@ -1360,7 +1361,7 @@ class Releases
 	{
 		return $this->pdo->queryOneRow(
 			sprintf(
-				'SELECT id, releaseid %s FROM release_nfos WHERE releaseid = %d AND nfo IS NOT NULL',
+				'SELECT releaseid %s FROM release_nfos WHERE releaseid = %d AND nfo IS NOT NULL',
 				($getNfoString ? ", UNCOMPRESS(nfo) AS nfo" : ''),
 				$id
 			)
@@ -1571,7 +1572,7 @@ class Releases
 		return $this->pdo->query(
 			"SELECT r.videos_id, r.guid, r.name, r.searchname, r.size, r.completion,
 				r.postdate, r.categoryid, r.comments, r.grabs,
-				v.id AS tvid, v.title AS tvtitle, v.tvdb, v.tvrage,
+				v.id AS tvid, v.title AS tvtitle, v.tvdb, v.trakt, v.tvrage, v.tvmaze, v.imdb, v.tmdb,
 				tvi.image
 			FROM releases r
 			INNER JOIN videos v ON r.videos_id = v.id

@@ -10,7 +10,7 @@
 	<br />
 {/if}
 
-<h2>{$release.searchname|escape:"htmlall"|truncate:100:"...":true}{if $failed > 0}<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
+<h2>{$release.searchname|escape:"htmlall"|truncate:100:"...":true}{if $failed != NULL && $failed > 0}<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
 		<i class ="fa fa-thumbs-o-up"></i> {$release.grabs} Grab{if $release.grabs != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$failed} Failed Download{if $failed != 1}s{/if}</span>{/if}</h2><br>
 <div class="container">
 	<div class="col-xs-8">
@@ -39,13 +39,24 @@
 						{if $show.summary != ""}<span class="descinitial">{$show.summary|escape:"htmlall"|nl2br|magicurl|truncate:"350":" <a class=\"descmore\" href=\"#\">more...</a>"}</span>
 						{if $show.summary|strlen > 350}<span class="descfull">{$show.summary|escape:"htmlall"|nl2br|magicurl}</span>{/if}<br><br>{/if}
 						{if $release.firstaired != ""}<strong>Aired:</strong> {$release.firstaired|date_format}<br>{/if}
+						{if $show.publisher != ""}<strong>Network:</strong> {$show.publisher}<br>{/if}
 						{if $show.countries_id != ""}<strong>Country:</strong> {$show.countries_id}{/if}
 						<div style="margin-top:10px;">
 							<span class="label label-default"><a title="View all episodes from this series" href="{$smarty.const.WWW_TOP}/series/{$release.videos_id}">All Episodes</a></span>
-							{if $release.source = 1}
-								<span class="label label-default"><a target="_blank" href="{$site->dereferrer_link}http://thetvdb.com/?tab=series&id={$release.tvdb}" title="View at TVDB">TVDB</a></span>
-							{elseif $release.source = 3}
-								<span class="label label-default"><a target="_blank" href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$release.tvrage}" title="View at TV Rage">TV Rage</a></span>
+							{if $show.tvdb > 0}
+								<span class="label label-default"><a title="View at TVDB" target="_blank" href="{$site->dereferrer_link}http://thetvdb.com/?tab=series&id={$show.tvdb}">TVDB</a></span>
+							{/if}
+							{if $show.trakt > 0}
+								<span class="label label-default"><a title="View at Trakt" target="_blank" href="{$site->dereferrer_link}http://www.trakt.tv/shows/{$show.trakt}">Trakt</a></span>
+							{/if}
+							{if $show.tvrage > 0}
+									<span class="label label-default"><a title="View at TVRage" target="_blank" href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$show.tvrage}">TVRage</a></span>
+							{/if}
+							{if $show.tvmaze > 0}
+								<span class="label label-default"><a title="View at TVMaze" target="_blank" href="{$site->dereferrer_link}http://tvmaze.com/shows/{$show.tvmaze}">TVMaze</a></span>
+							{/if}
+							{if $show.tmdb > 0}
+								<span class="label label-default"><a title="View at TheMovieDB" target="_blank" href="{$site->dereferrer_link}https://www.themoviedb.org/tv/{$show.tmdb}">TMDB</a></span>
 							{/if}
 							<span class="label label-default"><a href="{$smarty.const.WWW_TOP}/rss?show={$release.videos_id}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}" title="Rss feed for this series">Series Rss Feed</a></span>
 							<br><strong>Subtitle Search:</strong>
@@ -282,7 +293,7 @@
 	<td><a title="Browse by {$release.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$release.categoryid}">{$release.category_name}</a>
 	</td>
 </tr>
-{if $nfo.id|@count > 0}
+{if $nfo.releaseid|@count > 0}
 	<tr><th>Nfo:</th><td><a href="{$smarty.const.WWW_TOP}/nfo/{$release.guid}" title="View Nfo">View Nfo</a></td></tr>
 {/if}
 
@@ -482,11 +493,13 @@
 	<td>{$release.grabs} time{if $release.grabs==1}{else}s{/if}
 	</td>
 </tr>
+	{if $failed != NULL && $failed > 0}
 	<tr>
 		<th width="140">Failed Download</th>
 		<td>{$failed}
 			time{if $failed==1}{else}s{/if}</td>
 	</tr>
+	{/if}
 <tr>
 	<th style="vertical-align:top">Files:</th>
 	<td><a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$release.guid}">{$release.totalpart} file{if $release.totalpart==1}{else}s{/if}</a>

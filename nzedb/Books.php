@@ -1,9 +1,8 @@
 <?php
 namespace nzedb;
 
-require_once nZEDb_LIBS . 'AmazonProductAPI.php';
-
 use nzedb\db\Settings;
+use libs\AmazonProductAPI;
 
 /*
  * Class for processing book info.
@@ -96,11 +95,22 @@ class Books
 		$this->failCache = array();
 	}
 
+	/**
+	 * @param $id
+	 *
+	 * @return array|bool
+	 */
 	public function getBookInfo($id)
 	{
 		return $this->pdo->queryOneRow(sprintf('SELECT bookinfo.* FROM bookinfo WHERE bookinfo.id = %d', $id));
 	}
 
+	/**
+	 * @param $author
+	 * @param $title
+	 *
+	 * @return array|bool
+	 */
 	public function getBookInfoByName($author, $title)
 	{
 		//only used to get a count of words
@@ -128,6 +138,12 @@ class Books
 		return $this->pdo->queryOneRow(sprintf("SELECT * FROM bookinfo WHERE %s", $searchsql));
 	}
 
+	/**
+	 * @param $start
+	 * @param $num
+	 *
+	 * @return array
+	 */
 	public function getRange($start, $num)
 	{
 		if ($start === false) {
@@ -139,40 +155,28 @@ class Books
 		return $this->pdo->query('SELECT * FROM bookinfo ORDER BY createddate DESC' . $limit);
 	}
 
+	/**
+	 * @return mixed
+	 */
 	public function getCount()
 	{
 		$res = $this->pdo->queryOneRow('SELECT COUNT(id) AS num FROM bookinfo');
 		return $res['num'];
 	}
 
-	public function getBookCount($cat, $maxage = -1, $excludedcats = [])
-	{
-		$res = $this->pdo->queryOneRow(
-			sprintf(
-				"SELECT COUNT(DISTINCT r.bookinfoid) AS num FROM releases r
-				INNER JOIN bookinfo boo ON boo.id = r.bookinfoid AND boo.title != '' and boo.cover = 1
-				WHERE r.nzbstatus = 1 AND  r.passwordstatus %s
-				AND %s %s %s %s",
-				Releases::showPasswords($this->pdo),
-				$this->getBrowseBy(),
-				(count($cat) > 0 && $cat[0] != -1 ? (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat) : ''),
-				($maxage > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage) : ''),
-				(count($excludedcats) > 0 ? ' AND r.categoryid NOT IN (' . implode(',', $excludedcats) . ')' : '')
-			)
-		);
-		return $res['num'];
-	}
-
+	/**
+	 * @param       $cat
+	 * @param       $start
+	 * @param       $num
+	 * @param       $orderby
+	 * @param array $excludedcats
+	 *
+	 * @return array
+	 */
 	public function getBookRange($cat, $start, $num, $orderby, $excludedcats = [])
 	{
 
 		$browseby = $this->getBrowseBy();
-
-		if ($start === false) {
-			$limit = '';
-		} else {
-			$limit = ' LIMIT ' . $num . ' OFFSET ' . $start;
-		}
 
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
@@ -190,34 +194,88 @@ class Books
 		}
 
 		$order = $this->getBookOrder($orderby);
-		$sql = sprintf(
-			"SELECT GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id, "
-			. "GROUP_CONCAT(r.rarinnerfilecount ORDER BY r.postdate DESC SEPARATOR ',') as grp_rarinnerfilecount, "
-			. "GROUP_CONCAT(r.haspreview ORDER BY r.postdate DESC SEPARATOR ',') AS grp_haspreview, "
-			. "GROUP_CONCAT(r.passwordstatus ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_password, "
-			. "GROUP_CONCAT(r.guid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_guid, "
-			. "GROUP_CONCAT(rn.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid, "
-			. "GROUP_CONCAT(groups.name ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grpname, "
-			. "GROUP_CONCAT(r.searchname ORDER BY r.postdate DESC SEPARATOR '#') AS grp_release_name, "
-			. "GROUP_CONCAT(r.postdate ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_postdate, "
-			. "GROUP_CONCAT(r.size ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_size, "
-			. "GROUP_CONCAT(r.totalpart ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_totalparts, "
-			. "GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments, "
-			. "GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs, "
-			. "boo.*, r.bookinfoid, groups.name AS group_name, rn.id as nfoid FROM releases r "
-			. "LEFT OUTER JOIN groups ON groups.id = r.group_id "
-			. "LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id "
-			. "INNER JOIN bookinfo boo ON boo.id = r.bookinfoid "
-			. "WHERE r.nzbstatus = 1 AND boo.cover = 1 AND boo.title != '' AND "
-			. "r.passwordstatus %s AND %s %s %s %s "
-			. "GROUP BY boo.id ORDER BY %s %s" . $limit,
-			Releases::showPasswords($this->pdo),
-			$browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]
+
+		$books = $this->pdo->queryCalc(
+			sprintf("
+				SELECT SQL_CALC_FOUND_ROWS boo.id,
+					GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id
+				FROM bookinfo boo
+				LEFT JOIN releases r ON boo.id = r.bookinfoid
+				WHERE r.nzbstatus = 1
+				AND boo.cover = 1
+				AND boo.title != ''
+				AND r.passwordstatus %s
+				AND %s %s %s %s
+				GROUP BY boo.id
+				ORDER BY %s %s %s",
+				Releases::showPasswords($this->pdo),
+				$browseby,
+				$catsrch,
+				$maxage,
+				$exccatlist,
+				$order[0],
+				$order[1],
+				($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
+			), true, nZEDb_CACHE_EXPIRY_MEDIUM
 		);
 
-		return $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
+		$bookIDs = $releaseIDs = false;
+
+		if (is_array($books['result'])) {
+			foreach ($books['result'] AS $book => $id) {
+				$bookIDs[] = $id['id'];
+				$releaseIDs[] = $id['grp_release_id'];
+			}
+		}
+
+		$sql = sprintf("
+			SELECT
+				GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id,
+				GROUP_CONCAT(r.rarinnerfilecount ORDER BY r.postdate DESC SEPARATOR ',') as grp_rarinnerfilecount,
+				GROUP_CONCAT(r.haspreview ORDER BY r.postdate DESC SEPARATOR ',') AS grp_haspreview,
+				GROUP_CONCAT(r.passwordstatus ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_password,
+				GROUP_CONCAT(r.guid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_guid,
+				GROUP_CONCAT(rn.releaseid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid,
+				GROUP_CONCAT(g.name ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grpname,
+				GROUP_CONCAT(r.searchname ORDER BY r.postdate DESC SEPARATOR '#') AS grp_release_name,
+				GROUP_CONCAT(r.postdate ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_postdate,
+				GROUP_CONCAT(r.size ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_size,
+				GROUP_CONCAT(r.totalpart ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_totalparts,
+				GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments,
+				GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs,
+				GROUP_CONCAT(df.failed ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_failed,
+			boo.*,
+			r.bookinfoid,
+			g.name AS group_name,
+			rn.releaseid AS nfoid
+			FROM releases r
+			LEFT OUTER JOIN groups g ON g.id = r.group_id
+			LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
+			LEFT OUTER JOIN dnzb_failures df ON df.release_id = r.id
+			INNER JOIN bookinfo boo ON boo.id = r.bookinfoid
+			WHERE boo.id IN (%s)
+			AND r.id IN (%s)
+			AND %s
+			GROUP BY boo.id
+			ORDER BY %s %s",
+			(is_array($bookIDs) ? implode(',', $bookIDs) : -1),
+			(is_array($releaseIDs) ? implode(',', $releaseIDs) : -1),
+			$catsrch,
+			$order[0],
+			$order[1]
+		);
+		$return = $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
+		if (!empty($return)) {
+			$return[0]['_totalcount'] = (isset($books['total']) ? $books['total'] : 0);
+		}
+		return $return;
 	}
 
+	/**
+	 * @param $orderby
+	 *
+	 * @return array
+	 */
 	public function getBookOrder($orderby)
 	{
 		$order = ($orderby == '') ? 'r.postdate' : $orderby;
@@ -250,6 +308,9 @@ class Books
 		return [$orderfield, $ordersort];
 	}
 
+	/**
+	 * @return array
+	 */
 	public function getBookOrdering()
 	{
 		return [
@@ -270,11 +331,17 @@ class Books
 		];
 	}
 
+	/**
+	 * @return array
+	 */
 	public function getBrowseByOptions()
 	{
 		return ['author' => 'author', 'title' => 'title'];
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getBrowseBy()
 	{
 		$browseby = ' ';
@@ -288,11 +355,16 @@ class Books
 		return $browseby;
 	}
 
+	/**
+	 * @param $title
+	 *
+	 * @return bool|mixed
+	 */
 	public function fetchAmazonProperties($title)
 	{
-		$obj = new \AmazonProductAPI($this->pubkey, $this->privkey, $this->asstag);
+		$obj = new AmazonProductAPI($this->pubkey, $this->privkey, $this->asstag);
 		try {
-			$result = $obj->searchProducts($title, \AmazonProductAPI::BOOKS, 'TITLE');
+			$result = $obj->searchProducts($title, AmazonProductAPI::BOOKS, 'TITLE');
 		} catch (\Exception $e) {
 			$result = false;
 		}
@@ -401,6 +473,13 @@ class Books
 		}
 	}
 
+	/**
+	 * @param $release_name
+	 * @param $releaseID
+	 * @param $releasetype
+	 *
+	 * @return bool|string
+	 */
 	public function parseTitle($release_name, $releaseID, $releasetype)
 	{
 		$a = preg_replace('/\d{1,2} \d{1,2} \d{2,4}|(19|20)\d\d|anybody got .+?[a-z]\? |[-._ ](Novel|TIA)([-._ ]|$)|( |\.)HQ(-|\.| )|[\(\)\.\-_ ](AVI|AZW3?|DOC|EPUB|LIT|MOBI|NFO|RETAIL|(si)?PDF|RTF|TXT)[\)\]\.\-_ ](?![a-z0-9])|compleet|DAGSTiDNiNGEN|DiRFiX|\+ extra|r?e ?Books?([\.\-_ ]English|ers)?|azw3?|ePu(b|p)s?|html|mobi|^NEW[\.\-_ ]|PDF([\.\-_ ]English)?|Please post more|Post description|Proper|Repack(fix)?|[\.\-_ ](Chinese|English|French|German|Italian|Retail|Scan|Swedish)|^R4 |Repost|Skytwohigh|TIA!+|TruePDF|V413HAV|(would someone )?please (re)?post.+? "|with the authors name right/i', '', $release_name);
@@ -449,6 +528,12 @@ class Books
 		return false;
 	}
 
+	/**
+	 * @param string $bookInfo
+	 * @param null   $amazdata
+	 *
+	 * @return false|int|string
+	 */
 	public function updateBookInfo($bookInfo = '', $amazdata = null)
 	{
 		$ri = new ReleaseImage($this->pdo);

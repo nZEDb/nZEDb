@@ -5,23 +5,39 @@
 		<tr>
 			<td><label for="id">Videos Id:</label></td>
 			<td>
-				<input id="id" class="short" name="id" type="text" value="{$show.id}" />
+				<input id="id" class="medium" name="id" type="text" value="{$show.id}" />
 				<input type="hidden" name="id" value="{$show.id}" />
-				<div class="hint">The numeric TV Show Id.</div>
+				<div class="hint">The numeric Video Id.  Changing this is not recommended.</div>
 			</td>
 		</tr>
 		<tr>
 			<td><label for="tvdb">TVDB Id:</label></td>
 			<td>
-				<input id="tvdb" class="short" name="tvdb" type="text" value="{$show.tvdb}" />
+				<input id="tvdb" class="medium" name="tvdb" type="text" value="{$show.tvdb}" />
 				<input type="hidden" name="tvdb" value="{$show.tvdb}" />
 				<div class="hint">The numeric TVDB Show Id.</div>
 			</td>
 		</tr>
 		<tr>
+			<td><label for="tvmaze">TVMaze Id:</label></td>
+			<td>
+				<input id="tvmaze" class="medium" name="tvmaze" type="text" value="{$show.tvmaze}" />
+				<input type="hidden" name="tvmaze" value="{$show.tvmaze}" />
+				<div class="hint">The numeric TVMaze Show Id.</div>
+			</td>
+		</tr>
+		<tr>
+			<td><label for="tmdb">TMDB Id:</label></td>
+			<td>
+				<input id="tmdb" class="medium" name="tmdb" type="text" value="{$show.tmdb}" />
+				<input type="hidden" name="tmdb" value="{$show.tmdb}" />
+				<div class="hint">The numeric TMDB Show Id.</div>
+			</td>
+		</tr>
+		<tr>
 			<td><label for="trakt">Trakt Id:</label></td>
 			<td>
-				<input id="trakt" class="short" name="trakt" type="text" value="{$show.trakt}" />
+				<input id="trakt" class="medium" name="trakt" type="text" value="{$show.trakt}" />
 				<input type="hidden" name="trakt" value="{$show.trakt}" />
 				<div class="hint">The numeric Trakt Show Id.</div>
 			</td>
@@ -29,9 +45,17 @@
 		<tr>
 			<td><label for="tvrage">TvRage Id:</label></td>
 			<td>
-				<input id="tvrage" class="short" name="tvrage" type="text" value="{$show.tvrage}" />
+				<input id="tvrage" class="medium" name="tvrage" type="text" value="{$show.tvrage}" />
 				<input type="hidden" name="tvrage" value="{$show.tvrage}" />
 				<div class="hint">The numeric TvRage Show Id.</div>
+			</td>
+		</tr>
+		<tr>
+			<td><label for="imdb">IMDB Id:</label></td>
+			<td>
+				<input id="imdb" class="medium" name="imdb" type="text" value="{$show.imdb}" />
+				<input type="hidden" name="imdb" value="{$show.imdb}" />
+				<div class="hint">The numeric IMDB Show Id.</div>
 			</td>
 		</tr>
 		<tr>

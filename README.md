@@ -138,7 +138,9 @@ GiantBombAPI.php => MIT
 
 TMDb PHP API class => BSD
 
-TVDB PHP API class => Moinax
+TVDB PHP API => Moinax
+
+TVMaze PHP API => JPinkney
 
 Zip file creation class => No license specified.
 

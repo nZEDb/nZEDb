@@ -1202,7 +1202,7 @@ class ProcessAdditional
 				$this->pdo->queryOneRow(
 					sprintf(
 						'
-						SELECT id FROM release_files
+						SELECT releaseid FROM release_files
 						WHERE releaseid = %d
 						AND name = %s
 						AND size = %d',
@@ -2275,7 +2275,7 @@ class ProcessAdditional
 				if ($filesAdded < 11 &&
 					$this->pdo->queryOneRow(
 						sprintf(
-							'SELECT id FROM release_files WHERE releaseid = %d AND name = %s',
+							'SELECT releaseid FROM release_files WHERE releaseid = %d AND name = %s',
 							$this->_release['id'], $this->pdo->escapeString($file['name'])
 						)
 					) === false

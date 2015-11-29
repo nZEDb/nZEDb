@@ -42,13 +42,18 @@
 		Returns detailed information about an nzb.
 	</li>
 	<li>
+		<b>Info</b> <span style="font-family:courier;"><a href="{$smarty.const.WWW_TOP}/api?t=info&amp;id=9ca52909ba9b9e5e6758d815fef4ecda">?t=info&amp;id=9ca52909ba9b9e5e6758d815fef4ecda</a></span>
+		<br/>
+		Returns the NFO contents of an NZB.  Specify &o=file to retrieve the NFO as a file download.
+	</li>
+	<li>
 		<b>Get</b> <span style="font-family:courier;"><a href="{$smarty.const.WWW_TOP}/api?t=get&amp;id=9ca52909ba9b9e5e6758d815fef4ecda">?t=get&amp;id=9ca52909ba9b9e5e6758d815fef4ecda</a></span>
 		<br/>
 		Downloads the nzb file associated with an Id.
 	</li>
 </ul>
 <h2>Output Format</h2>
-<p>Obviously not appropriate to functions which return an nzb file.</p>
+<p>Obviously not appropriate to functions which return an nzb file or an NFO.</p>
 <ul>
 	<li>
 		Xml (default) <span style="font-family:courier;">?t=search&amp;q=linux&amp;o=xml</span>

@@ -6,12 +6,93 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
-
+2015-11-24 ruhllatio
+	Mrg: PR #1973, from darius - Adjust omicron/charisma templates to failed releases count fix
+2015-11-23 ruhllatio
+	Fix: Failed counts for cover views being lumped together instead of group_concat
+	Chg: Speed up Music, Games, and XXX cover views
+	Fix: Forgot to fix movies cover view not returning a single dimension array when none are found
+2015-11-24 bart39
+	Mrg: PR #1971, From darius - Update templates to font-awesome 4.5.0.
+	Mrg: PR #1970, From darius - Fix count of failed releases.
+	Mrg: PR #1964, From darius - Remove option to postprocess properly renamed releases from tmux.
+2015-11-23 ruhllatio
+	Mrg: PR #1969, From darius - Change dnzb_failures table layout, drop indexes, add new PK
+	Fix: Broken queries in DnzbFailures, change logic to reduce clutter and excess queries
+	Fix: Broken DF queries in Releases
+	Chg: A few more refinements for DNZB failures
+	Chg: Make some things public in TV to allow external script runs
+	Fix: XmlException errors in TVDB not being caught
+	Fix: Queries in DnzbFailures not working properly
+	Fix: Security issues with DnzbFailures
+2015-11-23 bart39
+	Mrg: PR #1968, From darius - Fix the dnzb failures part of search query in Releases.php.
+	Mrg: PR #1965, From darius - Add changes for api and pager to charisma and omicron templates.
+2015-11-20 ruhllatio
+	Chg: Move PK on release_nfos to releaseid.  Improves NFO joining operations and reduces overhead.
+	Fix: Update schema for release_nfos change
+	Fix: Don't cache failed TV lookups when the Episode didn't find a match but the show did
+2015-11-20 bart39
+	Mrg: PR #1960, From izolight - More tvmaze fixes.
+2015-11-18 ruhllatio
+	Chg: Make categorizeReleases query search for iscategorized in the correct partition
+	Add: include NFOURL (if NFO exists) in extended=1 API information #1962
+	Add: Make NFO file retrievable for a release via the API and update documentation
+	Chg: Update the alpha API description for NFO. Fixing bad copy paste.
+	Chg: Improve error reporting for API NFO.
+	Add: queryCalc function to DB Class to allow cached SQL_CALC_FOUND_ROWS
+	Fix: Typo in queryCalc strpos / forgot to pass cache to query in queryCalc / cache the result instead of the array
+	Chg: Re-work movies cover view queries and make all data sets cacheable / remove count function for movies cover views
+	Fix: A ton of spacing issues I introduced and some others that were already existing in Movie class
+	Chg: Re-work books cover view queries and further improve the query / Remove some lingering query stuff that isn't needed
+	Fix: Undefined offsets when accessing pre query for Books
+	Chg: Re-work consoles cover view queries
+	Chg: Pager template should not round, using ceil to always round up for the last page is a better choice
+2015-11-17 ruhllatio
+	Chg: Move PK on release_files to releaseid/name.  Drastically improves query performance with optimizations to follow.
+	Fix: Add DROP IF EXISTS for temp table in patch
+	Add: IMDB Icon to TV new poster wall
+2015-11-17 bart39
+	Fix: If episode airdate not set insert null.
+	Fix: tvmaze response status can return 404 which we want to exclude.
+	Fix: Tv name parsing regex.
+	Mrg: PR #1959, From izolight - Fixes for tvmaze lookup.
+2015-11-15 ruhllatio
+	Add: TV Failed Title Lookup Cache (Thread Persistent like Amazon)
+	Fix: Bad merge broke regex again
+	Chg: If TVDB cannot reach the API, catch the error and force local lookup
+	Fix: Add XmlException to try/catch
+	Chg: Remove year tags from TVMaze lookup as it returns no results with them
+	Fix: Season Packs not showing up correctly in View Series
+	Chg: Speed up books cover view
+	Chg: Speed up XXX cover view
+	Chg: Speed up Console cover view (fix discrepancy in count)
+2015-11-14 ruhllatio
+	Mrg: PR #1953, Add TVMaze and TMDB Scrapers
+	Fix: Duplicate Alias Errors and cache alias lookups
+	Fix: TraktTv abstract errors from missing functions
+	Chg: AmazonProductAPI now namespaced and autoloads across project
+	Chg: Speedup Music Cover Views and cleanup a lot of the queries / fixed some issues
+	Fix: A few typos with the Music change
+	Chg: Cache counts for Movies, Music, Games
+	Fix: Undefined offset and foreach errors in TMDB
+	Fix: SmartyTV class abstract errors / fix a few template issues
+	Chg: Releases that fail to parse for TV proc go into their own queue for review
+	Fix: First TV name processing Regex not enforcing the start of the string
+	Fix: Bad logic for airdate shows after cleanup of TV parsing (Actually fixed)
+2015-11-14 bart39
+	Mrg: PR #1952, from Darius - Fix book related problems due to wrong var used.
+	Mrg: PR #1951, from Darius - Ignore duplicate comments.
+	Mrg: PR #1949, from rainje - Add french flag to "multi" releases.
+	Fix: Another regex fix.
+	Fix: Collection regex errors noted in #1954.
 2015-11-10 niel
 	Fix: Remerged Darius' original charisma/omicron themes into next-master. Hopefully this will fix the issues for master, but may need more work yet.
 2015-11-09 ruhllatio
 	Fix: Sonarr's "RSS" is just using the API with no parameters.  Left joining should 'fix' this until it can be addressed with the Sonarr team.
 	Fix: Wrong if condition for TVDB Test script return
+	Chg: Greatly improve movies cover view query time.  Depending upon others' findings it is easily adapted to the other views.
+	Chg: Greatly improve games cover view query time. Edit: missed a comma.
 2015-11-07 bart39
 	Fix: Collection regex errors.
 	Mrg: PR #1948, From izolight - Regexes from request thread.

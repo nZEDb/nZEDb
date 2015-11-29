@@ -1,6 +1,5 @@
 <div class="header">
 	<h2>NZB > <strong>Details</strong></h2>
-
 	<div class="breadcrumb-wrapper">
 		<ol class="breadcrumb">
 			<li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li>
@@ -11,9 +10,10 @@
 <div class="box-body">
 	<div class="row">
 		<div class="col-xlg-12 portlets">
-			<div class="panel">
-				<div class="panel-content pagination2">
-					<h1>{$release.searchname|escape:"htmlall"}</h1>
+			<div class="panel panel-default">
+				<div class="panel-body pagination2">
+					<h1>{$release.searchname|escape:"htmlall"} {if $failed != NULL && $failed > 0}<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
+							<i class ="fa fa-thumbs-o-up"></i> {$release.grabs} Grab{if $release.grabs != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$failed} Failed Download{if $failed != 1}s{/if}</span>{/if}</h1>
 					{if isset($isadmin)}
 						<a class="label label-warning"
 						   href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$release.id}&amp;from={$smarty.server.REQUEST_URI}"
@@ -22,12 +22,14 @@
 						   href="{$smarty.const.WWW_TOP}/admin/release-delete.php?id={$release.id}&amp;from={$smarty.server.HTTP_REFERER}"
 						   title="Delete release">Delete</a>
 					{/if}
-					{if $movie && $release.rageid < 0}
-						<a class="label label-default" href="{$serverroot}movies?imdb={$release.imdbid}"
-						   title="View all releases for this movie">Movie View</a>
+					{if $movie && $release.videos_id <= 0}
 						<a class="label label-default" target="_blank"
 						   href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$release.imdbid}/"
 						   title="View at IMDB">IMDB</a>
+						<a target="_blank"
+						   href="{$site->dereferrer_link}http://trakt.tv/search/imdb/tt{$release.imdbid}/"
+						   name="trakt{$release.imdbid}" title="View Trakt page"
+						   class="label label-default" rel="trakt">TRAKT</a>
 						{if $movie.tmdbid != ''}
 							<a class="label label-default" target="_blank"
 							   href="{$site->dereferrer_link}http://www.themoviedb.org/movie/{$movie.tmdbid}"
@@ -44,21 +46,40 @@
 						   href="{$smarty.const.WWW_TOP}/rss?anidb={$release.anidbid}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">Anime
 							RSS Feed</a>
 					{/if}
-					{if $rage && $release.rageid > 0}
-						<a href="{$smarty.const.WWW_TOP}/myshows/add/{$release.rageid}?from={$smarty.server.REQUEST_URI|escape:"url"}"
+					{if $show && $release.videos_id > 0}
+						<a href="{$smarty.const.WWW_TOP}/myshows/add/{$release.videos_id}?from={$smarty.server.REQUEST_URI|escape:"url"}"
 						   class="label label-success">Add to My Shows</a>
-						<a class="label label-default" href="{$serverroot}series/{$release.rageid}"
+						<a class="label label-default" href="{$serverroot}series/{$release.videos_id}"
 						   title="View all releases for this series">View all episodes</a>
-						<a class="label label-default" target="_blank"
-						   href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$release.rageid}"
-						   title="View at TV Rage">TV Rage</a>
-						{if $release.tvdbid > 0}<a class="label label-default" target="_blank"
-												   href="{$site->dereferrer_link}http://thetvdb.com/?tab=series&id={$release.tvdbid}&lid=7"
-												   title="View at TheTVDB">TheTVDB</a>{/if}
+							{if $show.tvdb > 0}
+							<a class="label label-default" target="_blank"
+							   href="{$site->dereferrer_link}http://thetvdb.com/?tab=series&id={$show.tvdb}"
+							   title="View at TheTVDB">TheTVDB</a>
+							{/if}
+							{if $show.tvmaze > 0}
+							<a class="label label-default" target="_blank"
+							   href="{$site->dereferrer_link}http://tvmaze.com/shows/{$show.tvmaze}"
+							   title="View at TVMaze">TVMaze</a>
+								{/if}
+							{if $show.trakt > 0}
+							<a class="label label-default" target="_blank"
+							   href="{$site->dereferrer_link}http://www.trakt.tv/shows/{$show.trakt}"
+							   title="View at TraktTv">Trakt</a>
+								{/if}
+							{if $show.tvrage > 0}
+							<a class="label label-default" target="_blank"
+							   href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$show.tvrage}"
+							   title="View at TV Rage">TV Rage</a>
+								{/if}
+							{if $show.tmdb > 0}
+							<a class="label label-default" target="_blank"
+							   href="{$site->dereferrer_link}https://www.themoviedb.org/tv/{$show.tmdb}"
+							   title="View at TheMovieDB">TMDB</a>
+						{/if}
 					{/if}
 					{if $con && $con.url != ""}<a href="{$site->dereferrer_link}{$con.url}/"
 												  class="label label-default" target="_blank">Amazon</a>{/if}
-					{if $book && $book.url != ""}<a href="{$site->dereferrer_link}{$book.url}/"
+					{if $boo && $boo.url != ""}<a href="{$site->dereferrer_link}{$boo.url}/"
 													class="label label-default" target="_blank">Amazon</a>{/if}
 					{if $music && $music.url != ""}<a href="{$site->dereferrer_link}{$music.url}/"
 													  class="label label-default" target="_blank">
@@ -79,49 +100,41 @@
 														   title="View at Hot Movies">HotMovies</a>
 						{/if}
 					{/if}
-					<a class="label label-default"
-					   href="http://www.google.com/search?q={$release.name|escape:"htmlall"}"
-					   target="_blank">Google</a>
-
 					<p>
-						{if $movie && $release.rageid < 0 && $movie.plot != ''}<span
+						{if $movie && $release.videos_id <= 0 && $movie.plot != ''}<span
 								class="descinitial">{$movie.plot|escape:"htmlall"|truncate:500:"...":true}</span>
 							{if $movie.plot|strlen > 500}
 								<a class="descmore" href="#">more...</a>
 								<span class="descfull">{$movie.plot|escape:"htmlall"|nl2br|magicurl}</span>{/if}{/if}
-
-						{if $rage && $release.rageid > 0 && $rage.description != ""}<span
-								class="descinitial">{$rage.description|escape:"htmlall"|nl2br|magicurl|truncate:500:"...":true}</span>
-							{if $rage.description|strlen > 500}
+						{if $show && $release.videos_id > 0 && $show.summary != ""}<span
+								class="descinitial">{$show.summary|escape:"htmlall"|nl2br|magicurl|truncate:500:"...":true}</span>
+							{if $show.summary|strlen > 500}
 								<a class="descmore" href="#">more...</a>
-								<span class="descfull">{$rage.description|escape:"htmlall"|nl2br|magicurl}</span>{/if}{/if}
-
+								<span class="descfull">{$show.summary|escape:"htmlall"|nl2br|magicurl}</span>{/if}{/if}
 						{if $xxx}
 							{if $xxx.tagline != ''}<br/>{$xxx.tagline|stripslashes|escape:"htmlall"}{/if}
 							{if $xxx.plot != ''}{if $xxx.tagline != ''} - {else}
 								<br/>
 							{/if}{$xxx.plot|stripslashes|escape:"htmlall"}{/if}
 						{/if}
-
 						{if $anidb && $release.anidbid > 0 && $anidb.description != ""}{$anidb.description|escape:"htmlall"|nl2br|magicurl|truncate:500:"...":true}{/if}
 						{if $music && $music.review != ""}{$music.review|escape:"htmlall"|nl2br|magicurl|truncate:500:"...":true}{/if}
-						{if $book && $book.review != ""}{$book.review|escape:"htmlall"|nl2br|magicurl|truncate:500:"...":true}{/if}
+						{if $boo && $boo.review != ""}{$boo.review|escape:"htmlall"|nl2br|magicurl|truncate:500:"...":true}{/if}
 						{if $con &&$con.review != ""}{$con.review|escape:"htmlall"|nl2br|magicurl|truncate:500:"...":true}{/if}
 					</p>
-
 					<div class="box col-md-12">
 						<div class="box-body">
 							<div class="tabbable">
 								<ul class="nav nav-tabs nav-primary">
 									<li class="active"><a href="#pane1"
 														  data-toggle="tab">Info</a></li>
-									{if $movie && $release.rageid < 0}{if $movie.trailer != ""}
+									{if $movie && $release.videos_id <= 0}{if $movie.trailer != ""}
 										<li><a href="#pane2" data-toggle="tab">Trailer</a></li>
 									{/if}{/if}
 									{if isset($xxx.trailers) && $xxx.trailers != ''}
 										<li><a href="#pane2" data-toggle="tab">Trailer</a></li>
 									{/if}
-									{if isset($nfo.nfo) && $nfo.nfo != ""}
+									{if isset($nfo.nfo) && $nfo.nfo != ''}
 										<li><a href="#pane3" data-toggle="tab">NFO</a></li>
 									{/if}
 									{if isset($similars) && $similars|@count > 1}
@@ -130,30 +143,35 @@
 									{if $release.jpgstatus == 1 && $userdata.canpreview == 1}
 										<li><a href="#pane6" data-toggle="tab">Sample</a></li>
 									{/if}
-									<li><a href="#pane5" data-toggle="tab">Comments</a></li>
+									<li><a href="#comments" data-toggle="tab">Comments</a></li>
 									{if ($release.haspreview == 1 && $userdata.canpreview == 1) || ($release.haspreview == 2 && $userdata.canpreview == 1)}
 										<li><a href="#pane7" data-toggle="tab">Preview</a></li>
 									{/if}
 									{if $reVideo.releaseid|@count > 0 || $reAudio|@count > 0}
 										<li><a href="#pane8" data-toggle="tab">MediaInfo</a></li>
 									{/if}
-
+									{if isset($xxx.backdrop) && $xxx.backdrop == 1}
+										<li><a href="#pane9" data-toggle="tab">Back Cover</a></li>
+									{/if}
+									{if isset($game.backdrop) && $game.backdrop == 1}
+									<li><a href="#pane10" data-toggle="tab">Screenshot</a></li>
+									{/if}
 								</ul>
 								<div class="tab-content">
 									<div id="pane1" class="tab-pane active">
-										<div class="row no-gutter">
-											<div class="col-md-3 no-gutter">
-												{if $movie && $release.rageid < 0 && $movie.cover == 1}
+										<div class="row small-gutter-left">
+											<div class="col-md-3 small-gutter-left">
+												{if $movie && $release.videos_id <= 0 && $movie.cover == 1}
 													<img src="{$smarty.const.WWW_TOP}/covers/movies/{$movie.imdbid}-cover.jpg"
 														 width="185"
 														 alt="{$movie.title|escape:"htmlall"}"
 														 data-toggle="modal"
 														 data-target="#modal-image"/>
 												{/if}
-												{if $rage && $release.rageid > 0 && $rage.imgdata != ""}
-													<img src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$rage.id}"
+												{if $show && $release.videos_id > 0 && $show.image != "0"}
+													<img src="{$smarty.const.WWW_TOP}/covers/tvshows/{$release.videos_id}.jpg"
 														 width="185"
-														 alt="{$rage.releasetitle|escape:"htmlall"}"
+														 alt="{$show.title|escape:"htmlall"}"
 														 data-toggle="modal"
 														 data-target="#modal-image"/>
 												{/if}
@@ -185,10 +203,10 @@
 														 data-toggle="modal"
 														 data-target="#modal-image"/>
 												{/if}
-												{if $book && $book.cover == 1}
-													<img src="{$smarty.const.WWW_TOP}/covers/book/{$book.id}.jpg"
+												{if $boo && $boo.cover == 1}
+													<img src="{$smarty.const.WWW_TOP}/covers/book/{$boo.id}.jpg"
 														 width="185"
-														 alt="{$book.title|escape:"htmlall"}"
+														 alt="{$boo.title|escape:"htmlall"}"
 														 data-toggle="modal"
 														 data-target="#modal-image"/>
 												{/if}
@@ -203,7 +221,6 @@
 																data-target="#modal-image"/></a>
 												{/if}
 												<br/><br/>
-
 												<div class="btn-group btn-group-vertical">
 													<a class="btn btn-primary btn-sm btn-success btn-transparent"
 													   href="{$smarty.const.WWW_TOP}/getnzb/{$release.guid}/{$release.searchname|escape:"htmlall"}"><i
@@ -211,7 +228,7 @@
 														Download</a>
 													<button type="button"
 															class="btn btn-primary btn-sm btn-info btn-transparent cartadd">
-														<i class="icon icon_cart fa fa-shopping-cart guid"
+														<i class="icon icon_cart fa fa-shopping-basket guid"
 														   id="guid{$release.guid}"></i> Add to
 														Cart
 													</button>
@@ -232,32 +249,26 @@
 													<p id="demo"></p>
 												</div>
 											</div>
-											<div class="col-md-9 no-gutter">
+											<div class="col-md-9 small-gutter-left">
 												<table cellpadding="0" cellspacing="0"
 													   width="100%">
 													<tbody>
 													<tr valign="top">
 														<td>
-															<table class="table table-condensed table-striped responsive">
+															<table class="data table table-condensed table-striped table-responsive table-hover">
 																<tbody>
-																{if $movie && $release.rageid < 0}
+																{if $movie && $release.videos_id <= 0}
 																	<tr>
 																		<th width="140">Name
 																		</th>
 																		<td>{$movie.title|escape:"htmlall"}</td>
 																	</tr>
 																{/if}
-																{if $rage && $release.rageid > 0}
+																{if $show && $release.videos_id > 0}
 																	<tr>
 																		<th width="140">Name
 																		</th>
-																		<td>{$release.tvtitle|escape:"htmlall"}</td>
-																	</tr>
-																	<tr>
-																		<th width="140">Season /
-																			Episode
-																		</th>
-																		<td>{$release.seriesfull|replace:"S":"Season "|replace:"E":" Episode "}</td>
+																		<td>{$release.title|escape:"htmlall"}</td>
 																	</tr>
 																{/if}
 																{if $xxx}
@@ -272,7 +283,7 @@
 																		</th>
 																		<td>{$xxx.actors}</td>
 																	</tr>
-																	{if $xxx.director != ""}
+																	{if isset($xxx.director) && $xxx.director != ""}
 																		<tr>
 																			<th width="140">
 																				Director
@@ -280,7 +291,7 @@
 																			<td>{$xxx.director}</td>
 																		</tr>
 																	{/if}
-																	{if $xxx.genres != ""}
+																	{if isset($xxx.genres) && $xxx.genres != ""}
 																		<tr>
 																			<th width="140">
 																				Genre
@@ -289,7 +300,7 @@
 																		</tr>
 																	{/if}
 																{/if}
-																{if $movie && $release.rageid < 0}
+																{if $movie && $release.videos_id <= 0}
 																	<tr>
 																		<th width="140">
 																			Starring
@@ -317,29 +328,29 @@
 																		</td>
 																	</tr>
 																{/if}
-																{if $rage && $release.rageid > 0}
-																	{if $rage.genre != ""}
-																		<tr>
-																			<th width="140">
-																				Genre
-																			</th>
-																			<td>{$rage.genre|escape:"htmlall"|replace:"|":", "}</td>
-																		</tr>
-																	{/if}
-																	{if $release.tvairdate != ""}
+																{if $show && $release.videos_id > 0}
+																	{if $release.firstaired != ""}
 																		<tr>
 																			<th width="140">
 																				Aired
 																			</th>
-																			<td>{$release.tvairdate|date_format}</td>
+																			<td>{$release.firstaired|date_format}</td>
 																		</tr>
 																	{/if}
-																	{if $rage.country != ""}
+																	{if $show.publisher != ""}
+																		<tr>
+																			<th width="140">
+																				Network
+																			</th>
+																			<td>{$show.publisher}</td>
+																		</tr>
+																	{/if}
+																	{if $show.countries_id != ""}
 																		<tr>
 																			<th width="140">
 																				Country
 																			</th>
-																			<td>{$rage.country}</td>
+																			<td>{$show.countries_id}</td>
 																		</tr>
 																	{/if}
 																{/if}
@@ -371,63 +382,63 @@
 																		</tr>
 																	{/if}
 																{/if}
-																{if $book}
+																{if $boo}
 																	<tr>
 																		<th width="140">Name
 																		</th>
-																		<td>{$book.title|escape:"htmlall"}</td>
+																		<td>{$boo.title|escape:"htmlall"}</td>
 																	</tr>
 																	<tr>
 																		<th width="140">Author
 																		</th>
-																		<td>{$book.author|escape:"htmlall"}</td>
+																		<td>{$boo.author|escape:"htmlall"}</td>
 																	</tr>
-																	{if $book.ean != ""}
+																	{if $boo.ean != ""}
 																		<tr>
 																			<th width="140">
 																				EAN
 																			</th>
-																			<td>{$book.ean|escape:"htmlall"}</td>
+																			<td>{$boo.ean|escape:"htmlall"}</td>
 																		</tr>
 																	{/if}
-																	{if $book.isbn != ""}
+																	{if $boo.isbn != ""}
 																		<tr>
 																			<th width="140">
 																				ISBN
 																			</th>
-																			<td>{$book.isbn|escape:"htmlall"}</td>
+																			<td>{$boo.isbn|escape:"htmlall"}</td>
 																		</tr>
 																	{/if}
-																	{if $book.pages != ""}
+																	{if $boo.pages != ""}
 																		<tr>
 																			<th width="140">
 																				Pages
 																			</th>
-																			<td>{$book.pages|escape:"htmlall"}</td>
+																			<td>{$boo.pages|escape:"htmlall"}</td>
 																		</tr>
 																	{/if}
-																	{if $book.dewey != ""}
+																	{if $boo.dewey != ""}
 																		<tr>
 																			<th width="140">
 																				Dewey
 																			</th>
-																			<td>{$book.dewey|escape:"htmlall"}</td>
+																			<td>{$boo.dewey|escape:"htmlall"}</td>
 																		</tr>
 																	{/if}
-																	{if $book.publisher != ""}
+																	{if $boo.publisher != ""}
 																		<tr>
 																			<th width="140">
 																				Publisher
 																			</th>
-																			<td>{$book.publisher|escape:"htmlall"}</td>
+																			<td>{$boo.publisher|escape:"htmlall"}</td>
 																		</tr>
 																	{/if}
-																	{if $book.publishdate != ""}
+																	{if $boo.publishdate != ""}
 																		<tr>
 																			<th width="140">
 																				Released
 																			</th>
-																			<td>{$book.publishdate|date_format}</td>
+																			<td>{$boo.publishdate|date_format}</td>
 																		</tr>
 																	{/if}
 																{/if}
@@ -452,6 +463,13 @@
 																	<td>{$release.grabs}
 																		time{if $release.grabs==1}{else}s{/if}</td>
 																</tr>
+																{if $failed != NULL && $failed > 0}
+																<tr>
+																	<th width="140">Failed Download</th>
+																	<td>{$failed}
+																		time{if $failed==1}{else}s{/if}</td>
+																</tr>
+																{/if}
 																<tr>
 																	<th width="140">Password
 																	</th>
@@ -474,8 +492,7 @@
 																	</td>
 																</tr>
 																<tr>
-																	<th width="140">RAR
-																		Contains
+																	<th width="140">RAR Contains
 																	</th>
 																	<td>
 																		<strong>Files:</strong><br/>
@@ -543,7 +560,7 @@
 												{$xxx.trailers}
 											{/if}
 										{/if}
-										{if $movie && $release.rageid < 0}
+										{if $movie && $release.videos_id <= 0}
 											{if $movie.trailer != ''}
 												{$movie.trailer}
 											{/if}
@@ -570,28 +587,28 @@
 						</tr>
 						{/if}
 									</div>
-									<div id="pane5" class="tab-pane">
+									<div id="comments" class="tab-pane">
 										{if $comments|@count > 0}
-											<table class="table table-striped">
-												<tr>
-													<th width="100">User</th>
+											<table class="tdata table table-condensed table-striped table-responsive table-hover">
+												<tr class="{cycle values=",alt"}">
+													<th width="80">User</th>
 													<th>Comment</th>
 												</tr>
-												{foreach from=$comments item=comment}
+												{foreach from=$comments|@array_reverse:true item=comment}
 													<tr>
-														<td width="150">{if $comment.sourceid == 0}
-																<a
-																title="View {$comment.username}'s profile"
-																href="{$smarty.const.WWW_TOP}/profile?name={$comment.username}">{$comment.username}</a>{else}{$comment.username}
-																<br/>
-																<span style="color: #ce0000;">(syndicated)</span>
+														<td class="less" title="{$comment.createddate}">
+															{if !$privateprofiles || $isadmin || $ismod}
+																<a title="View {$comment.username}'s profile" href="{$smarty.const.WWW_TOP}/profile?name={$comment.username}">{$comment.username}</a>
+															{else}
+																{$comment.username}
 															{/if}
-															<br/>{$comment.createddate|date_format}
+															<br/>{$comment.createddate|daysago}
 														</td>
-														<td>
-															{$comment.text|escape:"htmlall"|nl2br}
-														</td>
-													</tr>
+														{if isset($comment.shared) && $comment.shared == 2}
+															<td style="color:#6B2447">{$comment.text|escape:"htmlall"|nl2br}</td>
+														{else}
+															<td>{$comment.text|escape:"htmlall"|nl2br}</td>
+														{/if}
 												{/foreach}
 											</table>
 										{else}
@@ -600,11 +617,10 @@
 											</div>
 										{/if}
 										<form action="" method="post">
-											<label for="txtAddComment">Add Comment</label>:<br/>
-														<textarea class="form-control" id="txtAddComment"
-																  name="txtAddComment" rows="6" cols="100"></textarea>
+											<label for="txtAddComment">Add Comment:</label><br/>
+											<textarea id="txtAddComment" name="txtAddComment" rows="6" cols="60"></textarea>
 											<br/>
-											<input type="submit" value="submit"/>
+											<input class="btn" type="submit" value="Submit"/>
 										</form>
 									</div>
 									{if $release.jpgstatus == 1 && $userdata.canpreview == 1}
@@ -625,7 +641,8 @@
 									{/if}
 									{if $reVideo.releaseid|@count > 0 || $reAudio|@count > 0}
 										<div id="pane8" class="tab-pane">
-											<table style="width:100%;" class="table table-striped table-responsive table-hover">
+											<table style="width:100%;"
+												   class="data table table-condensed table-striped table-responsive table-hover">
 												<tr>
 													<th width="15%"></th>
 													<th>Property</th>
@@ -670,7 +687,8 @@
 													<tr>
 														<td></td>
 														<td>Width x Height</td>
-														<td class="right">{$reVideo.videowidth}x{$reVideo.videoheight}</td>
+														<td class="right">{$reVideo.videowidth}
+															x{$reVideo.videoheight}</td>
 													</tr>
 												{/if}
 												{if $reVideo.videoaspect != ""}
@@ -767,7 +785,22 @@
 											</table>
 										</div>
 									{/if}
-
+									{if isset($xxx.backdrop) && $xxx.backdrop == 1}
+										<div id="pane9" class="tab-pane">
+											<img src="{$smarty.const.WWW_TOP}/covers/xxx/{$xxx.id}-backdrop.jpg"
+												 alt="{$xxx.title|escape:"htmlall"}"
+												 data-toggle="modal"
+												 data-target="#modal-image"/>
+										</div>
+									{/if}
+									{if isset($game.backdrop) && $game.backdrop == 1}
+										<div id="pane10" class="tab-pane">
+											<img src="{$smarty.const.WWW_TOP}/covers/games/{$game.id}-backdrop.jpg"
+												 alt="{$game.title|escape:"htmlall"}"
+												 data-toggle="modal"
+												 data-target="#modal-image"/>
+										</div>
+									{/if}
 								</div>
 							</div>
 							<!-- /.tab-content -->
@@ -779,8 +812,6 @@
 		</div>
 	</div>
 </div>
-</div>
-
 <div class="modal fade modal-image" id="modal-image" tabindex="-1" role="dialog" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -789,13 +820,13 @@
 							class="icons-office-52"></i></button>
 			</div>
 			<div class="modal-body">
-				{if $movie && $release.rageid < 0 && $movie.cover == 1}
+				{if $movie && $release.videos_id <= 0 && $movie.cover == 1}
 					<img src="{$smarty.const.WWW_TOP}/covers/movies/{$movie.imdbid}-cover.jpg"
 						 alt="{$movie.title|escape:"htmlall"}">
 				{/if}
-				{if $rage && $release.rageid > 0 && $rage.imgdata != ""}
-					<img src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$rage.id}"
-						 alt="{$rage.releasetitle|escape:"htmlall"}"/>
+				{if $show && $release.videos_id > 0 && $show.image != "0"}
+					<img src="{$smarty.const.WWW_TOP}/covers/tvshows/{$release.videos_id}.jpg"
+						 alt="{$show.title|escape:"htmlall"}"/>
 				{/if}
 				{if $anidb && $release.anidbid > 0 && $anidb.picture != ""}
 					<img src="{$smarty.const.WWW_TOP}/covers/anime/{$anidb.anidbid}.jpg"
@@ -809,17 +840,21 @@
 					<img src="{$smarty.const.WWW_TOP}/covers/music/{$music.id}.jpg"
 						 alt="{$music.title|escape:"htmlall"}"/>
 				{/if}
-				{if $book && $book.cover == 1}
-					<img src="{$smarty.const.WWW_TOP}/covers/book/{$book.id}.jpg"
-						 alt="{$book.title|escape:"htmlall"}"/>
+				{if $boo && $boo.cover == 1}
+					<img src="{$smarty.const.WWW_TOP}/covers/book/{$boo.id}.jpg"
+						 alt="{$boo.title|escape:"htmlall"}"/>
 				{/if}
-				{if $xxx && $xxx.cover == 1}
+				{if $xxx && $xxx.backdrop == 1}
+					<a href="{$smarty.const.WWW_TOP}/covers/xxx/{$xxx.id}-backdrop.jpg"
+					   class="modal-image_back"><img class="modal-image_back"
+													 src="{$smarty.const.WWW_TOP}/covers/xxx/{$xxx.id}-backdrop.jpg"
+													 alt="{$xxx.title|escape:"htmlall"}"/></a>
+				{elseif $xxx && $xxx.cover == 1}
 					<a href="{$smarty.const.WWW_TOP}/covers/xxx/{$xxx.id}-cover.jpg"
 					   class="modal-image"><img class="modal-image"
 												src="{$smarty.const.WWW_TOP}/covers/xxx/{$xxx.id}-cover.jpg"
 												alt="{$xxx.title|escape:"htmlall"}"/></a>
 				{/if}
-
 			</div>
 		</div>
 	</div>

@@ -96,8 +96,16 @@
 							<span class="label label-info"><a title="View series" href="{$smarty.const.WWW_TOP}/series/{$s.id}">Series</a></span>
 							{if $s.id > 0}
 								<span class="label label-danger">
-									{if $s.source = 1}
+									{if $s.source == 1}
 										<a title="View at TVDB" target="_blank" href="{$site->dereferrer_link}http://thetvdb.com/?tab=series&id={$s.tvdb}">TVDB</a>
+									{else if $s.source == 2}
+										<a title="View at TVMaze" target="_blank" href="{$site->dereferrer_link}http://tvmaze.com/shows/{$s.tvmaze}">TVMaze</a>
+									{else if $s.source == 3}
+										<a title="View at TMDB" target="_blank" href="{$site->dereferrer_link}http://themoviedb.org/tv/{$s.tmdb}">TMDB</a>
+									{else if $s.source == 4}
+										<a title="View at Trakt" target="_blank" href="{$site->dereferrer_link}http://www.trakt.tv/shows/{$s.trakt}">Trakt</a>
+									{else if $s.source == 6}
+										<a title="View at TVRage" target="_blank" href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$s.tvrage}">TVRage</a>
 									{/if}
 								</span>
 								<span class="label label-warning">

@@ -203,18 +203,35 @@ class Nfo
 	{
 		if ($release['id'] > 0 && $this->isNFO($nfo, $release['guid'])) {
 
-			$check = $this->pdo->queryOneRow(sprintf('SELECT id FROM release_nfos WHERE releaseid = %d', $release['id']));
+			$check = $this->pdo->queryOneRow(
+				sprintf('
+					SELECT releaseid
+					FROM release_nfos
+					WHERE releaseid = %d',
+					$release['id']
+				)
+			);
 
 			if ($check === false) {
 				$this->pdo->queryInsert(
-					sprintf('INSERT INTO release_nfos (nfo, releaseid) VALUES (compress(%s), %d)',
+					sprintf('
+						INSERT INTO release_nfos (nfo, releaseid)
+						VALUES (compress(%s), %d)',
 						$this->pdo->escapeString($nfo),
 						$release['id']
 					)
 				);
 			}
 
-			$this->pdo->queryExec(sprintf('UPDATE releases SET nfostatus = %d WHERE id = %d', self::NFO_FOUND, $release['id']));
+			$this->pdo->queryExec(
+				sprintf('
+					UPDATE releases
+					SET nfostatus = %d
+					WHERE id = %d',
+					self::NFO_FOUND,
+					$release['id']
+				)
+			);
 
 			if (!isset($release['completion'])) {
 				$release['completion'] = 0;
@@ -354,8 +371,8 @@ class Nfo
 					$cp = 'COMPRESS(%s)';
 					$nc = $this->pdo->escapeString($fetchedBinary);
 
-					$ckreleaseid = $this->pdo->queryOneRow(sprintf('SELECT id FROM release_nfos WHERE releaseid = %d', $arr['id']));
-					if (!isset($ckreleaseid['id'])) {
+					$ckreleaseid = $this->pdo->queryOneRow(sprintf('SELECT releaseid FROM release_nfos WHERE releaseid = %d', $arr['id']));
+					if (!isset($ckreleaseid['releaseid'])) {
 						$this->pdo->queryInsert(sprintf('INSERT INTO release_nfos (nfo, releaseid) VALUES (' . $cp . ', %d)', $nc, $arr['id']));
 					}
 					$this->pdo->queryExec(sprintf('UPDATE releases SET nfostatus = %d WHERE id = %d', self::NFO_FOUND, $arr['id']));
