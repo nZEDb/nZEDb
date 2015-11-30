@@ -9,6 +9,15 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 2015-10-29 niel
 	Mrg: dev => next-master to prepare for updating master.
 
+2015-11-29 bart39
+	Fix: missing 'AND' from browseBy.
+2015-11-28 bart39
+	Chg: update readme - postgres NOT supported.
+	Chg: Also remove tv schedule update from threaded script.
+2015-11-28 ruhllatio
+	Mrg: PR #1977, from darius - Fix the full movie view in omicron/charisma templates
+	Mrg: PR #1979, from Wally73 - Update simple.sh to remove tv schedule script default
+	Mrg: PR #1980, from kaibosh - Change default to PHP version of scripts rather than python ones in threaded screen script
 2015-11-24 ruhllatio
 	Mrg: PR #1973, from darius - Adjust omicron/charisma templates to failed releases count fix
 2015-11-23 ruhllatio

@@ -79,7 +79,7 @@
 										   value="Download NZBs"/>
 									<input type="button"
 										   class="nzb_multi_operations_cart btn btn-sm btn-info"
-										   value="Add to Cart"/>
+										   value="Send to my Download Basket"/>
 									{if isset($sabintegrated)}
 										<input type="button"
 											   class="nzb_multi_operations_sab btn btn-sm btn-primary"
@@ -139,7 +139,7 @@
 													{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
 													{foreach from=$msplits item=m name=loop}
 													{if $smarty.foreach.loop.first}
-													<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}"><img
+													<a href="{$smarty.const.WWW_TOP}/movies/?imdb={$result.imdbid}"><img
 																class="cover"
 																src="{if $result.cover == 1}{$smarty.const.WWW_TOP}covers/movies/{$result.imdbid}-cover.jpg{else}{$smarty.const.WWW_TOP}themes_shared/images/no-cover.png{/if}"
 																width="100" border="0"
@@ -162,7 +162,7 @@
 												</div>
 												<div class="col-md-9 small-gutter-left">
 																<span class="release-title"><a class="text-muted"
-																							   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$result.title|escape:"htmlall"}</a></span>
+																							   href="{$smarty.const.WWW_TOP}/movies/?imdb={$result.imdbid}">{$result.title|escape:"htmlall"}</a></span>
 													<div class="release-subtitle">{if $result.genre != ''}
 															<b>Genre: </b>
 															{$result.genre}, {/if}</div>
@@ -193,21 +193,21 @@
 														<div>
 															<a role="button" class="btn btn-default btn-xs"
 															   href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}|escape:"htmlall"}"><i
-																		class="fa fa-download"></i><span
-																		class="badge"> {$mgrabs[$m@index]}
-																	Grab{if $mgrabs[$m@index] != 1}s{/if}</span></a>
+																	class="fa fa-cloud-download"></i><span
+																	class="badge"> {$mgrabs[$m@index]}
+																Grab{if $mgrabs[$m@index] != 1}s{/if}</span></a>
 															<a role="button" class="btn btn-default btn-xs"
 															   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/#comments"><i
 																		class="fa fa-comment-o"></i><span
 																		class="badge"> {$mcomments[$m@index]}
 																	Comment{if $mcomments[$m@index] != 1}s{/if}</span></a>
 															<span class="btn btn-hover btn-default btn-xs icon_cart text-muted"
-																  title="Add to Cart"><i
+																  title="Send to my Download Basket"><i
 																		class="fa fa-shopping-basket"></i></span>
 															{if isset($sabintegrated)}
 																<span class="btn btn-hover btn-default btn-xs icon_sab text-muted"
 																	  title="Send to my Queue"><i
-																			class="fa fa-send"></i></span>
+																			class="fa fa-share"></i></span>
 															{/if}
 															{if $cpurl != '' && $cpapi != ''}
 																<span class="btn btn-hover btn-default btn-xs sendtocouch text-muted"
@@ -216,7 +216,7 @@
 																	  rel="{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}"
 																	  name="CP{$result.imdbid}"
 																	  title="Add to CouchPotato"
-																		><i class="fa fa-send-o"></i></span>
+																><i class="fa fa-share"></i></span>
 															{/if}
 															{if $mfailed[$m@index] > 0}
 																<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
@@ -257,7 +257,7 @@
 													{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
 													{foreach from=$msplits item=m name=loop}
 													{if $smarty.foreach.loop.first}
-													<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}"><img
+													<a href="{$smarty.const.WWW_TOP}/movies/?imdb={$result.imdbid}"><img
 																class="cover"
 																src="{if $result.cover == 1}{$smarty.const.WWW_TOP}covers/movies/{$result.imdbid}-cover.jpg{else}{$smarty.const.WWW_TOP}themes_shared/images/no-cover.png{/if}"
 																width="100" border="0"
@@ -280,7 +280,7 @@
 												</div>
 												<div class="col-md-9 small-gutter-left">
 																<span class="release-title"><a class="text-muted"
-																							   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$result.title|escape:"htmlall"}</a></span>
+																							   href="{$smarty.const.WWW_TOP}/movies/?imdb={$result.imdbid}">{$result.title|escape:"htmlall"}</a></span>
 													<div class="release-subtitle">{if $result.genre != ''}
 															<b>Genre: </b>
 															{$result.genre}, {/if}</div>
@@ -311,30 +311,30 @@
 														<div>
 															<a role="button" class="btn btn-default btn-xs"
 															   href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}|escape:"htmlall"}"><i
-																		class="fa fa-download"></i><span
-																		class="badge"> {$mgrabs[$m@index]}
-																	Grab{if $mgrabs[$m@index] != 1}s{/if}</span></a>
+																	class="fa fa-cloud-download"></i><span
+																	class="badge"> {$mgrabs[$m@index]}
+																Grab{if $mgrabs[$m@index] != 1}s{/if}</span></a>
 															<a role="button" class="btn btn-default btn-xs"
 															   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/#comments"><i
 																		class="fa fa-comment-o"></i><span
 																		class="badge"> {$mcomments[$m@index]}
 																	Comment{if $mcomments[$m@index] != 1}s{/if}</span></a>
 															<span class="btn btn-hover btn-default btn-xs icon icon_cart text-muted"
-																  title="Add to Cart"><i
+																  title="Send to my Download Basket"><i
 																		class="fa fa-shopping-basket"></i></span>
 															{if isset($sabintegrated)}
 																<span class="btn btn-hover btn-default btn-xs icon icon_sab text-muted"
 																	  title="Send to my Queue"><i
-																			class="fa fa-send"></i></span>
+																			class="fa fa-share"></i></span>
 															{/if}
 															{if $cpurl != '' && $cpapi != ''}
 																<span class="btn btn-hover btn-default btn-xs sendtocouch text-muted"
-																		target="blackhole"
-																		href="javascript:"
-																		rel="{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}"
-																		name="CP{$result.imdbid}"
-																		title="Add to CouchPotato"
-																		><i class="fa fa-send-o"></i></span>
+																	  target="blackhole"
+																	  href="javascript:"
+																	  rel="{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}"
+																	  name="CP{$result.imdbid}"
+																	  title="Add to CouchPotato"
+																><i class="fa fa-share"></i></span>
 															{/if}
 															{if $mfailed[$m@index] > 0}
 																<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
@@ -367,7 +367,7 @@
 										   value="Download NZBs"/>
 									<input type="button"
 										   class="nzb_multi_operations_cart btn btn-sm btn-info"
-										   value="Add to Cart"/>
+										   value="Send to my Download Basket"/>
 									{if isset($sabintegrated)}
 										<input type="button"
 											   class="nzb_multi_operations_sab btn btn-sm btn-primary"
@@ -386,7 +386,7 @@
 												rel="{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}"
 												name="CP{$result.imdbid}"
 												title="Add to CouchPotato"
-												><img
+										><img
 													src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/couch.png"></a>
 									{/if}
 									{if isset($isadmin)}

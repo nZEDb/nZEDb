@@ -69,7 +69,7 @@ do
 	then
 		LASTOPTIMIZE2=`date +%s`
 		echo "Updating schedules..."
-		$PHP ${NZEDB_PATH}/update_tvschedule.php
+		#$PHP ${NZEDB_PATH}/update_tvschedule.php
 		$PHP ${NZEDB_PATH}/update_theaters.php
 	fi
 
