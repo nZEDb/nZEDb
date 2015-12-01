@@ -664,9 +664,7 @@ class ProcessAdditional
 				false
 			);
 
-			if ($this->_showCLIReleaseID) {
-				cli_set_process_title($this->_showCLIReleaseID . $this->_release['id']);
-			}
+			cli_set_process_title($this->_showCLIReleaseID . $this->_release['id']);
 
 			// Create folder to store temporary files.
 			if ($this->_createTempFolder() === false) {
