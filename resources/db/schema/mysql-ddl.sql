@@ -613,32 +613,32 @@ CREATE TABLE predb_hashes (
 DROP TABLE IF EXISTS predb_imports;
 CREATE TABLE predb_imports (
   title      VARCHAR(255)
-             COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+               COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   nfo        VARCHAR(255)
-             COLLATE utf8_unicode_ci          DEFAULT NULL,
+               COLLATE utf8_unicode_ci          DEFAULT NULL,
   size       VARCHAR(50)
-             COLLATE utf8_unicode_ci          DEFAULT NULL,
+               COLLATE utf8_unicode_ci          DEFAULT NULL,
   category   VARCHAR(255)
-             COLLATE utf8_unicode_ci          DEFAULT NULL,
+               COLLATE utf8_unicode_ci          DEFAULT NULL,
   predate    DATETIME                         DEFAULT NULL,
   source     VARCHAR(50)
-             COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+               COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   requestid  INT(10) UNSIGNED        NOT NULL DEFAULT '0',
   group_id   INT(10) UNSIGNED        NOT NULL DEFAULT '0'
-  COMMENT 'FK to groups',
+    COMMENT 'FK to groups',
   nuked      TINYINT(1)              NOT NULL DEFAULT '0'
-  COMMENT 'Is this pre nuked? 0 no 2 yes 1 un nuked 3 mod nuked',
+    COMMENT 'Is this pre nuked? 0 no 2 yes 1 un nuked 3 mod nuked',
   nukereason VARCHAR(255)
-             COLLATE utf8_unicode_ci          DEFAULT NULL
+               COLLATE utf8_unicode_ci          DEFAULT NULL
   COMMENT 'If this pre is nuked, what is the reason?',
   files      VARCHAR(50)
-             COLLATE utf8_unicode_ci          DEFAULT NULL
+               COLLATE utf8_unicode_ci          DEFAULT NULL
   COMMENT 'How many files does this pre have ?',
   filename   VARCHAR(255)
-             COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+               COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   searched   TINYINT(1)              NOT NULL DEFAULT '0',
   groupname  VARCHAR(255)
-             COLLATE utf8_unicode_ci          DEFAULT NULL
+               COLLATE utf8_unicode_ci          DEFAULT NULL
 )
   ENGINE =MYISAM
   DEFAULT CHARSET =utf8
@@ -719,15 +719,15 @@ CREATE TABLE         releases (
   COLLATE         = utf8_unicode_ci
   AUTO_INCREMENT  = 1
   PARTITION BY RANGE (categoryid) (
-  PARTITION unused  VALUES LESS THAN (1000),
-  PARTITION console VALUES LESS THAN (2000),
-  PARTITION movies  VALUES LESS THAN (3000),
-  PARTITION audio   VALUES LESS THAN (4000),
-  PARTITION pc      VALUES LESS THAN (5000),
-  PARTITION tv      VALUES LESS THAN (6000),
-  PARTITION xxx     VALUES LESS THAN (7000),
-  PARTITION misc    VALUES LESS THAN (8000),
-  PARTITION books   VALUES LESS THAN (9000)
+    PARTITION unused  VALUES LESS THAN (1000),
+    PARTITION console VALUES LESS THAN (2000),
+    PARTITION movies  VALUES LESS THAN (3000),
+    PARTITION audio   VALUES LESS THAN (4000),
+    PARTITION pc      VALUES LESS THAN (5000),
+    PARTITION tv      VALUES LESS THAN (6000),
+    PARTITION xxx     VALUES LESS THAN (7000),
+    PARTITION misc    VALUES LESS THAN (8000),
+    PARTITION books   VALUES LESS THAN (9000)
   );
 
 
@@ -956,7 +956,7 @@ DROP TABLE IF EXISTS tv_info;
 CREATE TABLE tv_info (
   videos_id MEDIUMINT(11) UNSIGNED  NOT NULL DEFAULT '0' COMMENT 'FK to video.id',
   summary   TEXT          CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Description/summary of the show.',
-  publisher VARCHAR(50)  CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'The channel/network of production/release (ABC, BBC, Showtime, etc.).',
+  publisher VARCHAR(50)   CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'The channel/network of production/release (ABC, BBC, Showtime, etc.).',
   localzone VARCHAR(50)   CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT 'The linux tz style identifier',
   image     TINYINT(1)    UNSIGNED  NOT NULL DEFAULT '0' COMMENT 'Does the video have a cover image?',
   PRIMARY KEY          (videos_id),
@@ -1231,7 +1231,7 @@ DELIMITER $$
 CREATE TRIGGER check_insert BEFORE INSERT ON releases FOR EACH ROW
   BEGIN
     IF NEW.searchname REGEXP '[a-fA-F0-9]{32}' OR NEW.name REGEXP '[a-fA-F0-9]{32}'
-    THEN SET NEW.ishashed = 1;
+      THEN SET NEW.ishashed = 1;
     ELSEIF NEW.name REGEXP '^\\[ ?([[:digit:]]{4,6}) ?\\]|^REQ\s*([[:digit:]]{4,6})|^([[:digit:]]{4,6})-[[:digit:]]{1}\\['
       THEN SET NEW.isrequestid = 1;
     END IF;
@@ -1240,7 +1240,7 @@ CREATE TRIGGER check_insert BEFORE INSERT ON releases FOR EACH ROW
 CREATE TRIGGER check_update BEFORE UPDATE ON releases FOR EACH ROW
   BEGIN
     IF NEW.searchname REGEXP '[a-fA-F0-9]{32}' OR NEW.name REGEXP '[a-fA-F0-9]{32}'
-    THEN SET NEW.ishashed = 1;
+      THEN SET NEW.ishashed = 1;
     ELSEIF NEW.name REGEXP '^\\[ ?([[:digit:]]{4,6}) ?\\]|^REQ\s*([[:digit:]]{4,6})|^([[:digit:]]{4,6})-[[:digit:]]{1}\\['
       THEN SET NEW.isrequestid = 1;
     END IF;
@@ -1249,14 +1249,14 @@ CREATE TRIGGER check_update BEFORE UPDATE ON releases FOR EACH ROW
 CREATE TRIGGER check_rfinsert BEFORE INSERT ON release_files FOR EACH ROW
   BEGIN
     IF NEW.name REGEXP '[a-fA-F0-9]{32}'
-    THEN SET NEW.ishashed = 1;
+      THEN SET NEW.ishashed = 1;
     END IF;
   END; $$
 
 CREATE TRIGGER check_rfupdate BEFORE UPDATE ON release_files FOR EACH ROW
   BEGIN
     IF NEW.name REGEXP '[a-fA-F0-9]{32}'
-    THEN SET NEW.ishashed = 1;
+      THEN SET NEW.ishashed = 1;
     END IF;
   END; $$
 
@@ -1268,16 +1268,16 @@ CREATE TRIGGER insert_search AFTER INSERT ON releases FOR EACH ROW
 CREATE TRIGGER update_search AFTER UPDATE ON releases FOR EACH ROW
   BEGIN
     IF NEW.guid != OLD.guid
-    THEN UPDATE release_search_data SET guid = NEW.guid WHERE releaseid = OLD.id;
+      THEN UPDATE release_search_data SET guid = NEW.guid WHERE releaseid = OLD.id;
     END IF;
     IF NEW.name != OLD.name
-    THEN UPDATE release_search_data SET name = NEW.name WHERE releaseid = OLD.id;
+      THEN UPDATE release_search_data SET name = NEW.name WHERE releaseid = OLD.id;
     END IF;
     IF NEW.searchname != OLD.searchname
-    THEN UPDATE release_search_data SET searchname = NEW.searchname WHERE releaseid = OLD.id;
+      THEN UPDATE release_search_data SET searchname = NEW.searchname WHERE releaseid = OLD.id;
     END IF;
     IF NEW.fromname != OLD.fromname
-    THEN UPDATE release_search_data SET fromname = NEW.fromname WHERE releaseid = OLD.id;
+      THEN UPDATE release_search_data SET fromname = NEW.fromname WHERE releaseid = OLD.id;
     END IF;
   END; $$
 
@@ -1294,9 +1294,9 @@ CREATE TRIGGER insert_hashes AFTER INSERT ON predb FOR EACH ROW
 CREATE TRIGGER update_hashes AFTER UPDATE ON predb FOR EACH ROW
   BEGIN
     IF NEW.title != OLD.title
-    THEN
-      DELETE FROM predb_hashes WHERE hash IN ( UNHEX(md5(OLD.title)), UNHEX(md5(md5(OLD.title))), UNHEX(sha1(OLD.title)) ) AND pre_id = OLD.id;
-      INSERT INTO predb_hashes (hash, pre_id) VALUES ( UNHEX(MD5(NEW.title)), NEW.id ), ( UNHEX(MD5(MD5(NEW.title))), NEW.id ), ( UNHEX(SHA1(NEW.title)), NEW.id );
+      THEN
+         DELETE FROM predb_hashes WHERE hash IN ( UNHEX(md5(OLD.title)), UNHEX(md5(md5(OLD.title))), UNHEX(sha1(OLD.title)) ) AND pre_id = OLD.id;
+         INSERT INTO predb_hashes (hash, pre_id) VALUES ( UNHEX(MD5(NEW.title)), NEW.id ), ( UNHEX(MD5(MD5(NEW.title))), NEW.id ), ( UNHEX(SHA1(NEW.title)), NEW.id );
     END IF;
   END; $$
 
@@ -1307,7 +1307,7 @@ CREATE TRIGGER delete_hashes AFTER DELETE ON predb FOR EACH ROW
 
 CREATE TRIGGER insert_MD5 BEFORE INSERT ON release_comments FOR EACH ROW
   SET
-  NEW.text_hash = MD5(NEW.text);
-$$
+    NEW.text_hash = MD5(NEW.text);
+    $$
 
 DELIMITER ;
