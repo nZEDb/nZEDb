@@ -131,44 +131,6 @@ class XXX
 	}
 
 	/**
-	 * Get count of movies for movies browse page.
-	 *
-	 * @param       $cat
-	 * @param       $maxAge
-	 * @param array $excludedCats
-	 *
-	 * @return int
-	 */
-	public function getXXXCount($cat, $maxAge = -1, $excludedCats = [])
-	{
-		$catsrch = '';
-		if (count($cat) > 0 && $cat[0] != -1) {
-			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
-		}
-
-		$res = $this->pdo->query(
-			sprintf("
-				SELECT COUNT(DISTINCT r.xxxinfo_id) AS num
-				FROM releases r
-				INNER JOIN xxxinfo xxx ON xxx.id = r.xxxinfo_id
-				WHERE r.nzbstatus = 1
-				AND xxx.title != ''
-				AND r.passwordstatus %s
-				AND %s %s %s %s ",
-				$this->showPasswords,
-				$this->getBrowseBy(),
-				$catsrch,
-				($maxAge > 0
-					? 'AND r.postdate > NOW() - INTERVAL ' . $maxAge . 'DAY '
-					: ''
-				),
-				(count($excludedCats) > 0 ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : '')
-			), true, nZEDb_CACHE_EXPIRY_MEDIUM
-		);
-		return (isset($res[0]["num"]) ? $res[0]["num"] : 0);
-	}
-
-	/**
 	 * Get movie releases with covers for xxx browse page.
 	 *
 	 * @param       $cat
@@ -189,9 +151,11 @@ class XXX
 
 		$order = $this->getXXXOrder($orderBy);
 
-		$xxxmovies = $this->pdo->query(
+		$xxxmovies = $this->pdo->queryCalc(
 			sprintf("
-				SELECT xxx.id
+				SELECT SQL_CALC_FOUND_ROWS
+					xxx.id,
+					GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id
 				FROM xxxinfo xxx
 				LEFT JOIN releases r ON xxx.id = r.xxxinfo_id
 				WHERE r.nzbstatus = 1
@@ -214,11 +178,12 @@ class XXX
 			), true, nZEDb_CACHE_EXPIRY_MEDIUM
 		);
 
-		$xxxIDs = false;
+		$xxxIDs = $releaseIDs = false;
 
-		if (is_array($xxxmovies)) {
-			foreach ($xxxmovies AS $xxx => $id) {
+		if (is_array($xxxmovies['result'])) {
+			foreach ($xxxmovies['result'] AS $xxx => $id) {
 				$xxxIDs[] = $id['id'];
+				$releaseIDs[] = $id['grp_release_id'];
 			}
 		}
 
@@ -263,7 +228,11 @@ class XXX
 			$order[0],
 			$order[1]
 		);
-		return $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
+		$return = $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
+		if (!empty($return)){
+			$return[0]['_totalcount'] = (isset($xxxmovies['total']) ? $xxxmovies['total'] : 0);
+		}
+		return $return;
 	}
 
 	/**

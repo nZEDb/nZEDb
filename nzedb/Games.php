@@ -119,6 +119,11 @@ class Games
 		//$this->cleangames = ($this->pdo->getSetting('lookupgames') == 2) ? 'AND isrenamed = 1' : '';
 	}
 
+	/**
+	 * @param $id
+	 *
+	 * @return array|bool
+	 */
 	public function getGamesInfo($id)
 	{
 		return $this->pdo->queryOneRow(
@@ -132,6 +137,11 @@ class Games
 		);
 	}
 
+	/**
+	 * @param $title
+	 *
+	 * @return array|bool
+	 */
 	public function getGamesInfoByName($title)
 	{
 		return $this->pdo->queryOneRow(
@@ -144,6 +154,12 @@ class Games
 		);
 	}
 
+	/**
+	 * @param $start
+	 * @param $num
+	 *
+	 * @return array
+	 */
 	public function getRange($start, $num)
 	{
 		return $this->pdo->query(
@@ -154,39 +170,23 @@ class Games
 		);
 	}
 
+	/**
+	 * @return int
+	 */
 	public function getCount()
 	{
 		$res = $this->pdo->queryOneRow("SELECT COUNT(id) AS num FROM gamesinfo");
 		return ($res === false ? 0 : $res["num"]);
 	}
 
-	public function getGamesCount($cat, $maxage = -1, $excludedcats = [])
-	{
-		$catsrch = '';
-		if (count($cat) > 0 && $cat[0] != -1) {
-			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
-		}
-
-		$res = $this->pdo->query(
-			sprintf("
-				SELECT COUNT(DISTINCT r.gamesinfo_id) AS num
-				FROM releases r
-				INNER JOIN gamesinfo con ON con.id = r.gamesinfo_id
-				WHERE r.nzbstatus = 1
-				AND con.title != ''
-				AND con.cover = 1
-				AND r.passwordstatus %s
-				AND %s %s %s %s",
-				Releases::showPasswords($this->pdo),
-				$this->getBrowseBy(),
-				$catsrch,
-				($maxage > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage) : ''),
-				(count($excludedcats) > 0 ? " AND r.categoryid NOT IN (" . implode(",", $excludedcats) . ")" : '')
-			), true, nZEDb_CACHE_EXPIRY_MEDIUM
-		);
-		return (isset($res[0]["num"]) ? $res[0]["num"] : 0);
-	}
-
+	/**
+	 * @param       $cat
+	 * @param       $start
+	 * @param       $num
+	 * @param       $orderby
+	 * @param int   $maxage
+	 * @param array $excludedcats
+	 */
 	public function getGamesRange($cat, $start, $num, $orderby, $maxage = -1, $excludedcats = [])
 	{
 		$browseby = $this->getBrowseBy();
@@ -209,9 +209,10 @@ class Games
 
 		$order = $this->getGamesOrder($orderby);
 
-		$games = $this->pdo->query(
+		$games = $this->pdo->queryCalc(
 			sprintf("
-				SELECT con.id
+				SELECT SQL_CALC_FOUND_ROWS con.id,
+					GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id
 				FROM gamesinfo con
 				LEFT JOIN releases r ON con.id = r.gamesinfo_id
 				WHERE r.nzbstatus = 1
@@ -232,15 +233,16 @@ class Games
 			), true, nZEDb_CACHE_EXPIRY_MEDIUM
 		);
 
-		$gameIDs = false;
+		$gameIDs = $releaseIDs = false;
 
-		if (is_array($games)) {
-			foreach ($games AS $game => $id) {
+		if (is_array($games['result'])) {
+			foreach ($games['result'] AS $game => $id) {
 				$gameIDs[] = $id['id'];
+				$releaseIDs[] = $id['grp_release_id'];
 			}
 		}
 
-		return $this->pdo->query(
+		$return = $this->pdo->query(
 			sprintf("
 				SELECT
 					GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id,
@@ -249,38 +251,44 @@ class Games
 					GROUP_CONCAT(r.passwordstatus ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_password,
 					GROUP_CONCAT(r.guid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_guid,
 					GROUP_CONCAT(rn.releaseid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid,
-					GROUP_CONCAT(groups.name ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grpname,
+					GROUP_CONCAT(g.name ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grpname,
 					GROUP_CONCAT(r.searchname ORDER BY r.postdate DESC SEPARATOR '#') AS grp_release_name,
 					GROUP_CONCAT(r.postdate ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_postdate,
 					GROUP_CONCAT(r.size ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_size,
 					GROUP_CONCAT(r.totalpart ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_totalparts,
 					GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments,
 					GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs,
-				con.*, YEAR (con.releasedate) as year, r.gamesinfo_id, groups.name AS group_name,
+					GROUP_CONCAT(df.failed ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_failed,
+				con.*, YEAR (con.releasedate) as year, r.gamesinfo_id, g.name AS group_name,
 				rn.releaseid AS nfoid
 				FROM releases r
-				LEFT OUTER JOIN groups ON groups.id = r.group_id
+				LEFT OUTER JOIN groups g ON g.id = r.group_id
 				LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
+				LEFT OUTER JOIN dnzb_failures df ON df.release_id = r.id
 				INNER JOIN gamesinfo con ON con.id = r.gamesinfo_id
-				WHERE r.nzbstatus = 1
-				AND con.id IN (%s)
-				AND con.title != ''
-				AND r.passwordstatus %s
-				AND %s %s %s %s
+				WHERE con.id IN (%s)
+				AND r.id IN (%s)
+				AND %s
 				GROUP BY con.id
 				ORDER BY %s %s",
 				(is_array($gameIDs) ? implode(',', $gameIDs) : -1),
-				Releases::showPasswords($this->pdo),
-				$browseby,
+				(is_array($releaseIDs) ? implode(',', $releaseIDs) : -1),
 				$catsrch,
-				$maxage,
-				$exccatlist,
 				$order[0],
 				$order[1]
 			), true, nZEDb_CACHE_EXPIRY_MEDIUM
 		);
+		if (!empty($return)) {
+			$return[0]['_totalcount'] = (isset($games['total']) ? $games['total'] : 0);
+		}
+		return $return;
 	}
 
+	/**
+	 * @param $orderby
+	 *
+	 * @return array
+	 */
 	public function getGamesOrder($orderby)
 	{
 		$order = ($orderby == '') ? 'r.postdate' : $orderby;
@@ -314,6 +322,9 @@ class Games
 		return [$orderfield, $ordersort];
 	}
 
+	/**
+	 * @return array
+	 */
 	public function getGamesOrdering()
 	{
 		return [
@@ -323,11 +334,17 @@ class Games
 		];
 	}
 
+	/**
+	 * @return array
+	 */
 	public function getBrowseByOptions()
 	{
 		return ['title' => 'title', 'genre' => 'genre_id', 'year' => 'year'];
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getBrowseBy()
 	{
 		$browseby = ' ';
@@ -348,6 +365,12 @@ class Games
 		return $browseby;
 	}
 
+	/**
+	 * @param $data
+	 * @param $field
+	 *
+	 * @return string
+	 */
 	public function makeFieldLinks($data, $field)
 	{
 		$tmpArr = explode(', ', $data[$field]);
@@ -772,7 +795,6 @@ class Games
 	 *
 	 * @return bool|mixed Array if no result False
 	 */
-
 	public function fetchGiantBombID($title = '')
 	{
 		$obj = new \GiantBomb($this->publicKey);
@@ -838,6 +860,9 @@ class Games
 		return $result;
 	}
 
+	/**
+	 * Main function for retrieving and processing PC games titles
+	 */
 	public function processGamesReleases()
 	{
 		$res = $this->pdo->queryDirect(

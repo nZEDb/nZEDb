@@ -62,7 +62,7 @@
 										   value="Download NZBs"/>
 									<input type="button"
 										   class="nzb_multi_operations_cart btn btn-sm btn-info"
-										   value="Add to Cart"/>
+										   value="Send to my Download Basket"/>
 									{if isset($sabintegrated)}
 										<input type="button"
 											   class="nzb_multi_operations_sab btn btn-sm btn-primary"
@@ -113,7 +113,7 @@
 													{assign var="mtotalparts" value=","|explode:$result.grp_release_totalparts}
 													{assign var="mcomments" value=","|explode:$result.grp_release_comments}
 													{assign var="mgrabs" value=","|explode:$result.grp_release_grabs}
-													{assign var="mfailed" value=","|explode:$result.failed}
+													{assign var="mfailed" value=","|explode:$result.grp_release_failed}
 													{assign var="mpass" value=","|explode:$result.grp_release_password}
 													{assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
 													{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
@@ -129,62 +129,55 @@
 													</a>
 													{if $result.classused == "ade"}
 														<a
-																target="_blank"
-																href="{$site->dereferrer_link}{$result.directurl}"
-																name="viewade{$result.title}"
-																title="View AdultdvdEmpire page"
-																><img
-																	src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/ade.png"></a>
+															target="_blank"
+															href="{$site->dereferrer_link}{$result.directurl}"
+															name="viewade{$result.title}"
+															title="View AdultdvdEmpire page">
+															<img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/ade.png"></a>
 													{else}
 														<a
-																target="_blank"
-																href="{$site->dereferrer_link}http://www.adultdvdempire.com/dvd/search?q={$result.title}"
-																name="viewade{$result.title}"
-																title="Search AdultdvdEmpire page"
-																><img
-																	src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/ade.png"></a>
+															target="_blank"
+															href="{$site->dereferrer_link}http://www.adultdvdempire.com/dvd/search?q={$result.title}"
+															name="viewade{$result.title}"
+															title="Search AdultdvdEmpire page">
+															<img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/ade.png"></a>
 													{/if}
 													{if $result.classused == "hm"}
 														<a
-																target="_blank"
-																href="{$site->dereferrer_link}{$result.directurl}"
-																name="viewhm{$result.title}"
-																title="View Hot Movies page"
-																><img
-																	src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/hotmovies.png"></a>
+															target="_blank"
+															href="{$site->dereferrer_link}{$result.directurl}"
+															name="viewhm{$result.title}"
+															title="View Hot Movies page">
+															<img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/hotmovies.png"></a>
 													{else}
 														<a
-																target="_blank"
-																href="{$site->dereferrer_link}http://www.hotmovies.com/search.php?words={$result.title}&complete=on&search_in=video_title"
-																name="viewhm{$result.title}"
-																title="Search Hot Movies page"
-																><img
-																	src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/hotmovies.png"></a>
+															target="_blank"
+															href="{$site->dereferrer_link}http://www.hotmovies.com/search.php?words={$result.title}&complete=on&search_in=video_title"
+															name="viewhm{$result.title}"
+															title="Search Hot Movies page">
+															<img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/hotmovies.png"></a>
 													{/if}
 													{if $result.classused == "pop"}
 														<a
-																target="_blank"
-																href="{$site->dereferrer_link}{$result.directurl}"
-																name="viewpop{$result.id}"
-																title="View Popporn page"
-																><img
-																	src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/popporn.png"></a>
+															target="_blank"
+															href="{$site->dereferrer_link}{$result.directurl}"
+															name="viewpop{$result.id}"
+															title="View Popporn page">
+															<img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/popporn.png"></a>
 													{else}
 														<a
-																target="_blank"
-																href="{$site->dereferrer_link}http://www.popporn.com/results/index.cfm?v=4&g=0&searchtext={$result.title}"
-																name="viewpop{$result.id}"
-																title="Search Popporn page"
-																><img
-																	src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/popporn.png"></a>
+															target="_blank"
+															href="{$site->dereferrer_link}http://www.popporn.com/results/index.cfm?v=4&g=0&searchtext={$result.title}"
+															name="viewpop{$result.id}"
+															title="Search Popporn page">
+															<img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/popporn.png"></a>
 													{/if}
 													<a
 															target="_blank"
 															href="{$site->dereferrer_link}http://www.iafd.com/results.asp?searchtype=title&searchstring={$result.title}"
 															name="viewiafd{$result.title}"
-															title="Search Internet Adult Film Database"
-															><img
-																src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/iafd.png"></a>
+															title="Search Internet Adult Film Database">
+														<img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/iafd.png"></a>
 													{if $mnfo[$m@index] > 0}<a
 														href="{$smarty.const.WWW_TOP}/nfo/{$mguid[$m@index]}|escape:"htmlall"}"
 														title="View NFO" class="label label-default"
@@ -194,7 +187,7 @@
 													   title="Browse releases in {$result.grp_release_grpname|replace:"alt.binaries":"a.b"}">Group</a>
 													{if $mfailed[$m@index] > 0}
 														<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
-															<i class="fa fa-thumbs-o-up"></i> {$mgrabs[$m@index]} Grab{if {$mgrabs[$m@index]} != 1}s{/if} / <i class="fa fa-thumbs-o-down"></i> {$mfailed[$m@index]}Failed Download{if {$mfailed[$m@index]} != 1}s{/if}</span>
+															<i class="fa fa-thumbs-o-up"></i> {$mgrabs[$m@index]} Grab{if {$mgrabs[$m@index]} != 1}s{/if} / <i class="fa fa-thumbs-o-down"></i> {$mfailed[$m@index]}Failed Download{if {$mfailed[$m@index]} > 1}s{/if}</span>
 													{/if}
 												</div>
 												<div class="col-md-9 small-gutter-left">
@@ -222,21 +215,21 @@
 														<div>
 															<a role="button" class="btn btn-default btn-xs"
 															   href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}|escape:"htmlall"}"><i
-																		class="fa fa-download"></i><span
-																		class="badge"> {$mgrabs[$m@index]}
-																	Grab{if $mgrabs[$m@index] != 1}s{/if}</span></a>
+																	class="fa fa-cloud-download"></i><span
+																	class="badge"> {$mgrabs[$m@index]}
+																Grab{if $mgrabs[$m@index] != 1}s{/if}</span></a>
 															<a role="button" class="btn btn-default btn-xs"
 															   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/#comments"><i
 																		class="fa fa-comment-o"></i><span
 																		class="badge"> {$mcomments[$m@index]}
 																	Comment{if $mcomments[$m@index] != 1}s{/if}</span></a>
 															<span class="btn btn-hover btn-default btn-xs icon icon_cart text-muted"
-																  title="Add to Cart"><i
-																		class="fa fa-shopping-cart"></i></span>
+																  title="Send to my Download Basket"><i
+																		class="fa fa-shopping-basket"></i></span>
 															{if isset($sabintegrated)}
 																<span class="btn btn-hover btn-default btn-xs icon icon_sab text-muted"
 																	  title="Send to my Queue"><i
-																			class="fa fa-send"></i></span>
+																			class="fa fa-share"></i></span>
 															{/if}
 														</div>
 													</div>
@@ -265,7 +258,7 @@
 													{assign var="mtotalparts" value=","|explode:$result.grp_release_totalparts}
 													{assign var="mcomments" value=","|explode:$result.grp_release_comments}
 													{assign var="mgrabs" value=","|explode:$result.grp_release_grabs}
-													{assign var="mfailed" value=","|explode:$result.failed}
+													{assign var="mfailed" value=","|explode:$result.grp_release_failed}
 													{assign var="mpass" value=","|explode:$result.grp_release_password}
 													{assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
 													{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
@@ -284,59 +277,52 @@
 																target="_blank"
 																href="{$site->dereferrer_link}{$result.directurl}"
 																name="viewade{$result.title}"
-																title="View AdultdvdEmpire page"
-																><img
-																	src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/ade.png"></a>
+																title="View AdultdvdEmpire page">
+																<img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/ade.png"></a>
 													{else}
 														<a
-																target="_blank"
-																href="{$site->dereferrer_link}http://www.adultdvdempire.com/dvd/search?q={$result.title}"
-																name="viewade{$result.title}"
-																title="Search AdultdvdEmpire page"
-																><img
-																	src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/ade.png"></a>
+															target="_blank"
+															href="{$site->dereferrer_link}http://www.adultdvdempire.com/dvd/search?q={$result.title}"
+															name="viewade{$result.title}"
+															title="Search AdultdvdEmpire page">
+															<img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/ade.png"></a>
 													{/if}
 													{if $result.classused == "hm"}
 														<a
-																target="_blank"
-																href="{$site->dereferrer_link}{$result.directurl}"
-																name="viewhm{$result.title}"
-																title="View Hot Movies page"
-																><img
-																	src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/hotmovies.png"></a>
+															target="_blank"
+															href="{$site->dereferrer_link}{$result.directurl}"
+															name="viewhm{$result.title}"
+															title="View Hot Movies page">
+															<img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/hotmovies.png"></a>
 													{else}
 														<a
-																target="_blank"
-																href="{$site->dereferrer_link}http://www.hotmovies.com/search.php?words={$result.title}&complete=on&search_in=video_title"
-																name="viewhm{$result.title}"
-																title="Search Hot Movies page"
-																><img
-																	src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/hotmovies.png"></a>
+															target="_blank"
+															href="{$site->dereferrer_link}http://www.hotmovies.com/search.php?words={$result.title}&complete=on&search_in=video_title"
+															name="viewhm{$result.title}"
+															title="Search Hot Movies page">
+															<img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/hotmovies.png"></a>
 													{/if}
 													{if $result.classused == "pop"}
 														<a
-																target="_blank"
-																href="{$site->dereferrer_link}{$result.directurl}"
-																name="viewpop{$result.id}"
-																title="View Popporn page"
-																><img
-																	src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/popporn.png"></a>
+															target="_blank"
+															href="{$site->dereferrer_link}{$result.directurl}"
+															name="viewpop{$result.id}"
+															title="View Popporn page">
+															<img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/popporn.png"></a>
 													{else}
 														<a
-																target="_blank"
-																href="{$site->dereferrer_link}http://www.popporn.com/results/index.cfm?v=4&g=0&searchtext={$result.title}"
-																name="viewpop{$result.id}"
-																title="Search Popporn page"
-																><img
-																	src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/popporn.png"></a>
+															target="_blank"
+															href="{$site->dereferrer_link}http://www.popporn.com/results/index.cfm?v=4&g=0&searchtext={$result.title}"
+															name="viewpop{$result.id}"
+															title="Search Popporn page">
+															<img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/popporn.png"></a>
 													{/if}
 													<a
-															target="_blank"
-															href="{$site->dereferrer_link}http://www.iafd.com/results.asp?searchtype=title&searchstring={$result.title}"
-															name="viewiafd{$result.title}"
-															title="Search Internet Adult Film Database"
-															><img
-																src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/iafd.png"></a>
+														target="_blank"
+														href="{$site->dereferrer_link}http://www.iafd.com/results.asp?searchtype=title&searchstring={$result.title}"
+														name="viewiafd{$result.title}"
+														title="Search Internet Adult Film Database">
+														<img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/iafd.png"></a>
 													{if $mnfo[$m@index] > 0}<a
 														href="{$smarty.const.WWW_TOP}/nfo/{$mguid[$m@index]}|escape:"htmlall"}"
 														title="View NFO" class="label label-default"
@@ -346,7 +332,7 @@
 													   title="Browse releases in {$result.grp_release_grpname|replace:"alt.binaries":"a.b"}">Group</a>
 													{if $mfailed[$m@index] > 0}
 														<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
-															<i class="fa fa-thumbs-o-up"></i> {$mgrabs[$m@index]} Grab{if {$mgrabs[$m@index]} != 1}s{/if} / <i class="fa fa-thumbs-o-down"></i> {$mfailed[$m@index]}Failed Download{if {$mfailed[$m@index]} != 1}s{/if}</span>
+															<i class="fa fa-thumbs-o-up"></i> {$mgrabs[$m@index]} Grab{if {$mgrabs[$m@index]} != 1}s{/if} / <i class="fa fa-thumbs-o-down"></i> {$mfailed[$m@index]}Failed Download{if {$mfailed[$m@index]} > 1}s{/if}</span>
 													{/if}
 												</div>
 												<div class="col-md-9 small-gutter-left">
@@ -374,21 +360,21 @@
 														<div>
 															<a role="button" class="btn btn-default btn-xs"
 															   href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}|escape:"htmlall"}"><i
-																		class="fa fa-download"></i><span
-																		class="badge"> {$mgrabs[$m@index]}
-																	Grab{if $mgrabs[$m@index] != 1}s{/if}</span></a>
+																	class="fa fa-cloud-download"></i><span
+																	class="badge"> {$mgrabs[$m@index]}
+																Grab{if $mgrabs[$m@index] != 1}s{/if}</span></a>
 															<a role="button" class="btn btn-default btn-xs"
 															   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/#comments"><i
 																		class="fa fa-comment-o"></i><span
 																		class="badge"> {$mcomments[$m@index]}
 																	Comment{if $mcomments[$m@index] != 1}s{/if}</span></a>
 															<span class="btn btn-hover btn-default btn-xs icon icon_cart text-muted"
-																  title="Add to Cart"><i
-																		class="fa fa-shopping-cart"></i></span>
+																  title="Send to my Download Basket"><i
+																		class="fa fa-shopping-basket"></i></span>
 															{if isset($sabintegrated)}
 																<span class="btn btn-hover btn-default btn-xs icon icon_sab text-muted"
 																	  title="Send to my Queue"><i
-																			class="fa fa-send"></i></span>
+																			class="fa fa-share"></i></span>
 															{/if}
 														</div>
 													</div>
@@ -418,7 +404,7 @@
 										   value="Download NZBs"/>
 									<input type="button"
 										   class="nzb_multi_operations_cart btn btn-sm btn-info"
-										   value="Add to Cart"/>
+										   value="Send to my Download Basket"/>
 									{if isset($sabintegrated)}
 										<input type="button"
 											   class="nzb_multi_operations_sab btn btn-sm btn-primary"

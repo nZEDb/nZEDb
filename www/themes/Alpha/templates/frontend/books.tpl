@@ -133,7 +133,7 @@
 									{assign var="mtotalparts" value=","|explode:$result.grp_release_totalparts}
 									{assign var="mcomments" value=","|explode:$result.grp_release_comments}
 									{assign var="mgrabs" value=","|explode:$result.grp_release_grabs}
-									{assign var="mfailed" value=","|explode:$result.failed}
+									{assign var="mfailed" value=","|explode:$result.grp_release_failed}
 									{assign var="mpass" value=","|explode:$result.grp_release_password}
 									{assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
 									{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
@@ -164,7 +164,7 @@
 															href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}#comments">{$mcomments[$m@index]}
 															cmt{if $mcomments[$m@index] != 1}s{/if}
 														</a> |
-														<i class="icon-download"></i> {$mgrabs[$m@index]} grab{if $mgrabs[$m@index] != 1}s{/if}
+														<i class="icon-download"></i> {$mgrabs[$m@index]} grab{if $mgrabs[$m@index] > 1}s{/if}
 													</div>
 													<div class="pull-right">
 														{if $mnfo[$m@index] > 0}
@@ -211,8 +211,8 @@
 														{if $mfailed[$m@index] > 0}
 														<span class="btn btn-hover btn-default btn-xs"><i class="fa fa-thumbs-o-down"></i><span
 																	class="badge"> {$mfailed[$m@index]}
-																Failed Download{if $mfailed[$m@index] != 1}s{/if}</span>
-															{/if}
+																Failed Download{if $mfailed[$m@index] > 1}s{/if}</span>
+														{/if}
 													</div>
 												</div>
 											</td>
