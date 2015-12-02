@@ -12,7 +12,7 @@ Class TraktAPI {
 	const API_URL = 'https://api-v2launch.trakt.tv/';
 
 	/**
-	 * @var array	List of site IDs that trakt,tv supports. Only trakt is guaranteed to exist.
+	 * @var array	List of site IDs that trakt.tv supports. Only trakt is guaranteed to exist.
 	 */
 	private $types = ['imdb', 'tmdb', 'trakt', 'tvdb', 'tvrage'];
 
