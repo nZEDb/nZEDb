@@ -20,6 +20,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Mrg: PR #1980, from kaibosh - Change default to PHP version of scripts rather than python ones in threaded screen script
 2015-11-24 ruhllatio
 	Mrg: PR #1973, from darius - Adjust omicron/charisma templates to failed releases count fix
+	Fix: Bad merge on my part which reverted some DDL in the schema.  Reverted to dev and then made the one branch change
 2015-11-23 ruhllatio
 	Fix: Failed counts for cover views being lumped together instead of group_concat
 	Chg: Speed up Music, Games, and XXX cover views
