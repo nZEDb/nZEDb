@@ -332,7 +332,8 @@ class TMDB extends TV
 				'tvrage'    => (isset($show->_data['external_ids']['tvrage_id']) ? (int)$show->_data['external_ids']['tvrage_id'] : 0),
 				'tvmaze'    => 0,
 				'tmdb'      => (int)$show->_data['id'],
-				'aliases'   => (!empty($show->_data['alternative_titles']) ? (array)$show->_data['alternative_titles'] : '')
+				'aliases'   => (!empty($show->_data['alternative_titles']) ? (array)$show->_data['alternative_titles'] : ''),
+				'localzone' => "''"
 		];
 	}
 
