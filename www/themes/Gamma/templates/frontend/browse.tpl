@@ -263,13 +263,6 @@
 						</a>
 					</li>
 					{/if}
-                    {if $weHasVortex}
-                        <li>
-                            <a class="icon icon_nzb fa fa-cloud-downloadvortex" href="#" title="Send to NZBVortex">
-                                <img class="icon icon_nzb fa fa-cloud-downloadvortex" alt="Send to my NZBVortex" src="{$smarty.const.WWW_TOP}/themes/Gamma/images/icons/vortex/bigsmile.png">
-                            </a>
-                        </li>
-                    {/if}
 				</ul>
 			</td>
 		</tr>

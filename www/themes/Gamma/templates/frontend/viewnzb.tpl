@@ -361,9 +361,6 @@
 						{if isset($nzbgetintegrated)}
 							<a id="guid{$release.guid}" class="icon icon_nzb fa fa-cloud-download nzbgetNZBinfo" href="#" title="Send to my NZBGet"><img src="{$smarty.const.WWW_TOP}/themes/Gamma/images/icons/nzbgetup.png"/></a>
 						{/if}
-						{if $weHasVortex}
-							<a class="icon icon_nzb fa fa-cloud-downloadvortex" href="#" title="Send to my NZBVortex"><img src="{$smarty.const.WWW_TOP}/themes/Gamma/images/icons/vortex/bigsmile.png"/></a>
-						{/if}
 					</dd>
 
 					<dt>Similar</dt>
