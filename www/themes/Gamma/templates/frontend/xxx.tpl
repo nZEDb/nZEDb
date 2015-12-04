@@ -146,7 +146,7 @@
 								{if $result.cover == 1}
 									{$smarty.const.WWW_TOP}covers/xxx/{$result.id}-cover.jpg"
 											{if $previewguid == ''}
-												href="{$smarty.const.WWW_TOP}themes/shared/images/nocover.png"
+												href="{$smarty.const.WWW_TOP}themes_shared/images/nocover.png"
 											{else} href="{$smarty.const.WWW_TOP}/covers/preview/{$previewguid}_thumb.jpg"
 											{/if}
 											{/if}
@@ -165,7 +165,7 @@
 												name="viewade{$result.title}"
 												title="View AdultdvdEmpire page"
 										><img
-													src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/ade.png"></a>
+													src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/ade.png"></a>
 									{else}
 										<a
 												target="_blank"
@@ -173,7 +173,7 @@
 												name="viewade{$result.title}"
 												title="Search AdultdvdEmpire page"
 										><img
-													src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/ade.png"></a>
+													src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/ade.png"></a>
 									{/if}
 									{if $result.classused == "hm"}
 										<a
@@ -182,7 +182,7 @@
 												name="viewhm{$result.title}"
 												title="View Hot Movies page"
 										><img
-													src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/hotmovies.png"></a>
+													src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/hotmovies.png"></a>
 									{else}
 										<a
 												target="_blank"
@@ -190,7 +190,7 @@
 												name="viewhm{$result.title}"
 												title="Search Hot Movies page"
 										><img
-													src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/hotmovies.png"></a>
+													src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/hotmovies.png"></a>
 									{/if}
 									{if $result.classused == "pop"}
 										<a
@@ -199,7 +199,7 @@
 												name="viewpop{$result.id}"
 												title="View Popporn page"
 										><img
-													src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/popporn.png"></a>
+													src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/popporn.png"></a>
 									{else}
 										<a
 												target="_blank"
@@ -207,7 +207,7 @@
 												name="viewpop{$result.id}"
 												title="Search Popporn page"
 										><img
-													src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/popporn.png"></a>
+													src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/popporn.png"></a>
 									{/if}
 									<a
 											target="_blank"
@@ -215,7 +215,7 @@
 											name="viewiafd{$result.title}"
 											title="Search Internet Adult Film Database"
 									><img
-												src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/iafd.png"></a>
+												src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/iafd.png"></a>
 								</center>
 							</div>
 						</div>

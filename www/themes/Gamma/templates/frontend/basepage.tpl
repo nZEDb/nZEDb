@@ -22,7 +22,7 @@
 	<link href="http://www.google.com/cse/api/branding.css" rel="stylesheet" type="text/css" media="screen" />
 {/if}
 	<!-- Newposterwall -->
-	<link href="{$smarty.const.WWW_TOP}/themes/shared/styles/posterwall.css" rel="stylesheet" type="text/css" media="screen" />
+	<link href="{$smarty.const.WWW_TOP}/themes_shared/styles/posterwall.css" rel="stylesheet" type="text/css" media="screen" />
 	<link href="{$smarty.const.WWW_TOP}/themes/Gamma/styles/bootstrap.css" rel="stylesheet" type="text/css" media="screen" />
 	<link href="{$smarty.const.WWW_TOP}/themes/Gamma/styles/font-awesome.css" rel="stylesheet" type="text/css" media="screen" />
 	<link href="{$smarty.const.WWW_TOP}/themes/Gamma/styles/extra.css" rel="stylesheet" type="text/css" media="screen" />
