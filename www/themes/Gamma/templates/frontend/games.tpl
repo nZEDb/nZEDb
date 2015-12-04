@@ -221,7 +221,16 @@
 									{/if}
 								</li>
 								<li style="vertical-align:text-bottom;">
+									{if $weHasVortex}
+										<div>
+											<a href="#" class="icon icon_nzb fa fa-cloud-downloadvortex" title="Send to my NZBVortex"><img src="{$smarty.const.WWW_TOP}/themes/Gamma/images/icons/vortex/bigsmile.png"></a>
+										</div>
+									{/if}
 								</li>
+								{if $isadmin}
+									<a class="rndbtn confirm_action btn btn-mini btn-danger pull-right" href="{$smarty.const.WWW_TOP}/admin/release-delete.php?id={$result.releaseid}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Delete Release">Delete</a>
+									<a class="rndbtn btn btn-mini btn-warning pull-right" href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$result.releaseid}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Edit Release">Edit</a>
+								{/if}
 							</ul>
 							{if isset($result.genre) && $result.genre != ""}
 								<b>Genre:</b>
@@ -250,9 +259,6 @@
 							{/if}
 							<br />
 							<div class="movextra">
-								{if $isadmin}
-									<a class="rndbtn btn btn-mini btn-warning" href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$result.releaseid}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Edit Release">Edit</a> <a class="rndbtn confirm_action btn btn-mini btn-danger" href="{$smarty.const.WWW_TOP}/admin/release-delete.php?id={$result.releaseid}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Delete Release">Delete</a>
-								{/if}
 								<br />
 								<ul class="inline">
 									<li width="50px"><b>Info:</b></li>
