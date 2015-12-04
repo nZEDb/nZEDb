@@ -220,13 +220,6 @@
 										</div>
 									{/if}
 								</li>
-								<li style="vertical-align:text-bottom;">
-									{if $weHasVortex}
-										<div>
-											<a href="#" class="icon icon_nzb fa fa-cloud-downloadvortex" title="Send to my NZBVortex"><img src="{$smarty.const.WWW_TOP}/themes/Gamma/images/icons/vortex/bigsmile.png"></a>
-										</div>
-									{/if}
-								</li>
 								{if $isadmin}
 									<a class="rndbtn confirm_action btn btn-mini btn-danger pull-right" href="{$smarty.const.WWW_TOP}/admin/release-delete.php?id={$result.releaseid}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Delete Release">Delete</a>
 									<a class="rndbtn btn btn-mini btn-warning pull-right" href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$result.releaseid}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Edit Release">Edit</a>
