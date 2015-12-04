@@ -26,7 +26,7 @@
 			{if $anidb && $release.anidbid > 0 && $anidb.picture != ""}<img class="shadow img-polaroid pull-right" style="margin-right:50px; margin-top:80px;" src="{$smarty.const.WWW_TOP}/covers/anime/{$anidb.anidbid}.jpg" width="180" alt="{$anidb.title|escape:"htmlall"}" />{/if}
 			{if $con && $con.cover == 1}<img class="shadow img-polaroid pull-right" style="margin-right:50px; margin-top:80px;" src="{$smarty.const.WWW_TOP}/covers/console/{$con.id}.jpg" width="160" alt="{$con.title|escape:"htmlall"}" />{/if}
 			{if $music && $music.cover == 1}<img class="shadow img-polaroid pull-right" style="margin-right:50px; margin-top:80px;" src="{$smarty.const.WWW_TOP}/covers/music/{$music.id}.jpg" width="160" alt="{$music.title|escape:"htmlall"}" />{/if}
-			{if $book && $book.cover == 1}<img class="shadow img-polaroid pull-right" style="margin-right:50px; margin-top:80px;" src="{$smarty.const.WWW_TOP}/covers/book/{$book.id}.jpg" width="160" alt="{$book.title|escape:"htmlall"}" />{/if}
+			{if $boo && $boo.cover == 1}<img class="shadow img-polaroid pull-right" style="margin-right:50px; margin-top:80px;" src="{$smarty.const.WWW_TOP}/covers/book/{$boo.id}.jpg" width="160" alt="{$boo.title|escape:"htmlall"}" />{/if}
 			{if $game && $game.cover == 1}
 				<img class="shadow img-polaroid pull-right" style="margin-right:50px; margin-top:80px;"  src="{$smarty.const.WWW_TOP}/covers/games/{$game.id}.jpg" width="160" alt="{$con.title|escape:"htmlall"}"/>{/if}
 				{if $isadmin}
@@ -189,50 +189,50 @@
 
 				{/if}
 
-				{if $book}
+				{if $boo}
 				<dl class="dl-horizontal" style="margin-right:300px;">
 					<dt>Book Info</dt>
-					<dd>{$book.author|escape:"htmlall"} - {$book.title|escape:"htmlall"}</dd>
+					<dd>{$boo.author|escape:"htmlall"} - {$boo.title|escape:"htmlall"}</dd>
 
-					{if $book.review != ""}
+					{if $boo.review != ""}
 					<dt>Review</dt>
-					<dd><span class="descinitial">{$book.review|escape:"htmlall"|nl2br|magicurl|truncate:"350":"</span><a class=\"descmore\" href=\"#\"> more...</a>"}{if $book.review|strlen > 350}<span class="descfull">{$book.review|escape:"htmlall"|nl2br|magicurl}</span>{else}</span>{/if}</dd>
+					<dd><span class="descinitial">{$boo.review|escape:"htmlall"|nl2br|magicurl|truncate:"350":"</span><a class=\"descmore\" href=\"#\"> more...</a>"}{if $boo.review|strlen > 350}<span class="descfull">{$boo.review|escape:"htmlall"|nl2br|magicurl}</span>{else}</span>{/if}</dd>
 					{/if}
 
-					{if $book.ean != ""}
+					{if $boo.ean != ""}
 					<dt>EAN</dt>
-					<dd>{$book.ean|escape:"htmlall"}</dd>
+					<dd>{$boo.ean|escape:"htmlall"}</dd>
 					{/if}
 
-					{if $book.isbn != ""}
+					{if $boo.isbn != ""}
 					<dt>ISBN</dt>
-					<dd>{$book.isbn|escape:"htmlall"}</dd>
+					<dd>{$boo.isbn|escape:"htmlall"}</dd>
 					{/if}
 
-					{if $book.pages != ""}
+					{if $boo.pages != ""}
 					<dt>Pages</dt>
-					<dd>{$book.pages|escape:"htmlall"}</dd>
+					<dd>{$boo.pages|escape:"htmlall"}</dd>
 					{/if}
 
-					{if $book.dewey != ""}
+					{if $boo.dewey != ""}
 					<dt>Dewey</dt>
-					<dd>{$book.dewey|escape:"htmlall"}</dd>
+					<dd>{$boo.dewey|escape:"htmlall"}</dd>
 					{/if}
 
-					{if $book.publisher != ""}
+					{if $boo.publisher != ""}
 					<dt>Publisher</dt>
-					<dd>{$book.publisher|escape:"htmlall"}</dd>
+					<dd>{$boo.publisher|escape:"htmlall"}</dd>
 					{/if}
 
-					{if $book.publishdate != ""}
+					{if $boo.publishdate != ""}
 					<dt>Publish Date</dt>
-					<dd>{$book.publishdate|date_format}</dd>
+					<dd>{$boo.publishdate|date_format}</dd>
 					{/if}
 
-					{if $book.url != ""}
+					{if $boo.url != ""}
 					<br/>
 					<div style="margin-left: 180px;">
-						<a class="rndbtn badge badge-amaz" target="_blank" href="{$site->dereferrer_link}{$book.url}/" title="View book at Amazon">Amazon</a>
+						<a class="rndbtn badge badge-amaz" target="_blank" href="{$site->dereferrer_link}{$boo.url}/" title="View book at Amazon">Amazon</a>
 					</div>
 					{/if}
 				</dl>
@@ -290,16 +290,6 @@
 				{if $nfo.id|@count > 0}
 					<dt>Nfo</dy>
 					<dd><a href="{$smarty.const.WWW_TOP}/nfo/{$release.guid}" title="View Nfo">View Nfo</a></dd>
-				{/if}
-
-				{if $predb && $userdata.canpre}
-					<dt>Pre:</th>
-					<dd>{$predb.ctime|date_format:"%b %e, %Y %T"} ({$predb.ctime|daysago})</dd>
-
-					{if $predb.nuketype != '' && $predb.nukereason != ''}
-						<dt>{$predb.nuketype|lower|capitalize}:</dt>
-						<dd>{$predb.nukereason}</dd>
-					{/if}
 				{/if}
 				{if $release.haspreview == 2 && $userdata.canpreview == 1}
 					<dt>Preview</dt>
@@ -371,9 +361,8 @@
 					{if $isadmin}
 					<dt>Release Info</dt>
 					<dd>
-						Regex Id (<a href="{$smarty.const.WWW_TOP}/admin/regex-list.php?group={$release.group_name|escape:"url"}#{$release.regexid}">{$release.regexid}</a>)
-						{if $release.reqid != ""}
-						Request Id ({$release.reqid})
+						{if $release.requsetid != ""}
+						Request Id ({$release.requestid})
 						{/if}
 					</dd>
 					{/if}
