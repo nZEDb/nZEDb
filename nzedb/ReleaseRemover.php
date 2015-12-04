@@ -427,7 +427,15 @@ class ReleaseRemover
 		switch (nZEDb_RELEASE_SEARCH_TYPE) {
 			case ReleaseSearch::SPHINX:
 				$rs = new ReleaseSearch($this->pdo);
-				$execFT = str_replace('=10000;', '=1000000;', $rs->getSearchSQL(['filename' => '-exes* -exec* exe']));
+				$execFT =
+					str_replace('=10000;', '=1000000;',
+						$rs->getSearchSQL(
+							[
+								'searchname' => '-exes* -exec*',
+								'filename' => 'exe'
+							]
+						)
+				);
 				$ftJoin = $rs->getFullTextJoinString();
 				break;
 			default:
