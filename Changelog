@@ -8,6 +8,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2015-12-04 ruhllatio
 	Chg: TVDB and TVMaze scripts now support Airdate lookup testing.
+	Fix: RemoveCrap Executable with Sphinx finding too much for the limit
 2015-12-02 ruhllatio
 	Mrg: PR #1985 - Add Trakt Support to Dev
 2015-11-29 niel
