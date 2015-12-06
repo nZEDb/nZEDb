@@ -30,7 +30,7 @@
 		<link href="{$smarty.const.WWW_THEMES}/shared/styles/posterwall.css"
 				rel="stylesheet"
 				type="text/css"
-				media="screen" />
+				media="screen">
 		<link href="{$smarty.const.WWW_THEMES}/{$theme}/styles/style.css"
 				rel="stylesheet"
 				media="screen">
