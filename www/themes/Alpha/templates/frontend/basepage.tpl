@@ -346,7 +346,7 @@
 	<script src="{$smarty.const.WWW_THEMES}/{$theme}/scripts/utils.js"></script>
 
 	<!-- Additional nZEDb JS -->
-	<script> Holder.add_theme("dark", {background: "black", foreground: "gray", size: 16})</script>
+	<script> Holder.add_theme("dark", { background: "black", foreground: "gray", size: 16 })</script>
 	<!-- <script>
 		jQuery(function(){
 			jQuery('.nzb_check, .nzb_check_all').click(function(){
