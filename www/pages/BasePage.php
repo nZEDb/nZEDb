@@ -37,6 +37,7 @@ class BasePage
 
 	/**
 	 * Current page the user is browsing. ie browse
+	 *
 	 * @var string
 	 */
 	public $page = '';
@@ -45,24 +46,28 @@ class BasePage
 
 	/**
 	 * User settings from the MySQL DB.
+	 *
 	 * @var array|bool
 	 */
 	public $userdata = [];
 
 	/**
 	 * URL of the server. ie http://localhost/
+	 *
 	 * @var string
 	 */
 	public $serverurl = '';
 
 	/**
 	 * Whether to trim white space before rendering the page or not.
+	 *
 	 * @var bool
 	 */
 	public $trimWhiteSpace = true;
 
 	/**
 	 * Is the current session HTTPS?
+	 *
 	 * @var bool
 	 */
 	public $https = false;
@@ -73,6 +78,13 @@ class BasePage
 	 * @var \nzedb\Captcha
 	 */
 	public $captcha;
+
+	/**
+	 * User's theme
+	 *
+	 * @var string
+	 */
+	private $theme = 'Default';
 
 	/**
 	 * Set up session / smarty / user variables.
@@ -93,12 +105,6 @@ class BasePage
 
 		$this->smarty = new Smarty();
 
-		$this->smarty->setTemplateDir(
-			[
-				'user_frontend' => nZEDb_WWW . 'themes/' . $this->settings->getSetting('style') . '/templates/frontend',
-				'frontend' => nZEDb_WWW . 'themes/Default/templates/frontend'
-			]
-		);
 		$this->smarty->setCompileDir(SMARTY_DIR . 'templates_c/');
 		$this->smarty->setConfigDir(SMARTY_DIR . 'configs/');
 		$this->smarty->setCacheDir(SMARTY_DIR . 'cache/');
@@ -107,7 +113,8 @@ class BasePage
 		if (isset($_SERVER['SERVER_NAME'])) {
 			$this->serverurl = (
 				($this->https === true ? 'https://' : 'http://') . $_SERVER['SERVER_NAME'] .
-				(($_SERVER['SERVER_PORT'] != '80' && $_SERVER['SERVER_PORT'] != '443') ? ':' . $_SERVER['SERVER_PORT'] : '') .
+				(($_SERVER['SERVER_PORT'] != '80' && $_SERVER['SERVER_PORT'] != '443') ?
+					':' . $_SERVER['SERVER_PORT'] : '') .
 				WWW_TOP . '/'
 			);
 			$this->smarty->assign('serverroot', $this->serverurl);
@@ -117,21 +124,24 @@ class BasePage
 
 		$this->users = new Users(['Settings' => $this->settings]);
 		if ($this->users->isLoggedIn()) {
-			$this->userdata = $this->users->getById($this->users->currentUserId());
+			$this->userdata                       = $this->users->getById($this->users->currentUserId());
 			$this->userdata['categoryexclusions'] = $this->users->getCategoryExclusion($this->users->currentUserId());
 
 			// Change the theme to user's selected theme if they selected one, else use the admin one.
 			if (isset($this->userdata['style']) && $this->userdata['style'] !== 'None') {
+				$this->theme = $this->userdata['style'];
 				$this->smarty->setTemplateDir(
 					[
-						'user_frontend' => nZEDb_WWW . 'themes/' . $this->userdata['style'] . '/templates/frontend',
-						'frontend'      => nZEDb_WWW . 'themes/Default/templates/frontend'
+						'user_frontend' => nZEDb_THEMES . $this->theme . '/templates/frontend',
+						'frontend'      => nZEDb_THEMES . 'Default/templates/frontend'
 					]
 				);
 			}
 
 			// Update last login every 15 mins.
-			if ((strtotime($this->userdata['now']) - 900) > strtotime($this->userdata['lastlogin'])) {
+			if ((strtotime($this->userdata['now']) - 900) >
+				strtotime($this->userdata['lastlogin'])
+			) {
 				$this->users->updateSiteAccessed($this->userdata['id']);
 			}
 
@@ -147,16 +157,25 @@ class BasePage
 			switch ((int)$this->userdata['role']) {
 				case Users::ROLE_ADMIN:
 					$this->smarty->assign('isadmin', 'true');
-					break;
+				break;
 				case Users::ROLE_MODERATOR:
 					$this->smarty->assign('ismod', 'true');
 			}
 		} else {
+			$this->theme = $this->settings->getSetting('site.main.style');
+			$this->smarty->setTemplateDir(
+				[
+					'user_frontend' => nZEDb_THEMES . $this->theme . '/templates/frontend',
+					'frontend'      => nZEDb_THEMES . $this->theme . '/templates/frontend'
+				]
+			);
+
 			$this->smarty->assign('isadmin', 'false');
 			$this->smarty->assign('ismod', 'false');
 			$this->smarty->assign('loggedin', 'false');
 		}
 
+		$this->smarty->assign('theme', $this->theme);
 		$this->smarty->assign('site', $this->settings);
 		$this->smarty->assign('page', $this);
 	}
@@ -169,7 +188,8 @@ class BasePage
 	private function stripSlashes(&$array)
 	{
 		foreach ($array as $key => $value) {
-			$array[$key] = (is_array($value) ? array_map('stripslashes', $value) : stripslashes($value));
+			$array[$key] = (is_array($value) ? array_map('stripslashes', $value) :
+				stripslashes($value));
 		}
 	}
 
@@ -182,7 +202,9 @@ class BasePage
 		// Check if this is not from CLI.
 		if (empty($argc)) {
 			// If flood wait set, the user must wait x seconds until they can access a page.
-			if (isset($_SESSION['flood_wait_until']) && $_SESSION['flood_wait_until'] > microtime(true)) {
+			if (isset($_SESSION['flood_wait_until']) &&
+				$_SESSION['flood_wait_until'] > microtime(true)
+			) {
 				$this->showFloodWarning($waitTime);
 			} else {
 				// If user not an admin, they are allowed three requests in FLOOD_THREE_REQUESTS_WITHIN_X_SECONDS seconds.
@@ -190,7 +212,10 @@ class BasePage
 					$_SESSION['flood_check_hits'] = 1;
 					$_SESSION['flood_check_time'] = microtime(true);
 				} else {
-					if ($_SESSION['flood_check_hits'] >= (nZEDb_FLOOD_MAX_REQUESTS_PER_SECOND < 1 ? 5 : nZEDb_FLOOD_MAX_REQUESTS_PER_SECOND)) {
+					if ($_SESSION['flood_check_hits'] >=
+						(nZEDb_FLOOD_MAX_REQUESTS_PER_SECOND < 1 ? 5 :
+							nZEDb_FLOOD_MAX_REQUESTS_PER_SECOND)
+					) {
 						if ($_SESSION['flood_check_time'] + 1 > microtime(true)) {
 							$_SESSION['flood_wait_until'] = microtime(true) + $waitTime;
 							unset($_SESSION['flood_check_hits']);
@@ -272,7 +297,7 @@ class BasePage
 	{
 		header('HTTP/1.1 404 Not Found');
 		exit(
-		sprintf("
+			sprintf("
 				<html>
 					<head>
 						<title>404 - File not found.</title>
@@ -283,9 +308,9 @@ class BasePage
 						<p>We could not find the above page on our servers.</p>
 					</body>
 				</html>",
-			$this->serverurl,
-			$this->page
-		)
+				$this->serverurl,
+				$this->page
+			)
 		);
 	}
 
