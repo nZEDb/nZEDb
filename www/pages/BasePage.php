@@ -130,6 +130,10 @@ class BasePage
 			// Change the theme to user's selected theme if they selected one, else use the admin one.
 			if (isset($this->userdata['style']) && $this->userdata['style'] !== 'None') {
 				$this->theme = $this->userdata['style'];
+				if (lcfirst($this->theme) === $this->theme) {
+					// TODO add redirect to error page telling user to fix their theme name.
+					exit();
+				}
 				$this->smarty->setTemplateDir(
 					[
 						'user_frontend' => nZEDb_THEMES . $this->theme . '/templates/frontend',
