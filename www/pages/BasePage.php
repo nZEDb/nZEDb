@@ -185,7 +185,7 @@ class BasePage
 	 *
 	 * @param $array
 	 */
-	private function stripSlashes(&$array)
+	private function stripSlashes(array &$array)
 	{
 		foreach ($array as $key => $value) {
 			$array[$key] = (is_array($value) ? array_map('stripslashes', $value) :
