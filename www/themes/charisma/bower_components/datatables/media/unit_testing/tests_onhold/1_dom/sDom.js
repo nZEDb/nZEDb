@@ -9,14 +9,12 @@ $(document).ready( function () {
 	var oSettings = oTable.fnSettings();
 
 	oTest.fnTest(
-
 		"Default DOM varaible",
 		null,
 		function () { return oSettings.sDom == "lfrtip"; }
 	);
 
 	oTest.fnTest(
-
 		"Default DOM in document",
 		null,
 		function () {
@@ -29,7 +27,6 @@ $(document).ready( function () {
 			var nTable = document.getElementById('example');
 
 			var bReturn =
-
 				nNodes[0] == nWrapper &&
 				nNodes[1] == nLength &&
 				nNodes[2] == nFilter &&
@@ -41,7 +38,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Check example 1 in code propagates",
 		function () {
 			oSession.fnRestore();
@@ -54,7 +50,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Check example 1 in DOM",
 		null,
 		function () {
@@ -80,7 +75,6 @@ $(document).ready( function () {
 			var nCustomWrapper = $('div.wrapper')[0];
 
 			var bReturn =
-
 				nNodes[0] == nWrapper &&
 				nNodes[1] == nCustomWrapper &&
 				nNodes[2] == nFilter &&
@@ -93,7 +87,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Check example 2 in DOM",
 		function () {
 			oSession.fnRestore();
@@ -130,7 +123,6 @@ $(document).ready( function () {
 			var nTable = document.getElementById('example');
 
 			var bReturn =
-
 				nNodes[0] == nWrapper &&
 				nNodes[1] == nCustomWrappers[0] &&
 				nNodes[2] == nLength &&
@@ -144,7 +136,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Check no length element",
 		function () {
 			oSession.fnRestore();
@@ -162,7 +153,6 @@ $(document).ready( function () {
 			var nTable = document.getElementById('example');
 
 			var bReturn =
-
 				nNodes[0] == nWrapper &&
 				null == nLength &&
 				nNodes[1] == nFilter &&
@@ -174,7 +164,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Check no filter element",
 		function () {
 			oSession.fnRestore();
@@ -192,7 +181,6 @@ $(document).ready( function () {
 			var nTable = document.getElementById('example');
 
 			var bReturn =
-
 				nNodes[0] == nWrapper &&
 				nNodes[1] == nLength &&
 				null == nFilter &&
@@ -206,7 +194,6 @@ $(document).ready( function () {
 	/* Note we don't test for no table as this is not supported (and it would be fairly daft! */
 
 	oTest.fnTest(
-
 		"Check no info element",
 		function () {
 			oSession.fnRestore();
@@ -224,7 +211,6 @@ $(document).ready( function () {
 			var nTable = document.getElementById('example');
 
 			var bReturn =
-
 				nNodes[0] == nWrapper &&
 				nNodes[1] == nLength &&
 				nNodes[2] == nFilter &&
@@ -236,7 +222,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Check no paging element",
 		function () {
 			oSession.fnRestore();
@@ -254,7 +239,6 @@ $(document).ready( function () {
 			var nTable = document.getElementById('example');
 
 			var bReturn =
-
 				nNodes[0] == nWrapper &&
 				nNodes[1] == nLength &&
 				nNodes[2] == nFilter &&
@@ -266,7 +250,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Element with an id",
 		function () {
 			$('#example').dataTable( {
@@ -280,7 +263,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Element with an id and a class",
 		function () {
 			$('#example').dataTable( {
@@ -294,7 +276,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Element with just a class",
 		function () {
 			$('#example').dataTable( {
@@ -308,7 +289,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Two elements with an id",
 		function () {
 			$('#example').dataTable( {
@@ -322,7 +302,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Two elements with an id and one with a class",
 		function () {
 			$('#example').dataTable( {

@@ -15,14 +15,12 @@ $(document).ready( function () {
 	} );
 
 	oTest.fnWaitTest(
-
 		"Sorting is on by default",
 		null,
 		function () { return $('#example tbody td:eq(0)').html() == "Gecko"; }
 	);
 
 	oTest.fnWaitTest(
-
 		"Sorting Asc by default class applied",
 		null,
 		function () { return $('#example thead th:eq(0)').hasClass("sorting_asc"); }
@@ -35,14 +33,12 @@ $(document).ready( function () {
 	);
 
 	oTest.fnWaitTest(
-
 		"Sorting class removed from first column",
 		null,
 		function () { return $('#example thead th:eq(0)').hasClass("sorting_asc") != true; }
 	);
 
 	oTest.fnWaitTest(
-
 		"Sorting asc class applied to second column",
 		null,
 		function () { return $('#example thead th:eq(1)').hasClass("sorting_asc"); }
@@ -55,14 +51,12 @@ $(document).ready( function () {
 	);
 
 	oTest.fnWaitTest(
-
 		"Sorting acs class removed from second column",
 		null,
 		function () { return $('#example thead th:eq(1)').hasClass("sorting_asc") != true; }
 	);
 
 	oTest.fnWaitTest(
-
 		"Sorting desc class applied to second column",
 		null,
 		function () { return $('#example thead th:eq(1)').hasClass("sorting_desc"); }
@@ -70,7 +64,6 @@ $(document).ready( function () {
 
 	/* Check can disable */
 	oTest.fnWaitTest(
-
 		"Pagiantion can be disabled",
 		function () {
 			oSession.fnRestore();
@@ -103,7 +96,6 @@ $(document).ready( function () {
 
 	/* Enable makes no difference */
 	oTest.fnWaitTest(
-
 		"Sorting enabled override",
 		function () {
 			oSession.fnRestore();

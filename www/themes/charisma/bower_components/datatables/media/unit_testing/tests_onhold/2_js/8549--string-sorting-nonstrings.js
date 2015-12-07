@@ -25,21 +25,18 @@ $(document).ready( function () {
 	} );
 
 	oTest.fnTest(
-
 		"Sorting works - first cell is empty",
 		null,
 		function () { return $('#example tbody tr:eq(0) td:eq(0)').html() === ""; }
 	);
 
 	oTest.fnTest(
-
 		"Second cell is 1a",
 		null,
 		function () { return $('#example tbody tr:eq(1) td:eq(0)').html() === "1a"; }
 	);
 
 	oTest.fnTest(
-
 		"Third cell is 5",
 		null,
 		function () { return $('#example tbody tr:eq(2) td:eq(0)').html() === "5"; }

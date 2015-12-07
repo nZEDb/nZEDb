@@ -8,14 +8,12 @@ $(document).ready( function () {
 
 	/* Basic checks */
 	oTest.fnTest(
-
 		"null by default",
 		null,
 		function () { return $('#example').dataTable().fnSettings().oLanguage.fnInfoCallback == null; }
 	);
 
 	oTest.fnTest(
-
 		"Agrument length",
 		function () {
 			$('#example').dataTable( {
@@ -30,7 +28,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Settings first",
 		function () {
 			$('#example').dataTable( {
@@ -45,7 +42,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Start arg",
 		function () {
 			$('#example').dataTable( {
@@ -59,7 +55,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"End arg",
 		function () {
 			$('#example').dataTable( {
@@ -73,7 +68,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Max arg",
 		function () {
 			$('#example').dataTable( {
@@ -87,7 +81,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Max arg - filter",
 		function () {
 			$('#example').dataTable().fnFilter("1.0");
@@ -96,7 +89,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Total arg",
 		function () {
 			$('#example').dataTable( {
@@ -110,7 +102,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Total arg - filter",
 		function () {
 			$('#example').dataTable().fnFilter("1.0");

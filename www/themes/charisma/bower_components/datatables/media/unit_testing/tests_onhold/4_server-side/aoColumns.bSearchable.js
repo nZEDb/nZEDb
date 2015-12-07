@@ -10,7 +10,6 @@ $(document).ready( function () {
 	var oSettings = oTable.fnSettings();
 
 	oTest.fnWaitTest(
-
 		"Columns are searchable by default",
 		function () { oTable.fnFilter("Camino"); },
 		function () { return $('#example tbody tr:eq(0) td:eq(1)').html() == "Camino 1.0"; }

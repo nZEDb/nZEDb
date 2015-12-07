@@ -9,19 +9,16 @@ $(document).ready( function () {
 	var oSettings = oTable.fnSettings();
 
 	oTest.fnTest(
-
 		"Info empty language is 'Showing 0 to 0 of 0 entries' by default",
 		function () { oTable.fnFilter("nothinghere"); },
 		function () { return oSettings.oLanguage.sInfoEmpty == "Showing 0 to 0 of 0 entries"; }
 	);
 
 	oTest.fnTest(
-
 		"Info empty language default is in the DOM",
 		null,
 		function () {
 			var bReturn = document.getElementById('example_info').innerHTML.replace(
-
 				' '+oSettings.oLanguage.sInfoFiltered.replace( '_MAX_', '57' ), "" ) ==
 					"Showing 0 to 0 of 0 entries";
 			return bReturn;
@@ -30,7 +27,6 @@ $(document).ready( function () {
 
 
 	oTest.fnTest(
-
 		"Info empty language can be defined",
 		function () {
 			oSession.fnRestore();
@@ -47,12 +43,10 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Info empty language default is in the DOM",
 		null,
 		function () {
 			var bReturn = document.getElementById('example_info').innerHTML.replace(
-
 				' '+oSettings.oLanguage.sInfoFiltered.replace( '_MAX_', '57' ), "" ) ==
 					"unit test";
 			return bReturn;
@@ -61,7 +55,6 @@ $(document).ready( function () {
 
 
 	oTest.fnTest(
-
 		"Macro's replaced",
 		function () {
 			oSession.fnRestore();
@@ -75,7 +68,6 @@ $(document).ready( function () {
 		},
 		function () {
 			var bReturn = document.getElementById('example_info').innerHTML.replace(
-
 				' '+oSettings.oLanguage.sInfoFiltered.replace( '_MAX_', '57' ), "" ) ==
 					"unit 1 0 0 test";
 			return bReturn;

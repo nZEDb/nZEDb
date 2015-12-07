@@ -44,7 +44,6 @@ function _fnGetTrNodes ( oSettings )
  * Return an flat array with all TD nodes for the table, or row
  *  @param {object} oSettings dataTables settings object
  *  @param {int} [iIndividualRow] aoData index to get the nodes for - optional
-
  *    if not given then the return array will contain all nodes for the table
  *  @returns {array} TD array
  *  @memberof DataTable#oApi
@@ -272,7 +271,6 @@ function _fnCallbackFire( oSettings, sStore, sTrigger, aArgs )
 /**
  * JSON stringify. If JSON.stringify it provided by the browser, json2.js or any other
  * library, then we use that as it is fast, safe and accurate. If the function isn't
-
  * available then we need to built it ourselves - the inspiration for this function comes
  * from Craig Buckler ( http://www.sitepoint.com/javascript-json-serialization/ ). It is
  * not perfect and absolutely should not be used as a replacement to json2.js - but it does
@@ -345,3 +343,4 @@ function _fnBrowserDetect( oSettings )
 	oSettings.oBrowser.bScrollOversize = $('#DT_BrowserTest', n)[0].offsetWidth === 100 ? true : false;
 	document.body.removeChild( n );
 }
+

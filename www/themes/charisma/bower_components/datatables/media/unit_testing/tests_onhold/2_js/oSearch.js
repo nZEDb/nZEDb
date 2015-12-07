@@ -9,12 +9,10 @@ $(document).ready( function () {
 	var oSettings = oTable.fnSettings();
 
 	oTest.fnTest(
-
 		"Default values should be blank",
 		null,
 		function () {
 			var bReturn = oSettings.oPreviousSearch.sSearch == "" &&
-
 			              !oSettings.oPreviousSearch.bRegex;
 			return bReturn;
 		}
@@ -24,7 +22,6 @@ $(document).ready( function () {
 	 * expect DataTables to cope with this. It should just assumine regex false
 	 */
 	oTest.fnTest(
-
 		"Search term only in object",
 		function () {
 			oSession.fnRestore();
@@ -39,7 +36,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"New search will kill old one",
 		function () {
 			oTable.fnFilter("Opera");
@@ -48,7 +44,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Search plain text term and escape regex true",
 		function () {
 			oSession.fnRestore();
@@ -64,7 +59,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Search plain text term and escape regex false",
 		function () {
 			oSession.fnRestore();
@@ -80,7 +74,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Search regex text term and escape regex true",
 		function () {
 			oSession.fnRestore();
@@ -96,7 +89,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Search regex text term and escape regex false",
 		function () {
 			oSession.fnRestore();

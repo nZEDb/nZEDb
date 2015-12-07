@@ -7,7 +7,6 @@ $(document).ready( function () {
 
 	/* Basic checks */
 	oTest.fnTest(
-
 		"Check filtering",
 		function () { $('#example').dataTable().fnFilter('testsearchstring'); },
 		function () { return $('#example tbody tr').length == 1; }

@@ -70,11 +70,9 @@ Google Maps).
 
         var defaultShow = options.series.images.show;
 
-
         $.each(series, function (i, s) {
             if (!(defaultShow || s.images.show))
                 return;
-
 
             if (s.data)
                 s = s.data;
@@ -98,7 +96,6 @@ Google Maps).
         });
     }
 
-
     $.plot.image.load = function (urls, callback) {
         var missing = urls.length, loaded = {};
         if (missing == 0)
@@ -108,9 +105,7 @@ Google Maps).
             var handler = function () {
                 --missing;
 
-
                 loaded[url] = this;
-
 
                 if (missing == 0)
                     callback(loaded);
@@ -120,18 +115,14 @@ Google Maps).
         });
     };
 
-
     function drawSeries(plot, ctx, series) {
         var plotOffset = plot.getPlotOffset();
-
 
         if (!series.images || !series.images.show)
             return;
 
-
         var points = series.datapoints.points,
             ps = series.datapoints.pointsize;
-
 
         for (var i = 0; i < points.length; i += ps) {
             var img = points[i],
@@ -157,9 +148,7 @@ Google Maps).
                 y1 = tmp;
             }
 
-
             // if the anchor is at the center of the pixel, expand the
-
             // image by 1/2 pixel in each direction
             if (series.images.anchor == "center") {
                 tmp = 0.5 * (x2-x1) / (img.width - 1);
@@ -169,7 +158,6 @@ Google Maps).
                 y1 -= tmp;
                 y2 += tmp;
             }
-
 
             // clip
             if (x1 == x2 || y1 == y2 ||
@@ -198,12 +186,10 @@ Google Maps).
                 y2 = yaxis.max;
             }
 
-
             x1 = xaxis.p2c(x1);
             x2 = xaxis.p2c(x2);
             y1 = yaxis.p2c(y1);
             y2 = yaxis.p2c(y2);
-
 
             // the transformation may have swapped us
             if (x1 > x2) {
@@ -241,12 +227,10 @@ Google Maps).
         ];
     }
 
-
     function init(plot) {
         plot.hooks.processRawData.push(processRawData);
         plot.hooks.drawSeries.push(drawSeries);
     }
-
 
     $.plot.plugins.push({
         init: init,

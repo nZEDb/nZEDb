@@ -15,14 +15,12 @@ $(document).ready( function () {
 	} );
 
 	oTest.fnWaitTest(
-
 		"Default length is ten",
 		null,
 		function () { return $('#example tbody tr').length == 10; }
 	);
 
 	oTest.fnWaitTest(
-
 		"Select menu shows 10",
 		null,
 		function () { return $('#example_length select').val() == 10; }
@@ -30,7 +28,6 @@ $(document).ready( function () {
 
 
 	oTest.fnWaitTest(
-
 		"Set initial length to 25",
 		function () {
 			oSession.fnRestore();
@@ -50,7 +47,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnWaitTest(
-
 		"Select menu shows 25",
 		null,
 		function () { return $('#example_length select').val() == 25; }
@@ -58,7 +54,6 @@ $(document).ready( function () {
 
 
 	oTest.fnWaitTest(
-
 		"Set initial length to 100",
 		function () {
 			oSession.fnRestore();
@@ -78,7 +73,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnWaitTest(
-
 		"Select menu shows 25",
 		null,
 		function () { return $('#example_length select').val() == 100; }
@@ -86,7 +80,6 @@ $(document).ready( function () {
 
 
 	oTest.fnWaitTest(
-
 		"Set initial length to 23 (unknown select menu length)",
 		function () {
 			oSession.fnRestore();
@@ -106,7 +99,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnWaitTest(
-
 		"Select menu shows 10 (since 23 is unknow)",
 		null,
 		function () { return $('#example_length select').val() == 10; }

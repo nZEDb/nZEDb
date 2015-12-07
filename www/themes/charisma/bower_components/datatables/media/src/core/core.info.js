@@ -72,7 +72,6 @@ function _fnUpdateInfo ( oSettings )
 	if ( oLang.fnInfoCallback !== null )
 	{
 		sOut = oLang.fnInfoCallback.call( oSettings.oInstance,
-
 			oSettings, iStart, iEnd, iMax, iTotal, sOut );
 	}
 
@@ -109,3 +108,4 @@ function _fnInfoMacros ( oSettings, str )
 		replace(/_TOTAL_/g, sTotal).
 		replace(/_MAX_/g,   sMax);
 }
+

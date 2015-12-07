@@ -12,7 +12,6 @@ $(document).ready( function () {
 	var oSettings = oTable.fnSettings();
 
 	oTest.fnWaitTest(
-
 		"Server side can be set to on",
 		null,
 		function () { return oSettings.oFeatures.bServerSide == true; }

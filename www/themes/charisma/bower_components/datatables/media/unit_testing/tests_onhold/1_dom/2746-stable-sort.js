@@ -5,7 +5,6 @@ $(document).ready( function () {
 	$('#example').dataTable();
 
 	oTest.fnTest(
-
 		"Initial sort",
 		null,
 		function () {
@@ -20,7 +19,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Reserve initial sort",
 		function () {
 			$('#example thead th:eq(0)').click();
@@ -37,7 +35,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Reserve to go back to initial sort sort",
 		function () {
 			$('#example thead th:eq(0)').click();
@@ -54,7 +51,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Reserve initial sort again",
 		function () {
 			$('#example thead th:eq(0)').click();
@@ -71,7 +67,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"And once more back to the initial sort",
 		function () {
 			$('#example thead th:eq(0)').click();
@@ -88,7 +83,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Sort on second column",
 		function () {
 			$('#example thead th:eq(1)').click();
@@ -105,7 +99,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Reserve sort on second column",
 		function () {
 			$('#example thead th:eq(1)').click();
@@ -122,7 +115,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"And back to asc sorting on second column",
 		function () {
 			$('#example thead th:eq(1)').click();
@@ -139,7 +131,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Sort on third column, having now sorted on second",
 		function () {
 			$('#example thead th:eq(2)').click();
@@ -156,7 +147,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Reserve sort on third column",
 		function () {
 			$('#example thead th:eq(2)').click();
@@ -173,7 +163,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Return sorting on third column to asc",
 		function () {
 			$('#example thead th:eq(2)').click();
@@ -190,7 +179,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Sort on first column having sorted on second then third columns",
 		function () {
 			$('#example thead th:eq(0)').click();

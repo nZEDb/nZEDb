@@ -10,7 +10,6 @@ $(document).ready( function () {
 	var mPass;
 
 	oTest.fnTest(
-
 		"Default should be null",
 		null,
 		function () { return oSettings.fnRowCallback == null; }
@@ -18,7 +17,6 @@ $(document).ready( function () {
 
 
 	oTest.fnTest(
-
 		"Four arguments passed",
 		function () {
 			oSession.fnRestore();
@@ -36,7 +34,6 @@ $(document).ready( function () {
 
 
 	oTest.fnTest(
-
 		"fnRowCallback called once for each drawn row",
 		function () {
 			oSession.fnRestore();
@@ -53,7 +50,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"fnRowCallback allows us to alter row information",
 		function () {
 			oSession.fnRestore();
@@ -68,7 +64,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Data array has length matching columns",
 		function () {
 			oSession.fnRestore();
@@ -86,7 +81,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Data array has length matching columns",
 		function () {
 			oSession.fnRestore();

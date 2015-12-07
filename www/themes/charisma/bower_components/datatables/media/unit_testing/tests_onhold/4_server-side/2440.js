@@ -20,12 +20,10 @@ $(document).ready( function () {
 
 	/* Basic checks */
 	oTest.fnWaitTest(
-
 		"Check length is correct when -1 length given",
 		null,
 		function () {
 			return document.getElementById('example_info').innerHTML ==
-
 				"Showing 1 to 57 of 57 entries";
 		}
 	);

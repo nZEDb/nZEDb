@@ -19,7 +19,6 @@ $(document).ready( function () {
 	var oSettings = oTable.fnSettings();
 
 	oTest.fnWaitTest(
-
 		"Names are stored in the columns object",
 		null,
 		function () { return oSettings.aoColumns[3].sName =="unit test"; }

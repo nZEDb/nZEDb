@@ -7,7 +7,6 @@ $(document).ready( function () {
 	} );
 
 	oTest.fnTest(
-
 		"Set the hidden column",
 		function () {
 			$('#example').dataTable().fnSetColumnVis( 2, false );
@@ -16,7 +15,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Destroy the table and remake it - checking one column was removed",
 		function () {
 			$('#example').dataTable( {
@@ -28,7 +26,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Do it again without state saving and make sure we are back to 5 columns",
 		function () {
 			$('#example').dataTable( {
