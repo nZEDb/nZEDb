@@ -1,4 +1,3 @@
-
 // event bindings
 jQuery(function($){
 
@@ -62,37 +61,37 @@ jQuery(function($){
             }
         });
     });
-	
+
     // browse.tpl, search.tpl
     $('.icon_cart').click(function(e){
         if ($(this).hasClass('icon_cart_clicked')) return false;
-		var guid = $(this).parent().parent().parent().parent().attr('id').substring(4);
+        var guid = $(this).parent().parent().parent().parent().attr('id').substring(4);
         $.post( SERVERROOT + "cart?add=" + guid, function(resp){
             $(e.target).addClass('icon_cart_clicked').attr('title',' Release added to Cart');
-	        $.pnotify({
-		        title: 'ADDED TO CART!',
-		        text: 'Its now in your Cart',
-		        type: 'warning',
-		        icon: 'fa-icon-info-sign'
-		    });        });
+            $.pnotify({
+                title: 'ADDED TO YOUR DOWNLOAD BASKET!',
+                text: 'Its now in your Download Basket',
+                type: 'warning',
+                icon: 'fa-icon-info-sign'
+            });        });
         return false;
     });
-	
+
     // browse.tpl, search.tpl
     $('.icon_cartNZBinfo').click(function(e){
         if ($(this).hasClass('icon_cart_clicked')) return false;
-		var guid = $(this).attr('id').substring(4);
+        var guid = $(this).attr('id').substring(4);
         $.post( SERVERROOT + "cart?add=" + guid, function(resp){
             $(e.target).addClass('icon_cart_clicked').attr('title',' Release added to Cart');
-	        $.pnotify({
-		        title: 'ADDED TO CART!',
-		        text: 'Its now in your Cart',
-		        type: 'warning',
-		        icon: 'fa-icon-info-sign'
-		    });        });
+            $.pnotify({
+                title: 'ADDED TO YOUR DOWNLOAD BASKET!',
+                text: 'Its now in your Download Basket',
+                type: 'warning',
+                icon: 'fa-icon-info-sign'
+            });        });
         return false;
     });
-	
+
     $('.icon_nzbvortex').click(function(event)
     {
         if ($(this).hasClass('icon_nzbvortex_clicked')) return false;
@@ -213,63 +212,63 @@ jQuery(function($){
         return false;
     });
 
-	$('.icon_sab').click(function(e){
-		if ($(this).hasClass('icon_sab_clicked')) return false;
+    $('.icon_sab').click(function(e){
+        if ($(this).hasClass('icon_sab_clicked')) return false;
 
-		var guid = $(this).parent().parent().parent().parent().attr('id').substring(4);
-		var nzburl = SERVERROOT + "sendtoqueue/" + guid;
+        var guid = $(this).parent().parent().parent().parent().attr('id').substring(4);
+        var nzburl = SERVERROOT + "sendtoqueue/" + guid;
 
-		$.post(nzburl, function(resp){
-			$(e.target).addClass('icon_sab_clicked').attr('title','Added to Queue');
-			
-	        $.pnotify({
-		        title: 'ADDED TO QUEUE!',
-		        text: 'Its now in the Queue',
-		        type: 'info',
-		        icon: 'fa-icon-info-sign'
-		    });
-		});
-		return false;
-	});
-	
-	$('.icon_sabNZBinfo').click(function(e){ // replace with cookies?
-		if ($(this).hasClass('icon_sabNZBinfo_clicked')) return false;
+        $.post(nzburl, function(resp){
+            $(e.target).addClass('icon_sab_clicked').attr('title','Added to Queue');
 
-		var guid = $(this).attr('id').substring(4);
-		var nzburl = SERVERROOT + "sendtoqueue/" + guid;
+            $.pnotify({
+                title: 'ADDED TO QUEUE!',
+                text: 'Its now in the Queue',
+                type: 'info',
+                icon: 'fa-icon-info-sign'
+            });
+        });
+        return false;
+    });
 
-		$.post(nzburl, function(resp){
-			$(e.target).addClass('icon_sabNZBinfo_clicked').attr('title','Added to Queue');
-			
-	        $.pnotify({
-		        title: 'ADDED TO NZBGET!',
-		        text: 'Its now in the Queue',
-		        type: 'info',
-		        icon: 'fa-icon-info-sign'
-		    });
-		});
-		return false;
-	});
-	
-	$('.icon_sabMovieinfo').click(function(e){ // replace with cookies?
-		if ($(this).hasClass('icon_sabMovieinfo_clicked')) return false;
+    $('.icon_sabNZBinfo').click(function(e){ // replace with cookies?
+        if ($(this).hasClass('icon_sabNZBinfo_clicked')) return false;
 
-		var guid = $(this).attr('id');
-		var nzburl = SERVERROOT + "sendtoqueue/" + guid;
+        var guid = $(this).attr('id').substring(4);
+        var nzburl = SERVERROOT + "sendtoqueue/" + guid;
 
-		$.post(nzburl, function(resp){
-			$(e.target).addClass('icon_sabMovieinfo_clicked').attr('title','Added to Queue');
-			
-	        $.pnotify({
-		        title: 'ADDED TO NZBGET!',
-		        text: 'Its now in the Queue',
-		        type: 'info',
-		        icon: 'fa-icon-info-sign'
-		    });
-		});
-		return false;
-	});
-	
+        $.post(nzburl, function(resp){
+            $(e.target).addClass('icon_sabNZBinfo_clicked').attr('title','Added to Queue');
+
+            $.pnotify({
+                title: 'ADDED TO NZBGET!',
+                text: 'Its now in the Queue',
+                type: 'info',
+                icon: 'fa-icon-info-sign'
+            });
+        });
+        return false;
+    });
+
+    $('.icon_sabMovieinfo').click(function(e){ // replace with cookies?
+        if ($(this).hasClass('icon_sabMovieinfo_clicked')) return false;
+
+        var guid = $(this).attr('id');
+        var nzburl = SERVERROOT + "sendtoqueue/" + guid;
+
+        $.post(nzburl, function(resp){
+            $(e.target).addClass('icon_sabMovieinfo_clicked').attr('title','Added to Queue');
+
+            $.pnotify({
+                title: 'ADDED TO NZBGET!',
+                text: 'Its now in the Queue',
+                type: 'info',
+                icon: 'fa-icon-info-sign'
+            });
+        });
+        return false;
+    });
+
     $('.icon_nzbget').click(function(e){
         if ($(this).hasClass('icon_nzbget_clicked')) return false;
 
@@ -289,18 +288,18 @@ jQuery(function($){
         title: function(){ return $(this).parent().parent().children('a.title').text(); },
         innerWidth:"800px", innerHeight:"90%", initialWidth:"800px", initialHeight:"90%", speed:0, opacity:0.7
     });
-	
+
     $("table.data a.modal_prev").colorbox(	  // Screenshot modal
-		{
-			scrolling:false, maxWidth:"800px", maxHeight:"450px"
-		}
-	);
-	
-	$("table.data a.modal_prev").colorbox(	  // Video modal
-	{
-		scrolling:false, maxWidth:"1200px", maxHeight:"675px"
-	}
-	);
+        {
+            scrolling:false, maxWidth:"800px", maxHeight:"450px"
+        }
+    );
+
+    $("table.data a.modal_prev").colorbox(	  // Video modal
+        {
+            scrolling:false, maxWidth:"1200px", maxHeight:"675px"
+        }
+    );
 
     $("table.data a.modal_imdb").colorbox({	 // IMDB modal
         href: function(){ return SERVERROOT + "movie/"+$(this).attr('name').substring(4)+'&modal'; },
@@ -340,8 +339,8 @@ jQuery(function($){
     }).click(function(){
         $('#colorbox').removeClass().addClass('cboxBook');
     });
-	
-	$("table.data a.modal_xxx").colorbox({	 // XXX modal
+
+    $("table.data a.modal_xxx").colorbox({	 // XXX modal
         href: function(){ return SERVERROOT + "xxx/"+$(this).attr('name').substring(4)+'&guid='+$(this).attr('guid').substring(4)+'&modal'; },
         title: function(){ return $(this).parent().parent().children('a.title').text(); },
         innerWidth:"800px", innerHeight:"450px", initialWidth:"800px", initialHeight:"450px", speed:0, opacity:0.7
@@ -365,6 +364,19 @@ jQuery(function($){
             window.location = SERVERROOT + "getnzb?zip=1&id="+ids;
     });
 
+    $('input.nzb_multi_operations_download_cart').click(function () {
+        var ids = "";
+        $("table.data INPUT[type='checkbox']:checked").each( function (i, row) {
+            if ($(row).val()!="on")
+                ids += $(row.id).selector+',';
+        });
+        ids = ids.substring(0,ids.length-1);
+        if (ids)
+        {
+            window.location = SERVERROOT + "getnzb?zip=1&id="+ids;
+        }
+    });
+
 
     $('input.nzb_multi_operations_cart').click(function(){
         var guids = new Array();
@@ -374,7 +386,13 @@ jQuery(function($){
             if (guid && !$cartIcon.hasClass('icon_cart_clicked')){
                 $cartIcon.addClass('icon_cart_clicked').attr('title','Added to Cart');
                 guids.push(guid);
-                cart_notify() // consider doing this only upon success and maybe placing it outside of the loop
+                //cart_notify() // consider doing this only upon success and maybe placing it outside of the loop
+                $.pnotify({
+                    title: 'ADDED TO YOUR DOWNLOAD BASKET!',
+                    text: 'Its now in your Download Basket',
+                    type: 'warning',
+                    icon: 'fa-icon-info-sign'
+                });
             }
             $(this).attr('checked', false);
         });
@@ -382,25 +400,47 @@ jQuery(function($){
         // alert (guidstring); // This is just for testing shit
         $.post( SERVERROOT + "cart?add=" + guidstring);
     });
-	$('input.nzb_multi_operations_sab').click(function(){
-	    $("table.data INPUT[type='checkbox']:checked").each( function(i, row) {
-	    	var $sabIcon = $(row).parent().parent().children('td.icons').children('.icon_sab');
-	    	var guid = $(row).val();
-			if (guid && !$sabIcon.hasClass('icon_sab_clicked')) {
-				var nzburl = SERVERROOT + "sendtoqueue/" + guid;
-				$.post( nzburl, function(resp){
-					$sabIcon.addClass('icon_sab_clicked').attr('title','Added to Queue');
-               				$.pnotify({
-                			        title: 'ADDED TO QUEUE!',
-                			        text: 'Its now in the queue!! ^_^',
-                			        type: 'info',
-                			        icon: 'fa-icon-info-sign'
-               			        });					
-				});
-			}
-			$(this).attr('checked', false);
-		});
-	});
+
+    $('input.nzb_multi_operations_sab').click(function(){
+        $("table.data INPUT[type='checkbox']:checked").each( function(i, row) {
+            var $sabIcon = $(row).parent().parent().children('td.icons').children('.icon_sab');
+            var guid = $(row).val();
+            if (guid && !$sabIcon.hasClass('icon_sab_clicked')) {
+                var nzburl = SERVERROOT + "sendtoqueue/" + guid;
+                $.post( nzburl, function(resp){
+                    $sabIcon.addClass('icon_sab_clicked').attr('title','Added to Queue');
+                    $.pnotify({
+                        title: 'ADDED TO QUEUE!',
+                        text: 'Its now in the queue!! ^_^',
+                        type: 'info',
+                        icon: 'fa-icon-info-sign'
+                    });
+                });
+            }
+            $(this).attr('checked', false);
+        });
+    });
+
+    $('input.nzb_multi_operations_sab_cart').click(function(){
+        $("table.data INPUT[type='checkbox']:checked").each( function(i, row) {
+            var $sabIcon = $(row).parent().parent().children('td.icons').children('.icon_sab');
+            var guid = $(row.id).selector;
+            if (guid && !$sabIcon.hasClass('icon_sab_clicked')) {
+                var nzburl = SERVERROOT + "sendtoqueue/" + guid;
+                $.post( nzburl, function(resp){
+                    $sabIcon.addClass('icon_sab_clicked').attr('title','Added to Queue');
+                    $.pnotify({
+                        title: 'ADDED TO QUEUE!',
+                        text: 'Its now in the queue!! ^_^',
+                        type: 'info',
+                        icon: 'fa-icon-info-sign'
+                    });
+                });
+            }
+            $(this).attr('checked', false);
+        });
+    });
+
     $('input.nzb_multi_operations_nzbget').click(function(){
         $("table.data INPUT[type='checkbox']:checked").each( function(i, row) {
             var $nzbgetIcon = $(row).parent().parent().children('td.icons').children('.icon_nzbget');
@@ -710,41 +750,41 @@ jQuery(function($){
         return false;
     });
 
-	// file list tooltip
-	$(".rarfilelist").each(function() {
-		var guid = $(this).children('img').attr('alt');
-	  	$(this).qtip({
-			content: {
-			  title: {
-				  text: 'rar archive contains...'
-			  },
-			  text: 'loading...',
-			  ajax: {
-			     url: SERVERROOT + 'ajax_rarfilelist', 
-			     type: 'GET',
-			     data: { id: guid },
-			     success: function(data, status) {
-			        this.set('content.text', data);
-			     }
-			  }
-			},
-			position: {
-				my: 'top right',
-				at: 'bottom left'
-			},
-			style: {
-			    classes: 'ui-tooltip-newznab',
-				width: { max: 500 },
-				tip: { 
-	        		corner: 'topRight', 
-	        		size: {
-	                	x: 8, 
-	                	y : 8 
-	             	}
-				}
-			}
-		});
-	});
+    // file list tooltip
+    $(".rarfilelist").each(function() {
+        var guid = $(this).children('img').attr('alt');
+        $(this).qtip({
+            content: {
+                title: {
+                    text: 'rar archive contains...'
+                },
+                text: 'loading...',
+                ajax: {
+                    url: SERVERROOT + 'ajax_rarfilelist',
+                    type: 'GET',
+                    data: { id: guid },
+                    success: function(data, status) {
+                        this.set('content.text', data);
+                    }
+                }
+            },
+            position: {
+                my: 'top right',
+                at: 'bottom left'
+            },
+            style: {
+                classes: 'ui-tooltip-newznab',
+                width: { max: 500 },
+                tip: {
+                    corner: 'topRight',
+                    size: {
+                        x: 8,
+                        y : 8
+                    }
+                }
+            }
+        });
+    });
 
     // seriesinfo tooltip
     $(".seriesinfo").each(function() {
@@ -802,7 +842,7 @@ jQuery(function($){
         });
     });
 
-	// preinfo tooltip
+    // preinfo tooltip
     $(".preinfo").each(function() {
         var searchname = $(this).attr('title');
         $(this).qtip({
@@ -825,7 +865,7 @@ jQuery(function($){
             }
         });
     });
-	
+
     // prehashinfo tooltip
     $(".prehashinfo").each(function () {
         var prehashid = $(this).attr('title');
@@ -843,18 +883,18 @@ jQuery(function($){
                         this.set('content.text', data);
                     }
                 }
-			},
-			style: {
-				classes: 'ui-tooltip-newznab',
-				width: { max: 500 },
-				tip: { 
-					corner: 'topLeft', 
-					size: {
-				    	x: 8, 
-				    	y : 8 
-				 	}
-				}
-			}
+            },
+            style: {
+                classes: 'ui-tooltip-newznab',
+                width: { max: 500 },
+                tip: {
+                    corner: 'topLeft',
+                    size: {
+                        x: 8,
+                        y : 8
+                    }
+                }
+            }
         });
     });
 });
@@ -924,45 +964,45 @@ $(document).ready(function()
         var persistent = false;
 
         $(document.body).qtip({
-            content: {
-                text: tipText,
-                title: {
-                    text: tipTitle,
-                    button: true
-                }
-            },
-            position: {
-                my: 'top right',
-                at: (target.length ? 'bottom' : 'top') + ' right',
-                target: target.length ? target : $(document.body),
-                adjust: { y: 5 }
-            },
-            show: {
-                event: false,
-                ready: true,
-                effect: function() { $(this).stop(0,1).fadeIn(400); },
+                content: {
+                    text: tipText,
+                    title: {
+                        text: tipTitle,
+                        button: true
+                    }
+                },
+                position: {
+                    my: 'top right',
+                    at: (target.length ? 'bottom' : 'top') + ' right',
+                    target: target.length ? target : $(document.body),
+                    adjust: { y: 5 }
+                },
+                show: {
+                    event: false,
+                    ready: true,
+                    effect: function() { $(this).stop(0,1).fadeIn(400); },
 
-                persistent: persistent
-            },
-            hide: {
-                event: false,
-                effect: function(api) {
-                    $(this).stop(0,1).fadeOut(400).queue(function() {
-                        api.destroy();
-                        updateGrowls();
-                    })
+                    persistent: persistent
+                },
+                hide: {
+                    event: false,
+                    effect: function(api) {
+                        $(this).stop(0,1).fadeOut(400).queue(function() {
+                            api.destroy();
+                            updateGrowls();
+                        })
+                    }
+                },
+                style: {
+                    classes: 'jgrowl ui-tooltip-newznab ui-tooltip-rounded',
+                    tip: false
+                },
+                events: {
+                    render: function(event, api) {
+                        timer.call(api.elements.tooltip, event);
+                    }
                 }
-            },
-            style: {
-                classes: 'jgrowl ui-tooltip-newznab ui-tooltip-rounded',
-                tip: false
-            },
-            events: {
-                render: function(event, api) {
-                    timer.call(api.elements.tooltip, event);
-                }
-            }
-        })
+            })
             .removeData('qtip');
     };
 
