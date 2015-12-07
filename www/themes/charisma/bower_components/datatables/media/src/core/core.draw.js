@@ -41,13 +41,13 @@ function _fnCreateTr ( oSettings, iRow )
 			nTd.innerHTML = (typeof oCol.fnRender === 'function' && (!oCol.bUseRendered || oCol.mData === null)) ?
 				_fnRender( oSettings, iRow, i ) :
 				_fnGetCellData( oSettings, iRow, i, 'display' );
-		
+
 			/* Add user defined class */
 			if ( oCol.sClass !== null )
 			{
 				nTd.className = oCol.sClass;
 			}
-			
+
 			if ( oCol.bVisible )
 			{
 				oData.nTr.appendChild( nTd );
@@ -82,7 +82,7 @@ function _fnBuildHead( oSettings )
 	var iThs = $('th, td', oSettings.nTHead).length;
 	var iCorrector = 0;
 	var jqChildren;
-	
+
 	/* If there is a header in place - then use it - otherwise it's going to get nuked... */
 	if ( iThs !== 0 )
 	{
@@ -101,7 +101,7 @@ function _fnBuildHead( oSettings )
 			{
 				$(nTh).addClass( oSettings.aoColumns[i].sClass );
 			}
-			
+
 			/* Set the title of the column if it is user defined (not what was auto detected) */
 			if ( oSettings.aoColumns[i].sTitle != nTh.innerHTML )
 			{
@@ -113,45 +113,45 @@ function _fnBuildHead( oSettings )
 	{
 		/* We don't have a header in the DOM - so we are going to have to create one */
 		var nTr = document.createElement( "tr" );
-		
+
 		for ( i=0, iLen=oSettings.aoColumns.length ; i<iLen ; i++ )
 		{
 			nTh = oSettings.aoColumns[i].nTh;
 			nTh.innerHTML = oSettings.aoColumns[i].sTitle;
 			nTh.setAttribute('tabindex', '0');
-			
+
 			if ( oSettings.aoColumns[i].sClass !== null )
 			{
 				$(nTh).addClass( oSettings.aoColumns[i].sClass );
 			}
-			
+
 			nTr.appendChild( nTh );
 		}
 		$(oSettings.nTHead).html( '' )[0].appendChild( nTr );
 		_fnDetectHeader( oSettings.aoHeader, oSettings.nTHead );
 	}
-	
-	/* ARIA role for the rows */	
+
+	/* ARIA role for the rows */
 	$(oSettings.nTHead).children('tr').attr('role', 'row');
-	
+
 	/* Add the extra markup needed by jQuery UI's themes */
 	if ( oSettings.bJUI )
 	{
 		for ( i=0, iLen=oSettings.aoColumns.length ; i<iLen ; i++ )
 		{
 			nTh = oSettings.aoColumns[i].nTh;
-			
+
 			var nDiv = document.createElement('div');
 			nDiv.className = oSettings.oClasses.sSortJUIWrapper;
 			$(nTh).contents().appendTo(nDiv);
-			
+
 			var nSpan = document.createElement('span');
 			nSpan.className = oSettings.oClasses.sSortIcon;
 			nDiv.appendChild( nSpan );
 			nTh.appendChild( nDiv );
 		}
 	}
-	
+
 	if ( oSettings.oFeatures.bSort )
 	{
 		for ( i=0 ; i<oSettings.aoColumns.length ; i++ )
@@ -166,13 +166,13 @@ function _fnBuildHead( oSettings )
 			}
 		}
 	}
-	
+
 	/* Deal with the footer - add classes if required */
 	if ( oSettings.oClasses.sFooterTH !== "" )
 	{
 		$(oSettings.nTFoot).children('tr').children('th').addClass( oSettings.oClasses.sFooterTH );
 	}
-	
+
 	/* Cache the footer elements */
 	if ( oSettings.nTFoot !== null )
 	{
@@ -196,13 +196,13 @@ function _fnBuildHead( oSettings )
  * Draw the header (or footer) element based on the column visibility states. The
  * methodology here is to use the layout array from _fnDetectHeader, modified for
  * the instantaneous column visibility, to construct the new layout. The grid is
- * traversed over cell at a time in a rows x columns grid fashion, although each 
+ * traversed over cell at a time in a rows x columns grid fashion, although each
  * cell insert can cover multiple elements in the grid - which is tracks using the
  * aApplied array. Cell inserts in the grid will only occur where there isn't
  * already a cell in that position.
  *  @param {object} oSettings dataTables settings object
  *  @param array {objects} aoSource Layout array from _fnDetectHeader
- *  @param {boolean} [bIncludeHidden=false] If true then include the hidden columns in the calc, 
+ *  @param {boolean} [bIncludeHidden=false] If true then include the hidden columns in the calc,
  *  @memberof DataTable#oApi
  */
 function _fnDrawHead( oSettings, aoSource, bIncludeHidden )
@@ -240,7 +240,7 @@ function _fnDrawHead( oSettings, aoSource, bIncludeHidden )
 	for ( i=0, iLen=aoLocal.length ; i<iLen ; i++ )
 	{
 		nLocalTr = aoLocal[i].nTr;
-		
+
 		/* All cells are going to be replaced, so empty out the row */
 		if ( nLocalTr )
 		{
@@ -306,15 +306,15 @@ function _fnDraw( oSettings )
 		_fnProcessingDisplay( oSettings, false );
 		return;
 	}
-	
+
 	var i, iLen, n;
 	var anRows = [];
 	var iRowCount = 0;
 	var iStripes = oSettings.asStripeClasses.length;
 	var iOpenRows = oSettings.aoOpenRows.length;
-	
+
 	oSettings.bDrawing = true;
-	
+
 	/* Check and see if we have an initial draw position from state saving */
 	if ( oSettings.iInitDisplayStart !== undefined && oSettings.iInitDisplayStart != -1 )
 	{
@@ -330,7 +330,7 @@ function _fnDraw( oSettings )
 		oSettings.iInitDisplayStart = -1;
 		_fnCalculateEnd( oSettings );
 	}
-	
+
 	/* Server-side processing draw intercept */
 	if ( oSettings.bDeferLoading )
 	{
@@ -345,18 +345,18 @@ function _fnDraw( oSettings )
 	{
 		return;
 	}
-	
+
 	if ( oSettings.aiDisplay.length !== 0 )
 	{
 		var iStart = oSettings._iDisplayStart;
 		var iEnd = oSettings._iDisplayEnd;
-		
+
 		if ( oSettings.oFeatures.bServerSide )
 		{
 			iStart = 0;
 			iEnd = oSettings.aoData.length;
 		}
-		
+
 		for ( var j=iStart ; j<iEnd ; j++ )
 		{
 			var aoData = oSettings.aoData[ oSettings.aiDisplay[j] ];
@@ -366,7 +366,7 @@ function _fnDraw( oSettings )
 			}
 
 			var nRow = aoData.nTr;
-			
+
 			/* Remove the old striping classes and then add the new one */
 			if ( iStripes !== 0 )
 			{
@@ -377,14 +377,14 @@ function _fnDraw( oSettings )
 					aoData._sRowStripe = sStripe;
 				}
 			}
-			
+
 			/* Row callback functions - might want to manipulate the row */
-			_fnCallbackFire( oSettings, 'aoRowCallback', null, 
+			_fnCallbackFire( oSettings, 'aoRowCallback', null,
 				[nRow, oSettings.aoData[ oSettings.aiDisplay[j] ]._aData, iRowCount, j] );
-			
+
 			anRows.push( nRow );
 			iRowCount++;
-			
+
 			/* If there is an open row - and it is attached to this parent - attach it on redraw */
 			if ( iOpenRows !== 0 )
 			{
@@ -403,7 +403,7 @@ function _fnDraw( oSettings )
 	{
 		/* Table is empty - create a row with an empty message in it */
 		anRows[ 0 ] = document.createElement( 'tr' );
-		
+
 		if ( oSettings.asStripeClasses[0] )
 		{
 			anRows[ 0 ].className = oSettings.asStripeClasses[0];
@@ -425,32 +425,32 @@ function _fnDraw( oSettings )
 		nTd.colSpan = _fnVisbleColumns( oSettings );
 		nTd.className = oSettings.oClasses.sRowEmpty;
 		nTd.innerHTML = _fnInfoMacros( oSettings, sZero );
-		
+
 		anRows[ iRowCount ].appendChild( nTd );
 	}
-	
+
 	/* Header and footer callbacks */
-	_fnCallbackFire( oSettings, 'aoHeaderCallback', 'header', [ $(oSettings.nTHead).children('tr')[0], 
+	_fnCallbackFire( oSettings, 'aoHeaderCallback', 'header', [ $(oSettings.nTHead).children('tr')[0],
 		_fnGetDataMaster( oSettings ), oSettings._iDisplayStart, oSettings.fnDisplayEnd(), oSettings.aiDisplay ] );
-	
-	_fnCallbackFire( oSettings, 'aoFooterCallback', 'footer', [ $(oSettings.nTFoot).children('tr')[0], 
+
+	_fnCallbackFire( oSettings, 'aoFooterCallback', 'footer', [ $(oSettings.nTFoot).children('tr')[0],
 		_fnGetDataMaster( oSettings ), oSettings._iDisplayStart, oSettings.fnDisplayEnd(), oSettings.aiDisplay ] );
-	
-	/* 
+
+	/*
 	 * Need to remove any old row from the display - note we can't just empty the tbody using
-	 * $().html('') since this will unbind the jQuery event handlers (even although the node 
+	 * $().html('') since this will unbind the jQuery event handlers (even although the node
 	 * still exists!) - equally we can't use innerHTML, since IE throws an exception.
 	 */
 	var
 		nAddFrag = document.createDocumentFragment(),
 		nRemoveFrag = document.createDocumentFragment(),
 		nBodyPar, nTrs;
-	
+
 	if ( oSettings.nTBody )
 	{
 		nBodyPar = oSettings.nTBody.parentNode;
 		nRemoveFrag.appendChild( oSettings.nTBody );
-		
+
 		/* When doing infinite scrolling, only remove child rows when sorting, filtering or start
 		 * up. When not infinite scroll, always do it.
 		 */
@@ -462,28 +462,28 @@ function _fnDraw( oSettings )
 				oSettings.nTBody.removeChild( n );
 			}
 		}
-		
+
 		/* Put the draw table into the dom */
 		for ( i=0, iLen=anRows.length ; i<iLen ; i++ )
 		{
 			nAddFrag.appendChild( anRows[i] );
 		}
-		
+
 		oSettings.nTBody.appendChild( nAddFrag );
 		if ( nBodyPar !== null )
 		{
 			nBodyPar.appendChild( oSettings.nTBody );
 		}
 	}
-	
+
 	/* Call all required callback functions for the end of a draw */
 	_fnCallbackFire( oSettings, 'aoDrawCallback', 'draw', [oSettings] );
-	
+
 	/* Draw is complete, sorting and filtering must be as well */
 	oSettings.bSorted = false;
 	oSettings.bFiltered = false;
 	oSettings.bDrawing = false;
-	
+
 	if ( oSettings.oFeatures.bServerSide )
 	{
 		_fnProcessingDisplay( oSettings, false );
@@ -533,8 +533,8 @@ function _fnAddOptionsHtml ( oSettings )
 	 */
 	var nHolding = $('<div></div>')[0];
 	oSettings.nTable.parentNode.insertBefore( nHolding, oSettings.nTable );
-	
-	/* 
+
+	/*
 	 * All DataTables are wrapped in a div
 	 */
 	oSettings.nTableWrapper = $('<div id="'+oSettings.sTableId+'_wrapper" class="'+oSettings.oClasses.sWrapper+'" role="grid"></div>')[0];
@@ -542,7 +542,7 @@ function _fnAddOptionsHtml ( oSettings )
 
 	/* Track where we want to insert the option */
 	var nInsertNode = oSettings.nTableWrapper;
-	
+
 	/* Loop over the user set positioning and place the elements as needed */
 	var aDom = oSettings.sDom.split('');
 	var nTmp, iPushFeature, cOption, nNewNode, cNext, sAttr, j;
@@ -550,12 +550,12 @@ function _fnAddOptionsHtml ( oSettings )
 	{
 		iPushFeature = 0;
 		cOption = aDom[i];
-		
+
 		if ( cOption == '<' )
 		{
 			/* New container div */
 			nNewNode = $('<div></div>')[0];
-			
+
 			/* Check to see if we should append an id and/or a class name to the container */
 			cNext = aDom[i+1];
 			if ( cNext == "'" || cNext == '"' )
@@ -567,7 +567,7 @@ function _fnAddOptionsHtml ( oSettings )
 					sAttr += aDom[i+j];
 					j++;
 				}
-				
+
 				/* Replace jQuery UI constants */
 				if ( sAttr == "H" )
 				{
@@ -577,7 +577,7 @@ function _fnAddOptionsHtml ( oSettings )
 				{
 					sAttr = oSettings.oClasses.sJUIFooter;
 				}
-				
+
 				/* The attribute can be in the format of "#id.class", "#id" or "class" This logic
 				 * breaks the string into parts and applies them as needed
 				 */
@@ -595,10 +595,10 @@ function _fnAddOptionsHtml ( oSettings )
 				{
 					nNewNode.className = sAttr;
 				}
-				
+
 				i += j; /* Move along the position array */
 			}
-			
+
 			nInsertNode.appendChild( nNewNode );
 			nInsertNode = nNewNode;
 		}
@@ -660,7 +660,7 @@ function _fnAddOptionsHtml ( oSettings )
 				}
 			}
 		}
-		
+
 		/* Add to the 2D features array */
 		if ( iPushFeature == 1 && nTmp !== null )
 		{
@@ -672,7 +672,7 @@ function _fnAddOptionsHtml ( oSettings )
 			nInsertNode.appendChild( nTmp );
 		}
 	}
-	
+
 	/* Built our DOM structure - replace the holding div with what we want */
 	nHolding.parentNode.replaceChild( oSettings.nTableWrapper, nHolding );
 }
@@ -702,19 +702,19 @@ function _fnDetectHeader ( aLayout, nThead )
 	};
 
 	aLayout.splice( 0, aLayout.length );
-	
+
 	/* We know how many rows there are in the layout - so prep it */
 	for ( i=0, iLen=nTrs.length ; i<iLen ; i++ )
 	{
 		aLayout.push( [] );
 	}
-	
+
 	/* Calculate a layout array */
 	for ( i=0, iLen=nTrs.length ; i<iLen ; i++ )
 	{
 		nTr = nTrs[i];
 		iColumn = 0;
-		
+
 		/* For every cell in the row... */
 		nCell = nTr.firstChild;
 		while ( nCell ) {
@@ -727,14 +727,14 @@ function _fnDetectHeader ( aLayout, nThead )
 				iColspan = (!iColspan || iColspan===0 || iColspan===1) ? 1 : iColspan;
 				iRowspan = (!iRowspan || iRowspan===0 || iRowspan===1) ? 1 : iRowspan;
 
-				/* There might be colspan cells already in this row, so shift our target 
+				/* There might be colspan cells already in this row, so shift our target
 				 * accordingly
 				 */
 				iColShifted = fnShiftCol( aLayout, i, iColumn );
-				
+
 				/* Cache calculation for unique columns */
 				bUnique = iColspan === 1 ? true : false;
-				
+
 				/* If there is col / rowspan, copy the information into the layout grid */
 				for ( l=0 ; l<iColspan ; l++ )
 				{
@@ -779,14 +779,14 @@ function _fnGetUniqueThs ( oSettings, nHeader, aLayout )
 	{
 		for ( var j=0, jLen=aLayout[i].length ; j<jLen ; j++ )
 		{
-			if ( aLayout[i][j].unique && 
+			if ( aLayout[i][j].unique &&
 				 (!aReturn[j] || !oSettings.bSortCellsTop) )
 			{
 				aReturn[j] = aLayout[i][j].cell;
 			}
 		}
 	}
-	
+
 	return aReturn;
 }
 

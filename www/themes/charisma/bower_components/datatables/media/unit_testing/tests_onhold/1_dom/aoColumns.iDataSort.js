@@ -15,33 +15,33 @@ $(document).ready( function () {
 		]
 	} );
 	var oSettings = oTable.fnSettings();
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
 		"Sorting on first column is uneffected",
 		null,
 		function () { return $('#example tbody tr:eq(0) td:eq(0)').html() == 'Gecko'; }
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
 		"Sorting on second column is the order of the fifth",
 		function () { $('#example thead th:eq(1)').click(); },
 		function () { return $('#example tbody tr:eq(0) td:eq(4)').html() == 'A'; }
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
 		"Reserve sorting on second column uses fifth column as well",
 		function () { $('#example thead th:eq(1)').click(); },
 		function () { return $('#example tbody tr:eq(0) td:eq(4)').html() == 'X'; }
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
 		"Sorting on 5th column retains it's own sorting",
 		function () { $('#example thead th:eq(4)').click(); },
 		function () { return $('#example tbody tr:eq(0) td:eq(4)').html() == 'A'; }
 	);
-	
-	
-	oTest.fnTest( 
+
+
+	oTest.fnTest(
 		"Use 2nd col for sorting 5th col and via-versa - no effect on first col sorting",
 		function () {
 			mTmp = 0;
@@ -58,31 +58,31 @@ $(document).ready( function () {
 		},
 		function () { return $('#example tbody tr:eq(0) td:eq(0)').html() == 'Gecko'; }
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
 		"2nd col sorting uses fifth col",
 		function () { $('#example thead th:eq(1)').click(); },
 		function () { return $('#example tbody tr:eq(0) td:eq(4)').html() == 'A'; }
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
 		"2nd col sorting uses fifth col - reversed",
 		function () { $('#example thead th:eq(1)').click(); },
 		function () { return $('#example tbody tr:eq(0) td:eq(4)').html() == 'X'; }
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
 		"5th col sorting uses 2nd col",
 		function () { $('#example thead th:eq(4)').click(); },
 		function () { return $('#example tbody tr:eq(0) td:eq(1)').html() == 'All others'; }
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
 		"5th col sorting uses 2nd col - reversed",
 		function () { $('#example thead th:eq(4)').click(); },
 		function () { return $('#example tbody tr:eq(0) td:eq(1)').html() == 'Seamonkey 1.1'; }
 	);
-	
-	
+
+
 	oTest.fnComplete();
 } );

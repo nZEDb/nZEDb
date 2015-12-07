@@ -3,7 +3,7 @@
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<link rel="shortcut icon" type="image/ico" href="http://www.datatables.net/favicon.ico" />
-		
+
 		<title>DataTables example</title>
 		<style type="text/css" title="currentStyle">
 			@import "../../media/css/demo_page.css";
@@ -37,11 +37,11 @@
 					return false;
 				}
 			);
-			
+
 			$(document).ready(function() {
 				/* Initialise datatables */
 				var oTable = $('#example').dataTable();
-				
+
 				/* Add event listeners to the two range filtering inputs */
 				$('#min').keyup( function() { oTable.fnDraw(); } );
 				$('#max').keyup( function() { oTable.fnDraw(); } );
@@ -53,10 +53,10 @@
 			<div class="full_width big">
 				DataTables custom filtering (range filtering) example
 			</div>
-			
+
 			<h1>Preamble</h1>
 			<p>There may be occasions when you wish to filter data presented to the end user in your own manner, common examples are number range filtering (in between two numbers) and date range filtering. DataTables provide an API method to add your own filtering functions, <b>$.fn.dataTableExt.afnFiltering</b>. This is an array of functions (push your own onto it) which will will be run at table draw time to see if a particular row should be included or not.</p>
-			
+
 			<h1>Live example</h1>
 			<table border="0" cellspacing="5" cellpadding="5">
 				<tr>
@@ -496,8 +496,8 @@
 </table>
 			</div>
 			<div class="spacer"></div>
-			
-			
+
+
 			<h1>Initialisation code</h1>
 			<pre class="brush: js;">/* Custom filtering function which will filter data in column four between two values */
 $.fn.dataTableExt.afnFiltering.push(
@@ -528,7 +528,7 @@ $.fn.dataTableExt.afnFiltering.push(
 $(document).ready(function() {
 	/* Initialise datatables */
 	var oTable = $('#example').dataTable();
-	
+
 	/* Add event listeners to the two range filtering inputs */
 	$('#min').keyup( function() { oTable.fnDraw(); } );
 	$('#max').keyup( function() { oTable.fnDraw(); } );
@@ -537,8 +537,8 @@ $(document).ready(function() {
 				@import "../examples_support/syntax/css/shCore.css";
 			</style>
 			<script type="text/javascript" language="javascript" src="../examples_support/syntax/js/shCore.js"></script>
-			
-			
+
+
 			<h1>Other examples</h1>
 			<div class="demo_links">
 				<h2>Basic initialisation</h2>
@@ -555,21 +555,21 @@ $(document).ready(function() {
 					<li><a href="../basic_init/state_save.html">State saving</a></li>
 					<li><a href="../basic_init/alt_pagination.html">Alternative pagination styles</a></li>
 					<li>Scrolling: <br>
-						<a href="../basic_init/scroll_x.html">Horizontal</a> / 
-						<a href="../basic_init/scroll_y.html">Vertical</a> / 
-						<a href="../basic_init/scroll_xy.html">Both</a> / 
-						<a href="../basic_init/scroll_y_theme.html">Themed</a> / 
+						<a href="../basic_init/scroll_x.html">Horizontal</a> /
+						<a href="../basic_init/scroll_y.html">Vertical</a> /
+						<a href="../basic_init/scroll_xy.html">Both</a> /
+						<a href="../basic_init/scroll_y_theme.html">Themed</a> /
 						<a href="../basic_init/scroll_y_infinite.html">Infinite</a>
 					</li>
 					<li><a href="../basic_init/language.html">Change language information (internationalisation)</a></li>
 					<li><a href="../basic_init/themes.html">ThemeRoller themes (Smoothness)</a></li>
 				</ul>
-				
+
 				<h2>Advanced initialisation</h2>
 				<ul>
 					<li>Events: <br>
-						<a href="../advanced_init/events_live.html">Live events</a> / 
-						<a href="../advanced_init/events_pre_init.html">Pre-init</a> / 
+						<a href="../advanced_init/events_live.html">Live events</a> /
+						<a href="../advanced_init/events_pre_init.html">Pre-init</a> /
 						<a href="../advanced_init/events_post_init.html">Post-init</a>
 					</li>
 					<li><a href="../advanced_init/column_render.html">Column rendering</a></li>
@@ -588,7 +588,7 @@ $(document).ready(function() {
 					<li><a href="../advanced_init/localstorage.html">State saving with localStorage</a></li>
 					<li><a href="../advanced_init/dt_events.html">Custom events</a></li>
 				</ul>
-				
+
 				<h2>API</h2>
 				<ul>
 					<li><a href="../api/add_row.html">Dynamically add a new row</a></li>
@@ -607,7 +607,7 @@ $(document).ready(function() {
 					<li><a href="../api/regex.html">Regular expression filtering</a></li>
 				</ul>
 			</div>
-			
+
 			<div class="demo_links">
 				<h2>Data sources</h2>
 				<ul>
@@ -616,7 +616,7 @@ $(document).ready(function() {
 					<li><a href="../data_sources/ajax.html">Ajax source</a></li>
 					<li><a href="../data_sources/server_side.html">Server side processing</a></li>
 				</ul>
-				
+
 				<h2>Server-side processing</h2>
 				<ul>
 					<li><a href="../server_side/server_side.html">Obtain server-side data</a></li>
@@ -631,7 +631,7 @@ $(document).ready(function() {
 					<li><a href="../server_side/defer_loading.html">Deferred loading of Ajax data</a></li>
 					<li><a href="../server_side/pipeline.html">Pipelining data (reduce Ajax calls for paging)</a></li>
 				</ul>
-				
+
 				<h2>Ajax data source</h2>
 				<ul>
 					<li><a href="../ajax/ajax.html">Ajax sourced data (array of arrays)</a></li>
@@ -642,7 +642,7 @@ $(document).ready(function() {
 					<li><a href="../ajax/objects_subarrays.html">Read column data from sub-arrays</a></li>
 					<li><a href="../ajax/deep.html">Read column data from deeply nested properties</a></li>
 				</ul>
-				
+
 				<h2>Plug-ins</h2>
 				<ul>
 					<li><a href="../plug-ins/plugin_api.html">Add custom API functions</a></li>
@@ -654,14 +654,14 @@ $(document).ready(function() {
 					<li><a href="../plug-ins/html_sort.html">Automatic HTML type detection</a></li>
 				</ul>
 			</div>
-			
-			
+
+
 			<div id="footer" class="clear" style="text-align:center;">
 				<p>
 					Please refer to the <a href="http://www.datatables.net/usage">DataTables documentation</a> for full information about its API properties and methods.<br>
 					Additionally, there are a wide range of <a href="http://www.datatables.net/extras">extras</a> and <a href="http://www.datatables.net/plug-ins">plug-ins</a> which extend the capabilities of DataTables.
 				</p>
-				
+
 				<span style="font-size:10px;">
 					DataTables designed and created by <a href="http://www.sprymedia.co.uk">Allan Jardine</a> &copy; 2007-2011<br>
 					DataTables is dual licensed under the <a href="http://www.datatables.net/license_gpl2">GPL v2 license</a> or a <a href="http://www.datatables.net/license_bsd">BSD (3-point) license</a>.

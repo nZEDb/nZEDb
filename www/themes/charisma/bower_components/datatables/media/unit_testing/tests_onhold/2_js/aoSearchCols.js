@@ -9,12 +9,12 @@ $(document).ready( function () {
 		"aaData": gaaData
 	} );
 	var oSettings = oTable.fnSettings();
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
 		"Default should be to have a empty colums array",
 		null,
 		function () {
-			var bReturn = 
+			var bReturn =
 				oSettings.aoPreSearchCols[0].sSearch == 0 && !oSettings.aoPreSearchCols[0].bRegex &&
 				oSettings.aoPreSearchCols[1].sSearch == 0 && !oSettings.aoPreSearchCols[1].bRegex &&
 				oSettings.aoPreSearchCols[2].sSearch == 0 && !oSettings.aoPreSearchCols[2].bRegex &&
@@ -23,9 +23,9 @@ $(document).ready( function () {
 			return bReturn;
 		}
 	);
-	
-	
-	oTest.fnTest( 
+
+
+	oTest.fnTest(
 		"Search on a single column - no regex statement given",
 		function () {
 			oSession.fnRestore();
@@ -42,8 +42,8 @@ $(document).ready( function () {
 		},
 		function () { return $('#example_info').html() == "Showing 1 to 9 of 9 entries (filtered from 57 total entries)"; }
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
 		"Search on two columns - no regex statement given",
 		function () {
 			oSession.fnRestore();
@@ -60,8 +60,8 @@ $(document).ready( function () {
 		},
 		function () { return $('#example tbody tr:eq(0) td:eq(3)').html() == "1.5"; }
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
 		"Search on single column - escape regex false",
 		function () {
 			oSession.fnRestore();
@@ -78,8 +78,8 @@ $(document).ready( function () {
 		},
 		function () { return $('#example_info').html() == "Showing 1 to 3 of 3 entries (filtered from 57 total entries)"; }
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
 		"Search on two columns - escape regex false on first, true on second",
 		function () {
 			oSession.fnRestore();
@@ -96,8 +96,8 @@ $(document).ready( function () {
 		},
 		function () { return $('#example tbody tr:eq(0) td:eq(1)').html() == "Konqureror 3.3"; }
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
 		"Search on two columns (no records) - escape regex false on first, true on second",
 		function () {
 			oSession.fnRestore();
@@ -114,6 +114,6 @@ $(document).ready( function () {
 		},
 		function () { return $('#example tbody tr:eq(0) td:eq(0)').html() == "No matching records found"; }
 	);
-	
+
 	oTest.fnComplete();
 } );

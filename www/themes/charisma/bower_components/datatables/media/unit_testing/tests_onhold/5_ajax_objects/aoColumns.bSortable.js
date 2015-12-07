@@ -14,14 +14,14 @@ $(document).ready( function () {
 		]
 	} );
 	var oSettings = oTable.fnSettings();
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
 		"All columns are sortable by default",
 		function () { $('#example thead th:eq(1)').click(); },
 		function () { return $('#example tbody tr:eq(0) td:eq(1)').html() == "All others"; }
 	);
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
 		"Can disable sorting from one column",
 		function () {
 			oSession.fnRestore();
@@ -39,14 +39,14 @@ $(document).ready( function () {
 		},
 		function () { return $('#example tbody tr:eq(0) td:eq(1)').html() != "All others"; }
 	);
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
 		"Disabled column has no sorting class",
 		null,
 		function () { return $('#example thead th:eq(1)').hasClass("sorting_asc") == false; }
 	);
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
 		"Other columns can still sort",
 		function () {
 			$('#example thead th:eq(4)').click();
@@ -54,8 +54,8 @@ $(document).ready( function () {
 		},
 		function () { return $('#example tbody tr:eq(0) td:eq(4)').html() == "X"; }
 	);
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
 		"Disable sorting on multiple columns - no sorting classes",
 		function () {
 			oSession.fnRestore();
@@ -71,38 +71,38 @@ $(document).ready( function () {
 			} );
 		},
 		function () {
-			var bReturn = 
+			var bReturn =
 				$('#example thead th:eq(1)').hasClass("sorting") ||
 				$('#example thead th:eq(3)').hasClass("sorting")
 			return bReturn == false;
 		}
 	);
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
 		"Sorting on disabled column 1 has no effect",
 		function () {
 			$('#example thead th:eq(1)').click();
 		},
 		function () { return $('#example tbody tr:eq(0) td:eq(1)').html() != "All others"; }
 	);
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
 		"Sorting on disabled column 2 has no effect",
 		function () {
 			$('#example thead th:eq(3)').click();
 		},
 		function () { return $('#example tbody tr:eq(0) td:eq(3)').html() != "-"; }
 	);
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
 		"Second sort on disabled column 2 has no effect",
 		function () {
 			$('#example thead th:eq(3)').click();
 		},
 		function () { return $('#example tbody tr:eq(0) td:eq(3)').html() != "-"; }
 	);
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
 		"Even with multiple disabled sorting columns other columns can still sort",
 		function () {
 			$('#example thead th:eq(4)').click();
@@ -110,7 +110,7 @@ $(document).ready( function () {
 		},
 		function () { return $('#example tbody tr:eq(0) td:eq(4)').html() == "X"; }
 	);
-	
-	
+
+
 	oTest.fnComplete();
 } );

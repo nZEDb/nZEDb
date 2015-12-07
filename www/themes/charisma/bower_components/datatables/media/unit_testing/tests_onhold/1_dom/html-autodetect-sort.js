@@ -3,8 +3,8 @@ oTest.fnStart( "HTML auto detect" );
 
 $(document).ready( function () {
 	var oTable = $('#example').dataTable();
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
 		"Initial sort",
 		null,
 		function () {
@@ -15,8 +15,8 @@ $(document).ready( function () {
 			return ret;
 		}
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
 		"HTML sort",
 		function () { $('#example thead th:eq(1)').click() },
 		function () {
@@ -27,8 +27,8 @@ $(document).ready( function () {
 			return ret;
 		}
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
 		"HTML reverse sort",
 		function () { $('#example thead th:eq(1)').click() },
 		function () {
@@ -39,8 +39,8 @@ $(document).ready( function () {
 			return ret;
 		}
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
 		"Numeric sort",
 		function () { $('#example thead th:eq(0)').click() },
 		function () {
@@ -51,7 +51,7 @@ $(document).ready( function () {
 			return ret;
 		}
 	);
-	
-	
+
+
 	oTest.fnComplete();
 } );

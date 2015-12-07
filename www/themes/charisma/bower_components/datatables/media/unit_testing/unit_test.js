@@ -10,40 +10,40 @@
  * License:     GPL v2 or BSD 3 point style
  * Project:     DataTables
  * Contact:     allan.jardine@sprymedia.co.uk
- * 
+ *
  * Copyright 2009 Allan Jardine, all rights reserved.
  *
  * Description:
  * This is a javascript library suitable for use as a unit testing framework. Employing a queuing
  * mechanisim to take account of async events in javascript, this library will communicates with
  * a controller frame (to report individual test status).
- * 
+ *
  */
 
 
 var oTest = {
 	/* Block further tests from occuring - might be end of tests or due to async wait */
 	bBlock: false,
-	
+
 	/* Number of times to try retesting for a blocking test */
 	iReTestLimit: 20,
-	
+
 	/* Amount of time to wait between trying for an async test */
 	iReTestDelay: 150,
-	
+
 	/* End tests - external control */
 	bEnd: false,
-	
+
 	/* Internal variables */
 	_aoQueue: [],
 	_iReTest: 0,
 	_bFinished: false,
-	
-	
+
+
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 * Recommened public functions
 	 */
-	
+
 	/*
 	 * Function: fnTest
 	 * Purpose:  Add a test to the queue
@@ -61,7 +61,7 @@ var oTest = {
 		} );
 		this._fnNext();
 	},
-	
+
 	/*
 	 * Function: fnWaitTest
 	 * Purpose:  Add a test to the queue which has a re-test cycle
@@ -79,7 +79,7 @@ var oTest = {
 		} );
 		this._fnNext();
 	},
-	
+
 	/*
 	 * Function: fnStart
 	 * Purpose:  Indicate that this is a new unit and what it is testing (message to end user)
@@ -90,7 +90,7 @@ var oTest = {
 	{
 		window.parent.controller.fnStartMessage( sMessage );
 	},
-	
+
 	/*
 	 * Function: fnComplete
 	 * Purpose:  Tell the controller that we are all done here
@@ -102,7 +102,7 @@ var oTest = {
 		this._bFinished = true;
 		this._fnNext();
 	},
-	
+
 	/*
 	 * Function: fnCookieDestroy
 	 * Purpose:  Destroy a cookie of a given name
@@ -117,14 +117,14 @@ var oTest = {
 		document.cookie = sNameFile+"=; expires=Thu, 01-Jan-1970 00:00:01 GMT; path="+
 			aParts.join('/') + "/";
 	},
-	
-	
-	
+
+
+
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 * Internal functions
 	 */
-	
-	
+
+
 	"_fnReTest": function ( oTestInfo )
 	{
 		var bResult = oTestInfo.fnTest( );
@@ -149,27 +149,27 @@ var oTest = {
 			}
 		}
 	},
-	
+
 	"_fnNext": function ()
 	{
 		if ( this.bEnd )
 		{
 			return;
 		}
-		
+
 		if ( !this.bBlock && this._aoQueue.length > 0 )
 		{
 			var oNextTest = this._aoQueue.shift();
 			window.parent.controller.fnTestStart( oNextTest.sMessage );
 			this.bBlock = true;
-			
+
 			if ( typeof oNextTest.fnSetup == 'function' )
 			{
 				oNextTest.fnSetup( );
 			}
 			var bResult = oNextTest.fnTest( );
 			//bResult = false;
-			
+
 			if ( oNextTest.bPoll )
 			{
 				if ( bResult )
@@ -196,7 +196,7 @@ var oTest = {
 			window.parent.controller.fnUnitComplete( );
 		}
 	},
-	
+
 	"_fnResult": function ( b )
 	{
 		window.parent.controller.fnTestResult( b );
@@ -218,7 +218,7 @@ var oDispacher = {
 		else
 			nNode.fireEvent('onclick', evt);
 	},
-	
+
 	"change": function ( nNode )
 	{
 		var evt = this.fnCreateEvent( 'change', nNode );
@@ -227,8 +227,8 @@ var oDispacher = {
 		else
 			nNode.fireEvent('onchange', evt);
 	},
-	
-	
+
+
 	/*
 	 * Function: fnCreateEvent
 	 * Purpose:  Create an event oject based on the type to trigger an event - x-platform
@@ -245,34 +245,34 @@ var oDispacher = {
 		{
 			oSpecial = {};
 		}
-		
+
 		var ctrlKey = false;
 		var altKey = false;
 		var shiftKey = (typeof oSpecial.shift != 'undefined') ? oSpecial.shift : false;
 		var metaKey = false;
 		var button = false;
-		
+
 		if ( document.createEvent )
 		{
 			switch ( sTypeGroup )
 			{
 				case 'mouse':
 					evt = document.createEvent( "MouseEvents" );
-					evt.initMouseEvent( sType, true, true, window, 0, oTargetPos[0], oTargetPos[1], 
-						oTargetPos[0], oTargetPos[1], ctrlKey, altKey, shiftKey, 
+					evt.initMouseEvent( sType, true, true, window, 0, oTargetPos[0], oTargetPos[1],
+						oTargetPos[0], oTargetPos[1], ctrlKey, altKey, shiftKey,
 						metaKey, button, null );
 					break;
-				
+
 				case 'html':
 					evt = document.createEvent( "HTMLEvents" );
 					evt.initEvent( sType, true, true );
 					break;
-					
+
 				case 'ui':
 					evt = document.createEvent( "UIEvents" );
 					evt.initUIEvent( sType, true, true, window, 0 );
 					break;
-				
+
 				default:
 					break;
 			}
@@ -294,38 +294,38 @@ var oDispacher = {
 					evt.button = button;
 					evt.relatedTarget = null;
 					break;
-				
+
 				case 'html':
 					/* fall through to basic event object */
-					
+
 				case 'ui':
 					evt = document.createEventObject();
 					break;
-				
+
 				default:
 					break;
 			}
 		}
-		
+
 		return evt;
 	},
-	
-	/* 
+
+	/*
 	 * Function: DesignCore.fnGetPos
 	 * Purpose:  Get the position of an element on the page
 	 * Returns:  array[ 0-int:left, 1-int:top ]
 	 * Inputs:   node:obj - node to analyse
 	 */
-	_fnGetPos: function ( obj ) 
+	_fnGetPos: function ( obj )
 	{
 		var curleft = 0;
 		var curtop = 0;
-		
-		if (obj.offsetParent) 
+
+		if (obj.offsetParent)
 		{
 			curleft = obj.offsetLeft;
 			curtop = obj.offsetTop;
-			while (obj = obj.offsetParent ) 
+			while (obj = obj.offsetParent )
 			{
 				curleft += obj.offsetLeft;
 				curtop += obj.offsetTop;
@@ -333,8 +333,8 @@ var oDispacher = {
 		}
 		return [curleft,curtop];
 	},
-	
-	
+
+
 	/*
 	 * Function: _fnEventTypeGroup
 	 * Purpose:  Group the event types as per w3c groupings
@@ -353,21 +353,21 @@ var oDispacher = {
 			case 'mouseover':
 			case 'mouseup':
 				return 'mouse';
-			
+
 			case 'change':
 			case 'focus':
 			case 'blur':
 			case 'select':
 			case 'submit':
 				return 'html';
-				
+
 			case 'keydown':
 			case 'keypress':
 			case 'keyup':
 			case 'load':
 			case 'unload':
 				return 'ui';
-			
+
 			default:
 				return 'custom';
 		}
@@ -377,12 +377,12 @@ var oDispacher = {
 
 var oSession = {
 	nTable: null,
-	
+
 	fnCache: function ()
 	{
 		this.nTable = document.getElementById('demo').cloneNode(true);
 	},
-	
+
 	fnRestore: function ()
 	{
 		while( $.fn.dataTableSettings.length > 0 )

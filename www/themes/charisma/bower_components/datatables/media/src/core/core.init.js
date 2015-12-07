@@ -8,17 +8,17 @@
 function _fnInitialise ( oSettings )
 {
 	var i, iLen, iAjaxStart=oSettings.iInitDisplayStart;
-	
+
 	/* Ensure that the table data is fully initialised */
 	if ( oSettings.bInitialised === false )
 	{
 		setTimeout( function(){ _fnInitialise( oSettings ); }, 200 );
 		return;
 	}
-	
+
 	/* Show the display HTML options */
 	_fnAddOptionsHtml( oSettings );
-	
+
 	/* Build and draw the header / footer for the table */
 	_fnBuildHead( oSettings );
 	_fnDrawHead( oSettings, oSettings.aoHeader );
@@ -29,13 +29,13 @@ function _fnInitialise ( oSettings )
 
 	/* Okay to show that something is going on now */
 	_fnProcessingDisplay( oSettings, true );
-	
+
 	/* Calculate sizes for columns */
 	if ( oSettings.oFeatures.bAutoWidth )
 	{
 		_fnCalculateColumnWidths( oSettings );
 	}
-	
+
 	for ( i=0, iLen=oSettings.aoColumns.length ; i<iLen ; i++ )
 	{
 		if ( oSettings.aoColumns[i].sWidth !== null )
@@ -43,7 +43,7 @@ function _fnInitialise ( oSettings )
 			oSettings.aoColumns[i].nTh.style.width = _fnStringToCss( oSettings.aoColumns[i].sWidth );
 		}
 	}
-	
+
 	/* If there is default sorting required - let's do it. The sort function will do the
 	 * drawing for us. Otherwise we draw the table regardless of the Ajax source - this allows
 	 * the table to look initialised for Ajax sourcing data (show 'loading' message possibly)
@@ -62,7 +62,7 @@ function _fnInitialise ( oSettings )
 		_fnCalculateEnd( oSettings );
 		_fnDraw( oSettings );
 	}
-	
+
 	/* if there is an ajax source load the data */
 	if ( oSettings.sAjaxSource !== null && !oSettings.oFeatures.bServerSide )
 	{
@@ -77,12 +77,12 @@ function _fnInitialise ( oSettings )
 			{
 				_fnAddData( oSettings, aData[i] );
 			}
-			
+
 			/* Reset the init display for cookie saving. We've already done a filter, and
 			 * therefore cleared it before. So we need to make it appear 'fresh'
 			 */
 			oSettings.iInitDisplayStart = iAjaxStart;
-			
+
 			if ( oSettings.oFeatures.bSort )
 			{
 				_fnSort( oSettings );
@@ -93,13 +93,13 @@ function _fnInitialise ( oSettings )
 				_fnCalculateEnd( oSettings );
 				_fnDraw( oSettings );
 			}
-			
+
 			_fnProcessingDisplay( oSettings, false );
 			_fnInitComplete( oSettings, json );
 		}, oSettings );
 		return;
 	}
-	
+
 	/* Server-side processing initialisation complete is done at the end of _fnDraw */
 	if ( !oSettings.oFeatures.bServerSide )
 	{

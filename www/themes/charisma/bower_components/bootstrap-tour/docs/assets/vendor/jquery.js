@@ -1521,7 +1521,7 @@ jQuery.support = (function() {
 
 var rbrace = /(?:\{[\s\S]*\}|\[[\s\S]*\])$/,
 	rmultiDash = /([A-Z])/g;
-	
+
 function internalData( elem, name, data, pvt /* Internal Use Only */ ){
 	if ( !jQuery.acceptData( elem ) ) {
 		return;
@@ -1737,7 +1737,7 @@ jQuery.extend({
 	_data: function( elem, name, data ) {
 		return internalData( elem, name, data, true );
 	},
-	
+
 	_removeData: function( elem, name ) {
 		return internalRemoveData( elem, name, true );
 	},
@@ -7365,7 +7365,7 @@ var
 	// Document location
 	ajaxLocParts,
 	ajaxLocation,
-	
+
 	ajax_nonce = jQuery.now(),
 
 	ajax_rquery = /\?/,

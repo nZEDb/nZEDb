@@ -9,12 +9,12 @@
 function _fnFeatureHtmlFilter ( oSettings )
 {
 	var oPreviousSearch = oSettings.oPreviousSearch;
-	
+
 	var sSearchStr = oSettings.oLanguage.sSearch;
 	sSearchStr = (sSearchStr.indexOf('_INPUT_') !== -1) ?
 	  sSearchStr.replace('_INPUT_', '<input type="text" />') :
 	  sSearchStr==="" ? '<input type="text" />' : sSearchStr+' <input type="text" />';
-	
+
 	var nFilter = document.createElement( 'div' );
 	nFilter.className = oSettings.oClasses.sFilter;
 	nFilter.innerHTML = '<label>'+sSearchStr+'</label>';
@@ -22,7 +22,7 @@ function _fnFeatureHtmlFilter ( oSettings )
 	{
 		nFilter.id = oSettings.sTableId+'_filter';
 	}
-	
+
 	var jqFilter = $('input[type="text"]', nFilter);
 
 	// Store a reference to the input element, so other input elements could be
@@ -42,15 +42,15 @@ function _fnFeatureHtmlFilter ( oSettings )
 				$(n[i]._DT_Input).val( val );
 			}
 		}
-		
+
 		/* Now do the filter */
 		if ( val != oPreviousSearch.sSearch )
 		{
-			_fnFilterComplete( oSettings, { 
-				"sSearch": val, 
+			_fnFilterComplete( oSettings, {
+				"sSearch": val,
 				"bRegex": oPreviousSearch.bRegex,
 				"bSmart": oPreviousSearch.bSmart ,
-				"bCaseInsensitive": oPreviousSearch.bCaseInsensitive 
+				"bCaseInsensitive": oPreviousSearch.bCaseInsensitive
 			} );
 		}
 	} );
@@ -65,7 +65,7 @@ function _fnFeatureHtmlFilter ( oSettings )
 			}
 		}
 	);
-	
+
 	return nFilter;
 }
 
@@ -99,10 +99,10 @@ function _fnFilterComplete ( oSettings, oInput, iForce )
 		/* Now do the individual column filter */
 		for ( var i=0 ; i<oSettings.aoPreSearchCols.length ; i++ )
 		{
-			_fnFilterColumn( oSettings, aoPrevSearch[i].sSearch, i, aoPrevSearch[i].bRegex, 
+			_fnFilterColumn( oSettings, aoPrevSearch[i].sSearch, i, aoPrevSearch[i].bRegex,
 				aoPrevSearch[i].bSmart, aoPrevSearch[i].bCaseInsensitive );
 		}
-		
+
 		/* Custom filtering */
 		_fnFilterCustom( oSettings );
 	}
@@ -110,16 +110,16 @@ function _fnFilterComplete ( oSettings, oInput, iForce )
 	{
 		fnSaveFilter( oInput );
 	}
-	
+
 	/* Tell the draw function we have been filtering */
 	oSettings.bFiltered = true;
 	$(oSettings.oInstance).trigger('filter', oSettings);
-	
+
 	/* Redraw the table */
 	oSettings._iDisplayStart = 0;
 	_fnCalculateEnd( oSettings );
 	_fnDraw( oSettings );
-	
+
 	/* Rebuild search array 'offline' */
 	_fnBuildSearchArray( oSettings, 0 );
 }
@@ -146,7 +146,7 @@ function _fnFilterCustom( oSettings )
 				_fnGetRowData( oSettings, iDisIndex, 'filter', aiFilterColumns ),
 				iDisIndex
 			);
-			
+
 			/* Check if we should use this row based on the filtering function */
 			if ( !bTest )
 			{
@@ -174,10 +174,10 @@ function _fnFilterColumn ( oSettings, sInput, iColumn, bRegex, bSmart, bCaseInse
 	{
 		return;
 	}
-	
+
 	var iIndexCorrector = 0;
 	var rpSearch = _fnFilterCreateSearch( sInput, bRegex, bSmart, bCaseInsensitive );
-	
+
 	for ( var i=oSettings.aiDisplay.length-1 ; i>=0 ; i-- )
 	{
 		var sData = _fnDataToSearch( _fnGetCellData( oSettings, oSettings.aiDisplay[i], iColumn, 'filter' ),
@@ -206,19 +206,19 @@ function _fnFilter( oSettings, sInput, iForce, bRegex, bSmart, bCaseInsensitive 
 	var i;
 	var rpSearch = _fnFilterCreateSearch( sInput, bRegex, bSmart, bCaseInsensitive );
 	var oPrevSearch = oSettings.oPreviousSearch;
-	
+
 	/* Check if we are forcing or not - optional parameter */
 	if ( !iForce )
 	{
 		iForce = 0;
 	}
-	
+
 	/* Need to take account of custom filtering functions - always filter */
 	if ( DataTable.ext.afnFiltering.length !== 0 )
 	{
 		iForce = 1;
 	}
-	
+
 	/*
 	 * If the input is blank - we want the full data set
 	 */
@@ -230,7 +230,7 @@ function _fnFilter( oSettings, sInput, iForce, bRegex, bSmart, bCaseInsensitive 
 	else
 	{
 		/*
-		 * We are starting a new search or the new search string is smaller 
+		 * We are starting a new search or the new search string is smaller
 		 * then the old one (i.e. delete). Search from the master array
 	 	 */
 		if ( oSettings.aiDisplay.length == oSettings.aiDisplayMaster.length ||
@@ -239,12 +239,12 @@ function _fnFilter( oSettings, sInput, iForce, bRegex, bSmart, bCaseInsensitive 
 		{
 			/* Nuke the old display array - we are going to rebuild it */
 			oSettings.aiDisplay.splice( 0, oSettings.aiDisplay.length);
-			
+
 			/* Force a rebuild of the search array */
 			_fnBuildSearchArray( oSettings, 1 );
-			
+
 			/* Search through all records to populate the search array
-			 * The the oSettings.aiDisplayMaster and asDataSearch arrays have 1 to 1 
+			 * The the oSettings.aiDisplayMaster and asDataSearch arrays have 1 to 1
 			 * mapping
 			 */
 			for ( i=0 ; i<oSettings.aiDisplayMaster.length ; i++ )
@@ -261,7 +261,7 @@ function _fnFilter( oSettings, sInput, iForce, bRegex, bSmart, bCaseInsensitive 
 	  	 * Don't have to search the whole master array again
 			 */
 	  	var iIndexCorrector = 0;
-	  	
+
 	  	/* Search the current results */
 	  	for ( i=0 ; i<oSettings.asDataSearch.length ; i++ )
 			{
@@ -293,7 +293,7 @@ function _fnBuildSearchArray ( oSettings, iMaster )
 		var aiIndex = (iMaster===1) ?
 		 	oSettings.aiDisplayMaster :
 		 	oSettings.aiDisplay;
-		
+
 		for ( var i=0, iLen=aiIndex.length ; i<iLen ; i++ )
 		{
 			oSettings.asDataSearch[i] = _fnBuildSearchRow(
@@ -314,13 +314,13 @@ function _fnBuildSearchArray ( oSettings, iMaster )
 function _fnBuildSearchRow( oSettings, aData )
 {
 	var sSearch = aData.join('  ');
-	
+
 	/* If it looks like there is an HTML entity in the string, attempt to decode it */
 	if ( sSearch.indexOf('&') !== -1 )
 	{
 		sSearch = $('<div>').html(sSearch).text();
 	}
-	
+
 	// Strip newline characters
 	return sSearch.replace( /[\n\r]/g, " " );
 }
@@ -337,7 +337,7 @@ function _fnBuildSearchRow( oSettings, aData )
 function _fnFilterCreateSearch( sSearch, bRegex, bSmart, bCaseInsensitive )
 {
 	var asSearch, sRegExpString;
-	
+
 	if ( bSmart )
 	{
 		/* Generate the regular expression to use. Something along the lines of:

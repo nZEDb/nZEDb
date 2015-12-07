@@ -26,7 +26,7 @@
 var factory = function( $, DataTable ) {
 "use strict";
 
-/** 
+/**
  * AutoFill provides Excel like auto-fill features for a DataTable
  *
  * @class AutoFill
@@ -330,7 +330,7 @@ AutoFill.prototype = {
 			height = offsetEnd.top + $(nEnd).outerHeight() - offsetStart.top + (2*border),
 			oStyle;
 
-		// Recalculate start and end (when dragging "backwards")  
+		// Recalculate start and end (when dragging "backwards")
 		if( offsetStart.left > offsetEnd.left) {
 			x1 = offsetEnd.left - border;
 			x2 = offsetStart.left + $(nStart).outerWidth();

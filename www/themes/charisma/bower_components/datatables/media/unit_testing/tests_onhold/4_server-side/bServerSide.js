@@ -10,12 +10,12 @@ $(document).ready( function () {
 		"sAjaxSource": "../../../examples/server_side/scripts/server_processing.php"
 	} );
 	var oSettings = oTable.fnSettings();
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
 		"Server side can be set to on",
 		null,
 		function () { return oSettings.oFeatures.bServerSide == true; }
 	);
-	
+
 	oTest.fnComplete();
 } );

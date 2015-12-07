@@ -7,21 +7,21 @@ $(document).ready( function () {
 		"sAjaxSource": "../../../examples/ajax/sources/arrays.txt",
 		"bDeferRender": true
 	} );
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
 		"Default length is ten",
 		null,
 		function () { return $('#example tbody tr').length == 10; }
 	);
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
 		"Select menu shows 10",
 		null,
 		function () { return $('#example_length select').val() == 10; }
 	);
-	
-	
-	oTest.fnWaitTest( 
+
+
+	oTest.fnWaitTest(
 		"Set initial length to 25",
 		function () {
 			oSession.fnRestore();
@@ -33,15 +33,15 @@ $(document).ready( function () {
 		},
 		function () { return $('#example tbody tr').length == 25; }
 	);
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
 		"Select menu shows 25",
 		null,
 		function () { return $('#example_length select').val() == 25; }
 	);
-	
-	
-	oTest.fnWaitTest( 
+
+
+	oTest.fnWaitTest(
 		"Set initial length to 100",
 		function () {
 			oSession.fnRestore();
@@ -53,15 +53,15 @@ $(document).ready( function () {
 		},
 		function () { return $('#example tbody tr').length == 57; }
 	);
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
 		"Select menu shows 25",
 		null,
 		function () { return $('#example_length select').val() == 100; }
 	);
-	
-	
-	oTest.fnWaitTest( 
+
+
+	oTest.fnWaitTest(
 		"Set initial length to 23 (unknown select menu length)",
 		function () {
 			oSession.fnRestore();
@@ -73,13 +73,13 @@ $(document).ready( function () {
 		},
 		function () { return $('#example tbody tr').length == 23; }
 	);
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
 		"Select menu shows 10 (since 23 is unknow)",
 		null,
 		function () { return $('#example_length select').val() == 10; }
 	);
-	
-	
+
+
 	oTest.fnComplete();
 } );

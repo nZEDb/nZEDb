@@ -7,22 +7,22 @@ $(document).ready( function () {
 		"sAjaxSource": "../../../examples/ajax/sources/arrays.txt",
 		"bDeferRender": true
 	} );
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
 		"Pagiantion div exists by default",
 		null,
 		function () { return document.getElementById('example_paginate') != null; }
 	);
-	
+
 	oTest.fnWaitTest(
 		"Information div takes paging into account",
 		null,
-		function () { return document.getElementById('example_info').innerHTML == 
+		function () { return document.getElementById('example_info').innerHTML ==
 			"Showing 1 to 10 of 57 entries"; }
 	);
-	
+
 	/* Check can disable */
-	oTest.fnWaitTest( 
+	oTest.fnWaitTest(
 		"Pagiantion can be disabled",
 		function () {
 			oSession.fnRestore();
@@ -34,16 +34,16 @@ $(document).ready( function () {
 		},
 		function () { return document.getElementById('example_paginate') == null; }
 	);
-	
+
 	oTest.fnWaitTest(
 		"Information div takes paging disabled into account",
 		null,
-		function () { return document.getElementById('example_info').innerHTML == 
+		function () { return document.getElementById('example_info').innerHTML ==
 			"Showing 1 to 57 of 57 entries"; }
 	);
-	
+
 	/* Enable makes no difference */
-	oTest.fnWaitTest( 
+	oTest.fnWaitTest(
 		"Pagiantion enabled override",
 		function () {
 			oSession.fnRestore();
@@ -55,8 +55,8 @@ $(document).ready( function () {
 		},
 		function () { return document.getElementById('example_paginate') != null; }
 	);
-	
-	
-	
+
+
+
 	oTest.fnComplete();
 } );

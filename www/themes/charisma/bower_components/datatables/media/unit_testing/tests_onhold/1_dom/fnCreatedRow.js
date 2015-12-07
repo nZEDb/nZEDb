@@ -9,14 +9,14 @@ $(document).ready( function () {
 			tmp++;
 		}
 	} );
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
 		"Row created is called once for each row on init",
 		null,
 		function () { return tmp===57; }
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
 		"Created isn't called back on other draws",
 		function () { $('#example th:eq(1)').click(); },
 		function () { return tmp===57; }
@@ -24,7 +24,7 @@ $(document).ready( function () {
 
 	oTest.fnTest(
 		"Three arguments for the function",
-		function () { 
+		function () {
 			oSession.fnRestore();
 			tmp = true;
 
@@ -41,7 +41,7 @@ $(document).ready( function () {
 
 	oTest.fnTest(
 		"First argument is a TR element",
-		function () { 
+		function () {
 			oSession.fnRestore();
 			tmp = true;
 
@@ -58,7 +58,7 @@ $(document).ready( function () {
 
 	oTest.fnTest(
 		"Second argument is an array with 5 elements",
-		function () { 
+		function () {
 			oSession.fnRestore();
 			tmp = true;
 
@@ -75,7 +75,7 @@ $(document).ready( function () {
 
 	oTest.fnTest(
 		"Third argument is the data source for the row",
-		function () { 
+		function () {
 			oSession.fnRestore();
 			tmp = true;
 
@@ -92,7 +92,7 @@ $(document).ready( function () {
 
 	oTest.fnTest(
 		"TR element is tied to the correct data",
-		function () { 
+		function () {
 			oSession.fnRestore();
 			tmp = false;
 
@@ -108,8 +108,8 @@ $(document).ready( function () {
 		},
 		function () { return tmp; }
 	);
-	
-	
-	
+
+
+
 	oTest.fnComplete();
 } );

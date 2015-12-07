@@ -8,7 +8,7 @@
 
 (function ($) {
     if ($.fn.inputmask === undefined) {
-        //helper functions    
+        //helper functions
         function isInputEventSupported(eventName) {
             var el = document.createElement('input'),
             eventName = 'on' + eventName,
@@ -261,7 +261,7 @@
             }
 
             function isValid(pos, c, strict) { //strict true ~ no correction or autofill
-                strict = strict === true; //always set a value to strict to prevent possible strange behavior in the extensions 
+                strict = strict === true; //always set a value to strict to prevent possible strange behavior in the extensions
 
                 function _isValid(position, activeMaskset, c, strict) {
                     var testPos = determineTestPosition(position), loopend = c ? 1 : 0, chrs = '', buffer = activeMaskset["buffer"];
@@ -1067,7 +1067,7 @@
                                     }
                                 }
                                 if (minimalForwardPosition > getActiveMaskSet()["p"])
-                                    getActiveMaskSet()["p"] = minimalForwardPosition; //needed for checkval strict 
+                                    getActiveMaskSet()["p"] = minimalForwardPosition; //needed for checkval strict
                             }
                         });
 
@@ -1199,7 +1199,7 @@
                                 }
                             });
                         }
-                        if (getMaskLength() >= maxLength && maxLength > -1) { //FF sets no defined max length to -1 
+                        if (getMaskLength() >= maxLength && maxLength > -1) { //FF sets no defined max length to -1
                             if (maxLength < getActiveBufferTemplate().length) getActiveBufferTemplate().length = maxLength;
                             if (getActiveMaskSet()['greedy'] == false) {
                                 getActiveMaskSet()['repeat'] = Math.round(maxLength / getActiveBufferTemplate().length);
@@ -1567,7 +1567,7 @@
                             return masksets[activeMasksetIndex]['_buffer'].join('');
                         }
                         else return "";
-                    case "hasMaskedValue": //check wheter the returned value is masked or not; currently only works reliable when using jquery.val fn to retrieve the value 
+                    case "hasMaskedValue": //check wheter the returned value is masked or not; currently only works reliable when using jquery.val fn to retrieve the value
                         return this.data('_inputmask') ? !this.data('_inputmask')['opts'].autoUnmask : false;
                     case "isComplete":
                         masksets = this.data('_inputmask')['masksets'];

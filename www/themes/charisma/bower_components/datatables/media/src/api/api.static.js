@@ -26,13 +26,13 @@ DataTable.fnVersionCheck = function( sVersion )
 	var aThis = DataTable.ext.sVersion.split('.');
 	var aThat = sVersion.split('.');
 	var sThis = '', sThat = '';
-	
+
 	for ( var i=0, iLen=aThat.length ; i<iLen ; i++ )
 	{
 		sThis += fnZPad( aThis[i], 3 );
 		sThat += fnZPad( aThat[i], 3 );
 	}
-	
+
 	return parseInt(sThis, 10) >= parseInt(sThat, 10);
 };
 
@@ -70,7 +70,7 @@ DataTable.fnIsDataTable = function ( nTable )
 /**
  * Get all DataTable tables that have been initialised - optionally you can select to
  * get only currently visible tables.
- *  @param {boolean} [bVisible=false] Flag to indicate if you want all (default) or 
+ *  @param {boolean} [bVisible=false] Flag to indicate if you want all (default) or
  *    visible tables only.
  *  @returns {array} Array of TABLE nodes (not DataTable instances) which are DataTables
  *  @static

@@ -1,5 +1,5 @@
-<li class="menu_useful"> 
-	<h2>Useful Links</h2> 
+<li class="menu_useful">
+	<h2>Useful Links</h2>
 	<ul>
 	<li class="mmenu"><a title="Contact Us" href="{$smarty.const.WWW_TOP}/contact-us">Contact Us</a></li>
 	<li class="mmenu"><a title="Site Map" href="{$smarty.const.WWW_TOP}/sitemap">Site Map</a></li>

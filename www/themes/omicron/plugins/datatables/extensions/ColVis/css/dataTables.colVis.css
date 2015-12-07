@@ -67,12 +67,12 @@ button.ColVis_Button {
 	padding: 3px 8px;
 }
 
-button.ColVis_Button::-moz-focus-inner { 
+button.ColVis_Button::-moz-focus-inner {
 	border: none !important;
 	padding: 0;
 }
 
-button.ColVis_Button:active { 
+button.ColVis_Button:active {
 	outline: none;
 }
 
@@ -104,7 +104,7 @@ ul.ColVis_collection {
 	    -ms-border-radius: 5px;
 	     -o-border-radius: 5px;
 	        border-radius: 5px;
-	
+
 	-webkit-box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
 	   -moz-box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
 	    -ms-box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
@@ -122,7 +122,7 @@ ul.ColVis_collection li {
 	display: block;
 	float: none;
 	margin-bottom: 4px;
-	
+
 	-webkit-box-shadow: 1px 1px 3px #999;
 	   -moz-box-shadow: 1px 1px 3px #999;
 	    -ms-box-shadow: 1px 1px 3px #999;

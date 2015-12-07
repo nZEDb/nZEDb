@@ -7,7 +7,7 @@ $(document).ready( function () {
 	// get at the functions!
 	var table = $('#example').dataTable();
 	var fn, test;
-	
+
 	// Object property access
 	oTest.fnTest(
 		"Single object, single property",
@@ -17,7 +17,7 @@ $(document).ready( function () {
 		},
 		function () { return test }
 	);
-	
+
 	oTest.fnTest(
 		"Single property from object",
 		function () {
@@ -26,7 +26,7 @@ $(document).ready( function () {
 		},
 		function () { return test }
 	);
-	
+
 	oTest.fnTest(
 		"Single property from object - different property",
 		function () {
@@ -35,7 +35,7 @@ $(document).ready( function () {
 		},
 		function () { return test===false }
 	);
-	
+
 	oTest.fnTest(
 		"Undefined property from object",
 		function () {
@@ -44,7 +44,7 @@ $(document).ready( function () {
 		},
 		function () { return test===undefined }
 	);
-	
+
 	// Array index access
 	oTest.fnTest(
 		"Array access - index 0",
@@ -54,7 +54,7 @@ $(document).ready( function () {
 		},
 		function () { return test }
 	);
-	
+
 	oTest.fnTest(
 		"Array access - index 1",
 		function () {
@@ -63,7 +63,7 @@ $(document).ready( function () {
 		},
 		function () { return test }
 	);
-	
+
 	oTest.fnTest(
 		"Array access - undefined",
 		function () {
@@ -113,7 +113,7 @@ $(document).ready( function () {
 		},
 		function () { return test===1 }
 	);
-	
+
 	oTest.fnTest(
 		"Nested object property - undefined prop",
 		function () {
@@ -345,7 +345,7 @@ $(document).ready( function () {
 		},
 		function () { return test === 'trueqwertyfalse'; }
 	);
-	
+
 	// Array alone join
 	oTest.fnTest(
 		"Flat array join",
@@ -392,8 +392,8 @@ $(document).ready( function () {
 		function () { return test.length===3 && test[0]===true &&
 			test[1]===false && test[2]===1; }
 	);
-	
-	
-	
+
+
+
 	oTest.fnComplete();
 } );

@@ -2,7 +2,7 @@
  * elFinder - file manager for web
  * Version 2.0 rc1 (2012-04-10)
  * http://elfinder.org
- * 
+ *
  * Copyright 2009-2012, Studio 42
  * Licensed under a 3 clauses BSD license
  */

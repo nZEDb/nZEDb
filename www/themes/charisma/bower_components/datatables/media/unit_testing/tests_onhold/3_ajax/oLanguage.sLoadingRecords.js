@@ -3,7 +3,7 @@ oTest.fnStart( "oLanguage.sLoadingRecords" );
 
 $(document).ready( function () {
 	var tmp = false;
-	oTest.fnTest( 
+	oTest.fnTest(
 		"Default loading text is 'Loading...'",
 		function () {
 			$('#example').dataTable( {
@@ -13,7 +13,7 @@ $(document).ready( function () {
 		},
 		function () { return tmp; }
 	);
-	
+
 	oTest.fnTest(
 		"Text can be overriden",
 		function () {
@@ -28,7 +28,7 @@ $(document).ready( function () {
 		},
 		function () { return tmp; }
 	);
-	
+
 	oTest.fnTest(
 		"When sZeroRecords is given but sLoadingRecords is not, sZeroRecords is used",
 		function () {
@@ -43,7 +43,7 @@ $(document).ready( function () {
 		},
 		function () { return tmp; }
 	);
-	
+
 	oTest.fnTest(
 		"sLoadingRecords and sZeroRecords both given",
 		function () {
@@ -59,7 +59,7 @@ $(document).ready( function () {
 		},
 		function () { return tmp; }
 	);
-	
-	
+
+
 	oTest.fnComplete();
 } );

@@ -11,7 +11,7 @@ $(document).ready( function () {
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 * Shallow properties
 	 */
-	
+
 	$('#example').dataTable( {
 		"aaData": [
 			[ null ],
@@ -23,25 +23,25 @@ $(document).ready( function () {
 			{ "sTitle": "Test" }
 		]
 	} );
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
 		"Sorting works - first cell is empty",
 		null,
 		function () { return $('#example tbody tr:eq(0) td:eq(0)').html() === ""; }
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
 		"Second cell is 1a",
 		null,
 		function () { return $('#example tbody tr:eq(1) td:eq(0)').html() === "1a"; }
 	);
-	
-	oTest.fnTest( 
+
+	oTest.fnTest(
 		"Third cell is 5",
 		null,
 		function () { return $('#example tbody tr:eq(2) td:eq(0)').html() === "5"; }
 	);
-	
-	
+
+
 	oTest.fnComplete();
 } );

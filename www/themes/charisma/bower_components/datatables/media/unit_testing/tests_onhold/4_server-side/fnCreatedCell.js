@@ -15,14 +15,14 @@ $(document).ready( function () {
 			"aTargets": ["_all"]
 		} ]
 	} );
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
 		"Cell created is called once for each cell on init",
 		null,
 		function () { return tmp===50; }
 	);
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
 		"Created is called back on other draws",
 		function () { $('#example th:eq(1)').click(); },
 		function () { return tmp===100; }
@@ -30,7 +30,7 @@ $(document).ready( function () {
 
 	oTest.fnWaitTest(
 		"Four arguments for the function",
-		function () { 
+		function () {
 			oSession.fnRestore();
 			tmp = true;
 			complete = false;
@@ -56,7 +56,7 @@ $(document).ready( function () {
 
 	oTest.fnWaitTest(
 		"First argument is a TD element",
-		function () { 
+		function () {
 			oSession.fnRestore();
 			tmp = true;
 			complete = false;
@@ -82,7 +82,7 @@ $(document).ready( function () {
 
 	oTest.fnWaitTest(
 		"Second argument is the HTML value",
-		function () { 
+		function () {
 			oSession.fnRestore();
 			tmp = true;
 			complete = false;
@@ -108,7 +108,7 @@ $(document).ready( function () {
 
 	oTest.fnWaitTest(
 		"Third argument is the data array",
-		function () { 
+		function () {
 			oSession.fnRestore();
 			tmp = true;
 			complete = false;
@@ -134,7 +134,7 @@ $(document).ready( function () {
 
 	oTest.fnWaitTest(
 		"Fourth argument is the data source for the row",
-		function () { 
+		function () {
 			oSession.fnRestore();
 			tmp = true;
 			complete = false;
@@ -160,7 +160,7 @@ $(document).ready( function () {
 
 	oTest.fnWaitTest(
 		"Fifth argument is the the col index",
-		function () { 
+		function () {
 			oSession.fnRestore();
 			tmp = true;
 			complete = false;
@@ -183,8 +183,8 @@ $(document).ready( function () {
 		},
 		function () { return (tmp && complete); }
 	);
-	
-	
-	
+
+
+
 	oTest.fnComplete();
 } );

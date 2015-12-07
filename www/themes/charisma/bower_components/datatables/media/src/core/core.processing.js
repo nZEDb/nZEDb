@@ -9,7 +9,7 @@
 function _fnFeatureHtmlProcessing ( oSettings )
 {
 	var nProcessing = document.createElement( 'div' );
-	
+
 	if ( !oSettings.aanFeatures.r )
 	{
 		nProcessing.id = oSettings.sTableId+'_processing';
@@ -17,7 +17,7 @@ function _fnFeatureHtmlProcessing ( oSettings )
 	nProcessing.innerHTML = oSettings.oLanguage.sProcessing;
 	nProcessing.className = oSettings.oClasses.sProcessing;
 	oSettings.nTable.parentNode.insertBefore( nProcessing, oSettings.nTable );
-	
+
 	return nProcessing;
 }
 

@@ -17,19 +17,19 @@ $(document).ready( function () {
 	} );
 	var oSettings = oTable.fnSettings();
 	var mPass;
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
 		"Default should be null",
 		null,
 		function () { return oSettings.fnInitComplete == null; }
 	);
-	
-	
-	oTest.fnWaitTest( 
+
+
+	oTest.fnWaitTest(
 		"Two arguments passed (for Ajax!)",
 		function () {
 			oSession.fnRestore();
-			
+
 			mPass = -1;
 			$('#example').dataTable( {
 				"sAjaxSource": "../../../examples/ajax/sources/objects.txt",
@@ -47,13 +47,13 @@ $(document).ready( function () {
 		},
 		function () { return mPass == 2; }
 	);
-	
-	
-	oTest.fnWaitTest( 
+
+
+	oTest.fnWaitTest(
 		"That one argument is the settings object",
 		function () {
 			oSession.fnRestore();
-			
+
 			oTable = $('#example').dataTable( {
 				"sAjaxSource": "../../../examples/ajax/sources/objects.txt",
 				"aoColumnDefs": [
@@ -70,13 +70,13 @@ $(document).ready( function () {
 		},
 		function () { return oTable.fnSettings() == mPass; }
 	);
-	
-	
-	oTest.fnWaitTest( 
+
+
+	oTest.fnWaitTest(
 		"fnInitComplete called once on first draw",
 		function () {
 			oSession.fnRestore();
-			
+
 			mPass = 0;
 			$('#example').dataTable( {
 				"sAjaxSource": "../../../examples/ajax/sources/objects.txt",
@@ -94,8 +94,8 @@ $(document).ready( function () {
 		},
 		function () { return mPass == 1; }
 	);
-	
-	oTest.fnWaitTest( 
+
+	oTest.fnWaitTest(
 		"fnInitComplete never called there after",
 		function () {
 			$('#example_next').click();
@@ -104,13 +104,13 @@ $(document).ready( function () {
 		},
 		function () { return mPass == 1; }
 	);
-	
-	
-	oTest.fnWaitTest( 
+
+
+	oTest.fnWaitTest(
 		"10 rows in the table on complete",
 		function () {
 			oSession.fnRestore();
-			
+
 			mPass = 0;
 			$('#example').dataTable( {
 				"sAjaxSource": "../../../examples/ajax/sources/objects.txt",
@@ -128,8 +128,8 @@ $(document).ready( function () {
 		},
 		function () { return mPass == 10; }
 	);
-	
-	
-	
+
+
+
 	oTest.fnComplete();
 } );
