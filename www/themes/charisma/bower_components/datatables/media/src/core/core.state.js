@@ -195,7 +195,7 @@ function _fnReadCookie ( sName )
 	var
 		aParts = window.location.pathname.split('/'),
 		sNameEQ = sName + '_' + aParts[aParts.length-1].replace(/[\/:]/g,"").toLowerCase() + '=',
-	 	sCookieContents = document.cookie.split(';');
+	 sCookieContents = document.cookie.split(';');
 
 	for( var i=0 ; i<sCookieContents.length ; i++ )
 	{

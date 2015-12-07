@@ -138,10 +138,10 @@ class Settings extends DB
 	public function setCovers()
 	{
 		$path = $this->getSetting([
-				'section' 		=> 'site',
+				'section' => 'site',
 				'subsection'	=> 'main',
-				'name' 			=> 'coverspath',
-				'setting' 		=> 'coverspath',
+				'name'	=> 'coverspath',
+				'setting' => 'coverspath',
 			]);
 		Misc::setCoversConstant($path);
 	}

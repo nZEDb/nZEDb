@@ -1,12 +1,12 @@
 <?php
 /**
- * 	This class handles all the data you can get from a Movie
+ * This class handles all the data you can get from a Movie
  *
- * 	@author Alvaro Octal | <a href="https://twitter.com/Alvaro_Octal">Twitter</a>
- * 	@version 0.1
- * 	@date 09/01/2015
- * 	@link https://github.com/Alvaroctal/TMDB-PHP-API
- * 	@copyright Licensed under BSD (http://www.opensource.org/licenses/bsd-license.php)
+ * @author Alvaro Octal | <a href="https://twitter.com/Alvaro_Octal">Twitter</a>
+ * @version 0.1
+ * @date 09/01/2015
+ * @link https://github.com/Alvaroctal/TMDB-PHP-API
+ * @copyright Licensed under BSD (http://www.opensource.org/licenses/bsd-license.php)
  */
 
 namespace libs\Tmdb\Data;
@@ -28,9 +28,9 @@ class Movie{
 	private $_tmdb;
 
 	/**
-	 * 	Construct Class
+	 * Construct Class
 	 *
-	 * 	@param array $data An array with the data of the Movie
+	 * @param array $data An array with the data of the Movie
 	 */
 	public function __construct($data) {
 		$this->_data = $data;
@@ -41,63 +41,63 @@ class Movie{
 	//------------------------------------------------------------------------------
 
 	/**
-	 * 	Get the Movie's id
+	 * Get the Movie's id
 	 *
-	 * 	@return int
+	 * @return int
 	 */
 	public function getID() {
 		return $this->_data['id'];
 	}
 
 	/**
-	 * 	Get the Movie's title
+	 * Get the Movie's title
 	 *
-	 * 	@return string
+	 * @return string
 	 */
 	public function getTitle() {
 		return $this->_data['title'];
 	}
 
 	/**
-	 * 	Get the Movie's tagline
+	 * Get the Movie's tagline
 	 *
-	 * 	@return string
+	 * @return string
 	 */
 	public function getTagline() {
 		return $this->_data['tagline'];
 	}
 
 	/**
-	 * 	Get the Movie's Poster
+	 * Get the Movie's Poster
 	 *
-	 * 	@return string
+	 * @return string
 	 */
 	public function getPoster() {
 		return $this->_data['poster_path'];
 	}
 
 	/**
-	 * 	Get the Movie's vote average
+	 * Get the Movie's vote average
 	 *
-	 * 	@return int
+	 * @return int
 	 */
 	public function getVoteAverage() {
 		return $this->_data['vote_average'];
 	}
 
 	/**
-	 * 	Get the Movie's vote count
+	 * Get the Movie's vote count
 	 *
-	 * 	@return int
+	 * @return int
 	 */
 	public function getVoteCount() {
 		return $this->_data['vote_count'];
 	}
 
 	/**
-	 * 	Get the Movie's trailers
+	 * Get the Movie's trailers
 	 *
-	 * 	@return array
+	 * @return array
 	 */
 	public function getTrailers() {
 
@@ -109,9 +109,9 @@ class Movie{
 	}
 
 	/**
-	 * 	Get the Movie's trailer
+	 * Get the Movie's trailer
 	 *
-	 * 	@return string
+	 * @return string
 	 */
 	public function getTrailer() {
 		return $this->getTrailers()['youtube'][0]['source'];
@@ -121,8 +121,8 @@ class Movie{
 	 *  Get Generic.<br>
 	 *  Get a item of the array, you should not get used to use this, better use specific get's.
 	 *
-	 * 	@param string $item The item of the $data array you want
-	 * 	@return array
+	 * @param string $item The item of the $data array you want
+	 * @return array
 	 */
 	public function get($item = ''){
 		return (empty($item)) ? $this->_data : $this->_data[$item];
@@ -133,7 +133,7 @@ class Movie{
 	//------------------------------------------------------------------------------
 
 	/**
-	 * 	Load the images of the Movie
+	 * Load the images of the Movie
 	 *	Used in a Lazy load technique
 	 */
 	public function loadImages(){
@@ -141,7 +141,7 @@ class Movie{
 	}
 
 	/**
-	 * 	Load the trailer of the Movie
+	 * Load the trailer of the Movie
 	 *	Used in a Lazy load technique
 	 */
 	public function loadTrailer() {
@@ -149,7 +149,7 @@ class Movie{
 	}
 
 	/**
-	 * 	Load the casting of the Movie
+	 * Load the casting of the Movie
 	 *	Used in a Lazy load technique
 	 */
 	public function loadCasting(){
@@ -157,7 +157,7 @@ class Movie{
 	}
 
 	/**
-	 * 	Load the translations of the Movie
+	 * Load the translations of the Movie
 	 *	Used in a Lazy load technique
 	 */
 	public function loadTranslations(){
@@ -182,9 +182,9 @@ class Movie{
 	//------------------------------------------------------------------------------
 
 	/**
-	 * 	Get the JSON representation of the Movie
+	 * Get the JSON representation of the Movie
 	 *
-	 * 	@return string
+	 * @return string
 	 */
 	public function getJSON() {
 		return json_encode($this->_data, JSON_PRETTY_PRINT);

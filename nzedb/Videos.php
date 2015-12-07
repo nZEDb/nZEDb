@@ -128,7 +128,7 @@ Class Videos
 			$tsql .= sprintf("AND v.title LIKE %s", $this->pdo->escapeString("%" . $showname . "%"));
 		}
 
-		$qry = 	sprintf("
+		$qry = sprintf("
 			SELECT v.*,
 				us.id AS userseriesid
 			FROM

@@ -13,7 +13,7 @@ Use this page to manage movies added to your personal list. If the movie becomes
 		<th>name</th>
 		<th>category</th>
 		<th>added</th>
- 		<th class="mid">options</th>
+ <th class="mid">options</th>
 	</tr>
 
 	{foreach from=$movies item=movie}

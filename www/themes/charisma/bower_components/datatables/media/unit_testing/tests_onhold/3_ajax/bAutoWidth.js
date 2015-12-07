@@ -87,7 +87,7 @@ $(document).ready( function () {
 				"sAjaxSource": "../../../examples/ajax/sources/arrays.txt",
 				"bAutoWidth": false
 			} );
-	 		oSettings = oTable.fnSettings();
+	 oSettings = oTable.fnSettings();
 		},
 		function () { return oSettings.oFeatures.bAutoWidth == false; }
 	);
@@ -132,7 +132,7 @@ $(document).ready( function () {
 				"sAjaxSource": "../../../examples/ajax/sources/arrays.txt",
 				"bAutoWidth": true
 			} );
-	 		oSettings = oTable.fnSettings();
+	 oSettings = oTable.fnSettings();
 		},
 		function () { return oSettings.oFeatures.bAutoWidth; }
 	);

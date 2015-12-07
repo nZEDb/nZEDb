@@ -40,8 +40,8 @@ $(document).ready( function () {
 					{
 						"fnRender": function (a) {
 							if ( arguments.length != 2 || typeof a.iDataRow=='undefined' ||
-							 	typeof a.iDataColumn=='undefined' || typeof a.aData=='undefined' ||
-							 	typeof a.mData=='undefined' )
+							 typeof a.iDataColumn=='undefined' || typeof a.aData=='undefined' ||
+							 typeof a.mData=='undefined' )
 							{
 								mTmp = false;
 							}

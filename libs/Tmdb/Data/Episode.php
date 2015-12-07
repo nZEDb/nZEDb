@@ -1,12 +1,12 @@
 <?php
 /**
- * 	This class handles all the data you can get from a Episode
+ * This class handles all the data you can get from a Episode
  *
- * 	@author Alvaro Octal | <a href="https://twitter.com/Alvaro_Octal">Twitter</a>
- * 	@version 0.1
- * 	@date 11/01/2015
- * 	@link https://github.com/Alvaroctal/TMDB-PHP-API
- * 	@copyright Licensed under BSD (http://www.opensource.org/licenses/bsd-license.php)
+ * @author Alvaro Octal | <a href="https://twitter.com/Alvaro_Octal">Twitter</a>
+ * @version 0.1
+ * @date 11/01/2015
+ * @link https://github.com/Alvaroctal/TMDB-PHP-API
+ * @copyright Licensed under BSD (http://www.opensource.org/licenses/bsd-license.php)
  */
 
 namespace libs\Tmdb\Data;
@@ -25,9 +25,9 @@ class Episode{
     public $_data;
 
     /**
-     * 	Construct Class
+     * Construct Class
      *
-     * 	@param array $data An array with the data of the Episode
+     * @param array $data An array with the data of the Episode
      */
     public function __construct($data, $idTVShow) {
         $this->_data = $data;
@@ -39,18 +39,18 @@ class Episode{
     //------------------------------------------------------------------------------
 
     /**
-     * 	Get the episode's id
+     * Get the episode's id
      *
-     * 	@return int
+     * @return int
      */
     public function getID() {
         return $this->_data['id'];
     }
 
     /**
-     * 	Get the Episode's name
+     * Get the Episode's name
      *
-     * 	@return string
+     * @return string
      */
     public function getName() {
         return $this->_data['name'];
@@ -75,9 +75,9 @@ class Episode{
     }
 
     /**
-     * 	Get the Episode's number
+     * Get the Episode's number
      *
-     * 	@return string
+     * @return string
      */
     public function getEpisodeNumber() {
         return $this->_data['episode_number'];
@@ -93,36 +93,36 @@ class Episode{
     }
 
     /**
-     * 	Get the Seasons's Still
+     * Get the Seasons's Still
      *
-     * 	@return string
+     * @return string
      */
     public function getStill() {
         return $this->_data['still_path'];
     }
 
     /**
-     * 	Get the Season's AirDate
+     * Get the Season's AirDate
      *
-     * 	@return string
+     * @return string
      */
     public function getAirDate() {
         return $this->_data['air_date'];
     }
 
     /**
-     * 	Get the Episode's vote average
+     * Get the Episode's vote average
      *
-     * 	@return int
+     * @return int
      */
     public function getVoteAverage() {
         return $this->_data['vote_average'];
     }
 
     /**
-     * 	Get the Episode's vote count
+     * Get the Episode's vote count
      *
-     * 	@return int
+     * @return int
      */
     public function getVoteCount() {
         return $this->_data['vote_count'];
@@ -132,8 +132,8 @@ class Episode{
      *  Get Generic.<br>
      *  Get a item of the array, you should not get used to use this, better use specific get's.
      *
-     * 	@param string $item The item of the $data array you want
-     * 	@return array
+     * @param string $item The item of the $data array you want
+     * @return array
      */
     public function get($item = ''){
         return (empty($item)) ? $this->_data : $this->_data[$item];
@@ -158,9 +158,9 @@ class Episode{
     //------------------------------------------------------------------------------
 
     /**
-     * 	Get the JSON representation of the Episode
+     * Get the JSON representation of the Episode
      *
-     * 	@return string
+     * @return string
      */
     public function getJSON() {
         return json_encode($this->_data, JSON_PRETTY_PRINT);

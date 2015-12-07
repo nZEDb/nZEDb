@@ -25,7 +25,7 @@ $(document).ready( function () {
 		"Search language default is in the DOM",
 		null,
 		function () { return $('label', oSettings.aanFeatures.f[0]).text()
-		 	== "Search: "; }
+		 == "Search: "; }
 	);
 
 

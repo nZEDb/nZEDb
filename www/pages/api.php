@@ -138,7 +138,7 @@ switch ($function) {
 		$page->users->addApiRequest($uid, $_SERVER['REQUEST_URI']);
 		$offset = offset();
 
-		$siteIdArr = 	[
+		$siteIdArr = [
 							'id'     => (isset($_GET['vid']) ? $_GET['vid'] : '0'),
 							'tvdb'   => (isset($_GET['tvdbid']) ? $_GET['tvdbid'] : '0'),
 							'trakt'  => (isset($_GET['traktid']) ? $_GET['traktid'] : '0'),

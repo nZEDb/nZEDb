@@ -84,7 +84,7 @@ $(document).ready( function () {
 			oTable = $('#example').dataTable( {
 				"bAutoWidth": false
 			} );
-	 		oSettings = oTable.fnSettings();
+	 oSettings = oTable.fnSettings();
 		},
 		function () { return oSettings.oFeatures.bAutoWidth == false; }
 	);
@@ -128,7 +128,7 @@ $(document).ready( function () {
 			oTable = $('#example').dataTable( {
 				"bAutoWidth": true
 			} );
-	 		oSettings = oTable.fnSettings();
+	 oSettings = oTable.fnSettings();
 		},
 		function () { return oSettings.oFeatures.bAutoWidth; }
 	);
