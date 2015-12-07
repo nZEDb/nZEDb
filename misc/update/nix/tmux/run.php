@@ -96,10 +96,14 @@ if ($powerline == 1) {
 } else {
 	$tmuxconfig = $DIR . "update/nix/tmux/tmux.conf";
 }
+// Check local tmux config file exists
+if (!file_exists($tmuxconfig)) {
+    exit("Local copy of tmux.conf not found.\nCopy tmux.example.conf to tmux.conf and make any local changes as needed.\n");
+}
 
 if ($seq == 1) {
 	exec("cd ${DIR}/update/nix/tmux; tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;\"Monitor\"\033\"'");
-	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -h -p 67 'printf \"\033]2;update_releases\033\"'");
+	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -h -p 64 'printf \"\033]2;update_releases\033\"'");
 	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 25 'printf \"\033]2;nzb-import\033\"'");
 
 	window_utilities($tmux_session);
@@ -118,7 +122,7 @@ if ($seq == 1) {
 } else {
 	if ($seq == 2) {
 		exec("cd ${DIR}/update/nix/tmux; tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;\"Monitor\"\033\"'");
-		exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -h -p 67 'printf \"\033]2;sequential\033\"'");
+		exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -h -p 64 'printf \"\033]2;sequential\033\"'");
 		exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 25 'printf \"\033]2;nzb-import\033\"'");
 
 		window_stripped_utilities($tmux_session);
@@ -136,7 +140,7 @@ if ($seq == 1) {
 		attach($DIR, $tmux_session);
 	} else {
 		exec("cd ${DIR}/update/nix/tmux; tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;Monitor\033\"'");
-		exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -h -p 67 'printf \"\033]2;update_binaries\033\"'");
+		exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -h -p 64 'printf \"\033]2;update_binaries\033\"'");
 		exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 25 'printf \"\033]2;nzb-import\033\"'");
 		exec("tmux selectp -t $tmux_session:0.2; tmux splitw -t $tmux_session:0 -v -p 67 'printf \"\033]2;backfill\033\"'");
 		exec("tmux splitw -t $tmux_session -v -p 50 'printf \"\033]2;update_releases\033\"'");
