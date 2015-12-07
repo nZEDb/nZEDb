@@ -9,7 +9,6 @@ $(document).ready( function () {
 	var oSettings = oTable.fnSettings();
 
 	oTest.fnWaitTest(
-
 		"Columns are searchable by default",
 		function () { oTable.fnFilter("Camino"); },
 		function () {
@@ -21,7 +20,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnWaitTest(
-
 		"Disabling sorting on a column removes it from the global filter",
 		function () {
 			oSession.fnRestore();
@@ -42,14 +40,12 @@ $(document).ready( function () {
 	);
 
 	oTest.fnWaitTest(
-
 		"Disabled on one column has no effect on other columns",
 		function () { oTable.fnFilter("Webkit"); },
 		function () { return $('#example tbody tr:eq(0) td:eq(0)').html() == "Webkit"; }
 	);
 
 	oTest.fnWaitTest(
-
 		"Disable filtering on multiple columns",
 		function () {
 			oSession.fnRestore();
@@ -70,7 +66,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnWaitTest(
-
 		"Filter on second disabled column",
 		function () { oTable.fnFilter("Camino"); },
 		function () { return $('#example tbody tr:eq(0) td:eq(0)').html() == "No matching records found"; }

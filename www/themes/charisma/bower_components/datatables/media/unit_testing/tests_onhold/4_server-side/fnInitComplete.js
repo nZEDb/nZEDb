@@ -5,7 +5,6 @@ oTest.fnStart( "fnInitComplete" );
 
 $(document).ready( function () {
 	oTest.fnWaitTest(
-
 		"Two arguments passed",
 		function () {
 
@@ -23,7 +22,6 @@ $(document).ready( function () {
 
 
 	oTest.fnWaitTest(
-
 		"That one argument is the settings object",
 		function () {
 			oSession.fnRestore();
@@ -41,7 +39,6 @@ $(document).ready( function () {
 
 
 	oTest.fnWaitTest(
-
 		"fnInitComplete called once on first draw",
 		function () {
 			oSession.fnRestore();
@@ -59,7 +56,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnWaitTest(
-
 		"fnInitComplete never called there after",
 		function () {
 			$('#example_next').click();
@@ -71,7 +67,6 @@ $(document).ready( function () {
 
 
 	oTest.fnWaitTest(
-
 		"10 rows in the table on complete",
 		function () {
 			oSession.fnRestore();

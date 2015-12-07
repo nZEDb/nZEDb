@@ -7,14 +7,12 @@ $(document).ready( function () {
 	var oSettings = oTable.fnSettings();
 
 	oTest.fnTest(
-
 		"All columns are visible by default",
 		null,
 		function () { return $('#example tbody tr:eq(0) td').length == 5; }
 	);
 
 	oTest.fnTest(
-
 		"Can hide one column and it removes td column from DOM",
 		function () {
 			oSession.fnRestore();
@@ -32,27 +30,23 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Can hide one column and it removes thead th column from DOM",
 		null,
 		function () { return $('#example thead tr:eq(0) th').length == 4; }
 	);
 
 	oTest.fnTest(
-
 		"Can hide one column and it removes tfoot th column from DOM",
 		null,
 		function () { return $('#example tfoot tr:eq(0) th').length == 4; }
 	);
 
 	oTest.fnTest(
-
 		"The correct thead column has been hidden",
 		null,
 		function () {
 			var jqNodes = $('#example thead tr:eq(0) th');
 			var bReturn =
-
 				jqNodes[0].innerHTML == "Rendering engine" &&
 				jqNodes[1].innerHTML == "Platform(s)" &&
 				jqNodes[2].innerHTML == "Engine version" &&
@@ -62,7 +56,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"The correct tbody column has been hidden",
 		function () {
 			oDispacher.click( $('#example thead th:eq(1)')[0], { 'shift': true } );
@@ -70,7 +63,6 @@ $(document).ready( function () {
 		function () {
 			var jqNodes = $('#example tbody tr:eq(0) td');
 			var bReturn =
-
 				jqNodes[0].innerHTML == "Gecko" &&
 				jqNodes[1].innerHTML == "Gnome" &&
 				jqNodes[2].innerHTML == "1.8" &&
@@ -81,7 +73,6 @@ $(document).ready( function () {
 
 
 	oTest.fnTest(
-
 		"Can hide multiple columns and it removes td column from DOM",
 		function () {
 			oSession.fnRestore();
@@ -99,27 +90,23 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Multiple hide - removes thead th column from DOM",
 		null,
 		function () { return $('#example thead tr:eq(0) th').length == 2; }
 	);
 
 	oTest.fnTest(
-
 		"Multiple hide - removes tfoot th column from DOM",
 		null,
 		function () { return $('#example tfoot tr:eq(0) th').length == 2; }
 	);
 
 	oTest.fnTest(
-
 		"Multiple hide - the correct thead columns have been hidden",
 		null,
 		function () {
 			var jqNodes = $('#example thead tr:eq(0) th');
 			var bReturn =
-
 				jqNodes[0].innerHTML == "Rendering engine" &&
 				jqNodes[1].innerHTML == "Engine version"
 			return bReturn;
@@ -127,7 +114,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Multiple hide - the correct tbody columns have been hidden",
 		function () {
 			oDispacher.click( $('#example thead th:eq(1)')[0], { 'shift': true } );
@@ -135,7 +121,6 @@ $(document).ready( function () {
 		function () {
 			var jqNodes = $('#example tbody tr:eq(0) td');
 			var bReturn =
-
 				jqNodes[0].innerHTML == "Gecko" &&
 				jqNodes[1].innerHTML == "1"
 			return bReturn;

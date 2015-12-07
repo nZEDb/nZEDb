@@ -1,9 +1,9 @@
 <div class="header">
-	<h2>Your > <strong>Cart</strong></h2>
+	<h2><strong>My Download Basket</strong></h2>
 	<div class="breadcrumb-wrapper">
 		<ol class="breadcrumb">
 			<li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li>
-			/ Cart
+			/ My Download Basket
 		</ol>
 	</div>
 </div>
@@ -50,12 +50,12 @@
 									</td>
 									<td class="less"
 										title="Added on {$result.createddate}">{$result.createddate|date_format}</td>
-									<td><a title="Delete from your cart" href="?delete={$result.id}"
+									<td><a title="Delete from your Download Basket" href="?delete={$result.id}"
 										   class="btn btn-danger btn-sm" style="padding-bottom:2px;">Delete</a></td>
 								</tr>
 							{/foreach}
 						</table>
 	</form>
 {else}
-	<div class="alert alert-danger" role="alert">There are no NZBs in your cart.</div>
+	<div class="alert alert-danger" role="alert">There are no NZBs in your Download Basket.</div>
 {/if}

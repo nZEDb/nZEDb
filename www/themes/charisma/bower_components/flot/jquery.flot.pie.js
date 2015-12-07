@@ -182,7 +182,7 @@ More detail and specific examples can be found in the included HTML file.
 				// that the user may have stored in higher indexes.
 
 				if ($.isArray(value) && value.length == 1) {
-				value = value[0];
+					value = value[0];
 				}
 
 				if ($.isArray(value)) {

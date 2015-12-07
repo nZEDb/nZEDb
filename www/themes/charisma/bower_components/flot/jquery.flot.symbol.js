@@ -59,11 +59,9 @@ The symbols are accessed as strings through the standard symbol options:
             series.points.symbol = handlers[s];
     }
 
-
     function init(plot) {
         plot.hooks.processDatapoints.push(processRawData);
     }
-
 
     $.plot.plugins.push({
         init: init,

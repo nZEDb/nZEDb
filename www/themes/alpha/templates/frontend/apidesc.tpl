@@ -35,12 +35,15 @@
 	<dt>Details <span style="font-family:courier;"><a href="{$smarty.const.WWW_TOP}/api?t=details&amp;id=9ca52909ba9b9e5e6758d815fef4ecda">?t=details&amp;id=9ca52909ba9b9e5e6758d815fef4ecda</a></span></dt>
 	<dd>Returns detailed information about an nzb.</dd>
 	<br>
+	<dt>Info <span style="font-family:courier;"><a href="{$smarty.const.WWW_TOP}/api?t=info&amp;id=9ca52909ba9b9e5e6758d815fef4ecda">?t=info&amp;id=9ca52909ba9b9e5e6758d815fef4ecda</a></span></dt>
+	<dd>Returns NFO contents for an NZB.  Retrieve the NFO as file by specifying o=file in the request URI.</dd>
+	<br>
 	<dt>Get <span style="font-family:courier;"><a href="{$smarty.const.WWW_TOP}/api?t=get&amp;id=9ca52909ba9b9e5e6758d815fef4ecda">?t=get&amp;id=9ca52909ba9b9e5e6758d815fef4ecda</a></span></dt>
 	<dd>Downloads the nzb file associated with an Id.</dd>
 </dl>
 <br>
 <h3>Output Format</h3>
-<p>Obviously not appropriate to functions which return an nzb file.</p>
+<p>Obviously not appropriate to functions which return an nzb/nfo file.</p>
 <dl>
 	<dt>Xml (default) <span style="font-family:courier;">?t=search&amp;q=linux&amp;o=xml</span></dt>
 	<dd>Returns the data in an xml document.</dd>

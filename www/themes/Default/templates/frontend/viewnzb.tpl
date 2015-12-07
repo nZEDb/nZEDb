@@ -27,7 +27,7 @@
 			<div style="margin-top:10px;">
 				<a class="rndbtn" title="View all episodes from this series" href="{$smarty.const.WWW_TOP}/series/{$release.videos_id}">All Episodes</a>
 				{if $release.tvrage >0}<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$release.tvrage}" title="View at TV Rage">TV Rage</a>{/if}
-				<a class="rndbtn" href="{$smarty.const.WWW_TOP}/rss?rage={$release.videos_id}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}" title="Rss feed for this series">Series Rss Feed</a>
+				<a class="rndbtn" href="{$smarty.const.WWW_TOP}/rss?show={$release.videos_id}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}" title="Rss feed for this series">Series Rss Feed</a>
 			</div>
 			</td>
 		</tr>
@@ -187,7 +187,7 @@
 
 	<tr><th>Group:</th><td title="{$release.group_name}"><a title="Browse {$release.group_name}" href="{$smarty.const.WWW_TOP}/browse?g={$release.group_name}">{$release.group_name|replace:"alt.binaries":"a.b"}</a></td></tr>
 	<tr><th>Category:</th><td><a title="Browse by {$release.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$release.categoryid}">{$release.category_name}</a></td></tr>
-	{if $nfo.id|@count > 0}
+	{if $nfo.releaseid|@count > 0}
 	<tr><th>Nfo:</th><td><a href="{$smarty.const.WWW_TOP}/nfo/{$release.guid}" title="View Nfo">View Nfo</a></td></tr>
 	{/if}
 

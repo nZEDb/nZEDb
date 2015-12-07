@@ -35,6 +35,11 @@ if (isset($_GET['t'])) {
 		case 'movie':
 			$function = 'm';
 			break;
+		case 'n':
+		case 'nfo':
+		case 'info':
+			$function = 'n';
+			break;
 		case 'r':
 		case 'register':
 			$function = 'r';
@@ -133,7 +138,7 @@ switch ($function) {
 		$page->users->addApiRequest($uid, $_SERVER['REQUEST_URI']);
 		$offset = offset();
 
-		$siteIdArr = 	[
+		$siteIdArr = [
 							'id'     => (isset($_GET['vid']) ? $_GET['vid'] : '0'),
 							'tvdb'   => (isset($_GET['tvdbid']) ? $_GET['tvdbid'] : '0'),
 							'trakt'  => (isset($_GET['traktid']) ? $_GET['traktid'] : '0'),
@@ -236,6 +241,34 @@ switch ($function) {
 		}
 
 		printOutput($relData, $outputXML, $page, offset());
+		break;
+
+	// Get an NFO file for an individual release.
+	case 'n':
+		if (!isset($_GET['id'])) {
+			showApiError(200, 'Missing parameter (id is required for retrieving an NFO)');
+		}
+
+		$page->users->addApiRequest($uid, $_SERVER['REQUEST_URI']);
+		$rel = $releases->getByGuid($_GET["id"]);
+		$data = $releases->getReleaseNfo($rel['id']);
+
+		if ($rel !== false && !empty($rel)) {
+			if ($data !== false) {
+				if (isset($_GET['o']) && $_GET['o'] == 'file') {
+					header("Content-type: application/octet-stream");
+					header("Content-disposition: attachment; filename={$rel['searchname']}.nfo");
+					exit($data['nfo']);
+				} else {
+					echo nl2br(Text::cp437toUTF($data['nfo']));
+				}
+			} else {
+				showApiError(300, 'Release does not have an NFO file associated.');
+			}
+		} else {
+			showApiError(300, 'Release does not exist.');
+		}
+
 		break;
 
 	// Capabilities request.
@@ -500,7 +533,12 @@ function addLanguage(&$releases, Settings $settings)
 	if ($releases && count($releases)) {
 		foreach ($releases as $key => $release) {
 			if (isset($release['id'])) {
-				$language = $settings->queryOneRow(sprintf('SELECT audiolanguage FROM audio_data WHERE releaseid = %d', $release['id']));
+				$language = $settings->queryOneRow('
+					SELECT audiolanguage
+					FROM audio_data
+					WHERE releaseid = ' .
+					$release['id']
+				);
 				if ($language !== false) {
 					$releases[$key]['searchname'] = $releases[$key]['searchname'] . ' ' . $language['audiolanguage'];
 				}

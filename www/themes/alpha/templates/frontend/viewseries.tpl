@@ -10,7 +10,7 @@
 			<div class="col-xs-9">
 				<h1>
 					{if $isadmin || $ismod}
-						<a title="Edit Video data" href="{$smarty.const.WWW_TOP}/admin/rage-edit.php?id={$show.id}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}">{$show.title} </a>
+						<a title="Edit Video data" href="{$smarty.const.WWW_TOP}/admin/show-edit.php?id={$show.id}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}">{$show.title} </a>
 					{else}
 						{$show.title}
 					{/if}
@@ -58,9 +58,7 @@
 		{foreach $seasons as $seasonnum => $season}
 		<thead>
 		<tr>
-			{if is_null($seasonnum)}
-				{$seasonnum} = 'Packs';
-			{/if}
+			{if empty($seasonnum)}{$seasonnum = 'Packs'}{/if}
 			<th colspan="10"><h2>Season {$seasonnum}</h2></th>
 		</tr>
 		<tr>

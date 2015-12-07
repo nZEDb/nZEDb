@@ -16,14 +16,12 @@ $(document).ready( function () {
 	var oSettings = oTable.fnSettings();
 
 	oTest.fnWaitTest(
-
 		"By default the test class hasn't been applied to the column (sanity!)",
 		null,
 		function () { return $('#example tbody tr:eq(0) td:eq(2)').hasClass('unittest') == false; }
 	);
 
 	oTest.fnWaitTest(
-
 		"Add a class to a single column - first row",
 		function () {
 			oSession.fnRestore();
@@ -42,49 +40,42 @@ $(document).ready( function () {
 	);
 
 	oTest.fnWaitTest(
-
 		"Add a class to a single column - third row",
 		null,
 		function () { return $('#example tbody tr:eq(3) td:eq(2)').hasClass('unittest'); }
 	);
 
 	oTest.fnWaitTest(
-
 		"Add a class to a single column - last row",
 		null,
 		function () { return $('#example tbody tr:eq(9) td:eq(2)').hasClass('unittest'); }
 	);
 
 	oTest.fnWaitTest(
-
 		"Add a class to a single column - has not applied to other columns - 1st",
 		null,
 		function () { return $('#example tbody tr:eq(3) td:eq(0)').hasClass('unittest') == false; }
 	);
 
 	oTest.fnWaitTest(
-
 		"Add a class to a single column - has not applied to other columns - 5th",
 		null,
 		function () { return $('#example tbody tr:eq(3) td:eq(4)').hasClass('unittest') == false; }
 	);
 
 	oTest.fnWaitTest(
-
 		"Add a class to a single column - seventh row - second page",
 		function () { $('#example_next').click(); },
 		function () { return $('#example tbody tr:eq(6) td:eq(2)').hasClass('unittest'); }
 	);
 
 	oTest.fnWaitTest(
-
 		"Add a class to a single column - has not applied to header",
 		null,
 		function () { return $('#example thead tr:eq(3) th:eq(4)').hasClass('unittest') == false; }
 	);
 
 	oTest.fnWaitTest(
-
 		"Add a class to a single column - has not applied to footer",
 		null,
 		function () { return $('#example thead tr:eq(3) th:eq(4)').hasClass('unittest') == false; }
@@ -92,7 +83,6 @@ $(document).ready( function () {
 
 
 	oTest.fnWaitTest(
-
 		"Class defined for multiple columns - first row",
 		function () {
 			oSession.fnRestore();
@@ -109,7 +99,6 @@ $(document).ready( function () {
 		},
 		function () {
 			var bReturn =
-
 				$('#example tbody tr:eq(3) td:eq(0)').hasClass('unittest2') &&
 				$('#example tbody tr:eq(8) td:eq(3)').hasClass('unittest1');
 			return bReturn;
@@ -117,14 +106,12 @@ $(document).ready( function () {
 	);
 
 	oTest.fnWaitTest(
-
 		"Class defined for multiple columns - has not applied to other columns - 5th 1",
 		null,
 		function () { return $('#example tbody tr:eq(0) td:eq(4)').hasClass('unittest1') == false; }
 	);
 
 	oTest.fnWaitTest(
-
 		"Class defined for multiple columns - has not applied to other columns - 5th 2",
 		null,
 		function () { return $('#example tbody tr:eq(6) td:eq(4)').hasClass('unittest2') == false; }

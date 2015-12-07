@@ -1,7 +1,66 @@
 This file details which changes to the code are in which release version. It is a complement to the ChangeLog file which list *when* changes are made to the dev branch.
 
+0.5.1 2015-12-07
+Added:
+	* Regexes for korean newsgroups (PR 1868).
+	* Regexes from request thread (PR 1948).
+	* French flag to "multi" releases (PR 1949).
+	* Add TVMaze and TMDB Scrapers (PR 1953).
+	* IMDB Icon to TV new poster wall.
+	* Make NFO file retrievable for a release via the API and update documentation.
+	* include NFOURL (if NFO exists) in extended=1 API information (Issue 1962).
+	* Add changes for API and pager to charisma and omicron templates (PR 1965).
 
-0.5.1 2015-11-03
+Changed:
+	* Improve games cover view query time.
+	* Improve movies cover view query time
+	* Releases that fail to parse for TV proc go into their own queue for review.
+	* SmartyTV class abstract errors / fix a few template issues.
+	* Cache counts for Movies, Music, Games.
+	* Speedup Music Cover Views and cleanup a lot of the queries.
+	* Speed up Books, Console, and XXX cover views.
+	* If TVDB cannot reach the API, catch the error and force local lookup.
+	* Improvement to Releases' queries.
+	* Re-work books cover view queries to improve performance.
+	* Re-work movies cover view queries to improve performance.
+	* Improve error reporting for API NFO.
+	* Update the alpha API description for NFO. Fixing bad copy paste.
+	* Improve NFO joining operations and reduce overhead.
+	* Remove option to postprocess [only] properly renamed releases from tmux (PR 1964).
+	* Update templates to font-awesome 4.5.0 (PR 1971).
+	* More speed ups to Music, Games, and XXX cover views.
+	* Alter Screen scripts to default to PHP rather than Python scripts (PR 1980).
+	* Remove update TV schedule from screen script (PR 1979).
+
+Fixed:
+	* Remerged Darius' original charisma/omicron themes into next-master. Hopefully this will fix the issues for master, but may need more work yet.
+	* Attempt to fix AEBN / ADM lookups (Issue 1914).
+	* Schema data for countries table using invalid column for private key.
+	* Collection regex errors (Issue 1954).
+	* Fix book related problems due to wrong var used (PR 1952).
+	* Bad logic for airdate shows after cleanup of TV parsing.
+	* First TV name processing Regex not enforcing the start of the string.
+	* Undefined offset and foreach errors in TMDB.
+	* TraktTv abstract errors from missing functions.
+	* Duplicate Alias Errors and cache alias lookups.
+	* Season Packs not showing up correctly in View Series.
+	* Handle XmlException for try/catch on TVDB lookup.
+	* Bad merge broke regex again.
+	* TV name parsing regex.
+	* If episode airdate not set insert null.
+	* Pager template should not round down. Using ceil round up for the last page is a better choice.
+	* Don't cache failed TV lookups when the Episode didn't find a match but the show did.
+	* Fix the dnzb failures part of search query in Releases.php (PR 1968).
+	* Security issues with DnzbFailures.
+	* Queries in DnzbFailures not working properly.
+	* XmlException errors in TVDB not being caught.
+	* Broken DF queries in Releases.
+	* Fix count of failed releases.
+	* Failed counts for cover views being lumped together instead of group_concat.
+	* Fix the full movie view in omicron/charisma templates (PR 1977).
+
+
+0.5.0-1 2015-11-03
 Added:
 
 Changed:
@@ -18,6 +77,7 @@ Fixed:
 	* Attempt to fix Issue 1844, Pager counts not reflecting release availability.
 	* Index name on user series.
 	* Release-edit redirecting to wrong page (Issue 1940).
+	* Collection regex errors.
 
 
 0.5.0 2015-11-02

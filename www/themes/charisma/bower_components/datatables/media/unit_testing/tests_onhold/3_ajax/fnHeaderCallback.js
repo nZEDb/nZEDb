@@ -10,7 +10,6 @@ $(document).ready( function () {
 	var mPass, bInit;
 
 	oTest.fnWaitTest(
-
 		"Default should be null",
 		null,
 		function () { return oSettings.fnHeaderCallback == null; }
@@ -18,7 +17,6 @@ $(document).ready( function () {
 
 
 	oTest.fnWaitTest(
-
 		"Five arguments passed",
 		function () {
 			oSession.fnRestore();
@@ -41,7 +39,6 @@ $(document).ready( function () {
 
 	/* The header callback is called once for the init and then when the data is added */
 	oTest.fnWaitTest(
-
 		"fnHeaderCallback called once per draw",
 		function () {
 			oSession.fnRestore();
@@ -62,7 +59,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnWaitTest(
-
 		"fnRowCallback called on paging (i.e. another draw)",
 		function () { $('#example_next').click(); },
 		function () { return mPass == 3; }
@@ -70,7 +66,6 @@ $(document).ready( function () {
 
 
 	oTest.fnWaitTest(
-
 		"fnRowCallback allows us to alter row information",
 		function () {
 			oSession.fnRestore();
@@ -86,7 +81,6 @@ $(document).ready( function () {
 
 
 	oTest.fnWaitTest(
-
 		"iStart correct on first page",
 		function () {
 			oSession.fnRestore();
@@ -107,7 +101,6 @@ $(document).ready( function () {
 
 
 	oTest.fnWaitTest(
-
 		"iStart correct on second page",
 		function () {
 			oSession.fnRestore();
@@ -131,7 +124,6 @@ $(document).ready( function () {
 
 
 	oTest.fnWaitTest(
-
 		"iEnd correct on second page",
 		function () {
 			oSession.fnRestore();
@@ -155,7 +147,6 @@ $(document).ready( function () {
 
 
 	oTest.fnWaitTest(
-
 		"aiDisplay length is full data when not filtered",
 		function () {
 			oSession.fnRestore();
@@ -175,7 +166,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnWaitTest(
-
 		"aiDisplay length is 9 when filtering on 'Mozilla'",
 		function () {
 			oSession.fnRestore();

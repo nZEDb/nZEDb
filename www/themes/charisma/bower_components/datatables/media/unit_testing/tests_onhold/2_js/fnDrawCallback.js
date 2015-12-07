@@ -12,7 +12,6 @@ $(document).ready( function () {
 	var mPass;
 
 	oTest.fnTest(
-
 		"Default should be null",
 		null,
 		function () { return oSettings.fnDrawCallback == null; }
@@ -20,7 +19,6 @@ $(document).ready( function () {
 
 
 	oTest.fnTest(
-
 		"One argument passed",
 		function () {
 			oSession.fnRestore();
@@ -38,7 +36,6 @@ $(document).ready( function () {
 
 
 	oTest.fnTest(
-
 		"That one argument is the settings object",
 		function () {
 			oSession.fnRestore();
@@ -55,7 +52,6 @@ $(document).ready( function () {
 
 
 	oTest.fnTest(
-
 		"fnRowCallback called once on first draw",
 		function () {
 			oSession.fnRestore();
@@ -72,7 +68,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"fnRowCallback called once on each draw there after as well",
 		function () {
 			$('#example_next').click();

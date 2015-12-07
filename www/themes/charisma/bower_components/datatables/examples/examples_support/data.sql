@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS `ajax` (
   `grade` varchar(20) NOT NULL default '',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+
 INSERT INTO ajax ( engine, browser, platform, version, grade ) VALUES ( 'Trident', 'Internet Explorer 4.0', 'Win 95+', '4', 'X' );
 INSERT INTO ajax ( engine, browser, platform, version, grade ) VALUES ( 'Trident', 'Internet Explorer 5.0', 'Win 95+', '5', 'C' );
 INSERT INTO ajax ( engine, browser, platform, version, grade ) VALUES ( 'Trident', 'Internet Explorer 5.5', 'Win 95+', '5.5', 'A' );

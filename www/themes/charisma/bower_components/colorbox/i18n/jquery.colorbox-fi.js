@@ -12,5 +12,4 @@ jQuery.extend(jQuery.colorbox.settings, {
 	imgError: "Kuvan lataaminen epäonnistui.",
 	slideshowStart: "Aloita kuvaesitys.",
 	slideshowStop: "Lopeta kuvaesitys."
-
 });

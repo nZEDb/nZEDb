@@ -9,7 +9,6 @@ $(document).ready( function () {
 		"bServerSide": true,
 		"sAjaxSource": "../../../examples/server_side/scripts/server_processing.php",
 		"aoColumnDefs": [
-
 			{ "bSearchable": false, "bVisible": false, "aTargets": [ 2 ] },
 			{ "bVisible": false, "aTargets": [ 3 ] }
 		],
@@ -19,7 +18,6 @@ $(document).ready( function () {
 	} );
 
 	oTest.fnWaitTest(
-
 		"Check that the number of columns in table is correct",
 		null,
 		function () { return $('#example tbody tr:eq(0) td').length == 5; }
@@ -27,7 +25,6 @@ $(document).ready( function () {
 
 
 	oTest.fnTest(
-
 		"And with scrolling",
 		function () {
 			$('#example').dataTable( {
@@ -35,7 +32,6 @@ $(document).ready( function () {
 				"sAjaxSource": "../../../examples/server_side/scripts/server_processing.php",
 				"sScrollY": 200,
 				"aoColumnDefs": [
-
 					{ "bSearchable": false, "bVisible": false, "aTargets": [ 2 ] },
 					{ "bVisible": false, "aTargets": [ 3 ] }
 				],

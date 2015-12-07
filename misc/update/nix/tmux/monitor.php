@@ -86,7 +86,6 @@ while ($runVar['counts']['iterations'] > 0) {
 	//get usenet connection info
 	$runVar['connections'] = $tOut->getConnectionsInfo($runVar['constants']);
 
-	$runVar['modsettings']['clean'] = ($runVar['settings']['post_non'] == 2 ? ' clean ' : ' ');
 	$runVar['constants']['pre_lim'] = ($runVar['counts']['iterations'] > 1 ? '7' : '');
 
 	//assign scripts

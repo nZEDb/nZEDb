@@ -13,7 +13,7 @@ Head to http://sphinxsearch.com/downloads/release/, download the latest version 
 
 Assuming you are on ubuntu, you would:
 
-`sudo add-apt-repository ppa:builds/sphinxsearch-rel21`
+`sudo add-apt-repository ppa:builds/sphinxsearch-rel22`
 
 `sudo apt-get update`
 

@@ -7,7 +7,6 @@ $(document).ready( function () {
 	} );
 
 	oTest.fnTest(
-
 		"Set the filter",
 		function () {
 			$('#example_filter input').val( '\\s*CVM\\s*$' );
@@ -17,7 +16,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Destroy the table and remake it - checking the filter was saved",
 		function () {
 			$('#example').dataTable( {
@@ -29,7 +27,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Do it again without state saving and make sure filter is empty",
 		function () {
 			$('#example').dataTable( {
@@ -40,7 +37,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Clean up",
 		function () {
 			$('#example').dataTable( {

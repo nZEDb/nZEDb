@@ -75,7 +75,7 @@
 			if ( $_POST[ 'bSortable_'.intval($_POST['iSortCol_'.$i]) ] == "true" )
 			{
 				$sOrder .= $aColumns[ intval( $_POST['iSortCol_'.$i] ) ]."
-					".mysql_real_escape_string( $_POST['sSortDir_'.$i] ) .", ";
+				 ".mysql_real_escape_string( $_POST['sSortDir_'.$i] ) .", ";
 			}
 		}
 

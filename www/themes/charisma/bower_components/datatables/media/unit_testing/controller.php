@@ -47,7 +47,7 @@
 				function fnReadDir( &$aReturn, $path )
 				{
 					$rDir = opendir( $path );
-					while ( ($file = readdir($rDir)) !== false )
+        while ( ($file = readdir($rDir)) !== false )
 					{
 						if ( $file == "." || $file == ".." || $file == ".DS_Store" )
 						{

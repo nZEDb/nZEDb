@@ -9,7 +9,6 @@ $(document).ready( function () {
 	} );
 
 	oTest.fnWaitTest(
-
 		"Filtering div exists by default",
 		null,
 		function () { return document.getElementById('example_filter') != null; }
@@ -17,7 +16,6 @@ $(document).ready( function () {
 
 	/* Check can disable */
 	oTest.fnWaitTest(
-
 		"Fltering can be disabled",
 		function () {
 			oSession.fnRestore();
@@ -32,7 +30,6 @@ $(document).ready( function () {
 
 	/* Enable makes no difference */
 	oTest.fnWaitTest(
-
 		"Filtering enabled override",
 		function () {
 			oSession.fnRestore();

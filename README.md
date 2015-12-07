@@ -29,13 +29,13 @@ The overall speed of nZEDb is largely governed by performance of the database. A
 ### Software
 
 	PHP 5.5+ (and various modules)
-	MySQL 5.5+ (Postgres support is Work-In-Progress)
+	MySQL 5.5+ (Postgres is not supported)
 	Python 2.7 or 3.0 (and various modules)(Optional. Most useful on Windows.)
 The installation guides have more detailed software requirements.
 
 ### Database
 
-Most (if not all) distributions ship MySQL/Postgres with a default configuration that will perform well on a Raspberry Pi. If you wish to store more that 500K releases, these default settings will quickly lead to poor performance. Expect this.
+Most (if not all) distributions ship MySQL with a default configuration that will perform well on a Raspberry Pi. If you wish to store more that 500K releases, these default settings will quickly lead to poor performance. Expect this.
 
 As a general rule of thumb the database will need a minimum of 1-2G buffer RAM for every million releases you intend to store. That RAM should be assigned to either of these two parameters:
 - key_buffer_size			(MyISAM)
@@ -63,7 +63,7 @@ Before converting to InnoDB be sure to set:
 
 Specific installation guides for common Operating Systems can be found on the nZEDb github wiki: https://github.com/nZEDb/nZEDb/wiki/Install-Guides
 
-The latest Ubuntu guide can be found in the docs folder of the dev branch: https://github.com/nZEDb/nZEDb/blob/dev/docs/Ubuntu%2013.10%20INSTALL%20GUIDE.md
+The latest Ubuntu guide can be found in the dev branch: https://github.com/nZEDb/nZEDb/blob/dev/Ubuntu-14.04.2-Install.txt
 
 ## Getting Started
 
@@ -138,7 +138,9 @@ GiantBombAPI.php => MIT
 
 TMDb PHP API class => BSD
 
-TVDB PHP API class => Moinax
+TVDB PHP API => Moinax
+
+TVMaze PHP API => JPinkney
 
 Zip file creation class => No license specified.
 

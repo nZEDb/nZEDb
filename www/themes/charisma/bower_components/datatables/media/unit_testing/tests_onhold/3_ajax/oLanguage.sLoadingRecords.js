@@ -4,7 +4,6 @@ oTest.fnStart( "oLanguage.sLoadingRecords" );
 $(document).ready( function () {
 	var tmp = false;
 	oTest.fnTest(
-
 		"Default loading text is 'Loading...'",
 		function () {
 			$('#example').dataTable( {

@@ -22,7 +22,7 @@
 		</div>
 	</div>
 	<h1>
-		<center>{$seriestitles}</center>
+		<center>{$seriestitles} ({$show.publisher})</center>
 	</h1>
 	{if $catname != ''}<span class="text-info h5">Current category shown: {$catname|escape:"htmlall"}</span>{/if}
 	<div class="tvseriesheading">
@@ -40,15 +40,31 @@
 	<div class="btn-group">
 		<a class="btn btn-sm btn-default"
 		   href="{$smarty.const.WWW_TOP}/rss?show={$show.id}{if $category != ''}&amp;t={$category}{/if}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">RSS for TV Show <i class="fa fa-rss"></i></a>
-		{if $result.source = 1}
-			{if $show.tvdb > 0}<a class="btn btn-sm btn-info" target="_blank"
-									 href="{$site->dereferrer_link}http://thetvdb.com/?tab=series&id={$show.tvdb}&lid=7"
-									 title="View at TheTVDB">TheTVDB</a>{/if}
-		{elseif $result.source = 3}
-			<a class="btn btn-sm btn-info" target="_blank"
-			   href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$show.id}"
-			   title="View at TV Rage">TV Rage</a>
-		{/if}
+			{if $show.tvdb > 0}
+				<a class="btn btn-sm btn-info" target="_blank"
+				   href="{$site->dereferrer_link}http://thetvdb.com/?tab=series&id={$show.tvdb}"
+				   title="View at TheTVDB">TheTVDB</a>
+			{/if}
+			{if $show.tvmaze > 0}
+				<a class="btn btn-sm btn-info" target="_blank"
+				   href="{$site->dereferrer_link}http://tvmaze.com/shows/{$show.tvmaze}"
+				   title="View at TVMaze">TVMaze</a>
+			{/if}
+			{if $show.trakt > 0}
+				<a class="btn btn-sm btn-info" target="_blank"
+				   href="{$site->dereferrer_link}http://www.trakt.tv/shows/{$show.trakt}"
+				   title="View at TraktTv">Trakt</a>
+			{/if}
+			{if $show.tvrage > 0}
+				<a class="btn btn-sm btn-info" target="_blank"
+				   href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$show.tvrage}"
+				   title="View at TV Rage">TV Rage</a>
+			{/if}
+			{if $show.tmdb > 0}
+				<a class="btn btn-sm btn-info" target="_blank"
+				   href="{$site->dereferrer_link}https://www.themoviedb.org/tv/{$show.tmdb}"
+				   title="View at TheMovieDB">TMDB</a>
+			{/if}
 	</div>
 	<br/>
 	<div class="box-body"
@@ -60,7 +76,7 @@
 					<input type="button" class="nzb_multi_operations_download btn btn-sm btn-success"
 						   value="Download NZBs"/>
 					<input type="button" class="nzb_multi_operations_cart btn btn-sm btn-info"
-						   value="Add to Cart"/>
+						   value="Send to my Download Basket"/>
 					{if isset($sabintegrated)}
 						<input type="button" class="nzb_multi_operations_sab btn btn-sm btn-primary"
 							   value="Send to Queue"/>
@@ -189,13 +205,13 @@
 														<td class="icons" style='width:100px;'>
 															<a title="Download Nzb"
 															   href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}"><i
-																		class="fa fa-download text-muted"></i></a>
-															<a class="fa fa-shopping-cart icon_cart text-muted"
+																		class="fa fa-cloud-download text-muted"></i></a>
+															<a class="fa fa-shopping-basket icon_cart text-muted"
 															   href="#"
-															   title="Add to Cart">
+															   title="Send to my Download Basket">
 															</a>
 															{if isset($sabintegrated)}
-																<a class="fa fa-send-o icon_sab text-muted"
+																<a class="fa fa-share-o icon_sab text-muted"
 																   href="#"
 																   title="Send to my Queue">
 																</a>

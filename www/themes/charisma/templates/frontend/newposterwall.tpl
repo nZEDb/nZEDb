@@ -74,7 +74,7 @@
 																										  href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}">
 											<i class="glyphicon glyphicon-download"></i></a>
 									</span>
-									<span class="btn btn-hover btn-default btn-sm icon_cart text-muted" title="Add to Cart"><i class="glyphicon glyphicon-shopping-cart"></i></span>
+									<span class="btn btn-hover btn-default btn-sm icon_cart text-muted" title="Send to my Download Basket"><i class="glyphicon glyphicon-shopping-cart"></i></span>
 									{if isset($sabintegrated)}
 										<span class="btn btn-hover btn-default btn-sm icon_sab text-muted" title="Send to my Queue"><i class="glyphicon glyphicon-send"></i></span>
 									{/if}

@@ -22,17 +22,13 @@ new function($) {
         var position = settings.cursor_position || 0;
 
 
-
         return this.filter(":input").each(function(index) {
-
             $.data(this, key, values[index] || $(this).attr(attr));
-
         }).each(function() {
             if ($.trim($(this).val()) === "")
                 $(this).addClass(className).val($.data(this, key));
         }).focus(function() {
             if ($.trim($(this).val()) === $.data(this, key))
-
                 $(this).removeClass(className).val(value)
                 if ($.fn.setCursorPosition) {
                   $(this).setCursorPosition(position);
@@ -51,7 +47,6 @@ new function($) {
                 new function(e) {
                     $(e.form).submit(function() {
                         if ($.trim($(e).val()) == $.data(e, key))
-
                             $(e).removeClass(className).val("");
                         return true;
                     });

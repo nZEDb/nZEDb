@@ -320,7 +320,6 @@ fc.lang = function(langCode, options) {
 ;;
 
 
-
 function Calendar(element, instanceOptions) {
 	var t = this;
 
@@ -2493,7 +2492,6 @@ FCMoment.prototype.zone = function(tzo) {
 	if (tzo != null) {
 		// FYI, the delete statements need to be before the .zone() call or else chaos ensues
 		// for reasons I don't understand.
-
 		delete this._ambigTime;
 		delete this._ambigZone;
 	}
@@ -6902,7 +6900,6 @@ function SelectionManager() {
 }
 
 ;;
-
 
 function OverlayManager() {
 	var t = this;

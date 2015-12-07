@@ -11,14 +11,12 @@ $(document).ready( function () {
 	var oSettings = oTable.fnSettings();
 
 	oTest.fnWaitTest(
-
 		"Processing language is 'Processing...' by default",
 		null,
 		function () { return oSettings.oLanguage.sProcessing == "Processing..."; }
 	);
 
 	oTest.fnTest(
-
 		"Processing language default is in the DOM",
 		null,
 		function () { return document.getElementById('example_processing').innerHTML = "Processing..."; }
@@ -26,7 +24,6 @@ $(document).ready( function () {
 
 
 	oTest.fnWaitTest(
-
 		"Processing language can be defined",
 		function () {
 			oSession.fnRestore();
@@ -44,7 +41,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Processing language definition is in the DOM",
 		null,
 		function () { return document.getElementById('example_processing').innerHTML = "unit test"; }

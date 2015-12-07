@@ -106,7 +106,7 @@ define('nZEDb_RELEASE_SEARCH_TYPE', 0);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * This is the hostname to use when connecting to the SphinxQL server,
+ * This is the hostname to use when connecting to the SphinxQL server (mysql41 protocol),
  *
  * @note    Using localhost / 127.0.0.1 has caused me issues and only 0 worked on my local server.
  * @note    See misc/sphinxsearch/README.md for installation details.
@@ -115,7 +115,7 @@ define('nZEDb_RELEASE_SEARCH_TYPE', 0);
 define('nZEDb_SPHINXQL_HOST_NAME', '0');
 
 /**
- * This is the port to the SphinxQL server.
+ * This is the port to the SphinxQL server (mysql41 protocol).
  *
  * @default 9306
  */
@@ -573,7 +573,12 @@ if (Misc::isCLI()) {
 
 	/**
 	 * Type of errors to display.
-	 * @note    For development/debugging set to E_ALL
+	 *
+	 * nZEDb code should run clean with no errors, so there is no point to restricting the reported
+	 * output. Any notices or warnings should be dealt with.
+	 * It makes no difference to performance if reporting specific types (i.e. strict, warnings, etc.)
+	 * are disabled, as the error is still prepared just not displayed.
+	 *
 	 * @default E_ALL
 	 * @see     https://secure.php.net/manual/en/errorfunc.constants.php
 	 * @version 4
@@ -663,7 +668,12 @@ if (Misc::isCLI()) {
 
 	/**
 	 * Type of errors to display.
-	 * @note    For development/debugging set to E_ALL
+	 *
+	 * nZEDb code should run clean with no errors, so there is no point to restricting the reported
+	 * output. Any notices or warnings should be dealt with.
+	 * It makes no difference to performance if reporting specific types (i.e. strict, warnings, etc.)
+	 * are disabled, as the error is still prepared just not displayed.
+	 *
 	 * @default E_ALL
 	 * @see     https://secure.php.net/manual/en/errorfunc.constants.php
 	 * @version 4

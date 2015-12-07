@@ -7,14 +7,12 @@ $(document).ready( function () {
 	var oSettings = oTable.fnSettings();
 
 	oTest.fnTest(
-
 		"All columns are visible by default",
 		null,
 		function () { return $('#example tbody tr:eq(0) td').length == 5; }
 	);
 
 	oTest.fnTest(
-
 		"Hide the first column",
 		function () {
 			oSession.fnRestore();
@@ -63,7 +61,6 @@ $(document).ready( function () {
 
 
 	oTest.fnTest(
-
 		"Hide the second column",
 		function () {
 			oSession.fnRestore();
@@ -136,7 +133,6 @@ $(document).ready( function () {
 
 
 	oTest.fnTest(
-
 		"Hide the first two columns",
 		function () {
 			oSession.fnRestore();
@@ -197,7 +193,6 @@ $(document).ready( function () {
 
 
 	oTest.fnTest(
-
 		"Hide the third column",
 		function () {
 			oSession.fnRestore();

@@ -1031,7 +1031,7 @@ class fork_daemon
 	 *
 	 * @param int $bucket the bucket to use
 	 * @param bool $show_pending True to show children that are done,
-	 * 		but not yet had their results retrieved
+	 *		but not yet had their results retrieved
 	 * @return int the number of children running
 	 */
 	public function children_running($bucket = self::DEFAULT_BUCKET, $show_pending = false)

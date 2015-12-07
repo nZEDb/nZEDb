@@ -9,14 +9,12 @@ $(document).ready( function () {
 	} );
 
 	oTest.fnTest(
-
 		"No sort",
 		null,
 		function () { return $('#example tbody td:eq(3)').html() == "4"; }
 	);
 
 	oTest.fnTest(
-
 		"Next page",
 		function () {
 			$('#example').dataTable().fnPageChange( 'next' );
@@ -25,7 +23,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Destroy the table and remake it - checking we are still on the next page",
 		function () {
 			$('#example').dataTable( {

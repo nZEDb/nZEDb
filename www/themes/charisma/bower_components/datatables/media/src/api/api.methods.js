@@ -1175,7 +1175,7 @@ this.fnSort = function( aaSort )
 this.fnSortListener = function( nNode, iColumn, fnCallback )
 {
 	_fnSortAttachListener( _fnSettingsFromNode( this[DataTable.ext.iApiIndex] ), nNode, iColumn,
-		fnCallback );
+	 fnCallback );
 };
 
 
