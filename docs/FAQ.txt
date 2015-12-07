@@ -53,7 +53,7 @@ A: You should follow the recommendations found on these 2 webpages.
    http://stackoverflow.com/questions/3927690/howto-clean-a-mysql-innodb-storage-engine/4056261#4056261
    http://www.mysqlperformanceblog.com/2011/11/06/improved-innodb-fast-index-creation
    Percona Server as of versions 5.1.56 and 5.5.11 allows utilizing fast index creation for all of the above cases, which can potentially speed them up greatly.
-   Be sure to add to you InnoDB section: 	expand_fast_index_creation = 1
+   Be sure to add to you InnoDB section:    expand_fast_index_creation = 1
 									        innodb_merge_sort_block_size = 1G
 
 Q: I'm having issues with the PREDB backfill script.
