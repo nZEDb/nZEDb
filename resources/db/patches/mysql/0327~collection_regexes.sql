@@ -2189,7 +2189,7 @@ VALUES (
   '^alt\\.binaries\\.games$',
   '/^\\(\\d+\\/(?P<match0>\\d+\\))[-_ ]{0,3}Description[-_ ]{0,3}"\\w+(?P<match1>[-_](proof|sample|thumbs?))*(\\.part\\d*(\\.rar)?|\\.rar|\\.7z)?(\\d{1,3}\\.rev"|\\.vol\\d+\\+\\d+\\.par2"|\\.[A-Za-z0-9]{2,4}"|")[-_\\s]{0,3}\\d+([.,]\\d+)? [kKmMgG][bB][-_\\s]{0,3}[-_\\s]{0,3}yEnc$/ui',
   1,
-  '// 	(1/8) - Description - "90b66b2e31053401d808cf413b28f2f0.par2" - 698,44 MB - yEnc',
+  '// (1/8) - Description - "90b66b2e31053401d808cf413b28f2f0.par2" - 698,44 MB - yEnc',
   125
 ), (
   320,

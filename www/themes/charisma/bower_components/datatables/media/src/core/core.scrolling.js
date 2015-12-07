@@ -29,16 +29,16 @@ function _fnFeatureHtmlTable ( oSettings )
 	 *          tfoot - nTfoot
 	 */
 	var
-	 	nScroller = document.createElement('div'),
-	 	nScrollHead = document.createElement('div'),
-	 	nScrollHeadInner = document.createElement('div'),
-	 	nScrollBody = document.createElement('div'),
-	 	nScrollFoot = document.createElement('div'),
-	 	nScrollFootInner = document.createElement('div'),
-	 	nScrollHeadTable = oSettings.nTable.cloneNode(false),
-	 	nScrollFootTable = oSettings.nTable.cloneNode(false),
+	 nScroller = document.createElement('div'),
+	 nScrollHead = document.createElement('div'),
+	 nScrollHeadInner = document.createElement('div'),
+	 nScrollBody = document.createElement('div'),
+	 nScrollFoot = document.createElement('div'),
+	 nScrollFootInner = document.createElement('div'),
+	 nScrollHeadTable = oSettings.nTable.cloneNode(false),
+	 nScrollFootTable = oSettings.nTable.cloneNode(false),
 		nThead = oSettings.nTable.getElementsByTagName('thead')[0],
-	 	nTfoot = oSettings.nTable.getElementsByTagName('tfoot').length === 0 ? null :
+	 nTfoot = oSettings.nTable.getElementsByTagName('tfoot').length === 0 ? null :
 			oSettings.nTable.getElementsByTagName('tfoot')[0],
 		oClasses = oSettings.oClasses;
 
@@ -436,7 +436,7 @@ function _fnScrollDraw ( o )
 		nScrollBody.style.height = _fnStringToCss( o.oScroll.sY );
 
 		var iExtra = (o.oScroll.sX !== "" && o.nTable.offsetWidth > nScrollBody.offsetWidth) ?
-		 	o.oScroll.iBarWidth : 0;
+		 o.oScroll.iBarWidth : 0;
 		if ( o.nTable.offsetHeight < nScrollBody.offsetHeight )
 		{
 			nScrollBody.style.height = _fnStringToCss( o.nTable.offsetHeight+iExtra );

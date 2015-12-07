@@ -2066,7 +2066,7 @@ class getid3_riff extends getid3_handler
 			AVRN	Independent JPEG Group\'s codec (AVRN)
 			AYUV	4:4:4 YUV (AYUV)
 			AZPR	Quicktime Apple Video (AZPR)
-			BGR 	Raw RGB32
+			BGR Raw RGB32
 			BLZ0	Blizzard DivX MPEG-4
 			BTVC	Conexant Composite Video
 			BINK	RAD Game Tools Bink Video
@@ -2090,7 +2090,7 @@ class getid3_riff extends getid3_handler
 			CYUY	ATI YUV
 			D261	H.261
 			D263	H.263
-			DIB 	Device Independent Bitmap
+			DIB Device Independent Bitmap
 			DIV1	FFmpeg OpenDivX
 			DIV2	Microsoft MPEG-4 v1/v2
 			DIV3	DivX ;-) MPEG-4 v3.x Low-Motion
@@ -2107,7 +2107,7 @@ class getid3_riff extends getid3_handler
 			DPSC	DPS/Leitch PAR Motion JPEG
 			DV25	Matrox DVCPRO codec
 			DV50	Matrox DVCPRO50 codec
-			DVC 	IEC 61834 and SMPTE 314M (DVC/DV Video)
+			DVC IEC 61834 and SMPTE 314M (DVC/DV Video)
 			DVCP	IEC 61834 and SMPTE 314M (DVC/DV Video)
 			DVHD	IEC Standard DV 1125 lines @ 30fps / 1250 lines @ 25fps
 			DVMA	Darim Vision DVMPEG (dummy for MPEG compressor) (www.darvision.com)
@@ -2169,7 +2169,7 @@ class getid3_riff extends getid3_handler
 			IYUV	Planar YUV format (8-bpp Y plane, followed by 8-bpp 2×2 U and V planes)
 			i263	Intel ITU H.263 Videoconferencing (i263)
 			I420	Intel Indeo 4
-			IAN 	Intel Indeo 4 (RDX)
+			IAN Intel Indeo 4 (RDX)
 			ICLB	InSoft CellB Videoconferencing
 			IGOR	Power DVD
 			IJPG	Intergraph JPEG
@@ -2283,7 +2283,7 @@ class getid3_riff extends getid3_handler
 			Q1.1	Q-Team\'s QPEG 1.1 (www.q-team.de)
 			QPEG	Q-Team QPEG 1.0
 			qpeq	Q-Team QPEG 1.1
-			RGB 	Raw BGR32
+			RGB Raw BGR32
 			RGBA	Raw RGB w/ Alpha
 			RMP4	REALmagic MPEG-4 (unauthorized XVID copy) (www.sigmadesigns.com)
 			ROQV	Id RoQ File Video Decoder
@@ -2295,14 +2295,14 @@ class getid3_riff extends getid3_handler
 			RV30	RealVideo 8
 			RV40	RealVideo 9
 			RGBT	Raw RGB w/ Transparency
-			RLE 	Microsoft Run Length Encoder
+			RLE Microsoft Run Length Encoder
 			RLE4	Run Length Encoded (4bpp, 16-color)
 			RLE8	Run Length Encoded (8bpp, 256-color)
 			RT21	Intel Indeo RealTime Video 2.1
 			rv20	RealVideo G2
 			rv30	RealVideo 8
-			RVX 	Intel RDX (RVX )
-			SMC 	Apple Graphics (SMC )
+			RVX Intel RDX (RVX )
+			SMC Apple Graphics (SMC )
 			SP54	Logitech Sunplus Sp54 Codec for Mustek GSmart Mini 2
 			SPIG	Radius Spigot
 			SVQ3	Sorenson Video 3 (Apple Quicktime 5)
@@ -2408,7 +2408,7 @@ class getid3_riff extends getid3_handler
 			Y42T	Brooktree UYUV 4:2:2 with transparency
 			Y422	ADS Technologies Copy of UYVY used in Pyro WebCam firewire camera
 			Y800	Simple, single Y plane for monochrome images
-			Y8  	Grayscale video
+			Y8  Grayscale video
 			YC12	Intel YUV 12 codec
 			YUV8	Winnov Caviar YUV8
 			YUV9	Intel YUV9

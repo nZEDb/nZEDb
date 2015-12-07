@@ -25,7 +25,7 @@ input[type=text], input[type=password], textarea, select { background: #fff; bac
 /*
 page structure
 */
-#header { width: 85%;	margin: 0 auto; }
+#header { width: 85%; margin: 0 auto; }
 #page { width: 85%; margin: 0 auto; padding: 50px 0px 0px 0px;}
 
 #logo { width: 85%; margin: 0 auto; height: 65px; padding-left:5px; margin-top:4px; background:url("../images/banner.jpg") no-repeat bottom left; }
@@ -323,10 +323,9 @@ div.icon_sab_clicked {
 }
 
 div.icon_tvrage			{ background-image:url('../images/icons/tvrage.png'); }
-div.icon_anidb          { background-image:url('../images/icons/anidb.png'); }
 div.icon_check			{ background-image:url('../images/icons/check.png'); }
 div.icon_nzbvortex		{ background-image: url('../images/icons/vortex/bigsmile.png'); }
-div.icon_nzbvortex_clicked	{ background-image: url('../images/icons/vortex/bigsmiledown.png'); }
+div.icon_nzbvortex_clicked		{ background-image: url('../images/icons/vortex/bigsmiledown.png'); }
 
 
 

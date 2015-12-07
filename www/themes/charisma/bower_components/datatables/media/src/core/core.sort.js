@@ -10,7 +10,7 @@ function _fnSort ( oSettings, bApplyClasses )
 		i, iLen, j, jLen, k, kLen,
 		sDataType, nTh,
 		aaSort = [],
-	 	aiOrig = [],
+	 aiOrig = [],
 		oSort = DataTable.ext.oSort,
 		aoData = oSettings.aoData,
 		aoColumns = oSettings.aoColumns,
@@ -87,14 +87,14 @@ function _fnSort ( oSettings, bApplyClasses )
 		 * and sorting function (from oSort) in a certain direction. It's reasonably complex to
 		 * follow on it's own, but this is what we want (example two column sorting):
 		 *  fnLocalSorting = function(a,b){
-		 *  	var iTest;
-		 *  	iTest = oSort['string-asc']('data11', 'data12');
-		 *  	if (iTest !== 0)
-		 *  		return iTest;
+		 *  var iTest;
+		 *  iTest = oSort['string-asc']('data11', 'data12');
+		 *  if (iTest !== 0)
+		 *  return iTest;
 		 *    iTest = oSort['numeric-desc']('data21', 'data22');
 		 *    if (iTest !== 0)
-		 *  		return iTest;
-		 *  	return oSort['numeric-asc']( aiOrig[a], aiOrig[b] );
+		 *  return iTest;
+		 *  return oSort['numeric-asc']( aiOrig[a], aiOrig[b] );
 		 *  }
 		 * Basically we have a test for each sorting column, if the data in that column is equal,
 		 * test the next column. If all columns match, then we use a numeric sort on the row
@@ -362,7 +362,7 @@ function _fnSortingClasses( oSettings )
 				var sSpanClass;
 				if ( iFound == -1 )
 				{
-				 	sSpanClass = oSettings.aoColumns[i].sSortingClassJUI;
+				 sSpanClass = oSettings.aoColumns[i].sSortingClassJUI;
 				}
 				else if ( aaSort[iFound][1] == "asc" )
 				{

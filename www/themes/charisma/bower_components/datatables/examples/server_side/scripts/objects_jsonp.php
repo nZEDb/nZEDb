@@ -77,7 +77,7 @@
 			{
 				$iColumnIndex = array_search( $_GET['mDataProp_'.$_GET['iSortCol_'.$i]], $aColumns );
 				$sOrder .= $aColumns[ $iColumnIndex ]."
-					".mysql_real_escape_string( $_GET['sSortDir_'.$i] ) .", ";
+				 ".mysql_real_escape_string( $_GET['sSortDir_'.$i] ) .", ";
 			}
 		}
 

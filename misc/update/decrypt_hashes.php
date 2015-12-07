@@ -12,8 +12,8 @@ if (!isset($argv[1]) || ($argv[1] != "all" && $argv[1] != "full" && !is_numeric(
 		"\nThis script tries to match hashes of the releases.name or releases.searchname to predb hashes.\n"
 		. "To display the changes, use 'show' as the second argument.\n\n"
 		. "php decrypt_hashes.php 1000		...: to limit to 1000 sorted by newest postdate.\n"
-		. "php decrypt_hashes.php full 		...: to run on full database.\n"
-		. "php decrypt_hashes.php all 		...: to run on all hashed releases(including previously renamed).\n"
+		. "php decrypt_hashes.php full ...: to run on full database.\n"
+		. "php decrypt_hashes.php all ...: to run on all hashed releases(including previously renamed).\n"
 	));
 }
 

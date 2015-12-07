@@ -729,7 +729,7 @@ class ProcessAdditional
 	/**
 	 * Deletes files and folders recursively.
 	 *
-	 * @param string 	$path          Path to a folder or file.
+	 * @param string $path          Path to a folder or file.
 	 * @param string[] $ignoredFolders Array with paths to folders to ignore.
 	 *
 	 * @void

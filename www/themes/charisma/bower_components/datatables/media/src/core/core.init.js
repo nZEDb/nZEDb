@@ -70,7 +70,7 @@ function _fnInitialise ( oSettings )
 		_fnServerParams( oSettings, aoData );
 		oSettings.fnServerData.call( oSettings.oInstance, oSettings.sAjaxSource, aoData, function(json) {
 			var aData = (oSettings.sAjaxDataProp !== "") ?
-			 	_fnGetObjectDataFn( oSettings.sAjaxDataProp )(json) : json;
+			 _fnGetObjectDataFn( oSettings.sAjaxDataProp )(json) : json;
 
 			/* Got the data - add it to the table */
 			for ( i=0 ; i<aData.length ; i++ )

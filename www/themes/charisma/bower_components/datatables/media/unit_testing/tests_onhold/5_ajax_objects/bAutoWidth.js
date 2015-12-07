@@ -101,7 +101,7 @@ $(document).ready( function () {
 				],
 				"bAutoWidth": false
 			} );
-	 		oSettings = oTable.fnSettings();
+	 oSettings = oTable.fnSettings();
 		},
 		function () { return oSettings.oFeatures.bAutoWidth == false; }
 	);
@@ -153,7 +153,7 @@ $(document).ready( function () {
 				],
 				"bAutoWidth": true
 			} );
-	 		oSettings = oTable.fnSettings();
+	 oSettings = oTable.fnSettings();
 		},
 		function () { return oSettings.oFeatures.bAutoWidth; }
 	);

@@ -91,7 +91,7 @@ do
 ## Backfill options
 #	echo "--- Backfill ---"
 #	$PHP ${MULTI_PATH}/backfill.php 500000			#run backfill one active backfill group per thread upto a max of 500k headers
-#	$PHP ${MULTI_PATH}/backfill.php 				#run backfill one active backfill group per thread upto groups backfill target date
+#	$PHP ${MULTI_PATH}/backfill.php		#run backfill one active backfill group per thread upto groups backfill target date
 #	$PHP ${MULTI_PATH}/safe.php backfill			#run safe backfill - split across all threads
 #													#This will queue all headers for active backfill groups for download but
 #													#optimize your thread usage as the number of messages to download for each
@@ -110,7 +110,7 @@ do
 #	echo "--- PreDB ---"
 #	$PHP ${NZEDB_PATH}/nix/tmux/bin/postprocess_pre.php	# Post-Process PreDBs
 	echo "--- PREs ---"
-	$PHP ${NZEDB_PATH}/match_prefiles.php 10240 show 	# Match PREs
+	$PHP ${NZEDB_PATH}/match_prefiles.php 10240 show # Match PREs
 ## Post-Processing options
 #	$PHP ${MULTI_PATH}/requestid.php				#run local lookup for requestID matching.
 

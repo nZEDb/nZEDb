@@ -87,7 +87,7 @@ $(document).ready( function () {
 				"aaData": gaaData,
 				"bAutoWidth": false
 			} );
-	 		oSettings = oTable.fnSettings();
+	 oSettings = oTable.fnSettings();
 		},
 		function () { return oSettings.oFeatures.bAutoWidth == false; }
 	);
@@ -132,7 +132,7 @@ $(document).ready( function () {
 				"aaData": gaaData,
 				"bAutoWidth": true
 			} );
-	 		oSettings = oTable.fnSettings();
+	 oSettings = oTable.fnSettings();
 		},
 		function () { return oSettings.oFeatures.bAutoWidth; }
 	);

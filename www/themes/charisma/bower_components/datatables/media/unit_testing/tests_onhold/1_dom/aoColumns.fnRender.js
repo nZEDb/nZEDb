@@ -34,8 +34,8 @@ $(document).ready( function () {
 					null,
 					{ "fnRender": function (a, v) {
 						if ( arguments.length != 2 || typeof a.iDataRow=='undefined' ||
-						 	typeof a.iDataColumn=='undefined' || typeof a.aData=='undefined' ||
-						 	typeof a.mDataProp=='undefined' )
+						 typeof a.iDataColumn=='undefined' || typeof a.aData=='undefined' ||
+						 typeof a.mDataProp=='undefined' )
 						{
 							mTmp = false;
 						}

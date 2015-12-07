@@ -89,7 +89,7 @@ $(document).ready( function () {
 		"sAjaxSource": "../../../examples/server_side/scripts/server_processing.php",
 				"bAutoWidth": false
 			} );
-	 		oSettings = oTable.fnSettings();
+	 oSettings = oTable.fnSettings();
 		},
 		function () { return oSettings.oFeatures.bAutoWidth == false; }
 	);
@@ -135,7 +135,7 @@ $(document).ready( function () {
 		"sAjaxSource": "../../../examples/server_side/scripts/server_processing.php",
 				"bAutoWidth": true
 			} );
-	 		oSettings = oTable.fnSettings();
+	 oSettings = oTable.fnSettings();
 		},
 		function () { return oSettings.oFeatures.bAutoWidth; }
 	);

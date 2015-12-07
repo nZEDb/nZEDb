@@ -55,7 +55,7 @@ function reCategorize($argv)
 	$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 	$time = $consoletools->convertTime(TIME() - $timestart);
 	if ($update === true) {
-		echo $pdo->log->header("Finished re-categorizing " . number_format($chgcount) . " releases in " . $time . " , 	using the searchname.\n");
+		echo $pdo->log->header("Finished re-categorizing " . number_format($chgcount) . " releases in " . $time . " , using the searchname.\n");
 	} else {
 		echo $pdo->log->header("Finished re-categorizing in " . $time . " , using the searchname.\n"
 		. "This would have changed " . number_format($chgcount) . " releases but no updates were done.\n");

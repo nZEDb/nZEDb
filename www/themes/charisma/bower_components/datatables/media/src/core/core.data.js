@@ -80,7 +80,7 @@ function _fnAddData ( oSettings, aDataSupplied )
 function _fnGatherData( oSettings )
 {
 	var iLoop, i, iLen, j, jLen, jInner,
-	 	nTds, nTrs, nTd, nTr, aLocalData, iThisIndex,
+	 nTds, nTrs, nTd, nTr, aLocalData, iThisIndex,
 		iRow, iRows, iColumn, iColumns, sNodeName,
 		oCol, oData;
 

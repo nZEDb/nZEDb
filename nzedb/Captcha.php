@@ -51,16 +51,16 @@ class Captcha {
 	/**
 	 * Error key literals.
 	 */
-	const RECAPTCHA_ERROR_MISSING_SECRET 	= 'missing-input-secret';
-	const RECAPTCHA_ERROR_INVALID_SECRET 	= 'invalid-input-secret';
-	const RECAPTCHA_ERROR_MISSING_RESPONSE 	= 'missing-input-response';
-	const RECAPTCHA_ERROR_INVALID_RESPONSE 	= 'invalid-input-response';
+	const RECAPTCHA_ERROR_MISSING_SECRET = 'missing-input-secret';
+	const RECAPTCHA_ERROR_INVALID_SECRET = 'invalid-input-secret';
+	const RECAPTCHA_ERROR_MISSING_RESPONSE = 'missing-input-response';
+	const RECAPTCHA_ERROR_INVALID_RESPONSE = 'invalid-input-response';
 
 	/**
 	 * Settings key literals
 	 */
 	const RECAPTCHA_SETTING_SITEKEY		= 'recaptchasitekey';
-	const RECAPTCHA_SETTING_SECRETKEY 	= 'recaptchasecretkey';
+	const RECAPTCHA_SETTING_SECRETKEY = 'recaptchasecretkey';
 
 	/**
 	 * Construct and decide whether to show the captcha or not.

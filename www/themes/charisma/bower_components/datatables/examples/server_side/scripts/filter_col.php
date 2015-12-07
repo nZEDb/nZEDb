@@ -42,7 +42,7 @@
 		for ( $i=0 ; $i<mysql_real_escape_string( $_GET['iSortingCols'] ) ; $i++ )
 		{
 			$sOrder .= fnColumnToField(mysql_real_escape_string( $_GET['iSortCol_'.$i] ))."
-				".mysql_real_escape_string( $_GET['sSortDir_'.$i] ) .", ";
+			 ".mysql_real_escape_string( $_GET['sSortDir_'.$i] ) .", ";
 		}
 		$sOrder = substr_replace( $sOrder, "", -2 );
 	}

@@ -455,7 +455,7 @@ function _fnDraw( oSettings )
 		 * up. When not infinite scroll, always do it.
 		 */
 		if ( !oSettings.oScroll.bInfinite || !oSettings._bInitComplete ||
-		 	oSettings.bSorted || oSettings.bFiltered )
+		 oSettings.bSorted || oSettings.bFiltered )
 		{
 			while( (n = oSettings.nTBody.firstChild) )
 			{
