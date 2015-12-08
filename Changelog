@@ -8,7 +8,7 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 2015-12-08 bart39
-	Mrg: PR #1996, from darius - Fix paths to scripts in charisma/omicron themes..
+	Mrg: PR #1996, from darius - Fix paths to scripts in charisma/omicron themes.
 	Mrg: PR #1995, from darius - Fix wrong paths in omicron/charisma templates.
 	Fix: omicron/charisma movie cover links.
 2015-12-06 niel
