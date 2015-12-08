@@ -7,6 +7,8 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2015-12-08 bart39
+	Fix: omicron/charisma movie cover links.
 2015-12-06 niel
 	Fix: Column genre_id in gamesinfo table, not patched when schema was updated around patch 278.
 2015-12-04 ruhllatio
@@ -16,7 +18,6 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Mrg: PR #1985 - Add Trakt Support to Dev
 2015-11-29 niel
 	Mrg: dev => next-master to prepare for updating master.
-
 2015-11-29 bart39
 	Fix: missing 'AND' from browseBy.
 2015-11-28 bart39
