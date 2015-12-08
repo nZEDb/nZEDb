@@ -445,9 +445,8 @@ class Binaries
 						);
 					}
 
-					if (isset($scanSummary['lastArticleDate'])) {
-						$scanSummary['lastArticleDate'] = strtotime($scanSummary['lastArticleDate']);
-					} else {
+					$scanSummary['lastArticleDate'] = (isset($scanSummary['lastArticleDate']) ? strtotime($scanSummary['lastArticleDate']) : false);
+					if (!is_numeric($scanSummary['lastArticleDate'])) {
 						$scanSummary['lastArticleDate'] = $this->postdate($scanSummary['lastArticleNumber'], $groupNNTP);
 					}
 
