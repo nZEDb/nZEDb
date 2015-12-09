@@ -1,6 +1,5 @@
 <h2>{$release.searchname|escape:"htmlall"}</h2>
 {$site->addetail}
-
 <div id="content">
 	<ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
 		<li class="active"><a href="#info" data-toggle="tab">Info</a></li>
@@ -301,31 +300,17 @@
 					<dt>Nfo</dy>
 					<dd><a href="{$smarty.const.WWW_TOP}/nfo/{$release.guid}" title="View Nfo">View Nfo</a></dd>
 				{/if}
-
-				{if $predb && $userdata.canpre}
-					<dt>Pre:</th>
-					<dd>{$predb.ctime|date_format:"%b %e, %Y %T"} ({$predb.ctime|daysago})</dd>
-
-					{if $predb.nuketype != '' && $predb.nukereason != ''}
-						<dt>{$predb.nuketype|lower|capitalize}:</dt>
-						<dd>{$predb.nukereason}</dd>
-					{/if}
-				{/if}
 				{if $release.haspreview == 2 && $userdata.canpreview == 1}
 					<dt>Preview</dt>
 					<dd><a href="#" name="audio{$release.guid}" title="Listen to {$release.searchname|escape:"htmlall"}" class="audioprev rndbtn" rel="audio">Listen</a><audio id="audprev{$release.guid}" src="{$smarty.const.WWW_TOP}/covers/audio/{$release.guid}.mp3" preload="none"></audio></dd>
-
 				{/if}
 			</dl>
 			<dl class="dl-horizontal" style="margin-right:300px;">
 				<dt>Size:</dt>
 				<dd>{$release.size|fsize_format:"MB"}{if $release.completion > 0}&nbsp;{if $release.completion < 100}<span class="badge badge-warning">{$release.completion}%</span>{else}<span class="badge badge-success">{$release.completion}%{/if}</span>{/if}</dt>
-
 				<dt>Files</dt>
 				<dd><a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$release.guid}">{$release.totalpart}</a> <i class="fa fa-file"></i></dd>
-
 				{if $releasefiles|@count > 0}
-
 					<dt>Rar Contains</dt>
 					<dd>
 						<table style="width:100%;" class="innerdata highlight table tabel-striped">
@@ -346,21 +331,16 @@
 						</table>
 					</dd>
 				{/if}
-
 				{if $site->checkpasswordedrar > 0}
 					<dt>Password</dt>
 					<dd>{if $release.passwordstatus == 0}None{elseif $release.passwordstatus == 2}Passworded Rar Archive{elseif $release.passwordstatus == 1}Contains Cab/Ace/Rar Inside Archive{else}Unknown{/if}</dd>
 				{/if}
-
 				<dt>Poster</dt>
 				<dd>{$release.fromname|escape:"htmlall"}</dd>
-
 				<dt>Posted</dt>
 				<dd>{$release.postdate|date_format} ({$release.postdate|daysago} )</dd>
-
 				<dt>Added</dt>
 				<dd>{$release.adddate|date_format} ({$release.adddate|daysago} )</dd>
-
 				<dt style="margin-top:15px; margin-bottom:15px;">Download</dt>
 				<dd style="margin-top:15px; margin-bottom:15px;" id="{$release.guid}">
 					<a class="icon icon_nzb fa fa-cloud-download" style="text-decoration: none; color: #7ab800;" title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$release.guid}/{$release.searchname|escape:"url"}"></a>
@@ -372,17 +352,14 @@
 						<a id="guid{$release.guid}" class="icon icon_nzb fa fa-cloud-download nzbgetNZBinfo" href="#" title="Send to my NZBGet"><img src="{$smarty.const.WWW_TOP}/themes/Gamma/images/icons/nzbgetup.png"/></a>
 					{/if}
 				</dd>
-
 				<dt>Similar</dt>
 				<dd>
 					<a class="label" title="Search for similar Nzbs" href="{$smarty.const.WWW_TOP}/search/{$searchname|escape:"url"}">Search for similar</a>
 				</dd>
-
 				{if $isadmin}
 					<dt>Release Info</dt>
 					<dd>
-						Regex Id (<a href="{$smarty.const.WWW_TOP}/admin/regex-list.php?group={$release.group_name|escape:"url"}#{$release.regexid}">{$release.regexid}</a>)
-						{if $release.reqid != ""}
+						{if isset($release.requestid) && $release.requestid != ""}
 							Request Id ({$release.reqid})
 						{/if}
 					</dd>

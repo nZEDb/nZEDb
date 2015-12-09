@@ -2,10 +2,10 @@
 	{$site->adbrowse}
 {/if}
 <h1>{$page->title}</h1>
-<form name="prehashsearch" method="get" action="{$smarty.const.WWW_TOP}/prehash" id="custom-search-form"
+<form name="predbsearch" method="get" action="{$smarty.const.WWW_TOP}/predb" id="custom-search-form"
 	class="form-search form-horizontal col-4 col-lg-4 pull-right">
 	<div id="search" class="input-group col-12 col-lg-12">
-		<input type="text" class="form-control" placeholder="Search prehash" id="prehashsearch" name="prehashsearch"
+		<input type="text" class="form-control" placeholder="Search predb" id="predbsearch" name="predbsearch"
 			value="{$lastSearch|escape:'html'}">
 		<span class="input-group-btn">
 			<button type="submit" value="Go" class="btn btn-default">
@@ -37,10 +37,10 @@
 								</tr>
 								{foreach from=$results item=result}
 									<tr class="{cycle values=",alt"}">
-										<td class="prehash" style="text-align:center;">
+										<td class="predb" style="text-align:center;">
 											{$result.predate|date_format:"%Y-%m-%d %H:%M:%S"}
 										</td>
-										<td class="prehash" style="text-align:center;">
+										<td class="predb" style="text-align:center;">
 											{if isset($result.guid)}
 												<a style="font-style:italic;text-decoration:underline;color:#{if $result.nuked == 1}009933{elseif $result.nuked > 1}990000{/if};"
 												   class="title" title="View details"
@@ -52,7 +52,7 @@
 													  title="{if $result.nuked == 1}UNNUKED: {$result.nukereason|escape:"htmlall"}{elseif $result.nuked > 1}NUKED: {$result.nukereason|escape:"htmlall"}{else}{$result.title|escape:"htmlall"}{/if}">{$result.title|escape:"htmlall"}</span>
 											{/if}
 										</td>
-										<td class="prehash" style="text-align:center;">
+										<td class="predb" style="text-align:center;">
 											{* Console *}
 											{* Xbox 360 *}
 											{if {$result.category} == 'XBOX360'}
@@ -182,7 +182,7 @@
 												{$result.category}
 											{/if}
 										</td>
-										<td class="prehash" style="text-align:center;">
+										<td class="predb" style="text-align:center;">
 											{if {$result.source} == abgx}
 												<a title="Visit abgx"
 												   href="{$site->dereferrer_link}http://www.abgx.net/rss/x360/posted.rss"
@@ -252,18 +252,6 @@
 												   target="_blank">
 													srrDB
 												</a>
-											{elseif {$result.source} == "usenet-crawler"}
-												<a title="Visit Usenet-Crawler"
-												   href="{$site->dereferrer_link}http://www.usenet-crawler.com/predb?q={$result.title}"
-												   target="_blank">
-													Usenet-Crawler
-												</a>
-											{elseif {$result.source} == womble}
-												<a title="Visit Womble"
-												   href="{$site->dereferrer_link}http://www.newshost.co.za/?s={$result.title}"
-												   target="_blank">
-													Womble
-												</a>
 											{elseif {$result.source} == zenet}
 												<a title="Visit ZEnet"
 												   href="{$site->dereferrer_link}http://pre.zenet.org/?search={$result.title}"
@@ -274,7 +262,7 @@
 												{$result.source}
 											{/if}
 										</td>
-										<td class="prehash" style="text-align:center;">
+										<td class="predb" style="text-align:center;">
 											{if is_numeric({$result.requestid}) && {$result.requestid} != 0}
 												<a
 														class="requestid"
@@ -289,7 +277,7 @@
 												N/A
 											{/if}
 										</td>
-										<td class="prehash" style="text-align:center;">
+										<td class="predb" style="text-align:center;">
 											{if not in_array({$result.size}, array('NULL', '', '0MB'))}
 												{if strpos($result.size, 'MB') != false && {$result.size|regex_replace:"/(\.\d|,|MB)+/":''|count_characters} > 3}
 													{math equation=($result.size|regex_replace:'/(\.\d|,|MB)+/':'' / 1024)|round}GB
@@ -300,14 +288,14 @@
 												N/A
 											{/if}
 										</td>
-										<td class="prehash" style="text-align:center;">
+										<td class="predb" style="text-align:center;">
 											{if isset($result.files)}
 												{$result.files}
 											{else}
 												N/A
 											{/if}
 										</td>
-										<td class="prehash" style="text-align:center;">
+										<td class="predb" style="text-align:center;">
 											<a
 													style="float: right;"
 													title="NzbIndex"
@@ -318,7 +306,7 @@
 												&nbsp;
 											</a>
 										</td>
-										<td class="prehash" style="text-align:center;">
+										<td class="predb" style="text-align:center;">
 											<a
 													style="float: right;"
 													title="BinSearch"

@@ -6,7 +6,6 @@
 			jQuery('#sbasic,#sadvanced').toggle();
 		return false;">{if $sadvanced}Basic{else}Click For Advanced{/if} Search
 </div>
-
 <div class="navbar">
 	<div class="navbar-inner">
 		<form method="get" class="navbar-form pull-left" action="{$smarty.const.WWW_TOP}/search">
@@ -21,7 +20,6 @@
 		</form>
 	</div>
 </div>
-
 <form method="get" action="{$smarty.const.WWW_TOP}/search">
 	<div id="sadvanced" {if not $sadvanced}style="display:none"{/if}>
 		<center>
@@ -241,43 +239,32 @@
 				<i class="fa fa-lock"></i>
 				{/if}
 
-				{if $userdata.canpre == 1 && isset($result.nuketype) && $result.nuketype != ''}
-				&nbsp;<img title="{$result.nuketype}" src="{$smarty.const.WWW_TOP}/themes/Gamma/images/icons/nuke.png" width="10" height="10" alt="{$result.nuketype}" />
-				{/if}
-
 
 				<div class="resextra">
 					<div class="btns">{strip}
 						{if $result.nfoid > 0}
 						<a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}" title="View Nfo" class="modal_nfo badge halffade" rel="nfo">Nfo</a>
 						{/if}
-
-						{if $result.preid > 0 && $userdata.canpre == 1}
+						{if $result.preid > 0}
 						<span class="preinfo badge halffade" title="{$result.searchname}">Pre'd {$result.ctime|timeago}</span>
 						{/if}
-
 						{if $result.imdbid > 0}
 						<a href="{$smarty.const.WWW_TOP}/movies?imdb={$result.imdbid}" title="View movie info" class="badge badge-inverse halffade" rel="movie" >Movie</a>
 						{/if}
-
 						{if $result.haspreview == 1 && $userdata.canpreview == 1}
 						<a href="{$smarty.const.WWW_TOP}/covers/preview/{$result.guid}_thumb.jpg" name="name{$result.guid}"
 						title="Screenshot" class="modal_prev badge badge-success halffade" rel="preview">Preview</a>
 						{/if}
-
 						{if $result.haspreview == 2 && $userdata.canpreview == 1}
 						<a href="#" name="audio{$result.guid}" title="Listen to Preview" class="audioprev badge badge-success halffade" rel="audio">Listen</a>
 						<audio id="audprev{$result.guid}" src="{$smarty.const.WWW_TOP}/covers/audio/{$result.guid}.mp3" preload="none"></audio>
 						{/if}
-
 						{if $result.musicinfoid > 0}
 						<a href="#" name="name{$result.musicinfoid}" title="View music info" class="modal_music badge badge-success halffade" rel="music" >Cover</a>
 						{/if}
-
 						{if $result.consoleinfoid > 0}
 						<a href="#" name="name{$result.consoleinfoid}" title="View console info" class="modal_console badge badge-success halffade" rel="console" >Cover</a>
 						{/if}
-
 						{if $result.bookinfoid > 0}
 						<a href="#" name="name{$result.bookinfoid}" title="View book info" class="modal_book badge badge-success halffade" rel="console" >Cover</a>
 						{/if}
@@ -289,32 +276,24 @@
 						{if $result.anidbid > 0}
 						<a class="badge badge-inverse halffade" href="{$smarty.const.WWW_TOP}/anime/{$result.anidbid}" title="View all episodes">View Anime</a>
 						{/if}
-
 						{if isset($result.firstaired) && $result.firstaired != ''}
 						<span class="seriesinfo badge badge-success halffade" title="{$result.guid}">Aired {if $result.firstaired|strtotime > $smarty.now}in future{else}{$result.firstaired|daysago}{/if}
 						</span>
 						{/if}
-
-
 						{if $result.videostatus > 0}
 							&nbsp;<span class="badge badge-inverse halffade" id="{$result.guid}" title="Release has video sample">Sample</span>
 						{/if}
-
 						{if $result.reid > 0}
 						<span class="mediainfo badge badge-inverse halffade" title="{$result.guid}">Media</span>
 						{/if}
-
 						{/strip}
 					</div>
 				</div>
 			</td>
-
 			<td width="100px" class="less">
 				<a title="Browse {$result.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$result.categoryid}">{$result.category_name}</a>
 			</td>
-
 			<td class="less mid" title="{$result.postdate}">{$result.postdate|timeago}</td>
-
 			<td class="less right">
 				{$result.size|fsize_format:"MB"}
 				{if $result.completion > 0}<br />
@@ -325,7 +304,6 @@
 				{/if}
 				{/if}
 			</td>
-
 			<td class="less mid">
 				<a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$result.guid}">{$result.totalpart}</a> <i class="fa fa-file"></i>
 			</td>
@@ -355,10 +333,8 @@
 			</td>
 		</tr>
 	{/foreach}
-
 </table>
 <br/>
-
 {if $results|@count > 10}
 <div class="well well-small">
 	<div class="nzb_multi_operations">
@@ -396,5 +372,4 @@
 </div>
 {/if}
 </form>
-
 {/if}

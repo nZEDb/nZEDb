@@ -152,9 +152,6 @@
 				{elseif $result.passwordstatus == 1}
 				<i class="fa fa-lock"></i>
 				{/if}
-				{if $userdata.canpre == 1 && isset($result.nuketype) && $result.nuketype != ''}
-				&nbsp;<img title="{$result.nuketype}" src="{$smarty.const.WWW_TOP}/themes/Gamma/images/icons/nuke.png" width="10" height="10" alt="{$result.nuketype}" />
-				{/if}
 				<div class="resextra">
 					<div class="btns">{strip}
 						{if $result.nfoid > 0}
@@ -203,12 +200,12 @@
 						<span class="mediainfo badge badge-inverse halffade" title="{$result.guid}">Media</span>
 						{/if}
 
-						{if $result.preid > 0 && $userdata.canpre == 1}
+						{if $result.preid > 0}
 						<span class="preinfo badge badge-inverse halffade" title="{$result.searchname}">PreDB</span>
 						{/if}
 
-						{if $result.prehashid > 0}
-						<span class="prehashinfo badge badge-inverse halffade" title="{$result.prehashid}">Prehash</span>
+						{if $result.preid > 0}
+						<span class="prehashinfo badge badge-inverse halffade" title="{$result.preid}">Prehash</span>
 						{/if}
 
 						{/strip}
