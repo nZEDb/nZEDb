@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 #version=10
 #
 # The hook should  exit with non-zero status after issuing an appropriate message if  it wants to
