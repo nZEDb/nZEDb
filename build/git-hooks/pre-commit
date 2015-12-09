@@ -1,11 +1,9 @@
 #!/bin/sh
 #version=10
 #
-# The hook should
-# exit with non-zero status after issuing an appropriate message if
-# it wants to stop the commit.
+# The hook should  exit with non-zero status after issuing an appropriate message if  it wants to
+# stop the commit.
 #
-# To enable this hook, rename this file to "pre-commit".
 
 if git rev-parse --verify HEAD >/dev/null 2>&1
 then
@@ -15,7 +13,7 @@ else
 	AGAINST=4b825dc642cb6eb9a060e54bf8d69288fbee4904
 fi
 
-#####################################################################################################
+####################################################################################################
 
 EXIT_STATUS=0
 
