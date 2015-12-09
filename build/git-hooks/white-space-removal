@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 #
-
 # A git hook script to find and fix trailing whitespace
 # in your commits. Bypass it with the --no-verify option
 # to git-commit
@@ -59,7 +58,7 @@ done
 if [ "x`git status -s | grep '^[A|D|M]'`" = "x" ]; then
   # empty commit
   echo
-  echo -e "\033[31mNO CHANGES ADDED, ABORT COMMIT!\033[0m"
+  echo -e "\033[35mNO CHANGES ADDED, ABORT COMMIT!\033[0m"
   exit 1
 fi
 
