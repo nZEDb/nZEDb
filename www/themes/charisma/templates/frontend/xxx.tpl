@@ -121,7 +121,7 @@
 													{if $smarty.foreach.loop.first}
 													<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}"><img
 																class="cover"
-																src="{if $result.cover == 1}{$smarty.const.WWW_TOP}covers/xxx/{$result.id}-cover.jpg{else}{$smarty.const.WWW_TOP}themes_shared/images/no-cover.png{/if}"
+																src="{if $result.cover == 1}{$smarty.const.WWW_TOP}covers/xxx/{$result.id}-cover.jpg{else}{$smarty.const.WWW_TOP}/themes_shared/images/no-cover.png{/if}"
 																width="100" border="0"
 																alt="{$result.title|escape:"htmlall"}"/>{if $mfailed[$m@index] > 0}
 														<i class="fa fa-exclamation-circle" style="color: red"
@@ -273,7 +273,7 @@
 													{if $smarty.foreach.loop.first}
 													<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}"><img
 																class="cover"
-																src="{if $result.cover == 1}{$smarty.const.WWW_TOP}covers/xxx/{$result.id}-cover.jpg{else}{$smarty.const.WWW_TOP}themes_shared/images/no-cover.png{/if}"
+																src="{if $result.cover == 1}{$smarty.const.WWW_TOP}covers/xxx/{$result.id}-cover.jpg{else}{$smarty.const.WWW_TOP}/themes_shared/images/no-cover.png{/if}"
 																width="100" border="0"
 																alt="{$result.title|escape:"htmlall"}"/>{if $mfailed[$m@index] > 0}
 														<i class="fa fa-exclamation-circle" style="color: red"
