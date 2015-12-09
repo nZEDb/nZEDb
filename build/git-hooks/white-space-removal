@@ -30,7 +30,7 @@ for line in `git diff --check --cached | sed '/^[+-]/d'` ; do
   fi
 
   # display tips
-  echo -e "auto remove trailing whitespace in \033[31m$file\033[0m!"
+  echo -e "auto remove trailing whitespace in \033[33m$file\033[0m!"
 
   # since $file in working directory isn't always equal to $file in index, so we backup it
   mv -f "$file" "${file}.save"
