@@ -5,7 +5,6 @@ $(document).ready( function () {
 	var mPass;
 
 	oTest.fnTest(
-
 		"Argument length",
 		function () {
 			$('#example').dataTable( {
@@ -19,7 +18,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Url",
 		function () {
 			$('#example').dataTable( {
@@ -34,7 +32,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Data array",
 		function () {
 			$('#example').dataTable( {
@@ -49,7 +46,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Callback function",
 		function () {
 			$('#example').dataTable( {

@@ -1,4 +1,4 @@
-/*	Artfully masterminded by ZURB
+/* Artfully masterminded by ZURB
 	Make sure to include app.js / foundation.js if you are going to use inline label inputs
 */
 
@@ -57,7 +57,7 @@
 
 	form.nice div.form-field.error small, form.nice small.error { padding: 6px 4px; border: solid 0 #C00000; border-width: 0 1px 1px 1px; margin-top: -10px; background: #C00000; color: #fff; font-size: 12px; font-weight: bold; border-bottom-left-radius: 2px; border-bottom-right-radius: 2px; -webkit-border-bottom-left-radius: 2px; -webkit-border-bottom-right-radius: 2px; -moz-border-radius-bottomleft: 2px; -moz-border-radius-bottomright: 2px; }
 
-	form.nice div.form-field.error .small + small, form.nice .small + small.error { width: 132px; }
+ form.nice div.form-field.error .small + small, form.nice .small + small.error { width: 132px; }
 	form.nice div.form-field.error .medium + small, form.nice .medium + small.error { width: 252px; }
 	form.nice div.form-field.error .large + small, form.nice .large + small.error { width: 432px; }
 
@@ -84,3 +84,5 @@
 	form.custom div.custom.dropdown ul.show { display: block; }
 
 	form.custom div.custom.dropdown.open ul { display: block; }
+
+

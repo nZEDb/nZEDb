@@ -2,7 +2,6 @@
 // language : korean (ko)
 //
 // authors
-
 //
 // - Kyungwook, Park : https://github.com/kyungw00k
 // - Jeeeyul Lee <jeeeyul@gmail.com>

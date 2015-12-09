@@ -1,12 +1,12 @@
 <?php
 /**
- * 	This class handles all the data you can get from a TVShowRole
+ * This class handles all the data you can get from a TVShowRole
  *
- * 	@author Alvaro Octal | <a href="https://twitter.com/Alvaro_Octal">Twitter</a>
- * 	@version 0.1
- * 	@date 11/01/2015
- * 	@link https://github.com/Alvaroctal/TMDB-PHP-API
- * 	@copyright Licensed under BSD (http://www.opensource.org/licenses/bsd-license.php)
+ * @author Alvaro Octal | <a href="https://twitter.com/Alvaro_Octal">Twitter</a>
+ * @version 0.1
+ * @date 11/01/2015
+ * @link https://github.com/Alvaroctal/TMDB-PHP-API
+ * @copyright Licensed under BSD (http://www.opensource.org/licenses/bsd-license.php)
  */
 
 namespace libs\Tmdb\Data\Roles;
@@ -22,9 +22,9 @@ class TVShowRole extends Role{
     public $_data;
 
     /**
-     * 	Construct Class
+     * Construct Class
      *
-     * 	@param array $data An array with the data of a TVShowRole
+     * @param array $data An array with the data of a TVShowRole
      */
     public function __construct($data, $idPerson) {
         $this->_data = $data;

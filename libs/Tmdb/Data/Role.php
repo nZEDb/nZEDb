@@ -1,12 +1,12 @@
 <?php
 /**
- * 	This class handles all the data you can get from a Role
+ * This class handles all the data you can get from a Role
  *
- * 	@author Alvaro Octal | <a href="https://twitter.com/Alvaro_Octal">Twitter</a>
- * 	@version 0.1
- * 	@date 11/01/2015
- * 	@link https://github.com/Alvaroctal/TMDB-PHP-API
- * 	@copyright Licensed under BSD (http://www.opensource.org/licenses/bsd-license.php)
+ * @author Alvaro Octal | <a href="https://twitter.com/Alvaro_Octal">Twitter</a>
+ * @version 0.1
+ * @date 11/01/2015
+ * @link https://github.com/Alvaroctal/TMDB-PHP-API
+ * @copyright Licensed under BSD (http://www.opensource.org/licenses/bsd-license.php)
  */
 
 namespace libs\Tmdb\Data;
@@ -25,9 +25,9 @@ class Role{
     public $_data;
 
     /**
-     * 	Construct Class
+     * Construct Class
      *
-     * 	@param array $data An array with the data of a Role
+     * @param array $data An array with the data of a Role
      */
     protected function __construct($data, $ipPerson) {
         $this->_data = $data;

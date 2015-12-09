@@ -29,12 +29,12 @@
 					<a class="rndbtn confirm_action" href="{$smarty.const.WWW_TOP}/admin/forum-delete.php?id={$result.id}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Delete Post">Delete</a>
 				</div>
 				{/if}
-				
+
 			</td>
 			<td>{$result.message|escape:"htmlall"|nl2br|magicurl}</td>
 		</tr>
 	{/foreach}
-	
+
 </table>
 
 <div style="float:right;margin-top:5px;"><a href="#">Top</a></div>

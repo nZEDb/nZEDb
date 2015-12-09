@@ -16,13 +16,10 @@ $.extend( DataTable.ext.oSort, {
 		return ((x < y) ? -1 : ((x > y) ? 1 : 0));
 	},
 
-
 	"string-desc": function ( x, y )
 	{
 		return ((x < y) ? 1 : ((x > y) ? -1 : 0));
 	},
-
-
 
 
 	/*
@@ -33,19 +30,15 @@ $.extend( DataTable.ext.oSort, {
 		return a.replace( /<.*?>/g, "" ).toLowerCase();
 	},
 
-
 	"html-asc": function ( x, y )
 	{
 		return ((x < y) ? -1 : ((x > y) ? 1 : 0));
 	},
 
-
 	"html-desc": function ( x, y )
 	{
 		return ((x < y) ? 1 : ((x > y) ? -1 : 0));
 	},
-
-
 
 
 	/*
@@ -54,7 +47,6 @@ $.extend( DataTable.ext.oSort, {
 	"date-pre": function ( a )
 	{
 		var x = Date.parse( a );
-
 
 		if ( isNaN(x) || x==="" )
 		{
@@ -68,13 +60,10 @@ $.extend( DataTable.ext.oSort, {
 		return x - y;
 	},
 
-
 	"date-desc": function ( x, y )
 	{
 		return y - x;
 	},
-
-
 
 
 	/*
@@ -89,7 +78,6 @@ $.extend( DataTable.ext.oSort, {
 	{
 		return x - y;
 	},
-
 
 	"numeric-desc": function ( x, y )
 	{

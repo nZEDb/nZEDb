@@ -135,9 +135,9 @@
 			      });
 
 			      if(!objects || objects.length > 1) {
-					  return objects;
+			      return objects;
 			      } else {
-					  return objects[0];
+			      return objects[0];
 			      }
 			    }
 			  };
@@ -161,8 +161,8 @@
 
 		}
 
-		// get jquery from browser global
-		defineBridget( $ );
+	  // get jquery from browser global
+	  defineBridget( $ );
 
 	})( $ );
 
@@ -500,7 +500,7 @@
 
 			defaultOptions: {
 				id: "",
-				min: 0,
+			  min: 0,
 				max: 10,
 				step: 1,
 				precision: 0,
@@ -677,7 +677,7 @@
 			- Any method that is not part of the public interface.
 			- Place it underneath this comment block and write its signature like so:
 
-								_fnName : function() {...}
+						_fnName : function() {...}
 
 			********************************/
 			_removeSliderEventHandlers: function() {
@@ -712,7 +712,7 @@
 			},
 			_showTooltip: function() {
 				if (this.options.tooltip_split === false ){
-					this._addClass(this.tooltip, 'in');
+	            this._addClass(this.tooltip, 'in');
 		        } else {
 		            this._addClass(this.tooltip_min, 'in');
 		            this._addClass(this.tooltip_max, 'in');
@@ -758,10 +758,10 @@
 			            this._addClass(this.tooltip_max, 'top');
 			            this.tooltip_max.style.top = -30 + 'px';
 			        }
-				}
+		}
 
 
-				var formattedTooltipVal;
+		var formattedTooltipVal;
 
 				if (this.options.range) {
 					formattedTooltipVal = this.options.formatter(this.options.value);
@@ -937,7 +937,7 @@
 					ev.stopPropagation();
 				}
 			    if(ev.preventDefault) {
-				ev.preventDefault();
+			    ev.preventDefault();
 			    }
 			    ev.cancelBubble=true;
 			    ev.returnValue=false;
@@ -1097,10 +1097,10 @@
 			},
 			_setText: function(element, text) {
 				if(typeof element.innerText !== "undefined") {
-					element.innerText = text;
-				} else if(typeof element.textContent !== "undefined") {
-					element.textContent = text;
-				}
+			 element.innerText = text;
+			 } else if(typeof element.textContent !== "undefined") {
+			 element.textContent = text;
+			 }
 			},
 			_removeClass: function(element, classString) {
 				var classes = classString.split(" ");

@@ -9,7 +9,6 @@ $(document).ready( function () {
 	var oSettings = oTable.fnSettings();
 
 	oTest.fnWaitTest(
-
 		"Zero records language is 'No matching records found' by default",
 		null,
 		function () { return oSettings.oLanguage.sZeroRecords == "No matching records found"; }
@@ -24,7 +23,6 @@ $(document).ready( function () {
 
 
 	oTest.fnWaitTest(
-
 		"Zero records language can be defined",
 		function () {
 			oSession.fnRestore();

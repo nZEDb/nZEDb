@@ -1819,7 +1819,7 @@
 		}
 
 		/* ARIA role for the rows */
-		$(thead).find('>tr').attr('role', 'row');
+	 $(thead).find('>tr').attr('role', 'row');
 
 		/* Deal with the footer - add classes if required */
 		$(thead).find('>tr>th, >tr>td').addClass( classes.sHeaderTH );
@@ -7064,10 +7064,10 @@
 	// @todo - Is there need for an augment function?
 	// _Api.augment = function ( inst, name )
 	// {
-	//	// Find src object in the structure from the name
-	//	var parts = name.split('.');
+	// // Find src object in the structure from the name
+	// var parts = name.split('.');
 
-	//	_Api.extend( inst, obj );
+	// _Api.extend( inst, obj );
 	// };
 
 
@@ -14948,3 +14948,4 @@
 }));
 
 }(window, document));
+

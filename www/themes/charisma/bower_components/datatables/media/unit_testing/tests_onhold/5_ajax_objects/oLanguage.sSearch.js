@@ -16,7 +16,6 @@ $(document).ready( function () {
 	var oSettings = oTable.fnSettings();
 
 	oTest.fnWaitTest(
-
 		"Search language is 'Search:' by default",
 		null,
 		function () { return oSettings.oLanguage.sSearch == "Search:"; }
@@ -29,16 +28,14 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Search language default is in the DOM",
 		null,
 		function () { return $('label', oSettings.aanFeatures.f[0]).text()
-			== "Search: "; }
+		 == "Search: "; }
 	);
 
 
 	oTest.fnWaitTest(
-
 		"Search language can be defined",
 		function () {
 			oSession.fnRestore();
@@ -61,7 +58,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Info language definition is in the DOM",
 		null,
 		function () { return $('label', oSettings.aanFeatures.f[0]).text().indexOf('unit test') !== -1; }
@@ -69,7 +65,6 @@ $(document).ready( function () {
 
 
 	oTest.fnWaitTest(
-
 		"Blank search has a no space (separator) inserted",
 		function () {
 			oSession.fnRestore();

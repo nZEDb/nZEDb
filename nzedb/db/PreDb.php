@@ -28,11 +28,11 @@ class PreDb extends DB
 	 */
 	protected $ps = [
 		'AddGroups'		=> null,
-		'DeleteShort' 	=> null,
+		'DeleteShort' => null,
 		'Export'		=> null,
-		'Import' 		=> null,
+		'Import' => null,
 		'Insert'		=> null,
-		'LoadData' 		=> null,
+		'LoadData' => null,
 		'Truncate'		=> null,
 		'UpdateGroupID'	=> null,
 	];

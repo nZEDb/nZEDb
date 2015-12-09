@@ -25,14 +25,12 @@ $(document).ready( function () {
 	} );
 
 	oTest.fnWaitTest(
-
 		"10 rows shown on the first page",
 		null,
 		function () { return $('#example tbody tr').length == 10; }
 	);
 
 	oTest.fnWaitTest(
-
 		"No request to the server yet",
 		null,
 		function () { return !gotServerData; }
@@ -45,35 +43,30 @@ $(document).ready( function () {
 	);
 
 	oTest.fnWaitTest(
-
 		"Initial data order retained",
 		null,
 		function () { return $('#example tbody td:eq(0)').html() == "Gecko"; }
 	);
 
 	oTest.fnWaitTest(
-
 		"Initial data order retained 2",
 		null,
 		function () { return $('#example tbody td:eq(1)').html() == "Firefox 1.0"; }
 	);
 
 	oTest.fnWaitTest(
-
 		"Still no request to the server yet",
 		null,
 		function () { return !gotServerData; }
 	);
 
 	oTest.fnWaitTest(
-
 		"Sorting (first click) on second column",
 		function () { $('#example thead th:eq(1)').click(); },
 		function () { return $('#example tbody td:eq(1)').html() == "All others"; }
 	);
 
 	oTest.fnWaitTest(
-
 		"Now we've had a request",
 		null,
 		function () { return gotServerData; }
@@ -86,14 +79,12 @@ $(document).ready( function () {
 	);
 
 	oTest.fnWaitTest(
-
 		"Sorting (second click) on second column",
 		function () { $('#example thead th:eq(1)').click(); },
 		function () { return $('#example tbody td:eq(1)').html() == "Seamonkey 1.1"; }
 	);
 
 	oTest.fnWaitTest(
-
 		"Sorting (third click) on second column",
 		function () { $('#example thead th:eq(1)').click(); },
 		function () { return $('#example tbody td:eq(1)').html() == "All others"; }

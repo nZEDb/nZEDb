@@ -20,7 +20,6 @@ $(document).ready( function () {
 	var oSettings = oTable.fnSettings();
 
 	oTest.fnTest(
-
 		"sUrl is blank by default",
 		null,
 		function () { return oSettings.oLanguage.sUrl == ""; }
@@ -28,7 +27,6 @@ $(document).ready( function () {
 
 
 	oTest.fnWaitTest(
-
 		"Loading of German file loads language information",
 		function () {
 			oSession.fnRestore();
@@ -49,7 +47,6 @@ $(document).ready( function () {
 		},
 		function () {
 			var bReturn =
-
 				oSettings.oLanguage.sProcessing == "Bitte warten..." &&
 				oSettings.oLanguage.sLengthMenu == "_MENU_ Einträge anzeigen" &&
 				oSettings.oLanguage.sZeroRecords == "Keine Einträge vorhanden." &&

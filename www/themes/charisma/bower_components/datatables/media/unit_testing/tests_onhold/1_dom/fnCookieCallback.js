@@ -9,7 +9,6 @@ $(document).ready( function () {
 	 */
 
 	oTest.fnTest(
-
 		"null by default",
 		function () {
 			$('#example').dataTable();
@@ -18,7 +17,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Number of arguments",
 		function () {
 			$('#example').dataTable( {
@@ -34,7 +32,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Name",
 		function () {
 			$('#example').dataTable( {
@@ -50,7 +47,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Data",
 		function () {
 			$('#example').dataTable( {
@@ -66,7 +62,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Expires",
 		function () {
 			$('#example').dataTable( {
@@ -82,7 +77,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Path",
 		function () {
 			$('#example').dataTable( {

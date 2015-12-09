@@ -16,11 +16,9 @@ $(document).ready(function() {
     }
   };
 
-
   $(window).load(updateTables);
   $(window).on("redraw",function(){switched=false;updateTables();}); // An event to listen for
   $(window).on("resize", updateTables);
-
 
 
 	function splitTable(original)

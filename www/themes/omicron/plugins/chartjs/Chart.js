@@ -467,8 +467,8 @@
 			// If templateString is function rather than string-template - call the function for valuesObject
 
 			if(templateString instanceof Function){
-				return templateString(valuesObject);
-			}
+			 return templateString(valuesObject);
+		 }
 
 			var cache = {};
 			function tmpl(str, data){

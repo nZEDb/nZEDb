@@ -328,7 +328,7 @@ td.details {
 }
 
 .paging_full_numbers a.paginate_button,
-	.paging_full_numbers a.paginate_active {
+ .paging_full_numbers a.paginate_active {
 	border: 1px solid #aaa;
 	-webkit-border-radius: 5px;
 	-moz-border-radius: 5px;
@@ -392,7 +392,7 @@ tr.even td.sorting_3 {
 
 /* For the Conditional-CSS grading rows */
 /*
-	Colour calculations (based off the main row colours)
+ Colour calculations (based off the main row colours)
   Level 1:
 		dd > c4
 		ee > d5

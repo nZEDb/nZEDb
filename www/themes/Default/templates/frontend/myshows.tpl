@@ -15,7 +15,7 @@
 		<th>feed</th>
 		<th>category</th>
 		<th>added</th>
- 		<th class="mid">options</th>
+ <th class="mid">options</th>
 	</tr>
 
 	{foreach from=$shows item=show}

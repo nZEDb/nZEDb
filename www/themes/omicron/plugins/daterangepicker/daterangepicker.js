@@ -317,11 +317,11 @@
 
             // bind the time zone used to build the calendar to either the timeZone passed in through the options or the zone of the startDate (which will be the local time zone by default)
             if (typeof options.timeZone === 'string' || typeof options.timeZone === 'number') {
-                if (typeof options.timeZone === 'string' && typeof moment.tz !== 'undefined') {
-                    this.timeZone = moment.tz.zone(options.timeZone).parse(new Date) * -1;	// Offset is positive if the timezone is behind UTC and negative if it is ahead.
-                } else {
-                    this.timeZone = options.timeZone;
-                }
+            if (typeof options.timeZone === 'string' && typeof moment.tz !== 'undefined') {
+            this.timeZone = moment.tz.zone(options.timeZone).parse(new Date) * -1;	// Offset is positive if the timezone is behind UTC and negative if it is ahead.
+            } else {
+            this.timeZone = options.timeZone;
+            }
               this.startDate.utcOffset(this.timeZone);
               this.endDate.utcOffset(this.timeZone);
             } else {
@@ -539,9 +539,9 @@
 
         keydown: function (e) {
             //hide on tab or enter
-            if ((e.keyCode === 9) || (e.keyCode === 13)) {
-                this.hide();
-            }
+        if ((e.keyCode === 9) || (e.keyCode === 13)) {
+        this.hide();
+        }
         },
 
         notify: function () {
@@ -551,7 +551,7 @@
 
         move: function () {
             var parentOffset = { top: 0, left: 0 },
-                    containerTop;
+            containerTop;
             var parentRightEdge = $(window).width();
             if (!this.parentEl.is('body')) {
                 parentOffset = {
@@ -562,9 +562,9 @@
             }
 
             if (this.drops == 'up')
-                containerTop = this.element.offset().top - this.container.outerHeight() - parentOffset.top;
+            containerTop = this.element.offset().top - this.container.outerHeight() - parentOffset.top;
             else
-                containerTop = this.element.offset().top + this.element.outerHeight() - parentOffset.top;
+            containerTop = this.element.offset().top + this.element.outerHeight() - parentOffset.top;
             this.container[this.drops == 'up' ? 'addClass' : 'removeClass']('dropup');
 
             if (this.opens == 'left') {

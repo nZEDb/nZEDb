@@ -9,7 +9,6 @@ function _fnInitialise ( oSettings )
 {
 	var i, iLen, iAjaxStart=oSettings.iInitDisplayStart;
 
-
 	/* Ensure that the table data is fully initialised */
 	if ( oSettings.bInitialised === false )
 	{
@@ -17,10 +16,8 @@ function _fnInitialise ( oSettings )
 		return;
 	}
 
-
 	/* Show the display HTML options */
 	_fnAddOptionsHtml( oSettings );
-
 
 	/* Build and draw the header / footer for the table */
 	_fnBuildHead( oSettings );
@@ -33,13 +30,11 @@ function _fnInitialise ( oSettings )
 	/* Okay to show that something is going on now */
 	_fnProcessingDisplay( oSettings, true );
 
-
 	/* Calculate sizes for columns */
 	if ( oSettings.oFeatures.bAutoWidth )
 	{
 		_fnCalculateColumnWidths( oSettings );
 	}
-
 
 	for ( i=0, iLen=oSettings.aoColumns.length ; i<iLen ; i++ )
 	{
@@ -48,7 +43,6 @@ function _fnInitialise ( oSettings )
 			oSettings.aoColumns[i].nTh.style.width = _fnStringToCss( oSettings.aoColumns[i].sWidth );
 		}
 	}
-
 
 	/* If there is default sorting required - let's do it. The sort function will do the
 	 * drawing for us. Otherwise we draw the table regardless of the Ajax source - this allows
@@ -69,7 +63,6 @@ function _fnInitialise ( oSettings )
 		_fnDraw( oSettings );
 	}
 
-
 	/* if there is an ajax source load the data */
 	if ( oSettings.sAjaxSource !== null && !oSettings.oFeatures.bServerSide )
 	{
@@ -77,7 +70,7 @@ function _fnInitialise ( oSettings )
 		_fnServerParams( oSettings, aoData );
 		oSettings.fnServerData.call( oSettings.oInstance, oSettings.sAjaxSource, aoData, function(json) {
 			var aData = (oSettings.sAjaxDataProp !== "") ?
-				_fnGetObjectDataFn( oSettings.sAjaxDataProp )(json) : json;
+			 _fnGetObjectDataFn( oSettings.sAjaxDataProp )(json) : json;
 
 			/* Got the data - add it to the table */
 			for ( i=0 ; i<aData.length ; i++ )
@@ -85,12 +78,10 @@ function _fnInitialise ( oSettings )
 				_fnAddData( oSettings, aData[i] );
 			}
 
-
 			/* Reset the init display for cookie saving. We've already done a filter, and
 			 * therefore cleared it before. So we need to make it appear 'fresh'
 			 */
 			oSettings.iInitDisplayStart = iAjaxStart;
-
 
 			if ( oSettings.oFeatures.bSort )
 			{
@@ -103,13 +94,11 @@ function _fnInitialise ( oSettings )
 				_fnDraw( oSettings );
 			}
 
-
 			_fnProcessingDisplay( oSettings, false );
 			_fnInitComplete( oSettings, json );
 		}, oSettings );
 		return;
 	}
-
 
 	/* Server-side processing initialisation complete is done at the end of _fnDraw */
 	if ( !oSettings.oFeatures.bServerSide )
@@ -161,3 +150,4 @@ function _fnLanguageCompat( oLanguage )
 		_fnMap( oLanguage, oLanguage, 'sZeroRecords', 'sLoadingRecords' );
 	}
 }
+

@@ -776,7 +776,7 @@ var sh = {
 		url							: /\w+:\/\/[\w-.\/?%&=:@;#]*/g,
 
 		/** <?= ?> tags. */
-		phpScriptTags				: { left: /(&lt;|<)\?(?:=|php)?/g, right: /\?(&gt;|>)/g, 'eof' : true },
+		phpScriptTags	: { left: /(&lt;|<)\?(?:=|php)?/g, right: /\?(&gt;|>)/g, 'eof' : true },
 
 		/** <%= %> tags. */
 		aspScriptTags				: { left: /(&lt;|<)%=?/g, right: /%(&gt;|>)/g },
@@ -899,11 +899,11 @@ var sh = {
 	 * Finds all elements on the page which should be processes by SyntaxHighlighter.
 	 *
 	 * @param {Object} globalParams		Optional parameters which override element's
-	 *									parameters. Only used if element is specified.
+	 *						parameters. Only used if element is specified.
 	 *
 	 * @param {Object} element	Optional element to highlight. If none is
-	 *							provided, all elements in the current document
-	 *							are returned which qualify.
+	 *				provided, all elements in the current document
+	 *				are returned which qualify.
 	 *
 	 * @return {Array}	Returns list of <code>{ target: DOMElement, params: Object }</code> objects.
 	 */
@@ -943,11 +943,11 @@ var sh = {
 	 * SyntaxHighlighter source code.
 	 *
 	 * @param {Object} globalParams		Optional parameters which override element's
-	 *									parameters. Only used if element is specified.
+	 *						parameters. Only used if element is specified.
 	 *
 	 * @param {Object} element	Optional element to highlight. If none is
-	 *							provided, all elements in the current document
-	 *							are highlighted.
+	 *				provided, all elements in the current document
+	 *				are highlighted.
 	 */
 	highlight: function(globalParams, element)
 	{
@@ -2056,7 +2056,7 @@ sh.Highlighter.prototype = {
 		];
 
 		if (this.isLineHighlighted(lineNumber))
-			classes.push('highlighted');
+		 classes.push('highlighted');
 
 		if (lineNumber == 0)
 			classes.push('break');

@@ -29,14 +29,12 @@ $(document).ready( function () {
 	var oSettings = oTable.fnSettings();
 
 	oTest.fnWaitTest(
-
 		"Default for bUseRendered is true - rendered data is used for sorting",
 		function () { $('#example thead th:eq(1)').click(); },
 		function () { return $('#example tbody tr:eq(0) td:eq(1)').html() == 'aaa'; }
 	);
 
 	oTest.fnWaitTest(
-
 		"When bUseRendered is false, original data is used for sorting",
 		function () {
 			mTmp = 0;
@@ -47,7 +45,6 @@ $(document).ready( function () {
 				"aoColumns": [
 					null,
 					{
-
 						"bUseRendered": false,
 						"fnRender": function (a) {
 							if ( a.iDataRow == 0 ) {
@@ -70,7 +67,6 @@ $(document).ready( function () {
 
 
 	oTest.fnWaitTest(
-
 		"bUseRendered set to false on one columns and true (default) on two others",
 		function () {
 			mTmp = 0;
@@ -93,7 +89,6 @@ $(document).ready( function () {
 						}
 					},
 					{
-
 						"bUseRendered": false,
 						"fnRender": function (a) {
 							if ( a.iDataRow == 0 ) {
@@ -123,14 +118,12 @@ $(document).ready( function () {
 	);
 
 	oTest.fnWaitTest(
-
 		"Multi-column rendering - 2nd column sorting",
 		function () { $('#example thead th:eq(1)').click(); },
 		function () { return $('#example tbody tr:eq(0) td:eq(1)').html() == 'All others'; }
 	);
 
 	oTest.fnWaitTest(
-
 		"Multi-column rendering - 3rd column sorting",
 		function () {
 			$('#example thead th:eq(2)').click();
@@ -140,14 +133,12 @@ $(document).ready( function () {
 	);
 
 	oTest.fnWaitTest(
-
 		"Multi-column rendering - 4th column sorting",
 		function () { $('#example thead th:eq(3)').click(); },
 		function () { return $('#example tbody tr:eq(0) td:eq(3)').html() == '-'; }
 	);
 
 	oTest.fnWaitTest(
-
 		"Multi-column rendering - 5th column sorting",
 		function () { $('#example thead th:eq(4)').click(); },
 		function () { return $('#example tbody tr:eq(0) td:eq(4)').html() == 'A'; }

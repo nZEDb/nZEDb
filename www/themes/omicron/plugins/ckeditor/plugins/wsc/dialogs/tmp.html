@@ -79,8 +79,8 @@
 
 				function loadScript(src, callback) {
 				    var scriptTag = document.createElement("script");
-						scriptTag.type = "text/javascript";
-					callback ? callback : callback = function() {};
+				   scriptTag.type = "text/javascript";
+				   callback ? callback : callback = function() {};
 				    if(scriptTag.readyState) {
 				        //IE
 				        scriptTag.onreadystatechange = function() {

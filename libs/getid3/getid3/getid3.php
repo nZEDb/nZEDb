@@ -1658,13 +1658,13 @@ abstract class getid3_handler
 			}
 			return 0;
 	    } else {
-	    	$pos = $bytes;
-	    	if ($whence == SEEK_CUR) {
+			$pos = $bytes;
+			if ($whence == SEEK_CUR) {
 				$pos = $this->ftell() + $bytes;
-	    	} elseif ($whence == SEEK_END) {
+			} elseif ($whence == SEEK_END) {
 				$pos = $this->info['filesize'] + $bytes;
-	    	}
-	    	if (!getid3_lib::intValueSupported($pos)) {
+			}
+			if (!getid3_lib::intValueSupported($pos)) {
 				throw new getid3_exception('cannot fseek('.$pos.') because beyond PHP filesystem limit', 10);
 			}
 		}

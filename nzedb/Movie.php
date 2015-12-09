@@ -288,12 +288,12 @@ class Movie
 					AND m.title != ''
 					AND m.imdbid != '0000000'
 					AND r.passwordstatus %s
-					AND %s %s %s %s
+					%s %s %s %s
 					GROUP BY m.imdbid
 					ORDER BY %s %s %s",
 					$this->showPasswords,
 					$this->getBrowseBy(),
-					$catsrch,
+					(!empty($catsrch) ? 'AND ' . $catsrch : ''),
 					($maxAge > 0
 							? 'AND r.postdate > NOW() - INTERVAL ' . $maxAge . 'DAY '
 							: ''
@@ -312,11 +312,6 @@ class Movie
 				$movieIDs[] = $id['imdbid'];
 				$releaseIDs[] = $id['grp_release_id'];
 			}
-		}
-
-		$catsrchCheck = '';
-		if(!empty($catsrch)) {
-			$catsrchCheck = 'AND ' . $catsrch;
 		}
 
 		$sql = sprintf("
@@ -352,7 +347,7 @@ class Movie
 			ORDER BY %s %s",
 				(is_array($movieIDs) ? implode(',', $movieIDs) : -1),
 				(is_array($releaseIDs) ? implode(',', $releaseIDs) : -1),
-				$catsrchCheck,
+				(!empty($catsrch) ? 'AND ' . $catsrch : ''),
 				$order[0],
 				$order[1]
 		);
@@ -417,9 +412,9 @@ class Movie
 					$bbv .= '.';
 				}
 				if ($bb === 'imdb') {
-					$browseBy .= 'm.' . $bb . 'id = ' . $bbv . ' AND ';
+					$browseBy .= 'AND m.' . $bb . 'id = ' . $bbv;
 				} else {
-					$browseBy .= 'm.' . $bb . ' ' . $this->pdo->likeString($bbv, true, true) . ' AND ';
+					$browseBy .= 'AND m.' . $bb . ' ' . $this->pdo->likeString($bbv, true, true);
 				}
 			}
 		}

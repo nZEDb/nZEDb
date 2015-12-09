@@ -47,10 +47,10 @@ class getid3_ac3 extends getid3_handler
 		// syncinfo() | bsi() | AB0 | AB1 | AB2 | AB3 | AB4 | AB5 | Aux | CRC
 
 		// syncinfo() {
-		// 	 syncword    16
-		// 	 crc1        16
-		// 	 fscod        2
-		// 	 frmsizecod   6
+		//  syncword    16
+		//  crc1        16
+		//  fscod        2
+		//  frmsizecod   6
 		// } /* end of syncinfo */
 
 		$this->fseek($info['avdataoffset']);

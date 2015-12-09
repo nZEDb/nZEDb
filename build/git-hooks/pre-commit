@@ -1,5 +1,5 @@
 #!/bin/sh
-#version=9
+#version=10
 #
 # The hook should
 # exit with non-zero status after issuing an appropriate message if
@@ -18,8 +18,15 @@ fi
 #####################################################################################################
 
 EXIT_STATUS=0
-PROJECT=/path/to/nZEDb/
-HOOKS=${PROJECT}nzedb/build/git-hooks
+
+NZEDB=`pwd`
+HOOK_DIR=/build/git-hooks
+GIT=/.git/hooks
+PC=/pre-commit
+
+# Strip off the current directory path if we are run from in the git-hooks directory.
+PROJECT=${NZEDB%${HOOK_DIR}}
+HOOKS=${PROJECT}${HOOK_DIR}
 FILE_LIST=${HOOKS}/git_hook_list.txt
 
 if [ -e ${FILE_LIST} ]
@@ -33,8 +40,7 @@ do
     echo ${PROJECT}/${FILE} >> ${FILE_LIST}
 done
 
-#nZEDb hook - run hooks
-# placeholder for script to add command with correct path ;-)
+/usr/bin/php ${HOOKS}/runHooks.php
 
 EXIT_STATUS=$?
 

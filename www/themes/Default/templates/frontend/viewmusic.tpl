@@ -18,7 +18,7 @@
 	{assign var="tracksplits" value="|"|explode:$music.tracks}
 	{foreach from=$tracksplits item=tracksplit}
 	<li>{$tracksplit|trim}</li>
-	{/foreach}		
+	{/foreach}
 </ol>
 {/if}
 

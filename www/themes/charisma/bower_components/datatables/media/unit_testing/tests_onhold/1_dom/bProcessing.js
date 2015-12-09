@@ -13,28 +13,24 @@ $(document).ready( function () {
 	var oSettings = oTable.fnSettings();
 
 	oTest.fnTest(
-
 		"Processing is off by default",
 		null,
 		function () { return oSettings.oFeatures.bProcessing == false; }
 	);
 
 	oTest.fnTest(
-
 		"Processing div is not in the DOM",
 		function () { oTable.oApi._fnProcessingDisplay( oSettings, true ); },
 		function () { return document.getElementById('example_processing') == null; }
 	);
 
 	oTest.fnTest(
-
 		"Processing div cannot be shown",
 		function () { oTable.oApi._fnProcessingDisplay( oSettings, true ); },
 		function () { return document.getElementById('example_processing') == null; }
 	);
 
 	oTest.fnTest(
-
 		"Processing div cannot be hidden",
 		function () { oTable.oApi._fnProcessingDisplay( oSettings, false ); },
 		function () { return document.getElementById('example_processing') == null; }
@@ -43,7 +39,6 @@ $(document).ready( function () {
 
 	/* Check can disable */
 	oTest.fnTest(
-
 		"Processing can be enabled",
 		function () {
 			oSession.fnRestore();
@@ -56,28 +51,24 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Processing div is in the DOM",
 		function () { oTable.oApi._fnProcessingDisplay( oSettings, true ); },
 		function () { return document.getElementById('example_processing'); }
 	);
 
 	oTest.fnTest(
-
 		"Processing div is hidden by default",
 		function () { oTable.oApi._fnProcessingDisplay( oSettings, true ); },
 		function () { return document.getElementById('example_processing').style.visibility = "hidden"; }
 	);
 
 	oTest.fnTest(
-
 		"Processing div can be shown",
 		function () { oTable.oApi._fnProcessingDisplay( oSettings, true ); },
 		function () { return document.getElementById('example_processing').style.visibility = "visible"; }
 	);
 
 	oTest.fnTest(
-
 		"Processing div can be hidden",
 		function () { oTable.oApi._fnProcessingDisplay( oSettings, false ); },
 		function () { return document.getElementById('example_processing').style.visibility = "hidden"; }
@@ -85,7 +76,6 @@ $(document).ready( function () {
 
 	/* Enable makes no difference */
 	oTest.fnTest(
-
 		"Processing disabled override",
 		function () {
 			oSession.fnRestore();
@@ -98,7 +88,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Processing div is not in the DOM",
 		function () { oTable.oApi._fnProcessingDisplay( oSettings, true ); },
 		function () { return document.getElementById('example_processing') == null; }

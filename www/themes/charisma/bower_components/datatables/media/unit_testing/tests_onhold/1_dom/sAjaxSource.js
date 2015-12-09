@@ -9,7 +9,6 @@ $(document).ready( function () {
 	var oSettings = oTable.fnSettings();
 
 	oTest.fnTest(
-
 		"Server side is off by default",
 		null,
 		function () { return oSettings.sAjaxSource == null; }

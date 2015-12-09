@@ -88,13 +88,6 @@ class BasePage
 			$this->floodCheck();
 		}
 
-		if ((function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc()) || ini_get('magic_quotes_sybase')) {
-			$this->stripSlashes($_GET);
-			$this->stripSlashes($_POST);
-			$this->stripSlashes($_REQUEST);
-			$this->stripSlashes($_COOKIE);
-		}
-
 		// Buffer settings/DB connection.
 		$this->settings = new Settings();
 

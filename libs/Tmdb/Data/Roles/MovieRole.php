@@ -1,12 +1,12 @@
 <?php
 /**
- * 	This class handles all the data you can get from a MovieRole
+ * This class handles all the data you can get from a MovieRole
  *
- * 	@author Alvaro Octal | <a href="https://twitter.com/Alvaro_Octal">Twitter</a>
- * 	@version 0.1
- * 	@date 11/01/2015
- * 	@link https://github.com/Alvaroctal/TMDB-PHP-API
- * 	@copyright Licensed under BSD (http://www.opensource.org/licenses/bsd-license.php)
+ * @author Alvaro Octal | <a href="https://twitter.com/Alvaro_Octal">Twitter</a>
+ * @version 0.1
+ * @date 11/01/2015
+ * @link https://github.com/Alvaroctal/TMDB-PHP-API
+ * @copyright Licensed under BSD (http://www.opensource.org/licenses/bsd-license.php)
  */
 
 namespace libs\Tmdb\Data\Roles;
@@ -21,9 +21,9 @@ class MovieRole extends Role{
     public $_data;
 
     /**
-     * 	Construct Class
+     * Construct Class
      *
-     * 	@param array $data An array with the data of a MovieRole
+     * @param array $data An array with the data of a MovieRole
      */
     public function __construct($data, $idPerson) {
         $this->_data = $data;
