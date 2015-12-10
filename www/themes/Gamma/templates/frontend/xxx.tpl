@@ -130,7 +130,7 @@
 								   class="modal_xxx thumbnail" rel="viewxxx">
 									{if $result.cover == 1}
 									<img class="shadow img-polaroid" src="{$smarty.const.WWW_TOP}covers/xxx/{$result.id}-cover.jpg" style="max-width: 120px;" width="120" border="0" alt="{$result.title|escape:"htmlall"}"/>
-									{else} <img class="shadow img-polaroid" src="{$smarty.const.WWW_TOP}themes_shared/images/nocover.png" style="max-width: 120px;" width="120" border="0" alt="{$result.title|escape:"htmlall"}"/>
+									{else} <img class="shadow img-polaroid" src="{$smarty.const.WWW_TOP}themes_shared/images/no-cover.png" style="max-width: 120px;" width="120" border="0" alt="{$result.title|escape:"htmlall"}"/>
 									{/if}
 								</a>
 							</h4>
