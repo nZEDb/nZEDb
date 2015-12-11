@@ -186,13 +186,8 @@
 						{/if}
 
 						{if $result.preid > 0}
-						<span class="preinfo badge badge-inverse halffade" title="{$result.searchname}">PreDB</span>
+						<span class="preinfo badge badge-inverse halffade" title="{$result.preid}">PreDB</span>
 						{/if}
-
-						{if $result.preid > 0}
-						<span class="prehashinfo badge badge-inverse halffade" title="{$result.preid}">Prehash</span>
-						{/if}
-
 						{/strip}
 					</div>
 				</div>

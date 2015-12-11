@@ -866,19 +866,19 @@ jQuery(function($){
         });
     });
 
-    // prehashinfo tooltip
-    $(".prehashinfo").each(function () {
+    // preinfo tooltip
+    $(".preinfo").each(function () {
         var prehashid = $(this).attr('title');
         $(this).qtip({
             content: {
                 title: {
-                    text: 'PreHash Info'
+                    text: 'PreDB Info'
                 },
                 text: 'loading...', // The text to use whilst the AJAX request is loading
                 ajax: {
-                    url: SERVERROOT + 'ajax_prehashinfo', // URL to the local file
+                    url: SERVERROOT + 'ajax_preinfo', // URL to the local file
                     type: 'GET', // POST or GET
-                    data: { id: prehashid }, // Data to pass along with your request
+                    data: { id: preid }, // Data to pass along with your request
                     success: function (data, status) {
                         this.set('content.text', data);
                     }
