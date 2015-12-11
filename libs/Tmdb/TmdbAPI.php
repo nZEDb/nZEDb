@@ -29,43 +29,43 @@
  * @author Alvaro Octal
  * @link {https://github.com/Alvaroctal/TMDB-PHP-API}
  *
- * 	Function List
- *   	public function  __construct($apikey,$lang='en')
- *   	public function setLang($lang="en")
- *   	public function getLang()
- *   	public function setImageURL($config)
- *   	public function getImageURL($size="original")
- *   	public function movieTitles($idMovie)
- *   	public function movieTrans($idMovie)
- *   	public function movieTrailer($idMovie,$source="")
- *   	public function movieDetail($idMovie)
- *   	public function moviePoster($idMovie)
- *   	public function movieCast($idMovie)
- *   	public function movieInfo($idMovie,$option="",$print=false)
- *   	public function searchMovie($movieTitle)
- *   	public function getConfig()
- *   	public function latestMovie()
- *   	public function nowPlayingMovies($page=1)
+ * Function List
+ *   public function  __construct($apikey,$lang='en')
+ *   public function setLang($lang="en")
+ *   public function getLang()
+ *   public function setImageURL($config)
+ *   public function getImageURL($size="original")
+ *   public function movieTitles($idMovie)
+ *   public function movieTrans($idMovie)
+ *   public function movieTrailer($idMovie,$source="")
+ *   public function movieDetail($idMovie)
+ *   public function moviePoster($idMovie)
+ *   public function movieCast($idMovie)
+ *   public function movieInfo($idMovie,$option="",$print=false)
+ *   public function searchMovie($movieTitle)
+ *   public function getConfig()
+ *   public function latestMovie()
+ *   public function nowPlayingMovies($page=1)
  *
- *   	private function _getDataArray($action,$text,$lang="")
- *   	private function setApikey($apikey)
- *   	private function getApikey()
+ *   private function _getDataArray($action,$text,$lang="")
+ *   private function setApikey($apikey)
+ *   private function getApikey()
  *
  *
- * 	URL LIST:
- *   	configuration		https://api.themoviedb.org/3/configuration
- * 		Image				https://cf2.imgobject.com/t/p/original/IMAGEN.jpg #### echar un ojo ####
- * 		Search Movie		https://api.themoviedb.org/3/search/movie
- * 		Search Person		https://api.themoviedb.org/3/search/person
- * 		Movie Info			https://api.themoviedb.org/3/movie/11
- * 		Casts				https://api.themoviedb.org/3/movie/11/casts
- * 		Posters				https://api.themoviedb.org/3/movie/11/images
- * 		Trailers			https://api.themoviedb.org/3/movie/11/trailers
- * 		translations		https://api.themoviedb.org/3/movie/11/translations
- * 		Alternative titles 	https://api.themoviedb.org/3/movie/11/alternative_titles
+ * URL LIST:
+ *   configuration		https://api.themoviedb.org/3/configuration
+ * Image				https://cf2.imgobject.com/t/p/original/IMAGEN.jpg #### echar un ojo ####
+ * Search Movie		https://api.themoviedb.org/3/search/movie
+ * Search Person		https://api.themoviedb.org/3/search/person
+ * Movie Info			https://api.themoviedb.org/3/movie/11
+ * Casts				https://api.themoviedb.org/3/movie/11/casts
+ * Posters				https://api.themoviedb.org/3/movie/11/images
+ * Trailers			https://api.themoviedb.org/3/movie/11/trailers
+ * translations		https://api.themoviedb.org/3/movie/11/translations
+ * Alternative titles https://api.themoviedb.org/3/movie/11/alternative_titles
  *
- * 		// Collection Info 	https://api.themoviedb.org/3/collection/11
- * 		// Person images		https://api.themoviedb.org/3/person/287/images
+ * // Collection Info https://api.themoviedb.org/3/collection/11
+ * // Person images		https://api.themoviedb.org/3/person/287/images
  */
 
 namespace libs\Tmdb;
@@ -101,10 +101,10 @@ class TmdbAPI {
 
 
 	/**
-	 * 	Construct Class
+	 * Construct Class
 	 *
-	 * 	@param string $apikey The API key token
-	 * 	@param string $lang The languaje to work with, default is english
+	 * @param string $apikey The API key token
+	 * @param string $lang The languaje to work with, default is english
 	 */
 	public function __construct($apikey, $lang = 'en', $debug = false) {
 
@@ -129,19 +129,19 @@ class TmdbAPI {
 	//------------------------------------------------------------------------------
 
 	/**
-	 * 	Set the API key
+	 * Set the API key
 	 *
-	 * 	@param string $apikey
-	 * 	@return void
+	 * @param string $apikey
+	 * @return void
 	 */
 	private function setApikey($apikey) {
 		$this->_apikey = (string) $apikey;
 	}
 
 	/**
-	 * 	Get the API key
+	 * Get the API key
 	 *
-	 * 	@return string
+	 * @return string
 	 */
 	private function getApikey() {
 		return $this->_apikey;
@@ -155,16 +155,16 @@ class TmdbAPI {
 	 *  Set the language
 	 *	By default english
 	 *
-	 * 	@param string $lang
+	 * @param string $lang
 	 */
 	public function setLang($lang = 'en') {
 		$this->_lang = $lang;
 	}
 
 	/**
-	 * 	Get the language
+	 * Get the language
 	 *
-	 * 	@return string
+	 * @return string
 	 */
 	public function getLang() {
 		return $this->_lang;
@@ -175,9 +175,9 @@ class TmdbAPI {
 	//------------------------------------------------------------------------------
 
 	/**
-	 * 	Loads the configuration of the API
+	 * Loads the configuration of the API
 	 *
-	 * 	@return boolean
+	 * @return boolean
 	 */
 	private function _loadConfig() {
 		$this->_config = $this->_call('configuration', '');
@@ -186,9 +186,9 @@ class TmdbAPI {
 	}
 
 	/**
-	 * 	Get Configuration of the API (Revisar)
+	 * Get Configuration of the API (Revisar)
 	 *
-	 * 	@return array
+	 * @return array
 	 */
 	public function getConfig(){
 		return $this->_config;
@@ -200,23 +200,23 @@ class TmdbAPI {
 
 	/**
 	 *	Get the URL images
-	 * 	You can specify the width, by default original
+	 * You can specify the width, by default original
 	 *
-	 * 	@param String $size A String like 'w185' where you specify the image width
-	 * 	@return string
+	 * @param String $size A String like 'w185' where you specify the image width
+	 * @return string
 	 */
 	public function getImageURL($size = 'original') {
 		return $this->_config['images']['base_url'] . $size;
 	}
 
 	/**
-	 * 	Get Movie Info
-	 * 	Gets part of the info of the Movie, mostly used for the lazy load
+	 * Get Movie Info
+	 * Gets part of the info of the Movie, mostly used for the lazy load
 	 *
-	 * 	@param int $idMovie The Movie id
+	 * @param int $idMovie The Movie id
 	 *  @param string $option The request option
-	 * 	@param string $append_request additional request
-	 * 	@return array
+	 * @param string $append_request additional request
+	 * @return array
 	 *	@deprecated
 	 */
 	public function getMovieInfo($idMovie, $option = '', $append_request = ''){
@@ -231,10 +231,10 @@ class TmdbAPI {
 	// Get Lists of Discover
 	//------------------------------------------------------------------------------
 	/**
-	 * 	Get latest Movie
+	 * Get latest Movie
 	 *	@add by tnsws
 	 *
-	 * 	@return Movie
+	 * @return Movie
 	 */
 	public function getDiscoverMovie($page = 1) {
 		$movies = array();
@@ -254,9 +254,9 @@ class TmdbAPI {
 	//------------------------------------------------------------------------------
 
 	/**
-	 * 	Get latest Movie
+	 * Get latest Movie
 	 *
-	 * 	@return Movie
+	 * @return Movie
 	 */
 	public function getLatestMovie() {
 		return new Movie($this->_call('movie/latest',''));
@@ -265,8 +265,8 @@ class TmdbAPI {
 	/**
 	 *  Now Playing Movies
 	 *
-	 * 	@param integer $page
-	 * 	@return array
+	 * @param integer $page
+	 * @return array
 	 */
 	public function nowPlayingMovies($page = 1) {
 
@@ -287,8 +287,8 @@ class TmdbAPI {
 	 *  Top Rated Movies
 	 *	@add by tnsws
 	 *
-	 * 	@param integer $page
-	 * 	@return array
+	 * @param integer $page
+	 * @return array
 	 */
 	public function topRatedMovies($page = 1) {
 		$movies = array();
@@ -305,8 +305,8 @@ class TmdbAPI {
 	 *  Upcoming Movies
 	 *	@add by tnsws
 	 *
-	 * 	@param integer $page
-	 * 	@return array
+	 * @param integer $page
+	 * @return array
 	 */
 	public function upcomingMovies($page = 1) {
 		$movies = array();
@@ -326,18 +326,18 @@ class TmdbAPI {
 	//------------------------------------------------------------------------------
 
 	/**
-	 * 	Get latest Person
+	 * Get latest Person
 	 *
-	 * 	@return Person
+	 * @return Person
 	 */
 	public function getLatestPerson() {
 		return new Person($this->_call('person/latest',''));
 	}
 
 	/**
-	 * 	Get Popular Persons
+	 * Get Popular Persons
 	 *
-	 * 	@return Person[]
+	 * @return Person[]
 	 */
 	public function getPopularPersons($page = 1) {
 		$persons = array();
@@ -358,11 +358,11 @@ class TmdbAPI {
 	//------------------------------------------------------------------------------
 
 	/**
-	 * 	Makes the call to the API and retrieves the data as a JSON
+	 * Makes the call to the API and retrieves the data as a JSON
 	 *
-	 * 	@param string $action	API specific function name for in the URL
-	 * 	@param string $appendToResponse	The extra append of the request
-	 * 	@return string
+	 * @param string $action	API specific function name for in the URL
+	 * @param string $appendToResponse	The extra append of the request
+	 * @return string
 	 */
 	private function _call($action, $appendToResponse){
 
@@ -390,92 +390,92 @@ class TmdbAPI {
 	//------------------------------------------------------------------------------
 
 	/**
-	 * 	Get a Movie
+	 * Get a Movie
 	 *
-	 * 	@param int $idMovie The Movie id
-	 * 	@param string $appendToResponse The extra append of the request, by default all
-	 * 	@return Movie
+	 * @param int $idMovie The Movie id
+	 * @param string $appendToResponse The extra append of the request, by default all
+	 * @return Movie
 	 */
 	public function getMovie($idMovie, $appendToResponse = 'append_to_response=trailers,images,casts,translations'){
 		return new Movie($this->_call('movie/' . $idMovie, $appendToResponse));
 	}
 
 	/**
-	 * 	Get a TVShow
+	 * Get a TVShow
 	 *
-	 * 	@param int $idTVShow The TVShow id
-	 * 	@param string $appendToResponse The extra append of the request, by default all
-	 * 	@return TVShow
+	 * @param int $idTVShow The TVShow id
+	 * @param string $appendToResponse The extra append of the request, by default all
+	 * @return TVShow
 	 */
 	public function getTVShow($idTVShow, $appendToResponse = 'append_to_response=trailers,images,casts,translations,keywords'){
 		return new TVShow($this->_call('tv/' . $idTVShow, $appendToResponse));
 	}
 
 	/**
-	 * 	Get a Season
+	 * Get a Season
 	 *
 	 *  @param int $idTVShow The TVShow id
 	 *  @param int $numSeason The Season number
-	 * 	@param string $appendToResponse The extra append of the request, by default all
-	 * 	@return Season
+	 * @param string $appendToResponse The extra append of the request, by default all
+	 * @return Season
 	 */
 	public function getSeason($idTVShow, $numSeason, $appendToResponse = 'append_to_response=trailers,images,casts,translations'){
 		return new Season($this->_call('tv/'. $idTVShow .'/season/' . $numSeason, $appendToResponse), $idTVShow);
 	}
 
 	/**
-	 * 	Get a Season by Number
+	 * Get a Season by Number
 	 *
 	 *  @param int $idTVShow The TVShow id
 	 *  @param int $numSeason The Season number
-	 * 	@param string $appendToResponse The extra append of the request, by default all
-	 * 	@return Season
+	 * @param string $appendToResponse The extra append of the request, by default all
+	 * @return Season
 	 */
 	/*public function getSeasonByNumber($idTVShow, $numSeason, $appendToResponse = 'append_to_response=trailers,images,casts,translations'){
 		return new Season($this->_call('tv/'. $idTVShow .'/season/' . $numSeason, $appendToResponse));
 	}*/
 
 	/**
-	 * 	Get a Episode
+	 * Get a Episode
 	 *
 	 *  @param int $idEpisode The Episode id
-	 * 	@param string $appendToResponse The extra append of the request, by default all
-	 * 	@return Episode
+	 * @param string $appendToResponse The extra append of the request, by default all
+	 * @return Episode
 	 */
 	/*public function getEpisode($idEpisode, $appendToResponse = 'append_to_response=trailers,images,casts,translations'){
 		return new Episode($this->_call('tv/season/episode/' . $idEpisode, $appendToResponse));
 	}*/
 
 	/**
-	 * 	Get a Episode
+	 * Get a Episode
 	 *
 	 *  @param int $idTVShow The TVShow id
 	 *  @param int $numSeason The Season number
 	 *  @param int $numEpisode the Episode number
-	 * 	@param string $appendToResponse The extra append of the request, by default all
-	 * 	@return Episode
+	 * @param string $appendToResponse The extra append of the request, by default all
+	 * @return Episode
 	 */
 	public function getEpisode($idTVShow, $numSeason, $numEpisode, $appendToResponse = 'append_to_response=trailers,images,casts,translations'){
 		return new Episode($this->_call('tv/'. $idTVShow .'/season/'. $numSeason .'/episode/'. $numEpisode, $appendToResponse), $idTVShow);
 	}
 
 	/**
-	 * 	Get a Person
+	 * Get a Person
 	 *
-	 * 	@param int $idPerson The Person id
-	 * 	@param string $appendToResponse The extra append of the request, by default all
-	 * 	@return Person
+	 * @param int $idPerson The Person id
+	 * @param string $appendToResponse The extra append of the request, by default all
+	 * @return Person
 	 */
 	public function getPerson($idPerson, $appendToResponse = 'append_to_response=tv_credits,movie_credits'){
 		return new Person($this->_call('person/' . $idPerson, $appendToResponse));
 	}
 
 	/**
-	 * 	Get a Collection
+	 * Get a Collection
 	 *
-	 * 	@param int $idCollection The Person id
-	 * 	@param string $appendToResponse The extra append of the request, by default all
-	 * 	@return Collection
+	 * @param int $idCollection The Person id
+	 * @param string $appendToResponse The extra append of the request, by default all
+	 * @return Collection
 	 */
 	public function getCollection($idCollection, $appendToResponse = 'append_to_response=images'){
 		return new Collection($this->_call('collection/' . $idCollection, $appendToResponse));
@@ -488,8 +488,8 @@ class TmdbAPI {
 	/**
 	 *  Search Movie
 	 *
-	 * 	@param string $movieTitle The title of a Movie
-	 * 	@return Movie[]
+	 * @param string $movieTitle The title of a Movie
+	 * @return Movie[]
 	 */
 	public function searchMovie($movieTitle){
 
@@ -509,8 +509,8 @@ class TmdbAPI {
 	/**
 	 *  Search TVShow
 	 *
-	 * 	@param string $tvShowTitle The title of a TVShow
-	 * 	@return TVShow[]
+	 * @param string $tvShowTitle The title of a TVShow
+	 * @return TVShow[]
 	 */
 	public function searchTVShow($tvShowTitle)
 	{
@@ -531,8 +531,8 @@ class TmdbAPI {
 	/**
 	 *  Search Person
 	 *
-	 * 	@param string $personName The name of the Person
-	 * 	@return Person[]
+	 * @param string $personName The name of the Person
+	 * @return Person[]
 	 */
 	public function searchPerson($personName){
 
@@ -552,8 +552,8 @@ class TmdbAPI {
 	/**
 	 *  Search Collection
 	 *
-	 * 	@param string $collectionName The name of the Collection
-	 * 	@return Collection[]
+	 * @param string $collectionName The name of the Collection
+	 * @return Collection[]
 	 */
 	public function searchCollection($collectionName){
 

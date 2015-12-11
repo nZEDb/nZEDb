@@ -7,7 +7,6 @@ $(document).ready( function () {
 	} );
 
 	oTest.fnTest(
-
 		"Header elements are fully wrapped by DIVs",
 		null,
 		function () {
@@ -22,7 +21,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"One div for each header element",
 		null,
 		function () {
@@ -31,7 +29,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"One span for each header element, nested as child of div",
 		null,
 		function () {

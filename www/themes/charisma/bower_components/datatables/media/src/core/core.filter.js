@@ -47,13 +47,10 @@ function _fnFeatureHtmlFilter ( oSettings )
 		if ( val != oPreviousSearch.sSearch )
 		{
 			_fnFilterComplete( oSettings, {
-
 				"sSearch": val,
-
 				"bRegex": oPreviousSearch.bRegex,
 				"bSmart": oPreviousSearch.bSmart ,
 				"bCaseInsensitive": oPreviousSearch.bCaseInsensitive
-
 			} );
 		}
 	} );
@@ -103,7 +100,6 @@ function _fnFilterComplete ( oSettings, oInput, iForce )
 		for ( var i=0 ; i<oSettings.aoPreSearchCols.length ; i++ )
 		{
 			_fnFilterColumn( oSettings, aoPrevSearch[i].sSearch, i, aoPrevSearch[i].bRegex,
-
 				aoPrevSearch[i].bSmart, aoPrevSearch[i].bCaseInsensitive );
 		}
 
@@ -235,9 +231,8 @@ function _fnFilter( oSettings, sInput, iForce, bRegex, bSmart, bCaseInsensitive 
 	{
 		/*
 		 * We are starting a new search or the new search string is smaller
-
 		 * then the old one (i.e. delete). Search from the master array
-		 */
+	  */
 		if ( oSettings.aiDisplay.length == oSettings.aiDisplayMaster.length ||
 			   oPrevSearch.sSearch.length > sInput.length || iForce == 1 ||
 			   sInput.indexOf(oPrevSearch.sSearch) !== 0 )
@@ -250,7 +245,6 @@ function _fnFilter( oSettings, sInput, iForce, bRegex, bSmart, bCaseInsensitive 
 
 			/* Search through all records to populate the search array
 			 * The the oSettings.aiDisplayMaster and asDataSearch arrays have 1 to 1
-
 			 * mapping
 			 */
 			for ( i=0 ; i<oSettings.aiDisplayMaster.length ; i++ )
@@ -263,20 +257,20 @@ function _fnFilter( oSettings, sInput, iForce, bRegex, bSmart, bCaseInsensitive 
 	  }
 	  else
 		{
-		/* Using old search array - refine it - do it this way for speed
-		 * Don't have to search the whole master array again
+	  /* Using old search array - refine it - do it this way for speed
+	   * Don't have to search the whole master array again
 			 */
-		var iIndexCorrector = 0;
+	  var iIndexCorrector = 0;
 
-		/* Search the current results */
-		for ( i=0 ; i<oSettings.asDataSearch.length ; i++ )
+	  /* Search the current results */
+	  for ( i=0 ; i<oSettings.asDataSearch.length ; i++ )
 			{
-			if ( ! rpSearch.test(oSettings.asDataSearch[i]) )
+	  if ( ! rpSearch.test(oSettings.asDataSearch[i]) )
 				{
-				oSettings.aiDisplay.splice( i-iIndexCorrector, 1 );
-				iIndexCorrector++;
-			}
-		}
+	  oSettings.aiDisplay.splice( i-iIndexCorrector, 1 );
+	  iIndexCorrector++;
+	  }
+	  }
 	  }
 	}
 }
@@ -297,8 +291,8 @@ function _fnBuildSearchArray ( oSettings, iMaster )
 
 		var aiFilterColumns = _fnGetColumns( oSettings, 'bSearchable' );
 		var aiIndex = (iMaster===1) ?
-			oSettings.aiDisplayMaster :
-			oSettings.aiDisplay;
+		 oSettings.aiDisplayMaster :
+		 oSettings.aiDisplay;
 
 		for ( var i=0, iLen=aiIndex.length ; i<iLen ; i++ )
 		{
@@ -402,3 +396,4 @@ function _fnEscapeRegex ( sVal )
 	var reReplace = new RegExp( '(\\' + acEscape.join('|\\') + ')', 'g' );
 	return sVal.replace(reReplace, '\\$1');
 }
+

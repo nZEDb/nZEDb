@@ -43,10 +43,10 @@
 		.row .phone-one.column, .row .phone-two.column, .row .phone-three.column, .row .phone-four.column,
 		.row .phone-one.columns, .row .phone-two.columns, .row .phone-three.columns, .row .phone-four.columns { margin-left: 4.4%; float: left; min-height: 1px; position: relative; padding: 0; }
 
-		.row .phone-one.columns	{ width: 21.68% !important; }
-		.row .phone-two.columns	{ width: 47.8% !important; }
-		.row .phone-three.columns	{ width: 73.9% !important; }
-		.row .phone-four.columns	{ width: 100% !important; }
+		.row .phone-one.columns { width: 21.68% !important; }
+		.row .phone-two.columns { width: 47.8% !important; }
+		.row .phone-three.columns { width: 73.9% !important; }
+		.row .phone-four.columns { width: 100% !important; }
 
 		.row .columns.push-one-phone { left: 26.08%; }
 		.row .columns.push-two-phone { left: 52.2% }

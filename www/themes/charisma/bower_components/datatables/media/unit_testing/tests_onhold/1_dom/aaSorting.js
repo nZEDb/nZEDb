@@ -7,7 +7,6 @@ $(document).ready( function () {
 	var oSettings = oTable.fnSettings();
 
 	oTest.fnTest(
-
 		"Default sorting is single column",
 		null,
 		function () {
@@ -16,7 +15,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Default sorting is first column asc",
 		null,
 		function () {
@@ -26,7 +24,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Sorting is applied",
 		null,
 		function () { return $('#example tbody td:eq(0)').html() == "Gecko"; }
@@ -34,7 +31,6 @@ $(document).ready( function () {
 
 
 	oTest.fnTest(
-
 		"Custom sorting on single string column asc",
 		function () {
 			oSession.fnRestore();
@@ -47,7 +43,6 @@ $(document).ready( function () {
 
 
 	oTest.fnTest(
-
 		"Custom sorting on single string column desc",
 		function () {
 			oSession.fnRestore();
@@ -60,7 +55,6 @@ $(document).ready( function () {
 
 
 	oTest.fnTest(
-
 		"Custom sorting on single int column asc",
 		function () {
 			oSession.fnRestore();
@@ -73,7 +67,6 @@ $(document).ready( function () {
 
 
 	oTest.fnTest(
-
 		"Custom sorting on single int column desc",
 		function () {
 			oSession.fnRestore();
@@ -86,7 +79,6 @@ $(document).ready( function () {
 
 
 	oTest.fnTest(
-
 		"Multi-column sorting (2 column) - string asc / string asc",
 		function () {
 			oSession.fnRestore();
@@ -98,7 +90,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Multi-column sorting (2 column) - string asc / string desc",
 		function () {
 			oSession.fnRestore();
@@ -110,7 +101,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Multi-column sorting (2 column) - string desc / string asc",
 		function () {
 			oSession.fnRestore();
@@ -122,7 +112,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Multi-column sorting (2 column) - string desc / string desc",
 		function () {
 			oSession.fnRestore();
@@ -135,7 +124,6 @@ $(document).ready( function () {
 
 
 	oTest.fnTest(
-
 		"Multi-column sorting (2 column) - string asc / int asc",
 		function () {
 			oSession.fnRestore();
@@ -147,7 +135,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Multi-column sorting (2 column) - string asc / int desc",
 		function () {
 			oSession.fnRestore();
@@ -159,7 +146,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Multi-column sorting (2 column) - string desc / int asc",
 		function () {
 			oSession.fnRestore();
@@ -171,7 +157,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Multi-column sorting (2 column) - string desc / int desc",
 		function () {
 			oSession.fnRestore();
@@ -183,7 +168,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Multi-column sorting (3 column) - string asc / int asc / string asc",
 		function () {
 			oSession.fnRestore();

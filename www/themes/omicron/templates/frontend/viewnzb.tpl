@@ -224,7 +224,7 @@
 												<div class="btn-group btn-group-vertical">
 													<a class="btn btn-primary btn-sm btn-success btn-transparent"
 													   href="{$smarty.const.WWW_TOP}/getnzb/{$release.guid}/{$release.searchname|escape:"htmlall"}"><i
-																class="fa fa-download"></i>
+																class="fa fa-cloud-download"></i>
 														Download</a>
 													<button type="button"
 															class="btn btn-primary btn-sm btn-info btn-transparent cartadd">
@@ -238,13 +238,6 @@
 														<i class="icon_sab fa fa-arrow-right"
 														   id="guid{$release.guid}"></i> Send to
 														Queue
-														</button>{/if}
-													{if $weHasVortex}
-														<button type="button"
-																class="btn btn-primary btn-sm btn-transparent vortexsend">
-														<i class="icon_sab fa fa-arrow-right"
-														   id="guid{$release.guid}"></i> Send to
-														NZBVortex
 														</button>{/if}
 													<p id="demo"></p>
 												</div>

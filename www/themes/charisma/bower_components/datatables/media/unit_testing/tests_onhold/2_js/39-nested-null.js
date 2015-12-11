@@ -35,7 +35,6 @@ $(document).ready( function () {
 		function () {
 			oSession.fnRestore();
 
-
 			$('#example').dataTable( {
 				"aaData": [
 					{ "a": "0", "b": {"c": 0} },
@@ -57,7 +56,6 @@ $(document).ready( function () {
 		function () {
 			oSession.fnRestore();
 
-
 			$('#example').dataTable( {
 				"aaData": [
 					{ "a": "0", "b": {"c": 0} },
@@ -73,7 +71,6 @@ $(document).ready( function () {
 		},
 		function () { return $('#example tbody td:eq(8)').html() === "allan"; }
 	);
-
 
 	oTest.fnComplete();
 } );

@@ -10,7 +10,7 @@ function _fnSort ( oSettings, bApplyClasses )
 		i, iLen, j, jLen, k, kLen,
 		sDataType, nTh,
 		aaSort = [],
-		aiOrig = [],
+	 aiOrig = [],
 		oSort = DataTable.ext.oSort,
 		aoData = oSettings.aoData,
 		aoColumns = oSettings.aoColumns,
@@ -18,7 +18,6 @@ function _fnSort ( oSettings, bApplyClasses )
 
 	/* No sorting required if server-side or no sorting array */
 	if ( !oSettings.oFeatures.bServerSide &&
-
 		(oSettings.aaSorting.length !== 0 || oSettings.aaSortingFixed !== null) )
 	{
 		aaSort = ( oSettings.aaSortingFixed !== null ) ?
@@ -36,7 +35,6 @@ function _fnSort ( oSettings, bApplyClasses )
 			if ( DataTable.ext.afnSortData[sDataType] )
 			{
 				var aData = DataTable.ext.afnSortData[sDataType].call(
-
 					oSettings.oInstance, oSettings, iColumn, iVisColumn
 				);
 				if ( aData.length === aoData.length )
@@ -89,18 +87,17 @@ function _fnSort ( oSettings, bApplyClasses )
 		 * and sorting function (from oSort) in a certain direction. It's reasonably complex to
 		 * follow on it's own, but this is what we want (example two column sorting):
 		 *  fnLocalSorting = function(a,b){
-		 *	var iTest;
-		 *	iTest = oSort['string-asc']('data11', 'data12');
-		 *	if (iTest !== 0)
-		 *		return iTest;
+		 *  var iTest;
+		 *  iTest = oSort['string-asc']('data11', 'data12');
+		 *  if (iTest !== 0)
+		 *  return iTest;
 		 *    iTest = oSort['numeric-desc']('data21', 'data22');
 		 *    if (iTest !== 0)
-		 *		return iTest;
-		 *	return oSort['numeric-asc']( aiOrig[a], aiOrig[b] );
+		 *  return iTest;
+		 *  return oSort['numeric-asc']( aiOrig[a], aiOrig[b] );
 		 *  }
 		 * Basically we have a test for each sorting column, if the data in that column is equal,
 		 * test the next column. If all columns match, then we use a numeric sort on the row
-
 		 * positions in the original data array to provide a stable sort.
 		 */
 		oSettings.aiDisplayMaster.sort( function ( a, b ) {
@@ -150,7 +147,6 @@ function _fnSort ( oSettings, bApplyClasses )
 				nTh.setAttribute('aria-sort', aaSort[0][1]=="asc" ? "ascending" : "descending" );
 
 				var nextSort = (aoColumns[i].asSorting[ aaSort[0][2]+1 ]) ?
-
 					aoColumns[i].asSorting[ aaSort[0][2]+1 ] : aoColumns[i].asSorting[0];
 				nTh.setAttribute('aria-label', sTitle+
 					(nextSort=="asc" ? oAria.sSortAscending : oAria.sSortDescending) );
@@ -207,18 +203,13 @@ function _fnSortAttachListener ( oSettings, nNode, iDataIndex, fnCallback )
 		/*
 		 * This is a little bit odd I admit... I declare a temporary function inside the scope of
 		 * _fnBuildHead and the click handler in order that the code presented here can be used
-
 		 * twice - once for when bProcessing is enabled, and another time for when it is
-
 		 * disabled, as we need to perform slightly different actions.
 		 *   Basically the issue here is that the Javascript engine in modern browsers don't
-
 		 * appear to allow the rendering engine to update the display while it is still executing
 		 * it's thread (well - it does but only after long intervals). This means that the
-
 		 * 'processing' display doesn't appear for a table sort. To break the js thread up a bit
 		 * I force an execution break by using setTimeout - but this breaks the expected
-
 		 * thread continuation for the end-developer's point of view (their code would execute
 		 * too early), so we only do it when we absolutely have to.
 		 */
@@ -257,7 +248,6 @@ function _fnSortAttachListener ( oSettings, nNode, iDataIndex, fnCallback )
 				if ( bFound === false )
 				{
 					oSettings.aaSorting.push( [ iDataIndex,
-
 						oSettings.aoColumns[iDataIndex].asSorting[0], 0 ] );
 				}
 			}
@@ -279,7 +269,6 @@ function _fnSortAttachListener ( oSettings, nNode, iDataIndex, fnCallback )
 				{
 					oSettings.aaSorting.splice( 0, oSettings.aaSorting.length );
 					oSettings.aaSorting.push( [ iDataIndex,
-
 						oSettings.aoColumns[iDataIndex].asSorting[0], 0 ] );
 				}
 			}
@@ -315,7 +304,6 @@ function _fnSortAttachListener ( oSettings, nNode, iDataIndex, fnCallback )
 
 /**
  * Set the sorting classes on the header, Note: it is safe to call this function
-
  * when bSort and bSortClasses are false
  *  @param {object} oSettings dataTables settings object
  *  @memberof DataTable#oApi
@@ -369,13 +357,12 @@ function _fnSortingClasses( oSettings )
 				/* jQuery UI uses extra markup */
 				var jqSpan = $("span."+oClasses.sSortIcon,  oSettings.aoColumns[i].nTh);
 				jqSpan.removeClass(oClasses.sSortJUIAsc +" "+ oClasses.sSortJUIDesc +" "+
-
 					oClasses.sSortJUI +" "+ oClasses.sSortJUIAscAllowed +" "+ oClasses.sSortJUIDescAllowed );
 
 				var sSpanClass;
 				if ( iFound == -1 )
 				{
-					sSpanClass = oSettings.aoColumns[i].sSortingClassJUI;
+				 sSpanClass = oSettings.aoColumns[i].sSortingClassJUI;
 				}
 				else if ( aaSort[iFound][1] == "asc" )
 				{
@@ -399,12 +386,10 @@ function _fnSortingClasses( oSettings )
 	}
 
 	/*
-
 	 * Apply the required classes to the table body
 	 * Note that this is given as a feature switch since it can significantly slow down a sort
 	 * on large data sets (adding and removing of classes is always slow at the best of times..)
 	 * Further to this, note that this code is admittedly fairly ugly. It could be made a lot
-
 	 * simpler using jQuery selectors and add/removeClass, but that is significantly slower
 	 * (on the order of 5 times slower) - hence the direct DOM manipulation here.
 	 * Note that for deferred drawing we do use jQuery - the reason being that taking the first
@@ -463,3 +448,4 @@ function _fnSortingClasses( oSettings )
 		}
 	}
 }
+

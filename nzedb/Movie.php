@@ -288,12 +288,12 @@ class Movie
 					AND m.title != ''
 					AND m.imdbid != '0000000'
 					AND r.passwordstatus %s
-					AND %s %s %s %s
+					%s %s %s %s
 					GROUP BY m.imdbid
 					ORDER BY %s %s %s",
 					$this->showPasswords,
 					$this->getBrowseBy(),
-					$catsrch,
+					(!empty($catsrch) ? 'AND ' . $catsrch : ''),
 					($maxAge > 0
 							? 'AND r.postdate > NOW() - INTERVAL ' . $maxAge . 'DAY '
 							: ''
@@ -330,6 +330,7 @@ class Movie
 				GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments,
 				GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs,
 				GROUP_CONCAT(df.failed ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_failed,
+				GROUP_CONCAT(cp.title, ' > ', c.title ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_catname,
 			m.*,
 			g.name AS group_name,
 			rn.releaseid AS nfoid
@@ -337,17 +338,18 @@ class Movie
 			LEFT OUTER JOIN groups g ON g.id = r.group_id
 			LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
 			LEFT OUTER JOIN dnzb_failures df ON df.release_id = r.id
+			LEFT OUTER JOIN category c ON c.id = r.categoryid
+			LEFT OUTER JOIN category cp ON cp.id = c.parentid
 			INNER JOIN movieinfo m ON m.imdbid = r.imdbid
 			WHERE m.imdbid IN (%s)
-			AND r.id IN (%s)
-			AND %s
+			AND r.id IN (%s) %s
 			GROUP BY m.imdbid
 			ORDER BY %s %s",
-			(is_array($movieIDs) ? implode(',', $movieIDs) : -1),
-			(is_array($releaseIDs) ? implode(',', $releaseIDs) : -1),
-			$catsrch,
-			$order[0],
-			$order[1]
+				(is_array($movieIDs) ? implode(',', $movieIDs) : -1),
+				(is_array($releaseIDs) ? implode(',', $releaseIDs) : -1),
+				(!empty($catsrch) ? 'AND ' . $catsrch : ''),
+				$order[0],
+				$order[1]
 		);
 		$return = $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
 		if (!empty($return)) {
@@ -410,9 +412,9 @@ class Movie
 					$bbv .= '.';
 				}
 				if ($bb === 'imdb') {
-					$browseBy .= 'm.' . $bb . 'id = ' . $bbv . ' AND ';
+					$browseBy .= 'AND m.' . $bb . 'id = ' . $bbv;
 				} else {
-					$browseBy .= 'm.' . $bb . ' ' . $this->pdo->likeString($bbv, true, true) . ' AND ';
+					$browseBy .= 'AND m.' . $bb . ' ' . $this->pdo->likeString($bbv, true, true);
 				}
 			}
 		}

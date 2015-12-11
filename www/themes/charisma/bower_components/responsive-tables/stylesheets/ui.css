@@ -39,7 +39,7 @@
 		border: none;
 	}
 
-	/* Don't use native buttons on iOS */
+  /* Don't use native buttons on iOS */
 	input[type=submit].button, button.button { -webkit-appearance: none; }
 
 	.button.nice {
@@ -79,13 +79,13 @@
 	}
 
 	/* Sizes ---------- */
-	.small.button			{ font-size: 11px; padding: 8px 20px 10px; width: auto; }
-	.medium.button			{ font-size: 13px; width: auto; }
-	.large.button			{ font-size: 18px; padding: 11px 48px 13px; width: auto; }
+	.small.button { font-size: 11px; padding: 8px 20px 10px; width: auto; }
+	.medium.button { font-size: 13px; width: auto; }
+	.large.button { font-size: 18px; padding: 11px 48px 13px; width: auto; }
 
 	/* Nice Sizes ---------- */
-	.nice.small.button		{ background-position: 0 -36px; }
-	.nice.large.button		{ background-position: 0 -30px; }
+	.nice.small.button { background-position: 0 -36px; }
+	.nice.large.button { background-position: 0 -30px; }
 
 	/* Colors ---------- */
 	.blue.button			{ background-color: #00a6fc;  }
@@ -100,9 +100,9 @@
 	.nice.black.button		{ border: 1px solid #000; }
 
 	/* Hovers ---------- */
-	.button:hover, .button:focus				{ background-color: #0192dd; color: #fff; }
-	.blue.button:hover, .blue.button:focus		{ background-color: #0192dd;	}
-	.red.button:hover, .red.button:focus		{ background-color: #d01217;	}
+	.button:hover, .button:focus	{ background-color: #0192dd; color: #fff; }
+	.blue.button:hover, .blue.button:focus		{ background-color: #0192dd; }
+	.red.button:hover, .red.button:focus { background-color: #d01217; }
 	.white.button:hover, .white.button:focus	{ background-color: #dadada; color: #333; }
 	.black.button:hover, .black.button:focus	{ background-color: #000; }
 
@@ -194,7 +194,7 @@
 	}
 
 /*	--------------------------------------------------
-	Nav Bar with Dropdowns
+   Nav Bar with Dropdowns
 	-------------------------------------------------- */
 
 	.nav-bar { height: 45px; background: #fff; margin-top: 20px; border: 1px solid #ddd; }
@@ -218,8 +218,8 @@
 
 
 /*	--------------------------------------------------
-	Video
-	Mad props to http://www.alistapart.com/articles/creating-intrinsic-ratios-for-video/
+   Video
+   Mad props to http://www.alistapart.com/articles/creating-intrinsic-ratios-for-video/
 	-------------------------------------------------- */
 
 	.flex-video {
@@ -247,7 +247,7 @@
 
 
 /*	--------------------------------------------------
-	Microformats
+   Microformats
 	-------------------------------------------------- */
 
 	/* hCard */
@@ -257,3 +257,8 @@
 
 	p.vevent span.summary { font-weight: bold; }
 	p.vevent abbr { cursor: default; text-decoration: none; font-weight: bold; border: none; padding: 0 1px; }
+
+
+
+
+

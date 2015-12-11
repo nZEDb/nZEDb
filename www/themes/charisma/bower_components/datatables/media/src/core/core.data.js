@@ -1,6 +1,5 @@
 /**
  * Add a data array to the table, creating DOM node etc. This is the parallel to
-
  * _fnGatherData, but for adding rows from a Javascript source, rather than a
  * DOM source.
  *  @param {object} oSettings dataTables settings object
@@ -81,7 +80,7 @@ function _fnAddData ( oSettings, aDataSupplied )
 function _fnGatherData( oSettings )
 {
 	var iLoop, i, iLen, j, jLen, jInner,
-		nTds, nTrs, nTd, nTr, aLocalData, iThisIndex,
+	 nTds, nTrs, nTd, nTr, aLocalData, iThisIndex,
 		iRow, iRows, iColumn, iColumns, sNodeName,
 		oCol, oData;
 

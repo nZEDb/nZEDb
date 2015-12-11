@@ -1,6 +1,6 @@
 
 <h1>Forum</h1>
-	
+
 {if $results|@count > 0}
 
 {$pager}
@@ -40,7 +40,7 @@
 			<td class="mid">{$result.replies}</td>
 		</tr>
 	{/foreach}
-	
+
 </table>
 
 <div style="float:right;margin-top:5px;"><a href="#top">Top</a></div>

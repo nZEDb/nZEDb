@@ -40,7 +40,6 @@ charts or filled areas).
         series: { stack: null } // or number/string
     };
 
-
     function init(plot) {
         function findMatchingSeries(s, allseries) {
             var res = null;
@@ -48,15 +47,12 @@ charts or filled areas).
                 if (s == allseries[i])
                     break;
 
-
                 if (allseries[i].stack == s.stack)
                     res = allseries[i];
             }
 
-
             return res;
         }
-
 
         function stackData(plot, s, datapoints) {
             if (s.stack == null || s.stack === false)
@@ -123,7 +119,6 @@ charts or filled areas).
                         newpoints[l + accumulateOffset] += qy;
                         bottom = qy;
 
-
                         i += ps;
                         j += otherps;
                     }
@@ -137,7 +132,6 @@ charts or filled areas).
                             for (m = 2; m < ps; ++m)
                                 newpoints.push(points[i + m]);
                             bottom = qy;
-
                         }
 
                         j += otherps;
@@ -149,10 +143,8 @@ charts or filled areas).
                             continue;
                         }
 
-
                         for (m = 0; m < ps; ++m)
                             newpoints.push(points[i + m]);
-
 
                         // we might be able to interpolate a point below,
                         // this can give us a better y
@@ -161,12 +153,10 @@ charts or filled areas).
 
                         newpoints[l + accumulateOffset] += bottom;
 
-
                         i += ps;
                     }
 
                     fromgap = false;
-
 
                     if (l != newpoints.length && withbottom)
                         newpoints[l + 2] += bottom;
@@ -186,10 +176,8 @@ charts or filled areas).
             datapoints.points = newpoints;
         }
 
-
         plot.hooks.processDatapoints.push(stackData);
     }
-
 
     $.plot.plugins.push({
         init: init,

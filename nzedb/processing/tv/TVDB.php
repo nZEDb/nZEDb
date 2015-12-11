@@ -428,7 +428,8 @@ class TVDB extends TV
 			'tvrage'    => 0,
 			'tvmaze'    => 0,
 			'tmdb'      => 0,
-			'aliases'   => (!empty($show->aliasNames) ? (array)$show->aliasNames : '')
+			'aliases'   => (!empty($show->aliasNames) ? (array)$show->aliasNames : ''),
+			'localzone' => "''"
 		];
 	}
 

@@ -676,10 +676,10 @@ Licensed under the MIT license.
             plot = null;
         };
         plot.resize = function () {
-			var width = placeholder.width(),
-				height = placeholder.height();
-				surface.resize(width, height);
-				overlay.resize(width, height);
+        var width = placeholder.width(),
+        height = placeholder.height();
+            surface.resize(width, height);
+            overlay.resize(width, height);
         };
 
         // public attributes
@@ -727,7 +727,7 @@ Licensed under the MIT license.
             // not expected behavior; avoid it by replacing them here.
 
             if (opts && opts.colors) {
-				options.colors = opts.colors;
+            options.colors = opts.colors;
             }
 
             if (options.xaxis.color == null)
@@ -2495,10 +2495,8 @@ Licensed under the MIT license.
                 symbol = series.points.symbol;
 
             // If the user sets the line width to 0, we change it to a very
-
             // small value. A line width of 0 seems to force the default of 1.
             // Doing the conditional here allows the shadow setting to still be
-
             // optional even with a lineWidth of 0.
 
             if( lw == 0 )
@@ -2716,7 +2714,7 @@ Licensed under the MIT license.
                 if ($.isFunction(options.legend.sorted)) {
                     entries.sort(options.legend.sorted);
                 } else if (options.legend.sorted == "reverse") {
-					entries.reverse();
+                entries.reverse();
                 } else {
                     var ascending = options.legend.sorted != "descending";
                     entries.sort(function(a, b) {

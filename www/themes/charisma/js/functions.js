@@ -1,5 +1,5 @@
-$('head').append('<link rel="stylesheet" href="templates/charisma/css/animate.min.css" type="text/css" />');
-jQuery.getScript("templates/charisma/js/noty/packaged/jquery.noty.packaged.min.js");
+$('head').append('<link rel="stylesheet" href="themes/charisma/css/animate.min.css" type="text/css" />');
+jQuery.getScript("themes/charisma/js/noty/packaged/jquery.noty.packaged.min.js");
 
 // event bindings
 jQuery(function($){

@@ -33,7 +33,7 @@
 	<link href="{$smarty.const.WWW_TOP}/themes/omicron/dist/css/skins/skin-blue.min.css" rel="stylesheet"
 		  type="text/css"/>
 	<!-- Noty animation style -->
-	<link href="{$smarty.const.WWW_TOP}/templates/omicron/dist/css/animate.css" rel="stylesheet" type="text/css"/>
+	<link href="{$smarty.const.WWW_TOP}/themes/omicron/dist/css/animate.css" rel="stylesheet" type="text/css"/>
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 	<!--[if lt IE 9]>
@@ -106,7 +106,7 @@
 								<!-- Menu Body -->
 								<li class="user-body">
 									<div class="col-xs-12 text-center">
-										<a href="{$serverroot}cart"><i class="fa fa-shopping-basket"></i> My Cart</a>
+										<a href="{$serverroot}cart"><i class="fa fa-shopping-basket"></i> My Download Basket</a>
 									</div>
 									<div class="col-xs-12 text-center">
 										<a href="{$serverroot}queue"><i class="fa fa-list-alt"></i> My Queue</a>
@@ -347,10 +347,10 @@
 	<script type="text/javascript"
 			src='{$smarty.const.WWW_TOP}/themes/omicron/dist/js/jquery.dataTables.min.js'></script>
 	<!-- nZEDb default scripts, needed for stuff to work -->
-	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes_shared/scripts/jquery.colorbox-min.js"></script>
-	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes_shared/scripts/jquery.autosize-min.js"></script>
-	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes_shared/scripts/jquery.qtip2.js"></script>
-	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes_shared/scripts/sorttable.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/omicron/scripts/jquery.colorbox-min.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/omicron/scripts/jquery.autosize-min.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/omicron/scripts/jquery.qtip2.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/omicron/scripts/sorttable.js"></script>
 	<!-- Optionally, you can add Slimscroll and FastClick plugins.
 		  Both of these plugins are recommended to enhance the
 		  user experience. Slimscroll is required when using the

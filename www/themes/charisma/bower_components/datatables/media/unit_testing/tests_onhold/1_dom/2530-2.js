@@ -6,7 +6,6 @@ $(document).ready( function () {
 	$('#example').dataTable();
 
 	oTest.fnTest(
-
 		"Check user width is left",
 		null,
 		function () { return $('#example').width() == 640; }

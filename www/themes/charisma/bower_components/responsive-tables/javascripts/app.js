@@ -13,7 +13,7 @@ $(document).ready(function () {
 		$activeTab.removeClass('active');
 		$tab.addClass('active');
 
-	//Show Tab Content
+    //Show Tab Content
 		$(contentLocation).closest('.tabs-content').children('li').hide();
 		$(contentLocation).show();
 	}
@@ -82,9 +82,9 @@ $(document).ready(function () {
 		}
 	});
 	// $('body').bind('touchend', function(e) {
-	//	if (!$(e.target).parents().is('.nav-bar') || !$(e.target).is('.nav-bar')) {
-	//		$('.nav-bar li .flyout').is(':visible').hide();
-	//	}
+	// if (!$(e.target).parents().is('.nav-bar') || !$(e.target).is('.nav-bar')) {
+	// $('.nav-bar li .flyout').is(':visible').hide();
+	// }
 	// });
 
 	/* DISABLED BUTTONS ------------- */

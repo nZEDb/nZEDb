@@ -8,7 +8,6 @@ $(document).ready( function () {
 	} );
 
 	oTest.fnTest(
-
 		"Length div exists by default",
 		null,
 		function () { return document.getElementById('example_length') != null; }
@@ -34,13 +33,11 @@ $(document).ready( function () {
 		"Info takes length into account",
 		null,
 		function () { return document.getElementById('example_info').innerHTML ==
-
 			"Showing 1 to 10 of 57 entries"; }
 	);
 
 	/* Check can disable */
 	oTest.fnTest(
-
 		"Change length can be disabled",
 		function () {
 			oSession.fnRestore();
@@ -56,13 +53,11 @@ $(document).ready( function () {
 		"Information takes length disabled into account",
 		null,
 		function () { return document.getElementById('example_info').innerHTML ==
-
 			"Showing 1 to 10 of 57 entries"; }
 	);
 
 	/* Enable makes no difference */
 	oTest.fnTest(
-
 		"Length change enabled override",
 		function () {
 			oSession.fnRestore();

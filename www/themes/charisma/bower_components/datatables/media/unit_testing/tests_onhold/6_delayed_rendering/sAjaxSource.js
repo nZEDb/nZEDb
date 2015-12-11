@@ -12,11 +12,9 @@ $(document).ready( function () {
 	var oSettings = oTable.fnSettings();
 
 	oTest.fnWaitTest(
-
 		"Server side is off by default",
 		null,
 		function () {
-
 			return oSettings.sAjaxSource == "../../../examples/ajax/sources/arrays.txt";
 		}
 	);

@@ -6,7 +6,6 @@ $(document).ready( function () {
 	$('#example').dataTable();
 
 	oTest.fnTest(
-
 		"Filtering div exists by default",
 		null,
 		function () { return document.getElementById('example_filter') != null; }
@@ -14,7 +13,6 @@ $(document).ready( function () {
 
 	/* Check can disable */
 	oTest.fnTest(
-
 		"Fltering can be disabled",
 		function () {
 			oSession.fnRestore();
@@ -27,7 +25,6 @@ $(document).ready( function () {
 
 	/* Enable makes no difference */
 	oTest.fnTest(
-
 		"Filtering enabled override",
 		function () {
 			oSession.fnRestore();

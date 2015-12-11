@@ -136,7 +136,7 @@ class dirscan {
 				break;
 			default: // scan 4 directories deep
 				if (!is_dir($root)) {
-    				return null;
+					return null;
 				}
 				$dirs = array_merge(glob($root.'/*', GLOB_ONLYDIR), glob($root.'/*/*', GLOB_ONLYDIR), glob($root.'/*/*/*', GLOB_ONLYDIR), glob($root.'/*/*/*/*', GLOB_ONLYDIR), glob($root.'/*/*/*/*/*', GLOB_ONLYDIR), glob($root.'/*/*/*/*/*/*', GLOB_ONLYDIR), glob($root.'/*/*/*/*/*/*/*', GLOB_ONLYDIR));
 				break;

@@ -2,7 +2,6 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Note that most of the paging logic is done in
-
  * DataTable.ext.oPagination
  */
 
@@ -23,7 +22,6 @@ function _fnFeatureHtmlPaginate ( oSettings )
 	nPaginate.className = oSettings.oClasses.sPaging+oSettings.sPaginationType;
 
 	DataTable.ext.oPagination[ oSettings.sPaginationType ].fnInit( oSettings, nPaginate,
-
 		function( oSettings ) {
 			_fnCalculateEnd( oSettings );
 			_fnDraw( oSettings );
@@ -118,3 +116,4 @@ function _fnPageChange ( oSettings, mAction )
 
 	return iOldStart != oSettings._iDisplayStart;
 }
+

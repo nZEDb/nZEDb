@@ -6,7 +6,6 @@ $(document).ready( function () {
 	$('#example').dataTable();
 
 	oTest.fnTest(
-
 		"Info div exists by default",
 		null,
 		function () { return document.getElementById('example_info') != null; }
@@ -14,7 +13,6 @@ $(document).ready( function () {
 
 	/* Check can disable */
 	oTest.fnTest(
-
 		"Info can be disabled",
 		function () {
 			oSession.fnRestore();
@@ -27,7 +25,6 @@ $(document).ready( function () {
 
 	/* Enable makes no difference */
 	oTest.fnTest(
-
 		"Info enabled override",
 		function () {
 			oSession.fnRestore();

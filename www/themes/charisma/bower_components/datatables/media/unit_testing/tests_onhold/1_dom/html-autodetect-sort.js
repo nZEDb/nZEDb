@@ -5,7 +5,6 @@ $(document).ready( function () {
 	var oTable = $('#example').dataTable();
 
 	oTest.fnTest(
-
 		"Initial sort",
 		null,
 		function () {
@@ -18,7 +17,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"HTML sort",
 		function () { $('#example thead th:eq(1)').click() },
 		function () {
@@ -31,7 +29,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"HTML reverse sort",
 		function () { $('#example thead th:eq(1)').click() },
 		function () {
@@ -44,7 +41,6 @@ $(document).ready( function () {
 	);
 
 	oTest.fnTest(
-
 		"Numeric sort",
 		function () { $('#example thead th:eq(0)').click() },
 		function () {

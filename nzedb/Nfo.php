@@ -333,7 +333,7 @@ class Nfo
 				// Get count of releases per nfo status
 				$nfoStats = $this->pdo->queryDirect(
 					sprintf('
-						SELECT r.nfostatus AS status, COUNT(*) AS count
+						SELECT r.nfostatus AS status, COUNT(r.id) AS count
 						FROM releases r
 						WHERE 1=1 %s %s %s
 						GROUP BY r.nfostatus

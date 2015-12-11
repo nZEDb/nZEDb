@@ -113,12 +113,12 @@ class DB extends \PDO
 			'createDb'		=> false, // create dbname if it does not exist?
 			'ct'			=> new ConsoleTools(),
 			'dbhost'		=> defined('DB_HOST') ? DB_HOST : '',
-			'dbname' 		=> defined('DB_NAME') ? DB_NAME : '',
-			'dbpass' 		=> defined('DB_PASSWORD') ? DB_PASSWORD : '',
+			'dbname' => defined('DB_NAME') ? DB_NAME : '',
+			'dbpass' => defined('DB_PASSWORD') ? DB_PASSWORD : '',
 			'dbport'		=> defined('DB_PORT') ? DB_PORT : '',
 			'dbsock'		=> defined('DB_SOCKET') ? DB_SOCKET : '',
 			'dbtype'		=> defined('DB_SYSTEM') ? DB_SYSTEM : '',
-			'dbuser' 		=> defined('DB_USER') ? DB_USER : '',
+			'dbuser' => defined('DB_USER') ? DB_USER : '',
 			'log'			=> new ColorCLI(),
 			'persist'		=> false,
 		];

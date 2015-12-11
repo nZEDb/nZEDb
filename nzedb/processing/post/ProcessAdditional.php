@@ -664,9 +664,7 @@ class ProcessAdditional
 				false
 			);
 
-			if ($this->_showCLIReleaseID) {
-				cli_set_process_title($this->_showCLIReleaseID . $this->_release['id']);
-			}
+			cli_set_process_title($this->_showCLIReleaseID . $this->_release['id']);
 
 			// Create folder to store temporary files.
 			if ($this->_createTempFolder() === false) {
@@ -731,7 +729,7 @@ class ProcessAdditional
 	/**
 	 * Deletes files and folders recursively.
 	 *
-	 * @param string 	$path          Path to a folder or file.
+	 * @param string $path          Path to a folder or file.
 	 * @param string[] $ignoredFolders Array with paths to folders to ignore.
 	 *
 	 * @void

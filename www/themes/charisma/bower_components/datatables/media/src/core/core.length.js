@@ -20,7 +20,6 @@ function _fnFeatureHtmlLength ( oSettings )
 	var aLengthMenu = oSettings.aLengthMenu;
 
 	if ( aLengthMenu.length == 2 && typeof aLengthMenu[0] === 'object' &&
-
 			typeof aLengthMenu[1] === 'object' )
 	{
 		for ( i=0, iLen=aLengthMenu[0].length ; i<iLen ; i++ )
@@ -120,3 +119,4 @@ function _fnCalculateEnd( oSettings )
 		}
 	}
 }
+

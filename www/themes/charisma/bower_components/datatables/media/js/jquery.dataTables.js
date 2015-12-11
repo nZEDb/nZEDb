@@ -532,7 +532,7 @@
 		function _fnGatherData( oSettings )
 		{
 			var iLoop, i, iLen, j, jLen, jInner,
-				nTds, nTrs, nTd, nTr, aLocalData, iThisIndex,
+			 nTds, nTrs, nTd, nTr, aLocalData, iThisIndex,
 				iRow, iRows, iColumn, iColumns, sNodeName,
 				oCol, oData;
 
@@ -1541,7 +1541,7 @@
 				 * up. When not infinite scroll, always do it.
 				 */
 				if ( !oSettings.oScroll.bInfinite || !oSettings._bInitComplete ||
-					oSettings.bSorted || oSettings.bFiltered )
+				 oSettings.bSorted || oSettings.bFiltered )
 				{
 					while( (n = oSettings.nTBody.firstChild) )
 					{
@@ -2295,7 +2295,7 @@
 				/*
 				 * We are starting a new search or the new search string is smaller
 				 * then the old one (i.e. delete). Search from the master array
-				 */
+			  */
 				if ( oSettings.aiDisplay.length == oSettings.aiDisplayMaster.length ||
 					   oPrevSearch.sSearch.length > sInput.length || iForce == 1 ||
 					   sInput.indexOf(oPrevSearch.sSearch) !== 0 )
@@ -2320,20 +2320,20 @@
 			  }
 			  else
 				{
-				/* Using old search array - refine it - do it this way for speed
-				 * Don't have to search the whole master array again
+			  /* Using old search array - refine it - do it this way for speed
+			   * Don't have to search the whole master array again
 					 */
-				var iIndexCorrector = 0;
+			  var iIndexCorrector = 0;
 
-				/* Search the current results */
-				for ( i=0 ; i<oSettings.asDataSearch.length ; i++ )
+			  /* Search the current results */
+			  for ( i=0 ; i<oSettings.asDataSearch.length ; i++ )
 					{
-					if ( ! rpSearch.test(oSettings.asDataSearch[i]) )
+			  if ( ! rpSearch.test(oSettings.asDataSearch[i]) )
 						{
-						oSettings.aiDisplay.splice( i-iIndexCorrector, 1 );
-						iIndexCorrector++;
-					}
-				}
+			  oSettings.aiDisplay.splice( i-iIndexCorrector, 1 );
+			  iIndexCorrector++;
+			  }
+			  }
 			  }
 			}
 		}
@@ -2354,8 +2354,8 @@
 
 				var aiFilterColumns = _fnGetColumns( oSettings, 'bSearchable' );
 				var aiIndex = (iMaster===1) ?
-					oSettings.aiDisplayMaster :
-					oSettings.aiDisplay;
+				 oSettings.aiDisplayMaster :
+				 oSettings.aiDisplay;
 
 				for ( var i=0, iLen=aiIndex.length ; i<iLen ; i++ )
 				{
@@ -2643,7 +2643,7 @@
 				_fnServerParams( oSettings, aoData );
 				oSettings.fnServerData.call( oSettings.oInstance, oSettings.sAjaxSource, aoData, function(json) {
 					var aData = (oSettings.sAjaxDataProp !== "") ?
-						_fnGetObjectDataFn( oSettings.sAjaxDataProp )(json) : json;
+					 _fnGetObjectDataFn( oSettings.sAjaxDataProp )(json) : json;
 
 					/* Got the data - add it to the table */
 					for ( i=0 ; i<aData.length ; i++ )
@@ -3040,16 +3040,16 @@
 			 *          tfoot - nTfoot
 			 */
 			var
-				nScroller = document.createElement('div'),
-				nScrollHead = document.createElement('div'),
-				nScrollHeadInner = document.createElement('div'),
-				nScrollBody = document.createElement('div'),
-				nScrollFoot = document.createElement('div'),
-				nScrollFootInner = document.createElement('div'),
-				nScrollHeadTable = oSettings.nTable.cloneNode(false),
-				nScrollFootTable = oSettings.nTable.cloneNode(false),
+			 nScroller = document.createElement('div'),
+			 nScrollHead = document.createElement('div'),
+			 nScrollHeadInner = document.createElement('div'),
+			 nScrollBody = document.createElement('div'),
+			 nScrollFoot = document.createElement('div'),
+			 nScrollFootInner = document.createElement('div'),
+			 nScrollHeadTable = oSettings.nTable.cloneNode(false),
+			 nScrollFootTable = oSettings.nTable.cloneNode(false),
 				nThead = oSettings.nTable.getElementsByTagName('thead')[0],
-				nTfoot = oSettings.nTable.getElementsByTagName('tfoot').length === 0 ? null :
+			 nTfoot = oSettings.nTable.getElementsByTagName('tfoot').length === 0 ? null :
 					oSettings.nTable.getElementsByTagName('tfoot')[0],
 				oClasses = oSettings.oClasses;
 
@@ -3447,7 +3447,7 @@
 				nScrollBody.style.height = _fnStringToCss( o.oScroll.sY );
 
 				var iExtra = (o.oScroll.sX !== "" && o.nTable.offsetWidth > nScrollBody.offsetWidth) ?
-					o.oScroll.iBarWidth : 0;
+				 o.oScroll.iBarWidth : 0;
 				if ( o.nTable.offsetHeight < nScrollBody.offsetHeight )
 				{
 					nScrollBody.style.height = _fnStringToCss( o.nTable.offsetHeight+iExtra );
@@ -3935,7 +3935,7 @@
 				i, iLen, j, jLen, k, kLen,
 				sDataType, nTh,
 				aaSort = [],
-				aiOrig = [],
+			 aiOrig = [],
 				oSort = DataTable.ext.oSort,
 				aoData = oSettings.aoData,
 				aoColumns = oSettings.aoColumns,
@@ -4012,14 +4012,14 @@
 				 * and sorting function (from oSort) in a certain direction. It's reasonably complex to
 				 * follow on it's own, but this is what we want (example two column sorting):
 				 *  fnLocalSorting = function(a,b){
-				 *	var iTest;
-				 *	iTest = oSort['string-asc']('data11', 'data12');
-				 *	if (iTest !== 0)
-				 *		return iTest;
+				 *  var iTest;
+				 *  iTest = oSort['string-asc']('data11', 'data12');
+				 *  if (iTest !== 0)
+				 *  return iTest;
 				 *    iTest = oSort['numeric-desc']('data21', 'data22');
 				 *    if (iTest !== 0)
-				 *		return iTest;
-				 *	return oSort['numeric-asc']( aiOrig[a], aiOrig[b] );
+				 *  return iTest;
+				 *  return oSort['numeric-asc']( aiOrig[a], aiOrig[b] );
 				 *  }
 				 * Basically we have a test for each sorting column, if the data in that column is equal,
 				 * test the next column. If all columns match, then we use a numeric sort on the row
@@ -4287,7 +4287,7 @@
 						var sSpanClass;
 						if ( iFound == -1 )
 						{
-							sSpanClass = oSettings.aoColumns[i].sSortingClassJUI;
+						 sSpanClass = oSettings.aoColumns[i].sSortingClassJUI;
 						}
 						else if ( aaSort[iFound][1] == "asc" )
 						{
@@ -4571,7 +4571,7 @@
 			var
 				aParts = window.location.pathname.split('/'),
 				sNameEQ = sName + '_' + aParts[aParts.length-1].replace(/[\/:]/g,"").toLowerCase() + '=',
-				sCookieContents = document.cookie.split(';');
+			 sCookieContents = document.cookie.split(';');
 
 			for( var i=0 ; i<sCookieContents.length ; i++ )
 			{
@@ -6114,7 +6114,7 @@
 		this.fnSortListener = function( nNode, iColumn, fnCallback )
 		{
 			_fnSortAttachListener( _fnSettingsFromNode( this[DataTable.ext.iApiIndex] ), nNode, iColumn,
-				fnCallback );
+			 fnCallback );
 		};
 
 
@@ -12096,3 +12096,4 @@
 }));
 
 }(window, document));
+

@@ -1134,17 +1134,14 @@ class Releases
 	 */
 	private function getPagerCount($query)
 	{
-		$count = $this->pdo->queryOneRow(
+		$count = $this->pdo->query(
 			sprintf(
-				'SELECT COUNT(*) AS count FROM (%s LIMIT %s) z',
+				'SELECT COUNT(z.id) AS count FROM (%s LIMIT %s) z',
 				preg_replace('/SELECT.+?FROM\s+releases/is', 'SELECT r.id FROM releases', $query),
 				nZEDb_MAX_PAGER_RESULTS
 			)
 		);
-		if (isset($count['count']) && is_numeric($count['count'])) {
-			return $count['count'];
-		}
-		return 0;
+		return (isset($count[0]['count']) ? $count[0]['count'] : 0);
 	}
 
 	/**
@@ -1418,13 +1415,13 @@ class Releases
 	public function getRecentlyAdded()
 	{
 		return $this->pdo->query(
-			"SELECT CONCAT(cp.title, ' > ', category.title) AS title, COUNT(*) AS count
+			"SELECT CONCAT(cp.title, ' > ', category.title) AS title, COUNT(r.id) AS count
 			FROM category
-			INNER JOIN category cp on cp.id = category.parentid
+			INNER JOIN category cp ON cp.id = category.parentid
 			INNER JOIN releases r ON r.categoryid = category.id
 			WHERE r.adddate > NOW() - INTERVAL 1 WEEK
-			GROUP BY concat(cp.title, ' > ', category.title)
-			ORDER BY COUNT(*) DESC", true, nZEDb_CACHE_EXPIRY_MEDIUM
+			GROUP BY CONCAT(cp.title, ' > ', category.title)
+			ORDER BY count DESC", true, nZEDb_CACHE_EXPIRY_MEDIUM
 		);
 	}
 

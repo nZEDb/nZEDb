@@ -6,13 +6,10 @@
  * table options. DataTables does not have a single instance for each DataTable
  * with the settings attached to that instance, but rather instances of the
  * DataTable "class" are created on-the-fly as needed (typically by a
-
  * $().dataTable() call) and the settings object is then applied to that
  * instance.
  *
-
  * Note that this object is related to {@link DataTable.defaults} but this
-
  * one is the internal data store for DataTables's cache of columns. It should
  * NOT be manipulated outside of DataTables. Any configuration should be done
  * through the initialisation options.
@@ -21,7 +18,6 @@
  *    don't need to create new instances on each $().dataTable() call (if the
  *    table already exists). It would also save passing oSettings around and
  *    into every single function. However, this is a very significant
-
  *    architecture change for DataTables and will almost certainly break
  *    backwards compatibility with older installations. This is something that
  *    will be done in 2.0.
@@ -180,7 +176,6 @@ DataTable.models.oSettings = {
 
 		/**
 		 * Space (in pixels) between the bottom of the scrolling container and
-
 		 * the bottom of the scrolling viewport before the next page is loaded
 		 * when using infinite scrolling.
 		 * Note that this parameter will be set by the initialisation routine. To
@@ -191,7 +186,6 @@ DataTable.models.oSettings = {
 
 		/**
 		 * Viewport width for horizontal scrolling. Horizontal scrolling is
-
 		 * disabled if an empty string.
 		 * Note that this parameter will be set by the initialisation routine. To
 		 * set a default use {@link DataTable.defaults}.
@@ -227,7 +221,6 @@ DataTable.models.oSettings = {
 	"oLanguage": {
 		/**
 		 * Information callback function. See
-
 		 * {@link DataTable.defaults.fnInfoCallback}
 		 *  @type function
 		 *  @default null
@@ -251,7 +244,6 @@ DataTable.models.oSettings = {
 
 	/**
 	 * Array referencing the nodes which are used for the features. The
-
 	 * parameters of this object match what is allowed by sDom - i.e.
 	 *   <ul>
 	 *     <li>'l' - Length changing</li>
@@ -318,7 +310,6 @@ DataTable.models.oSettings = {
 
 	/**
 	 * Store the applied global search information in case we want to force a
-
 	 * research or compare the old search to a new one.
 	 * Note that this parameter will be set by the initialisation routine. To
 	 * set a default use {@link DataTable.defaults}.
@@ -329,7 +320,6 @@ DataTable.models.oSettings = {
 
 	/**
 	 * Store the applied search for each column - see
-
 	 * {@link DataTable.models.oSearch} for the format that is used for the
 	 * filtering information for each column.
 	 *  @type array
@@ -380,7 +370,6 @@ DataTable.models.oSettings = {
 
 	/**
 	 * If restoring a table - we should restore its width
-
 	 *  @type int
 	 *  @default 0
 	 */
@@ -423,7 +412,6 @@ DataTable.models.oSettings = {
 
 	/**
 	 * Callback functions for just before the table is redrawn. A return of
-
 	 * false will be used to cancel the draw.
 	 *  @type array
 	 *  @default []
@@ -506,7 +494,6 @@ DataTable.models.oSettings = {
 
 	/**
 	 * Indicate if when using server-side processing the loading of data
-
 	 * should be deferred until the second draw.
 	 * Note that this parameter will be set by the initialisation routine. To
 	 * set a default use {@link DataTable.defaults}.
@@ -545,7 +532,6 @@ DataTable.models.oSettings = {
 	 * Note that this parameter will be set by the initialisation routine. To
 	 * set a default use {@link DataTable.defaults}.
 	 *  @type string
-
 	 *  @default two_button
 	 */
 	"sPaginationType": "two_button",
@@ -579,13 +565,11 @@ DataTable.models.oSettings = {
 
 	/**
 	 * Array of callback functions for state saving. Each array element is an
-
 	 * object with the following parameters:
 	 *   <ul>
 	 *     <li>function:fn - function to call. Takes two parameters, oSettings
 	 *       and the JSON string to save that has been thus far created. Returns
 	 *       a JSON string to be inserted into a json object
-
 	 *       (i.e. '"param": [ 0, 1, 2]')</li>
 	 *     <li>string:sName - name of callback</li>
 	 *   </ul>
@@ -596,11 +580,9 @@ DataTable.models.oSettings = {
 
 	/**
 	 * Array of callback functions for state loading. Each array element is an
-
 	 * object with the following parameters:
 	 *   <ul>
 	 *     <li>function:fn - function to call. Takes two parameters, oSettings
-
 	 *       and the object stored. May return false to cancel state loading</li>
 	 *     <li>string:sName - name of callback</li>
 	 *   </ul>
@@ -628,7 +610,6 @@ DataTable.models.oSettings = {
 	/**
 	 * Property from a given object from which to read the table data from. This
 	 * can be an empty string (when not server-side processing), in which case
-
 	 * it is  assumed an an array is given directly.
 	 * Note that this parameter will be set by the initialisation routine. To
 	 * set a default use {@link DataTable.defaults}.
@@ -645,9 +626,7 @@ DataTable.models.oSettings = {
 
 	/**
 	 * The last jQuery XHR object that was used for server-side data gathering.
-
 	 * This can be used for working with the XHR information in one of the
-
 	 * callbacks
 	 *  @type object
 	 *  @default null
@@ -664,7 +643,6 @@ DataTable.models.oSettings = {
 
 	/**
 	 * Functions which are called prior to sending an Ajax request so extra
-
 	 * parameters can easily be sent to the server
 	 *  @type array
 	 *  @default []
@@ -673,7 +651,6 @@ DataTable.models.oSettings = {
 
 	/**
 	 * Send the XHR HTTP method - GET or POST (could be PUT or DELETE if
-
 	 * required).
 	 * Note that this parameter will be set by the initialisation routine. To
 	 * set a default use {@link DataTable.defaults}.
@@ -782,7 +759,6 @@ DataTable.models.oSettings = {
 
 	/**
 	 * Flag attached to the settings object so you can check in the draw
-
 	 * callback if filtering has been done in the draw. Deprecated in favour of
 	 * events.
 	 *  @type boolean
@@ -793,7 +769,6 @@ DataTable.models.oSettings = {
 
 	/**
 	 * Flag attached to the settings object so you can check in the draw
-
 	 * callback if sorting has been done in the draw. Deprecated in favour of
 	 * events.
 	 *  @type boolean
@@ -804,9 +779,7 @@ DataTable.models.oSettings = {
 
 	/**
 	 * Indicate that if multiple rows are in the header and there is more than
-
 	 * one unique cell per column, if the top one (true) or bottom one (false)
-
 	 * should be used for sorting / title by DataTables.
 	 * Note that this parameter will be set by the initialisation routine. To
 	 * set a default use {@link DataTable.defaults}.
@@ -868,7 +841,6 @@ DataTable.models.oSettings = {
 				return this._iDisplayStart+this.aiDisplay.length;
 			} else {
 				return Math.min( this._iDisplayStart+this._iDisplayLength,
-
 					this._iRecordsDisplay );
 			}
 		} else {

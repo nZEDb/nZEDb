@@ -29,17 +29,16 @@ function _fnFeatureHtmlTable ( oSettings )
 	 *          tfoot - nTfoot
 	 */
 	var
-		nScroller = document.createElement('div'),
-		nScrollHead = document.createElement('div'),
-		nScrollHeadInner = document.createElement('div'),
-		nScrollBody = document.createElement('div'),
-		nScrollFoot = document.createElement('div'),
-		nScrollFootInner = document.createElement('div'),
-		nScrollHeadTable = oSettings.nTable.cloneNode(false),
-		nScrollFootTable = oSettings.nTable.cloneNode(false),
+	 nScroller = document.createElement('div'),
+	 nScrollHead = document.createElement('div'),
+	 nScrollHeadInner = document.createElement('div'),
+	 nScrollBody = document.createElement('div'),
+	 nScrollFoot = document.createElement('div'),
+	 nScrollFootInner = document.createElement('div'),
+	 nScrollHeadTable = oSettings.nTable.cloneNode(false),
+	 nScrollFootTable = oSettings.nTable.cloneNode(false),
 		nThead = oSettings.nTable.getElementsByTagName('thead')[0],
-		nTfoot = oSettings.nTable.getElementsByTagName('tfoot').length === 0 ? null :
-
+	 nTfoot = oSettings.nTable.getElementsByTagName('tfoot').length === 0 ? null :
 			oSettings.nTable.getElementsByTagName('tfoot')[0],
 		oClasses = oSettings.oClasses;
 
@@ -150,7 +149,6 @@ function _fnFeatureHtmlTable ( oSettings )
 			{
 				/* Check if we should load the next data set */
 				if ( $(this).scrollTop() + $(this).height() >
-
 					$(oSettings.nTable).height() - oSettings.oScroll.iLoadGap )
 				{
 					/* Only do the redraw if we have to - we might be at the end of the data */
@@ -273,7 +271,6 @@ function _fnScrollDraw ( o )
 		 * into account.
 		 */
 		if ( ie67 && ($('tbody', nScrollBody).height() > nScrollBody.offsetHeight ||
-
 			$(nScrollBody).css('overflow-y') == "scroll")  )
 		{
 			o.nTable.style.width = _fnStringToCss( $(o.nTable).outerWidth() - o.oScroll.iBarWidth);
@@ -315,18 +312,14 @@ function _fnScrollDraw ( o )
 	 */
 
 	// Apply all styles in one pass. Invalidates layout only once because we don't read any
-
 	// DOM properties.
 	_fnApplyToChildren( zeroOut, anHeadSizers );
 
-
 	// Read all widths in next pass. Forces layout only once because we do not change
-
 	// any DOM properties.
 	_fnApplyToChildren( function(nSizer) {
 		aApplied.push( _fnStringToCss( $(nSizer).width() ) );
 	}, anHeadSizers );
-
 
 	// Apply all widths in final pass. Invalidates layout only once because we do not
 	// read any DOM properties.
@@ -341,11 +334,9 @@ function _fnScrollDraw ( o )
 	{
 		_fnApplyToChildren( zeroOut, anFootSizers );
 
-
 		_fnApplyToChildren( function(nSizer) {
 			aAppliedFooter.push( _fnStringToCss( $(nSizer).width() ) );
 		}, anFootSizers );
-
 
 		_fnApplyToChildren( function(nToSize, i) {
 			nToSize.style.width = aAppliedFooter[i];
@@ -381,13 +372,11 @@ function _fnScrollDraw ( o )
 	{
 		/* The min width depends upon if we have a vertical scrollbar visible or not */
 		var iCorrection = ((nScrollBody.scrollHeight > nScrollBody.offsetHeight ||
-
 			$(nScrollBody).css('overflow-y') == "scroll")) ?
 				iSanityWidth+o.oScroll.iBarWidth : iSanityWidth;
 
 		/* IE6/7 are a law unto themselves... */
 		if ( ie67 && (nScrollBody.scrollHeight >
-
 			nScrollBody.offsetHeight || $(nScrollBody).css('overflow-y') == "scroll")  )
 		{
 			o.nTable.style.width = _fnStringToCss( iCorrection-o.oScroll.iBarWidth );
@@ -447,7 +436,7 @@ function _fnScrollDraw ( o )
 		nScrollBody.style.height = _fnStringToCss( o.oScroll.sY );
 
 		var iExtra = (o.oScroll.sX !== "" && o.nTable.offsetWidth > nScrollBody.offsetWidth) ?
-			o.oScroll.iBarWidth : 0;
+		 o.oScroll.iBarWidth : 0;
 		if ( o.nTable.offsetHeight < nScrollBody.offsetHeight )
 		{
 			nScrollBody.style.height = _fnStringToCss( o.nTable.offsetHeight+iExtra );
@@ -519,3 +508,4 @@ function _fnApplyToChildren( fn, an1, an2 )
 		i++;
 	}
 }
+

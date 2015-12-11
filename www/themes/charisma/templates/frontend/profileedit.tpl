@@ -20,7 +20,7 @@
 							<ul class="nav nav-tabs nav-primary">
 								<li class="active"><a href="#tab2_1" data-toggle="tab"><i class="fa fa-cogs fa-spin"></i>
 										Settings</a></li>
-								<li><a href="#tab2_3" data-toggle="tab"><i class="fa fa-download"></i> Downloaders</a>
+								<li><a href="#tab2_3" data-toggle="tab"><i class="fa fa-cloud-download"></i> Downloaders</a>
 								</li>
 							</ul>
 							<form action="profileedit?action=submit" method="post">
