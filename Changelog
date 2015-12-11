@@ -7,6 +7,9 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2015-12-10 ruhllato
+	Chg: Change COUNT(*) queries to count the primary key columns to improve query performance
+	Chg: Re-work the count querying in PreDB class
 2015-12-09 niel
 	Chg: Refactored git hook scripts. They now live in .../build/git-hooks. Run .../build/git-hooks/addHooks.sh to create a symlink to the .git/hooks directory.
 2015-12-08 bart39
