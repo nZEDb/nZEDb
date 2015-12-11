@@ -48,7 +48,8 @@
 							{if isset($sabintegrated)}<input type="button" class="nzb_multi_operations_sab btn btn-small btn-primary" value="Send to queue" />{/if}
 							{if isset($nzbgetintegrated)}<input type="button" class="nzb_multi_operations_nzbget btn btn-small btn-primary" value="Send to NZBGet" />{/if}
 						</div>
-						&nbsp;&nbsp;&nbsp;&nbsp;<a title="Switch to List view" href="{$smarty.const.WWW_TOP}/browse?t={$category}"><i class="fa fa-lg fa-list-ol"></i></a>
+						View: <strong>Covers</strong> | <a
+								href="{$smarty.const.WWW_TOP}/browse?t={$category}">List</a><br/>
 					</td>
 					<td width="50%">
 						<center>
@@ -66,8 +67,6 @@
 								</div>
 								&nbsp;
 							{/if}
-							<a href="{$smarty.const.WWW_TOP}/{$section}?t={$category}"><i class="fa fa-th-list"></i></a>
-							&nbsp;
 							</div>
 						{/if}
 					</td>

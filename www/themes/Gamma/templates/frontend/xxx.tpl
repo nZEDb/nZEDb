@@ -52,9 +52,8 @@
 										   value="Send to NZBGet"/>
 								{/if}
 							</div>
-							&nbsp;&nbsp;&nbsp;&nbsp;<a title="Switch to List view"
-													   href="{$smarty.const.WWW_TOP}/browse?t={$category}"><i
-										class="fa fa-lg fa-list-ol"></i></a>
+							View: <strong>Covers</strong> | <a
+									href="{$smarty.const.WWW_TOP}/browse?t={$category}">List</a><br/>
 						</td>
 						<td width="50%">
 							<center>

@@ -32,23 +32,12 @@
 							{if isset($sabintegrated)}<input type="button" class="nzb_multi_operations_sab btn btn-small btn-primary" value="Send to queue" />{/if}
 							{if isset($nzbgetintegrated)}<input type="button" class="nzb_multi_operations_nzbget btn btn-small btn-primary" value="Send to NZBGet" />{/if}
 						</div>
-						{if (strpos($category, '10')  !== false)}
-							&nbsp;&nbsp;&nbsp;&nbsp;<a title="Switch to Cover view" href="{$smarty.const.WWW_TOP}/console"><i class="fa fa-lg fa-camera-retro"></i></a>
-						{/if}
-						{if (strpos($category, '20') !== false)}
-							&nbsp;&nbsp;&nbsp;&nbsp;<a title="Switch to Cover view" href="{$smarty.const.WWW_TOP}/movies"><i class="fa fa-lg fa-camera-retro"></i></a>
-						{/if}
-						{if (strpos($category, '30') !== false)}
-							&nbsp;&nbsp;&nbsp;&nbsp;<a title="Switch to Cover view" href="{$smarty.const.WWW_TOP}/music"><i class="fa fa-lg fa-camera-retro"></i></a>
-						{/if}
-						{if $category == 4050}
-							&nbsp;&nbsp;&nbsp;&nbsp;<a title="Switch to Cover view" href="{$smarty.const.WWW_TOP}/games"><i class="fa fa-lg fa-camera-retro"></i></a>
-						{/if}
-						{if (strpos($category, '60')  !== false)}
-							&nbsp;&nbsp;&nbsp;&nbsp;<a title="Switch to Cover view" href="{$smarty.const.WWW_TOP}/xxx"><i class="fa fa-lg fa-camera-retro"></i></a>
-						{/if}
-						{if (strpos($category, '70')  !== false)}
-						&nbsp;&nbsp;&nbsp;&nbsp;<a title="Switch to Cover view" href="{$smarty.const.WWW_TOP}/books"><i class="fa fa-lg fa-camera-retro"></i></a>
+						{if $covgroup != ''}View:
+							<a href="{$smarty.const.WWW_TOP}/{$covgroup}?t={$category}">Covers
+							</a>
+							|
+							<b>List</b>
+							<br/>
 						{/if}
 					</td>
 					<td width="50%">
@@ -66,10 +55,6 @@
 								<input type="button" class="nzb_multi_operations_delete btn btn-small btn-danger" value="Delete" />
 							</div>
 						{/if}
-						{if isset($section) && $section != ''}
-							<a href="{$smarty.const.WWW_TOP}/{$section}?t={$category}"><i class="fa fa-th-list"></i></a>
-						{/if}
-						&nbsp;
 						</div>
 					</td>
 				</tr>
@@ -279,11 +264,12 @@
 							{if $sabintegrated}<input type="button" class="nzb_multi_operations_sab btn btn-small btn-primary" value="Send to queue" />{/if}
 							{if isset($nzbgetintegrated)}<input type="button" class="nzb_multi_operations_nzbget btn btn-small btn-primary" value="Send to NZBGet" />{/if}
 						</div>
-						{if (strpos($category, '60')  !== false)}
-							&nbsp;&nbsp;&nbsp;&nbsp;<a title="Switch to Cover view" href="{$smarty.const.WWW_TOP}/xxx"><i class="fa fa-lg fa-camera-retro"></i></a>
-						{/if}
-						{if (strpos($category, '20') !== false)}
-							&nbsp;&nbsp;&nbsp;&nbsp;<a title="Switch to Cover view" href="{$smarty.const.WWW_TOP}/movies"><i class="fa fa-lg fa-camera-retro"></i></a>
+						{if $covgroup != ''}View:
+							<a href="{$smarty.const.WWW_TOP}/{$covgroup}?t={$category}">Covers
+							</a>
+							|
+							<b>List</b>
+							<br/>
 						{/if}
 					</td>
 					<td width="50%">
@@ -300,16 +286,13 @@
 								<input type="button" class="nzb_multi_operations_delete btn btn-small btn-danger" value="Delete" />
 							</div>
 						{/if}
-						{if isset($section) && $section != ''}
-							<a href="{$smarty.const.WWW_TOP}/{$section}?t={$category}"><i class="fa fa-th-list"></i></a>
-						{/if}
-						{if (strpos($category, '60')  !== false)}
-								<a href="{$smarty.const.WWW_TOP}/xxx"><i class="fa fa-lg fa-camera-retro"></i></a>
-						{/if}
-						{if (strpos($category, '20') !== false)}
-							<a href="{$smarty.const.WWW_TOP}/movies"><i class="fa fa-lg fa-camera-retro"></i></a>
-						{/if}
-						&nbsp;
+							{if $covgroup != ''}View:
+								<a href="{$smarty.const.WWW_TOP}/{$covgroup}?t={$category}">Covers
+								</a>
+								|
+								<b>List</b>
+								<br/>
+							{/if}
 						</div>
 					</td>
 				</tr>
