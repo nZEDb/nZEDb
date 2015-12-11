@@ -9,6 +9,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2015-12-11 ruhllatio
 	Chg: Move video type check to JOIN instead of WHERE in API TVSearch
+	Fix: Spacing issues with AniDB and small update to parsing
 2015-12-10 ruhllato
 	Chg: Change COUNT(*) queries to count the primary key columns to improve query performance
 	Chg: Re-work the count querying in PreDB class
