@@ -28,7 +28,7 @@
 		<th>Role:</th>
 		<td>{$user.rolename}</td>
 	</tr>
-	{if $userdata.role==2}
+	{if isset($user.nots) && $userdata.role == 2}
 		<tr>
 			<th title="Admin Notes">Notes:</th>
 			<td>{$user.notes|escape:htmlall}{if $user.notes|count_characters > 0}<br/>{/if}<a href="{$smarty.const.WWW_TOP}/admin/user-edit.php?id={$user.id}#notes" class="btn btn-mini btn-info">Add/Edit</a></td>
@@ -124,7 +124,7 @@
 			</tr>
 	{/if}
 </table>
-{if $userdata.role==2 && $downloadlist|@count > 0}
+{if $userdata.role==2 && isset($downloadlist) && $downloadlist|@count > 0}
 <div style="padding-top:20px;">
 	<h3>Downloads for User and Host</h3>
 	<table class="data Sortable highlight table table-striped" id="downloadtable" style="margin-top:10px;">
@@ -142,7 +142,7 @@
 		<tr {if $download@iteration >= 10}class="extra" style="display:none;"{/if}>
 			<td class="less" title="{$download.timestamp}">{$download.timestamp|date_format}</td>
 			<td title="{$download.hosthash}">{if $download.hosthash == ""}n/a{else}{$download.hosthash|truncate:10}{/if}</td>
-			<td>{if $download.guid == ""}n/a{else}<a href="{$smarty.const.WWW_TOP}/details/{$download.guid}/{$download.searchname|escape:"seourl"}">{$download.searchname}</a>{/if}</td>
+			<td>{if $download.guid == ""}n/a{else}<a href="{$smarty.const.WWW_TOP}/details/{$download.guid}{/if}</td>
 		</tr>
 		{/foreach}
 	</table>
