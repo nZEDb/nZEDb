@@ -132,7 +132,7 @@ class BasePage
 				$this->theme = $this->userdata['style'];
 				// if the first character is lower-case, correct it (for now).
 				if (lcfirst($this->theme) === $this->theme) {
-					// TODO add redirect to error page telling the user their theme name is invalid.
+					// TODO add redirect to error page telling the user their theme name is invalid (after SQL patch to update current users is added).
 					$this->theme = ucfirst($this->theme);
 				}
 				$this->smarty->setTemplateDir(
