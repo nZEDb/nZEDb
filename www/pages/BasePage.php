@@ -127,12 +127,13 @@ class BasePage
 			$this->userdata                       = $this->users->getById($this->users->currentUserId());
 			$this->userdata['categoryexclusions'] = $this->users->getCategoryExclusion($this->users->currentUserId());
 
-			// Change the theme to user's selected theme if they selected one, else use the admin one.
+			// Change to the user's selected theme, if they selected one, else use the admin set one.
 			if (isset($this->userdata['style']) && $this->userdata['style'] !== 'None') {
 				$this->theme = $this->userdata['style'];
+				// if the first character is lower-case, correct it (for now).
 				if (lcfirst($this->theme) === $this->theme) {
-					// TODO add redirect to error page telling user to fix their theme name.
-					exit();
+					// TODO add redirect to error page telling the user their theme name is invalid.
+					$this->theme = ucfirst($this->theme);
 				}
 				$this->smarty->setTemplateDir(
 					[
