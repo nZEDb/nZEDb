@@ -1030,82 +1030,50 @@ class ReleaseRemover
 	 */
 	protected function removeCodecPoster()
 	{
-		$this->method = 'Codec Poster';
-		$regex = "rf.name REGEXP 'x264.*\.(wmv|avi)$'";
-		$regex2 = "rf.name REGEXP '\\\\.*((DVDrip|BRRip)[. ].*[. ](R[56]|HQ)|720p[ .](DVDrip|HQ)|"
-			. "Webrip.*[. ](R[56]|Xvid|AC3|US)|720p.*[. ]WEB-DL[. ]Xvid[. ]AC3[. ]US|"
-			. "HDRip.*[. ]Xvid[. ]DD5).*[. ]avi$'";
-		$codec = '\\Codec%Setup.exe';
-		$codec2 ='\\Codec%Installer.exe';
-		$iferror = 'If_you_get_error.txt';
-		$ifnotplaying = 'read me if the movie not playing.txt';
-		$frenchv = 'Lisez moi si le film ne demarre pas.txt';
-		$nl = 'lees me als de film niet spelen.txt';
-		$german = 'Lesen Sie mir wenn der Film nicht abgespielt.txt';
-		$german2 = 'Lesen Sie mir, wenn der Film nicht starten.txt';
 		$categories = sprintf("r.categoryid IN (%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d)",
-				Category::CAT_MOVIE_3D,
-				Category::CAT_MOVIE_BLURAY,
-				Category::CAT_MOVIE_DVD,
-				Category::CAT_MOVIE_FOREIGN,
-				Category::CAT_MOVIE_HD,
-				Category::CAT_MOVIE_OTHER,
-				Category::CAT_MOVIE_SD,
-				Category::CAT_XXX_WMV,
-				Category::CAT_XXX_X264,
-				Category::CAT_XXX_XVID,
-				Category::CAT_XXX_OTHER
+			Category::CAT_MOVIE_3D,
+			Category::CAT_MOVIE_BLURAY,
+			Category::CAT_MOVIE_DVD,
+			Category::CAT_MOVIE_FOREIGN,
+			Category::CAT_MOVIE_HD,
+			Category::CAT_MOVIE_OTHER,
+			Category::CAT_MOVIE_SD,
+			Category::CAT_XXX_WMV,
+			Category::CAT_XXX_X264,
+			Category::CAT_XXX_XVID,
+			Category::CAT_XXX_OTHER
 		);
 
-		switch (nZEDb_RELEASE_SEARCH_TYPE) {
-			case ReleaseSearch::SPHINX:
-				$rs = new ReleaseSearch($this->pdo);
-				$codecFT1 = str_replace('=10000;', '=1000000;', $rs->getSearchSQL(['filename' => 'x264|wmv|avi|DVDrip|BRRip|R5|R6|HQ|Webrip|Xvid|AC3|HDRip|DD5']));
-				$codecFT2 = str_replace('=10000;', '=1000000;', $rs->getSearchSQL(['filename' => 'Codec|error|txt|installer|vlc']));
-				$ftJoin = $rs->getFullTextJoinString();
-				break;
-			default:
-				$codecFT1 = $codecFT2 = $ftJoin = '';
-				break;
-		}
+		$regex =
+			'\.*((DVDrip|BRRip)[. ].*[. ](R[56]|HQ)|720p[ .](DVDrip|HQ)|Webrip.*[. ](R[56]|Xvid|AC3|US)' .
+			'|720p.*[. ]WEB-DL[. ]Xvid[. ]AC3[. ]US|HDRip.*[. ]Xvid[. ]DD5).*[. ]avi$';
 
-		$codeclike = sprintf("
-				SELECT r.guid, r.searchname, r.id FROM releases r %s
-				STRAIGHT_JOIN release_files rf ON r.id = rf.releaseid
-				WHERE %s %s AND
-					(rf.name %s OR rf.name %s OR
-					rf.name %s OR rf.name %s OR
-					rf.name %s OR rf.name %s OR
-					rf.name %s OR rf.name %s)
-				%s",
-					$ftJoin,
-					$categories,
-					$codecFT2,
-					$this->pdo->likeString($codec, true, true),
-					$this->pdo->likeString($codec2, true, true),
-					$this->pdo->likeString($iferror, true, true),
-					$this->pdo->likeString($ifnotplaying, true, true),
-					$this->pdo->likeString($frenchv, true, true),
-					$this->pdo->likeString($nl, true, true),
-					$this->pdo->likeString($german, true, true),
-					$this->pdo->likeString($german2, true, true),
-					$this->crapTime
-		);
-
-		$this->query = sprintf(
-			"SELECT r.guid, r.searchname, r.id FROM releases r %s
-			STRAIGHT_JOIN release_files rf ON (r.id = rf.releaseid)
-			WHERE %s %s
-			AND (%s OR %s) %s
-			UNION %s",
-			$ftJoin,
-			$categories,
-			$codecFT1,
-			$regex,
-			$regex2,
-			$this->crapTime,
-			$codeclike
-		);
+		$this->query = "
+			SELECT r.guid, r.searchname, r.id
+			FROM releases r
+			LEFT JOIN release_files rf ON r.id = rf.releaseid
+			WHERE {$categories}
+			AND (r.imdbid NOT IN ('0000000', 0) OR xxxinfo_id > 0)
+			AND nfostatus = 1
+			AND haspreview = 0
+			AND jpgstatus = 0
+			AND preid = 0
+			AND videostatus = 0
+			AND
+			(
+				rf.name REGEXP 'XviD-[a-z]{3}\\.(avi|mkv|wmv)$'
+				OR rf.name REGEXP 'x264.*\\.(wmv|avi)$'
+				OR rf.name REGEXP '{$regex}'
+				OR rf.name LIKE '%\\Codec%Setup.exe%'
+				OR rf.name LIKE '%\\Codec%Installer.exe%'
+				OR rf.name LIKE '%If_you_get_error.txt%'
+				OR rf.name LIKE '%read me if the movie not playing.txt%'
+				OR rf.name LIKE '%Lisez moi si le film ne demarre pas.txt%'
+				OR rf.name LIKE '%lees me als de film niet spelen.txt%'
+				OR rf.name LIKE '%Lesen Sie mir wenn der Film nicht abgespielt.txt%'
+				OR rf.name LIKE '%Lesen Sie mir, wenn der Film nicht starten.txt%'
+			)
+			GROUP BY r.id {$this->crapTime}";
 
 		if ($this->checkSelectQuery() === false) {
 			return $this->returnError();

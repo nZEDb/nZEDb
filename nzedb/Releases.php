@@ -957,7 +957,6 @@ class Releases
 		$whereSql = sprintf(
 			"%s
 			WHERE r.categoryid BETWEEN 5000 AND 5999
-			AND v.type = 0
 			AND r.nzbstatus = %d
 			AND r.passwordstatus %s
 			AND (%s)
@@ -986,7 +985,7 @@ class Releases
 				rn.releaseid AS nfoid,
 				re.releaseid AS reid
 			FROM releases r
-			LEFT OUTER JOIN videos v ON r.videos_id = v.id
+			LEFT OUTER JOIN videos v ON r.videos_id = v.id AND v.type = 0
 			LEFT OUTER JOIN tv_info tvi ON v.id = tvi.videos_id
 			LEFT OUTER JOIN tv_episodes tve ON r.tv_episodes_id = tve.id
 			INNER JOIN category c ON c.id = r.categoryid
