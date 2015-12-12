@@ -1073,7 +1073,7 @@ class ReleaseRemover
 				OR rf.name LIKE '%Lesen Sie mir wenn der Film nicht abgespielt.txt%'
 				OR rf.name LIKE '%Lesen Sie mir, wenn der Film nicht starten.txt%'
 			)
-			GROUP BY r.id";
+			GROUP BY r.id {$this->crapTime}";
 
 		if ($this->checkSelectQuery() === false) {
 			return $this->returnError();
