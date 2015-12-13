@@ -124,61 +124,22 @@ class BasePage
 
 		$this->users = new Users(['Settings' => $this->settings]);
 		if ($this->users->isLoggedIn()) {
-			$this->userdata                       = $this->users->getById($this->users->currentUserId());
-			$this->userdata['categoryexclusions'] = $this->users->getCategoryExclusion($this->users->currentUserId());
-
-			// Change to the user's selected theme, if they selected one, else use the admin set one.
-			if (isset($this->userdata['style']) && $this->userdata['style'] !== 'None') {
-				$this->theme = $this->userdata['style'];
-				// if the first character is lower-case, correct it (for now).
-				if (lcfirst($this->theme) === $this->theme) {
-					// TODO add redirect to error page telling the user their theme name is invalid (after SQL patch to update current users is added).
-					$this->theme = ucfirst($this->theme);
-				}
-				$this->smarty->setTemplateDir(
-					[
-						'user_frontend' => nZEDb_THEMES . $this->theme . '/templates/frontend',
-						'frontend'      => nZEDb_THEMES . 'Default/templates/frontend'
-					]
-				);
-			}
-
-			// Update last login every 15 mins.
-			if ((strtotime($this->userdata['now']) - 900) >
-				strtotime($this->userdata['lastlogin'])
-			) {
-				$this->users->updateSiteAccessed($this->userdata['id']);
-			}
-
-			$this->smarty->assign('userdata', $this->userdata);
-			$this->smarty->assign('loggedin', 'true');
-
-			$sab = new SABnzbd($this);
-			$this->smarty->assign('sabintegrated', $sab->integratedBool);
-			if ($sab->integratedBool !== false && $sab->url != '' && $sab->apikey != '') {
-				$this->smarty->assign('sabapikeytype', $sab->apikeytype);
-			}
-
-			switch ((int)$this->userdata['role']) {
-				case Users::ROLE_ADMIN:
-					$this->smarty->assign('isadmin', 'true');
-				break;
-				case Users::ROLE_MODERATOR:
-					$this->smarty->assign('ismod', 'true');
-			}
+			$this->setUserPreferences();
 		} else {
 			$this->theme = $this->settings->getSetting('site.main.style');
-			$this->smarty->setTemplateDir(
-				[
-					'user_frontend' => nZEDb_THEMES . $this->theme . '/templates/frontend',
-					'frontend'      => nZEDb_THEMES . $this->theme . '/templates/frontend'
-				]
-			);
 
 			$this->smarty->assign('isadmin', 'false');
 			$this->smarty->assign('ismod', 'false');
 			$this->smarty->assign('loggedin', 'false');
 		}
+		
+		// Tell Smarty which directories to use for templates
+		$this->smarty->setTemplateDir(
+				[
+						'user_frontend' => nZEDb_THEMES . $this->theme . '/templates/frontend',
+						'frontend'      => nZEDb_THEMES . 'Default/templates/frontend'
+				]
+		);
 
 		$this->smarty->assign('theme', $this->theme);
 		$this->smarty->assign('site', $this->settings);
@@ -352,5 +313,45 @@ class BasePage
 			$this->smarty->loadFilter('output', 'trimwhitespace');
 		}
 		$this->smarty->display($this->page_template);
+	}
+	
+	protected function setUserPreferences()
+	{
+		$this->userdata                       = $this->users->getById($this->users->currentUserId());
+		$this->userdata['categoryexclusions'] = $this->users->getCategoryExclusion($this->users->currentUserId());
+
+		// Change to the user's selected theme, if they selected one, else use the admin set one.
+		if (isset($this->userdata['style']) && $this->userdata['style'] !== 'None') {
+			$this->theme = $this->userdata['style'];
+			// if the first character is lower-case, correct it (for now).
+			if (lcfirst($this->theme) === $this->theme) {
+				// TODO add redirect to error page telling the user their theme name is invalid (after SQL patch to update current users is added).
+				$this->theme = ucfirst($this->theme);
+			}
+		}
+
+		// Update last login every 15 mins.
+		if ((strtotime($this->userdata['now']) - 900) >
+			strtotime($this->userdata['lastlogin'])
+		) {
+			$this->users->updateSiteAccessed($this->userdata['id']);
+		}
+
+		$this->smarty->assign('userdata', $this->userdata);
+		$this->smarty->assign('loggedin', 'true');
+
+		$sab = new SABnzbd($this);
+		$this->smarty->assign('sabintegrated', $sab->integratedBool);
+		if ($sab->integratedBool !== false && $sab->url != '' && $sab->apikey != '') {
+			$this->smarty->assign('sabapikeytype', $sab->apikeytype);
+		}
+
+		switch ((int)$this->userdata['role']) {
+			case Users::ROLE_ADMIN:
+				$this->smarty->assign('isadmin', 'true');
+			break;
+			case Users::ROLE_MODERATOR:
+				$this->smarty->assign('ismod', 'true');
+		}
 	}
 }
