@@ -9,6 +9,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2015-12-13 ruhllatio
 	Fix: Too many arguments for sprintf and re-work Dnzb Failures a tiny bit as I'm getting strange results
+	Fix: Provide a DNZB response code when no alternate match is found in DNZB query instead of just showing 404
 2015-12-11 ruhllatio
 	Chg: Move video type check to JOIN instead of WHERE in API TVSearch
 	Fix: Spacing issues with AniDB and small update to parsing

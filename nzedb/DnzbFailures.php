@@ -110,20 +110,17 @@ class DnzbFailures
 			)
 		);
 
-		// Specifying LAST_INSERT_ID on releaseid will return the releaseid
-		// if the row was actually inserted and not updated
 		$insert = $this->pdo->queryInsert(
 			sprintf('
-				INSERT INTO dnzb_failures (release_id, userid, failed)
-				VALUES (%d, %d, 1)
-				ON DUPLICATE KEY UPDATE failed = failed + 1',
+				INSERT IGNORE INTO dnzb_failures (release_id, userid, failed)
+				VALUES (%d, %d, 1)',
 				$rel['id'],
 				$userid
 			)
 		);
 
 		// If we didn't actually insert the row, don't add a comment
-		if ((int)$insert > 0) {
+		if (is_numeric($insert) && $insert > 0) {
 			$this->postComment($rel['id'], $userid);
 		}
 
