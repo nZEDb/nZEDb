@@ -35,9 +35,9 @@ if ($page->users->isLoggedIn()) {
 	}
 }
 
-if (isset($_GET['guid']) && isset($_GET['searchname']) && isset($uid) && is_numeric($uid) && isset($rssToken)) {
+if (isset($_GET['guid']) && isset($uid) && is_numeric($uid) && isset($rssToken)) {
 
-	$alt = (new DnzbFailures(['Settings' => $page->settings]))->getAlternate($_GET['guid'], $_GET['searchname'], $uid);
+	$alt = (new DnzbFailures(['Settings' => $page->settings]))->getAlternate($_GET['guid'], $uid);
 	if ($alt === false) {
 		header("X-DNZB-RCode: 404");
 		header("X-DNZB-RText: No NZB found for alternate match.");

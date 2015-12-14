@@ -95,20 +95,23 @@ class DnzbFailures
 	 * Retrieve alternate release with same or similar searchname
 	 *
 	 * @param string $guid
-	 * @param string $searchname
 	 * @param string $userid
 	 * @return string
 	 */
-	public function getAlternate($guid, $searchname, $userid)
+	public function getAlternate($guid, $userid)
 	{
 		$rel = $this->pdo->queryOneRow(
 			sprintf('
-				SELECT id, categoryid
+				SELECT id, searchname, categoryid
 				FROM releases
 				WHERE guid = %s',
 				$this->pdo->escapeString($guid)
 			)
 		);
+
+		if ($rel === false) {
+			return false;
+		}
 
 		$insert = $this->pdo->queryInsert(
 			sprintf('
@@ -134,7 +137,7 @@ class DnzbFailures
 				AND r.categoryid = %d
 				AND r.id != %d
 				ORDER BY r.postdate DESC',
-				$this->pdo->likeString($searchname, true, true),
+				$this->pdo->likeString($rel['searchname'], true, true),
 				$rel['categoryid'],
 				$rel['id']
 			)
