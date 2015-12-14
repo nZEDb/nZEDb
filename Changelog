@@ -9,6 +9,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2015-12-14 ruhllatio
 	Chg: DNZB failures shouldn't send an easily corrupted searchname.  Now retrieves it from the DB by sent guid instead.
+	Fix: Attempt to fix issue with releases that have parts counters in the searchname not being sent to Sab properly
 2015-12-13 ruhllatio
 	Fix: Too many arguments for sprintf and re-work Dnzb Failures a tiny bit as I'm getting strange results
 	Fix: Provide a DNZB response code when no alternate match is found in DNZB query instead of just showing 404
