@@ -38,8 +38,11 @@ if ($page->users->isLoggedIn()) {
 if (isset($_GET['guid']) && isset($_GET['searchname']) && isset($uid) && is_numeric($uid) && isset($rssToken)) {
 
 	$alt = (new DnzbFailures(['Settings' => $page->settings]))->getAlternate($_GET['guid'], $_GET['searchname'], $uid);
-	if (!$alt) {
+	if ($alt === false) {
+		header("X-DNZB-RCode: 404");
+		header("X-DNZB-RText: No NZB found for alternate match.");
 		$page->show404();
+	} else {
+		header('Location: ' . $page->serverurl . 'getnzb/' . $alt['guid'] . '&i=' . $uid . '&r=' . $rssToken);
 	}
-	header('Location: ' . $page->serverurl . 'getnzb/' . $alt['guid'] . '&i=' . $uid . '&r=' . $rssToken);
 }
