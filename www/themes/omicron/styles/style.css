@@ -213,7 +213,7 @@ div.movextra tr.mlextra {display:none;}
 div.movcover { width:140px; }
 div.movcover img { margin-bottom:5px;}
 div.movcover .rndbtn {display:inline-block; margin-top:2px;}
-.mediainfo, .seriesinfo, .preinfo, .prehashinfo {cursor:pointer;}
+.mediainfo, .seriesinfo, .preinfo {cursor:pointer;}
 
 a.external { background: url('../images/newwindow.png') center right no-repeat !important; padding-right:13px !important;}
 
