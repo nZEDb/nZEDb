@@ -14,6 +14,11 @@ class TMDB extends TV
 	public $posterUrl;
 
 	/**
+	 * @var \libs\Tmdb\TmdbAPI
+	 */
+	public $client;
+
+	/**
 	 * Construct. Instantiate TMDB Class
 	 *
 	 * @param array $options Class instances.
