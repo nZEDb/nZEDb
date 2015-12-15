@@ -321,13 +321,15 @@ class BasePage
 		$this->userdata['categoryexclusions'] = $this->users->getCategoryExclusion($this->users->currentUserId());
 
 		// Change to the user's selected theme, if they selected one, else use the admin set one.
-		if (isset($this->userdata['style']) && $this->userdata['style'] !== 'None') {
-			$this->theme = $this->userdata['style'];
-			// if the first character is lower-case, correct it (for now).
-			if (lcfirst($this->theme) === $this->theme) {
-				// TODO add redirect to error page telling the user their theme name is invalid (after SQL patch to update current users is added).
-				$this->theme = ucfirst($this->theme);
-			}
+		$this->theme = isset($this->userdata['style']) ? $this->userdata['style'] : 'None';
+
+		if ($this->theme = 'None') {
+			$this->theme = $this->settings->getSetting('site.main.style');
+		}
+
+		if (lcfirst($this->theme) === $this->theme) {
+			// TODO add redirect to error page telling the user their theme name is invalid (after SQL patch to update current users is added).
+			$this->theme = ucfirst($this->theme);
 		}
 
 		// Update last login every 15 mins.
