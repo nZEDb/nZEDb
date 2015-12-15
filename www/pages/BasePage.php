@@ -323,7 +323,7 @@ class BasePage
 		// Change to the user's selected theme, if they selected one, else use the admin set one.
 		$this->theme = isset($this->userdata['style']) ? $this->userdata['style'] : 'None';
 
-		if ($this->theme = 'None') {
+		if ($this->theme == 'None') {
 			$this->theme = $this->settings->getSetting('site.main.style');
 		}
 
