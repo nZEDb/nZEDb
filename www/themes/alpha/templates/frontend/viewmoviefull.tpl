@@ -43,12 +43,6 @@
 						<input class="span2"  id="filter-text" type="text" placeholder="Filter">
 					</div>
 				</div>
-				<div class="btn-group pull-right" data-toggle="buttons-radio" id="filter-quality">
-					<button data-quality="" class="btn active">Any</button>
-					<button data-quality="hdtv" class="btn">HDTV</button>
-					<button data-quality="720p" class="btn">720p</button>
-					<button data-quality="1080p" class="btn">1080p</button>
-				</div>
 				{if $isadmin}
 					<div class="pull-right">
 						Admin:
@@ -186,12 +180,6 @@
 							<span class="add-on"><i class="icon-search"></i></span>
 						</div>
 					</div>
-					<div class="btn-group pull-right" data-toggle="buttons-radio" id="filter-quality">
-						<button data-quality="" class="btn active">Any</button>
-						<button data-quality="720p" class="btn">720p</button>
-						<button data-quality="1080p" class="btn">1080p</button>
-						<button data-quality="complete Rbluray" class="BDISK">HDTV</button>
-					</div>
 					{if $isadmin}
 						<div class="pull-right">
 							Admin:
@@ -207,32 +195,3 @@
 		{/if}
 	{/foreach}
 {/if}
-<script type="text/javascript">
-	$(document).ready(function(){
-		function filter(event){
-			var elements = $('table.data:visible tr.filter');
-			elements.hide();
-			/* quality filter */
-			x = event;
-			//if(event.currentTarget.at)
-			if(event.target.dataset.quality != undefined){
-				var quality = event.target.dataset.quality;
-			}else{
-				var quality = $('#filter-quality button.active').data('quality');
-			}
-			if(quality){
-				elements = elements.filter('[data-name*="' + quality + '"]');
-			}
-			var values = $('#filter-text').val().split(/\s+/);
-			var i = values.length;
-			while(i--){
-				var value = values[i];
-				//console.log('value', value);
-				if(value)elements = elements.filter('[data-name*="' + values[i] + '"]');
-			}
-			elements.show();
-		}
-		$('#filter-text').click(filter).blur(filter).keyup(filter);
-		$('#filter-quality button').mouseup(filter);
-	});
-</script>
