@@ -9,6 +9,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2015-12-15 ruhllatio
 	Mrg: PR #1987, from Darius - Add Gamma template made by RickDB (adapted by Darius)
+	Mrg: PR #1998, from Darius - Declare $client property in nzedb/processing/tv/TMDB.php
 2015-12-14 ruhllatio
 	Chg: DNZB failures shouldn't send an easily corrupted searchname.  Now retrieves it from the DB by sent guid instead.
 	Fix: Attempt to fix issue with releases that have parts counters in the searchname not being sent to Sab properly
