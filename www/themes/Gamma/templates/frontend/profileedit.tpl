@@ -55,9 +55,7 @@
 		<div class="control-group">
 			<label class="control-label">Change site theme</label>
 			<div class="controls">
-				{if $page->settings->getSetting('userselstyle') == 1}
-					{html_options id="style" name='style' values=$themelist output=$themelist selected=$user.style}
-				{/if}
+				{html_options id="style" name='style' values=$themelist output=$themelist selected=$user.style}
 			</div>
 		</div>
 
