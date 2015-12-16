@@ -1,0 +1,378 @@
+/* MORE STUFF */
+
+.fa-midt{
+    line-height: 1.8;
+}
+
+.footer {
+    text-align: center;
+    padding: 5px 0;
+    margin-top: 20px;
+    border-top: 1px solid #e5e5e5;
+    background-color: #f5f5f5;
+}
+.footer p {
+    margin-bottom: 0;
+    color: #777;
+}
+.footer-links {
+    margin: 5px 0;
+}
+.footer-links li {
+    display: inline;
+    padding: 0 2px;
+}
+.footer-links li:first-child {
+    padding-left: 0;
+}
+
+
+/* Fluid class for determining actual width in IE */
+.ui-tooltip-fluid{
+    display: block;
+    visibility: hidden;
+    position: static !important;
+    float: left !important;
+}
+
+.ui-tooltip, .qtip, .ui-tooltip-hidden{
+    position: absolute;
+    left: -31000px;
+    top: -31000px;
+    display: block;
+
+    max-width: 280px;
+    min-width: 50px;
+
+    font-size: 10.5px;
+    line-height: 12px;
+}
+
+    .ui-tooltip-content{
+        padding: 9px 14px;
+        position: relative;
+        overflow: hidden;
+
+        background-color: #ffffff;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        -webkit-border-bottom-right-radius: 6px;
+        -moz-border-bottom-right-radius: 6px;
+        border-bottom-right-radius: 6px;
+
+        -webkit-border-bottom-left-radius: 6px;
+        -moz-border-bottom-left-radius: 6px;
+        border-bottom-left-radius: 6px;
+
+        text-align: left;
+        word-wrap: break-word;
+        overflow: hidden;
+    }
+
+    .ui-tooltip-titlebar{
+        padding: 8px 14px;
+        margin: 0;
+        font-size: 14px;
+        overflow: hidden;
+        font-weight: normal;
+        line-height: 18px;
+
+        background-color: #f7f7f7;
+
+        border-bottom: 1px solid #ebebeb;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+
+        -webkit-border-top-right-radius: 6px;
+        -moz-border-top-right-radius: 6px;
+        border-top-right-radius: 6px;
+
+        -webkit-radius-top-left-radius: 6px;
+        -moz-border-top-left-radius: 6px;
+        border-top-left-radius: 6px;
+
+    }
+
+    .ui-tooltip-titlebar + .ui-tooltip-content{ border-top-width: 0px !important; }
+
+        /*! Default close button class */
+        .ui-tooltip-titlebar .ui-state-default{
+            position: absolute;
+            right: 4px;
+            top: 50%;
+            margin-top: -9px;
+
+            cursor: pointer;
+            outline: medium none;
+
+            border-width: 1px;
+            border-style: solid;
+        }
+
+        * html .ui-tooltip-titlebar .ui-state-default{
+            top: 16px;
+        }
+
+        .ui-tooltip-titlebar .ui-icon,
+        .ui-tooltip-icon .ui-icon{
+            display: block;
+            text-indent: -1000em;
+        }
+
+        .ui-tooltip-icon, .ui-tooltip-icon .ui-icon{
+            -moz-border-radius: 3px;
+            -webkit-border-radius: 3px;
+            border-radius: 3px;
+        }
+
+        .ui-tooltip-icon .ui-icon{
+            width: 18px;
+            height: 14px;
+
+            text-align: center;
+            text-indent: 0;
+            font: normal bold 10px/13px Tahoma,sans-serif;
+
+            color: inherit;
+            background: transparent none no-repeat -100em -100em;
+        }
+
+        .ui-tooltip .ui-tooltip-tip{
+            position: absolute;
+            margin: 0 auto;
+            overflow: hidden;
+
+            background: transparent !important;
+            border: 0px dashed transparent !important;
+            z-index: 10;
+            }
+
+        .ui-tooltip .ui-tooltip-tip,
+        .ui-tooltip .ui-tooltip-tip *{
+
+            line-height: 0.1px !important;
+            font-size: 0.1px !important;
+            color: #123456;
+
+            background: transparent;
+            border: 0px dashed transparent;
+        }
+
+        /*! Add shadows to your tooltips in: FF3+, Chrome 2+, Opera 10.6+, IE6+, Safari 2+ */
+        .ui-tooltip-shadow{
+            -webkit-box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, 0.15);
+            -moz-box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, 0.15);
+            box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, 0.15);
+        }
+
+        .ui-tooltip-shadow .ui-tooltip-titlebar,
+        .ui-tooltip-shadow .ui-tooltip-content{
+            filter: progid:DXImageTransform.Microsoft.Shadow(Color='gray', Direction=135, Strength=3);
+            -ms-filter:"progid:DXImageTransform.Microsoft.Shadow(Color='gray', Direction=135, Strength=3)";
+        }
+
+        /* Applied to 'focused' tooltips e.g. most recently displayed/interacted with */
+        .ui-tooltip-focus{
+
+        }
+
+
+
+/*! Newznab tooltip style */
+.ui-tooltip-newznab .ui-tooltip-titlebar,
+.ui-tooltip-newznab .ui-tooltip-content{
+    color: #000;
+}
+
+    .ui-tooltip-newznab .ui-tooltip-content{
+        color: #000;
+    }
+
+    .ui-tooltip-newznab .ui-tooltip-titlebar{
+        color: #000;
+        font-size:1.2em;
+    }
+
+    .ui-tooltip-newznab .ui-state-default .ui-tooltip-icon{
+        background-position: -42px 0;
+    }
+
+
+/*
+movie, console and music modals with backdrop images.
+*/
+#movieinfo {
+    background-position: center center;
+    background-repeat: no-repeat;
+    position: absolute;
+    z-index: 2;
+}
+#movieinfo h1 {
+    font-size: 28px;
+    line-height:100%;
+    padding: 10px 10px 0px 20px;
+    color: #fff;
+    text-shadow: 0px 0px 4px #000;
+}
+#movieinfo h2, #movieinfo h3 {
+    font-size: 18px;
+    padding: 0px 20px 0px 20px;
+    color: #fff;
+    text-shadow: 0px 0px 4px #000;
+    font-weight: normal;
+    line-height: 20px;
+    text-rendering: optimizelegibility;
+}
+
+#movieinfo img.cover {
+    margin-right: 20px;
+    padding: 4px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-collapse:separate;
+    /*
+    margin-right: 20px;
+    -webkit-box-shadow: 0px 0px 4px #000;
+    -moz-box-shadow: 0px 0px 4px #000;
+    box-shadow: 0px 0px 4px #000;
+    border-collapse:separate;*/
+}
+#backdrop {
+    position: absolute;
+    width: 1010px;
+    height: 655px;
+    left: -1px;
+    top: 5px;
+    background-color: #000;
+    overflow: hidden;
+}
+#backdrop img {
+    opacity:0.5;
+    width: 100%;
+    height: 100%;
+}
+
+
+#moviefull .pic {
+    margin-left: 20px;
+    float: right;
+}
+
+#musicinfo {
+    color:#FFF;
+    min-height:635px;
+    background-color:#7F7F7F;
+    background-image:url('../../covers/music/backdrop.jpg');
+    background-repeat: repeat-x;
+}
+#musicinfo h1 {
+    font-size: 32px;
+    padding: 10px 10px 0px 20px;
+    color: #fff;
+}
+#musicinfo h2, #musicinfo h3, #musicinfo p {
+    padding: 10px 20px 0px 20px;
+    color: #fff;
+}
+#musicinfo img.cover {
+    float:right;
+    margin:20px 20px 0 20px;
+    padding: 5px 5px 5px 5px;
+    background: #FFF;
+    border:1px solid #EEE;
+    -moz-box-shadow: 3px 6px 8px -4px #333;
+    -webkit-box-shadow: 3px 6px 8px -4px #333;
+    box-shadow: 3px 6px 8px -4px #333;
+    border-collapse:separate;
+}
+#musicinfo p {
+    text-align: left;
+    line-height: 180%;
+}
+
+pre#nfo { font-family: "Courier New", "DejaVu Sans Mono", monospace; font-size: 12px; line-height: 13px; }
+
+a.external { background: url('../../images/newwindow.png') center right no-repeat !important; padding-right:13px !important;}
+
+div.movcover { width:140px; }
+div.movcover img { margin-bottom:5px;}
+div.movcover .rndbtn {display:inline-block; margin-top:2px;}
+.mediainfo, .seriesinfo, .preinfo {cursor:pointer;}
+
+
+/*
+    ColorBox Core Style
+    The following rules are the styles that are consistant between themes.
+    Avoid changing this area to maintain compatability with future versions of ColorBox.
+*/
+#colorbox, #cboxOverlay, #cboxWrapper{position:absolute; top:0; left:0; z-index:9999; overflow:hidden;}
+#cboxOverlay{position:fixed; width:100%; height:100%;}
+#cboxMiddleLeft, #cboxBottomLeft{clear:left;}
+#cboxContent{position:relative; overflow:visible;}
+#cboxLoadedContent{overflow:auto;}
+#cboxLoadedContent iframe{display:block; width:100%; height:100%; border:0;}
+#cboxTitle{margin:0;}
+#cboxLoadingOverlay, #cboxLoadingGraphic{position:absolute; top:0; left:0; width:100%;}
+#cboxPrevious, #cboxNext, #cboxClose, #cboxSlideshow{cursor:pointer;}
+
+#cboxOverlay{background:#fff;}
+
+#colorbox{}
+    #cboxTopLeft{width:25px; height:25px; background:url(../../Gamma/images/colorbox/border1-dark.png) 0 0 no-repeat;}
+    #cboxTopCenter{height:25px; background:url(../../Gamma/images/colorbox/border1-dark.png) 0 -50px repeat-x;}
+    #cboxTopRight{width:25px; height:25px; background:url(../../Gamma/images/colorbox/border1-dark.png) -25px 0 no-repeat;}
+    #cboxBottomLeft{width:25px; height:25px; background:url(../../Gamma/images/colorbox/border1-dark.png) 0 -25px no-repeat;}
+    #cboxBottomCenter{height:25px; background:url(../../Gamma/images/colorbox/border1-dark.png) 0 -75px repeat-x;}
+    #cboxBottomRight{width:25px; height:25px; background:url(../../Gamma/images/colorbox/border1-dark.png) -25px -25px no-repeat;}
+    #cboxMiddleLeft{width:25px; background:url(../../Gamma/images/colorbox/border2-dark.png) 0 0 repeat-y;}
+    #cboxMiddleRight{width:25px; background:url(../../Gamma/images/colorbox/border2-dark.png) -25px 0 repeat-y;}
+    #cboxContent{background:#000;}
+        #cboxLoadedContent{background:#000; margin-top:32px; padding:1px; }
+        #cboxLoadingOverlay{background:#000;}
+        #cboxTitle{position:absolute; font-size:125%; top:-2px; left:0; color:#fff; background:#000;}
+        #cboxCurrent{position:absolute; top:-1px; right:205px; text-indent:-9999px;}
+        #cboxSlideshow, #cboxPrevious, #cboxNext, #cboxClose{text-indent:-9999px; width:20px; height:20px; position:absolute; top:-1px; background:url(../../Gamma/images/colorbox/controls-dark.png) 0 0 no-repeat;}
+        #cboxPrevious{background-position:0px 0px; right:44px;}
+        #cboxPrevious.hover{background-position:0px -25px;}
+        #cboxNext{background-position:-25px 0px; right:22px;}
+        #cboxNext.hover{background-position:-25px -25px;}
+        #cboxClose{background-position:-50px 0px; right:0;}
+        #cboxClose.hover{background-position:-50px -25px;}
+        .cboxSlideshow_on #cboxPrevious, .cboxSlideshow_off #cboxPrevious{right:66px;}
+        .cboxSlideshow_on #cboxSlideshow{background-position:-75px -25px; right:44px;}
+        .cboxSlideshow_on #cboxSlideshow.hover{background-position:-100px -25px;}
+        .cboxSlideshow_off #cboxSlideshow{background-position:-100px 0px; right:44px;}
+        .cboxSlideshow_off #cboxSlideshow.hover{background-position:-75px -25px;}
+
+/*
+    Use colorbox example 2 css for movieinfo popups
+*/
+.cboxMovie{}
+    .cboxMovie #cboxContent{margin-top:32px; background: transparent;}
+    .cboxMovie #cboxTopLeft{display:none;}
+    .cboxMovie #cboxTopCenter{display:none;}
+    .cboxMovie #cboxTopRight{display:none;}
+    .cboxMovie #cboxBottomLeft{display:none;}
+    .cboxMovie #cboxBottomCenter{display:none;}
+    .cboxMovie #cboxBottomRight{display:none;}
+    .cboxMovie #cboxMiddleLeft{display:none;}
+    .cboxMovie #cboxMiddleRight{display:none;}
+        .cboxMovie #cboxLoadedContent{margin-top: 5px; background:#888; padding:1px;}
+        .cboxMovie #cboxLoadingGraphic{background:url(../../images/loading.gif) center center no-repeat;}
+        .cboxMovie #cboxLoadingOverlay{background:#000;}
+        .cboxMovie #cboxTitle{position:absolute; top:-22px; left:0; color:#000;}
+        .cboxMovie #cboxCurrent{position:absolute; top:-22px; right:205px; text-indent:-9999px;}
+        .cboxMovie #cboxSlideshow, .cboxMovie #cboxPrevious, .cboxMovie #cboxNext, .cboxMovie #cboxClose{text-indent:-9999px; width:20px; height:20px; position:absolute; top:-20px; background:url(../../Gamma/images/colorbox/controls-dark.png) 0 0 no-repeat;}
+        .cboxMovie #cboxPrevious{background-position:0px 0px; right:44px;}
+        .cboxMovie #cboxPrevious.hover{background-position:0px -25px;}
+        .cboxMovie #cboxNext{background-position:-25px 0px; right:22px;}
+        .cboxMovie #cboxNext.hover{background-position:-25px -25px;}
+        .cboxMovie #cboxClose{background-position:-50px 0px; right:0;}
+        .cboxMovie #cboxClose.hover{background-position:-50px -25px;}
+        .cboxMovie .cboxSlideshow_on #cboxPrevious, .cboxMovie .cboxSlideshow_off #cboxPrevious{right:66px;}
+        .cboxMovie .cboxSlideshow_on #cboxSlideshow{background-position:-75px -25px; right:44px;}
+        .cboxMovie .cboxSlideshow_on #cboxSlideshow.hover{background-position:-100px -25px;}
+        .cboxMovie .cboxSlideshow_off #cboxSlideshow{background-position:-100px 0px; right:44px;}
+        .cboxMovie .cboxSlideshow_off #cboxSlideshow.hover{background-position:-75px -25px;}
