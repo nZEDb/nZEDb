@@ -13,24 +13,24 @@
 	<title>{$site->title}</title>
 	<meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
 	<!-- Newposterwall -->
-	<link href="{$smarty.const.WWW_TOP}/themes/omicron/styles/posterwall.css" rel="stylesheet" type="text/css" media="screen"/>
+	<link href="{$smarty.const.WWW_THEMES}/{$theme}/styles/posterwall.css" rel="stylesheet" type="text/css" media="screen"/>
 	<!-- Bootstrap 3.3.4 -->
-	<link href="{$smarty.const.WWW_TOP}/themes/omicron/bootstrap/css/bootstrap.min.css" rel="stylesheet"
+	<link href="{$smarty.const.WWW_THEMES}/{$theme}/bootstrap/css/bootstrap.min.css" rel="stylesheet"
 		  type="text/css"/>
 	<!-- Font Awesome Icons -->
-	<link href="{$smarty.const.WWW_TOP}/themes/omicron/bootstrap/css/font-awesome.min.css" rel="stylesheet"
+	<link href="{$smarty.const.WWW_THEMES}/{$theme}/bootstrap/css/font-awesome.min.css" rel="stylesheet"
 		  type="text/css"/>
 	<!-- Normalize.css -->
-	<link href="{$smarty.const.WWW_TOP}/themes/shared/styles/normalize.css" rel="stylesheet" type="text/css"/>
+	<link href="{$smarty.const.WWW_THEMES}/shared/styles/normalize.css" rel="stylesheet" type="text/css"/>
 	<!-- Ionicons -->
 	<link href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet" type="text/css"/>
 	<!-- Theme style -->
-	<link href="{$smarty.const.WWW_TOP}/themes/omicron/dist/css/AdminLTE.css" rel="stylesheet" type="text/css"/>
+	<link href="{$smarty.const.WWW_THEMES}/{$theme}/dist/css/AdminLTE.css" rel="stylesheet" type="text/css"/>
 	<!-- AdminLTE Skins. We have chosen the skin-blue for this starter
 		  page. However, you can choose any other skin. Make sure you
 		  apply the skin class to the body tag so the changes take effect.
 	-->
-	<link href="{$smarty.const.WWW_TOP}/themes/omicron/dist/css/skins/skin-blue.min.css" rel="stylesheet"
+	<link href="{$smarty.const.WWW_THEMES}/{$theme}/dist/css/skins/skin-blue.min.css" rel="stylesheet"
 		  type="text/css"/>
 	<!-- Noty animation style -->
 	<link href="{$smarty.const.WWW_TOP}/templates/omicron/dist/css/animate.css" rel="stylesheet" type="text/css"/>
@@ -88,7 +88,7 @@
 							<!-- Menu Toggle Button -->
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown">
 								<!-- The user image in the navbar-->
-								<img src="{$smarty.const.WWW_TOP}/themes/omicron/images/userimage.png"
+								<img src="{$smarty.const.WWW_THEMES}/{$theme}/images/userimage.png"
 									 class="user-image" alt="User Image"/>
 								<!-- hidden-xs hides the username on small devices so only the image appears. -->
 								<span class="hidden-xs">{$userdata.username}</span>
@@ -96,7 +96,7 @@
 							<ul class="dropdown-menu">
 								<!-- The user image in the menu -->
 								<li class="user-header">
-									<img src="{$smarty.const.WWW_TOP}/themes/omicron/images/userimage.png"
+									<img src="{$smarty.const.WWW_THEMES}/{$theme}/images/userimage.png"
 										 class="img-circle" alt="User Image"/>
 									<p>
 										{$userdata.username}
@@ -150,7 +150,7 @@
 				<!-- Sidebar user panel -->
 				<div class="user-panel">
 					<div class="pull-left image">
-						<img src="{$smarty.const.WWW_TOP}/themes/omicron/images/user-loggedin.png" class="img-circle"
+						<img src="{$smarty.const.WWW_THEMES}/{$theme}/images/user-loggedin.png" class="img-circle"
 							 alt="User Image"/>
 					</div>
 					<div class="pull-left info">
@@ -323,34 +323,34 @@
 	<!-- ./wrapper -->
 	<!-- REQUIRED JS SCRIPTS -->
 	<!-- jQuery 2.1.4 -->
-	<script src="{$smarty.const.WWW_TOP}/themes/omicron/plugins/jQuery/jQuery-2.1.4.min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/{$theme}/plugins/jQuery/jQuery-2.1.4.min.js"></script>
 	<!-- Bootstrap 3.3.2 JS -->
-	<script src="{$smarty.const.WWW_TOP}/themes/omicron/bootstrap/js/bootstrap.min.js"
+	<script src="{$smarty.const.WWW_THEMES}/{$theme}/bootstrap/js/bootstrap.min.js"
 			type="text/javascript"></script>
 	<!-- Bootstrap hover on mouseover script -->
 	<script type="text/javascript"
-			src="{$smarty.const.WWW_TOP}/themes/omicron/plugins/hover/bootstrap-hover-dropdown.min.js"></script>
+			src="{$smarty.const.WWW_THEMES}/{$theme}/plugins/hover/bootstrap-hover-dropdown.min.js"></script>
 	<!-- AdminLTE App -->
-	<script src="{$smarty.const.WWW_TOP}/themes/omicron/dist/js/app.min.js" type="text/javascript"></script>
+	<script src="{$smarty.const.WWW_THEMES}/{$theme}/dist/js/app.min.js" type="text/javascript"></script>
 	<!-- jQuery migrate script -->
 	<script type="text/javascript"
-			src="{$smarty.const.WWW_TOP}/themes/omicron/plugins/migrate/jquery-migrate-1.2.1.min.js"></script>
+			src="{$smarty.const.WWW_THEMES}/{$theme}/plugins/migrate/jquery-migrate-1.2.1.min.js"></script>
 	<!-- SlimScroll script -->
-	<script src="{$smarty.const.WWW_TOP}/themes/omicron/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/{$theme}/plugins/slimScroll/jquery.slimscroll.min.js"></script>
 	<!-- Fastclick script -->
-	<script src="{$smarty.const.WWW_TOP}/themes/omicron/plugins/fastclick/fastclick.min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/{$theme}/plugins/fastclick/fastclick.min.js"></script>
 	<!-- Notification script -->
-	<script src="{$smarty.const.WWW_TOP}/themes/omicron/plugins/noty/packaged/jquery.noty.packaged.min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/{$theme}/plugins/noty/packaged/jquery.noty.packaged.min.js"></script>
 	<!-- Custom functions -->
-	<script src="{$smarty.const.WWW_TOP}/themes/omicron/dist/js/functions.js" type="text/javascript"></script>
+	<script src="{$smarty.const.WWW_THEMES}/{$theme}/dist/js/functions.js" type="text/javascript"></script>
 	<!-- data table plugin -->
 	<script type="text/javascript"
-			src='{$smarty.const.WWW_TOP}/themes/omicron/dist/js/jquery.dataTables.min.js'></script>
+			src='{$smarty.const.WWW_THEMES}/{$theme}/dist/js/jquery.dataTables.min.js'></script>
 	<!-- nZEDb default scripts, needed for stuff to work -->
-	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/shared/scripts/jquery.colorbox-min.js"></script>
-	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/shared/scripts/jquery.autosize-min.js"></script>
-	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/shared/scripts/jquery.qtip2.js"></script>
-	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/shared/scripts/sorttable.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/scripts/jquery.colorbox-min.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/scripts/jquery.autosize-min.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/scripts/jquery.qtip2.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/scripts/sorttable.js"></script>
 	<!-- Optionally, you can add Slimscroll and FastClick plugins.
 		  Both of these plugins are recommended to enhance the
 		  user experience. Slimscroll is required when using the
