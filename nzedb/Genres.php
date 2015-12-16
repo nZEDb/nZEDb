@@ -69,10 +69,10 @@ class Genres
 		}
 
 		if ($activeonly) {
-			$sql = sprintf("SELECT COUNT(*) AS num FROM genres g WHERE 1 %s AND g.disabled != 1", $typesql
+			$sql = sprintf("SELECT COUNT(id) AS num FROM genres g WHERE 1 %s AND g.disabled != 1", $typesql
 			);
 		} else {
-			$sql = sprintf("SELECT COUNT(*) AS num FROM genres g WHERE 1 %s", $typesql);
+			$sql = sprintf("SELECT COUNT(id) AS num FROM genres g WHERE 1 %s", $typesql);
 		}
 
 		$res = $this->pdo->queryOneRow($sql);

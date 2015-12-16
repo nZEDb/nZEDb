@@ -239,35 +239,41 @@ class PreDb
 				$search = "LIKE '%" . $search[0] . "%'";
 			}
 			$search = 'WHERE title ' . $search;
-			$count = $this->pdo->queryOneRow(sprintf('SELECT COUNT(*) AS cnt FROM predb %s', $search));
-			$count = $count['cnt'];
-		} else {
-			$count = $this->getCount();
 		}
 
-		$parr = $this->pdo->query(
-			sprintf('
-				SELECT p.*, r.guid
-				FROM predb p
-				LEFT OUTER JOIN releases r ON p.id = r.preid %s
-				ORDER BY p.predate DESC LIMIT %d OFFSET %d',
-				$search,
-				$offset2,
-				$offset
-			)
+		$count = $this->getCount($search);
+
+		$sql = sprintf('
+			SELECT p.*, r.guid
+			FROM predb p
+			LEFT OUTER JOIN releases r ON p.id = r.preid %s
+			ORDER BY p.predate DESC
+			LIMIT %d
+			OFFSET %d',
+			$search,
+			$offset2,
+			$offset
 		);
+		$parr = $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
 		return ['arr' => $parr, 'count' => $count];
 	}
 
 	/**
 	 * Get count of all PRE's.
 	 *
+	 * @param string $search
+	 *
 	 * @return int
 	 */
-	public function getCount()
+	public function getCount($search = '')
 	{
-		$count = $this->pdo->queryOneRow('SELECT COUNT(*) AS cnt FROM predb');
-		return ($count === false ? 0 : $count['cnt']);
+		$count = $this->pdo->query("
+			SELECT COUNT(id) AS cnt
+			FROM predb {$search}",
+			true,
+			nZEDb_CACHE_EXPIRY_MEDIUM
+		);
+		return ($count === false ? 0 : $count[0]['cnt']);
 	}
 
 	/**

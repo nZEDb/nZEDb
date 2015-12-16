@@ -113,10 +113,10 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 	 *
 	 * @access public
 	 */
-	public function Net_NNTP_Client()
+	public function __construct()
 	{
 		// Init parent construct.
-		parent::Net_NNTP_Protocol_Client();
+		parent::__construct();
 	}
 
 	/**

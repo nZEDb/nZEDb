@@ -1219,10 +1219,10 @@ class Users
 	public function getUsersByMonth()
 	{
 		return $this->pdo->query("
-			SELECT DATE_FORMAT(createddate, '%M %Y') AS mth, COUNT(*) AS num
+			SELECT DATE_FORMAT(createddate, '%M %Y') AS mth, COUNT(id) AS num
 			FROM users
 			WHERE createddate IS NOT NULL AND createddate != '0000-00-00 00:00:00'
-			GROUP BY DATE_FORMAT(createddate, '%M %Y')
+			GROUP BY mth
 			ORDER BY createddate DESC"
 		);
 	}

@@ -7,6 +7,23 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2015-12-15 ruhllatio
+	Mrg: PR #1987, from Darius - Add Gamma template made by RickDB (adapted by Darius)
+	Mrg: PR #1998, from Darius - Declare $client property in nzedb/processing/tv/TMDB.php
+2015-12-14 ruhllatio
+	Chg: DNZB failures shouldn't send an easily corrupted searchname.  Now retrieves it from the DB by sent guid instead.
+	Fix: Attempt to fix issue with releases that have parts counters in the searchname not being sent to Sab properly
+2015-12-13 ruhllatio
+	Fix: Too many arguments for sprintf and re-work Dnzb Failures a tiny bit as I'm getting strange results
+	Fix: Provide a DNZB response code when no alternate match is found in DNZB query instead of just showing 404
+2015-12-11 ruhllatio
+	Chg: Move video type check to JOIN instead of WHERE in API TVSearch
+	Fix: Spacing issues with AniDB and small update to parsing
+	Chg: Greatly improve CodecPoster accuracy and query speed
+	Fix: Query update didn't have crapTime in it
+2015-12-10 ruhllato
+	Chg: Change COUNT(*) queries to count the primary key columns to improve query performance
+	Chg: Re-work the count querying in PreDB class
 2015-12-09 niel
 	Chg: Refactored git hook scripts. They now live in .../build/git-hooks. Run .../build/git-hooks/addHooks.sh to create a symlink to the .git/hooks directory.
 2015-12-08 bart39

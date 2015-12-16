@@ -252,18 +252,6 @@
 													   target="_blank">
 														srrDB
 													</a>
-												{elseif {$result.source} == "usenet-crawler"}
-													<a title="Visit Usenet-Crawler"
-													   href="{$site->dereferrer_link}http://www.usenet-crawler.com/predb?q={$result.title}"
-													   target="_blank">
-														Usenet-Crawler
-													</a>
-												{elseif {$result.source} == womble}
-													<a title="Visit Womble"
-													   href="{$site->dereferrer_link}http://www.newshost.co.za/?s={$result.title}"
-													   target="_blank">
-														Womble
-													</a>
 												{elseif {$result.source} == zenet}
 													<a title="Visit ZEnet"
 													   href="{$site->dereferrer_link}http://pre.zenet.org/?search={$result.title}"
