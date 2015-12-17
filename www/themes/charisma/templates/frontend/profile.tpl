@@ -63,6 +63,27 @@
 														<table class="data table table-condensed table-striped table-responsive table-hover">
 															<tbody>
 															<tr class="bg-aqua-active">
+																<td colspan="2" style="padding-left: 8px;"><strong>UI Preferences</strong></td>
+															</tr>
+															<tr>
+																<th>Theme:</th>
+																<td>{$user.style}</td>
+															</tr>
+															<tr>
+																<td>
+																	{if $user.movieview == "1"}View movie covers{else}View standard movie category{/if}<br/>
+																	{if $user.musicview == "1"}View music covers{else}View standard music category{/if}<br/>
+																	{if $user.consoleview == "1"}View console covers{else}View standard console category{/if}<br/>
+																	{if $user.gameview == "1"}View games covers{else}View standard games category{/if}<br/>
+																	{if $user.bookview == "1"}View book covers{else}View standard book category{/if}<br/>
+																	{if $user.xxxview == "1"}View xxx covers{else}View standard xxx category{/if}<br/>
+																</td>
+															</tr>
+															</tbody>
+														</table>
+														<table class="data table table-condensed table-striped table-responsive table-hover">
+															<tbody>
+															<tr class="bg-aqua-active">
 																<td colspan="2" style="padding-left: 8px;"><strong>API &
 																		Downloads</strong></td>
 															</tr>
@@ -91,10 +112,6 @@
 															<tr>
 																<th>Downloads Total</th>
 																<td>{$user.grabs}</td>
-															</tr>
-															<tr>
-																<th>Theme:</th>
-																<td>{$user.style}</td>
 															</tr>
 															{if $isadmin || !$publicview}
 																<tr>
