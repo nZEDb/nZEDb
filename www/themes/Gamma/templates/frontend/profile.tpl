@@ -28,7 +28,7 @@
 		<th>Role:</th>
 		<td>{$user.rolename}</td>
 	</tr>
-	{if isset($user.nots) && $userdata.role == 2}
+	{if isset($user.notes) && $userdata.role == 2}
 		<tr>
 			<th title="Admin Notes">Notes:</th>
 			<td>{$user.notes|escape:htmlall}{if $user.notes|count_characters > 0}<br/>{/if}<a href="{$smarty.const.WWW_TOP}/admin/user-edit.php?id={$user.id}#notes" class="btn btn-mini btn-info">Add/Edit</a></td>
@@ -40,6 +40,10 @@
 			<td><a href="{$smarty.const.WWW_TOP}/rss?t=0&amp;dl=1&amp;i={$user.id}&amp;r={$user.rsstoken}">{$user.rsstoken}</a></td>
 		</tr>
 	{/if}
+	<tr>
+		<th>Theme:</th>
+		<td>{$user.style}</td>
+	</tr>
 	{if $user.id==$userdata.id || $userdata.role==2}
 		<tr>
 			<th>API Hits Today:</th>
@@ -54,7 +58,7 @@
 		<th>Grabs Total:</th>
 		<td>{$user.grabs}</td>
 	</tr>
-	{if ($user.id==$userdata.id || $userdata.role==2) && $site->registerstatus==1}
+	{if (!$publicview || $isadmin) && $site->registerstatus==1}
 	<tr>
 		<th title="Not public">Invites</th>
 		<td>{$user.invites} </td>
@@ -81,7 +85,12 @@
 	{if $userinvitedby && $userinvitedby.username != ""}
 	<tr>
 		<th>Invited By:</th>
-		<td><a title="View {$userinvitedby.username}'s profile" href="{$smarty.const.WWW_TOP}/profile?name={$userinvitedby.username}">{$userinvitedby.username}</a></td>
+		{if $privileged || !$privateprofiles}
+		<td><a title="View {$userinvitedby.username}'s profile" href="{$smarty.const.WWW_TOP}/profile?name={$userinvitedby.username}">{$userinvitedby.username}</a>
+			{else}
+			{$userinvitedby.username}
+			{/if}
+		</td>
 	</tr>
 	{/if}
 	<tr>
