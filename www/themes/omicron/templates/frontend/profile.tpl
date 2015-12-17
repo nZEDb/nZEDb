@@ -92,6 +92,10 @@
 																<th>Downloads Total</th>
 																<td>{$user.grabs}</td>
 															</tr>
+															<tr>
+																<th>Theme:</th>
+																<td>{$user.style}</td>
+															</tr>
 															{if $isadmin || !$publicview}
 																<tr>
 																	<th title="Not public">API/RSS Key</th>
@@ -105,7 +109,7 @@
 															{/if}
 															</tbody>
 														</table>
-														{if ($user.id==$userdata.id || $isadmin) && $site->registerstatus==1}
+														{if (!$publicview || $isadmin) && $site->registerstatus==1}
 															<table class="data table table-condensed table-striped table-responsive table-hover">
 																<tbody>
 																<tr class="bg-aqua-active">
