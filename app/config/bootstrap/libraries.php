@@ -84,7 +84,7 @@ require LITHIUM_LIBRARY_PATH . '/lithium/core/StaticObject.php';
 require LITHIUM_LIBRARY_PATH . '/lithium/util/Collection.php';
 require LITHIUM_LIBRARY_PATH . '/lithium/util/collection/Filters.php';
 require LITHIUM_LIBRARY_PATH . '/lithium/util/Inflector.php';
-require LITHIUM_LIBRARY_PATH . '/lithium/util/String.php';
+require LITHIUM_LIBRARY_PATH . '/lithium/util/Text.php';
 require LITHIUM_LIBRARY_PATH . '/lithium/util/Set.php';
 require LITHIUM_LIBRARY_PATH . '/lithium/core/Adaptable.php';
 require LITHIUM_LIBRARY_PATH . '/lithium/core/Environment.php';
@@ -124,5 +124,16 @@ Libraries::add('app', array('default' => true));
 // foreach (glob($pattern, GLOB_BRACE | GLOB_ONYLDIR) as $path) {
 // 	Libraries::add(basename($path), array('path' => $path));
 // }
+
+/**
+ * Add some plugins:
+ */
+if (is_dir(LITHIUM_LIBRARY_PATH . DS . 'li3_docs')) {
+	Libraries::add('li3_docs');
+}
+
+if (is_dir(LITHIUM_LIBRARY_PATH . DS . 'li3_quality')) {
+	Libraries::add('li3_quality');
+}
 
 ?>

@@ -6,6 +6,10 @@
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
+if (!defined('DS')) {
+	define('DS', DIRECTORY_SEPARATOR);
+}
+
 /**
  * This is the primary bootstrap file of your application, and is loaded immediately after the front
  * controller (`webroot/index.php`) is invoked. It includes references to other feature-specific
