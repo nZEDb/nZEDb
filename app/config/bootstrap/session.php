@@ -38,7 +38,7 @@ Session::config(array(
  * @see lithium\action\Request::$data
  * @see lithium\security\Auth
  */
-// use lithium\security\Auth;
+use lithium\security\Auth;
 
 // Auth::config(array(
 // 	'default' => array(
@@ -47,5 +47,32 @@ Session::config(array(
 // 		'fields' => array('username', 'password')
 // 	)
 // ));
+
+use app\models\Users;
+use lithium\security\Password;
+
+Auth::config([
+					 'default' => [
+							 'adapter' => 'Form',
+							 'model'   => 'Users'
+					 ],
+			 ]);
+
+if (!\lithium\data\Connections::get('default')) {
+	Users::applyFilter('save',
+			function ($self, $params, $chain) {
+				if ($params['data']) {
+					$params['entity']->set($params['data']);
+					$params['data'] = [];
+				}
+
+				if (!$params['entity']->exists()) {
+					$params['entity']->password = Password::hash($params['entity']->password);
+				}
+
+				return $chain->next($self, $params, $chain);
+			}
+	);
+}
 
 ?>
