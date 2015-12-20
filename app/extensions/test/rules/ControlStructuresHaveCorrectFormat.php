@@ -8,7 +8,7 @@
 
 namespace app\extensions\test\rules;
 
-use lithium\util\String;
+use lithium\util\Text;
 
 class ControlStructuresHaveCorrectFormat extends \li3_quality\test\Rule
 {
@@ -192,7 +192,7 @@ class ControlStructuresHaveCorrectFormat extends \li3_quality\test\Rule
 	 */
 	protected function _matchPattern($patterns, $body) {
 		foreach ($patterns as $pattern) {
-			if (preg_match(String::insert($pattern, $this->_regexMap), $body) === 1) {
+			if (preg_match(Text::insert($pattern, $this->_regexMap), $body) === 1) {
 				return true;
 			}
 		}
