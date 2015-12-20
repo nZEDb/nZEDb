@@ -1,0 +1,14 @@
+{
+	"name": "Default Rule Set",
+	"rules": [
+		"BeginsWithOpenTag",
+		"EndsWithCloseTagNewline"
+	],
+	"options": {
+		"DoesntExceedMaxLineLength": {
+			"softLimit": false,
+			"hardLimit": 100,
+			"tabWidth": 4
+		}
+	}
+}

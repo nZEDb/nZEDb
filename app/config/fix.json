@@ -1,0 +1,8 @@
+{
+	"name": "Default Rule Set",
+	"rules": [
+		"StringTextRename"
+	],
+	"options": {
+	}
+}
