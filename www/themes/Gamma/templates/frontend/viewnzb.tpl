@@ -522,7 +522,7 @@
 		<div class="tab-pane" id="sample">
 			{if ($release.videostatus == 1 && $userdata.canpreview == 1)}
 				<video width="75%" controls>
-					<source src="/covers/video/{$release.guid}.ogg" type="video/ogg">
+					<source src="/covers/video/{$release.guid}.ogv" type="video/ogg">
 					Your browser does not support the video tag.
 				</video>
 			{/if}
