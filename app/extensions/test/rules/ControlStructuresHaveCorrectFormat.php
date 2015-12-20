@@ -109,7 +109,7 @@ class ControlStructuresHaveCorrectFormat extends \li3_quality\test\Rule
 	 * @param  Testable $testable The testable object
 	 * @return void
 	 */
-	public function apply($testable, array $config = array()) {
+	public function apply($testable, array $config = []) {
 		$lines = $testable->lines();
 		$tokens = $testable->tokens();
 		$filtered = $testable->findAll(array_keys($this->_tokenMap));
@@ -129,15 +129,15 @@ class ControlStructuresHaveCorrectFormat extends \li3_quality\test\Rule
 				$multiLine = $this->_matchPattern($patterns, $body);
 			}
 			if (!$singleLine && !$multiLine) {
-				$this->addViolation(array(
+				$this->addViolation([
 					'message' => $this->_tokenMap[$token['id']]['message'],
 					'line' => $token['line'],
-				));
+				]);
 			} elseif (!$singleLine) {
-				$this->addWarning(array(
+				$this->addWarning([
 					'message' => $this->_tokenMap[$token['id']]['message'] . ' on a signle line.',
 					'line' => $token['line'],
-				));
+				]);
 			}
 		}
 	}

@@ -10,16 +10,16 @@ namespace app\extensions\test\rules;
 
 class EndsWithCloseTagNewline extends \li3_quality\test\Rule {
 
-	public function apply($testable, array $config = array()) {
+	public function apply($testable, array $config = []) {
 		$message = "File does not end with ?>";
 		$lines = $testable->lines();
 
 		$cnt = count($lines);
 		if ($lines[$cnt - 1] !== "?>" && ($lines[$cnt - 1] !== '' && $lines[$cnt - 2] !== "?>")) {
-			$this->addViolation(array(
+			$this->addViolation([
 				'message' => $message,
 				'line' => count($lines) - 1
-			));
+			]);
 		}
 	}
 }
