@@ -129,7 +129,7 @@ Libraries::add('app', array('default' => true));
  * Add some plugins:
  */
 if (is_dir(LITHIUM_LIBRARY_PATH . DS . 'li3_docs')) {
-	Libraries::add('li3_docs', ['index' => ['app']]);
+	Libraries::add('li3_docs', ['index' => ['app', 'lithium']]);
 }
 
 if (is_dir(LITHIUM_LIBRARY_PATH . DS . 'li3_quality')) {
