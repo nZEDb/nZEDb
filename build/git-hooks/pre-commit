@@ -28,7 +28,7 @@ HOOKS=${PROJECT}${HOOK_DIR}
 FILE_LIST=${HOOKS}/git_hook_list.txt
 
 # stash any unstaged changes
-git stash -q --keep-index
+#git stash save -q --keep-index
 
 if [ -e ${FILE_LIST} ]
 then
@@ -61,4 +61,4 @@ fi
 ${HOOKS}/white-space-removal
 
 # unstash the saved stuff
-git stash pop -q
+#git stash pop -q
