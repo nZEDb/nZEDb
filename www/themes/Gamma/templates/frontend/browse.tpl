@@ -67,7 +67,7 @@
 				<input id="chkSelectAll" type="checkbox" class="nzb_check_all" />
 				<label for="chkSelectAll" style="display:none;">Select All</label>
 			</th>
-			<th style="padding-top:0px; padding-bottom:0px;">name<br/>
+			<th style="padding-top:0px; padding-bottom:0px;">Name<br/>
 				<a title="Sort Descending" href="{$orderbyname_desc}">
 					<i class="fa fa-caret-down"></i>
 				</a>
@@ -75,7 +75,7 @@
 					<i class="fa fa-caret-up"></i>
 				</a>
 			</th>
-			<th style="padding-top:0px; padding-bottom:0px;">category<br/>
+			<th style="padding-top:0px; padding-bottom:0px;">Category<br/>
 				<a title="Sort Descending" href="{$orderbycat_desc}">
 					<i class="fa fa-caret-down"></i>
 				</a>
@@ -83,7 +83,7 @@
 					<i class="fa fa-caret-up"></i>
 				</a>
 			</th>
-			<th style="padding-top:0px; padding-bottom:0px;">posted<br/>
+			<th style="padding-top:0px; padding-bottom:0px;">Posted<br/>
 				<a title="Sort Descending" href="{$orderbyposted_desc}">
 					<i class="fa fa-caret-down"></i>
 				</a>
@@ -91,7 +91,7 @@
 					<i class="fa fa-caret-up"></i>
 				</a>
 			</th>
-			<th style="padding-top:0px; padding-bottom:0px;">size<br/>
+			<th style="padding-top:0px; padding-bottom:0px;">Size<br/>
 				<a title="Sort Descending" href="{$orderbysize_desc}">
 					<i class="fa fa-caret-down"></i>
 				</a>
@@ -99,7 +99,15 @@
 					<i class="fa fa-caret-up"></i>
 				</a>
 			</th>
-			<th style="padding-top:0px; padding-bottom:0px;">files<br/>
+			<th style="padding-top:0px; padding-bottom:0px;">Files<br/>
+				<a title="Sort Descending" href="{$orderbyfiles_desc}">
+					<i class="fa fa-caret-down"></i>
+				</a>
+				<a title="Sort Ascending" href="{$orderbyfiles_asc}">
+					<i class="fa fa-caret-up"></i>
+				</a>
+			</th>
+			<th style="padding-top:0px; padding-bottom:0px;">Grabs<br/>
 				<a title="Sort Descending" href="{$orderbyfiles_desc}">
 					<i class="fa fa-caret-down"></i>
 				</a>
@@ -218,6 +226,7 @@
 				</div>
 				{/if}
 			</td>
+			<td class="less mid"><span class="label label-default">{$result.grabs} Grab{if $result.grabs != 1}s{/if}</span></td>
 			<td class="icons" style='width:100px;'>
 				<ul class="inline">
 					<li>
