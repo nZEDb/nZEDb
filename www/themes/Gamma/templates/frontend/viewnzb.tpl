@@ -331,6 +331,16 @@
 						</table>
 					</dd>
 				{/if}
+				<dl>
+					<dt> Grabs</dt>
+					<dd>{$release.grabs} time{if $release.grabs==1}{else}s{/if}</dd>
+				</dl>
+				{if $failed != NULL && $failed >0}
+					<dl>
+						<dt> Failed Download</dt>
+						<dd>{$failed} time{if $failed==1}{else}s{/if}</dd>
+					</dl>
+				{/if}
 				{if $site->checkpasswordedrar > 0}
 					<dt>Password</dt>
 					<dd>{if $release.passwordstatus == 0}None{elseif $release.passwordstatus == 2}Passworded Rar Archive{elseif $release.passwordstatus == 1}Contains Cab/Ace/Rar Inside Archive{else}Unknown{/if}</dd>
