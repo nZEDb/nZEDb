@@ -26,7 +26,7 @@ namespace app\extensions\console;
 
 class Response extends \lithium\console\Response
 {
-	public static $coloursBackground = array(
+	public $coloursBackground = [
 		'black'		=> '40',
 		'blue'		=> '44',
 		'cyan'		=> '46',
@@ -35,9 +35,9 @@ class Response extends \lithium\console\Response
 		'red'		=> '41',
 		'white'		=> '47',
 		'yellow'	=> '43',
-	);
+	];
 
-	public static $coloursForeground = array(
+	public $coloursForeground = [
 		'black'		=> '30',
 		'blue'		=> '34',
 		'cyan'		=> '36',
@@ -48,9 +48,9 @@ class Response extends \lithium\console\Response
 		'red'		=> '31',
 		'white'		=> '1;37',
 		'yellow'	=> '33',
-	);
+	];
 
-	public static $colours256 = array(
+	public $colours256 = [
 		'Aquamarine'		=> '086',
 		'Aquamarine1'		=> '122',
 		'Aquamarine2'		=> '079',
@@ -299,9 +299,9 @@ class Response extends \lithium\console\Response
 		'Yellow4'			=> '184',
 		'Yellow5'			=> '100',
 		'Yellow6'			=> '106',
-	);
+	];
 
-	private static $styles = array(
+	private $styles = [
 		'blink'			=> "\033[5m",
 		'bright'		=> "\033[1m",
 		'command'		=> "\033[0;35m",
@@ -314,11 +314,16 @@ class Response extends \lithium\console\Response
 		'reverse'		=> "\033[7m",
 		'strikethrough' => "\033[9m",
 		'underscore'    => "\033[4m",
-	);
+	];
 
 	public function __construct(array $options = array())
 	{
 		parent::__construct($options);
+	}
+
+	public function __destruct()
+	{
+		parent::__destruct();
 	}
 
 	public function clearStyle($style)
@@ -341,16 +346,15 @@ class Response extends \lithium\console\Response
 		return isset(self::$styles[$style]) ? self::$styles[$style] : null;
 	}
 
-	public function setStyle($style,
-		$value)
+	public function setStyle($style, $value)
 	{
 		self::$styles[$style] = $value;
 		return ($this->getStyle($style) == $value);
 	}
 
-	public function styles($styles = array())
+	public function styles($styles = [])
 	{
-		return parent::styles($styles + self::$styles);
+		return parent::styles($styles + $this->styles);
 	}
 
 	protected function _encode($code)
