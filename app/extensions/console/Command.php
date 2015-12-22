@@ -23,10 +23,13 @@ namespace app\extensions\console;
 
 class Command extends \lithium\console\Command
 {
+	protected $_classes = [
+			'response'	=> 'app\extensions\console\Response'
+	];
+
 	public function __construct(array $config = array())
 	{
-		$this->_classes['response'] = 'app\extensions\console\Response';
-		$defaults = array('request' => null, 'response' => array(), 'classes' => $this->_classes);
+		$defaults = ['request' => null, 'response' => [], 'classes' => $this->_classes];
 		parent::__construct($config + $defaults);
 	}
 }
