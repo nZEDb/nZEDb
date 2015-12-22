@@ -23,26 +23,26 @@ namespace app\extensions\qa\rules\syntax;
 
 use lithium\g11n\Multibyte;
 
-class HasNoTrailingWhitespace extends \li3_quality\qa\rules\syntax\HasNoTrailingWhitespace {
+class HasNoTrailingWhitespace extends \li3_quality\qa\rules\syntax\HasNoTrailingWhitespace
+{
+	public function apply($testable, array $config = array())
+	{
+		$message = "Trailing whitespace found";
+		$lines = $testable->lines();
 
-    public function apply($testable, array $config = array()) {
-        $message = "Trailing whitespace found";
-        $lines = $testable->lines();
-
-        foreach ($lines as $i => $line) {
-            $name = 'li3_quality';
-            $length = Multibyte::strlen($line, compact('name'));
-            $lengthTrimmed = Multibyte::strlen(rtrim($line), compact('name'));
-            if ($length !== $lengthTrimmed) {
-                $this->addViolation(array(
-                    'message' => $message,
-                    'line' => $i + 1,
-                    'position' => $length
-                ));
-            }
-        }
-    }
-
+		foreach ($lines as $i => $line) {
+			$name = 'li3_quality';
+			$length = Multibyte::strlen($line, compact('name'));
+			$lengthTrimmed = Multibyte::strlen(rtrim($line), compact('name'));
+			if ($length !== $lengthTrimmed) {
+				$this->addViolation(array(
+					'message' => $message,
+					'line' => $i + 1,
+					'position' => $length
+				));
+			}
+		}
+	}
 }
 
 ?>

@@ -14,31 +14,31 @@
  * along with this program (see LICENSE.txt in the base directory.  If
  * not, see:
  *
- * @link      <http://www.gnu.org/licenses/>.
- * @author    niel
+ * @link	  <http://www.gnu.org/licenses/>.
+ * @author	niel
  * @copyright 2014 nZEDb
  */
 namespace app\extensions\qa\rules\syntax;
 
 class EndsWithCloseTag extends \li3_quality\qa\rules\syntax\EndsWithCloseTag
 {
-    public function apply($testable, array $config = [])
-    {
-        $message = "File does not end with ?>";
-        $lines = $testable->lines();
+	public function apply($testable, array $config = [])
+	{
+		$message = "File does not end with ?>";
+		$lines = $testable->lines();
 
-        $cnt = count($lines);
-        if ($cnt > 1) {
-            if (!(empty($lines[$cnt - 1]) && $lines[($cnt - 2)] === "?>") || ($lines[($cnt - 1)] 
-                    === "?>")) {
-                $this->addViolation(
-                    [
-                        'message' => $message,
-                        'line' => $cnt - 1
-                    ]);
-            }
-        }
-    }
+		$cnt = count($lines);
+		if ($cnt > 1) {
+			if (!(empty($lines[$cnt - 1]) && $lines[($cnt - 2)] === "?>") || ($lines[($cnt - 1)] 
+					=== "?>")) {
+				$this->addViolation(
+					[
+						'message' => $message,
+						'line' => $cnt - 1
+					]);
+			}
+		}
+	}
 }
 
 ?>
