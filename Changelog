@@ -8,6 +8,8 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 
+2015-10-23 niel
+	Mrg: PR 2007, from Darius - Change grabs and group browse ordering in Gamma.
 2015-12-22 niel
 	Mrg: PR 2006, from Darius - Fix wrong video sample extension in Gamma template.
 2015-12-15 ruhllatio
