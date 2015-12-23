@@ -29,8 +29,7 @@ class EndsWithCloseTag extends \li3_quality\qa\rules\syntax\EndsWithCloseTag
 
 		$cnt = count($lines);
 		if ($cnt > 1) {
-			if (!(empty($lines[$cnt - 1]) && $lines[($cnt - 2)] === "?>") || ($lines[($cnt - 1)] 
-					=== "?>")) {
+			if (!((empty($lines[$cnt - 1]) && $lines[($cnt - 2)] === "?>") || ($lines[($cnt - 1)] === "?>"))) {
 				$this->addViolation(
 					[
 						'message' => $message,
