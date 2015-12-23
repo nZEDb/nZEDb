@@ -16,6 +16,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 		 Admins may rename the directory of any theme they want to omit from user choice to be
 		fully lower-case (the change must be commited to prevent overwriting by next update).
 		 This change will be the basis for further improvements in time.
+	Mrg: PR 2005, from Zeta - Adding noscript support to recaptcha.
 2015-12-22 niel
 	Mrg: PR 2006, from Darius - Fix wrong video sample extension in Gamma template.
 2015-12-15 ruhllatio
