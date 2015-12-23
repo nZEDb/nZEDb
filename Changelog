@@ -10,6 +10,12 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2015-10-23 niel
 	Mrg: PR 2007, from Darius - Change grabs and group browse ordering in Gamma.
+	Chg: Merged in dev-themes branch. This moves the themes_shared directory to themes/shared.
+		More importantly it now assumes a convention that themes should use Title cased names or
+		they are not presented as available selections.
+		 Admins may rename the directory of any theme they want to omit from user choice to be
+		fully lower-case (the change must be commited to prevent overwriting by next update).
+		 This change will be the basis for further improvements in time.
 2015-12-22 niel
 	Mrg: PR 2006, from Darius - Fix wrong video sample extension in Gamma template.
 2015-12-15 ruhllatio
