@@ -7,8 +7,10 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2015-12-30 niel
+	Mrg: PR 2010, from DariusIII - Fix missing table definition from queries in NameFixer.
 2015-12-27 ruhllatio
-	Fix: Issue #2001 - update_releases.php -> Call to undefined method finfo::close() 
+	Fix: Issue #2001 - update_releases.php -> Call to undefined method finfo::close()
 2015-12-23 niel
 	Mrg: PR 2007, from Darius - Change grabs and group browse ordering in Gamma.
 	Chg: Merged in dev-themes branch. This moves the themes_shared directory to themes/shared.
