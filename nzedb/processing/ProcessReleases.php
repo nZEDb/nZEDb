@@ -323,7 +323,7 @@ class ProcessReleases
 		if ($this->echoCLI) {
 			$count = $this->pdo->queryOneRow(
 				sprintf(
-					'SELECT COUNT(*) AS complete FROM %s c WHERE filecheck = %d %s',
+					'SELECT COUNT(id) AS complete FROM %s c WHERE filecheck = %d %s',
 					$group['cname'],
 					self::COLLFC_COMPPART,
 					$where

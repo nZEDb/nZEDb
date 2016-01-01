@@ -1,6 +1,4 @@
 <?php
-/* This is a smarty/www file and should be moved to the nZEDb_WWW/pages directory? */
-#require_once './config.php';
 
 use nzedb\Users;
 
@@ -24,7 +22,7 @@ class AdminPage extends BasePage
 
 		$this->smarty->setTemplateDir(
 			array(
-				'admin'    => nZEDb_WWW . 'themes_shared/templates/admin',
+				'admin'    => nZEDb_WWW . 'themes/shared/templates/admin',
 				'frontend' => nZEDb_WWW . 'themes/Default/templates/frontend',
 			)
 		);

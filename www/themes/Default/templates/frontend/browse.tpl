@@ -37,55 +37,55 @@
 				<th>
 					name<br/>
 					<a title="Sort Descending" href="{$orderbyname_desc}">
-						<img src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif" alt="Sort Descending" />
+						<img src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_down.gif" alt="Sort Descending" />
 					</a>
 					<a title="Sort Ascending" href="{$orderbyname_asc}">
-						<img src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt="Sort Ascending" />
+						<img src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_up.gif" alt="Sort Ascending" />
 					</a>
 				</th>
 				<th style="text-align:center;">
 					category<br/>
 					<a title="Sort Descending" href="{$orderbycat_desc}">
-						<img src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif" alt="Sort Descending" />
+						<img src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_down.gif" alt="Sort Descending" />
 					</a>
 					<a title="Sort Ascending" href="{$orderbycat_asc}">
-						<img src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt="Sort Ascending" />
+						<img src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_up.gif" alt="Sort Ascending" />
 					</a>
 				</th>
 				<th style="text-align:center;">
 					posted<br/>
 					<a title="Sort Descending" href="{$orderbyposted_desc}">
-						<img src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif" alt="Sort Descending" />
+						<img src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_down.gif" alt="Sort Descending" />
 					</a>
 					<a title="Sort Ascending" href="{$orderbyposted_asc}">
-						<img src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt="Sort Ascending" />
+						<img src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_up.gif" alt="Sort Ascending" />
 					</a>
 				</th>
 				<th style="text-align:center;">
 					size<br/>
 					<a title="Sort Descending" href="{$orderbysize_desc}">
-						<img src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif" alt="Sort Descending" />
+						<img src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_down.gif" alt="Sort Descending" />
 					</a>
 					<a title="Sort Ascending" href="{$orderbysize_asc}">
-						<img src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt="Sort Ascending" />
+						<img src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_up.gif" alt="Sort Ascending" />
 					</a>
 				</th>
 				<th style="text-align:center;">
 					files<br/>
 					<a title="Sort Descending" href="{$orderbyfiles_desc}">
-						<img src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif" alt="Sort Descending" />
+						<img src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_down.gif" alt="Sort Descending" />
 					</a>
 					<a title="Sort Ascending" href="{$orderbyfiles_asc}">
-						<img src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt="Sort Ascending" />
+						<img src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_up.gif" alt="Sort Ascending" />
 					</a>
 				</th>
 				<th style="text-align:center;">
 					stats<br/>
 					<a title="Sort Descending" href="{$orderbystats_desc}">
-						<img src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif" alt="Sort Descending" />
+						<img src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_down.gif" alt="Sort Descending" />
 					</a>
 					<a title="Sort Ascending" href="{$orderbystats_asc}">
-						<img src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt="Sort Ascending" />
+						<img src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_up.gif" alt="Sort Ascending" />
 					</a>
 				</th>
 				<th>
@@ -113,15 +113,15 @@
 							<div class="btns" style="float:right">
 								{release_flag($result.searchname, browse)}
 								{if $result.passwordstatus == 1}
-									<img title="RAR/ZIP Possibly Passworded." src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/lock2.png" alt="RAR/ZIP Possibly Passworded." />
+									<img title="RAR/ZIP Possibly Passworded." src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/lock2.png" alt="RAR/ZIP Possibly Passworded." />
 								{elseif $result.passwordstatus == 2}
-									<img title="RAR/ZIP Possibly Damaged." src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/broken.png" alt="RAR/ZIP Possibly Damaged." />
+									<img title="RAR/ZIP Possibly Damaged." src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/broken.png" alt="RAR/ZIP Possibly Damaged." />
 								{elseif $result.passwordstatus == 10}
-									<img title="RAR/ZIP is Passworded." src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/lock.gif" alt="RAR/ZIP is Passworded." />
+									<img title="RAR/ZIP is Passworded." src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/lock.gif" alt="RAR/ZIP is Passworded." />
 								{/if}
 								{if $result.videostatus == 1}
 									<a href="{$smarty.const.WWW_TOP}/details/{$result.guid}" title="This release has a video preview." class="model_prev rndbtn" rel="preview">
-										<img src="{$smarty.const.WWW_TOP}/themes_shared/images/multimedia/video.png" />
+										<img src="{$smarty.const.WWW_TOP}/themes/shared/images/multimedia/video.png" />
 									</a>
 								{/if}
 								{if $result.nfoid > 0}
@@ -195,7 +195,7 @@
 						<a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$result.guid}">{$result.totalpart}</a>
 						{if $result.rarinnerfilecount > 0}
 							<div class="rarfilelist">
-								<img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/magnifier.png" alt="{$result.guid}" />
+								<img src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/magnifier.png" alt="{$result.guid}" />
 							</div>
 						{/if}
 					</td>

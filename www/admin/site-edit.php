@@ -209,12 +209,13 @@ $page->smarty->assign('loggingopt_names',
 					  ['Disabled', 'Log in DB only', 'Log both DB and file', 'Log only in file']);
 
 $themelist = [];
-$themes    = scandir(nZEDb_WWW . "/themes");
+$themes    = scandir(nZEDb_THEMES);
 foreach ($themes as $theme) {
-	if (strpos($theme, ".") === false && is_dir(nZEDb_WWW . "/themes/" . $theme)) {
+	if (strpos($theme, ".") === false && is_dir(nZEDb_THEMES . $theme) && ucfirst($theme) === $theme) {
 		$themelist[] = $theme;
 	}
 }
+sort($themelist);
 
 $page->smarty->assign('themelist', $themelist);
 

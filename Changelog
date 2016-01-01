@@ -1,14 +1,65 @@
 * Note *
-Pull requests will be accepted *only* against the dev branch.
+Pull requests will be accepted *only* against the dev branch, except for feature branch fixes/enhancements,
+in which case they should be against that branch.
 Please make sure any PR's comply with our coding standards policy: http://li3.me/docs/specs/accepted/LSR-0-coding.md
 
 New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
-2015-10-29 niel
-	Mrg: dev => next-master to prepare for updating master.
+2016-01-01 niel
+	Mrg: Dev => next-master
 
+2015-12-30 niel
+	Mrg: PR 2010, from DariusIII - Fix missing table definition from queries in NameFixer.
+2015-12-27 ruhllatio
+	Fix: Issue #2001 - update_releases.php -> Call to undefined method finfo::close()
+2015-12-23 niel
+	Mrg: PR 2007, from Darius - Change grabs and group browse ordering in Gamma.
+	Chg: Merged in dev-themes branch. This moves the themes_shared directory to themes/shared.
+		More importantly it now assumes a convention that themes should use Title cased names or
+		they are not presented as available selections.
+		 Admins may rename the directory of any theme they want to omit from user choice to be
+		fully lower-case (the change must be commited to prevent overwriting by next update).
+		 This change will be the basis for further improvements in time.
+	Mrg: PR 2005, from Zeta - Adding noscript support to recaptcha.
+2015-12-22 niel
+	Mrg: PR 2006, from Darius - Fix wrong video sample extension in Gamma template.
+2015-12-15 ruhllatio
+	Mrg: PR #1987, from Darius - Add Gamma template made by RickDB (adapted by Darius)
+	Mrg: PR #1998, from Darius - Declare $client property in nzedb/processing/tv/TMDB.php
+2015-12-14 ruhllatio
+	Chg: DNZB failures shouldn't send an easily corrupted searchname.  Now retrieves it from the DB by sent guid instead.
+	Fix: Attempt to fix issue with releases that have parts counters in the searchname not being sent to Sab properly
+2015-12-13 ruhllatio
+	Fix: Too many arguments for sprintf and re-work Dnzb Failures a tiny bit as I'm getting strange results
+	Fix: Provide a DNZB response code when no alternate match is found in DNZB query instead of just showing 404
+2015-12-11 ruhllatio
+	Chg: Move video type check to JOIN instead of WHERE in API TVSearch
+	Fix: Spacing issues with AniDB and small update to parsing
+	Chg: Greatly improve CodecPoster accuracy and query speed
+	Fix: Query update didn't have crapTime in it
+2015-12-10 ruhllato
+	Chg: Change COUNT(*) queries to count the primary key columns to improve query performance
+	Chg: Re-work the count querying in PreDB class
+2015-12-09 niel
+	Chg: Refactored git hook scripts. They now live in .../build/git-hooks. Run .../build/git-hooks/addHooks.sh to create a symlink to the .git/hooks directory.
+2015-12-08 bart39
+	Mrg: PR #1996, from darius - Fix paths to scripts in charisma/omicron themes.
+	Mrg: PR #1995, from darius - Fix wrong paths in omicron/charisma templates.
+	Fix: omicron/charisma movie cover links.
+2015-12-07 niel
+	Fix: Cleaned up over 16K occurences of trailing white-space in Charisma/Omicron theme files. Again!
+	Fix: Cleaned up space-before-tabs.
+2015-12-06 niel
+	Fix: Column genre_id in gamesinfo table, not patched when schema was updated around patch 278.
+2015-12-04 ruhllatio
+	Chg: TVDB and TVMaze scripts now support Airdate lookup testing.
+	Fix: RemoveCrap Executable with Sphinx finding too much for the limit
+2015-12-02 ruhllatio
+	Mrg: PR #1985 - Add Trakt Support to Dev
+2015-11-29 niel
+	Mrg: dev => next-master to prepare for updating master.
 2015-11-29 bart39
 	Fix: missing 'AND' from browseBy.
 2015-11-28 bart39
@@ -20,6 +71,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Mrg: PR #1980, from kaibosh - Change default to PHP version of scripts rather than python ones in threaded screen script
 2015-11-24 ruhllatio
 	Mrg: PR #1973, from darius - Adjust omicron/charisma templates to failed releases count fix
+	Fix: Bad merge on my part which reverted some DDL in the schema.  Reverted to dev and then made the one branch change
 2015-11-23 ruhllatio
 	Fix: Failed counts for cover views being lumped together instead of group_concat
 	Chg: Speed up Music, Games, and XXX cover views

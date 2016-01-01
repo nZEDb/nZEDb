@@ -65,39 +65,39 @@
 			<tr>
 				<th width="130"><input type="checkbox" class="nzb_check_all"/></th>
 				<th>artist<br/><a title="Sort Descending" href="{$orderbyartist_desc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif"
+								src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_down.gif"
 								alt=""/></a><a title="Sort Ascending" href="{$orderbyartist_asc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt=""/></a>
+								src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_up.gif" alt=""/></a>
 				</th>
 				<th>year<br/><a title="Sort Descending" href="{$orderbyyear_desc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif"
+								src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_down.gif"
 								alt=""/></a><a title="Sort Ascending" href="{$orderbyyear_asc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt=""/></a>
+								src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_up.gif" alt=""/></a>
 				</th>
 				<th>genre<br/><a title="Sort Descending" href="{$orderbygenre_desc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif"
+								src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_down.gif"
 								alt=""/></a><a title="Sort Ascending" href="{$orderbygenre_asc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt=""/></a>
+								src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_up.gif" alt=""/></a>
 				</th>
 				<th>posted<br/><a title="Sort Descending" href="{$orderbyposted_desc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif"
+								src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_down.gif"
 								alt=""/></a><a title="Sort Ascending" href="{$orderbyposted_asc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt=""/></a>
+								src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_up.gif" alt=""/></a>
 				</th>
 				<th>size<br/><a title="Sort Descending" href="{$orderbysize_desc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif"
+								src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_down.gif"
 								alt=""/></a><a title="Sort Ascending" href="{$orderbysize_asc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt=""/></a>
+								src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_up.gif" alt=""/></a>
 				</th>
 				<th>files<br/><a title="Sort Descending" href="{$orderbyfiles_desc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif"
+								src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_down.gif"
 								alt=""/></a><a title="Sort Ascending" href="{$orderbyfiles_asc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt=""/></a>
+								src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_up.gif" alt=""/></a>
 				</th>
 				<th>stats<br/><a title="Sort Descending" href="{$orderbystats_desc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif"
+								src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_down.gif"
 								alt=""/></a><a title="Sort Ascending" href="{$orderbystats_asc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt=""/></a>
+								src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_up.gif" alt=""/></a>
 				</th>
 			</tr>
 

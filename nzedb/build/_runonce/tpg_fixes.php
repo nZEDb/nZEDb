@@ -38,7 +38,7 @@ if ($groups === false) {
 	// Adds currentparts column to binaries tables
 	$query2 = "ALTER TABLE binaries_%s ADD COLUMN currentparts INT UNSIGNED NOT NULL DEFAULT '0' AFTER totalparts";
 	// Updates binaries tables with parts current count.
-	$query3 = "UPDATE binaries_%s b SET currentparts = (SELECT COUNT(*) FROM parts_%s p WHERE p.binaryid = b.id)";
+	$query3 = "UPDATE binaries_%s b SET currentparts = (SELECT COUNT(binaryid) FROM parts_%s p WHERE p.binaryid = b.id)";
 
 	// Drops/adds new indexes to parts, adds the collection_id column to parts, used when deleting.
 	$query4[] = "ALTER TABLE parts_%s DROP INDEX ix_parts_messageid";
