@@ -7,8 +7,9 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+
 2016-01-01 niel
-	Mrg: Dev => next-master
+	Mrg: dev => next-master to prepare for updating master.
 
 2015-12-30 niel
 	Mrg: PR 2010, from DariusIII - Fix missing table definition from queries in NameFixer.
@@ -60,6 +61,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Mrg: PR #1985 - Add Trakt Support to Dev
 2015-11-29 niel
 	Mrg: dev => next-master to prepare for updating master.
+
 2015-11-29 bart39
 	Fix: missing 'AND' from browseBy.
 2015-11-28 bart39
@@ -4028,8 +4030,3 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	changed fixreleasenames to use inner join insteaqd of left join
 	changed tmpunrar folder creation to chmod 0777 from 0764, just in case
 	moved delete stale tmpunrar from threaded script to monitor
-
-* Note *
-No future pull requests will be accepted without this file being updated to reflect what you changed and when.
-No pull requests will be accepted to any branch except the dev branch.
-Each update goes to the top of the file
