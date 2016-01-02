@@ -1,5 +1,5 @@
 <?php
-require_once dirname(__FILE__) . '/../../../config.php';
+require_once realpath(dirname(dirname(dirname(dirname(dirname(__DIR__))))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
 use nzedb\MiscSorter;
 use nzedb\NameFixer;
@@ -40,6 +40,17 @@ if (!isset($argv[1])) {
 				. 'INNER JOIN release_files relfiles ON (relfiles.releaseid = rel.id) WHERE rel.id = %d', $release))) {
 			$namefixer->done = $namefixer->matched = false;
 			if ($namefixer->checkName($res, true, 'Filenames, ', 1, 1) !== true) {
+				echo '.';
+			}
+			$namefixer->checked++;
+		}
+	} else if (isset($pieces[1]) && $pieces[0] == 'srr') {
+		$release = $pieces[1];
+		if ($res = $db->queryOneRow(sprintf('SELECT relfiles.name AS textstring, rel.categoryid, rel.searchname, '
+			. 'rel.group_id, relfiles.releaseid AS fileid, rel.id AS releaseid, rel.name FROM releases rel '
+			. 'INNER JOIN release_files relfiles ON (relfiles.releaseid = rel.id) WHERE rel.id = %d', $release))) {
+			$namefixer->done = $namefixer->matched = false;
+			if ($namefixer->checkName($res, true, 'Srr, ', 1, 1) !== true) {
 				echo '.';
 			}
 			$namefixer->checked++;
