@@ -8,8 +8,22 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 
-2015-10-23 niel
+2016-01-01 niel
+	Mrg: dev => next-master to prepare for updating master.
+
+2015-12-30 niel
+	Mrg: PR 2010, from DariusIII - Fix missing table definition from queries in NameFixer.
+2015-12-27 ruhllatio
+	Fix: Issue #2001 - update_releases.php -> Call to undefined method finfo::close()
+2015-12-23 niel
 	Mrg: PR 2007, from Darius - Change grabs and group browse ordering in Gamma.
+	Chg: Merged in dev-themes branch. This moves the themes_shared directory to themes/shared.
+		More importantly it now assumes a convention that themes should use Title cased names or
+		they are not presented as available selections.
+		 Admins may rename the directory of any theme they want to omit from user choice to be
+		fully lower-case (the change must be commited to prevent overwriting by next update).
+		 This change will be the basis for further improvements in time.
+	Mrg: PR 2005, from Zeta - Adding noscript support to recaptcha.
 2015-12-22 niel
 	Mrg: PR 2006, from Darius - Fix wrong video sample extension in Gamma template.
 2015-12-15 ruhllatio
@@ -47,6 +61,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Mrg: PR #1985 - Add Trakt Support to Dev
 2015-11-29 niel
 	Mrg: dev => next-master to prepare for updating master.
+
 2015-11-29 bart39
 	Fix: missing 'AND' from browseBy.
 2015-11-28 bart39
@@ -137,6 +152,8 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Mrg: PR #1949, from rainje - Add french flag to "multi" releases.
 	Fix: Another regex fix.
 	Fix: Collection regex errors noted in #1954.
+2015-11-10 niel
+	Fix: Remerged Darius' original charisma/omicron themes into next-master. Hopefully this will fix the issues for master, but may need more work yet.
 2015-11-09 ruhllatio
 	Fix: Sonarr's "RSS" is just using the API with no parameters.  Left joining should 'fix' this until it can be addressed with the Sonarr team.
 	Fix: Wrong if condition for TVDB Test script return
@@ -158,6 +175,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Fix: Change patch 391 to drop and recreate user_series table due to unknown issue on InnoDB.
 2015-11-02 bart39
 	Fix: index name on user series.
+
 2015-10-30 ruhllatio
 	Fix: Attempt to fix Issue #1844 Pager counts not reflecting release availability
 2015-10-29 ruhllatio
@@ -4012,8 +4030,3 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	changed fixreleasenames to use inner join insteaqd of left join
 	changed tmpunrar folder creation to chmod 0777 from 0764, just in case
 	moved delete stale tmpunrar from threaded script to monitor
-
-* Note *
-No future pull requests will be accepted without this file being updated to reflect what you changed and when.
-No pull requests will be accepted to any branch except the dev branch.
-Each update goes to the top of the file

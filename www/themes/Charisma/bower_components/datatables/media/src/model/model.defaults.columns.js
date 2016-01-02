@@ -756,4 +756,3 @@ DataTable.defaults.columns = {
 	 */
 	"sWidth": null
 };
-

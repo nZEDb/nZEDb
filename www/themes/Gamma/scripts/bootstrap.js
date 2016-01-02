@@ -18,7 +18,7 @@
  * ========================================================== */
 $("td").live("click", function(e) {
     var chk = $(this).closest("tr").find("input:checkbox").get(0);
-	
+
 	//Checked state
     if(chk.checked = chk.checked)
     {
@@ -31,7 +31,7 @@ $("td").live("click", function(e) {
 		$(this).closest("tr").css("background-color", this ? "#000000" : "");
 		chk.checked = chk.unchecked;
 	}
-	
+
 });
 
 

@@ -41,4 +41,3 @@ function _fnProcessingDisplay ( oSettings, bShow )
 
 	$(oSettings.oInstance).trigger('processing', [oSettings, bShow]);
 }
-

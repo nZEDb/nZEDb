@@ -396,4 +396,3 @@ function _fnEscapeRegex ( sVal )
 	var reReplace = new RegExp( '(\\' + acEscape.join('|\\') + ')', 'g' );
 	return sVal.replace(reReplace, '\\$1');
 }
-

@@ -150,4 +150,3 @@ function _fnLanguageCompat( oLanguage )
 		_fnMap( oLanguage, oLanguage, 'sZeroRecords', 'sLoadingRecords' );
 	}
 }
-

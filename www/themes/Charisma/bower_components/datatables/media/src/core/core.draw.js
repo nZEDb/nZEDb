@@ -789,4 +789,3 @@ function _fnGetUniqueThs ( oSettings, nHeader, aLayout )
 
 	return aReturn;
 }
-

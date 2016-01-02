@@ -20,5 +20,3 @@
 
 <div id="divMovResults">
 </div>
-
-

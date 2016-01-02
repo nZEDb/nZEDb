@@ -108,4 +108,3 @@ function _fnInfoMacros ( oSettings, str )
 		replace(/_TOTAL_/g, sTotal).
 		replace(/_MAX_/g,   sMax);
 }
-

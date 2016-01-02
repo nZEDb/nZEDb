@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html>
 <head>
 	<script type="text/javascript">
@@ -26,6 +27,9 @@
 	-->
 	<link href="{$smarty.const.WWW_TOP}/themes/omicron/dist/css/skins/skin-blue.min.css" rel="stylesheet"
 		  type="text/css"/>
+	<!-- Newznab utils.js -->
+	<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/omicron/scripts/utils.js"></script>
+
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 	<!--[if lt IE 9]>
@@ -33,10 +37,12 @@
 	<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 	<![endif]-->
 </head>
+
 <body class="skin-blue layout-boxed">
 <div class="wrapper">
 	<div class="header">
 		<h2>View > <strong>{$page->title}</strong></h2>
+
 		<div class="breadcrumb-wrapper">
 			<ol class="breadcrumb">
 				<li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li>
@@ -51,8 +57,8 @@
 				<div class="box-content">
 					<div class="row">
 						<div class="col-xlg-12 portlets">
-							<div class="panel panel-default">
-								<div class="panel-body pagination2">
+							<div class="panel">
+								<div class="panel-content pagination2">
 									<p>{$site->tandc}</p>
 								</div>
 							</div>
@@ -64,7 +70,9 @@
 	</div>
 </div>
 </body>
+
 <!-- REQUIRED JS SCRIPTS -->
+
 <!-- jQuery 2.1.4 -->
 <script src="{$smarty.const.WWW_TOP}/themes/omicron/plugins/jQuery/jQuery-2.1.4.min.js"></script>
 <!-- Bootstrap 3.3.2 JS -->
@@ -94,4 +102,7 @@
 <script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/omicron/scripts/jquery.autosize-min.js"></script>
 <script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/omicron/scripts/jquery.qtip2.js"></script>
 <script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/omicron/scripts/sorttable.js"></script>
+<!-- Newznab utils.js -->
+<script type="text/javascript" src="{$smarty.const.WWW_TOP}/themes/omicron/scripts/utils.js"></script>
+
 </html>

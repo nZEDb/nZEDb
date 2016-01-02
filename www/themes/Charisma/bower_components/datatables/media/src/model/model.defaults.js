@@ -1949,4 +1949,3 @@ DataTable.defaults = {
 	 */
 	"sServerMethod": "GET"
 };
-

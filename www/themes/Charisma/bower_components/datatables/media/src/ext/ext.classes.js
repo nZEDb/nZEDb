@@ -109,4 +109,3 @@ $.extend( DataTable.ext.oJUIClasses, DataTable.ext.oStdClasses, {
 	"sJUIHeader": "fg-toolbar ui-toolbar ui-widget-header ui-corner-tl ui-corner-tr ui-helper-clearfix",
 	"sJUIFooter": "fg-toolbar ui-toolbar ui-widget-header ui-corner-bl ui-corner-br ui-helper-clearfix"
 } );
-

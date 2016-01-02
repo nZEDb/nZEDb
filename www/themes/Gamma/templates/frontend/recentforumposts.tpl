@@ -7,6 +7,3 @@
 	{/foreach}
 </li>
 {/if}
-
-
-	

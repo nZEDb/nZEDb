@@ -213,4 +213,3 @@ function _fnReadCookie ( sName )
 	}
 	return null;
 }
-

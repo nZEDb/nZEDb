@@ -260,4 +260,3 @@ DataTable.models.oColumn = {
 	 */
 	"sWidthOrig": null
 };
-

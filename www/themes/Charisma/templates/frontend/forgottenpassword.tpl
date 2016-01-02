@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 {if isset($error) && $error != ''}
 	<div class="alert alert-danger">{$error}</div>
 {/if}
@@ -9,6 +10,7 @@
 {if isset($sent) && $sent != ''}
 	<div class="alert alert-info">A link to reset your password has been sent to your e-mail account.</div>
 {/if}
+
 <head>
 	<script type="text/javascript">
 		/* <![CDATA[ */
@@ -21,18 +23,23 @@
 	<!--
 		===
 		This comment should NOT be removed.
+
 		Charisma v2.0.0
+
 		Copyright 2012-2014 Muhammad Usman
 		Licensed under the Apache License v2.0
 		http://www.apache.org/licenses/LICENSE-2.0
+
 		http://usman.it
 		http://twitter.com/halalit_usman
 		===
 	-->
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+
 	<!-- The styles -->
 	<link id="bs-css" href="{$smarty.const.WWW_TOP}/themes/charisma/css/bootstrap-spacelab.min.css" rel="stylesheet">
+
 	<link href="{$smarty.const.WWW_TOP}/themes/charisma/css/charisma-app.css" rel="stylesheet">
 	<link href='{$smarty.const.WWW_TOP}/themes/charisma/bower_components/fullcalendar/dist/fullcalendar.css'
 		  rel='stylesheet'>
@@ -52,18 +59,24 @@
 	<link href='{$smarty.const.WWW_TOP}/themes/charisma/css/jquery.iphone.toggle.css' rel='stylesheet'>
 	<link href='{$smarty.const.WWW_TOP}/themes/charisma/css/uploadify.css' rel='stylesheet'>
 	<link href='{$smarty.const.WWW_TOP}/themes/charisma/css/animate.min.css' rel='stylesheet'>
+
 	<!-- jQuery -->
 	<script src="{$smarty.const.WWW_TOP}/themes/charisma/bower_components/jquery/jquery.min.js"></script>
+
 	<!-- The HTML5 shim, for IE6-8 support of HTML5 elements -->
 	<!--[if lt IE 9]>
 	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
 	<![endif]-->
+
 	<!-- The fav icon -->
 	<link rel="shortcut icon" href="{$smarty.const.WWW_TOP}/themes/charisma/img/favicon.ico">
+
 </head>
+
 {if $confirmed == '' && $sent == ''}
 	<div class="ch-container">
 		<div class="row">
+
 			<div class="row">
 				<div class="col-md-12 center login-header">
 					<h2>Request a password reset</h2>
@@ -71,6 +84,7 @@
 				<!--/span-->
 			</div>
 			<!--/row-->
+
 			<div class="row">
 				<div class="well col-md-5 center login-box">
 					<div class="alert alert-info">
@@ -88,6 +102,7 @@
 							<div class="clearfix"></div>
 							<br>
 							<p class="center col-md-5">
+
 							<p class="center col-md-5">
 								{$page->smarty->fetch('captcha.tpl')}
 							</p>
@@ -101,6 +116,7 @@
 			<!--/row-->
 		</div>
 		<!--/fluid-row-->
+
 	</div>
 	<!--/.fluid-container-->
 {/if}

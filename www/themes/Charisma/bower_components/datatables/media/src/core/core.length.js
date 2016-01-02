@@ -119,4 +119,3 @@ function _fnCalculateEnd( oSettings )
 		}
 	}
 }
-

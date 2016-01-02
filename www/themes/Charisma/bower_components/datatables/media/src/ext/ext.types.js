@@ -85,4 +85,3 @@ $.extend( DataTable.ext.aTypes, [
 		return null;
 	}
 ] );
-

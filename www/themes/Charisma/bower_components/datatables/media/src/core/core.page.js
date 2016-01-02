@@ -116,4 +116,3 @@ function _fnPageChange ( oSettings, mAction )
 
 	return iOldStart != oSettings._iDisplayStart;
 }
-

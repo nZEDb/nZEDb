@@ -508,4 +508,3 @@ function _fnApplyToChildren( fn, an1, an2 )
 		i++;
 	}
 }
-

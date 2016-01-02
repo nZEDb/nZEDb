@@ -14,8 +14,8 @@ body,h1,h2,h3,h4,h5,h6,img,input,form,fieldset{
 body{
     font-family:"Droid Sans",Arial,serif;
     font-size:13px;
-    color: #1c94c4;
-    background-color: dimgrey;
+    color:#000;
+    background-color:#d5d3be;
 }
 
 
@@ -28,20 +28,47 @@ div.poster a img{
 
 div.poster a{
     text-decoration:none;
-    color: #E6FF99;
+    color:#008fbb;
 }
 
 
 div.icons {
     white-space:nowrap;
-    padding-left:0;
-    padding-right:0;
-    width:100%;
-    margin: auto;
-    display:inline-block;
-    vertical-align: middle;
-    align-items: center;
+    padding-left:0px;
+    padding-right:0px;
+    width:65px;
+    margin: 0 auto;
 }
+
+.icon_allmusic       { background-image:url('../images/icons/allmusic.png'); }
+.icon_allmusic2      { content:url('../images/icons/allmusic.png'); }
+.icon_amazon         { background-image:url('../images/icons/amazon.png'); }
+.icon_amazon2        { content:url('../images/icons/amazon.png'); }
+.icon_giantbomb      { background-image:url('../images/icons/giantbomb.png');}
+.icon_cart           { background-image:url('../images/icons/cartup.png'); }
+.icon_cart_clicked   { background-image:url('../images/icons/cartdown.png'); }
+.icon_couch          { background-image:url('../images/icons/couch.png'); }
+.icon_couch2         { content:url('../images/icons/couch.png'); }
+.icon_discogs        { background-image:url('../images/icons/discogs.png'); }
+.icon_gamespot       { background-image:url('../images/icons/gamespot.png'); }
+.icon_ign            { background-image:url('../images/icons/ign.png'); }
+.icon_lastfm         { background-image:url('../images/icons/lastfm.png'); }
+.icon_nzb            { background-image:url('../images/icons/nzbup.png'); }
+.icon_nzb_clicked    { background-image:url('../images/icons/nzbdown.png'); }
+.icon_nzb a          { text-decoration:none; padding-bottom:2px; padding-right:12px; }
+.icon_predbme        { background-image:url('../images/icons/predbme.png'); }
+.icon_imdb           { background-image:url('../images/icons/imdb.png'); }
+.icon_imdb2          { content:url('../images/icons/imdb.png'); }
+.icon_imdb a         { text-decoration:none; padding-bottom:2px; padding-right:12px; }
+.icon_sab            { background-image:url('../images/icons/sabup.png'); }
+.icon_sab_clicked    { background-image:url('../images/icons/sabdown.png'); }
+.icon_trakt          { background-image:url('../images/icons/trakt.png'); }
+.icon_trakt2         { content:url('../images/icons/trakt.png'); }
+.icon_tvrage         { background-image:url('../images/icons/tvrage.png'); }
+.icon_check          { background-image:url('../images/icons/check.png'); }
+.icon_cp             { background-image:url('../images/icons/couch.png'); }
+.icon_goodreads      { background-image:url('../images/icons/goodreads.png'); }
+.icon_shelfari       { background-image:url('../images/icons/shelfari.png'); }
 
 a.divlink {
     display:block;
@@ -75,10 +102,11 @@ h3 a.see-more{
     border-radius:8px;
     color:#000;
     padding:5px 7px;
+    display:block;
     float:right;
     font-size:12px;
     font-weight:normal;
-    background-color:dimgrey;
+    background-color:#d5d3be;
 }
 
 
@@ -99,15 +127,15 @@ input.placeholder{
 
 
 ::-moz-selection{
-    background:cornflowerblue;
-    color:black;
+    background:#4DBCE9;
+    color:#fff;
     text-shadow:none;
 }
 
 
 ::selection{
-    background:cornflowerblue;
-    color:black;
+    background:#4DBCE9;
+    color:#fff;
     text-shadow:none;
 }
 
@@ -432,7 +460,7 @@ br.clear{
 .library-wrapper .library-show .title{
     display:block;
     font-weight:bold;
-    color:#000000;
+    color:#000;
 }
 
 
@@ -674,7 +702,7 @@ br.clear{
     width:13px;
     height:30px;
     margin:0!important;
-    background-color:steelblue!important;
+    background-color:#333!important;
     background-image:url(https://trakt.us/images/quick-icons/heart-love.png);
     background-size:12px 12px;
     float:left;
@@ -699,12 +727,12 @@ br.clear{
 
 
 .rating-pod{
-    background-color:aliceblue;
+    background-color:#333;
     padding:5px 10px 5px 7px;
     border-radius:0 0 6px 6px;
     overflow:hidden;
     margin:1px;
-    color:#0c0c0c;
+    color:#ccc;
     position:relative;
 }
 
@@ -750,20 +778,20 @@ br.clear{
 }
 
 .main-title {
-    color: lightgrey;
+    color: rgb(255, 255, 255);
     text-shadow: 0px -1px 1px rgb(17, 17, 17);
     padding: 10px 10px 11px;
     font-size: 16px;
     border-radius: 4px 4px 0px 0px;
     border-top: 1px solid rgb(119, 119, 119);
     border-bottom: 1px solid rgb(51, 51, 51);
-    background-color: steelblue;
+    background-color: rgb(95, 95, 95);
     background-image: -moz-linear-gradient(center top , rgb(102, 102, 102), rgb(85, 85, 85));
 }
 
 .main-wrapper {
-    background: none repeat scroll 0% 0% rgb(70,130,180);
-    color: steelblue;
+    background: none repeat scroll 0% 0% rgb(208, 208, 208);
+    color: rgb(153, 153, 153);
     padding: 9px;
 }
 

@@ -11,7 +11,7 @@ At the current version this wrapper supports all of TVMaze's endpoints except fo
 
 Pre-reqs
 --------
-- Before attempting to use this wrapper make sure you require 'TVMazeIncludes.php'; at the top of your php file. 
+- Before attempting to use this wrapper make sure you require 'TVMazeIncludes.php'; at the top of your php file.
 
 Supported Methods
 -----------------
@@ -42,5 +42,5 @@ getCrewCreditsByID -> Return an array of all the positions a particular actor ha
 Open Source Projects using this
 -------------------------------
 nZEDb
-Website Link: http://www.nzedb.com 
+Website Link: http://www.nzedb.com
 Github Link: https://github.com/nZEDb/nZEDb

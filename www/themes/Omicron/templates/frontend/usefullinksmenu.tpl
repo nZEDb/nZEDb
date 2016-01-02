@@ -10,8 +10,8 @@
 		{/if}
 		{foreach from=$usefulcontentlist item=content}
 			<li class="mmenu{if $menu.newwindow =="1"}_new{/if}"><a {if $menu.newwindow =="1"}class="external"
-																	target="null"{/if} title="{$content->title}"
-																	href="{$smarty.const.WWW_TOP}/content/{$content->id}{$content->url}">{$content->title}</a>
+																	target="null"{/if} title="{$content.title}"
+																	href="{$smarty.const.WWW_TOP}/content/{$content.id}{$content.url}">{$content.title}</a>
 			</li>
 		{/foreach}
 	</ul>

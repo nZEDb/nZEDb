@@ -182,4 +182,3 @@ function _fnAjaxUpdateDraw ( oSettings, json )
 	oSettings.bAjaxDataGet = true;
 	_fnProcessingDisplay( oSettings, false );
 }
-

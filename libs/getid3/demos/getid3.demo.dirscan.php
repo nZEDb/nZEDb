@@ -213,7 +213,7 @@ class dirscan {
 				echo ' Scanning: '.$d."\n";
 				$search = self::type_brace($d, $match);
 				if ($search !== null) {
-    				$files = self::file_check($search);
+					$files = self::file_check($search);
 					if ($files !== null) {
 						foreach ($files as $f) {
 							echo ' * Analyzing '.$f.' '."\n";

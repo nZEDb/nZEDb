@@ -343,4 +343,3 @@ function _fnBrowserDetect( oSettings )
 	oSettings.oBrowser.bScrollOversize = $('#DT_BrowserTest', n)[0].offsetWidth === 100 ? true : false;
 	document.body.removeChild( n );
 }
-

@@ -448,4 +448,3 @@ function _fnSortingClasses( oSettings )
 		}
 	}
 }
-

@@ -1,5 +1,6 @@
 <div class="header">
 	<h2>Anime > <strong>List</strong></h2>
+
 	<div class="breadcrumb-wrapper">
 		<ol class="breadcrumb">
 			<li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li>
@@ -7,7 +8,9 @@
 		</ol>
 	</div>
 </div>
+
 {$site->adbrowse}
+
 <p><b>Jump to</b>:
 	&nbsp;&nbsp;[ {if $animeletter == '0-9'}<b><u>{/if}<a
 					href="{$smarty.const.WWW_TOP}/anime/0-9">0-9</a>{if $animeletter == '0-9'}</u></b>{/if}
@@ -16,19 +19,23 @@
 	href="{$smarty.const.WWW_TOP}/anime/{$range}">{$range}</a>{if $range == $animeletter}</u></b>{/if}
 	{/foreach}]
 </p>
+
 {$site->adbrowse}
+
 {if $animelist|@count > 0}
-	<table style="width:100%;" class="data table table-condensed table-striped table-responsive table-hover" id="browsetable">
+	<table style="width:100%;" class="data highlight icons table table-striped" id="browsetable">
 		{foreach $animelist as $aletter => $anime}
 			<tr>
 				<td colspan="10">
 					<h2>{$aletter}...</h2>
+
 					<form name="anidbsearch" class="form pull-right" action="" method="get" style="margin-top:-35px;">
 						<label for="title">Search:</label>
 						<input class="form-control" style="width: 150px;" id="title appendedInputButton" type="text"
 							   name="title" value="{$animetitle}" placeholder="Search here"/>
 						<button type="submit" class="btn btn-default">GO</button>
 					</form>
+
 				</td>
 			</tr>
 			<tr>
