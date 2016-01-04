@@ -90,7 +90,7 @@ class BasePage
 	 *
 	 * @var string
 	 */
-	private $theme = 'Default';
+	protected $theme = 'Default';
 
 	/**
 	 * Set up session / smarty / user variables.
@@ -138,15 +138,6 @@ class BasePage
 			$this->smarty->assign('ismod', 'false');
 			$this->smarty->assign('loggedin', 'false');
 		}
-
-		// Tell Smarty which directories to use for templates
-		$this->smarty->setTemplateDir(
-			[
-				1 => nZEDb_THEMES . $this->theme . '/templates/frontend',
-				2 => nZEDb_THEMES . 'shared/templates',
-				3 => nZEDb_THEMES . 'Default/templates/frontend'
-			]
-		);
 
 		$this->smarty->assign('theme', $this->theme);
 		$this->smarty->assign('site', $this->settings);
