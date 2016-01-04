@@ -167,7 +167,7 @@ if ($page->isPostBack()) {
 		if (!$cfg->error) {
 			// Check one of the standard tables was created and has data.
 			$dbInstallWorked = false;
-			$reschk = $pdo->query("SELECT COUNT(*) AS num FROM tmux");
+			$reschk = $pdo->query("SELECT COUNT(id) AS num FROM tmux");
 			if ($reschk === false) {
 				$cfg->dbCreateCheck = false;
 				$cfg->error = true;

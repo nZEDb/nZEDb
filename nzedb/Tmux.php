@@ -418,13 +418,13 @@ class Tmux
 
 			case 2:
 				return "SELECT
-					(SELECT COUNT(*) FROM releases r
+					(SELECT COUNT(r.id) FROM releases r
 						INNER JOIN category c ON c.id = r.categoryid
 						WHERE r.nzbstatus = 1
 						AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0
 					) AS work,
-					(SELECT COUNT(*) FROM groups WHERE active = 1) AS active_groups,
-					(SELECT COUNT(*) FROM groups WHERE name IS NOT NULL) AS all_groups";
+					(SELECT COUNT(id) FROM groups WHERE active = 1) AS active_groups,
+					(SELECT COUNT(id) FROM groups WHERE name IS NOT NULL) AS all_groups";
 
 			case 4:
 				return sprintf("
@@ -435,10 +435,10 @@ class Tmux
 					(SELECT TABLE_ROWS FROM information_schema.TABLES WHERE table_name = 'binaries' AND TABLE_SCHEMA = %1\$s) AS binaries_table,
 					(SELECT TABLE_ROWS FROM information_schema.TABLES WHERE table_name = 'collections' AND TABLE_SCHEMA = %1\$s) AS collections_table,
 					(SELECT TABLE_ROWS FROM information_schema.TABLES WHERE table_name = 'releases' AND TABLE_SCHEMA = %1\$s) AS releases,
-					(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1
+					(SELECT COUNT(id) FROM groups WHERE first_record IS NOT NULL AND backfill = 1
 						AND (now() - INTERVAL backfill_target DAY) < first_record_postdate
 					) AS backfill_groups_days,
-					(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (now() - INTERVAL datediff(curdate(),
+					(SELECT COUNT(id) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (now() - INTERVAL datediff(curdate(),
 					(SELECT VALUE FROM settings WHERE setting = 'safebackfilldate')) DAY) < first_record_postdate) AS backfill_groups_date",
 					$this->pdo->escapeString($db_name)
 				);

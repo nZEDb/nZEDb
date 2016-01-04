@@ -2,11 +2,11 @@
 <nzedb>
 	<versions>
 		<sql>
-			<db>416</db>
-			<file>416</file>
+			<db>420</db>
+			<file>420</file>
 		</sql>
 		<git>
-			<tag>0.5.1</tag>
+			<tag>0.5.2</tag>
 			<!-- commit count removed Dec 2014 -->
 			<hooks>
 				<precommit>9</precommit>

@@ -1,0 +1,188 @@
+
+/*! nZEDb tooltip style */
+.ui-tooltip-nzedb .ui-tooltip-titlebar,
+.ui-tooltip-nzedb .ui-tooltip-content{
+    border-color: #90D93F;
+    color: #3F6219;
+}
+
+    .ui-tooltip-nzedb .ui-tooltip-content{
+        background-color: #CAED9E;
+    }
+
+    .ui-tooltip-nzedb .ui-tooltip-titlebar{
+        background-color: #B0DE78;
+        color:white;
+    }
+
+    .ui-tooltip-nzedb .ui-state-default .ui-tooltip-icon{
+        background-position: -42px 0;
+    }
+
+.rarfilelist {cursor:pointer;}
+
+
+
+/*
+movie, xxx, console and music modals with backdrop images.
+*/
+#movieinfo { background-position: center center; background-repeat: no-repeat; position: absolute; z-index: 2;}
+#movieinfo h1 { font-size: 32px; padding: 10px 10px 0px 20px; color: #fff; text-shadow: 0px 0px 4px #000; }
+#movieinfo h2, #movieinfo h3 { padding: 10px 20px 0px 20px; color: #fff; text-shadow: 0px 0px 4px #000; }
+#movieinfo a { color: #fff; }
+#movieinfo img.cover { margin-right: 20px; -webkit-box-shadow: 0px 0px 4px #000; -moz-box-shadow: 0px 0px 4px #000; }
+
+#xxxinfo { background-position: center center; background-repeat: no-repeat; position: absolute; z-index: 2;}
+#xxxinfo h1 { font-size: 32px; padding: 10px 10px 0px 20px; color: #fff; text-shadow: 0px 0px 4px #000;}
+#xxxinfo h2, #xxxinfo h3 { padding: 10px 20px 0px 20px; color: #fff; text-shadow: 0px 0px 4px #000;}
+#xxxinfo a { color: #fff;}
+#xxxinfo img.cover { width: 187px; height: 270px; margin-right: 20px; -webkit-box-shadow: 0px 0px 4px #000; -moz-box-shadow: 0px 0px 4px #000;}
+#xxxbackdrop { position: absolute; width: 600px; height: 717px; margin-left: -3px; top: 20px; background-color: #000; overflow: hidden;}
+#xxxbackdrop img { opacity:0.5; width: 100%; height: 100%;}
+
+#backdrop { position: absolute; width: 810px; height: 455px; margin-left: -3px; top: 20px; background-color: #000; overflow: hidden;}
+#backdrop img { opacity:0.5; width: 100%; height: 100%;}
+
+#musicinfo { color:#FFF; min-height:435px; background-color:#7F7F7F; background-image:url('../../../covers/music/backdrop.jpg'); background-repeat: repeat-x;}
+#musicinfo h1 { font-size: 32px; padding: 10px 10px 0px 20px; color: #fff; }
+#musicinfo h2, #musicinfo h3, #musicinfo p { padding: 10px 20px 0px 20px; color: #fff;}
+#musicinfo a { color: #fff; }
+#musicinfo img.cover { float:right;  margin:20px 20px 0 20px; padding: 5px 5px 5px 5px; background: #FFF; border:1px solid #EEE; -moz-box-shadow: 3px 6px 8px -4px #333; -webkit-box-shadow: 3px 6px 8px -4px #333; box-shadow: 3px 6px 8px -4px #333; }
+#musicinfo p {text-align: left; line-height: 180%;}
+
+/*
+icons and multioperation buttons
+*/
+/*input.nzb_check_all { margin-left:6px; }
+#nzb_multi_operations_form { clear: both; }
+div.nzb_multi_operations { color:#888; display:inline; float:right; text-align: right; clear: both; }
+div.nzb_multi_operations input { color:#888; background-color:#fff; border:1px solid #ddd; }
+div.nzb_multi_operations input:hover { color:#000; border:1px solid #000; cursor:pointer; }
+
+div.icon { width:16px; height:16px; background-repeat:no-repeat; cursor:pointer; position:relative; float:left; margin:2px; }
+table.data td.icons div.icon { opacity:.30; }
+div.icon_cart           { background-image:url('../../../themes/shared/images/icons/cartup.png'); }
+div.icon_cart_clicked   { background-image:url('../../../themes/shared/images/icons/cartdown.png'); }
+div.icon_nzb            { background-image:url('../../../themes/shared/images/icons/nzbup.png'); }
+div.icon_nzb_clicked    { background-image:url('../../../themes/shared/images/icons/nzbdown.png'); }
+div.icon_nzb a          { text-decoration:none; padding-bottom:2px; padding-right:12px; }
+div.icon_sab            { background-image:url('../../../themes/shared/images/icons/sabup.png'); }
+div.icon_sab_clicked    { background-image:url('../../../themes/shared/images/icons/sabdown.png'); }
+div.icon_tvrage         { background-image:url('../../../themes/shared/images/icons/tvrage.png'); }
+div.icon_check          { background-image:url('../../../themes/shared/images/icons/check.png'); }
+*/
+/*
+    ColorBox Core Style
+    The following rules are the styles that are consistant between themes.
+    Avoid changing this area to maintain compatability with future versions of ColorBox.
+*/
+#colorbox, #cboxOverlay, #cboxWrapper{position:absolute; top:0; left:0; z-index:9999; overflow:hidden;}
+#cboxOverlay{position:fixed; width:100%; height:100%;}
+#cboxMiddleLeft, #cboxBottomLeft{clear:left;}
+#cboxContent{position:relative; overflow:visible;}
+#cboxLoadedContent{overflow:auto;}
+#cboxLoadedContent iframe{display:block; width:100%; height:100%; border:0;}
+#cboxTitle{margin:0;}
+#cboxLoadingOverlay, #cboxLoadingGraphic{position:absolute; top:0; left:0; width:100%;}
+#cboxPrevious, #cboxNext, #cboxClose, #cboxSlideshow{cursor:pointer;}
+
+#cboxOverlay{background:#fff;}
+
+#colorbox{}
+    #cboxTopLeft{width:25px; height:25px; background:url(../../../themes/shared/images/colorbox/border1.png) 0 0 no-repeat;}
+    #cboxTopCenter{height:25px; background:url(../../../themes/shared/images/colorbox/border1.png) 0 -50px repeat-x;}
+    #cboxTopRight{width:25px; height:25px; background:url(../../../themes/shared/images/colorbox/border1.png) -25px 0 no-repeat;}
+    #cboxBottomLeft{width:25px; height:25px; background:url(../../../themes/shared/images/colorbox/border1.png) 0 -25px no-repeat;}
+    #cboxBottomCenter{height:25px; background:url(../../../themes/shared/images/colorbox/border1.png) 0 -75px repeat-x;}
+    #cboxBottomRight{width:25px; height:25px; background:url(../../../themes/shared/images/colorbox/border1.png) -25px -25px no-repeat;}
+    #cboxMiddleLeft{width:25px; background:url(../../../themes/shared/images/colorbox/border2.png) 0 0 repeat-y;}
+    #cboxMiddleRight{width:25px; background:url(../../../themes/shared/images/colorbox/border2.png) -25px 0 repeat-y;}
+    #cboxContent{background:#fff;}
+        #cboxLoadedContent{background:#fff; margin-top:32px; padding:1px; }
+        #cboxLoadingOverlay{background:#fff;}
+        #cboxTitle{position:absolute; font-size:125%; top:-2px; left:0; color:#000; }
+        #cboxCurrent{position:absolute; top:-1px; right:205px; text-indent:-9999px;}
+        #cboxSlideshow, #cboxPrevious, #cboxNext, #cboxClose{text-indent:-9999px; width:20px; height:20px; position:absolute; top:-1px; background:url(../../../themes/shared/images/colorbox/controls.png) 0 0 no-repeat;}
+        #cboxPrevious{background-position:0px 0px; right:44px; border-style:solid; border-color:#fff;}
+        #cboxPrevious.hover{background-position:0px -25px;}
+        #cboxNext{background-position:-25px 0px; right:22px; border-style:solid; border-color:#fff;}
+        #cboxNext.hover{background-position:-25px -25px;}
+        #cboxClose{background-position:-50px 0px; right:0; border-style:solid; border-color:#fff;}
+        #cboxClose.hover{background-position:-50px -25px;}
+        .cboxSlideshow_on #cboxPrevious, .cboxSlideshow_off #cboxPrevious{right:66px;}
+        .cboxSlideshow_on #cboxSlideshow{background-position:-75px -25px; right:44px;}
+        .cboxSlideshow_on #cboxSlideshow.hover{background-position:-100px -25px;}
+        .cboxSlideshow_off #cboxSlideshow{background-position:-100px 0px; right:44px;}
+        .cboxSlideshow_off #cboxSlideshow.hover{background-position:-75px -25px;}
+
+/*
+    The following fixes png-transparency for IE6.
+*/
+.cboxIE #cboxTopLeft{background:transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src=../../../themes/shared/images/colorbox/internet_explorer/borderTopLeft.png, sizingMethod='scale');}
+.cboxIE #cboxTopCenter{background:transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src=../../../themes/shared/images/colorbox/internet_explorer/borderTopCenter.png, sizingMethod='scale');}
+.cboxIE #cboxTopRight{background:transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src=../../../themes/shared/images/colorbox/internet_explorer/borderTopRight.png, sizingMethod='scale');}
+.cboxIE #cboxBottomLeft{background:transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src=../../../themes/shared/images/colorbox/internet_explorer/borderBottomLeft.png, sizingMethod='scale');}
+.cboxIE #cboxBottomCenter{background:transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src=../../../themes/shared/images/colorbox/internet_explorer/borderBottomCenter.png, sizingMethod='scale');}
+.cboxIE #cboxBottomRight{background:transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src=../../../themes/shared/images/colorbox/internet_explorer/borderBottomRight.png, sizingMethod='scale');}
+.cboxIE #cboxMiddleLeft{background:transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src=../../../themes/shared/images/colorbox/internet_explorer/borderMiddleLeft.png, sizingMethod='scale');}
+.cboxIE #cboxMiddleRight{background:transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src=../../../themes/shared/images/colorbox/internet_explorer/borderMiddleRight.png, sizingMethod='scale');}
+
+/*
+    Use colorbox example 2 css for movieinfo popups
+*/
+/*
+.cboxMovie{}
+    .cboxMovie #cboxContent{background:#fff;}
+    .cboxMovie #cboxTopLeft{width:25px; height:25px; background:url(../../../themes/shared/images/colorbox/border1.png) 0 0 no-repeat;}
+    .cboxMovie #cboxTopCenter{height:25px; background:url(../../../themes/shared/images/colorbox/border1.png) 0 -50px repeat-x;}
+    .cboxMovie #cboxTopRight{width:25px; height:25px; background:url(../../../themes/shared/images/colorbox/border1.png) -25px 0 no-repeat;}
+    .cboxMovie #cboxBottomLeft{width:25px; height:25px; background:url(../../../themes/shared/images/colorbox/border1.png) 0 -25px no-repeat;}
+    .cboxMovie #cboxBottomCenter{height:25px; background:url(../../../themes/shared/images/colorbox/border1.png) 0 -75px repeat-x;}
+    .cboxMovie #cboxBottomRight{width:25px; height:25px; background:url(../../../themes/shared/images/colorbox/border1.png) -25px -25px no-repeat;}
+    .cboxMovie #cboxMiddleLeft{width:25px; background:url(../../../themes/shared/images/colorbox/border2.png) 0 0 repeat-y;}
+    .cboxMovie #cboxMiddleRight{width:25px; background:url(../../../themes/shared/images/colorbox/border2.png) -25px 0 repeat-y;}
+        .cboxMovie #cboxLoadedContent{background:#fff; margin-top:32px; padding:1px; }
+        .cboxMovie #cboxLoadingGraphic{background:url(../../../themes/shared/images/loading.gif) center center no-repeat;}
+        .cboxMovie #cboxLoadingOverlay{background:#fff;}
+        .cboxMovie #cboxTitle{position:absolute; font-size:125%; top:-2px; left:0; color:#000; margin-top:-10px;}
+        .cboxMovie #cboxCurrent{position:absolute; top:-1px; right:205px; text-indent:-9999px;}
+        .cboxMovie #cboxSlideshow, .cboxMovie #cboxPrevious, .cboxMovie #cboxNext, .cboxMovie #cboxClose{text-indent:-9999px; width:20px; height:20px; position:absolute; top:-1px; background:url(../../../themes/shared/images/colorbox/controls.png) 0 0 no-repeat;}
+        .cboxMovie #cboxPrevious{background-position:0px 0px; right:44px;}
+        .cboxMovie #cboxPrevious.hover{background-position:0px -25px;}
+        .cboxMovie #cboxNext{background-position:-25px 0px; right:22px;}
+        .cboxMovie #cboxNext.hover{background-position:-25px -25px;}
+        .cboxMovie #cboxClose{background-position:-50px 0px; right:0;}
+        .cboxMovie #cboxClose.hover{background-position:-50px -25px;}
+        .cboxMovie .cboxSlideshow_on #cboxPrevious, .cboxMovie .cboxSlideshow_off #cboxPrevious{right:66px;}
+        .cboxMovie .cboxSlideshow_on #cboxSlideshow{background-position:-75px -25px; right:44px;}
+        .cboxMovie .cboxSlideshow_on #cboxSlideshow.hover{background-position:-100px -25px;}
+        .cboxMovie .cboxSlideshow_off #cboxSlideshow{background-position:-100px 0px; right:44px;}
+        .cboxMovie .cboxSlideshow_off #cboxSlideshow.hover{background-position:-75px -25px;}
+
+.cboxXXX{}
+    .cboxXXX #cboxContent{background:#fff;}
+    .cboxXXX #cboxTopLeft{width:25px; height:25px; background:url(../../../themes/shared/images/colorbox/border1.png) 0 0 no-repeat;}
+    .cboxXXX #cboxTopCenter{height:25px; background:url(../../../themes/shared/images/colorbox/border1.png) 0 -50px repeat-x;}
+    .cboxXXX #cboxTopRight{width:25px; height:25px; background:url(../../../themes/shared/images/colorbox/border1.png) -25px 0 no-repeat;}
+    .cboxXXX #cboxBottomLeft{width:25px; height:25px; background:url(../../../themes/shared/images/colorbox/border1.png) 0 -25px no-repeat;}
+    .cboxXXX #cboxBottomCenter{height:25px; background:url(../../../themes/shared/images/colorbox/border1.png) 0 -75px repeat-x;}
+    .cboxXXX #cboxBottomRight{width:25px; height:25px; background:url(../../../themes/shared/images/colorbox/border1.png) -25px -25px no-repeat;}
+    .cboxXXX #cboxMiddleLeft{width:25px; background:url(../../../themes/shared/images/colorbox/border2.png) 0 0 repeat-y;}
+    .cboxXXX #cboxMiddleRight{width:25px; background:url(../../../themes/shared/images/colorbox/border2.png) -25px 0 repeat-y;}
+    .cboxXXX #cboxLoadedContent{background:#fff; margin-top:32px; padding:1px; }
+    .cboxXXX #cboxLoadingOverlay{background:#fff;}
+    .cboxXXX #cboxTitle{position:absolute; font-size:125%; top:-2px; left:0; color:#000; margin-top:-10px;}
+    .cboxXXX #cboxCurrent{position:absolute; top:-1px; right:205px; text-indent:-9999px;}
+    .cboxXXX #cboxSlideshow, .cboxMovie #cboxPrevious, .cboxMovie #cboxNext, .cboxMovie #cboxClose{text-indent:-9999px; width:20px; height:20px; position:absolute; top:-1px; background:url(../../../themes/shared/images/colorbox/controls.png) 0 0 no-repeat;}
+    .cboxXXX #cboxPrevious{background-position:0px 0px; right:44px;}
+    .cboxXXX #cboxPrevious.hover{background-position:0px -25px;}
+    .cboxXXX #cboxNext{background-position:-25px 0px; right:22px;}
+    .cboxXXX #cboxNext.hover{background-position:-25px -25px;}
+    .cboxXXX #cboxClose{background-position:-50px 0px; right:0;}
+    .cboxXXX #cboxClose.hover{background-position:-50px -25px;}
+    .cboxXXX .cboxSlideshow_on #cboxPrevious, .cboxMovie .cboxSlideshow_off #cboxPrevious{right:66px;}
+    .cboxXXX .cboxSlideshow_on #cboxSlideshow{background-position:-75px -25px; right:44px;}
+    .cboxXXX .cboxSlideshow_on #cboxSlideshow.hover{background-position:-100px -25px;}
+    .cboxXXX .cboxSlideshow_off #cboxSlideshow{background-position:-100px 0px; right:44px;}
+    .cboxXXX .cboxSlideshow_off #cboxSlideshow.hover{background-position:-75px -25px;}
+*/

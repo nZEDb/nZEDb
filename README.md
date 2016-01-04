@@ -105,7 +105,7 @@ The nZEDb team have no control over and are not responsible for what is posted o
 
 ### The Team
 
-Kevin123, jonnyboy, Miatrix, zombu2, Codeslave, sinfuljosh, ugo, Whitelighter, Bart39, archer(niel), ThePeePs, ruhllatio<br /><br />
+Kevin123, jonnyboy, Miatrix, zombu2, Codeslave, sinfuljosh, ugo, Whitelighter, Bart39, archer(niel), ThePeePs, ruhllatio, DariusIII<br /><br />
 <a href="https://flattr.com/submit/auto?user_id=nzedb&url=https%3A%2F%2Fgithub.com%2FnZEDb%2FnZEDb" target="_blank"><img src="//api.flattr.com/button/flattr-badge-large.png" alt="Donations." title="Donations." border="0"></a>
 
 <p>

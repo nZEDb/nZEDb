@@ -4,11 +4,11 @@
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 	<title>{$page->title}</title>
 	<link href="./templates/install.css" rel="stylesheet" type="text/css" media="screen" />
-	<link rel="shortcut icon" type="image/ico" href="../themes_shared/images/favicon.ico"/>
+	<link rel="shortcut icon" type="image/ico" href="../themes/shared/images/favicon.ico"/>
 	{$page->head}
 </head>
 <body>
-	<h1 id="logo"><img alt="nZEDb" src="../themes_shared/images/logo.png" /></h1>
+	<h1 id="logo"><img alt="nZEDb" src="../themes/shared/images/logo.png" /></h1>
 	<div class="content">
 		<h2>{$page->title}</h2>
 		{$page->content}

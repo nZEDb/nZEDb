@@ -182,14 +182,6 @@
 					<a title="Visit tvnzb on IRC" href="irc://irc.Prison.NET:6667/tvnzb" target="_blank">
 						tvnzbIRC
 					</a>
-				{elseif {$result.source} == "usenet-crawler"}
-					<a title="Visit Usenet-Crawler" href="{$site->dereferrer_link}http://www.usenet-crawler.com/predb?q={$result.title}" target="_blank">
-						Usenet-Crawler
-					</a>
-				{elseif {$result.source} == womble}
-					<a title="Visit Womble" href="{$site->dereferrer_link}http://www.newshost.co.za/?s={$result.title}" target="_blank">
-						Womble
-					</a>
 				{elseif {$result.source} == zenet}
 					<a title="Visit ZEnet" href="{$site->dereferrer_link}http://pre.zenet.org/?search={$result.title}" target="_blank">
 						ZEnet
@@ -238,7 +230,7 @@
 					href="{$site->dereferrer_link}http://nzbindex.com/search/?q={$result.title}"
 					target="_blank"
 				>
-					<img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/nzbindex.png" />
+					<img src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/nzbindex.png" />
 					&nbsp;
 				</a>
 			</td>
@@ -249,7 +241,7 @@
 					href="{$site->dereferrer_link}http://binsearch.info/?q={$result.title}"
 					target="_blank"
 				>
-					<img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/binsearch.png" />
+					<img src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/binsearch.png" />
 					&nbsp;
 				</a>
 			</td>

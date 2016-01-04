@@ -106,22 +106,24 @@ ob_start();
 // De-gzip the NZB and store it in the output buffer.
 readgzfile($nzbPath);
 
+$cleanName = str_replace(array(',', ' ', '/'), '_', $relData["searchname"]);
+
 // Set the NZB file name.
-header("Content-Disposition: attachment; filename=" . str_replace(array(',', ' '), '_', $relData["searchname"]) . ".nzb");
+header("Content-Disposition: attachment; filename=" . $cleanName . ".nzb");
 // Get the size of the NZB file.
 header("Content-Length: " . ob_get_length());
 header("Content-Type: application/x-nzb");
 header("Expires: " . date('r', time() + 31536000));
 // Set X-DNZB header data.
-header("X-DNZB-Failure: " . $page->serverurl . 'failed/' . '?guid=' . $_GET['id'] . '&searchname=' . $relData["searchname"] . '&userid=' . $uid . '&rsstoken=' . $rssToken);
+header("X-DNZB-Failure: " . $page->serverurl . 'failed/' . '?guid=' . $_GET['id'] . '&userid=' . $uid . '&rsstoken=' . $rssToken);
 header("X-DNZB-Category: " . $relData["category_name"]);
 header("X-DNZB-Details: " . $page->serverurl . 'details/' . $_GET["id"]);
 if (!empty($relData['imdbid']) && $relData['imdbid'] > 0) {
 	header("X-DNZB-MoreInfo: http://www.imdb.com/title/tt" . $relData['imdbid']);
-} else if (!empty($relData['tvrage']) && $relData['tvrage'] > 0) {
-	header("X-DNZB-MoreInfo: http://www.tvrage.com/shows/id-" . $relData['tvrage']);
+} else if (!empty($relData['tvdb']) && $relData['tvdb'] > 0) {
+	header("X-DNZB-MoreInfo: http://www.thetvdb.com/?tab=series&id=" . $relData['tvdb']);
 }
-header("X-DNZB-Name: " . $relData["searchname"]);
+header("X-DNZB-Name: " . $cleanName);
 if ($relData['nfostatus'] == 1) {
 	header("X-DNZB-NFO: " . $page->serverurl . 'nfo/' . $_GET["id"]);
 }

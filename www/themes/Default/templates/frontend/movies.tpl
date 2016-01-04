@@ -73,19 +73,19 @@
 			<tr>
 				<th width="130"><input type="checkbox" class="nzb_check_all"/></th>
 				<th>title<br/><a title="Sort Descending" href="{$orderbytitle_desc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif"
+								src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_down.gif"
 								alt=""/></a><a title="Sort Ascending" href="{$orderbytitle_asc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt=""/></a>
+								src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_up.gif" alt=""/></a>
 				</th>
 				<th>year<br/><a title="Sort Descending" href="{$orderbyyear_desc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif"
+								src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_down.gif"
 								alt=""/></a><a title="Sort Ascending" href="{$orderbyyear_asc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt=""/></a>
+								src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_up.gif" alt=""/></a>
 				</th>
 				<th>rating<br/><a title="Sort Descending" href="{$orderbyrating_desc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif"
+								src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_down.gif"
 								alt=""/></a><a title="Sort Ascending" href="{$orderbyrating_asc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt=""/></a>
+								src="{$smarty.const.WWW_TOP}/themes/shared/images/sorting/arrow_up.gif" alt=""/></a>
 				</th>
 			</tr>
 			{foreach from=$results item=result}

@@ -206,6 +206,13 @@
 												   target="_blank"></a>
 											</div>
 										{/if}
+										{if $result.trakt > 0}
+											<div class="icon icon_trakt">
+												<a class="divlink" title="View in Trakt"
+												   href="{$site->dereferrer_link}https://trakt.tv/shows/{$result.trakt}"
+												   target="_blank"></a>
+											</div>
+										{/if}
 										{if $result.imdb > 0}
 											<div class="icon icon_imdb">
 												<a class="divlink" title="View in IMDB"
