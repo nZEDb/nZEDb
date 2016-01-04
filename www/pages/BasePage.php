@@ -142,8 +142,9 @@ class BasePage
 		// Tell Smarty which directories to use for templates
 		$this->smarty->setTemplateDir(
 			[
-				'user_frontend' => nZEDb_THEMES . $this->theme . '/templates/frontend',
-				'frontend'      => nZEDb_THEMES . 'Default/templates/frontend'
+				1 => nZEDb_THEMES . $this->theme . '/templates/frontend',
+				2 => nZEDb_THEMES . 'shared/templates/frontend',
+				3 => nZEDb_THEMES . 'Default/templates/frontend'
 			]
 		);
 
