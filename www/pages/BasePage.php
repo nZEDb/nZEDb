@@ -143,7 +143,7 @@ class BasePage
 		$this->smarty->setTemplateDir(
 			[
 				1 => nZEDb_THEMES . $this->theme . '/templates/frontend',
-				2 => nZEDb_THEMES . 'shared/templates/frontend',
+				2 => nZEDb_THEMES . 'shared/templates',
 				3 => nZEDb_THEMES . 'Default/templates/frontend'
 			]
 		);
