@@ -19,6 +19,8 @@ class NameFixer
 	const PROC_FILES_DONE = 1;
 	const PROC_PAR2_NONE = 0;
 	const PROC_PAR2_DONE = 1;
+	const PROC_SRR_NONE = 0;
+	const PROC_SRR_DONE = 1;
 
 	// Constants for overall rename status
 	const IS_RENAMED_NONE = 0;
@@ -354,6 +356,76 @@ class NameFixer
 
 				foreach ($releases as $release) {
 					if (($nzbContents->checkPAR2($release['guid'], $release['releaseid'], $release['group_id'], $nameStatus, $show)) === true) {
+						$this->fixed++;
+					}
+
+					$this->checked++;
+					$this->_echoRenamed($show);
+				}
+				$this->_echoFoundCount($echo, ' files');
+			} else {
+				echo $this->pdo->log->alternate('Nothing to fix.');
+			}
+		}
+	}
+
+	/**
+	 * Attempts to fix release names using the SRR File data.
+	 *
+	 * @param int $time   1: 24 hours, 2: no time limit
+	 * @param int $echo   1: change the name, anything else: preview of what could have been changed.
+	 * @param int $cats   1: other categories, 2: all categories
+	 * @param $nameStatus
+	 * @param $show
+	 * @param NNTP $nntp
+	 */
+	public function fixNamesWithSRR($time, $echo, $cats, $nameStatus, $show, $nntp)
+	{
+		$this->_echoStartMessage($time, 'SRR files');
+
+		if ($cats === 3) {
+			$query = sprintf('
+					SELECT rel.id AS releaseid, rel.guid, rel.group_id
+					FROM releases rel
+					WHERE nzbstatus = %d
+					AND preid = 0',
+				NZB::NZB_ADDED
+			);
+			$cats = 2;
+		} else {
+			$query = sprintf('
+					SELECT rel.id AS releaseid, rel.guid, rel.group_id
+					FROM releases rel
+					WHERE (rel.isrenamed = %d OR rel.categoryid = %d)
+					AND proc_srr = %d',
+				self::IS_RENAMED_NONE,
+				Category::CAT_MISC,
+				self::PROC_SRR_NONE
+			);
+		}
+
+		$releases = $this->_getReleases($time, $cats, $query);
+
+		if ($releases instanceof \Traversable && $releases !== false) {
+
+			$total = $releases->rowCount();
+			if ($total > 0) {
+				$this->_totalReleases = $total;
+
+				echo $this->pdo->log->primary(number_format($total) . ' releases to process.');
+				$Nfo = new Nfo(['Echo' => $this->echooutput, 'Settings' => $this->pdo]);
+				$nzbContents = new NZBContents(
+					[
+						'Echo'        => $this->echooutput,
+						'NNTP'        => $nntp,
+						'Nfo'         => $Nfo,
+						'Settings'    => $this->pdo,
+						'PostProcess' => new PostProcess(['Settings' => $this->pdo, 'Nfo' => $Nfo])
+					]
+				);
+
+				foreach ($releases as $release) {
+					if (($nzbContents->checkSRR($release['guid'], $release['releaseid'], $release['group_id'], $nameStatus, $show)) === true) {
 						$this->fixed++;
 					}
 

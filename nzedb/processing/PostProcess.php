@@ -25,6 +25,7 @@ use nzedb\processing\post\ProcessAdditional;
 use nzedb\utility;
 
 require_once nZEDb_LIBS . 'rarinfo/par2info.php';
+require_once nZEDb_LIBS . 'rarinfo/srrinfo.php';
 
 class PostProcess
 {
@@ -109,6 +110,7 @@ class PostProcess
 		$this->pdo = (($options['Settings'] instanceof Settings) ? $options['Settings'] : new Settings());
 		$this->groups = (($options['Groups'] instanceof Groups) ? $options['Groups'] : new Groups(['Settings' => $this->pdo]));
 		$this->_par2Info = new \Par2Info();
+		$this->_srrInfo = new \SrrInfo();
 		$this->debugging = ($options['Logger'] instanceof Logger ? $options['Logger'] : new Logger(['ColorCLI' => $this->pdo->log]));
 		$this->nameFixer = (($options['NameFixer'] instanceof NameFixer) ? $options['NameFixer'] : new NameFixer(['Echo' => $this->echooutput, 'Settings' => $this->pdo, 'Groups' => $this->groups]));
 		$this->Nfo = (($options['Nfo'] instanceof Nfo) ? $options['Nfo'] : new Nfo(['Echo' => $this->echooutput, 'Settings' => $this->pdo]));
@@ -330,17 +332,7 @@ class PostProcess
 		$foundName = true;
 		if (!in_array(
 			(int)$query['categoryid'],
-			[
-				Category::CAT_BOOKS_OTHER,
-				Category::CAT_GAME_OTHER,
-				Category::CAT_MOVIE_OTHER,
-				Category::CAT_MUSIC_OTHER,
-				Category::CAT_PC_PHONE_OTHER,
-				Category::CAT_TV_OTHER,
-				Category::CAT_OTHER_HASHED,
-				Category::CAT_XXX_OTHER,
-				Category::CAT_MISC
-			]
+			Category::CAT_GROUP_OTHER
 		)
 		) {
 			$foundName = false;
@@ -424,6 +416,75 @@ class PostProcess
 					)
 				);
 			}
+			if ($foundName === true) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Attempt to get a better name from a par2 file and categorize the release.
+	 *
+	 * @note Called from NZBContents.php
+	 *
+	 * @param string $messageID MessageID from NZB file.
+	 * @param int    $relID     ID of the release.
+	 * @param int    $groupID   Group ID of the release.
+	 * @param \nzedb\NNTP   $nntp      Class NNTP
+	 * @param int    $show      Only show result or apply iy.
+	 *
+	 * @return bool
+	 */
+	public function parseSRR($messageID, $relID, $groupID, &$nntp, $show)
+	{
+		if ($messageID === '') {
+			return false;
+		}
+
+		$query = $this->pdo->queryOneRow(
+			sprintf('
+				SELECT
+					r.id, r.group_id, r.categoryid, r.name, r.searchname,
+					UNIX_TIMESTAMP(r.postdate) AS post_date,
+					r.id AS releaseid,
+					g.name AS groupname
+				FROM releases r
+				LEFT JOIN groups g ON r.group_id = g.id
+				WHERE r.isrenamed = 0
+				AND r.categoryid IN (%s)
+				AND r.id = %d',
+				implode(',', Category::CAT_GROUP_OTHER),
+				$relID
+			)
+		);
+
+		if ($query === false) {
+			return false;
+		}
+
+		// Get the SRR file.
+		$srr = $nntp->getMessages($query['groupname'], $messageID, $this->alternateNNTP);
+		if ($nntp->isError($srr)) {
+			return false;
+		}
+
+		// Put the SRR into SrrInfo, check if there's an error.
+		$this->_srrInfo->setData($srr);
+		if ($this->_srrInfo->error) {
+			return false;
+		}
+
+		// Get the file list from SrrInfo.
+		$summary = $this->_srrInfo->getSummary();
+		if ($summary !== false && empty($summary['error'])) {
+			$foundName = false;
+			// Try to get a new name.
+			$query['textstring'] = $summary['file_name'];
+			if ($this->nameFixer->checkName($query, 1, 'SRR, ', 1, $show) === true) {
+				$foundName = true;
+			}
+
 			if ($foundName === true) {
 				return true;
 			}

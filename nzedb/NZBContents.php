@@ -191,6 +191,38 @@ class NZBContents
 	}
 
 	/**
+	 * Attempts to get the releasename from a par2 file
+	 *
+	 * @param string $guid
+	 * @param int    $relID
+	 * @param int    $groupID
+	 * @param int    $nameStatus
+	 * @param int    $show
+	 *
+	 * @return bool
+	 *
+	 * @access public
+	 */
+	public function checkSRR($guid, $relID, $groupID, $nameStatus, $show)
+	{
+		$nzbFile = $this->LoadNZB($guid);
+		if ($nzbFile !== false) {
+			foreach ($nzbFile->file as $nzbContents) {
+				if (preg_match('/\.srr[" ].+\(1\/1\)$/i', (string)$nzbContents->attributes()->subject)) {
+					if ($this->pp->parseSRR((string)$nzbContents->segments->segment, $relID, $groupID, $this->nntp, $show) === true && $nameStatus === 1) {
+						$this->pdo->queryExec(sprintf('UPDATE releases SET proc_srr = 1 WHERE id = %d', $relID));
+						return true;
+					}
+				}
+			}
+		}
+		if ($nameStatus === 1) {
+			$this->pdo->queryExec(sprintf('UPDATE releases SET proc_srr = 1 WHERE id = %d', $relID));
+		}
+		return false;
+	}
+
+	/**
 	 * Gets the completion from the NZB, optionally looks if there is an NFO/PAR2 file.
 	 *
 	 * @param string $guid
