@@ -172,15 +172,15 @@ function ajax_welcome_msg(bln)
 	  {
 		if (bln)
 		{
-		  $('div#adminhome').hide();		
+		  $('div#adminhome').hide();
 		  $('div#adminwelcome').show('fast', function() {});
 		}
 		else
 		{
-		  $('div#adminwelcome').hide();			
+		  $('div#adminwelcome').hide();
 		  $('div#adminhome').show('fast', function() {});
 		}
-	  },	  
+	  },
 	  error: function(xhr,err,e) { alert( "Error in ajax_welcome_msg: " + err ); }
 	});
 }
@@ -203,6 +203,3 @@ jQuery(function($){
     $('.autosize').autosize({append: "\n"});
 
 });
-
-
-

@@ -227,8 +227,8 @@
 						<li width="100px">Posted {$mpostdate[$m@index]|timeago}</li>
 						<li width="80px">{{$msize[$m@index]}|fsize_format:"MB"}</li>
 						<li width="50px"><a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$mguid[$m@index]}">{$mtotalparts[$m@index]}</a> <i class="fa fa-file"></i></li>
-						<li width="50px"><a title="View comments for {$result.title|escape:"htmlall"}" href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/#comments">{$mcomments[$m@index]}</a> <i class="fa fa-comments-alt"></i></li>
-						<li width="50px">{$mgrabs[$m@index]} <i class="fa fa-cloud-download-alt"></i></li>
+						<li width="50px"><a title="View comments for {$result.title|escape:"htmlall"}" href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/#comments">{$mcomments[$m@index]}</a> <i class="fa fa-comments-o"></i></li>
+						<li width="50px">{$mgrabs[$m@index]} <i class="fa fa-cloud-download"></i></li>
 					</ul>
 				</div>
 			</td>

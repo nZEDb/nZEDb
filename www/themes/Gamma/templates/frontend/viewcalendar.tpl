@@ -5,7 +5,7 @@
 <center>
 	<div class="well well-small">
 	{foreach $cal as $c}
-	<a href="{$smarty.const.WWW_TOP}/calendar?date={$c}">{$c}</a>&nbsp;&nbsp           
+	<a href="{$smarty.const.WWW_TOP}/calendar?date={$c}">{$c}</a>&nbsp;&nbsp
 	{/foreach}
 	</div>
 </center>
@@ -13,7 +13,7 @@
 <table width="100%;">
 	<tr valign="top">
 		<td width="33%";>
-			
+
 			<table width="100%;" class="data highlight icons table table-striped" id="browsetable">
 				<tr class="error">
 					{if $predata|@count > 0}
@@ -28,10 +28,10 @@
 				<td style="padding-top:15px;" colspan="10"><h2>No results</h2></td></tr>
 				{/if}
 			</table>
-			
+
 		</td>
 		<td width="33%";>
-			
+
 			<table width="100%;" class="data highlight icons table table-striped" id="browsetable">
 				<tr class="success">
 					{if $daydata|@count > 0}
@@ -46,7 +46,7 @@
 				<td style="padding-top:15px;" colspan="10"><h2>No results</h2></td></tr>
 				{/if}
 			</table>
-			
+
 		</td>
 		<td width="33%";>
 			<table width="100%;" class="data highlight icons table table-striped" id="browsetable">

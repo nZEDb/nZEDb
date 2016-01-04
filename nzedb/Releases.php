@@ -80,7 +80,7 @@ class Releases
 			sprintf(
 				"INSERT INTO releases
 					(name, searchname, totalpart, group_id, adddate, guid, postdate, fromname,
-				  	size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus,
+					size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus,
 					isrenamed, iscategorized, reqidstatus, preid)
 				 VALUES (%s, %s, %d, %d, NOW(), %s, %s, %s, %s, %d, -1, %d, -1, %d, %d, 1, %d, %d)",
 				$parameters['name'],

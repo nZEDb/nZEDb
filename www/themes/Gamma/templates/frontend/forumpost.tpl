@@ -25,18 +25,18 @@
 					<a class="rndbtn confirm_action btn btn-mini btn-danger" href="{$smarty.const.WWW_TOP}/admin/forum-delete.php?id={$result.id}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Delete Post">Delete</a>
 				</div>
 				{/if}
-				
+
 			</td>
 			<td>{$result.message|escape:"htmlall"|nl2br|magicurl}</td>
 		</tr>
 	{/foreach}
-	
+
 </table>
 
 
 
 <div style="float:right;margin-top:5px;">
-	<a href="#new" role="button" class="btn btn-small btn-primary" data-toggle="modal">Reply</a> 
+	<a href="#new" role="button" class="btn btn-small btn-primary" data-toggle="modal">Reply</a>
 	{if $results|@count > 10}
 		<a class="btn btn-small" href="#">Top</a>
 	{/if}
@@ -45,35 +45,34 @@
 
 <div id="new" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	<div class="modal-header">
-	    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-	    <h3 id="myModalLabel">Add New Post</h3>
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+		<h3 id="myModalLabel">Add New Post</h3>
 	</div>
-    <div class="modal-body">
-    	<form id="forum-post-reply" class="form-horizontal" action="" method="post">
+	<div class="modal-body">
+		<form id="forum-post-reply" class="form-horizontal" action="" method="post">
 			<div class="control-group">
 				<label class="control-label" for="addReply">Message</label>
 				<div class="controls">
 					<textarea class="input input-xlarge" maxlength="5000" id="addReply" name="addReply" rows="6" cols="100"></textarea>
 				</div>
-			</div>		
+			</div>
 		</form>
-    </div>
-    <div class="modal-footer">
-    	<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-    	<input id="forum-post-reply-submit" class="forumreplysubmit btn btn-success" type="submit" value="submit"/>
-    </div>
+	</div>
+	<div class="modal-footer">
+		<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+		<input id="forum-post-reply-submit" class="forumreplysubmit btn btn-success" type="submit" value="submit"/>
+	</div>
 </div>
 
 <script>
   $('#forum-post-reply-submit').on('click', function(e){
-    // We don't want this to act as a link so cancel the link action
-    e.preventDefault();
+	// We don't want this to act as a link so cancel the link action
+	e.preventDefault();
 
-    // Find form and submit it
-    $('#forum-post-reply').submit();
+	// Find form and submit it
+	$('#forum-post-reply').submit();
   });
 </script>
 
 
 {/if}
-

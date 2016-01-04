@@ -186,7 +186,7 @@ class NameFixer
 					SELECT rel.id AS releaseid
 					FROM releases rel
 					INNER JOIN release_nfos nfo ON (nfo.releaseid = rel.id)
-					WHERE (isrenamed = %d OR rel.categoryid = %d)
+					WHERE (rel.isrenamed = %d OR rel.categoryid = %d)
 					AND proc_nfo = %d',
 					self::IS_RENAMED_NONE,
 					Category::CAT_MISC,
@@ -267,7 +267,7 @@ class NameFixer
 						rf.releaseid AS fileid, rel.id AS releaseid
 					FROM releases rel
 					INNER JOIN release_files rf ON (rf.releaseid = rel.id)
-					WHERE (isrenamed = %d OR rel.categoryid = %d)
+					WHERE (rel.isrenamed = %d OR rel.categoryid = %d)
 					AND proc_files = %d',
 					self::IS_RENAMED_NONE,
 					Category::CAT_MISC,
@@ -324,7 +324,7 @@ class NameFixer
 			$query = sprintf('
 					SELECT rel.id AS releaseid, rel.guid, rel.group_id
 					FROM releases rel
-					WHERE (isrenamed = %d OR rel.categoryid = %d)
+					WHERE (rel.isrenamed = %d OR rel.categoryid = %d)
 					AND proc_par2 = %d',
 					self::IS_RENAMED_NONE,
 					Category::CAT_MISC,

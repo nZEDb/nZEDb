@@ -51,7 +51,7 @@ class Capabilities
 				'strapline'  => $this->pdo->getSetting('strapline'),
 				'email'      => $this->pdo->getSetting('email'),
 				'url'        => $serverroot,
-				'image'      => $serverroot . 'themes_shared/images/logo.png'
+				'image'      => $serverroot . 'themes/shared/images/logo.png'
 			],
 			'limits' => [
 				'max'     => 100,

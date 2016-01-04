@@ -3,7 +3,7 @@
 	  style="background-color:#d9edf7; padding:40px; background-color: #f7f7f9; border: 1px solid #e1e1e8;
 	    -webkit-border-radius: 4px;
 	    -moz-border-radius: 4px;
-	    border-radius: 4px; 
+	    border-radius: 4px;
 	">
 	<h3>Register</h3><br/>
         <p>
@@ -25,7 +25,7 @@
 		<input id="invitecode" name="invitecode" type="hidden" value="{$invitecode|escape:html_all}" />
 		<input class="input-block-level" autocomplete="off" id="confirmpassword" name="confirmpassword" value="{$confirmpassword}" type="password" placeholder="Confim password" style="margin-bottom:5px;"/>
 		<input class="input-block-level" autocomplete="off" id="email" name="email" value="{$email}" type="text" placeholder="Email" style="margin-bottom:20px;"/>
-		
+
 		{if $site->registerrecaptcha == "1"}
 			<div class="well well-mini">
 				<center>
@@ -33,8 +33,8 @@
 				</center>
 			</div>
 		{/if}
-		
-		
+
+
 			<button type="submit" class="btn btn-success pull-right">Register</button>
 		</table>
 	</form>

@@ -93,7 +93,7 @@ if (is_null($data)) {
 	exit("Error: $result");
 }
 
-$total = count($data);
+$total = count($data) - 1;
 $predb = new PreDb();
 
 $progress = $predb->progress(settings_array());

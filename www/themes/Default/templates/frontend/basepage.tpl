@@ -18,10 +18,10 @@
 	<!-- Included CSS files - Bootstrap 2.3.2 - Font Awesome 3.2.0 - plugins master style.css -->
 	<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
 	<link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/3.2.0/css/font-awesome.css" rel="stylesheet" media="screen">
-	<link href="{$smarty.const.WWW_TOP}/themes_shared/styles/jquery.qtip.css" rel="stylesheet" media="screen">
-	<!-- <link href="{$smarty.const.WWW_TOP}/themes_shared/styles/subnav.css" rel="stylesheet" media="screen"> -->
-	<link href="{$smarty.const.WWW_TOP}/themes_shared/styles/posterwall.css" rel="stylesheet" type="text/css" media="screen" />
-	<link href="{$smarty.const.WWW_TOP}/themes/Default/styles/style.css" rel="stylesheet" media="screen">
+	<link href="{$smarty.const.WWW_THEMES}/shared/styles/jquery.qtip.css" rel="stylesheet" media="screen">
+	<!-- <link href="{$smarty.const.WWW_THEMES}/shared/styles/subnav.css" rel="stylesheet" media="screen"> -->
+	<link href="{$smarty.const.WWW_THEMES}/shared/styles/posterwall.css" rel="stylesheet" type="text/css" media="screen" />
+	<link href="{$smarty.const.WWW_THEMES}/{$theme}/styles/style.css" rel="stylesheet" media="screen">
 
 	<!-- Manual Adjustment for Search input fields on browse pages. -->
 	<style>
@@ -30,7 +30,7 @@
 	</style>
 
 	<!-- Site Icon files -->
-	<link rel="shortcut icon" href="{$smarty.const.WWW_TOP}/themes_shared/images/favicon.ico">
+	<link rel="shortcut icon" href="{$smarty.const.WWW_THEMES}/shared/images/favicon.ico">
 
 	<!-- Additional site files -->
 	{if $site->google_adsense_acc != ''}<link href="http://www.google.com/cse/api/branding.css" rel="stylesheet" media="screen">{/if}
@@ -65,7 +65,7 @@
 
 		<!-- Header Logo Area Including Main Menu -->
 		<div id="logo">
-			<a class="logolink" title="{$site->title} Logo" href="{$smarty.const.WWW_TOP}{$site->home_link}"><img class="logoimg" alt="{$site->title} Logo" src="{$smarty.const.WWW_TOP}/themes_shared/images/clearlogo.png" /></a>
+			<a class="logolink" title="{$site->title} Logo" href="{$smarty.const.WWW_TOP}{$site->home_link}"><img class="logoimg" alt="{$site->title} Logo" src="{$smarty.const.WWW_THEMES}/shared/images/clearlogo.png" /></a>
 
 			<!-- Main Menu at top of page -->
 			<ul>{$main_menu}</ul>
@@ -100,14 +100,14 @@
 
 	<!-- Moved The Script Files to end of site for faster page loading -->
 	<script src="//code.jquery.com/jquery-1.9.1.js"></script>
-	{literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_TOP}{literal}/themes_shared/scripts/jquery-1.9.1.js"><\/script>')</script>{/literal}
+	{literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_THEMES}{literal}/shared/scripts/jquery-1.9.1.js"><\/script>')</script>{/literal}
 	<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
-	{literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_TOP}{literal}/themes/Default/scripts/bootstrap.min.js"><\/script>')</script>{/literal}
+	{literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_THEMES}{literal}/Default/scripts/bootstrap.min.js"><\/script>')</script>{/literal}
 	<!-- <script src="{$smarty.const.WWW_TOP}/themes_shared/scripts/subnav.js"></script> -->
-	<script src="{$smarty.const.WWW_TOP}/themes_shared/scripts/jquery.colorbox-min.js"></script>
-	<script src="{$smarty.const.WWW_TOP}/themes_shared/scripts/jquery.qtip.min.js"></script>
-	<script src="{$smarty.const.WWW_TOP}/themes/Default/scripts/utils.js"></script>
-	<script src="{$smarty.const.WWW_TOP}/themes_shared/scripts/sorttable.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/scripts/jquery.colorbox-min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/scripts/jquery.qtip.min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/{$theme}/scripts/utils.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/scripts/sorttable.js"></script>
 
 	<!-- Google Analytics Tracking Code -->
 	{if $site->google_analytics_acc != ''}

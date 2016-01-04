@@ -3,7 +3,7 @@
 </div>
 
 <p>
-	Here you can choose RSS feeds from site categories. The feeds will present either decriptions or 
+	Here you can choose RSS feeds from site categories. The feeds will present either decriptions or
 	downloads of NZB files.
 </p>
 
@@ -12,16 +12,16 @@
 		Add this string to your feed URL to allow NZB downloads without logging in: <code>&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}</code>
 	</li>
 	<li>
-		To remove the NZB from your cart after download add this string to your feed URL: <code>&amp;del=1</code> 
+		To remove the NZB from your cart after download add this string to your feed URL: <code>&amp;del=1</code>
 	</li>
 	<li>
 		To change the default link to download an NZB: <code>&amp;dl=1</code>
 	</li>
 	<li>
-		To change the number of results (default is 25, max is 100) returned: <code>&amp;num=50</code> 
+		To change the number of results (default is 25, max is 100) returned: <code>&amp;num=50</code>
 	</li>
 	<li>
-		To return TV shows only aired in the last x days (default is all): <code>&amp;airdate=20</code> 
+		To return TV shows only aired in the last x days (default is all): <code>&amp;airdate=20</code>
 	</li>
 </ul>
 
@@ -37,19 +37,19 @@
 <h3>General</h3>
 <ul style="text-align: left;">
 	<li>
-		Full site : 
+		Full site :
 		<code><a href="{$smarty.const.WWW_TOP}/rss?t=0&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">{$smarty.const.WWW_TOP}/rss?t=0&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}</a></code>
 	</li><br/>
 	<li>
-		<a href="{$smarty.const.WWW_TOP}/cart">My cart</a> : 
+		<a href="{$smarty.const.WWW_TOP}/cart">My cart</a> :
 		<code><a href="{$smarty.const.WWW_TOP}/rss?t=-2&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}&amp;del=1">{$smarty.const.WWW_TOP}/rss?t=-2&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}&amp;del=1</a></code>
 	</li><br/>
 	<li>
-		<a href="{$smarty.const.WWW_TOP}/myshows">My shows</a> : 
+		<a href="{$smarty.const.WWW_TOP}/myshows">My shows</a> :
 		<code><a href="{$smarty.const.WWW_TOP}/rss?t=-3&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}&amp;del=1">{$smarty.const.WWW_TOP}/rss?t=-3&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}&amp;del=1</a></code>
 	</li><br/>
 	<li>
-		<a href="{$smarty.const.WWW_TOP}/mymovies">My movies</a> : 
+		<a href="{$smarty.const.WWW_TOP}/mymovies">My movies</a> :
 		<code><a href="{$smarty.const.WWW_TOP}/rss?t=-4&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}&amp;del=1">{$smarty.const.WWW_TOP}/rss?t=-4&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}&amp;del=1</a></code>
 	</li><br/>
 
@@ -58,7 +58,7 @@
 <ul style="text-align: left;">
 	{foreach from=$parentcategorylist item=category}
 	<li>
-		<a href="{$smarty.const.WWW_TOP}/browse?t={$category.id}">{$category.title}</a></code> feed: 
+		<a href="{$smarty.const.WWW_TOP}/browse?t={$category.id}">{$category.title}</a></code> feed:
 		<code><a href="{$smarty.const.WWW_TOP}/rss?t={$category.id}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">{$smarty.const.WWW_TOP}/rss?t={$category.id}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}</a></code>
 	</li><br/>
 	{/foreach}
@@ -70,7 +70,7 @@
 
 	{foreach from=$categorylist item=category}
 	<li>
-		<a href="{$smarty.const.WWW_TOP}/browse?t={$category.id}">{$category.title}</a> feed: 
+		<a href="{$smarty.const.WWW_TOP}/browse?t={$category.id}">{$category.title}</a> feed:
 		<code><a href="{$smarty.const.WWW_TOP}/rss?t={$category.id}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">{$smarty.const.WWW_TOP}/rss?t={$category.id}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}</a></code>
 	</li><br/>
 	{/foreach}

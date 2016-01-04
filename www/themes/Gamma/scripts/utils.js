@@ -868,7 +868,7 @@ jQuery(function($){
 
     // preinfo tooltip
     $(".preinfo").each(function () {
-        var prehashid = $(this).attr('title');
+        var preid = $(this).attr('title');
         $(this).qtip({
             content: {
                 title: {

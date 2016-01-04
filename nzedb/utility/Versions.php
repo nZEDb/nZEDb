@@ -136,7 +136,7 @@ class Versions
 		$latest = $this->git->tagLatest();
 		$ver = preg_match('#v(\d+\.\d+\.\d+).*#', $latest, $matches) ? $matches[1] : $latest;
 
-		if ($this->git->getBranch() === 'dev') {
+		if ($this->git->getBranch() !== 'master') {
 			if (version_compare($this->_vers->git->tag, '0.0.0', '!=')) {
 				$this->_vers->git->tag = '0.0.0';
 				$this->_changes |= self::UPDATED_GIT_TAG;

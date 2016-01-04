@@ -67,7 +67,7 @@
 
     $.infinitescroll.prototype = {
 
-        /*	
+        /*
             ----------------------------
             Private methods
             ----------------------------
@@ -262,7 +262,7 @@
             } else if (path.match(/^(.*?)\b2\b(.*?$)/)) {
                 path = path.match(/^(.*?)\b2\b(.*?$)/).slice(1);
 
-                // if there is any 2 in the url at all.    
+                // if there is any 2 in the url at all.
             } else if (path.match(/^(.*?)2(.*?$)/)) {
 
                 // page= is used in django:
@@ -481,7 +481,7 @@
                 $(this).parent().fadeOut(opts.loading.speed);
             });
 
-            // user provided callback when done    
+            // user provided callback when done
             opts.errorCallback.call($(opts.contentSelector)[0],'done');
         },
 
@@ -497,7 +497,7 @@
             return true;
         },
 
-        /*	
+        /*
             ----------------------------
             Public methods
             ----------------------------
@@ -533,7 +533,7 @@
 			// increment the URL bit. e.g. /page/3/
 			opts.state.currPage++;
 
-            // Manually control maximum page 
+            // Manually control maximum page
             if ( opts.maxPage != undefined && opts.state.currPage > opts.maxPage ){
                 this.destroy();
                 return;
@@ -686,7 +686,7 @@
     };
 
 
-    /*	
+    /*
         ----------------------------
         Infinite Scroll function
         ----------------------------
@@ -700,7 +700,7 @@
         - https://github.com/jsor/jcarousel/blob/master/lib/jquery.jcarousel.js
 
         Masonry
-        - https://github.com/desandro/masonry/blob/master/jquery.masonry.js		
+        - https://github.com/desandro/masonry/blob/master/jquery.masonry.js
 
 */
 
@@ -711,7 +711,7 @@
 
         switch (thisCall) {
 
-            // method 
+            // method
             case 'string':
                 var args = Array.prototype.slice.call(arguments, 1);
 
@@ -735,7 +735,7 @@
 
             break;
 
-            // creation 
+            // creation
             case 'object':
 
                 this.each(function () {
@@ -770,7 +770,7 @@
 
 
 
-    /* 
+    /*
      * smartscroll: debounced scroll event for jQuery *
      * https://github.com/lukeshumard/smartscroll
      * Based on smartresize by @louis_remi: https://github.com/lrbabe/jquery.smartresize.js *

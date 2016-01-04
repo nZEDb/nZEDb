@@ -8,6 +8,3 @@
 	{/foreach}
 </li>
 {/if}
-
-
-

@@ -67,7 +67,7 @@
 				<input id="chkSelectAll" type="checkbox" class="nzb_check_all" />
 				<label for="chkSelectAll" style="display:none;">Select All</label>
 			</th>
-			<th style="padding-top:0px; padding-bottom:0px;">name<br/>
+			<th style="padding-top:0px; padding-bottom:0px;">Name<br/>
 				<a title="Sort Descending" href="{$orderbyname_desc}">
 					<i class="fa fa-caret-down"></i>
 				</a>
@@ -75,7 +75,7 @@
 					<i class="fa fa-caret-up"></i>
 				</a>
 			</th>
-			<th style="padding-top:0px; padding-bottom:0px;">category<br/>
+			<th style="padding-top:0px; padding-bottom:0px;">Category<br/>
 				<a title="Sort Descending" href="{$orderbycat_desc}">
 					<i class="fa fa-caret-down"></i>
 				</a>
@@ -83,7 +83,7 @@
 					<i class="fa fa-caret-up"></i>
 				</a>
 			</th>
-			<th style="padding-top:0px; padding-bottom:0px;">posted<br/>
+			<th style="padding-top:0px; padding-bottom:0px;">Posted<br/>
 				<a title="Sort Descending" href="{$orderbyposted_desc}">
 					<i class="fa fa-caret-down"></i>
 				</a>
@@ -91,7 +91,7 @@
 					<i class="fa fa-caret-up"></i>
 				</a>
 			</th>
-			<th style="padding-top:0px; padding-bottom:0px;">size<br/>
+			<th style="padding-top:0px; padding-bottom:0px;">Size<br/>
 				<a title="Sort Descending" href="{$orderbysize_desc}">
 					<i class="fa fa-caret-down"></i>
 				</a>
@@ -99,11 +99,19 @@
 					<i class="fa fa-caret-up"></i>
 				</a>
 			</th>
-			<th style="padding-top:0px; padding-bottom:0px;">files<br/>
+			<th style="padding-top:0px; padding-bottom:0px;">Files<br/>
 				<a title="Sort Descending" href="{$orderbyfiles_desc}">
 					<i class="fa fa-caret-down"></i>
 				</a>
 				<a title="Sort Ascending" href="{$orderbyfiles_asc}">
+					<i class="fa fa-caret-up"></i>
+				</a>
+			</th>
+			<th style="padding-top:0px; padding-bottom:0px;">Grabs<br/>
+				<a title="Sort Descending" href="{$orderbystats_desc}">
+					<i class="fa fa-caret-down"></i>
+				</a>
+				<a title="Sort Ascending" href="{$orderbystats_asc}">
 					<i class="fa fa-caret-up"></i>
 				</a>
 			</th>
@@ -176,18 +184,18 @@
 						{if isset($result.firstaired) && $result.firstaired != ""}
 							<span class="seriesinfo badge badge-success halffade" title="{$result.guid}"> Aired {if $result.firstaired|strtotime > $smarty.now}in future{else}{$result.firstaired|daysago}{/if}</span>
 						{/if}
-
 						{if $result.videostatus > 0}
 							<span class="badge badge-inverse halffade" id="{$result.guid}" title="Release has video sample">Sample</span>
 						{/if}
-
 						{if $result.reid > 0}
 						<span class="mediainfo badge badge-inverse halffade" title="{$result.guid}">Media</span>
 						{/if}
-
 						{if $result.preid > 0}
 						<span class="preinfo badge badge-inverse halffade" title="{$result.preid}">PreDB</span>
 						{/if}
+							{if $result.failed > 0}
+								<span class="badge badge-inverse"><i class ="fa fa-thumbs-o-up"></i> {$result.grabs} Grab{if $result.grabs != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$result.failed} Failed Download{if $result.failed != 1}s{/if}</span>
+							{/if}
 						{/strip}
 					</div>
 				</div>
@@ -218,6 +226,7 @@
 				</div>
 				{/if}
 			</td>
+			<td class="less mid"><span class="label label-default">{$result.grabs} Grab{if $result.grabs != 1}s{/if}</span></td>
 			<td class="icons" style='width:100px;'>
 				<ul class="inline">
 					<li>

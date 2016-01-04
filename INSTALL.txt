@@ -47,7 +47,7 @@ REQUIREMENTS
 			Non root MySQL USER.
 			MySQL user with ALL permissions. (GRANT ALL ON *.* TO 'YourMySQLUsername'@'YourMySQLServerIPAddress';)
 			MySQL user with FILE permissions. (GRANT FILE ON *.* TO 'YourMySQLUsername'@'YourMySQLServerIPAddress';)
-			
+
 			If the database is remote:
 			[client]
 			loose-local-infile=1

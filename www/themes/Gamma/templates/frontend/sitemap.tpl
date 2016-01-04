@@ -1,5 +1,5 @@
 <div class="page-header">
-	<h1>{$page->title}</h1> 
+	<h1>{$page->title}</h1>
 </div>
 <table class="table span8">
 {foreach from=$sitemaps item=sitemap}
@@ -20,7 +20,6 @@
 		<td>
 			<a title="{$sitemap->type} - {$sitemap->name}" href="{$smarty.const.WWW_TOP}{$sitemap->loc}">{$sitemap->name}</a>
 		</td>
-	</tr>	
+	</tr>
 {/foreach}
 </table>
-

@@ -6,7 +6,7 @@
 
 <form class="form-horizontal" id="myshows" action="{$smarty.const.WWW_TOP}/myshows/do{$type}" method="post">
 	<input type="hidden" name="subpage" value="{$rid}" />
-	
+
 	<div class="control-group">
 		<label class="control-label" for="category">Choose</label>
 		<div class="controls">

@@ -54,11 +54,11 @@
 
 <div id="new" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	<div class="modal-header">
-	    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-	    <h3 id="myModalLabel">Add New Post</h3>
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+		<h3 id="myModalLabel">Add New Post</h3>
 	</div>
-    <div class="modal-body">
-    	<form id="new-forum-thread" class="form-horizontal" action="" method="post">
+	<div class="modal-body">
+		<form id="new-forum-thread" class="form-horizontal" action="" method="post">
 
 		<div class="control-group">
 			<label class="control-label" for="addSubject">Subject</label>
@@ -74,21 +74,21 @@
 			</div>
 		</div>
 		</form>
-    </div>
-    <div class="modal-footer">
-    	<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-    	<input id="new-forum-thread-submit" class="forumpostsubmit btn btn-success" type="submit" value="submit"/>
-    </div>
+	</div>
+	<div class="modal-footer">
+		<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+		<input id="new-forum-thread-submit" class="forumpostsubmit btn btn-success" type="submit" value="submit"/>
+	</div>
 </div>
 
 <script>
-  $('#new-forum-thread-submit').on('click', function(e){
-    // We don't want this to act as a link so cancel the link action
-    e.preventDefault();
+	$('#new-forum-thread-submit').on('click', function(e){
+	// We don't want this to act as a link so cancel the link action
+	e.preventDefault();
 
-    // Find form and submit it
-    $('#new-forum-thread').submit();
-  });
+	// Find form and submit it
+	$('#new-forum-thread').submit();
+	});
 </script>
 
 <br/><br/><br/>
