@@ -336,7 +336,7 @@
 	<!-- Bootstrap core JavaScript
 	================================================== -->
 	<script src="//code.jquery.com/jquery-1.9.1.js"></script>
-	<script src="{$smarty.const.WWW_THEMES}/{$theme}/scripts/bootstrap.min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/scripts/bootstrap.min-v3.0.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/scripts/holder.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/scripts/jquery.pnotify.min.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/scripts/jquery.qtip.min.js"></script>
