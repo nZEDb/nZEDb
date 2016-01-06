@@ -1,8 +1,10 @@
-.grunt
 node_modules
-components
+bower_components
 bootstrap-tour.sublime-project
 bootstrap-tour.sublime-workspace
 npm-debug.log
 test
+docs
 _SpecRunner.html
+*.DS_Store
+smart.lock

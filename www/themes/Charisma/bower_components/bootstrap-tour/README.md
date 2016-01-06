@@ -1,60 +1,77 @@
-# Bootstrap Tour [![Build Status](https://travis-ci.org/sorich87/bootstrap-tour.png?branch=master)](https://travis-ci.org/sorich87/bootstrap-tour)
+# Bootstrap Tour
+[![Build Status](http://img.shields.io/travis/sorich87/bootstrap-tour.svg?style=flat)](https://travis-ci.org/sorich87/bootstrap-tour)
+[![Dependency Status](http://img.shields.io/david/sorich87/bootstrap-tour.svg?style=flat)](https://david-dm.org/sorich87/bootstrap-tour)
+[![devDependency Status](http://img.shields.io/david/dev/sorich87/bootstrap-tour/dev-status.svg?style=flat)](https://david-dm.org/sorich87/bootstrap-tour#info=devDependencies)
+[![NPM Version](http://img.shields.io/npm/v/bootstrap-tour.svg?style=flat)](https://www.npmjs.org/)
 
-Quick and easy way to build your product tours with Twitter Bootstrap Popovers.
+Quick and easy way to build your product tours with Bootstrap Popovers.
 
-*Compatible with Bootstrap <= 3.0.0*
+*Compatible with Bootstrap >= 2.3.0*
 
-## Demo and Documentation ##
+## Demo and Documentation
 [http://bootstraptour.com](http://bootstraptour.com)
 
-## TODO ##
-- Add the smooth scrolling when the popover is outside the viewport
-- Define an appropriate tag + milestone system
-
-## Contributing ##
->In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
+## Contributing
+In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Gulp](http://gulpjs.com/).
 
 Feel free to contribute with pull requests, bug reports or enhancement suggestions.
 
-We use [Grunt](http://gruntjs.com/) and [Jasmine](http://pivotal.github.io/jasmine/). Both make your lives easier ;)
+We use [Gulp](http://gulpjs.com/) and [Jasmine](http://pivotal.github.io/jasmine/). Both make your life easier ;)
 
-### How to run/develop
+### Develop
 
-Install the dependencies
+Files to be developed are located under `./src/`.
+Compiled sources are then automatically put under `./build/`, `./test/` and `./docs/`.
+
+#### Requirements
+
+To begin, you need a few standard dependencies installed. These commands will install ruby, gem, node, npm, and grunt's command line runner:
+
+##### Linux
 
 ```bash
-npm install
+$ sudo apt-get install ruby
+$ sudo apt-get install ruby-dev
+$ sudo apt-get install npm
+$ sudo apt-get install nodejs-legacy
 ```
 
-Files to be developed are located under `./src/`
-Compiled sources are then automatically put under `./build/` (and `./test/`)
+##### Mac OS X
 
-Run main tasks (check `Gruntfile.coffee` for more infos)
-
-```javascript
-// Start a server and run the demo page
-grunt
-grunt run
-// Compile all sources
-grunt build
-// Compile all sources and run the tests
-grunt test
-// Automatically release a new version (see below for more details)
-grunt release
+```bash
+ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"
+\curl -L https://get.rvm.io | bash
+rvm install ruby-2.1.1
+brew install node
 ```
 
-[More information here](http://bootstraptour.com/#grunt-usage)
+##### Development requirements
 
-## Releasing ##
-Releasing a new version is completely automated using the Grunt task `grunt release`.
-
-```javascript
-grunt release // patch release
-grunt release:minor // minor release
-grunt release:major // major release
+```bash
+$ npm install -g gulp
+$ npm install
+$ gem install jekyll
 ```
 
-## License ##
+For Mac OS X Mavericks (10.9) users: You will need to [jump through all these hoops](http://dean.io/setting-up-a-ruby-on-rails-development-environment-on-mavericks/) before you can install Jekyll.
+
+#### Gulp usage
+
+Run gulp and start to develop with ease:
+
+```bash
+$ gulp
+$ gulp dist
+$ gulp test
+$ gulp docs
+$ gulp clean
+$ gulp server
+$ gulp bump --type minor (major.minor.patch)
+```
+
+Check `gulpfile.coffee` to know more.
+
+## License
+
 Code licensed under the [Apache License v2.0](http://www.apache.org/licenses/LICENSE-2.0).
 Documentation licensed under [CC BY 3.0](http://creativecommons.org/licenses/by/3.0/).
-Well, the same licenses as Bootstrap. We are lazy! ;)
