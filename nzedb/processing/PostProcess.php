@@ -424,19 +424,18 @@ class PostProcess
 	}
 
 	/**
-	 * Attempt to get a better name from a par2 file and categorize the release.
+	 * Attempt to get a better name from a SRR file and categorize the release.
 	 *
 	 * @note Called from NZBContents.php
 	 *
 	 * @param string $messageID MessageID from NZB file.
 	 * @param int    $relID     ID of the release.
-	 * @param int    $groupID   Group ID of the release.
 	 * @param \nzedb\NNTP   $nntp      Class NNTP
-	 * @param int    $show      Only show result or apply iy.
+	 * @param int    $show      Only show result or apply it.
 	 *
 	 * @return bool
 	 */
-	public function parseSRR($messageID, $relID, $groupID, &$nntp, $show)
+	public function parseSRR($messageID, $relID, &$nntp, $show)
 	{
 		if ($messageID === '') {
 			return false;
@@ -466,6 +465,7 @@ class PostProcess
 		// Get the SRR file.
 		$srr = $nntp->getMessages($query['groupname'], $messageID, $this->alternateNNTP);
 		if ($nntp->isError($srr)) {
+			echo "Couldn't connect to usenet, dummy";
 			return false;
 		}
 
@@ -477,6 +477,7 @@ class PostProcess
 
 		// Get the file list from SrrInfo.
 		$summary = $this->_srrInfo->getSummary();
+		var_dump($summary);
 		if ($summary !== false && empty($summary['error'])) {
 			$foundName = false;
 			// Try to get a new name.

@@ -149,6 +149,7 @@ class Forking extends \fork_daemon
 			case 'fixRelNames_par2':
 			case 'fixRelNames_miscsorter':
 			case 'fixRelNames_predbft':
+			case 'fixRelNames_srr':
 				$maxProcesses = $this->fixRelNamesMainMethod();
 				break;
 
@@ -527,6 +528,10 @@ class Forking extends \fork_daemon
 				$extrawhere = "";
 				$where = "1=1";
 				$rowLimit = sprintf("LIMIT %s", $threads);
+				break;
+
+			case "srr":
+				$where = "r.proc_srr = 0";
 				break;
 		}
 

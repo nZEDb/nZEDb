@@ -396,10 +396,11 @@ class NameFixer
 			$query = sprintf('
 					SELECT rel.id AS releaseid, rel.guid, rel.group_id
 					FROM releases rel
-					WHERE (rel.isrenamed = %d OR rel.categoryid = %d)
+					WHERE (rel.isrenamed = %d OR rel.categoryid IN (%s))
+					AND preid = 0
 					AND proc_srr = %d',
 				self::IS_RENAMED_NONE,
-				Category::CAT_MISC,
+				implode(',', Category::CAT_GROUP_OTHER),
 				self::PROC_SRR_NONE
 			);
 		}
@@ -425,7 +426,7 @@ class NameFixer
 				);
 
 				foreach ($releases as $release) {
-					if (($nzbContents->checkSRR($release['guid'], $release['releaseid'], $release['group_id'], $nameStatus, $show)) === true) {
+					if (($nzbContents->checkSRR($release['guid'], $release['releaseid'], $nameStatus, $show)) === true) {
 						$this->fixed++;
 					}
 
@@ -803,7 +804,6 @@ class NameFixer
 							INNER JOIN release_files rf ON r.id = rf.releaseid
 							AND rf.name IS NOT NULL
 							WHERE r.preid = 0
-							GROUP BY r.id
 							%s %s',
 							$orderby,
 							$limit
