@@ -10,6 +10,8 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 2016-01-04 niel
 	Fix: Added template file to Default theme which caused 500 error when clicking on movie title
 		in covers view.
+	Mrg: PR 2012, from DariusIII - Update Captcha.tpl with noscript fix, make browse groups in
+		Charisma/Omicron themes sortable.
 2016-01-02 niel
 	Mrg: PR 2012, from egandt - Fixed paths in  Charisma/Omicron themes.
 2016-01-01 niel
