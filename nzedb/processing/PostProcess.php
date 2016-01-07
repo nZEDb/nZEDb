@@ -23,6 +23,7 @@ use nzedb\db\Settings;
 use nzedb\processing\post\AniDB;
 use nzedb\processing\post\ProcessAdditional;
 use nzedb\utility;
+use nzedb\utility\Text;
 
 require_once nZEDb_LIBS . 'rarinfo/par2info.php';
 require_once nZEDb_LIBS . 'rarinfo/srrinfo.php';
@@ -332,7 +333,7 @@ class PostProcess
 		$foundName = true;
 		if (!in_array(
 			(int)$query['categoryid'],
-			Category::CAT_GROUP_OTHER
+			Category::CAT_OTHERS_GROUP
 		)
 		) {
 			$foundName = false;
@@ -451,9 +452,8 @@ class PostProcess
 				FROM releases r
 				LEFT JOIN groups g ON r.group_id = g.id
 				WHERE r.isrenamed = 0
-				AND r.categoryid IN (%s)
+				AND r.preid = 0
 				AND r.id = %d',
-				implode(',', Category::CAT_GROUP_OTHER),
 				$relID
 			)
 		);
@@ -464,25 +464,44 @@ class PostProcess
 
 		// Get the SRR file.
 		$srr = $nntp->getMessages($query['groupname'], $messageID, $this->alternateNNTP);
+
 		if ($nntp->isError($srr)) {
-			echo "Couldn't connect to usenet, dummy";
+			if ($srr->getMessage() === 'No such article found') {
+				echo $this->pdo->log->primaryOver('f');
+			}
 			return false;
 		}
 
 		// Put the SRR into SrrInfo, check if there's an error.
 		$this->_srrInfo->setData($srr);
 		if ($this->_srrInfo->error) {
+			echo $this->pdo->log->primaryOver("-");
 			return false;
 		}
 
 		// Get the file list from SrrInfo.
 		$summary = $this->_srrInfo->getSummary();
-		var_dump($summary);
 		if ($summary !== false && empty($summary['error'])) {
+			echo $this->pdo->log->primaryOver("+");
 			$foundName = false;
 			// Try to get a new name.
-			$query['textstring'] = $summary['file_name'];
-			if ($this->nameFixer->checkName($query, 1, 'SRR, ', 1, $show) === true) {
+			if (!empty($summary['oso_info']['name'])) {
+				$newName = $summary['oso_info']['name'];
+			} else if (is_array($summary['stored_files']) && !empty($summary['stored_files'])) {
+				$newName = $summary['stored_files'][0]['name'];
+			} else if (!empty($summary['file_name'])) {
+				$newName = $summary['file_name'];
+			}
+
+			// Strip extensions from the names for better match
+			if (isset($newName)) {
+				if (preg_match('/\.[a-z0-9]{2,4}$/i', $newName)) {
+					$newName = Text::cutStringUsingLast('.', $newName, 'left', false);
+				}
+				$query['textstring'] = $newName;
+			}
+
+			if (isset($query['textstring']) && $this->nameFixer->checkName($query, 1, 'SRR, ', 1, $show) === true) {
 				$foundName = true;
 			}
 

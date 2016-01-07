@@ -77,7 +77,7 @@ class Category
 	const STATUS_ACTIVE = 1;
 	const STATUS_DISABLED = 2;
 
-	const CAT_GROUP_OTHER =
+	const CAT_OTHERS_GROUP =
 		[
 			self::CAT_BOOKS_OTHER,
 			self::CAT_GAME_OTHER,

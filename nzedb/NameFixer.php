@@ -396,11 +396,8 @@ class NameFixer
 			$query = sprintf('
 					SELECT rel.id AS releaseid, rel.guid, rel.group_id
 					FROM releases rel
-					WHERE (rel.isrenamed = %d OR rel.categoryid IN (%s))
-					AND preid = 0
+					WHERE preid = 0
 					AND proc_srr = %d',
-				self::IS_RENAMED_NONE,
-				implode(',', Category::CAT_GROUP_OTHER),
 				self::PROC_SRR_NONE
 			);
 		}
@@ -976,7 +973,11 @@ class NameFixer
 		if (preg_match_all(self::PREDB_REGEX, $release['textstring'], $matches) && !preg_match('/Source\s\:/i', $release['textstring'])) {
 			foreach ($matches as $match) {
 				foreach ($match as $val) {
-					$title = $this->pdo->queryOneRow("SELECT title, id from predb WHERE title = " . $this->pdo->escapeString(trim($val)));
+					$title = $this->pdo->queryOneRow("
+						SELECT title, id
+						FROM predb
+						WHERE title = " . $this->pdo->escapeString(trim($val))
+					);
 					if ($title !== false) {
 						$this->updateRelease($release, $title['title'], $method = "preDB: Match", $echo, $type, $namestatus, $show, $title['id']);
 						$preid = true;
@@ -990,6 +991,7 @@ class NameFixer
 
 			switch ($type) {
 				case "PAR2, ":
+				case "SRR, ":
 					$this->fileCheck($release, $echo, $type, $namestatus, $show);
 					break;
 				case "NFO, ":
@@ -1020,6 +1022,9 @@ class NameFixer
 						break;
 					case "PAR2, ":
 						$this->_updateSingleColumn('proc_par2', self::PROC_FILES_DONE, $release['releaseid']);
+						break;
+					case "SRR, ":
+						$this->_updateSingleColumn('proc_srr', self::PROC_FILES_DONE, $release['releaseid']);
 						break;
 				}
 			}
