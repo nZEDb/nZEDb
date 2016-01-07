@@ -336,9 +336,7 @@ class BasePage
 		}
 
 		// Update last login every 15 mins.
-		if ((strtotime($this->userdata['now']) - 900) >
-			strtotime($this->userdata['lastlogin'])
-		) {
+		if ((strtotime($this->userdata['now']) - 900) > strtotime($this->userdata['lastlogin'])) {
 			$this->users->updateSiteAccessed($this->userdata['id']);
 		}
 
