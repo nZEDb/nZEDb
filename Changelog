@@ -9,6 +9,8 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2016-01-08 niel
 	Mrg: PR 2023, from DariusIII - Fix wrong path to shared folder in Gamma theme.
+2016-01-07 niel
+	Fix: Several bad URLs in Charisma/Gamma/Omicron themes (missing '/' after the smarty constants).
 2016-01-06 niel
 	Mrg: Bring in dev-git-hooks changes. Adds whitespace checking/fixing to pre-commit hook.
 2016-01-05 niel
