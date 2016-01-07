@@ -8,6 +8,8 @@ class AdminPage extends BasePage
 	{
 		parent::__construct();
 
+		define('WWW_THEMES', WWW_TOP . '/../themes');
+
 		if (!$this->users->isLoggedIn() || !isset($this->userdata['role'])) {
 			$this->show403(true);
 		}
