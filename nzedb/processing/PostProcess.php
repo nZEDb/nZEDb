@@ -467,7 +467,7 @@ class PostProcess
 
 		if ($nntp->isError($srr)) {
 			if ($srr->getMessage() === 'No such article found') {
-				echo $this->pdo->log->primaryOver('f');
+				$this->pdo->log->doEcho($this->pdo->log->primaryOver('f'));
 			}
 			return false;
 		}
@@ -475,14 +475,14 @@ class PostProcess
 		// Put the SRR into SrrInfo, check if there's an error.
 		$this->_srrInfo->setData($srr);
 		if ($this->_srrInfo->error) {
-			echo $this->pdo->log->primaryOver("-");
+			$this->pdo->log->doEcho($this->pdo->log->primaryOver("-"));
 			return false;
 		}
 
 		// Get the file list from SrrInfo.
 		$summary = $this->_srrInfo->getSummary();
 		if ($summary !== false && empty($summary['error'])) {
-			echo $this->pdo->log->primaryOver("+");
+			$this->pdo->log->doEcho($this->pdo->log->primaryOver("+"));
 			$foundName = false;
 			// Try to get a new name.
 			if (!empty($summary['oso_info']['name'])) {
@@ -501,7 +501,7 @@ class PostProcess
 				$query['textstring'] = $newName;
 			}
 
-			if (isset($query['textstring']) && $this->nameFixer->checkName($query, 1, 'SRR, ', 1, $show) === true) {
+			if (isset($query['textstring']) && $this->nameFixer->checkName($query, 1, 'SRR, ', 1, $show, true) === true) {
 				$foundName = true;
 			}
 

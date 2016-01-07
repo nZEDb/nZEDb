@@ -325,7 +325,7 @@ class Nfo
 					($groupID === '' ? '' : '[' . $groupID . '] ') .
 					'Processing ' . $nfoCount .
 					' NFO(s), starting at ' . $this->nzbs .
-					' * = hidden NFO, + = NFO, - = no NFO, f = download failed. Purple output is for SRR.'
+					' * = hidden NFO, + = NFO, - = no NFO, f = download failed. Green output is for SRR.'
 				)
 			);
 

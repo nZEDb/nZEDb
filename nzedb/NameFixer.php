@@ -991,7 +991,6 @@ class NameFixer
 
 			switch ($type) {
 				case "PAR2, ":
-				case "SRR, ":
 					$this->fileCheck($release, $echo, $type, $namestatus, $show);
 					break;
 				case "NFO, ":
