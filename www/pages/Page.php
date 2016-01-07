@@ -12,6 +12,8 @@ class Page extends BasePage
 	{
 		parent::__construct();
 
+		define('WWW_THEMES', WWW_TOP . '/themes');
+
 		// Tell Smarty which directories to use for templates
 		$this->smarty->setTemplateDir(
 			[
