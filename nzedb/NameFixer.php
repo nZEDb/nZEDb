@@ -463,13 +463,14 @@ class NameFixer
 		}
 
 		if (isset($queryTime)) {
-			$query .= $queryTime . ';';
+			$query .= $queryTime;
 			// Remove GROUP BY if it exists for filename based renames
 			if (strpos($query, 'proc_files') !== false) {
 				$query = str_replace('GROUP BY r.id', '', $query);
 			}
-			echo $this->pdo->log->header($query . PHP_EOL);
-			$releases = $this->pdo->queryDirect($query . $queryTime);
+			echo $this->pdo->log->header("{$query};\n");
+
+			$releases = $this->pdo->queryDirect($query);
 		}
 
 		return $releases;
