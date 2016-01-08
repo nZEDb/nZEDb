@@ -438,6 +438,8 @@ class PostProcess
 	 */
 	public function parseSRR($messageID, $relID, &$nntp, $show)
 	{
+		$foundMatch = false;
+
 		if ($messageID === '') {
 			return false;
 		}
@@ -483,33 +485,29 @@ class PostProcess
 		$summary = $this->_srrInfo->getSummary();
 		if ($summary !== false && empty($summary['error'])) {
 			$this->pdo->log->doEcho($this->pdo->log->primaryOver("+"));
-			$foundName = false;
 
-			// Try to get a new name.
-			if (!empty($summary['oso_info']['name'])) {
-				$newName = $summary['oso_info']['name'];
-			} else if (is_array($summary['stored_files']) && !empty($summary['stored_files'])) {
-				$newName = $summary['stored_files'][0]['name'];
-			} else if (!empty($summary['file_name'])) {
-				$newName = $summary['file_name'];
+			// Try to get a Pre Match by the OSO release name.
+			if (isset($summary['oso_info']['name']) && !empty($summary['oso_info']['name'])) {
+				$query['textstring'] = $summary['oso_info']['name'];
+				$foundMatch = $this->nameFixer->checkName($query, 1, 'SRR, ', 1, $show, true);
 			}
-
-			// Strip extensions from the names for better match
-			if (isset($newName)) {
-				if (preg_match('/\.[a-z0-9]{2,4}$/i', $newName)) {
-					$newName = Text::cutStringUsingLast('.', $newName, 'left', false);
+			// Loop through the stored files in the SRR and try to get a Pre Match
+			if ($foundMatch === false && is_array($summary['stored_files']) && !empty($summary['stored_files'])) {
+				foreach ($summary['stored_files'] AS $storedFile) {
+					if ($foundMatch === true) {
+						break;
+					} else if (isset($storedFile['name']) && !empty($storedFile['name'])) {
+						$query['textstring'] = Text::cutStringUsingLast('.', $storedFile['name'], 'left', false);
+						$foundMatch = $this->nameFixer->checkName($query, 1, 'SRR, ', 1, $show, true);
+					}
 				}
-				$query['textstring'] = $newName;
 			}
-
-			if (isset($query['textstring']) && $this->nameFixer->checkName($query, 1, 'SRR, ', 1, $show, true) === true) {
-				$foundName = true;
-			}
-
-			if ($foundName === true) {
-				return true;
+			// This field is rarely populated but worth a shot for a rename
+			if ($foundMatch === false && isset($summary['file_name']) && !empty($summary['file_name'])) {
+				$query['textstring'] = Text::cutStringUsingLast('.', $summary['file_name'], 'left', false);
+				$foundMatch = $this->nameFixer->checkName($query, 1, 'SRR, ', 1, $show, true);
 			}
 		}
-		return false;
+		return $foundMatch;
 	}
 }
