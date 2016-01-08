@@ -67,12 +67,6 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4])) {
 		case 8:
 			$namefixer->fixNamesWithPar2(2, $update, $other, $setStatus, $show, $nntp);
 			break;
-		case 9:
-			$namefixer->fixNamesWithSrr(1, $update, $other, $setStatus, $show);
-			break;
-		case 10:
-			$namefixer->fixNamesWithSrr(2, $update, $other, $setStatus, $show);
-			break;
 		default :
 			exit($pdo->log->error("\nERROR: Wrong argument, type php $argv[0] to see a list of valid arguments." . $n));
 			break;
@@ -90,7 +84,5 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4])) {
 			. "php $argv[0] 5 false other no ...: Fix release names in misc categories using File Name in the past 6 hours.\n"
 			. "php $argv[0] 6 false other no ...: Fix release names in misc categories using File Name.\n"
 			. "php $argv[0] 7 false other no ...: Fix release names in misc categories using Par2 Files in the past 6 hours.\n"
-			. "php $argv[0] 8 false other no ...: Fix release names in misc categories using Par2 Files.\n"
-			. "php $argv[0] 9 false other no ...: Fix release names in misc categories using srr file in the past 6 hours.\n"
-			. "php $argv[0] 10 false other no ...: Fix release names in misc categories using srr file.\n"));
+			. "php $argv[0] 8 false other no ...: Fix release names in misc categories using Par2 Files.\n"));
 }

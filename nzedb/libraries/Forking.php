@@ -517,7 +517,6 @@ class Forking extends \fork_daemon
 				break;
 
 			case "srr":
-				$join = "INNER JOIN release_files rf ON r.id = rf.releaseid";
 				$where = "r.proc_srr = 0";
 				break;
 

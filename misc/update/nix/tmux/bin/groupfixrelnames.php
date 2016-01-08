@@ -58,10 +58,8 @@ if (!isset($argv[1])) {
 			}
 			break;
 		case $pieces[0] === 'filename' && isset($guidChar) && isset($maxperrun) && is_numeric($maxperrun):
-			$namefixer->fixNamesWithFiles(1, 1, 1, 1, 1, $guidChar, $maxperrun);
-			break;
-		case $pieces[0] === 'srr' && isset($guidChar) && isset($maxperrun) && is_numeric($maxperrun):
-			$namefixer->fixNamesWithSrr(1, 1, 1, 1, 1, $guidChar, $maxperrun);
+			$namefixer->fixNamesWithFiles(1, true, 1, 1, 1, true, $guidChar, $maxperrun);
+			$namefixer->fixNamesWithFiles(1, true, 1, 1, 1, $guidChar, $maxperrun);
 			break;
 		case $pieces[0] === 'md5' && isset($guidChar) && isset($maxperrun) && is_numeric($maxperrun):
 			$releases = $pdo->queryDirect(
