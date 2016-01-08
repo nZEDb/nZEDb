@@ -88,7 +88,7 @@
 													<div class="col-md-2 small-gutter-left">
 														<a title="View details"
 														   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">
-															<img src="{$smarty.const.WWW_TOP}/covers/book/{if $result.cover == 1}{$result.bookinfoid}.jpg{else}{$smarty.const.WWW_TOP}/themes/shared/images/no-cover.png{/if}"
+															<img src="{$smarty.const.WWW_TOP}/covers/book/{if $result.cover == 1}{$result.bookinfoid}.jpg{else}{$smarty.const.WWW_THEMES}/shared/images/no-cover.png{/if}"
 																 width="140" border="0"
 																 alt="{$result.author|escape:"htmlall"} - {$result.title|escape:"htmlall"}"/>{if $mfailed[$m@index] > 0} <i class="fa fa-exclamation-circle" style="color: red" title="This release has failed to download for some users"></i>{/if}
 														</a>
@@ -150,7 +150,7 @@
 																	{/if}
 																	<div>
 																		<a role="button" class="btn btn-default btn-xs"
-																		   href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}"><i
+																		   href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}|escape:"htmlall"}"><i
 																				class="fa fa-cloud-download"></i><span
 																				class="badge">{$mgrabs[$m@index]}
 																			Grab{if $mgrabs[$m@index] != 1}s{/if}</span></a>
