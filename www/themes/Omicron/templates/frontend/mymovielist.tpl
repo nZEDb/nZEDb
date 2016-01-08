@@ -10,7 +10,7 @@
 					<td>
 						<div>
 							<img class="shadow"
-								 src="{if $result['cover'] ==""}{$serverroot}themes_shared/images/no-cover.png{else}{$result['cover']}{/if}"
+								 src="{if $result['cover'] ==""}{$serverroot}themes/shared/images/no-cover.png{else}{$result['cover']}{/if}"
 								 width="120" border="0" alt="{$result['title']|escape:"htmlall"}"/>
 							<div>
 								<a class="label label-default" target="_blank"
