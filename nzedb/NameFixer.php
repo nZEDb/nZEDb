@@ -449,22 +449,29 @@ class NameFixer
 		$releases = false;
 		// 24 hours, other cats
 		if ($time == 1 && $cats == 1) {
-			echo $this->pdo->log->header($query . $this->timeother . ";\n");
-			$releases = $this->pdo->queryDirect($query . $this->timeother);
+			$queryTime = $this->timeother;
 		} // 24 hours, all cats
 		else if ($time == 1 && $cats == 2) {
-			echo $this->pdo->log->header($query . $this->timeall . ";\n");
-			$releases = $this->pdo->queryDirect($query . $this->timeall);
+			$queryTime = $this->timeall;
 		} //other cats
 		else if ($time == 2 && $cats == 1) {
-			echo $this->pdo->log->header($query . $this->fullother . ";\n");
-			$releases = $this->pdo->queryDirect($query . $this->fullother);
+			$queryTime = $this->fullother;
 		}
 		// all cats
 		else if ($time == 2 && $cats == 2) {
-			echo $this->pdo->log->header($query . $this->fullall . ";\n");
-			$releases = $this->pdo->queryDirect($query . $this->fullall);
+			$queryTime = $this->fullall;
 		}
+
+		if (isset($queryTime)) {
+			$query .= $queryTime . ';';
+			// Remove GROUP BY if it exists for filename based renames
+			if (strpos($query, 'proc_files') !== false) {
+				$query = str_replace('GROUP BY r.id', '', $query);
+			}
+			echo $this->pdo->log->header($query . PHP_EOL);
+			$releases = $this->pdo->queryDirect($query . $queryTime);
+		}
+
 		return $releases;
 	}
 

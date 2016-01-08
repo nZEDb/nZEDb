@@ -8,4 +8,4 @@ $nntp = new NNTP();
 
 $nameFixer = new NameFixer();
 
-$nameFixer->fixNamesWithSRR(2, 1, 2, 1, 1, $nntp);
+$nameFixer->fixNamesWithSRR(2, 1, 1, 1, 1, $nntp);

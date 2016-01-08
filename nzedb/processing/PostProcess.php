@@ -484,6 +484,7 @@ class PostProcess
 		if ($summary !== false && empty($summary['error'])) {
 			$this->pdo->log->doEcho($this->pdo->log->primaryOver("+"));
 			$foundName = false;
+
 			// Try to get a new name.
 			if (!empty($summary['oso_info']['name'])) {
 				$newName = $summary['oso_info']['name'];
