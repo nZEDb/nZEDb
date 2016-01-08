@@ -19,6 +19,8 @@ class NameFixer
 	const PROC_FILES_DONE = 1;
 	const PROC_PAR2_NONE = 0;
 	const PROC_PAR2_DONE = 1;
+	const PROC_SRR_NONE = 0;
+	const PROC_SRR_DONE = 1;
 
 	// Constants for overall rename status
 	const IS_RENAMED_NONE = 0;
@@ -237,16 +239,28 @@ class NameFixer
 	/**
 	 * Attempts to fix release names using the File name.
 	 *
-	 * @param int $time   1: 24 hours, 2: no time limit
-	 * @param boolean $echo   1: change the name, anything else: preview of what could have been changed.
-	 * @param int $cats   1: other categories, 2: all categories
-	 * @param $nameStatus
-	 * @param $show
+	 * @param int     $time 1: 24 hours, 2: no time limit
+	 * @param boolean $echo 1: change the name, anything else: preview of what could have been changed.
+	 * @param int     $cats 1: other categories, 2: all categories
+	 * @param         $nameStatus
+	 * @param         $show
+	 * @param bool    $fileExt
+	 * @param string  $guidChar
+	 * @param string  $limit
 	 */
-	public function fixNamesWithFiles($time, $echo, $cats, $nameStatus, $show)
+	public function fixNamesWithFiles($time, $echo, $cats, $nameStatus, $show, $fileExt = false, $guidChar = '', $limit = '')
 	{
-		$this->_echoStartMessage($time, 'file names');
-		$type = 'Filenames, ';
+		if ($fileExt === true){
+			$type = 'Extension, ';
+		} else {
+			$type = 'Filenames, ';
+		}
+		$guid = ($guidChar === '') ? '' : ('AND rel.guid '. $this->pdo->likeString($guidChar, false, true));
+		$ext = ($fileExt === false) ? '' : ('AND rf.name '. $this->pdo->likeString('.srr', true, false));
+		$queryLimit = ($limit === '') ? '' : $limit;
+		if ($guid === '') {
+			$this->_echoStartMessage($time, 'file names');
+		}
 
 		$preId = false;
 		if ($cats === 3) {
@@ -255,9 +269,9 @@ class NameFixer
 						rf.releaseid AS fileid, rel.id AS releaseid
 					FROM releases rel
 					INNER JOIN release_files rf ON (rf.releaseid = rel.id)
-					WHERE nzbstatus = %d
-					AND preid = 0',
-					NZB::NZB_ADDED
+					WHERE rel.nzbstatus = %d
+					AND rel.preid = 0',
+				NZB::NZB_ADDED
 			);
 			$cats = 2;
 			$preId = true;
@@ -268,20 +282,25 @@ class NameFixer
 					FROM releases rel
 					INNER JOIN release_files rf ON (rf.releaseid = rel.id)
 					WHERE (rel.isrenamed = %d OR rel.categoryid = %d)
-					AND proc_files = %d',
-					self::IS_RENAMED_NONE,
-					Category::CAT_MISC,
-					self::PROC_FILES_NONE
+					AND rel.proc_files = %d
+					%s %s',
+				self::IS_RENAMED_NONE,
+				Category::CAT_MISC,
+				self::PROC_FILES_NONE,
+				$ext,
+				$guid
 			);
 		}
 
-		$releases = $this->_getReleases($time, $cats, $query);
+		$releases = $this->_getReleases($time, $cats, $query, $queryLimit);
 		if ($releases instanceof \Traversable && $releases !== false) {
 
 			$total = $releases->rowCount();
 			if ($total > 0) {
 				$this->_totalReleases = $total;
-				echo $this->pdo->log->primary(number_format($total) . ' file names to process.');
+				if ($guid === '') {
+					echo $this->pdo->log->primary(number_format($total) . ' file names to process.');
+				}
 
 				foreach ($releases as $release) {
 					$this->done = $this->matched = false;
@@ -291,8 +310,10 @@ class NameFixer
 				}
 
 				$this->_echoFoundCount($echo, ' files');
-			} else {
+			} elseif ($guid === '') {
 				echo $this->pdo->log->info('Nothing to fix.');
+			} else {
+				echo '.';
 			}
 		}
 	}
@@ -372,29 +393,32 @@ class NameFixer
 	 * @param int    $cats  1: other categories, 2: all categories
 	 * @param string $query Query to execute.
 	 *
-	 * @return \PDOStatement|bool False on failure, PDOStatement with query results on success.
+	 * @param string $limit
+	 *
+	 * @return bool|\PDOStatement False on failure, PDOStatement with query results on success.
 	 */
-	protected function _getReleases($time, $cats, $query)
+	protected function _getReleases($time, $cats, $query, $limit = '')
 	{
 		$releases = false;
+		$queryLimit = ($limit === '') ? '' : ' LIMIT ' . $limit;
 		// 24 hours, other cats
 		if ($time == 1 && $cats == 1) {
 			echo $this->pdo->log->header($query . $this->timeother . ";\n");
-			$releases = $this->pdo->queryDirect($query . $this->timeother);
+			$releases = $this->pdo->queryDirect($query . $this->timeother . $queryLimit);
 		} // 24 hours, all cats
 		else if ($time == 1 && $cats == 2) {
 			echo $this->pdo->log->header($query . $this->timeall . ";\n");
-			$releases = $this->pdo->queryDirect($query . $this->timeall);
+			$releases = $this->pdo->queryDirect($query . $this->timeall . $queryLimit);
 		} //other cats
 		else if ($time == 2 && $cats == 1) {
 			echo $this->pdo->log->header($query . $this->fullother . ";\n");
-			$releases = $this->pdo->queryDirect($query . $this->fullother);
-		}
-		// all cats
+			$releases = $this->pdo->queryDirect($query . $this->fullother . $queryLimit);
+		} // all cats
 		else if ($time == 2 && $cats == 2) {
 			echo $this->pdo->log->header($query . $this->fullall . ";\n");
-			$releases = $this->pdo->queryDirect($query . $this->fullall);
+			$releases = $this->pdo->queryDirect($query . $this->fullall . $queryLimit);
 		}
+
 		return $releases;
 	}
 
@@ -490,6 +514,13 @@ class NameFixer
 					}
 				}
 
+				if ($type === "Extension, ") {
+					$newName = ucwords($newName);
+					if (preg_match('/(.+?)\.(srr)?$/i', $name, $match)) {
+						$newName = $match[1];
+					}
+				}
+
 				$this->fixed++;
 
 				$newName = explode("\\", $newName);
@@ -546,6 +577,7 @@ class NameFixer
 								break;
 							case "Filenames, ":
 							case "file matched source: ":
+							case "Extension, ":
 								$status = "isrenamed = 1, iscategorized = 1, proc_files = 1,";
 								break;
 							case "SHA1, ":
@@ -919,6 +951,9 @@ class NameFixer
 			switch ($type) {
 				case "PAR2, ":
 					$this->fileCheck($release, $echo, $type, $namestatus, $show);
+					break;
+				case "Extension, ":
+					$this->extCheck($release, $echo, $type, $namestatus, $show);
 					break;
 				case "NFO, ":
 					$this->nfoCheckTV($release, $echo, $type, $namestatus, $show);
@@ -1484,6 +1519,26 @@ class NameFixer
 			} else if (preg_match('/\w.+?\.(epub|mobi|azw|opf|fb2|prc|djvu|cb[rz])/i', $release["textstring"], $result)) {
 				$result = str_replace("." . $result["1"], " (" . $result["1"] . ")", $result['0']);
 				$this->updateRelease($release, $result, $method = "fileCheck: EBook", $echo, $type, $namestatus, $show);
+			}
+		}
+	}
+
+	/**
+	 * Look for a name based on srr filename.
+	 *
+	 * @param $release
+	 * @param boolean $echo
+	 * @param string $type
+	 * @param $namestatus
+	 * @param $show
+	 */
+	public function extCheck($release, $echo, $type, $namestatus, $show)
+	{
+		$result = [];
+
+		if ($this->done === false && $this->relid !== $release["releaseid"]) {
+			if (preg_match('/(.+?)\.(srr)$/i', $release["textstring"], $result)) {
+				$this->updateRelease($release, $result["1"], $method = "Filenames: extension", $echo, $type, $namestatus, $show);
 			}
 		}
 	}
