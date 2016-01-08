@@ -1,9 +1,9 @@
 <div class="header">
-	<h2>View > <strong>Movie</strong></h2>
+	<h2>View > <strong>XXX Movie</strong></h2>
 	<div class="breadcrumb-wrapper">
 		<ol class="breadcrumb">
 			<li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li>
-			/ View Movie
+			/ View XXX
 		</ol>
 	</div>
 </div>
@@ -14,38 +14,32 @@
 				{if $result.cover == 1}
 					<img class="pull-right" style="margin-right:50px; max-height:278px;"
 						 alt="{$result.title|escape:"htmlall"} Logo"
-						 src="{$smarty.const.WWW_TOP}/covers/movies/{$result.imdbid}-cover.jpg"/>
+						 src="{$smarty.const.WWW_TOP}/covers/xxx/{$result.id}-cover.jpg"/>
 				{else}
 					<img class="pull-right" style="margin-right:50px; max-height:278px;"
 						 alt="{$result.title|escape:"htmlall"} Logo"
-						 src="{$serverroot}themes/omicron/images/nomoviecover.jpg"/>
+						 src="{$serverroot}themes/Omicron/images/nomoviecover.jpg"/>
 				{/if}
-				<span class="h1" style="display:inline;">{$result.title|escape:"htmlall"} ({$result.year})</span>
-				<a class="btn btn-transparent btn-primary" target="_blank"
-				   href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/"
-				   name="imdb{$result.imdbid}" title="View IMDB page">IMDB</a>
-				<a class="btn btn-transparent btn-primary" target="_blank"
-				   href="{$site->dereferrer_link}http://trakt.tv/search/imdb/tt{$result.imdbid}/"
-				   name="trakt{$result.imdbid}" title="View Trakt page" rel="trakt">TRAKT</a>
+				<span class="h1" style="display:inline;">{$result.title|escape:"htmlall"}</span>
 				<h4>{if $result.genre != ''}{$result.genre|replace:"|":" / "}{/if}</h4>
 				{if $result.tagline != ''}
 					<p class="lead" style="margin-right:300px;">"{$result.tagline|escape:"htmlall"}"</p>
 				{/if}
 				<dl style="margin-right:300px;">
-					{if $result.plot != ''}
+					{if isset($result.plot) && $result.plot != ''}
 						<dt>Plot</dt>
 						<dd>{$result.plot|escape:"htmlall"}</dd>
 					{/if}
-					{if $result.rating != ''}
+					{if isset($result.rating) && $result.rating != ''}
 						<dt>Rating</dt>
 						<dd>{$result.rating}
 						/10 {if isset($result.ratingcount) && $result.ratingcount != ''}({$result.ratingcount|number_format} votes)</dd>{/if}
 					{/if}
-					{if $result.director != ''}
+					{if isset($result.director) && $result.director != ''}
 						<dt>Director</dt>
 						<dd>{$result.director|replace:"|":", "}</dd>
 					{/if}
-					{if $result.actors != ''}
+					{if isset($result.actors) && $result.actors != ''}
 						<dt>Actors</dt>
 						<dd>{$result.actors|replace:"|":", "}</dd>
 					{/if}
