@@ -8,9 +8,16 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 2016-01-08 niel
+	Fix: More bad URLs in Charisma/Omicron.
 	Mrg: PR 2023, from DariusIII - Fix wrong path to shared folder in Gamma theme.
+2016-01-07 niel
+	Fix: Several bad URLs in Charisma/Gamma/Omicron themes (missing '/' after the smarty constants).
 2016-01-06 niel
 	Mrg: Bring in dev-git-hooks changes. Adds whitespace checking/fixing to pre-commit hook.
+2016-01-05 niel
+	Fix: Remove duplicate menu items for Login and Register in menu_items.tsv
+	Fix: In some cases, if not logged in, no theme is defined and certain links are broken with
+		themes//style... appearing instead of a proper link.
 2016-01-04 niel
 	Fix: Added template file to Default theme which caused 500 error when clicking on movie title
 		in covers view.
