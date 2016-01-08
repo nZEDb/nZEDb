@@ -54,6 +54,11 @@ class PostProcess
 	protected $_par2Info;
 
 	/**
+	 * @var \srrInfo
+	 */
+	protected $_srrInfo;
+
+	/**
 	 * Use alternate NNTP provider when download fails?
 	 * @var bool
 	 */
@@ -111,7 +116,6 @@ class PostProcess
 		$this->pdo = (($options['Settings'] instanceof Settings) ? $options['Settings'] : new Settings());
 		$this->groups = (($options['Groups'] instanceof Groups) ? $options['Groups'] : new Groups(['Settings' => $this->pdo]));
 		$this->_par2Info = new \Par2Info();
-		$this->_srrInfo = new \SrrInfo();
 		$this->debugging = ($options['Logger'] instanceof Logger ? $options['Logger'] : new Logger(['ColorCLI' => $this->pdo->log]));
 		$this->nameFixer = (($options['NameFixer'] instanceof NameFixer) ? $options['NameFixer'] : new NameFixer(['Echo' => $this->echooutput, 'Settings' => $this->pdo, 'Groups' => $this->groups]));
 		$this->Nfo = (($options['Nfo'] instanceof Nfo) ? $options['Nfo'] : new Nfo(['Echo' => $this->echooutput, 'Settings' => $this->pdo]));
@@ -438,6 +442,7 @@ class PostProcess
 	 */
 	public function parseSRR($messageID, $relID, &$nntp, $show)
 	{
+		$this->_srrInfo = new \SrrInfo();
 		$foundMatch = false;
 
 		if ($messageID === '') {
@@ -508,6 +513,7 @@ class PostProcess
 				$foundMatch = $this->nameFixer->checkName($query, 1, 'SRR, ', 1, $show, true);
 			}
 		}
+		unset($this->_srrInfo);
 		return $foundMatch;
 	}
 }

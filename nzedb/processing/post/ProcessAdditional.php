@@ -2343,7 +2343,7 @@ class ProcessAdditional
 		}
 
 		// Put the SRR into SrrInfo, check if there's an error.
-		$this->_srrInfo->setData($srr);
+		$this->_srrInfo->open($srr);
 		if ($this->_srrInfo->error) {
 			$this->pdo->log->doEcho($this->pdo->log->primaryOver("-"));
 			return;
