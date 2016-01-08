@@ -271,7 +271,7 @@
 													<a class="icon icon_nzb fa fa-cloud-download"
 													   style="text-decoration: none; color: #7ab800;"
 													   title="Download Nzb"
-													   href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}/{$mname[$m@index]|escape:"url"}"></a>
+													   href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}"></a>
 												</li>
 												<li>
 													<a class="icon icon_cart fa fa-shopping-basket"
