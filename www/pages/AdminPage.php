@@ -8,6 +8,8 @@ class AdminPage extends BasePage
 	{
 		parent::__construct();
 
+		define('WWW_THEMES', WWW_TOP . '/../themes');
+
 		if (!$this->users->isLoggedIn() || !isset($this->userdata['role'])) {
 			$this->show403(true);
 		}
@@ -21,10 +23,11 @@ class AdminPage extends BasePage
 		}
 
 		$this->smarty->setTemplateDir(
-			array(
-				'admin'    => nZEDb_WWW . 'themes/shared/templates/admin',
-				'frontend' => nZEDb_WWW . 'themes/Default/templates/frontend',
-			)
+			[
+				'admin'		=> nZEDb_THEMES . 'shared/templates/admin',
+				'shared'	=> nZEDb_THEMES . 'shared/templates',
+				'default'	=> nZEDb_THEMES . 'Default/templates/frontend'
+			]
 		);
 	}
 
