@@ -36,7 +36,7 @@
 	{if $site->google_adsense_acc != ''}<link href="http://www.google.com/cse/api/branding.css" rel="stylesheet" media="screen">{/if}
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-	<script>window.html5 || document.write('<script src="{$smarty.const.WWW_TOP}/themes_shared/scripts/html5shiv.js"><\/script>')</script>
+	<script>window.html5 || document.write('<script src="{$smarty.const.WWW_THEMES}/shared/scripts/html5shiv.js"><\/script>')</script>
 	<![endif]-->
 
 	<script>
