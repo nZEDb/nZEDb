@@ -19,6 +19,7 @@ use nzedb\Releases;
 use nzedb\SphinxSearch;
 use nzedb\db\Settings;
 use nzedb\utility\Misc;
+use nzedb\utility\Text;
 
 class ProcessAdditional
 {
@@ -1311,7 +1312,6 @@ class ProcessAdditional
 						$this->_siftPAR2Info($file);
 					} // Process SRR files
 					else if ($this->_foundSRRInfo === false && preg_match('/\.srr$/', $file)) {
-						var_dump($file);
 						exit;
 						$this->_siftSRRInfo($file);
 					} // Process NFO files.
@@ -2319,16 +2319,18 @@ class ProcessAdditional
 	/**
 	 * Get file info from inside SRR and attempt to get a release name.
 	 *
-	 * @param string $fileLocation
+	 * @param string $srr
 	 */
-	protected function _siftSRRInfo($fileLocation)
+	protected function _siftSRRInfo($srr)
 	{
 		$releaseInfo = $this->pdo->queryOneRow(
 			sprintf(
 				'
 				SELECT UNIX_TIMESTAMP(postdate) AS postdate, isrenamed
 				FROM releases
-				WHERE id = %d',
+				WHERE preid = 0
+				AND proc_srr =0
+				AND id = %d',
 				$this->_release['id']
 			)
 		);
@@ -2344,17 +2346,36 @@ class ProcessAdditional
 				Category::CAT_OTHERS_GROUP
 			)
 		) {
-			$srr = $this->_SRRInfo->getSummary($fileLocation);
-
+			// Put the SRR into SrrInfo, check if there's an error.
+			$this->_SRRInfo->setData($srr);
 			if ($this->_SRRInfo->error) {
-				return;
+				$this->pdo->log->doEcho($this->pdo->log->primaryOver("-"));
+				return false;
 			}
 
-			// Try to get a new name.
-			$this->_release['textstring'] = $srr['file_name'];
-			$this->_release['releaseid'] = $this->_release['id'];
-			if ($this->_nameFixer->checkName($this->_release, ($this->_echoCLI ? true : false), 'SRR, ', 1, 1) === true) {
-				$this->_foundSRRInfo = true;
+			// Get the file list from SrrInfo.
+			$summary = $this->_SRRInfo->getSummary();
+			if ($summary !== false && empty($summary['error'])) {
+				$this->pdo->log->doEcho($this->pdo->log->primaryOver("+"));
+				// Try to get a new name.
+				if (!empty($summary['oso_info']['name'])) {
+					$newName = $summary['oso_info']['name'];
+				} else if (is_array($summary['stored_files']) && !empty($summary['stored_files'])) {
+					$newName = $summary['stored_files'][0]['name'];
+				} else if (!empty($summary['file_name'])) {
+					$newName = $summary['file_name'];
+				}
+
+				// Strip extensions from the names for better match
+				if (isset($newName)) {
+					if (preg_match('/\.[a-z0-9]{2,4}$/i', $newName)) {
+						$newName = Text::cutStringUsingLast('.', $newName, 'left', false);
+					}
+					$query['textstring'] = $newName;
+				}
+				if (isset($query['texstring']) && $this->_nameFixer->checkName($this->_release, $this->_echoCLI, 'SRR, ', 1, 1) === true) {
+					$this->_foundSRRInfo = true;
+				}
 			}
 		}
 	}

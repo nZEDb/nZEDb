@@ -208,7 +208,7 @@ class NZBContents
 		$nzbFile = $this->LoadNZB($guid);
 		if ($nzbFile !== false) {
 			foreach ($nzbFile->file as $nzbContents) {
-				if (preg_match('/\.(srr[&" ]|\d{2,3}").+\(1\/1\)$/i', (string)$nzbContents->attributes()->subject)) {
+				if (preg_match('/\.srr[&" ].+\(1\/1\)$/i', (string)$nzbContents->attributes()->subject)) {
 					if ($this->pp->parseSRR((string)$nzbContents->segments->segment, $relID, $this->nntp, $show) === true && $nameStatus === 1) {
 						$this->pdo->queryExec(sprintf('UPDATE releases SET proc_srr = 1 WHERE id = %d', $relID));
 						return true;
