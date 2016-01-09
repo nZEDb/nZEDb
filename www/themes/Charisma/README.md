@@ -2,8 +2,8 @@
 
 ### Free, premium quality, responsive, multiple skin admin template.
 
-##[Live Demo](http://usman.it/themes/charisma/)
-### [Download](https://github.com/usmanhalalit/charisma/archive/master.zip)
+##[Live Demo](http://usman.it/themes/Charisma/)
+### [Download](https://github.com/usmanhalalit/Charisma/archive/master.zip)
 
 ##Features
 
@@ -12,12 +12,12 @@
 - Based on Bootstrap.
 - Works on IE9+
 - Commented code.
-- Custom product tour, [see example](http://usman.it/themes/charisma/tour.html).
-- Grid system, [see example](http://usman.it/themes/charisma/grid.html).
+- Custom product tour, [see example](http://usman.it/themes/Charisma/tour.html).
+- Grid system, [see example](http://usman.it/themes/Charisma/grid.html).
 - Charts, including, pie, stack, flot, realtime etc.
 - Data tables
-- Widget boxes, collapsible, closable, [see example](http://usman.it/themes/charisma/grid.html).
-- Photo gallery [see example](http://usman.it/themes/charisma/gallery.html).
+- Widget boxes, collapsible, closable, [see example](http://usman.it/themes/Charisma/grid.html).
+- Photo gallery [see example](http://usman.it/themes/Charisma/gallery.html).
 - Ajaxified menus
 - Full calendar, monthly weekly, daily, with todo list.
 - Custom error page
