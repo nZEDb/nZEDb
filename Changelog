@@ -13,6 +13,8 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Mrg: PR 2040, from DariusIII - Update isISO categorization.
 2016-01-16 niel
 	Chg: Update getID3 library to version 1.9.11
+2016-01-09 niel
+	Chg: Delete duplicated bootstrap files in shared theme.
 2016-01-08 niel
 	Fix: More bad URLs in Charisma/Omicron.
 	Mrg: PR 2023, from DariusIII - Fix wrong path to shared folder in Gamma theme.
