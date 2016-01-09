@@ -167,7 +167,7 @@
 <!-- history.js for cross-browser state change on ajax -->
 <script src="{$smarty.const.WWW_TOP}/themes/Charisma/js/jquery.history.js"></script>
 <!-- application script for Charisma demo -->
-<script src="{$smarty.const.WWW_TOP}/themes/Charisma/js/Charisma.js"></script>
+<script src="{$smarty.const.WWW_TOP}/themes/Charisma/js/charisma.js"></script>
 
 
 </body>
