@@ -38,7 +38,7 @@
 	<!-- The styles -->
 	<link id="bs-css" href="{$smarty.const.WWW_TOP}/themes/Charisma/css/bootstrap-spacelab.min.css" rel="stylesheet">
 
-	<link href="{$smarty.const.WWW_TOP}/themes/Charisma/css/Charisma-app.css" rel="stylesheet">
+	<link href="{$smarty.const.WWW_TOP}/themes/Charisma/css/charisma-app.css" rel="stylesheet">
 	<link href='{$smarty.const.WWW_TOP}/themes/Charisma/bower_components/fullcalendar/dist/fullcalendar.css'
 		  rel='stylesheet'>
 	<link href='{$smarty.const.WWW_TOP}/themes/Charisma/bower_components/fullcalendar/dist/fullcalendar.print.css'
@@ -136,38 +136,38 @@
 
 <!-- external javascript -->
 
-<script src="{$smarty.const.WWW_TOP}/themes/Charisma/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="{$smarty.const.WWW_THEMES}/Charisma/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 
 <!-- library for cookie management -->
-<script src="{$smarty.const.WWW_TOP}/themes/Charisma/js/jquery.cookie.js"></script>
+<script src="{$smarty.const.WWW_THEMES}/Charisma/js/jquery.cookie.js"></script>
 <!-- calender plugin -->
-<script src='{$smarty.const.WWW_TOP}/themes/Charisma/bower_components/moment/min/moment.min.js'></script>
-<script src='{$smarty.const.WWW_TOP}/themes/Charisma/bower_components/fullcalendar/dist/fullcalendar.min.js'></script>
+<script src='{$smarty.const.WWW_THEMES}/Charisma/bower_components/moment/min/moment.min.js'></script>
+<script src='{$smarty.const.WWW_THEMES}/Charisma/bower_components/fullcalendar/dist/fullcalendar.min.js'></script>
 <!-- data table plugin -->
-<script src='{$smarty.const.WWW_TOP}/themes/Charisma/js/jquery.dataTables.min.js'></script>
+<script src='{$smarty.const.WWW_THEMES}/Charisma/js/jquery.dataTables.min.js'></script>
 
 <!-- select or dropdown enhancer -->
-<script src="{$smarty.const.WWW_TOP}/themes/Charisma/bower_components/chosen/chosen.jquery.min.js"></script>
+<script src="{$smarty.const.WWW_THEMES}/Charisma/bower_components/chosen/chosen.jquery.min.js"></script>
 <!-- plugin for gallery image view -->
-<script src="{$smarty.const.WWW_TOP}/themes/Charisma/bower_components/colorbox/jquery.colorbox-min.js"></script>
+<script src="{$smarty.const.WWW_THEMES}/Charisma/bower_components/colorbox/jquery.colorbox-min.js"></script>
 <!-- notification plugin -->
-<script src="{$smarty.const.WWW_TOP}/themes/Charisma/js/jquery.noty.js"></script>
+<script src="{$smarty.const.WWW_THEMES}/Charisma/js/noty/jquery.noty.js"></script>
 <!-- library for making tables responsive -->
-<script src="{$smarty.const.WWW_TOP}/themes/Charisma/bower_components/responsive-tables/responsive-tables.js"></script>
+<script src="{$smarty.const.WWW_THEMES}/Charisma/bower_components/responsive-tables/responsive-tables.js"></script>
 <!-- tour plugin -->
-<script src="{$smarty.const.WWW_TOP}/themes/Charisma/bower_components/bootstrap-tour/build/js/bootstrap-tour.min.js"></script>
+<script src="{$smarty.const.WWW_THEMES}/Charisma/bower_components/bootstrap-tour/build/js/bootstrap-tour.min.js"></script>
 <!-- star rating plugin -->
-<script src="{$smarty.const.WWW_TOP}/themes/Charisma/js/jquery.raty.min.js"></script>
+<script src="{$smarty.const.WWW_THEMES}/Charisma/js/jquery.raty.min.js"></script>
 <!-- for iOS style toggle switch -->
-<script src="{$smarty.const.WWW_TOP}/themes/Charisma/js/jquery.iphone.toggle.js"></script>
+<script src="{$smarty.const.WWW_THEMES}/Charisma/js/jquery.iphone.toggle.js"></script>
 <!-- autogrowing textarea plugin -->
-<script src="{$smarty.const.WWW_TOP}/themes/Charisma/js/jquery.autogrow-textarea.js"></script>
+<script src="{$smarty.const.WWW_THEMES}/Charisma/js/jquery.autogrow-textarea.js"></script>
 <!-- multiple file upload plugin -->
-<script src="{$smarty.const.WWW_TOP}/themes/Charisma/js/jquery.uploadify-3.1.min.js"></script>
+<script src="{$smarty.const.WWW_THEMES}/Charisma/js/jquery.uploadify-3.1.min.js"></script>
 <!-- history.js for cross-browser state change on ajax -->
-<script src="{$smarty.const.WWW_TOP}/themes/Charisma/js/jquery.history.js"></script>
+<script src="{$smarty.const.WWW_THEMES}/Charisma/js/jquery.history.js"></script>
 <!-- application script for Charisma demo -->
-<script src="{$smarty.const.WWW_TOP}/themes/Charisma/js/charisma.js"></script>
+<script src="{$smarty.const.WWW_THEMES}/Charisma/js/charisma.js"></script>
 
 
 </body>
