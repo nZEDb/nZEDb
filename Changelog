@@ -9,6 +9,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2016-01-09 niel
 	Chg: Delete duplicated bootstrap files in shared theme.
+	Chg: Rename shared directories: images => img, scripts => js, styles => css to be more conventional.
 2016-01-08 niel
 	Fix: More bad URLs in Charisma/Omicron.
 	Mrg: PR 2023, from DariusIII - Fix wrong path to shared folder in Gamma theme.
@@ -21,8 +22,8 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Fix: In some cases, if not logged in, no theme is defined and certain links are broken with
 		themes//style... appearing instead of a proper link.
 2016-01-04 niel
-	Fix: Added template file to Default theme which caused 500 error when clicking on movie title
-		in covers view.
+	Fix: Added missing template file to Default theme which caused 500 error when clicking on movie
+		title in covers view.
 	Mrg: PR 2012, from DariusIII - Update Captcha.tpl with noscript fix, make browse groups in
 		Charisma/Omicron themes sortable.
 2016-01-02 niel

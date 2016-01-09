@@ -21,13 +21,13 @@
 		{/if}
 
 		<!-- nZEDb core CSS -->
-		<link href="{$smarty.const.WWW_THEMES}/shared/styles/bootstrap.min.css"
+		<link href="{$smarty.const.WWW_THEMES}/shared/css/bootstrap.min.css"
 				rel="stylesheet"
 				media="screen">
 		<link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/3.2.1/css/font-awesome.css"
 				rel="stylesheet"
 				media="screen">
-		<link href="{$smarty.const.WWW_THEMES}/shared/styles/posterwall.css"
+		<link href="{$smarty.const.WWW_THEMES}/shared/css/posterwall.css"
 				rel="stylesheet"
 				type="text/css"
 				media="screen">
@@ -39,10 +39,10 @@
 		{if $site->google_adsense_acc != ''}
 			<link href="//www.google.com/cse/api/branding.css" rel="stylesheet" media="screen">
 		{/if}
-		<link href="{$smarty.const.WWW_THEMES}/shared/styles/jquery.pnotify.default.css"
+		<link href="{$smarty.const.WWW_THEMES}/shared/css/jquery.pnotify.default.css"
 				rel="stylesheet"
 				media="screen">
-		<link href="{$smarty.const.WWW_THEMES}/shared/styles/jquery.qtip.css"
+		<link href="{$smarty.const.WWW_THEMES}/shared/css/jquery.qtip.css"
 				rel="stylesheet"
 				media="screen">
 
@@ -130,12 +130,12 @@
 		</style>
 
 		<!-- Favicons WWWIIIPPP Larger Icons-->
-		<link rel="shortcut icon" href="{$smarty.const.WWW_THEMES}/shared/images/favicon.ico">
+		<link rel="shortcut icon" href="{$smarty.const.WWW_THEMES}/shared/img/favicon.ico">
 
 		<!-- Additional nZEDb -->
 		<!--[if lt IE 9]>
-		<script src="{$smarty.const.WWW_THEMES}/shared/scripts/html5shiv.js"></script>
-		<script src="{$smarty.const.WWW_THEMES}/shared/scripts/respond.min.js"></script>
+		<script src="{$smarty.const.WWW_THEMES}/shared/js/html5shiv.js"></script>
+		<script src="{$smarty.const.WWW_THEMES}/shared/js/respond.min.js"></script>
 		<![endif]-->
 		{literal}
 		<script>
@@ -227,7 +227,7 @@
 								href="{$smarty.const.WWW_TOP}{$site->home_link}">
 							<img class="media-object"
 									alt="{$site->title} Logo"
-									src="{$smarty.const.WWW_THEMES}/shared/images/clearlogo.png">
+									src="{$smarty.const.WWW_THEMES}/shared/img/clearlogo.png">
 							<!-- SITE LOGO -->
 						</a>
 
@@ -337,12 +337,12 @@
 	================================================== -->
 	<script src="//code.jquery.com/jquery-1.9.1.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/libraries/bootstrap/v3/js/bootstrap.min.js"></script>
-	<script src="{$smarty.const.WWW_THEMES}/shared/scripts/holder.js"></script>
-	<script src="{$smarty.const.WWW_THEMES}/shared/scripts/jquery.pnotify.min.js"></script>
-	<script src="{$smarty.const.WWW_THEMES}/shared/scripts/jquery.qtip.min.js"></script>
-	<script src="{$smarty.const.WWW_THEMES}/shared/scripts/jquery.autosize-min.js"></script>
-	<script src="{$smarty.const.WWW_THEMES}/shared/scripts/jquery.colorbox-min.js"></script>
-	<script src="{$smarty.const.WWW_THEMES}/shared/scripts/sorttable.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/js/holder.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/js/jquery.pnotify.min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/js/jquery.qtip.min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/js/jquery.autosize-min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/js/jquery.colorbox-min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/js/sorttable.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/{$theme}/scripts/utils.js"></script>
 
 	<!-- Additional nZEDb JS -->

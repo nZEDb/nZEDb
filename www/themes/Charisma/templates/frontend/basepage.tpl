@@ -45,7 +45,7 @@
 	<link href='{$smarty.const.WWW_THEMES}/{$theme}/css/jquery.iphone.toggle.css' rel='stylesheet'>
 	<link href='{$smarty.const.WWW_THEMES}/{$theme}/css/animate.min.css' rel='stylesheet'>
 	<!-- Normalize.css -->
-	<link href="{$smarty.const.WWW_TOP}/themes/shared/styles/normalize.css"
+	<link href="{$smarty.const.WWW_TOP}/themes/shared/css/normalize.css"
 		rel="stylesheet"
 		type="text/css">
 	<!-- The fav icon -->
@@ -309,13 +309,13 @@
 		src="{$smarty.const.WWW_THEMES}/{$theme}/js/functions.js"></script>
 	<!-- nZEDb default scripts, needed for stuff to work -->
 	<script type="text/javascript"
-		src="{$smarty.const.WWW_THEMES}/shared/scripts/jquery.colorbox-min.js"></script>
+		src="{$smarty.const.WWW_THEMES}/shared/js/jquery.colorbox-min.js"></script>
 	<script type="text/javascript"
-		src="{$smarty.const.WWW_THEMES}/shared/scripts/jquery.autosize-min.js"></script>
+		src="{$smarty.const.WWW_THEMES}/shared/js/jquery.autosize-min.js"></script>
 	<script type="text/javascript"
-		src="{$smarty.const.WWW_THEMES}/shared/scripts/jquery.qtip2.js"></script>
+		src="{$smarty.const.WWW_THEMES}/shared/js/jquery.qtip2.js"></script>
 	<script type="text/javascript"
-		src="{$smarty.const.WWW_THEMES}/shared/scripts/sorttable.js"></script>
+		src="{$smarty.const.WWW_THEMES}/shared/js/sorttable.js"></script>
 	<!-- The HTML5 shim, for IE6-8 support of HTML5 elements -->
 	<!--[if lt IE 9]>
 	<script type="text/javascript"

@@ -79,7 +79,7 @@
 										href="{$site->dereferrer_link}{$result.url}"
 										name="amazon{$result.consoleinfoid}"
 										title="View amazon page"
-									><img src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/amazon.png"></a>
+									><img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/amazon.png"></a>
 								{/if}
 								<a
 									class="label"
@@ -87,14 +87,14 @@
 									href="{$site->dereferrer_link}http://ign.com/search?q={$result.title|escape:"htmlall"}&page=0&count=10&type=object&objectType=game&filter=games&"
 									name="ign{$result.id}"
 									title="Find game on IGN"
-								><img src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/ign.png"></a>
+								><img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/ign.png"></a>
 								<a
 									class="label"
 									target="_blank"
 									href="{$site->dereferrer_link}http://www.gamespot.com/search/?q={$result.title|escape:"htmlall"}"
 									name="ign{$result.id}"
 									title="Find game on Gamespot"
-								><img src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/gamespot.png"></a>
+								><img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/gamespot.png"></a>
 							</div>
 							<hr>
 							<div class="container">
