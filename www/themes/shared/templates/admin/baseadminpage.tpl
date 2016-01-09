@@ -14,14 +14,14 @@
 		<meta name="viewport" content="width=device-width">
 		{*<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">*}
 		<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.0/css/font-awesome.min.css" rel="stylesheet">
-		<link href="{$smarty.const.WWW_THEMES}/shared/styles/jquery.accordian.css" rel="stylesheet" media="screen">
+		<link href="{$smarty.const.WWW_THEMES}/shared/css/jquery.accordian.css" rel="stylesheet" media="screen">
 		<link href="{$smarty.const.WWW_THEMES}/Default/styles/style.css" rel="stylesheet" media="screen">
-		<link href="{$smarty.const.WWW_THEMES}/shared/styles/admin.css" rel="stylesheet" media="screen">
-		<link href="{$smarty.const.WWW_THEMES}/shared/styles/jquery.multiselect.css" rel="stylesheet" media="screen">
-		<link rel="shortcut icon" href="{$smarty.const.WWW_TOP}/../themes/shared/images/favicon.ico">
+		<link href="{$smarty.const.WWW_THEMES}/shared/css/admin.css" rel="stylesheet" media="screen">
+		<link href="{$smarty.const.WWW_THEMES}/shared/css/jquery.multiselect.css" rel="stylesheet" media="screen">
+		<link rel="shortcut icon" href="{$smarty.const.WWW_TOP}/www/themes/shared/img/favicon.ico">
 		<!--[if lt IE 9]>
 		<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-		<script>window.html5 || document.write('<script src="{$smarty.const.WWW_TOP}/../themes/shared/scripts/html5shiv.js"><\/script>')</script>
+		<script>window.html5 || document.write('<script src="{$smarty.const.WWW_TOP}/../themes/shared/js/html5shiv.js"><\/script>')</script>
 		<![endif]-->
 	{$page->head}
 	</head>
@@ -57,15 +57,16 @@
 		<script src="//code.jquery.com/jquery-1.9.1.js"></script>
 		{literal}
 			<script>
-				window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_TOP}{literal}/../themes/shared/scripts/jquery-1.9.1.js"><\/script>')
+				window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_TOP}{literal}/../themes/shared/js/jquery-1.9.1.js"><\/script>')
 			</script>
 		{/literal}
 		{*<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
-		{literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_TOP}{literal}/../themes/Default/scripts/bootstrap.min.js"><\/script>')</script>{/literal}*}
-		<script src="{$smarty.const.WWW_THEMES}/shared/scripts/sorttable.js"></script>
-		<script src="{$smarty.const.WWW_THEMES}/shared/scripts/utils-admin.js"></script>
-		<script src="{$smarty.const.WWW_THEMES}/shared/scripts/jquery.multifile.js"></script>
-		<script src="{$smarty.const.WWW_THEMES}/shared/scripts/jquery.multiselect.js"></script>
+		{literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_THEMES}{literal}/shared/libraries/bootstrap/v3/js/bootstrap.min.js"><\/script>')
+		</script>{/literal}*}
+		<script src="{$smarty.const.WWW_THEMES}/shared/js/sorttable.js"></script>
+		<script src="{$smarty.const.WWW_THEMES}/shared/js/utils-admin.js"></script>
+		<script src="{$smarty.const.WWW_THEMES}/shared/js/jquery.multifile.js"></script>
+		<script src="{$smarty.const.WWW_THEMES}/shared/js/jquery.multiselect.js"></script>
 		<script>var WWW_TOP = "{$smarty.const.WWW_TOP}/..";</script>
 		{if $site->google_analytics_acc != ''}
 			{literal}

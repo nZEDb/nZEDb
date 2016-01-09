@@ -83,7 +83,7 @@
 								href="{$site->dereferrer_link}{$result.url}"
 								name="amazon{$result.musicinfoid}"
 								title="View amazon page"
-							><img src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/amazon.png"></a>
+							><img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/amazon.png"></a>
 						{/if}
 						<a
 							class="label"
@@ -91,14 +91,14 @@
 							href="{$site->dereferrer_link}http://www.allmusic.com/search/artist/{$result.artist|escape:"htmlall"}"
 							name="allmusic{$result.id}"
 							title="Find artist on AllMusic"
-						><img src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/allmusic.png"></a>
+						><img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/allmusic.png"></a>
 						<a
 							class="label"
 							target="_blank"
 							href="{$site->dereferrer_link}http://www.discogs.com/search/?q={$result.artist|escape:"htmlall"}&type=artist"
 							name="discogs{$result.id}"
 							title="Find artist on Discogs"
-							><img src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/discogs.png"></a>
+							><img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/discogs.png"></a>
 					</div>
 					<hr>
 					<div>
