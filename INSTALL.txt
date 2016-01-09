@@ -132,6 +132,7 @@ INSTALLATION
 
 
 RUNNING OUTSIDE OF WEB ROOT
+	This is not officially supported. If you choose to do this, it is up to you to get it working ;-)
 	set www\.htaccess RewriteBase to your virtual directory
 
 

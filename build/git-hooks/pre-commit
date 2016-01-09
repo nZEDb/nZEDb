@@ -1,11 +1,9 @@
-#!/bin/sh
+#!/usr/bin/env bash
 #version=10
 #
-# The hook should
-# exit with non-zero status after issuing an appropriate message if
-# it wants to stop the commit.
+# The hook should  exit with non-zero status after issuing an appropriate message if  it wants to
+# stop the commit.
 #
-# To enable this hook, rename this file to "pre-commit".
 
 if git rev-parse --verify HEAD >/dev/null 2>&1
 then
@@ -15,7 +13,7 @@ else
 	AGAINST=4b825dc642cb6eb9a060e54bf8d69288fbee4904
 fi
 
-#####################################################################################################
+####################################################################################################
 
 EXIT_STATUS=0
 
@@ -28,6 +26,9 @@ PC=/pre-commit
 PROJECT=${NZEDB%${HOOK_DIR}}
 HOOKS=${PROJECT}${HOOK_DIR}
 FILE_LIST=${HOOKS}/git_hook_list.txt
+
+# stash any unstaged changes
+#git stash save -q --keep-index
 
 if [ -e ${FILE_LIST} ]
 then
@@ -55,4 +56,10 @@ then
 fi
 
 # If there are whitespace errors, print the offending file names and fail.
-exec git diff-index --check --cached ${AGAINST} --
+#exec git diff-index --check --cached ${AGAINST} --
+
+# Remove trailing white-space in commits.
+${HOOKS}/white-space-removal
+
+# unstash the saved stuff
+#git stash pop -q

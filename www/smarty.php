@@ -55,6 +55,5 @@ if (strlen($www_top) == 1) {
 
 // Used everywhere an href is output.
 define('WWW_TOP', $www_top);
-define('WWW_THEMES', '/themes');
 
 ?>

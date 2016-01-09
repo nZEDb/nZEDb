@@ -90,7 +90,7 @@ class BasePage
 	 *
 	 * @var string
 	 */
-	private $theme = 'Default';
+	protected $theme = 'Default';
 
 	/**
 	 * Set up session / smarty / user variables.
@@ -132,6 +132,7 @@ class BasePage
 		if ($this->users->isLoggedIn()) {
 			$this->setUserPreferences();
 		} else {
+
 			$this->theme = $this->settings->getSetting('site.main.style');
 
 			$this->smarty->assign('isadmin', 'false');
@@ -139,13 +140,9 @@ class BasePage
 			$this->smarty->assign('loggedin', 'false');
 		}
 
-		// Tell Smarty which directories to use for templates
-		$this->smarty->setTemplateDir(
-			[
-				'user_frontend' => nZEDb_THEMES . $this->theme . '/templates/frontend',
-				'frontend'      => nZEDb_THEMES . 'Default/templates/frontend'
-			]
-		);
+		if ($this->theme === '') {
+			$this->theme = 'Default';
+		}
 
 		$this->smarty->assign('theme', $this->theme);
 		$this->smarty->assign('site', $this->settings);
@@ -339,9 +336,7 @@ class BasePage
 		}
 
 		// Update last login every 15 mins.
-		if ((strtotime($this->userdata['now']) - 900) >
-			strtotime($this->userdata['lastlogin'])
-		) {
+		if ((strtotime($this->userdata['now']) - 900) > strtotime($this->userdata['lastlogin'])) {
 			$this->users->updateSiteAccessed($this->userdata['id']);
 		}
 

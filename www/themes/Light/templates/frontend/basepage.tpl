@@ -99,9 +99,9 @@
 
             <!-- Moved The Script Files to end of site for faster page loading -->
 			<script src="//code.jquery.com/jquery-1.9.1.js"></script>
-            {literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_TOP}{literal}/themes/shared/scripts/jquery-1.9.1.js"><\/script>')</script>{/literal}
+            {literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_THEMES}{literal}/shared/scripts/jquery-1.9.1.js"><\/script>')</script>{/literal}
 			<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
-            {literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_TOP}{literal}/themes/Default/scripts/bootstrap.min.js"><\/script>')</script>{/literal}
+            {literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_THEMES}{literal}/Default/scripts/bootstrap.min-v3.0.js"><\/script>')</script>{/literal}
             <!-- <script src="{$smarty.const.WWW_THEMES}/shared/scripts/subnav.js"></script> -->
             <script src="{$smarty.const.WWW_THEMES}/shared/scripts/jquery.colorbox-min.js"></script>
             <script src="{$smarty.const.WWW_THEMES}/shared/scripts/jquery.qtip.min.js"></script>

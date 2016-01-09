@@ -302,7 +302,7 @@
 													href="{$site->dereferrer_link}http://nzbindex.com/search/?q={$result.title}"
 													target="_blank"
 													>
-												<img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/nzbindex.png"/>
+												<img src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/nzbindex.png"/>
 												&nbsp;
 											</a>
 										</td>
@@ -313,7 +313,7 @@
 													href="{$site->dereferrer_link}http://binsearch.info/?q={$result.title}"
 													target="_blank"
 													>
-												<img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/binsearch.png"/>
+												<img src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/binsearch.png"/>
 												&nbsp;
 											</a>
 										</td>

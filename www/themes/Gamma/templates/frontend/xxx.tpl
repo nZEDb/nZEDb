@@ -128,8 +128,8 @@
 								   title="View XXX info"
 								   class="modal_xxx thumbnail" rel="viewxxx">
 									{if $result.cover == 1}
-									<img class="shadow img-polaroid" src="{$smarty.const.WWW_TOP}covers/xxx/{$result.id}-cover.jpg" style="max-width: 120px;" width="120" border="0" alt="{$result.title|escape:"htmlall"}"/>
-									{else} <img class="shadow img-polaroid" src="{$smarty.const.WWW_TOP}themes_shared/images/no-cover.png" style="max-width: 120px;" width="120" border="0" alt="{$result.title|escape:"htmlall"}"/>
+									<img class="shadow img-polaroid" src="{$smarty.const.WWW_TOP}/covers/xxx/{$result.id}-cover.jpg" style="max-width: 120px;" width="120" border="0" alt="{$result.title|escape:"htmlall"}"/>
+									{else} <img class="shadow img-polaroid" src="{$smarty.const.WWW_THEMES}/shared/images/no-cover.png" style="max-width: 120px;" width="120" border="0" alt="{$result.title|escape:"htmlall"}"/>
 									{/if}
 								</a>
 							</h4>
@@ -142,7 +142,7 @@
 												name="viewade{$result.title}"
 												title="View AdultdvdEmpire page"
 										><img
-													src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/ade.png"></a>
+													src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/ade.png"></a>
 									{else}
 										<a
 												target="_blank"
@@ -150,7 +150,7 @@
 												name="viewade{$result.title}"
 												title="Search AdultdvdEmpire page"
 										><img
-													src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/ade.png"></a>
+													src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/ade.png"></a>
 									{/if}
 									{if $result.classused == "hm"}
 										<a
@@ -159,7 +159,7 @@
 												name="viewhm{$result.title}"
 												title="View Hot Movies page"
 										><img
-													src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/hotmovies.png"></a>
+													src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/hotmovies.png"></a>
 									{else}
 										<a
 												target="_blank"
@@ -167,7 +167,7 @@
 												name="viewhm{$result.title}"
 												title="Search Hot Movies page"
 										><img
-													src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/hotmovies.png"></a>
+													src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/hotmovies.png"></a>
 									{/if}
 									{if $result.classused == "pop"}
 										<a
@@ -176,7 +176,7 @@
 												name="viewpop{$result.id}"
 												title="View Popporn page"
 										><img
-													src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/popporn.png"></a>
+													src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/popporn.png"></a>
 									{else}
 										<a
 												target="_blank"
@@ -184,7 +184,7 @@
 												name="viewpop{$result.id}"
 												title="Search Popporn page"
 										><img
-													src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/popporn.png"></a>
+													src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/popporn.png"></a>
 									{/if}
 									<a
 											target="_blank"
@@ -192,7 +192,7 @@
 											name="viewiafd{$result.title}"
 											title="Search Internet Adult Film Database"
 									><img
-												src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/iafd.png"></a>
+												src="{$smarty.const.WWW_TOP}/themes/shared/images/icons/iafd.png"></a>
 								</center>
 							</div>
 						</div>
@@ -271,7 +271,7 @@
 													<a class="icon icon_nzb fa fa-cloud-download"
 													   style="text-decoration: none; color: #7ab800;"
 													   title="Download Nzb"
-													   href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}/{$mname[$m@index]|escape:"url"}"></a>
+													   href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}"></a>
 												</li>
 												<li>
 													<a class="icon icon_cart fa fa-shopping-basket"

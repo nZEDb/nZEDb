@@ -156,7 +156,7 @@
 						<span class="label label-default">{$mgrabs[$m@index]}
 							grab{if $mgrabs[$m@index] != 1}s{/if}</span>
 												{if isset($mnfo[$m@index]) && $mnfo[$m@index] > 0}<span class="label label-default"><a
-															href="{$smarty.const.WWW_TOP}/nfo/{$mguid[$m@index]}"
+															href="{$smarty.const.WWW_TOP}/nfo/{$mguid[$m@index]}|escape:"htmlall"}"
 															class="text-muted">NFO</a>
 													</span>{/if}
 												{if $mpass[$m@index] == 2}
