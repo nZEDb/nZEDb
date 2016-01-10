@@ -97,7 +97,7 @@
 							   name="name{$result.imdbid}" title="View movie info" class="modal_imdb" rel="movie">
 								<img class="shadow"
 									 src="{$smarty.const.WWW_TOP}/covers/movies/{if $result.cover == 1}{$result.imdbid}-cover.jpg{else}no-cover.jpg{/if}"
-									 width="120" border="0" alt="{$result.title|escape:"htmlall"}"/>
+									 width="120" alt="{$result.title|escape:"htmlall"}"/>
 							</a>
 							<div class="movextra">
 								<a class="rndbtn" target="_blank"

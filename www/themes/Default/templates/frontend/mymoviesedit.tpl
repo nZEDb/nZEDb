@@ -22,7 +22,7 @@ Use this page to manage movies added to your personal list. If the movie becomes
 			<td class="mid">
 
 				<div class="movcover">
-					<img class="shadow" src="{$smarty.const.WWW_TOP}/covers/movies/{if $movie.cover == 1}{$movie.imdbid}-cover.jpg{else}no-cover.jpg{/if}" width="120" border="0" alt="{$movie.title|escape:"htmlall"}" />
+					<img class="shadow" src="{$smarty.const.WWW_TOP}/covers/movies/{if $movie.cover == 1}{$movie.imdbid}-cover.jpg{else}no-cover.jpg{/if}" width="120" alt="{$movie.title|escape:"htmlall"}" />
 					<div class="movextra">
 						<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$movie.imdbid}" title="View IMDB">IMDB</a>
 					</div>

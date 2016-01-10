@@ -14,7 +14,7 @@
 
 				<div class="movcover">
 
-					<img class="shadow" src="{if $result['cover'] ==""}{$smarty.const.WWW_TOP}/covers/movies/no-cover.jpg{else}{$result['cover']}{/if}" width="120" border="0" alt="{$result['title']|escape:"htmlall"}" />
+					<img class="shadow" src="{if $result['cover'] ==""}{$smarty.const.WWW_TOP}/covers/movies/no-cover.jpg{else}{$result['cover']}{/if}" width="120" alt="{$result['title']|escape:"htmlall"}" />
 					<div class="movextra">
 						{if $ourmovies[$imdbid] != ""}
 						<a href="#" name="name{$imdbid}" title="View movie info" class="rndbtn modal_imdb" rel="movie" >Cover</a>
