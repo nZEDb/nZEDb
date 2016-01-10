@@ -109,7 +109,7 @@
 							   href="{$smarty.const.WWW_TOP}/details/{$result.guid}">
 								<img class="shadow"
 									 src="{$smarty.const.WWW_TOP}/covers/music/{if $result.cover == 1}{$result.musicinfoid}.jpg{else}no-cover.jpg{/if}"
-									 width="120" border="0"
+									 width="120"
 									 alt="{$result.artist|escape:"htmlall"} - {$result.title|escape:"htmlall"}"/>
 							</a>
 

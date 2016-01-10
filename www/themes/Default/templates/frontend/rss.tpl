@@ -26,16 +26,16 @@
 					<![CDATA[{strip}
 					<div>
 						{if $release.cover == 1}
-							<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/movies/{$release.imdbid}-cover.jpg" width="120" border="0" alt="{$release.searchname|escape:"htmlall"}" />
+							<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/movies/{$release.imdbid}-cover.jpg" width="120" alt="{$release.searchname|escape:"htmlall"}" />
 						{/if}
 						{if $release.mu_cover == 1}
-							<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/music/{$release.musicinfoid}.jpg" width="120" border="0" alt="{$release.searchname|escape:"htmlall"}" />
+							<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/music/{$release.musicinfoid}.jpg" width="120" alt="{$release.searchname|escape:"htmlall"}" />
 						{/if}
 						{if $release.co_cover == 1}
-							<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/console/{$release.consoleinfoid}.jpg" width="120" border="0" alt="{$release.searchname|escape:"htmlall"}" />
+							<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/console/{$release.consoleinfoid}.jpg" width="120" alt="{$release.searchname|escape:"htmlall"}" />
 						{/if}
 						{if $release.bo_cover == 1}
-							<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/book/{$release.bookinfoid}.jpg" width="120" border="0" alt="{$release.searchname|escape:"htmlall"}" />
+							<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/book/{$release.bookinfoid}.jpg" width="120" alt="{$release.searchname|escape:"htmlall"}" />
 						{/if}
 						<ul>
 							<li>ID: <a href="{$serverroot}details/{$release.guid}">{$release.guid}</a></li>

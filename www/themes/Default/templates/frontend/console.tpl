@@ -84,7 +84,7 @@
 							   href="{$smarty.const.WWW_TOP}/details/{$result.grp_release_guid}">
 								<img class="shadow"
 									 src="{$smarty.const.WWW_TOP}/covers/console/{if $result.cover == 1}{$result.consoleinfoid}.jpg{else}no-cover.jpg{/if}"
-									 width="120" border="0" alt="{$result.title|escape:"htmlall"}"/>
+									 width="120" alt="{$result.title|escape:"htmlall"}"/>
 							</a>
 
 							<div class="movextra">

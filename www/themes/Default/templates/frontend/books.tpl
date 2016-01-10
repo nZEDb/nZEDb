@@ -85,7 +85,7 @@
 							   href="{$site->dereferrer_link}{$result.url}">
 								<img class="shadow"
 									 src="{$smarty.const.WWW_TOP}/covers/book/{if $result.cover == 1}{$result.bookinfoid}.jpg{else}no-cover.jpg{/if}"
-									 width="120" border="0" alt="{$result.title|escape:"htmlall"}">
+									 width="120" alt="{$result.title|escape:"htmlall"}">
 							</a>
 
 							<div class="movextra">
