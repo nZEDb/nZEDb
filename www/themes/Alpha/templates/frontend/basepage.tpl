@@ -21,7 +21,7 @@
 		{/if}
 
 		<!-- nZEDb core CSS -->
-		<link href="{$smarty.const.WWW_THEMES}/shared/css/bootstrap.min.css"
+		<link href="{$smarty.const.WWW_THEMES}/shared/libraries/bootstrap/v3/css/bootstrap.min.css"
 				rel="stylesheet"
 				media="screen">
 		<link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/3.2.1/css/font-awesome.css"
