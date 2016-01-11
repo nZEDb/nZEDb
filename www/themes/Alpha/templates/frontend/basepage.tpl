@@ -21,7 +21,7 @@
 		{/if}
 
 		<!-- nZEDb core CSS -->
-		<link href="{$smarty.const.WWW_THEMES}/shared/libraries/bootstrap/v3/css/bootstrap.min.css"
+		<link href="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap/v3/css/bootstrap.min.css"
 				rel="stylesheet"
 				media="screen">
 		<link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/3.2.1/css/font-awesome.css"
@@ -336,7 +336,7 @@
 	<!-- Bootstrap core JavaScript
 	================================================== -->
 	<script src="//code.jquery.com/jquery-1.9.1.js"></script>
-	<script src="{$smarty.const.WWW_THEMES}/shared/libraries/bootstrap/v3/js/bootstrap.min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap/v3/js/bootstrap.min.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/js/holder.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/js/jquery.pnotify.min.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/js/jquery.qtip.min.js"></script>
