@@ -1,6 +1,5 @@
 <div class="header">
 	<h2>Edit Profile > <strong>{$user.username|escape:"htmlall"}</strong></h2>
-
 	<div class="breadcrumb-wrapper">
 		<ol class="breadcrumb">
 			<li><a href="{$smarty.const.WWW_TOP}">Home</a></li>
@@ -13,13 +12,14 @@
 		<div class="box-content">
 			<div class="row">
 				<div class="col-xlg-12 portlets">
-					<div class="panel">
-						<div class="panel-content pagination2">
-							{if $error != ''}
+					<div class="panel panel-default">
+						<div class="panel-body pagination2">
+							{if isset($error) && $error != ''}
 								<div class="alert alert-danger">{$error}</div>
 							{/if}
 							<ul class="nav nav-tabs nav-primary">
-								<li class="active"><a href="#tab2_1" data-toggle="tab"><i class="fa fa-cogs fa-spin"></i>
+								<li class="active"><a href="#tab2_1" data-toggle="tab"><i
+												class="fa fa-cogs fa-spin"></i>
 										Settings</a></li>
 								<li><a href="#tab2_3" data-toggle="tab"><i class="fa fa-cloud-download"></i> Downloaders</a>
 								</li>
@@ -31,9 +31,9 @@
 											<tbody>
 											<tr valign="top">
 												<td>
-													<table class="table table-condensed table-striped responsive">
+													<table class="data table table-condensed table-striped table-responsive table-hover">
 														<tbody>
-														<tr class="bg-primary">
+														<tr class="bg-aqua-active">
 															<td colspan="2" style="padding-left: 8px;">
 																<strong>Profile</strong></td>
 														</tr>
@@ -48,7 +48,6 @@
 															<td>
 																<input autocomplete="off" id="password" name="password"
 																	   type="password" class="form-control" value="">
-
 																<div class="hint">Only enter your password if you want
 																	to change it.
 																</div>
@@ -70,9 +69,9 @@
 														</tr>
 														</tbody>
 													</table>
-													<table class="table table-condensed table-striped responsive">
+													<table class="data table table-condensed table-striped table-responsive table-hover">
 														<tbody>
-														<tr class="bg-primary">
+														<tr class="bg-aqua-active">
 															<td colspan="2" style="padding-left: 8px;"><strong>Excluded
 																	Categories</strong></td>
 														</tr>
@@ -84,9 +83,9 @@
 														</tr>
 														</tbody>
 													</table>
-													<table class="table table-condensed table-striped responsive">
+													<table class="data table table-condensed table-striped table-responsive table-hover">
 														<tbody>
-														<tr class="bg-primary">
+														<tr class="bg-aqua-active">
 															<td colspan="2" style="padding-left: 8px;"><strong>UI
 																	Preferences</strong></td>
 														</tr>
@@ -156,9 +155,9 @@
 													function.
 													<br/>
 													{if $page->settings->getSetting('sabintegrationtype') != 1}
-														<table class="table table-condensed table-striped responsive">
+														<table class="data table table-condensed table-striped table-responsive table-hover">
 															<tbody>
-															<tr class="bg-primary">
+															<tr class="bg-aqua-active">
 																<td colspan="2" style="padding-left: 8px;"><strong>Queue
 																		type
 																		<small>(NZBGet or SABnzbd)</small>
@@ -175,9 +174,9 @@
 														</table>
 													{/if}
 													{if $user.queuetype == 1 && $page->settings->getSetting('sabintegrationtype') == 2}
-														<table class="table table-condensed table-striped responsive">
+														<table class="data table table-condensed table-striped table-responsive table-hover">
 															<tbody>
-															<tr class="bg-primary">
+															<tr class="bg-aqua-active">
 																<td colspan="2" style="padding-left: 8px;"><strong>SABnzbd</strong>
 																</td>
 															</tr>
@@ -207,36 +206,13 @@
 																	</div>
 																</td>
 															</tr>
-															<tr>
-																<th width="200">Priority</th>
-																<td>{html_options id="sabpriority" name='sabpriority' values=$sabpriority_ids output=$sabpriority_names selected=$sabpriority_selected}</td>
-															</tr>
-															<tr>
-																<th width="200">Storage</th>
-																<td>{html_radios id="sabsetting" name='sabsetting' values=$sabsetting_ids output=$sabsetting_names selected=$sabsetting_selected separator='&nbsp;&nbsp;'}{if $sabsetting_selected == 2}&nbsp;&nbsp;[
-																		<a class="confirm_action"
-																		   href="?action=clearcookies">Clear Cookies</a>
-																		]{/if}
-																	<div class="hint">Where to store the SAB
-																		setting.<br/>&bull; <b>Cookie</b> will store the
-																		setting in your browsers coookies and will only
-																		work when using your current browser.<br/>&bull;
-																		<b>Site</b> will store the setting in your user
-																		account enabling it to work no matter where you
-																		are logged in from.<br/><span
-																				class="warning"><b>Please
-																				Note:</b></span> You should only store
-																		your full SAB api key with sites you trust.
-																	</div>
-																</td>
-															</tr>
 															</tbody>
 														</table>
 													{/if}
 													{if $user.queuetype == 2 && ($page->settings->getSetting('sabintegrationtype') == 0 || $page->settings->getSetting('sabintegrationtype') == 2)}
-														<table class="table table-condensed table-striped responsive">
+														<table class="data table table-condensed table-striped table-responsive table-hover">
 															<tbody>
-															<tr class="bg-primary">
+															<tr class="bg-aqua-active">
 																<td colspan="2" style="padding-left: 8px;"><strong>NZBget</strong>
 																</td>
 															</tr>
@@ -247,7 +223,6 @@
 																		   type="text" value="{$user.nzbgeturl}"/></td>
 															</tr>
 															<tr>
-
 																<th width="200">Username / Password</th>
 																<td>
 																	<div class="form-inline">
@@ -264,7 +239,6 @@
 																			   value="{$user.nzbgetpassword}"/>
 																	</div>
 																</td>
-
 															</tr>
 															</tbody>
 														</table>
@@ -276,14 +250,13 @@
 										</table>
 									</div>
 								</div>
-								<table class="table table-condensed table-striped responsive">
+								<table class="data table table-condensed table-striped table-responsive table-hover">
 									<tbody>
-									<tr class="bg-primary">
+									<tr class="bg-aqua-active">
 										<td colspan="2" style="padding-left: 8px;"><strong>Couchpotato</strong>
 										</td>
 									</tr>
 									<tr>
-
 										<th width="200">API / URL</th>
 										<td>
 											<div class="form-inline">
@@ -300,17 +273,17 @@
 													   value="{$cp_url_selected}"/>
 											</div>
 										</td>
-
 									</tr>
 									</tbody>
 								</table>
-								<table class="table table-condensed table-striped responsive">
+								<table class="data table table-condensed table-striped table-responsive">
 									<tbody>
-									<tr class="bg-primary">
-										<td colspan="2" style="padding-left: 8px;"><strong>Site theme</strong>
-										<div>
-										{html_options id="style" name='style' values=$themelist output=$themelist selected=$user.style}
-										</div>
+									<tr class="bg-aqua-active">
+										<td colspan="2" style="padding-left: 8px;"><strong>Site theme</strong></td>
+									</tr>
+									<tr>
+										<td>
+											{html_options id="style" name='style' values=$themelist output=$themelist selected=$user.style}
 										</td>
 									</tr>
 									</tbody>

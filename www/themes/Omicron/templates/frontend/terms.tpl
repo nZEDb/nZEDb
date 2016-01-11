@@ -95,7 +95,7 @@
 <!-- data table plugin -->
 <script type="text/javascript"
 		src='{$smarty.const.WWW_THEMES}/Omicron/dist/js/jquery.dataTables.min.js'></script>
-<!-- newznab default scripts, needed for stuff to work -->
+<!-- default scripts, needed for stuff to work -->
 <script type="text/javascript" src="{$smarty.const.WWW_THEMES}/Omicron/scripts/jquery.colorbox-min.js"></script>
 <script type="text/javascript" src="{$smarty.const.WWW_THEMES}/Omicron/scripts/jquery.autosize-min.js"></script>
 <script type="text/javascript" src="{$smarty.const.WWW_THEMES}/Omicron/scripts/jquery.qtip2.js"></script>
