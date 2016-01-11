@@ -13,6 +13,8 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Mrg: PR 2040, from DariusIII - Update isISO categorization.
 2016-01-16 niel
 	Chg: Update getID3 library to version 1.9.11
+2016-01-11 niel
+	Mrg: PR 2027, from DariusIII - Fix white letters on profile site theme selection, replace references to nntmux/newznab with nzedb.
 2016-01-09 niel
 	Chg: Delete duplicated bootstrap files in shared theme.
 	Chg: Rename shared directories: images => img, scripts => js, styles => css to be more conventional.
