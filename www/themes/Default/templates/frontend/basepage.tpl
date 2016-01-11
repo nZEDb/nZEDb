@@ -16,7 +16,7 @@
 	{if $loggedin=="true"}<link rel="alternate" type="application/rss+xml" title="{$site->title} Full Rss Feed" href="{$smarty.const.WWW_TOP}/rss?t=0&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">{/if}
 
 	<!-- Included CSS files - Bootstrap 3 - Font Awesome 3.2.0 - plugins master style.css -->
-	<link href="themes/libraries/bootstrap/v3/css/bootstrap.css" rel="stylesheet">
+	<link href="themes/shared/libs/bootstrap/v3/css/bootstrap.css" rel="stylesheet">
 	<link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/3.2.0/css/font-awesome.css" rel="stylesheet" media="screen">
 	<link href="{$smarty.const.WWW_THEMES}/shared/css/jquery.qtip.css" rel="stylesheet" media="screen">
 	<!-- <link href="{$smarty.const.WWW_THEMES}/shared/css/subnav.css" rel="stylesheet" media="screen"> -->
