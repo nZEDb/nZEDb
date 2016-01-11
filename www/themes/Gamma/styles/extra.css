@@ -177,21 +177,21 @@
 
 
 /*! Newznab tooltip style */
-.ui-tooltip-newznab .ui-tooltip-titlebar,
-.ui-tooltip-newznab .ui-tooltip-content{
+.ui-tooltip-nzedb .ui-tooltip-titlebar,
+.ui-tooltip-nzedb .ui-tooltip-content{
     color: #000;
 }
 
-    .ui-tooltip-newznab .ui-tooltip-content{
+    .ui-tooltip-nzedb .ui-tooltip-content{
         color: #000;
     }
 
-    .ui-tooltip-newznab .ui-tooltip-titlebar{
+    .ui-tooltip-nzedb .ui-tooltip-titlebar{
         color: #000;
         font-size:1.2em;
     }
 
-    .ui-tooltip-newznab .ui-state-default .ui-tooltip-icon{
+    .ui-tooltip-nzedb .ui-state-default .ui-tooltip-icon{
         background-position: -42px 0;
     }
 
