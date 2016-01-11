@@ -193,7 +193,7 @@
 						{if $result.preid > 0}
 						<span class="preinfo badge badge-inverse halffade" title="{$result.preid}">PreDB</span>
 						{/if}
-							{if $result.failed > 0}
+							{if isset($result.failed) && $result.failed > 0}
 								<span class="badge badge-inverse"><i class ="fa fa-thumbs-o-up"></i> {$result.grabs} Grab{if $result.grabs != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$result.failed} Failed Download{if $result.failed != 1}s{/if}</span>
 							{/if}
 						{/strip}
