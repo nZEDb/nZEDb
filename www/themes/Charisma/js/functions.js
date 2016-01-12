@@ -83,7 +83,7 @@ jQuery(function($){
         return false;
     });
 
-    $('.nntmux_check_all').change(function(){
+    $('.nzedb_check_all').change(function(){
         if($(this).attr('checked'))
         {
             $(".nzb_check").attr('checked',$(this).attr('checked'));
@@ -102,7 +102,7 @@ jQuery(function($){
         }
     });
 
-    $('input.nntmux_multi_operations_download').click(function(){
+    $('input.nzedb_multi_operations_download').click(function(){
         var newFormName = 'nzbmulti' + Math.round(+new Date()/1000);
         var newForm = $("<form />", {'action': SERVERROOT + 'getnzb?zip=1', 'method':'post', 'target': '_top', 'id':newFormName});
         $("INPUT[type='checkbox']:checked").each( function(i, row) {
@@ -114,7 +114,7 @@ jQuery(function($){
         $('#'+newFormName).submit();
     });
 
-    $('input.nntmux_multi_operations_cart').click(function(){
+    $('input.nzedb_multi_operations_cart').click(function(){
         var guids = [];
         $("INPUT[type='checkbox']:checked").each( function(i, row) {
             var guid = $(row).val();
@@ -129,7 +129,7 @@ jQuery(function($){
         $.post( SERVERROOT + "cart?add", { 'add': guids });
     });
 
-    $('input.nntmux_multi_operations_sab').click(function(){
+    $('input.nzedb_multi_operations_sab').click(function(){
         $("INPUT[type='checkbox']:checked").each( function(i, row) {
             var $sabIcon = $(row).parent().parent().children('td.icons').children('.icon_sab');
             var guid = $(row).val();
@@ -144,7 +144,7 @@ jQuery(function($){
         });
     });
 
-    $('input.nntmux_multi_operations_nzbget').click(function(){
+    $('input.nzedb_multi_operations_nzbget').click(function(){
         $("INPUT[type='checkbox']:checked").each( function(i, row) {
             var $nzbgetIcon = $(row).parent().parent().children('td.icons').children('.icon_nzbget');
             var guid = $(row).val();
@@ -159,7 +159,7 @@ jQuery(function($){
         });
     });
 
-    $('input.nntmux_multi_operations_delete').click(function(){
+    $('input.nzedb_multi_operations_delete').click(function(){
         var ids = "";
         $("INPUT[type='checkbox']:checked").each( function(i, row) {
             if ($(row).val()!="on")
@@ -173,7 +173,7 @@ jQuery(function($){
             }
     });
 
-    $('input.nntmux_multi_operations_deletereport').click(function(){
+    $('input.nzedb_multi_operations_deletereport').click(function(){
         var ids = "";
         //var rids = "";
         $("INPUT[type='checkbox']:checked").each( function(i, row) {
@@ -192,7 +192,7 @@ jQuery(function($){
             }
     });
 
-    $('input.nntmux_multi_operations_rebuild').click(function(){
+    $('input.nzedb_multi_operations_rebuild').click(function(){
         var ids = "";
         $("INPUT[type='checkbox']:checked").each( function(i, row) {
             if ($(row).val()!="on")
@@ -853,7 +853,7 @@ jQuery(function($){
                 at: 'bottom left'
             },
             style: {
-                classes: 'ui-tooltip-newznab',
+                classes: 'ui-tooltip-nzedb',
                 width: { max: 500 },
                 tip: {
                     corner: 'topRight',
@@ -885,7 +885,7 @@ jQuery(function($){
                 }
             },
             style: {
-                classes: 'ui-tooltip-newznab'
+                classes: 'ui-tooltip-nzedb'
             }
         });
     });
@@ -909,7 +909,7 @@ jQuery(function($){
                 }
             },
             style: {
-                classes: 'ui-tooltip-newznab',
+                classes: 'ui-tooltip-nzedb',
                 width: { max: 500 },
                 tip: {
                     corner: 'topLeft',
@@ -941,7 +941,7 @@ jQuery(function($){
                 }
             },
             style: {
-                classes: 'ui-tooltip-newznab'
+                classes: 'ui-tooltip-nzedb'
             }
         });
     });
@@ -1043,7 +1043,7 @@ $(document).ready(function()
                 }
             },
             style: {
-                classes: 'jgrowl ui-tooltip-newznab ui-tooltip-rounded',
+                classes: 'jgrowl ui-tooltip-nzedb ui-tooltip-rounded',
                 tip: false
             },
             events: {

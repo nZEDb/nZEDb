@@ -238,29 +238,29 @@ div.nosearchresults ul { line-height: 150%;}
 span.warning { color: red; }
 
 
-/*! Newznab tooltip style */
-.ui-tooltip-tmux .ui-tooltip-titlebar,
-.ui-tooltip-tmux .ui-tooltip-content{
+/*! nZEDb tooltip style */
+.ui-tooltip-nzedb .ui-tooltip-titlebar,
+.ui-tooltip-nzedb .ui-tooltip-content{
 	border-color: #90D93F;
 	color: #3F6219;
 }
 
-	.ui-tooltip-tmux .ui-tooltip-content{
+	.ui-tooltip-nzedb .ui-tooltip-content{
 		background-color: #CAED9E;
 	}
 
-	.ui-tooltip-tmux .ui-tooltip-titlebar{
+	.ui-tooltip-nzedb .ui-tooltip-titlebar{
 		background-color: #B0DE78;
 		color:white;
 		font-size:1.2em;
 	}
 
-	.ui-tooltip-tmuxb .ui-state-default .ui-tooltip-icon{
+	.ui-tooltip-nzedbb .ui-state-default .ui-tooltip-icon{
 		background-position: -42px 0;
 	}
 
-table.ui-tooltip-tmux th {vertical-align:top;text-align:right;}
-ul.ui-tooltip-tmux li {text-align:left;}
+table.ui-tooltip-nzedb th {vertical-align:top;text-align:right;}
+ul.ui-tooltip-nzedb li {text-align:left;}
 
 .rarfilelist {cursor:pointer;}
 /*.tooltiphead {background-color:#A9DB66; padding:5px;color:white; font-weight:bold; margin:-5px -10px 5px -10px;}*/
