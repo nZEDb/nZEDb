@@ -1,4 +1,4 @@
-body { margin: 0; padding: 0; background: #FFF url(../../themes/shared/images/menu.gif) repeat-x left top; font-family: Calibri, Arial, Helvetica, sans-serif;	font-size: 12px; color: #515151; }
+body { margin: 0; padding: 0; background: #FFF url(/themes/shared/img/menu.gif) repeat-x left top; font-family: Calibri, Arial, Helvetica, sans-serif;	font-size: 12px; color: #515151; }
 textarea { height:100px; width:400px; }
 fieldset { margin-bottom:20px; border:1px solid #999;}
 legend { padding: 0.4em 0.6em; border:1px solid #999; font-weight:bold; text-align:right; }
