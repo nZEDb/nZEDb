@@ -452,7 +452,7 @@ class ReleaseRemover
 			AND r.categoryid NOT IN (%d, %d, %d, %d, %d, %d) %s %s",
 			$ftJoin,
 			$this->pdo->escapeString('\.exe[sc]'),
-			$this->pdo->likeString('.exe', true, true),
+			$this->pdo->likeString('.exe', true, false),
 			Category::CAT_PC_0DAY,
 			Category::CAT_PC_GAMES,
 			Category::CAT_PC_ISO,
