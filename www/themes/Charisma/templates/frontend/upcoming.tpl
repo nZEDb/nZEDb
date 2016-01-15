@@ -28,7 +28,7 @@
 			<tr class="{cycle values=",alt"}">
 				<td class="mid">
 					<div class="movcover">
-						<img class="shadow" src="{replace_url($result->posters->original)}" width="120" border="0"
+						<img class="shadow" src="{$result->posters->original}" width="120" border="0"
 							 alt="{$result->title|escape:"htmlall"}"/>
 
 						<div class="movextra">
