@@ -11,7 +11,7 @@
 			<td class="mid">
 				<div class="movcover">
 					<center>
-					<img class="shadow img img-polaroid" src="{replace_url($result->posters->original)}" width="120" border="0"
+					<img class="shadow img img-polaroid" src="{$result->posters->original}" width="120" border="0"
 						 alt="{$result->title|escape:"htmlall"}"/>
 					</center>
 					<div class="movextra">
