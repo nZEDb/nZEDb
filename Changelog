@@ -11,6 +11,8 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Mrg: PR 2037, from DariusIII - Move Other cats to 0000 range, books cat to 7000 range.
 2016-01-21 niel
 	Mrg: PR 2040, from DariusIII - Update isISO categorization.
+2016-01-18 niel
+	Mrg: PR 2036, from DariusIII - Fix books menu in Gamma template.
 2016-01-16 niel
 	Chg: Update getID3 library to version 1.9.11
 2016-01-11 niel
