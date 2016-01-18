@@ -111,30 +111,31 @@
 				{/foreach}
 			</ul>
 		</li>
-	{else}
-	<li class="dropdown">
-		<a id="drop{$parentcat.id}" class="dropdown-toggle" data-toggle="dropdown" href="#">{$parentcat.title} <b class="caret"></b></a>
-		<ul class="dropdown-menu" role="menu" aria-labelledby="drop{$parentcat.id}">
-			{if ($parentcat.id == 8000 && $userdata.bookview=="1")}
-				<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/books">Books</a></li>
-				<li class="divider"></li>
-			{/if}
-			{foreach from=$parentcat.subcatlist item=subcat}
-			{if ($subcat.id == 7010)}
-			<li class="divider"></li>
-			<li><a href="{$smarty.const.WWW_TOP}/browse">All</a></li>
-			<li class="divider"></li>
-			{/if}
-			{if $userdata.bookview=="1"}
-			<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/books">{$subcat.title}</a></li>
-			{else}
-			<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a></li>
-			{/if}
-			{/foreach}
-		</ul>
-	</li>
+	{elseif $parentcat.id == 8000}
+		<li class="dropdown">
+			<a id="drop{$parentcat.id}" class="dropdown-toggle" data-toggle="dropdown" href="#">{$parentcat.title} <b class="caret"></b></a>
+			<ul class="dropdown-menu" role="menu" aria-labelledby="drop{$parentcat.id}">
+				{if $userdata.bookview == "1"}
+					<li><a href="{$smarty.const.WWW_TOP}/books">{$parentcat.title}</a></li>
+				{elseif $userdata.bookview != "1"}
+					<li><a href="{$smarty.const.WWW_TOP}/browse?t=8000">{$parentcat.title}</a></li>
+				{/if}
+				<hr>
+				{foreach from=$parentcat.subcatlist item=subcat}
+					<li><a href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a></li>
+				{/foreach}
+			</ul>
+		</li>
 	{/if}
 	{/foreach}
+	<li class="dropdown">
+		<a id="dropOther" class="dropdown-toggle" data-toggle="dropdown" href="#">Other <b class="caret"></b></a>
+		<ul class="dropdown-menu" role="menu" aria-labelledby="dropOther">
+			<hr>
+			<li><a href="/browse?t=7010">Misc</a></li>
+			<li><a href="/browse?t=7020">Hashed</a></li>
+		</ul>
+	</li>
 </ul>
 <ul class="nav pull-left">
 	<li class="">
