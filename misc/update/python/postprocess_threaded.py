@@ -59,9 +59,9 @@ elif len(sys.argv) == 3 and sys.argv[2].isdigit() and len(sys.argv[2]) == 4:
 	elif sys.argv[2] == '7000':
 		group_id = 'AND categoryid BETWEEN 7000 AND 7999'
 		print(bcolors.HEADER + "Using categoryids 7000-7999" + bcolors.ENDC)
-	elif sys.argv[2] == '8000':
-		group_id = 'AND categoryid BETWEEN 8000 AND 8999'
-		print(bcolors.HEADER + "Using categoryids 8000-8999" + bcolors.ENDC)
+	elif sys.argv[2] == '7000':
+		group_id = 'AND categoryid BETWEEN 7000 AND 7999'
+		print(bcolors.HEADER + "Using categoryids 7000-7999" + bcolors.ENDC)
 	else:
 		group_id = 'AND categoryid = '+sys.argv[2]
 		print(bcolors.HEADER + "Using categoryid "+sys.argv[2] + bcolors.ENDC)

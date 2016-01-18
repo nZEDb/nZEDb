@@ -613,21 +613,22 @@ nZEDb    https://github.com/nZEDb/nZEDb
    for an item to belong to several categories at the same time.
 
    Category Range                       Category Name                   Comments
-   0000-0999                            Reserved
+   0000-0999                            Other
    1000-1999                            Console
    2000-2999                            Movies
    3000-3999                            Audio
    4000-4999                            PC
    5000-5999                            TV
    6000-6999                            XXX
-   7000-7999                            Other
-   8000-8999                            Books
-   9000-99999                           Reserved                        Reserved for future expansion
+   7000-7999                            Books
+   8000-99999                           Reserved                        Reserved for future expansion
    100000-                              Custom                          Site specific category range. Defined in CAPS
 
    Categories                           Category Name
 
-   0000                                 Reserved
+   0000                                 Other                           All of Other
+   0010                                 Other/Misc                      Anything that could not get categorized
+   0020                                 Other/Hashed                    Anything with a hashed name
    1000                                 Console                         All of console
    1010                                 Console/NDS                     Nintendo DS
    1020                                 Console/PSP                     Sony Playstation Portable
@@ -684,16 +685,13 @@ nZEDb    https://github.com/nZEDb/nZEDb
    6050                                 XXX/Other                       Misc Porn
    6060                                 XXX/Imageset                    Sets of porn images
    6070                                 XXX/Packs                       Packs of multiple porn videos
-   7000                                 Other                           All of Other
-   7010                                 Other/Misc                      Anything that could not get categorized
-   7020                                 Other/Hashed                    Anything with a hashed name
-   8000                                 Books                           All of Books
-   8010                                 Books/Ebook                     Ebooks
-   8020                                 Books/Comics                    Comics Ebooks
-   8030                                 Books/Magazines                 Magazines
-   8040                                 Books/Technical                 Technical books
-   8050                                 Books/Other                     Misc books
-   8060                                 Books/Foreign                   Non english books
+   7000                                 Books                           All of Books
+   7010                                 Books/Ebook                     Ebooks
+   7020                                 Books/Comics                    Comics Ebooks
+   7030                                 Books/Magazines                 Magazines
+   7040                                 Books/Technical                 Technical books
+   7050                                 Books/Other                     Misc books
+   7060                                 Books/Foreign                   Non english books
    100000-                              Custom                          Specific to a site
 
 

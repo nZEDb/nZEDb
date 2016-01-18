@@ -5,6 +5,8 @@ use nzedb\db\Settings;
 
 class Category
 {
+	const CAT_OTHER_MISC = 0010;
+	const CAT_OTHER_HASHED = 0020;
 	const CAT_GAME_NDS = 1010;
 	const CAT_GAME_PSP = 1020;
 	const CAT_GAME_WII = 1030;
@@ -57,22 +59,20 @@ class Category
 	const CAT_XXX_PACKS = 6070;
 	const CAT_XXX_SD = 6080;
 	const CAT_XXX_WEBDL = 6090;
-	const CAT_MISC = 7010;
-	const CAT_OTHER_HASHED = 7020;
-	const CAT_BOOKS_EBOOK = 8010;
-	const CAT_BOOKS_COMICS = 8020;
-	const CAT_BOOKS_MAGAZINES = 8030;
-	const CAT_BOOKS_TECHNICAL = 8040;
-	const CAT_BOOKS_OTHER = 8050;
-	const CAT_BOOKS_FOREIGN = 8060;
+	const CAT_BOOKS_EBOOK = 7010;
+	const CAT_BOOKS_COMICS = 7020;
+	const CAT_BOOKS_MAGAZINES = 7030;
+	const CAT_BOOKS_TECHNICAL = 7040;
+	const CAT_BOOKS_OTHER = 7050;
+	const CAT_BOOKS_FOREIGN = 7060;
+	const CAT_PARENT_OTHER = 0000;
 	const CAT_PARENT_GAME = 1000;
 	const CAT_PARENT_MOVIE = 2000;
 	const CAT_PARENT_MUSIC = 3000;
 	const CAT_PARENT_PC = 4000;
 	const CAT_PARENT_TV = 5000;
 	const CAT_PARENT_XXX = 6000;
-	const CAT_PARENT_MISC = 7000;
-	const CAT_PARENT_BOOKS = 8000;
+	const CAT_PARENT_BOOKS = 7000;
 	const STATUS_INACTIVE = 0;
 	const STATUS_ACTIVE = 1;
 	const STATUS_DISABLED = 2;

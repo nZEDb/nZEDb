@@ -110,11 +110,11 @@
 							{/foreach}
 						</ul>
 					</li>
-					{elseif ($parentcat.id == 8000 && $userdata.bookview=="1") && $site->lookupbooks=="1"}
+					{elseif ($parentcat.id == 7000 && $userdata.bookview=="1") && $site->lookupbooks=="1"}
 					<li><a title="Browse All {$parentcat.title}" href="{$smarty.const.WWW_TOP}/books">{$parentcat.title}</a>
 						<ul>
 							{foreach from=$parentcat.subcatlist item=subcat}
-								{if $subcat.id == 8010}
+								{if $subcat.id == 7010}
 									<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/books">{$subcat.title}</a></li>
 								{else}
 									<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a></li>

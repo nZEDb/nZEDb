@@ -378,7 +378,7 @@ class ReleaseRemover
 			AND r.categoryid NOT IN (%d, %d)
 			AND r.searchname REGEXP '[a-zA-Z0-9]{25,}'
 			%s",
-			Category::CAT_MISC, Category::CAT_OTHER_HASHED, $this->crapTime
+			Category::CAT_OTHER_MISC, Category::CAT_OTHER_HASHED, $this->crapTime
 		);
 
 		if ($this->checkSelectQuery() === false) {
@@ -405,7 +405,7 @@ class ReleaseRemover
 			AND r.categoryid NOT IN (%d)
 			AND r.searchname REGEXP '^[a-zA-Z0-9]{0,5}$'
 			%s",
-			Category::CAT_MISC, $this->crapTime
+			Category::CAT_OTHER_MISC, $this->crapTime
 		);
 
 		if ($this->checkSelectQuery() === false) {
@@ -457,7 +457,7 @@ class ReleaseRemover
 			Category::CAT_PC_GAMES,
 			Category::CAT_PC_ISO,
 			Category::CAT_PC_MAC,
-			Category::CAT_MISC,
+			Category::CAT_OTHER_MISC,
 			Category::CAT_OTHER_HASHED,
 			$execFT,
 			$this->crapTime
@@ -594,7 +594,7 @@ class ReleaseRemover
 			Category::CAT_PC_PHONE_ANDROID,
 			Category::CAT_PC_PHONE_IOS,
 			Category::CAT_PC_PHONE_OTHER,
-			Category::CAT_MISC,
+			Category::CAT_OTHER_MISC,
 			Category::CAT_OTHER_HASHED,
 			$passFT,
 			$this->crapTime
@@ -630,7 +630,7 @@ class ReleaseRemover
 			Category::CAT_BOOKS_OTHER,
 			Category::CAT_PC_0DAY,
 			Category::CAT_PC_GAMES,
-			Category::CAT_MISC,
+			Category::CAT_OTHER_MISC,
 			Category::CAT_OTHER_HASHED,
 			$this->crapTime
 		);

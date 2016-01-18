@@ -23,7 +23,7 @@ class Categorize extends Category
 	 *
 	 * @var int
 	 */
-	protected $tmpCat = Category::CAT_MISC;
+	protected $tmpCat = Category::CAT_OTHER_MISC;
 
 	/**
 	 * Release name to sort through.
@@ -60,7 +60,7 @@ class Categorize extends Category
 	/**
 	 * Look up the site to see which language of categorizing to use.
 	 * Then work out which category is applicable for either a group or a binary.
-	 * Returns Category::CAT_MISC if no category is appropriate.
+	 * Returns Category::CAT_OTHER_MISC if no category is appropriate.
 	 *
 	 * @param string     $releaseName The name to parse.
 	 * @param int|string $groupID     The groupID.
@@ -71,7 +71,7 @@ class Categorize extends Category
 	{
 		$this->releaseName = $releaseName;
 		$this->groupID = $groupID;
-		$this->tmpCat = Category::CAT_MISC;
+		$this->tmpCat = Category::CAT_OTHER_MISC;
 
 		switch (true) {
 			case $this->isMisc():
@@ -217,7 +217,7 @@ class Categorize extends Category
 					if ($this->isMovie()) {
 						break;
 					}
-					$this->tmpCat = Category::CAT_MISC;
+					$this->tmpCat = Category::CAT_OTHER_MISC;
 					break;
 				case preg_match('/alt\.binaries\.(dvdnordic\.org|nordic\.(dvdr?|xvid))|dk\.(binaer|binaries)\.film(\.divx)?/', $group):
 					if ($this->categorizeForeign && $this->isMovieForeign()) {
@@ -270,7 +270,7 @@ class Categorize extends Category
 							$this->tmpCat = Category::CAT_BOOKS_EBOOK;
 							break;
 						default:
-							$this->tmpCat = Category::CAT_MISC;
+							$this->tmpCat = Category::CAT_OTHER_MISC;
 							break;
 					}
 					break;
@@ -1492,7 +1492,7 @@ class Categorize extends Category
 				break;
 			case preg_match('/[a-z0-9]{20,}/i', $this->releaseName):
 			case preg_match('/^[A-Z0-9]{1,}$/i', $this->releaseName):
-				$this->tmpCat = Category::CAT_MISC;
+				$this->tmpCat = Category::CAT_OTHER_MISC;
 				break;
 			default:
 				return false;

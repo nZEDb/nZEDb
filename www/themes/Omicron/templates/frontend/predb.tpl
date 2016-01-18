@@ -170,11 +170,11 @@
 													{* Books *}
 												{elseif in_array({$result.category}, array('EBOOK'))}
 													<a class="title" title="View category Books"
-													   href="{$smarty.const.WWW_TOP}/browse?t=8000">Ebooks</a>
+													   href="{$smarty.const.WWW_TOP}/browse?t=7000">Ebooks</a>
 													{* Other *}
 												{elseif in_array({$result.category}, array('Other: E-Books'))}
 													<a class="title" title="View category Books Other"
-													   href="{$smarty.const.WWW_TOP}/browse?t=8050">Ebooks
+													   href="{$smarty.const.WWW_TOP}/browse?t=7050">Ebooks
 														Other</a>
 												{elseif in_array({$result.category}, array('', 'PRE'))}
 													N/A
