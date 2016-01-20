@@ -38,7 +38,6 @@
 							<input type="button" class="nzb_multi_operations_download btn btn-small btn-success" value="Download NZBs" />
 							<input type="button" class="nzb_multi_operations_cart btn btn-small btn-info" value="Send to my Download Basket" />
 							{if $sabintegrated}<input type="button" class="nzb_multi_operations_sab btn btn-small btn-primary" value="Send to queue" />{/if}
-							{if isset($nzbgetintegrated)}<input type="button" class="nzb_multi_operations_nzbget btn btn-small btn-primary" value="Send to NZBGet" />{/if}
 						</div>
 						View: <strong>Covers</strong> | <a
 								href="{$smarty.const.WWW_TOP}/browse?t={$category}">List</a><br/>
@@ -198,17 +197,6 @@
 						</div>
 						{/if}
 					</li>
-					<li style="vertical-align:text-bottom;">
-						{if isset($nzbgetintegrated)}
-						<div>
-							<a href="#" class="icon icon_nzb fa fa-cloud-downloadget" title="Send to my NZBGet">
-								<img src="{$smarty.const.WWW_THEMES}/Gamma/images/icons/nzbgetup.png">
-							</a>
-						</div>
-						{/if}
-					</li>
-                    <li style="vertical-align:text-bottom;">
-                    </li>
 				</ul>
 				{if $result.genre != ""}<b>Genre:</b> {$result.genre}<br />{/if}
 				{if $result.esrb != ""}<b>Rating:</b> {$result.esrb}<br />{/if}
@@ -249,7 +237,6 @@
 						<input type="button" class="nzb_multi_operations_download btn btn-small btn-success" value="Download NZBs" />
 						<input type="button" class="nzb_multi_operations_cart btn btn-small btn-info" value="Send to my Download Basket" />
 						{if isset($sabintegrated)}<input type="button" class="nzb_multi_operations_sab btn btn-small btn-primary" value="Send to queue" />{/if}
-						{if isset($nzbgetintegrated)}<input type="button" class="nzb_multi_operations_nzbget btn btn-small btn-primary" value="Send to NZBGet" />{/if}
 					</div>
 				</td>
 				<td width="50%">

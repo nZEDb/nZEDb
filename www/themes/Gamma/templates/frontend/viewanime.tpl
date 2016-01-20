@@ -35,7 +35,6 @@
 			<input type="button" class="nzb_multi_operations_download btn btn-small btn-success" value="Download NZBs" />
 			<input type="button" class="nzb_multi_operations_cart btn btn-small btn-info" value="Send to my Download Basket" />
 			{if $sabintegrated}<input type="button" class="nzb_multi_operations_sab btn btn-small btn-primary" value="Send to queue" />{/if}
-			{if isset($nzbgetintegrated)}<input type="button" class="nzb_multi_operations_nzbget btn btn-small btn-primary" value="Send to NZBGet" />{/if}
 			{if $isadmin}
 				&nbsp;&nbsp;
 				<input type="button" class="nzb_multi_operations_edit btn btn-small btn-warning" value="Edit" />
@@ -58,9 +57,9 @@
 						<a title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"seourl"}">{$result.searchname|escape:"htmlall"|replace:".":" "}</a>
 						<div class="resextra">
 							<div class="btns">
-								{if $result.nfoid > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}" title="View Nfo" class="modal_nfo rndbtn badge" rel="nfo">Nfo</a>{/if}
-								{if $result.haspreview == 1 && $userdata.canpreview == 1}<a href="{$smarty.const.WWW_TOP}/covers/preview/{$result.guid}_thumb.jpg" name="name{$mguid[$m@index]}" title="Screenshot" class="modal_prev rndbtn badge" rel="preview">Preview</a>{/if}
-								{if $result.reid > 0}<span class="mediainfo rndbtn badge" title="{$result.guid}">Media</span>{/if}
+								{if isset($result.nfoid) && $result.nfoid > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}" title="View Nfo" class="modal_nfo rndbtn badge" rel="nfo">Nfo</a>{/if}
+								{if isset($result.haspreview) && $result.haspreview == 1 && $userdata.canpreview == 1}<a href="{$smarty.const.WWW_TOP}/covers/preview/{$result.guid}_thumb.jpg" name="name{$mguid[$m@index]}" title="Screenshot" class="modal_prev rndbtn badge" rel="preview">Preview</a>{/if}
+								{if isset($result.reid) && $result.reid > 0}<span class="mediainfo rndbtn badge" title="{$result.guid}">Media</span>{/if}
 					<td class="less"><a title="This anime in {$result.category_name}" href="{$smarty.const.WWW_TOP}/anime/{$result.anidbid}?t={$result.categoryid}">{$result.category_name}</a></td>
 					<td class="less mid" width="40" title="{$result.postdate}">{$result.postdate|timeago}</td>
 					<td width="40" class="less right">{$result.size|fsize_format:"MB"}</td>
@@ -77,10 +76,6 @@
 					{if isset($sabintegrated)}
 						<a href="#" class="icon_sab text-muted"><i class="fa fa-share"
 																   title="Send to my Queue"></i></a>
-					{/if}
-					{if $weHasVortex}
-						<a href="#" class="icon_vortex text-muted"><i
-									class="fa fa-share" title="Send to NZBVortex"></i></a>
 					{/if}
 				</tr>
 			{/foreach}

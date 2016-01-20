@@ -62,10 +62,6 @@
 				{if isset($sabintegrated)}
 					<input type="button" class="nzb_multi_operations_sab btn btn-sm btn-primary" value="Send to Queue"/>
 				{/if}
-				{if isset($nzbgetintegrated)}
-					<input type="button" class="nzb_multi_operations_nzbget btn btn-sm btn-primary"
-						   value="Send to NZBGet"/>
-				{/if}
 			</div>
 			{if isset($isadmin)}
 				<div class="pull-right">

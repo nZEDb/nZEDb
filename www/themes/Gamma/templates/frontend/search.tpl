@@ -124,7 +124,6 @@
 								<input type="button" class="nzb_multi_operations_download btn btn-small btn-success" value="Download NZBs" />
 								<input type="button" class="nzb_multi_operations_cart btn btn-small btn-info" value="Send to my Download Basket" />
 								{if $sabintegrated}<input type="button" class="nzb_multi_operations_sab btn btn-small btn-primary" value="Send to queue" />{/if}
-								{if isset($nzbgetintegrated)}<input type="button" class="nzb_multi_operations_nzbget btn btn-small btn-primary" value="Send to NZBGet" />{/if}
 							</div>
 						</td>
 						<td width="33%">
@@ -322,13 +321,6 @@
 						</a>
 					</li>
 					{/if}
-					{if isset($nzbgetintegrated)}
-					<li>
-						<a class="icon icon_nzb fa fa-cloud-downloadget" href="#" title="Send to NZBGet">
-							<img class="icon icon_nzb fa fa-cloud-downloadget" alt="Send to my NZBGet" src="{$smarty.const.WWW_TOP}/themes/Gamma/images/icons/nzbgetup.png">
-						</a>
-					</li>
-					{/if}
 				</ul>
 			</td>
 		</tr>
@@ -346,7 +338,6 @@
 						<input type="button" class="nzb_multi_operations_download btn btn-small btn-success" value="Download NZBs" />
 						<input type="button" class="nzb_multi_operations_cart btn btn-small btn-info" value="Send to my Download Basket" />
 						{if $sabintegrated}<input type="button" class="nzb_multi_operations_sab btn btn-small btn-primary" value="Send to queue" />{/if}
-						{if isset($nzbgetintegrated)}<input type="button" class="nzb_multi_operations_nzbget btn btn-small btn-primary" value="Send to NZBGet" />{/if}
 					</div>
 				</td>
 				<td width="33%">
