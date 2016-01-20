@@ -47,10 +47,6 @@
 									<input type="button" class="nzb_multi_operations_sab btn btn-small btn-primary"
 										   value="Send to queue"/>
 								{/if}
-								{if isset($nzbgetintegrated)}
-									<input type="button" class="nzb_multi_operations_nzbget btn btn-small btn-primary"
-										   value="Send to NZBGet"/>
-								{/if}
 							</div>
 							View: <strong>Covers</strong> | <a
 									href="{$smarty.const.WWW_TOP}/browse?t={$category}">List</a><br/>
@@ -287,14 +283,6 @@
 														</a>
 													</li>
 												{/if}
-												{if isset($nzbgetintegrated)}
-													<li>
-														<a class="icon icon_nzb fa fa-cloud-downloadget" href="#"
-														   title="Send to NZBGet">
-															<img src="{$smarty.const.WWW_TOP}/themes/Gamma/images/icons/nzbgetup.png">
-														</a>
-													</li>
-												{/if}
 											</ul>
 										</td>
 									</tr>
@@ -327,11 +315,6 @@
 									{if isset($sabintegrated)}
 										<input type="button" class="nzb_multi_operations_sab btn btn-small btn-primary"
 											   value="Send to queue"/>
-									{/if}
-									{if isset($nzbgetintegrated)}
-										<input type="button"
-											   class="nzb_multi_operations_nzbget btn btn-small btn-primary"
-											   value="Send to NZBGet"/>
 									{/if}
 								</div>
 								&nbsp;&nbsp;&nbsp;&nbsp;<a title="Switch to List view"

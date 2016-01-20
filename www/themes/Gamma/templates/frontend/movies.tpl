@@ -64,7 +64,6 @@
 							<input type="button" class="nzb_multi_operations_download btn btn-small btn-success" value="Download NZBs" />
 							<input type="button" class="nzb_multi_operations_cart btn btn-small btn-info" value="Send to my Download Basket" />
 							{if $sabintegrated}<input type="button" class="nzb_multi_operations_sab btn btn-small btn-primary" value="Send to queue" />{/if}
-							{if isset($nzbgetintegrated)}<input type="button" class="nzb_multi_operations_nzbget btn btn-small btn-primary" value="Send to NZBGet" />{/if}
 						</div>
 						View: <strong>Covers</strong> | <a
 								href="{$smarty.const.WWW_TOP}/browse?t={$category}">List</a><br/>
@@ -244,7 +243,6 @@
 							<input type="button" class="nzb_multi_operations_download btn btn-small btn-success" value="Download NZBs" />
 							<input type="button" class="nzb_multi_operations_cart btn btn-small btn-info" value="Send to my Download Basket" />
 							{if $sabintegrated}<input type="button" class="nzb_multi_operations_sab btn btn-small btn-primary" value="Send to queue" />{/if}
-							{if isset($nzbgetintegrated)}<input type="button" class="nzb_multi_operations_nzbget btn btn-small btn-primary" value="Send to NZBGet" />{/if}
 						</div>
 						&nbsp;&nbsp;&nbsp;&nbsp;<a title="Switch to List view" href="{$smarty.const.WWW_TOP}/browse?t={$category}"><i class="fa fa-lg fa-list-ol"></i></a>
 					</td>
