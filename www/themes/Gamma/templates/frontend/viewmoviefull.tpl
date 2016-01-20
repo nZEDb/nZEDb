@@ -136,8 +136,8 @@
 					{/if}
 					<div class="resextra">
 						<div class="btns">{strip}
-							{if $mnfo[$m@index] > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$mguid[$m@index]}" title="View Nfo" class="modal_nfo rndbtn badge" rel="nfo">Nfo</a>{/if}
-							{if $mhaspreview[$m@index] == 1 && $userdata.canpreview == 1}<a href="{$smarty.const.WWW_TOP}/covers/preview/{$mguid[$m@index]}_thumb.jpg" name="name{$mguid[$m@index]}" title="Screenshot" class="modal_prev rndbtn badge" rel="preview">Preview</a>{/if}
+							{if isset($mnfo[$m@index]) && $mnfo[$m@index] > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$mguid[$m@index]}" title="View Nfo" class="modal_nfo rndbtn badge" rel="nfo">Nfo</a>{/if}
+							{if isset($mhaspreview[$m@index]) && $mhaspreview[$m@index] == 1 && $userdata.canpreview == 1}<a href="{$smarty.const.WWW_TOP}/covers/preview/{$mguid[$m@index]}_thumb.jpg" name="name{$mguid[$m@index]}" title="Screenshot" class="modal_prev rndbtn badge" rel="preview">Preview</a>{/if}
 						{/strip}</div>
 					</div>
 				</td>
@@ -162,19 +162,11 @@
 								</a>
 							</li>
 							{/if}
-							{if isset($nzbgetintegrated)}
-							<li>
-								<a class="icon icon_nzb fa fa-cloud-downloadget" href="#" title="Send to NZBGet">
-									<img class="icon icon_nzb fa fa-cloud-downloadget" alt="Send to my NZBGet" src="{$smarty.const.WWW_TOP}/themes/Gamma/images/icons/nzbgetup.png">
-								</a>
-							</li>
-							{/if}
 						</ul>
 					</td>
 			</tr>
 		{/foreach}
 	</table>
-	</div>
 	<br/>
 	{$pager}
 	{if $results|@count > 10}
