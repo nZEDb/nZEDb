@@ -1,24 +1,18 @@
 {if isset($nodata) && $nodata != ""}
-
 <h2>View TV Series</h2>
-
 <div class="alert">
 	<button type="button" class="close" data-dismiss="alert">&times;</button>
 	<strong>Sorry!</strong>
 	{$nodata}
 </div>
 {else}
-
 <h2>
 	{$seriestitles} ({$show.publisher})
-
 	{if $catname != ''} in {$catname|escape:"htmlall"}{/if}
 </h2>
-
 <div>
 	<b><a title="Manage your shows" href="{$smarty.const.WWW_TOP}/myshows">My Shows</a></b>:
 	<div class="btn-group">
-
 		{if $myshows.id != ''}
 		<a class="btn btn-mini btn-warning" href="{$smarty.const.WWW_TOP}/myshows/edit/{$show.id}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows" rel="edit" name="series{$show.id}" title="Edit Categories for this show">Edit</a> |
 		<a class="btn btn-mini btn-danger" href="{$smarty.const.WWW_TOP}/myshows/delete/{$show.id}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows" rel="remove" name="series{$show.id}" title="Remove from My Shows">Remove</a>
@@ -27,7 +21,6 @@
 		{/if}
 	</div>
 </div>
-
 <div class="tvseriesheading">
 	{if $show.image != 0}
 	<center>
@@ -38,9 +31,7 @@
 	<p>
 		<span class="descinitial">{$seriessummary|escape:"htmlall"|nl2br|magicurl}</span>
 	</p>
-
 </div>
-
 <center>
 	<div class="btn-group">
 		{if $show.tvdb > 0}
@@ -70,9 +61,7 @@
 		{/if}
 	</div>
 </center>
-
 <br/>
-
 <form id="nzb_multi_operations_form" action="get">
 	<div class="well well-small">
 		<div class="nzb_multi_operations">
@@ -83,20 +72,17 @@
 				{if $sabintegrated}<input type="button" class="nzb_multi_operations_sab btn btn-small btn-primary" value="Send to queue" />{/if}
 				{if isset($nzbgetintegrated)}<input type="button" class="nzb_multi_operations_nzbget btn btn-small btn-primary" value="Send to NZBGet" />{/if}
 			</div>
-
 		    <div class="btn-group pull-right">
 		        <div class="input-append">
                     <input class="span2"  id="filter-text" type="text" placeholder="Filter">
                 </div>
 		    </div>
-
 		    <div class="btn-group pull-right" data-toggle="buttons-radio" id="filter-quality">
 		        <button data-quality="" class="btn active">Any</button>
 		        <button data-quality="hdtv" class="btn">HDTV</button>
 		        <button data-quality="720p" class="btn">720p</button>
 		        <button data-quality="1080p" class="btn">1080p</button>
 		    </div>
-
 			{if $isadmin}
 			<div class="pull-right">
 				Admin:
@@ -108,15 +94,12 @@
 			{/if}
 		</div>
 	</div>
-
 	<script type="text/javascript">
         $(document).ready(function(){
             var ul = $('div.tabbable ul.nav').prepend('<ul id="filters">');
-
             function filter(event){
                 var elements = $('table.data:visible tr.filter');
                 elements.hide();
-
                 /* quality filter */
                 x = event;
                 //if(event.currentTarget.at)
@@ -142,20 +125,14 @@
             $('#filter-quality button').mouseup(filter);
         });
 	</script>
-
 	<br clear="all" />
-
 	<a id="latest"></a>
-
-
-
 	<div class="tabbable">
 		<ul class="nav nav-tabs">
 			{foreach $seasons as $seasonnum => $season name="seas"}
 			<li {if $smarty.foreach.seas.first}class="active"{/if}><a title="View Season {$seasonnum}" href="#{$seasonnum}" data-toggle="tab">{$seasonnum}</a></li>
 			{/foreach}
 		</ul>
-
 		<div class="tab-content">
 			{foreach $seasons as $seasonnum => $season name=tv}
 			<div class="tab-pane{if $smarty.foreach.tv.first} active{/if}" id="{$seasonnum}">
@@ -172,40 +149,36 @@
 					</tr>
 					{foreach $season as $episodes}
 					{foreach $episodes as $result}
-
 					{if $result@index == 0}
 					<tr class="{cycle values=",alt"} dont-filter">
 						<td style="padding-top: 20px;" colspan="8" class="static"><h4 style="height: 0px; margin-top: 20px; margin-bottom: -50px;">{$episodes@key}</h4></td>
 					</tr>
 					{/if}
-
 					<tr class="{cycle values=",alt"} filter" id="guid{$result.guid}" data-name="{$result.searchname|escape:"htmlall"|lower|replace:".":" "}">
 						<td width="20" class="static"></td>
 						<td>
 							<a title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"seourl"}"><h5>{$result.searchname|escape:"htmlall"|replace:".":" "}</h5></a>
-
 							<div class="resextra">
 								<div class="btns">
-										{if $result.nfoid > 0}<span><a
+										{if isset($result.nfoid) && $result.nfoid > 0}<span><a
 													href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}"
 													class="modal_nfo label label-default" rel="nfo">NFO</a></span>{/if}
-										{if $result.reid > 0}<span
+										{if isset($result.reid) && $result.reid > 0}<span
 																	class="mediainfo label label-default"
 																	title="{$result.guid}">Media</span>{/if}
-										{if $result.jpgstatus == 1 && $userdata.canpreview == 1}<span><a
+										{if isset($result.jpgstatus) && $result.jpgstatus == 1 && $userdata.canpreview == 1}<span><a
 													href="{$smarty.const.WWW_TOP}/covers/sample/{$result.guid}_thumb.jpg"
 													name="name{$result.guid}" class="modal_prev label label-default" rel="preview">Sample</a></span>{/if}
-										{if $result.haspreview == 1 && $userdata.canpreview == 1}<span><a
+										{if isset($result.haspreview) && $result.haspreview == 1 && $userdata.canpreview == 1}<span><a
 													href="{$smarty.const.WWW_TOP}/covers/preview/{$result.guid}_thumb.jpg"
 													name="name{$result.guid}" class="modal_prev label label-default" rel="preview">Preview</a></span>{/if}
-										{if $result.firstaired != ""}<span class="rndbtn badge badge-success halffade" title="{$result.title} Aired on {$result.firstaired|date_format}"> Aired {if $result.firstaired|strtotime > $smarty.now}in future{else}{$result.firstaired|daysago}{/if}</span>{/if}
+										{if isset($result.firstaired) && $result.firstaired != ""}<span class="rndbtn badge badge-success halffade" title="{$result.title} Aired on {$result.firstaired|date_format}"> Aired {if $result.firstaired|strtotime > $smarty.now}in future{else}{$result.firstaired|daysago}{/if}</span>{/if}
 								</div>
 							</div>
 						</td>
 						<td class="check"><input id="chk{$result.guid|substr:0:7}" type="checkbox" class="nzb_check" name="{$seasonnum}" value="{$result.guid}" /></td>
 						<td class="less"><a title="This series in {$result.category_name}" href="{$smarty.const.WWW_TOP}/series/{$show.id}?t={$result.categoryid}">{$result.category_name}</a></td>
 						<td class="less mid" width="40" title="{$result.postdate}">{$result.postdate|timeago}</td>
-
 						<td class="less right">
 							{$result.size|fsize_format:"MB"}
 							{if $result.completion > 0}<br />
@@ -216,7 +189,6 @@
 							{/if}
 							{/if}
 						</td>
-
 						<td class="less mid">
 							<a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$result.guid}">{$result.totalpart}</a>&nbsp;<i class="fa fa-file"></i>
 						</td>
@@ -231,12 +203,6 @@
 								{if $sabintegrated}
 								<li>
 									<a class="icon icon_sab fa fa-share" style="text-decoration: none; color: #008ab8;"  href="#" title="Send to queue">
-									</a>
-								</li>
-								{/if}
-								{if isset($nzbgetintegrated)}
-								<li>
-									<a class="icon icon_nzb fa fa-cloud-downloadget" href="#" title="Send to NZBGet">
 									</a>
 								</li>
 								{/if}
