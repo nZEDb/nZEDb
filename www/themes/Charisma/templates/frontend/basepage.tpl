@@ -282,7 +282,7 @@
 		src="{$smarty.const.WWW_THEMES}/{$theme}/bower_components/colorbox/jquery.colorbox-min.js"></script>
 	<!-- notification plugin -->
 	<script type="text/javascript"
-		src="{$smarty.const.WWW_THEMES}/{$theme}/js/noty/packaged/jquery.noty.packaged.min.js"></script>
+			src="{$smarty.const.WWW_THEMES}/shared/libs/noty/packaged/jquery.noty.packaged.js"></script>
 	<!-- library for making tables responsive -->
 	<script type="text/javascript"
 		src="{$smarty.const.WWW_THEMES}/{$theme}/bower_components/responsive-tables/responsive-tables.js"></script>
