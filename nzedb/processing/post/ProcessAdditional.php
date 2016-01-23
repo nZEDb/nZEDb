@@ -3,6 +3,7 @@ namespace nzedb\processing\post;
 
 require_once nZEDb_LIBS . 'rarinfo/archiveinfo.php';
 require_once nZEDb_LIBS . 'rarinfo/par2info.php';
+require_once nZEDb_LIBS . 'rarinfo/srrinfo.php';
 
 use nzedb\Categorize;
 use nzedb\Category;
@@ -18,6 +19,7 @@ use nzedb\Releases;
 use nzedb\SphinxSearch;
 use nzedb\db\Settings;
 use nzedb\utility\Misc;
+use nzedb\utility\Text;
 
 class ProcessAdditional
 {
@@ -52,7 +54,7 @@ class ProcessAdditional
 
 	/**
 	 * Current release we are working on.
-	 * @var Array
+	 * @var array
 	 */
 	protected $_release;
 
@@ -76,6 +78,11 @@ class ProcessAdditional
 	 * @var \Par2Info
 	 */
 	protected $_par2Info;
+
+	/**
+	 * @var \SrrInfo
+	 */
+	protected $_srrInfo;
 
 	/**
 	 * @var \ArchiveInfo
@@ -312,6 +319,12 @@ class ProcessAdditional
 	protected $_foundPAR2Info;
 
 	/**
+	 * Have we found SRR info on this release?
+	 * @var bool
+	 */
+	protected $_foundSRRInfo;
+
+	/**
 	 * Message ID's for found content to download.
 	 * @var array
 	 */
@@ -400,6 +413,7 @@ class ProcessAdditional
 		$this->_releaseExtra = ($options['ReleaseExtra'] instanceof ReleaseExtra ? $options['ReleaseExtra'] : new ReleaseExtra($this->pdo));
 		$this->_releaseImage = ($options['ReleaseImage'] instanceof ReleaseImage ? $options['ReleaseImage'] : new ReleaseImage($this->pdo));
 		$this->_par2Info = new \Par2Info();
+		$this->_srrInfo = new \SrrInfo();
 		$this->_nfo = ($options['Nfo'] instanceof Nfo ? $options['Nfo'] : new Nfo(['Echo' => $this->_echoCLI, 'Settings' => $this->pdo]));
 		$this->sphinx = ($options['SphinxSearch'] instanceof SphinxSearch ? $options['SphinxSearch'] : new SphinxSearch());
 
@@ -1294,8 +1308,11 @@ class ProcessAdditional
 				if (is_file($file)) {
 
 					// Process PAR2 files.
-					if ($this->_foundPAR2Info === false && preg_match('/\.par2$/', $file)) {
+					if ($this->_foundPAR2Info === false && preg_match('/\.par2$/i', $file)) {
 						$this->_siftPAR2Info($file);
+					} // Process SRR files
+					else if ($this->_foundSRRInfo === false && preg_match('/\.srr$/i', $file)) {
+						$this->_siftSRRInfo($file);
 					} // Process NFO files.
 					else if ($this->_releaseHasNoNFO === true && preg_match('/(\.(nfo|inf|ofn)|info\.txt)$/i', $file)) {
 						$this->_processNfoFile($file);
@@ -2238,17 +2255,7 @@ class ProcessAdditional
 			$releaseInfo['proc_pp'] == 0 &&
 			in_array(
 				((int)$this->_release['categoryid']),
-				[
-					Category::CAT_BOOKS_OTHER,
-					Category::CAT_GAME_OTHER,
-					Category::CAT_MOVIE_OTHER,
-					Category::CAT_MUSIC_OTHER,
-					Category::CAT_PC_PHONE_OTHER,
-					Category::CAT_TV_OTHER,
-					Category::CAT_OTHER_HASHED,
-					Category::CAT_XXX_OTHER,
-					Category::CAT_MISC
-				]
+				Category::CAT_OTHERS_GROUP
 			)
 		) {
 			$foundName = false;
@@ -2306,6 +2313,70 @@ class ProcessAdditional
 			)
 		);
 		$this->_foundPAR2Info = true;
+	}
+
+	/**
+	 * Get file info from inside SRR and attempt to get a release name.
+	 *
+	 * @param string $srr
+	 */
+	protected function _siftSRRInfo($srr)
+	{
+		$foundMatch = false;
+
+		$query = $this->pdo->queryOneRow(
+			sprintf('
+				SELECT
+					r.id, r.group_id, r.categoryid, r.name, r.searchname,
+					UNIX_TIMESTAMP(r.postdate) AS post_date,
+					r.id AS releaseid
+				FROM releases r
+				WHERE r.isrenamed = 0
+				AND r.preid = 0
+				AND r.id = %d',
+				$this->_release['id']
+			)
+		);
+
+		if ($query === false) {
+			return;
+		}
+
+		// Put the SRR into SrrInfo, check if there's an error.
+		$this->_srrInfo->open($srr);
+		if ($this->_srrInfo->error) {
+			$this->pdo->log->doEcho($this->pdo->log->primaryOver("-"));
+			return;
+		}
+
+		// Get the file list from SrrInfo.
+		$summary = $this->_srrInfo->getSummary();
+		if ($summary !== false && empty($summary['error'])) {
+			$this->pdo->log->doEcho($this->pdo->log->primaryOver("+"));
+
+			// Try to get a Pre Match by the OSO release name.
+			if (isset($summary['oso_info']['name']) && !empty($summary['oso_info']['name'])) {
+				$query['textstring'] = $summary['oso_info']['name'];
+				$foundMatch = $this->_nameFixer->checkName($query, $this->_echoCLI, 'SRR, ', 1, 1, true);
+			}
+			// Loop through the stored files in the SRR and try to get a Pre Match
+			if ($foundMatch === false && is_array($summary['stored_files']) && !empty($summary['stored_files'])) {
+				foreach ($summary['stored_files'] AS $storedFile) {
+					if ($foundMatch === true) {
+						break;
+					} else if (isset($storedFile['name']) && !empty($storedFile['name'])) {
+						$query['textstring'] = Text::cutStringUsingLast('.', $storedFile['name'], 'left', false);
+						$foundMatch = $this->_nameFixer->checkName($query, $this->_echoCLI, 'SRR, ', 1, 1, true);
+					}
+				}
+			}
+			// This field is rarely populated but worth a shot for a rename
+			if ($foundMatch === false && isset($summary['file_name']) && !empty($summary['file_name'])) {
+				$query['textstring'] = Text::cutStringUsingLast('.', $summary['file_name'], 'left', false);
+				$foundMatch = $this->_nameFixer->checkName($query, $this->_echoCLI, 'SRR, ', 1, 1, true);
+			}
+		}
+		$this->_foundSRRInfo = $foundMatch;
 	}
 
 	/**
@@ -2512,6 +2583,7 @@ class ProcessAdditional
 		$this->_foundSample = ($this->_processThumbnails ? false : true);
 		$this->_foundSample = (($this->_release['disablepreview'] == 1) ? true : false);
 		$this->_foundPAR2Info = false;
+		$this->_foundSRRInfo = false;
 
 		$this->_passwordStatus = [Releases::PASSWD_NONE];
 		$this->_releaseHasPassword = false;

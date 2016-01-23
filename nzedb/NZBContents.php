@@ -191,6 +191,40 @@ class NZBContents
 	}
 
 	/**
+	 * Attempts to get the releasename from a SRR file
+	 *
+	 * @param string $guid
+	 * @param int    $relID
+	 * @param int    $groupID
+	 * @param int    $nameStatus
+	 * @param int    $show
+	 *
+	 * @return bool
+	 *
+	 * @access public
+	 */
+	public function checkSRR($guid, $relID, $nameStatus, $show)
+	{
+		$nzbFile = $this->LoadNZB($guid);
+		if ($nzbFile !== false) {
+			foreach ($nzbFile->file as $nzbContents) {
+				if (preg_match('/\.srr[&" ].+\(1\/1\)$/i', (string)$nzbContents->attributes()->subject)) {
+					if ($this->pp->parseSRR((string)$nzbContents->segments->segment, $relID, $this->nntp, $show) === true && $nameStatus === 1) {
+						$this->pdo->queryExec(sprintf('UPDATE releases SET proc_srr = 1 WHERE id = %d', $relID));
+						return true;
+					}
+				} else {
+					echo '.';
+				}
+			}
+		}
+		if ($nameStatus === 1) {
+			$this->pdo->queryExec(sprintf('UPDATE releases SET proc_srr = 1 WHERE id = %d', $relID));
+		}
+		return false;
+	}
+
+	/**
 	 * Gets the completion from the NZB, optionally looks if there is an NFO/PAR2 file.
 	 *
 	 * @param string $guid
@@ -210,6 +244,7 @@ class NZBContents
 			$actualParts = $artificialParts = 0;
 			$foundPAR2 = ($this->lookuppar2 === false ? true : false);
 			$foundNFO = $hiddenNFO = ($nfoCheck === false ? true : false);
+			$foundSRR = false;
 
 			foreach ($nzbFile->file as $nzbcontents) {
 				foreach ($nzbcontents->segments->segment as $segment) {
@@ -240,10 +275,19 @@ class NZBContents
 				}
 
 				if ($foundPAR2 === false) {
-					if (preg_match('/\.(par[2" ]|\d{2,3}").+\(1\/1\)$/i', $subject)) {
+					if (preg_match('/\.(par[&2" ]|\d{2,3}").+\(1\/1\)$/i', $subject)) {
 						if ($this->pp->parsePAR2((string)$nzbcontents->segments->segment, $relID, $groupID, $this->nntp, 1) === true) {
 							$this->pdo->queryExec(sprintf('UPDATE releases SET proc_par2 = 1 WHERE id = %d', $relID));
 							$foundPAR2 = true;
+						}
+					}
+				}
+
+				if ($foundSRR === false) {
+					if (preg_match('/\.(srr[&" ]).+\(1\/1\)$/i', $subject)) {
+						if ($this->pp->parseSRR((string)$nzbcontents->segments->segment, $relID, $this->nntp, 1) === true) {
+							$this->pdo->queryExec(sprintf('UPDATE releases SET proc_srr = 1 WHERE id = %d', $relID));
+							$foundSRR = true;
 						}
 					}
 				}

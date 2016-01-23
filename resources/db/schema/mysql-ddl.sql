@@ -692,6 +692,7 @@ CREATE TABLE         releases (
   proc_par2         TINYINT(1)                     NOT NULL DEFAULT '0',
   proc_nfo          TINYINT(1)                     NOT NULL DEFAULT '0',
   proc_files        TINYINT(1)                     NOT NULL DEFAULT '0',
+  proc_srr          TINYINT(1)                     NOT NULL DEFAULT '0' COMMENT 'Has the release been SRR processed?',
   PRIMARY KEY                                 (id, categoryid),
   INDEX ix_releases_name                      (name),
   INDEX ix_releases_group_id                  (group_id,passwordstatus),

@@ -19,6 +19,8 @@ class NameFixer
 	const PROC_FILES_DONE = 1;
 	const PROC_PAR2_NONE = 0;
 	const PROC_PAR2_DONE = 1;
+	const PROC_SRR_NONE = 0;
+	const PROC_SRR_DONE = 1;
 
 	// Constants for overall rename status
 	const IS_RENAMED_NONE = 0;
@@ -368,6 +370,74 @@ class NameFixer
 	}
 
 	/**
+	 * Attempts to fix release names using the SRR File data.
+	 *
+	 * @param int $time   1: 24 hours, 2: no time limit
+	 * @param int $echo   1: change the name, anything else: preview of what could have been changed.
+	 * @param int $cats   1: other categories, 2: all categories
+	 * @param $nameStatus
+	 * @param $show
+	 * @param NNTP $nntp
+	 */
+	public function fixNamesWithSRR($time, $echo, $cats, $nameStatus, $show, $nntp)
+	{
+		$this->_echoStartMessage($time, 'SRR files');
+
+		if ($cats === 3) {
+			$query = sprintf('
+					SELECT rel.id AS releaseid, rel.guid, rel.group_id
+					FROM releases rel
+					WHERE nzbstatus = %d
+					AND preid = 0',
+				NZB::NZB_ADDED
+			);
+			$cats = 2;
+		} else {
+			$query = sprintf('
+					SELECT rel.id AS releaseid, rel.guid, rel.group_id
+					FROM releases rel
+					WHERE preid = 0
+					AND proc_srr = %d',
+				self::PROC_SRR_NONE
+			);
+		}
+
+		$releases = $this->_getReleases($time, $cats, $query);
+
+		if ($releases instanceof \Traversable && $releases !== false) {
+
+			$total = $releases->rowCount();
+			if ($total > 0) {
+				$this->_totalReleases = $total;
+
+				echo $this->pdo->log->primary(number_format($total) . ' releases to process.');
+				$Nfo = new Nfo(['Echo' => $this->echooutput, 'Settings' => $this->pdo]);
+				$nzbContents = new NZBContents(
+					[
+						'Echo'        => $this->echooutput,
+						'NNTP'        => $nntp,
+						'Nfo'         => $Nfo,
+						'Settings'    => $this->pdo,
+						'PostProcess' => new PostProcess(['Settings' => $this->pdo, 'Nfo' => $Nfo])
+					]
+				);
+
+				foreach ($releases as $release) {
+					if (($nzbContents->checkSRR($release['guid'], $release['releaseid'], $nameStatus, $show)) === true) {
+						$this->fixed++;
+					}
+
+					$this->checked++;
+					$this->_echoRenamed($show);
+				}
+				$this->_echoFoundCount($echo, ' files');
+			} else {
+				echo $this->pdo->log->alternate('Nothing to fix.');
+			}
+		}
+	}
+
+	/**
 	 * @param int    $time  1: 24 hours, 2: no time limit
 	 * @param int    $cats  1: other categories, 2: all categories
 	 * @param string $query Query to execute.
@@ -379,22 +449,30 @@ class NameFixer
 		$releases = false;
 		// 24 hours, other cats
 		if ($time == 1 && $cats == 1) {
-			echo $this->pdo->log->header($query . $this->timeother . ";\n");
-			$releases = $this->pdo->queryDirect($query . $this->timeother);
+			$queryTime = $this->timeother;
 		} // 24 hours, all cats
 		else if ($time == 1 && $cats == 2) {
-			echo $this->pdo->log->header($query . $this->timeall . ";\n");
-			$releases = $this->pdo->queryDirect($query . $this->timeall);
+			$queryTime = $this->timeall;
 		} //other cats
 		else if ($time == 2 && $cats == 1) {
-			echo $this->pdo->log->header($query . $this->fullother . ";\n");
-			$releases = $this->pdo->queryDirect($query . $this->fullother);
+			$queryTime = $this->fullother;
 		}
 		// all cats
 		else if ($time == 2 && $cats == 2) {
-			echo $this->pdo->log->header($query . $this->fullall . ";\n");
-			$releases = $this->pdo->queryDirect($query . $this->fullall);
+			$queryTime = $this->fullall;
 		}
+
+		if (isset($queryTime)) {
+			$query .= $queryTime;
+			// Remove GROUP BY if it exists for filename based renames
+			if (strpos($query, 'proc_files') !== false) {
+				$query = str_replace('GROUP BY r.id', '', $query);
+			}
+			echo $this->pdo->log->header("{$query};\n");
+
+			$releases = $this->pdo->queryDirect($query);
+		}
+
 		return $releases;
 	}
 
@@ -731,7 +809,6 @@ class NameFixer
 							INNER JOIN release_files rf ON r.id = rf.releaseid
 							AND rf.name IS NOT NULL
 							WHERE r.preid = 0
-							GROUP BY r.id
 							%s %s',
 							$orderby,
 							$limit
@@ -904,7 +981,11 @@ class NameFixer
 		if (preg_match_all(self::PREDB_REGEX, $release['textstring'], $matches) && !preg_match('/Source\s\:/i', $release['textstring'])) {
 			foreach ($matches as $match) {
 				foreach ($match as $val) {
-					$title = $this->pdo->queryOneRow("SELECT title, id from predb WHERE title = " . $this->pdo->escapeString(trim($val)));
+					$title = $this->pdo->queryOneRow("
+						SELECT title, id
+						FROM predb
+						WHERE title = " . $this->pdo->escapeString(trim($val))
+					);
 					if ($title !== false) {
 						$this->updateRelease($release, $title['title'], $method = "preDB: Match", $echo, $type, $namestatus, $show, $title['id']);
 						$preid = true;
@@ -948,6 +1029,9 @@ class NameFixer
 						break;
 					case "PAR2, ":
 						$this->_updateSingleColumn('proc_par2', self::PROC_FILES_DONE, $release['releaseid']);
+						break;
+					case "SRR, ":
+						$this->_updateSingleColumn('proc_srr', self::PROC_FILES_DONE, $release['releaseid']);
 						break;
 				}
 			}
