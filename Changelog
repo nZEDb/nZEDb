@@ -9,6 +9,9 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2016-01-26 niel
 	Mrg: PR 2037, from DariusIII - Move Other cats to 0000 range, books cat to 7000 range.
+2016-01-23 niel
+	Mrg: PR 2041, from DariusIII - Update Noty package to version 2.3.8 and move it to
+		shared/libs folder.
 2016-01-21 niel
 	Mrg: PR 2039, from DariusIII - Prevent undefined index notices in full series and movies
 		view, remove references to nzbvortex and nzbgetintegration.
