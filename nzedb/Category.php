@@ -106,20 +106,12 @@ class Category
 	 *
 	 * @return array
 	 */
-	public function get($activeonly = false, $excludedcats = [])
+	public function getCategories($activeonly = false, $excludedcats = [])
 	{
+		$excluded = count($excludedcats) > 0 ? " AND c.id NOT IN (" . implode(",", $excludedcats) . ")" : '';
+		$active = $activeonly ? sprintf(" WHERE c.status = %d %s ", Category::STATUS_ACTIVE, $excluded) : '';
 		return $this->pdo->query(
-			"SELECT c.id, CONCAT(cp.title, ' > ',c.title) AS title, cp.id AS parentid, c.status, c.minsize
-			FROM category c
-			INNER JOIN category cp ON cp.id = c.parentid " .
-			($activeonly ?
-				sprintf(
-					" WHERE c.status = %d %s ",
-					Category::STATUS_ACTIVE,
-					(count($excludedcats) > 0 ? " AND c.id NOT IN (" . implode(",", $excludedcats) . ")" : '')
-				) : ''
-			) .
-			" ORDER BY c.id"
+			"SELECT c.id, CONCAT(cp.title, ' > ',c.title) AS title, cp.id AS parentid, c.status, c.minsize FROM category c INNER JOIN category cp ON cp.id = c.parentid $active ORDER BY c.id"
 		);
 	}
 
@@ -343,7 +335,7 @@ class Category
 	 */
 	public function getForSelect($blnIncludeNoneSelected = true)
 	{
-		$categories = $this->get();
+		$categories = $this->getCategories();
 		$temp_array = [];
 
 		if ($blnIncludeNoneSelected) {
