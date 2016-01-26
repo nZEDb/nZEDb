@@ -5,91 +5,95 @@ use nzedb\db\Settings;
 
 class Category
 {
-	const CAT_OTHER_MISC = '0010';
-	const CAT_OTHER_HASHED = '0020';
-	const CAT_GAME_NDS = '1010';
-	const CAT_GAME_PSP = '1020';
-	const CAT_GAME_WII = '1030';
-	const CAT_GAME_XBOX = '1040';
-	const CAT_GAME_XBOX360 = '1050';
-	const CAT_GAME_WIIWARE = '1060';
-	const CAT_GAME_XBOX360DLC = '1070';
-	const CAT_GAME_PS3 = '1080';
-	const CAT_GAME_OTHER = '1090';
-	const CAT_GAME_3DS = '1110';
-	const CAT_GAME_PSVITA = '1120';
-	const CAT_GAME_WIIU = '1130';
-	const CAT_GAME_XBOXONE = '1140';
-	const CAT_GAME_PS4 = '1180';
-	const CAT_MOVIE_FOREIGN = '2010';
-	const CAT_MOVIE_OTHER = '2020';
-	const CAT_MOVIE_SD = '2030';
-	const CAT_MOVIE_HD = '2040';
-	const CAT_MOVIE_3D = '2050';
-	const CAT_MOVIE_BLURAY = '2060';
-	const CAT_MOVIE_DVD = '2070';
-	const CAT_MOVIE_WEBDL = '2080';
-	const CAT_MUSIC_MP3 = '3010';
-	const CAT_MUSIC_VIDEO = '3020';
-	const CAT_MUSIC_AUDIOBOOK = '3030';
-	const CAT_MUSIC_LOSSLESS = '3040';
-	const CAT_MUSIC_OTHER = '3050';
-	const CAT_MUSIC_FOREIGN = '3060';
-	const CAT_PC_0DAY = '4010';
-	const CAT_PC_ISO = '4020';
-	const CAT_PC_MAC = '4030';
-	const CAT_PC_PHONE_OTHER = '4040';
-	const CAT_PC_GAMES = '4050';
-	const CAT_PC_PHONE_IOS = '4060';
-	const CAT_PC_PHONE_ANDROID = '4070';
-	const CAT_TV_WEBDL = '5010';
-	const CAT_TV_FOREIGN = '5020';
-	const CAT_TV_SD = '5030';
-	const CAT_TV_HD = '5040';
-	const CAT_TV_OTHER = '5050';
-	const CAT_TV_SPORT = '5060';
-	const CAT_TV_ANIME = '5070';
-	const CAT_TV_DOCUMENTARY = '5080';
-	const CAT_XXX_DVD = '6010';
-	const CAT_XXX_WMV = '6020';
-	const CAT_XXX_XVID = '6030';
-	const CAT_XXX_X264 = '6040';
-	const CAT_XXX_OTHER = '6050';
-	const CAT_XXX_IMAGESET = '6060';
-	const CAT_XXX_PACKS = '6070';
-	const CAT_XXX_SD = '6080';
-	const CAT_XXX_WEBDL = '6090';
-	const CAT_BOOKS_EBOOK = '7010';
-	const CAT_BOOKS_COMICS = '7020';
-	const CAT_BOOKS_MAGAZINES = '7030';
-	const CAT_BOOKS_TECHNICAL = '7040';
-	const CAT_BOOKS_OTHER = '7050';
-	const CAT_BOOKS_FOREIGN = '7060';
-	const CAT_PARENT_OTHER = '0000';
-	const CAT_PARENT_GAME = '1000';
-	const CAT_PARENT_MOVIE = '2000';
-	const CAT_PARENT_MUSIC = '3000';
-	const CAT_PARENT_PC = '4000';
-	const CAT_PARENT_TV = '5000';
-	const CAT_PARENT_XXX = '6000';
-	const CAT_PARENT_BOOKS = '7000';
-	const STATUS_INACTIVE = 0;
-	const STATUS_ACTIVE = 1;
-	const STATUS_DISABLED = 2;
+	/** Category constants.
+	 * These constants should always be used where categories are used. NEVER use the numbers
+	 * explicitly.
+	 */
+	const CAT_BOOKS_COMICS		= '7020';
+	const CAT_BOOKS_EBOOK		= '7010';
+	const CAT_BOOKS_FOREIGN		= '7060';
+	const CAT_BOOKS_MAGAZINES	= '7030';
+	const CAT_BOOKS_OTHER		= '7050';
+	const CAT_BOOKS_TECHNICAL	= '7040';
+	const CAT_GAME_3DS			= '1110';
+	const CAT_GAME_NDS			= '1010';
+	const CAT_GAME_OTHER		= '1090';
+	const CAT_GAME_PS3			= '1080';
+	const CAT_GAME_PS4			= '1180';
+	const CAT_GAME_PSP			= '1020';
+	const CAT_GAME_PSVITA		= '1120';
+	const CAT_GAME_WII			= '1030';
+	const CAT_GAME_WIIU			= '1130';
+	const CAT_GAME_WIIWARE		= '1060';
+	const CAT_GAME_XBOX			= '1040';
+	const CAT_GAME_XBOX360		= '1050';
+	const CAT_GAME_XBOX360DLC	= '1070';
+	const CAT_GAME_XBOXONE		= '1140';
+	const CAT_MOVIE_3D			= '2050';
+	const CAT_MOVIE_BLURAY		= '2060';
+	const CAT_MOVIE_DVD			= '2070';
+	const CAT_MOVIE_FOREIGN		= '2010';
+	const CAT_MOVIE_HD			= '2040';
+	const CAT_MOVIE_OTHER		= '2020';
+	const CAT_MOVIE_SD			= '2030';
+	const CAT_MOVIE_WEBDL		= '2080';
+	const CAT_MUSIC_AUDIOBOOK	= '3030';
+	const CAT_MUSIC_FOREIGN		= '3060';
+	const CAT_MUSIC_LOSSLESS	= '3040';
+	const CAT_MUSIC_MP3			= '3010';
+	const CAT_MUSIC_OTHER		= '3050';
+	const CAT_MUSIC_VIDEO		= '3020';
+	const CAT_OTHER_HASHED		= '0020';
+	const CAT_OTHER_MISC		= '0010';
+	const CAT_PARENT_BOOKS		= '7000';
+	const CAT_PARENT_GAME		= '1000';
+	const CAT_PARENT_MOVIE		= '2000';
+	const CAT_PARENT_MUSIC		= '3000';
+	const CAT_PARENT_OTHER		= '0000';
+	const CAT_PARENT_PC			= '4000';
+	const CAT_PARENT_TV			= '5000';
+	const CAT_PARENT_XXX		= '6000';
+	const CAT_PC_0DAY			= '4010';
+	const CAT_PC_GAMES			= '4050';
+	const CAT_PC_ISO			= '4020';
+	const CAT_PC_MAC			= '4030';
+	const CAT_PC_PHONE_ANDROID	= '4070';
+	const CAT_PC_PHONE_IOS		= '4060';
+	const CAT_PC_PHONE_OTHER	= '4040';
+	const CAT_TV_ANIME			= '5070';
+	const CAT_TV_DOCUMENTARY	= '5080';
+	const CAT_TV_FOREIGN		= '5020';
+	const CAT_TV_HD				= '5040';
+	const CAT_TV_OTHER			= '5050';
+	const CAT_TV_SD				= '5030';
+	const CAT_TV_SPORT			= '5060';
+	const CAT_TV_WEBDL			= '5010';
+	const CAT_XXX_DVD			= '6010';
+	const CAT_XXX_IMAGESET		= '6060';
+	const CAT_XXX_OTHER			= '6050';
+	const CAT_XXX_PACKS			= '6070';
+	const CAT_XXX_SD			= '6080';
+	const CAT_XXX_WEBDL			= '6090';
+	const CAT_XXX_WMV			= '6020';
+	const CAT_XXX_X264			= '6040';
+	const CAT_XXX_XVID			= '6030';
 
 	const CAT_OTHERS_GROUP =
-		[
-			self::CAT_BOOKS_OTHER,
-			self::CAT_GAME_OTHER,
-			self::CAT_MOVIE_OTHER,
-			self::CAT_MUSIC_OTHER,
-			self::CAT_PC_PHONE_OTHER,
-			self::CAT_TV_OTHER,
-			self::CAT_OTHER_HASHED,
-			self::CAT_XXX_OTHER,
-			self::CAT_OTHER_MISC
-		]
-	;
+			[
+					self::CAT_BOOKS_OTHER,
+					self::CAT_GAME_OTHER,
+					self::CAT_MOVIE_OTHER,
+					self::CAT_MUSIC_OTHER,
+					self::CAT_PC_PHONE_OTHER,
+					self::CAT_TV_OTHER,
+					self::CAT_OTHER_HASHED,
+					self::CAT_XXX_OTHER,
+					self::CAT_OTHER_MISC
+			];
+
+	const STATUS_ACTIVE			= 1;
+	const STATUS_DISABLED		= 2;
+	const STATUS_INACTIVE		= 0;
 
 	/**
 	 * @var Settings
