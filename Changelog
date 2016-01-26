@@ -9,6 +9,8 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2016-01-26 niel
 	Mrg: PR 2037, from DariusIII - Move Other cats to 0000 range, books cat to 7000 range.
+	Fix: Changing the CAT_OTHERS_GROUP array to be a function instead, as array constants are not
+		supported for PHP 5.5. When 5.5 reaches EOL in July we can revisit this.
 2016-01-21 niel
 	Mrg: PR 2040, from DariusIII - Update isISO categorization.
 2016-01-16 niel
