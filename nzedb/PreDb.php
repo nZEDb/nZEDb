@@ -164,7 +164,7 @@ class PreDb
 	{
 		$namefixer = new NameFixer(['Echo' => $this->echooutput, 'ConsoleTools' => $this->pdo->log, 'Settings' => $this->pdo]);
 		$consoletools = new ConsoleTools(['ColorCLI' => $this->pdo->log]);
-		$othercats = implode(",", Category::CAT_OTHERS_GROUP);
+		$othercats = Category::getCategoryOthersGroup();
 		$updated = $checked = 0;
 
 		$tq = '';
