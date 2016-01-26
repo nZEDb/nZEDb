@@ -77,20 +77,6 @@ class Category
 	const STATUS_ACTIVE = 1;
 	const STATUS_DISABLED = 2;
 
-	const CAT_OTHERS_GROUP =
-		[
-			self::CAT_BOOKS_OTHER,
-			self::CAT_GAME_OTHER,
-			self::CAT_MOVIE_OTHER,
-			self::CAT_MUSIC_OTHER,
-			self::CAT_PC_PHONE_OTHER,
-			self::CAT_TV_OTHER,
-			self::CAT_OTHER_HASHED,
-			self::CAT_XXX_OTHER,
-			self::CAT_OTHER_MISC
-		]
-	;
-
 	/**
 	 * @var Settings
 	 */
@@ -381,5 +367,21 @@ class Category
 		$parent = $this->pdo->queryOneRow(sprintf("SELECT title FROM category WHERE id = %d", substr($ID, 0, 1) . "000"));
 		$cat = $this->pdo->queryOneRow(sprintf("SELECT title FROM category WHERE id = %d", $ID));
 		return $parent["title"] . " " . $cat["title"];
+	}
+
+	public function getCategoryOthersGroup()
+	{
+		return implode(",",
+				[
+						self::CAT_BOOKS_OTHER,
+						self::CAT_GAME_OTHER,
+						self::CAT_MOVIE_OTHER,
+						self::CAT_MUSIC_OTHER,
+						self::CAT_PC_PHONE_OTHER,
+						self::CAT_TV_OTHER,
+						self::CAT_OTHER_HASHED,
+						self::CAT_XXX_OTHER,
+						self::CAT_OTHER_MISC
+				]);
 	}
 }
