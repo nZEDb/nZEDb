@@ -1,13 +1,23 @@
 #Change categoryids of existing releases to new values.
-UPDATE releases SET categoryid = 0010 WHERE categoryid = 7010;
-UPDATE releases SET categoryid = 0020 WHERE categoryid = 7020;
-UPDATE releases SET categoryid = 7010 WHERE categoryid = 8010;
-UPDATE releases SET categoryid = 7020 WHERE categoryid = 8020;
-UPDATE releases SET categoryid = 7030 WHERE categoryid = 8030;
-UPDATE releases SET categoryid = 7040 WHERE categoryid = 8040;
-UPDATE releases SET categoryid = 7050 WHERE categoryid = 8050;
-UPDATE releases SET categoryid = 7060 WHERE categoryid = 8060;
-
+UPDATE releases SET categoryid =
+  CASE
+    WHEN 7010
+      THEN 0010
+    WHEN 7020
+      THEN 0020
+    WHEN 8010
+      THEN 7010
+    WHEN 8020
+      THEN 7020
+    WHEN 8030
+      THEN 7030
+    WHEN 8040
+      THEN 7040
+    WHEN 8050
+      THEN 7050
+    WHEN 8060
+      THEN 7060
+      END;
 
 #Partition the releases table with new values.
 ALTER TABLE releases PARTITION BY RANGE (categoryid) (
