@@ -74,9 +74,9 @@ class Category
 	const CAT_XXX_X264 = '6040';
 	const CAT_XXX_XVID = '6030';
 
-	const STATUS_INACTIVE = 0;
 	const STATUS_ACTIVE = 1;
 	const STATUS_DISABLED = 2;
+	const STATUS_INACTIVE = 0;
 
 	/**
 	 * @var Settings
