@@ -68,7 +68,7 @@
           </div>
           <div class="row">
             <div class="col-xs-8">
-              <div class="checkbox icheck">
+              <div class="checkbox">
                 <label>
                   <input type="checkbox"> I agree to the <a href="{$serverroot}terms-and-conditions">terms</a>
                 </label>

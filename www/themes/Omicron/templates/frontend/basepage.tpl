@@ -4,7 +4,7 @@
 	<script type="text/javascript">
 		/* <![CDATA[ */
 		var WWW_TOP = "{$smarty.const.WWW_TOP}";
-		var SERVERROOT = "{$serverroot}";
+		var SERVERROOT = "{serverroot}";
 		var UID = "{if $loggedin=="true"}{$userdata.id}{else}{/if}";
 		var RSSTOKEN = "{if $loggedin=="true"}{$userdata.rsstoken}{else}{/if}";
 		/* ]]> */
@@ -41,7 +41,6 @@
 	<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 	<![endif]-->
 </head>
-{if ($loggedin)=="true"}
 	<!--
 	  BODY TAG OPTIONS:
 	  =================
@@ -86,6 +85,7 @@
 						<!-- User Account Menu -->
 						<li class="dropdown user user-menu">
 							<!-- Menu Toggle Button -->
+							{if ($loggedin)=="true"}
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown">
 								<!-- The user image in the navbar-->
 								<img src="{$smarty.const.WWW_THEMES}/{$theme}/images/userimage.png"
@@ -106,44 +106,48 @@
 								<!-- Menu Body -->
 								<li class="user-body">
 									<div class="col-xs-12 text-center">
-										<a href="{$serverroot}cart"><i class="fa fa-shopping-basket"></i> My Download Basket</a>
+										<a href="{$smarty.const.WWW_TOP}/cart"><i class="fa fa-shopping-basket"></i> My Download Basket</a>
 									</div>
 									<div class="col-xs-12 text-center">
-										<a href="{$serverroot}queue"><i class="fa fa-list-alt"></i> My Queue</a>
+										<a href="{$smarty.const.WWW_TOP}/queue"><i class="fa fa-list-alt"></i> My Queue</a>
 									</div>
 									<div class="col-xs-12 text-center">
-										<a href="{$serverroot}mymovies"><i class="fa fa-film"></i> My Movies</a>
+										<a href="{$smarty.const.WWW_TOP}/mymovies"><i class="fa fa-film"></i> My Movies</a>
 									</div>
 									<div class="col-xs-12 text-center">
-										<a href="{$serverroot}myshows"><i class="fa fa-television"></i> My Shows</a>
+										<a href="{$smarty.const.WWW_TOP}/myshows"><i class="fa fa-television"></i> My Shows</a>
 									</div>
 									<div class="col-xs-12 text-center">
-										<a href="{$serverroot}profileedit"><i class="fa fa-cog fa-spin"></i> Account Settings</a>
+										<a href="{$smarty.const.WWW_TOP}/profileedit"><i class="fa fa-cog fa-spin"></i> Account Settings</a>
 									</div>
 									{if isset($isadmin)}
 										<div class="col-xs-12 text-center">
-											<a href="{$serverroot}admin"><i class="fa fa-cogs fa-spin"></i> Admin</a>
+											<a href="{$smarty.const.WWW_TOP}/admin"><i class="fa fa-cogs fa-spin"></i> Admin</a>
 										</div>
 									{/if}
 								</li>
 								<!-- Menu Footer-->
 								<li class="user-footer">
 									<div class="pull-left">
-										<a href="{$serverroot}profile" class="btn btn-default btn-flat"><i
+										<a href="{$smarty.const.WWW_TOP}/profile" class="btn btn-default btn-flat"><i
 													class="fa fa-user"></i> Profile</a>
 									</div>
 									<div class="pull-right">
-										<a href="{$serverroot}logout" class="btn btn-default btn-flat"><i
+										<a href="{$smarty.const.WWW_TOP}/logout" class="btn btn-default btn-flat"><i
 													class="fa fa-unlock-alt"></i> Sign out</a>
 									</div>
 								</li>
 							</ul>
-						</li>
+							{else}
+						<li><a href="{$smarty.const.WWW_TOP}/login"><i class="fa fa-lock"></i><span> Sign In</span></a></li>
+						<li><a href="{$smarty.const.WWW_TOP}/register"><i class="fa fa-bookmark-o"></i><span> Register</span></a></li>
+						{/if}
 					</ul>
 				</div>
 			</nav>
 		</header>
 		<!-- Left side column. contains the logo and sidebar -->
+		{if ($loggedin)=="true"}
 		<aside class="main-sidebar">
 			<!-- sidebar: style can be found in sidebar.less -->
 			<section class="sidebar">
@@ -189,40 +193,40 @@
 					<li class="treeview">
 						<a href="#"><i class="fa fa-list-ol"></i><span> Browse</span></a>
 						<ul class="treeview-menu">
-							<li><a href="{$serverroot}newposterwall"><i
+							<li><a href="{$smarty.const.WWW_TOP}/newposterwall"><i
 											class="fa fa-file-image-o"></i><span> New Releases</span></a></li>
-							<li><a href="{$serverroot}console"><i
+							<li><a href="{$smarty.const.WWW_TOP}/console"><i
 											class="fa fa-gamepad"></i><span> Console</span></a></li>
-							<li><a href="{$serverroot}movies"><i
+							<li><a href="{$smarty.const.WWW_TOP}/movies"><i
 											class="fa fa-film"></i><span> Movies</span></a></li>
-							<li><a href="{$serverroot}music"><i
+							<li><a href="{$smarty.const.WWW_TOP}/music"><i
 											class="fa fa-music"></i><span> Music</span></a></li>
-							<li><a href="{$serverroot}games"><i
+							<li><a href="{$smarty.const.WWW_TOP}/games"><i
 											class="fa fa-gamepad"></i><span> Games</span></a></li>
-							<li><a href="{$serverroot}series"><i
+							<li><a href="{$smarty.const.WWW_TOP}/series"><i
 											class="fa fa-television"></i><span> TV</span></a></li>
-							<li><a href="{$serverroot}xxx"><i class="fa fa-venus-mars"></i><span> Adult</span></a></li>
-							<li><a href="{$serverroot}books"><i class="fa fa-book"></i><span> Books</span></a></li>
-							<li><a href="{$serverroot}browse"><i
+							<li><a href="{$smarty.const.WWW_TOP}/xxx"><i class="fa fa-venus-mars"></i><span> Adult</span></a></li>
+							<li><a href="{$smarty.const.WWW_TOP}/books"><i class="fa fa-book"></i><span> Books</span></a></li>
+							<li><a href="{$smarty.const.WWW_TOP}/browse"><i
 											class="fa fa-list-ul"></i><span> Browse All Releases</span></a></li>
-							<li><a href="{$serverroot}predb"><i class="fa fa-list-ol"></i><span> PreDb</span></a>
+							<li><a href="{$smarty.const.WWW_TOP}/predb"><i class="fa fa-list-ol"></i><span> PreDb</span></a>
 							</li>
 						</ul>
 					</li>
+					{/if}
 					<li class="treeview">
 						<a href="#"><i class="fa fa-list-ol"></i><span> Articles & Links</span></a>
 						<ul class="treeview-menu">
-							<li><a href="{$serverroot}contact-us"><i
+							<li><a href="{$smarty.const.WWW_TOP}/contact-us"><i
 											class="fa fa-envelope-o"></i><span> Contact</span> <span
 											class="fa arrow"></span></a></li>
-							<li><a href="{$serverroot}search"><i class="fa fa-search"></i> Search</a></li>
-							<li><a href="{$serverroot}rss"><i class="fa fa-rss"></i> RSS Feeds</a></li>
-							<li><a href="{$serverroot}apihelp"><i class="fa fa-cloud"></i> API</a></li>
+							{if ($loggedin)=="true"}
+							<li><a href="{$smarty.const.WWW_TOP}/search"><i class="fa fa-search"></i> Search</a></li>
+							<li><a href="{$smarty.const.WWW_TOP}/rss"><i class="fa fa-rss"></i> RSS Feeds</a></li>
+							<li><a href="{$smarty.const.WWW_TOP}/apihelp"><i class="fa fa-cloud"></i> API</a></li>
 						</ul>
 					</li>
-					<li><a href="{$serverroot}logout"><i class="fa fa-unlock"></i><span> Sign out</span></a>
-						{else}
-					<li><a href="{$serverroot}login"><i class="fa fa-lock"></i><span> Login</span></a>
+					<li><a href="{$smarty.const.WWW_TOP}/logout"><i class="fa fa-unlock"></i><span> Sign out</span></a>
 						{/if}
 					</li>
 				</ul>
@@ -357,15 +361,4 @@
 		  user experience. Slimscroll is required when using the
 		  fixed layout. -->
 	</body>
-{elseif $smarty.server.REQUEST_URI == "/register" || $smarty.server.REQUEST_URI eq '/register?action=submit'}
-	{include file="register.tpl"}
-{elseif $smarty.server.REQUEST_URI == "/forgottenpassword" || $smarty.server.REQUEST_URI eq '/forgottenpassword?action=submit'}
-	{include file="forgottenpassword.tpl"}
-{elseif $smarty.server.REQUEST_URI == "/contact-us"}
-	{include file="contact.tpl"}
-{elseif $smarty.server.REQUEST_URI == "/terms-and-conditions"}
-	{include file="terms.tpl"}
-{else}
-	{include file="login.tpl"}
-{/if}
 </html>
