@@ -17,6 +17,7 @@ UPDATE releases SET categoryid =
       THEN 7050
     WHEN 8060
       THEN 7060
+    ELSE categoryid
       END;
 
 #Partition the releases table with new values.
