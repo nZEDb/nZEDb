@@ -20,6 +20,8 @@
 	<!-- Font Awesome Icons -->
 	<link href="{$smarty.const.WWW_THEMES}/{$theme}/bootstrap/css/font-awesome.min.css" rel="stylesheet"
 		  type="text/css"/>
+	<!-- iCheck -->
+	<link href="{$smarty.const.WWW_THEMES}/{$theme}/plugins/iCheck/square/blue.css" rel="stylesheet" type="text/css" />
 	<!-- Normalize.css -->
 	<link href="{$smarty.const.WWW_THEMES}/shared/css/normalize.css" rel="stylesheet" type="text/css"/>
 	<!-- Ionicons -->
@@ -33,7 +35,7 @@
 	<link href="{$smarty.const.WWW_THEMES}/{$theme}/dist/css/skins/skin-blue.min.css" rel="stylesheet"
 		  type="text/css"/>
 	<!-- Noty animation style -->
-	<link href="{$smarty.const.WWW_THEMES}/Omicron/dist/css/animate.css" rel="stylesheet" type="text/css"/>
+	<link href="{$smarty.const.WWW_THEMES}/{$theme}/dist/css/animate.css" rel="stylesheet" type="text/css"/>
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 	<!--[if lt IE 9]>
@@ -85,7 +87,6 @@
 						<!-- User Account Menu -->
 						<li class="dropdown user user-menu">
 							<!-- Menu Toggle Button -->
-							{if ($loggedin)=="true"}
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown">
 								<!-- The user image in the navbar-->
 								<img src="{$smarty.const.WWW_THEMES}/{$theme}/images/userimage.png"
@@ -95,6 +96,7 @@
 							</a>
 							<ul class="dropdown-menu">
 								<!-- The user image in the menu -->
+								{if ($loggedin)=="true"}
 								<li class="user-header">
 									<img src="{$smarty.const.WWW_THEMES}/{$theme}/images/userimage.png"
 										 class="img-circle" alt="User Image"/>
@@ -147,11 +149,11 @@
 			</nav>
 		</header>
 		<!-- Left side column. contains the logo and sidebar -->
-		{if ($loggedin)=="true"}
 		<aside class="main-sidebar">
 			<!-- sidebar: style can be found in sidebar.less -->
 			<section class="sidebar">
 				<!-- Sidebar user panel -->
+				{if ($loggedin)=="true"}
 				<div class="user-panel">
 					<div class="pull-left image">
 						<img src="{$smarty.const.WWW_THEMES}/{$theme}/images/user-loggedin.png" class="img-circle"
@@ -182,14 +184,15 @@
 						</div>
 					</div>
 				</form>
+				{/if}
 				<!-- /.search form -->
 				<!-- Sidebar Menu -->
 				<ul class="sidebar-menu">
 					<li class="header">Main</li>
-					{if ($loggedin)=="true"}
 					<!-- Optionally, you can add icons to the links -->
 					<li><a href="{$site->home_link}"><i class="fa fa-home"></i><span> Home</span> <span
 									class="fa arrow"></span></a></li>
+					{if ($loggedin)=="true"}
 					<li class="treeview">
 						<a href="#"><i class="fa fa-list-ol"></i><span> Browse</span></a>
 						<ul class="treeview-menu">
@@ -331,6 +334,8 @@
 	<!-- Bootstrap 3.3.2 JS -->
 	<script src="{$smarty.const.WWW_THEMES}/{$theme}/bootstrap/js/bootstrap.min.js"
 			type="text/javascript"></script>
+	<!-- iCheck -->
+	<script src="{$smarty.const.WWW_THEMES}/{$theme}/plugins/iCheck/icheck.min.js" type="text/javascript"></script>
 	<!-- Bootstrap hover on mouseover script -->
 	<script type="text/javascript"
 			src="{$smarty.const.WWW_THEMES}/{$theme}/plugins/hover/bootstrap-hover-dropdown.min.js"></script>

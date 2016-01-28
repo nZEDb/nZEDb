@@ -108,12 +108,12 @@
 			<!-- left menu starts -->
 			<div class="col-sm-2 col-lg-2">
 				<div class="sidebar-nav">
-					{if ($loggedin)=="true"}
 					<div class="nav-canvas">
 						<div class="nav-sm nav nav-stacked">
 						</div>
 						<ul class="nav nav-pills nav-stacked main-menu">
 							<!-- search form -->
+							{if ($loggedin)=="true"}
 							<form id="headsearch_form"
 								action="{$smarty.const.WWW_TOP}/search/"
 								method="get">

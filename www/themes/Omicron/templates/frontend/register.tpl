@@ -13,7 +13,7 @@
       <script type="text/javascript">
           /* <![CDATA[ */
           var WWW_TOP = "{$smarty.const.WWW_TOP}";
-          var SERVERROOT = "{$serverroot}";
+          var SERVERROOT = "{$smarty.const.WWW_TOP}/";
           var UID = "{if $loggedin=="true"}{$userdata.id}{else}{/if}";
           var RSSTOKEN = "{if $loggedin=="true"}{$userdata.rsstoken}{else}{/if}";
           /* ]]> */
@@ -22,13 +22,13 @@
     <title>{$page->meta_title}{if $page->meta_title != "" && $site->metatitle != ""} - {/if}{$site->metatitle} | Registration Page</title>
     <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
     <!-- Bootstrap 3.3.4 -->
-    <link href="{$smarty.const.WWW_THEMES}/Omicron/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="{$smarty.const.WWW_THEMES}/{$theme}/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <!-- Font Awesome Icons -->
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
     <!-- Theme style -->
-    <link href="{$smarty.const.WWW_THEMES}/Omicron/dist/css/AdminLTE.min.css" rel="stylesheet" type="text/css" />
+    <link href="{$smarty.const.WWW_THEMES}/{$theme}/dist/css/AdminLTE.min.css" rel="stylesheet" type="text/css" />
     <!-- iCheck -->
-    <link href="{$smarty.const.WWW_THEMES}/Omicron/plugins/iCheck/square/blue.css" rel="stylesheet" type="text/css" />
+    <link href="{$smarty.const.WWW_THEMES}/{$theme}/plugins/iCheck/square/blue.css" rel="stylesheet" type="text/css" />
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -41,7 +41,7 @@
   <body class="register-page">
     <div class="register-box">
       <div class="register-logo">
-        <a href="{$serverroot}"><b>{$site->title}</b></a>
+        <a href="{$smarty.const.WWW_TOP}/"><b>{$site->title}</b></a>
       </div>
 
       <div class="register-box-body">
@@ -68,9 +68,9 @@
           </div>
           <div class="row">
             <div class="col-xs-8">
-              <div class="checkbox">
+              <div class="checkbox icheck">
                 <label>
-                  <input type="checkbox"> I agree to the <a href="{$serverroot}terms-and-conditions">terms</a>
+                  <input type="checkbox"> I agree to the <a href="{$smarty.const.WWW_TOP}/terms-and-conditions">terms</a>
                 </label>
               </div>
             </div><!-- /.col -->
@@ -80,18 +80,18 @@
 			  <hr>
 			  {$page->smarty->fetch('captcha.tpl')}
           </div>
-			<a href="{$serverroot}login" class="text-center">I already have a membership</a>
+			<a href="{$smarty.const.WWW_TOP}/login" class="text-center">I already have a membership</a>
         </form>
 
       </div><!-- /.form-box -->
     </div><!-- /.register-box -->
 
     <!-- jQuery 2.1.4 -->
-    <script src="{$smarty.const.WWW_THEMES}/Omicron/plugins/jQuery/jQuery-2.1.4.min.js"></script>
+    <script src="{$smarty.const.WWW_THEMES}/{$theme}/plugins/jQuery/jQuery-2.1.4.min.js"></script>
     <!-- Bootstrap 3.3.2 JS -->
-    <script src="{$smarty.const.WWW_THEMES}/Omicron/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="{$smarty.const.WWW_THEMES}/{$theme}/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
     <!-- iCheck -->
-    <script src="{$smarty.const.WWW_THEMES}/Omicron/plugins/iCheck/icheck.min.js" type="text/javascript"></script>
+    <script src="{$smarty.const.WWW_THEMES}/{$theme}/plugins/iCheck/icheck.min.js" type="text/javascript"></script>
     <script>
       $(function () {
         $('input').iCheck({
