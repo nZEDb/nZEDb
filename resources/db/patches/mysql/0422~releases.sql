@@ -9,6 +9,7 @@ UPDATE releases SET categoryid = 7050 WHERE categoryid = 8050;
 UPDATE releases SET categoryid = 7060 WHERE categoryid = 8060;
 
 
+ALTER TABLE releases REMOVE PARTITIONING;
 #Partition the releases table with new values.
 ALTER TABLE releases PARTITION BY RANGE (categoryid) (
 PARTITION misc VALUES LESS THAN (1000),
