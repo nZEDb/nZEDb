@@ -118,7 +118,7 @@
 																class="cover"
 																src="{if $result.cover == 1}{$smarty.const.WWW_TOP}/covers/xxx/{$result.id}-cover.jpg{else}{$smarty.const.WWW_THEMES}/shared/img/no-cover.png{/if}"
 																width="100" border="0"
-																alt="{$result.title|escape:"htmlall"}"/>{if $mfailed[$m@index] > 0}
+																alt="{$result.title|escape:"htmlall"}"/>{if isset($mfailed[$m@index]) && $mfailed[$m@index] > 0}
 														<i class="fa fa-exclamation-circle" style="color: red"
 														   title="This release has failed to download for some users"></i>{/if}
 													</a>
@@ -187,7 +187,7 @@
 													<a class="label label-default"
 													   href="{$smarty.const.WWW_TOP}/browse?g={$result.grp_release_grpname}"
 													   title="Browse releases in {$result.grp_release_grpname|replace:"alt.binaries":"a.b"}">Group</a>
-													{if $mfailed[$m@index] > 0}
+													{if isset($mfailed[$m@index]) && $mfailed[$m@index] > 0}
 														<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
 															<i class="fa fa-thumbs-o-up"></i> {$mgrabs[$m@index]} Grab{if {$mgrabs[$m@index]} != 1}s{/if} / <i class="fa fa-thumbs-o-down"></i> {$mfailed[$m@index]}Failed Download{if {$mfailed[$m@index]} != 1}s{/if}</span>
 													{/if}
@@ -270,7 +270,7 @@
 																class="cover"
 																src="{if $result.cover == 1}{$smarty.const.WWW_TOP}/covers/xxx/{$result.id}-cover.jpg{else}{$smarty.const.WWW_THEMES}/shared/img/no-cover.png{/if}"
 																width="100" border="0"
-																alt="{$result.title|escape:"htmlall"}"/>{if $mfailed[$m@index] > 0}
+																alt="{$result.title|escape:"htmlall"}"/>{if isset($mfailed[$m@index]) && $mfailed[$m@index] > 0}
 														<i class="fa fa-exclamation-circle" style="color: red"
 														   title="This release has failed to download for some users"></i>{/if}
 													</a>
@@ -339,7 +339,7 @@
 													<a class="label label-default"
 													   href="{$smarty.const.WWW_TOP}/browse?g={$result.grp_release_grpname}"
 													   title="Browse releases in {$result.grp_release_grpname|replace:"alt.binaries":"a.b"}">Group</a>
-													{if $mfailed[$m@index] > 0}
+													{if isset($mfailed[$m@index]) && $mfailed[$m@index] > 0}
 														<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
 															<i class="fa fa-thumbs-o-up"></i> {$mgrabs[$m@index]} Grab{if {$mgrabs[$m@index]} != 1}s{/if} / <i class="fa fa-thumbs-o-down"></i> {$mfailed[$m@index]}Failed Download{if {$mfailed[$m@index]} != 1}s{/if}</span>
 													{/if}

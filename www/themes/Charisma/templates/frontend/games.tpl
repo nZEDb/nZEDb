@@ -100,7 +100,7 @@
 												   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">
 													<img src="{$smarty.const.WWW_TOP}/covers/games/{if $result.cover == 1}{$result.gamesinfo_id}.jpg{else}{$smarty.const.WWW_THEMES}/shared/img/no-cover.png{/if}"
 														 width="140" border="0"
-														 alt="{$result.title|escape:"htmlall"}"/>{if $mfailed[$m@index] > 0} <i class="fa fa-exclamation-circle" style="color: red" title="This release has failed to download for some users"></i>{/if}
+														 alt="{$result.title|escape:"htmlall"}"/>{if isset($mfailed[$m@index]) && $mfailed[$m@index] > 0} <i class="fa fa-exclamation-circle" style="color: red" title="This release has failed to download for some users"></i>{/if}
 												</a>
 												{if $result.classused == "gb"}<a class="label label-default"
 																				 target="_blank"
@@ -133,7 +133,7 @@
 												<a class="label label-default"
 												   href="{$smarty.const.WWW_TOP}/browse?g={$result.group_name}"
 												   title="Browse releases in {$result.group_name|replace:"alt.binaries":"a.b"}">Group</a>
-												{if $mfailed[$m@index] > 0}
+												{if isset($mfailed[$m@index]) && $mfailed[$m@index] > 0}
 													<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
 														<i class ="fa fa-thumbs-o-up"></i> {$mgrabs[$m@index]} Grab{if {$mgrabs[$m@index]} != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$mfailed[$m@index]} Failed Download{if {$mfailed[$m@index]} > 1}s{/if}</span>												{/if}
 											</div>

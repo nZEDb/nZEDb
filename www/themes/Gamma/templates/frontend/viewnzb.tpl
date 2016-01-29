@@ -335,7 +335,7 @@
 					<dt> Grabs</dt>
 					<dd>{$release.grabs} time{if $release.grabs==1}{else}s{/if}</dd>
 				</dl>
-				{if $failed != NULL && $failed >0}
+				{if isset($failed) && $failed != NULL && $failed >0}
 					<dl>
 						<dt> Failed Download</dt>
 						<dd>{$failed} time{if $failed==1}{else}s{/if}</dd>
