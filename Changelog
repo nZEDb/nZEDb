@@ -9,6 +9,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2016-01-29 niel
 	Mrg: PR 2044, from DariusIII - Rework Omicron/Charisma basepages and Omicron login/register checkboxes.
+	Mrg: PR 2046, from DariusIII - Prevent undefined index notices for failed downloads in Omicron and Charisma themes.
 2016-01-26 niel
 	Mrg: PR 2037, from DariusIII - Move Other cats to 0000 range, books cat to 7000 range.
 2016-01-23 niel
