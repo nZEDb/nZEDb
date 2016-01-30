@@ -5,11 +5,11 @@ use nzedb\db\Settings;
 
 class Category
 {
-	const CAT_BOOKS_COMICS = '7020';
-	const CAT_BOOKS_EBOOK = '7010';
+	const CAT_BOOKS_COMICS = '7030';
+	const CAT_BOOKS_EBOOK = '7020';
 	const CAT_BOOKS_FOREIGN = '7060';
-	const CAT_BOOKS_MAGAZINES = '7030';
-	const CAT_BOOKS_OTHER = '7050';
+	const CAT_BOOKS_MAGAZINES = '7010';
+	const CAT_BOOKS_OTHER = '7999';
 	const CAT_BOOKS_TECHNICAL = '7040';
 	const CAT_GAME_3DS = '1110';
 	const CAT_GAME_NDS = '1010';
