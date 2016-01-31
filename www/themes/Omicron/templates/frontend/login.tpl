@@ -19,13 +19,13 @@
     <title>{$site->title} | Log in</title>
     <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
     <!-- Bootstrap 3.3.4 -->
-    <link href="{$smarty.const.WWW_TOP}/themes/omicron/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="{$smarty.const.WWW_THEMES}/Omicron/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <!-- Font Awesome Icons -->
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
     <!-- Theme style -->
-    <link href="{$smarty.const.WWW_TOP}/themes/omicron/dist/css/AdminLTE.min.css" rel="stylesheet" type="text/css" />
+    <link href="{$smarty.const.WWW_THEMES}/Omicron/dist/css/AdminLTE.min.css" rel="stylesheet" type="text/css" />
     <!-- iCheck -->
-    <link href="{$smarty.const.WWW_TOP}/themes/omicron/plugins/iCheck/square/blue.css" rel="stylesheet" type="text/css" />
+    <link href="{$smarty.const.WWW_THEMES}/Omicron/plugins/iCheck/square/blue.css" rel="stylesheet" type="text/css" />
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -71,11 +71,11 @@
         <a href="{$serverroot}register" class="text-center">Register a new membership</a>
 
     <!-- jQuery 2.1.4 -->
-    <script src="{$smarty.const.WWW_TOP}/themes/omicron/plugins/jQuery/jQuery-2.1.4.min.js"></script>
+    <script src="{$smarty.const.WWW_THEMES}/Omicron/plugins/jQuery/jQuery-2.1.4.min.js"></script>
     <!-- Bootstrap 3.3.2 JS -->
-    <script src="{$smarty.const.WWW_TOP}/themes/omicron/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="{$smarty.const.WWW_THEMES}/Omicron/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
     <!-- iCheck -->
-    <script src="{$smarty.const.WWW_TOP}/themes/omicron/plugins/iCheck/icheck.min.js" type="text/javascript"></script>
+    <script src="{$smarty.const.WWW_THEMES}/Omicron/plugins/iCheck/icheck.min.js" type="text/javascript"></script>
     <script>
       $(function () {
         $('input').iCheck({
