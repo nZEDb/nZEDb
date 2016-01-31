@@ -39,8 +39,6 @@ RUN apt-get install -y software-properties-common && \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN ls -la /etc/nginx/sites-available/
-
 EXPOSE 80
 
 ENTRYPOINT ["/init.sh"]
