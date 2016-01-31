@@ -3,6 +3,7 @@
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
 //            or http://www.getid3.org                         //
+//          also https://github.com/JamesHeinrich/getID3       //
 /////////////////////////////////////////////////////////////////
 //                                                             //
 // /demo/demo.browse.php - part of getID3()                     //
@@ -84,7 +85,7 @@ if (isset($_REQUEST['deletefile'])) {
 if (isset($_REQUEST['filename'])) {
 
 	if (!file_exists($_REQUEST['filename']) || !is_file($_REQUEST['filename'])) {
-		die(getid3_lib::iconv_fallback('ISO-8859-1', 'UTF-8', $_REQUEST['filename'].' does not exist'));
+		die(getid3_lib::iconv_fallback('ISO-8859-1', $PageEncoding, $_REQUEST['filename'].' does not exist'));
 	}
 	$starttime = microtime(true);
 
@@ -115,7 +116,7 @@ if (isset($_REQUEST['filename'])) {
 	if (strstr($_REQUEST['filename'], 'http://') || strstr($_REQUEST['filename'], 'ftp://')) {
 		echo '<i>Cannot browse remote filesystems</i><br>';
 	} else {
-		echo 'Browse: <a href="'.htmlentities($_SERVER['PHP_SELF'].'?listdirectory='.urlencode($listdirectory), ENT_QUOTES | ENT_SUBSTITUTE, 'ISO-8859-1').'">'.getid3_lib::iconv_fallback('ISO-8859-1', 'UTF-8', $listdirectory).'</a><br>';
+		echo 'Browse: <a href="'.htmlentities($_SERVER['PHP_SELF'].'?listdirectory='.urlencode($listdirectory), ENT_QUOTES | ENT_SUBSTITUTE, $PageEncoding).'">'.getid3_lib::iconv_fallback('ISO-8859-1', $PageEncoding, $listdirectory).'</a><br>';
 	}
 
 	getid3_lib::ksort_recursive($ThisFileInfo);
@@ -223,7 +224,7 @@ if (isset($_REQUEST['filename'])) {
 		$columnsintable = 14;
 		echo '<table class="table" cellspacing="0" cellpadding="3">';
 
-		echo '<tr bgcolor="#'.$getID3checkColor_Head.'"><th colspan="'.$columnsintable.'">Files in '.getid3_lib::iconv_fallback('ISO-8859-1', 'UTF-8', $currentfulldir).'</th></tr>';
+		echo '<tr bgcolor="#'.$getID3checkColor_Head.'"><th colspan="'.$columnsintable.'">Files in '.getid3_lib::iconv_fallback('ISO-8859-1', $PageEncoding, $currentfulldir).'</th></tr>';
 		$rowcounter = 0;
 		foreach ($DirectoryContents as $dirname => $val) {
 			if (isset($DirectoryContents[$dirname]['dir']) && is_array($DirectoryContents[$dirname]['dir'])) {
@@ -232,20 +233,20 @@ if (isset($_REQUEST['filename'])) {
 					echo '<tr bgcolor="#'.(($rowcounter++ % 2) ? $getID3checkColor_DirectoryLight : $getID3checkColor_DirectoryDark).'">';
 					if ($filename == '..') {
 						echo '<td colspan="'.$columnsintable.'">';
-						echo '<form action="'.htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES | ENT_SUBSTITUTE, 'ISO-8859-1').'" method="get">';
+						echo '<form action="'.htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES | ENT_SUBSTITUTE, $PageEncoding).'" method="get">';
 						echo 'Parent directory: ';
 						echo '<input type="text" name="listdirectory" size="50" style="background-color: '.$getID3checkColor_DirectoryDark.';" value="';
 						if (GETID3_OS_ISWINDOWS) {
-							echo htmlentities(str_replace(DIRECTORY_SEPARATOR, '/', realpath($dirname.$filename)), ENT_QUOTES | ENT_SUBSTITUTE, 'ISO-8859-1');
+							echo htmlentities(str_replace(DIRECTORY_SEPARATOR, '/', realpath($dirname.$filename)), ENT_QUOTES | ENT_SUBSTITUTE, $PageEncoding);
 						} else {
-							echo htmlentities(realpath($dirname.$filename), ENT_QUOTES | ENT_SUBSTITUTE, 'ISO-8859-1');
+							echo htmlentities(realpath($dirname.$filename), ENT_QUOTES | ENT_SUBSTITUTE, $PageEncoding);
 						}
 						echo '"> <input type="submit" value="Go">';
 						echo '</form></td>';
 					} else {
-						$escaped_filename = htmlentities($filename, ENT_SUBSTITUTE, 'ISO-8859-1'); // do filesystems always return filenames in ISO-8859-1?
+						$escaped_filename = htmlentities($filename, ENT_SUBSTITUTE, $PageEncoding); // do filesystems always return filenames in ISO-8859-1?
 						$escaped_filename = ($escaped_filename ? $escaped_filename : rawurlencode($filename));
-						echo '<td colspan="'.$columnsintable.'"><a href="'.htmlentities($_SERVER['PHP_SELF'].'?listdirectory='.urlencode($dirname.$filename), ENT_QUOTES | ENT_SUBSTITUTE, 'ISO-8859-1').'"><b>'.$escaped_filename.'</b></a></td>';
+						echo '<td colspan="'.$columnsintable.'"><a href="'.htmlentities($_SERVER['PHP_SELF'].'?listdirectory='.urlencode($dirname.$filename), ENT_QUOTES | ENT_SUBSTITUTE, $PageEncoding).'"><b>'.$escaped_filename.'</b></a></td>';
 					}
 					echo '</tr>';
 				}
@@ -260,11 +261,11 @@ if (isset($_REQUEST['filename'])) {
 			echo '<th>Artist</th>';
 			echo '<th>Title</th>';
 			if (isset($_REQUEST['ShowMD5']) && GETID3_DEMO_BROWSE_ALLOW_MD5_LINK) {
-				echo '<th>MD5&nbsp;File (File) (<a href="'.htmlentities($_SERVER['PHP_SELF'].'?listdirectory='.rawurlencode(isset($_REQUEST['listdirectory']) ? $_REQUEST['listdirectory'] : '.'), ENT_QUOTES | ENT_SUBSTITUTE, 'ISO-8859-1').'">disable</a>)</th>';
-				echo '<th>MD5&nbsp;Data (File) (<a href="'.htmlentities($_SERVER['PHP_SELF'].'?listdirectory='.rawurlencode(isset($_REQUEST['listdirectory']) ? $_REQUEST['listdirectory'] : '.'), ENT_QUOTES | ENT_SUBSTITUTE, 'ISO-8859-1').'">disable</a>)</th>';
-				echo '<th>MD5&nbsp;Data (Source) (<a href="'.htmlentities($_SERVER['PHP_SELF'].'?listdirectory='.rawurlencode(isset($_REQUEST['listdirectory']) ? $_REQUEST['listdirectory'] : '.'), ENT_QUOTES | ENT_SUBSTITUTE, 'ISO-8859-1').'">disable</a>)</th>';
+				echo '<th>MD5&nbsp;File (File) (<a href="'.htmlentities($_SERVER['PHP_SELF'].'?listdirectory='.rawurlencode(isset($_REQUEST['listdirectory']) ? $_REQUEST['listdirectory'] : '.'), ENT_QUOTES | ENT_SUBSTITUTE, $PageEncoding).'">disable</a>)</th>';
+				echo '<th>MD5&nbsp;Data (File) (<a href="'.htmlentities($_SERVER['PHP_SELF'].'?listdirectory='.rawurlencode(isset($_REQUEST['listdirectory']) ? $_REQUEST['listdirectory'] : '.'), ENT_QUOTES | ENT_SUBSTITUTE, $PageEncoding).'">disable</a>)</th>';
+				echo '<th>MD5&nbsp;Data (Source) (<a href="'.htmlentities($_SERVER['PHP_SELF'].'?listdirectory='.rawurlencode(isset($_REQUEST['listdirectory']) ? $_REQUEST['listdirectory'] : '.'), ENT_QUOTES | ENT_SUBSTITUTE, $PageEncoding).'">disable</a>)</th>';
 			} else {
-				echo '<th colspan="3">MD5&nbsp;Data'.(GETID3_DEMO_BROWSE_ALLOW_MD5_LINK ?' (<a href="'.htmlentities($_SERVER['PHP_SELF'].'?listdirectory='.rawurlencode(isset($_REQUEST['listdirectory']) ? $_REQUEST['listdirectory'] : '.').'&ShowMD5=1', ENT_QUOTES | ENT_SUBSTITUTE, 'ISO-8859-1').'">enable</a>)' : '').'</th>';
+				echo '<th colspan="3">MD5&nbsp;Data'.(GETID3_DEMO_BROWSE_ALLOW_MD5_LINK ?' (<a href="'.htmlentities($_SERVER['PHP_SELF'].'?listdirectory='.rawurlencode(isset($_REQUEST['listdirectory']) ? $_REQUEST['listdirectory'] : '.').'&ShowMD5=1', ENT_QUOTES | ENT_SUBSTITUTE, $PageEncoding).'">enable</a>)' : '').'</th>';
 			}
 			echo '<th>Tags</th>';
 			echo '<th>Errors &amp; Warnings</th>';
@@ -276,9 +277,9 @@ if (isset($_REQUEST['filename'])) {
 				uksort($DirectoryContents[$dirname]['known'], 'MoreNaturalSort');
 				foreach ($DirectoryContents[$dirname]['known'] as $filename => $fileinfo) {
 					echo '<tr bgcolor="#'.(($rowcounter++ % 2) ? $getID3checkColor_FileDark : $getID3checkColor_FileLight).'">';
-					$escaped_filename = htmlentities($filename, ENT_SUBSTITUTE, 'ISO-8859-1');
+					$escaped_filename = htmlentities($filename, ENT_SUBSTITUTE, $PageEncoding);
 					$escaped_filename = ($escaped_filename ? $escaped_filename : rawurlencode($filename));
-					echo '<td><a href="'.htmlentities($_SERVER['PHP_SELF'].'?filename='.urlencode($dirname.$filename), ENT_QUOTES | ENT_SUBSTITUTE, 'ISO-8859-1').'" title="View detailed analysis">'.$escaped_filename.'</a></td>';
+					echo '<td><a href="'.htmlentities($_SERVER['PHP_SELF'].'?filename='.urlencode($dirname.$filename), ENT_QUOTES | ENT_SUBSTITUTE, $PageEncoding).'" title="View detailed analysis">'.$escaped_filename.'</a></td>';
 					echo '<td align="right">&nbsp;'.number_format($fileinfo['filesize']).'</td>';
 					echo '<td align="right">&nbsp;'.NiceDisplayFiletypeFormat($fileinfo).'</td>';
 					echo '<td align="right">&nbsp;'.(isset($fileinfo['playtime_string']) ? $fileinfo['playtime_string'] : '-').'</td>';
@@ -315,11 +316,11 @@ if (isset($_REQUEST['filename'])) {
 							case 'flac':
 							case 'mpc':
 							case 'real':
-								echo '<a href="'.htmlentities($writescriptfilename.'?Filename='.urlencode($dirname.$filename), ENT_QUOTES | ENT_SUBSTITUTE, 'ISO-8859-1').'" title="Edit tags">edit&nbsp;tags</a>';
+								echo '<a href="'.htmlentities($writescriptfilename.'?Filename='.urlencode($dirname.$filename), ENT_QUOTES | ENT_SUBSTITUTE, $PageEncoding).'" title="Edit tags">edit&nbsp;tags</a>';
 								break;
 							case 'ogg':
 								if (isset($fileinfo['audio']['dataformat']) && ($fileinfo['audio']['dataformat'] == 'vorbis')) {
-									echo '<a href="'.htmlentities($writescriptfilename.'?Filename='.urlencode($dirname.$filename), ENT_QUOTES | ENT_SUBSTITUTE, 'ISO-8859-1').'" title="Edit tags">edit&nbsp;tags</a>';
+									echo '<a href="'.htmlentities($writescriptfilename.'?Filename='.urlencode($dirname.$filename), ENT_QUOTES | ENT_SUBSTITUTE, $PageEncoding).'" title="Edit tags">edit&nbsp;tags</a>';
 								}
 								break;
 							default:
@@ -328,7 +329,7 @@ if (isset($_REQUEST['filename'])) {
 						echo '</td>';
 					}
 					if (GETID3_DEMO_BROWSE_ALLOW_DELETE_LINK) {
-						echo '<td align="left">&nbsp;<a href="'.htmlentities($_SERVER['PHP_SELF'].'?listdirectory='.urlencode($listdirectory).'&deletefile='.urlencode($dirname.$filename), ENT_QUOTES | ENT_SUBSTITUTE, 'ISO-8859-1').'" onClick="return confirm(\'Are you sure you want to delete '.addslashes(htmlentities($dirname.$filename)).'? \n(this action cannot be un-done)\');" title="'.htmlentities('Permanently delete '."\n".$filename."\n".' from'."\n".' '.$dirname, ENT_QUOTES | ENT_SUBSTITUTE, 'ISO-8859-1').'">delete</a></td>';
+						echo '<td align="left">&nbsp;<a href="'.htmlentities($_SERVER['PHP_SELF'].'?listdirectory='.urlencode($listdirectory).'&deletefile='.urlencode($dirname.$filename), ENT_QUOTES | ENT_SUBSTITUTE, $PageEncoding).'" onClick="return confirm(\'Are you sure you want to delete '.addslashes(htmlentities($dirname.$filename)).'? \n(this action cannot be un-done)\');" title="'.htmlentities('Permanently delete '."\n".$filename."\n".' from'."\n".' '.$dirname, ENT_QUOTES | ENT_SUBSTITUTE, $PageEncoding).'">delete</a></td>';
 					}
 					echo '</tr>';
 				}
@@ -338,9 +339,9 @@ if (isset($_REQUEST['filename'])) {
 				uksort($DirectoryContents[$dirname]['other'], 'MoreNaturalSort');
 				foreach ($DirectoryContents[$dirname]['other'] as $filename => $fileinfo) {
 					echo '<tr bgcolor="#'.(($rowcounter++ % 2) ? $getID3checkColor_UnknownDark : $getID3checkColor_UnknownLight).'">';
-					$escaped_filename = htmlentities($filename, ENT_SUBSTITUTE, 'ISO-8859-1');
+					$escaped_filename = htmlentities($filename, ENT_SUBSTITUTE, $PageEncoding);
 					$escaped_filename = ($escaped_filename ? $escaped_filename : rawurlencode($filename));
-					echo '<td><a href="'.htmlentities($_SERVER['PHP_SELF'].'?filename='.urlencode($dirname.$filename), ENT_QUOTES | ENT_SUBSTITUTE, 'ISO-8859-1').'"><i>'.$escaped_filename.'</i></a></td>';
+					echo '<td><a href="'.htmlentities($_SERVER['PHP_SELF'].'?filename='.urlencode($dirname.$filename), ENT_QUOTES | ENT_SUBSTITUTE, $PageEncoding).'"><i>'.$escaped_filename.'</i></a></td>';
 					echo '<td align="right">&nbsp;'.(isset($fileinfo['filesize']) ? number_format($fileinfo['filesize']) : '-').'</td>';
 					echo '<td align="right">&nbsp;'.NiceDisplayFiletypeFormat($fileinfo).'</td>';
 					echo '<td align="right">&nbsp;'.(isset($fileinfo['playtime_string']) ? $fileinfo['playtime_string'] : '-').'</td>';
@@ -368,7 +369,7 @@ if (isset($_REQUEST['filename'])) {
 						echo '<td align="left">&nbsp;</td>'; // Edit
 					}
 					if (GETID3_DEMO_BROWSE_ALLOW_DELETE_LINK) {
-						echo '<td align="left">&nbsp;<a href="'.htmlentities($_SERVER['PHP_SELF'].'?listdirectory='.urlencode($listdirectory).'&deletefile='.urlencode($dirname.$filename), ENT_QUOTES | ENT_SUBSTITUTE, 'ISO-8859-1').'" onClick="return confirm(\'Are you sure you want to delete '.addslashes($dirname.$filename).'? \n(this action cannot be un-done)\');" title="Permanently delete '.addslashes($dirname.$filename).'">delete</a></td>';
+						echo '<td align="left">&nbsp;<a href="'.htmlentities($_SERVER['PHP_SELF'].'?listdirectory='.urlencode($listdirectory).'&deletefile='.urlencode($dirname.$filename), ENT_QUOTES | ENT_SUBSTITUTE, $PageEncoding).'" onClick="return confirm(\'Are you sure you want to delete '.addslashes($dirname.$filename).'? \n(this action cannot be un-done)\');" title="Permanently delete '.addslashes($dirname.$filename).'">delete</a></td>';
 					}
 					echo '</tr>';
 				}
@@ -479,8 +480,11 @@ function table_var_dump($variable, $wrap_in_td=false, $encoding='ISO-8859-1') {
 				//if (($key == 'data') && isset($variable['image_mime']) && isset($variable['dataoffset'])) {
 				if (($key == 'data') && isset($variable['image_mime'])) {
 					$imageinfo = array();
-					$imagechunkcheck = getid3_lib::GetDataImageSize($value, $imageinfo);
-					$returnstring .= '</td>'."\n".'<td><img src="data:'.$variable['image_mime'].';base64,'.base64_encode($value).'" width="'.$imagechunkcheck[0].'" height="'.$imagechunkcheck[1].'"></td></tr>'."\n";
+					if ($imagechunkcheck = getid3_lib::GetDataImageSize($value, $imageinfo)) {
+						$returnstring .= '</td>'."\n".'<td><img src="data:'.$variable['image_mime'].';base64,'.base64_encode($value).'" width="'.$imagechunkcheck[0].'" height="'.$imagechunkcheck[1].'"></td></tr>'."\n";
+					} else {
+						$returnstring .= '</td>'."\n".'<td><i>invalid image data</i></td></tr>'."\n";
+					}
 				} else {
 					$returnstring .= '</td>'."\n".table_var_dump($value, true, $encoding).'</tr>'."\n";
 				}
@@ -514,8 +518,7 @@ function table_var_dump($variable, $wrap_in_td=false, $encoding='ISO-8859-1') {
 
 		default:
 			$imageinfo = array();
-			$imagechunkcheck = getid3_lib::GetDataImageSize($variable, $imageinfo);
-			if (($imagechunkcheck[2] >= 1) && ($imagechunkcheck[2] <= 3)) {
+			if (($imagechunkcheck = getid3_lib::GetDataImageSize($variable, $imageinfo)) && ($imagechunkcheck[2] >= 1) && ($imagechunkcheck[2] <= 3)) {
 				$returnstring .= ($wrap_in_td ? '<td>' : '');
 				$returnstring .= '<table class="dump" cellspacing="0" cellpadding="2">';
 				$returnstring .= '<tr><td><b>type</b></td><td>'.getid3_lib::ImageTypesLookup($imagechunkcheck[2]).'</td></tr>'."\n";

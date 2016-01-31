@@ -3,6 +3,7 @@
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
 //            or http://www.getid3.org                         //
+//          also https://github.com/JamesHeinrich/getID3       //
 /////////////////////////////////////////////////////////////////
 // See readme.txt for more details                             //
 /////////////////////////////////////////////////////////////////
@@ -22,7 +23,7 @@ class getid3_write_vorbiscomment
 	public $warnings = array(); // any non-critical errors will be stored here
 	public $errors   = array(); // any critical errors will be stored here
 
-	public function getid3_write_vorbiscomment() {
+	public function __construct() {
 		return true;
 	}
 

@@ -3,6 +3,7 @@
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
 //            or http://www.getid3.org                         //
+//          also https://github.com/JamesHeinrich/getID3       //
 /////////////////////////////////////////////////////////////////
 // See readme.txt for more details                             //
 /////////////////////////////////////////////////////////////////
@@ -29,7 +30,7 @@ class getid3_write_id3v2
 	public $warnings                    = array();  // any non-critical errors will be stored here
 	public $errors                      = array();  // any critical errors will be stored here
 
-	public function getid3_write_id3v2() {
+	public function __construct() {
 		return true;
 	}
 
@@ -91,7 +92,7 @@ class getid3_write_id3v2
 
 								rewind($fp_source);
 								if (!empty($OldThisFileInfo['avdataoffset'])) {
-									fseek($fp_source, $OldThisFileInfo['avdataoffset'], SEEK_SET);
+									fseek($fp_source, $OldThisFileInfo['avdataoffset']);
 								}
 
 								while ($buffer = fread($fp_source, $this->fread_buffer_size)) {
@@ -152,7 +153,7 @@ class getid3_write_id3v2
 				}
 				rewind($fp_source);
 				if ($OldThisFileInfo['avdataoffset'] !== false) {
-					fseek($fp_source, $OldThisFileInfo['avdataoffset'], SEEK_SET);
+					fseek($fp_source, $OldThisFileInfo['avdataoffset']);
 				}
 				if (is_writable($this->filename) && is_file($this->filename) && ($fp_temp = fopen($this->filename.'getid3tmp', 'w+b'))) {
 					while ($buffer = fread($fp_source, $this->fread_buffer_size)) {
@@ -187,7 +188,7 @@ class getid3_write_id3v2
 				}
 				rewind($fp_source);
 				if ($OldThisFileInfo['avdataoffset'] !== false) {
-					fseek($fp_source, $OldThisFileInfo['avdataoffset'], SEEK_SET);
+					fseek($fp_source, $OldThisFileInfo['avdataoffset']);
 				}
 				if ($fp_temp = tmpfile()) {
 					while ($buffer = fread($fp_source, $this->fread_buffer_size)) {
@@ -1542,6 +1543,9 @@ class getid3_write_id3v2
 						unset($frame_flags);
 						$frame_data = false;
 						if ($this->ID3v2FrameIsAllowed($frame_name, $source_data_array)) {
+							if(array_key_exists('description', $source_data_array) && array_key_exists('encodingid', $source_data_array) && array_key_exists('encoding', $this->tag_data)) {
+								$source_data_array['description'] = getid3_lib::iconv_fallback($this->tag_data['encoding'], $source_data_array['encoding'], $source_data_array['description']);
+							}
 							if ($frame_data = $this->GenerateID3v2FrameData($frame_name, $source_data_array)) {
 								$FrameUnsynchronisation = false;
 								if ($this->majorversion >= 4) {
@@ -1755,10 +1759,15 @@ class getid3_write_id3v2
 	}
 
 	public function ID3v2IsValidTextEncoding($textencodingbyte) {
+		// 0 = ISO-8859-1
+		// 1 = UTF-16 with BOM
+		// 2 = UTF-16BE without BOM
+		// 3 = UTF-8
 		static $ID3v2IsValidTextEncoding_cache = array(
-			2 => array(true, true),
-			3 => array(true, true),
-			4 => array(true, true, true, true));
+			2 => array(true, true),              // ID3v2.2 - allow 0=ISO-8859-1, 1=UTF-16
+			3 => array(true, true),              // ID3v2.3 - allow 0=ISO-8859-1, 1=UTF-16
+			4 => array(true, true, true, true),  // ID3v2.4 - allow 0=ISO-8859-1, 1=UTF-16, 2=UTF-16BE, 3=UTF-8
+		);
 		return isset($ID3v2IsValidTextEncoding_cache[$this->majorversion][$textencodingbyte]);
 	}
 
@@ -1902,6 +1911,7 @@ class getid3_write_id3v2
 			$ID3v2ShortFrameNameLookup[2]['comment']                                          = 'COM';
 			$ID3v2ShortFrameNameLookup[2]['album']                                            = 'TAL';
 			$ID3v2ShortFrameNameLookup[2]['beats_per_minute']                                 = 'TBP';
+			$ID3v2ShortFrameNameLookup[2]['bpm']                                              = 'TBP';
 			$ID3v2ShortFrameNameLookup[2]['composer']                                         = 'TCM';
 			$ID3v2ShortFrameNameLookup[2]['genre']                                            = 'TCO';
 			$ID3v2ShortFrameNameLookup[2]['itunescompilation']                                = 'TCP';
@@ -1920,6 +1930,7 @@ class getid3_write_id3v2
 			$ID3v2ShortFrameNameLookup[2]['publisher']                                        = 'TPB';
 			$ID3v2ShortFrameNameLookup[2]['isrc']                                             = 'TRC';
 			$ID3v2ShortFrameNameLookup[2]['tracknumber']                                      = 'TRK';
+			$ID3v2ShortFrameNameLookup[2]['track_number']                                     = 'TRK';
 			$ID3v2ShortFrameNameLookup[2]['size']                                             = 'TSI';
 			$ID3v2ShortFrameNameLookup[2]['encoder_settings']                                 = 'TSS';
 			$ID3v2ShortFrameNameLookup[2]['description']                                      = 'TT1';
@@ -1940,6 +1951,7 @@ class getid3_write_id3v2
 			// The following are common to ID3v2.3 and ID3v2.4
 			$ID3v2ShortFrameNameLookup[3]['audio_encryption']                                 = 'AENC';
 			$ID3v2ShortFrameNameLookup[3]['attached_picture']                                 = 'APIC';
+			$ID3v2ShortFrameNameLookup[3]['picture']                                          = 'APIC';
 			$ID3v2ShortFrameNameLookup[3]['comment']                                          = 'COMM';
 			$ID3v2ShortFrameNameLookup[3]['commercial']                                       = 'COMR';
 			$ID3v2ShortFrameNameLookup[3]['encryption_method_registration']                   = 'ENCR';
@@ -1960,6 +1972,7 @@ class getid3_write_id3v2
 			$ID3v2ShortFrameNameLookup[3]['synchronised_tempo_codes']                         = 'SYTC';
 			$ID3v2ShortFrameNameLookup[3]['album']                                            = 'TALB';
 			$ID3v2ShortFrameNameLookup[3]['beats_per_minute']                                 = 'TBPM';
+			$ID3v2ShortFrameNameLookup[3]['bpm']                                              = 'TBPM';
 			$ID3v2ShortFrameNameLookup[3]['itunescompilation']                                = 'TCMP';
 			$ID3v2ShortFrameNameLookup[3]['composer']                                         = 'TCOM';
 			$ID3v2ShortFrameNameLookup[3]['genre']                                            = 'TCON';
@@ -1987,6 +2000,7 @@ class getid3_write_id3v2
 			$ID3v2ShortFrameNameLookup[3]['part_of_a_set']                                    = 'TPOS';
 			$ID3v2ShortFrameNameLookup[3]['publisher']                                        = 'TPUB';
 			$ID3v2ShortFrameNameLookup[3]['tracknumber']                                      = 'TRCK';
+			$ID3v2ShortFrameNameLookup[3]['track_number']                                     = 'TRCK';
 			$ID3v2ShortFrameNameLookup[3]['internet_radio_station_name']                      = 'TRSN';
 			$ID3v2ShortFrameNameLookup[3]['internet_radio_station_owner']                     = 'TRSO';
 			$ID3v2ShortFrameNameLookup[3]['isrc']                                             = 'TSRC';

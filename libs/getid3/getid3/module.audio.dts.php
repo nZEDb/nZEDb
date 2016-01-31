@@ -3,6 +3,7 @@
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
 //            or http://www.getid3.org                         //
+//          also https://github.com/JamesHeinrich/getID3       //
 /////////////////////////////////////////////////////////////////
 // See readme.txt for more details                             //
 /////////////////////////////////////////////////////////////////
@@ -30,10 +31,10 @@ class getid3_dts extends getid3_handler
     * Possible syncwords indicating bitstream encoding
     */
     public static $syncwords = array(
-    0 => "\x7F\xFE\x80\x01",  // raw big-endian
-    1 => "\xFE\x7F\x01\x80",  // raw little-endian
-    2 => "\x1F\xFF\xE8\x00",  // 14-bit big-endian
-    3 => "\xFF\x1F\x00\xE8"); // 14-bit little-endian
+    	0 => "\x7F\xFE\x80\x01",  // raw big-endian
+    	1 => "\xFE\x7F\x01\x80",  // raw little-endian
+    	2 => "\x1F\xFF\xE8\x00",  // 14-bit big-endian
+    	3 => "\xFF\x1F\x00\xE8"); // 14-bit little-endian
 
 	public function Analyze() {
 		$info = &$this->getid3->info;
@@ -46,7 +47,7 @@ class getid3_dts extends getid3_handler
 		$sync = substr($DTSheader, 0, 4);
         if (($encoding = array_search($sync, self::$syncwords)) !== false) {
 
-        $info['dts']['raw']['magic'] = $sync;
+        	$info['dts']['raw']['magic'] = $sync;
 			$this->readBinDataOffset = 32;
 
         } elseif ($this->isDependencyFor('matroska')) {

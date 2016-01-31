@@ -3,6 +3,7 @@
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
 //            or http://www.getid3.org                         //
+//          also https://github.com/JamesHeinrich/getID3       //
 /////////////////////////////////////////////////////////////////
 // See readme.txt for more details                             //
 /////////////////////////////////////////////////////////////////
@@ -47,10 +48,10 @@ class getid3_ac3 extends getid3_handler
 		// syncinfo() | bsi() | AB0 | AB1 | AB2 | AB3 | AB4 | AB5 | Aux | CRC
 
 		// syncinfo() {
-		//  syncword    16
-		//  crc1        16
-		//  fscod        2
-		//  frmsizecod   6
+		// 	 syncword    16
+		// 	 crc1        16
+		// 	 fscod        2
+		// 	 frmsizecod   6
 		// } /* end of syncinfo */
 
 		$this->fseek($info['avdataoffset']);

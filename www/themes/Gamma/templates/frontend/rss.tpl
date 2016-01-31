@@ -10,7 +10,7 @@
 		<webMaster></webMaster>
 		<category>{$site->meta_keywords}</category>
 		<image>
-			<url>{$smarty.const.WWW_TOP}themes/Gamma/images/logo.png</url>
+			<url>{$smarty.const.WWW_THEMES}/Gamma/images/logo.png</url>
 			<title>{$site->title|escape}</title>
 			<link href="{$smarty.const.WWW_TOP}"/>
 			<description>Visit {$site->title|escape} - {$site->strapline|escape}</description>
@@ -28,22 +28,22 @@
 					<div>
 						{if isset($release_cover) && $release.cover == 1}
 							<img style="margin-left:10px;margin-bottom:10px;float:right;"
-								 src="{$smarty.const.WWW_TOP}covers/movies/{$release.imdbid}-cover.jpg" width="120" border="0"
+								 src="{$smarty.const.WWW_TOP}/covers/movies/{$release.imdbid}-cover.jpg" width="120" border="0"
 								 alt="{$release.searchname|escape:"htmlall"}"/>
 						{/if}
 						{if isset($release.mu_cover) && $release.mu_cover == 1}
 							<img style="margin-left:10px;margin-bottom:10px;float:right;"
-								 src="{$smarty.const.WWW_TOP}covers/music/{$release.musicinfoid}.jpg" width="120" border="0"
+								 src="{$smarty.const.WWW_TOP}/covers/music/{$release.musicinfoid}.jpg" width="120" border="0"
 								 alt="{$release.searchname|escape:"htmlall"}"/>
 						{/if}
 						{if isset($release.co_cover) && $release.co_cover == 1}
 							<img style="margin-left:10px;margin-bottom:10px;float:right;"
-								 src="{$smarty.const.WWW_TOP}covers/console/{$release.consoleinfoid}.jpg" width="120" border="0"
+								 src="{$smarty.const.WWW_TOP}/covers/console/{$release.consoleinfoid}.jpg" width="120" border="0"
 								 alt="{$release.searchname|escape:"htmlall"}"/>
 						{/if}
 						{if isset($release.bo_cover) && $release.bo_cover == 1}
 							<img style="margin-left:10px;margin-bottom:10px;float:right;"
-								 src="{$smarty.const.WWW_TOP}covers/book/{$release.bookinfoid}.jpg" width="120" border="0"
+								 src="{$smarty.const.WWW_TOP}/covers/book/{$release.bookinfoid}.jpg" width="120" border="0"
 								 alt="{$release.searchname|escape:"htmlall"}"/>
 						{/if}
 						{if $dl=="1"}<li><a href="{$serverroot}getnzb/{$release.guid}.nzb&amp;i={$uid}&amp;r={$rsstoken}{if $del=="1"}&amp;del=1{/if}">Download NZB</a></li>{/if}

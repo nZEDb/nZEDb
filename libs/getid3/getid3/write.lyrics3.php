@@ -3,6 +3,7 @@
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
 //            or http://www.getid3.org                         //
+//          also https://github.com/JamesHeinrich/getID3       //
 /////////////////////////////////////////////////////////////////
 // See readme.txt for more details                             //
 /////////////////////////////////////////////////////////////////
@@ -22,7 +23,7 @@ class getid3_write_lyrics3
 	public $warnings        = array(); // any non-critical errors will be stored here
 	public $errors          = array(); // any critical errors will be stored here
 
-	public function getid3_write_lyrics3() {
+	public function __construct() {
 		return true;
 	}
 
@@ -40,7 +41,7 @@ class getid3_write_lyrics3
 				flock($fp, LOCK_EX);
 				$oldignoreuserabort = ignore_user_abort(true);
 
-				fseek($fp, $ThisFileInfo['lyrics3']['tag_offset_end'], SEEK_SET);
+				fseek($fp, $ThisFileInfo['lyrics3']['tag_offset_end']);
 				$DataAfterLyrics3 = '';
 				if ($ThisFileInfo['filesize'] > $ThisFileInfo['lyrics3']['tag_offset_end']) {
 					$DataAfterLyrics3 = fread($fp, $ThisFileInfo['filesize'] - $ThisFileInfo['lyrics3']['tag_offset_end']);
@@ -49,7 +50,7 @@ class getid3_write_lyrics3
 				ftruncate($fp, $ThisFileInfo['lyrics3']['tag_offset_start']);
 
 				if (!empty($DataAfterLyrics3)) {
-					fseek($fp, $ThisFileInfo['lyrics3']['tag_offset_start'], SEEK_SET);
+					fseek($fp, $ThisFileInfo['lyrics3']['tag_offset_start']);
 					fwrite($fp, $DataAfterLyrics3, strlen($DataAfterLyrics3));
 				}
 

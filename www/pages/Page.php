@@ -12,6 +12,17 @@ class Page extends BasePage
 	{
 		parent::__construct();
 
+		define('WWW_THEMES', WWW_TOP . '/themes');
+
+		// Tell Smarty which directories to use for templates
+		$this->smarty->setTemplateDir(
+			[
+				'user'    => nZEDb_THEMES . $this->theme . '/templates/frontend',
+				'shared'  => nZEDb_THEMES . 'shared/templates',
+				'default' => nZEDb_THEMES . 'Default/templates/frontend'
+			]
+		);
+
 		$role = Users::ROLE_GUEST;
 		if ($this->userdata != null) {
 			$role = $this->userdata["role"];

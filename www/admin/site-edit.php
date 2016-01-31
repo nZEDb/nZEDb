@@ -182,7 +182,7 @@ $page->smarty->assign('lookup_reqids_names',
 $page->smarty->assign('coversPath', nZEDb_COVERS);
 
 // return a list of audiobooks, ebooks, technical and foreign books
-$result = $page->settings->query("SELECT id, title FROM category WHERE id IN (3030, 8010, 8040, 8060)");
+$result = $page->settings->query("SELECT id, title FROM category WHERE id IN (3030, 7010, 7040, 7060)");
 
 // setup the display lists for these categories, this could have been static, but then if names changed they would be wrong
 $book_reqids_ids   = [];

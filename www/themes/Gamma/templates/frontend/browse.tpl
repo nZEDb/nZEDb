@@ -193,7 +193,7 @@
 						{if $result.preid > 0}
 						<span class="preinfo badge badge-inverse halffade" title="{$result.preid}">PreDB</span>
 						{/if}
-							{if $result.failed > 0}
+							{if isset($result.failed) && $result.failed > 0}
 								<span class="badge badge-inverse"><i class ="fa fa-thumbs-o-up"></i> {$result.grabs} Grab{if $result.grabs != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$result.failed} Failed Download{if $result.failed != 1}s{/if}</span>
 							{/if}
 						{/strip}
@@ -230,7 +230,7 @@
 			<td class="icons" style='width:100px;'>
 				<ul class="inline">
 					<li>
-						<a class="icon icon_nzb fa fa-cloud-download" style="text-decoration: none; color: #7ab800;" title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"url"}"></a>
+						<a class="icon icon_nzb fa fa-cloud-download" style="text-decoration: none; color: #7ab800;" title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}"></a>
 					</li>
 					<li>
 						<a href="#" class="icon icon_cart fa fa-shopping-basket" style="text-decoration: none; color: #5c5c5c;" title="Send to my Download Basket">
