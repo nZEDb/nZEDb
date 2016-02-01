@@ -18,7 +18,7 @@
 				{else}
 					<img class="pull-right" style="margin-right:50px; max-height:278px;"
 						 alt="{$result.title|escape:"htmlall"} Logo"
-						 src="{$serverroot}themes/omicron/images/nomoviecover.jpg"/>
+						 src="{$serverroot}themes/Omicron/images/nomoviecover.jpg"/>
 				{/if}
 				<span class="h1" style="display:inline;">{$result.title|escape:"htmlall"} ({$result.year})</span>
 				<a class="btn btn-transparent btn-primary" target="_blank"
@@ -62,9 +62,9 @@
 						{/if}
 						With Selected:
 						<div class="btn-group">
-							<input type="button" class="nntmux_multi_operations_download btn btn-sm btn-success"
+							<input type="button" class="nzedb_multi_operations_download btn btn-sm btn-success"
 								   value="Download NZBs"/>
-							<input type="button" class="nntmux_multi_operations_cart btn btn-sm btn-info"
+							<input type="button" class="nzedb_multi_operations_cart btn btn-sm btn-info"
 								   value="Send to my Download Basket"/>
 							{if isset($sabintegrated)}
 								<input type="button" class="nzb_multi_operations_sab btn btn-sm btn-primary"
@@ -75,9 +75,9 @@
 							<div class="pull-right">
 								Admin:
 								<div class="btn-group">
-									<input type="button" class="nntmux_multi_operations_edit btn btn-sm btn-warning"
+									<input type="button" class="nzedb_multi_operations_edit btn btn-sm btn-warning"
 										   value="Edit"/>
-									<input type="button" class="nntmux_multi_operations_delete btn btn-sm btn-danger"
+									<input type="button" class="nzedb_multi_operations_delete btn btn-sm btn-danger"
 										   value="Delete"/>
 								</div>
 							</div>
@@ -92,7 +92,7 @@
 									   class="data table table-condensed table-striped table-responsive table-hover">
 									<tr>
 										<th>
-											<input id="chkSelectAll" type="checkbox" class="nntmux_check_all"/>
+											<input id="chkSelectAll" type="checkbox" class="nzedb_check_all"/>
 											<label for="chkSelectAll" style="display:none;">Select All</label>
 										</th>
 										<th>Name<br/>

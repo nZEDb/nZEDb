@@ -57,7 +57,7 @@
 							<div class="nzb_multi_operations">
 								View: <strong>Covers</strong> | <a
 										href="{$smarty.const.WWW_TOP}/browse?t={$category}">List</a><br/>
-								Check all: <input type="checkbox" class="nntmux_check_all"/> <br/>
+								Check all: <input type="checkbox" class="nzedb_check_all"/> <br/>
 								With Selected:
 								<div class="btn-group">
 									<input type="button"
@@ -115,7 +115,7 @@
 											<div class="col-md-2 small-gutter-left">
 												<a title="View details"
 												   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">
-													<img src="{$smarty.const.WWW_TOP}/covers/music/{if $result.cover == 1}{$result.musicinfoid}.jpg{else}{$smarty.const.WWW_TOP}/themes_shared/images/no-cover.png{/if}"
+													<img src="{$smarty.const.WWW_TOP}/covers/music/{if $result.cover == 1}{$result.musicinfoid}.jpg{else}{$smarty.const.WWW_THEMES}/shared/images/no-cover.png{/if}"
 														 width="140" border="0"
 														 alt="{$result.artist|escape:"htmlall"} - {$result.title|escape:"htmlall"}"/>{if $mfailed[$m@index] > 0} <i class="fa fa-exclamation-circle" style="color: red" title="This release has failed to download for some users"></i>{/if}
 												</a>
@@ -210,7 +210,7 @@
 							<div class="nzb_multi_operations">
 								View: <strong>Covers</strong> | <a
 										href="{$smarty.const.WWW_TOP}/browse?t={$category}">List</a><br/>
-								Check all: <input type="checkbox" class="nntmux_check_all"/> <br/>
+								Check all: <input type="checkbox" class="nzedb_check_all"/> <br/>
 								With Selected:
 								<div class="btn-group">
 									<input type="button"

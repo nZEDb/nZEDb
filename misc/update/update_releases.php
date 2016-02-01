@@ -37,7 +37,7 @@ if (isset($argv[1]) && isset($argv[2])) {
 	} else if ($argv[1] == 5 && ($argv[2] == 'true' || $argv[2] == 'false')) {
 		echo $pdo->log->header("Categorizing all non-categorized releases in other->misc using usenet subject. This can take a while, be patient.");
 		$timestart = TIME();
-		$relcount = $releases->categorizeRelease('name', 'WHERE iscategorized = 0 AND categoryID = 7010');
+		$relcount = $releases->categorizeRelease('name', 'WHERE iscategorized = 0 AND categoryID = 0010');
 		$time = $consoletools->convertTime(TIME() - $timestart);
 		echo $pdo->log->primary("\n" . 'Finished categorizing ' . $relcount . ' releases in ' . $time . " seconds, using the usenet subject.");
 	} else if ($argv[1] == 6 && $argv[2] == 'true') {
@@ -50,7 +50,7 @@ if (isset($argv[1]) && isset($argv[2])) {
 	} else if ($argv[1] == 6 && $argv[2] == 'false') {
 		echo $pdo->log->header("Categorizing releases in misc sections using the searchname. This can take a while, be patient.");
 		$timestart = TIME();
-		$relcount = $releases->categorizeRelease('searchname', 'WHERE categoryID IN (1090, 2020, 3050, 5050, 6050, 7010)');
+		$relcount = $releases->categorizeRelease('searchname', 'WHERE categoryID IN (1090, 2020, 3050, 5050, 6050, 0010)');
 		$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 		$time = $consoletools->convertTime(TIME() - $timestart);
 		echo $pdo->log->primary("\n" . 'Finished categorizing ' . $relcount . ' releases in ' . $time . " seconds, using the search name.");

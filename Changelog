@@ -7,6 +7,41 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2016-01-31 niel
+	Mrg: dev => next-master to prepare for updating master.
+
+2016-01-30 niel
+	Chg: Juggle Book category values so they match the existing ones of neznab's published API.
+2016-01-26 niel
+	Mrg: PR 2037, from DariusIII - Move Other cats to 0000 range, books cat to 7000 range.
+	Fix: Changing the CAT_OTHERS_GROUP array to be a function instead, as array constants are not
+		supported for PHP 5.5. When 5.5 reaches EOL in July we can revisit this.
+		***NOTE*** on larger data sets the patches will take a long time to run.
+	Chg: Update SQL patch 422 to improve speed on larger data sets. Thanks to NZBMets for the idea. (reverted).
+	Fix: Remove the previous change to patch 422.
+		***Note*** Anyone that used the bad version will have to run the recategorise script to
+		fix things, sorry for the hassle.
+	Fix: Add remove partition query before adding the new partition.
+2016-01-21 niel
+	Mrg: PR 2040, from DariusIII - Update isISO categorization.
+2016-01-16 niel
+	Chg: Update getID3 library to version 1.9.11
+2016-01-08 niel
+	Fix: More bad URLs in Charisma/Omicron.
+	Mrg: PR 2023, from DariusIII - Fix wrong path to shared folder in Gamma theme.
+2016-01-07 niel
+	Fix: Several bad URLs in Charisma/Gamma/Omicron themes (missing '/' after the smarty constants).
+2016-01-06 niel
+	Mrg: Bring in dev-git-hooks changes. Adds whitespace checking/fixing to pre-commit hook.
+2016-01-05 niel
+	Fix: Remove duplicate menu items for Login and Register in menu_items.tsv
+	Fix: In some cases, if not logged in, no theme is defined and certain links are broken with
+		themes//style... appearing instead of a proper link.
+2016-01-04 niel
+	Fix: Added template file to Default theme which caused 500 error when clicking on movie title
+		in covers view.
+	Mrg: PR 2012, from DariusIII - Update Captcha.tpl with noscript fix, make browse groups in
+		Charisma/Omicron themes sortable.
 2016-01-02 niel
 	Mrg: PR 2012, from egandt - Fixed paths in  Charisma/Omicron themes.
 2016-01-01 niel
@@ -45,7 +80,11 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Chg: Change COUNT(*) queries to count the primary key columns to improve query performance
 	Chg: Re-work the count querying in PreDB class
 2015-12-09 niel
-	Chg: Refactored git hook scripts. They now live in .../build/git-hooks. Run .../build/git-hooks/addHooks.sh to create a symlink to the .git/hooks directory.
+	Chg: Refactored git hook scripts. They now live in .../build/git-hooks. Run
+		.../build/git-hooks/addHooks.sh to create a symlink to the .git/hooks directory.
+		 ***NOTE*** When commiting, staged files will have trailing white-space replaced. This
+		**WILL** cause problems if you have unstaged changes for the same files, as they will be
+		committed as part of the white-space replacing.
 2015-12-08 bart39
 	Mrg: PR #1996, from darius - Fix paths to scripts in charisma/omicron themes.
 	Mrg: PR #1995, from darius - Fix wrong paths in omicron/charisma templates.

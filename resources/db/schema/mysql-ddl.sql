@@ -204,7 +204,7 @@ CREATE TABLE category_regexes (
   status      TINYINT(1) UNSIGNED NOT NULL DEFAULT '1'    COMMENT '1=ON 0=OFF',
   description VARCHAR(1000)       NOT NULL DEFAULT ''     COMMENT 'Optional extra details on this regex',
   ordinal     INT SIGNED          NOT NULL DEFAULT '0'    COMMENT 'Order to run the regex in',
-  category_id SMALLINT UNSIGNED   NOT NULL DEFAULT '7010' COMMENT 'Which category id to put the release in',
+  category_id SMALLINT UNSIGNED   NOT NULL DEFAULT '0010' COMMENT 'Which category id to put the release in',
   PRIMARY KEY (id),
   INDEX ix_category_regexes_group_regex (group_regex),
   INDEX ix_category_regexes_status      (status),
@@ -659,7 +659,7 @@ CREATE TABLE         releases (
   guid              VARCHAR(40)                    NOT NULL,
   fromname          VARCHAR(255)                   NULL,
   completion        FLOAT                          NOT NULL DEFAULT '0',
-  categoryid        INT                            NOT NULL DEFAULT '7010',
+  categoryid        INT                            NOT NULL DEFAULT '0010',
   videos_id         MEDIUMINT(11) UNSIGNED         NOT NULL COMMENT 'FK to videos.id of the parent series.',
   tv_episodes_id    MEDIUMINT(11) SIGNED           NOT NULL COMMENT 'FK to tv_episodes.id for the episode.',
   imdbid            MEDIUMINT(7) UNSIGNED ZEROFILL NULL,
@@ -719,14 +719,13 @@ CREATE TABLE         releases (
   COLLATE         = utf8_unicode_ci
   AUTO_INCREMENT  = 1
   PARTITION BY RANGE (categoryid) (
-    PARTITION unused  VALUES LESS THAN (1000),
+    PARTITION misc    VALUES LESS THAN (1000),
     PARTITION console VALUES LESS THAN (2000),
     PARTITION movies  VALUES LESS THAN (3000),
     PARTITION audio   VALUES LESS THAN (4000),
     PARTITION pc      VALUES LESS THAN (5000),
     PARTITION tv      VALUES LESS THAN (6000),
     PARTITION xxx     VALUES LESS THAN (7000),
-    PARTITION misc    VALUES LESS THAN (8000),
     PARTITION books   VALUES LESS THAN (9000)
   );
 

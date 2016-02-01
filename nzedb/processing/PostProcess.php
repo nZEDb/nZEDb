@@ -339,7 +339,7 @@ class PostProcess
 				Category::CAT_TV_OTHER,
 				Category::CAT_OTHER_HASHED,
 				Category::CAT_XXX_OTHER,
-				Category::CAT_MISC
+				Category::CAT_OTHER_MISC
 			]
 		)
 		) {

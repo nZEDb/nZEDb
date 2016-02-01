@@ -11,7 +11,6 @@
 	<meta name="keywords" content="{$page->meta_keywords}{if $page->meta_keywords != "" && $site->metakeywords != ""},{/if}{$site->metakeywords}" />
 	<meta name="description" content="{$page->meta_description}{if $page->meta_description != "" && $site->metadescription != ""} - {/if}{$site->metadescription}" />
 	<meta name="robots" content="noindex,nofollow"/>
-	<meta name="application-name" content="newznab-{$site->version}" />
 	<title>{$page->meta_title}{if $page->meta_title != "" && $site->metatitle != ""} - {/if}{$site->metatitle}</title>
 
 {if $loggedin=="true"}

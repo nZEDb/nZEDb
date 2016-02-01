@@ -23,7 +23,7 @@ class Regexes
 	/**
 	 * @var int
 	 */
-	protected $_categoryID = Category::CAT_MISC;
+	protected $_categoryID = Category::CAT_OTHER_MISC;
 
 	/**
 	 * @param array $options

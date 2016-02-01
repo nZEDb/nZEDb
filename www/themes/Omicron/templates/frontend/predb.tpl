@@ -170,11 +170,11 @@
 													{* Books *}
 												{elseif in_array({$result.category}, array('EBOOK'))}
 													<a class="title" title="View category Books"
-													   href="{$smarty.const.WWW_TOP}/browse?t=8000">Ebooks</a>
+													   href="{$smarty.const.WWW_TOP}/browse?t=7000">Ebooks</a>
 													{* Other *}
 												{elseif in_array({$result.category}, array('Other: E-Books'))}
 													<a class="title" title="View category Books Other"
-													   href="{$smarty.const.WWW_TOP}/browse?t=8050">Ebooks
+													   href="{$smarty.const.WWW_TOP}/browse?t=7050">Ebooks
 														Other</a>
 												{elseif in_array({$result.category}, array('', 'PRE'))}
 													N/A
@@ -302,7 +302,7 @@
 														href="{$site->dereferrer_link}http://nzbindex.com/search/?q={$result.title}"
 														target="_blank"
 														>
-													<img src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/nzbindex.png"/>
+													<img src="{$smarty.const.WWW_TOP}/themes/Omicron/images/icons/nzbindex.png"/>
 													&nbsp;
 												</a>
 											</td>
@@ -313,7 +313,7 @@
 														href="{$site->dereferrer_link}http://binsearch.info/?q={$result.title}"
 														target="_blank"
 														>
-													<img src="{$smarty.const.WWW_TOP}/themes/omicron/images/icons/binsearch.png"/>
+													<img src="{$smarty.const.WWW_TOP}/themes/Omicron/images/icons/binsearch.png"/>
 													&nbsp;
 												</a>
 											</td>
