@@ -17,7 +17,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Fix: Changing the CAT_OTHERS_GROUP array to be a function instead, as array constants are not
 		supported for PHP 5.5. When 5.5 reaches EOL in July we can revisit this.
 		***NOTE*** on larger data sets the patches will take a long time to run.
-	Chg: Update SQL patch 422 to improve speed on larger data sets. Thanks to NZBMets for the idea.
+	Chg: Update SQL patch 422 to improve speed on larger data sets. Thanks to NZBMets for the idea. (reverted).
 	Fix: Remove the previous change to patch 422.
 		***Note*** Anyone that used the bad version will have to run the recategorise script to
 		fix things, sorry for the hassle.
