@@ -26,7 +26,7 @@ class AdminPage extends BasePage
 			[
 				'admin'		=> nZEDb_THEMES . 'shared/templates/admin',
 				'shared'	=> nZEDb_THEMES . 'shared/templates',
-				'default'	=> nZEDb_THEMES . 'Default/templates/frontend'
+				'default'	=> nZEDb_THEMES . 'Default/templates'
 			]
 		);
 	}
