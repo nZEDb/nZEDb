@@ -370,7 +370,7 @@ class Category
 		return $parent["title"] . " " . $cat["title"];
 	}
 
-	public function getCategoryOthersGroup()
+	public static function getCategoryOthersGroup()
 	{
 		return implode(",",
 				[
