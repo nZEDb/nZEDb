@@ -10,6 +10,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 2016-02-02 niel
 	Fix: Copy jquery.qtip2.js to themes/shared/script so requests can find it.
 	Fix: Make Category::getCategoryOthersGroup static, so it is accessed like a constant would be.
+	Fix: Fix reference to 'template' instead of 'theme' in the Omicron basepage.tpl
 2016-01-31 niel
 	Mrg: dev => next-master to prepare for updating master.
 
