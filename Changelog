@@ -7,6 +7,9 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2016-02-02 niel
+	Mrg: PR 2051, from DariusIII - Correct wrong variable usage and replace it with proper one
+		 ($rid => $video) in myshows-add.tpl template file for all themes.
 2016-01-29 niel
 	Mrg: PR 2044, from DariusIII - Rework Omicron/Charisma basepages and Omicron login/register checkboxes.
 	Mrg: PR 2046, from DariusIII - Prevent undefined index notices for failed downloads in Omicron and Charisma themes.
