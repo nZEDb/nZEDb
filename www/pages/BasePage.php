@@ -132,16 +132,11 @@ class BasePage
 		if ($this->users->isLoggedIn()) {
 			$this->setUserPreferences();
 		} else {
-
 			$this->theme = $this->settings->getSetting('site.main.style');
 
 			$this->smarty->assign('isadmin', 'false');
 			$this->smarty->assign('ismod', 'false');
 			$this->smarty->assign('loggedin', 'false');
-		}
-
-		if ($this->theme === '') {
-			$this->theme = 'Default';
 		}
 
 		$this->smarty->assign('theme', $this->theme);
@@ -336,7 +331,9 @@ class BasePage
 		}
 
 		// Update last login every 15 mins.
-		if ((strtotime($this->userdata['now']) - 900) > strtotime($this->userdata['lastlogin'])) {
+		if ((strtotime($this->userdata['now']) - 900) >
+			strtotime($this->userdata['lastlogin'])
+		) {
 			$this->users->updateSiteAccessed($this->userdata['id']);
 		}
 
