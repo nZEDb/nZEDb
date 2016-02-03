@@ -1,7 +1,7 @@
 <h2>Browse Music</h2>
 
 <div class="well well-small">
-<center>
+<div style="text-align: center;">
 <form class="form-inline" name="browseby" action="music" style="margin:0;">
 		<i class="fa fa-user fa-midt"></i>
 		<input class="input input-medium" id="musicartist" type="text" name="artist" value="{$artist}" placeholder="Artist" />
@@ -31,7 +31,7 @@
 			</select>
 		<input class="btn btn-success" type="submit" value="Go" />
 </form>
-</center>
+</div>
 </div>
 {$site->adbrowse}
 {if $results|@count > 0}
@@ -51,9 +51,9 @@
 								href="{$smarty.const.WWW_TOP}/browse?t={$category}">List</a><br/>
 					</td>
 					<td width="50%">
-						<center>
+						<div style="text-align: center;">
 							{$pager}
-						</center>
+						</div>
 					</td>
 					<td width="20%">
 						{if isset($section) && $section != ''}
@@ -159,11 +159,11 @@
 						<img class="shadow img-polaroid" src="{$smarty.const.WWW_TOP}/covers/music/{if $result.cover == 1}{$result.musicinfoid}.jpg{else}no-cover.jpg{/if}" width="120" border="0" alt="{$result.artist|escape:"htmlall"} - {$result.title|escape:"htmlall"}" />
 					</a>
 					<div class="movextra">
-						<center>
+						<div style="text-align: center;">
 						{if $result.nfoid > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$mguid[$m@index]}" title="View Nfo" class="rndbtn modal_nfo badge" rel="nfo">Nfo</a>{/if}
 						{if $result.url != ""}<a class="rndbtn badge badge-amaz" target="_blank" href="{$site->dereferrer_link}{$result.url}" name="amazon{$result.musicinfoid}" title="View amazon page">Amazon</a>{/if}
 						<a class="rndbtn badge" href="{$smarty.const.WWW_TOP}/browse?g={$result.group_name}" title="Browse releases in {$result.group_name|replace:"alt.binaries":"a.b"}">Grp</a>
-						</center>
+						</div>
 					</div>
 				</div>
 			</td>
@@ -238,9 +238,9 @@
 						</div>
 					</td>
 					<td width="50%">
-						<center>
+						<div style="text-align: center;">
 							{$pager}
-						</center>
+						</div>
 					</td>
 					<td width="20%">
 						{if isset($section) && $section != ''}

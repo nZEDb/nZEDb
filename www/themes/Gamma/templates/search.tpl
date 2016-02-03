@@ -22,7 +22,7 @@
 </div>
 <form method="get" action="{$smarty.const.WWW_TOP}/search">
 	<div id="sadvanced" {if not $sadvanced}style="display:none"{/if}>
-		<center>
+		<div style="text-align: center;">
 			<table class="data table table-striped table-condensed table-responsive">
 				<tr>
 					<th><label for="searchadvr">Release Name:</label></th>
@@ -88,7 +88,7 @@
 					</td>
 				</tr>
 			</table>
-		</center>
+		</div>
 	</div>
 </form>
 
@@ -127,9 +127,9 @@
 							</div>
 						</td>
 						<td width="33%">
-							<center>
+							<div style="text-align: center;">
 								{$pager}
-							</center>
+							</div>
 						</td>
 						<td width="33%">
 							<div class="pull-right">
@@ -341,9 +341,9 @@
 					</div>
 				</td>
 				<td width="33%">
-					<center>
+					<div style="text-align: center;">
 						{$pager}
-					</center>
+					</div>
 				</td>
 				<td width="33%">
 					{if $isadmin}

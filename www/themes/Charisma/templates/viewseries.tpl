@@ -22,15 +22,15 @@
 		</div>
 	</div>
 	<h1>
-		<center>{$seriestitles} ({$show.publisher})</center>
+		<div style="text-align: center;">{$seriestitles} ({$show.publisher})</div>
 	</h1>
 	{if $catname != ''}<span class="text-info h5">Current category shown: {$catname|escape:"htmlall"}</span>{/if}
 	<div class="tvseriesheading">
 		{if $show.image != 0}
-			<center>
+			<div style="text-align: center;">
 				<img class="shadow img img-polaroid" style="max-height:300px;" alt="{$seriestitles} Logo"
 					 src="{$smarty.const.WWW_TOP}/covers/tvshows/{$show.id}.jpg"/>
-			</center>
+			</div>
 			<br/>
 		{/if}
 		<p>

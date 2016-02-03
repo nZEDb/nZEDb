@@ -15,8 +15,8 @@
 		</div>
 	</form>
 </form
-<center>
-</center>
+<div style="text-align: center;">
+</div>
 {$site->adbrowse}
 
 {if $animelist|@count > 0}

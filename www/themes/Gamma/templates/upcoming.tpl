@@ -10,15 +10,15 @@
 		<tr class="{cycle values=",alt"}">
 			<td class="mid">
 				<div class="movcover">
-					<center>
+					<div style="text-align: center;">
 					<img class="shadow img img-polaroid" src="{$result->posters->original}" width="120" border="0"
 						 alt="{$result->title|escape:"htmlall"}"/>
-					</center>
+					</div>
 					<div class="movextra">
-						<center>
+						<div style="text-align: center;">
 						<a class="rndbtn badge badge-success" target="_blank" href="{$site->dereferrer_link}{$result->links->alternate}" title="View Rotten Tomatoes Details">Rotten</a>
 						<a class="rndbtn badge badge-imdb" target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result->alternate_ids->imdb}" title="View Imdb Details">Imdb</a>
-						</center>
+						</div>
 					</div>
 				</div>
 			</td>

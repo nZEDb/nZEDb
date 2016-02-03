@@ -1,6 +1,6 @@
 <h2>Browse Games</h2>
 <div class="well well-small">
-	<center>
+	<div style="text-align: center;">
 		<form class="form-inline" name="browseby" action="games" style="margin:0;">
 			<i class="fa fa-font fa-midt"></i>
 			<input class="input input-medium" id="title" type="text" name="title" value="{$title}" placeholder="Title" />
@@ -20,7 +20,7 @@
 			</select>
 			<input class="btn btn-success" type="submit" value="Go" />
 		</form>
-	</center>
+	</div>
 </div>
 {$site->adbrowse}
 {if $results|@count > 0}
@@ -40,9 +40,9 @@
 									href="{$smarty.const.WWW_TOP}/browse?t={$category}">List</a><br/>
 						</td>
 						<td width="50%">
-							<center>
+							<div style="text-align: center;">
 								{$pager}
-							</center>
+							</div>
 						</td>
 						<td width="20%">
 							<div class="pull-right">
@@ -141,14 +141,14 @@
 					<tr class="{cycle values=",alt"}">
 						<td class="mid">
 							<div class="movcover">
-								<center>
+								<div style="text-align: center;">
 									<a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">
 										<img class="shadow img img-polaroid" src="{$smarty.const.WWW_TOP}/covers/games/{if isset($result.cover) && $result.cover == 1}{$result.gamesinfo_id}.jpg{else}no-cover.jpg{/if}"
 											 width="120" border="0" alt="{$result.title|escape:"htmlall"}"/>{if isset($mfailed[$m@index]) && $mfailed[$m@index] > 0} <i class="fa fa-exclamation-circle" style="color: red" title="This release has failed to download for some users"></i>{/if}
 									</a>
-								</center>
+								</div>
 								<div class="movextra">
-									<center>
+									<div style="text-align: center;">
 										{if $result.classused == "gb"}<a class="rndbtn badge"
 																		 target="_blank"
 																		 href="{$site->dereferrer_link}{$result.url}"
@@ -175,7 +175,7 @@
 												Desura</a>{/if}
 										{if isset($mnfo[$m@index]) && $mnfo[$m@index] > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$mguid[$m@index]}" title="View Nfo" class="rndbtn modal_nfo badge" rel="nfo">Nfo</a>{/if}
 										<a class="rndbtn badge" href="{$smarty.const.WWW_TOP}/browse?g={$mgrp[$m@index]}" title="Browse releases in {$mgrp[$m@index]|replace:"alt.binaries":"a.b"}">Grp</a>
-									</center>
+									</div>
 								</div>
 							</div>
 						</td>
@@ -272,9 +272,9 @@
 								</div>
 							</td>
 							<td width="50%">
-								<center>
+								<div style="text-align: center;">
 									{$pager}
-								</center>
+								</div>
 							</td>
 							<td width="20%">
 								{if isset($section) && $section != ''}

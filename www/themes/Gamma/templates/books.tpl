@@ -1,7 +1,7 @@
 <h2>Browse Books</h2>
 
 <div class="well well-small">
-<center>
+<div style="text-align: center;">
 <form class="form-inline" name="browseby" action="books" style="margin:0;">
 
 		<i class="fa fa-user fa-midt"></i>
@@ -12,7 +12,7 @@
 
 		<input class="btn btn-success" type="submit" value="Go" />
 </form>
-</center>
+</div>
 </div>
 
 {$site->adbrowse}
@@ -36,9 +36,9 @@
 								href="{$smarty.const.WWW_TOP}/browse?t={$category}">List</a><br/>
 					</td>
 					<td width="50%">
-						<center>
+						<div style="text-align: center;">
 							{$pager}
-						</center>
+						</div>
 					</td>
 					<td width="20%">
 						{if isset($section) && $section != ''}
@@ -99,10 +99,10 @@
 
 					</a>
 					<div class="movextra">
-						<center>
+						<div style="text-align: center;">
 						{if $result.url != ""}<a class="rndbtn badge badge-amaz" target="_blank" href="{$site->dereferrer_link}{$result.url}" name="amazon{$result.bookinfoid}" title="View amazon page">Amazon</a>{/if}
 						<a class="rndbtn badge" href="{$smarty.const.WWW_TOP}/browse?g={$result.group_name}" title="Browse releases in {$result.group_name|replace:"alt.binaries":"a.b"}">Grp</a>
-						</center>
+						</div>
 					</div>
 				</div>
 			</td>
@@ -215,9 +215,9 @@
 					</div>
 				</td>
 				<td width="50%">
-					<center>
+					<div style="text-align: center;">
 						{$pager}
-					</center>
+					</div>
 				</td>
 				<td width="20%">
 					{if isset($section) && $section != ''}

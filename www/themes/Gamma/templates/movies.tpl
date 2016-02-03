@@ -1,7 +1,7 @@
 <h2>Browse {$catname}</h2>
 
 <div class="well well-small">
-<center>
+<div style="text-align: center;">
 <form class="form-inline" name="browseby" action="movies" style="margin:0;">
 
 		<i class="fa fa-film fa-midt"></i>
@@ -46,7 +46,7 @@
 
 		<input class="btn btn-success" type="submit" value="Go" />
 </form>
-</center>
+</div>
 </div>
 
 {$site->adbrowse}
@@ -69,9 +69,9 @@
 								href="{$smarty.const.WWW_TOP}/browse?t={$category}">List</a><br/>
 					</td>
 					<td width="50%">
-						<center>
+						<div style="text-align: center;">
 							{$pager}
-						</center>
+						</div>
 					</td>
 					<td width="20%">
 						<div class="pull-right">
@@ -131,11 +131,11 @@
 						<img class="shadow img-polaroid" src="{$smarty.const.WWW_TOP}/covers/movies/{if isset($result.cover) && $result.cover == 1}{$result.imdbid}-cover.jpg{else}no-cover.jpg{/if}" style="max-width: 120px; /*width: auto;*/" width="120" border="0" alt="{$result.title|escape:"htmlall"}" />
 					</a>
 					<div class="movextra">
-						<center>
+						<div style="text-align: center;">
 						<a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="name{$result.imdbid}" title="View movie info" class="rndbtn modal_imdb badge" rel="movie" >Cover</a>
 						<a class="rndbtn badge badge-trakt" target="_blank" href="{$site->dereferrer_link}http://trakt.tv/search/imdb/tt{$result.imdbid}/" name="trakt{$result.imdbid}" title="View trakt page">Trakt</a>
 						<a class="rndbtn badge badge-imdb" target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="imdb{$result.imdbid}" title="View imdb page">Imdb</a>
-						</center>
+						</div>
 					</div>
 				</div>
 			</td>
@@ -247,9 +247,9 @@
 						&nbsp;&nbsp;&nbsp;&nbsp;<a title="Switch to List view" href="{$smarty.const.WWW_TOP}/browse?t={$category}"><i class="fa fa-lg fa-list-ol"></i></a>
 					</td>
 					<td width="50%">
-						<center>
+						<div style="text-align: center;">
 							{$pager}
-						</center>
+						</div>
 					</td>
 					<td width="20%">
 						<div class="pull-right">

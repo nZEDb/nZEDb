@@ -1,12 +1,12 @@
 <h2>{$page->title}</h2>
 
-<center>
+<div style="text-align: center;">
 <div class="btn-group">
 	<a class="btn btn-small" title="View available TV series" href="{$smarty.const.WWW_TOP}/series" >Series List</a>
 	<a class="btn btn-small" title="View a list of all releases in your shows" href="{$smarty.const.WWW_TOP}/myshows/browse">Browse My Shows</a>
 	<a class="btn btn-small" title="All releases in your shows as an RSS feed" href="{$smarty.const.WWW_TOP}/rss?t=-3&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">Rss <i class="fa fa-rss"></i></a>
 </div>
-</center>
+</div>
 <br>
 
 {if $shows|@count > 0}

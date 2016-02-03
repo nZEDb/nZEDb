@@ -12,7 +12,7 @@
 					<td class="mid" style="width:140px;">
 
 						<div class="movcover">
-							<center>
+							<div style="text-align: center;">
 								<img class="shadow img img-polaroid" src="{if $result['cover'] ==""}{$smarty.const.WWW_TOP}/covers/movies/no-cover.jpg{else}{$result['cover']}{/if}" width="120" border="0" alt="{$result['title']|escape:"htmlall"}" />
 								<div class="movextra">
 									{if $ourmovies[$result['imdb_id']] != ""}
@@ -20,7 +20,7 @@
 									{/if}
 									<a class="rndbtn badge badge-imdb" target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result['imdb_id']}" title="View Imdb">Imdb</a>
 								</div>
-							</center>
+							</div>
 						</div>
 					</td>
 					<td colspan="3" class="left">

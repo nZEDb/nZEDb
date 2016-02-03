@@ -16,9 +16,9 @@
 		return false;">{if $sadvanced}Basic{else}Click For Advanced{/if} Search
 	</a>
 </h3>
-<center>
+<div style="text-align: center;">
 	{$search_description}
-</center>
+</div>
 <br>
 <form style="float:none; margin:0 auto;" method="get" action="{$smarty.const.WWW_TOP}/search" class="form-search form-horizontal col-lg-4">
 	<div id="sbasic" class="input-group col-lg-12" style="{if $sadvanced}display:none;{/if}">
@@ -35,7 +35,7 @@
 </form>
 <form method="get" action="{$smarty.const.WWW_TOP}/search">
 	<div id="sadvanced" {if not $sadvanced}style="display:none"{/if}>
-		<center>
+		<div style="text-align: center;">
 			<table class="data">
 				<tr>
 					<th><label for="searchadvr">Release Name:</label></th>
@@ -86,24 +86,24 @@
 						<input type="hidden" name="searchadvhascomments" value="0" /><input type="checkbox" name="searchadvhascomments" value="1"/> <div style="float:right;"><input type="hidden" name="search_type" value="adv" id="search_type" /> <input id="search_adv_button" type="submit" value="search" /></div> </td>
 				</tr>
 			</table>
-		</center>
+		</div>
 	</div>
 </form>
 <br>
 <br>
 {if $results|@count == 0 && ($search || $subject || $searchadvr || $searchadvsubject || $selectedgroup || $selectedsizefrom || $searchadvdaysold) != ""}
-	<center><div class="nosearchresults">
+	<div style="text-align: center;"><div class="nosearchresults">
 			Your search did not match any releases.
 			<br><br>
 			Suggestions:
 			<br><br>
 			<ul>
-				<center><li>Make sure all words are spelled correctly.</li></center>
-				<center><li>Try different keywords.</li></center>
-				<center><li>Try more general keywords.</li></center>
-				<center><li>Try fewer keywords.</li></center>
+				<div style="text-align: center;"><li>Make sure all words are spelled correctly.</li></div>
+				<div style="text-align: center;"><li>Try different keywords.</li></div>
+				<div style="text-align: center;"><li>Try more general keywords.</li></div>
+				<div style="text-align: center;"><li>Try fewer keywords.</li></div>
 			</ul>
-		</div></center>
+		</div></div>
 {elseif ($search || $subject || $searchadvr || $searchadvsubject || $searchadvfilename || $selectedgroup || $selectedsizefrom || $searchadvdaysold) == ""}
 {else}
 	<form id="nzb_multi_operations_form" method="get" action="{$smarty.const.WWW_TOP}/search">

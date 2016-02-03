@@ -24,10 +24,10 @@
 </h1>
 <div>
 	{if animePicture != ''}
-		<center>
+		<div style="text-align: center;">
 			<img class="shadow img img-polaroid" alt="{$animeTitle} Picture"
 				 src="{$smarty.const.WWW_TOP}/covers/anime/{$animeAnidbid}.jpg"/>
-		</center>
+		</div>
 		<br/>
 	{/if}
 	<p>
@@ -41,7 +41,7 @@
 		{if $animeRelated != ''}<br><i>Related Anime: {$animeRelated|escape:"htmlall"}</i><br/>{/if}
 	</p>
 </div>
-<center>
+<div style="text-align: center;">
 	<div class="btn-group">
 		<a class="btn btn-sm btn-default"
 		   href="{$site->dereferrer_link}http://anidb.net/perl-bin/animedb.pl?show=anime&amp;aid={$animeAnidbid}"
@@ -50,7 +50,7 @@
 		   href="{$smarty.const.WWW_TOP}/rss?anidb={$animeAnidbid}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">RSS
 			feed for this Anime <i class="fa fa-rss"></i></a>
 	</div>
-</center>
+</div>
 <form id="nzb_multi_operations_form" action="get">
 	<div class="well well-small">
 		<div class="nzb_multi_operations">

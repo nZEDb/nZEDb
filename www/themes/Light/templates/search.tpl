@@ -3,7 +3,7 @@
 {/if}
 <h1>Search</h1>
 <div>
-	<center>
+	<div style="text-align: center;">
 		<a href="#" onclick="if (jQuery(this).text() == 'Advanced Search')
 					jQuery(this).text('Basic Search');
 				else
@@ -11,12 +11,12 @@
 				jQuery('#sbasic,#sadvanced').toggle();
 				return false;">{if $sadvanced}Basic{else}Click For Advanced{/if} Search
 		</a>
-	</center>
+	</div>
 </div>
 <br>
-<center>
+<div style="text-align: center;">
 	{$search_description}
-</center>
+</div>
 <form method="get" action="{$smarty.const.WWW_TOP}/search">
 	<div id="sbasic" style="text-align:center;{if $sadvanced} display:none;"{/if}">
 	<label for="search" style="display:none;">Search</label>
@@ -28,7 +28,7 @@
 </form>
 <form method="get" action="{$smarty.const.WWW_TOP}/search">
 	<div id="sadvanced" {if not $sadvanced}style="display:none"{/if}>
-		<center>
+		<div style="text-align: center;">
 			<table class="data">
 				<tr>
 					<th><label for="searchadvr">Release Name:</label></th>
@@ -85,24 +85,24 @@
 					</td>
 				</tr>
 			</table>
-		</center>
+		</div>
 	</div>
 </form>
 {if $results|@count == 0 && ($search || $subject|| $searchadvr|| $searchadvsubject || $selectedgroup || $selectedsizefrom || $searchadvdaysold) != ""}
-	<center>
+	<div style="text-align: center;">
 		<div class="nosearchresults">
 			Your search did not match any releases.
 			<br><br>
 			Suggestions:
 			<br><br>
 			<ul>
-				<center><li>Make sure all words are spelled correctly.</li></center>
-				<center><li>Try different keywords.</li></center>
-				<center><li>Try more general keywords.</li></center>
-				<center><li>Try fewer keywords.</li></center>
+				<div style="text-align: center;"><li>Make sure all words are spelled correctly.</li></div>
+				<div style="text-align: center;"><li>Try different keywords.</li></div>
+				<div style="text-align: center;"><li>Try more general keywords.</li></div>
+				<div style="text-align: center;"><li>Try fewer keywords.</li></div>
 			</ul>
 		</div>
-	</center>
+	</div>
 {elseif ($search || $subject || $searchadvr || $searchadvsubject || $selectedgroup || $selectedsizefrom || $searchadvdaysold) == ""}
 {else}
 	<form style="padding-top:10px;" id="nzb_multi_operations_form" method="get" action="{$smarty.const.WWW_TOP}/search">

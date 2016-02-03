@@ -10,7 +10,7 @@
 	</div>
 </div>
 
-<center>
+<div style="text-align: center;">
 	<div class="btn-group">
 		<a class="btn btn-sm btn-default" title="View available TV series" href="{$smarty.const.WWW_TOP}/series">View
 			all series</a>
@@ -20,7 +20,7 @@
 		   href="{$smarty.const.WWW_TOP}/rss?t=-3&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">RSS Feed for
 			My Shows <i class="fa fa-rss"></i></a>
 	</div>
-</center>
+</div>
 <br>
 
 {if $shows|@count > 0}
