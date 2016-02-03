@@ -97,6 +97,7 @@
 				<li><a href="{$smarty.const.WWW_TOP}/register"><i class="fa fa-bookmark-o"></i><span> Register</span></a></li>
 			</div>
 			{/if}
+		</div>
 	</div>
 	<!-- topbar ends -->
 	<div class="ch-container">
