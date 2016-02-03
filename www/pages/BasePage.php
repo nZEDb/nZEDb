@@ -97,7 +97,6 @@ class BasePage
 	 */
 	public function __construct()
 	{
-		define('WWW_THEMES', WWW_TOP . '/../themes');
 		$this->https = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? true : false);
 
 		session_set_cookie_params(0, '/', '', $this->https, true);
