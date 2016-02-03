@@ -8,6 +8,7 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 2016-02-03 DariusIII
+	Fix: Wrong paths to scripts in Omicron theme
 	Fix: Define missing WWW_THEMES in www/smarty.php
 2016-02-03 niel
 	Mrg: PR 2055, from DariusIII - Fix paths in Charisma theme.
