@@ -4,7 +4,7 @@ section,subsection,name,value,hint,setting
 		amazonsleep	1000	Sleep time in milliseconds to wait in between amazon requests. If you thread post-proc, multiply by the number of threads. ie Postprocessing Threads = 12, Amazon sleep time = 12000<br /><a href="https://affiliate-program.amazon.com/gp/advertising/api/detail/faq.html">https://affiliate-program.amazon.com/gp/advertising/api/detail/faq.html</a>	amazonsleep
 		backfillthreads	1	The number of threads for backfill.	backfillthreads
 		binarythreads	1	The number of threads for update_binaries. If you notice that you are getting a lot of parts into the partrepair table, it is possible that you USP is not keeping up with the requests. Try to reduce the threads to safe scripts, stop using safe scripts or stop using nntpproxy until improves. Ar least until the cause can be determined.	binarythreads
-		book_reqids	8010	Categories of Books to lookup information for (only work if Lookup Books is set to yes).	book_reqids
+		book_reqids	7010	Categories of Books to lookup information for (only work if Lookup Books is set to yes).	book_reqids
 		checkpasswordedrar	0	Whether to attempt to peek into every release, to see if rar files are password protected.	checkpasswordedrar
 		compressedheaders	0	Some servers allow headers to be sent over in a compressed format.  If enabled this will use much less bandwidth, but processing times may increase.<br />If you notice that update binaries or backfill seems to hang, look in htop and see if a group is being processed. If so, first try disabling compressed headers and let run until it processes the group at least once, then you can re-enable compressed headers.	compressedheaders
 		crossposttime	2	The time in hours to check for cross-posted releases.	crossposttime

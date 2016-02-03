@@ -3,6 +3,7 @@
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
 //            or http://www.getid3.org                         //
+//          also https://github.com/JamesHeinrich/getID3       //
 /////////////////////////////////////////////////////////////////
 //                                                             //
 // /demo/demo.simple.php - part of getID3()                    //
@@ -32,7 +33,7 @@ echo '<table border="1" cellspacing="0" cellpadding="3">';
 echo '<tr><th>Filename</th><th>Artist</th><th>Title</th><th>Bitrate</th><th>Playtime</th></tr>';
 while (($file = readdir($dir)) !== false) {
 	$FullFileName = realpath($DirectoryToScan.'/'.$file);
-	if ((substr($FullFileName, 0, 1) != '.') && is_file($FullFileName)) {
+	if ((substr($file, 0, 1) != '.') && is_file($FullFileName)) {
 		set_time_limit(30);
 
 		$ThisFileInfo = $getID3->analyze($FullFileName);

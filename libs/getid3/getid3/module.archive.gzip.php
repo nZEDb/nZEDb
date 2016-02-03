@@ -3,6 +3,7 @@
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
 //            or http://www.getid3.org                         //
+//          also https://github.com/JamesHeinrich/getID3       //
 /////////////////////////////////////////////////////////////////
 // See readme.txt for more details                             //
 /////////////////////////////////////////////////////////////////
@@ -35,12 +36,12 @@ class getid3_gzip extends getid3_handler {
 		//|ID1|ID2|CM |FLG|     MTIME     |XFL|OS |
 		//+---+---+---+---+---+---+---+---+---+---+
 
-		if ($info['filesize'] > $info['php_memory_limit']) {
+		if ($info['php_memory_limit'] && ($info['filesize'] > $info['php_memory_limit'])) {
 			$info['error'][] = 'File is too large ('.number_format($info['filesize']).' bytes) to read into memory (limit: '.number_format($info['php_memory_limit'] / 1048576).'MB)';
 			return false;
 		}
-		fseek($this->getid3->fp, 0);
-		$buffer = fread($this->getid3->fp, $info['filesize']);
+		$this->fseek(0);
+		$buffer = $this->fread($info['filesize']);
 
 		$arr_members = explode("\x1F\x8B\x08", $buffer);
 		while (true) {
@@ -55,7 +56,7 @@ class getid3_gzip extends getid3_handler {
 				$attr = unpack($unpack_header, substr($buf, 0, $start_length));
 				if (!$this->get_os_type(ord($attr['os']))) {
 					// Merge member with previous if wrong OS type
-					$arr_members[$i - 1] .= $buf;
+					$arr_members[($i - 1)] .= $buf;
 					$arr_members[$i] = '';
 					$is_wrong_members = true;
 					continue;

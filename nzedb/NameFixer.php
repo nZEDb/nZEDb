@@ -75,6 +75,11 @@ class NameFixer
 	/**
 	 * @var string
 	 */
+	protected $othercats;
+
+	/**
+	 * @var string
+	 */
 	protected $timeother;
 
 	/**
@@ -141,9 +146,10 @@ class NameFixer
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
 		$this->relid = $this->fixed = $this->checked = 0;
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
-		$this->timeother = ' AND rel.adddate > (NOW() - INTERVAL 6 HOUR) AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 7020, 8050) GROUP BY rel.id ORDER BY postdate DESC';
+		$this->othercats = Category::getCategoryOthersGroup();
+		$this->timeother = sprintf(' AND rel.adddate > (NOW() - INTERVAL 6 HOUR) AND rel.categoryid IN (%s) GROUP BY rel.id ORDER BY postdate DESC', $this->othercats);
 		$this->timeall = ' AND rel.adddate > (NOW() - INTERVAL 6 HOUR) GROUP BY rel.id ORDER BY postdate DESC';
-		$this->fullother = ' AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 7020, 8050) GROUP BY rel.id';
+		$this->fullother = sprintf(' AND rel.categoryid IN (%s) GROUP BY rel.id', $this->othercats);
 		$this->fullall = '';
 		$this->_fileName = '';
 		$this->done = $this->matched = false;
@@ -189,7 +195,7 @@ class NameFixer
 					WHERE (rel.isrenamed = %d OR rel.categoryid = %d)
 					AND proc_nfo = %d',
 					self::IS_RENAMED_NONE,
-					Category::CAT_MISC,
+					Category::CAT_OTHER_MISC,
 					self::PROC_NFO_NONE
 			);
 		}
@@ -270,7 +276,7 @@ class NameFixer
 					WHERE (rel.isrenamed = %d OR rel.categoryid = %d)
 					AND proc_files = %d',
 					self::IS_RENAMED_NONE,
-					Category::CAT_MISC,
+					Category::CAT_OTHER_MISC,
 					self::PROC_FILES_NONE
 			);
 		}
@@ -327,7 +333,7 @@ class NameFixer
 					WHERE (rel.isrenamed = %d OR rel.categoryid = %d)
 					AND proc_par2 = %d',
 					self::IS_RENAMED_NONE,
-					Category::CAT_MISC,
+					Category::CAT_OTHER_MISC,
 					self::PROC_PAR2_NONE
 			);
 		}

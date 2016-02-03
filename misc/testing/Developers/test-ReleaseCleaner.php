@@ -11,7 +11,7 @@ $message =
 	'Argument 1 is the group name.' . PHP_EOL .
 	'Argument 2 is how many releases to limit this to, must be a number.' . PHP_EOL .
 	'Argument 3 (true|false) true renames the releases, false only displays what could be changed.' . PHP_EOL .
-	'Argument 4 is a categoryID, pass 0 to do all, 7010 to do misc, etc.' . PHP_EOL .
+	'Argument 4 is a categoryID, pass 0 to do all, 0010 to do misc, etc.' . PHP_EOL .
 	'php ' . $argv[0] . ' alt.binaries.comics.dcp 1000 false' . PHP_EOL;
 
 if ($argc < 5) {

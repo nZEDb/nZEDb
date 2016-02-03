@@ -9,7 +9,7 @@ Add _ as the first character of the theme's folder name.
 
 Copy the simple folder, paste it into the themes folder with a new name (for example mytheme).
 
-Open the mytheme folder, go to templates/frontend/
+Open the mytheme folder, go to templates/
 
 Open basepage.tpl in a text editor.
 

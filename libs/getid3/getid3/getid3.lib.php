@@ -3,6 +3,7 @@
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
 //            or http://www.getid3.org                         //
+//          also https://github.com/JamesHeinrich/getID3       //
 /////////////////////////////////////////////////////////////////
 //                                                             //
 // getid3.lib.php - part of getID3()                           //
@@ -282,7 +283,6 @@ class getid3_lib
 				}
 			} else {
 				throw new Exception('ERROR: Cannot have signed integers larger than '.(8 * PHP_INT_SIZE).'-bits ('.strlen($byteword).') in self::BigEndian2Int()');
-				break;
 			}
 		}
 		return self::CastAsInt($intvalue);
@@ -414,6 +414,20 @@ class getid3_lib
 		return $newarray;
 	}
 
+	public static function flipped_array_merge_noclobber($array1, $array2) {
+		if (!is_array($array1) || !is_array($array2)) {
+			return false;
+		}
+		# naturally, this only works non-recursively
+		$newarray = array_flip($array1);
+		foreach (array_flip($array2) as $key => $val) {
+			if (!isset($newarray[$key])) {
+				$newarray[$key] = count($newarray);
+			}
+		}
+		return array_flip($newarray);
+	}
+
 
 	public static function ksort_recursive(&$theArray) {
 		ksort($theArray);
@@ -519,11 +533,14 @@ class getid3_lib
 	}
 
 	public static function XML2array($XMLstring) {
-		if (function_exists('simplexml_load_string')) {
-			if (function_exists('get_object_vars')) {
-				$XMLobject = simplexml_load_string($XMLstring);
-				return self::SimpleXMLelement2array($XMLobject);
-			}
+		if (function_exists('simplexml_load_string') && function_exists('libxml_disable_entity_loader')) {
+			// http://websec.io/2012/08/27/Preventing-XEE-in-PHP.html
+			// https://core.trac.wordpress.org/changeset/29378
+			$loader = libxml_disable_entity_loader(true);
+			$XMLobject = simplexml_load_string($XMLstring, 'SimpleXMLElement', LIBXML_NOENT);
+			$return = self::SimpleXMLelement2array($XMLobject);
+			libxml_disable_entity_loader($loader);
+			return $return;
 		}
 		return false;
 	}
@@ -634,7 +651,7 @@ class getid3_lib
 		}
 		if (is_readable($filename_source) && is_file($filename_source) && ($fp_src = fopen($filename_source, 'rb'))) {
 			if (($fp_dest = fopen($filename_dest, 'wb'))) {
-				if (fseek($fp_src, $offset, SEEK_SET) == 0) {
+				if (fseek($fp_src, $offset) == 0) {
 					$byteslefttowrite = $length;
 					while (($byteslefttowrite > 0) && ($buffer = fread($fp_src, min($byteslefttowrite, getID3::FREAD_BUFFER_SIZE)))) {
 						$byteswritten = fwrite($fp_dest, $buffer, $byteslefttowrite);
@@ -985,6 +1002,19 @@ class getid3_lib
 		throw new Exception('PHP does not have iconv() support - cannot convert from '.$in_charset.' to '.$out_charset);
 	}
 
+	public static function recursiveMultiByteCharString2HTML($data, $charset='ISO-8859-1') {
+		if (is_string($data)) {
+			return self::MultiByteCharString2HTML($data, $charset);
+		} elseif (is_array($data)) {
+			$return_data = array();
+			foreach ($data as $key => $value) {
+				$return_data[$key] = self::recursiveMultiByteCharString2HTML($value, $charset);
+			}
+			return $return_data;
+		}
+		// integer, float, objects, resources, etc
+		return $data;
+	}
 
 	public static function MultiByteCharString2HTML($string, $charset='ISO-8859-1') {
 		$string = (string) $string; // in case trying to pass a numeric (float, int) string, would otherwise return an empty string
@@ -1137,11 +1167,19 @@ class getid3_lib
 	public static function GetDataImageSize($imgData, &$imageinfo=array()) {
 		static $tempdir = '';
 		if (empty($tempdir)) {
+			if (function_exists('sys_get_temp_dir')) {
+				$tempdir = sys_get_temp_dir(); // https://github.com/JamesHeinrich/getID3/issues/52
+			}
+
 			// yes this is ugly, feel free to suggest a better way
-			require_once(dirname(__FILE__).'/getid3.php');
-			$getid3_temp = new getID3();
-			$tempdir = $getid3_temp->tempdir;
-			unset($getid3_temp);
+			if (include_once(dirname(__FILE__).'/getid3.php')) {
+				if ($getid3_temp = new getID3()) {
+					if ($getid3_temp_tempdir = $getid3_temp->tempdir) {
+						$tempdir = $getid3_temp_tempdir;
+					}
+					unset($getid3_temp, $getid3_temp_tempdir);
+				}
+			}
 		}
 		$GetDataImageSize = false;
 		if ($tempfilename = tempnam($tempdir, 'gI3')) {
@@ -1149,6 +1187,11 @@ class getid3_lib
 				fwrite($tmp, $imgData);
 				fclose($tmp);
 				$GetDataImageSize = @getimagesize($tempfilename, $imageinfo);
+				if (($GetDataImageSize === false) || !isset($GetDataImageSize[0]) || !isset($GetDataImageSize[1])) {
+					return false;
+				}
+				$GetDataImageSize['height'] = $GetDataImageSize[0];
+				$GetDataImageSize['width']  = $GetDataImageSize[1];
 			}
 			unlink($tempfilename);
 		}
@@ -1209,16 +1252,21 @@ class getid3_lib
 								$newvaluelength = strlen(trim($value));
 								foreach ($ThisFileInfo['comments'][$tagname] as $existingkey => $existingvalue) {
 									$oldvaluelength = strlen(trim($existingvalue));
-									if (($newvaluelength > $oldvaluelength) && (substr(trim($value), 0, strlen($existingvalue)) == $existingvalue)) {
+									if ((strlen($existingvalue) > 10) && ($newvaluelength > $oldvaluelength) && (substr(trim($value), 0, strlen($existingvalue)) == $existingvalue)) {
 										$ThisFileInfo['comments'][$tagname][$existingkey] = trim($value);
-										break 2;
+										//break 2;
+										break;
 									}
 								}
 
 							}
 							if (is_array($value) || empty($ThisFileInfo['comments'][$tagname]) || !in_array(trim($value), $ThisFileInfo['comments'][$tagname])) {
 								$value = (is_string($value) ? trim($value) : $value);
-								$ThisFileInfo['comments'][$tagname][] = $value;
+								if (!is_numeric($key)) {
+									$ThisFileInfo['comments'][$tagname][$key] = $value;
+								} else {
+									$ThisFileInfo['comments'][$tagname][]     = $value;
+								}
 							}
 						}
 					}
@@ -1226,20 +1274,23 @@ class getid3_lib
 			}
 
 			// Copy to ['comments_html']
-			foreach ($ThisFileInfo['comments'] as $field => $values) {
-				if ($field == 'picture') {
-					// pictures can take up a lot of space, and we don't need multiple copies of them
-					// let there be a single copy in [comments][picture], and not elsewhere
-					continue;
-				}
-				foreach ($values as $index => $value) {
-					if (is_array($value)) {
-						$ThisFileInfo['comments_html'][$field][$index] = $value;
-					} else {
-						$ThisFileInfo['comments_html'][$field][$index] = str_replace('&#0;', '', self::MultiByteCharString2HTML($value, $ThisFileInfo['encoding']));
+			if (!empty($ThisFileInfo['comments'])) {
+				foreach ($ThisFileInfo['comments'] as $field => $values) {
+					if ($field == 'picture') {
+						// pictures can take up a lot of space, and we don't need multiple copies of them
+						// let there be a single copy in [comments][picture], and not elsewhere
+						continue;
+					}
+					foreach ($values as $index => $value) {
+						if (is_array($value)) {
+							$ThisFileInfo['comments_html'][$field][$index] = $value;
+						} else {
+							$ThisFileInfo['comments_html'][$field][$index] = str_replace('&#0;', '', self::MultiByteCharString2HTML($value, $ThisFileInfo['encoding']));
+						}
 					}
 				}
 			}
+
 		}
 		return true;
 	}
@@ -1337,6 +1388,18 @@ class getid3_lib
 			}
 		}
 		return $filesize;
+	}
+
+
+	/**
+	* Workaround for Bug #37268 (https://bugs.php.net/bug.php?id=37268)
+	* @param string $path A path.
+	* @param string $suffix If the name component ends in suffix this will also be cut off.
+	* @return string
+	*/
+	public static function mb_basename($path, $suffix = null) {
+		$splited = preg_split('#/#', rtrim($path, '/ '));
+		return substr(basename('X'.$splited[count($splited) - 1], $suffix), 1);
 	}
 
 }

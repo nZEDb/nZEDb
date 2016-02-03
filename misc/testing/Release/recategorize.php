@@ -2,6 +2,7 @@
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
 use nzedb\Categorize;
+use nzedb\Category;
 use nzedb\ColorCLI;
 use nzedb\ConsoleTools;
 use nzedb\db\Settings;
@@ -27,13 +28,14 @@ function reCategorize($argv)
 {
 	global $pdo;
 	$where = '';
+	$othercats = Category::getCategoryOthersGroup();
 	$update = true;
 	if (isset($argv[1]) && is_numeric($argv[1])) {
 		$where = ' AND group_id = ' . $argv[1];
 	} else if (isset($argv[1]) && preg_match('/\([\d, ]+\)/', $argv[1])) {
 		$where = ' AND group_id IN ' . $argv[1];
 	} else if (isset($argv[1]) && $argv[1] === 'misc') {
-		$where = ' AND categoryid IN (1090, 2020, 3050, 4040, 5050, 6050, 7010, 7020, 8050)';
+		$where = sprintf(' AND categoryid IN (%s)', $othercats);
 	}
 	if (isset($argv[2]) && $argv[2] === 'test') {
 		$update = false;

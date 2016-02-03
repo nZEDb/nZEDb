@@ -164,6 +164,7 @@ class PreDb
 	{
 		$namefixer = new NameFixer(['Echo' => $this->echooutput, 'ConsoleTools' => $this->pdo->log, 'Settings' => $this->pdo]);
 		$consoletools = new ConsoleTools(['ColorCLI' => $this->pdo->log]);
+		$othercats = Category::getCategoryOthersGroup();
 		$updated = $checked = 0;
 
 		$tq = '';
@@ -172,7 +173,7 @@ class PreDb
 		}
 		$ct = '';
 		if ($cats == 1) {
-			$ct = 'AND r.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050)';
+			$ct = sprintf('AND r.categoryid IN (%s)', $othercats);
 		}
 
 		if ($this->echooutput) {

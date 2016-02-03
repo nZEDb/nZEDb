@@ -40,7 +40,7 @@ if (!isset($_GET["t"]) && !isset($_GET["show"]) && !isset($_GET["anidb"])) {
 	}
 
 	$page->smarty->assign([
-			'categorylist'       => $category->get(true, $page->userdata["categoryexclusions"]),
+			'categorylist'       => $category->getCategories(true, $page->userdata["categoryexclusions"]),
 			'parentcategorylist' => $category->getForMenu($page->userdata["categoryexclusions"])
 		]
 	);
