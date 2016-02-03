@@ -21,6 +21,16 @@
 
 use nzedb\Category;
 
+/**
+ * Returns the value of the specified Category constant.
+ *
+ * @param string $category	Name of constant whose value to return.
+ */
+function getCategoryValue($category)
+{
+	Category::getCategoryValue($category);
+}
+
 // Function inspired by c0r3@newznabforums adds country flags on the browse page.
 /**
  * @param string $text	Text to match against.
@@ -159,11 +169,6 @@ function release_flag($text, $page)
 		}
 	}
 	return '';
-}
-
-function getCategoryValue($category)
-{
-	Category::getCategoryValue($category);
 }
 
 ?>
