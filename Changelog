@@ -16,7 +16,16 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Mrg: PR 2054 - Change references of releasetitle to title in myshows-add page of Charisma/Omicron theme
 2016-02-02 niel
 	Mrg: PR 2051, from DariusIII - Correct wrong variable usage and replace it with proper one
-		 ($rid => $video) in myshows-add.tpl template file for all themes.
+		($rid => $video) in myshows-add.tpl template file for all themes.
+	Fix: Copy jquery.qtip2.js to themes/shared/script so requests can find it.
+	Fix: Make Category::getCategoryOthersGroup static, so it is accessed like a constant would be.
+	Fix: Fix reference to 'template' instead of 'theme' in the Omicron basepage.tpl
+2016-01-31 niel
+	Mrg: dev => next-master to prepare for updating master.
+
+
+2016-01-30 niel
+	Chg: Juggle Book category values so they match the existing ones of neznab's published API.
 2016-01-29 niel
 	Mrg: PR 2044, from DariusIII - Rework Omicron/Charisma basepages and Omicron login/register checkboxes.
 	Mrg: PR 2046, from DariusIII - Prevent undefined index notices for failed downloads in Omicron and Charisma themes.
@@ -29,6 +38,16 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Mrg: PR 2039, from DariusIII - Prevent undefined index notices in full series and movies
 		view, remove references to nzbvortex and nzbgetintegration.
 	Mrg: PR 2040, from DariusIII - Update isISO categorization.
+2016-01-26 niel
+	Mrg: PR 2037, from DariusIII - Move Other cats to 0000 range, books cat to 7000 range.
+	Fix: Changing the CAT_OTHERS_GROUP array to be a function instead, as array constants are not
+		supported for PHP 5.5. When 5.5 reaches EOL in July we can revisit this.
+		***NOTE*** on larger data sets the patches will take a long time to run.
+	Chg: Update SQL patch 422 to improve speed on larger data sets. Thanks to NZBMets for the idea. (reverted).
+	Fix: Remove the previous change to patch 422.
+		***Note*** Anyone that used the bad version will have to run the recategorise script to
+		fix things, sorry for the hassle.
+	Fix: Add remove partition query before adding the new partition.
 2016-01-18 niel
 	Mrg: PR 2036, from DariusIII - Fix books menu in Gamma template.
 2016-01-16 niel

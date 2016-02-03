@@ -686,12 +686,12 @@ nZEDb    https://github.com/nZEDb/nZEDb
    6060                                 XXX/Imageset                    Sets of porn images
    6070                                 XXX/Packs                       Packs of multiple porn videos
    7000                                 Books                           All of Books
-   7010                                 Books/Ebook                     Ebooks
-   7020                                 Books/Comics                    Comics Ebooks
-   7030                                 Books/Magazines                 Magazines
+   7010                                 Books/Magazines                 Magazines
+   7020                                 Books/Ebook                     Ebooks
+   7030                                 Books/Comics                    Comics Ebooks
    7040                                 Books/Technical                 Technical books
-   7050                                 Books/Other                     Misc books
    7060                                 Books/Foreign                   Non english books
+   7999                                 Books/Other                     Misc books
    100000-                              Custom                          Specific to a site
 
 

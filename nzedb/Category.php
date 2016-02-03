@@ -5,11 +5,11 @@ use nzedb\db\Settings;
 
 class Category
 {
-	const CAT_BOOKS_COMICS = '7020';
-	const CAT_BOOKS_EBOOK = '7010';
+	const CAT_BOOKS_COMICS = '7030';
+	const CAT_BOOKS_EBOOK = '7020';
 	const CAT_BOOKS_FOREIGN = '7060';
-	const CAT_BOOKS_MAGAZINES = '7030';
-	const CAT_BOOKS_OTHER = '7050';
+	const CAT_BOOKS_MAGAZINES = '7010';
+	const CAT_BOOKS_OTHER = '7999';
 	const CAT_BOOKS_TECHNICAL = '7040';
 	const CAT_GAME_3DS = '1110';
 	const CAT_GAME_NDS = '1010';
@@ -74,9 +74,9 @@ class Category
 	const CAT_XXX_X264 = '6040';
 	const CAT_XXX_XVID = '6030';
 
+	const STATUS_INACTIVE = 0;
 	const STATUS_ACTIVE = 1;
 	const STATUS_DISABLED = 2;
-	const STATUS_INACTIVE = 0;
 
 	/**
 	 * @var Settings
@@ -106,12 +106,20 @@ class Category
 	 *
 	 * @return array
 	 */
-	public function getCategories($activeonly = false, $excludedcats = [])
+	public function get($activeonly = false, $excludedcats = [])
 	{
-		$excluded = count($excludedcats) > 0 ? " AND c.id NOT IN (" . implode(",", $excludedcats) . ")" : '';
-		$active = $activeonly ? sprintf(" WHERE c.status = %d %s ", Category::STATUS_ACTIVE, $excluded) : '';
 		return $this->pdo->query(
-			"SELECT c.id, CONCAT(cp.title, ' > ',c.title) AS title, cp.id AS parentid, c.status, c.minsize FROM category c INNER JOIN category cp ON cp.id = c.parentid $active ORDER BY c.id"
+			"SELECT c.id, CONCAT(cp.title, ' > ',c.title) AS title, cp.id AS parentid, c.status, c.minsize
+			FROM category c
+			INNER JOIN category cp ON cp.id = c.parentid " .
+			($activeonly ?
+				sprintf(
+					" WHERE c.status = %d %s ",
+					Category::STATUS_ACTIVE,
+					(count($excludedcats) > 0 ? " AND c.id NOT IN (" . implode(",", $excludedcats) . ")" : '')
+				) : ''
+			) .
+			" ORDER BY c.id"
 		);
 	}
 
@@ -335,7 +343,7 @@ class Category
 	 */
 	public function getForSelect($blnIncludeNoneSelected = true)
 	{
-		$categories = $this->getCategories();
+		$categories = $this->get();
 		$temp_array = [];
 
 		if ($blnIncludeNoneSelected) {
@@ -362,7 +370,7 @@ class Category
 		return $parent["title"] . " " . $cat["title"];
 	}
 
-	public function getCategoryOthersGroup()
+	public static function getCategoryOthersGroup()
 	{
 		return implode(",",
 				[
