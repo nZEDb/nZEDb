@@ -19,6 +19,8 @@
  * @copyright 2014 nZEDb
  */
 
+use nzedb\Category;
+
 // Function inspired by c0r3@newznabforums adds country flags on the browse page.
 /**
  * @param string $text	Text to match against.
@@ -157,6 +159,11 @@ function release_flag($text, $page)
 		}
 	}
 	return '';
+}
+
+function getCategoryValue($category)
+{
+	Category::getCategoryValue($category);
 }
 
 ?>
