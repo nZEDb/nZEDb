@@ -9,6 +9,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2016-02-03 niel
 	Mrg: PR 2055, from DariusIII - Fix paths in Charisma theme.
+	Mrg: PR 2056, from DariusIII - Replace deprecated html tag <center> with proper CSS.
 2016-02-03 DariusIII
 	Mrg: PR 2054 - Change references of releasetitle to title in myshows-add page of Charisma/Omicron theme
 2016-02-02 niel
