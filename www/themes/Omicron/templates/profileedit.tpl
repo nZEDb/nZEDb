@@ -316,13 +316,14 @@
 									</tr>
 									</tbody>
 								</table>
-								<table class="table table-condensed table-striped responsive">
+								<table class="data table table-condensed table-striped table-responsive">
 									<tbody>
 									<tr class="bg-aqua-active">
-										<td colspan="2" style="padding-left: 8px;"><strong>Site theme</strong>
-											<div>
-												{html_options id="style" name='style' values=$themelist output=$themelist selected=$user.style}
-											</div>
+										<td colspan="2" style="padding-left: 8px;"><strong>Site theme</strong></td>
+									</tr>
+									<tr>
+										<td>
+											{html_options id="style" name='style' values=$themelist output=$themelist selected=$user.style}
 										</td>
 									</tr>
 									</tbody>
