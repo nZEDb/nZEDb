@@ -9,6 +9,8 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2016-02-04 niel
 	Chg: Updated Smarty to version 3.1.29
+	Chg: Created second directory for Smarty plugins (.../www/plugins) where we will keep our
+		custom added plugins to avoid issues when updating Smarty.
 2016-02-03 niel
 	Mrg: PR 2055, from DariusIII - Fix paths in Charisma theme.
 	Mrg: PR 2056, from DariusIII - Replace deprecated html tag <center> with proper CSS.
