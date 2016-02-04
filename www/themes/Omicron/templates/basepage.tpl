@@ -14,11 +14,11 @@
 	<meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
 	<!-- Newposterwall -->
 	<link href="{$smarty.const.WWW_THEMES}/{$theme}/styles/posterwall.css" rel="stylesheet" type="text/css" media="screen"/>
-	<!-- Bootstrap 3.3.4 -->
-	<link href="{$smarty.const.WWW_THEMES}/{$theme}/bootstrap/css/bootstrap.min.css" rel="stylesheet"
+	<!-- Bootstrap 3.3.6 -->
+	<link href="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap/v3/css/bootstrap.min.css" rel="stylesheet"
 		  type="text/css"/>
 	<!-- Font Awesome Icons -->
-	<link href="{$smarty.const.WWW_THEMES}/{$theme}/bootstrap/css/font-awesome.min.css" rel="stylesheet"
+	<link href="{$smarty.const.WWW_THEMES}/shared/css/font-awesome.min.css" rel="stylesheet"
 		  type="text/css"/>
 	<!-- iCheck -->
 	<link href="{$smarty.const.WWW_THEMES}/{$theme}/plugins/iCheck/square/blue.css" rel="stylesheet" type="text/css" />
@@ -331,8 +331,8 @@
 	<!-- REQUIRED JS SCRIPTS -->
 	<!-- jQuery 2.1.4 -->
 	<script src="{$smarty.const.WWW_THEMES}/{$theme}/plugins/jQuery/jQuery-2.1.4.min.js"></script>
-	<!-- Bootstrap 3.3.2 JS -->
-	<script src="{$smarty.const.WWW_THEMES}/{$theme}/bootstrap/js/bootstrap.min.js"
+	<!-- Bootstrap 3.3.6 JS -->
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap/v3/js/bootstrap.min.js"
 			type="text/javascript"></script>
 	<!-- iCheck -->
 	<script src="{$smarty.const.WWW_THEMES}/{$theme}/plugins/iCheck/icheck.min.js" type="text/javascript"></script>
