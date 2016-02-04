@@ -207,4 +207,17 @@ abstract class Smarty_CacheResource
         // give up
         throw new SmartyException("Unable to load cache resource '{$type}'");
     }
+
+    /**
+     * Invalid Loaded Cache Files
+     *
+     * @param Smarty $smarty Smarty object
+     */
+    public function invalidLoadedCache(Smarty $smarty)
+    {
+        $smarty->_cache['isCached'] = array();
+        if (isset($smarty->ext->_subtemplate)) {
+            $smarty->ext->_subtemplate->tplObjects = array();
+        }
+    }
 }

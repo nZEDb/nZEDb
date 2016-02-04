@@ -43,12 +43,7 @@ class Smarty_Internal_Resource_File extends Smarty_Resource
             ) {
                 throw new SmartyException("Template '{$file}' cannot be relative to template of resource type '{$_template->parent->source->type}'");
             }
-            // if we are inside an {block} tag the path must be relative to current template
-            if (isset($_template->ext->_inheritance) && $_template->ext->_inheritance->blockNesting && $_template->parent->parent->_objType == 2) {
-                $path = dirname($_template->parent->parent->source->filepath) . DS . $file;
-            } else {
-                $path = dirname($_template->parent->source->filepath) . DS . $file;
-            }
+            $path = dirname($_template->parent->source->filepath) . DS . $file;
             // normalize path
             $path = $source->smarty->_realpath($path);
             // files relative to a template only get one shot
@@ -128,7 +123,7 @@ class Smarty_Internal_Resource_File extends Smarty_Resource
                 $source->smarty->security_policy->isTrustedResourceDir($source->filepath, $source->isConfig);
             }
             $source->exists = true;
-            $source->uid = sha1($source->filepath . ($source->isConfig ? $source->smarty->_joined_config_dir : $source->smarty->_joined_template_dir));
+            $source->uid = sha1($source->filepath);
             if ($source->smarty->compile_check == 1) {
                 $source->timestamp = filemtime($source->filepath);
             }

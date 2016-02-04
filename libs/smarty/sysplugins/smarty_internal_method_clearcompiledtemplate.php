@@ -33,8 +33,6 @@ class Smarty_Internal_Method_ClearCompiledTemplate
      */
     public function clearCompiledTemplate(Smarty $smarty, $resource_name = null, $compile_id = null, $exp_time = null)
     {
-        // clear template objects cache
-        $smarty->_clearTemplateCache();
 
         $_compile_dir = $smarty->getCompileDir();
         if ($_compile_dir == '/') { //We should never want to delete this!
@@ -111,10 +109,15 @@ class Smarty_Internal_Method_ClearCompiledTemplate
                 if ($unlink && @unlink($_filepath)) {
                     $_count ++;
                     if (function_exists('opcache_invalidate')) {
-                        opcache_invalidate($_filepath, true);
+                        opcache_invalidate($_filepath);
                     }
                 }
             }
+        }
+        // clear template objects cache
+        $smarty->_cache['isCached'] = array();
+        if (isset($smarty->ext->_subtemplate)) {
+            $smarty->ext->_subtemplate->tplObjects = array();
         }
         return $_count;
     }

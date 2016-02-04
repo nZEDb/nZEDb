@@ -83,17 +83,10 @@ class Smarty_Internal_Method_ConfigLoad
     {
         $this->_assignConfigVars($tpl->parent, $tpl, $_config_vars);
         $scope = $tpl->source->scope;
-        $scopes = array();
-        if ($scope) {
-            $scopes[] = $scope;
-        }
-        if ($tpl->scope) {
-            $scopes[] = $tpl->scope;
-        }
-        if (empty($scopes)) {
+        if (!$scope && !$tpl->scope) {
             return;
         }
-        foreach ($scopes as $s) {
+        foreach (array($scope, $tpl->scope) as $s) {
             $s = ($bubble_up = $s >= Smarty::SCOPE_BUBBLE_UP) ? $s - Smarty::SCOPE_BUBBLE_UP : $s;
             if ($bubble_up && $s) {
                 $ptr = $tpl->parent->parent;
@@ -110,11 +103,15 @@ class Smarty_Internal_Method_ConfigLoad
                 }
                 if ($s == Smarty::SCOPE_TPL_ROOT) {
                     continue;
+                } elseif ($s == Smarty::SCOPE_SMARTY) {
+                    $this->_assignConfigVars($tpl->smarty, $tpl, $_config_vars);
+                } elseif ($s == Smarty::SCOPE_GLOBAL) {
+                    $this->_assignConfigVars($tpl->smarty, $tpl, $_config_vars);
                 } elseif ($s == Smarty::SCOPE_ROOT) {
                     while (isset($ptr->parent)) {
                         $ptr = $ptr->parent;
-                        $this->_assignConfigVars($ptr, $tpl, $_config_vars);
                     }
+                    $this->_assignConfigVars($ptr, $tpl, $_config_vars);
                 }
             }
         }

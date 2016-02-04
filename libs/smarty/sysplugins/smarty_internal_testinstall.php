@@ -20,10 +20,9 @@ class Smarty_Internal_TestInstall
      * diagnose Smarty setup
      * If $errors is secified, the diagnostic report will be appended to the array, rather than being output.
      *
-     * @param \Smarty $smarty
-     * @param  array  $errors array to push results into rather than outputting them
+     * @param  array $errors array to push results into rather than outputting them
      *
-     * @return bool status, true if everything is fine, false else
+     * @return bool   status, true if everything is fine, false else
      */
     public static function testInstall(Smarty $smarty, &$errors = null)
     {
@@ -365,7 +364,6 @@ class Smarty_Internal_TestInstall
                                         'smarty_cacheresource_custom.php'                           => true,
                                         'smarty_cacheresource_keyvaluestore.php'                    => true,
                                         'smarty_data.php'                                           => true,
-                                        'smarty_internal_block.php'                                 => true,
                                         'smarty_internal_cacheresource_file.php'                    => true,
                                         'smarty_internal_compilebase.php'                           => true,
                                         'smarty_internal_compile_append.php'                        => true,
@@ -431,7 +429,6 @@ class Smarty_Internal_TestInstall
                                         'smarty_internal_method_getconfigvars.php'                  => true,
                                         'smarty_internal_method_getdebugtemplate.php'               => true,
                                         'smarty_internal_method_getdefaultmodifiers.php'            => true,
-                                        'smarty_internal_method_getglobal.php'                      => true,
                                         'smarty_internal_method_getregisteredobject.php'            => true,
                                         'smarty_internal_method_getstreamvariable.php'              => true,
                                         'smarty_internal_method_gettags.php'                        => true,
@@ -477,10 +474,14 @@ class Smarty_Internal_TestInstall
                                         'smarty_internal_runtime_filterhandler.php'                 => true,
                                         'smarty_internal_runtime_foreach.php'                       => true,
                                         'smarty_internal_runtime_getincludepath.php'                => true,
+                                        'smarty_internal_runtime_hhvm.php'                          => true,
                                         'smarty_internal_runtime_inheritance.php'                   => true,
+                                        'smarty_internal_runtime_subtemplate.php'                   => true,
                                         'smarty_internal_runtime_tplfunction.php'                   => true,
                                         'smarty_internal_runtime_updatecache.php'                   => true,
                                         'smarty_internal_runtime_updatescope.php'                   => true,
+                                        'smarty_internal_runtime_validatecompiled.php'              => true,
+                                        'smarty_internal_runtime_var.php'                           => true,
                                         'smarty_internal_runtime_writefile.php'                     => true,
                                         'smarty_internal_smartytemplatecompiler.php'                => true,
                                         'smarty_internal_template.php'                              => true,

@@ -84,7 +84,7 @@ abstract class Smarty_CacheResource_Custom extends Smarty_CacheResource
     {
         $_cache_id = isset($cached->cache_id) ? preg_replace('![^\w\|]+!', '_', $cached->cache_id) : null;
         $_compile_id = isset($cached->compile_id) ? preg_replace('![^\w]+!', '_', $cached->compile_id) : null;
-        $path = $cached->source->uid . $_cache_id . $_compile_id;
+        $path = $cached->source->filepath . $_cache_id . $_compile_id;
         $cached->filepath = sha1($path);
         if ($_template->smarty->cache_locking) {
             $cached->lock_id = sha1('lock.' . $path);
@@ -214,6 +214,14 @@ abstract class Smarty_CacheResource_Custom extends Smarty_CacheResource
                 $cache_name = $source->name;
             } else {
                 return 0;
+            }
+            // remove from template cache
+            if (isset($smarty->_cache['template_objects'])) {
+                foreach ($smarty->_cache['template_objects'] as $key => $_tpl) {
+                    if (isset($_tpl->cached) && $_tpl->source->uid == $source->uid) {
+                        unset($smarty->_cache['template_objects'][$key]);
+                    }
+                }
             }
         }
 
