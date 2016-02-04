@@ -16,6 +16,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 2016-02-03 DariusIII
 	Mrg: PR 2054 - Change references of releasetitle to title in myshows-add page of Charisma/Omicron theme
 	Fix: Wrong paths to scripts in Omicron theme
+	Fix: Fix profileedit pages in Charisma/Gamma/Omicron templates
 2016-02-02 niel
 	Mrg: PR 2051, from DariusIII - Correct wrong variable usage and replace it with proper one
 		($rid => $video) in myshows-add.tpl template file for all themes.
