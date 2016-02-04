@@ -18,14 +18,24 @@
 				{$user.username|escape:"htmlall"}
 			</div>
 		</div>
-
+		<div class="control-group">
+			<label class="control-label" for="firstname">First Name</label>
+			<div class="controls">
+				<input class="input input-xxlarge long" id="firstname" name="firstname" type="text" value="{$user.firstname|escape:"htmlall"}">
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label" for="firstname">Last Name</label>
+			<div class="controls">
+				<input class="input input-xxlarge long" id="lastname" name="lastname" type="text" value="{$user.lastname|escape:"htmlall"}">
+			</div>
+		</div>
 		<div class="control-group">
 			<label class="control-label" for="email">Email</label>
 			<div class="controls">
-				<input class="input input-xxlarge" id="email" class="long" name="email" type="text" value="{$user.email|escape:"htmlall"}">
+				<input class="input input-xxlarge long" id="email" name="email" type="text" value="{$user.email|escape:"htmlall"}">
 			</div>
 		</div>
-
 		<div class="control-group">
 			<label class="control-label" for="password">Password</label>
 			<div class="controls">
@@ -33,14 +43,12 @@
 				<span class="help-block">Only enter your password if you want to change it.</span>
 			</div>
 		</div>
-
 		<div class="control-group">
 			<label class="control-label" for="confirmpassword">Confirm Password</label>
 			<div class="controls">
 				<input class="input input-xxlarge" autocomplete="off" id="confirmpassword" name="confirmpassword" type="password" value="" />
 			</div>
 		</div>
-
 		<div class="control-group">
 			<label class="control-label">Site Api/Rss Key</label>
 			<div class="controls">
@@ -48,17 +56,14 @@
 			</div>
 		</div>
 	</fieldset>
-
 	<fieldset>
 		<legend>Site Preferences</legend>
-
 		<div class="control-group">
 			<label class="control-label">Change site theme</label>
 			<div class="controls">
 				{html_options id="style" name='style' values=$themelist output=$themelist selected=$user.style}
 			</div>
 		</div>
-
 		<div class="control-group">
 			<label class="control-label" for="movieview">View Movie Page</label>
 			<div class="controls">
@@ -66,7 +71,6 @@
 				<span class="help-block">Browse movie covers. Only shows movies with known IMDB info.</span>
 			</div>
 		</div>
-
 		<div class="control-group">
 			<label class="control-label" for="musicview">View Music Page</label>
 			<div class="controls">
@@ -74,7 +78,6 @@
 				<span class="help-block">Browse music covers. Only shows music with known lookup info.</span>
 			</div>
 		</div>
-
 		<div class="control-group">
 			<label class="control-label" for="consoleview">View Console Page</label>
 			<div class="controls">
@@ -82,7 +85,6 @@
 				<span class="help-block">Browse console covers. Only shows games with known lookup info.</span>
 			</div>
 		</div>
-
 		<div class="control-group">
 			<label class="control-label" for="gameview">View Games Page</label>
 			<div class="controls">
@@ -90,7 +92,6 @@
 				<span class="help-block">Browse games covers. Only shows games with known lookup info.</span>
 			</div>
 		</div>
-
 		<div class="control-group">
 			<label class="control-label" for="bookview">View Book Page</label>
 			<div class="controls">
@@ -98,8 +99,6 @@
 				<span class="help-block">Browse book covers. Only shows books with known lookup info.</span>
 			</div>
 		</div>
-
-
 		<div class="control-group">
 			<label class="control-label" for="xxxview">View XXX Page</label>
 			<div class="controls">
@@ -107,7 +106,6 @@
 				<span class="help-block">Browse XXX covers. Only shows XXX releases with known lookup info.</span>
 			</div>
 		</div>
-
 		<div class="control-group">
 			<label class="control-label" for="exclu">Excluded Categories</label>
 			<div class="controls">
@@ -116,12 +114,9 @@
 			</div>
 		</div>
 	</fieldset>
-
 	{if $page->settings->getSetting('sabintegrationtype') > 0}
-
 	{if $page->settings->getSetting('sabintegrationtype') != 1}
 		<legend>Queue type (NZBget / Sabnzbd)</legend>
-
 		<div class="control-group">
 			<label class="control-label">Queue type</label>
 				<div class="controls">
@@ -135,19 +130,17 @@
 		<div class="control-group">
 			<label class="control-label" for="saburl">SABnzbd Url</label>
 			<div class="controls">
-				<input class="input input-xxlarge" id="saburl" class="long" name="saburl" type="text" value="{$saburl_selected}" />
+				<input class="input input-xxlarge long" id="saburl" name="saburl" type="text" value="{$saburl_selected}" />
 				<span class="help-block">The url of the SAB installation, for example: <code>http://localhost:8080/sabnzbd/</code></span>
 			</div>
 		</div>
-
 		<div class="control-group">
 			<label class="control-label" for="sabapikey">SABnzbd Api Key</label>
 			<div class="controls">
-				<input class="input input-xxlarge" id="sabapikey" class="long" name="sabapikey" type="text" value="{$sabapikey_selected}" />
+				<input class="input input-xxlarge long" id="sabapikey" name="sabapikey" type="text" value="{$sabapikey_selected}" />
 				<span class="help-block">The api key of the SAB installation. Can be the full api key or the nzb api key (as of SAB 0.6)</span>
 			</div>
 		</div>
-
 		<div class="control-group">
 			<label class="control-label" for="sabapikeytype">Api Key Type</label>
 			<div class="controls">
@@ -155,7 +148,6 @@
 				<span class="help-block">Select the type of api key you entered in the above setting. Using your full SAB api key will allow you access to the SAB queue from within this site.</span>
 			</div>
 		</div>
-
 		<div class="control-group">
 			<label class="control-label" for="sabpriority">Priority Level</label>
 			<div class="controls">
@@ -163,7 +155,6 @@
 				<span class="help-block">Set the priority level for NZBs that are added to your queue</span>
 			</div>
 		</div>
-
 		<div class="control-group">
 			<label class="control-label" for="sabsetting">Setting Storage</label>
 			<div class="controls">
@@ -171,12 +162,9 @@
 				<span class="help-block">Where to store the SAB setting.<br />&bull; <b>Cookie</b> will store the setting in your browsers coookies and will only work when using your current browser.<br/>&bull; <b>Site</b> will store the setting in your user account enabling it to work no matter where you are logged in from.<br /><span style="color:#B94A48;"><b>Please Note:</b></span> You should only store your full SAB api key with sites you trust.</span>
 			</div>
 		</div>
-
 	</fieldset>
-
 	<fieldset>
     <legend>NZBGet Integration</legend>
-
 	<div class="control-group">
             <label class="control-label" for="nzbgeturl">NZBGet Url</label>
 			<div class="controls">
@@ -184,7 +172,6 @@
                 <div class="hint">The url of the NZBGet installation, for example: http://localhost:6789/</div>
             </div>
 	</div>
-
 	<div class="control-group">
             <label class="control-label" for="nzbgetusername">NZBGet Username</label>
 			<div class="controls">
@@ -192,7 +179,6 @@
                 <div class="hint">The NZBGet ControlUsername e.g. nzbget</div>
 			</div>
 	</div>
-
 	<div class="control-group">
             <label class="control-label" for="nzbgetpassword">NABGet Password</label>
 			<div class="controls">
