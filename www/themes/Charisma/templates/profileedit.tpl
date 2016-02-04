@@ -38,6 +38,18 @@
 																<strong>Profile</strong></td>
 														</tr>
 														<tr>
+															<th width="200">First Name</th>
+															<td><input id="firstname" class="form-control" name="firstname"
+																	   type="text"
+																	   value="{$user.firstname|escape:"htmlall"}"></td>
+														</tr>
+														<tr>
+															<th width="200">Last Name</th>
+															<td><input id="lastname" class="form-control" name="lastname"
+																	   type="text"
+																	   value="{$user.lastname|escape:"htmlall"}"></td>
+														</tr>
+														<tr>
 															<th width="200">E-Mail</th>
 															<td><input id="email" class="form-control" name="email"
 																	   type="text"
