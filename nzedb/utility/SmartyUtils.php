@@ -24,11 +24,13 @@ use nzedb\Category;
 /**
  * Returns the value of the specified Category constant.
  *
- * @param string $category	Name of constant whose value to return.
+ * @param string $category Name of constant whose value to return.
+ *
+ * @return Value of the specified Category constant.
  */
 function getCategoryValue($category)
 {
-	Category::getCategoryValue($category);
+	return Category::getCategoryValue($category);
 }
 
 // Function inspired by c0r3@newznabforums adds country flags on the browse page.
