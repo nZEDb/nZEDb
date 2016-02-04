@@ -1007,3 +1007,4 @@ class Smarty_Internal_Configfileparser
         } while ($yymajor != self::YYNOCODE && $this->yyidx >= 0);
     }
 }
+
