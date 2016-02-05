@@ -97,7 +97,7 @@
 					<ul class="dropdown-menu" role="menu" aria-labelledby="cat3">
 						<li><a href="{$smarty.const.WWW_TOP}/books">All {$parentcat.title}</a></li>
 						{foreach from=$parentcat.subcatlist item=subcat}
-							{if $subcat.id == 7010}
+							{if $subcat.id == 7050}
 								<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/books?t={$subcat.id}">{$subcat.title}</a></li>
 							{else}
 								<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a></li>
