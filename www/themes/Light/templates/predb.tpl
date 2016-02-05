@@ -125,7 +125,7 @@
 					<a class="title" title="View category Books" href="{$smarty.const.WWW_TOP}/browse?t=7000">Ebooks</a>
 					{* Other *}
 				{elseif in_array({$result.category}, array('Other: E-Books'))}
-					<a class="title" title="View category Books Other" href="{$smarty.const.WWW_TOP}/browse?t={getcatval('CAT_BOOKS_OTHER')}">Ebooks Other</a>
+					<a class="title" title="View category Books Other" href="{$smarty.const.WWW_TOP}/browse?t={getCategoryValue('CAT_BOOKS_OTHER')}">Ebooks Other</a>
 
 				{elseif in_array({$result.category}, array('', 'PRE'))}
 					N/A
