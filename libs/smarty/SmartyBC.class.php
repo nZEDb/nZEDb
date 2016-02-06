@@ -31,7 +31,7 @@
 require_once(dirname(__FILE__) . '/Smarty.class.php');
 
 /**
- * Smarty Backward Compatibility Wrapper Class
+ * Smarty Backward Compatability Wrapper Class
  *
  * @package Smarty
  */
@@ -54,10 +54,11 @@ class SmartyBC extends Smarty
     /**
      * Initialize new SmartyBC object
      *
+     * @param array $options options to set during initialization, e.g. array( 'forceCompile' => false )
      */
-    public function __construct()
+    public function __construct(array $options = array())
     {
-        parent::__construct();
+        parent::__construct($options);
     }
 
     /**
@@ -107,7 +108,7 @@ class SmartyBC extends Smarty
     }
 
     /**
-     * Unregister custom function
+     * Unregisters custom function
      *
      * @param string $function name of template function
      */
@@ -136,7 +137,7 @@ class SmartyBC extends Smarty
     }
 
     /**
-     * Unregister object
+     * Unregisters object
      *
      * @param string $object name of template object
      */
@@ -159,7 +160,7 @@ class SmartyBC extends Smarty
     }
 
     /**
-     * Unregister block function
+     * Unregisters block function
      *
      * @param string $block name of template function
      */
@@ -181,7 +182,7 @@ class SmartyBC extends Smarty
     }
 
     /**
-     * Unregister compiler function
+     * Unregisters compiler function
      *
      * @param string $function name of template function
      */
@@ -202,7 +203,7 @@ class SmartyBC extends Smarty
     }
 
     /**
-     * Unregister modifier
+     * Unregisters modifier
      *
      * @param string $modifier name of template modifier
      */
@@ -223,7 +224,7 @@ class SmartyBC extends Smarty
     }
 
     /**
-     * Unregister a resource
+     * Unregisters a resource
      *
      * @param string $type name of resource
      */
@@ -244,7 +245,7 @@ class SmartyBC extends Smarty
     }
 
     /**
-     * Unregister a prefilter function
+     * Unregisters a prefilter function
      *
      * @param callable $function
      */
@@ -265,7 +266,7 @@ class SmartyBC extends Smarty
     }
 
     /**
-     * Unregister a postfilter function
+     * Unregisters a postfilter function
      *
      * @param callable $function
      */
@@ -286,7 +287,7 @@ class SmartyBC extends Smarty
     }
 
     /**
-     * Unregister an outputfilter function
+     * Unregisters an outputfilter function
      *
      * @param callable $function
      */

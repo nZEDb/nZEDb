@@ -18,9 +18,9 @@ class Smarty_Internal_Runtime_CodeFrame
      * Create code frame for compiled and cached templates
      *
      * @param Smarty_Internal_Template              $_template
-     * @param string                                $content   optional template content
+     * @param string                                $content optional template content
      * @param string                                $functions compiled template function and block code
-     * @param bool                                  $cache     flag for cache file
+     * @param bool                                  $cache   flag for cache file
      * @param \Smarty_Internal_TemplateCompilerBase $compiler
      *
      * @return string
@@ -29,17 +29,16 @@ class Smarty_Internal_Runtime_CodeFrame
                            Smarty_Internal_TemplateCompilerBase $compiler = null)
     {
         // build property code
+        $properties[ 'has_nocache_code' ] = $_template->compiled->has_nocache_code;
         $properties[ 'version' ] = Smarty::SMARTY_VERSION;
         $properties[ 'unifunc' ] = 'content_' . str_replace(array('.', ','), '_', uniqid('', true));
         if (!$cache) {
-            $properties[ 'has_nocache_code' ] = $_template->compiled->has_nocache_code;
             $properties[ 'file_dependency' ] = $_template->compiled->file_dependency;
             $properties[ 'includes' ] = $_template->compiled->includes;
             if (!empty($compiler->tpl_function)) {
                 $properties[ 'tpl_function' ] = $compiler->tpl_function;
             }
         } else {
-            $properties[ 'has_nocache_code' ] = $_template->cached->has_nocache_code;
             $properties[ 'file_dependency' ] = $_template->cached->file_dependency;
             $properties[ 'cache_lifetime' ] = $_template->cache_lifetime;
             if (!empty($_template->tpl_function)) {
@@ -50,8 +49,8 @@ class Smarty_Internal_Runtime_CodeFrame
         $output .= "/* Smarty version " . Smarty::SMARTY_VERSION . ", created on " . strftime("%Y-%m-%d %H:%M:%S") .
             "\n  from \"" . $_template->source->filepath . "\" */\n\n";
 
-        $dec = "\$_smarty_tpl->_decodeProperties(\$_smarty_tpl, " . var_export($properties, true) . ',' .
-            ($cache ? 'true' : 'false') . ")";
+        $dec = "\$_smarty_tpl->smarty->ext->_validateCompiled->decodeProperties(\$_smarty_tpl, " .
+            var_export($properties, true) . ',' . ($cache ? 'true' : 'false') . ")";
         $output .= "if ({$dec}) {\n";
         $output .= "function {$properties['unifunc']} (\$_smarty_tpl) {\n";
         // include code for plugins

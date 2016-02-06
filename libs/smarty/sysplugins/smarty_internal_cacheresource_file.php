@@ -30,7 +30,7 @@ class Smarty_Internal_CacheResource_File extends Smarty_CacheResource
         $_source_file_path = str_replace(':', '.', $_template->source->filepath);
         $_cache_id = isset($_template->cache_id) ? preg_replace('![^\w\|]+!', '_', $_template->cache_id) : null;
         $_compile_id = isset($_template->compile_id) ? preg_replace('![^\w]+!', '_', $_template->compile_id) : null;
-        $_filepath = sha1($_template->source->uid . $_template->smarty->_joined_template_dir);
+        $_filepath = $_template->source->uid;
         // if use_sub_dirs, break file into directories
         if ($_template->smarty->use_sub_dirs) {
             $_filepath = substr($_filepath, 0, 2) . DS . substr($_filepath, 2, 2) . DS . substr($_filepath, 4, 2) . DS .
@@ -98,8 +98,7 @@ class Smarty_Internal_CacheResource_File extends Smarty_CacheResource
         $_smarty_tpl = $_template;
         $_template->cached->valid = false;
         if ($update && defined('HHVM_VERSION')) {
-            eval("?>" . file_get_contents($_template->cached->filepath));
-            return true;
+            return $_template->smarty->ext->_hhvm->includeHhvm($_template, $_template->cached->filepath);
         } else {
             return @include $_template->cached->filepath;
         }
@@ -117,9 +116,7 @@ class Smarty_Internal_CacheResource_File extends Smarty_CacheResource
     {
         if ($_template->smarty->ext->_writeFile->writeFile($_template->cached->filepath, $content, $_template->smarty) === true) {
             if (function_exists('opcache_invalidate')) {
-                opcache_invalidate($_template->cached->filepath, true);
-            } elseif (function_exists('apc_compile_file')) {
-                apc_compile_file($_template->cached->filepath);
+                opcache_invalidate($_template->cached->filepath);
             }
             $cached = $_template->cached;
             $cached->timestamp = $cached->exists = is_file($cached->filepath);

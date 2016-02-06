@@ -58,8 +58,8 @@ class Smarty_Internal_Compile_Include extends Smarty_Internal_CompileBase
      *
      * @var array
      */
-    public $valid_scopes = array('local'  => true, 'parent' => true, 'root' => true,
-                                 'tpl_root' => true);
+    public $valid_scopes = array('local'  => true, 'parent' => true, 'root' => true, 'global' => true,
+                                 'smarty' => true, 'tpl_root' => true);
 
     /**
      * Compiles code for the {include} tag
@@ -124,11 +124,16 @@ class Smarty_Internal_Compile_Include extends Smarty_Internal_CompileBase
                     $_scope = Smarty::SCOPE_PARENT;
                 } elseif ($_attr['scope'] == 'root') {
                     $_scope = Smarty::SCOPE_ROOT;
+                } elseif ($_attr['scope'] == 'global') {
+                    $_scope = Smarty::SCOPE_GLOBAL;
+                } elseif ($_attr['scope'] == 'smarty') {
+                    $_scope = Smarty::SCOPE_SMARTY;
                 } elseif ($_attr['scope'] == 'tpl_root') {
                     $_scope = Smarty::SCOPE_TPL_ROOT;
                 }
-                $_scope += (isset($_attr[ 'bubble_up' ]) && $_attr[ 'bubble_up' ] == 'false') ? 0 :
-                    Smarty::SCOPE_BUBBLE_UP;
+                if ($_attr['bubble_up'] === true) {
+                    $_scope = $_scope + Smarty::SCOPE_BUBBLE_UP;
+                }
             }
         }
 
@@ -264,7 +269,7 @@ class Smarty_Internal_Compile_Include extends Smarty_Internal_CompileBase
             if (isset($_assign)) {
                 $_output .= "ob_start();\n";
             }
-            $_output .= "\$_smarty_tpl->_subTemplateRender({$fullResourceName}, {$_cache_id}, {$_compile_id}, {$_caching}, {$_cache_lifetime}, {$_vars}, {$_scope}, {$_cache_tpl}, '{$compiler->parent_compiler->mergedSubTemplatesData[$hashResourceName][$t_hash]['uid']}', '{$compiler->parent_compiler->mergedSubTemplatesData[$hashResourceName][$t_hash]['func']}');\n";
+            $_output .= "\$_smarty_tpl->smarty->ext->_subtemplate->render(\$_smarty_tpl, {$fullResourceName}, {$_cache_id}, {$_compile_id}, {$_caching}, {$_cache_lifetime}, {$_vars}, {$_scope}, {$_cache_tpl}, '{$compiler->parent_compiler->mergedSubTemplatesData[$hashResourceName][$t_hash]['uid']}', '{$compiler->parent_compiler->mergedSubTemplatesData[$hashResourceName][$t_hash]['func']}');\n";
             if (isset($_assign)) {
                 $_output .= "\$_smarty_tpl->assign({$_assign}, ob_get_clean());\n";
             }
@@ -287,7 +292,7 @@ class Smarty_Internal_Compile_Include extends Smarty_Internal_CompileBase
         if (isset($_assign)) {
             $_output .= "ob_start();\n";
         }
-        $_output .= "\$_smarty_tpl->_subTemplateRender({$fullResourceName}, $_cache_id, $_compile_id, $_caching, $_cache_lifetime, $_vars, $_scope, {$_cache_tpl});\n";
+        $_output .= "\$_smarty_tpl->smarty->ext->_subtemplate->render(\$_smarty_tpl, {$fullResourceName}, $_cache_id, $_compile_id, $_caching, $_cache_lifetime, $_vars, $_scope, {$_cache_tpl});\n";
         if (isset($_assign)) {
             $_output .= "\$_smarty_tpl->assign({$_assign}, ob_get_clean());\n";
         }
@@ -320,8 +325,8 @@ class Smarty_Internal_Compile_Include extends Smarty_Internal_CompileBase
                                                    $compiler->template->cache_id, $c_id, $_caching);
         if (!($tpl->source->handler->uncompiled) && $tpl->source->exists) {
             $compiler->parent_compiler->mergedSubTemplatesData[$hashResourceName][$t_hash]['uid'] = $tpl->source->uid;
-            if (isset($compiler->template->ext->_inheritance)) {
-                $tpl->ext->_inheritance = clone $compiler->template->ext->_inheritance;
+            if (isset($compiler->template->_inheritance)) {
+                $tpl->_inheritance = clone $compiler->template->_inheritance;
             }
             $tpl->compiled = new Smarty_Template_Compiled();
             $tpl->compiled->nocache_hash = $compiler->parent_compiler->template->compiled->nocache_hash;
@@ -333,22 +338,16 @@ class Smarty_Internal_Compile_Include extends Smarty_Internal_CompileBase
             $tpl->mustCompile = true;
             $compiler->parent_compiler->mergedSubTemplatesData[$hashResourceName][$t_hash]['nocache_hash'] =
                 $tpl->compiled->nocache_hash;
-            if ($compiler->template->source->type == 'file') {
-                $sourceInfo = $compiler->template->source->filepath;
-            } else {
-                $basename = $compiler->template->source->handler->getBasename($compiler->template->source);
-                $sourceInfo = $compiler->template->source->type .':' . ($basename ? $basename : $compiler->template->source->name);
-            }
             // get compiled code
             $compiled_code = "<?php\n\n";
-            $compiled_code .= "/* Start inline template \"{$sourceInfo}\" =============================*/\n";
+            $compiled_code .= "/* Start inline template \"{$tpl->source->type}:{$tpl->source->name}\" =============================*/\n";
             $compiled_code .= "function {$tpl->compiled->unifunc} (\$_smarty_tpl) {\n";
             $compiled_code .= "?>\n" . $tpl->compiler->compileTemplateSource($tpl, null, $compiler->parent_compiler);
             $compiled_code .= "<?php\n";
             $compiled_code .= "}\n?>\n";
             $compiled_code .= $tpl->compiler->postFilter($tpl->compiler->blockOrFunctionCode);
             $compiled_code .= "<?php\n\n";
-            $compiled_code .= "/* End inline template \"{$sourceInfo}\" =============================*/\n";
+            $compiled_code .= "/* End inline template \"{$tpl->source->type}:{$tpl->source->name}\" =============================*/\n";
             $compiled_code .= "?>";
             unset($tpl->compiler);
             if ($tpl->compiled->has_nocache_code) {

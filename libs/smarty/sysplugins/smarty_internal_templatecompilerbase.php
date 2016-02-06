@@ -17,8 +17,8 @@
  *
  * @property Smarty_Internal_SmartyTemplateCompiler $prefixCompiledCode  = ''
  * @property Smarty_Internal_SmartyTemplateCompiler $postfixCompiledCode = ''
- * @method registerPostCompileCallback($callback, $parameter = array(), $key = null, $replace = false)
- * @method unregisterPostCompileCallback($key)
+ * @method Smarty_Internal_SmartyTemplateCompiler registerPostCompileCallback($callback, $parameter = array(), $key = null, $replace = false)
+ * @method Smarty_Internal_SmartyTemplateCompiler unregisterPostCompileCallback($key)
  */
 abstract class Smarty_Internal_TemplateCompilerBase
 {
@@ -407,6 +407,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
             $this->smarty->_debug->end_compile($this->template);
         }
         $this->parent_compiler = null;
+        $this->template = null;
         $this->parser = null;
         return $_compiled_code;
     }
@@ -806,7 +807,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
 
                     $expressions = array(// replace multiple spaces between tags by a single space
                                          // can't remove them entirely, becaue that might break poorly implemented CSS display:inline-block elements
-                                         '#(:SMARTY@!@|>)\s+(?=@!@SMARTY:|<)#s'                                    => '\1\2',
+                                         '#(:SMARTY@!@|>)\s+(?=@!@SMARTY:|<)#s'                                    => '\1 \2',
                                          // remove spaces between attributes (but not in attribute values!)
                                          '#(([a-z0-9]\s*=\s*("[^"]*?")|(\'[^\']*?\'))|<[a-z0-9_]+)\s+([a-z/>])#is' => '\1 \5',
                                          '#^\s+<#Ss'                                                               => '<',

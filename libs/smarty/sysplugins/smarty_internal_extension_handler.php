@@ -11,13 +11,19 @@
  * @author     Uwe Tews
  *
  * @property Smarty_Internal_Runtime_Inheritance      $_inheritance
+ * @property Smarty_Internal_Runtime_SubTemplate      $_subTemplate
  * @property Smarty_Internal_Runtime_TplFunction      $_tplFunction
+ * @property Smarty_Internal_Runtime_Var              $_var
+ * @property Smarty_Internal_Runtime_Config           $_config
  * @property Smarty_Internal_Runtime_Foreach          $_foreach
+ * @property Smarty_Internal_Runtime_Hhvm             $_hhvm
  * @property Smarty_Internal_Runtime_WriteFile        $_writeFile
+ * @property Smarty_Internal_Runtime_ValidateCompiled $_validateCompiled
  * @property Smarty_Internal_Runtime_CodeFrame        $_codeFrame
  * @property Smarty_Internal_Runtime_FilterHandler    $_filterHandler
  * @property Smarty_Internal_Runtime_GetIncludePath   $_getIncludePath
  * @property Smarty_Internal_Runtime_UpdateScope      $_updateScope
+ * @property Smarty_Internal_Runtime_IsCached         $_isCached
  * @property Smarty_Internal_Runtime_CacheModify      $_cacheModify
  * @property Smarty_Internal_Runtime_UpdateCache      $_updateCache
  * @property Smarty_Internal_Method_GetTemplateVars   $getTemplateVars
@@ -123,12 +129,15 @@ class Smarty_Internal_Extension_Handler
     public function __get($property_name)
     {
         // object properties of runtime template extensions will start with '_'
-        if ($property_name[ 0 ] == '_') {
+        if ($property_name[0] == '_') {
             $class = 'Smarty_Internal_Runtime_' . ucfirst(substr($property_name, 1));
         } else {
             $class = 'Smarty_Internal_Method_' . ucfirst($property_name);
         }
-        return $this->$property_name = new $class();
+        if (class_exists($class)) {
+            return $this->$property_name = new $class();
+        }
+        return $this;
     }
 
     /**
@@ -142,7 +151,7 @@ class Smarty_Internal_Extension_Handler
      */
     public function __call($name, $args)
     {
-        return call_user_func_array(array(new Smarty_Internal_Undefined(), $name), array($this));
+        return call_user_func_array(array(new Smarty_Internal_Undefined(), $name), $args);
     }
 
 }
