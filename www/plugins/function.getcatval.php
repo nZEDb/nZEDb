@@ -21,10 +21,11 @@ use nzedb\Category;
 
 /**
  * Returns the value of the specified Category constant.
+ * @usage {getcatval category=CAT_BOOKS_COMICS}
  *
- * @param string $category Name of constant whose value to return.
+ *@param string $category Name of constant whose value to return.
  *
- * @return Value of the specified Category constant.
+ *@return Value of the specified Category constant.
  */
 function smarty_function_getcatval($params)
 {
