@@ -115,8 +115,8 @@ class BasePage
 		$this->smarty->setConfigDir(SMARTY_DIR . 'configs/');
 		$this->smarty->setCacheDir(SMARTY_DIR . 'cache/');
 		$this->smarty->setPluginsDir([
+			nZEDb_WWW . 'plugins/',
 			SMARTY_DIR . 'plugins/',
-			nZEDb_WWW . 'plugins/'
 		]);
 		$this->smarty->error_reporting = ((nZEDb_DEBUG ? E_ALL : E_ALL - E_NOTICE));
 
