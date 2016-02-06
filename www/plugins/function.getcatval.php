@@ -26,9 +26,9 @@ use nzedb\Category;
  *
  * @return Value of the specified Category constant.
  */
-function smarty_function_getcatval($category)
+function smarty_function_getcatval($params)
 {
-	return Category::getCategoryValue($category);
+	return Category::getCategoryValue($params['category']);
 }
 
 ?>
