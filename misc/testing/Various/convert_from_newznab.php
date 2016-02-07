@@ -259,11 +259,11 @@ echo "Skipping releaseregex table: Not needed with nZEDb\n";
 //      *8000   Misc                    Books
 
 //      name                            nn+                     nZEDb
-//      Comics                          7030/7000       8020/8000
-//      EBook                           7020/7000       8010/8000
-//      Mags                            7010/7000       8030/8000
+//      Comics                          7030/7000       7030/7000
+//      EBook                           7020/7000       7020/7000
+//      Mags                            7010/7000       7010/7000
 //      Pack                            6050/6000       6070/6000
-//      Misc                            0                       7010/7000
+//      Misc                            0                       7999/7000
 //      Other                           0                       7000/null
 //      Other                           0                       1090/1000
 //  Other                               0                       3050/3000
