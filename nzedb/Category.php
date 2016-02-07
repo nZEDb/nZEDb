@@ -9,8 +9,9 @@ class Category
 	const BOOKS_EBOOK = '7020';
 	const BOOKS_FOREIGN = '7060';
 	const BOOKS_MAGAZINES = '7010';
-	const BOOKS_UNKNOWN = '7999';
+	const BOOKS_ROOT = '7000';
 	const BOOKS_TECHNICAL = '7040';
+	const BOOKS_UNKNOWN = '7999';
 	const GAME_3DS = '1110';
 	const GAME_NDS = '1010';
 	const GAME_OTHER = '1090';
@@ -18,6 +19,7 @@ class Category
 	const GAME_PS4 = '1180';
 	const GAME_PSP = '1020';
 	const GAME_PSVITA = '1120';
+	const GAME_ROOT = '1000';
 	const GAME_WII = '1030';
 	const GAME_WIIU = '1130';
 	const GAME_WIIWARE = '1060';
@@ -31,6 +33,7 @@ class Category
 	const MOVIE_FOREIGN = '2010';
 	const MOVIE_HD = '2040';
 	const MOVIE_OTHER = '2020';
+	const MOVIE_ROOT = '2000';
 	const MOVIE_SD = '2030';
 	const MOVIE_WEBDL = '2080';
 	const MUSIC_AUDIOBOOK = '3030';
@@ -38,17 +41,11 @@ class Category
 	const MUSIC_LOSSLESS = '3040';
 	const MUSIC_MP3 = '3010';
 	const MUSIC_OTHER = '3050';
+	const MUSIC_ROOT = '3000';
 	const MUSIC_VIDEO = '3020';
 	const OTHER_HASHED = '0020';
 	const OTHER_MISC = '0010';
-	const BOOKS_ROOT = '7000';
-	const GAME_ROOT = '1000';
-	const MOVIE_ROOT = '2000';
-	const MUSIC_ROOT = '3000';
 	const OTHER_ROOT = '0000';
-	const PC_ROOT = '4000';
-	const TV_ROOT = '5000';
-	const XXX_ROOT = '6000';
 	const PC_0DAY = '4010';
 	const PC_GAMES = '4050';
 	const PC_ISO = '4020';
@@ -56,11 +53,13 @@ class Category
 	const PC_PHONE_ANDROID = '4070';
 	const PC_PHONE_IOS = '4060';
 	const PC_PHONE_OTHER = '4040';
+	const PC_ROOT = '4000';
 	const TV_ANIME = '5070';
 	const TV_DOCUMENTARY = '5080';
 	const TV_FOREIGN = '5020';
 	const TV_HD = '5040';
 	const TV_OTHER = '5050';
+	const TV_ROOT = '5000';
 	const TV_SD = '5030';
 	const TV_SPORT = '5060';
 	const TV_WEBDL = '5010';
@@ -68,6 +67,7 @@ class Category
 	const XXX_IMAGESET = '6060';
 	const XXX_OTHER = '6050';
 	const XXX_PACKS = '6070';
+	const XXX_ROOT = '6000';
 	const XXX_SD = '6080';
 	const XXX_WEBDL = '6090';
 	const XXX_WMV = '6020';
