@@ -66,6 +66,7 @@ class Page extends BasePage
 
 		$this->smarty->assign('consolecatlist', $consoleCatList);
 		$this->smarty->assign('parentcatlist', $parentcatlist);
+		$this->smarty->assign('category', $category);
 
 		$searchStr = '';
 		if ($this->page == 'search' && isset($_REQUEST["id"])) {
