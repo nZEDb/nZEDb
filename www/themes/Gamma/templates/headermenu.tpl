@@ -59,7 +59,7 @@
 			<li><a href="{$smarty.const.WWW_TOP}/browse?t={$parentcat.id}">{$parentcat.title}</a></li>
 			<li class="divider"></li>
 			{foreach from=$parentcat.subcatlist item=subcat}
-			{if ($subcat.id == {getCategoryValue('CAT_BOOKS_COMICS')} && $userdata.bookview=="1")}
+			{if ($subcat.id == {getCategoryValue('BOOKS_COMICS')} && $userdata.bookview=="1")}
 			<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/books">{$subcat.title}</a></li>
 			{else}
 			<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a></li>
@@ -129,7 +129,7 @@
 			<li><a href="{$smarty.const.WWW_TOP}/browse">All</a></li>
 			<li class="divider"></li>
 			{/if}
-			{if ($subcat.id == {getCategoryValue('CAT_BOOKS_COMICS')} && $userdata.bookview=="1")}
+			{if ($subcat.id == {getCategoryValue('BOOKS_COMICS')} && $userdata.bookview=="1")}
 			<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/books">{$subcat.title}</a></li>
 			{else}
 			<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a></li>

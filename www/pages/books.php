@@ -12,12 +12,12 @@ $book = new Books(['Settings' => $page->settings]);
 $cat = new Category(['Settings' => $page->settings]);
 $fail = new DnzbFailures(['Settings' => $page->settings]);
 
-$boocats = $cat->getChildren(Category::CAT_PARENT_BOOKS);
+$boocats = $cat->getChildren(Category::BOOKS_ROOT);
 $btmp = array();
 foreach ($boocats as $bcat) {
 	$btmp[$bcat['id']] = $bcat;
 }
-$category = Category::CAT_PARENT_BOOKS;
+$category = Category::BOOKS_ROOT;
 if (isset($_REQUEST["t"]) && array_key_exists($_REQUEST['t'], $btmp)) {
 	$category = $_REQUEST["t"] + 0;
 }

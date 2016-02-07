@@ -14,12 +14,12 @@ $cat = new Category(['Settings' => $page->settings]);
 $gen = new Genres(['Settings' => $page->settings]);
 $fail = new DnzbFailures(['Settings' => $page->settings]);
 
-$musiccats = $cat->getChildren(Category::CAT_PARENT_MUSIC);
+$musiccats = $cat->getChildren(Category::MUSIC_ROOT);
 $mtmp = array();
 foreach ($musiccats as $mcat) {
 	$mtmp[$mcat['id']] = $mcat;
 }
-$category = Category::CAT_PARENT_MUSIC;
+$category = Category::MUSIC_ROOT;
 if (isset($_REQUEST['t']) && array_key_exists($_REQUEST['t'], $mtmp)) {
 	$category = $_REQUEST['t'] + 0;
 }

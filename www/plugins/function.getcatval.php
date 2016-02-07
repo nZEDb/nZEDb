@@ -21,7 +21,7 @@ use nzedb\Category;
 
 /**
  * Returns the value of the specified Category constant.
- * @usage {getcatval category=CAT_BOOKS_COMICS}
+ * @usage {getcatval category=BOOKS_COMICS}
  *
  *@param string $category Name of constant whose value to return.
  *

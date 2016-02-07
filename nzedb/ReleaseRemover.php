@@ -350,7 +350,7 @@ class ReleaseRemover
 			AND r.categoryid NOT IN (%d)
 			AND r.searchname REGEXP '^[a-zA-Z0-9]{15,}$'
 			%s",
-			Category::CAT_OTHER_HASHED,
+			Category::OTHER_HASHED,
 			$this->crapTime
 		);
 
@@ -378,7 +378,7 @@ class ReleaseRemover
 			AND r.categoryid NOT IN (%d, %d)
 			AND r.searchname REGEXP '[a-zA-Z0-9]{25,}'
 			%s",
-			Category::CAT_OTHER_MISC, Category::CAT_OTHER_HASHED, $this->crapTime
+			Category::OTHER_MISC, Category::OTHER_HASHED, $this->crapTime
 		);
 
 		if ($this->checkSelectQuery() === false) {
@@ -405,7 +405,7 @@ class ReleaseRemover
 			AND r.categoryid NOT IN (%d)
 			AND r.searchname REGEXP '^[a-zA-Z0-9]{0,5}$'
 			%s",
-			Category::CAT_OTHER_MISC, $this->crapTime
+			Category::OTHER_MISC, $this->crapTime
 		);
 
 		if ($this->checkSelectQuery() === false) {
@@ -453,12 +453,12 @@ class ReleaseRemover
 			$ftJoin,
 			$this->pdo->escapeString('\.exe[sc]'),
 			$this->pdo->likeString('.exe', true, false),
-			Category::CAT_PC_0DAY,
-			Category::CAT_PC_GAMES,
-			Category::CAT_PC_ISO,
-			Category::CAT_PC_MAC,
-			Category::CAT_OTHER_MISC,
-			Category::CAT_OTHER_HASHED,
+			Category::PC_0DAY,
+			Category::PC_GAMES,
+			Category::PC_ISO,
+			Category::PC_MAC,
+			Category::OTHER_MISC,
+			Category::OTHER_HASHED,
 			$execFT,
 			$this->crapTime
 		);
@@ -587,15 +587,15 @@ class ReleaseRemover
 			$this->pdo->likeString('recovery', true, true),
 			$this->pdo->likeString('reset', true, true),
 			$this->pdo->likeString('unlocker', true, true),
-			Category::CAT_PC_GAMES,
-			Category::CAT_PC_0DAY,
-			Category::CAT_PC_ISO,
-			Category::CAT_PC_MAC,
-			Category::CAT_PC_PHONE_ANDROID,
-			Category::CAT_PC_PHONE_IOS,
-			Category::CAT_PC_PHONE_OTHER,
-			Category::CAT_OTHER_MISC,
-			Category::CAT_OTHER_HASHED,
+			Category::PC_GAMES,
+			Category::PC_0DAY,
+			Category::PC_ISO,
+			Category::PC_MAC,
+			Category::PC_PHONE_ANDROID,
+			Category::PC_PHONE_IOS,
+			Category::PC_PHONE_OTHER,
+			Category::OTHER_MISC,
+			Category::OTHER_HASHED,
 			$passFT,
 			$this->crapTime
 		);
@@ -621,17 +621,17 @@ class ReleaseRemover
 			WHERE r.totalpart = 1
 			AND r.size < 2097152
 			AND r.categoryid NOT IN (%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d) %s",
-			Category::CAT_MUSIC_MP3,
-			Category::CAT_BOOKS_COMICS,
-			Category::CAT_BOOKS_EBOOK,
-			Category::CAT_BOOKS_FOREIGN,
-			Category::CAT_BOOKS_MAGAZINES,
-			Category::CAT_BOOKS_TECHNICAL,
-			Category::CAT_BOOKS_OTHER,
-			Category::CAT_PC_0DAY,
-			Category::CAT_PC_GAMES,
-			Category::CAT_OTHER_MISC,
-			Category::CAT_OTHER_HASHED,
+			Category::MUSIC_MP3,
+			Category::BOOKS_COMICS,
+			Category::BOOKS_EBOOK,
+			Category::BOOKS_FOREIGN,
+			Category::BOOKS_MAGAZINES,
+			Category::BOOKS_TECHNICAL,
+			Category::BOOKS_UNKNOWN,
+			Category::PC_0DAY,
+			Category::PC_GAMES,
+			Category::OTHER_MISC,
+			Category::OTHER_HASHED,
 			$this->crapTime
 		);
 
@@ -694,21 +694,21 @@ class ReleaseRemover
 			AND r.categoryid IN (%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d) %s %s",
 			$ftJoin,
 			$this->pdo->likeString('sample', true, true),
-			Category::CAT_TV_ANIME,
-			Category::CAT_TV_DOCUMENTARY,
-			Category::CAT_TV_FOREIGN,
-			Category::CAT_TV_HD,
-			Category::CAT_TV_OTHER,
-			Category::CAT_TV_SD,
-			Category::CAT_TV_SPORT,
-			Category::CAT_TV_WEBDL,
-			Category::CAT_MOVIE_3D,
-			Category::CAT_MOVIE_BLURAY,
-			Category::CAT_MOVIE_DVD,
-			Category::CAT_MOVIE_FOREIGN,
-			Category::CAT_MOVIE_HD,
-			Category::CAT_MOVIE_OTHER,
-			Category::CAT_MOVIE_SD,
+			Category::TV_ANIME,
+			Category::TV_DOCUMENTARY,
+			Category::TV_FOREIGN,
+			Category::TV_HD,
+			Category::TV_OTHER,
+			Category::TV_SD,
+			Category::TV_SPORT,
+			Category::TV_WEBDL,
+			Category::MOVIE_3D,
+			Category::MOVIE_BLURAY,
+			Category::MOVIE_DVD,
+			Category::MOVIE_FOREIGN,
+			Category::MOVIE_HD,
+			Category::MOVIE_OTHER,
+			Category::MOVIE_SD,
 			$sampleFT,
 			$this->crapTime
 		);
@@ -1031,17 +1031,17 @@ class ReleaseRemover
 	protected function removeCodecPoster()
 	{
 		$categories = sprintf("r.categoryid IN (%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d)",
-			Category::CAT_MOVIE_3D,
-			Category::CAT_MOVIE_BLURAY,
-			Category::CAT_MOVIE_DVD,
-			Category::CAT_MOVIE_FOREIGN,
-			Category::CAT_MOVIE_HD,
-			Category::CAT_MOVIE_OTHER,
-			Category::CAT_MOVIE_SD,
-			Category::CAT_XXX_WMV,
-			Category::CAT_XXX_X264,
-			Category::CAT_XXX_XVID,
-			Category::CAT_XXX_OTHER
+			Category::MOVIE_3D,
+			Category::MOVIE_BLURAY,
+			Category::MOVIE_DVD,
+			Category::MOVIE_FOREIGN,
+			Category::MOVIE_HD,
+			Category::MOVIE_OTHER,
+			Category::MOVIE_SD,
+			Category::XXX_WMV,
+			Category::XXX_X264,
+			Category::XXX_XVID,
+			Category::XXX_OTHER
 		);
 
 		$regex =

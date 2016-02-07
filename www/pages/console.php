@@ -14,12 +14,12 @@ $cat = new Category(['Settings' => $page->settings]);
 $gen = new Genres(['Settings' => $page->settings]);
 $fail = new DnzbFailures(['Settings' => $page->settings]);
 
-$concats = $cat->getChildren(Category::CAT_PARENT_GAME);
+$concats = $cat->getChildren(Category::GAME_ROOT);
 $ctmp = array();
 foreach ($concats as $ccat) {
 	$ctmp[$ccat['id']] = $ccat;
 }
-$category = Category::CAT_PARENT_GAME;
+$category = Category::GAME_ROOT;
 if (isset($_REQUEST["t"]) && array_key_exists($_REQUEST['t'], $ctmp)) {
 	$category = $_REQUEST["t"] + 0;
 }

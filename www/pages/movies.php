@@ -12,12 +12,12 @@ $movie = new Movie(['Settings' => $page->settings]);
 $cat = new Category(['Settings' => $page->settings]);
 $fail = new DnzbFailures(['Settings' => $page->settings]);
 
-$moviecats = $cat->getChildren(Category::CAT_PARENT_MOVIE);
+$moviecats = $cat->getChildren(Category::MOVIE_ROOT);
 $mtmp = [];
 foreach ($moviecats as $mcat) {
 	$mtmp[$mcat['id']] = $mcat;
 }
-$category = Category::CAT_PARENT_MOVIE;
+$category = Category::MOVIE_ROOT;
 if (isset($_REQUEST['t']) && array_key_exists($_REQUEST['t'], $mtmp)) {
 	$category = $_REQUEST['t'] + 0;
 }
