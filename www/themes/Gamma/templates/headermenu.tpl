@@ -95,7 +95,7 @@
 				{/if}
 			</ul>
 		</li>
-	{elseif $parentcat.id == {getCategoryValue('BOOKS_ROOT')}}
+	{elseif $parentcat.id == {getcatval category=BOOKS_ROOT}}
 		<li class="dropdown">
 			<a id="drop{$parentcat.id}"
 			   class="dropdown-toggle"
@@ -107,7 +107,7 @@
 				{if $userdata.bookview == "1"}
 					<li><a href="{$smarty.const.WWW_TOP}/books">{$parentcat.title}</a></li>
 				{else}
-					<li><a href="{$smarty.const.WWW_TOP}/browse?t=7000">{$parentcat.title}</a></li>
+					<li><a href="{$smarty.const.WWW_TOP}/browse?t={getcatval category=BOOKS_ROOT}">{$parentcat.title}</a></li>
 				{/if}
 				<hr>
 				{foreach from=$parentcat.subcatlist item=subcat}
