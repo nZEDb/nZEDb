@@ -14,7 +14,7 @@ class Category
 	const BOOKS_UNKNOWN = '7999';
 	const GAME_3DS = '1110';
 	const GAME_NDS = '1010';
-	const GAME_OTHER = '1090';
+	const GAME_OTHER = '1999';
 	const GAME_PS3 = '1080';
 	const GAME_PS4 = '1180';
 	const GAME_PSP = '1020';
@@ -32,7 +32,7 @@ class Category
 	const MOVIE_DVD = '2070';
 	const MOVIE_FOREIGN = '2010';
 	const MOVIE_HD = '2040';
-	const MOVIE_OTHER = '2020';
+	const MOVIE_OTHER = '2999';
 	const MOVIE_ROOT = '2000';
 	const MOVIE_SD = '2030';
 	const MOVIE_WEBDL = '2080';
@@ -40,7 +40,7 @@ class Category
 	const MUSIC_FOREIGN = '3060';
 	const MUSIC_LOSSLESS = '3040';
 	const MUSIC_MP3 = '3010';
-	const MUSIC_OTHER = '3050';
+	const MUSIC_OTHER = '3999';
 	const MUSIC_ROOT = '3000';
 	const MUSIC_VIDEO = '3020';
 	const OTHER_HASHED = '0020';
@@ -58,14 +58,14 @@ class Category
 	const TV_DOCUMENTARY = '5080';
 	const TV_FOREIGN = '5020';
 	const TV_HD = '5040';
-	const TV_OTHER = '5050';
+	const TV_OTHER = '5999';
 	const TV_ROOT = '5000';
 	const TV_SD = '5030';
 	const TV_SPORT = '5060';
 	const TV_WEBDL = '5010';
 	const XXX_DVD = '6010';
 	const XXX_IMAGESET = '6060';
-	const XXX_OTHER = '6050';
+	const XXX_OTHER = '6999';
 	const XXX_PACKS = '6070';
 	const XXX_ROOT = '6000';
 	const XXX_SD = '6080';

@@ -724,7 +724,7 @@ class Music
 					FROM releases
 					WHERE musicinfoid IS NULL
 					AND nzbstatus = 1 %s
-					AND categoryid IN (3010, 3040, 3050)
+					AND categoryid IN (3010, 3040, 3999)
 					ORDER BY postdate DESC
 					LIMIT %d',
 					$this->renamed,

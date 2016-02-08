@@ -262,15 +262,15 @@ echo "Skipping releaseregex table: Not needed with nZEDb\n";
 //      Comics                          7030/7000       7030/7000
 //      EBook                           7020/7000       7020/7000
 //      Mags                            7010/7000       7010/7000
-//      Pack                            6050/6000       6070/6000
+//      Pack                            6999/6000       6070/6000
 //      Misc                            0                       7999/7000
 //      Other                           0                       7000/null
-//      Other                           0                       1090/1000
-//  Other                               0                       3050/3000
+//      Other                           0                       1999/1000
+//  Other                               0                       3999/3000
 //      3D                                      2060/2000       2050/2000
 //      BluRay                          2050/2000       2060/2000
 //      Books                           7000/null       8000/null
-//      Other                           6070/6000       6050/6000
+//      Other                           6070/6000       6999/6000
 //      Other                           8010/8000       8050/8000
 
 convertTable($pdo,
@@ -278,7 +278,7 @@ convertTable($pdo,
 			 "releases",
 			 "INSERT INTO " . $nZEDB_schema .
 			 ".releases (adddate, anidbid, bookinfoid, categoryid, comments, completion, consoleinfoid, fromname, grabs, group_id, guid, haspreview, id, imdbid, musicinfoid, name, passwordstatus, postdate, rarinnerfilecount, searchname, size, totalpart, nzb_guid) " .
-			 "SELECT adddate, anidbID, bookinfoID, case categoryID when 7030 then 8020 when 7020 then 8010 when 7010 then 8030 when 6050 then 6070 when 2060 then 2050 when 2050 then 2060 when 7000 then 8000 when 6070 then 6050 when 8010 then 8050 else categoryID end, comments, completion, consoleinfoID, fromname, grabs, group_id, guid, haspreview, ID, imdbID, musicinfoID, name, passwordstatus, postdate, rarinnerfilecount, searchname, size, totalpart, UNHEX(gid) FROM " .
+			 "SELECT adddate, anidbID, bookinfoID, case categoryID when 7030 then 8020 when 7020 then 8010 when 7010 then 8030 when 6999 then 6070 when 2060 then 2050 when 2050 then 2060 when 7000 then 8000 when 6070 then 6999 when 8010 then 8050 else categoryID end, comments, completion, consoleinfoID, fromname, grabs, group_id, guid, haspreview, ID, imdbID, musicinfoID, name, passwordstatus, postdate, rarinnerfilecount, searchname, size, totalpart, UNHEX(gid) FROM " .
 			 $nn_schema . ".releases",
 			 $runQueries);
 

@@ -124,7 +124,7 @@
 						<a class="title" title="View category XXX x264" href="{$smarty.const.WWW_TOP}/browse?t=6040">XXX HD</a>
 						{* Other *}
 					{elseif in_array({$result.category}, array('xxx-videos'))}
-						<a class="title" title="View category XXX Other" href="{$smarty.const.WWW_TOP}/browse?t=6050">XXX Other</a>
+						<a class="title" title="View category XXX Other" href="{$smarty.const.WWW_TOP}/browse?t=6999">XXX Other</a>
 						{* Imageset *}
 					{elseif in_array({$result.category}, array('XXX-IMGSET'))}
 						<a class="title" title="View category XXX Imageset" href="{$smarty.const.WWW_TOP}/browse?t=6060">XXX Imagesets</a>
