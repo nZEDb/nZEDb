@@ -125,10 +125,6 @@
 			<li><a href="/browse?t=0020">Hashed</a></li>
 		</ul>
 	</li>
-		</ul>
-	</li>
-	{/if}
-	{/foreach}
 </ul>
 <ul class="nav pull-left">
 	<li class="">
