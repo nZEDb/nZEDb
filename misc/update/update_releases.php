@@ -1,11 +1,13 @@
 <?php
 require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'indexer.php');
 
+use nzedb\Category;
 use nzedb\ConsoleTools;
 use nzedb\NNTP;
 use nzedb\db\Settings;
 use nzedb\processing\ProcessReleases;
 
+$category = new Category();
 $pdo = new Settings();
 
 if (isset($argv[2]) && $argv[2] === 'true') {
@@ -37,7 +39,7 @@ if (isset($argv[1]) && isset($argv[2])) {
 	} else if ($argv[1] == 5 && ($argv[2] == 'true' || $argv[2] == 'false')) {
 		echo $pdo->log->header("Categorizing all non-categorized releases in other->misc using usenet subject. This can take a while, be patient.");
 		$timestart = TIME();
-		$relcount = $releases->categorizeRelease('name', 'WHERE iscategorized = 0 AND categoryID = 0010');
+		$relcount = $releases->categorizeRelease('name', "WHERE iscategorized = 0 AND categoryID = " . Category::OTHER_MISC);
 		$time = $consoletools->convertTime(TIME() - $timestart);
 		echo $pdo->log->primary("\n" . 'Finished categorizing ' . $relcount . ' releases in ' . $time . " seconds, using the usenet subject.");
 	} else if ($argv[1] == 6 && $argv[2] == 'true') {
@@ -50,7 +52,15 @@ if (isset($argv[1]) && isset($argv[2])) {
 	} else if ($argv[1] == 6 && $argv[2] == 'false') {
 		echo $pdo->log->header("Categorizing releases in misc sections using the searchname. This can take a while, be patient.");
 		$timestart = TIME();
-		$relcount = $releases->categorizeRelease('searchname', 'WHERE categoryID IN (1090, 2020, 3050, 5050, 6050, 0010)');
+		$relcount = $releases->categorizeRelease('searchname',
+				sprintf("WHERE categoryID IN (%s, %s, %s, %s, %s, %s)",
+					Category::GAME_OTHER,
+					Category::MOVIE_OTHER,
+					Category::MUSIC_OTHER,
+					Category::TV_OTHER,
+					Category::XXX_OTHER,
+					Category::OTHER_MISC
+				));
 		$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 		$time = $consoletools->convertTime(TIME() - $timestart);
 		echo $pdo->log->primary("\n" . 'Finished categorizing ' . $relcount . ' releases in ' . $time . " seconds, using the search name.");

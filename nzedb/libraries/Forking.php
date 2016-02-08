@@ -756,7 +756,7 @@ class Forking extends \fork_daemon
 						FROM releases
 						WHERE nzbstatus = %d
 						AND imdbid IS NULL
-						AND categoryid BETWEEN 2000 AND 2999
+						AND categoryid BETWEEN 2000 AND {$category::MOVIE_OTHER}
 						%s %s
 						LIMIT 1',
 						NZB::NZB_ADDED,
@@ -781,7 +781,7 @@ class Forking extends \fork_daemon
 					FROM releases
 					WHERE nzbstatus = %d
 					AND imdbid IS NULL
-					AND categoryid BETWEEN 2000 AND 2999
+					AND categoryid BETWEEN ' . Category::MOVIE_ROOT . ' AND ' . Category::MOVIE_OTHER . '
 					%s %s
 					GROUP BY LEFT(guid, 1)
 					LIMIT 16',

@@ -1082,7 +1082,7 @@ class Releases
 	{
 		$whereSql = sprintf(
 			"%s
-			WHERE r.categoryid BETWEEN 2000 AND 2999
+			WHERE r.categoryid BETWEEN " . Category::MOVIE_ROOT . " AND " . Category::MOVIE_OTHER . "
 			AND r.nzbstatus = %d
 			AND r.passwordstatus %s
 			%s %s %s %s",
@@ -1437,7 +1437,7 @@ class Releases
 				m.cover
 			FROM releases r
 			INNER JOIN movieinfo m USING (imdbid)
-			WHERE r.categoryid BETWEEN 2000 AND 2999
+			WHERE r.categoryid BETWEEN " . Category::MOVIE_ROOT . " AND " . Category::MOVIE_OTHER . "
 			AND m.imdbid > 0
 			AND m.cover = 1
 			AND r.id in (select max(id) from releases where imdbid > 0 group by imdbid)
@@ -1481,7 +1481,7 @@ class Releases
 				con.cover
 			FROM releases r
 			INNER JOIN consoleinfo con ON r.consoleinfoid = con.id
-			WHERE r.categoryid BETWEEN 1000 AND 1999
+			WHERE r.categoryid BETWEEN " . Category::GAME_ROOT . " AND " . Category::GAME_OTHER . "
 			AND con.id > 0
 			AND con.cover > 0
 			AND r.id in (select max(id) from releases where consoleinfoid > 0 group by consoleinfoid)
@@ -1525,7 +1525,7 @@ class Releases
 				m.cover
 			FROM releases r
 			INNER JOIN musicinfo m ON r.musicinfoid = m.id
-			WHERE r.categoryid BETWEEN 3000 AND 3999
+			WHERE r.categoryid BETWEEN " . Category::MUSIC_ROOT . " AND " . Category::MUSIC_OTHER . "
 			AND r.categoryid != 3030
 			AND m.id > 0
 			AND m.cover > 0

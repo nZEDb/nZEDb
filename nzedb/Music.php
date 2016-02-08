@@ -724,10 +724,13 @@ class Music
 					FROM releases
 					WHERE musicinfoid IS NULL
 					AND nzbstatus = 1 %s
-					AND categoryid IN (3010, 3040, 3999)
+					AND categoryid IN (%s, %s, %s)
 					ORDER BY postdate DESC
 					LIMIT %d',
 					$this->renamed,
+					Category::MUSIC_MP3,
+					Category::MUSIC_LOSSLESS,
+					Category::MUSIC_OTHER,
 					$this->musicqty
 				)
 		);

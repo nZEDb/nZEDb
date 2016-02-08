@@ -5,6 +5,10 @@ use nzedb\db\Settings;
 
 class Category
 {
+	/**
+	 * Category constants.
+	 * Do NOT use the values, as they may change, always use the constant - that's what it's for.
+	 */
 	const BOOKS_COMICS = '7030';
 	const BOOKS_EBOOK = '7020';
 	const BOOKS_FOREIGN = '7060';

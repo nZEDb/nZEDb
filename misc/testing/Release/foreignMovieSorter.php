@@ -1,6 +1,7 @@
 <?php
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
+use nzedb\Category;
 use nzedb\Categorize;
 use nzedb\db\Settings;
 
@@ -63,5 +64,5 @@ function determineMovieCategory($name)
 		return "2040";
 	}
 
-	return "2999";
+	return Category::MOVIE_OTHER;
 }

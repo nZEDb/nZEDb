@@ -1,6 +1,7 @@
 <?php
 namespace nzedb;
 
+use nzedb\Category;
 use nzedb\db\Settings;
 use libs\AmazonProductAPI;
 
@@ -70,6 +71,7 @@ class Console
 			'Settings' => null,
 		];
 		$options += $defaults;
+		$category = new Category();
 
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
@@ -85,7 +87,7 @@ class Console
 			$this->renamed = 'AND isrenamed = 1';
 		}
 		//$this->cleanconsole = ($this->pdo->getSetting('lookupgames') == 2) ? 'AND isrenamed = 1' : '';
-		$this->catWhere = 'AND categoryid BETWEEN 1000 AND 1999 ';
+		$this->catWhere = "AND categoryid BETWEEN " . Category::GAME_ROOT . " AND " . Category::GAME_OTHER;
 		$this->failCache = array();
 	}
 
