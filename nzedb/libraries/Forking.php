@@ -1,6 +1,7 @@
 <?php
 namespace nzedb\libraries;
 
+use nzedb\Category;
 use nzedb\ColorCLI;
 use nzedb\Nfo;
 use nzedb\NNTP;
