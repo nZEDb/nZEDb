@@ -35,7 +35,7 @@
 										<th></th>
 										<th></th>
 									</tr>
-									{foreach from=$results item=result}
+									{foreach $results as $result}
 										<tr class="{cycle values=",alt"}">
 											<td class="predb" style="text-align:center;">
 												{$result.predate|date_format:"%Y-%m-%d %H:%M:%S"}

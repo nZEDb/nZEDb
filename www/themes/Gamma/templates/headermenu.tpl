@@ -1,34 +1,34 @@
 <ul class="nav" role="navigation">
-	{foreach from=$parentcatlist item=parentcat}
-	{if $parentcat.id == 1000 && $userdata.consoleview=="1"}
+	{foreach $parentcatlist as $parentcat}
+	{if $parentcat.id == 1000 && $userdata.consoleview == "1"}
 		<li class="dropdown">
 		<a id="drop1" role="button" class="dropdown-toggle" data-toggle="dropdown" href="#">{$parentcat.title} <b class="caret"></b></a>
 		<ul class="dropdown-menu" role="menu" aria-labelledby="drop1">
 			<li><a href="{$smarty.const.WWW_TOP}/console">{$parentcat.title}</a></li>
 			<li class="divider"></li>
-			{foreach from=$parentcat.subcatlist item=subcat}
+			{foreach $parentcat.subcatlist as $subcat}
 				<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/console?t={$subcat.id}">{$subcat.title}</a></li>
 			{/foreach}
 		</ul>
 		</li>
-	{elseif $parentcat.id == 2000 && $userdata.movieview=="1"}
+	{elseif $parentcat.id == 2000 && $userdata.movieview == "1"}
 	<li class="dropdown">
 		<a id="drop2" role="button" class="dropdown-toggle" data-toggle="dropdown" href="#">{$parentcat.title} <b class="caret"></b></a>
 		<ul class="dropdown-menu" role="menu" aria-labelledby="drop2">
 			<li><a href="{$smarty.const.WWW_TOP}/movies">{$parentcat.title}</a></li>
 			<li class="divider"></li>
-			{foreach from=$parentcat.subcatlist item=subcat}
+			{foreach $parentcat.subcatlist as $subcat}
 			<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/movies?t={$subcat.id}">{$subcat.title}</a></li>
 			{/foreach}
 		</ul>
 	</li>
-	{elseif ($parentcat.id == 3000 && $userdata.musicview=="1")}
+	{elseif ($parentcat.id == 3000 && $userdata.musicview == "1")}
 	<li class="dropdown">
 		<a id="drop3" class="dropdown-toggle" data-toggle="dropdown" href="#">{$parentcat.title} <b class="caret"></b></a>
 		<ul class="dropdown-menu" role="menu" aria-labelledby="drop3">
 			<li><a href="{$smarty.const.WWW_TOP}/music">{$parentcat.title}</a></li>
 			<li class="divider"></li>
-			{foreach from=$parentcat.subcatlist item=subcat}
+			{foreach $parentcat.subcatlist as $subcat}
 			{if $subcat.id == 3030}
 			<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a></li>
 			{else}
@@ -37,13 +37,13 @@
 			{/foreach}
 		</ul>
 	</li>
-	{elseif ($parentcat.id == 4000 && $userdata.gameview=="1")}
+	{elseif ($parentcat.id == 4000 && $userdata.gameview == "1")}
 		<li class="dropdown">
 			<a id="drop4" class="dropdown-toggle" data-toggle="dropdown" href="#">{$parentcat.title} <b class="caret"></b></a>
 			<ul class="dropdown-menu" role="menu" aria-labelledby="drop4">
 				<li><a href="{$smarty.const.WWW_TOP}/games">{$parentcat.title}</a></li>
 				<li class="divider"></li>
-				{foreach from=$parentcat.subcatlist item=subcat}
+				{foreach $parentcat.subcatlist as $subcat}
 					{if $subcat.id !== 4050}
 						<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a></li>
 					{else}
@@ -58,7 +58,7 @@
 		<ul class="dropdown-menu" role="menu" aria-labelledby="drop{$parentcat.id}">
 			<li><a href="{$smarty.const.WWW_TOP}/browse?t={$parentcat.id}">{$parentcat.title}</a></li>
 			<li class="divider"></li>
-			{foreach from=$parentcat.subcatlist item=subcat}
+			{foreach $parentcat.subcatlist as $subcat}
 			<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a></li>
 			{/foreach}
 		</ul>
@@ -79,7 +79,7 @@
 				{/if}
 				<hr>
 				{if $userdata.xxxview == "1"}
-					{foreach from=$parentcat.subcatlist item=subcat}
+					{foreach $parentcat.subcatlist as $subcat}
 						{if $subcat.id == 6010 OR $subcat.id == 6020 OR $subcat.id == 6030 OR $subcat.id == 6040}
 							<li><a href="{$smarty.const.WWW_TOP}/xxx?t={$subcat.id}">{$subcat.title}</a>
 							</li>
@@ -89,7 +89,7 @@
 						{/if}
 					{/foreach}
 				{else}
-					{foreach from=$parentcat.subcatlist item=subcat}
+					{foreach $parentcat.subcatlist as $subcat}
 						<li><a href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a></li>
 					{/foreach}
 				{/if}
@@ -110,7 +110,7 @@
 					<li><a href="{$smarty.const.WWW_TOP}/browse?t={getcatval category=BOOKS_ROOT}">{$parentcat.title}</a></li>
 				{/if}
 				<hr>
-				{foreach from=$parentcat.subcatlist item=subcat}
+				{foreach $parentcat.subcatlist as $subcat}
 					<li><a href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a></li>
 				{/foreach}
 			</ul>
@@ -131,9 +131,9 @@
 		<form class="navbar-form" id="headsearch_form" action="{$smarty.const.WWW_TOP}/search/" method="get">
 				<select class="input-small" id="headcat" name="t">
 					<option class="grouping" value="-1">All</option>
-					{foreach from=$parentcatlist item=parentcat}
+					{foreach $parentcatlist as $parentcat}
 					<option {if $header_menu_cat==$parentcat.id}selected="selected"{/if} class="grouping" value="{$parentcat.id}">{$parentcat.title}</option>
-					{foreach from=$parentcat.subcatlist item=subcat}
+					{foreach $parentcat.subcatlist as $subcat}
 					<option {if $header_menu_cat==$subcat.id}selected="selected"{/if} value="{$subcat.id}">&nbsp;&nbsp;{$subcat.title}</option>
 					{/foreach}
 					{/foreach}

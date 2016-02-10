@@ -11,21 +11,21 @@
 		<i class="fa fa-inbox fa-midt"></i>
 			<select class="input input-small" id="genre" name="genre">
 				<option class="grouping" value=""></option>
-				{foreach from=$genres item=gen}
+				{foreach $genres as $gen}
 					<option {if $gen.id == $genre}selected="selected"{/if} value="{$gen.id}">{$gen.title|escape:"htmlall"}</option>
 				{/foreach}
 			</select>
 		<i class="fa fa-calendar fa-midt"></i>
 			<select class="input input-small" id="year" name="year">
 				<option class="grouping" value=""></option>
-				{foreach from=$years item=yr}
+				{foreach $years as $yr}
 					<option {if $yr==$year}selected="selected"{/if} value="{$yr}">{$yr}</option>
 				{/foreach}
 			</select>
 		<i class="fa fa-flag fa-midt"></i>
 			<select class="input input-small" id="category" name="t">
 			<option class="grouping" value="3000"></option>
-				{foreach from=$catlist item=ct}
+				{foreach $catlist as $ct}
 					<option {if $ct.id==$category}selected="selected"{/if} value="{$ct.id}">{$ct.title}</option>
 				{/foreach}
 			</select>
@@ -136,7 +136,7 @@
 		</th>
 	</tr>
 
-	{foreach from=$results item=result}
+	{foreach $results as $result}
 		{assign var="msplits" value=","|explode:$result.grp_release_id}
 		{assign var="mguid" value=","|explode:$result.grp_release_guid}
 		{assign var="mnfo" value=","|explode:$result.grp_release_nfoid}
@@ -151,7 +151,7 @@
 		{assign var="mpass" value=","|explode:$result.grp_release_password}
 		{assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
 		{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
-		{foreach from=$msplits item=m}
+		{foreach $msplits as $m}
 		<tr class="{cycle values=",alt"}">
 			<td class="mid">
 				<div class="movcover">

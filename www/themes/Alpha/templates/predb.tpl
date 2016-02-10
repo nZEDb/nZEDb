@@ -34,7 +34,7 @@
 			</tr>
 		</thead>
 		<tbody>
-		{foreach from=$results item=result}
+		{foreach $results as $result}
 			<tr>
 				<td style="width:125px;text-align:center;" class="predb" title="{$result.predate}">
 					{$result.predate|date_format:"%Y-%m-%d %H:%M:%S"}

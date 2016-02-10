@@ -61,7 +61,7 @@
 									</div>
 								</div>
 								<hr>
-								{foreach from=$results item=result}
+								{foreach $results as $result}
 									{assign var="msplits" value=","|explode:$result.grp_release_id}
 									{assign var="mguid" value=","|explode:$result.grp_release_guid}
 									{assign var="mnfo" value=","|explode:$result.grp_release_nfoid}
@@ -76,7 +76,7 @@
 									{assign var="mpass" value=","|explode:$result.grp_release_password}
 									{assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
 									{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
-									{foreach from=$msplits item=m}
+									{foreach $msplits as $m}
 										<div class="panel panel-default">
 											<div class="panel-body">
 												<div class="row">

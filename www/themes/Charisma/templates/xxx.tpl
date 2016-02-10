@@ -26,7 +26,7 @@
 			<label class="sr-only" for="genre">Genre:</label>
 			<select id="genre" name="genre" class="form-control">
 				<option class="grouping" value="" selected>Genre</option>
-				{foreach from=$genres item=gen}
+				{foreach $genres as $gen}
 					<option {if $gen==$genre}selected="selected"{/if} value="{$gen}">{$gen}</option>
 				{/foreach}
 			</select>
@@ -35,7 +35,7 @@
 			<label class="sr-only" for="category">Category:</label>
 			<select id="category" name="t" class="form-control">
 				<option class="grouping" value="" selected>Category</option>
-				{foreach from=$catlist item=ct}
+				{foreach $catlist as $ct}
 					<option {if $ct.id==$category}selected="selected"{/if} value="{$ct.id}">{$ct.title}</option>
 				{/foreach}
 			</select>
@@ -112,7 +112,7 @@
 													{assign var="mpass" value=","|explode:$result.grp_release_password}
 													{assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
 													{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
-													{foreach from=$msplits item=m name=loop}
+													{foreach $msplits as $loop=>$m name="loop"}
 													{if $smarty.foreach.loop.first}
 													<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}"><img
 																class="cover"
@@ -264,7 +264,7 @@
 													{assign var="mpass" value=","|explode:$result.grp_release_password}
 													{assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
 													{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
-													{foreach from=$msplits item=m name=loop}
+													{foreach $msplits as $loop=>$m name="loop"}
 													{if $smarty.foreach.loop.first}
 													<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}"><img
 																class="cover"

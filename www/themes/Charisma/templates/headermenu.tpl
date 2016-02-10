@@ -1,7 +1,7 @@
 <div id="menucontainer">
 	<div class="collapse navbar-collapse nav navbar-nav top-menu">
 		{if $loggedin=="true"}
-			{foreach from=$parentcatlist item=parentcat}
+			{foreach $parentcatlist as $parentcat}
 				{if ($parentcat.id == 5000)}
 					<li class="nav-parent">
 						<a href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"
@@ -14,7 +14,7 @@
 							<li><a href="{$smarty.const.WWW_TOP}/series">TV Series</a></li>
 							<li><a href="{$smarty.const.WWW_TOP}/anime">Anime Series</a></li>
 							<hr>
-							{foreach from=$parentcat.subcatlist item=subcat}
+							{foreach $parentcat.subcatlist as $subcat}
 								<li><a href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a></li>
 							{/foreach}
 						</ul>
@@ -36,11 +36,11 @@
 							<li><a href="{$smarty.const.WWW_TOP}/mymovies">My Movies</a></li>
 							<hr>
 							{if $userdata.movieview == "1"}
-								{foreach from=$parentcat.subcatlist item=subcat}
+								{foreach $parentcat.subcatlist as $subcat}
 									<li><a href="{$smarty.const.WWW_TOP}/movies?t={$subcat.id}">{$subcat.title}</a></li>
 								{/foreach}
 							{elseif $userdata.movieview != "1"}
-								{foreach from=$parentcat.subcatlist item=subcat}
+								{foreach $parentcat.subcatlist as $subcat}
 									<li><a href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a></li>
 								{/foreach}
 							{/if}
@@ -60,12 +60,12 @@
 							{/if}
 							<hr>
 							{if $userdata.consoleview == "1"}
-								{foreach from=$parentcat.subcatlist item=subcat}
+								{foreach $parentcat.subcatlist as $subcat}
 									<li><a href="{$smarty.const.WWW_TOP}/console?t={$subcat.id}">{$subcat.title}</a>
 									</li>
 								{/foreach}
 							{elseif $userdata.consoleview != "1"}
-								{foreach from=$parentcat.subcatlist item=subcat}
+								{foreach $parentcat.subcatlist as $subcat}
 									<li><a href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a></li>
 								{/foreach}
 							{/if}
@@ -85,7 +85,7 @@
 							{/if}
 							<hr>
 							{if $userdata.gameview == "1"}
-								{foreach from=$parentcat.subcatlist item=subcat}
+								{foreach $parentcat.subcatlist as $subcat}
 									{if $subcat.id == 4050}
 										<li><a href="{$smarty.const.WWW_TOP}/games?t={$subcat.id}">{$subcat.title}</a>
 										</li>
@@ -95,7 +95,7 @@
 									{/if}
 								{/foreach}
 							{elseif $userdata.gameview != "1"}
-								{foreach from=$parentcat.subcatlist item=subcat}
+								{foreach $parentcat.subcatlist as $subcat}
 									<li><a href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a></li>
 								{/foreach}
 							{/if}
@@ -115,11 +115,11 @@
 							{/if}
 							<hr>
 							{if $userdata.musicview == "1"}
-								{foreach from=$parentcat.subcatlist item=subcat}
+								{foreach $parentcat.subcatlist as $subcat}
 									<li><a href="{$smarty.const.WWW_TOP}/music?t={$subcat.id}">{$subcat.title}</a></li>
 								{/foreach}
 							{elseif $userdata.musicview != "1"}
-								{foreach from=$parentcat.subcatlist item=subcat}
+								{foreach $parentcat.subcatlist as $subcat}
 									<li><a href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a></li>
 								{/foreach}
 							{/if}
@@ -138,7 +138,7 @@
 								<li><a href="{$smarty.const.WWW_TOP}/browse?t=7000">{$parentcat.title}</a></li>
 							{/if}
 							<hr>
-							{foreach from=$parentcat.subcatlist item=subcat}
+							{foreach $parentcat.subcatlist as $subcat}
 								<li><a href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a></li>
 							{/foreach}
 						</ul>
@@ -157,7 +157,7 @@
 							{/if}
 							<hr>
 							{if $userdata.xxxview == "1"}
-								{foreach from=$parentcat.subcatlist item=subcat}
+								{foreach $parentcat.subcatlist as $subcat}
 									{if $subcat.id == 6010 OR $subcat.id == 6020 OR $subcat.id == 6030 OR $subcat.id == 6040}
 										<li><a href="{$smarty.const.WWW_TOP}/xxx?t={$subcat.id}">{$subcat.title}</a>
 										</li>
@@ -167,7 +167,7 @@
 									{/if}
 								{/foreach}
 							{elseif $userdata.xxxview != "1"}
-								{foreach from=$parentcat.subcatlist item=subcat}
+								{foreach $parentcat.subcatlist as $subcat}
 									<li><a href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a></li>
 								{/foreach}
 							{/if}

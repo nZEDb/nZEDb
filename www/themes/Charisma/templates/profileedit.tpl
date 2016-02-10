@@ -105,7 +105,7 @@
 															<th width="200">Movie Page</th>
 															<td><input type="checkbox" name="movieview"
 																	   class="onoffswitch-checkbox" id="movieview"
-																	   {if $user.movieview=="1"}checked{/if}> Browse
+																	   {if $user.movieview == "1"}checked{/if}> Browse
 																movie covers. Only shows movies with known IMDB info.
 															</td>
 														</tr>
@@ -113,7 +113,7 @@
 															<th width="200">Music Page</th>
 															<td><input type="checkbox" name="musicview"
 																	   class="onoffswitch-checkbox" id="musicview"
-																	   {if $user.musicview=="1"}checked{/if}> Browse
+																	   {if $user.musicview == "1"}checked{/if}> Browse
 																music covers. Only shows music with known lookup info.
 															</td>
 														</tr>
@@ -121,7 +121,7 @@
 															<th width="200">Console Page</th>
 															<td><input type="checkbox" name="consoleview"
 																	   class="onoffswitch-checkbox" id="consoleview"
-																	   {if $user.consoleview=="1"}checked{/if}> Browse
+																	   {if $user.consoleview == "1"}checked{/if}> Browse
 																console covers. Only shows games with known lookup info.
 															</td>
 														</tr>
@@ -129,7 +129,7 @@
 															<th width="200">Games Page</th>
 															<td><input type="checkbox" name="gameview"
 																	   class="onoffswitch-checkbox" id="gameview"
-																	   {if $user.gameview=="1"}checked{/if}> Browse game
+																	   {if $user.gameview == "1"}checked{/if}> Browse game
 																covers. Only shows games with known lookup info.
 															</td>
 														</tr>
@@ -137,7 +137,7 @@
 															<th width="200">Book Page</th>
 															<td><input type="checkbox" name="bookview"
 																	   class="onoffswitch-checkbox" id="bookview"
-																	   {if $user.bookview=="1"}checked{/if}> Browse book
+																	   {if $user.bookview == "1"}checked{/if}> Browse book
 																covers. Only shows books with known lookup info.
 															</td>
 														</tr>
@@ -145,7 +145,7 @@
 															<th width="200">XXX Page</th>
 															<td><input type="checkbox" name="xxxview"
 																	   class="onoffswitch-checkbox" id="xxxview"
-																	   {if $user.xxxview=="1"}checked{/if}> Browse XXX
+																	   {if $user.xxxview == "1"}checked{/if}> Browse XXX
 																covers. Only shows XXX releases with known lookup info.
 															</td>
 														</tr>

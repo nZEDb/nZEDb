@@ -16,14 +16,14 @@
 		<i class="fa fa-star fa-midt"></i>
 			<select class="input span1" id="rating" name="rating">
 				<option class="grouping" value=""></option>
-				{foreach from=$ratings item=rate}
+				{foreach $ratings as $rate}
 				<option {if $rating==$rate}selected="selected"{/if} value="{$rate}">{$rate}</option>
 				{/foreach}
 			</select>
 		<i class="fa fa-inbox fa-midt"></i>
 			<select class="input input-small" id="genre" name="genre">
 				<option class="grouping" value=""></option>
-				{foreach from=$genres item=gen}
+				{foreach $genres as $gen}
 					<option {if $gen==$genre}selected="selected"{/if} value="{$gen}">{$gen}</option>
 				{/foreach}
 			</select>
@@ -31,7 +31,7 @@
 		<i class="fa fa-calendar fa-midt"></i>
 			<select class="input input-small" id="year" name="year">
 				<option class="grouping" value=""></option>
-				{foreach from=$years item=yr}
+				{foreach $years as $yr}
 					<option {if $yr==$year}selected="selected"{/if} value="{$yr}">{$yr}</option>
 				{/foreach}
 			</select>
@@ -39,7 +39,7 @@
 		<i class="fa fa-flag fa-midt"></i>
 			<select class="input input-small" id="category" name="t">
 			<option class="grouping" value="2000"></option>
-				{foreach from=$catlist item=ct}
+				{foreach $catlist as $ct}
 				<option {if $ct.id==$category}selected="selected"{/if} value="{$ct.id}">{$ct.title}</option>
 				{/foreach}
 			</select>
@@ -123,7 +123,7 @@
 		</th>
 	</tr>
 
-	{foreach from=$results item=result}
+	{foreach $results as $result}
 		<tr class="{cycle values=",alt"}">
 			<td class="mid">
 				<div class="movcover">
@@ -182,7 +182,7 @@
 						{assign var="mpass" value=","|explode:$result.grp_release_password}
 						{assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
 						{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
-						{foreach from=$msplits item=m}
+						{foreach $msplits as $m}
 						<tr id="guid{$mguid[$m@index]}" {if $m@index > 0}class="mlextra"{/if}>
 							<td>
 								<div class="icon"><input type="checkbox" class="nzb_check" value="{$mguid[$m@index]}" /></div>

@@ -25,7 +25,7 @@
 			<label class="sr-only" for="rating">Rating:</label>
 			<select id="rating" name="rating" class="form-control" name="Score">
 				<option value="" selected>Rating</option>
-				{foreach from=$ratings item=rate}
+				{foreach $ratings as $rate}
 					<option {if $rating==$rate}selected="selected"{/if} value="{$rate}">{$rate}</option>
 				{/foreach}
 			</select>
@@ -34,7 +34,7 @@
 			<label class="sr-only" for="genre">Genre:</label>
 			<select id="genre" name="genre" class="form-control">
 				<option class="grouping" value="" selected>Genre</option>
-				{foreach from=$genres item=gen}
+				{foreach $genres as $gen}
 					<option {if $gen==$genre}selected="selected"{/if} value="{$gen}">{$gen}</option>
 				{/foreach}
 			</select>
@@ -43,7 +43,7 @@
 			<label class="sr-only" for="year">Year:</label>
 			<select id="year" name="year" class="form-control">
 				<option class="grouping" value="" selected>Year</option>
-				{foreach from=$years item=yr}
+				{foreach $years as $yr}
 					<option {if $yr==$year}selected="selected"{/if} value="{$yr}">{$yr}</option>
 				{/foreach}
 			</select>
@@ -52,7 +52,7 @@
 			<label class="sr-only" for="category">Category:</label>
 			<select id="category" name="t" class="form-control">
 				<option class="grouping" value="" selected>Category</option>
-				{foreach from=$catlist item=ct}
+				{foreach $catlist as $ct}
 					<option {if $ct.id==$category}selected="selected"{/if} value="{$ct.id}">{$ct.title}</option>
 				{/foreach}
 			</select>
@@ -115,7 +115,7 @@
 										<div class="panel-body">
 											<div class="row small-gutter-left">
 												<div class="col-md-3 small-gutter-left">
-													{foreach from=$result.languages item=movielanguage}
+													{foreach $result.languages as $movielanguage}
 														{release_flag($movielanguage, browse)}
 													{/foreach}
 													{assign var="msplits" value=","|explode:$result.grp_release_id}
@@ -132,7 +132,7 @@
 													{assign var="mpass" value=","|explode:$result.grp_release_password}
 													{assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
 													{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
-													{foreach from=$msplits item=m name=loop}
+													{foreach $msplits as $loop=>$m name="loop"}
 													{if $smarty.foreach.loop.first}
 													<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}"><img
 																class="cover"
@@ -233,7 +233,7 @@
 										<div class="panel-body">
 											<div class="row small-gutter-left">
 												<div class="col-md-3 small-gutter-left">
-													{foreach from=$result.languages item=movielanguage}
+													{foreach $result.languages as $movielanguage}
 														{release_flag($movielanguage, browse)}
 													{/foreach}
 													{assign var="msplits" value=","|explode:$result.grp_release_id}
@@ -250,7 +250,7 @@
 													{assign var="mpass" value=","|explode:$result.grp_release_password}
 													{assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
 													{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
-													{foreach from=$msplits item=m name=loop}
+													{foreach $msplits as $loop=>$m name="loop"}
 													{if $smarty.foreach.loop.first}
 													<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}"><img
 																class="cover"

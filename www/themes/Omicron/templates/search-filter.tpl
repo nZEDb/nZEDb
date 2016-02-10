@@ -8,25 +8,25 @@
 			   value="{$director}" placeholder="Director">
 		<select class="form-control" style="width: 150px;" id="rating" name="rating">
 			<option class="grouping" value="">Rating...</option>
-			{foreach from=$ratings item=rate}
+			{foreach $ratings as $rate}
 				<option {if $rating==$rate}selected="selected"{/if} value="{$rate}">{$rate}</option>
 			{/foreach}
 		</select>
 		<select class="form-control" style="width: 150px;" id="genre" name="genre" placeholder="Genre">
 			<option class="grouping" value="">Genre...</option>
-			{foreach from=$genres item=gen}
+			{foreach $genres as $gen}
 				<option {if $gen==$genre}selected="selected"{/if} value="{$gen}">{$gen}</option>
 			{/foreach}
 		</select>
 		<select class="form-control" style="width: 150px;" id="year" name="year">
 			<option class="grouping" value="">Year...</option>
-			{foreach from=$years item=yr}
+			{foreach $years as $yr}
 				<option {if $yr==$year}selected="selected"{/if} value="{$yr}">{$yr}</option>
 			{/foreach}
 		</select>
 		<select class="form-control" style="width: 150px;" id="category" name="t">
 			<option class="grouping" value="2000">Category...</option>
-			{foreach from=$catlist item=ct}
+			{foreach $catlist as $ct}
 				<option {if $ct.id==$category}selected="selected"{/if} value="{$ct.id}">{$ct.title}</option>
 			{/foreach}
 		</select>
@@ -62,13 +62,13 @@
 				name="genre"
 				placeholder="Genre">
 			<option class="grouping" value="">Genre...</option>
-			{foreach from=$genres item=gen}
+			{foreach $genres as $gen}
 				<option {if $gen==$genre}selected="selected"{/if} value="{$gen}">{$gen}</option>
 			{/foreach}
 		</select>
 		<select class="form-control" style="width: 150px;" id="category" name="t">
 			<option class="grouping" value="2000">Category...</option>
-			{foreach from=$catlist item=ct}
+			{foreach $catlist as $ct}
 				<option {if $ct.id==$category}selected="selected"{/if}
 						value="{$ct.id}">{$ct.title}</option>
 			{/foreach}
@@ -93,20 +93,20 @@
 			   placeholder="Title">
 		<select class="form-control" style="width: 150px;" id="genre" name="genre">
 			<option class="grouping" value="">Genre...</option>
-			{foreach from=$genres item=gen}
+			{foreach $genres as $gen}
 				<option {if $gen.id == $genre}selected="selected"{/if}
 						value="{$gen.id}">{$gen.title|escape:"htmlall"}</option>
 			{/foreach}
 		</select>
 		<select class="form-control" style="width: 150px;" id="year" name="year">
 			<option class="grouping" value="">Year...</option>
-			{foreach from=$years item=yr}
+			{foreach $years as $yr}
 				<option {if $yr==$year}selected="selected"{/if} value="{$yr}">{$yr}</option>
 			{/foreach}
 		</select>
 		<select class="form-control" style="width: 150px;" id="category" name="t">
 			<option class="grouping" value="3000">Category...</option>
-			{foreach from=$catlist item=ct}
+			{foreach $catlist as $ct}
 				<option {if $ct.id==$category}selected="selected"{/if} value="{$ct.id}">{$ct.title}</option>
 			{/foreach}
 		</select>
@@ -121,13 +121,13 @@
 			   placeholder="Platform">
 		<select class="form-control" style="width: 150px;" id="genre" name="genre">
 			<option class="grouping" value="">Genre...</option>
-			{foreach from=$genres item=gen}
+			{foreach $genres as $gen}
 				<option {if $gen.id == $genre}selected="selected"{/if} value="{$gen.id}">{$gen.title}</option>
 			{/foreach}
 		</select>
 		<select class="form-control" style="width: 150px;" id="category" name="t">
 			<option class="grouping" value="1000">Category...</option>
-			{foreach from=$catlist item=ct}
+			{foreach $catlist as $ct}
 				<option {if $ct.id==$category}selected="selected"{/if} value="{$ct.id}">{$ct.title}</option>
 			{/foreach}
 		</select>
@@ -140,19 +140,19 @@
 			   placeholder="Title">
 		<select class="form-control" style="width: 150px;" id="genre" name="genre">
 			<option class="grouping" value="">Genre...</option>
-			{foreach from=$genres item=gen}
+			{foreach $genres as $gen}
 				<option {if $gen.id == $genre}selected="selected"{/if} value="{$gen.id}">{$gen.title}</option>
 			{/foreach}
 		</select>
 		<select class="form-control" style="width: 150px;" id="year" name="year">
 			<option class="grouping" value="">Year...</option>
-			{foreach from=$years item=yr}
+			{foreach $years as $yr}
 				<option {if $yr==$year}selected="selected"{/if} value="{$yr}">{$yr}</option>
 			{/foreach}
 		</select>
 		{*<select class="form-control" style="width: 150px;" id="category" name="t">*}
 		{*<option class="grouping" value="4000">Category... </option>*}
-		{*{foreach from=$catlist item=ct}*}
+		{*{foreach $catlist as $ct}*}
 		{*<option {if $ct.id==$category}selected="selected"{/if} value="{$ct.id}">{$ct.title}</option>*}
 		{*{/foreach}*}
 		{*</select>*}
@@ -167,13 +167,13 @@
 			   placeholder="Platform">
 		<select class="form-control" style="width: auto;" id="genre" name="genre">
 			<option class="grouping" value="">Genre...</option>
-			{foreach from=$genres item=gen}
+			{foreach $genres as $gen}
 				<option {if $gen.id == $genre}selected="selected"{/if} value="{$gen.id}">{$gen.title}</option>
 			{/foreach}
 		</select>
 		<select class="form-control" style="width: auto;" id="category" name="t">
 			<option class="grouping" value="1000">Category...</option>
-			{foreach from=$catlist item=ct}
+			{foreach $catlist as $ct}
 				<option {if $ct.id==$category}selected="selected"{/if} value="{$ct.id}">{$ct.title}</option>
 			{/foreach}
 		</select>
@@ -186,19 +186,19 @@
 			   placeholder="Title">
 		<select class="form-control" style="width: auto;" id="genre" name="genre">
 			<option class="grouping" value="">Genre...</option>
-			{foreach from=$genres item=gen}
+			{foreach $genres as $gen}
 				<option {if $gen.id == $genre}selected="selected"{/if} value="{$gen.id}">{$gen.title}</option>
 			{/foreach}
 		</select>
 		<select class="form-control" style="width: auto;" id="year" name="year">
 			<option class="grouping" value="">Year...</option>
-			{foreach from=$years item=yr}
+			{foreach $years as $yr}
 				<option {if $yr==$year}selected="selected"{/if} value="{$yr}">{$yr}</option>
 			{/foreach}
 		</select>
 		{*<select class="form-control" style="width: auto;" id="category" name="t">*}
 		{*<option class="grouping" value="4000">Category... </option>*}
-		{*{foreach from=$catlist item=ct}*}
+		{*{foreach $catlist as $ct}*}
 		{*<option {if $ct.id==$category}selected="selected"{/if} value="{$ct.id}">{$ct.title}</option>*}
 		{*{/foreach}*}
 		{*</select>*}
@@ -224,25 +224,25 @@
 			   value="{$director}" placeholder="Director">
 		<select class="form-control" style="width: auto;" id="rating" name="rating">
 			<option class="grouping" value="">Rating...</option>
-			{foreach from=$ratings item=rate}
+			{foreach $ratings as $rate}
 				<option {if $rating==$rate}selected="selected"{/if} value="{$rate}">{$rate}</option>
 			{/foreach}
 		</select>
 		<select class="form-control" style="width: auto;" id="genre" name="genre" placeholder="Genre">
 			<option class="grouping" value="">Genre...</option>
-			{foreach from=$genres item=gen}
+			{foreach $genres as $gen}
 				<option {if $gen==$genre}selected="selected"{/if} value="{$gen}">{$gen}</option>
 			{/foreach}
 		</select>
 		<select class="form-control" style="width: auto;" id="year" name="year">
 			<option class="grouping" value="">Year...</option>
-			{foreach from=$years item=yr}
+			{foreach $years as $yr}
 				<option {if $yr==$year}selected="selected"{/if} value="{$yr}">{$yr}</option>
 			{/foreach}
 		</select>
 		<select class="form-control" style="width: auto;" id="category" name="t">
 			<option class="grouping" value="2000">Category...</option>
-			{foreach from=$catlist item=ct}
+			{foreach $catlist as $ct}
 				<option {if $ct.id==$category}selected="selected"{/if} value="{$ct.id}">{$ct.title}</option>
 			{/foreach}
 		</select>
@@ -278,13 +278,13 @@
 				name="genre"
 				placeholder="Genre">
 			<option class="grouping" value="">Genre...</option>
-			{foreach from=$genres item=gen}
+			{foreach $genres as $gen}
 				<option {if $gen==$genre}selected="selected"{/if} value="{$gen}">{$gen}</option>
 			{/foreach}
 		</select>
 		<select class="form-control" style="width: auto;" id="category" name="t">
 			<option class="grouping" value="2000">Category...</option>
-			{foreach from=$catlist item=ct}
+			{foreach $catlist as $ct}
 				<option {if $ct.id==$category}selected="selected"{/if}
 						value="{$ct.id}">{$ct.title}</option>
 			{/foreach}
@@ -300,20 +300,20 @@
 			   placeholder="Title">
 		<select class="form-control" style="width: auto;" id="genre" name="genre">
 			<option class="grouping" value="">Genre...</option>
-			{foreach from=$genres item=gen}
+			{foreach $genres as $gen}
 				<option {if $gen.id == $genre}selected="selected"{/if}
 						value="{$gen.id}">{$gen.title|escape:"htmlall"}</option>
 			{/foreach}
 		</select>
 		<select class="form-control" style="width: auto;" id="year" name="year">
 			<option class="grouping" value="">Year...</option>
-			{foreach from=$years item=yr}
+			{foreach $years as $yr}
 				<option {if $yr==$year}selected="selected"{/if} value="{$yr}">{$yr}</option>
 			{/foreach}
 		</select>
 		<select class="form-control" style="width: auto;" id="category" name="t">
 			<option class="grouping" value="3000">Category...</option>
-			{foreach from=$catlist item=ct}
+			{foreach $catlist as $ct}
 				<option {if $ct.id==$category}selected="selected"{/if} value="{$ct.id}">{$ct.title}</option>
 			{/foreach}
 		</select>

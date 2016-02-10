@@ -17,7 +17,7 @@
 			<label class="sr-only" for="genre">Genre:</label>
 			<select id="genre" name="genre" class="form-control">
 				<option class="grouping" value="" selected>Genre</option>
-				{foreach from=$genres item=gen}
+				{foreach $genres as $gen}
 					<option {if $gen.id == $genre}selected="selected"{/if} value="{$gen.id}">{$gen.title}</option>
 				{/foreach}
 			</select>
@@ -26,7 +26,7 @@
 			<label class="sr-only" for="year">Year:</label>
 			<select id="year" name="year" class="form-control">
 				<option class="grouping" value="" selected>Year</option>
-				{foreach from=$years item=yr}
+				{foreach $years as $yr}
 					<option {if $yr==$year}selected="selected"{/if} value="{$yr}">{$yr}</option>
 				{/foreach}
 			</select>
@@ -75,7 +75,7 @@
 						</div>
 					</div>
 					<hr>
-					{foreach from=$results item=result}
+					{foreach $results as $result}
 						{assign var="msplits" value=","|explode:$result.grp_release_id}
 						{assign var="mguid" value=","|explode:$result.grp_release_guid}
 						{assign var="mnfo" value=","|explode:$result.grp_release_nfoid}
@@ -90,7 +90,7 @@
 						{assign var="mpass" value=","|explode:$result.grp_release_password}
 						{assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
 						{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
-						{foreach from=$msplits item=m name=loop}
+						{foreach $msplits as $loop=>$m name="loop"}
 							{if $smarty.foreach.loop.first}
 								<div class="panel panel-default">
 									<div class="panel-body">

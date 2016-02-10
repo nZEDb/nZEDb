@@ -19,11 +19,11 @@
 		<item>
 				<title>{$release.searchname|escape:html}</title>
 				<guid isPermaLink="true">{$smarty.const.WWW_TOP}details/{$release.guid}</guid>
-				<link href="{$smarty.const.WWW_TOP}{if $dl=="1"}getnzb{else}details{/if}/{$release.guid}{if $dl=="1"}.nzb&amp;i={$uid}&amp;r={$rsstoken}{/if}{if $del=="1"}&amp;del=1{/if}"/>
+				<link href="{$smarty.const.WWW_TOP}{if $dl == "1"}getnzb{else}details{/if}/{$release.guid}{if $dl == "1"}.nzb&amp;i={$uid}&amp;r={$rsstoken}{/if}{if $del == "1"}&amp;del=1{/if}"/>
 				<comments>{$smarty.const.WWW_TOP}details/{$release.guid}#comments</comments>
 				<pubDate>{$release.adddate|phpdate_format:"DATE_RSS"}</pubDate>
 				<category>{$release.category_name|escape:html}</category>
-				<description>{if isset($api) && $api=="1"}{$release.searchname}{else}
+				<description>{if isset($api) && $api == "1"}{$release.searchname}{else}
 					<![CDATA[{strip}
 					<div>
 						{if isset($release_cover) && $release.cover == 1}
@@ -46,7 +46,7 @@
 								 src="{$smarty.const.WWW_TOP}/covers/book/{$release.bookinfoid}.jpg" width="120" border="0"
 								 alt="{$release.searchname|escape:"htmlall"}"/>
 						{/if}
-						{if $dl=="1"}<li><a href="{$serverroot}getnzb/{$release.guid}.nzb&amp;i={$uid}&amp;r={$rsstoken}{if $del=="1"}&amp;del=1{/if}">Download NZB</a></li>{/if}
+						{if $dl == "1"}<li><a href="{$serverroot}getnzb/{$release.guid}.nzb&amp;i={$uid}&amp;r={$rsstoken}{if $del == "1"}&amp;del=1{/if}">Download NZB</a></li>{/if}
 						{if $release.jpgstatus == 1}
 							{if (strpos($release.categoryid, '60') !== false)}
 									<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$smarty.const.WWW_TOP}/covers/sample/{$release.guid}_thumb.jpg" border="0" alt="{$release.searchname|escape:"htmlall"}" />
@@ -157,7 +157,7 @@
 						{/strip}]]>
 						{/if}
 				</description>
-				{if $dl=="1"}<enclosure url="{$serverroot}getnzb/{$release.guid}.nzb&amp;i={$uid}&amp;r={$rsstoken}{if $del=="1"}&amp;del=1{/if}" length="{$release.size}" type="application/x-nzb" />{/if}
+				{if $dl == "1"}<enclosure url="{$serverroot}getnzb/{$release.guid}.nzb&amp;i={$uid}&amp;r={$rsstoken}{if $del == "1"}&amp;del=1{/if}" length="{$release.size}" type="application/x-nzb" />{/if}
 				{foreach from=$release.category_ids|parray:"," item=cat}
 					<newznab:attr name="category" value="{$cat}"/>
 				{/foreach}

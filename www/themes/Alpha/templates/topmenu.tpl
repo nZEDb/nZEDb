@@ -2,7 +2,7 @@
 	{if $menulist|@count > 0}
 		{strip}
 			<ul class="nav navbar-nav">
-			{foreach from=$menulist item=menu}
+			{foreach $menulist as $menu}
 				{assign var="var" value=$menu.menueval}
 				{eval var="$var," assign='menuevalresult'}
 				{if $menu.title == "Music"
@@ -21,7 +21,7 @@
 					{continue}
 				{/if}
 				{if $menuevalresult|replace:",":"1" == "1"}
-					<li class="mmenu{if $menu.newwindow =="1"}_new{/if}" style="display:inline-block;"><a {if $menu.newwindow =="1"}class="external" target="null"{/if} title="{$menu.tooltip}" href="{$menu.href}">{$menu.title|replace:"Advanced ":''}</a></li>
+					<li class="mmenu{if $menu.newwindow == "1"}_new{/if}" style="display:inline-block;"><a {if $menu.newwindow == "1"}class="external" target="null"{/if} title="{$menu.tooltip}" href="{$menu.href}">{$menu.title|replace:"Advanced ":''}</a></li>
 				{/if}
 			{/foreach}
 			</ul>

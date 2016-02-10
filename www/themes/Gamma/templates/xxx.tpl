@@ -14,7 +14,7 @@
 			<i class="fa fa-inbox fa-midt"></i>
 			<select class="input input-medium" id="genre" name="genre">
 				<option class="grouping" value=""></option>
-				{foreach from=$genres item=gen}
+				{foreach $genres as $gen}
 					<option {if $gen==$genre}selected="selected"{/if} value="{$gen}">{$gen}</option>
 				{/foreach}
 			</select>
@@ -89,7 +89,7 @@
 					</a>
 				</th>
 			</tr>
-			{foreach from=$results item=result}
+			{foreach $results as $result}
 				{assign var="msplits" value=","|explode:$result.grp_release_id}
 				{assign var="mguid" value=","|explode:$result.grp_release_guid}
 				{assign var="mnfo" value=","|explode:$result.grp_release_nfoid}
@@ -110,7 +110,7 @@
 						<div class="movcover">
 							<h4>
 								<a target="_blank"
-										{foreach from=$msplits item=m}
+										{foreach $msplits as $m}
 											{if $previewfound == 0}
 												{if $mhaspreview[$m@index] == 1 && $userdata.canpreview == 1}
 													{$previewfound = 1}
@@ -224,7 +224,7 @@
 						{/if}
 						<div class="movextra">
 							<table class="table" style="margin-bottom:0px; margin-top:10px">
-								{foreach from=$msplits item=m}
+								{foreach $msplits as $m}
 									<tr id="guid{$mguid[$m@index]}" {if $m@index > 0}class="mlextra"{/if}>
 										<td>
 											<div class="icon"><input type="checkbox" class="nzb_check"

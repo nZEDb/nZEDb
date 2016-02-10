@@ -52,7 +52,7 @@
 			</tr>
 		</thead>
 		<tbody>
-		{foreach from=$results item=result}
+		{foreach $results as $result}
 			<tr>
 				<td colspan="1" style="vertical-align:top;text-align:center;width:160px;padding:10px;">
 					<div class="movcover">
@@ -110,7 +110,7 @@
 						{if $result.rating != ''}
 							{$result.rating}/10
 						{/if}
-						{foreach from=$result.languages item=movielanguage}
+						{foreach $result.languages as $movielanguage}
 							{release_flag($movielanguage, browse)}
 						{/foreach}
 					</h2>
@@ -156,7 +156,7 @@
 							{assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
 							{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
 							<tbody>
-							{foreach from=$msplits item=m}
+							{foreach $msplits as $m}
 								<tr id="guid{$mguid[$m@index]}" {if $m@index > 1}class="mlextra"{/if}>
 									<td style="width: 27px;">
 										<input type="checkbox" class="nzb_check" value="{$mguid[$m@index]}">

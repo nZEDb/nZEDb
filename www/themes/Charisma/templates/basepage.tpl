@@ -127,11 +127,11 @@
 											class="form-control"
 											data-search="true">
 											<option class="grouping" value="-1">All</option>
-											{foreach from=$parentcatlist item=parentcat}
+											{foreach $parentcatlist as $parentcat}
 												<option {if $header_menu_cat==$parentcat.id}selected="selected"{/if}
 													value="{$parentcat.id}"> [{$parentcat.title}]
 												</option>
-												{foreach from=$parentcat.subcatlist item=subcat}
+												{foreach $parentcat.subcatlist as $subcat}
 													<option {if $header_menu_cat==$subcat.id}selected="selected"{/if}
 														value="{$subcat.id}">&nbsp;&nbsp;&nbsp;
 																			 > {$subcat.title}</option>

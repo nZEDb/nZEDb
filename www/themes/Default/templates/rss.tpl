@@ -18,11 +18,11 @@
 			<item>
 				<title>{$release.searchname|escape:html}</title>
 				<guid isPermaLink="true">{$serverroot}details/{$release.guid}</guid>
-				<link>{$serverroot}{if $dl=="1"}getnzb{else}details{/if}/{$release.guid}{if $dl=="1"}.nzb&amp;i={$uid}&amp;r={$rsstoken}{/if}{if $del=="1"}&amp;del=1{/if}</link>
+				<link>{$serverroot}{if $dl == "1"}getnzb{else}details{/if}/{$release.guid}{if $dl == "1"}.nzb&amp;i={$uid}&amp;r={$rsstoken}{/if}{if $del == "1"}&amp;del=1{/if}</link>
 				<comments>{$serverroot}details/{$release.guid}#comments</comments>
 				<pubDate>{$release.adddate|phpdate_format:"DATE_RSS"}</pubDate>
 				<category>{$release.category_name|escape:html}</category>
-				<description>{if $api=="1"}{$release.searchname}{else}
+				<description>{if $api == "1"}{$release.searchname}{else}
 					<![CDATA[{strip}
 					<div>
 						{if $release.cover == 1}
@@ -107,7 +107,7 @@
 						{/strip}]]>
 						{/if}
 				</description>
-				{if $dl=="1"}<enclosure url="{$serverroot}getnzb/{$release.guid}.nzb&amp;i={$uid}&amp;r={$rsstoken}{if $del=="1"}&amp;del=1{/if}" length="{$release.size}" type="application/x-nzb" />{/if}
+				{if $dl == "1"}<enclosure url="{$serverroot}getnzb/{$release.guid}.nzb&amp;i={$uid}&amp;r={$rsstoken}{if $del == "1"}&amp;del=1{/if}" length="{$release.size}" type="application/x-nzb" />{/if}
 				{foreach from=$release.category_ids|parray:"," item=cat}
 					<nZEDb:attr name="category" value="{$cat}" />
 				{/foreach}

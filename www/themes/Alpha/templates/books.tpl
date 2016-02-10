@@ -52,7 +52,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				{foreach from=$results item=result}
+				{foreach $results as $result}
 					<tr>
 						<td style="text-align:center;width:150px;padding:10px;">
 							<div class="bookcover">
@@ -138,7 +138,7 @@
 									{assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
 									{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
 									<tbody>
-									{foreach from=$msplits item=m}
+									{foreach $msplits as $m}
 										<tr id="guid{$mguid[$m@index]}" {if $m@index > 1}class="mlextra"{/if}>
 											<td style="width: 27px;">
 												<input type="checkbox" class="nzb_check" value="{$mguid[$m@index]}">

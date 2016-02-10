@@ -31,7 +31,7 @@
 							<th class="mid">options</th>
 						</tr>
 
-						{foreach from=$movies item=movie}
+						{foreach $movies as $movie}
 							<tr>
 
 								<td>

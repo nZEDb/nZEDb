@@ -14,7 +14,7 @@
 		<th style="text-align:right;">size</th>
 	</tr>
 
-	{foreach item=i name=iteration from=$files item=file}
+	{foreach $files as $file=>$i name="iteration"}
 	<tr class="{cycle values=",alt"}">
 		<td width="20">{$smarty.foreach.iteration.index+1}</td>
 		<td>{$file.title|escape:'htmlall'}</td>
