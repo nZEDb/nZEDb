@@ -2,7 +2,7 @@
 	<div class="collapse navbar-collapse nav navbar-nav top-menu">
 		{if $loggedin=="true"}
 			{foreach $parentcatlist as $parentcat}
-				{if ($parentcat.id == 5000)}
+				{if ($parentcat.id == {$category::TV_ROOT})}
 					<li class="nav-parent">
 						<a href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"
 						   data-delay="30">
@@ -19,7 +19,7 @@
 							{/foreach}
 						</ul>
 					</li>
-				{elseif $parentcat.id == 2000}
+				{elseif $parentcat.id == {$category::MOVIE_ROOT}}
 					<li class="nav-parent">
 						<a href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"
 						   data-delay="30">
@@ -46,7 +46,7 @@
 							{/if}
 						</ul>
 					</li>
-				{elseif $parentcat.id == 1000}
+				{elseif $parentcat.id == {$category::GAME_ROOT}}
 					<li class="nav-parent">
 						<a href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"
 						   data-delay="30">
@@ -71,7 +71,7 @@
 							{/if}
 						</ul>
 					</li>
-				{elseif $parentcat.id == 4000}
+				{elseif $parentcat.id == {$category::PC_ROOT}}
 					<li class="nav-parent">
 						<a href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"
 						   data-delay="30">
@@ -101,7 +101,7 @@
 							{/if}
 						</ul>
 					</li>
-				{elseif $parentcat.id == 3000}
+				{elseif $parentcat.id == {$category::MUSIC_ROOT}}
 					<li class="nav-parent">
 						<a href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"
 						   data-delay="30">
@@ -125,7 +125,7 @@
 							{/if}
 						</ul>
 					</li>
-				{elseif $parentcat.id == 7000}
+				{elseif $parentcat.id == {$category::BOOKS_ROOT}}
 					<li class="nav-parent">
 						<a href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"
 						   data-delay="30">
@@ -143,7 +143,7 @@
 							{/foreach}
 						</ul>
 					</li>
-				{elseif $parentcat.id == 6000}
+				{elseif $parentcat.id == {$category::XXX_ROOT}}
 					<li class="nav-parent">
 						<a href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"
 						   data-delay="30">

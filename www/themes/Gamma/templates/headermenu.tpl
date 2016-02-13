@@ -1,6 +1,6 @@
 <ul class="nav" role="navigation">
 	{foreach $parentcatlist as $parentcat}
-	{if $parentcat.id == 1000 && $userdata.consoleview == "1"}
+	{if $parentcat.id == {$category::GAME_ROOT} && $userdata.consoleview == "1"}
 		<li class="dropdown">
 		<a id="drop1" role="button" class="dropdown-toggle" data-toggle="dropdown" href="#">{$parentcat.title} <b class="caret"></b></a>
 		<ul class="dropdown-menu" role="menu" aria-labelledby="drop1">
@@ -11,7 +11,7 @@
 			{/foreach}
 		</ul>
 		</li>
-	{elseif $parentcat.id == 2000 && $userdata.movieview == "1"}
+	{elseif $parentcat.id == {$category::MOVIE_ROOT} && $userdata.movieview == "1"}
 	<li class="dropdown">
 		<a id="drop2" role="button" class="dropdown-toggle" data-toggle="dropdown" href="#">{$parentcat.title} <b class="caret"></b></a>
 		<ul class="dropdown-menu" role="menu" aria-labelledby="drop2">
@@ -22,7 +22,7 @@
 			{/foreach}
 		</ul>
 	</li>
-	{elseif ($parentcat.id == 3000 && $userdata.musicview == "1")}
+	{elseif ($parentcat.id == {$category::MUSIC_ROOT} && $userdata.musicview == "1")}
 	<li class="dropdown">
 		<a id="drop3" class="dropdown-toggle" data-toggle="dropdown" href="#">{$parentcat.title} <b class="caret"></b></a>
 		<ul class="dropdown-menu" role="menu" aria-labelledby="drop3">
@@ -37,7 +37,7 @@
 			{/foreach}
 		</ul>
 	</li>
-	{elseif ($parentcat.id == 4000 && $userdata.gameview == "1")}
+	{elseif ($parentcat.id == {$category::PC_ROOT} && $userdata.gameview == "1")}
 		<li class="dropdown">
 			<a id="drop4" class="dropdown-toggle" data-toggle="dropdown" href="#">{$parentcat.title} <b class="caret"></b></a>
 			<ul class="dropdown-menu" role="menu" aria-labelledby="drop4">
@@ -52,7 +52,7 @@
 				{/foreach}
 			</ul>
 		</li>
-	{elseif ($parentcat.id == 5000)}
+	{elseif ($parentcat.id == {$category::TV_ROOT})}
 	<li class="dropdown">
 		<a id="drop{$parentcat.id}" class="dropdown-toggle" data-toggle="dropdown" href="#">{$parentcat.title} <b class="caret"></b></a>
 		<ul class="dropdown-menu" role="menu" aria-labelledby="drop{$parentcat.id}">
@@ -63,7 +63,7 @@
 			{/foreach}
 		</ul>
 	</li>
-	{elseif $parentcat.id == 6000}
+	{elseif $parentcat.id == {$category::XXX_ROOT}}
 		<li class="dropdown">
 			<a id="cat3"
 			   class="dropdown-toggle"

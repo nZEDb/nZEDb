@@ -35,7 +35,7 @@
 		<ul>
 			{if isset($userdata)}
 				{foreach $parentcatlist as $parentcat}
-					{if $parentcat.id == 1000 && $userdata.consoleview == "1" && $site->lookupgames == "1"}
+					{if $parentcat.id == {$category::GAME_ROOT} && $userdata.consoleview == "1" && $site->lookupgames == "1"}
 						<li><a title="Browse All {$parentcat.title}"
 									href="{$smarty.const.WWW_TOP}/console">{$parentcat.title}</a>
 							<ul>
@@ -46,7 +46,7 @@
 								{/foreach}
 							</ul>
 						</li>
-					{elseif $parentcat.id == 2000 && $userdata.movieview == "1" && $site->lookupimdb > "0"}
+					{elseif $parentcat.id == {$category::MOVIE_ROOT} && $userdata.movieview == "1" && $site->lookupimdb > "0"}
 						<li><a title="Browse All {$parentcat.title}"
 									href="{$smarty.const.WWW_TOP}/movies">{$parentcat.title}</a>
 							<ul>
@@ -57,7 +57,7 @@
 								{/foreach}
 							</ul>
 						</li>
-					{elseif ($parentcat.id == 3000 && $userdata.musicview == "1") && $site->lookupmusic == "1"}
+					{elseif ($parentcat.id == {$category::MUSIC_ROOT} && $userdata.musicview == "1") && $site->lookupmusic == "1"}
 						<li><a title="Browse All {$parentcat.title}"
 									href="{$smarty.const.WWW_TOP}/music">{$parentcat.title}</a>
 							<ul>
@@ -74,7 +74,7 @@
 								{/foreach}
 							</ul>
 						</li>
-					{elseif ($parentcat.id == 4000 && $userdata.gameview == "1")}
+					{elseif ($parentcat.id == {$category::PC_ROOT} && $userdata.gameview == "1")}
 						<li><a title="Browse All {$parentcat.title}"
 									href="{$smarty.const.WWW_TOP}/games">{$parentcat.title}</a>
 							<ul>
@@ -91,7 +91,7 @@
 								{/foreach}
 							</ul>
 						</li>
-					{elseif ($parentcat.id == 6000 && $userdata.xxxview == "1" && $site->lookupxxx == "1")}
+					{elseif ($parentcat.id == {$category::XXX_ROOT} && $userdata.xxxview == "1" && $site->lookupxxx == "1")}
 						<li class="dropdown">
 							<a id="cat3"
 									class="dropdown-toggle"
@@ -115,7 +115,7 @@
 								{/foreach}
 							</ul>
 						</li>
-					{elseif ($parentcat.id == 6000 && $userdata.xxxview == "1" && $site->lookupxxx == "1")}
+					{elseif ($parentcat.id == {$category::XXX_ROOT} && $userdata.xxxview == "1" && $site->lookupxxx == "1")}
 						<li class="dropdown">
 							<a id="cat3"
 									class="dropdown-toggle"
