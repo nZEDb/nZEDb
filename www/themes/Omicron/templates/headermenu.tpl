@@ -19,7 +19,7 @@
 							{/foreach}
 						</ul>
 					</li>
-				{elseif $parentcat.id == {$category::MOVIE_ROOT}}
+				{if $parentcat.id == {$category::MOVIE_ROOT}}
 					<li class="nav-parent">
 						<a href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"
 						   data-delay="30">
@@ -46,7 +46,8 @@
 							{/if}
 						</ul>
 					</li>
-				{elseif $parentcat.id == {$category::GAME_ROOT}}
+				{/if}
+				{if $parentcat.id == {$category::GAME_ROOT}}
 					<li class="nav-parent">
 						<a href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"
 						   data-delay="30">
@@ -71,7 +72,8 @@
 							{/if}
 						</ul>
 					</li>
-				{elseif $parentcat.id == {$category::PC_ROOT}}
+				{/if}
+				{if $parentcat.id == {$category::PC_ROOT}}
 					<li class="nav-parent">
 						<a href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"
 						   data-delay="30">
@@ -86,7 +88,7 @@
 							<hr>
 							{if $userdata.gameview == "1"}
 								{foreach $parentcat.subcatlist as $subcat}
-									{if $subcat.id == 4050}
+									{if $subcat.id == {$category::PC_GAMES}}
 										<li><a href="{$smarty.const.WWW_TOP}/games?t={$subcat.id}">{$subcat.title}</a>
 										</li>
 									{else}
@@ -101,7 +103,8 @@
 							{/if}
 						</ul>
 					</li>
-				{elseif $parentcat.id == {$category::MUSIC_ROOT}}
+				{/if}
+				{if $parentcat.id == {$category::MUSIC_ROOT}}
 					<li class="nav-parent">
 						<a href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"
 						   data-delay="30">
@@ -125,7 +128,8 @@
 							{/if}
 						</ul>
 					</li>
-				{elseif $parentcat.id == {$category::BOOKS_ROOT}}
+				{/if}
+				{if $parentcat.id == {$category::BOOKS_ROOT}}
 					<li class="nav-parent">
 						<a href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"
 						   data-delay="30">
@@ -143,7 +147,8 @@
 							{/foreach}
 						</ul>
 					</li>
-				{elseif $parentcat.id == {$category::XXX_ROOT}}
+				{/if}
+				{if $parentcat.id == {$category::XXX_ROOT}}
 					<li class="nav-parent">
 						<a href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"
 						   data-delay="30">
@@ -158,7 +163,7 @@
 							<hr>
 							{if $userdata.xxxview == "1"}
 								{foreach $parentcat.subcatlist as $subcat}
-									{if $subcat.id == 6010 OR $subcat.id == 6020 OR $subcat.id == 6030 OR $subcat.id == 6040}
+									{if $subcat.id == {$category::XXX_DVD} OR $subcat.id == {$category::XXX_WMV} OR $subcat.id == {$category::XXX_XVID} OR $subcat.id == {$category::XXX_X264}}
 										<li><a href="{$smarty.const.WWW_TOP}/xxx?t={$subcat.id}">{$subcat.title}</a>
 										</li>
 									{else}
@@ -180,9 +185,9 @@
 					<i class="fa fa-bolt"></i> Misc<i class="fa fa-angle-down"></i>
 				</a>
 				<ul class="dropdown-menu">
-					<li><a href="{$smarty.const.WWW_TOP}/browse?t=0000">Other</a></li>
-					<li><a href="{$smarty.const.WWW_TOP}/browse?t=0010">Misc</a></li>
-					<li><a href="{$smarty.const.WWW_TOP}/browse?t=0020">Hashed</a></li>
+					<li><a href="{$smarty.const.WWW_TOP}/browse?t={$category::OTHER_ROOT}">Other</a></li>
+					<li><a href="{$smarty.const.WWW_TOP}/browse?t={$category::OTHER_MISC}">Misc</a></li>
+					<li><a href="{$smarty.const.WWW_TOP}/browse?t={$category::OTHER_HASHED}">Hashed</a></li>
 
 					<hr>
 					<li><a href="{$smarty.const.WWW_TOP}/browse">All</a></li>
