@@ -31,7 +31,7 @@
 			<li><a href="{$smarty.const.WWW_TOP}/music">{$parentcat.title}</a></li>
 			<li class="divider"></li>
 			{foreach $parentcat.subcatlist as $subcat}
-			{if $subcat.id == {$category::MUSIC_AUDIOBOOKS}}
+			{if $subcat.id == {$category::MUSIC_AUDIOBOOK}}
 			<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a></li>
 			{else}
 			<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/music?t={$subcat.id}">{$subcat.title}</a></li>
