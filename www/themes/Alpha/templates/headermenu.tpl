@@ -73,7 +73,7 @@
 					</ul>
 				</li>
 			{/if}
-			{if $parentcat.id == {$category::XXX_ROOT} && $userdata.xxxview == "1" && $site->lookupxxx == "1"}
+			{if $parentcat.id == {$category::XXX_ROOT} && $userdata.xxxview == "1"}
 				<li class="dropdown">
 					<a id="cat6"
 						class="dropdown-toggle"
