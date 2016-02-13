@@ -115,7 +115,7 @@ class Games
 		if ($this->pdo->getSetting('lookupgames') == 2) {
 			$this->renamed = 'AND isrenamed = 1';
 		}
-		$this->catWhere = 'AND categoryid = 4050 ';
+		$this->catWhere = 'AND categoryid = ' . Category::PC_GAMES;
 		//$this->cleangames = ($this->pdo->getSetting('lookupgames') == 2) ? 'AND isrenamed = 1' : '';
 	}
 

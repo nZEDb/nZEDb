@@ -399,10 +399,10 @@ class Tmux
 		switch ((int)$qry) {
 			case 1:
 				return sprintf("SELECT
-					SUM(IF(nzbstatus = 1 AND categoryid BETWEEN 5000 AND 5999 AND categoryid != 5070 AND videos_id = 0
-						AND tv_episodes_id BETWEEN -3 AND 0 AND size > 1048576,1,0)) AS processtv,
+					SUM(IF(nzbstatus = 1 AND categoryid BETWEEN %d AND %d AND categoryid != %d AND videos_id = 0 AND tv_episodes_id BETWEEN -3 AND 0 AND size > 1048576,1,0)) AS processtv,
 					SUM(IF(nzbstatus = 1 AND categoryid = 5070 AND anidbid IS NULL,1,0)) AS processanime,
-					SUM(IF(nzbstatus = 1 AND categoryid BETWEEN %d AND %D AND imdbid IS NULL,1,0)) AS processmovies,
+					SUM(IF(nzbstatus = 1 AND categoryid BETWEEN %d AND %d AND imdbid IS NULL,1,0)
+					) AS processmovies,
 					SUM(IF(nzbstatus = 1 AND categoryid IN (%d, %d, %d) AND musicinfoid IS NULL,1,0)) AS processmusic,
 					SUM(IF(nzbstatus = 1 AND categoryid BETWEEN %d AND %d AND consoleinfoid IS
 					NULL,1,0)) AS processconsole,
@@ -416,19 +416,22 @@ class Tmux
 					SUM(IF(preid > 0 AND searchname IS NOT NULL,1,0)) AS predb_matched,
 					COUNT(DISTINCT(preid)) AS distinct_predb_matched
 					FROM releases r",
-						Category::MOVIE_ROOT,
-						Category::MOVIE_OTHER,
-						Category::MUSIC_MP3,
-						Category::MUSIC_LOSSLESS,
-						Category::MUSIC_OTHER,
-						Category::GAME_ROOT,
-						Category::GAME_OTHER,
-						$bookreqids,
-						Category::PC_GAMES,
-						Category::XXX_ROOT,
-						Category::XXX_X264,
-						Nfo::NfoQueryString($this->pdo),
-						$request_hours);
+					Category::TV_ROOT,
+					Category::TV_OTHER,
+					Category::TV_ANIME,
+					Category::MOVIE_ROOT,
+					Category::MOVIE_OTHER,
+					Category::MUSIC_MP3,
+					Category::MUSIC_LOSSLESS,
+					Category::MUSIC_OTHER,
+					Category::GAME_ROOT,
+					Category::GAME_OTHER,
+					$bookreqids,
+					Category::PC_GAMES,
+					Category::XXX_ROOT,
+					Category::XXX_X264,
+					Nfo::NfoQueryString($this->pdo),
+					$request_hours);
 
 			case 2:
 				return "SELECT

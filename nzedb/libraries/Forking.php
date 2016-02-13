@@ -838,12 +838,15 @@ class Forking extends \fork_daemon
 					WHERE nzbstatus = %d
 					AND tv_episodes_id BETWEEN -2 AND 0
 					AND size > 1048576
-					AND categoryid BETWEEN 5000 AND 5999
+					AND categoryid BETWEEN %d AND %d
 					%s %s
 					GROUP BY LEFT(guid, 1)
 					LIMIT 16',
+
 					($this->ppRenamedOnly ? 2 : 1),
 					NZB::NZB_ADDED,
+					Category::TV_ROOT,
+					Category::TV_OTHER,
 					($this->pdo->getSetting('lookuptvrage') == 2 ? 'AND isrenamed = 1' : ''),
 					($this->ppRenamedOnly ? 'AND isrenamed = 1' : '')
 				)

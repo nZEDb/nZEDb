@@ -129,14 +129,17 @@ Class RSS
 				LEFT OUTER JOIN tv_episodes tve ON tve.id = r.tv_episodes_id
 				WHERE %s %s %s
 				AND r.nzbstatus = %d
-				AND r.categoryid BETWEEN 5000 AND 5999
+				AND r.categoryid BETWEEN %d AND %d
 				AND r.passwordstatus %s
 				ORDER BY postdate DESC %s",
+
 				$this->releases->getConcatenatedCategoryIDs(),
 				$this->releases->uSQL($this->pdo->query(sprintf('SELECT videos_id, categoryid FROM user_series WHERE user_id = %d', $userID), true), 'videos_id'),
 				(count($excludedCats) ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : ''),
 				($airDate > -1 ? sprintf(' AND tve.firstaired >= DATE_SUB(CURDATE(), INTERVAL %d DAY) ', $airDate) : ''),
 				NZB::NZB_ADDED,
+				Category::TV_ROOT,
+				Category::TV_OTHER,
 				$this->releases->showPasswords,
 				(' LIMIT ' . ($limit > 100 ? 100 : $limit) . ' OFFSET 0')
 			), true, nZEDb_CACHE_EXPIRY_MEDIUM

@@ -1,6 +1,7 @@
 <?php
 namespace nzedb;
 
+use nzedb\Category;
 use nzedb\db\Settings;
 use libs\AmazonProductAPI;
 
@@ -91,7 +92,7 @@ class Books
 			$this->renamed = 'AND isrenamed = 1';
 		}
 
-		$this->catWhere = 'AND (categoryid BETWEEN 7000 AND 7999 OR categoryid = 3030) ';
+		$this->catWhere = 'AND (categoryid BETWEEN ' . Category::BOOKS_ROOT . ' AND ' . Category::BOOKS_UNKNOWN . ' OR categoryid = ' . Category::MUSIC_AUDIOBOOK . ') ';
 		$this->failCache = array();
 	}
 
