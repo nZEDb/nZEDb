@@ -56,7 +56,7 @@
 			<tbody>
 			{foreach $results as $result}
 				<tr>
-					<td colspan="1" style="vertical-align:top;text-align:center;width:160px;padding:10px;">
+					<td style="width:150px;padding:10px;text-align:center;">
 						<div class="movcover" style="padding-bottom:5px;">
 							<a
 								class="title thumbnail"
