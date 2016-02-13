@@ -8,7 +8,7 @@
 						<li><a href="{$smarty.const.WWW_TOP}/console">All {$parentcat.title}</a></li>
 						{foreach $consolecatlist as $systemtype=>$system}
 							<li class="dropdown-submenu" >
-							<a tabindex="-1" href="#">{$systemtype}</a>
+							<a tabindex="-1" href="#">{$system}</a>
 							<ul class="dropdown-menu" style="overflow:auto">
 								{foreach $system as $subcat}
 									<li>
