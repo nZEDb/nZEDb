@@ -110,7 +110,7 @@ class Category
 	 *
 	 * @return array
 	 */
-	public function get($activeonly = false, $excludedcats = [])
+	public function getCategories($activeonly = false, $excludedcats = [])
 	{
 		return $this->pdo->query(
 			"SELECT c.id, CONCAT(cp.title, ' > ',c.title) AS title, cp.id AS parentid, c.status, c.minsize
@@ -368,7 +368,7 @@ class Category
 	 */
 	public function getForSelect($blnIncludeNoneSelected = true)
 	{
-		$categories = $this->get();
+		$categories = $this->getCategories();
 		$temp_array = [];
 
 		if ($blnIncludeNoneSelected) {
