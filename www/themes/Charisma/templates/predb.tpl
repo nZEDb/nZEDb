@@ -2,10 +2,10 @@
 	{$site->adbrowse}
 {/if}
 <h1>{$page->title}</h1>
-<form name="predbsearch" method="get" action="{$smarty.const.WWW_TOP}/predb" id="custom-search-form"
+<form name="presearch" method="get" action="{$smarty.const.WWW_TOP}/predb" id="custom-search-form"
 	  class="form-search form-horizontal col-4 col-lg-4 pull-right">
 	<div id="search" class="input-group col-12 col-lg-12">
-		<input type="text" class="form-control" placeholder="Search predb" id="predbsearch" name="predbsearch"
+		<input type="text" class="form-control" placeholder="Search predb" id="presearch" name="presearch"
 			   value="{$lastSearch|escape:'html'}">
 		<span class="input-group-btn">
 			<button type="submit" value="Go" class="btn btn-default">
