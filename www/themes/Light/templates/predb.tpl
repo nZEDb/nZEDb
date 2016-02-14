@@ -42,148 +42,252 @@
 			<td class="predb" style="text-align:center;">
 				{* Console *}
 				{* Xbox 360 *}
-				{if {$result.category} == 'XBOX360'}
-					<a class="title" title="View category XBOX 360" href="{$smarty.const.WWW_TOP}/browse?t=1050">Console Xbox 360</a>
-
-					{* Movies *}
-				{elseif in_array({$result.category}, array('Movies'))}
-					<a class="title" title="View category Movies" href="{$smarty.const.WWW_TOP}/browse?t=2000">Movies</a>
-					{* SD *}
-				{elseif in_array({$result.category}, array('movies-sd', 'Movies: STD', 'XVID'))}
-					<a class="title" title="View category Movies SD" href="{$smarty.const.WWW_TOP}/browse?t=2030">Movies SD</a>
-					{* HD *}
-				{elseif in_array({$result.category}, array('Movies: HD', 'X264'))}
-					<a class="title" title="View category Movies HD" href="{$smarty.const.WWW_TOP}/browse?t=2040">Movies HD</a>
-					{* BluRay *}
-				{elseif in_array({$result.category}, array('BLURAY'))}
-					<a class="title" title="View category BluRay" href="{$smarty.const.WWW_TOP}/browse?t=2060">Movies BluRay</a>
-					{* DVD *}
-				{elseif in_array({$result.category}, array('DVDR', 'Movies: DVD'))}
-					<a class="title" title="View category DVDR" href="{$smarty.const.WWW_TOP}/browse?t=2070">DVD</a>
-
-					{* Audio *}
-				{elseif in_array({$result.category}, array('music-audio'))}
-					<a class="title" title="View category Music" href="{$smarty.const.WWW_TOP}/music">Audio</a>
-					{* MP3 *}
-				{elseif in_array({$result.category}, array('MP3', 'Music: MP3'))}
-					<a class="title" title="View category MP3" href="{$smarty.const.WWW_TOP}/browse?t=3010">MP3</a>
-					{* Video *}
-				{elseif in_array({$result.category}, array('MVID', 'Music: MVID'))}
-					<a class="title" title="View category Audio Video" href="{$smarty.const.WWW_TOP}/browse?t=3020">Music Videos</a>
-					{* Audiobook *}
-				{elseif in_array({$result.category}, array('audiobook', 'Audiobook'))}
-					<a class="title" title="View category Audiobook" href="{$smarty.const.WWW_TOP}/browse?t=3030">Audiobook</a>
-					{* Lossless *}
-				{elseif in_array({$result.category}, array('FLAC', 'Music: FLAC'))}
-					<a class="title" title="View category Music Lossless" href="{$smarty.const.WWW_TOP}/browse?t=3040">Lossless Music</a>
-
-					{* PC *}
-					{* 0day *}
-				{elseif in_array({$result.category}, array('0DAY', 'APPS', 'Apps: PC', 'Apps: Linux', 'DOX'))}
-					<a class="title" title="View category PC 0day" href="{$smarty.const.WWW_TOP}/browse?t=4010">PC 0DAY</a>
-					{* Mac *}
-				{elseif in_array({$result.category}, array('Apps: MAC', 'Games: MAC'))}
-					<a class="title" title="View category PC Mac" href="{$smarty.const.WWW_TOP}/browse?t=4030">PC Mac</a>
-					{* Phone-Other *}
-				{elseif in_array({$result.category}, array('Apps: Phone', 'PDA'))}
-					<a class="title" title="View category Phone Other" href="{$smarty.const.WWW_TOP}/browse?t=4040">Phone Other</a>
-					{* Games *}
-				{elseif in_array({$result.category}, array('GAMES', 'Games: PC', 'Games: Other'))}
-					<a class="title" title="View category PC Games" href="{$smarty.const.WWW_TOP}/browse?t=4050">PC Games</a>
-
-					{* TV *}
-				{elseif in_array({$result.category}, array('TV'))}
-					<a class="title" title="View category TV" href="{$smarty.const.WWW_TOP}/browse?t=5000">TV</a>
-					{* SD *}
-				{elseif in_array({$result.category}, array('TV-DVDRIP', 'tv-sd', 'TV: STD', 'TV-XVID'))}
-					<a class="title" title="View category TV SD" href="{$smarty.const.WWW_TOP}/browse?t=5030">SDTV</a>
-					{* HD *}
-				{elseif in_array({$result.category}, array('tv-hd', 'TV: HD', 'TV-x264', 'TV-X264'))}
-					<a class="title" title="View category TV HD" href="{$smarty.const.WWW_TOP}/browse?t=5040">HDTV</a>
-
-					{* XXX *}
-				{elseif in_array({$result.category}, array('XXX'))}
-					<a class="title" title="View category XXX" href="{$smarty.const.WWW_TOP}/browse?t=6000">XXX</a>
-					{* DVD *}
-				{elseif in_array({$result.category}, array('XXX: DVD'))}
-					<a class="title" title="View category XXX DVD" href="{$smarty.const.WWW_TOP}/browse?t=6010">XXX DVD</a>
-					{* XviD *}
-				{elseif in_array({$result.category}, array('XXX: SD-CLIPS', 'XXX: MOVIES-SD'))}
-					<a class="title" title="View category XXX XviD" href="{$smarty.const.WWW_TOP}/browse?t=6030">XXX SD</a>
-					{* x264 *}
-				{elseif in_array({$result.category}, array('XXX: HD-CLIPS', 'XXX: MOVIES-HD'))}
-					<a class="title" title="View category XXX x264" href="{$smarty.const.WWW_TOP}/browse?t=6040">XXX HD</a>
-					{* Other *}
-				{elseif in_array({$result.category}, array('xxx-videos'))}
-					<a class="title" title="View category XXX Other" href="{$smarty.const.WWW_TOP}/browse?t=6999">XXX Other</a>
-					{* Imageset *}
-				{elseif in_array({$result.category}, array('XXX-IMGSET'))}
-					<a class="title" title="View category XXX Imageset" href="{$smarty.const.WWW_TOP}/browse?t=6060">XXX Imagesets</a>
-
-					{* Books *}
-				{elseif in_array({$result.category}, array('EBOOK'))}
-					<a class="title" title="View category Books" href="{$smarty.const.WWW_TOP}/browse?t=7000">Ebooks</a>
-					{* Other *}
-				{elseif in_array({$result.category}, array('Other: E-Books'))}
-					<a class="title" title="View category Books Other" href="{$smarty.const.WWW_TOP}/browse?t={getCategoryValue('BOOKS_UNKNOWN')}">Ebooks Other</a>
-
-				{elseif in_array({$result.category}, array('', 'PRE'))}
+				{if $result.category == 'XBOX360'}
+					<a class="title" title="View category XBOX 360"
+					   href="{$smarty.const.WWW_TOP}/browse?t={$category::GAME_XBOX360}">Console
+						Xbox
+						360</a>
+				{/if}
+				{* Movies *}
+				{if in_array($result.category, array('Movies'))}
+					<a class="title" title="View category Movies"
+					   href="{$smarty.const.WWW_TOP}/browse?t={$category::MOVIE_ROOT}">Movies</a>
+				{/if}
+				{* SD *}
+				{if in_array($result.category, array('movies-sd', 'Movies: STD', 'XVid'))}
+					<a class="title" title="View category Movies SD"
+					   href="{$smarty.const.WWW_TOP}/browse?t={$category::MOVIE_SD}">Movies
+						SD</a>
+				{/if}
+				{* HD *}
+				{if in_array($result.category, array('Movies: HD', 'X264'))}
+					<a class="title" title="View category Movies HD"
+					   href="{$smarty.const.WWW_TOP}/browse?t={$category::MOVIE_HD}">Movies
+						HD</a>
+				{/if}
+				{* BluRay *}
+				{if in_array($result.category, array('BLURAY'))}
+					<a class="title" title="View category BluRay"
+					   href="{$smarty.const.WWW_TOP}/browse?t={$category::MOVIE_BLURAY}">Movies
+						BluRay</a>
+				{/if}
+				{* DVD *}
+				{if in_array($result.category, array('DVDR', 'Movies: DVD'))}
+					<a class="title" title="View category DVDR"
+					   href="{$smarty.const.WWW_TOP}/browse?t={$category::MOVIE_DVD}">DVD</a>
+				{/if}
+				{* Audio *}
+				{if in_array($result.category, array('music-audio'))}
+					<a class="title" title="View category Music"
+					   href="{$smarty.const.WWW_TOP}/music">Audio</a>
+				{/if}
+				{* MP3 *}
+				{if in_array($result.category, array('MP3', 'Music: MP3'))}
+					<a class="title" title="View category MP3"
+					   href="{$smarty.const.WWW_TOP}/browse?t={$category::MUSIC_MP3}">MP3</a>
+				{/if}
+				{* Video *}
+				{if in_array($result.category, array('MVid', 'Music: MVid'))}
+					<a class="title" title="View category Audio Video"
+					   href="{$smarty.const.WWW_TOP}/browse?t={$category::MUSIC_VIDEO}">Music
+						Videos</a>
+				{/if}
+				{* Audiobook *}
+				{if in_array($result.category, array('audiobook', 'Audiobook'))}
+					<a class="title" title="View category Audiobook"
+					   href="{$smarty.const.WWW_TOP}/browse?t={$category::MUSIC_AUDIOBOOK}">Audiobook</a>
+				{/if}
+				{* Lossless *}
+				{if in_array($result.category, array('FLAC', 'Music: FLAC'))}
+					<a class="title" title="View category Music Lossless"
+					   href="{$smarty.const.WWW_TOP}/browse?t={$category::MUSIC_LOSSLESS}">Lossless
+						Music</a>
+				{/if}
+				{* PC *}
+				{* 0day *}
+				{if in_array($result.category, array('0DAY', 'APPS', 'Apps: PC', 'Apps: Linux', 'DOX'))}
+					<a class="title" title="View category PC 0day"
+					   href="{$smarty.const.WWW_TOP}/browse?t={$category::PC_0DAY}">PC
+						0DAY</a>
+				{/if}
+				{* Mac *}
+				{if in_array($result.category, array('Apps: MAC', 'Games: MAC'))}
+					<a class="title" title="View category PC Mac"
+					   href="{$smarty.const.WWW_TOP}/browse?t={$category::PC_MAC}">PC
+						Mac</a>
+				{/if}
+				{* Phone-Other *}
+				{if in_array($result.category, array('Apps: Phone', 'PDA'))}
+					<a class="title" title="View category Phone Other"
+					   href="{$smarty.const.WWW_TOP}/browse?t={$category::PC_PHONE_OTHER}">Phone
+						Other</a>
+				{/if}
+				{* Games *}
+				{if in_array($result.category, array('GAMES', 'Games: PC', 'Games: Other'))}
+					<a class="title" title="View category PC Games"
+					   href="{$smarty.const.WWW_TOP}/browse?t={$category::PC_GAME}">PC
+						Games</a>
+				{/if}
+				{* TV *}
+				{if in_array($result.category, array('TV'))}
+					<a class="title" title="View category TV"
+					   href="{$smarty.const.WWW_TOP}/browse?t={$category::TV_ROOT}">TV</a>
+				{/if}
+				{* SD *}
+				{if in_array($result.category, array('TV-DVDRIP', 'tv-sd', 'TV: STD', 'TV-XVid'))}
+					<a class="title" title="View category TV SD"
+					   href="{$smarty.const.WWW_TOP}/browse?t={$category::TV_SD}">SDTV</a>
+				{/if}
+				{* HD *}
+				{if in_array($result.category, array('tv-hd', 'TV: HD', 'TV-x264', 'TV-X264'))}
+					<a class="title" title="View category TV HD"
+					   href="{$smarty.const.WWW_TOP}/browse?t={$category::TV_HD}">HDTV</a>
+				{/if}
+				{* XXX *}
+				{if in_array($result.category, array('XXX'))}
+					<a class="title" title="View category XXX"
+					   href="{$smarty.const.WWW_TOP}/browse?t={$category::XXX_ROOT}">XXX</a>
+				{/if}
+				{* DVD *}
+				{if in_array($result.category, array('XXX: DVD'))}
+					<a class="title" title="View category XXX DVD"
+					   href="{$smarty.const.WWW_TOP}/browse?t={$category::XXX_DVD}">XXX
+						DVD</a>
+				{/if}
+				{* XviD *}
+				{if in_array($result.category, array('XXX: SD-CLIPS', 'XXX: MOVIES-SD'))}
+					<a class="title" title="View category XXX XviD"
+					   href="{$smarty.const.WWW_TOP}/browse?t={$category::XXX_XVID}">XXX
+						SD</a>
+				{/if}
+				{* x264 *}
+				{if in_array($result.category, array('XXX: HD-CLIPS', 'XXX: MOVIES-HD'))}
+					<a class="title" title="View category XXX x264"
+					   href="{$smarty.const.WWW_TOP}/browse?t={$category::XXX_X264}">XXX
+						HD</a>
+				{/if}
+				{* Other *}
+				{if in_array($result.category, array('xxx-videos'))}
+					<a class="title" title="View category XXX Other"
+					   href="{$smarty.const.WWW_TOP}/browse?t={$category::XXX_OTHER}">XXX
+						Other</a>
+				{/if}
+				{* Imageset *}
+				{if in_array($result.category, array('XXX-IMGSET'))}
+					<a class="title" title="View category XXX Imageset"
+					   href="{$smarty.const.WWW_TOP}/browse?t={$category::XXX_IMAGESET}">XXX
+						Imagesets</a>
+				{/if}
+				{* Books *}
+				{if in_array($result.category, array('EBOOK'))}
+					<a class="title" title="View category Books"
+					   href="{$smarty.const.WWW_TOP}/browse?t={$category::BOOKS_ROOT}">Ebooks</a>
+				{/if}
+				{* Other *}
+				{if in_array($result.category, array('Other: E-Books'))}
+					<a class="title" title="View category Books Other"
+					   href="{$smarty.const.WWW_TOP}/browse?t={$category::BOOKS_UNKNOWN}">Ebooks
+						Other</a>
+				{/if}
+				{if in_array($result.category, array('', 'PRE'))}
 					N/A
 				{else}
 					{$result.category}
 				{/if}
 			</td>
 			<td class="predb" style="text-align:center;">
-				{if {$result.source} == abgx}
-					<a title="Visit abgx" href="{$site->dereferrer_link}http://www.abgx.net/rss/x360/posted.rss" target="_blank">
+				{if $result.source == abgx}
+					<a title="Visit abgx"
+					   href="{$site->dereferrer_link}http://www.abgx.net/rss/x360/posted.rss"
+					   target="_blank">
 						abgx.net
 					</a>
-				{elseif in_array({$result.source}, array('abErotica', 'abMooVee', 'abTeeVee', 'abForeign'))}
-					<a title="Visit allfilled {$result.source}" href="{$site->dereferrer_link}http://{$result.source}.allfilled.com/search.php?q={$result.title}&Search=Search" target="_blank">
-						{$result.source}
+				{/if}
+				{if in_array($result.source, array('abErotica', 'abMooVee', 'abTeeVee', 'abForeign'))}
+					<a title="Visit allfilled $result.source"
+					   href="{$site->dereferrer_link}http://$result.source.allfilled.com/search.php?q={$result.title}&Search=Search"
+					   target="_blank">
+						$result.source
 					</a>
-				{elseif $result.source|strpos:'#a.b.' !== false}
-					<a title="Visit {$result.source} on IRC" href="irc://irc.Prison.NET:6667/{str_replace('#a.b.', 'alt.binaries.', {$result.source})}" target="_blank">
-						{$result.source}
+				{/if}
+				{if $result.source|strpos:'#a.b.' != false}
+					<a title="Visit $result.source on IRC"
+					   href="irc://irc.Prison.NET:6667/{str_replace('#a.b.', 'alt.binaries.', $result.source)}"
+					   target="_blank">
+						$result.source
 					</a>
-				{elseif {$result.source} == omgwtfnzbs}
-					<a title="Visit omgwtfnzbs" href="{$site->dereferrer_link}http://rss.omgwtfnzbs.org/rss-info.php" target="_blank">
+				{/if}
+				{if $result.source == omgwtfnzbs}
+					<a title="Visit omgwtfnzbs"
+					   href="{$site->dereferrer_link}http://rss.omgwtfnzbs.org/rss-info.php"
+					   target="_blank">
 						omgwtfnzbs
 					</a>
-				{elseif {$result.source} == orlydb}
-					<a title="Visit ORLYDB" href="{$site->dereferrer_link}http://orlydb.com/?q={$result.title}" target="_blank">
+				{/if}
+				{if $result.source == orlydb}
+					<a title="Visit ORLYDB"
+					   href="{$site->dereferrer_link}http://orlydb.com/?q={$result.title}"
+					   target="_blank">
 						ORLYDB
 					</a>
-				{elseif {$result.source} == predbme}
-					<a title="Visit PreDB.me" href="{$site->dereferrer_link}http://predb.me/?search={$result.title}" target="_blank">
+				{/if}
+				{if $result.source == predbme}
+					<a title="Visit PreDB.me"
+					   href="{$site->dereferrer_link}http://predb.me/?search={$result.title}"
+					   target="_blank">
 						PreDB
 					</a>
-				{elseif {$result.source} == prelist}
-					<a title="Visit Prelist" href="{$site->dereferrer_link}http://www.prelist.ws/?search={$result.title}" target="_blank">
+				{/if}
+				{if $result.source == prelist}
+					<a title="Visit Prelist"
+					   href="{$site->dereferrer_link}http://www.prelist.ws/?search={$result.title}"
+					   target="_blank">
 						Prelist
 					</a>
-				{elseif {$result.source} == "#Pre@zenet"}
-					<a title="Visit zenet on IRC" href="irc://irc.zenet.org:6667/Pre" target="_blank">
+				{/if}
+				{if $result.source == "#Pre@zenet"}
+					<a title="Visit zenet on IRC" href="irc://irc.zenet.org:6667/Pre"
+					   target="_blank">
 						Zenet IRC
 					</a>
-				{elseif {$result.source} == "#pre@corrupt"}
-					<a title="Visit corrupt on IRC" href="irc://irc.corrupt-net.org:6667/pre" target="_blank">
+				{/if}
+				{if $result.source == "#pre@corrupt"}
+					<a title="Visit corrupt on IRC"
+					   href="irc://irc.corrupt-net.org:6667/pre"
+					   target="_blank">
 						Corrupt-Net
 					</a>
-				{elseif {$result.source} == srrdb}
-					<a title="Visit srrDB" href="{$site->dereferrer_link}http://www.srrdb.com/browse/{$result.title}" target="_blank">
+				{/if}
+				{if $result.source == srrdb}
+					<a title="Visit srrDB"
+					   href="{$site->dereferrer_link}http://www.srrdb.com/browse/{$result.title}"
+					   target="_blank">
 						srrDB
 					</a>
-				{elseif {$result.source} == "#scnzb"}
-					<a title="Visit scnzb on IRC" href="irc://irc.Prison.NET:6667/scnzb" target="_blank">
-						scnzbIRC
+				{/if}
+				{if $result.source == "#scnzb"}
+					<a title="Visit srrDB" href="irc://irc.Prison.NET:6667/scnzb"
+					   target="_blank">
+						srrDB
 					</a>
-				{elseif {$result.source} == "#tvnzb"}
-					<a title="Visit tvnzb on IRC" href="irc://irc.Prison.NET:6667/tvnzb" target="_blank">
-						tvnzbIRC
+				{/if}
+				{if $result.source == "#tvnzb"}
+					<a title="Visit srrDB" href="irc://irc.Prison.NET:6667/tvnzb"
+					   target="_blank">
+						srrDB
 					</a>
-				{elseif {$result.source} == zenet}
-					<a title="Visit ZEnet" href="{$site->dereferrer_link}http://pre.zenet.org/?search={$result.title}" target="_blank">
+				{/if}
+				{if $result.source == womble}
+					<a title="Visit Womble"
+					   href="{$site->dereferrer_link}http://www.newshost.co.za/?s={$result.title}"
+					   target="_blank">
+						Womble
+					</a>
+				{/if}
+				{if $result.source == zenet}
+					<a title="Visit ZEnet"
+					   href="{$site->dereferrer_link}http://pre.zenet.org/?search={$result.title}"
+					   target="_blank">
 						ZEnet
 					</a>
 				{else}
