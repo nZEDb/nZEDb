@@ -8,6 +8,7 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 2016-02-14 DariusIII
+	Chg: Update themes rss pages to use category constants
 	Chg: Change category numbers to category constants in themes search-filter.tpl
 2016-02-13 DariusIII
 	Chg: Change category numbers to category constants in themes predb.tpl
