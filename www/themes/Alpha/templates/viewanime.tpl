@@ -34,14 +34,15 @@
 			<div class="container nzb_multi_operations text-right" style="padding-bottom: 4px;">
 				View:
 				<span><i class="icon-th-list"></i></span>&nbsp;&nbsp;
-				<a href="{$smarty.const.WWW_TOP}/browse?t={$category::TV_ANIME}"><i	class="icon-align-justify"></i></a>&nbsp;&nbsp;
+				<a href="{$smarty.const.WWW_TOP}/browse?t={$category::TV_ANIME}"><i class="icon-align-justify"></i></a>&nbsp;&nbsp;
 				{if $isadmin || $ismod}
 					Admin: <button type="button" class="btn btn-warning btn-sm nzb_multi_operations_edit">Edit</button>
 					<button type="button" class="btn btn-danger btn-sm nzb_multi_operations_delete">Delete</button>
 				{/if}
 			</div>
 			{include file='multi-operations.tpl'}
-		</div>
+		</form>
+	</div>
 		<table class="table table-hover table-condensed table-highlight data" id="browsetable">
 			<thead>
 				<tr>
@@ -96,5 +97,4 @@
 			{/foreach}
 			</tbody>
 		</table>
-	</form>
 {/if}

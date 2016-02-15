@@ -52,6 +52,7 @@
 				{include file='multi-operations.tpl'}
 			</div>
 		</div>
+	</div>
 
 	<a id="latest"></a>
 	<table class="table table-hover table-condensed table-highlight data" id="browsetable">
