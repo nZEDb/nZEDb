@@ -1,12 +1,4 @@
-{if {$site->adbrowse} != ''}
-	<div class="container" style="width:500px;">
-		<fieldset class="adbanner div-center">
-			<legend class="adbanner">Advertisement</legend>
-			{$site->adbrowse}
-		</fieldset>
-	</div>
-	<br>
-{/if}
+{include file='partials/ads.tpl' ad=$site->adbrowse}
 <h3 class="text-center">
 	<a href="#" onclick="if (jQuery(this).text() == 'Advanced Search')
 		jQuery(this).text('Basic Search');
