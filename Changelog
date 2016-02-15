@@ -7,10 +7,11 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2016-02-15
+	Chg: Use Category constants instead of numbers in 33 template files of various themes.
 2016-02-15 DariusIII
-	Upd: Fix template tag errors in Alpha viewanime and viewseries.tpl
+	Fix Fix template tag errors in Alpha viewanime and viewseries.tpl
 2016-02-14 DariusIII
-	Chg: Update themes rss pages to use category constants
 	Chg: Change category numbers to category constants in themes search-filter.tpl
 2016-02-13 DariusIII
 	Chg: Change category numbers to category constants in themes predb.tpl
