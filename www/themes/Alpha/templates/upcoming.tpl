@@ -1,14 +1,4 @@
-{if {$site->adbrowse} != ''}
-	<div class="row">
-		<div class="container" style="width:500px;">
-			<fieldset class="adbanner div-center">
-				<legend class="adbanner">Advertisement</legend>
-				{$site->adbrowse}
-			</fieldset>
-		</div>
-	</div>
-	<br>
-{/if}
+{include file='partials/ads.tpl' ad=$site->adbrowse}
 
 <p>
 	<a href="{$smarty.const.WWW_TOP}/upcoming/1">Box Office</a> |
