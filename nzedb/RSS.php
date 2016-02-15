@@ -2,6 +2,7 @@
 
 namespace nzedb;
 
+use nzedb\Category;
 use nzedb\db\Settings;
 
 /**
@@ -52,7 +53,7 @@ Class RSS
 	{
 		$catSearch = $cartSearch = '';
 
-		$catLimit = "AND r.categoryid BETWEEN 5000 AND 5999";
+		$catLimit = "AND r.categoryid BETWEEN " . Category::TV_ROOT . " AND " . Category::TV_OTHER;
 
 		if (count($cat)) {
 			if ($cat[0] == -2) {

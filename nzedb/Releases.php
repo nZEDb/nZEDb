@@ -1515,7 +1515,7 @@ class Releases
 				gi.cover
 			FROM releases r
 			INNER JOIN gamesinfo gi ON r.gamesinfo_id = gi.id
-			WHERE r.categoryid = 4050
+			WHERE r.categoryid = " . Category::PC_GAMES . "
 			AND gi.id > 0
 			AND gi.cover > 0
 			AND r.id in (select max(id) from releases where gamesinfo_id > 0 group by gamesinfo_id)
@@ -1608,7 +1608,7 @@ class Releases
 			FROM releases r
 			INNER JOIN anidb_titles at USING (anidbid)
 			INNER JOIN anidb_info ai USING (anidbid)
-			WHERE r.categoryid = 5070
+			WHERE r.categoryid = " . Category::TV_ANIME . "
 			AND at.anidbid > 0
 			AND at.lang = 'en'
 			AND ai.picture != ''

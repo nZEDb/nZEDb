@@ -9,6 +9,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2016-02-15
 	Chg: Use Category constants instead of numbers in 33 template files of various themes.
+	Chg: Use Category constants instead of numbers in 11 code files from misc and nzedb directories.
 2016-02-15 DariusIII
 	Fix Fix template tag errors in Alpha viewanime and viewseries.tpl
 2016-02-14 DariusIII

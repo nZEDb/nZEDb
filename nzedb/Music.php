@@ -847,13 +847,13 @@ class Music
 					SELECT DISTINCT genre_id
 					FROM musicinfo
 				) x ON x.genre_id = ge.id
-				WHERE ge.type = 3000
+				WHERE ge.type = " . Category::MUSIC_ROOT . "
 				ORDER BY title"
 			);
 		} else {
 			return $this->pdo->query("
 				SELECT * FROM genres
-				WHERE type = 3000
+				WHERE type = " . Category::MUSIC_ROOT . "
 				ORDER BY title"
 			);
 		}

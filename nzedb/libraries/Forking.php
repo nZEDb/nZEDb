@@ -757,10 +757,13 @@ class Forking extends \fork_daemon
 						FROM releases
 						WHERE nzbstatus = %d
 						AND imdbid IS NULL
-						AND categoryid BETWEEN 2000 AND {$category::MOVIE_OTHER}
+						AND categoryid BETWEEN %d AND %d
 						%s %s
 						LIMIT 1',
+
 						NZB::NZB_ADDED,
+						Category::MOVIE_ROOT,
+						Category::MOVIE_OTHER,
 						($this->pdo->getSetting('lookupimdb') == 2 ? 'AND isrenamed = 1' : ''),
 						($this->ppRenamedOnly ? 'AND isrenamed = 1' : '')
 					)
@@ -812,10 +815,13 @@ class Forking extends \fork_daemon
 						WHERE nzbstatus = %d
 						AND size > 1048576
 						AND tv_episodes_id BETWEEN -2 AND 0
-						AND categoryid BETWEEN 5000 AND 5999
+						AND categoryid BETWEEN %d AND %d
 						%s %s
 						LIMIT 1',
+
 						NZB::NZB_ADDED,
+						Category::TV_ROOT,
+						Category::TV_OTHER,
 						($this->pdo->getSetting('lookuptvrage') == 2 ? 'AND isrenamed = 1' : ''),
 						($this->ppRenamedOnly ? 'AND isrenamed = 1' : '')
 					)

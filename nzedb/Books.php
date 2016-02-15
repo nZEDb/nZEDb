@@ -421,7 +421,7 @@ class Books
 				$startTime = microtime(true);
 				$usedAmazon = false;
 				// audiobooks are also books and should be handled in an identical manor, even though it falls under a music category
-				if ($arr['categoryid'] == '3030') {
+				if ($arr['categoryid'] == Category::MUSIC_AUDIOBOOK) {
 					// audiobook
 					$bookInfo = $this->parseTitle($arr['searchname'], $arr['id'], 'audiobook');
 				} else {

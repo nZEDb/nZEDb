@@ -39,29 +39,29 @@ function determineMovieCategory($name)
 	global $categorize;
 
 	if ($categorize->isMovieSD($name)) {
-		return "2030";
+		return Category::MOVIE_SD;
 	}
 
 	if ($categorize->isMovie3D($name)) {
-		return "2060";
+		return Category::MOVIE_3D;
 	}
 
 	if ($categorize->isMovieHD($name)) {
-		return "2040";
+		return Category::MOVIE_HD;
 	}
 
 	if ($categorize->isMovieBluRay($name)) {
-		return "2050";
+		return Category::MOVIE_BLURAY;
 	}
 
 	// Hack to catch 1080 named releases that didnt reveal their encoding.
 	if (strrpos($name, '1080') != false) {
-		return "2040";
+		return Category::MOVIE_HD;
 	}
 
 	// Hack to catch 720 named releases that didnt reveal their encoding.
 	if (strrpos($name, '720') != false) {
-		return "2040";
+		return Category::MOVIE_HD;
 	}
 
 	return Category::MOVIE_OTHER;
