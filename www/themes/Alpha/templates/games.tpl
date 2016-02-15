@@ -26,7 +26,7 @@
 </div>
 {if $results|@count > 0}
 	<form id="nzb_multi_operations_form" action="get">
-		<div class="container nzb_multi_operations" style="text-align:right;margin-bottom:5px;">
+		<div class="nzb_multi_operations" style="text-align:right;margin-bottom:5px;">
 			View:
 			<span><i class="icon-th-list"></i></span>
 			&nbsp;&nbsp;

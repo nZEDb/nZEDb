@@ -31,7 +31,7 @@
 			{if animePicture != ""}<img class="shadow img-thumbnail" alt="{$animeTitle} Picture" src="{$smarty.const.WWW_TOP}/covers/anime/{$animeAnidbID}.jpg" />{/if}
 		</div>
 		<form id="nzb_multi_operations_form" action="get">
-			<div class="container nzb_multi_operations text-right" style="padding-bottom: 4px;">
+			<div class="nzb_multi_operations text-right" style="padding-bottom: 4px;">
 				View:
 				<span><i class="icon-th-list"></i></span>&nbsp;&nbsp;
 				<a href="{$smarty.const.WWW_TOP}/browse?t=5070"><i class="icon-align-justify"></i></a>
