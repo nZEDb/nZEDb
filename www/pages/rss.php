@@ -75,7 +75,7 @@ if (!isset($_GET["t"]) && !isset($_GET["show"]) && !isset($_GET["anidb"])) {
 		$username = $res['username'];
 
 		if ($page->users->isDisabled($username)) {
-			Misc::showApiError(101,'Insufficient privileges/not authorized (Free Account is Expired, Please Login to Webportal!)');
+			Misc::showApiError(101);
 		}
 	}
 

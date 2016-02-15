@@ -13,7 +13,7 @@ if ($page->users->isLoggedIn()) {
 	$maxDownloads = $page->userdata["downloadrequests"];
 	$rssToken = $page->userdata['rsstoken'];
 	if ($page->users->isDisabled($page->userdata['username'])) {
-		Misc::showApiError(101, 'Insufficient privileges/not authorized (Free Account is Expired, Please Login to Webportal!)');
+		Misc::showApiError(101);
 	}
 } else {
 	if ($page->settings->getSetting('registerstatus') == Settings::REGISTER_STATUS_API_ONLY) {
@@ -36,7 +36,7 @@ if ($page->users->isLoggedIn()) {
 	$rssToken = $res['rsstoken'];
 	$maxDownloads = $res["downloadrequests"];
 	if ($page->users->isDisabled($res['username'])) {
-		Misc::showApiError(101, 'Insufficient privileges/not authorized (Free Account is Expired, Please Login to Webportal!)');
+		Misc::showApiError(101);
 	}
 }
 

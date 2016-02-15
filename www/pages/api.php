@@ -61,7 +61,7 @@ if ($page->users->isLoggedIn()) {
 	$catExclusions = $page->userdata['categoryexclusions'];
 	$maxRequests = $page->userdata['apirequests'];
 	if ($page->users->isDisabled($page->userdata['username'])) {
-		Misc::showApiError(101, 'Insufficient privileges/not authorized (Free Account is Expired, Please Login to Webportal!)');
+		Misc::showApiError(101);
 	}
 } else {
 	if ($function != 'c' && $function != 'r') {
@@ -76,7 +76,7 @@ if ($page->users->isLoggedIn()) {
 			}
 
 		if ($page->users->isDisabled($res['username'])) {
-			Misc::showApiError(101, 'Insufficient privileges/not authorized (Free Account is Expired, Please Login to Webportal!)');
+			Misc::showApiError(101);
 		}
 
 		$uid = $res['id'];
