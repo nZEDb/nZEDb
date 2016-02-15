@@ -145,7 +145,8 @@
 							</ul>
 						</li>
 					{/if}
-					{if ($parentcat.id == 8000 && $userdata.bookview == "1") && $site->lookupbooks == "1"}
+					{if ($parentcat.id == {$category::BOOKS_ROOT} && $userdata.bookview == "1") &&
+					$site->lookupbooks	== "1"}
 						<li><a title="Browse All {$parentcat.title}"
 									href="{$smarty.const.WWW_TOP}/books">{$parentcat.title}</a>
 							<ul>

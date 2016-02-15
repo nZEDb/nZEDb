@@ -113,18 +113,13 @@
 						<div>
 							<a
 								class="label label-info"
-								href="{$smarty.const.WWW_TOP}/search/{$result.title|escape:"url"}?t=2000"
-								title="View similar nzbs"
-							>Similar</a>
+								href="{$smarty.const.WWW_TOP}/search/{$result.title|escape:"url"}?t={$category::MOVIE_ROOT}" title="View similar nzbs">Similar</a>
 						</div>
 					</div>
 				</td>
 				<td colspan="3" class="left">
 					<h2>
-						<a
-							title="{$result.title|stripslashes|escape:"htmlall"}"
-							href="{$smarty.const.WWW_TOP}/xxx/?id={$result.id}">{$result.title|stripslashes|escape:"htmlall"}
-						</a>
+						<a title="{$result.title|stripslashes|escape:"htmlall"}" href="{$smarty.const.WWW_TOP}/xxx/?id={$result.id}">{$result.title|stripslashes|escape:"htmlall"}</a>
 					</h2>
 					{if $result.tagline != ''}
 						<b>{$result.tagline|stripslashes}</b>

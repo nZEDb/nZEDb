@@ -80,7 +80,7 @@
 				{if $userdata.xxxview == "1"}
 					<li><a href="{$smarty.const.WWW_TOP}/xxx">{$parentcat.title}</a></li>
 				{else}
-					<li><a href="{$smarty.const.WWW_TOP}/browse?t=6000">{$parentcat.title}</a></li>
+					<li><a href="{$smarty.const.WWW_TOP}/browse?t={$category::XX_ROOT}">{$parentcat.title}</a></li>
 				{/if}
 				<hr>
 				{if $userdata.xxxview == "1"}

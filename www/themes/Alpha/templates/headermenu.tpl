@@ -38,7 +38,7 @@
 					<ul class="dropdown-menu" role="menu" aria-labelledby="cat3">
 						<li><a href="{$smarty.const.WWW_TOP}/music">All {$parentcat.title}</a></li>
 						{foreach $parentcat.subcatlist as $subcat}
-							{if $subcat.id == 3030}
+							{if $subcat.id == {$category::MUSIC_AUDIOBOOK}}
 								<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a></li>
 							{else}
 								<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/music?t={$subcat.id}">{$subcat.title}</a></li>

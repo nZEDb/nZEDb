@@ -80,7 +80,7 @@
 <ul style="text-align: left;">
 	<li>
 		Multiple categories separated by comma.<br/>
-		<code><a href="{$smarty.const.WWW_TOP}/rss?t=1000,2000,3010&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">{$smarty.const.WWW_TOP}/rss?t=1000,2000,3010&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}</a></code>
+		<code><a href="{$smarty.const.WWW_TOP}/rss?t={$category::GAME_ROOT},{$category::MOVIE_ROOT},{$category::MUSIC_MP3}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">{$smarty.const.WWW_TOP}/rss?t={$category::GAME_ROOT},{$category::MOVIE_ROOT},{$category::MUSIC_MP3}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}</a></code>
 	</li><br/>
 </ul>
 

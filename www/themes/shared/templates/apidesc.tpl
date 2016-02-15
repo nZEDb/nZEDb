@@ -16,12 +16,12 @@
 	<dd>Registers a new user account. Does not require any credentials in order to be ran.<br>Returns either the registered username and password if successful or an error code.</dd>
 	<br>
 	<dt>Search <span style="font-family:courier;"><a href="{$smarty.const.WWW_TOP}/api?t=search&amp;q=linux">?t=search&amp;q=linux</a></span></dt>
-	<dd>Returns a list of nzbs matching a query. You can also  filter by site category by including a comma separated list of categories as follows <span style="font-family:courier;"><a href="{$smarty.const.WWW_TOP}/api?t=search&amp;cat=1000,2000">?t=search&amp;cat=1000,2000</a></span>. Include <span style="font-family:courier;">&amp;extended=1</span> to return extended information in the search results.</dd>
+	<dd>Returns a list of nzbs matching a query. You can also  filter by site category by including a comma separated list of categories as follows <span style="font-family:courier;"><a href="{$smarty.const.WWW_TOP}/api?t=search&amp;cat={$category::GAME_ROOT},{$category::MOVIE_ROOT}">?t=search&amp;cat={$category::GAME_ROOT},{$category::MOVIE_ROOT}</a></span>. Include <span style="font-family:courier;">&amp;extended=1</span> to return extended information in the search results.</dd>
 	<br>
 	<dt>TV <span style="font-family:courier;"><a href="{$smarty.const.WWW_TOP}/api?t=tvsearch&amp;q=law%20and%20order&amp;season=7&amp;ep=12">?t=tvsearch&amp;q=law and order&amp;season=7&amp;ep=12</a></span></dt>
 	<dd>Returns a list of nzbs matching a query, category, tvrageid, season or episode.
 		You can also filter by site category by including a comma separated list of categories as follows:
-		<span style="font-family:courier;"><a href="{$smarty.const.WWW_TOP}/api?t=tvsearch&amp;rid=2204&amp;cat=1000,2000">?t=tvsearch&amp;cat=1000,2000</a></span>.
+		<span style="font-family:courier;"><a href="{$smarty.const.WWW_TOP}/api?t=tvsearch&amp;rid=2204&amp;cat={$category::GAME_ROOT},{$category::MOVIE_ROOT}">?t=tvsearch&amp;cat={$category::GAME_ROOT},{$category::MOVIE_ROOT}</a></span>.
 		Include <span style="font-family:courier;">&amp;extended=1</span> to return extended information in the search results.
 	</dd>
 	<dd>
@@ -30,7 +30,9 @@
 	</dd>
 	<br>
 	<dt>Movies <span style="font-family:courier;"><a href="{$smarty.const.WWW_TOP}/api?t=movie&amp;imdbid=1418646">?t=movie&amp;imdbid=1418646</a></span></dt>
-	<dd>Returns a list of nzbs matching a query, an imdbid and optionally a category. Filter by site category by including a comma separated list of categories as follows <span style="font-family:courier;"><a href="{$smarty.const.WWW_TOP}/api?t=movie&amp;imdbid=1418646&amp;cat=2030,2040">?t=movie&amp;imdbid=1418646&amp;cat=2030,2040</a></span>.  Include <span style="font-family:courier;">&amp;extended=1</span> to return extended information in the search results.</dd>
+	<dd>Returns a list of nzbs matching a query, an imdbid and optionally a category. Filter by
+	    site category by including a comma separated list of categories as follows <span
+				style="font-family:courier;"><a href="{$smarty.const.WWW_TOP}/api?t=movie&amp;imdbid=1418646&amp;cat={$category::MOVIE_SD},{$category::MOVIE_HD}">?t=movie&amp;imdbid=1418646&amp;cat={$category::MOVIE_SD},{$category::MOVIE_HD}</a></span>.  Include <span style="font-family:courier;">&amp;extended=1</span> to return extended information in the search results.</dd>
 	<br>
 	<dt>Details <span style="font-family:courier;"><a href="{$smarty.const.WWW_TOP}/api?t=details&amp;id=9ca52909ba9b9e5e6758d815fef4ecda">?t=details&amp;id=9ca52909ba9b9e5e6758d815fef4ecda</a></span></dt>
 	<dd>Returns detailed information about an nzb.</dd>

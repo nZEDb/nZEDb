@@ -44,7 +44,7 @@
 			</td>
 			<td>
 				<select id="category" name="t">
-					<option class="grouping" value="2000"></option>
+					<option class="grouping" value="{$category::MOVIE_ROOT}"></option>
 					{foreach $catlist as $ct}
 						<option {if $ct.id==$category}selected="selected"{/if} value="{$ct.id}">{$ct.title}</option>
 					{/foreach}
