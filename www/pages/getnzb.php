@@ -2,6 +2,7 @@
 
 use nzedb\Releases;
 use nzedb\NZB;
+use nzedb\utility\Misc;
 $uid = 0;
 
 use nzedb\db\Settings;
@@ -11,6 +12,9 @@ if ($page->users->isLoggedIn()) {
 	$uid = $page->users->currentUserId();
 	$maxDownloads = $page->userdata["downloadrequests"];
 	$rssToken = $page->userdata['rsstoken'];
+	if ($page->users->isDisabled($page->userdata['username'])) {
+		Misc::showApiError(101, 'Insufficient privileges/not authorized (Free Account is Expired, Please Login to Webportal!)');
+	}
 } else {
 	if ($page->settings->getSetting('registerstatus') == Settings::REGISTER_STATUS_API_ONLY) {
 		$res = $page->users->getById(0);
@@ -31,6 +35,9 @@ if ($page->users->isLoggedIn()) {
 	$uid = $res["id"];
 	$rssToken = $res['rsstoken'];
 	$maxDownloads = $res["downloadrequests"];
+	if ($page->users->isDisabled($res['username'])) {
+		Misc::showApiError(101, 'Insufficient privileges/not authorized (Free Account is Expired, Please Login to Webportal!)');
+	}
 }
 
 // Check download limit on user role.
