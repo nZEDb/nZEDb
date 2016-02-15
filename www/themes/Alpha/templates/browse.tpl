@@ -1,11 +1,4 @@
-{if {$site->adbrowse} != ''}
-	<div class="container" style="width:500px;">
-		<fieldset class="adbanner div-center">
-			<legend class="adbanner">Advertisement</legend>
-			{$site->adbrowse}
-		</fieldset></div>
-	<br>
-{/if}
+{include file='partials/ads.tpl' ad=$site->adbrowse}
 {* {if $covergrp != ''}
 <div class="accordion" id="searchtoggle">
 	<div class="accordion-group">
