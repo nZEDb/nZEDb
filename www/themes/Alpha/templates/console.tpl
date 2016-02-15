@@ -26,7 +26,7 @@
 </div>
 {if $results|@count > 0}
 	<form id="nzb_multi_operations_form" action="get">
-		<div class="container nzb_multi_operations" style="text-align:right;margin-bottom:5px;">
+		<div class="nzb_multi_operations" style="text-align:right;margin-bottom:5px;">
 			View:
 			<span><i class="icon-th-list"></i></span>
 			&nbsp;&nbsp;
@@ -97,13 +97,13 @@
 								><img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/gamespot.png"></a>
 							</div>
 							<hr>
-							<div class="container">
+
 								<a
 									class="label label-info"
 									href="{$smarty.const.WWW_TOP}/console?platform={$result.platform}"
 									title="View similar nzbs"
 								>Similar</a>
-							</div>
+
 						</div>
 					</td>
 					<td colspan="8" class="left" id="guid{$result.guid}">

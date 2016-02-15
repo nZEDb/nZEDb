@@ -12,7 +12,6 @@
 
 <h2>{$release.searchname|escape:"htmlall"|truncate:100:"...":true}{if $failed != NULL && $failed > 0}<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
 		<i class ="fa fa-thumbs-o-up"></i> {$release.grabs} Grab{if $release.grabs != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$failed} Failed Download{if $failed != 1}s{/if}</span>{/if}</h2><br>
-<div class="container">
 	<div class="col-xs-8">
 		<span class="label label-default">{$release.category_name}</span> <span class="label label-default">{$release.group_name}</span>
 		<br />
@@ -274,7 +273,6 @@
 		{if $boo && $boo.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/book/{$boo.id}.jpg" alt="{$boo.title|escape:"htmlall"}">{/if}
 		{*{$smarty.const.WWW_TOP}/covers/book/{$boo.id}.jpg" width="160" alt="{$boo.title|escape:"htmlall"}*}
 	</div>
-</div>
 <br>        <br>
 
 <table class="table table-condensed table-striped data">

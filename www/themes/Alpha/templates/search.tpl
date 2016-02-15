@@ -107,7 +107,7 @@
 {elseif ($search || $subject || $searchadvr || $searchadvsubject || $searchadvfilename || $selectedgroup || $selectedsizefrom || $searchadvdaysold) == ""}
 {else}
 	<form id="nzb_multi_operations_form" method="get" action="{$smarty.const.WWW_TOP}/search">
-		<div class="container nzb_multi_operations" style="text-align:right;margin-bottom:5px;">
+		<div class="nzb_multi_operations" style="text-align:right;margin-bottom:5px;">
 			{if $covgroup != ''}View:
 				<a href="{$smarty.const.WWW_TOP}/{$covgroup}?t={$category}">
 					<i class="icon-th-list"></i>

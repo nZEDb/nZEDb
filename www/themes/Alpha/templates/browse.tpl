@@ -25,7 +25,7 @@
 {/if} *}
 {if $results|@count > 0}
 	<form id="nzb_multi_operations_form" action="get">
-		<div class="container nzb_multi_operations" style="text-align:right;margin-bottom:5px;">
+		<div class="nzb_multi_operations" style="text-align:right;margin-bottom:5px;">
 			{if $covgroup != ''}View:
 				<a href="{$smarty.const.WWW_TOP}/{$covgroup}?t={$category}">
 					<i class="icon-th-list"></i>

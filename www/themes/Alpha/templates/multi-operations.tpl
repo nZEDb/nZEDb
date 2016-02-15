@@ -1,4 +1,4 @@
-<div class="container nzb_multi_operations">
+<div class="nzb_multi_operations">
 	{if $pager}
 		{$pager}
 	{/if}
