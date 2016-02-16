@@ -21,7 +21,7 @@ switch (true) {
 		$plugins_dir = '';
 		foreach ($smarty->plugins_dir as $dir) {
 			if (is_string($dir) && is_dir($dir)) {
-				$plugins_dir = $dir;
+				ini_set('include_path', ini_get('include_path') . PATH_SEPARATOR . $dir);
 				break;
 			}
 		}
@@ -33,7 +33,7 @@ if (!is_dir($plugins_dir)) {
 	exit('Fatal: Unable to find smarty plugins directory.' . PHP_EOL);
 }
 // End fix by nZEDb.
-require_once ($plugins_dir . 'shared.make_timestamp.php');
+require_once ('shared.make_timestamp.php');
 /**
  * Smarty phpdate_format modifier plugin
  *
