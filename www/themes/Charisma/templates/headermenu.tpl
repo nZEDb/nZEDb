@@ -19,6 +19,7 @@
 							{/foreach}
 						</ul>
 					</li>
+				{/if}
 				{if $parentcat.id == {$category::MOVIE_ROOT}}
 					<li class="nav-parent">
 						<a href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"
