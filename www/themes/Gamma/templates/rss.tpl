@@ -78,7 +78,7 @@
 									<a href="{$smarty.const.WWW_TOP}api?t=getnfo&amp;id={$release.guid}&amp;raw=1&amp;i={$uid}&amp;r={$rsstoken}">{$release.searchname}
 										.nfo</a></li>
 							{/if}
-							{if isset($release.parentCategoryid) && $release.parentCategoryid == {$category::MOVIE_ROOT}}
+							{if isset($release.parentCategoryid) && $release.parentCategoryid == {$catClass::MOVIE_ROOT}}
 								{if $release.imdbid != ""}
 									<li>Imdb Info:
 										<ul>
@@ -101,7 +101,7 @@
 									</li>
 								{/if}
 							{/if}
-							{if isset($release.parentCategoryid) && $release.parentCategoryid == {$category::MUSIC_ROOT}}
+							{if isset($release.parentCategoryid) && $release.parentCategoryid == {$catClass::MUSIC_ROOT}}
 								{if $release.musicinfoid > 0}
 									<li>Music Info:
 										<ul>
@@ -132,7 +132,7 @@
 									</li>
 								{/if}
 							{/if}
-							{if isset($release.parentCategoryid) && $release.parentCategoryid == {$category::GAME_ROOT}}
+							{if isset($release.parentCategoryid) && $release.parentCategoryid == {$catClass::GAME_ROOT}}
 								{if $release.consoleinfoid > 0}
 									<li>Console Info:
 										<ul>

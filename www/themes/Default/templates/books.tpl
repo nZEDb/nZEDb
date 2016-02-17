@@ -16,7 +16,7 @@
 			<td><input id="author" type="text" name="author" value="{$author}" size="15"/></td>
 			<td>
 				<select id="category" name="t">
-					<option class="grouping" value="{$category::BOOKS_ROOT}"></option>
+					<option class="grouping" value="{$catClass::BOOKS_ROOT}"></option>
 					{foreach $catlist as $ct}
 						<option {if $ct.id==$category}selected="selected"{/if} value="{$ct.id}">{$ct.title}</option>
 					{/foreach}

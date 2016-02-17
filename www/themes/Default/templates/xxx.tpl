@@ -32,7 +32,7 @@
 			</td>
 			<td>
 				<select id="category" name="t">
-					<option class="grouping" value="{$category::XXX_ROOT}"></option>
+					<option class="grouping" value="{$catClass::XXX_ROOT}"></option>
 					{foreach $catlist as $ct}
 						<option {if $ct.id==$category}selected="selected"{/if} value="{$ct.id}">{$ct.title}</option>
 					{/foreach}
@@ -135,7 +135,7 @@
 						<div>
 							<a
 								class="label label-info"
-								href="{$smarty.const.WWW_TOP}/search/{$result.title|escape:"url"}?t={$category::MOVIE_ROOT}"
+								href="{$smarty.const.WWW_TOP}/search/{$result.title|escape:"url"}?t={$catClass::MOVIE_ROOT}"
 								title="View similar nzbs"
 							>Similar</a>
 						</div>

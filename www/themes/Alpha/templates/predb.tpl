@@ -46,37 +46,37 @@
 					{* Xbox 360 *}
 					{if $result.category == 'XBOX360'}
 						<a class="title" title="View category XBOX 360"
-						   href="{$smarty.const.WWW_TOP}/browse?t={$category::GAME_XBOX360}">Console
+						   href="{$smarty.const.WWW_TOP}/browse?t={$catClass::GAME_XBOX360}">Console
 							Xbox
 							360</a>
 					{/if}
 					{* Movies *}
 					{if in_array($result.category, array('Movies'))}
 						<a class="title" title="View category Movies"
-						   href="{$smarty.const.WWW_TOP}/browse?t={$category::MOVIE_ROOT}">Movies</a>
+						   href="{$smarty.const.WWW_TOP}/browse?t={$catClass::MOVIE_ROOT}">Movies</a>
 					{/if}
 					{* SD *}
 					{if in_array($result.category, array('movies-sd', 'Movies: STD', 'XVid'))}
 						<a class="title" title="View category Movies SD"
-						   href="{$smarty.const.WWW_TOP}/browse?t={$category::MOVIE_SD}">Movies
+						   href="{$smarty.const.WWW_TOP}/browse?t={$catClass::MOVIE_SD}">Movies
 							SD</a>
 					{/if}
 					{* HD *}
 					{if in_array($result.category, array('Movies: HD', 'X264'))}
 						<a class="title" title="View category Movies HD"
-						   href="{$smarty.const.WWW_TOP}/browse?t={$category::MOVIE_HD}">Movies
+						   href="{$smarty.const.WWW_TOP}/browse?t={$catClass::MOVIE_HD}">Movies
 							HD</a>
 					{/if}
 					{* BluRay *}
 					{if in_array($result.category, array('BLURAY'))}
 						<a class="title" title="View category BluRay"
-						   href="{$smarty.const.WWW_TOP}/browse?t={$category::MOVIE_BLURAY}">Movies
+						   href="{$smarty.const.WWW_TOP}/browse?t={$catClass::MOVIE_BLURAY}">Movies
 							BluRay</a>
 					{/if}
 					{* DVD *}
 					{if in_array($result.category, array('DVDR', 'Movies: DVD'))}
 						<a class="title" title="View category DVDR"
-						   href="{$smarty.const.WWW_TOP}/browse?t={$category::MOVIE_DVD}">DVD</a>
+						   href="{$smarty.const.WWW_TOP}/browse?t={$catClass::MOVIE_DVD}">DVD</a>
 					{/if}
 					{* Audio *}
 					{if in_array($result.category, array('music-audio'))}
@@ -86,109 +86,109 @@
 					{* MP3 *}
 					{if in_array($result.category, array('MP3', 'Music: MP3'))}
 						<a class="title" title="View category MP3"
-						   href="{$smarty.const.WWW_TOP}/browse?t={$category::MUSIC_MP3}">MP3</a>
+						   href="{$smarty.const.WWW_TOP}/browse?t={$catClass::MUSIC_MP3}">MP3</a>
 					{/if}
 					{* Video *}
 					{if in_array($result.category, array('MVid', 'Music: MVid'))}
 						<a class="title" title="View category Audio Video"
-						   href="{$smarty.const.WWW_TOP}/browse?t={$category::MUSIC_VIDEO}">Music
+						   href="{$smarty.const.WWW_TOP}/browse?t={$catClass::MUSIC_VIDEO}">Music
 							Videos</a>
 					{/if}
 					{* Audiobook *}
 					{if in_array($result.category, array('audiobook', 'Audiobook'))}
 						<a class="title" title="View category Audiobook"
-						   href="{$smarty.const.WWW_TOP}/browse?t={$category::MUSIC_AUDIOBOOK}">Audiobook</a>
+						   href="{$smarty.const.WWW_TOP}/browse?t={$catClass::MUSIC_AUDIOBOOK}">Audiobook</a>
 					{/if}
 					{* Lossless *}
 					{if in_array($result.category, array('FLAC', 'Music: FLAC'))}
 						<a class="title" title="View category Music Lossless"
-						   href="{$smarty.const.WWW_TOP}/browse?t={$category::MUSIC_LOSSLESS}">Lossless
+						   href="{$smarty.const.WWW_TOP}/browse?t={$catClass::MUSIC_LOSSLESS}">Lossless
 							Music</a>
 					{/if}
 					{* PC *}
 					{* 0day *}
 					{if in_array($result.category, array('0DAY', 'APPS', 'Apps: PC', 'Apps: Linux', 'DOX'))}
 						<a class="title" title="View category PC 0day"
-						   href="{$smarty.const.WWW_TOP}/browse?t={$category::PC_0DAY}">PC
+						   href="{$smarty.const.WWW_TOP}/browse?t={$catClass::PC_0DAY}">PC
 							0DAY</a>
 					{/if}
 					{* Mac *}
 					{if in_array($result.category, array('Apps: MAC', 'Games: MAC'))}
 						<a class="title" title="View category PC Mac"
-						   href="{$smarty.const.WWW_TOP}/browse?t={$category::PC_MAC}">PC
+						   href="{$smarty.const.WWW_TOP}/browse?t={$catClass::PC_MAC}">PC
 							Mac</a>
 					{/if}
 					{* Phone-Other *}
 					{if in_array($result.category, array('Apps: Phone', 'PDA'))}
 						<a class="title" title="View category Phone Other"
-						   href="{$smarty.const.WWW_TOP}/browse?t={$category::PC_PHONE_OTHER}">Phone
+						   href="{$smarty.const.WWW_TOP}/browse?t={$catClass::PC_PHONE_OTHER}">Phone
 							Other</a>
 					{/if}
 					{* Games *}
 					{if in_array($result.category, array('GAMES', 'Games: PC', 'Games: Other'))}
 						<a class="title" title="View category PC Games"
-						   href="{$smarty.const.WWW_TOP}/browse?t={$category::PC_GAME}">PC
+						   href="{$smarty.const.WWW_TOP}/browse?t={$catClass::PC_GAME}">PC
 							Games</a>
 					{/if}
 					{* TV *}
 					{if in_array($result.category, array('TV'))}
 						<a class="title" title="View category TV"
-						   href="{$smarty.const.WWW_TOP}/browse?t={$category::TV_ROOT}">TV</a>
+						   href="{$smarty.const.WWW_TOP}/browse?t={$catClass::TV_ROOT}">TV</a>
 					{/if}
 					{* SD *}
 					{if in_array($result.category, array('TV-DVDRIP', 'tv-sd', 'TV: STD', 'TV-XVid'))}
 						<a class="title" title="View category TV SD"
-						   href="{$smarty.const.WWW_TOP}/browse?t={$category::TV_SD}">SDTV</a>
+						   href="{$smarty.const.WWW_TOP}/browse?t={$catClass::TV_SD}">SDTV</a>
 					{/if}
 					{* HD *}
 					{if in_array($result.category, array('tv-hd', 'TV: HD', 'TV-x264', 'TV-X264'))}
 						<a class="title" title="View category TV HD"
-						   href="{$smarty.const.WWW_TOP}/browse?t={$category::TV_HD}">HDTV</a>
+						   href="{$smarty.const.WWW_TOP}/browse?t={$catClass::TV_HD}">HDTV</a>
 					{/if}
 					{* XXX *}
 					{if in_array($result.category, array('XXX'))}
 						<a class="title" title="View category XXX"
-						   href="{$smarty.const.WWW_TOP}/browse?t={$category::XXX_ROOT}">XXX</a>
+						   href="{$smarty.const.WWW_TOP}/browse?t={$catClass::XXX_ROOT}">XXX</a>
 					{/if}
 					{* DVD *}
 					{if in_array($result.category, array('XXX: DVD'))}
 						<a class="title" title="View category XXX DVD"
-						   href="{$smarty.const.WWW_TOP}/browse?t={$category::XXX_DVD}">XXX
+						   href="{$smarty.const.WWW_TOP}/browse?t={$catClass::XXX_DVD}">XXX
 							DVD</a>
 					{/if}
 					{* XviD *}
 					{if in_array($result.category, array('XXX: SD-CLIPS', 'XXX: MOVIES-SD'))}
 						<a class="title" title="View category XXX XviD"
-						   href="{$smarty.const.WWW_TOP}/browse?t={$category::XXX_XVID}">XXX
+						   href="{$smarty.const.WWW_TOP}/browse?t={$catClass::XXX_XVID}">XXX
 							SD</a>
 					{/if}
 					{* x264 *}
 					{if in_array($result.category, array('XXX: HD-CLIPS', 'XXX: MOVIES-HD'))}
 						<a class="title" title="View category XXX x264"
-						   href="{$smarty.const.WWW_TOP}/browse?t={$category::XXX_X264}">XXX
+						   href="{$smarty.const.WWW_TOP}/browse?t={$catClass::XXX_X264}">XXX
 							HD</a>
 					{/if}
 					{* Other *}
 					{if in_array($result.category, array('xxx-videos'))}
 						<a class="title" title="View category XXX Other"
-						   href="{$smarty.const.WWW_TOP}/browse?t={$category::XXX_OTHER}">XXX
+						   href="{$smarty.const.WWW_TOP}/browse?t={$catClass::XXX_OTHER}">XXX
 							Other</a>
 					{/if}
 					{* Imageset *}
 					{if in_array($result.category, array('XXX-IMGSET'))}
 						<a class="title" title="View category XXX Imageset"
-						   href="{$smarty.const.WWW_TOP}/browse?t={$category::XXX_IMAGESET}">XXX
+						   href="{$smarty.const.WWW_TOP}/browse?t={$catClass::XXX_IMAGESET}">XXX
 							Imagesets</a>
 					{/if}
 					{* Books *}
 					{if in_array($result.category, array('EBOOK'))}
 						<a class="title" title="View category Books"
-						   href="{$smarty.const.WWW_TOP}/browse?t={$category::BOOKS_ROOT}">Ebooks</a>
+						   href="{$smarty.const.WWW_TOP}/browse?t={$catClass::BOOKS_ROOT}">Ebooks</a>
 					{/if}
 					{* Other *}
 					{if in_array($result.category, array('Other: E-Books'))}
 						<a class="title" title="View category Books Other"
-						   href="{$smarty.const.WWW_TOP}/browse?t={$category::BOOKS_UNKNOWN}">Ebooks
+						   href="{$smarty.const.WWW_TOP}/browse?t={$catClass::BOOKS_UNKNOWN}">Ebooks
 							Other</a>
 					{/if}
 					{if in_array($result.category, array('', 'PRE'))}

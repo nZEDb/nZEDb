@@ -35,7 +35,7 @@
 		<ul>
 			{if isset($userdata)}
 				{foreach $parentcatlist as $parentcat}
-					{if $parentcat.id == {$category::GAME_ROOT} && $userdata.consoleview == "1" && $site->lookupgames == "1"}
+					{if $parentcat.id == {$catClass::GAME_ROOT} && $userdata.consoleview == "1" && $site->lookupgames == "1"}
 						<li><a title="Browse All {$parentcat.title}"
 									href="{$smarty.const.WWW_TOP}/console">{$parentcat.title}</a>
 							<ul>
@@ -47,7 +47,7 @@
 							</ul>
 						</li>
 					{/if}
-					{if $parentcat.id == {$category::MOVIE_ROOT} && $userdata.movieview == "1" && $site->lookupimdb > "0"}
+					{if $parentcat.id == {$catClass::MOVIE_ROOT} && $userdata.movieview == "1" && $site->lookupimdb > "0"}
 						<li><a title="Browse All {$parentcat.title}"
 									href="{$smarty.const.WWW_TOP}/movies">{$parentcat.title}</a>
 							<ul>
@@ -59,12 +59,12 @@
 							</ul>
 						</li>
 					{/if}
-					{if ($parentcat.id == {$category::MUSIC_ROOT} && $userdata.musicview == "1") && $site->lookupmusic == "1"}
+					{if ($parentcat.id == {$catClass::MUSIC_ROOT} && $userdata.musicview == "1") && $site->lookupmusic == "1"}
 						<li><a title="Browse All {$parentcat.title}"
 									href="{$smarty.const.WWW_TOP}/music">{$parentcat.title}</a>
 							<ul>
 								{foreach $parentcat.subcatlist as $subcat}
-									{if $subcat.id == {$category::MUSIC_AUDIOBOOK}}
+									{if $subcat.id == {$catClass::MUSIC_AUDIOBOOK}}
 										<li><a title="Browse {$subcat.title}"
 													href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a>
 										</li>
@@ -77,12 +77,12 @@
 							</ul>
 						</li>
 					{/if}
-					{if ($parentcat.id == {$category::PC_ROOT} && $userdata.gameview == "1")}
+					{if ($parentcat.id == {$catClass::PC_ROOT} && $userdata.gameview == "1")}
 						<li><a title="Browse All {$parentcat.title}"
 									href="{$smarty.const.WWW_TOP}/games">{$parentcat.title}</a>
 							<ul>
 								{foreach $parentcat.subcatlist as $subcat}
-									{if $subcat.id == {$category::PC_GAMES}}
+									{if $subcat.id == {$catClass::PC_GAMES}}
 										<li><a title="Browse {$subcat.title}"
 													href="{$smarty.const.WWW_TOP}/games">{$subcat.title}</a>
 										</li>
@@ -95,7 +95,7 @@
 							</ul>
 						</li>
 					{/if}
-					{if ($parentcat.id == {$category::XXX_ROOT} && $userdata.xxxview == "1" && $site->lookupxxx == "1")}
+					{if ($parentcat.id == {$catClass::XXX_ROOT} && $userdata.xxxview == "1" && $site->lookupxxx == "1")}
 						<li class="dropdown">
 							<a id="cat3"
 									class="dropdown-toggle"
@@ -107,7 +107,7 @@
 								<li><a href="{$smarty.const.WWW_TOP}/xxx">All {$parentcat.title}</a>
 								</li>
 								{foreach $parentcat.subcatlist as $subcat}
-									{if $subcat.id == {$category::XXX_DVD} OR {$category::XXX_WMV} OR {$category::XXX_XVID} OR {$category@@XXX_X264}}
+									{if $subcat.id == {$catClass::XXX_DVD} OR {$catClass::XXX_WMV} OR {$catClass::XXX_XVID} OR {$category@@XXX_X264}}
 										<li><a title="Browse {$subcat.title}"
 													href="{$smarty.const.WWW_TOP}/xxx?t={$subcat.id}">{$subcat.title}</a>
 										</li>
@@ -120,7 +120,7 @@
 							</ul>
 						</li>
 					{/if}
-					{if ($parentcat.id == {$category::XXX_ROOT} && $userdata.xxxview == "1" && $site->lookupxxx == "1")}
+					{if ($parentcat.id == {$catClass::XXX_ROOT} && $userdata.xxxview == "1" && $site->lookupxxx == "1")}
 						<li class="dropdown">
 							<a id="cat3"
 									class="dropdown-toggle"
@@ -132,7 +132,7 @@
 								<li><a href="{$smarty.const.WWW_TOP}/xxx">All {$parentcat.title}</a>
 								</li>
 								{foreach $parentcat.subcatlist as $subcat}
-									{if $subcat.id == {$category::XXX_DVD} OR {$category::XXX_WMV} OR {$category::XXX_XVID} OR {$category@@XXX_X264}}
+									{if $subcat.id == {$catClass::XXX_DVD} OR {$catClass::XXX_WMV} OR {$catClass::XXX_XVID} OR {$category@@XXX_X264}}
 										<li><a title="Browse {$subcat.title}"
 													href="{$smarty.const.WWW_TOP}/xxx?t={$subcat.id}">{$subcat.title}</a>
 										</li>
@@ -145,13 +145,13 @@
 							</ul>
 						</li>
 					{/if}
-					{if ($parentcat.id == {$category::BOOKS_ROOT} && $userdata.bookview == "1") &&
+					{if ($parentcat.id == {$catClass::BOOKS_ROOT} && $userdata.bookview == "1") &&
 					$site->lookupbooks	== "1"}
 						<li><a title="Browse All {$parentcat.title}"
 									href="{$smarty.const.WWW_TOP}/books">{$parentcat.title}</a>
 							<ul>
 								{foreach $parentcat.subcatlist as $subcat}
-									{if $subcat.id == {$category::BOOKS_UNKNOWN}}
+									{if $subcat.id == {$catClass::BOOKS_UNKNOWN}}
 										<li><a title="Browse {$subcat.title}"
 													href="{$smarty.const.WWW_TOP}/books">{$subcat.title}</a>
 										</li>
@@ -169,8 +169,8 @@
 					<a id="cat8" class="dropdown-toggle" data-toggle="dropdown" href="#">Other <b class="caret"></b></a>
 					<ul class="dropdown-menu" role="menu" aria-labelledby="cat3">
 						<hr>
-						<li><a href="/browse?t={$category::OTHER_MISC}">Misc</a></li>
-						<li><a href="/browse?t={$category::OTHER_HASHED}">Hashed</a></li>
+						<li><a href="/browse?t={$catClass::OTHER_MISC}">Misc</a></li>
+						<li><a href="/browse?t={$catClass::OTHER_HASHED}">Hashed</a></li>
 					</ul>
 				</li>
 			{/if}

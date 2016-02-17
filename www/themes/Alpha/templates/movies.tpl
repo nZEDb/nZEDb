@@ -86,7 +86,7 @@
 						<div>
 							<a
 								class="label label-info"
-								href="{$smarty.const.WWW_TOP}/search/{$result.title|escape:"url"}?t={$category::MOVIE_ROOT}"
+								href="{$smarty.const.WWW_TOP}/search/{$result.title|escape:"url"}?t={$catClass::MOVIE_ROOT}"
 								title="View similar nzbs"
 							>Similar</a>
 						</div>

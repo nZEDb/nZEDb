@@ -49,7 +49,7 @@
 							{if $release.nfoid != ""}
 								<li>Nfo: <a href="{$serverroot}api?t=getnfo&amp;id={$release.guid}&amp;raw=1&amp;i={$uid}&amp;r={$rsstoken}">{$release.searchname}.nfo</a></li>
 							{/if}
-							{if $release.parentCategoryid == {$category::MOVIE_ROOT}}
+							{if $release.parentCategoryid == {$catClass::MOVIE_ROOT}}
 								{if $release.imdbid != ""}
 									<li>Imdb Info:
 										<ul>
@@ -64,7 +64,7 @@
 									</li>
 								{/if}
 							{/if}
-							{if $release.parentCategoryid == {$category::MUSIC_ROOT}}
+							{if $release.parentCategoryid == {$catClass::MUSIC_ROOT}}
 								{if $release.musicinfoid > 0}
 									<li>Music Info:
 										<ul>
@@ -88,7 +88,7 @@
 									</li>
 								{/if}
 							{/if}
-							{if $release.parentCategoryid == {$category::GAME_ROOT}}
+							{if $release.parentCategoryid == {$catClass::GAME_ROOT}}
 								{if $release.consoleinfoid > 0}
 									<li>Console Info:
 										<ul>
