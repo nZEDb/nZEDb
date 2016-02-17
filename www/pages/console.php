@@ -55,7 +55,7 @@ $page->smarty->assign('platform', $platform);
 $title = (isset($_REQUEST['title']) && !empty($_REQUEST['title'])) ? stripslashes($_REQUEST['title']) : '';
 $page->smarty->assign('title', $title);
 
-$genres = $gen->getGenres(Genres::CONSOLE_TYPE, true);
+$genres = $gen->getGenres(Category::GAME_ROOT, true);
 $tmpgnr = array();
 foreach ($genres as $gn) {
 	$tmpgnr[$gn['id']] = $gn['title'];

@@ -645,7 +645,7 @@ class Games
 			return false;
 		}
 		// Load genres.
-		$defaultGenres = $gen->getGenres(Genres::GAME_TYPE);
+		$defaultGenres = $gen->getGenres(Category::PC_ROOT);
 		$genreassoc = [];
 		foreach ($defaultGenres as $dg) {
 			$genreassoc[$dg['id']] = strtolower($dg['title']);
@@ -692,7 +692,7 @@ class Games
 					INSERT INTO genres (title, type)
 					VALUES (%s, %d)",
 					$this->pdo->escapeString($genreName),
-					Genres::GAME_TYPE
+					Category::PC_ROOT
 				)
 			);
 		}

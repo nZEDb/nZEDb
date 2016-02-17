@@ -476,7 +476,7 @@ class Music
 		}
 
 		// Load genres.
-		$defaultGenres = $gen->getGenres(Genres::MUSIC_TYPE);
+		$defaultGenres = $gen->getGenres(Category::MUSIC_ROOT);
 		$genreassoc = [];
 		foreach ($defaultGenres as $dg) {
 			$genreassoc[$dg['id']] = strtolower($dg['title']);
@@ -565,7 +565,7 @@ class Music
 										INSERT INTO genres (title, type)
 										VALUES (%s, %d)",
 										$this->pdo->escapeString($genreName),
-										Genres::MUSIC_TYPE
+										Category::MUSIC_ROOT
 									)
 				);
 			}

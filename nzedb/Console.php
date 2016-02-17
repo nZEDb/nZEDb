@@ -658,7 +658,7 @@ class Console
 									INSERT INTO genres (title, type)
 									VALUES (%s, %d)",
 									$this->pdo->escapeString($genreName),
-									Genres::CONSOLE_TYPE
+									Category::GAME_ROOT
 								)
 			);
 		}
