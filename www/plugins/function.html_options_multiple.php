@@ -6,10 +6,6 @@
  * @subpackage PluginsFunction
  */
 
-// Fix by nZEDb
-require_once './load_plugin_dependency.php';
-// End fix by nZEDb.
-
 /**
  * Smarty {html_options_multiple} function plugin
  *
@@ -39,7 +35,7 @@ require_once './load_plugin_dependency.php';
  */
 function smarty_function_html_options_multiple($params, $template)
 {
-	load_plugin_dependency('shared.escape_special_chars.php');
+	$template->smarty->loadPlugin('shared.escape_special_chars.php');
 	$name = null;
 	$values = null;
 	$options = null;
