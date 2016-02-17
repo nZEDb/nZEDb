@@ -83,9 +83,7 @@
 							{if $userdata.gameview == "1"}
 								<li><a href="{$smarty.const.WWW_TOP}/games">{$parentcat.title}</a></li>
 							{elseif $userdata.gameview != "1"}
-								<li><a href="{$smarty.const
-									.WWW_TOP}/browse?t={$category::PC_ROOT}">{$parentcat
-										.title}</a></li>
+								<li><a href="{$smarty.const.WWW_TOP}/browse?t={$category::PC_ROOT}">{$parentcat.title}</a></li>
 							{/if}
 							<hr>
 							{if $userdata.gameview == "1"}
@@ -116,9 +114,7 @@
 							{if $userdata.musicview == "1"}
 								<li><a href="{$smarty.const.WWW_TOP}/music">{$parentcat.title}</a></li>
 							{elseif $userdata.musicview != "1"}
-								<li><a href="{$smarty.const
-									.WWW_TOP}/browse?t={$category::MUSIC_ROOT}">{$parentcat
-										.title}</a></li>
+								<li><a href="{$smarty.const.WWW_TOP}/browse?t={$category::MUSIC_ROOT}">{$parentcat.title}</a></li>
 							{/if}
 							<hr>
 							{if $userdata.musicview == "1"}
@@ -143,9 +139,7 @@
 							{if $userdata.bookview == "1"}
 								<li><a href="{$smarty.const.WWW_TOP}/books">{$parentcat.title}</a></li>
 							{elseif $userdata.bookview != "1"}
-								<li><a href="{$smarty.const
-									.WWW_TOP}/browse?t={$category::BOOKS_ROOT}">{$parentcat
-										.title}</a></li>
+								<li><a href="{$smarty.const.WWW_TOP}/browse?t={$category::BOOKS_ROOT}">{$parentcat.title}</a></li>
 							{/if}
 							<hr>
 							{foreach $parentcat.subcatlist as $subcat}
@@ -164,9 +158,7 @@
 							{if $userdata.xxxview == "1"}
 								<li><a href="{$smarty.const.WWW_TOP}/xxx">{$parentcat.title}</a></li>
 							{elseif $userdata.xxxview != "1"}
-								<li><a href="{$smarty.const
-									.WWW_TOP}/browse?t={$category::XXX_ROOT}">{$parentcat
-										.title}</a></li>
+								<li><a href="{$smarty.const.WWW_TOP}/browse?t={$category::XXX_ROOT}">{$parentcat.title}</a></li>
 							{/if}
 							<hr>
 							{if $userdata.xxxview == "1"}
