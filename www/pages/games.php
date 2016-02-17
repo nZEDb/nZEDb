@@ -74,7 +74,8 @@ $page->smarty->assign('genre', $genre);
 
 $browseby_link = '&amp;title=' . $title . '&amp;year=' . $year;
 
-$page->smarty->assign('pagertotalitems', $results[0]['_totalcount']);
+$page->smarty->assign('pagertotalitems',
+		isset($results[0]['_totalcount']) ? $results[0]['_totalcount'] : 0);
 $page->smarty->assign('pageroffset', $offset);
 $page->smarty->assign('pageritemsperpage', ITEMS_PER_COVER_PAGE);
 $page->smarty->assign('pagerquerybase', WWW_TOP . "/games?t=" . $category . $browseby_link . "&amp;ob=" . $orderby . "&amp;offset=");
