@@ -29,9 +29,7 @@
 							{if $userdata.movieview == "1"}
 								<li><a href="{$smarty.const.WWW_TOP}/movies">{$parentcat.title}</a></li>
 							{elseif $userdata.movieview != "1"}
-								<li><a href="{$smarty.const
-									.WWW_TOP}/browse?t={$catClass::MOVIE_ROOT}">{$parentcat
-										.title}</a></li>
+								<li><a href="{$smarty.const.WWW_TOP}/browse?t={$catClass::MOVIE_ROOT}">{$parentcat.title}</a></li>
 							{/if}
 							<hr>
 							<li><a href="{$smarty.const.WWW_TOP}/upcoming">In Theatre</a></li>
