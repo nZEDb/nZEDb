@@ -189,9 +189,6 @@
 					<li><a href="{$smarty.const.WWW_TOP}/browse?t={$catClass::OTHER_ROOT}">Other</a></li>
 					<li><a href="{$smarty.const.WWW_TOP}/browse?t={$catClass::OTHER_MISC}">Misc</a></li>
 					<li><a href="{$smarty.const.WWW_TOP}/browse?t={$catClass::OTHER_HASHED}">Hashed</a></li>
-					<hr>
-					<li><a href="{$smarty.const.WWW_TOP}/browse">All</a></li>
-					<li><a href="{$smarty.const.WWW_TOP}/browsegroup">Browse Groups</a></li>
 				</ul>
 			</li>
 			<!-- End If logged in -->
