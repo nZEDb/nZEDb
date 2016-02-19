@@ -1,8 +1,8 @@
 <div id="menucontainer">
 	<div class="collapse navbar-collapse nav navbar-nav top-menu">
-		{if $loggedin=="true"}
+		{if $loggedin == "true"}
 			{foreach $parentcatlist as $parentcat}
-				{if ($parentcat.id == {$catClass::TV_ROOT})}
+				{if $parentcat.id == {$catClass::TV_ROOT}}
 					<li class="nav-parent">
 						<a href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"
 						   data-delay="30">
@@ -19,6 +19,7 @@
 							{/foreach}
 						</ul>
 					</li>
+				{/if}
 				{if $parentcat.id == {$catClass::MOVIE_ROOT}}
 					<li class="nav-parent">
 						<a href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"
@@ -181,16 +182,14 @@
 				{/if}
 			{/foreach}
 			<li class="nav-parent">
-				<a href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true" data-delay="30">
-					<i class="fa fa-bolt"></i> Misc<i class="fa fa-angle-down"></i>
-				</a>
+				<a href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true" data-delay="30"> <i class="fa fa-bolt"></i> Other<i class="fa fa-angle-down"></i></a>
 				<ul class="dropdown-menu">
 					<li><a href="{$smarty.const.WWW_TOP}/browse?t={$catClass::OTHER_ROOT}">Other</a></li>
 					<li><a href="{$smarty.const.WWW_TOP}/browse?t={$catClass::OTHER_MISC}">Misc</a></li>
 					<li><a href="{$smarty.const.WWW_TOP}/browse?t={$catClass::OTHER_HASHED}">Hashed</a></li>
 				</ul>
 			</li>
-			<!-- End If logged in -->
 		{/if}
+		<!-- End If logged in -->
 	</div>
 </div>
