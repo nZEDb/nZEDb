@@ -30,12 +30,13 @@ if (!$cfg->error) {
 		?>
 	</title>
 	<link href="./templates/install.css" rel="stylesheet" type="text/css" media="screen" />
-	<link rel="shortcut icon" type="image/ico" href="www/themes/shared/img/favicon.ico"/>
+	<link rel="shortcut icon" type="image/ico" href="../themes/shared/img/favicon.ico" />
 </head>
 <body>
 <h1 id="logo">
-	<img alt="nZEDb" src="www/themes/shared/img/logo.png" />
+	<img alt="nZEDb" src="../themes/shared/img/logo.png" />
 </h1>
+
 <div class="content">
 	<h2>Index Usenet. Now.</h2>
 
