@@ -95,27 +95,24 @@
 							</ul>
 						</li>
 					{/if}
-					{if ($parentcat.id == {$catClass::XXX_ROOT} && $userdata.xxxview == "1" && $site->lookupxxx == "1")}
+					{if $parentcat.id == {$catClass::TV_ROOT}}
 						<li class="dropdown">
-							<a id="cat3"
+							<a id="cat5"
 									class="dropdown-toggle"
 									data-toggle="dropdown"
 									data-hover="dropdown"
-									href="{$smarty.const.WWW_TOP}/xxx">{$parentcat.title}
+									href="{$smarty.const.WWW_TOP}/browse?t={$parentcat.id}">{$parentcat.title}
 								<b class="caret"></b></a>
-							<ul class="dropdown-menu" role="menu" aria-labelledby="cat3">
-								<li><a href="{$smarty.const.WWW_TOP}/xxx">All {$parentcat.title}</a>
+							<ul class="dropdown-menu"
+									role="menu"
+									aria-labelledby="cat{$parentcat.id}">
+								<li>
+									<a href="{$smarty.const.WWW_TOP}/browse?t={$parentcat.id}">All {$parentcat.title}</a>
 								</li>
 								{foreach $parentcat.subcatlist as $subcat}
-									{if $subcat.id == {$catClass::XXX_DVD} OR {$catClass::XXX_WMV} OR {$catClass::XXX_XVID} OR {$catClass::XXX_X264}}
-										<li><a title="Browse {$subcat.title}"
-													href="{$smarty.const.WWW_TOP}/xxx?t={$subcat.id}">{$subcat.title}</a>
-										</li>
-									{else}
-										<li><a title="Browse {$subcat.title}"
-													href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a>
-										</li>
-									{/if}
+									<li><a title="Browse {$subcat.title}"
+												href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a>
+									</li>
 								{/foreach}
 							</ul>
 						</li>
@@ -146,7 +143,7 @@
 						</li>
 					{/if}
 					{if ($parentcat.id == {$catClass::BOOKS_ROOT} && $userdata.bookview == "1") &&
-					$site->lookupbooks	== "1"}
+					$site->lookupbooks == "1"}
 						<li><a title="Browse All {$parentcat.title}"
 									href="{$smarty.const.WWW_TOP}/books">{$parentcat.title}</a>
 							<ul>
@@ -166,7 +163,8 @@
 					{/if}
 				{/foreach}
 				<li class="dropdown">
-					<a id="cat8" class="dropdown-toggle" data-toggle="dropdown" href="#">Other <b class="caret"></b></a>
+					<a id="cat8" class="dropdown-toggle" data-toggle="dropdown" href="#">Other <b
+								class="caret"></b></a>
 					<ul class="dropdown-menu" role="menu" aria-labelledby="cat3">
 						<hr>
 						<li><a href="/browse?t={$catClass::OTHER_MISC}">Misc</a></li>
