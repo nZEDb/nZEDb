@@ -107,7 +107,7 @@
 								<li><a href="{$smarty.const.WWW_TOP}/xxx">All {$parentcat.title}</a>
 								</li>
 								{foreach $parentcat.subcatlist as $subcat}
-									{if $subcat.id == {$catClass::XXX_DVD} OR {$catClass::XXX_WMV} OR {$catClass::XXX_XVID} OR {$category::XXX_X264}}
+									{if $subcat.id == {$catClass::XXX_DVD} OR {$catClass::XXX_WMV} OR {$catClass::XXX_XVID} OR {$catClass::XXX_X264}}
 										<li><a title="Browse {$subcat.title}"
 													href="{$smarty.const.WWW_TOP}/xxx?t={$subcat.id}">{$subcat.title}</a>
 										</li>
@@ -132,7 +132,7 @@
 								<li><a href="{$smarty.const.WWW_TOP}/xxx">All {$parentcat.title}</a>
 								</li>
 								{foreach $parentcat.subcatlist as $subcat}
-									{if $subcat.id == {$catClass::XXX_DVD} OR {$catClass::XXX_WMV} OR {$catClass::XXX_XVID} OR {$category::XXX_X264}}
+									{if $subcat.id == {$catClass::XXX_DVD} OR {$catClass::XXX_WMV} OR {$catClass::XXX_XVID} OR {$catClass::XXX_X264}}
 										<li><a title="Browse {$subcat.title}"
 													href="{$smarty.const.WWW_TOP}/xxx?t={$subcat.id}">{$subcat.title}</a>
 										</li>
