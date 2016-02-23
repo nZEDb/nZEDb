@@ -16,7 +16,7 @@
 			</select>
 		<i class="fa fa-flag fa-midt"></i>
 			<select class="input input-small" id="category" name="t">
-			<option class="grouping" value="{$catClass::MOVIE_ROOT}"></option>
+			<option class="grouping" value="{getCategoryValue('MOVIE_ROOT')}"></option>
 				{foreach $catlist as $ct}
 				<option {if $ct.id==$category}selected="selected"{/if} value="{$ct.id}">{$ct.title}</option>
 				{/foreach}
