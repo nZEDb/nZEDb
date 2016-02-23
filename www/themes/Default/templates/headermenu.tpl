@@ -96,19 +96,9 @@
 						</li>
 					{/if}
 					{if $parentcat.id == {$catClass::TV_ROOT}}
-						<li class="dropdown">
-							<a id="cat5"
-									class="dropdown-toggle"
-									data-toggle="dropdown"
-									data-hover="dropdown"
-									href="{$smarty.const.WWW_TOP}/browse?t={$parentcat.id}">{$parentcat.title}
-								<b class="caret"></b></a>
-							<ul class="dropdown-menu"
-									role="menu"
-									aria-labelledby="cat{$parentcat.id}">
-								<li>
-									<a href="{$smarty.const.WWW_TOP}/browse?t={$parentcat.id}">All {$parentcat.title}</a>
-								</li>
+						<li><a title="Browse All {$parentcat.title}"
+									href="{$smarty.const.WWW_TOP}/series">{$parentcat.title}</a>
+							<ul>
 								{foreach $parentcat.subcatlist as $subcat}
 									<li><a title="Browse {$subcat.title}"
 												href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a>
@@ -119,15 +109,9 @@
 					{/if}
 					{if ($parentcat.id == {$catClass::XXX_ROOT} && $userdata.xxxview == "1" && $site->lookupxxx == "1")}
 						<li class="dropdown">
-							<a id="cat3"
-									class="dropdown-toggle"
-									data-toggle="dropdown"
-									data-hover="dropdown"
-									href="{$smarty.const.WWW_TOP}/xxx">{$parentcat.title}
-								<b class="caret"></b></a>
-							<ul class="dropdown-menu" role="menu" aria-labelledby="cat3">
-								<li><a href="{$smarty.const.WWW_TOP}/xxx">All {$parentcat.title}</a>
-								</li>
+							<a title="Browse All {$parentcat.title}"
+									href="{$smarty.const.WWW_TOP}/xxx">{$parentcat.title}</a>
+							<ul>
 								{foreach $parentcat.subcatlist as $subcat}
 									{if $subcat.id == {$catClass::XXX_DVD} OR {$catClass::XXX_WMV} OR {$catClass::XXX_XVID} OR {$catClass::XXX_X264}}
 										<li><a title="Browse {$subcat.title}"
@@ -162,10 +146,9 @@
 						</li>
 					{/if}
 				{/foreach}
-				<li class="dropdown">
-					<a id="cat8" class="dropdown-toggle" data-toggle="dropdown" href="#">Other <b
-								class="caret"></b></a>
-					<ul class="dropdown-menu" role="menu" aria-labelledby="cat3">
+				<li>
+					<a title="Miscellaneous" href="#">Other</a>
+					<ul>
 						<hr>
 						<li><a href="/browse?t={$catClass::OTHER_MISC}">Misc</a></li>
 						<li><a href="/browse?t={$catClass::OTHER_HASHED}">Hashed</a></li>
