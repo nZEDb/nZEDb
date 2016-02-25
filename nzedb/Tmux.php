@@ -419,6 +419,7 @@ class Tmux
 					Category::TV_ROOT,
 					Category::TV_OTHER,
 					Category::TV_ANIME,
+					Category::TV_ANIME,
 					Category::MOVIE_ROOT,
 					Category::MOVIE_OTHER,
 					Category::MUSIC_MP3,
