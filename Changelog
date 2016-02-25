@@ -8,6 +8,7 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 2016-02-25 DariusIII
+	Fix: Prevent undefined index userdata notice in headermenu of Charisma/Gamma/Omicron themes.
 	Fix: Fix "too few arguments" error in Tmux class.
 2016-02-24 niel
 	Fix: Issue 2011 - Default Template Issues.

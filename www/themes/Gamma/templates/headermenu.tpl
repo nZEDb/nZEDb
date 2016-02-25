@@ -1,3 +1,4 @@
+{if isset($userdata)}
 <ul class="nav" role="navigation">
 	{foreach $parentcatlist as $parentcat}
 		{if $parentcat.id == {$catClass::GAME_ROOT}}
@@ -204,3 +205,4 @@
 		</form>
 	</li>
 </ul>
+{/if}

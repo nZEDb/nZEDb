@@ -1,5 +1,6 @@
 <div id="menucontainer">
 	<div class="collapse navbar-collapse nav navbar-nav top-menu">
+		{if isset($userdata)}
 		{if $loggedin == "true"}
 			{foreach $parentcatlist as $parentcat}
 				{if $parentcat.id == {$catClass::TV_ROOT}}
@@ -189,6 +190,7 @@
 					<li><a href="{$smarty.const.WWW_TOP}/browse?t={$catClass::OTHER_HASHED}">Hashed</a></li>
 				</ul>
 			</li>
+		{/if}
 		{/if}
 		<!-- End If logged in -->
 	</div>

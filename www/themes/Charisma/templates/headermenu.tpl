@@ -1,5 +1,6 @@
 <div id="menucontainer">
 	<div class="collapse navbar-collapse nav navbar-nav top-menu">
+		{if isset($userdata)}
 		{if $loggedin=="true"}
 			{foreach $parentcatlist as $parentcat}
 				{if ($parentcat.id == {$catClass::TV_ROOT})}
@@ -192,6 +193,7 @@
 				</ul>
 			</li>
 			<!-- End If logged in -->
+		{/if}
 		{/if}
 	</div>
 </div>
