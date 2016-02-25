@@ -2,16 +2,7 @@
 
 <div class="well well-small">
 <div style="text-align: center;">
-<form class="form-inline" name="browseby" action="books" style="margin:0;">
-
-		<i class="fa fa-user fa-midt"></i>
-		<input class="input input-medium" id="author" type="text" name="author" value="{$author}" placeholder="Author" />
-
-		<i class="fa fa-book fa-midt"></i>
-		<input class="input input-medium" id="title" type="text" name="title" value="{$title}" placeholder="Title" />
-
-		<input class="btn btn-success" type="submit" value="Go" />
-</form>
+	{include file='search-filter.tpl'}
 </div>
 </div>
 

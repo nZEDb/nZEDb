@@ -2,31 +2,7 @@
 
 <div class="well well-small">
 	<div style="text-align: center;">
-		<form class="form-inline" name="browseby" action="xxx" style="margin:0;">
-			<i class="fa fa-film fa-midt"></i>
-			<input class="input input-medium" id="title" type="text" name="title" value="{$title}" placeholder="Title"/>
-			<i class="fa fa-group fa-midt"></i>
-			<input class="input input-medium" id="actors" type="text" name="actors" value="{$actors}"
-				   placeholder="Actor"/>
-			<i class="fa fa-bullhorn fa-midt"></i>
-			<input class="input input-medium" id="director" type="text" name="director" value="{$director}"
-				   placeholder="Director"/>
-			<i class="fa fa-inbox fa-midt"></i>
-			<select class="input input-medium" id="genre" name="genre">
-				<option class="grouping" value=""></option>
-				{foreach $genres as $gen}
-					<option {if $gen==$genre}selected="selected"{/if} value="{$gen}">{$gen}</option>
-				{/foreach}
-			</select>
-			<i class="fa fa-flag fa-midt"></i>
-			<select class="input input-medium" id="category" name="category">
-				<option class="grouping" value=""></option>
-				{foreach from=$catlist item=cat}
-					<option {if $cat.id==$category}selected="selected"{/if} value="{$cat.id}">{$cat.title}</option>
-				{/foreach}
-			</select>
-			<input class="btn btn-success" type="submit" value="Go"/>
-		</form>
+		{include file='search-filter.tpl'}
 	</div>
 </div>
 {$site->adbrowse}

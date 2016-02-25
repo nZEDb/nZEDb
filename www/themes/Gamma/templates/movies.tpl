@@ -2,50 +2,7 @@
 
 <div class="well well-small">
 <div style="text-align: center;">
-<form class="form-inline" name="browseby" action="movies" style="margin:0;">
-
-		<i class="fa fa-film fa-midt"></i>
-		<input class="input input-medium" id="movietitle" type="text" name="title" value="{$title}" placeholder="Title" />
-
-		<i class="fa fa-group fa-midt"></i>
-		<input class="input input-medium" id="movieactors" type="text" name="actors" value="{$actors}" placeholder="Actor" />
-
-		<i class="fa fa-bullhorn fa-midt"></i>
-		<input class="input input-medium" id="moviedirector" type="text" name="director" value="{$director}"  placeholder="Director" />
-
-		<i class="fa fa-star fa-midt"></i>
-			<select class="input span1" id="rating" name="rating">
-				<option class="grouping" value=""></option>
-				{foreach $ratings as $rate}
-				<option {if $rating==$rate}selected="selected"{/if} value="{$rate}">{$rate}</option>
-				{/foreach}
-			</select>
-		<i class="fa fa-inbox fa-midt"></i>
-			<select class="input input-small" id="genre" name="genre">
-				<option class="grouping" value=""></option>
-				{foreach $genres as $gen}
-					<option {if $gen==$genre}selected="selected"{/if} value="{$gen}">{$gen}</option>
-				{/foreach}
-			</select>
-
-		<i class="fa fa-calendar fa-midt"></i>
-			<select class="input input-small" id="year" name="year">
-				<option class="grouping" value=""></option>
-				{foreach $years as $yr}
-					<option {if $yr==$year}selected="selected"{/if} value="{$yr}">{$yr}</option>
-				{/foreach}
-			</select>
-
-		<i class="fa fa-flag fa-midt"></i>
-			<select class="input input-small" id="category" name="t">
-			<option class="grouping" value="{getCategoryValue('MOVIE_ROOT')}"></option>
-				{foreach $catlist as $ct}
-				<option {if $ct.id==$category}selected="selected"{/if} value="{$ct.id}">{$ct.title}</option>
-				{/foreach}
-			</select>
-
-		<input class="btn btn-success" type="submit" value="Go" />
-</form>
+	{include file='search-filter.tpl'}
 </div>
 </div>
 

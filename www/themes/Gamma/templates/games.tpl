@@ -1,25 +1,7 @@
 <h2>Browse Games</h2>
 <div class="well well-small">
 	<div style="text-align: center;">
-		<form class="form-inline" name="browseby" action="games" style="margin:0;">
-			<i class="fa fa-font fa-midt"></i>
-			<input class="input input-medium" id="title" type="text" name="title" value="{$title}" placeholder="Title" />
-			<i class="fa fa-inbox fa-midt"></i>
-			<select class="input input-small" id="genre" name="genre">
-				<option class="grouping" value=""></option>
-				{foreach $genres as $gen}
-					<option {if $gen.id == $genre}selected="selected"{/if} value="{$gen.id}">{$gen.title}</option>
-				{/foreach}
-			</select>
-			<i class="fa fa-flag fa-midt"></i>
-			<select class="input input-small" id="category" name="t">
-				<option class="grouping" value="{$catClass::GAME_ROOT}"></option>
-				{foreach $catlist as $ct}
-					<option {if $ct.id==$category}selected="selected"{/if} value="{$ct.id}">{$ct.title}</option>
-				{/foreach}
-			</select>
-			<input class="btn btn-success" type="submit" value="Go" />
-		</form>
+		{include file='search-filter.tpl'}
 	</div>
 </div>
 {$site->adbrowse}

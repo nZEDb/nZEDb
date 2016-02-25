@@ -8,57 +8,7 @@
 	</div>
 </div>
 <div class="well well-sm">
-	<form class="form-inline" role="form" name="browseby" action="movies">
-		<div class="form-group form-group-sm">
-			<label class="sr-only" for="movietitle">Title:</label>
-			<input type="text" class="form-control" id="movietitle" name="title" value="{$title}" placeholder="Title">
-		</div>
-		<div class="form-group form-group-sm">
-			<label class="sr-only" for="movieactors">Artist:</label>
-			<input type="text" class="form-control" id="movieactors" name="actors" value="{$actors}" placeholder="Actor">
-		</div>
-		<div class="form-group form-group-sm">
-			<label class="sr-only" for="moviedirector">Director:</label>
-			<input type="text" class="form-control col-xs-3" id="moviedirector" name="director" value="{$director}" placeholder="Director">
-		</div>
-		<div class="form-group form-group-sm">
-			<label class="sr-only" for="rating">Rating:</label>
-			<select id="rating" name="rating" class="form-control" name="Score">
-				<option value="" selected>Rating</option>
-				{foreach $ratings as $rate}
-					<option {if $rating==$rate}selected="selected"{/if} value="{$rate}">{$rate}</option>
-				{/foreach}
-			</select>
-		</div>
-		<div class="form-group form-group-sm">
-			<label class="sr-only" for="genre">Genre:</label>
-			<select id="genre" name="genre" class="form-control">
-				<option class="grouping" value="" selected>Genre</option>
-				{foreach $genres as $gen}
-					<option {if $gen==$genre}selected="selected"{/if} value="{$gen}">{$gen}</option>
-				{/foreach}
-			</select>
-		</div>
-		<div class="form-group form-group-sm">
-			<label class="sr-only" for="year">Year:</label>
-			<select id="year" name="year" class="form-control">
-				<option class="grouping" value="" selected>Year</option>
-				{foreach $years as $yr}
-					<option {if $yr==$year}selected="selected"{/if} value="{$yr}">{$yr}</option>
-				{/foreach}
-			</select>
-		</div>
-		<div class="form-group form-group-sm">
-			<label class="sr-only" for="category">Category:</label>
-			<select id="category" name="t" class="form-control">
-				<option class="grouping" value="" selected>Category</option>
-				{foreach $catlist as $ct}
-					<option {if $ct.id==$category}selected="selected"{/if} value="{$ct.id}">{$ct.title}</option>
-				{/foreach}
-			</select>
-		</div>
-		<input type="submit" class="btn btn-primary" value="Search!"/>
-	</form>
+	{include file='search-filter.tpl'}
 </div>
 <form id="nzb_multi_operations_form" action="get">
 	<div class="box-body"
