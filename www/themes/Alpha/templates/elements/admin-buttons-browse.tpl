@@ -1,6 +1,6 @@
 <div class="nzb_multi_operations" style="text-align:right;margin-bottom:5px;">
 	{if $covgroup != ''}View:
-		<a href="{$smarty.const.WWW_TOP}/{$covgroup}?t={$category}">
+		<a href="{$smarty.const.WWW_TOP}/browse?t={$category}">
 			<span class="icon-th-list"></span>
 		</a>
 		&nbsp;&nbsp;
