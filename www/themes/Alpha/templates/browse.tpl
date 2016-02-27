@@ -19,7 +19,7 @@
 {if $results|@count > 0}
 	<form id="nzb_multi_operations_form" action="get">
 		{include file='elements/admin-buttons-browse.tpl'}
-		{include file='multi-operations.tpl'}
+		{include file='elements/multi-operations.tpl'}
 		<table class="table table-striped table-bordered table-condensed table-hover data" id="browsetable">
 			<thead>
 				<tr>
