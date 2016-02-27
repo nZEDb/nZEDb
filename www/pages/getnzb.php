@@ -2,6 +2,7 @@
 
 use nzedb\Releases;
 use nzedb\NZB;
+use nzedb\utility\Misc;
 $uid = 0;
 
 use nzedb\db\Settings;
@@ -11,40 +12,38 @@ if ($page->users->isLoggedIn()) {
 	$uid = $page->users->currentUserId();
 	$maxDownloads = $page->userdata["downloadrequests"];
 	$rssToken = $page->userdata['rsstoken'];
+	if ($page->users->isDisabled($page->userdata['username'])) {
+		Misc::showApiError(101);
+	}
 } else {
 	if ($page->settings->getSetting('registerstatus') == Settings::REGISTER_STATUS_API_ONLY) {
 		$res = $page->users->getById(0);
 	} else {
 		if ((!isset($_GET["i"]) || !isset($_GET["r"]))) {
-			header("X-DNZB-RCode: 400");
-			header("X-DNZB-RText: Bad request, please supply all parameters!");
-			$page->show403();
+			Misc::showApiError(200);
 		}
 
 		$res = $page->users->getByIdAndRssToken($_GET["i"], $_GET["r"]);
 		if (!$res) {
-			header("X-DNZB-RCode: 401");
-			header("X-DNZB-RText: Unauthorised, wrong user ID or rss key!");
-			$page->show403();
+			Misc::showApiError(100);
 		}
 	}
 	$uid = $res["id"];
 	$rssToken = $res['rsstoken'];
 	$maxDownloads = $res["downloadrequests"];
+	if ($page->users->isDisabled($res['username'])) {
+		Misc::showApiError(101);
+	}
 }
 
 // Check download limit on user role.
 $requests = $page->users->getDownloadRequests($uid);
 if ($requests > $maxDownloads) {
-	header("X-DNZB-RCode: 503");
-	header("X-DNZB-RText: User has exceeded maximum downloads for the day!");
-	$page->show503();
+	Misc::showApiError(501);
 }
 
 if (!isset($_GET['id'])) {
-	header("X-DNZB-RCode: 400");
-	header("X-DNZB-RText: Bad request! (parameter id is required)");
-	$page->show403();
+	Misc::showApiError(200, 'parameter id is required');
 }
 
 // Remove any suffixed id with .nzb which is added to help weblogging programs see nzb traffic.
@@ -55,9 +54,7 @@ $rel = new Releases(['Settings' => $page->settings]);
 if (isset($_GET["zip"]) && $_GET["zip"] == "1") {
 	$guids = explode(",", $_GET["id"]);
 	if ($requests['num'] + sizeof($guids) > $maxDownloads) {
-		header("X-DNZB-RCode: 503");
-		header("X-DNZB-RText: User has exceeded maximum downloads for the day!");
-		$page->show503();
+		Misc::showApiError(501);
 	}
 
 	$zip = $rel->getZipped($guids);
@@ -82,9 +79,7 @@ if (isset($_GET["zip"]) && $_GET["zip"] == "1") {
 
 $nzbPath = (new NZB($page->settings))->getNZBPath($_GET["id"]);
 if (!file_exists($nzbPath)) {
-	header("X-DNZB-RCode: 404");
-	header("X-DNZB-RText: NZB file not found!");
-	$page->show404();
+	Misc::showApiError(300, 'NZB file not found!');
 }
 
 $relData = $rel->getByGuid($_GET["id"]);
@@ -96,9 +91,7 @@ if ($relData) {
 		$page->users->delCartByUserAndRelease($_GET["id"], $uid);
 	}
 } else {
-	header("X-DNZB-RCode: 404");
-	header("X-DNZB-RText: Release not found!");
-	$page->show404();
+	Misc::showApiError(300, 'Release not found!');
 }
 
 // Start reading output buffer.

@@ -308,7 +308,6 @@ class DB extends \PDO
 			\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
 			\PDO::ATTR_TIMEOUT => 180,
 			\PDO::ATTR_PERSISTENT => $this->opts['persist'],
-			\PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8",
 			\PDO::MYSQL_ATTR_LOCAL_INFILE => true
 		];
 
