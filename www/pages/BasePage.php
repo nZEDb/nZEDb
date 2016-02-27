@@ -114,6 +114,10 @@ class BasePage
 		$this->smarty->setCompileDir(SMARTY_DIR . 'templates_c/');
 		$this->smarty->setConfigDir(SMARTY_DIR . 'configs/');
 		$this->smarty->setCacheDir(SMARTY_DIR . 'cache/');
+		$this->smarty->setPluginsDir([
+			SMARTY_DIR . 'plugins/',
+			nZEDb_WWW . 'plugins/'
+		]);
 		$this->smarty->error_reporting = ((nZEDb_DEBUG ? E_ALL : E_ALL - E_NOTICE));
 
 		if (isset($_SERVER['SERVER_NAME'])) {
@@ -132,16 +136,11 @@ class BasePage
 		if ($this->users->isLoggedIn()) {
 			$this->setUserPreferences();
 		} else {
-
 			$this->theme = $this->settings->getSetting('site.main.style');
 
 			$this->smarty->assign('isadmin', 'false');
 			$this->smarty->assign('ismod', 'false');
 			$this->smarty->assign('loggedin', 'false');
-		}
-
-		if ($this->theme === '') {
-			$this->theme = 'Default';
 		}
 
 		$this->smarty->assign('theme', $this->theme);
@@ -336,7 +335,9 @@ class BasePage
 		}
 
 		// Update last login every 15 mins.
-		if ((strtotime($this->userdata['now']) - 900) > strtotime($this->userdata['lastlogin'])) {
+		if ((strtotime($this->userdata['now']) - 900) >
+			strtotime($this->userdata['lastlogin'])
+		) {
 			$this->users->updateSiteAccessed($this->userdata['id']);
 		}
 
