@@ -8,7 +8,8 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 2016-02-27 niel
-	Fix: Fix positioning of View/Admin buttons on category browse pages (Closes PR 2063).
+	Fix: Positioning of View/Admin buttons on category browse pages (Closes PR 2063).
+	Fix: Console rows going outside the grey box element.
 2016-02-25 DariusIII
 	Chg: Replace custom filtering code in Charisma/Gamma/Omicron themes with search-filter.
 	Chg: Move rss, rssdesc and search-filter.tpl to themes/shared folder.

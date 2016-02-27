@@ -76,7 +76,7 @@
 								><img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/gamespot.png"></a>
 							</div>
 							<hr>
-							<div class="container">
+							<div>
 								<a
 									class="label label-info"
 									href="{$smarty.const.WWW_TOP}/console?platform={$result.platform}"
