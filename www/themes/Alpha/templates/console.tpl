@@ -18,18 +18,7 @@
 </div>
 {if $results|@count > 0}
 	<form id="nzb_multi_operations_form" action="get">
-		<div class="container nzb_multi_operations" style="text-align:right;margin-bottom:5px;">
-			View:
-			<span><i class="icon-th-list"></i></span>
-			&nbsp;&nbsp;
-			<a href="{$smarty.const.WWW_TOP}/browse?t={$category}"><i class="icon-align-justify"></i></a>
-			{if $isadmin || $ismod}
-				&nbsp;&nbsp;
-				Admin:
-				<input type="button" class="btn btn-warning nzb_multi_operations_edit" value="Edit">
-				<input type="button" class="btn btn-danger nzb_multi_operations_delete" value="Delete">
-			{/if}
-		</div>
+		{include file='elements/admin-buttons-browse.tpl'}
 		{include file='multi-operations.tpl'}
 		<table class="table table-striped table-condensed table-hover data icons" id="coverstable">
 			<thead>
