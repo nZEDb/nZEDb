@@ -10,7 +10,6 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 2016-02-25 DariusIII
 	Chg: Replace custom filtering code in Charisma/Gamma/Omicron themes with search-filter.
 	Chg: Move rss, rssdesc and search-filter.tpl to themes/shared folder.
-	Fix: Prevent undefined index covergrp notice in all of the themes.
 	Fix: Fix the rss of Gamma theme.
 	Fix: Prevent undefined index userdata notice in headermenu of Charisma/Gamma/Omicron themes.
 	Fix: Fix "too few arguments" error in Tmux class.
