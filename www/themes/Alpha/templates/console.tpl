@@ -1,4 +1,4 @@
-{include file='partials/ads.tpl' ad=$site->adbrowse}
+{include file='elements/ads.tpl' ad=$site->adbrowse}
 <div class="panel">
 	<div class="panel-heading">
 		<h4 class="panel-title">

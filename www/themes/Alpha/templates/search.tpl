@@ -1,4 +1,4 @@
-{include file='partials/ads.tpl' ad=$site->adbrowse}
+{include file='elements/ads.tpl' ad=$site->adbrowse}
 <h3 class="text-center">
 	<a href="#" onclick="if (jQuery(this).text() == 'Advanced Search')
 		jQuery(this).text('Basic Search');

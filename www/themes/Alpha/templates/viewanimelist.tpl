@@ -1,4 +1,4 @@
-{include file='partials/ads.tpl' ad=$site->adbrowse}
+{include file='elements/ads.tpl' ad=$site->adbrowse}
 <div>
 	<br>
 	<p style="font-size:16px">

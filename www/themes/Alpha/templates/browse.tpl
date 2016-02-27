@@ -1,4 +1,4 @@
-{include file='partials/ads.tpl' ad=$site->adbrowse}
+{include file='elements/ads.tpl' ad=$site->adbrowse}
 {* {if $covergrp != ''}
 <div class="accordion" id="searchtoggle">
 	<div class="accordion-group">
@@ -18,7 +18,7 @@
 {/if} *}
 {if $results|@count > 0}
 	<form id="nzb_multi_operations_form" action="get">
-		{include file='admin-buttons.tpl'}
+		{include file='elements/admin-buttons.tpl'}
 		{include file='multi-operations.tpl'}
 		<table class="table table-striped table-bordered table-condensed table-hover data" id="browsetable">
 			<thead>

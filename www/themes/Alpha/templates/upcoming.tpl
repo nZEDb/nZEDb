@@ -1,4 +1,4 @@
-{include file='partials/ads.tpl' ad=$site->adbrowse}
+{include file='elements/ads.tpl' ad=$site->adbrowse}
 
 <p>
 	<a href="{$smarty.const.WWW_TOP}/upcoming/1">Box Office</a> |
