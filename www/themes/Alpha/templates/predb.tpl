@@ -10,7 +10,7 @@
 		</span>
 	</div>
 </form>
-<div class="container">
+
 	{$pager}
 	<table style="margin-bottom:10px; margin-top:5px;" class="table table-condensed table-highlight table-striped data Sortable">
 		<thead>
@@ -356,4 +356,3 @@
 		</tbody>
 	</table>
 	{$pager}
-</div>

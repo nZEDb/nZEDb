@@ -3,7 +3,6 @@
 {/if}
 
 {if $showregister != "0"}
-	<div class="container">
 	<div class="col-sm-6 col-sm-offset-3">
 		<div class="well">
 			<form class="form-signin" action="register?action=submit{$invite_code_query}" method="post">
@@ -46,6 +45,5 @@
 				<button class="btn btn-default" type="submit" value="Register">Register</button>
 			</form>
 		</div>
-	</div>
 	</div>
 {/if}
