@@ -41,7 +41,7 @@ Most of this guide is done from the command line (terminal).
 2. Install PHP and extensions.
 
 	# Install PHP and the required extensions:
-		sudo apt-get install -y php5 php5-dev php-pear php5-gd php5-mysql php5-curl
+		sudo apt-get install -y php5 php5-dev php-pear php5-gd php5-mysqlnd php5-curl
 
 3. Install MySQL
 

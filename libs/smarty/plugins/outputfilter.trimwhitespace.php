@@ -88,5 +88,6 @@ function smarty_outputfilter_trimwhitespace($source)
 
     // (mod by nZEDb) Strip multiple new lines / spaces.
     $source = preg_replace("/\s+/ms", " ", $source);
+
     return $source;
 }

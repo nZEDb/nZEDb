@@ -46,6 +46,6 @@ if (isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "safe")) {
 } else {
 	exit($cli->error("\nThis script will automatically do a git pull, patch the DB and delete the smarty folder contents.\n\n"
 			. "php $argv[0] true   ...: To run.\n"
-			. "php $argv[0] safe   ...: Tto run a backup of your database and then update.\n"));
+			. "php $argv[0] safe   ...: To run a backup of your database and then update.\n"));
 }
 ?>

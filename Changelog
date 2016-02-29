@@ -7,15 +7,56 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2016-02-27 niel
+	Mrg: dev => next-master to prepare for updating master.
+
+2016-02-23 niel
+	Chg: Remove unneccessary MYSQL_ATTR_INIT_COMMAND from PDO dsn options array. This was only
+		needed before PHP 5.3.6 as 'charset' was ignored.
+	Fix: Updated Ubuntu-14.04.2-Install to use mysqlnd library instead of the no longer
+		maintained version.
+2016-02-22 ruhllatio
+	Fix: Long running queries for RemoveCrap WMV
+2016-02-20 niel
+	Fix: Correct path for images on opening page of Install.
+2016-02-15 niel
+	Mrg: PR 2062, from zetas - Disable API access for disabled users.
+2016-02-04 niel
+	Chg: Updated Smarty to version 3.1.29
+	Chg: Created second directory for Smarty plugins (.../www/plugins) where we will keep our
+		custom added plugins to avoid issues when updating Smarty.
+2016-02-03 niel
+	Mrg: PR 2055, from DariusIII - Fix paths in Charisma theme.
+	Mrg: PR 2056, from DariusIII - Replace deprecated html tag <center> with proper CSS.
+	Fix: Regression that remove WWW_THEMES definition from Page class.
+2016-02-03 DariusIII
+	Mrg: PR 2054 - Change references of releasetitle to title in myshows-add page of Charisma/Omicron theme
+	Fix: Wrong paths to scripts in Omicron theme
+	Fix: Fix profileedit pages in Charisma/Gamma/Omicron templates
 2016-02-02 niel
+	Mrg: PR 2051, from DariusIII - Correct wrong variable usage and replace it with proper one
+		($rid => $video) in myshows-add.tpl template file for all themes.
 	Fix: Copy jquery.qtip2.js to themes/shared/script so requests can find it.
 	Fix: Make Category::getCategoryOthersGroup static, so it is accessed like a constant would be.
 	Fix: Fix reference to 'template' instead of 'theme' in the Omicron basepage.tpl
 2016-01-31 niel
 	Mrg: dev => next-master to prepare for updating master.
 
+
 2016-01-30 niel
 	Chg: Juggle Book category values so they match the existing ones of neznab's published API.
+2016-01-29 niel
+	Mrg: PR 2044, from DariusIII - Rework Omicron/Charisma basepages and Omicron login/register checkboxes.
+	Mrg: PR 2046, from DariusIII - Prevent undefined index notices for failed downloads in Omicron and Charisma themes.
+2016-01-26 niel
+	Mrg: PR 2037, from DariusIII - Move Other cats to 0000 range, books cat to 7000 range.
+2016-01-23 niel
+	Mrg: PR 2041, from DariusIII - Update Noty package to version 2.3.8 and move it to
+		shared/libs folder.
+2016-01-21 niel
+	Mrg: PR 2039, from DariusIII - Prevent undefined index notices in full series and movies
+		view, remove references to nzbvortex and nzbgetintegration.
+	Mrg: PR 2040, from DariusIII - Update isISO categorization.
 2016-01-26 niel
 	Mrg: PR 2037, from DariusIII - Move Other cats to 0000 range, books cat to 7000 range.
 	Fix: Changing the CAT_OTHERS_GROUP array to be a function instead, as array constants are not
@@ -26,10 +67,15 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 		***Note*** Anyone that used the bad version will have to run the recategorise script to
 		fix things, sorry for the hassle.
 	Fix: Add remove partition query before adding the new partition.
-2016-01-21 niel
-	Mrg: PR 2040, from DariusIII - Update isISO categorization.
+2016-01-18 niel
+	Mrg: PR 2036, from DariusIII - Fix books menu in Gamma template.
 2016-01-16 niel
 	Chg: Update getID3 library to version 1.9.11
+2016-01-11 niel
+	Mrg: PR 2027, from DariusIII - Fix white letters on profile site theme selection, replace references to nntmux/newznab with nzedb.
+2016-01-09 niel
+	Chg: Delete duplicated bootstrap files in shared theme.
+	Chg: Rename shared directories: images => img, scripts => js, styles => css to be more conventional.
 2016-01-08 niel
 	Fix: More bad URLs in Charisma/Omicron.
 	Mrg: PR 2023, from DariusIII - Fix wrong path to shared folder in Gamma theme.
@@ -42,8 +88,8 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Fix: In some cases, if not logged in, no theme is defined and certain links are broken with
 		themes//style... appearing instead of a proper link.
 2016-01-04 niel
-	Fix: Added template file to Default theme which caused 500 error when clicking on movie title
-		in covers view.
+	Fix: Added missing template file to Default theme which caused 500 error when clicking on movie
+		title in covers view.
 	Mrg: PR 2012, from DariusIII - Update Captcha.tpl with noscript fix, make browse groups in
 		Charisma/Omicron themes sortable.
 2016-01-02 niel
