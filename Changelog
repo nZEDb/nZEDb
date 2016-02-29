@@ -8,6 +8,7 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 2016-02-29 DariusIII
+	Chg: Replace form-search in Charisma and Omicron too
 	Chg: Replace form-search with proper form-inline in Alpha theme
 2016-02-27 niel
 	Fix: Positioning of View/Admin buttons on category browse pages (Closes PR 2063).
