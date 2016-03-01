@@ -138,7 +138,7 @@
 												{* Games *}
 												{if in_array($result.category, array('GAMES', 'Games: PC', 'Games: Other'))}
 													<a class="title" title="View category PC Games"
-													   href="{$smarty.const.WWW_TOP}/browse?t={$catClass::PC_GAME}">PC
+													   href="{$smarty.const.WWW_TOP}/browse?t={$catClass::PC_GAMES}">PC
 														Games</a>
 												{/if}
 												{* TV *}
