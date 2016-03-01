@@ -10,6 +10,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 2016-03-01 niel
 	* Mrg: PR 2074, from zetas/kingcat - Removing extraneous container tags from alpha for
 	 Bootstrap v3.
+	* Fix: Incorrect constant name PC_GAME in predb.tpl, to correct PC_GAMES.
 
 2016-02-27 niel
 	Fix: Positioning of View/Admin buttons on category browse pages (Closes PR 2063).
