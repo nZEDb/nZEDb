@@ -22,7 +22,7 @@
 {/if}
 	<!-- Newposterwall -->
 	<link href="{$smarty.const.WWW_THEMES}/shared/css/posterwall.css" rel="stylesheet" type="text/css" media="screen" />
-	<link href="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap/v3/css/bootstrap.css" rel="stylesheet" type="text/css" media="screen" />
+	<link href="{$smarty.const.WWW_THEMES}/{$theme}/styles/bootstrap.css" rel="stylesheet" type="text/css" media="screen" />
 	<link href="{$smarty.const.WWW_THEMES}/shared/css/font-awesome.css" rel="stylesheet" type="text/css" media="screen" />
 	<link href="{$smarty.const.WWW_THEMES}/{$theme}/styles/extra.css" rel="stylesheet" type="text/css" media="screen" />
 	<link href="{$smarty.const.WWW_THEMES}/{$theme}/styles/jquery.pnotify.default.css" rel="stylesheet" type="text/css" media="screen" />
