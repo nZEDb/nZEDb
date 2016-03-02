@@ -1,9 +1,9 @@
 {if isset($userdata)}
-<ul class="nav" role="navigation">
+<ul class="nav navbar-nav">
 	{foreach $parentcatlist as $parentcat}
 		{if $parentcat.id == {$catClass::GAME_ROOT}}
 			<li class="dropdown">
-				<a id="drop1" role="button" class="dropdown-toggle" data-toggle="dropdown" href="#">{$parentcat.title}
+				<a id="drop1" role="button" class="dropdown-toggle" data-hover="dropdown" href="#">{$parentcat.title}
 					<b class="caret"></b></a>
 				<ul class="dropdown-menu" role="menu" aria-labelledby="drop1">
 					{if $userdata.consoleview == "1"}
@@ -27,7 +27,7 @@
 		{/if}
 		{if $parentcat.id == {$catClass::MOVIE_ROOT}}
 			<li class="dropdown">
-				<a id="drop2" role="button" class="dropdown-toggle" data-toggle="dropdown" href="#">{$parentcat.title}
+				<a id="drop2" role="button" class="dropdown-toggle" data-hover="dropdown" href="#">{$parentcat.title}
 					<b class="caret"></b></a>
 				<ul class="dropdown-menu" role="menu" aria-labelledby="drop2">
 					{if $userdata.movieview == "1"}
@@ -51,7 +51,7 @@
 		{/if}
 		{if $parentcat.id == {$catClass::MUSIC_ROOT}}
 			<li class="dropdown">
-				<a id="drop3" class="dropdown-toggle" data-toggle="dropdown" href="#">{$parentcat.title} <b
+				<a id="drop3" class="dropdown-toggle" data-hover="dropdown" href="#">{$parentcat.title} <b
 							class="caret"></b></a>
 				<ul class="dropdown-menu" role="menu" aria-labelledby="drop3">
 					{if $userdata.musicview == "1"}
@@ -80,7 +80,7 @@
 		{/if}
 		{if $parentcat.id == {$catClass::PC_ROOT}}
 			<li class="dropdown">
-				<a id="drop4" class="dropdown-toggle" data-toggle="dropdown" href="#">{$parentcat.title} <b
+				<a id="drop4" class="dropdown-toggle" data-hover="dropdown" href="#">{$parentcat.title} <b
 							class="caret"></b></a>
 				<ul class="dropdown-menu" role="menu" aria-labelledby="drop4">
 					{if $userdata.gameview == "1"}
@@ -107,7 +107,7 @@
 		{/if}
 		{if $parentcat.id == {$catClass::TV_ROOT}}
 			<li class="dropdown">
-				<a id="drop{$parentcat.id}" class="dropdown-toggle" data-toggle="dropdown" href="#">{$parentcat.title}
+				<a id="drop{$parentcat.id}" class="dropdown-toggle" data-hover="dropdown" href="#">{$parentcat.title}
 					<b class="caret"></b></a>
 				<ul class="dropdown-menu" role="menu" aria-labelledby="drop{$parentcat.id}">
 					<li><a href="{$smarty.const.WWW_TOP}/browse?t={$parentcat.id}">{$parentcat.title}</a></li>
@@ -123,7 +123,7 @@
 			<li class="dropdown">
 				<a id="cat3"
 				   class="dropdown-toggle"
-				   data-toggle="dropdown"
+				   data-hover="dropdown"
 				   data-hover="dropdown"
 				   href="{$smarty.const.WWW_TOP}/xxx">{$parentcat.title}
 					<b class="caret"></b></a>
@@ -156,7 +156,7 @@
 			<li class="dropdown">
 				<a id="drop{$parentcat.id}"
 				   class="dropdown-toggle"
-				   data-toggle="dropdown"
+				   data-hover="dropdown"
 				   data-hover="dropdown"
 				   href="{$smarty.const.WWW_TOP}/books">{$parentcat.title}
 					<b class="caret"></b></a>
@@ -176,7 +176,7 @@
 		{/if}
 	{/foreach}
 	<li class="dropdown">
-		<a id="dropOther" class="dropdown-toggle" data-toggle="dropdown" href="#">Other <b class="caret"></b></a>
+		<a id="dropOther" class="dropdown-toggle" data-hover="dropdown" href="#">Other <b class="caret"></b></a>
 		<ul class="dropdown-menu" role="menu" aria-labelledby="dropOther">
 			<li><a href="/browse?t={$catClass::OTHER_ROOT}">Other</a></li>
 			<hr>
@@ -186,7 +186,7 @@
 	</li>
 </ul>
 <ul class="nav pull-left">
-	<li class="">
+	<li>
 		<form class="navbar-form" id="headsearch_form" action="{$smarty.const.WWW_TOP}/search/" method="get">
 			<select class="input-small" id="headcat" name="t">
 				<option class="grouping" value="-1">All</option>
