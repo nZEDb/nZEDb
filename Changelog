@@ -7,10 +7,14 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2016-03-03 bart39
+	* Fix: Book categories in Site Edit "type of books to lookup".
+	 ***NOTE*** You may need to reselect these to pp them correctly.
 2016-03-03 niel
 	* Mrg: Brought dev-themes into dev branch.
 	 ***NOTE*** That's why dates below are out of sequence, it is not a mistake.
 	* Fix: View NZB comments block from spilling beyond its wrapping grey box.
+	* Fix: Replaced Genres::CONSOLE_TYPE causing Console.php to fail.
 2016-03-02 DariusIII
 	* Fix: Fix wrong path to shared images folder in Charisma/Gamma/omicron themes
 	* Chg: Make Gamma theme menus dropdown on hover
