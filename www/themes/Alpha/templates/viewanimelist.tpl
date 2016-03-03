@@ -9,7 +9,7 @@
 	</p>
 </div>
 <div>
-	<form name="anidbsearch" action="" method="get" id="custom-search-form" class="form-search form-horizontal col-4 col-lg-4 pull-right">
+	<form name="anidbsearch" action="" method="get" id="custom-search-form" class="form-inline form-horizontal col-4 col-lg-4 pull-right">
 		<div class="input-group col-12 col-lg-12">
 			<input type="text" class="form-control" placeholder="Search" id="title" name="title" value="{$animetitle}">
 <span class="input-group-btn">

@@ -1,6 +1,6 @@
 {include file='elements/ads.tpl' ad=$site->adbrowse}
 <h4>{$page->title}</h4>
-<form name="presearch" method="get" action="{$smarty.const.WWW_TOP}/predb" id="custom-search-form" class="form-search form-horizontal col-4 col-lg-4 pull-right">
+<form name="presearch" method="get" action="{$smarty.const.WWW_TOP}/predb" id="custom-search-form" class="form-inline form-horizontal col-4 col-lg-4 pull-right">
 	<div id="search" class="input-group col-12 col-lg-12">
 		<input type="text" class="form-control" placeholder="Search PreDB" id="presearch" name="presearch" value="{$lastSearch|escape:'html'}">
 		<span class="input-group-btn">

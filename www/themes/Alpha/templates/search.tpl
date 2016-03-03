@@ -12,7 +12,7 @@
 	{$search_description}
 </div>
 <br>
-<form style="float:none; margin:0 auto;" method="get" action="{$smarty.const.WWW_TOP}/search" class="form-search form-horizontal col-lg-4">
+<form style="float:none; margin:0 auto;" method="get" action="{$smarty.const.WWW_TOP}/search" class="form-inline form-horizontal col-lg-4">
 	<div id="sbasic" class="input-group col-lg-12" style="{if $sadvanced}display:none;{/if}">
 
 		<input id="search" name="search" value="{$search|escape:'html'}" type="text" class="form-control" placeholder="Name"/>
