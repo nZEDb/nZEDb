@@ -9,9 +9,9 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 2016-03-02 DariusIII
 	* Fix: Fix wrong path to shared images folder in Charisma/Gamma/omicron themes
-	* Upd: Make Gamma theme menus dropdown on hover
-	* Upd: Make Gamma theme Bootstrap 3 compatible
-	* Upd: Update jQuery to version 2.2.1, use jQuery migrate 1.4.0
+	* Chg: Make Gamma theme menus dropdown on hover
+	* Chg: Make Gamma theme Bootstrap 3 compatible
+	* Chg: Update jQuery to version 2.2.1, use jQuery migrate 1.4.0
 2016-03-01 niel
 	* Mrg: PR 2074, from zetas/kingcat - Removing extraneous container tags from alpha for
 	 Bootstrap v3.
