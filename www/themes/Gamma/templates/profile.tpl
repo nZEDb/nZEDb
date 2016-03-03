@@ -169,7 +169,7 @@
 			<th>release</th>
 			<th>comment</th>
 		</tr>
-		{foreach from=$commentslist item=comment}
+		{foreach $commentslist as $comment}
 		<tr>
 			<td width="80" title="{$comment.createddate}">{$comment.createddate|date_format}</td>
 			<td><a href="{$smarty.const.WWW_TOP}/details/{$comment.guid}/{$comment.searchname|escape:"seourl"}">{$comment.searchname}</a></td>

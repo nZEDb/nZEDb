@@ -19,6 +19,20 @@
  * @copyright 2014 nZEDb
  */
 
+use nzedb\Category;
+
+/**
+ * Returns the value of the specified Category constant.
+ *
+ * @param string $category Name of constant whose value to return.
+ *
+ * @return Value of the specified Category constant.
+ */
+function getCategoryValue($category)
+{
+	return Category::getCategoryValue($category);
+}
+
 // Function inspired by c0r3@newznabforums adds country flags on the browse page.
 /**
  * @param string $text	Text to match against.

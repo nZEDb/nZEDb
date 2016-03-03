@@ -10,7 +10,7 @@
 			<th>new window</th>
 			<th>options</th>
 		</tr>
-		{foreach from=$menulist item=menu}
+		{foreach $menulist as $menu}
 			<tr class="{cycle values=",alt"}">
 				<td title="Edit {$menu.title}"><a href="{$smarty.const.WWW_TOP}/menu-edit.php?id={$menu.id}">{$menu.title|escape:"htmlall"}</a></td>
 				<td>{$menu.href}</td>

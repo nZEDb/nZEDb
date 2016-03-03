@@ -9,7 +9,7 @@
 </div>
 {if $results|@count > 0}
 	<div class="box-body">
-		{foreach from=$results item=result}
+		{foreach $results as $result}
 			<div id="moviefull" style="min-height:340px;">
 				{if $result.cover == 1}
 					<img class="pull-right" style="margin-right:50px; max-height:278px;"
@@ -137,7 +137,7 @@
 									{assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
 									{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
 									{assign var="mcatname" value=","|explode:$result.grp_release_catname}
-									{foreach from=$msplits item=m}
+									{foreach $msplits as $m}
 										<tr class="{cycle values=",alt"}" id="guid{$mguid[$m@index]}">
 											<td class="check"><input id="chk{$mguid[$m@index]|substr:0:7}"
 																	 type="checkbox"

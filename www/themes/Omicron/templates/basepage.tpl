@@ -171,9 +171,9 @@
 						<div class="col-md-8">
 							<select id="headcat" name="t" class="form-control" data-search="true">
 								<option class="grouping" value="-1">All</option>
-								{foreach from=$parentcatlist item=parentcat}
+								{foreach $parentcatlist as $parentcat}
 									<option {if $header_menu_cat==$parentcat.id}selected="selected"{/if} value="{$parentcat.id}"> [{$parentcat.title}]</option>
-									{foreach from=$parentcat.subcatlist item=subcat}
+									{foreach $parentcat.subcatlist as $subcat}
 										<option {if $header_menu_cat==$subcat.id}selected="selected"{/if} value="{$subcat.id}">&nbsp;&nbsp;&nbsp; > {$subcat.title}</option>
 									{/foreach}
 								{/foreach}
@@ -212,6 +212,8 @@
 							<li><a href="{$smarty.const.WWW_TOP}/books"><i class="fa fa-book"></i><span> Books</span></a></li>
 							<li><a href="{$smarty.const.WWW_TOP}/browse"><i
 											class="fa fa-list-ul"></i><span> Browse All Releases</span></a></li>
+							<li><a href="{$smarty.const.WWW_TOP}/browsegroup"><i class="fa fa-object-group"></i><span> Browse Groups</span></a>
+							</li>
 							<li><a href="{$smarty.const.WWW_TOP}/predb"><i class="fa fa-list-ol"></i><span> PreDb</span></a>
 							</li>
 						</ul>
@@ -329,8 +331,8 @@
 	</div>
 	<!-- ./wrapper -->
 	<!-- REQUIRED JS SCRIPTS -->
-	<!-- jQuery 2.1.4 -->
-	<script src="{$smarty.const.WWW_THEMES}/{$theme}/plugins/jQuery/jQuery-2.1.4.min.js"></script>
+	<!-- jQuery 2.2.1 -->
+	<script src="{$smarty.const.WWW_THEMES}/shared/js/jquery-2.2.1.min.js"></script>
 	<!-- Bootstrap 3.3.6 JS -->
 	<script src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap/v3/js/bootstrap.min.js"
 			type="text/javascript"></script>
@@ -338,7 +340,7 @@
 	<script src="{$smarty.const.WWW_THEMES}/{$theme}/plugins/iCheck/icheck.min.js" type="text/javascript"></script>
 	<!-- Bootstrap hover on mouseover script -->
 	<script type="text/javascript"
-			src="{$smarty.const.WWW_THEMES}/{$theme}/plugins/hover/bootstrap-hover-dropdown.min.js"></script>
+			src="{$smarty.const.WWW_THEMES}/shared/js/bootstrap-hover-dropdown.min.js"></script>
 	<!-- AdminLTE App -->
 	<script src="{$smarty.const.WWW_THEMES}/{$theme}/dist/js/app.min.js" type="text/javascript"></script>
 	<!-- jQuery migrate script -->

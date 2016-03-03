@@ -1,5 +1,5 @@
 {if $results|@count > 0}
-	{foreach from=$results item=result}
+	{foreach $results as $result}
 		<div id="moviefull" style="min-height:340px;">
 			{if $result.cover == 1}<img class="shadow pic img-polaroid pull-right" style="margin-right:50px;" width="200px" alt="{$result.title|escape:"htmlall"} Logo" src="{$smarty.const.WWW_TOP}/covers/xxx/{$result.id}-cover.jpg" />{/if}
 			<h2 style="display:inline;">{$result.title|escape:"htmlall"}</h2>
@@ -120,7 +120,7 @@
 			{assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
 			{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
 			{assign var="mcatname" value=","|explode:$result.grp_release_catname}
-			{foreach from=$msplits item=m}
+			{foreach $msplits as $m}
 				<tr class="{cycle values=",alt"} filter"data-name="{$mname[$m@index]|escape:"htmlall"|replace:".":" "|lower}" id="guid{$mguid[$m@index]}">
 					<td class="check"><input id="chk{$mguid[$m@index]|substr:0:7}" type="checkbox" class="nzb_check" value="{$mguid[$m@index]}" /></td>
 					<td class="item">

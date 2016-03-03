@@ -1,9 +1,9 @@
 {if $loggedin=="false"}
-	{foreach from=$content item=c}
+	{foreach $content as $c}
 		{if $c->role == 0}{$c->body}{/if}
 	{/foreach}
 {else}
-	{foreach from=$content item=c}
+	{foreach $content as $c}
 		{if $c->role == 0 || $c->role == 1 || ($c->role == 2 && $admin == 'true')}
 			{if $front == false}
 				<h3>

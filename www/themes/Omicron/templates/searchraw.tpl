@@ -53,7 +53,7 @@
 								<th>Nzb</th>
 							</tr>
 
-							{foreach from=$results item=result}
+							{foreach $results as $result}
 								<tr class="{cycle values=",alt"}">
 									<!--<td class="selection"><input name="file{$result.id}" id="file{$result.id}" value="{$result.id}" type="checkbox"/></td>-->
 									<td title="{$result.xref|escape:"htmlall"}">{$result.name|escape:"htmlall"}</td>

@@ -8,31 +8,7 @@
 	</div>
 </div>
 <div class="well well-sm">
-	<form class="form-inline" role="form" name="browseby" action="games">
-		<div class="form-group form-group-sm">
-			<label class="sr-only" for="title">Title:</label>
-			<input type="text" class="form-control" id="title" name="title" value="{$title}" placeholder="Title">
-		</div>
-		<div class="form-group form-group-sm">
-			<label class="sr-only" for="genre">Genre:</label>
-			<select id="genre" name="genre" class="form-control">
-				<option class="grouping" value="" selected>Genre</option>
-				{foreach from=$genres item=gen}
-					<option {if $gen.id == $genre}selected="selected"{/if} value="{$gen.id}">{$gen.title}</option>
-				{/foreach}
-			</select>
-		</div>
-		<div class="form-group form-group-sm">
-			<label class="sr-only" for="year">Year:</label>
-			<select id="year" name="year" class="form-control">
-				<option class="grouping" value="" selected>Year</option>
-				{foreach from=$years item=yr}
-					<option {if $yr==$year}selected="selected"{/if} value="{$yr}">{$yr}</option>
-				{/foreach}
-			</select>
-		</div>
-		<input type="submit" class="btn btn-primary" value="Search!"/>
-	</form>
+	{include file='search-filter.tpl'}
 </div>
 <form id="nzb_multi_operations_form" action="get">
 	<div class="box-body"
@@ -75,7 +51,7 @@
 						</div>
 					</div>
 					<hr>
-					{foreach from=$results item=result}
+					{foreach $results as $result}
 						{assign var="msplits" value=","|explode:$result.grp_release_id}
 						{assign var="mguid" value=","|explode:$result.grp_release_guid}
 						{assign var="mnfo" value=","|explode:$result.grp_release_nfoid}
@@ -90,7 +66,7 @@
 						{assign var="mpass" value=","|explode:$result.grp_release_password}
 						{assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
 						{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
-						{foreach from=$msplits item=m name=loop}
+						{foreach $msplits as $loop=>$m name="loop"}
 							{if $smarty.foreach.loop.first}
 								<div class="panel panel-default">
 									<div class="panel-body">

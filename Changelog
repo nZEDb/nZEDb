@@ -7,8 +7,50 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2016-03-03 niel
+	* Mrg: Brought dev-themes into dev branch.
+	 ***NOTE*** That's why dates below are out of sequence, it is not a mistake.
+2016-03-02 DariusIII
+	* Fix: Fix wrong path to shared images folder in Charisma/Gamma/omicron themes
+	* Chg: Make Gamma theme menus dropdown on hover
+	* Chg: Make Gamma theme Bootstrap 3 compatible
+	* Chg: Update jQuery to version 2.2.1, use jQuery migrate 1.4.0
+2016-03-01 niel
+	* Mrg: PR 2074, from zetas/kingcat - Removing extraneous container tags from alpha for
+	 Bootstrap v3.
+	* Fix: Incorrect constant name PC_GAME in predb.tpl, to correct PC_GAMES.
+2016-02-27 niel
+	Fix: Positioning of View/Admin buttons on category browse pages (Closes PR 2063).
+	Fix: Console rows going outside the grey box element.
+2016-02-25 DariusIII
+	Chg: Replace custom filtering code in Charisma/Gamma/Omicron themes with search-filter.
+	Chg: Move rss, rssdesc and search-filter.tpl to themes/shared folder.
+	Fix: Fix the rss of Gamma theme.
+	Fix: Prevent undefined index userdata notice in headermenu of Charisma/Gamma/Omicron themes.
+	Fix: Fix "too few arguments" error in Tmux class.
+2016-02-24 niel
+	Fix: Issue 2011 - Default Template Issues.
+	Fix: Issue 2026 - Alpha theme. The Audio menu item does not work as intended.
+2016-02-19 DariusIII
+	Fix: Fix Gamma theme headermenu when not using coverviews.
+	Chg: Move group browsing from user to left side menu in Charisma/Omicron themes.
+2016-02-17 niel
+	Fix: Prevent unkown index '0' for null pagertotalitems result and force a zero value if missing.
+2016-02-15 niel
+	Chg: Use Category constants instead of numbers in 33 template files of various themes.
+	Chg: Use Category constants instead of numbers in 11 code files from misc and nzedb directories.
+	Mrg: PR 2061, from zetas - Moving ad display to a partial for Alpha theme to unify look and functionality.
+2016-02-15 DariusIII
+	Fix Fix template tag errors in Alpha viewanime and viewseries.tpl
+2016-02-14 DariusIII
+	Chg: Change category numbers to category constants in themes search-filter.tpl
+2016-02-13 DariusIII
+	Chg: Change category numbers to category constants in themes predb.tpl
+2016-02-12 DariusIII
+	Chg: Update themes headermenu.tpl to use category constants
 2016-02-27 niel
 	Mrg: dev => next-master to prepare for updating master.
+
 
 2016-02-23 niel
 	Chg: Remove unneccessary MYSQL_ATTR_INIT_COMMAND from PDO dsn options array. This was only

@@ -13,9 +13,9 @@
 	</searching>
 
 	<categories>
-		{foreach from=$parentcatlist item=parentcat}
+		{foreach $parentcatlist as $parentcat}
 			<category id="{$parentcat.id}" name="{$parentcat.title|escape:html}"{if $parentcat.description != ""} description="{$parentcat.description|escape:html}"{/if}>
-				{foreach from=$parentcat.subcatlist item=subcat}
+				{foreach $parentcat.subcatlist as $subcat}
 					<subcat id="{$subcat.id}" name="{$subcat.title|escape:html}"{if $subcat.description != ""} description="{$subcat.description|escape:html}"{/if}/>
 				{/foreach}
 			</category>

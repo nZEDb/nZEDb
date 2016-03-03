@@ -1,6 +1,7 @@
 <?php
 namespace nzedb\processing\tv;
 
+use nzedb\Category;
 use nzedb\processing\Videos;
 use nzedb\utility\Country;
 use nzedb\utility\Text;
@@ -54,7 +55,7 @@ abstract class TV extends Videos
 	public function __construct(array $options = [])
 	{
 		parent::__construct($options);
-		$this->catWhere = 'categoryid BETWEEN 5000 AND 5999 AND categoryid NOT IN (5070)';
+		$this->catWhere = 'categoryid BETWEEN ' . Category::TV_ROOT . ' AND ' . Category::TV_OTHER . ' AND categoryid  NOT IN (' . Category::TV_ANIME . ')';
 		$this->tvqty = ($this->pdo->getSetting('maxrageprocessed') != '') ? $this->pdo->getSetting('maxrageprocessed') : 75;
 		$this->imgSavePath = nZEDb_COVERS . 'tvshows' . DS;
 		$this->siteColumns = ['tvdb', 'trakt', 'tvrage', 'tvmaze', 'imdb', 'tmdb'];

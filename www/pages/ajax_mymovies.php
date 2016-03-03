@@ -1,6 +1,7 @@
 <?php
 require_once nZEDb_LIBS . 'TMDb.php';
 
+use nzedb\Category;
 use nzedb\Movie;
 use nzedb\UserMovies;
 
@@ -15,8 +16,8 @@ if (isset($_REQUEST['del'])) {
 } else if (isset($_REQUEST['add'])) {
 	// Derive cats from user preferences.
 	$cats = array();
-	$cats[] = '2030';
-	$cats[] = '2040';
+	$cats[] = Category::MOVIE_SD;
+	$cats[] = Category::MOVIE_HD;
 
 	$m = new Movie(['Settings' => $page->settings]);
 	$mi = $m->getMovieInfo($_REQUEST['add']);

@@ -9,7 +9,7 @@
 			<th>host</th>
 			<th>options</th>
 		</tr>
-		{foreach from=$commentslist item=comment}
+		{foreach $commentslist as $comment}
 			<tr class="{cycle values=",alt"}">
 				<td>
 					{if $comment.user_id > 0}

@@ -10,11 +10,11 @@
 <form class="form pull-right" style="margin-top:-35px;">
 	<form name="anidbsearch" class="navbar-form" action="" method="get">
 		<div class="input-append">
-			<input class="input-medium" id="title appendedInputButton" type="text" name="title" value="{$animetitle}" class="span2" placeholder="Search anime title"/>
+			<input class="input-medium span2" id="title appendedInputButton" type="text" name="title" value="{$animetitle}" placeholder="Search anime title"/>
 			<button type="submit" class="btn">GO</button>
 		</div>
 	</form>
-</form
+</form>
 <div style="text-align: center;">
 </div>
 {$site->adbrowse}
@@ -32,7 +32,7 @@
 	{foreach $animelist as $aletter => $anime}
 		{foreach $anime as $a}
 			<tr class="{cycle values=",alt"}">
-				<td width="40%"><a align="" class="title" title="View anime" href="{$smarty.const.WWW_TOP}/anime/{$a.anidbid}"><img class="shadow" width="35%" src="{$smarty.const.WWW_TOP}/covers/anime/{$a.anidbid}.jpg" />  {$a.title|escape:"htmlall"}</a></td>
+				<td width="40%"><a class="title" title="View anime" href="{$smarty.const.WWW_TOP}/anime/{$a.anidbid}"><img class="shadow" width="35%" src="{$smarty.const.WWW_TOP}/covers/anime/{$a.anidbid}.jpg" />  {$a.title|escape:"htmlall"}</a></td>
 				<td style="text-align: center;">{if {$a.type} != ''}{$a.type|escape:"htmlall"}{/if}</td>
 				<td width>{if {$a.categories} != ''}{$a.categories|escape:"htmlall"|replace:'|':', '}{/if}{if {$a.startdate} != ''}<br><br><b>Air date: {$a.startdate|date_format} - {/if}{if $a.enddate != ''}{$a.enddate|date_format}</b>{/if}</td>
 				<td style="text-align: center;">{if {$a.rating} != ''}{$a.rating}{/if}</td>

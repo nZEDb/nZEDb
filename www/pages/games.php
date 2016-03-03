@@ -14,12 +14,12 @@ $cat = new Category(['Settings' => $page->settings]);
 $gen = new Genres(['Settings' => $page->settings]);
 $fail = new DnzbFailures(['Settings' => $page->settings]);
 
-$concats = $cat->getChildren(Category::CAT_PARENT_PC);
+$concats = $cat->getChildren(Category::PC_ROOT);
 $ctmp = array();
 foreach ($concats as $ccat) {
 	$ctmp[$ccat['id']] = $ccat;
 }
-$category = Category::CAT_PC_GAMES;
+$category = Category::PC_GAMES;
 if (isset($_REQUEST["t"]) && array_key_exists($_REQUEST['t'], $ctmp)) {
 	$category = $_REQUEST["t"] + 0;
 }
@@ -56,7 +56,7 @@ foreach ($results as $result) {
 $title = (isset($_REQUEST['title']) && !empty($_REQUEST['title'])) ? stripslashes($_REQUEST['title']) : '';
 $page->smarty->assign('title', $title);
 
-$genres = $gen->getGenres(Genres::GAME_TYPE, true);
+$genres = $gen->getGenres(Category::PC_ROOT, true);
 $tmpgnr = array();
 foreach ($genres as $gn) {
 	$tmpgnr[$gn['id']] = $gn['title'];
@@ -74,7 +74,8 @@ $page->smarty->assign('genre', $genre);
 
 $browseby_link = '&amp;title=' . $title . '&amp;year=' . $year;
 
-$page->smarty->assign('pagertotalitems', $results[0]['_totalcount']);
+$page->smarty->assign('pagertotalitems',
+		isset($results[0]['_totalcount']) ? $results[0]['_totalcount'] : 0);
 $page->smarty->assign('pageroffset', $offset);
 $page->smarty->assign('pageritemsperpage', ITEMS_PER_COVER_PAGE);
 $page->smarty->assign('pagerquerybase', WWW_TOP . "/games?t=" . $category . $browseby_link . "&amp;ob=" . $orderby . "&amp;offset=");

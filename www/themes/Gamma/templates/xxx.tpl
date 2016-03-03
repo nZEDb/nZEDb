@@ -2,31 +2,7 @@
 
 <div class="well well-small">
 	<div style="text-align: center;">
-		<form class="form-inline" name="browseby" action="xxx" style="margin:0;">
-			<i class="fa fa-film fa-midt"></i>
-			<input class="input input-medium" id="title" type="text" name="title" value="{$title}" placeholder="Title"/>
-			<i class="fa fa-group fa-midt"></i>
-			<input class="input input-medium" id="actors" type="text" name="actors" value="{$actors}"
-				   placeholder="Actor"/>
-			<i class="fa fa-bullhorn fa-midt"></i>
-			<input class="input input-medium" id="director" type="text" name="director" value="{$director}"
-				   placeholder="Director"/>
-			<i class="fa fa-inbox fa-midt"></i>
-			<select class="input input-medium" id="genre" name="genre">
-				<option class="grouping" value=""></option>
-				{foreach from=$genres item=gen}
-					<option {if $gen==$genre}selected="selected"{/if} value="{$gen}">{$gen}</option>
-				{/foreach}
-			</select>
-			<i class="fa fa-flag fa-midt"></i>
-			<select class="input input-medium" id="category" name="category">
-				<option class="grouping" value=""></option>
-				{foreach from=$catlist item=cat}
-					<option {if $cat.id==$category}selected="selected"{/if} value="{$cat.id}">{$cat.title}</option>
-				{/foreach}
-			</select>
-			<input class="btn btn-success" type="submit" value="Go"/>
-		</form>
+		{include file='search-filter.tpl'}
 	</div>
 </div>
 {$site->adbrowse}
@@ -89,7 +65,7 @@
 					</a>
 				</th>
 			</tr>
-			{foreach from=$results item=result}
+			{foreach $results as $result}
 				{assign var="msplits" value=","|explode:$result.grp_release_id}
 				{assign var="mguid" value=","|explode:$result.grp_release_guid}
 				{assign var="mnfo" value=","|explode:$result.grp_release_nfoid}
@@ -110,7 +86,7 @@
 						<div class="movcover">
 							<h4>
 								<a target="_blank"
-										{foreach from=$msplits item=m}
+										{foreach $msplits as $m}
 											{if $previewfound == 0}
 												{if $mhaspreview[$m@index] == 1 && $userdata.canpreview == 1}
 													{$previewfound = 1}
@@ -224,7 +200,7 @@
 						{/if}
 						<div class="movextra">
 							<table class="table" style="margin-bottom:0px; margin-top:10px">
-								{foreach from=$msplits item=m}
+								{foreach $msplits as $m}
 									<tr id="guid{$mguid[$m@index]}" {if $m@index > 0}class="mlextra"{/if}>
 										<td>
 											<div class="icon"><input type="checkbox" class="nzb_check"

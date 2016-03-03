@@ -1,12 +1,4 @@
-{if {$site->adbrowse} != ''}
-	<div class="container" style="width:500px;">
-		<fieldset class="adbanner div-center">
-			<legend class="adbanner">Advertisement</legend>
-			{$site->adbrowse}
-		</fieldset>
-	</div>
-	<br>
-{/if}
+{include file='elements/ads.tpl' ad=$site->adbrowse}
 <div class="panel">
 	<div class="panel-heading">
 		<h4 class="panel-title">
@@ -26,18 +18,7 @@
 </div>
 {if $results|@count > 0}
 	<form id="nzb_multi_operations_form" action="get">
-		<div class="container nzb_multi_operations" style="text-align:right;margin-bottom:5px;">
-			View:
-			<span><i class="icon-th-list"></i></span>
-			&nbsp;&nbsp;
-			<a href="{$smarty.const.WWW_TOP}/browse?t={$category}"><i class="icon-align-justify"></i></a>
-			{if $isadmin || $ismod}
-				&nbsp;&nbsp;
-				Admin:
-				<input type="button" class="btn btn-warning nzb_multi_operations_edit" value="Edit">
-				<input type="button" class="btn btn-danger nzb_multi_operations_delete" value="Delete">
-			{/if}
-		</div>
+		{include file='elements/admin-buttons-browse.tpl'}
 		{include file='multi-operations.tpl'}
 		<table class="table table-striped table-condensed table-hover data icons" id="coverstable">
 			<thead>
@@ -54,7 +35,7 @@
 				</tr>
 			</thead>
 			<tbody>
-			{foreach from=$results item=result}
+			{foreach $results as $result}
 				<tr>
 					<td style="width:150px;padding:10px;text-align:center;">
 						<div class="movcover" style="padding-bottom:5px;">
@@ -62,8 +43,6 @@
 								class="title thumbnail"
 								title="View amazon page"
 								href="{$site->dereferrer_link}{$result.url}"
-								width="130px"
-								height="180px"
 							><img
 									class="shadow"
 									 src="{$smarty.const.WWW_TOP}/covers/console/{if $result.cover == 1}{$result.consoleinfoid}.jpg{else}no-cover.jpg{/if}"
@@ -97,7 +76,7 @@
 								><img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/gamespot.png"></a>
 							</div>
 							<hr>
-							<div class="container">
+							<div>
 								<a
 									class="label label-info"
 									href="{$smarty.const.WWW_TOP}/console?platform={$result.platform}"
@@ -138,7 +117,7 @@
 								{assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
 								{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
 								<tbody>
-								{foreach from=$msplits item=m}
+								{foreach $msplits as $m}
 									<tr id="guid{$mguid[$m@index]}" {if $m@index > 1}class="mlextra"{/if}>
 										<td style="width: 27px;">
 											<input type="checkbox" class="nzb_check" value="{$mguid[$m@index]}">

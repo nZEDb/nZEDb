@@ -57,7 +57,7 @@ if (isset($_REQUEST["id"])) {
 		default:
 			$page->title = "Music Edit";
 			$page->smarty->assign('music', $mus);
-			$page->smarty->assign('genres', $gen->getGenres(Genres::MUSIC_TYPE));
+			$page->smarty->assign('genres', $gen->getGenres(Category::MUSIC_ROOT));
 			break;
 	}
 }

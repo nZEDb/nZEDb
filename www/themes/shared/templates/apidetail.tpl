@@ -18,12 +18,12 @@
 			<item>
 				<title>{$release.searchname}</title>
 				<guid isPermaLink="true">{$serverroot}details/{$release.guid}</guid>
-				<link>{$serverroot}getnzb/{$release.guid}.nzb&amp;i={$uid}&amp;r={$rsstoken}{if $del=="1"}&amp;del=1{/if}</link>
+				<link>{$serverroot}getnzb/{$release.guid}.nzb&amp;i={$uid}&amp;r={$rsstoken}{if $del == "1"}&amp;del=1{/if}</link>
 				<comments>{$serverroot}details/{$release.guid}#comments</comments>
 				<pubDate>{$release.adddate|phpdate_format:"DATE_RSS"}</pubDate>
 				<category>{$release.category_name|escape:html}</category>
 				<description>{$release.searchname}</description>
-				<enclosure url="{$serverroot}getnzb/{$release.guid}.nzb&amp;i={$uid}&amp;r={$rsstoken}{if $del=="1"}&amp;del=1{/if}" length="{$release.size}" type="application/x-nzb" />
+				<enclosure url="{$serverroot}getnzb/{$release.guid}.nzb&amp;i={$uid}&amp;r={$rsstoken}{if $del == "1"}&amp;del=1{/if}" length="{$release.size}" type="application/x-nzb" />
 				{foreach from=$release.category_ids|parray:"," item=cat}
 					<newznab:attr name="category" value="{$cat}" />
 				{/foreach}

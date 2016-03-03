@@ -16,7 +16,7 @@ Use this page to manage movies added to your personal list. If the movie becomes
  <th class="mid">options</th>
 	</tr>
 
-	{foreach from=$movies item=movie}
+	{foreach $movies as $movie}
 		<tr class="{cycle values=",alt"}">
 
 			<td class="mid">

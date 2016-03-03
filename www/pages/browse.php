@@ -49,17 +49,17 @@ if ($category == -1 && $grp == "") {
 	$cdata = $cat->getById($category);
 	if ($cdata) {
 		$page->smarty->assign('catname', $cdata["title"]);
-		if ($cdata['parentid'] == Category::CAT_PARENT_GAME || $cdata['id'] == Category::CAT_PARENT_GAME) {
+		if ($cdata['parentid'] == Category::GAME_ROOT || $cdata['id'] == Category::GAME_ROOT) {
 			$covgroup = 'console';
-		} elseif ($cdata['parentid'] == Category::CAT_PARENT_MOVIE || $cdata['id'] == Category::CAT_PARENT_MOVIE) {
+		} elseif ($cdata['parentid'] == Category::MOVIE_ROOT || $cdata['id'] == Category::MOVIE_ROOT) {
 			$covgroup = 'movies';
-		} elseif ($cdata['parentid'] == Category::CAT_PARENT_XXX || $cdata['id'] == Category::CAT_PARENT_XXX) {
+		} elseif ($cdata['parentid'] == Category::XXX_ROOT || $cdata['id'] == Category::XXX_ROOT) {
 			$covgroup = 'xxx';
-		} elseif ($cdata['parentid'] == Category::CAT_PARENT_PC || $cdata['id'] == Category::CAT_PC_GAMES) {
+		} elseif ($cdata['parentid'] == Category::PC_ROOT || $cdata['id'] == Category::PC_GAMES) {
 			$covgroup = 'games';
-		} elseif ($cdata['parentid'] == Category::CAT_PARENT_MUSIC || $cdata['id'] == Category::CAT_PARENT_MUSIC) {
+		} elseif ($cdata['parentid'] == Category::MUSIC_ROOT || $cdata['id'] == Category::MUSIC_ROOT) {
 			$covgroup = 'music';
-		} elseif ($cdata['parentid'] == Category::CAT_PARENT_BOOKS || $cdata['id'] == Category::CAT_PARENT_BOOKS) {
+		} elseif ($cdata['parentid'] == Category::BOOKS_ROOT || $cdata['id'] == Category::BOOKS_ROOT) {
 			$covgroup = 'books';
 		}
 	} else {

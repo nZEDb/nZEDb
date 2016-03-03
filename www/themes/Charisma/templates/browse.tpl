@@ -84,7 +84,7 @@
 							</tr>
 							</thead>
 							<tbody>
-							{foreach from=$results item=result}
+							{foreach $results as $result}
 								<tr id="guid{$result.guid}">
 									<td class="check"><input id="chk{$result.guid|substr:0:7}"
 															 type="checkbox" class="nzb_check"

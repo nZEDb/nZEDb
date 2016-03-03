@@ -175,7 +175,7 @@
 					<td style="text-align:center;">{$site.first_time|timeago}</td>
 					<td style="text-align:center;">{$site.last_time|timeago}</td>
 					<td style="text-align:center;" id="site-{$site.id}">
-						{if $site.enabled=="1"}
+						{if $site.enabled == "1"}
 							<a href="javascript:ajax_sharing_site_status({$site.id}, 0)" class="sharing_site_active">Disable</a>
 						{else}
 							<a href="javascript:ajax_sharing_site_status({$site.id}, 1)" class="sharing_site_deactive">Enable</a>

@@ -74,7 +74,13 @@ class XXX
 		$this->imgSavePath = nZEDb_COVERS . 'xxx' . DS;
 		$this->cookie = nZEDb_TMP . 'xxx.cookie';
 
-		$this->catWhere = 'AND categoryid IN (6010, 6020, 6030, 6040, 6080, 6090) ';
+		$this->catWhere = 'AND categoryid IN (' .
+				Category::XXX_DVD . ', ' .
+				Category::XXX_WMV . ', ' .
+				Category::XXX_XVID . ', ' .
+				Category::XXX_X264 . ', ' .
+				Category::XXX_SD . ', ' .
+				Category::XXX_WEBDL . ') ';
 
 		if (nZEDb_DEBUG || nZEDb_LOGGING) {
 			$this->debug = true;
@@ -691,9 +697,11 @@ class XXX
 		$ret = null;
 
 		if ($activeOnly) {
-			$res = $this->pdo->query("SELECT title FROM genres WHERE disabled = 0 AND type = 6000 ORDER BY title");
+			$res = $this->pdo->query("SELECT title FROM genres WHERE disabled = 0 AND type = " .
+					Category::XXX_ROOT . " ORDER BY title");
 		} else {
-			$res = $this->pdo->query("SELECT title FROM genres WHERE disabled = 1 AND type = 6000 ORDER BY title");
+			$res = $this->pdo->query("SELECT title FROM genres WHERE disabled = 1 AND type = " .
+					Category::XXX_ROOT . " ORDER BY title");
 		}
 
 		foreach ($res as $arr => $value) {
@@ -719,9 +727,9 @@ class XXX
 		}
 
 		if ($activeOnly) {
-			return $this->pdo->queryOneRow("SELECT title FROM genres WHERE disabled = 0 AND type = 6000" . $gid);
+			return $this->pdo->queryOneRow("SELECT title FROM genres WHERE disabled = 0 AND type = " . Category::XXX_ROOT . $gid);
 		} else {
-			return $this->pdo->queryOneRow("SELECT title FROM genres WHERE disabled = 1 AND type = 6000" . $gid);
+			return $this->pdo->queryOneRow("SELECT title FROM genres WHERE disabled = 1 AND type = " . Category::XXX_ROOT . $gid);
 		}
 	}
 

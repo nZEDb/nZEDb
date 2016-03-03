@@ -3,6 +3,7 @@ namespace nzedb;
 
 require_once nZEDb_LIBS . 'TMDb.php';
 
+use nzedb\Category;
 use nzedb\db\Settings;
 use nzedb\utility\Misc;
 use nzedb\processing\tv\TraktTv;
@@ -173,7 +174,7 @@ class Movie
 		$this->imgSavePath = nZEDb_COVERS . 'movies' . DS;
 		$this->service = '';
 
-		$this->catWhere = 'AND categoryid BETWEEN 2000 AND 2999 ';
+		$this->catWhere = 'AND categoryid BETWEEN ' . Category::MOVIE_ROOT . ' AND ' . Category::MOVIE_OTHER;
 
 		if (nZEDb_DEBUG || nZEDb_LOGGING) {
 			$this->debug = true;

@@ -16,7 +16,7 @@
 		</tr>
 		</thead>
 		<tbody>
-		{foreach from=$results item=result name=result}
+		{foreach $results as $result name=result}
 			<tr>
 				<td>
 					{if !$privateprofiles || $isadmin || $ismod}

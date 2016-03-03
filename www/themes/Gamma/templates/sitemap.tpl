@@ -2,7 +2,7 @@
 	<h1>{$page->title}</h1>
 </div>
 <table class="table span8">
-{foreach from=$sitemaps item=sitemap}
+{foreach $sitemaps as $sitemap}
 	{if $last_type != $sitemap->type}
 		{assign var=last_type value=$sitemap->type}
 	<tr>
