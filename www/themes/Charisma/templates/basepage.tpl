@@ -127,11 +127,11 @@
 											class="form-control"
 											data-search="true">
 											<option class="grouping" value="-1">All</option>
-											{foreach from=$parentcatlist item=parentcat}
+											{foreach $parentcatlist as $parentcat}
 												<option {if $header_menu_cat==$parentcat.id}selected="selected"{/if}
 													value="{$parentcat.id}"> [{$parentcat.title}]
 												</option>
-												{foreach from=$parentcat.subcatlist item=subcat}
+												{foreach $parentcat.subcatlist as $subcat}
 													<option {if $header_menu_cat==$subcat.id}selected="selected"{/if}
 														value="{$subcat.id}">&nbsp;&nbsp;&nbsp;
 																			 > {$subcat.title}</option>
@@ -179,6 +179,8 @@
 									</li>
 									<li>
 										<a href="{$smarty.const.WWW_TOP}/browse"><i class="fa fa-list-ul"></i><span> Browse All Releases</span></a>
+									<li><a href="{$smarty.const.WWW_TOP}/browsegroup"><i class="fa fa-object-group"></i><span> Browse Groups</span></a>
+									</li>
 									<li><a href="{$smarty.const.WWW_TOP}/predb"><i
 												class="fa fa-list-ol"></i><span> PreDb</span></a>
 								</ul>
@@ -255,7 +257,7 @@
 	<!-- Scripts-->
 	<!-- jQuery -->
 	<script type="text/javascript"
-		src="{$smarty.const.WWW_THEMES}/{$theme}/bower_components/jquery/jquery.min.js"></script>
+		src="{$smarty.const.WWW_THEMES}/shared/js/jquery-2.2.1.min.js"></script>
 	<!-- jQuery migrate script -->
 	<script type="text/javascript"
 		src="{$smarty.const.WWW_THEMES}/{$theme}/js/jquery-migrate-1.2.1.min.js"></script>
@@ -263,7 +265,7 @@
 		src="{$smarty.const.WWW_THEMES}/{$theme}/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 	<!-- Bootstrap hover on mouseover script -->
 	<script type="text/javascript"
-		src="{$smarty.const.WWW_THEMES}/{$theme}/js/bootstrap-hover-dropdown.min.js"></script>
+		src="{$smarty.const.WWW_THEMES}/shared/js/bootstrap-hover-dropdown.min.js"></script>
 	<!-- library for cookie management -->
 	<script type="text/javascript"
 		src="{$smarty.const.WWW_THEMES}/{$theme}/js/jquery.cookie.js"></script>

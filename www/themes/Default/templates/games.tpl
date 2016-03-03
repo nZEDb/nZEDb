@@ -16,7 +16,7 @@
 			<td>
 				<select id="genre" name="genre">
 					<option class="grouping" value=""></option>
-					{foreach from=$genres item=gen}
+					{foreach $genres as $gen}
 						<option {if $gen.id == $genre}selected="selected"{/if} value="{$gen.id}">{$gen.title}</option>
 					{/foreach}
 				</select>
@@ -24,7 +24,7 @@
 			<td>
 				<select id="year" name="year">
 					<option class="grouping" value=""></option>
-					{foreach from=$years item=yr}
+					{foreach $years as $yr}
 						<option {if $yr==$year}selected="selected"{/if} value="{$yr}">{$yr}</option>
 					{/foreach}
 				</select>
@@ -89,7 +89,7 @@
 				</th>
 			</tr>
 
-			{foreach from=$results item=result}
+			{foreach $results as $result}
 				<tr class="{cycle values=",alt"}">
 					<td class="mid">
 						<div class="movcover">
@@ -158,7 +158,7 @@
 								{assign var="mpass" value=","|explode:$result.grp_release_password}
 								{assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
 								{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
-								{foreach from=$msplits item=m}
+								{foreach $msplits as $m}
 									<tr id="guid{$mguid[$m@index]}" {if $m@index > 1}class="mlextra"{/if}>
 										<td>
 											<div class="icon"><input type="checkbox" class="nzb_check"

@@ -1,14 +1,4 @@
-{if {$site->adbrowse} != ''}
-	<div class="row">
-		<div class="container" style="width:500px;">
-			<fieldset class="adbanner div-center">
-				<legend class="adbanner">Advertisement</legend>
-				{$site->adbrowse}
-			</fieldset>
-		</div>
-	</div>
-	<br>
-{/if}
+{include file='elements/ads.tpl' ad=$site->adbrowse}
 <div>
 	<br>
 	<p style="font-size:16px">
@@ -23,7 +13,7 @@
 	<a class="btn btn-default" href="{$smarty.const.WWW_TOP}/myshows" title="List my watched shows">My Shows</a>&nbsp;&nbsp;
 	<a class="btn btn-default" href="{$smarty.const.WWW_TOP}/myshows/browse" title="browse your shows">Browse My Shows</a>
 
-	<form name="showsearch" action="" method="get" id="custom-search-form" class="form-search form-horizontal col-4 col-lg-4 pull-right">
+	<form name="showsearch" action="" method="get" id="custom-search-form" class="form-inline form-horizontal col-4 col-lg-4 pull-right">
 		<div class="input-group col-12 col-lg-12">
 			<input type="text" class="form-control" placeholder="Search" id="title" name="title" value="{$showname}">
 			<span class="input-group-btn">

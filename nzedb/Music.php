@@ -476,7 +476,7 @@ class Music
 		}
 
 		// Load genres.
-		$defaultGenres = $gen->getGenres(Genres::MUSIC_TYPE);
+		$defaultGenres = $gen->getGenres(Category::MUSIC_ROOT);
 		$genreassoc = [];
 		foreach ($defaultGenres as $dg) {
 			$genreassoc[$dg['id']] = strtolower($dg['title']);
@@ -565,7 +565,7 @@ class Music
 										INSERT INTO genres (title, type)
 										VALUES (%s, %d)",
 										$this->pdo->escapeString($genreName),
-										Genres::MUSIC_TYPE
+										Category::MUSIC_ROOT
 									)
 				);
 			}
@@ -724,10 +724,13 @@ class Music
 					FROM releases
 					WHERE musicinfoid IS NULL
 					AND nzbstatus = 1 %s
-					AND categoryid IN (3010, 3040, 3050)
+					AND categoryid IN (%s, %s, %s)
 					ORDER BY postdate DESC
 					LIMIT %d',
 					$this->renamed,
+					Category::MUSIC_MP3,
+					Category::MUSIC_LOSSLESS,
+					Category::MUSIC_OTHER,
 					$this->musicqty
 				)
 		);
@@ -844,13 +847,13 @@ class Music
 					SELECT DISTINCT genre_id
 					FROM musicinfo
 				) x ON x.genre_id = ge.id
-				WHERE ge.type = 3000
+				WHERE ge.type = " . Category::MUSIC_ROOT . "
 				ORDER BY title"
 			);
 		} else {
 			return $this->pdo->query("
 				SELECT * FROM genres
-				WHERE type = 3000
+				WHERE type = " . Category::MUSIC_ROOT . "
 				ORDER BY title"
 			);
 		}

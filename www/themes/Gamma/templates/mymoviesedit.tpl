@@ -18,7 +18,7 @@
 			<th class="mid" style="padding-top:0px; padding-bottom:0px;">options</th>
 		</tr>
 
-		{foreach from=$movies item=movie}
+		{foreach $movies as $movie}
 			<tr class="{cycle values=",alt"}">
 
 				<td class="mid" style="width:140px">

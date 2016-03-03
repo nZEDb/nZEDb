@@ -1,12 +1,4 @@
-{if {$site->adbrowse} != ''}
-	<div class="container" style="width:500px;">
-		<fieldset class="adbanner div-center">
-			<legend class="adbanner">Advertisement</legend>
-			{$site->adbrowse}
-		</fieldset>
-	</div>
-	<br>
-{/if}
+{include file='elements/ads.tpl' ad=$site->adbrowse}
 <div class="panel">
 	<div class="panel-heading">
 		<h4 class="panel-title">
@@ -26,19 +18,8 @@
 </div>
 {if $results|@count > 0}
 	<form id="nzb_multi_operations_form" action="get">
-	<div class="container nzb_multi_operations" style="text-align:right;margin-bottom:5px;">
-		View:
-		<span><i class="icon-th-list"></i></span>
-		&nbsp;&nbsp;
-		<a href="{$smarty.const.WWW_TOP}/browse?t={$category}"><i class="icon-align-justify"></i></a>
-		{if $isadmin || $ismod}
-			&nbsp;&nbsp;
-			Admin:
-			<button type="button" class="btn btn-warning nzb_multi_operations_edit">Edit</button>
-			<button type="button" class="btn btn-danger nzb_multi_operations_delete">Delete</button>
-		{/if}
-	</div>
-	{include file='multi-operations.tpl'}
+		{include file='elements/admin-buttons-browse.tpl'}
+		{include file='multi-operations.tpl'}
 	<table class="table table-striped table-condensed table-hover data icons" id="coverstable">
 		<thead>
 			<tr>
@@ -52,7 +33,7 @@
 			</tr>
 		</thead>
 		<tbody>
-		{foreach from=$results item=result}
+		{foreach $results as $result}
 			<tr>
 				<td colspan="1" style="vertical-align:top;text-align:center;width:160px;padding:10px;">
 					<div class="movcover">
@@ -94,7 +75,7 @@
 						<div>
 							<a
 								class="label label-info"
-								href="{$smarty.const.WWW_TOP}/search/{$result.title|escape:"url"}?t=2000"
+								href="{$smarty.const.WWW_TOP}/search/{$result.title|escape:"url"}?t={getCategoryValue('MOVIE_ROOT')}"
 								title="View similar nzbs"
 							>Similar</a>
 						</div>
@@ -110,7 +91,7 @@
 						{if $result.rating != ''}
 							{$result.rating}/10
 						{/if}
-						{foreach from=$result.languages item=movielanguage}
+						{foreach $result.languages as $movielanguage}
 							{release_flag($movielanguage, browse)}
 						{/foreach}
 					</h2>
@@ -156,7 +137,7 @@
 							{assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
 							{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
 							<tbody>
-							{foreach from=$msplits item=m}
+							{foreach $msplits as $m}
 								<tr id="guid{$mguid[$m@index]}" {if $m@index > 1}class="mlextra"{/if}>
 									<td style="width: 27px;">
 										<input type="checkbox" class="nzb_check" value="{$mguid[$m@index]}">

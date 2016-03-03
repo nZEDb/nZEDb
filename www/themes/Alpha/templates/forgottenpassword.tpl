@@ -4,7 +4,7 @@
 
 {if $confirmed == '' && $sent == ''}
 
-	<div class="container">
+
 		<div class="col-sm-6 col-sm-offset-3">
 			<div class="well">
 				<form class="form-signin" action="forgottenpassword?action=submit" method="post">
@@ -20,7 +20,6 @@
 				</form>
 			</div>
 		</div>
-	</div>
 	</div>
 {elseif $sent != ''}
 	<p>

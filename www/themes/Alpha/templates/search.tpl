@@ -1,12 +1,4 @@
-{if {$site->adbrowse} != ''}
-	<div class="container" style="width:500px;">
-		<fieldset class="adbanner div-center">
-			<legend class="adbanner">Advertisement</legend>
-			{$site->adbrowse}
-		</fieldset>
-	</div>
-	<br>
-{/if}
+{include file='elements/ads.tpl' ad=$site->adbrowse}
 <h3 class="text-center">
 	<a href="#" onclick="if (jQuery(this).text() == 'Advanced Search')
 		jQuery(this).text('Basic Search');
@@ -20,7 +12,7 @@
 	{$search_description}
 </div>
 <br>
-<form style="float:none; margin:0 auto;" method="get" action="{$smarty.const.WWW_TOP}/search" class="form-search form-horizontal col-lg-4">
+<form style="float:none; margin:0 auto;" method="get" action="{$smarty.const.WWW_TOP}/search" class="form-inline form-horizontal col-lg-4">
 	<div id="sbasic" class="input-group col-lg-12" style="{if $sadvanced}display:none;{/if}">
 
 		<input id="search" name="search" value="{$search|escape:'html'}" type="text" class="form-control" placeholder="Name"/>
@@ -107,23 +99,7 @@
 {elseif ($search || $subject || $searchadvr || $searchadvsubject || $searchadvfilename || $selectedgroup || $selectedsizefrom || $searchadvdaysold) == ""}
 {else}
 	<form id="nzb_multi_operations_form" method="get" action="{$smarty.const.WWW_TOP}/search">
-		<div class="container nzb_multi_operations" style="text-align:right;margin-bottom:5px;">
-			{if $covgroup != ''}View:
-				<a href="{$smarty.const.WWW_TOP}/{$covgroup}?t={$category}">
-					<i class="icon-th-list"></i>
-				</a>
-				&nbsp;&nbsp;
-				<span>
-					<i class="icon-align-justify"></i>
-				</span>
-			{/if}
-			{if $isadmin || $ismod}
-				&nbsp;&nbsp;
-				Admin:
-				<button type="button" class="btn btn-warning btn-sm nzb_multi_operations_edit">Edit</button>
-				<button type="button" class="btn btn-danger btn-sm nzb_multi_operations_delete">Delete</button>
-			{/if}
-		</div>
+		{include file='elements/admin-buttons-covgroup.tpl'}
 		{include file='multi-operations.tpl'}
 
 		<table class="table table-collapsed table-striped table-bordered table-hover data" id="browsetable">
@@ -187,7 +163,7 @@
 			</tr>
 			</thead>
 			<tbody>
-			{foreach from=$results item=result}
+			{foreach $results as $result}
 				<tr class="{if $lastvisit|strtotime<$result.adddate|strtotime}success{/if}" id="guid{$result.guid}">
 					<td class="check" style="width:26px;text-align:center;white-space:nowrap;">
 						<input id="chk{$result.guid|substr:0:7}" type="checkbox" class="nzb_check" value="{$result.guid}">

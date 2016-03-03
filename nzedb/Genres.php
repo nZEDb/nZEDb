@@ -5,10 +5,6 @@ use nzedb\db\Settings;
 
 class Genres
 {
-	const CONSOLE_TYPE = Category::CAT_PARENT_GAME;
-	const MUSIC_TYPE   = Category::CAT_PARENT_MUSIC;
-	const GAME_TYPE    = Category::CAT_PARENT_PC;
-
 	const STATUS_ENABLED = 0;
 	const STATUS_DISABLED = 1;
 

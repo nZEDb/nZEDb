@@ -1,15 +1,31 @@
 This file details which changes to the code are in which release version. It is a complement to the ChangeLog file which list *when* changes are made to the dev branch.
 
-0.5.4 2016-03-07
+0.5.4 2016-02-29
 Added:
+	* Created second directory for Smarty plugins (.../www/plugins) where we will keep our added
+	 plugins, to avoid issues when updating Smarty.
 
 Changed:
-	* Update isISO categorization (PR 2040).
-	* Juggle Book category values so they match the existing ones of newznab's published API.
+	* Updated Smarty to version 3.1.29
+	* Change references of releasetitle to title in myshows-add page of Charisma/Omicron theme (PR 2054).
+	* Disable API access for disabled users (PR 2062).
+	* Remove unneccessary MYSQL_ATTR_INIT_COMMAND from PDO dsn options array. This was only
+	 needed before PHP 5.3.6 as 'charset' was ignored.
 
 Fixed:
 	* Prevent undefined index notices in full series and movies view, remove references to
 	 nzbvortex and nzbgetintegration (PR 2039).
+	* myshows-add.tpl (PR 2051, PR 2054).
+	* Missing jquery.qtip2.js in themes/shared/script.
+	* profileedit pages in Charisma/Gamma/Omicron templates
+	* Wrong paths to scripts in Omicron theme
+	* Regression that remove WWW_THEMES definition from Page class.
+	* Fix paths in Charisma theme (PR 2055).
+	* Replace deprecated HTML tag <center> with proper CSS (PR 2056).
+	* Correct path for images on opening page of Install.
+	* Long running queries for RemoveCrap WMV
+	* Update isISO categorization (PR 2040).
+	* Juggle Book category values so they match the existing ones of newznab's published API.
 
 
 0.5.3 2016-02-01

@@ -1,6 +1,7 @@
 <?php
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
+use nzedb\Category;
 use nzedb\Games;
 use nzedb\db\Settings;
 
@@ -21,7 +22,7 @@ function getOddGames()
 				FROM releases
 				WHERE nzbstatus = 1
 				AND gamesinfo_id = 0
-				AND categoryid BETWEEN 4010 AND 4020
+				AND categoryid BETWEEN ' . Category::PC_0DAY . ' AND ' . Category::PC_ISO . '
 				ORDER BY postdate DESC LIMIT 150'
 	);
 
@@ -58,7 +59,7 @@ function getOddGames()
 						$gameId = $gameCheck['id'];
 					}
 					if ($gameId != -2 && $gameId != 0) {
-						$arr['categoryid'] = 4050;
+						$arr['categoryid'] = Category::PC_GAMES;
 					}
 
 					$pdo->queryExec(sprintf('UPDATE releases SET gamesinfo_id = %d, categoryid = %d WHERE id = %d', $gameId, $arr['categoryid'], $arr['id']));

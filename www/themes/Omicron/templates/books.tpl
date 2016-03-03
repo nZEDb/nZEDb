@@ -8,17 +8,7 @@
 	</div>
 </div>
 <div class="well well-sm">
-	<form class="form-inline" role="form" name="browseby" action="books">
-		<div class="form-group form-group-sm">
-			<label class="sr-only" for="title">Title:</label>
-			<input type="text" class="form-control" id="title" name="title" value="{$title}" placeholder="Title">
-		</div>
-		<div class="form-group form-group-sm">
-			<label class="sr-only" for="author">Author:</label>
-			<input type="text" class="form-control" id="author" name="author" value="{$author}" placeholder="Author">
-		</div>
-		<input type="submit" class="btn btn-primary" value="Search!"/>
-	</form>
+	{include file='search-filter.tpl'}
 </div>
 <form id="nzb_multi_operations_form" action="get">
 	<div class="box-body"
@@ -61,7 +51,7 @@
 									</div>
 								</div>
 								<hr>
-								{foreach from=$results item=result}
+								{foreach $results as $result}
 									{assign var="msplits" value=","|explode:$result.grp_release_id}
 									{assign var="mguid" value=","|explode:$result.grp_release_guid}
 									{assign var="mnfo" value=","|explode:$result.grp_release_nfoid}
@@ -76,7 +66,7 @@
 									{assign var="mpass" value=","|explode:$result.grp_release_password}
 									{assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
 									{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
-									{foreach from=$msplits item=m}
+									{foreach $msplits as $m}
 										<div class="panel panel-default">
 											<div class="panel-body">
 												<div class="row">

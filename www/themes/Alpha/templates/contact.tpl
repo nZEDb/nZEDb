@@ -1,4 +1,4 @@
-<div class="container">
+
 	<div class="col-sm-6 col-sm-offset-3">
 		<div class="well">
 			{$msg} {* This is a message that appears if a email is sent. *}
@@ -31,4 +31,3 @@
 			{/if}
 		</div>
 	</div>
-</div><!-- container -->

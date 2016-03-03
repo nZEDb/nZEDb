@@ -1,12 +1,4 @@
-{if {$site->adbrowse} != ''}
-	<div class="container" style="width:500px;">
-		<fieldset class="adbanner div-center">
-			<legend class="adbanner">Advertisement</legend>
-			{$site->adbrowse}
-		</fieldset>
-	</div>
-	<br>
-{/if}
+{include file='elements/ads.tpl' ad=$site->adbrowse}
 {if $results|@count > 0}
 	<table class="table-striped table-condensed table-highlight data Sortable table" id="browsetable">
 		<thead>
@@ -18,7 +10,7 @@
 		</tr>
 		</thead>
 		<tbody>
-		{foreach from=$results item=result}
+		{foreach $results as $result}
 			{if $result.num_releases > 0}
 				<tr>
 					<td>

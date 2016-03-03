@@ -38,7 +38,7 @@
 								<th>Added</th>
 								<th>Action</th>
 							</tr>
-							{foreach from=$results item=result}
+							{foreach $results as $result}
 								<tr class="{cycle values=",alt"}">
 									<td class="check">
 										<input id="chk{$result.guid|substr:0:7}" type="checkbox" class="nzb_check"

@@ -25,7 +25,7 @@
 			</td>
 		</tr>
 	{/if}
-	{foreach from=$results item=result}
+	{foreach $results as $result}
 		<tr class="{cycle values=",alt"}">
 			{assign var="icon" value='themes/shared/img/fileicons/'|cat:$result.pathinfo.extension|cat:".png"}
 			{if $result.isdir == "1"}

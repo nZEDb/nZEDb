@@ -2,16 +2,7 @@
 
 <div class="well well-small">
 <div style="text-align: center;">
-<form class="form-inline" name="browseby" action="books" style="margin:0;">
-
-		<i class="fa fa-user fa-midt"></i>
-		<input class="input input-medium" id="author" type="text" name="author" value="{$author}" placeholder="Author" />
-
-		<i class="fa fa-book fa-midt"></i>
-		<input class="input input-medium" id="title" type="text" name="title" value="{$title}" placeholder="Title" />
-
-		<input class="btn btn-success" type="submit" value="Go" />
-</form>
+	{include file='search-filter.tpl'}
 </div>
 </div>
 
@@ -90,7 +81,7 @@
 		</th>
 	</tr>
 
-	{foreach from=$results item=result}
+	{foreach $results as $result}
 		<tr class="{cycle values=",alt"}">
 			<td class="mid">
 				<div class="movcover">
@@ -141,7 +132,7 @@
 						{assign var="mpass" value=","|explode:$result.grp_release_password}
 						{assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
 						{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
-						{foreach from=$msplits item=m}
+						{foreach $msplits as $m}
 						<tr id="guid{$mguid[$m@index]}" {if $m@index > 1}class="mlextra"{/if}>
 							<td>
 								<div class="icon"><input type="checkbox" class="nzb_check" value="{$mguid[$m@index]}" /></div>

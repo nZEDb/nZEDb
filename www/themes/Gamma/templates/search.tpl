@@ -204,7 +204,7 @@
 		<th style="padding-top:0px; padding-bottom:0px;"></th>
 	</tr>
 
-	{foreach from=$results item=result}
+	{foreach $results as $result}
 		<tr class="{cycle values=",alt"}{if $lastvisit|strtotime<$result.adddate|strtotime} new{/if}" id="guid{$result.guid}">
 			{if (strpos($category[0], '60') !== false)}
 					<td class="check" width="25%"><input id="chk{$result.guid|substr:0:7}"

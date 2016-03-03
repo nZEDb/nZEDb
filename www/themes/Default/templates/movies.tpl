@@ -21,7 +21,7 @@
 			<td>
 				<select id="rating" name="rating">
 					<option class="grouping" value=""></option>
-					{foreach from=$ratings item=rate}
+					{foreach $ratings as $rate}
 						<option {if $rating==$rate}selected="selected"{/if} value="{$rate}">{$rate}</option>
 					{/foreach}
 				</select>
@@ -29,7 +29,7 @@
 			<td>
 				<select id="genre" name="genre">
 					<option class="grouping" value=""></option>
-					{foreach from=$genres item=gen}
+					{foreach $genres as $gen}
 						<option {if $gen==$genre}selected="selected"{/if} value="{$gen}">{$gen}</option>
 					{/foreach}
 				</select>
@@ -37,15 +37,15 @@
 			<td>
 				<select id="year" name="year">
 					<option class="grouping" value=""></option>
-					{foreach from=$years item=yr}
+					{foreach $years as $yr}
 						<option {if $yr==$year}selected="selected"{/if} value="{$yr}">{$yr}</option>
 					{/foreach}
 				</select>
 			</td>
 			<td>
 				<select id="category" name="t">
-					<option class="grouping" value="2000"></option>
-					{foreach from=$catlist item=ct}
+					<option class="grouping" value="{getCategoryValue('MOVIE_ROOT')}"></option>
+					{foreach $catlist as $ct}
 						<option {if $ct.id==$category}selected="selected"{/if} value="{$ct.id}">{$ct.title}</option>
 					{/foreach}
 				</select>
@@ -88,7 +88,7 @@
 								src="{$smarty.const.WWW_TOP}/themes/shared/img/sorting/arrow_up.gif" alt=""/></a>
 				</th>
 			</tr>
-			{foreach from=$results item=result}
+			{foreach $results as $result}
 				<tr class="{cycle values=",alt"}">
 					<td class="mid">
 						<div class="movcover">
@@ -127,7 +127,7 @@
 							   href="{$smarty.const.WWW_TOP}/movies/?imdb={$result.imdbid}">{$result.title|stripslashes|escape:"htmlall"}</a>
 							(<a class="title" title="{$result.year}"
 								href="{$smarty.const.WWW_TOP}/movies?year={$result.year}">{$result.year}</a>) {if $result.rating != ''}{$result.rating}/10{/if}
-							{foreach from=$result.languages item=movielanguage}
+							{foreach $result.languages as $movielanguage}
 								{release_flag($movielanguage, browse)}
 							{/foreach}</h2>
 						{if $result.tagline != ''}<b>{$result.tagline|stripslashes}</b><br/>{/if}
@@ -150,7 +150,7 @@
 								{assign var="mpass" value=","|explode:$result.grp_release_password}
 								{assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
 								{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
-								{foreach from=$msplits item=m}
+								{foreach $msplits as $m}
 									<tr id="guid{$mguid[$m@index]}" {if $m@index > 1}class="mlextra"{/if}>
 										<td>
 											<div class="icon"><input type="checkbox" class="nzb_check"

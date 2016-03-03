@@ -1,10 +1,10 @@
 {if $results|@count > 0}
-	<div class="container">
+
 		<div class="pull-left"><i class="icon-rss-sign icon-2x" style="color:orange;"></i> Download your cart as an <a href="{$smarty.const.WWW_TOP}/rss?t=-2&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}&amp;del=1">Rss Feed</a>.</div>
-	</div>
+
 	<br>
 	<form id="nzb_multi_operations_form" action="get">
-		<div class="container nzb_multi_operations text-right" style="margin-bottom:5px;">
+		<div class="nzb_multi_operations text-right" style="margin-bottom:5px;">
 			With Selected: <button type="button" class="btn btn-danger btn-sm nzb_multi_operations_cartdelete">Delete</button>
 		</div>
 
@@ -19,7 +19,7 @@
 			</tr>
 			</thead>
 			<tbody>
-			{foreach from=$results item=result}
+			{foreach $results as $result}
 				<tr>
 					<td style="text-align:center;" class="check"><input id="chk{$result.guid|substr:0:7}" type="checkbox" class="nzb_check" value="{$result.id}" /></td>
 					<td style="text-align:left;">
@@ -36,4 +36,3 @@
 {else}
 	<h2>No NZBs in cart</h2>
 {/if}
-</div>

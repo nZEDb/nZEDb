@@ -28,7 +28,7 @@
 			<td><label for="genre">Genre:</label></td>
 			<td>
 				<select multiple="multiple" id="xxxgenre_list" name="genre[]">
-					{foreach from=$genres item=gen}
+					{foreach $genres as $gen}
 						<option value="{$gen.id}" {if in_array($gen.id, $xxxmovie.genre)}selected="selected"{/if}>
 							{$gen.title|escape:'htmlall'}
 						</option>

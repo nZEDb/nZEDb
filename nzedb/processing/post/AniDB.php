@@ -73,7 +73,7 @@ class AniDB
 				ORDER BY postdate DESC
 				LIMIT %d',
 				NZB::NZB_ADDED,
-				Category::CAT_TV_ANIME,
+				Category::TV_ANIME,
 				$this->aniqty
 			)
 		);

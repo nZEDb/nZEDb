@@ -67,42 +67,42 @@
 		<div class="control-group">
 			<label class="control-label" for="movieview">View Movie Page</label>
 			<div class="controls">
-				<input class="input input-xxlarge" id="movieview" name="movieview" value="1" type="checkbox" {if $user.movieview=="1"}checked="checked"{/if} />
+				<input class="input input-xxlarge" id="movieview" name="movieview" value="1" type="checkbox" {if $user.movieview == "1"}checked="checked"{/if} />
 				<span class="help-block">Browse movie covers. Only shows movies with known IMDB info.</span>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label" for="musicview">View Music Page</label>
 			<div class="controls">
-				<input class="input input-xxlarge" id="musicview" name="musicview" value="1" type="checkbox" {if $user.musicview=="1"}checked="checked"{/if} />
+				<input class="input input-xxlarge" id="musicview" name="musicview" value="1" type="checkbox" {if $user.musicview == "1"}checked="checked"{/if} />
 				<span class="help-block">Browse music covers. Only shows music with known lookup info.</span>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label" for="consoleview">View Console Page</label>
 			<div class="controls">
-				<input class="input input-xxlarge" id="consoleview" name="consoleview" value="1" type="checkbox" {if $user.consoleview=="1"}checked="checked"{/if} />
+				<input class="input input-xxlarge" id="consoleview" name="consoleview" value="1" type="checkbox" {if $user.consoleview == "1"}checked="checked"{/if} />
 				<span class="help-block">Browse console covers. Only shows games with known lookup info.</span>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label" for="gameview">View Games Page</label>
 			<div class="controls">
-				<input class="input input-xxlarge" id="gameview" name="gameview" value="1" type="checkbox" {if $user.gameview=="1"}checked="checked"{/if} />
+				<input class="input input-xxlarge" id="gameview" name="gameview" value="1" type="checkbox" {if $user.gameview == "1"}checked="checked"{/if} />
 				<span class="help-block">Browse games covers. Only shows games with known lookup info.</span>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label" for="bookview">View Book Page</label>
 			<div class="controls">
-				<input class="input input-xxlarge" id="bookview" name="bookview" value="1" type="checkbox" {if $user.bookview=="1"}checked="checked"{/if} />
+				<input class="input input-xxlarge" id="bookview" name="bookview" value="1" type="checkbox" {if $user.bookview == "1"}checked="checked"{/if} />
 				<span class="help-block">Browse book covers. Only shows books with known lookup info.</span>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label" for="xxxview">View XXX Page</label>
 			<div class="controls">
-				<input class="input input-xxlarge" id="xxxview" name="xxxview" value="1" type="checkbox" {if $user.xxxview=="1"}checked="checked"{/if} />
+				<input class="input input-xxlarge" id="xxxview" name="xxxview" value="1" type="checkbox" {if $user.xxxview == "1"}checked="checked"{/if} />
 				<span class="help-block">Browse XXX covers. Only shows XXX releases with known lookup info.</span>
 			</div>
 		</div>

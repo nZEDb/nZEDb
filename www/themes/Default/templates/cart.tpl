@@ -22,7 +22,7 @@ Your cart can be downloaded as an <a href="{$smarty.const.WWW_TOP}/rss?t=-2&amp;
 		<th>options</th>
 	</tr>
 
-	{foreach from=$results item=result}
+	{foreach $results as $result}
 		<tr class="{cycle values=",alt"}">
 			<td class="check"><input id="chk{$result.guid|substr:0:7}" type="checkbox" class="nzb_check" value="{$result.id}" /></td>
 			<td>

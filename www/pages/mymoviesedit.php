@@ -13,7 +13,7 @@ if (isset($_REQUEST["del"])) {
 }
 
 $cat = new Category(['Settings' => $page->settings]);
-$tmpcats = $cat->getChildren(Category::CAT_PARENT_MOVIE);
+$tmpcats = $cat->getChildren(Category::MOVIE_ROOT);
 $categories = array();
 foreach ($tmpcats as $c) {
 	$categories[$c['id']] = $c['title'];

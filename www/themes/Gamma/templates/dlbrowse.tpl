@@ -25,7 +25,7 @@ View:
 		</tr>
 	{/if}
 
-	{foreach from=$results item=result}
+	{foreach $results as $result}
 		<tr class="{cycle values=",alt"}">
 
 			{assign var="icon" value='themes/Gamma/images/fileicons/'|cat:$result.pathinfo.extension|cat:".png"}

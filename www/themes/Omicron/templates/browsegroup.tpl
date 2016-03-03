@@ -28,7 +28,7 @@
 									</tr>
 									</thead>
 									<tbody>
-									{foreach from=$results item=result}
+									{foreach $results as $result}
 										{if $result.num_releases > 0}
 											<tr>
 												<td>

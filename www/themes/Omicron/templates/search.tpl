@@ -202,7 +202,7 @@
 			</tr>
 			</thead>
 			<tbody>
-			{foreach from=$results item=result}
+			{foreach $results as $result}
 				<tr class="{cycle values=",alt"}{if $lastvisit|strtotime<$result.adddate|strtotime} new{/if}"
 					id="guid{$result.guid}">
 					<td class="check">

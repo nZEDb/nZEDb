@@ -1321,7 +1321,7 @@ class ProcessAdditional
 					} // Check if it's alt.binaries.u4e file.
 					else if (in_array($this->_releaseGroupName, ['alt.binaries.u4e', 'alt.binaries.mom']) &&
 						preg_match('/Linux_2rename\.sh/i', $file) &&
-						($this->_release['categoryid'] == Category::CAT_OTHER_HASHED || $this->_release['categoryid'] == Category::CAT_OTHER_MISC)
+						($this->_release['categoryid'] == Category::OTHER_HASHED || $this->_release['categoryid'] == Category::OTHER_MISC)
 					) {
 						$this->_processU4ETitle($file);
 					}
@@ -1736,14 +1736,14 @@ class ProcessAdditional
 			)
 		);
 
-		$musicParent = (string)Category::CAT_PARENT_MUSIC;
+		$musicParent = (string)Category::MUSIC_ROOT;
 		if ($rQuery === false || !preg_match(
 				sprintf(
 					'/%d\d{3}|%d|%d|%d/',
 					$musicParent[0],
-					Category::CAT_OTHER_MISC,
-					Category::CAT_MOVIE_OTHER,
-					Category::CAT_TV_OTHER
+					Category::OTHER_MISC,
+					Category::MOVIE_OTHER,
+					Category::TV_OTHER
 				),
 				$rQuery['id']
 			)
@@ -1784,9 +1784,9 @@ class ProcessAdditional
 
 									// Get the category or try to determine it.
 									if ($ext === 'MP3') {
-										$newCat = Category::CAT_MUSIC_MP3;
+										$newCat = Category::MUSIC_MP3;
 									} else if ($ext === 'FLAC') {
-										$newCat = Category::CAT_MUSIC_LOSSLESS;
+										$newCat = Category::MUSIC_LOSSLESS;
 									} else {
 										$newCat = $this->_categorize->determineCategory($rQuery['group_id'], $newName);
 									}
@@ -2239,15 +2239,15 @@ class ProcessAdditional
 			in_array(
 				((int)$this->_release['categoryid']),
 				[
-					Category::CAT_BOOKS_OTHER,
-					Category::CAT_GAME_OTHER,
-					Category::CAT_MOVIE_OTHER,
-					Category::CAT_MUSIC_OTHER,
-					Category::CAT_PC_PHONE_OTHER,
-					Category::CAT_TV_OTHER,
-					Category::CAT_OTHER_HASHED,
-					Category::CAT_XXX_OTHER,
-					Category::CAT_OTHER_MISC
+					Category::BOOKS_UNKNOWN,
+					Category::GAME_OTHER,
+					Category::MOVIE_OTHER,
+					Category::MUSIC_OTHER,
+					Category::PC_PHONE_OTHER,
+					Category::TV_OTHER,
+					Category::OTHER_HASHED,
+					Category::XXX_OTHER,
+					Category::OTHER_MISC
 				]
 			)
 		) {

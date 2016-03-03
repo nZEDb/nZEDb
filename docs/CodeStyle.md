@@ -4,6 +4,10 @@ nZEDb uses a code style based on Lithium's [LSR-0](http://li3.me/docs/specs/acce
 with a few modifications for features that have been releases since PHP 5.3, or that are not
 mentioned in it at all.
 
+For PHP Storm users there is a [settings.jar](https://github.com/Howard3/Lithium_PhpStorm) file
+which has these behaviours mostly predefined. The settings uses a dark theme, but this can be
+overridden to use whichever theme you like.
+
 
 ##Changes
 * Namespace declarations should follow our license header/comments, if they exist.

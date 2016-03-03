@@ -494,15 +494,18 @@ class Releases
 				LEFT OUTER JOIN dnzb_failures df ON df.release_id = r.id
 				WHERE %s %s
 				AND r.nzbstatus = %d
-				AND r.categoryid BETWEEN 5000 AND 5999
+				AND r.categoryid BETWEEN %d AND %d
 				AND r.passwordstatus %s
 				%s
 				GROUP BY r.id
 				ORDER BY %s %s %s",
+
 				$this->getConcatenatedCategoryIDs(),
 				$this->uSQL($userShows, 'videos_id'),
 				(count($excludedCats) ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : ''),
 				NZB::NZB_ADDED,
+				Category::TV_ROOT,
+				Category::TV_OTHER,
 				$this->showPasswords,
 				($maxAge > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxAge) : ''),
 				$orderBy[0],
@@ -529,12 +532,14 @@ class Releases
 				FROM releases r
 				WHERE %s %s
 				AND r.nzbstatus = %d
-				AND r.categoryid BETWEEN 5000 AND 5999
+				AND r.categoryid BETWEEN %d AND %d
 				AND r.passwordstatus %s
 				%s',
 				$this->uSQL($userShows, 'videos_id'),
 				(count($excludedCats) ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : ''),
 				NZB::NZB_ADDED,
+				Category::TV_ROOT,
+				Category::TV_OTHER,
 				$this->showPasswords,
 				($maxAge > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxAge) : '')
 			)
@@ -956,12 +961,15 @@ class Releases
 
 		$whereSql = sprintf(
 			"%s
-			WHERE r.categoryid BETWEEN 5000 AND 5999
+			WHERE r.categoryid BETWEEN %d AND %d
 			AND r.nzbstatus = %d
 			AND r.passwordstatus %s
 			AND (%s)
 			%s %s %s %s %s %s",
+
 			($name !== '' ? $this->releaseSearch->getFullTextJoinString() : ''),
+			Category::TV_ROOT,
+			Category::TV_OTHER,
 			NZB::NZB_ADDED,
 			$this->showPasswords,
 			($siteCount > 0 ? implode(' OR ', $siteSQL) : '1=1'),
@@ -1082,7 +1090,7 @@ class Releases
 	{
 		$whereSql = sprintf(
 			"%s
-			WHERE r.categoryid BETWEEN 2000 AND 2999
+			WHERE r.categoryid BETWEEN " . Category::MOVIE_ROOT . " AND " . Category::MOVIE_OTHER . "
 			AND r.nzbstatus = %d
 			AND r.passwordstatus %s
 			%s %s %s %s",
@@ -1282,10 +1290,13 @@ class Releases
 				INNER JOIN category cp ON cp.id = c.parentid
 				INNER JOIN videos v ON r.videos_id = v.id
 				%s
-				WHERE r.categoryid BETWEEN 5000 AND 5999
+				WHERE r.categoryid BETWEEN %d AND %d
 				AND r.passwordstatus %s
 				AND v.id = %d %s %s",
+
 				$tvWhere,
+				Category::TV_ROOT,
+				Category::TV_OTHER,
 				$this->showPasswords,
 				$videoId,
 				$series,
@@ -1437,7 +1448,7 @@ class Releases
 				m.cover
 			FROM releases r
 			INNER JOIN movieinfo m USING (imdbid)
-			WHERE r.categoryid BETWEEN 2000 AND 2999
+			WHERE r.categoryid BETWEEN " . Category::MOVIE_ROOT . " AND " . Category::MOVIE_OTHER . "
 			AND m.imdbid > 0
 			AND m.cover = 1
 			AND r.id in (select max(id) from releases where imdbid > 0 group by imdbid)
@@ -1459,12 +1470,13 @@ class Releases
 				xxx.cover, xxx.title
 			FROM releases r
 			INNER JOIN xxxinfo xxx ON r.xxxinfo_id = xxx.id
-			WHERE r.categoryid BETWEEN 6000 AND 6999
+			WHERE r.categoryid BETWEEN " . Category::XXX_ROOT . " AND " . Category::XXX_OTHER . "
 			AND xxx.id > 0
 			AND xxx.cover = 1
 			AND r.id in (select max(id) from releases where xxxinfo_id > 0 group by xxxinfo_id)
-			ORDER BY r.postdate DESC
-			LIMIT 20", true, nZEDb_CACHE_EXPIRY_LONG
+			ORDER BY r.postdate DESC LIMIT 20",
+				true,
+				nZEDb_CACHE_EXPIRY_LONG
 		);
 	}
 
@@ -1481,7 +1493,7 @@ class Releases
 				con.cover
 			FROM releases r
 			INNER JOIN consoleinfo con ON r.consoleinfoid = con.id
-			WHERE r.categoryid BETWEEN 1000 AND 1999
+			WHERE r.categoryid BETWEEN " . Category::GAME_ROOT . " AND " . Category::GAME_OTHER . "
 			AND con.id > 0
 			AND con.cover > 0
 			AND r.id in (select max(id) from releases where consoleinfoid > 0 group by consoleinfoid)
@@ -1503,7 +1515,7 @@ class Releases
 				gi.cover
 			FROM releases r
 			INNER JOIN gamesinfo gi ON r.gamesinfo_id = gi.id
-			WHERE r.categoryid = 4050
+			WHERE r.categoryid = " . Category::PC_GAMES . "
 			AND gi.id > 0
 			AND gi.cover > 0
 			AND r.id in (select max(id) from releases where gamesinfo_id > 0 group by gamesinfo_id)
@@ -1525,8 +1537,8 @@ class Releases
 				m.cover
 			FROM releases r
 			INNER JOIN musicinfo m ON r.musicinfoid = m.id
-			WHERE r.categoryid BETWEEN 3000 AND 3999
-			AND r.categoryid != 3030
+			WHERE r.categoryid BETWEEN " . Category::MUSIC_ROOT . " AND " . Category::MUSIC_OTHER . "
+			AND r.categoryid != " . Category::MUSIC_AUDIOBOOK . "
 			AND m.id > 0
 			AND m.cover > 0
 			AND r.id in (select max(id) from releases where musicinfoid > 0 group by musicinfoid)
@@ -1548,8 +1560,8 @@ class Releases
 				b.url,	b.cover, b.title as booktitle, b.author
 			FROM releases r
 			INNER JOIN bookinfo b ON r.bookinfoid = b.id
-			WHERE r.categoryid BETWEEN 7000 AND 7999
-			OR r.categoryid = 3030
+			WHERE r.categoryid BETWEEN " . Category::BOOKS_ROOT . " AND " . Category::BOOKS_UNKNOWN . "
+			OR r.categoryid = " . Category::MUSIC_AUDIOBOOK . "
 			AND b.id > 0
 			AND b.cover > 0
 			AND r.id in (select max(id) from releases where bookinfoid > 0 group by bookinfoid)
@@ -1573,7 +1585,7 @@ class Releases
 			FROM releases r
 			INNER JOIN videos v ON r.videos_id = v.id
 			INNER JOIN tv_info tvi ON r.videos_id = tvi.videos_id
-			WHERE r.categoryid BETWEEN 5000 AND 5999
+			WHERE r.categoryid BETWEEN " . Category::TV_ROOT . " AND "	. Category::TV_OTHER . "
 			AND v.id > 0
 			AND v.type = 0
 			AND tvi.image = 1
@@ -1596,7 +1608,7 @@ class Releases
 			FROM releases r
 			INNER JOIN anidb_titles at USING (anidbid)
 			INNER JOIN anidb_info ai USING (anidbid)
-			WHERE r.categoryid = 5070
+			WHERE r.categoryid = " . Category::TV_ANIME . "
 			AND at.anidbid > 0
 			AND at.lang = 'en'
 			AND ai.picture != ''

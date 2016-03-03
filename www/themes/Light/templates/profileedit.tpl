@@ -35,25 +35,25 @@
 		<tr>
 			<th>View Movie Page:</th>
 			<td>
-				<input id="movieview" name="movieview" value="1" type="checkbox" {if $user.movieview=="1"}checked="checked"{/if}></input>
+				<input id="movieview" name="movieview" value="1" type="checkbox" {if $user.movieview == "1"}checked="checked"{/if}></input>
 				<div class="hint">Browse movie covers. Only shows movies with known IMDB info.</div>
 			</td>
 		</tr>
 		<tr><th>View Music Page:</th>
 			<td>
-				<input id="musicview" name="musicview" value="1" type="checkbox" {if $user.musicview=="1"}checked="checked"{/if}></input>
+				<input id="musicview" name="musicview" value="1" type="checkbox" {if $user.musicview == "1"}checked="checked"{/if}></input>
 				<div class="hint">Browse music covers. Only shows music with known lookup info.</div>
 			</td>
 		</tr>
 		<tr><th>View Console Page:</th>
 			<td>
-				<input id="consoleview" name="consoleview" value="1" type="checkbox" {if $user.consoleview=="1"}checked="checked"{/if}></input>
+				<input id="consoleview" name="consoleview" value="1" type="checkbox" {if $user.consoleview == "1"}checked="checked"{/if}></input>
 				<div class="hint">Browse console covers. Only shows games with known lookup info.</div>
 			</td>
 		</tr>
 		<tr><th>View Book Page:</th>
 			<td>
-				<input id="bookview" name="bookview" value="1" type="checkbox" {if $user.bookview=="1"}checked="checked"{/if}></input>
+				<input id="bookview" name="bookview" value="1" type="checkbox" {if $user.bookview == "1"}checked="checked"{/if}></input>
 				<div class="hint">Browse book covers. Only shows books with known lookup info.</div>
 			</td>
 		</tr>
