@@ -593,9 +593,7 @@
 {/if}
 </table>
 
-
-<div class="container">
-
+<div>
 	<div class="comments">
 		<a id="comments"></a>
 		<h2>Comments</h2>
