@@ -11,6 +11,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	* Mrg: Brought dev-themes into dev branch.
 	 ***NOTE*** That's why dates below are out of sequence, it is not a mistake.
 	* Fix: View NZB comments block from spilling beyond its wrapping grey box.
+	* Fix: Replaced Genres::CONSOLE_TYPE causing Console.php to fail.
 2016-03-02 DariusIII
 	* Fix: Fix wrong path to shared images folder in Charisma/Gamma/omicron themes
 	* Chg: Make Gamma theme menus dropdown on hover

@@ -672,7 +672,7 @@ class Console
 	{
 		$gen = new Genres(['Settings' => $this->pdo]);
 
-		$defaultGenres = $gen->getGenres(Genres::CONSOLE_TYPE);
+		$defaultGenres = $gen->getGenres(Category::GAME_ROOT);
 		$genreassoc = [];
 		foreach ($defaultGenres as $dg) {
 			$genreassoc[$dg['id']] = strtolower($dg['title']);
