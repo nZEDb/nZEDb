@@ -139,6 +139,8 @@ class SABnzbd
 				}
 				break;
 		}
+		if (substr($this->url, -1) != '/')
+			$this->url .= '/';
 	}
 
 	/**
