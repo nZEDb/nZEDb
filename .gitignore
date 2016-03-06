@@ -1,5 +1,4 @@
 .DS_Store
-composer.*
 config.php
 error_log
 failed-login.log
