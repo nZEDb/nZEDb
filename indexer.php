@@ -21,6 +21,7 @@
 require_once 'constants.php';
 require_once 'autoloader.php';
 require_once 'libs/autoloader.php';
+require_once 'vendor/autoload.php';
 
 use nzedb\config\Configure;
 use nzedb\utility\Misc;
