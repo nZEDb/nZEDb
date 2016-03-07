@@ -10,8 +10,6 @@ use nzedb\RequestID;
 use nzedb\db\Settings;
 use nzedb\processing\PostProcess;
 
-require_once(nZEDb_LIBS . 'forkdaemon-php' . DS . 'fork_daemon.php');
-
 /**
  * Class Forking
  *
