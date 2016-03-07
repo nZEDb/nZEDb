@@ -1,20 +1,32 @@
 {
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/JPinkney/TVMaze-PHP-API-Wrapper"
+    }
+  ],
+
   "autoload": {
     "psr-0": {
       "libs\\": "libs/"
     }
   },
 
-  "license": "MIT",
+  "description": "A Usenet Indexer",
+
+  "license": "GPL-3.0",
+
+  "minimum-requirement": "dev",
 
   "name": "nZEDb/nZEDb",
 
   "require": {
     "php": ">=5.5.0",
     "barracudanetworks/forkdaemon-php": "~1.0",
+    "giantbomb/giantbomb": "@dev",
     "google/recaptcha": "~1.1",
     "james-heinrich/getid3": "1.9.*",
-    "joshpinkney/tv-maze-php-api": "~1.0",
+    "joshpinkney/tv-maze-php-api": "@dev",
     "moinax/tvdb": "~1.0",
     "phpmailer/phpmailer": "~5.2",
     "smarty/smarty": "3.1.*"
