@@ -4,10 +4,10 @@
   },
 
   "require": {
-    "barracudanetworks/forkdaemon-php": "",
-    "james-heinrich/getid3": ">=1.9.11",
-    "kbjr/Git.php": "",
+    "barracudanetworks/forkdaemon-php": "*",
+    "james-heinrich/getid3": "1.9.*",
+    "kbjr/Git.php": "*",
     "phpmailer/phpmailer": "~5.2",
-    "smarty/smarty": ">=3.1.29"
+    "smarty/smarty": "3.1.*"
   }
 }
