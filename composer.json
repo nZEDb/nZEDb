@@ -5,12 +5,16 @@
     }
   },
 
+  "license": "MIT",
+
+  "name": "nZEDb/nZEDb",
+
   "require": {
     "php": ">=5.5.0",
     "barracudanetworks/forkdaemon-php": "~1.0",
     "google/recaptcha": "~1.1",
     "james-heinrich/getid3": "1.9.*",
-    "joshpinkney/tv-maze-php-api": "*",
+    "joshpinkney/tv-maze-php-api": "~1.0",
     "moinax/tvdb": "~1.0",
     "phpmailer/phpmailer": "~5.2",
     "smarty/smarty": "3.1.*"
