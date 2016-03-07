@@ -3,6 +3,10 @@
     {
       "type": "vcs",
       "url": "https://github.com/JPinkney/TVMaze-PHP-API-Wrapper"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/kbjr/Git.php"
     }
   ],
 
@@ -27,6 +31,7 @@
     "google/recaptcha": "~1.1",
     "james-heinrich/getid3": "1.9.*",
     "joshpinkney/tv-maze-php-api": "@dev",
+    "kbjr/Git.php": "@dev",
     "moinax/tvdb": "~1.0",
     "phpmailer/phpmailer": "~5.2",
     "smarty/smarty": "3.1.*"
