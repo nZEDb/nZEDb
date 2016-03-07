@@ -1,12 +1,8 @@
 {
   "require": {
-    "php": ">=5.5.0"
-  },
-
-  "require": {
+    "php": ">=5.5.0",
     "barracudanetworks/forkdaemon-php": "*",
     "james-heinrich/getid3": "1.9.*",
-    "kbjr/Git.php": "*",
     "phpmailer/phpmailer": "~5.2",
     "smarty/smarty": "3.1.*"
   }
