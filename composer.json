@@ -1,8 +1,17 @@
 {
+  "autoload": {
+    "psr-0": {
+      "libs\\": "libs/"
+    }
+  },
+
   "require": {
     "php": ">=5.5.0",
-    "barracudanetworks/forkdaemon-php": "*",
+    "barracudanetworks/forkdaemon-php": "~1.0",
+    "google/recaptcha": "~1.1",
     "james-heinrich/getid3": "1.9.*",
+    "joshpinkney/tv-maze-php-api": "*",
+    "moinax/tvdb": "~1.0",
     "phpmailer/phpmailer": "~5.2",
     "smarty/smarty": "3.1.*"
   }
