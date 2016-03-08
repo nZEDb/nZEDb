@@ -1,10 +1,6 @@
 {
   "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/JPinkney/TVMaze-PHP-API-Wrapper"
-    },
-    {
+     {
       "type": "vcs",
       "url": "https://github.com/kbjr/Git.php"
     }
