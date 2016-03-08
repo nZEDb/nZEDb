@@ -1,0 +1,407 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "hash": "269a4e73d395b8f78b1057b4dc079b1a",
+    "content-hash": "66b941ebfedcbae1efe6288a5cb3a7fb",
+    "packages": [
+        {
+            "name": "barracudanetworks/forkdaemon-php",
+            "version": "v1.0.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/barracudanetworks/forkdaemon-php.git",
+                "reference": "9f9402909a4bd1ac98e5aacb6f15f19056f591f6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/barracudanetworks/forkdaemon-php/zipball/9f9402909a4bd1ac98e5aacb6f15f19056f591f6",
+                "reference": "9f9402909a4bd1ac98e5aacb6f15f19056f591f6",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "fork_daemon.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A library to make setup and management of forking daemons in PHP easy.",
+            "homepage": "https://github.com/barracudanetworks/forkdaemon-php",
+            "keywords": [
+                "daemons",
+                "forking",
+                "php"
+            ],
+            "time": "2016-01-12 19:40:56"
+        },
+        {
+            "name": "giantbomb/giantbomb",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/amalfra/GiantBomb.git",
+                "reference": "6e5c37fdaff69bc2af089acd39fbc00b1d4f5985"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/amalfra/GiantBomb/zipball/6e5c37fdaff69bc2af089acd39fbc00b1d4f5985",
+                "reference": "6e5c37fdaff69bc2af089acd39fbc00b1d4f5985",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "GiantBomb": "GiantBomb/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Amal Francis",
+                    "email": "amalfra@gmail.com"
+                },
+                {
+                    "name": "koroban",
+                    "email": "dev+koroban@novutec.com"
+                }
+            ],
+            "description": "A PHP wrapper for GiantBomb API",
+            "homepage": "http://www.giantbomb.com/api/",
+            "keywords": [
+                "api",
+                "giantbomb",
+                "php",
+                "wrapper"
+            ],
+            "time": "2014-05-10 11:57:09"
+        },
+        {
+            "name": "google/recaptcha",
+            "version": "1.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/google/recaptcha.git",
+                "reference": "2b7e00566afca82a38a1d3adb8e42c118006296e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/google/recaptcha/zipball/2b7e00566afca82a38a1d3adb8e42c118006296e",
+                "reference": "2b7e00566afca82a38a1d3adb8e42c118006296e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.5.*"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ReCaptcha\\": "src/ReCaptcha"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "Client library for reCAPTCHA, a free service that protect websites from spam and abuse.",
+            "homepage": "http://www.google.com/recaptcha/",
+            "keywords": [
+                "Abuse",
+                "captcha",
+                "recaptcha",
+                "spam"
+            ],
+            "time": "2015-09-02 17:23:59"
+        },
+        {
+            "name": "james-heinrich/getid3",
+            "version": "v1.9.12",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/JamesHeinrich/getID3.git",
+                "reference": "41c05612d532d30f07680cad3a4a6efbec7fc7f5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/JamesHeinrich/getID3/zipball/41c05612d532d30f07680cad3a4a6efbec7fc7f5",
+                "reference": "41c05612d532d30f07680cad3a4a6efbec7fc7f5",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "getid3/getid3.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL"
+            ],
+            "description": "PHP script that extracts useful information from popular multimedia file formats",
+            "homepage": "http://www.getid3.org/",
+            "keywords": [
+                "codecs",
+                "php",
+                "tags"
+            ],
+            "time": "2016-03-02 13:13:30"
+        },
+        {
+            "name": "joshpinkney/tv-maze-php-api",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/JPinkney/TVMaze-PHP-API-Wrapper.git",
+                "reference": "6b8b8ba8494e368bc223f2184013ad211eab2df3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/JPinkney/TVMaze-PHP-API-Wrapper/zipball/6b8b8ba8494e368bc223f2184013ad211eab2df3",
+                "reference": "6b8b8ba8494e368bc223f2184013ad211eab2df3",
+                "shasum": ""
+            },
+            "require": {
+                "joshpinkney/tv-maze-php-api": "dev-master"
+            },
+            "require-dev": {
+                "joshpinkney/tv-maze-php-api": "dev-master"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "JPinkney": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "Josh Pinkney",
+                    "email": "Joshpinkney@gmail.com"
+                }
+            ],
+            "description": "TVMaze-API-Wrapper",
+            "time": "2016-03-08 02:23:27"
+        },
+        {
+            "name": "kbjr/Git.php",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kbjr/Git.php.git",
+                "reference": "0d1a99625d45bccda222389bbe6135482b407782"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kbjr/Git.php/zipball/0d1a99625d45bccda222389bbe6135482b407782",
+                "reference": "0d1a99625d45bccda222389bbe6135482b407782",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "Git.php"
+                ]
+            },
+            "support": {
+                "source": "https://github.com/kbjr/Git.php/tree/master",
+                "issues": "https://github.com/kbjr/Git.php/issues"
+            },
+            "time": "2015-03-31 14:10:29"
+        },
+        {
+            "name": "moinax/tvdb",
+            "version": "v1.0.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Moinax/TvDb.git",
+                "reference": "68204c72efe99945cd49fe99ac23c8f9b068f2d6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Moinax/TvDb/zipball/68204c72efe99945cd49fe99ac23c8f9b068f2d6",
+                "reference": "68204c72efe99945cd49fe99ac23c8f9b068f2d6",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Moinax\\TvDb": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Moinax",
+                    "email": "moinax@gmail.com"
+                }
+            ],
+            "description": "PHPTVDB is a PHP library for accessing TV show information such as episodes, actors, showtimes and descriptions.",
+            "homepage": "http://moinax.github.io/TvDb/",
+            "keywords": [
+                "api"
+            ],
+            "time": "2016-03-08 12:37:26"
+        },
+        {
+            "name": "phpmailer/phpmailer",
+            "version": "v5.2.14",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PHPMailer/PHPMailer.git",
+                "reference": "e774bc9152de85547336e22b8926189e582ece95"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/e774bc9152de85547336e22b8926189e582ece95",
+                "reference": "e774bc9152de85547336e22b8926189e582ece95",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.0.0"
+            },
+            "require-dev": {
+                "phpdocumentor/phpdocumentor": "*",
+                "phpunit/phpunit": "4.7.*"
+            },
+            "suggest": {
+                "league/oauth2-client": "Needed for XOAUTH2 authentication",
+                "league/oauth2-google": "Needed for Gmail XOAUTH2"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "class.phpmailer.php",
+                    "class.phpmaileroauth.php",
+                    "class.phpmaileroauthgoogle.php",
+                    "class.smtp.php",
+                    "class.pop3.php",
+                    "extras/EasyPeasyICS.php",
+                    "extras/ntlm_sasl_client.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-2.1"
+            ],
+            "authors": [
+                {
+                    "name": "Jim Jagielski",
+                    "email": "jimjag@gmail.com"
+                },
+                {
+                    "name": "Marcus Bointon",
+                    "email": "phpmailer@synchromedia.co.uk"
+                },
+                {
+                    "name": "Andy Prevost",
+                    "email": "codeworxtech@users.sourceforge.net"
+                },
+                {
+                    "name": "Brent R. Matzelle"
+                }
+            ],
+            "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
+            "time": "2015-11-01 10:15:28"
+        },
+        {
+            "name": "smarty/smarty",
+            "version": "v3.1.29",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/smarty-php/smarty.git",
+                "reference": "35480f10e7ce9b0fdaf23d3799d7b79463919b1e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/35480f10e7ce9b0fdaf23d3799d7b79463919b1e",
+                "reference": "35480f10e7ce9b0fdaf23d3799d7b79463919b1e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.2"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.1.x-dev"
+                }
+            },
+            "autoload": {
+                "classmap": [
+                    "libs/Smarty.class.php",
+                    "libs/SmartyBC.class.php",
+                    "libs/sysplugins/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "Monte Ohrt",
+                    "email": "monte@ohrt.com"
+                },
+                {
+                    "name": "Uwe Tews",
+                    "email": "uwe.tews@googlemail.com"
+                },
+                {
+                    "name": "Rodney Rehm",
+                    "email": "rodney.rehm@medialize.de"
+                }
+            ],
+            "description": "Smarty - the compiling PHP template engine",
+            "homepage": "http://www.smarty.net",
+            "keywords": [
+                "templating"
+            ],
+            "time": "2015-12-21 01:57:06"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": {
+        "giantbomb/giantbomb": 20,
+        "joshpinkney/tv-maze-php-api": 20,
+        "kbjr/git.php": 20
+    },
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "php": ">=5.5.0"
+    },
+    "platform-dev": []
+}
