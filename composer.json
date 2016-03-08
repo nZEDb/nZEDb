@@ -1,11 +1,4 @@
 {
-  "repositories": [
-     {
-      "type": "vcs",
-      "url": "https://github.com/kbjr/Git.php"
-    }
-  ],
-
   "autoload": {
     "psr-0": {
       "libs\\": "libs/"
@@ -19,6 +12,13 @@
   "minimum-requirement": "dev",
 
   "name": "nZEDb/nZEDb",
+
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/kbjr/Git.php"
+    }
+  ],
 
   "require": {
     "php": ">=5.5.0",
