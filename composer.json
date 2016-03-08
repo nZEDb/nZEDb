@@ -3,7 +3,9 @@
     "psr-4": {
       "nzedb\\": "nzedb/"
     },
-    "classmaps": [
+
+    "classmap": [
+      "www/pages/",
       "libs/pixelead0/Tmdb/",
       "libs/PEAR/NET_NNTP/NNTP/",
       "libs/zeebinz/rarinfo/",
