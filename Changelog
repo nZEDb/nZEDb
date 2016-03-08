@@ -10,6 +10,8 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 2016-03-08 niel
 	* Fix: Alpha theme's posterwall had white on white characters in the dropdown list for category.
 	* Chg: Rename the ID for posterwall's select dropdown to be more unique and move its style definition to the posterwall.css file.
+	* Add: Commited a .gitattributes file. I've been using it foe several months now and it helps
+	  avoid certain kinds of problems (white-space checking on imported files for example.).
 2016-03-05 niel
 	* Fix: Force users' saburl entry to have a trailing slash.
 2016-03-03 bart39
