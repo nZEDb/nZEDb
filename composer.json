@@ -22,14 +22,14 @@
 
   "require": {
     "php": ">=5.5.0",
-    "barracudanetworks/forkdaemon-php": "~1.0",
+    "barracudanetworks/forkdaemon-php": "^1.0.7",
     "giantbomb/giantbomb": "@dev",
-    "google/recaptcha": "~1.1",
-    "james-heinrich/getid3": "1.9.*",
+    "google/recaptcha": "^1.1.2",
+    "james-heinrich/getid3": "^1.9.12",
     "joshpinkney/tv-maze-php-api": "@dev",
     "kbjr/Git.php": "@dev",
-    "moinax/tvdb": "~1.0",
-    "phpmailer/phpmailer": "~5.2",
-    "smarty/smarty": "3.1.*"
+    "moinax/tvdb": "^1.0.4",
+    "phpmailer/phpmailer": "^5.2.14",
+    "smarty/smarty": "^3.1.29"
   }
 }
