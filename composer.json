@@ -1,5 +1,8 @@
 {
   "autoload": {
+    "psr-4": {
+      "nzedb\\": "nzedb/"
+    },
     "classmaps": [
       "libs/pixelead0/Tmdb/",
       "libs/PEAR/NET_NNTP/NNTP/",
