@@ -3,8 +3,6 @@ namespace nzedb;
 
 use nzedb\utility\Misc;
 
-require_once nZEDb_LIBS . 'simple_html_dom.php';
-
 class Greenlight
 {
 
