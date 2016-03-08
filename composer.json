@@ -1,8 +1,11 @@
 {
   "autoload": {
-    "psr-0": {
-      "libs\\": "libs/"
-    }
+    "classmaps": [
+      "libs/pixelead0/Tmdb/",
+      "libs/PEAR/NET_NNTP/NNTP/",
+      "libs/zeebinz/rarinfo/",
+      "libs/"
+    ]
   },
 
   "description": "A Usenet Indexer",
