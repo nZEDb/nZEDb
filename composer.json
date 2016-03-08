@@ -7,7 +7,7 @@
     "classmap": [
       "www/pages/",
       "libs/pixelead0/Tmdb/",
-      "libs/PEAR/NET_NNTP/NNTP/",
+      "libs/PEAR/Net_NNTP/NNTP/",
       "libs/zeebinz/rarinfo/",
       "libs/"
     ]
