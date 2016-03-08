@@ -1,11 +1,5 @@
 <?php
 
-require_once SMARTY_DIR . 'Autoloader.php';
-
-Smarty_Autoloader::register();
-
-require_once nZEDb_LIB . 'utility' . DS . 'SmartyUtils.php';
-
 use nzedb\SABnzbd;
 use nzedb\Users;
 use nzedb\db\Settings;
