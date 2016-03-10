@@ -40,5 +40,6 @@
     "smarty/smarty": "^3.1.29"
   },
 
-  "require-dev": {}
+  "require-dev": {},
+  "type": "project"
 }
