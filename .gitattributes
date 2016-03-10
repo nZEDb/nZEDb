@@ -35,3 +35,4 @@ ReleaseNotes	-binary text eol=lf
 /libs/smarty/nZEDb_NOTES -binary text eol=lf
 .gitignore		-binary text
 .gitattributes	-binary text
+composer.lock	-binary text
