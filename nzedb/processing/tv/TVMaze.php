@@ -1,7 +1,8 @@
 <?php
+
 namespace nzedb\processing\tv;
 
-use \libs\JPinkney\TVMaze\Client;
+use JPinkney\TVMaze\Client;
 use nzedb\ReleaseImage;
 
 /**
@@ -16,7 +17,7 @@ class TVMaze extends TV
 	/**
 	 * Client for TVMaze API
 	 *
-	 * @var \libs\JPinkney\TVMaze\Client
+	 * @var \JPinkney\TVMaze\Client
 	 */
 	public $client;
 
