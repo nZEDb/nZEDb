@@ -1,9 +1,9 @@
 <?php
 namespace nzedb\processing\tv;
 
-use libs\Moinax\TVDB\Client;
-use libs\Moinax\TVDB\CurlException;
-use libs\Moinax\TVDB\XmlException;
+use Moinax\TVDB\Client;
+use Moinax\TVDB\CurlException;
+use Moinax\TVDB\XmlException;
 use nzedb\ReleaseImage;
 
 /**
