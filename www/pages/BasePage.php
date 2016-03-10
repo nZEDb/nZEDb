@@ -105,9 +105,9 @@ class BasePage
 
 		$this->smarty = new Smarty();
 
-		$this->smarty->setCompileDir(SMARTY_DIR . 'templates_c/');
-		$this->smarty->setConfigDir(SMARTY_DIR . 'configs/');
-		$this->smarty->setCacheDir(SMARTY_DIR . 'cache/');
+		$this->smarty->setCompileDir(nZEDb_RES . DS . 'smarty' . DS . 'templates_c/');
+		$this->smarty->setConfigDir(nZEDb_RES . DS . 'smarty' . DS . 'configs/');
+		$this->smarty->setCacheDir(nZEDb_RES . DS . 'smarty' . DS . 'cache/');
 		$this->smarty->setPluginsDir([
 				SMARTY_DIR . 'plugins/',
 				nZEDb_WWW . 'plugins/',
