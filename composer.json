@@ -1,5 +1,9 @@
 {
-  "authors": "nZEDb Team",
+  "authors": [
+    {
+      "name": "nZEDb Team"
+    }
+  ],
   "autoload": {
     "psr-4": {
       "nzedb\\": "nzedb/"

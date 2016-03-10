@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "25e62cf5aeb66e64acbd750a441dd352",
-    "content-hash": "66b941ebfedcbae1efe6288a5cb3a7fb",
+    "hash": "59cafed96baad633000f1c4e4033aa7c",
+    "content-hash": "e2d0b9754c08b259a0101762d32fe85c",
     "packages": [
         {
             "name": "barracudanetworks/forkdaemon-php",
@@ -177,27 +177,19 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/JPinkney/TVMaze-PHP-API-Wrapper.git",
-                "reference": "6b8b8ba8494e368bc223f2184013ad211eab2df3"
+                "reference": "b90d2dda61635201ce175f4800fe9fab6af8bfb8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/JPinkney/TVMaze-PHP-API-Wrapper/zipball/6b8b8ba8494e368bc223f2184013ad211eab2df3",
-                "reference": "6b8b8ba8494e368bc223f2184013ad211eab2df3",
+                "url": "https://api.github.com/repos/JPinkney/TVMaze-PHP-API-Wrapper/zipball/b90d2dda61635201ce175f4800fe9fab6af8bfb8",
+                "reference": "b90d2dda61635201ce175f4800fe9fab6af8bfb8",
                 "shasum": ""
             },
-            "require": {
-                "joshpinkney/tv-maze-php-api": "dev-master"
-            },
-            "require-dev": {
-                "joshpinkney/tv-maze-php-api": "dev-master"
-            },
             "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "JPinkney": ""
-                }
-            },
             "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
             "authors": [
                 {
                     "name": "Josh Pinkney",
@@ -205,7 +197,7 @@
                 }
             ],
             "description": "TVMaze-API-Wrapper",
-            "time": "2016-03-08 02:23:27"
+            "time": "2016-03-10 05:30:32"
         },
         {
             "name": "kbjr/Git.php",
