@@ -17,7 +17,7 @@ class TVMaze extends TV
 	/**
 	 * Client for TVMaze API
 	 *
-	 * @var \JPinkney\TVMaze\Client
+	 * @var \JPinkney\TVMaze\TVMaze
 	 */
 	public $client;
 
