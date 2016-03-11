@@ -16,7 +16,7 @@ class TVDB extends TV
 	const MATCH_PROBABILITY = 75;
 
 	/**
-	 * @var \libs\Moinax\TVDB\Client
+	 * @var \Moinax\TVDB\Client
 	 */
 	public $client;
 
