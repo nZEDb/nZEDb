@@ -2,7 +2,7 @@
 
 namespace nzedb\processing\tv;
 
-use JPinkney\TVMaze\Client;
+use JPinkney\TVMaze\TVMaze as Client;
 use nzedb\ReleaseImage;
 
 /**
