@@ -419,7 +419,7 @@ class TVDB extends TV
 			'type'      => (int)parent::TYPE_TV,
 			'title'     => (string)$show->name,
 			'summary'   => (string)$show->overview,
-			'started'   => (string)$show->firstAired,
+			'started'   => $show->firstAired->format('Y-m-d'),
 			'publisher' => (string)$show->network,
 			'source'    => (int)parent::SOURCE_TVDB,
 			'imdb'      => (int)(isset($imdb['imdbid']) ? $imdb['imdbid'] : 0),
@@ -448,7 +448,7 @@ class TVDB extends TV
 			'series'      => (int)$episode->season,
 			'episode'     => (int)$episode->number,
 			'se_complete' => (string)'S' . sprintf('%02d', $episode->season) . 'E' . sprintf('%02d', $episode->number),
-			'firstaired'  => (string)$episode->firstAired,
+			'firstaired'  => $episode->firstAired->format('Y-m-d'),
 			'summary'     => (string)$episode->overview
 		];
 	}
