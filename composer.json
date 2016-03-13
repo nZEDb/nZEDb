@@ -4,6 +4,7 @@
       "name": "nZEDb Team"
     }
   ],
+
   "autoload": {
     "psr-4": {
       "nzedb\\": "nzedb/"
@@ -45,5 +46,6 @@
   },
 
   "require-dev": {},
+
   "type": "project"
 }
