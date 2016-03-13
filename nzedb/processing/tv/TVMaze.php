@@ -242,7 +242,7 @@ class TVMaze extends TV
 		$cleanName = preg_replace('# \((19|20)\d{2}\)$#', '', $cleanName);
 
 		//Try for the best match with AKAs embedded
-		$response = $this->client->singleSearchAKA($cleanName);
+		$response = $this->client->singleSearchAkas($cleanName);
 
 		sleep(1);
 
