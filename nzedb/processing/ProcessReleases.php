@@ -555,10 +555,12 @@ class ProcessReleases
 			foreach ($collections as $collection) {
 
 				$cleanRelName = $this->pdo->escapeString(
+					utf8_encode(
 						str_replace(['#', '@', '$', '%', '^', '§', '¨', '©', 'Ö'], '', $collection['subject'])
+					)
 				);
 				$fromName = $this->pdo->escapeString(
-					trim($collection['fromname'], "'")
+					utf8_encode(trim($collection['fromname'], "'"))
 				);
 
 				// Look for duplicates, duplicates match on releases.name, releases.fromname and releases.size
@@ -607,7 +609,7 @@ class ProcessReleases
 					$releaseID = $this->releases->insertRelease(
 						[
 							'name' => $cleanRelName,
-							'searchname' => $this->pdo->escapeString(($cleanedName),
+							'searchname' => $this->pdo->escapeString(utf8_encode($cleanedName)),
 							'totalpart' => $collection['totalfiles'],
 							'group_id' => $collection['group_id'],
 							'guid' => $this->pdo->escapeString($this->releases->createGUID($cleanRelName)),
