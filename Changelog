@@ -7,6 +7,8 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2016-08-15 DariusIII
+	* Fix: Fix NZBGet url error warning on empty NZBGet url on profile edit page.
 2016-03-08 niel
 	* Fix: Alpha theme's posterwall had white on white characters in the dropdown list for category.
 	* Chg: Rename the ID for posterwall's select dropdown to be more unique and move its style definition to the posterwall.css file.
