@@ -12,6 +12,7 @@ test.php
 *.orig
 
 /.idea/
+/app/libraries/*
 /nzedb/config/config.php
 /nzedb/config/settings.php
 /nzedb/config/ircscraper_settings.php
@@ -24,4 +25,4 @@ test.php
 /resources/nzb/*
 /resources/tmp/*
 /templates_c/*
-/vendor
+/libraries/*
