@@ -9,7 +9,9 @@ if (!defined('DS')) {
 }
 
 // These are file path constants
-define('nZEDb_ROOT', realpath(__DIR__) . DS);
+if (!defined('nZEDb_ROOT')) {
+	define('nZEDb_ROOT', realpath(__DIR__) . DS);
+}
 
 // Used to refer to the main lib class files.
 define('nZEDb_LIB', nZEDb_ROOT . 'nzedb' . DS);
