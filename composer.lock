@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "25ecc61fa563f2a1b4fccb9989e4ac13",
-    "content-hash": "e2d0b9754c08b259a0101762d32fe85c",
+    "hash": "24c9f968882e9ad4943de1b3fea1884b",
+    "content-hash": "4e001422859a9aaad31c5e92d2e20cd0",
     "packages": [
         {
             "name": "barracudanetworks/forkdaemon-php",
@@ -42,6 +42,104 @@
                 "php"
             ],
             "time": "2016-01-12 19:40:56"
+        },
+        {
+            "name": "composer/installers",
+            "version": "v1.0.23",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/composer/installers.git",
+                "reference": "6213d900e92647831f7a406d5c530ea1f3d4360e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/composer/installers/zipball/6213d900e92647831f7a406d5c530ea1f3d4360e",
+                "reference": "6213d900e92647831f7a406d5c530ea1f3d4360e",
+                "shasum": ""
+            },
+            "require": {
+                "composer-plugin-api": "^1.0"
+            },
+            "replace": {
+                "roundcube/plugin-installer": "*",
+                "shama/baton": "*"
+            },
+            "require-dev": {
+                "composer/composer": "1.0.*@dev",
+                "phpunit/phpunit": "4.1.*"
+            },
+            "type": "composer-plugin",
+            "extra": {
+                "class": "Composer\\Installers\\Plugin",
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Composer\\Installers\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kyle Robinson Young",
+                    "email": "kyle@dontkry.com",
+                    "homepage": "https://github.com/shama"
+                }
+            ],
+            "description": "A multi-framework Composer library installer",
+            "homepage": "http://composer.github.com/installers/",
+            "keywords": [
+                "Craft",
+                "Dolibarr",
+                "Hurad",
+                "MODX Evo",
+                "OXID",
+                "SMF",
+                "Thelia",
+                "WolfCMS",
+                "agl",
+                "aimeos",
+                "annotatecms",
+                "bitrix",
+                "cakephp",
+                "chef",
+                "codeigniter",
+                "concrete5",
+                "croogo",
+                "dokuwiki",
+                "drupal",
+                "elgg",
+                "fuelphp",
+                "grav",
+                "installer",
+                "joomla",
+                "kohana",
+                "laravel",
+                "lithium",
+                "magento",
+                "mako",
+                "mediawiki",
+                "modulework",
+                "moodle",
+                "phpbb",
+                "piwik",
+                "ppi",
+                "puppet",
+                "roundcube",
+                "shopware",
+                "silverstripe",
+                "symfony",
+                "typo3",
+                "wordpress",
+                "zend",
+                "zikula"
+            ],
+            "time": "2016-01-27 12:54:22"
         },
         {
             "name": "giantbomb/giantbomb",
@@ -385,6 +483,52 @@
                 "templating"
             ],
             "time": "2015-12-21 01:57:06"
+        },
+        {
+            "name": "unionofrad/lithium",
+            "version": "1.1.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/UnionOfRAD/lithium.git",
+                "reference": "9b942de7ba5f771d6ae8f17e2f6d7a7342a84663"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/UnionOfRAD/lithium/zipball/9b942de7ba5f771d6ae8f17e2f6d7a7342a84663",
+                "reference": "9b942de7ba5f771d6ae8f17e2f6d7a7342a84663",
+                "shasum": ""
+            },
+            "require": {
+                "composer/installers": "1.*",
+                "php": ">=5.5.0"
+            },
+            "require-dev": {
+                "unionofrad/li3_fixtures": "1.0.*@RC"
+            },
+            "bin": [
+                "console/li3"
+            ],
+            "type": "lithium-library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Union of RAD"
+                },
+                {
+                    "name": "The Community"
+                }
+            ],
+            "description": "The core library of the Lithium PHP framework",
+            "homepage": "http://li3.me",
+            "keywords": [
+                "framework",
+                "li3",
+                "lithium"
+            ],
+            "time": "2016-01-25 12:29:04"
         }
     ],
     "packages-dev": [],
@@ -393,7 +537,8 @@
     "stability-flags": {
         "giantbomb/giantbomb": 20,
         "joshpinkney/tv-maze-php-api": 20,
-        "kbjr/git.php": 20
+        "kbjr/git.php": 20,
+        "unionofrad/lithium": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
