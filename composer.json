@@ -44,8 +44,11 @@
     "php": ">=5.5.0",
     "phpmailer/phpmailer": "^5.2.14",
     "smarty/smarty": "^3.1.29",
-    "unionofrad/lithium": "~1.1-dev"
+    "unionofrad/lithium": "^1.1-dev"
   },
-  "require-dev": {},
+  "require-dev": {
+    "unionofrad/li3_docs": "^1.1-dev",
+    "unionofrad/li3_quality": "^1.1-dev"
+  },
   "type": "project"
 }
