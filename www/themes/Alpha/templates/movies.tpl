@@ -144,7 +144,7 @@
 									</td>
 									<td class="name">
 										<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">
-											<b>{$mname[$m@index]|escape:"htmlall"|wordwrap:80:"\n":true}</b>{if $mfailed[$m@index]} <i class="fa fa-exclamation-circle" style="color: red" title="This release has failed for some users"></i>{/if}
+											<b>{$mname[$m@index]|escape:"htmlall"|wordwrap:80:"\n":true}</b>{if !empty($mfailed[$m@index])} <i class="fa fa-exclamation-circle" style="color: red" title="This release has failed for some users"></i>{/if}
 										</a>
 										<br>
 										<div class="resextra">
