@@ -1,10 +1,15 @@
 <div class="nzb_multi_operations" style="text-align:right;margin-bottom:5px;">
 	{if !empty($covgroup)}View:
-		<a href="{$smarty.const.WWW_TOP}/browse?t={$category}">
+		<span class="icon-align-justify"></span>
+		&nbsp;&nbsp;
+		<a href="{$smarty.const.WWW_TOP}/{$covgroup}?t={$category}">
 			<span class="icon-th-list"></span>
 		</a>
-		&nbsp;&nbsp;
+	{else} View: <a href="{$smarty.const.WWW_TOP}/browse?t={$category}">
 		<span class="icon-align-justify"></span>
+		</a>
+		&nbsp;&nbsp;
+		<span class="icon-th-list"></span>
 	{/if}
 	{if $isadmin || $ismod}
 		&nbsp;&nbsp;
