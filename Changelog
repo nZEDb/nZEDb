@@ -8,6 +8,7 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 2016-03-18 DariusIII
+	* Upd: Fix issue #2080 Add back TV processing to NFO files processing.
 	* Fix: Fix issue #2082 Undefined index $covgroup in Alpha theme preventing cover|list view
 2016-03-17 DariusIII
 	* Fix: Fix wrong name for failed releases in templates
