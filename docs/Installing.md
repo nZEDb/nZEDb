@@ -12,7 +12,7 @@ global method, as we do not provide the composer.phar file in our repo.
 	1) If you will not be working on the code (most people), you should run this command instead 
 	of cloning the repository (This will install the latest version of the stable code.):
 	
-	composer install nZEDb/nZEDb
+	composer create-project nZEDb/nZEDb
 	
  	or: 2) Clone the repository as instructed, then switch to the nZEDb directory and run:
 	
