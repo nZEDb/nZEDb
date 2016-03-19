@@ -20,13 +20,18 @@
     "vendor-dir": "app/libraries"
   },
   "description": "A Usenet Indexer",
+  "extra": {
+    "branch-alias": {
+      "dev-master": "0.x-dev"
+    }
+  },
   "homepage": "http://nzedb.com",
   "keywords": [
     "lithium",
     "li3"
   ],
   "license": "GPL-3.0",
-  "name": "nZEDb/nZEDb",
+  "name": "nzedb/nzedb",
   "repositories": [
     {
       "type": "vcs",
@@ -35,11 +40,12 @@
   ],
   "require": {
     "barracudanetworks/forkdaemon-php": "^1.0.7",
-    "giantbomb/giantbomb": "@dev",
+    "ext-curl": "*",
+    "giantbomb/giantbomb": "dev-master",
     "google/recaptcha": "^1.1.2",
     "james-heinrich/getid3": "^1.9.12",
-    "joshpinkney/tv-maze-php-api": "@dev",
-    "kbjr/Git.php": "@dev",
+    "joshpinkney/tv-maze-php-api": "dev-master",
+    "kbjr/Git.php": "dev-master",
     "moinax/tvdb": "^1.0.4",
     "php": ">=5.5.0",
     "phpmailer/phpmailer": "^5.2.14",
@@ -47,8 +53,6 @@
     "unionofrad/lithium": "^1.1-dev"
   },
   "require-dev": {
-    "unionofrad/li3_docs": "^1.1-dev",
-    "unionofrad/li3_quality": "^1.1-dev"
   },
   "type": "project"
 }
