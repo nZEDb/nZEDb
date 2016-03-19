@@ -41,6 +41,9 @@
   "require": {
     "barracudanetworks/forkdaemon-php": "^1.0.7",
     "ext-curl": "*",
+    "ext-gd": "*",
+    "ext-json": "*",
+    "ext-mysqlnd": "*",
     "giantbomb/giantbomb": "dev-master",
     "google/recaptcha": "^1.1.2",
     "james-heinrich/getid3": "^1.9.12",
