@@ -5,6 +5,7 @@ master branch. It will be renamed to 0.x. You HAVE to run the following commands
 stable code:
 	git checkout master
 	git branch -m 0.x
+	git fetch -p
 	git branch --set-upstream-to=origin/0.x
 
 0.5.5 2016-04-04
