@@ -10,9 +10,13 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 2016-04-04 niel
 	Mrg: dev => next-master to prepare for updating master.
 
+**IMPORTANT** Be aware that for the next update (May) the stable branch will no longer be the
+master branch. It will be renamed to 0.x. You HAVE to run the following commands to stay on
+stable code:
+	git checkout master
+	git branch -m 0.x
+	git branch --set-upstream-to=origin/0.x
 
-**IMPORTANT** Be aware that the next update (May) will move the master branch to a version based
-branch (0.x). You will HAVE to use a script to be able to update.
 2016-03-18 DariusIII
 	* Fix: Issue #2080 Add back TV processing to NFO files processing.
 	* Fix: Issue #2082 Undefined index $covgroup in Alpha theme preventing cover|list view
