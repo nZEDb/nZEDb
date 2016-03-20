@@ -17,6 +17,7 @@ Changed:
 	* We now force each users' saburl entry to have a trailing slash.
 	* Rename the ID for posterwall's select dropdown to be more unique and move its style
 	 definition to the posterwall.css file.
+	* Change semantics for failed downloads.
 
 Fixed:
 	* Prevent unkown index '0' for null pagertotalitems result and force a zero value if missing.
@@ -36,6 +37,10 @@ Fixed:
 	* Book categories in Site Edit "type of books to lookup".
 	 ***NOTE*** You may need to reselect these to pp them correctly.
 	* Alpha theme - Posterwall had white on white characters in the dropdown list for category.
+	* NZBGet url error warning on empty NZBGet url on profile edit page.
+	* Wrong name for failed releases in template.
+	* Add back TV processing to NFO files processing (Issue 2080).
+	* Undefined index $covgroup in Alpha theme preventing cover|list view (Issue 2082).
 
 
 0.5.4 2016-02-29
