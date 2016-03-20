@@ -23,7 +23,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	* Fix: View NZB comments block from spilling beyond its wrapping grey box.
 	* Fix: Replaced Genres::CONSOLE_TYPE causing Console.php to fail.
 2016-03-02 DariusIII
-	* Fix: Fix wrong path to shared images folder in Charisma/Gamma/omicron themes
+	* Fix: Fix wrong path to shared images folder in Charisma/Gamma/Omicron themes
 	* Chg: Make Gamma theme menus dropdown on hover
 	* Chg: Make Gamma theme Bootstrap 3 compatible
 	* Chg: Update jQuery to version 2.2.1, use jQuery migrate 1.4.0
@@ -36,7 +36,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Chg: Replace form-search with proper form-inline in Alpha theme
 2016-02-27 niel
 	Fix: Positioning of View/Admin buttons on category browse pages (Closes PR 2063).
-	Fix: Console rows going outside the grey box element.
+	Fix: Console page, rows going outside the grey box element.
 2016-02-25 DariusIII
 	Chg: Replace custom filtering code in Charisma/Gamma/Omicron themes with search-filter.
 	Chg: Move rss, rssdesc and search-filter.tpl to themes/shared folder.
@@ -47,7 +47,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 	Fix: Issue 2011 - Default Template Issues.
 	Fix: Issue 2026 - Alpha theme. The Audio menu item does not work as intended.
 2016-02-19 DariusIII
-	Fix: Fix Gamma theme headermenu when not using coverviews.
+	Fix: Gamma theme headermenu when not using coverviews.
 	Chg: Move group browsing from user to left side menu in Charisma/Omicron themes.
 2016-02-17 niel
 	Fix: Prevent unkown index '0' for null pagertotalitems result and force a zero value if missing.
