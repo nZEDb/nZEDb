@@ -5,18 +5,19 @@ you you will be developing the code yourself.
 (https://getcomposer.org/doc/00-intro.md#downloading-the-composer-executable). We recommend the 
 global method, as we do not provide the composer.phar file in our repo.
 
-* At the point that your chosen guide, instructs you to clone the nZEDb repository, you should 
-	ONLY do so if you intend to work on the code yourself.
+* At the point that your chosen guide, instructs you to install git/clone the nZEDb repository, 
+	do ONE of the following:
  	**NOTE** Commands below assume you followed the packagist instructions and renamed 
  	composer.phar
 
- 	Either:
-	1) If you will not be working on the code (most people), you should run this command instead 
-	of cloning the repository (This will install the latest version of the stable code.):
+Either:
+	1) If you will not be working on the code (most people), run this command:
 
-	composer create-project nZEDb/nZEDb
+	composer create-project nzedb/nzedb
+This will install the latest stable version of the code. 
 
-	or: 2) Clone the repository as instructed, then switch to the nZEDb directory and run:
+or:
+	2) Install Git as instructed, then run:
 
-	git checkout dev-branch
-	composer install
+	composer create-project --dev --keep-vcs --prefer-source nzedb/nzedb
+This clones the development branch at the latest commit.
