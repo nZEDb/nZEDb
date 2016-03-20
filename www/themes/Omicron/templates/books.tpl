@@ -75,7 +75,7 @@
 														   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">
 															<img src="{$smarty.const.WWW_TOP}/covers/book/{if $result.cover == 1}{$result.bookinfoid}.jpg{else}{$smarty.const.WWW_THEMES}/shared/img/no-cover.png{/if}"
 																 width="140" border="0"
-																 alt="{$result.author|escape:"htmlall"} - {$result.title|escape:"htmlall"}"/>{if isset($mfailed[$m@index]) && $mfailed[$m@index] > 0} <i class="fa fa-exclamation-circle" style="color: red" title="This release has failed to download for some users"></i>{/if}
+																 alt="{$result.author|escape:"htmlall"} - {$result.title|escape:"htmlall"}"/>{if !empty($mfailed[$m@index])} <i class="fa fa-exclamation-circle" style="color: red" title="This release has failed to download for some users"></i>{/if}
 														</a>
 														{if isset($resulturl) && $result.url != ""}<a
 															class="label label-default" target="_blank"
@@ -89,7 +89,7 @@
 														<a class="label label-default"
 														   href="{$smarty.const.WWW_TOP}/browse?g={$mgrp[$m@index]}"
 														   title="Browse releases in {$mgrp[$m@index]|replace:"alt.binaries":"a.b"}">Group</a>
-														{if isset($mfailed[$m@index]) && $mfailed[$m@index] > 0}
+														{if !empty($mfailed[$m@index])}
 														<span class="btn btn-hover btn-default btn-xs"><i class="fa fa-thumbs-o-down"></i><span
 																	class="badge"> {$mfailed[$m@index]}
 																Failed Download{if $mfailed[$m@index] > 1}s{/if}</span>
