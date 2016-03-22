@@ -51,7 +51,7 @@
  * application's classes and files.  You don't need to change this unless your webroot folder is
  * stored outside of your app folder.
  */
-define('LITHIUM_APP_PATH', dirname(dirname(__DIR__)));
+define('LITHIUM_APP_PATH', realpath(dirname(dirname(__DIR__))));
 
 if (!defined('nZEDb_ROOT')) {
 	define('nZEDb_ROOT', realpath(dirname(LITHIUM_APP_PATH)) . DS);
@@ -139,4 +139,5 @@ if (is_dir(LITHIUM_LIBRARY_PATH . DS . 'li3_quality')) {
 	Libraries::add('li3_quality');
 }
 
+require_once LITHIUM_APP_PATH . DS . 'libraries/autoload.php';
 ?>
