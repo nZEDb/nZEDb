@@ -39,6 +39,14 @@
     {
       "type": "vcs",
       "url": "https://github.com/kbjr/Git.php"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/niel/li3_quality"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/niel/li3_docs"
     }
   ],
   "require": {
@@ -59,6 +67,8 @@
     "unionofrad/lithium": "^1.1-dev"
   },
   "require-dev": {
+    "unionofrad/li3_docs": "1.1.x-dev",
+    "unionofrad/li3_quality": "1.1.x-dev"
   },
   "type": "project"
 }

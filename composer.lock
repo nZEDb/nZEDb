@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "b7b274d54ba59b3deb057927509d8511",
-    "content-hash": "8c93cf6b0a59a0ecc46ae75d2756c04f",
+    "hash": "a3dede31118e4d5bdbfa1f92ec55f93e",
+    "content-hash": "049e424acdf27d392432a3c98470fb9d",
     "packages": [
         {
             "name": "barracudanetworks/forkdaemon-php",
@@ -531,14 +531,170 @@
             "time": "2016-01-25 12:29:04"
         }
     ],
-    "packages-dev": [],
+    "packages-dev": [
+        {
+            "name": "cebe/markdown",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/cebe/markdown.git",
+                "reference": "54a2c49de31cc44e864ebf0500a35ef21d0010b2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/cebe/markdown/zipball/54a2c49de31cc44e864ebf0500a35ef21d0010b2",
+                "reference": "54a2c49de31cc44e864ebf0500a35ef21d0010b2",
+                "shasum": ""
+            },
+            "require": {
+                "lib-pcre": "*",
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "cebe/indent": "*",
+                "facebook/xhprof": "*@dev",
+                "phpunit/phpunit": "4.1.*"
+            },
+            "bin": [
+                "bin/markdown"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "cebe\\markdown\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Carsten Brandt",
+                    "email": "mail@cebe.cc",
+                    "homepage": "http://cebe.cc/",
+                    "role": "Creator"
+                }
+            ],
+            "description": "A super fast, highly extensible markdown parser for PHP",
+            "homepage": "https://github.com/cebe/markdown#readme",
+            "keywords": [
+                "extensible",
+                "fast",
+                "gfm",
+                "markdown",
+                "markdown-extra"
+            ],
+            "time": "2015-03-06 05:28:07"
+        },
+        {
+            "name": "unionofrad/li3_docs",
+            "version": "1.1.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/niel/li3_docs.git",
+                "reference": "502a84a3eba182c6f3e163ec4031131ea4133fd4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/niel/li3_docs/zipball/502a84a3eba182c6f3e163ec4031131ea4133fd4",
+                "reference": "502a84a3eba182c6f3e163ec4031131ea4133fd4",
+                "shasum": ""
+            },
+            "require": {
+                "cebe/markdown": "1.*",
+                "composer/installers": "1.*",
+                "php": ">=5.3",
+                "unionofrad/lithium": "1.1.x-dev"
+            },
+            "type": "lithium-library",
+            "license": [
+                "BSD-3-clause"
+            ],
+            "authors": [
+                {
+                    "name": "Union of RAD"
+                },
+                {
+                    "name": "The Community"
+                }
+            ],
+            "description": "A documentation generator for Lithium projects.",
+            "homepage": "http://li3.me",
+            "keywords": [
+                "docblock",
+                "docs",
+                "documentation",
+                "documented",
+                "li3",
+                "lithium"
+            ],
+            "support": {
+                "source": "https://github.com/niel/li3_docs/tree/1.1"
+            },
+            "time": "2016-03-22 13:06:11"
+        },
+        {
+            "name": "unionofrad/li3_quality",
+            "version": "1.1.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/niel/li3_quality.git",
+                "reference": "9bc45546786a780d9ddac74d1a54e3a78970a427"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/niel/li3_quality/zipball/9bc45546786a780d9ddac74d1a54e3a78970a427",
+                "reference": "9bc45546786a780d9ddac74d1a54e3a78970a427",
+                "shasum": ""
+            },
+            "require": {
+                "composer/installers": "1.*",
+                "php": ">=5.3",
+                "unionofrad/lithium": "1.1.x-dev"
+            },
+            "type": "lithium-library",
+            "license": [
+                "BSD-3-clause"
+            ],
+            "authors": [
+                {
+                    "name": "Union of RAD"
+                },
+                {
+                    "name": "The Community"
+                }
+            ],
+            "description": "This li₃ plugin adds code quality assurance to your toolbelt.",
+            "homepage": "http://li3.me",
+            "keywords": [
+                "coverage",
+                "li3",
+                "lithium",
+                "plugin",
+                "quality",
+                "syntax"
+            ],
+            "support": {
+                "source": "https://github.com/niel/li3_quality/tree/1.1"
+            },
+            "time": "2016-03-22 12:07:46"
+        }
+    ],
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
         "giantbomb/giantbomb": 20,
         "joshpinkney/tv-maze-php-api": 20,
         "kbjr/git.php": 20,
-        "unionofrad/lithium": 20
+        "unionofrad/lithium": 20,
+        "unionofrad/li3_docs": 20,
+        "unionofrad/li3_quality": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
