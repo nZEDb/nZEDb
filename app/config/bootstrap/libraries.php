@@ -85,8 +85,7 @@ use lithium\core\Libraries;
  */
 require LITHIUM_LIBRARY_PATH . '/lithium/core/Object.php';
 require LITHIUM_LIBRARY_PATH . '/lithium/core/StaticObject.php';
-require LITHIUM_LIBRARY_PATH . '/lithium/util/Collection.php';
-require LITHIUM_LIBRARY_PATH . '/lithium/util/collection/Filters.php';
+require LITHIUM_LIBRARY_PATH . '/lithium/aop/Filters.php';
 require LITHIUM_LIBRARY_PATH . '/lithium/util/Inflector.php';
 require LITHIUM_LIBRARY_PATH . '/lithium/util/Text.php';
 require LITHIUM_LIBRARY_PATH . '/lithium/util/Set.php';

@@ -84,16 +84,6 @@ $checks = array(
 			'Please set <code>error_reporting = E_ALL</code> in your <code>php.ini</code> settings.'
 		);
 	},
-	'magicQuotes' => function() use ($notify) {
-		if (!get_magic_quotes_gpc()) {
-			return;
-		}
-		return $notify(
-			'error',
-			'Magic quotes are enabled in your PHP configuration',
-			'Please set <code>magic_quotes_gpc = Off</code> in your <code>php.ini</code> settings.'
-		);
-	},
 	'mbstringFuncOverload' => function() use ($notify) {
 		if (!ini_get('mbstring.func_overload')) {
 			return;
@@ -103,16 +93,6 @@ $checks = array(
 			'Multibyte String function overlading is enabled in your PHP configuration',
 			'Please set <code>mbstring.func_overload = 0</code>
 			in your <code>php.ini</code> settings.'
-		);
-	},
-	'registerGlobals' => function() use ($notify) {
-		if (!ini_get('register_globals')) {
-			return;
-		}
-		return $notify(
-			'error',
-			'Register globals is enabled in your PHP configuration',
-			'Please set <code>register_globals = Off</code> in your <code>php.ini</code> settings.'
 		);
 	},
 	'curlwrappers' => function() use ($notify, $compiled) {

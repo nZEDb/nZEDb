@@ -6,11 +6,11 @@
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
+use lithium\aop\Filters;
 use lithium\storage\Cache;
 use lithium\storage\cache\adapter\Apc;
 use lithium\core\Libraries;
 use lithium\core\Environment;
-use lithium\action\Dispatcher;
 use lithium\data\Connections;
 use lithium\data\source\Database;
 
@@ -62,14 +62,14 @@ if (!Environment::is('production')) {
 	return;
 }
 
-Dispatcher::applyFilter('run', function($self, $params, $chain) {
+Filters::apply('lithium\action\Dispatcher', 'run', function($params, $next) {
 	$cacheKey = 'core.libraries';
 
 	if ($cached = Cache::read('default', $cacheKey)) {
 		$cached = (array) $cached + Libraries::cache();
 		Libraries::cache($cached);
 	}
-	$result = $chain->next($self, $params, $chain);
+	$result = $next($params);
 
 	if ($cached != ($data = Libraries::cache())) {
 		Cache::write('default', $cacheKey, $data, '+1 day');
@@ -77,25 +77,25 @@ Dispatcher::applyFilter('run', function($self, $params, $chain) {
 	return $result;
 });
 
-Dispatcher::applyFilter('run', function($self, $params, $chain) {
+Filters::apply('lithium\action\Dispatcher', 'run', function($params, $next) {
 	foreach (Connections::get() as $name) {
 		if (!(($connection = Connections::get($name)) instanceof Database)) {
 			continue;
 		}
-		$connection->applyFilter('describe', function($self, $params, $chain) use ($name) {
+		Filters::apply($connection, 'describe', function($params, $chain) use ($name) {
 			if ($params['fields']) {
-				return $chain->next($self, $params, $chain);
+				return $next($params);
 			}
 			$cacheKey = "data.connections.{$name}.sources.{$params['entity']}.schema";
 
 			return Cache::read('default', $cacheKey, array(
-				'write' => function() use ($self, $params, $chain) {
-					return array('+1 day' => $chain->next($self, $params, $chain));
+				'write' => function() use ($params, $next) {
+					return array('+1 day' => $next($params));
 				}
 			));
 		});
 	}
-	return $chain->next($self, $params, $chain);
+	return $next($params);
 });
 
 ?>

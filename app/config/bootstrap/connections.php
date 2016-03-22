@@ -58,6 +58,9 @@ use lithium\data\Connections;
 
 /**
  * Uncomment this configuration to use MySQL as your default database.
+ *
+ * Strict mode can be enabled or disabled, older MySQL versions were
+ * by default non-strict.
  */
 // Connections::add('default', array(
 // 	'type' => 'database',
@@ -66,7 +69,8 @@ use lithium\data\Connections;
 // 	'login' => 'root',
 // 	'password' => '',
 // 	'database' => 'my_app',
-// 	'encoding' => 'UTF-8'
+// 	'encoding' => 'UTF-8',
+// 	'strict' => false
 // ));
 
 ?>

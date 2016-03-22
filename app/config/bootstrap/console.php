@@ -6,7 +6,7 @@
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
-use lithium\console\Dispatcher;
+use lithium\aop\Filters;
 use lithium\core\Environment;
 use lithium\core\Libraries;
 
@@ -17,7 +17,7 @@ use lithium\core\Libraries;
  * Routes are also loaded, to facilitate URL generation from within the console environment.
  *
  */
-Dispatcher::applyFilter('run', function($self, $params, $chain) {
+Filters::apply('lithium\console\Dispatcher', 'run', function($params, $next) {
 	Environment::set($params['request']);
 
 	foreach (array_reverse(Libraries::get()) as $name => $config) {
@@ -27,7 +27,7 @@ Dispatcher::applyFilter('run', function($self, $params, $chain) {
 		$file = "{$config['path']}/config/routes.php";
 		file_exists($file) ? call_user_func(function () use ($file) { include $file; }) : null;
 	}
-	return $chain->next($self, $params, $chain);
+	return $next($params);
 });
 
 /**
@@ -35,11 +35,11 @@ Dispatcher::applyFilter('run', function($self, $params, $chain) {
  * output and creating different sections.
  *
  */
-// Dispatcher::applyFilter('_call', function($self, $params, $chain) {
+// Filters::apply('lithium\console\Dispatcher', '_call', function($params, $next) {
 // 	$params['callable']->response->styles(array(
 // 		'heading' => '\033[1;30;46m'
 // 	));
-// 	return $chain->next($self, $params, $chain);
+// 	return $next($params);
 // });
 
 ?>

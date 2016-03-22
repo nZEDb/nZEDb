@@ -10,6 +10,7 @@
  * This bootstrap file contains configurations for all globalizing
  * aspects of your application.
  */
+use lithium\aop\Filters;
 use lithium\core\Libraries;
 use lithium\core\Environment;
 use lithium\g11n\Locale;
@@ -18,9 +19,6 @@ use lithium\g11n\Message;
 use lithium\g11n\Multibyte;
 use lithium\util\Inflector;
 use lithium\util\Validator;
-use lithium\net\http\Media;
-use lithium\action\Dispatcher as ActionDispatcher;
-use lithium\console\Dispatcher as ConsoleDispatcher;
 use RuntimeException;
 
 /**
@@ -65,16 +63,16 @@ Environment::set('test', array('locale' => 'en', 'locales' => array('en' => 'Eng
  * @see lithium\g11n\Message
  * @see lithium\core\Environment
  */
-$setLocale = function($self, $params, $chain) {
+$setLocale = function($params, $next) {
 	if (!$params['request']->locale()) {
 		$params['request']->locale(Locale::preferred($params['request']));
 	}
 	Environment::set(true, array('locale' => $params['request']->locale()));
 
-	return $chain->next($self, $params, $chain);
+	return $next($params);
 };
-ActionDispatcher::applyFilter('_callable', $setLocale);
-ConsoleDispatcher::applyFilter('_callable', $setLocale);
+Filters::apply('lithium\action\Dispatcher', '_callable', $setLocale);
+Filters::apply('lithium\console\Dispatcher', '_callable', $setLocale);
 
 /**
  * Resources
@@ -222,10 +220,10 @@ Validator::add('lengthBetween', function($value, $format, $options) {
  * @see lithium\g11n\Message::aliases()
  * @see lithium\net\http\Media
  */
-Media::applyFilter('_handle', function($self, $params, $chain) {
+Filters::apply('lithium\net\http\Media', '_handle', function($params, $next) {
 	$params['handler'] += array('outputFilters' => array());
 	$params['handler']['outputFilters'] += Message::aliases();
-	return $chain->next($self, $params, $chain);
+	return $next($params);
 });
 
 ?>

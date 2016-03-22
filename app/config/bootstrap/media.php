@@ -34,11 +34,11 @@ Collection::formats('lithium\net\http\Media');
  * plugin's `webroot` directory into your main application's `webroot` directory, or adding routing
  * rules in your web server's configuration.
  */
-// use lithium\action\Dispatcher;
+// use lithium\aop\Filters;
 // use lithium\action\Response;
 // use lithium\net\http\Media;
 //
-// Dispatcher::applyFilter('_callable', function($self, $params, $chain) {
+// Filters::apply('lithium\action\Dispatcher', '_callable', function($params, $next) {
 // 	$url = ltrim($params['request']->url, '/');
 // 	list($library, $asset) = explode('/', $url, 2) + array("", "");
 //
@@ -54,7 +54,7 @@ Collection::formats('lithium\net\http\Media');
 // 			));
 // 		};
 // 	}
-// 	return $chain->next($self, $params, $chain);
+// 	return $next($params);
 // });
 
 ?>
