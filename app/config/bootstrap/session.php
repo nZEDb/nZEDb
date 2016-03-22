@@ -51,16 +51,18 @@ use lithium\security\Auth;
 use app\models\Users;
 use lithium\security\Password;
 
-Auth::config([
-					 'default' => [
-							 'adapter' => 'Form',
-							 'model'   => 'Users'
-					 ],
-			 ]);
+Auth::config(
+	[
+		'default' => [
+			'adapter' => 'Form',
+			'model'   => 'Users'
+		],
+	]);
 
-if (!\lithium\data\Connections::get('default')) {
-	Users::applyFilter('save',
-			function ($self, $params, $chain) {
+	if (!\lithium\data\Connections::get('default')) {
+		Users::applyFilter('save',
+			function ($self, $params, $chain)
+			{
 				if ($params['data']) {
 					$params['entity']->set($params['data']);
 					$params['data'] = [];
@@ -72,7 +74,7 @@ if (!\lithium\data\Connections::get('default')) {
 
 				return $chain->next($self, $params, $chain);
 			}
-	);
-}
+		);
+	}
 
 ?>
