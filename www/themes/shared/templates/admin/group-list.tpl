@@ -46,8 +46,8 @@
 					<td class="less">{$group.first_record_postdate}<br />{$group.first_record_postdate|timeago}</td>
 					<td class="less">{$group.last_record_postdate}<br />{$group.last_record_postdate|timeago}</td>
 					<td class="less">{$group.last_updated|timeago} ago</td>
-					<td class="less" id="group-{$group.id}">{if $group.active=="1"}<a href="javascript:ajax_group_status({$group.id}, 0)" class="group_active">Deactivate</a>{else}<a href="javascript:ajax_group_status({$group.id}, 1)" class="group_deactive">Activate</a>{/if}</td>
-					<td class="less" id="backfill-{$group.id}">{if $group.backfill=="1"}<a href="javascript:ajax_backfill_status({$group.id}, 0)" class="backfill_active">Deactivate</a>{else}<a href="javascript:ajax_backfill_status({$group.id}, 1)" class="backfill_deactive">Activate</a>{/if}</td>
+					<td class="less" id="group-{$group.id}">{if $group.active == "1"}<a href="javascript:ajax_group_status({$group.id}, 0)" class="group_active">Deactivate</a>{else}<a href="javascript:ajax_group_status({$group.id}, 1)" class="group_deactive">Activate</a>{/if}</td>
+					<td class="less" id="backfill-{$group.id}">{if $group.backfill == "1"}<a href="javascript:ajax_backfill_status({$group.id}, 0)" class="backfill_active">Deactivate</a>{else}<a href="javascript:ajax_backfill_status({$group.id}, 1)" class="backfill_deactive">Activate</a>{/if}</td>
 					<td class="less">{$group.num_releases}</td>
 					<td class="less">{if $group.minfilestoformrelease==""}n/a{else}{$group.minfilestoformrelease}{/if}</td>
 					<td class="less">{if $group.minsizetoformrelease==""}n/a{else}{$group.minsizetoformrelease|fsize_format:"MB"}{/if}</td>

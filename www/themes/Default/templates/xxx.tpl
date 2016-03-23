@@ -25,15 +25,15 @@
 			<td>
 				<select id="genre" name="genre">
 					<option class="grouping" value=""></option>
-					{foreach from=$genres item=gen}
+					{foreach $genres as $gen}
 						<option {if $gen==$genre}selected="selected"{/if} value="{$gen}">{$gen}</option>
 					{/foreach}
 				</select>
 			</td>
 			<td>
 				<select id="category" name="t">
-					<option class="grouping" value="6000"></option>
-					{foreach from=$catlist item=ct}
+					<option class="grouping" value="{$catClass::XXX_ROOT}"></option>
+					{foreach $catlist as $ct}
 						<option {if $ct.id==$category}selected="selected"{/if} value="{$ct.id}">{$ct.title}</option>
 					{/foreach}
 				</select>
@@ -70,7 +70,7 @@
 			</tr>
 		</thead>
 		<tbody>
-		{foreach from=$results item=result}
+		{foreach $results as $result}
 			<tr>
 				<td style="vertical-align:top;text-align:center;width:150px;padding:10px;">
 					<div class="movcover">
@@ -135,7 +135,7 @@
 						<div>
 							<a
 								class="label label-info"
-								href="{$smarty.const.WWW_TOP}/search/{$result.title|escape:"url"}?t=2000"
+								href="{$smarty.const.WWW_TOP}/search/{$result.title|escape:"url"}?t={$catClass::MOVIE_ROOT}"
 								title="View similar nzbs"
 							>Similar</a>
 						</div>
@@ -189,7 +189,7 @@
 							{assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
 							{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
 							<tbody>
-							{foreach from=$msplits item=m}
+							{foreach $msplits as $m}
 								<tr id="guid{$mguid[$m@index]}" {if $m@index > 1}class="mlextra"{/if}>
 									<td style="width: 27px;">
 										<input type="checkbox" class="nzb_check" value="{$mguid[$m@index]}">

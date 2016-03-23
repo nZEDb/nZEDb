@@ -3,6 +3,7 @@
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
 use nzedb\Categorize;
+use nzedb\Category;
 use nzedb\ColorCLI;
 use nzedb\ConsoleTools;
 use nzedb\Groups;
@@ -86,7 +87,8 @@ function preName($argv, $argc)
 		$where = ' AND group_id = ' . $argv[2];
 		$why = ' WHERE nzbstatus = 1 AND isrenamed = 0';
 	} else if ($full === true) {
-		$why = ' WHERE nzbstatus = 1 AND (isrenamed = 0 OR categoryid between 7000 AND 7999)';
+		$why = ' WHERE nzbstatus = 1 AND (isrenamed = 0 OR categoryid between ' .
+				Category::BOOKS_ROOT . ' AND ' . Category::BOOKS_UNKNOWN .')';
 	} else if ($all === true) {
 		$why = ' WHERE nzbstatus = 1';
 	} else {
@@ -222,7 +224,8 @@ function preName($argv, $argc)
 	}
 	$timestart = TIME();
 	if (isset($argv[1]) && is_numeric($argv[1])) {
-		$relcount = catRelease("searchname", "WHERE (iscategorized = 0 OR categoryID = 0010) AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
+		$relcount = catRelease("searchname", "WHERE (iscategorized = 0 OR categoryID = " .
+				Category::OTHER_MISC . ") AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
 	} else if (isset($argv[2]) && preg_match('/\([\d, ]+\)/', $argv[2]) && $full === true) {
 		$relcount = catRelease("searchname", str_replace(" AND", "WHERE", $where) . " AND iscategorized = 0 ", true);
 	} else if (isset($argv[2]) && preg_match('/\([\d, ]+\)/', $argv[2]) && $all === true) {
@@ -232,13 +235,14 @@ function preName($argv, $argc)
 	} else if (isset($argv[2]) && is_numeric($argv[2]) && $argv[1] == "all") {
 		$relcount = catRelease("searchname", str_replace(" AND", "WHERE", $where), true);
 	} else if (isset($argv[1]) && $argv[1] == "full") {
-		$relcount = catRelease("searchname", "WHERE categoryID = 0010 OR iscategorized = 0", true);
+		$relcount = catRelease("searchname", "WHERE categoryID = " . Category::OTHER_MISC . " OR iscategorized = 0", true);
 	} else if (isset($argv[1]) && $argv[1] == "all") {
 		$relcount = catRelease("searchname", "", true);
 	} else if (isset($argv[1]) && $argv[1] == "preid") {
 		$relcount = catRelease("searchname", "WHERE preid = 0 AND nzbstatus = 1", true);
 	} else {
-		$relcount = catRelease("searchname", "WHERE (iscategorized = 0 OR categoryID = 0010) AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
+		$relcount = catRelease("searchname", "WHERE (iscategorized = 0 OR categoryID = " .
+				Category::OTHER_MISC . ") AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
 	}
 	$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 	$time = $consoletools->convertTime(TIME() - $timestart);

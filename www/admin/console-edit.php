@@ -56,7 +56,7 @@ if (isset($_REQUEST["id"])) {
 		default:
 			$page->title = "Console Edit";
 			$page->smarty->assign('console', $con);
-			$page->smarty->assign('genres', $gen->getGenres(Genres::CONSOLE_TYPE));
+			$page->smarty->assign('genres', $gen->getGenres(Category::GAME_ROOT));
 			break;
 	}
 }

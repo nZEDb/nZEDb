@@ -1,25 +1,7 @@
 <h2>Browse Games</h2>
 <div class="well well-small">
 	<div style="text-align: center;">
-		<form class="form-inline" name="browseby" action="games" style="margin:0;">
-			<i class="fa fa-font fa-midt"></i>
-			<input class="input input-medium" id="title" type="text" name="title" value="{$title}" placeholder="Title" />
-			<i class="fa fa-inbox fa-midt"></i>
-			<select class="input input-small" id="genre" name="genre">
-				<option class="grouping" value=""></option>
-				{foreach from=$genres item=gen}
-					<option {if $gen.id == $genre}selected="selected"{/if} value="{$gen.id}">{$gen.title}</option>
-				{/foreach}
-			</select>
-			<i class="fa fa-flag fa-midt"></i>
-			<select class="input input-small" id="category" name="t">
-				<option class="grouping" value="1000"></option>
-				{foreach from=$catlist item=ct}
-					<option {if $ct.id==$category}selected="selected"{/if} value="{$ct.id}">{$ct.title}</option>
-				{/foreach}
-			</select>
-			<input class="btn btn-success" type="submit" value="Go" />
-		</form>
+		{include file='search-filter.tpl'}
 	</div>
 </div>
 {$site->adbrowse}
@@ -122,7 +104,7 @@
 					</a>
 				</th>
 			</tr>
-			{foreach from=$results item=result}
+			{foreach $results as $result}
 				{assign var="msplits" value=","|explode:$result.grp_release_id}
 				{assign var="mguid" value=","|explode:$result.grp_release_guid}
 				{assign var="mnfo" value=","|explode:$result.grp_release_nfoid}
@@ -137,14 +119,14 @@
 				{assign var="mpass" value=","|explode:$result.grp_release_password}
 				{assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
 				{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
-				{foreach from=$msplits item=m}
+				{foreach $msplits as $m}
 					<tr class="{cycle values=",alt"}">
 						<td class="mid">
 							<div class="movcover">
 								<div style="text-align: center;">
 									<a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">
 										<img class="shadow img img-polaroid" src="{$smarty.const.WWW_TOP}/covers/games/{if isset($result.cover) && $result.cover == 1}{$result.gamesinfo_id}.jpg{else}no-cover.jpg{/if}"
-											 width="120" border="0" alt="{$result.title|escape:"htmlall"}"/>{if isset($mfailed[$m@index]) && $mfailed[$m@index] > 0} <i class="fa fa-exclamation-circle" style="color: red" title="This release has failed to download for some users"></i>{/if}
+											 width="120" border="0" alt="{$result.title|escape:"htmlall"}"/>{if !empty($mfailed[$m@index])} <i class="fa fa-exclamation-circle" style="color: red" title="This release has failed to download for some users"></i>{/if}
 									</a>
 								</div>
 								<div class="movextra">

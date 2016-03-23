@@ -54,7 +54,7 @@ if (isset($_REQUEST["id"])) {
 		default:
 			$page->title = "Game Edit";
 			$page->smarty->assign('game', $game);
-			$page->smarty->assign('genres', $gen->getGenres(Genres::GAME_TYPE));
+			$page->smarty->assign('genres', $gen->getGenres(Category::PC_ROOT));
 			break;
 	}
 }

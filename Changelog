@@ -7,8 +7,86 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2016-04-04 niel
+	Mrg: dev => next-master to prepare for updating master.
+
+**IMPORTANT** Be aware that for the next update (May) the stable branch will no longer be the
+master branch. It will be renamed to 0.x. You HAVE to run the following commands to stay on
+stable code:
+	git checkout master
+	git branch -m 0.x
+	git fetch -p
+	git branch --set-upstream-to=origin/0.x
+
+2016-03-23 niel
+	* Fix problem with category entry for 'Other' being added with ID 100001 for new installs.
+2016-03-18 DariusIII
+	* Fix: Issue #2080 Add back TV processing to NFO files processing.
+	* Fix: Issue #2082 Undefined index $covgroup in Alpha theme preventing cover|list view
+2016-03-17 DariusIII
+	* Fix: Wrong name for failed releases in templates
+	* Chg: Change semantics for failed downloads in themes
+2016-08-15 DariusIII
+	* Fix: NZBGet url error warning on empty NZBGet url on profile edit page.
+2016-03-08 niel
+	* Fix: Alpha theme's posterwall had white on white characters in the dropdown list for category.
+	* Chg: Rename the ID for posterwall's select dropdown to be more unique and move its style definition to the posterwall.css file.
+	* Add: Commited a .gitattributes file. I've been using it foe several months now and it helps
+	  avoid certain kinds of problems (white-space checking on imported files for example.).
+2016-03-05 niel
+	* Fix: Force users' saburl entry to have a trailing slash.
+2016-03-03 bart39
+	* Fix: Book categories in Site Edit "type of books to lookup".
+	 ***NOTE*** You may need to reselect these to pp them correctly.
+2016-03-03 niel
+	* Mrg: Brought dev-themes into dev branch.
+	 ***NOTE*** That's why dates below are out of sequence, it is not a mistake.
+	* Fix: View NZB comments block from spilling beyond its wrapping grey box.
+	* Fix: Replaced Genres::CONSOLE_TYPE causing Console.php to fail.
+2016-03-02 DariusIII
+	* Fix: Fix wrong path to shared images folder in Charisma/Gamma/Omicron themes
+	* Chg: Make Gamma theme menus dropdown on hover
+	* Chg: Make Gamma theme Bootstrap 3 compatible
+	* Chg: Update jQuery to version 2.2.1, use jQuery migrate 1.4.0
+2016-03-01 niel
+	* Mrg: PR 2074, from zetas/kingcat - Removing extraneous container tags from alpha for
+	 Bootstrap v3.
+	* Fix: Incorrect constant name PC_GAME in predb.tpl, to correct PC_GAMES.
+2016-02-29 DariusIII
+	Chg: Replace form-search in Charisma and Omicron too
+	Chg: Replace form-search with proper form-inline in Alpha theme
+2016-02-27 niel
+	Fix: Positioning of View/Admin buttons on category browse pages (Closes PR 2063).
+	Fix: Console page, rows going outside the grey box element.
+2016-02-25 DariusIII
+	Chg: Replace custom filtering code in Charisma/Gamma/Omicron themes with search-filter.
+	Chg: Move rss, rssdesc and search-filter.tpl to themes/shared folder.
+	Fix: Fix the rss of Gamma theme.
+	Fix: Prevent undefined index userdata notice in headermenu of Charisma/Gamma/Omicron themes.
+	Fix: Fix "too few arguments" error in Tmux class.
+2016-02-24 niel
+	Fix: Issue 2011 - Default Template Issues.
+	Fix: Issue 2026 - Alpha theme. The Audio menu item does not work as intended.
+2016-02-19 DariusIII
+	Fix: Gamma theme headermenu when not using coverviews.
+	Chg: Move group browsing from user to left side menu in Charisma/Omicron themes.
+2016-02-17 niel
+	Fix: Prevent unkown index '0' for null pagertotalitems result and force a zero value if missing.
+2016-02-15 niel
+	Chg: Use Category constants instead of numbers in 33 template files of various themes.
+	Chg: Use Category constants instead of numbers in 11 code files from misc and nzedb directories.
+	Mrg: PR 2061, from zetas - Moving ad display to a partial for Alpha theme to unify look and functionality.
+2016-02-15 DariusIII
+	Fix Fix template tag errors in Alpha viewanime and viewseries.tpl
+2016-02-14 DariusIII
+	Chg: Change category numbers to category constants in themes search-filter.tpl
+2016-02-13 DariusIII
+	Chg: Change category numbers to category constants in themes predb.tpl
+2016-02-12 DariusIII
+	Chg: Update themes headermenu.tpl to use category constants
 2016-02-27 niel
 	Mrg: dev => next-master to prepare for updating master.
+
 
 2016-02-23 niel
 	Chg: Remove unneccessary MYSQL_ATTR_INIT_COMMAND from PDO dsn options array. This was only

@@ -1,11 +1,4 @@
-{if {$site->adbrowse} != ''}
-	<div class="container" style="width:500px;">
-		<fieldset class="adbanner div-center">
-			<legend class="adbanner">Advertisement</legend>
-			{$site->adbrowse}
-		</fieldset></div>
-	<br>
-{/if}
+{include file='elements/ads.tpl' ad=$site->adbrowse}
 {* {if $covergrp != ''}
 <div class="accordion" id="searchtoggle">
 	<div class="accordion-group">
@@ -25,23 +18,7 @@
 {/if} *}
 {if $results|@count > 0}
 	<form id="nzb_multi_operations_form" action="get">
-		<div class="container nzb_multi_operations" style="text-align:right;margin-bottom:5px;">
-			{if $covgroup != ''}View:
-				<a href="{$smarty.const.WWW_TOP}/{$covgroup}?t={$category}">
-					<i class="icon-th-list"></i>
-				</a>
-				&nbsp;&nbsp;
-				<span>
-					<i class="icon-align-justify"></i>
-				</span>
-			{/if}
-			{if $isadmin || $ismod}
-				&nbsp;&nbsp;
-				Admin:
-				<button type="button" class="btn btn-warning btn-sm nzb_multi_operations_edit">Edit</button>
-				<button type="button" class="btn btn-danger btn-sm nzb_multi_operations_delete">Delete</button>
-			{/if}
-		</div>
+		{include file='elements/admin-buttons-browse.tpl'}
 		{include file='multi-operations.tpl'}
 		<table class="table table-striped table-bordered table-condensed table-hover data" id="browsetable">
 			<thead>
@@ -79,7 +56,7 @@
 				</tr>
 			</thead>
 			<tbody>
-			{foreach from=$results item=result}
+			{foreach $results as $result}
 				<tr class="{if $lastvisit|strtotime<$result.adddate|strtotime}success{/if}" id="guid{$result.guid}">
 					<td class="check" style="width:26px;text-align:center;white-space:nowrap;">
 						<input id="chk{$result.guid|substr:0:7}" type="checkbox" class="nzb_check" value="{$result.guid}">

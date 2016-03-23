@@ -287,7 +287,11 @@
 												   improve your experience.</p>
 							<![endif]-->
 
-							{$page->content}
+							<div class="row">
+								<div class="col-sm-12">
+									{$page->content}
+								</div>
+							</div>
 
 						</div><!--/.grey-box -->
 					</div><!--/.grey-frame -->

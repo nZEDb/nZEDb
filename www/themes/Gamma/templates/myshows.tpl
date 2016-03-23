@@ -19,7 +19,7 @@
 		<th width="80" class="mid">options</th>
 	</tr>
 
-	{foreach from=$shows item=show}
+	{foreach $shows as $show}
 		<tr class="{cycle values=",alt"}">
 			<td>
 				<a title="View details" href="{$smarty.const.WWW_TOP}/series/{$show.videos_id}{if $show.categoryid != ''}?t={$show.categoryid|replace:"|":","}{/if}"><h5>{$show.title|escape:"htmlall"|wordwrap:75:"\n":true}</h5></a>

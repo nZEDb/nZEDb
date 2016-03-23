@@ -6,9 +6,9 @@
 			<a class="see-more" href="{$smarty.const.WWW_TOP}/{$goto}">see more &raquo;</a>
 			The <strong>newest releases</strong> for
 			<strong>
-				<select name="MySelect" id="MySelect"
+				<select name="MySelect" id="npwSelectCategory"
 						onchange="window.location='{$smarty.const.WWW_TOP}/newposterwall?t=' + this.value;">
-					{foreach from=$types item=newtype}
+					{foreach $types as $newtype}
 						<option {if $type == $newtype}selected="selected"{/if} value="{$newtype}">
 							{$newtype}
 						</option>
@@ -20,7 +20,7 @@
 			<div class="main-content">
 				<!-- library -->
 				<div class="library-wrapper">
-					{foreach from=$newest item=result}
+					{foreach $newest as $result}
 						<div
 								{if $type == 'Console'}
 									class="library-console"

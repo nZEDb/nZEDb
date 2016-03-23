@@ -12,8 +12,9 @@ $activeOnly = isset($_REQUEST['activeonly']);
 $offset = isset($_REQUEST["offset"]) ? $_REQUEST["offset"] : 0;
 
 $page->smarty->assign([
-		'genrelist'         => $genres->getRange($offset, ITEMS_PER_PAGE, Genres::MUSIC_TYPE, $activeOnly),
-		'pagertotalitems'   => $genres->getCount(Genres::MUSIC_TYPE, $activeOnly),
+		'genrelist'         => $genres->getRange($offset, ITEMS_PER_PAGE,
+				Category::MUSIC_ROOT, $activeOnly),
+		'pagertotalitems'   => $genres->getCount(Category::MUSIC_ROOT, $activeOnly),
 		'pageroffset'       => $offset,
 		'pageritemsperpage' => ITEMS_PER_PAGE,
 		'pagerquerysuffix'  => '',

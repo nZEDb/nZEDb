@@ -55,25 +55,25 @@
 		<tr>
 			<td>Movie View:</td>
 			<td>
-				<input name="movieview" type="checkbox" value="1" {if $user.movieview=="1"}checked="checked"{/if}" />
+				<input name="movieview" type="checkbox" value="1" {if $user.movieview == "1"}checked="checked"{/if}" />
 			</td>
 		</tr>
 		<tr>
 			<td>XXX View:</td>
 			<td>
-				<input name="xxxview" type="checkbox" value="1" {if $user.xxxview=="1"}checked="checked"{/if}" />
+				<input name="xxxview" type="checkbox" value="1" {if $user.xxxview == "1"}checked="checked"{/if}" />
 			</td>
 		</tr>
 		<tr>
 			<td>Music View:</td>
 			<td>
-				<input name="musicview" type="checkbox" value="1" {if $user.musicview=="1"}checked="checked"{/if}" />
+				<input name="musicview" type="checkbox" value="1" {if $user.musicview == "1"}checked="checked"{/if}" />
 			</td>
 		</tr>
 		<tr>
 			<td>Console View:</td>
 			<td>
-				<input name="consoleview" type="checkbox" value="1" {if $user.consoleview=="1"}checked="checked"{/if}" />
+				<input name="consoleview" type="checkbox" value="1" {if $user.consoleview == "1"}checked="checked"{/if}" />
 			</td>
 		</tr>
 		<tr>
@@ -82,13 +82,13 @@
 				<input name="gameview"
 					type="checkbox"
 					value="1"
-					{if $user.gameview=="1"}checked="checked"{/if}" />
+					{if $user.gameview == "1"}checked="checked"{/if}" />
 			</td>
 		</tr>
 		<tr>
 			<td>Book View:</td>
 			<td>
-				<input name="bookview" type="checkbox" value="1" {if $user.bookview=="1"}checked="checked"{/if}" />
+				<input name="bookview" type="checkbox" value="1" {if $user.bookview == "1"}checked="checked"{/if}" />
 			</td>
 		</tr>
 		<tr>

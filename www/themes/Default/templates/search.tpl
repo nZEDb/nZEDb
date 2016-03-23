@@ -182,7 +182,7 @@
 					<label for="chkSelectAll" style="display:none;">Select All</label>
 				</th>
 			</tr>
-			{foreach from=$results item=result}
+			{foreach $results as $result}
 				<tr class="{cycle values=",alt"}{if $lastvisit|strtotime<$result.adddate|strtotime} new{/if}" id="guid{$result.guid}">
 					<td class="icons">
 						<div class="icon icon_nzb">

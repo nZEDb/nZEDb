@@ -53,7 +53,7 @@
 		<tr>
 			<th>View Movie Page:</th>
 			<td>
-				<input id="movieview" name="movieview" value="1" type="checkbox" {if $user.movieview=="1"}checked="checked"{/if}>
+				<input id="movieview" name="movieview" value="1" type="checkbox" {if $user.movieview == "1"}checked="checked"{/if}>
 				<span class="help-block">Browse movie covers. Only shows movies with known IMDB info.</span>
 			</td>
 		</tr>
@@ -61,35 +61,35 @@
 		<tr>
 			<th>View XXX Page:</th>
 			<td>
-				<input id="xxxview"	name="xxxview" value="1" type="checkbox" {if $user.xxxview=="1"}checked="checked"{/if}>
+				<input id="xxxview"	name="xxxview" value="1" type="checkbox" {if $user.xxxview == "1"}checked="checked"{/if}>
 				<span class="help-block">Browse XXX covers. Only shows xxx releases with known lookup info.</span>
 			</td>
 		</tr>
 		<tr>
 			<th>View Music Page:</th>
 			<td>
-				<input id="musicview" name="musicview" value="1" type="checkbox" {if $user.musicview=="1"}checked="checked"{/if}>
+				<input id="musicview" name="musicview" value="1" type="checkbox" {if $user.musicview == "1"}checked="checked"{/if}>
 				<span class="help-block">Browse music covers. Only shows music with known lookup info.</span>
 			</td>
 		</tr>
 		<tr>
 			<th>View Game Page:</th>
 			<td>
-				<input id="gameview" name="gameview" value="1" type="checkbox" {if $user.gameview=="1"}checked="checked"{/if}>
+				<input id="gameview" name="gameview" value="1" type="checkbox" {if $user.gameview == "1"}checked="checked"{/if}>
 				<span class="help-block">Browse game covers. Only shows games with known lookup info.</span>
 			</td>
 		</tr>
 		<tr>
 			<th>View Console Page:</th>
 			<td>
-				<input id="consoleview" name="consoleview" value="1" type="checkbox" {if $user.consoleview=="1"}checked="checked"{/if}>
+				<input id="consoleview" name="consoleview" value="1" type="checkbox" {if $user.consoleview == "1"}checked="checked"{/if}>
 				<span class="help-block">Browse console covers. Only shows games with known lookup info.</span>
 			</td>
 		</tr>
 		<tr>
 			<th>View Book Page:</th>
 			<td>
-				<input id="bookview" name="bookview" value="1" type="checkbox" {if $user.bookview=="1"}checked="checked"{/if}>
+				<input id="bookview" name="bookview" value="1" type="checkbox" {if $user.bookview == "1"}checked="checked"{/if}>
 				<span class="help-block">Browse book covers. Only shows books with known lookup info.</span>
 			</td>
 		</tr>

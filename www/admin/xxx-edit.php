@@ -77,7 +77,7 @@ if (isset($_REQUEST["id"])) {
 			}
 			$xxx['trailers'] = (!empty($xxx['trailers'])) ? unserialize($xxx['trailers']) : '';
 			$xxx['trailers'] = $xxx['trailers']['url'];
-			$page->smarty->assign('genres', $gen->getGenres(Category::CAT_PARENT_XXX));
+			$page->smarty->assign('genres', $gen->getGenres(Category::XXX_ROOT));
 			$page->smarty->assign('xxxmovie', $xxx);
 			break;
 	}

@@ -14,7 +14,7 @@
                 <th>Releases</th>
 	</tr>
 
-	{foreach from=$results item=result}
+	{foreach $results as $result}
 		{if $result.num_releases > 0}
 		<tr class="{cycle values=",alt"}">
 			<td>

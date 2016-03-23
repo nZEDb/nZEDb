@@ -116,7 +116,7 @@
 			</th>
 			<th>action</th>
 		</tr>
-		{foreach from=$results item=result}
+		{foreach $results as $result}
 		<tr class="{cycle values=",alt"}{if $lastvisit|strtotime<$result.adddate|strtotime} new{/if}" id="guid{$result.guid}">
 			{if (strpos($category, '60') !== false)}
 					<td class="check" width="25%"><input id="chk{$result.guid|substr:0:7}"
@@ -192,7 +192,7 @@
 						{if $result.preid > 0}
 						<span class="preinfo badge badge-inverse halffade" title="{$result.preid}">PreDB</span>
 						{/if}
-							{if isset($result.failed) && $result.failed > 0}
+							{if !empty($result.failed)}
 								<span class="badge badge-inverse"><i class ="fa fa-thumbs-o-up"></i> {$result.grabs} Grab{if $result.grabs != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$result.failed} Failed Download{if $result.failed != 1}s{/if}</span>
 							{/if}
 						{/strip}

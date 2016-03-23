@@ -13,7 +13,7 @@
 			<th width="5%" class="mid">Replies</th>
 		</tr>
 
-		{foreach from=$results item=result}
+		{foreach $results as $result}
 			<tr class="{cycle values=",alt"}" id="guid{$result.id}">
 				<td style="cursor:pointer;" class="item"
 					onclick="document.location='{$smarty.const.WWW_TOP}/forumpost/{$result.id}';">

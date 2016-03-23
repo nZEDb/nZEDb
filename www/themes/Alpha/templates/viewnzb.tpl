@@ -1,18 +1,7 @@
-{if {$site->addetail} != ''}
-	<div class="container" style="width:500px;">
-		<div class="row">
-			<fieldset class="adbanner div-center">
-				<legend class="adbanner">Advertisement</legend>
-				{$site->addetail}
-			</fieldset>
-		</div>
-	</div>
-	<br />
-{/if}
+{include file='elements/ads.tpl' ad=$site->addetail}
 
-<h2>{$release.searchname|escape:"htmlall"|truncate:100:"...":true}{if $failed != NULL && $failed > 0}<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
+<h2>{$release.searchname|escape:"htmlall"|truncate:100:"...":true}{if !empty($failed) }<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
 		<i class ="fa fa-thumbs-o-up"></i> {$release.grabs} Grab{if $release.grabs != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$failed} Failed Download{if $failed != 1}s{/if}</span>{/if}</h2><br>
-<div class="container">
 	<div class="col-xs-8">
 		<span class="label label-default">{$release.category_name}</span> <span class="label label-default">{$release.group_name}</span>
 		<br />
@@ -274,7 +263,6 @@
 		{if $boo && $boo.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/book/{$boo.id}.jpg" alt="{$boo.title|escape:"htmlall"}">{/if}
 		{*{$smarty.const.WWW_TOP}/covers/book/{$boo.id}.jpg" width="160" alt="{$boo.title|escape:"htmlall"}*}
 	</div>
-</div>
 <br>        <br>
 
 <table class="table table-condensed table-striped data">
@@ -493,7 +481,7 @@
 	<td>{$release.grabs} time{if $release.grabs==1}{else}s{/if}
 	</td>
 </tr>
-	{if $failed != NULL && $failed > 0}
+	{if !empty($failed) }
 	<tr>
 		<th width="140">Failed Download</th>
 		<td>{$failed}
@@ -605,9 +593,7 @@
 {/if}
 </table>
 
-
-<div class="container">
-
+<div>
 	<div class="comments">
 		<a id="comments"></a>
 		<h2>Comments</h2>

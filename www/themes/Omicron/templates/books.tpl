@@ -8,17 +8,7 @@
 	</div>
 </div>
 <div class="well well-sm">
-	<form class="form-inline" role="form" name="browseby" action="books">
-		<div class="form-group form-group-sm">
-			<label class="sr-only" for="title">Title:</label>
-			<input type="text" class="form-control" id="title" name="title" value="{$title}" placeholder="Title">
-		</div>
-		<div class="form-group form-group-sm">
-			<label class="sr-only" for="author">Author:</label>
-			<input type="text" class="form-control" id="author" name="author" value="{$author}" placeholder="Author">
-		</div>
-		<input type="submit" class="btn btn-primary" value="Search!"/>
-	</form>
+	{include file='search-filter.tpl'}
 </div>
 <form id="nzb_multi_operations_form" action="get">
 	<div class="box-body"
@@ -61,7 +51,7 @@
 									</div>
 								</div>
 								<hr>
-								{foreach from=$results item=result}
+								{foreach $results as $result}
 									{assign var="msplits" value=","|explode:$result.grp_release_id}
 									{assign var="mguid" value=","|explode:$result.grp_release_guid}
 									{assign var="mnfo" value=","|explode:$result.grp_release_nfoid}
@@ -76,7 +66,7 @@
 									{assign var="mpass" value=","|explode:$result.grp_release_password}
 									{assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
 									{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
-									{foreach from=$msplits item=m}
+									{foreach $msplits as $m}
 										<div class="panel panel-default">
 											<div class="panel-body">
 												<div class="row">
@@ -85,7 +75,7 @@
 														   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">
 															<img src="{$smarty.const.WWW_TOP}/covers/book/{if $result.cover == 1}{$result.bookinfoid}.jpg{else}{$smarty.const.WWW_THEMES}/shared/img/no-cover.png{/if}"
 																 width="140" border="0"
-																 alt="{$result.author|escape:"htmlall"} - {$result.title|escape:"htmlall"}"/>{if isset($mfailed[$m@index]) && $mfailed[$m@index] > 0} <i class="fa fa-exclamation-circle" style="color: red" title="This release has failed to download for some users"></i>{/if}
+																 alt="{$result.author|escape:"htmlall"} - {$result.title|escape:"htmlall"}"/>{if !empty($mfailed[$m@index])} <i class="fa fa-exclamation-circle" style="color: red" title="This release has failed to download for some users"></i>{/if}
 														</a>
 														{if isset($resulturl) && $result.url != ""}<a
 															class="label label-default" target="_blank"
@@ -99,7 +89,7 @@
 														<a class="label label-default"
 														   href="{$smarty.const.WWW_TOP}/browse?g={$mgrp[$m@index]}"
 														   title="Browse releases in {$mgrp[$m@index]|replace:"alt.binaries":"a.b"}">Group</a>
-														{if isset($mfailed[$m@index]) && $mfailed[$m@index] > 0}
+														{if !empty($mfailed[$m@index])}
 														<span class="btn btn-hover btn-default btn-xs"><i class="fa fa-thumbs-o-down"></i><span
 																	class="badge"> {$mfailed[$m@index]}
 																Failed Download{if $mfailed[$m@index] > 1}s{/if}</span>

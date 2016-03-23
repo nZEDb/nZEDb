@@ -1,7 +1,7 @@
 {if $error != ''}
 	<div class="alert alert-danger">{$error}</div>
 {/if}
-<div class="container">
+
 	<div class="col-sm-6 col-sm-offset-3">
 		<div class="well">
 			<form class="form-signin" action="login" method="post">
@@ -26,4 +26,3 @@
 			</form>
 		</div>
 	</div>
-</div>

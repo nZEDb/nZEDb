@@ -138,7 +138,7 @@
 		</tr>
 		</thead>
 		<tbody>
-		{foreach from=$commentslist item=comment}
+		{foreach $commentslist as $comment}
 			<tr>
 				<td title="{$comment.createddate}">{$comment.createddate|date_format}</td>
 				<td>{$comment.text|escape:"htmlall"|nl2br}</td>

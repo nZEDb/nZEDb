@@ -255,7 +255,7 @@ class ProcessReleases
 	public function resetCategorize($where = '')
 	{
 		$this->pdo->queryExec(
-			sprintf('UPDATE releases SET categoryid = %d, iscategorized = 0 %s', Category::CAT_OTHER_MISC, $where)
+			sprintf('UPDATE releases SET categoryid = %d, iscategorized = 0 %s', Category::OTHER_MISC, $where)
 		);
 	}
 
@@ -820,8 +820,8 @@ class ProcessReleases
 		$this->categorizeRelease(
 			$type,
 			(!empty($groupID)
-				? 'WHERE categoryid = ' . Category::CAT_OTHER_MISC . ' AND iscategorized = 0 AND group_id = ' . $groupID
-				: 'WHERE categoryid = ' . Category::CAT_OTHER_MISC . ' AND iscategorized = 0')
+				? 'WHERE categoryid = ' . Category::OTHER_MISC . ' AND iscategorized = 0 AND group_id = ' . $groupID
+				: 'WHERE categoryid = ' . Category::OTHER_MISC . ' AND iscategorized = 0')
 		);
 
 		if ($this->echoCLI) {
@@ -1338,7 +1338,7 @@ class ProcessReleases
 					FROM releases
 					WHERE categoryid = %d
 					AND adddate <= NOW() - INTERVAL %d HOUR',
-					Category::CAT_OTHER_MISC,
+					Category::OTHER_MISC,
 					$this->pdo->getSetting('miscotherretentionhours')
 				)
 			);
@@ -1358,7 +1358,7 @@ class ProcessReleases
 					FROM releases
 					WHERE categoryid = %d
 					AND adddate <= NOW() - INTERVAL %d HOUR',
-					Category::CAT_OTHER_HASHED,
+					Category::OTHER_HASHED,
 					$this->pdo->getSetting('mischashedretentionhours')
 				)
 			);

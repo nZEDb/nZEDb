@@ -1,6 +1,6 @@
 <h1>{$page->title}</h1>
 <table>
-	{foreach from=$sitemaps item=sitemap}
+	{foreach $sitemaps as $sitemap}
 		{if $last_type != $sitemap->type}
 			{assign var=last_type value=$sitemap->type}
 			<tr>

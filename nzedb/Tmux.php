@@ -1,6 +1,7 @@
 <?php
 namespace nzedb;
 
+use nzedb\Category;
 use nzedb\db\Settings;
 
 class Tmux
@@ -398,23 +399,40 @@ class Tmux
 		switch ((int)$qry) {
 			case 1:
 				return sprintf("SELECT
-					SUM(IF(nzbstatus = 1 AND categoryid BETWEEN 5000 AND 5999 AND categoryid != 5070 AND videos_id = 0
-						AND tv_episodes_id BETWEEN -3 AND 0 AND size > 1048576,1,0)) AS processtv,
-					SUM(IF(nzbstatus = 1 AND categoryid = 5070 AND anidbid IS NULL,1,0)) AS processanime,
-					SUM(IF(nzbstatus = 1 AND categoryid BETWEEN 2000 AND 2999 AND imdbid IS NULL,1,0)) AS processmovies,
-					SUM(IF(nzbstatus = 1 AND categoryid IN (3010, 3040, 3050) AND musicinfoid IS NULL,1,0)) AS processmusic,
-					SUM(IF(nzbstatus = 1 AND categoryid BETWEEN 1000 AND 1999 AND consoleinfoid IS NULL,1,0)) AS processconsole,
+					SUM(IF(nzbstatus = 1 AND categoryid BETWEEN %d AND %d AND categoryid != %d AND videos_id = 0 AND tv_episodes_id BETWEEN -3 AND 0 AND size > 1048576,1,0)) AS processtv,
+					SUM(IF(nzbstatus = 1 AND categoryid = %d AND anidbid IS NULL,1,0)) AS processanime,
+					SUM(IF(nzbstatus = 1 AND categoryid BETWEEN %d AND %d AND imdbid IS NULL,1,0)
+					) AS processmovies,
+					SUM(IF(nzbstatus = 1 AND categoryid IN (%d, %d, %d) AND musicinfoid IS NULL,1,0)) AS processmusic,
+					SUM(IF(nzbstatus = 1 AND categoryid BETWEEN %d AND %d AND consoleinfoid IS
+					NULL,1,0)) AS processconsole,
 					SUM(IF(nzbstatus = 1 AND categoryid IN (%s) AND bookinfoid IS NULL,1,0)) AS processbooks,
-					SUM(IF(nzbstatus = 1 AND categoryid = 4050 AND gamesinfo_id = 0,1,0)) AS processgames,
-					SUM(IF(nzbstatus = 1 AND categoryid BETWEEN 6000 AND 6040 AND xxxinfo_id = 0,1,0)) AS processxxx,
+					SUM(IF(nzbstatus = 1 AND categoryid = %d AND gamesinfo_id = 0,1,0)) AS processgames,
+					SUM(IF(nzbstatus = 1 AND categoryid BETWEEN %d AND %d AND xxxinfo_id = 0,1,0)) AS processxxx,
 					SUM(IF(1=1 %s,1,0)) AS processnfo,
 					SUM(IF(nzbstatus = 1 AND nfostatus = 1,1,0)) AS nfo,
-					SUM(IF(nzbstatus = 1 AND isrequestid = 1 AND preid = 0 AND
-						((reqidstatus = 0) OR (reqidstatus = -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL %s HOUR)),1,0)) AS requestid_inprogress,
+					SUM(IF(nzbstatus = 1 AND isrequestid = 1 AND preid = 0 AND ((reqidstatus = 0) OR (reqidstatus = -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL %s HOUR)),1,0)) AS requestid_inprogress,
 					SUM(IF(preid > 0 AND nzbstatus = 1 AND isrequestid = 1 AND reqidstatus = 1,1,0)) AS requestid_matched,
 					SUM(IF(preid > 0 AND searchname IS NOT NULL,1,0)) AS predb_matched,
 					COUNT(DISTINCT(preid)) AS distinct_predb_matched
-					FROM releases r", $bookreqids, Nfo::NfoQueryString($this->pdo), $request_hours);
+					FROM releases r",
+					Category::TV_ROOT,
+					Category::TV_OTHER,
+					Category::TV_ANIME,
+					Category::TV_ANIME,
+					Category::MOVIE_ROOT,
+					Category::MOVIE_OTHER,
+					Category::MUSIC_MP3,
+					Category::MUSIC_LOSSLESS,
+					Category::MUSIC_OTHER,
+					Category::GAME_ROOT,
+					Category::GAME_OTHER,
+					$bookreqids,
+					Category::PC_GAMES,
+					Category::XXX_ROOT,
+					Category::XXX_X264,
+					Nfo::NfoQueryString($this->pdo),
+					$request_hours);
 
 			case 2:
 				return "SELECT
