@@ -153,12 +153,12 @@ if ($page->isPostBack()) {
 
 		try {
 			$DbSetup->processSQLFile(); // Setup default schema
-			$DbSetup->loadTables(); // Load default data files
 			$DbSetup->processSQLFile( // Process any custom stuff.
-					[
-						 'filepath' =>	nZEDb_RES . 'db' . DS . 'schema' . DS . 'mysql-data.sql'
-					]
+				[
+					'filepath' => nZEDb_RES . 'db' . DS . 'schema' . DS . 'mysql-data.sql'
+				]
 			);
+			$DbSetup->loadTables(); // Load default data files
 		} catch (\PDOException $err) {
 			$cfg->error = true;
 			$cfg->emessage = "Error inserting: (" . $err->getMessage() . ")";

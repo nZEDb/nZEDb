@@ -18,6 +18,11 @@ stable code:
 	git fetch -p
 	git branch --set-upstream-to=origin/0.x
 
+2016-03-24 DariusIII
+	* Fix: Fix Default theme menus for cover/list views
+	* Fix: Fix Alpha theme menus when coverview is not enabled
+2016-03-23 niel
+	* Fix problem with category entry for 'Other' being added with ID 100001 for new installs.
 2016-03-18 DariusIII
 	* Fix: Issue #2080 Add back TV processing to NFO files processing.
 	* Fix: Issue #2082 Undefined index $covgroup in Alpha theme preventing cover|list view

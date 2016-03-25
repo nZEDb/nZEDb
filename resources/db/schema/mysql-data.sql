@@ -8,3 +8,5 @@ INSERT INTO user_roles (id, name, apirequests, downloadrequests, defaultinvites,
   (6, 'Friend', 100, 100, 5, 0, 1);
 
 UPDATE user_roles SET id =  id - 1;
+
+INSERT INTO category (id, title, parentid) VALUES (0,  'Other', NULL);
