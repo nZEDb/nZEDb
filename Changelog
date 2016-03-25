@@ -18,6 +18,9 @@ stable code:
 	git fetch -p
 	git branch --set-upstream-to=origin/0.x
 
+
+2016-03-25 niel
+	* Fix: Releases' table videos_id and tv_episodes_id need to default to 0.
 2016-03-23 niel
 	* Fix problem with category entry for 'Other' being added with ID 100001 for new installs.
 2016-03-18 DariusIII
