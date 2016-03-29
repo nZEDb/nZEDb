@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "a3dede31118e4d5bdbfa1f92ec55f93e",
-    "content-hash": "049e424acdf27d392432a3c98470fb9d",
+    "hash": "f95ffa433a2fc259ea1237cb71ee9e23",
+    "content-hash": "308bc99c203287532ddd572e2648f720",
     "packages": [
         {
             "name": "barracudanetworks/forkdaemon-php",
@@ -684,6 +684,43 @@
                 "source": "https://github.com/niel/li3_quality/tree/1.1"
             },
             "time": "2016-03-22 12:07:46"
+        },
+        {
+            "name": "unionofrad/manual",
+            "version": "1.1.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/UnionOfRAD/manual.git",
+                "reference": "7117a85d03045bfe0b4854de6dada100056f7fef"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/UnionOfRAD/manual/zipball/7117a85d03045bfe0b4854de6dada100056f7fef",
+                "reference": "7117a85d03045bfe0b4854de6dada100056f7fef",
+                "shasum": ""
+            },
+            "require": {
+                "composer/installers": "*"
+            },
+            "type": "lithium-library",
+            "license": [
+                "BSD-3-clause"
+            ],
+            "description": "li3 full-fledged documentation effort.",
+            "homepage": "https://github.com/UnionOfRAD/manual",
+            "keywords": [
+                "docblock",
+                "docs",
+                "documentation",
+                "documented",
+                "li3",
+                "lithium"
+            ],
+            "support": {
+                "source": "https://github.com/UnionOfRAD/manual/tree/1.1",
+                "issues": "https://github.com/UnionOfRAD/manual/issues"
+            },
+            "time": "2016-01-04 20:29:49"
         }
     ],
     "aliases": [],
@@ -694,6 +731,7 @@
         "kbjr/git.php": 20,
         "unionofrad/lithium": 20,
         "unionofrad/li3_docs": 20,
+        "unionofrad/manual": 20,
         "unionofrad/li3_quality": 20
     },
     "prefer-stable": false,
