@@ -35,5 +35,5 @@ spl_autoload_register(
 	}
 );
 */
-require_once 'vendor/autoload.php'
+require_once 'app/libraries/autoload.php'
 ?>
