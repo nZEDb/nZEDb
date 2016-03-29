@@ -7,6 +7,8 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
+2016-03-29 DariusIII
+	* Fix: Fix vendor autoload path in autoloader.php
 2016-03-09 niel
 	* Chg: Move location of Smarty's additional directories (cache, compile, and config) to the
 	 resources directory.
