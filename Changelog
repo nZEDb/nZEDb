@@ -18,6 +18,9 @@ stable code:
 	git fetch -p
 	git branch --set-upstream-to=origin/0.x
 
+2016-03-30 niel
+	* Mrg: PR 2087, jmelen - Fix mismatched braces in api which caused search problems (Closes
+	  issue 2069).
 2016-03-25 niel
 	* Fix: Releases' table videos_id and tv_episodes_id need to default to 0 (Closes issue 2084).
 2016-03-24 DariusIII
