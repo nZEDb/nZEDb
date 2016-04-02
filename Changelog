@@ -10,7 +10,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 2016-04-04 niel
 	Mrg: dev => next-master to prepare for updating master.
 
-**IMPORTANT** Be aware that for the next update (May) the stable branch will no longer be the
+**IMPORTANT** Be aware that for the next update (April) the stable branch will no longer be the
 master branch. It will be renamed to 0.x. You HAVE to run the following commands to stay on
 stable code:
 	git checkout master
