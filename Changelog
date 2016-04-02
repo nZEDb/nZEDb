@@ -7,7 +7,7 @@ New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
-2016-04-04 niel
+2016-04-03 niel
 	Mrg: dev => next-master to prepare for updating master.
 
 **IMPORTANT** Be aware that for the next update (April) the stable branch will no longer be the
@@ -24,8 +24,8 @@ stable code:
 2016-03-25 niel
 	* Fix: Releases' table videos_id and tv_episodes_id need to default to 0 (Closes issue 2084).
 2016-03-24 DariusIII
-	* Fix: Fix Default theme menus for cover/list views
-	* Fix: Fix Alpha theme menus when coverview is not enabled
+	* Fix: Default theme menus for cover/list views
+	* Fix: Alpha theme menus when coverview is not enabled
 2016-03-23 niel
 	* Fix problem with category entry for 'Other' being added with ID 100001 for new installs.
 2016-03-18 DariusIII
