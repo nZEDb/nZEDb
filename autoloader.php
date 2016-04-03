@@ -18,7 +18,7 @@
  * @author    niel
  * @copyright 2014 nZEDb
  */
-
+/*
 spl_autoload_register(
 	function ($class) {
 		// Only continue if the class is in our namespace.
@@ -34,5 +34,6 @@ spl_autoload_register(
 		}
 	}
 );
-
+*/
+require_once 'app/libraries/autoload.php'
 ?>
