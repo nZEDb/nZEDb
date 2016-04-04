@@ -6,7 +6,7 @@
 			<file>426</file>
 		</sql>
 		<git>
-			<tag>0.5.2</tag>
+			<tag>0.5.5</tag>
 			<!-- commit count removed Dec 2014 -->
 			<hooks>
 				<precommit>9</precommit>
