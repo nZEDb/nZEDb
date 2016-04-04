@@ -38,6 +38,11 @@ class Versions
 	protected $_filespec;
 
 	/**
+	 * @var array of stable branches.
+	 */
+	protected $_stable = ['0.x'];
+
+	/**
 	 * Shortcut to the nzedb->versions node to make method work shorter.
 	 * @var object SimpleXMLElement
 	 */
@@ -133,17 +138,17 @@ class Versions
 	 */
 	public function checkGitTag($update = true)
 	{
+		$branch = $this->git->getBranch();
 		$latest = $this->git->tagLatest();
 		$ver = preg_match('#v(\d+\.\d+\.\d+).*#', $latest, $matches) ? $matches[1] : $latest;
 
-		if ($this->git->getBranch() !== 'master') {
+		if (!in_array($branch,  $this->_stable)) {
 			if (version_compare($this->_vers->git->tag, '0.0.0', '!=')) {
 				$this->_vers->git->tag = '0.0.0';
 				$this->_changes |= self::UPDATED_GIT_TAG;
 			}
 			return $this->_vers->git->tag;
 		}
-
 		// Check if version file's entry is the same as current branch's tag
 		if (version_compare($this->_vers->git->tag, $latest, '!=')) {
 			if ($update) {
