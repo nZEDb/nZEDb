@@ -49,6 +49,10 @@ Fixed:
 	* Wrong name for failed releases in template.
 	* Add back TV processing to NFO files processing (Issue 2080).
 	* Undefined index $covgroup in Alpha theme preventing cover|list view (Issue 2082).
+	* Default theme menus for cover/list views
+	* Alpha theme menus when coverview is not enabled
+	* Releases' table videos_id and tv_episodes_id need to default to 0 (Closes issue 2084).
+	* Mismatched braces in api which caused search problems (PR 2087, Closes issue 2069).
 
 
 0.5.4 2016-02-29
