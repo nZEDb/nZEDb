@@ -74,7 +74,8 @@ if ($page->users->isLoggedIn()) {
 			if (!$res) {
 				Misc::showApiError(100, 'Incorrect user credentials (wrong API key)');
 			}
-
+		}
+		
 		if ($page->users->isDisabled($res['username'])) {
 			Misc::showApiError(101);
 		}
@@ -347,9 +348,6 @@ switch ($function) {
 		header('Content-Length: ' . strlen($response) );
 		echo $response;
 		break;
-}
-
-
 }
 
 /**
