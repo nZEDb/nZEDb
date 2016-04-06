@@ -52,4 +52,4 @@ define('nZEDb_THEMES_SHARED', nZEDb_WWW . 'themes/shared' . DS);
 // Path where log files are stored.
 define('nZEDb_LOGS', nZEDb_RES . 'logs' . DS);
 
-define('nZEDb_VERSIONS', nZEDb_LIB . 'build' . DS . 'nZEDb.xml');
+define('nZEDb_VERSIONS', nZEDb_ROOT . 'build' . DS . 'nzedb.xml');
