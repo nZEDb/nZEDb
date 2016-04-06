@@ -26,6 +26,10 @@ use \nzedb\utility\Git;
 /**
  * Returns the current version (or branch) of the indexer.
  *
+ * Actions:
+ *  * git	Show git tag for current version.
+ *  * sql	Show SQL patch level
+ *
  * @package app\extensions\command
  */
 class Version extends \app\extensions\console\Command
@@ -33,12 +37,12 @@ class Version extends \app\extensions\console\Command
 	/**
 	 * @var \nzedb\utility\Git instance variable.
 	 */
-	public $git;
+	//protected $git;
 
 	/**
 	 * @var array of stable branches.
 	 */
-	public $stable = ['0.x'];
+	//protected $stable = ['0.x'];
 
 	/**
 	 * Constructor.
@@ -55,12 +59,10 @@ class Version extends \app\extensions\console\Command
 		parent::__construct($config + $defaults);
 	}
 
-	public function run($command = null, $path = null)
+	public function run()
 	{
-		$dummy = $this->request->args();
-		var_dump($this->request->params);
-		if (!$command) {
-			return $this->error("{$command}.");
+		if (!$this->request->args()) {
+			return $this->_help();
 		}
 
 		return false;
@@ -74,6 +76,11 @@ class Version extends \app\extensions\console\Command
 
 		//$this->header('nZEDb');
 		$this->out("nZEDb version: $latest");
+	}
+
+	protected function sql()
+	{
+		;
 	}
 
 	/**
