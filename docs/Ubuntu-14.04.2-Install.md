@@ -145,7 +145,7 @@ Most of this guide is done from the command line (terminal).
 	#sudo chmod 777 nZEDb
 	#cd nZEDb
 	#sudo chmod -R 755 .
-	#sudo chmod 777 /var/www/nZEDb/libs/smarty/templates_c
+	#sudo chmod 777 /var/www/nZEDb/resources/smarty/templates_c
 	#sudo chmod -R 777 /var/www/nZEDb/www/covers
 	#sudo chmod 777 /var/www/nZEDb/www
 	#sudo chmod 777 /var/www/nZEDb/www/install
@@ -156,8 +156,8 @@ Most of this guide is done from the command line (terminal).
 	sudo chmod 775 nZEDb
 	cd nZEDb
 	sudo chmod -R 755 .
-	sudo chgrp www-data /var/www/nZEDb/libs/smarty/templates_c
-	sudo chmod 775 /var/www/nZEDb/libs/smarty/templates_c
+	sudo chgrp www-data /var/www/nZEDb/resources/smarty/templates_c
+	sudo chmod 775 /var/www/nZEDb/resources/smarty/templates_c
 	sudo chgrp -R www-data /var/www/nZEDb/resources/covers
 	sudo chmod -R 775 /var/www/nZEDb/resources/covers
 	sudo chgrp www-data /var/www/nZEDb/www

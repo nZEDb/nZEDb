@@ -9,6 +9,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 
 
 2016-04-06 niel
+	Fix: Fix smarty related issues
 	Mrg: Bring dev-li3 branch into dev. This includes composer changes and the lithium framework.
 		 ***NOTE*** You MUST install Composer to continue using nZEDb. See
 		https://getcomposer.org/doc/00-intro.md#downloading-the-composer-executable We recommend the
