@@ -1,8 +1,6 @@
 <?php
 namespace nzedb;
 
-require_once nZEDb_LIBS . 'TMDb.php';
-
 use nzedb\Category;
 use nzedb\db\Settings;
 use nzedb\utility\Misc;

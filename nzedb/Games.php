@@ -1,8 +1,6 @@
 <?php
 namespace nzedb;
 
-require_once nZEDb_LIBS . 'GiantBombAPI.php';
-
 use nzedb\db\Settings;
 
 class Games

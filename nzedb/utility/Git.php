@@ -20,8 +20,6 @@
  */
 namespace nzedb\utility;
 
-require_once nZEDb_LIBS . 'Git.php' . DS . 'Git.php';
-
 /**
  * Class Git - Wrapper for various git operations.
  * @package nzedb\utility

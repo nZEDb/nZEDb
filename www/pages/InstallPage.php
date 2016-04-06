@@ -1,5 +1,4 @@
 <?php
-require_once nZEDb_LIBS . 'smarty/Smarty.class.php';
 
 define('nZEDb_INSTALLER', true);
 

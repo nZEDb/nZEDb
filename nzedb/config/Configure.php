@@ -20,8 +20,6 @@
  */
 namespace nzedb\config;
 
-require_once nZEDb_LIBS . 'autoloader.php';
-
 class Configure
 {
 	private $environments = [

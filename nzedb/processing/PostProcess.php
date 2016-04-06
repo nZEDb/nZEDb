@@ -24,8 +24,6 @@ use nzedb\processing\post\AniDB;
 use nzedb\processing\post\ProcessAdditional;
 use nzedb\utility;
 
-require_once nZEDb_LIBS . 'rarinfo/par2info.php';
-
 class PostProcess
 {
 	/**
