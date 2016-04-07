@@ -36,7 +36,7 @@ if (isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "safe")) {
 	if ($cleared) {
 		echo $cli->header("The smarty template cache has been cleaned for you");
 	} else {
-		echo $cli->header("You should clear your smarty template cache at: " . SMARTY_DIR . "templates_c");
+		echo $cli->header("You should clear your smarty template cache at: " . nZEDb_RES . "smarty" . DS . "templates_c");
 	}
 
 	if ($restart) {

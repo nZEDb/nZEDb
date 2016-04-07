@@ -33,7 +33,7 @@ foreach (explode(DS, nZEDb_ROOT) as $folder) {
 $folders = [
 	nZEDb_LIBS										=> [R],
 	nZEDb_LIBS . 'smarty'							=> [R],
-	nZEDb_LIBS . 'smarty' . DS . 'templates_c'		=> [R, W],
+	nZEDb_RES . 'smarty' . DS . 'templates_c'		=> [R, W],
 	nZEDb_RES										=> [R, W, E],
 	nZEDb_RES . 'db'								=> [R, E],
 	nZEDb_RES . 'db' . DS . 'patches'				=> [R, E],
