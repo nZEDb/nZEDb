@@ -1,5 +1,4 @@
 .DS_Store
-composer.*
 config.php
 error_log
 failed-login.log
@@ -13,6 +12,7 @@ test.php
 *.orig
 
 /.idea/
+/app/libraries/*
 /app/resources/tmp/*
 /nzedb/config/config.php
 /nzedb/config/settings.php
@@ -27,4 +27,4 @@ test.php
 /resources/nzb/*
 /resources/tmp/*
 /templates_c/*
-/vendor
+/libraries/*

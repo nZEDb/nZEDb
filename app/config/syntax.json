@@ -1,0 +1,43 @@
+{
+  "name": "Default Rule Set",
+  "rules": [
+    "BeginsWithOpenTag",
+    "ClassesDoNotUseSuperglobalsDirectly",
+    "ConstructsWithoutBrackets",
+    "ControlStructuresHaveCorrectFormat",
+    "DoesntExceedMaxLineLength",
+    "EndsWithCloseTag",
+    "HasCorrectCastSpacing",
+    "HasCorrectCommentStyle",
+    "HasCorrectEncoding",
+    "HasCorrectFunctionNames",
+    "HasCorrectInlineHTML",
+    "HasCorrectPermissions",
+    "HasCorrectTabIndention",
+    "HasCorrectVariableNames",
+    "HasExplicitPropertyAndMethodVisibility",
+    "HasNoForbiddenStatements",
+    "HasNoPrivateMethods",
+    "HasNoTrailingWhitespace",
+    "HasTabsAsIndentation",
+    "MultipleBlankLines",
+    "OperatorSpacing",
+    "ProtectedNamesStartWithUnderscore",
+    "TabsOnlyAppearFirst",
+    "UnusedUseStatements",
+    "WeakComparisonOperators"
+  ],
+  "skipped": [
+    "ControlStructuresHaveCorrectSpacing",
+    "HasCorrectDocblockStyle",
+    "HasCorrectClassName",
+    "HasNoTrailingWhitespaceExceptNewline"
+  ],
+  "options": {
+    "DoesntExceedMaxLineLength": {
+      "softLimit": false,
+      "hardLimit": 100,
+      "tabWidth": 4
+    }
+  }
+}

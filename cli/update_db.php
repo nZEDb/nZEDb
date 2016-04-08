@@ -19,7 +19,6 @@
  * @copyright 2014 nZEDb
  */
 require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'indexer.php');
-require_once nZEDb_LIBS . DIRECTORY_SEPARATOR . 'smarty' . DIRECTORY_SEPARATOR . 'Smarty.class.php';
 
 use nzedb\db\DbUpdate;
 use nzedb\utility\Misc;
@@ -42,7 +41,7 @@ if (isset($argc) && $argc > 1 && isset($argv[1]) && $argv[1] == true) {
 		if ($cleared) {
 			$msg = "The smarty template cache has been cleaned for you\n";
 		} else {
-			$msg = "You should clear your smarty template cache at: " . SMARTY_DIR . "templates_c\n";
+			$msg = "You should clear your smarty template cache at: " . nZEDb_RES . "smarty" . DS . "templates_c\n";
 		}
 		$updater->log->info($msg);
 	}

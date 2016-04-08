@@ -1,7 +1,8 @@
 <?php
+
 namespace nzedb\processing\tv;
 
-use \libs\JPinkney\TVMaze\Client;
+use JPinkney\TVMaze\TVMaze as Client;
 use nzedb\ReleaseImage;
 
 /**
@@ -16,7 +17,7 @@ class TVMaze extends TV
 	/**
 	 * Client for TVMaze API
 	 *
-	 * @var \libs\JPinkney\TVMaze\Client
+	 * @var \JPinkney\TVMaze\TVMaze
 	 */
 	public $client;
 
@@ -241,7 +242,7 @@ class TVMaze extends TV
 		$cleanName = preg_replace('# \((19|20)\d{2}\)$#', '', $cleanName);
 
 		//Try for the best match with AKAs embedded
-		$response = $this->client->singleSearch($cleanName);
+		$response = $this->client->singleSearchAkas($cleanName);
 
 		sleep(1);
 

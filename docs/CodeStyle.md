@@ -42,4 +42,4 @@ overridden to use whichever theme you like.
 
 * Fields referencing fields in other tables (usually indexed fields), should use the table name
  followed by the field name separated by an underderscore.
-  i.e. videos_id is a reference to videos.id (the id field in the videos table).
+ i.e. videos_id is a reference to videos.id (the id field in the videos table).

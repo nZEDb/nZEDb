@@ -20,8 +20,6 @@
  */
 namespace nzedb\utility;
 
-require_once nZEDb_LIBS . 'Git.php' . DS . 'Git.php';
-
 /**
  * Class Git - Wrapper for various git operations.
  * @package nzedb\utility
@@ -29,7 +27,7 @@ require_once nZEDb_LIBS . 'Git.php' . DS . 'Git.php';
 class Git extends \GitRepo
 {
 	private $branch;
-	private $mainBranches = ['0.x', 'dev', 'next-master', 'master', 'dev-test'];
+	private $mainBranches = ['0.x', 'dev', 'latest-testing', 'dev-test'];
 
 	public function __construct(array $options = [])
 	{

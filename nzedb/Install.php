@@ -100,6 +100,7 @@ class Install
 		$this->CONFIG_PATH = nZEDb_CONFIGS;
 		$this->COVERS_PATH = nZEDb_RES . 'covers' . DS;
 		$this->DB_DIR = nZEDb_RES . 'db' . DS . 'schema' . DS;
+		$this->SMARTY_COMPILED_TEMPLATES = nZEDb_RES . 'smarty' . DS . 'templates_c' . DS;
 		$this->INSTALL_DIR = nZEDb_WWW . 'install';
 		$this->NZB_PATH = nZEDb_RES . 'nzb' . DS;
 		$this->TMP_PATH = nZEDb_RES . 'tmp' . DS;

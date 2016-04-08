@@ -72,7 +72,7 @@ if (extension_loaded('posix') && strtolower(substr(PHP_OS, 0, 3)) !== 'win') {
 	$page->smarty->assign('fixString', false);
 }
 
-$cfg->cacheCheck = is_writable(SMARTY_DIR . 'templates_c');
+$cfg->cacheCheck = is_writable(nZEDb_RES . 'smarty' . DS . 'templates_c');
 if ($cfg->cacheCheck === false) {
 	$cfg->error = true;
 }

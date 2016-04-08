@@ -4,10 +4,14 @@
 define('nZEDb_MINIMUM_PHP_VERSION', '5.5.0');
 define('nZEDb_MINIMUM_MYSQL_VERSION', '5.5');
 
-define('DS', DIRECTORY_SEPARATOR);
+if (!defined('DS')) {
+	define('DS', DIRECTORY_SEPARATOR);
+}
 
 // These are file path constants
-define('nZEDb_ROOT', realpath(__DIR__) . DS);
+if (!defined('nZEDb_ROOT')) {
+	define('nZEDb_ROOT', realpath(__DIR__) . DS);
+}
 
 // Used to refer to the main lib class files.
 define('nZEDb_LIB', nZEDb_ROOT . 'nzedb' . DS);
@@ -48,4 +52,4 @@ define('nZEDb_THEMES_SHARED', nZEDb_WWW . 'themes/shared' . DS);
 // Path where log files are stored.
 define('nZEDb_LOGS', nZEDb_RES . 'logs' . DS);
 
-define('nZEDb_VERSIONS', nZEDb_LIB . 'build' . DS . 'nZEDb.xml');
+define('nZEDb_VERSIONS', nZEDb_ROOT . 'build' . DS . 'nzedb.xml');
