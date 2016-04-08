@@ -8,8 +8,9 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 
+2016-04-07 Darius
+	Fix: Installation smarty related issue (Closes issue 2092).
 2016-04-06 niel
-	Fix: Fix smarty related issues
 	Mrg: Bring dev-li3 branch into dev. This includes composer changes and the lithium framework.
 		 ***NOTE*** You MUST install Composer to continue using nZEDb. See
 		https://getcomposer.org/doc/00-intro.md#downloading-the-composer-executable We recommend the
