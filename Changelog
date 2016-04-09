@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the master branch see the ReleaseNotes file.
 
 
+2016-04-09 niel
+	Mrg: PR 2098, from Wally73 - Update read me.
 2016-04-07 Darius
 	Fix: Installation smarty related issue (Closes issue 2092).
 2016-04-06 niel
