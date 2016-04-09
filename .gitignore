@@ -24,6 +24,7 @@ test.php
 /nbproject/private/
 /resources/covers/*
 /resources/nzb/*
+/resources/smarty/templates_c/*.php
 /resources/tmp/*
 /templates_c/*
 /libraries/*
