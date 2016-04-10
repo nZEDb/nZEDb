@@ -13,7 +13,7 @@ global method, as we do not provide the composer.phar file in our repo.
 Either:
 	1) If you will not be working on the code (most people), run this command:
 
-	composer create-project --no-dev nzedb/nzedb
+	composer create-project --no-dev --keep-vcs nzedb/nzedb
 This will install the latest stable version of the code.
 
 or:
