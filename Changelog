@@ -6,9 +6,11 @@ Please make sure any PR's comply with our coding standards policy: http://li3.me
 New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY
 NOT BE PRESENT IN THE STABLE BRANCH
-For details of when a commit makes it into the master branch see the ReleaseNotes file.
+For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
-
+2016-04-10 niel
+	Fix: Incorrect covers path for Apache users, caused by .htaccess file added to nZEDb
+		directory during lithium integration.
 2016-04-09 niel
 	Mrg: PR 2098, from Wally73 - Update read me.
 2016-04-07 Darius
