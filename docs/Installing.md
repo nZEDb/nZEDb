@@ -13,11 +13,11 @@ global method, as we do not provide the composer.phar file in our repo.
 Either:
 	1) If you will not be working on the code (most people), run this command:
 
-	composer create-project nzedb/nzedb
+	composer create-project --no-dev nzedb/nzedb
 This will install the latest stable version of the code. 
 
 or:
 	2) Install Git as instructed, then run:
 
-	composer create-project --stability dev --dev --keep-vcs --prefer-source nzedb/nzedb
+	composer create-project --stability dev --keep-vcs --prefer-source nzedb/nzedb
 This clones the development branch at the latest commit.
