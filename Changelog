@@ -11,6 +11,8 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 2016-04-10 niel
 	Fix: Incorrect covers path for Apache users, caused by .htaccess file added to nZEDb
 		directory during lithium integration.
+	Add: New setting for ReCaptcha to switch it off. Defaults to on to prevent BC problems. This
+		allows disabling ReCaptcha without having to remove your keys.
 2016-04-09 niel
 	Mrg: PR 2098, from Wally73 - Update read me.
 2016-04-07 Darius
