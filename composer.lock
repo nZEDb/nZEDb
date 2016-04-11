@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f95ffa433a2fc259ea1237cb71ee9e23",
+    "hash": "e0b12c1aed53a150faa7c7ab31b86ba9",
     "content-hash": "308bc99c203287532ddd572e2648f720",
     "packages": [
         {
@@ -45,16 +45,16 @@
         },
         {
             "name": "composer/installers",
-            "version": "v1.0.23",
+            "version": "v1.0.24",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/installers.git",
-                "reference": "6213d900e92647831f7a406d5c530ea1f3d4360e"
+                "reference": "1cf7cc4b89d5e8549bbb7d6ab1de75da13d27988"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/installers/zipball/6213d900e92647831f7a406d5c530ea1f3d4360e",
-                "reference": "6213d900e92647831f7a406d5c530ea1f3d4360e",
+                "url": "https://api.github.com/repos/composer/installers/zipball/1cf7cc4b89d5e8549bbb7d6ab1de75da13d27988",
+                "reference": "1cf7cc4b89d5e8549bbb7d6ab1de75da13d27988",
                 "shasum": ""
             },
             "require": {
@@ -76,8 +76,8 @@
                 }
             },
             "autoload": {
-                "psr-0": {
-                    "Composer\\Installers\\": "src/"
+                "psr-4": {
+                    "Composer\\Installers\\": "src/Composer/Installers"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -92,12 +92,14 @@
                 }
             ],
             "description": "A multi-framework Composer library installer",
-            "homepage": "http://composer.github.com/installers/",
+            "homepage": "https://composer.github.io/installers/",
             "keywords": [
                 "Craft",
                 "Dolibarr",
                 "Hurad",
+                "ImageCMS",
                 "MODX Evo",
+                "Mautic",
                 "OXID",
                 "SMF",
                 "Thelia",
@@ -139,7 +141,7 @@
                 "zend",
                 "zikula"
             ],
-            "time": "2016-01-27 12:54:22"
+            "time": "2016-04-05 11:42:46"
         },
         {
             "name": "giantbomb/giantbomb",
@@ -330,16 +332,16 @@
         },
         {
             "name": "moinax/tvdb",
-            "version": "v1.0.4",
+            "version": "v1.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Moinax/TvDb.git",
-                "reference": "68204c72efe99945cd49fe99ac23c8f9b068f2d6"
+                "reference": "772b24179b199bc1f17935c52613f95d318ad3cc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Moinax/TvDb/zipball/68204c72efe99945cd49fe99ac23c8f9b068f2d6",
-                "reference": "68204c72efe99945cd49fe99ac23c8f9b068f2d6",
+                "url": "https://api.github.com/repos/Moinax/TvDb/zipball/772b24179b199bc1f17935c52613f95d318ad3cc",
+                "reference": "772b24179b199bc1f17935c52613f95d318ad3cc",
                 "shasum": ""
             },
             "require": {
@@ -366,7 +368,7 @@
             "keywords": [
                 "api"
             ],
-            "time": "2016-03-08 12:37:26"
+            "time": "2016-04-01 14:51:00"
         },
         {
             "name": "phpmailer/phpmailer",
