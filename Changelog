@@ -8,6 +8,8 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+2016-04-11 DariusIII
+	Fix: Fix NFO display on coverpages in Light/Default themes.Second part of fixes for issue #2099
 2016-04-10 niel
 	Fix: Prevent undefined index isadmin on forumpost page in Gamma template
 	Fix: DariusIII - Fix issue #2099 Broken links for NFO display on Charisma/Omicron cover pages
