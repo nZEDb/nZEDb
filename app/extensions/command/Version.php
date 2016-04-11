@@ -19,6 +19,7 @@
 namespace app\extensions\command;
 
 use \Exception;
+use \app\models\Settings;
 use \lithium\console\command\Help;
 use \nzedb\utility\Git;
 
@@ -98,15 +99,42 @@ class Version extends \app\extensions\console\Command
 	 *
 	 * @param null $path Optional path to the versions XML file.
 	 */
-	protected function sql($versions = null)
+	protected function sql()
 	{
-		$this->_loadVersionsFile($versions);
-		$latest = $this->getSQLPatchFromFile();
-		$this->out("SQL version: $latest");
+		$this->request->params['args'] += ['sqlcheck' => 'all'];
+		$this->primary('Looking up SQL patch version(s)');
+
+		if (in_array($this->request->params['args']['sqlcheck'], ['xml', 'both', 'all'])) {
+			$latest = $this->getSQLPatchFromFile();
+			$this->out("XML version: $latest");
+		}
+
+		if (in_array($this->request->params['args']['sqlcheck'], ['db', 'both', 'all'])) {
+			$dbpatch = self::getSQLPatchFromDB();
+
+			if ($dbpatch->count()) {
+				$dbVersion = $dbpatch->data()[0]['value'];
+				if (!is_numeric($dbVersion)) {
+					$this->error("Bad sqlpatch value: '$dbVersion'\n");
+				} else {
+					$this->out(" DB version: " . $dbVersion);
+				}
+			} else {
+				$this->error("Unable to fetch Databse SQL level ");
+			}
+		}
 	}
+
+	protected function getSQLPatchFromDB()
+	{
+		return Settings::find('setting', ['conditions' => '..sqlpatch']);
+
+	}
+
 
 	protected function getSQLPatchFromFile()
 	{
+		$this->_loadVersionsFile();
 		return ($this->xml === null) ? null : $this->_vers->sql->file->__toString();
 	}
 
@@ -132,10 +160,10 @@ class Version extends \app\extensions\console\Command
 				$vers = $this->xml->xpath('/nzedb/versions');
 
 				if ($vers[0]->count() == 0) {
-					$this->error("Your versions XML file ({nZEDb_VERSIONS}) does not contain version info, try updating from git.");
+					$this->error("Your versions XML file ($versions) does not contain version info, try updating from git.");
 					throw new \Exception("Failed to find versions node in XML file '$versions'");
 				} else {
-					$this->primary("Your versions XML file ({nZEDb_VERSIONS}) looks okay, continuing.");
+					//$this->primary("Your versions XML file ($versions) looks okay, continuing.");
 					$this->_vers = &$this->xml->versions;
 				}
 			} else {
