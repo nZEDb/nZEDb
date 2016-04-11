@@ -53,7 +53,7 @@ class Update extends \app\extensions\console\Command
 	{
 		// TODO Add check to determine if the indexer or other scripts are running. Hopefully
 		// also prevent web access.
-		$this->primary("Update Database starting...");
+		$this->primary("Checking Schema versions...");
 	}
 
 	public function git()
@@ -70,10 +70,10 @@ class Update extends \app\extensions\console\Command
 	{
 		try {
 			$this->composer();
+			$this->db();
 		} catch (Exception $e) {
 			$this->error($e->getMessage());
 		}
-
 	}
 
 	public function run($command = null)
