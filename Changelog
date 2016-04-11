@@ -9,6 +9,7 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 2016-04-11 DariusIII
+	Fix: Update autopatcher - fix issue #2096
 	Fix: Fix NFO display on coverpages in Light/Default themes.Second part of fixes for issue #2099
 2016-04-10 niel
 	Fix: Prevent undefined index isadmin on forumpost page in Gamma template

@@ -1,8 +1,5 @@
 <?php
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DS . 'libs' . DS . 'smarty' . DS . 'Autoloader.php');
-
-Smarty_Autoloader::register();
 
 use nzedb\ColorCLI;
 use nzedb\Tmux;
@@ -11,7 +8,7 @@ use nzedb\utility\Misc;
 
 $pdo = new Settings();
 $DIR = nZEDb_MISC;
-$smarty = new Smarty;
+$smarty = new SmartyBC();
 $dbname = DB_NAME;
 $cli = new ColorCLI();
 
@@ -32,7 +29,7 @@ if (isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "safe")) {
 	system("$PHP " . nZEDb_ROOT . 'cli' . DS . "update_db.php true $safe");
 
 	// Remove folders from smarty.
-	$cleared = $smarty->clearCompiledTemplate();
+	$cleared = $smarty->clear_compiled_tpl();
 	if ($cleared) {
 		echo $cli->header("The smarty template cache has been cleaned for you");
 	} else {
