@@ -22,6 +22,10 @@ namespace app\models;
 class Settings extends \lithium\data\Model {
 
 	public $validates = [];
+
+	protected $_meta = [
+		'key' => ['section', 'subsection', 'name']
+	];
 }
 
 ?>
