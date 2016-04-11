@@ -19,6 +19,14 @@
 
 namespace app\models;
 
+/**
+ * Settings - model for settings table.
+ *
+ * li3 app completely ignore the 'setting' column and only uses 'section', 'subsection', and 'name'
+ * for finding values/hints.
+ *
+*@package app\models
+ */
 class Settings extends \lithium\data\Model {
 
 	public $validates = [];
@@ -26,6 +34,61 @@ class Settings extends \lithium\data\Model {
 	protected $_meta = [
 		'key' => ['section', 'subsection', 'name']
 	];
+
+	public static function init()
+	{
+		static::finder('setting',
+			function ($params, $next) {
+
+				if (!is_array($params['options']['conditions'])) {
+					$params['options']['conditions'] = self::dottedToArray($params['options']['conditions']);
+				} elseif (count($params) == 1) {
+					$params['options']['conditions'] = self::dottedToArray($params['options']['conditions'][0]);
+				}
+				$params['type'] = 'first';
+
+				$array = array_diff_key(
+					$params['options'],
+					array_fill_keys(['conditions', 'fields', 'order', 'limit', 'page'], 0)
+				);
+				$params['options'] = array_diff_key($params['options'], $array);
+				$params['options']['fields'] = ['value', 'hint'];
+
+
+				$result = $next($params);
+
+				return $result;
+			}
+		);
+	}
+
+	protected static function dottedToArray($setting)
+	{
+		$result = [];
+		if (is_string($setting)) {
+			$array = explode('.', $setting);
+			$count = count($array);
+			if ($count > 3) {
+				return false;
+			}
+
+			while (3 - $count > 0) {
+				array_unshift($array, '');
+				$count++;
+			}
+						list(
+				$result['section'],
+				$result['subsection'],
+				$result['name'],
+				) = $array;
+		} else {
+			return false;
+		}
+		//var_dump($result);
+
+		return $result;
+
+	}
 }
 
-?>
+Settings::init();
