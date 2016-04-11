@@ -100,14 +100,14 @@
 					<td class="mid">
 						<div class="movcover">
 							<a class="title" title="View details"
-							   href="{$smarty.const.WWW_TOP}/details/{$result.guid}">
+							   href="{$smarty.const.WWW_TOP}/details/{$result.grp_release_guid}">
 								<img class="shadow"
 									 src="{$smarty.const.WWW_TOP}/covers/music/{if $result.cover == 1}{$result.musicinfoid}.jpg{else}no-cover.jpg{/if}"
 									 width="120" border="0"
 									 alt="{$result.artist|escape:"htmlall"} - {$result.title|escape:"htmlall"}"/>
 							</a>
 							<div class="movextra">
-								{if $result.nfoid > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}"
+								{if $result.nfoid > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$result.grp_release_guid}"
 														 title="View Nfo" class="rndbtnsml modal_nfo" rel="nfo">
 										Nfo</a>{/if}
 								<a class="rndbtnsml" target="_blank" href="{$site->dereferrer_link}{$result.url}"
@@ -117,7 +117,7 @@
 							</div>
 						</div>
 					</td>
-					<td colspan="7" class="left" id="guid{$result.guid}">
+					<td colspan="7" class="left" id="guid{$result.grp_release_guid}">
 						<h2>{$result.artist}{" - "}{$result.title}</h2>
 						{if $result.genre_id != ""}
 							<b>Genre:</b>
