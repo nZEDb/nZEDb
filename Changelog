@@ -8,6 +8,10 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+2016-04-11 niel
+	Add: Initial 'Update' console command. Currently only updates the repo (via composer).
+		 ***NOTE*** `./zed update nzedb` is now the prefered method of updating. Do not `git pull`
+		unless you know what you might be screwing up ;-)
 2016-04-10 niel
 	Fix: Incorrect covers path for Apache users, caused by .htaccess file added to nZEDb
 		directory during lithium integration.
