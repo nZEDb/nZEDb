@@ -12,7 +12,12 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Add: Initial 'Update' console command. Currently only updates the repo (via composer).
 		 ***NOTE*** `./zed update nzedb` is now the prefered method of updating. Do not `git pull`
 		unless you know what you might be screwing up ;-)
+2016-04-11 DariusIII
+	Fix: Update autopatcher - fix issue #2096
+	Fix: Fix NFO display on coverpages in Light/Default themes.Second part of fixes for issue #2099
 2016-04-10 niel
+	Fix: Prevent undefined index isadmin on forumpost page in Gamma template
+	Fix: DariusIII - Fix issue #2099 Broken links for NFO display on Charisma/Omicron cover pages
 	Fix: Incorrect covers path for Apache users, caused by .htaccess file added to nZEDb
 		directory during lithium integration.
 	Add: New setting for ReCaptcha to switch it off. Defaults to on to prevent BC problems. This
