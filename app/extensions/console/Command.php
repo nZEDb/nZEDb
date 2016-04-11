@@ -33,5 +33,13 @@ class Command extends \lithium\console\Command
 		parent::__construct($config + $defaults);
 		require_once nZEDb_ROOT . 'constants.php';
 	}
+
+	public function primary($text)
+	{
+		if ($this->silent) {
+			return;
+		}
+		$this->out($text, 'primary');
+	}
 }
 ?>
