@@ -49,6 +49,13 @@ class Update extends \app\extensions\console\Command
 		parent::__construct($config + $defaults);
 	}
 
+	public function db()
+	{
+		// TODO Add check to determine if the indexer or other scripts are running. Hopefully
+		// also prevent web access.
+		$this->primary("Update Database starting...");
+	}
+
 	public function git()
 	{
 		/*
@@ -56,6 +63,7 @@ class Update extends \app\extensions\console\Command
 		$this->gitBranch = $git->getBranch();
 		$this->gitTag = $git->tagLatest();
 		*/
+		$this->error("Not implemented yet!!");
 	}
 
 	public function nzedb()
