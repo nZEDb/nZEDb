@@ -37,16 +37,6 @@ use \lithium\console\command\Help;
 class Version extends \app\extensions\console\Command
 {
 	/**
-	 * @var \nzedb\utility\Git instance variable.
-	 */
-	//protected $git;
-
-	/**
-	 * @var array of stable branches.
-	 */
-	//protected $stable = ['0.x'];
-
-	/**
 	 * @var object simpleXMLElement
 	 */
 	protected $xml = null;
@@ -83,12 +73,14 @@ class Version extends \app\extensions\console\Command
 
 	protected function getGitTagFromFile()
 	{
-		;
+		$this->_loadVersionsFile();
+		return ($this->xml === null) ? null : $this->_vers->git->tag->__toString();
 	}
 
 	protected function getGitTagFromRepo()
 	{
-		;
+		$git = new Git();
+		return $git->tagLatest();
 	}
 
 	protected function getSQLPatchFromDB()
@@ -108,12 +100,14 @@ class Version extends \app\extensions\console\Command
 	 *
 	 * @param null $path Optional path to the versions XML file.
 	 */
-	protected function git($versions = null)
+	protected function git()
 	{
-		$git = new Git();
-		$latest = $git->tagLatest();
+		$current = $this->getGitTagFromFile();
+		$latest = $this->getGitTagFromRepo();
 
-		$this->out("nZEDb version: $latest");
+		$this->primary('Looking up Git tag version(s)');
+		$this->out("XML version: $current");
+		$this->out("Git version: $latest");
 	}
 
 	/**
