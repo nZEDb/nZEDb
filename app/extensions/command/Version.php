@@ -153,9 +153,7 @@ class Version extends \app\extensions\console\Command
 			libxml_use_internal_errors($temp);
 
 			if ($this->xml === false) {
-				if (Misc::isCLI()) {
-					$this->error("Your versions XML file ($versions) is broken, try updating from git.");
-				}
+				$this->error("Your versions XML file ($versions) is broken, try updating from git.");
 				throw new \Exception("Failed to open versions XML file '$versions'");
 			}
 
