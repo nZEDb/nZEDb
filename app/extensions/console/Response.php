@@ -310,6 +310,7 @@ class Response extends \lithium\console\Response
 		'grey'			=> "\033[37m",
 		'hidden'		=> "\033[8m",
 		'normal'		=> "\033[0m",
+		'primary'		=> "\033[38;5;010m",
 		'reset'			=> "\033[0m",
 		'reverse'		=> "\033[7m",
 		'strikethrough' => "\033[9m",

@@ -26,7 +26,11 @@
 			{assign var="icon" value=$file.ext}
 		{/if}
 
-		{assign var="completion" value=($file.partsactual/$file.partstotal*100)|number_format:1}
+		{if $file.partstotal != 0}
+			{assign var="completion" value=($file.partsactual/$file.partstotal*100)|number_format:1}
+		{else}
+			{assign var="completion" value=0|number_format:1}
+		{/if}
 
 		<td><img title=".{$file.ext}" alt="{$file.ext}" src="{$smarty.const.WWW_TOP}/themes/shared/img/fileicons/{$icon}.png" /></td>
 		<td class="less right">{if $completion < 100}<span class="warning">{$completion}%</span>{else}{$completion}%{/if}</td>

@@ -4,10 +4,33 @@ in which case they should be against that branch.
 Please make sure any PR's comply with our coding standards policy: http://li3.me/docs/specs/accepted/LSR-0-coding.md
 
 New updates are grouped by person (committer/merger), at the top of the file.
-All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY NOT BE PRESENT IN THE MASTER BRANCH
-For details of when a commit makes it into the master branch see the ReleaseNotes file.
+All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY
+NOT BE PRESENT IN THE STABLE BRANCH
+For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-04-14 niel
+	Add: Version console command.
+2016-04-14 DariusIII
+	Fix: Fix division by zero error when viewing filelist in Alpha and Default themes.
+2016-04-13 niel
+	Add: Refactored version of nzedb\utils\Git to li3 app\extensions\util\Git.
+2016-04-11 niel
+	Add: Initial 'Update' console command. Currently only updates the repo (via composer).
+		 ***NOTE*** `./zed update nzedb` is now the prefered method of updating. Do not `git pull`
+		unless you know what you might be screwing up ;-)
+2016-04-11 DariusIII
+	Fix: Update autopatcher - fix issue #2096
+	Fix: Fix NFO display on coverpages in Light/Default themes.Second part of fixes for issue #2099
+2016-04-10 niel
+	Fix: Prevent undefined index isadmin on forumpost page in Gamma template
+	Fix: DariusIII - Fix issue #2099 Broken links for NFO display on Charisma/Omicron cover pages
+	Fix: Incorrect covers path for Apache users, caused by .htaccess file added to nZEDb
+		directory during lithium integration.
+	Add: New setting for ReCaptcha to switch it off. Defaults to on to prevent BC problems. This
+		allows disabling ReCaptcha without having to remove your keys. NO UI component yet.
+2016-04-09 niel
+	Mrg: PR 2098, from Wally73 - Update read me.
 2016-04-07 Darius
 	Fix: Installation smarty related issue (Closes issue 2092).
 2016-04-06 niel
@@ -15,6 +38,7 @@ For details of when a commit makes it into the master branch see the ReleaseNote
 		 ***NOTE*** You MUST install Composer to continue using nZEDb. See
 		https://getcomposer.org/doc/00-intro.md#downloading-the-composer-executable We recommend the
 		global method, as we do not provide the composer.phar file in our repo.
+		 ***NOTE*** After installing Composer run `composer install` from your nZEDb directory.
 	Chg: Remove commit count from tmux's monitor display.
 2016-04-04 niel
 	Fix: Update version checking/updating code to account for branch renaming/changes.
