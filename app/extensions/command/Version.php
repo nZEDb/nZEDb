@@ -20,8 +20,8 @@ namespace app\extensions\command;
 
 use \Exception;
 use \app\models\Settings;
+use \app\extensions\util\Git;
 use \lithium\console\command\Help;
-use \nzedb\utility\Git;
 
 
 /**
@@ -81,10 +81,32 @@ class Version extends \app\extensions\console\Command
 		$this->sql();
 	}
 
+	protected function getGitTagFromFile()
+	{
+		;
+	}
+
+	protected function getGitTagFromRepo()
+	{
+		;
+	}
+
+	protected function getSQLPatchFromDB()
+	{
+		return Settings::find('setting', ['conditions' => '..sqlpatch']);
+
+	}
+
+	protected function getSQLPatchFromFile()
+	{
+		$this->_loadVersionsFile();
+		return ($this->xml === null) ? null : $this->_vers->sql->file->__toString();
+	}
+
 	/**
 	 * Fetch git tag for latest version.
 	 *
-	 * @param null $path	Optional path to the versions XML file.
+	 * @param null $path Optional path to the versions XML file.
 	 */
 	protected function git($versions = null)
 	{
@@ -123,19 +145,6 @@ class Version extends \app\extensions\console\Command
 				$this->error("Unable to fetch Databse SQL level ");
 			}
 		}
-	}
-
-	protected function getSQLPatchFromDB()
-	{
-		return Settings::find('setting', ['conditions' => '..sqlpatch']);
-
-	}
-
-
-	protected function getSQLPatchFromFile()
-	{
-		$this->_loadVersionsFile();
-		return ($this->xml === null) ? null : $this->_vers->sql->file->__toString();
 	}
 
 	protected function _loadVersionsFile($versions = null)
