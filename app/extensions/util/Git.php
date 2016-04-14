@@ -18,6 +18,7 @@
  */
 namespace app\extensions\util;
 
+use \GitRepo;
 
 class Git extends \lithium\core\Object
 {
@@ -155,9 +156,9 @@ class Git extends \lithium\core\Object
 		parent::_init();
 
 		$this->repo = new GitRepo(
-			$this->config['filepath'],
-			$this->config['create'],
-			$this->config['initialise']
+			$this->_config['filepath'],
+			$this->_config['create'],
+			$this->_config['initialise']
 		);
 		$this->branch = $this->repo->active_branch();
 	}
