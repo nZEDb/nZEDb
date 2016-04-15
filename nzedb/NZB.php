@@ -409,7 +409,7 @@ class NZB
 
 			// File size.
 			foreach ($file->segments->segment as $segment) {
-				array_push($result[$i]['segments'], (string)$segment);
+				$result[$i]['segments'][] = (string)$segment;
 				$fileSize += $segment->attributes()->bytes;
 				$numSegments++;
 			}

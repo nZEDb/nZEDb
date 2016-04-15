@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-04-15 DariusIII
+	Fix: Fix filelist display in all of the themes, reduce overhead in NZB class related to segments array.
 2016-04-14 niel
 	Add: Version console command.
 2016-04-14 DariusIII
