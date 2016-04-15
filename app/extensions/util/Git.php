@@ -109,7 +109,8 @@ class Git extends \lithium\core\Object
 	 */
 	public function mainBranches()
 	{
-		return $this->_config->branches;
+
+		return $this->_config['branches'];
 	}
 
 	/**
