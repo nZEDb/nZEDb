@@ -19,8 +19,8 @@
 namespace app\extensions\command;
 
 use \Exception;
+use \app\extensions\util\Git;
 use \lithium\console\command\Help;
-use \nzedb\utility\Git;
 
 
 /**
@@ -58,20 +58,23 @@ class Update extends \app\extensions\console\Command
 
 	public function git()
 	{
-		/*
 		$git = new Git();
 		$this->gitBranch = $git->getBranch();
-		$this->gitTag = $git->tagLatest();
-		*/
-		$this->error("Not implemented yet!!");
+		if (!in_array($this->gitBranch, $git->mainBranches())) {
+			$this->error("Not on the stable or dev branch! Refusing to update repository ;-)");
+			return;
+		}
+		$git->run('pull');
 	}
 
 	public function nzedb()
 	{
 		try {
+			$this->git();
 			$this->composer();
 			$this->db();
-		} catch (Exception $e) {
+			// ToDo clear smarty cache, may be.
+		} catch (\Exception $e) {
 			$this->error($e->getMessage());
 		}
 	}
