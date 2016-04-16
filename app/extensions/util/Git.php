@@ -32,7 +32,10 @@ class Git extends \lithium\core\Object
 	public function __construct(array $config = [])
 	{
 		$defaults = [
-			'branches'		=> ['0.x', 'dev', 'latest-testing', 'dev-test'],
+			'branches'		=> [
+				'stable' => ['0.x', 'latest-testing'],
+				'development' => ['dev', 'dev-test']
+			],
 			'create'		=> false,
 			'initialise'	=> false,
 			'filepath'		=> nZEDb_ROOT,
@@ -109,8 +112,8 @@ class Git extends \lithium\core\Object
 	 */
 	public function mainBranches()
 	{
-
-		return $this->_config['branches'];
+		$main = array_merge($this->_config['branches']['stable'], $this->_config['branches']['development']);
+		return $main;
 	}
 
 	/**
