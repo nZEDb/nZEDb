@@ -30,6 +30,11 @@ use \lithium\console\command\Help;
  */
 class Update extends \app\extensions\console\Command
 {
+	/**
+	 * @var \app\extensions\util\Git instance.
+	 */
+	protected $git;
+
 	private $gitBranch;
 
 	private $gitTag;
@@ -42,11 +47,17 @@ class Update extends \app\extensions\console\Command
 	public function __construct(array $config = [])
 	{
 		$defaults = [
-			'request'  => null,
-			'response' => [],
-			'classes'  => $this->_classes
+			'classes'	=> $this->_classes,
+			'git'		=> null,
+			'request'	=> null,
+			'response'	=> [],
 		];
 		parent::__construct($config + $defaults);
+	}
+
+	public function all()
+	{
+		$this->nzedb();
 	}
 
 	public function db()
@@ -58,13 +69,12 @@ class Update extends \app\extensions\console\Command
 
 	public function git()
 	{
-		$git = new Git();
-		$this->gitBranch = $git->getBranch();
-		if (!in_array($this->gitBranch, $git->mainBranches())) {
+		$this->gitInitialise();
+		if (!in_array($this->git->getBranch(), $this->git->mainBranches())) {
 			$this->error("Not on the stable or dev branch! Refusing to update repository ;-)");
 			return;
 		}
-		$git->run('pull');
+		$this->git->run('pull');
 	}
 
 	public function nzedb()
@@ -100,7 +110,19 @@ class Update extends \app\extensions\console\Command
 
 	protected function composer()
 	{
-		passthru('composer install --no-dev');
+		$this->gitInitialise();
+		$command = 'composer install';
+		if (in_array($this->gitBranch, $this->git->getStableBranches())) {
+			$command .= ' --no-dev';
+		}
+		passthru($command);
+	}
+
+	protected function gitInitialise()
+	{
+		if (!($this->git instanceof Git)) {
+			$this->git = new Git();
+		}
 	}
 
 	/**
@@ -130,5 +152,9 @@ class Update extends \app\extensions\console\Command
 	protected function _init()
 	{
 		parent::_init();
+
+		if ($this->_config['git'] instanceof Git) {
+			$this->git =& $this->_config['git'];
+		}
 	}
 }
