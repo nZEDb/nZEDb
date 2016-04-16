@@ -73,7 +73,7 @@ class Version extends \app\extensions\console\Command
 
 	protected function getGitTagFromFile()
 	{
-		$this->_loadVersionsFile();
+		$this->loadVersionsFile();
 		return ($this->xml === null) ? null : $this->_vers->git->tag->__toString();
 	}
 
@@ -91,7 +91,7 @@ class Version extends \app\extensions\console\Command
 
 	protected function getSQLPatchFromFile()
 	{
-		$this->_loadVersionsFile();
+		$this->loadVersionsFile();
 		return ($this->xml === null) ? null : $this->_vers->sql->file->__toString();
 	}
 
@@ -105,43 +105,14 @@ class Version extends \app\extensions\console\Command
 		$current = $this->getGitTagFromFile();
 		$latest = $this->getGitTagFromRepo();
 
-		$this->primary('Looking up Git tag version(s)');
+		if (!$this->request->plain) {
+			$this->primary('Looking up Git tag version(s)');
+		}
 		$this->out("XML version: $current");
 		$this->out("Git version: $latest");
 	}
 
-	/**
-	 * Fetch SQL latest patch version.
-	 *
-	 * @param null $path Optional path to the versions XML file.
-	 */
-	protected function sql()
-	{
-		$this->request->params['args'] += ['sqlcheck' => 'all'];
-		$this->primary('Looking up SQL patch version(s)');
-
-		if (in_array($this->request->params['args']['sqlcheck'], ['xml', 'both', 'all'])) {
-			$latest = $this->getSQLPatchFromFile();
-			$this->out("XML version: $latest");
-		}
-
-		if (in_array($this->request->params['args']['sqlcheck'], ['db', 'both', 'all'])) {
-			$dbpatch = self::getSQLPatchFromDB();
-
-			if ($dbpatch->count()) {
-				$dbVersion = $dbpatch->data()[0]['value'];
-				if (!is_numeric($dbVersion)) {
-					$this->error("Bad sqlpatch value: '$dbVersion'\n");
-				} else {
-					$this->out(" DB version: " . $dbVersion);
-				}
-			} else {
-				$this->error("Unable to fetch Databse SQL level ");
-			}
-		}
-	}
-
-	protected function _loadVersionsFile($versions = null)
+	protected function loadVersionsFile($versions = null)
 	{
 		if ($this->xml === null) {
 			if ($versions == '') {
@@ -169,6 +140,40 @@ class Version extends \app\extensions\console\Command
 				}
 			} else {
 				throw new \RuntimeException("No elements in file!\n");
+			}
+		}
+	}
+
+	/**
+	 * Fetch SQL latest patch version.
+	 *
+	 * @param null $path Optional path to the versions XML file.
+	 */
+	protected function sql()
+	{
+		$this->request->params['args'] += ['sqlcheck' => 'all'];
+
+		if (!$this->request->plain) {
+			$this->primary('Looking up SQL patch version(s)');
+		}
+
+		if (in_array($this->request->params['args']['sqlcheck'], ['xml', 'both', 'all'])) {
+			$latest = $this->getSQLPatchFromFile();
+			$this->out("XML version: $latest");
+		}
+
+		if (in_array($this->request->params['args']['sqlcheck'], ['db', 'both', 'all'])) {
+			$dbpatch = self::getSQLPatchFromDB();
+
+			if ($dbpatch->count()) {
+				$dbVersion = $dbpatch->data()[0]['value'];
+				if (!is_numeric($dbVersion)) {
+					$this->error("Bad sqlpatch value: '$dbVersion'\n");
+				} else {
+					$this->out(" DB version: " . $dbVersion);
+				}
+			} else {
+				$this->error("Unable to fetch Databse SQL level ");
 			}
 		}
 	}
