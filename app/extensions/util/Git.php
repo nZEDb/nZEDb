@@ -40,9 +40,8 @@ class Git extends \lithium\core\Object
 			'initialise'	=> false,
 			'filepath'		=> nZEDb_ROOT,
 		];
-		$config += $defaults;
 
-		parent::__construct($config);
+		parent::__construct($config += $defaults);
 	}
 
 	/**
