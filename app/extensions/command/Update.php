@@ -19,7 +19,9 @@
 namespace app\extensions\command;
 
 use \Exception;
+use \app\extensions\command\Version;
 use \app\extensions\util\Git;
+use \app\extensions\util\Versions;
 use \lithium\console\command\Help;
 
 
@@ -31,7 +33,7 @@ use \lithium\console\command\Help;
 class Update extends \app\extensions\console\Command
 {
 	/**
-	 * @var \app\extensions\util\Git instance.
+	 * @var \app\extensions\util\Git object.
 	 */
 	protected $git;
 
@@ -64,12 +66,23 @@ class Update extends \app\extensions\console\Command
 	{
 		// TODO Add check to determine if the indexer or other scripts are running. Hopefully
 		// also prevent web access.
-		$this->primary("Checking Schema versions...");
+		$this->primary("Checking database version...");
+
+		$versions = new Versions(['git' => ($this->git instanceof Git) ? $this->git : null]);
+
+		$currentDb = $versions->getSQLPatchFromDB();
+		$currentXML = $versions->getSQLPatchFromFile();
+		if ($currentDb < $currentXML) {
+			$this->updateDb();
+		} else {
+			$this->out("Up to date.");
+		}
+
 	}
 
 	public function git()
 	{
-		$this->gitInitialise();
+		$this->initialiseGit();
 		if (!in_array($this->git->getBranch(), $this->git->mainBranches())) {
 			$this->error("Not on the stable or dev branch! Refusing to update repository ;-)");
 			return;
@@ -110,7 +123,7 @@ class Update extends \app\extensions\console\Command
 
 	protected function composer()
 	{
-		$this->gitInitialise();
+		$this->initialiseGit();
 		$command = 'composer install';
 		if (in_array($this->gitBranch, $this->git->getStableBranches())) {
 			$command .= ' --no-dev';
@@ -118,11 +131,16 @@ class Update extends \app\extensions\console\Command
 		passthru($command);
 	}
 
-	protected function gitInitialise()
+	protected function initialiseGit()
 	{
 		if (!($this->git instanceof Git)) {
 			$this->git = new Git();
 		}
+	}
+
+	protected function updateDb()
+	{
+		;
 	}
 
 	/**
