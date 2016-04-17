@@ -18,9 +18,7 @@
  */
 namespace app\extensions\command;
 
-use \Exception;
-use \app\models\Settings;
-use \app\extensions\util\Git;
+use \app\extensions\util\Versions;
 use \lithium\console\command\Help;
 
 
@@ -36,10 +34,7 @@ use \lithium\console\command\Help;
  */
 class Version extends \app\extensions\console\Command
 {
-	/**
-	 * @var object simpleXMLElement
-	 */
-	protected $xml = null;
+	protected $versions = null;
 
 	/**
 	 * Constructor.
@@ -49,9 +44,9 @@ class Version extends \app\extensions\console\Command
 	public function __construct(array $config = [])
 	{
 		$defaults = [
-			'request'  => null,
-			'response' => [],
-			'classes'  => $this->_classes
+			'classes'	=> $this->_classes,
+			'request'	=> null,
+			'response'	=> [],
 		];
 		parent::__construct($config + $defaults);
 	}
@@ -71,30 +66,6 @@ class Version extends \app\extensions\console\Command
 		$this->sql();
 	}
 
-	protected function getGitTagFromFile()
-	{
-		$this->loadVersionsFile();
-		return ($this->xml === null) ? null : $this->_vers->git->tag->__toString();
-	}
-
-	protected function getGitTagFromRepo()
-	{
-		$git = new Git();
-		return $git->tagLatest();
-	}
-
-	protected function getSQLPatchFromDB()
-	{
-		return Settings::find('setting', ['conditions' => '..sqlpatch']);
-
-	}
-
-	protected function getSQLPatchFromFile()
-	{
-		$this->loadVersionsFile();
-		return ($this->xml === null) ? null : $this->_vers->sql->file->__toString();
-	}
-
 	/**
 	 * Fetch git tag for latest version.
 	 *
@@ -102,46 +73,11 @@ class Version extends \app\extensions\console\Command
 	 */
 	protected function git()
 	{
-		$current = $this->getGitTagFromFile();
-		$latest = $this->getGitTagFromRepo();
-
-		if (!$this->request->plain) {
+		if (!$this->plain) {
 			$this->primary('Looking up Git tag version(s)');
 		}
-		$this->out("XML version: $current");
-		$this->out("Git version: $latest");
-	}
-
-	protected function loadVersionsFile($versions = null)
-	{
-		if ($this->xml === null) {
-			if ($versions == '') {
-				$versions = nZEDb_VERSIONS;
-			}
-
-			$temp = libxml_use_internal_errors(true);
-			$this->xml = simplexml_load_file($versions);
-			libxml_use_internal_errors($temp);
-
-			if ($this->xml === false) {
-				$this->error("Your versions XML file ($versions) is broken, try updating from git.");
-				throw new \Exception("Failed to open versions XML file '$versions'");
-			}
-
-			if ($this->xml->count() > 0) {
-				$vers = $this->xml->xpath('/nzedb/versions');
-
-				if ($vers[0]->count() == 0) {
-					$this->error("Your versions XML file ($versions) does not contain version info, try updating from git.");
-					throw new \Exception("Failed to find versions node in XML file '$versions'");
-				} else {
-					//$this->primary("Your versions XML file ($versions) looks okay, continuing.");
-					$this->_vers = &$this->xml->versions;
-				}
-			} else {
-				throw new \RuntimeException("No elements in file!\n");
-			}
-		}
+		$this->out("XML version: " . $this->versions->getGitTagFromFile());
+		$this->out("Git version: " . $this->versions->getGitTagFromRepo());
 	}
 
 	/**
@@ -151,19 +87,17 @@ class Version extends \app\extensions\console\Command
 	 */
 	protected function sql()
 	{
-		$this->request->params['args'] += ['sqlcheck' => 'all'];
-
-		if (!$this->request->plain) {
+		if (!$this->plain) {
 			$this->primary('Looking up SQL patch version(s)');
 		}
 
 		if (in_array($this->request->params['args']['sqlcheck'], ['xml', 'both', 'all'])) {
-			$latest = $this->getSQLPatchFromFile();
+			$latest = $this->versions->getSQLPatchFromFile();
 			$this->out("XML version: $latest");
 		}
 
 		if (in_array($this->request->params['args']['sqlcheck'], ['db', 'both', 'all'])) {
-			$dbpatch = self::getSQLPatchFromDB();
+			$dbpatch = $this->versions->getSQLPatchFromDB();
 
 			if ($dbpatch->count()) {
 				$dbVersion = $dbpatch->data()[0]['value'];
@@ -173,7 +107,7 @@ class Version extends \app\extensions\console\Command
 					$this->out(" DB version: " . $dbVersion);
 				}
 			} else {
-				$this->error("Unable to fetch Databse SQL level ");
+				$this->error("Unable to fetch Databse SQL level!");
 			}
 		}
 	}
@@ -205,5 +139,8 @@ class Version extends \app\extensions\console\Command
 	protected function _init()
 	{
 		parent::_init();
+
+		$this->request->params['args'] += ['sqlcheck' => 'all'];    // Default to all versions/
+		$this->versions = new Versions();
 	}
 }
