@@ -34,6 +34,9 @@ use \lithium\console\command\Help;
  */
 class Version extends \app\extensions\console\Command
 {
+	/**
+	 * @var \app\extensions\util\Versions;
+	 */
 	protected $versions = null;
 
 	/**
@@ -64,6 +67,11 @@ class Version extends \app\extensions\console\Command
 	{
 		$this->git();
 		$this->sql();
+	}
+
+	protected function branch()
+	{
+		$this->primary('Git branch: ' . $this->versions->getGitBranch());
 	}
 
 	/**
