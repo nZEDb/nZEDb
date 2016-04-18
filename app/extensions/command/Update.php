@@ -19,6 +19,7 @@
 namespace app\extensions\command;
 
 use \Exception;
+use \Smarty;
 use \app\extensions\command\Version;
 use \app\extensions\util\Git;
 use \app\extensions\util\Versions;
