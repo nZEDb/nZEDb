@@ -83,7 +83,7 @@ class Update extends \app\extensions\console\Command
 	public function git()
 	{
 		$this->initialiseGit();
-		if (!in_array($this->git->getBranch(), $this->git->mainBranches())) {
+		if (!in_array($this->git->getBranch(), $this->git->getBranchesMain())) {
 			$this->error("Not on the stable or dev branch! Refusing to update repository ;-)");
 			return;
 		}
@@ -125,7 +125,7 @@ class Update extends \app\extensions\console\Command
 	{
 		$this->initialiseGit();
 		$command = 'composer install';
-		if (in_array($this->gitBranch, $this->git->getStableBranches())) {
+		if (in_array($this->gitBranch, $this->git->getBranchesStable())) {
 			$command .= ' --no-dev';
 		}
 		passthru($command);

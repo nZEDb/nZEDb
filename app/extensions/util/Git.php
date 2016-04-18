@@ -66,6 +66,28 @@ class Git extends \lithium\core\Object
 		return $this->branch;
 	}
 
+	public function getBranchesDevelop()
+	{
+		return $this->_config['branches']['development'];
+	}
+
+	/**
+	 * Fetches the array of branch names that are considered to be core.
+	 *
+	 * @return array
+	 */
+	public function getBranchesMain()
+	{
+		$main = array_merge($this->getBranchesStable(), $this->getBranchesDevelop());
+
+		return $main;
+	}
+
+	public function getBranchesStable()
+	{
+		return $this->_config['branches']['stable'];
+	}
+
 	/**
 	 * Determine if the supplied object is commited to the repository or not.
 	 *
@@ -102,17 +124,6 @@ class Git extends \lithium\core\Object
 	public function log($options = null)
 	{
 		return $this->run("log $options");
-	}
-
-	/**
-	 * Fetches the array of branch names that are considered to be core.
-	 *
-	 * @return array
-	 */
-	public function mainBranches()
-	{
-		$main = array_merge($this->_config['branches']['stable'], $this->_config['branches']['development']);
-		return $main;
 	}
 
 	/**
