@@ -18,6 +18,7 @@
  */
 namespace app\extensions\util;
 
+use \app\models\Settings;
 
 class Versions extends \lithium\core\Object
 {
@@ -41,24 +42,24 @@ class Versions extends \lithium\core\Object
 		parent::__construct($config += $defaults);
 	}
 
-	protected function getGitTagFromFile()
+	public function getGitTagFromFile()
 	{
 		$this->loadXMLFile();
 		return ($this->xml === null) ? null : $this->_vers->git->tag->__toString();
 	}
 
-	protected function getGitTagFromRepo()
+	public function getGitTagFromRepo()
 	{
 		$this->initialiseGit();
 		return $this->git->tagLatest();
 	}
 
-	protected function getSQLPatchFromDB()
+	public function getSQLPatchFromDB()
 	{
 		return Settings::find('setting', ['conditions' => '..sqlpatch']);
 	}
 
-	protected function getSQLPatchFromFile()
+	public function getSQLPatchFromFile()
 	{
 		$this->loadXMLFile();
 		return ($this->xml === null) ? null : $this->_vers->sql->file->__toString();
@@ -71,7 +72,7 @@ class Versions extends \lithium\core\Object
 		}
 	}
 
-	protected function loadXMLFile($versions = null)
+	protected function loadXMLFile()
 	{
 		if ($this->xml === null) {
 			$versions = $this->_config['path'];
