@@ -28,8 +28,14 @@ use \nzedb\db\DbUpdate;
 
 /**
  * Update various aspects of your indexer.
- *
- * @package app\extensions\command
+
+ * Actions:
+ *  * all|nzedb Fetches current git repo, composer dependencies, and update latest Db patches.
+ *  * db		Update the Db with any patches not yet applied.
+ *  * git		Performs git pull.
+
+*
+*@package app\extensions\command
  */
 class Update extends \app\extensions\console\Command
 {
@@ -98,7 +104,15 @@ class Update extends \app\extensions\console\Command
 			$this->git();
 			$this->composer();
 			$this->db();
-			// ToDo clear smarty cache, may be.
+
+			$smarty = new Smarty();
+			$cleared = $smarty->clearCompiledTemplate();
+			if ($cleared) {
+				$this->primary('The Smarty compiled template cache has been cleaned for you');
+			} else {
+				$this->primary('You should clear your Smarty compiled template cache at: ' .
+					nZEDb_RES . "smarty" . DS . 'templates_c');
+			}
 		} catch (\Exception $e) {
 			$this->error($e->getMessage());
 		}
