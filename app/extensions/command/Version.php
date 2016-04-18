@@ -26,9 +26,10 @@ use \lithium\console\command\Help;
  * Returns the current version (or branch) of the indexer.
  *
  * Actions:
- *  * all	Show all of following info.
- *  * git	Show git tag for current version.
- *  * sql	Show SQL patch level
+ *  * all		Show all of following info.
+ *  * branch	Show git branch name.
+ *  * git		Show git tag for current version.
+ *  * sql		Show SQL patch level
  *
  * @package app\extensions\command
  */
