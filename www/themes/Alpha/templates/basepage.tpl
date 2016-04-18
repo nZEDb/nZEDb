@@ -21,12 +21,10 @@
 		{/if}
 
 		<!-- nZEDb core CSS -->
-		<link href="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap/v3/css/bootstrap.min.css"
-				rel="stylesheet"
-				media="screen">
-		<link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/3.2.1/css/font-awesome.css"
-				rel="stylesheet"
-				media="screen">
+		<link href="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet"
+			  type="text/css"/>
+		<link href="{$smarty.const.WWW_THEMES}/shared/libs/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+			  type="text/css"/>
 		<link href="{$smarty.const.WWW_THEMES}/shared/css/posterwall.css"
 				rel="stylesheet"
 				type="text/css"
@@ -134,8 +132,8 @@
 
 		<!-- Additional nZEDb -->
 		<!--[if lt IE 9]>
-		<script src="{$smarty.const.WWW_THEMES}/shared/js/html5shiv.js"></script>
-		<script src="{$smarty.const.WWW_THEMES}/shared/js/respond.min.js"></script>
+		<script src="{$smarty.const.WWW_THEMES}/shared/libs/html5shiv/dist/html5shiv.min.js"></script>
+		<script src="{$smarty.const.WWW_THEMES}/shared/libs/respond/dest/respond.min.js"></script>
 		<![endif]-->
 		{literal}
 		<script>
@@ -339,13 +337,14 @@
 	<!-- JS and analytics only. -->
 	<!-- Bootstrap core JavaScript
 	================================================== -->
-	<script src="//code.jquery.com/jquery-1.9.1.js"></script>
-	<script src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap/v3/js/bootstrap.min.js"></script>
+	<!-- jQuery 1.9.1 -->
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/jquery-1.9.x/dist/jquery.min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap/dist/js/bootstrap.min.js" type="text/javascript"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/js/holder.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/js/jquery.pnotify.min.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/js/jquery.qtip.min.js"></script>
-	<script src="{$smarty.const.WWW_THEMES}/shared/js/jquery.autosize-min.js"></script>
-	<script src="{$smarty.const.WWW_THEMES}/shared/js/jquery.colorbox-min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/autosize/dist/autosize.min.js" type="text/javascript" ></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/colorbox/jquery.colorbox-min.js" type="text/javascript" ></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/js/sorttable.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/{$theme}/scripts/utils.js"></script>
 

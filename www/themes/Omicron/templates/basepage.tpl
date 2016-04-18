@@ -15,10 +15,11 @@
 	<!-- Newposterwall -->
 	<link href="{$smarty.const.WWW_THEMES}/{$theme}/styles/posterwall.css" rel="stylesheet" type="text/css" media="screen"/>
 	<!-- Bootstrap 3.3.6 -->
-	<link href="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap/v3/css/bootstrap.min.css" rel="stylesheet"
+	<!-- Bootstrap 3.3.6 -->
+	<link href="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet"
 		  type="text/css"/>
 	<!-- Font Awesome Icons -->
-	<link href="{$smarty.const.WWW_THEMES}/shared/css/font-awesome.min.css" rel="stylesheet"
+	<link href="{$smarty.const.WWW_THEMES}/shared/libs/font-awesome/css/font-awesome.min.css" rel="stylesheet"
 		  type="text/css"/>
 	<!-- iCheck -->
 	<link href="{$smarty.const.WWW_THEMES}/{$theme}/plugins/iCheck/square/blue.css" rel="stylesheet" type="text/css" />
@@ -39,8 +40,8 @@
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 	<!--[if lt IE 9]>
-	<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-	<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/html5shiv/dist/html5shiv.min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/respond/dest/respond.min.js"></script>
 	<![endif]-->
 </head>
 	<!--
@@ -332,35 +333,35 @@
 	<!-- ./wrapper -->
 	<!-- REQUIRED JS SCRIPTS -->
 	<!-- jQuery 2.2.1 -->
-	<script src="{$smarty.const.WWW_THEMES}/shared/js/jquery-2.2.1.min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/jquery-2.2.x/dist/jquery.min.js"
+			type="text/javascript" ></script>
 	<!-- Bootstrap 3.3.6 JS -->
-	<script src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap/v3/js/bootstrap.min.js"
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap/dist/js/bootstrap.min.js"
 			type="text/javascript"></script>
-	<!-- iCheck -->
-	<script src="{$smarty.const.WWW_THEMES}/{$theme}/plugins/iCheck/icheck.min.js" type="text/javascript"></script>
+	<!-- icheck -->
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/icheck/icheck.min.js" type="text/javascript"></script>
 	<!-- Bootstrap hover on mouseover script -->
 	<script type="text/javascript"
-			src="{$smarty.const.WWW_THEMES}/shared/js/bootstrap-hover-dropdown.min.js"></script>
+			src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js"></script>
 	<!-- AdminLTE App -->
 	<script src="{$smarty.const.WWW_THEMES}/{$theme}/dist/js/app.min.js" type="text/javascript"></script>
 	<!-- jQuery migrate script -->
-	<script type="text/javascript"
-			src="{$smarty.const.WWW_THEMES}/{$theme}/plugins/migrate/jquery-migrate-1.2.1.min.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/jquery-migrate/jquery-migrate.min.js"></script>
 	<!-- SlimScroll script -->
 	<script src="{$smarty.const.WWW_THEMES}/{$theme}/plugins/slimScroll/jquery.slimscroll.min.js"></script>
 	<!-- Fastclick script -->
 	<script src="{$smarty.const.WWW_THEMES}/{$theme}/plugins/fastclick/fastclick.min.js"></script>
 	<!-- notification plugin -->
 	<script type="text/javascript"
-			src="{$smarty.const.WWW_THEMES}/shared/libs/noty/packaged/jquery.noty.packaged.js"></script>
+			src="{$smarty.const.WWW_THEMES}/shared/libs/noty/js/noty/packaged/jquery.noty.packaged.js"></script>
 	<!-- Custom functions -->
 	<script src="{$smarty.const.WWW_THEMES}/{$theme}/dist/js/functions.js" type="text/javascript"></script>
 	<!-- data table plugin -->
 	<script type="text/javascript"
 			src='{$smarty.const.WWW_THEMES}/{$theme}/dist/js/jquery.dataTables.min.js'></script>
 	<!-- nZEDb default scripts, needed for stuff to work -->
-	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/js/jquery.colorbox-min.js"></script>
-	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/js/jquery.autosize-min.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/colorbox/jquery.colorbox-min.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/autosize/dist/autosize.min.js"></script>
 	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/js/jquery.qtip2.js"></script>
 	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/js/sorttable.js"></script>
 	<!-- Optionally, you can add Slimscroll and FastClick plugins.

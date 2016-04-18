@@ -10,6 +10,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 
 2016-04-18 DariusIII
+	Upd: Update themes to use libs handled by composer
 	Upd: Update .gitignore
 	Upd: Update composer.json
 2016-04-15 DariusIII
