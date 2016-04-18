@@ -39,9 +39,10 @@
 	<link href='{$smarty.const.WWW_THEMES}/{$theme}/css/elfinder.min.css' rel='stylesheet'>
 	<link href='{$smarty.const.WWW_THEMES}/{$theme}/css/elfinder.theme.css' rel='stylesheet'>
 	<link href='{$smarty.const.WWW_THEMES}/{$theme}/css/jquery.iphone.toggle.css' rel='stylesheet'>
-	<link href='{$smarty.const.WWW_THEMES}/{$theme}/css/animate.min.css' rel='stylesheet'>
+	<link href="{$smarty.const.WWW_THEMES}/shared/libs/animate.css/animate.min.css" rel="stylesheet">
 	<!-- Font Awesome Icons -->
-	<link href="{$smarty.const.WWW_THEMES}/shared/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+	<link href="{$smarty.const.WWW_THEMES}/shared/libs/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+		  type="text/css"/>
 	<!-- Normalize.css -->
 	<link href="{$smarty.const.WWW_TOP}/themes/shared/css/normalize.css" rel="stylesheet" type="text/css">
 	<!-- The fav icon -->
@@ -255,17 +256,16 @@
 	</div>
 	<!--/.fluid-container-->
 	<!-- Scripts-->
-	<!-- jQuery -->
-	<script type="text/javascript"
-		src="{$smarty.const.WWW_THEMES}/shared/js/jquery-2.2.1.min.js"></script>
+	<!-- jQuery 2.2.1 -->
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/jquery-2.2.x/dist/jquery.min.js"></script>
 	<!-- jQuery migrate script -->
 	<script type="text/javascript"
-		src="{$smarty.const.WWW_THEMES}/{$theme}/js/jquery-migrate-1.2.1.min.js"></script>
+			src="{$smarty.const.WWW_THEMES}/shared/libs/jquery-migrate/jquery-migrate.min.js"></script>
 	<script type="text/javascript"
-		src="{$smarty.const.WWW_THEMES}/{$theme}/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+			src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap/dist/js/bootstrap.min.js"></script>
 	<!-- Bootstrap hover on mouseover script -->
 	<script type="text/javascript"
-		src="{$smarty.const.WWW_THEMES}/shared/js/bootstrap-hover-dropdown.min.js"></script>
+			src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js"></script>
 	<!-- library for cookie management -->
 	<script type="text/javascript"
 		src="{$smarty.const.WWW_THEMES}/{$theme}/js/jquery.cookie.js"></script>
@@ -276,11 +276,10 @@
 	<script type="text/javascript"
 		src="{$smarty.const.WWW_THEMES}/{$theme}/bower_components/chosen/chosen.jquery.min.js"></script>
 	<!-- plugin for gallery image view -->
-	<script type="text/javascript"
-		src="{$smarty.const.WWW_THEMES}/{$theme}/bower_components/colorbox/jquery.colorbox-min.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/colorbox/jquery.colorbox-min.js"></script>
 	<!-- notification plugin -->
 	<script type="text/javascript"
-			src="{$smarty.const.WWW_THEMES}/shared/libs/noty/packaged/jquery.noty.packaged.js"></script>
+			src="{$smarty.const.WWW_THEMES}/shared/libs/noty/js/noty/packaged/jquery.noty.packaged.js"></script>
 	<!-- library for making tables responsive -->
 	<script type="text/javascript"
 		src="{$smarty.const.WWW_THEMES}/{$theme}/bower_components/responsive-tables/responsive-tables.js"></script>
@@ -308,8 +307,7 @@
 	<!-- nZEDb default scripts, needed for stuff to work -->
 	<script type="text/javascript"
 		src="{$smarty.const.WWW_THEMES}/shared/js/jquery.colorbox-min.js"></script>
-	<script type="text/javascript"
-		src="{$smarty.const.WWW_THEMES}/shared/js/jquery.autosize-min.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/autosize/dist/autosize.min.js"></script>
 	<script type="text/javascript"
 		src="{$smarty.const.WWW_THEMES}/shared/js/jquery.qtip2.js"></script>
 	<script type="text/javascript"
@@ -317,7 +315,7 @@
 	<!-- The HTML5 shim, for IE6-8 support of HTML5 elements -->
 	<!--[if lt IE 9]>
 	<script type="text/javascript"
-		src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		src="{$smarty.const.WWW_THEMES}/shared/libs/html5shiv/dist/html5shiv.min.js"></script>
 	<![endif]-->
 	</body>
 </html>
