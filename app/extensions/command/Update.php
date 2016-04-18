@@ -23,6 +23,7 @@ use \app\extensions\command\Version;
 use \app\extensions\util\Git;
 use \app\extensions\util\Versions;
 use \lithium\console\command\Help;
+use \nzedb\db\DbUpdate;
 
 
 /**
@@ -73,7 +74,8 @@ class Update extends \app\extensions\console\Command
 		$currentDb = $versions->getSQLPatchFromDB();
 		$currentXML = $versions->getSQLPatchFromFile();
 		if ($currentDb < $currentXML) {
-			$this->updateDb();
+			$db = new DbUpdate();
+			$db->processPatches();
 		} else {
 			$this->out("Up to date.");
 		}
@@ -136,11 +138,6 @@ class Update extends \app\extensions\console\Command
 		if (!($this->git instanceof Git)) {
 			$this->git = new Git();
 		}
-	}
-
-	protected function updateDb()
-	{
-		;
 	}
 
 	/**
