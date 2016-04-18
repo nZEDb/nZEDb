@@ -22,7 +22,7 @@
 	<link href="{$smarty.const.WWW_THEMES}/shared/libs/font-awesome/css/font-awesome.min.css" rel="stylesheet"
 		  type="text/css"/>
 	<!-- iCheck -->
-	<link href="{$smarty.const.WWW_THEMES}/{$theme}/plugins/iCheck/square/blue.css" rel="stylesheet" type="text/css" />
+	<link href="{$smarty.const.WWW_THEMES}/shared/libs/icheck/skins/flat/blue.css" rel="stylesheet">
 	<!-- Normalize.css -->
 	<link href="{$smarty.const.WWW_THEMES}/shared/css/normalize.css" rel="stylesheet" type="text/css"/>
 	<!-- Ionicons -->
@@ -36,7 +36,7 @@
 	<link href="{$smarty.const.WWW_THEMES}/{$theme}/dist/css/skins/skin-blue.min.css" rel="stylesheet"
 		  type="text/css"/>
 	<!-- Noty animation style -->
-	<link href="{$smarty.const.WWW_THEMES}/{$theme}/dist/css/animate.css" rel="stylesheet" type="text/css"/>
+	<link href="{$smarty.const.WWW_THEMES}/shared/libs/animate.css/animate.min.css" rel="stylesheet">
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 	<!--[if lt IE 9]>
