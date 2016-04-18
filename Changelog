@@ -144,6 +144,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Chg: Removed the .../cli/update_db.php script. Use './zed update db' to replicate, or './zed
 		update nzedb' for everything in one operation.
 2016-04-18 DariusIII
+	Upd: Missed some files, cleanup unused scripts.
 	Upd: Update themes to use libs handled by composer
 	Upd: Update .gitignore
 	Upd: Update composer.json

@@ -147,7 +147,6 @@
 		{/literal}
 
 		{$page->head}
-
 	</head>
 	<body {$page->body}>
 	<div id="wrap">
