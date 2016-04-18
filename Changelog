@@ -144,8 +144,8 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Chg: Removed the .../cli/update_db.php script. Use './zed update db' to replicate, or './zed
 		update nzedb' for everything in one operation.
 2016-04-18 DariusIII
-	Upd: Update .gitignore
 	Upd: Update composer.json
+	Upd: Update .gitignore
 2016-04-15 DariusIII
 	Fix: Fix filelist display in all of the themes, reduce overhead in NZB class related to segments array.
 2016-04-14 niel

@@ -24,6 +24,10 @@
   "extra": {
     "branch-alias": {
       "dev-master": "0.x-dev"
+    },
+    "asset-installer-paths": {
+      "npm-asset-library": "www/themes/shared/libs",
+      "bower-asset-library": "www/themes/shared/libs"
     }
   },
   "homepage": "http://nzedb.com",
@@ -68,6 +72,23 @@
     "php": ">=5.5.0",
     "phpmailer/phpmailer": "^5.2.14",
     "smarty/smarty": "^3.1.29",
+    "fxp/composer-asset-plugin": "~1.1",
+    "bower-asset/animate.css":"~3.5.1",
+    "bower-asset/autosize":"~3.0.15",
+    "bower-asset/bootstrap": "~3.3.6",
+    "bower-asset/bootstrap-2.3.x": "~2.3.2",
+    "bower-asset/bootstrap-hover-dropdown": "~2.2.1",
+    "bower-asset/bootstrap-progressbar": "~0.9.0",
+    "bower-asset/colorbox":"~1.6.3",
+    "bower-asset/font-awesome": "~4.5",
+    "bower-asset/html5shiv": "~3.7.3",
+    "bower-asset/icheck": "~1.0.2",
+    "bower-asset/jquery-1.9.x": "~1.9.1",
+    "bower-asset/jquery-2.2.x": "~2.2.1",
+    "bower-asset/jquery-migrate": "~1.4.0",
+    "bower-asset/noty": "~2.3.8",
+    "bower-asset/pnotify": "~3.0",
+    "bower-asset/respond": "~1.4.2",
     "unionofrad/lithium": "^1.1-dev"
   },
   "require-dev": {
