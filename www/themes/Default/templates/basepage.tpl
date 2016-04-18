@@ -101,7 +101,7 @@
 
 	<!-- Moved The Script Files to end of site for faster page loading -->
 	<!-- jQuery 1.9.1 -->
-	<script src="{$smarty.const.WWW_THEMES}/shared/libs/shared/jquery-1.9.x/jquery.min.js"></script>
+		<script src="{$smarty.const.WWW_THEMES}/shared/libs/jquery-1.9.x/jquery.min.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap-2.3.x/docs/assets/bootstrap.min.js"></script>
 	<!-- <script src="{$smarty.const.WWW_THEMES}/shared/js/subnav.js"></script> -->
 	<script src="{$smarty.const.WWW_THEMES}/shared/libs/colorbox/jquery.colorbox-min.js" type="text/javascript" ></script>
