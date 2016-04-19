@@ -16,7 +16,7 @@
 	<link href="{$smarty.const.WWW_THEMES}/{$theme}/styles/posterwall.css" rel="stylesheet" type="text/css" media="screen"/>
 	<!-- Bootstrap 3.3.6 -->
 	<!-- Bootstrap 3.3.6 -->
-	<link href="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet"
+	<link href="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap-3.x/dist/css/bootstrap.min.css" rel="stylesheet"
 		  type="text/css"/>
 	<!-- Font Awesome Icons -->
 	<link href="{$smarty.const.WWW_THEMES}/shared/libs/font-awesome/css/font-awesome.min.css" rel="stylesheet"
@@ -336,7 +336,7 @@
 	<script src="{$smarty.const.WWW_THEMES}/shared/libs/jquery-2.2.x/dist/jquery.min.js"
 			type="text/javascript" ></script>
 	<!-- Bootstrap 3.3.6 JS -->
-	<script src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap/dist/js/bootstrap.min.js"
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap-3.x/dist/js/bootstrap.min.js"
 			type="text/javascript"></script>
 	<!-- icheck -->
 	<script src="{$smarty.const.WWW_THEMES}/shared/libs/icheck/icheck.min.js" type="text/javascript"></script>

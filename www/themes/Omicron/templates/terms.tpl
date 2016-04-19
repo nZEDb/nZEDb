@@ -12,7 +12,8 @@
 	<title>{$page->meta_title}{if $page->meta_title != "" && $site->metatitle != ""} - {/if}{$site->metatitle}</title>
 	<meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
 	<!-- Bootstrap 3.3.6 -->
-	<link href="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap/v3/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+	<link href="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap-3.x/css/bootstrap.min.css"
+			rel="stylesheet" type="text/css"/>
 	<!-- Font Awesome Icons -->
 	<link href="{$smarty.const.WWW_THEMES}/shared/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
 	<!-- Ionicons -->
@@ -74,7 +75,7 @@
 <!-- jQuery 2.1.4 -->
 <script src="{$smarty.const.WWW_THEMES}/Omicron/plugins/jQuery/jQuery-2.1.4.min.js"></script>
 <!-- Bootstrap 3.3.2 JS -->
-<script src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap/v3/js/bootstrap.min.js"
+<script src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap-3.x/js/bootstrap.min.js"
 		type="text/javascript"></script>
 <!-- Bootstrap hover on mouseover script -->
 <script type="text/javascript"
