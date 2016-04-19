@@ -48,7 +48,8 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 		 ***NOTE*** You MUST install Composer to continue using nZEDb. See
 		https://getcomposer.org/doc/00-intro.md#downloading-the-composer-executable We recommend the
 		global method, as we do not provide the composer.phar file in our repo.
-		 ***NOTE*** After installing Composer run `composer install` from your nZEDb directory.
+		 ***NOTE*** After installing Composer run `./zed update nzedb` from your nZEDb directory.
+		 You may have to set permissions on .../app/libraries and .../resources/smarty/templates_c
 	Chg: Remove commit count from tmux's monitor display.
 2016-04-04 niel
 	Fix: Update version checking/updating code to account for branch renaming/changes.
