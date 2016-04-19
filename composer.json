@@ -63,6 +63,7 @@
     "ext-gd": "*",
     "ext-json": "*",
     "ext-mysqlnd": "*",
+    "fxp/composer-asset-plugin": "~1.1",
     "giantbomb/giantbomb": "dev-master",
     "google/recaptcha": "^1.1.2",
     "james-heinrich/getid3": "^1.9.12",
@@ -72,7 +73,6 @@
     "php": ">=5.5.0",
     "phpmailer/phpmailer": "^5.2.14",
     "smarty/smarty": "^3.1.29",
-    "fxp/composer-asset-plugin": "~1.1",
     "bower-asset/animate.css":"~3.5.1",
     "bower-asset/autosize":"~3.0.15",
     "bower-asset/bootstrap": "~3.3.6",
@@ -88,6 +88,7 @@
     "bower-asset/jquery-migrate": "~1.4.0",
     "bower-asset/noty": "~2.3.8",
     "bower-asset/pnotify": "~3.0",
+    "bower-asset/qtip2": "~2.2.1",
     "bower-asset/respond": "~1.4.2",
     "unionofrad/lithium": "^1.1-dev"
   },
