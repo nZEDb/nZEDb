@@ -29,4 +29,4 @@ test.php
 /resources/tmp/*
 /templates_c/*
 /libraries/*
-/www/themes/shared/libs/
+/www/themes/shared/libs/*
