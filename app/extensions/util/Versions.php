@@ -62,7 +62,13 @@ class Versions extends \lithium\core\Object
 
 	public function getSQLPatchFromDB()
 	{
-		return Settings::find('setting', ['conditions' => '..sqlpatch']);
+		$dbVersion = Settings::value('..sqlpatch', true);
+
+		if (!is_numeric($dbVersion)) {
+			throw new \Exception('Bad sqlpatch value');
+		}
+
+		return $dbVersion;
 	}
 
 	public function getSQLPatchFromFile()
