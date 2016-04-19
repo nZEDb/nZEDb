@@ -682,7 +682,6 @@
                 "zikula"
             ],
             "time": "2016-04-13 19:46:30"
-<<<<<<< HEAD
         },
         {
             "name": "fxp/composer-asset-plugin",
@@ -739,8 +738,6 @@
                 "package"
             ],
             "time": "2016-04-01 15:27:16"
-=======
->>>>>>> dev
         },
         {
             "name": "giantbomb/giantbomb",
