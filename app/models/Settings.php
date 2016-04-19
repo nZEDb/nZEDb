@@ -65,7 +65,7 @@ class Settings extends \lithium\data\Model {
 	/**
 	 * Return the value of supplied setting.
 	 * The setting can be either a a normal condition array for the custom 'setting' finder or a
-	 * dotted string notation setting string.
+	 * dotted string notation setting.
 	 * Be aware that this method only returns the first of any values found, so make sure your
 	 * $setting produces a unique result.
 	 *
