@@ -15,6 +15,10 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 		database accordingly (replaces .../cli/update_db.php script which will be removed shortly).
 	Chg: Removed the .../cli/update_db.php script. Use './zed update db' to replicate, or './zed
 		update nzedb' for everything in one operation.
+	Upd: Missed some files, cleanup unused scripts.
+    Upd: Update themes to use libs handled by composer
+    Upd: Update .gitignore
+    Upd: Update composer.json
 2016-04-15 DariusIII
 	Fix: Fix filelist display in all of the themes, reduce overhead in NZB class related to segments array.
 2016-04-14 niel
