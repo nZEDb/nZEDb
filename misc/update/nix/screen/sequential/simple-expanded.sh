@@ -12,7 +12,7 @@ export NZEDB_PATH="${NZEDB_ROOT}/misc/update"
 export CLI_PATH="${NZEDB_ROOT}/cli/data"
 export RAGE_PATH="${NZEDB_ROOT}/misc/testing/PostProcess"
 export TEST_PATH="${NZEDB_ROOT}/misc/testing"
-export DEV_PATH="${NZEDB_ROOT}/misc/testing/Dev"
+export DEV_PATH="${NZEDB_ROOT}/misc/testing/Developers"
 export DB_PATH="${NZEDB_ROOT}/misc/testing/DB"
 export THREADED_PATH="${NZEDB_ROOT}/misc/update/python"
 export NZEDB_SLEEP_TIME="30" # in seconds
@@ -56,15 +56,15 @@ then
 	LASTOPTIMIZE=`date +%s`
 	echo "Cleaning DB..."
 	#$PHP ${DEV_PATH}/renametopre.php 4 show
-	$PHP ${TEST_PATH}/Release/fixReleaseNames.php 1 true all no 
-	#$PHP ${TEST_PATH}/Release/fixReleaseNames.php 3 true other no 
-	$PHP ${TEST_PATH}/Release/fixReleaseNames.php 5 true other no 
-	#$PHP ${TEST_PATH}/Release/fixReleaseNames.php 7 true other no 
-	$PHP ${TEST_PATH}/Release/fixReleaseNames.php 1 true preid no 
-	#$PHP ${TEST_PATH}/Release/fixReleaseNames.php 3 true preid no 
-	$PHP ${TEST_PATH}/Release/fixReleaseNames.php 5 true preid no 
-	#$PHP ${TEST_PATH}/Release/fixReleaseNames.php 7 true preid no 
-	$PHP ${TEST_PATH}/Release/removeCrapReleases.php true full 
+	$PHP ${TEST_PATH}/Release/fixReleaseNames.php 1 true all no
+	#$PHP ${TEST_PATH}/Release/fixReleaseNames.php 3 true other no
+	$PHP ${TEST_PATH}/Release/fixReleaseNames.php 5 true other no
+	#$PHP ${TEST_PATH}/Release/fixReleaseNames.php 7 true other no
+	$PHP ${TEST_PATH}/Release/fixReleaseNames.php 1 true preid no
+	#$PHP ${TEST_PATH}/Release/fixReleaseNames.php 3 true preid no
+	$PHP ${TEST_PATH}/Release/fixReleaseNames.php 5 true preid no
+	#$PHP ${TEST_PATH}/Release/fixReleaseNames.php 7 true preid no
+	$PHP ${TEST_PATH}/Release/removeCrapReleases.php true full
 fi
 
 cd ${NZEDB_PATH}

@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-04-19 niel
+	Add: Wally73's simple-expanded.sh Screen script.
 2016-04-18 niel
 	Add: 'branch' option to the versions console command. This tells you which git branch you're on.
 	Add: Finished 'db' option for the update command. This checks for patches and updates the
