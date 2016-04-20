@@ -1,4 +1,3 @@
-
 // event bindings
 jQuery(function($){
 
