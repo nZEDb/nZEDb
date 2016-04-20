@@ -33,7 +33,7 @@
   "license": "GPL-3.0",
   "name": "nzedb/nzedb",
   "non-feature-branches": [
-    "latest-.*"
+    "Latest-*"
   ],
   "repositories": [
     {
