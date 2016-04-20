@@ -78,7 +78,7 @@ class Settings extends \lithium\data\Model {
 	 */
 	public static function value($setting, $returnAlways = false)
 	{
-		$result = Settings::find('setting', ['conditions' => $setting]);
+		$result = Settings::find('setting', ['conditions' => $setting, 'fields' => ['value']]);
 
 		if ($result->count()) {
 			$value = $result->data()[0]['value'];
