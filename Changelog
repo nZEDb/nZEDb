@@ -131,12 +131,15 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 		updated to the last commit, I have to update the lock file so the hash gets updated.
 2016-04-22 DariusIII
 	Fix: Links to detail pages in Gamma theme (remove release name).
+2016-04-20 DariusIII
+	Chg: 'Moved' more bootstrap files from themes to use shared/libs versions.
 2016-04-19 niel
 	Mrg: PR 2113, from Wally73 - simple-expanded.sh Screen script.
 	Chg: Removed the .../cli/versions.php script. Use './zed version all' instead.
 	Chg: Added nZEDb to li3 as a library, complete with .../nzedb/bootstrap.php file.
 	Fix: Issue with `./zed update db` not working as expected. Mostly caused by not having nZEDb
 		added into lithium as a library (see above).
+	Chg: 'Moved' some bootstrap files from themes to use shared/libs versions.
 2016-04-18 niel
 	Add: 'branch' option to the versions console command. This tells you which git branch you're on.
 	Add: Finished 'db' option for the update command. This checks for patches and updates the
