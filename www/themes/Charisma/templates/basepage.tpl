@@ -283,12 +283,6 @@
 	<!-- library for making tables responsive -->
 	<script type="text/javascript"
 		src="{$smarty.const.WWW_THEMES}/{$theme}/bower_components/responsive-tables/responsive-tables.js"></script>
-	<!-- tour plugin -->
-	<script type="text/javascript"
-		src="{$smarty.const.WWW_THEMES}/{$theme}/bower_components/bootstrap-tour/build/js/bootstrap-tour.min.js"></script>
-	<!-- star rating plugin -->
-	<script type="text/javascript"
-		src="{$smarty.const.WWW_THEMES}/{$theme}/js/jquery.raty.min.js"></script>
 	<!-- for iOS style toggle switch -->
 	<script type="text/javascript"
 		src="{$smarty.const.WWW_THEMES}/{$theme}/js/jquery.iphone.toggle.js"></script>
@@ -305,8 +299,7 @@
 	<script type="text/javascript"
 		src="{$smarty.const.WWW_THEMES}/shared/js/functions.js"></script>
 	<!-- nZEDb default scripts, needed for stuff to work -->
-	<script type="text/javascript"
-		src="{$smarty.const.WWW_THEMES}/shared/js/jquery.colorbox-min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/colorbox/jquery.colorbox.min.js" type="text/javascript" ></script>
 	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/autosize/dist/autosize.min.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/libs/qtip2/jquery.qtip.min.js" type="text/javascript" ></script>
 	<script type="text/javascript"
