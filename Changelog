@@ -38,7 +38,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 		unless you know what you might be screwing up ;-)
 2016-04-11 DariusIII
 	Fix: Update autopatcher - fix issue #2096
-	Fix: Fix NFO display on coverpages in Light/Default themes.Second part of fixes for issue #2099
+	Fix: Fix NFO display on coverpages in Light/Default themes. Second part of fixes for issue #2099
 2016-04-10 niel
 	Fix: Prevent undefined index isadmin on forumpost page in Gamma template
 	Fix: DariusIII - Fix issue #2099 Broken links for NFO display on Charisma/Omicron cover pages
