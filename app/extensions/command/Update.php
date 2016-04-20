@@ -80,9 +80,10 @@ class Update extends \app\extensions\console\Command
 		$currentDb = $versions->getSQLPatchFromDB();
 		$currentXML = $versions->getSQLPatchFromFile();
 		if ($currentDb < $currentXML) {
-			$db = new DbUpdate();
-			$db->processPatches();
+			$db = new DbUpdate(['backup' => false]);
+			$db->processPatches(['safe' => false]);
 		} else {
+			var_dump($currentDb, $currentXML);
 			$this->out("Up to date.");
 		}
 
