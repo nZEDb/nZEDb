@@ -109,37 +109,4 @@
 	</div>
 </body>
 
-<!-- REQUIRED JS SCRIPTS -->
-
-<!-- jQuery 2.1.4 -->
-<script src="{$smarty.const.WWW_THEMES}/Omicron/plugins/jQuery/jQuery-2.1.4.min.js"></script>
-<!-- Bootstrap 3.3.2 JS -->
-<script src="{$smarty.const.WWW_THEMES}/Omicron/bootstrap/js/bootstrap.min.js"
-		type="text/javascript"></script>
-<!-- Bootstrap hover on mouseover script -->
-<script type="text/javascript"
-		src="{$smarty.const.WWW_THEMES}/Omicron/plugins/hover/bootstrap-hover-dropdown.min.js"></script>
-<!-- AdminLTE App -->
-<script src="{$smarty.const.WWW_THEMES}/Omicron/dist/js/app.min.js" type="text/javascript"></script>
-<!-- jQuery migrate script -->
-<script type="text/javascript"
-		src="{$smarty.const.WWW_THEMES}/Omicron/plugins/migrate/jquery-migrate-1.2.1.min.js"></script>
-<!-- SlimScroll script -->
-<script src="{$smarty.const.WWW_THEMES}/Omicron/plugins/slimScroll/jquery.slimscroll.min.js"></script>
-<!-- Fastclick script -->
-<script src="{$smarty.const.WWW_THEMES}/Omicron/plugins/fastclick/fastclick.min.js"></script>
-<!-- Notification script -->
-<script src="{$smarty.const.WWW_THEMES}/Omicron/plugins/noty/packaged/jquery.noty.packaged.min.js"></script>
-<!-- Custom functions -->
-<script src="{$smarty.const.WWW_THEMES}/Omicron/dist/js/functions.js" type="text/javascript"></script>
-<!-- data table plugin -->
-<script type="text/javascript"
-		src='{$smarty.const.WWW_THEMES}/Omicron/dist/js/jquery.dataTables.min.js'></script>
-<!-- default scripts, needed for stuff to work -->
-<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/Omicron/scripts/jquery.colorbox-min.js"></script>
-<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/Omicron/scripts/jquery.autosize-min.js"></script>
-<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/Omicron/scripts/jquery.qtip2.js"></script>
-<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/Omicron/scripts/sorttable.js"></script>
-<!-- Newznab utils.js -->
-<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/Omicron/scripts/utils.js"></script>
 </html>

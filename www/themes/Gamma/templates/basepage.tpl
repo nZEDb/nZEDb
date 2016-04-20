@@ -39,10 +39,10 @@
 	<!-- jQuery migrate script -->
 	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/jquery-migrate/jquery-migrate.min.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/libs/colorbox/jquery.colorbox-min.js" type="text/javascript" ></script>
-	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/{$theme}/scripts/jquery.qtip2.js"></script>
-	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/{$theme}/scripts/utils.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/js/jquery.qtip2.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/js/utils.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/libs/autosize/dist/autosize.min.js" type="text/javascript" ></script>
-	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/{$theme}/scripts/sorttable.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/js/sorttable.js"></script>
 
 	<!-- Added the Bootstrap JS -->
 	<script src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap-3.x/dist/js/bootstrap.min.js" type="text/javascript"></script>

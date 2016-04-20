@@ -355,7 +355,7 @@
 	<script type="text/javascript"
 			src="{$smarty.const.WWW_THEMES}/shared/libs/noty/js/noty/packaged/jquery.noty.packaged.js"></script>
 	<!-- Custom functions -->
-	<script src="{$smarty.const.WWW_THEMES}/{$theme}/dist/js/functions.js" type="text/javascript"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/js/functions.js" type="text/javascript"></script>
 	<!-- data table plugin -->
 	<script type="text/javascript"
 			src='{$smarty.const.WWW_THEMES}/{$theme}/dist/js/jquery.dataTables.min.js'></script>
