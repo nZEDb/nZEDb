@@ -24,7 +24,7 @@
 		<link href="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap-3.x/dist/css/bootstrap.min.css"
 				rel="stylesheet"
 				media="screen">
-		<link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/3.2.1/css/font-awesome.css"
+		<link href="{$smarty.const.WWW_THEMES}/shared/libs/font-awesome/css/font-awesome.css"
 				rel="stylesheet"
 				media="screen">
 		<link href="{$smarty.const.WWW_THEMES}/shared/css/posterwall.css"
@@ -339,7 +339,7 @@
 	<!-- JS and analytics only. -->
 	<!-- Bootstrap core JavaScript
 	================================================== -->
-	<script src="//code.jquery.com/jquery-1.9.1.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/jquery-1.9.x/jquery-1.9.1.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap-3.x/dist/js/bootstrap.min.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/js/holder.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/js/jquery.pnotify.min.js"></script>
