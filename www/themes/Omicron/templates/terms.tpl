@@ -92,16 +92,16 @@
 <!-- Notification script -->
 <script src="{$smarty.const.WWW_THEMES}/Omicron/plugins/noty/packaged/jquery.noty.packaged.min.js"></script>
 <!-- Custom functions -->
-<script src="{$smarty.const.WWW_THEMES}/Omicron/dist/js/functions.js" type="text/javascript"></script>
+<script src="{$smarty.const.WWW_THEMES}/shared/js/functions.js" type="text/javascript"></script>
 <!-- data table plugin -->
 <script type="text/javascript"
 		src='{$smarty.const.WWW_THEMES}/Omicron/dist/js/jquery.dataTables.min.js'></script>
 <!-- default scripts, needed for stuff to work -->
-<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/Omicron/scripts/jquery.colorbox-min.js"></script>
-<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/Omicron/scripts/jquery.autosize-min.js"></script>
-<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/Omicron/scripts/jquery.qtip2.js"></script>
-<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/Omicron/scripts/sorttable.js"></script>
+<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/colorbox/jquery.colorbox-min.js"></script>
+<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/js/jquery.autosize-min.js"></script>
+<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/js/jquery.qtip2.js"></script>
+<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/js//sorttable.js"></script>
 <!-- Newznab utils.js -->
-<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/Omicron/scripts/utils.js"></script>
+<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/js//utils.js"></script>
 
 </html>
