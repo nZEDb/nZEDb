@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-04-24 niel
+	Fix: MAke Category IDs for 'Other' sub-categories match the code values.
 2016-04-22 DariusIII
 	Fix: Fix links to detail pages in Gamma theme(remove release name).
 2016-04-19 niel
