@@ -27,6 +27,9 @@
   },
   "homepage": "http://nzedb.com",
   "keywords": [
+    "nZEDb",
+    "usenet",
+    "indexer",
     "lithium",
     "li3"
   ],
