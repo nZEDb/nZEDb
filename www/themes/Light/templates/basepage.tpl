@@ -101,7 +101,7 @@
             <script src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap-2.3.x/docs/assets/bootstrap.min.js"></script>
             <!-- <script src="{$smarty.const.WWW_THEMES}/shared/js/subnav.js"></script> -->
             <script src="{$smarty.const.WWW_THEMES}/shared/libs/colorbox/jquery.colorbox-min.js" type="text/javascript" ></script>
-            <script src="{$smarty.const.WWW_THEMES}/shared/js/jquery.qtip.min.js"></script>
+            <script src="{$smarty.const.WWW_THEMES}/shared/libs/qtip2/jquery.qtip.min.js" type="text/javascript" ></script>
             <script src="{$smarty.const.WWW_THEMES}/Default/scripts/utils.js"></script>
             <script src="{$smarty.const.WWW_THEMES}/shared/js/sorttable.js"></script>
 

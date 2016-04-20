@@ -308,8 +308,7 @@
 	<script type="text/javascript"
 		src="{$smarty.const.WWW_THEMES}/shared/js/jquery.colorbox-min.js"></script>
 	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/autosize/dist/autosize.min.js"></script>
-	<script type="text/javascript"
-		src="{$smarty.const.WWW_THEMES}/shared/js/jquery.qtip2.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/qtip2/jquery.qtip.min.js" type="text/javascript" ></script>
 	<script type="text/javascript"
 		src="{$smarty.const.WWW_THEMES}/shared/js/sorttable.js"></script>
 	<!-- The HTML5 shim, for IE6-8 support of HTML5 elements -->
