@@ -93,7 +93,7 @@ select#headcat option.grouping { padding-left: 5px; font-weight: bold; }
 #headsearch{float:right;height:15px;}
 
 .gobutton {display:inline;float:right;margin-left:5px;}
-.gobutton input { background:url('../images/icons/go.png') no-repeat; cursor:pointer; border: none;	 width:30px; height:25px; }
+.gobutton input { background:url('../img/icons/go.png') no-repeat; cursor:pointer; border: none;	 width:30px; height:25px; }
 
 /* menu styling for when menu is displayed in top position  */
 #logo ul { list-style-type: none; float:right; margin: 0 0 10px 0; padding:0; line-height: normal; text-align: right; }
@@ -226,7 +226,7 @@ span.descfull {display:none;}
 a.descmore { display: inline; margin: 0px; margin-left:5px;}
 
 
-div.error { padding:20px; padding-left:50px; border:1px solid #BBB; background: #FED0D0 url(../images/icons/warning.png) no-repeat top; background-position: 5px 50%; font-size:1.2em; font-weight:bold; margin-bottom:10px;}
+div.error { padding:20px; padding-left:50px; border:1px solid #BBB; background: #FED0D0 url(../img/icons/warning.png) no-repeat top; background-position: 5px 50%; font-size:1.2em; font-weight:bold; margin-bottom:10px;}
 div.comments { padding-top:20px; }
 
 .invitesuccess {display:none; font-weight:bold; padding-left:10px; color:green;}
@@ -308,24 +308,24 @@ div.nzb_multi_operations input:hover { color:#000; border:1px solid #000; cursor
 
 div.icon { width:16px; height:16px; background-repeat:no-repeat; cursor:pointer; position:relative; float:left; margin:2px; }
 table.data td.icons div.icon { opacity:.20; }
-div.icon_cart			{ background-image:url('../images/icons/cartup.png'); }
-div.icon_cart_clicked	{ background-image:url('../images/icons/cartdown.png'); }
-div.icon_nzb			{ background-image:url('../images/icons/nzbup.png'); }
-div.icon_nzb_clicked	{ background-image:url('../images/icons/nzbdown.png'); }
+div.icon_cart			{ background-image:url('../img/icons/cartup.png'); }
+div.icon_cart_clicked	{ background-image:url('../img/icons/cartdown.png'); }
+div.icon_nzb			{ background-image:url('../img/icons/nzbup.png'); }
+div.icon_nzb_clicked	{ background-image:url('../img/icons/nzbdown.png'); }
 div.icon_nzb a			{ text-decoration:none; padding-bottom:2px; padding-right:12px; }
 
 div.icon_sab {
-    background-image: url('../images/icons/queueup.png');
+    background-image: url('../img/icons/queueup.png');
 }
 
 div.icon_sab_clicked {
-    background-image: url('../images/icons/queuedown.png');
+    background-image: url('../img/icons/queuedown.png');
 }
 
-div.icon_tvrage			{ background-image:url('../images/icons/tvrage.png'); }
-div.icon_check			{ background-image:url('../images/icons/check.png'); }
-div.icon_nzbvortex		{ background-image: url('../images/icons/vortex/bigsmile.png'); }
-div.icon_nzbvortex_clicked		{ background-image: url('../images/icons/vortex/bigsmiledown.png'); }
+div.icon_tvrage			{ background-image:url('../img/icons/tvrage.png'); }
+div.icon_check			{ background-image:url('../img/icons/check.png'); }
+div.icon_nzbvortex		{ background-image: url('../img/icons/vortex/bigsmile.png'); }
+div.icon_nzbvortex_clicked		{ background-image: url('../img/icons/vortex/bigsmiledown.png'); }
 
 
 
@@ -406,7 +406,7 @@ div.icon_nzbvortex_clicked		{ background-image: url('../images/icons/vortex/bigs
         .cboxMovie #cboxLoadingOverlay{background:#000;}
         .cboxMovie #cboxTitle{position:absolute; top:-22px; left:0; color:#000;}
         .cboxMovie #cboxCurrent{position:absolute; top:-22px; right:205px; text-indent:-9999px;}
-        .cboxMovie #cboxSlideshow, .cboxMovie #cboxPrevious, .cboxMovie #cboxNext, .cboxMovie #cboxClose{text-indent:-9999px; width:20px; height:20px; position:absolute; top:-20px; background:url(../images/colorbox/controls2.png) 0 0 no-repeat;}
+        .cboxMovie #cboxSlideshow, .cboxMovie #cboxPrevious, .cboxMovie #cboxNext, .cboxMovie #cboxClose{text-indent:-9999px; width:20px; height:20px; position:absolute; top:-20px; background:url(../../shared/img/colorbox/controls2.png) 0 0 no-repeat;}
         .cboxMovie #cboxPrevious{background-position:0px 0px; right:44px;}
         .cboxMovie #cboxPrevious.hover{background-position:0px -25px;}
         .cboxMovie #cboxNext{background-position:-25px 0px; right:22px;}
