@@ -227,7 +227,7 @@
 
 			<td class="item">
 				<label for="chk{$result.guid|substr:0:7}">
-					<a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"seourl"}">
+					<a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}">
 						<h5>{$result.searchname|escape:"htmlall"|replace:".":" "}</h5>
 					</a>
 				</label>
