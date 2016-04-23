@@ -138,7 +138,7 @@
 								<div class="icon"><input type="checkbox" class="nzb_check" value="{$mguid[$m@index]}" /></div>
 							</td>
 							<td>
-								<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"seourl"}">{$mname[$m@index]|escape:"htmlall"}</a><br/>
+								<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$mname[$m@index]|escape:"htmlall"}</a><br/>
 								<ul class="inline">
 									<li width="50px"><b>Info:</b></li>
 									<li width="100px">Posted {$mpostdate[$m@index]|timeago}</li>

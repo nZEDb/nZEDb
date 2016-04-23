@@ -156,7 +156,7 @@
 					<tr class="{cycle values=",alt"} filter" id="guid{$result.guid}" data-name="{$result.searchname|escape:"htmlall"|lower|replace:".":" "}">
 						<td width="20" class="static"></td>
 						<td>
-							<a title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"seourl"}"><h5>{$result.searchname|escape:"htmlall"|replace:".":" "}</h5></a>
+							<a title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}"><h5>{$result.searchname|escape:"htmlall"|replace:".":" "}</h5></a>
 							<div class="resextra">
 								<div class="btns">
 										{if isset($result.nfoid) && $result.nfoid > 0}<span><a

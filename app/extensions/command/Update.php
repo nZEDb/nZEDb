@@ -83,7 +83,6 @@ class Update extends \app\extensions\console\Command
 			$db = new DbUpdate(['backup' => false]);
 			$db->processPatches(['safe' => false]);
 		} else {
-			var_dump($currentDb, $currentXML);
 			$this->out("Up to date.");
 		}
 
@@ -102,9 +101,9 @@ class Update extends \app\extensions\console\Command
 	public function nzedb()
 	{
 		try {
-			$this->git();
+			//$this->git();
 			$this->composer();
-			$this->db();
+			//$this->db();
 
 			$smarty = new Smarty();
 			$cleared = $smarty->clearCompiledTemplate();
@@ -145,6 +144,7 @@ class Update extends \app\extensions\console\Command
 		if (in_array($this->gitBranch, $this->git->getBranchesStable())) {
 			$command .= ' --no-dev';
 		}
+		$this->primary('Running composer install process...');
 		passthru($command);
 	}
 
