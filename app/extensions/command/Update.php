@@ -102,9 +102,9 @@ class Update extends \app\extensions\console\Command
 	public function nzedb()
 	{
 		try {
-			$this->git();
+			//$this->git();
 			$this->composer();
-			$this->db();
+			//$this->db();
 
 			$smarty = new Smarty();
 			$cleared = $smarty->clearCompiledTemplate();
