@@ -10,7 +10,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 
 2016-04-22 DariusIII
-	Fix: Fix links to detail pages in Gamma theme(remove release name).
+	Fix: Links to detail pages in Gamma theme (remove release name).
 2016-04-19 niel
 	Mrg: PR 2113, from Wally73 - simple-expanded.sh Screen script.
 	Chg: Removed the .../cli/versions.php script. Use './zed version all' instead.

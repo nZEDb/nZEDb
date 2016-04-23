@@ -38,6 +38,7 @@ Fixed:
 	* NFO display on coverpages in Light/Default themes (ssue #2099).
 	* Division by zero error when viewing filelist in Alpha and Default themes.
 	* Filelist display in all of the themes, reduce overhead in NZB class related to segments array.
+	* Links to detail pages in Gamma theme (remove release name).
 
 
 0.5.5 2016-04-04
