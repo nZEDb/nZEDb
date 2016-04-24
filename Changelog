@@ -10,7 +10,10 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 
 2016-04-24 niel
-	Fix: MAke Category IDs for 'Other' sub-categories match the code values.
+	Fix: Make Category IDs for 'Other' sub-categories match the code values.
+	Chg: Increase Composer's process-timeout value to 6 hours, so update db doesn't time out so
+		easily.
+	Chg: Add 'pre-install-cmd' back to composer.json so that git pull gets run by composer install.
 2016-04-22 DariusIII
 	Fix: Links to detail pages in Gamma theme (remove release name).
 2016-04-19 niel

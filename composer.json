@@ -17,6 +17,7 @@
     ]
   },
   "config": {
+    "process-timeout": "3600",
     "vendor-dir": "app/libraries"
   },
   "description": "A Usenet Indexer",
@@ -75,6 +76,7 @@
     "unionofrad/li3_quality": "1.1.x-dev"
   },
   "scripts": {
+    "pre-install-cmd": "./zed update git",
     "post-install-cmd": "./zed update db"
   },
   "type": "project"
