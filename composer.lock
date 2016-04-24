@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "9284cee307ccc286fd93e991429323b7",
+    "hash": "8026330d07462c70c400ecaf13d94d9f",
     "content-hash": "ab7c264abaa2e203d53eb9a5dd4639bb",
     "packages": [
         {
@@ -45,16 +45,16 @@
         },
         {
             "name": "composer/installers",
-            "version": "v1.0.24",
+            "version": "v1.0.25",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/installers.git",
-                "reference": "1cf7cc4b89d5e8549bbb7d6ab1de75da13d27988"
+                "reference": "36e5b5843203d7f1cf6ffb0305a97e014387bd8e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/installers/zipball/1cf7cc4b89d5e8549bbb7d6ab1de75da13d27988",
-                "reference": "1cf7cc4b89d5e8549bbb7d6ab1de75da13d27988",
+                "url": "https://api.github.com/repos/composer/installers/zipball/36e5b5843203d7f1cf6ffb0305a97e014387bd8e",
+                "reference": "36e5b5843203d7f1cf6ffb0305a97e014387bd8e",
                 "shasum": ""
             },
             "require": {
@@ -141,7 +141,7 @@
                 "zend",
                 "zikula"
             ],
-            "time": "2016-04-05 11:42:46"
+            "time": "2016-04-13 19:46:30"
         },
         {
             "name": "giantbomb/giantbomb",

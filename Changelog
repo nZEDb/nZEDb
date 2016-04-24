@@ -9,6 +9,27 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-04-24 niel
+	Fix: MAke Category IDs for 'Other' sub-categories match the code values.
+2016-04-22 DariusIII
+	Fix: Fix links to detail pages in Gamma theme(remove release name).
+2016-04-19 niel
+	Mrg: PR 2113, from Wally73 - simple-expanded.sh Screen script.
+	Chg: Removed the .../cli/versions.php script. Use './zed version all' instead.
+	Chg: Added nZEDb to li3 as a library, complete with .../nzedb/bootstrap.php file.
+	Fix: Issue with `./zed update db` not working as expected. Mostly caused by not having nZEDb
+		added into lithium as a library (see above).
+2016-04-18 niel
+	Add: 'branch' option to the versions console command. This tells you which git branch you're on.
+	Add: Finished 'db' option for the update command. This checks for patches and updates the
+		database accordingly (replaces .../cli/update_db.php script which will be removed shortly).
+	Chg: Removed the .../cli/update_db.php script. Use './zed update db' to replicate, or './zed
+		update nzedb' for everything in one operation.
+2016-04-18 DariusIII
+	Upd: Update .gitignore
+	Upd: Update composer.json
+2016-04-15 DariusIII
+	Fix: Fix filelist display in all of the themes, reduce overhead in NZB class related to segments array.
 2016-04-14 niel
 	Add: Version console command.
 2016-04-14 DariusIII
@@ -21,7 +42,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 		unless you know what you might be screwing up ;-)
 2016-04-11 DariusIII
 	Fix: Update autopatcher - fix issue #2096
-	Fix: Fix NFO display on coverpages in Light/Default themes.Second part of fixes for issue #2099
+	Fix: Fix NFO display on coverpages in Light/Default themes. Second part of fixes for issue #2099
 2016-04-10 niel
 	Fix: Prevent undefined index isadmin on forumpost page in Gamma template
 	Fix: DariusIII - Fix issue #2099 Broken links for NFO display on Charisma/Omicron cover pages
@@ -38,7 +59,8 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 		 ***NOTE*** You MUST install Composer to continue using nZEDb. See
 		https://getcomposer.org/doc/00-intro.md#downloading-the-composer-executable We recommend the
 		global method, as we do not provide the composer.phar file in our repo.
-		 ***NOTE*** After installing Composer run `composer install` from your nZEDb directory.
+		 ***NOTE*** After installing Composer run `./zed update nzedb` from your nZEDb directory.
+		 You may have to set permissions on .../app/libraries and .../resources/smarty/templates_c
 	Chg: Remove commit count from tmux's monitor display.
 2016-04-04 niel
 	Fix: Update version checking/updating code to account for branch renaming/changes.

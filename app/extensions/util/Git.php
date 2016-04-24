@@ -32,14 +32,16 @@ class Git extends \lithium\core\Object
 	public function __construct(array $config = [])
 	{
 		$defaults = [
-			'branches'		=> ['0.x', 'dev', 'latest-testing', 'dev-test'],
+			'branches'		=> [
+				'stable' => ['0.x', 'latest-testing'],
+				'development' => ['dev', 'dev-test']
+			],
 			'create'		=> false,
 			'initialise'	=> false,
 			'filepath'		=> nZEDb_ROOT,
 		];
-		$config += $defaults;
 
-		parent::__construct($config);
+		parent::__construct($config += $defaults);
 	}
 
 	/**
@@ -62,6 +64,28 @@ class Git extends \lithium\core\Object
 	public function getBranch()
 	{
 		return $this->branch;
+	}
+
+	public function getBranchesDevelop()
+	{
+		return $this->_config['branches']['development'];
+	}
+
+	/**
+	 * Fetches the array of branch names that are considered to be core.
+	 *
+	 * @return array
+	 */
+	public function getBranchesMain()
+	{
+		$main = array_merge($this->getBranchesStable(), $this->getBranchesDevelop());
+
+		return $main;
+	}
+
+	public function getBranchesStable()
+	{
+		return $this->_config['branches']['stable'];
 	}
 
 	/**
@@ -100,16 +124,6 @@ class Git extends \lithium\core\Object
 	public function log($options = null)
 	{
 		return $this->run("log $options");
-	}
-
-	/**
-	 * Fetches the array of branch names that are considered to be core.
-	 *
-	 * @return array
-	 */
-	public function mainBranches()
-	{
-		return $this->_config->branches;
 	}
 
 	/**

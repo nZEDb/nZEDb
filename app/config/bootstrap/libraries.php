@@ -128,6 +128,16 @@ Libraries::add('app', array('default' => true));
 // 	Libraries::add(basename($path), array('path' => $path));
 // }
 
+Libraries::add('nzedb',
+	[
+		'bootstrap'	=> 'bootstrap.php',
+		'path'	=> 'nzedb',
+	]);
+
+require_once nZEDb_ROOT . 'constants.php';
+
+require_once LITHIUM_APP_PATH . DS . 'libraries' . DS . 'autoload.php';
+
 /**
  * Add some plugins:
  */
@@ -138,7 +148,5 @@ if (is_dir(LITHIUM_LIBRARY_PATH . DS . 'li3_docs')) {
 if (is_dir(LITHIUM_LIBRARY_PATH . DS . 'li3_quality')) {
 	Libraries::add('li3_quality');
 }
-
-require_once LITHIUM_APP_PATH . DS . 'libraries' . DS . 'autoload.php';
 
 ?>

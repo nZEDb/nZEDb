@@ -19,17 +19,31 @@
 namespace app\extensions\command;
 
 use \Exception;
+use \Smarty;
+use \app\extensions\util\Git;
+use \app\extensions\util\Versions;
 use \lithium\console\command\Help;
-use \nzedb\utility\Git;
+use \nzedb\db\DbUpdate;
 
 
 /**
  * Update various aspects of your indexer.
- *
- * @package app\extensions\command
+
+ * Actions:
+ *  * all|nzedb Fetches current git repo, composer dependencies, and update latest Db patches.
+ *  * db		Update the Db with any patches not yet applied.
+ *  * git		Performs git pull.
+
+*
+*@package app\extensions\command
  */
 class Update extends \app\extensions\console\Command
 {
+	/**
+	 * @var \app\extensions\util\Git object.
+	 */
+	protected $git;
+
 	private $gitBranch;
 
 	private $gitTag;
@@ -42,36 +56,64 @@ class Update extends \app\extensions\console\Command
 	public function __construct(array $config = [])
 	{
 		$defaults = [
-			'request'  => null,
-			'response' => [],
-			'classes'  => $this->_classes
+			'classes'	=> $this->_classes,
+			'git'		=> null,
+			'request'	=> null,
+			'response'	=> [],
 		];
 		parent::__construct($config + $defaults);
+	}
+
+	public function all()
+	{
+		$this->nzedb();
 	}
 
 	public function db()
 	{
 		// TODO Add check to determine if the indexer or other scripts are running. Hopefully
 		// also prevent web access.
-		$this->primary("Checking Schema versions...");
+		$this->primary("Checking database version...");
+
+		$versions = new Versions(['git' => ($this->git instanceof Git) ? $this->git : null]);
+
+		$currentDb = $versions->getSQLPatchFromDB();
+		$currentXML = $versions->getSQLPatchFromFile();
+		if ($currentDb < $currentXML) {
+			$db = new DbUpdate(['backup' => false]);
+			$db->processPatches(['safe' => false]);
+		} else {
+			$this->out("Up to date.");
+		}
+
 	}
 
 	public function git()
 	{
-		/*
-		$git = new Git();
-		$this->gitBranch = $git->getBranch();
-		$this->gitTag = $git->tagLatest();
-		*/
-		$this->error("Not implemented yet!!");
+		$this->initialiseGit();
+		if (!in_array($this->git->getBranch(), $this->git->getBranchesMain())) {
+			$this->error("Not on the stable or dev branch! Refusing to update repository ;-)");
+			return;
+		}
+		$this->git->run('pull');
 	}
 
 	public function nzedb()
 	{
 		try {
+			//$this->git();
 			$this->composer();
-			$this->db();
-		} catch (Exception $e) {
+			//$this->db();
+
+			$smarty = new Smarty();
+			$cleared = $smarty->clearCompiledTemplate();
+			if ($cleared) {
+				$this->primary('The Smarty compiled template cache has been cleaned for you');
+			} else {
+				$this->primary('You should clear your Smarty compiled template cache at: ' .
+					nZEDb_RES . "smarty" . DS . 'templates_c');
+			}
+		} catch (\Exception $e) {
 			$this->error($e->getMessage());
 		}
 	}
@@ -97,7 +139,20 @@ class Update extends \app\extensions\console\Command
 
 	protected function composer()
 	{
-		passthru('composer install --no-dev');
+		$this->initialiseGit();
+		$command = 'composer install';
+		if (in_array($this->gitBranch, $this->git->getBranchesStable())) {
+			$command .= ' --no-dev';
+		}
+		$this->primary('Running composer install process...');
+		passthru($command);
+	}
+
+	protected function initialiseGit()
+	{
+		if (!($this->git instanceof Git)) {
+			$this->git = new Git();
+		}
 	}
 
 	/**
@@ -127,5 +182,9 @@ class Update extends \app\extensions\console\Command
 	protected function _init()
 	{
 		parent::_init();
+
+		if ($this->_config['git'] instanceof Git) {
+			$this->git =& $this->_config['git'];
+		}
 	}
 }
