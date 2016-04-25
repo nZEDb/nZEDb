@@ -88,6 +88,11 @@ class Git extends \lithium\core\Object
 		return $this->_config['branches']['stable'];
 	}
 
+	public function getHeadHash()
+	{
+		return $this->run('rev-parse HEAD');
+	}
+
 	/**
 	 * Determine if the supplied object is commited to the repository or not.
 	 *
