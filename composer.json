@@ -17,6 +17,7 @@
     ]
   },
   "config": {
+    "process-timeout": 3600,
     "vendor-dir": "app/libraries"
   },
   "description": "A Usenet Indexer",
