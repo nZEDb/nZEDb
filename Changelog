@@ -9,6 +9,12 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-04-26 niel
+	Add: Hash of git's current HEAD to version console command's git option.
+2016-04-25 bart39
+	Fix: Iterator for populate_rt_indexes - fixes issue #2116.
+2016-04-25 niel
+	Add: New action 'predb' for Update console command. Only a stub method for now.
 2016-04-24 niel
 	Fix: Make Category IDs for 'Other' sub-categories match the code values.
 	Chg: Increase Composer's process-timeout value to 6 hours, so update db doesn't time out so
