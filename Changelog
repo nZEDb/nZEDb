@@ -11,6 +11,8 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 2016-04-26 niel
 	Add: Hash of git's current HEAD to version console command's git option.
+2016-04-25 bart39
+	Fix: Iterator for populate_rt_indexes - fixes issue #2116.
 2016-04-25 niel
 	Add: New action 'predb' for Update console command. Only a stub method for now.
 2016-04-24 niel
