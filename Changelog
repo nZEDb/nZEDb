@@ -11,7 +11,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 2016-04-26 bart39
 	Fix: Update sphinx releases_rt index when release files are added.
-	*** NOTE *** - you will need to do the following to update the sphinx index:
+		*** NOTE *** - you will need to do the following to update the sphinx index:
     		1) stop sphinxsearch - `sudo service sphinxsearch stop`
     		2) clear old index - `sudo rm /var/lib/sphinxsearch/data/*`
     		3) start sphinxsearch - `sudo service sphinxsearch start`
