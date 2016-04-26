@@ -177,8 +177,8 @@ CREATE TABLE bookinfo (
   AUTO_INCREMENT = 1;
 
 
-DROP TABLE IF EXISTS category;
-CREATE TABLE category (
+DROP TABLE IF EXISTS categories;
+CREATE TABLE categoriesy (
   id             INT(16) UNSIGNED NOT NULL AUTO_INCREMENT,
   title          VARCHAR(255)     NOT NULL,
   parentid       INT              NULL,
@@ -187,8 +187,8 @@ CREATE TABLE category (
   disablepreview TINYINT(1)       NOT NULL DEFAULT '0',
   minsize        BIGINT UNSIGNED  NOT NULL DEFAULT '0',
   PRIMARY KEY (id),
-  INDEX ix_category_status   (status),
-  INDEX ix_category_parentid (parentid)
+  INDEX ix_categories_status   (status),
+  INDEX ix_categories_parentid (parentid)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
@@ -204,12 +204,12 @@ CREATE TABLE category_regexes (
   status      TINYINT(1) UNSIGNED NOT NULL DEFAULT '1'    COMMENT '1=ON 0=OFF',
   description VARCHAR(1000)       NOT NULL DEFAULT ''     COMMENT 'Optional extra details on this regex',
   ordinal     INT SIGNED          NOT NULL DEFAULT '0'    COMMENT 'Order to run the regex in',
-  category_id SMALLINT UNSIGNED   NOT NULL DEFAULT '0010' COMMENT 'Which category id to put the release in',
+  categories_id SMALLINT UNSIGNED   NOT NULL DEFAULT '0010' COMMENT 'Which categories id to put the release in',
   PRIMARY KEY (id),
   INDEX ix_category_regexes_group_regex (group_regex),
   INDEX ix_category_regexes_status      (status),
   INDEX ix_category_regexes_ordinal     (ordinal),
-  INDEX ix_category_regexes_category_id (category_id)
+  INDEX ix_category_regexes_categories_id (categories_id)
 )
   ENGINE          = MYISAM
   DEFAULT CHARSET = utf8
@@ -659,7 +659,7 @@ CREATE TABLE         releases (
   guid              VARCHAR(40)                    NOT NULL,
   fromname          VARCHAR(255)                   NULL,
   completion        FLOAT                          NOT NULL DEFAULT '0',
-  categoryid        INT                            NOT NULL DEFAULT '0010',
+  categories_id        INT                            NOT NULL DEFAULT '0010',
   videos_id         MEDIUMINT(11) UNSIGNED         NOT NULL DEFAULT '0' COMMENT 'FK to videos.id of the parent series.',
   tv_episodes_id    MEDIUMINT(11) SIGNED           NOT NULL DEFAULT '0' COMMENT 'FK to tv_episodes.id for the episode.',
   imdbid            MEDIUMINT(7) UNSIGNED ZEROFILL NULL,
@@ -692,7 +692,7 @@ CREATE TABLE         releases (
   proc_par2         TINYINT(1)                     NOT NULL DEFAULT '0',
   proc_nfo          TINYINT(1)                     NOT NULL DEFAULT '0',
   proc_files        TINYINT(1)                     NOT NULL DEFAULT '0',
-  PRIMARY KEY                                 (id, categoryid),
+  PRIMARY KEY                                 (id, categories_id),
   INDEX ix_releases_name                      (name),
   INDEX ix_releases_group_id                  (group_id,passwordstatus),
   INDEX ix_releases_postdate_searchname       (postdate,searchname),
@@ -718,7 +718,7 @@ CREATE TABLE         releases (
   DEFAULT CHARSET = utf8
   COLLATE         = utf8_unicode_ci
   AUTO_INCREMENT  = 1
-  PARTITION BY RANGE (categoryid) (
+  PARTITION BY RANGE (categories_id) (
     PARTITION misc    VALUES LESS THAN (1000),
     PARTITION console VALUES LESS THAN (2000),
     PARTITION movies  VALUES LESS THAN (3000),
@@ -1061,10 +1061,10 @@ DROP TABLE IF EXISTS user_excluded_categories;
 CREATE TABLE user_excluded_categories (
   id          INT(16) UNSIGNED NOT NULL AUTO_INCREMENT,
   user_id INT              NOT NULL,
-  categoryid  INT              NOT NULL,
+  categories_id  INT              NOT NULL,
   createddate DATETIME         NOT NULL,
   PRIMARY KEY (id),
-  UNIQUE INDEX ix_userexcat_usercat (user_id, categoryid)
+  UNIQUE INDEX ix_userexcat_usercat (user_id, categories_id)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8

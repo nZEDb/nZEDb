@@ -222,7 +222,7 @@ if (!isset($groups) || count($groups) == 0) {
 						'postdate' => $pdo->escapeString($posteddate),
 						'fromname' => $pdo->escapeString($poster),
 						'size' => $pdo->escapeString($totalsize),
-						'categoryid' => $category,
+						'categories_id' => $category,
 						'isrenamed' => 1,
 						'reqidstatus' => 0,
 						'preid' => 0,

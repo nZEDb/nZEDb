@@ -255,7 +255,7 @@ class ProcessReleases
 	public function resetCategorize($where = '')
 	{
 		$this->pdo->queryExec(
-			sprintf('UPDATE releases SET categoryid = %d, iscategorized = 0 %s', Category::OTHER_MISC, $where)
+			sprintf('UPDATE releases SET categories_id = %d, iscategorized = 0 %s', Category::OTHER_MISC, $where)
 		);
 	}
 
@@ -278,7 +278,7 @@ class ProcessReleases
 			foreach ($releases as $release) {
 				$catId = $cat->determineCategory($release['group_id'], $release[$type]);
 				$this->pdo->queryExec(
-					sprintf('UPDATE releases SET categoryid = %d, iscategorized = 1 WHERE id = %d', $catId, $release['id'])
+					sprintf('UPDATE releases SET categories_id = %d, iscategorized = 1 WHERE id = %d', $catId, $release['id'])
 				);
 				$categorized++;
 				if ($this->echoCLI) {
@@ -616,7 +616,7 @@ class ProcessReleases
 							'postdate' => $this->pdo->escapeString($collection['date']),
 							'fromname' => $fromName,
 							'size' => $collection['filesize'],
-							'categoryid' => $categorize->determineCategory($collection['group_id'], $cleanedName),
+							'categories_id' => $categorize->determineCategory($collection['group_id'], $cleanedName),
 							'isrenamed' => ($properName === true ? 1 : 0),
 							'reqidstatus' => ($isReqID === true ? 1 : 0),
 							'preid' => ($preID === false ? 0 : $preID),
@@ -698,8 +698,8 @@ class ProcessReleases
 				SELECT SQL_NO_CACHE CONCAT(COALESCE(cp.title,'') , CASE WHEN cp.title IS NULL THEN '' ELSE ' > ' END , c.title) AS title,
 					r.name, r.id, r.guid
 				FROM releases r
-				INNER JOIN category c ON r.categoryid = c.id
-				INNER JOIN category cp ON cp.id = c.parentid
+				INNER JOIN categories c ON r.categories_id = c.id
+				INNER JOIN categories cp ON cp.id = c.parentid
 				WHERE %s nzbstatus = 0",
 				(!empty($groupID) ? ' r.group_id = ' . $groupID . ' AND ' : ' ')
 			)
@@ -820,8 +820,8 @@ class ProcessReleases
 		$this->categorizeRelease(
 			$type,
 			(!empty($groupID)
-				? 'WHERE categoryid = ' . Category::OTHER_MISC . ' AND iscategorized = 0 AND group_id = ' . $groupID
-				: 'WHERE categoryid = ' . Category::OTHER_MISC . ' AND iscategorized = 0')
+				? 'WHERE categories_id = ' . Category::OTHER_MISC . ' AND iscategorized = 0 AND group_id = ' . $groupID
+				: 'WHERE categories_id = ' . Category::OTHER_MISC . ' AND iscategorized = 0')
 		);
 
 		if ($this->echoCLI) {
@@ -1265,7 +1265,7 @@ class ProcessReleases
 		if (count($disabledCategories) > 0) {
 			foreach ($disabledCategories as $disabledCategory) {
 				$releases = $this->pdo->queryDirect(
-					sprintf('SELECT SQL_NO_CACHE id, guid FROM releases WHERE categoryid = %d', $disabledCategory['id'])
+					sprintf('SELECT SQL_NO_CACHE id, guid FROM releases WHERE categories_id = %d', $disabledCategory['id'])
 				);
 				if ($releases instanceof \Traversable) {
 					foreach ($releases as $release) {
@@ -1280,8 +1280,8 @@ class ProcessReleases
 		$categories = $this->pdo->queryDirect('
 			SELECT SQL_NO_CACHE c.id AS id,
 			CASE WHEN c.minsize = 0 THEN cp.minsize ELSE c.minsize END AS minsize
-			FROM category c
-			INNER JOIN category cp ON cp.id = c.parentid
+			FROM categories c
+			INNER JOIN categories cp ON cp.id = c.parentid
 			WHERE c.parentid IS NOT NULL'
 		);
 
@@ -1292,7 +1292,7 @@ class ProcessReleases
 						sprintf('
 							SELECT SQL_NO_CACHE r.id, r.guid
 							FROM releases r
-							WHERE r.categoryid = %d
+							WHERE r.categories_id = %d
 							AND r.size < %d LIMIT 1000',
 							$category['id'],
 							$category['minsize']
@@ -1336,7 +1336,7 @@ class ProcessReleases
 				sprintf('
 					SELECT SQL_NO_CACHE id, guid
 					FROM releases
-					WHERE categoryid = %d
+					WHERE categories_id = %d
 					AND adddate <= NOW() - INTERVAL %d HOUR',
 					Category::OTHER_MISC,
 					$this->pdo->getSetting('miscotherretentionhours')
@@ -1356,7 +1356,7 @@ class ProcessReleases
 				sprintf('
 					SELECT SQL_NO_CACHE id, guid
 					FROM releases
-					WHERE categoryid = %d
+					WHERE categories_id = %d
 					AND adddate <= NOW() - INTERVAL %d HOUR',
 					Category::OTHER_HASHED,
 					$this->pdo->getSetting('mischashedretentionhours')

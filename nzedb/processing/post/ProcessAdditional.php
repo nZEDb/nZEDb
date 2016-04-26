@@ -600,9 +600,9 @@ class ProcessAdditional
 	{
 		$this->_releases = $this->pdo->query(
 			sprintf(
-				'SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.group_id, r.nfostatus, r.completion, r.categoryid, r.searchname, r.preid
+				'SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.group_id, r.nfostatus, r.completion, r.categories_id, r.searchname, r.preid
 				FROM releases r
-				LEFT JOIN category c ON c.id = r.categoryid
+				LEFT JOIN categories c ON c.id = r.categories_id
 				WHERE r.nzbstatus = 1
 				%s %s %s %s
 				AND r.passwordstatus BETWEEN -6 AND -1
@@ -1318,7 +1318,7 @@ class ProcessAdditional
 					} // Check if it's alt.binaries.u4e file.
 					else if (in_array($this->_releaseGroupName, ['alt.binaries.u4e', 'alt.binaries.mom']) &&
 						preg_match('/Linux_2rename\.sh/i', $file) &&
-						($this->_release['categoryid'] == Category::OTHER_HASHED || $this->_release['categoryid'] == Category::OTHER_MISC)
+						($this->_release['categories_id'] == Category::OTHER_HASHED || $this->_release['categories_id'] == Category::OTHER_MISC)
 					) {
 						$this->_processU4ETitle($file);
 					}
@@ -1728,7 +1728,7 @@ class ProcessAdditional
 		// Make sure the category is music or other.
 		$rQuery = $this->pdo->queryOneRow(
 			sprintf(
-				'SELECT searchname, categoryid AS id, group_id FROM releases WHERE proc_pp = 0 AND id = %d',
+				'SELECT searchname, categories_id AS id, group_id FROM releases WHERE proc_pp = 0 AND id = %d',
 				$this->_release['id']
 			)
 		);
@@ -1794,7 +1794,7 @@ class ProcessAdditional
 										sprintf(
 											'
 											UPDATE releases
-											SET searchname = %s, categoryid = %d, iscategorized = 1, isrenamed = 1, proc_pp = 1
+											SET searchname = %s, categories_id = %d, iscategorized = 1, isrenamed = 1, proc_pp = 1
 											WHERE id = %d',
 											$newTitle,
 											$newCat,
@@ -2234,7 +2234,7 @@ class ProcessAdditional
 		if (nZEDb_RENAME_PAR2 &&
 			$releaseInfo['proc_pp'] == 0 &&
 			in_array(
-				((int)$this->_release['categoryid']),
+				((int)$this->_release['categories_id']),
 				[
 					Category::BOOKS_UNKNOWN,
 					Category::GAME_OTHER,
@@ -2382,7 +2382,7 @@ class ProcessAdditional
 							'UPDATE releases
 							SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL,
 							bookinfoid = NULL, anidbid = NULL, preid = 0, searchname = %s, isrenamed = 1, iscategorized = 1,
-							proc_files = 1, categoryid = %d
+							proc_files = 1, categories_id = %d
 							WHERE id = %d',
 							$newTitle,
 							$newCategory,
@@ -2398,7 +2398,7 @@ class ProcessAdditional
 								'new_name' => $newName,
 								'old_name' => $this->_release['searchname'],
 								'new_category' => $newCategory,
-								'old_category' => $this->_release['categoryid'],
+								'old_category' => $this->_release['categories_id'],
 								'group' => $this->_release['group_id'],
 								'release_id' => $this->_release['id'],
 								'method' => 'ProcessAdditional->_processU4ETitle'

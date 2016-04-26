@@ -40,7 +40,7 @@ $tRun->runPane('scraper', $runVar);
 $runVar['panes'] = $tRun->getListOfPanes($runVar['constants']);
 
 //totals per category in db, results by parentID
-$catcntqry = "SELECT c.parentid AS parentid, COUNT(r.id) AS count FROM category c, releases r WHERE r.categoryid = c.id GROUP BY c.parentid";
+$catcntqry = "SELECT c.parentid AS parentid, COUNT(r.id) AS count FROM categories c, releases r WHERE r.categories_id = c.id GROUP BY c.parentid";
 
 //create timers and set to now
 $runVar['timers']['timer1'] = $runVar['timers']['timer2'] = $runVar['timers']['timer3'] =

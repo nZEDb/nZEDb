@@ -87,7 +87,7 @@ class Console
 			$this->renamed = 'AND isrenamed = 1';
 		}
 		//$this->cleanconsole = ($this->pdo->getSetting('lookupgames') == 2) ? 'AND isrenamed = 1' : '';
-		$this->catWhere = "AND categoryid BETWEEN " . Category::GAME_ROOT . " AND " . Category::GAME_OTHER;
+		$this->catWhere = "AND categories_id BETWEEN " . Category::GAME_ROOT . " AND " . Category::GAME_OTHER;
 		$this->failCache = array();
 	}
 
@@ -184,7 +184,7 @@ class Console
 
 		$exccatlist = "";
 		if (count($excludedcats) > 0) {
-			$exccatlist = " AND r.categoryid NOT IN (" . implode(",", $excludedcats) . ")";
+			$exccatlist = " AND r.categories_id NOT IN (" . implode(",", $excludedcats) . ")";
 		}
 
 		$order = $this->getConsoleOrder($orderby);

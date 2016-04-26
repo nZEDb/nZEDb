@@ -205,7 +205,7 @@ class Music
 				$this->getBrowseBy(),
 				(count($cat) > 0 && $cat[0] != -1 ? (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat) : ''),
 				($maxage > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage) : ''),
-				(count($excludedcats) > 0 ? " AND r.categoryid NOT IN (" . implode(",", $excludedcats) . ")" : '')
+				(count($excludedcats) > 0 ? " AND r.categories_id NOT IN (" . implode(",", $excludedcats) . ")" : '')
 			), true, nZEDb_CACHE_EXPIRY_MEDIUM
 		);
 		return (isset($res[0]["num"]) ? $res[0]["num"] : 0);
@@ -231,7 +231,7 @@ class Music
 
 		$exccatlist = "";
 		if (count($excludedcats) > 0) {
-			$exccatlist = " AND r.categoryid NOT IN (" . implode(",", $excludedcats) . ")";
+			$exccatlist = " AND r.categories_id NOT IN (" . implode(",", $excludedcats) . ")";
 		}
 
 		$order = $this->getMusicOrder($orderby);
@@ -724,7 +724,7 @@ class Music
 					FROM releases
 					WHERE musicinfoid IS NULL
 					AND nzbstatus = 1 %s
-					AND categoryid IN (%s, %s, %s)
+					AND categories_id IN (%s, %s, %s)
 					ORDER BY postdate DESC
 					LIMIT %d',
 					$this->renamed,

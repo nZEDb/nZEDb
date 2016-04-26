@@ -12,7 +12,7 @@ $console = new Console(['Echo' => true, 'Settings' => $pdo]);
 
 $res = $pdo->queryDirect(
 		sprintf(
-				"SELECT searchname, id FROM releases WHERE consoleinfoid IS NULL AND categoryid
+				"SELECT searchname, id FROM releases WHERE consoleinfoid IS NULL AND categories_id
 				BETWEEN %s AND %s ORDER BY id DESC",
 				Category::GAME_ROOT,
 				Category::GAME_OTHER
