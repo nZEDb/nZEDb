@@ -1,6 +1,9 @@
-before_commands:
-    - 'composer install --dev --prefer-source --no-scripts'
 build:
+    dependencies:
+        # Overwrites inferred commands
+        override:
+            - 'composer install --no-interaction --no-dev --prefer-source --no-scripts'
+
     environment:
         php:
             version: 5.5.14
