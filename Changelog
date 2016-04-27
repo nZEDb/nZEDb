@@ -9,6 +9,12 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-04-27 niel
+	Add: Adding new nodes to nzedb.xml. This last script node will hold the date and ordinal of any
+		script run as part of updating.
+		 This will allow us to specify scripts that the updating process can run to make changes
+		other than simple file changes. It is intended that the scripts will *not* be included in
+		the repo, but instead be fetched from github.
 2016-04-26 bart39
 	Fix: Update sphinx releases_rt index when release files are added.
 		*** NOTE *** - you will need to do the following to update the sphinx index:
