@@ -1,3 +1,5 @@
+before_commands:
+    - 'composer install --dev --prefer-source --no-scripts'
 build:
     environment:
         php:
@@ -76,7 +78,4 @@ coding_style:
                 true_false_null: undefined
 
 filter:
-    excluded_paths:
-        - libs/*
-        - resources/*
-        - vendor/*
+    excluded_paths: [app/libraries/*, libraries/*, libs/*, resources/*]

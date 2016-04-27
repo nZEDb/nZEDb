@@ -15,6 +15,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 		 This will allow us to specify scripts that the updating process can run to make changes
 		other than simple file changes. It is intended that the scripts will *not* be included in
 		the repo, but instead be fetched from github.
+	Fix: Update Scrutinizer file to hopefully fix 'failed install' errors.
 2016-04-26 bart39
 	Fix: Update sphinx releases_rt index when release files are added.
 		*** NOTE *** - you will need to do the following to update the sphinx index:
