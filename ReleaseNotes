@@ -39,6 +39,12 @@ Fixed:
 	* Division by zero error when viewing filelist in Alpha and Default themes.
 	* Filelist display in all of the themes, reduce overhead in NZB class related to segments array.
 	* Links to detail pages in Gamma theme (remove release name).
+	* Update sphinx releases_rt index when release files are added.
+		*** NOTE *** - you will need to do the following to update the sphinx index:
+		1) stop sphinxsearch - `sudo service sphinxsearch stop`
+		2) clear old index - `sudo rm /var/lib/sphinxsearch/data/*`
+		3) start sphinxsearch - `sudo service sphinxsearch start`
+		4) populate the index - `php /var/www/nZEDb/misc/sphinxsearch/populate_rt_indexes.php releases_rt`
 
 
 0.5.5 2016-04-04
