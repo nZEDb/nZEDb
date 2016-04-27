@@ -387,6 +387,9 @@ class Categorize extends Category
 				case $group === 'alt.binaries.moovee':
 					switch (true) {
 						case $this->isTV():  // Check if it's TV first as some tv posted in moovee
+							break;
+						case $this->isMovieSD(): // Need to check this BEFORE the HD check
+							break;
 						case $this->isMovieHD():  // Check the movie isn't an HD release before blindly assigning SD
 							break;
 						default:

@@ -16,6 +16,8 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 		other than simple file changes. It is intended that the scripts will *not* be included in
 		the repo, but instead be fetched from github.
 	Fix: Update Scrutinizer file to hopefully fix 'failed install' errors.
+	Fix: PR 2120, from megonomic - Check for SD movies before HD ones, to prevent some being falsey
+		matched.
 2016-04-26 bart39
 	Fix: Update sphinx releases_rt index when release files are added.
 		*** NOTE *** - you will need to do the following to update the sphinx index:
