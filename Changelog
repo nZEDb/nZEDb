@@ -13,6 +13,9 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Fix: Removing pre-install-cmd from composer.json again. It kills the install for new users.
 		User on dev branch will have to manually issue the 'git pull' command until I can find a
 		work-around for this.
+	Fix: Removing post-install-cmd from composer.json It doesn't work if nZEDb's configuration
+		file has not been created, which is always the case on new installs.
+	Fix: Restore the original method of doing git pull before composer install and update db after.
 2016-04-28 DariusIII
 	Add: 'gn' case to nfo retrieval in api, to be in line with newznab api spec.
 2016-04-27 niel
