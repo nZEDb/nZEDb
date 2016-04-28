@@ -16,7 +16,7 @@ $page->smarty->assign(
 		'pageroffset' => $offset,
 		'pageritemsperpage' => ITEMS_PER_PAGE,
 		'pagerquerybase' =>
-			WWW_TOP . "/group-list.php?" . (($groupName != '') ? "groupname=$groupName&amp;": '') . 'offset=',
+			WWW_TOP . "/group-list.php?" . (($groupName != '') ? "groupname=$groupName&amp;" : '') . 'offset=',
 		'pagerquerysuffix' => '',
 		'grouplist' => $groups->getRange($offset, ITEMS_PER_PAGE, $groupName)
 	]

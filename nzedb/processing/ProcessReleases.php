@@ -911,7 +911,7 @@ class ProcessReleases
 
 		// Cleanup orphaned collections, binaries and parts
 		// this really shouldn't happen, but just incase - so we only run 1/200 of the time
-		if (mt_rand(0, 200) <= 1 ) {
+		if (mt_rand(0, 200) <= 1) {
 			// CBP collection orphaned with no binaries or parts.
 			if ($this->echoCLI) {
 				echo (
@@ -1424,7 +1424,7 @@ class ProcessReleases
 	 */
 	private function maxQueryFormulator($groupName, $difference)
 	{
-		$maxID = $this->pdo->queryOneRow(sprintf('SELECT IFNULL(MAX(id),0) AS max FROM %s', $groupName ));
+		$maxID = $this->pdo->queryOneRow(sprintf('SELECT IFNULL(MAX(id),0) AS max FROM %s', $groupName));
 		return empty($maxID['max']) || $maxID['max'] < $difference ? 0 : $maxID['max'] - $difference;
 	}
 

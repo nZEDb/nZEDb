@@ -120,7 +120,7 @@ class PostProcess
 	/**
 	 * Go through every type of post proc.
 	 *
-	 * @param $nntp
+	 * @param \nzedb\NNTP $nntp
 	 *
 	 * @return void
 	 */
@@ -246,10 +246,13 @@ class PostProcess
 	/**
 	 * Process all TV related releases which will assign their series/episode/rage data.
 	 *
-	 * @param string     $groupID   (Optional) ID of a group to work on.
-	 * @param string     $guidChar  (Optional) First letter of a release GUID to use to get work.
-	 * @param string|int $processTV (Optional) 0 Don't process, 1 process all releases,
-	 *                                         2 process renamed releases only, '' check site setting
+	 * @param string        $groupID   (Optional) ID of a group to work on.
+	 * @param string        $guidChar  (Optional) First letter of a release GUID to use to get work.
+	 * @param string|integer $processTV (Optional)
+	 *                                         0 Don't process,
+	 *                                         1 process all releases,
+	 *                                         2 process renamed releases only,
+	 *                                         '' check site setting
 	 *
 	 * @return void
 	 */

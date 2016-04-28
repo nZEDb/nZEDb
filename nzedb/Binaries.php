@@ -1213,7 +1213,7 @@ class Binaries
 		$aMin = $data['first'];
 		$reallyOldArticle = $oldArticle = $articleTime = null;
 
-		while(true) {
+		while (true) {
 			// Article exists outside of available range, this shouldn't happen
 			if ($wantedArticle <= $data['first'] || $wantedArticle >= $data['last']) {
 				break;

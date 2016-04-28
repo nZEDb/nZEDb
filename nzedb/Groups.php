@@ -698,7 +698,7 @@ class Groups
 	{
 		$cbpm = ['collections', 'binaries', 'parts', 'missed_parts'];
 
-		foreach ( $cbpm as $tableName) {
+		foreach ($cbpm as $tableName) {
 			if ($this->pdo->queryExec(sprintf('SELECT * FROM %s_%s LIMIT 1', $tableName, $groupID), true) === false) {
 				if ($this->pdo->queryExec(sprintf('CREATE TABLE %s_%s LIKE %s', $tableName, $groupID, $tableName), true) === false) {
 					return false;

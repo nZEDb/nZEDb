@@ -13,7 +13,8 @@ Class Videos
 	/**
 	 * @param array $options
 	 */
-	public function __construct(array $options = []) {
+	public function __construct(array $options = [])
+	{
 		$defaults = [
 			'Echo'         => false,
 			'Logger'       => null,

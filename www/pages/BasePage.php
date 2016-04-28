@@ -152,8 +152,7 @@ class BasePage
 	private function stripSlashes(array &$array)
 	{
 		foreach ($array as $key => $value) {
-			$array[$key] = (is_array($value) ? array_map('stripslashes', $value) :
-				stripslashes($value));
+			$array[$key] = (is_array($value) ? array_map('stripslashes', $value) : stripslashes($value));
 		}
 	}
 
@@ -177,8 +176,7 @@ class BasePage
 					$_SESSION['flood_check_time'] = microtime(true);
 				} else {
 					if ($_SESSION['flood_check_hits'] >=
-						(nZEDb_FLOOD_MAX_REQUESTS_PER_SECOND < 1 ? 5 :
-							nZEDb_FLOOD_MAX_REQUESTS_PER_SECOND)
+						(nZEDb_FLOOD_MAX_REQUESTS_PER_SECOND < 1 ? 5 : nZEDb_FLOOD_MAX_REQUESTS_PER_SECOND)
 					) {
 						if ($_SESSION['flood_check_time'] + 1 > microtime(true)) {
 							$_SESSION['flood_wait_until'] = microtime(true) + $waitTime;

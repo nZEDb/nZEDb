@@ -220,6 +220,12 @@ class ReleaseExtra
 		return $this->pdo->queryExec(sprintf('DELETE FROM releaseextrafull WHERE releaseid = %d', $id));
 	}
 
+	/**
+	 * @param $id
+	 * @param string $xml
+	 *
+	 * @return boolean|\PDOStatement
+	 */
 	public function addFull($id, $xml)
 	{
 		$ckid = $this->pdo->queryOneRow(sprintf('SELECT releaseid FROM releaseextrafull WHERE releaseid = %s', $id));

@@ -88,7 +88,7 @@ function preName($argv, $argc)
 		$why = ' WHERE nzbstatus = 1 AND isrenamed = 0';
 	} else if ($full === true) {
 		$why = ' WHERE nzbstatus = 1 AND (isrenamed = 0 OR categoryid between ' .
-				Category::BOOKS_ROOT . ' AND ' . Category::BOOKS_UNKNOWN .')';
+				Category::BOOKS_ROOT . ' AND ' . Category::BOOKS_UNKNOWN . ')';
 	} else if ($all === true) {
 		$why = ' WHERE nzbstatus = 1';
 	} else {

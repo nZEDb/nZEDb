@@ -216,7 +216,7 @@ class Console
 		$consoleIDs = $releaseIDs = false;
 
 		if (is_array($consoles['result'])) {
-			foreach ($consoles['result'] AS $console => $id) {
+			foreach ($consoles['result'] as $console => $id) {
 				$consoleIDs[] = $id['id'];
 				$releaseIDs[] = $id['grp_release_id'];
 			}
@@ -309,7 +309,7 @@ class Console
 	}
 
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function getConsoleOrdering()
 	{
@@ -317,7 +317,7 @@ class Console
 	}
 
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function getBrowseByOptions()
 	{
@@ -644,7 +644,7 @@ class Console
 	/**
 	 * @param $genreName
 	 *
-	 * @return false|int|mixed|string
+	 * @return boolean|string
 	 */
 	protected function _getGenreKey($genreName)
 	{
@@ -991,7 +991,7 @@ class Console
 	}
 
 	/**
-	 * @param $platform
+	 * @param string $platform
 	 *
 	 * @return string
 	 */
@@ -1063,9 +1063,9 @@ class Console
 	}
 
 	/**
-	 * @param $nodeName
+	 * @param string $nodeName
 	 *
-	 * @return bool|string
+	 * @return boolean|string
 	 */
 	public function matchBrowseNode($nodeName)
 	{

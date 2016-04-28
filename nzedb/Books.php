@@ -107,8 +107,8 @@ class Books
 	}
 
 	/**
-	 * @param $author
-	 * @param $title
+	 * @param string $author
+	 * @param string $title
 	 *
 	 * @return array|bool
 	 */
@@ -223,7 +223,7 @@ class Books
 		$bookIDs = $releaseIDs = false;
 
 		if (is_array($books['result'])) {
-			foreach ($books['result'] AS $book => $id) {
+			foreach ($books['result'] as $book => $id) {
 				$bookIDs[] = $id['id'];
 				$releaseIDs[] = $id['grp_release_id'];
 			}
@@ -310,7 +310,7 @@ class Books
 	}
 
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function getBookOrdering()
 	{
@@ -357,7 +357,7 @@ class Books
 	}
 
 	/**
-	 * @param $title
+	 * @param string $title
 	 *
 	 * @return bool|mixed
 	 */
@@ -477,9 +477,9 @@ class Books
 	/**
 	 * @param $release_name
 	 * @param $releaseID
-	 * @param $releasetype
+	 * @param string $releasetype
 	 *
-	 * @return bool|string
+	 * @return false|string
 	 */
 	public function parseTitle($release_name, $releaseID, $releasetype)
 	{

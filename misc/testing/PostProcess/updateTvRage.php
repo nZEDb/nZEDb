@@ -16,7 +16,7 @@ if (empty($argv[1]) && !in_array($argv[1], ['update', 'check'])) {
 
 $tvrage = new TvRage(['Settings' => $pdo, 'Echo' => true]);
 
-switch((string)$argv[1]) {
+switch ((string)$argv[1]) {
 	case 'update':
 		updateTvImages($pdo, $tvrage);
 		break;
@@ -105,7 +105,7 @@ function checkTvImages($pdo, $tvrage)
 		echo PHP_EOL . $pdo->log->header("Matching " . number_format($imgCount) . " files to their RageIDs and setting hascover.") . PHP_EOL;
 		$checkCnt = $notReqdCnt = $badRageCnt = 0;
 
-		foreach($images as $file) {
+		foreach ($images as $file) {
 
 			$rightCut = $text->cutStringUsingLast('/', $file, "right", false);
 			$leftCut = $text->cutStringUsingLast('.', $rightCut, "left", false);

@@ -142,7 +142,7 @@ class Versions
 		$latest = $this->git->tagLatest();
 		$ver = preg_match('#v(\d+\.\d+\.\d+).*#', $latest, $matches) ? $matches[1] : $latest;
 
-		if (!in_array($branch,  $this->_stable)) {
+		if (!in_array($branch, $this->_stable)) {
 			if (version_compare($this->_vers->git->tag, '0.0.0', '!=')) {
 				$this->_vers->git->tag = '0.0.0';
 				$this->_changes |= self::UPDATED_GIT_TAG;

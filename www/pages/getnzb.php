@@ -70,7 +70,7 @@ if (isset($_GET["zip"]) && $_GET["zip"] == "1") {
 		}
 
 		header("Content-type: application/octet-stream");
-		header("Content-disposition: attachment; filename=" .  date("Ymdhis") . ".nzb.zip");
+		header("Content-disposition: attachment; filename=" . date("Ymdhis") . ".nzb.zip");
 		exit($zip);
 	} else {
 		$page->show404();

@@ -37,8 +37,9 @@ switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
 			 *
 			 * We do not include it in the supplied themes, as this is a potential security problem.
 			 */
-			$onscreen = "Your password has been reset to <strong>" .  $newPassword ."</strong> and sent to your e-mail address.";
-			$page->smarty->assign('notice',  $onscreen);
+			$onscreen = "Your password has been reset to <strong>" . $newPassword .
+				"</strong> and sent to your e-mail address.";
+			$page->smarty->assign('notice', $onscreen);
 			$confirmed = "true";
 			break;
 		}

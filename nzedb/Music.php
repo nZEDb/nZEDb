@@ -263,7 +263,7 @@ class Music
 		$musicIDs = $releaseIDs = false;
 
 		if (is_array($music['result'])) {
-			foreach ($music['result'] AS $mus => $id) {
+			foreach ($music['result'] as $mus => $id) {
 				$musicIDs[] = $id['id'];
 				$releaseIDs[] = $id['grp_release_id'];
 			}

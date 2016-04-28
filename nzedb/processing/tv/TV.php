@@ -169,7 +169,8 @@ abstract class TV extends Videos
 	 * @param     $releaseId
 	 * @param int $episodeId
 	 */
-	public function setVideoIdFound($videoId, $releaseId, $episodeId) {
+	public function setVideoIdFound($videoId, $releaseId, $episodeId)
+	{
 		$this->pdo->queryExec(
 			sprintf('
 				UPDATE releases
@@ -224,7 +225,7 @@ abstract class TV extends Videos
 
 		// Check if video already exists based on site ID info
 		// if that fails be sure we're not inserting duplicates by checking the title
-		foreach ($this->siteColumns AS $column) {
+		foreach ($this->siteColumns as $column) {
 			if ($show[$column] > 0) {
 				$videoId = $this->getVideoIDFromSiteID($column, $show[$column]);
 			}
@@ -374,7 +375,7 @@ abstract class TV extends Videos
 	/**
 	 * Sets the TV show's image column to found (1)
 	 *
-	 * @param $videoId
+	 * @param integer $videoId
 	 */
 	public function setCoverFound($videoId)
 	{
@@ -798,7 +799,7 @@ abstract class TV extends Videos
 
 		if (is_array($required)) {
 			foreach ($required as $req) {
-				if (!in_array($type, ['tmdbS', 'tmdbE', 'traktS', 'traktE'])){
+				if (!in_array($type, ['tmdbS', 'tmdbE', 'traktS', 'traktE'])) {
 					if (!isset($array->$req)) {
 						return false;
 					}
