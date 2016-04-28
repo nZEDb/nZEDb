@@ -35,6 +35,7 @@ if (isset($_GET['t'])) {
 		case 'movie':
 			$function = 'm';
 			break;
+		case 'gn':
 		case 'n':
 		case 'nfo':
 		case 'info':
