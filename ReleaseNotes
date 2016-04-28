@@ -22,6 +22,7 @@ Added:
 		version
 	* simple-expanded.sh Screen script. This is an updated version of the standard screen script
 	with common options already enabled (PR 2113, Thanks to Wally73).
+	* 'gn' case to nfo retrieval in api, to be in line with newznab api spec.
 
 Changed:
 	* Move location of Smarty's additional directories (cache, compile, and config) to the resources
@@ -45,6 +46,8 @@ Fixed:
 		2) clear old index - `sudo rm /var/lib/sphinxsearch/data/*`
 		3) start sphinxsearch - `sudo service sphinxsearch start`
 		4) populate the index - `php /var/www/nZEDb/misc/sphinxsearch/populate_rt_indexes.php releases_rt`
+	* Check for SD movies before HD ones, to prevent some being falsey matched (PR 2120).
+	* Update Scrutinizer file to hopefully fix 'failed install' errors.
 
 
 0.5.5 2016-04-04
