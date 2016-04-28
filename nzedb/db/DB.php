@@ -682,7 +682,7 @@ class DB extends \PDO
 			return $data;
 		}
 
-		if ($cache === true && $this->cacheEnabled === true ) {
+		if ($cache === true && $this->cacheEnabled === true) {
 			try {
 				$count = $this->cacheServer->get($this->cacheServer->createKey($query . 'count'));
 				if ($count !== false) {
@@ -1108,7 +1108,7 @@ class DB extends \PDO
 	 *
 	 * @param int $attribute
 	 *
-	 * @return bool|mixed
+	 * @return false|mixed
 	 */
 	public function getAttribute($attribute)
 	{
@@ -1165,11 +1165,11 @@ class DB extends \PDO
 	}
 
 	/**
-	 * Checks if the query is empty. Cleans the query of whitespace is needed.
+	 * Checks if the query is empty. Cleans the query of whitespace if needed.
 	 *
-	 * @param reference string $query
+	 * @param string $query
 	 *
-	 * @return bool
+	 * @return boolean
 	 */
 	private function parseQuery(&$query)
 	{

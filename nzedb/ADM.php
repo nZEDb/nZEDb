@@ -188,7 +188,7 @@ class ADM
 			$category = explode(":", $li->plaintext);
 			if (trim($category[0]) == "Category") {
 				$g = explode(",", $category[1]);
-				foreach($g as $genre) {
+				foreach ($g as $genre) {
 					$genres[] = trim($genre);
 				}
 				$this->_res['genres'] = & $genres;

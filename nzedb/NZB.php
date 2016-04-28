@@ -309,8 +309,8 @@ class NZB
 	 *
 	 * @param  string $releaseGuid              The guid of the release.
 	 *
-	 * @return bool|string On success: (string) Path+file name of the nzb.
-	 *                     On failure: (bool)   False.
+	 * @return string|false On success: (string) Path + file name of the nzb.
+	 *                      On failure: (bool)   False.
 	 *
 	 * @access public
 	 */

@@ -119,7 +119,7 @@ class Text
 			"\x10", "\x11", "\x12", "\x13", "\x14", "\x15", "\x16", "\x17",
 			"\x18", "\x19", "\x1A", "\x1B", "\x1C", "\x1D", "\x1E", "\x1F",
 		];
-		$text     = str_replace($lowChars, '', $text);
+		$text = str_replace($lowChars, '', $text);
 
 		return $text;
 	}
@@ -163,7 +163,8 @@ class Text
 	 *
 	 * @return int $e
 	 */
-	public static function convertRomanToInt($string) {
+	public static function convertRomanToInt($string)
+	{
 		switch (strtolower($string)) {
 			case 'i': $e = 1;
 				break;

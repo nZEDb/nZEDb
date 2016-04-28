@@ -7,7 +7,8 @@ use nzedb\utility\Misc;
  * Class TraktAPI
  * Retrive info from the Trakt API.
  */
-Class TraktAPI {
+class TraktAPI
+{
 
 	const API_URL = 'https://api-v2launch.trakt.tv/';
 
@@ -56,7 +57,7 @@ Class TraktAPI {
 	 */
 	public function episodeSummary($id, $season = '', $ep = '', $type = 'min')
 	{
-		switch($type) {
+		switch ($type) {
 			case 'aliases':
 			case 'full':
 			case 'images':
@@ -80,16 +81,14 @@ Class TraktAPI {
 	/**
 	 * Fetches weekend box office data from trakt.tv, updated every monday.
 	 *
-	 * @return array|bool
 	 * @see    http://docs.trakt.apiary.io/#reference/movies/box-office/get-the-weekend-box-office
 	 *
 	 * @access public
+	 * @return array|false
 	 */
 	public function getBoxOffice()
 	{
-		$array = $this->getJsonArray(
-			self::API_URL . 'movies/boxoffice'
-		);
+		$array = $this->getJsonArray(self::API_URL . 'movies/boxoffice');
 		if (!$array) {
 			return false;
 		}
