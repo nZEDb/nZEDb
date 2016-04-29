@@ -224,25 +224,39 @@ class Movie
 		);
 	}
 
-	/**
-	 * Get movies for movie-list admin page.
-	 *
-	 * @param int $start
-	 * @param int $num
-	 *
-	 * @return array
-	 */
-	public function getRange($start, $num)
-	{
-		return $this->pdo->query(
-			sprintf('
-				SELECT *
-				FROM movieinfo
-				ORDER BY createddate DESC %s',
-				($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
-			)
-		);
-	}
+    /**
+     * Retrieves a range of all shows for the show-edit admin list
+     *
+     * @param        $start
+     * @param        $num
+     * @param string $showname
+     *
+     * @return array
+     */
+    public function getRange($start, $num, $movietitle = "")
+    {
+        if ($start === false) {
+            $limit = "";
+        } else {
+            $limit = "LIMIT " . $num . " OFFSET " . $start;
+        }
+
+        $rsql = '';
+        if ($movietitle != "") {
+            $rsql .= sprintf("AND movieinfo.title LIKE %s ", $this->pdo->escapeString("%" . $movietitle . "%"));
+        }
+
+        return $this->pdo->query(
+            sprintf("
+                        SELECT *
+                        FROM movieinfo
+                        WHERE 1=1 %s
+                        ORDER BY createddate DESC %s",
+                $rsql,
+                $limit
+            )
+        );
+    }
 
 	/**
 	 * Get count of movies for movie-list admin page.
