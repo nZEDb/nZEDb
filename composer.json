@@ -76,7 +76,7 @@
     "unionofrad/li3_quality": "1.1.x-dev"
   },
   "scripts": {
-    "pre-install-cmd": "./zed update git",
+    "pre-install-cmd": "git pull",
     "post-install-cmd": "./zed update db"
   },
   "type": "project"
