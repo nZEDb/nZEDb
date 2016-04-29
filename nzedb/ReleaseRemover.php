@@ -1313,7 +1313,7 @@ class ReleaseRemover
 					}
 					switch ($args[1]) {
 						case 'smaller':
-							return ' AND completion > 0 AND completion < ' . $args[2];
+							return ' AND completion < ' . $args[2];
 						default:
 							break;
 					}
