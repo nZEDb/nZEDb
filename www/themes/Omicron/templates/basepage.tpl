@@ -348,9 +348,9 @@
 	<!-- jQuery migrate script -->
 	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/jquery-migrate/jquery-migrate.min.js"></script>
 	<!-- SlimScroll script -->
-	<script src="{$smarty.const.WWW_THEMES}/{$theme}/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/slimScroll/jquery.slimscroll.min.js"></script>
 	<!-- Fastclick script -->
-	<script src="{$smarty.const.WWW_THEMES}/{$theme}/plugins/fastclick/fastclick.min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/fastclick/fastclick.js"></script>
 	<!-- notification plugin -->
 	<script type="text/javascript"
 			src="{$smarty.const.WWW_THEMES}/shared/libs/noty/js/noty/packaged/jquery.noty.packaged.js"></script>
