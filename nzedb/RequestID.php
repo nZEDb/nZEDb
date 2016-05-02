@@ -229,7 +229,7 @@ abstract class RequestID
 							$requestID):
 			case preg_match('/\[\s*(\d+)\s*\]/', $this->_release['name'], $requestID):
 			case preg_match('/^REQ\s*(\d{4,6})/i', $this->_release['name'], $requestID):
-			case preg_match('/^(\d{4,6})-\d{1}\[/', $this->_release['name'], $requestID):
+			case preg_match('/^(\d{4,6})-\d{1}\s?\[/', $this->_release['name'], $requestID):
 			case preg_match('/(\d{4,6}) -/', $this->_release['name'], $requestID):
 				if ((int)$requestID[1] > 0) {
 					return (int)$requestID[1];
