@@ -11,7 +11,7 @@ if ($cfg->isLocked()) {
 	$cfg->error = true;
 }
 
-$cfg->cacheCheck = is_writable(SMARTY_DIR . 'templates_c');
+$cfg->cacheCheck = is_writable(nZEDb_RES . 'smarty' . DS . 'templates_c');
 if ($cfg->cacheCheck === false) {
 	$cfg->error = true;
 }
@@ -70,7 +70,7 @@ if (!$cfg->error) {
 				<div class="error">
 					The template compile dir must be writable.<br />A quick solution is to run:	<br />
 					<?php
-					echo 'chmod 777 ' . SMARTY_DIR . 'templates_c';
+					echo 'chmod 777 ' . nZEDb_RES . 'smarty' . DS . 'templates_c';
 					if (extension_loaded('posix') && strtolower(substr(PHP_OS, 0, 3)) !== 'win') {
 						$group = posix_getgrgid(posix_getgid());
 						echo

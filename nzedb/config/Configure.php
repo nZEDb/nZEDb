@@ -20,8 +20,6 @@
  */
 namespace nzedb\config;
 
-require_once nZEDb_LIBS . 'autoloader.php';
-
 class Configure
 {
 	private $environments = [
@@ -42,17 +40,6 @@ class Configure
 	public function __construct($environment = 'indexer')
 	{
 		$this->loadEnvironment($environment);
-	}
-
-	private function loadEnvironment($environment)
-	{
-		if (array_key_exists($environment, $this->environments)) {
-			foreach ($this->environments[$environment] as $config => $throwException) {
-				$this->loadSettings($config, $throwException);
-			}
-		} else {
-			throw new \RuntimeException("Unknown environment passed to Configure class!");
-		}
 	}
 
 	public function loadSettings($filename, $throwException = true)
@@ -131,6 +118,17 @@ class Configure
 			define('nZEDb_SSL_VERIFY_PEER', '0');
 			define('nZEDb_SSL_VERIFY_HOST', '0');
 			define('nZEDb_SSL_ALLOW_SELF_SIGNED', '1');
+		}
+	}
+
+	private function loadEnvironment($environment)
+	{
+		if (array_key_exists($environment, $this->environments)) {
+			foreach ($this->environments[$environment] as $config => $throwException) {
+				$this->loadSettings($config, $throwException);
+			}
+		} else {
+			throw new \RuntimeException("Unknown environment passed to Configure class!");
 		}
 	}
 }

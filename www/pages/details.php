@@ -61,7 +61,7 @@ if (isset($_GET['id'])) {
 	}
 
 	if ($data['xxxinfo_id'] != '' && $data['xxxinfo_id'] != 0) {
-		$XXX   = new XXX(['Settings' => $page->settings]);
+		$XXX = new XXX(['Settings' => $page->settings]);
 		$xxx = $XXX->getXXXInfo($data['xxxinfo_id']);
 		if ($xxx && isset($xxx['title'])) {
 			$xxx['title']    = str_replace(['/', '\\'], '', $xxx['title']);
@@ -77,7 +77,7 @@ if (isset($_GET['id'])) {
 	}
 
 	$user = $page->users->getById($page->users->currentUserId());
-	$re  = new ReleaseExtra($page->settings);
+	$re = new ReleaseExtra($page->settings);
 
 	$page->smarty->assign([
 		'anidb'   => ($data['anidbid'] > 0 ? (new AniDB(['Settings' => $page->settings]))->getAnimeInfo($data['anidbid']) : ''),

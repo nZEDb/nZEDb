@@ -1,6 +1,6 @@
 <h2>{$page->title} </h2>
 
-<h4>For <a href="{$smarty.const.WWW_TOP}/details/{$rel.guid}/{$rel.searchname|escape:"seourl"}">{$rel.searchname|escape:'htmlall'}</a></h4>
+<h4>For <a href="{$smarty.const.WWW_TOP}/details/{$rel.guid}">{$rel.searchname|escape:'htmlall'}</a></h4>
 <br/>
 
 <table class="data Sortable highlight table table-striped">
@@ -13,7 +13,7 @@
 		<th style="text-align:center;">size</th>
 	</tr>
 
-	{foreach $files as $file=>$i name="iteration"}
+	{foreach $files as $i=>$file name="iteration"}
 	<tr class="{cycle values=",alt"}">
 		<td width="30">{$smarty.foreach.iteration.index+1}</td>
 		<td>{$file.title|escape:'htmlall'}</td>

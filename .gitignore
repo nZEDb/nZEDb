@@ -1,5 +1,4 @@
 .DS_Store
-composer.*
 config.php
 error_log
 failed-login.log
@@ -13,6 +12,8 @@ test.php
 *.orig
 
 /.idea/
+/app/libraries/*
+/app/resources/tmp/*
 /nzedb/config/config.php
 /nzedb/config/settings.php
 /nzedb/config/ircscraper_settings.php
@@ -23,6 +24,8 @@ test.php
 /nbproject/private/
 /resources/covers/*
 /resources/nzb/*
+/resources/smarty/templates_c/*.php
 /resources/tmp/*
 /templates_c/*
-/vendor
+/libraries/*
+/www/themes/shared/libs/

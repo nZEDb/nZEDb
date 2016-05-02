@@ -11,7 +11,7 @@
 	</tr>
 	</thead>
 	<tbody>
-	{foreach $files as $file=>$i name="iteration"}
+	{foreach $files as $i=>$file name="iteration"}
 		<tr>
 			<td>{$smarty.foreach.iteration.index+1}</td>
 			<td>{$file.title|escape:'htmlall'}</td>
@@ -23,7 +23,11 @@
 				{assign var="icon" value=$file.ext}
 			{/if}
 
-			{assign var="completion" value=($file.partsactual/$file.partstotal*100)|number_format:1}
+			{if $file.partstotal != 0}
+				{assign var="completion" value=($file.partsactual/$file.partstotal*100)|number_format:1}
+			{else}
+				{assign var="completion" value=0|number_format:1}
+			{/if}
 
 			<td><img title=".{$file.ext}" alt="{$file.ext}" src="{$smarty.const.WWW_TOP}/themes/shared/img/fileicons/{$icon}.png"></td>
 			<td><span class="label {if $completion < 100}label-danger{else}label-success{/if}">{$completion}%</span></td>

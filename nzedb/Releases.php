@@ -1,8 +1,6 @@
 <?php
 namespace nzedb;
 
-require_once nZEDb_LIBS . 'ZipFile.php';
-
 use nzedb\db\Settings;
 use nzedb\utility\Misc;
 
@@ -973,8 +971,8 @@ class Releases
 			NZB::NZB_ADDED,
 			$this->showPasswords,
 			($siteCount > 0 ? implode(' OR ', $siteSQL) : '1=1'),
-			($series != '' ? sprintf('AND tve.series = %d', (int)preg_replace('/^s0*/i', '', $series)): ''),
-			($episode != '' ? sprintf('AND tve.episode = %d', (int)preg_replace('/^e0*/i', '', $episode)): ''),
+			($series != '' ? sprintf('AND tve.series = %d', (int)preg_replace('/^s0*/i', '', $series)) : ''),
+			($episode != '' ? sprintf('AND tve.episode = %d', (int)preg_replace('/^e0*/i', '', $episode)) : ''),
 			($airdate != '' ? sprintf('AND DATE(tve.firstaired) = %s', $this->pdo->escapeString($airdate)) : ''),
 			($name !== '' ? $this->releaseSearch->getSearchSQL(['searchname' => $name]) : ''),
 			$this->categorySQL($cat),
@@ -1585,8 +1583,8 @@ class Releases
 			FROM releases r
 			INNER JOIN videos v ON r.videos_id = v.id
 			INNER JOIN tv_info tvi ON r.videos_id = tvi.videos_id
-			WHERE r.categoryid BETWEEN " . Category::TV_ROOT . " AND "	. Category::TV_OTHER . "
-			AND v.id > 0
+			WHERE r.categoryid BETWEEN " . Category::TV_ROOT . " AND " . Category::TV_OTHER .
+			" AND v.id > 0
 			AND v.type = 0
 			AND tvi.image = 1
 			AND r.id in (select max(id) from releases where videos_id > 0 group by videos_id)

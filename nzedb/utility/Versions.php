@@ -38,6 +38,11 @@ class Versions
 	protected $_filespec;
 
 	/**
+	 * @var array of stable branches.
+	 */
+	protected $_stable = ['0.x'];
+
+	/**
 	 * Shortcut to the nzedb->versions node to make method work shorter.
 	 * @var object SimpleXMLElement
 	 */
@@ -127,23 +132,23 @@ class Versions
 
 	/**
 	 * Checks the git's latest version tag against the XML's stored value. Version should be
-	 * Major.Minor.Revision (Note commit number is NOT revision)
+	 * Major.Minor.Revision (**commit number is NOT revision**)
 	 * @param boolean $update Whether the XML should be updated by the check.
 	 * @return boolean The new git's latest version tag, or false.
 	 */
 	public function checkGitTag($update = true)
 	{
+		$branch = $this->git->getBranch();
 		$latest = $this->git->tagLatest();
 		$ver = preg_match('#v(\d+\.\d+\.\d+).*#', $latest, $matches) ? $matches[1] : $latest;
 
-		if ($this->git->getBranch() !== 'master') {
+		if (!in_array($branch, $this->_stable)) {
 			if (version_compare($this->_vers->git->tag, '0.0.0', '!=')) {
 				$this->_vers->git->tag = '0.0.0';
 				$this->_changes |= self::UPDATED_GIT_TAG;
 			}
 			return $this->_vers->git->tag;
 		}
-
 		// Check if version file's entry is the same as current branch's tag
 		if (version_compare($this->_vers->git->tag, $latest, '!=')) {
 			if ($update) {

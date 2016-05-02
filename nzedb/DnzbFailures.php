@@ -152,7 +152,7 @@ class DnzbFailures
 	 *        update the failed count in dnzb_failures table
 	 *
 	 * @param $relid
-	 * @param $uid
+	 * @param string $uid
 	 */
 	public function postComment($relid, $uid)
 	{
@@ -170,7 +170,7 @@ class DnzbFailures
 		);
 
 		if ($check instanceof \Traversable) {
-			foreach ($check AS $dbl) {
+			foreach ($check as $dbl) {
 				if ($dbl['text'] == $text) {
 					$dupe = 1;
 					break;

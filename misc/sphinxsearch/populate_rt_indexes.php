@@ -54,7 +54,7 @@ function populate_rt($table, $max)
 
 	$lastId = $minId - 1;
 	echo "[Starting to populate sphinx RT index $table with $total releases.]\n";
-	for ($i = $minId; $i <= ($total + $max) ; $i += $max) {
+	for ($i = $minId; $i <= ($total + $max + $minId); $i += $max) {
 
 		$rows = $pdo->queryDirect(sprintf($query, $lastId, $max));
 		if (!$rows) {

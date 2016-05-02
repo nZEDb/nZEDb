@@ -65,7 +65,7 @@
 				<span class="error">
 						The template compile dir must be writable.<br /><br />
 						A quick solution is to run:<br />
-						chmod 777 {$cfg->SMARTY_DIR}/templates_c
+						chmod 777 {$cfg->SMARTY_COMPILED_TEMPLATES}
 					{$fixString}
 					</span>
 			{/if}

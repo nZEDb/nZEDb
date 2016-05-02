@@ -1,8 +1,6 @@
 <?php
 namespace nzedb;
 
-require_once nZEDb_LIBS . 'GiantBombAPI.php';
-
 use nzedb\db\Settings;
 
 class Games
@@ -236,7 +234,7 @@ class Games
 		$gameIDs = $releaseIDs = false;
 
 		if (is_array($games['result'])) {
-			foreach ($games['result'] AS $game => $id) {
+			foreach ($games['result'] as $game => $id) {
 				$gameIDs[] = $id['id'];
 				$releaseIDs[] = $id['grp_release_id'];
 			}
@@ -323,14 +321,25 @@ class Games
 	}
 
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function getGamesOrdering()
 	{
 		return [
-			'title_asc', 'title_desc', 'posted_asc', 'posted_desc', 'size_asc', 'size_desc',
-			'files_asc', 'files_desc', 'stats_asc', 'stats_desc',
-			'releasedate_asc', 'releasedate_desc', 'genre_asc', 'genre_desc'
+			'title_asc',
+			'title_desc',
+			'posted_asc',
+			'posted_desc',
+			'size_asc',
+			'size_desc',
+			'files_asc',
+			'files_desc',
+			'stats_asc',
+			'stats_desc',
+			'releasedate_asc',
+			'releasedate_desc',
+			'genre_asc',
+			'genre_desc'
 		];
 	}
 
@@ -999,7 +1008,7 @@ class Games
 	 *
 	 * @param $nodeName
 	 *
-	 * @return bool|string
+	 * @return false|string
 	 */
 	public function matchBrowseNode($nodeName)
 	{

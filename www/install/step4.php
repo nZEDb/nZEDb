@@ -32,7 +32,6 @@ if ($page->isPostBack()) {
 	$cfg->NNTP_SSLENABLED_A = (isset($_POST['ssla']) ? (trim($_POST['ssla']) == '1' ? true : false) : false);
 	$cfg->NNTP_SOCKET_TIMEOUT_A = (is_numeric(trim($_POST['socket_timeouta'])) ? (int)trim($_POST['socket_timeouta']) : 120);
 
-	require_once nZEDb_LIBS . 'Net_NNTP/NNTP/Client.php';
 	$test = new Net_NNTP_Client();
 	$pear_obj = new PEAR();
 

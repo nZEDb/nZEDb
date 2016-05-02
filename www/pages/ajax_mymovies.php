@@ -1,5 +1,4 @@
 <?php
-require_once nZEDb_LIBS . 'TMDb.php';
 
 use nzedb\Category;
 use nzedb\Movie;

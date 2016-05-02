@@ -38,7 +38,7 @@ function getCategoryValue($category)
  * @param string $text	Text to match against.
  * @param string $page	Type of page. browse or search.
  *
-*@return bool|string
+ * @return string|false
  */
 function release_flag($text, $page)
 {

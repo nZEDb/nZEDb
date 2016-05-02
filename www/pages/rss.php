@@ -116,6 +116,6 @@ if (!isset($_GET["t"]) && !isset($_GET["show"]) && !isset($_GET["anidb"])) {
 	$page->smarty->assign('releases', $relData);
 	$response = trim($page->smarty->fetch('rss.tpl'));
 	header("Content-type: text/xml");
-	header('Content-Length: ' . strlen($response) );
+	header('Content-Length: ' . strlen($response));
 	echo $response;
 }

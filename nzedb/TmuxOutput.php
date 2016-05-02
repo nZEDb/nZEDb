@@ -14,7 +14,7 @@ class TmuxOutput extends Tmux
 	/**
 	 * @var \nzedb\utility\Git
 	 */
-	protected $_git;
+//	protected $_git;
 
 	/**
 	 * @var \nzedb\utility\Versions
@@ -35,7 +35,7 @@ class TmuxOutput extends Tmux
 	public function __construct(Settings $pdo = null)
 	{
 		parent::__construct($pdo);
-		$this->_git = new \nzedb\utility\Git(); // Do not remove the full namespace/ PHP gets confused for some reason without it.
+//		$this->_git = new \nzedb\utility\Git(); // Do not remove the full namespace/ PHP gets confused for some reason without it.
 		$this->_vers = Misc::getValidVersionsFile();
 
 		$this->_setColourMasks();
@@ -115,7 +115,7 @@ class TmuxOutput extends Tmux
 	{
 		$buffer = '';
 		$state = ($this->runVar['settings']['is_running'] == 1) ? 'Running' : 'Disabled';
-		$version = $this->_vers->versions->git->tag . 'r' . $this->_git->commits();
+		$version = $this->_vers->versions->git->tag;
 
 		$buffer .= sprintf($this->tmpMasks[2],
 					"Monitor $state v$version [" . $this->runVar['constants']['sqlpatch'] . "]: ",

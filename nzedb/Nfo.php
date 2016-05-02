@@ -6,10 +6,6 @@ use nzedb\processing\PostProcess;
 use nzedb\utility\Misc;
 //use nzedb\processing\tv\TvRage;
 
-require_once nZEDb_LIBS . 'getid3/getid3/getid3.php';
-require_once nZEDb_LIBS . 'rarinfo/par2info.php';
-require_once nZEDb_LIBS . 'rarinfo/sfvinfo.php';
-
 /**
  * Class Nfo
  * Class for handling fetching/storing of NFO files.
@@ -167,7 +163,7 @@ class Nfo
 			}
 
 			// If above checks couldn't  make a categorical identification, Use GetId3 to check if it's an image/video/rar/zip etc..
-			$check = (new \getid3())->analyze($tmpPath);
+			$check = (new \getID3())->analyze($tmpPath);
 			@unlink($tmpPath);
 			if (isset($check['error'])) {
 
@@ -285,7 +281,7 @@ class Nfo
 	/**
 	 * Attempt to find NFO files inside the NZB's of releases.
 	 *
-	 * @param object $nntp           Instance of class NNTP.
+	 * @param \NNTP $nntp            Instance of class NNTP.
 	 * @param string $groupID        (optional) Group ID.
 	 * @param string $guidChar       (optional) First character of the release GUID (used for multi-processing).
 	 * @param int    $processImdb    (optional) Attempt to find IMDB id's in the NZB?

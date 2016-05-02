@@ -1,9 +1,6 @@
 <?php
 namespace nzedb\processing\post;
 
-require_once nZEDb_LIBS . 'rarinfo/archiveinfo.php';
-require_once nZEDb_LIBS . 'rarinfo/par2info.php';
-
 use nzedb\Categorize;
 use nzedb\Category;
 use nzedb\Groups;

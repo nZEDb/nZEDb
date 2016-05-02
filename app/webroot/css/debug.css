@@ -1,0 +1,7 @@
+/*-------------------------------------------------------------------------------------------------
+   Lithium: the most rad php framework
+
+   @copyright     Copyright 2014, Union of RAD (http://union-of-rad.org)
+   @license       http://opensource.org/licenses/bsd-license.php The BSD License
+-------------------------------------------------------------------------------------------------*/
+.lithium-indicator{margin:0;list-style:none}.lithium-indicator li{display:inline}.lithium-indicator li + li:before{content:" / "}.lithium-indicator .enabled:after{content:"\0020 \2714";color:#4ddb4a}.lithium-indicator .disabled:after{content:"\0020 \2718";color:#d13ef2}pre.lithium-debug{background:#fc0;font-size:1.2em;line-height:1.5em;margin-top:1em;overflow:auto;position:relative}div.lithium-exception-class,div.lithium-exception-location{font-weight:700}div.lithium-exception-message{font-size:18px!important}div.lithium-stack-trace{background:#fff;border:4px dotted #fc0;color:#333;margin:0;padding:6px;font-size:1.2em;line-height:1.5em;overflow:auto;position:relative}div.lithium-code-dump pre{position:relative;overflow:auto}div.lithium-stack-trace pre,div.lithium-code-dump pre{color:#000;background-color:#F0F0F0;margin:0;padding:1em;overflow:auto}div.lithium-code-dump pre,div.lithium-code-dump pre code{clear:both;font-size:1em;line-height:1.5em;margin:4px 2px;padding:4px;overflow:auto}div.lithium-code-dump span.code-highlight{background-color:#ff0}

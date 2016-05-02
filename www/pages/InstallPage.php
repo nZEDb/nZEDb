@@ -1,5 +1,4 @@
 <?php
-require_once nZEDb_LIBS . 'smarty/Smarty.class.php';
 
 define('nZEDb_INSTALLER', true);
 
@@ -24,9 +23,9 @@ class InstallPage
 		$this->smarty = new Smarty();
 
 		$this->smarty->setTemplateDir(realpath('../install/templates/'));
-		$this->smarty->setCompileDir(nZEDb_LIBS . 'smarty/templates_c/');
-		$this->smarty->setConfigDir(nZEDb_LIBS . 'smarty/configs/');
-		$this->smarty->setCacheDir(nZEDb_LIBS . 'smarty/cache/');
+		$this->smarty->setCompileDir(nZEDb_RES . 'smarty/templates_c/');
+		$this->smarty->setConfigDir(nZEDb_RES . 'smarty/configs/');
+		$this->smarty->setCacheDir(nZEDb_RES . 'smarty/cache/');
 	}
 
 	public function addToHead($headcontent)

@@ -7,7 +7,7 @@ use nzedb\db\Settings;
 $pdo = new Settings();
 $DIR = nZEDb_MISC;
 $ROOTDIR = nZEDb_ROOT;
-$smarty = SMARTY_DIR . 'templates_c/';
+$smarty = nZEDb_RES . 'smarty' . DS . 'templates_c/';
 $dbname = DB_NAME;
 
 function command_exist($cmd)

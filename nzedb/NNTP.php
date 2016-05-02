@@ -1,8 +1,6 @@
 <?php
 namespace nzedb;
 
-require_once nZEDb_LIBS . 'Net_NNTP/NNTP/Client.php';
-
 use nzedb\db\Settings;
 use nzedb\utility\Misc;
 

@@ -1,0 +1,81 @@
+{
+  "authors": [
+    {
+      "name": "nZEDb Team"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "nzedb\\": "nzedb/"
+    },
+    "classmap": [
+      "www/pages/",
+      "libs/pixelead0/Tmdb/",
+      "libs/PEAR/Net_NNTP/NNTP/",
+      "libs/zeebinz/rarinfo/",
+      "libs/"
+    ]
+  },
+  "config": {
+    "process-timeout": 3600,
+    "vendor-dir": "app/libraries"
+  },
+  "description": "A Usenet Indexer",
+  "extra": {
+    "branch-alias": {
+      "dev-master": "0.x-dev"
+    }
+  },
+  "homepage": "http://nzedb.com",
+  "keywords": [
+    "nZEDb",
+    "usenet",
+    "indexer",
+    "lithium",
+    "li3"
+  ],
+  "license": "GPL-3.0",
+  "name": "nzedb/nzedb",
+  "non-feature-branches": [
+    "Latest-*"
+  ],
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/kbjr/Git.php"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/niel/li3_docs"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/unionofrad/manual"
+    }
+  ],
+  "require": {
+    "barracudanetworks/forkdaemon-php": "^1.0.7",
+    "ext-curl": "*",
+    "ext-gd": "*",
+    "ext-json": "*",
+    "ext-mysqlnd": "*",
+    "giantbomb/giantbomb": "dev-master",
+    "google/recaptcha": "^1.1.2",
+    "james-heinrich/getid3": "^1.9.12",
+    "joshpinkney/tv-maze-php-api": "dev-master",
+    "kbjr/Git.php": "dev-master",
+    "moinax/tvdb": "^1.0.4",
+    "php": ">=5.5.0",
+    "phpmailer/phpmailer": "^5.2.14",
+    "smarty/smarty": "^3.1.29",
+    "unionofrad/lithium": "^1.1-dev"
+  },
+  "require-dev": {
+    "unionofrad/li3_docs": "1.1.x-dev",
+    "unionofrad/manual": "1.1.x-dev",
+    "unionofrad/li3_quality": "1.1.x-dev"
+  },
+  "scripts": {
+  },
+  "type": "project"
+}

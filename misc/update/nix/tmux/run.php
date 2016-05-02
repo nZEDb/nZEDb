@@ -9,7 +9,7 @@ $pdo = new Settings();
 $DIR = nZEDb_MISC;
 
 
-// Check that Db patch level is current. Also checks nZEDb.xml is valid.
+// Check that Db patch level is current. Also checks nzedb.xml is valid.
 Misc::isPatched();
 
 Misc::clearScreen();

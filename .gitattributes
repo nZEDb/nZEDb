@@ -23,10 +23,11 @@
 *.sql			-binary text eol=lf
 *.svg			-binary text eol=lf
 *.tpl			-binary text eol=lf -whitespace
-*.tsv			-binary text eol=lf -whitespace
+*.tsv			-binary text eol=crlf -whitespace
 *.txt			-binary text eol=lf conflict-marker-size=100
 *.vcproj		-binary text eol=crlf
 *.xml			-binary text eol=lf
+*.yml			-binary text eol=lf
 
 libs/*			-whitespace
 
@@ -35,3 +36,5 @@ ReleaseNotes	-binary text eol=lf
 /libs/smarty/nZEDb_NOTES -binary text eol=lf
 .gitignore		-binary text
 .gitattributes	-binary text
+.gitmodules	-binary text
+composer.lock	-binary text

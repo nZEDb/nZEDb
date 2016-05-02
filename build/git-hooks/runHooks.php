@@ -46,6 +46,7 @@ if ($error === false) {
 		// Only update versions, etc. on specific branches to lessen conflicts
 
 		if ($error === false) {
+			echo "Checking versions!\n";
 			try {
 				$vers = new Versions();
 				$vers->checkAll();
@@ -58,7 +59,7 @@ if ($error === false) {
 			}
 		}
 	} else {
-		echo "not 'dev', 'next-master', or 'master' branch, skipping version/patch updates\n";
+		echo "'$branch' is not 'dev', 'next-master', or a stable branch, skipping version/patch updates\n";
 	}
 } else {
 	echo "Error in pre-commit hooks!!\n";

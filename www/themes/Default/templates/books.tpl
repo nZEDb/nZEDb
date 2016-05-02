@@ -89,7 +89,7 @@
 							</a>
 
 							<div class="movextra">
-								{if $result.nfoid > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}"
+								{if $result.nfoid > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$result.grp_release_guid}"
 														 title="View Nfo" class="rndbtn modal_nfo" rel="nfo">
 										Nfo</a>{/if}
 								<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}{$result.url}"
@@ -99,7 +99,7 @@
 							</div>
 						</div>
 					</td>
-					<td colspan="8" class="left" id="guid{$result.guid}">
+					<td colspan="8" class="left" id="guid{$result.grp_release_guid}">
 						<h2>{$result.author|stripslashes|escape:"htmlall"}{" - "}{$result.title|stripslashes|escape:"htmlall"}
 						</h2>
 						{if $result.genre != "null"}<b>Genre:</b>{$result.genre|escape:'htmlall'}<br/>{/if}
