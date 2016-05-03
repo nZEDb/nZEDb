@@ -7,6 +7,8 @@ Added:
 	have to manually run update_db (that script has been removed). Instead you will have to install
 	Composer (one time only) https://getcomposer.org/doc/00-intro.md#downloading-the-composer-executable
 	 We recommend the global method, as we do not provide the composer.phar file in our repo.
+	 Then in nZEDb root dir run:
+	    composer install 
 	 Once that is done (and in the future) run:
 		./zed update nzedb
 	 This will check and install all dependencies and then run the Db updater automatically.
