@@ -658,7 +658,7 @@ CREATE TABLE         releases (
   updatetime        TIMESTAMP                      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   guid              VARCHAR(40)                    NOT NULL,
   fromname          VARCHAR(255)                   NULL,
-  completion        FLOAT                          NOT NULL DEFAULT '0',
+  completion        FLOAT                          NOT NULL DEFAULT '-1',
   categoryid        INT                            NOT NULL DEFAULT '0010',
   videos_id         MEDIUMINT(11) UNSIGNED         NOT NULL DEFAULT '0' COMMENT 'FK to videos.id of the parent series.',
   tv_episodes_id    MEDIUMINT(11) SIGNED           NOT NULL DEFAULT '0' COMMENT 'FK to tv_episodes.id for the episode.',
@@ -1240,7 +1240,7 @@ CREATE TRIGGER check_update BEFORE UPDATE ON releases FOR EACH ROW
   BEGIN
     IF NEW.searchname REGEXP '[a-fA-F0-9]{32}' OR NEW.name REGEXP '[a-fA-F0-9]{32}'
       THEN SET NEW.ishashed = 1;
-    ELSEIF NEW.name REGEXP '^\\[ ?([[:digit:]]{4,6}) ?\\]|^REQ\s*([[:digit:]]{4,6})|^([[:digit:]]{4,6})-[[:digit:]]{1}\\['
+    ELSEIF NEW.name REGEXP '^\\[ ?([[:digit:]]{4,6}) ?\\]|^REQ\s*([[:digit:]]{4,6})|^([[:digit:]]{4,6})-[[:digit:]]{1}\s?\\['
       THEN SET NEW.isrequestid = 1;
     END IF;
   END; $$

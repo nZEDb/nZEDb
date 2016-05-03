@@ -8,6 +8,9 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+2016-05-02 bart39
+	Mrg: PR 2127, from rainje - New release name format not matched with reqid
+	Chg: update schema and replace triggers for above PR.
 2016-04-28 niel
 	Fix: Code style foramtting.
 	Fix: Removing pre-install-cmd from composer.json again. It kills the install for new users.
