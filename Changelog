@@ -8,6 +8,12 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+
+2016-05-03 niel
+	Mrg: Add 'composer install' instruction to ReleaseNotes (PR 2128).
+2016-05-02 bart39
+	Mrg: PR 2127, from rainje - New release name format not matched with reqid
+	Chg: update schema and replace triggers for above PR.
 2016-04-28 niel
 	Fix: Code style foramtting.
 	Fix: Removing pre-install-cmd from composer.json again. It kills the install for new users.
@@ -96,7 +102,9 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 		 ***NOTE*** You MUST install Composer to continue using nZEDb. See
 		https://getcomposer.org/doc/00-intro.md#downloading-the-composer-executable We recommend the
 		global method, as we do not provide the composer.phar file in our repo.
-		 ***NOTE*** After installing Composer run `./zed update nzedb` from your nZEDb directory.
+		 ***NOTE*** After installing Composer, from your nZEDb directory run:
+		  `composer install`
+		  `./zed update nzedb`.
 		 You may have to set permissions on .../app/libraries and .../resources/smarty/templates_c
 	Chg: Remove commit count from tmux's monitor display.
 2016-04-04 niel
