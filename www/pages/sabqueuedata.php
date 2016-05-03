@@ -18,7 +18,7 @@ if ($json !== false) {
 	$count = 1;
 
 	$output .=
-		"<div class='container text-center' style='display:block;'>
+		"<div class='text-center' style='display:block;'>
 			<div style='width:16.666666667%;float:left;'><b>Speed:</b><br /> " . $obj->{'speed'} . "B/s </div>
 			<div style='width:16.666666667%;float:left;'><b>Queued:</b><br /> " . round($obj->{'mbleft'}, 2) . "MB / " . round($obj->{'mb'}, 2) . "MB" . " </div>
 			<div style='width:16.666666667%;float:left;'><b>Status:</b><br /> " . ucwords(strtolower($obj->{'state'})) . " </div>
