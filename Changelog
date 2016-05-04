@@ -11,7 +11,8 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 2016-05-03 niel
 	Mrg: Add 'composer install' instruction to ReleaseNotes (PR 2128).
-	Fix: Reinstate the LINES TERMINATED BY clause to loading data files to override default behaviour of only using '\n' instead of '\r\n' that we need.
+	Fix: Reinstate the LINES TERMINATED BY clause to loading data files to override default
+	behaviour of only using '\n' instead of '\r\n' that we need (Closes Issue 2104).
 2016-05-02 bart39
 	Mrg: PR 2127, from rainje - New release name format not matched with reqid
 	Chg: update schema and replace triggers for above PR.
