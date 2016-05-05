@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-05-05 niel
+	Mrg: PR 2121, from meganomic - Yahoo search fix.
 2016-05-03 niel
 	Fix: Force li3 connections to ignore Host/Port settings if a socket is provided.
 	Mrg: Add 'composer install' instruction to ReleaseNotes (PR 2128).
