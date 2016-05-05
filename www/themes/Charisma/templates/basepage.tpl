@@ -44,7 +44,7 @@
 	<!-- Normalize.css -->
 	<link href="{$smarty.const.WWW_THEMES}/shared/css/normalize.css" rel="stylesheet" type="text/css">
 	<!-- The fav icon -->
-	<link rel="shortcut icon" href="{$smarty.const.WWW_THEMES}/{$theme}/img/favicon.ico">
+	<link rel="shortcut icon" href="{$smarty.const.WWW_THEMES}/shared/img/favicon.ico">
 </head>
 	<body>
 	<!-- topbar starts -->
@@ -57,7 +57,7 @@
 				<span class="icon-bar"></span>
 			</button>
 			<a class="navbar-brand" href="{$site->home_link}"> <img alt="nZEDb logo"
-					src="{$smarty.const.WWW_THEMES}/{$theme}/img/logo-nzedb.png"
+					src="{$smarty.const.WWW_THEMES}/shared/img/logo.png"
 				/></a>
 			{$header_menu}
 			<!-- user dropdown starts -->
