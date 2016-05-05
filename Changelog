@@ -11,6 +11,9 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 2016-05-05 niel
 	Mrg: PR 2121, from meganomic - Yahoo search fix.
+2016-05-05 bart39
+	Fix: update collection regex in a.b.mom
+	Fix: Missing escape on release triggers.
 2016-05-03 niel
 	Fix: Force li3 connections to ignore Host/Port settings if a socket is provided.
 	Mrg: Add 'composer install' instruction to ReleaseNotes (PR 2128).
