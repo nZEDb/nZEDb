@@ -1358,10 +1358,10 @@ class Movie
 		$buffer = Misc::getUrl(
 			[
 				'url' =>
-					"http://search.yahoo.com/search?n=10&ei=UTF-8&va_vt=title&vo_vt=any&ve_vt=any&vp_vt=any&vf=all&vm=p&fl=0&fr=fp-top&p=intitle:" .
+					"http://search.yahoo.com/search?n=10&ei=UTF-8&va_vt=title&vo_vt=any&ve_vt=any&vp_vt=any&vf=all&vm=p&fl=0&fr=fp-top&p=" .
 					urlencode(
-						'intitle:' .
-						implode(' intitle:',
+						'' .
+						implode('+',
 							explode(
 								' ',
 								preg_replace(
@@ -1375,7 +1375,7 @@ class Movie
 								)
 							)
 						) .
-						' intitle:' .
+						'+' .
 						$this->currentYear
 					) .
 					'&vs=' .
