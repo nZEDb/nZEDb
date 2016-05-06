@@ -75,7 +75,9 @@ class PreDb
 						sprintf('
 							SELECT p.id AS preid, r.id AS releaseid
 							FROM predb p
-							LEFT JOIN releases r FORCE INDEX (ix_releases_preid_searchname) ON p.title = r.searchname
+							INNER JOIN releases r
+								FORCE INDEX (ix_releases_preid_searchname)
+								ON p.title = r.searchname
 							WHERE r.preid < 1 %s',
 							$datesql
 						)
