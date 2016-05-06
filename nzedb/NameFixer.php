@@ -564,6 +564,9 @@ class NameFixer
 							case "sorter ":
 								$status = "isrenamed = 1, iscategorized = 1, proc_sorter = 1,";
 								break;
+							case "CRC/OSO, ":
+								$status = "isrenamed = 1, iscategorized = 1,";
+								break;
 						}
 						$this->pdo->queryExec(
 							sprintf('
