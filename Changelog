@@ -9,6 +9,11 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-05-06 bart39
+	Fix: TV categorization mismatches.
+		** NOTE *** - you will need to do the following to fix the categorization:
+		`php /var/www/nZEDb/misc/testing/Release/recategorize.php all`
+		this will take a while to complete.
 2016-05-06 DariusIII
 	Upd: Comment out max_matches(deprecated since sphinx 2.2.3) and change sphinx.pid location to proper /var/run/sphinxsearch/searchd.pid
 2016-05-05 niel
