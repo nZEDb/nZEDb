@@ -35,6 +35,7 @@ if (isset($_GET['t'])) {
 		case 'movie':
 			$function = 'm';
 			break;
+		case 'gn':
 		case 'n':
 		case 'nfo':
 		case 'info':
@@ -75,7 +76,7 @@ if ($page->users->isLoggedIn()) {
 				Misc::showApiError(100, 'Incorrect user credentials (wrong API key)');
 			}
 		}
-		
+
 		if ($page->users->isDisabled($res['username'])) {
 			Misc::showApiError(101);
 		}
@@ -290,7 +291,7 @@ switch ($function) {
 		if ($outputXML) { //use apicaps.tpl if xml is requested
 			$response = $page->smarty->fetch('apicaps.tpl');
 			header('Content-type: text/xml');
-			header('Content-Length: ' . strlen($response) );
+			header('Content-Length: ' . strlen($response));
 			echo $response;
 		} else { //otherwise construct array of capabilities and categories
 			//get capabilities
@@ -299,7 +300,7 @@ switch ($function) {
 			//use json_encode
 			$response = encodeAsJSON($caps);
 			header('Content-type: application/json');
-			header('Content-Length: ' . strlen($response) );
+			header('Content-Length: ' . strlen($response));
 			echo $response;
 		}
 		break;
@@ -345,7 +346,7 @@ switch ($function) {
 			'" apikey="' . $userdata['rsstoken'] .
 			"\"/>\n";
 		header('Content-type: text/xml');
-		header('Content-Length: ' . strlen($response) );
+		header('Content-Length: ' . strlen($response));
 		echo $response;
 		break;
 }
@@ -428,7 +429,7 @@ function printOutput($data, $xml = true, $page, $offset = 0)
 		$page->smarty->assign('releases', $data);
 		$response = trim($page->smarty->fetch('apiresult.tpl'));
 		header('Content-type: text/xml');
-		header('Content-Length: ' . strlen($response) );
+		header('Content-Length: ' . strlen($response));
 		echo $response;
 	} else {
 		$response = encodeAsJSON($data);

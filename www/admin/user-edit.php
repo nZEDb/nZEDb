@@ -107,7 +107,7 @@ switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
 	default:
 		if (isset($_GET["id"])) {
 			$page->title = "User Edit";
-			$user = $page->users->getByID($_GET["id"]);
+			$user = $page->users->getById($_GET["id"]);
 		}
 		break;
 }

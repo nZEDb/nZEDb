@@ -99,7 +99,8 @@ class DbUpdate
 		$files = empty($options['files']) ? Misc::getDirFiles($options) : $options['files'];
 		natsort($files);
 		$local = $this->pdo->isLocalDb() ? '' : 'LOCAL ';
-		$sql = 'LOAD DATA ' . $local . 'INFILE "%s" IGNORE INTO TABLE `%s` FIELDS TERMINATED BY "\t" OPTIONALLY ENCLOSED BY "\"" IGNORE 1 LINES (%s)';
+		$sql = 'LOAD DATA ' .
+			$local . 'INFILE "%s" IGNORE INTO TABLE `%s` FIELDS TERMINATED BY "\t" OPTIONALLY ENCLOSED BY "\"" LINES TERMINATED BY "\r\n" IGNORE 1 LINES (%s)';
 		foreach ($files as $file) {
 			if ($show === true) {
 				echo "File: $file\n";
@@ -186,7 +187,7 @@ class DbUpdate
 							   $matches['table'] . '.sql';
 					rename($matches[0], $newName);
 					$this->git->add($newName);
-					if ($this->git->isCommited($this->git->getBranch() . ':' . str_replace(nZEDb_ROOT, '',$matches[0]))) {
+					if ($this->git->isCommited($this->git->getBranch() . ':' . str_replace(nZEDb_ROOT, '', $matches[0]))) {
 						$this->git->add(" -u {$matches[0]}"); // remove old filename from the index.
 					}
 				}

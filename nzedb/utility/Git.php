@@ -73,7 +73,7 @@ class Git extends \GitRepo
 	}
 
 	/**
-	 * @param $gitObject
+	 * @param string $gitObject
 	 *
 	 * @return bool
 	 * @throws \Exception

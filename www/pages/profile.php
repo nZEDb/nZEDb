@@ -42,7 +42,7 @@ if (!isset($data['style']) || $data['style'] == 'None') {
 	$data['style'] = 'Using the admin selected theme.';
 }
 
-$offset       = isset($_REQUEST["offset"]) ? $_REQUEST["offset"] : 0;
+$offset = isset($_REQUEST["offset"]) ? $_REQUEST["offset"] : 0;
 $page->smarty->assign([
 		'apirequests'       => $page->users->getApiRequests($userID),
 		'grabstoday'        => $page->users->getDownloadRequests($userID),

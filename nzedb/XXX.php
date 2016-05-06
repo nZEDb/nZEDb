@@ -187,7 +187,7 @@ class XXX
 		$xxxIDs = $releaseIDs = false;
 
 		if (is_array($xxxmovies['result'])) {
-			foreach ($xxxmovies['result'] AS $xxx => $id) {
+			foreach ($xxxmovies['result'] as $xxx => $id) {
 				$xxxIDs[] = $id['id'];
 				$releaseIDs[] = $id['grp_release_id'];
 			}
@@ -235,7 +235,7 @@ class XXX
 			$order[1]
 		);
 		$return = $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
-		if (!empty($return)){
+		if (!empty($return)) {
 			$return[0]['_totalcount'] = (isset($xxxmovies['total']) ? $xxxmovies['total'] : 0);
 		}
 		return $return;

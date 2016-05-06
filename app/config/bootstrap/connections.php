@@ -91,17 +91,23 @@ if (file_exists($config)) {
 	}
 
 	if (isset($adapter)) {
+		$host = $port = '';
+		if (empty(DB_SOCKET)) {
+			$host = DB_HOST;
+			$port = DB_PORT;
+		}
 		Connections::add('default',
 			[
 				'type'       => 'database',
 				'adapter'    => $adapter,
-				'host'       => DB_HOST,
-				'port'       => DB_PORT,
+				'host'       => $host,
+				'port'       => $port,
 				'login'      => DB_USER,
 				'password'   => DB_PASSWORD,
 				'database'   => DB_NAME,
 				'encoding'   => 'UTF-8',
-				'persistent' => false
+				'persistent' => false,
+				'socket'	 => DB_SOCKET,
 			]
 		);
 	}

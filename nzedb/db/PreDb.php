@@ -82,8 +82,8 @@ class PreDb extends DB
 			'enclosedby' => '',
 			'fields'     => '\t',
 			'limit'      => 0,
-			'lines'      => '\r\n',    // use Windows style endings so that text can contain \n
-			'path'		=> null,
+			'lines'      => '\r\n', // use Windows style endings so that text can contain \n
+			'path'       => null,
 		];
 		$options += $defaults;
 
@@ -97,7 +97,7 @@ class PreDb extends DB
 
 		$enclosedby = empty($options['enclosedby']) ? '' : "ENCLOSED BY {$this->escapeString($options['enclosedby'])}";
 
-		$sql   = <<<SQL_EXPORT
+		$sql = <<<SQL_EXPORT
 SELECT title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, g.name
 	FROM {$this->tableMain} p LEFT OUTER JOIN groups g ON p.group_id = g.id $limit
 	INTO OUTFILE '{$options['path']}'
@@ -263,7 +263,7 @@ SQL_INSERT;
 		$defaults = [
 			'enclosedby'	=> "'",
 			'fields'		=> '\t',
-			'lines'			=> '\r\n',    // Windows' style EOL to allow \n to be used in text.
+			'lines'			=> '\r\n', // Windows' style EOL to allow \n to be used in text.
 			'local'			=> false,
 			'optional'		=> true,
 		];

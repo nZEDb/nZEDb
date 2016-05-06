@@ -27,7 +27,7 @@ use nzedb\db\Settings;
  *
  * @package nzedb\utility
  */
-Class Country
+class Country
 {
 	/**
 	 * Get a country code for a country name.

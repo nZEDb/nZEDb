@@ -1,16 +1,18 @@
 This file details which changes to the code are in which release version. It is a complement to the ChangeLog file which list *when* changes are made to the dev branch.
 
-0.6.0 2016-05-02
+0.6.0 2016-05-02 updated 2016-05-03
 Added:
 	* Support for Composer to handle the project and its dependencies (third party libraries).
 	 In particular this means after this update you will no longer use git pull to updates then
-	 have to manually run update_db (that script has been removed). Instead you will have to install
-	 Composer (one time only) https://getcomposer.org/doc/00-intro.md#downloading-the-composer-executable
+	have to manually run update_db (that script has been removed). Instead you will have to install
+	Composer (one time only) https://getcomposer.org/doc/00-intro.md#downloading-the-composer-executable
 	 We recommend the global method, as we do not provide the composer.phar file in our repo.
-	  Once that is done (and in the future) run:
+	 Then in nZEDb root dir run:
+	    composer install
+	 Once that is done (and in the future) run:
 		./zed update nzedb
-	  This will check and install all dependencies and then run the Db updater automatically.
-	  You may have to set permissions on .../app/libraries
+	 This will check and install all dependencies and then run the Db updater automatically.
+	 You may have to set permissions on .../app/libraries and .../resources/smarty/templates_c
 	* We are now using the lithium (li3) framework to handle a number of tasks. The ./zed
 	command is an alias to the frameworks li3 console command added in the nZEDb directory for
 	convenience (always use this directory to run such commands in your shell).
@@ -20,8 +22,9 @@ Added:
 	 to get help text).
 		update
 		version
-	* simple-expanded.sh Screen script. This is an up to date version of the standard screen
-	script with common options already enabled (PR 2113, Thanks to Wally73).
+	* simple-expanded.sh Screen script. This is an updated version of the standard screen script
+	with common options already enabled (PR 2113, Thanks to Wally73).
+	* 'gn' case to nfo retrieval in api, to be in line with newznab api spec.
 
 Changed:
 	* Move location of Smarty's additional directories (cache, compile, and config) to the resources
@@ -38,13 +41,24 @@ Fixed:
 	* NFO display on coverpages in Light/Default themes (ssue #2099).
 	* Division by zero error when viewing filelist in Alpha and Default themes.
 	* Filelist display in all of the themes, reduce overhead in NZB class related to segments array.
+	* Links to detail pages in Gamma theme (remove release name).
+	* Update sphinx releases_rt index when release files are added.
+		*** NOTE *** - you will need to do the following to update the sphinx index:
+		1) stop sphinxsearch - `sudo service sphinxsearch stop`
+		2) clear old index - `sudo rm /var/lib/sphinxsearch/data/*`
+		3) start sphinxsearch - `sudo service sphinxsearch start`
+		4) populate the index - `php /var/www/nZEDb/misc/sphinxsearch/populate_rt_indexes.php releases_rt`
+	* Check for SD movies before HD ones, to prevent some being falsey matched (PR 2120).
+	* Update Scrutinizer file to hopefully fix 'failed install' errors.
+	* Reinstate the LINES TERMINATED BY clause to loading data files to override default behaviour
+	of only using '\n' instead of '\r\n' that we need (Issue 2104).
 
 
 0.5.5 2016-04-04
 Added:
 
-**IMPORTANT** Be aware that for the next update (May) the stable branch will no longer be the
-master branch. It will be renamed to 0.x. You HAVE to run the following commands to stay on
+**IMPORTANT** Be aware that for the this update (April) the stable branch will no longer be the
+master branch. It has been renamed to 0.x. You HAVE to run the following commands to stay on
 stable code:
 	git checkout master
 	git branch -m 0.x

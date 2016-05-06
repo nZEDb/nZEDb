@@ -70,7 +70,7 @@ class TvRage extends TV
 	public function __construct(array $options = [])
 	{
 		parent::__construct($options);
-		$this->xmlEpisodeInfoUrl    =  "http://services.tvrage.com/myfeeds/episodeinfo.php?key=" . TvRage::APIKEY;
+		$this->xmlEpisodeInfoUrl = "http://services.tvrage.com/myfeeds/episodeinfo.php?key=" . TvRage::APIKEY;
 		$this->imgSavePath = nZEDb_COVERS . 'tvrage' . DS;
 	}
 
@@ -128,7 +128,7 @@ class TvRage extends TV
 								 $this->pdo->log->headerOver($show['cleanname']) .
 								 $this->pdo->log->primary(" found in local db, setting tvrage ID and attempting episode lookup.");
 						}
-						$episodeId = $this->getBySeasonEp($this->videoId,  $show['season'], $show['episode']);
+						$episodeId = $this->getBySeasonEp($this->videoId, $show['season'], $show['episode']);
 						if ($episodeId === false) {
 							$epinfo = $this->getEpisodeInfo($this->rageId, $show['season'], $show['episode']);
 							if ($epinfo !== false && isset($epinfo['airdate']) && !empty($epinfo['title'])) {
