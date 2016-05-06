@@ -37,7 +37,7 @@ class ProcessAdditional
 
 	/**
 	 * Releases to work on.
-	 * @var Array
+	 * @var array
 	 */
 	protected $_releases;
 
@@ -49,7 +49,7 @@ class ProcessAdditional
 
 	/**
 	 * Current release we are working on.
-	 * @var Array
+	 * @var array
 	 */
 	protected $_release;
 
@@ -1090,13 +1090,13 @@ class ProcessAdditional
 			return false;
 		}
 
-		if (isset($this->_crc) && $this->_reverse === true && $this->_release['preid'] == 0) {
-			echo "1";
-			$this->_crc->checkCRCInfo(
+		if (isset($this->_crc) && $this->_release['preid'] == 0) {
+			$matchedCRC = $this->_crc->checkCRCInfo(
 				$this->_release,
 				$dataSummary['file_list'][0]['crc32'],
 				$dataSummary['file_list'][0]['size']
 			);
+			$this->_release['preid'] = ($matchedCRC !== false ? $matchedCRC : 0);
 		}
 
 		switch ($dataSummary['main_type']) {
