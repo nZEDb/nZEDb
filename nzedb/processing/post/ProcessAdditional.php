@@ -1097,7 +1097,8 @@ class ProcessAdditional
 			$matchedCRC = $this->_crc->checkCRCInfo(
 				$this->_release,
 				$dataSummary['file_list'][0]['crc32'],
-				$dataSummary['file_list'][0]['size']
+				$dataSummary['file_list'][0]['size'],
+				$dataSummary['file_list'][0]['date']
 			);
 			$this->_release['preid'] = ($matchedCRC !== false ? $matchedCRC : 0);
 		}
