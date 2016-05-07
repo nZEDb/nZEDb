@@ -3,6 +3,7 @@ require_once './config.php';
 
 use nzedb\Console;
 use nzedb\Genres;
+use nzedb\Category;
 
 $page    = new AdminPage();
 $console = new Console(['Settings' => $page->settings]);

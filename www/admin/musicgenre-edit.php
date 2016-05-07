@@ -23,7 +23,7 @@ switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
 	default:
 		if (isset($_GET["id"])) {
 			$page->title = "Music Genre Edit";
-			$genre = $genres->getByID($_GET["id"]);
+			$genre = $genres->getById($_GET["id"]);
 		}
 		break;
 }
