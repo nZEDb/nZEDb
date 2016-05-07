@@ -197,7 +197,8 @@ class Captcha
 			return true;
 		}
 
-		if ($this->page->settings->getSetting(self::RECAPTCHA_SETTING_ENABLED)) {
+		$enabled = $this->page->settings->getSetting(self::RECAPTCHA_SETTING_ENABLED);
+		if ($enabled || is_null($enabled)) { // Only disable if the setting exists and is truish.
 			$this->sitekey = $this->page->settings->getSetting(self::RECAPTCHA_SETTING_SITEKEY);
 			$this->secretkey = $this->page->settings->getSetting(self::RECAPTCHA_SETTING_SECRETKEY);
 
