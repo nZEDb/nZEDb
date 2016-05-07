@@ -10,6 +10,8 @@ use nzedb\db\Settings;
  */
 class ForkingImportNZB extends Forking
 {
+	public $importPath;
+
 	/**
 	 * @param array $options
 	 */
