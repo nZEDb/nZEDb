@@ -1090,6 +1090,8 @@ class ProcessAdditional
 			return false;
 		}
 
+		var_dump($dataSummary);
+
 		if (isset($this->_crc) && $this->_reverse === true) {
 			echo '>';
 			$matchedCRC = $this->_crc->checkCRCInfo(
