@@ -1092,7 +1092,7 @@ class ProcessAdditional
 
 		if (isset($this->_crc) && $this->_reverse === true) {
 			$fileData = (isset($dataSummary['file_list'][0]) ? $dataSummary['file_list'][0] : '');
-			if(isset($fileData['crc32'])) {
+			if(isset($fileData['crc32']) && isset($fileData['size']) && $fileData['size'] > 104857600) {
 				$matchedCRC = $this->_crc->checkCRCInfo(
 					$this->_release,
 					$fileData['crc32'],
