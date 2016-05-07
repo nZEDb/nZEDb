@@ -1091,14 +1091,17 @@ class ProcessAdditional
 		}
 
 		if (isset($this->_crc) && $this->_reverse === true) {
-			echo '>';
-			$matchedCRC = $this->_crc->checkCRCInfo(
-				$this->_release,
-				$dataSummary['file_list'][0]['crc32'],
-				$dataSummary['file_list'][0]['size'],
-				$dataSummary['file_list'][0]['date']
-			);
-			$this->_release['preid'] = ($matchedCRC !== false ? $matchedCRC : 0);
+			$fileData = (isset($dataSummary['file_list'][0]) ? $dataSummary['file_list'][0] : '');
+			if(isset($fileData['crc32'])) {
+				$matchedCRC = $this->_crc->checkCRCInfo(
+					$this->_release,
+					$fileData['crc32'],
+					$fileData['size'],
+					'',
+					$fileData['date']
+				);
+				$this->_release['preid'] = ($matchedCRC !== false ? $matchedCRC : 0);
+			}
 		}
 
 		switch ($dataSummary['main_type']) {
