@@ -63,9 +63,11 @@ class Captcha
 	/**
 	 * Settings key literals
 	 */
-	const RECAPTCHA_SETTING_SITEKEY = 'recaptchasitekey';
+	const RECAPTCHA_SETTING_SITEKEY = 'APIs.recaptcha.sitekey';
 
-	const RECAPTCHA_SETTING_SECRETKEY = 'recaptchasecretkey';
+	const RECAPTCHA_SETTING_SECRETKEY = 'APIs.recaptcha.secretkey';
+
+	const RECAPTCHA_SETTING_ENABLED = 'APIs.recaptcha.enabled';
 
 	/**
 	 * Construct and decide whether to show the captcha or not.
@@ -195,7 +197,7 @@ class Captcha
 			return true;
 		}
 
-		if ((new Settings())->getSetting('recaptchaenabled')) {
+		if ($this->page->settings->getSetting(self::RECAPTCHA_SETTING_ENABLED)) {
 			$this->sitekey = $this->page->settings->getSetting(self::RECAPTCHA_SETTING_SITEKEY);
 			$this->secretkey = $this->page->settings->getSetting(self::RECAPTCHA_SETTING_SECRETKEY);
 
