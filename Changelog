@@ -10,6 +10,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 2016-05-07 niel
 	Chg: alter subsection,name fields to settings for recaptcha.
+	Mrg: PR 2135, from zetas - Fix Recaptcha settings.
 2016-05-06 DariusIII
 	Fix: Missing use statement for Category class in admin pages.
 2016-05-06 bart39
