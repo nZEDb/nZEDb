@@ -284,7 +284,9 @@
 {if $nfo.releaseid|@count > 0}
 	<tr><th>Nfo:</th><td><a href="{$smarty.const.WWW_TOP}/nfo/{$release.guid}" title="View Nfo">View Nfo</a></td></tr>
 {/if}
-
+{if $usenetnzbguid.guid == True}
+<tr><th>Uploaded NZB:</th><td><a href="{$smarty.const.WWW_TOP}/getnzb/{$usenetnzbguid.guid}" title="Get originaly uploaded NZB">Get uploaded NZB</a></td></tr>
+{/if}
 {if $reVideo.releaseid|@count > 0 || $reAudio|@count > 0}
 	<tr>
 		<th style="vertical-align:top">Media Info:</th>

@@ -21,6 +21,7 @@ archive	fetch	end	0	Download/process the last rar or zip file(s) to check for a 
 		fixnamesperrun	10	The maximum number of releases to check per run(threaded script only).	fixnamesperrun
 		fixnamethreads	1	The number of threads for fixReleasesNames. This includes md5, nfos and filenames.	fixnamethreads
 		grabstatus	1	Whether to update download counts when someone downloads a release.	grabstatus
+        hideuploadednzb 0   Hide NZB files that were uploaded to usenet by the original poster. hideuplaodednzb
 indexer	ppa	innerfileblacklist	/setup\.exe|password\.url/i	You can add a regex here to set releases to potentially passworded when a file name inside a rar/zip matches this regex.	innerfileblacklist
 		lastpretime	0	Last time we downloaded a pre using WEB sources	lastpretime
 		intanidbupdate	7	The number of days between AniDB full updates.  Default is 7.	intanidbupdate
