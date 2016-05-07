@@ -1090,7 +1090,8 @@ class ProcessAdditional
 			return false;
 		}
 
-		if (isset($this->_crc) && $this->_release['preid'] == 0) {
+		if (isset($this->_crc) && $this->_reverse === true) {
+			echo '>';
 			$matchedCRC = $this->_crc->checkCRCInfo(
 				$this->_release,
 				$dataSummary['file_list'][0]['crc32'],
