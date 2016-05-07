@@ -3,6 +3,7 @@ require_once './config.php';
 
 use nzedb\Games;
 use nzedb\Genres;
+use nzedb\Category;
 
 $page  = new AdminPage();
 $games = new Games(['Settings' => $page->settings]);
