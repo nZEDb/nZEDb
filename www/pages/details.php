@@ -101,7 +101,8 @@ if (isset($_GET['id'])) {
 		'privateprofiles' => ($page->settings->getSetting('privateprofiles') == 1 ? true : false),
 		'releasefiles'    => (new ReleaseFiles($page->settings))->get($data['id']),
 		'searchname'      => $releases->getSimilarName($data['searchname']),
-		'failed'          => $fail->getFailedCount($data['id']),
+        'failed'          => $fail->getFailedCount($data['id']),
+        'usenetnzbguid'   => $releases->getUsenetNZBGuid($_GET['id']),
 	]);
 
 	$page->meta_title       = 'View NZB';

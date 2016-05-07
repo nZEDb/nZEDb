@@ -62,7 +62,8 @@ class Releases
 		$this->passwordStatus = ($this->pdo->getSetting('checkpasswordedrar') == 1 ? -1 : 0);
 		$this->sphinxSearch = new SphinxSearch();
 		$this->releaseSearch = new ReleaseSearch($this->pdo, $this->sphinxSearch);
-		$this->showPasswords = self::showPasswords($this->pdo);
+        $this->showPasswords = self::showPasswords($this->pdo);
+        $this->hideuploadednzb = ($this->pdo->getSetting('hideuploadednzb') == 1 ? true : false);
 	}
 
 	/**
@@ -199,7 +200,50 @@ class Releases
 	{
 		$orderBy = $this->getBrowseOrder($orderBy);
 
-		$qry = sprintf(
+        if ($this->hideuploadednzb) {
+            $qry = sprintf(
+                "SELECT r.*,
+                    CONCAT(cp.title, ' > ', c.title) AS category_name,
+                    CONCAT(cp.id, ',', c.id) AS category_ids,
+                    df.failed AS failed,
+                    rn.releaseid AS nfoid,
+                    re.releaseid AS reid,
+                    v.tvdb, v.trakt, v.tvrage, v.tvmaze, v.imdb, v.tmdb,
+                    tve.title, tve.firstaired
+                FROM
+                (
+                    SELECT r.*, g.name AS group_name
+                    FROM releases r
+                    LEFT JOIN groups g ON g.id = r.group_id
+                    WHERE r.nzbstatus = %d
+                    AND r.name NOT LIKE '%%.nzb\" yEnc'
+                    AND r.passwordstatus %s
+                    %s %s %s %s
+                    ORDER BY %s %s %s
+                ) r
+                INNER JOIN category c ON c.id = r.categoryid
+                INNER JOIN category cp ON cp.id = c.parentid
+                LEFT OUTER JOIN videos v ON r.videos_id = v.id
+                LEFT OUTER JOIN tv_episodes tve ON r.tv_episodes_id = tve.id
+                LEFT OUTER JOIN video_data re ON re.releaseid = r.id
+                LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
+                LEFT OUTER JOIN dnzb_failures df ON df.release_id = r.id
+                GROUP BY r.id
+                ORDER BY %7\$s %8\$s",
+                NZB::NZB_ADDED,
+                $this->showPasswords,
+                $this->categorySQL($cat),
+                ($maxAge > 0 ? (" AND postdate > NOW() - INTERVAL " . $maxAge . ' DAY ') : ''),
+                (count($excludedCats) ? (' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')') : ''),
+                ($groupName != '' ? sprintf(' AND g.name = %s ', $this->pdo->escapeString($groupName)) : ''),
+                $orderBy[0],
+                $orderBy[1],
+                ($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
+            );
+
+        }
+        else {
+    		$qry = sprintf(
 				"SELECT r.*,
 					CONCAT(cp.title, ' > ', c.title) AS category_name,
 					CONCAT(cp.id, ',', c.id) AS category_ids,
@@ -236,7 +280,8 @@ class Releases
 				$orderBy[0],
 				$orderBy[1],
 				($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
-		);
+		    );
+        }
 		$sql = $this->pdo->query($qry, true, nZEDb_CACHE_EXPIRY_MEDIUM);
 		return $sql;
 	}
@@ -1189,6 +1234,32 @@ class Releases
 	{
 		return implode(' ', array_slice(str_word_count(str_replace(['.', '_'], ' ', $name), 2), 0, 2));
 	}
+
+   /**
+     * @param string $guid
+     *
+     * @return array|bool
+     */
+    public function getUsenetNZBGuid($guid)
+    {
+      if ($this->hideuploadednzb) {
+
+            $sql = sprintf(
+                "SELECT guid
+                FROM releases
+                WHERE preid = (SELECT preid
+                FROM releases
+                WHERE guid = %s
+                AND preid != 0)
+                AND totalpart = 1
+                AND name like '%%.nzb\" yEnc'
+                LIMIT 1",
+                $this->pdo->escapeString($guid)
+            );
+        }
+
+       return $this->hideuploadednzb ? $this->pdo->queryonerow($sql) : false;
+    }
 
 	/**
 	 * @param string $guid

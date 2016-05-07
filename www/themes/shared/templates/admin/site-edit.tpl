@@ -511,6 +511,13 @@
 					</div>
 				</td>
 			</tr>
+            <tr>
+                <td style="width:180px;"><label for="hideuploadednzb">Hide uploaded NZBs:</label></td>
+                <td>
+                    {html_radios id="hideuploadednzb" name='hideuploadednzb' values=$yesno_ids output=$yesno_names selected=$site->hideuploadednzb separator='<br />'}
+                    <div class="hint">Hide NZB files that was uploaded to usenet by the original poster.<br/></div>
+                </td>
+            </tr>
 			<tr>
 				<td style="width:180px;"><label for="deletepasswordedrelease">Delete Passworded Releases:</label></td>
 				<td>
