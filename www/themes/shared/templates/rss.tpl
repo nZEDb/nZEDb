@@ -32,7 +32,7 @@
 							<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/music/{$release.musicinfo_id}.jpg" width="120" alt="{$release.searchname|escape:"htmlall"}" />
 						{/if}
 						{if $release.co_cover == 1}
-							<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/console/{$release.consoleinfoid}.jpg" width="120" alt="{$release.searchname|escape:"htmlall"}" />
+							<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/console/{$release.consoleinfo_id}.jpg" width="120" alt="{$release.searchname|escape:"htmlall"}" />
 						{/if}
 						{if $release.bo_cover == 1}
 							<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/book/{$release.bookinfoid}.jpg" width="120" alt="{$release.searchname|escape:"htmlall"}" />
@@ -89,7 +89,7 @@
 								{/if}
 							{/if}
 							{if $release.parentCategoryid == {$catClass::GAME_ROOT}}
-								{if $release.consoleinfoid > 0}
+								{if $release.consoleinfo_id > 0}
 									<li>Console Info:
 										<ul>
 											{if $release.co_url != ""}<li>Amazon: <a href="{$release.co_url}">{$release.co_title}</a></li>{/if}

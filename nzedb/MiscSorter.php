@@ -228,7 +228,7 @@ class MiscSorter
 			$this->_setProcSorter(self::PROC_SORTER_DONE, $id);
 		}
 
-		if ($type !== '' && in_array($type, ['bookinfoid', 'consoleinfoid', 'imdbid', 'musicinfo_id'])) {
+		if ($type !== '' && in_array($type, ['bookinfoid', 'consoleinfo_id', 'imdbid', 'musicinfo_id'])) {
 				$this->pdo->queryExec(
 							sprintf('
 								UPDATE releases
@@ -457,7 +457,7 @@ class MiscSorter
 		$rel = $this->_doAmazonLocal('consoleinfo', (string)$amaz->Items->Item->ASIN);
 
 		if ($rel !== false) {
-			$ok = $this->dodbupdate($id, $name, $rel['id'], 'consoleinfoid');
+			$ok = $this->dodbupdate($id, $name, $rel['id'], 'consoleinfo_id');
 		} else {
 			$consoleId = (new Console(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->
 				updateConsoleInfo([
@@ -465,7 +465,7 @@ class MiscSorter
 							'node'     => (int)$amaz->Items->Item->BrowseNodes->BrowseNodeId,
 							'platform' => (string)$amaz->Items->Item->ItemAttributes->Platform]
 				);
-			$ok = $this->dodbupdate($id, $name, $consoleId, 'consoleinfoid');
+			$ok = $this->dodbupdate($id, $name, $consoleId, 'consoleinfo_id');
 		}
 
 		return $ok;

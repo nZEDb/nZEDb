@@ -261,8 +261,8 @@
 						{if $result.musicinfo_id > 0}
 						<a href="#" name="name{$result.musicinfo_id}" title="View music info" class="modal_music badge badge-success halffade" rel="music" >Cover</a>
 						{/if}
-						{if $result.consoleinfoid > 0}
-						<a href="#" name="name{$result.consoleinfoid}" title="View console info" class="modal_console badge badge-success halffade" rel="console" >Cover</a>
+						{if $result.consoleinfo_id > 0}
+						<a href="#" name="name{$result.consoleinfo_id}" title="View console info" class="modal_console badge badge-success halffade" rel="console" >Cover</a>
 						{/if}
 						{if $result.bookinfoid > 0}
 						<a href="#" name="name{$result.bookinfoid}" title="View book info" class="modal_book badge badge-success halffade" rel="console" >Cover</a>

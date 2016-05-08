@@ -228,8 +228,8 @@
 								{if $result.musicinfo_id > 0}
 									<a href="#" name="name{$result.musicinfo_id}" title="View music info" class="modal_music rndbtn" rel="music" >Cover</a>
 								{/if}
-								{if $result.consoleinfoid > 0}
-									<a href="#" name="name{$result.consoleinfoid}" title="View console info" class="modal_console rndbtn" rel="console" >Cover</a>
+								{if $result.consoleinfo_id > 0}
+									<a href="#" name="name{$result.consoleinfo_id}" title="View console info" class="modal_console rndbtn" rel="console" >Cover</a>
 								{/if}
 								{if $result.videos_id > 0}
 									<a class="rndbtn" href="{$smarty.const.WWW_TOP}/series/{$result.videos_id}" title="View all episodes">View Series</a>

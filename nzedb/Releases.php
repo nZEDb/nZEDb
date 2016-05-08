@@ -1486,15 +1486,15 @@ class Releases
 	public function getNewestConsole()
 	{
 		return $this->pdo->query(
-			"SELECT r.consoleinfoid, r.guid, r.name, r.searchname, r.size, r.completion,
+			"SELECT r.consoleinfo_id, r.guid, r.name, r.searchname, r.size, r.completion,
 				r.postdate, r.categories_id, r.comments, r.grabs,
 				con.cover
 			FROM releases r
-			INNER JOIN consoleinfo con ON r.consoleinfoid = con.id
+			INNER JOIN consoleinfo con ON r.consoleinfo_id = con.id
 			WHERE r.categories_id BETWEEN " . Category::GAME_ROOT . " AND " . Category::GAME_OTHER . "
 			AND con.id > 0
 			AND con.cover > 0
-			AND r.id in (select max(id) from releases where consoleinfoid > 0 group by consoleinfoid)
+			AND r.id in (select max(id) from releases where consoleinfo_id > 0 group by consoleinfo_id)
 			ORDER BY r.postdate DESC
 			LIMIT 35"
 		);

@@ -404,7 +404,7 @@ class Tmux
 					SUM(IF(nzbstatus = 1 AND categories_id BETWEEN %d AND %d AND imdbid IS NULL,1,0)
 					) AS processmovies,
 					SUM(IF(nzbstatus = 1 AND categories_id IN (%d, %d, %d) AND musicinfo_id IS NULL,1,0)) AS processmusic,
-					SUM(IF(nzbstatus = 1 AND categories_id BETWEEN %d AND %d AND consoleinfoid IS
+					SUM(IF(nzbstatus = 1 AND categories_id BETWEEN %d AND %d AND consoleinfo_id IS
 					NULL,1,0)) AS processconsole,
 					SUM(IF(nzbstatus = 1 AND categories_id IN (%s) AND bookinfoid IS NULL,1,0)) AS processbooks,
 					SUM(IF(nzbstatus = 1 AND categories_id = %d AND gamesinfo_id = 0,1,0)) AS processgames,

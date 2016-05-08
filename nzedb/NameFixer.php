@@ -569,7 +569,7 @@ class NameFixer
 							sprintf('
 								UPDATE releases
 								SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfo_id = NULL,
-									consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, predb_id = %d,
+									consoleinfo_id = NULL, bookinfoid = NULL, anidbid = NULL, predb_id = %d,
 									searchname = %s, %s categories_id = %d
 								WHERE id = %d',
 								$preId,
@@ -586,7 +586,7 @@ class NameFixer
 							sprintf('
 								UPDATE releases
 								SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfo_id = NULL,
-									consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, predb_id = %d,
+									consoleinfo_id = NULL, bookinfoid = NULL, anidbid = NULL, predb_id = %d,
 									searchname = %s, iscategorized = 1, categories_id = %d
 								WHERE id = %d',
 								$preId,

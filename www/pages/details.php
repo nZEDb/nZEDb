@@ -82,7 +82,7 @@ if (isset($_GET['id'])) {
 	$page->smarty->assign([
 		'anidb'   => ($data['anidbid'] > 0 ? (new AniDB(['Settings' => $page->settings]))->getAnimeInfo($data['anidbid']) : ''),
 		'boo'   => ($data['bookinfoid'] != '' ? (new Books(['Settings' => $page->settings]))->getBookInfo($data['bookinfoid']) : ''),
-		'con'   => ($data['consoleinfoid'] != '' ? (new Console(['Settings' => $page->settings]))->getConsoleInfo($data['consoleinfoid']) : ''),
+		'con'   => ($data['consoleinfo_id'] != '' ? (new Console(['Settings' => $page->settings]))->getConsoleInfo($data['consoleinfo_id']) : ''),
 		'game'  => ($data['gamesinfo_id'] != '' ? (new Games(['Settings' => $page->settings]))->getgamesInfo($data['gamesinfo_id']) : ''),
 		'movie'   => $mov,
 		'music' => ($data['musicinfo_id'] != '' ? (new Music(['Settings' => $page->settings]))->getMusicInfo($data['musicinfo_id']) : ''),

@@ -41,7 +41,7 @@ if (isset($argv[1]) && $argv[1] === "all") {
 				$pdo->queryExec(
 					sprintf("
 						UPDATE releases
-						SET consoleinfoid = NULL, gamesinfo_id = 0, imdbid = NULL, musicinfo_id = NULL,
+						SET consoleinfo_id = NULL, gamesinfo_id = 0, imdbid = NULL, musicinfo_id = NULL,
 							bookinfoid = NULL, videos_id = 0, tv_episodes_id = 0, xxxinfo_id = 0, passwordstatus = -1, haspreview = -1,
 							jpgstatus = 0, videostatus = 0, audiostatus = 0, nfostatus = -1
 						WHERE id = %d",
@@ -60,10 +60,10 @@ if (isset($argv[1]) && ($argv[1] === "consoles" || $argv[1] === "all")) {
 	}
 	if (isset($argv[2]) && $argv[2] === "true") {
 		echo $pdo->log->header("Resetting all Console postprocessing");
-		$where = ' WHERE consoleinfoid IS NOT NULL';
+		$where = ' WHERE consoleinfo_id IS NOT NULL';
 	} else {
 		echo $pdo->log->header("Resetting all failed Console postprocessing");
-		$where = " WHERE consoleinfoid IN (-2, 0) AND categories_id BETWEEN " . Category::GAME_ROOT . " AND " . Category::GAME_OTHER;
+		$where = " WHERE consoleinfo_id IN (-2, 0) AND categories_id BETWEEN " . Category::GAME_ROOT . " AND " . Category::GAME_OTHER;
 	}
 
 	$qry = $pdo->queryDirect("SELECT id FROM releases" . $where);
@@ -75,7 +75,7 @@ if (isset($argv[1]) && ($argv[1] === "consoles" || $argv[1] === "all")) {
 	$concount = 0;
 	if ($qry instanceof \Traversable) {
 		foreach ($qry as $releases) {
-			$pdo->queryExec("UPDATE releases SET consoleinfoid = NULL WHERE id = " . $releases['id']);
+			$pdo->queryExec("UPDATE releases SET consoleinfo_id = NULL WHERE id = " . $releases['id']);
 			$consoletools->overWritePrimary("Resetting Console Releases:  " . $consoletools->percentString(++$concount, $total));
 		}
 	}

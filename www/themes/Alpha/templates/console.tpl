@@ -45,7 +45,7 @@
 								href="{$site->dereferrer_link}{$result.url}"
 							><img
 									class="shadow"
-									 src="{$smarty.const.WWW_TOP}/covers/console/{if $result.cover == 1}{$result.consoleinfoid}.jpg{else}no-cover.jpg{/if}"
+									 src="{$smarty.const.WWW_TOP}/covers/console/{if $result.cover == 1}{$result.consoleinfo_id}.jpg{else}no-cover.jpg{/if}"
 									 width="130px"
 									 border="0"
 									 alt="{$result.title|escape:"htmlall"}"
@@ -56,7 +56,7 @@
 										class="label"
 										target="_blank"
 										href="{$site->dereferrer_link}{$result.url}"
-										name="amazon{$result.consoleinfoid}"
+										name="amazon{$result.consoleinfo_id}"
 										title="View amazon page"
 									><img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/amazon.png"></a>
 								{/if}

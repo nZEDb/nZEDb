@@ -218,10 +218,10 @@
 									rel="music"
 								><i class="icon-music"></i></a>
 							{/if}
-							{if $result.consoleinfoid > 0}
+							{if $result.consoleinfo_id > 0}
 								<a
 									href="#"
-									name="name{$result.consoleinfoid}"
+									name="name{$result.consoleinfo_id}"
 									title="View console info"
 									class="modal_console label label-default"
 									rel="console"
