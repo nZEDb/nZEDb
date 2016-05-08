@@ -10,6 +10,8 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 2016-05-08 niel
 	Mrg: Changing table 'category' to 'categories' along with references to categoryid => categories_id.
+		**NOTE** This involves changes to your releases table. It will take some time,
+		potentially a very long time, depending on the number of releases you have.
 2016-05-07 niel
 	Chg: alter subsection,name fields to settings for recaptcha.
 	Mrg: PR 2135, from zetas - Fix Recaptcha settings.
