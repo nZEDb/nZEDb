@@ -193,9 +193,9 @@ class Music
 	{
 		$res = $this->pdo->query(
 			sprintf("
-				SELECT COUNT(DISTINCT r.musicinfoid) AS num
+				SELECT COUNT(DISTINCT r.musicinfo_id) AS num
 				FROM releases r
-				INNER JOIN musicinfo m ON m.id = r.musicinfoid
+				INNER JOIN musicinfo m ON m.id = r.musicinfo_id
 				AND m.title != ''
 				AND m.cover = 1
 				WHERE nzbstatus = 1
@@ -242,7 +242,7 @@ class Music
 					m.id,
 					GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id
 				FROM musicinfo m
-				LEFT JOIN releases r ON r.musicinfoid = m.id
+				LEFT JOIN releases r ON r.musicinfo_id = m.id
 				WHERE r.nzbstatus = 1
 				AND m.title != ''
 				AND m.cover = 1
@@ -286,14 +286,14 @@ class Music
 				GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs,
 				GROUP_CONCAT(df.failed ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_failed,
 				m.*,
-				r.musicinfoid, r.haspreview,
+				r.musicinfo_id, r.haspreview,
 				g.name AS group_name,
 				rn.releaseid AS nfoid
 			FROM releases r
 			LEFT OUTER JOIN groups g ON g.id = r.group_id
 			LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
 			LEFT OUTER JOIN dnzb_failures df ON df.release_id = r.id
-			INNER JOIN musicinfo m ON m.id = r.musicinfoid
+			INNER JOIN musicinfo m ON m.id = r.musicinfo_id
 			WHERE m.id IN (%s)
 			AND r.id IN (%s)
 			AND %s
@@ -722,7 +722,7 @@ class Music
 				sprintf('
 					SELECT searchname, id
 					FROM releases
-					WHERE musicinfoid IS NULL
+					WHERE musicinfo_id IS NULL
 					AND nzbstatus = 1 %s
 					AND categories_id IN (%s, %s, %s)
 					ORDER BY postdate DESC
@@ -774,10 +774,10 @@ class Music
 					}
 
 					// Update release.
-					$this->pdo->queryExec(sprintf("UPDATE releases SET musicinfoid = %d WHERE id = %d", $albumId, $arr["id"]));
+					$this->pdo->queryExec(sprintf("UPDATE releases SET musicinfo_id = %d WHERE id = %d", $albumId, $arr["id"]));
 				} // No album found.
 				else {
-					$this->pdo->queryExec(sprintf("UPDATE releases SET musicinfoid = %d WHERE id = %d", -2, $arr["id"]));
+					$this->pdo->queryExec(sprintf("UPDATE releases SET musicinfo_id = %d WHERE id = %d", -2, $arr["id"]));
 					echo '.';
 				}
 

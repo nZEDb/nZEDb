@@ -1530,16 +1530,16 @@ class Releases
 	public function getNewestMP3s()
 	{
 		return $this->pdo->query(
-			"SELECT r.musicinfoid, r.guid, r.name, r.searchname, r.size, r.completion,
+			"SELECT r.musicinfo_id, r.guid, r.name, r.searchname, r.size, r.completion,
 				r.postdate, r.categories_id, r.comments, r.grabs,
 				m.cover
 			FROM releases r
-			INNER JOIN musicinfo m ON r.musicinfoid = m.id
+			INNER JOIN musicinfo m ON r.musicinfo_id = m.id
 			WHERE r.categories_id BETWEEN " . Category::MUSIC_ROOT . " AND " . Category::MUSIC_OTHER . "
 			AND r.categories_id != " . Category::MUSIC_AUDIOBOOK . "
 			AND m.id > 0
 			AND m.cover > 0
-			AND r.id in (select max(id) from releases where musicinfoid > 0 group by musicinfoid)
+			AND r.id in (select max(id) from releases where musicinfo_id > 0 group by musicinfo_id)
 			ORDER BY r.postdate DESC
 			LIMIT 24", true, nZEDb_CACHE_EXPIRY_LONG
 		);

@@ -81,7 +81,7 @@ Class RSS
 				INNER JOIN categories cp ON cp.id = c.parentid
 				INNER JOIN groups g ON g.id = r.group_id
 				LEFT OUTER JOIN movieinfo m ON m.imdbid = r.imdbid AND m.title != ''
-				LEFT OUTER JOIN musicinfo mu ON mu.id = r.musicinfoid
+				LEFT OUTER JOIN musicinfo mu ON mu.id = r.musicinfo_id
 				LEFT OUTER JOIN genres mug ON mug.id = mu.genre_id
 				LEFT OUTER JOIN consoleinfo co ON co.id = r.consoleinfoid
 				LEFT OUTER JOIN genres cog ON cog.id = co.genre_id %s

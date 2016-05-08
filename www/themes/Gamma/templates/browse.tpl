@@ -165,8 +165,8 @@
 						<a href="#" name="audio{$result.guid}" title="Listen to Preview" class="audioprev badge badge-success halffade" rel="audio">Listen</a>
 						<audio id="audprev{$result.guid}" src="{$smarty.const.WWW_TOP}/covers/audio/{$result.guid}.mp3" preload="none"></audio>
 						{/if}
-						{if $result.musicinfoid > 0}
-						<a href="#" name="name{$result.musicinfoid}" title="View music info" class="modal_music badge badge-success halffade" rel="music" >Cover</a>
+						{if $result.musicinfo_id > 0}
+						<a href="#" name="name{$result.musicinfo_id}" title="View music info" class="modal_music badge badge-success halffade" rel="music" >Cover</a>
 						{/if}
 						{if $result.consoleinfoid > 0}
 						<a href="#" name="name{$result.consoleinfoid}" title="View console info" class="modal_console badge badge-success halffade" rel="console" >Cover</a>

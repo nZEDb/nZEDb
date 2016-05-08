@@ -29,7 +29,7 @@
 							<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/movies/{$release.imdbid}-cover.jpg" width="120" alt="{$release.searchname|escape:"htmlall"}" />
 						{/if}
 						{if $release.mu_cover == 1}
-							<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/music/{$release.musicinfoid}.jpg" width="120" alt="{$release.searchname|escape:"htmlall"}" />
+							<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/music/{$release.musicinfo_id}.jpg" width="120" alt="{$release.searchname|escape:"htmlall"}" />
 						{/if}
 						{if $release.co_cover == 1}
 							<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/console/{$release.consoleinfoid}.jpg" width="120" alt="{$release.searchname|escape:"htmlall"}" />
@@ -65,7 +65,7 @@
 								{/if}
 							{/if}
 							{if $release.parentCategoryid == {$catClass::MUSIC_ROOT}}
-								{if $release.musicinfoid > 0}
+								{if $release.musicinfo_id > 0}
 									<li>Music Info:
 										<ul>
 											{if $release.mu_url != ""}<li>Amazon: <a href="{$release.mu_url}">{$release.mu_title}</a></li>{/if}

@@ -228,7 +228,7 @@ class MiscSorter
 			$this->_setProcSorter(self::PROC_SORTER_DONE, $id);
 		}
 
-		if ($type !== '' && in_array($type, ['bookinfoid', 'consoleinfoid', 'imdbid', 'musicinfoid'])) {
+		if ($type !== '' && in_array($type, ['bookinfoid', 'consoleinfoid', 'imdbid', 'musicinfo_id'])) {
 				$this->pdo->queryExec(
 							sprintf('
 								UPDATE releases
@@ -425,10 +425,10 @@ class MiscSorter
 		$rel = $this->_doAmazonLocal('musicinfo', (string)$amaz->Items->Item->ASIN);
 
 		if ($rel !== false) {
-			$ok = $this->dodbupdate($id, $name, $rel['id'], 'musicinfoid');
+			$ok = $this->dodbupdate($id, $name, $rel['id'], 'musicinfo_id');
 		} else {
 			$musicId = (new Music(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->updateMusicInfo('', '', $amaz);
-			$ok = $this->dodbupdate($id, $name, $musicId, 'musicinfoid');
+			$ok = $this->dodbupdate($id, $name, $musicId, 'musicinfo_id');
 		}
 		return $ok;
 	}

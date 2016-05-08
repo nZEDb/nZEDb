@@ -568,7 +568,7 @@ class NameFixer
 						$this->pdo->queryExec(
 							sprintf('
 								UPDATE releases
-								SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfoid = NULL,
+								SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfo_id = NULL,
 									consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, predb_id = %d,
 									searchname = %s, %s categories_id = %d
 								WHERE id = %d',
@@ -585,7 +585,7 @@ class NameFixer
 						$this->pdo->queryExec(
 							sprintf('
 								UPDATE releases
-								SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfoid = NULL,
+								SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfo_id = NULL,
 									consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, predb_id = %d,
 									searchname = %s, iscategorized = 1, categories_id = %d
 								WHERE id = %d',

@@ -1317,7 +1317,7 @@ class ProcessReleases
 						SELECT SQL_NO_CACHE id, guid
 						FROM releases
 						INNER JOIN (SELECT id AS mid FROM musicinfo WHERE musicinfo.genre_id = %d) mi
-						ON musicinfoid = mid',
+						ON musicinfo_id = mid',
 						$genre['id']
 					)
 				);

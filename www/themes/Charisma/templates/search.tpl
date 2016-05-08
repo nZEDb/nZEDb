@@ -254,8 +254,8 @@
 								<a href="{$smarty.const.WWW_TOP}/covers/sample/{$result.guid}_thumb.jpg"
 								   name="name{$result.guid}" title="Sample of {$result.searchname|escape:"htmlall"}"
 								   class="modal_prev label label-default" rel="preview">Sample</a>{/if}
-								{if $result.musicinfoid > 0}
-									<a href="#" name="name{$result.musicinfoid}" title="View music info"
+								{if $result.musicinfo_id > 0}
+									<a href="#" name="name{$result.musicinfo_id}" title="View music info"
 									   class="modal_music label label-default" rel="music">Cover</a>
 								{/if}
 								{if $result.consoleinfoid > 0}

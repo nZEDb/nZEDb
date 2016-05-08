@@ -209,10 +209,10 @@
 									rel="movie"
 								><i class="icon-film"></i></a>
 							{/if}
-							{if $result.musicinfoid > 0}
+							{if $result.musicinfo_id > 0}
 								<a
 									href="#"
-									name="name{$result.musicinfoid}"
+									name="name{$result.musicinfo_id}"
 									title="View music info"
 									class="modal_music label label-default"
 									rel="music"
