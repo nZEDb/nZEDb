@@ -57,7 +57,7 @@
 											 src="{$smarty.const.WWW_TOP}/covers/music/{$result.musicinfo_id}.jpg"/>
 									{elseif $type == 'Books'}
 										<img width="140px" height="205px" alt=""
-											 src="{$smarty.const.WWW_TOP}/covers/book/{$result.bookinfoid}.jpg"/>
+											 src="{$smarty.const.WWW_TOP}/covers/book/{$result.bookinfo_id}.jpg"/>
 									{elseif $type == 'PC'}
 										<img width="130px" height="195px" alt=""
 											 src="{$smarty.const.WWW_TOP}/covers/games/{$result.gamesinfo_id}.jpg"/>

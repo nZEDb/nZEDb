@@ -289,7 +289,7 @@ class RequestIDWeb extends RequestID
 		$this->pdo->queryExec(
 			sprintf('
 				UPDATE releases
-				SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfo_id = NULL, consoleinfo_id = NULL, bookinfoid = NULL,
+				SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfo_id = NULL, consoleinfo_id = NULL, bookinfo_id = NULL,
 				anidbid = NULL, reqidstatus = %d, isrenamed = 1, proc_files = 1, searchname = %s, categories_id = %d, predb_id = %d
 				WHERE id = %d',
 				self::REQID_FOUND,

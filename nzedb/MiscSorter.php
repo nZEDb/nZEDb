@@ -228,7 +228,7 @@ class MiscSorter
 			$this->_setProcSorter(self::PROC_SORTER_DONE, $id);
 		}
 
-		if ($type !== '' && in_array($type, ['bookinfoid', 'consoleinfo_id', 'imdbid', 'musicinfo_id'])) {
+		if ($type !== '' && in_array($type, ['bookinfo_id', 'consoleinfo_id', 'imdbid', 'musicinfo_id'])) {
 				$this->pdo->queryExec(
 							sprintf('
 								UPDATE releases
@@ -406,9 +406,9 @@ class MiscSorter
 		}
 
 		if ($audiobook) {
-			$ok = $this->dodbupdate($id, $name, $bookId, 'bookinfoid');
+			$ok = $this->dodbupdate($id, $name, $bookId, 'bookinfo_id');
 		} else {
-			$ok = $this->dodbupdate($id, $name, $bookId, 'bookinfoid');
+			$ok = $this->dodbupdate($id, $name, $bookId, 'bookinfo_id');
 		}
 
 		return $ok;

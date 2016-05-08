@@ -15,6 +15,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Chg: Changing releases.preid to releases.predb_id in line with lithium conventions.
 	Chg: Changing releases.musicinfoid => releases.musicinfo_id inline with lithium conventions.
 	Chg: Changing releases.consoleinfoid => releases.consoleinfo_id inline with lithium conventions.
+	Chg: Changing releases.bookinfoid => releases.bookinfo_id inline with lithium conventions.
 2016-05-07 niel
 	Chg: alter subsection,name fields to settings for recaptcha.
 	Mrg: PR 2135, from zetas - Fix Recaptcha settings.

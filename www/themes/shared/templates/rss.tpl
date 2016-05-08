@@ -35,7 +35,7 @@
 							<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/console/{$release.consoleinfo_id}.jpg" width="120" alt="{$release.searchname|escape:"htmlall"}" />
 						{/if}
 						{if $release.bo_cover == 1}
-							<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/book/{$release.bookinfoid}.jpg" width="120" alt="{$release.searchname|escape:"htmlall"}" />
+							<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/book/{$release.bookinfo_id}.jpg" width="120" alt="{$release.searchname|escape:"htmlall"}" />
 						{/if}
 						<ul>
 							<li>ID: <a href="{$serverroot}details/{$release.guid}">{$release.guid}</a></li>

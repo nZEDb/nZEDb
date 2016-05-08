@@ -1553,16 +1553,16 @@ class Releases
 	public function getNewestBooks()
 	{
 		return $this->pdo->query(
-			"SELECT r.bookinfoid, r.guid, r.name, r.searchname, r.size, r.completion,
+			"SELECT r.bookinfo_id, r.guid, r.name, r.searchname, r.size, r.completion,
 				r.postdate, r.categories_id, r.comments, r.grabs,
 				b.url,	b.cover, b.title as booktitle, b.author
 			FROM releases r
-			INNER JOIN bookinfo b ON r.bookinfoid = b.id
+			INNER JOIN bookinfo b ON r.bookinfo_id = b.id
 			WHERE r.categories_id BETWEEN " . Category::BOOKS_ROOT . " AND " . Category::BOOKS_UNKNOWN . "
 			OR r.categories_id = " . Category::MUSIC_AUDIOBOOK . "
 			AND b.id > 0
 			AND b.cover > 0
-			AND r.id in (select max(id) from releases where bookinfoid > 0 group by bookinfoid)
+			AND r.id in (select max(id) from releases where bookinfo_id > 0 group by bookinfo_id)
 			ORDER BY r.postdate DESC
 			LIMIT 24", true, nZEDb_CACHE_EXPIRY_LONG
 		);

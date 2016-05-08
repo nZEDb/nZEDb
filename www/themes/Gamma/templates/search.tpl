@@ -264,8 +264,8 @@
 						{if $result.consoleinfo_id > 0}
 						<a href="#" name="name{$result.consoleinfo_id}" title="View console info" class="modal_console badge badge-success halffade" rel="console" >Cover</a>
 						{/if}
-						{if $result.bookinfoid > 0}
-						<a href="#" name="name{$result.bookinfoid}" title="View book info" class="modal_book badge badge-success halffade" rel="console" >Cover</a>
+						{if $result.bookinfo_id > 0}
+						<a href="#" name="name{$result.bookinfo_id}" title="View book info" class="modal_book badge badge-success halffade" rel="console" >Cover</a>
 						{/if}
 
 						{if $result.videos_id > 0}

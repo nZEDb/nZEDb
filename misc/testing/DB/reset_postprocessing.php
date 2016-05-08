@@ -42,7 +42,7 @@ if (isset($argv[1]) && $argv[1] === "all") {
 					sprintf("
 						UPDATE releases
 						SET consoleinfo_id = NULL, gamesinfo_id = 0, imdbid = NULL, musicinfo_id = NULL,
-							bookinfoid = NULL, videos_id = 0, tv_episodes_id = 0, xxxinfo_id = 0, passwordstatus = -1, haspreview = -1,
+							bookinfo_id = NULL, videos_id = 0, tv_episodes_id = 0, xxxinfo_id = 0, passwordstatus = -1, haspreview = -1,
 							jpgstatus = 0, videostatus = 0, audiostatus = 0, nfostatus = -1
 						WHERE id = %d",
 						$releases['id']
@@ -254,10 +254,10 @@ if (isset($argv[1]) && ($argv[1] === "books" || $argv[1] === "all")) {
 	}
 	if (isset($argv[2]) && $argv[2] === "true") {
 		echo $pdo->log->header("Resetting all Book postprocessing");
-		$where = ' WHERE bookinfoid IS NOT NULL';
+		$where = ' WHERE bookinfo_id IS NOT NULL';
 	} else {
 		echo $pdo->log->header("Resetting all failed Book postprocessing");
-		$where = ' WHERE bookinfoid IN (-2, 0) AND categories_id BETWEEN ' . Category::BOOKs_ROOT .
+		$where = ' WHERE bookinfo_id IN (-2, 0) AND categories_id BETWEEN ' . Category::BOOKs_ROOT .
 				' AND ' . Category::BOOKS_OTHER;
 	}
 
@@ -266,7 +266,7 @@ if (isset($argv[1]) && ($argv[1] === "books" || $argv[1] === "all")) {
 	$concount = 0;
 	if ($qry instanceof \Traversable) {
 		foreach ($qry as $releases) {
-			$pdo->queryExec("UPDATE releases SET bookinfoid = NULL WHERE id = " . $releases['id']);
+			$pdo->queryExec("UPDATE releases SET bookinfo_id = NULL WHERE id = " . $releases['id']);
 			$consoletools->overWritePrimary("Resetting Book Releases:  " . $consoletools->percentString(++$concount, $total));
 		}
 	}
