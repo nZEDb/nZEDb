@@ -184,7 +184,7 @@
 					</td>
 					<td style="width:auto;text-align:center;white-space:nowrap;">
 						<small
-							><a title="Browse {$result.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$result.categoryid}">
+							><a title="Browse {$result.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$result.categories_id}">
 								<b>{$result.category_name}</b>
 							</a>
 						</small>

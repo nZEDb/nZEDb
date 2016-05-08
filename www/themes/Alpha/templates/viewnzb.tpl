@@ -278,7 +278,7 @@
 </tr>
 <tr>
 	<th style="vertical-align:top">Category:</th>
-	<td><a title="Browse by {$release.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$release.categoryid}">{$release.category_name}</a>
+	<td><a title="Browse by {$release.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$release.categories_id}">{$release.category_name}</a>
 	</td>
 </tr>
 {if $nfo.releaseid|@count > 0}

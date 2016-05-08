@@ -473,7 +473,7 @@
 																	</th>
 																	<td>
 																		<a title="Browse by {$release.category_name}"
-																		   href="{$smarty.const.WWW_TOP}/browse?t={$release.categoryid}">{$release.category_name}</a>
+																		   href="{$smarty.const.WWW_TOP}/browse?t={$release.categories_id}">{$release.category_name}</a>
 																	</td>
 																</tr>
 																<tr>
