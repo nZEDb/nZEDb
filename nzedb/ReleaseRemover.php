@@ -347,7 +347,7 @@ class ReleaseRemover
 			WHERE r.nfostatus = 0
 			AND r.iscategorized = 1
 			AND r.rarinnerfilecount = 0
-			AND r.categoryid NOT IN (%d)
+			AND r.categories_id NOT IN (%d)
 			AND r.searchname REGEXP '^[a-zA-Z0-9]{15,}$'
 			%s",
 			Category::OTHER_HASHED,
@@ -375,7 +375,7 @@ class ReleaseRemover
 			WHERE r.nfostatus = 0
 			AND r.iscategorized = 1
 			AND r.rarinnerfilecount = 0
-			AND r.categoryid NOT IN (%d, %d)
+			AND r.categories_id NOT IN (%d, %d)
 			AND r.searchname REGEXP '[a-zA-Z0-9]{25,}'
 			%s",
 			Category::OTHER_MISC, Category::OTHER_HASHED, $this->crapTime
@@ -402,7 +402,7 @@ class ReleaseRemover
 			WHERE r.nfostatus = 0
 			AND r.iscategorized = 1
 			AND r.rarinnerfilecount = 0
-			AND r.categoryid NOT IN (%d)
+			AND r.categories_id NOT IN (%d)
 			AND r.searchname REGEXP '^[a-zA-Z0-9]{0,5}$'
 			%s",
 			Category::OTHER_MISC, $this->crapTime
@@ -449,7 +449,7 @@ class ReleaseRemover
 			STRAIGHT_JOIN release_files rf ON r.id = rf.releaseid
 			WHERE r.searchname NOT REGEXP %s
 			AND rf.name %s
-			AND r.categoryid NOT IN (%d, %d, %d, %d, %d, %d) %s %s",
+			AND r.categories_id NOT IN (%d, %d, %d, %d, %d, %d) %s %s",
 			$ftJoin,
 			$this->pdo->escapeString('\.exe[sc]'),
 			$this->pdo->likeString('.exe', true, false),
@@ -577,7 +577,7 @@ class ReleaseRemover
 			AND r.searchname NOT %s
 			AND r.searchname NOT %s
 			AND r.nzbstatus = 1
-			AND r.categoryid NOT IN (%d, %d, %d, %d, %d, %d, %d, %d, %d) %s %s",
+			AND r.categories_id NOT IN (%d, %d, %d, %d, %d, %d, %d, %d, %d) %s %s",
 			// Matches passwort / passworded / etc also.
 			$ftJoin,
 			$this->pdo->likeString('passwor', true, true),
@@ -620,7 +620,7 @@ class ReleaseRemover
 			FROM releases r
 			WHERE r.totalpart = 1
 			AND r.size < 2097152
-			AND r.categoryid NOT IN (%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d) %s",
+			AND r.categories_id NOT IN (%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d) %s",
 			Category::MUSIC_MP3,
 			Category::BOOKS_COMICS,
 			Category::BOOKS_EBOOK,
@@ -691,7 +691,7 @@ class ReleaseRemover
 			WHERE r.totalpart > 1
 			AND r.size < 40000000
 			AND r.name %s
-			AND r.categoryid IN (%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d) %s %s",
+			AND r.categories_id IN (%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d) %s %s",
 			$ftJoin,
 			$this->pdo->likeString('sample', true, true),
 			Category::TV_ANIME,
@@ -1013,7 +1013,7 @@ class ReleaseRemover
 			SELECT r.guid, r.searchname
 			FROM releases r
 			LEFT JOIN release_files rf ON (r.id = rf.releaseid)
-			WHERE r.categoryid BETWEEN 2000 AND 2999
+			WHERE r.categories_id BETWEEN 2000 AND 2999
 			AND rf.name REGEXP 'x264.*\.wmv$'
 			GROUP BY r.id"
 		;
@@ -1033,7 +1033,7 @@ class ReleaseRemover
 	 */
 	protected function removeCodecPoster()
 	{
-		$categories = sprintf("r.categoryid IN (%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d)",
+		$categories = sprintf("r.categories_id IN (%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d)",
 			Category::MOVIE_3D,
 			Category::MOVIE_BLURAY,
 			Category::MOVIE_DVD,
@@ -1158,7 +1158,7 @@ class ReleaseRemover
 				case 'categoryid':
 					switch ($args[1]) {
 						case 'equals':
-							return ' AND categoryID = ' . $args[2];
+							return ' AND categories_id = ' . $args[2];
 						default:
 							break;
 					}

@@ -92,7 +92,7 @@ class Books
 			$this->renamed = 'AND isrenamed = 1';
 		}
 
-		$this->catWhere = 'AND (categoryid BETWEEN ' . Category::BOOKS_ROOT . ' AND ' . Category::BOOKS_UNKNOWN . ' OR categoryid = ' . Category::MUSIC_AUDIOBOOK . ') ';
+		$this->catWhere = 'AND (categories_id BETWEEN ' . Category::BOOKS_ROOT . ' AND ' . Category::BOOKS_UNKNOWN . ' OR categories_id = ' . Category::MUSIC_AUDIOBOOK . ') ';
 		$this->failCache = array();
 	}
 
@@ -191,7 +191,7 @@ class Books
 
 		$exccatlist = '';
 		if (count($excludedcats) > 0) {
-			$exccatlist = ' AND r.categoryid NOT IN (' . implode(',', $excludedcats) . ')';
+			$exccatlist = ' AND r.categories_id NOT IN (' . implode(',', $excludedcats) . ')';
 		}
 
 		$order = $this->getBookOrder($orderby);
@@ -390,11 +390,11 @@ class Books
 				$this->processBookReleasesHelper(
 					$this->pdo->queryDirect(
 						sprintf('
-						SELECT searchname, id, categoryid
+						SELECT searchname, id, categories_id
 						FROM releases
 						WHERE nzbstatus = 1 %s
 						AND bookinfoid IS NULL
-						AND categoryid in (%s)
+						AND categories_id in (%s)
 						ORDER BY postdate
 						DESC LIMIT %d', $this->renamed, $bookids[$i], $this->bookqty)
 					), $bookids[$i]
@@ -421,7 +421,7 @@ class Books
 				$startTime = microtime(true);
 				$usedAmazon = false;
 				// audiobooks are also books and should be handled in an identical manor, even though it falls under a music category
-				if ($arr['categoryid'] == Category::MUSIC_AUDIOBOOK) {
+				if ($arr['categories_id'] == Category::MUSIC_AUDIOBOOK) {
 					// audiobook
 					$bookInfo = $this->parseTitle($arr['searchname'], $arr['id'], 'audiobook');
 				} else {
@@ -502,7 +502,7 @@ class Books
 						$this->pdo->log->headerOver('Changing category to misc books: ') . $this->pdo->log->primary($releasename)
 					);
 				}
-				$this->pdo->queryExec(sprintf('UPDATE releases SET categoryid = %s WHERE id = %d', Category::BOOKS_UNKNOWN, $releaseID));
+				$this->pdo->queryExec(sprintf('UPDATE releases SET categories_id = %s WHERE id = %d', Category::BOOKS_UNKNOWN, $releaseID));
 				return false;
 			} else if (preg_match('/^([a-z0-9ü!]+ ){1,2}(N|Vol)?\d{1,4}(a|b|c)?$|^([a-z0-9]+ ){1,2}(Jan( |unar|$)|Feb( |ruary|$)|Mar( |ch|$)|Apr( |il|$)|May(?![a-z0-9])|Jun( |e|$)|Jul( |y|$)|Aug( |ust|$)|Sep( |tember|$)|O(c|k)t( |ober|$)|Nov( |ember|$)|De(c|z)( |ember|$))/i', $releasename) && !preg_match('/Part \d+/i', $releasename)) {
 
@@ -511,7 +511,7 @@ class Books
 						$this->pdo->log->headerOver('Changing category to magazines: ') . $this->pdo->log->primary($releasename)
 					);
 				}
-				$this->pdo->queryExec(sprintf('UPDATE releases SET categoryid = %s WHERE id = %d', Category::BOOKS_MAGAZINES, $releaseID));
+				$this->pdo->queryExec(sprintf('UPDATE releases SET categories_id = %s WHERE id = %d', Category::BOOKS_MAGAZINES, $releaseID));
 				return false;
 			} else if (!empty($releasename) && !preg_match('/^[a-z0-9]+$|^([0-9]+ ){1,}$|Part \d+/i', $releasename)) {
 				return $releasename;

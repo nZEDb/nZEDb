@@ -655,7 +655,7 @@ class Forking extends \fork_daemon
 				sprintf('
 					SELECT r.id
 					FROM releases r
-					LEFT JOIN category c ON c.id = r.categoryid
+					LEFT JOIN categories c ON c.id = r.categories_id
 					WHERE r.nzbstatus = %d
 					AND r.passwordstatus BETWEEN -6 AND -1
 					AND r.haspreview = -1
@@ -680,7 +680,7 @@ class Forking extends \fork_daemon
 				sprintf('
 					SELECT LEFT(r.guid, 1) AS id
 					FROM releases r
-					LEFT JOIN category c ON c.id = r.categoryid
+					LEFT JOIN categories c ON c.id = r.categories_id
 					WHERE r.nzbstatus = %d
 					AND r.passwordstatus BETWEEN -6 AND -1
 					AND r.haspreview = -1
@@ -755,7 +755,7 @@ class Forking extends \fork_daemon
 						FROM releases
 						WHERE nzbstatus = %d
 						AND imdbid IS NULL
-						AND categoryid BETWEEN %d AND %d
+						AND categories_id BETWEEN %d AND %d
 						%s %s
 						LIMIT 1',
 
@@ -783,7 +783,7 @@ class Forking extends \fork_daemon
 					FROM releases
 					WHERE nzbstatus = %d
 					AND imdbid IS NULL
-					AND categoryid BETWEEN ' . Category::MOVIE_ROOT . ' AND ' . Category::MOVIE_OTHER . '
+					AND categories_id BETWEEN ' . Category::MOVIE_ROOT . ' AND ' . Category::MOVIE_OTHER . '
 					%s %s
 					GROUP BY LEFT(guid, 1)
 					LIMIT 16',
@@ -813,7 +813,7 @@ class Forking extends \fork_daemon
 						WHERE nzbstatus = %d
 						AND size > 1048576
 						AND tv_episodes_id BETWEEN -2 AND 0
-						AND categoryid BETWEEN %d AND %d
+						AND categories_id BETWEEN %d AND %d
 						%s %s
 						LIMIT 1',
 
@@ -842,7 +842,7 @@ class Forking extends \fork_daemon
 					WHERE nzbstatus = %d
 					AND tv_episodes_id BETWEEN -2 AND 0
 					AND size > 1048576
-					AND categoryid BETWEEN %d AND %d
+					AND categories_id BETWEEN %d AND %d
 					%s %s
 					GROUP BY LEFT(guid, 1)
 					LIMIT 16',

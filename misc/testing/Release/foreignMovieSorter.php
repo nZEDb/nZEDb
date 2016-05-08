@@ -24,13 +24,13 @@ function getForeignMovies()
 {
 	global $pdo;
 	$like = 'LIKE';
-	return $pdo->query('SELECT r.id, r.searchname FROM releases r JOIN audio_data ra ON ra.releaseID = r.id WHERE ra.audiolanguage ' . $like . " '%English%' AND r.categoryid = 2010");
+	return $pdo->query('SELECT r.id, r.searchname FROM releases r JOIN audio_data ra ON ra.releaseID = r.id WHERE ra.audiolanguage ' . $like . " '%English%' AND r.categories_id = 2010");
 }
 
 function updateRelease($id, $cat)
 {
 	global $pdo;
-	$pdo->queryExec(sprintf("UPDATE releases SET categoryid = %s WHERE id = %d", $cat, $id));
+	$pdo->queryExec(sprintf("UPDATE releases SET categories_id = %s WHERE id = %d", $cat, $id));
 }
 
 function determineMovieCategory($name)

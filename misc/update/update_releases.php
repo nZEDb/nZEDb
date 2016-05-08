@@ -39,7 +39,7 @@ if (isset($argv[1]) && isset($argv[2])) {
 	} else if ($argv[1] == 5 && ($argv[2] == 'true' || $argv[2] == 'false')) {
 		echo $pdo->log->header("Categorizing all non-categorized releases in other->misc using usenet subject. This can take a while, be patient.");
 		$timestart = TIME();
-		$relcount = $releases->categorizeRelease('name', "WHERE iscategorized = 0 AND categoryID = " . Category::OTHER_MISC);
+		$relcount = $releases->categorizeRelease('name', "WHERE iscategorized = 0 AND categories_id = " . Category::OTHER_MISC);
 		$time = $consoletools->convertTime(TIME() - $timestart);
 		echo $pdo->log->primary("\n" . 'Finished categorizing ' . $relcount . ' releases in ' . $time . " seconds, using the usenet subject.");
 	} else if ($argv[1] == 6 && $argv[2] == 'true') {
@@ -53,7 +53,7 @@ if (isset($argv[1]) && isset($argv[2])) {
 		echo $pdo->log->header("Categorizing releases in misc sections using the searchname. This can take a while, be patient.");
 		$timestart = TIME();
 		$relcount = $releases->categorizeRelease('searchname',
-				sprintf("WHERE categoryID IN (%s, %s, %s, %s, %s, %s)",
+				sprintf("WHERE categories_id IN (%s, %s, %s, %s, %s, %s)",
 					Category::GAME_OTHER,
 					Category::MOVIE_OTHER,
 					Category::MUSIC_OTHER,

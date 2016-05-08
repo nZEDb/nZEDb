@@ -55,7 +55,7 @@ abstract class TV extends Videos
 	public function __construct(array $options = [])
 	{
 		parent::__construct($options);
-		$this->catWhere = 'categoryid BETWEEN ' . Category::TV_ROOT . ' AND ' . Category::TV_OTHER . ' AND categoryid  NOT IN (' . Category::TV_ANIME . ')';
+		$this->catWhere = 'categories_id BETWEEN ' . Category::TV_ROOT . ' AND ' . Category::TV_OTHER . ' AND categories_id  NOT IN (' . Category::TV_ANIME . ')';
 		$this->tvqty = ($this->pdo->getSetting('maxrageprocessed') != '') ? $this->pdo->getSetting('maxrageprocessed') : 75;
 		$this->imgSavePath = nZEDb_COVERS . 'tvshows' . DS;
 		$this->siteColumns = ['tvdb', 'trakt', 'tvrage', 'tvmaze', 'imdb', 'tmdb'];

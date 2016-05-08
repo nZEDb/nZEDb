@@ -69,7 +69,7 @@ class AniDB
 				FROM releases
 				WHERE nzbstatus = %d
 				AND anidbid IS NULL
-				AND categoryid = %d
+				AND categories_id = %d
 				ORDER BY postdate DESC
 				LIMIT %d',
 				NZB::NZB_ADDED,

@@ -85,8 +85,8 @@ class DnzbFailures
 			SELECT r.*, CONCAT(cp.title, ' > ', c.title) AS category_name
 			FROM releases r
 			RIGHT JOIN dnzb_failures df ON df.release_id = r.id
-			LEFT OUTER JOIN category c ON c.id = r.categoryid
-			LEFT OUTER JOIN category cp ON cp.id = c.parentid
+			LEFT OUTER JOIN categories c ON c.id = r.categories_id
+			LEFT OUTER JOIN categories cp ON cp.id = c.parentid
 			ORDER BY postdate DESC" . $limit
 		);
 	}
@@ -102,7 +102,7 @@ class DnzbFailures
 	{
 		$rel = $this->pdo->queryOneRow(
 			sprintf('
-				SELECT id, searchname, categoryid
+				SELECT id, searchname, categories_id
 				FROM releases
 				WHERE guid = %s',
 				$this->pdo->escapeString($guid)
@@ -134,11 +134,11 @@ class DnzbFailures
 				LEFT JOIN dnzb_failures df ON r.id = df.release_id
 				WHERE r.searchname %s
 				AND df.release_id IS NULL
-				AND r.categoryid = %d
+				AND r.categories_id = %d
 				AND r.id != %d
 				ORDER BY r.postdate DESC',
 				$this->pdo->likeString($rel['searchname'], true, true),
-				$rel['categoryid'],
+				$rel['categories_id'],
 				$rel['id']
 			)
 		);

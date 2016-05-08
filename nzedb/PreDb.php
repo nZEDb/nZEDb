@@ -173,7 +173,7 @@ class PreDb
 		}
 		$ct = '';
 		if ($cats == 1) {
-			$ct = sprintf('AND r.categoryid IN (%s)', $othercats);
+			$ct = sprintf('AND r.categories_id IN (%s)', $othercats);
 		}
 
 		if ($this->echooutput) {
@@ -186,12 +186,12 @@ class PreDb
 		$regex = "AND (r.ishashed = 1 OR rf.ishashed = 1)";
 
 		if ($cats === 3) {
-			$query = sprintf('SELECT r.id AS releaseid, r.name, r.searchname, r.categoryid, r.group_id, '
+			$query = sprintf('SELECT r.id AS releaseid, r.name, r.searchname, r.categories_id, r.group_id, '
 				. 'dehashstatus, rf.name AS filename FROM releases r '
 				. 'LEFT OUTER JOIN release_files rf ON r.id = rf.releaseid '
 				. 'WHERE nzbstatus = 1 AND dehashstatus BETWEEN -6 AND 0 AND preid = 0 %s', $regex);
 		} else {
-			$query = sprintf('SELECT r.id AS releaseid, r.name, r.searchname, r.categoryid, r.group_id, '
+			$query = sprintf('SELECT r.id AS releaseid, r.name, r.searchname, r.categories_id, r.group_id, '
 				. 'dehashstatus, rf.name AS filename FROM releases r '
 				. 'LEFT OUTER JOIN release_files rf ON r.id = rf.releaseid '
 				. 'WHERE nzbstatus = 1 AND isrenamed = 0 AND dehashstatus BETWEEN -6 AND 0 %s %s %s', $regex, $ct, $tq);

@@ -74,7 +74,7 @@ class XXX
 		$this->imgSavePath = nZEDb_COVERS . 'xxx' . DS;
 		$this->cookie = nZEDb_TMP . 'xxx.cookie';
 
-		$this->catWhere = 'AND categoryid IN (' .
+		$this->catWhere = 'AND categories_id IN (' .
 				Category::XXX_DVD . ', ' .
 				Category::XXX_WMV . ', ' .
 				Category::XXX_XVID . ', ' .
@@ -177,7 +177,7 @@ class XXX
 						? 'AND r.postdate > NOW() - INTERVAL ' . $maxAge . 'DAY '
 						: ''
 				),
-				(count($excludedCats) > 0 ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : ''),
+				(count($excludedCats) > 0 ? ' AND r.categories_id NOT IN (' . implode(',', $excludedCats) . ')' : ''),
 				$order[0],
 				$order[1],
 				($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
@@ -230,7 +230,7 @@ class XXX
 				? 'AND r.postdate > NOW() - INTERVAL ' . $maxAge . 'DAY '
 				: ''
 			),
-			(count($excludedCats) > 0 ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : ''),
+			(count($excludedCats) > 0 ? ' AND r.categories_id NOT IN (' . implode(',', $excludedCats) . ')' : ''),
 			$order[0],
 			$order[1]
 		);
