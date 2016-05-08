@@ -600,7 +600,7 @@ class ProcessAdditional
 	{
 		$this->_releases = $this->pdo->query(
 			sprintf(
-				'SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.group_id, r.nfostatus, r.completion, r.categories_id, r.searchname, r.preid
+				'SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.group_id, r.nfostatus, r.completion, r.categories_id, r.searchname, r.predb_id
 				FROM releases r
 				LEFT JOIN categories c ON c.id = r.categories_id
 				WHERE r.nzbstatus = 1
@@ -1768,7 +1768,7 @@ class ProcessAdditional
 
 							if (isset($track['Album']) && isset($track['Performer'])) {
 
-								if (nZEDb_RENAME_MUSIC_MEDIAINFO && $this->_release['preid'] == 0) {
+								if (nZEDb_RENAME_MUSIC_MEDIAINFO && $this->_release['predb_id'] == 0) {
 									// Make the extension upper case.
 									$ext = strtoupper($fileExtension);
 
@@ -2381,7 +2381,7 @@ class ProcessAdditional
 						sprintf(
 							'UPDATE releases
 							SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL,
-							bookinfoid = NULL, anidbid = NULL, preid = 0, searchname = %s, isrenamed = 1, iscategorized = 1,
+							bookinfoid = NULL, anidbid = NULL, searchname = %s, isrenamed = 1, iscategorized = 1,
 							proc_files = 1, categories_id = %d
 							WHERE id = %d',
 							$newTitle,

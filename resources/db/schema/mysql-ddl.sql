@@ -178,7 +178,7 @@ CREATE TABLE bookinfo (
 
 
 DROP TABLE IF EXISTS categories;
-CREATE TABLE categoriesy (
+CREATE TABLE categories (
   id             INT(16) UNSIGNED NOT NULL AUTO_INCREMENT,
   title          VARCHAR(255)     NOT NULL,
   parentid       INT              NULL,
@@ -601,7 +601,7 @@ CREATE TABLE predb (
 
 DROP TABLE IF EXISTS predb_hashes;
 CREATE TABLE predb_hashes (
-  pre_id INT(11) UNSIGNED NOT NULL DEFAULT '0',
+  predb_id INT(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'id, of the predb entry, this hash belongs to',
   hash VARBINARY(20)      NOT NULL DEFAULT '',
   PRIMARY KEY (hash)
 )
@@ -707,7 +707,7 @@ CREATE TABLE         releases (
   INDEX ix_releases_gamesinfo_id              (gamesinfo_id),
   INDEX ix_releases_bookinfoid                (bookinfoid),
   INDEX ix_releases_anidbid                   (anidbid),
-  INDEX ix_releases_preid_searchname          (preid,searchname),
+  INDEX ix_releases_predb_id_searchname       (predb_id,searchname),
   INDEX ix_releases_haspreview_passwordstatus (haspreview,passwordstatus),
   INDEX ix_releases_passwordstatus            (passwordstatus),
   INDEX ix_releases_nfostatus                 (nfostatus,size),
@@ -1287,21 +1287,22 @@ CREATE TRIGGER delete_search AFTER DELETE ON releases FOR EACH ROW
 
 CREATE TRIGGER insert_hashes AFTER INSERT ON predb FOR EACH ROW
   BEGIN
-    INSERT INTO predb_hashes (hash, pre_id) VALUES (UNHEX(MD5(NEW.title)), NEW.id), (UNHEX(MD5(MD5(NEW.title))), NEW.id), ( UNHEX(SHA1(NEW.title)), NEW.id);
+    INSERT INTO predb_hashes (hash, predb_id) VALUES (UNHEX(MD5(NEW.title)), NEW.id), (UNHEX(MD5
+                                                                                            (MD5(NEW.title))), NEW.id), ( UNHEX(SHA1(NEW.title)), NEW.id);
   END; $$
 
 CREATE TRIGGER update_hashes AFTER UPDATE ON predb FOR EACH ROW
   BEGIN
     IF NEW.title != OLD.title
       THEN
-         DELETE FROM predb_hashes WHERE hash IN ( UNHEX(md5(OLD.title)), UNHEX(md5(md5(OLD.title))), UNHEX(sha1(OLD.title)) ) AND pre_id = OLD.id;
-         INSERT INTO predb_hashes (hash, pre_id) VALUES ( UNHEX(MD5(NEW.title)), NEW.id ), ( UNHEX(MD5(MD5(NEW.title))), NEW.id ), ( UNHEX(SHA1(NEW.title)), NEW.id );
+         DELETE FROM predb_hashes WHERE hash IN ( UNHEX(md5(OLD.title)), UNHEX(md5(md5(OLD.title))), UNHEX(sha1(OLD.title)) ) AND predb_id = OLD.id;
+         INSERT INTO predb_hashes (hash, predb_id) VALUES ( UNHEX(MD5(NEW.title)), NEW.id ), ( UNHEX(MD5(MD5(NEW.title))), NEW.id ), ( UNHEX(SHA1(NEW.title)), NEW.id );
     END IF;
   END; $$
 
 CREATE TRIGGER delete_hashes AFTER DELETE ON predb FOR EACH ROW
   BEGIN
-    DELETE FROM predb_hashes WHERE hash IN ( UNHEX(md5(OLD.title)), UNHEX(md5(md5(OLD.title))), UNHEX(sha1(OLD.title)) ) AND pre_id = OLD.id;
+    DELETE FROM predb_hashes WHERE hash IN ( UNHEX(md5(OLD.title)), UNHEX(md5(md5(OLD.title))), UNHEX(sha1(OLD.title)) ) AND predb_id = OLD.id;
   END; $$
 
 CREATE TRIGGER insert_MD5 BEFORE INSERT ON release_comments FOR EACH ROW

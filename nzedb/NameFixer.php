@@ -874,7 +874,7 @@ class NameFixer
 		$row = $pdo->queryOneRow(
 					sprintf("
 						SELECT p.id AS preid, p.title, p.source
-						FROM predb p INNER JOIN predb_hashes h ON h.pre_id = p.id
+						FROM predb p INNER JOIN predb_hashes h ON h.predb_id = p.id
 						WHERE h.hash = UNHEX(%s)
 						LIMIT 1",
 						$pdo->escapeString($hash)
