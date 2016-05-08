@@ -46,7 +46,7 @@ class RequestIDWeb extends RequestID
 				FROM releases r
 				INNER JOIN groups g ON r.group_id = g.id
 				WHERE r.nzbstatus = 1
-				AND r.preid = 0
+				AND r.predb_id = 0
 				AND r.isrequestid = 1
 				AND (
 					r.reqidstatus = %d
@@ -246,7 +246,7 @@ class RequestIDWeb extends RequestID
 	{
 		$dupeCheck = $this->pdo->queryOneRow(
 			sprintf('
-				SELECT id AS preid, requestid, group_id
+				SELECT id AS predb_id, requestid, group_id
 				FROM predb
 				WHERE title = %s',
 				$this->pdo->escapeString($this->_newTitle['title'])
@@ -265,7 +265,7 @@ class RequestIDWeb extends RequestID
 				)
 			);
 		} else {
-			$this->_preDbID = $dupeCheck['preid'];
+			$this->_preDbID = $dupeCheck['predb_id'];
 			$this->pdo->queryExec(
 				sprintf('
 					UPDATE predb
@@ -290,7 +290,7 @@ class RequestIDWeb extends RequestID
 			sprintf('
 				UPDATE releases
 				SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL,
-				anidbid = NULL, reqidstatus = %d, isrenamed = 1, proc_files = 1, searchname = %s, categories_id = %d, preid = %d
+				anidbid = NULL, reqidstatus = %d, isrenamed = 1, proc_files = 1, searchname = %s, categories_id = %d, predb_id = %d
 				WHERE id = %d',
 				self::REQID_FOUND,
 				$newTitle,

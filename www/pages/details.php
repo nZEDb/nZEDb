@@ -86,7 +86,7 @@ if (isset($_GET['id'])) {
 		'game'  => ($data['gamesinfo_id'] != '' ? (new Games(['Settings' => $page->settings]))->getgamesInfo($data['gamesinfo_id']) : ''),
 		'movie'   => $mov,
 		'music' => ($data['musicinfoid'] != '' ? (new Music(['Settings' => $page->settings]))->getMusicInfo($data['musicinfoid']) : ''),
-		'pre'   => (new PreDb(['Settings' => $page->settings]))->getForRelease($data['preid']),
+		'pre'   => (new PreDb(['Settings' => $page->settings]))->getForRelease($data['predb_id']),
 		'show'  => $showInfo,
 		'xxx'   => $xxx,
 		'comments' => $rc->getComments($data['id']),

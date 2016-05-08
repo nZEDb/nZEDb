@@ -601,7 +601,7 @@ class ProcessReleases
 						$preMatch = $preDB->matchPre($cleanedName);
 						if ($preMatch !== false) {
 							$cleanedName = $preMatch['title'];
-							$preID = $preMatch['preid'];
+							$preID = $preMatch['predb_id'];
 							$properName = true;
 						}
 					}
@@ -619,7 +619,7 @@ class ProcessReleases
 							'categories_id' => $categorize->determineCategory($collection['group_id'], $cleanedName),
 							'isrenamed' => ($properName === true ? 1 : 0),
 							'reqidstatus' => ($isReqID === true ? 1 : 0),
-							'preid' => ($preID === false ? 0 : $preID),
+							'predb_id' => ($preID === false ? 0 : $preID),
 							'nzbstatus' => NZB::NZB_NONE
 						]
 					);

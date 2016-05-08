@@ -50,7 +50,7 @@ class MiscSorter
 							INNER JOIN groups g ON r.group_id = g.id
 							WHERE rn.nfo IS NOT NULL
 							AND r.proc_sorter = %d
-							AND r.preid = 0 %s",
+							AND r.predb_id = 0 %s",
 							self::PROC_SORTER_NONE,
 							($idarr = '' ? $cat : $idarr)
 						)

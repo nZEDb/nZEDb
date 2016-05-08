@@ -60,14 +60,14 @@ function preName($argv, $argc)
 		$full = true;
 	} else if ($argv[1] === 'all') {
 		$all = true;
-	} else if ($argv[1] === 'preid') {
+	} else if ($argv[1] === 'predb_id') {
 		$usepre = true;
 	} else if (is_numeric($argv[1])) {
 		$what = ' AND adddate > NOW() - INTERVAL ' . $argv[1] . ' HOUR';
 	}
 	if ($usepre === true) {
 		$where = '';
-		$why = ' WHERE preid = 0 AND nzbstatus = 1';
+		$why = ' WHERE predb_id = 0 AND nzbstatus = 1';
 	} else if (isset($argv[1]) && is_numeric($argv[1])) {
 		$where = '';
 		$why = ' WHERE nzbstatus = 1 AND isrenamed = 0';
@@ -82,7 +82,7 @@ function preName($argv, $argc)
 		$why = ' WHERE nzbstatus = 1';
 	} else if (isset($argv[2]) && is_numeric($argv[2]) && $all === true) {
 		$where = ' AND group_id = ' . $argv[2];
-		$why = ' WHERE nzbstatus = 1 and preid = 0';
+		$why = ' WHERE nzbstatus = 1 and predb_id = 0';
 	} else if (isset($argv[2]) && is_numeric($argv[2])) {
 		$where = ' AND group_id = ' . $argv[2];
 		$why = ' WHERE nzbstatus = 1 AND isrenamed = 0';
@@ -238,8 +238,8 @@ function preName($argv, $argc)
 		$relcount = catRelease("searchname", "WHERE categories_id = " . Category::OTHER_MISC . " OR iscategorized = 0", true);
 	} else if (isset($argv[1]) && $argv[1] == "all") {
 		$relcount = catRelease("searchname", "", true);
-	} else if (isset($argv[1]) && $argv[1] == "preid") {
-		$relcount = catRelease("searchname", "WHERE preid = 0 AND nzbstatus = 1", true);
+	} else if (isset($argv[1]) && $argv[1] == "predb_id") {
+		$relcount = catRelease("searchname", "WHERE predb_id = 0 AND nzbstatus = 1", true);
 	} else {
 		$relcount = catRelease("searchname", "WHERE (iscategorized = 0 OR categories_id = " .
 				Category::OTHER_MISC . ") AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
@@ -256,7 +256,7 @@ function resetSearchnames()
 	echo $pdo->log->header("Resetting blank searchnames.");
 	$bad = $pdo->queryDirect(
 		"UPDATE releases SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
-		. "preid = 0, searchname = name, isrenamed = 0, iscategorized = 0 WHERE searchname = ''"
+		. "predb_id = 0, searchname = name, isrenamed = 0, iscategorized = 0 WHERE searchname = ''"
 	);
 	$tot = $bad->rowCount();
 	if ($tot > 0) {
@@ -265,7 +265,7 @@ function resetSearchnames()
 	echo $pdo->log->header("Resetting searchnames that are 8 characters or less.");
 	$run = $pdo->queryDirect(
 		"UPDATE releases SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
-		. "preid = 0, searchname = name, isrenamed = 0, iscategorized = 0 WHERE LENGTH(searchname) <= 8 AND LENGTH(name) > 8"
+		. "predb_id = 0, searchname = name, isrenamed = 0, iscategorized = 0 WHERE LENGTH(searchname) <= 8 AND LENGTH(name) > 8"
 	);
 	$total = $run->rowCount();
 	if ($total > 0) {

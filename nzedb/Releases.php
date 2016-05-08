@@ -79,7 +79,7 @@ class Releases
 				"INSERT INTO releases
 					(name, searchname, totalpart, group_id, adddate, guid, postdate, fromname,
 					size, passwordstatus, haspreview, categories_id, nfostatus, nzbstatus,
-					isrenamed, iscategorized, reqidstatus, preid)
+					isrenamed, iscategorized, reqidstatus, predb_id)
 				 VALUES (%s, %s, %d, %d, NOW(), %s, %s, %s, %s, %d, -1, %d, -1, %d, %d, 1, %d, %d)",
 				$parameters['name'],
 				$parameters['searchname'],
@@ -94,7 +94,7 @@ class Releases
 				$parameters['nzbstatus'],
 				$parameters['isrenamed'],
 				$parameters['reqidstatus'],
-				$parameters['preid']
+				$parameters['predb_id']
 			)
 		);
 		$this->sphinxSearch->insertRelease($parameters);

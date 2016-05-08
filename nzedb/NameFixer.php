@@ -182,7 +182,7 @@ class NameFixer
 					FROM releases rel
 					INNER JOIN release_nfos nfo ON (nfo.releaseid = rel.id)
 					WHERE nzbstatus = %d
-					AND preid = 0',
+					AND predb_id = 0',
 					NZB::NZB_ADDED
 			);
 			$cats = 2;
@@ -262,7 +262,7 @@ class NameFixer
 					FROM releases rel
 					INNER JOIN release_files rf ON (rf.releaseid = rel.id)
 					WHERE nzbstatus = %d
-					AND preid = 0',
+					AND predb_id = 0',
 					NZB::NZB_ADDED
 			);
 			$cats = 2;
@@ -322,7 +322,7 @@ class NameFixer
 					SELECT rel.id AS releaseid, rel.guid, rel.group_id
 					FROM releases rel
 					WHERE nzbstatus = %d
-					AND preid = 0',
+					AND predb_id = 0',
 					NZB::NZB_ADDED
 			);
 			$cats = 2;
@@ -569,7 +569,7 @@ class NameFixer
 							sprintf('
 								UPDATE releases
 								SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfoid = NULL,
-									consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, preid = %d,
+									consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, predb_id = %d,
 									searchname = %s, %s categories_id = %d
 								WHERE id = %d',
 								$preId,
@@ -586,7 +586,7 @@ class NameFixer
 							sprintf('
 								UPDATE releases
 								SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfoid = NULL,
-									consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, preid = %d,
+									consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, predb_id = %d,
 									searchname = %s, iscategorized = 1, categories_id = %d
 								WHERE id = %d',
 								$preId,
@@ -658,7 +658,7 @@ class NameFixer
 							FROM releases r
 							%1\$s
 							AND (r.name %2\$s OR r.searchname %2\$s)
-							AND r.preid = 0
+							AND r.predb_id = 0
 							LIMIT 21",
 							$join,
 							$this->pdo->likeString($pre['title'], true, true)
@@ -673,10 +673,10 @@ class NameFixer
 		if ($total > 0 && $total <= 15 && $res instanceof \Traversable) {
 			foreach ($res as $row) {
 					if ($pre['title'] !== $row['searchname']) {
-						$this->updateRelease($row, $pre['title'], $method = "Title Match source: " . $pre['source'], $echo, "PreDB FT Exact, ", $namestatus, $show, $pre['preid']);
+						$this->updateRelease($row, $pre['title'], $method = "Title Match source: " . $pre['source'], $echo, "PreDB FT Exact, ", $namestatus, $show, $pre['predb_id']);
 						$matching++;
 					} else {
-						$this->_updateSingleColumn('preid', $pre['preid'], $row['releaseid']);
+						$this->_updateSingleColumn('predb_id', $pre['predb_id'], $row['releaseid']);
 					}
 			}
 		} elseif ($total >= 16) {
@@ -736,7 +736,7 @@ class NameFixer
 							FROM releases r
 							INNER JOIN release_files rf ON r.id = rf.releaseid
 							AND rf.name IS NOT NULL
-							WHERE r.preid = 0
+							WHERE r.predb_id = 0
 							GROUP BY r.id
 							%s %s',
 							$orderby,
@@ -786,7 +786,7 @@ class NameFixer
 		if ($this->_fileName !== '') {
 			$pre = $this->pdo->queryOneRow(
 						sprintf('
-							SELECT id AS preid, title, source
+							SELECT id AS predb_id, title, source
 							FROM predb
 							WHERE filename = %s
 							OR title = %1$s',
@@ -797,9 +797,9 @@ class NameFixer
 
 		if (isset($pre) && $pre !== false) {
 			if ($pre['title'] !== $release['searchname']) {
-				$this->updateRelease($release, $pre['title'], $method = "file matched source: " . $pre['source'], $echo, "PreDB file match, ", $namestatus, $show, $pre['preid']);
+				$this->updateRelease($release, $pre['title'], $method = "file matched source: " . $pre['source'], $echo, "PreDB file match, ", $namestatus, $show, $pre['predb_id']);
 			} else {
-				$this->_updateSingleColumn('preid', $pre['preid'], $release['releaseid']);
+				$this->_updateSingleColumn('predb_id', $pre['predb_id'], $release['releaseid']);
 			}
 			$matching++;
 		}
@@ -873,7 +873,7 @@ class NameFixer
 
 		$row = $pdo->queryOneRow(
 					sprintf("
-						SELECT p.id AS preid, p.title, p.source
+						SELECT p.id AS predb_id, p.title, p.source
 						FROM predb p INNER JOIN predb_hashes h ON h.predb_id = p.id
 						WHERE h.hash = UNHEX(%s)
 						LIMIT 1",
@@ -883,7 +883,7 @@ class NameFixer
 
 		if ($row !== false) {
 			if ($row["title"] !== $release["searchname"]) {
-					$this->updateRelease($release, $row["title"], $method = "predb hash release name: " . $row["source"], $echo, $hashtype, $namestatus, $show, $row['preid']);
+					$this->updateRelease($release, $row["title"], $method = "predb hash release name: " . $row["source"], $echo, $hashtype, $namestatus, $show, $row['predb_id']);
 					$matching++;
 			}
 		} else {

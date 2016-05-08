@@ -669,7 +669,7 @@ CREATE TABLE         releases (
   gamesinfo_id      INT SIGNED                     NOT NULL DEFAULT '0',
   bookinfoid        INT                            NULL,
   anidbid           INT                            NULL,
-  preid             INT UNSIGNED                   NOT NULL DEFAULT '0',
+  predb_id          INT(11) UNSIGNED               NOT NULL DEFAULT '0' COMMENT 'FK to predb.id',
   grabs             INT UNSIGNED                   NOT NULL DEFAULT '0',
   comments          INT                            NOT NULL DEFAULT '0',
   passwordstatus    TINYINT                        NOT NULL DEFAULT '0',
