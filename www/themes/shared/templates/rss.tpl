@@ -41,7 +41,7 @@
 							<li>ID: <a href="{$serverroot}details/{$release.guid}">{$release.guid}</a></li>
 							<li>Name: {$release.searchname}</li>
 							<li>Size: {$release.size|fsize_format:"MB"} </li>
-							<li>Attributes: Category - <a href="{$serverroot}browse?t={$release.categoryid}">{$release.category_name}</a></li>
+							<li>Attributes: Category - <a href="{$serverroot}browse?t={$release.categories_id}">{$release.category_name}</a></li>
 							<li>Groups: <a href="{$serverroot}browse?g={$release.group_name}">{$release.group_name}</a></li>
 							<li>Poster: {$release.fromname|escape:"htmlall"}</li>
 							<li>PostDate: {$release.postdate|phpdate_format:"DATE_RSS"}</li>

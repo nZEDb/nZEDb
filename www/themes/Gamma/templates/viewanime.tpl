@@ -60,7 +60,7 @@
 								{if isset($result.nfoid) && $result.nfoid > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}" title="View Nfo" class="modal_nfo rndbtn badge" rel="nfo">Nfo</a>{/if}
 								{if isset($result.haspreview) && $result.haspreview == 1 && $userdata.canpreview == 1}<a href="{$smarty.const.WWW_TOP}/covers/preview/{$result.guid}_thumb.jpg" name="name{$mguid[$m@index]}" title="Screenshot" class="modal_prev rndbtn badge" rel="preview">Preview</a>{/if}
 								{if isset($result.reid) && $result.reid > 0}<span class="mediainfo rndbtn badge" title="{$result.guid}">Media</span>{/if}
-					<td class="less"><a title="This anime in {$result.category_name}" href="{$smarty.const.WWW_TOP}/anime/{$result.anidbid}?t={$result.categoryid}">{$result.category_name}</a></td>
+					<td class="less"><a title="This anime in {$result.category_name}" href="{$smarty.const.WWW_TOP}/anime/{$result.anidbid}?t={$result.categories_id}">{$result.category_name}</a></td>
 					<td class="less mid" width="40" title="{$result.postdate}">{$result.postdate|timeago}</td>
 					<td width="40" class="less right">{$result.size|fsize_format:"MB"}</td>
 					<td class="icons style='width:100px;'>

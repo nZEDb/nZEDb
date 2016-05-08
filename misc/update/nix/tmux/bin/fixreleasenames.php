@@ -18,11 +18,11 @@ if (!isset($argv[1])) {
 	$pieces = explode(' ', $argv[1]);
 	if (isset($pieces[1]) && $pieces[0] == 'nfo') {
 		$release = $pieces[1];
-		if ($res = $pdo->queryOneRow(sprintf('SELECT rel.guid AS guid, nfo.releaseid AS nfoid, rel.group_id, rel.categories_id, rel.name, rel.searchname, uncompress(nfo) AS textstring, rel.id AS releaseid FROM releases rel INNER JOIN release_nfos nfo ON (nfo.releaseid = rel.id) WHERE rel.id = %d', $release))) {
+		if ($res = $pdo->queryOneRow(sprintf('SELECT rel.guid AS guid, nfo.releases_id AS nfoid, rel.group_id, rel.categories_id, rel.name, rel.searchname, uncompress(nfo) AS textstring, rel.id AS releases_id FROM releases rel INNER JOIN release_nfos nfo ON (nfo.releases_id = rel.id) WHERE rel.id = %d', $release))) {
 			//ignore encrypted nfos
 			if (preg_match('/^=newz\[NZB\]=\w+/', $res['textstring'])) {
 				$namefixer->done = $namefixer->matched = false;
-				$pdo->queryDirect(sprintf('UPDATE releases SET proc_nfo = 1 WHERE id = %d', $res['releaseid']));
+				$pdo->queryDirect(sprintf('UPDATE releases SET proc_nfo = 1 WHERE id = %d', $res['releases_id']));
 				$namefixer->checked++;
 				echo '.';
 			} else {
@@ -36,8 +36,8 @@ if (!isset($argv[1])) {
 	} else if (isset($pieces[1]) && $pieces[0] == 'filename') {
 		$release = $pieces[1];
 		if ($res = $pdo->queryOneRow(sprintf('SELECT relfiles.name AS textstring, rel.categories_id, rel.searchname, '
-				. 'rel.group_id, relfiles.releaseid AS fileid, rel.id AS releaseid, rel.name FROM releases rel '
-				. 'INNER JOIN release_files relfiles ON (relfiles.releaseid = rel.id) WHERE rel.id = %d', $release))) {
+				. 'rel.group_id, relfiles.releases_id AS fileid, rel.id AS releases_id, rel.name FROM releases rel '
+				. 'INNER JOIN release_files relfiles ON (relfiles.releases_id = rel.id) WHERE rel.id = %d', $release))) {
 			$namefixer->done = $namefixer->matched = false;
 			if ($namefixer->checkName($res, true, 'Filenames, ', 1, 1) !== true) {
 				echo '.';
@@ -46,14 +46,14 @@ if (!isset($argv[1])) {
 		}
 	} else if (isset($pieces[1]) && $pieces[0] == 'md5') {
 		$release = $pieces[1];
-		if ($res = $pdo->queryOneRow(sprintf('SELECT r.id AS releaseid, r.name, r.searchname, r.categories_id, r.group_id, dehashstatus, rf.name AS filename '
-							. 'FROM releases r LEFT JOIN release_files rf ON r.id = rf.releaseid WHERE r.id = %d', $release))) {
+		if ($res = $pdo->queryOneRow(sprintf('SELECT r.id AS releases_id, r.name, r.searchname, r.categories_id, r.group_id, dehashstatus, rf.name AS filename '
+							. 'FROM releases r LEFT JOIN release_files rf ON r.id = rf.releases_id WHERE r.id = %d', $release))) {
 			if (preg_match('/[a-fA-F0-9]{32,40}/i', $res['name'], $matches)) {
 				$namefixer->matchPredbHash($matches[0], $res, 1, 1, true, 1);
 			} else if (preg_match('/[a-fA-F0-9]{32,40}/i', $res['filename'], $matches)) {
 				$namefixer->matchPredbHash($matches[0], $res, 1, 1, true, 1);
 			} else {
-				$pdo->queryExec(sprintf("UPDATE releases SET dehashstatus = %d - 1 WHERE id = %d", $res['dehashstatus'], $res['releaseid']));
+				$pdo->queryExec(sprintf("UPDATE releases SET dehashstatus = %d - 1 WHERE id = %d", $res['dehashstatus'], $res['releases_id']));
 				echo '.';
 			}
 		}

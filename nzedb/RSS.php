@@ -57,7 +57,7 @@ Class RSS
 
 		if (count($cat)) {
 			if ($cat[0] == -2) {
-				$cartSearch = sprintf(' INNER JOIN users_releases ON users_releases.user_id = %d AND users_releases.releaseid = r.id ', $userID);
+				$cartSearch = sprintf(' INNER JOIN users_releases ON users_releases.user_id = %d AND users_releases.releases_id = r.id ', $userID);
 			} else if ($cat[0] != -1) {
 				$catSearch = $this->releases->categorySQL($cat);
 			}

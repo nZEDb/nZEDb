@@ -24,7 +24,7 @@ function getForeignMovies()
 {
 	global $pdo;
 	$like = 'LIKE';
-	return $pdo->query('SELECT r.id, r.searchname FROM releases r JOIN audio_data ra ON ra.releaseID = r.id WHERE ra.audiolanguage ' . $like . " '%English%' AND r.categories_id = 2010");
+	return $pdo->query('SELECT r.id, r.searchname FROM releases r JOIN audio_data ra ON ra.releases_id = r.id WHERE ra.audiolanguage ' . $like . " '%English%' AND r.categories_id = 2010");
 }
 
 function updateRelease($id, $cat)

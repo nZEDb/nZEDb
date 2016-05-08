@@ -911,7 +911,7 @@ class Users
 	{
 		return $this->pdo->queryInsert(
 			sprintf(
-				"INSERT INTO users_releases (user_id, releaseid, createddate) VALUES (%d, %d, NOW())",
+				"INSERT INTO users_releases (user_id, releases_id, createddate) VALUES (%d, %d, NOW())",
 				$userID,
 				$releaseID
 			)
@@ -931,7 +931,7 @@ class Users
 			sprintf("
 				SELECT users_releases.*, releases.searchname, releases.guid
 				FROM users_releases
-				INNER JOIN releases ON releases.id = users_releases.releaseid
+				INNER JOIN releases ON releases.id = users_releases.releases_id
 				WHERE user_id = %d",
 				$userID
 			)
@@ -978,7 +978,7 @@ class Users
 		if ($rel) {
 			$this->pdo->queryExec(
 				sprintf(
-					"DELETE FROM users_releases WHERE user_id = %d AND releaseid = %d",
+					"DELETE FROM users_releases WHERE user_id = %d AND releases_id = %d",
 					$userID,
 					$rel["id"]
 				)
@@ -1003,7 +1003,7 @@ class Users
 	 */
 	public function delCartForRelease($releaseID)
 	{
-		$this->pdo->queryExec(sprintf("DELETE FROM users_releases WHERE releaseid = %d", $releaseID));
+		$this->pdo->queryExec(sprintf("DELETE FROM users_releases WHERE releases_id = %d", $releaseID));
 	}
 
 	/**

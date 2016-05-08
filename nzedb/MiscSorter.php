@@ -46,7 +46,7 @@ class MiscSorter
 							SELECT UNCOMPRESS(rn.nfo) AS nfo,
 								r.id, r.name, r.searchname
 							FROM release_nfos rn
-							INNER JOIN releases r ON rn.releaseid = r.id
+							INNER JOIN releases r ON rn.releases_id = r.id
 							INNER JOIN groups g ON r.group_id = g.id
 							WHERE rn.nfo IS NOT NULL
 							AND r.proc_sorter = %d
@@ -213,7 +213,7 @@ class MiscSorter
 
 		$release = $this->pdo->queryOneRow(
 						sprintf("
-							SELECT r.id AS releaseid, r.searchname AS searchname,
+							SELECT r.id AS releases_id, r.searchname AS searchname,
 								r.name AS name, r.categories_id, r.group_id
 							FROM releases r
 							WHERE r.id = %d",

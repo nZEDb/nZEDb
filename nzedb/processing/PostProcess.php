@@ -315,7 +315,7 @@ class PostProcess
 
 		$query = $this->pdo->queryOneRow(
 			sprintf('
-				SELECT id, group_id, categories_id, name, searchname, UNIX_TIMESTAMP(postdate) AS post_date, id AS releaseid
+				SELECT id, group_id, categories_id, name, searchname, UNIX_TIMESTAMP(postdate) AS post_date, id AS releases_id
 				FROM releases
 				WHERE isrenamed = 0
 				AND id = %d',
@@ -382,9 +382,9 @@ class PostProcess
 					if ($filesAdded < 11 &&
 						$this->pdo->queryOneRow(
 							sprintf('
-								SELECT releaseid
+								SELECT releases_id
 								FROM release_files
-								WHERE releaseid = %d
+								WHERE releases_id = %d
 								AND name = %s',
 								$relID,
 								$this->pdo->escapeString($file['name'])

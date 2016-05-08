@@ -139,7 +139,7 @@ class NZB
 			'SELECT %s.*, UNIX_TIMESTAMP(%s.date) AS udate, groups.name AS groupname
 			FROM %s
 			INNER JOIN groups ON %s.group_id = groups.id
-			WHERE %s.releaseid = ',
+			WHERE %s.releases_id = ',
 			$this->_tableNames['cName'],
 			$this->_tableNames['cName'],
 			$this->_tableNames['cName'],
@@ -240,7 +240,7 @@ class NZB
 				$this->pdo->queryExec(
 					sprintf('
 						UPDATE releases SET nzbstatus = %d %s WHERE id = %d;
-						DELETE c, b, p FROM %s c JOIN %s b ON(c.id=b.collection_id) STRAIGHT_JOIN %s p ON(b.id=p.binaryid) WHERE c.releaseid = %d',
+						DELETE c, b, p FROM %s c JOIN %s b ON(c.id=b.collection_id) STRAIGHT_JOIN %s p ON(b.id=p.binaryid) WHERE c.releases_id = %d',
 						NZB::NZB_ADDED, ($nzb_guid === '' ? '' : ', nzb_guid = UNHEX( ' . $this->pdo->escapestring(md5($nzb_guid)) . ' )'), $relID,
 						$this->_tableNames['cName'], $this->_tableNames['bName'], $this->_tableNames['pName'], $relID
 					)

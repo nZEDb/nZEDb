@@ -1197,8 +1197,8 @@ class ProcessAdditional
 				$this->pdo->queryOneRow(
 					sprintf(
 						'
-						SELECT releaseid FROM release_files
-						WHERE releaseid = %d
+						SELECT releases_id FROM release_files
+						WHERE releases_id = %d
 						AND name = %s
 						AND size = %d',
 						$this->_release['id'], $this->pdo->escapeString($file['name']), $file['size']
@@ -1223,7 +1223,7 @@ class ProcessAdditional
 					} //Run a PreDB filename check on insert to try and match the release
 					else if (strpos($file['name'], '.') != 0 && strlen($file['name']) > 0) {
 						$this->_release['filename'] = $file['name'];
-						$this->_release['releaseid'] = $this->_release['id'];
+						$this->_release['releases_id'] = $this->_release['id'];
 						$this->_nameFixer->matchPredbFiles($this->_release, 1, 1, true, 1);
 					}
 				}
@@ -1619,10 +1619,10 @@ class ProcessAdditional
 		$releaseFiles = $this->pdo->queryOneRow(
 			sprintf(
 				'
-				SELECT COUNT(release_files.releaseid) AS count,
+				SELECT COUNT(release_files.releases_id) AS count,
 				SUM(release_files.size) AS size
 				FROM release_files
-				WHERE releaseid = %d',
+				WHERE releases_id = %d',
 				$this->_release['id']
 			)
 		);
@@ -2270,7 +2270,7 @@ class ProcessAdditional
 				if ($filesAdded < 11 &&
 					$this->pdo->queryOneRow(
 						sprintf(
-							'SELECT releaseid FROM release_files WHERE releaseid = %d AND name = %s',
+							'SELECT releases_id FROM release_files WHERE releases_id = %d AND name = %s',
 							$this->_release['id'], $this->pdo->escapeString($file['name'])
 						)
 					) === false
@@ -2288,7 +2288,7 @@ class ProcessAdditional
 			// Try to get a new name.
 			if ($foundName === false) {
 				$this->_release['textstring'] = $file['name'];
-				$this->_release['releaseid'] = $this->_release['id'];
+				$this->_release['releases_id'] = $this->_release['id'];
 				if ($this->_nameFixer->checkName($this->_release, ($this->_echoCLI ? true : false), 'PAR2, ', 1, 1) === true) {
 					$foundName = true;
 				}

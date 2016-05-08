@@ -276,7 +276,7 @@ class Music
 				GROUP_CONCAT(r.haspreview ORDER BY r.postdate DESC SEPARATOR ',') AS grp_haspreview,
 				GROUP_CONCAT(r.passwordstatus ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_password,
 				GROUP_CONCAT(r.guid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_guid,
-				GROUP_CONCAT(rn.releaseid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid,
+				GROUP_CONCAT(rn.releases_id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid,
 				GROUP_CONCAT(g.name ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grpname,
 				GROUP_CONCAT(r.searchname ORDER BY r.postdate DESC SEPARATOR '#') AS grp_release_name,
 				GROUP_CONCAT(r.postdate ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_postdate,
@@ -288,10 +288,10 @@ class Music
 				m.*,
 				r.musicinfo_id, r.haspreview,
 				g.name AS group_name,
-				rn.releaseid AS nfoid
+				rn.releases_id AS nfoid
 			FROM releases r
 			LEFT OUTER JOIN groups g ON g.id = r.group_id
-			LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
+			LEFT OUTER JOIN release_nfos rn ON rn.releases_id = r.id
 			LEFT OUTER JOIN dnzb_failures df ON df.release_id = r.id
 			INNER JOIN musicinfo m ON m.id = r.musicinfo_id
 			WHERE m.id IN (%s)

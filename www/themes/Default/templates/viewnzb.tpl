@@ -187,11 +187,11 @@
 
 	<tr><th>Group:</th><td title="{$release.group_name}"><a title="Browse {$release.group_name}" href="{$smarty.const.WWW_TOP}/browse?g={$release.group_name}">{$release.group_name|replace:"alt.binaries":"a.b"}</a></td></tr>
 	<tr><th>Category:</th><td><a title="Browse by {$release.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$release.categories_id}">{$release.category_name}</a></td></tr>
-	{if $nfo.releaseid|@count > 0}
+	{if $nfo.releases_id|@count > 0}
 	<tr><th>Nfo:</th><td><a href="{$smarty.const.WWW_TOP}/nfo/{$release.guid}" title="View Nfo">View Nfo</a></td></tr>
 	{/if}
 
-	{if $reVideo.releaseid|@count > 0 || $reAudio|@count > 0}
+	{if $reVideo.releases_id|@count > 0 || $reAudio|@count > 0}
 	<tr><th>Media Info:</th>
 		<td style="padding:0;">
 			<table style="width:100%;" class="innerdata highlight">
