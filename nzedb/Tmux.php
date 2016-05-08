@@ -399,16 +399,16 @@ class Tmux
 		switch ((int)$qry) {
 			case 1:
 				return sprintf("SELECT
-					SUM(IF(nzbstatus = 1 AND categoryid BETWEEN %d AND %d AND categoryid != %d AND videos_id = 0 AND tv_episodes_id BETWEEN -3 AND 0 AND size > 1048576,1,0)) AS processtv,
-					SUM(IF(nzbstatus = 1 AND categoryid = %d AND anidbid IS NULL,1,0)) AS processanime,
-					SUM(IF(nzbstatus = 1 AND categoryid BETWEEN %d AND %d AND imdbid IS NULL,1,0)
+					SUM(IF(nzbstatus = 1 AND categories_id BETWEEN %d AND %d AND categories_id != %d AND videos_id = 0 AND tv_episodes_id BETWEEN -3 AND 0 AND size > 1048576,1,0)) AS processtv,
+					SUM(IF(nzbstatus = 1 AND categories_id = %d AND anidbid IS NULL,1,0)) AS processanime,
+					SUM(IF(nzbstatus = 1 AND categories_id BETWEEN %d AND %d AND imdbid IS NULL,1,0)
 					) AS processmovies,
-					SUM(IF(nzbstatus = 1 AND categoryid IN (%d, %d, %d) AND musicinfoid IS NULL,1,0)) AS processmusic,
-					SUM(IF(nzbstatus = 1 AND categoryid BETWEEN %d AND %d AND consoleinfoid IS
+					SUM(IF(nzbstatus = 1 AND categories_id IN (%d, %d, %d) AND musicinfoid IS NULL,1,0)) AS processmusic,
+					SUM(IF(nzbstatus = 1 AND categories_id BETWEEN %d AND %d AND consoleinfoid IS
 					NULL,1,0)) AS processconsole,
-					SUM(IF(nzbstatus = 1 AND categoryid IN (%s) AND bookinfoid IS NULL,1,0)) AS processbooks,
-					SUM(IF(nzbstatus = 1 AND categoryid = %d AND gamesinfo_id = 0,1,0)) AS processgames,
-					SUM(IF(nzbstatus = 1 AND categoryid BETWEEN %d AND %d AND xxxinfo_id = 0,1,0)) AS processxxx,
+					SUM(IF(nzbstatus = 1 AND categories_id IN (%s) AND bookinfoid IS NULL,1,0)) AS processbooks,
+					SUM(IF(nzbstatus = 1 AND categories_id = %d AND gamesinfo_id = 0,1,0)) AS processgames,
+					SUM(IF(nzbstatus = 1 AND categories_id BETWEEN %d AND %d AND xxxinfo_id = 0,1,0)) AS processxxx,
 					SUM(IF(1=1 %s,1,0)) AS processnfo,
 					SUM(IF(nzbstatus = 1 AND nfostatus = 1,1,0)) AS nfo,
 					SUM(IF(nzbstatus = 1 AND isrequestid = 1 AND preid = 0 AND ((reqidstatus = 0) OR (reqidstatus = -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL %s HOUR)),1,0)) AS requestid_inprogress,
@@ -437,7 +437,7 @@ class Tmux
 			case 2:
 				return "SELECT
 					(SELECT COUNT(r.id) FROM releases r
-						INNER JOIN category c ON c.id = r.categoryid
+						INNER JOIN categories c ON c.id = r.categories_id
 						WHERE r.nzbstatus = 1
 						AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0
 					) AS work,

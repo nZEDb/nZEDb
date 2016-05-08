@@ -42,7 +42,7 @@ class RequestIDWeb extends RequestID
 	{
 		$this->_releases = $this->pdo->queryDirect(
 			sprintf('
-				SELECT r.id, r.name, r.searchname, g.name AS groupname, r.group_id, r.categoryid
+				SELECT r.id, r.name, r.searchname, g.name AS groupname, r.group_id, r.categories_id
 				FROM releases r
 				INNER JOIN groups g ON r.group_id = g.id
 				WHERE r.nzbstatus = 1
@@ -290,7 +290,7 @@ class RequestIDWeb extends RequestID
 			sprintf('
 				UPDATE releases
 				SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL,
-				anidbid = NULL, reqidstatus = %d, isrenamed = 1, proc_files = 1, searchname = %s, categoryid = %d, preid = %d
+				anidbid = NULL, reqidstatus = %d, isrenamed = 1, proc_files = 1, searchname = %s, categories_id = %d, preid = %d
 				WHERE id = %d',
 				self::REQID_FOUND,
 				$newTitle,

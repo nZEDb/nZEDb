@@ -23,7 +23,7 @@ class RequestIDLocal extends RequestID
 	protected function _getReleases()
 	{
 		$query = (
-			'SELECT r.id, r.name, r.categoryid, r.reqidstatus, g.name AS groupname, g.id as gid
+			'SELECT r.id, r.name, r.categories_id, r.reqidstatus, g.name AS groupname, g.id as gid
 			FROM releases r
 			INNER JOIN groups g ON r.group_id = g.id
 			WHERE r.nzbstatus = 1
@@ -254,7 +254,7 @@ class RequestIDLocal extends RequestID
 	protected function _updateRelease()
 	{
 		$determinedCat = $this->category->determineCategory($this->_release['gid'], $this->_newTitle['title']);
-		if ($determinedCat == $this->_release['categoryid']) {
+		if ($determinedCat == $this->_release['categories_id']) {
 			$newTitle = $this->pdo->escapeString($this->_newTitle['title']);
 			$this->pdo->queryExec(
 				sprintf('
@@ -275,7 +275,7 @@ class RequestIDLocal extends RequestID
 					UPDATE releases SET
 						videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL,
 						bookinfoid = NULL, anidbid = NULL, preid = %d, reqidstatus = %d, isrenamed = 1,
-						iscategorized = 1, searchname = %s, categoryid = %d
+						iscategorized = 1, searchname = %s, categories_id = %d
 					WHERE id = %d',
 					$this->_newTitle['id'],
 					self::REQID_FOUND,
@@ -293,7 +293,7 @@ class RequestIDLocal extends RequestID
 					'new_name'     => $this->_newTitle['title'],
 					'old_name'     => $this->_release['name'],
 					'new_category' => $this->category->getNameByID($determinedCat),
-					'old_category' => $this->category->getNameByID($this->_release['categoryid']),
+					'old_category' => $this->category->getNameByID($this->_release['categories_id']),
 					'group'        => $this->_release['groupname'],
 					'release_id'   => $this->_release['id'],
 					'method'       => 'RequestIDLocal'

@@ -147,9 +147,9 @@ class NameFixer
 		$this->relid = $this->fixed = $this->checked = 0;
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 		$this->othercats = Category::getCategoryOthersGroup();
-		$this->timeother = sprintf(' AND rel.adddate > (NOW() - INTERVAL 6 HOUR) AND rel.categoryid IN (%s) GROUP BY rel.id ORDER BY postdate DESC', $this->othercats);
+		$this->timeother = sprintf(' AND rel.adddate > (NOW() - INTERVAL 6 HOUR) AND rel.categories_id IN (%s) GROUP BY rel.id ORDER BY postdate DESC', $this->othercats);
 		$this->timeall = ' AND rel.adddate > (NOW() - INTERVAL 6 HOUR) GROUP BY rel.id ORDER BY postdate DESC';
-		$this->fullother = sprintf(' AND rel.categoryid IN (%s) GROUP BY rel.id', $this->othercats);
+		$this->fullother = sprintf(' AND rel.categories_id IN (%s) GROUP BY rel.id', $this->othercats);
 		$this->fullall = '';
 		$this->_fileName = '';
 		$this->done = $this->matched = false;
@@ -192,7 +192,7 @@ class NameFixer
 					SELECT rel.id AS releaseid
 					FROM releases rel
 					INNER JOIN release_nfos nfo ON (nfo.releaseid = rel.id)
-					WHERE (rel.isrenamed = %d OR rel.categoryid = %d)
+					WHERE (rel.isrenamed = %d OR rel.categories_id = %d)
 					AND proc_nfo = %d',
 					self::IS_RENAMED_NONE,
 					Category::OTHER_MISC,
@@ -212,7 +212,7 @@ class NameFixer
 				foreach ($releases as $rel) {
 					$releaseRow = $this->pdo->queryOneRow(
 						sprintf('
-							SELECT nfo.releaseid AS nfoid, rel.group_id, rel.categoryid, rel.name, rel.searchname,
+							SELECT nfo.releaseid AS nfoid, rel.group_id, rel.categories_id, rel.name, rel.searchname,
 								UNCOMPRESS(nfo) AS textstring, rel.id AS releaseid
 							FROM releases rel
 							INNER JOIN release_nfos nfo ON (nfo.releaseid = rel.id)
@@ -257,7 +257,7 @@ class NameFixer
 		$preId = false;
 		if ($cats === 3) {
 			$query = sprintf('
-					SELECT rf.name AS textstring, rel.categoryid, rel.name, rel.searchname, rel.group_id,
+					SELECT rf.name AS textstring, rel.categories_id, rel.name, rel.searchname, rel.group_id,
 						rf.releaseid AS fileid, rel.id AS releaseid
 					FROM releases rel
 					INNER JOIN release_files rf ON (rf.releaseid = rel.id)
@@ -269,11 +269,11 @@ class NameFixer
 			$preId = true;
 		} else {
 			$query = sprintf('
-					SELECT rf.name AS textstring, rel.categoryid, rel.name, rel.searchname, rel.group_id,
+					SELECT rf.name AS textstring, rel.categories_id, rel.name, rel.searchname, rel.group_id,
 						rf.releaseid AS fileid, rel.id AS releaseid
 					FROM releases rel
 					INNER JOIN release_files rf ON (rf.releaseid = rel.id)
-					WHERE (rel.isrenamed = %d OR rel.categoryid = %d)
+					WHERE (rel.isrenamed = %d OR rel.categories_id = %d)
 					AND proc_files = %d',
 					self::IS_RENAMED_NONE,
 					Category::OTHER_MISC,
@@ -330,7 +330,7 @@ class NameFixer
 			$query = sprintf('
 					SELECT rel.id AS releaseid, rel.guid, rel.group_id
 					FROM releases rel
-					WHERE (rel.isrenamed = %d OR rel.categoryid = %d)
+					WHERE (rel.isrenamed = %d OR rel.categories_id = %d)
 					AND proc_par2 = %d',
 					self::IS_RENAMED_NONE,
 					Category::OTHER_MISC,
@@ -503,7 +503,7 @@ class NameFixer
 
 				if ($this->echooutput === true && $show === 1) {
 					$groupName = $this->_groups->getByNameByID($release['group_id']);
-					$oldCatName = $this->category->getNameByID($release['categoryid']);
+					$oldCatName = $this->category->getNameByID($release['categories_id']);
 					$newCatName = $this->category->getNameByID($determinedCategory);
 
 					if ($type === "PAR2, ") {
@@ -573,7 +573,7 @@ class NameFixer
 								UPDATE releases
 								SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfoid = NULL,
 									consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, preid = %d,
-									searchname = %s, %s categoryid = %d
+									searchname = %s, %s categories_id = %d
 								WHERE id = %d',
 								$preId,
 								$newTitle,
@@ -590,7 +590,7 @@ class NameFixer
 								UPDATE releases
 								SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfoid = NULL,
 									consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, preid = %d,
-									searchname = %s, iscategorized = 1, categoryid = %d
+									searchname = %s, iscategorized = 1, categories_id = %d
 								WHERE id = %d',
 								$preId,
 								$newTitle,
@@ -657,7 +657,7 @@ class NameFixer
 		$res = $this->pdo->queryDirect(
 						sprintf("
 							SELECT r.id AS releaseid, r.name, r.searchname,
-								r.group_id, r.categoryid
+								r.group_id, r.categories_id
 							FROM releases r
 							%1\$s
 							AND (r.name %2\$s OR r.searchname %2\$s)
@@ -734,7 +734,7 @@ class NameFixer
 		$query = $this->pdo->queryDirect(
 						sprintf('
 							SELECT r.id AS releaseid, r.name, r.searchname,
-								r.group_id, r.categoryid,
+								r.group_id, r.categories_id,
 								rf.name AS filename
 							FROM releases r
 							INNER JOIN release_files rf ON r.id = rf.releaseid
