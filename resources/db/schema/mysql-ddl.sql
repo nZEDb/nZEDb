@@ -668,7 +668,7 @@ CREATE TABLE         releases (
   consoleinfo_id    INT(11) UNSIGNED               NULL COMMENT 'FK to consoleinfo.id',
   gamesinfo_id      INT SIGNED                     NOT NULL DEFAULT '0',
   bookinfo_id       INT(11) UNSIGNED               NULL COMMENT 'FK to bookinfo.id',
-  anidbid           INT                            NULL,
+  anidbid           INT                            NULL COMMENT 'FK to anidb_titles.anidbid',
   predb_id          INT(11) UNSIGNED               NOT NULL DEFAULT '0' COMMENT 'FK to predb.id',
   grabs             INT UNSIGNED                   NOT NULL DEFAULT '0',
   comments          INT                            NOT NULL DEFAULT '0',
