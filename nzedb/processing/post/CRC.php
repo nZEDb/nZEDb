@@ -41,7 +41,7 @@ class CRC
 	public function __call($name, $arguments)
 	{
 		if (is_null($this->crc)) {
-			return null;
+			return false;
 		}
 		return $this->crc->$name($arguments);
 	}
