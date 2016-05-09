@@ -415,9 +415,7 @@ class ProcessAdditional
 		$this->_par2Info = new \Par2Info();
 		$this->_nfo = ($options['Nfo'] instanceof Nfo ? $options['Nfo'] : new Nfo(['Echo' => $this->_echoCLI, 'Settings' => $this->pdo]));
 		$this->sphinx = ($options['SphinxSearch'] instanceof SphinxSearch ? $options['SphinxSearch'] : new SphinxSearch());
-		if (class_exists('nzedb\processing\post\CRC')) {
-			$this->_crc = new CRC(['Settings' => $this->pdo, 'Echo' => $this->_echoCLI, 'NameFixer' => $this->_nameFixer]);
-		}
+		$this->_crc = new CRC(['Settings' => $this->pdo, 'Echo' => $this->_echoCLI, 'NameFixer' => $this->_nameFixer]);
 
 		$this->_innerFileBlacklist = ($this->pdo->getSetting('innerfileblacklist') == '' ? false : $this->pdo->getSetting('innerfileblacklist'));
 		$this->_maxNestedLevels = ($this->pdo->getSetting('maxnestedlevels') == 0 ? 3 : $this->pdo->getSetting('maxnestedlevels'));
@@ -1090,16 +1088,16 @@ class ProcessAdditional
 			return false;
 		}
 
-		if (isset($this->_crc) && $this->_reverse === true) {
+		if ($this->_reverse === true) {
 			$fileData = (isset($dataSummary['file_list'][0]) ? $dataSummary['file_list'][0] : '');
 			if(isset($fileData['crc32']) && isset($fileData['size']) && $fileData['size'] > 104857600) {
-				$matchedCRC = $this->_crc->checkCRCInfo(
+				$matchedCRC = $this->_crc->checkCRCInfo([
 					$this->_release,
 					$fileData['crc32'],
 					$fileData['size'],
 					'',
 					$fileData['date']
-				);
+				]);
 				$this->_release['preid'] = ($matchedCRC !== false ? $matchedCRC : 0);
 			}
 		}
