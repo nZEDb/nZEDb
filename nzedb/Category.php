@@ -394,7 +394,7 @@ class Category
 			sprintf("
 				SELECT c.title AS ctitle, cp.title AS ptitle
 				FROM categories c
-				INNER JOIN categories cp ON c.parentid = c.id
+				INNER JOIN categories cp ON c.parentid = cp.id
 				WHERE c.id = %d",
 				$ID
 			)
