@@ -19,10 +19,10 @@ test.php
 /nzedb/config/ircscraper_settings.php
 /nzedb/config/ircscraper.php
 /nzedb/config/opensssl.php
-/nzedb/processing/post/CRC.php
 
 /nbproject/
 /nbproject/private/
+/plugins/*
 /resources/covers/*
 /resources/nzb/*
 /resources/smarty/templates_c/*.php
