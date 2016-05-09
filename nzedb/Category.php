@@ -395,7 +395,7 @@ class Category
 				SELECT c.title AS ctitle, cp.title AS ptitle
 				FROM categories c
 				INNER JOIN categories cp ON c.parentid = c.id
-				WHERE id = %d",
+				WHERE c.id = %d",
 				$ID
 			)
 		);
