@@ -61,14 +61,14 @@ while ($cdone < $clen['total']) {
 			$collection['collectionhash'] = $pdo->escapeString($collection['collectionhash']);
 			$collection['dateadded'] = $pdo->escapeString($collection['dateadded']);
 			$collection['xref'] = $pdo->escapeString($collection['xref']);
-			$collection['releases_id'] = $pdo->escapeString($collection['releases_id']);
+			$collection['releasesid'] = $pdo->escapeString($collection['releasesid']);
 			$oldcid = array_shift($collection);
 			if ($debug) {
 				echo "\n\nCollection insert:\n";
 				print_r($collection);
-				echo sprintf("\nINSERT INTO collections_%d (subject, fromname, date, xref, totalfiles, group_id, collectionhash, dateadded, filecheck, filesize, releases_id) VALUES (%s)\n\n", $collection['group_id'], implode(', ', $collection));
+				echo sprintf("\nINSERT INTO collections_%d (subject, fromname, date, xref, totalfiles, group_id, collectionhash, dateadded, filecheck, filesize, releasesid) VALUES (%s)\n\n", $collection['group_id'], implode(', ', $collection));
 			}
-			$newcid = array('collection_id' => $pdo->queryInsert(sprintf('INSERT INTO collections_%d (subject, fromname, date, xref, totalfiles, group_id, collectionhash, dateadded, filecheck, filesize, releases_id) VALUES (%s);', $collection['group_id'], implode(', ', $collection))));
+			$newcid = array('collection_id' => $pdo->queryInsert(sprintf('INSERT INTO collections_%d (subject, fromname, date, xref, totalfiles, group_id, collectionhash, dateadded, filecheck, filesize, releasesid) VALUES (%s);', $collection['group_id'], implode(', ', $collection))));
 			$consoletools->overWrite('Collections Completed: ' . $consoletools->percentString($ccount, $clen['total']));
 
 			//Get binaries and split to correct group tables.
