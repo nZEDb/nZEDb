@@ -37,7 +37,7 @@ class ProcessAdditional
 
 	/**
 	 * Releases to work on.
-	 * @var Array
+	 * @var array
 	 */
 	protected $_releases;
 
@@ -49,7 +49,7 @@ class ProcessAdditional
 
 	/**
 	 * Current release we are working on.
-	 * @var Array
+	 * @var array
 	 */
 	protected $_release;
 
@@ -193,6 +193,11 @@ class ProcessAdditional
 	 * @var \nzedb\Nfo
 	 */
 	protected $_nfo;
+
+	/**
+	 * @var \nzedb\processing\post\CRC
+	 */
+	protected $_crc;
 
 	/**
 	 * @var bool
@@ -362,6 +367,18 @@ class ProcessAdditional
 	protected $_compressedFilesChecked;
 
 	/**
+	 * Should we download the last rar?
+	 * @var bool
+	 */
+	protected $_fetchLastFiles;
+
+	/**
+	 * Are we downloading the last rar?
+	 * @var bool
+	 */
+	protected $_reverse;
+
+	/**
 	 * @param array $options Class instances / echo to cli.
 	 */
 	public function __construct(array $options = [])
@@ -387,7 +404,6 @@ class ProcessAdditional
 
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 		$this->_nntp = ($options['NNTP'] instanceof NNTP ? $options['NNTP'] : new NNTP(['Echo' => $this->_echoCLI, 'Settings' => $this->pdo]));
-
 		$this->_nzb = ($options['NZB'] instanceof NZB ? $options['NZB'] : new NZB($this->pdo));
 		$this->_groups = ($options['Groups'] instanceof Groups ? $options['Groups'] : new Groups(['Settings' => $this->pdo]));
 		$this->_archiveInfo = new \ArchiveInfo();
@@ -399,10 +415,12 @@ class ProcessAdditional
 		$this->_par2Info = new \Par2Info();
 		$this->_nfo = ($options['Nfo'] instanceof Nfo ? $options['Nfo'] : new Nfo(['Echo' => $this->_echoCLI, 'Settings' => $this->pdo]));
 		$this->sphinx = ($options['SphinxSearch'] instanceof SphinxSearch ? $options['SphinxSearch'] : new SphinxSearch());
+		$this->_crc = new CRC(['Settings' => $this->pdo, 'Echo' => $this->_echoCLI, 'NameFixer' => $this->_nameFixer]);
 
 		$this->_innerFileBlacklist = ($this->pdo->getSetting('innerfileblacklist') == '' ? false : $this->pdo->getSetting('innerfileblacklist'));
 		$this->_maxNestedLevels = ($this->pdo->getSetting('maxnestedlevels') == 0 ? 3 : $this->pdo->getSetting('maxnestedlevels'));
 		$this->_extractUsingRarInfo = ($this->pdo->getSetting('extractusingrarinfo') == 0 ? false : true);
+		$this->_fetchLastFiles = ($this->pdo->getSetting('fetchlastcompressedfiles') == 0 ? false : true);
 
 		$this->_7zipPath = false;
 		$this->_unrarPath = false;
@@ -600,7 +618,9 @@ class ProcessAdditional
 	{
 		$this->_releases = $this->pdo->query(
 			sprintf(
-				'SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.group_id, r.nfostatus, r.completion, r.categories_id, r.searchname, r.preid
+				'SELECT r.id, r.id AS releaseid, r.guid, r.name, r.size, r.group_id,
+					r.nfostatus, r.completion, r.categories_id, r.searchname, r.preid,
+					c.disablepreview
 				FROM releases r
 				LEFT JOIN categories c ON c.id = r.categories_id
 				WHERE r.nzbstatus = 1
@@ -701,7 +721,7 @@ class ProcessAdditional
 					$this->_processNZBCompressedFiles();
 
 					// Download rar/zip in reverse order, to get the last rar or zip file.
-					if ($this->pdo->getSetting('fetchlastcompressedfiles') == 1) {
+					if ($this->_fetchLastFiles == 1) {
 						$this->_processNZBCompressedFiles(true);
 					}
 
@@ -949,7 +969,9 @@ class ProcessAdditional
 	 */
 	protected function _processNZBCompressedFiles($reverse = false)
 	{
-		if ($reverse) {
+		$this->_reverse = $reverse;
+
+		if ($this->_reverse) {
 			if (!krsort($this->_nzbContents)) {
 				return;
 			}
@@ -989,7 +1011,7 @@ class ProcessAdditional
 					break;
 				}
 				$segment = (string)$nzbFile['segments'][$i];
-				if (!$reverse) {
+				if (!$this->_reverse) {
 					$this->_triedCompressedMids[] = $segment;
 				} else if (in_array($segment, $this->_triedCompressedMids)) {
 					// We already downloaded this file.
@@ -1064,6 +1086,20 @@ class ProcessAdditional
 			$this->_releaseHasPassword = true;
 			$this->_passwordStatus[] = Releases::PASSWD_RAR;
 			return false;
+		}
+
+		if ($this->_reverse === true) {
+			$fileData = (isset($dataSummary['file_list'][0]) ? $dataSummary['file_list'][0] : '');
+			if(isset($fileData['crc32']) && isset($fileData['size']) && $fileData['size'] > 104857600) {
+				$matchedCRC = $this->_crc->checkCRCInfo([
+					$this->_release,
+					$fileData['crc32'],
+					$fileData['size'],
+					'',
+					$fileData['date']
+				]);
+				$this->_release['preid'] = ($matchedCRC !== false ? $matchedCRC : 0);
+			}
 		}
 
 		switch ($dataSummary['main_type']) {
