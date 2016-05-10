@@ -9,6 +9,7 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 2016-05-10 DariusIII
+	Fix: Prevent deadlocks on binaries and releases update (fix @ruhllatio).
 	Upd: Add couchpotato icon to Gamma theme. Fix issue #2115
 2016-05-09 DariusIII
 	Fix: Partitioning in patch 0436.
