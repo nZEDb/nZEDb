@@ -1018,7 +1018,7 @@ class ProcessReleases
 			sprintf('
 				SELECT SQL_NO_CACHE c.id
 				FROM %s c
-				INNER JOIN releases r ON r.id = c.releasesid
+				INNER JOIN releases r ON r.id = c.releaseid
 				WHERE r.nzbstatus = 1',
 				$group['cname']
 			)

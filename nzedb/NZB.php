@@ -240,7 +240,7 @@ class NZB
 				$this->pdo->queryExec(
 					sprintf('
 						UPDATE releases SET nzbstatus = %d %s WHERE id = %d;
-						DELETE c, b, p FROM %s c JOIN %s b ON(c.id=b.collection_id) STRAIGHT_JOIN %s p ON(b.id=p.binaryid) WHERE c.releases_id = %d',
+						DELETE c, b, p FROM %s c JOIN %s b ON(c.id=b.collection_id) STRAIGHT_JOIN %s p ON(b.id=p.binaryid) WHERE c.releaseid = %d',
 						NZB::NZB_ADDED, ($nzb_guid === '' ? '' : ', nzb_guid = UNHEX( ' . $this->pdo->escapestring(md5($nzb_guid)) . ' )'), $relID,
 						$this->_tableNames['cName'], $this->_tableNames['bName'], $this->_tableNames['pName'], $relID
 					)
