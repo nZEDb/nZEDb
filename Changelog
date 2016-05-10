@@ -8,6 +8,8 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+2016-05-10 DariusIII
+	Upd: Add couchpotato icon to Gamma theme. Fix issue #2115
 2016-05-09 DariusIII
 	Fix: Partitioning in patch 0436.
 	Chg: Replace requestid_threaded.py with requestid.php in ProcessReleases class.
