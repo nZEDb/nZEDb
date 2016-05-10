@@ -172,6 +172,11 @@
 										<a class="icon icon_sab fa fa-share" style="text-decoration: none; color: #008ab8;"  href="#" title="Send to queue"></a>
 									</li>
 									{/if}
+									{if !empty($cpurl) && !empty($cpapi)}
+										<li>
+											<a class="sendtocouch fa fa-bed" target="blackhole" href="javascript:;" rel="{$site->dereferrer_link}{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}" name="CP{$result.imdbid}" title="Add to CouchPotato"></a>
+										</li>
+									{/if}
 								</ul>
 							</td>
 						</tr>

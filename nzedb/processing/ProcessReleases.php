@@ -183,8 +183,6 @@ class ProcessReleases
 		$this->deleteUnwantedCollections($groupID);
 
 		$DIR = nZEDb_MISC;
-		$PYTHON = shell_exec('which python3 2>/dev/null');
-		$PYTHON = (empty($PYTHON) ? 'python -OOu' : 'python3 -OOu');
 
 		$totalReleasesAdded = 0;
 		do {
@@ -202,7 +200,7 @@ class ProcessReleases
 				if ($this->echoCLI) {
 					$this->pdo->log->doEcho($this->pdo->log->header("Process Releases -> Request ID Threaded lookup."));
 				}
-				passthru("$PYTHON ${DIR}update/python/requestid_threaded.py");
+				passthru("${DIR}update/nix/multiprocessing/requestid.php");
 				if ($this->echoCLI) {
 					$this->pdo->log->doEcho(
 						$this->pdo->log->primary(
@@ -1640,15 +1638,16 @@ class ProcessReleases
 	 */
 	private function processStuckCollections(array $group, $where)
 	{
+		$lastRun = $this->pdo->getSetting('last_run_time');
 		$obj = $this->pdo->queryExec(
 			sprintf("
-				DELETE c, b, p FROM %s c
-				LEFT JOIN %s b ON (c.id=b.collection_id)
-				LEFT JOIN %s p ON (b.id=p.binaryid)
-				WHERE
-					c.added <
-					DATE_SUB((SELECT value FROM settings WHERE setting = 'last_run_time'), INTERVAL %d HOUR)
-				%s",
+                DELETE c, b, p FROM %s c
+                LEFT JOIN %s b ON (c.id=b.collection_id)
+                LEFT JOIN %s p ON (b.id=p.binaryid)
+                WHERE
+                    c.added <
+                    DATE_SUB({$this->pdo->escapeString($lastRun)}, INTERVAL %d HOUR)
+                %s",
 				$group['cname'],
 				$group['bname'],
 				$group['pname'],

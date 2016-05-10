@@ -8,8 +8,16 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+2016-05-10 DariusIII
+	Fix: Prevent deadlocks on binaries and releases update (fix @ruhllatio).
+	Upd: Add couchpotato icon to Gamma theme. Fix issue #2115
+2016-05-09 DariusIII
+	Fix: Partitioning in patch 0436.
+	Chg: Replace requestid_threaded.py with requestid.php in ProcessReleases class.
 2016-05-08 niel
 	Mrg: Changing table 'category' to 'categories' along with references to categoryid => categories_id.
+		**NOTE** This involves changes to your releases table. It will take some time,
+		potentially a very long time, depending on the number of releases you have.
 2016-05-07 niel
 	Chg: alter subsection,name fields to settings for recaptcha.
 	Mrg: PR 2135, from zetas - Fix Recaptcha settings.

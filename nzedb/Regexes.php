@@ -319,7 +319,7 @@ class Regexes
 		$this->_regexCache[$groupName]['regex'] = $this->pdo->query(
 			sprintf(
 				'SELECT r.regex%s FROM %s r WHERE %s REGEXP r.group_regex AND r.status = 1 ORDER BY r.ordinal ASC, r.group_regex ASC',
-				($this->tableName === 'category_regexes' ? ', r.category_id' : ''),
+				($this->tableName === 'category_regexes' ? ', r.categories_id' : ''),
 				$this->tableName,
 				$this->pdo->escapeString($groupName)
 			), true, 900
