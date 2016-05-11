@@ -44,7 +44,7 @@ switch ($action) {
 		} else {
 			$show = $tv->getByVideoID($videoId);
 			if (!$show) {
-				$page->show404('Seriously?');
+				$page->show404('No matching show.');
 			}
 		}
 

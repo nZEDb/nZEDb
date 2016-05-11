@@ -145,18 +145,6 @@ class BasePage
 	}
 
 	/**
-	 * Unquotes quoted strings recursively in an array.
-	 *
-	 * @param $array
-	 */
-	private function stripSlashes(array &$array)
-	{
-		foreach ($array as $key => $value) {
-			$array[$key] = (is_array($value) ? array_map('stripslashes', $value) : stripslashes($value));
-		}
-	}
-
-	/**
 	 * Check if the user is flooding.
 	 */
 	public function floodCheck()
@@ -196,6 +184,8 @@ class BasePage
 
 	/**
 	 * Done in html here to reduce any smarty processing burden if a large flood is underway.
+	 *
+	 * @param int $seconds The number of seconds after which to retry operation
 	 */
 	public function showFloodWarning($seconds = 5)
 	{
@@ -254,8 +244,10 @@ class BasePage
 
 	/**
 	 * Show 404 page.
+	 *
+	 * @param string $reason The reason we 404'd
 	 */
-	public function show404()
+	public function show404($reason = '')
 	{
 		header('HTTP/1.1 404 Not Found');
 		exit(
@@ -267,11 +259,13 @@ class BasePage
 					<body>
 						<h1>404 - File not found.</h1>
 						<p>%s%s</p>
+						<p>%s</p>
 						<p>We could not find the above page on our servers.</p>
 					</body>
 				</html>",
 				$this->serverurl,
-				$this->page
+				$this->page,
+				(!empty($reason) ? 'Reason: ' . $reason : '')
 			)
 		);
 	}
