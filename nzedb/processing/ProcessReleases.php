@@ -610,7 +610,7 @@ class ProcessReleases
 							'searchname' => $this->pdo->escapeString(utf8_encode($cleanedName)),
 							'totalpart' => $collection['totalfiles'],
 							'group_id' => $collection['group_id'],
-							'guid' => $this->pdo->escapeString($this->releases->createGUID($cleanRelName)),
+							'guid' => $this->pdo->escapeString($this->releases->createGUID()),
 							'postdate' => $this->pdo->escapeString($collection['date']),
 							'fromname' => $fromName,
 							'size' => $collection['filesize'],
@@ -1641,13 +1641,13 @@ class ProcessReleases
 		$lastRun = $this->pdo->getSetting('last_run_time');
 		$obj = $this->pdo->queryExec(
 			sprintf("
-                DELETE c, b, p FROM %s c
-                LEFT JOIN %s b ON (c.id=b.collection_id)
-                LEFT JOIN %s p ON (b.id=p.binaryid)
-                WHERE
-                    c.added <
-                    DATE_SUB({$this->pdo->escapeString($lastRun)}, INTERVAL %d HOUR)
-                %s",
+				DELETE c, b, p FROM %s c
+				LEFT JOIN %s b ON (c.id=b.collection_id)
+				LEFT JOIN %s p ON (b.id=p.binaryid)
+				WHERE
+					c.added <
+					DATE_SUB({$this->pdo->escapeString($lastRun)}, INTERVAL %d HOUR)
+					%s",
 				$group['cname'],
 				$group['bname'],
 				$group['pname'],
