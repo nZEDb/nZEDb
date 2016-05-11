@@ -10,6 +10,9 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 2016-05-11 bart39
 	Fix: fix patch 438 / schema.
+	Chg: Added some logging to help diagnose issue #2139
+	Chg: detect broken nzbs in clean nzbs.
+	Chg: add method for rarinfo if missing.
 2016-05-11 ruhllatio
 	Chg: Make some var changes in PP Add
 	Fix: fix patch 438 missing trigger updates for release search table
