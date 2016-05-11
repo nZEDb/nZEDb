@@ -1160,7 +1160,7 @@ class Releases
 	{
 		// Get the category for the parent of this release.
 		$currRow = $this->getById($currentID);
-		$catRow = (new Category(['Settings' => $this->pdo]))->getById($currRow['categoryid']);
+		$catRow = (new Category(['Settings' => $this->pdo]))->getById($currRow['categories_id']);
 		$parentCat = $catRow['parentid'];
 
 		$results = $this->search(
@@ -1442,7 +1442,7 @@ class Releases
 		return $this->pdo->query(
 			"SELECT r.imdbid, r.guid, r.name, r.searchname, r.size, r.completion,
 				postdate, categories_id, comments, grabs,
-				m.cover
+				m.cover, m.title
 			FROM releases r
 			INNER JOIN movieinfo m USING (imdbid)
 			WHERE r.categories_id BETWEEN " . Category::MOVIE_ROOT . " AND " . Category::MOVIE_OTHER . "
@@ -1487,7 +1487,7 @@ class Releases
 		return $this->pdo->query(
 			"SELECT r.consoleinfo_id, r.guid, r.name, r.searchname, r.size, r.completion,
 				r.postdate, r.categories_id, r.comments, r.grabs,
-				con.cover
+				con.cover, con.title
 			FROM releases r
 			INNER JOIN consoleinfo con ON r.consoleinfo_id = con.id
 			WHERE r.categories_id BETWEEN " . Category::GAME_ROOT . " AND " . Category::GAME_OTHER . "
@@ -1509,7 +1509,7 @@ class Releases
 		return $this->pdo->query(
 			"SELECT r.gamesinfo_id, r.guid, r.name, r.searchname, r.size, r.completion,
 				r.postdate, r.categories_id, r.comments, r.grabs,
-				gi.cover
+				gi.cover, gi.title
 			FROM releases r
 			INNER JOIN gamesinfo gi ON r.gamesinfo_id = gi.id
 			WHERE r.categories_id = " . Category::PC_GAMES . "
@@ -1531,7 +1531,7 @@ class Releases
 		return $this->pdo->query(
 			"SELECT r.musicinfo_id, r.guid, r.name, r.searchname, r.size, r.completion,
 				r.postdate, r.categories_id, r.comments, r.grabs,
-				m.cover
+				m.cover, m.title
 			FROM releases r
 			INNER JOIN musicinfo m ON r.musicinfo_id = m.id
 			WHERE r.categories_id BETWEEN " . Category::MUSIC_ROOT . " AND " . Category::MUSIC_OTHER . "

@@ -627,7 +627,7 @@ class ProcessReleases
 						$this->pdo->queryExec(
 							sprintf('
 								UPDATE %s
-								SET filecheck = %d, releases_id = %d
+								SET filecheck = %d, releaseid = %d
 								WHERE id = %d',
 								$group['cname'],
 								self::COLLFC_INSERTED,

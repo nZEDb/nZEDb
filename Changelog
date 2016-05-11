@@ -13,6 +13,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Fix: WEB-DL shows as option in My TV shows when not used as a category #2110
 	Fix: 404 function had no parameter for reason even though it was being set and clean up BasePage
 	Mrg: Feature db #2136 @niel 
+	Fix: Mulple issues in feature-db branch and some Gamma issues
 2016-05-10 DariusIII
 	Fix: Prevent deadlocks on binaries and releases update (fix @ruhllatio).
 	Upd: Add couchpotato icon to Gamma theme. Fix issue #2115

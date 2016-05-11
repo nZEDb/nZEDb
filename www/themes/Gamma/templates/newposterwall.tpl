@@ -24,24 +24,32 @@
 						<div
 								{if $type == 'Console'}
 									class="library-console"
+									{$title = $result.title}
 								{elseif $type == 'Movies'}
 									class="library-show"
+									{$title = $result.title}
 								{elseif $type == 'XXX'}
 									class="library-show"
+									{$title = $result.title}
 								{elseif $type == 'Audio'}
 									class="library-music"
+									{$title = $result.title}
 								{elseif $type == 'Books'}
 									class="library-show"
+									{$title = $result.booktitle}
 								{elseif $type == 'PC'}
 									class="library-games"
+									{$title = $result.title}
 								{elseif $type == 'TV'}
 									class="library-show"
+									{$title = $result.tvtitle}
 								{elseif $type == 'Anime'}
 									class="library-show"
+									{$title = $result.title}
 								{/if}
-								>
+						>
 							<div class="poster">
-								<a class="titleinfo" title="{$result.guid}"
+								<a class="titleinfo" title="{$title}"
 								   href="{$smarty.const.WWW_TOP}/details/{$result.guid}">
 									{if $type == 'Console'}
 										<img width="130px" alt=""

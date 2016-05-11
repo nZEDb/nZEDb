@@ -139,7 +139,7 @@ class NZB
 			'SELECT %s.*, UNIX_TIMESTAMP(%s.date) AS udate, groups.name AS groupname
 			FROM %s
 			INNER JOIN groups ON %s.group_id = groups.id
-			WHERE %s.releases_id = ',
+			WHERE %s.releaseid = ',
 			$this->_tableNames['cName'],
 			$this->_tableNames['cName'],
 			$this->_tableNames['cName'],
