@@ -620,8 +620,11 @@ class Releases
 				LEFT OUTER JOIN video_data rv ON rv.releases_id = r.id
 				LEFT OUTER JOIN releaseextrafull re ON re.releases_id = r.id
 				LEFT OUTER JOIN dnzb_failures df ON df.release_id = r.id
-				WHERE r.guid = %s',
-				$this->pdo->escapeString($identifiers['g'])
+				WHERE %s',
+				(isset($identifiers['i']) && $identifiers['i'] > 0
+					? "r.id = {$identifiers['i']}"
+					: "r.guid = {$this->pdo->escapeString($identifiers['g'])}"
+				)
 			)
 		);
 	}
