@@ -10,6 +10,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 2016-05-10 ruhllatio
 	Fix: Category Parent->Child name return function after Misc move
+	Fix: WEB-DL shows as option in My TV shows when not used as a category #2110
 2016-05-10 DariusIII
 	Fix: Prevent deadlocks on binaries and releases update (fix @ruhllatio).
 	Upd: Add couchpotato icon to Gamma theme. Fix issue #2115
