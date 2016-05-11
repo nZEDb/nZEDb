@@ -362,6 +362,18 @@ class ProcessAdditional
 	protected $_compressedFilesChecked;
 
 	/**
+	 * Should we download the last rar?
+	 * @var bool
+	 */
+	protected $_fetchLastFiles;
+
+	/**
+	 * Are we downloading the last rar?
+	 * @var bool
+	 */
+	protected $_reverse;
+
+	/**
 	 * @param array $options Class instances / echo to cli.
 	 */
 	public function __construct(array $options = [])
@@ -403,6 +415,7 @@ class ProcessAdditional
 		$this->_innerFileBlacklist = ($this->pdo->getSetting('innerfileblacklist') == '' ? false : $this->pdo->getSetting('innerfileblacklist'));
 		$this->_maxNestedLevels = ($this->pdo->getSetting('maxnestedlevels') == 0 ? 3 : $this->pdo->getSetting('maxnestedlevels'));
 		$this->_extractUsingRarInfo = ($this->pdo->getSetting('extractusingrarinfo') == 0 ? false : true);
+		$this->_fetchLastFiles = ($this->pdo->getSetting('fetchlastcompressedfiles') == 0 ? false : true);
 
 		$this->_7zipPath = false;
 		$this->_unrarPath = false;
@@ -599,8 +612,10 @@ class ProcessAdditional
 	protected function _fetchReleases($groupID, &$guidChar)
 	{
 		$this->_releases = $this->pdo->query(
-			sprintf(
-				'SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.group_id, r.nfostatus, r.completion, r.categories_id, r.searchname, r.predb_id
+			sprintf('
+				SELECT r.id, r.id AS releaseid, r.guid, r.name, r.size, r.group_id, r.nfostatus,
+					r.completion, r.categories_id, r.searchname, r.predb_id,
+					c.disablepreview
 				FROM releases r
 				LEFT JOIN categories c ON c.id = r.categories_id
 				WHERE r.nzbstatus = 1
@@ -701,7 +716,7 @@ class ProcessAdditional
 					$this->_processNZBCompressedFiles();
 
 					// Download rar/zip in reverse order, to get the last rar or zip file.
-					if ($this->pdo->getSetting('fetchlastcompressedfiles') == 1) {
+					if ($this->_fetchLastFiles == 1) {
 						$this->_processNZBCompressedFiles(true);
 					}
 
@@ -949,7 +964,9 @@ class ProcessAdditional
 	 */
 	protected function _processNZBCompressedFiles($reverse = false)
 	{
-		if ($reverse) {
+		$this->_reverse = $reverse;
+
+		if ($this->_reverse) {
 			if (!krsort($this->_nzbContents)) {
 				return;
 			}
@@ -989,7 +1006,7 @@ class ProcessAdditional
 					break;
 				}
 				$segment = (string)$nzbFile['segments'][$i];
-				if (!$reverse) {
+				if (!$this->_reverse) {
 					$this->_triedCompressedMids[] = $segment;
 				} else if (in_array($segment, $this->_triedCompressedMids)) {
 					// We already downloaded this file.

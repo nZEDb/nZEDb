@@ -8,6 +8,8 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+2016-05-11 ruhllatio
+	Chg: Make some var changes in PP Add
 2016-05-11 DariusIII
 	Upd: Split UPDATE and DELETE query after NZB is created for release
 	Fix: Remove argument from createGUID function call in createReleases function, as createGUID function does not use any argument.
