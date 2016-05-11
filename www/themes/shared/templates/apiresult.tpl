@@ -75,6 +75,9 @@
 					{if $release.anidbid > 0}
 						<newznab:attr name="anidbid" value="{$release.anidbid}" />
 					{/if}
+					{if $release.predb_id > 0}
+						<newznab:attr name="prematch" value="1" />
+					{/if}
 					{if $release.nfostatus == 1}
 						<newznab:attr name="info" value="{$serverroot}api?t=info&amp;id={$release.guid}&amp;r={$rsstoken}" />
 					{/if}
