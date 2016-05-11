@@ -12,6 +12,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Fix: fix patch 438 / schema.
 2016-05-11 ruhllatio
 	Chg: Make some var changes in PP Add
+	Fix: fix patch 438 missing trigger updates for release search table
 2016-05-11 DariusIII
 	Upd: Split UPDATE and DELETE query after NZB is created for release
 	Fix: Remove argument from createGUID function call in createReleases function, as createGUID function does not use any argument.
