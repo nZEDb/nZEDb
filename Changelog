@@ -8,6 +8,8 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+2016-05-11 DariusIII
+	Fix: Remove argument from createGUID function call in createReleases function, as createGUID function does not use any argument.
 2016-05-10 ruhllatio
 	Fix: Category Parent->Child name return function after Misc move
 	Fix: WEB-DL shows as option in My TV shows when not used as a category #2110

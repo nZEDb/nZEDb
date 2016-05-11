@@ -610,7 +610,7 @@ class ProcessReleases
 							'searchname' => $this->pdo->escapeString(utf8_encode($cleanedName)),
 							'totalpart' => $collection['totalfiles'],
 							'group_id' => $collection['group_id'],
-							'guid' => $this->pdo->escapeString($this->releases->createGUID($cleanRelName)),
+							'guid' => $this->pdo->escapeString($this->releases->createGUID()),
 							'postdate' => $this->pdo->escapeString($collection['date']),
 							'fromname' => $fromName,
 							'size' => $collection['filesize'],
