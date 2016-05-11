@@ -613,7 +613,7 @@ class ProcessAdditional
 	{
 		$this->_releases = $this->pdo->query(
 			sprintf('
-				SELECT r.id, r.id AS releaseid, r.guid, r.name, r.size, r.group_id, r.nfostatus,
+				SELECT r.id, r.id AS releases_id, r.guid, r.name, r.size, r.group_id, r.nfostatus,
 					r.completion, r.categories_id, r.searchname, r.predb_id,
 					c.disablepreview
 				FROM releases r
