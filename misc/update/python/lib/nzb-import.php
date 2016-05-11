@@ -225,7 +225,7 @@ if (!isset($groups) || count($groups) == 0) {
 						'categories_id' => $category,
 						'isrenamed' => 1,
 						'reqidstatus' => 0,
-						'preid' => 0,
+						'predb_id' => 0,
 						'nzbstatus' => NZB::NZB_ADDED
 					]
 				);

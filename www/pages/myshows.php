@@ -171,7 +171,7 @@ switch ($action) {
 		$shows = $us->getShows($page->users->currentUserId());
 		$results = array();
 		foreach ($shows as $showk => $show) {
-			$showcats = explode('|', $show['categories_id']);
+			$showcats = explode('|', $show['categoryid']);
 			if (is_array($showcats) && sizeof($showcats) > 0) {
 				$catarr = array();
 				foreach ($showcats as $scat) {

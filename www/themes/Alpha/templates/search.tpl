@@ -209,19 +209,19 @@
 									rel="movie"
 								><i class="icon-film"></i></a>
 							{/if}
-							{if $result.musicinfoid > 0}
+							{if $result.musicinfo_id > 0}
 								<a
 									href="#"
-									name="name{$result.musicinfoid}"
+									name="name{$result.musicinfo_id}"
 									title="View music info"
 									class="modal_music label label-default"
 									rel="music"
 								><i class="icon-music"></i></a>
 							{/if}
-							{if $result.consoleinfoid > 0}
+							{if $result.consoleinfo_id > 0}
 								<a
 									href="#"
-									name="name{$result.consoleinfoid}"
+									name="name{$result.consoleinfo_id}"
 									title="View console info"
 									class="modal_console label label-default"
 									rel="console"
@@ -291,7 +291,7 @@
 						</div>
 					</td>
 					<td class="category" style="width:auto;text-align:center;white-space:nowrap;">
-						<a title="Browse {$result.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$result.categoryid}">{$result.category_name}</a>
+						<a title="Browse {$result.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$result.categories_id}">{$result.category_name}</a>
 					</td>
 					<td class="posted" title="{$result.postdate}" style="white-space:nowrap;text-align:center;">{$result.postdate|timeago}</td>
 					<td class="size" style="width:auto;text-align:center;white-space:nowrap;">

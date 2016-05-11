@@ -57,7 +57,7 @@ Class RSS
 
 		if (count($cat)) {
 			if ($cat[0] == -2) {
-				$cartSearch = sprintf(' INNER JOIN users_releases ON users_releases.user_id = %d AND users_releases.releaseid = r.id ', $userID);
+				$cartSearch = sprintf(' INNER JOIN users_releases ON users_releases.user_id = %d AND users_releases.releases_id = r.id ', $userID);
 			} else if ($cat[0] != -1) {
 				$catSearch = $this->releases->categorySQL($cat);
 			}
@@ -81,9 +81,9 @@ Class RSS
 				INNER JOIN categories cp ON cp.id = c.parentid
 				INNER JOIN groups g ON g.id = r.group_id
 				LEFT OUTER JOIN movieinfo m ON m.imdbid = r.imdbid AND m.title != ''
-				LEFT OUTER JOIN musicinfo mu ON mu.id = r.musicinfoid
+				LEFT OUTER JOIN musicinfo mu ON mu.id = r.musicinfo_id
 				LEFT OUTER JOIN genres mug ON mug.id = mu.genre_id
-				LEFT OUTER JOIN consoleinfo co ON co.id = r.consoleinfoid
+				LEFT OUTER JOIN consoleinfo co ON co.id = r.consoleinfo_id
 				LEFT OUTER JOIN genres cog ON cog.id = co.genre_id %s
 				LEFT OUTER JOIN tv_episodes tve ON tve.id = r.tv_episodes_id
 				WHERE r.passwordstatus %s

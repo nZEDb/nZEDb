@@ -278,14 +278,14 @@
 </tr>
 <tr>
 	<th style="vertical-align:top">Category:</th>
-	<td><a title="Browse by {$release.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$release.categoryid}">{$release.category_name}</a>
+	<td><a title="Browse by {$release.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$release.categories_id}">{$release.category_name}</a>
 	</td>
 </tr>
-{if $nfo.releaseid|@count > 0}
+{if $nfo.releases_id|@count > 0}
 	<tr><th>Nfo:</th><td><a href="{$smarty.const.WWW_TOP}/nfo/{$release.guid}" title="View Nfo">View Nfo</a></td></tr>
 {/if}
 
-{if $reVideo.releaseid|@count > 0 || $reAudio|@count > 0}
+{if $reVideo.releases_id|@count > 0 || $reAudio|@count > 0}
 	<tr>
 		<th style="vertical-align:top">Media Info:</th>
 		<td style="padding:0;">

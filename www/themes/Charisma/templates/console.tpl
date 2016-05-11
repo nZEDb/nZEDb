@@ -73,14 +73,14 @@
 											<div class="col-md-2 small-gutter-left">
 												<a title="View details"
 												   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">
-													<img src="{$smarty.const.WWW_TOP}/covers/console/{if $result.cover == 1}{$result.consoleinfoid}.jpg{else}{$smarty.const.WWW_THEMES}/shared/img/no-cover.png{/if}"
+													<img src="{$smarty.const.WWW_TOP}/covers/console/{if $result.cover == 1}{$result.consoleinfo_id}.jpg{else}{$smarty.const.WWW_THEMES}/shared/img/no-cover.png{/if}"
 														 width="140" border="0"
 														 alt="{$result.title|escape:"htmlall"}"/>{if !empty($mfailed[$m@index])} <i class="fa fa-exclamation-circle" style="color: red" title="This release has failed to download for some users"></i>{/if}
 												</a>
 												{if $result.url != ""}<a class="label label-default"
 																		 target="_blank"
 																		 href="{$site->dereferrer_link}{$result.url}"
-																		 name="amazon{$result.consoleinfoid}"
+																		 name="amazon{$result.consoleinfo_id}"
 																		 title="View Amazon page">
 														Amazon</a>{/if}
 												{if $result.nfoid > 0}<a

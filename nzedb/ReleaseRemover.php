@@ -446,7 +446,7 @@ class ReleaseRemover
 		$this->query = sprintf(
 			"SELECT r.guid, r.searchname, r.id
 			FROM releases r %s
-			STRAIGHT_JOIN release_files rf ON r.id = rf.releaseid
+			STRAIGHT_JOIN release_files rf ON r.id = rf.releases_id
 			WHERE r.searchname NOT REGEXP %s
 			AND rf.name %s
 			AND r.categories_id NOT IN (%d, %d, %d, %d, %d, %d) %s %s",
@@ -493,7 +493,7 @@ class ReleaseRemover
 		$this->query = sprintf(
 			"SELECT r.guid, r.searchname, r.id
 			FROM releases r %s
-			STRAIGHT_JOIN release_files rf ON r.id = rf.releaseid
+			STRAIGHT_JOIN release_files rf ON r.id = rf.releases_id
 			WHERE rf.name %s %s",
 			$ftJoin,
 			$this->pdo->likeString('install.bin', true, true),
@@ -531,7 +531,7 @@ class ReleaseRemover
 		$this->query = sprintf(
 			"SELECT r.guid, r.searchname, r.id
 			FROM releases r %s
-			STRAIGHT_JOIN release_files rf ON r.id = rf.releaseid
+			STRAIGHT_JOIN release_files rf ON r.id = rf.releases_id
 			WHERE rf.name %s %s %s",
 			$ftJoin,
 			$this->pdo->likeString('password.url', true, true),
@@ -743,7 +743,7 @@ class ReleaseRemover
 		$this->query = sprintf(
 			"SELECT r.guid, r.searchname, r.id
 			FROM releases r %s
-			STRAIGHT_JOIN release_files rf ON r.id = rf.releaseid
+			STRAIGHT_JOIN release_files rf ON r.id = rf.releases_id
 			WHERE (rf.name REGEXP '[.]scr[$ \"]' OR r.name REGEXP '[.]scr[$ \"]')
 			%s %s",
 			$ftJoin,
@@ -864,7 +864,7 @@ class ReleaseRemover
 				);
 
 				if ($opTypeName == 'Subject') {
-					$join = (nZEDb_RELEASE_SEARCH_TYPE == ReleaseSearch::SPHINX ? 'INNER JOIN releases_se rse ON rse.id = r.id' : 'INNER JOIN release_search_data rs ON rs.releaseid = r.id');
+					$join = (nZEDb_RELEASE_SEARCH_TYPE == ReleaseSearch::SPHINX ? 'INNER JOIN releases_se rse ON rse.id = r.id' : 'INNER JOIN release_search_data rs ON rs.releases_id = r.id');
 				} else {
 					$join = '';
 				}
@@ -931,7 +931,7 @@ class ReleaseRemover
 					}
 				}
 
-				$regexSQL = sprintf("STRAIGHT_JOIN release_files rf ON r.id = rf.releaseid
+				$regexSQL = sprintf("STRAIGHT_JOIN release_files rf ON r.id = rf.releases_id
 				WHERE rf.name REGEXP %s ", $this->pdo->escapeString($regex['regex'])
 				);
 
@@ -1012,7 +1012,7 @@ class ReleaseRemover
 		$this->query = "
 			SELECT r.guid, r.searchname
 			FROM releases r
-			LEFT JOIN release_files rf ON (r.id = rf.releaseid)
+			LEFT JOIN release_files rf ON (r.id = rf.releases_id)
 			WHERE r.categories_id BETWEEN 2000 AND 2999
 			AND rf.name REGEXP 'x264.*\.wmv$'
 			GROUP BY r.id"
@@ -1054,13 +1054,13 @@ class ReleaseRemover
 		$this->query = "
 			SELECT r.guid, r.searchname, r.id
 			FROM releases r
-			LEFT JOIN release_files rf ON r.id = rf.releaseid
+			LEFT JOIN release_files rf ON r.id = rf.releases_id
 			WHERE {$categories}
 			AND (r.imdbid NOT IN ('0000000', 0) OR xxxinfo_id > 0)
 			AND nfostatus = 1
 			AND haspreview = 0
 			AND jpgstatus = 0
-			AND preid = 0
+			AND predb_id = 0
 			AND videostatus = 0
 			AND
 			(

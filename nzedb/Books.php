@@ -201,7 +201,7 @@ class Books
 				SELECT SQL_CALC_FOUND_ROWS boo.id,
 					GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id
 				FROM bookinfo boo
-				LEFT JOIN releases r ON boo.id = r.bookinfoid
+				LEFT JOIN releases r ON boo.id = r.bookinfo_id
 				WHERE r.nzbstatus = 1
 				AND boo.cover = 1
 				AND boo.title != ''
@@ -236,7 +236,7 @@ class Books
 				GROUP_CONCAT(r.haspreview ORDER BY r.postdate DESC SEPARATOR ',') AS grp_haspreview,
 				GROUP_CONCAT(r.passwordstatus ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_password,
 				GROUP_CONCAT(r.guid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_guid,
-				GROUP_CONCAT(rn.releaseid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid,
+				GROUP_CONCAT(rn.releases_id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid,
 				GROUP_CONCAT(g.name ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grpname,
 				GROUP_CONCAT(r.searchname ORDER BY r.postdate DESC SEPARATOR '#') AS grp_release_name,
 				GROUP_CONCAT(r.postdate ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_postdate,
@@ -246,14 +246,14 @@ class Books
 				GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs,
 				GROUP_CONCAT(df.failed ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_failed,
 			boo.*,
-			r.bookinfoid,
+			r.bookinfo_id,
 			g.name AS group_name,
-			rn.releaseid AS nfoid
+			rn.releases_id AS nfoid
 			FROM releases r
 			LEFT OUTER JOIN groups g ON g.id = r.group_id
-			LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
+			LEFT OUTER JOIN release_nfos rn ON rn.releases_id = r.id
 			LEFT OUTER JOIN dnzb_failures df ON df.release_id = r.id
-			INNER JOIN bookinfo boo ON boo.id = r.bookinfoid
+			INNER JOIN bookinfo boo ON boo.id = r.bookinfo_id
 			WHERE boo.id IN (%s)
 			AND r.id IN (%s)
 			AND %s
@@ -393,7 +393,7 @@ class Books
 						SELECT searchname, id, categories_id
 						FROM releases
 						WHERE nzbstatus = 1 %s
-						AND bookinfoid IS NULL
+						AND bookinfo_id IS NULL
 						AND categories_id in (%s)
 						ORDER BY postdate
 						DESC LIMIT %d', $this->renamed, $bookids[$i], $this->bookqty)
@@ -455,10 +455,10 @@ class Books
 					}
 
 					// Update release.
-					$this->pdo->queryExec(sprintf('UPDATE releases SET bookinfoid = %d WHERE id = %d %s', $bookId, $arr['id'], $this->catWhere));
+					$this->pdo->queryExec(sprintf('UPDATE releases SET bookinfo_id = %d WHERE id = %d %s', $bookId, $arr['id'], $this->catWhere));
 				} else {
 					// Could not parse release title.
-					$this->pdo->queryExec(sprintf('UPDATE releases SET bookinfoid = %d WHERE id = %d %s', -2, $arr['id'], $this->catWhere));
+					$this->pdo->queryExec(sprintf('UPDATE releases SET bookinfo_id = %d WHERE id = %d %s', -2, $arr['id'], $this->catWhere));
 					if ($this->echooutput) {
 						echo '.';
 					}

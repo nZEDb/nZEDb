@@ -5,11 +5,9 @@
 ALTER TABLE category_regexes
   CHANGE COLUMN category_id categories_id SMALLINT UNSIGNED NOT NULL DEFAULT '0010'
   COMMENT 'Which category id to put the release in';
-#ALTER TABLE category_regexes RENAME INDEX ix_category_regexes_category_id TO ix_category_regexes_categories_id;
 
 ALTER TABLE releases
-  CHANGE COLUMN categoryid categories_id INT NOT NULL DEFAULT '0010',
-  COMMENT 'Which category id the release belongs to'
+  CHANGE COLUMN categoryid categories_id INT NOT NULL DEFAULT '0010' COMMENT 'Which category id the release belongs to'
   PARTITION BY RANGE (categories_id) (
   PARTITION misc VALUES LESS THAN (1000),
   PARTITION console VALUES LESS THAN (2000),

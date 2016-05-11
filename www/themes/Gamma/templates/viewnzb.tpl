@@ -3,7 +3,7 @@
 <div id="content">
 	<ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
 		<li class="active"><a href="#info" data-toggle="tab">Info</a></li>
-		{if $reVideo.releaseid|@count > 0 || $reAudio|@count > 0}
+		{if $reVideo.releases_id|@count > 0 || $reAudio|@count > 0}
 			<li><a href="#mediainfo" data-toggle="tab">Media info</a></li>
 		{/if}
 		{if $release.jpgstatus == 1 && $userdata.canpreview == 1}
@@ -295,8 +295,8 @@
 				<dd><a title="Browse {$release.group_name}" href="{$smarty.const.WWW_TOP}/browse?g={$release.group_name}">{$release.group_name|replace:"alt.binaries":"a.b"}</a></dd>
 
 				<dt>Category</dt>
-				<dd><a title="Browse by {$release.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$release.categoryid}">{$release.category_name}</a></dd>
-				{if $nfo.releaseid|@count > 0}
+				<dd><a title="Browse by {$release.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$release.categories_id}">{$release.category_name}</a></dd>
+				{if $nfo.releases_id|@count > 0}
 					<dt>Nfo</dy>
 					<dd><a href="{$smarty.const.WWW_TOP}/nfo/{$release.guid}" title="View Nfo">View Nfo</a></dd>
 				{/if}
@@ -377,7 +377,7 @@
 			</dl>
 		</div>
 		<div class="tab-pane" id="mediainfo">
-			{if $reVideo.releaseid|@count > 0 || $reAudio|@count > 0}
+			{if $reVideo.releases_id|@count > 0 || $reAudio|@count > 0}
 				<td style="padding:0;">
 					<table style="width:100%;" class="innerdata highlight table table-striped">
 						<tr>

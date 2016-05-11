@@ -96,17 +96,17 @@ SQL_INSERT;
 	// Add hashes                                                                                                                                                                               g
 	echo $pdo->log->info("Adding predb_hashes entries");
 	echo $pdo->log->info("Stage 1: UNHEX(MD5(TITLE))");
-	$pdo->queryExec("INSERT IGNORE INTO predb_hashes (hash, pre_id) SELECT UNHEX(md5(title)), id from predb;");
+	$pdo->queryExec("INSERT IGNORE INTO predb_hashes (hash, predb_id) SELECT UNHEX(md5(title)), id from predb;");
 	echo $pdo->log->info("Stage 1: UNHEX(MD5(MD5(TITLE)))");
-	$pdo->queryExec("INSERT IGNORE INTO predb_hashes (hash, pre_id) SELECT UNHEX(md5(md5(title))), id from predb;");
+	$pdo->queryExec("INSERT IGNORE INTO predb_hashes (hash, predb_id) SELECT UNHEX(md5(md5(title))), id from predb;");
 	echo $pdo->log->info("Stage 1: UNHEX(SHA1(TITLE))");
-	$pdo->queryExec("INSERT IGNORE INTO predb_hashes (hash, pre_id) SELECT UNHEX(sha1(title)), id from predb;");
+	$pdo->queryExec("INSERT IGNORE INTO predb_hashes (hash, predb_id) SELECT UNHEX(sha1(title)), id from predb;");
 
 	// Re-add triggers on predb
 	echo $pdo->log->info("Adding predb_hashes triggers");
-	$pdo->queryExec("CREATE TRIGGER insert_hashes AFTER INSERT ON predb FOR EACH ROW BEGIN INSERT INTO predb_hashes (hash, pre_id) VALUES (UNHEX(MD5(NEW.title)), NEW.id), (UNHEX(MD5(MD5(NEW.title))), NEW.id), ( UNHEX(SHA1(NEW.title)), NEW.id); END;");
-	$pdo->queryExec("CREATE TRIGGER update_hashes AFTER UPDATE ON predb FOR EACH ROW BEGIN IF NEW.title != OLD.title THEN DELETE FROM predb_hashes WHERE hash IN ( UNHEX(md5(OLD.title)), UNHEX(md5(md5(OLD.title))), UNHEX(sha1(OLD.title)) ) AND pre_id = OLD.id; INSERT INTO predb_hashes (hash, pre_id) VALUES ( UNHEX(MD5(NEW.title)), NEW.id ), ( UNHEX(MD5(MD5(NEW.title))), NEW.id ), ( UNHEX(SHA1(NEW.title)), NEW.id ); END IF; END;");
-	$pdo->queryExec("CREATE TRIGGER delete_hashes BEGIN DELETE FROM predb_hashes WHERE hash IN ( UNHEX(md5(OLD.title)), UNHEX(md5(md5(OLD.title))), UNHEX(sha1(OLD.title)) ) AND pre_id = OLD.id; END;");
+	$pdo->queryExec("CREATE TRIGGER insert_hashes AFTER INSERT ON predb FOR EACH ROW BEGIN INSERT INTO predb_hashes (hash, predb_id) VALUES (UNHEX(MD5(NEW.title)), NEW.id), (UNHEX(MD5(MD5(NEW.title))), NEW.id), ( UNHEX(SHA1(NEW.title)), NEW.id); END;");
+	$pdo->queryExec("CREATE TRIGGER update_hashes AFTER UPDATE ON predb FOR EACH ROW BEGIN IF NEW.title != OLD.title THEN DELETE FROM predb_hashes WHERE hash IN ( UNHEX(md5(OLD.title)), UNHEX(md5(md5(OLD.title))), UNHEX(sha1(OLD.title)) ) AND predb_id = OLD.id; INSERT INTO predb_hashes (hash, predb_id) VALUES ( UNHEX(MD5(NEW.title)), NEW.id ), ( UNHEX(MD5(MD5(NEW.title))), NEW.id ), ( UNHEX(SHA1(NEW.title)), NEW.id ); END IF; END;");
+	$pdo->queryExec("CREATE TRIGGER delete_hashes BEGIN DELETE FROM predb_hashes WHERE hash IN ( UNHEX(md5(OLD.title)), UNHEX(md5(md5(OLD.title))), UNHEX(sha1(OLD.title)) ) AND predb_id = OLD.id; END;");
 
 	$pdo->queryExec("TRUNCATE TABLE predb_imports");
 } else {
