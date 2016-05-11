@@ -8,6 +8,8 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+2016-05-11 bart39
+	Fix: fix patch 438 / schema.
 2016-05-11 ruhllatio
 	Chg: Make some var changes in PP Add
 2016-05-11 DariusIII
@@ -17,7 +19,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Fix: Category Parent->Child name return function after Misc move
 	Fix: WEB-DL shows as option in My TV shows when not used as a category #2110
 	Fix: 404 function had no parameter for reason even though it was being set and clean up BasePage
-	Mrg: Feature db #2136 @niel 
+	Mrg: Feature db #2136 @niel
 	Fix: Mulple issues in feature-db branch and some Gamma issues
 2016-05-10 DariusIII
 	Fix: Prevent deadlocks on binaries and releases update (fix @ruhllatio).
