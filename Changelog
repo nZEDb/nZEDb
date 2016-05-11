@@ -16,6 +16,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Fix: Invalid index errors in NameFixer caused by bad find and replaces in feature-db (temp)
 	Fix: PP Add query using old releaseid
 	Add: Feature request - Option to specify the minimum file size using the API? #234
+	Fix: Undefined index: anidb #2137
 2016-05-11 DariusIII
 	Upd: Split UPDATE and DELETE query after NZB is created for release
 	Fix: Remove argument from createGUID function call in createReleases function, as createGUID function does not use any argument.
