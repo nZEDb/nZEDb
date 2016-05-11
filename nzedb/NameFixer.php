@@ -480,12 +480,13 @@ class NameFixer
 	 */
 	public function updateRelease($release, $name, $method, $echo, $type, $nameStatus, $show, $preId = 0)
 	{
+		$release["releases_id"] = (isset($release['releases_id']) ? $release['releases_id'] : $release["releaseid"]);
 		if ($this->relid !== $release['releases_id']) {
 			$releaseCleaning = new ReleaseCleaning($this->pdo);
 			$newName = $releaseCleaning->fixerCleaner($name);
 			if (strtolower($newName) != strtolower($release["searchname"])) {
 				$this->matched = true;
-				$this->relid = $release["releases_id"];
+				$this->relid = $release['releases_id'];
 
 				$determinedCategory = $this->category->determineCategory($release['group_id'], $newName);
 
