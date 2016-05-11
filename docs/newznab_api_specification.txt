@@ -254,6 +254,7 @@ nZEDb    https://github.com/nZEDb/nZEDb
       del=1             Delete the item from a users cart on download.
       maxage=123        Only return results which were posted to usenet in the last x days.
       offset=50         The 0 based query offset defining which part of the response we want.
+      minsize=1024      Only return results which are larger than or equal to x bytes.
 
    Examples:
       --> GET http://servername.com/api?t=search&apikey=xxxxx&q=a%20tv%20show
@@ -357,6 +358,7 @@ nZEDb    https://github.com/nZEDb/nZEDb
       del=1              Delete the item from a users cart on download.
       maxage=123         Only return results which were posted to usenet in the last x days.
       offset=50          The 0 based query offset defining which part of the response we want.
+      minsize=1024       Only return results which are larger than or equal to x bytes.
 
    Examples:
       --> GET http://servername.com/api?t=tvsearch&apikey=xxxq=lost&season=S03
@@ -448,6 +450,7 @@ nZEDb    https://github.com/nZEDb/nZEDb
       del=1              Delete the item from a users cart on download.
       maxage=123         Only return results which were posted to usenet in the last x days.
       offset=50          The 0 based query offset defining which part of the response we want.
+      minsize=1024       Only return results which are larger than or equal to x bytes.
 
    Examples:
       --> GET http://servername.com/api?t=movie&apikey=xxx&imdbid=0058935

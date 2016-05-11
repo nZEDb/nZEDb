@@ -192,10 +192,11 @@ class Releases
 	 * @param int    $maxAge
 	 * @param array  $excludedCats
 	 * @param string $groupName
+	 * @param string $minSize
 	 *
 	 * @return array
 	 */
-	public function getBrowseRange($cat, $start, $num, $orderBy, $maxAge = -1, $excludedCats = [], $groupName = '')
+	public function getBrowseRange($cat, $start, $num, $orderBy, $maxAge = -1, $excludedCats = [], $groupName = '', $minSize = 0)
 	{
 		$orderBy = $this->getBrowseOrder($orderBy);
 
@@ -215,7 +216,7 @@ class Releases
 					LEFT JOIN groups g ON g.id = r.group_id
 					WHERE r.nzbstatus = %d
 					AND r.passwordstatus %s
-					%s %s %s %s
+					%s %s %s %s %s
 					ORDER BY %s %s %s
 				) r
 				INNER JOIN categories c ON c.id = r.categories_id
@@ -233,6 +234,7 @@ class Releases
 				($maxAge > 0 ? (" AND postdate > NOW() - INTERVAL " . $maxAge . ' DAY ') : ''),
 				(count($excludedCats) ? (' AND r.categories_id NOT IN (' . implode(',', $excludedCats) . ')') : ''),
 				($groupName != '' ? sprintf(' AND g.name = %s ', $this->pdo->escapeString($groupName)) : ''),
+				($minSize > 0 ? sprintf('AND r.size >= %d', $minSize) : ''),
 				$orderBy[0],
 				$orderBy[1],
 				($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
@@ -807,6 +809,7 @@ class Releases
 	 * @param integer[] $excludedCats
 	 * @param string $type
 	 * @param array  $cat
+	 * @param int    $minSize
 	 *
 	 * @return array
 	 */
@@ -828,7 +831,8 @@ class Releases
 		$maxAge = -1,
 		$excludedCats = [],
 		$type = 'basic',
-		$cat = [-1]
+		$cat = [-1],
+		$minSize = 0
 	) {
 		$sizeRange = [
 			1 => 1,
@@ -867,7 +871,7 @@ class Releases
 		}
 
 		$whereSql = sprintf(
-			"%s WHERE r.passwordstatus %s AND r.nzbstatus = %d %s %s %s %s %s %s %s %s %s %s %s",
+			"%s WHERE r.passwordstatus %s AND r.nzbstatus = %d %s %s %s %s %s %s %s %s %s %s %s %s",
 			$this->releaseSearch->getFullTextJoinString(),
 			$this->showPasswords,
 			NZB::NZB_ADDED,
@@ -881,7 +885,8 @@ class Releases
 			($daysNew != -1 ? sprintf(' AND r.postdate < (NOW() - INTERVAL %d DAY) ', $daysNew) : ''),
 			($daysOld != -1 ? sprintf(' AND r.postdate > (NOW() - INTERVAL %d DAY) ', $daysOld) : ''),
 			(count($excludedCats) > 0 ? ' AND r.categories_id NOT IN (' . implode(',', $excludedCats) . ')' : ''),
-			(count($searchOptions) > 0 ? $this->releaseSearch->getSearchSQL($searchOptions) : '')
+			(count($searchOptions) > 0 ? $this->releaseSearch->getSearchSQL($searchOptions) : ''),
+			($minSize > 0 ? sprintf('AND r.size >= %d', $minSize) : '')
 		);
 
 		$baseSql = sprintf(
@@ -929,20 +934,25 @@ class Releases
 	}
 
 	/**
-	 * @param array  $siteIdArr
-	 * @param string $series
-	 * @param string $episode
-	 * @param string $airdate
-	 * @param int    $offset
-	 * @param int    $limit
-	 * @param string $name
-	 * @param array  $cat
-	 * @param int    $maxAge
+	 * Search TV Shows via the API
+	 *
+	 * @param array  $siteIdArr Array containing all possible TV Processing site IDs desired
+	 * @param string $series The series or season number requested
+	 * @param string $episode The episode number requested
+	 * @param string $airdate The airdate of the episode requested
+	 * @param int    $offset Skip this many releases
+	 * @param int    $limit Return this many releases
+	 * @param string $name The show name to search
+	 * @param array  $cat The category to search
+	 * @param int    $maxAge The maximum age of releases to be returned
+	 * @param int    $minSize The minimum size of releases to be returned
 	 *
 	 * @return array
 	 */
-	public function searchShows($siteIdArr = array(), $series = '', $episode = '', $airdate = '', $offset = 0,
-								$limit = 100, $name = '', $cat = [-1], $maxAge = -1)
+	public function searchShows(
+			$siteIdArr = array(), $series = '', $episode = '', $airdate = '', $offset = 0,
+			$limit = 100, $name = '', $cat = [-1], $maxAge = -1, $minSize = 0
+		)
 	{
 		$siteSQL = array();
 
@@ -962,7 +972,7 @@ class Releases
 			AND r.nzbstatus = %d
 			AND r.passwordstatus %s
 			AND (%s)
-			%s %s %s %s %s %s",
+			%s %s %s %s %s %s %s",
 
 			($name !== '' ? $this->releaseSearch->getFullTextJoinString() : ''),
 			Category::TV_ROOT,
@@ -975,7 +985,8 @@ class Releases
 			($airdate != '' ? sprintf('AND DATE(tve.firstaired) = %s', $this->pdo->escapeString($airdate)) : ''),
 			($name !== '' ? $this->releaseSearch->getSearchSQL(['searchname' => $name]) : ''),
 			$this->categorySQL($cat),
-			($maxAge > 0 ? sprintf('AND r.postdate > NOW() - INTERVAL %d DAY', $maxAge) : '')
+			($maxAge > 0 ? sprintf('AND r.postdate > NOW() - INTERVAL %d DAY', $maxAge) : ''),
+			($minSize > 0 ? sprintf('AND r.size >= %d', $minSize) : '')
 		);
 
 		$baseSql = sprintf(
@@ -1083,21 +1094,22 @@ class Releases
 	 *
 	 * @return array
 	 */
-	public function searchbyImdbId($imDbId, $offset = 0, $limit = 100, $name = '', $cat = [-1], $maxAge = -1)
+	public function searchbyImdbId($imDbId, $offset = 0, $limit = 100, $name = '', $cat = [-1], $maxAge = -1, $minSize = 0)
 	{
 		$whereSql = sprintf(
 			"%s
 			WHERE r.categories_id BETWEEN " . Category::MOVIE_ROOT . " AND " . Category::MOVIE_OTHER . "
 			AND r.nzbstatus = %d
 			AND r.passwordstatus %s
-			%s %s %s %s",
+			%s %s %s %s %s",
 			($name !== '' ? $this->releaseSearch->getFullTextJoinString() : ''),
 			NZB::NZB_ADDED,
 			$this->showPasswords,
 			($name !== '' ? $this->releaseSearch->getSearchSQL(['searchname' => $name]) : ''),
 			(($imDbId != '-1' && is_numeric($imDbId)) ? sprintf(' AND imdbid = %d ', str_pad($imDbId, 7, '0', STR_PAD_LEFT)) : ''),
 			$this->categorySQL($cat),
-			($maxAge > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxAge) : '')
+			($maxAge > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxAge) : ''),
+			($minSize > 0 ? sprintf('AND r.size >= %d', $minSize) : '')
 		);
 
 		$baseSql = sprintf(
