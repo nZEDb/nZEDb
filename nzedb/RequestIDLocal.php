@@ -31,7 +31,7 @@ class RequestIDLocal extends RequestID
 			AND r.isrequestid = 1'
 		);
 
-		$query .= ($this->_charGUID === '' ? '' : ' AND r.guid ' . $this->pdo->likeString($this->_charGUID, false, true));
+		$query .= ($this->_charGUID === '' ? '' : ' AND r.leftguid = ' . $this->pdo->escapeString($this->_charGUID));
 		$query .= ($this->_groupID === '' ? '' : ' AND r.group_id = ' . $this->_groupID);
 		$query .= ($this->_maxTime === 0 ? '' : sprintf(' AND r.adddate > NOW() - INTERVAL %d HOUR', $this->_maxTime));
 
