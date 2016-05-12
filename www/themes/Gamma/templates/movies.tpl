@@ -174,7 +174,7 @@
 									{/if}
 									{if !empty($cpurl) && !empty($cpapi)}
 										<li>
-											<a class="sendtocouch fa fa-bed" target="blackhole" href="javascript:;" rel="{$site->dereferrer_link}{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}" name="CP{$result.imdbid}" title="Add to CouchPotato"></a>
+											<a class="sendtocouch fa fa-bed" target="blackhole" href="javascript:;" rel="{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}" name="CP{$result.imdbid}" title="Add to CouchPotato"></a>
 										</li>
 									{/if}
 								</ul>

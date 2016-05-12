@@ -8,6 +8,8 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+2016-05-12 DariusIII
+	* Fix: Remove derefferer links from CouchPotato url in Gamma theme.
 2016-05-11 bart39
 	Fix: fix patch 438 / schema.
 	Chg: Added some logging to help diagnose issue #2139
