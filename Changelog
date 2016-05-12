@@ -12,6 +12,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Add: Reporting oupt for update git,db commands.
 2016-05-12 ruhllatio
 	Fix: Browse ordering wrong due to added minSize push
+	Mrg: PR Add leftguid column to releases to improve threading work queries #2144
 2016-05-12 DariusIII
 	* Fix: Remove derefferer links from CouchPotato url in Gamma theme.
 2016-05-11 bart39
