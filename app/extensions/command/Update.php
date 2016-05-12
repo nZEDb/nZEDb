@@ -79,6 +79,7 @@ class Update extends \app\extensions\console\Command
 
 		$currentDb = $versions->getSQLPatchFromDB();
 		$currentXML = $versions->getSQLPatchFromFile();
+		$this->out("Db: $currentDb,\tFiles: $currentXML");
 		if ($currentDb < $currentXML) {
 			$db = new DbUpdate(['backup' => false]);
 			$db->processPatches(['safe' => false]);
@@ -90,20 +91,37 @@ class Update extends \app\extensions\console\Command
 
 	public function git()
 	{
+		// TODO Add check to determine if the indexer or other scripts are running. Hopefully
+		// also prevent web access.
 		$this->initialiseGit();
 		if (!in_array($this->git->getBranch(), $this->git->getBranchesMain())) {
 			$this->error("Not on the stable or dev branch! Refusing to update repository ;-)");
 			return;
 		}
-		$this->git->run('pull');
+
+		//return
+		$this->out($this->git->pull());
 	}
 
 	public function nzedb()
 	{
 		try {
-			$this->git();
-			$this->composer();
-			$this->db();
+			$output = $this->git();
+			if ($output === 'Already up-to-date.') {
+				$this->info($output);
+			} else {
+				$fail = $this->composer();
+				if (!$fail) {
+					$fail = $this->db();
+					if ($fail) {
+						$this->error('Db updating failled!!');
+						return false;
+					}
+				} else {
+					$this->error('Composer failed tp update!!');
+					return false;
+				};
+			}
 
 			$smarty = new Smarty();
 			$cleared = $smarty->clearCompiledTemplate();
