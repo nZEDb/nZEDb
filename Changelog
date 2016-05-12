@@ -8,6 +8,8 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+2016-05-12 niel
+	Add: Reporting oupt for update git,db commands.
 2016-05-12 ruhllatio
 	Fix: Browse ordering wrong due to added minSize push
 2016-05-12 DariusIII
