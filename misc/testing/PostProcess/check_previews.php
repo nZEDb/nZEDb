@@ -44,8 +44,8 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "check")) {
 					$pdo->queryExec(
 						sprintf("
 							UPDATE releases
-							SET consoleinfoid = NULL, gamesinfo_id = 0, imdbid = NULL, musicinfoid = NULL,
-								bookinfoid = NULL, videos_id = 0, tv_episodes_id = 0, xxxinfo_id = 0,
+							SET consoleinfo_id = NULL, gamesinfo_id = 0, imdbid = NULL, musicinfo_id = NULL,
+								bookinfo_id = NULL, videos_id = 0, tv_episodes_id = 0, xxxinfo_id = 0,
 								passwordstatus = -1, haspreview = -1, jpgstatus = 0, videostatus = 0,
 								audiostatus = 0, nfostatus = -1
 							WHERE id = %s",

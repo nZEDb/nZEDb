@@ -44,7 +44,7 @@
 									href="{$site->dereferrer_link}{$result.url}"
 								><img
 										class="shadow"
-										src="{$smarty.const.WWW_TOP}/covers/book/{if $result.cover == 1}{$result.bookinfoid}.jpg{else}no-cover.jpg{/if}"
+										src="{$smarty.const.WWW_TOP}/covers/book/{if $result.cover == 1}{$result.bookinfo_id}.jpg{else}no-cover.jpg{/if}"
 										width="120"
 										border="0"
 										alt="{$result.title|escape:"htmlall"}"
@@ -54,7 +54,7 @@
 										class="label"
 										target="_blank"
 										href="{$site->dereferrer_link}{$result.url}"
-										name="amazon{$result.bookinfoid}"
+										name="amazon{$result.bookinfo_id}"
 										title="View amazon page"
 									><img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/amazon.png"></a>
 									<a

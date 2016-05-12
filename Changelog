@@ -8,6 +8,30 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+2016-05-11 bart39
+	Fix: fix patch 438 / schema.
+	Chg: Added some logging to help diagnose issue #2139
+	Chg: detect broken nzbs in clean nzbs.
+	Chg: add method for rarinfo if missing.
+2016-05-11 ruhllatio
+	Chg: Make some var changes in PP Add
+	Fix: fix patch 438 missing trigger updates for release search table
+	Fix: Invalid index errors in NameFixer caused by bad find and replaces in feature-db (temp)
+	Fix: PP Add query using old releaseid
+	Add: Feature request - Option to specify the minimum file size using the API? #234
+	Fix: Undefined index: anidb #2137
+	Add: REQUEST: include PREDBURL (if PREDB info exists) in extended=1 API information #2035
+	Chg: Make deleteSingle honor the release ID identifier as a PK delete will always be faster
+	Chg: Make fixRelNames filename work query a bit quicker on larger databases by preserving table placement
+2016-05-11 DariusIII
+	Upd: Split UPDATE and DELETE query after NZB is created for release
+	Fix: Remove argument from createGUID function call in createReleases function, as createGUID function does not use any argument.
+2016-05-10 ruhllatio
+	Fix: Category Parent->Child name return function after Misc move
+	Fix: WEB-DL shows as option in My TV shows when not used as a category #2110
+	Fix: 404 function had no parameter for reason even though it was being set and clean up BasePage
+	Mrg: Feature db #2136 @niel
+	Fix: Mulple issues in feature-db branch and some Gamma issues
 2016-05-10 DariusIII
 	Fix: Prevent deadlocks on binaries and releases update (fix @ruhllatio).
 	Upd: Add couchpotato icon to Gamma theme. Fix issue #2115
@@ -18,6 +42,11 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Mrg: Changing table 'category' to 'categories' along with references to categoryid => categories_id.
 		**NOTE** This involves changes to your releases table. It will take some time,
 		potentially a very long time, depending on the number of releases you have.
+	Chg: Changing releases.preid to releases.predb_id in line with lithium conventions.
+	Chg: Changing releases.musicinfoid => releases.musicinfo_id inline with lithium conventions.
+	Chg: Changing releases.consoleinfoid => releases.consoleinfo_id inline with lithium conventions.
+	Chg: Changing releases.bookinfoid => releases.bookinfo_id inline with lithium conventions.
+	Chg: Changing various tables with releaseid => releases_id inline with lithium conventions.
 2016-05-07 niel
 	Chg: alter subsection,name fields to settings for recaptcha.
 	Mrg: PR 2135, from zetas - Fix Recaptcha settings.

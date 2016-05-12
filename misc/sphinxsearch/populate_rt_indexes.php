@@ -31,7 +31,7 @@ function populate_rt($table, $max)
 			$query = (
 				'SELECT r.id, r.name, r.searchname, r.fromname, IFNULL(GROUP_CONCAT(rf.name SEPARATOR " "),"") filename
 				FROM releases r
-				LEFT JOIN release_files rf ON(r.id=rf.releaseid)
+				LEFT JOIN release_files rf ON(r.id=rf.releases_id)
 				WHERE r.id > %d
 				GROUP BY r.id
 				ORDER BY r.id ASC

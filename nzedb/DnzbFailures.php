@@ -164,7 +164,7 @@ class DnzbFailures
 			sprintf('
 				SELECT text
 				FROM release_comments
-				WHERE releaseid = %d',
+				WHERE releases_id = %d',
 				$relid
 			)
 		);

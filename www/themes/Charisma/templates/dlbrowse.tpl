@@ -88,8 +88,8 @@
 				{/if}
 			</td>
 			<td class="less mid">
-				{if $result.release.categoryid != ""}
-					<a href="{$smarty.const.WWW_TOP}/browse?t={$result.release.categoryid}">{$result.release.category_name}</a>
+				{if $result.release.categories_id != ""}
+					<a href="{$smarty.const.WWW_TOP}/browse?t={$result.release.categories_id}">{$result.release.category_name}</a>
 				{/if}
 			</td>
 			<td>

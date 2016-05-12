@@ -27,7 +27,7 @@ class RequestIDLocal extends RequestID
 			FROM releases r
 			INNER JOIN groups g ON r.group_id = g.id
 			WHERE r.nzbstatus = 1
-			AND r.preid = 0
+			AND r.predb_id = 0
 			AND r.isrequestid = 1'
 		);
 
@@ -259,7 +259,7 @@ class RequestIDLocal extends RequestID
 			$this->pdo->queryExec(
 				sprintf('
 					UPDATE releases
-					SET preid = %d, reqidstatus = %d, isrenamed = 1, iscategorized = 1, searchname = %s
+					SET predb_id = %d, reqidstatus = %d, isrenamed = 1, iscategorized = 1, searchname = %s
 					WHERE id = %d',
 					$this->_newTitle['id'],
 					self::REQID_FOUND,
@@ -273,8 +273,8 @@ class RequestIDLocal extends RequestID
 			$this->pdo->queryExec(
 				sprintf('
 					UPDATE releases SET
-						videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL,
-						bookinfoid = NULL, anidbid = NULL, preid = %d, reqidstatus = %d, isrenamed = 1,
+						videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfo_id = NULL, consoleinfo_id = NULL,
+						bookinfo_id = NULL, anidbid = NULL, predb_id = %d, reqidstatus = %d, isrenamed = 1,
 						iscategorized = 1, searchname = %s, categories_id = %d
 					WHERE id = %d',
 					$this->_newTitle['id'],

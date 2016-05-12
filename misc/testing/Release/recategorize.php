@@ -88,10 +88,10 @@ function categorizeRelease($where, $update = true, $echooutput = false)
 								videos_id = 0,
 								tv_episodes_id = 0,
 								imdbid = NULL,
-								musicinfoid = NULL,
-								consoleinfoid = NULL,
+								musicinfo_id = NULL,
+								consoleinfo_id = NULL,
 								gamesinfo_id = 0,
-								bookinfoid = NULL,
+								bookinfo_id = NULL,
 								anidbid = NULL,
 								xxxinfo_id = 0,
 								categories_id = %d

@@ -403,18 +403,18 @@ class Tmux
 					SUM(IF(nzbstatus = 1 AND categories_id = %d AND anidbid IS NULL,1,0)) AS processanime,
 					SUM(IF(nzbstatus = 1 AND categories_id BETWEEN %d AND %d AND imdbid IS NULL,1,0)
 					) AS processmovies,
-					SUM(IF(nzbstatus = 1 AND categories_id IN (%d, %d, %d) AND musicinfoid IS NULL,1,0)) AS processmusic,
-					SUM(IF(nzbstatus = 1 AND categories_id BETWEEN %d AND %d AND consoleinfoid IS
+					SUM(IF(nzbstatus = 1 AND categories_id IN (%d, %d, %d) AND musicinfo_id IS NULL,1,0)) AS processmusic,
+					SUM(IF(nzbstatus = 1 AND categories_id BETWEEN %d AND %d AND consoleinfo_id IS
 					NULL,1,0)) AS processconsole,
-					SUM(IF(nzbstatus = 1 AND categories_id IN (%s) AND bookinfoid IS NULL,1,0)) AS processbooks,
+					SUM(IF(nzbstatus = 1 AND categories_id IN (%s) AND bookinfo_id IS NULL,1,0)) AS processbooks,
 					SUM(IF(nzbstatus = 1 AND categories_id = %d AND gamesinfo_id = 0,1,0)) AS processgames,
 					SUM(IF(nzbstatus = 1 AND categories_id BETWEEN %d AND %d AND xxxinfo_id = 0,1,0)) AS processxxx,
 					SUM(IF(1=1 %s,1,0)) AS processnfo,
 					SUM(IF(nzbstatus = 1 AND nfostatus = 1,1,0)) AS nfo,
-					SUM(IF(nzbstatus = 1 AND isrequestid = 1 AND preid = 0 AND ((reqidstatus = 0) OR (reqidstatus = -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL %s HOUR)),1,0)) AS requestid_inprogress,
-					SUM(IF(preid > 0 AND nzbstatus = 1 AND isrequestid = 1 AND reqidstatus = 1,1,0)) AS requestid_matched,
-					SUM(IF(preid > 0 AND searchname IS NOT NULL,1,0)) AS predb_matched,
-					COUNT(DISTINCT(preid)) AS distinct_predb_matched
+					SUM(IF(nzbstatus = 1 AND isrequestid = 1 AND predb_id = 0 AND ((reqidstatus = 0) OR (reqidstatus = -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL %s HOUR)),1,0)) AS requestid_inprogress,
+					SUM(IF(predb_id > 0 AND nzbstatus = 1 AND isrequestid = 1 AND reqidstatus = 1,1,0)) AS requestid_matched,
+					SUM(IF(predb_id > 0 AND searchname IS NOT NULL,1,0)) AS predb_matched,
+					COUNT(DISTINCT(predb_id)) AS distinct_predb_matched
 					FROM releases r",
 					Category::TV_ROOT,
 					Category::TV_OTHER,

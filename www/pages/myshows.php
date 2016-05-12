@@ -44,7 +44,7 @@ switch ($action) {
 		} else {
 			$show = $tv->getByVideoID($videoId);
 			if (!$show) {
-				$page->show404('Seriously?');
+				$page->show404('No matching show.');
 			}
 		}
 
@@ -61,6 +61,10 @@ switch ($action) {
 			$tmpcats = $cat->getChildren(Category::TV_ROOT);
 			$categories = array();
 			foreach ($tmpcats as $c) {
+				// If TV WEB-DL categorization is disabled, don't include it as an option
+				if ($page->settings->getSetting('catwebdl') == 0 && $c['id'] == Category::TV_WEBDL) {
+					continue;
+				}
 				$categories[$c['id']] = $c['title'];
 			}
 			$page->smarty->assign('type', 'add');
@@ -167,7 +171,7 @@ switch ($action) {
 		$shows = $us->getShows($page->users->currentUserId());
 		$results = array();
 		foreach ($shows as $showk => $show) {
-			$showcats = explode('|', $show['categories_id']);
+			$showcats = explode('|', $show['categoryid']);
 			if (is_array($showcats) && sizeof($showcats) > 0) {
 				$catarr = array();
 				foreach ($showcats as $scat) {

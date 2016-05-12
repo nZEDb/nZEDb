@@ -490,7 +490,7 @@ class Forking extends \fork_daemon
 		$groupby = "GROUP BY guidchar";
 		$orderby = "ORDER BY guidchar ASC";
 		$rowLimit = "LIMIT 16";
-		$extrawhere = "AND r.preid = 0 AND r.nzbstatus = 1";
+		$extrawhere = "AND r.predb_id = 0 AND r.nzbstatus = 1";
 		$select = "DISTINCT LEFT(r.guid, 1) AS guidchar, COUNT(r.id) AS count";
 
 		$threads = $this->pdo->getSetting('fixnamethreads');
@@ -501,7 +501,7 @@ class Forking extends \fork_daemon
 		}
 		switch ($this->workTypeOptions[0]) {
 			case "md5":
-				$join = "LEFT OUTER JOIN release_files rf ON r.id = rf.releaseid AND rf.ishashed = 1";
+				$join = "LEFT OUTER JOIN release_files rf ON r.id = rf.releases_id AND rf.ishashed = 1";
 				$where = "r.ishashed = 1 AND r.dehashstatus BETWEEN -6 AND 0";
 				break;
 
@@ -510,7 +510,7 @@ class Forking extends \fork_daemon
 				break;
 
 			case "filename":
-				$join = "INNER JOIN release_files rf ON r.id = rf.releaseid";
+				$join = "STRAIGHT_JOIN release_files rf ON r.id = rf.releases_id";
 				$where = "r.proc_files = 0";
 				break;
 
@@ -906,7 +906,7 @@ class Forking extends \fork_daemon
 				INNER JOIN releases r ON r.group_id = g.id
 				WHERE (g.active = 1 OR g.backfill = 1)
 				AND r.nzbstatus = %d
-				AND r.preid = 0
+				AND r.predb_id = 0
 				AND r.isrequestid = 1
 				AND r.reqidstatus = %d',
 				NZB::NZB_ADDED,
