@@ -698,6 +698,7 @@ CREATE TABLE         releases (
   INDEX ix_releases_group_id                  (group_id,passwordstatus),
   INDEX ix_releases_postdate_searchname       (postdate,searchname),
   INDEX ix_releases_guid                      (guid),
+  INDEX ix_releases_leftguid                  (leftguid ASC, predb_id),
   INDEX ix_releases_nzb_guid                  (nzb_guid),
   INDEX ix_releases_videos_id                 (videos_id),
   INDEX ix_releases_tv_episodes_id            (tv_episodes_id),
