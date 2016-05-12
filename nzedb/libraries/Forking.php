@@ -491,7 +491,7 @@ class Forking extends \fork_daemon
 		$orderby = "ORDER BY guidchar ASC";
 		$rowLimit = "LIMIT 16";
 		$extrawhere = "AND r.predb_id = 0 AND r.nzbstatus = 1";
-		$select = "DISTINCT LEFT(r.guid, 1) AS guidchar, COUNT(r.id) AS count";
+		$select = "DISTINCT r.leftguid AS guidchar, COUNT(r.id) AS count";
 
 		$threads = $this->pdo->getSetting('fixnamethreads');
 		$maxperrun = $this->pdo->getSetting('fixnamesperrun');
@@ -678,7 +678,7 @@ class Forking extends \fork_daemon
 			$this->register_child_run([0 => $this, 1 => 'postProcessChildWorker']);
 			$this->work = $this->pdo->query(
 				sprintf('
-					SELECT LEFT(r.guid, 1) AS id
+					SELECT leftguid AS id
 					FROM releases r
 					LEFT JOIN categories c ON c.id = r.categories_id
 					WHERE r.nzbstatus = %d
@@ -686,7 +686,7 @@ class Forking extends \fork_daemon
 					AND r.haspreview = -1
 					AND c.disablepreview = 0
 					%s %s
-					GROUP BY LEFT(r.guid, 1)
+					GROUP BY leftguid
 					LIMIT 16',
 					NZB::NZB_ADDED,
 					$this->ppAddMaxSize,
@@ -728,10 +728,10 @@ class Forking extends \fork_daemon
 			$this->register_child_run([0 => $this, 1 => 'postProcessChildWorker']);
 			$this->work = $this->pdo->query(
 				sprintf('
-					SELECT LEFT(r.guid, 1) AS id
+					SELECT leftguid AS id
 					FROM releases r
 					WHERE 1=1 %s
-					GROUP BY LEFT(r.guid, 1)
+					GROUP BY leftguid
 					LIMIT 16',
 					$this->nfoQueryString
 				)

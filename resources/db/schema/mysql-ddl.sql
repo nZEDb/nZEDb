@@ -657,6 +657,7 @@ CREATE TABLE         releases (
   adddate           DATETIME                       DEFAULT NULL,
   updatetime        TIMESTAMP                      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   guid              VARCHAR(40)                    NOT NULL,
+  leftguid          CHAR(1)                        NOT NULL COMMENT 'The first letter of the release guid',
   fromname          VARCHAR(255)                   NULL,
   completion        FLOAT                          NOT NULL DEFAULT '0',
   categories_id     INT                            NOT NULL DEFAULT '0010',
