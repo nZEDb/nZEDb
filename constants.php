@@ -40,6 +40,16 @@ define('nZEDb_WWW', nZEDb_ROOT . 'www' . DS);
 // Used to refer to the resources folder
 define('nZEDb_RES', nZEDb_ROOT . 'resources' . DS);
 
+
+// Smarty's cache.
+define('nZEDb_SMARTY_CACHE', nZEDb_RES . DS . 'smarty' . DS . 'cache/');
+
+// Smarty's configuration files.
+define('nZEDb_SMARTY_CONFIGS', nZEDb_RES . DS . 'smarty' . DS . 'configs/');
+
+// Smarty's compiled template cache.
+define('nZEDb_SMARTY_TEMPLATES', nZEDb_RES . DS . 'smarty' . DS . 'templates_c/');
+
 // Used to refer to the tmp folder
 define('nZEDb_TMP', nZEDb_RES . 'tmp' . DS);
 
