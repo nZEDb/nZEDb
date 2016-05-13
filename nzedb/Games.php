@@ -113,7 +113,7 @@ class Games
 		if ($this->pdo->getSetting('lookupgames') == 2) {
 			$this->renamed = 'AND isrenamed = 1';
 		}
-		$this->catWhere = 'AND categoryid = ' . Category::PC_GAMES;
+		$this->catWhere = 'AND categories_id = ' . Category::PC_GAMES;
 		//$this->cleangames = ($this->pdo->getSetting('lookupgames') == 2) ? 'AND isrenamed = 1' : '';
 	}
 
@@ -202,7 +202,7 @@ class Games
 
 		$exccatlist = "";
 		if (count($excludedcats) > 0) {
-			$exccatlist = " AND r.categoryid NOT IN (" . implode(",", $excludedcats) . ")";
+			$exccatlist = " AND r.categories_id NOT IN (" . implode(",", $excludedcats) . ")";
 		}
 
 		$order = $this->getGamesOrder($orderby);
@@ -248,7 +248,7 @@ class Games
 					GROUP_CONCAT(r.haspreview ORDER BY r.postdate DESC SEPARATOR ',') AS grp_haspreview,
 					GROUP_CONCAT(r.passwordstatus ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_password,
 					GROUP_CONCAT(r.guid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_guid,
-					GROUP_CONCAT(rn.releaseid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid,
+					GROUP_CONCAT(rn.releases_id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid,
 					GROUP_CONCAT(g.name ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grpname,
 					GROUP_CONCAT(r.searchname ORDER BY r.postdate DESC SEPARATOR '#') AS grp_release_name,
 					GROUP_CONCAT(r.postdate ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_postdate,
@@ -258,10 +258,10 @@ class Games
 					GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs,
 					GROUP_CONCAT(df.failed ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_failed,
 				con.*, YEAR (con.releasedate) as year, r.gamesinfo_id, g.name AS group_name,
-				rn.releaseid AS nfoid
+				rn.releases_id AS nfoid
 				FROM releases r
 				LEFT OUTER JOIN groups g ON g.id = r.group_id
-				LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
+				LEFT OUTER JOIN release_nfos rn ON rn.releases_id = r.id
 				LEFT OUTER JOIN dnzb_failures df ON df.release_id = r.id
 				INNER JOIN gamesinfo con ON con.id = r.gamesinfo_id
 				WHERE con.id IN (%s)

@@ -41,7 +41,7 @@ switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
 	default:
 		if (isset($_GET["id"])) {
 			$page->title = "User Roles Edit";
-			$role = $page->users->getRoleByID($_GET["id"]);
+			$role = $page->users->getRoleById($_GET["id"]);
 		}
 		break;
 }

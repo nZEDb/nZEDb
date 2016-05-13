@@ -172,7 +172,7 @@ class Movie
 		$this->imgSavePath = nZEDb_COVERS . 'movies' . DS;
 		$this->service = '';
 
-		$this->catWhere = 'AND categoryid BETWEEN ' . Category::MOVIE_ROOT . ' AND ' . Category::MOVIE_OTHER;
+		$this->catWhere = 'AND categories_id BETWEEN ' . Category::MOVIE_ROOT . ' AND ' . Category::MOVIE_OTHER;
 
 		if (nZEDb_DEBUG || nZEDb_LOGGING) {
 			$this->debug = true;
@@ -297,7 +297,7 @@ class Movie
 							? 'AND r.postdate > NOW() - INTERVAL ' . $maxAge . 'DAY '
 							: ''
 					),
-					(count($excludedCats) > 0 ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : ''),
+					(count($excludedCats) > 0 ? ' AND r.categories_id NOT IN (' . implode(',', $excludedCats) . ')' : ''),
 					$order[0],
 					$order[1],
 					($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
@@ -320,7 +320,7 @@ class Movie
 				GROUP_CONCAT(r.haspreview ORDER BY r.postdate DESC SEPARATOR ',') AS grp_haspreview,
 				GROUP_CONCAT(r.passwordstatus ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_password,
 				GROUP_CONCAT(r.guid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_guid,
-				GROUP_CONCAT(rn.releaseid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid,
+				GROUP_CONCAT(rn.releases_id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid,
 				GROUP_CONCAT(g.name ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grpname,
 				GROUP_CONCAT(r.searchname ORDER BY r.postdate DESC SEPARATOR '#') AS grp_release_name,
 				GROUP_CONCAT(r.postdate ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_postdate,
@@ -332,13 +332,13 @@ class Movie
 				GROUP_CONCAT(cp.title, ' > ', c.title ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_catname,
 			m.*,
 			g.name AS group_name,
-			rn.releaseid AS nfoid
+			rn.releases_id AS nfoid
 			FROM releases r
 			LEFT OUTER JOIN groups g ON g.id = r.group_id
-			LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
+			LEFT OUTER JOIN release_nfos rn ON rn.releases_id = r.id
 			LEFT OUTER JOIN dnzb_failures df ON df.release_id = r.id
-			LEFT OUTER JOIN category c ON c.id = r.categoryid
-			LEFT OUTER JOIN category cp ON cp.id = c.parentid
+			LEFT OUTER JOIN categories c ON c.id = r.categories_id
+			LEFT OUTER JOIN categories cp ON cp.id = c.parentid
 			INNER JOIN movieinfo m ON m.imdbid = r.imdbid
 			WHERE m.imdbid IN (%s)
 			AND r.id IN (%s) %s
@@ -1075,19 +1075,19 @@ class Movie
 
 		// Get all releases without an IMDB id.
 		$res = $this->pdo->query(
-				sprintf("
-				SELECT r.searchname, r.id
-				FROM releases r
-				WHERE r.imdbid IS NULL
-				AND r.nzbstatus = 1
-				%s %s %s %s
-				LIMIT %d",
-				$this->catWhere,
-				($groupID === '' ? '' : ('AND r.group_id = ' . $groupID)),
-				($guidChar === '' ? '' : ('AND r.guid ' . $this->pdo->likeString($guidChar, false, true))),
-				($lookupIMDB == 2 ? 'AND r.isrenamed = 1' : ''),
-				$this->movieqty
-				)
+			sprintf("
+			SELECT r.searchname, r.id
+			FROM releases r
+			WHERE r.imdbid IS NULL
+			AND r.nzbstatus = 1
+			%s %s %s %s
+			LIMIT %d",
+			$this->catWhere,
+			($groupID === '' ? '' : ('AND r.group_id = ' . $groupID)),
+			($guidChar === '' ? '' : 'AND r.leftguid = ' . $this->pdo->escapeString($guidChar)),
+			($lookupIMDB == 2 ? 'AND r.isrenamed = 1' : ''),
+			$this->movieqty
+			)
 		);
 		$movieCount = count($res);
 
@@ -1358,10 +1358,10 @@ class Movie
 		$buffer = Misc::getUrl(
 			[
 				'url' =>
-					"http://search.yahoo.com/search?n=10&ei=UTF-8&va_vt=title&vo_vt=any&ve_vt=any&vp_vt=any&vf=all&vm=p&fl=0&fr=fp-top&p=intitle:" .
+					"http://search.yahoo.com/search?n=10&ei=UTF-8&va_vt=title&vo_vt=any&ve_vt=any&vp_vt=any&vf=all&vm=p&fl=0&fr=fp-top&p=" .
 					urlencode(
-						'intitle:' .
-						implode(' intitle:',
+						'' .
+						implode('+',
 							explode(
 								' ',
 								preg_replace(
@@ -1375,7 +1375,7 @@ class Movie
 								)
 							)
 						) .
-						' intitle:' .
+						'+' .
 						$this->currentYear
 					) .
 					'&vs=' .

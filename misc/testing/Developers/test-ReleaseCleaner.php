@@ -26,7 +26,7 @@ if (!in_array($argv[3], array('true', 'false'))) {
 
 $category = '';
 if ($argv[4] !== '0' && strlen($argv[4]) === 4) {
-	$category = 'AND categoryid = ' . $argv[4];
+	$category = 'AND categories_id = ' . $argv[4];
 }
 
 $rename = false;

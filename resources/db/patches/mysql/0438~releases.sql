@@ -1,0 +1,15 @@
+ALTER TABLE releases
+  CHANGE COLUMN preid predb_id INT(11) UNSIGNED NOT NULL COMMENT 'id, of the predb entry, this hash belongs to',
+  CHANGE COLUMN musicinfoid musicinfo_id INT(11) SIGNED NULL COMMENT 'FK to musicinfo.id',
+  CHANGE COLUMN consoleinfoid consoleinfo_id INT(11) SIGNED NULL COMMENT 'FK to consoleinfo.id',
+  CHANGE COLUMN bookinfoid bookinfo_id INT(11) SIGNED NULL COMMENT 'FK to bookinfo.id'
+PARTITION BY RANGE (categories_id) (
+PARTITION misc VALUES LESS THAN (1000),
+PARTITION console VALUES LESS THAN (2000),
+PARTITION movies VALUES LESS THAN (3000),
+PARTITION audio VALUES LESS THAN (4000),
+PARTITION pc VALUES LESS THAN (5000),
+PARTITION tv VALUES LESS THAN (6000),
+PARTITION xxx VALUES LESS THAN (7000),
+PARTITION books VALUES LESS THAN (8000)
+);

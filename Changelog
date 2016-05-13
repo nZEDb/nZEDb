@@ -8,17 +8,84 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
-
+2016-05-12 niel
+	Add: Reporting oupt for update git,db commands.
+2016-05-12 ruhllatio
+	Fix: Browse ordering wrong due to added minSize push
+	Mrg: PR Add leftguid column to releases to improve threading work queries #2144
+2016-05-12 DariusIII
+	* Fix: Remove derefferer links from CouchPotato url in Gamma theme.
+2016-05-11 bart39
+	Fix: fix patch 438 / schema.
+	Chg: Added some logging to help diagnose issue #2139
+	Chg: detect broken nzbs in clean nzbs.
+	Chg: add method for rarinfo if missing.
+2016-05-11 ruhllatio
+	Chg: Make some var changes in PP Add
+	Fix: fix patch 438 missing trigger updates for release search table
+	Fix: Invalid index errors in NameFixer caused by bad find and replaces in feature-db (temp)
+	Fix: PP Add query using old releaseid
+	Add: Feature request - Option to specify the minimum file size using the API? #234
+	Fix: Undefined index: anidb #2137
+	Add: REQUEST: include PREDBURL (if PREDB info exists) in extended=1 API information #2035
+	Chg: Make deleteSingle honor the release ID identifier as a PK delete will always be faster
+	Chg: Make fixRelNames filename work query a bit quicker on larger databases by preserving table placement
+2016-05-11 DariusIII
+	Upd: Split UPDATE and DELETE query after NZB is created for release
+	Fix: Remove argument from createGUID function call in createReleases function, as createGUID function does not use any argument.
+2016-05-10 ruhllatio
+	Fix: Category Parent->Child name return function after Misc move
+	Fix: WEB-DL shows as option in My TV shows when not used as a category #2110
+	Fix: 404 function had no parameter for reason even though it was being set and clean up BasePage
+	Mrg: Feature db #2136 @niel
+	Fix: Mulple issues in feature-db branch and some Gamma issues
+2016-05-10 DariusIII
+	Fix: Prevent deadlocks on binaries and releases update (fix @ruhllatio).
+	Upd: Add couchpotato icon to Gamma theme. Fix issue #2115
+2016-05-09 DariusIII
+	Fix: Partitioning in patch 0436.
+	Chg: Replace requestid_threaded.py with requestid.php in ProcessReleases class.
+2016-05-08 niel
+	Mrg: Changing table 'category' to 'categories' along with references to categoryid => categories_id.
+		**NOTE** This involves changes to your releases table. It will take some time,
+		potentially a very long time, depending on the number of releases you have.
+	Chg: Changing releases.preid to releases.predb_id in line with lithium conventions.
+	Chg: Changing releases.musicinfoid => releases.musicinfo_id inline with lithium conventions.
+	Chg: Changing releases.consoleinfoid => releases.consoleinfo_id inline with lithium conventions.
+	Chg: Changing releases.bookinfoid => releases.bookinfo_id inline with lithium conventions.
+	Chg: Changing various tables with releaseid => releases_id inline with lithium conventions.
+2016-05-07 niel
+	Chg: alter subsection,name fields to settings for recaptcha.
+	Mrg: PR 2135, from zetas - Fix Recaptcha settings.
+	Fix: Reference to configuration file/location for IRC Scraper in tmux-edit.tpl.
+2016-05-06 DariusIII
+	Fix: Missing use statement for Category class in admin pages.
+2016-05-06 bart39
+	Fix: TV categorization mismatches.
+		** NOTE *** - you will need to do the following to fix the categorization:
+		`php /var/www/nZEDb/misc/testing/Release/recategorize.php all`
+		this will take a while to complete.
+2016-05-06 DariusIII
+	Upd: Comment out max_matches(deprecated since sphinx 2.2.3) and change sphinx.pid location to proper /var/run/sphinxsearch/searchd.pid
+2016-05-05 niel
+	Mrg: PR 2121, from meganomic - Yahoo search fix.
 2016-05-05 bart39
 	Fix: update collection regex in a.b.mom
 	Fix: Missing escape on release triggers.
 2016-05-03 niel
+	Fix: Force li3 connections to ignore Host/Port settings if a socket is provided.
 	Mrg: Add 'composer install' instruction to ReleaseNotes (PR 2128).
 	Fix: Reinstate the LINES TERMINATED BY clause to loading data files to override default
 	behaviour of only using '\n' instead of '\r\n' that we need (Closes Issue 2104).
 2016-05-02 bart39
 	Mrg: PR 2127, from rainje - New release name format not matched with reqid
 	Chg: update schema and replace triggers for above PR.
+2016-04-30
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x.
+
+
+2016-05-03 niel
+	Mrg: Add 'composer install' instruction to ReleaseNotes (PR 2128).
 2016-04-28 niel
 	Fix: Code style foramtting.
 	Fix: Removing pre-install-cmd from composer.json again. It kills the install for new users.

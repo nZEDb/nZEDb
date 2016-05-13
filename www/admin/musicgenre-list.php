@@ -2,6 +2,7 @@
 require_once './config.php';
 
 use nzedb\Genres;
+use nzedb\Category;
 
 $page = new AdminPage();
 $genres = new Genres(['Settings' => $page->settings]);

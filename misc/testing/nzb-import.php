@@ -48,7 +48,7 @@ if (substr($path, -1) !== DS) {
 }
 
 $files = new \RegexIterator(
-	new \RecursiveIteratorIterator(
+		new \RecursiveIteratorIterator(
 		new \RecursiveDirectoryIterator($argv[1])
 	),
 	'/^.+\.nzb(\.gz)?$/i',

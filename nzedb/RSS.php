@@ -53,11 +53,11 @@ Class RSS
 	{
 		$catSearch = $cartSearch = '';
 
-		$catLimit = "AND r.categoryid BETWEEN " . Category::TV_ROOT . " AND " . Category::TV_OTHER;
+		$catLimit = "AND r.categories_id BETWEEN " . Category::TV_ROOT . " AND " . Category::TV_OTHER;
 
 		if (count($cat)) {
 			if ($cat[0] == -2) {
-				$cartSearch = sprintf(' INNER JOIN users_releases ON users_releases.user_id = %d AND users_releases.releaseid = r.id ', $userID);
+				$cartSearch = sprintf(' INNER JOIN users_releases ON users_releases.user_id = %d AND users_releases.releases_id = r.id ', $userID);
 			} else if ($cat[0] != -1) {
 				$catSearch = $this->releases->categorySQL($cat);
 			}
@@ -77,13 +77,13 @@ Class RSS
 					co.publisher AS co_publisher, co.releasedate AS co_releasedate,
 					co.review AS co_review, co.cover AS co_cover, cog.title AS co_genre
 				FROM releases r
-				INNER JOIN category c ON c.id = r.categoryid
-				INNER JOIN category cp ON cp.id = c.parentid
+				INNER JOIN categories c ON c.id = r.categories_id
+				INNER JOIN categories cp ON cp.id = c.parentid
 				INNER JOIN groups g ON g.id = r.group_id
 				LEFT OUTER JOIN movieinfo m ON m.imdbid = r.imdbid AND m.title != ''
-				LEFT OUTER JOIN musicinfo mu ON mu.id = r.musicinfoid
+				LEFT OUTER JOIN musicinfo mu ON mu.id = r.musicinfo_id
 				LEFT OUTER JOIN genres mug ON mug.id = mu.genre_id
-				LEFT OUTER JOIN consoleinfo co ON co.id = r.consoleinfoid
+				LEFT OUTER JOIN consoleinfo co ON co.id = r.consoleinfo_id
 				LEFT OUTER JOIN genres cog ON cog.id = co.genre_id %s
 				LEFT OUTER JOIN tv_episodes tve ON tve.id = r.tv_episodes_id
 				WHERE r.passwordstatus %s
@@ -123,20 +123,20 @@ Class RSS
 					%s AS category_ids,
 					COALESCE(cp.id,0) AS parentCategoryid
 				FROM releases r
-				INNER JOIN category c ON c.id = r.categoryid
-				INNER JOIN category cp ON cp.id = c.parentid
+				INNER JOIN categories c ON c.id = r.categories_id
+				INNER JOIN categories cp ON cp.id = c.parentid
 				INNER JOIN groups g ON g.id = r.group_id
 				LEFT OUTER JOIN videos v ON v.id = r.videos_id
 				LEFT OUTER JOIN tv_episodes tve ON tve.id = r.tv_episodes_id
 				WHERE %s %s %s
 				AND r.nzbstatus = %d
-				AND r.categoryid BETWEEN %d AND %d
+				AND r.categories_id BETWEEN %d AND %d
 				AND r.passwordstatus %s
 				ORDER BY postdate DESC %s",
 
 				$this->releases->getConcatenatedCategoryIDs(),
 				$this->releases->uSQL($this->pdo->query(sprintf('SELECT videos_id, categoryid FROM user_series WHERE user_id = %d', $userID), true), 'videos_id'),
-				(count($excludedCats) ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : ''),
+				(count($excludedCats) ? ' AND r.categories_id NOT IN (' . implode(',', $excludedCats) . ')' : ''),
 				($airDate > -1 ? sprintf(' AND tve.firstaired >= DATE_SUB(CURDATE(), INTERVAL %d DAY) ', $airDate) : ''),
 				NZB::NZB_ADDED,
 				Category::TV_ROOT,
@@ -165,18 +165,18 @@ Class RSS
 					%s AS category_ids,
 					COALESCE(cp.id,0) AS parentCategoryid
 				FROM releases r
-				INNER JOIN category c ON c.id = r.categoryid
-				INNER JOIN category cp ON cp.id = c.parentid
+				INNER JOIN categories c ON c.id = r.categories_id
+				INNER JOIN categories cp ON cp.id = c.parentid
 				INNER JOIN groups g ON g.id = r.group_id
 				LEFT OUTER JOIN movieinfo mi ON mi.imdbid = r.imdbid
 				WHERE %s %s
 				AND r.nzbstatus = %d
-				AND r.categoryid BETWEEN ' . Category::MOVIE_ROOT . ' AND ' . Category::MOVIE_OTHER . '
+				AND r.categories_id BETWEEN ' . Category::MOVIE_ROOT . ' AND ' . Category::MOVIE_OTHER . '
 				AND r.passwordstatus %s
 				ORDER BY postdate DESC %s",
 				$this->releases->getConcatenatedCategoryIDs(),
 				$this->releases->uSQL($this->pdo->query(sprintf('SELECT imdbid, categoryid FROM user_movies WHERE user_id = %d', $userID), true), 'imdbid'),
-				(count($excludedCats) ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : ''),
+				(count($excludedCats) ? ' AND r.categories_id NOT IN (' . implode(',', $excludedCats) . ')' : ''),
 				NZB::NZB_ADDED,
 				$this->releases->showPasswords,
 				(' LIMIT ' . ($limit > 100 ? 100 : $limit) . ' OFFSET 0')

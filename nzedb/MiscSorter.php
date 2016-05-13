@@ -39,18 +39,18 @@ class MiscSorter
 	public function nfosorter($category = 0, $id = 0)
 	{
 		$idarr = ($id != 0 ? sprintf('AND r.id = %d', $id) : '');
-		$cat = ($category = 0 ? sprintf('AND r.categoryid = %d', Category::OTHER_MISC) : sprintf('AND r.categoryid = %d', $category));
+		$cat = ($category = 0 ? sprintf('AND r.categories_id = %d', Category::OTHER_MISC) : sprintf('AND r.categories_id = %d', $category));
 
 		$res = $this->pdo->queryDirect(
 						sprintf("
 							SELECT UNCOMPRESS(rn.nfo) AS nfo,
 								r.id, r.name, r.searchname
 							FROM release_nfos rn
-							INNER JOIN releases r ON rn.releaseid = r.id
+							INNER JOIN releases r ON rn.releases_id = r.id
 							INNER JOIN groups g ON r.group_id = g.id
 							WHERE rn.nfo IS NOT NULL
 							AND r.proc_sorter = %d
-							AND r.preid = 0 %s",
+							AND r.predb_id = 0 %s",
 							self::PROC_SORTER_NONE,
 							($idarr = '' ? $cat : $idarr)
 						)
@@ -213,8 +213,8 @@ class MiscSorter
 
 		$release = $this->pdo->queryOneRow(
 						sprintf("
-							SELECT r.id AS releaseid, r.searchname AS searchname,
-								r.name AS name, r.categoryid, r.group_id
+							SELECT r.id AS releases_id, r.searchname AS searchname,
+								r.name AS name, r.categories_id, r.group_id
 							FROM releases r
 							WHERE r.id = %d",
 							$id
@@ -228,7 +228,7 @@ class MiscSorter
 			$this->_setProcSorter(self::PROC_SORTER_DONE, $id);
 		}
 
-		if ($type !== '' && in_array($type, ['bookinfoid', 'consoleinfoid', 'imdbid', 'musicinfoid'])) {
+		if ($type !== '' && in_array($type, ['bookinfo_id', 'consoleinfo_id', 'imdbid', 'musicinfo_id'])) {
 				$this->pdo->queryExec(
 							sprintf('
 								UPDATE releases
@@ -406,9 +406,9 @@ class MiscSorter
 		}
 
 		if ($audiobook) {
-			$ok = $this->dodbupdate($id, $name, $bookId, 'bookinfoid');
+			$ok = $this->dodbupdate($id, $name, $bookId, 'bookinfo_id');
 		} else {
-			$ok = $this->dodbupdate($id, $name, $bookId, 'bookinfoid');
+			$ok = $this->dodbupdate($id, $name, $bookId, 'bookinfo_id');
 		}
 
 		return $ok;
@@ -425,10 +425,10 @@ class MiscSorter
 		$rel = $this->_doAmazonLocal('musicinfo', (string)$amaz->Items->Item->ASIN);
 
 		if ($rel !== false) {
-			$ok = $this->dodbupdate($id, $name, $rel['id'], 'musicinfoid');
+			$ok = $this->dodbupdate($id, $name, $rel['id'], 'musicinfo_id');
 		} else {
 			$musicId = (new Music(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->updateMusicInfo('', '', $amaz);
-			$ok = $this->dodbupdate($id, $name, $musicId, 'musicinfoid');
+			$ok = $this->dodbupdate($id, $name, $musicId, 'musicinfo_id');
 		}
 		return $ok;
 	}
@@ -457,7 +457,7 @@ class MiscSorter
 		$rel = $this->_doAmazonLocal('consoleinfo', (string)$amaz->Items->Item->ASIN);
 
 		if ($rel !== false) {
-			$ok = $this->dodbupdate($id, $name, $rel['id'], 'consoleinfoid');
+			$ok = $this->dodbupdate($id, $name, $rel['id'], 'consoleinfo_id');
 		} else {
 			$consoleId = (new Console(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->
 				updateConsoleInfo([
@@ -465,7 +465,7 @@ class MiscSorter
 							'node'     => (int)$amaz->Items->Item->BrowseNodes->BrowseNodeId,
 							'platform' => (string)$amaz->Items->Item->ItemAttributes->Platform]
 				);
-			$ok = $this->dodbupdate($id, $name, $consoleId, 'consoleinfoid');
+			$ok = $this->dodbupdate($id, $name, $consoleId, 'consoleinfo_id');
 		}
 
 		return $ok;

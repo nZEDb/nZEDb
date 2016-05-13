@@ -53,7 +53,7 @@
 							height="130px"
 							width="130px"
 							class="shadow"
-							src="{$smarty.const.WWW_TOP}/covers/music/{if $result.cover == 1}{$result.musicinfoid}.jpg{else}no-cover.jpg{/if}"
+							src="{$smarty.const.WWW_TOP}/covers/music/{if $result.cover == 1}{$result.musicinfo_id}.jpg{else}no-cover.jpg{/if}"
 							alt="{$result.artist|escape:"htmlall"} - {$result.title|escape:"htmlall"}"
 						></a>
 					</div>
@@ -62,7 +62,7 @@
 							<a
 								class="label"
 								href="{$site->dereferrer_link}{$result.url}"
-								name="amazon{$result.musicinfoid}"
+								name="amazon{$result.musicinfo_id}"
 								title="View amazon page"
 							><img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/amazon.png"></a>
 						{/if}

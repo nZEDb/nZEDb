@@ -551,7 +551,7 @@
 			<td style="width:180px;"><label for="explain">Information:</label></td>
 			<td>
 				<div class="explanation">IRC Scraper will scrape nZEDb's own pre channel on synIRC for pre info.<br/>
-					Copy settings_example.php to settings.php in /misc/testing/IRCScraper and change the settings.<br/>
+					Copy ircscraper_settings_example.php to ircscraper_settings.php in {$smarty.const.nZEDb_CONFIGS} and change the settings.<br/>
 					As a minimum you should set the username and make sure it is unique.
 				</div>
 			</td>
