@@ -493,10 +493,9 @@ class Forking extends \fork_daemon
 
 		$join = "";
 		$where = "";
-		$groupby = "GROUP BY guidchar";
-		$orderby = "ORDER BY guidchar ASC";
+		$groupby = "GROUP BY leftguid";
 		$rowLimit = "LIMIT 16";
-		$extrawhere = "AND r.predb_id = 0 AND r.nzbstatus = 1";
+		$extrawhere = "AND r.predb_id < 1 AND r.nzbstatus = 1";
 		$select = "r.leftguid AS guidchar, COUNT(r.id) AS count";
 
 		$threads = $this->pdo->getSetting('fixnamethreads');
@@ -539,13 +538,12 @@ class Forking extends \fork_daemon
 			sprintf("
 				SELECT %s
 				FROM releases r %s
-				WHERE %s %s %s %s %s",
+				WHERE %s %s %s %s",
 				$select,
 				$join,
 				$where,
 				$extrawhere,
 				$groupby,
-				$orderby,
 				$rowLimit
 			)
 		);
@@ -1053,6 +1051,16 @@ class Forking extends \fork_daemon
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////// All class vars here /////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * @var ColorCLI
+	 */
+	public $_colorCLI;
+
+	/**
+	 * @var int The type of output
+	 */
+	protected $outputType;
 
 	/**
 	 * Path to do not run folder.
