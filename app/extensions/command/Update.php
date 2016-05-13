@@ -108,16 +108,18 @@ class Update extends \app\extensions\console\Command
 			if ($output === 'Already up-to-date.') {
 				$this->out($output, 'info');
 			} else {
-				$fail = $this->composer();
-				if (!$fail) {
+				$status = $this->composer();
+				if ($status) {
+					$this->out('Composer failed to update!!', 'error');
+
+					return false;
+				} else {
 					$fail = $this->db();
 					if ($fail) {
 						$this->out('Db updating failed!!', 'error');
+
 						return false;
 					}
-				} else {
-					$this->out('Composer failed to update!!', 'error');
-					return false;
 				};
 			}
 
@@ -167,6 +169,8 @@ class Update extends \app\extensions\console\Command
 	 *
 	 * It first checks the current branch for stable versions. If found then the '--no-dev'
 	 * option is added to the command to prevent development packages being also downloded.
+	 *
+	 * @return integer Return status from Composer.
 	 */
 	protected function composer()
 	{
@@ -176,7 +180,8 @@ class Update extends \app\extensions\console\Command
 			$command .= ' --no-dev';
 		}
 		$this->out('Running composer install process...', 'primary');
-		passthru($command);
+		system($command, $status);
+		return $status;
 	}
 
 	protected function initialiseGit()
