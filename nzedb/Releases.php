@@ -75,16 +75,17 @@ class Releases
 	public function insertRelease(array $parameters = [])
 	{
 		$parameters['id'] = $this->pdo->queryInsert(
-			sprintf(
-				"INSERT INTO releases
-					(name, searchname, totalpart, group_id, adddate, guid, postdate, fromname,
+			sprintf("
+				INSERT INTO releases
+					(name, searchname, totalpart, group_id, adddate, guid, leftguid, postdate, fromname,
 					size, passwordstatus, haspreview, categories_id, nfostatus, nzbstatus,
 					isrenamed, iscategorized, reqidstatus, predb_id)
-				 VALUES (%s, %s, %d, %d, NOW(), %s, %s, %s, %s, %d, -1, %d, -1, %d, %d, 1, %d, %d)",
+				VALUES (%s, %s, %d, %d, NOW(), %s, LEFT(%s, 1), %s, %s, %s, %d, -1, %d, -1, %d, %d, 1, %d, %d)",
 				$parameters['name'],
 				$parameters['searchname'],
 				$parameters['totalpart'],
 				$parameters['group_id'],
+				$parameters['guid'],
 				$parameters['guid'],
 				$parameters['postdate'],
 				$parameters['fromname'],
@@ -227,7 +228,7 @@ class Releases
 				LEFT OUTER JOIN release_nfos rn ON rn.releases_id = r.id
 				LEFT OUTER JOIN dnzb_failures df ON df.release_id = r.id
 				GROUP BY r.id
-				ORDER BY %7\$s %8\$s",
+				ORDER BY %8\$s %9\$s",
 				NZB::NZB_ADDED,
 				$this->showPasswords,
 				$this->categorySQL($cat),

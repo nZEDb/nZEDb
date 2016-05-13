@@ -294,7 +294,7 @@ class Nfo
 	public function processNfoFiles($nntp, $groupID = '', $guidChar = '', $processImdb = 1, $processTv = 1)
 	{
 		$ret = 0;
-		$guidCharQuery = ($guidChar === '' ? '' : 'AND r.guid ' . $this->pdo->likeString($guidChar, false, true));
+		$guidCharQuery = ($guidChar === '' ? '' : 'AND r.leftguid = ' . $this->pdo->escapeString($guidChar));
 		$groupIDQuery = ($groupID === '' ? '' : 'AND r.group_id = ' . $groupID);
 		$optionsQuery = self::NfoQueryString($this->pdo);
 

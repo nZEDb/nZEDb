@@ -131,6 +131,17 @@ class Git extends \lithium\core\Object
 		return $this->run("log $options");
 	}
 
+	public function pull(array $options = [])
+	{
+		$default = [
+			'branch'	=> $this->getBranch(),
+			'remote'	=> 'origin',
+		];
+		$options += $default;
+
+		return $this->repo->pull($options['remote'], $options['branch']);
+	}
+
 	/**
 	 * Run a git command in the git repository
 	 * Accepts a git command to run

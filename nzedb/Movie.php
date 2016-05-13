@@ -1075,19 +1075,19 @@ class Movie
 
 		// Get all releases without an IMDB id.
 		$res = $this->pdo->query(
-				sprintf("
-				SELECT r.searchname, r.id
-				FROM releases r
-				WHERE r.imdbid IS NULL
-				AND r.nzbstatus = 1
-				%s %s %s %s
-				LIMIT %d",
-				$this->catWhere,
-				($groupID === '' ? '' : ('AND r.group_id = ' . $groupID)),
-				($guidChar === '' ? '' : ('AND r.guid ' . $this->pdo->likeString($guidChar, false, true))),
-				($lookupIMDB == 2 ? 'AND r.isrenamed = 1' : ''),
-				$this->movieqty
-				)
+			sprintf("
+			SELECT r.searchname, r.id
+			FROM releases r
+			WHERE r.imdbid IS NULL
+			AND r.nzbstatus = 1
+			%s %s %s %s
+			LIMIT %d",
+			$this->catWhere,
+			($groupID === '' ? '' : ('AND r.group_id = ' . $groupID)),
+			($guidChar === '' ? '' : 'AND r.leftguid = ' . $this->pdo->escapeString($guidChar)),
+			($lookupIMDB == 2 ? 'AND r.isrenamed = 1' : ''),
+			$this->movieqty
+			)
 		);
 		$movieCount = count($res);
 

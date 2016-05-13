@@ -12,7 +12,7 @@ use nzedb\processing\PostProcess;
 $pdo = new Settings();
 
 if (!isset($argv[1])) {
-	exit($pdo->log->error("This script is not intended to be run manually, it is called from groupfixrelnames_threaded.py."));
+	exit($pdo->log->error("This script is not intended to be run manually, it is called from Multiprocessing."));
 } else if (isset($argv[1])) {
 	$namefixer = new NameFixer(['Settings' => $pdo]);
 	$pieces = explode(' ', $argv[1]);
@@ -23,21 +23,21 @@ if (!isset($argv[1])) {
 	switch (true) {
 		case $pieces[0] === 'nfo' && isset($guidChar) && isset($maxperrun) && is_numeric($maxperrun):
 			$releases = $pdo->queryDirect(
-							sprintf('
-								SELECT r.id AS releases_id, r.guid, r.group_id, r.categories_id, r.name, r.searchname,
-									uncompress(nfo) AS textstring
-								FROM releases r
-								INNER JOIN release_nfos rn ON r.id = rn.releases_id
-								WHERE r.guid %s
-								AND r.nzbstatus = 1
-								AND r.proc_nfo = 0
-								AND r.nfostatus = 1
-								AND r.predb_id = 0
-								ORDER BY r.postdate DESC
-								LIMIT %s',
-								$pdo->likeString($guidChar, false, true),
-								$maxperrun
-							)
+				sprintf('
+					SELECT r.id AS releases_id, r.guid, r.group_id, r.categories_id, r.name, r.searchname,
+						uncompress(nfo) AS textstring
+					FROM releases r
+					INNER JOIN release_nfos rn ON r.id = rn.releases_id
+					WHERE r.leftguid = %s
+					AND r.nzbstatus = 1
+					AND r.proc_nfo = 0
+					AND r.nfostatus = 1
+					AND r.predb_id < 1
+					ORDER BY r.id DESC
+					LIMIT %s',
+					$pdo->escapeString($guidChar),
+					$maxperrun
+				)
 			);
 
 			if ($releases instanceof \Traversable) {
@@ -59,19 +59,20 @@ if (!isset($argv[1])) {
 			break;
 		case $pieces[0] === 'filename' && isset($guidChar) && isset($maxperrun) && is_numeric($maxperrun):
 			$releases = $pdo->queryDirect(
-							sprintf('
-								SELECT rf.name AS textstring, rf.releases_id AS fileid,
-									r.id AS releases_id, r.name, r.searchname, r.categories_id, r.group_id
-								FROM releases r
-								INNER JOIN release_files rf ON r.id = rf.releases_id
-								WHERE r.guid %s
-								AND r.nzbstatus = 1 AND r.proc_files = 0
-								AND r.predb_id = 0
-								ORDER BY r.postdate ASC
-								LIMIT %s',
-								$pdo->likeString($guidChar, false, true),
-								$maxperrun
-							)
+				sprintf('
+					SELECT rf.name AS textstring, rf.releases_id AS fileid,
+						r.id AS releases_id, r.name, r.searchname, r.categories_id, r.group_id
+					FROM releases r
+					INNER JOIN release_files rf ON r.id = rf.releases_id
+					WHERE r.leftguid = %s
+					AND r.nzbstatus = 1
+					AND r.proc_files = 0
+					AND r.predb_id < 1
+					ORDER BY r.id ASC
+					LIMIT %s',
+					$pdo->escapeString($guidChar),
+					$maxperrun
+				)
 			);
 
 			if ($releases instanceof \Traversable) {
@@ -86,20 +87,21 @@ if (!isset($argv[1])) {
 			break;
 		case $pieces[0] === 'md5' && isset($guidChar) && isset($maxperrun) && is_numeric($maxperrun):
 			$releases = $pdo->queryDirect(
-							sprintf('
-								SELECT DISTINCT r.id AS releases_id, r.name, r.searchname, r.categories_id, r.group_id, r.dehashstatus,
-									rf.name AS filename
-								FROM releases r
-								LEFT OUTER JOIN release_files rf ON r.id = rf.releases_id AND rf.ishashed = 1
-								WHERE r.guid %s
-								AND nzbstatus = 1 AND r.ishashed = 1
-								AND r.dehashstatus BETWEEN -6 AND 0
-								AND r.predb_id = 0
-								ORDER BY r.dehashstatus DESC, r.postdate ASC
-								LIMIT %s',
-								$pdo->likeString($guidChar, false, true),
-								$maxperrun
-							)
+				sprintf('
+					SELECT DISTINCT r.id AS releases_id, r.name, r.searchname, r.categories_id, r.group_id, r.dehashstatus,
+						rf.name AS filename
+					FROM releases r
+					LEFT OUTER JOIN release_files rf ON r.id = rf.releases_id AND rf.ishashed = 1
+					WHERE r.leftguid = %s
+					AND nzbstatus = 1
+					AND r.ishashed = 1
+					AND r.dehashstatus BETWEEN -6 AND 0
+					AND r.predb_id < 1
+					ORDER BY r.dehashstatus DESC, r.id ASC
+					LIMIT %s',
+					$pdo->escapeString($guidChar),
+					$maxperrun
+				)
 			);
 
 			if ($releases instanceof \Traversable) {
@@ -117,18 +119,18 @@ if (!isset($argv[1])) {
 			break;
 		case $pieces[0] === 'par2' && isset($guidChar) && isset($maxperrun) && is_numeric($maxperrun):
 			$releases = $pdo->queryDirect(
-							sprintf('
-								SELECT r.id AS releases_id, r.guid, r.group_id
-								FROM releases r
-								WHERE r.guid %s
-								AND r.nzbstatus = 1
-								AND r.proc_par2 = 0
-								AND r.predb_id = 0
-								ORDER BY r.postdate ASC
-								LIMIT %s',
-								$pdo->likeString($guidChar, false, true),
-								$maxperrun
-							)
+				sprintf('
+					SELECT r.id AS releases_id, r.guid, r.group_id
+					FROM releases r
+					WHERE r.leftguid = %s
+					AND r.nzbstatus = 1
+					AND r.proc_par2 = 0
+					AND r.predb_id < 1
+					ORDER BY r.id ASC
+					LIMIT %s',
+					$pdo->escapeString($guidChar),
+					$maxperrun
+				)
 			);
 
 			if ($releases instanceof \Traversable) {
@@ -154,18 +156,20 @@ if (!isset($argv[1])) {
 			break;
 		case $pieces[0] === 'miscsorter' && isset($guidChar) && isset($maxperrun) && is_numeric($maxperrun):
 			$releases = $pdo->queryDirect(
-							sprintf('
-								SELECT r.id AS releases_id
-								FROM releases r
-								WHERE r.guid %s
-								AND r.nzbstatus = 1 AND r.nfostatus = 1
-								AND r.proc_sorter = 0 AND r.isrenamed = 0
-								AND r.predb_id = 0
-								ORDER BY r.postdate DESC
-								LIMIT %s',
-								$pdo->likeString($guidChar, false, true),
-								$maxperrun
-							)
+				sprintf('
+					SELECT r.id AS releases_id
+					FROM releases r
+					WHERE r.leftguid = %s
+					AND r.nzbstatus = 1
+					AND r.nfostatus = 1
+					AND r.proc_sorter = 0
+					AND r.isrenamed = 0
+					AND r.predb_id < 1
+					ORDER BY r.id DESC
+					LIMIT %s',
+					$pdo->escapeString($guidChar),
+					$maxperrun
+				)
 			);
 
 			if ($releases instanceof \Traversable) {
