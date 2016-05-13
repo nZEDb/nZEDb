@@ -309,7 +309,7 @@ class Response extends \lithium\console\Response
 		'gray'			=> "\033[37m",
 		'grey'			=> "\033[37m",
 		'hidden'		=> "\033[8m",
-		'info'			=> "\033[35mInfo: ",	// replace with updated version of:
+		'info'			=> "\033[35m",	// replace with updated version of:
 		// "\033[" . self::coloursForeground['purple'] . "mInfo: $text\033[0m"
 		// when we switch to PHP 5.6
 		'normal'		=> "\033[0m",

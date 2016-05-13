@@ -124,6 +124,7 @@ class Update extends \app\extensions\console\Command
 			}
 
 			$smarty = new Smarty();
+			$smarty->setCompileDir(nZEDb_SMARTY_TEMPLATES);
 			$cleared = $smarty->clearCompiledTemplate();
 			if ($cleared) {
 				$this->out('The Smarty compiled template cache has been cleaned for you', 'primary');
