@@ -180,7 +180,14 @@ while ($runVar['counts']['iterations'] > 0) {
 		$runVar['timers']['query']['proc11_time'] = (time() - $timer01);
 
 		$timer05 = time();
-		$proc2qry = $tRun->proc_query(2, $runVar['settings']['book_reqids'], $runVar['settings']['request_hours'], $db_name);
+		$proc2qry = $tRun->proc_query(
+			2,
+			$runVar['settings']['book_reqids'],
+			$runVar['settings']['request_hours'],
+			$db_name,
+			$runVar['settings']['maxsize_pp'],
+			$runVar['settings']['minsize_pp']
+		);
 		$proc2res = $pdo->queryOneRow(($proc2qry !== false ? $proc2qry : ''), $tRun->rand_bool($runVar['counts']['iterations']));
 		$runVar['timers']['query']['proc2_time'] = (time() - $timer05);
 		$runVar['timers']['query']['proc21_time'] = (time() - $timer01);
