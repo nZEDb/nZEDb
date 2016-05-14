@@ -40,7 +40,6 @@ define('nZEDb_WWW', nZEDb_ROOT . 'www' . DS);
 // Used to refer to the resources folder
 define('nZEDb_RES', nZEDb_ROOT . 'resources' . DS);
 
-
 // Smarty's cache.
 define('nZEDb_SMARTY_CACHE', nZEDb_RES . 'smarty' . DS . 'cache/');
 
