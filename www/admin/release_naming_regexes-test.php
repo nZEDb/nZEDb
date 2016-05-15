@@ -21,7 +21,7 @@ $page->smarty->assign([
 );
 
 if ($group && $regex) {
-	$data = (new Regexes(['Settings'   => $page->settings, 'Table_Name' => 'release_naming_regexes' ])
+	$data = (new Regexes(['Settings' => $page->settings, 'Table_Name' => 'release_naming_regexes'])
 		)->testReleaseNamingRegex($group, $regex, $showLimit, $queryLimit
 	);
 }

@@ -88,6 +88,11 @@ class Git extends \lithium\core\Object
 		return $this->_config['branches']['stable'];
 	}
 
+	public function getHeadHash()
+	{
+		return $this->run('rev-parse HEAD');
+	}
+
 	/**
 	 * Determine if the supplied object is commited to the repository or not.
 	 *
@@ -124,6 +129,17 @@ class Git extends \lithium\core\Object
 	public function log($options = null)
 	{
 		return $this->run("log $options");
+	}
+
+	public function pull(array $options = [])
+	{
+		$default = [
+			'branch'	=> $this->getBranch(),
+			'remote'	=> 'origin',
+		];
+		$options += $default;
+
+		return $this->repo->pull($options['remote'], $options['branch']);
 	}
 
 	/**

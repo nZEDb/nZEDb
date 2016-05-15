@@ -120,7 +120,7 @@ class PostProcess
 	/**
 	 * Go through every type of post proc.
 	 *
-	 * @param $nntp
+	 * @param \nzedb\NNTP $nntp
 	 *
 	 * @return void
 	 */
@@ -246,10 +246,13 @@ class PostProcess
 	/**
 	 * Process all TV related releases which will assign their series/episode/rage data.
 	 *
-	 * @param string     $groupID   (Optional) ID of a group to work on.
-	 * @param string     $guidChar  (Optional) First letter of a release GUID to use to get work.
-	 * @param string|int $processTV (Optional) 0 Don't process, 1 process all releases,
-	 *                                         2 process renamed releases only, '' check site setting
+	 * @param string        $groupID   (Optional) ID of a group to work on.
+	 * @param string        $guidChar  (Optional) First letter of a release GUID to use to get work.
+	 * @param string|integer $processTV (Optional)
+	 *                                         0 Don't process,
+	 *                                         1 process all releases,
+	 *                                         2 process renamed releases only,
+	 *                                         '' check site setting
 	 *
 	 * @return void
 	 */
@@ -312,7 +315,7 @@ class PostProcess
 
 		$query = $this->pdo->queryOneRow(
 			sprintf('
-				SELECT id, group_id, categoryid, name, searchname, UNIX_TIMESTAMP(postdate) AS post_date, id AS releaseid
+				SELECT id, group_id, categories_id, name, searchname, UNIX_TIMESTAMP(postdate) AS post_date, id AS releases_id
 				FROM releases
 				WHERE isrenamed = 0
 				AND id = %d',
@@ -327,7 +330,7 @@ class PostProcess
 		// Only get a new name if the category is OTHER.
 		$foundName = true;
 		if (!in_array(
-			(int)$query['categoryid'],
+			(int)$query['categories_id'],
 			[
 				Category::BOOKS_UNKNOWN,
 				Category::GAME_OTHER,
@@ -379,9 +382,9 @@ class PostProcess
 					if ($filesAdded < 11 &&
 						$this->pdo->queryOneRow(
 							sprintf('
-								SELECT releaseid
+								SELECT releases_id
 								FROM release_files
-								WHERE releaseid = %d
+								WHERE releases_id = %d
 								AND name = %s',
 								$relID,
 								$this->pdo->escapeString($file['name'])

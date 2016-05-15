@@ -56,12 +56,12 @@ class TVMaze extends TV
 	 * Main processing director function for scrapers
 	 * Calls work query function and initiates processing
 	 *
-	 * @param      $groupID
-	 * @param      $guidChar
-	 * @param      $process
-	 * @param bool $local
+	 * @param string  $groupID
+	 * @param string  $guidChar
+	 * @param         $process
+	 * @param boolean $local
 	 */
-	public function processSite ($groupID, $guidChar, $process, $local = false)
+	public function processSite($groupID, $guidChar, $process, $local = false)
 	{
 		$res = $this->getTvReleases($groupID, $guidChar, $process, parent::PROCESS_TVMAZE);
 
@@ -192,7 +192,7 @@ class TVMaze extends TV
 						$this->setVideoNotFound(parent::PROCESS_TMDB, $row['id']);
 						$this->titleCache[] = $release['cleanname'];
 					}
-				} else{
+				} else {
 					//Processing failed, set the episode ID to the next processing group
 					$this->setVideoNotFound(parent::PROCESS_TMDB, $row['id']);
 					$this->titleCache[] = $release['cleanname'];
@@ -204,7 +204,7 @@ class TVMaze extends TV
 	/**
 	 * Calls the API to lookup the TvMaze info for a given TVDB or TVRage ID
 	 * Returns a formatted array of show data or false if no match
-
+	 *
 	 * @param $site
 	 * @param $siteId
 	 *
@@ -265,16 +265,16 @@ class TVMaze extends TV
 
 	/**
 	 * @param $shows
-	 * @param $cleanName
+	 * @param string $cleanName
 	 *
-	 * @return array|bool
+	 * @return array|boolean
 	 */
 	private function matchShowInfo($shows, $cleanName)
 	{
 		$return = false;
 		$highestMatch = 0;
 
-		foreach ($shows AS $show) {
+		foreach ($shows as $show) {
 			if ($this->checkRequiredAttr($show, 'tvmazeS')) {
 				// Check for exact title match first and then terminate if found
 				if (strtolower($show->name) === strtolower($cleanName)) {

@@ -65,7 +65,7 @@ function revertToStandard($pdo)
 			sprintf("
 				CREATE TABLE release_search_data (
 					id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-					releaseid INT(11) UNSIGNED NOT NULL,
+					releases_id INT(11) UNSIGNED NOT NULL,
 					guid VARCHAR(50) NOT NULL,
 					name VARCHAR(255) NOT NULL DEFAULT '',
 					searchname VARCHAR(255) NOT NULL DEFAULT '',
@@ -74,7 +74,7 @@ function revertToStandard($pdo)
 					FULLTEXT INDEX ix_releasesearch_name_ft (name),
 					FULLTEXT INDEX ix_releasesearch_searchname_ft (searchname),
 					FULLTEXT INDEX ix_releasesearch_fromname_ft (fromname),
-					INDEX ix_releasesearch_releaseid (releaseid),
+					INDEX ix_releasesearch_releases_id (releases_id),
 					INDEX ix_releasesearch_guid (guid)
 				)
 				%s
@@ -86,7 +86,7 @@ function revertToStandard($pdo)
 	);
 
 	echo $pdo->log->info('Populating the releasearch table with initial data. (Slow)' . PHP_EOL);
-	$pdo->queryInsert('INSERT INTO release_search_data (releaseid, guid, name, searchname, fromname)
+	$pdo->queryInsert('INSERT INTO release_search_data (releases_id, guid, name, searchname, fromname)
 				SELECT id, guid, name, searchname, fromname FROM releases');
 
 	echo $pdo->log->info('Adding the auto-population triggers. (Quick)' . PHP_EOL);
@@ -96,7 +96,7 @@ function revertToStandard($pdo)
 	$pdo->exec('
 				CREATE TRIGGER insert_search AFTER INSERT ON releases FOR EACH ROW
 					BEGIN
-						INSERT INTO release_search_data (releaseid, guid, name, searchname, fromname)
+						INSERT INTO release_search_data (releases_id, guid, name, searchname, fromname)
 						VALUES (NEW.id, NEW.guid, NEW.name, NEW.searchname, NEW.fromname);
 					END;
 
@@ -105,29 +105,29 @@ function revertToStandard($pdo)
 						IF NEW.guid != OLD.guid
 						THEN UPDATE release_search_data
 							SET guid = NEW.guid
-							WHERE releaseid = OLD.id;
+							WHERE releases_id = OLD.id;
 						END IF;
 						IF NEW.name != OLD.name
 						THEN UPDATE release_search_data
 							SET name = NEW.name
-							WHERE releaseid = OLD.id;
+							WHERE releases_id = OLD.id;
 						END IF;
 						IF NEW.searchname != OLD.searchname
 						THEN UPDATE release_search_data
 							SET searchname = NEW.searchname
-							WHERE releaseid = OLD.id;
+							WHERE releases_id = OLD.id;
 						END IF;
 						IF NEW.fromname != OLD.fromname
 						THEN UPDATE release_search_data
 							SET fromname = NEW.fromname
-							WHERE releaseid = OLD.id;
+							WHERE releases_id = OLD.id;
 						END IF;
 					END;
 
 				CREATE TRIGGER delete_search AFTER DELETE ON releases FOR EACH ROW
 					BEGIN
 						DELETE FROM release_search_data
-						WHERE releaseid = OLD.id;
+						WHERE releases_id = OLD.id;
 					END;'
 	);
 	echo $pdo->log->header('Standard search should once again be available.' . PHP_EOL);

@@ -32,7 +32,8 @@ class Misc
 			if ($path !== '') {
 				$fullPath .= $path . DS;
 				if (!is_readable($fullPath) || !is_executable($fullPath)) {
-					return "The '$fullPath' directory must be readable and executable by all ." .PHP_EOL;
+					return "The '$fullPath' directory must be readable and executable by all ." .
+					PHP_EOL;
 				}
 			}
 		}
@@ -169,12 +170,12 @@ class Misc
 			'method'         => 'get', // String ; Http method, get/post/etc..
 			'postdata'       => '',    // String ; Data to send on post method.
 			'language'       => '',    // String ; Language in request header string.
-			'debug'          => false, // Bool   ; Show curl debug information.
+			'debug'          => false, // Boolean; Show curl debug information.
 			'useragent'      => '',    // String ; User agent string.
 			'cookie'         => '',    // String ; Cookie string.
 			'requestheaders' => [],    // Array  ; List of request headers.
 			                           //          Example: ["Content-Type: application/json", "DNT: 1"]
-			'verifycert'     => true,  // Bool   ; Verify certificate authenticity?
+			'verifycert'     => true,  // Boolean; Verify certificate authenticity?
 			                           //          Since curl does not have a verify self signed certs option,
 			                           //          you should use this instead if your cert is self signed.
 		];
@@ -748,7 +749,7 @@ class Misc
 
 		$response =
 			"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" .
-			'<error code="' . $errorCode .  '" description="' . $errorText . "\"/>\n";
+			'<error code="' . $errorCode . '" description="' . $errorText . "\"/>\n";
 		header('Content-type: text/xml');
 		header('Content-Length: ' . strlen($response) );
 		header('X-nZEDb: API ERROR [' . $errorCode . '] ' . $errorText);

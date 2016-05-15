@@ -17,6 +17,7 @@
     ]
   },
   "config": {
+    "process-timeout": 3600,
     "vendor-dir": "app/libraries"
   },
   "description": "A Usenet Indexer",
@@ -31,13 +32,16 @@
   },
   "homepage": "http://nzedb.com",
   "keywords": [
+    "nZEDb",
+    "usenet",
+    "indexer",
     "lithium",
     "li3"
   ],
   "license": "GPL-3.0",
   "name": "nzedb/nzedb",
   "non-feature-branches": [
-    "latest-.*"
+    "Latest-*"
   ],
   "repositories": [
     {
@@ -100,6 +104,8 @@
     "unionofrad/li3_docs": "1.1.x-dev",
     "unionofrad/manual": "1.1.x-dev",
     "unionofrad/li3_quality": "1.1.x-dev"
+  },
+  "scripts": {
   },
   "type": "project"
 }

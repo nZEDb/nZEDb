@@ -84,7 +84,7 @@ abstract class Result extends Object implements \Iterator
 	}
 
 	/**
-	 * Contains the current result.
+	 * Fetches the current result.
 	 *
 	 * @return array|null The current result (or `null` if there is none).
 	 */

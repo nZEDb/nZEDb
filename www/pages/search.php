@@ -9,14 +9,14 @@ if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
-$groups      = new Groups(['Settings' => $page->settings]);
+$groups   = new Groups(['Settings' => $page->settings]);
 $releases = new Releases(['Groups' => $groups, 'Settings' => $page->settings]);
 
 $page->meta_title       = "Search Nzbs";
 $page->meta_keywords    = "search,nzb,description,details";
 $page->meta_description = "Search for Nzbs";
 
-$results    = [];
+$results = [];
 
 $searchType = "basic";
 if (isset($_REQUEST["search_type"]) && $_REQUEST["search_type"] == "adv") {
@@ -39,11 +39,11 @@ if ((isset($_REQUEST["id"]) || isset($_REQUEST["subject"])) && !isset($_REQUEST[
 	$searchString = '';
 	switch (true) {
 		case isset($_REQUEST["subject"]):
-			$searchString = (string) $_REQUEST["subject"];
+			$searchString = (string)$_REQUEST["subject"];
 			$page->smarty->assign('subject', $searchString);
 			break;
 		case isset($_REQUEST["id"]):
-			$searchString =(string) $_REQUEST["id"];
+			$searchString =(string)$_REQUEST["id"];
 			$page->smarty->assign('search', $searchString);
 			break;
 	}
@@ -87,7 +87,7 @@ $searchVars = [
 	'searchadvsizeto' => '', 'searchadvhasnfo' => '', 'searchadvhascomments' => ''
 ];
 
-foreach($searchVars as $searchVarKey => $searchVar) {
+foreach ($searchVars as $searchVarKey => $searchVar) {
 	$searchVars[$searchVarKey] = (isset($_REQUEST[$searchVarKey]) ? (string) $_REQUEST[$searchVarKey] : '');
 }
 
@@ -95,7 +95,7 @@ $searchVars['selectedgroup'] = $searchVars['searchadvgroups'];
 $searchVars['selectedcat'] = $searchVars['searchadvcat'];
 $searchVars['selectedsizefrom'] = $searchVars['searchadvsizefrom'];
 $searchVars['selectedsizeto'] = $searchVars['searchadvsizeto'];
-foreach($searchVars as $searchVarKey => $searchVar) {
+foreach ($searchVars as $searchVarKey => $searchVar) {
 	$page->smarty->assign($searchVarKey, $searchVars[$searchVarKey]);
 }
 

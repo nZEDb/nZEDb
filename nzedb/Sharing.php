@@ -176,7 +176,7 @@ class Sharing
 				'SELECT rc.text, rc.id, %s, u.username, HEX(r.nzb_guid) AS nzb_guid
 				FROM release_comments rc
 				INNER JOIN users u ON rc.user_id = u.id
-				INNER JOIN releases r on rc.releaseid = r.id
+				INNER JOIN releases r on rc.releases_id = r.id
 				WHERE rc.shared = 0 LIMIT %d',
 				$this->pdo->unix_timestamp_column('rc.createddate'),
 				$this->siteSettings['max_push']
@@ -271,7 +271,7 @@ class Sharing
 			SELECT r.id
 			FROM release_comments rc
 			INNER JOIN releases r USING (nzb_guid)
-			WHERE rc.releaseid = 0'
+			WHERE rc.releases_id = 0'
 		);
 		$found = count($res);
 		if ($found > 0) {
@@ -280,9 +280,9 @@ class Sharing
 					sprintf("
 						UPDATE release_comments rc
 						INNER JOIN releases r USING (nzb_guid)
-						SET rc.releaseid = %d, r.comments = r.comments + 1
+						SET rc.releases_id = %d, r.comments = r.comments + 1
 						WHERE r.id = %d
-						AND rc.releaseid = 0",
+						AND rc.releases_id = 0",
 						$row['id'],
 						$row['id']
 					)
@@ -525,7 +525,7 @@ class Sharing
 		if ($this->pdo->queryExec(
 			sprintf('
 				INSERT IGNORE INTO release_comments
-				(text, createddate, shareid, nzb_guid, siteid, username, user_id, releaseid, shared, host)
+				(text, createddate, shareid, nzb_guid, siteid, username, user_id, releases_id, shared, host)
 				VALUES (%s, %s, %s, UNHEX(%s), %s, %s, 0, 0, 2, "")',
 				$this->pdo->escapeString($body['BODY']),
 				$this->pdo->from_unixtime(($body['TIME'] > time() ? time() : $body['TIME'])),

@@ -205,7 +205,7 @@ class Binaries
 	 *
 	 * @return void
 	 */
-	public function updateAllGroups($maxHeaders = 0)
+	public function updateAllGroups($maxHeaders = 100000)
 	{
 		$groups = $this->_groups->getActive();
 
@@ -1213,7 +1213,7 @@ class Binaries
 		$aMin = $data['first'];
 		$reallyOldArticle = $oldArticle = $articleTime = null;
 
-		while(true) {
+		while (true) {
 			// Article exists outside of available range, this shouldn't happen
 			if ($wantedArticle <= $data['first'] || $wantedArticle >= $data['last']) {
 				break;

@@ -107,9 +107,9 @@ class BasePage
 
 		$this->smarty = new Smarty();
 
-		$this->smarty->setCompileDir(nZEDb_RES . DS . 'smarty' . DS . 'templates_c/');
-		$this->smarty->setConfigDir(nZEDb_RES . DS . 'smarty' . DS . 'configs/');
-		$this->smarty->setCacheDir(nZEDb_RES . DS . 'smarty' . DS . 'cache/');
+		$this->smarty->setCacheDir(nZEDb_SMARTY_CACHE);
+		$this->smarty->setCompileDir(nZEDb_SMARTY_TEMPLATES);
+		$this->smarty->setConfigDir(nZEDb_SMARTY_CONFIGS);
 		$this->smarty->setPluginsDir([
 				SMARTY_DIR . 'plugins/',
 				nZEDb_WWW . 'plugins/',
@@ -145,19 +145,6 @@ class BasePage
 	}
 
 	/**
-	 * Unquotes quoted strings recursively in an array.
-	 *
-	 * @param $array
-	 */
-	private function stripSlashes(array &$array)
-	{
-		foreach ($array as $key => $value) {
-			$array[$key] = (is_array($value) ? array_map('stripslashes', $value) :
-				stripslashes($value));
-		}
-	}
-
-	/**
 	 * Check if the user is flooding.
 	 */
 	public function floodCheck()
@@ -177,8 +164,7 @@ class BasePage
 					$_SESSION['flood_check_time'] = microtime(true);
 				} else {
 					if ($_SESSION['flood_check_hits'] >=
-						(nZEDb_FLOOD_MAX_REQUESTS_PER_SECOND < 1 ? 5 :
-							nZEDb_FLOOD_MAX_REQUESTS_PER_SECOND)
+						(nZEDb_FLOOD_MAX_REQUESTS_PER_SECOND < 1 ? 5 : nZEDb_FLOOD_MAX_REQUESTS_PER_SECOND)
 					) {
 						if ($_SESSION['flood_check_time'] + 1 > microtime(true)) {
 							$_SESSION['flood_wait_until'] = microtime(true) + $waitTime;
@@ -198,6 +184,8 @@ class BasePage
 
 	/**
 	 * Done in html here to reduce any smarty processing burden if a large flood is underway.
+	 *
+	 * @param int $seconds The number of seconds after which to retry operation
 	 */
 	public function showFloodWarning($seconds = 5)
 	{
@@ -256,8 +244,10 @@ class BasePage
 
 	/**
 	 * Show 404 page.
+	 *
+	 * @param string $reason The reason we 404'd
 	 */
-	public function show404()
+	public function show404($reason = '')
 	{
 		header('HTTP/1.1 404 Not Found');
 		exit(
@@ -269,11 +259,13 @@ class BasePage
 					<body>
 						<h1>404 - File not found.</h1>
 						<p>%s%s</p>
+						<p>%s</p>
 						<p>We could not find the above page on our servers.</p>
 					</body>
 				</html>",
 				$this->serverurl,
-				$this->page
+				$this->page,
+				(!empty($reason) ? 'Reason: ' . $reason : '')
 			)
 		);
 	}

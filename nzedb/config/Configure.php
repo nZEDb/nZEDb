@@ -42,17 +42,6 @@ class Configure
 		$this->loadEnvironment($environment);
 	}
 
-	private function loadEnvironment($environment)
-	{
-		if (array_key_exists($environment, $this->environments)) {
-			foreach ($this->environments[$environment] as $config => $throwException) {
-				$this->loadSettings($config, $throwException);
-			}
-		} else {
-			throw new \RuntimeException("Unknown environment passed to Configure class!");
-		}
-	}
-
 	public function loadSettings($filename, $throwException = true)
 	{
 		$file = nZEDb_CONFIGS . $filename . '.php';
@@ -129,6 +118,17 @@ class Configure
 			define('nZEDb_SSL_VERIFY_PEER', '0');
 			define('nZEDb_SSL_VERIFY_HOST', '0');
 			define('nZEDb_SSL_ALLOW_SELF_SIGNED', '1');
+		}
+	}
+
+	private function loadEnvironment($environment)
+	{
+		if (array_key_exists($environment, $this->environments)) {
+			foreach ($this->environments[$environment] as $config => $throwException) {
+				$this->loadSettings($config, $throwException);
+			}
+		} else {
+			throw new \RuntimeException("Unknown environment passed to Configure class!");
 		}
 	}
 }

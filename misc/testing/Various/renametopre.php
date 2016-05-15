@@ -60,14 +60,14 @@ function preName($argv, $argc)
 		$full = true;
 	} else if ($argv[1] === 'all') {
 		$all = true;
-	} else if ($argv[1] === 'preid') {
+	} else if ($argv[1] === 'predb_id') {
 		$usepre = true;
 	} else if (is_numeric($argv[1])) {
 		$what = ' AND adddate > NOW() - INTERVAL ' . $argv[1] . ' HOUR';
 	}
 	if ($usepre === true) {
 		$where = '';
-		$why = ' WHERE preid = 0 AND nzbstatus = 1';
+		$why = ' WHERE predb_id = 0 AND nzbstatus = 1';
 	} else if (isset($argv[1]) && is_numeric($argv[1])) {
 		$where = '';
 		$why = ' WHERE nzbstatus = 1 AND isrenamed = 0';
@@ -82,12 +82,12 @@ function preName($argv, $argc)
 		$why = ' WHERE nzbstatus = 1';
 	} else if (isset($argv[2]) && is_numeric($argv[2]) && $all === true) {
 		$where = ' AND group_id = ' . $argv[2];
-		$why = ' WHERE nzbstatus = 1 and preid = 0';
+		$why = ' WHERE nzbstatus = 1 and predb_id = 0';
 	} else if (isset($argv[2]) && is_numeric($argv[2])) {
 		$where = ' AND group_id = ' . $argv[2];
 		$why = ' WHERE nzbstatus = 1 AND isrenamed = 0';
 	} else if ($full === true) {
-		$why = ' WHERE nzbstatus = 1 AND (isrenamed = 0 OR categoryid between ' .
+		$why = ' WHERE nzbstatus = 1 AND (isrenamed = 0 OR categories_id between ' .
 				Category::BOOKS_ROOT . ' AND ' . Category::BOOKS_UNKNOWN .')';
 	} else if ($all === true) {
 		$why = ' WHERE nzbstatus = 1';
@@ -96,10 +96,10 @@ function preName($argv, $argc)
 	}
 	resetSearchnames();
 	echo $pdo->log->header(
-		"SELECT id, name, searchname, fromname, size, group_id, categoryid FROM releases" . $why . $what .
+		"SELECT id, name, searchname, fromname, size, group_id, categories_id FROM releases" . $why . $what .
 		$where . ";\n"
 	);
-	$res = $pdo->queryDirect("SELECT id, name, searchname, fromname, size, group_id, categoryid FROM releases" . $why . $what . $where);
+	$res = $pdo->queryDirect("SELECT id, name, searchname, fromname, size, group_id, categories_id FROM releases" . $why . $what . $where);
 	$total = $res->rowCount();
 	if ($total > 0) {
 		$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
@@ -161,15 +161,15 @@ function preName($argv, $argc)
 						if ($propername == true) {
 							$pdo->queryExec(
 								sprintf(
-									"UPDATE releases SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
-									. "iscategorized = 1, isrenamed = 1, searchname = %s, categoryid = %d, preid = " . $preid . " WHERE id = %d", $pdo->escapeString($cleanName), $determinedcat, $row['id']
+									"UPDATE releases SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfo_id = NULL, consoleinfo_id = NULL, bookinfo_id = NULL, anidbid = NULL, "
+									. "iscategorized = 1, isrenamed = 1, searchname = %s, categories_id = %d, predb_id = " . $preid . " WHERE id = %d", $pdo->escapeString($cleanName), $determinedcat, $row['id']
 								)
 							);
 						} else {
 							$pdo->queryExec(
 								sprintf(
-									"UPDATE releases SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL,  "
-									. "iscategorized = 1, searchname = %s, categoryid = %d, preid = " . $preid . " WHERE id = %d", $pdo->escapeString($cleanName), $determinedcat, $row['id']
+									"UPDATE releases SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfo_id = NULL, consoleinfo_id = NULL, bookinfo_id = NULL, anidbid = NULL,  "
+									. "iscategorized = 1, searchname = %s, categories_id = %d, predb_id = " . $preid . " WHERE id = %d", $pdo->escapeString($cleanName), $determinedcat, $row['id']
 								)
 							);
 						}
@@ -183,7 +183,7 @@ function preName($argv, $argc)
 							$external++;
 						}
 						if ($show === 1) {
-							$oldcatname = $category->getNameByID($row["categoryid"]);
+							$oldcatname = $category->getNameByID($row["categories_id"]);
 							$newcatname = $category->getNameByID($determinedcat);
 
 							NameFixer::echoChangedReleaseName([
@@ -224,7 +224,7 @@ function preName($argv, $argc)
 	}
 	$timestart = TIME();
 	if (isset($argv[1]) && is_numeric($argv[1])) {
-		$relcount = catRelease("searchname", "WHERE (iscategorized = 0 OR categoryID = " .
+		$relcount = catRelease("searchname", "WHERE (iscategorized = 0 OR categories_id = " .
 				Category::OTHER_MISC . ") AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
 	} else if (isset($argv[2]) && preg_match('/\([\d, ]+\)/', $argv[2]) && $full === true) {
 		$relcount = catRelease("searchname", str_replace(" AND", "WHERE", $where) . " AND iscategorized = 0 ", true);
@@ -235,13 +235,13 @@ function preName($argv, $argc)
 	} else if (isset($argv[2]) && is_numeric($argv[2]) && $argv[1] == "all") {
 		$relcount = catRelease("searchname", str_replace(" AND", "WHERE", $where), true);
 	} else if (isset($argv[1]) && $argv[1] == "full") {
-		$relcount = catRelease("searchname", "WHERE categoryID = " . Category::OTHER_MISC . " OR iscategorized = 0", true);
+		$relcount = catRelease("searchname", "WHERE categories_id = " . Category::OTHER_MISC . " OR iscategorized = 0", true);
 	} else if (isset($argv[1]) && $argv[1] == "all") {
 		$relcount = catRelease("searchname", "", true);
-	} else if (isset($argv[1]) && $argv[1] == "preid") {
-		$relcount = catRelease("searchname", "WHERE preid = 0 AND nzbstatus = 1", true);
+	} else if (isset($argv[1]) && $argv[1] == "predb_id") {
+		$relcount = catRelease("searchname", "WHERE predb_id = 0 AND nzbstatus = 1", true);
 	} else {
-		$relcount = catRelease("searchname", "WHERE (iscategorized = 0 OR categoryID = " .
+		$relcount = catRelease("searchname", "WHERE (iscategorized = 0 OR categories_id = " .
 				Category::OTHER_MISC . ") AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
 	}
 	$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
@@ -255,8 +255,8 @@ function resetSearchnames()
 	global $pdo;
 	echo $pdo->log->header("Resetting blank searchnames.");
 	$bad = $pdo->queryDirect(
-		"UPDATE releases SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
-		. "preid = 0, searchname = name, isrenamed = 0, iscategorized = 0 WHERE searchname = ''"
+		"UPDATE releases SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfo_id = NULL, consoleinfo_id = NULL, bookinfo_id = NULL, anidbid = NULL, "
+		. "predb_id = 0, searchname = name, isrenamed = 0, iscategorized = 0 WHERE searchname = ''"
 	);
 	$tot = $bad->rowCount();
 	if ($tot > 0) {
@@ -264,8 +264,8 @@ function resetSearchnames()
 	}
 	echo $pdo->log->header("Resetting searchnames that are 8 characters or less.");
 	$run = $pdo->queryDirect(
-		"UPDATE releases SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
-		. "preid = 0, searchname = name, isrenamed = 0, iscategorized = 0 WHERE LENGTH(searchname) <= 8 AND LENGTH(name) > 8"
+		"UPDATE releases SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfo_id = NULL, consoleinfo_id = NULL, bookinfo_id = NULL, anidbid = NULL, "
+		. "predb_id = 0, searchname = name, isrenamed = 0, iscategorized = 0 WHERE LENGTH(searchname) <= 8 AND LENGTH(name) > 8"
 	);
 	$total = $run->rowCount();
 	if ($total > 0) {
@@ -288,7 +288,7 @@ function catRelease($type, $where, $echooutput = false)
 	if ($total > 0) {
 		foreach ($resrel as $rowrel) {
 			$catId = $cat->determineCategory($rowrel['group_id'], $rowrel[$type]);
-			$pdo->queryExec(sprintf("UPDATE releases SET iscategorized = 1, categoryid = %d WHERE id = %d", $catId, $rowrel['id']));
+			$pdo->queryExec(sprintf("UPDATE releases SET iscategorized = 1, categories_id = %d WHERE id = %d", $catId, $rowrel['id']));
 			$relcount++;
 			if ($echooutput) {
 				$consoletools->overWritePrimary("Categorizing: " . $consoletools->percentString($relcount, $total));

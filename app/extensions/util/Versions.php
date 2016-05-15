@@ -42,6 +42,12 @@ class Versions extends \lithium\core\Object
 		parent::__construct($config += $defaults);
 	}
 
+	public function getGitHeadHash()
+	{
+		$this->initialiseGit();
+		return $this->git->getHeadHash();
+	}
+
 	public function getGitTagFromFile()
 	{
 		$this->loadXMLFile();
@@ -62,7 +68,13 @@ class Versions extends \lithium\core\Object
 
 	public function getSQLPatchFromDB()
 	{
-		return Settings::find('setting', ['conditions' => '..sqlpatch']);
+		$dbVersion = Settings::value('..sqlpatch', true);
+
+		if (!is_numeric($dbVersion)) {
+			throw new \Exception('Bad sqlpatch value');
+		}
+
+		return $dbVersion;
 	}
 
 	public function getSQLPatchFromFile()

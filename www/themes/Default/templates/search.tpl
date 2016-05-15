@@ -225,11 +225,11 @@
 									<a href="{$smarty.const.WWW_TOP}/covers/preview/{$result.guid}_thumb.jpg" name="name{$result.guid}" title="Screenshot of {$result.searchname|escape:"htmlall"}" class="modal_prev rndbtn" rel="preview">Preview</a>{/if}
 								{if $result.jpgstatus == 1 && $userdata.canpreview == 1}
 									<a href="{$smarty.const.WWW_TOP}/covers/sample/{$result.guid}_thumb.jpg" name="name{$result.guid}" title="Sample of {$result.searchname|escape:"htmlall"}" class="modal_prev rndbtn" rel="preview">Sample</a>{/if}
-								{if $result.musicinfoid > 0}
-									<a href="#" name="name{$result.musicinfoid}" title="View music info" class="modal_music rndbtn" rel="music" >Cover</a>
+								{if $result.musicinfo_id > 0}
+									<a href="#" name="name{$result.musicinfo_id}" title="View music info" class="modal_music rndbtn" rel="music" >Cover</a>
 								{/if}
-								{if $result.consoleinfoid > 0}
-									<a href="#" name="name{$result.consoleinfoid}" title="View console info" class="modal_console rndbtn" rel="console" >Cover</a>
+								{if $result.consoleinfo_id > 0}
+									<a href="#" name="name{$result.consoleinfo_id}" title="View console info" class="modal_console rndbtn" rel="console" >Cover</a>
 								{/if}
 								{if $result.videos_id > 0}
 									<a class="rndbtn" href="{$smarty.const.WWW_TOP}/series/{$result.videos_id}" title="View all episodes">View Series</a>
@@ -253,7 +253,7 @@
 						</div>
 					</td>
 					<td class="category">
-						<a title="Browse {$result.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$result.categoryid}">{$result.category_name}</a>
+						<a title="Browse {$result.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$result.categories_id}">{$result.category_name}</a>
 					</td>
 					<td class="posted" title="{$result.postdate}">
 						{$result.postdate|timeago}

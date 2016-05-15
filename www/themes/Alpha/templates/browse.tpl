@@ -100,20 +100,20 @@
 									rel="movie"
 								><i class="icon-film"></i></a>
 							{/if}
-							{if $result.musicinfoid > 0}
+							{if $result.musicinfo_id > 0}
 								<a
 									class="label label-default modal_music"
 									href="#"
-									name="name{$result.musicinfoid}"
+									name="name{$result.musicinfo_id}"
 									title="View music info"
 									rel="music"
 								><i class="icon-music"></i></a>
 							{/if}
-							{if $result.consoleinfoid > 0}
+							{if $result.consoleinfo_id > 0}
 								<a
 									class="label label-default modal_console"
 									href="#"
-									name="name{$result.consoleinfoid}"
+									name="name{$result.consoleinfo_id}"
 									title="View console info"
 									rel="console"
 								><i class="icon-off"></i></a>
@@ -184,7 +184,7 @@
 					</td>
 					<td style="width:auto;text-align:center;white-space:nowrap;">
 						<small
-							><a title="Browse {$result.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$result.categoryid}">
+							><a title="Browse {$result.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$result.categories_id}">
 								<b>{$result.category_name}</b>
 							</a>
 						</small>

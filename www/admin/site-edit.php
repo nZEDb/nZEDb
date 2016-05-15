@@ -184,7 +184,7 @@ $page->smarty->assign('lookup_reqids_names',
 $page->smarty->assign('coversPath', nZEDb_COVERS);
 
 // return a list of audiobooks, ebooks, technical and foreign books
-$result = $page->settings->query("SELECT id, title FROM category WHERE id IN ({$category->getCategoryValue('MUSIC_AUDIOBOOK')}, {$category->getCategoryValue('BOOKS_EBOOK')}, {$category->getCategoryValue('BOOKS_TECHNICAL')}, {$category->getCategoryValue('BOOKS_FOREIGN')})");
+$result = $page->settings->query("SELECT id, title FROM categories WHERE id IN ({$category->getCategoryValue('MUSIC_AUDIOBOOK')}, {$category->getCategoryValue('BOOKS_EBOOK')}, {$category->getCategoryValue('BOOKS_TECHNICAL')}, {$category->getCategoryValue('BOOKS_FOREIGN')})");
 
 // setup the display lists for these categories, this could have been static, but then if names changed they would be wrong
 $book_reqids_ids   = [];
@@ -195,7 +195,13 @@ foreach ($result as $bookcategory) {
 }
 
 // convert from a string array to an int array as we want to use int
-$book_reqids_ids = array_map(function($value) {return (int)$value;}, $book_reqids_ids);
+$book_reqids_ids = array_map(
+	function($value)
+	{
+		return (int)$value;
+	},
+	$book_reqids_ids
+);
 $page->smarty->assign('book_reqids_ids', $book_reqids_ids);
 $page->smarty->assign('book_reqids_names', $book_reqids_names);
 
@@ -203,7 +209,13 @@ $page->smarty->assign('book_reqids_names', $book_reqids_names);
 $books_selected = explode(",", $page->settings->getSetting('book_reqids'));
 
 // convert from a string array to an int array
-$books_selected = array_map(function($value) {return (int)$value;}, $books_selected);
+$books_selected = array_map(
+	function($value)
+	{
+		return (int)$value;
+	},
+	$books_selected
+);
 $page->smarty->assign('book_reqids_selected', $books_selected);
 
 $page->smarty->assign('loggingopt_ids', [0, 1, 2, 3]);

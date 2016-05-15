@@ -40,7 +40,8 @@ foreach ($itr as $filePath) {
 	$guid = stristr($filePath->getFilename(), '.nzb.gz', true);
 	if (is_file($filePath) && $guid) {
 		$nzbfile = Misc::unzipGzipFile($filePath);
-		if (!$nzbfile || !@simplexml_load_string($nzbfile)) {
+		$nzbContents = $nzb->nzbFileList($nzbfile, ['no-file-key' => false, 'strip-count' => true]);
+		if (!$nzbfile || !@simplexml_load_string($nzbfile) || count($nzbContents) === 0) {
 			if ($argv[1] === "move") {
 				rename($filePath, $dir . $guid . ".nzb.gz");
 			}

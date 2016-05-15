@@ -22,6 +22,7 @@ test.php
 
 /nbproject/
 /nbproject/private/
+/resources/*.csv
 /resources/covers/*
 /resources/nzb/*
 /resources/smarty/templates_c/*.php

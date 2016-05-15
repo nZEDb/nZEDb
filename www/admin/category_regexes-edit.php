@@ -7,7 +7,7 @@ use nzedb\Regexes;
 $page    = new AdminPage();
 $regexes = new Regexes(['Settings' => $page->settings, 'Table_Name' => 'category_regexes']);
 $error = '';
-$regex = ['id' => '', 'regex' => '', 'description' => '', 'group_regex' => '', 'ordinal' => '', 'category_id' => ''];
+$regex = ['id' => '', 'regex' => '', 'description' => '', 'group_regex' => '', 'ordinal' => '', 'categories_id' => ''];
 
 switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
 	case 'submit':
@@ -43,7 +43,7 @@ switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
 	default:
 		if (isset($_GET["id"])) {
 			$page->title = "Category Regex Edit";
-			$regex= $regexes->getRegexByID($_GET["id"]);
+			$regex = $regexes->getRegexByID($_GET["id"]);
 		} else {
 			$page->title = "Category Regex Add";
 			$regex += ['status' => 1];
@@ -54,12 +54,12 @@ switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
 
 $categories_db = $page->settings->queryDirect(
 	'SELECT c.id, c.title, cp.title AS parent_title
-	FROM category c
-	INNER JOIN category cp ON c.parentid = cp.id
+	FROM categories c
+	INNER JOIN categories cp ON c.parentid = cp.id
 	WHERE c.parentid IS NOT NULL
 	ORDER BY c.id ASC'
 );
-$categories = ['category_names', 'category_ids'];
+$categories = ['category_names', 'categories_id'];
 if ($categories_db) {
 	foreach ($categories_db as $category_db) {
 		$categories['category_names'][] =

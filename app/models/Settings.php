@@ -62,6 +62,35 @@ class Settings extends \lithium\data\Model {
 		);
 	}
 
+	/**
+	 * Return the value of supplied setting.
+	 * The setting can be either a a normal condition array for the custom 'setting' finder or a
+	 * dotted string notation setting.
+	 * Be aware that this method only returns the first of any values found, so make sure your
+	 * $setting produces a unique result.
+	 *
+	 * @param      $setting
+	 * @param bool $returnAlways Indicates if the method should throw an exception (false) or return
+	 *                           null on failure. Defaults to throwing an exception.
+	 *
+	 * @return string|null		 The setting's value, or null on failure IF 'returnAlways' is true.
+	 * @throws \Exception
+	 */
+	public static function value($setting, $returnAlways = false)
+	{
+		$result = Settings::find('setting', ['conditions' => $setting, 'fields' => ['value']]);
+
+		if ($result->count()) {
+			$value = $result->data()[0]['value'];
+		} else if ($returnAlways === false) {
+			throw new \Exception("Unable to fetch setting from Db!");
+		} else {
+			$value = null;
+		}
+
+		return $value;
+	}
+
 	protected static function dottedToArray($setting)
 	{
 		$result = [];

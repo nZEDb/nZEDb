@@ -83,7 +83,7 @@
 							<a class="title" title="View details"
 							   href="{$smarty.const.WWW_TOP}/details/{$result.grp_release_guid}">
 								<img class="shadow"
-									 src="{$smarty.const.WWW_TOP}/covers/console/{if $result.cover == 1}{$result.consoleinfoid}.jpg{else}no-cover.jpg{/if}"
+									 src="{$smarty.const.WWW_TOP}/covers/console/{if $result.cover == 1}{$result.consoleinfo_id}.jpg{else}no-cover.jpg{/if}"
 									 width="120" alt="{$result.title|escape:"htmlall"}"/>
 							</a>
 
@@ -92,16 +92,16 @@
 														 title="View Nfo" class="rndbtn modal_nfo" rel="nfo">
 										Nfo</a>{/if}
 								<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}{$result.url}"
-								   name="amazon{$result.consoleinfoid}" title="View amazon page">Amazon</a>
+								   name="amazon{$result.consoleinfo_id}" title="View amazon page">Amazon</a>
 								<a class="rndbtn" target="_blank"
 								   href="{$site->dereferrer_link}http://ign.com/search?q={$result.title|escape:"htmlall"}&page=0&count=10&type=object&objectType=game&filter=games&"
-								   name="ign{$result.consoleinfoid}" title="View ign page">IGN</a>
+								   name="ign{$result.consoleinfo_id}" title="View ign page">IGN</a>
 								<a class="rndbtn" target="_blank"
 								   href="{$site->dereferrer_link}http://www.gamespot.com/search/?qs={$result.title|escape:"htmlall"}/"
-								   name="gamespot{$result.consoleinfoid}" title="View gamespot page">Gamespot</a>
+								   name="gamespot{$result.consoleinfo_id}" title="View gamespot page">Gamespot</a>
 								<a class="rndbtn" target="_blank"
 								   href="{$site->dereferrer_link}http://www.metacritic.com/search/game/{$result.title|escape:"htmlall"}/results"
-								   name="metacritic{$result.consoleinfoid}" title="View metacritic page">Metacritic</a>
+								   name="metacritic{$result.consoleinfo_id}" title="View metacritic page">Metacritic</a>
 							</div>
 						</div>
 					</td>

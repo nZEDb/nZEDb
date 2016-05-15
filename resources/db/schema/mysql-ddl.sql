@@ -87,7 +87,7 @@ CREATE TABLE anidb_titles (
 DROP TABLE IF EXISTS audio_data;
 CREATE TABLE audio_data (
   id               INT(11)     UNSIGNED AUTO_INCREMENT,
-  releaseid        INT(11)     UNSIGNED NOT NULL,
+  releases_id      INT(11)     UNSIGNED NOT NULL COMMENT 'FK to releases.id',
   audioid          INT(2)      UNSIGNED NOT NULL,
   audioformat      VARCHAR(50) DEFAULT NULL,
   audiomode        VARCHAR(50) DEFAULT NULL,
@@ -99,7 +99,7 @@ CREATE TABLE audio_data (
   audiolanguage    VARCHAR(50) DEFAULT NULL,
   audiotitle       VARCHAR(50) DEFAULT NULL,
   PRIMARY KEY (id),
-  UNIQUE INDEX ix_releaseaudio_releaseid_audioid (releaseid, audioid)
+  UNIQUE INDEX ix_releaseaudio_releaseid_audioid (releases_id, audioid)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
@@ -177,8 +177,8 @@ CREATE TABLE bookinfo (
   AUTO_INCREMENT = 1;
 
 
-DROP TABLE IF EXISTS category;
-CREATE TABLE category (
+DROP TABLE IF EXISTS categories;
+CREATE TABLE categories (
   id             INT(16) UNSIGNED NOT NULL AUTO_INCREMENT,
   title          VARCHAR(255)     NOT NULL,
   parentid       INT              NULL,
@@ -187,8 +187,8 @@ CREATE TABLE category (
   disablepreview TINYINT(1)       NOT NULL DEFAULT '0',
   minsize        BIGINT UNSIGNED  NOT NULL DEFAULT '0',
   PRIMARY KEY (id),
-  INDEX ix_category_status   (status),
-  INDEX ix_category_parentid (parentid)
+  INDEX ix_categories_status   (status),
+  INDEX ix_categories_parentid (parentid)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
@@ -204,12 +204,12 @@ CREATE TABLE category_regexes (
   status      TINYINT(1) UNSIGNED NOT NULL DEFAULT '1'    COMMENT '1=ON 0=OFF',
   description VARCHAR(1000)       NOT NULL DEFAULT ''     COMMENT 'Optional extra details on this regex',
   ordinal     INT SIGNED          NOT NULL DEFAULT '0'    COMMENT 'Order to run the regex in',
-  category_id SMALLINT UNSIGNED   NOT NULL DEFAULT '0010' COMMENT 'Which category id to put the release in',
+  categories_id SMALLINT UNSIGNED   NOT NULL DEFAULT '0010' COMMENT 'Which categories id to put the release in',
   PRIMARY KEY (id),
   INDEX ix_category_regexes_group_regex (group_regex),
   INDEX ix_category_regexes_status      (status),
   INDEX ix_category_regexes_ordinal     (ordinal),
-  INDEX ix_category_regexes_category_id (category_id)
+  INDEX ix_category_regexes_categories_id (categories_id)
 )
   ENGINE          = MYISAM
   DEFAULT CHARSET = utf8
@@ -601,7 +601,7 @@ CREATE TABLE predb (
 
 DROP TABLE IF EXISTS predb_hashes;
 CREATE TABLE predb_hashes (
-  pre_id INT(11) UNSIGNED NOT NULL DEFAULT '0',
+  predb_id INT(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'id, of the predb entry, this hash belongs to',
   hash VARBINARY(20)      NOT NULL DEFAULT '',
   PRIMARY KEY (hash)
 )
@@ -657,19 +657,20 @@ CREATE TABLE         releases (
   adddate           DATETIME                       DEFAULT NULL,
   updatetime        TIMESTAMP                      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   guid              VARCHAR(40)                    NOT NULL,
+  leftguid          CHAR(1)                        NOT NULL COMMENT 'The first letter of the release guid',
   fromname          VARCHAR(255)                   NULL,
   completion        FLOAT                          NOT NULL DEFAULT '0',
-  categoryid        INT                            NOT NULL DEFAULT '0010',
+  categories_id     INT                            NOT NULL DEFAULT '0010',
   videos_id         MEDIUMINT(11) UNSIGNED         NOT NULL DEFAULT '0' COMMENT 'FK to videos.id of the parent series.',
   tv_episodes_id    MEDIUMINT(11) SIGNED           NOT NULL DEFAULT '0' COMMENT 'FK to tv_episodes.id for the episode.',
   imdbid            MEDIUMINT(7) UNSIGNED ZEROFILL NULL,
   xxxinfo_id        INT SIGNED                     NOT NULL DEFAULT '0',
-  musicinfoid       INT                            NULL,
-  consoleinfoid     INT                            NULL,
+  musicinfo_id      INT(11) SIGNED               NULL COMMENT 'FK to musicinfo.id',
+  consoleinfo_id    INT(11) SIGNED               NULL COMMENT 'FK to consoleinfo.id',
   gamesinfo_id      INT SIGNED                     NOT NULL DEFAULT '0',
-  bookinfoid        INT                            NULL,
-  anidbid           INT                            NULL,
-  preid             INT UNSIGNED                   NOT NULL DEFAULT '0',
+  bookinfo_id       INT(11) SIGNED               NULL COMMENT 'FK to bookinfo.id',
+  anidbid           INT                            NULL COMMENT 'FK to anidb_titles.anidbid',
+  predb_id          INT(11) UNSIGNED               NOT NULL DEFAULT '0' COMMENT 'FK to predb.id',
   grabs             INT UNSIGNED                   NOT NULL DEFAULT '0',
   comments          INT                            NOT NULL DEFAULT '0',
   passwordstatus    TINYINT                        NOT NULL DEFAULT '0',
@@ -692,22 +693,23 @@ CREATE TABLE         releases (
   proc_par2         TINYINT(1)                     NOT NULL DEFAULT '0',
   proc_nfo          TINYINT(1)                     NOT NULL DEFAULT '0',
   proc_files        TINYINT(1)                     NOT NULL DEFAULT '0',
-  PRIMARY KEY                                 (id, categoryid),
+  PRIMARY KEY                                 (id, categories_id),
   INDEX ix_releases_name                      (name),
   INDEX ix_releases_group_id                  (group_id,passwordstatus),
   INDEX ix_releases_postdate_searchname       (postdate,searchname),
   INDEX ix_releases_guid                      (guid),
+  INDEX ix_releases_leftguid                  (leftguid ASC, predb_id),
   INDEX ix_releases_nzb_guid                  (nzb_guid),
   INDEX ix_releases_videos_id                 (videos_id),
   INDEX ix_releases_tv_episodes_id            (tv_episodes_id),
   INDEX ix_releases_imdbid                    (imdbid),
   INDEX ix_releases_xxxinfo_id                (xxxinfo_id),
-  INDEX ix_releases_musicinfoid               (musicinfoid,passwordstatus),
-  INDEX ix_releases_consoleinfoid             (consoleinfoid),
+  INDEX ix_releases_musicinfo_id              (musicinfo_id,passwordstatus),
+  INDEX ix_releases_consoleinfo_id            (consoleinfo_id),
   INDEX ix_releases_gamesinfo_id              (gamesinfo_id),
-  INDEX ix_releases_bookinfoid                (bookinfoid),
+  INDEX ix_releases_bookinfo_id               (bookinfo_id),
   INDEX ix_releases_anidbid                   (anidbid),
-  INDEX ix_releases_preid_searchname          (preid,searchname),
+  INDEX ix_releases_predb_id_searchname       (predb_id,searchname),
   INDEX ix_releases_haspreview_passwordstatus (haspreview,passwordstatus),
   INDEX ix_releases_passwordstatus            (passwordstatus),
   INDEX ix_releases_nfostatus                 (nfostatus,size),
@@ -718,7 +720,7 @@ CREATE TABLE         releases (
   DEFAULT CHARSET = utf8
   COLLATE         = utf8_unicode_ci
   AUTO_INCREMENT  = 1
-  PARTITION BY RANGE (categoryid) (
+  PARTITION BY RANGE (categories_id) (
     PARTITION misc    VALUES LESS THAN (1000),
     PARTITION console VALUES LESS THAN (2000),
     PARTITION movies  VALUES LESS THAN (3000),
@@ -733,7 +735,7 @@ CREATE TABLE         releases (
 DROP TABLE IF EXISTS release_comments;
 CREATE TABLE release_comments (
   id          INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  releaseid   INT(11) UNSIGNED NOT NULL,
+  releases_id INT(11) UNSIGNED NOT NULL COMMENT 'FK to releases.id',
   text        VARCHAR(2000)    NOT NULL DEFAULT '',
   text_hash   VARCHAR(32)      NOT NULL DEFAULT '',
   username    VARCHAR(255)     NOT NULL DEFAULT '',
@@ -745,8 +747,8 @@ CREATE TABLE release_comments (
   siteid      VARCHAR(40)      NOT NULL DEFAULT '',
   nzb_guid    BINARY(16)       NOT NULL DEFAULT '0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0',
   PRIMARY KEY (id),
-  UNIQUE INDEX ix_release_comments_hash_releaseid(text_hash, releaseid),
-  INDEX ix_releasecomment_releaseid (releaseid),
+  UNIQUE INDEX ix_release_comments_hash_releases_id(text_hash, releases_id),
+  INDEX ix_releasecomment_releases_id (releases_id),
   INDEX ix_releasecomment_userid    (user_id)
 )
   ENGINE = MYISAM
@@ -757,9 +759,9 @@ CREATE TABLE release_comments (
 
 DROP TABLE IF EXISTS releaseextrafull;
 CREATE TABLE releaseextrafull (
-  releaseid INT(11) UNSIGNED NOT NULL,
-  mediainfo TEXT NULL,
-  PRIMARY KEY (releaseid)
+  releases_id INT(11) UNSIGNED NOT NULL COMMENT 'FK to releases.id',
+  mediainfo   TEXT NULL,
+  PRIMARY KEY (releases_id)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
@@ -768,13 +770,13 @@ CREATE TABLE releaseextrafull (
 
 DROP TABLE IF EXISTS release_files;
 CREATE TABLE release_files (
-  releaseid int(11) unsigned NOT NULL,
+  releases_id int(11) unsigned NOT NULL COMMENT 'FK to releases.id',
   name varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   size bigint(20) unsigned NOT NULL DEFAULT '0',
   ishashed tinyint(1) NOT NULL DEFAULT '0',
   createddate datetime DEFAULT NULL,
   passworded tinyint(1) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (releaseid, name),
+  PRIMARY KEY (releases_id, name),
   KEY ix_releasefiles_ishashed (ishashed)
 )
   ENGINE = MYISAM
@@ -803,9 +805,9 @@ CREATE TABLE release_naming_regexes (
 
 DROP TABLE IF EXISTS release_nfos;
 CREATE TABLE release_nfos (
-  releaseid INT(11) UNSIGNED NOT NULL,
+  releases_id INT(11) UNSIGNED NOT NULL COMMENT 'FK to releases.id',
   nfo       BLOB             NULL DEFAULT NULL,
-  PRIMARY KEY (releaseid)
+  PRIMARY KEY (releases_id)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
@@ -815,7 +817,7 @@ CREATE TABLE release_nfos (
 DROP TABLE IF EXISTS release_search_data;
 CREATE TABLE release_search_data (
   id         INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  releaseid  INT(11) UNSIGNED NOT NULL,
+  releases_id  INT(11) UNSIGNED NOT NULL COMMENT 'FK to releases.id',
   guid       VARCHAR(50)      NOT NULL,
   name       VARCHAR(255)     NOT NULL DEFAULT '',
   searchname VARCHAR(255)     NOT NULL DEFAULT '',
@@ -824,7 +826,7 @@ CREATE TABLE release_search_data (
   FULLTEXT INDEX ix_releasesearch_name_ft (name),
   FULLTEXT INDEX ix_releasesearch_searchname_ft (searchname),
   FULLTEXT INDEX ix_releasesearch_fromname_ft (fromname),
-  INDEX          ix_releasesearch_releaseid          (releaseid),
+  INDEX          ix_releasesearch_releases_id          (releases_id),
   INDEX          ix_releasesearch_guid               (guid)
 )
   ENGINE          = MYISAM
@@ -836,11 +838,11 @@ CREATE TABLE release_search_data (
 DROP TABLE IF EXISTS release_subtitles;
 CREATE TABLE release_subtitles (
   id           INT(11)     UNSIGNED AUTO_INCREMENT,
-  releaseid    INT(11)     UNSIGNED NOT NULL,
+  releases_id    INT(11)     UNSIGNED NOT NULL COMMENT 'FK to releases.id',
   subsid       INT(2)      UNSIGNED NOT NULL,
   subslanguage VARCHAR(50) NOT NULL,
   PRIMARY KEY (id),
-  UNIQUE INDEX ix_releasesubs_releaseid_subsid (releaseid, subsid)
+  UNIQUE INDEX ix_releasesubs_releases_id_subsid (releases_id, subsid)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
@@ -1031,10 +1033,10 @@ DROP TABLE IF EXISTS users_releases;
 CREATE TABLE users_releases (
   id          INT(16) UNSIGNED NOT NULL AUTO_INCREMENT,
   user_id INT              NOT NULL,
-  releaseid   INT              NOT NULL,
+  releases_id   INT              NOT NULL COMMENT 'FK to releases.id',
   createddate DATETIME         NOT NULL,
   PRIMARY KEY (id),
-  UNIQUE INDEX ix_usercart_userrelease (user_id, releaseid)
+  UNIQUE INDEX ix_usercart_userrelease (user_id, releases_id)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
@@ -1061,10 +1063,10 @@ DROP TABLE IF EXISTS user_excluded_categories;
 CREATE TABLE user_excluded_categories (
   id          INT(16) UNSIGNED NOT NULL AUTO_INCREMENT,
   user_id INT              NOT NULL,
-  categoryid  INT              NOT NULL,
+  categories_id  INT              NOT NULL,
   createddate DATETIME         NOT NULL,
   PRIMARY KEY (id),
-  UNIQUE INDEX ix_userexcat_usercat (user_id, categoryid)
+  UNIQUE INDEX ix_userexcat_usercat (user_id, categories_id)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
@@ -1139,7 +1141,7 @@ CREATE TABLE user_series (
 
 DROP TABLE IF EXISTS video_data;
 CREATE TABLE video_data (
-  releaseid       INT(11) UNSIGNED NOT NULL,
+  releases_id       INT(11) UNSIGNED NOT NULL COMMENT 'FK to releases.id',
   containerformat VARCHAR(50) DEFAULT NULL,
   overallbitrate  VARCHAR(20) DEFAULT NULL,
   videoduration   VARCHAR(20) DEFAULT NULL,
@@ -1150,7 +1152,7 @@ CREATE TABLE video_data (
   videoaspect     VARCHAR(10) DEFAULT NULL,
   videoframerate  FLOAT(7, 4) DEFAULT NULL,
   videolibrary    VARCHAR(50) DEFAULT NULL,
-  PRIMARY KEY (releaseid)
+  PRIMARY KEY (releases_id)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
@@ -1231,7 +1233,7 @@ CREATE TRIGGER check_insert BEFORE INSERT ON releases FOR EACH ROW
   BEGIN
     IF NEW.searchname REGEXP '[a-fA-F0-9]{32}' OR NEW.name REGEXP '[a-fA-F0-9]{32}'
       THEN SET NEW.ishashed = 1;
-    ELSEIF NEW.name REGEXP '^\\[ ?([[:digit:]]{4,6}) ?\\]|^REQ\s*([[:digit:]]{4,6})|^([[:digit:]]{4,6})-[[:digit:]]{1}\\['
+    ELSEIF NEW.name REGEXP '^\\[ ?([[:digit:]]{4,6}) ?\\]|^REQ\\s*([[:digit:]]{4,6})|^([[:digit:]]{4,6})-[[:digit:]]{1}\\['
       THEN SET NEW.isrequestid = 1;
     END IF;
   END; $$
@@ -1240,7 +1242,7 @@ CREATE TRIGGER check_update BEFORE UPDATE ON releases FOR EACH ROW
   BEGIN
     IF NEW.searchname REGEXP '[a-fA-F0-9]{32}' OR NEW.name REGEXP '[a-fA-F0-9]{32}'
       THEN SET NEW.ishashed = 1;
-    ELSEIF NEW.name REGEXP '^\\[ ?([[:digit:]]{4,6}) ?\\]|^REQ\s*([[:digit:]]{4,6})|^([[:digit:]]{4,6})-[[:digit:]]{1}\\['
+    ELSEIF NEW.name REGEXP '^\\[ ?([[:digit:]]{4,6}) ?\\]|^REQ\\s*([[:digit:]]{4,6})|^([[:digit:]]{4,6})-[[:digit:]]{1}\s?\\['
       THEN SET NEW.isrequestid = 1;
     END IF;
   END; $$
@@ -1261,47 +1263,48 @@ CREATE TRIGGER check_rfupdate BEFORE UPDATE ON release_files FOR EACH ROW
 
 CREATE TRIGGER insert_search AFTER INSERT ON releases FOR EACH ROW
   BEGIN
-    INSERT INTO release_search_data (releaseid, guid, name, searchname, fromname) VALUES (NEW.id, NEW.guid, NEW.name, NEW.searchname, NEW.fromname);
+    INSERT INTO release_search_data (releases_id, guid, name, searchname, fromname) VALUES (NEW.id, NEW.guid, NEW.name, NEW.searchname, NEW.fromname);
   END; $$
 
 CREATE TRIGGER update_search AFTER UPDATE ON releases FOR EACH ROW
   BEGIN
     IF NEW.guid != OLD.guid
-      THEN UPDATE release_search_data SET guid = NEW.guid WHERE releaseid = OLD.id;
+      THEN UPDATE release_search_data SET guid = NEW.guid WHERE releases_id = OLD.id;
     END IF;
     IF NEW.name != OLD.name
-      THEN UPDATE release_search_data SET name = NEW.name WHERE releaseid = OLD.id;
+      THEN UPDATE release_search_data SET name = NEW.name WHERE releases_id = OLD.id;
     END IF;
     IF NEW.searchname != OLD.searchname
-      THEN UPDATE release_search_data SET searchname = NEW.searchname WHERE releaseid = OLD.id;
+      THEN UPDATE release_search_data SET searchname = NEW.searchname WHERE releases_id = OLD.id;
     END IF;
     IF NEW.fromname != OLD.fromname
-      THEN UPDATE release_search_data SET fromname = NEW.fromname WHERE releaseid = OLD.id;
+      THEN UPDATE release_search_data SET fromname = NEW.fromname WHERE releases_id = OLD.id;
     END IF;
   END; $$
 
 CREATE TRIGGER delete_search AFTER DELETE ON releases FOR EACH ROW
   BEGIN
-    DELETE FROM release_search_data WHERE releaseid = OLD.id;
+    DELETE FROM release_search_data WHERE releases_id = OLD.id;
   END; $$
 
 CREATE TRIGGER insert_hashes AFTER INSERT ON predb FOR EACH ROW
   BEGIN
-    INSERT INTO predb_hashes (hash, pre_id) VALUES (UNHEX(MD5(NEW.title)), NEW.id), (UNHEX(MD5(MD5(NEW.title))), NEW.id), ( UNHEX(SHA1(NEW.title)), NEW.id);
+    INSERT INTO predb_hashes (hash, predb_id) VALUES (UNHEX(MD5(NEW.title)), NEW.id), (UNHEX(MD5
+                                                                                            (MD5(NEW.title))), NEW.id), ( UNHEX(SHA1(NEW.title)), NEW.id);
   END; $$
 
 CREATE TRIGGER update_hashes AFTER UPDATE ON predb FOR EACH ROW
   BEGIN
     IF NEW.title != OLD.title
       THEN
-         DELETE FROM predb_hashes WHERE hash IN ( UNHEX(md5(OLD.title)), UNHEX(md5(md5(OLD.title))), UNHEX(sha1(OLD.title)) ) AND pre_id = OLD.id;
-         INSERT INTO predb_hashes (hash, pre_id) VALUES ( UNHEX(MD5(NEW.title)), NEW.id ), ( UNHEX(MD5(MD5(NEW.title))), NEW.id ), ( UNHEX(SHA1(NEW.title)), NEW.id );
+         DELETE FROM predb_hashes WHERE hash IN ( UNHEX(md5(OLD.title)), UNHEX(md5(md5(OLD.title))), UNHEX(sha1(OLD.title)) ) AND predb_id = OLD.id;
+         INSERT INTO predb_hashes (hash, predb_id) VALUES ( UNHEX(MD5(NEW.title)), NEW.id ), ( UNHEX(MD5(MD5(NEW.title))), NEW.id ), ( UNHEX(SHA1(NEW.title)), NEW.id );
     END IF;
   END; $$
 
 CREATE TRIGGER delete_hashes AFTER DELETE ON predb FOR EACH ROW
   BEGIN
-    DELETE FROM predb_hashes WHERE hash IN ( UNHEX(md5(OLD.title)), UNHEX(md5(md5(OLD.title))), UNHEX(sha1(OLD.title)) ) AND pre_id = OLD.id;
+    DELETE FROM predb_hashes WHERE hash IN ( UNHEX(md5(OLD.title)), UNHEX(md5(md5(OLD.title))), UNHEX(sha1(OLD.title)) ) AND predb_id = OLD.id;
   END; $$
 
 CREATE TRIGGER insert_MD5 BEFORE INSERT ON release_comments FOR EACH ROW

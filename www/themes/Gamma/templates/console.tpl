@@ -134,14 +134,14 @@
 				<div class="movcover">
 					<div style="text-align: center;">
 						<a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">
-							<img class="shadow img img-polaroid" src="{$smarty.const.WWW_TOP}/covers/console/{if isset($result.cover) && $result.cover == 1}{$result.consoleinfoid}.jpg{else}no-cover.jpg{/if}"
+							<img class="shadow img img-polaroid" src="{$smarty.const.WWW_TOP}/covers/console/{if isset($result.cover) && $result.cover == 1}{$result.consoleinfo_id}.jpg{else}no-cover.jpg{/if}"
 							width="120" border="0" alt="{$result.title|escape:"htmlall"}"/>
 						</a>
 					</div>
 					<div class="movextra">
 						<div style="text-align: center;">
 						{if {$mnfo[$m@index]} > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$mguid[$m@index]}" title="View Nfo" class="rndbtn modal_nfo badge" rel="nfo">Nfo</a>{/if}
-						{if $result.url != ""}<a class="rndbtn badge badge-amaz" target="_blank" href="{$site->dereferrer_link}{$result.url}" name="amazon{$result.consoleinfoid}" title="View amazon page">Amazon</a>{/if}
+						{if $result.url != ""}<a class="rndbtn badge badge-amaz" target="_blank" href="{$site->dereferrer_link}{$result.url}" name="amazon{$result.consoleinfo_id}" title="View amazon page">Amazon</a>{/if}
 						<a class="rndbtn badge" href="{$smarty.const.WWW_TOP}/browse?g={$mgrp[$m@index]}" title="Browse releases in {$mgrp[$m@index]|replace:"alt.binaries":"a.b"}">Grp</a>
 						</div>
 					</div>
@@ -185,18 +185,34 @@
 				{if $result.review != ""}<b>Review:</b> {$result.review|escape:'htmlall'}<br />{/if}
 				<br />
 				<div class="movextra">
-					<b>{$result.title|escape:"htmlall"}</b> <a class="rndbtn btn btn-mini btn-info" href="{$smarty.const.WWW_TOP}/console?platform={$result.platform}" title="View similar nzbs">Similar</a>
+					<a class="rndbtn btn btn-mini btn-info" href="{$smarty.const.WWW_TOP}/console?platform={$result.platform}" title="View similar nzbs">Similar</a>
 					{if $isadmin}
-						<a class="rndbtn btn btn-mini btn-warning" href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$result.releaseid}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Edit Release">Edit</a> <a class="rndbtn confirm_action btn btn-mini btn-danger" href="{$smarty.const.WWW_TOP}/admin/release-delete.php?id={$result.releaseid}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Delete Release">Delete</a>
+						<a class="rndbtn btn btn-mini btn-warning" href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$result.id}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Edit Release">Edit</a> <a class="rndbtn confirm_action btn btn-mini btn-danger" href="{$smarty.const.WWW_TOP}/admin/release-delete.php?id={$result.id}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Delete Release">Delete</a>
 					{/if}
 					<br />
+					<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$mname[$m@index]|escape:"htmlall"}</a><br/>
 					<ul class="inline">
 						<li width="50px"><b>Info:</b></li>
 						<li width="100px">Posted {$mpostdate[$m@index]|timeago}</li>
-						<li width="80px">{{$msize[$m@index]}|fsize_format:"MB"}</li>
+						<li width="80px">{$msize[$m@index]|fsize_format:"MB"}</li>
 						<li width="50px"><a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$mguid[$m@index]}">{$mtotalparts[$m@index]}</a> <i class="fa fa-file"></i></li>
-						<li width="50px"><a title="View comments for {$result.title|escape:"htmlall"}" href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/#comments">{$mcomments[$m@index]}</a> <i class="fa fa-comments-o"></i></li>
+						<li width="50px"><a title="View comments for {$mname[$m@index]|escape:"htmlall"}" href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/#comments">{$mcomments[$m@index]}</a> <i class="fa fa-comments-o"></i></li>
 						<li width="50px">{$mgrabs[$m@index]} <i class="fa fa-cloud-download"></i></li>
+						{if $mnfo[$m@index] > 0}
+							<li width="50px"><a href="{$smarty.const.WWW_TOP}/nfo/{$mguid[$m@index]}" title="View Nfo" class="modal_nfo badge" rel="nfo">Nfo</a></li>
+						{/if}
+						{if $mpass[$m@index] == 1}
+							<li width="50px">Passworded, {elseif $mpass[$m@index] == 2}Potential Password</li>
+						{/if}
+						<li width="50px"><a href="{$smarty.const.WWW_TOP}/browse?g={$mgrp[$m@index]}" class="badge" title="Browse releases in {$mgrp[$m@index]|replace:"alt.binaries":"a.b"}">Grp</a></li>
+						{if $mhaspreview[$m@index] == 1 && $userdata.canpreview == 1}
+							<li width="50px"><a href="{$smarty.const.WWW_TOP}/covers/preview/{$mguid[$m@index]}_thumb.jpg" name="name{$mguid[$m@index]}" title="Screenshot of {$mname[$m@index]|escape:"htmlall"}" class="modal_prev badge" rel="preview">Preview</a></li>
+						{/if}
+
+						{if $minnerfiles[$m@index] > 0}
+							<li width="50px"><a href="#" onclick="return false;" class="mediainfo badge" title="{$mguid[$m@index]}">Media</a></li>
+						{/if}
+
 					</ul>
 				</div>
 			</td>

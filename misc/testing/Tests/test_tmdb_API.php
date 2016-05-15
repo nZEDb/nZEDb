@@ -37,7 +37,7 @@ if (!empty($argv[1]) && is_numeric($argv[2]) && is_numeric($argv[3])) {
 		} else if ($season == 0 && $episode == 0) {
 			$episodeObj = $tmdb->client->getTVShow($series[0]->_data['id']);
 			if (is_array($episodeObj)) {
-				foreach ($episodeObj AS $ep) {
+				foreach ($episodeObj as $ep) {
 					print_r($ep);
 				}
 			}
