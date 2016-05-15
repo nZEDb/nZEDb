@@ -32,9 +32,9 @@
 		href="{$smarty.const.WWW_THEMES}/{$theme}/css/bootstrap-spacelab.min.css"
 		rel="stylesheet">
 	<link href="{$smarty.const.WWW_THEMES}/{$theme}/css/charisma-app.css" rel="stylesheet">
-	<link href='{$smarty.const.WWW_THEMES}/{$theme}/bower_components/chosen/chosen.min.css' rel='stylesheet'>
+	<link href='{$smarty.const.WWW_THEMES}/{$theme}/shared/libs/chosen/chosen.css' rel='stylesheet'>
 	<link href='{$smarty.const.WWW_THEMES}/shared/libs/colorbox/example3/colorbox.css' rel='stylesheet'>
-	<link href='{$smarty.const.WWW_THEMES}/{$theme}/bower_components/responsive-tables/responsive-tables.css' rel='stylesheet'>
+	<link href='{$smarty.const.WWW_THEMES}/{$theme}/shared/libs/responsive-tables-js/dist/responsivetables.css' rel='stylesheet'>
 	<link href='{$smarty.const.WWW_THEMES}/{$theme}/css/elfinder.min.css' rel='stylesheet'>
 	<link href='{$smarty.const.WWW_THEMES}/{$theme}/css/elfinder.theme.css' rel='stylesheet'>
 	<link href='{$smarty.const.WWW_THEMES}/{$theme}/css/jquery.iphone.toggle.css' rel='stylesheet'>
@@ -44,7 +44,7 @@
 	<!-- Normalize.css -->
 	<link href="{$smarty.const.WWW_THEMES}/shared/css/normalize.css" rel="stylesheet" type="text/css">
 	<!-- The fav icon -->
-	<link rel="shortcut icon" href="{$smarty.const.WWW_THEMES}/{$theme}/img/favicon.ico">
+	<link rel="shortcut icon" href="{$smarty.const.WWW_THEMES}/shared/img/favicon.ico">
 </head>
 	<body>
 	<!-- topbar starts -->
@@ -57,7 +57,7 @@
 				<span class="icon-bar"></span>
 			</button>
 			<a class="navbar-brand" href="{$site->home_link}"> <img alt="nZEDb logo"
-					src="{$smarty.const.WWW_THEMES}/{$theme}/img/logo-nzedb.png"
+					src="{$smarty.const.WWW_THEMES}/shared/img/logo.png"
 				/></a>
 			{$header_menu}
 			<!-- user dropdown starts -->
@@ -259,7 +259,7 @@
 		src="{$smarty.const.WWW_THEMES}/shared/libs/jquery-2.2.x/dist/jquery.min.js"></script>
 	<!-- jQuery migrate script -->
 	<script type="text/javascript"
-		src="{$smarty.const.WWW_THEMES}/{$theme}/js/jquery-migrate-1.2.1.min.js"></script>
+		src="{$smarty.const.WWW_THEMES}/shared/libs/jquery-migrate/jquery-migrate.min.js"></script>
 	<script type="text/javascript"
 		src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap-3.x/dist/js/bootstrap.min.js"></script>
 	<!-- Bootstrap hover on mouseover script -->
@@ -270,10 +270,10 @@
 		src="{$smarty.const.WWW_THEMES}/{$theme}/js/jquery.cookie.js"></script>
 	<!-- data table plugin -->
 	<script type="text/javascript"
-		src='{$smarty.const.WWW_THEMES}/{$theme}/js/jquery.dataTables.min.js'></script>
+		src='{$smarty.const.WWW_THEMES}/shared/libs/datatables/media/js/jquery.dataTables.min.js'></script>
 	<!-- select or dropdown enhancer -->
 	<script type="text/javascript"
-		src="{$smarty.const.WWW_THEMES}/{$theme}/bower_components/chosen/chosen.jquery.min.js"></script>
+		src="{$smarty.const.WWW_THEMES}/{$theme}/shared/libs/chosen/chosen.jquery.js"></script>
 	<!-- plugin for gallery image view -->
 	<script type="text/javascript"
 		src="{$smarty.const.WWW_THEMES}/shared/libs/colorbox/jquery.colorbox-min.js"></script>
@@ -282,7 +282,7 @@
 			src="{$smarty.const.WWW_THEMES}/shared/libs/noty/packaged/jquery.noty.packaged.js"></script>
 	<!-- library for making tables responsive -->
 	<script type="text/javascript"
-		src="{$smarty.const.WWW_THEMES}/{$theme}/bower_components/responsive-tables/responsive-tables.js"></script>
+		src="{$smarty.const.WWW_THEMES}/{$theme}/shared/libs/responsive-tables-js/dist/responsivetables.js"></script>
 	<!-- Charisma functions -->
 	<script type="text/javascript"
 			src="{$smarty.const.WWW_THEMES}/{$theme}/js/charisma.js"></script>
@@ -295,8 +295,8 @@
 			src="{$smarty.const.WWW_THEMES}/shared/js/sorttable.js"></script>
 	<!-- The HTML5 shim, for IE6-8 support of HTML5 elements -->
 	<!--[if lt IE 9]>
-	<script type="text/javascript"
-			src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/html5shiv/dist/html5shiv.min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/respond/dest/respond.min.js"></script>
 	<![endif]-->
 
 	<!-- autogrowing textarea plugin -->
