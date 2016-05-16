@@ -20,7 +20,7 @@ $page->smarty->assign('pagerquerybase', WWW_TOP . "/movie-list.php?offset=");
 $pager = $page->smarty->fetch("pager.tpl");
 $page->smarty->assign('pager', $pager);
 
-$movielist = $movie->getRange($offset, ITEMS_PER_PAGE);
+$movielist = $movie->getRange($offset, ITEMS_PER_PAGE, $movietitle);
 $page->smarty->assign('movielist', $movielist);
 
 $page->content = $page->smarty->fetch('movie-list.tpl');

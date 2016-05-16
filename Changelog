@@ -8,7 +8,9 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
-2916-05-13 ruhllatio
+2016-05-16 ruhllatio
+	Mrg: PR from Meganomic, Req Feature: Search Movies #1581 #2125
+2016-05-13 ruhllatio
 	Fix: PostProcess Additional tmux query not accurate with PP add queue
 2016-05-12 niel
 	Add: Reporting oupt for update git,db commands.
