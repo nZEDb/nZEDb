@@ -193,159 +193,81 @@ class NZB
 	 */
 	public function writeNZBforReleaseId($relID, $relGuid, $name, $cTitle)
 	{
-		$path = ($this->buildNZBPath($relGuid, $this->nzbSplitLevel, true) . $relGuid . '.nzb.gz');
-		$fp = gzopen($path, 'wb7');
+		$collections = $this->pdo->queryDirect($this->_collectionsQuery . $relID);
 
-		$complete = false;
-		if ($fp) {
-			$nzb_guid = '';
-			gzwrite(
-				$fp,
-				sprintf(
-					$this->_nzbHeadString,
-					htmlspecialchars($cTitle, ENT_QUOTES, 'utf-8'),
-					htmlspecialchars($name, ENT_QUOTES, 'utf-8')
-				)
-			);
+		if (!$collections instanceof \Traversable) {
+			return false;
+		}
 
-			$collections = $this->pdo->queryDirect($this->_collectionsQuery . $relID);
+		$nzb_guid = '';
+		// Buffer segment writes, increases performance.
+		$string = sprintf(
+				$this->_nzbHeadString,
+				htmlspecialchars($cTitle, ENT_QUOTES, 'utf-8'),
+				htmlspecialchars($name, ENT_QUOTES, 'utf-8')
+		);
 
-			if ($collections instanceof \Traversable) {
-
-				foreach ($collections as $collection) {
-					$poster = htmlspecialchars($collection['fromname'], ENT_QUOTES, 'utf-8');
-					$binaries = $this->pdo->queryDirect(
-						sprintf(
-							$this->_binariesQuery,
-							$collection['id']
-						)
-					);
-
-					if ($binaries instanceof \Traversable) {
-
-						foreach ($binaries as $binary) {
-
-							// Buffer segment writes, increases performance.
-							$string = '';
-
-							$parts = $this->pdo->queryDirect(
-								sprintf(
-									$this->_partsQuery,
-									$binary['id']
-								)
-							);
-
-							if ($parts instanceof \Traversable) {
-
-								foreach ($parts as $part) {
-									if ($nzb_guid === '') {
-										$nzb_guid = $part['messageid'];
-									}
-									$string .= (
-										'  <segment bytes="' . $part['size'] .
-										'" number="' . $part['partnumber'] . '">' .
-										htmlspecialchars(
-											$part['messageid'],
-											ENT_QUOTES,
-											'utf-8'
-										) . "</segment>\n"
-									);
-								}
-
-								$complete = true;
-							} else {
-								if ($this->_debug) {
-									$this->debugging->log(
-										get_class(),
-										__FUNCTION__,
-										'ERROR: no parts for release '
-										. $relID,
-										Logger::LOG_WARNING
-									);
-								}
-							}
-
-							gzwrite($fp,
-								'<file poster="' . $poster .
-								'" date="' . $collection['udate'] .
-								'" subject="' .
-								htmlspecialchars($binary['name'], ENT_QUOTES, 'utf-8') .
-								' (1/' . $binary['totalparts'] .
-								")\">\n <groups>\n  <group>" . $collection['groupname'] .
-								"</group>\n </groups>\n <segments>\n" . $string .
-								" </segments>\n</file>\n"
-							);
-						}
-					} else {
-						if ($this->_debug) {
-							$this->debugging->log(
-								get_class(),
-								__FUNCTION__,
-								'ERROR: no binaries for release '
-								. $relID,
-								Logger::LOG_WARNING
-							);
-						}
-					}
-				}
-			} else {
-				if ($this->_debug) {
-					$this->debugging->log(
-						get_class(),
-						__FUNCTION__,
-						'ERROR: no collections for release '
-						. $relID,
-						Logger::LOG_WARNING
-					);
-				}
+		foreach ($collections as $collection) {
+			$binaries = $this->pdo->queryDirect(sprintf($this->_binariesQuery, $collection['id']));
+			if (!$binaries instanceof \Traversable) {
+				return false;
 			}
 
-			gzwrite($fp, '</nzb>');
-			gzclose($fp);
+			$poster = htmlspecialchars($collection['fromname'], ENT_QUOTES, 'utf-8');
 
-			if ($complete) {
+			foreach ($binaries as $binary) {
+				$parts = $this->pdo->queryDirect(sprintf($this->_partsQuery, $binary['id']));
+				if (!$parts instanceof \Traversable) {
+					return false;
+				}
 
-				if (is_file($path)) {
-				// Mark release as having NZB.
-					$this->pdo->queryExec(
-						sprintf('
-							UPDATE releases
-							SET nzbstatus = %d %s
-							WHERE id = %d',
-							NZB::NZB_ADDED,
-							($nzb_guid === '' ? '' : ', nzb_guid = UNHEX(' . $this->pdo->escapeString(md5($nzb_guid)) . ')'),
-							$relID
-						)
+				$string .= '<file poster="' . $poster .
+						   '" date="' . $collection['udate'] .
+						   '" subject="' . htmlspecialchars($binary['name'], ENT_QUOTES, 'utf-8') .
+						   ' (1/' . $binary['totalparts'] . ")\">\n <groups>\n  <group>" . $collection['groupname'] .
+						   "</group>\n </groups>\n <segments>\n";
+
+				foreach ($parts as $part) {
+					if ($nzb_guid === '') {
+						$nzb_guid = $part['messageid'];
+					}
+					$string .= (
+							'  <segment bytes="' . $part['size']
+							. '" number="' . $part['partnumber'] . '">'
+							. htmlspecialchars($part['messageid'], ENT_QUOTES, 'utf-8')
+							. "</segment>\n"
 					);
-				// Delete CBP for release that has its NZB created.
-				$this->pdo->queryExec(
-					sprintf('
-						DELETE c, b, p
-						FROM %s c
-						JOIN %s b ON c.id = b.collection_id
-						STRAIGHT_JOIN %s p ON b.id = p.binaryid
-						WHERE c.releaseid = %d',
-						$this->_tableNames['cName'],
-						$this->_tableNames['bName'],
-						$this->_tableNames['pName'],
-						$relID
-					)
-				);
-
-					// Chmod to fix issues some users have with file permissions.
-					chmod($path, 0777);
-
-					return true;
-				} else {
-					echo "ERROR: $path does not exist.\n";
 				}
-			} else {
-				if (is_file($path)) {
-					@unlink($path);
-				}
+
+				$string .= " </segments>\n</file>\n";
 			}
 		}
-		return false;
+		$path = ($this->buildNZBPath($relGuid, $this->nzbSplitLevel, true) . $relGuid . '.nzb.gz');
+		$fp = gzopen($path, 'wb7');
+		if (!$fp) {
+			return false;
+		}
+		gzwrite($fp, $string . '</nzb>');
+		gzclose($fp);
+
+		if (!is_file($path)) {
+			echo "ERROR: $path does not exist.\n";
+			return false;
+		}
+
+		// Mark release as having NZB and delete CBP.
+		$this->pdo->queryExec(
+				sprintf('
+				UPDATE releases SET nzbstatus = %d %s WHERE id = %d;
+				DELETE c, b, p FROM %s c JOIN %s b ON(c.id=b.collection_id) STRAIGHT_JOIN %s p ON(b.id=p.binaryid) WHERE c.releaseid = %d',
+						NZB::NZB_ADDED, ($nzb_guid === '' ? '' : ', nzb_guid = UNHEX( ' . $this->pdo->escapestring(md5($nzb_guid)) . ' )'), $relID,
+						$this->_tableNames['cName'], $this->_tableNames['bName'], $this->_tableNames['pName'], $relID
+				)
+		);
+
+		// Chmod to fix issues some users have with file permissions.
+		chmod($path, 0777);
+		return true;
 	}
 
 	/**
