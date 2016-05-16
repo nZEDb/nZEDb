@@ -48,11 +48,13 @@
 		<div style="margin-top:10px;">
 			<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$release.imdbid}/" title="View at IMDB">IMDB</a>
 			{if $movie.tmdbid != ''}<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://www.themoviedb.org/movie/{$movie.tmdbid}" title="View at TMDb">TMDb</a>{/if}
-			<a
-				class="rndbtn sendtocouch"
-				title="Add to CouchPotato">
-				CouchPotato
-			</a>
+			{if !empty($cpurl) && !empty($cpapi)}
+				<a
+					id="guid{$release.guid}"
+					class="rndbtn sendtocouch">
+					Add to CouchPotato"
+				</a>
+			{/if}
 		</div>
 	</td></tr>
 	{/if}

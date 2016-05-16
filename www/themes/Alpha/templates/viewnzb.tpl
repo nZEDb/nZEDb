@@ -74,10 +74,12 @@
 							<br><strong>Subtitle Search:</strong>
 							<br><a target="_blank" href="http://www.opensubtitles.org/search/sublanguageid-all/moviename-{$movie.title|replace:" ":"+"}"title="Opensubtitles">OpenSubtitles</a> <a target="_blank" href="http://www.subtitleseeker.com/search/MOVIE_TITLES/{$movie.title}"title="SubtitleSeeker">SubtitleSeeker</a>
 							<span class="label label-default">
-							{if $cpurl != "" && $cpapi != ""}
+							{if !empty($cpurl) && !empty($cpapi)}
 								<a
+									id="guid{$release.guid}"
 									class="sendtocouch"
-									title="Add to CouchPotato">CouchPotato
+									title="Add to CouchPotato">
+
 								</a>
 							{/if}
 							</span>

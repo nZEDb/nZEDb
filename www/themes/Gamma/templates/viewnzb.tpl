@@ -360,6 +360,7 @@
 					{/if}
 					{if !empty($cpurl) && !empty($cpapi)}
 						<a
+							id="guid{$release.guid}"
 							class="sendtocouch"
 							title="Add to CouchPotato">
 							<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
