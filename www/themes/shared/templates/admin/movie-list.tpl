@@ -1,7 +1,16 @@
 <h1>{$page->title}</h1>
 {if $movielist}
+    <div style="float:right;">
+        <form name="moviesearch" action="">
+            <label for="movietitle">Title</label>
+            <input id="movietitle" type="text" name="movietitle" value="{$movietitle}" size="15" />
+            &nbsp;&nbsp;
+            <input type="submit" value="Go" />
+        </form>
+    </div>
 	{$pager}
-	<table style="margin-top:10px;" class="data Sortable highlight">
+    <br/><br/>
+	<table style="width:100%;margin-top:10px;" class="data Sortable highlight">
 		<tr>
 			<th>IMDB ID</th>
 			<th>TMDb ID</th>
