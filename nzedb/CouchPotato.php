@@ -67,7 +67,6 @@ class CouchPotato
 	{
 		$relData = $this->releases->getByGuid($guid);
 		$imdbid = $relData['imdbid'];
-		$title = $relData['title'];
 
 		return Misc::getUrl([
 				'url' => $this->cpurl .
