@@ -79,7 +79,6 @@
 									id="guid{$release.guid}"
 									class="sendtocouch"
 									title="Add to CouchPotato">
-
 								</a>
 							{/if}
 							</span>
