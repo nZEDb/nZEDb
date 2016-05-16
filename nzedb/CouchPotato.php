@@ -73,14 +73,10 @@ class CouchPotato
 				'url' => $this->cpurl .
 					'/api/' .
 					$this->cpapi .
-					'movie.add/?identifier=tt' .
-					$imdbid .
-					'&title=' .
-					$title,
+					'/movie.add/?identifier=tt' .
+					$imdbid,
 				'verifypeer' => false,
 			]
 		);
 	}
-
-
 }
