@@ -8,6 +8,8 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+2016-05-16 niel
+	Fix: Profile edit included non theme names in its dropdown list.
 2016-05-16 ruhllatio
 	Mrg: PR from Meganomic, Req Feature: Search Movies #1581 #2125
 	Chg: Clean up NZB class file indents and query strings
