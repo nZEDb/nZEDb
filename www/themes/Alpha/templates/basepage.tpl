@@ -339,12 +339,12 @@
 	<!-- JS and analytics only. -->
 	<!-- Bootstrap core JavaScript
 	================================================== -->
-	<script src="{$smarty.const.WWW_THEMES}/shared/libs/jquery-1.9.x/jquery-1.9.1.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/jquery-1.9.x/jquery.min.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap-3.x/dist/js/bootstrap.min.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/js/holder.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/js/jquery.pnotify.min.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/js/jquery.qtip.min.js"></script>
-	<script src="{$smarty.const.WWW_THEMES}/shared/js/jquery.autosize-min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/autosize/autosize-min.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/libs/colorbox/jquery.colorbox-min.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/js/sorttable.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/{$theme}/scripts/utils.js"></script>

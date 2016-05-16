@@ -29,6 +29,7 @@
 	<link href="{$smarty.const.WWW_THEMES}/{$theme}/styles/style.css" rel="stylesheet" type="text/css" media="screen" />
 	<link href="{$smarty.const.WWW_THEMES}/{$theme}/styles/bootstrap.cyborg.css" rel="stylesheet" type="text/css" media="screen" />
 	<link href="{$smarty.const.WWW_THEMES}/{$theme}/styles/bootstrap-fixes.css" rel="stylesheet" type="text/css" media="screen" />
+	<link href="{$smarty.const.WWW_THEMES}/shared/css/jquery.qtip.css" rel="stylesheet" media="screen" />
 
 	<!-- FAVICON -->
 	<link rel="search" type="application/opensearchdescription+xml" href="/opensearch" title="{$site->title|escape}" />
@@ -39,7 +40,7 @@
 	<!-- jQuery migrate script -->
 	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/jquery-migrate/jquery-migrate.min.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/libs/colorbox/jquery.colorbox-min.js" type="text/javascript" ></script>
-	<script src="{$smarty.const.WWW_THEMES}/shared/libs/qtip2/jquery.qtip.min.js" type="text/javascript" ></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/js/jquery.qtip.min.js" type="text/javascript" ></script>
 	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/js/utils.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/libs/autosize/dist/autosize.min.js" type="text/javascript" ></script>
 	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/js/sorttable.js"></script>
