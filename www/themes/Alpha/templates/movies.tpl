@@ -217,11 +217,10 @@
 										{/if}
 										<div class="icon icon_cart float-right" title="Add to Cart"></div>
 										{if $cpurl != '' && $cpapi != ''}
-											<a
-													id="guid{$mguid[$m@index]}"
-													class="sendtocouch"
-													title="Add to CouchPotato"
-											><img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png"></a>
+											<a id="guid{$mguid[$m@index]}"
+											   class="sendtocouch"
+											   title="Add to CouchPotato">
+												<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png"></a>
 										{/if}
 										<br>
 										{*s{if $isadmin || $ismod}

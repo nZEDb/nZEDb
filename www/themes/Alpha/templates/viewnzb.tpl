@@ -77,7 +77,8 @@
 							{if $cpurl != "" && $cpapi != ""}
 								<a
 									class="sendtocouch"
-									title="Add to CouchPotato">CouchPotato</a>
+									title="Add to CouchPotato">CouchPotato
+								</a>
 							{/if}
 							</span>
 						</div>

@@ -174,7 +174,11 @@
 									{/if}
 									{if !empty($cpurl) && !empty($cpapi)}
 										<li>
-											<a class="sendtocouch" title="Add to CouchPotato"><img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png"></a>
+											<a
+												class="sendtocouch"
+												title="Add to CouchPotato">
+												<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
+											</a>
 										</li>
 									{/if}
 								</ul>

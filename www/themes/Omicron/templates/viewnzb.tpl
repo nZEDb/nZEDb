@@ -240,10 +240,11 @@
 														Queue
 														</button>{/if}
 													{if !empty($cpurl) && !empty($cpapi)}
-														<button type="button"
-																class="btn btn-primary btn-sm btn-info btn-transparent couchsend">
-															<i class="fa fa-bed"
-															   id="guid{$release.guid}"></i> Send to CouchPotato
+														<button
+															type="button"
+															id="guid{$release.guid}"
+															class="btn btn-primary btn-sm btn-info btn-transparent couchsend">
+															<i class="fa fa-bed"></i> Send to CouchPotato
 														</button>
 													{/if}
 												</div>

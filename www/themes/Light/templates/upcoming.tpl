@@ -28,7 +28,10 @@
 							<a class="rndbtnsml" target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result->alternate_ids->imdb}/" name="imdb{$result->alternate_ids->imdb}" title="View imdb page">Imdb</a>
 							<a class="rndbtnsml" target="_blank" href="{$site->dereferrer_link}http://trakt.tv/search/imdb/tt{$result->alternate_ids->imdb}/" name="trakt{$result->alternate_ids->imdb}" title="View trakt page">Trakt</a>
 							{if $cpurl != '' && $cpapi != ''}
-								<a class="rndbtnsml sendtocouch" title="Add to CouchPotato">CouchPotato</a>
+								<a
+									class="rndbtnsml sendtocouch"
+									title="Add to CouchPotato">CouchPotato
+								</a>
 							{/if}
 						</div>
 					</div>

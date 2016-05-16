@@ -112,7 +112,8 @@
 								</a>
 								{if $cpurl != '' && $cpapi != ''}
 									<a
-										class="rndbtn sendtocouch" title="Add to CouchPotato">
+										class="rndbtn sendtocouch"
+										title="Add to CouchPotato">
 										Couch
 									</a>
 								{/if}
