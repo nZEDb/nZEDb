@@ -77,10 +77,6 @@
 							{if $cpurl != "" && $cpapi != ""}
 								<a
 									class="sendtocouch"
-									target="blackhole"
-									href="javascript:;"
-									rel="{$site->dereferrer_link}{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$release.imdbid}&title={$movie.title}"
-									name="CP{$release.imdbid}"
 									title="Add to CouchPotato">CouchPotato</a>
 							{/if}
 							</span>

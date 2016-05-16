@@ -55,9 +55,7 @@
 							{if $cpurl != '' && $cpapi != ''}
 								<a
 										class="sendtocouch"
-										target="blackhole"
-										href="javascript:;"
-										rel="{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result->alternate_ids->imdb}&title={$result->title}" name="CP{$result->alternate_ids->imdb}" title="Add to CouchPotato"><img
+										title="Add to CouchPotato"><img
 											src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
 								</a>
 							{/if}

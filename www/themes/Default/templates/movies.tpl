@@ -112,10 +112,7 @@
 								</a>
 								{if $cpurl != '' && $cpapi != ''}
 									<a
-										class="rndbtn sendtocouch" target="blackhole"
-										href="javascript:;"
-										rel="{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}"
-										name="CP{$result.imdbid}" title="Add to CouchPotato">
+										class="rndbtn sendtocouch" title="Add to CouchPotato">
 										Couch
 									</a>
 								{/if}
