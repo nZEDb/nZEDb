@@ -1,4 +1,9 @@
 build:
+    dependencies:
+        # Overwrites inferred commands
+        override:
+            - 'composer install --no-interaction --no-dev --prefer-source --no-scripts'
+
     environment:
         php:
             version: 5.5.14
@@ -76,7 +81,4 @@ coding_style:
                 true_false_null: undefined
 
 filter:
-    excluded_paths:
-        - libs/*
-        - resources/*
-        - vendor/*
+    excluded_paths: [app/libraries/*, libraries/*, libs/*, resources/*]

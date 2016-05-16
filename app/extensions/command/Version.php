@@ -85,8 +85,9 @@ class Version extends \app\extensions\console\Command
 		if (!$this->plain) {
 			$this->primary('Looking up Git tag version(s)');
 		}
-		$this->out("XML version: " . $this->versions->getGitTagFromFile());
-		$this->out("Git version: " . $this->versions->getGitTagFromRepo());
+		$this->out('Hash: ' . $this->versions->getGitHeadHash(), 0);
+		$this->out('XML version: ' . $this->versions->getGitTagFromFile());
+		$this->out('Git version: ' . $this->versions->getGitTagFromRepo());
 	}
 
 	/**
@@ -106,17 +107,11 @@ class Version extends \app\extensions\console\Command
 		}
 
 		if (in_array($this->request->params['args']['sqlcheck'], ['db', 'both', 'all'])) {
-			$dbpatch = $this->versions->getSQLPatchFromDB();
-
-			if ($dbpatch->count()) {
-				$dbVersion = $dbpatch->data()[0]['value'];
-				if (!is_numeric($dbVersion)) {
-					$this->error("Bad sqlpatch value: '$dbVersion'\n");
-				} else {
-					$this->out(" DB version: " . $dbVersion);
-				}
-			} else {
-				$this->error("Unable to fetch Databse SQL level!");
+			try {
+				$dbVersion = $this->versions->getSQLPatchFromDB();
+				$this->out(" DB version: " . $dbVersion);
+			} catch (\Exception $e) {
+				$this->error($e->getMessage());
 			}
 		}
 	}

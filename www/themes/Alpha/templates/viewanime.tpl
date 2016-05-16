@@ -76,7 +76,7 @@
 							{/if}
 						</div>
 					</td>
-					<td style="text-align:center;"><a title="This anime in {$result.category_name}" href="{$smarty.const.WWW_TOP}/anime/{$result.anidbid}?t={$result.categoryid}">{$result.category_name}</a></td>
+					<td style="text-align:center;"><a title="This anime in {$result.category_name}" href="{$smarty.const.WWW_TOP}/anime/{$result.anidbid}?t={$result.categories_id}">{$result.category_name}</a></td>
 					<td style="text-align:center;" title="{$result.postdate}">{$result.postdate|timeago}</td>
 					<td style="text-align:center;">{$result.size|fsize_format:"MB"}{if $result.completion > 0}<br>{if $result.completion < 100}<span class="warning">{$result.completion}%</span>{else}{$result.completion}%{/if}{/if}</td>
 					<td style="text-align:center;">

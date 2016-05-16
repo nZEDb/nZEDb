@@ -40,7 +40,7 @@ $tRun->runPane('scraper', $runVar);
 $runVar['panes'] = $tRun->getListOfPanes($runVar['constants']);
 
 //totals per category in db, results by parentID
-$catcntqry = "SELECT c.parentid AS parentid, COUNT(r.id) AS count FROM category c, releases r WHERE r.categoryid = c.id GROUP BY c.parentid";
+$catcntqry = "SELECT c.parentid AS parentid, COUNT(r.id) AS count FROM categories c, releases r WHERE r.categories_id = c.id GROUP BY c.parentid";
 
 //create timers and set to now
 $runVar['timers']['timer1'] = $runVar['timers']['timer2'] = $runVar['timers']['timer3'] =
@@ -180,7 +180,14 @@ while ($runVar['counts']['iterations'] > 0) {
 		$runVar['timers']['query']['proc11_time'] = (time() - $timer01);
 
 		$timer05 = time();
-		$proc2qry = $tRun->proc_query(2, $runVar['settings']['book_reqids'], $runVar['settings']['request_hours'], $db_name);
+		$proc2qry = $tRun->proc_query(
+			2,
+			$runVar['settings']['book_reqids'],
+			$runVar['settings']['request_hours'],
+			$db_name,
+			$runVar['settings']['maxsize_pp'],
+			$runVar['settings']['minsize_pp']
+		);
 		$proc2res = $pdo->queryOneRow(($proc2qry !== false ? $proc2qry : ''), $tRun->rand_bool($runVar['counts']['iterations']));
 		$runVar['timers']['query']['proc2_time'] = (time() - $timer05);
 		$runVar['timers']['query']['proc21_time'] = (time() - $timer01);

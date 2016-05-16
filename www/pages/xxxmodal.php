@@ -26,14 +26,11 @@ if (isset($_GET['modal']) && isset($_GET["id"]) && ctype_digit($_GET["id"])) {
 	$page->meta_description = "";
 	$page->smarty->registerPlugin('modifier', 'ss', 'stripslashes');
 
-	if (isset($_GET['modal']))
-	{
+	if (isset($_GET['modal'])) {
 		$page->content = $page->smarty->fetch('viewxxx.tpl');
 		$page->smarty->assign('modal', true);
 		echo $page->content;
-	}
-	else
-	{
+	} else {
 		$page->content = $page->smarty->fetch('viewxxxfull.tpl');
 		$page->render();
 	}

@@ -2,10 +2,12 @@
 
 <html>
 <head>
-	<script type="text/javascript">
+	<<script type="text/javascript">
 		/* <![CDATA[ */
 		var WWW_TOP = "{$smarty.const.WWW_TOP}";
-		var SERVERROOT = "{$serverroot}";
+		var SERVERROOT = "{$smarty.const.WWW_TOP}/";
+		var UID = "{if $loggedin=="true"}{$userdata.id}{else}{/if}";
+		var RSSTOKEN = "{if $loggedin=="true"}{$userdata.rsstoken}{else}{/if}";
 		/* ]]> */
 	</script>
 	<meta charset="UTF-8">
@@ -17,7 +19,6 @@
 <div class="wrapper">
 	<div class="header">
 		<h2>View > <strong>{$page->title}</strong></h2>
-
 		<div class="breadcrumb-wrapper">
 			<ol class="breadcrumb">
 				<li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li>

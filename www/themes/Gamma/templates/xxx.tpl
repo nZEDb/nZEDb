@@ -207,7 +207,7 @@
 																	 value="{$mguid[$m@index]}"/></div>
 										</td>
 										<td>
-											<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"seourl"}">
+											<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">
 												&nbsp;{$mname[$m@index]|escape:"htmlall"}</a>
 											<ul class="inline">
 												<li width="100px">Posted {$mpostdate[$m@index]|timeago}</li>

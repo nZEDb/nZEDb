@@ -27,6 +27,7 @@
 *.txt			-binary text eol=lf conflict-marker-size=100
 *.vcproj		-binary text eol=crlf
 *.xml			-binary text eol=lf
+*.yml			-binary text eol=lf
 
 libs/*			-whitespace
 

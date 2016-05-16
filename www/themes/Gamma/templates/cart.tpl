@@ -33,7 +33,7 @@
 				<input id="chk{$result.guid|substr:0:7}" type="checkbox" class="nzb_check" value="{$result.id}" />
 			</td>
 			<td>
-				<a title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"seourl"}">{$result.searchname|escape:"htmlall"|wordwrap:75:"\n":true}</a>
+				<a title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}">{$result.searchname|escape:"htmlall"|wordwrap:75:"\n":true}</a>
 			</td>
 			<td class="less" title="Added on {$result.createddate}">{$result.createddate|date_format}</td>
 			<td><a class="btn btn-mini btn-danger" title="Delete from your Download Basket" href="?delete={$result.id}">Delete</a></td>

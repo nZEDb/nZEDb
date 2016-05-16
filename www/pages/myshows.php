@@ -44,7 +44,7 @@ switch ($action) {
 		} else {
 			$show = $tv->getByVideoID($videoId);
 			if (!$show) {
-				$page->show404('Seriously?');
+				$page->show404('No matching show.');
 			}
 		}
 
@@ -61,6 +61,10 @@ switch ($action) {
 			$tmpcats = $cat->getChildren(Category::TV_ROOT);
 			$categories = array();
 			foreach ($tmpcats as $c) {
+				// If TV WEB-DL categorization is disabled, don't include it as an option
+				if ($page->settings->getSetting('catwebdl') == 0 && $c['id'] == Category::TV_WEBDL) {
+					continue;
+				}
 				$categories[$c['id']] = $c['title'];
 			}
 			$page->smarty->assign('type', 'add');
@@ -101,7 +105,7 @@ switch ($action) {
 			$page->smarty->assign('type', 'edit');
 			$page->smarty->assign('cat_ids', array_keys($categories));
 			$page->smarty->assign('cat_names', $categories);
-			$page->smarty->assign('cat_selected', explode('|', $show['categoryid']));
+			$page->smarty->assign('cat_selected', explode('|', $show['categories_id']));
 			$page->smarty->assign('video', $videoId);
 			$page->smarty->assign('show', $show);
 			$page->content = $page->smarty->fetch('myshows-add.tpl');

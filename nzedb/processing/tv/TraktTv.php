@@ -83,10 +83,10 @@ class TraktTv extends TV
 	 * Main processing director function for scrapers
 	 * Calls work query function and initiates processing
 	 *
-	 * @param      $groupID
-	 * @param      $guidChar
-	 * @param      $process
-	 * @param bool $local
+	 * @param string  $groupID
+	 * @param string  $guidChar
+	 * @param         $process
+	 * @param boolean $local
 	 */
 	public function processSite($groupID, $guidChar, $process, $local = false)
 	{

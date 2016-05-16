@@ -227,7 +227,7 @@
 
 			<td class="item">
 				<label for="chk{$result.guid|substr:0:7}">
-					<a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"seourl"}">
+					<a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}">
 						<h5>{$result.searchname|escape:"htmlall"|replace:".":" "}</h5>
 					</a>
 				</label>
@@ -258,14 +258,14 @@
 						<a href="#" name="audio{$result.guid}" title="Listen to Preview" class="audioprev badge badge-success halffade" rel="audio">Listen</a>
 						<audio id="audprev{$result.guid}" src="{$smarty.const.WWW_TOP}/covers/audio/{$result.guid}.mp3" preload="none"></audio>
 						{/if}
-						{if $result.musicinfoid > 0}
-						<a href="#" name="name{$result.musicinfoid}" title="View music info" class="modal_music badge badge-success halffade" rel="music" >Cover</a>
+						{if $result.musicinfo_id > 0}
+						<a href="#" name="name{$result.musicinfo_id}" title="View music info" class="modal_music badge badge-success halffade" rel="music" >Cover</a>
 						{/if}
-						{if $result.consoleinfoid > 0}
-						<a href="#" name="name{$result.consoleinfoid}" title="View console info" class="modal_console badge badge-success halffade" rel="console" >Cover</a>
+						{if $result.consoleinfo_id > 0}
+						<a href="#" name="name{$result.consoleinfo_id}" title="View console info" class="modal_console badge badge-success halffade" rel="console" >Cover</a>
 						{/if}
-						{if $result.bookinfoid > 0}
-						<a href="#" name="name{$result.bookinfoid}" title="View book info" class="modal_book badge badge-success halffade" rel="console" >Cover</a>
+						{if $result.bookinfo_id > 0}
+						<a href="#" name="name{$result.bookinfo_id}" title="View book info" class="modal_book badge badge-success halffade" rel="console" >Cover</a>
 						{/if}
 
 						{if $result.videos_id > 0}
@@ -290,7 +290,7 @@
 				</div>
 			</td>
 			<td width="100px" class="less">
-				<a title="Browse {$result.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$result.categoryid}">{$result.category_name}</a>
+				<a title="Browse {$result.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$result.categories_id}">{$result.category_name}</a>
 			</td>
 			<td class="less mid" title="{$result.postdate}">{$result.postdate|timeago}</td>
 			<td class="less right">

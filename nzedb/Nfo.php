@@ -201,9 +201,9 @@ class Nfo
 
 			$check = $this->pdo->queryOneRow(
 				sprintf('
-					SELECT releaseid
+					SELECT releases_id
 					FROM release_nfos
-					WHERE releaseid = %d',
+					WHERE releases_id = %d',
 					$release['id']
 				)
 			);
@@ -211,7 +211,7 @@ class Nfo
 			if ($check === false) {
 				$this->pdo->queryInsert(
 					sprintf('
-						INSERT INTO release_nfos (nfo, releaseid)
+						INSERT INTO release_nfos (nfo, releases_id)
 						VALUES (compress(%s), %d)',
 						$this->pdo->escapeString($nfo),
 						$release['id']
@@ -281,7 +281,7 @@ class Nfo
 	/**
 	 * Attempt to find NFO files inside the NZB's of releases.
 	 *
-	 * @param object $nntp           Instance of class NNTP.
+	 * @param \NNTP $nntp            Instance of class NNTP.
 	 * @param string $groupID        (optional) Group ID.
 	 * @param string $guidChar       (optional) First character of the release GUID (used for multi-processing).
 	 * @param int    $processImdb    (optional) Attempt to find IMDB id's in the NZB?
@@ -294,7 +294,7 @@ class Nfo
 	public function processNfoFiles($nntp, $groupID = '', $guidChar = '', $processImdb = 1, $processTv = 1)
 	{
 		$ret = 0;
-		$guidCharQuery = ($guidChar === '' ? '' : 'AND r.guid ' . $this->pdo->likeString($guidChar, false, true));
+		$guidCharQuery = ($guidChar === '' ? '' : 'AND r.leftguid = ' . $this->pdo->escapeString($guidChar));
 		$groupIDQuery = ($groupID === '' ? '' : 'AND r.group_id = ' . $groupID);
 		$optionsQuery = self::NfoQueryString($this->pdo);
 
@@ -367,9 +367,9 @@ class Nfo
 					$cp = 'COMPRESS(%s)';
 					$nc = $this->pdo->escapeString($fetchedBinary);
 
-					$ckreleaseid = $this->pdo->queryOneRow(sprintf('SELECT releaseid FROM release_nfos WHERE releaseid = %d', $arr['id']));
-					if (!isset($ckreleaseid['releaseid'])) {
-						$this->pdo->queryInsert(sprintf('INSERT INTO release_nfos (nfo, releaseid) VALUES (' . $cp . ', %d)', $nc, $arr['id']));
+					$ckreleaseid = $this->pdo->queryOneRow(sprintf('SELECT releases_id FROM release_nfos WHERE releases_id = %d', $arr['id']));
+					if (!isset($ckreleaseid['releases_id'])) {
+						$this->pdo->queryInsert(sprintf('INSERT INTO release_nfos (nfo, releases_id) VALUES (' . $cp . ', %d)', $nc, $arr['id']));
 					}
 					$this->pdo->queryExec(sprintf('UPDATE releases SET nfostatus = %d WHERE id = %d', self::NFO_FOUND, $arr['id']));
 					$ret++;
@@ -416,7 +416,7 @@ class Nfo
 			foreach ($releases as $release) {
 				// remove any release_nfos for failed
 				$this->pdo->queryExec(sprintf('
-					DELETE FROM release_nfos WHERE nfo IS NULL AND releaseid = %d',
+					DELETE FROM release_nfos WHERE nfo IS NULL AND releases_id = %d',
 					$release['id']
 					)
 				);

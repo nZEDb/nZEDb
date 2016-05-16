@@ -34,6 +34,14 @@ class Command extends \lithium\console\Command
 		require_once nZEDb_ROOT . 'constants.php';
 	}
 
+	public function info($text)
+	{
+		if ($this->silent) {
+			return;
+		}
+		$this->out($text, 'info');
+	}
+
 	public function primary($text)
 	{
 		if ($this->silent) {

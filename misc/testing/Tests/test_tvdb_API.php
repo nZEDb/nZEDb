@@ -24,7 +24,7 @@ if (isset($argv[1]) && !empty($argv[1]) && isset($argv[2]) && is_numeric($argv[2
 	// Use the first show found (highest match) and get the requested season/episode from $argv
 	if ($series) {
 
-		echo PHP_EOL . $c->info("Server Time: " . $serverTime) .  PHP_EOL;
+		echo PHP_EOL . $c->info("Server Time: " . $serverTime) . PHP_EOL;
 		print_r($series[0]);
 
 		if ($season > 0 && $episode > 0 && $day === '') {
@@ -35,7 +35,7 @@ if (isset($argv[1]) && !empty($argv[1]) && isset($argv[2]) && is_numeric($argv[2
 		} else if ($season == 0 && $episode == 0) {
 			$episodeObj = $tvdb->client->getSerieEpisodes($series[0]->id, 'en');
 			if (is_array($episodeObj['episodes'])) {
-				foreach ($episodeObj['episodes'] AS $ep) {
+				foreach ($episodeObj['episodes'] as $ep) {
 					print_r($ep);
 				}
 			}

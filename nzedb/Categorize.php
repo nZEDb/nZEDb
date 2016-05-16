@@ -270,7 +270,7 @@ class Categorize extends Category
 							$this->tmpCat = Category::BOOKS_EBOOK;
 							break;
 						default:
-							$this->tmpCat = Category::OTHER_MISC;
+							$this->tmpCat = Category::BOOKS_UNKNOWN;
 							break;
 					}
 					break;
@@ -387,6 +387,9 @@ class Categorize extends Category
 				case $group === 'alt.binaries.moovee':
 					switch (true) {
 						case $this->isTV():  // Check if it's TV first as some tv posted in moovee
+							break;
+						case $this->isMovieSD(): // Need to check this BEFORE the HD check
+							break;
 						case $this->isMovieHD():  // Check the movie isn't an HD release before blindly assigning SD
 							break;
 						default:
@@ -562,7 +565,10 @@ class Categorize extends Category
 
 	public function isOtherTV()
 	{
-		if (preg_match('/[-._ ]S\d{1,3}.+(EP\d{1,3}|Extras|SUBPACK)[-._ ]|News/i', $this->releaseName)) {
+		if (preg_match('/[-._ ]S\d{1,3}.+(EP\d{1,3}|Extras|SUBPACK)[-._ ]|News/i', $this->releaseName)
+			//special case for "Have.I.Got.News.For.You" tv show
+			&& !preg_match('/[-._ ]Got[-._ ]News[-._ ]For[-._ ]You/i', $this->releaseName)
+		) {
 			$this->tmpCat = Category::TV_OTHER;
 
 			return true;
@@ -662,7 +668,7 @@ class Categorize extends Category
 		switch (true) {
 			case preg_match('/(360|480|576)p|Complete[-._ ]Season|dvdr(ip)?|dvd5|dvd9|\.pdtv|SD[-._ ]TV|TVRip|NTSC|BDRip|hdtv|xvid/i', $this->releaseName):
 			case preg_match('/((H|P)D[-._ ]?TV|DSR|WebRip)[-._ ]x264/i', $this->releaseName):
-			case preg_match('/s\d{1,3}[-._ ]?[ed]\d{1,3}([ex]\d{1,3}|[-.\w ])|\s\d{3,4}\s/i', $this->releaseName) && preg_match('/(H|P)D[-._ ]?TV|BDRip[-._ ]x264/i', $this->releaseName):
+			case preg_match('/s\d{1,3}[-._ ]?[ed]\d{1,3}([ex]\d{1,3}|[-.\w ])|\s\d{3,4}\s/i', $this->releaseName) && preg_match('/(H|P)D[-._ ]?TV|BDRip|WEB[-._ ]x264/i', $this->releaseName):
 				$this->tmpCat = Category::TV_SD;
 
 				return true;

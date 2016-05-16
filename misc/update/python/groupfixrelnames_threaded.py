@@ -41,7 +41,7 @@ groupby = "GROUP BY guidchar"
 orderby = "ORDER BY guidchar ASC"
 rowlimit = "LIMIT 16"
 extrawhere = "AND r.preid = 0 AND r.nzbstatus = 1"
-select = "DISTINCT LEFT(r.guid, 1) AS guidchar, COUNT(*) AS count"
+select = "r.leftguid AS guidchar, COUNT(*) AS count"
 
 cur[0].execute("SELECT value FROM settings WHERE setting = 'fixnamethreads'")
 run_threads = cur[0].fetchone()

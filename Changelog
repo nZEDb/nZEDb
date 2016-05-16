@@ -8,10 +8,137 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+2916-05-13 ruhllatio
+	Fix: PostProcess Additional tmux query not accurate with PP add queue
+2016-05-12 niel
+	Add: Reporting oupt for update git,db commands.
+2016-05-12 ruhllatio
+	Fix: Browse ordering wrong due to added minSize push
+	Mrg: PR Add leftguid column to releases to improve threading work queries #2144
+	Chg: Improve fixRelNames work queries
+2016-05-12 DariusIII
+	* Fix: Remove derefferer links from CouchPotato url in Gamma theme.
+2016-05-11 bart39
+	Fix: fix patch 438 / schema.
+	Chg: Added some logging to help diagnose issue #2139
+	Chg: detect broken nzbs in clean nzbs.
+	Chg: add method for rarinfo if missing.
+2016-05-11 ruhllatio
+	Chg: Make some var changes in PP Add
+	Fix: fix patch 438 missing trigger updates for release search table
+	Fix: Invalid index errors in NameFixer caused by bad find and replaces in feature-db (temp)
+	Fix: PP Add query using old releaseid
+	Add: Feature request - Option to specify the minimum file size using the API? #234
+	Fix: Undefined index: anidb #2137
+	Add: REQUEST: include PREDBURL (if PREDB info exists) in extended=1 API information #2035
+	Chg: Make deleteSingle honor the release ID identifier as a PK delete will always be faster
+	Chg: Make fixRelNames filename work query a bit quicker on larger databases by preserving table placement
+2016-05-11 DariusIII
+	Upd: Split UPDATE and DELETE query after NZB is created for release
+	Fix: Remove argument from createGUID function call in createReleases function, as createGUID function does not use any argument.
+2016-05-10 ruhllatio
+	Fix: Category Parent->Child name return function after Misc move
+	Fix: WEB-DL shows as option in My TV shows when not used as a category #2110
+	Fix: 404 function had no parameter for reason even though it was being set and clean up BasePage
+	Mrg: Feature db #2136 @niel
+	Fix: Mulple issues in feature-db branch and some Gamma issues
+2016-05-10 DariusIII
+	Fix: Prevent deadlocks on binaries and releases update (fix @ruhllatio).
+	Upd: Add couchpotato icon to Gamma theme. Fix issue #2115
+2016-05-09 DariusIII
+	Fix: Partitioning in patch 0436.
+	Chg: Replace requestid_threaded.py with requestid.php in ProcessReleases class.
+2016-05-08 niel
+	Mrg: Changing table 'category' to 'categories' along with references to categoryid => categories_id.
+		**NOTE** This involves changes to your releases table. It will take some time,
+		potentially a very long time, depending on the number of releases you have.
+	Chg: Changing releases.preid to releases.predb_id in line with lithium conventions.
+	Chg: Changing releases.musicinfoid => releases.musicinfo_id inline with lithium conventions.
+	Chg: Changing releases.consoleinfoid => releases.consoleinfo_id inline with lithium conventions.
+	Chg: Changing releases.bookinfoid => releases.bookinfo_id inline with lithium conventions.
+	Chg: Changing various tables with releaseid => releases_id inline with lithium conventions.
+2016-05-07 niel
+	Chg: alter subsection,name fields to settings for recaptcha.
+	Mrg: PR 2135, from zetas - Fix Recaptcha settings.
+	Fix: Reference to configuration file/location for IRC Scraper in tmux-edit.tpl.
+2016-05-06 DariusIII
+	Fix: Missing use statement for Category class in admin pages.
+2016-05-06 bart39
+	Fix: TV categorization mismatches.
+		** NOTE *** - you will need to do the following to fix the categorization:
+		`php /var/www/nZEDb/misc/testing/Release/recategorize.php all`
+		this will take a while to complete.
+2016-05-06 DariusIII
+	Upd: Comment out max_matches(deprecated since sphinx 2.2.3) and change sphinx.pid location to proper /var/run/sphinxsearch/searchd.pid
+2016-05-05 niel
+	Mrg: PR 2121, from meganomic - Yahoo search fix.
+2016-05-05 bart39
+	Fix: update collection regex in a.b.mom
+	Fix: Missing escape on release triggers.
+2016-05-03 niel
+	Fix: Force li3 connections to ignore Host/Port settings if a socket is provided.
+	Mrg: Add 'composer install' instruction to ReleaseNotes (PR 2128).
+	Fix: Reinstate the LINES TERMINATED BY clause to loading data files to override default
+	behaviour of only using '\n' instead of '\r\n' that we need (Closes Issue 2104).
+2016-05-02 bart39
+	Mrg: PR 2127, from rainje - New release name format not matched with reqid
+	Chg: update schema and replace triggers for above PR.
+2016-04-30
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x.
 
+
+2016-05-03 niel
+	Mrg: Add 'composer install' instruction to ReleaseNotes (PR 2128).
+2016-04-28 niel
+	Fix: Code style foramtting.
+	Fix: Removing pre-install-cmd from composer.json again. It kills the install for new users.
+		User on dev branch will have to manually issue the 'git pull' command until I can find a
+		work-around for this.
+	Fix: Removing post-install-cmd from composer.json It doesn't work if nZEDb's configuration
+		file has not been created, which is always the case on new installs.
+	Fix: Restore the original method of doing git pull before composer install and update db after.
+2016-04-28 DariusIII
+	Add: 'gn' case to nfo retrieval in api, to be in line with newznab api spec.
+2016-04-27 niel
+	Add: Adding new nodes to nzedb.xml. This last script node will hold the date and ordinal of any
+		script run as part of updating.
+		 This will allow us to specify scripts that the updating process can run to make changes
+		other than simple file changes. It is intended that the scripts will *not* be included in
+		the repo, but instead be fetched from github.
+	Fix: Update Scrutinizer file to hopefully fix 'failed install' errors.
+	Fix: PR 2120, from megonomic - Check for SD movies before HD ones, to prevent some being falsey
+		matched.
+2016-04-26 bart39
+	Fix: Update sphinx releases_rt index when release files are added.
+		*** NOTE *** - you will need to do the following to update the sphinx index:
+    		1) stop sphinxsearch - `sudo service sphinxsearch stop`
+    		2) clear old index - `sudo rm /var/lib/sphinxsearch/data/*`
+    		3) start sphinxsearch - `sudo service sphinxsearch start`
+    		4) populate the index - `php /var/www/nZEDb/misc/sphinxsearch/populate_rt_indexes.php releases_rt`
+2016-04-26 niel
+	Add: Hash of git's current HEAD to version console command's git option.
+	Fix: robots.txt incorrectly named robot.txt
+2016-04-25 bart39
+	Fix: Iterator for populate_rt_indexes - fixes issue #2116.
+2016-04-25 niel
+	Add: New action 'predb' for Update console command. Only a stub method for now.
+2016-04-24 niel
+	Fix: Make Category IDs for 'Other' sub-categories match the code values.
+	Chg: Increase Composer's process-timeout value to 6 hours, so update db doesn't time out so
+		easily.
+	Chg: Add 'pre-install-cmd' back to composer.json so that git pull gets run by composer install.
+	Chg: Revert the 'pre-install-cmd' change. Keep forgetting that for the dev branch to be
+		updated to the last commit, I have to update the lock file so the hash gets updated.
+2016-04-22 DariusIII
+	Fix: Links to detail pages in Gamma theme (remove release name).
 2016-04-20 DariusIII
 	Chg: 'Moved' more bootstrap files from themes to use shared/libs versions.
 2016-04-19 niel
+	Mrg: PR 2113, from Wally73 - simple-expanded.sh Screen script.
+	Chg: Removed the .../cli/versions.php script. Use './zed version all' instead.
+	Chg: Added nZEDb to li3 as a library, complete with .../nzedb/bootstrap.php file.
+	Fix: Issue with `./zed update db` not working as expected. Mostly caused by not having nZEDb
+		added into lithium as a library (see above).
 	Chg: 'Moved' some bootstrap files from themes to use shared/libs versions.
 2016-04-18 niel
 	Add: 'branch' option to the versions console command. This tells you which git branch you're on.
@@ -19,10 +146,12 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 		database accordingly (replaces .../cli/update_db.php script which will be removed shortly).
 	Chg: Removed the .../cli/update_db.php script. Use './zed update db' to replicate, or './zed
 		update nzedb' for everything in one operation.
+2016-04-18 DariusIII
 	Upd: Missed some files, cleanup unused scripts.
-    Upd: Update themes to use libs handled by composer
-    Upd: Update .gitignore
-    Upd: Update composer.json
+	Upd: Update themes to use libs handled by composer
+	Upd: Update .gitignore
+	Upd: Update composer.json
+	Upd: Update .gitignore
 2016-04-15 DariusIII
 	Fix: Fix filelist display in all of the themes, reduce overhead in NZB class related to segments array.
 2016-04-14 niel
@@ -37,7 +166,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 		unless you know what you might be screwing up ;-)
 2016-04-11 DariusIII
 	Fix: Update autopatcher - fix issue #2096
-	Fix: Fix NFO display on coverpages in Light/Default themes.Second part of fixes for issue #2099
+	Fix: Fix NFO display on coverpages in Light/Default themes. Second part of fixes for issue #2099
 2016-04-10 niel
 	Fix: Prevent undefined index isadmin on forumpost page in Gamma template
 	Fix: DariusIII - Fix issue #2099 Broken links for NFO display on Charisma/Omicron cover pages
@@ -54,7 +183,10 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 		 ***NOTE*** You MUST install Composer to continue using nZEDb. See
 		https://getcomposer.org/doc/00-intro.md#downloading-the-composer-executable We recommend the
 		global method, as we do not provide the composer.phar file in our repo.
-		 ***NOTE*** After installing Composer run `composer install` from your nZEDb directory.
+		 ***NOTE*** After installing Composer, from your nZEDb directory run:
+		  `composer install`
+		  `./zed update nzedb`.
+		 You may have to set permissions on .../app/libraries and .../resources/smarty/templates_c
 	Chg: Remove commit count from tmux's monitor display.
 2016-04-04 niel
 	Fix: Update version checking/updating code to account for branch renaming/changes.

@@ -130,16 +130,19 @@ Most of this guide is done from the command line (terminal).
 
 
 
-6. Git clone the nZEDb source.
+6. Install Git / Composer.
 
 	# If /var/www/ does not exist, create it : mkdir /var/www/  (This should exist)
 	cd /var/www/
 	#sudo chmod 777 .
 
+	# [Install Composer](https://getcomposer.org/doc/00-intro.md#downloading-the-composer-executable).
+	We recommend the global method, as we do not provide the composer.phar file in our repo.
+
 	# Install git.
 	sudo apt-get install git
-	# Clone the git.
-	git clone https://github.com/nZEDb/nZEDb.git
+	# Create the project using composer
+	composer create-project --no-dev --keep-vcs nzedb/nzedb
 
 	# Set the perms.
 	#sudo chmod 777 nZEDb
@@ -167,7 +170,8 @@ Most of this guide is done from the command line (terminal).
 	sudo chgrp -R www-data /var/www/nZEDb/resources/nzb
 	sudo chmod -R 775 /var/www/nZEDb/resources/nzb
 
-
+	#Install the third party libraries.
+	#composer install
 
 
 7. Install memcache / apc.

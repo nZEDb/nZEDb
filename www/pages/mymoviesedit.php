@@ -22,7 +22,7 @@ foreach ($tmpcats as $c) {
 $movies = $um->getMovies($page->users->currentUserId());
 $results = array();
 foreach ($movies as $mov => $m) {
-	$movcats = explode('|', $m['categoryid']);
+	$movcats = explode('|', $m['categories_id']);
 	if (is_array($movcats) && sizeof($movcats) > 0) {
 		$catarr = array();
 		foreach ($movcats as $movcat) {
