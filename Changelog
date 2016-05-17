@@ -8,6 +8,8 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+2016-05-17 niel
+	Chg: Remove autopatcher script functionality. Replace with message to use ./zed update nzedb.
 2016-05-17 ruhllatio
 	Mrg: Feature couchpotato #2148 @DariusIII
 2016-05-17 DariusIII
