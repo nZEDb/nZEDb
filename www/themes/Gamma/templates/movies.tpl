@@ -174,7 +174,11 @@
 									{/if}
 									{if !empty($cpurl) && !empty($cpapi)}
 										<li>
-											<a class="sendtocouch fa fa-bed" target="blackhole" href="javascript:;" rel="{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}" name="CP{$result.imdbid}" title="Add to CouchPotato"></a>
+											<a
+												class="sendtocouch"
+												title="Add to CouchPotato">
+												<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
+											</a>
 										</li>
 									{/if}
 								</ul>

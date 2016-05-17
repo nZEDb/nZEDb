@@ -51,6 +51,7 @@ switch ($page->page) {
 	case 'sabqueuedata':
 	case 'search':
 	case 'sendtoqueue':
+	case 'sendtocouch':
 	case 'series':
 	case 'sitemap':
 	case 'sysinfo':

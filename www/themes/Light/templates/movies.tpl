@@ -90,7 +90,10 @@
 										<a class="rndbtnsml" target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="imdb{$result.imdbid}" title="View imdb page">Imdb</a>
 										<a class="rndbtnsml" target="_blank" href="{$site->dereferrer_link}http://trakt.tv/search/imdb/tt{$result.imdbid}/" name="trakt{$result.imdbid}" title="View trakt page">Trakt</a>
 										{if $cpurl != '' && $cpapi != ''}
-											<a class="rndbtnsml sendtocouch" target="blackhole" href="javascript:;" rel="{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}" name="CP{$result.imdbid}" title="Add to CouchPotato">Couch</a>
+											<a
+												class="rndbtnsml sendtocouch"
+												title="Add to CouchPotato">Couch
+											</a>
 										{/if}
 									</div>
 								</div>
