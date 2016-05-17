@@ -4,6 +4,7 @@ use nzedb\Category;
 use nzedb\NZBGet;
 use nzedb\SABnzbd;
 use nzedb\Users;
+use nzedb\utility\Misc;
 use nzedb\utility\Text;
 
 if (!$page->users->isLoggedIn()) {
@@ -109,15 +110,7 @@ switch ($action) {
 }
 
 // Get the list of themes.
-$themeList[] = 'None';
-$themes = scandir(nZEDb_WWW . '/themes');
-foreach ($themes as $theme) {
-	if (strpos($theme, ".") === false && $theme[0] !== '_' && is_dir(nZEDb_WWW . '/themes/' . $theme)) {
-		$themeList[] = $theme;
-	}
-}
-
-$page->smarty->assign('themelist', $themeList);
+$page->smarty->assign('themelist', Misc::getThemesList());
 
 $page->smarty->assign('error', $errorStr);
 $page->smarty->assign('user', $data);

@@ -4,6 +4,7 @@ require_once './config.php';
 use nzedb\Category;
 use nzedb\SABnzbd;
 use nzedb\db\Settings;
+use nzedb\utility\Misc;
 
 // new to get information on books groups
 
@@ -222,16 +223,7 @@ $page->smarty->assign('loggingopt_ids', [0, 1, 2, 3]);
 $page->smarty->assign('loggingopt_names',
 					  ['Disabled', 'Log in DB only', 'Log both DB and file', 'Log only in file']);
 
-$themelist = [];
-$themes    = scandir(nZEDb_THEMES);
-foreach ($themes as $theme) {
-	if (strpos($theme, ".") === false && is_dir(nZEDb_THEMES . $theme) && ucfirst($theme) === $theme) {
-		$themelist[] = $theme;
-	}
-}
-sort($themelist);
-
-$page->smarty->assign('themelist', $themelist);
+$page->smarty->assign('themelist', Misc::getThemesList());
 
 $page->content = $page->smarty->fetch('site-edit.tpl');
 $page->render();
