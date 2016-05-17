@@ -8,6 +8,8 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+2016-05-17 DariusIII
+	Fix: Add back 'None' to themes selection list in profile edit, so admin selected theme is used
 2016-05-16 bart39
 	Fix: Buffer nzb creation fixes #2139.
 2016-05-16 niel
