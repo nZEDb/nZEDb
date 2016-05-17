@@ -58,22 +58,16 @@ class CouchPotato
 	/**
 	 * Send a movie release to CouchPotato.
 	 *
-	 * @param $guid
+	 * @param int $imdbid The IMDB ID of the movie we want to send to couch
 	 *
 	 * @return bool|mixed
 	 *
 	 */
-	public function sendToCouchPotato($guid)
+	public function sendToCouchPotato($imdbid)
 	{
-		$relData = $this->releases->getByGuid($guid);
-		$imdbid = $relData['imdbid'];
-
-		return Misc::getUrl([
-				'url' => $this->cpurl .
-					'/api/' .
-					$this->cpapi .
-					'/movie.add/?identifier=tt' .
-					$imdbid,
+		return Misc::getUrl(
+			[
+				'url'        => $this->cpurl . '/api/' . $this->cpapi . '/movie.add/?identifier=tt' . $imdbid,
 				'verifypeer' => false,
 			]
 		);

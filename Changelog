@@ -12,6 +12,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Chg: Remove autopatcher script functionality. Replace with message to use ./zed update nzedb.
 2016-05-17 ruhllatio
 	Mrg: Feature couchpotato #2148 @DariusIII
+	Fix: Feature couchpotato should send IMDB ID from page request not release guid
 2016-05-17 DariusIII
 	Fix: Add artist - title display to Gamma music page. Fixes issue #2149
 	Fix: Add back 'None' to themes selection list in profile edit, so admin selected theme is used

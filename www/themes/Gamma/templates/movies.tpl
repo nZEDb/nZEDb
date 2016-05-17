@@ -175,6 +175,7 @@
 									{if !empty($cpurl) && !empty($cpapi)}
 										<li>
 											<a
+												id="imdb{$result.imdbid}"
 												class="sendtocouch"
 												title="Add to CouchPotato">
 												<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">

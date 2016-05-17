@@ -16,7 +16,5 @@ if (empty($cp->cpurl))
 if (empty($cp->cpapi))
 	$page->show404();
 
-$guid = $_GET["id"];
-
-$cp->sendToCouchPotato($guid);
+$cp->sendToCouchPotato($_GET["id"]);
 
