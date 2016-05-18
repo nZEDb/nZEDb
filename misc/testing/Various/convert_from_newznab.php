@@ -277,7 +277,7 @@ convertTable($pdo,
 			 $nZEDB_schema,
 			 "releases",
 			 "INSERT INTO " . $nZEDB_schema .
-			 ".releases (adddate, anidbid, bookinfo_id, categories_id, comments, completion, consoleinfo_id, fromname, grabs, group_id, guid, haspreview, id, imdbid, musicinfo_id, name, passwordstatus, postdate, rarinnerfilecount, searchname, size, totalpart, nzb_guid) " .
+			 ".releases (adddate, anidbid, bookinfo_id, categories_id, comments, completion, consoleinfo_id, fromname, grabs, groups_id, guid, haspreview, id, imdbid, musicinfo_id, name, passwordstatus, postdate, rarinnerfilecount, searchname, size, totalpart, nzb_guid) " .
 			 "SELECT adddate, anidbID, bookinfo_id, case categoryID when 7030 then 8020 when 7020 then 8010 when 7010 then 8030 when 6999 then 6070 when 2060 then 2050 when 2050 then 2060 when 7000 then 8000 when 6070 then 6999 when 8010 then 8050 else categoryID end, comments, completion, consoleinfo_id, fromname, grabs, group_id, guid, haspreview, ID, imdbID, musicinfo_id, name, passwordstatus, postdate, rarinnerfilecount, searchname, size, totalpart, UNHEX(gid) FROM " .
 			 $nn_schema . ".releases",
 			 $runQueries);

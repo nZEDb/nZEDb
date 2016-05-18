@@ -186,12 +186,12 @@ class PreDb
 		$regex = "AND (r.ishashed = 1 OR rf.ishashed = 1)";
 
 		if ($cats === 3) {
-			$query = sprintf('SELECT r.id AS releases_id, r.name, r.searchname, r.categories_id, r.group_id, '
+			$query = sprintf('SELECT r.id AS releases_id, r.name, r.searchname, r.categories_id, r.groups_id, '
 				. 'dehashstatus, rf.name AS filename FROM releases r '
 				. 'LEFT OUTER JOIN release_files rf ON r.id = rf.releases_id '
 				. 'WHERE nzbstatus = 1 AND dehashstatus BETWEEN -6 AND 0 AND predb_id = 0 %s', $regex);
 		} else {
-			$query = sprintf('SELECT r.id AS releases_id, r.name, r.searchname, r.categories_id, r.group_id, '
+			$query = sprintf('SELECT r.id AS releases_id, r.name, r.searchname, r.categories_id, r.groups_id, '
 				. 'dehashstatus, rf.name AS filename FROM releases r '
 				. 'LEFT OUTER JOIN release_files rf ON r.id = rf.releases_id '
 				. 'WHERE nzbstatus = 1 AND isrenamed = 0 AND dehashstatus BETWEEN -6 AND 0 %s %s %s', $regex, $ct, $tq);

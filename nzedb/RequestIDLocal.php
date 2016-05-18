@@ -25,14 +25,14 @@ class RequestIDLocal extends RequestID
 		$query = (
 			'SELECT r.id, r.name, r.categories_id, r.reqidstatus, g.name AS groupname, g.id as gid
 			FROM releases r
-			INNER JOIN groups g ON r.group_id = g.id
+			INNER JOIN groups g ON r.groups_id = g.id
 			WHERE r.nzbstatus = 1
 			AND r.predb_id = 0
 			AND r.isrequestid = 1'
 		);
 
 		$query .= ($this->_charGUID === '' ? '' : ' AND r.leftguid = ' . $this->pdo->escapeString($this->_charGUID));
-		$query .= ($this->_groupID === '' ? '' : ' AND r.group_id = ' . $this->_groupID);
+		$query .= ($this->_groupID === '' ? '' : ' AND r.groups_id = ' . $this->_groupID);
 		$query .= ($this->_maxTime === 0 ? '' : sprintf(' AND r.adddate > NOW() - INTERVAL %d HOUR', $this->_maxTime));
 
 		switch ($this->_limit) {
@@ -108,7 +108,7 @@ class RequestIDLocal extends RequestID
 
 		$check = $this->pdo->queryDirect(
 			sprintf(
-				'SELECT id, title FROM predb WHERE requestid = %d AND group_id = %d',
+				'SELECT id, title FROM predb WHERE requestid = %d AND groups_id = %d',
 				$this->_requestID,
 				$this->_release['gid']
 			)
@@ -193,7 +193,8 @@ class RequestIDLocal extends RequestID
 	private $groupIDCache = [];
 
 	/**
-	 * Attempts to remap the release group_id by extracting the new group name from the release usenet name.
+	 * Attempts to remap the release groups_id by extracting the new group name from the release
+	 * usenet name.
 	 *
 	 * @return array|bool
 	 */
@@ -237,7 +238,7 @@ class RequestIDLocal extends RequestID
 		}
 		$check = $this->pdo->queryOneRow(
 			sprintf("
-				SELECT id, title FROM predb WHERE requestid = %d AND group_id = %d",
+				SELECT id, title FROM predb WHERE requestid = %d AND groups_id = %d",
 				$this->_requestID,
 				($groupID === '' ? 0 : $groupID)
 			)

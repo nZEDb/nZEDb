@@ -79,7 +79,7 @@ Class RSS
 				FROM releases r
 				INNER JOIN categories c ON c.id = r.categories_id
 				INNER JOIN categories cp ON cp.id = c.parentid
-				INNER JOIN groups g ON g.id = r.group_id
+				INNER JOIN groups g ON g.id = r.groups_id
 				LEFT OUTER JOIN movieinfo m ON m.imdbid = r.imdbid AND m.title != ''
 				LEFT OUTER JOIN musicinfo mu ON mu.id = r.musicinfo_id
 				LEFT OUTER JOIN genres mug ON mug.id = mu.genre_id
@@ -125,7 +125,7 @@ Class RSS
 				FROM releases r
 				INNER JOIN categories c ON c.id = r.categories_id
 				INNER JOIN categories cp ON cp.id = c.parentid
-				INNER JOIN groups g ON g.id = r.group_id
+				INNER JOIN groups g ON g.id = r.groups_id
 				LEFT OUTER JOIN videos v ON v.id = r.videos_id
 				LEFT OUTER JOIN tv_episodes tve ON tve.id = r.tv_episodes_id
 				WHERE %s %s %s
@@ -167,7 +167,7 @@ Class RSS
 				FROM releases r
 				INNER JOIN categories c ON c.id = r.categories_id
 				INNER JOIN categories cp ON cp.id = c.parentid
-				INNER JOIN groups g ON g.id = r.group_id
+				INNER JOIN groups g ON g.id = r.groups_id
 				LEFT OUTER JOIN movieinfo mi ON mi.imdbid = r.imdbid
 				WHERE %s %s
 				AND r.nzbstatus = %d

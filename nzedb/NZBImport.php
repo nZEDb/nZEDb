@@ -3,6 +3,7 @@ namespace nzedb;
 
 use nzedb\db\Settings;
 use nzedb\utility\Misc;
+use nzedb\Groups;
 
 /**
  * Import NZB files into the database.
@@ -85,11 +86,6 @@ class NZBImport
 	public $nzb;
 
 	/**
-	 * @var string the MD5 hash of the first segment Message-ID of the NZB
-	 */
-	protected $nzbGuid;
-
-	/**
 	 * Access point to add new groups.
 	 *
 	 * @var Groups $groups
@@ -124,11 +120,11 @@ class NZBImport
 		$this->nzb = ($options['NZB'] instanceof NZB ? $options['NZB'] : new NZB($this->pdo));
 		$this->releaseCleaner = ($options['ReleaseCleaning'] instanceof ReleaseCleaning ? $options['ReleaseCleaning'] : new ReleaseCleaning($this->pdo));
 		$this->releases = ($options['Releases'] instanceof Releases ? $options['Releases'] : new Releases(['settings' => $this->pdo]));
-		$this->groups = new Groups(['Settings' => $this->pdo]);
 
 		$this->crossPostt = ($this->pdo->getSetting('crossposttime') != '') ? $this->pdo->getSetting('crossposttime') : 2;
 		$this->browser = $options['Browser'];
 		$this->retVal = '';
+		$this->groups = new Groups(['Settings' => $this->pdo]);
 	}
 
 	/**
@@ -157,8 +153,6 @@ class NZBImport
 
 		// Loop over the file names.
 		foreach ($filesToProcess as $nzbFile) {
-
-			$this->nzbGuid = '';
 
 			// Check if the file is really there.
 			if (is_file($nzbFile)) {
@@ -209,10 +203,8 @@ class NZBImport
 						$this->echoOut('ERROR: Problem compressing NZB file to: ' . $path);
 
 						// Remove the release.
-						$this->pdo->queryExec("
-							DELETE
-							FROM releases
-							WHERE guid = {$this->pdo->escapeString($this->relGuid)}"
+						$this->pdo->queryExec(
+							sprintf("DELETE FROM releases WHERE guid = %s", $this->pdo->escapeString($this->relGuid))
 						);
 
 						if ($deleteFailed) {
@@ -222,8 +214,6 @@ class NZBImport
 						continue;
 
 					} else {
-
-						$this->updateNzbGuid();
 
 						if ($delete) {
 							// Remove the nzb file.
@@ -235,7 +225,6 @@ class NZBImport
 					}
 
 				} else {
-					$this->echoOut('ERROR: Failed to insert NZB!');
 					if ($deleteFailed) {
 						@unlink($nzbFile);
 					}
@@ -275,14 +264,11 @@ class NZBImport
 	 */
 	protected function scanNZBFile(&$nzbXML, $useNzbName = false)
 	{
-		$binary_names = array();
 		$totalFiles = $totalSize = $groupID = 0;
 		$isBlackListed = $groupName = $firstName = $posterName = $postDate = false;
 
 		// Go through the NZB, get the details, look if it's blacklisted, look if we have the groups.
 		foreach ($nzbXML->file as $file) {
-
-			$binary_names[] = $file['subject'];
 
 			$totalFiles++;
 			$groupID = -1;
@@ -301,12 +287,12 @@ class NZBImport
 			// Make a fake message array to use to check the blacklist.
 			$msg = ["Subject" => (string)$file->attributes()->subject, "From" => (string)$file->attributes()->poster, "Message-ID" => ""];
 
-			// Get the group names, group_id, check if it's blacklisted.
+			// Get the group names, groups_id, check if it's blacklisted.
 			$groupArr = [];
 			foreach ($file->groups->group as $group) {
 				$group = (string)$group;
 
-				// If group_id is -1 try to get a group_id.
+				// If groups_id is -1 try to get a groups_id.
 				if ($groupID === -1) {
 					if (array_key_exists($group, $this->allGroups)) {
 						$groupID = $this->allGroups[$group];
@@ -332,7 +318,7 @@ class NZBImport
 				$groupArr[] = $group;
 
 				// Check if this NZB is blacklisted.
-				if ($this->binaries->isBlackListed($msg, $group)) {
+				if ($this->binaries->isBlacklisted($msg, $group)) {
 					$isBlackListed = true;
 					break;
 				}
@@ -360,17 +346,6 @@ class NZBImport
 			}
 		}
 
-		// Sort values alphabetically but keep the keys intact
-		if (count($binary_names) > 0) {
-			asort($binary_names);
-			foreach ($nzbXML->file as $file) {
-				if ($file["subject"] == $binary_names[0]) {
-					$this->nzbGuid = md5($file->segments->segment);
-					break;
-				}
-			}
-		}
-
 		// Try to insert the NZB details into the DB.
 		return $this->insertNZB(
 			[
@@ -378,7 +353,7 @@ class NZBImport
 				'useFName'   => $useNzbName,
 				'postDate'   => (empty($postDate) ? date("Y-m-d H:i:s") : $postDate),
 				'from'       => (empty($posterName) ? '' : $posterName),
-				'group_id'   => $groupID,
+				'groups_id'  => $groupID,
 				'groupName'  => $groupName,
 				'totalFiles' => $totalFiles,
 				'totalSize'  => $totalSize,
@@ -424,12 +399,8 @@ class NZBImport
 
 		// Look for a duplicate on name, poster and size.
 		$dupeCheck = $this->pdo->queryOneRow(
-			sprintf('
-				SELECT id
-				FROM releases
-				WHERE name = %s
-				AND fromname = %s
-				AND size BETWEEN %s AND %s',
+			sprintf(
+				'SELECT id FROM releases WHERE name = %s AND fromname = %s AND size BETWEEN %s AND %s',
 				$escapedSubject,
 				$escapedFromName,
 				$this->pdo->escapeString($nzbDetails['totalSize'] * 0.99),
@@ -438,25 +409,27 @@ class NZBImport
 		);
 
 		if ($dupeCheck === false) {
+			$escapedSearchName = $this->pdo->escapeString($cleanName);
 			// Insert the release into the DB.
 			$relID = $this->releases->insertRelease(
 				[
-					'name'          => $escapedSubject,
-					'searchname'    => $this->pdo->escapeString($cleanName),
-					'totalpart'     => $nzbDetails['totalFiles'],
-					'group_id'      => $nzbDetails['group_id'],
-					'guid'          => $this->pdo->escapeString($this->relGuid),
-					'postdate'      => $this->pdo->escapeString($nzbDetails['postDate']),
-					'fromname'      => $escapedFromName,
-					'size'          => $this->pdo->escapeString($nzbDetails['totalSize']),
-					'categories_id' => $this->category->determineCategory($nzbDetails['group_id'], $cleanName),
-					'isrenamed'     => $renamed,
-					'reqidstatus'   => 0,
-					'predb_id'      => 0,
-					'nzbstatus'     => NZB::NZB_ADDED,
+					'name' => $escapedSubject,
+					'searchname' => $escapedSearchName,
+					'totalpart' => $nzbDetails['totalFiles'],
+					'groups_id' => $nzbDetails['groups_id'],
+					'guid' => $this->pdo->escapeString($this->relGuid),
+					'postdate' => $this->pdo->escapeString($nzbDetails['postDate']),
+					'fromname' => $escapedFromName,
+					'size' => $this->pdo->escapeString($nzbDetails['totalSize']),
+					'categories_id' => $this->category->determineCategory($nzbDetails['groups_id'], $cleanName),
+					'isrenamed' => $renamed,
+					'reqidstatus' => 0,
+					'predb_id' => 0,
+					'nzbstatus' => NZB::NZB_ADDED
 				]
 			);
 		} else {
+			//$this->echoOut('This release is already in our DB so skipping: ' . $subject);
 			return false;
 		}
 
@@ -476,15 +449,9 @@ class NZBImport
 	protected function getAllGroups()
 	{
 		$this->allGroups = [];
-		$groups = $this->pdo->queryDirect("
-			SELECT id, name
-			FROM groups"
-		);
-
-		if ($groups instanceof \Traversable) {
-			foreach ($groups as $group) {
-				$this->allGroups[$group["name"]] = $group["id"];
-			}
+		$groups = $this->pdo->query("SELECT id, name FROM groups");
+		foreach ($groups as $group) {
+			$this->allGroups[$group["name"]] = $group["id"];
 		}
 
 		if (count($this->allGroups) === 0) {
@@ -508,19 +475,5 @@ class NZBImport
 		} elseif ($this->echoCLI) {
 			echo $message . PHP_EOL;
 		}
-	}
-
-	/**
-	 * The function updates the NZB guid after there is no chance of deletion
-	 *
-	 * @access protected
-	 */
-	protected function updateNzbGuid()
-	{
-		$this->pdo->queryExec("
-			UPDATE releases
-			SET nzb_guid = UNHEX({$this->pdo->escapeString($this->nzbGuid)})
-			WHERE guid = {$this->pdo->escapeString($this->relGuid)}"
-		);
 	}
 }

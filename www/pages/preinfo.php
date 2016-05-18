@@ -188,7 +188,7 @@ if (isset($_GET['type'])) {
 						SELECT p.*,
 						g.name AS groupname
 						FROM predb p
-						INNER JOIN groups g ON g.id = p.group_id
+						INNER JOIN groups g ON g.id = p.groups_id
 						WHERE requestid = %d
 						AND g.name = %s
 						%s %s %s
@@ -302,7 +302,7 @@ if (isset($_GET['type'])) {
 					SELECT p.*,
 					g.name AS groupname
 					FROM predb p
-					INNER JOIN groups g ON g.id = p.group_id
+					INNER JOIN groups g ON g.id = p.groups_id
 					WHERE requestid = %d
 					AND g.name = %s
 					LIMIT 1',
