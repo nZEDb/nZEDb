@@ -76,9 +76,10 @@
 							<span class="label label-default">
 							{if !empty($cpurl) && !empty($cpapi)}
 								<a
-									id="guid{$release.guid}"
-									class="sendtocouch"
+									id="mvid{$release.imdbid}"
+									class="sendmovietocouch"
 									title="Add to CouchPotato">
+									<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
 								</a>
 							{/if}
 							</span>

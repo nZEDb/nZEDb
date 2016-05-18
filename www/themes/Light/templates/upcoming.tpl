@@ -30,7 +30,7 @@
 							{if !empty($cpurl) && !empty($cpapi)}
 								<a
 									id="mvid{$result->alternate_ids->imdb}"
-									class="rndbtnsml couchsend"
+									class="rndbtnsml sendmovietocouch"
 									title="Add to CouchPotato">CouchPotato
 								</a>
 							{/if}

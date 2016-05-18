@@ -48,7 +48,7 @@
 							{if !empty($cpurl) && !empty($cpapi)}
 								<a
 									id="mvid{$result->alternate_ids->imdb}"
-									class="couchsend"
+									class="sendmovietocouch"
 									title="Add to CouchPotato">
 									<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
 								</a>

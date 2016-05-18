@@ -183,8 +183,8 @@
 									{if !empty($cpurl) && !empty($cpapi)}
 										<li>
 											<a
-												id="guid{$mguid[$m@index]}"
-												class="sendtocouch"
+												id="mvid{$result.imdbid}"
+												class="sendmovietocouch"
 												title="Add to CouchPotato">
 												<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
 											</a>
