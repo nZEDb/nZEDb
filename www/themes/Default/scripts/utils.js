@@ -97,6 +97,18 @@ jQuery(function ($) {
             createGrowl('Added to CouchPotato');
         });
     });
+
+    $('.sendmovietocouch').click(function (e) {
+        if ($(this).hasClass('icon_cp_clicked')) return false;
+        var id = $(this).attr('id').substring(4);
+        var cpurl = SERVERROOT + "sendtocouch/" + id;
+
+        $.post(cpurl, function(resp){
+            $(e.target).addClass('icon_cp_clicked').attr('title','Added to CouchPotato');
+            createGrowl('Added to CouchPotato');
+        });
+    });
+    
     $("table.data a.modal_nfo").colorbox({	 // NFO modal
         href: function () {
             return $(this).attr('href') + '&modal';

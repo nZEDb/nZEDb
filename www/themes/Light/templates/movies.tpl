@@ -91,8 +91,8 @@
 										<a class="rndbtnsml" target="_blank" href="{$site->dereferrer_link}http://trakt.tv/search/imdb/tt{$result.imdbid}/" name="trakt{$result.imdbid}" title="View trakt page">Trakt</a>
 										{if !empty($cpurl) && !empty($cpapi)}
 											<a
-												id="guid{$mguid[$m@index]}"
-												class="rndbtnsml sendtocouch"
+												id="mvid{$result.imdbid}"
+												class="rndbtnsml sendmovietocouch"
 												title="Add to CouchPotato">Couch
 											</a>
 										{/if}

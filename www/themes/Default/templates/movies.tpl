@@ -112,8 +112,8 @@
 								</a>
 								{if !empty($cpurl) && !empty($cpapi)}
 									<a
-										id="guid{$result.guid}"
-										class="rndbtn sendtocouch"
+										id="mvid{$result.imdbid}"
+										class="rndbtn sendmovietocouch"
 										title="Add to CouchPotato">
 										Couch
 									</a>
