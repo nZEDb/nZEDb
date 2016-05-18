@@ -57,10 +57,10 @@
 								title="View trakt page">
 								<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/trakt.png">
 							</a>
-							{if $cpurl != '' && $cpapi != ''}
+							{if !empty($cpurl) && !empty($cpapi)}
 								<a
-									id="imdb{$result->alternate_ids->imdb}"
-									class="sendtocouch"
+									id="mvid{$result->alternate_ids->imdb}"
+									class="couchsend"
 									title="Add to CouchPotato">
 									<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
 								</a>

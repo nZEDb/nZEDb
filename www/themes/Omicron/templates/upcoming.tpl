@@ -38,6 +38,21 @@
 							<a class="rndbtn badge badge-imdb" target="_blank"
 							   href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result->alternate_ids->imdb}"
 							   title="View Imdb Details">IMDB</a>
+							<a
+								target="_blank"
+								href="{$site->dereferrer_link}http://trakt.tv/search/imdb/tt{$result->alternate_ids->imdb}/"
+								name="trakt{$result->alternate_ids->imdb}"
+								title="View trakt page">
+								<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/trakt.png">
+							</a>
+							{if !empty($cpurl) && !empty($cpapi)}
+								<a
+									id="mvid{$result->alternate_ids->imdb}"
+									class="couchsend"
+									title="Add to CouchPotato">
+									<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
+								</a>
+							{/if}
 						</div>
 					</div>
 				</td>

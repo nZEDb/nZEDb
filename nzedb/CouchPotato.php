@@ -15,28 +15,16 @@ class CouchPotato
 	public $cpurl = '';
 
 	/**
-	 * The SAB CP key.
+	 * The CP key.
 	 * @var string|array|bool
 	 */
 	public $cpapi = '';
 
 	/**
-	 * ID of the current user
+	 * Imdb ID
 	 * @var string
 	 */
-	protected $uid = '';
-
-	/**
-	 * User's newznab API key
-	 * @var string
-	 */
-	protected $rsstoken = '';
-
-	/**
-	 * nZEDb Site URL to send to SAB to download the NZB.
-	 * @var string
-	 */
-	protected $serverurl = '';
+	public $imdbid = '';
 
 	/**
 	 * Construct.
@@ -45,29 +33,31 @@ class CouchPotato
 	 */
 	public function __construct(&$page)
 	{
-		$this->uid = $page->userdata['id'];
-		$this->rsstoken = $page->userdata['rsstoken'];
-		$this->serverurl = $page->serverurl;
-		$this->releases = new Releases();
-
 		$this->cpurl = !empty($page->userdata['cp_url']) ? $page->userdata['cp_url'] : '';
 		$this->cpapi = !empty($page->userdata['cp_api']) ? $page->userdata['cp_api'] : '';
-
 	}
 
 	/**
-	 * Send a movie release to CouchPotato.
+	 * Send a movie to CouchPotato.
 	 *
-	 * @param int $imdbid The IMDB ID of the movie we want to send to couch
-	 *
+	 * @param string $id
 	 * @return bool|mixed
-	 *
 	 */
-	public function sendToCouchPotato($imdbid)
+	public function sendToCouchPotato($id)
 	{
-		return Misc::getUrl(
-			[
-				'url'        => $this->cpurl . '/api/' . $this->cpapi . '/movie.add/?identifier=tt' . $imdbid,
+		if (strlen($id) == 40) {
+			$relData = (new Releases())->getByGuid($id);
+			$this->imdbid = $relData['imdbid'];
+		} else {
+			$this->imdbid = $id;
+		}
+
+		return Misc::getUrl([
+				'url' => $this->cpurl .
+					'/api/' .
+					$this->cpapi .
+					'/movie.add/?identifier=tt' .
+					$this->imdbid,
 				'verifypeer' => false,
 			]
 		);

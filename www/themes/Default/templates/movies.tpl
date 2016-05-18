@@ -110,9 +110,9 @@
 									name="trakt{$result.imdbid}" title="View trakt page">
 									Trakt
 								</a>
-								{if $cpurl != '' && $cpapi != ''}
+								{if !empty($cpurl) && !empty($cpapi)}
 									<a
-										id="imdb{$result.imdbid}"
+										id="guid{$result.guid}"
 										class="rndbtn sendtocouch"
 										title="Add to CouchPotato">
 										Couch

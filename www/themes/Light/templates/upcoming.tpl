@@ -27,10 +27,10 @@
 							<a class="rndbtnsml" target="_blank" href="{$site->dereferrer_link}{$result->links->alternate}" title="View Rotten Tomatoes Details">Rotten Tomatoes</a>
 							<a class="rndbtnsml" target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result->alternate_ids->imdb}/" name="imdb{$result->alternate_ids->imdb}" title="View imdb page">Imdb</a>
 							<a class="rndbtnsml" target="_blank" href="{$site->dereferrer_link}http://trakt.tv/search/imdb/tt{$result->alternate_ids->imdb}/" name="trakt{$result->alternate_ids->imdb}" title="View trakt page">Trakt</a>
-							{if $cpurl != '' && $cpapi != ''}
+							{if !empty($cpurl) && !empty($cpapi)}
 								<a
-									id="imdb{$result.imdbid}"
-									class="rndbtnsml sendtocouch"
+									id="mvid{$result->alternate_ids->imdb}"
+									class="rndbtnsml couchsend"
 									title="Add to CouchPotato">CouchPotato
 								</a>
 							{/if}
