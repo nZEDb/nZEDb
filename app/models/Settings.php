@@ -25,9 +25,10 @@ namespace app\models;
  * li3 app completely ignore the 'setting' column and only uses 'section', 'subsection', and 'name'
  * for finding values/hints.
  *
-*@package app\models
+ * @package app\models
  */
-class Settings extends \lithium\data\Model {
+class Settings extends \lithium\data\Model
+{
 
 	public $validates = [];
 
