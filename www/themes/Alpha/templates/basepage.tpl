@@ -24,7 +24,7 @@
 		<link href="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap-3.x/dist/css/bootstrap.min.css"
 				rel="stylesheet"
 				media="screen">
-		<link href="{$smarty.const.WWW_THEMES}/shared/libs/font-awesome/css/font-awesome.css"
+		<link href="{$smarty.const.WWW_THEMES}/shared/libs/font-awesome-4.x/css/font-awesome.css"
 				rel="stylesheet"
 				media="screen">
 		<link href="{$smarty.const.WWW_THEMES}/shared/css/posterwall.css"
@@ -134,8 +134,8 @@
 
 		<!-- Additional nZEDb -->
 		<!--[if lt IE 9]>
-		<script src="{$smarty.const.WWW_THEMES}/shared/libs/html5shiv/dist/html5shiv.js"></script>
-		<script src="{$smarty.const.WWW_THEMES}/shared/libs/respond/dest/respond.min.js"></script>
+		<script src="{$smarty.const.WWW_THEMES}/shared/libs/html5shiv-3.7.x/dist/html5shiv.js"></script>
+		<script src="{$smarty.const.WWW_THEMES}/shared/libs/respond-1.4.x/dest/respond.min.js"></script>
 		<![endif]-->
 		{literal}
 		<script>
@@ -344,8 +344,8 @@
 	<script src="{$smarty.const.WWW_THEMES}/shared/js/holder.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/js/jquery.pnotify.min.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/js/jquery.qtip.min.js"></script>
-	<script src="{$smarty.const.WWW_THEMES}/shared/libs/autosize/autosize-min.js"></script>
-	<script src="{$smarty.const.WWW_THEMES}/shared/libs/colorbox/jquery.colorbox-min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/autosize-3.x/autosize-min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/colorbox-1.6.x/jquery.colorbox-min.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/js/sorttable.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/{$theme}/scripts/utils.js"></script>
 

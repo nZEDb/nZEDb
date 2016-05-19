@@ -23,7 +23,7 @@
 	<!-- Newposterwall -->
 	<link href="{$smarty.const.WWW_THEMES}/shared/css/posterwall.css" rel="stylesheet" type="text/css" media="screen" />
 	<link href="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap-3.x/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
-	<link href="{$smarty.const.WWW_THEMES}/shared/libs/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+	<link href="{$smarty.const.WWW_THEMES}/shared/libs/font-awesome-4.x/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
 	<link href="{$smarty.const.WWW_THEMES}/{$theme}/styles/extra.css" rel="stylesheet" type="text/css" media="screen" />
 	<link href="{$smarty.const.WWW_THEMES}/{$theme}/styles/jquery.pnotify.default.css" rel="stylesheet" type="text/css" media="screen" />
 	<link href="{$smarty.const.WWW_THEMES}/{$theme}/styles/style.css" rel="stylesheet" type="text/css" media="screen" />
@@ -38,17 +38,17 @@
 	<!-- Javascripts -->
 	<script src="{$smarty.const.WWW_THEMES}/shared/libs/jquery-2.2.x/dist/jquery.min.js"></script>
 	<!-- jQuery migrate script -->
-	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/jquery-migrate/jquery-migrate.min.js"></script>
-	<script src="{$smarty.const.WWW_THEMES}/shared/libs/colorbox/jquery.colorbox-min.js" type="text/javascript" ></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/jquery-migrate-1.4.x/jquery-migrate.min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/colorbox-1.6.x/jquery.colorbox-min.js" type="text/javascript" ></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/js/jquery.qtip.min.js" type="text/javascript" ></script>
 	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/js/utils.js"></script>
-	<script src="{$smarty.const.WWW_THEMES}/shared/libs/autosize/dist/autosize.min.js" type="text/javascript" ></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/autosize-3.x/dist/autosize.min.js" type="text/javascript" ></script>
 	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/js/sorttable.js"></script>
 
 	<!-- Added the Bootstrap JS -->
 	<script src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap-3.x/dist/js/bootstrap.min.js" type="text/javascript"></script>
 	<!-- Bootstrap hover on mouseover script -->
-	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap-hover-dropdown-2.2.x/bootstrap-hover-dropdown.min.js"></script>
 
 	<!-- Pines Notify -->
 	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/{$theme}/scripts/jquery.pnotify.js"></script>

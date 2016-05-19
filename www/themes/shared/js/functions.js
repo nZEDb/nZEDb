@@ -1,5 +1,5 @@
-$('head').append('<link rel="stylesheet" href="/themes/shared/libs/animate.css/animate.min.css" type="text/css" />');
-jQuery.getScript("themes/shared/libs/noty/js/noty/packaged/jquery.noty.packaged.min.js");
+$('head').append('<link rel="stylesheet" href="/themes/shared/libs/animate.css-3.5.x/animate.min.css" type="text/css" />');
+jQuery.getScript("themes/shared/libs/noty-2.3.x/js/noty/packaged/jquery.noty.packaged.min.js");
 
 // event bindings
 jQuery(function($){

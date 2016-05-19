@@ -18,7 +18,7 @@
 	<!-- Included CSS files - Bootstrap 3 - Font Awesome 3.2.0 - plugins master style.css -->
 	<link href="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap-2.3.x/docs/assets/css/bootstrap.css" rel="stylesheet"
 		  type="text/css"/>
-	<link href="{$smarty.const.WWW_THEMES}/shared/libs/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+	<link href="{$smarty.const.WWW_THEMES}/shared/libs/font-awesome-4.x/css/font-awesome.min.css" rel="stylesheet"
 		  type="text/css"/>
 	<link href="{$smarty.const.WWW_THEMES}/shared/css/jquery.qtip.css" rel="stylesheet" media="screen">
 	<!-- <link href="{$smarty.const.WWW_THEMES}/shared/css/subnav.css" rel="stylesheet" media="screen"> -->
@@ -37,7 +37,7 @@
 	<!-- Additional site files -->
 	{if $site->google_adsense_acc != ''}<link href="http://www.google.com/cse/api/branding.css" rel="stylesheet" media="screen">{/if}
 	<!--[if lt IE 9]>
-	<script src="{$smarty.const.WWW_THEMES}/shared/libs/html5shiv/dist/html5shiv.min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/html5shiv-3.7.x/dist/html5shiv.min.js"></script>
 	<![endif]-->
 
 	<script>
@@ -104,7 +104,7 @@
 		<script src="{$smarty.const.WWW_THEMES}/shared/libs/jquery-1.9.x/jquery.min.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap-2.3.x/docs/assets/bootstrap.min.js"></script>
 	<!-- <script src="{$smarty.const.WWW_THEMES}/shared/js/subnav.js"></script> -->
-	<script src="{$smarty.const.WWW_THEMES}/shared/libs/colorbox/jquery.colorbox-min.js" type="text/javascript" ></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/colorbox-1.6.x/jquery.colorbox-min.js" type="text/javascript" ></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/js/jquery.qtip.min.js" type="text/javascript" ></script>
 	<script src="{$smarty.const.WWW_THEMES}/{$theme}/scripts/utils.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/js/sorttable.js"></script>
