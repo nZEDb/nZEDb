@@ -58,31 +58,7 @@ jQuery(function($){
         return false;
     });
 
-    $('.couchend').click(function(e){
-        if ($(this).hasClass('icon_cp_clicked')) return false;
-
-        var id = $(".mvid").attr('id').substring(4);
-        var cpurl = SERVERROOT + "sendtocouch/" + id;
-
-        $.post(cpurl, function(resp){
-            $(e.target).addClass('icon_cp_clicked').attr('title','Added to CouchPotato');
-            notify('Movie added to Couchpotato', 'topCenter', 'success');
-        });
-        return false;
-    });
-
     $('.sendtocouch').click(function (e) {
-        if ($(this).hasClass('icon_cp_clicked')) return false;
-        var id = $(this).parent().parent().attr('id').substring(4);
-        var cpurl = SERVERROOT + "sendtocouch/" + id;
-
-        $.post(cpurl, function(resp){
-            $(e.target).addClass('icon_cp_clicked').attr('title','Added to CouchPotato');
-            notify('Movie added to CouchPotato', 'topCenter', 'success');
-        });
-    });
-
-    $('.sendmovietocouch').click(function (e) {
         if ($(this).hasClass('icon_cp_clicked')) return false;
         var id = $(this).attr('id').substring(4);
         var cpurl = SERVERROOT + "sendtocouch/" + id;

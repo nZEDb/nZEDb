@@ -93,7 +93,7 @@
 											<a
 												id="mvid{$result.imdbid}"
 												href="javascript:;"
-												class="rndbtnsml sendmovietocouch"
+												class="rndbtnsml sendtocouch"
 												title="Add to CouchPotato">Couch
 											</a>
 										{/if}

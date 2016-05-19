@@ -362,7 +362,7 @@
 						<a
 								id="mvid{$release.imdbid}"
 								href="javascript:;"
-								class="sendmovietocouch"
+								class="sendtocouch"
 								title="Add to CouchPotato">
 							<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
 						</a>

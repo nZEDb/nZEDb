@@ -31,7 +31,7 @@
 								<a
 									id="mvid{$result->alternate_ids->imdb}"
 									href="javascript:;"
-									class="rndbtnsml sendmovietocouch"
+									class="rndbtnsml sendtocouch"
 									title="Add to CouchPotato">CouchPotato
 								</a>
 							{/if}

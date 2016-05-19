@@ -282,43 +282,7 @@ jQuery(function($){
         return false;
     });
 
-    $('.couchend').click(function(e){
-        if ($(this).hasClass('icon_cp_clicked')) return false;
-
-        var id = $(".mvid").attr('id').substring(4);
-        var cpurl = SERVERROOT + "sendtocouch/" + id;
-
-        $.post(cpurl, function(resp){
-            $(e.target).addClass('icon_cp_clicked').attr('title','Added to CouchPotato');
-            $.pnotify({
-                title: 'ADDED TO COUCHPOTATO!',
-                text: 'Its now on your wanted list! ^_^',
-                type: 'info',
-                animate_speed: 'fast',
-                icon: 'fa fa-info-sign'
-            });
-        });
-        return false;
-    });
-
     $('.sendtocouch').click(function (e) {
-        if ($(this).hasClass('icon_cp_clicked')) return false;
-        var id = $(this).parent().parent().attr('id').substring(4);
-        var cpurl = SERVERROOT + "sendtocouch/" + id;
-
-        $.post(cpurl, function(resp){
-            $(e.target).addClass('icon_cp_clicked').attr('title','Added to CouchPotato');
-            $.pnotify({
-                title: 'ADDED TO COUCHPOTATO!',
-                text: 'Its now on your wanted list! ^_^',
-                type: 'info',
-                animate_speed: 'fast',
-                icon: 'fa fa-info-sign'
-            });
-        });
-    });
-
-    $('.sendmovietocouch').click(function (e) {
         if ($(this).hasClass('icon_cp_clicked')) return false;
         var id = $(this).attr('id').substring(4);
         var cpurl = SERVERROOT + "sendtocouch/" + id;

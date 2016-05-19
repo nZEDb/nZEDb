@@ -112,7 +112,7 @@
 											<div class="icon icon_cp">
 												<a
 													id="mvid{$result.imdbid}"
-													class="divlink sendmovietocouch" target="_blank"
+													class="divlink sendtocouch" target="_blank"
 													title="Send to CouchPotato">
 												</a>
 											</div>
