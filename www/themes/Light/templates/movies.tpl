@@ -89,9 +89,10 @@
 									<div class="movextra">
 										<a class="rndbtnsml" target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="imdb{$result.imdbid}" title="View imdb page">Imdb</a>
 										<a class="rndbtnsml" target="_blank" href="{$site->dereferrer_link}http://trakt.tv/search/imdb/tt{$result.imdbid}/" name="trakt{$result.imdbid}" title="View trakt page">Trakt</a>
-										{if $cpurl != '' && $cpapi != ''}
+										{if !empty($cpurl) && !empty($cpapi)}
 											<a
 												id="imdb{$result.imdbid}"
+												href="javascript:;"
 												class="rndbtnsml sendtocouch"
 												title="Add to CouchPotato">Couch
 											</a>

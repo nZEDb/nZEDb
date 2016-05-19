@@ -284,8 +284,8 @@ jQuery(function($){
 
     $('.sendtocouch').click(function (e) {
         if ($(this).hasClass('icon_cp_clicked')) return false;
-        var imdb = $(this).parent().parent().attr('id').substring(4);
-        var cpurl = SERVERROOT + "sendtocouch/" + imdb;
+        var id = $(this).attr('id').substring(4);
+        var cpurl = SERVERROOT + "sendtocouch/" + id;
 
         $.post(cpurl, function(resp){
             $(e.target).addClass('icon_cp_clicked').attr('title','Added to CouchPotato');

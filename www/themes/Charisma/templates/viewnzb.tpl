@@ -241,8 +241,9 @@
 														</button>{/if}
 													{if !empty($cpurl) && !empty($cpapi)}
 														<button type="button"
-																id="guid{$release.guid}"
-																class="btn btn-primary btn-sm btn-info btn-transparent couchsend">
+																id="imdb{$release.imdbid}"
+																href="javascript:;"
+																class="btn btn-primary btn-sm btn-info btn-transparent sendtocouch">
 																<i class="fa fa-bed"></i> Send to CouchPotato
 														</button>
 													{/if}
