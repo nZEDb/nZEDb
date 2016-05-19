@@ -25,15 +25,18 @@
 						border="0" alt="{$result->title|escape:"htmlall"}"/>
 						<div class="movextra">
 							<a class="rndbtnsml" target="_blank" href="{$site->dereferrer_link}{$result->links->alternate}" title="View Rotten Tomatoes Details">Rotten Tomatoes</a>
-							<a class="rndbtnsml" target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result->alternate_ids->imdb}/" name="imdb{$result->alternate_ids->imdb}" title="View imdb page">Imdb</a>
-							<a class="rndbtnsml" target="_blank" href="{$site->dereferrer_link}http://trakt.tv/search/imdb/tt{$result->alternate_ids->imdb}/" name="trakt{$result->alternate_ids->imdb}" title="View trakt page">Trakt</a>
-							{if !empty($cpurl) && !empty($cpapi)}
-								<a
-									id="imdb{$result->alternate_ids->imdb}"
-									href="javascript:;"
-									class="rndbtnsml sendtocouch"
-									title="Add to CouchPotato">CouchPotato
-								</a>
+							{if !empty($result->alternate_ids)}
+								<a class="rndbtn badge badge-imdb" target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result->alternate_ids->imdb}" title="View Imdb Details">Imdb</a>
+								<a class="rndbtnsml" target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result->alternate_ids->imdb}/" name="imdb{$result->alternate_ids->imdb}" title="View imdb page">Imdb</a>
+								<a class="rndbtnsml" target="_blank" href="{$site->dereferrer_link}http://trakt.tv/search/imdb/tt{$result->alternate_ids->imdb}/" name="trakt{$result->alternate_ids->imdb}" title="View trakt page">Trakt</a>
+								{if !empty($cpurl) && !empty($cpapi)}
+									<a
+										id="imdb{$result->alternate_ids->imdb}"
+										href="javascript:;"
+										class="rndbtnsml sendtocouch"
+										title="Add to CouchPotato">CouchPotato
+									</a>
+								{/if}
 							{/if}
 						</div>
 					</div>
