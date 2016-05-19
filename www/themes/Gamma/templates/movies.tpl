@@ -181,16 +181,6 @@
 										<a class="icon icon_sab fa fa-share" style="text-decoration: none; color: #008ab8;"  href="#" title="Send to queue"></a>
 									</li>
 									{/if}
-									{if !empty($cpurl) && !empty($cpapi)}
-										<li>
-											<a
-												id="mvid{$result.imdbid}"
-												class="sendmovietocouch"
-												title="Add to CouchPotato">
-												<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
-											</a>
-										</li>
-									{/if}
 								</ul>
 							</td>
 						</tr>
