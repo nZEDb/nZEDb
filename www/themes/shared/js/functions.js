@@ -1,5 +1,5 @@
-$('head').append('<link rel="stylesheet" href="/themes/shared/libs/animate.css/animate.min.css" type="text/css" />');
-jQuery.getScript("themes/shared/libs/noty/js/noty/packaged/jquery.noty.packaged.min.js");
+$('head').append('<link rel="stylesheet" href="themes/Charisma/css/animate.min.css" type="text/css" />');
+jQuery.getScript("themes/shared/libs/noty/packaged/jquery.noty.packaged.min.js");
 
 // event bindings
 jQuery(function($){
@@ -58,11 +58,10 @@ jQuery(function($){
         return false;
     });
 
-    $('.couchend').click(function(e){
+    $('.sendtocouch').click(function (e) {
         if ($(this).hasClass('icon_cp_clicked')) return false;
-
-        var guid = $(".guid").attr('id').substring(4);
-        var cpurl = SERVERROOT + "sendtocouch/" + guid;
+        var id = $(this).attr('id').substring(4);
+        var cpurl = SERVERROOT + "sendtocouch/" + id;
 
         $.post(cpurl, function(resp){
             $(e.target).addClass('icon_cp_clicked').attr('title','Added to CouchPotato');
@@ -70,18 +69,6 @@ jQuery(function($){
         });
         return false;
     });
-
-    $('.sendtocouch').click(function (e) {
-        if ($(this).hasClass('icon_cp_clicked')) return false;
-        var imdb = $(this).parent().parent().attr('id').substring(4);
-        var cpurl = SERVERROOT + "sendtocouch/" + imdb;
-
-        $.post(cpurl, function(resp){
-            $(e.target).addClass('icon_cp_clicked').attr('title','Added to CouchPotato');
-            notify('Movie added to CouchPotato', 'topCenter', 'success');
-        });
-    });
-
 
     $('.vortexsend').click(function(event)
     {
