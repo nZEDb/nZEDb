@@ -155,7 +155,7 @@
 																			class="fa fa-send"></i></span>
 															{/if}
 															{if $cpurl != '' && $cpapi != ''}
-																<span id="guid{$mguid[$m@index]}"
+																<span id="imdb{$result.imdbid}"
 																	  class="btn btn-hover btn-default btn-xs sendtocouch text-muted"
 																	  title="Add to CouchPotato">
 																		<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">

@@ -30,37 +30,39 @@
 						<div class="movextra">
 							{if $result->ratings->critics_score > 60}
 								<a
-										target="_blank"
-										href="{$site->dereferrer_link}{$result->links->alternate}"
-										title="View Rotten Tomatoes Details"><img
-											src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/fresh.png"></a>
+									target="_blank"
+									href="{$site->dereferrer_link}{$result->links->alternate}"
+									title="View Rotten Tomatoes Details">
+									<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/fresh.png">
+								</a>
 							{else}
 								<a
-										target="_blank"
-										href="{$site->dereferrer_link}{$result->links->alternate}"
-										title="View Rotten Tomatoes Details"><img
-											src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/rotten.png"></a>
+									target="_blank"
+									href="{$site->dereferrer_link}{$result->links->alternate}"
+									title="View Rotten Tomatoes Details">
+									<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/rotten.png">
+								</a>
 							{/if}
 							<a
-									target="_blank"
-									href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result->alternate_ids->imdb}/"
-									name="imdb{$result->alternate_ids->imdb}"
-									title="View imdb page"><img
-										src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/imdb.png"></a>
+								target="_blank"
+								href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result->alternate_ids->imdb}/"
+								name="imdb{$result->alternate_ids->imdb}"
+								title="View imdb page">
+								<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/imdb.png">
+							</a>
 							<a
-									target="_blank"
-									href="{$site->dereferrer_link}http://trakt.tv/search/imdb/tt{$result->alternate_ids->imdb}/"
-									name="trakt{$result->alternate_ids->imdb}"
-									title="View trakt page"><img
-										src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/trakt.png"></a>
+								target="_blank"
+								href="{$site->dereferrer_link}http://trakt.tv/search/imdb/tt{$result->alternate_ids->imdb}/"
+								name="trakt{$result->alternate_ids->imdb}"
+								title="View trakt page">
+								<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/trakt.png">
+							</a>
 							{if $cpurl != '' && $cpapi != ''}
 								<a
-										class="sendtocouch"
-										target="blackhole"
-										href="javascript:;"
-										rel="{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result->alternate_ids->imdb}&title={$result->title}"
-										name="CP{$result->alternate_ids->imdb}" title="Add to CouchPotato"><img
-											src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
+									id="imdb{$result->alternate_ids->imdb}"
+									class="sendtocouch"
+									title="Add to CouchPotato">
+									<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
 								</a>
 							{/if}
 						</div>

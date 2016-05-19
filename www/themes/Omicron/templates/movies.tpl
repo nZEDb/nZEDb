@@ -155,9 +155,12 @@
 																			class="fa fa-send"></i></span>
 															{/if}
 															{if $cpurl != '' && $cpapi != ''}
-																<span id="guid{$mguid[$m@index]}" class="btn btn-hover btn-default btn-xs sendtocouch text-muted"
-																	  title="Add to CouchPotato">
-											<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png"></span>
+																<span
+																	id="imdb{$result.imdbid}"
+																	class="btn btn-hover btn-default btn-xs sendtocouch text-muted"
+																	title="Add to CouchPotato">
+																	<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
+																</span>
 															{/if}
 															{if !empty($mfailed[$m@index])}
 																<span class="btn btn-default btn-xs" title="This release has failed to download for some users">

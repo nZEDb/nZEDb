@@ -112,6 +112,7 @@
 								</a>
 								{if $cpurl != '' && $cpapi != ''}
 									<a
+										id="imdb{$result.imdbid}"
 										class="rndbtn sendtocouch"
 										title="Add to CouchPotato">
 										Couch
