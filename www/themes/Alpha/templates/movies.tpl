@@ -62,7 +62,7 @@
 							><img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/trakt.png"></a>
 							{if !empty($cpurl) && !empty($cpapi)}
 								<a
-									id="mvid{$result.imdbid}"
+									id="imdb{$result.imdbid}"
 									href="javascript:;"
 									class="sendtocouch"
 									title="Add to CouchPotato">

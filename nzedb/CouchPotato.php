@@ -1,10 +1,30 @@
 <?php
+/**
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (see LICENSE.txt in the base directory.  If
+ * not, see:
+ *
+ * @link      <http://www.gnu.org/licenses/>.
+ * @author    DariusIII
+ * @copyright 2016 nZEDb
+ */
+
 namespace nzedb;
 
 use nzedb\utility\Misc;
 
 /**
- * Class SABnzbd
+ * Class CouchPotato
  */
 class CouchPotato
 {
@@ -21,7 +41,7 @@ class CouchPotato
 	public $cpapi = '';
 
 	/**
-	 * Imdb ID
+	 * ImdbID
 	 * @var string
 	 */
 	public $imdbid = '';
@@ -45,12 +65,7 @@ class CouchPotato
 	 */
 	public function sendToCouchPotato($id)
 	{
-		if (strlen($id) == 40) {
-			$relData = (new Releases())->getByGuid($id);
-			$this->imdbid = $relData['imdbid'];
-		} else {
-			$this->imdbid = $id;
-		}
+		$this->imdbid = $id;
 
 		return Misc::getUrl([
 				'url' => $this->cpurl .

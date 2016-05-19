@@ -111,7 +111,7 @@
 										{if !empty($cpapi) && !empty($cpurl)}
 											<div class="icon icon_cp">
 												<a
-													id="mvid{$result.imdbid}"
+													id="imdb{$result.imdbid}"
 													class="divlink sendtocouch" target="_blank"
 													title="Send to CouchPotato">
 												</a>

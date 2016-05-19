@@ -28,7 +28,7 @@
 						</a>
 						{if !empty($cpurl) && !empty($cpapi)}
 							<a
-								id="mvid{$result->alternate_ids->imdb}"
+								id="imdb{$result->alternate_ids->imdb}"
 								href="javascript:;"
 								class="sendtocouch"
 								title="Add to CouchPotato">

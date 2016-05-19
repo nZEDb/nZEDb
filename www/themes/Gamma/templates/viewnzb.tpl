@@ -360,7 +360,7 @@
 					{/if}
 					{if !empty($cpurl) && !empty($cpapi)}
 						<a
-								id="mvid{$release.imdbid}"
+								id="imdb{$release.imdbid}"
 								href="javascript:;"
 								class="sendtocouch"
 								title="Add to CouchPotato">

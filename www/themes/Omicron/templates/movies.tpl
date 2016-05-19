@@ -156,7 +156,7 @@
 															{/if}
 															{if !empty($cpurl) && !empty($cpapi)}
 																<span
-																	id="mvid{$result.imdbid}"
+																	id="imdb{$result.imdbid}"
 																	href="javascript:;"
 																	class="btn btn-hover btn-default btn-xs sendtocouch text-muted"
 																	title="Add to CouchPotato">
@@ -274,7 +274,7 @@
 															{/if}
 															{if !empty($cpurl) && !empty($cpapi)}
 																<span
-																	id="mvid{$result.imdbid}"
+																	id="imdb{$result.imdbid}"
 																	href="javascript:;"
 																	class="btn btn-hover btn-default btn-xs sendtocouch text-muted"
 																	title="Add to CouchPotato">

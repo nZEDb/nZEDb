@@ -50,7 +50,7 @@
 			{if $movie.tmdbid != ''}<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://www.themoviedb.org/movie/{$movie.tmdbid}" title="View at TMDb">TMDb</a>{/if}
 			{if !empty($cpurl) && !empty($cpapi)}
 				<a
-					id="mvid{$release.imdbid}"
+					id="imdb{$release.imdbid}"
 					href="javascript:;"
 					class="sendtocouch"
 					title="Add to CouchPotato">

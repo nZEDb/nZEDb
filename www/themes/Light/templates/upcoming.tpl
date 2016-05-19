@@ -29,7 +29,7 @@
 							<a class="rndbtnsml" target="_blank" href="{$site->dereferrer_link}http://trakt.tv/search/imdb/tt{$result->alternate_ids->imdb}/" name="trakt{$result->alternate_ids->imdb}" title="View trakt page">Trakt</a>
 							{if !empty($cpurl) && !empty($cpapi)}
 								<a
-									id="mvid{$result->alternate_ids->imdb}"
+									id="imdb{$result->alternate_ids->imdb}"
 									href="javascript:;"
 									class="rndbtnsml sendtocouch"
 									title="Add to CouchPotato">CouchPotato
