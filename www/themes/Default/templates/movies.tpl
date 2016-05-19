@@ -113,6 +113,7 @@
 								{if !empty($cpurl) && !empty($cpapi)}
 									<a
 										id="mvid{$result.imdbid}"
+										href="javascript:;"
 										class="rndbtn sendmovietocouch"
 										title="Add to CouchPotato">
 										Couch

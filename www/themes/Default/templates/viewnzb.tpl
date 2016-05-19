@@ -50,9 +50,10 @@
 			{if $movie.tmdbid != ''}<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://www.themoviedb.org/movie/{$movie.tmdbid}" title="View at TMDb">TMDb</a>{/if}
 			{if !empty($cpurl) && !empty($cpapi)}
 				<a
-						id="mvid{$release.imdbid}"
-						class="sendmovietocouch"
-						title="Add to CouchPotato">
+					id="mvid{$release.imdbid}"
+					href="javascript:;"
+					class="sendmovietocouch"
+					title="Add to CouchPotato">
 					<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
 				</a>
 			{/if}

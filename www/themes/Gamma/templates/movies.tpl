@@ -95,6 +95,7 @@
 							{if !empty($cpurl) && !empty($cpapi)}
 								<a
 										id="mvid{$result.imdbid}"
+										href="javascript:;"
 										class="sendmovietocouch"
 										title="Add to CouchPotato">
 									<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">

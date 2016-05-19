@@ -30,6 +30,7 @@
 							{if !empty($cpurl) && !empty($cpapi)}
 								<a
 									id="mvid{$result->alternate_ids->imdb}"
+									href="javascript:;"
 									class="rndbtnsml sendmovietocouch"
 									title="Add to CouchPotato">CouchPotato
 								</a>

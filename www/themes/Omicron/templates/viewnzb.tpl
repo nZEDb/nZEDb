@@ -242,6 +242,7 @@
 													{if !empty($cpurl) && !empty($cpapi)}
 														<button type="button"
 															id="mvid{$release.imdbid}"
+															href="javascript:;"
 															class="btn btn-primary btn-sm btn-info btn-transparent sendmovietocouch">
 															<i class="fa fa-bed"></i> Send to CouchPotato
 														</button>

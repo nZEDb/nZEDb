@@ -156,6 +156,7 @@
 															{/if}
 															{if !empty($cpurl) && !empty($cpapi)}
 																<span id="mvid{$result.imdbid}"
+																	  href="javascript:;"
 																	  class="btn btn-hover btn-default btn-xs sendmovietocouch text-muted"
 																	  title="Add to CouchPotato">
 																		<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
@@ -272,6 +273,7 @@
 															{/if}
 															{if !empty($cpurl) && !empty($cpapi)}
 																<span id="mvid{$result.imdbid}"
+																	  href="javascript:;"
 																	  class="btn btn-hover btn-default btn-xs sendmovietocouch text-muted"
 																	  title="Add to CouchPotato">
 																		<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">

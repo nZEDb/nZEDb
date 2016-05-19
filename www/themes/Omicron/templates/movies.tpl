@@ -156,8 +156,9 @@
 															{/if}
 															{if !empty($cpurl) && !empty($cpapi)}
 																<span
-																	id="guid{$mguid[$m@index]}"
-																	class="btn btn-hover btn-default btn-xs sendtocouch text-muted"
+																	id="mvid{$result.imdbid}"
+																	href="javascript:;"
+																	class="btn btn-hover btn-default btn-xs sendmovietocouch text-muted"
 																	title="Add to CouchPotato">
 																	<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
 																</span>
@@ -273,8 +274,9 @@
 															{/if}
 															{if !empty($cpurl) && !empty($cpapi)}
 																<span
-																	id="guid{$mguid[$m@index]}"
-																	class="btn btn-hover btn-default btn-xs sendtocouch text-muted"
+																	id="mvid{$result.imdbid}"
+																	href="javascript:;"
+																	class="btn btn-hover btn-default btn-xs sendmovietocouch text-muted"
 																	title="Add to CouchPotato">
 																	<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
 																</span>
