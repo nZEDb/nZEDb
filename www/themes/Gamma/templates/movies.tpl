@@ -92,6 +92,15 @@
 						<a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="name{$result.imdbid}" title="View movie info" class="rndbtn modal_imdb badge" rel="movie" >Cover</a>
 						<a class="rndbtn badge badge-trakt" target="_blank" href="{$site->dereferrer_link}http://trakt.tv/search/imdb/tt{$result.imdbid}/" name="trakt{$result.imdbid}" title="View trakt page">Trakt</a>
 						<a class="rndbtn badge badge-imdb" target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="imdb{$result.imdbid}" title="View imdb page">Imdb</a>
+							{if !empty($cpurl) && !empty($cpapi)}
+								<a
+										id="imdb{$result.imdbid}"
+										href="javascript:;"
+										class="sendtocouch"
+										title="Add to CouchPotato">
+									<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
+								</a>
+							{/if}
 						</div>
 					</div>
 				</div>
@@ -171,16 +180,6 @@
 									<li>
 										<a class="icon icon_sab fa fa-share" style="text-decoration: none; color: #008ab8;"  href="#" title="Send to queue"></a>
 									</li>
-									{/if}
-									{if !empty($cpurl) && !empty($cpapi)}
-										<li>
-											<a
-												id="imdb{$result.imdbid}"
-												class="sendtocouch"
-												title="Add to CouchPotato">
-												<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
-											</a>
-										</li>
 									{/if}
 								</ul>
 							</td>

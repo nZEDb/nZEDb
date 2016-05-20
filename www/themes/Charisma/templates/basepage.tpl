@@ -307,6 +307,20 @@
 			src="{$smarty.const.WWW_THEMES}/{$theme}/js/jquery.history.js"></script>
 	<!-- Functions with noty -->
 	<script type="text/javascript"
-			src="{$smarty.const.WWW_THEMES}/{$theme}/js/functions.js"></script>
+		src="{$smarty.const.WWW_THEMES}shared/js/functions.js"></script>
+	<!-- nZEDb default scripts, needed for stuff to work -->
+	<script type="text/javascript"
+		src="{$smarty.const.WWW_THEMES}/shared/js/jquery.colorbox-min.js"></script>
+	<script type="text/javascript"
+		src="{$smarty.const.WWW_THEMES}/shared/js/jquery.autosize-min.js"></script>
+	<script type="text/javascript"
+		src="{$smarty.const.WWW_THEMES}/shared/js/jquery.qtip2.js"></script>
+	<script type="text/javascript"
+		src="{$smarty.const.WWW_THEMES}/shared/js/sorttable.js"></script>
+	<!-- The HTML5 shim, for IE6-8 support of HTML5 elements -->
+	<!--[if lt IE 9]>
+	<script type="text/javascript"
+		src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
 	</body>
 </html>

@@ -234,16 +234,16 @@
 													</button>
 													{if isset($sabintegrated)}
 														<button type="button"
-																class="btn btn-primary btn-sm btn-transparent sabsend">
-														<i class="icon_sab fa fa-arrow-right"
-														   id="guid{$release.guid}"></i> Send to
+															class="btn btn-primary btn-sm btn-transparent sabsend">
+															<i class="icon_sab fa fa-arrow-right"
+															id="guid{$release.guid}"></i> Send to
 														Queue
 														</button>{/if}
 													{if !empty($cpurl) && !empty($cpapi)}
-														<button
-															type="button"
-															id="guid{$release.guid}"
-															class="btn btn-primary btn-sm btn-info btn-transparent couchsend">
+														<button type="button"
+															id="imdb{$release.imdbid}"
+															href="javascript:;"
+															class="btn btn-primary btn-sm btn-info btn-transparent sendtocouch">
 															<i class="fa fa-bed"></i> Send to CouchPotato
 														</button>
 													{/if}
