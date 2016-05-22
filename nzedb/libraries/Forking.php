@@ -519,6 +519,11 @@ class Forking extends \fork_daemon
 				$where = "r.proc_files = 0";
 				break;
 
+			case "uid":
+				$join = "STRAIGHT_JOIN release_unique ru ON ru.releases_id = r.id";
+				$where = "r.proc_uid = 0";
+				break;
+
 			case "par2":
 				$where = "r.proc_par2 = 0";
 				break;

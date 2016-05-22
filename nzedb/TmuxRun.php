@@ -181,6 +181,7 @@ class TmuxRun extends Tmux
 					{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/fixrelnames.php filename $log; \
 					{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/fixrelnames.php nfo $log; \
 					{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/fixrelnames.php par2 $log; \
+					{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/fixrelnames.php uid $log; \
 					{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/fixrelnames.php miscsorter $log; \
 					{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/fixrelnames.php predbft $log; date +\"{$this->_dateFormat}\"; \
 					{$runVar['commands']['_sleep']} {$runVar['settings']['fix_timer']}' 2>&1 1> /dev/null"

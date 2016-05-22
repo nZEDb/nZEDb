@@ -109,6 +109,12 @@ class ReleaseExtra
 						if (isset($track['Overall_bit_rate'])) {
 							$overallbitrate = $track['Overall_bit_rate'];
 						}
+						if (isset($track['Unique_ID'])) {
+							if(preg_match('/\(0x(?P<hash>[0-9a-f]{32})\)/i', $track['Unique_ID'], $matches)){
+								$uniqueid = $matches['hash'];
+								$this->addUID($releaseID, $uniqueid);
+							}
+						}
 					} else if ($track['@attributes']['type'] == 'Video') {
 						$videoduration = $videoformat = $videocodec = $videowidth = $videoheight = $videoaspect = $videoframerate = $videolibrary = '';
 						if (isset($track['Duration'])) {
@@ -208,6 +214,15 @@ class ReleaseExtra
 		if (!isset($ckid['releases_id'])) {
 			return $this->pdo->queryExec(sprintf('INSERT INTO release_subtitles (releases_id, subsid, subslanguage) VALUES (%d, %d, %s)', $releaseID, $subsID, $this->pdo->escapeString($subslanguage)));
 		}
+	}
+
+	/**
+	 * @param $releaseID
+	 * @param $uniqueid
+	 */
+	public function addUID($releaseID, $uniqueid)
+	{
+		$this->pdo->queryExec(sprintf("INSERT IGNORE INTO release_unique (releases_id, uniqueid) VALUES (%s, UNHEX('%s'))", $releaseID, $uniqueid ));
 	}
 
 	public function getFull($id)
