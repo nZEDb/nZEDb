@@ -146,6 +146,7 @@ class Forking extends \fork_daemon
 			case 'fixRelNames_filename':
 			case 'fixRelNames_md5':
 			case 'fixRelNames_par2':
+			case 'fixRelNames_uid':
 			case 'fixRelNames_miscsorter':
 			case 'fixRelNames_predbft':
 				$maxProcesses = $this->fixRelNamesMainMethod();
