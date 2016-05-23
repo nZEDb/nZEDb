@@ -222,7 +222,7 @@ class ReleaseExtra
 	 */
 	public function addUID($releaseID, $uniqueid)
 	{
-		$this->pdo->queryExec(sprintf("INSERT IGNORE INTO release_unique (releases_id, uniqueid) VALUES (%s, UNHEX('%s'))", $releaseID, $uniqueid ));
+		$this->pdo->queryExec(sprintf("INSERT IGNORE INTO release_unique (releases_id, uniqueid) VALUES (%s, UNHEX('%s'))", $releaseID, $uniqueid));
 	}
 
 	public function getFull($id)

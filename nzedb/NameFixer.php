@@ -383,6 +383,7 @@ class NameFixer
 	 * @param int     $cats 1: other categories, 2: all categories
 	 * @param         $nameStatus
 	 * @param         $show
+	 * @param string  $guidChar
 	 */
 	public function fixNamesWithMedia($time, $echo, $cats, $nameStatus, $show, $guidChar = '')
 	{
@@ -422,19 +423,15 @@ class NameFixer
 		}
 
 		$releases = $this->_getReleases($time, $cats, $query);
-
 		if ($releases instanceof \Traversable && $releases !== false) {
 			$total = $releases->rowCount();
-
 			if ($total > 0) {
 				$this->_totalReleases = $total;
 				if ($guid === '') {
 					echo $this->pdo->log->primary(number_format($total) . ' unique ids to process.');
 				}
-
 				foreach ($releases as $rel) {
 					$this->checked++;
-
 					$this->done = $this->matched = false;
 					$this->checkName($rel, $echo, $type, $nameStatus, $show, $preId);
 					$this->_echoRenamed($show);
