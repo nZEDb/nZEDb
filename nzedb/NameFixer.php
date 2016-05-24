@@ -404,27 +404,29 @@ class NameFixer
 					AND rel.predb_id < 1',
 				NZB::NZB_ADDED
 			);
-			$cats = 2;
 		} else {
 			$query = sprintf('
-					SELECT
-						rel.id AS releases_id, rel.size AS relsize, rel.group_id, rel.categories_id,
-						rel.name, rel.name AS textstring, rel.predb_id, rel.searchname, ru.releases_id,
-						HEX(ru.uniqueid) AS uid
-					FROM releases rel
-					INNER JOIN release_unique ru ON ru.releases_id = rel.id
-					WHERE (rel.isrenamed = %d OR rel.categories_id IN (%d, %d))
-					AND rel.proc_uid = %d
-					%s',
+				SELECT
+					rel.id AS releases_id, rel.size AS relsize, rel.group_id, rel.categories_id,
+					rel.name, rel.name AS textstring, rel.predb_id, rel.searchname, ru.releases_id,
+					HEX(ru.uniqueid) AS uid
+				FROM releases rel
+				INNER JOIN release_unique ru ON ru.releases_id = rel.id
+				WHERE (rel.isrenamed = %d OR rel.categories_id IN (%d, %d))
+				AND rel.proc_uid = %d
+				%s
+				ORDER BY r.id DESC
+				LIMIT %d',
 				self::IS_RENAMED_NONE,
 				Category::OTHER_MISC,
 				Category::OTHER_HASHED,
 				self::PROC_UID_NONE,
-				$guid
+				$guid,
+				$maxperrun
 			);
 		}
 
-		$releases = $this->_getReleases($time, $cats, $query, $maxperrun);
+		$releases = $this->pdo->queryDirect($query);
 		if ($releases instanceof \Traversable && $releases !== false) {
 			$total = $releases->rowCount();
 			if ($total > 0) {
