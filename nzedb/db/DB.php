@@ -682,6 +682,9 @@ class DB extends \PDO
 			return $data;
 		}
 
+		// Remove LIMIT and OFFSET from query to allow queryCalc usage with browse
+		$query = preg_replace('#(\s+LIMIT\s+\d+)?\s+OFFSET\s+\d+\s*$#i', '', $query);
+
 		if ($cache === true && $this->cacheEnabled === true) {
 			try {
 				$count = $this->cacheServer->get($this->cacheServer->createKey($query . 'count'));

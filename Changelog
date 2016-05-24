@@ -12,6 +12,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Fix: Revert concat cat query to INNER and add WHERE constraint to exclude parentid being NULL
 	Chg: Convert browse to use queryCalc method for cached counts to improve performance
 	Fix: preid still in use in browse templates causing Pre'd tags to not show up in site view
+	Fix: Make queryCalc strip out OFFSET/LIMIT tags from query before caching the SQL_CALC_FOUNDS_ROWS results
 2016-05-24 niel
 	Fix: Typoes in Changelog.
 	Fix: Error checking for fetching SQL versions.
