@@ -10,6 +10,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 2016-05-24 niel
 	Fix: Typoes in Changelog.
+	Fix: Error checking for fetching SQL versions.
 2016-05-19 bart39
 	Mrg: Proper CouchPotato implementation #2151 @DariusIII
 2016-05-17 niel
