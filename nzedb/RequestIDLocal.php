@@ -25,7 +25,7 @@ class RequestIDLocal extends RequestID
 		$query = (
 			'SELECT r.id, r.name, r.categories_id, r.reqidstatus, g.name AS groupname, g.id as gid
 			FROM releases r
-			INNER JOIN groups g ON r.group_id = g.id
+			LEFT JOIN groups g ON r.group_id = g.id
 			WHERE r.nzbstatus = 1
 			AND r.predb_id = 0
 			AND r.isrequestid = 1'
