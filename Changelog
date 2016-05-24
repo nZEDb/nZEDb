@@ -10,6 +10,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 2016-05-23 ruhllatio
 	Chg: Improve RequestID query times (and update_releases thread performance) on larger databases
+	Chg: Improve all Releases queries for larger databases by preserving join orders of smaller tables
 2016-05-19 bart39
 	Mrg: Proper CouchPotato implementation #2151 @DariusIII
 2016-05-17 niel
