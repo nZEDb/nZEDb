@@ -1604,18 +1604,21 @@ class NameFixer
 				AND ru.releases_id != {$release['releases_id']}
 				AND (r.predb_id > 0 OR r.anidbid > 0)"
 			);
-			$floor = floor((1 - $result['relsize'] / $release['relsize']) * 100);
-			if ($result !== false &&  $floor <= 5 && $floor >= -5) {
-				$this->updateRelease(
-					$release,
-					$result['searchname'],
-					$method = "uidCheck: Unique_ID",
-					$echo,
-					$type,
-					$namestatus,
-					$show,
-					$result['predb_id']
-				);
+
+			if ($result !== false) {
+				$floor = floor((1 - $result['relsize'] / $release['relsize']) * 100);
+				if ($floor <= 5 && $floor >= -5) {
+					$this->updateRelease(
+						$release,
+						$result['searchname'],
+						$method = "uidCheck: Unique_ID",
+						$echo,
+						$type,
+						$namestatus,
+						$show,
+						$result['predb_id']
+					);
+				}
 			} else {
 				$this->_updateSingleColumn('proc_uid', 1, $release['releases_id']);
 			}
