@@ -408,7 +408,7 @@ class NameFixer
 			$preId = true;
 		} else {
 			$query = sprintf('
-					SELECT rel.id AS releases_id, rel.group_id, rel.categories_id, rel.name, rel.name AS textstring, rel.predb_id, rel.searchname, ru.releases_id, HEX(ru.uniqueid) AS uid
+					SELECT rel.id AS releases_id, rel.size AS relsize, rel.group_id, rel.categories_id, rel.name, rel.name AS textstring, rel.predb_id, rel.searchname, ru.releases_id, HEX(ru.uniqueid) AS uid
 					FROM releases rel
 					INNER JOIN release_unique ru ON (ru.releases_id = rel.id)
 					WHERE (rel.isrenamed = %d OR rel.categories_id IN (%d, %d))
@@ -1594,7 +1594,7 @@ class NameFixer
 		if ($this->done === false && $this->relid !== $release["releases_id"]) {
 			$result = $this->pdo->queryExec(
 				sprintf('
-						SELECT r.id AS releases_id, r.name AS textstring, r.searchname AS searchname, r.predb_id, HEX(ru.uniqueid) AS uid
+						SELECT r.id AS releases_id, r.size AS relsize, r.name AS textstring, r.searchname AS searchname, r.predb_id, HEX(ru.uniqueid) AS uid
 						FROM releases r
 						INNER JOIN release_unique ru ON (ru.releases_id = r.id)
 						WHERE (r.isrenamed = %s OR r.categories_id NOT IN(%s)) AND r.predb_id > 0',
@@ -1603,7 +1603,10 @@ class NameFixer
 						)
 					);
 			foreach ($result as $rel) {
-				if ($rel['uid'] === $release['uid']) {
+				$percentage = $rel['relsize'] * (5/100);
+				$minSize = $rel['relsize'] - $percentage;
+				$maxSize = $rel['relsize'] + $percentage;
+				if ($rel['uid'] === $release['uid'] && ($minSize <= $release['relsize'] && $maxSize >= $release['relsize'])) {
 					$this->updateRelease($release, $rel['searchname'], $method = "uidCheck: Unique_ID", $echo, $type, $namestatus, $show, ($rel['predb_id'] > 0 ? $rel['predb_id'] : 0));
 				}
 			}
