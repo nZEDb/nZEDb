@@ -120,8 +120,8 @@ class Releases
 			sprintf(
 				'SELECT r.*, g.name AS group_name, c.title AS category_name
 				FROM releases r
-				INNER JOIN categories c ON c.id = r.categories_id
-				INNER JOIN groups g ON g.id = r.group_id
+				LEFT JOIN categories c ON c.id = r.categories_id
+				LEFT JOIN groups g ON g.id = r.group_id
 				WHERE r.nzbstatus = %d',
 				NZB::NZB_ADDED
 			), true, nZEDb_CACHE_EXPIRY_LONG
@@ -142,8 +142,8 @@ class Releases
 			sprintf(
 				"SELECT r.*, CONCAT(cp.title, ' > ', c.title) AS category_name
 				FROM releases r
-				INNER JOIN categories c ON c.id = r.categories_id
-				INNER JOIN categories cp ON cp.id = c.parentid
+				LEFT JOIN categories c ON c.id = r.categories_id
+				LEFT JOIN categories cp ON cp.id = c.parentid
 				WHERE r.nzbstatus = %d
 				ORDER BY r.postdate DESC %s",
 				NZB::NZB_ADDED,
@@ -220,8 +220,8 @@ class Releases
 					%s %s %s %s %s
 					ORDER BY %s %s %s
 				) r
-				INNER JOIN categories c ON c.id = r.categories_id
-				INNER JOIN categories cp ON cp.id = c.parentid
+				LEFT JOIN categories c ON c.id = r.categories_id
+				LEFT JOIN categories cp ON cp.id = c.parentid
 				LEFT OUTER JOIN videos v ON r.videos_id = v.id
 				LEFT OUTER JOIN tv_episodes tve ON r.tv_episodes_id = tve.id
 				LEFT OUTER JOIN video_data re ON re.releases_id = r.id
@@ -342,9 +342,9 @@ class Releases
 			sprintf(
 				"SELECT searchname, guid, groups.name AS gname, CONCAT(cp.title,'_',category.title) AS catName
 				FROM releases r
-				INNER JOIN categories ON r.categories_id = categories_id.id
-				INNER JOIN groups ON r.group_id = groups.id
-				INNER JOIN categories cp ON cp.id = categories.parentid
+				LEFT JOIN categories ON r.categories_id = categories_id.id
+				LEFT JOIN groups ON r.group_id = groups.id
+				LEFT JOIN categories cp ON cp.id = categories.parentid
 				WHERE r.nzbstatus = %d
 				%s %s %s",
 				NZB::NZB_ADDED,
@@ -422,7 +422,7 @@ class Releases
 		$groups = $this->pdo->query(
 			'SELECT DISTINCT g.id, g.name
 			FROM releases r
-			INNER JOIN groups g ON g.id = r.group_id'
+			LEFT JOIN groups g ON g.id = r.group_id'
 		);
 		$temp_array = [];
 
@@ -450,8 +450,10 @@ class Releases
 	public function getConcatenatedCategoryIDs()
 	{
 		if (is_null($this->concatenatedCategoryIDsCache)) {
-			$result = $this->pdo->query(
-				"SELECT CONCAT(cp.id, ',', c.id) AS category_ids FROM categories c INNER JOIN categories cp ON cp.id = c.parentid",
+			$result = $this->pdo->query("
+				SELECT CONCAT(cp.id, ',', c.id) AS category_ids
+				FROM categories c
+				LEFT JOIN categories cp ON cp.id = c.parentid",
 				true, nZEDb_CACHE_EXPIRY_LONG
 			);
 			if (isset($result[0]['category_ids'])) {
@@ -487,11 +489,11 @@ class Releases
 					df.failed AS failed
 				FROM releases r
 				LEFT OUTER JOIN video_data re ON re.releases_id = r.id
-				INNER JOIN groups ON groups.id = r.group_id
+				LEFT JOIN groups ON groups.id = r.group_id
 				LEFT OUTER JOIN release_nfos rn ON rn.releases_id = r.id
 				LEFT OUTER JOIN tv_episodes tve ON tve.videos_id = r.videos_id
-				INNER JOIN categories c ON c.id = r.categories_id
-				INNER JOIN categories cp ON cp.id = c.parentid
+				LEFT JOIN categories c ON c.id = r.categories_id
+				LEFT JOIN categories cp ON cp.id = c.parentid
 				LEFT OUTER JOIN dnzb_failures df ON df.release_id = r.id
 				WHERE %s %s
 				AND r.nzbstatus = %d
@@ -500,7 +502,6 @@ class Releases
 				%s
 				GROUP BY r.id
 				ORDER BY %s %s %s",
-
 				$this->getConcatenatedCategoryIDs(),
 				$this->uSQL($userShows, 'videos_id'),
 				(count($excludedCats) ? ' AND r.categories_id NOT IN (' . implode(',', $excludedCats) . ')' : ''),
@@ -909,9 +910,9 @@ class Releases
 			LEFT OUTER JOIN videos v ON r.videos_id = v.id
 			LEFT OUTER JOIN tv_episodes tve ON r.tv_episodes_id = tve.id
 			LEFT OUTER JOIN release_nfos rn ON rn.releases_id = r.id
-			INNER JOIN groups ON groups.id = r.group_id
-			INNER JOIN categories c ON c.id = r.categories_id
-			INNER JOIN categories cp ON cp.id = c.parentid
+			LEFT JOIN groups ON groups.id = r.group_id
+			LEFT JOIN categories c ON c.id = r.categories_id
+			LEFT JOIN categories cp ON cp.id = c.parentid
 			LEFT OUTER JOIN dnzb_failures df ON df.release_id = r.id
 			%s",
 			$this->getConcatenatedCategoryIDs(),
@@ -1008,11 +1009,11 @@ class Releases
 			LEFT OUTER JOIN videos v ON r.videos_id = v.id AND v.type = 0
 			LEFT OUTER JOIN tv_info tvi ON v.id = tvi.videos_id
 			LEFT OUTER JOIN tv_episodes tve ON r.tv_episodes_id = tve.id
-			INNER JOIN categories c ON c.id = r.categories_id
-			INNER JOIN groups ON groups.id = r.group_id
+			LEFT JOIN categories c ON c.id = r.categories_id
+			LEFT JOIN categories cp ON cp.id = c.parentid
+			LEFT JOIN groups ON groups.id = r.group_id
 			LEFT OUTER JOIN video_data re ON re.releases_id = r.id
 			LEFT OUTER JOIN release_nfos rn ON rn.releases_id = r.id
-			INNER JOIN categories cp ON cp.id = c.parentid
 			%s",
 			$this->getConcatenatedCategoryIDs(),
 			$whereSql
@@ -1065,11 +1066,11 @@ class Releases
 				rn.releases_id AS nfoid,
 				re.releases_id AS reid
 			FROM releases r
-			INNER JOIN categories c ON c.id = r.categories_id
-			INNER JOIN groups ON groups.id = r.group_id
+			LEFT JOIN categories c ON c.id = r.categories_id
+			LEFT JOIN groups ON groups.id = r.group_id
 			LEFT OUTER JOIN release_nfos rn ON rn.releases_id = r.id
 			LEFT OUTER JOIN releaseextrafull re ON re.releases_id = r.id
-			INNER JOIN categories cp ON cp.id = c.parentid
+			LEFT JOIN categories cp ON cp.id = c.parentid
 			%s",
 			$this->getConcatenatedCategoryIDs(),
 			$whereSql
@@ -1123,10 +1124,10 @@ class Releases
 				g.name AS group_name,
 				rn.releases_id AS nfoid
 			FROM releases r
-			INNER JOIN groups g ON g.id = r.group_id
-			INNER JOIN categories c ON c.id = r.categories_id
+			LEFT JOIN groups g ON g.id = r.group_id
+			LEFT JOIN categories c ON c.id = r.categories_id
 			LEFT OUTER JOIN release_nfos rn ON rn.releases_id = r.id
-			INNER JOIN categories cp ON cp.id = c.parentid
+			LEFT JOIN categories cp ON cp.id = c.parentid
 			%s",
 			$this->getConcatenatedCategoryIDs(),
 			$whereSql
@@ -1230,9 +1231,9 @@ class Releases
 				tvi.summary, tvi.image,
 				tve.title, tve.firstaired, tve.se_complete
 				FROM releases r
-			INNER JOIN groups g ON g.id = r.group_id
-			INNER JOIN categories c ON c.id = r.categories_id
-			INNER JOIN categories cp ON cp.id = c.parentid
+			LEFT JOIN groups g ON g.id = r.group_id
+			LEFT JOIN categories c ON c.id = r.categories_id
+			LEFT JOIN categories cp ON cp.id = c.parentid
 			LEFT OUTER JOIN videos v ON r.videos_id = v.id
 			LEFT OUTER JOIN tv_info tvi ON r.videos_id = tvi.videos_id
 			LEFT OUTER JOIN tv_episodes tve ON r.tv_episodes_id = tve.id
@@ -1298,9 +1299,9 @@ class Releases
 					CONCAT(cp.title, ' > ', c.title) AS category_name,
 					g.name AS group_name
 				FROM releases r
-				INNER JOIN groups g ON g.id = r.group_id
-				INNER JOIN categories c ON c.id = r.categories_id
-				INNER JOIN categories cp ON cp.id = c.parentid
+				LEFT JOIN groups g ON g.id = r.group_id
+				LEFT JOIN categories c ON c.id = r.categories_id
+				LEFT JOIN categories cp ON cp.id = c.parentid
 				INNER JOIN videos v ON r.videos_id = v.id
 				%s
 				WHERE r.categories_id BETWEEN %d AND %d
@@ -1364,7 +1365,7 @@ class Releases
 		$qry = sprintf('
 				SELECT r.*, g.name AS group_name
 				FROM releases r
-				INNER JOIN groups g ON g.id = r.group_id
+				LEFT JOIN groups g ON g.id = r.group_id
 				WHERE r.id = %d',
 				$id
 		);
@@ -1438,12 +1439,12 @@ class Releases
 	public function getRecentlyAdded()
 	{
 		return $this->pdo->query(
-			"SELECT CONCAT(cp.title, ' > ', category.title) AS title, COUNT(r.id) AS count
-			FROM categories
-			INNER JOIN categories cp ON cp.id = categories.parentid
-			INNER JOIN releases r ON r.categories_id = categories.id
+			"SELECT CONCAT(cp.title, ' > ', c.title) AS title, COUNT(r.id) AS count
+			FROM categories c
+			LEFT JOIN categories cp ON cp.id = c.parentid
+			INNER JOIN releases r ON r.categories_id = c.id
 			WHERE r.adddate > NOW() - INTERVAL 1 WEEK
-			GROUP BY CONCAT(cp.title, ' > ', categories.title)
+			GROUP BY CONCAT(cp.title, ' > ', c.title)
 			ORDER BY count DESC", true, nZEDb_CACHE_EXPIRY_MEDIUM
 		);
 	}
