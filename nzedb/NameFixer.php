@@ -1614,6 +1614,8 @@ class NameFixer
 					$show,
 					$result['predb_id']
 				);
+			} else {
+				$this->_updateSingleColumn('proc_uid', 1);
 			}
 		}
 	}
