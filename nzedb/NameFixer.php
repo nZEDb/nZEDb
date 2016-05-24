@@ -1617,7 +1617,7 @@ class NameFixer
 					$result['predb_id']
 				);
 			} else {
-				$this->_updateSingleColumn('proc_uid', 1, $release['releases_id']);r
+				$this->_updateSingleColumn('proc_uid', 1, $release['releases_id']);
 			}
 		}
 	}
