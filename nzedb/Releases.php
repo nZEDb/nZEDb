@@ -453,7 +453,8 @@ class Releases
 			$result = $this->pdo->query("
 				SELECT CONCAT(cp.id, ',', c.id) AS category_ids
 				FROM categories c
-				INNER JOIN categories cp ON cp.id = c.parentid",
+				LEFT JOIN categories cp ON cp.id = c.parentid
+				WHERE c.parentid IS NOT NULL",
 				true, nZEDb_CACHE_EXPIRY_LONG
 			);
 			if (isset($result[0]['category_ids'])) {
