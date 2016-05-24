@@ -415,7 +415,7 @@ class NameFixer
 				WHERE (rel.isrenamed = %d OR rel.categories_id IN (%d, %d))
 				AND rel.proc_uid = %d
 				%s
-				ORDER BY r.id DESC
+				ORDER BY rel.id DESC
 				LIMIT %d',
 				self::IS_RENAMED_NONE,
 				Category::OTHER_MISC,
@@ -1617,7 +1617,7 @@ class NameFixer
 					$result['predb_id']
 				);
 			} else {
-				$this->_updateSingleColumn('proc_uid', 1, $release['releases_id']);
+				$this->_updateSingleColumn('proc_uid', 1, $release['releases_id']);r
 			}
 		}
 	}
