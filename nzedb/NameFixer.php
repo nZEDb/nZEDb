@@ -383,9 +383,10 @@ class NameFixer
 	 * @param int     $cats 1: other categories, 2: all categories
 	 * @param         $nameStatus
 	 * @param         $show
+	 * @param int     $maxperrun the maximum number of releases to process per thread
 	 * @param string  $guidChar
 	 */
-	public function fixNamesWithMedia($time, $echo, $cats, $nameStatus, $show, $guidChar = '')
+	public function fixNamesWithMedia($time, $echo, $cats, $nameStatus, $show, $maxperrun, $guidChar = '')
 	{
 		$type = 'UID, ';
 		$guid = ($guidChar === '') ? '' : ('AND rel.leftguid = '. $this->pdo->escapeString($guidChar));
@@ -423,7 +424,7 @@ class NameFixer
 			);
 		}
 
-		$releases = $this->_getReleases($time, $cats, $query);
+		$releases = $this->_getReleases($time, $cats, $query, $maxperrun);
 		if ($releases instanceof \Traversable && $releases !== false) {
 			$total = $releases->rowCount();
 			if ($total > 0) {
