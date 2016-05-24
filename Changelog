@@ -8,6 +8,9 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+2016-05-24 niel
+	Fix: Typoes in Changelog.
+	Fix: Error checking for fetching SQL versions.
 2016-05-23 ruhllatio
 	Chg: Improve RequestID query times (and update_releases thread performance) on larger databases
 	Chg: Improve all Releases queries for larger databases by preserving join orders of smaller tables
@@ -32,7 +35,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 2016-05-13 ruhllatio
 	Fix: PostProcess Additional tmux query not accurate with PP add queue
 2016-05-12 niel
-	Add: Reporting oupt for update git,db commands.
+	Add: Reporting output for update git, db commands.
 2016-05-12 ruhllatio
 	Fix: Browse ordering wrong due to added minSize push
 	Mrg: PR Add leftguid column to releases to improve threading work queries #2144
