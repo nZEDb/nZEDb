@@ -1603,7 +1603,7 @@ class NameFixer
 				SELECT r.id AS releases_id, r.size AS relsize, r.name AS textstring, r.searchname, r.predb_id
 				FROM release_unique ru
 				LEFT JOIN releases r ON ru.releases_id = r.id
-				WHERE ru.uniqueid = UNHEX('{$release['uid']}')
+				WHERE ru.uniqueid = UNHEX({$this->pdo->escapeString($release['uid'])})
 				AND ru.releases_id != {$release['releases_id']}
 				AND ROUND((r.size - {$release['relsize']}) / r.size * 100, 0) BETWEEN -5 AND 5
 				AND (r.predb_id > 0 OR r.anidbid > 0)"
