@@ -60,15 +60,14 @@
 								name="trakt{$result.imdbid}"
 								title="View trakt page"
 							><img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/trakt.png"></a>
-							{if $cpurl != '' && $cpapi != ''}
+							{if !empty($cpurl) && !empty($cpapi)}
 								<a
-									class="sendtocouch"
-									target="blackhole"
+									id="imdb{$result.imdbid}"
 									href="javascript:;"
-									rel="{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}"
-									name="CP{$result.imdbid}"
-									title="Add to CouchPotato"
-								><img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png"></a>
+									class="sendtocouch"
+									title="Add to CouchPotato">
+									<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
+								</a>
 							{/if}
 						</div>
 						<hr>

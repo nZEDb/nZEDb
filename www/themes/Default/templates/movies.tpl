@@ -110,12 +110,12 @@
 									name="trakt{$result.imdbid}" title="View trakt page">
 									Trakt
 								</a>
-								{if $cpurl != '' && $cpapi != ''}
+								{if !empty($cpurl) && !empty($cpapi)}
 									<a
-										class="rndbtn sendtocouch" target="blackhole"
+										id="imdb{$result.imdbid}"
 										href="javascript:;"
-										rel="{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}"
-										name="CP{$result.imdbid}" title="Add to CouchPotato">
+										class="rndbtn sendtocouch"
+										title="Add to CouchPotato">
 										Couch
 									</a>
 								{/if}

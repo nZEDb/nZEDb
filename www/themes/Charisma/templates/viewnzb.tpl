@@ -239,7 +239,14 @@
 														   id="guid{$release.guid}"></i> Send to
 														Queue
 														</button>{/if}
-													<p id="demo"></p>
+													{if !empty($cpurl) && !empty($cpapi)}
+														<button type="button"
+																id="imdb{$release.imdbid}"
+																href="javascript:;"
+																class="btn btn-primary btn-sm btn-info btn-transparent sendtocouch">
+																<i class="fa fa-bed"></i> Send to CouchPotato
+														</button>
+													{/if}
 												</div>
 											</div>
 											<div class="col-md-9 small-gutter-left">

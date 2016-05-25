@@ -123,10 +123,14 @@ class Misc
 		$defaults = [
 			'dir'   => false,
 			'ext'   => '',
+			'file'	=> true,
 			'path'  => '',
 			'regex' => '',
 		];
 		$options += $defaults;
+		if (!$options['dir'] && !$options['file']) {
+			return null;
+		}
 
 		// Replace windows style path separators with unix style.
 		$iterator = new \FilesystemIterator(
@@ -146,6 +150,8 @@ class Misc
 					break;
 				case (empty($options['regex']) || !preg_match($options['regex'], $file)):
 					break;
+				case (!$options['file'] && $fileInfo->isFile()):
+					break;
 				default:
 					$files[] = $file;
 			}
@@ -154,7 +160,25 @@ class Misc
 		return $files;
 	}
 
-	/**
+	public static function getThemesList()
+	{
+		$themes = scandir(nZEDb_THEMES);
+		$themelist[] = 'None';
+		foreach ($themes as $theme) {
+			if (strpos($theme, ".") === false &&
+				is_dir(nZEDb_THEMES . $theme) &&
+				ucfirst($theme) === $theme
+			) {
+				$themelist[] = $theme;
+			}
+		}
+
+		sort($themelist);
+		return $themelist;
+	}
+
+
+/**
 	 * Use cURL To download a web page into a string.
 	 *
 	 * @param array $options See details below.

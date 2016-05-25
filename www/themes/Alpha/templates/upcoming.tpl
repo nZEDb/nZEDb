@@ -40,26 +40,30 @@
 										title="View Rotten Tomatoes Details"><img
 											src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/rotten.png"></a>
 							{/if}
-							<a
+							{if !empty($result->alternate_ids)}
+								<a
 									target="_blank"
 									href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result->alternate_ids->imdb}/"
 									name="imdb{$result->alternate_ids->imdb}"
 									title="View imdb page"><img
-									src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/imdb.png"></a>
-							<a
+									src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/imdb.png">
+								</a>
+								<a
 									target="_blank"
 									href="{$site->dereferrer_link}http://trakt.tv/search/imdb/tt{$result->alternate_ids->imdb}/"
 									name="trakt{$result->alternate_ids->imdb}"
 									title="View trakt page"><img
-									src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/trakt.png"></a>
-							{if $cpurl != '' && $cpapi != ''}
-								<a
-										class="sendtocouch"
-										target="blackhole"
-										href="javascript:;"
-										rel="{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result->alternate_ids->imdb}&title={$result->title}" name="CP{$result->alternate_ids->imdb}" title="Add to CouchPotato"><img
-											src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
+									src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/trakt.png">
 								</a>
+								{if !empty($cpurl) && !empty($cpapi)}
+									<a
+										id="imdb{$result->alternate_ids->imdb}"
+										href="javascript:;"
+										class="sendtocouch"
+										title="Add to CouchPotato">
+										<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
+									</a>
+								{/if}
 							{/if}
 						</div>
 					</div>

@@ -304,7 +304,7 @@
 		src="{$smarty.const.WWW_THEMES}/{$theme}/js/charisma.js"></script>
 	<!-- Functions with noty -->
 	<script type="text/javascript"
-		src="{$smarty.const.WWW_THEMES}/{$theme}/js/functions.js"></script>
+		src="{$smarty.const.WWW_THEMES}shared/js/functions.js"></script>
 	<!-- nZEDb default scripts, needed for stuff to work -->
 	<script type="text/javascript"
 		src="{$smarty.const.WWW_THEMES}/shared/js/jquery.colorbox-min.js"></script>

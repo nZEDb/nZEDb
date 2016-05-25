@@ -1,9 +1,13 @@
 <?php
 namespace nzedb;
 
-use nzedb\Category;
 use nzedb\db\Settings;
 
+/**
+ * Class Tmux
+ *
+ * @package nzedb
+ */
 class Tmux
 {
 	/**
@@ -11,18 +15,34 @@ class Tmux
 	 */
 	public $pdo;
 
+	/**
+	 * @var
+	 */
 	public $tmux_session;
 
+	/**
+	 * Tmux constructor.
+	 *
+	 * @param Settings|null $pdo
+	 */
 	function __construct(Settings $pdo = null)
 	{
 		$this->pdo = (empty($pdo) ? new Settings() : $pdo);
 	}
 
+	/**
+	 * @return string
+	 */
 	public function version()
 	{
 		return $this->pdo->version();
 	}
 
+	/**
+	 * @param $form
+	 *
+	 * @return \stdClass
+	 */
 	public function update($form)
 	{
 		$pdo = $this->pdo;
@@ -42,6 +62,11 @@ class Tmux
 		return $tmux;
 	}
 
+	/**
+	 * @param string $setting
+	 *
+	 * @return bool|\stdClass
+	 */
 	public function get($setting = '')
 	{
 		$pdo = $this->pdo;
@@ -56,6 +81,11 @@ class Tmux
 		return $this->rows2Object($rows);
 	}
 
+	/**
+	 * @param $constants
+	 *
+	 * @return mixed
+	 */
 	public function getConnectionsInfo($constants)
 	{
 		$runVar['connections']['port_a'] = $runVar['connections']['host_a'] = $runVar['connections']['ip_a'] = false;
@@ -104,6 +134,12 @@ class Tmux
 		return $runVar['connections'];
 	}
 
+	/**
+	 * @param $which
+	 * @param $connections
+	 *
+	 * @return mixed
+	 */
 	public function getUSPConnections($which, $connections)
 	{
 
@@ -139,6 +175,11 @@ class Tmux
 		return ($runVar['conncounts']);
 	}
 
+	/**
+	 * @param $constants
+	 *
+	 * @return array
+	 */
 	public function getListOfPanes($constants)
 	{
 		$panes = ['zero' => '', 'one' => '', 'two' => ''];
@@ -169,6 +210,9 @@ class Tmux
 		return $panes;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getConstantSettings()
 	{
 		$tmuxstr = 'SELECT value FROM tmux WHERE setting =';
@@ -190,6 +234,9 @@ class Tmux
 		return $sql;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getMonitorSettings()
 	{
 		$tmuxstr = 'SELECT value FROM tmux WHERE setting =';
@@ -254,13 +301,20 @@ class Tmux
 					(%2\$s 'tmpunrarpath') AS tmpunrar,
 					(%2\$s 'compressedheaders') AS compressed,
 					(%2\$s 'book_reqids') AS book_reqids,
-					(%2\$s 'request_hours') AS request_hours",
+					(%2\$s 'request_hours') AS request_hours,
+					(%2\$s 'maxsizetopostprocess') AS maxsize_pp,
+					(%2\$s 'minsizetopostprocess') AS minsize_pp",
 					$tmuxstr,
 					$settstr
 		);
 		return $sql;
 	}
 
+	/**
+	 * @param $rows
+	 *
+	 * @return \stdClass
+	 */
 	public function rows2Object($rows)
 	{
 		$obj = new \stdClass;
@@ -272,6 +326,11 @@ class Tmux
 		return $obj;
 	}
 
+	/**
+	 * @param $row
+	 *
+	 * @return \stdClass
+	 */
 	public function row2Object($row)
 	{
 		$obj = new \stdClass;
@@ -282,6 +341,12 @@ class Tmux
 		return $obj;
 	}
 
+	/**
+	 * @param $setting
+	 * @param $value
+	 *
+	 * @return bool|\PDOStatement
+	 */
 	public function updateItem($setting, $value)
 	{
 		$pdo = $this->pdo;
@@ -290,6 +355,9 @@ class Tmux
 	}
 
 	//get microtime
+	/**
+	 * @return float
+	 */
 	public function microtime_float()
 	{
 		list($usec, $sec) = explode(" ", microtime());
@@ -321,10 +389,15 @@ class Tmux
 		return (round($bytes, 2) . " " . $suffix);
 	}
 
+	/**
+	 * @param $pane
+	 *
+	 * @return string
+	 */
 	public function writelog($pane)
 	{
 		$path = nZEDb_LOGS;
-		$getdate = gmDate("Ymd");
+		$getdate = gmdate("Ymd");
 		$tmux = $this->get();
 		$logs = (isset($tmux->write_logs)) ? $tmux->write_logs : 0;
 		if ($logs == 1) {
@@ -334,6 +407,13 @@ class Tmux
 		}
 	}
 
+	/**
+	 * @param $colors_start
+	 * @param $colors_end
+	 * @param $colors_exc
+	 *
+	 * @return int
+	 */
 	public function get_color($colors_start, $colors_end, $colors_exc)
 	{
 		$exception = str_replace(".", ".", $colors_exc);
@@ -351,6 +431,12 @@ class Tmux
 	}
 
 	// Returns random bool, weighted by $chance
+	/**
+	 * @param     $loop
+	 * @param int $chance
+	 *
+	 * @return bool
+	 */
 	public function rand_bool($loop, $chance = 60)
 	{
 		$tmux = $this->get();
@@ -362,6 +448,11 @@ class Tmux
 		}
 	}
 
+	/**
+	 * @param $_time
+	 *
+	 * @return string
+	 */
 	public function relativeTime($_time)
 	{
 		$d = [];
@@ -388,13 +479,28 @@ class Tmux
 		return $return;
 	}
 
+	/**
+	 * @param $cmd
+	 *
+	 * @return bool
+	 */
 	public function command_exist($cmd)
 	{
 		$returnVal = shell_exec("which $cmd 2>/dev/null");
 		return (empty($returnVal) ? false : true);
 	}
 
-	public function proc_query($qry, $bookreqids, $request_hours, $db_name)
+	/**
+	 * @param        $qry
+	 * @param        $bookreqids
+	 * @param int    $request_hours
+	 * @param string $db_name
+	 * @param string $ppmax
+	 * @param string $ppmin
+	 *
+	 * @return bool|string
+	 */
+	public function proc_query($qry, $bookreqids, $request_hours, $db_name, $ppmax = '', $ppmin = '')
 	{
 		switch ((int)$qry) {
 			case 1:
@@ -435,11 +541,24 @@ class Tmux
 					$request_hours);
 
 			case 2:
+				$ppminString = $ppmaxString = '';
+				if (is_numeric($ppmax) && !empty($ppmax)) {
+					$ppmax *= 1073741824;
+					$ppmaxString = "AND r.size < {$ppmax}";
+				}
+				if (is_numeric($ppmin) && !empty($ppmin)) {
+					$ppmin *= 1048576;
+					$ppminString = "AND r.size > {$ppmin}";
+				}
 				return "SELECT
 					(SELECT COUNT(r.id) FROM releases r
-						INNER JOIN categories c ON c.id = r.categories_id
+						LEFT JOIN categories c ON c.id = r.categories_id
 						WHERE r.nzbstatus = 1
-						AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0
+						AND r.passwordstatus BETWEEN -6 AND -1
+						AND r.haspreview = -1
+						{$ppminString}
+						{$ppmaxString}
+						AND c.disablepreview = 0
 					) AS work,
 					(SELECT COUNT(id) FROM groups WHERE active = 1) AS active_groups,
 					(SELECT COUNT(id) FROM groups WHERE name IS NOT NULL) AS all_groups";
@@ -486,7 +605,7 @@ class Tmux
 	/**
 	 * Check if Tmux is running, if it is, stop it.
 	 *
-	 * @return bool		true if scripts were running, false otherwise.
+	 * @return bool true if scripts were running, false otherwise.
 	 * @access public
 	 */
 	public function stopIfRunning()
@@ -501,6 +620,9 @@ class Tmux
 		return false;
 	}
 
+	/**
+	 * @return bool|\PDOStatement
+	 */
 	public function startRunning()
 	{
 		if (!$this->isRunning()) {

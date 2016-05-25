@@ -359,7 +359,13 @@
 						<a id="guid{$release.guid}" class="icon icon_sabNZBinfo fa fa-share"  style="text-decoration: none; color: #008ab8;" href="#" title="Send to queue"></a>
 					{/if}
 					{if !empty($cpurl) && !empty($cpapi)}
-						<a class="sendtocouch fa fa-bed" target="blackhole" href="javascript:;" rel="{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$release.imdbid}&title={$movie.title}" name="CP{$release.imdbid}" title="Add to CouchPotato"></a>
+						<a
+								id="imdb{$release.imdbid}"
+								href="javascript:;"
+								class="sendtocouch"
+								title="Add to CouchPotato">
+							<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
+						</a>
 					{/if}
 				</dd>
 				<dt>Similar</dt>
