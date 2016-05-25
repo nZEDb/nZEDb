@@ -244,7 +244,7 @@
 						{if $result.nfoid > 0}
 						<a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}" title="View Nfo" class="modal_nfo badge halffade" rel="nfo">Nfo</a>
 						{/if}
-						{if $result.preid > 0}
+						{if $result.predb_id > 0}
 						<span class="preinfo badge halffade" title="{$result.searchname}">Pre'd {$result.ctime|timeago}</span>
 						{/if}
 						{if $result.imdbid > 0}
