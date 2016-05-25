@@ -1600,7 +1600,7 @@ class NameFixer
 			$result = $this->pdo->queryOneRow("
 				SELECT r.id AS releases_id, r.size AS relsize, r.name AS textstring, r.searchname, r.predb_id
 				FROM release_unique ru
-				LEFT JOIN releases r ON ru.releases_id = r.id
+				STRAIGHT_JOIN releases r ON ru.releases_id = r.id
 				WHERE ru.uniqueid = UNHEX({$this->pdo->escapeString($release['uid'])})
 				AND ru.releases_id != {$release['releases_id']}
 				AND ROUND((CAST(r.size AS SIGNED) - {$release['relsize']}) / CAST(r.size AS SIGNED) * 100, 0) BETWEEN -5 AND 5
