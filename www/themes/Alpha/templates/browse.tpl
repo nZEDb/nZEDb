@@ -162,10 +162,10 @@
 									title="{$result.guid}"
 								><i class="icon-list-alt"></i></span>
 							{/if}
-							{if $result.preid > 0}
+							{if $result.predb_id > 0}
 								<span
 									class="label label-default preinfo rndbtn"
-									title="{$result.preid}"
+									title="{$result.predb_id}"
 								><i class="icon-eye-open"></i></span>
 							{/if}
 							{if $result.group_name != ""}
