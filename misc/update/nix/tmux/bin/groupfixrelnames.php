@@ -88,23 +88,25 @@ if (!isset($argv[1])) {
 			}
 			break;
 		case $pieces[0] === 'uid' && isset($guidChar) && isset($maxperrun) && is_numeric($maxperrun):
-			$releases = $this->pdo->queryDirect('
-				SELECT
-					r.id AS releases_id, r.size AS relsize, r.group_id, r.categories_id,
-					r.name, r.name AS textstring, r.predb_id, r.searchname, ru.releases_id,
-					HEX(ru.uniqueid) AS uid
-				FROM releases r
-				LEFT JOIN release_unique ru ON ru.releases_id = r.id
-				WHERE ru.releases_id IS NOT NULL
-				AND r.leftguid = %s
-				AND r.nzbstatus = 1
-				AND r.predb_id = 0
-				AND r.proc_uid = %d
-				ORDER BY r.id DESC
-				LIMIT %d',
-				$pdo->escapeString($guidChar),
-				$namefixer::PROC_UID_NONE,
-				$maxperrun
+			$releases = $pdo->queryDirect(
+				sprintf('
+					SELECT
+						r.id AS releases_id, r.size AS relsize, r.group_id, r.categories_id,
+						r.name, r.name AS textstring, r.predb_id, r.searchname, ru.releases_id,
+						HEX(ru.uniqueid) AS uid
+					FROM releases r
+					LEFT JOIN release_unique ru ON ru.releases_id = r.id
+					WHERE ru.releases_id IS NOT NULL
+					AND r.leftguid = %s
+					AND r.nzbstatus = 1
+					AND r.predb_id = 0
+					AND r.proc_uid = %d
+					ORDER BY r.id DESC
+					LIMIT %d',
+					$pdo->escapeString($guidChar),
+					$namefixer::PROC_UID_NONE,
+					$maxperrun
+				)
 			);
 			if ($releases instanceof \Traversable) {
 				foreach ($releases as $release) {
