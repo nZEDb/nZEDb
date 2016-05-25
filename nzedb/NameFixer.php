@@ -383,8 +383,6 @@ class NameFixer
 	 * @param int     $cats 1: other categories, 2: all categories
 	 * @param         $nameStatus
 	 * @param         $show
-	 * @param int     $maxperrun the maximum number of releases to process per thread
-	 * @param string  $guidChar
 	 */
 	public function fixNamesWithMedia($time, $echo, $cats, $nameStatus, $show)
 	{
@@ -412,7 +410,7 @@ class NameFixer
 					rel.name, rel.name AS textstring, rel.predb_id, rel.searchname, ru.releases_id,
 					HEX(ru.uniqueid) AS uid
 				FROM releases rel
-				LEFT JOIN JOIN release_unique ru ON ru.releases_id = rel.id
+				LEFT JOIN release_unique ru ON ru.releases_id = rel.id
 				WHERE ru.releases_id IS NOT NULL
 				AND rel.nzbstatus = %d
 				AND rel.isrenamed = 0
@@ -843,7 +841,7 @@ class NameFixer
 						$this->consoletools->overWritePrimary("Renamed Releases: [" . number_format($counted) . "] " . $this->consoletools->percentString(++$counter, $total));
 					}
 				}
-				echo $this->pdo->log->header("\nRenamed " . number_format($counted) . " releases in " . $this->consoletools->convertTime(TIME() - $timestart) . ".");
+				echo $this->pdo->log->header("\nRenamed " . number_format($counted) . " releases in " . $this->consoletools->convertTime(time() - $timestart) . ".");
 			} else {
 				echo $this->pdo->log->info("\nNothing to do.");
 			}
@@ -892,6 +890,10 @@ class NameFixer
 
 	/**
 	 * Cleans file names for PreDB Match
+	 *
+	 * @param string $fileName
+	 *
+	 * @return string
 	 */
 	protected function _cleanMatchFiles($fileName = '')
 	{
@@ -929,6 +931,7 @@ class NameFixer
 			}
 			return trim($this->_fileName);
 		}
+		return '';
 	}
 
 	/**
@@ -936,9 +939,9 @@ class NameFixer
 	 *
 	 * @param string $hash
 	 * @param $release
+	 * @param bool $echo
 	 * @param $namestatus
-	 * @param boolean $echooutput
-	 * @param $show
+	 * @param int $show
 	 *
 	 * @return int
 	 */
@@ -1587,12 +1590,13 @@ class NameFixer
 	/**
 	 * Look for a name based on mediainfo xml Unique_ID.
 	 *
-	 * @param         $release
-	 * @param         $release
-	 * @param boolean $echo
-	 * @param string  $type
-	 * @param         $namestatus
-	 * @param         $show
+	 * @param array   $release The release to be matched
+	 * @param boolean $echo Should we show CLI output
+	 * @param string  $type The rename type
+	 * @param int     $namestatus Should we rename the release if match is found
+	 * @param int     $show Should we show the rename results
+	 *
+	 * @return bool Whether or not we matched the release
 	 */
 	public function uidCheck($release, $echo, $type, $namestatus, $show)
 	{
@@ -1619,10 +1623,9 @@ class NameFixer
 					$result['predb_id']
 				);
 				return true;
-			} else {
-				$this->_updateSingleColumn('proc_uid', 1, $release['releases_id']);
-				return false;
 			}
 		}
+		$this->_updateSingleColumn('proc_uid', 1, $release['releases_id']);
+		return false;
 	}
 }
