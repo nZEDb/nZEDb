@@ -416,7 +416,7 @@ class NameFixer
 				LEFT JOIN release_unique ru ON ru.releases_id = rel.id
 				WHERE ru.releases_id IS NOT NULL
 				AND rel.nzbstatus = %d
-				AND rel.isrenamed = 0
+				AND rel.isrenamed = %d
 				AND rel.categories_id IN (%d, %d)
 				AND rel.proc_uid = %d',
 				NZB::NZB_ADDED,
