@@ -397,11 +397,14 @@ class NameFixer
 		// Only select releases we haven't checked here before
 		if ($cats === 3) {
 			$query = sprintf('
-					SELECT rel.id AS releases_id, rel.name AS textstring
-					FROM releases rel
-					INNER JOIN release_unique ru ON ru.releases_id = rel.id
-					WHERE rel.nzbstatus = %d
-					AND rel.predb_id < 1',
+				SELECT
+					rel.id AS releases_id, rel.size AS relsize, rel.group_id, rel.categories_id,
+					rel.name, rel.name AS textstring, rel.predb_id, rel.searchname, ru.releases_id,
+					HEX(ru.uniqueid) AS uid
+				FROM releases rel
+				INNER JOIN release_unique ru ON ru.releases_id = rel.id
+				WHERE rel.nzbstatus = %d
+				AND rel.predb_id < 1',
 				NZB::NZB_ADDED
 			);
 		} else {
@@ -1602,23 +1605,21 @@ class NameFixer
 				LEFT JOIN releases r ON ru.releases_id = r.id
 				WHERE ru.uniqueid = UNHEX('{$release['uid']}')
 				AND ru.releases_id != {$release['releases_id']}
+				AND ROUND((r.size - {$release['relsize']}) / r.size * 100, 0) BETWEEN -5 AND 5
 				AND (r.predb_id > 0 OR r.anidbid > 0)"
 			);
 
 			if ($result !== false) {
-				$floor = floor((1 - $result['relsize'] / $release['relsize']) * 100);
-				if ($floor <= 5 && $floor >= -5) {
-					$this->updateRelease(
-						$release,
-						$result['searchname'],
-						$method = "uidCheck: Unique_ID",
-						$echo,
-						$type,
-						$namestatus,
-						$show,
-						$result['predb_id']
-					);
-				}
+				$this->updateRelease(
+					$release,
+					$result['searchname'],
+					$method = "uidCheck: Unique_ID",
+					$echo,
+					$type,
+					$namestatus,
+					$show,
+					$result['predb_id']
+				);
 			} else {
 				$this->_updateSingleColumn('proc_uid', 1, $release['releases_id']);
 			}
