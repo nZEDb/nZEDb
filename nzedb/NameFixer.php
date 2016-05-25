@@ -418,8 +418,7 @@ class NameFixer
 				AND rel.nzbstatus = %d
 				AND rel.isrenamed = 0
 				AND rel.categories_id IN (%d, %d)
-				AND rel.proc_uid = %d
-				%s',
+				AND rel.proc_uid = %d',
 				NZB::NZB_ADDED,
 				self::IS_RENAMED_NONE,
 				Category::OTHER_MISC,
@@ -1615,7 +1614,7 @@ class NameFixer
 
 			if ($result instanceof \Traversable) {
 				foreach ($result AS $res) {
-					$floor = round(($res['relsize'] - $release['relsize']) / $res['relsize'] * 100, 1);
+					$floor = round(($res['relsize'] - $release['relsize']) / $res['relsize'] * 100, 0);
 					if ($floor >= -5 && $floor <= 5) {
 						$this->updateRelease(
 							$release,
@@ -1632,7 +1631,7 @@ class NameFixer
 				}
 			}
 		}
-		$this->_updateSingleColumn('proc_uid', 1, $release['releases_id']);
+		$this->_updateSingleColumn('proc_uid', self::PROC_UID_DONE, $release['releases_id']);
 		return false;
 	}
 }
