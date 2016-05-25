@@ -1605,7 +1605,7 @@ class NameFixer
 				LEFT JOIN releases r ON ru.releases_id = r.id
 				WHERE ru.uniqueid = UNHEX({$this->pdo->escapeString($release['uid'])})
 				AND ru.releases_id != {$release['releases_id']}
-				AND ROUND((CAST(r.size AS SIGNED) - {$release['relsize']}) / r.size * 100, 0) BETWEEN -5 AND 5
+				AND ROUND((CAST(r.size AS SIGNED) - {$release['relsize']}) / (CAST(r.size AS SIGNED) * 100, 0) BETWEEN -5 AND 5
 				AND (r.predb_id > 0 OR r.anidbid > 0)"
 			);
 
