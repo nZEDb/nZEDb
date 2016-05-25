@@ -393,7 +393,10 @@ class NameFixer
 		// Re-check all releases we haven't matched to a PreDB
 		if ($cats === 3) {
 			$query = sprintf('
-				SELECT rel.id AS releases_id, rel.name AS textstring
+				SELECT
+					rel.id AS releases_id, rel.size AS relsize, rel.group_id, rel.categories_id,
+					rel.name, rel.name AS textstring, rel.predb_id, rel.searchname,
+					HEX(ru.uniqueid) AS uid
 				FROM releases rel
 				LEFT JOIN release_unique ru ON ru.releases_id = rel.id
 				WHERE ru.releases_id IS NOT NULL
@@ -407,7 +410,7 @@ class NameFixer
 			$query = sprintf('
 				SELECT
 					rel.id AS releases_id, rel.size AS relsize, rel.group_id, rel.categories_id,
-					rel.name, rel.name AS textstring, rel.predb_id, rel.searchname, ru.releases_id,
+					rel.name, rel.name AS textstring, rel.predb_id, rel.searchname,
 					HEX(ru.uniqueid) AS uid
 				FROM releases rel
 				LEFT JOIN release_unique ru ON ru.releases_id = rel.id

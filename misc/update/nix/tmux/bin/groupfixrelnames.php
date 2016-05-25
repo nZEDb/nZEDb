@@ -92,7 +92,7 @@ if (!isset($argv[1])) {
 				sprintf('
 					SELECT
 						r.id AS releases_id, r.size AS relsize, r.group_id, r.categories_id,
-						r.name, r.name AS textstring, r.predb_id, r.searchname, ru.releases_id,
+						r.name, r.name AS textstring, r.predb_id, r.searchname,
 						HEX(ru.uniqueid) AS uid
 					FROM releases r
 					LEFT JOIN release_unique ru ON ru.releases_id = r.id
