@@ -90,18 +90,17 @@ if (!isset($argv[1])) {
 		case $pieces[0] === 'uid' && isset($guidChar) && isset($maxperrun) && is_numeric($maxperrun):
 			$releases = $this->pdo->queryDirect('
 				SELECT
-					rel.id AS releases_id, rel.size AS relsize, rel.group_id, rel.categories_id,
-					rel.name, rel.name AS textstring, rel.predb_id, rel.searchname, ru.releases_id,
+					r.id AS releases_id, r.size AS relsize, r.group_id, r.categories_id,
+					r.name, r.name AS textstring, r.predb_id, r.searchname, ru.releases_id,
 					HEX(ru.uniqueid) AS uid
-				FROM releases rel
-				LEFT JOIN release_unique ru ON ru.releases_id = rel.id
+				FROM releases r
+				LEFT JOIN release_unique ru ON ru.releases_id = r.id
 				WHERE ru.releases_id IS NOT NULL
 				AND r.leftguid = %s
-				AND rel.nzbstatus = 1
-				AND rel.predb_id = 0
-				AND rel.proc_uid = %d
-				%s
-				ORDER BY r.id ASC
+				AND r.nzbstatus = 1
+				AND r.predb_id = 0
+				AND r.proc_uid = %d
+				ORDER BY r.id DESC
 				LIMIT %d',
 				$pdo->escapeString($guidChar),
 				$namefixer::PROC_UID_NONE,
@@ -110,7 +109,7 @@ if (!isset($argv[1])) {
 			if ($releases instanceof \Traversable) {
 				foreach ($releases as $release) {
 					$namefixer->done = $namefixer->matched = false;
-					if ($namefixer->uidCheck($release, true, 'Filenames, ', 1, 1) !== true) {
+					if ($namefixer->uidCheck($release, true, 'UID, ', 1, 1) === false) {
 						echo '.';
 					}
 					$namefixer->checked++;
@@ -156,11 +155,12 @@ if (!isset($argv[1])) {
 					FROM releases r
 					WHERE r.leftguid = %s
 					AND r.nzbstatus = 1
-					AND r.proc_par2 = 0
+					AND r.proc_par2 = %d
 					AND r.predb_id = 0
 					ORDER BY r.id ASC
 					LIMIT %s',
 					$pdo->escapeString($guidChar),
+					$namefixer::PROC_PAR2_NONE,
 					$maxperrun
 				)
 			);
