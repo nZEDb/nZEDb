@@ -201,34 +201,16 @@ class Releases
 	{
 		$orderBy = $this->getBrowseOrder($orderBy);
 
-		$qry = sprintf(
-				"SELECT r.*,
-					CONCAT(cp.title, ' > ', c.title) AS category_name,
-					CONCAT(cp.id, ',', c.id) AS category_ids,
-					df.failed AS failed,
-					rn.releases_id AS nfoid,
-					re.releases_id AS reid,
-					v.tvdb, v.trakt, v.tvrage, v.tvmaze, v.imdb, v.tmdb,
-					tve.title, tve.firstaired
-				FROM
-				(
-					SELECT r.*, g.name AS group_name
-					FROM releases r
-					LEFT JOIN groups g ON g.id = r.group_id
-					WHERE r.nzbstatus = %d
-					AND r.passwordstatus %s
-					%s %s %s %s %s
-					ORDER BY %s %s %s
-				) r
-				LEFT JOIN categories c ON c.id = r.categories_id
-				LEFT JOIN categories cp ON cp.id = c.parentid
-				LEFT OUTER JOIN videos v ON r.videos_id = v.id
-				LEFT OUTER JOIN tv_episodes tve ON r.tv_episodes_id = tve.id
-				LEFT OUTER JOIN video_data re ON re.releases_id = r.id
-				LEFT OUTER JOIN release_nfos rn ON rn.releases_id = r.id
-				LEFT OUTER JOIN dnzb_failures df ON df.release_id = r.id
-				GROUP BY r.id
-				ORDER BY %8\$s %9\$s",
+		$releases = $this->pdo->queryCalc(
+			sprintf("
+				SELECT SQL_CALC_FOUND_ROWS
+					r.id
+				FROM releases r
+				LEFT JOIN groups g ON g.id = r.group_id
+				WHERE r.nzbstatus = %d
+				AND r.passwordstatus %s
+				%s %s %s %s %s
+				ORDER BY %s %s %s",
 				NZB::NZB_ADDED,
 				$this->showPasswords,
 				$this->categorySQL($cat),
@@ -239,8 +221,47 @@ class Releases
 				$orderBy[0],
 				$orderBy[1],
 				($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
+			),
+			true,
+			nZEDb_CACHE_EXPIRY_MEDIUM
 		);
+
+		if (is_array($releases['result'])) {
+			foreach ($releases['result'] as $release => $id) {
+				$releaseIDs[] = $id['id'];
+			}
+		}
+
+		$qry = sprintf(
+			"SELECT r.*,
+				CONCAT(cp.title, ' > ', c.title) AS category_name,
+				CONCAT(cp.id, ',', c.id) AS category_ids,
+				df.failed AS failed,
+				rn.releases_id AS nfoid,
+				re.releases_id AS reid,
+				v.tvdb, v.trakt, v.tvrage, v.tvmaze, v.imdb, v.tmdb,
+				tve.title, tve.firstaired
+			FROM releases r
+			LEFT JOIN categories c ON c.id = r.categories_id
+			LEFT JOIN categories cp ON cp.id = c.parentid
+			LEFT OUTER JOIN videos v ON r.videos_id = v.id
+			LEFT OUTER JOIN tv_episodes tve ON r.tv_episodes_id = tve.id
+			LEFT OUTER JOIN video_data re ON re.releases_id = r.id
+			LEFT OUTER JOIN release_nfos rn ON rn.releases_id = r.id
+			LEFT OUTER JOIN dnzb_failures df ON df.release_id = r.id
+			WHERE r.id IN (%s)
+			ORDER BY %s %s",
+			(isset($releaseIDs) ? implode(',', $releaseIDs) : -1),
+			$orderBy[0],
+			$orderBy[1]
+		);
+
 		$sql = $this->pdo->query($qry, true, nZEDb_CACHE_EXPIRY_MEDIUM);
+
+		if (!empty($sql)) {
+			$sql[0]['_totalcount'] = (isset($releases['total']) ? $releases['total'] : 0);
+		}
+
 		return $sql;
 	}
 
@@ -340,17 +361,17 @@ class Releases
 	{
 		return $this->pdo->query(
 			sprintf(
-				"SELECT searchname, guid, groups.name AS gname, CONCAT(cp.title,'_',category.title) AS catName
+				"SELECT searchname, guid, g.name AS gname, CONCAT(cp.title, '_', c.title) AS catName
 				FROM releases r
-				LEFT JOIN categories ON r.categories_id = categories_id.id
-				LEFT JOIN groups ON r.group_id = groups.id
-				LEFT JOIN categories cp ON cp.id = categories.parentid
+				LEFT JOIN categories c ON r.categories_id = c.id
+				LEFT JOIN groups g ON r.group_id = g.id
+				LEFT JOIN categories cp ON cp.id = c.parentid
 				WHERE r.nzbstatus = %d
 				%s %s %s",
 				NZB::NZB_ADDED,
 				$this->exportDateString($postFrom),
 				$this->exportDateString($postTo, false),
-				(($groupID != '' && $groupID != '-1') ? sprintf(' AND group_id = %d ', $groupID) : '')
+				(($groupID != '' && $groupID != '-1') ? sprintf(' AND r.group_id = %d ', $groupID) : '')
 			)
 		);
 	}
@@ -453,7 +474,8 @@ class Releases
 			$result = $this->pdo->query("
 				SELECT CONCAT(cp.id, ',', c.id) AS category_ids
 				FROM categories c
-				INNER JOIN categories cp ON cp.id = c.parentid",
+				LEFT JOIN categories cp ON cp.id = c.parentid
+				WHERE c.parentid IS NOT NULL",
 				true, nZEDb_CACHE_EXPIRY_LONG
 			);
 			if (isset($result[0]['category_ids'])) {
