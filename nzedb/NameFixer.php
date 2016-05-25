@@ -386,21 +386,16 @@ class NameFixer
 	 * @param int     $maxperrun the maximum number of releases to process per thread
 	 * @param string  $guidChar
 	 */
-	public function fixNamesWithMedia($time, $echo, $cats, $nameStatus, $show, $maxperrun, $guidChar = '')
+	public function fixNamesWithMedia($time, $echo, $cats, $nameStatus, $show)
 	{
 		$type = 'UID, ';
-		$guid = ($guidChar === '') ? '' : ('AND rel.leftguid = '. $this->pdo->escapeString($guidChar));
-		if ($guid === '') {
-			$this->_echoStartMessage($time, 'mediainfo Unique_IDs');
-		}
 
-		// Only select releases we haven't checked here before
+		$this->_echoStartMessage($time, 'mediainfo Unique_IDs');
+
+		// Re-check all releases we haven't matched to a PreDB
 		if ($cats === 3) {
 			$query = sprintf('
-				SELECT
-					rel.id AS releases_id, rel.size AS relsize, rel.group_id, rel.categories_id,
-					rel.name, rel.name AS textstring, rel.predb_id, rel.searchname, ru.releases_id,
-					HEX(ru.uniqueid) AS uid
+				SELECT rel.id AS releases_id, rel.name AS textstring
 				FROM releases rel
 				LEFT JOIN release_unique ru ON ru.releases_id = rel.id
 				WHERE ru.releases_id IS NOT NULL
@@ -408,6 +403,8 @@ class NameFixer
 				AND rel.predb_id = 0',
 				NZB::NZB_ADDED
 			);
+			$cats = 2;
+		// Otherwise check only releases we haven't renamed and checked uid before in Misc categories
 		} else {
 			$query = sprintf('
 				SELECT
@@ -415,29 +412,27 @@ class NameFixer
 					rel.name, rel.name AS textstring, rel.predb_id, rel.searchname, ru.releases_id,
 					HEX(ru.uniqueid) AS uid
 				FROM releases rel
-				LEFT JOIN release_unique ru ON ru.releases_id = rel.id
+				LEFT JOIN JOIN release_unique ru ON ru.releases_id = rel.id
 				WHERE ru.releases_id IS NOT NULL
 				AND rel.nzbstatus = %d
-				AND predb_id = 0
+				AND rel.isrenamed = 0
+				AND rel.categories_id IN (%d, %d)
 				AND rel.proc_uid = %d
-				%s
-				ORDER BY rel.id DESC
-				LIMIT %d',
+				%s',
 				NZB::NZB_ADDED,
-				self::PROC_UID_NONE,
-				$guid,
-				$maxperrun
+				self::IS_RENAMED_NONE,
+				Category::OTHER_MISC,
+				Category::OTHER_HASHED,
+				self::PROC_UID_NONE
 			);
 		}
 
-		$releases = $this->pdo->queryDirect($query);
+		$releases = $this->_getReleases($time, $cats, $query);
 		if ($releases instanceof \Traversable && $releases !== false) {
 			$total = $releases->rowCount();
 			if ($total > 0) {
 				$this->_totalReleases = $total;
-				if ($guid === '') {
-					echo $this->pdo->log->primary(number_format($total) . ' unique ids to process.');
-				}
+				echo $this->pdo->log->primary(number_format($total) . ' unique ids to process.');
 				foreach ($releases as $rel) {
 					$this->checked++;
 					$this->done = $this->matched = false;
@@ -445,10 +440,8 @@ class NameFixer
 					$this->_echoRenamed($show);
 				}
 				$this->_echoFoundCount($echo, ' UID\'s');
-			} elseif ($guid === '') {
-				echo $this->pdo->log->info('Nothing to fix.');
 			} else {
-				echo '.';
+				echo $this->pdo->log->info('Nothing to fix.');
 			}
 		}
 	}
@@ -465,6 +458,10 @@ class NameFixer
 	protected function _getReleases($time, $cats, $query, $limit = '')
 	{
 		$releases = false;
+
+		// Collapse white space because it looks awful on the echo
+		$query = Text::collapseWhiteSpace($query);
+
 		$queryLimit = ($limit === '') ? '' : ' LIMIT ' . $limit;
 		// 24 hours, other cats
 		if ($time == 1 && $cats == 1) {
@@ -1597,7 +1594,7 @@ class NameFixer
 	 * @param         $namestatus
 	 * @param         $show
 	 */
-	protected function uidCheck($release, $echo, $type, $namestatus, $show)
+	public function uidCheck($release, $echo, $type, $namestatus, $show)
 	{
 		if ($this->done === false && $this->relid !== $release["releases_id"]) {
 			$result = $this->pdo->queryOneRow("
@@ -1621,8 +1618,10 @@ class NameFixer
 					$show,
 					$result['predb_id']
 				);
+				return true;
 			} else {
 				$this->_updateSingleColumn('proc_uid', 1, $release['releases_id']);
+				return false;
 			}
 		}
 	}
