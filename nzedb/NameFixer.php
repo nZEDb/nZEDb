@@ -402,9 +402,10 @@ class NameFixer
 					rel.name, rel.name AS textstring, rel.predb_id, rel.searchname, ru.releases_id,
 					HEX(ru.uniqueid) AS uid
 				FROM releases rel
-				INNER JOIN release_unique ru ON ru.releases_id = rel.id
-				WHERE rel.nzbstatus = %d
-				AND rel.predb_id < 1',
+				LEFT JOIN release_unique ru ON ru.releases_id = rel.id
+				WHERE ru.releases_id IS NOT NULL
+				AND rel.nzbstatus = %d
+				AND rel.predb_id = 0',
 				NZB::NZB_ADDED
 			);
 		} else {
@@ -414,15 +415,15 @@ class NameFixer
 					rel.name, rel.name AS textstring, rel.predb_id, rel.searchname, ru.releases_id,
 					HEX(ru.uniqueid) AS uid
 				FROM releases rel
-				INNER JOIN release_unique ru ON ru.releases_id = rel.id
-				WHERE (rel.isrenamed = %d OR rel.categories_id IN (%d, %d))
+				LEFT JOIN release_unique ru ON ru.releases_id = rel.id
+				WHERE ru.releases_id IS NOT NULL
+				AND rel.nzbstatus = %d
+				AND predb_id = 0
 				AND rel.proc_uid = %d
 				%s
 				ORDER BY rel.id DESC
 				LIMIT %d',
-				self::IS_RENAMED_NONE,
-				Category::OTHER_MISC,
-				Category::OTHER_HASHED,
+				NZB::NZB_ADDED,
 				self::PROC_UID_NONE,
 				$guid,
 				$maxperrun

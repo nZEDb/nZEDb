@@ -521,8 +521,8 @@ class Forking extends \fork_daemon
 				break;
 
 			case "uid":
-				$join = "STRAIGHT_JOIN release_unique ru ON ru.releases_id = r.id";
-				$where = "r.proc_uid = 0";
+				$join = "LEFT JOIN release_unique ru ON ru.releases_id = r.id";
+				$where = "ru.releases_id IS NOT NULL AND r.nzbstatus = 1 AND r.predb_id = 0 AND r.proc_uid = 0";
 				break;
 
 			case "par2":
