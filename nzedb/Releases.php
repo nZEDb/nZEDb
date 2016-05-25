@@ -260,7 +260,6 @@ class Releases
 
 		if (!empty($sql)) {
 			$sql[0]['_totalcount'] = (isset($releases['total']) ? $releases['total'] : 0);
-			var_dump($releases['total']);
 		}
 
 		return $sql;
