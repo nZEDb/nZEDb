@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "dc9201f4d80896aaab7e1c3f6971308f",
-    "content-hash": "a3b08755d93cf2cf0f4351dadeb3efbb",
+    "hash": "3f26bbca801213109d9c8df983613831",
+    "content-hash": "151c584e0a90992b43ab77e61acffea4",
     "packages": [
         {
             "name": "barracudanetworks/forkdaemon-php",
@@ -71,7 +71,7 @@
             }
         },
         {
-            "name": "bower-asset/autosize",
+            "name": "bower-asset/autosize-3.0.x",
             "version": "3.0.15",
             "source": {
                 "type": "git",
@@ -174,7 +174,7 @@
             }
         },
         {
-            "name": "bower-asset/bootstrap-3.x",
+            "name": "bower-asset/bootstrap-3.3.x",
             "version": "v3.3.6",
             "source": {
                 "type": "git",
@@ -223,7 +223,7 @@
             ]
         },
         {
-            "name": "bower-asset/bootstrap-hover-dropdown",
+            "name": "bower-asset/bootstrap-hover-dropdown-2.2.x",
             "version": "v2.2.1",
             "source": {
                 "type": "git",
@@ -253,7 +253,7 @@
             ]
         },
         {
-            "name": "bower-asset/bootstrap-progressbar",
+            "name": "bower-asset/bootstrap-progressbar-0.9.x",
             "version": "v0.9.0",
             "source": {
                 "type": "git",
@@ -287,7 +287,7 @@
             ]
         },
         {
-            "name": "bower-asset/chosen",
+            "name": "bower-asset/chosen-1.5.x",
             "version": "v1.5.1",
             "source": {
                 "type": "git",
@@ -328,17 +328,17 @@
             ]
         },
         {
-            "name": "bower-asset/colorbox",
-            "version": "1.6.3",
+            "name": "bower-asset/colorbox-1.6.x",
+            "version": "1.6.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jackmoore/colorbox.git",
-                "reference": "d9b74f2289b315c36b2e4b2bce01a799bf851aed"
+                "reference": "bac78120c6ca9e63370cc317ab6f400129cd6608"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jackmoore/colorbox/zipball/d9b74f2289b315c36b2e4b2bce01a799bf851aed",
-                "reference": "d9b74f2289b315c36b2e4b2bce01a799bf851aed",
+                "url": "https://api.github.com/repos/jackmoore/colorbox/zipball/bac78120c6ca9e63370cc317ab6f400129cd6608",
+                "reference": "bac78120c6ca9e63370cc317ab6f400129cd6608",
                 "shasum": ""
             },
             "require": {
@@ -369,17 +369,17 @@
             ]
         },
         {
-            "name": "bower-asset/datatables",
-            "version": "1.10.11",
+            "name": "bower-asset/datatables-1.10.x",
+            "version": "1.10.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DataTables/DataTables.git",
-                "reference": "d0163e24a0735ef3c0f04886be301baba67482e1"
+                "reference": "3a432c5db3546b2ef0c192f2ae367811cb5edb9b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DataTables/DataTables/zipball/d0163e24a0735ef3c0f04886be301baba67482e1",
-                "reference": "d0163e24a0735ef3c0f04886be301baba67482e1",
+                "url": "https://api.github.com/repos/DataTables/DataTables/zipball/3a432c5db3546b2ef0c192f2ae367811cb5edb9b",
+                "reference": "3a432c5db3546b2ef0c192f2ae367811cb5edb9b",
                 "shasum": ""
             },
             "require": {
@@ -417,43 +417,7 @@
             ]
         },
         {
-            "name": "bower-asset/ev-emitter",
-            "version": "v1.0.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/metafizzy/ev-emitter.git",
-                "reference": "e1f8d670f76749aff783ad5e2f27d7294c2c679e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/metafizzy/ev-emitter/zipball/e1f8d670f76749aff783ad5e2f27d7294c2c679e",
-                "reference": "e1f8d670f76749aff783ad5e2f27d7294c2c679e",
-                "shasum": ""
-            },
-            "type": "bower-asset-library",
-            "extra": {
-                "bower-asset-main": "ev-emitter.js",
-                "bower-asset-ignore": [
-                    "**/.*",
-                    "node_modules",
-                    "bower_components",
-                    "test",
-                    "tests",
-                    "sandbox"
-                ]
-            },
-            "license": [
-                "MIT"
-            ],
-            "description": "lil' event emitter",
-            "keywords": [
-                "emitter",
-                "event",
-                "pubsub"
-            ]
-        },
-        {
-            "name": "bower-asset/fastclick",
+            "name": "bower-asset/fastclick-1.0.x",
             "version": "v1.0.6",
             "source": {
                 "type": "git",
@@ -480,17 +444,17 @@
             }
         },
         {
-            "name": "bower-asset/font-awesome",
-            "version": "v4.6.1",
+            "name": "bower-asset/font-awesome-4.5.x",
+            "version": "v4.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FortAwesome/Font-Awesome.git",
-                "reference": "6535013c330e801ecf0b23c437865a7fb344486d"
+                "reference": "fddd2c240452e6c8990c4ef75e0265b455aa7968"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FortAwesome/Font-Awesome/zipball/6535013c330e801ecf0b23c437865a7fb344486d",
-                "reference": "6535013c330e801ecf0b23c437865a7fb344486d",
+                "url": "https://api.github.com/repos/FortAwesome/Font-Awesome/zipball/fddd2c240452e6c8990c4ef75e0265b455aa7968",
+                "reference": "fddd2c240452e6c8990c4ef75e0265b455aa7968",
                 "shasum": ""
             },
             "type": "bower-asset-library",
@@ -517,7 +481,7 @@
             "description": "Font Awesome"
         },
         {
-            "name": "bower-asset/html5shiv",
+            "name": "bower-asset/html5shiv-3.7.x",
             "version": "3.7.3",
             "source": {
                 "type": "git",
@@ -546,7 +510,7 @@
             }
         },
         {
-            "name": "bower-asset/icheck",
+            "name": "bower-asset/icheck-1.0.x",
             "version": "1.0.2",
             "source": {
                 "type": "git",
@@ -596,49 +560,6 @@
             ]
         },
         {
-            "name": "bower-asset/imagesloaded",
-            "version": "v4.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/desandro/imagesloaded.git",
-                "reference": "eb483b9b5e1edcc06daa6bb980810b4accd406f0"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/desandro/imagesloaded/zipball/eb483b9b5e1edcc06daa6bb980810b4accd406f0",
-                "reference": "eb483b9b5e1edcc06daa6bb980810b4accd406f0",
-                "shasum": ""
-            },
-            "require": {
-                "bower-asset/ev-emitter": "~1.0.0"
-            },
-            "require-dev": {
-                "bower-asset/jquery": ">=1.9,<4.0",
-                "bower-asset/qunit": "~1.20.0"
-            },
-            "type": "bower-asset-library",
-            "extra": {
-                "bower-asset-main": "imagesloaded.js",
-                "bower-asset-ignore": [
-                    "**/.*",
-                    "test",
-                    "package.json",
-                    "node_modules",
-                    "bower_components",
-                    "tests",
-                    "sandbox/",
-                    "contributing.md"
-                ]
-            },
-            "license": [
-                "MIT"
-            ],
-            "description": "JavaScript is all like _You images done yet or what?_",
-            "keywords": [
-                "images"
-            ]
-        },
-        {
             "name": "bower-asset/jquery",
             "version": "2.0.0",
             "source": {
@@ -683,16 +604,16 @@
         },
         {
             "name": "bower-asset/jquery-2.2.x",
-            "version": "2.2.3",
+            "version": "2.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jquery/jquery-dist.git",
-                "reference": "af22a351b2ea5801ffb1695abb3bb34d5bed9198"
+                "reference": "c0185ab7c75aab88762c5aae780b9d83b80eda72"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jquery/jquery-dist/zipball/af22a351b2ea5801ffb1695abb3bb34d5bed9198",
-                "reference": "af22a351b2ea5801ffb1695abb3bb34d5bed9198",
+                "url": "https://api.github.com/repos/jquery/jquery-dist/zipball/c0185ab7c75aab88762c5aae780b9d83b80eda72",
+                "reference": "c0185ab7c75aab88762c5aae780b9d83b80eda72",
                 "shasum": ""
             },
             "type": "bower-asset-library",
@@ -713,7 +634,7 @@
             ]
         },
         {
-            "name": "bower-asset/jquery-migrate",
+            "name": "bower-asset/jquery-migrate-1.4.x",
             "version": "1.4.0",
             "source": {
                 "type": "git",
@@ -732,7 +653,7 @@
             }
         },
         {
-            "name": "bower-asset/jquery.nicescroll",
+            "name": "bower-asset/jquery.nicescroll-3.6.x",
             "version": "3.6.8",
             "source": {
                 "type": "git",
@@ -762,7 +683,7 @@
             }
         },
         {
-            "name": "bower-asset/noty",
+            "name": "bower-asset/noty-2.3.x",
             "version": "v2.3.8",
             "source": {
                 "type": "git",
@@ -783,7 +704,7 @@
             "description": "noty is a jQuery plugin that makes it easy to create alert - success - error - warning - information - confirmation messages as an alternative the standard alert dialog. Each notification is added to a queue. (Optional)"
         },
         {
-            "name": "bower-asset/pace",
+            "name": "bower-asset/pace-1.0.x",
             "version": "v1.0.2",
             "source": {
                 "type": "git",
@@ -829,7 +750,7 @@
             ]
         },
         {
-            "name": "bower-asset/pnotify",
+            "name": "bower-asset/pnotify-3.0.x",
             "version": "3.0.0",
             "source": {
                 "type": "git",
@@ -880,52 +801,7 @@
             "description": "JavaScript notification plugin."
         },
         {
-            "name": "bower-asset/qtip2",
-            "version": "v2.2.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/qTip2/bower.git",
-                "reference": "2f67997b5449bb4dea568e82966fb35dc11fb84e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/qTip2/bower/zipball/2f67997b5449bb4dea568e82966fb35dc11fb84e",
-                "reference": "2f67997b5449bb4dea568e82966fb35dc11fb84e",
-                "shasum": ""
-            },
-            "require": {
-                "bower-asset/imagesloaded": ">=3.0.0",
-                "bower-asset/jquery": ">=1.6.0"
-            },
-            "type": "bower-asset-library",
-            "extra": {
-                "bower-asset-main": [
-                    "./jquery.qtip.js",
-                    "./basic/jquery.qtip.js"
-                ],
-                "bower-asset-ignore": [
-                    "bin"
-                ]
-            },
-            "license": [
-                "MIT"
-            ],
-            "description": "Introducing... qTip2. The second generation of the advanced qTip plugin for the ever popular jQuery framework.",
-            "keywords": [
-                "craga89",
-                "craig michael thompson",
-                "craig thompson",
-                "craigsworks",
-                "jquery",
-                "qtip",
-                "qtip2",
-                "simpletip",
-                "tooltip",
-                "tooltips"
-            ]
-        },
-        {
-            "name": "bower-asset/respond",
+            "name": "bower-asset/respond-1.4.x",
             "version": "1.4.2",
             "source": {
                 "type": "git",
@@ -949,7 +825,7 @@
             "description": "Fast and lightweight polyfill for min/max-width CSS3 Media Queries (for IE 6-8, and more)"
         },
         {
-            "name": "bower-asset/responsive-tables-js",
+            "name": "bower-asset/responsive-tables-js-1.0.x",
             "version": "v1.0.6",
             "source": {
                 "type": "git",
@@ -979,7 +855,7 @@
             ]
         },
         {
-            "name": "bower-asset/select2",
+            "name": "bower-asset/select2-4.0.x",
             "version": "4.0.2",
             "source": {
                 "type": "git",
@@ -1002,7 +878,7 @@
             "description": "Select2 is a jQuery based replacement for select boxes. It supports searching, remote data sets, and infinite scrolling of results."
         },
         {
-            "name": "bower-asset/slimscroll",
+            "name": "bower-asset/slimscroll-1.3.x",
             "version": "v1.3.7",
             "source": {
                 "type": "git",
@@ -1307,12 +1183,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/JPinkney/TVMaze-PHP-API-Wrapper.git",
-                "reference": "bf6b5bcf44d607bd2406b0638e86e6b9f1b909fe"
+                "reference": "03e60ddbb4a5516aee531be5f4fafc92922f8ae4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/JPinkney/TVMaze-PHP-API-Wrapper/zipball/bf6b5bcf44d607bd2406b0638e86e6b9f1b909fe",
-                "reference": "bf6b5bcf44d607bd2406b0638e86e6b9f1b909fe",
+                "url": "https://api.github.com/repos/JPinkney/TVMaze-PHP-API-Wrapper/zipball/03e60ddbb4a5516aee531be5f4fafc92922f8ae4",
+                "reference": "03e60ddbb4a5516aee531be5f4fafc92922f8ae4",
                 "shasum": ""
             },
             "type": "library",
@@ -1332,7 +1208,7 @@
                 }
             ],
             "description": "TVMaze-API-Wrapper",
-            "time": "2016-03-16 14:59:03"
+            "time": "2016-05-04 01:31:56"
         },
         {
             "name": "kbjr/Git.php",
@@ -1402,16 +1278,16 @@
         },
         {
             "name": "phpmailer/phpmailer",
-            "version": "v5.2.14",
+            "version": "v5.2.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPMailer/PHPMailer.git",
-                "reference": "e774bc9152de85547336e22b8926189e582ece95"
+                "reference": "d0186171b28af4f06ac2ad8a84a8f3d6cbc3ba6c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/e774bc9152de85547336e22b8926189e582ece95",
-                "reference": "e774bc9152de85547336e22b8926189e582ece95",
+                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/d0186171b28af4f06ac2ad8a84a8f3d6cbc3ba6c",
+                "reference": "d0186171b28af4f06ac2ad8a84a8f3d6cbc3ba6c",
                 "shasum": ""
             },
             "require": {
@@ -1422,8 +1298,7 @@
                 "phpunit/phpunit": "4.7.*"
             },
             "suggest": {
-                "league/oauth2-client": "Needed for XOAUTH2 authentication",
-                "league/oauth2-google": "Needed for Gmail XOAUTH2"
+                "league/oauth2-google": "Needed for Google XOAUTH2 authentication"
             },
             "type": "library",
             "autoload": {
@@ -1459,7 +1334,7 @@
                 }
             ],
             "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
-            "time": "2015-11-01 10:15:28"
+            "time": "2016-05-10 18:39:36"
         },
         {
             "name": "smarty/smarty",
