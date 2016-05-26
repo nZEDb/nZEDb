@@ -40,7 +40,7 @@
 	<link href='{$smarty.const.WWW_THEMES}/{$theme}/css/jquery.iphone.toggle.css' rel='stylesheet'>
 	<link href='{$smarty.const.WWW_THEMES}/shared/libs/animate.css-3.5.x/animate.min.css'	rel='stylesheet'>
 	<!-- Font Awesome Icons -->
-	<link href="{$smarty.const.WWW_THEMES}/shared/libs/font-awesome-4.x/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+	<link href="{$smarty.const.WWW_THEMES}/shared/libs/font-awesome-4.5.x/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
 	<!-- Normalize.css -->
 	<link href="{$smarty.const.WWW_THEMES}/shared/css/normalize.css" rel="stylesheet" type="text/css">
 	<!-- The fav icon -->
@@ -261,7 +261,7 @@
 	<script type="text/javascript"
 		src="{$smarty.const.WWW_THEMES}/shared/libs/jquery-migrate-1.4.x/jquery-migrate.min.js"></script>
 	<script type="text/javascript"
-		src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap-3.x/dist/js/bootstrap.min.js"></script>
+		src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap-3.3.x/dist/js/bootstrap.min.js"></script>
 	<!-- Bootstrap hover on mouseover script -->
 	<script type="text/javascript"
 		src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap-hover-dropdown-2.2.x/bootstrap-hover-dropdown.min.js"></script>
@@ -288,7 +288,7 @@
 			src="{$smarty.const.WWW_THEMES}/{$theme}/js/charisma.js"></script>
 	<!-- nZEDb default scripts, needed for stuff to work -->
 	<script type="text/javascript"
-			src="{$smarty.const.WWW_THEMES}/shared/libs/autosize-3.x/dist/autosize-min.js"></script>
+			src="{$smarty.const.WWW_THEMES}/shared/libs/autosize-3.0.x/dist/autosize-min.js"></script>
 	<script type="text/javascript"
 			src="{$smarty.const.WWW_THEMES}/shared/js/jquery.qtip.min.js"></script>
 	<script type="text/javascript"

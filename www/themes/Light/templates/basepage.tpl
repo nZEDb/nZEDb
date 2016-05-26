@@ -17,7 +17,7 @@
 
         <!-- Included CSS files - Bootstrap 2.3.2 - Font Awesome 3.2.1 - plugins master style.css -->
         <link href="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap-2.3.x/docs/assets/css/bootstrap.css" rel="stylesheet" type="text/css"/>
-        <link href="{$smarty.const.WWW_THEMES}/shared/libs/font-awesome-4.x/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+        <link href="{$smarty.const.WWW_THEMES}/shared/libs/font-awesome-4.5.x/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
 		<link href="{$smarty.const.WWW_THEMES}/shared/css/jquery.qtip.css" rel="stylesheet" media="screen">
         <!-- <link href="{$smarty.const.WWW_THEMES}/shared/css/subnav.css" rel="stylesheet" media="screen"> -->
         <link href="{$smarty.const.WWW_THEMES}/shared/css/posterwall.css" rel="stylesheet" type="text/css" media="screen" />

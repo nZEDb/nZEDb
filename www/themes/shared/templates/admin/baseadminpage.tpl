@@ -61,7 +61,7 @@
 			</script>
 		{/literal}
 		{*<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
-		{literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_THEMES}{literal}/shared/libs/bootstrap-3.x/js/bootstrap.min.js"><\/script>')
+		{literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_THEMES}{literal}/shared/libs/bootstrap-3.3.x/js/bootstrap.min.js"><\/script>')
 		</script>{/literal}*}
 		<script src="{$smarty.const.WWW_THEMES}/shared/js/sorttable.js"></script>
 		<script src="{$smarty.const.WWW_THEMES}/shared/js/utils-admin.js"></script>

@@ -100,7 +100,7 @@
 			<script src="//code.jquery.com/jquery-1.9.1.js"></script>
             {literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_THEMES}{literal}/shared/js/jquery-1.9.1.js"><\/script>')</script>{/literal}
 			<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
-            {literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_THEMES}{literal}/shared/libs/bootstrap-3.x/js/bootstrap.min.js"><\/script>')</script>{/literal}
+            {literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_THEMES}{literal}/shared/libs/bootstrap-3.3.x/js/bootstrap.min.js"><\/script>')</script>{/literal}
             <!-- <script src="{$smarty.const.WWW_THEMES}/shared/js/subnav.js"></script> -->
             <script src="{$smarty.const.WWW_THEMES}/shared/js/jquery.colorbox-min.js"></script>
             <script src="{$smarty.const.WWW_THEMES}/shared/js/jquery.qtip.min.js"></script>
