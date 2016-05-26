@@ -8,6 +8,11 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+
+2015-05-26 niel
+	Fix: Update some bower-asset's version strings to better reflect the version specified.
+		Tightened versions for others to err on the side of caution. We can relax later if this
+		prooves to be too tight.
 2016-05-24 ruhllatio
 	Fix: Revert concat cat query to INNER and add WHERE constraint to exclude parentid being NULL
 	Chg: Convert browse to use queryCalc method for cached counts to improve performance
