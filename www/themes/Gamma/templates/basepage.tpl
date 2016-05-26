@@ -22,33 +22,33 @@
 {/if}
 	<!-- Newposterwall -->
 	<link href="{$smarty.const.WWW_THEMES}/shared/css/posterwall.css" rel="stylesheet" type="text/css" media="screen" />
-	<link href="{$smarty.const.WWW_THEMES}/{$theme}/styles/bootstrap.css" rel="stylesheet" type="text/css" media="screen" />
-	<link href="{$smarty.const.WWW_THEMES}/shared/css/font-awesome.css" rel="stylesheet" type="text/css" media="screen" />
+	<link href="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap-3.x/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+	<link href="{$smarty.const.WWW_THEMES}/shared/libs/font-awesome-4.x/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
 	<link href="{$smarty.const.WWW_THEMES}/{$theme}/styles/extra.css" rel="stylesheet" type="text/css" media="screen" />
 	<link href="{$smarty.const.WWW_THEMES}/{$theme}/styles/jquery.pnotify.default.css" rel="stylesheet" type="text/css" media="screen" />
 	<link href="{$smarty.const.WWW_THEMES}/{$theme}/styles/style.css" rel="stylesheet" type="text/css" media="screen" />
 	<link href="{$smarty.const.WWW_THEMES}/{$theme}/styles/bootstrap.cyborg.css" rel="stylesheet" type="text/css" media="screen" />
 	<link href="{$smarty.const.WWW_THEMES}/{$theme}/styles/bootstrap-fixes.css" rel="stylesheet" type="text/css" media="screen" />
+	<link href="{$smarty.const.WWW_THEMES}/shared/css/jquery.qtip.css" rel="stylesheet" media="screen" />
 
 	<!-- FAVICON -->
 	<link rel="search" type="application/opensearchdescription+xml" href="/opensearch" title="{$site->title|escape}" />
-	<link rel="shortcut icon" type="image/ico" href="{$smarty.const.WWW_THEMES}/{$theme}/images/favicon.ico"/>
+	<link rel="shortcut icon" type="image/ico" href="{$smarty.const.WWW_THEMES}/shared/img/favicon.ico"/>
 
 	<!-- Javascripts -->
-	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/js/jquery-2.2.1.min.js"></script>
-	<script type="text/javascript" src="https://code.jquery.com/jquery-migrate-1.4.0.min.js"></script>
-	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/{$theme}/scripts/jquery.colorbox-min.js"></script>
-	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/{$theme}/scripts/jquery.qtip2.js"></script>
-	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/{$theme}/scripts/utils.js"></script>
-	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/{$theme}/scripts/jquery.autosize-min.js"></script>
-	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/{$theme}/scripts/sorttable.js"></script>
-	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/{$theme}/scripts/jquery.qtip2.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/jquery-2.2.x/dist/jquery.min.js"></script>
+	<!-- jQuery migrate script -->
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/jquery-migrate-1.4.x/jquery-migrate.min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/colorbox-1.6.x/jquery.colorbox-min.js" type="text/javascript" ></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/js/jquery.qtip.min.js" type="text/javascript" ></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/js/utils.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/autosize-3.x/dist/autosize.min.js" type="text/javascript" ></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/js/sorttable.js"></script>
 
 	<!-- Added the Bootstrap JS -->
-	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap/v3/js/bootstrap.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap-3.x/dist/js/bootstrap.min.js" type="text/javascript"></script>
 	<!-- Bootstrap hover on mouseover script -->
-	<script type="text/javascript"
-			src="{$smarty.const.WWW_THEMES}/shared/js/bootstrap-hover-dropdown.min.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap-hover-dropdown-2.2.x/bootstrap-hover-dropdown.min.js"></script>
 
 	<!-- Pines Notify -->
 	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/{$theme}/scripts/jquery.pnotify.js"></script>
