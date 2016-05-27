@@ -10,6 +10,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 
 2015-06-27 DariusIII
+	* Fix: Replace boostrap.min.css with Gamma theme custom bootstrap.css
 	* Fix: Fix link to autosize.min.js in Alpha theme.
 	* Fix: Fix tables layout in Gamma theme by removing table-striped attribute.
 2015-05-26 niel
