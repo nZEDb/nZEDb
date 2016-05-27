@@ -19,7 +19,7 @@
 			</div>
 		</div>
 	</div>
-	<table style="width:100%;" class="data highlight table table-striped" id="browsetable">
+	<table style="width:100%;" class="data highlight table" id="browsetable">
 		<tr>
 			<th width="50"><input id="chkSelectAll" type="checkbox" class="nzb_check_all" /><label for="chkSelectAll" style="display:none;">Select All</label></th>
 			<th>name</th>

@@ -59,7 +59,7 @@
 				{/if}
 			</div>
 		</div>
-		<table style="width:100%;" class="data highlight icons table table-striped" id="browsetable">
+		<table style="width:100%;" class="data highlight icons table" id="browsetable">
 			<tr class="dont-filter">
 				<th>
 					<input id="chkSelectAll" type="checkbox" class="nzb_check_all" />

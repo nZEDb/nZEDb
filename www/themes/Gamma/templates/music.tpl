@@ -45,7 +45,7 @@
 			</table>
 		</div>
 	</div>
-<table style="width:100%;" class="data highlight icons table table-striped" id="coverstable">
+<table style="width:100%;" class="data highlight icons table" id="coverstable">
 	<tr>
 		<th width="130" style="padding-top:0px; padding-bottom:0px;">
 			<input type="checkbox" class="nzb_check_all" />

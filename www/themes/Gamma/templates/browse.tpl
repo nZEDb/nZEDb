@@ -60,7 +60,7 @@
 			</table>
 		</div>
 	</div>
-	<table style="100%" class="data highlight icons table table-striped" id="browsetable">
+	<table style="100%" class="data highlight icons table" id="browsetable">
 		<tr>
 			<th style="padding-top:0px; padding-bottom:0px;">
 				<input id="chkSelectAll" type="checkbox" class="nzb_check_all" />

@@ -385,7 +385,7 @@
 		<div class="tab-pane" id="mediainfo">
 			{if $reVideo.releases_id|@count > 0 || $reAudio|@count > 0}
 				<td style="padding:0;">
-					<table style="width:100%;" class="innerdata highlight table table-striped">
+					<table style="width:100%;" class="innerdata highlight table">
 						<tr>
 							<th width="15%"></th>
 							<th>Property</th>
@@ -561,7 +561,7 @@
 			<div class="comments">
 				{if $comments|@count > 0}
 
-					<table style="margin-bottom:20px;" class="data Sortable table table-striped">
+					<table style="margin-bottom:20px;" class="data Sortable table">
 						<tr class="{cycle values=",alt"}">
 							<th width="150" style="text-align:right;">User </th>
 							<th>Comment</th>

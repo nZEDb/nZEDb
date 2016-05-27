@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2015-06-27 DariusIII
+	* Fix: Fix tables layout in Gamma theme by removing table-striped attribute.
 2015-05-26 niel
 	Fix: Update some bower-asset's version strings to better reflect the version specified.
 		Tightened versions for others to err on the side of caution. We can relax later if this

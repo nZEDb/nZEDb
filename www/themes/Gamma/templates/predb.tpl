@@ -23,7 +23,7 @@
 					<div class="panel-body pagination2">
 						<div class="row">
 							<div class="col-md-8">
-								<table class="data table table-condensed table-striped table-responsive table-hover">
+								<table class="data table table-condensed  table-responsive table-hover">
 									<tr>
 										<th style="width: auto"> Date</th>
 										<th style="width: auto"> Title</th>

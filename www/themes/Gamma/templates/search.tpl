@@ -23,7 +23,7 @@
 <form method="get" action="{$smarty.const.WWW_TOP}/search">
 	<div id="sadvanced" {if not $sadvanced}style="display:none"{/if}>
 		<div style="text-align: center;">
-			<table class="data table table-striped table-condensed table-responsive">
+			<table class="data table  table-condensed table-responsive">
 				<tr>
 					<th><label for="searchadvr">Release Name:</label></th>
 					<td><input class="searchadv" id="searchadvr" name="searchadvr" value="{$searchadvr|escape:'html'}"
@@ -149,7 +149,7 @@
 			</div>
 		</div>
 
-<table style="100%" class="data highlight icons table table-striped" id="browsetable">
+<table style="100%" class="data highlight icons table" id="browsetable">
 
 	<tr>
 		<th style="padding-top:0px; padding-bottom:0px;">

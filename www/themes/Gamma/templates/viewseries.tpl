@@ -135,7 +135,7 @@
 		<div class="tab-content">
 			{foreach $seasons as $seasonnum => $season name=tv}
 			<div class="tab-pane{if $smarty.foreach.tv.first} active{/if}" id="{$seasonnum}">
-				<table class="tb_{$seasonnum} data highlight icons table table-striped" id="browsetable">
+				<table class="tb_{$seasonnum} data highlight icons table" id="browsetable">
 					<tr class="dont-filter">
 						<th>Ep</th>
 						<th>Name</th>
