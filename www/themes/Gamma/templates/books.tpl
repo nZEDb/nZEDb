@@ -1,6 +1,6 @@
 <h2>Browse Books</h2>
 
-<div class="well well-small">
+<div class="well well-sm">
 <div style="text-align: center;">
 	{include file='search-filter.tpl'}
 </div>
@@ -12,7 +12,7 @@
 
 <form id="nzb_multi_operations_form" action="get">
 
-	<div class="well well-small">
+	<div class="well well-sm">
 		<div class="nzb_multi_operations">
 			<table width="100%">
 				<tr>
@@ -193,7 +193,7 @@
 </table>
 
 {if $results|@count > 10}
-<div class="well well-small">
+<div class="well well-sm">
 	<div class="nzb_multi_operations">
 		<table width="100%">
 			<tr>
