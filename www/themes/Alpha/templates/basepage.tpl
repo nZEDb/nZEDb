@@ -344,7 +344,7 @@
 	<script src="{$smarty.const.WWW_THEMES}/shared/js/holder.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/js/jquery.pnotify.min.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/js/jquery.qtip.min.js"></script>
-	<script src="{$smarty.const.WWW_THEMES}/shared/libs/autosize-3.0.x/autosize-min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/autosize-3.0.x/dist/autosize-min.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/libs/colorbox-1.6.x/jquery.colorbox-min.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/js/sorttable.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/{$theme}/scripts/utils.js"></script>
