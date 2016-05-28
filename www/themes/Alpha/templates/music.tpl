@@ -171,7 +171,7 @@
 															href="{$smarty.const.WWW_TOP}/nfo/{$mguid[$m@index]}"
 															title="View Nfo" class="modal_nfo"
 															rel="nfo"
-														><i class="fa fa-info-sign"></i></a></span
+														><i class="fa fa-info"></i></a></span
 													>
 												{/if}
 												{if $mhaspreview[$m@index] == 1 && $userdata.canpreview == 1}

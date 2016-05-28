@@ -90,7 +90,7 @@
 									class="label label-default modal_nfo"
 									href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}"
 									title="View Nfo" rel="nfo"
-								><i class="fa fa-info-sign"></i></a>
+								><i class="fa fa-info"></i></a>
 							{/if}
 							{if $result.imdbid > 0}
 								<a
