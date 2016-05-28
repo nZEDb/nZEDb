@@ -207,7 +207,7 @@
 									title="View movie info"
 									class="modal_imdb label label-default"
 									rel="movie"
-								><i class="icon-film"></i></a>
+								><i class="fa fa-film"></i></a>
 							{/if}
 							{if $result.musicinfo_id > 0}
 								<a
@@ -216,7 +216,7 @@
 									title="View music info"
 									class="modal_music label label-default"
 									rel="music"
-								><i class="icon-music"></i></a>
+								><i class="fa fa-music"></i></a>
 							{/if}
 							{if $result.consoleinfo_id > 0}
 								<a
@@ -225,7 +225,7 @@
 									title="View console info"
 									class="modal_console label label-default"
 									rel="console"
-								><i class="icon-off"></i></a>
+								><i class="fa fa-power-off"></i></a>
 							{/if}
 							{if $result.haspreview == 1 && $userdata.canpreview == 1}
 								<a
@@ -243,7 +243,7 @@
 									name="name{$result.guid}"
 									title="Sample of {$result.searchname|escape:"htmlall"}"
 									rel="preview"
-								><i class="icon-picture"></i></a>
+								><i class="fa fa-picture-o"></i></a>
 							{/if}
 							{if $result.videos_id > 0}
 								<a

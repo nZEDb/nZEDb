@@ -112,7 +112,7 @@
 							href="#"
 							name="audio{$result.guid}" title="Listen to {$result.searchname|escape:"htmlall"}"
 							class="audioprev" rel="audio"
-						><i class="icon-music"></i></a>
+						><i class="fa fa-music"></i></a>
 						<audio
 							id="audprev{$result.guid}"
 							src="{$smarty.const.WWW_TOP}/covers/audio/{$result.guid}.mp3"

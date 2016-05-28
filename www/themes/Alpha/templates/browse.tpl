@@ -98,7 +98,7 @@
 									href="#" name="name{$result.imdbid}"
 									title="View movie info"
 									rel="movie"
-								><i class="icon-film"></i></a>
+								><i class="fa fa-film"></i></a>
 							{/if}
 							{if $result.musicinfo_id > 0}
 								<a
@@ -107,7 +107,7 @@
 									name="name{$result.musicinfo_id}"
 									title="View music info"
 									rel="music"
-								><i class="icon-music"></i></a>
+								><i class="fa fa-music"></i></a>
 							{/if}
 							{if $result.consoleinfo_id > 0}
 								<a
@@ -116,7 +116,7 @@
 									name="name{$result.consoleinfo_id}"
 									title="View console info"
 									rel="console"
-								><i class="icon-off"></i></a>
+								><i class="fa fa-power-off"></i></a>
 							{/if}
 							{if $result.haspreview == 1 && $userdata.canpreview == 1}
 								<a
@@ -134,7 +134,7 @@
 									name="name{$result.guid}"
 									title="Sample of {$result.searchname|escape:"htmlall"}"
 									rel="preview"
-								><i class="icon-picture"></i></a>
+								><i class="fa fa-picture-o"></i></a>
 							{/if}
 							{if $result.videos_id > 0}
 								<a
@@ -213,10 +213,10 @@
 					</td>
 					<td style="width:auto;text-align:center;white-space:nowrap;">
 						<a title="View comments" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/#comments">{$result.comments}</a>
-						<i class="icon-comments-alt"></i>
+						<i class="fa fa-comments-o"></i>
 						<br/>
 						{$result.grabs}
-						<i class="icon-download-alt"></i>
+						<i class="fa fa-download"></i>
 					</td>
 					<td class="icons" style="width:80px;text-align:center;white-space:nowrap;">
 						<div class="icon icon_nzb">
