@@ -75,7 +75,7 @@
 							{elseif $result.passwordstatus == 2}
 								<span class="icon-stack" title="Broken Post"><i class="icon-check-empty icon-stack-base"></i><i class="icon-unlink"></i></span>
 							{elseif $result.passwordstatus == 10}
-								<span class="icon-stack" title="Passworded Archive"><i class="icon-check-empty icon-stack-base"></i><i class="icon-lock"></i></span>
+								<span class="icon-stack" title="Passworded Archive"><i class="icon-check-empty icon-stack-base"></i><i class="fa fa-lock"></i></span>
 							{/if}
 							{if $result.videostatus > 0}
 								<a
@@ -90,7 +90,7 @@
 									class="label label-default modal_nfo"
 									href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}"
 									title="View Nfo" rel="nfo"
-								><i class="icon-info-sign"></i></a>
+								><i class="fa fa-info-sign"></i></a>
 							{/if}
 							{if $result.imdbid > 0}
 								<a
@@ -125,7 +125,7 @@
 									name="name{$result.guid}"
 									title="Screenshot of {$result.searchname|escape:"htmlall"}"
 									rel="preview"
-								><i class="icon-camera"></i></a>
+								><i class="fa fa-camera"></i></a>
 							{/if}
 							{if $result.jpgstatus == 1 && $userdata.canpreview == 1}
 								<a
@@ -160,20 +160,20 @@
 								<span
 									class="label label-default mediainfo"
 									title="{$result.guid}"
-								><i class="icon-list-alt"></i></span>
+								><i class="fa fa-list-alt"></i></span>
 							{/if}
 							{if $result.predb_id > 0}
 								<span
 									class="label label-default preinfo rndbtn"
 									title="{$result.predb_id}"
-								><i class="icon-eye-open"></i></span>
+								><i class="fa fa-eye"></i></span>
 							{/if}
-							{if $result.group_name != ""}
+							{if !empty($result.group_name)}
 								<a
 									class="label label-default"
 									href="{$smarty.const.WWW_TOP}/browse?g={$result.group_name|escape:"htmlall"}"
 									title="Browse {$result.group_name}"
-								><i class="icon-share-alt"></i></a>
+								><i class="fa fa-share-alt"></i></a>
 							{/if}
 							{release_flag($result.searchname, browse)}
 							{if $result.failed > 0}<span class="label label-default">

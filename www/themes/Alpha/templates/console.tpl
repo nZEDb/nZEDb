@@ -153,7 +153,7 @@
 																title="View Nfo"
 																class="modal_nfo"
 																rel="nfo"
-															><i class="icon-info-sign"></i></a></span
+															><i class="fa fa-info-sign"></i></a></span
 														> {/if}
 													{if $mhaspreview[$m@index] == 1 && $userdata.canpreview == 1}
 														<span class="label label-default">
@@ -162,7 +162,7 @@
 																name="name{$mguid[$m@index]}"
 																title="Screenshot of {$mname[$m@index]|escape:"htmlall"}"
 																class="modal_prev" rel="preview"
-															><i class="icon-camera"></i></a>
+															><i class="fa fa-camera"></i></a>
 														</span>
 													{/if}
 													{if $minnerfiles[$m@index] > 0}
@@ -171,21 +171,21 @@
 																href="#" onclick="return false;"
 																class="mediainfo"
 																title="{$mguid[$m@index]}"
-																><i class="icon-list-alt"></i></a></span
+																><i class="fa fa-list-alt"></i></a></span
 																>
 													{/if}
 													<span class="label label-default">
 														<a
 															href="{$smarty.const.WWW_TOP}/browse?g={$mgrp[$m@index]}"
 															title="Browse releases in {$mgrp[$m@index]}"
-														><i class="icon-share-alt"></i></a></span
+														><i class="fa fa-share-alt"></i></a></span
 													>
 													{if $mpass[$m@index] == 1}
 														<span class="icon-stack" title="Potentially Passworded"><i class="icon-check-empty icon-stack-base"></i><i class="icon-unlock-alt"></i></span>
 													{elseif $mpass[$m@index] == 2}
 														<span class="icon-stack" title="Broken Post"><i class="icon-check-empty icon-stack-base"></i><i class="icon-unlink"></i></span>
 													{elseif $mpass[$m@index] == 10}
-														<span class="icon-stack" title="Passworded Archive"><i class="icon-check-empty icon-stack-base"></i><i class="icon-lock"></i></span>
+														<span class="icon-stack" title="Passworded Archive"><i class="icon-check-empty icon-stack-base"></i><i class="fa fa-lock"></i></span>
 													{/if}
 													{if $mfailed[$m@index] > 0}
 														<span class="btn btn-default btn-xs" title="This release has failed to download for some users">

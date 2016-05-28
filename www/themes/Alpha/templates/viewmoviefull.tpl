@@ -123,9 +123,9 @@
 							<a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"seourl"}">{$mname[$m@index]|escape:"htmlall"|replace:".":" "}</a>
 						</label>
 						{if $mpass[$m@index] == 2}
-							<i class="icon-lock"></i>
+							<i class="fa fa-lock"></i>
 						{elseif $mpass[$m@index] == 1}
-							<i class="icon-lock"></i>
+							<i class="fa fa-lock"></i>
 						{/if}
 						<div class="resextra">
 							<div class="btns">{strip}

@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2015-06-28 DariusIII
+	* Upd: Replace icons with font-awesome counterparts.
 2015-06-27 DariusIII
 	* Upd: Use well-sm in all the themes.
 	* Fix: Replace boostrap.min.css with Gamma theme custom bootstrap.css
