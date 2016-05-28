@@ -7,7 +7,7 @@
 				data-toggle="collapse"
 				data-parent="#accordion"
 				href="#searchtoggle"
-			><i class="icon-search"></i> Search Filter</a>
+			><i class="fa fa-search"></i> Search Filter</a>
 		</h4>
 	</div>
 	<div id="searchtoggle" class="panel-collapse collapse">
@@ -24,8 +24,8 @@
 		<thead>
 			<tr>
 				<th>Select All:<input type="checkbox" class="nzb_check_all"></th>
-				<th>title<a title="Sort Descending" href="{$orderbytitle_desc}"><i class="icon-chevron-down icon-black"></i></a><a
-							title="Sort Ascending" href="{$orderbytitle_asc}"><i class="icon-chevron-up icon-black"></i></a></th>
+				<th>title<a title="Sort Descending" href="{$orderbytitle_desc}"><i class="fa fa-chevron-down icon-black"></i></a><a
+							title="Sort Ascending" href="{$orderbytitle_asc}"><i class="fa fa-chevron-up icon-black"></i></a></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -211,9 +211,9 @@
 													><i class="fa fa-share-alt"></i></a></span
 												>
 												{if $mpass[$m@index] == 1}
-													<span class="icon-stack" title="Potentially Passworded"><i class="icon-check-empty icon-stack-base"></i><i class="icon-unlock-alt"></i></span>
+													<span class="icon-stack" title="Potentially Passworded"><i class="icon-check-empty icon-stack-base"></i><i class="fa fa-unlock-alt"></i></span>
 												{elseif $mpass[$m@index] == 2}
-													<span class="icon-stack" title="Broken Post"><i class="icon-check-empty icon-stack-base"></i><i class="icon-unlink"></i></span>
+													<span class="icon-stack" title="Broken Post"><i class="icon-check-empty icon-stack-base"></i><i class="fa fa-chain-broken"></i></span>
 												{elseif $mpass[$m@index] == 10}
 													<span class="icon-stack" title="Passworded Archive"><i class="icon-check-empty icon-stack-base"></i><i class="fa fa-lock"></i></span>
 												{/if}

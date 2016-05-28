@@ -61,42 +61,42 @@
 				</th>
 				<th>name<br/>
 					<a title="Sort Descending" href="{$orderbyname_desc}">
-						<i class="icon-chevron-down icon-black"></i>
+						<i class="fa fa-chevron-down icon-black"></i>
 					</a>
 					<a title="Sort Ascending" href="{$orderbyname_asc}">
-						<i class="icon-chevron-up icon-black"></i>
+						<i class="fa fa-chevron-up icon-black"></i>
 					</a>
 				</th>
 				<th>category<br/>
 					<a title="Sort Descending" href="{$orderbycat_desc}">
-						<i class="icon-chevron-down icon-black"></i>
+						<i class="fa fa-chevron-down icon-black"></i>
 					</a>
 					<a title="Sort Ascending" href="{$orderbycat_asc}">
-						<i class="icon-chevron-up icon-black"></i>
+						<i class="fa fa-chevron-up icon-black"></i>
 					</a>
 				</th>
 				<th>posted<br/>
 					<a title="Sort Descending" href="{$orderbyposted_desc}">
-						<i class="icon-chevron-down icon-black"></i>
+						<i class="fa fa-chevron-down icon-black"></i>
 					</a>
 					<a title="Sort Ascending" href="{$orderbyposted_asc}">
-						<i class="icon-chevron-up icon-black"></i>
+						<i class="fa fa-chevron-up icon-black"></i>
 					</a>
 				</th>
 				<th>size<br/>
 					<a title="Sort Descending" href="{$orderbysize_desc}">
-						<i class="icon-chevron-down icon-black"></i>
+						<i class="fa fa-chevron-down icon-black"></i>
 					</a>
 					<a title="Sort Ascending" href="{$orderbysize_asc}">
-						<i class="icon-chevron-up icon-black"></i>
+						<i class="fa fa-chevron-up icon-black"></i>
 					</a>
 				</th>
 				<th>files<br/>
 					<a title="Sort Descending" href="{$orderbyfiles_desc}">
-						<i class="icon-chevron-down icon-black"></i>
+						<i class="fa fa-chevron-down icon-black"></i>
 					</a>
 					<a title="Sort Ascending" href="{$orderbyfiles_asc}">
-						<i class="icon-chevron-up icon-black"></i>
+						<i class="fa fa-chevron-up icon-black"></i>
 					</a>
 				</th>
 				<th>action</th>
@@ -176,7 +176,7 @@
 					<div class="btn-group pull-right">
 						<div class="input-append">
 							<input class="span2" id="filter-text" type="text">
-							<span class="add-on"><i class="icon-search"></i></span>
+							<span class="add-on"><i class="fa fa-search"></i></span>
 						</div>
 					</div>
 					{if $isadmin}

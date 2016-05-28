@@ -18,7 +18,7 @@
 		<input id="search" name="search" value="{$search|escape:'html'}" type="text" class="form-control" placeholder="Name"/>
 		<span class="input-group-btn">
 			<button id="search_search_button" type="submit" value="Name" class="btn btn-default">
-				<i class="icon-search"></i>
+				<i class="fa fa-search"></i>
 			</button>
 		</span>
 		<input type="hidden" name="t" value="{if $category[0]!=""}{$category[0]}{else}-1{/if}" id="search_cat" />
@@ -109,54 +109,54 @@
 				<th style="vertical-align:top;">
 					name
 					<a title="Sort Descending" href="{$orderbyname_desc}">
-						<i class="icon-chevron-down"></i>
+						<i class="fa fa-chevron-down"></i>
 					</a>
 					<a title="Sort Ascending" href="{$orderbyname_asc}">
-						<i class="icon-chevron-up"></i>
+						<i class="fa fa-chevron-up"></i>
 					</a>
 				</th>
 				<th style="vertical-align:top;">
 					category<br>
 					<a title="Sort Descending" href="{$orderbycat_desc}">
-						<i class="icon-chevron-down"></i>
+						<i class="fa fa-chevron-down"></i>
 					</a>
 					<a title="Sort Ascending" href="{$orderbycat_asc}">
-						<i class="icon-chevron-up"></i>
+						<i class="fa fa-chevron-up"></i>
 					</a>
 				</th>
 				<th style="vertical-align:top;">
 					posted<br>
 					<a title="Sort Descending" href="{$orderbyposted_desc}">
-						<i class="icon-chevron-down"></i>
+						<i class="fa fa-chevron-down"></i>
 					</a>
 					<a title="Sort Ascending" href="{$orderbyposted_asc}">
-						<i class="icon-chevron-up"></i>
+						<i class="fa fa-chevron-up"></i>
 					</a>
 				</th>
 				<th style="vertical-align:top;">
 					size<br>
 					<a title="Sort Descending" href="{$orderbysize_desc}">
-						<i class="icon-chevron-down"></i>
+						<i class="fa fa-chevron-down"></i>
 					</a>
 					<a title="Sort Ascending" href="{$orderbysize_asc}">
-						<i class="icon-chevron-up"></i>
+						<i class="fa fa-chevron-up"></i>
 					</a>
 				</th>
 				<th style="vertical-align:top;">files<br>
 					<a title="Sort Descending" href="{$orderbyfiles_desc}">
-						<i class="icon-chevron-down"></i>
+						<i class="fa fa-chevron-down"></i>
 					</a>
 					<a title="Sort Ascending" href="{$orderbyfiles_asc}">
-						<i class="icon-chevron-up"></i>
+						<i class="fa fa-chevron-up"></i>
 					</a>
 				</th>
 				<th style="vertical-align:top;">
 					stats<br>
 					<a title="Sort Descending" href="{$orderbystats_desc}">
-						<i class="icon-chevron-down"></i>
+						<i class="fa fa-chevron-down"></i>
 					</a>
 					<a title="Sort Ascending" href="{$orderbystats_asc}">
-						<i class="icon-chevron-up"></i>
+						<i class="fa fa-chevron-up"></i>
 					</a>
 				</th>
 				<th style="vertical-align:top;">action</th>
@@ -178,9 +178,9 @@
 						</label>
 						<div class="resextra">
 							{if $result.passwordstatus == 1}
-								<span class="label label-default" title="Probably Passworded"><i class="icon-unlock-alt"></i></span>
+								<span class="label label-default" title="Probably Passworded"><i class="fa fa-unlock-alt"></i></span>
 							{elseif $result.passwordstatus == 2}
-								<span class="label label-default" title="Broken Post"><i class="icon-unlink"></i></span>
+								<span class="label label-default" title="Broken Post"><i class="fa fa-chain-broken"></i></span>
 							{elseif $result.passwordstatus == 10}
 								<span class="label label-default" title="Passworded Archive"><i class="fa fa-lock"></i></span>
 							{/if}

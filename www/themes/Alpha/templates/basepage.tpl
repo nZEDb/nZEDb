@@ -170,44 +170,44 @@
 						<li class="dropdown">
 							<a href="#"
 									class="dropdown-toggle"
-									data-toggle="dropdown"><i class="icon-user"></i> Profile
+									data-toggle="dropdown"><i class="fa fa-user"></i> Profile
 								<b class="caret"></b></a>
 							<ul class="dropdown-menu pull-right">
-								<li><a href="{$smarty.const.WWW_TOP}/profile"><i class="icon-home"></i>
+								<li><a href="{$smarty.const.WWW_TOP}/profile"><i class="fa fa-home"></i>
 										My Profile</a></li>
 								{if $isadmin
 								}
 									<li>
-									<a href="{$smarty.const.WWW_TOP}/admin"><i class="icon-gears"></i>
+									<a href="{$smarty.const.WWW_TOP}/admin"><i class="fa fa-gears"></i>
 										Admin Panel</a></li>
 								{/if}
 								<li class="divider"></li>
 								<li>
-									<a href="{$smarty.const.WWW_TOP}/mymovies"><i class="icon-ticket"></i>
+									<a href="{$smarty.const.WWW_TOP}/mymovies"><i class="fa fa-ticket"></i>
 										My Movies</a></li>
 								<li>
-									<a href="{$smarty.const.WWW_TOP}/myshows"><i class="icon-desktop"></i>
+									<a href="{$smarty.const.WWW_TOP}/myshows"><i class="fa fa-desktop"></i>
 										My Shows</a></li>
 								<li class="divider"></li>
 								<li>
-									<a href="{$smarty.const.WWW_TOP}/cart"><i class="icon-shopping-cart"></i>
+									<a href="{$smarty.const.WWW_TOP}/cart"><i class="fa fa-shopping-cart"></i>
 										My Cart</a></li>
 								{if $sabintegrated}
 									<li>
-										<a href="{$smarty.const.WWW_TOP}/queue"><i class="icon-tasks"></i>
+										<a href="{$smarty.const.WWW_TOP}/queue"><i class="fa fa-tasks"></i>
 											My Queue</a></li>
 								{/if}
 							</ul>
 						</li>
 					{else}
-						<li><a href="{$smarty.const.WWW_TOP}/login"><i class="icon-signin"></i>
+						<li><a href="{$smarty.const.WWW_TOP}/login"><i class="fa fa-signin"></i>
 								Login</a></li>
 					{/if}
 					<li>
 						{if $loggedin=="true"}
-							<a href="{$smarty.const.WWW_TOP}/logout"><i class="icon-signout"></i> Logout</a>
+							<a href="{$smarty.const.WWW_TOP}/logout"><i class="fa fa-signout"></i> Logout</a>
 						{else}
-							<a href="{$smarty.const.WWW_TOP}/register"><i class="icon-sign-edit"></i>
+							<a href="{$smarty.const.WWW_TOP}/register"><i class="fa fa-sign-edit"></i>
 								Register</a>
 						{/if}
 					</li>
@@ -312,9 +312,9 @@
 	================================================== -->
 	<footer>
 		<div class="container text-center">
-			<p><i class="icon-certificate icon-2x" style="color:yellow;"></i>
-				<i class="icon-quote-left qoute"></i> {$site->footer}
-				<i class="icon-quote-right qoute"></i></p>
+			<p><i class="fa fa-certificate fa-2x" style="color:yellow;"></i>
+				<i class="fa fa-quote-left qoute"></i> {$site->footer}
+				<i class="fa fa-quote-right qoute"></i></p>
 
 			<p>Copyright &copy;
 				<a href="{$smarty.const.WWW_TOP}{$site->home_link}">{if $site->title == ''}nZEDb{else}{$site->title}{/if}</a>

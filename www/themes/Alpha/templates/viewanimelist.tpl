@@ -13,7 +13,7 @@
 		<div class="input-group col-12 col-lg-12">
 			<input type="text" class="form-control" placeholder="Search" id="title" name="title" value="{$animetitle}">
 <span class="input-group-btn">
-<button type="submit" value="Go" class="btn btn-default"><i class="icon-search"></i></button>
+<button type="submit" value="Go" class="btn btn-default"><i class="fa fa-search"></i></button>
 </span>
 		</div>
 	</form>
