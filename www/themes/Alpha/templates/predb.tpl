@@ -5,7 +5,7 @@
 		<input type="text" class="form-control" placeholder="Search PreDB" id="presearch" name="presearch" value="{$lastSearch|escape:'html'}">
 		<span class="input-group-btn">
 			<button type="submit" value="Go" class="btn btn-default">
-				<i class="icon-search"></i>
+				<i class="fa fa-search"></i>
 			</button>
 		</span>
 	</div>
@@ -308,7 +308,7 @@
 							{$result.requestid}
 						</a>
 					{else}
-						<i class="icon-remove-sign" title="N/A"></i>
+						<i class="fa fa-times-circle" title="N/A"></i>
 					{/if}
 				</td>
 				<td class="predb" style="width:60px;text-align:center;overflow:hidden;">
@@ -319,14 +319,14 @@
 							{$result.size|regex_replace:"/(\.\d|,)+/":''}
 						{/if}
 					{else}
-						<i class="icon-remove-sign" title="N/A"></i>
+						<i class="fa fa-times-circle" title="N/A"></i>
 					{/if}
 				</td>
 				<td class="predb" style="width:60px;text-align:center;overflow:hidden;">
 					{if isset($result.files)}
 						{$result.files}
 					{else}
-						<i class="icon-remove-sign" title="N/A"></i>
+						<i class="fa fa-times-circle" title="N/A"></i>
 					{/if}
 				</td>
 				<td class="predb" style="text-align:center;">

@@ -4,7 +4,7 @@
 	<div class="accordion-group">
 		<div class="accordion-heading">
 			<a class="accordion-toggle" data-toggle="collapse" data-parent="#searchtoggle" href="#searchfilter">
-				<i class="icon-search"></i>
+				<i class="fa fa-search"></i>
 				Search Filter
 			</a>
 		</div>
@@ -29,28 +29,28 @@
 						</div>
 					</th>
 					<th style="vertical-align:top;">name
-						<a title="Sort Descending" href="{$orderbyname_desc}"><i class="icon-chevron-down"></i></a>
-						<a title="Sort Ascending" href="{$orderbyname_asc}"><i class="icon-chevron-up"></i></a>
+						<a title="Sort Descending" href="{$orderbyname_desc}"><i class="fa fa-chevron-down"></i></a>
+						<a title="Sort Ascending" href="{$orderbyname_asc}"><i class="fa fa-chevron-up"></i></a>
 					</th>
 					<th style="vertical-align:top;text-align:center;">category<br>
-						<a title="Sort Descending" href="{$orderbycat_desc}"><i class="icon-chevron-down"></i></a>
-						<a title="Sort Ascending" href="{$orderbycat_asc}"><i class="icon-chevron-up"></i></a>
+						<a title="Sort Descending" href="{$orderbycat_desc}"><i class="fa fa-chevron-down"></i></a>
+						<a title="Sort Ascending" href="{$orderbycat_asc}"><i class="fa fa-chevron-up"></i></a>
 					</th>
 					<th style="vertical-align:top;text-align:center;">posted<br>
-						<a title="Sort Descending" href="{$orderbyposted_desc}"><i class="icon-chevron-down"></i></a>
-						<a title="Sort Ascending" href="{$orderbyposted_asc}"><i class="icon-chevron-up"></i></a>
+						<a title="Sort Descending" href="{$orderbyposted_desc}"><i class="fa fa-chevron-down"></i></a>
+						<a title="Sort Ascending" href="{$orderbyposted_asc}"><i class="fa fa-chevron-up"></i></a>
 					</th>
 					<th style="vertical-align:top;text-align:center;">size<br>
-						<a title="Sort Descending" href="{$orderbysize_desc}"><i class="icon-chevron-down"></i></a>
-						<a title="Sort Ascending" href="{$orderbysize_asc}"><i class="icon-chevron-up"></i></a>
+						<a title="Sort Descending" href="{$orderbysize_desc}"><i class="fa fa-chevron-down"></i></a>
+						<a title="Sort Ascending" href="{$orderbysize_asc}"><i class="fa fa-chevron-up"></i></a>
 					</th>
 					<th style="vertical-align:top;text-align:center;">files<br>
-						<a title="Sort Descending" href="{$orderbyfiles_desc}"><i class="icon-chevron-down"></i></a>
-						<a title="Sort Ascending" href="{$orderbyfiles_asc}"><i class="icon-chevron-up"></i></a>
+						<a title="Sort Descending" href="{$orderbyfiles_desc}"><i class="fa fa-chevron-down"></i></a>
+						<a title="Sort Ascending" href="{$orderbyfiles_asc}"><i class="fa fa-chevron-up"></i></a>
 					</th>
 					<th style="vertical-align:top;text-align:center;">stats<br>
-						<a title="Sort Descending" href="{$orderbystats_desc}"><i class="icon-chevron-down"></i></a>
-						<a title="Sort Ascending" href="{$orderbystats_asc}"><i class="icon-chevron-up"></i></a>
+						<a title="Sort Descending" href="{$orderbystats_desc}"><i class="fa fa-chevron-down"></i></a>
+						<a title="Sort Ascending" href="{$orderbystats_asc}"><i class="fa fa-chevron-up"></i></a>
 					</th>
 					<th style="vertical-align:top;text-align:center;">action</th>
 				</tr>
@@ -71,11 +71,11 @@
 						</label>
 						<div class="resextra">
 							{if $result.passwordstatus == 1}
-								<span class="icon-stack" title="Potentially Passworded"><i class="icon-check-empty icon-stack-base"></i><i class="icon-unlock-alt"></i></span>
+								<span class="fa fa-stack" title="Potentially Passworded"><i class="fa fa-square-o fa-stack-base"></i><i class="fa fa-unlock-alt"></i></span>
 							{elseif $result.passwordstatus == 2}
-								<span class="icon-stack" title="Broken Post"><i class="icon-check-empty icon-stack-base"></i><i class="icon-unlink"></i></span>
+								<span class="fa fa-stack" title="Broken Post"><i class="fa fa-square-o fa-stack-base"></i><i class="fa fa fa-chain-broken"></i></span>
 							{elseif $result.passwordstatus == 10}
-								<span class="icon-stack" title="Passworded Archive"><i class="icon-check-empty icon-stack-base"></i><i class="icon-lock"></i></span>
+								<span class="fa fa-stack" title="Passworded Archive"><i class="fa fa-square-o fa-stack-base"></i><i class="fa fa-lock"></i></span>
 							{/if}
 							{if $result.videostatus > 0}
 								<a
@@ -83,14 +83,14 @@
 									href="{$smarty.const.WWW_TOP}/details/{$result.guid}"
 									title="This release has a video preview"
 									rel="preview"
-								><i class="icon-youtube-play"></i></a>
+								><i class="fa fa-youtube-play"></i></a>
 							{/if}
 							{if $result.nfoid > 0}
 								<a
 									class="label label-default modal_nfo"
 									href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}"
 									title="View Nfo" rel="nfo"
-								><i class="icon-info-sign"></i></a>
+								><i class="fa fa-info"></i></a>
 							{/if}
 							{if $result.imdbid > 0}
 								<a
@@ -98,7 +98,7 @@
 									href="#" name="name{$result.imdbid}"
 									title="View movie info"
 									rel="movie"
-								><i class="icon-film"></i></a>
+								><i class="fa fa-film"></i></a>
 							{/if}
 							{if $result.musicinfo_id > 0}
 								<a
@@ -107,7 +107,7 @@
 									name="name{$result.musicinfo_id}"
 									title="View music info"
 									rel="music"
-								><i class="icon-music"></i></a>
+								><i class="fa fa-music"></i></a>
 							{/if}
 							{if $result.consoleinfo_id > 0}
 								<a
@@ -116,7 +116,7 @@
 									name="name{$result.consoleinfo_id}"
 									title="View console info"
 									rel="console"
-								><i class="icon-off"></i></a>
+								><i class="fa fa-power-off"></i></a>
 							{/if}
 							{if $result.haspreview == 1 && $userdata.canpreview == 1}
 								<a
@@ -125,7 +125,7 @@
 									name="name{$result.guid}"
 									title="Screenshot of {$result.searchname|escape:"htmlall"}"
 									rel="preview"
-								><i class="icon-camera"></i></a>
+								><i class="fa fa-camera"></i></a>
 							{/if}
 							{if $result.jpgstatus == 1 && $userdata.canpreview == 1}
 								<a
@@ -134,21 +134,21 @@
 									name="name{$result.guid}"
 									title="Sample of {$result.searchname|escape:"htmlall"}"
 									rel="preview"
-								><i class="icon-picture"></i></a>
+								><i class="fa fa-picture-o"></i></a>
 							{/if}
 							{if $result.videos_id > 0}
 								<a
 									class="label label-default"
 									href="{$smarty.const.WWW_TOP}/series/{$result.videos_id}"
 									title="View all episodes"
-								><i class="icon-bookmark"></i></a>
+								><i class="fa fa-bookmark"></i></a>
 							{/if}
 							{if $result.anidbid > 0}
 								<a
 									class="label label-default"
 									href="{$smarty.const.WWW_TOP}/anime/{$result.anidbid}"
 									title="View all anime"
-								><i class="icon-font"></i></a>
+								><i class="fa fa-font"></i></a>
 							{/if}
 							{if $result.firstaired != ""}
 								<span
@@ -160,20 +160,20 @@
 								<span
 									class="label label-default mediainfo"
 									title="{$result.guid}"
-								><i class="icon-list-alt"></i></span>
+								><i class="fa fa-list-alt"></i></span>
 							{/if}
 							{if $result.predb_id > 0}
 								<span
 									class="label label-default preinfo rndbtn"
 									title="{$result.predb_id}"
-								><i class="icon-eye-open"></i></span>
+								><i class="fa fa-eye"></i></span>
 							{/if}
-							{if $result.group_name != ""}
+							{if !empty($result.group_name)}
 								<a
 									class="label label-default"
 									href="{$smarty.const.WWW_TOP}/browse?g={$result.group_name|escape:"htmlall"}"
 									title="Browse {$result.group_name}"
-								><i class="icon-share-alt"></i></a>
+								><i class="fa fa-share-alt"></i></a>
 							{/if}
 							{release_flag($result.searchname, browse)}
 							{if $result.failed > 0}<span class="label label-default">
@@ -204,7 +204,7 @@
 					</td>
 					<td style="width:auto;text-align:center;white-space:nowrap;">
 						<a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$result.guid}">{$result.totalpart}</a>
-						<i class="icon-file"></i>
+						<i class="fa fa-file"></i>
 						{if $result.rarinnerfilecount > 0}
 							<div class="rarfilelist">
 								<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/magnifier.png" alt="{$result.guid}">
@@ -213,10 +213,10 @@
 					</td>
 					<td style="width:auto;text-align:center;white-space:nowrap;">
 						<a title="View comments" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/#comments">{$result.comments}</a>
-						<i class="icon-comments-alt"></i>
+						<i class="fa fa-comments-o"></i>
 						<br/>
 						{$result.grabs}
-						<i class="icon-download-alt"></i>
+						<i class="fa fa-download"></i>
 					</td>
 					<td class="icons" style="width:80px;text-align:center;white-space:nowrap;">
 						<div class="icon icon_nzb">

@@ -57,7 +57,6 @@
 					<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
 				</a>
 			{/if}
-			{/if}
 		</div>
 	</td></tr>
 	{/if}
