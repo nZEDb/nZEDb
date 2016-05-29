@@ -983,7 +983,7 @@ class Releases
 		)
 	{
 		$siteSQL = array();
-		$showSql = false;
+		$showSql = '';
 
 		if (is_array($siteIdArr)) {
 			foreach ($siteIdArr as $column => $Id) {
@@ -997,22 +997,21 @@ class Releases
 
 		if ($siteCount > 0 ) {
 			// If we have show info, find the Episode ID/Video ID first to avoid table scans
-			$show = $this->pdo->queryOneRow(
-				sprintf('
-					SELECT v.id AS video, tve.id AS episode
-					FROM videos v
-					LEFT JOIN tv_episodes tve ON v.id = tve.videos_id
-					WHERE (%s) %s %s %s',
-					implode(' OR ', $siteSQL),
-					($series != '' ? sprintf('AND tve.series = %d', (int)preg_replace('/^s0*/i', '', $series)) : ''),
-					($episode != '' ? sprintf('AND tve.episode = %d', (int)preg_replace('/^e0*/i', '', $episode)) : ''),
-					($airdate != '' ? sprintf('AND DATE(tve.firstaired) = %s', $this->pdo->escapeString($airdate)) : '')
-				)
+			$showQry = sprintf('
+				SELECT v.id AS video, tve.id AS episode
+				FROM videos v
+				LEFT JOIN tv_episodes tve ON v.id = tve.videos_id
+				WHERE (%s) %s %s %s',
+				implode(' OR ', $siteSQL),
+				($series != '' ? sprintf('AND tve.series = %d', (int)preg_replace('/^s0*/i', '', $series)) : ''),
+				($episode != '' ? sprintf('AND tve.episode = %d', (int)preg_replace('/^e0*/i', '', $episode)) : ''),
+				($airdate != '' ? sprintf('AND DATE(tve.firstaired) = %s', $this->pdo->escapeString($airdate)) : '')
 			);
+			$show = $this->pdo->queryOneRow($showQry);
 			if ($show !== false) {
-				if ($show['episode'] > 0) {
+				if (($series !== '' && $episode !== '') || $airdate !== '') {
 					$showSql = 'AND r.tv_episodes_id = ' . $show['episode'];
-				} elseif ($show['video'] > 0) {
+				} else {
 					$showSql = 'AND r.videos_id = ' . $show['video'];
 				}
 			}
@@ -1029,7 +1028,7 @@ class Releases
 			Category::TV_OTHER,
 			NZB::NZB_ADDED,
 			$this->showPasswords,
-			($showSql !== false ? $showSql : ''),
+			$showSql,
 			($name !== '' ? $this->releaseSearch->getSearchSQL(['searchname' => $name]) : ''),
 			$this->categorySQL($cat),
 			($maxAge > 0 ? sprintf('AND r.postdate > NOW() - INTERVAL %d DAY', $maxAge) : ''),
