@@ -280,7 +280,7 @@ class XMLReturn
 	}
 
 	/**
-	 *
+	 * Writes the channel information for the feed
 	 */
 	protected function includeMetaInfo()
 	{
@@ -327,7 +327,7 @@ class XMLReturn
 	}
 
 	/**
-	 *
+	 * Writes the primary release information
 	 */
 	public function includeReleaseMain()
 	{
@@ -359,7 +359,7 @@ class XMLReturn
 	}
 
 	/**
-	 * Write the Zed (newznab) specific attributes
+	 * Writes the Zed (newznab) specific attributes
 	 */
 	protected function setZedAttributes()
 	{
@@ -402,7 +402,7 @@ class XMLReturn
 	}
 
 	/**
-	 * Write the TV Specific attributes
+	 * Writes the TV Specific attributes
 	 */
 	protected function setTvAttributes()
 	{
@@ -432,7 +432,7 @@ class XMLReturn
 	}
 
 	/**
-	 * Writes zed (newznab) type attributes
+	 * Writes individual zed (newznab) type attributes
 	 *
 	 * @param string $name The newznab attribute name tag
 	 * @param string $value The newznab attribute value
