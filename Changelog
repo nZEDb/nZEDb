@@ -9,14 +9,17 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
-2015-06-28 DariusIII
-	* Upd: Replace icons with font-awesome counterparts.
-2015-06-27 DariusIII
+2015-05-29 DariusIII
+	* Upd: Replace icons with font-awesome counterparts in Alpha theme.
+2016-05-28 ruhllatio
+	Fix: Greatly improve TV API search query when specifying ID/Season/Ep etc. Remove var_dump.
+	Fix: Wrong array offset
+2016-05-27 DariusIII
 	* Upd: Use well-sm in all the themes.
 	* Fix: Replace boostrap.min.css with Gamma theme custom bootstrap.css
 	* Fix: Fix link to autosize.min.js in Alpha theme.
 	* Fix: Fix tables layout in Gamma theme by removing table-striped attribute.
-2015-05-26 niel
+2016-05-26 niel
 	Fix: Update some bower-asset's version strings to better reflect the version specified.
 		Tightened versions for others to err on the side of caution. We can relax later if this
 		prooves to be too tight.
