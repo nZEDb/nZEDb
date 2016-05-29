@@ -89,9 +89,6 @@ if ($page->users->isLoggedIn()) {
 	}
 }
 
-$page->smarty->assign('uid', $uid);
-$page->smarty->assign('rsstoken', $apiKey);
-
 // Record user access to the api, if its been called by a user (i.e. capabilities request do not require a user to be logged in or key provided).
 if ($uid != '') {
 	$page->users->updateApiAccessed($uid);
@@ -103,15 +100,16 @@ if ($uid != '') {
 
 $releases = new Releases(['Settings' => $page->settings]);
 $api = new API(['Settings' => $page->settings, 'Request' => $_GET]);
+$caps = (new Capabilities(['Settings' => $page->settings]))->getForMenu();
 
-$page->smarty->assign('extended', (isset($_GET['extended']) && $_GET['extended'] == 1 ? '1' : '0'));
-$page->smarty->assign('del', (isset($_GET['del']) && $_GET['del'] == 1 ? '1' : '0'));
-
-// Output is either json or xml.
+// Set Query Parameters based on Request objects
 $outputXML = (isset($_GET['o']) && $_GET['o'] == 'json' ? false : true);
-
 $minSize = (isset($_GET['minsize']) && $_GET['minsize'] > 0 ? $_GET['minsize'] : 0);
 $offset = $api->offset();
+
+// Set API Parameters based on Request objects
+$params['extended'] = (isset($_GET['extended']) && $_GET['extended'] == 1 ? '1' : '0');
+$params['del'] = (isset($_GET['del']) && $_GET['del'] == 1 ? '1' : '0');
 
 switch ($function) {
 	// Search releases.
@@ -132,10 +130,8 @@ switch ($function) {
 				$categoryID, $offset, $limit, '', $maxAge, $catExclusions, '', $minSize
 			);
 		}
-
-		$api->printOutput($relData, $outputXML, $page, $offset);
+		$api->printOutput($relData, $outputXML, $caps, $params);
 		break;
-
 	// Search tv releases.
 	case 'tv':
 		$api->verifyEmptyParameter('q');
@@ -184,7 +180,7 @@ switch ($function) {
 		);
 
 		$api->addLanguage($relData);
-		$api->printOutput($relData, $outputXML, $page, $offset);
+		$api->printOutput($relData, $outputXML, $caps, $params);
 		break;
 
 	// Search movie releases.
@@ -213,37 +209,12 @@ switch ($function) {
 		);
 
 		$api->addLanguage($relData);
-		$api->printOutput($relData, $outputXML, $page, $offset);
+		$api->printOutput($relData, $outputXML, $caps, $params);
 		break;
-
-	// Get NZB.
-	case 'g':
-		if (!isset($_GET['id'])) {
-			Misc::showApiError(200, 'Missing parameter (id is required for downloading an NZB)');
-		}
-
-		$relData = $releases->getByGuid($_GET['id']);
-		if ($relData) {
-			header(
-				'Location:' .
-				WWW_TOP .
-				'/getnzb?i=' .
-				$uid .
-				'&r=' .
-				$apiKey .
-				'&id=' .
-				$relData['guid'] .
-				((isset($_GET['del']) && $_GET['del'] == '1') ? '&del=1' : '')
-			);
-		} else {
-			Misc::showApiError(300, 'No such item (the guid you provided has no release in our database)');
-		}
-		break;
-
 	// Get individual NZB details.
 	case 'd':
 		if (!isset($_GET['id'])) {
-			Misc::showApiError(200, 'Missing parameter (id is required for downloading an NZB)');
+			Misc::showApiError(200, 'Missing parameter (id is required for single release details)');
 		}
 
 		$page->users->addApiRequest($uid, $_SERVER['REQUEST_URI']);
@@ -253,8 +224,7 @@ switch ($function) {
 		if ($data) {
 			$relData[] = $data;
 		}
-
-		$api->printOutput($relData, $outputXML, $page, $offset);
+		$api->printOutput($relData, $outputXML, $caps, $params);
 		break;
 
 	// Get an NFO file for an individual release.
@@ -286,17 +256,14 @@ switch ($function) {
 
 	// Capabilities request.
 	case 'c':
-
 		//get categories
 		$cats = (new Category(['Settings' => $page->settings]))->getForMenu();
-		$caps = (new Capabilities(['Settings' => $page->settings]))->getForMenu();
 		$caps['categories'] = $cats;
 
 		if ($outputXML) { //use apicaps.tpl if xml is requested
 			$response = (new XMLReturn(['Categories' => $cats, 'Server' => $caps, 'Type' => 'caps']))->returnXML();
-			//var_dump($caps); exit;
 			header('Content-type: text/xml');
-		} else { //otherwise construct array of capabilities and categories
+		} else { //otherwise construct JSON array
 			//get capabilities
 			//use json_encode
 			$response = $api->encodeAsJSON($caps);

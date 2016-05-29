@@ -50,6 +50,7 @@ class Capabilities
 				'title'      => $this->pdo->getSetting('title'),
 				'strapline'  => $this->pdo->getSetting('strapline'),
 				'email'      => $this->pdo->getSetting('email'),
+				'meta'       => $this->pdo->getSetting('metakeywords'),
 				'url'        => $serverroot,
 				'image'      => $serverroot . 'themes/shared/images/logo.png'
 			],

@@ -58,26 +58,33 @@ class API {
 
 	/**
 	 * Print XML or JSON output.
+	 *
 	 * @param array    $data   Data to print.
 	 * @param bool     $xml    True: Print as XML False: Print as JSON.
-	 * @param \BasePage $page
-	 * @param int      $offset Offset for limit.
+	 * @param array    $caps   Server Capabilities
+	 * @param array    $params Additional request parameters
 	 */
-	function printOutput($data, $xml = true, $page, $offset = 0)
+	function printOutput($data, $xml = true, $caps, $params)
 	{
 		if ($xml) {
-			$page->smarty->assign('offset', $offset);
-			$page->smarty->assign('releases', $data);
-			$response = trim($page->smarty->fetch('apiresult.tpl'));
+			$response =
+				(
+				new XMLReturn(
+					[
+						'Parameters' => $params,
+						'Releases' => $data,
+						'Server' => $caps,
+						'Type' => 'api'
+					]
+				)
+				)->returnXML();
 			header('Content-type: text/xml');
-			header('Content-Length: ' . strlen($response));
-			echo $response;
 		} else {
 			$response = $this->encodeAsJSON($data);
 			header('Content-type: application/json');
-			header('Content-Length: ' . strlen($response));
-			echo $response;
 		}
+		header('Content-Length: ' . strlen($response));
+		echo $response;
 	}
 
 	/**
