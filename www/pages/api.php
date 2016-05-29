@@ -7,6 +7,7 @@ use nzedb\API;
 use nzedb\db\Settings;
 use nzedb\utility\Misc;
 use nzedb\utility\Text;
+use nzedb\XMLReturn;
 
 // API functions.
 $function = 's';
@@ -285,28 +286,24 @@ switch ($function) {
 
 	// Capabilities request.
 	case 'c':
-		//get categories
-		$category = new Category(['Settings' => $page->settings]);
-		$cats = $category->getForMenu();
 
-		//insert cats into template variable
-		$page->smarty->assign('parentcatlist', $cats);
+		//get categories
+		$cats = (new Category(['Settings' => $page->settings]))->getForMenu();
+		$caps = (new Capabilities(['Settings' => $page->settings]))->getForMenu();
+		$caps['categories'] = $cats;
 
 		if ($outputXML) { //use apicaps.tpl if xml is requested
-			$response = $page->smarty->fetch('apicaps.tpl');
+			$response = (new XMLReturn(['Categories' => $cats, 'Server' => $caps, 'Type' => 'caps']))->returnXML();
+			//var_dump($caps); exit;
 			header('Content-type: text/xml');
-			header('Content-Length: ' . strlen($response));
-			echo $response;
 		} else { //otherwise construct array of capabilities and categories
 			//get capabilities
-			$caps = (new Capabilities(['Settings' => $page->settings]))->getForMenu();
-			$caps['categories'] = $cats;
 			//use json_encode
 			$response = $api->encodeAsJSON($caps);
 			header('Content-type: application/json');
-			header('Content-Length: ' . strlen($response));
-			echo $response;
 		}
+		header('Content-Length: ' . strlen($response));
+		echo $response;
 		break;
 	// Register request.
 	case 'r':
