@@ -184,11 +184,11 @@
 															><i class="fa fa-share-alt"></i></a></span
 														>
 														{if $mpass[$m@index] == 1}
-															<span class="icon-stack" title="Potentially Passworded"><i class="icon-check-empty icon-stack-base"></i><i class="fa fa-unlock-alt"></i></span>
+															<span class="fa fa-stack" title="Potentially Passworded"><i class="fa fa-square-o fa-stack-base"></i><i class="fa fa-unlock-alt"></i></span>
 														{elseif $mpass[$m@index] == 2}
-															<span class="icon-stack" title="Broken Post"><i class="icon-check-empty icon-stack-base"></i><i class="fa fa-chain-broken"></i></span>
+															<span class="fa fa-stack" title="Broken Post"><i class="fa fa-square-o fa-stack-base"></i><i class="fa fa-chain-broken"></i></span>
 														{elseif $mpass[$m@index] == 10}
-															<span class="icon-stack" title="Passworded Archive"><i class="icon-check-empty icon-stack-base"></i><i class="fa fa-lock"></i></span>
+															<span class="fa fa-stack" title="Passworded Archive"><i class="fa fa-square-o fa-stack-base"></i><i class="fa fa-lock"></i></span>
 														{/if}
 														{if $mfailed[$m@index] > 0}
 														<span class="btn btn-hover btn-default btn-xs"><i class="fa fa-thumbs-o-down"></i><span

@@ -71,11 +71,11 @@
 						</label>
 						<div class="resextra">
 							{if $result.passwordstatus == 1}
-								<span class="icon-stack" title="Potentially Passworded"><i class="icon-check-empty icon-stack-base"></i><i class="fa fa-unlock-alt"></i></span>
+								<span class="fa fa-stack" title="Potentially Passworded"><i class="fa fa-square-o fa-stack-base"></i><i class="fa fa-unlock-alt"></i></span>
 							{elseif $result.passwordstatus == 2}
-								<span class="icon-stack" title="Broken Post"><i class="icon-check-empty icon-stack-base"></i><i class="fa fa fa-chain-broken"></i></span>
+								<span class="fa fa-stack" title="Broken Post"><i class="fa fa-square-o fa-stack-base"></i><i class="fa fa fa-chain-broken"></i></span>
 							{elseif $result.passwordstatus == 10}
-								<span class="icon-stack" title="Passworded Archive"><i class="icon-check-empty icon-stack-base"></i><i class="fa fa-lock"></i></span>
+								<span class="fa fa-stack" title="Passworded Archive"><i class="fa fa-square-o fa-stack-base"></i><i class="fa fa-lock"></i></span>
 							{/if}
 							{if $result.videostatus > 0}
 								<a

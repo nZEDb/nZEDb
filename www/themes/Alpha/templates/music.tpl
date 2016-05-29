@@ -148,21 +148,21 @@
 										<br>
 										<div class="resextra">
 											<div class="pull-left">
-												<i class="icon-calendar"></i> Posted {$mpostdate[$m@index]|timeago} |
-												<i class="icon-hdd"></i> {$msize[$m@index]|fsize_format:"MB"} |
-												<i class="icon-file"></i>
+												<i class="fa fa-calendar"></i> Posted {$mpostdate[$m@index]|timeago} |
+												<i class="fa fa-hdd"></i> {$msize[$m@index]|fsize_format:"MB"} |
+												<i class="fa fa-file"></i>
 												<a
 													title="View file list"
 													href="{$smarty.const.WWW_TOP}/filelist/{$mguid[$m@index]}">{$mtotalparts[$m@index]}
 													files
 												</a> |
-												<i class="icon-comments"></i>
+												<i class="fa fa-comments"></i>
 												<a
 													title="View comments for {$mname[$m@index]|escape:"htmlall"}"
 													href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}#comments">{$mcomments[$m@index]}
 													cmt{if $mcomments[$m@index] != 1}s{/if}
 												</a> |
-												<i class="icon-download"></i> {$mgrabs[$m@index]} grab{if $mgrabs[$m@index] != 1}s{/if}
+												<i class="fa fa-download"></i> {$mgrabs[$m@index]} grab{if $mgrabs[$m@index] != 1}s{/if}
 											</div>
 											<div class="pull-right">
 												{if $mnfo[$m@index] > 0}
@@ -200,11 +200,11 @@
 													><i class="fa fa-share-alt"></i></a></span
 												>
 												{if $mpass[$m@index] == 1}
-													<span class="icon-stack" title="Potentially Passworded"><i class="icon-check-empty icon-stack-base"></i><i class="fa fa-unlock-alt"></i></span>
+													<span class="fa fa-stack" title="Potentially Passworded"><i class="fa fa-square-o fa-stack-base"></i><i class="fa fa-unlock-alt"></i></span>
 												{elseif $mpass[$m@index] == 2}
-													<span class="icon-stack" title="Broken Post"><i class="icon-check-empty icon-stack-base"></i><i class="fa fa-chain-broken"></i></span>
+													<span class="fa fa-stack" title="Broken Post"><i class="fa fa-square-o fa-stack-base"></i><i class="fa fa-chain-broken"></i></span>
 												{elseif $mpass[$m@index] == 10}
-													<span class="icon-stack" title="Passworded Archive"><i class="icon-check-empty icon-stack-base"></i><i class="fa fa-lock"></i></span>
+													<span class="fa fa-stack" title="Passworded Archive"><i class="fa fa-square-o fa-stack-base"></i><i class="fa fa-lock"></i></span>
 												{/if}
 												{if $mfailed[$m@index] > 0}
 													<span class="btn btn-default btn-xs" title="This release has failed to download for some users">

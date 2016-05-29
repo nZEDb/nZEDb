@@ -61,42 +61,42 @@
 				</th>
 				<th>name<br/>
 					<a title="Sort Descending" href="{$orderbyname_desc}">
-						<i class="fa fa-chevron-down icon-black"></i>
+						<i class="fa fa-chevron-down"></i>
 					</a>
 					<a title="Sort Ascending" href="{$orderbyname_asc}">
-						<i class="fa fa-chevron-up icon-black"></i>
+						<i class="fa fa-chevron-up"></i>
 					</a>
 				</th>
 				<th>category<br/>
 					<a title="Sort Descending" href="{$orderbycat_desc}">
-						<i class="fa fa-chevron-down icon-black"></i>
+						<i class="fa fa-chevron-down"></i>
 					</a>
 					<a title="Sort Ascending" href="{$orderbycat_asc}">
-						<i class="fa fa-chevron-up icon-black"></i>
+						<i class="fa fa-chevron-up"></i>
 					</a>
 				</th>
 				<th>posted<br/>
 					<a title="Sort Descending" href="{$orderbyposted_desc}">
-						<i class="fa fa-chevron-down icon-black"></i>
+						<i class="fa fa-chevron-down"></i>
 					</a>
 					<a title="Sort Ascending" href="{$orderbyposted_asc}">
-						<i class="fa fa-chevron-up icon-black"></i>
+						<i class="fa fa-chevron-up"></i>
 					</a>
 				</th>
 				<th>size<br/>
 					<a title="Sort Descending" href="{$orderbysize_desc}">
-						<i class="fa fa-chevron-down icon-black"></i>
+						<i class="fa fa-chevron-down"></i>
 					</a>
 					<a title="Sort Ascending" href="{$orderbysize_asc}">
-						<i class="fa fa-chevron-up icon-black"></i>
+						<i class="fa fa-chevron-up"></i>
 					</a>
 				</th>
 				<th>files<br/>
 					<a title="Sort Descending" href="{$orderbyfiles_desc}">
-						<i class="fa fa-chevron-down icon-black"></i>
+						<i class="fa fa-chevron-down"></i>
 					</a>
 					<a title="Sort Ascending" href="{$orderbyfiles_asc}">
-						<i class="fa fa-chevron-up icon-black"></i>
+						<i class="fa fa-chevron-up"></i>
 					</a>
 				</th>
 				<th>action</th>

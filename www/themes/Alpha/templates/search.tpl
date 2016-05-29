@@ -190,7 +190,7 @@
 									href="{$smarty.const.WWW_TOP}/details/{$result.guid}"
 									title="This release has a video preview."
 									rel="preview"
-								><i class="icon-youtube-play"></i>
+								><i class="fa fa-youtube-play"></i>
 								</a>
 							{/if}
 							{if $result.nfoid > 0}
@@ -250,14 +250,14 @@
 									class="label label-default"
 									href="{$smarty.const.WWW_TOP}/series/{$result.videos_id}"
 									title="View all episodes"
-								><i class="icon-bookmark"></i></a>
+								><i class="fa fa-bookmark"></i></a>
 							{/if}
 							{if $result.anidbid > 0}
 								<a
 									class="label label-default"
 									href="{$smarty.const.WWW_TOP}/anime/{$result.anidbid}"
 									title="View all episodes"
-								><i class="icon-font"></i></a>
+								><i class="fa fa-font"></i></a>
 							{/if}
 							{if $result.firstaired != ""}
 								<span

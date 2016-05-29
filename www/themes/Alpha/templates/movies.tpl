@@ -24,12 +24,12 @@
 		<thead>
 			<tr>
 				<th><input type="checkbox" class="nzb_check_all"></th>
-				<th>title<a title="Sort Descending" href="{$orderbytitle_desc}"><i class="fa fa-chevron-down icon-black"></i></a><a
-							title="Sort Ascending" href="{$orderbytitle_asc}"><i class="fa fa-chevron-up icon-black"></i></a></th>
-				<th>year<a title="Sort Descending" href="{$orderbyyear_desc}"><i class="fa fa-chevron-down icon-black"></i></a><a
-							title="Sort Ascending" href="{$orderbyyear_asc}"><i class="fa fa-chevron-up icon-black"></i></a></th>
-				<th>rating<a title="Sort Descending" href="{$orderbyrating_desc}"><i class="fa fa-chevron-down icon-black"></i></a><a
-							title="Sort Ascending" href="{$orderbyrating_asc}"><i class="fa fa-chevron-up icon-black"></i></a></th>
+				<th>title<a title="Sort Descending" href="{$orderbytitle_desc}"><i class="fa fa-chevron-down"></i></a><a
+							title="Sort Ascending" href="{$orderbytitle_asc}"><i class="fa fa-chevron-up"></i></a></th>
+				<th>year<a title="Sort Descending" href="{$orderbyyear_desc}"><i class="fa fa-chevron-down"></i></a><a
+							title="Sort Ascending" href="{$orderbyyear_asc}"><i class="fa fa-chevron-up"></i></a></th>
+				<th>rating<a title="Sort Descending" href="{$orderbyrating_desc}"><i class="fa fa-chevron-down"></i></a><a
+							title="Sort Ascending" href="{$orderbyrating_asc}"><i class="fa fa-chevron-up"></i></a></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -201,11 +201,11 @@
 													><i class="fa fa-share-alt"></i></a></span
 												>
 												{if $mpass[$m@index] == 1}
-													<span class="icon-stack" title="Potentially Passworded"><i class="icon-check-empty icon-stack-base"></i><i class="fa fa-unlock-alt"></i></span>
+													<span class="fa fa-stack" title="Potentially Passworded"><i class="fa fa-square-o fa-stack-base"></i><i class="fa fa-unlock-alt"></i></span>
 												{elseif $mpass[$m@index] == 2}
-													<span class="icon-stack" title="Broken Post"><i class="icon-check-empty icon-stack-base"></i><i class="fa fa-chain-broken"></i></span>
+													<span class="fa fa-stack" title="Broken Post"><i class="fa fa-square-o fa-stack-base"></i><i class="fa fa-chain-broken"></i></span>
 												{elseif $mpass[$m@index] == 10}
-													<span class="icon-stack" title="Passworded Archive"><i class="icon-check-empty icon-stack-base"></i><i class="fa fa-lock"></i></span>
+													<span class="fa fa-stack" title="Passworded Archive"><i class="fa fa-square-o fa-stack-base"></i><i class="fa fa-lock"></i></span>
 												{/if}
 												{if $mfailed[$m@index] > 0}
 													<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
