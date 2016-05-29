@@ -1012,7 +1012,7 @@ class Releases
 			if ($show !== false) {
 				if ($show['episode'] > 0) {
 					$showSql = 'AND r.tv_episodes_id = ' . $show['episode'];
-				} elseif ($show['v.id'] > 0) {
+				} elseif ($show['video'] > 0) {
 					$showSql = 'AND r.videos_id = ' . $show['video'];
 				}
 			}

@@ -8,9 +8,9 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
-
 2016-06-28 ruhllatio
 	Fix: Greatly improve TV API search query when specifying ID/Season/Ep etc. Remove var_dump.
+	Fix: Wrong array offset
 2016-06-27 DariusIII
 	* Upd: Use well-sm in all the themes.
 	* Fix: Replace boostrap.min.css with Gamma theme custom bootstrap.css
