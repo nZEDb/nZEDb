@@ -60,12 +60,12 @@ class API {
 	 * Print XML or JSON output.
 	 *
 	 * @param array  $data   Data to print.
-	 * @param bool   $xml    True: Print as XML False: Print as JSON.
 	 * @param array  $caps   Server Capabilities
 	 * @param array  $params Additional request parameters
+	 * @param bool   $xml    True: Print as XML False: Print as JSON.
 	 * @param string $type   What type of API query to format if XML
 	 */
-	function printOutput($data, $xml = true, $caps, $params, $type = '')
+	public function printOutput($data, $caps, $params, $xml = true, $type = '')
 	{
 		if ($xml) {
 			$response =

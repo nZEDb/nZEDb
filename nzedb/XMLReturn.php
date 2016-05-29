@@ -292,6 +292,9 @@ class XMLReturn
 		$this->xml->writeElement('language', 'en-gb');
 		$this->xml->writeElement('webMaster', $server['email'] . ' ' . $server['title']);
 		$this->xml->writeElement('category', $server['meta']);
+		$this->xml->writeElement('generator', 'nZEDb');
+		$this->xml->writeElement('ttl', '10');
+		$this->xml->writeElement('docs', $this->server['server']['url'] . 'apihelp');
 	}
 
 	/**
