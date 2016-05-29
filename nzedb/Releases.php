@@ -1070,8 +1070,6 @@ class Releases
 			$offset
 		);
 
-		var_dump($sql);
-
 		$releases = $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
 		return $releases;
 	}

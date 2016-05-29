@@ -10,7 +10,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 
 2016-06-28 ruhllatio
-	Fix: Greatly improve TV API search query when specifying ID/Season/Ep etc.
+	Fix: Greatly improve TV API search query when specifying ID/Season/Ep etc. Remove var_dump.
 2016-06-27 DariusIII
 	* Upd: Use well-sm in all the themes.
 	* Fix: Replace boostrap.min.css with Gamma theme custom bootstrap.css
