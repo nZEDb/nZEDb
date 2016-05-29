@@ -59,12 +59,13 @@ class API {
 	/**
 	 * Print XML or JSON output.
 	 *
-	 * @param array    $data   Data to print.
-	 * @param bool     $xml    True: Print as XML False: Print as JSON.
-	 * @param array    $caps   Server Capabilities
-	 * @param array    $params Additional request parameters
+	 * @param array  $data   Data to print.
+	 * @param bool   $xml    True: Print as XML False: Print as JSON.
+	 * @param array  $caps   Server Capabilities
+	 * @param array  $params Additional request parameters
+	 * @param string $type   What type of API query to format if XML
 	 */
-	function printOutput($data, $xml = true, $caps, $params)
+	function printOutput($data, $xml = true, $caps, $params, $type = '')
 	{
 		if ($xml) {
 			$response =
@@ -74,7 +75,7 @@ class API {
 						'Parameters' => $params,
 						'Releases' => $data,
 						'Server' => $caps,
-						'Type' => 'api'
+						'Type' => $type
 					]
 				)
 				)->returnXML();

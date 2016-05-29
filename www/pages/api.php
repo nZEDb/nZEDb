@@ -132,7 +132,7 @@ switch ($function) {
 				$categoryID, $offset, $limit, '', $maxAge, $catExclusions, '', $minSize
 			);
 		}
-		$api->printOutput($relData, $outputXML, $caps, $params);
+		$api->printOutput($relData, $outputXML, $caps, $params, 'api');
 		break;
 	// Search tv releases.
 	case 'tv':
@@ -182,7 +182,7 @@ switch ($function) {
 		);
 
 		$api->addLanguage($relData);
-		$api->printOutput($relData, $outputXML, $caps, $params);
+		$api->printOutput($relData, $outputXML, $caps, $params, 'api');
 		break;
 
 	// Search movie releases.
@@ -226,7 +226,7 @@ switch ($function) {
 		if ($data) {
 			$relData[] = $data;
 		}
-		$api->printOutput($relData, $outputXML, $caps, $params);
+		$api->printOutput($relData, $outputXML, $caps, $params, 'api');
 		break;
 
 	// Get an NFO file for an individual release.
@@ -262,17 +262,7 @@ switch ($function) {
 		$cats = (new Category(['Settings' => $page->settings]))->getForMenu();
 		$caps['categories'] = $cats;
 
-		if ($outputXML) { //use apicaps.tpl if xml is requested
-			$response = (new XMLReturn(['Categories' => $cats, 'Server' => $caps, 'Type' => 'caps']))->returnXML();
-			header('Content-type: text/xml');
-		} else { //otherwise construct JSON array
-			//get capabilities
-			//use json_encode
-			$response = $api->encodeAsJSON($caps);
-			header('Content-type: application/json');
-		}
-		header('Content-Length: ' . strlen($response));
-		echo $response;
+		$api->printOutput('', $outputXML, $caps, $params, 'caps');
 		break;
 	// Register request.
 	case 'r':
@@ -281,42 +271,33 @@ switch ($function) {
 		if (!in_array((int)$page->settings->getSetting('registerstatus'), [Settings::REGISTER_STATUS_OPEN, Settings::REGISTER_STATUS_API_ONLY])) {
 			Misc::showApiError(104);
 		}
-
 		// Check email is valid format.
 		if (!$page->users->isValidEmail($_GET['email'])) {
 			Misc::showApiError(106);
 		}
-
 		// Check email isn't taken.
 		$ret = $page->users->getByEmail($_GET['email']);
 		if (isset($ret['id'])) {
 			Misc::showApiError(105);
 		}
-
 		// Create username/pass and register.
 		$username = $page->users->generateUsername($_GET['email']);
 		$password = $page->users->generatePassword();
-
 		// Register.
 		$userDefault = $page->users->getDefaultRole();
 		$uid = $page->users->signUp(
 			$username, $password, $_GET['email'], $_SERVER['REMOTE_ADDR'], $userDefault['id'], $userDefault['defaultinvites']
 		);
-
 		// Check if it succeeded.
 		$userData = $page->users->getById($uid);
 		if (!$userData) {
 			Misc::showApiError(107);
 		}
 
-		$response =
-			"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" .
-			'<register username="' . $username .
-			'" password="' . $password .
-			'" apikey="' . $userdata['rsstoken'] .
-			"\"/>\n";
-		header('Content-type: text/xml');
-		header('Content-Length: ' . strlen($response));
-		echo $response;
+		$params['username'] = $username;
+		$params['password'] = $password;
+		$params['token'] = $userdata['rsstoken'];
+
+		$api->printOutput('', true, $caps, $params, 'reg');
 		break;
 }

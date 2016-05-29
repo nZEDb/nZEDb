@@ -110,6 +110,9 @@ class XMLReturn
 				case 'rss':
 					return $this->returnRSS();
 					break;
+				case 'reg':
+					return $this->returnReg();
+					break;
 			}
 		}
 		return false;
@@ -172,6 +175,22 @@ class XMLReturn
 		$w->endDocument();
 
 		return $w->outputMemory();
+	}
+
+	/**
+	 * @return string The XML formatted registration information
+	 */
+	protected function returnReg()
+	{
+		$this->xml->startDocument('1.0', 'UTF-8');
+		$this->xml->startElement('register');
+		$this->xml->writeAttribute('username', $this->parameters['username']);
+		$this->xml->writeAttribute('password', $this->parameters['password']);
+		$this->xml->writeAttribute('apikey', $this->parameters['token']);
+		$this->xml->endElement();
+		$this->xml->endDocument();
+
+		return $this->xml->outputMemory();
 	}
 
 	/**
