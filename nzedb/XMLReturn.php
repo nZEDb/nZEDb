@@ -22,7 +22,6 @@
 namespace nzedb;
 
 use nzedb\Utility\Misc;
-use nzedb\Category;
 
 /**
  * Class XMLReturn
@@ -31,6 +30,11 @@ use nzedb\Category;
  */
 class XMLReturn
 {
+
+	/**
+	 * @var string The buffered cData before final write
+	 */
+	protected $cdata;
 
 	/**
 	 * The RSS namespace used for the output
@@ -366,16 +370,18 @@ class XMLReturn
 		} else {
 			$this->writeRssCdata();
 		}
-		$this->xml->startElement('enclosure');
-		$this->xml->writeAttribute(
-			'url',
-			"{$this->server['server']['url']}getnzb/{$this->release['guid']}.nzb" .
-			"&i={$this->parameters['uid']}" . "&r={$this->parameters['token']}" .
-			($this->parameters['del'] == '1' ? "&del=1" : '')
-		);
-		$this->xml->writeAttribute('length', $this->release['size']);
-		$this->xml->writeAttribute('type', 'application/x-nzb');
-		$this->xml->endElement();
+		if((isset($this->parameters['dl']) && $this->parameters['dl'] == 1) || !isset($this->parameters['dl'])) {
+			$this->xml->startElement('enclosure');
+			$this->xml->writeAttribute(
+				'url',
+				"{$this->server['server']['url']}getnzb/{$this->release['guid']}.nzb" .
+				"&i={$this->parameters['uid']}" . "&r={$this->parameters['token']}" .
+				($this->parameters['del'] == '1' ? "&del=1" : '')
+			);
+			$this->xml->writeAttribute('length', $this->release['size']);
+			$this->xml->writeAttribute('type', 'application/x-nzb');
+			$this->xml->endElement();
+		}
 	}
 
 	/**
@@ -471,14 +477,14 @@ class XMLReturn
 	 */
 	protected function writeRssCdata()
 	{
+		$this->cdata = '';
+
 		$w = $this->xml;
 		$r = $this->release;
 		$s = $this->server;
 		$p = $this->parameters;
 
-
-		$w->startElement('description');
-		$w->writeCdata('<div>');
+		$this->cdata = "\n\t<div>\n";
 		switch(1) {
 			case $r['cover']:
 				$dir = 'movies';
@@ -499,36 +505,21 @@ class XMLReturn
 		}
 		if (isset($dir) && isset($column)) {
 			$dcov = ($dir === 'movies' ? '-cover' : '');
-			$w->writeCdata(
-				"<img style=\"margin-left:10px;margin-bottom:10px;float:right;\" " .
+			$this->cdata .=
+				"\t<img style=\"margin-left:10px;margin-bottom:10px;float:right;\" " .
 				"src=\"{$s['server']['url']}covers/{$dir}/{$r[$column]}{$dcov}.jpg\" " .
-				"width=\"120\" alt=\"{$r['searchname']}\" />"
-			);
+				"width=\"120\" alt=\"{$r['searchname']}\" />\n";
 		}
-
-		$w->writeCdata(
-			"<li>ID: <a href=\"{$s['server']['url']}details/{$r['guid']}\">{$r['guid']}</a></li>"
-		);
-		$w->writeCdata(
-			"<li>Name: {$r['searchname']}</li>"
-		);
 		$size = Misc::bytesToSizeString($r['size']);
-		$w->writeCdata(
-			"<li>Size: {$size}</li>"
-		);
-		$w->writeCdata(
-			"<li>Category: <a href=\"{$s['server']['url']}browse?t={$r['categories_id']}\">{$r['category_name']}</a></li>"
-		);
-		$w->writeCdata(
-			"<li>Group: <a href=\"{$s['server']['url']}browse?g={$r['group_name']}\">{$r['group_name']}</a></li>"
-		);
-		$w->writeCdata(
-			"<li>Poster: {$r['fromname']}</li>"
-		);
 		$pdate = date(DATE_RSS, strtotime($r['postdate']));
-		$w->writeCdata(
-			"<li>Posted: {$pdate}</li>"
-		);
+		$this->cdata .=
+			"\t<li>ID: <a href=\"{$s['server']['url']}details/{$r['guid']}\">{$r['guid']}</a></li>\n" .
+			"\t<li>Name: {$r['searchname']}</li>\n" .
+			"\t<li>Size: {$size}</li>\n" .
+			"\t<li>Category: <a href=\"{$s['server']['url']}browse?t={$r['categories_id']}\">{$r['category_name']}</a></li>\n" .
+			"\t<li>Group: <a href=\"{$s['server']['url']}browse?g={$r['group_name']}\">{$r['group_name']}</a></li>\n" .
+			"\t<li>Poster: {$r['fromname']}</li>\n" .
+			"\t<li>Posted: {$pdate}</li>\n";
 
 		switch ($r['passwordstatus']) {
 			case 0:
@@ -546,14 +537,14 @@ class XMLReturn
 			default:
 				$pstatus = 'Unknown';
 		}
-		$w->writeCdata("<li>Password: {$pstatus}</li>");
+		$this->cdata .= "\t<li>Password: {$pstatus}</li>\n";
 		if ($r['nfostatus'] == 1) {
-			$w->writeCdata(
-				"<li>Nfo: " .
+			$this->cdata .=
+				"\t<li>Nfo: " .
 				"<a href=\"{$s['server']['url']}api?t=nfo&id={$r['guid']}&raw=1&i={$p['uid']}&r={$p['token']}\">" .
-				"{$r['searchname']}.nfo</a></li>"
-			);
+				"{$r['searchname']}.nfo</a></li>\n";
 		}
+
 		if ($r['parentid'] == Category::MOVIE_ROOT && $r['imdbid'] != '') {
 			$this->writeRssMovieInfo();
 		} else if ($r['parentid'] == Category::MUSIC_ROOT && $r['musicinfo_id'] > 0) {
@@ -561,6 +552,8 @@ class XMLReturn
 		} else if ($r['parentid'] == Category::GAME_ROOT && $r['consoleinfo_id'] > 0) {
 			$this->writeRssConsoleInfo();
 		}
+		$w->startElement('description');
+		$w->writeCdata($this->cdata . "\t</div>");
 		$w->endElement();
 	}
 
@@ -575,15 +568,14 @@ class XMLReturn
 
 		$cData = $this->buildCdata($movieCol);
 
-		$this->xml->writeCdata(
-			"<li>Imdb Info:
-				<ul>
-					<li>IMDB Link: <a href=\"http://www.imdb.com/title/tt{$r['imdbid']}/\">{$r['searchname']}</a></li>
-					{$cData}
-				</ul>
-			</li>
-			"
-		);
+		$this->cdata .=
+			"\t<li>Imdb Info:
+				\t<ul>
+					\t<li>IMDB Link: <a href=\"http://www.imdb.com/title/tt{$r['imdbid']}/\">{$r['searchname']}</a></li>\n
+					\t{$cData}
+				\t</ul>
+			\t</li>
+			\n";
 	}
 
 	/**
@@ -602,13 +594,13 @@ class XMLReturn
 			$cDataUrl = "<li>Amazon: <a href=\"{$r['mu_url']}\">{$r['mu_title']}</a></li>";
 		}
 
-		$this->xml->writeCdata("
-		<li>Music Info:
+		$this->cdata .=
+			"\t<li>Music Info:
 			<ul>
-				$cDataUrl
-				$cData
+			{$cDataUrl}
+			{$cData}
 			</ul>
-		</li>");
+			</li>\n";
 		if ($r['mu_tracks'] != '') {
 			$tracks = explode('|', $r['mu_tracks']);
 			if (count($tracks) > 0) {
@@ -617,13 +609,12 @@ class XMLReturn
 					$tData .= "<li>{$track}</li>";
 				}
 			}
-			$this->xml->writeCdata("
+			$this->cdata .= "
 			<li>Track Listing:
 				<ol>
 				{$tData}
 				</ol>
-			</li>"
-			);
+			</li>\n";
 		}
 	}
 
@@ -637,14 +628,13 @@ class XMLReturn
 
 		$cData = $this->buildCdata($gamesCol);
 
-		$this->xml->writeCdata("
+		$this->cdata .= "
 		<li>Console Info:
 			<ul>
-				<li>Amazon: <a href=\"{$r['co_url']}\">{$r['co_title']}</a></li>
+				<li>Amazon: <a href=\"{$r['co_url']}\">{$r['co_title']}</a></li>\n
 				{$cData}
 			</ul>
-		</li>
-		");
+		</li>\n";
 	}
 
 	/**
@@ -665,10 +655,10 @@ class XMLReturn
 				if ($info == 'mu_releasedate') {
 					$ucInfo = 'Released';
 					$rDate = date('Y-m-d', strtotime($r[$info]));
-					$cData .= "<li>{$ucInfo}: {$rDate}</li>";
+					$cData .= "<li>{$ucInfo}: {$rDate}</li>\n";
 				} else {
 					$ucInfo = ucfirst(preg_replace('/^[a-z]{2}_/i', '', $info));
-					$cData .= "<li>{$ucInfo}: {$r[$info]}</li>";
+					$cData .= "<li>{$ucInfo}: {$r[$info]}</li>\n";
 				}
 			}
 		}
