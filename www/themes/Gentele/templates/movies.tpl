@@ -159,12 +159,12 @@
 																				class="fa fa-comment-o"></i><span
 																				class="badge"> {$mcomments[$m@index]}
 																			Comment{if $mcomments[$m@index] != 1}s{/if}</span></a>
-															<span class="btn btn-hover btn-default btn-xs icon_cart text-muted"
+															<span class="btn btn-hover btn-default btn-xs icon_cart text-muted" style="background-image: none"
 																  data-toggle="tooltip" data-placement="top" title
 																  data-original-title="Send to my download basket"><i
 																		class="fa fa-shopping-basket"></i></span>
 																	{if isset($sabintegrated) && $sabintegrated !=""}
-																		<span class="btn btn-hover btn-default btn-xs icon_sab text-muted"
+																		<span class="btn btn-hover btn-default btn-xs icon_sab text-muted" style="background-image: none"
 																			  data-toggle="tooltip" data-placement="top"
 																			  title
 																			  data-original-title="Send to my Queue"><i
@@ -295,12 +295,12 @@
 																				class="fa fa-comment-o"></i><span
 																				class="badge"> {$mcomments[$m@index]}
 																			Comment{if $mcomments[$m@index] != 1}s{/if}</span></a>
-															<span class="btn btn-hover btn-default btn-xs icon_cart text-muted"
+															<span class="btn btn-hover btn-default btn-xs icon_cart text-muted" style="background-image: none"
 																  data-toggle="tooltip" data-placement="top" title
 																  data-original-title="Send to my download basket"><i
 																		class="fa fa-shopping-basket"></i></span>
 																	{if isset($sabintegrated) && $sabintegrated !=""}
-																		<span class="btn btn-hover btn-default btn-xs icon_sab text-muted"
+																		<span class="btn btn-hover btn-default btn-xs icon_sab text-muted" style="background-image: none"
 																			  data-toggle="tooltip" data-placement="top"
 																			  title
 																			  data-original-title="Send to my Queue"><i
