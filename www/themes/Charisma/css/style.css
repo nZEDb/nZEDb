@@ -314,12 +314,11 @@ div.icon_nzb			{ background-image:url('../img/icons/nzbup.png'); }
 div.icon_nzb_clicked	{ background-image:url('../img/icons/nzbdown.png'); }
 div.icon_nzb a			{ text-decoration:none; padding-bottom:2px; padding-right:12px; }
 
-div.icon_sab {
-    background-image: url('../img/icons/queueup.png');
+div.icon_sab            {
+    background: url('../../shared/img/icons/queueup.png')  no-repeat;
 }
-
-div.icon_sab_clicked {
-    background-image: url('../img/icons/queuedown.png');
+div.icon_sab_clicked    {
+    background: url('../../shared/img/icons/queuedown.png') no-repeat;
 }
 
 div.icon_tvrage			{ background-image:url('../img/icons/tvrage.png'); }

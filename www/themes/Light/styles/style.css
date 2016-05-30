@@ -698,8 +698,12 @@ div.icon_nzb_clicked		{ background-image:url('../../shared/img/icons/nzbdown.png
 div.icon_nzb a			{ text-decoration:none; padding-bottom:2px; padding-right:12px; }
 div.icon_imdb			{ background-image:url('../../shared/img/icons/imdb.png'); }
 div.icon_imdb a			{ text-decoration:none; padding-bottom:2px; padding-right:12px; }
-div.icon_sab			{ background-image:url('../../shared/img/icons/queueup.png'); }
-div.icon_sab_clicked		{ background-image:url('../../shared/img/icons/queuedown.png'); }
+div.icon_sab            {
+    background: url('../../shared/img/icons/queueup.png')  no-repeat;
+}
+div.icon_sab_clicked    {
+    background: url('../../shared/img/icons/queuedown.png') no-repeat;
+}
 div.icon_tvrage			{ background-image:url('../../shared/img/icons/tvrage.png'); }
 div.icon_check			{ background-image:url('../../shared/img/icons/check.png'); }
 div.icon_cp			    { background-image:url('../../shared/img/icons/couch.png'); }
