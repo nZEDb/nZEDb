@@ -84,7 +84,7 @@
 				{/if}
 				{if $con && $con.url != ""}<a href="{$site->dereferrer_link}{$con.url}/"
 											  class="label label-primary" target="_blank">Amazon</a>{/if}
-				{if $book && $book.url != ""}<a href="{$site->dereferrer_link}{$book.url}/"
+				{if $boo && $boo.url != ""}<a href="{$site->dereferrer_link}{$boo.url}/"
 												class="label label-primary" target="_blank">Amazon</a>{/if}
 				{if $music && $music.url != ""}<a href="{$site->dereferrer_link}{$music.url}/"
 												  class="label label-primary" target="_blank">
@@ -124,7 +124,7 @@
 					{/if}
 					{if $anidb && $release.anidbid > 0 && $anidb.description != ""}{$anidb.description|escape:"htmlall"|nl2br|magicurl|truncate:500:"...":true}{/if}
 					{if $music && $music.review != ""}{$music.review|escape:"htmlall"|nl2br|magicurl|truncate:500:"...":true}{/if}
-					{if $book && $book.review != ""}{$book.review|escape:"htmlall"|nl2br|magicurl|truncate:500:"...":true}{/if}
+					{if $boo && $boo.review != ""}{$boo.review|escape:"htmlall"|nl2br|magicurl|truncate:500:"...":true}{/if}
 					{if $con &&$con.review != ""}{$con.review|escape:"htmlall"|nl2br|magicurl|truncate:500:"...":true}{/if}
 				</p>
 				<div class="col-md-12">
@@ -209,10 +209,10 @@
 												 data-toggle="modal"
 												 data-target="#modal-image"/>
 										{/if}
-										{if $book && $book.cover == 1}
-											<img src="{$smarty.const.WWW_TOP}/covers/book/{$book.id}.jpg"
+										{if $boo && $boo.cover == 1}
+											<img src="{$smarty.const.WWW_TOP}/covers/book/{$boo.id}.jpg"
 												 width="185"
-												 alt="{$book.title|escape:"htmlall"}"
+												 alt="{$boo.title|escape:"htmlall"}"
 												 data-toggle="modal"
 												 data-target="#modal-image"/>
 										{/if}
@@ -390,63 +390,63 @@
 																</tr>
 															{/if}
 														{/if}
-														{if $book}
+														{if $boo}
 															<tr>
 																<th width="140">Name
 																</th>
-																<td>{$book.title|escape:"htmlall"}</td>
+																<td>{$boo.title|escape:"htmlall"}</td>
 															</tr>
 															<tr>
 																<th width="140">Author
 																</th>
-																<td>{$book.author|escape:"htmlall"}</td>
+																<td>{$boo.author|escape:"htmlall"}</td>
 															</tr>
-															{if $book.ean != ""}
+															{if $boo.ean != ""}
 																<tr>
 																	<th width="140">
 																		EAN
 																	</th>
-																	<td>{$book.ean|escape:"htmlall"}</td>
+																	<td>{$boo.ean|escape:"htmlall"}</td>
 																</tr>
 															{/if}
-															{if $book.isbn != ""}
+															{if $boo.isbn != ""}
 																<tr>
 																	<th width="140">
 																		ISBN
 																	</th>
-																	<td>{$book.isbn|escape:"htmlall"}</td>
+																	<td>{$boo.isbn|escape:"htmlall"}</td>
 																</tr>
 															{/if}
-															{if $book.pages != ""}
+															{if $boo.pages != ""}
 																<tr>
 																	<th width="140">
 																		Pages
 																	</th>
-																	<td>{$book.pages|escape:"htmlall"}</td>
+																	<td>{$boo.pages|escape:"htmlall"}</td>
 																</tr>
 															{/if}
-															{if $book.dewey != ""}
+															{if $boo.dewey != ""}
 																<tr>
 																	<th width="140">
 																		Dewey
 																	</th>
-																	<td>{$book.dewey|escape:"htmlall"}</td>
+																	<td>{$boo.dewey|escape:"htmlall"}</td>
 																</tr>
 															{/if}
-															{if $book.publisher != ""}
+															{if $boo.publisher != ""}
 																<tr>
 																	<th width="140">
 																		Publisher
 																	</th>
-																	<td>{$book.publisher|escape:"htmlall"}</td>
+																	<td>{$boo.publisher|escape:"htmlall"}</td>
 																</tr>
 															{/if}
-															{if $book.publishdate != ""}
+															{if $boo.publishdate != ""}
 																<tr>
 																	<th width="140">
 																		Released
 																	</th>
-																	<td>{$book.publishdate|date_format}</td>
+																	<td>{$boo.publishdate|date_format}</td>
 																</tr>
 															{/if}
 														{/if}
@@ -850,9 +850,9 @@
 					<img src="{$smarty.const.WWW_TOP}/covers/music/{$music.id}.jpg"
 						 alt="{$music.title|escape:"htmlall"}"/>
 				{/if}
-				{if $book && $book.cover == 1}
-					<img src="{$smarty.const.WWW_TOP}/covers/book/{$book.id}.jpg"
-						 alt="{$book.title|escape:"htmlall"}"/>
+				{if $boo && $boo.cover == 1}
+					<img src="{$smarty.const.WWW_TOP}/covers/book/{$boo.id}.jpg"
+						 alt="{$boo.title|escape:"htmlall"}"/>
 				{/if}
 				{if $xxx && $xxx.backdrop == 1}
 					<a href="{$smarty.const.WWW_TOP}/covers/xxx/{$xxx.id}-backdrop.jpg"
