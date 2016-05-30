@@ -22,10 +22,11 @@ test.php
 
 /nbproject/
 /nbproject/private/
+/resources/*.csv
 /resources/covers/*
 /resources/nzb/*
 /resources/smarty/templates_c/*.php
 /resources/tmp/*
 /templates_c/*
 /libraries/*
-/www/themes/shared/libs/
+/www/themes/shared/libs/*

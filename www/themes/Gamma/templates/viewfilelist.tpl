@@ -3,7 +3,7 @@
 <h4>For <a href="{$smarty.const.WWW_TOP}/details/{$rel.guid}">{$rel.searchname|escape:'htmlall'}</a></h4>
 <br/>
 
-<table class="data Sortable highlight table table-striped">
+<table class="data Sortable highlight table">
 
 	<tr>
 		<th>#</th>

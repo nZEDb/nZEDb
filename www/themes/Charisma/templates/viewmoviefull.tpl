@@ -18,7 +18,7 @@
 				{else}
 					<img class="pull-right" style="margin-right:50px; max-height:278px;"
 						 alt="{$result.title|escape:"htmlall"} Logo"
-						 src="{$serverroot}themes/Charisma/images/nomoviecover.jpg"/>
+						 src="{$smarty.const.WWW_THEMES}/shared/img/nomoviecover.jpg"/>
 				{/if}
 				<span class="h1" style="display:inline;">{$result.title|escape:"htmlall"} ({$result.year})</span>
 				<a class="btn btn-transparent btn-primary" target="_blank"
@@ -52,7 +52,7 @@
 				</dl>
 			</div>
 			<form id="nzb_multi_operations_form" action="get">
-				<div class="well well-small">
+				<div class="well well-sm">
 					<div class="nzb_multi_operations">
 						{if isset($section) && $section != ''}View:
 							<a href="{$smarty.const.WWW_TOP}/{$section}?t={$category}">Covers</a>

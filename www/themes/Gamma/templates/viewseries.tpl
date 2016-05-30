@@ -63,7 +63,7 @@
 </div>
 <br/>
 <form id="nzb_multi_operations_form" action="get">
-	<div class="well well-small">
+	<div class="well well-sm">
 		<div class="nzb_multi_operations">
 			With Selected:
 			<div class="btn-group">
@@ -135,7 +135,7 @@
 		<div class="tab-content">
 			{foreach $seasons as $seasonnum => $season name=tv}
 			<div class="tab-pane{if $smarty.foreach.tv.first} active{/if}" id="{$seasonnum}">
-				<table class="tb_{$seasonnum} data highlight icons table table-striped" id="browsetable">
+				<table class="tb_{$seasonnum} data highlight icons table" id="browsetable">
 					<tr class="dont-filter">
 						<th>Ep</th>
 						<th>Name</th>
