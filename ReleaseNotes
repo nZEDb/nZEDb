@@ -4,6 +4,49 @@ This file details which changes to the code are in which release version. It is 
 0.6.1 2016-06-06
 **NOTE** PHP v5.5 reaches its end of life 2016-07-10. This will be the last release to target it.
  The next release will require PHP 5.6+
+Added:
+	* New release name format not matched by reqid - includes updated schema/new triggers (PR 2127).
+	* Couch Potato icon to Gamma theme (Closes Issue 2115).
+	* Option to specify the minimum file size using the API? (Closes Issue 234).
+	* Include PREDBURL (if PREDB info exists) in extended=1 API information (Closes Issue 2035).
+	* More verbose output for update git, db commands.
+	* Search Movies (PR 2125, Closes Issue 1581).
+	* Asset (CSS, JS, etc.) management library to reduce duplication of these resources and allow
+	for multiple versions to be used.
+
+Changed:
+	* Numerous SQL query improvements for speed.
+	* Comment out max_matches (deprecated since sphinx 2.2.3) and change sphinx.pid location to
+	proper /var/run/sphinxsearch/searchd.pid.
+	* Changing table 'category' to 'categories' along with references to categoryid => categories_id.
+	**NOTE** This involves changes to your releases table. It will take some time, potentially a
+	very long time, depending on the number of releases you have.
+	* Other changes to tables to bring them inline with lithium conventions. Shouldn't take as long.
+	* Broken NZB files are now detected in clean NZB script.
+	* NZBImport now sets the nzb_guid during the import.
+	* Removed autopatcher script functionality.
+
+Fixed:
+	* MySQL connect ignored unix socket if host/port were supplied. Now the socket takes precedent.
+	* Reinstated the LINES TERMINATED BY clause to loading data files to override default. This
+	prevented some data files being correctly loaded into the database.
+	* Update collection regex in a.b.mom.
+	* Yahoo search fix (PR 2121).
+	* TV categorization mismatches.
+	  ** NOTE *** - you will need to do the following to fix the categorization:
+		`php /var/www/nZEDb/misc/testing/Release/recategorize.php all`
+	this will take a while to complete.
+	* Reference to configuration file/location for IRC Scraper in tmux-edit.tpl.
+	* Fix Recaptcha settings (PR 2135).
+	* Prevent deadlocks on binaries and releases updates.
+	* WEB-DL shows as option in My TV shows when not used as a category (Closes Issue 2110).
+	* Remove derefferer use from CouchPotato url links in Gamma theme.
+	* PostProcess Additional tmux query not accurate with PP add queue.
+	* Profile edit included non theme names in its dropdown list.
+	* Buffer nzb creation fixes (Closes Issue 2139).
+	* Add 'artist - title' display to Gamma music page (Closes Issue 2149).
+	* Restore 'None' to themes drop-down list, in profile edit, so site default theme can be used.
+	* Couch Potato should send IMDB ID from page request not release guid.
 
 
 0.6.0.1 2016-05-07

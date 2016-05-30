@@ -8,6 +8,11 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+
+2016-05-30 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x.
+
+
 2016-06-28 ruhllatio
 	Fix: Greatly improve TV API search query when specifying ID/Season/Ep etc. Remove var_dump.
 	Fix: Wrong array offset
@@ -46,11 +51,11 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 2016-05-16 niel
 	Fix: Profile edit included non theme names in its dropdown list.
 2016-05-16 ruhllatio
-	Mrg: PR from Meganomic, Req Feature: Search Movies #1581 #2125
+	Mrg: PR 2125, from Meganomic, Req Feature: Search Movies (Closes 1581)
 	Chg: Clean up NZB class file indents and query strings
 	Fix: NZBImport now sets the nzb_guid during the import
 2016-05-13 ruhllatio
-	Fix: PostProcess Additional tmux query not accurate with PP add queue
+	Fix: PostProcess Additional tmux query not accurate with PP add queue.
 2016-05-12 niel
 	Add: Reporting output for update git, db commands.
 2016-05-12 ruhllatio
