@@ -36,7 +36,7 @@
 	<link href="{$smarty.const.WWW_THEMES}/{$theme}/dist/css/skins/skin-blue.min.css" rel="stylesheet"
 		  type="text/css"/>
 	<!-- Noty animation style -->
-	<link href="{$smarty.const.WWW_THEMES}/shared/libs/animate.css-3.5.x/animate.min.css" rel="stylesheet">
+	<link href="{$smarty.const.WWW_THEMES}/shared/libs/animate.css/animate.min.css" rel="stylesheet">
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 	<!--[if lt IE 9]>
@@ -348,9 +348,9 @@
 	<!-- jQuery migrate script -->
 	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/jquery-migrate-1.4.x/jquery-migrate.min.js"></script>
 	<!-- SlimScroll script -->
-	<script src="{$smarty.const.WWW_THEMES}/shared/libs/slimScroll-1.3.x/jquery.slimscroll.min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/slimscroll-1.3.x/jquery.slimscroll.min.js"></script>
 	<!-- Fastclick script -->
-	<script src="{$smarty.const.WWW_THEMES}/shared/libs/fastclick-1.0.x/fastclick.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/fastclick-1.0.x/lib/fastclick.js"></script>
 	<!-- notification plugin -->
 	<script type="text/javascript"
 			src="{$smarty.const.WWW_THEMES}/shared/libs/noty-2.3.x/js/noty/packaged/jquery.noty.packaged.js"></script>
@@ -358,7 +358,7 @@
 	<script src="{$smarty.const.WWW_THEMES}/shared/js/functions.js" type="text/javascript"></script>
 	<!-- data table plugin -->
 	<script type="text/javascript"
-			src='{$smarty.const.WWW_THEMES}/{$theme}/dist/js/jquery.dataTables.min.js'></script>
+			src='{$smarty.const.WWW_THEMES}/shared/lib/datatables-1.10.x/media/js/jquery.dataTables.min.js'></script>
 	<!-- nZEDb default scripts, needed for stuff to work -->
 	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/colorbox-1.6.x/jquery.colorbox-min.js"></script>
 	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/autosize-3.0.x/dist/autosize.min.js"></script>
