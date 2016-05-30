@@ -340,8 +340,8 @@
 								cmt{if $result.comments != 1}s{/if}</a>
 							<br>{$result.grabs} grab{if $result.grabs != 1}s{/if}
 						</td>
-						<td class="icon_nzb"><a
-									href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}"><i
+						<td>
+							<a href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}" class="icon_nzb text-muted"><i
 										class="fa fa-cloud-download text-muted"
 										data-toggle="tooltip" data-placement="top" title
 										data-original-title="Download NZB"></i></a>
