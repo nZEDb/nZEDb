@@ -25,6 +25,7 @@ Changed:
 	* Broken NZB files are now detected in clean NZB script.
 	* NZBImport now sets the nzb_guid during the import.
 	* Removed autopatcher script functionality.
+	* Some of Alpha's icons to use font-awesome equivalents.
 
 Fixed:
 	* MySQL connect ignored unix socket if host/port were supplied. Now the socket takes precedent.
