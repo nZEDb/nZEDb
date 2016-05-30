@@ -2,7 +2,6 @@
 
 namespace nzedb;
 
-use nzedb\Category;
 use nzedb\db\Settings;
 
 /**
@@ -69,13 +68,14 @@ Class RSS
 					m.year, m.genre, m.director, m.actors, g.name AS group_name,
 					CONCAT(cp.title, ' > ', c.title) AS category_name,
 					%s AS category_ids,
-					COALESCE(cp.id,0) AS parentCategoryid,
+					COALESCE(cp.id,0) AS parentid,
 					mu.title AS mu_title, mu.url AS mu_url, mu.artist AS mu_artist,
 					mu.publisher AS mu_publisher, mu.releasedate AS mu_releasedate,
 					mu.review AS mu_review, mu.tracks AS mu_tracks, mu.cover AS mu_cover,
 					mug.title AS mu_genre, co.title AS co_title, co.url AS co_url,
 					co.publisher AS co_publisher, co.releasedate AS co_releasedate,
-					co.review AS co_review, co.cover AS co_cover, cog.title AS co_genre
+					co.review AS co_review, co.cover AS co_cover, cog.title AS co_genre,
+					bo.cover AS bo_cover
 				FROM releases r
 				INNER JOIN categories c ON c.id = r.categories_id
 				INNER JOIN categories cp ON cp.id = c.parentid
@@ -86,6 +86,7 @@ Class RSS
 				LEFT OUTER JOIN consoleinfo co ON co.id = r.consoleinfo_id
 				LEFT OUTER JOIN genres cog ON cog.id = co.genre_id %s
 				LEFT OUTER JOIN tv_episodes tve ON tve.id = r.tv_episodes_id
+				LEFT OUTER JOIN bookinfo bo ON bo.id = r.bookinfo_id
 				WHERE r.passwordstatus %s
 				AND r.nzbstatus = %d
 				%s %s %s %s
@@ -121,7 +122,7 @@ Class RSS
 				SELECT r.*, v.id, v.title, g.name AS group_name,
 					CONCAT(cp.title, '-', c.title) AS category_name,
 					%s AS category_ids,
-					COALESCE(cp.id,0) AS parentCategoryid
+					COALESCE(cp.id,0) AS parentid
 				FROM releases r
 				INNER JOIN categories c ON c.id = r.categories_id
 				INNER JOIN categories cp ON cp.id = c.parentid
@@ -163,7 +164,7 @@ Class RSS
 				SELECT r.*, mi.title AS releasetitle, g.name AS group_name,
 					CONCAT(cp.title, '-', c.title) AS category_name,
 					%s AS category_ids,
-					COALESCE(cp.id,0) AS parentCategoryid
+					COALESCE(cp.id,0) AS parentid
 				FROM releases r
 				INNER JOIN categories c ON c.id = r.categories_id
 				INNER JOIN categories cp ON cp.id = c.parentid
@@ -193,13 +194,13 @@ Class RSS
 	public function getFirstInstance($column, $table)
 	{
 		return $this->pdo->queryOneRow(
-					sprintf("
-						SELECT %1\$s
-						FROM %2\$s
-						ORDER BY %1\$s ASC",
-						$column,
-						$table
-					)
+			sprintf("
+				SELECT %1\$s
+				FROM %2\$s
+				ORDER BY %1\$s ASC",
+				$column,
+				$table
+			)
 		);
 	}
 }

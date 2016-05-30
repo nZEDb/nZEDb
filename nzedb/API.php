@@ -65,7 +65,7 @@ class API {
 	 * @param bool   $xml    True: Print as XML False: Print as JSON.
 	 * @param string $type   What type of API query to format if XML
 	 */
-	public function printOutput($data, $caps, $params, $xml = true, $type = '')
+	public function output($data, $caps, $params, $xml = true, $type = '')
 	{
 		if ($xml) {
 			$response =

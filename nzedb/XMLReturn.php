@@ -21,6 +21,9 @@
 
 namespace nzedb;
 
+use nzedb\Utility\Misc;
+use nzedb\Category;
+
 /**
  * Class XMLReturn
  *
@@ -28,6 +31,14 @@ namespace nzedb;
  */
 class XMLReturn
 {
+
+	/**
+	 * The RSS namespace used for the output
+	 *
+	 * @var string
+	 */
+	protected $namespace;
+
 	/**
 	 * The trailing URL parameters on the request
 	 *
@@ -105,10 +116,12 @@ class XMLReturn
 					return $this->returnCaps();
 					break;
 				case 'api':
-					return $this->returnAPI();
+					$this->namespace = 'newznab';
+					return $this->returnApiRss();
 					break;
 				case 'rss':
-					return $this->returnRSS();
+					$this->namespace = 'nZEDb';
+					return $this->returnApiRss();
 					break;
 				case 'reg':
 					return $this->returnReg();
@@ -130,10 +143,10 @@ class XMLReturn
 
 		$w->startDocument('1.0', 'UTF-8');
 		$w->startElement('caps');
-		$this->loopSingleElementAttrs(['name' => 'server', 'data' => $s['server']]);
-		$this->loopSingleElementAttrs(['name' => 'limits', 'data' => $s['limits']]);
-		$this->loopSingleElementAttrs(['name' => 'registration', 'data' => $s['registration']]);
-		$this->loopMultiElementAttributes(['name' => 'searching', 'data' => $s['searching']]);
+		$this->addNode(['name' => 'server', 'data' => $s['server']]);
+		$this->addNode(['name' => 'limits', 'data' => $s['limits']]);
+		$this->addNode(['name' => 'registration', 'data' => $s['registration']]);
+		$this->addNodes(['name' => 'searching', 'data' => $s['searching']]);
 		$this->writeCategoryListing();
 		$w->endElement();
 		$w->endDocument();
@@ -146,7 +159,7 @@ class XMLReturn
 	 *
 	 * @return string The XML Formatted string data
 	 */
-	protected function returnAPI()
+	protected function returnApiRss()
 	{
 		$w = $this->xml;
 		$this->xml->startDocument('1.0', 'UTF-8');
@@ -158,20 +171,6 @@ class XMLReturn
 		$this->includeReleases();
 		$w->endElement(); // End channel
 		$w->endElement(); // End RSS
-		$w->endDocument();
-
-		return $w->outputMemory();
-	}
-
-	/**
-	 * XML writes and returns the RSS data
-	 *
-	 * @return string The XML Formatted string data
-	 */
-	protected function returnRSS()
-	{
-		$w = $this->xml;
-		$this->xml->startDocument('1.0', 'UTF-8');
 		$w->endDocument();
 
 		return $w->outputMemory();
@@ -197,7 +196,7 @@ class XMLReturn
 	 * Starts a new element, loops through the attribute data and ends the element
 	 * @param array $element An array with the name of the element and the attribute data
 	 */
-	protected function loopSingleElementAttrs($element)
+	protected function addNode($element)
 	{
 		$this->xml->startElement($element['name']);
 		foreach($element['data'] AS $attr => $val) {
@@ -210,15 +209,11 @@ class XMLReturn
 	 * Starts a new element, loops through the attribute data and ends the element
 	 * @param array $element An array with the name of the element and the attribute data
 	 */
-	protected function loopMultiElementAttributes($element)
+	protected function addNodes($element)
 	{
 		$this->xml->startElement($element['name']);
 		foreach($element['data'] AS $name => $elem) {
-			$this->xml->startElement($name);
-			foreach ($elem AS $attr => $val) {
-				$this->xml->writeAttribute($attr, $val);
-			}
-			$this->xml->endElement();
+			$this->addNode($elem);
 		}
 		$this->xml->endElement();
 	}
@@ -251,13 +246,23 @@ class XMLReturn
 
 	/**
 	 * Adds RSS Atom information to the XML
+	 *
 	 */
 	protected function includeRssAtom()
 	{
+		switch($this->namespace) {
+			case 'newznab':
+				$url = 'http://www.newznab.com/DTD/2010/feeds/attributes/';
+				break;
+			case 'nZEDb':
+			default:
+				$url = $this->server['server']['url'] . 'rss-info/';
+		}
+
 		$this->xml->startElement('rss');
 		$this->xml->writeAttribute('version', '2.0');
 		$this->xml->writeAttribute('xmlns:atom', 'http://www.w3.org/2005/Atom');
-		$this->xml->writeAttribute('xmlns:newznab', 'http://www.newznab.com/DTD/2010/feeds/attributes/');
+		$this->xml->writeAttribute("xmlns:{$this->namespace}", $url);
 		$this->xml->writeAttribute('encoding', 'utf-8');
 	}
 
@@ -286,15 +291,26 @@ class XMLReturn
 	{
 		$server = $this->server['server'];
 
+		switch($this->namespace) {
+			case 'newznab':
+				$path = 'apihelp/';
+				$tag = 'API';
+				break;
+			case 'nZEDb':
+			default:
+				$path = 'rss-info/';
+				$tag = 'RSS';
+		}
+
 		$this->xml->writeElement('title', $server['title']);
-		$this->xml->writeElement('description', $server['title'] . ' API Details');
+		$this->xml->writeElement('description', $server['title'] . " {$tag} Details");
 		$this->xml->writeElement('link', $server['url']);
 		$this->xml->writeElement('language', 'en-gb');
 		$this->xml->writeElement('webMaster', $server['email'] . ' ' . $server['title']);
 		$this->xml->writeElement('category', $server['meta']);
 		$this->xml->writeElement('generator', 'nZEDb');
 		$this->xml->writeElement('ttl', '10');
-		$this->xml->writeElement('docs', $this->server['server']['url'] . 'apihelp');
+		$this->xml->writeElement('docs', $this->server['server']['url'] . $path);
 	}
 
 	/**
@@ -345,7 +361,11 @@ class XMLReturn
 		$this->xml->writeElement('comments', "{$this->server['server']['url']}details/{$this->release['guid']}#comments");
 		$this->xml->writeElement('pubDate', date(DATE_RSS, strtotime($this->release['adddate'])));
 		$this->xml->writeElement('category', $this->release['category_name']);
-		$this->xml->writeElement('description', $this->release['searchname']);
+		if ($this->namespace === 'newznab') {
+			$this->xml->writeElement('description', $this->release['searchname']);
+		} else {
+			$this->writeRssCdata();
+		}
 		$this->xml->startElement('enclosure');
 		$this->xml->writeAttribute(
 			'url',
@@ -375,23 +395,23 @@ class XMLReturn
 		if ($this->parameters['extended'] == 1) {
 			$this->writeZedAttr('files', $this->release['totalpart']);
 			$this->writeZedAttr('poster', $this->release['fromname']);
-			if($this->release['videos_id'] > 0 || $this->release['tv_episodes_id'] > 0) {
-				$this->setTvAttributes();
+			if(($this->release['videos_id'] > 0 || $this->release['tv_episodes_id'] > 0) && $this->namespace === 'newznab') {
+				$this->setTvAttr();
 			}
 
 			switch (true) {
-				case $this->release['imdbid'] > 0:
-					$this->writeZedAttr('imdb', $this->release['imdbid']);
-				case $this->release['anidbid'] > 0:
-					$this->writeZedAttr('anidbid', $this->release['anidbid']);
-				case $this->release['predb_id'] > 0:
-					$this->writeZedAttr('prematch', 1);
-				case $this->release['nfostatus'] == 1:
-					$this->writeZedAttr(
-						'info',
-						$this->server['server']['url'] .
+					case isset($this->release['imdbid']) && $this->release['imdbid'] > 0:
+						$this->writeZedAttr('imdb', $this->release['imdbid']);
+					case isset($this->release['anidbid']) && $this->release['anidbid'] > 0:
+						$this->writeZedAttr('anidbid', $this->release['anidbid']);
+					case isset($this->release['predb_id']) && $this->release['predb_id'] > 0:
+						$this->writeZedAttr('prematch', 1);
+					case isset($this->release['nfostatus']) && $this->release['nfostatus'] == 1:
+						$this->writeZedAttr(
+							'info',
+							$this->server['server']['url'] .
 							"api?t=info&id={$this->release['guid']}&r={$this->parameters['token']}"
-					);
+						);
 			}
 			$this->writeZedAttr('grabs', $this->release['grabs']);
 			$this->writeZedAttr('comments', $this->release['comments']);
@@ -404,7 +424,7 @@ class XMLReturn
 	/**
 	 * Writes the TV Specific attributes
 	 */
-	protected function setTvAttributes()
+	protected function setTvAttr()
 	{
 		switch(true) {
 			case !empty($this->release['title']):
@@ -434,13 +454,225 @@ class XMLReturn
 	/**
 	 * Writes individual zed (newznab) type attributes
 	 *
-	 * @param string $name The newznab attribute name tag
-	 * @param string $value The newznab attribute value
+	 * @param string $name The namespaced attribute name tag
+	 * @param string $value The namespaced attribute value
 	 */
-	protected function writeZedAttr($name, $value) {
-		$this->xml->startElement('newznab:attr');
+	protected function writeZedAttr($name, $value)
+	{
+		$this->xml->startElement($this->namespace . ":attr");
 		$this->xml->writeAttribute('name', $name);
 		$this->xml->writeAttribute('value', $value);
 		$this->xml->endElement();
+	}
+
+	/**
+	 * Writes the cData (HTML format) for the RSS feed
+	 * Also calls supplementary cData writes depending upon post process
+	 */
+	protected function writeRssCdata()
+	{
+		$w = $this->xml;
+		$r = $this->release;
+		$s = $this->server;
+		$p = $this->parameters;
+
+
+		$w->startElement('description');
+		$w->writeCdata('<div>');
+		switch(1) {
+			case $r['cover']:
+				$dir = 'movies';
+				$column = 'imdbid';
+				break;
+			case $r['mu_cover']:
+				$dir = 'music';
+				$column = 'musicinfo_id';
+				break;
+			case $r['co_cover']:
+				$dir = 'console';
+				$column = 'consoleinfo_id';
+				break;
+			case $r['bo_cover']:
+				$dir = 'books';
+				$column = 'bookinfo_id';
+				break;
+		}
+		if (isset($dir) && isset($column)) {
+			$dcov = ($dir === 'movies' ? '-cover' : '');
+			$w->writeCdata(
+				"<img style=\"margin-left:10px;margin-bottom:10px;float:right;\" " .
+				"src=\"{$s['server']['url']}covers/{$dir}/{$r[$column]}{$dcov}.jpg\" " .
+				"width=\"120\" alt=\"{$r['searchname']}\" />"
+			);
+		}
+
+		$w->writeCdata(
+			"<li>ID: <a href=\"{$s['server']['url']}details/{$r['guid']}\">{$r['guid']}</a></li>"
+		);
+		$w->writeCdata(
+			"<li>Name: {$r['searchname']}</li>"
+		);
+		$size = Misc::bytesToSizeString($r['size']);
+		$w->writeCdata(
+			"<li>Size: {$size}</li>"
+		);
+		$w->writeCdata(
+			"<li>Category: <a href=\"{$s['server']['url']}browse?t={$r['categories_id']}\">{$r['category_name']}</a></li>"
+		);
+		$w->writeCdata(
+			"<li>Group: <a href=\"{$s['server']['url']}browse?g={$r['group_name']}\">{$r['group_name']}</a></li>"
+		);
+		$w->writeCdata(
+			"<li>Poster: {$r['fromname']}</li>"
+		);
+		$pdate = date(DATE_RSS, strtotime($r['postdate']));
+		$w->writeCdata(
+			"<li>Posted: {$pdate}</li>"
+		);
+
+		switch ($r['passwordstatus']) {
+			case 0:
+				$pstatus = 'None';
+				break;
+			case 1:
+				$pstatus = 'Possibly Passworded';
+				break;
+			case 2:
+				$pstatus = 'Probably not viable';
+				break;
+			case 10:
+				$pstatus = 'Passworded';
+				break;
+			default:
+				$pstatus = 'Unknown';
+		}
+		$w->writeCdata("<li>Password: {$pstatus}</li>");
+		if ($r['nfostatus'] == 1) {
+			$w->writeCdata(
+				"<li>Nfo: " .
+				"<a href=\"{$s['server']['url']}api?t=nfo&id={$r['guid']}&raw=1&i={$p['uid']}&r={$p['token']}\">" .
+				"{$r['searchname']}.nfo</a></li>"
+			);
+		}
+		if ($r['parentid'] == Category::MOVIE_ROOT && $r['imdbid'] != '') {
+			$this->writeRssMovieInfo();
+		} else if ($r['parentid'] == Category::MUSIC_ROOT && $r['musicinfo_id'] > 0) {
+			$this->writeRssMusicInfo();
+		} else if ($r['parentid'] == Category::GAME_ROOT && $r['consoleinfo_id'] > 0) {
+			$this->writeRssConsoleInfo();
+		}
+		$w->endElement();
+	}
+
+	/**
+	 * Writes the Movie Info for the RSS feed cData
+	 */
+	protected function writeRssMovieInfo()
+	{
+		$r = $this->release;
+
+		$movieCol = ['rating', 'plot', 'year', 'genre', 'director', 'actors'];
+
+		$cData = $this->buildCdata($movieCol);
+
+		$this->xml->writeCdata(
+			"<li>Imdb Info:
+				<ul>
+					<li>IMDB Link: <a href=\"http://www.imdb.com/title/tt{$r['imdbid']}/\">{$r['searchname']}</a></li>
+					{$cData}
+				</ul>
+			</li>
+			"
+		);
+	}
+
+	/**
+	 * Writes the Music Info for the RSS feed cData
+	 */
+	protected function writeRssMusicInfo()
+	{
+		$r = $this->release;
+		$tData = $cDataUrl = '';
+
+		$musicCol = ['mu_artist', 'mu_genre', 'mu_publisher', 'mu_releasedate', 'mu_review'];
+
+		$cData = $this->buildCdata($musicCol);
+
+		if ($r['mu_url'] !== '' ) {
+			$cDataUrl = "<li>Amazon: <a href=\"{$r['mu_url']}\">{$r['mu_title']}</a></li>";
+		}
+
+		$this->xml->writeCdata("
+		<li>Music Info:
+			<ul>
+				$cDataUrl
+				$cData
+			</ul>
+		</li>");
+		if ($r['mu_tracks'] != '') {
+			$tracks = explode('|', $r['mu_tracks']);
+			if (count($tracks) > 0) {
+				foreach ($tracks AS $track) {
+					$track = trim($track);
+					$tData .= "<li>{$track}</li>";
+				}
+			}
+			$this->xml->writeCdata("
+			<li>Track Listing:
+				<ol>
+				{$tData}
+				</ol>
+			</li>"
+			);
+		}
+	}
+
+	/**
+	 * Writes the Console Info for the RSS feed cData
+	 */
+	protected function writeRssConsoleInfo()
+	{
+		$r = $this->release;
+		$gamesCol = ['co_genre', 'co_publisher', 'year', 'co_review'];
+
+		$cData = $this->buildCdata($gamesCol);
+
+		$this->xml->writeCdata("
+		<li>Console Info:
+			<ul>
+				<li>Amazon: <a href=\"{$r['co_url']}\">{$r['co_title']}</a></li>
+				{$cData}
+			</ul>
+		</li>
+		");
+	}
+
+	/**
+	 * Accepts an array of values to loop through to build cData from the release info
+	 *
+	 * @param array $columns The columns in the release we need to insert
+	 *
+	 * @return string The HTML format cData
+	 */
+	protected function buildCdata($columns)
+	{
+		$r = $this->release;
+
+		$cData = '';
+
+		foreach ($columns AS $info) {
+			if ($r[$info] != '') {
+				if ($info == 'mu_releasedate') {
+					$ucInfo = 'Released';
+					$rDate = date('Y-m-d', strtotime($r[$info]));
+					$cData .= "<li>{$ucInfo}: {$rDate}</li>";
+				} else {
+					$ucInfo = ucfirst(preg_replace('/^[a-z]{2}_/i', '', $info));
+					$cData .= "<li>{$ucInfo}: {$r[$info]}</li>";
+				}
+			}
+		}
+
+		return $cData;
 	}
 }
