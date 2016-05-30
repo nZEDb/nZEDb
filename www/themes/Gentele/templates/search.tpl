@@ -341,7 +341,7 @@
 							<br>{$result.grabs} grab{if $result.grabs != 1}s{/if}
 						</td>
 						<td>
-							<a href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}" class="icon_nzb text-muted"><i
+							<a href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}" class="icon_nzb text-muted" style="background-image: none"><i
 										class="fa fa-cloud-download text-muted"
 										data-toggle="tooltip" data-placement="top" title
 										data-original-title="Download NZB"></i></a>
@@ -349,11 +349,11 @@
 										class="fa fa-comments-o text-muted"
 										data-toggle="tooltip" data-placement="top" title
 										data-original-title="Comments"></i></a>
-							<a href="#" class="icon_cart text-muted"><i
+							<a href="#" class="icon_cart text-muted" style="background-image: none"><i
 										class="fa fa-shopping-basket" data-toggle="tooltip" data-placement="top" title
 										data-original-title="Send to my download basket"></i></a>
 							{if isset($sabintegrated) && $sabintegrated !=""}
-								<a href="#" class="icon_sab text-muted"><i class="fa fa-share" data-toggle="tooltip"
+								<a href="#" class="icon_sab text-muted" style="background-image: none"><i class="fa fa-share" data-toggle="tooltip"
 																		   data-placement="top" title
 																		   data-original-title="Send to my Queue"></i></a>
 							{/if}
