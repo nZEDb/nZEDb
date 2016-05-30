@@ -255,14 +255,6 @@
 													</button>
 												{/if}
 											{/if}
-											{if $weHasVortex}
-												<button type="button"
-														class="btn btn-primary btn-sm btn-transparent vortexsend">
-												<i class="icon_sab fa fa-arrow-right"
-												   id="guid{$release.guid}"></i> Send to
-												NZBVortex
-												</button>
-											{/if}
 										</div>
 									</div>
 									<div class="col-md-9 small-gutter-left">

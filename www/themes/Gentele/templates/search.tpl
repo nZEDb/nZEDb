@@ -357,11 +357,6 @@
 																		   data-placement="top" title
 																		   data-original-title="Send to my Queue"></i></a>
 							{/if}
-							{if $weHasVortex}
-								<a href="#" class="icon_vortex text-muted"><i
-											class="fa fa-share" data-toggle="tooltip" data-placement="top" title
-											data-original-title="Send to NZBVortex"></i></a>
-							{/if}
 						</td>
 					</tr>
 				{/foreach}
