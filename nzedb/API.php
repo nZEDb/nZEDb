@@ -22,7 +22,6 @@ namespace nzedb;
 
 use nzedb\db\Settings;
 use nzedb\utility\Misc;
-use nzedb\utility\Text;
 
 /**
  * Class API
@@ -54,38 +53,6 @@ class API {
 
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 		$this->getRequest = $options['Request'];
-	}
-
-	/**
-	 * Print XML or JSON output.
-	 *
-	 * @param array  $data   Data to print.
-	 * @param array  $caps   Server Capabilities
-	 * @param array  $params Additional request parameters
-	 * @param bool   $xml    True: Print as XML False: Print as JSON.
-	 * @param string $type   What type of API query to format if XML
-	 */
-	public function output($data, $caps, $params, $xml = true, $type = '')
-	{
-		if ($xml) {
-			$response =
-				(
-				new XMLReturn(
-					[
-						'Parameters' => $params,
-						'Releases' => $data,
-						'Server' => $caps,
-						'Type' => $type
-					]
-				)
-				)->returnXML();
-			header('Content-type: text/xml');
-		} else {
-			$response = $this->encodeAsJSON($data);
-			header('Content-type: application/json');
-		}
-		header('Content-Length: ' . strlen($response));
-		echo $response;
 	}
 
 	/**
@@ -200,19 +167,5 @@ class API {
 				$releases[$key]['coverurl'] = $coverURL;
 			}
 		}
-	}
-
-	/**
-	 * @param $data
-	 *
-	 * @return mixed
-	 */
-	public function encodeAsJSON($data)
-	{
-		$json = json_encode(Text::encodeAsUTF8($data));
-		if ($json === false) {
-			Misc::showApiError(201);
-		}
-		return $json;
 	}
 }

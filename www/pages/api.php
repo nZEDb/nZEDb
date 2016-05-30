@@ -4,6 +4,7 @@ use nzedb\Capabilities;
 use nzedb\Category;
 use nzedb\Releases;
 use nzedb\API;
+use nzedb\http\Output;
 use nzedb\db\Settings;
 use nzedb\utility\Misc;
 use nzedb\utility\Text;
@@ -131,7 +132,7 @@ switch ($function) {
 				$categoryID, $offset, $limit, '', $maxAge, $catExclusions, '', $minSize
 			);
 		}
-		$api->output($relData, $caps, $params, $outputXML, 'api');
+		Output::output($relData, $caps, $params, $outputXML, 'api');
 		break;
 	// Search tv releases.
 	case 'tv':
@@ -181,7 +182,7 @@ switch ($function) {
 		);
 
 		$api->addLanguage($relData);
-		$api->output($relData, $caps, $params, $outputXML, 'api');
+		Output::output($relData, $caps, $params, $outputXML, 'api');
 		break;
 
 	// Search movie releases.
@@ -210,7 +211,7 @@ switch ($function) {
 		);
 
 		$api->addLanguage($relData);
-		$api->output($relData, $caps, $params, $outputXML, 'api');
+		Output::output($relData, $caps, $params, $outputXML, 'api');
 		break;
 	// Get individual NZB details.
 	case 'd':
@@ -225,7 +226,7 @@ switch ($function) {
 		if ($data) {
 			$relData[] = $data;
 		}
-		$api->output($relData, $caps, $params, $outputXML, 'api');
+		Output::output($relData, $caps, $params, $outputXML, 'api');
 		break;
 
 	// Get an NFO file for an individual release.
@@ -261,7 +262,7 @@ switch ($function) {
 		$cats = (new Category(['Settings' => $page->settings]))->getForMenu();
 		$caps['categories'] = $cats;
 
-		$api->output('', $caps, $params, $outputXML, 'caps');
+		Output::output('', $caps, $params, $outputXML, 'caps');
 		break;
 	// Register request.
 	case 'r':
@@ -297,6 +298,6 @@ switch ($function) {
 		$params['password'] = $password;
 		$params['token'] = $userdata['rsstoken'];
 
-		$api->output('', $caps, $params, true, 'reg');
+		Output::output('', $caps, $params, true, 'reg');
 		break;
 }

@@ -28,7 +28,7 @@ use nzedb\Utility\Misc;
  *
  * @package nzedb
  */
-class XMLReturn
+class XML_Response
 {
 
 	/**
