@@ -350,7 +350,7 @@
 	<!-- SlimScroll script -->
 	<script src="{$smarty.const.WWW_THEMES}/shared/libs/slimscroll-1.3.x/jquery.slimscroll.min.js"></script>
 	<!-- Fastclick script -->
-	<script src="{$smarty.const.WWW_THEMES}/shared/libs/fastclick-1.0.x/libs/fastclick.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/fastclick-1.0.x/lib/fastclick.js"></script>
 	<!-- notification plugin -->
 	<script type="text/javascript"
 			src="{$smarty.const.WWW_THEMES}/shared/libs/noty-2.3.x/js/noty/packaged/jquery.noty.packaged.js"></script>
