@@ -1033,12 +1033,11 @@ div.icon_cart_clicked {
     background-image: url('../../shared/img/icons/cartdown.png');
 }
 
-div.icon_nzb {
-    background-image: url('../../shared/img/icons/nzbup.png');
+div.icon_nzb			{
+    background: url('../../shared/img/icons/nzbup.png') no-repeat;
 }
-
-div.icon_nzb_clicked {
-    background-image: url('../../shared/img/icons/nzbdown.png');
+div.icon_nzb_clicked	{
+    background: url('../../shared/img/icons/nzbdown.png') no-repeat;
 }
 
 div.icon_nzb a {

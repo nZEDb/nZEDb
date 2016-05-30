@@ -310,8 +310,12 @@ div.icon { width:16px; height:16px; background-repeat:no-repeat; cursor:pointer;
 table.data td.icons div.icon { opacity:.20; }
 div.icon_cart			{ background-image:url('../img/icons/cartup.png'); }
 div.icon_cart_clicked	{ background-image:url('../img/icons/cartdown.png'); }
-div.icon_nzb			{ background-image:url('../img/icons/nzbup.png'); }
-div.icon_nzb_clicked	{ background-image:url('../img/icons/nzbdown.png'); }
+div.icon_nzb			{
+    background: url('../../shared/img/icons/nzbup.png') no-repeat;
+}
+div.icon_nzb_clicked	{
+    background: url('../../shared/img/icons/nzbdown.png') no-repeat;
+}
 div.icon_nzb a			{ text-decoration:none; padding-bottom:2px; padding-right:12px; }
 
 div.icon_sab            {

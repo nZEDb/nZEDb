@@ -308,10 +308,14 @@ div.nzb_multi_operations input:hover { color:#000; border:1px solid #000; cursor
 
 div.icon { width:16px; height:16px; background-repeat:no-repeat; cursor:pointer; position:relative; float:left; margin:2px; }
 table.data td.icons div.icon { opacity:.20; }
-div.icon_cart			{ background-image:url('../images/icons/cartup.png'); }
-div.icon_cart_clicked	{ background-image:url('../images/icons/cartdown.png'); }
-div.icon_nzb			{ background-image:url('../images/icons/nzbup.png'); }
-div.icon_nzb_clicked	{ background-image:url('../images/icons/nzbdown.png'); }
+div.icon_cart			{ background-image:url('../../shared/img/icons/cartup.png'); }
+div.icon_cart_clicked	{ background-image:url('../../shared/img/icons/cartdown.png'); }
+div.icon_nzb			{
+    background: url('../../shared/img/icons/nzbup.png') no-repeat;
+}
+div.icon_nzb_clicked	{
+    background: url('../../shared/img/icons/nzbdown.png') no-repeat;
+}
 div.icon_nzb a			{ text-decoration:none; padding-bottom:2px; padding-right:12px; }
 
 div.icon_sab            {
@@ -321,10 +325,8 @@ div.icon_sab_clicked    {
     background: url('../../shared/img/icons/queuedown.png') no-repeat;
 }
 
-div.icon_tvrage			{ background-image:url('../images/icons/tvrage.png'); }
-div.icon_check			{ background-image:url('../images/icons/check.png'); }
-div.icon_nzbvortex		{ background-image: url('../images/icons/vortex/bigsmile.png'); }
-div.icon_nzbvortex_clicked		{ background-image: url('../images/icons/vortex/bigsmiledown.png'); }
+div.icon_tvrage			{ background-image:url('../../shared/img/icons/tvrage.png'); }
+div.icon_check			{ background-image:url('../../shared/img/icons/check.png'); }
 
 
 
