@@ -204,10 +204,8 @@
 			<!-- footer content -->
 			<footer>
 				<div class="copyright-info">
-					<strong>Copyright &copy; {$smarty.now|date_format:"%Y"} <a
-								href="https://github.com/DariusIII/">newznab-tmux</a>.</strong> This software is open
-					source,
-					released under the GPL license
+					<strong>Copyright &copy; <a
+								href="{$smarty.const.WWW_TOP}{$site->home_link}">{if $site->title == ''}nZEDb{else}{$site->title}{/if}</a> all rights reserved {$smarty.now|date_format:"%Y"}
 				</div>
 				<div class="clearfix"></div>
 			</footer>

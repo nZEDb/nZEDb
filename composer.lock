@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "3f26bbca801213109d9c8df983613831",
-    "content-hash": "151c584e0a90992b43ab77e61acffea4",
+    "hash": "32d4cf109a92de182c8cc10b015c6375",
+    "content-hash": "ab2da7e2c340fabda6a6a3f7943cb64b",
     "packages": [
         {
             "name": "barracudanetworks/forkdaemon-php",
@@ -417,6 +417,42 @@
             ]
         },
         {
+            "name": "bower-asset/ev-emitter",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/metafizzy/ev-emitter.git",
+                "reference": "e1f8d670f76749aff783ad5e2f27d7294c2c679e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/metafizzy/ev-emitter/zipball/e1f8d670f76749aff783ad5e2f27d7294c2c679e",
+                "reference": "e1f8d670f76749aff783ad5e2f27d7294c2c679e",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": "ev-emitter.js",
+                "bower-asset-ignore": [
+                    "**/.*",
+                    "node_modules",
+                    "bower_components",
+                    "test",
+                    "tests",
+                    "sandbox"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "lil' event emitter",
+            "keywords": [
+                "emitter",
+                "event",
+                "pubsub"
+            ]
+        },
+        {
             "name": "bower-asset/fastclick-1.0.x",
             "version": "v1.0.6",
             "source": {
@@ -557,6 +593,49 @@
                 "replacement",
                 "skins",
                 "ui"
+            ]
+        },
+        {
+            "name": "bower-asset/imagesloaded",
+            "version": "v4.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/desandro/imagesloaded.git",
+                "reference": "eb483b9b5e1edcc06daa6bb980810b4accd406f0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/desandro/imagesloaded/zipball/eb483b9b5e1edcc06daa6bb980810b4accd406f0",
+                "reference": "eb483b9b5e1edcc06daa6bb980810b4accd406f0",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/ev-emitter": "~1.0.0"
+            },
+            "require-dev": {
+                "bower-asset/jquery": ">=1.9,<4.0",
+                "bower-asset/qunit": "~1.20.0"
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": "imagesloaded.js",
+                "bower-asset-ignore": [
+                    "**/.*",
+                    "test",
+                    "package.json",
+                    "node_modules",
+                    "bower_components",
+                    "tests",
+                    "sandbox/",
+                    "contributing.md"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "JavaScript is all like _You images done yet or what?_",
+            "keywords": [
+                "images"
             ]
         },
         {
@@ -801,6 +880,49 @@
             "description": "JavaScript notification plugin."
         },
         {
+            "name": "bower-asset/qtip2-main-3.0.x",
+            "version": "v3.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/qTip2/qTip2.git",
+                "reference": "ae4173b5ff6e97e2b1600363cf9561a618a76b8e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/qTip2/qTip2/zipball/ae4173b5ff6e97e2b1600363cf9561a618a76b8e",
+                "reference": "ae4173b5ff6e97e2b1600363cf9561a618a76b8e",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/imagesloaded": ">=3.0.0",
+                "bower-asset/jquery": ">=1.6.0"
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": [
+                    "./dist/jquery.qtip.js",
+                    "./dist/jquery.qtip.css"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Introducing... qTip2. The second generation of the advanced qTip plugin for the ever popular jQuery framework.",
+            "keywords": [
+                "craga89",
+                "craig michael thompson",
+                "craig thompson",
+                "craigsworks",
+                "jquery",
+                "jquery-plugin",
+                "qtip",
+                "qtip2",
+                "simpletip",
+                "tooltip",
+                "tooltips"
+            ]
+        },
+        {
             "name": "bower-asset/respond-1.4.x",
             "version": "1.4.2",
             "source": {
@@ -856,16 +978,16 @@
         },
         {
             "name": "bower-asset/select2-4.0.x",
-            "version": "4.0.2",
+            "version": "4.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/select2/select2.git",
-                "reference": "622a619d25358b86a93c2335f88e1884acc9ccb8"
+                "reference": "566c7846fbf8c3b7674346f26d0ee872c0a77629"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/select2/select2/zipball/622a619d25358b86a93c2335f88e1884acc9ccb8",
-                "reference": "622a619d25358b86a93c2335f88e1884acc9ccb8",
+                "url": "https://api.github.com/repos/select2/select2/zipball/566c7846fbf8c3b7674346f26d0ee872c0a77629",
+                "reference": "566c7846fbf8c3b7674346f26d0ee872c0a77629",
                 "shasum": ""
             },
             "type": "bower-asset-library",
