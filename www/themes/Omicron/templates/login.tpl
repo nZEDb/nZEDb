@@ -55,7 +55,7 @@
 		  <a href="{$smarty.const.WWW_TOP}/forgottenpassword" class="text-center">I forgot my password</a><br>
         <a href="{$smarty.const.WWW_TOP}/register" class="text-center">Register a new membership</a>
     <!-- iCheck -->
-    <script src="{$smarty.const.WWW_THEMES}/{$theme}/plugins/iCheck/icheck.min.js" type="text/javascript"></script>
+    <script src="{$smarty.const.WWW_THEMES}/shared/libs/icheck-1.0.x/icheck.min.js" type="text/javascript"></script>
     <script>
       $(function () {
         $('input').iCheck({
