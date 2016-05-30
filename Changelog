@@ -13,10 +13,12 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x.
 
 
-2016-06-28 ruhllatio
+2015-05-29 DariusIII
+	* Upd: Replace icons with font-awesome counterparts in Alpha theme.
+2016-05-28 ruhllatio
 	Fix: Greatly improve TV API search query when specifying ID/Season/Ep etc. Remove var_dump.
 	Fix: Wrong array offset
-2016-06-27 DariusIII
+2016-05-27 DariusIII
 	* Upd: Use well-sm in all the themes.
 	* Fix: Replace boostrap.min.css with Gamma theme custom bootstrap.css
 	* Fix: Fix link to autosize.min.js in Alpha theme.
