@@ -136,8 +136,8 @@
 									</td>
 									<td>{$result.postdate|timeago}</td>
 									<td>{$result.size|fsize_format:"MB"}</td>
-									<td class="icon_nzb"><a
-												href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}"><i
+									<td>
+										<a href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}" class="icon_nzb text-muted"><i
 													class="fa fa-cloud-download text-muted"
 													data-toggle="tooltip" data-placement="top" title
 													data-original-title="Download NZB"></i></a>
@@ -145,8 +145,8 @@
 													class="fa fa-comments-o text-muted"
 													data-toggle="tooltip" data-placement="top" title
 													data-original-title="Comments"></i></a>
-										<a href="#" class="icon_cart text-muted"><i
-													class="fa fa-shopping-basket" data-toggle="tooltip"
+										<a href="#"><i
+													class="icon_cart text-muted fa fa-shopping-basket" data-toggle="tooltip"
 													data-placement="top" title
 													data-original-title="Send to my download basket"></i></a>
 										{if isset($sabintegrated) && $sabintegrated !=""}

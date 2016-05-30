@@ -116,8 +116,8 @@
 									</td>
 									<td>{$result.postdate|timeago}</td>
 									<td>{$result.size|fsize_format:"MB"}</td>
-									<td class="icon_nzb"><a
-												href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}"><i
+									<td>
+										<a href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}" class="icon_nzb text-muted"><i
 													class="fa fa-cloud-download text-muted"
 													title="Download NZB"></i></a>
 										<a href="{$smarty.const.WWW_TOP}/details/{$result.guid}/#comments"><i
