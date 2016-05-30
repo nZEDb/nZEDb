@@ -167,7 +167,7 @@
 													<div id="guid{$mguid[$m@index]}">
 														<label>
 															<input type="checkbox"
-																   class="nzb_check"
+																   class="square"
 																   value="{$mguid[$m@index]}"
 																   id="chksingle"/>
 														</label>
@@ -319,7 +319,7 @@
 													<div id="guid{$mguid[$m@index]}">
 														<label>
 															<input type="checkbox"
-																   class="nzb_check"
+																   class="square"
 																   value="{$mguid[$m@index]}"
 																   id="chksingle"/>
 														</label>

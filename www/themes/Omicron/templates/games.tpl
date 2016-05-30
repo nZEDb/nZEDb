@@ -124,7 +124,7 @@
 														<td id="guid{$mguid[$m@index]}">
 															<label>
 																<input type="checkbox"
-																	   class="nzb_check"
+																	   class="square"
 																	   value="{$mguid[$m@index]}" id="chksingle"/>
 															</label>
 															<span class="label label-default">{$msize[$m@index]|fsize_format:"MB"}</span>

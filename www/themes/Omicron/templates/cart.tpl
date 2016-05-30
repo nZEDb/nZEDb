@@ -32,7 +32,7 @@
 					<div class="panel-body pagination2">
 						<table style="width:100%;" class="data table table-condensed table-striped table-responsive table-hover" id="browsetable">
 							<tr>
-								<th width="50"><input id="chkSelectAll" type="checkbox" class="nzb_check_all"/><label
+								<th width="50"><input id="chkSelectAll" type="checkbox" class="square-all"/><label
 											for="chkSelectAll" style="display:none;">Select All</label></th>
 								<th>Name</th>
 								<th>Added</th>
@@ -41,7 +41,7 @@
 							{foreach $results as $result}
 								<tr class="{cycle values=",alt"}">
 									<td class="check">
-										<input id="chk{$result.guid|substr:0:7}" type="checkbox" class="nzb_check"
+										<input id="chk{$result.guid|substr:0:7}" type="checkbox" class="square"
 											   value="{$result.id}"/>
 									</td>
 									<td>
