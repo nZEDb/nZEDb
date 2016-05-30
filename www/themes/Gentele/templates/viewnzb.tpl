@@ -545,7 +545,7 @@
 																</th>
 																<td>
 																	{if $release.gid != ""}
-																		Global Id ({$release.gid})
+																		Global Id ({$release.nzb_guid})
 																	{/if}
 																</td>
 															</tr>
