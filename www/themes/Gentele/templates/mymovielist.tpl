@@ -10,7 +10,7 @@
 					<td>
 						<div>
 							<img class="shadow"
-								 src="{if $result['cover'] ==""}{$smarty.const.WWW_THEMES}/shared/images/no-cover.png{else}{$result['cover']}{/if}"
+								 src="{if $result['cover'] ==""}{$smarty.const.WWW_THEMES}/shared/img/no-cover.png{else}{$result['cover']}{/if}"
 								 width="120" border="0" alt="{$result['title']|escape:"htmlall"}"/>
 							<div>
 								<a class="label label-primary" target="_blank"

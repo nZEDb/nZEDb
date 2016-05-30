@@ -30,7 +30,7 @@
 							<tr>
 								<td>
 									<div>
-										<img src="{$smarty.const.WWW_TOP}/covers/movies/{if $movie.cover == 1}{$movie.imdbid}-cover.jpg{else}{$smarty.const.WWW_THEMES}/shared/images/no-cover.png{/if}"
+										<img src="{$smarty.const.WWW_TOP}/covers/movies/{if $movie.cover == 1}{$movie.imdbid}-cover.jpg{else}{$smarty.const.WWW_THEMES}/shared/img/no-cover.png{/if}"
 											 width="120" border="0" alt="{$movie.title|escape:"htmlall"}"/>
 										<div>
 											<a class="label label-primary" target="_blank"

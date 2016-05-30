@@ -55,7 +55,7 @@
 				<!-- menu profile quick info -->
 				<div class="profile">
 					<div class="profile_pic">
-						<img src="{$smarty.const.WWW_THEMES}/shared/images/userimage.png" alt="User Image"
+						<img src="{$smarty.const.WWW_THEMES}/shared/img/userimage.png" alt="User Image"
 							 class="img-circle profile_img">
 					</div>
 					{if $loggedin == "true"}
@@ -145,7 +145,7 @@
 							<a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown"
 							   data-hover="dropdown" data-close-others="true" data-delay="30" aria-expanded="false">
 								{if $loggedin == "true"}
-								<img src="{$smarty.const.WWW_THEMES}/shared/images/userimage.png"
+								<img src="{$smarty.const.WWW_THEMES}/shared/img/userimage.png"
 									 alt="User Image"> {$userdata.username}
 								<span class=" fa fa-angle-down"></span>
 							</a>
