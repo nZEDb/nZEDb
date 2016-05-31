@@ -1,6 +1,5 @@
 <?php
 
-use nzedb\Capabilities;
 use nzedb\Category;
 use nzedb\http\RSS;
 use nzedb\db\Settings;
@@ -49,7 +48,6 @@ if (!isset($_GET["t"]) && !isset($_GET["show"]) && !isset($_GET["anidb"])) {
 	$page->content = $page->smarty->fetch('rssdesc.tpl');
 	$page->render();
 } else {
-	$caps = (new Capabilities(['Settings' => $page->settings]))->getForMenu();
 	$rssToken = $uid = -1;
 	// User requested a feed, ensure either logged in or passing a valid token.
 	if ($page->users->isLoggedIn()) {
@@ -115,5 +113,5 @@ if (!isset($_GET["t"]) && !isset($_GET["show"]) && !isset($_GET["anidb"])) {
 	} else {
 		$relData = $rss->getRss(explode(',', $userCat), $userNum, $userShow, $userAnidb, $uid, $userAirDate);
 	}
-	$rss->output($relData, $caps, $params, true, 'rss');
+	$rss->output($relData, $params, true, 'rss');
 }

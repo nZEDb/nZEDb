@@ -46,6 +46,7 @@ class API extends Output {
 	 */
 	public function __construct(array $options = [])
 	{
+		parent::__construct($options);
 		$defaults = [
 			'Settings' => null,
 			'Request'  => null,

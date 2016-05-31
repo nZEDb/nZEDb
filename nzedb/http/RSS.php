@@ -29,6 +29,7 @@ Class RSS extends Output
 	 */
 	public function __construct(array $options = [])
 	{
+		parent::__construct($options);
 		$defaults = [
 			'Settings' => null,
 			'Releases' => null

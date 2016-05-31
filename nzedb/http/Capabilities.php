@@ -4,7 +4,7 @@ namespace nzedb;
 use nzedb\db\Settings;
 use nzedb\utility\Versions;
 
-class Capabilities
+abstract class Capabilities
 {
 	/**
 	 * @var Settings

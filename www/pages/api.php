@@ -1,6 +1,5 @@
 <?php
 
-use nzedb\Capabilities;
 use nzedb\Category;
 use nzedb\Releases;
 use nzedb\http\API;
@@ -99,7 +98,6 @@ if ($uid != '') {
 
 $releases = new Releases(['Settings' => $page->settings]);
 $api = new API(['Settings' => $page->settings, 'Request' => $_GET]);
-$caps = (new Capabilities(['Settings' => $page->settings]))->getForMenu();
 
 // Set Query Parameters based on Request objects
 $outputXML = (isset($_GET['o']) && $_GET['o'] == 'json' ? false : true);
@@ -131,7 +129,7 @@ switch ($function) {
 				$categoryID, $offset, $limit, '', $maxAge, $catExclusions, '', $minSize
 			);
 		}
-		$api->output($relData, $caps, $params, $outputXML, 'api');
+		$api->output($relData, $params, $outputXML, 'api');
 		break;
 	// Search tv releases.
 	case 'tv':
@@ -181,7 +179,7 @@ switch ($function) {
 		);
 
 		$api->addLanguage($relData);
-		$api->output($relData, $caps, $params, $outputXML, 'api');
+		$api->output($relData, $params, $outputXML, 'api');
 		break;
 
 	// Search movie releases.
@@ -210,7 +208,7 @@ switch ($function) {
 		);
 
 		$api->addLanguage($relData);
-		$api->output($relData, $caps, $params, $outputXML, 'api');
+		$api->output($relData, $params, $outputXML, 'api');
 		break;
 	// Get individual NZB details.
 	case 'd':
@@ -225,7 +223,7 @@ switch ($function) {
 		if ($data) {
 			$relData[] = $data;
 		}
-		$api->output($relData, $caps, $params, $outputXML, 'api');
+		$api->output($relData, $params, $outputXML, 'api');
 		break;
 
 	// Get an NFO file for an individual release.
@@ -261,7 +259,7 @@ switch ($function) {
 		$cats = (new Category(['Settings' => $page->settings]))->getForMenu();
 		$caps['categories'] = $cats;
 
-		$api->output('', $caps, $params, $outputXML, 'caps');
+		$api->output('', $params, $outputXML, 'caps');
 		break;
 	// Register request.
 	case 'r':
@@ -297,6 +295,6 @@ switch ($function) {
 		$params['password'] = $password;
 		$params['token'] = $userdata['rsstoken'];
 
-		$api->output('', $caps, $params, true, 'reg');
+		$api->output('', $params, true, 'reg');
 		break;
 }

@@ -22,24 +22,29 @@ namespace nzedb\http;
 
 use nzedb\Utility\Misc;
 use nzedb\Utility\Text;
+use nzedb\Capabilities;
 
 /**
  * Class Output -- abstract class for printing web requests outside of Smarty
  *
  * @package nzedb\http
  */
-abstract class Output
+abstract class Output extends Capabilities
 {
+	public function __construct(array $options = [])
+	{
+		parent::__construct($options);
+	}
+
 	/**
 	 * Print XML or JSON output.
 	 *
 	 * @param array  $data   Data to print.
-	 * @param array  $caps   Server Capabilities
 	 * @param array  $params Additional request parameters
 	 * @param bool   $xml    True: Print as XML False: Print as JSON.
 	 * @param string $type   What type of API query to format if XML
 	 */
-	public static function output($data, $caps, $params, $xml = true, $type = '')
+	public function output($data, $params, $xml = true, $type = '')
 	{
 		if ($xml) {
 			$response =
@@ -48,7 +53,7 @@ abstract class Output
 					[
 						'Parameters' => $params,
 						'Releases' => $data,
-						'Server' => $caps,
+						'Server' => $this->getForMenu(),
 						'Type' => $type
 					]
 				)
