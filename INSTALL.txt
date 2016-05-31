@@ -19,7 +19,6 @@ REQUIREMENTS
 			Curl
 			Ctype
 			Date
-			DBA
 			EXIF
 			Filter
 			GD
