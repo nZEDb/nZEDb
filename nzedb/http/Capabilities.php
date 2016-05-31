@@ -30,7 +30,7 @@ use nzedb\utility\Versions;
  *
  * @package nzedb\http
  */
-abstract class Output
+abstract class Capabilities
 {
 	/**
 	 * @var Settings

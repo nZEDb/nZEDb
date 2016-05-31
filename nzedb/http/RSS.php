@@ -12,7 +12,7 @@ use nzedb\NZB;
  *
  * @package nzedb
  */
-Class RSS extends Output
+Class RSS extends Capabilities
 {
 	/** Releases class
 	 * @var Releases

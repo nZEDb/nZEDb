@@ -29,7 +29,7 @@ use nzedb\Category;
  *
  * @package nzedb
  */
-class API extends Output {
+class API extends Capabilities {
 
 	/** Settings class
 	 * @var \nzedb\db\Settings
