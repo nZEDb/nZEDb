@@ -205,17 +205,21 @@ Class RSS extends Output
 	 * @param $column
 	 * @param $table
 	 *
+	 * @param $order
+	 *
 	 * @return array|bool
 	 */
-	public function getFirstInstance($column, $table)
+	public function getFirstInstance($column, $table, $order)
 	{
 		return $this->pdo->queryOneRow(
 			sprintf("
 				SELECT %1\$s
 				FROM %2\$s
-				ORDER BY %1\$s ASC",
+				WHERE %1\$s > 0
+				ORDER BY %3\$s ASC",
 				$column,
-				$table
+				$table,
+				$order
 			)
 		);
 	}

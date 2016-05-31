@@ -25,8 +25,8 @@ if (!isset($_GET["t"]) && !isset($_GET["show"]) && !isset($_GET["anidb"])) {
 	$page->meta_keywords = "view,nzb,description,details,rss,atom";
 	$page->meta_description = "View information about nZEDb RSS Feeds.";
 
-	$firstShow = $rss->getFirstInstance('id', 'videos');
-	$firstAni = $rss->getFirstInstance('anidbid', 'releases');
+	$firstShow = $rss->getFirstInstance('videos_id', 'releases', 'id');
+	$firstAni = $rss->getFirstInstance('anidbid', 'releases', 'id');
 
 	if (isset($firstShow['id'])) {
 		$page->smarty->assign('show', $firstShow['id']);
