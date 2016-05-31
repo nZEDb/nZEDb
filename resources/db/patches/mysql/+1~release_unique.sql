@@ -18,7 +18,7 @@
       CREATE TEMPORARY TABLE temp_uniqueids (
         releases_id INT(11) UNSIGNED NOT NULL,
         uniqueid VARCHAR(255) CHARSET utf8 COLLATE utf8_unicode_ci,
-        PRIMARY KEY (uniqueid)
+        PRIMARY KEY (releases_id, uniqueid)
       );
 
       INSERT IGNORE INTO temp_uniqueids (releases_id, uniqueid)
