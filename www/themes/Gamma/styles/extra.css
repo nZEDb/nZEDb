@@ -320,20 +320,20 @@ div.movcover .rndbtn {display:inline-block; margin-top:2px;}
 #cboxOverlay{background:#fff;}
 
 #colorbox{}
-    #cboxTopLeft{width:25px; height:25px; background:url(../../Gamma/images/colorbox/border1-dark.png) 0 0 no-repeat;}
-    #cboxTopCenter{height:25px; background:url(../../Gamma/images/colorbox/border1-dark.png) 0 -50px repeat-x;}
-    #cboxTopRight{width:25px; height:25px; background:url(../../Gamma/images/colorbox/border1-dark.png) -25px 0 no-repeat;}
-    #cboxBottomLeft{width:25px; height:25px; background:url(../../Gamma/images/colorbox/border1-dark.png) 0 -25px no-repeat;}
-    #cboxBottomCenter{height:25px; background:url(../../Gamma/images/colorbox/border1-dark.png) 0 -75px repeat-x;}
-    #cboxBottomRight{width:25px; height:25px; background:url(../../Gamma/images/colorbox/border1-dark.png) -25px -25px no-repeat;}
-    #cboxMiddleLeft{width:25px; background:url(../../Gamma/images/colorbox/border2-dark.png) 0 0 repeat-y;}
-    #cboxMiddleRight{width:25px; background:url(../../Gamma/images/colorbox/border2-dark.png) -25px 0 repeat-y;}
+    #cboxTopLeft{width:25px; height:25px; background:url(../../shared/img/colorbox/border1-dark.png) 0 0 no-repeat;}
+    #cboxTopCenter{height:25px; background:url(../../shared/img/colorbox/border1-dark.png) 0 -50px repeat-x;}
+    #cboxTopRight{width:25px; height:25px; background:url(../../shared/img/colorbox/border1-dark.png) -25px 0 no-repeat;}
+    #cboxBottomLeft{width:25px; height:25px; background:url(../../shared/img/colorbox/border1-dark.png) 0 -25px no-repeat;}
+    #cboxBottomCenter{height:25px; background:url(../../shared/img/colorbox/border1-dark.png) 0 -75px repeat-x;}
+    #cboxBottomRight{width:25px; height:25px; background:url(../../shared/img/colorbox/border1-dark.png) -25px -25px no-repeat;}
+    #cboxMiddleLeft{width:25px; background:url(../../shared/img/colorbox/border2-dark.png) 0 0 repeat-y;}
+    #cboxMiddleRight{width:25px; background:url(../../shared/img/colorbox/border2-dark.png) -25px 0 repeat-y;}
     #cboxContent{background:#000;}
         #cboxLoadedContent{background:#000; margin-top:32px; padding:1px; }
         #cboxLoadingOverlay{background:#000;}
         #cboxTitle{position:absolute; font-size:125%; top:-2px; left:0; color:#fff; background:#000;}
         #cboxCurrent{position:absolute; top:-1px; right:205px; text-indent:-9999px;}
-        #cboxSlideshow, #cboxPrevious, #cboxNext, #cboxClose{text-indent:-9999px; width:20px; height:20px; position:absolute; top:-1px; background:url(../../Gamma/images/colorbox/controls-dark.png) 0 0 no-repeat;}
+        #cboxSlideshow, #cboxPrevious, #cboxNext, #cboxClose{text-indent:-9999px; width:20px; height:20px; position:absolute; top:-1px; background:url(../../shared/img/colorbox/controls-dark.png) 0 0 no-repeat;}
         #cboxPrevious{background-position:0px 0px; right:44px;}
         #cboxPrevious.hover{background-position:0px -25px;}
         #cboxNext{background-position:-25px 0px; right:22px;}
@@ -364,7 +364,7 @@ div.movcover .rndbtn {display:inline-block; margin-top:2px;}
         .cboxMovie #cboxLoadingOverlay{background:#000;}
         .cboxMovie #cboxTitle{position:absolute; top:-22px; left:0; color:#000;}
         .cboxMovie #cboxCurrent{position:absolute; top:-22px; right:205px; text-indent:-9999px;}
-        .cboxMovie #cboxSlideshow, .cboxMovie #cboxPrevious, .cboxMovie #cboxNext, .cboxMovie #cboxClose{text-indent:-9999px; width:20px; height:20px; position:absolute; top:-20px; background:url(../../Gamma/images/colorbox/controls-dark.png) 0 0 no-repeat;}
+        .cboxMovie #cboxSlideshow, .cboxMovie #cboxPrevious, .cboxMovie #cboxNext, .cboxMovie #cboxClose{text-indent:-9999px; width:20px; height:20px; position:absolute; top:-20px; background:url(../../shared/img/colorbox/controls-dark.png) 0 0 no-repeat;}
         .cboxMovie #cboxPrevious{background-position:0px 0px; right:44px;}
         .cboxMovie #cboxPrevious.hover{background-position:0px -25px;}
         .cboxMovie #cboxNext{background-position:-25px 0px; right:22px;}

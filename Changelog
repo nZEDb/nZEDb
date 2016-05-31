@@ -9,10 +9,12 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-05-31 DariusIII
+	Fix: Remove doubled and wrong preinfo function ih Gamma theme utils.js
+	Fix: PreDB page layout in Gamma theme.
+	Fix: Links to colorbox images in Gamma theme.
 2016-05-30 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x.
-
-
 2015-05-29 DariusIII
 	* Upd: Replace icons with font-awesome counterparts in Alpha theme.
 2016-05-28 ruhllatio
