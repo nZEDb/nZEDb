@@ -14,18 +14,23 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 
 2016-05-31 DariusIII
-	* Fix: PreDB page layout in Gamma theme.
-	* Fix: Links to colorbox images in Gamma theme.
-2016-05-29 DariusIII
-	* Upd: Replace icons with font-awesome counterparts in Alpha theme.
+	Fix: PreDB page layout in Gamma theme.
+	Fix: Links to colorbox images in Gamma theme.
+2016-05-30 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x.
+2015-05-29 DariusIII
+	Upd: Replace icons with font-awesome counterparts in Alpha theme.
+	Fix: Remove doubled and wrong preinfo function ih Gamma theme utils.js
+	Fix: PreDB page layout in Gamma theme.
+	Fix: Links to colorbox images in Gamma theme.
 2016-05-28 ruhllatio
 	Fix: Greatly improve TV API search query when specifying ID/Season/Ep etc. Remove var_dump.
 	Fix: Wrong array offset
 2016-05-27 DariusIII
-	* Upd: Use well-sm in all the themes.
-	* Fix: Replace boostrap.min.css with Gamma theme custom bootstrap.css
-	* Fix: Fix link to autosize.min.js in Alpha theme.
-	* Fix: Fix tables layout in Gamma theme by removing table-striped attribute.
+	Upd: Use well-sm in all the themes.
+	Fix: Replace boostrap.min.css with Gamma theme custom bootstrap.css
+	Fix: Fix link to autosize.min.js in Alpha theme.
+	Fix: Fix tables layout in Gamma theme by removing table-striped attribute.
 2016-05-26 niel
 	Fix: Update some bower-asset's version strings to better reflect the version specified.
 		Tightened versions for others to err on the side of caution. We can relax later if this

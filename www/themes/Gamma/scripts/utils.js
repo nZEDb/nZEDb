@@ -860,30 +860,6 @@ jQuery(function($){
     });
 
     // preinfo tooltip
-    $(".preinfo").each(function() {
-        var searchname = $(this).attr('title');
-        $(this).qtip({
-            content: {
-                title: {
-                    text: 'Pre Info'
-                },
-                text: 'loading...',
-                ajax: {
-                    url: SERVERROOT + 'ajax_preinfo',
-                    type: 'GET',
-                    data: { searchname: searchname },
-                    success: function(data, status) {
-                        this.set('content.text', data);
-                    }
-                }
-            },
-            style: {
-                classes: 'ui-tooltip-nzedb'
-            }
-        });
-    });
-
-    // preinfo tooltip
     $(".preinfo").each(function () {
         var preid = $(this).attr('title');
         $(this).qtip({
