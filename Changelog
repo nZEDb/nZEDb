@@ -10,8 +10,9 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 
 2016-05-31 DariusIII
-	* Fix: PreDB page layout in Gamma theme.
-	* Fix: Links to colorbox images in Gamma theme.
+	Fix: Remove doubled and wrong preinfo function ih Gamma theme utils.js
+	Fix: PreDB page layout in Gamma theme.
+	Fix: Links to colorbox images in Gamma theme.
 2016-05-30 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x.
 2015-05-29 DariusIII
