@@ -113,5 +113,9 @@
   },
   "scripts": {
   },
+  "suggest": {
+    "ext-simple_php_yenc_decode": "Greatly improves yEnc decoding speed in PHP 5.x",
+    "ext-xdebug": "For developement work"
+  },
   "type": "project"
 }

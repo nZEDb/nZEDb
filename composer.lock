@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "226ff888d6bf94fcb997b21480d45910",
-    "content-hash": "693b161a2b66a3097e2cbf1d559db5f5",
+    "hash": "4af1efe6e9334f235c71953bb60374fa",
+    "content-hash": "f3ef9c76ca3e68998993bd24951cff0a",
     "packages": [
         {
             "name": "barracudanetworks/forkdaemon-php",
@@ -856,16 +856,16 @@
         },
         {
             "name": "bower-asset/select2-4.0.x",
-            "version": "4.0.2",
+            "version": "4.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/select2/select2.git",
-                "reference": "622a619d25358b86a93c2335f88e1884acc9ccb8"
+                "reference": "566c7846fbf8c3b7674346f26d0ee872c0a77629"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/select2/select2/zipball/622a619d25358b86a93c2335f88e1884acc9ccb8",
-                "reference": "622a619d25358b86a93c2335f88e1884acc9ccb8",
+                "url": "https://api.github.com/repos/select2/select2/zipball/566c7846fbf8c3b7674346f26d0ee872c0a77629",
+                "reference": "566c7846fbf8c3b7674346f26d0ee872c0a77629",
                 "shasum": ""
             },
             "type": "bower-asset-library",
@@ -1647,13 +1647,13 @@
         "ext-iconv": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
+        "ext-mcrypt": "*",
         "ext-mysqlnd": "*",
         "ext-pdo": "*",
         "ext-pdo_mysql": "*",
         "ext-simplexml": "*",
         "ext-xmlwriter": "*",
-        "php": ">=5.5.0",
-        "ext-mcrypt": "*"
+        "php": ">=5.5.0"
     },
     "platform-dev": []
 }
