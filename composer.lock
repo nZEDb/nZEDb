@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "4af1efe6e9334f235c71953bb60374fa",
-    "content-hash": "f3ef9c76ca3e68998993bd24951cff0a",
+    "hash": "73c0f6f98c77c857b760ae0075f16408",
+    "content-hash": "0c95ca25558028e442b75fc9ba8fb256",
     "packages": [
         {
             "name": "barracudanetworks/forkdaemon-php",
@@ -1653,7 +1653,17 @@
         "ext-pdo_mysql": "*",
         "ext-simplexml": "*",
         "ext-xmlwriter": "*",
-        "php": ">=5.5.0"
+        "php": ">=5.5.0",
+        "ext-ctype": "*",
+        "ext-exif": "*",
+        "ext-filter": "*",
+        "ext-hash": "*",
+        "ext-openssl": "*",
+        "ext-pcre": "*",
+        "ext-session": "*",
+        "ext-spl": "*",
+        "ext-sockets": "*",
+        "ext-zlib": "*"
     },
     "platform-dev": []
 }
