@@ -1,15 +1,18 @@
 <?php
 
-namespace nzedb;
+namespace nzedb\http;
 
 use nzedb\db\Settings;
+use nzedb\Releases;
+use nzedb\Category;
+use nzedb\NZB;
 
 /**
  * Class RSS -- contains specific functions for RSS
  *
  * @package nzedb
  */
-Class RSS
+Class RSS extends Output
 {
 	/** Releases class
 	 * @var Releases
@@ -176,12 +179,25 @@ Class RSS
 				AND r.passwordstatus %s
 				ORDER BY postdate DESC %s",
 				$this->releases->getConcatenatedCategoryIDs(),
-				$this->releases->uSQL($this->pdo->query(sprintf('SELECT imdbid, categoryid FROM user_movies WHERE user_id = %d', $userID), true), 'imdbid'),
+				$this->releases->uSQL(
+					$this->pdo->query(
+						sprintf('
+							SELECT imdbid, categories_id
+							FROM user_movies
+							WHERE user_id = %d',
+							$userID
+						),
+						true
+					),
+					'imdbid'
+				),
 				(count($excludedCats) ? ' AND r.categories_id NOT IN (' . implode(',', $excludedCats) . ')' : ''),
 				NZB::NZB_ADDED,
 				$this->releases->showPasswords,
 				(' LIMIT ' . ($limit > 100 ? 100 : $limit) . ' OFFSET 0')
-			), true, nZEDb_CACHE_EXPIRY_MEDIUM
+			),
+			true,
+			nZEDb_CACHE_EXPIRY_MEDIUM
 		);
 	}
 

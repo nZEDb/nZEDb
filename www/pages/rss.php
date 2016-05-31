@@ -2,10 +2,9 @@
 
 use nzedb\Capabilities;
 use nzedb\Category;
-use nzedb\RSS;
+use nzedb\http\RSS;
 use nzedb\db\Settings;
 use nzedb\utility\Misc;
-use nzedb\http\Output;
 
 $category = new Category(['Settings' => $page->settings]);
 $rss = new RSS(['Settings' => $page->settings]);
@@ -116,5 +115,5 @@ if (!isset($_GET["t"]) && !isset($_GET["show"]) && !isset($_GET["anidb"])) {
 	} else {
 		$relData = $rss->getRss(explode(',', $userCat), $userNum, $userShow, $userAnidb, $uid, $userAirDate);
 	}
-	Output::output($relData, $caps, $params, true, 'rss');
+	$rss->output($relData, $caps, $params, true, 'rss');
 }

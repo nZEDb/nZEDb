@@ -18,17 +18,18 @@
  * @author    ruhllatio
  * @copyright 2016 nZEDb
  */
-namespace nzedb;
+namespace nzedb\http;
 
 use nzedb\db\Settings;
 use nzedb\utility\Misc;
+use nzedb\Category;
 
 /**
  * Class API
  *
  * @package nzedb
  */
-class API {
+class API extends Output {
 
 	/** Settings class
 	 * @var \nzedb\db\Settings

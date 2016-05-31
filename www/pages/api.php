@@ -3,8 +3,7 @@
 use nzedb\Capabilities;
 use nzedb\Category;
 use nzedb\Releases;
-use nzedb\API;
-use nzedb\http\Output;
+use nzedb\http\API;
 use nzedb\db\Settings;
 use nzedb\utility\Misc;
 use nzedb\utility\Text;

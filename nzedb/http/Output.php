@@ -20,7 +20,6 @@
  */
 namespace nzedb\http;
 
-use nzedb\XML_Response;
 use nzedb\Utility\Misc;
 use nzedb\Utility\Text;
 

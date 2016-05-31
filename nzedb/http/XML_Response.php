@@ -19,9 +19,9 @@
  * @copyright 2016 nZEDb
  */
 
-namespace nzedb;
-
+namespace nzedb\http;
 use nzedb\Utility\Misc;
+use nzedb\Category;
 
 /**
  * Class XMLReturn
