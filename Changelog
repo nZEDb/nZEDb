@@ -9,7 +9,9 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
-2015-05-29 DariusIII
+2016-05-31 DariusIII
+	* Fix: Links to colorbox images in Gamma theme.
+2016-05-29 DariusIII
 	* Upd: Replace icons with font-awesome counterparts in Alpha theme.
 2016-05-28 ruhllatio
 	Fix: Greatly improve TV API search query when specifying ID/Season/Ep etc. Remove var_dump.
