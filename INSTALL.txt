@@ -17,7 +17,6 @@ REQUIREMENTS
 
 		(extensions)
 			Curl
-			Crypt
 			Ctype
 			Date
 			DBA
@@ -28,6 +27,7 @@ REQUIREMENTS
 			Iconv
 			JSON
 			MBString
+			Mcrypt
 			OpenSSL
 			PEAR
 			PCRE
