@@ -70,17 +70,17 @@
 							</div>
 							<div class="rating-pod" id="guid{$result.guid}">
 								<div class="icons divlink col-lg-4">
-									<span class="btn btn-hover btn-default btn-sm icon_nzb text-muted"><a
+									<span class="btn btn-hover btn-default btn-sm text-muted"><a
 												title="Download Nzb"
 												href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}">
-											<i class="fa fa-cloud-download"></i></a>
+											<i class="icon_nzb fa fa-cloud-download"></i></a>
 									</span>
-									<span class="btn btn-hover btn-default btn-sm icon_cart text-muted"
+									<span class="btn btn-hover btn-default btn-sm text-muted"
 										  title="Send to my Download Basket"><i
-												class="fa fa-shopping-basket"></i></span>
+												class="icon_cart fa fa-shopping-basket"></i></span>
 									{if isset($sabintegrated) && $sabintegrated !=""}
-										<span class="btn btn-hover btn-default btn-sm icon_sab text-muted"
-											  title="Send to my Queue"><i class="fa fa-share"></i></span>
+										<span class="btn btn-hover btn-default btn-sm text-muted"
+											  title="Send to my Queue"><i class="icon_sab fa fa-share"></i></span>
 									{/if}
 								</div>
 							</div>
