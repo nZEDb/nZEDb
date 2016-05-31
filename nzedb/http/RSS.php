@@ -36,7 +36,9 @@ Class RSS extends Output
 		$options += $defaults;
 
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
-		$this->releases = ($options['Releases'] instanceof Releases ? $options['Releases'] : new Releases());
+		$this->releases = (
+			$options['Releases'] instanceof Releases ? $options['Releases'] : new Releases(['Settings' => $this->pdo])
+		);
 	}
 
 	/**
@@ -59,7 +61,7 @@ Class RSS extends Output
 
 		if (count($cat)) {
 			if ($cat[0] == -2) {
-				$cartSearch = sprintf(' INNER JOIN users_releases ON users_releases.user_id = %d AND users_releases.releases_id = r.id ', $userID);
+				$cartSearch = sprintf('INNER JOIN users_releases ON users_releases.user_id = %d AND users_releases.releases_id = r.id', $userID);
 			} else if ($cat[0] != -1) {
 				$catSearch = $this->releases->categorySQL($cat);
 			}
@@ -67,10 +69,10 @@ Class RSS extends Output
 
 		$sql = $this->pdo->query(
 			sprintf(
-				"SELECT r.*, m.cover, m.imdbid, m.rating, m.plot,
-					m.year, m.genre, m.director, m.actors, g.name AS group_name,
+				"SELECT r.*,
+					m.cover, m.imdbid, m.rating, m.plot, m.year, m.genre, m.director, m.actors,
+					g.name AS group_name,
 					CONCAT(cp.title, ' > ', c.title) AS category_name,
-					%s AS category_ids,
 					COALESCE(cp.id,0) AS parentid,
 					mu.title AS mu_title, mu.url AS mu_url, mu.artist AS mu_artist,
 					mu.publisher AS mu_publisher, mu.releasedate AS mu_releasedate,
@@ -79,6 +81,7 @@ Class RSS extends Output
 					co.publisher AS co_publisher, co.releasedate AS co_releasedate,
 					co.review AS co_review, co.cover AS co_cover, cog.title AS co_genre,
 					bo.cover AS bo_cover
+					%s AS category_ids,
 				FROM releases r
 				INNER JOIN categories c ON c.id = r.categories_id
 				INNER JOIN categories cp ON cp.id = c.parentid
@@ -99,9 +102,9 @@ Class RSS extends Output
 				$this->releases->showPasswords,
 				NZB::NZB_ADDED,
 				$catSearch,
-				($videosId > 0 ? sprintf(' AND r.videos_id = %d %s ', $videosId, ($catSearch == '' ? $catLimit : '')) : ''),
-				($aniDbID > 0 ? sprintf(' AND r.anidbid = %d %s ', $aniDbID, ($catSearch == '' ? $catLimit : '')) : ''),
-				($airDate > -1 ? sprintf(' AND tve.firstaired >= DATE_SUB(CURDATE(), INTERVAL %d DAY) ', $airDate) : ''),
+				($videosId > 0 ? sprintf('AND r.videos_id = %d %s', $videosId, ($catSearch == '' ? $catLimit : '')) : ''),
+				($aniDbID > 0 ? sprintf('AND r.anidbid = %d %s', $aniDbID, ($catSearch == '' ? $catLimit : '')) : ''),
+				($airDate > -1 ? sprintf('AND tve.firstaired >= DATE_SUB(CURDATE(), INTERVAL %d DAY)', $airDate) : ''),
 				(' LIMIT 0,' . ($offset > 100 ? 100 : $offset))
 			), true, nZEDb_CACHE_EXPIRY_MEDIUM
 		);
@@ -137,11 +140,21 @@ Class RSS extends Output
 				AND r.categories_id BETWEEN %d AND %d
 				AND r.passwordstatus %s
 				ORDER BY postdate DESC %s",
-
 				$this->releases->getConcatenatedCategoryIDs(),
-				$this->releases->uSQL($this->pdo->query(sprintf('SELECT videos_id, categoryid FROM user_series WHERE user_id = %d', $userID), true), 'videos_id'),
-				(count($excludedCats) ? ' AND r.categories_id NOT IN (' . implode(',', $excludedCats) . ')' : ''),
-				($airDate > -1 ? sprintf(' AND tve.firstaired >= DATE_SUB(CURDATE(), INTERVAL %d DAY) ', $airDate) : ''),
+				$this->releases->uSQL(
+					$this->pdo->query(
+						sprintf('
+							SELECT videos_id, categoryid
+							FROM user_series
+							WHERE user_id = %d',
+							$userID
+						),
+						true
+					),
+					'videos_id'
+				),
+				(count($excludedCats) ? 'AND r.categories_id NOT IN (' . implode(',', $excludedCats) . ')' : ''),
+				($airDate > -1 ? sprintf('AND tve.firstaired >= DATE_SUB(CURDATE(), INTERVAL %d DAY) ', $airDate) : ''),
 				NZB::NZB_ADDED,
 				Category::TV_ROOT,
 				Category::TV_OTHER,

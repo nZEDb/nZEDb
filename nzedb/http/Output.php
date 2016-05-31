@@ -23,7 +23,12 @@ namespace nzedb\http;
 use nzedb\Utility\Misc;
 use nzedb\Utility\Text;
 
-class Output
+/**
+ * Class Output -- abstract class for printing web requests outside of Smarty
+ *
+ * @package nzedb\http
+ */
+abstract class Output
 {
 	/**
 	 * Print XML or JSON output.
