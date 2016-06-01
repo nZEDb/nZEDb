@@ -18,18 +18,18 @@
  * @author    ruhllatio
  * @copyright 2016 nZEDb
  */
-namespace nzedb;
+namespace nzedb\http;
 
 use nzedb\db\Settings;
 use nzedb\utility\Misc;
-use nzedb\utility\Text;
+use nzedb\Category;
 
 /**
  * Class API
  *
  * @package nzedb
  */
-class API {
+class API extends Capabilities {
 
 	/** Settings class
 	 * @var \nzedb\db\Settings
@@ -46,6 +46,7 @@ class API {
 	 */
 	public function __construct(array $options = [])
 	{
+		parent::__construct($options);
 		$defaults = [
 			'Settings' => null,
 			'Request'  => null,
@@ -54,30 +55,6 @@ class API {
 
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 		$this->getRequest = $options['Request'];
-	}
-
-	/**
-	 * Print XML or JSON output.
-	 * @param array    $data   Data to print.
-	 * @param bool     $xml    True: Print as XML False: Print as JSON.
-	 * @param \BasePage $page
-	 * @param int      $offset Offset for limit.
-	 */
-	function printOutput($data, $xml = true, $page, $offset = 0)
-	{
-		if ($xml) {
-			$page->smarty->assign('offset', $offset);
-			$page->smarty->assign('releases', $data);
-			$response = trim($page->smarty->fetch('apiresult.tpl'));
-			header('Content-type: text/xml');
-			header('Content-Length: ' . strlen($response));
-			echo $response;
-		} else {
-			$response = $this->encodeAsJSON($data);
-			header('Content-type: application/json');
-			header('Content-Length: ' . strlen($response));
-			echo $response;
-		}
 	}
 
 	/**
@@ -192,19 +169,5 @@ class API {
 				$releases[$key]['coverurl'] = $coverURL;
 			}
 		}
-	}
-
-	/**
-	 * @param $data
-	 *
-	 * @return mixed
-	 */
-	public function encodeAsJSON($data)
-	{
-		$json = json_encode(Text::encodeAsUTF8($data));
-		if ($json === false) {
-			Misc::showApiError(201);
-		}
-		return $json;
 	}
 }
