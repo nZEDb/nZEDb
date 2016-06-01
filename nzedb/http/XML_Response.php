@@ -238,7 +238,7 @@ class XML_Response
 				$this->xml->writeAttribute('description', html_entity_decode($p['description']));
 			}
 			foreach($p['subcatlist'] AS $c) {
-				$this->xml->startElement('subcatlist');
+				$this->xml->startElement('subcat');
 				$this->xml->writeAttribute('id', $c['id']);
 				$this->xml->writeAttribute('name', html_entity_decode($c['title']));
 				if ($c['description'] != '') {
