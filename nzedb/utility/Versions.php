@@ -33,9 +33,14 @@ class Versions
 	protected $_changes = 0;
 
 	/**
-	 * @var string	Path and filename for the XML file.
+	 * @var string Path and filename for the XML file.
 	 */
 	protected $_filespec;
+
+	/**
+	 * @var string highest tag value
+	 */
+	protected $_gitHighestTag;
 
 	/**
 	 * @var array of stable branches.
@@ -92,7 +97,6 @@ class Versions
 	public function checkAll($update = true)
 	{
 		$this->checkGitTag($update);
-		//$this->checkSQLFileLatest($update);
 		$this->checkSQLDb($update);
 		$this->checkGitCommit($update);
 		return $this->hasChanged();
@@ -139,7 +143,7 @@ class Versions
 	public function checkGitTag($update = true)
 	{
 		$branch = $this->git->getBranch();
-		$latest = $this->git->tagLatest();
+		$this->_gitHighestTag = $latest = $this->git->tagLatest();
 		$ver = preg_match('#v(\d+\.\d+\.\d+).*#', $latest, $matches) ? $matches[1] : $latest;
 
 		if (!in_array($branch, $this->_stable)) {
@@ -250,7 +254,10 @@ class Versions
 
 	public function getTagVersion()
 	{
-		return $this->_vers->git->tag->__toString();
+		if (empty($this->_gitHighestTag)) {
+			$this->checkGitTag();
+		}
+		return $this->_gitHighestTag;
 	}
 
 	public function getValidVersionsFile($filepath = null)
