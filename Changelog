@@ -10,6 +10,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 2016-06-01 ruhllatio
 	Mrg: PR Feature media #2153
+	Fix: Regex error in SP from #2153
 2016-06-01 DariusIII
 	Upd: Composer.lock to match composer.json.
 2016-05-31 ruhllatio
