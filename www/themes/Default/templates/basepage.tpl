@@ -16,8 +16,10 @@
 	{if $loggedin=="true"}<link rel="alternate" type="application/rss+xml" title="{$site->title} Full Rss Feed" href="{$smarty.const.WWW_TOP}/rss?t=0&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">{/if}
 
 	<!-- Included CSS files - Bootstrap 3 - Font Awesome 3.2.0 - plugins master style.css -->
-	<link href="themes/shared/libs/bootstrap/v3/css/bootstrap.css" rel="stylesheet">
-	<link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/3.2.0/css/font-awesome.css" rel="stylesheet" media="screen">
+	<link href="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap-2.3.x/docs/assets/css/bootstrap.css" rel="stylesheet"
+		  type="text/css"/>
+	<link href="{$smarty.const.WWW_THEMES}/shared/libs/font-awesome-4.5.x/css/font-awesome.min.css" rel="stylesheet"
+		  type="text/css"/>
 	<link href="{$smarty.const.WWW_THEMES}/shared/css/jquery.qtip.css" rel="stylesheet" media="screen">
 	<!-- <link href="{$smarty.const.WWW_THEMES}/shared/css/subnav.css" rel="stylesheet" media="screen"> -->
 	<link href="{$smarty.const.WWW_THEMES}/shared/css/posterwall.css" rel="stylesheet" type="text/css" media="screen" />
@@ -35,8 +37,7 @@
 	<!-- Additional site files -->
 	{if $site->google_adsense_acc != ''}<link href="http://www.google.com/cse/api/branding.css" rel="stylesheet" media="screen">{/if}
 	<!--[if lt IE 9]>
-	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-	<script>window.html5 || document.write('<script src="{$smarty.const.WWW_THEMES}/shared/js/html5shiv.js"><\/script>')</script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/html5shiv-3.7.x/dist/html5shiv.min.js"></script>
 	<![endif]-->
 
 	<script>
@@ -99,13 +100,12 @@
 </div>
 
 	<!-- Moved The Script Files to end of site for faster page loading -->
-	<script src="//code.jquery.com/jquery-1.9.1.js"></script>
-	{literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_THEMES}{literal}/shared/js/jquery-1.9.1.js"><\/script>')</script>{/literal}
-	<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
-	{literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_THEMES}{literal}/shared/libs/bootstrap/v3/js/bootstrap.min.js"><\/script>')</script>{/literal}
+	<!-- jQuery 1.9.1 -->
+		<script src="{$smarty.const.WWW_THEMES}/shared/libs/jquery-1.9.x/jquery.min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap-2.3.x/docs/assets/bootstrap.min.js"></script>
 	<!-- <script src="{$smarty.const.WWW_THEMES}/shared/js/subnav.js"></script> -->
-	<script src="{$smarty.const.WWW_THEMES}/shared/js/jquery.colorbox-min.js"></script>
-	<script src="{$smarty.const.WWW_THEMES}/shared/js/jquery.qtip.min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/colorbox-1.6.x/jquery.colorbox-min.js" type="text/javascript" ></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/js/jquery.qtip.min.js" type="text/javascript" ></script>
 	<script src="{$smarty.const.WWW_THEMES}/{$theme}/scripts/utils.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/js/sorttable.js"></script>
 

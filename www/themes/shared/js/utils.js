@@ -65,30 +65,11 @@ jQuery(function($){
     // browse.tpl, search.tpl
     $('.icon_cart').click(function(e){
         if ($(this).hasClass('icon_cart_clicked')) return false;
-        var guid = $(this).parent().parent().parent().parent().attr('id').substring(4);
+        var guid = $(this).parent().parent().attr('id').substring(4);
         $.post( SERVERROOT + "cart?add=" + guid, function(resp){
-            $(e.target).addClass('icon_cart_clicked').attr('title',' Release added to Cart');
-            $.pnotify({
-                title: 'ADDED TO YOUR DOWNLOAD BASKET!',
-                text: 'Its now in your Download Basket',
-                type: 'warning',
-                icon: 'fa-icon-info-sign'
-            });        });
-        return false;
-    });
-
-    // browse.tpl, search.tpl
-    $('.icon_cartNZBinfo').click(function(e){
-        if ($(this).hasClass('icon_cart_clicked')) return false;
-        var guid = $(this).attr('id').substring(4);
-        $.post( SERVERROOT + "cart?add=" + guid, function(resp){
-            $(e.target).addClass('icon_cart_clicked').attr('title',' Release added to Cart');
-            $.pnotify({
-                title: 'ADDED TO YOUR DOWNLOAD BASKET!',
-                text: 'Its now in your Download Basket',
-                type: 'warning',
-                icon: 'fa-icon-info-sign'
-            });        });
+            $(e.target).addClass('icon_cart_clicked').attr('title','Added to Cart');
+            cart_notify();
+        });
         return false;
     });
 
@@ -215,56 +196,12 @@ jQuery(function($){
     $('.icon_sab').click(function(e){
         if ($(this).hasClass('icon_sab_clicked')) return false;
 
-        var guid = $(this).parent().parent().parent().parent().attr('id').substring(4);
+        var guid = $(this).parent().parent().attr('id').substring(4);
         var nzburl = SERVERROOT + "sendtoqueue/" + guid;
 
         $.post(nzburl, function(resp){
             $(e.target).addClass('icon_sab_clicked').attr('title','Added to Queue');
-
-            $.pnotify({
-                title: 'ADDED TO QUEUE!',
-                text: 'Its now in the Queue',
-                type: 'info',
-                icon: 'fa-icon-info-sign'
-            });
-        });
-        return false;
-    });
-
-    $('.icon_sabNZBinfo').click(function(e){ // replace with cookies?
-        if ($(this).hasClass('icon_sabNZBinfo_clicked')) return false;
-
-        var guid = $(this).attr('id').substring(4);
-        var nzburl = SERVERROOT + "sendtoqueue/" + guid;
-
-        $.post(nzburl, function(resp){
-            $(e.target).addClass('icon_sabNZBinfo_clicked').attr('title','Added to Queue');
-
-            $.pnotify({
-                title: 'ADDED TO NZBGET!',
-                text: 'Its now in the Queue',
-                type: 'info',
-                icon: 'fa-icon-info-sign'
-            });
-        });
-        return false;
-    });
-
-    $('.icon_sabMovieinfo').click(function(e){ // replace with cookies?
-        if ($(this).hasClass('icon_sabMovieinfo_clicked')) return false;
-
-        var guid = $(this).attr('id');
-        var nzburl = SERVERROOT + "sendtoqueue/" + guid;
-
-        $.post(nzburl, function(resp){
-            $(e.target).addClass('icon_sabMovieinfo_clicked').attr('title','Added to Queue');
-
-            $.pnotify({
-                title: 'ADDED TO NZBGET!',
-                text: 'Its now in the Queue',
-                type: 'info',
-                icon: 'fa-icon-info-sign'
-            });
+            notify('NZB added to queue', 'top');
         });
         return false;
     });
@@ -277,26 +214,9 @@ jQuery(function($){
 
         $.post(nzburl, function(resp){
             $(e.target).addClass('icon_nzbget_clicked').attr('title','Added to Queue');
-            notify('Release added to queue', 'topCenter');
+            notify('NZB added to queue', 'top');
         });
         return false;
-    });
-
-    $('.sendtocouch').click(function (e) {
-        if ($(this).hasClass('icon_cp_clicked')) return false;
-        var id = $(this).attr('id').substring(4);
-        var cpurl = SERVERROOT + "sendtocouch/" + id;
-
-        $.post(cpurl, function(resp){
-            $(e.target).addClass('icon_cp_clicked').attr('title','Added to CouchPotato');
-            $.pnotify({
-                title: 'ADDED TO COUCHPOTATO!',
-                text: 'Its now on your wanted list! ^_^',
-                type: 'info',
-                animate_speed: 'fast',
-                icon: 'fa fa-info-sign'
-            });
-        });
     });
 
 
@@ -305,18 +225,8 @@ jQuery(function($){
         title: function(){ return $(this).parent().parent().children('a.title').text(); },
         innerWidth:"800px", innerHeight:"90%", initialWidth:"800px", initialHeight:"90%", speed:0, opacity:0.7
     });
-
-    $("table.data a.modal_prev").colorbox(	  // Screenshot modal
-        {
-            scrolling:false, maxWidth:"800px", maxHeight:"450px"
-        }
-    );
-
-    $("table.data a.modal_prev").colorbox(	  // Video modal
-        {
-            scrolling:false, maxWidth:"1200px", maxHeight:"675px"
-        }
-    );
+    // Screenshot modal
+    $("table.data a.modal_prev").colorbox({scrolling:false, maxWidth:"800px", maxHeight:"450px"});
 
     $("table.data a.modal_imdb").colorbox({	 // IMDB modal
         href: function(){ return SERVERROOT + "movie/"+$(this).attr('name').substring(4)+'&modal'; },
@@ -357,14 +267,6 @@ jQuery(function($){
         $('#colorbox').removeClass().addClass('cboxBook');
     });
 
-    $("table.data a.modal_xxx").colorbox({	 // XXX modal
-        href: function(){ return SERVERROOT + "xxxmodal/"+$(this).attr('name').substring(4)+'&guid='+$(this).attr('guid').substring(4)+'&modal'; },
-        title: function(){ return $(this).parent().parent().children('a.title').text(); },
-        innerWidth:"800px", innerHeight:"450px", initialWidth:"800px", initialHeight:"450px", speed:0, opacity:0.7
-    }).click(function(){
-        $('#colorbox').removeClass().addClass('cboxMovie');
-    });
-
 
     $('#nzb_multi_operations_form').submit(function(){return false;});
 
@@ -381,19 +283,6 @@ jQuery(function($){
             window.location = SERVERROOT + "getnzb?zip=1&id="+ids;
     });
 
-    $('input.nzb_multi_operations_download_cart').click(function () {
-        var ids = "";
-        $("table.data INPUT[type='checkbox']:checked").each( function (i, row) {
-            if ($(row).val()!="on")
-                ids += $(row.id).selector+',';
-        });
-        ids = ids.substring(0,ids.length-1);
-        if (ids)
-        {
-            window.location = SERVERROOT + "getnzb?zip=1&id="+ids;
-        }
-    });
-
 
     $('input.nzb_multi_operations_cart').click(function(){
         var guids = new Array();
@@ -403,13 +292,7 @@ jQuery(function($){
             if (guid && !$cartIcon.hasClass('icon_cart_clicked')){
                 $cartIcon.addClass('icon_cart_clicked').attr('title','Added to Cart');
                 guids.push(guid);
-                //cart_notify() // consider doing this only upon success and maybe placing it outside of the loop
-                $.pnotify({
-                    title: 'ADDED TO YOUR DOWNLOAD BASKET!',
-                    text: 'Its now in your Download Basket',
-                    type: 'warning',
-                    icon: 'fa-icon-info-sign'
-                });
+                cart_notify() // consider doing this only upon success and maybe placing it outside of the loop
             }
             $(this).attr('checked', false);
         });
@@ -417,47 +300,22 @@ jQuery(function($){
         // alert (guidstring); // This is just for testing shit
         $.post( SERVERROOT + "cart?add=" + guidstring);
     });
-
     $('input.nzb_multi_operations_sab').click(function(){
         $("table.data INPUT[type='checkbox']:checked").each( function(i, row) {
             var $sabIcon = $(row).parent().parent().children('td.icons').children('.icon_sab');
             var guid = $(row).val();
+            //alert(guid);
             if (guid && !$sabIcon.hasClass('icon_sab_clicked')) {
                 var nzburl = SERVERROOT + "sendtoqueue/" + guid;
+                // alert(nzburl);
                 $.post( nzburl, function(resp){
                     $sabIcon.addClass('icon_sab_clicked').attr('title','Added to Queue');
-                    $.pnotify({
-                        title: 'ADDED TO QUEUE!',
-                        text: 'Its now in the queue!! ^_^',
-                        type: 'info',
-                        icon: 'fa-icon-info-sign'
-                    });
+                    notify('NZB added to queue', 'top');
                 });
             }
             $(this).attr('checked', false);
         });
     });
-
-    $('input.nzb_multi_operations_sab_cart').click(function(){
-        $("table.data INPUT[type='checkbox']:checked").each( function(i, row) {
-            var $sabIcon = $(row).parent().parent().children('td.icons').children('.icon_sab');
-            var guid = $(row.id).selector;
-            if (guid && !$sabIcon.hasClass('icon_sab_clicked')) {
-                var nzburl = SERVERROOT + "sendtoqueue/" + guid;
-                $.post( nzburl, function(resp){
-                    $sabIcon.addClass('icon_sab_clicked').attr('title','Added to Queue');
-                    $.pnotify({
-                        title: 'ADDED TO QUEUE!',
-                        text: 'Its now in the queue!! ^_^',
-                        type: 'info',
-                        icon: 'fa-icon-info-sign'
-                    });
-                });
-            }
-            $(this).attr('checked', false);
-        });
-    });
-
     $('input.nzb_multi_operations_nzbget').click(function(){
         $("table.data INPUT[type='checkbox']:checked").each( function(i, row) {
             var $nzbgetIcon = $(row).parent().parent().children('td.icons').children('.icon_nzbget');
@@ -466,7 +324,7 @@ jQuery(function($){
                 var nzburl = SERVERROOT + "sendtoqueue/" + guid;
                 $.post( nzburl, function(resp){
                     $nzbgetIcon.addClass('icon_nzbget_clicked').attr('title','Added to Queue');
-                    notify('Release added to queue', 'topCenter');
+                    notify('NZB added to queue', 'top');
                 });
             }
             $(this).attr('checked', false);
@@ -535,7 +393,7 @@ jQuery(function($){
             var guid = $(row).val();
             var nzburl = SERVERROOT + "sendtoqueue/" + guid;
             $.post( nzburl, function(resp){
-                notify('Release added to queue', 'topCenter');
+                notify('NZB added to queue', 'top');
             });
         });
     });
@@ -833,7 +691,7 @@ jQuery(function($){
         $(this).qtip({
             content: {
                 title: {
-                    text: 'Media Info'
+                    text: 'Extended Media Info'
                 },
                 text: 'loading...',
                 ajax: {
@@ -890,6 +748,7 @@ jQuery(function($){
             }
         });
     });
+
 });
 
 
@@ -957,45 +816,45 @@ $(document).ready(function()
         var persistent = false;
 
         $(document.body).qtip({
-                content: {
-                    text: tipText,
-                    title: {
-                        text: tipTitle,
-                        button: true
-                    }
-                },
-                position: {
-                    my: 'top right',
-                    at: (target.length ? 'bottom' : 'top') + ' right',
-                    target: target.length ? target : $(document.body),
-                    adjust: { y: 5 }
-                },
-                show: {
-                    event: false,
-                    ready: true,
-                    effect: function() { $(this).stop(0,1).fadeIn(400); },
-
-                    persistent: persistent
-                },
-                hide: {
-                    event: false,
-                    effect: function(api) {
-                        $(this).stop(0,1).fadeOut(400).queue(function() {
-                            api.destroy();
-                            updateGrowls();
-                        })
-                    }
-                },
-                style: {
-                    classes: 'jgrowl ui-tooltip-nzedb ui-tooltip-rounded',
-                    tip: false
-                },
-                events: {
-                    render: function(event, api) {
-                        timer.call(api.elements.tooltip, event);
-                    }
+            content: {
+                text: tipText,
+                title: {
+                    text: tipTitle,
+                    button: true
                 }
-            })
+            },
+            position: {
+                my: 'top right',
+                at: (target.length ? 'bottom' : 'top') + ' right',
+                target: target.length ? target : $(document.body),
+                adjust: { y: 5 }
+            },
+            show: {
+                event: false,
+                ready: true,
+                effect: function() { $(this).stop(0,1).fadeIn(400); },
+
+                persistent: persistent
+            },
+            hide: {
+                event: false,
+                effect: function(api) {
+                    $(this).stop(0,1).fadeOut(400).queue(function() {
+                        api.destroy();
+                        updateGrowls();
+                    })
+                }
+            },
+            style: {
+                classes: 'jgrowl ui-tooltip-nzedb ui-tooltip-rounded',
+                tip: false
+            },
+            events: {
+                render: function(event, api) {
+                    timer.call(api.elements.tooltip, event);
+                }
+            }
+        })
             .removeData('qtip');
     };
 
@@ -1028,6 +887,25 @@ $(document).ready(function()
 function resetapireq(uid, type)
 {
     $.post( SERVERROOT + "ajax_resetusergrabs-admin?id=" + uid + "&action=" + type, function(resp){ });
+}
+
+
+function getQueue()
+{
+    $.ajax({
+        url: "queuedata?id=" + $.now(),
+        cache: false,
+        success: function(html)
+        {
+            $(".sab_queue").html(html);
+            setTimeout("getQueue()", 2500);
+        },
+        error: function ()
+        {
+            $(".sab_queue").html("Could not contact your queue. <a href=\"javascript:location.reload(true)\">Refresh</a>");
+        },
+        timeout:5000
+    });
 }
 
 function getNzbGetQueue()

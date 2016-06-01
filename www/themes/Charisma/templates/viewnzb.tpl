@@ -530,21 +530,6 @@
 																		)
 																	</td>
 																</tr>
-																{if isset($isadmin)}
-																	<tr>
-																		<th width="140">Release
-																			Info
-																		</th>
-																		<td>{if $release.regexid != ""}Regex Id (
-																				<a href="{$smarty.const.WWW_TOP}/admin/regex-list.php?group={$release.group_name|escape:"url"}#{$release.regexid}">{$release.regexid}</a>
-																				)
-																			{/if}
-																			{if $release.gid != ""}
-																				Global Id ({$release.gid})
-																			{/if}
-																		</td>
-																	</tr>
-																{/if}
 																</tbody>
 															</table>
 														</td>

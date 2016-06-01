@@ -9,6 +9,30 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-06-01 DariusIII
+	Upd: Composer.lock to match composer.json.
+2016-05-31 ruhllatio
+	Fix: Bug with TV API changes that causes unmatched Show/Sxx/Exx queries to return data
+2016-05-31 DariusIII
+	Fix: Remove doubled and wrong preinfo function ih Gamma theme utils.js
+	Fix: PreDB page layout in Gamma theme.
+	Fix: Links to colorbox images in Gamma theme.
+2016-05-30 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x.
+2015-05-29 DariusIII
+	* Upd: Replace icons with font-awesome counterparts in Alpha theme.
+2016-05-28 ruhllatio
+	Fix: Greatly improve TV API search query when specifying ID/Season/Ep etc. Remove var_dump.
+	Fix: Wrong array offset
+2016-05-27 DariusIII
+	* Upd: Use well-sm in all the themes.
+	* Fix: Replace boostrap.min.css with Gamma theme custom bootstrap.css
+	* Fix: Fix link to autosize.min.js in Alpha theme.
+	* Fix: Fix tables layout in Gamma theme by removing table-striped attribute.
+2016-05-26 niel
+	Fix: Update some bower-asset's version strings to better reflect the version specified.
+		Tightened versions for others to err on the side of caution. We can relax later if this
+		prooves to be too tight.
 2016-05-24 ruhllatio
 	Fix: Revert concat cat query to INNER and add WHERE constraint to exclude parentid being NULL
 	Chg: Convert browse to use queryCalc method for cached counts to improve performance
@@ -35,11 +59,11 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 2016-05-16 niel
 	Fix: Profile edit included non theme names in its dropdown list.
 2016-05-16 ruhllatio
-	Mrg: PR from Meganomic, Req Feature: Search Movies #1581 #2125
+	Mrg: PR 2125, from Meganomic, Req Feature: Search Movies (Closes 1581)
 	Chg: Clean up NZB class file indents and query strings
 	Fix: NZBImport now sets the nzb_guid during the import
 2016-05-13 ruhllatio
-	Fix: PostProcess Additional tmux query not accurate with PP add queue
+	Fix: PostProcess Additional tmux query not accurate with PP add queue.
 2016-05-12 niel
 	Add: Reporting output for update git, db commands.
 2016-05-12 ruhllatio
@@ -161,12 +185,15 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 		updated to the last commit, I have to update the lock file so the hash gets updated.
 2016-04-22 DariusIII
 	Fix: Links to detail pages in Gamma theme (remove release name).
+2016-04-20 DariusIII
+	Chg: 'Moved' more bootstrap files from themes to use shared/libs versions.
 2016-04-19 niel
 	Mrg: PR 2113, from Wally73 - simple-expanded.sh Screen script.
 	Chg: Removed the .../cli/versions.php script. Use './zed version all' instead.
 	Chg: Added nZEDb to li3 as a library, complete with .../nzedb/bootstrap.php file.
 	Fix: Issue with `./zed update db` not working as expected. Mostly caused by not having nZEDb
 		added into lithium as a library (see above).
+	Chg: 'Moved' some bootstrap files from themes to use shared/libs versions.
 2016-04-18 niel
 	Add: 'branch' option to the versions console command. This tells you which git branch you're on.
 	Add: Finished 'db' option for the update command. This checks for patches and updates the
@@ -174,8 +201,11 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Chg: Removed the .../cli/update_db.php script. Use './zed update db' to replicate, or './zed
 		update nzedb' for everything in one operation.
 2016-04-18 DariusIII
+	Upd: Missed some files, cleanup unused scripts.
+	Upd: Update themes to use libs handled by composer
 	Upd: Update .gitignore
 	Upd: Update composer.json
+	Upd: Update .gitignore
 2016-04-15 DariusIII
 	Fix: Fix filelist display in all of the themes, reduce overhead in NZB class related to segments array.
 2016-04-14 niel

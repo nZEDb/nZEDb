@@ -1,6 +1,6 @@
 {if $results|@count > 0}
 
-		<div class="pull-left"><i class="icon-rss-sign icon-2x" style="color:orange;"></i> Download your cart as an <a href="{$smarty.const.WWW_TOP}/rss?t=-2&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}&amp;del=1">Rss Feed</a>.</div>
+		<div class="pull-left"><i class="fa fa-rss fa-2x" style="color:orange;"></i> Download your cart as an <a href="{$smarty.const.WWW_TOP}/rss?t=-2&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}&amp;del=1">Rss Feed</a>.</div>
 
 	<br>
 	<form id="nzb_multi_operations_form" action="get">

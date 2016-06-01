@@ -8,7 +8,7 @@
 				data-toggle="collapse"
 				data-parent="#accordion"
 				href="#searchtoggle"
-			><i class="icon-search"></i> Search Filter</a>
+			><i class="fa fa-search"></i> Search Filter</a>
 		</h4>
 	</div>
 	<div id="searchtoggle" class="panel-collapse collapse">
@@ -25,12 +25,12 @@
 			<thead>
 				<tr>
 					<th><input type="checkbox" class="nzb_check_all"></th>
-					<th>author<a title="Sort Descending" href="{$orderbyauthor_desc}"><i class="icon-chevron-down"></i></a><a
-								title="Sort Ascending" href="{$orderbyauthor_asc}"><i class="icon-chevron-up"></i></a></th>
-					<th>genre<a title="Sort Descending" href="{$orderbygenre_desc}"><i class="icon-chevron-down"></i></a><a
-								title="Sort Ascending" href="{$orderbygenre_asc}"><i class="icon-chevron-up"></i></a></th>
-					<th>posted<a title="Sort Descending" href="{$orderbyposted_desc}"><i class="icon-chevron-down"></i></a><a
-								title="Sort Ascending" href="{$orderbyposted_asc}"><i class="icon-chevron-up"></i></a></th>
+					<th>author<a title="Sort Descending" href="{$orderbyauthor_desc}"><i class="fa fa-chevron-down"></i></a><a
+								title="Sort Ascending" href="{$orderbyauthor_asc}"><i class="fa fa-chevron-up"></i></a></th>
+					<th>genre<a title="Sort Descending" href="{$orderbygenre_desc}"><i class="fa fa-chevron-down"></i></a><a
+								title="Sort Ascending" href="{$orderbygenre_asc}"><i class="fa fa-chevron-up"></i></a></th>
+					<th>posted<a title="Sort Descending" href="{$orderbyposted_desc}"><i class="fa fa-chevron-down"></i></a><a
+								title="Sort Ascending" href="{$orderbyposted_asc}"><i class="fa fa-chevron-up"></i></a></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -132,21 +132,21 @@
 												<br>
 												<div class="resextra">
 													<div class="pull-left">
-														<i class="icon-calendar"></i> Posted {$mpostdate[$m@index]|timeago} |
-														<i class="icon-hdd"></i> {$msize[$m@index]|fsize_format:"MB"} |
-														<i class="icon-file"></i>
+														<i class="fa fa-calendar"></i> Posted {$mpostdate[$m@index]|timeago} |
+														<i class="fa fa-hdd"></i> {$msize[$m@index]|fsize_format:"MB"} |
+														<i class="fa fa-file"></i>
 														<a
 															title="View file list"
 															href="{$smarty.const.WWW_TOP}/filelist/{$mguid[$m@index]}">{$mtotalparts[$m@index]}
 															files
 														</a> |
-														<i class="icon-comments"></i>
+														<i class="fa fa-comments"></i>
 														<a
 															title="View comments for {$mname[$m@index]|escape:"htmlall"}"
 															href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}#comments">{$mcomments[$m@index]}
 															cmt{if $mcomments[$m@index] != 1}s{/if}
 														</a> |
-														<i class="icon-download"></i> {$mgrabs[$m@index]} grab{if $mgrabs[$m@index] > 1}s{/if}
+														<i class="fa fa-download"></i> {$mgrabs[$m@index]} grab{if $mgrabs[$m@index] > 1}s{/if}
 													</div>
 													<div class="pull-right">
 														{if $mnfo[$m@index] > 0}
@@ -156,7 +156,7 @@
 																	title="View Nfo"
 																	class="modal_nfo"
 																	rel="nfo"
-																><i class="icon-info-sign"></i></a></span>
+																><i class="fa fa-info"></i></a></span>
 														{/if}
 														{if $mhaspreview[$m@index] == 1 && $userdata.canpreview == 1}
 															<span class="label label-default">
@@ -165,7 +165,7 @@
 																	name="name{$mguid[$m@index]}"
 																	title="Screenshot of {$mname[$m@index]|escape:"htmlall"}"
 																	class="modal_prev" rel="preview"
-																><i class="icon-camera"></i></a></span
+																><i class="fa fa-camera"></i></a></span
 															>
 														{/if}
 														{if $minnerfiles[$m@index] > 0}
@@ -174,21 +174,21 @@
 																	href="#" onclick="return false;"
 																	class="mediainfo"
 																	title="{$mguid[$m@index]}"
-																><i class="icon-list-alt"></i></a></span
+																><i class="fa fa-list-alt"></i></a></span
 															>
 														{/if}
 														<span class="label label-default">
 															<a
 																href="{$smarty.const.WWW_TOP}/browse?g={$mgrp[$m@index]}"
 																title="Browse releases in {$mgrp[$m@index]}"
-															><i class="icon-share-alt"></i></a></span
+															><i class="fa fa-share-alt"></i></a></span
 														>
 														{if $mpass[$m@index] == 1}
-															<span class="icon-stack" title="Potentially Passworded"><i class="icon-check-empty icon-stack-base"></i><i class="icon-unlock-alt"></i></span>
+															<span class="fa fa-stack" title="Potentially Passworded"><i class="fa fa-square-o fa-stack-base"></i><i class="fa fa-unlock-alt"></i></span>
 														{elseif $mpass[$m@index] == 2}
-															<span class="icon-stack" title="Broken Post"><i class="icon-check-empty icon-stack-base"></i><i class="icon-unlink"></i></span>
+															<span class="fa fa-stack" title="Broken Post"><i class="fa fa-square-o fa-stack-base"></i><i class="fa fa-chain-broken"></i></span>
 														{elseif $mpass[$m@index] == 10}
-															<span class="icon-stack" title="Passworded Archive"><i class="icon-check-empty icon-stack-base"></i><i class="icon-lock"></i></span>
+															<span class="fa fa-stack" title="Passworded Archive"><i class="fa fa-square-o fa-stack-base"></i><i class="fa fa-lock"></i></span>
 														{/if}
 														{if $mfailed[$m@index] > 0}
 														<span class="btn btn-hover btn-default btn-xs"><i class="fa fa-thumbs-o-down"></i><span
