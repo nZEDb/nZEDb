@@ -20,6 +20,7 @@
  */
 namespace nzedb\http;
 
+use nzedb\Category;
 use nzedb\Utility\Misc;
 use nzedb\Utility\Text;
 use nzedb\db\Settings;
@@ -36,6 +37,12 @@ abstract class Capabilities
 	 * @var Settings
 	 */
 	public $pdo;
+
+
+	/**
+	 * @var string The type of Capabilities request
+	 */
+	protected $type;
 
 	/**
 	 * Construct.
@@ -61,6 +68,8 @@ abstract class Capabilities
 	 */
 	public function output($data, $params, $xml = true, $type = '')
 	{
+		$this->type = $type;
+
 		if ($xml) {
 			$response =
 				(
@@ -127,7 +136,12 @@ abstract class Capabilities
 				'tv-search'    => ['available' => 'yes', 'supportedParams' => 'q,vid,tvdbid,traktid,rid,tvmazeid,imdbid,tmdbid,season,ep'],
 				'movie-search' => ['available' => 'yes', 'supportedParams' => 'q,imdbid'],
 				'audio-search' => ['available' => 'no',  'supportedParams' => '']
-			]
+			],
+			'categories' =>
+				($this->type === 'caps'
+					? (new Category(['Settings' => $this->pdo]))->getForMenu()
+					: null
+				)
 		];
 	}
 }

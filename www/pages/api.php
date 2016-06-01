@@ -255,10 +255,6 @@ switch ($function) {
 
 	// Capabilities request.
 	case 'c':
-		//get categories
-		$cats = (new Category(['Settings' => $page->settings]))->getForMenu();
-		$caps['categories'] = $cats;
-
 		$api->output('', $params, $outputXML, 'caps');
 		break;
 	// Register request.
