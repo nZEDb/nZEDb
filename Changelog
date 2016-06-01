@@ -12,6 +12,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Mrg: PR Feature media #2153
 	Fix: Regex error in SP from #2153
 	Chg: Make nzb-export comments reflect a more specific date format
+	Fix: nzb-import using filenames as searchname now strips .gz as well as .nzb
 2016-06-01 DariusIII
 	Upd: Composer.lock to match composer.json.
 2016-05-31 ruhllatio
