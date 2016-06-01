@@ -195,7 +195,7 @@ Most of this guide is done from the command line (terminal).
 		sudo service apache2 restart
 
 	# Configure /var/lib/php5
-		sudo chod o+r /var/lib/php5
+		sudo chmod o+r /var/lib/php5
 
 8. Run the installer.
 
