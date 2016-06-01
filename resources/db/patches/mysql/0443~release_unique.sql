@@ -29,7 +29,7 @@
         WHERE mediainfo IS NOT NULL
         AND LENGTH(mediainfo) > 0;
 
-      DELETE FROM temp_uniqueids WHERE uniqueid NOT REGEXP '^[0-9-A-F]{32}$';
+      DELETE FROM temp_uniqueids WHERE uniqueid NOT REGEXP '^.{32}$';
 
       INSERT INTO release_unique (releases_id, uniqueid)
         SELECT releases_id, UNHEX(uniqueid) FROM temp_uniqueids;
