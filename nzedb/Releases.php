@@ -993,9 +993,7 @@ class Releases
 			}
 		}
 
-		$siteCount = count($siteSQL);
-
-		if ($siteCount > 0 ) {
+		if (count($siteSQL) > 0) {
 			// If we have show info, find the Episode ID/Video ID first to avoid table scans
 			$showQry = sprintf('
 				SELECT v.id AS video, tve.id AS episode
@@ -1009,9 +1007,9 @@ class Releases
 			);
 			$show = $this->pdo->queryOneRow($showQry);
 			if ($show !== false) {
-				if ($show['episode'] > 0) {
+				if ((!empty($series) && !empty($epsiode) || !empty($airdate)) &&  $show['episode'] > 0) {
 					$showSql = 'AND r.tv_episodes_id = ' . $show['episode'];
-				} else if($show['video'] > 0) {
+				} else if ($show['video'] > 0) {
 					$showSql = 'AND r.videos_id = ' . $show['video'];
 				} else {
 					return array();

@@ -17,6 +17,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Fix: Caps category issue caused by final class moves
 	Fix: Caps Multi to single call not sending data in the correct format
 	Fix: Caps subcategory listing sending subcatlist as element should be just subcat
+	Fix: TV API query will wrongly return an tv_episodes_id value when no sxx/exx/airdate is passed
 2016-06-01 DariusIII
 	Upd: Composer.lock to match composer.json.
 2016-05-31 ruhllatio
