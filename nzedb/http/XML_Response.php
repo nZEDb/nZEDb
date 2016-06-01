@@ -216,8 +216,10 @@ class XML_Response
 	protected function addNodes($element)
 	{
 		$this->xml->startElement($element['name']);
-		foreach($element['data'] AS $name => $elem) {
-			$this->addNode($elem);
+		foreach($element['data'] AS $elem => $value) {
+			$subelement['name'] = $elem;
+			$subelement['data'] = $value;
+			$this->addNode($subelement);
 		}
 		$this->xml->endElement();
 	}

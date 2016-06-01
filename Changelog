@@ -15,6 +15,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Fix: nzb-import using filenames as searchname now strips .gz as well as .nzb
 	Mrg: PR - Feature apixmlwrite #2155
 	Fix: Caps category issue caused by final class moves
+	Fix: Caps Multi to single call not sending data in the correct format
 2016-06-01 DariusIII
 	Upd: Composer.lock to match composer.json.
 2016-05-31 ruhllatio
