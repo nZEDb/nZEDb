@@ -62,7 +62,10 @@ Class RSS extends Capabilities
 
 		if (count($cat)) {
 			if ($cat[0] == -2) {
-				$cartSearch = sprintf('INNER JOIN users_releases ON users_releases.user_id = %d AND users_releases.releases_id = r.id', $userID);
+				$cartSearch = sprintf(
+					'INNER JOIN users_releases ON users_releases.user_id = %d AND users_releases.releases_id = r.id',
+					$userID
+				);
 			} else if ($cat[0] != -1) {
 				$catSearch = $this->releases->categorySQL($cat);
 			}
@@ -84,9 +87,9 @@ Class RSS extends Capabilities
 					bo.cover AS bo_cover,
 					%s AS category_ids
 				FROM releases r
-				INNER JOIN categories c ON c.id = r.categories_id
+				LEFT JOIN categories c ON c.id = r.categories_id
 				INNER JOIN categories cp ON cp.id = c.parentid
-				INNER JOIN groups g ON g.id = r.group_id
+				LEFT JOIN groups g ON g.id = r.group_id
 				LEFT OUTER JOIN movieinfo m ON m.imdbid = r.imdbid AND m.title != ''
 				LEFT OUTER JOIN musicinfo mu ON mu.id = r.musicinfo_id
 				LEFT OUTER JOIN genres mug ON mug.id = mu.genre_id
@@ -131,9 +134,9 @@ Class RSS extends Capabilities
 					%s AS category_ids,
 					COALESCE(cp.id,0) AS parentid
 				FROM releases r
-				INNER JOIN categories c ON c.id = r.categories_id
+				LEFT JOIN categories c ON c.id = r.categories_id
 				INNER JOIN categories cp ON cp.id = c.parentid
-				INNER JOIN groups g ON g.id = r.group_id
+				LEFT JOIN groups g ON g.id = r.group_id
 				LEFT OUTER JOIN videos v ON v.id = r.videos_id
 				LEFT OUTER JOIN tv_episodes tve ON tve.id = r.tv_episodes_id
 				WHERE %s %s %s
@@ -183,13 +186,13 @@ Class RSS extends Capabilities
 					%s AS category_ids,
 					COALESCE(cp.id,0) AS parentid
 				FROM releases r
-				INNER JOIN categories c ON c.id = r.categories_id
+				LEFT JOIN categories c ON c.id = r.categories_id
 				INNER JOIN categories cp ON cp.id = c.parentid
-				INNER JOIN groups g ON g.id = r.group_id
+				LEFT JOIN groups g ON g.id = r.group_id
 				LEFT OUTER JOIN movieinfo mi ON mi.imdbid = r.imdbid
 				WHERE %s %s
 				AND r.nzbstatus = %d
-				AND r.categories_id BETWEEN ' . Category::MOVIE_ROOT . ' AND ' . Category::MOVIE_OTHER . '
+				AND r.categories_id BETWEEN %d AND %d
 				AND r.passwordstatus %s
 				ORDER BY postdate DESC %s",
 				$this->releases->getConcatenatedCategoryIDs(),
@@ -207,6 +210,8 @@ Class RSS extends Capabilities
 				),
 				(count($excludedCats) ? ' AND r.categories_id NOT IN (' . implode(',', $excludedCats) . ')' : ''),
 				NZB::NZB_ADDED,
+				Category::MOVIE_ROOT,
+				Category::MOVIE_OTHER,
 				$this->releases->showPasswords,
 				(' LIMIT ' . ($limit > 100 ? 100 : $limit) . ' OFFSET 0')
 			),
