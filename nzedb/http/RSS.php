@@ -81,8 +81,8 @@ Class RSS extends Capabilities
 					mug.title AS mu_genre, co.title AS co_title, co.url AS co_url,
 					co.publisher AS co_publisher, co.releasedate AS co_releasedate,
 					co.review AS co_review, co.cover AS co_cover, cog.title AS co_genre,
-					bo.cover AS bo_cover
-					%s AS category_ids,
+					bo.cover AS bo_cover,
+					%s AS category_ids
 				FROM releases r
 				INNER JOIN categories c ON c.id = r.categories_id
 				INNER JOIN categories cp ON cp.id = c.parentid
