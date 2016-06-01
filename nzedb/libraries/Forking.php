@@ -146,6 +146,7 @@ class Forking extends \fork_daemon
 			case 'fixRelNames_filename':
 			case 'fixRelNames_md5':
 			case 'fixRelNames_par2':
+			case 'fixRelNames_uid':
 			case 'fixRelNames_miscsorter':
 			case 'fixRelNames_predbft':
 				$maxProcesses = $this->fixRelNamesMainMethod();
@@ -519,6 +520,11 @@ class Forking extends \fork_daemon
 				$where = "r.proc_files = 0";
 				break;
 
+			case "uid":
+				$join = "LEFT JOIN release_unique ru ON ru.releases_id = r.id";
+				$where = "ru.releases_id IS NOT NULL AND r.nzbstatus = 1 AND r.predb_id = 0 AND r.proc_uid = 0";
+				break;
+
 			case "par2":
 				$where = "r.proc_par2 = 0";
 				break;
@@ -552,9 +558,6 @@ class Forking extends \fork_daemon
 			$count = 0;
 			$queue = [];
 			foreach ($datas as $firstguid) {
-				if ($count >= $threads) {
-					$count = 0;
-				}
 				$count++;
 				if ($firstguid['count'] < $maxperrun) {
 					$limit = $firstguid['count'];
