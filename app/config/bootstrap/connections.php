@@ -91,7 +91,7 @@ if (file_exists($config)) {
 	}
 
 	if (isset($adapter)) {
-		$host = empty(DB_HOST) ? 'localhost' : DB_HOST;
+		$host = empty(DB_SOCKET) ? DB_HOST : DB_SOCKET;
 
 		Connections::add('default',
 			[
