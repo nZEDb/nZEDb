@@ -143,7 +143,7 @@ class Versions
 	public function checkGitTag($update = true)
 	{
 		$branch = $this->git->getBranch();
-		$this->_gitHighestTag = $latest = $this->git->tagLatest();
+		$this->_gitHighestTag = $latest = trim($this->git->tagLatest());
 		$ver = preg_match('#v(\d+\.\d+\.\d+).*#', $latest, $matches) ? $matches[1] : $latest;
 
 		if (!in_array($branch, $this->_stable)) {
