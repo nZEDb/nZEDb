@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-05-31 ruhllatio
+	Fix: Bug with TV API changes that causes unmatched Show/Sxx/Exx queries to return data
 2016-05-31 DariusIII
 	Fix: Remove doubled and wrong preinfo function ih Gamma theme utils.js
 	Fix: PreDB page layout in Gamma theme.
