@@ -11,6 +11,8 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 2016-06-02 ruhllatio
 	Add: JSON Response formatting
 	Fix: Need additional enclosure in TV Search API post-query check
+	Fix: Additional issues with TV API search logic
+	Add: Support for Season only searches with fast TV query
 2016-06-01 ruhllatio
 	Mrg: PR - Feature media #2153
 	Fix: Regex error in SP from #2153
