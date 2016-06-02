@@ -22,7 +22,6 @@ namespace nzedb\http;
 
 use nzedb\Category;
 use nzedb\Utility\Misc;
-use nzedb\Utility\Text;
 use nzedb\db\Settings;
 use nzedb\utility\Versions;
 
@@ -73,25 +72,35 @@ abstract class Capabilities
 		if ($xml) {
 			$response =
 				(
-				new XML_Response(
-					[
-						'Parameters' => $params,
-						'Releases' => $data,
-						'Server' => $this->getForMenu(),
-						'Type' => $type
-					]
-				)
+					new XML_Response(
+						[
+							'Parameters' => $params,
+							'Data'       => $data,
+							'Server'     => $this->getForMenu(),
+							'Type'       => $type
+						]
+					)
 				)->returnXML();
 			header('Content-type: text/xml');
 		} else {
-			$response = (new JSON_Response())->format($data);
-			if ($response === false) {
-				Misc::showApiError(201);
-			}
+			$response =
+				(
+					new JSON_Response(
+						[
+							'Parameters' => $params,
+							'Data'       => $data,
+							'Type'       => $type
+						]
+					)
+				)->returnJSON();
 			header('Content-type: application/json');
 		}
-		header('Content-Length: ' . strlen($response));
-		echo $response;
+		if ($response === false) {
+			Misc::showApiError(201);
+		} else {
+			header('Content-Length: ' . strlen($response));
+			echo $response;
+		}
 	}
 
 	/**

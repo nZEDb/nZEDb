@@ -13,6 +13,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Fix: Need additional enclosure in TV Search API post-query check
 	Fix: Additional issues with TV API search logic
 	Add: Support for Season only searches with fast TV query
+	Chg: Improve JSON Response class and refactor to make it like XML class
 2016-06-01 ruhllatio
 	Mrg: PR - Feature media #2153
 	Fix: Regex error in SP from #2153

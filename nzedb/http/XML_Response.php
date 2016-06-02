@@ -92,15 +92,15 @@ class XML_Response
 	 */
 	public function __construct($options = array()) {
 		$defaults = [
-			'Parameters' => false,
-			'Releases'   => false,
-			'Server'     => false,
-			'Type'       => false,
+			'Parameters' => null,
+			'Data'       => null,
+			'Server'     => null,
+			'Type'       => null,
 		];
 		$options += $defaults;
 
 		$this->parameters = $options['Parameters'];
-		$this->releases = $options['Releases'];
+		$this->releases = $options['Data'];
 		$this->server = $options['Server'];
 		$this->type = $options['Type'];
 
@@ -340,11 +340,13 @@ class XML_Response
 	 */
 	public function includeReleases()
 	{
-		foreach ($this->releases AS $this->release) {
-			$this->xml->startElement('item');
-			$this->includeReleaseMain();
-			$this->setZedAttributes();
-			$this->xml->endElement();
+		if(is_array($this->releases) && !empty($this->releases)) {
+			foreach ($this->releases AS $this->release) {
+				$this->xml->startElement('item');
+				$this->includeReleaseMain();
+				$this->setZedAttributes();
+				$this->xml->endElement();
+			}
 		}
 	}
 
