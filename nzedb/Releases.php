@@ -1007,15 +1007,16 @@ class Releases
 			);
 			$show = $this->pdo->queryOneRow($showQry);
 			if ($show !== false) {
-				if ((!empty($series) && !empty($epsiode) || !empty($airdate)) &&  $show['episode'] > 0) {
+				if (((!empty($series) && !empty($epsiode)) || !empty($airdate)) && $show['episode'] > 0) {
 					$showSql = 'AND r.tv_episodes_id = ' . $show['episode'];
 				} else if ($show['video'] > 0) {
 					$showSql = 'AND r.videos_id = ' . $show['video'];
 				} else {
+					// If we were passed Episode Info and no match was found, do not run the query
 					return array();
 				}
 			} else {
-				// If we were passed ID Info and no match was found, do not run the query
+				// If we were passed Site ID Info and no match was found, do not run the query
 				return array();
 			}
 		}
