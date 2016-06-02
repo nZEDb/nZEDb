@@ -59,10 +59,27 @@
   ],
   "require": {
     "barracudanetworks/forkdaemon-php": "^1.0.7",
+    "ext-ctype": "*",
     "ext-curl": "*",
+    "ext-exif": "*",
+    "ext-filter": "*",
     "ext-gd": "*",
+    "ext-hash": "*",
+    "ext-iconv": "*",
     "ext-json": "*",
+    "ext-mbstring": "*",
+    "ext-mcrypt": "*",
     "ext-mysqlnd": "*",
+    "ext-openssl": "*",
+    "ext-pcre": "*",
+    "ext-pdo": "*",
+    "ext-pdo_mysql": "*",
+    "ext-session": "*",
+    "ext-simplexml": "*",
+    "ext-sockets": "*",
+    "ext-spl": "*",
+    "ext-xmlwriter": "*",
+    "ext-zlib": "*",
     "fxp/composer-asset-plugin": "~1.1.0",
     "giantbomb/giantbomb": "dev-master",
     "google/recaptcha": "^1.1.2",
@@ -106,6 +123,10 @@
     "unionofrad/li3_quality": "1.1.x-dev"
   },
   "scripts": {
+  },
+  "suggest": {
+    "ext-simple_php_yenc_decode": "Greatly improves yEnc decoding speed in PHP 5.x",
+    "ext-xdebug": "For developement work"
   },
   "type": "project"
 }

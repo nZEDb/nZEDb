@@ -1,9 +1,8 @@
 <?php
 
-use nzedb\Capabilities;
 use nzedb\Category;
 use nzedb\Releases;
-use nzedb\API;
+use nzedb\http\API;
 use nzedb\db\Settings;
 use nzedb\utility\Misc;
 use nzedb\utility\Text;
@@ -88,9 +87,6 @@ if ($page->users->isLoggedIn()) {
 	}
 }
 
-$page->smarty->assign('uid', $uid);
-$page->smarty->assign('rsstoken', $apiKey);
-
 // Record user access to the api, if its been called by a user (i.e. capabilities request do not require a user to be logged in or key provided).
 if ($uid != '') {
 	$page->users->updateApiAccessed($uid);
@@ -103,14 +99,16 @@ if ($uid != '') {
 $releases = new Releases(['Settings' => $page->settings]);
 $api = new API(['Settings' => $page->settings, 'Request' => $_GET]);
 
-$page->smarty->assign('extended', (isset($_GET['extended']) && $_GET['extended'] == 1 ? '1' : '0'));
-$page->smarty->assign('del', (isset($_GET['del']) && $_GET['del'] == 1 ? '1' : '0'));
-
-// Output is either json or xml.
+// Set Query Parameters based on Request objects
 $outputXML = (isset($_GET['o']) && $_GET['o'] == 'json' ? false : true);
-
 $minSize = (isset($_GET['minsize']) && $_GET['minsize'] > 0 ? $_GET['minsize'] : 0);
 $offset = $api->offset();
+
+// Set API Parameters based on Request objects
+$params['extended'] = (isset($_GET['extended']) && $_GET['extended'] == 1 ? '1' : '0');
+$params['del'] = (isset($_GET['del']) && $_GET['del'] == 1 ? '1' : '0');
+$params['uid'] = $uid;
+$params['token'] = $apiKey;
 
 switch ($function) {
 	// Search releases.
@@ -131,10 +129,8 @@ switch ($function) {
 				$categoryID, $offset, $limit, '', $maxAge, $catExclusions, '', $minSize
 			);
 		}
-
-		$api->printOutput($relData, $outputXML, $page, $offset);
+		$api->output($relData, $params, $outputXML, 'api');
 		break;
-
 	// Search tv releases.
 	case 'tv':
 		$api->verifyEmptyParameter('q');
@@ -183,7 +179,7 @@ switch ($function) {
 		);
 
 		$api->addLanguage($relData);
-		$api->printOutput($relData, $outputXML, $page, $offset);
+		$api->output($relData, $params, $outputXML, 'api');
 		break;
 
 	// Search movie releases.
@@ -212,37 +208,12 @@ switch ($function) {
 		);
 
 		$api->addLanguage($relData);
-		$api->printOutput($relData, $outputXML, $page, $offset);
+		$api->output($relData, $params, $outputXML, 'api');
 		break;
-
-	// Get NZB.
-	case 'g':
-		if (!isset($_GET['id'])) {
-			Misc::showApiError(200, 'Missing parameter (id is required for downloading an NZB)');
-		}
-
-		$relData = $releases->getByGuid($_GET['id']);
-		if ($relData) {
-			header(
-				'Location:' .
-				WWW_TOP .
-				'/getnzb?i=' .
-				$uid .
-				'&r=' .
-				$apiKey .
-				'&id=' .
-				$relData['guid'] .
-				((isset($_GET['del']) && $_GET['del'] == '1') ? '&del=1' : '')
-			);
-		} else {
-			Misc::showApiError(300, 'No such item (the guid you provided has no release in our database)');
-		}
-		break;
-
 	// Get individual NZB details.
 	case 'd':
 		if (!isset($_GET['id'])) {
-			Misc::showApiError(200, 'Missing parameter (id is required for downloading an NZB)');
+			Misc::showApiError(200, 'Missing parameter (id is required for single release details)');
 		}
 
 		$page->users->addApiRequest($uid, $_SERVER['REQUEST_URI']);
@@ -252,8 +223,7 @@ switch ($function) {
 		if ($data) {
 			$relData[] = $data;
 		}
-
-		$api->printOutput($relData, $outputXML, $page, $offset);
+		$api->output($relData, $params, $outputXML, 'api');
 		break;
 
 	// Get an NFO file for an individual release.
@@ -285,28 +255,7 @@ switch ($function) {
 
 	// Capabilities request.
 	case 'c':
-		//get categories
-		$category = new Category(['Settings' => $page->settings]);
-		$cats = $category->getForMenu();
-
-		//insert cats into template variable
-		$page->smarty->assign('parentcatlist', $cats);
-
-		if ($outputXML) { //use apicaps.tpl if xml is requested
-			$response = $page->smarty->fetch('apicaps.tpl');
-			header('Content-type: text/xml');
-			header('Content-Length: ' . strlen($response));
-			echo $response;
-		} else { //otherwise construct array of capabilities and categories
-			//get capabilities
-			$caps = (new Capabilities(['Settings' => $page->settings]))->getForMenu();
-			$caps['categories'] = $cats;
-			//use json_encode
-			$response = $api->encodeAsJSON($caps);
-			header('Content-type: application/json');
-			header('Content-Length: ' . strlen($response));
-			echo $response;
-		}
+		$api->output('', $params, $outputXML, 'caps');
 		break;
 	// Register request.
 	case 'r':
@@ -315,42 +264,33 @@ switch ($function) {
 		if (!in_array((int)$page->settings->getSetting('registerstatus'), [Settings::REGISTER_STATUS_OPEN, Settings::REGISTER_STATUS_API_ONLY])) {
 			Misc::showApiError(104);
 		}
-
 		// Check email is valid format.
 		if (!$page->users->isValidEmail($_GET['email'])) {
 			Misc::showApiError(106);
 		}
-
 		// Check email isn't taken.
 		$ret = $page->users->getByEmail($_GET['email']);
 		if (isset($ret['id'])) {
 			Misc::showApiError(105);
 		}
-
 		// Create username/pass and register.
 		$username = $page->users->generateUsername($_GET['email']);
 		$password = $page->users->generatePassword();
-
 		// Register.
 		$userDefault = $page->users->getDefaultRole();
 		$uid = $page->users->signUp(
 			$username, $password, $_GET['email'], $_SERVER['REMOTE_ADDR'], $userDefault['id'], $userDefault['defaultinvites']
 		);
-
 		// Check if it succeeded.
 		$userData = $page->users->getById($uid);
 		if (!$userData) {
 			Misc::showApiError(107);
 		}
 
-		$response =
-			"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" .
-			'<register username="' . $username .
-			'" password="' . $password .
-			'" apikey="' . $userdata['rsstoken'] .
-			"\"/>\n";
-		header('Content-type: text/xml');
-		header('Content-Length: ' . strlen($response));
-		echo $response;
+		$params['username'] = $username;
+		$params['password'] = $password;
+		$params['token'] = $userdata['rsstoken'];
+
+		$api->output('', $params, true, 'reg');
 		break;
 }

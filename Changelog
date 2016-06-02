@@ -8,7 +8,22 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
-
+2016-06-01 ruhllatio
+	Mrg: PR - Feature media #2153
+	Fix: Regex error in SP from #2153
+	Chg: Make nzb-export comments reflect a more specific date format
+	Fix: nzb-import using filenames as searchname now strips .gz as well as .nzb
+	Mrg: PR - Feature apixmlwrite #2155
+	Fix: Caps category issue caused by final class moves
+	Fix: Caps Multi to single call not sending data in the correct format
+	Fix: Caps subcategory listing sending subcatlist as element should be just subcat
+	Fix: TV API query will wrongly return an tv_episodes_id value when no sxx/exx/airdate is passed
+	Fix: Typo in RSS query
+	Chg: Improve RSS query times by preserving JOIN orders
+2016-06-01 DariusIII
+	Upd: Composer.lock to match composer.json.
+2016-05-31 ruhllatio
+	Fix: Bug with TV API changes that causes unmatched Show/Sxx/Exx queries to return data
 2016-05-31 DariusIII
 	Fix: Remove doubled and wrong preinfo function ih Gamma theme utils.js
 	Fix: PreDB page layout in Gamma theme.

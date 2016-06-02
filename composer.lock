@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "32d4cf109a92de182c8cc10b015c6375",
-    "content-hash": "ab2da7e2c340fabda6a6a3f7943cb64b",
+    "hash": "11dcea1def34532b9c787f6c749bf0e6",
+    "content-hash": "5d1c8b158b31025a86d6d0251dc587d7",
     "packages": [
         {
             "name": "barracudanetworks/forkdaemon-php",
@@ -1519,17 +1519,17 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/UnionOfRAD/lithium.git",
-                "reference": "9b942de7ba5f771d6ae8f17e2f6d7a7342a84663"
+                "reference": "57e12b4e136f6de8a75321b82579de305a34acff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/UnionOfRAD/lithium/zipball/9b942de7ba5f771d6ae8f17e2f6d7a7342a84663",
-                "reference": "9b942de7ba5f771d6ae8f17e2f6d7a7342a84663",
+                "url": "https://api.github.com/repos/UnionOfRAD/lithium/zipball/57e12b4e136f6de8a75321b82579de305a34acff",
+                "reference": "57e12b4e136f6de8a75321b82579de305a34acff",
                 "shasum": ""
             },
             "require": {
                 "composer/installers": "1.*",
-                "php": ">=5.5.0"
+                "php": ">=5.5.14"
             },
             "require-dev": {
                 "unionofrad/li3_fixtures": "1.0.*@RC"
@@ -1557,7 +1557,7 @@
                 "li3",
                 "lithium"
             ],
-            "time": "2016-01-25 12:29:04"
+            "time": "2016-05-31 19:43:44"
         }
     ],
     "packages-dev": [
@@ -1718,12 +1718,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/UnionOfRAD/manual.git",
-                "reference": "7117a85d03045bfe0b4854de6dada100056f7fef"
+                "reference": "5e7781e131916b2401245ae7d12e77a41ecc5d2b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/UnionOfRAD/manual/zipball/7117a85d03045bfe0b4854de6dada100056f7fef",
-                "reference": "7117a85d03045bfe0b4854de6dada100056f7fef",
+                "url": "https://api.github.com/repos/UnionOfRAD/manual/zipball/5e7781e131916b2401245ae7d12e77a41ecc5d2b",
+                "reference": "5e7781e131916b2401245ae7d12e77a41ecc5d2b",
                 "shasum": ""
             },
             "require": {
@@ -1747,7 +1747,7 @@
                 "source": "https://github.com/UnionOfRAD/manual/tree/1.1",
                 "issues": "https://github.com/UnionOfRAD/manual/issues"
             },
-            "time": "2016-01-04 20:29:49"
+            "time": "2016-05-31 20:16:51"
         }
     ],
     "aliases": [],
@@ -1764,10 +1764,27 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
+        "ext-ctype": "*",
         "ext-curl": "*",
+        "ext-exif": "*",
+        "ext-filter": "*",
         "ext-gd": "*",
+        "ext-hash": "*",
+        "ext-iconv": "*",
         "ext-json": "*",
+        "ext-mbstring": "*",
+        "ext-mcrypt": "*",
         "ext-mysqlnd": "*",
+        "ext-openssl": "*",
+        "ext-pcre": "*",
+        "ext-pdo": "*",
+        "ext-pdo_mysql": "*",
+        "ext-session": "*",
+        "ext-simplexml": "*",
+        "ext-sockets": "*",
+        "ext-spl": "*",
+        "ext-xmlwriter": "*",
+        "ext-zlib": "*",
         "php": ">=5.5.0"
     },
     "platform-dev": []

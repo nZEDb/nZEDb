@@ -693,6 +693,7 @@ CREATE TABLE         releases (
   proc_par2         TINYINT(1)                     NOT NULL DEFAULT '0',
   proc_nfo          TINYINT(1)                     NOT NULL DEFAULT '0',
   proc_files        TINYINT(1)                     NOT NULL DEFAULT '0',
+  proc_uid          TINYINT(1)                     NOT NULL DEFAULT '0',
   PRIMARY KEY                                 (id, categories_id),
   INDEX ix_releases_name                      (name),
   INDEX ix_releases_group_id                  (group_id,passwordstatus),
@@ -755,6 +756,16 @@ CREATE TABLE release_comments (
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci
   AUTO_INCREMENT = 1;
+
+  DROP TABLE IF EXISTS release_unique;
+  CREATE TABLE release_unique (
+  releases_id   INT(11) UNSIGNED  NOT NULL COMMENT 'FK to releases.id.',
+  uniqueid BINARY(16)  NOT NULL DEFAULT '0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0' COMMENT 'Unique_ID from mediainfo.',
+  PRIMARY KEY (releases_id, uniqueid)
+)
+  ENGINE = MyISAM
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 
 DROP TABLE IF EXISTS releaseextrafull;

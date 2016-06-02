@@ -17,10 +17,8 @@ REQUIREMENTS
 
 		(extensions)
 			Curl
-			Crypt
 			Ctype
 			Date
-			DBA
 			EXIF
 			Filter
 			GD
@@ -28,6 +26,7 @@ REQUIREMENTS
 			Iconv
 			JSON
 			MBString
+			Mcrypt
 			OpenSSL
 			PEAR
 			PCRE
@@ -35,7 +34,6 @@ REQUIREMENTS
 			PDO MySQL
 			POSIX (On unix operating systems)
 			Session
-			SHA1
 			SimpleXML
 			Sockets
 			ZLib
