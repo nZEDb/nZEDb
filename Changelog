@@ -14,6 +14,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Fix: Additional issues with TV API search logic
 	Add: Support for Season only searches with fast TV query
 	Chg: Improve JSON Response class and refactor to make it like XML class
+	Chg: Change some dates in the output to not use RSS style as they are not RSS attributes
 2016-06-01 ruhllatio
 	Mrg: PR - Feature media #2153
 	Fix: Regex error in SP from #2153

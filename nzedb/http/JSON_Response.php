@@ -102,9 +102,9 @@ class JSON_Response
 			'prematch'      => 'predb_id',
 			'password'      => 'passwordstatus',
 			'tvtitle'       => 'title',
+			'tvairdate'     => 'firstaired',
 			'season'        => 'series',
 			'episode'       => 'episode',
-			'firstaired'    => 'firstaired',
 			'tvdbid'        => 'tvdb',
 			'traktid'       => 'trakt',
 			'tvrageid'      => 'tvrage',
@@ -128,6 +128,9 @@ class JSON_Response
 		foreach ($this->releases AS $this->release) {
 			foreach ($this->persistentColumns AS $apicol => $dbcol) {
 				if (isset($this->release[$dbcol])) {
+					if ($dbcol === 'adddate') {
+						$this->release[$dbcol] = date(DATE_RSS, strtotime($this->release[$dbcol]));
+					}
 					$this->return[$this->key][$apicol] = $this->release[$dbcol];
 				}
 			}
@@ -159,9 +162,6 @@ class JSON_Response
 					}
 					$this->return[$this->key][$apicol] = $this->release[$dbcol];
 				} else if (!is_numeric($this->release[$dbcol])) {
-					if ($dbcol === 'firstaired') {
-						$this->release[$dbcol] = date(DATE_RSS, strtotime($this->release['firstaired']));
-					}
 					$this->return[$this->key][$apicol] = $this->release[$dbcol];
 				}
 			}
