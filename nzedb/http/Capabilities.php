@@ -84,7 +84,7 @@ abstract class Capabilities
 				)->returnXML();
 			header('Content-type: text/xml');
 		} else {
-			$response = json_encode(Text::encodeAsUTF8($data));
+			$response = (new JSON_Response())->format($data);
 			if ($response === false) {
 				Misc::showApiError(201);
 			}

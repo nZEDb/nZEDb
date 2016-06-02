@@ -279,7 +279,7 @@ class XML_Response
 	{
 		$this->xml->startElement('atom:link');
 		$this->xml->startAttribute('href');
-		$this->xml->text($this->server['server']['url'] . 'api');
+		$this->xml->text($this->server['server']['url'] . ($this->namespace === 'newznab' ? 'api' : 'rss'));
 		$this->xml->endAttribute();
 		$this->xml->startAttribute('rel');
 		$this->xml->text('self');
