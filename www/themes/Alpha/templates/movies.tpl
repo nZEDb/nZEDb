@@ -60,6 +60,15 @@
 								name="trakt{$result.imdbid}"
 								title="View trakt page"
 							><img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/trakt.png"></a>
+							{if !empty($cpurl) && !empty($cpapi)}
+								<a
+									id="imdb{$result.imdbid}"
+									href="javascript:;"
+									class="sendtocouch"
+									title="Add to CouchPotato">
+									<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
+								</a>
+							{/if}
 						</div>
 						<hr>
 						<div>
@@ -216,14 +225,6 @@
 											<div class="icon icon_sab float-right" title="Send to my Queue"></div>
 										{/if}
 										<div class="icon icon_cart float-right" title="Add to Cart"></div>
-										{if $cpurl != '' && $cpapi != ''}
-											<a
-												id="imdb{$result.imdbid}"
-												class="sendtocouch"
-												title="Add to CouchPotato">
-												<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
-											</a>
-										{/if}
 										<br>
 										{*s{if $isadmin || $ismod}
 										<a class="label label-warning" href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$result.id}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Edit Release">Edit</a>

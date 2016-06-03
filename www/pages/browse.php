@@ -23,7 +23,6 @@ $catarray = array();
 $catarray[] = $category;
 
 $page->smarty->assign('category', $category);
-$browsecount = $releases->getBrowseCount($catarray, -1, $page->userdata["categoryexclusions"], $grp);
 
 $offset = (isset($_REQUEST["offset"]) && ctype_digit($_REQUEST['offset'])) ? $_REQUEST["offset"] : 0;
 $ordering = $releases->getBrowseOrdering();
@@ -31,6 +30,8 @@ $orderby = isset($_REQUEST["ob"]) && in_array($_REQUEST['ob'], $ordering) ? $_RE
 
 $results = array();
 $results = $releases->getBrowseRange($catarray, $offset, ITEMS_PER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"], $grp);
+
+$browsecount = $results[0]['_totalcount'];
 
 $page->smarty->assign('pagertotalitems', $browsecount);
 $page->smarty->assign('pageroffset', $offset);

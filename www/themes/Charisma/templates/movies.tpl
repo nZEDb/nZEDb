@@ -154,8 +154,9 @@
 																	  title="Send to my Queue"><i
 																			class="fa fa-send"></i></span>
 															{/if}
-															{if $cpurl != '' && $cpapi != ''}
+															{if !empty($cpurl) && !empty($cpapi)}
 																<span id="imdb{$result.imdbid}"
+																	  href="javascript:;"
 																	  class="btn btn-hover btn-default btn-xs sendtocouch text-muted"
 																	  title="Add to CouchPotato">
 																		<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
@@ -270,10 +271,13 @@
 																	  title="Send to my Queue"><i
 																			class="fa fa-send"></i></span>
 															{/if}
-															{if $cpurl != '' && $cpapi != ''}
-																<span class="btn btn-hover btn-default btn-xs sendtocouch text-muted"
-																	  title="Add to CouchPotato"
-																><img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png"></span>
+															{if !empty($cpurl) && !empty($cpapi)}
+																<span id="imdb{$result.imdbid}"
+																	  href="javascript:;"
+																	  class="btn btn-hover btn-default btn-xs sendtocouch text-muted"
+																	  title="Add to CouchPotato">
+																		<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
+																</span>
 															{/if}
 															{if !empty($mfailed[$m@index])}
 																<span class="btn btn-default btn-xs" title="This release has failed to download for some users">

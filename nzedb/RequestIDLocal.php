@@ -25,7 +25,7 @@ class RequestIDLocal extends RequestID
 		$query = (
 			'SELECT r.id, r.name, r.categories_id, r.reqidstatus, g.name AS groupname, g.id as gid
 			FROM releases r
-			INNER JOIN groups g ON r.groups_id = g.id
+			LEFT JOIN groups g ON r.groups_id = g.id
 			WHERE r.nzbstatus = 1
 			AND r.predb_id = 0
 			AND r.isrequestid = 1'
@@ -193,8 +193,7 @@ class RequestIDLocal extends RequestID
 	private $groupIDCache = [];
 
 	/**
-	 * Attempts to remap the release groups_id by extracting the new group name from the release
-	 * usenet name.
+	 * Attempts to remap the release groups_id by extracting the new group name from the release usenet name.
 	 *
 	 * @return array|bool
 	 */
