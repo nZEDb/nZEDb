@@ -8,6 +8,11 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+2016-06-20 v0.6.1.3
+	Mrg: Cherry-picking dev => Latest-testing to prepare for updating stable 0.x.
+2016-06-03 ruhllatio
+	Fix: Local lookup not working for airdates because Sxx/Exx is still being set as junk data
+
 
 2016-05-30 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x.
