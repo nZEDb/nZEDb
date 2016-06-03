@@ -10,6 +10,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 2016-06-03 ruhllatio
 	Fix: TV Processing returns alias for wrong show first instead of direct show title match
+	Fix: Local lookup not working for airdates because Sxx/Exx is still being set as junk data
 2016-06-03 DariusIII
 	Add: Add multiple channels support to IRCScraper
 2016-06-02 ruhllatio
