@@ -68,7 +68,6 @@ define('SCRAPE_IRC_TITLE_IGNORE', '');
 
 /***********************************************************************************************************************
  * This is a list of all the channels we fetch PRE's from.
- * If you want to ignore a source, change it from false to true.
  **********************************************************************************************************************/
 define('SCRAPE_IRC_CHANNELS',
 	serialize(
