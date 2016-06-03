@@ -193,8 +193,7 @@ class RequestIDLocal extends RequestID
 	private $groupIDCache = [];
 
 	/**
-	 * Attempts to remap the release groups_id by extracting the new group name from the release
-	 * usenet name.
+	 * Attempts to remap the release groups_id by extracting the new group name from the release usenet name.
 	 *
 	 * @return array|bool
 	 */

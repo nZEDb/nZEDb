@@ -77,8 +77,8 @@ class Releases
 		$parameters['id'] = $this->pdo->queryInsert(
 			sprintf("
 				INSERT INTO releases
-					(name, searchname, totalpart, groups_id, adddate, guid, leftguid, postdate,
-					fromname, size, passwordstatus, haspreview, categories_id, nfostatus, nzbstatus,
+					(name, searchname, totalpart, groups_id, adddate, guid, leftguid, postdate, fromname,
+					size, passwordstatus, haspreview, categories_id, nfostatus, nzbstatus,
 					isrenamed, iscategorized, reqidstatus, predb_id)
 				VALUES (%s, %s, %d, %d, NOW(), %s, LEFT(%s, 1), %s, %s, %s, %d, -1, %d, -1, %d, %d, 1, %d, %d)",
 				$parameters['name'],
@@ -371,7 +371,11 @@ class Releases
 				NZB::NZB_ADDED,
 				$this->exportDateString($postFrom),
 				$this->exportDateString($postTo, false),
-				(($groupID != '' && $groupID != '-1') ? sprintf(' AND r.groups_id = %d ', $groupID) : '')
+<<<<<<< Temporary merge branch 1
+				(($groupID != '' && $groupID != '-1') ? sprintf(' AND groups_id = %d ', $groupID) : '')
+=======
+				(($groupID != '' && $groupID != '-1') ? sprintf(' AND r.group_id = %d ', $groupID) : '')
+>>>>>>> Temporary merge branch 2
 			)
 		);
 	}
@@ -904,7 +908,7 @@ class Releases
 			$this->showPasswords,
 			NZB::NZB_ADDED,
 			($maxAge > 0 ? sprintf(' AND r.postdate > (NOW() - INTERVAL %d DAY) ', $maxAge) : ''),
-			($groupName != -1 ? sprintf(' AND r.groups_id = %d ', $this->groups->getIDByName ($groupName)) : ''),
+			($groupName != -1 ? sprintf(' AND r.groups_id = %d ', $this->groups->getIDByName($groupName)) : ''),
 			(array_key_exists($sizeFrom, $sizeRange) ? ' AND r.size > ' . (string)(104857600 * (int)$sizeRange[$sizeFrom]) . ' ' : ''),
 			(array_key_exists($sizeTo, $sizeRange) ? ' AND r.size < ' . (string)(104857600 * (int)$sizeRange[$sizeTo]) . ' ' : ''),
 			($hasNfo != 0 ? ' AND r.nfostatus = 1 ' : ''),
