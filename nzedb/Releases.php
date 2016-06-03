@@ -371,11 +371,7 @@ class Releases
 				NZB::NZB_ADDED,
 				$this->exportDateString($postFrom),
 				$this->exportDateString($postTo, false),
-<<<<<<< Temporary merge branch 1
 				(($groupID != '' && $groupID != '-1') ? sprintf(' AND groups_id = %d ', $groupID) : '')
-=======
-				(($groupID != '' && $groupID != '-1') ? sprintf(' AND r.group_id = %d ', $groupID) : '')
->>>>>>> Temporary merge branch 2
 			)
 		);
 	}
