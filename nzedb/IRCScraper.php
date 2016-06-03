@@ -162,7 +162,8 @@ class IRCScraper extends IRCClient
 		}
 
 		// Join channels.
-		$this->joinChannels(['#nZEDbPRE' => null]);
+		$channels = defined('SCRAPE_IRC_CHANNELS') ? unserialize(SCRAPE_IRC_CHANNELS) : ['#nZEDbPRE' => null];
+		$this->joinChannels($channels);
 
 		if (!$this->_silent) {
 			echo

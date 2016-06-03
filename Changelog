@@ -8,6 +8,8 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+2016-06-03 DariusIII
+	Upd: Add multiple channels support to IRCScraper
 2016-06-02 ruhllatio
 	Add: JSON Response formatting
 	Fix: Need additional enclosure in TV Search API post-query check
