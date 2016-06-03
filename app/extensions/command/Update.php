@@ -77,8 +77,13 @@ class Update extends \app\extensions\console\Command
 
 		$versions = new Versions(['git' => ($this->git instanceof Git) ? $this->git : null]);
 
-		$currentDb = $versions->getSQLPatchFromDB();
-		$currentXML = $versions->getSQLPatchFromFile();
+		try {
+			$currentDb = $versions->getSQLPatchFromDB();
+			$currentXML = $versions->getSQLPatchFromFile();
+		} catch (\PDOException $e) {
+			$this->out('Error fetching patch versions!', 'error');
+			return 1;
+		}
 		$this->out("Db: $currentDb,\tFile: $currentXML");
 		if ($currentDb < $currentXML) {
 			$db = new DbUpdate(['backup' => false]);
@@ -118,7 +123,7 @@ class Update extends \app\extensions\console\Command
 					if ($fail) {
 						$this->out('Db updating failed!!', 'error');
 
-						return false;
+						return 1;
 					}
 				};
 			}

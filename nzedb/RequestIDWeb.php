@@ -44,7 +44,7 @@ class RequestIDWeb extends RequestID
 			sprintf('
 				SELECT r.id, r.name, r.searchname, g.name AS groupname, r.groups_id, r.categories_id
 				FROM releases r
-				INNER JOIN groups g ON r.groups_id = g.id
+				LEFT JOIN groups g ON r.groups_id = g.id
 				WHERE r.nzbstatus = 1
 				AND r.predb_id = 0
 				AND r.isrequestid = 1

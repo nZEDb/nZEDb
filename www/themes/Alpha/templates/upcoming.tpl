@@ -40,6 +40,7 @@
 										title="View Rotten Tomatoes Details"><img
 											src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/rotten.png"></a>
 							{/if}
+							{if !empty($result->alternate_ids)}
 								<a
 									target="_blank"
 									href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result->alternate_ids->imdb}/"
@@ -54,13 +55,15 @@
 									title="View trakt page"><img
 									src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/trakt.png">
 								</a>
-							{if $cpurl != '' && $cpapi != ''}
-								<a
-									id="imdb{$result->alternate_ids->imdb}"
-									class="sendtocouch"
-									title="Add to CouchPotato">
-									<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
-								</a>
+								{if !empty($cpurl) && !empty($cpapi)}
+									<a
+										id="imdb{$result->alternate_ids->imdb}"
+										href="javascript:;"
+										class="sendtocouch"
+										title="Add to CouchPotato">
+										<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
+									</a>
+								{/if}
 							{/if}
 						</div>
 					</div>

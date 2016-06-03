@@ -8,6 +8,67 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+2016-06-03 ruhllatio
+	Fix: TV Processing returns alias for wrong show first instead of direct show title match
+	Fix: Local lookup not working for airdates because Sxx/Exx is still being set as junk data
+2016-06-03 DariusIII
+	Add: Add multiple channels support to IRCScraper
+2016-06-02 ruhllatio
+	Add: JSON Response formatting
+	Fix: Need additional enclosure in TV Search API post-query check
+	Fix: Additional issues with TV API search logic
+	Add: Support for Season only searches with fast TV query
+	Chg: Improve JSON Response class and refactor to make it like XML class
+	Chg: Change some dates in the output to not use RSS style as they are not RSS attributes
+2016-06-01 ruhllatio
+	Mrg: PR - Feature media #2153
+	Fix: Regex error in SP from #2153
+	Chg: Make nzb-export comments reflect a more specific date format
+	Fix: nzb-import using filenames as searchname now strips .gz as well as .nzb
+	Mrg: PR - Feature apixmlwrite #2155
+	Fix: Caps category issue caused by final class moves
+	Fix: Caps Multi to single call not sending data in the correct format
+	Fix: Caps subcategory listing sending subcatlist as element should be just subcat
+	Fix: TV API query will wrongly return an tv_episodes_id value when no sxx/exx/airdate is passed
+	Fix: Typo in RSS query
+	Chg: Improve RSS query times by preserving JOIN orders
+2016-06-01 DariusIII
+	Upd: Composer.lock to match composer.json.
+2016-05-31 ruhllatio
+	Fix: Bug with TV API changes that causes unmatched Show/Sxx/Exx queries to return data
+2016-05-31 DariusIII
+	Fix: Remove doubled and wrong preinfo function ih Gamma theme utils.js
+	Fix: PreDB page layout in Gamma theme.
+	Fix: Links to colorbox images in Gamma theme.
+2016-05-30 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x.
+2015-05-29 DariusIII
+	* Upd: Replace icons with font-awesome counterparts in Alpha theme.
+2016-05-28 ruhllatio
+	Fix: Greatly improve TV API search query when specifying ID/Season/Ep etc. Remove var_dump.
+	Fix: Wrong array offset
+2016-05-27 DariusIII
+	* Upd: Use well-sm in all the themes.
+	* Fix: Replace boostrap.min.css with Gamma theme custom bootstrap.css
+	* Fix: Fix link to autosize.min.js in Alpha theme.
+	* Fix: Fix tables layout in Gamma theme by removing table-striped attribute.
+2016-05-26 niel
+	Fix: Update some bower-asset's version strings to better reflect the version specified.
+		Tightened versions for others to err on the side of caution. We can relax later if this
+		prooves to be too tight.
+2016-05-24 ruhllatio
+	Fix: Revert concat cat query to INNER and add WHERE constraint to exclude parentid being NULL
+	Chg: Convert browse to use queryCalc method for cached counts to improve performance
+	Fix: preid still in use in browse templates causing Pre'd tags to not show up in site view
+	Fix: Make queryCalc strip out OFFSET/LIMIT tags from query before caching the SQL_CALC_FOUNDS_ROWS results
+2016-05-24 niel
+	Fix: Typoes in Changelog.
+	Fix: Error checking for fetching SQL versions.
+2016-05-23 ruhllatio
+	Chg: Improve RequestID query times (and update_releases thread performance) on larger databases
+	Chg: Improve all Releases queries for larger databases by preserving join orders of smaller tables
+2016-05-19 bart39
+	Mrg: Proper CouchPotato implementation #2151 @DariusIII
 2016-05-17 niel
 	Chg: Remove autopatcher script functionality. Replace with message to use ./zed update nzedb.
 2016-05-17 ruhllatio
@@ -21,13 +82,13 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 2016-05-16 niel
 	Fix: Profile edit included non theme names in its dropdown list.
 2016-05-16 ruhllatio
-	Mrg: PR from Meganomic, Req Feature: Search Movies #1581 #2125
+	Mrg: PR 2125, from Meganomic, Req Feature: Search Movies (Closes 1581)
 	Chg: Clean up NZB class file indents and query strings
 	Fix: NZBImport now sets the nzb_guid during the import
 2016-05-13 ruhllatio
-	Fix: PostProcess Additional tmux query not accurate with PP add queue
+	Fix: PostProcess Additional tmux query not accurate with PP add queue.
 2016-05-12 niel
-	Add: Reporting oupt for update git,db commands.
+	Add: Reporting output for update git, db commands.
 2016-05-12 ruhllatio
 	Fix: Browse ordering wrong due to added minSize push
 	Mrg: PR Add leftguid column to releases to improve threading work queries #2144
@@ -147,12 +208,15 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 		updated to the last commit, I have to update the lock file so the hash gets updated.
 2016-04-22 DariusIII
 	Fix: Links to detail pages in Gamma theme (remove release name).
+2016-04-20 DariusIII
+	Chg: 'Moved' more bootstrap files from themes to use shared/libs versions.
 2016-04-19 niel
 	Mrg: PR 2113, from Wally73 - simple-expanded.sh Screen script.
 	Chg: Removed the .../cli/versions.php script. Use './zed version all' instead.
 	Chg: Added nZEDb to li3 as a library, complete with .../nzedb/bootstrap.php file.
 	Fix: Issue with `./zed update db` not working as expected. Mostly caused by not having nZEDb
 		added into lithium as a library (see above).
+	Chg: 'Moved' some bootstrap files from themes to use shared/libs versions.
 2016-04-18 niel
 	Add: 'branch' option to the versions console command. This tells you which git branch you're on.
 	Add: Finished 'db' option for the update command. This checks for patches and updates the
@@ -160,8 +224,11 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Chg: Removed the .../cli/update_db.php script. Use './zed update db' to replicate, or './zed
 		update nzedb' for everything in one operation.
 2016-04-18 DariusIII
+	Upd: Missed some files, cleanup unused scripts.
+	Upd: Update themes to use libs handled by composer
 	Upd: Update .gitignore
 	Upd: Update composer.json
+	Upd: Update .gitignore
 2016-04-15 DariusIII
 	Fix: Fix filelist display in all of the themes, reduce overhead in NZB class related to segments array.
 2016-04-14 niel

@@ -1,6 +1,6 @@
 {if $data|@count > 0}
 
-	<table style="width:100%;" class="data highlight icons table table-striped" id="coverstable">
+	<table style="width:100%;" class="data highlight icons table" id="coverstable">
 		<tr>
 			<th style="padding-top:0px; padding-bottom:0px;"></th>
 			<th style="padding-top:0px; padding-bottom:0px;">Name</th>

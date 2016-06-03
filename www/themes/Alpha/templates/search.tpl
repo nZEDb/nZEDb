@@ -18,7 +18,7 @@
 		<input id="search" name="search" value="{$search|escape:'html'}" type="text" class="form-control" placeholder="Name"/>
 		<span class="input-group-btn">
 			<button id="search_search_button" type="submit" value="Name" class="btn btn-default">
-				<i class="icon-search"></i>
+				<i class="fa fa-search"></i>
 			</button>
 		</span>
 		<input type="hidden" name="t" value="{if $category[0]!=""}{$category[0]}{else}-1{/if}" id="search_cat" />
@@ -109,54 +109,54 @@
 				<th style="vertical-align:top;">
 					name
 					<a title="Sort Descending" href="{$orderbyname_desc}">
-						<i class="icon-chevron-down"></i>
+						<i class="fa fa-chevron-down"></i>
 					</a>
 					<a title="Sort Ascending" href="{$orderbyname_asc}">
-						<i class="icon-chevron-up"></i>
+						<i class="fa fa-chevron-up"></i>
 					</a>
 				</th>
 				<th style="vertical-align:top;">
 					category<br>
 					<a title="Sort Descending" href="{$orderbycat_desc}">
-						<i class="icon-chevron-down"></i>
+						<i class="fa fa-chevron-down"></i>
 					</a>
 					<a title="Sort Ascending" href="{$orderbycat_asc}">
-						<i class="icon-chevron-up"></i>
+						<i class="fa fa-chevron-up"></i>
 					</a>
 				</th>
 				<th style="vertical-align:top;">
 					posted<br>
 					<a title="Sort Descending" href="{$orderbyposted_desc}">
-						<i class="icon-chevron-down"></i>
+						<i class="fa fa-chevron-down"></i>
 					</a>
 					<a title="Sort Ascending" href="{$orderbyposted_asc}">
-						<i class="icon-chevron-up"></i>
+						<i class="fa fa-chevron-up"></i>
 					</a>
 				</th>
 				<th style="vertical-align:top;">
 					size<br>
 					<a title="Sort Descending" href="{$orderbysize_desc}">
-						<i class="icon-chevron-down"></i>
+						<i class="fa fa-chevron-down"></i>
 					</a>
 					<a title="Sort Ascending" href="{$orderbysize_asc}">
-						<i class="icon-chevron-up"></i>
+						<i class="fa fa-chevron-up"></i>
 					</a>
 				</th>
 				<th style="vertical-align:top;">files<br>
 					<a title="Sort Descending" href="{$orderbyfiles_desc}">
-						<i class="icon-chevron-down"></i>
+						<i class="fa fa-chevron-down"></i>
 					</a>
 					<a title="Sort Ascending" href="{$orderbyfiles_asc}">
-						<i class="icon-chevron-up"></i>
+						<i class="fa fa-chevron-up"></i>
 					</a>
 				</th>
 				<th style="vertical-align:top;">
 					stats<br>
 					<a title="Sort Descending" href="{$orderbystats_desc}">
-						<i class="icon-chevron-down"></i>
+						<i class="fa fa-chevron-down"></i>
 					</a>
 					<a title="Sort Ascending" href="{$orderbystats_asc}">
-						<i class="icon-chevron-up"></i>
+						<i class="fa fa-chevron-up"></i>
 					</a>
 				</th>
 				<th style="vertical-align:top;">action</th>
@@ -178,11 +178,11 @@
 						</label>
 						<div class="resextra">
 							{if $result.passwordstatus == 1}
-								<span class="label label-default" title="Probably Passworded"><i class="icon-unlock-alt"></i></span>
+								<span class="label label-default" title="Probably Passworded"><i class="fa fa-unlock-alt"></i></span>
 							{elseif $result.passwordstatus == 2}
-								<span class="label label-default" title="Broken Post"><i class="icon-unlink"></i></span>
+								<span class="label label-default" title="Broken Post"><i class="fa fa-chain-broken"></i></span>
 							{elseif $result.passwordstatus == 10}
-								<span class="label label-default" title="Passworded Archive"><i class="icon-lock"></i></span>
+								<span class="label label-default" title="Passworded Archive"><i class="fa fa-lock"></i></span>
 							{/if}
 							{if $result.videostatus > 0}
 								<a
@@ -190,7 +190,7 @@
 									href="{$smarty.const.WWW_TOP}/details/{$result.guid}"
 									title="This release has a video preview."
 									rel="preview"
-								><i class="icon-youtube-play"></i>
+								><i class="fa fa-youtube-play"></i>
 								</a>
 							{/if}
 							{if $result.nfoid > 0}
@@ -198,7 +198,7 @@
 									href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}"
 									title="View Nfo"
 									class="modal_nfo label label-default" rel="nfo"
-								><i class="icon-info-sign"></i></a>
+								><i class="fa fa-info"></i></a>
 							{/if}
 							{if $result.imdbid > 0}
 								<a
@@ -207,7 +207,7 @@
 									title="View movie info"
 									class="modal_imdb label label-default"
 									rel="movie"
-								><i class="icon-film"></i></a>
+								><i class="fa fa-film"></i></a>
 							{/if}
 							{if $result.musicinfo_id > 0}
 								<a
@@ -216,7 +216,7 @@
 									title="View music info"
 									class="modal_music label label-default"
 									rel="music"
-								><i class="icon-music"></i></a>
+								><i class="fa fa-music"></i></a>
 							{/if}
 							{if $result.consoleinfo_id > 0}
 								<a
@@ -225,7 +225,7 @@
 									title="View console info"
 									class="modal_console label label-default"
 									rel="console"
-								><i class="icon-off"></i></a>
+								><i class="fa fa-power-off"></i></a>
 							{/if}
 							{if $result.haspreview == 1 && $userdata.canpreview == 1}
 								<a
@@ -234,7 +234,7 @@
 									name="name{$result.guid}"
 									title="Screenshot of {$result.searchname|escape:"htmlall"}"
 									rel="preview"
-								><i class="icon-camera"></i></a>
+								><i class="fa fa-camera"></i></a>
 							{/if}
 							{if $result.jpgstatus == 1 && $userdata.canpreview == 1}
 								<a
@@ -243,21 +243,21 @@
 									name="name{$result.guid}"
 									title="Sample of {$result.searchname|escape:"htmlall"}"
 									rel="preview"
-								><i class="icon-picture"></i></a>
+								><i class="fa fa-picture-o"></i></a>
 							{/if}
 							{if $result.videos_id > 0}
 								<a
 									class="label label-default"
 									href="{$smarty.const.WWW_TOP}/series/{$result.videos_id}"
 									title="View all episodes"
-								><i class="icon-bookmark"></i></a>
+								><i class="fa fa-bookmark"></i></a>
 							{/if}
 							{if $result.anidbid > 0}
 								<a
 									class="label label-default"
 									href="{$smarty.const.WWW_TOP}/anime/{$result.anidbid}"
 									title="View all episodes"
-								><i class="icon-font"></i></a>
+								><i class="fa fa-font"></i></a>
 							{/if}
 							{if $result.firstaired != ""}
 								<span
@@ -269,20 +269,20 @@
 								<span
 									class="mediainfo label label-default"
 									title="{$result.guid}"
-								><i class="icon-list-alt"></i></span>
+								><i class="fa fa-list-alt"></i></span>
 							{/if}
-							{if $result.preid > 0}
+							{if $result.predb_id > 0}
 								<span
 									class="label label-default preinfo rndbtn"
-									title="{$result.preid}"
-								><i class="icon-eye-open"></i></span>
+									title="{$result.predb_id}"
+								><i class="fa fa-eye"></i></span>
 							{/if}
 							{if $result.group_name != ""}
 								<a
 									class="label label-default"
 									href="{$smarty.const.WWW_TOP}/browse?g={$result.group_name|escape:"htmlall"}"
 									title="Browse {$result.group_name}"
-								><i class="icon-share-alt"></i></a>
+								><i class="fa fa-share-alt"></i></a>
 							{/if}
 							{release_flag($result.searchname, browse)}
 							{if $result.failed > 0}<span class="label label-default">

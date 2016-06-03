@@ -284,8 +284,8 @@ jQuery(function($){
 
     $('.sendtocouch').click(function (e) {
         if ($(this).hasClass('icon_cp_clicked')) return false;
-        var imdb = $(this).parent().parent().attr('id').substring(4);
-        var cpurl = SERVERROOT + "sendtocouch/" + imdb;
+        var id = $(this).attr('id').substring(4);
+        var cpurl = SERVERROOT + "sendtocouch/" + id;
 
         $.post(cpurl, function(resp){
             $(e.target).addClass('icon_cp_clicked').attr('title','Added to CouchPotato');
@@ -855,30 +855,6 @@ jQuery(function($){
                         y : 8
                     }
                 }
-            }
-        });
-    });
-
-    // preinfo tooltip
-    $(".preinfo").each(function() {
-        var searchname = $(this).attr('title');
-        $(this).qtip({
-            content: {
-                title: {
-                    text: 'Pre Info'
-                },
-                text: 'loading...',
-                ajax: {
-                    url: SERVERROOT + 'ajax_preinfo',
-                    type: 'GET',
-                    data: { searchname: searchname },
-                    success: function(data, status) {
-                        this.set('content.text', data);
-                    }
-                }
-            },
-            style: {
-                classes: 'ui-tooltip-nzedb'
             }
         });
     });

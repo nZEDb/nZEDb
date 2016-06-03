@@ -245,8 +245,8 @@
 								{if $result.reid > 0}
 									<span class="mediainfo rndbtnsml" title="{$result.guid}">Media</span>
 								{/if}
-								{if $result.preid > 0}
-									<span class="preinfo rndbtnsml" title="{$result.preid}">PreDB</span>
+								{if $result.predb_id > 0}
+									<span class="preinfo rndbtnsml" title="{$result.predb_id}">PreDB</span>
 								{/if}
 								{if $result.group_name != ""}
 									<a class="rndbtnsml" href="{$smarty.const.WWW_TOP}/browse?g={$result.group_name|escape:"htmlall"}" title="Browse {$result.group_name}">{$result.group_name|escape:"htmlall"|replace:"alt.binaries.":"a.b."}</a>

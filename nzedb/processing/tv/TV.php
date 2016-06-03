@@ -438,19 +438,19 @@ abstract class TV extends Videos
 	 */
 	public function getBySeasonEp($id, $series, $episode, $airdate = '')
 	{
-		if ($episode > 0) {
-			$queryString = sprintf('series = %d AND episode = %d', $series, $episode);
-		} else if (!empty($airdate) && $airdate !== '') {
-			$queryString = sprintf('DATE(firstaired) = %s', $this->pdo->escapeString(date('Y-m-d', strtotime($airdate))));
+		if (!empty($airdate)) {
+			$queryString = sprintf('DATE(tve.firstaired) = %s', $this->pdo->escapeString(date('Y-m-d', strtotime($airdate))));
+		} else if ($series > 0 && $episode > 0) {
+			$queryString = sprintf('tve.series = %d AND tve.episode = %d', $series, $episode);
 		} else {
 			return false;
 		}
 
 		$episodeArr = $this->pdo->queryOneRow(
 			sprintf("
-				SELECT id
-				FROM tv_episodes
-				WHERE videos_id = %d
+				SELECT tve.id
+				FROM tv_episodes tve
+				WHERE tve.videos_id = %d
 				AND %s",
 				$id,
 				$queryString

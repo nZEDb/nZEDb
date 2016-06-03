@@ -1,7 +1,7 @@
 <?php
 
 use nzedb\Category;
-use nzedb\RSS;
+use nzedb\http\RSS;
 use nzedb\db\Settings;
 use nzedb\utility\Misc;
 
@@ -24,17 +24,17 @@ if (!isset($_GET["t"]) && !isset($_GET["show"]) && !isset($_GET["anidb"])) {
 	$page->meta_keywords = "view,nzb,description,details,rss,atom";
 	$page->meta_description = "View information about nZEDb RSS Feeds.";
 
-	$firstShow = $rss->getFirstInstance('id', 'videos');
-	$firstAni = $rss->getFirstInstance('anidbid', 'releases');
+	$firstShow = $rss->getFirstInstance('videos_id', 'releases', 'id');
+	$firstAni = $rss->getFirstInstance('anidbid', 'releases', 'id');
 
-	if (isset($firstShow['id'])) {
-		$page->smarty->assign('show', $firstShow['id']);
+	if (isset($firstShow['videos_id'])) {
+		$page->smarty->assign('show', $firstShow['videos_id']);
 	} else {
 		$page->smarty->assign('show', 1);
 	}
 
-	if (isset($firstAni['anidb'])) {
-		$page->smarty->assign('anidb', $firstAni['id']);
+	if (isset($firstAni['anidbid'])) {
+		$page->smarty->assign('anidb', $firstAni['anidbid']);
 	} else {
 		$page->smarty->assign('anidb', 1);
 	}
@@ -84,8 +84,8 @@ if (!isset($_GET["t"]) && !isset($_GET["show"]) && !isset($_GET["anidb"])) {
 	} else {
 		$page->users->addApiRequest($uid, $_SERVER['REQUEST_URI']);
 	}
-	// Valid or logged in user, get them the requested feed.
 
+	// Valid or logged in user, get them the requested feed.
 	$userShow = $userAnidb = -1;
 	if (isset($_GET["show"])) {
 		$userShow = ($_GET["show"] == 0 ? -1 : $_GET["show"] + 0);
@@ -97,13 +97,14 @@ if (!isset($_GET["t"]) && !isset($_GET["show"]) && !isset($_GET["anidb"])) {
 	$userNum = (isset($_GET["num"]) && is_numeric($_GET['num']) ? abs($_GET['num']) : 100);
 	$userAirDate = (isset($_GET["airdate"]) && is_numeric($_GET['airdate']) ? abs($_GET["airdate"]) : -1);
 
-	$page->smarty->assign([
+	$params =
+		[
 			'dl'       => (isset($_GET['dl']) && $_GET['dl'] == '1' ? '1' : '0'),
 			'del'      => (isset($_GET['del']) && $_GET['del'] == '1' ? '1' : '0'),
+			'extended' => 1,
 			'uid'      => $uid,
-			'rsstoken' => $rssToken
-		]
-	);
+			'token'    => $rssToken
+		];
 
 	if ($userCat == -3) {
 		$relData = $rss->getShowsRss($userNum, $uid, $page->users->getCategoryExclusion($uid), $userAirDate);
@@ -112,10 +113,5 @@ if (!isset($_GET["t"]) && !isset($_GET["show"]) && !isset($_GET["anidb"])) {
 	} else {
 		$relData = $rss->getRss(explode(',', $userCat), $userNum, $userShow, $userAnidb, $uid, $userAirDate);
 	}
-
-	$page->smarty->assign('releases', $relData);
-	$response = trim($page->smarty->fetch('rss.tpl'));
-	header("Content-type: text/xml");
-	header('Content-Length: ' . strlen($response));
-	echo $response;
+	$rss->output($relData, $params, true, 'rss');
 }

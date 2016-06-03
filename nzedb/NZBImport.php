@@ -187,7 +187,10 @@ class NZBImport
 				}
 
 				// Try to insert the NZB details into the DB.
-				$inserted = $this->scanNZBFile($nzbXML, ($useNzbName ? str_ireplace('.nzb', '', basename($nzbFile)) : false));
+				$inserted = $this->scanNZBFile(
+					$nzbXML,
+					($useNzbName ? trim(preg_replace('/\.nzb(\.gz)?$/i', '', basename($nzbFile))) : false)
+				);
 
 				if ($inserted) {
 

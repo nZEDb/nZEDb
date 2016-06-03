@@ -23,7 +23,7 @@
 <form method="get" action="{$smarty.const.WWW_TOP}/search">
 	<div id="sadvanced" {if not $sadvanced}style="display:none"{/if}>
 		<div style="text-align: center;">
-			<table class="data table table-striped table-condensed table-responsive">
+			<table class="data table  table-condensed table-responsive">
 				<tr>
 					<th><label for="searchadvr">Release Name:</label></th>
 					<td><input class="searchadv" id="searchadvr" name="searchadvr" value="{$searchadvr|escape:'html'}"
@@ -114,7 +114,7 @@
 <form style="padding-top:10px;" id="nzb_multi_operations_form" method="get" action="{$smarty.const.WWW_TOP}/search">
 
 	<form id="nzb_multi_operations_form" action="get">
-		<div class="well well-small">
+		<div class="well well-sm">
 			<div class="nzb_multi_operations">
 				<table width="100%">
 					<tr>
@@ -149,7 +149,7 @@
 			</div>
 		</div>
 
-<table style="100%" class="data highlight icons table table-striped" id="browsetable">
+<table style="100%" class="data highlight icons table" id="browsetable">
 
 	<tr>
 		<th style="padding-top:0px; padding-bottom:0px;">
@@ -244,7 +244,7 @@
 						{if $result.nfoid > 0}
 						<a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}" title="View Nfo" class="modal_nfo badge halffade" rel="nfo">Nfo</a>
 						{/if}
-						{if $result.preid > 0}
+						{if $result.predb_id > 0}
 						<span class="preinfo badge halffade" title="{$result.searchname}">Pre'd {$result.ctime|timeago}</span>
 						{/if}
 						{if $result.imdbid > 0}
@@ -328,7 +328,7 @@
 </table>
 <br/>
 {if $results|@count > 10}
-<div class="well well-small">
+<div class="well well-sm">
 	<div class="nzb_multi_operations">
 		<table width="100%">
 			<tr>

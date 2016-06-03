@@ -12,8 +12,8 @@ if (count($argv) !== 6) {
 		'Usage: ' . $n .
 		$_SERVER['_'] . ' ' . __FILE__ . ' arg1 arg2 arg3 arg4 arg5' . $n . $n .
 		'arg1 : Path to folder where NZB files are to be stored.          | a folder path' . $n .
-		'arg2 : The start date in this format: 01/01/2008 or false        | date/false' . $n .
-		'arg3 : The end date in this format: 01/01/2008 or false          | date/false' . $n .
+		'arg2 : The start date in this format: DD/MM/YYYY or false        | date/false' . $n .
+		'arg3 : The end date in this format: DD/MM/YYYY or false          | date/false' . $n .
 		'arg4 : Group ID for the group or false                           | number/false' . $n .
 		'arg5 : Gzip the NZB files (recommended, faster/takes less space) | true/false' . $n . $n .
 		'Examples: ' . $n .

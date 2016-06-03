@@ -5,7 +5,7 @@
 <h3>{$results[0].subject|escape:"htmlall"}</h3>
 
 <a id="top"></a>
-<table style="width:100%;" class="data highlight table table-striped" id="forumtable">
+<table style="width:100%;" class="data highlight table" id="forumtable">
 	<tr>
 		<th style="padding-top:0px; padding-bottom:0px;">By</th>
 		<th style="padding-top:0px; padding-bottom:0px;">Message</th>
