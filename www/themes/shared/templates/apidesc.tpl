@@ -1,3 +1,4 @@
+<div class="well well-sm">
 <h3>{$page->title}</h3>
 <p>Here lives the documentation for the api for accessing nzb and index data. Api functions can be called by either logged in users, or by providing an apikey.</p>
 <br>
@@ -53,3 +54,4 @@
 	<dt>Json <span style="font-family:courier;">?t=search&amp;q=linux&amp;o=json</span></dt>
 	<dd>Returns the data in a json object.</dd>
 </dl>
+</div>
