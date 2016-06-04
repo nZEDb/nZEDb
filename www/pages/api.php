@@ -1,6 +1,5 @@
 <?php
 
-use nzedb\Category;
 use nzedb\Releases;
 use nzedb\http\API;
 use nzedb\db\Settings;
@@ -156,9 +155,10 @@ switch ($function) {
 			'tmdb'   => (isset($_GET['tmdbid']) ? $_GET['tmdbid'] : '0')
 		];
 
-		if (isset($_GET['season']) && isset($_GET['ep'])) {
-			if (preg_match('#\d{4}#i', $_GET['season'], $year) && stripos($_GET['ep'], '/') !== false) {
-				$airdate = $year[0] . '/' . $_GET['ep'];
+		// Process season only queries or Season and Episode/Airdate queries
+		if (isset($_GET['season']) || (isset($_GET['season']) && isset($_GET['ep']))) {
+			if (preg_match('#^(19|20)\d{2}$#', $_GET['season'], $year) && stripos($_GET['ep'], '/') !== false) {
+				$airdate = str_replace('/', '-', $year[0] . '-' . $_GET['ep']);
 			} else {
 				$series = $_GET['season'];
 				$episode = $_GET['ep'];
