@@ -97,7 +97,7 @@ class MiscSorter
 			}
 		}
 		$this->_setProcSorter(self::PROC_SORTER_DONE, $id);
-		echo ".";
+		echo $this->pdo->log->primaryOver('^');
 		return false;
 	}
 
@@ -276,11 +276,6 @@ class MiscSorter
 	private function _doOSpregSplit($pattern = '', $nfo = '')
 	{
 		return preg_split($pattern, $nfo, 0, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-	}
-
-	private function _doOSsplitPos($split = [], $nfo = '')
-	{
-		return (isset($split[1]) ? $this->nfopos($nfo, $this->_cleanStrForPos($split[1])) : false);
 	}
 
 	private function moviename($nfo = '', $imdb = 0, $name = '')

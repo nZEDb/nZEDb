@@ -1,10 +1,12 @@
 <?php
 require_once realpath(dirname(dirname(dirname(dirname(dirname(__DIR__))))) . DIRECTORY_SEPARATOR . 'indexer.php');
 
+use nzedb\Category;
 use nzedb\MiscSorter;
 use nzedb\NameFixer;
 use nzedb\Nfo;
 use nzedb\NNTP;
+use nzedb\NZB;
 use nzedb\NZBContents;
 use nzedb\db\Settings;
 use nzedb\processing\PostProcess;
@@ -15,206 +17,183 @@ if (!isset($argv[1])) {
 	exit($pdo->log->error("This script is not intended to be run manually, it is called from Multiprocessing."));
 } else if (isset($argv[1])) {
 	$namefixer = new NameFixer(['Settings' => $pdo]);
+	$sorter = new MiscSorter(true, $pdo);
 	$pieces = explode(' ', $argv[1]);
 	$guidChar = $pieces[1];
 	$maxperrun = $pieces[2];
 	$thread = $pieces[3];
 
 	switch (true) {
-		case $pieces[0] === 'nfo' && isset($guidChar) && isset($maxperrun) && is_numeric($maxperrun):
-			$releases = $pdo->queryDirect(
-				sprintf('
-					SELECT r.id AS releases_id, r.guid, r.group_id, r.categories_id, r.name, r.searchname,
-						uncompress(nfo) AS textstring
-					FROM releases r
-					INNER JOIN release_nfos rn ON r.id = rn.releases_id
-					WHERE r.leftguid = %s
-					AND r.nzbstatus = 1
-					AND r.proc_nfo = %d
-					AND r.nfostatus = 1
-					AND r.predb_id = 0
-					ORDER BY r.id DESC
-					LIMIT %s',
-					$pdo->escapeString($guidChar),
-					$namefixer::PROC_NFO_NONE,
-					$maxperrun
-				)
-			);
 
-			if ($releases instanceof \Traversable) {
-				foreach ($releases as $release) {
-					if (preg_match('/^=newz\[NZB\]=\w+/', $release['textstring'])) {
-						$namefixer->done = $namefixer->matched = false;
-						$pdo->queryDirect(sprintf('UPDATE releases SET proc_nfo = 1 WHERE id = %d', $release['releases_id']));
-						$namefixer->checked++;
-						echo '.';
-					} else {
-						$namefixer->done = $namefixer->matched = false;
-						if ($namefixer->checkName($release, true, 'NFO, ', 1, 1) !== true) {
-							echo '.';
-						}
-						$namefixer->checked++;
-					}
-				}
-			}
-			break;
-		case $pieces[0] === 'filename' && isset($guidChar) && isset($maxperrun) && is_numeric($maxperrun):
-			$releases = $pdo->queryDirect(
-				sprintf('
-					SELECT rf.name AS textstring, rf.releases_id AS fileid,
-						r.id AS releases_id, r.name, r.searchname, r.categories_id, r.group_id
-					FROM releases r
-					INNER JOIN release_files rf ON r.id = rf.releases_id
-					WHERE r.leftguid = %s
-					AND r.nzbstatus = 1
-					AND r.proc_files = %d
-					AND r.predb_id = 0
-					ORDER BY r.id ASC
-					LIMIT %s',
-					$pdo->escapeString($guidChar),
-					$namefixer::PROC_FILES_NONE,
-					$maxperrun
-				)
-			);
+		case $pieces[0] === 'standard' && isset($guidChar) && isset($maxperrun) && is_numeric($maxperrun):
 
-			if ($releases instanceof \Traversable) {
-				foreach ($releases as $release) {
-					$namefixer->done = $namefixer->matched = false;
-					if ($namefixer->checkName($release, true, 'Filenames, ', 1, 1) !== true) {
-						echo '.';
-					}
-					$namefixer->checked++;
-				}
-			}
-			break;
-		case $pieces[0] === 'uid' && isset($guidChar) && isset($maxperrun) && is_numeric($maxperrun):
+			$categories = [
+				Category::OTHER_MISC,
+				Category::OTHER_HASHED,
+				Category::GAME_OTHER,
+				Category::MOVIE_OTHER,
+				Category::MUSIC_OTHER,
+				Category::PC_PHONE_OTHER,
+				Category::TV_OTHER,
+				Category::XXX_OTHER,
+				Category::BOOKS_UNKNOWN
+			];
+
+			// Find releases to process.  We only want releases that have no PreDB match, have not been renamed, exist
+			// in Other Categories, have already been PP Add/NFO processed, and haven't been fully fixRelName processed
 			$releases = $pdo->queryDirect(
-				sprintf('
+				sprintf("
 					SELECT
-						r.id AS releases_id, r.size AS relsize, r.group_id, r.categories_id,
-						r.name, r.name AS textstring, r.predb_id, r.searchname,
+						r.id AS releases_id, r.guid, r.group_id, r.categories_id, r.name, r.searchname, r.proc_nfo,
+						r.proc_files, r.proc_par2, r.proc_sorter, r.ishashed, r.dehashstatus, r.nfostatus,
+						r.size AS relsize, r.predb_id,
+						rf.releases_id AS fileid, IF(rf.ishashed = 1, rf.name, NULL) AS filehash,
+						GROUP_CONCAT(rf.name ORDER BY rf.name ASC SEPARATOR '|') AS filestring,
+						UNCOMPRESS(rn.nfo) AS textstring,
 						HEX(ru.uniqueid) AS uid
 					FROM releases r
+					LEFT JOIN release_nfos rn ON r.id = rn.releases_id
+					LEFT JOIN release_files rf ON r.id = rf.releases_id
 					LEFT JOIN release_unique ru ON ru.releases_id = r.id
-					WHERE ru.releases_id IS NOT NULL
-					AND r.leftguid = %s
-					AND r.nzbstatus = 1
-					AND r.predb_id = 0
-					AND r.proc_uid = %d
-					ORDER BY r.id DESC
-					LIMIT %d',
-					$pdo->escapeString($guidChar),
-					$namefixer::PROC_UID_NONE,
-					$maxperrun
-				)
-			);
-			if ($releases instanceof \Traversable) {
-				foreach ($releases as $release) {
-					$namefixer->done = $namefixer->matched = false;
-					if ($namefixer->uidCheck($release, true, 'UID, ', 1, 1) === false) {
-						echo '.';
-					}
-					$namefixer->checked++;
-				}
-			}
-			break;
-		case $pieces[0] === 'md5' && isset($guidChar) && isset($maxperrun) && is_numeric($maxperrun):
-			$releases = $pdo->queryDirect(
-				sprintf('
-					SELECT DISTINCT r.id AS releases_id, r.name, r.searchname, r.categories_id, r.group_id, r.dehashstatus,
-						rf.name AS filename
-					FROM releases r
-					LEFT OUTER JOIN release_files rf ON r.id = rf.releases_id AND rf.ishashed = 1
 					WHERE r.leftguid = %s
-					AND nzbstatus = 1
-					AND r.ishashed = 1
-					AND r.dehashstatus BETWEEN -6 AND 0
-					AND r.predb_id = 1
-					ORDER BY r.dehashstatus DESC, r.id ASC
-					LIMIT %s',
-					$pdo->escapeString($guidChar),
-					$maxperrun
-				)
-			);
-
-			if ($releases instanceof \Traversable) {
-				foreach ($releases as $release) {
-					if (preg_match('/[a-fA-F0-9]{32,40}/i', $release['name'], $matches)) {
-						$namefixer->matchPredbHash($matches[0], $release, 1, 1, true, 1);
-					} else if (preg_match('/[a-fA-F0-9]{32,40}/i', $release['filename'], $matches)) {
-						$namefixer->matchPredbHash($matches[0], $release, 1, 1, true, 1);
-					} else {
-						$pdo->queryExec(sprintf("UPDATE releases SET dehashstatus = %d - 1 WHERE id = %d", $release['dehashstatus'], $release['releases_id']));
-						echo '.';
-					}
-				}
-			}
-			break;
-		case $pieces[0] === 'par2' && isset($guidChar) && isset($maxperrun) && is_numeric($maxperrun):
-			$releases = $pdo->queryDirect(
-				sprintf('
-					SELECT r.id AS releases_id, r.guid, r.group_id
-					FROM releases r
-					WHERE r.leftguid = %s
-					AND r.nzbstatus = 1
-					AND r.proc_par2 = %d
-					AND r.predb_id = 0
-					ORDER BY r.id ASC
-					LIMIT %s',
-					$pdo->escapeString($guidChar),
-					$namefixer::PROC_PAR2_NONE,
-					$maxperrun
-				)
-			);
-
-			if ($releases instanceof \Traversable) {
-				$nntp = new NNTP(['Settings' => $pdo]);
-				if (($pdo->getSetting('alternate_nntp') == '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
-					exit($pdo->log->error("Unable to connect to usenet."));
-				}
-
-				$Nfo = new Nfo(['Settings' => $pdo, 'Echo' => true]);
-				$nzbcontents = new NZBContents(
-					[
-						'Echo' => true, 'NNTP' => $nntp, 'Nfo' => $Nfo, 'Settings' => $pdo,
-						'PostProcess' => new PostProcess(['Settings' => $pdo, 'Nfo' => $Nfo, 'NameFixer' => $namefixer])
-					]
-				);
-				foreach ($releases as $release) {
-					$res = $nzbcontents->checkPAR2($release['guid'], $release['releases_id'], $release['group_id'], 1, 1);
-					if ($res === false) {
-						echo '.';
-					}
-				}
-			}
-			break;
-		case $pieces[0] === 'miscsorter' && isset($guidChar) && isset($maxperrun) && is_numeric($maxperrun):
-			$releases = $pdo->queryDirect(
-				sprintf('
-					SELECT r.id AS releases_id
-					FROM releases r
-					WHERE r.leftguid = %s
-					AND r.nzbstatus = 1
-					AND r.nfostatus = 1
-					AND r.proc_sorter = %d
+					AND r.nzbstatus = %d
 					AND r.isrenamed = %d
 					AND r.predb_id = 0
-					ORDER BY r.id DESC
-					LIMIT %s',
+					AND proc_pp = 1
+					AND r.nfostatus = %d
+					AND
+					(
+						r.proc_nfo = %d
+						OR r.proc_files = %d
+						OR r.proc_uid = %d
+						OR r.proc_par2 = %d
+						OR r.proc_sorter = %d
+						OR r.dehashstatus BETWEEN -6 AND 0
+					)
+					AND r.categories_id IN (%s)
+					GROUP BY r.id
+					LIMIT %s",
 					$pdo->escapeString($guidChar),
+					NZB::NZB_ADDED,
+					NameFixer::IS_RENAMED_NONE,
+					Nfo::NFO_FOUND,
+					NameFixer::PROC_NFO_NONE,
+					NameFixer::PROC_FILES_NONE,
+					NameFixer::PROC_UID_NONE,
+					NameFixer::PROC_PAR2_NONE,
 					MiscSorter::PROC_SORTER_NONE,
-					$namefixer::IS_RENAMED_NONE,
+					implode(',', $categories),
 					$maxperrun
 				)
 			);
 
 			if ($releases instanceof \Traversable) {
-				$sorter = new MiscSorter(true, $pdo);
+
 				foreach ($releases as $release) {
-					$res = $sorter->nfosorter(null, $release['releases_id']);
+
+					$namefixer->checked++;
+					$namefixer->done = $namefixer->matched = false;
+
+					if ($release['ishashed'] === 1 && $release['dehashstatus'] > -6 && $release['dehashstatus'] < 0) {
+						if (preg_match('/[a-fA-F0-9]{32,40}/i', $release['name'], $matches)) {
+							$namefixer->matchPredbHash($matches[0], $release, 1, 1, true, 1);
+						}
+						if ($namefixer->matched === false
+							&& !is_null($release['filehash'])
+							&& preg_match('/[a-fA-F0-9]{32,40}/i', $release['filehash'], $matches)) {
+								$namefixer->matchPredbHash($matches[0], $release, 1, 1, true, 1);
+						}
+					}
+					$namefixer->_updateSingleColumn('dehashstatus', $release['dehashstatus'] - 1, $release['releases_id']);
+
+					if($namefixer->matched) {
+						continue;
+					} else {
+						$namefixer->done = $namefixer->matched = false;
+						echo $pdo->log->primaryOver('!');
+					}
+
+					if ($release['proc_uid'] === NameFixer::PROC_UID_NONE
+						&& !is_null($release['uid']) && strlen($release['uid']) === 32) {
+						$namefixer->uidCheck($release, true, 'UID, ', 1, 1);
+					}
+					$namefixer->_updateSingleColumn('proc_uid', NameFixer::PROC_UID_DONE, $release['releases_id']);
+
+					if($namefixer->matched) {
+						continue;
+					} else {
+						$namefixer->done = $namefixer->matched = false;
+						echo $pdo->log->primaryOver('@');
+					}
+
+					if (!preg_match('/^=newz\[NZB\]=\w+/', $release['textstring'])
+						|| (int)$release['nfostatus'] === Nfo::NFO_FOUND
+							|| (int)$release['nfostatus'] === NameFixer::PROC_NFO_NONE) {
+						$namefixer->done = $namefixer->matched = false;
+						$namefixer->checkName($release, true, 'NFO, ', 1, 1);
+					}
+					$namefixer->_updateSingleColumn('proc_nfo', NameFixer::PROC_NFO_DONE, $release['releases_id']);
+
+					if($namefixer->matched) {
+						continue;
+					} else {
+						$namefixer->done = $namefixer->matched = false;
+						echo $pdo->log->primaryOver('#');
+					}
+
+					if (!is_null($release['fileid']) && (int)$release['proc_files'] === NameFixer::PROC_FILES_NONE) {
+						$namefixer->done = $namefixer->matched = false;
+						$fileNames = explode('|', $release['filestring']);
+						if (is_array($fileNames)) {
+							$releaseFile = $release;
+							foreach ($fileNames AS $fileName) {
+								$releaseFile['texstring'] = $fileName;
+								$namefixer->checkName($releaseFile, true, 'Filenames, ', 1, 1);
+							}
+						}
+					}
+					$namefixer->_updateSingleColumn('proc_files', NameFixer::PROC_FILES_DONE, $release['releases_id']);
+
+					if($namefixer->matched) {
+						continue;
+					} else {
+						$namefixer->done = $namefixer->matched = false;
+						echo $pdo->log->primaryOver('$');
+					}
+
+					if ($release['proc_par2'] === NameFixer::PROC_PAR2_NONE) {
+						if (!isset($nzbcontents)) {
+							$nntp = new NNTP(['Settings' => $pdo]);
+							if (($pdo->getSetting('alternate_nntp') == '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
+								$pdo->log->error("Unable to connect to usenet.");
+							}
+							$Nfo = new Nfo(['Settings' => $pdo, 'Echo' => true]);
+							$nzbcontents = new NZBContents(
+								[
+									'Echo' => true, 'NNTP' => $nntp, 'Nfo' => $Nfo, 'Settings' => $pdo,
+									'PostProcess' => new PostProcess(['Settings' => $pdo, 'Nfo' => $Nfo, 'NameFixer' => $namefixer])
+								]
+							);
+						}
+						$nzbcontents->checkPAR2($release['guid'], $release['releases_id'], $release['group_id'], 1, 1);
+					}
+					$namefixer->_updateSingleColumn('proc_par2', NameFixer::PROC_PAR2_DONE, $release['releases_id']);
+
+					if($namefixer->matched) {
+						continue;
+					} else {
+						$namefixer->done = $namefixer->matched = false;
+						echo $pdo->log->primaryOver('%');
+					}
+
+					if ($release['nfostatus'] === Nfo::NFO_FOUND
+						&& $release['proc_sorter'] === MiscSorter::PROC_SORTER_NONE) {
+							$res = $sorter->nfosorter(null, $release['releases_id']);
+						}
+					}
 				}
-			}
 			break;
+
 		case $pieces[0] === 'predbft' && isset($maxperrun) && is_numeric($maxperrun) && isset($thread) && is_numeric($thread):
 			$pres = $pdo->queryDirect(
 						sprintf('

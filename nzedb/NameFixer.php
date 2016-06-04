@@ -1065,7 +1065,7 @@ class NameFixer
 	 * @param integer $status
 	 * @param integer $id
 	 */
-	private function _updateSingleColumn($column = '', $status = 0, $id = 0)
+	public function _updateSingleColumn($column = '', $status = 0, $id = 0)
 	{
 		if ($column !== '' && $id !== 0) {
 			$this->pdo->queryExec(

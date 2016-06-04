@@ -3,6 +3,8 @@ namespace nzedb\libraries;
 
 use nzedb\Category;
 use nzedb\ColorCLI;
+use nzedb\MiscSorter;
+use nzedb\NameFixer;
 use nzedb\Nfo;
 use nzedb\NNTP;
 use nzedb\NZB;
@@ -142,12 +144,7 @@ class Forking extends \fork_daemon
 				$maxProcesses = $this->binariesMainMethod();
 				break;
 
-			case 'fixRelNames_nfo':
-			case 'fixRelNames_filename':
-			case 'fixRelNames_md5':
-			case 'fixRelNames_par2':
-			case 'fixRelNames_uid':
-			case 'fixRelNames_miscsorter':
+			case 'fixRelNames_standard':
 			case 'fixRelNames_predbft':
 				$maxProcesses = $this->fixRelNamesMainMethod();
 				break;
@@ -492,11 +489,20 @@ class Forking extends \fork_daemon
 	{
 		$this->register_child_run([0 => $this, 1 => 'fixRelNamesChildWorker']);
 
-		$join = "";
-		$where = "";
+		$categories = [
+			Category::OTHER_MISC,
+			Category::OTHER_HASHED,
+			Category::GAME_OTHER,
+			Category::MOVIE_OTHER,
+			Category::MUSIC_OTHER,
+			Category::PC_PHONE_OTHER,
+			Category::TV_OTHER,
+			Category::XXX_OTHER,
+			Category::BOOKS_UNKNOWN
+		];
+
 		$groupby = "GROUP BY leftguid";
 		$rowLimit = "LIMIT 16";
-		$extrawhere = "AND r.predb_id < 1 AND r.nzbstatus = 1";
 		$select = "r.leftguid AS guidchar, COUNT(r.id) AS count";
 
 		$threads = $this->pdo->getSetting('fixnamethreads');
@@ -506,49 +512,52 @@ class Forking extends \fork_daemon
 			$threads = 16;
 		}
 		switch ($this->workTypeOptions[0]) {
-			case "md5":
-				$join = "LEFT OUTER JOIN release_files rf ON r.id = rf.releases_id AND rf.ishashed = 1";
-				$where = "r.ishashed = 1 AND r.dehashstatus BETWEEN -6 AND 0";
-				break;
 
-			case "nfo":
-				$where = "r.proc_nfo = 0 AND r.nfostatus = 1";
-				break;
-
-			case "filename":
-				$join = "STRAIGHT_JOIN release_files rf ON r.id = rf.releases_id";
-				$where = "r.proc_files = 0";
-				break;
-
-			case "uid":
-				$join = "LEFT JOIN release_unique ru ON ru.releases_id = r.id";
-				$where = "ru.releases_id IS NOT NULL AND r.nzbstatus = 1 AND r.predb_id = 0 AND r.proc_uid = 0";
-				break;
-
-			case "par2":
-				$where = "r.proc_par2 = 0";
-				break;
-
-			case "miscsorter":
-				$where = "r.nfostatus = 1 AND r.proc_nfo = 1 AND r.proc_sorter = 0 AND r.isrenamed = 0";
+			case "standard":
+				$where = sprintf("
+					r.nzbstatus = %d
+					AND r.isrenamed = %d
+					AND r.predb_id = 0
+					AND proc_pp = 1
+					AND r.nfostatus = %d
+					AND
+					(
+						r.proc_nfo = %d
+						OR r.proc_files = %d
+						OR r.proc_uid = %d
+						OR r.proc_par2 = %d
+						OR r.proc_sorter = %d
+						OR r.dehashstatus BETWEEN -6 AND 0
+					)
+					AND r.categories_id IN (%s)",
+					NZB::NZB_ADDED,
+					NameFixer::IS_RENAMED_NONE,
+					Nfo::NFO_FOUND,
+					NameFixer::PROC_NFO_NONE,
+					NameFixer::PROC_FILES_NONE,
+					NameFixer::PROC_UID_NONE,
+					NameFixer::PROC_PAR2_NONE,
+					MiscSorter::PROC_SORTER_NONE,
+					implode(',', $categories)
+				);
 				break;
 
 			case "predbft":
-				$extrawhere = "";
 				$where = "1=1";
 				$rowLimit = sprintf("LIMIT %s", $threads);
 				break;
+
+			default:
+				return 0;
 		}
 
 		$datas = $this->pdo->query(
 			sprintf("
 				SELECT %s
-				FROM releases r %s
-				WHERE %s %s %s %s",
+				FROM releases r
+				WHERE %s %s %s",
 				$select,
-				$join,
 				$where,
-				$extrawhere,
 				$groupby,
 				$rowLimit
 			)
