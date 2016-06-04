@@ -10,7 +10,7 @@ overridden to use whichever theme you like.
 
 
 ##Changes
-* Namespace declarations should follow our license header/comments, if they exist.
+* Namespace declarations, if they exist, should follow our license header/comments.
 * Protected fields/methods are NOT preceded by an underscore. - This makes refactoring easier.
 * Functions/methods have the opening brace (curly bracket) on a new line.
 * Functions/methods should have one blank line before any return statement.
@@ -40,6 +40,16 @@ overridden to use whichever theme you like.
   i.e. release_naming_regexes AS rnr
 
 
-* Fields referencing fields in other tables (usually indexed fields), should use the table name
- followed by the field name separated by an underderscore.
- i.e. videos_id is a reference to videos.id (the id field in the videos table).
+* Fields referencing fields in other tables (usually Primary Keys or indexed fields), should use
+ the table name followed by the field name, separated by an underderscore.
+  i.e. videos_id is a reference to videos.id (the id field in the videos table).
+ Fields using ids from an external source (such as IMDb, AniDb, etc.) should not have the
+ underscore.
+  i.e. anidbid, imdbid.
+
+
+##Pull Requests
+* Any changes to the database should be in a single SQL patch of the format +1~<table>.sql. If it
+ is for more than a single table us 'multiple' as the <table> identifier. However, if a single
+ patch becomes to complicated or confusing to read, it is acceptable to break it up into smaller
+ more concise files (increasing the initial digit for each successive file).
