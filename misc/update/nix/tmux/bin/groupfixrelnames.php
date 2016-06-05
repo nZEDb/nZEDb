@@ -196,18 +196,18 @@ if (!isset($argv[1])) {
 
 		case $pieces[0] === 'predbft' && isset($maxperrun) && is_numeric($maxperrun) && isset($thread) && is_numeric($thread):
 			$pres = $pdo->queryDirect(
-						sprintf('
-							SELECT p.id AS predb_id, p.title, p.source, p.searched
-							FROM predb p
-							WHERE LENGTH(title) >= 15 AND title NOT REGEXP "[\"\<\> ]"
-							AND searched = 0
-							AND DATEDIFF(NOW(), predate) > 1
-							ORDER BY predate ASC
-							LIMIT %s
-							OFFSET %s',
-							$maxperrun,
-							$thread * $maxperrun - $maxperrun
-						)
+				sprintf('
+					SELECT p.id AS predb_id, p.title, p.source, p.searched
+					FROM predb p
+					WHERE LENGTH(title) >= 15 AND title NOT REGEXP "[\"\<\> ]"
+					AND searched = 0
+					AND DATEDIFF(NOW(), predate) > 1
+					ORDER BY predate ASC
+					LIMIT %s
+					OFFSET %s',
+					$maxperrun,
+					$thread * $maxperrun - $maxperrun
+				)
 			);
 
 			if ($pres instanceof \Traversable) {
