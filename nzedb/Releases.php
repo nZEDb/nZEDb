@@ -1014,6 +1014,10 @@ class Releases
 					$showSql = sprintf('AND r.tv_episodes_id IN (%s)', $show['episodes']);
 				} else if ((int)$show['video'] > 0) {
 					$showSql = 'AND r.videos_id = ' . $show['video'];
+					// If $series is set but episode is not, return Season Packs only
+					if (!empty($series) && empty($episode)) {
+						$showSql .= ' AND r.tv_episodes_id = 0';
+					}
 				} else {
 					// If we were passed Episode Info and no match was found, do not run the query
 					return array();
@@ -1021,6 +1025,18 @@ class Releases
 			} else {
 				// If we were passed Site ID Info and no match was found, do not run the query
 				return array();
+			}
+		}
+
+		// If $name is set it is a fallback search, add available SxxExx/airdate info to the query
+		if (!empty($name) && $showSql === '') {
+			if (!empty($series) && (int)$series < 1900) {
+				$name .= sprintf(' S%s', str_pad($series, 2, '0', STR_PAD_LEFT));
+				if (!empty($episode)  && strpos($episode, '/') === false) {
+					$name .= sprintf('E%s', str_pad($episode, 2, '0', STR_PAD_LEFT));
+				}
+			} else if (!empty($airdate)) {
+				$name .= sprintf(' %s', str_replace(['/', '-', '.', '_'], ' ', $airdate));
 			}
 		}
 

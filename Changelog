@@ -8,6 +8,8 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+2016-06-05 ruhllatio
+	Fix: Fallback TV search now returns only specific episodes / also fix Season pack lookups
 2016-06-03 ruhllatio
 	Fix: TV Processing returns alias for wrong show first instead of direct show title match
 	Fix: Local lookup not working for airdates because Sxx/Exx is still being set as junk data
