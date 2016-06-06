@@ -177,12 +177,7 @@ class TmuxRun extends Tmux
 			case 1:
 				$log = $this->writelog($runVar['panes']['one'][0]);
 				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:1.0 ' \
-					{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/fixrelnames.php md5 $log; \
-					{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/fixrelnames.php filename $log; \
-					{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/fixrelnames.php nfo $log; \
-					{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/fixrelnames.php par2 $log; \
-					{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/fixrelnames.php uid $log; \
-					{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/fixrelnames.php miscsorter $log; \
+					{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/fixrelnames.php standard $log; \
 					{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/fixrelnames.php predbft $log; date +\"{$this->_dateFormat}\"; \
 					{$runVar['commands']['_sleep']} {$runVar['settings']['fix_timer']}' 2>&1 1> /dev/null"
 				);
