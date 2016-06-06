@@ -517,7 +517,7 @@ class Tmux
 					SUM(IF(1=1 %s,1,0)) AS processnfo,
 					SUM(IF(nzbstatus = %1\$d AND r.isrenamed = %d AND predb_id = 0 AND passwordstatus >= 0 AND nfostatus > %d
 						AND (proc_nfo = %d OR proc_files = %d OR proc_uid = %d OR proc_par2 = %d OR proc_sorter = %d
-							OR dehashstatus BETWEEN -6 AND 0) AND r.categories_id IN (%s),1,0)) AS processfrn,
+							OR dehashstatus BETWEEN -6 AND 0) AND r.categories_id IN (%s),1,0)) AS processrenames,
 					SUM(IF(isrenamed = %d,1,0)) AS renamed,
 					SUM(IF(nzbstatus = %1\$d AND nfostatus = %d,1,0)) AS nfo,
 					SUM(IF(nzbstatus = %1\$d AND isrequestid = %d AND predb_id = 0 AND ((reqidstatus = %d) OR (reqidstatus = %d) OR (reqidstatus = %d AND adddate > NOW() - INTERVAL %s HOUR)),1,0)) AS requestid_inprogress,

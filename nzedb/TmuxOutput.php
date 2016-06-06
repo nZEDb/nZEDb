@@ -249,8 +249,8 @@ class TmuxOutput extends Tmux
 			"Renames",
 			sprintf(
 				"%s(%s)",
-				number_format($this->runVar['counts']['now']['processfnr']),
-				$this->runVar['counts']['diff']['processfnr']
+				number_format($this->runVar['counts']['now']['processrenames']),
+				$this->runVar['counts']['diff']['processrenames']
 			),
 			sprintf(
 				"%s(%d%%)",

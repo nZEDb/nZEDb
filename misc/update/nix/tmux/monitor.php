@@ -281,7 +281,7 @@ while ($runVar['counts']['iterations'] > 0) {
 				$runVar['counts']['now'][$settingkey] = $runVar['counts']['start'][$settingkey] = 0;
 			}
 			if ($settingkey == 'fix_names' && $setting == 0) {
-				$runVar['counts']['now']['processfnr'] = $runVar['counts']['start']['processfnr'] = 0;
+				$runVar['counts']['now']['processrenames'] = $runVar['counts']['start']['processrenames'] = 0;
 			}
 		}
 

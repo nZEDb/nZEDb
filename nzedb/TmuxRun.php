@@ -176,7 +176,7 @@ class TmuxRun extends Tmux
 		switch ($runVar['settings']['fix_names']) {
 			case 1:
 				switch (true) {
-					case $runVar['counts']['now']['processfnr'] > 0:
+					case $runVar['counts']['now']['processrenames'] > 0:
 					$log = $this->writelog($runVar['panes']['one'][0]);
 					shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:1.0 ' \
 						{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/fixrelnames.php standard $log; \
