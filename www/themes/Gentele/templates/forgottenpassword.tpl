@@ -1,21 +1,14 @@
-<!DOCTYPE html>
-<html>
-{if isset($error) && $error != ''}
-	<div class="alert alert-danger">{$error}</div>
-{/if}
-{if isset($notice) && $notice != ''}
-	<div class="alert alert-info">{$notice}</div>
-{/if}
-{if isset($sent) && $sent != ''}
-	<div class="alert alert-info">A link to reset your password has been sent to your e-mail account.</div>
-{/if}
-<head>
-	<meta charset="UTF-8">
-	<title>{$site->title} | Password reset</title>
-	<meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
-</head>
-{if $confirmed == '' && $sent == ''}
-	<body class="login-page">
+<div class="well well-sm">
+	{if isset($error) && $error != ''}
+		<div class="alert alert-danger">{$error}</div>
+	{/if}
+	{if isset($notice) && $notice != ''}
+		<div class="alert alert-info">{$notice}</div>
+	{/if}
+	{if isset($sent) && $sent != ''}
+		<div class="alert alert-info">A link to reset your password has been sent to your e-mail account.</div>
+	{/if}
+	{if $confirmed == '' && $sent == ''}
 	<div class="login-box">
 		<div class="login-logo">
 			<a href="{$serverroot}"><b{$site->title}</b></a>
@@ -42,14 +35,15 @@
 					</div><!-- /.col -->
 				</div>
 			</form>
-	</body>
-{elseif $sent != ''}
-	<p>
-		A password reset request has been sent to your email.
-	</p>
-{else}
-	<p>
-		Your password has been reset and sent to you in an email.
-	</p>
-{/if}
-</html>
+			{elseif $sent != ''}
+			<p>
+				A password reset request has been sent to your email.
+			</p>
+			{else}
+			<p>
+				Your password has been reset and sent to you in an email.
+			</p>
+			{/if}
+		</div>
+	</div>
+</div>
