@@ -34,7 +34,7 @@
 	<link href="{$smarty.const.WWW_THEMES}/shared/css/posterwall.css" rel="stylesheet" type="text/css" media="screen"/>
 	<link href="{$smarty.const.WWW_THEMES}/shared/css/custom.css" rel="stylesheet">
 	<link href="{$smarty.const.WWW_THEMES}/shared/libs/icheck-1.0.x/skins/flat/green.css" rel="stylesheet">
-	<link href="{$smarty.const.WWW_THEMES}/shared/libs/qtip2-main-3.0.x/dist/jquery.qtip.min.css" type="text/css" media="screen"/>
+	<link href="{$smarty.const.WWW_THEMES}/shared/js/jquery.qtip2.css" type="text/css" media="screen"/>
 	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 	<!--[if lt IE 9]>
 	<script src="{$smarty.const.WWW_THEMES}/shared/libs/html5shiv-3.7.x/dist/html5shiv.min.js"></script>
