@@ -60,6 +60,7 @@ if (!isset($argv[1])) {
 					)
 					AND r.categories_id IN (%s)
 					GROUP BY r.id
+					ORDER BY r.id DESC
 					LIMIT %s",
 					$pdo->escapeString($guidChar),
 					NZB::NZB_ADDED,
