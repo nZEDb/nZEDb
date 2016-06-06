@@ -100,12 +100,7 @@ class IRCScraper extends IRCClient
 				'#pre@corrupt'                => false,
 				'#scnzb'                      => false,
 				'#tvnzb'                      => false,
-				'omgwtfnzbs'                  => false,
-				'orlydb'                      => false,
-				'prelist'                     => false,
-				'srrdb'                       => false,
-				'u4all.eu'                    => false,
-				'zenet'                       => false
+				'srrdb'                       => false
 			];
 		}
 
@@ -215,7 +210,7 @@ class IRCScraper extends IRCClient
 			}
 			if ($matches['req'] !== 'N/A' && preg_match('/^(?P<req>\d+):(?P<group>.+)$/i', $matches['req'], $matches2)) {
 				$this->_curPre['reqid'] = $matches2['req'];
-				$this->_curPre['group_id'] = $this->_getGroupID($matches2['group']);
+				$this->_curPre['groups_id'] = $this->_getGroupID($matches2['group']);
 			}
 			if ($matches['size'] !== 'N/A') {
 				$this->_curPre['size'] = $matches['size'];
@@ -287,7 +282,7 @@ class IRCScraper extends IRCClient
 		$query .= (!empty($this->_curPre['reason'])   ? 'nukereason, ' : '');
 		$query .= (!empty($this->_curPre['files'])    ? 'files, '      : '');
 		$query .= (!empty($this->_curPre['reqid'])    ? 'requestid, '  : '');
-		$query .= (!empty($this->_curPre['group_id'])  ? 'group_id, '    : '');
+		$query .= (!empty($this->_curPre['groups_id'])? 'groups_id, '  : '');
 		$query .= (!empty($this->_curPre['nuked'])    ? 'nuked, '      : '');
 		$query .= (!empty($this->_curPre['filename']) ? 'filename, '   : '');
 
@@ -299,7 +294,7 @@ class IRCScraper extends IRCClient
 		$query .= (!empty($this->_curPre['reason'])   ? $this->_pdo->escapeString($this->_curPre['reason'])   . ', '   : '');
 		$query .= (!empty($this->_curPre['files'])    ? $this->_pdo->escapeString($this->_curPre['files'])    . ', '   : '');
 		$query .= (!empty($this->_curPre['reqid'])    ? $this->_curPre['reqid']                             . ', '   : '');
-		$query .= (!empty($this->_curPre['group_id'])  ? $this->_curPre['group_id']                           . ', '   : '');
+		$query .= (!empty($this->_curPre['groups_id']) ? $this->_curPre['groups_id'] . ', '   : '');
 		$query .= (!empty($this->_curPre['nuked'])    ? $this->_curPre['nuked']                             . ', '   : '');
 		$query .= (!empty($this->_curPre['filename']) ? $this->_pdo->escapeString($this->_curPre['filename']) . ', '   : '');
 		$query .= (!empty($this->_curPre['predate'])  ? $this->_curPre['predate']                           . ', '   : 'NOW(), ');
@@ -336,7 +331,7 @@ class IRCScraper extends IRCClient
 		$query .= (!empty($this->_curPre['files'])    ? 'files = '      . $this->_pdo->escapeString($this->_curPre['files'])    . ', ' : '');
 		$query .= (!empty($this->_curPre['reason'])   ? 'nukereason = ' . $this->_pdo->escapeString($this->_curPre['reason'])   . ', ' : '');
 		$query .= (!empty($this->_curPre['reqid'])    ? 'requestid = '  . $this->_curPre['reqid']                               . ', ' : '');
-		$query .= (!empty($this->_curPre['group_id']) ? 'group_id = '   . $this->_curPre['group_id']                            . ', ' : '');
+		$query .= (!empty($this->_curPre['groups_id']) ? 'groups_id = ' . $this->_curPre['groups_id']                           . ', ' : '');
 		$query .= (!empty($this->_curPre['predate'])  ? 'predate = '    . $this->_curPre['predate']                             . ', ' : '');
 		$query .= (!empty($this->_curPre['nuked'])    ? 'nuked = '      . $this->_curPre['nuked']                               . ', ' : '');
 		$query .= (!empty($this->_curPre['filename']) ? 'filename = '   . $this->_pdo->escapeString($this->_curPre['filename']) . ', ' : '');
@@ -438,7 +433,7 @@ class IRCScraper extends IRCClient
 				'predate'  => '',
 				'category' => '',
 				'source'   => '',
-				'group_id' => '',
+				'groups_id'=> '',
 				'reqid'    => '',
 				'nuked'    => '',
 				'reason'   => '',

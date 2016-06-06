@@ -47,7 +47,7 @@ class MiscSorter
 								r.id, r.name, r.searchname
 							FROM release_nfos rn
 							INNER JOIN releases r ON rn.releases_id = r.id
-							INNER JOIN groups g ON r.group_id = g.id
+							INNER JOIN groups g ON r.groups_id = g.id
 							WHERE rn.nfo IS NOT NULL
 							AND r.proc_sorter = %d
 							AND r.predb_id = 0 %s",
@@ -214,7 +214,7 @@ class MiscSorter
 		$release = $this->pdo->queryOneRow(
 						sprintf("
 							SELECT r.id AS releases_id, r.searchname AS searchname,
-								r.name AS name, r.categories_id, r.group_id
+								r.name AS name, r.categories_id, r.groups_id
 							FROM releases r
 							WHERE r.id = %d",
 							$id

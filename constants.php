@@ -1,7 +1,7 @@
 <?php
 // YOU SHOULD NOT EDIT ANYTHING IN THIS FILE, COPY .../nzedb/config/settings.example.php TO .../nzedb/config/settings.php AND EDIT THAT FILE!
 
-define('nZEDb_MINIMUM_PHP_VERSION', '5.5.0');
+define('nZEDb_MINIMUM_PHP_VERSION', '5.5.20');
 define('nZEDb_MINIMUM_MYSQL_VERSION', '5.5');
 
 if (!defined('DS')) {

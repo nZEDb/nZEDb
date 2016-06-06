@@ -844,7 +844,7 @@ class ReleaseRemover
 						$groupIDs = (substr($string, 0, -1));
 					}
 
-					$groupID = ' AND r.group_id in (' . $groupIDs . ') ';
+					$groupID = ' AND r.groups_id in (' . $groupIDs . ') ';
 				}
 				$this->method = 'Blacklist [' . $regex['id'] . ']';
 
@@ -959,7 +959,7 @@ class ReleaseRemover
 						$groupIDs = (substr($string, 0, -1));
 					}
 
-					$groupID = ' AND r.group_id in (' . $groupIDs . ') ';
+					$groupID = ' AND r.groups_id in (' . $groupIDs . ') ';
 				}
 
 				$this->method = 'Blacklist Files ' . $regex['id'];
@@ -1220,14 +1220,14 @@ class ReleaseRemover
 								break;
 							}
 
-							return ' AND group_id = ' . $group['id'];
+							return ' AND groups_id = ' . $group['id'];
 						case 'like':
 							$groups = $this->pdo->query('SELECT id FROM groups WHERE name ' . $this->formatLike($args[2], 'name'));
 							if (count($groups) === 0) {
 								$this->error = 'No groups were found with this pattern in your database: ' . $args[2] . PHP_EOL;
 								break;
 							}
-							$gQuery = ' AND group_id IN (';
+							$gQuery = ' AND groups_id IN (';
 							foreach ($groups as $group) {
 								$gQuery .= $group['id'] . ',';
 							}

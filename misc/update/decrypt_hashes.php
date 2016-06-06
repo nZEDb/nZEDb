@@ -32,12 +32,12 @@ function getPreName($argv)
 
 	$res = false;
 	if (isset($argv[1]) && $argv[1] === "all") {
-		$res = $pdo->queryDirect('SELECT id AS releases_id, name, searchname, group_id, categories_id, dehashstatus FROM releases WHERE predb_id = 0 AND ishashed = 1');
+		$res = $pdo->queryDirect('SELECT id AS releases_id, name, searchname, groups_id, categories_id, dehashstatus FROM releases WHERE predb_id = 0 AND ishashed = 1');
 	} else if (isset($argv[1]) && $argv[1] === "full") {
-		$res = $pdo->queryDirect('SELECT id AS releases_id, name, searchname, group_id, categories_id, dehashstatus FROM releases WHERE categories_id = ' .
+		$res = $pdo->queryDirect('SELECT id AS releases_id, name, searchname, groups_id, categories_id, dehashstatus FROM releases WHERE categories_id = ' .
 				Category::OTHER_HASHED . ' AND ishashed = 1 AND dehashstatus BETWEEN -6 AND 0');
 	} else if (isset($argv[1]) && is_numeric($argv[1])) {
-		$res = $pdo->queryDirect('SELECT id AS releases_id, name, searchname, group_id, categories_id, dehashstatus FROM releases WHERE categories_id = ' .
+		$res = $pdo->queryDirect('SELECT id AS releases_id, name, searchname, groups_id, categories_id, dehashstatus FROM releases WHERE categories_id = ' .
 				Category::OTHER_HASHED . ' AND ishashed = 1 AND dehashstatus BETWEEN -6 AND 0 ORDER BY postdate DESC LIMIT ' . $argv[1]);
 	}
 

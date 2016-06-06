@@ -613,7 +613,7 @@ class ProcessAdditional
 	{
 		$this->_releases = $this->pdo->query(
 			sprintf('
-				SELECT r.id, r.id AS releases_id, r.guid, r.name, r.size, r.group_id, r.nfostatus,
+				SELECT r.id, r.id AS releases_id, r.guid, r.name, r.size, r.groups_id, r.nfostatus,
 					r.completion, r.categories_id, r.searchname, r.predb_id,
 					c.disablepreview
 				FROM releases r
@@ -627,7 +627,7 @@ class ProcessAdditional
 				LIMIT %d',
 				$this->_maxSize,
 				$this->_minSize,
-				($groupID === '' ? '' : 'AND r.group_id = ' . $groupID),
+				($groupID === '' ? '' : 'AND r.groups_id = ' . $groupID),
 				($guidChar === '' ? '' : 'AND r.leftguid = ' . $this->pdo->escapeString($guidChar)),
 				$this->_queryLimit
 			)
@@ -1745,7 +1745,7 @@ class ProcessAdditional
 		// Make sure the category is music or other.
 		$rQuery = $this->pdo->queryOneRow(
 			sprintf(
-				'SELECT searchname, categories_id AS id, group_id FROM releases WHERE proc_pp = 0 AND id = %d',
+				'SELECT searchname, categories_id AS id, groups_id FROM releases WHERE proc_pp = 0 AND id = %d',
 				$this->_release['id']
 			)
 		);
@@ -1802,7 +1802,7 @@ class ProcessAdditional
 									} else if ($ext === 'FLAC') {
 										$newCat = Category::MUSIC_LOSSLESS;
 									} else {
-										$newCat = $this->_categorize->determineCategory($rQuery['group_id'], $newName);
+										$newCat = $this->_categorize->determineCategory($rQuery['groups_id'], $newName);
 									}
 
 									$newTitle = $this->pdo->escapeString(substr($newName, 0, 255));
@@ -1828,7 +1828,7 @@ class ProcessAdditional
 												'old_name' => $rQuery['searchname'],
 												'new_category' => $newCat,
 												'old_category' => $rQuery['id'],
-												'group' => $rQuery['group_id'],
+												'group' => $rQuery['groups_id'],
 												'release_id' => $this->_release['id'],
 												'method' => 'ProcessAdditional->_getAudioInfo'
 											]
@@ -2390,7 +2390,7 @@ class ProcessAdditional
 					}
 
 					// Get a new category ID.
-					$newCategory = $this->_categorize->determineCategory($this->_release['group_id'], $newName);
+					$newCategory = $this->_categorize->determineCategory($this->_release['groups_id'], $newName);
 
 					$newTitle = $this->pdo->escapeString(substr($newName, 0, 255));
 					// Update the release with the data.
@@ -2416,7 +2416,7 @@ class ProcessAdditional
 								'old_name' => $this->_release['searchname'],
 								'new_category' => $newCategory,
 								'old_category' => $this->_release['categories_id'],
-								'group' => $this->_release['group_id'],
+								'group' => $this->_release['groups_id'],
 								'release_id' => $this->_release['id'],
 								'method' => 'ProcessAdditional->_processU4ETitle'
 							]
@@ -2530,7 +2530,7 @@ class ProcessAdditional
 		$this->_passwordStatus = [Releases::PASSWD_NONE];
 		$this->_releaseHasPassword = false;
 
-		$this->_releaseGroupName = $this->_groups->getByNameByID($this->_release['group_id']);
+		$this->_releaseGroupName = $this->_groups->getByNameByID($this->_release['groups_id']);
 
 		$this->_releaseHasNoNFO = false;
 		// Make sure we don't already have an nfo.

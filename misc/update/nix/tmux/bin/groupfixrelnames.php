@@ -44,7 +44,7 @@ if (!isset($argv[1])) {
 			$releases = $pdo->queryDirect(
 				sprintf("
 					SELECT
-						r.id AS releases_id, r.guid, r.group_id, r.categories_id, r.name, r.searchname, r.proc_nfo,
+						r.id AS releases_id, r.guid, r.groups_id, r.categories_id, r.name, r.searchname, r.proc_nfo,
 						r.proc_files, r.proc_par2, r.proc_sorter, r.ishashed, r.dehashstatus, r.nfostatus,
 						r.size AS relsize, r.predb_id,
 						rf.releases_id AS fileid, IF(rf.ishashed = 1, rf.name, NULL) AS filehash,
@@ -175,7 +175,7 @@ if (!isset($argv[1])) {
 								]
 							);
 						}
-						$nzbcontents->checkPAR2($release['guid'], $release['releases_id'], $release['group_id'], 1, 1);
+						$nzbcontents->checkPAR2($release['guid'], $release['releases_id'], $release['groups_id'], 1, 1);
 					}
 					$namefixer->_updateSingleColumn('proc_par2', NameFixer::PROC_PAR2_DONE, $release['releases_id']);
 

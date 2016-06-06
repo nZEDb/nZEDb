@@ -79,7 +79,7 @@ $predb->executeDeleteShort();
 // Add any groups that do not currently exist
 $predb->executeAddGroups();
 
-// Fill the group_id
+// Fill the groups_id
 $predb->executeUpdateGroupID();
 
 echo $predb->log->info("Inserting records from temporary table into predb table");

@@ -460,14 +460,13 @@ DROP TABLE IF EXISTS missed_parts;
 CREATE TABLE missed_parts (
   id       INT(16) UNSIGNED NOT NULL AUTO_INCREMENT,
   numberid BIGINT UNSIGNED  NOT NULL,
-  group_id INT(11) UNSIGNED NOT NULL DEFAULT '0'
-  COMMENT 'FK to groups',
+  group_id INT(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'FK to groups.id',
   attempts TINYINT(1)       NOT NULL DEFAULT '0',
   PRIMARY KEY (id),
   INDEX ix_missed_parts_attempts                  (attempts),
   INDEX ix_missed_parts_groupid_attempts          (group_id, attempts),
-  INDEX ix_missed_parts_numberid_groupid_attempts (numberid, group_id, attempts),
-  UNIQUE INDEX ix_missed_parts_numberid_groupid          (numberid, group_id)
+  INDEX ix_missed_parts_numberid_groupsid_attempts (numberid, group_id, attempts),
+  UNIQUE INDEX ix_missed_parts_numberid_groupsid          (numberid, group_id)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
@@ -578,7 +577,7 @@ CREATE TABLE predb (
   predate    DATETIME                  DEFAULT NULL,
   source     VARCHAR(50)      NOT NULL DEFAULT '',
   requestid  INT(10) UNSIGNED NOT NULL DEFAULT '0',
-  group_id   INT(10) UNSIGNED NOT NULL DEFAULT '0'   COMMENT 'FK to groups',
+  groups_id  INT(10) UNSIGNED NOT NULL DEFAULT '0'  COMMENT 'FK to groups',
   nuked      TINYINT(1)       NOT NULL DEFAULT '0'  COMMENT 'Is this pre nuked? 0 no 2 yes 1 un nuked 3 mod nuked',
   nukereason VARCHAR(255)     NULL  COMMENT 'If this pre is nuked, what is the reason?',
   files      VARCHAR(50)      NULL  COMMENT 'How many files does this pre have ?',
@@ -589,7 +588,7 @@ CREATE TABLE predb (
   INDEX ix_predb_nfo       (nfo),
   INDEX ix_predb_predate   (predate),
   INDEX ix_predb_source    (source),
-  INDEX ix_predb_requestid (requestid, group_id),
+  INDEX ix_predb_requestid (requestid, groups_id),
   INDEX ix_predb_filename  (filename),
   INDEX ix_predb_searched  (searched)
 )
@@ -624,10 +623,8 @@ CREATE TABLE predb_imports (
   source     VARCHAR(50)
                COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   requestid  INT(10) UNSIGNED        NOT NULL DEFAULT '0',
-  group_id   INT(10) UNSIGNED        NOT NULL DEFAULT '0'
-    COMMENT 'FK to groups',
-  nuked      TINYINT(1)              NOT NULL DEFAULT '0'
-    COMMENT 'Is this pre nuked? 0 no 2 yes 1 un nuked 3 mod nuked',
+  groups_id   INT(10) UNSIGNED        NOT NULL DEFAULT '0' COMMENT 'FK to groups',
+  nuked      TINYINT(1)              NOT NULL DEFAULT '0'  COMMENT 'Is this pre nuked? 0 no 2 yes 1 un nuked 3 mod nuked',
   nukereason VARCHAR(255)
                COLLATE utf8_unicode_ci          DEFAULT NULL
   COMMENT 'If this pre is nuked, what is the reason?',
@@ -651,7 +648,7 @@ CREATE TABLE         releases (
   name              VARCHAR(255)                   NOT NULL DEFAULT '',
   searchname        VARCHAR(255)                   NOT NULL DEFAULT '',
   totalpart         INT                            DEFAULT '0',
-  group_id          INT UNSIGNED                   NOT NULL DEFAULT '0' COMMENT 'FK to groups',
+  groups_id         INT(11) UNSIGNED               NOT NULL DEFAULT '0' COMMENT 'FK to groups.id',
   size              BIGINT UNSIGNED                NOT NULL DEFAULT '0',
   postdate          DATETIME                       DEFAULT NULL,
   adddate           DATETIME                       DEFAULT NULL,
@@ -696,7 +693,7 @@ CREATE TABLE         releases (
   proc_uid          TINYINT(1)                     NOT NULL DEFAULT '0',
   PRIMARY KEY                                 (id, categories_id),
   INDEX ix_releases_name                      (name),
-  INDEX ix_releases_group_id                  (group_id,passwordstatus),
+  INDEX ix_releases_groupsid                  (groups_id,passwordstatus),
   INDEX ix_releases_postdate_searchname       (postdate,searchname),
   INDEX ix_releases_guid                      (guid),
   INDEX ix_releases_leftguid                  (leftguid ASC, predb_id),
