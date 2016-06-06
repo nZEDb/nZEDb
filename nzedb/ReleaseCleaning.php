@@ -107,7 +107,7 @@ class ReleaseCleaning
 		) {
 			$title = $this->pdo->queryOneRow(
 				sprintf(
-				   'SELECT p.title , p.id from predb p INNER JOIN groups g on g.id = p.group_id WHERE p.requestid = %d and g.name = %s',
+				   'SELECT p.title , p.id from predb p INNER JOIN groups g on g.id = p.groups_id WHERE p.requestid = %d and g.name = %s',
 				   $match[1],
 				   $this->pdo->escapeString($this->groupName)
 				)
@@ -137,7 +137,7 @@ class ReleaseCleaning
 			if ($title === false && !empty($reqGname)) {
 				$title = $this->pdo->queryOneRow(
 					sprintf(
-					   "SELECT p.title as title, p.id as id from predb p INNER JOIN groups g on g.id = p.group_id
+					   "SELECT p.title as title, p.id as id from predb p INNER JOIN groups g on g.id = p.groups_id
 								WHERE p.requestid = %d and g.name = %s",
 					   $match[1],
 					   $this->pdo->escapeString($reqGname)

@@ -158,7 +158,7 @@ abstract class TV extends Videos
 				LIMIT %d",
 				$status,
 				$this->catWhere,
-				($groupID === '' ? '' : 'AND r.group_id = ' . $groupID),
+				($groupID === '' ? '' : 'AND r.groups_id = ' . $groupID),
 				($guidChar === '' ? '' : 'AND r.leftguid = ' . $this->pdo->escapeString($guidChar)),
 				($lookupSetting == 2 ? 'AND r.isrenamed = 1' : ''),
 				$this->tvqty

@@ -245,7 +245,7 @@ class Regexes
 
 		$rows = $this->pdo->query(
 			sprintf(
-				'SELECT name, searchname, id FROM releases WHERE group_id = %d LIMIT %d',
+				'SELECT name, searchname, id FROM releases WHERE groups_id = %d LIMIT %d',
 				$groupID,
 				$queryLimit
 			)

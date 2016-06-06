@@ -24,8 +24,7 @@ if (!isset($argv[1])) {
 		case $pieces[0] === 'nfo' && isset($guidChar) && isset($maxperrun) && is_numeric($maxperrun):
 			$releases = $pdo->queryDirect(
 				sprintf('
-					SELECT r.id AS releases_id, r.guid, r.group_id, r.categories_id, r.name, r.searchname,
-						uncompress(nfo) AS textstring
+					SELECT r.id AS releases_id, r.guid, r.groups_id, r.categories_id, r.name, r.searchname, uncompress(nfo) AS textstring
 					FROM releases r
 					INNER JOIN release_nfos rn ON r.id = rn.releases_id
 					WHERE r.leftguid = %s
@@ -62,7 +61,7 @@ if (!isset($argv[1])) {
 			$releases = $pdo->queryDirect(
 				sprintf('
 					SELECT rf.name AS textstring, rf.releases_id AS fileid,
-						r.id AS releases_id, r.name, r.searchname, r.categories_id, r.group_id
+						r.id AS releases_id, r.name, r.searchname, r.categories_id, r.groups_id
 					FROM releases r
 					INNER JOIN release_files rf ON r.id = rf.releases_id
 					WHERE r.leftguid = %s
@@ -121,7 +120,7 @@ if (!isset($argv[1])) {
 		case $pieces[0] === 'md5' && isset($guidChar) && isset($maxperrun) && is_numeric($maxperrun):
 			$releases = $pdo->queryDirect(
 				sprintf('
-					SELECT DISTINCT r.id AS releases_id, r.name, r.searchname, r.categories_id, r.group_id, r.dehashstatus,
+					SELECT DISTINCT r.id AS releases_id, r.name, r.searchname, r.categories_id, r.groups_id, r.dehashstatus,
 						rf.name AS filename
 					FROM releases r
 					LEFT OUTER JOIN release_files rf ON r.id = rf.releases_id AND rf.ishashed = 1
@@ -153,7 +152,7 @@ if (!isset($argv[1])) {
 		case $pieces[0] === 'par2' && isset($guidChar) && isset($maxperrun) && is_numeric($maxperrun):
 			$releases = $pdo->queryDirect(
 				sprintf('
-					SELECT r.id AS releases_id, r.guid, r.group_id
+					SELECT r.id AS releases_id, r.guid, r.groups_id
 					FROM releases r
 					WHERE r.leftguid = %s
 					AND r.nzbstatus = 1
@@ -181,7 +180,7 @@ if (!isset($argv[1])) {
 					]
 				);
 				foreach ($releases as $release) {
-					$res = $nzbcontents->checkPAR2($release['guid'], $release['releases_id'], $release['group_id'], 1, 1);
+					$res = $nzbcontents->checkPAR2($release['guid'], $release['releases_id'], $release['groups_id'], 1, 1);
 					if ($res === false) {
 						echo '.';
 					}

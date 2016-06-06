@@ -315,7 +315,7 @@ class PostProcess
 
 		$query = $this->pdo->queryOneRow(
 			sprintf('
-				SELECT id, group_id, categories_id, name, searchname, UNIX_TIMESTAMP(postdate) AS post_date, id AS releases_id
+				SELECT id, groups_id, categories_id, name, searchname, UNIX_TIMESTAMP(postdate) AS post_date, id AS releases_id
 				FROM releases
 				WHERE isrenamed = 0
 				AND id = %d',
