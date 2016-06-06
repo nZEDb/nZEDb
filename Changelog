@@ -11,6 +11,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 2016-06-06 niel
 	Chg: Update minimum PHP requirements to 5.6.20+
+	Mrg: Update schema to use groups_id instead of group_id. Note this does note affect CBPM tables which will be done in a separate commit.
 2016-06-06 DariusIII
 	Chg: Enable third pre channel, remove bad sources from ircscraper_settings_example and IRCScraper class.
 2016-06-05 ruhllatio
