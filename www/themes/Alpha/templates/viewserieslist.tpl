@@ -18,7 +18,7 @@
 			<input type="text" class="form-control" placeholder="Search" id="title" name="title" value="{$showname}">
 			<span class="input-group-btn">
 				<button type="submit" value="Go" class="btn btn-default">
-					<i class="icon-search"></i>
+					<i class="fa fa-search"></i>
 				</button>
 			</span>
 		</div>

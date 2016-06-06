@@ -225,11 +225,11 @@
 								{if $result.jpgstatus == 1 && $userdata.canpreview == 1}
 									<a href="{$smarty.const.WWW_TOP}/covers/sample/{$result.guid}_thumb.jpg" name="name{$result.guid}" title="Sample of {$result.searchname|escape:"htmlall"}" class="modal_prev rndbtnsml" rel="preview">Sample</a>
 								{/if}
-								{if $result.musicinfoid > 0}
-									<a href="#" name="name{$result.musicinfoid}" title="View music info" class="modal_music rndbtnsml" rel="music" >Cover</a>
+								{if $result.musicinfo_id > 0}
+									<a href="#" name="name{$result.musicinfo_id}" title="View music info" class="modal_music rndbtnsml" rel="music" >Cover</a>
 								{/if}
-								{if $result.consoleinfoid > 0}
-									<a href="#" name="name{$result.consoleinfoid}" title="View console info" class="modal_console rndbtnsml" rel="console" >Cover</a>
+								{if $result.consoleinfo_id > 0}
+									<a href="#" name="name{$result.consoleinfo_id}" title="View console info" class="modal_console rndbtnsml" rel="console" >Cover</a>
 								{/if}
 								{if $result.videos_id > 0}
 									<a class="rndbtnsml" href="{$smarty.const.WWW_TOP}/series/{$result.videos_id}" title="View all episodes">View Series</a>
@@ -245,8 +245,8 @@
 								{if $result.reid > 0}
 									<span class="mediainfo rndbtnsml" title="{$result.guid}">Media</span>
 								{/if}
-								{if $result.preid > 0}
-									<span class="preinfo rndbtnsml" title="{$result.preid}">PreDB</span>
+								{if $result.predb_id > 0}
+									<span class="preinfo rndbtnsml" title="{$result.predb_id}">PreDB</span>
 								{/if}
 								{if $result.group_name != ""}
 									<a class="rndbtnsml" href="{$smarty.const.WWW_TOP}/browse?g={$result.group_name|escape:"htmlall"}" title="Browse {$result.group_name}">{$result.group_name|escape:"htmlall"|replace:"alt.binaries.":"a.b."}</a>
@@ -255,7 +255,7 @@
 						</div>
 					</td>
 					<td class="category">
-						<a title="Browse {$result.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$result.categoryid}">{$result.category_name}</a>
+						<a title="Browse {$result.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$result.categories_id}">{$result.category_name}</a>
 					</td>
 					<td class="posted" title="{$result.postdate}">
 						{$result.postdate|timeago}

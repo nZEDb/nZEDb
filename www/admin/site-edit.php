@@ -4,6 +4,7 @@ require_once './config.php';
 use nzedb\Category;
 use nzedb\SABnzbd;
 use nzedb\db\Settings;
+use nzedb\utility\Misc;
 
 // new to get information on books groups
 
@@ -184,7 +185,7 @@ $page->smarty->assign('lookup_reqids_names',
 $page->smarty->assign('coversPath', nZEDb_COVERS);
 
 // return a list of audiobooks, ebooks, technical and foreign books
-$result = $page->settings->query("SELECT id, title FROM category WHERE id IN ({$category->getCategoryValue('MUSIC_AUDIOBOOK')}, {$category->getCategoryValue('BOOKS_EBOOK')}, {$category->getCategoryValue('BOOKS_TECHNICAL')}, {$category->getCategoryValue('BOOKS_FOREIGN')})");
+$result = $page->settings->query("SELECT id, title FROM categories WHERE id IN ({$category->getCategoryValue('MUSIC_AUDIOBOOK')}, {$category->getCategoryValue('BOOKS_EBOOK')}, {$category->getCategoryValue('BOOKS_TECHNICAL')}, {$category->getCategoryValue('BOOKS_FOREIGN')})");
 
 // setup the display lists for these categories, this could have been static, but then if names changed they would be wrong
 $book_reqids_ids   = [];
@@ -222,16 +223,7 @@ $page->smarty->assign('loggingopt_ids', [0, 1, 2, 3]);
 $page->smarty->assign('loggingopt_names',
 					  ['Disabled', 'Log in DB only', 'Log both DB and file', 'Log only in file']);
 
-$themelist = [];
-$themes    = scandir(nZEDb_THEMES);
-foreach ($themes as $theme) {
-	if (strpos($theme, ".") === false && is_dir(nZEDb_THEMES . $theme) && ucfirst($theme) === $theme) {
-		$themelist[] = $theme;
-	}
-}
-sort($themelist);
-
-$page->smarty->assign('themelist', $themelist);
+$page->smarty->assign('themelist', Misc::getThemesList());
 
 $page->content = $page->smarty->fetch('site-edit.tpl');
 $page->render();

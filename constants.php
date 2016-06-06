@@ -34,22 +34,31 @@ define('nZEDb_NIX', nZEDb_UPDATE . 'nix' . DS);
 // /misc/update/nix/multiprocessing/
 define('nZEDb_MULTIPROCESSING', nZEDb_NIX . 'multiprocessing' . DS);
 
-// Refers to the web root for the Smarty lib
-define('nZEDb_WWW', nZEDb_ROOT . 'www' . DS);
-
 // Used to refer to the resources folder
 define('nZEDb_RES', nZEDb_ROOT . 'resources' . DS);
 
+// Path where log files are stored.
+define('nZEDb_LOGS', nZEDb_RES . 'logs' . DS);
+
+// Smarty's cache.
+define('nZEDb_SMARTY_CACHE', nZEDb_RES . 'smarty' . DS . 'cache/');
+
+// Smarty's configuration files.
+define('nZEDb_SMARTY_CONFIGS', nZEDb_RES .'smarty' . DS . 'configs/');
+
+// Smarty's compiled template cache.
+define('nZEDb_SMARTY_TEMPLATES', nZEDb_RES . 'smarty' . DS . 'templates_c/');
+
 // Used to refer to the tmp folder
 define('nZEDb_TMP', nZEDb_RES . 'tmp' . DS);
+
+// Refers to the web root for the Smarty lib
+define('nZEDb_WWW', nZEDb_ROOT . 'www' . DS);
 
 // Full path is fs to the themes folder
 define('nZEDb_THEMES', nZEDb_WWW . 'themes' . DS);
 
 // Shared theme items (pictures, scripts).
-define('nZEDb_THEMES_SHARED', nZEDb_WWW . 'themes/shared' . DS);
-
-// Path where log files are stored.
-define('nZEDb_LOGS', nZEDb_RES . 'logs' . DS);
+define('nZEDb_THEMES_SHARED', nZEDb_THEMES . 'shared' . DS);
 
 define('nZEDb_VERSIONS', nZEDb_ROOT . 'build' . DS . 'nzedb.xml');

@@ -20,8 +20,8 @@
 			</div>
 			<form id="col-xs-3 nzb_multi_operations_form" action="get">
 				View:
-				<span><i class="icon-th-list"></i></span>&nbsp;&nbsp;
-				<a href="{$smarty.const.WWW_TOP}/browse?t={$category}"><i class="icon-align-justify"></i></a>
+				<span><i class="fa fa-th-list"></i></span>&nbsp;&nbsp;
+				<a href="{$smarty.const.WWW_TOP}/browse?t={$category}"><i class="fa fa-align-justify"></i></a>
 				&nbsp;&nbsp;
 				{if $isadmin || $ismod}
 					Admin: <button type="button" class="btn btn-warning btn-sm nzb_multi_operations_edit">Edit</button>

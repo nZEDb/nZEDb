@@ -1,6 +1,6 @@
 <h2>Browse Books</h2>
 
-<div class="well well-small">
+<div class="well well-sm">
 <div style="text-align: center;">
 	{include file='search-filter.tpl'}
 </div>
@@ -12,7 +12,7 @@
 
 <form id="nzb_multi_operations_form" action="get">
 
-	<div class="well well-small">
+	<div class="well well-sm">
 		<div class="nzb_multi_operations">
 			<table width="100%">
 				<tr>
@@ -52,7 +52,7 @@
 
 
 
-<table style="width:100%;" class="data highlight icons table table-striped" id="coverstable">
+<table style="width:100%;" class="data highlight icons table" id="coverstable">
 	<tr>
 		<th width="130"><input type="checkbox" class="nzb_check_all" /></th>
 		<th>author<br/>
@@ -86,12 +86,12 @@
 			<td class="mid">
 				<div class="movcover">
 					<a class="title" href="{$site->dereferrer_link}{$result.url}">
-						<img class="shadow img-polaroid" src="{$smarty.const.WWW_TOP}/covers/book/{if $result.cover == 1}{$result.bookinfoid}.jpg{else}no-cover.jpg{/if}" width="120" border="0" alt="{$result.author|escape:"htmlall"} - {$result.title|escape:"htmlall"}" />
+						<img class="shadow img-polaroid" src="{$smarty.const.WWW_TOP}/covers/book/{if $result.cover == 1}{$result.bookinfo_id}.jpg{else}no-cover.jpg{/if}" width="120" border="0" alt="{$result.author|escape:"htmlall"} - {$result.title|escape:"htmlall"}" />
 
 					</a>
 					<div class="movextra">
 						<div style="text-align: center;">
-						{if $result.url != ""}<a class="rndbtn badge badge-amaz" target="_blank" href="{$site->dereferrer_link}{$result.url}" name="amazon{$result.bookinfoid}" title="View amazon page">Amazon</a>{/if}
+						{if $result.url != ""}<a class="rndbtn badge badge-amaz" target="_blank" href="{$site->dereferrer_link}{$result.url}" name="amazon{$result.bookinfo_id}" title="View amazon page">Amazon</a>{/if}
 						<a class="rndbtn badge" href="{$smarty.const.WWW_TOP}/browse?g={$result.group_name}" title="Browse releases in {$result.group_name|replace:"alt.binaries":"a.b"}">Grp</a>
 						</div>
 					</div>
@@ -193,7 +193,7 @@
 </table>
 
 {if $results|@count > 10}
-<div class="well well-small">
+<div class="well well-sm">
 	<div class="nzb_multi_operations">
 		<table width="100%">
 			<tr>

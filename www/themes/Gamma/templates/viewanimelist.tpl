@@ -21,7 +21,7 @@
 
 {if $animelist|@count > 0}
 
-<table style="width:100%;" class="data highlight icons table table-striped" id="browsetable">
+<table style="width:100%;" class="data highlight icons table" id="browsetable">
 		<tr>
 			<th width="40%">Name</th>
 			<th width="10%" style="text-align: center;">Type</th>

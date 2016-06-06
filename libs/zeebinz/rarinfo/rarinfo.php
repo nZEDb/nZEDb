@@ -1090,6 +1090,11 @@ class RarInfo extends ArchiveReader
 				$block['av_created_by'] = $this->read($block['av_cname_size']);
 			}
 		}
+
+		// Add method if not set
+		if (!isset($block['method'])) {
+			$block['method'] = self::METHOD_NORMAL;
+		}
 	}
 
 	/**

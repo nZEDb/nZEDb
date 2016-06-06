@@ -45,7 +45,7 @@
 								   href="{$smarty.const.WWW_TOP}/details/{$result.guid}">
 									{if $type == 'Console'}
 										<img width="130px" height="195px" alt=""
-											 src="{$smarty.const.WWW_TOP}/covers/console/{$result.consoleinfoid}.jpg"/>
+											 src="{$smarty.const.WWW_TOP}/covers/console/{$result.consoleinfo_id}.jpg"/>
 									{elseif $type == 'Movies'}
 										<img width="140px" height="205px" alt=""
 											 src="{$smarty.const.WWW_TOP}/covers/movies/{$result.imdbid}-cover.jpg"/>
@@ -54,10 +54,10 @@
 											 src="{$smarty.const.WWW_TOP}/covers/xxx/{$result.xxxinfo_id}-cover.jpg"/>
 									{elseif $type == 'Audio'}
 										<img width="250px" height="250px" alt=""
-											 src="{$smarty.const.WWW_TOP}/covers/music/{$result.musicinfoid}.jpg"/>
+											 src="{$smarty.const.WWW_TOP}/covers/music/{$result.musicinfo_id}.jpg"/>
 									{elseif $type == 'Books'}
 										<img width="140px" height="205px" alt=""
-											 src="{$smarty.const.WWW_TOP}/covers/book/{$result.bookinfoid}.jpg"/>
+											 src="{$smarty.const.WWW_TOP}/covers/book/{$result.bookinfo_id}.jpg"/>
 									{elseif $type == 'PC'}
 										<img width="130px" height="195px" alt=""
 											 src="{$smarty.const.WWW_TOP}/covers/games/{$result.gamesinfo_id}.jpg"/>
@@ -108,11 +108,13 @@
 											<a class="divlink" target="_blank" title="View on Trakt"
 											   href="{$site->dereferrer_link}http://trakt.tv/search/imdb/tt{$result.imdbid}/"></a>
 										</div>
-										{if $cpapi != '' && $cpurl != ''}
+										{if !empty($cpapi) && !empty($cpurl)}
 											<div class="icon icon_cp">
-												<a class="divlink sendtocouch" target="_blank"
-												   title="Send to CouchPotato" href="javascript:;"
-												   rel="{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.searchname|escape:"url"}"></a>
+												<a
+													id="imdb{$result.imdbid}"
+													class="divlink sendtocouch" target="_blank"
+													title="Send to CouchPotato">
+												</a>
 											</div>
 										{/if}
 									{elseif $type == 'XXX'}

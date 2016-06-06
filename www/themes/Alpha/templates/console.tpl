@@ -7,7 +7,7 @@
 				data-toggle="collapse"
 				data-parent="#accordion"
 				href="#searchtoggle"
-			><i class="icon-search"></i> Search Filter</a>
+			><i class="fa fa-search"></i> Search Filter</a>
 		</h4>
 	</div>
 	<div id="searchtoggle" class="panel-collapse collapse">
@@ -24,14 +24,14 @@
 			<thead>
 				<tr>
 					<th><input type="checkbox" class="nzb_check_all"></th>
-					<th>title <a title="Sort Descending" href="{$orderbytitle_desc}"><i class="icon-chevron-down"></i></a><a
-								title="Sort Ascending" href="{$orderbytitle_asc}"><i class="icon-chevron-up"></i></a></th>
-					<th>platform <a title="Sort Descending" href="{$orderbyplatform_desc}"><i class="icon-chevron-down"></i></a><a
-								title="Sort Ascending" href="{$orderbyplatform_asc}"><i class="icon-chevron-up"></i></a></th>
-					<th>genre <a title="Sort Descending" href="{$orderbygenre_desc}"><i class="icon-chevron-down"></i></a><a
-								title="Sort Ascending" href="{$orderbygenre_asc}"><i class="icon-chevron-up"></i></a></th>
-					<th>release date <a title="Sort Descending" href="{$orderbyreleasedate_desc}"><i class="icon-chevron-down"></i></a>
-						<a title="Sort Ascending" href="{$orderbyreleasedate_asc}"><i class="icon-chevron-up"></i></a></th>
+					<th>title <a title="Sort Descending" href="{$orderbytitle_desc}"><i class="fa fa-chevron-down"></i></a><a
+								title="Sort Ascending" href="{$orderbytitle_asc}"><i class="fa fa-chevron-up"></i></a></th>
+					<th>platform <a title="Sort Descending" href="{$orderbyplatform_desc}"><i class="fa fa-chevron-down"></i></a><a
+								title="Sort Ascending" href="{$orderbyplatform_asc}"><i class="fa fa-chevron-up"></i></a></th>
+					<th>genre <a title="Sort Descending" href="{$orderbygenre_desc}"><i class="fa fa-chevron-down"></i></a><a
+								title="Sort Ascending" href="{$orderbygenre_asc}"><i class="fa fa-chevron-up"></i></a></th>
+					<th>release date <a title="Sort Descending" href="{$orderbyreleasedate_desc}"><i class="fa fa-chevron-down"></i></a>
+						<a title="Sort Ascending" href="{$orderbyreleasedate_asc}"><i class="fa fa-chevron-up"></i></a></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -45,7 +45,7 @@
 								href="{$site->dereferrer_link}{$result.url}"
 							><img
 									class="shadow"
-									 src="{$smarty.const.WWW_TOP}/covers/console/{if $result.cover == 1}{$result.consoleinfoid}.jpg{else}no-cover.jpg{/if}"
+									 src="{$smarty.const.WWW_TOP}/covers/console/{if $result.cover == 1}{$result.consoleinfo_id}.jpg{else}no-cover.jpg{/if}"
 									 width="130px"
 									 border="0"
 									 alt="{$result.title|escape:"htmlall"}"
@@ -56,7 +56,7 @@
 										class="label"
 										target="_blank"
 										href="{$site->dereferrer_link}{$result.url}"
-										name="amazon{$result.consoleinfoid}"
+										name="amazon{$result.consoleinfo_id}"
 										title="View amazon page"
 									><img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/amazon.png"></a>
 								{/if}
@@ -129,21 +129,21 @@
 											<br>
 											<div class="resextra">
 												<div class="pull-left">
-													<i class="icon-calendar"></i> Posted {$mpostdate[$m@index]|timeago} |
-													<i class="icon-hdd"></i> {$msize[$m@index]|fsize_format:"MB"} |
-													<i class="icon-file"></i>
+													<i class="fa fa-calendar"></i> Posted {$mpostdate[$m@index]|timeago} |
+													<i class="fa fa-hdd"></i> {$msize[$m@index]|fsize_format:"MB"} |
+													<i class="fa fa-file"></i>
 													<a
 														title="View file list"
 														href="{$smarty.const.WWW_TOP}/filelist/{$mguid[$m@index]}">{$mtotalparts[$m@index]}
 														files
 													</a> |
-													<i class="icon-comments"></i>
+													<i class="fa fa-comments"></i>
 													<a
 														title="View comments for {$mname[$m@index]|escape:"htmlall"}"
 														href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}#comments">{$mcomments[$m@index]}
 														cmt{if $mcomments[$m@index] != 1}s{/if}
 													</a> |
-													<i class="icon-download"></i> {$mgrabs[$m@index]} grab{if $mgrabs[$m@index] != 1}s{/if}
+													<i class="fa fa-download"></i> {$mgrabs[$m@index]} grab{if $mgrabs[$m@index] != 1}s{/if}
 												</div>
 												<div class="pull-right">
 													{if $mnfo[$m@index] > 0}
@@ -153,7 +153,7 @@
 																title="View Nfo"
 																class="modal_nfo"
 																rel="nfo"
-															><i class="icon-info-sign"></i></a></span
+															><i class="fa fa-info"></i></a></span
 														> {/if}
 													{if $mhaspreview[$m@index] == 1 && $userdata.canpreview == 1}
 														<span class="label label-default">
@@ -162,7 +162,7 @@
 																name="name{$mguid[$m@index]}"
 																title="Screenshot of {$mname[$m@index]|escape:"htmlall"}"
 																class="modal_prev" rel="preview"
-															><i class="icon-camera"></i></a>
+															><i class="fa fa-camera"></i></a>
 														</span>
 													{/if}
 													{if $minnerfiles[$m@index] > 0}
@@ -171,21 +171,21 @@
 																href="#" onclick="return false;"
 																class="mediainfo"
 																title="{$mguid[$m@index]}"
-																><i class="icon-list-alt"></i></a></span
+																><i class="fa fa-list-alt"></i></a></span
 																>
 													{/if}
 													<span class="label label-default">
 														<a
 															href="{$smarty.const.WWW_TOP}/browse?g={$mgrp[$m@index]}"
 															title="Browse releases in {$mgrp[$m@index]}"
-														><i class="icon-share-alt"></i></a></span
+														><i class="fa fa-share-alt"></i></a></span
 													>
 													{if $mpass[$m@index] == 1}
-														<span class="icon-stack" title="Potentially Passworded"><i class="icon-check-empty icon-stack-base"></i><i class="icon-unlock-alt"></i></span>
+														<span class="fa fa-stack" title="Potentially Passworded"><i class="fa fa-square-o fa-stack-base"></i><i class="fa fa-unlock-alt"></i></span>
 													{elseif $mpass[$m@index] == 2}
-														<span class="icon-stack" title="Broken Post"><i class="icon-check-empty icon-stack-base"></i><i class="icon-unlink"></i></span>
+														<span class="fa fa-stack" title="Broken Post"><i class="fa fa-square-o fa-stack-base"></i><i class="fa fa fa-chain-broken"></i></span>
 													{elseif $mpass[$m@index] == 10}
-														<span class="icon-stack" title="Passworded Archive"><i class="icon-check-empty icon-stack-base"></i><i class="icon-lock"></i></span>
+														<span class="fa fa-stack" title="Passworded Archive"><i class="fa fa-square-o fa-stack-base"></i><i class="fa fa-lock"></i></span>
 													{/if}
 													{if $mfailed[$m@index] > 0}
 														<span class="btn btn-default btn-xs" title="This release has failed to download for some users">

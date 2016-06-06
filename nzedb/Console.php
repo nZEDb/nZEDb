@@ -87,7 +87,7 @@ class Console
 			$this->renamed = 'AND isrenamed = 1';
 		}
 		//$this->cleanconsole = ($this->pdo->getSetting('lookupgames') == 2) ? 'AND isrenamed = 1' : '';
-		$this->catWhere = "AND categoryid BETWEEN " . Category::GAME_ROOT . " AND " . Category::GAME_OTHER;
+		$this->catWhere = "AND categories_id BETWEEN " . Category::GAME_ROOT . " AND " . Category::GAME_OTHER;
 		$this->failCache = array();
 	}
 
@@ -184,7 +184,7 @@ class Console
 
 		$exccatlist = "";
 		if (count($excludedcats) > 0) {
-			$exccatlist = " AND r.categoryid NOT IN (" . implode(",", $excludedcats) . ")";
+			$exccatlist = " AND r.categories_id NOT IN (" . implode(",", $excludedcats) . ")";
 		}
 
 		$order = $this->getConsoleOrder($orderby);
@@ -195,7 +195,7 @@ class Console
 						con.id,
 						GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id
 					FROM consoleinfo con
-					LEFT JOIN releases r ON con.id = r.consoleinfoid
+					LEFT JOIN releases r ON con.id = r.consoleinfo_id
 					WHERE r.nzbstatus = 1
 					AND con.title != ''
 					AND con.cover = 1
@@ -230,7 +230,7 @@ class Console
 					GROUP_CONCAT(r.haspreview ORDER BY r.postdate DESC SEPARATOR ',') AS grp_haspreview,
 					GROUP_CONCAT(r.passwordstatus ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_password,
 					GROUP_CONCAT(r.guid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_guid,
-					GROUP_CONCAT(rn.releaseid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid,
+					GROUP_CONCAT(rn.releases_id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid,
 					GROUP_CONCAT(g.name ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grpname,
 					GROUP_CONCAT(r.searchname ORDER BY r.postdate DESC SEPARATOR '#') AS grp_release_name,
 					GROUP_CONCAT(r.postdate ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_postdate,
@@ -240,15 +240,15 @@ class Console
 					GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs,
 					GROUP_CONCAT(df.failed ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_failed,
 				con.*,
-				r.consoleinfoid,
+				r.consoleinfo_id,
 				g.name AS group_name,
 				genres.title AS genre,
-				rn.releaseid AS nfoid
+				rn.releases_id AS nfoid
 				FROM releases r
 				LEFT OUTER JOIN groups g ON g.id = r.group_id
-				LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
+				LEFT OUTER JOIN release_nfos rn ON rn.releases_id = r.id
 				LEFT OUTER JOIN dnzb_failures df ON df.release_id = r.id
-				INNER JOIN consoleinfo con ON con.id = r.consoleinfoid
+				INNER JOIN consoleinfo con ON con.id = r.consoleinfo_id
 				INNER JOIN genres ON con.genre_id = genres.id
 				WHERE con.id IN (%s)
 				AND r.id IN (%s)
@@ -830,7 +830,7 @@ class Console
 							SELECT searchname, id
 							FROM releases
 							WHERE nzbstatus = %d %s
-							AND consoleinfoid IS NULL %s
+							AND consoleinfo_id IS NULL %s
 							ORDER BY postdate DESC
 							LIMIT %d',
 							NZB::NZB_ADDED,
@@ -899,7 +899,7 @@ class Console
 				$this->pdo->queryExec(
 							sprintf('
 								UPDATE releases
-								SET consoleinfoid = %d
+								SET consoleinfo_id = %d
 								WHERE id = %d %s',
 								$gameId,
 								$arr['id'],

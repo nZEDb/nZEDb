@@ -33,8 +33,8 @@
 		<form id="nzb_multi_operations_form" action="get">
 			<div class="nzb_multi_operations text-right" style="padding-bottom: 4px;">
 				View:
-				<span><i class="icon-th-list"></i></span>&nbsp;&nbsp;
-				<a href="{$smarty.const.WWW_TOP}/browse?t={$catClass::TV_ANIME}"><i class="icon-align-justify"></i></a>&nbsp;&nbsp;
+				<span><i class="fa fa-th-list"></i></span>&nbsp;&nbsp;
+				<a href="{$smarty.const.WWW_TOP}/browse?t={$catClass::TV_ANIME}"><i class="fa fa-align-justify"></i></a>&nbsp;&nbsp;
 				{if $isadmin || $ismod}
 					Admin: <button type="button" class="btn btn-warning btn-sm nzb_multi_operations_edit">Edit</button>
 					<button type="button" class="btn btn-danger btn-sm nzb_multi_operations_delete">Delete</button>
@@ -76,7 +76,7 @@
 							{/if}
 						</div>
 					</td>
-					<td style="text-align:center;"><a title="This anime in {$result.category_name}" href="{$smarty.const.WWW_TOP}/anime/{$result.anidbid}?t={$result.categoryid}">{$result.category_name}</a></td>
+					<td style="text-align:center;"><a title="This anime in {$result.category_name}" href="{$smarty.const.WWW_TOP}/anime/{$result.anidbid}?t={$result.categories_id}">{$result.category_name}</a></td>
 					<td style="text-align:center;" title="{$result.postdate}">{$result.postdate|timeago}</td>
 					<td style="text-align:center;">{$result.size|fsize_format:"MB"}{if $result.completion > 0}<br>{if $result.completion < 100}<span class="warning">{$result.completion}%</span>{else}{$result.completion}%{/if}{/if}</td>
 					<td style="text-align:center;">

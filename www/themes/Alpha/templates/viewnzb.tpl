@@ -74,14 +74,14 @@
 							<br><strong>Subtitle Search:</strong>
 							<br><a target="_blank" href="http://www.opensubtitles.org/search/sublanguageid-all/moviename-{$movie.title|replace:" ":"+"}"title="Opensubtitles">OpenSubtitles</a> <a target="_blank" href="http://www.subtitleseeker.com/search/MOVIE_TITLES/{$movie.title}"title="SubtitleSeeker">SubtitleSeeker</a>
 							<span class="label label-default">
-							{if $cpurl != "" && $cpapi != ""}
+							{if !empty($cpurl) && !empty($cpapi)}
 								<a
-									class="sendtocouch"
-									target="blackhole"
+									id="imdb{$release.imdbid}"
 									href="javascript:;"
-									rel="{$site->dereferrer_link}{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$release.imdbid}&title={$movie.title}"
-									name="CP{$release.imdbid}"
-									title="Add to CouchPotato">CouchPotato</a>
+									class="sendtocouch"
+									title="Add to CouchPotato">
+									<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
+								</a>
 							{/if}
 							</span>
 						</div>
@@ -278,14 +278,14 @@
 </tr>
 <tr>
 	<th style="vertical-align:top">Category:</th>
-	<td><a title="Browse by {$release.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$release.categoryid}">{$release.category_name}</a>
+	<td><a title="Browse by {$release.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$release.categories_id}">{$release.category_name}</a>
 	</td>
 </tr>
-{if $nfo.releaseid|@count > 0}
+{if $nfo.releases_id|@count > 0}
 	<tr><th>Nfo:</th><td><a href="{$smarty.const.WWW_TOP}/nfo/{$release.guid}" title="View Nfo">View Nfo</a></td></tr>
 {/if}
 
-{if $reVideo.releaseid|@count > 0 || $reAudio|@count > 0}
+{if $reVideo.releases_id|@count > 0 || $reAudio|@count > 0}
 	<tr>
 		<th style="vertical-align:top">Media Info:</th>
 		<td style="padding:0;">

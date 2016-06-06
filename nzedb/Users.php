@@ -911,7 +911,7 @@ class Users
 	{
 		return $this->pdo->queryInsert(
 			sprintf(
-				"INSERT INTO users_releases (user_id, releaseid, createddate) VALUES (%d, %d, NOW())",
+				"INSERT INTO users_releases (user_id, releases_id, createddate) VALUES (%d, %d, NOW())",
 				$userID,
 				$releaseID
 			)
@@ -931,7 +931,7 @@ class Users
 			sprintf("
 				SELECT users_releases.*, releases.searchname, releases.guid
 				FROM users_releases
-				INNER JOIN releases ON releases.id = users_releases.releaseid
+				INNER JOIN releases ON releases.id = users_releases.releases_id
 				WHERE user_id = %d",
 				$userID
 			)
@@ -978,7 +978,7 @@ class Users
 		if ($rel) {
 			$this->pdo->queryExec(
 				sprintf(
-					"DELETE FROM users_releases WHERE user_id = %d AND releaseid = %d",
+					"DELETE FROM users_releases WHERE user_id = %d AND releases_id = %d",
 					$userID,
 					$rel["id"]
 				)
@@ -1003,7 +1003,7 @@ class Users
 	 */
 	public function delCartForRelease($releaseID)
 	{
-		$this->pdo->queryExec(sprintf("DELETE FROM users_releases WHERE releaseid = %d", $releaseID));
+		$this->pdo->queryExec(sprintf("DELETE FROM users_releases WHERE releases_id = %d", $releaseID));
 	}
 
 	/**
@@ -1019,7 +1019,7 @@ class Users
 			foreach ($categoryIDs as $categoryID) {
 				$this->pdo->queryInsert(
 					sprintf(
-						"INSERT INTO user_excluded_categories (user_id, categoryid, createddate) VALUES (%d, %d, NOW())",
+						"INSERT INTO user_excluded_categories (user_id, categories_id, createddate) VALUES (%d, %d, NOW())",
 						$userID,
 						$categoryID
 					)
@@ -1038,9 +1038,9 @@ class Users
 	public function getCategoryExclusion($userID)
 	{
 		$ret = [];
-		$categories = $this->pdo->query(sprintf("SELECT categoryid FROM user_excluded_categories WHERE user_id = %d", $userID));
+		$categories = $this->pdo->query(sprintf("SELECT categories_id FROM user_excluded_categories WHERE user_id = %d", $userID));
 		foreach ($categories as $category) {
-			$ret[] = $category["categoryid"];
+			$ret[] = $category["categories_id"];
 		}
 
 		return $ret;
@@ -1075,7 +1075,7 @@ class Users
 	 */
 	public function delCategoryExclusion($userID, $categoryID)
 	{
-		$this->pdo->queryExec(sprintf("DELETE user_excluded_categories WHERE user_id = %d AND categoryid = %d", $userID, $categoryID));
+		$this->pdo->queryExec(sprintf("DELETE user_excluded_categories WHERE user_id = %d AND categories_id = %d", $userID, $categoryID));
 	}
 
 	/**

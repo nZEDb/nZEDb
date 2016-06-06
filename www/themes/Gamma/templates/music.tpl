@@ -1,6 +1,6 @@
 <h2>Browse Music</h2>
 
-<div class="well well-small">
+<div class="well well-sm">
 <div style="text-align: center;">
 	{include file='search-filter.tpl'}
 </div>
@@ -8,7 +8,7 @@
 {$site->adbrowse}
 {if $results|@count > 0}
 <form id="nzb_multi_operations_form" action="get">
-	<div class="well well-small">
+	<div class="well well-sm">
 		<div class="nzb_multi_operations">
 			<table width="100%">
 				<tr>
@@ -45,7 +45,7 @@
 			</table>
 		</div>
 	</div>
-<table style="width:100%;" class="data highlight icons table table-striped" id="coverstable">
+<table style="width:100%;" class="data highlight icons table" id="coverstable">
 	<tr>
 		<th width="130" style="padding-top:0px; padding-bottom:0px;">
 			<input type="checkbox" class="nzb_check_all" />
@@ -128,12 +128,12 @@
 			<td class="mid">
 				<div class="movcover">
 					<a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">
-						<img class="shadow img-polaroid" src="{$smarty.const.WWW_TOP}/covers/music/{if $result.cover == 1}{$result.musicinfoid}.jpg{else}no-cover.jpg{/if}" width="120" border="0" alt="{$result.artist|escape:"htmlall"} - {$result.title|escape:"htmlall"}" />
+						<img class="shadow img-polaroid" src="{$smarty.const.WWW_TOP}/covers/music/{if $result.cover == 1}{$result.musicinfo_id}.jpg{else}no-cover.jpg{/if}" width="120" border="0" alt="{$result.artist|escape:"htmlall"} - {$result.title|escape:"htmlall"}" />
 					</a>
 					<div class="movextra">
 						<div style="text-align: center;">
 						{if $result.nfoid > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$mguid[$m@index]}" title="View Nfo" class="rndbtn modal_nfo badge" rel="nfo">Nfo</a>{/if}
-						{if $result.url != ""}<a class="rndbtn badge badge-amaz" target="_blank" href="{$site->dereferrer_link}{$result.url}" name="amazon{$result.musicinfoid}" title="View amazon page">Amazon</a>{/if}
+						{if $result.url != ""}<a class="rndbtn badge badge-amaz" target="_blank" href="{$site->dereferrer_link}{$result.url}" name="amazon{$result.musicinfo_id}" title="View amazon page">Amazon</a>{/if}
 						<a class="rndbtn badge" href="{$smarty.const.WWW_TOP}/browse?g={$result.group_name}" title="Browse releases in {$result.group_name|replace:"alt.binaries":"a.b"}">Grp</a>
 						</div>
 					</div>
@@ -143,7 +143,7 @@
 				<ul class="inline">
 					<li>
 						<h4>
-							<a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$result.title|escape:"htmlall"}</a>
+							<a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$result.artist}{" - "}{$result.title}</a>
 						</h4>
 					</li>
 					<li style="vertical-align:text-bottom;">
@@ -178,8 +178,8 @@
 					<b>{$result.title|escape:"htmlall"}</b>
 					<a class="rndbtn btn btn-mini btn-info" href="{$smarty.const.WWW_TOP}/music?artist={$result.artist|escape:"url"}" title="View similar nzbs">Similar</a>
 					{if $isadmin}
-						<a class="rndbtn btn btn-mini btn-warning" href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$result.releaseid}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Edit Release">Edit</a>
-						<a class="rndbtn confirm_action btn btn-mini btn-danger" href="{$smarty.const.WWW_TOP}/admin/release-delete.php?id={$result.releaseid}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Delete Release">Delete</a>
+						<a class="rndbtn btn btn-mini btn-warning" href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$result.releases_id}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Edit Release">Edit</a>
+						<a class="rndbtn confirm_action btn btn-mini btn-danger" href="{$smarty.const.WWW_TOP}/admin/release-delete.php?id={$result.releases_id}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Delete Release">Delete</a>
 					{/if}
 					<br/>
 					<ul class="inline">
@@ -197,7 +197,7 @@
 	{/foreach}
 	</table>
 	{if $results|@count > 10}
-	<div class="well well-small">
+	<div class="well well-sm">
 		<div class="nzb_multi_operations">
 			<table width="100%">
 				<tr>

@@ -23,7 +23,7 @@
 <form method="get" action="{$smarty.const.WWW_TOP}/search">
 	<div id="sadvanced" {if not $sadvanced}style="display:none"{/if}>
 		<div style="text-align: center;">
-			<table class="data table table-striped table-condensed table-responsive">
+			<table class="data table  table-condensed table-responsive">
 				<tr>
 					<th><label for="searchadvr">Release Name:</label></th>
 					<td><input class="searchadv" id="searchadvr" name="searchadvr" value="{$searchadvr|escape:'html'}"
@@ -114,7 +114,7 @@
 <form style="padding-top:10px;" id="nzb_multi_operations_form" method="get" action="{$smarty.const.WWW_TOP}/search">
 
 	<form id="nzb_multi_operations_form" action="get">
-		<div class="well well-small">
+		<div class="well well-sm">
 			<div class="nzb_multi_operations">
 				<table width="100%">
 					<tr>
@@ -149,7 +149,7 @@
 			</div>
 		</div>
 
-<table style="100%" class="data highlight icons table table-striped" id="browsetable">
+<table style="100%" class="data highlight icons table" id="browsetable">
 
 	<tr>
 		<th style="padding-top:0px; padding-bottom:0px;">
@@ -244,7 +244,7 @@
 						{if $result.nfoid > 0}
 						<a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}" title="View Nfo" class="modal_nfo badge halffade" rel="nfo">Nfo</a>
 						{/if}
-						{if $result.preid > 0}
+						{if $result.predb_id > 0}
 						<span class="preinfo badge halffade" title="{$result.searchname}">Pre'd {$result.ctime|timeago}</span>
 						{/if}
 						{if $result.imdbid > 0}
@@ -258,14 +258,14 @@
 						<a href="#" name="audio{$result.guid}" title="Listen to Preview" class="audioprev badge badge-success halffade" rel="audio">Listen</a>
 						<audio id="audprev{$result.guid}" src="{$smarty.const.WWW_TOP}/covers/audio/{$result.guid}.mp3" preload="none"></audio>
 						{/if}
-						{if $result.musicinfoid > 0}
-						<a href="#" name="name{$result.musicinfoid}" title="View music info" class="modal_music badge badge-success halffade" rel="music" >Cover</a>
+						{if $result.musicinfo_id > 0}
+						<a href="#" name="name{$result.musicinfo_id}" title="View music info" class="modal_music badge badge-success halffade" rel="music" >Cover</a>
 						{/if}
-						{if $result.consoleinfoid > 0}
-						<a href="#" name="name{$result.consoleinfoid}" title="View console info" class="modal_console badge badge-success halffade" rel="console" >Cover</a>
+						{if $result.consoleinfo_id > 0}
+						<a href="#" name="name{$result.consoleinfo_id}" title="View console info" class="modal_console badge badge-success halffade" rel="console" >Cover</a>
 						{/if}
-						{if $result.bookinfoid > 0}
-						<a href="#" name="name{$result.bookinfoid}" title="View book info" class="modal_book badge badge-success halffade" rel="console" >Cover</a>
+						{if $result.bookinfo_id > 0}
+						<a href="#" name="name{$result.bookinfo_id}" title="View book info" class="modal_book badge badge-success halffade" rel="console" >Cover</a>
 						{/if}
 
 						{if $result.videos_id > 0}
@@ -290,7 +290,7 @@
 				</div>
 			</td>
 			<td width="100px" class="less">
-				<a title="Browse {$result.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$result.categoryid}">{$result.category_name}</a>
+				<a title="Browse {$result.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$result.categories_id}">{$result.category_name}</a>
 			</td>
 			<td class="less mid" title="{$result.postdate}">{$result.postdate|timeago}</td>
 			<td class="less right">
@@ -328,7 +328,7 @@
 </table>
 <br/>
 {if $results|@count > 10}
-<div class="well well-small">
+<div class="well well-sm">
 	<div class="nzb_multi_operations">
 		<table width="100%">
 			<tr>

@@ -102,7 +102,7 @@
 							<a class="title" title="View details"
 							   href="{$smarty.const.WWW_TOP}/details/{$result.grp_release_guid}">
 								<img class="shadow"
-									 src="{$smarty.const.WWW_TOP}/covers/music/{if $result.cover == 1}{$result.musicinfoid}.jpg{else}no-cover.jpg{/if}"
+									 src="{$smarty.const.WWW_TOP}/covers/music/{if $result.cover == 1}{$result.musicinfo_id}.jpg{else}no-cover.jpg{/if}"
 									 width="120" border="0"
 									 alt="{$result.artist|escape:"htmlall"} - {$result.title|escape:"htmlall"}"/>
 							</a>
@@ -111,7 +111,7 @@
 														 title="View Nfo" class="rndbtnsml modal_nfo" rel="nfo">
 										Nfo</a>{/if}
 								<a class="rndbtnsml" target="_blank" href="{$site->dereferrer_link}{$result.url}"
-								   name="amazon{$result.musicinfoid}" title="View amazon page">Amazon</a>
+								   name="amazon{$result.musicinfo_id}" title="View amazon page">Amazon</a>
 								<a class="rndbtnsml" href="{$smarty.const.WWW_TOP}/browse?g={$result.group_name}"
 								   title="Browse releases in {$result.group_name|replace:"alt.binaries":"a.b"}">Grp</a>
 							</div>

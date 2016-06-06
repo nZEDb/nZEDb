@@ -29,19 +29,19 @@
 							<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/movies/{$release.imdbid}-cover.jpg" width="120" alt="{$release.searchname|escape:"htmlall"}" />
 						{/if}
 						{if $release.mu_cover == 1}
-							<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/music/{$release.musicinfoid}.jpg" width="120" alt="{$release.searchname|escape:"htmlall"}" />
+							<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/music/{$release.musicinfo_id}.jpg" width="120" alt="{$release.searchname|escape:"htmlall"}" />
 						{/if}
 						{if $release.co_cover == 1}
-							<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/console/{$release.consoleinfoid}.jpg" width="120" alt="{$release.searchname|escape:"htmlall"}" />
+							<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/console/{$release.consoleinfo_id}.jpg" width="120" alt="{$release.searchname|escape:"htmlall"}" />
 						{/if}
 						{if $release.bo_cover == 1}
-							<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/book/{$release.bookinfoid}.jpg" width="120" alt="{$release.searchname|escape:"htmlall"}" />
+							<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/book/{$release.bookinfo_id}.jpg" width="120" alt="{$release.searchname|escape:"htmlall"}" />
 						{/if}
 						<ul>
 							<li>ID: <a href="{$serverroot}details/{$release.guid}">{$release.guid}</a></li>
 							<li>Name: {$release.searchname}</li>
 							<li>Size: {$release.size|fsize_format:"MB"} </li>
-							<li>Attributes: Category - <a href="{$serverroot}browse?t={$release.categoryid}">{$release.category_name}</a></li>
+							<li>Attributes: Category - <a href="{$serverroot}browse?t={$release.categories_id}">{$release.category_name}</a></li>
 							<li>Groups: <a href="{$serverroot}browse?g={$release.group_name}">{$release.group_name}</a></li>
 							<li>Poster: {$release.fromname|escape:"htmlall"}</li>
 							<li>PostDate: {$release.postdate|phpdate_format:"DATE_RSS"}</li>
@@ -65,7 +65,7 @@
 								{/if}
 							{/if}
 							{if $release.parentCategoryid == {$catClass::MUSIC_ROOT}}
-								{if $release.musicinfoid > 0}
+								{if $release.musicinfo_id > 0}
 									<li>Music Info:
 										<ul>
 											{if $release.mu_url != ""}<li>Amazon: <a href="{$release.mu_url}">{$release.mu_title}</a></li>{/if}
@@ -89,7 +89,7 @@
 								{/if}
 							{/if}
 							{if $release.parentCategoryid == {$catClass::GAME_ROOT}}
-								{if $release.consoleinfoid > 0}
+								{if $release.consoleinfo_id > 0}
 									<li>Console Info:
 										<ul>
 											{if $release.co_url != ""}<li>Amazon: <a href="{$release.co_url}">{$release.co_title}</a></li>{/if}

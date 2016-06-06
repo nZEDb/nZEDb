@@ -20,7 +20,7 @@
 
 <form id="nzb_multi_operations_form" action="get">
 
-	<div class="well well-small">
+	<div class="well well-sm">
 		<div class="nzb_multi_operations">
 			<table width="100%">
 				<tr>
@@ -60,7 +60,7 @@
 			</table>
 		</div>
 	</div>
-	<table style="100%" class="data highlight icons table table-striped" id="browsetable">
+	<table style="100%" class="data highlight icons table" id="browsetable">
 		<tr>
 			<th style="padding-top:0px; padding-bottom:0px;">
 				<input id="chkSelectAll" type="checkbox" class="nzb_check_all" />
@@ -165,14 +165,14 @@
 						<a href="#" name="audio{$result.guid}" title="Listen to Preview" class="audioprev badge badge-success halffade" rel="audio">Listen</a>
 						<audio id="audprev{$result.guid}" src="{$smarty.const.WWW_TOP}/covers/audio/{$result.guid}.mp3" preload="none"></audio>
 						{/if}
-						{if $result.musicinfoid > 0}
-						<a href="#" name="name{$result.musicinfoid}" title="View music info" class="modal_music badge badge-success halffade" rel="music" >Cover</a>
+						{if $result.musicinfo_id > 0}
+						<a href="#" name="name{$result.musicinfo_id}" title="View music info" class="modal_music badge badge-success halffade" rel="music" >Cover</a>
 						{/if}
-						{if $result.consoleinfoid > 0}
-						<a href="#" name="name{$result.consoleinfoid}" title="View console info" class="modal_console badge badge-success halffade" rel="console" >Cover</a>
+						{if $result.consoleinfo_id > 0}
+						<a href="#" name="name{$result.consoleinfo_id}" title="View console info" class="modal_console badge badge-success halffade" rel="console" >Cover</a>
 						{/if}
-						{if $result.bookinfoid > 0}
-						<a href="#" name="name{$result.bookinfoid}" title="View book info" class="modal_book badge badge-success halffade" rel="console" >Cover</a>
+						{if $result.bookinfo_id > 0}
+						<a href="#" name="name{$result.bookinfo_id}" title="View book info" class="modal_book badge badge-success halffade" rel="console" >Cover</a>
 						{/if}
 						{if $result.videos_id > 0}
 						<a class="badge badge-inverse halffade" href="{$smarty.const.WWW_TOP}/series/{$result.videos_id}">View Series</a>
@@ -189,8 +189,8 @@
 						{if $result.reid > 0}
 						<span class="mediainfo badge badge-inverse halffade" title="{$result.guid}">Media</span>
 						{/if}
-						{if $result.preid > 0}
-						<span class="preinfo badge badge-inverse halffade" title="{$result.preid}">PreDB</span>
+						{if $result.predb_id > 0}
+						<span class="preinfo badge badge-inverse halffade" title="{$result.predb_id}">PreDB</span>
 						{/if}
 							{if !empty($result.failed)}
 								<span class="badge badge-inverse"><i class ="fa fa-thumbs-o-up"></i> {$result.grabs} Grab{if $result.grabs != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$result.failed} Failed Download{if $result.failed != 1}s{/if}</span>
@@ -201,7 +201,7 @@
 			</td>
 
 			<td class="less">
-				<a title="Browse {$result.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$result.categoryid}">{$result.category_name}</a>
+				<a title="Browse {$result.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$result.categories_id}">{$result.category_name}</a>
 			</td>
 
 			<td class="less mid" title="{$result.postdate}">{$result.postdate|timeago}</td>
@@ -248,7 +248,7 @@
 	</table>
 
 	{if $results|@count > 10}
-	<div class="well well-small">
+	<div class="well well-sm">
 		<div class="nzb_multi_operations">
 			<table width="100%">
 				<tr>

@@ -362,6 +362,18 @@ class ProcessAdditional
 	protected $_compressedFilesChecked;
 
 	/**
+	 * Should we download the last rar?
+	 * @var bool
+	 */
+	protected $_fetchLastFiles;
+
+	/**
+	 * Are we downloading the last rar?
+	 * @var bool
+	 */
+	protected $_reverse;
+
+	/**
 	 * @param array $options Class instances / echo to cli.
 	 */
 	public function __construct(array $options = [])
@@ -403,6 +415,7 @@ class ProcessAdditional
 		$this->_innerFileBlacklist = ($this->pdo->getSetting('innerfileblacklist') == '' ? false : $this->pdo->getSetting('innerfileblacklist'));
 		$this->_maxNestedLevels = ($this->pdo->getSetting('maxnestedlevels') == 0 ? 3 : $this->pdo->getSetting('maxnestedlevels'));
 		$this->_extractUsingRarInfo = ($this->pdo->getSetting('extractusingrarinfo') == 0 ? false : true);
+		$this->_fetchLastFiles = ($this->pdo->getSetting('fetchlastcompressedfiles') == 0 ? false : true);
 
 		$this->_7zipPath = false;
 		$this->_unrarPath = false;
@@ -599,10 +612,12 @@ class ProcessAdditional
 	protected function _fetchReleases($groupID, &$guidChar)
 	{
 		$this->_releases = $this->pdo->query(
-			sprintf(
-				'SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.group_id, r.nfostatus, r.completion, r.categoryid, r.searchname, r.preid
+			sprintf('
+				SELECT r.id, r.id AS releases_id, r.guid, r.name, r.size, r.group_id, r.nfostatus,
+					r.completion, r.categories_id, r.searchname, r.predb_id,
+					c.disablepreview
 				FROM releases r
-				LEFT JOIN category c ON c.id = r.categoryid
+				LEFT JOIN categories c ON c.id = r.categories_id
 				WHERE r.nzbstatus = 1
 				%s %s %s %s
 				AND r.passwordstatus BETWEEN -6 AND -1
@@ -613,7 +628,7 @@ class ProcessAdditional
 				$this->_maxSize,
 				$this->_minSize,
 				($groupID === '' ? '' : 'AND r.group_id = ' . $groupID),
-				($guidChar === '' ? '' : 'AND r.guid ' . $this->pdo->likeString($guidChar, false, true)),
+				($guidChar === '' ? '' : 'AND r.leftguid = ' . $this->pdo->escapeString($guidChar)),
 				$this->_queryLimit
 			)
 		);
@@ -701,7 +716,7 @@ class ProcessAdditional
 					$this->_processNZBCompressedFiles();
 
 					// Download rar/zip in reverse order, to get the last rar or zip file.
-					if ($this->pdo->getSetting('fetchlastcompressedfiles') == 1) {
+					if ($this->_fetchLastFiles == 1) {
 						$this->_processNZBCompressedFiles(true);
 					}
 
@@ -949,7 +964,9 @@ class ProcessAdditional
 	 */
 	protected function _processNZBCompressedFiles($reverse = false)
 	{
-		if ($reverse) {
+		$this->_reverse = $reverse;
+
+		if ($this->_reverse) {
 			if (!krsort($this->_nzbContents)) {
 				return;
 			}
@@ -989,7 +1006,7 @@ class ProcessAdditional
 					break;
 				}
 				$segment = (string)$nzbFile['segments'][$i];
-				if (!$reverse) {
+				if (!$this->_reverse) {
 					$this->_triedCompressedMids[] = $segment;
 				} else if (in_array($segment, $this->_triedCompressedMids)) {
 					// We already downloaded this file.
@@ -1197,8 +1214,8 @@ class ProcessAdditional
 				$this->pdo->queryOneRow(
 					sprintf(
 						'
-						SELECT releaseid FROM release_files
-						WHERE releaseid = %d
+						SELECT releases_id FROM release_files
+						WHERE releases_id = %d
 						AND name = %s
 						AND size = %d',
 						$this->_release['id'], $this->pdo->escapeString($file['name']), $file['size']
@@ -1223,7 +1240,7 @@ class ProcessAdditional
 					} //Run a PreDB filename check on insert to try and match the release
 					else if (strpos($file['name'], '.') != 0 && strlen($file['name']) > 0) {
 						$this->_release['filename'] = $file['name'];
-						$this->_release['releaseid'] = $this->_release['id'];
+						$this->_release['releases_id'] = $this->_release['id'];
 						$this->_nameFixer->matchPredbFiles($this->_release, 1, 1, true, 1);
 					}
 				}
@@ -1318,7 +1335,7 @@ class ProcessAdditional
 					} // Check if it's alt.binaries.u4e file.
 					else if (in_array($this->_releaseGroupName, ['alt.binaries.u4e', 'alt.binaries.mom']) &&
 						preg_match('/Linux_2rename\.sh/i', $file) &&
-						($this->_release['categoryid'] == Category::OTHER_HASHED || $this->_release['categoryid'] == Category::OTHER_MISC)
+						($this->_release['categories_id'] == Category::OTHER_HASHED || $this->_release['categories_id'] == Category::OTHER_MISC)
 					) {
 						$this->_processU4ETitle($file);
 					}
@@ -1619,10 +1636,10 @@ class ProcessAdditional
 		$releaseFiles = $this->pdo->queryOneRow(
 			sprintf(
 				'
-				SELECT COUNT(release_files.releaseid) AS count,
+				SELECT COUNT(release_files.releases_id) AS count,
 				SUM(release_files.size) AS size
 				FROM release_files
-				WHERE releaseid = %d',
+				WHERE releases_id = %d',
 				$this->_release['id']
 			)
 		);
@@ -1728,7 +1745,7 @@ class ProcessAdditional
 		// Make sure the category is music or other.
 		$rQuery = $this->pdo->queryOneRow(
 			sprintf(
-				'SELECT searchname, categoryid AS id, group_id FROM releases WHERE proc_pp = 0 AND id = %d',
+				'SELECT searchname, categories_id AS id, group_id FROM releases WHERE proc_pp = 0 AND id = %d',
 				$this->_release['id']
 			)
 		);
@@ -1768,7 +1785,7 @@ class ProcessAdditional
 
 							if (isset($track['Album']) && isset($track['Performer'])) {
 
-								if (nZEDb_RENAME_MUSIC_MEDIAINFO && $this->_release['preid'] == 0) {
+								if (nZEDb_RENAME_MUSIC_MEDIAINFO && $this->_release['predb_id'] == 0) {
 									// Make the extension upper case.
 									$ext = strtoupper($fileExtension);
 
@@ -1794,7 +1811,7 @@ class ProcessAdditional
 										sprintf(
 											'
 											UPDATE releases
-											SET searchname = %s, categoryid = %d, iscategorized = 1, isrenamed = 1, proc_pp = 1
+											SET searchname = %s, categories_id = %d, iscategorized = 1, isrenamed = 1, proc_pp = 1
 											WHERE id = %d',
 											$newTitle,
 											$newCat,
@@ -2234,7 +2251,7 @@ class ProcessAdditional
 		if (nZEDb_RENAME_PAR2 &&
 			$releaseInfo['proc_pp'] == 0 &&
 			in_array(
-				((int)$this->_release['categoryid']),
+				((int)$this->_release['categories_id']),
 				[
 					Category::BOOKS_UNKNOWN,
 					Category::GAME_OTHER,
@@ -2270,7 +2287,7 @@ class ProcessAdditional
 				if ($filesAdded < 11 &&
 					$this->pdo->queryOneRow(
 						sprintf(
-							'SELECT releaseid FROM release_files WHERE releaseid = %d AND name = %s',
+							'SELECT releases_id FROM release_files WHERE releases_id = %d AND name = %s',
 							$this->_release['id'], $this->pdo->escapeString($file['name'])
 						)
 					) === false
@@ -2288,7 +2305,7 @@ class ProcessAdditional
 			// Try to get a new name.
 			if ($foundName === false) {
 				$this->_release['textstring'] = $file['name'];
-				$this->_release['releaseid'] = $this->_release['id'];
+				$this->_release['releases_id'] = $this->_release['id'];
 				if ($this->_nameFixer->checkName($this->_release, ($this->_echoCLI ? true : false), 'PAR2, ', 1, 1) === true) {
 					$foundName = true;
 				}
@@ -2380,9 +2397,9 @@ class ProcessAdditional
 					$this->pdo->queryExec(
 						sprintf(
 							'UPDATE releases
-							SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL,
-							bookinfoid = NULL, anidbid = NULL, preid = 0, searchname = %s, isrenamed = 1, iscategorized = 1,
-							proc_files = 1, categoryid = %d
+							SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfo_id = NULL, consoleinfo_id = NULL,
+							bookinfo_id = NULL, anidbid = NULL, searchname = %s, isrenamed = 1, iscategorized = 1,
+							proc_files = 1, categories_id = %d
 							WHERE id = %d',
 							$newTitle,
 							$newCategory,
@@ -2398,7 +2415,7 @@ class ProcessAdditional
 								'new_name' => $newName,
 								'old_name' => $this->_release['searchname'],
 								'new_category' => $newCategory,
-								'old_category' => $this->_release['categoryid'],
+								'old_category' => $this->_release['categories_id'],
 								'group' => $this->_release['group_id'],
 								'release_id' => $this->_release['id'],
 								'method' => 'ProcessAdditional->_processU4ETitle'

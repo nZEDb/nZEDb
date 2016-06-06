@@ -193,9 +193,9 @@ class Music
 	{
 		$res = $this->pdo->query(
 			sprintf("
-				SELECT COUNT(DISTINCT r.musicinfoid) AS num
+				SELECT COUNT(DISTINCT r.musicinfo_id) AS num
 				FROM releases r
-				INNER JOIN musicinfo m ON m.id = r.musicinfoid
+				INNER JOIN musicinfo m ON m.id = r.musicinfo_id
 				AND m.title != ''
 				AND m.cover = 1
 				WHERE nzbstatus = 1
@@ -205,7 +205,7 @@ class Music
 				$this->getBrowseBy(),
 				(count($cat) > 0 && $cat[0] != -1 ? (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat) : ''),
 				($maxage > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage) : ''),
-				(count($excludedcats) > 0 ? " AND r.categoryid NOT IN (" . implode(",", $excludedcats) . ")" : '')
+				(count($excludedcats) > 0 ? " AND r.categories_id NOT IN (" . implode(",", $excludedcats) . ")" : '')
 			), true, nZEDb_CACHE_EXPIRY_MEDIUM
 		);
 		return (isset($res[0]["num"]) ? $res[0]["num"] : 0);
@@ -231,7 +231,7 @@ class Music
 
 		$exccatlist = "";
 		if (count($excludedcats) > 0) {
-			$exccatlist = " AND r.categoryid NOT IN (" . implode(",", $excludedcats) . ")";
+			$exccatlist = " AND r.categories_id NOT IN (" . implode(",", $excludedcats) . ")";
 		}
 
 		$order = $this->getMusicOrder($orderby);
@@ -242,7 +242,7 @@ class Music
 					m.id,
 					GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id
 				FROM musicinfo m
-				LEFT JOIN releases r ON r.musicinfoid = m.id
+				LEFT JOIN releases r ON r.musicinfo_id = m.id
 				WHERE r.nzbstatus = 1
 				AND m.title != ''
 				AND m.cover = 1
@@ -276,7 +276,7 @@ class Music
 				GROUP_CONCAT(r.haspreview ORDER BY r.postdate DESC SEPARATOR ',') AS grp_haspreview,
 				GROUP_CONCAT(r.passwordstatus ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_password,
 				GROUP_CONCAT(r.guid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_guid,
-				GROUP_CONCAT(rn.releaseid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid,
+				GROUP_CONCAT(rn.releases_id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid,
 				GROUP_CONCAT(g.name ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grpname,
 				GROUP_CONCAT(r.searchname ORDER BY r.postdate DESC SEPARATOR '#') AS grp_release_name,
 				GROUP_CONCAT(r.postdate ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_postdate,
@@ -286,14 +286,14 @@ class Music
 				GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs,
 				GROUP_CONCAT(df.failed ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_failed,
 				m.*,
-				r.musicinfoid, r.haspreview,
+				r.musicinfo_id, r.haspreview,
 				g.name AS group_name,
-				rn.releaseid AS nfoid
+				rn.releases_id AS nfoid
 			FROM releases r
 			LEFT OUTER JOIN groups g ON g.id = r.group_id
-			LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
+			LEFT OUTER JOIN release_nfos rn ON rn.releases_id = r.id
 			LEFT OUTER JOIN dnzb_failures df ON df.release_id = r.id
-			INNER JOIN musicinfo m ON m.id = r.musicinfoid
+			INNER JOIN musicinfo m ON m.id = r.musicinfo_id
 			WHERE m.id IN (%s)
 			AND r.id IN (%s)
 			AND %s
@@ -722,9 +722,9 @@ class Music
 				sprintf('
 					SELECT searchname, id
 					FROM releases
-					WHERE musicinfoid IS NULL
+					WHERE musicinfo_id IS NULL
 					AND nzbstatus = 1 %s
-					AND categoryid IN (%s, %s, %s)
+					AND categories_id IN (%s, %s, %s)
 					ORDER BY postdate DESC
 					LIMIT %d',
 					$this->renamed,
@@ -774,10 +774,10 @@ class Music
 					}
 
 					// Update release.
-					$this->pdo->queryExec(sprintf("UPDATE releases SET musicinfoid = %d WHERE id = %d", $albumId, $arr["id"]));
+					$this->pdo->queryExec(sprintf("UPDATE releases SET musicinfo_id = %d WHERE id = %d", $albumId, $arr["id"]));
 				} // No album found.
 				else {
-					$this->pdo->queryExec(sprintf("UPDATE releases SET musicinfoid = %d WHERE id = %d", -2, $arr["id"]));
+					$this->pdo->queryExec(sprintf("UPDATE releases SET musicinfo_id = %d WHERE id = %d", -2, $arr["id"]));
 					echo '.';
 				}
 

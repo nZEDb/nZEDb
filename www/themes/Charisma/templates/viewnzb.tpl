@@ -147,7 +147,7 @@
 									{if ($release.haspreview == 1 && $userdata.canpreview == 1) || ($release.haspreview == 2 && $userdata.canpreview == 1)}
 										<li><a href="#pane7" data-toggle="tab">Preview</a></li>
 									{/if}
-									{if $reVideo.releaseid|@count > 0 || $reAudio|@count > 0}
+									{if $reVideo.releases_id|@count > 0 || $reAudio|@count > 0}
 										<li><a href="#pane8" data-toggle="tab">MediaInfo</a></li>
 									{/if}
 									{if isset($xxx.backdrop) && $xxx.backdrop == 1}
@@ -239,7 +239,14 @@
 														   id="guid{$release.guid}"></i> Send to
 														Queue
 														</button>{/if}
-													<p id="demo"></p>
+													{if !empty($cpurl) && !empty($cpapi)}
+														<button type="button"
+																id="imdb{$release.imdbid}"
+																href="javascript:;"
+																class="btn btn-primary btn-sm btn-info btn-transparent sendtocouch">
+																<i class="fa fa-bed"></i> Send to CouchPotato
+														</button>
+													{/if}
 												</div>
 											</div>
 											<div class="col-md-9 small-gutter-left">
@@ -473,7 +480,7 @@
 																	</th>
 																	<td>
 																		<a title="Browse by {$release.category_name}"
-																		   href="{$smarty.const.WWW_TOP}/browse?t={$release.categoryid}">{$release.category_name}</a>
+																		   href="{$smarty.const.WWW_TOP}/browse?t={$release.categories_id}">{$release.category_name}</a>
 																	</td>
 																</tr>
 																<tr>
@@ -523,21 +530,6 @@
 																		)
 																	</td>
 																</tr>
-																{if isset($isadmin)}
-																	<tr>
-																		<th width="140">Release
-																			Info
-																		</th>
-																		<td>{if $release.regexid != ""}Regex Id (
-																				<a href="{$smarty.const.WWW_TOP}/admin/regex-list.php?group={$release.group_name|escape:"url"}#{$release.regexid}">{$release.regexid}</a>
-																				)
-																			{/if}
-																			{if $release.gid != ""}
-																				Global Id ({$release.gid})
-																			{/if}
-																		</td>
-																	</tr>
-																{/if}
 																</tbody>
 															</table>
 														</td>
@@ -632,7 +624,7 @@
 												 data-target="#modal-image"/>
 										</div>
 									{/if}
-									{if $reVideo.releaseid|@count > 0 || $reAudio|@count > 0}
+									{if $reVideo.releases_id|@count > 0 || $reAudio|@count > 0}
 										<div id="pane8" class="tab-pane">
 											<table style="width:100%;"
 												   class="data table table-condensed table-striped table-responsive table-hover">

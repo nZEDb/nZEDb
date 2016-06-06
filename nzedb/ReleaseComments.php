@@ -26,7 +26,7 @@ class ReleaseComments
 
 	public function getComments($id)
 	{
-		return $this->pdo->query(sprintf("SELECT release_comments.* FROM release_comments WHERE releaseid = %d ORDER BY createddate DESC", $id));
+		return $this->pdo->query(sprintf("SELECT release_comments.* FROM release_comments WHERE releases_id = %d ORDER BY createddate DESC", $id));
 	}
 
 	public function getCommentCount()
@@ -41,13 +41,13 @@ class ReleaseComments
 		$res = $this->getCommentById($id);
 		if ($res) {
 			$this->pdo->queryExec(sprintf("DELETE FROM release_comments WHERE id = %d", $id));
-			$this->updateReleaseCommentCount($res["releaseid"]);
+			$this->updateReleaseCommentCount($res["releases_id"]);
 		}
 	}
 
 	public function deleteCommentsForRelease($id)
 	{
-		$this->pdo->queryExec(sprintf("DELETE FROM release_comments WHERE releaseid = %d", $id));
+		$this->pdo->queryExec(sprintf("DELETE FROM release_comments WHERE releases_id = %d", $id));
 		$this->updateReleaseCommentCount($id);
 	}
 
@@ -59,7 +59,7 @@ class ReleaseComments
 			$comments = $this->getCommentsForUserRange($id, 0, $numcomments);
 			foreach ($comments as $comment) {
 				$this->deleteComment($comment["id"]);
-				$this->updateReleaseCommentCount($comment["releaseid"]);
+				$this->updateReleaseCommentCount($comment["releases_id"]);
 			}
 		}
 	}
@@ -75,7 +75,7 @@ class ReleaseComments
 
 		$comid = $this->pdo->queryInsert(
 			sprintf("
-				INSERT INTO release_comments (releaseid, text, user_id, createddate, host, username)
+				INSERT INTO release_comments (releases_id, text, user_id, createddate, host, username)
 				VALUES (%d, %s, %d, NOW(), %s, %s)",
 				$id,
 				$this->pdo->escapeString($text),
@@ -94,7 +94,7 @@ class ReleaseComments
 			sprintf("
 				SELECT release_comments.*, releases.guid
 				FROM release_comments
-				LEFT JOIN releases on releases.id = release_comments.releaseid
+				LEFT JOIN releases on releases.id = release_comments.releases_id
 				ORDER BY release_comments.createddate DESC %s",
 				($start === false ? '' : " LIMIT " . $num . " OFFSET " . $start)
 			)
@@ -107,7 +107,7 @@ class ReleaseComments
 		$this->pdo->queryExec(
 			sprintf("
 				UPDATE releases
-				SET comments = (SELECT COUNT(id) from release_comments WHERE release_comments.releaseid = %d)
+				SET comments = (SELECT COUNT(id) from release_comments WHERE release_comments.releases_id = %d)
 				WHERE releases.id = %d",
 				$relid,
 				$relid

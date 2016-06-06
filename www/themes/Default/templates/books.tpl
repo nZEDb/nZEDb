@@ -84,7 +84,7 @@
 							<a class="title thumbnail" title="View amazon page"
 							   href="{$site->dereferrer_link}{$result.url}">
 								<img class="shadow"
-									 src="{$smarty.const.WWW_TOP}/covers/book/{if $result.cover == 1}{$result.bookinfoid}.jpg{else}no-cover.jpg{/if}"
+									 src="{$smarty.const.WWW_TOP}/covers/book/{if $result.cover == 1}{$result.bookinfo_id}.jpg{else}no-cover.jpg{/if}"
 									 width="120" alt="{$result.title|escape:"htmlall"}">
 							</a>
 
@@ -93,7 +93,7 @@
 														 title="View Nfo" class="rndbtn modal_nfo" rel="nfo">
 										Nfo</a>{/if}
 								<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}{$result.url}"
-								   name="amazon{$result.bookinfoid}" title="View amazon page">Amazon</a>
+								   name="amazon{$result.bookinfo_id}" title="View amazon page">Amazon</a>
 								<a class="rndbtn" href="{$smarty.const.WWW_TOP}/browse?g={$result.group_name}"
 								   title="Browse releases in {$result.group_name|replace:"alt.binaries":"a.b"}">Grp</a>
 							</div>

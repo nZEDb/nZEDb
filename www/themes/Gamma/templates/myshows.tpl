@@ -11,7 +11,7 @@
 
 {if $shows|@count > 0}
 
-<table class="data highlight Sortable table table-striped" id="browsetable">
+<table class="data highlight Sortable table" id="browsetable">
 	<tr>
 		<th>name</th>
 		<th width="80">category</th>

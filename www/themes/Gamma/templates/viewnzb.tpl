@@ -3,7 +3,7 @@
 <div id="content">
 	<ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
 		<li class="active"><a href="#info" data-toggle="tab">Info</a></li>
-		{if $reVideo.releaseid|@count > 0 || $reAudio|@count > 0}
+		{if $reVideo.releases_id|@count > 0 || $reAudio|@count > 0}
 			<li><a href="#mediainfo" data-toggle="tab">Media info</a></li>
 		{/if}
 		{if $release.jpgstatus == 1 && $userdata.canpreview == 1}
@@ -39,7 +39,7 @@
 				<img class="shadow img-polaroid pull-right" style="margin-right:50px; margin-top:80px;"  src="{$smarty.const.WWW_TOP}/covers/xxx/{$xxx.id}-cover.jpg" width="160" alt="{$xxx.title|escape:"htmlall"}"/>
 			{/if}
 			{if $isadmin}
-				<div class="well well-small pull-right">
+				<div class="well well-sm pull-right">
 					Admin :
 					<div class="btn-group">
 						<a href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$release.id}&amp;from={$smarty.server.REQUEST_URI}" class="btn btn-small btn-warning" >Edit</a>
@@ -295,8 +295,8 @@
 				<dd><a title="Browse {$release.group_name}" href="{$smarty.const.WWW_TOP}/browse?g={$release.group_name}">{$release.group_name|replace:"alt.binaries":"a.b"}</a></dd>
 
 				<dt>Category</dt>
-				<dd><a title="Browse by {$release.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$release.categoryid}">{$release.category_name}</a></dd>
-				{if $nfo.releaseid|@count > 0}
+				<dd><a title="Browse by {$release.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$release.categories_id}">{$release.category_name}</a></dd>
+				{if $nfo.releases_id|@count > 0}
 					<dt>Nfo</dy>
 					<dd><a href="{$smarty.const.WWW_TOP}/nfo/{$release.guid}" title="View Nfo">View Nfo</a></dd>
 				{/if}
@@ -358,6 +358,15 @@
 					{if $sabintegrated}
 						<a id="guid{$release.guid}" class="icon icon_sabNZBinfo fa fa-share"  style="text-decoration: none; color: #008ab8;" href="#" title="Send to queue"></a>
 					{/if}
+					{if !empty($cpurl) && !empty($cpapi)}
+						<a
+								id="imdb{$release.imdbid}"
+								href="javascript:;"
+								class="sendtocouch"
+								title="Add to CouchPotato">
+							<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
+						</a>
+					{/if}
 				</dd>
 				<dt>Similar</dt>
 				<dd>
@@ -374,9 +383,9 @@
 			</dl>
 		</div>
 		<div class="tab-pane" id="mediainfo">
-			{if $reVideo.releaseid|@count > 0 || $reAudio|@count > 0}
+			{if $reVideo.releases_id|@count > 0 || $reAudio|@count > 0}
 				<td style="padding:0;">
-					<table style="width:100%;" class="innerdata highlight table table-striped">
+					<table style="width:100%;" class="innerdata highlight table">
 						<tr>
 							<th width="15%"></th>
 							<th>Property</th>
@@ -552,7 +561,7 @@
 			<div class="comments">
 				{if $comments|@count > 0}
 
-					<table style="margin-bottom:20px;" class="data Sortable table table-striped">
+					<table style="margin-bottom:20px;" class="data Sortable table">
 						<tr class="{cycle values=",alt"}">
 							<th width="150" style="text-align:right;">User </th>
 							<th>Comment</th>

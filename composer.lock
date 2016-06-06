@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "b01aa8fb35f1294972df6c351d349b53",
-    "content-hash": "ab7c264abaa2e203d53eb9a5dd4639bb",
+    "hash": "3f26bbca801213109d9c8df983613831",
+    "content-hash": "151c584e0a90992b43ab77e61acffea4",
     "packages": [
         {
             "name": "barracudanetworks/forkdaemon-php",
@@ -42,6 +42,856 @@
                 "php"
             ],
             "time": "2016-01-12 19:40:56"
+        },
+        {
+            "name": "bower-asset/animate.css",
+            "version": "3.5.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/daneden/animate.css.git",
+                "reference": "010e06e11175840ae84ad9363f7269f03775d963"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/daneden/animate.css/zipball/010e06e11175840ae84ad9363f7269f03775d963",
+                "reference": "010e06e11175840ae84ad9363f7269f03775d963",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": "./animate.css",
+                "bower-asset-ignore": [
+                    ".*",
+                    "source",
+                    "*.yml",
+                    "Gemfile",
+                    "Gemfile.lock",
+                    "*.md"
+                ]
+            }
+        },
+        {
+            "name": "bower-asset/autosize-3.0.x",
+            "version": "3.0.15",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jackmoore/autosize.git",
+                "reference": "1e94f8aa0e6dfa7b52217bd4527e1dfdf38ed364"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jackmoore/autosize/zipball/1e94f8aa0e6dfa7b52217bd4527e1dfdf38ed364",
+                "reference": "1e94f8aa0e6dfa7b52217bd4527e1dfdf38ed364",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": "dist/autosize.js",
+                "bower-asset-ignore": []
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Autosize is a small, stand-alone script to automatically adjust textarea height to fit text.",
+            "keywords": [
+                "form",
+                "textarea",
+                "ui"
+            ]
+        },
+        {
+            "name": "bower-asset/bootstrap",
+            "version": "v3.3.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/twbs/bootstrap.git",
+                "reference": "81df608a40bf0629a1dc08e584849bb1e43e0b7a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/twbs/bootstrap/zipball/81df608a40bf0629a1dc08e584849bb1e43e0b7a",
+                "reference": "81df608a40bf0629a1dc08e584849bb1e43e0b7a",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/jquery": ">=1.9.1,<=2"
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": [
+                    "less/bootstrap.less",
+                    "dist/js/bootstrap.js"
+                ],
+                "bower-asset-ignore": [
+                    "/.*",
+                    "_config.yml",
+                    "CNAME",
+                    "composer.json",
+                    "CONTRIBUTING.md",
+                    "docs",
+                    "js/tests",
+                    "test-infra"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "The most popular front-end framework for developing responsive, mobile first projects on the web.",
+            "keywords": [
+                "css",
+                "framework",
+                "front-end",
+                "js",
+                "less",
+                "mobile-first",
+                "responsive",
+                "web"
+            ]
+        },
+        {
+            "name": "bower-asset/bootstrap-2.3.x",
+            "version": "v2.3.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/twbs/bootstrap.git",
+                "reference": "b4c4072679943773a7582daa63f545ba818fa627"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/twbs/bootstrap/zipball/b4c4072679943773a7582daa63f545ba818fa627",
+                "reference": "b4c4072679943773a7582daa63f545ba818fa627",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/jquery": ">=1.8.0,<2.1.0"
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": [
+                    "./docs/assets/js/bootstrap.js",
+                    "./docs/assets/css/bootstrap.css"
+                ]
+            }
+        },
+        {
+            "name": "bower-asset/bootstrap-3.3.x",
+            "version": "v3.3.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/twbs/bootstrap.git",
+                "reference": "81df608a40bf0629a1dc08e584849bb1e43e0b7a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/twbs/bootstrap/zipball/81df608a40bf0629a1dc08e584849bb1e43e0b7a",
+                "reference": "81df608a40bf0629a1dc08e584849bb1e43e0b7a",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/jquery": ">=1.9.1,<=2"
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": [
+                    "less/bootstrap.less",
+                    "dist/js/bootstrap.js"
+                ],
+                "bower-asset-ignore": [
+                    "/.*",
+                    "_config.yml",
+                    "CNAME",
+                    "composer.json",
+                    "CONTRIBUTING.md",
+                    "docs",
+                    "js/tests",
+                    "test-infra"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "The most popular front-end framework for developing responsive, mobile first projects on the web.",
+            "keywords": [
+                "css",
+                "framework",
+                "front-end",
+                "js",
+                "less",
+                "mobile-first",
+                "responsive",
+                "web"
+            ]
+        },
+        {
+            "name": "bower-asset/bootstrap-hover-dropdown-2.2.x",
+            "version": "v2.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/CWSpear/bootstrap-hover-dropdown.git",
+                "reference": "56c494fbb1f4ad54180c716cc07f4919e49b423a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/CWSpear/bootstrap-hover-dropdown/zipball/56c494fbb1f4ad54180c716cc07f4919e49b423a",
+                "reference": "56c494fbb1f4ad54180c716cc07f4919e49b423a",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/bootstrap": ">=3.0.0,<4.0.0",
+                "bower-asset/jquery": ">=1.9.0"
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": "./bootstrap-hover-dropdown.js"
+            },
+            "description": "An unofficial Bootstrap plugin to enable Bootstrap dropdowns to activate on hover and provide a nice user experience.",
+            "keywords": [
+                "bootstrap",
+                "dropdowns",
+                "hover",
+                "twitter"
+            ]
+        },
+        {
+            "name": "bower-asset/bootstrap-progressbar-0.9.x",
+            "version": "v0.9.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/minddust/bootstrap-progressbar.git",
+                "reference": "e7ac2690384024feb89bd5122fea14dc4d819567"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/minddust/bootstrap-progressbar/zipball/e7ac2690384024feb89bd5122fea14dc4d819567",
+                "reference": "e7ac2690384024feb89bd5122fea14dc4d819567",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/jquery": ">=1.9.1"
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": "./bootstrap-progressbar.js",
+                "bower-asset-ignore": [
+                    "**/.*",
+                    "Gulpfile.js",
+                    "Rakefile",
+                    "bower_components",
+                    "node_modules",
+                    "resources",
+                    "tasks"
+                ]
+            },
+            "license": [
+                "MIT"
+            ]
+        },
+        {
+            "name": "bower-asset/chosen-1.5.x",
+            "version": "v1.5.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/harvesthq/bower-chosen.git",
+                "reference": "e0d29eab0d1ea12535cf1933eba4c47df099f846"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/harvesthq/bower-chosen/zipball/e0d29eab0d1ea12535cf1933eba4c47df099f846",
+                "reference": "e0d29eab0d1ea12535cf1933eba4c47df099f846",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/jquery": ">=1.4.4"
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": [
+                    "chosen.jquery.js",
+                    "chosen.css"
+                ],
+                "bower-asset-ignore": []
+            },
+            "license": [
+                {
+                    "type": "MIT",
+                    "url": "https://github.com/harvesthq/chosen/blob/master/LICENSE.md"
+                }
+            ],
+            "description": "Chosen is a JavaScript plugin that makes select boxes user-friendly. It is currently available in both jQuery and Prototype flavors.",
+            "keywords": [
+                "dropdown",
+                "form",
+                "input",
+                "multiselect",
+                "select",
+                "ui"
+            ]
+        },
+        {
+            "name": "bower-asset/colorbox-1.6.x",
+            "version": "1.6.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jackmoore/colorbox.git",
+                "reference": "bac78120c6ca9e63370cc317ab6f400129cd6608"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jackmoore/colorbox/zipball/bac78120c6ca9e63370cc317ab6f400129cd6608",
+                "reference": "bac78120c6ca9e63370cc317ab6f400129cd6608",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/jquery": ">=1.3.2"
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": "jquery.colorbox.js",
+                "bower-asset-ignore": [
+                    "colorbox.jquery.json",
+                    "colorbox.ai",
+                    "content",
+                    "example1/index.html",
+                    "example2/index.html",
+                    "example3/index.html",
+                    "example4/index.html",
+                    "example5/index.html"
+                ]
+            },
+            "description": "jQuery lightbox and modal window plugin",
+            "keywords": [
+                "gallery",
+                "jquery-plugin",
+                "lightbox",
+                "modal",
+                "popup",
+                "ui"
+            ]
+        },
+        {
+            "name": "bower-asset/datatables-1.10.x",
+            "version": "1.10.12",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/DataTables/DataTables.git",
+                "reference": "3a432c5db3546b2ef0c192f2ae367811cb5edb9b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/DataTables/DataTables/zipball/3a432c5db3546b2ef0c192f2ae367811cb5edb9b",
+                "reference": "3a432c5db3546b2ef0c192f2ae367811cb5edb9b",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/jquery": ">=1.7.0"
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": [
+                    "media/js/jquery.dataTables.js",
+                    "media/css/jquery.dataTables.css",
+                    "media/images/sort_asc.png",
+                    "media/images/sort_asc_disabled.png",
+                    "media/images/sort_both.png",
+                    "media/images/sort_desc.png",
+                    "media/images/sort_desc_disabled.png"
+                ],
+                "bower-asset-ignore": [
+                    "/.*",
+                    "examples",
+                    "media/unit_testing",
+                    "composer.json",
+                    "dataTables.jquery.json",
+                    "package.json"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "keywords": [
+                "datatables",
+                "javascript",
+                "jquery",
+                "library",
+                "table"
+            ]
+        },
+        {
+            "name": "bower-asset/fastclick-1.0.x",
+            "version": "v1.0.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ftlabs/fastclick.git",
+                "reference": "9977a916739360ad4ffd7aa19b0016bf375e934b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ftlabs/fastclick/zipball/9977a916739360ad4ffd7aa19b0016bf375e934b",
+                "reference": "9977a916739360ad4ffd7aa19b0016bf375e934b",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": "lib/fastclick.js",
+                "bower-asset-ignore": [
+                    "**/.*",
+                    "component.json",
+                    "package.json",
+                    "Makefile",
+                    "tests",
+                    "examples"
+                ]
+            }
+        },
+        {
+            "name": "bower-asset/font-awesome-4.5.x",
+            "version": "v4.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/FortAwesome/Font-Awesome.git",
+                "reference": "fddd2c240452e6c8990c4ef75e0265b455aa7968"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/FortAwesome/Font-Awesome/zipball/fddd2c240452e6c8990c4ef75e0265b455aa7968",
+                "reference": "fddd2c240452e6c8990c4ef75e0265b455aa7968",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": [
+                    "less/font-awesome.less",
+                    "scss/font-awesome.scss"
+                ],
+                "bower-asset-ignore": [
+                    "*/.*",
+                    "*.json",
+                    "src",
+                    "*.yml",
+                    "Gemfile",
+                    "Gemfile.lock",
+                    "*.md"
+                ]
+            },
+            "license": [
+                "OFL-1.1",
+                "MIT",
+                "CC-BY-3.0"
+            ],
+            "description": "Font Awesome"
+        },
+        {
+            "name": "bower-asset/html5shiv-3.7.x",
+            "version": "3.7.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/aFarkas/html5shiv.git",
+                "reference": "ed28c56c071bddfe7d635ad88995674957a016be"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/aFarkas/html5shiv/zipball/ed28c56c071bddfe7d635ad88995674957a016be",
+                "reference": "ed28c56c071bddfe7d635ad88995674957a016be",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": [
+                    "dist/html5shiv.js"
+                ],
+                "bower-asset-ignore": [
+                    "**/.*",
+                    "composer.json",
+                    "test",
+                    "build",
+                    "src",
+                    "build.xml"
+                ]
+            }
+        },
+        {
+            "name": "bower-asset/icheck-1.0.x",
+            "version": "1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fronteed/icheck.git",
+                "reference": "8a6eb37bd7dab1e843c1b630c91c6398ff409d05"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fronteed/icheck/zipball/8a6eb37bd7dab1e843c1b630c91c6398ff409d05",
+                "reference": "8a6eb37bd7dab1e843c1b630c91c6398ff409d05",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/jquery": ">=1.7"
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": [
+                    "./icheck.min.js"
+                ],
+                "bower-asset-ignore": [
+                    ".gitignore",
+                    "CHANGELOG.md",
+                    "README.md",
+                    "demo/"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Highly customizable checkboxes and radio buttons (jQuery & Zepto)",
+            "keywords": [
+                "accessibility",
+                "checkbox",
+                "checked",
+                "custom",
+                "disabled",
+                "field",
+                "form",
+                "icheck",
+                "indeterminate",
+                "input",
+                "radio",
+                "replacement",
+                "skins",
+                "ui"
+            ]
+        },
+        {
+            "name": "bower-asset/jquery",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jquery/jquery-dist.git",
+                "reference": "a55c5eeb709b584f58a1f3d8d0bc9f1432cd998a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jquery/jquery-dist/zipball/a55c5eeb709b584f58a1f3d8d0bc9f1432cd998a",
+                "reference": "a55c5eeb709b584f58a1f3d8d0bc9f1432cd998a",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": "jquery.js"
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "jQuery component",
+            "keywords": [
+                "component",
+                "jquery"
+            ]
+        },
+        {
+            "name": "bower-asset/jquery-1.9.x",
+            "version": "1.9.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jquery/jquery-dist.git",
+                "reference": "d71f6a53927ad02d728503385d15539b73d21ac8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jquery/jquery-dist/zipball/d71f6a53927ad02d728503385d15539b73d21ac8",
+                "reference": "d71f6a53927ad02d728503385d15539b73d21ac8",
+                "shasum": ""
+            },
+            "type": "bower-asset-library"
+        },
+        {
+            "name": "bower-asset/jquery-2.2.x",
+            "version": "2.2.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jquery/jquery-dist.git",
+                "reference": "c0185ab7c75aab88762c5aae780b9d83b80eda72"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jquery/jquery-dist/zipball/c0185ab7c75aab88762c5aae780b9d83b80eda72",
+                "reference": "c0185ab7c75aab88762c5aae780b9d83b80eda72",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": "dist/jquery.js",
+                "bower-asset-ignore": [
+                    "package.json"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "keywords": [
+                "browser",
+                "javascript",
+                "jquery",
+                "library"
+            ]
+        },
+        {
+            "name": "bower-asset/jquery-migrate-1.4.x",
+            "version": "1.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/appleboy/jquery-migrate.git",
+                "reference": "29077d39689bddad05036a537d49c4cf96488569"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/appleboy/jquery-migrate/zipball/29077d39689bddad05036a537d49c4cf96488569",
+                "reference": "29077d39689bddad05036a537d49c4cf96488569",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": "jquery-migrate.js"
+            }
+        },
+        {
+            "name": "bower-asset/jquery.nicescroll-3.6.x",
+            "version": "3.6.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/inuyaksa/jquery.nicescroll.git",
+                "reference": "050267822f045f59d0b0d0ac5d84c36ff8c98e1e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/inuyaksa/jquery.nicescroll/zipball/050267822f045f59d0b0d0ac5d84c36ff8c98e1e",
+                "reference": "050267822f045f59d0b0d0ac5d84c36ff8c98e1e",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/jquery": ">=1.8.3"
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": [
+                    "./jquery.nicescroll.js",
+                    "./zoomico.png"
+                ],
+                "bower-asset-ignore": [
+                    "**/.*",
+                    "demo",
+                    "package.json"
+                ]
+            }
+        },
+        {
+            "name": "bower-asset/noty-2.3.x",
+            "version": "v2.3.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/needim/noty.git",
+                "reference": "6fe2cf81c7b8ecdbdafaa875b82b78cf65e2f100"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/needim/noty/zipball/6fe2cf81c7b8ecdbdafaa875b82b78cf65e2f100",
+                "reference": "6fe2cf81c7b8ecdbdafaa875b82b78cf65e2f100",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": "js/noty/packaged/jquery.noty.packaged.js",
+                "bower-asset-ignore": []
+            },
+            "description": "noty is a jQuery plugin that makes it easy to create alert - success - error - warning - information - confirmation messages as an alternative the standard alert dialog. Each notification is added to a queue. (Optional)"
+        },
+        {
+            "name": "bower-asset/pace-1.0.x",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/HubSpot/pace.git",
+                "reference": "c6846cbf6b928e9903b569269fa9fbf32f2554f4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/HubSpot/pace/zipball/c6846cbf6b928e9903b569269fa9fbf32f2554f4",
+                "reference": "c6846cbf6b928e9903b569269fa9fbf32f2554f4",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": "pace.js",
+                "bower-asset-ignore": [
+                    ".*",
+                    "Gruntfile.coffee",
+                    "bower_components",
+                    "docs",
+                    "node_modules",
+                    "package.json",
+                    "templates",
+                    "tests"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Automatic page load progress bar",
+            "keywords": [
+                "activity",
+                "ajax",
+                "automatic",
+                "bar",
+                "client-side",
+                "load",
+                "loading",
+                "pageload",
+                "progress",
+                "progress",
+                "spinner"
+            ]
+        },
+        {
+            "name": "bower-asset/pnotify-3.0.x",
+            "version": "3.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sciactive/pnotify.git",
+                "reference": "2c6a12b5d8a6b55d21beae5b35c2a643fcfe4a90"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sciactive/pnotify/zipball/2c6a12b5d8a6b55d21beae5b35c2a643fcfe4a90",
+                "reference": "2c6a12b5d8a6b55d21beae5b35c2a643fcfe4a90",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/jquery": ">=1.6"
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": [
+                    "dist/pnotify.animate.js",
+                    "dist/pnotify.brighttheme.css",
+                    "dist/pnotify.buttons.css",
+                    "dist/pnotify.buttons.js",
+                    "dist/pnotify.callbacks.js",
+                    "dist/pnotify.confirm.js",
+                    "dist/pnotify.css",
+                    "dist/pnotify.js",
+                    "dist/pnotify.desktop.js",
+                    "dist/pnotify.history.css",
+                    "dist/pnotify.history.js",
+                    "dist/pnotify.mobile.css",
+                    "dist/pnotify.mobile.js",
+                    "dist/pnotify.nonblock.js"
+                ],
+                "bower-asset-ignore": [
+                    "build-tools/",
+                    "includes/",
+                    "devnote*.*",
+                    "index.html",
+                    "testing.html",
+                    "buildcustom.php",
+                    "package.json",
+                    "src/"
+                ]
+            },
+            "license": [
+                "Apache-2.0"
+            ],
+            "description": "JavaScript notification plugin."
+        },
+        {
+            "name": "bower-asset/respond-1.4.x",
+            "version": "1.4.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/scottjehl/Respond.git",
+                "reference": "20b7f4a192bb910c8c7e067b961de38519d334e4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/scottjehl/Respond/zipball/20b7f4a192bb910c8c7e067b961de38519d334e4",
+                "reference": "20b7f4a192bb910c8c7e067b961de38519d334e4",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": "dest/respond.src.js",
+                "bower-asset-ignore": [
+                    "**/.*",
+                    "test"
+                ]
+            },
+            "description": "Fast and lightweight polyfill for min/max-width CSS3 Media Queries (for IE 6-8, and more)"
+        },
+        {
+            "name": "bower-asset/responsive-tables-js-1.0.x",
+            "version": "v1.0.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/smasala/responsive-tables-js.git",
+                "reference": "10c8ea1f59acb8a00dc4af898d0cd54a527eef5d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/smasala/responsive-tables-js/zipball/10c8ea1f59acb8a00dc4af898d0cd54a527eef5d",
+                "reference": "10c8ea1f59acb8a00dc4af898d0cd54a527eef5d",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/jquery": "dev-default|*"
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": "responsivetables.js",
+                "bower-asset-ignore": ""
+            },
+            "description": "JavaScript solution for supporting responsive tables",
+            "keywords": [
+                "javascript",
+                "jquery",
+                "responsive",
+                "table"
+            ]
+        },
+        {
+            "name": "bower-asset/select2-4.0.x",
+            "version": "4.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/select2/select2.git",
+                "reference": "622a619d25358b86a93c2335f88e1884acc9ccb8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/select2/select2/zipball/622a619d25358b86a93c2335f88e1884acc9ccb8",
+                "reference": "622a619d25358b86a93c2335f88e1884acc9ccb8",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": [
+                    "dist/js/select2.js",
+                    "src/scss/core.scss"
+                ]
+            },
+            "description": "Select2 is a jQuery based replacement for select boxes. It supports searching, remote data sets, and infinite scrolling of results."
+        },
+        {
+            "name": "bower-asset/slimscroll-1.3.x",
+            "version": "v1.3.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/rochal/jQuery-slimScroll.git",
+                "reference": "00d27e3541d9cb4ada6f41b06cd67bef62d9d2b3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/rochal/jQuery-slimScroll/zipball/00d27e3541d9cb4ada6f41b06cd67bef62d9d2b3",
+                "reference": "00d27e3541d9cb4ada6f41b06cd67bef62d9d2b3",
+                "shasum": ""
+            },
+            "type": "bower-asset-library"
         },
         {
             "name": "composer/installers",
@@ -142,6 +992,62 @@
                 "zikula"
             ],
             "time": "2016-04-13 19:46:30"
+        },
+        {
+            "name": "fxp/composer-asset-plugin",
+            "version": "v1.1.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/francoispluchino/composer-asset-plugin.git",
+                "reference": "c3d803cc890fad5a7fb61a4036c5d973faae34af"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/francoispluchino/composer-asset-plugin/zipball/c3d803cc890fad5a7fb61a4036c5d973faae34af",
+                "reference": "c3d803cc890fad5a7fb61a4036c5d973faae34af",
+                "shasum": ""
+            },
+            "require": {
+                "composer-plugin-api": "^1.0",
+                "php": ">=5.3.3"
+            },
+            "require-dev": {
+                "composer/composer": "^1.0.0"
+            },
+            "type": "composer-plugin",
+            "extra": {
+                "class": "Fxp\\Composer\\AssetPlugin\\FxpAssetPlugin",
+                "branch-alias": {
+                    "dev-master": "1.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Fxp\\Composer\\AssetPlugin\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "François Pluchino",
+                    "email": "francois.pluchino@gmail.com"
+                }
+            ],
+            "description": "NPM/Bower Dependency Manager for Composer",
+            "homepage": "https://github.com/francoispluchino/composer-asset-plugin",
+            "keywords": [
+                "asset",
+                "bower",
+                "composer",
+                "dependency manager",
+                "nodejs",
+                "npm",
+                "package"
+            ],
+            "time": "2016-04-22 08:48:58"
         },
         {
             "name": "giantbomb/giantbomb",
@@ -277,12 +1183,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/JPinkney/TVMaze-PHP-API-Wrapper.git",
-                "reference": "bf6b5bcf44d607bd2406b0638e86e6b9f1b909fe"
+                "reference": "03e60ddbb4a5516aee531be5f4fafc92922f8ae4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/JPinkney/TVMaze-PHP-API-Wrapper/zipball/bf6b5bcf44d607bd2406b0638e86e6b9f1b909fe",
-                "reference": "bf6b5bcf44d607bd2406b0638e86e6b9f1b909fe",
+                "url": "https://api.github.com/repos/JPinkney/TVMaze-PHP-API-Wrapper/zipball/03e60ddbb4a5516aee531be5f4fafc92922f8ae4",
+                "reference": "03e60ddbb4a5516aee531be5f4fafc92922f8ae4",
                 "shasum": ""
             },
             "type": "library",
@@ -302,7 +1208,7 @@
                 }
             ],
             "description": "TVMaze-API-Wrapper",
-            "time": "2016-03-16 14:59:03"
+            "time": "2016-05-04 01:31:56"
         },
         {
             "name": "kbjr/Git.php",
@@ -372,16 +1278,16 @@
         },
         {
             "name": "phpmailer/phpmailer",
-            "version": "v5.2.14",
+            "version": "v5.2.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPMailer/PHPMailer.git",
-                "reference": "e774bc9152de85547336e22b8926189e582ece95"
+                "reference": "d0186171b28af4f06ac2ad8a84a8f3d6cbc3ba6c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/e774bc9152de85547336e22b8926189e582ece95",
-                "reference": "e774bc9152de85547336e22b8926189e582ece95",
+                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/d0186171b28af4f06ac2ad8a84a8f3d6cbc3ba6c",
+                "reference": "d0186171b28af4f06ac2ad8a84a8f3d6cbc3ba6c",
                 "shasum": ""
             },
             "require": {
@@ -392,8 +1298,7 @@
                 "phpunit/phpunit": "4.7.*"
             },
             "suggest": {
-                "league/oauth2-client": "Needed for XOAUTH2 authentication",
-                "league/oauth2-google": "Needed for Gmail XOAUTH2"
+                "league/oauth2-google": "Needed for Google XOAUTH2 authentication"
             },
             "type": "library",
             "autoload": {
@@ -429,7 +1334,7 @@
                 }
             ],
             "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
-            "time": "2015-11-01 10:15:28"
+            "time": "2016-05-10 18:39:36"
         },
         {
             "name": "smarty/smarty",

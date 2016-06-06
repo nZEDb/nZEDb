@@ -7,7 +7,7 @@
 				data-toggle="collapse"
 				data-parent="#accordion"
 				href="#searchtoggle"
-			><i class="icon-search"></i> Search Filter</a>
+			><i class="fa fa-search"></i> Search Filter</a>
 		</h4>
 	</div>
 	<div id="searchtoggle" class="panel-collapse collapse">
@@ -24,8 +24,8 @@
 		<thead>
 			<tr>
 				<th>Select All:<input type="checkbox" class="nzb_check_all"></th>
-				<th>title<a title="Sort Descending" href="{$orderbytitle_desc}"><i class="icon-chevron-down icon-black"></i></a><a
-							title="Sort Ascending" href="{$orderbytitle_asc}"><i class="icon-chevron-up icon-black"></i></a></th>
+				<th>title<a title="Sort Descending" href="{$orderbytitle_desc}"><i class="fa fa-chevron-down"></i></a><a
+							title="Sort Ascending" href="{$orderbytitle_asc}"><i class="fa fa-chevron-up"></i></a></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -182,7 +182,7 @@
 															title="View Nfo"
 															class="modal_nfo"
 															rel="nfo"
-														><i class="icon-info-sign"></i></a></span
+														><i class="fa fa-info"></i></a></span
 													>
 												{/if}
 												{if $mhaspreview[$m@index] == 1 && $userdata.canpreview == 1}
@@ -193,7 +193,7 @@
 															title="Screenshot of {$mname[$m@index]|escape:"htmlall"}"
 															class="modal_prev"
 															rel="preview"
-														><i class="icon-camera"></i></a></span
+														><i class="fa fa-camera"></i></a></span
 													>
 												{/if}
 												{if $minnerfiles[$m@index] > 0}
@@ -201,21 +201,21 @@
 														<a
 															href="#" onclick="return false;" class="mediainfo"
 															title="{$mguid[$m@index]}"
-														><i class="icon-list-alt"></i></a></span
+														><i class="fa fa-list-alt"></i></a></span
 													>
 												{/if}
 												<span class="label label-default">
 													<a
 														href="{$smarty.const.WWW_TOP}/browse?g={$mgrp[$m@index]}"
 														title="Browse releases in {$mgrp[$m@index]}"
-													><i class="icon-share-alt"></i></a></span
+													><i class="fa fa-share-alt"></i></a></span
 												>
 												{if $mpass[$m@index] == 1}
-													<span class="icon-stack" title="Potentially Passworded"><i class="icon-check-empty icon-stack-base"></i><i class="icon-unlock-alt"></i></span>
+													<span class="fa fa-stack" title="Potentially Passworded"><i class="fa fa-square-o fa-stack-base"></i><i class="fa fa-unlock-alt"></i></span>
 												{elseif $mpass[$m@index] == 2}
-													<span class="icon-stack" title="Broken Post"><i class="icon-check-empty icon-stack-base"></i><i class="icon-unlink"></i></span>
+													<span class="fa fa-stack" title="Broken Post"><i class="fa fa-square-o fa-stack-base"></i><i class="fa fa-chain-broken"></i></span>
 												{elseif $mpass[$m@index] == 10}
-													<span class="icon-stack" title="Passworded Archive"><i class="icon-check-empty icon-stack-base"></i><i class="icon-lock"></i></span>
+													<span class="fa fa-stack" title="Passworded Archive"><i class="fa fa-square-o fa-stack-base"></i><i class="fa fa-lock"></i></span>
 												{/if}
 												{if $mfailed[$m@index] > 0}
 													<span class="btn btn-default btn-xs" title="This release has failed to download for some users">

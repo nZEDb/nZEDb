@@ -1,5 +1,5 @@
 <h2>Browse Games</h2>
-<div class="well well-small">
+<div class="well well-sm">
 	<div style="text-align: center;">
 		{include file='search-filter.tpl'}
 	</div>
@@ -7,7 +7,7 @@
 {$site->adbrowse}
 {if $results|@count > 0}
 	<form id="nzb_multi_operations_form" action="get">
-		<div class="well well-small">
+		<div class="well well-sm">
 			<div class="nzb_multi_operations">
 				<table width="100%">
 					<tr>
@@ -42,7 +42,7 @@
 				</table>
 			</div>
 		</div>
-		<table style="width:100%;" class="data highlight icons table table-striped" id="coverstable">
+		<table style="width:100%;" class="data highlight icons table" id="coverstable">
 			<tr>
 				<th width="130">
 					<input type="checkbox" class="nzb_check_all" />
@@ -192,8 +192,8 @@
 									{/if}
 								</li>
 								{if $isadmin}
-									<a class="rndbtn confirm_action btn btn-mini btn-danger pull-right" href="{$smarty.const.WWW_TOP}/admin/release-delete.php?id={$result.releaseid}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Delete Release">Delete</a>
-									<a class="rndbtn btn btn-mini btn-warning pull-right" href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$result.releaseid}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Edit Release">Edit</a>
+									<a class="rndbtn confirm_action btn btn-mini btn-danger pull-right" href="{$smarty.const.WWW_TOP}/admin/release-delete.php?id={$result.releases_id}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Delete Release">Delete</a>
+									<a class="rndbtn btn btn-mini btn-warning pull-right" href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$result.releases_id}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Edit Release">Edit</a>
 								{/if}
 							</ul>
 							{if isset($result.genre) && $result.genre != ""}
@@ -241,7 +241,7 @@
 		<br/>
 		{$pager}
 		{if $results|@count > 10}
-			<div class="well well-small">
+			<div class="well well-sm">
 				<div class="nzb_multi_operations">
 					<table width="100%">
 						<tr>

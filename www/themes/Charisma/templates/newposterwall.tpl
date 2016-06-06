@@ -43,7 +43,7 @@
 								   href="{$smarty.const.WWW_TOP}/details/{$result.guid}">
 									{if $type == 'Console'}
 										<img width="130px" alt=""
-											 src="{$smarty.const.WWW_TOP}/covers/console/{$result.consoleinfoid}.jpg"/>
+											 src="{$smarty.const.WWW_TOP}/covers/console/{$result.consoleinfo_id}.jpg"/>
 									{elseif $type == 'Movies'}
 										<img width="140px" height="205px" alt=""
 											 src="{$smarty.const.WWW_TOP}/covers/movies/{$result.imdbid}-cover.jpg"/>
@@ -52,10 +52,10 @@
 											 src="{$smarty.const.WWW_TOP}/covers/xxx/{$result.xxxinfo_id}-cover.jpg"/>
 									{elseif $type == 'Audio'}
 										<img height="250px" width="250px" alt=""
-											 src="{$smarty.const.WWW_TOP}/covers/music/{$result.musicinfoid}.jpg"/>
+											 src="{$smarty.const.WWW_TOP}/covers/music/{$result.musicinfo_id}.jpg"/>
 									{elseif $type == 'Books'}
 										<img height="140px" width="205px" alt=""
-											 src="{$smarty.const.WWW_TOP}/covers/book/{$result.bookinfoid}.jpg"/>
+											 src="{$smarty.const.WWW_TOP}/covers/book/{$result.bookinfo_id}.jpg"/>
 									{elseif $type == 'PC'}
 										<img height="130px" width="130px" alt=""
 											 src="{$smarty.const.WWW_TOP}/covers/games/{$result.gamesinfo_id}.jpg"/>
@@ -70,8 +70,9 @@
 							</div>
 							<div class="rating-pod" id="guid{$result.guid}">
 								<div class="icons divlink col-lg-4">
-									<span class="btn btn-hover btn-default btn-sm icon_nzb text-muted"><a title="Download Nzb"
-																										  href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}">
+									<span class="btn btn-hover btn-default btn-sm icon_nzb text-muted">
+										<a title="Download Nzb"
+										   href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}">
 											<i class="glyphicon glyphicon-download"></i></a>
 									</span>
 									<span class="btn btn-hover btn-default btn-sm icon_cart text-muted" title="Send to my Download Basket"><i class="glyphicon glyphicon-shopping-cart"></i></span>

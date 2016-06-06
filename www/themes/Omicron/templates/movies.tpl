@@ -154,14 +154,14 @@
 																	  title="Send to my Queue"><i
 																			class="fa fa-send"></i></span>
 															{/if}
-															{if $cpurl != '' && $cpapi != ''}
-																<span class="btn btn-hover btn-default btn-xs sendtocouch text-muted"
-																	  target="blackhole"
-																	  href="javascript:"
-																	  rel="{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}"
-																	  name="CP{$result.imdbid}"
-																	  title="Add to CouchPotato"
-																		><i class="fa fa-send-o"></i></span>
+															{if !empty($cpurl) && !empty($cpapi)}
+																<span
+																	id="imdb{$result.imdbid}"
+																	href="javascript:;"
+																	class="btn btn-hover btn-default btn-xs sendtocouch text-muted"
+																	title="Add to CouchPotato">
+																	<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
+																</span>
 															{/if}
 															{if !empty($mfailed[$m@index])}
 																<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
@@ -272,14 +272,14 @@
 																	  title="Send to my Queue"><i
 																			class="fa fa-send"></i></span>
 															{/if}
-															{if $cpurl != '' && $cpapi != ''}
-																<span class="btn btn-hover btn-default btn-xs sendtocouch text-muted"
-																		target="blackhole"
-																		href="javascript:"
-																		rel="{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}"
-																		name="CP{$result.imdbid}"
-																		title="Add to CouchPotato"
-																		><i class="fa fa-send-o"></i></span>
+															{if !empty($cpurl) && !empty($cpapi)}
+																<span
+																	id="imdb{$result.imdbid}"
+																	href="javascript:;"
+																	class="btn btn-hover btn-default btn-xs sendtocouch text-muted"
+																	title="Add to CouchPotato">
+																	<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
+																</span>
 															{/if}
 															{if !empty($mfailed[$m@index])}
 																<span class="btn btn-default btn-xs" title="This release has failed to download for some users">
@@ -317,17 +317,6 @@
 										<input type="button"
 											   class="nzb_multi_operations_sab btn btn-sm btn-primary"
 											   value="Send to Queue"/>
-									{/if}
-									{if $cpurl != '' && $cpapi != ''}
-										<a
-												class="sendtocouch"
-												target="blackhole"
-												href="javascript:"
-												rel="{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}"
-												name="CP{$result.imdbid}"
-												title="Add to CouchPotato"
-												><img
-													src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png"></a>
 									{/if}
 									{if isset($isadmin)}
 										<input type="button"
