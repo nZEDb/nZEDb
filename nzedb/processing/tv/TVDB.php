@@ -147,7 +147,7 @@ class TVDB extends TV
 							$tvdbid = (int)$tvdbShow['tvdb'];
 						}
 
-					} else if ($this->echooutput) {
+					} else if ($this->echooutput && $tvdbid !== false) {
 						echo $this->pdo->log->primaryOver("Video ID for ") .
 							$this->pdo->log->headerOver($release['cleanname']) .
 							$this->pdo->log->primary(" found in local db, attempting episode match.");
@@ -157,8 +157,8 @@ class TVDB extends TV
 						// Now that we have valid video and tvdb ids, try to get the poster
 						$this->getPoster($videoId, $tvdbid);
 
-						$seasonNo = preg_replace('/^S0*/i', '', $release['season']);
-						$episodeNo = preg_replace('/^E0*/i', '', $release['episode']);
+						$seasonNo = (!empty($release['season']) ? preg_replace('/^S0*/i', '', $release['season']) : '');
+						$episodeNo = (!empty($release['episode']) ? preg_replace('/^E0*/i', '', $release['episode']) : '');
 
 						if ($episodeNo === 'all') {
 							// Set the video ID and leave episode 0
