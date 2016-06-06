@@ -280,6 +280,9 @@ while ($runVar['counts']['iterations'] > 0) {
 			if (strpos($settingkey, 'process') == 0 && $setting == 0) {
 				$runVar['counts']['now'][$settingkey] = $runVar['counts']['start'][$settingkey] = 0;
 			}
+			if ($settingkey == 'fix_names' && $setting == 0) {
+				$runVar['counts']['now']['processfnr'] = $runVar['counts']['start']['processfnr'] = 0;
+			}
 		}
 
 		//set initial start postproc values from work queries -- this is used to determine diff variables
