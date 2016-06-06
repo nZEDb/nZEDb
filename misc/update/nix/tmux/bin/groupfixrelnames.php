@@ -35,10 +35,10 @@ if (!isset($argv[1])) {
 						r.id AS releases_id, r.guid, r.groups_id, r.categories_id, r.name, r.searchname, r.proc_nfo,
 						r.proc_files, r.proc_par2, r.proc_sorter, r.ishashed, r.dehashstatus, r.nfostatus,
 						r.size AS relsize, r.predb_id,
-						rf.releases_id AS fileid, IF(rf.ishashed = 1, rf.name, NULL) AS filehash,
-						GROUP_CONCAT(rf.name ORDER BY rf.name ASC SEPARATOR '|') AS filestring,
-						UNCOMPRESS(rn.nfo) AS textstring,
-						HEX(ru.uniqueid) AS uid
+						IFNULL(rf.releases_id, '') AS fileid, IF(rf.ishashed = 1, rf.name, '') AS filehash,
+						IFNULL(GROUP_CONCAT(rf.name ORDER BY rf.name ASC SEPARATOR '|'), '') AS filestring,
+						IFNULL(UNCOMPRESS(rn.nfo), '') AS textstring,
+						IFNULL(HEX(ru.uniqueid), '') AS uid
 					FROM releases r
 					LEFT JOIN release_nfos rn ON r.id = rn.releases_id
 					LEFT JOIN release_files rf ON r.id = rf.releases_id
@@ -91,7 +91,7 @@ if (!isset($argv[1])) {
 						if ($namefixer->matched === false
 							&& !empty($release['filehash'])
 							&& preg_match('/[a-fA-F0-9]{32,40}/i', $release['filehash'], $matches)) {
-								$namefixer->matchPredbHash($matches[0], $release, 1, 1, true, 1);
+							$namefixer->matchPredbHash($matches[0], $release, 1, 1, true, 1);
 						}
 					}
 					$namefixer->_updateSingleColumn('dehashstatus', 'dehashstatus -1', $release['releases_id']);
@@ -100,7 +100,6 @@ if (!isset($argv[1])) {
 						continue;
 					} else {
 						$namefixer->done = $namefixer->matched = false;
-						echo $pdo->log->primaryOver('!');
 					}
 
 					if ($release['proc_uid'] == NameFixer::PROC_UID_NONE
