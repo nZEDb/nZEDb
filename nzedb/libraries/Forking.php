@@ -510,11 +510,18 @@ class Forking extends \fork_daemon
 					AND r.nfostatus > %d
 					AND
 					(
-						r.proc_nfo = %d
+						(
+							r.nfostatus = %d
+							AND r.proc_nfo = %d
+						)
 						OR r.proc_files = %d
 						OR r.proc_uid = %d
 						OR r.proc_par2 = %d
-						OR r.proc_sorter = %d
+						OR
+						(
+							r.nfostatus = %d
+							AND r.proc_sorter = %d
+						)
 						OR
 						(
 							r.ishashed = 1

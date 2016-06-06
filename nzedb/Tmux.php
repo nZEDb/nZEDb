@@ -516,10 +516,10 @@ class Tmux
 					SUM(IF(nzbstatus = %1\$d AND categories_id BETWEEN %d AND %d AND xxxinfo_id = 0,1,0)) AS processxxx,
 					SUM(IF(1=1 %s,1,0)) AS processnfo,
 					SUM(IF(nzbstatus = %1\$d AND r.isrenamed = %d AND predb_id = 0 AND passwordstatus >= 0 AND nfostatus > %d
-						AND (proc_nfo = %d OR proc_files = %d OR proc_uid = %d OR proc_par2 = %d OR proc_sorter = %d
+						AND ((nfostatus = %d AND proc_nfo = %d) OR proc_files = %d OR proc_uid = %d OR proc_par2 = %d OR (nfostatus = %20\$d AND proc_sorter = %d)
 							OR (ishashed = 1 AND dehashstatus BETWEEN -6 AND 0)) AND r.categories_id IN (%s),1,0)) AS processrenames,
 					SUM(IF(isrenamed = %d,1,0)) AS renamed,
-					SUM(IF(nzbstatus = %1\$d AND nfostatus = %d,1,0)) AS nfo,
+					SUM(IF(nzbstatus = %1\$d AND nfostatus = %20\$d,1,0)) AS nfo,
 					SUM(IF(nzbstatus = %1\$d AND isrequestid = %d AND predb_id = 0 AND ((reqidstatus = %d) OR (reqidstatus = %d) OR (reqidstatus = %d AND adddate > NOW() - INTERVAL %s HOUR)),1,0)) AS requestid_inprogress,
 					SUM(IF(predb_id > 0 AND nzbstatus = %1\$d AND isrequestid = %28\$d AND reqidstatus = %d,1,0)) AS requestid_matched,
 					SUM(IF(predb_id > 0,1,0)) AS predb_matched,
@@ -544,6 +544,7 @@ class Tmux
 					Nfo::NfoQueryString($this->pdo),
 					NameFixer::IS_RENAMED_NONE,
 					Nfo::NFO_UNPROC,
+					Nfo::NFO_FOUND,
 					NameFixer::PROC_NFO_NONE,
 					NameFixer::PROC_FILES_NONE,
 					NameFixer::PROC_UID_NONE,
@@ -551,7 +552,6 @@ class Tmux
 					MiscSorter::PROC_SORTER_NONE,
 					Category::getCategoryOthersGroup(),
 					NameFixer::IS_RENAMED_DONE,
-					Nfo::NFO_FOUND,
 					RequestID::IS_REQID_TRUE,
 					RequestID::REQID_UPROC,
 					RequestID::REQID_NOLL,
