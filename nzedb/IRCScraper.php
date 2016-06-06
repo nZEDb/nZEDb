@@ -100,12 +100,7 @@ class IRCScraper extends IRCClient
 				'#pre@corrupt'                => false,
 				'#scnzb'                      => false,
 				'#tvnzb'                      => false,
-				'omgwtfnzbs'                  => false,
-				'orlydb'                      => false,
-				'prelist'                     => false,
-				'srrdb'                       => false,
-				'u4all.eu'                    => false,
-				'zenet'                       => false
+				'srrdb'                       => false
 			];
 		}
 

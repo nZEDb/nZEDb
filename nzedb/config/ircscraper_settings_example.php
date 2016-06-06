@@ -73,9 +73,9 @@ define('SCRAPE_IRC_CHANNELS',
 	serialize(
 		array(
 			//'#Channel'                => 'Password',
-			//'#nZEDbPRE2'                => null,
-			'#PreNNTmux'                => null,
-			'#nZEDbPRE'                 => null
+			'#nZEDbPRE'                 => null,
+			'#nZEDbPRE2'                => null,
+			'#PreNNTmux'                => null
 		)
 	)
 );
@@ -106,12 +106,7 @@ define('SCRAPE_IRC_SOURCE_IGNORE',
 			'#pre@corrupt'                => false,
 			'#scnzb'                      => false,
 			'#tvnzb'                      => false,
-			'omgwtfnzbs'                  => false,
-			'orlydb'                      => false,
-			'prelist'                     => false,
-			'srrdb'                       => false,
-			'u4all.eu'                    => false,
-			'zenet'                       => false
+			'srrdb'                       => false
 		)
 	)
 );
