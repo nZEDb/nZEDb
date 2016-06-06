@@ -85,6 +85,7 @@ if (!isset($argv[1])) {
 					echo PHP_EOL . $pdo->log->primaryOver("[{$release['releases_id']}]");
 
 					if ($release['ishashed'] == 1 && $release['dehashstatus'] > -6 && $release['dehashstatus'] < 0) {
+						echo $pdo->log->primaryOver('m');
 						if (preg_match('/[a-fA-F0-9]{32,40}/i', $release['name'], $matches)) {
 							$namefixer->matchPredbHash($matches[0], $release, 1, 1, true, 1);
 						}
@@ -98,26 +99,25 @@ if (!isset($argv[1])) {
 
 					if($namefixer->matched) {
 						continue;
-					} else {
-						$namefixer->done = $namefixer->matched = false;
 					}
+					$namefixer->done = $namefixer->matched = false;
 
 					if ($release['proc_uid'] == NameFixer::PROC_UID_NONE
 						&& !empty($release['uid'])) {
+						echo $pdo->log->primaryOver('U');
 						$namefixer->uidCheck($release, true, 'UID, ', 1, 1);
 					}
 					$namefixer->_updateSingleColumn('proc_uid', NameFixer::PROC_UID_DONE, $release['releases_id']);
 
 					if($namefixer->matched) {
 						continue;
-					} else {
-						$namefixer->done = $namefixer->matched = false;
-						echo $pdo->log->primaryOver('@');
 					}
+					$namefixer->done = $namefixer->matched = false;
 
 					if (!preg_match('/^=newz\[NZB\]=\w+/', $release['textstring'])
 						|| $release['nfostatus'] == Nfo::NFO_FOUND
-							|| $release['nfostatus'] == NameFixer::PROC_NFO_NONE) {
+						|| $release['nfostatus'] == NameFixer::PROC_NFO_NONE) {
+						echo $pdo->log->primaryOver('n');
 						$namefixer->done = $namefixer->matched = false;
 						$namefixer->checkName($release, true, 'NFO, ', 1, 1);
 					}
@@ -125,12 +125,11 @@ if (!isset($argv[1])) {
 
 					if($namefixer->matched) {
 						continue;
-					} else {
-						$namefixer->done = $namefixer->matched = false;
-						echo $pdo->log->primaryOver('#');
 					}
+					$namefixer->done = $namefixer->matched = false;
 
 					if ($release['fileid'] > 0 && $release['proc_files'] == NameFixer::PROC_FILES_NONE) {
+						echo $pdo->log->primaryOver('F');
 						$namefixer->done = $namefixer->matched = false;
 						$fileNames = explode('|', $release['filestring']);
 						if (is_array($fileNames)) {
@@ -145,12 +144,11 @@ if (!isset($argv[1])) {
 
 					if($namefixer->matched) {
 						continue;
-					} else {
-						$namefixer->done = $namefixer->matched = false;
-						echo $pdo->log->primaryOver('$');
 					}
+					$namefixer->done = $namefixer->matched = false;
 
 					if ($release['proc_par2'] == NameFixer::PROC_PAR2_NONE) {
+						echo $pdo->log->primaryOver('p');
 						if (!isset($nzbcontents)) {
 							$nntp = new NNTP(['Settings' => $pdo]);
 							if (($pdo->getSetting('alternate_nntp') == '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
@@ -170,10 +168,8 @@ if (!isset($argv[1])) {
 
 					if($namefixer->matched) {
 						continue;
-					} else {
-						$namefixer->done = $namefixer->matched = false;
-						echo $pdo->log->primaryOver('%');
 					}
+					$namefixer->done = $namefixer->matched = false;
 
 					if ($release['nfostatus'] == Nfo::NFO_FOUND
 						&& $release['proc_sorter'] === MiscSorter::PROC_SORTER_NONE) {
