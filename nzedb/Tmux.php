@@ -519,10 +519,10 @@ class Tmux
 						AND (proc_nfo = %d OR proc_files = %d OR proc_uid = %d OR proc_par2 = %d OR proc_sorter = %d
 							OR dehashstatus BETWEEN -6 AND 0) AND r.categories_id IN (%s),1,0)) AS processfrn,
 					SUM(IF(isrenamed = %d,1,0)) AS renamed,
-					SUM(IF(nzbstatus = %1\$d AND nfostatus = 1,1,0)) AS nfo,
-					SUM(IF(nzbstatus = %1\$d AND isrequestid = 1 AND predb_id = 0 AND ((reqidstatus = 0) OR (reqidstatus = -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL %s HOUR)),1,0)) AS requestid_inprogress,
-					SUM(IF(predb_id > 0 AND nzbstatus = 1 AND isrequestid = 1 AND reqidstatus = 1,1,0)) AS requestid_matched,
-					SUM(IF(predb_id > 0 AND searchname IS NOT NULL,1,0)) AS predb_matched,
+					SUM(IF(nzbstatus = %1\$d AND nfostatus = %d,1,0)) AS nfo,
+					SUM(IF(nzbstatus = %1\$d AND isrequestid = %d AND predb_id = 0 AND ((reqidstatus = %d) OR (reqidstatus = %d) OR (reqidstatus = %d AND adddate > NOW() - INTERVAL %s HOUR)),1,0)) AS requestid_inprogress,
+					SUM(IF(predb_id > 0 AND nzbstatus = %1\$d AND isrequestid = %28\$d AND reqidstatus = %d,1,0)) AS requestid_matched,
+					SUM(IF(predb_id > 0,1,0)) AS predb_matched,
 					COUNT(DISTINCT(predb_id)) AS distinct_predb_matched
 					FROM releases r",
 					NZB::NZB_ADDED,
@@ -551,6 +551,12 @@ class Tmux
 					MiscSorter::PROC_SORTER_NONE,
 					Category::getCategoryOthersGroup(),
 					NameFixer::IS_RENAMED_DONE,
+					Nfo::NFO_FOUND,
+					RequestID::IS_REQID_TRUE,
+					RequestID::REQID_UPROC,
+					RequestID::REQID_NOLL,
+					RequestID::REQID_NONE,
+					RequestID::REQID_FOUND,
 					$request_hours
 				);
 

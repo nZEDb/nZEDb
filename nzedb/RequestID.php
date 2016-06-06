@@ -13,6 +13,9 @@ abstract class RequestID
 	const REQID_UPROC = 0; // Release has not been processed.
 	const REQID_FOUND = 1; // Request ID found and release was updated.
 
+	const IS_REQID_TRUE = 1; // releases.isrequestid is 1
+	const IS_REQID_FALSE = 0; // releases.isrequestid is 0
+
 	/**
 	 * @var Groups
 	 */
