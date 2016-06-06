@@ -97,10 +97,14 @@
 									<th>Action</th>
 								</tr>
 								{foreach $animeEpisodeTitles as $result}
-									<tr class="{cycle values=",alt"}" id="guid{$result.guid}">
-										<td class="check"><input id="chk{$result.guid|substr:0:7}"
-																 type="checkbox" class="flat"
-																 value="{$result.guid}"/></td>
+									<tr class="{cycle values=",alt"}">
+										<td>
+											<input
+												id="guid{$result.guid}"
+												type="checkbox"
+												class="flat"
+												value="{$result.guid}"/>
+										</td>
 										<td>
 											<a title="View details"
 											   href="{$smarty.const.WWW_TOP}/details/{$result.guid}">{$result.searchname|escape:"htmlall"|replace:".":" "}</a>
@@ -125,19 +129,29 @@
 										<td><span class="label label-primary">{$result.category_name}</span></td>
 										<td width="40" title="{$result.postdate}">{$result.postdate|timeago}</td>
 										<td>{$result.size|fsize_format:"MB"}</td>
-										<td class="icon_nzb"><a
-													href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}"><i
-														class="fa fa-cloud-download text-muted" data-toggle="tooltip"
-														data-placement="top" title
-														data-original-title="Download NZB"></i></a>
+										<td>
+											<a href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}">
+												<i
+													id="guid{$result.guid}"
+													class="icon_nzb fa fa-cloud-download text-muted"
+													data-toggle="tooltip"
+													data-placement="top" title
+													data-original-title="Download NZB">
+												</i>
+											</a>
 											<a href="{$smarty.const.WWW_TOP}/details/{$result.guid}/#comments"><i
 														class="fa fa-comments-o text-muted" data-toggle="tooltip"
 														data-placement="top" title
 														data-original-title="Comments"></i></a>
-											<a href="#" class="icon_cart text-muted"><i
-														class="fa fa-shopping-basket" data-toggle="tooltip"
-														data-placement="top" title
-														data-original-title="Send to my Download Basket"></i></a>
+											<a href="#">
+												<i
+													id="guid{$result.guid}"
+													class="icon cart text-muted fa fa-shopping-basket"
+													data-toggle="tooltip"
+													data-placement="top" title
+													data-original-title="Send to my Download Basket">
+												</i>
+											</a>
 											{if isset($sabintegrated) && $sabintegrated !=""}
 												<a href="#" class="icon_sab text-muted"><i class="fa fa-share"
 																						   data-toggle="tooltip"
