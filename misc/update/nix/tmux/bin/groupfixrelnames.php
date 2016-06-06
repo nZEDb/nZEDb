@@ -33,7 +33,7 @@ if (!isset($argv[1])) {
 				sprintf("
 					SELECT
 						r.id AS releases_id, r.guid, r.groups_id, r.categories_id, r.name, r.searchname, r.proc_nfo,
-						r.proc_files, r.proc_par2, r.proc_sorter, r.ishashed, r.dehashstatus, r.nfostatus,
+						r.proc_uid, r.proc_files, r.proc_par2, r.proc_sorter, r.ishashed, r.dehashstatus, r.nfostatus,
 						r.size AS relsize, r.predb_id,
 						IFNULL(rf.releases_id, '') AS fileid, IF(rf.ishashed = 1, rf.name, '') AS filehash,
 						IFNULL(GROUP_CONCAT(rf.name ORDER BY rf.name ASC SEPARATOR '|'), '') AS filestring,
@@ -93,6 +93,7 @@ if (!isset($argv[1])) {
 						if ($namefixer->matched === false
 							&& !empty($release['filehash'])
 							&& preg_match('/[a-fA-F0-9]{32,40}/i', $release['filehash'], $matches)) {
+							echo $pdo->log->primaryOver('h');
 							$namefixer->matchPredbHash($matches[0], $release, 1, 1, true, 1);
 						}
 					}
@@ -136,6 +137,7 @@ if (!isset($argv[1])) {
 						if (is_array($fileNames)) {
 							$releaseFile = $release;
 							foreach ($fileNames AS $fileName) {
+								echo $pdo->log->primaryOver('f');
 								$releaseFile['texstring'] = $fileName;
 								$namefixer->checkName($releaseFile, true, 'Filenames, ', 1, 1);
 							}
