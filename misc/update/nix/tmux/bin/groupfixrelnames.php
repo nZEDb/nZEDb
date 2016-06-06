@@ -117,8 +117,8 @@ if (!isset($argv[1])) {
 					$namefixer->done = $namefixer->matched = false;
 
 					if (!preg_match('/^=newz\[NZB\]=\w+/', $release['textstring'])
-						|| $release['nfostatus'] == Nfo::NFO_FOUND
-						|| $release['nfostatus'] == NameFixer::PROC_NFO_NONE) {
+						&& $release['nfostatus'] == Nfo::NFO_FOUND
+						&& $release['proc_nfo'] == NameFixer::PROC_NFO_NONE) {
 						echo $pdo->log->primaryOver('n');
 						$namefixer->done = $namefixer->matched = false;
 						$namefixer->checkName($release, true, 'NFO, ', 1, 1);
