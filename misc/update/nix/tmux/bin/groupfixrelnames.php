@@ -188,10 +188,11 @@ if (!isset($argv[1])) {
 
 					if ($release['nfostatus'] == Nfo::NFO_FOUND
 						&& $release['proc_sorter'] === MiscSorter::PROC_SORTER_NONE) {
-							$res = $sorter->nfosorter(null, $release['releases_id']);
-						}
+						$res = $sorter->nfosorter(null, $release['releases_id']);
+						$namefixer->_updateSingleColumn('proc_sorter', NameFixer::PROC_PAR2_DONE, $release['releases_id']);
 					}
 				}
+			}
 			break;
 
 		case $pieces[0] === 'predbft' && isset($maxperrun) && is_numeric($maxperrun) && isset($thread) && is_numeric($thread):
