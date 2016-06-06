@@ -202,11 +202,11 @@ class TmuxOutput extends Tmux
 		$buffer = $this->_getTableCounts();
 		$buffer .= $this->_getPaths();
 
-		$buffer .= sprintf($this->tmpMasks[3], "PPA Lists", "Unmatched", "Matched");
+		$buffer .= sprintf($this->tmpMasks[3], "PP Lists", "Unmatched", "Matched");
 		$buffer .= $this->_getSeparator();
 
 		$buffer .= sprintf($this->tmpMasks[4],
-		"NFO's",
+		"Nfo",
 		sprintf(
 			"%s(%s)",
 			number_format($this->runVar['counts']['now']['processnfo']),
@@ -219,7 +219,7 @@ class TmuxOutput extends Tmux
 		)
 		);
 		$buffer .= sprintf($this->tmpMasks[4],
-			"predb",
+			"PreDB",
 			sprintf(
 				"%s(%s)",
 				number_format($this->runVar['counts']['now']['predb'] -
@@ -233,7 +233,7 @@ class TmuxOutput extends Tmux
 			)
 		);
 		$buffer .= sprintf($this->tmpMasks[4],
-			"requestID",
+			"RequestID",
 			sprintf(
 				"%s(%s)",
 				number_format($this->runVar['counts']['now']['requestid_inprogress']),
