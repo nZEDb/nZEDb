@@ -394,7 +394,7 @@ class NameFixer
 		if ($cats === 3) {
 			$query = sprintf('
 				SELECT
-					rel.id AS releases_id, rel.size AS relsize, rel.group_id, rel.categories_id,
+					rel.id AS releases_id, rel.size AS relsize, rel.groups_id, rel.categories_id,
 					rel.name, rel.name AS textstring, rel.predb_id, rel.searchname,
 					HEX(ru.uniqueid) AS uid
 				FROM releases rel
@@ -409,7 +409,7 @@ class NameFixer
 		} else {
 			$query = sprintf('
 				SELECT
-					rel.id AS releases_id, rel.size AS relsize, rel.group_id, rel.categories_id,
+					rel.id AS releases_id, rel.size AS relsize, rel.groups_id, rel.categories_id,
 					rel.name, rel.name AS textstring, rel.predb_id, rel.searchname,
 					HEX(ru.uniqueid) AS uid
 				FROM releases rel
