@@ -515,7 +515,11 @@ class Forking extends \fork_daemon
 						OR r.proc_uid = %d
 						OR r.proc_par2 = %d
 						OR r.proc_sorter = %d
-						OR r.dehashstatus BETWEEN -6 AND 0
+						OR
+						(
+							r.ishashed = 1
+							AND r.dehashstatus BETWEEN -6 AND 0
+						)
 					)
 					AND r.categories_id IN (%s)",
 					NZB::NZB_ADDED,

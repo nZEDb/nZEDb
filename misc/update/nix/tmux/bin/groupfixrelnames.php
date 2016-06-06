@@ -35,7 +35,7 @@ if (!isset($argv[1])) {
 						r.id AS releases_id, r.guid, r.groups_id, r.categories_id, r.name, r.searchname, r.proc_nfo,
 						r.proc_uid, r.proc_files, r.proc_par2, r.proc_sorter, r.ishashed, r.dehashstatus, r.nfostatus,
 						r.size AS relsize, r.predb_id,
-						IFNULL(rf.releases_id, '') AS fileid, IF(rf.ishashed = 1, rf.name, '') AS filehash,
+						IFNULL(rf.releases_id, 0) AS fileid, IF(rf.ishashed = 1, rf.name, 0) AS filehash,
 						IFNULL(GROUP_CONCAT(rf.name ORDER BY rf.name ASC SEPARATOR '|'), '') AS filestring,
 						IFNULL(UNCOMPRESS(rn.nfo), '') AS textstring,
 						IFNULL(HEX(ru.uniqueid), '') AS uid
@@ -56,7 +56,11 @@ if (!isset($argv[1])) {
 						OR r.proc_uid = %d
 						OR r.proc_par2 = %d
 						OR r.proc_sorter = %d
-						OR r.dehashstatus BETWEEN -6 AND 0
+						OR
+						(
+							r.ishashed = 1
+							AND r.dehashstatus BETWEEN -6 AND 0
+						)
 					)
 					AND r.categories_id IN (%s)
 					GROUP BY r.id
@@ -85,7 +89,7 @@ if (!isset($argv[1])) {
 
 					echo PHP_EOL . $pdo->log->primaryOver("[{$release['releases_id']}]");
 
-					if ($release['ishashed'] == 1 && $release['dehashstatus'] > -6 && $release['dehashstatus'] < 0) {
+					if ($release['ishashed'] == 1 && $release['dehashstatus'] >= -6 && $release['dehashstatus'] < 0) {
 						echo $pdo->log->primaryOver('m');
 						if (preg_match('/[a-fA-F0-9]{32,40}/i', $release['name'], $matches)) {
 							$namefixer->matchPredbHash($matches[0], $release, 1, 1, true, 1);
@@ -96,8 +100,8 @@ if (!isset($argv[1])) {
 							echo $pdo->log->primaryOver('h');
 							$namefixer->matchPredbHash($matches[0], $release, 1, 1, true, 1);
 						}
+						$namefixer->_updateSingleColumn('dehashstatus', 'dehashstatus - 1', $release['releases_id']);
 					}
-					$namefixer->_updateSingleColumn('dehashstatus', 'dehashstatus -1', $release['releases_id']);
 
 					if($namefixer->matched) {
 						continue;
