@@ -506,7 +506,7 @@ class Tmux
 			case 1:
 				return sprintf("
 					SELECT
-					SUM(IF(nzbstatus = %1\$d AND categories_id BETWEEN %d AND %d AND categories_id != %d AND videos_id = 0 AND tv_episodes_id BETWEEN -3 AND 0 AND size > 1048576,1,0)) AS processtv,
+					SUM(IF(nzbstatus = %d AND categories_id BETWEEN %d AND %d AND categories_id != %d AND videos_id = 0 AND tv_episodes_id BETWEEN -3 AND 0 AND size > 1048576,1,0)) AS processtv,
 					SUM(IF(nzbstatus = %1\$d AND categories_id = %d AND anidbid IS NULL,1,0)) AS processanime,
 					SUM(IF(nzbstatus = %1\$d AND categories_id BETWEEN %d AND %d AND imdbid IS NULL,1,0)) AS processmovies,
 					SUM(IF(nzbstatus = %1\$d AND categories_id IN (%d, %d, %d) AND musicinfo_id IS NULL,1,0)) AS processmusic,
