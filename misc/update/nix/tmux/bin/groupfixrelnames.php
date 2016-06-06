@@ -52,7 +52,7 @@ if (!isset($argv[1])) {
 					AND
 					(
 						(
-							r.nfostatus = 1
+							r.nfostatus = %d
 							AND r.proc_nfo = %d
 						)
 						OR r.proc_files = %d
@@ -60,7 +60,7 @@ if (!isset($argv[1])) {
 						OR r.proc_par2 = %d
 						OR
 						(
-							r.nfostatus = 1
+							r.nfostatus = %5\$d
 							AND r.proc_sorter = %d
 						)
 						OR
@@ -77,6 +77,7 @@ if (!isset($argv[1])) {
 					NZB::NZB_ADDED,
 					NameFixer::IS_RENAMED_NONE,
 					Nfo::NFO_UNPROC,
+					Nfo::NFO_FOUND,
 					NameFixer::PROC_NFO_NONE,
 					NameFixer::PROC_FILES_NONE,
 					NameFixer::PROC_UID_NONE,

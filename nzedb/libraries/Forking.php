@@ -519,7 +519,7 @@ class Forking extends \fork_daemon
 						OR r.proc_par2 = %d
 						OR
 						(
-							r.nfostatus = %d
+							r.nfostatus = %4\$d
 							AND r.proc_sorter = %d
 						)
 						OR
@@ -532,6 +532,7 @@ class Forking extends \fork_daemon
 					NZB::NZB_ADDED,
 					NameFixer::IS_RENAMED_NONE,
 					Nfo::NFO_UNPROC,
+					Nfo::NFO_FOUND,
 					NameFixer::PROC_NFO_NONE,
 					NameFixer::PROC_FILES_NONE,
 					NameFixer::PROC_UID_NONE,
