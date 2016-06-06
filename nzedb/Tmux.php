@@ -518,6 +518,7 @@ class Tmux
 					SUM(IF(nzbstatus = %1\$d AND r.isrenamed = %d AND predb_id = 0 AND passwordstatus >= 0 AND nfostatus > %d
 						AND (proc_nfo = %d OR proc_files = %d OR proc_uid = %d OR proc_par2 = %d OR proc_sorter = %d
 							OR dehashstatus BETWEEN -6 AND 0) AND r.categories_id IN (%s),1,0)) AS processfrn,
+					SUM(IF(isrenamed = %d,1,0) AS renamed,
 					SUM(IF(nzbstatus = %1\$d AND nfostatus = 1,1,0)) AS nfo,
 					SUM(IF(nzbstatus = %1\$d AND isrequestid = 1 AND predb_id = 0 AND ((reqidstatus = 0) OR (reqidstatus = -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL %s HOUR)),1,0)) AS requestid_inprogress,
 					SUM(IF(predb_id > 0 AND nzbstatus = 1 AND isrequestid = 1 AND reqidstatus = 1,1,0)) AS requestid_matched,
@@ -549,6 +550,7 @@ class Tmux
 					NameFixer::PROC_PAR2_NONE,
 					MiscSorter::PROC_SORTER_NONE,
 					Category::getCategoryOthersGroup(),
+					NameFixer::IS_RENAMED_DONE,
 					$request_hours
 				);
 
