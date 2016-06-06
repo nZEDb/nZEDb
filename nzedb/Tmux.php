@@ -515,7 +515,7 @@ class Tmux
 					SUM(IF(nzbstatus = %1\$d AND categories_id = %d AND gamesinfo_id = 0,1,0)) AS processgames,
 					SUM(IF(nzbstatus = %1\$d AND categories_id BETWEEN %d AND %d AND xxxinfo_id = 0,1,0)) AS processxxx,
 					SUM(IF(1=1 %s,1,0)) AS processnfo,
-					SUM(IF(nzbstatus = %1\$d AND r.isrenamed = %d AND predb_id = 0 AND passwordstatus >= 0 AND nfostatus > %d
+					SUM(IF(nzbstatus = %1\$d AND isrenamed = %d AND predb_id = 0 AND passwordstatus >= 0 AND nfostatus > %d
 						AND ((nfostatus = %d AND proc_nfo = %d) OR proc_files = %d OR proc_uid = %d OR proc_par2 = %d OR (nfostatus = %20\$d AND proc_sorter = %d)
 							OR (ishashed = 1 AND dehashstatus BETWEEN -6 AND 0)) AND r.categories_id IN (%s),1,0)) AS processrenames,
 					SUM(IF(isrenamed = %d,1,0)) AS renamed,
