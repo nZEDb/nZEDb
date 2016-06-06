@@ -187,7 +187,7 @@ if (!isset($argv[1])) {
 					$namefixer->done = $namefixer->matched = false;
 
 					if ($release['nfostatus'] == Nfo::NFO_FOUND
-						&& $release['proc_sorter'] === MiscSorter::PROC_SORTER_NONE) {
+						&& $release['proc_sorter'] == MiscSorter::PROC_SORTER_NONE) {
 						echo $pdo->log->primaryOver('S');
 						$res = $sorter->nfosorter(null, $release['releases_id']);
 						$namefixer->_updateSingleColumn('proc_sorter', NameFixer::PROC_PAR2_DONE, $release['releases_id']);
