@@ -106,8 +106,7 @@ define('SCRAPE_IRC_SOURCE_IGNORE',
 			'#pre@corrupt'                => false,
 			'#scnzb'                      => false,
 			'#tvnzb'                      => false,
-			'srrdb'                       => false,
-			'zenet'                       => false
+			'srrdb'                       => false
 		)
 	)
 );
