@@ -59,7 +59,7 @@ if (!isset($argv[1])) {
 					AND r.nzbstatus = %d
 					AND r.isrenamed = %d
 					AND r.predb_id = 0
-					AND proc_pp = 1
+					AND r.passwordstatus >= 0
 					AND r.nfostatus = %d
 					AND
 					(
