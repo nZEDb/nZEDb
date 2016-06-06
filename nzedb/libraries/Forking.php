@@ -489,18 +489,6 @@ class Forking extends \fork_daemon
 	{
 		$this->register_child_run([0 => $this, 1 => 'fixRelNamesChildWorker']);
 
-		$categories = [
-			Category::OTHER_MISC,
-			Category::OTHER_HASHED,
-			Category::GAME_OTHER,
-			Category::MOVIE_OTHER,
-			Category::MUSIC_OTHER,
-			Category::PC_PHONE_OTHER,
-			Category::TV_OTHER,
-			Category::XXX_OTHER,
-			Category::BOOKS_UNKNOWN
-		];
-
 		$groupby = "GROUP BY leftguid";
 		$rowLimit = "LIMIT 16";
 		$select = "r.leftguid AS guidchar, COUNT(r.id) AS count";
@@ -519,7 +507,7 @@ class Forking extends \fork_daemon
 					AND r.isrenamed = %d
 					AND r.predb_id = 0
 					AND r.passwordstatus >= 0
-					AND r.nfostatus = %d
+					AND r.nfostatus > %d
 					AND
 					(
 						r.proc_nfo = %d
@@ -532,13 +520,13 @@ class Forking extends \fork_daemon
 					AND r.categories_id IN (%s)",
 					NZB::NZB_ADDED,
 					NameFixer::IS_RENAMED_NONE,
-					Nfo::NFO_FOUND,
+					Nfo::NFO_UNPROC,
 					NameFixer::PROC_NFO_NONE,
 					NameFixer::PROC_FILES_NONE,
 					NameFixer::PROC_UID_NONE,
 					NameFixer::PROC_PAR2_NONE,
 					MiscSorter::PROC_SORTER_NONE,
-					implode(',', $categories)
+					Category::getCategoryOthersGroup()
 				);
 				break;
 

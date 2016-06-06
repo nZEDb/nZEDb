@@ -504,24 +504,27 @@ class Tmux
 	{
 		switch ((int)$qry) {
 			case 1:
-				return sprintf("SELECT
-					SUM(IF(nzbstatus = 1 AND categories_id BETWEEN %d AND %d AND categories_id != %d AND videos_id = 0 AND tv_episodes_id BETWEEN -3 AND 0 AND size > 1048576,1,0)) AS processtv,
-					SUM(IF(nzbstatus = 1 AND categories_id = %d AND anidbid IS NULL,1,0)) AS processanime,
-					SUM(IF(nzbstatus = 1 AND categories_id BETWEEN %d AND %d AND imdbid IS NULL,1,0)
-					) AS processmovies,
-					SUM(IF(nzbstatus = 1 AND categories_id IN (%d, %d, %d) AND musicinfo_id IS NULL,1,0)) AS processmusic,
-					SUM(IF(nzbstatus = 1 AND categories_id BETWEEN %d AND %d AND consoleinfo_id IS
-					NULL,1,0)) AS processconsole,
-					SUM(IF(nzbstatus = 1 AND categories_id IN (%s) AND bookinfo_id IS NULL,1,0)) AS processbooks,
-					SUM(IF(nzbstatus = 1 AND categories_id = %d AND gamesinfo_id = 0,1,0)) AS processgames,
-					SUM(IF(nzbstatus = 1 AND categories_id BETWEEN %d AND %d AND xxxinfo_id = 0,1,0)) AS processxxx,
+				return sprintf("
+					SELECT
+					SUM(IF(nzbstatus = %1\$d AND categories_id BETWEEN %d AND %d AND categories_id != %d AND videos_id = 0 AND tv_episodes_id BETWEEN -3 AND 0 AND size > 1048576,1,0)) AS processtv,
+					SUM(IF(nzbstatus = %1\$d AND categories_id = %d AND anidbid IS NULL,1,0)) AS processanime,
+					SUM(IF(nzbstatus = %1\$d AND categories_id BETWEEN %d AND %d AND imdbid IS NULL,1,0)) AS processmovies,
+					SUM(IF(nzbstatus = %1\$d AND categories_id IN (%d, %d, %d) AND musicinfo_id IS NULL,1,0)) AS processmusic,
+					SUM(IF(nzbstatus = %1\$d AND categories_id BETWEEN %d AND %d AND consoleinfo_id IS NULL,1,0)) AS processconsole,
+					SUM(IF(nzbstatus = %1\$d AND categories_id IN (%s) AND bookinfo_id IS NULL,1,0)) AS processbooks,
+					SUM(IF(nzbstatus = %1\$d AND categories_id = %d AND gamesinfo_id = 0,1,0)) AS processgames,
+					SUM(IF(nzbstatus = %1\$d AND categories_id BETWEEN %d AND %d AND xxxinfo_id = 0,1,0)) AS processxxx,
 					SUM(IF(1=1 %s,1,0)) AS processnfo,
-					SUM(IF(nzbstatus = 1 AND nfostatus = 1,1,0)) AS nfo,
-					SUM(IF(nzbstatus = 1 AND isrequestid = 1 AND predb_id = 0 AND ((reqidstatus = 0) OR (reqidstatus = -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL %s HOUR)),1,0)) AS requestid_inprogress,
+					SUM(IF(nzbstatus = %1\$d AND r.isrenamed = %d AND predb_id = 0 AND passwordstatus >= 0 AND nfostatus > %d
+						AND (proc_nfo = %d OR proc_files = %d OR proc_uid = %d OR proc_par2 = %d OR proc_sorter = %d
+							OR dehashstatus BETWEEN -6 AND 0) AND r.categories_id IN (%s),1,0)) AS processfrn,
+					SUM(IF(nzbstatus = %1\$d AND nfostatus = 1,1,0)) AS nfo,
+					SUM(IF(nzbstatus = %1\$d AND isrequestid = 1 AND predb_id = 0 AND ((reqidstatus = 0) OR (reqidstatus = -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL %s HOUR)),1,0)) AS requestid_inprogress,
 					SUM(IF(predb_id > 0 AND nzbstatus = 1 AND isrequestid = 1 AND reqidstatus = 1,1,0)) AS requestid_matched,
 					SUM(IF(predb_id > 0 AND searchname IS NOT NULL,1,0)) AS predb_matched,
 					COUNT(DISTINCT(predb_id)) AS distinct_predb_matched
 					FROM releases r",
+					NZB::NZB_ADDED,
 					Category::TV_ROOT,
 					Category::TV_OTHER,
 					Category::TV_ANIME,
@@ -538,7 +541,16 @@ class Tmux
 					Category::XXX_ROOT,
 					Category::XXX_X264,
 					Nfo::NfoQueryString($this->pdo),
-					$request_hours);
+					NameFixer::IS_RENAMED_NONE,
+					Nfo::NFO_UNPROC,
+					NameFixer::PROC_NFO_NONE,
+					NameFixer::PROC_FILES_NONE,
+					NameFixer::PROC_UID_NONE,
+					NameFixer::PROC_PAR2_NONE,
+					MiscSorter::PROC_SORTER_NONE,
+					Category::getCategoryOthersGroup(),
+					$request_hours
+				);
 
 			case 2:
 				$ppminString = $ppmaxString = '';

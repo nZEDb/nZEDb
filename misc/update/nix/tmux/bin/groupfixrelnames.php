@@ -27,18 +27,6 @@ if (!isset($argv[1])) {
 
 		case $pieces[0] === 'standard' && isset($guidChar) && isset($maxperrun) && is_numeric($maxperrun):
 
-			$categories = [
-				Category::OTHER_MISC,
-				Category::OTHER_HASHED,
-				Category::GAME_OTHER,
-				Category::MOVIE_OTHER,
-				Category::MUSIC_OTHER,
-				Category::PC_PHONE_OTHER,
-				Category::TV_OTHER,
-				Category::XXX_OTHER,
-				Category::BOOKS_UNKNOWN
-			];
-
 			// Find releases to process.  We only want releases that have no PreDB match, have not been renamed, exist
 			// in Other Categories, have already been PP Add/NFO processed, and haven't been fully fixRelName processed
 			$releases = $pdo->queryDirect(
@@ -60,7 +48,7 @@ if (!isset($argv[1])) {
 					AND r.isrenamed = %d
 					AND r.predb_id = 0
 					AND r.passwordstatus >= 0
-					AND r.nfostatus = %d
+					AND r.nfostatus > %d
 					AND
 					(
 						r.proc_nfo = %d
@@ -76,13 +64,13 @@ if (!isset($argv[1])) {
 					$pdo->escapeString($guidChar),
 					NZB::NZB_ADDED,
 					NameFixer::IS_RENAMED_NONE,
-					Nfo::NFO_FOUND,
+					Nfo::NFO_UNPROC,
 					NameFixer::PROC_NFO_NONE,
 					NameFixer::PROC_FILES_NONE,
 					NameFixer::PROC_UID_NONE,
 					NameFixer::PROC_PAR2_NONE,
 					MiscSorter::PROC_SORTER_NONE,
-					implode(',', $categories),
+					Category::getCategoryOthersGroup(),
 					$maxperrun
 				)
 			);
@@ -94,6 +82,8 @@ if (!isset($argv[1])) {
 					$namefixer->checked++;
 					$namefixer->done = $namefixer->matched = false;
 
+					echo $pdo->log->primary("[{$release['releases_id']}]");
+
 					if ($release['ishashed'] === 1 && $release['dehashstatus'] > -6 && $release['dehashstatus'] < 0) {
 						if (preg_match('/[a-fA-F0-9]{32,40}/i', $release['name'], $matches)) {
 							$namefixer->matchPredbHash($matches[0], $release, 1, 1, true, 1);
@@ -104,7 +94,7 @@ if (!isset($argv[1])) {
 								$namefixer->matchPredbHash($matches[0], $release, 1, 1, true, 1);
 						}
 					}
-					$namefixer->_updateSingleColumn('dehashstatus', $release['dehashstatus'] - 1, $release['releases_id']);
+					$namefixer->_updateSingleColumn('dehashstatus', 'dehashstatus -1', $release['releases_id']);
 
 					if($namefixer->matched) {
 						continue;
