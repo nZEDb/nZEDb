@@ -97,7 +97,6 @@ class MiscSorter
 			}
 		}
 		$this->_setProcSorter(self::PROC_SORTER_DONE, $id);
-		echo $this->pdo->log->primaryOver('^');
 		return false;
 	}
 
