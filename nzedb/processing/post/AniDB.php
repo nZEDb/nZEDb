@@ -299,7 +299,7 @@ class AniDB
 			sprintf("
 				SELECT anidbid
 				FROM anidb_info ai
-				WHERE DATEDIFF(NOW(), ai.updated) < 7
+				WHERE ai.updated < (NOW() - INTERVAL 7 DAY)
 				AND ai.anidbid = %d",
 				$anidbId
 			)

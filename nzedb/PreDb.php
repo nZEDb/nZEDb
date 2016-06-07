@@ -68,17 +68,17 @@ class PreDb
 		}
 
 		if ($this->dateLimit !== false && is_numeric($this->dateLimit)) {
-			$datesql = sprintf('AND DATEDIFF(NOW(), adddate) <= %d', $this->dateLimit);
+			$datesql = sprintf('AND adddate > (NOW() - INTERVAL %d DAY)', $this->dateLimit);
 		}
 
 		$res = $this->pdo->queryDirect(
-						sprintf('
-							SELECT p.id AS predb_id, r.id AS releases_id
-							FROM predb p
-							INNER JOIN releases r ON p.title = r.searchname
-							WHERE r.predb_id < 1 %s',
-							$datesql
-						)
+			sprintf('
+				SELECT p.id AS predb_id, r.id AS releases_id
+				FROM predb p
+				INNER JOIN releases r ON p.title = r.searchname
+				WHERE r.predb_id < 1 %s',
+				$datesql
+			)
 		);
 
 		if ($res !== false) {
