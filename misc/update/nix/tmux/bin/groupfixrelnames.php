@@ -100,7 +100,7 @@ if (!isset($argv[1])) {
 
 					echo PHP_EOL . $pdo->log->primaryOver("[{$release['releases_id']}]");
 
-					if ($release['ishashed'] == 1 && $release['dehashstatus'] >= -6 && $release['dehashstatus'] < 0) {
+					if ($release['ishashed'] == 1 && $release['dehashstatus'] >= -6 && $release['dehashstatus'] <= 0) {
 						echo $pdo->log->primaryOver('m');
 						if (preg_match('/[a-fA-F0-9]{32,40}/i', $release['name'], $matches)) {
 							$namefixer->matchPredbHash($matches[0], $release, 1, 1, true, 1);
