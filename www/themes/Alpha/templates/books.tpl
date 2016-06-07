@@ -190,7 +190,7 @@
 														{elseif $mpass[$m@index] == 10}
 															<span class="fa fa-stack" title="Passworded Archive"><i class="fa fa-square-o fa-stack-base"></i><i class="fa fa-lock"></i></span>
 														{/if}
-														{if $mfailed[$m@index] > 0}
+														{if isset($mfailed[$m@index]) && $mfailed[$m@index] > 0}
 														<span class="btn btn-hover btn-default btn-xs"><i class="fa fa-thumbs-o-down"></i><span
 																	class="badge"> {$mfailed[$m@index]}
 																Failed Download{if $mfailed[$m@index] > 1}s{/if}</span>
