@@ -90,7 +90,7 @@ if (!isset($argv[1])) {
 			$releases = $pdo->queryDirect(
 				sprintf('
 					SELECT
-						r.id AS releases_id, r.size AS relsize, r.group_id, r.categories_id,
+						r.id AS releases_id, r.size AS relsize, r.groups_id, r.categories_id,
 						r.name, r.name AS textstring, r.predb_id, r.searchname,
 						HEX(ru.uniqueid) AS uid
 					FROM releases r
