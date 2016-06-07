@@ -111,6 +111,7 @@ if (!isset($argv[1])) {
 							echo $pdo->log->primaryOver('h');
 							$namefixer->matchPredbHash($matches[0], $release, 1, 1, true, 1);
 						}
+						// All gate requirements in query, only set column status if it ran the routine
 						$namefixer->_updateSingleColumn('dehashstatus', 'dehashstatus - 1', $release['releases_id']);
 					}
 
@@ -124,6 +125,7 @@ if (!isset($argv[1])) {
 						echo $pdo->log->primaryOver('U');
 						$namefixer->uidCheck($release, true, 'UID, ', 1, 1);
 					}
+					// Not all gate requirements in query set column status as PP Add check is in query
 					$namefixer->_updateSingleColumn('proc_uid', NameFixer::PROC_UID_DONE, $release['releases_id']);
 
 					if($namefixer->matched) {
@@ -131,14 +133,16 @@ if (!isset($argv[1])) {
 					}
 					$namefixer->done = $namefixer->matched = false;
 
-					if (!preg_match('/^=newz\[NZB\]=\w+/', $release['textstring'])
-						&& $release['nfostatus'] == Nfo::NFO_FOUND
+					if ($release['nfostatus'] == Nfo::NFO_FOUND
 						&& $release['proc_nfo'] == NameFixer::PROC_NFO_NONE) {
-						echo $pdo->log->primaryOver('n');
-						$namefixer->done = $namefixer->matched = false;
-						$namefixer->checkName($release, true, 'NFO, ', 1, 1);
+						if (!preg_match('/^=newz\[NZB\]=\w+/', $release['textstring'])) {
+							echo $pdo->log->primaryOver('n');
+							$namefixer->done = $namefixer->matched = false;
+							$namefixer->checkName($release, true, 'NFO, ', 1, 1);
+						}
+						// All gate requirements in query, only set column status if it ran the routine
+						$namefixer->_updateSingleColumn('proc_nfo', NameFixer::PROC_NFO_DONE, $release['releases_id']);
 					}
-					$namefixer->_updateSingleColumn('proc_nfo', NameFixer::PROC_NFO_DONE, $release['releases_id']);
 
 					if($namefixer->matched) {
 						continue;
@@ -158,6 +162,7 @@ if (!isset($argv[1])) {
 							}
 						}
 					}
+					// Not all gate requirements in query set column status as PP Add check is in query
 					$namefixer->_updateSingleColumn('proc_files', NameFixer::PROC_FILES_DONE, $release['releases_id']);
 
 					if($namefixer->matched) {
@@ -181,8 +186,9 @@ if (!isset($argv[1])) {
 							);
 						}
 						$nzbcontents->checkPAR2($release['guid'], $release['releases_id'], $release['groups_id'], 1, 1);
+						// All gate requirements in query, only set column status if it ran the routine
+						$namefixer->_updateSingleColumn('proc_par2', NameFixer::PROC_PAR2_DONE, $release['releases_id']);
 					}
-					$namefixer->_updateSingleColumn('proc_par2', NameFixer::PROC_PAR2_DONE, $release['releases_id']);
 
 					if($namefixer->matched) {
 						continue;
@@ -193,6 +199,7 @@ if (!isset($argv[1])) {
 						&& $release['proc_sorter'] == MiscSorter::PROC_SORTER_NONE) {
 						echo $pdo->log->primaryOver('S');
 						$res = $sorter->nfosorter(null, $release['releases_id']);
+						// All gate requirements in query, only set column status if it ran the routine
 						$namefixer->_updateSingleColumn('proc_sorter', NameFixer::PROC_PAR2_DONE, $release['releases_id']);
 					}
 				}
