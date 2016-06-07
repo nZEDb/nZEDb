@@ -206,7 +206,7 @@ if (!isset($argv[1])) {
 					FROM predb p
 					WHERE LENGTH(title) >= 15 AND title NOT REGEXP "[\"\<\> ]"
 					AND searched = 0
-					AND DATEDIFF(NOW(), predate) > 1
+					AND predate < (NOW() - INTERVAL 1 DAY)
 					ORDER BY predate ASC
 					LIMIT %s
 					OFFSET %s',
