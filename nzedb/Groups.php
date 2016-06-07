@@ -42,8 +42,8 @@ class Groups
 			COALESCE(rel.num, 0) AS num_releases
 			FROM groups
 			LEFT OUTER JOIN
-				(SELECT group_id, COUNT(id) AS num FROM releases GROUP BY group_id) rel
-			ON rel.group_id = groups.id
+				(SELECT groups_id, COUNT(id) AS num FROM releases GROUP BY groups_id) rel
+			ON rel.groups_id = groups.id
 			ORDER BY groups.name",
 			true, nZEDb_CACHE_EXPIRY_LONG
 		);
@@ -154,7 +154,7 @@ class Groups
 	 *
 	 * @param string $name The group name.
 	 *
-	 * @return string Empty string on failure, group_id on success.
+	 * @return string Empty string on failure, groups_id on success.
 	 */
 	public function getIDByName($name)
 	{
@@ -264,10 +264,10 @@ class Groups
 				COALESCE(rel.num, 0) AS num_releases
 				FROM groups
 				LEFT OUTER JOIN
-					(SELECT group_id, COUNT(id) AS num
-						FROM releases GROUP BY group_id
+					(SELECT groups_id, COUNT(id) AS num
+						FROM releases GROUP BY groups_id
 					) rel
-				ON rel.group_id = groups.id
+				ON rel.groups_id = groups.id
 				WHERE 1 = 1 %s
 				ORDER BY groups.name " .
 					($start === false ? '' : " LIMIT " . $num . " OFFSET " . $start),
@@ -297,11 +297,11 @@ class Groups
 				SELECT groups.*, COALESCE(rel.num, 0) AS num_releases
 				FROM groups
 				LEFT OUTER JOIN
-					(SELECT group_id, COUNT(id) AS num
+					(SELECT groups_id, COUNT(id) AS num
 						FROM releases
-						GROUP BY group_id
+						GROUP BY groups_id
 					) rel
-				ON rel.group_id = groups.id
+				ON rel.groups_id = groups.id
 				WHERE 1 = 1 %s
 				AND active = 1
 				ORDER BY groups.name " .
@@ -332,11 +332,11 @@ class Groups
 				SELECT groups.*, COALESCE(rel.num, 0) AS num_releases
 				FROM groups
 				LEFT OUTER JOIN
-					(SELECT group_id, COUNT(id) AS num
+					(SELECT groups_id, COUNT(id) AS num
 						FROM releases
-						GROUP BY group_id
+						GROUP BY groups_id
 					) rel
-				ON rel.group_id = groups.id
+				ON rel.groups_id = groups.id
 				WHERE 1 = 1 %s
 				AND active = 0
 				ORDER BY groups.name " .
@@ -535,7 +535,7 @@ class Groups
 
 		$releaseArray = $this->pdo->queryDirect(
 			sprintf("SELECT id, guid FROM releases %s",
-				($id === false ? '' : 'WHERE group_id = ' . $id))
+				($id === false ? '' : 'WHERE groups_id = ' . $id))
 		);
 
 		if ($releaseArray instanceof \Traversable) {
@@ -642,7 +642,7 @@ class Groups
 
 	/**
 	 * Get the names of the collections/binaries/parts/part repair tables.
-	 * If TPG is on, try to create new tables for the group_id, if we fail, log the error and exit.
+	 * If TPG is on, try to create new tables for the groups_id, if we fail, log the error and exit.
 	 *
 	 * @param bool $tpgSetting false, tpg is off in site setting, true tpg is on in site setting.
 	 * @param int  $groupID    ID of the group.
@@ -688,7 +688,7 @@ class Groups
 	}
 
 	/**
-	 * Check if the tables exists for the group_id, make new tables for table per group.
+	 * Check if the tables exist for the groups_id, make new tables for table per group.
 	 *
 	 * @param int $groupID
 	 *

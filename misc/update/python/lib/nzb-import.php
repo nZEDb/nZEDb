@@ -217,7 +217,7 @@ if (!isset($groups) || count($groups) == 0) {
 						'name' => $pdo->escapeString($subject),
 						'searchname' => $pdo->escapeString($cleanName),
 						'totalpart' => $totalFiles,
-						'group_id' => $groupID,
+						'groups_id' => $groupID,
 						'guid' => $pdo->escapeString($relguid),
 						'postdate' => $pdo->escapeString($posteddate),
 						'fromname' => $pdo->escapeString($poster),

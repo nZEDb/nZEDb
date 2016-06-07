@@ -21,4 +21,3 @@
 </tr>
 {/foreach}
 </table>
-

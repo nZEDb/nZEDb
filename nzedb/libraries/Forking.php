@@ -920,7 +920,7 @@ class Forking extends \fork_daemon
 			sprintf('
 				SELECT DISTINCT(g.id)
 				FROM groups g
-				INNER JOIN releases r ON r.group_id = g.id
+				INNER JOIN releases r ON r.groups_id = g.id
 				WHERE (g.active = 1 OR g.backfill = 1)
 				AND r.nzbstatus = %d
 				AND r.predb_id = 0

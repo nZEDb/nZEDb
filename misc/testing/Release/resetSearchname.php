@@ -19,7 +19,7 @@ if (isset($argv[2]) && $argv[2] === 'show') {
 }
 
 if (isset($argv[1]) && $argv[1] == "full") {
-	$res = $pdo->query("SELECT releases.id, releases.name, releases.fromname, releases.size, groups.name AS gname FROM releases INNER JOIN groups ON releases.group_id = groups.id");
+	$res = $pdo->query("SELECT releases.id, releases.name, releases.fromname, releases.size, groups.name AS gname FROM releases INNER JOIN groups ON releases.groups_id = groups.id");
 
 	if (count($res) > 0) {
 		echo $pdo->log->header("Going to recreate all search names, recategorize them and fix the names with namefixer, this can take a while.");
@@ -57,7 +57,7 @@ if (isset($argv[1]) && $argv[1] == "full") {
 	}
 } else if (isset($argv[1]) && $argv[1] == "limited") {
 	$pdo = new Settings();
-	$res = $pdo->query("SELECT releases.id, releases.name, releases.fromname, releases.size, groups.name AS gname FROM releases INNER JOIN groups ON releases.group_id = groups.id WHERE isrenamed = 0");
+	$res = $pdo->query("SELECT releases.id, releases.name, releases.fromname, releases.size, groups.name AS gname FROM releases INNER JOIN groups ON releases.groups_id = groups.id WHERE isrenamed = 0");
 
 	if (count($res) > 0) {
 		echo $pdo->log->header("Going to recreate search names that have not been fixed with namefixer, recategorize them, and fix them with namefixer, this can take a while.");
@@ -95,7 +95,7 @@ if (isset($argv[1]) && $argv[1] == "full") {
 	}
 } else if (isset($argv[1]) && $argv[1] == "reset") {
 	$pdo = new Settings();
-	$res = $pdo->query("SELECT releases.id, releases.name, releases.fromname, releases.size, groups.name AS gname FROM releases INNER JOIN groups ON releases.group_id = groups.id");
+	$res = $pdo->query("SELECT releases.id, releases.name, releases.fromname, releases.size, groups.name AS gname FROM releases INNER JOIN groups ON releases.groups_id = groups.id");
 
 	if (count($res) > 0) {
 		echo $pdo->log->header("Going to reset search names, this can take a while.");
