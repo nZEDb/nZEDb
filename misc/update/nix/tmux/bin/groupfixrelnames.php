@@ -28,7 +28,7 @@ if (!isset($argv[1])) {
 		case $pieces[0] === 'standard' && isset($guidChar) && isset($maxperrun) && is_numeric($maxperrun):
 
 			// Allow for larger filename return sets
-			$this->pdo->queryExec('SET SESSION group_concat_max_len = 32768');
+			$pdo->queryExec('SET SESSION group_concat_max_len = 32768');
 
 			// Find releases to process.  We only want releases that have no PreDB match, have not been renamed, exist
 			// in Other Categories, have already been PP Add/NFO processed, and haven't been fully fixRelName processed
