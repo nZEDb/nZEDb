@@ -8,7 +8,8 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
-
+2016-06-07 ruhllatio
+	Chg: Change DATEDIFF constraints to constant comparisons to allow index scan
 2016-06-07 DariusIII
 	Fix: Revert Gamma to use customized utils.js and not the shared one. Fixes issue #2166
 2016-06-06 niel
