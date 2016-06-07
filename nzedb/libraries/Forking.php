@@ -489,96 +489,27 @@ class Forking extends \fork_daemon
 	{
 		$this->register_child_run([0 => $this, 1 => 'fixRelNamesChildWorker']);
 
-		$groupby = "GROUP BY leftguid";
-		$rowLimit = "LIMIT 16";
-		$select = "r.leftguid AS guidchar, COUNT(r.id) AS count";
-
 		$threads = $this->pdo->getSetting('fixnamethreads');
 		$maxperrun = $this->pdo->getSetting('fixnamesperrun');
 
 		if ($threads > 16) {
 			$threads = 16;
-		}
-		switch ($this->workTypeOptions[0]) {
-
-			case "standard":
-				$where = sprintf("
-					r.nzbstatus = %d
-					AND r.isrenamed = %d
-					AND r.predb_id = 0
-					AND r.passwordstatus >= 0
-					AND r.nfostatus > %d
-					AND
-					(
-						(
-							r.nfostatus = %d
-							AND r.proc_nfo = %d
-						)
-						OR r.proc_files = %d
-						OR r.proc_uid = %d
-						OR r.proc_par2 = %d
-						OR
-						(
-							r.nfostatus = %4\$d
-							AND r.proc_sorter = %d
-						)
-						OR
-						(
-							r.ishashed = 1
-							AND r.dehashstatus BETWEEN -6 AND 0
-						)
-					)
-					AND r.categories_id IN (%s)",
-					NZB::NZB_ADDED,
-					NameFixer::IS_RENAMED_NONE,
-					Nfo::NFO_UNPROC,
-					Nfo::NFO_FOUND,
-					NameFixer::PROC_NFO_NONE,
-					NameFixer::PROC_FILES_NONE,
-					NameFixer::PROC_UID_NONE,
-					NameFixer::PROC_PAR2_NONE,
-					MiscSorter::PROC_SORTER_NONE,
-					Category::getCategoryOthersGroup()
-				);
-				break;
-
-			case "predbft":
-				$where = "1=1";
-				$rowLimit = sprintf("LIMIT %s", $threads);
-				break;
-
-			default:
-				return 0;
+		} else if ($threads == 0) {
+			$threads = 1;
 		}
 
-		$datas = $this->pdo->query(
-			sprintf("
-				SELECT %s
-				FROM releases r
-				WHERE %s %s %s",
-				$select,
-				$where,
-				$groupby,
-				$rowLimit
-			)
-		);
+		$leftguids = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'];
 
-		if ($datas) {
-			$count = 0;
-			$queue = [];
-			foreach ($datas as $firstguid) {
-				$count++;
-				if ($firstguid['count'] < $maxperrun) {
-					$limit = $firstguid['count'];
-				} else {
-					$limit = $maxperrun;
-				}
-				if ($limit > 0) {
-					$queue[$count] = sprintf("%s %s %s %s", $this->workTypeOptions[0], $firstguid['guidchar'], $limit, $count);
-				}
+		$count = 0;
+		$queue = [];
+		foreach ($leftguids as $leftguid) {
+			$count++;
+			if ($maxperrun > 0) {
+				$queue[$count] = sprintf("%s %s %s %s", $this->workTypeOptions[0], $leftguid, $maxperrun, $count);
 			}
-			$this->work = $queue;
 		}
+		$this->work = $queue;
+
 		return $threads;
 	}
 
