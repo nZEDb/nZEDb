@@ -321,17 +321,17 @@
 							cmt{if $result.comments != 1}s{/if}</a>
 						<br>{$result.grabs} grab{if $result.grabs != 1}s{/if}
 					</td>
-					<td class="icon_nzb"><a
-								href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}"><i
+					<td>
+						<a href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}" class="icon_nzb text muted" style="background-image: none"><i
 									class="fa fa-cloud-download text-muted"
 									title="Download NZB"></i></a>
 						<a href="{$smarty.const.WWW_TOP}/details/{$result.guid}/#comments"><i
 									class="fa fa-comments-o text-muted"
 									title="Comments"></i></a>
 						<a href="#" class="icon_cart text-muted"><i
-									class="fa fa-shopping-basket" title="Send to my Download Basket"></i></a>
+									class="fa fa-shopping-basket" title="Send to my Download Basket" style="background-image: none"></i></a>
 						{if isset($sabintegrated)}
-							<a href="#" class="icon_sab text-muted"><i class="fa fa-share-o"
+							<a href="#" class="icon_sab text-muted" style="background-image: none"><i class="fa fa-share-o"
 																	   title="Send to my Queue"></i></a>
 						{/if}
 					</td>
