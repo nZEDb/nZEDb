@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "11dcea1def34532b9c787f6c749bf0e6",
-    "content-hash": "5d1c8b158b31025a86d6d0251dc587d7",
+    "hash": "e52d5144b2c4c3cddb81be8a389e29bf",
+    "content-hash": "b908517ed0984fcaff2b179f6482356c",
     "packages": [
         {
             "name": "barracudanetworks/forkdaemon-php",
@@ -1397,12 +1397,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/UnionOfRAD/lithium.git",
-                "reference": "57e12b4e136f6de8a75321b82579de305a34acff"
+                "reference": "ce1d4d44d1e5b6c4a8cf6dc273025a8638e78b8e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/UnionOfRAD/lithium/zipball/57e12b4e136f6de8a75321b82579de305a34acff",
-                "reference": "57e12b4e136f6de8a75321b82579de305a34acff",
+                "url": "https://api.github.com/repos/UnionOfRAD/lithium/zipball/ce1d4d44d1e5b6c4a8cf6dc273025a8638e78b8e",
+                "reference": "ce1d4d44d1e5b6c4a8cf6dc273025a8638e78b8e",
                 "shasum": ""
             },
             "require": {
@@ -1435,7 +1435,7 @@
                 "li3",
                 "lithium"
             ],
-            "time": "2016-05-31 19:43:44"
+            "time": "2016-06-03 16:16:20"
         }
     ],
     "packages-dev": [
@@ -1663,7 +1663,7 @@
         "ext-spl": "*",
         "ext-xmlwriter": "*",
         "ext-zlib": "*",
-        "php": ">=5.5.0"
+        "php": ">=5.6.20"
     },
     "platform-dev": []
 }
