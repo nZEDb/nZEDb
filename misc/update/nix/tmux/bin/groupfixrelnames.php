@@ -96,7 +96,7 @@ if (!isset($argv[1])) {
 				foreach ($releases as $release) {
 
 					$namefixer->checked++;
-					$namefixer->done = $namefixer->matched = false;
+					$namefixer->reset();
 
 					echo PHP_EOL . $pdo->log->primaryOver("[{$release['releases_id']}]");
 
