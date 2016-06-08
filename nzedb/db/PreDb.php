@@ -83,6 +83,7 @@ class PreDb extends DB
 			'fields'     => '\t',
 			'limit'      => 0,
 			'lines'      => '\r\n', // use Windows style endings so that text can contain \n
+			'local'		 => false,
 			'path'       => null,
 		];
 		$options += $defaults;

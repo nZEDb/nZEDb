@@ -68,7 +68,7 @@
 							   cellpadding="0" style="table-layout: auto;">
 							<thead>
 							<tr>
-								<th><input id="chkSelectAll" type="checkbox" class="nzb_check_all"/></th>
+								<th><input id="chkSelectAll" type="checkbox" class="square-all"/></th>
 								<th>Name
 									<a title="Sort Descending" href="{$orderbyname_desc}">
 										<i class="fa-icon-caret-down text-muted"> </i>
@@ -87,7 +87,7 @@
 							{foreach $results as $result}
 								<tr id="guid{$result.guid}">
 									<td class="check"><input id="chk{$result.guid|substr:0:7}"
-															 type="checkbox" class="nzb_check"
+															 type="checkbox" class="square"
 															 value="{$result.guid}"/></td>
 									<td>
 										<a href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}"
@@ -116,18 +116,18 @@
 									</td>
 									<td>{$result.postdate|timeago}</td>
 									<td>{$result.size|fsize_format:"MB"}</td>
-									<td class="icon_nzb"><a
-												href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}"><i
+									<td>
+										<a href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}" class="icon_nzb text-muted" style="background-image: none"><i
 													class="fa fa-cloud-download text-muted"
 													title="Download NZB"></i></a>
 										<a href="{$smarty.const.WWW_TOP}/details/{$result.guid}/#comments"><i
 													class="fa fa-comments-o text-muted"
 													title="Comments"></i></a>
-										<a href="#" class="icon_cart text-muted"><i
+										<a href="#" class="icon_cart text-muted" style="background-image: none"><i
 													class="fa fa-shopping-basket" title="Send to my Download Basket"></i></a>
 										{if isset($sabintegrated)}
-											<a href="#" class="icon_sab text-muted"><i class="fa fa-share-o"
-																					   title="Send to my Queue"></i></a>
+											<a href="#" class="icon_sab text-muted" style="background-image: none"><i class="fa fa-share-o"
+																													  title="Send to my Queue"></i></a>
 										{/if}
 									</td>
 								</tr>

@@ -92,7 +92,7 @@
 									   class="data table table-condensed table-striped table-responsive table-hover">
 									<tr>
 										<th>
-											<input id="chkSelectAll" type="checkbox" class="nzedb_check_all"/>
+											<input id="chkSelectAll" type="checkbox" class="square-all"/>
 											<label for="chkSelectAll" style="display:none;">Select All</label>
 										</th>
 										<th>Name<br/>
@@ -147,7 +147,7 @@
 										<tr class="{cycle values=",alt"}" id="guid{$mguid[$m@index]}">
 											<td class="check"><input id="chk{$mguid[$m@index]|substr:0:7}"
 																	 type="checkbox"
-																	 class="nzb_check"
+																	 class="square"
 																	 value="{$mguid[$m@index]}"/></td>
 											<td class="item">
 												<a title="View details"
