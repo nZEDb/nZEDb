@@ -79,7 +79,7 @@ class Categorize extends Category
 			case $this->byGroup(): // Note that in byGroup() some overrides occur...
 			//Try against all functions, if still nothing, return Cat Misc.
 			case $this->isPC():
-			case $this->isXXX():
+			case $this->isXxx():
 			case $this->isTV():
 			case $this->isMusic():
 			case $this->isMovie():
@@ -105,7 +105,14 @@ class Categorize extends Category
 	private function groupName()
 	{
 		if (!isset($this->groups[$this->groupID])) {
-			$group = $this->pdo->queryOneRow(sprintf('SELECT LOWER(name) AS name FROM groups WHERE id = %d', $this->groupID));
+			$group = $this->pdo->queryOneRow(
+				sprintf('
+					SELECT LOWER(name) AS name
+					FROM groups
+					WHERE id = %d',
+					$this->groupID
+				)
+			);
 			$this->groups[$this->groupID] = ($group === false ? false : $group['name']);
 		}
 
@@ -908,7 +915,6 @@ class Categorize extends Category
 			case $this->isXxxWMV():
 			case $this->isXxxDVD():
 			case $this->isXxxOther():
-			case $this->isXxxSD():
 				return true;
 			default:
 				$this->tmpCat = Category::XXX_OTHER;
