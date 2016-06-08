@@ -9,6 +9,7 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 2016-06-08 DariusIII
+	Fix: Fix check all icon behaviour in Omicron theme
 	Chg: Switch Omicron to iCheck checkbox style and new Pnotify style.
 	Upd: Fix no background images in Charisma/Omicron themes, change type of iCheck used in Omicron.
 2016-06-08 niel
