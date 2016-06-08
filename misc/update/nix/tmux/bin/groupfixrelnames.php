@@ -110,8 +110,6 @@ if (!isset($argv[1])) {
 							echo $pdo->log->primaryOver('h');
 							$namefixer->matchPredbHash($matches[0], $release, 1, 1, true, 1);
 						}
-						// All gate requirements in query, only set column status if it ran the routine
-						$namefixer->_updateSingleColumn('dehashstatus', 'dehashstatus - 1', $release['releases_id']);
 					}
 
 					if($namefixer->matched) {
@@ -140,8 +138,6 @@ if (!isset($argv[1])) {
 							$namefixer->done = $namefixer->matched = false;
 							$namefixer->checkName($release, true, 'NFO, ', 1, 1);
 						}
-						// All gate requirements in query, only set column status if it ran the routine
-						$namefixer->_updateSingleColumn('proc_nfo', NameFixer::PROC_NFO_DONE, $release['releases_id']);
 					}
 
 					if($namefixer->matched) {
@@ -188,8 +184,6 @@ if (!isset($argv[1])) {
 							);
 						}
 						$nzbcontents->checkPAR2($release['guid'], $release['releases_id'], $release['groups_id'], 1, 1);
-						// All gate requirements in query, only set column status if it ran the routine
-						$namefixer->_updateSingleColumn('proc_par2', NameFixer::PROC_PAR2_DONE, $release['releases_id']);
 					}
 
 					if($namefixer->matched) {
