@@ -141,7 +141,7 @@
 										<tr class="{cycle values=",alt"}" id="guid{$mguid[$m@index]}">
 											<td class="check"><input id="chk{$mguid[$m@index]|substr:0:7}"
 																	 type="checkbox"
-																	 class="nzb_check"
+																	 class="square"
 																	 value="{$mguid[$m@index]}"/></td>
 											<td class="item">
 												<a title="View details"

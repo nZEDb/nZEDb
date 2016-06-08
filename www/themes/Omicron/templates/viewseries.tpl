@@ -192,7 +192,7 @@
 														<td class="check" width="10"><input
 																	id="chk{$result.guid|substr:0:7}"
 																	type="checkbox"
-																	class="nzb_check" name="{$seasonnum}"
+																	class="square" name="{$seasonnum}"
 																	value="{$result.guid}"/></td>
 														<td>
 															<span class="label label-default">{$result.category_name}</span>
