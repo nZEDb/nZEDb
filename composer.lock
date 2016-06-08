@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "11dcea1def34532b9c787f6c749bf0e6",
-    "content-hash": "5d1c8b158b31025a86d6d0251dc587d7",
+    "hash": "fc2416c03f0ccb0c71f7b6900cb09630",
+    "content-hash": "7086a58f1e68abc5bc1c1d681772c0c4",
     "packages": [
         {
             "name": "barracudanetworks/forkdaemon-php",
@@ -1519,12 +1519,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/UnionOfRAD/lithium.git",
-                "reference": "57e12b4e136f6de8a75321b82579de305a34acff"
+                "reference": "ce1d4d44d1e5b6c4a8cf6dc273025a8638e78b8e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/UnionOfRAD/lithium/zipball/57e12b4e136f6de8a75321b82579de305a34acff",
-                "reference": "57e12b4e136f6de8a75321b82579de305a34acff",
+                "url": "https://api.github.com/repos/UnionOfRAD/lithium/zipball/ce1d4d44d1e5b6c4a8cf6dc273025a8638e78b8e",
+                "reference": "ce1d4d44d1e5b6c4a8cf6dc273025a8638e78b8e",
                 "shasum": ""
             },
             "require": {
@@ -1557,7 +1557,7 @@
                 "li3",
                 "lithium"
             ],
-            "time": "2016-05-31 19:43:44"
+            "time": "2016-06-03 16:16:20"
         }
     ],
     "packages-dev": [
@@ -1622,97 +1622,6 @@
             "time": "2015-03-06 05:28:07"
         },
         {
-            "name": "unionofrad/li3_docs",
-            "version": "1.1.x-dev",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/niel/li3_docs.git",
-                "reference": "502a84a3eba182c6f3e163ec4031131ea4133fd4"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/niel/li3_docs/zipball/502a84a3eba182c6f3e163ec4031131ea4133fd4",
-                "reference": "502a84a3eba182c6f3e163ec4031131ea4133fd4",
-                "shasum": ""
-            },
-            "require": {
-                "cebe/markdown": "1.*",
-                "composer/installers": "1.*",
-                "php": ">=5.3",
-                "unionofrad/lithium": "1.1.x-dev"
-            },
-            "type": "lithium-library",
-            "license": [
-                "BSD-3-clause"
-            ],
-            "authors": [
-                {
-                    "name": "Union of RAD"
-                },
-                {
-                    "name": "The Community"
-                }
-            ],
-            "description": "A documentation generator for Lithium projects.",
-            "homepage": "http://li3.me",
-            "keywords": [
-                "docblock",
-                "docs",
-                "documentation",
-                "documented",
-                "li3",
-                "lithium"
-            ],
-            "support": {
-                "source": "https://github.com/niel/li3_docs/tree/1.1"
-            },
-            "time": "2016-03-22 13:06:11"
-        },
-        {
-            "name": "unionofrad/li3_quality",
-            "version": "1.1.x-dev",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/UnionOfRAD/li3_quality.git",
-                "reference": "3a986b0b11ccd4be09a22206d6645aed8c8af1d2"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/UnionOfRAD/li3_quality/zipball/3a986b0b11ccd4be09a22206d6645aed8c8af1d2",
-                "reference": "3a986b0b11ccd4be09a22206d6645aed8c8af1d2",
-                "shasum": ""
-            },
-            "require": {
-                "composer/installers": "1.*",
-                "php": ">=5.5.0",
-                "unionofrad/lithium": "1.1.*"
-            },
-            "type": "lithium-library",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-clause"
-            ],
-            "authors": [
-                {
-                    "name": "Union of RAD"
-                },
-                {
-                    "name": "The Community"
-                }
-            ],
-            "description": "This li₃ plugin adds code quality assurance to your toolbelt.",
-            "homepage": "http://li3.me",
-            "keywords": [
-                "coverage",
-                "li3",
-                "lithium",
-                "plugin",
-                "quality",
-                "syntax"
-            ],
-            "time": "2016-04-10 15:04:15"
-        },
-        {
             "name": "unionofrad/manual",
             "version": "1.1.x-dev",
             "source": {
@@ -1757,9 +1666,7 @@
         "joshpinkney/tv-maze-php-api": 20,
         "kbjr/git.php": 20,
         "unionofrad/lithium": 20,
-        "unionofrad/li3_docs": 20,
-        "unionofrad/manual": 20,
-        "unionofrad/li3_quality": 20
+        "unionofrad/manual": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
@@ -1785,7 +1692,7 @@
         "ext-spl": "*",
         "ext-xmlwriter": "*",
         "ext-zlib": "*",
-        "php": ">=5.5.0"
+        "php": ">=5.6.20"
     },
     "platform-dev": []
 }

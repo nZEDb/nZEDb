@@ -8,8 +8,14 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+2016-06-08 DariusIII
+	Chg: Switch Omicron to iCheck checkbox style and new Pnotify style.
+	Upd: Fix no background images in Charisma/Omicron themes, change type of iCheck used in Omicron.
+2016-06-08 niel
+	Chg: Update version of unionofrad/lithium in composer.lock
 2016-06-07 ruhllatio
 	Chg: Change DATEDIFF constraints to constant comparisons to allow index scan
+	Chg: AniDB site query optimization and code cleanup (indentations)
 2016-06-07 DariusIII
 	Fix: Revert Gamma to use customized utils.js and not the shared one. Fixes issue #2166
 2016-06-06 niel

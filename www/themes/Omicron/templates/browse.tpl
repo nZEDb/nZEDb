@@ -118,7 +118,7 @@
 									<td>{$result.size|fsize_format:"MB"}</td>
 									<td>
 										<a href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}" class="icon_nzb text-muted" style="background-image: none"><i
-													class="icon_nzb fa fa-cloud-download text-muted"
+													class="fa fa-cloud-download text-muted"
 													title="Download NZB"></i></a>
 										<a href="{$smarty.const.WWW_TOP}/details/{$result.guid}/#comments"><i
 													class="fa fa-comments-o text-muted"
@@ -127,7 +127,7 @@
 													class="fa fa-shopping-basket" title="Send to my Download Basket"></i></a>
 										{if isset($sabintegrated)}
 											<a href="#" class="icon_sab text-muted" style="background-image: none"><i class="fa fa-share-o"
-																					   title="Send to my Queue"></i></a>
+																													  title="Send to my Queue"></i></a>
 										{/if}
 									</td>
 								</tr>

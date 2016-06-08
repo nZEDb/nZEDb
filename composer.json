@@ -54,6 +54,10 @@
     },
     {
       "type": "vcs",
+      "url": "https://github.com/niel/li3_quality"
+    },
+    {
+      "type": "vcs",
       "url": "https://github.com/unionofrad/manual"
     }
   ],
@@ -118,9 +122,7 @@
     "unionofrad/lithium": "^1.1-dev"
   },
   "require-dev": {
-    "unionofrad/li3_docs": "1.1.x-dev",
-    "unionofrad/manual": "1.1.x-dev",
-    "unionofrad/li3_quality": "1.1.x-dev"
+    "unionofrad/manual": "1.1.x-dev"
   },
   "scripts": {
   },
