@@ -1,6 +1,11 @@
 This file details which changes to the code are in which release version. It is a complement to the ChangeLog file which list *when* changes are made to the dev branch.
 
 
+0.6.1.1 2016-06-08
+Fixed:
+	* Renamed 10-category.tsv to 10-categories.sql
+	* Corrected *_Other categories to x999 in 10-categories.sql
+
 0.6.1 2016-06-06
 **NOTE** PHP v5.5 reaches its end of life 2016-07-10. This (0.6.1) will be the last release to
 target it.
