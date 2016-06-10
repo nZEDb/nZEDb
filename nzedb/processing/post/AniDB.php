@@ -234,7 +234,7 @@ class AniDB
 				$updatedAni = $this->checkAniDBInfo($anidbId['anidbid'], $cleanArr['epno']);
 
 				if ($updatedAni === false) {
-					if ($this->updateTimeCheck($anidbId['anidbid']) === false) {
+					if ($this->updateTimeCheck($anidbId['anidbid']) !== false) {
 						$this->padb->populateTable('info', $anidbId['anidbid']);
 						$this->doRandomSleep();
 						$updatedAni = $this->checkAniDBInfo($anidbId['anidbid']);
@@ -296,7 +296,7 @@ class AniDB
 	 *
 	 * @param int $anidbId
 	 *
-	 * @return array|bool
+	 * @return bool|\PDOStatement Has it been 7 days since we last updated this AniDB ID or not?
 	 */
 	private function updateTimeCheck($anidbId)
 	{

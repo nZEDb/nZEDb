@@ -8,8 +8,12 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
-2016-06-8 ruhllatio
+2016-06-09 ruhllatio
+	Fix: AniDB client not respecting update times
+2016-06-08 ruhllatio
 	Fix: A few errors in Categorize class (duplicate XxxSD call)
+	Fix: Issues with categories TSV not being updated after numerous change commits
+	Fix: Sneaky category_id not changed to categories_id in recategorize.php
 2016-06-08 DariusIII
 	Chg: Change qtip2 version used in Omicron theme
 	Fix: Fix check all icon behaviour in Omicron theme
