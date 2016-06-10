@@ -42,18 +42,18 @@ class MiscSorter
 		$cat = ($category = 0 ? sprintf('AND r.categories_id = %d', Category::OTHER_MISC) : sprintf('AND r.categories_id = %d', $category));
 
 		$res = $this->pdo->queryDirect(
-						sprintf("
-							SELECT UNCOMPRESS(rn.nfo) AS nfo,
-								r.id, r.name, r.searchname
-							FROM release_nfos rn
-							INNER JOIN releases r ON rn.releases_id = r.id
-							INNER JOIN groups g ON r.groups_id = g.id
-							WHERE rn.nfo IS NOT NULL
-							AND r.proc_sorter = %d
-							AND r.predb_id = 0 %s",
-							self::PROC_SORTER_NONE,
-							($idarr = '' ? $cat : $idarr)
-						)
+			sprintf("
+				SELECT UNCOMPRESS(rn.nfo) AS nfo,
+					r.id, r.name, r.searchname
+				FROM release_nfos rn
+				INNER JOIN releases r ON rn.releases_id = r.id
+				INNER JOIN groups g ON r.groups_id = g.id
+				WHERE rn.nfo IS NOT NULL
+				AND r.proc_sorter = %d
+				AND r.predb_id = 0 %s",
+				self::PROC_SORTER_NONE,
+				($idarr = '' ? $cat : $idarr)
+			)
 		);
 
 		if ($res !== false && $res instanceof \Traversable) {
@@ -97,7 +97,6 @@ class MiscSorter
 			}
 		}
 		$this->_setProcSorter(self::PROC_SORTER_DONE, $id);
-		echo ".";
 		return false;
 	}
 
@@ -134,7 +133,6 @@ class MiscSorter
 				$str = preg_replace("/\s/iU", "", $m);
 
 				$m = strtolower($str);
-
 				$x = 0;
 
 				if ($m == 'imdb') {
@@ -212,13 +210,13 @@ class MiscSorter
 		$nameChanged = false;
 
 		$release = $this->pdo->queryOneRow(
-						sprintf("
-							SELECT r.id AS releases_id, r.searchname AS searchname,
-								r.name AS name, r.categories_id, r.groups_id
-							FROM releases r
-							WHERE r.id = %d",
-							$id
-						)
+			sprintf("
+				SELECT r.id AS releases_id, r.searchname AS searchname,
+					r.name AS name, r.categories_id, r.groups_id
+				FROM releases r
+				WHERE r.id = %d",
+				$id
+			)
 		);
 
 		if ($release !== false && is_array($release) && $name !== '' && $name !== $release['searchname'] && strlen($name) >= 10) {
@@ -229,16 +227,16 @@ class MiscSorter
 		}
 
 		if ($type !== '' && in_array($type, ['bookinfo_id', 'consoleinfo_id', 'imdbid', 'musicinfo_id'])) {
-				$this->pdo->queryExec(
-							sprintf('
-								UPDATE releases
-								SET %s = %d
-								WHERE id = %d',
-								$type,
-								$typeid,
-								$id
-							)
-				);
+			$this->pdo->queryExec(
+				sprintf('
+					UPDATE releases
+					SET %s = %d
+					WHERE id = %d',
+					$type,
+					$typeid,
+					$id
+				)
+			);
 		}
 		return $nameChanged;
 	}
@@ -276,11 +274,6 @@ class MiscSorter
 	private function _doOSpregSplit($pattern = '', $nfo = '')
 	{
 		return preg_split($pattern, $nfo, 0, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-	}
-
-	private function _doOSsplitPos($split = [], $nfo = '')
-	{
-		return (isset($split[1]) ? $this->nfopos($nfo, $this->_cleanStrForPos($split[1])) : false);
 	}
 
 	private function moviename($nfo = '', $imdb = 0, $name = '')
@@ -460,10 +453,12 @@ class MiscSorter
 			$ok = $this->dodbupdate($id, $name, $rel['id'], 'consoleinfo_id');
 		} else {
 			$consoleId = (new Console(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->
-				updateConsoleInfo([
-							'title'    => (string)$amaz->Items->Item->Title,
-							'node'     => (int)$amaz->Items->Item->BrowseNodes->BrowseNodeId,
-							'platform' => (string)$amaz->Items->Item->ItemAttributes->Platform]
+				updateConsoleInfo(
+					[
+						'title'    => (string)$amaz->Items->Item->Title,
+						'node'     => (int)$amaz->Items->Item->BrowseNodes->BrowseNodeId,
+						'platform' => (string)$amaz->Items->Item->ItemAttributes->Platform
+					]
 				);
 			$ok = $this->dodbupdate($id, $name, $consoleId, 'consoleinfo_id');
 		}
@@ -474,13 +469,13 @@ class MiscSorter
 	private function _doAmazonLocal($table = '', $asin = '')
 	{
 		return $this->pdo->queryOneRow(
-					sprintf('
-						SELECT id
-						FROM %s
-						WHERE asin = %s',
-						$table,
-						$this->pdo->escapeString($asin)
-					)
+			sprintf('
+				SELECT id
+				FROM %s
+				WHERE asin = %s',
+				$table,
+				$this->pdo->escapeString($asin)
+			)
 		);
 	}
 
@@ -563,8 +558,7 @@ class MiscSorter
 					if (strlen($set[1]) <= 13) {
 						$set[2] = $set[1];
 						$set[1] = "com";
-						$ok = $this->doAmazon($set[2],
-											  $row['name'], $row['id'], $nfo, $set[1], $case, $row);
+						$ok = $this->doAmazon($set[2], $row['name'], $row['id'], $nfo, $set[1], $case, $row);
 					}
 				}
 				break;
@@ -676,13 +670,13 @@ class MiscSorter
 	private function _setProcSorter($status = 0, $id = 0)
 	{
 		$this->pdo->queryExec(
-					sprintf('
-						UPDATE releases
-						SET proc_sorter = %d
-						WHERE id = %d',
-						$status,
-						$id
-					)
+			sprintf('
+				UPDATE releases
+				SET proc_sorter = %d
+				WHERE id = %d',
+				$status,
+				$id
+			)
 		);
 	}
 
