@@ -237,19 +237,26 @@ class AniDB
 	 */
 	private function getAniDbResponse()
 	{
-		$urlString = sprintf(
+		$curlString = sprintf(
 			'http://api.anidb.net:9001/httpapi?request=anime&client=%s&clientver=%d&protover=1&aid=%d',
 			$this->apiKey,
 			self::CLIENT_VERSION,
 			$this->anidbId
 		);
 
-		return Misc::getUrl(
-			[
-				'url'    => $urlString,
-				'method' => 'get'
-			]
-		);
+		$ch = curl_init($curlString);
+
+		$curlOpts = [
+			CURLOPT_RETURNTRANSFER => 1,
+			CURLOPT_HEADER         => 0,
+			CURLOPT_FAILONERROR    => 1,
+			CURLOPT_ENCODING       => 'gzip'
+		];
+
+		curl_setopt_array($ch, $curlOpts);
+		$apiresponse = curl_exec($ch);
+		curl_close($ch);
+		return $apiresponse;
 	}
 
 	/**

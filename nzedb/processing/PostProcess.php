@@ -329,7 +329,7 @@ class PostProcess
 
 		// Only get a new name if the category is OTHER.
 		$foundName = true;
-		if (!in_array(
+		if (in_array(
 			(int)$query['categories_id'],
 			[
 				Category::BOOKS_UNKNOWN,

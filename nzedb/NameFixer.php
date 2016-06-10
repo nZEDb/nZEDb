@@ -1065,7 +1065,7 @@ class NameFixer
 	 * @param integer $status
 	 * @param integer $id
 	 */
-	private function _updateSingleColumn($column = '', $status = 0, $id = 0)
+	public function _updateSingleColumn($column = '', $status = 0, $id = 0)
 	{
 		if ($column !== '' && $id !== 0) {
 			$this->pdo->queryExec(
@@ -1633,5 +1633,13 @@ class NameFixer
 		}
 		$this->_updateSingleColumn('proc_uid', self::PROC_UID_DONE, $release['releases_id']);
 		return false;
+	}
+
+	/**
+	 * Resets NameFixer status variables for new processing
+	 */
+	public function reset()
+	{
+		$this->done = $this->matched = false;
 	}
 }
