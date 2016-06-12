@@ -39,7 +39,7 @@
 					<td style="color:#FF0000">Disabled</td>
 				{/if}
 				<td title="Edit this regex"><a href="{$smarty.const.WWW_TOP}/category_regexes-edit.php?id={$row.id}">{$row.regex|escape:html|truncate:50:"...":true}</a></td>
-				<td>{$row.category_id}</td>
+				<td>{$row.categories_id}</td>
 			</tr>
 		{/foreach}
 	</table>
