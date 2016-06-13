@@ -583,7 +583,7 @@ class NameFixer
 				$newName = preg_replace(['/^[-=_\.:\s]+/', '/[-=_\.:\s]+$/'], '', $newName[0]);
 
 				if ($this->echooutput === true && $show === 1) {
-					$groupName = $this->_groups->getByNameByID($release['groups_id']);
+					$groupName = $this->_groups->getNameByID($release['groups_id']);
 					$oldCatName = $this->category->getNameByID($release['categories_id']);
 					$newCatName = $this->category->getNameByID($determinedCategory);
 
