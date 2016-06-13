@@ -23,6 +23,11 @@ class Groups
 	protected $cbpm;
 
 	/**
+	 * @var array
+	 */
+	protected $cbppTableNames;
+
+	/**
 	 * Construct.
 	 *
 	 * @param array $options Class instances.
@@ -71,8 +76,10 @@ class Groups
 
 		$temp_array[-1] = "--Please Select--";
 
-		foreach ($groups as $group) {
-			$temp_array[$group["name"]] = $group["name"];
+		if (is_array($groups)) {
+			foreach ($groups as $group) {
+				$temp_array[$group["name"]] = $group["name"];
+			}
 		}
 
 		return $temp_array;
@@ -88,9 +95,9 @@ class Groups
 	public function getByID($id)
 	{
 		return $this->pdo->queryOneRow("
-			SELECT *
-			FROM groups
-			WHERE id = {$id}"
+			SELECT g.*
+			FROM groups g
+			WHERE g.id = {$id}"
 		);
 	}
 
@@ -102,7 +109,7 @@ class Groups
 	public function getActive()
 	{
 		return $this->pdo->query(
-			"SELECT * FROM groups WHERE active = 1 ORDER BY name ASC",
+			"SELECT g.* FROM groups g WHERE g.active = 1 ORDER BY g.name ASC",
 			true,
 			nZEDb_CACHE_EXPIRY_SHORT
 		);
@@ -116,7 +123,7 @@ class Groups
 	public function getActiveBackfill()
 	{
 		return $this->pdo->query(
-			"SELECT * FROM groups WHERE backfill = 1 AND last_record != 0 ORDER BY name ASC",
+			"SELECT g.* FROM groups g WHERE g.backfill = 1 AND g.last_record != 0 ORDER BY g.name ASC",
 			true,
 			nZEDb_CACHE_EXPIRY_SHORT
 		);
@@ -129,8 +136,12 @@ class Groups
 	 */
 	public function getActiveByDateBackfill()
 	{
-		return $this->pdo->query(
-			"SELECT * FROM groups WHERE backfill = 1 AND last_record != 0 ORDER BY first_record_postdate DESC",
+		return $this->pdo->query("
+			SELECT g.*
+			FROM groups g
+			WHERE g.backfill = 1
+			AND g.last_record != 0
+			ORDER BY g.first_record_postdate DESC",
 			true,
 			nZEDb_CACHE_EXPIRY_SHORT
 		);
@@ -143,8 +154,11 @@ class Groups
 	 */
 	public function getActiveIDs()
 	{
-		return $this->pdo->query(
-			"SELECT id FROM groups WHERE active = 1 ORDER BY name ASC",
+		return $this->pdo->query("
+			SELECT g.id
+			FROM groups g
+			WHERE g.active = 1
+			ORDER BY g.name ASC",
 			true,
 			nZEDb_CACHE_EXPIRY_SHORT
 		);
@@ -160,9 +174,9 @@ class Groups
 	public function getByName($grp)
 	{
 		return $this->pdo->queryOneRow("
-			SELECT *
-			FROM groups
-			WHERE name = {$this->pdo->escapeString($grp)}"
+			SELECT g.*
+			FROM groups g
+			WHERE g.name = {$this->pdo->escapeString($grp)}"
 		);
 	}
 
@@ -176,9 +190,9 @@ class Groups
 	public function getNameByID($id)
 	{
 		$res = $this->pdo->queryOneRow("
-			SELECT name
-			FROM groups
-			WHERE id = {$id}"
+			SELECT g.name
+			FROM groups g
+			WHERE g.id = {$id}"
 		);
 
 		return ($res === false ? '' : $res["name"]);
@@ -193,13 +207,10 @@ class Groups
 	 */
 	public function getIDByName($name)
 	{
-		$res = $this->pdo->queryOneRow(
-			sprintf("
-				SELECT id
-				FROM groups
-				WHERE name = %s",
-				$this->pdo->escapeString($name)
-			)
+		$res = $this->pdo->queryOneRow("
+			SELECT g.id
+			FROM groups g
+			WHERE g.name = {$this->pdo->escapeString($name)}"
 		);
 
 		return ($res === false ? '' : $res["id"]);
@@ -216,19 +227,19 @@ class Groups
 	public function getCount($groupname = "", $active = -1)
 	{
 		$res = $this->pdo->queryOneRow(
-			sprintf(
-				"SELECT COUNT(id) AS num
-				 FROM groups
-				 WHERE 1=1 %s %s",
+			sprintf("
+				SELECT COUNT(g.id) AS num
+				FROM groups g
+				WHERE 1=1 %s %s",
 				($groupname !== ''
 					?
 					sprintf(
-						"AND groups.name %s",
+						"AND g.name %s",
 						$this->pdo->likeString($groupname, true, true)
 					)
 					: ''
 				),
-				($active > -1 ? "AND active = {$active}" : '')
+				($active > -1 ? "AND g.active = {$active}" : '')
 			)
 		);
 
@@ -236,11 +247,12 @@ class Groups
 	}
 
 	/**
-	 * @param        $start
-	 * @param        $num
-	 * @param string $groupname
+	 * Gets all groups and associated release counts
 	 *
-	 * @param int    $active
+	 * @param int $start The offset of the query
+	 * @param int $num The limit of the query
+	 * @param string $groupname The groupname we want if any
+	 * @param int $active The status of the group we want if any
 	 *
 	 * @return mixed
 	 */
@@ -248,23 +260,23 @@ class Groups
 	{
 		return $this->pdo->query(
 			sprintf("
-				SELECT groups.*,
+				SELECT g.*,
 				COALESCE(COUNT(r.id), 0) AS num_releases
-				FROM groups
-				LEFT OUTER JOIN releases r ON r.groups_id = groups.id
+				FROM groups g
+				LEFT OUTER JOIN releases r ON r.groups_id = g.id
 				WHERE 1=1 %s %s
-				GROUP BY groups.id
-				ORDER BY groups.name ASC
+				GROUP BY g.id
+				ORDER BY g.name ASC
 				%s",
 				($groupname !== ''
 					?
 					sprintf(
-						"AND groups.name %s",
+						"AND g.name %s",
 						$this->pdo->likeString($groupname, true, true)
 					)
 					: ''
 				),
-				($active > -1 ? "AND active = {$active}" : ''),
+				($active > -1 ? "AND g.active = {$active}" : ''),
 				($start === false ? '' : " LIMIT " . $num . " OFFSET " . $start)
 			), true, nZEDb_CACHE_EXPIRY_SHORT
 		);
@@ -325,11 +337,11 @@ class Groups
 	 *
 	 * @param string $groupName The full name of the usenet group being evaluated
 	 *
-	 * @return string The name of the group after replacing any shorthand prefix
+	 * @return string|bool The name of the group replacing shorthand prefix or false if groupname was malformed
 	 */
 	public function isValidGroup($groupName)
 	{
-		if (preg_match('/(\w\.)+\w/i', $groupName)) {
+		if (preg_match('/^([\w-]+\.)+[\w-]+$/i', $groupName)) {
 
 			return preg_replace('/^a\.b\./i', 'alt.binaries.', $groupName, 1);
 		}
@@ -409,8 +421,8 @@ class Groups
 		$this->purge($id);
 
 		return $this->pdo->queryExec("
-			DELETE FROM groups
-			WHERE id = {$id}"
+			DELETE g FROM groups g
+			WHERE g.id = {$id}"
 		);
 	}
 
@@ -427,10 +439,15 @@ class Groups
 		(new Binaries(['Groups' => $this, 'Settings' => $this->pdo]))->purgeGroup($id);
 
 		// Remove rows from part repair.
-		$this->pdo->queryExec("DELETE FROM missed_parts WHERE group_id = {$id}");
+		$this->pdo->queryExec("
+			DELETE mp
+			FROM missed_parts mp
+			WHERE mp.group_id = {$id}"
+		);
 
 		foreach ($this->cbpm AS $tablePrefix) {
-			$this->pdo->queryExec("DROP TABLE IF EXISTS {$tablePrefix}_{$id}"
+			$this->pdo->queryExec(
+				"DROP TABLE IF EXISTS {$tablePrefix}_{$id}"
 			);
 		}
 
@@ -456,10 +473,14 @@ class Groups
 		foreach ($this->cbpm AS $tablePrefix) {
 			$this->pdo->queryExec("TRUNCATE TABLE {$tablePrefix}");
 		}
-		$groups = $this->pdo->query("SELECT id FROM groups");
-		foreach ($groups as $group) {
-			foreach ($this->cbpm AS $tablePrefix) {
-				$this->pdo->queryExec("DROP TABLE IF EXISTS {$tablePrefix}_{$group['id']}");
+
+		$groups = $this->pdo->queryDirect("SELECT id FROM groups");
+
+		if ($groups instanceof \Traversable) {
+			foreach ($groups AS $group) {
+				foreach ($this->cbpm AS $tablePrefix) {
+					$this->pdo->queryExec("DROP TABLE IF EXISTS {$tablePrefix}_{$group['id']}");
+				}
 			}
 		}
 
@@ -484,23 +505,23 @@ class Groups
 			$this->reset($id);
 		}
 
-		$releaseArray = $this->pdo->queryDirect(
+		$res = $this->pdo->queryDirect(
 			sprintf("
-				SELECT id, guid
-				FROM releases %s",
-				($id === false ? '' : 'WHERE groups_id = ' . $id)
+				SELECT r.id, r.guid
+				FROM releases r %s",
+				($id === false ? '' : 'WHERE r.groups_id = ' . $id)
 			)
 		);
 
-		if ($releaseArray instanceof \Traversable) {
+		if ($res instanceof \Traversable) {
 			$releases     = new Releases(['Settings' => $this->pdo, 'Groups' => $this]);
 			$nzb          = new NZB($this->pdo);
 			$releaseImage = new ReleaseImage($this->pdo);
-			foreach ($releaseArray as $release) {
+			foreach ($res AS $row) {
 				$releases->deleteSingle(
 					[
-						'g' => $release['guid'],
-						'i' => $release['id']
+						'g' => $row['guid'],
+						'i' => $row['id']
 					],
 					$nzb,
 					$releaseImage
@@ -584,11 +605,6 @@ class Groups
 	}
 
 	/**
-	 * @var array
-	 */
-	private $cbppTableNames;
-
-	/**
 	 * Get the names of the collections/binaries/parts/part repair tables.
 	 * If TPG is on, try to create new tables for the groups_id, if we fail, log the error and exit.
 	 *
@@ -618,8 +634,7 @@ class Groups
 			}
 
 			if ($this->createNewTPGTables($groupID) === false && nZEDb_ECHOCLI) {
-				exit('There is a problem creating new TPG tables for this group ID: ' . $groupID .
-					 PHP_EOL);
+				exit('There is a problem creating new TPG tables for this group ID: ' . $groupID . PHP_EOL);
 			}
 
 			$groupEnding = '_' . $groupID;
@@ -659,9 +674,9 @@ class Groups
 	}
 
 	/**
-	 * @note Disable group that does not exist on USP server
-	 * @param $id
+	 * Disable group that does not exist on USP server
 	 *
+	 * @param int $id The Group ID to disable
 	 */
 	public function disableIfNotExist($id)
 	{
