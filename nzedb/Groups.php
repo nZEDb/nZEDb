@@ -46,25 +46,6 @@ class Groups
 	}
 
 	/**
-	 * Returns all groups and the count of releases for each group
-	 *
-	 * @return array
-	 */
-	public function getAll()
-	{
-		return $this->pdo->query(
-			"SELECT g.*,
-				COALESCE(COUNT(r.id), 0) AS num_releases
-			FROM groups g
-			LEFT OUTER JOIN releases r ON g.id = r.groups_id
-			GROUP BY g.id
-			ORDER BY g.name ASC",
-			true,
-			nZEDb_CACHE_EXPIRY_LONG
-		);
-	}
-
-	/**
 	 * Returns an associative array of groups for list selection
 	 *
 	 * @return array
@@ -118,30 +99,26 @@ class Groups
 	/**
 	 * Get active backfill groups ordered by name ascending
 	 *
-	 * @return array
-	 */
-	public function getActiveBackfill()
-	{
-		return $this->pdo->query(
-			"SELECT g.* FROM groups g WHERE g.backfill = 1 AND g.last_record != 0 ORDER BY g.name ASC",
-			true,
-			nZEDb_CACHE_EXPIRY_SHORT
-		);
-	}
-
-	/**
-	 * Get active backfill groups ordered by the newest backfill postdate
+	 * @param string $order The type of operation designating the order
 	 *
 	 * @return array
 	 */
-	public function getActiveByDateBackfill()
+	public function getActiveBackfill($order)
 	{
-		return $this->pdo->query("
-			SELECT g.*
-			FROM groups g
-			WHERE g.backfill = 1
-			AND g.last_record != 0
-			ORDER BY g.first_record_postdate DESC",
+		switch ($order) {
+			case '':
+			case 'normal':
+				$orderBy = "g.name ASC";
+				break;
+			case 'date':
+				$orderBy = "g.first_record_postdate DESC";
+				break;
+			default:
+				return array();
+		}
+
+		return $this->pdo->query(
+			"SELECT g.* FROM groups g WHERE g.backfill = 1 AND g.last_record != 0 ORDER BY {$orderBy}",
 			true,
 			nZEDb_CACHE_EXPIRY_SHORT
 		);
@@ -249,14 +226,14 @@ class Groups
 	/**
 	 * Gets all groups and associated release counts
 	 *
-	 * @param int $start The offset of the query
+	 * @param bool|int $start The offset of the query or false for no offset
 	 * @param int $num The limit of the query
 	 * @param string $groupname The groupname we want if any
 	 * @param int $active The status of the group we want if any
 	 *
 	 * @return mixed
 	 */
-	public function getRange($start, $num, $groupname = "", $active = -1)
+	public function getRange($start = false, $num = -1, $groupname = '', $active = -1)
 	{
 		return $this->pdo->query(
 			sprintf("
@@ -452,14 +429,11 @@ class Groups
 		}
 
 		// Reset the group stats.
-		return $this->pdo->queryExec(
-			sprintf("
-				UPDATE groups
-				SET backfill_target = 1, first_record = 0, first_record_postdate = NULL, last_record = 0,
-					last_record_postdate = NULL, last_updated = NULL
-				WHERE id = %d",
-				$id
-			)
+		return $this->pdo->queryExec("
+			UPDATE groups
+			SET backfill_target = 1, first_record = 0, first_record_postdate = NULL, last_record = 0,
+				last_record_postdate = NULL, last_updated = NULL
+			WHERE id = {$id}"
 		);
 	}
 

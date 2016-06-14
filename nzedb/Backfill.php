@@ -142,11 +142,7 @@ class Backfill
 				$res = [$grp];
 			}
 		} else {
-			if ($type === 'normal' || $type === '') {
-				$res = $this->_groups->getActiveBackfill();
-			} else if ($type === 'date') {
-				$res = $this->_groups->getActiveByDateBackfill();
-			}
+			$res = $this->_groups->getActiveBackfill($type);
 		}
 
 		$groupCount = count($res);
