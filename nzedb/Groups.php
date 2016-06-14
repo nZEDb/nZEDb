@@ -398,7 +398,8 @@ class Groups
 		$this->purge($id);
 
 		return $this->pdo->queryExec("
-			DELETE g FROM groups g
+			DELETE g
+			FROM groups g
 			WHERE g.id = {$id}"
 		);
 	}
