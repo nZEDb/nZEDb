@@ -79,7 +79,7 @@ function categorizeRelease($where, $update = true, $echooutput = false)
 	if ($total > 0) {
 		foreach ($resrel as $rowrel) {
 			$catId = $cat->determineCategory($rowrel['groups_id'], $rowrel['searchname']);
-			if ($rowrel['categoryid'] != $catId) {
+			if ($rowrel['categories_id'] != $catId) {
 				if ($update === true) {
 					$pdo->queryExec(
 						sprintf("

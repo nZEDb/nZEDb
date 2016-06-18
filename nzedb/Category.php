@@ -172,7 +172,8 @@ class Category
 						self::TV_OTHER,
 						self::OTHER_HASHED,
 						self::XXX_OTHER,
-						self::OTHER_MISC
+						self::OTHER_MISC,
+						self::OTHER_HASHED
 				]);
 	}
 

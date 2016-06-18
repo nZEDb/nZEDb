@@ -57,9 +57,9 @@
 			</td>
 		</tr>
 		<tr>
-			<td><label for="category_id">Category:</label></td>
+			<td><label for="categories_id">Category:</label></td>
 			<td>
-				{html_options id="category_id" name='category_id' values=$category_ids output=$category_names selected=$regex.category_id}
+				{html_options id="categories_id" name='categories_id' values=$category_ids output=$category_names selected=$regex.categories_id}
 				<div class="hint">Select a category which releases matched to this regex will go into.</div>
 			</td>
 		</tr>

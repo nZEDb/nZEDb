@@ -92,7 +92,7 @@
 									   class="data table table-condensed table-striped table-responsive table-hover">
 									<tr>
 										<th>
-											<input id="chkSelectAll" type="checkbox" class="nzedb_check_all"/>
+											<input id="chkSelectAll" type="checkbox" class="square-all"/>
 											<label for="chkSelectAll" style="display:none;">Select All</label>
 										</th>
 										<th>Name<br/>
