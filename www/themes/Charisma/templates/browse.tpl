@@ -127,7 +127,7 @@
 													class="fa fa-shopping-basket" title="Send to my Download Basket"></i></a>
 										{if isset($sabintegrated)}
 											<a href="#" class="icon_sab text-muted" style="background-image: none"><i class="fa fa-share-o"
-																					   title="Send to my Queue"></i></a>
+																													  title="Send to my Queue"></i></a>
 										{/if}
 									</td>
 								</tr>
