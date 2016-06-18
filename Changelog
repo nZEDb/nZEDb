@@ -10,6 +10,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 2016-06-18 ruhllatio
 	Mrg: Add new Gentele theme. #2156 @DariusIII
+	Mrg: Fixed SQL injection in Movie.php #2180
 2016-06-13 DariusIII
 	Upd: scrutinizer config
 2016-06-12 ruhllatio
