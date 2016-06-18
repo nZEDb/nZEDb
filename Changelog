@@ -8,6 +8,8 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+2016-06-18 ruhllatio
+	Mrg: Add new Gentele theme. #2156 @DariusIII
 2016-06-13 DariusIII
 	Upd: scrutinizer config
 2016-06-12 ruhllatio
