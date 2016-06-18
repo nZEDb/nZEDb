@@ -693,13 +693,21 @@ div.icon { width:16px; height:16px; background-repeat:no-repeat; cursor:pointer;
 table.data td.icons div.icon { opacity:.20; }
 div.icon_cart			{ background-image:url('../../shared/img/icons/cartup.png'); }
 div.icon_cart_clicked		{ background-image:url('../../shared/img/icons/cartdown.png'); }
-div.icon_nzb			{ background-image:url('../../shared/img/icons/nzbup.png'); }
-div.icon_nzb_clicked		{ background-image:url('../../shared/img/icons/nzbdown.png'); }
+div.icon_nzb			{
+    background: url('../../shared/img/icons/nzbup.png') no-repeat;
+}
+div.icon_nzb_clicked	{
+    background: url('../../shared/img/icons/nzbdown.png') no-repeat;
+}
 div.icon_nzb a			{ text-decoration:none; padding-bottom:2px; padding-right:12px; }
 div.icon_imdb			{ background-image:url('../../shared/img/icons/imdb.png'); }
 div.icon_imdb a			{ text-decoration:none; padding-bottom:2px; padding-right:12px; }
-div.icon_sab			{ background-image:url('../../shared/img/icons/queueup.png'); }
-div.icon_sab_clicked		{ background-image:url('../../shared/img/icons/queuedown.png'); }
+div.icon_sab            {
+    background: url('../../shared/img/icons/queueup.png')  no-repeat;
+}
+div.icon_sab_clicked    {
+    background: url('../../shared/img/icons/queuedown.png') no-repeat;
+}
 div.icon_tvrage			{ background-image:url('../../shared/img/icons/tvrage.png'); }
 div.icon_check			{ background-image:url('../../shared/img/icons/check.png'); }
 div.icon_cp			    { background-image:url('../../shared/img/icons/couch.png'); }

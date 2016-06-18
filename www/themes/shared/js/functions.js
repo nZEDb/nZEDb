@@ -967,7 +967,7 @@ jQuery(function($){
                 at: 'bottom left'
             },
             style: {
-                classes: 'ui-tooltip-newznab',
+                classes: 'ui-tooltip-nzedb',
                 width: { max: 500 },
                 tip: {
                     corner: 'topRight',
@@ -999,7 +999,7 @@ jQuery(function($){
                 }
             },
             style: {
-                classes: 'ui-tooltip-newznab'
+                classes: 'ui-tooltip-nzedb'
             }
         });
     });
@@ -1023,7 +1023,7 @@ jQuery(function($){
                 }
             },
             style: {
-                classes: 'ui-tooltip-newznab',
+                classes: 'ui-tooltip-nzedb',
                 width: { max: 500 },
                 tip: {
                     corner: 'topLeft',
@@ -1132,7 +1132,7 @@ $(document).ready(function()
                 }
             },
             style: {
-                classes: 'jgrowl ui-tooltip-newznab ui-tooltip-rounded',
+                classes: 'jgrowl ui-tooltip-nzedb ui-tooltip-rounded',
                 tip: false
             },
             events: {
