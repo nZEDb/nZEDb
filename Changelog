@@ -10,6 +10,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 2016-06-21 niel
 	Fix: Initial default theme not set to Alpha, because of lower case first letter.
+	Chg: Relaxed minimum PHP requirement to 5.6.10, so users on distros from around 14.04 have less problems.
 2016-06-18 ruhllatio
 	Mrg: Add new Gentele theme. #2156 @DariusIII
 	Mrg: Fixed SQL injection in Movie.php #2180
