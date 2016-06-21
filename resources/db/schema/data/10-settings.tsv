@@ -152,7 +152,7 @@ site	main	metadescription	A usenet indexing website	Stem meta-description append
 site	main	metakeywords	usenet,nzbs,cms,community	Stem meta-keywords appended to all page meta keyword tags	metakeywords
 site	main	metatitle	An indexer	Stem meta-tag appended to all page title tags.	metatitle
 site	main	strapline	A great usenet indexer	Displayed in the header on every public page.	strapline
-site	main	style	alpha	The theme folder which will be loaded for css and images. (Use / for default)	style
+site	main	style	Alpha	The theme folder which will be loaded for css and images.	style
 site	main	tandc	<p>All information within this database is indexed by an automated process, without any human intervention. It is obtained from global Usenet newsgroups over which this site has no control. We cannot prevent that you might find obscene or objectionable material by using this service. If you do come across obscene, incorrect or objectionable results, let us know by using the contact form.</p>	Text displayed in the terms and conditions page.	tandc
 site	main	title	nZEDb	Displayed around the site and contact form as the name for the site.	title
 site	trailers	trailers_display	1	Display trailers on the details page?	trailers_display
