@@ -132,12 +132,13 @@ if (!isset($argv[1])) {
 
 					if ($release['nfostatus'] == Nfo::NFO_FOUND
 						&& $release['proc_nfo'] == NameFixer::PROC_NFO_NONE) {
-						if (!empty($release['texstring'])
+						if (!empty($release['textstring'])
 							&& !preg_match('/^=newz\[NZB\]=\w+/', $release['textstring'])) {
 							echo $pdo->log->primaryOver('n');
 							$namefixer->done = $namefixer->matched = false;
 							$namefixer->checkName($release, true, 'NFO, ', 1, 1);
 						}
+						$namefixer->_updateSingleColumn('proc_nfo', NameFixer::PROC_NFO_DONE, $release['releases_id']);
 					}
 
 					if($namefixer->matched) {
@@ -154,7 +155,7 @@ if (!isset($argv[1])) {
 							foreach ($fileNames AS $fileName) {
 								if ($namefixer->matched === false) {
 									echo $pdo->log->primaryOver('f');
-									$releaseFile['texstring'] = $fileName;
+									$releaseFile['textstring'] = $fileName;
 									$namefixer->checkName($releaseFile, true, 'Filenames, ', 1, 1);
 								}
 							}
