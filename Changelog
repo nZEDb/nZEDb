@@ -8,6 +8,14 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+2016-06-23 v0.6.1.3
+	Mrg: Cherry-picking dev => Latest-testing to prepare for updating stable 0.x.
+	Fix: Initial default theme not set to Alpha, because of lower case first letter.
+2016-06-12 bart39
+	Fix: category_id not changed to categories_id for category regexes. Fixes issue #2171.
+2016-06-03 ruhllatio
+	Fix: Local lookup not working for airdates because Sxx/Exx is still being set as junk data
+
 
 2016-05-30 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x.
@@ -19,7 +27,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 2016-05-30 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x.
 2015-05-29 DariusIII
-	Upd: Replace icons with font-awesome counterparts in Alpha theme.
+	Chg: Replace icons with font-awesome counterparts in Alpha theme.
 	Fix: Remove doubled and wrong preinfo function ih Gamma theme utils.js
 	Fix: PreDB page layout in Gamma theme.
 	Fix: Links to colorbox images in Gamma theme.
@@ -27,7 +35,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Fix: Greatly improve TV API search query when specifying ID/Season/Ep etc. Remove var_dump.
 	Fix: Wrong array offset
 2016-05-27 DariusIII
-	Upd: Use well-sm in all the themes.
+	Chg: Use well-sm in all the themes.
 	Fix: Replace boostrap.min.css with Gamma theme custom bootstrap.css
 	Fix: Fix link to autosize.min.js in Alpha theme.
 	Fix: Fix tables layout in Gamma theme by removing table-striped attribute.
@@ -90,7 +98,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Chg: Make deleteSingle honor the release ID identifier as a PK delete will always be faster
 	Chg: Make fixRelNames filename work query a bit quicker on larger databases by preserving table placement
 2016-05-11 DariusIII
-	Upd: Split UPDATE and DELETE query after NZB is created for release
+	Chg: Split UPDATE and DELETE query after NZB is created for release
 	Fix: Remove argument from createGUID function call in createReleases function, as createGUID function does not use any argument.
 2016-05-10 ruhllatio
 	Fix: Category Parent->Child name return function after Misc move
@@ -100,7 +108,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Fix: Mulple issues in feature-db branch and some Gamma issues
 2016-05-10 DariusIII
 	Fix: Prevent deadlocks on binaries and releases update (fix @ruhllatio).
-	Upd: Add couchpotato icon to Gamma theme. Fix issue #2115
+	Chg: Add couchpotato icon to Gamma theme. Fix issue #2115
 2016-05-09 DariusIII
 	Fix: Partitioning in patch 0436.
 	Chg: Replace requestid_threaded.py with requestid.php in ProcessReleases class.
@@ -125,7 +133,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 		`php /var/www/nZEDb/misc/testing/Release/recategorize.php all`
 		this will take a while to complete.
 2016-05-06 DariusIII
-	Upd: Comment out max_matches(deprecated since sphinx 2.2.3) and change sphinx.pid location to proper /var/run/sphinxsearch/searchd.pid
+	Chg: Comment out max_matches(deprecated since sphinx 2.2.3) and change sphinx.pid location to proper /var/run/sphinxsearch/searchd.pid
 2016-05-05 niel
 	Mrg: PR 2121, from meganomic - Yahoo search fix.
 2016-05-05 bart39
@@ -203,11 +211,11 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Chg: Removed the .../cli/update_db.php script. Use './zed update db' to replicate, or './zed
 		update nzedb' for everything in one operation.
 2016-04-18 DariusIII
-	Upd: Missed some files, cleanup unused scripts.
-	Upd: Update themes to use libs handled by composer
-	Upd: Update .gitignore
-	Upd: Update composer.json
-	Upd: Update .gitignore
+	Chg: Missed some files, cleanup unused scripts.
+	Chg: Update themes to use libs handled by composer
+	Chg: Update .gitignore
+	Chg: Update composer.json
+	Chg: Update .gitignore
 2016-04-15 DariusIII
 	Fix: Fix filelist display in all of the themes, reduce overhead in NZB class related to segments array.
 2016-04-14 niel
@@ -949,7 +957,7 @@ stable code:
 	* Fix: Notices. Issue #1737
 	* Fix: Various notices.
 	* Chg: Use get_class / __FUNCTION__ for nzedb\Logger->Log usage.
-	* Upd: Update smarty to 3.1.27
+	* Chg: Update smarty to 3.1.27
 	* Fix: Add check for string on nzedb\Movie::doMovieUpdate #1742
 	* Fix: PR 1742 (Notices in movie.php, remove old smarty files)
 2015-06-22 niel
@@ -1339,7 +1347,7 @@ stable code:
 2014-09-13 bart39
 	* Fix: another attempt at fixing scnzbefnet collections
 2014-09-13 DariusIII
-	* Upd: Updated regexes for codecposter
+	* Chg: Updated regexes for codecposter
 2014-09-12 bart39
 	* Add: More regex magic.
 	* Fix: possible fix for boneless splitting scnzbefnet par2 releases.
@@ -1368,7 +1376,7 @@ stable code:
 2014-09-10 kaibosh
 	* Fix: Fix for issue 1489 - Specify session name when selecting pane
 2014-09-09 DariusIII
-	* Upd: Updated codecposter removal with german, french and dutch variants of txt file.
+	* Chg: Updated codecposter removal with german, french and dutch variants of txt file.
 2014-09-09 bart39
 	* Fix: Namespace issue.
 2014-09-08 bart39
@@ -1604,7 +1612,7 @@ stable code:
 	* Fix: Tmux basic sequential undefined variables.
 	* Fix: XXX Search filter for non Alpha Themes
 2014-08-01 DariusIII
-	* Upd: Codec spam removal update
+	* Chg: Codec spam removal update
 2014-08-01 bart39
 	* Fix: UpdateTV for tmux complete sequential.
 	* Fix: Display issues for long titles on predb alpha theme.
@@ -2009,10 +2017,10 @@ stable code:
 	* Fix: Blank page on games cover view.
 	* Add: (UPDATE TO settings.php, update it if you have it.) Setting to settings.php.example for hiding/showing missing autoloader files.
 	* Fix: misc/testing/PostProc/getGames.php and changes to Games->ParseTitle
-	* Upd: Update games regex to pick up more games.
+	* Chg: Update games regex to pick up more games.
 	* Add: Re-enable header compression if header compression was disabled during fetching headers due to a decompression error.
 	* Fix: Undefined namespace issues in utility.
-	* Upd: Update some IGN.com links.
+	* Chg: Update some IGN.com links.
 	* Chg: Add check to see if explode is false on getXOVER (in case string is empty).
 	* Chg: Changes to binaries to help with large sections of missing headers.
 	* Chg: Changes to binaries to speed up part repair.
@@ -2143,8 +2151,8 @@ stable code:
 	* Add: U4E stuff into ProcessAdditional
 	* Add: Deleting temp files to rename_u4e.php
 	* Add: Getting NFO's from ZIP/RAR (and nested ZIP/RAR) files.
-	* Upd: Update u4e script, works now.
-	* Upd: Update the u4e script, untested.
+	* Chg: Update u4e script, works now.
+	* Chg: Update the u4e script, untested.
 	* Remake ProcessAdditional. Clean up NameFixer class a bit.
 2014-06-13 ruhllatio
 	* Add: Non-operational rough rename script
@@ -2165,7 +2173,7 @@ stable code:
 2014-06-09 ruhllatio
 	* Fix: Potential fix for hanging tmux monitor.php query (restart tmux session after pull)
 	* Chg: More categorization improvements
-	* Upd: Remove additional blank line in monitor.php
+	* Chg: Remove additional blank line in monitor.php
 2014-06-09 kevin
 	* Add: Catch and reconnect lost MySQL connections.
 2014-06-09 niel
@@ -2185,7 +2193,7 @@ stable code:
 2014-06-05 bart39
 	* Fix: use queryDirect rather than queryOneRow for queries starting with SHOW INDEX
 2014-06-05 DariusIII
-	* Upd: Updated the codec poster removal in ReleaseRemover.php. It might catch some legit releases.
+	* Chg: Updated the codec poster removal in ReleaseRemover.php. It might catch some legit releases.
 2014-06-04 bart39
 	* Fix: fix web lookup for requestid_threaded
 2014-06-04 DariusIII
@@ -2254,7 +2262,7 @@ stable code:
 	* Chg: Refactor PreDB final stage - remove md5/sha1 from predb table.
 	* Fix: fix issue with trigger causing duplicates
 2014-05-26 NZBmets
-	* Upd: TMUX Powerline uspsetting segment to handle IPv6 and proper IPv4 parsing
+	* Chg: TMUX Powerline uspsetting segment to handle IPv6 and proper IPv4 parsing
 2014-05-25 ruhllatio
 	* Fix: Remove no longer existing foreign check from Movie PP
 2014-05-25 bart39
@@ -2296,10 +2304,10 @@ stable code:
 	* Chg: Class RequestID part one
 	* Fix: FTS result sizes in PreDB FT exceeding limits
 2014-05-21 bart39
-	* Upd: test gitbot again
+	* Chg: test gitbot again
 	* Fix: fix releases stage 4 / request id threaded / non threaded handling of requestid matching
 2014-05-21 kevin
-	* Upd: Update rarinfo to newest (*Improves handling of corrupt RAR 5.0 archives*).
+	* Chg: Update rarinfo to newest (*Improves handling of corrupt RAR 5.0 archives*).
 2014-05-20 Bart39
 	* Fix: Releases stage 5b/5c requestid lookups
 2014-05-20 ruhllatio
@@ -2333,7 +2341,7 @@ stable code:
 	* Chg: Making covers' constant truly default to .../resources/covers.
 	  Users with older installs should consider moving their covers from .../www/covers .
 	* Fix: Pass backup settings from newPatches to processPatches.
-	* Upd: Renaming patches with 'schema' for table name.
+	* Chg: Renaming patches with 'schema' for table name.
 	* Fix: Uncapitalised settings table name in patch 226.
 2014-05-16 ruhllatio
 	* Add: PreDB FT Match to fixReleaseNames and tmux
@@ -2347,7 +2355,7 @@ stable code:
 2014-05-16 niel
 	* Chg: Improvements to Settings/Site detection for upgrading from older installs.
 	* Chg: Using separate settings value in DbUpdate only if needed (Improves memory use).
-	* Upd: Updated doc for creating patches.
+	* Chg: Updated doc for creating patches.
 2014-05-15 ruhllatio
 	* Add: New category matching and refined filtering to match_predbfiles (no longer console only)
 	* Add: Full database (no category restriction with a separate method) filename matching for match_predbfiles
@@ -2358,7 +2366,7 @@ stable code:
 	* Add: Time ago to comments (alpha theme).
 	* Fix: Fixes / tweaks to encode yEnc.
 2014-05-14 kevin
-	* Upd: Update ubuntu guide.
+	* Chg: Update ubuntu guide.
 	* Mov: Rename ubuntu guide.
 2014-05-14 DariusIII
 	* Fix: Add missing $status for new types of matches in NameFixer
@@ -2409,7 +2417,7 @@ stable code:
 2014-05-07 kevin
 	* Chg: Simplify predb class more.
 	* Chg: Check if the php posix extension loaded during install.
-	* Upd: Update ubuntu install guide.
+	* Chg: Update ubuntu install guide.
 	* Add: The completion criteria to the delete releases GUI.
 	* Chg: Set the minimum completion to 0 so unprocessed releases don't get deleted.
 	* Add: Filename parsing to IRCScraper.
@@ -2453,13 +2461,13 @@ stable code:
 	* Chg:  dump_predb now only removes titles that have <= 8 chars as opposed to 15 (older valid pres were being deleted).
 2014-05-04 kevin
 	* Add: Ability to ignore corrupt-net and categories to IRCScraper. Update your settings.php    #1300
-	* Upd: Update a predb source.
+	* Chg: Update a predb source.
 2014-05-04 niel
 	* Chg: Redid patch filename format to be <patch number>~<table>.sql That's a tilde separating them.
 	* Chg: Renamed first 99 patches so they list better in GitHub (Grumble: why doesn't Github use a natrual sort).
 	* Fix: Filename matching after changing filename format.
 	* Chg: Renamed remaining patch files to new format.
-	* Upd: Alter regexes to use the full format now.
+	* Chg: Alter regexes to use the full format now.
 	* Add: Basic method for processing new patches into Db and correct filename format. Needs more work to be useful.
 2014-05-03 ruhllatio
 	* Chg: Modify query for decrypt hashes to check MD5 or SHA depending upon hashlength
@@ -2470,11 +2478,11 @@ stable code:
 	* Add: Ignoring of efnet channels to IRCScraper. #1300
 	* Chg: Use TLS on step3 of install, better showing of NNTP errors.
 	* Add: Append the socket error / number to the PEAR error message when creating a NNTP stream resource fails.
-	* Upd: Update docs for ZEND Opcache.
+	* Chg: Update docs for ZEND Opcache.
 	* Add: Opcache stats page to admin (near the middle of the page).
 2014-05-01 niel
-	* Upd: Changed the forum address in the READDME for the new location.
-	* Upd: Merged traid's updated convert_from_newznab script. Many thanks.
+	* Chg: Changed the forum address in the READDME for the new location.
+	* Chg: Merged traid's updated convert_from_newznab script. Many thanks.
 2014-05-01 ruhllatio
 	* Chg: Force decrypt_hashes to do lower case letters only in the DB call to match hashes
 	* Add: decrypt_hashes when run in show mode will now specify the hash match type: MD5 or SHA1 instead of just MD5
@@ -2560,7 +2568,7 @@ stable code:
 2014-04-21 niel
 	* Chg: Adding removal of bad rows in predb to patch 213.
 	* New: Added method to Versions class to fetch the pre-commit version.
-	* Upd: Updated pre-commit hook. Dev's should run .../nzedb/build/addGitHook.php to install.
+	* Chg: Updated pre-commit hook. Dev's should run .../nzedb/build/addGitHook.php to install.
 2014-04-20 niel
 	* Fix: Updated create table for patch 210, to avoid truncation of data.
 	* Chg: Removing a number of query failures from errors to ignore during patching.
@@ -2845,7 +2853,7 @@ stable code:
 	* Chg: Revamp PreDB pages.
 	* Add: Constants to disable pre sources #1244.
 	* Fix: Don't reset the requestid even if we already have it. PreDb.php
-	* Upd: Update smarty from 3.1 beta to 3.1.17 stable.
+	* Chg: Update smarty from 3.1 beta to 3.1.17 stable.
 	* Add: Smarty filter to speed up page loading.
 	* Add: Full dates on hover alpha theme PreDB page.
 	* Add: Parse size from files IRCScraper, clickable IRC links for tvnzb and scnzb PreDB templates.
@@ -3166,7 +3174,7 @@ stable code:
 	* Fix: re-added site-edit requestid max hours setting that somehow got removed
 2014-03-12 niel
 	* Chg: Moving .../db dir to .../resources/db
-	* Upd: Fixing trailing white-space from previous commit ;-)
+	* Chg: Fixing trailing white-space from previous commit ;-)
 	* Fix: Moving missed files added before my push ;-)
 2014-03-12 kevin
 	* User changeable themes in profile edit. (Apply the SQL patch).
@@ -3285,7 +3293,7 @@ stable code:
 	* fixed typo in Binaries.php
 	* fixed typo in schema
 2014-03-01 niel
-	* Upd: Fixing trailing white-space introduced to group-list.tpl.
+	* Chg: Fixing trailing white-space introduced to group-list.tpl.
 2014-03-01 bart39
 	* tv/music regex additions
 2014-02-28 jonnyboy
@@ -3296,7 +3304,7 @@ stable code:
 	* changed query for requestid in-progress count to use a UNION instead of OR so that it makes use of indexes
 	fixed query in releases->stage7a
 2014-02-27 niel
-	* Upd: Moving duplicated function to Util.php and renaming.
+	* Chg: Moving duplicated function to Util.php and renaming.
 2014-02-27 jonnyboy
 	* fixed queries in releases->stage7a
 	added tooltips for group-list
@@ -3305,7 +3313,7 @@ stable code:
 	* regex additions
 	don't categorize as pc if it looks like audio/console
 2014-02-27 niel
-	* Upd: Changing default locations for covers, nzb, and temp files to use nZEDb/resources.
+	* Chg: Changing default locations for covers, nzb, and temp files to use nZEDb/resources.
 	New installs will use these locations unless you change them. Existing installs will continue to use their current locations.
 	If you want to move files from the old locations to the new look at _runonce/relocateAll.php and uncomment the locations you want to move.
 2014-02-27 jonnyboy
@@ -3317,7 +3325,7 @@ stable code:
 	updated monitor, moved analyze tables before initial display
 	updated releases->stage7a to loop over deletes instead of 1 massive delete(mysql)
 2014-02-26 niel
-	* Upd: Fixing indentation in Books.php to use tabs not spaces.
+	* Chg: Fixing indentation in Books.php to use tabs not spaces.
 2014-02-25 jonnyboy
 	* changed preid column default 0, added 3 regexes for a.b.comics, added index
 2014-02-24 jonnyboy
@@ -3384,7 +3392,7 @@ stable code:
 	moved post processing scripts to correct path
 	fixed backfill_groups.php
 2014-02-15 niel
-	* Upd: Removing the covers constant from automatied.config.php. It will be generated from a Db setting in future.
+	* Chg: Removing the covers constant from automatied.config.php. It will be generated from a Db setting in future.
 2014-02-15 jonnyboy
 	* colorized output
 	added disconnect after delete in grabnzbs_threaded.py
@@ -3426,7 +3434,7 @@ stable code:
 	nZEDb->NNTP->splitLines() New method for spliting lines longer than 510 chars and appending \r\n
 	nZEDb->NFO Add PhpDoc.
 2014-02-13 niel
-	* Upd: Changes to autoloading. Each "namespace" (nzedb, libs, and Smarty) gets its own autoloader.
+	* Chg: Changes to autoloading. Each "namespace" (nzedb, libs, and Smarty) gets its own autoloader.
 	* Fix: Replacing the theme path constant I inadvertantly killed :-(
 2014-02-12 kevin
 	* NNTP.php Change failure returns to pear error (even though this is depreceated in PEAR, most of our scripts look for these), getArticles method was invalid (the return from the parent function was an array and we were trying to return a string), change getMessage method to verify if the selected group is the same using the parent's object, change grabNZB to use getMessages method.
@@ -3464,7 +3472,7 @@ stable code:
 	* changed nntp compression to verify end of stream before decompress
 	nzedb/NNTP.php ; Disconnect from usenet if still connected when the class goes out of scope.
 2014-02-09 niel
-	* Upd: Adding 'coverspath' setting to schema.
+	* Chg: Adding 'coverspath' setting to schema.
 2014-02-09 jonnyboy
 	* changed order in if
 	added nZEDb_THEMES for pointing to fs themes path
@@ -3483,7 +3491,7 @@ stable code:
 	added option to optimize all tables at once, force optimize all tables or analyze only optimise.php
 	added analyze tables every 60 min to monitor.php
 2014-02-07 niel
-	* Upd: Updated install steps so that they correctly use the autoloader.
+	* Chg: Updated install steps so that they correctly use the autoloader.
 2014-02-07 jonnyboy
 	* fixed links to libs in install scripts, fixed more links
 	removed extra space
@@ -3499,7 +3507,7 @@ stable code:
 	group music releases by musicinfo
 	fixed duplicate musicinfo records, you may want to run misc/testing/DB/reset_postprocessing.php music true truncate to reprocess
 2014-02-06 niel
-	* Upd: Part 2 (ish) of directory changes/moves
+	* Chg: Part 2 (ish) of directory changes/moves
 2014-02-05 bart39
 	* removed un-needed dereferer link
 	fixed console, books and movie templates in alpha theme
@@ -3516,7 +3524,7 @@ stable code:
 2014-02-04 jonnyboy
 	* fixed tvrage edit
 2014-02-04 niel
-	* Upd: Removing a left over debug message
+	* Chg: Removing a left over debug message
 2014-02-04 jonnyboy
 	* fixed delete_disabled_category_releases.php, removed unneeded require statements
 2014-02-02 niel
@@ -3533,16 +3541,16 @@ stable code:
 	added dereferrer to movies list
 	updated renaming scripts to reset id's when seachname is set
 2014-02-01 kevin
-	* Upd: Added phpdoc notes to NNTP.php, changed some functions to protected, objects to private.
-	Upd: Combined the doConnect and doConnectA methods in NNTP.php.
-	Upd: Encapsulate the evalution to make the expressions clearer.
-	Upd: Mention that to decode yenc, the library is a better alternative, remove TODO on doconnect_a.
+	* Chg: Added phpdoc notes to NNTP.php, changed some functions to protected, objects to private.
+	Chg: Combined the doConnect and doConnectA methods in NNTP.php.
+	Chg: Encapsulate the evalution to make the expressions clearer.
+	Chg: Mention that to decode yenc, the library is a better alternative, remove TODO on doconnect_a.
 	Del: Removed pdo_notes.txt
 2014-02-01 kaibosh
 	* Update hardware section of README.md
 	Insert link to summary page produced by mymovielist
 2014-02-01 niel
-	* Upd: Moved one file (simple_html_dom.php) to nZEDb_LIBS. There are a few others we should move too.
+	* Chg: Moved one file (simple_html_dom.php) to nZEDb_LIBS. There are a few others we should move too.
 	Tidy up. Removed most commented out require_once lines.
 	Some formatting changes for coding standard
 2014-01-30 bart39
@@ -3569,24 +3577,24 @@ stable code:
 	fixed bug in Movie.php, fixed bug in nzb-import.php
 	fixed bug in PreDb.php allowing dupes from omgwthfnzbs, you may want to run misc/testing/Dev/update_predb_md5.php to clean the dupes
 2014-01-29 niel
-	* Upd: Merging in third party library move (from nZEDb/www/libs/... to nZEDb/libs/...).
-	Upd: Using file to check for text files in NFO, added check for non-printable characters after text check.
-	Upd: Oops for got to remove my debugging copy file from Nfo.
+	* Chg: Merging in third party library move (from nZEDb/www/libs/... to nZEDb/libs/...).
+	Chg: Using file to check for text files in NFO, added check for non-printable characters after text check.
+	Chg: Oops for got to remove my debugging copy file from Nfo.
 2014-01-29 jonnyboy
 	* updated Releases.php, seems Releases->processReleasesStage7b was not running unless running tmux scripts
 	updated DB.php, db->optimise to only optimise tables with a min of 5% free space
 2014-01-28 jonnyboy
 	* minor change to Releases->searchSQL, for ft search, at least 1 term must have +
 2014-01-28 niel
-	* Upd: Removing trailing white-space from README.md (It makes the pre-commit hook complain when merging).
-	* Upd: Fixing typo in runHooks
+	* Chg: Removing trailing white-space from README.md (It makes the pre-commit hook complain when merging).
+	* Chg: Fixing typo in runHooks
 2014-01-28 jonnyboy
 	* removed unnecessary resolve using ss, added another pass to try to get usp count
 	fixed bug in details view when using ft index
 	added parameter to Releases->searchSQL to choose ft index or not.
 2014-01-28 niel
 	* Fix: git hook script correctly detects the dev branch now.
-	* Upd: Partial reverting changes to tmux/monitor.php. It needs to show actual commit, not expected, i misunderstood the purpose :-(
+	* Chg: Partial reverting changes to tmux/monitor.php. It needs to show actual commit, not expected, i misunderstood the purpose :-(
 2014-01-28 jonnyboy
 	* updated step3.php
 	added 'XFeature GZIP compression, by wafflehouse : http://pastebin.com/A3YypDAJ'
@@ -3596,9 +3604,9 @@ stable code:
 	* fixed install not adding triggers
 	merged egandts pr, fix bad link in predb table
 2014-01-26 niel
-	* Upd: Changing runHooks to only update version for the 'dev' branch, to reduce merge conflicts.
-	* Upd: Moving third party libraries from nZEDb/www/lib to nZEDb/libs.
-	Upd: Adding check to queryDirect for failure, to avoid invalid parameter passed to foreach errors when queries go wrong.
+	* Chg: Changing runHooks to only update version for the 'dev' branch, to reduce merge conflicts.
+	* Chg: Moving third party libraries from nZEDb/www/lib to nZEDb/libs.
+	Chg: Adding check to queryDirect for failure, to avoid invalid parameter passed to foreach errors when queries go wrong.
 2014-01-26 bart39
 	* fixed typo in Releases.php
 	moved music checks before movie checks in determineCategoryNormal as music videos were incorrectly being categorized as movies
@@ -3617,13 +3625,13 @@ stable code:
 	* New: Added a git pre-commit hook file and a script to install/update it. I'll add more functionality to the hook as I can.
 	New: Added a git/hooks/precommit entry to versions file.
 	Fix: Changed UpdateVersions class to Versions, as it will be doing more than just updating.
-	Upd: Changed Versions to only allow the pre-commit hook to set the commit number to the *next* value instead of current one.
+	Chg: Changed Versions to only allow the pre-commit hook to set the commit number to the *next* value instead of current one.
 2014-01-24 bart39
 	* changed updateBookInfo query so that it checks if the bookinfo already exists (matching asin) this prevents a lot of duplicates
 	previous change got reverted somehow by niel's commit
 2014-01-24 niel
 	* Fix: Changes to commit.sh and UpdateVersions.php so they work.
-	Upd: Updated versions file manually.
+	Chg: Updated versions file manually.
 	New: Added new script commit in base directory to help with committing changes. It uses interactive mode for adding files to the index so that only those relevant to a change can be committed.
 		  Additionally it opens the changelog for updating before performing the git commit. It relies upon a git hook (not written yet) to call the UpdateVersions class.
 	Fix: Removed the crap at the end
