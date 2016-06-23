@@ -8,6 +8,8 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+2016-06-22 ruhllatio
+	Fix: New gFRN bad offset typo for NFO, Files
 2016-06-21 niel
 	Fix: Initial default theme not set to Alpha, because of lower case first letter.
 	Chg: Relaxed minimum PHP requirement to 5.6.10, so users on distros from around 14.04 have less problems.
