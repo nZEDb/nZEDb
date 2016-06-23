@@ -109,7 +109,7 @@
 					{/if}
 					{if $parentcat.id == {$catClass::TV_ROOT}}
 						<li class="dropdown">
-							<a title="Browse All {$parentcat.title}" href="{$smarty.const.WWW_TOP}/series">{$parentcat.title}</a>
+							<a title="Browse All {$parentcat.title}" href="{$smarty.const.WWW_TOP}/browse?t={$parentcat.id}">{$parentcat.title}</a>
 							<ul>
 								{foreach $parentcat.subcatlist as $subcat}
 									<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a></li>
