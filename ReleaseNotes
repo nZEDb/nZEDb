@@ -1,6 +1,12 @@
 This file details which changes to the code are in which release version. It is a complement to the ChangeLog file which list *when* changes are made to the dev branch.
 
 
+0.6.1.3 2016-06-23
+Fixed:
+	* Category_id not changed to categories_id for category regexes. (Closees issue 2171).
+	* Local lookup not working for airdates because Sxx/Exx is still being set as junk data.
+	* Initial default theme not set to Alpha, because of lower case first letter.
+
 0.6.1.1 2016-06-08
 Fixed:
 	* Renamed 10-category.tsv to 10-categories.sql
