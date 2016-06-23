@@ -8,6 +8,8 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+2016-06-23 ruhllatio
+	Chg: Make fixReleaseNames predbft deterministic to prevent useless threads
 2016-06-23 DariusIII
 	Upd: composer.lock with version 1.0.9 of barracudanetworks/forkdaemon-php (adds unlimited child run support)
 2016-06-22 ruhllatio

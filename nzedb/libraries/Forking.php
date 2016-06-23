@@ -500,6 +500,25 @@ class Forking extends \fork_daemon
 
 		$leftguids = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'];
 
+		// Prevent PreDB FT from always running
+		if ($this->workTypeOptions[0] === 'predbft') {
+			$preCount = $this->pdo->queryOneRow(
+				sprintf("
+					SELECT COUNT(p.id) AS num
+					FROM predb p
+					WHERE LENGTH(p.title) >= 15
+					AND p.title NOT REGEXP '[\"\<\> ]'
+					AND p.searched = 0
+					AND p.predate < (NOW() - INTERVAL 1 DAY)"
+				)
+			);
+			if ($preCount['num'] > 0) {
+				$leftguids = array_slice($leftguids, 0, (int)ceil($preCount['num'] / $maxperrun));
+			} else {
+				$leftguids = array();
+			}
+		}
+
 		$count = 0;
 		$queue = [];
 		foreach ($leftguids as $leftguid) {
