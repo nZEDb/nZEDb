@@ -92,11 +92,7 @@ if (file_exists($config)) {
 
 	if (isset($adapter)) {
 		if (empty(DB_SOCKET)) {
-			if (empty(DB_PORT)) {
-				$host =  DB_HOST;
-			} else {
-				$host = DB_HOST.':'.DB_PORT;
-			}
+			$host = empty(DB_PORT) ? DB_HOST : DB_HOST.':'.DB_PORT;
 		} else {
 			$host = DB_SOCKET;
 		}
