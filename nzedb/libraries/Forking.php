@@ -42,20 +42,21 @@ class Forking extends \fork_daemon
 			(defined('nZEDb_MULTIPROCESSING_LOG_TYPE') ? nZEDb_MULTIPROCESSING_LOG_TYPE : \fork_daemon::LOG_LEVEL_INFO)
 		);
 
-		$this->max_work_per_child_set(1);
 		if (defined('nZEDb_MULTIPROCESSING_MAX_CHILD_WORK')) {
 			$this->max_work_per_child_set(nZEDb_MULTIPROCESSING_MAX_CHILD_WORK);
+		} else {
+			$this->max_work_per_child_set(1);
 		}
 
-		$this->child_max_run_time_set(1800);
 		if (defined('nZEDb_MULTIPROCESSING_MAX_CHILD_TIME')) {
 			$this->child_max_run_time_set(nZEDb_MULTIPROCESSING_MAX_CHILD_TIME);
+		} else {
+			$this->child_max_run_time_set(1800);
 		}
 
 		// Use a single exit method for all children, makes things easier.
 		$this->register_parent_child_exit([0 => $this, 1 => 'childExit']);
 
-		$this->outputType = self::OUTPUT_REALTIME;
 		if (defined('nZEDb_MULTIPROCESSING_CHILD_OUTPUT_TYPE')) {
 			switch (nZEDb_MULTIPROCESSING_CHILD_OUTPUT_TYPE) {
 				case 0:
@@ -70,6 +71,8 @@ class Forking extends \fork_daemon
 				default:
 					$this->outputType = self::OUTPUT_REALTIME;
 			}
+		} else {
+			$this->outputType = self::OUTPUT_REALTIME;
 		}
 
 		$this->dnr_path = PHP_BINARY . ' ' . nZEDb_MULTIPROCESSING . '.do_not_run' . DS . 'switch.php "php  ';
