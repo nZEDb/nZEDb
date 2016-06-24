@@ -91,7 +91,7 @@ if (file_exists($config)) {
 	}
 
 	if (isset($adapter)) {
-		$port = DB_SOCKET ?: (DB_PORT ? DB_HOST.':'.DB_PORT : DB_HOST);
+		$host = DB_SOCKET ?: (DB_PORT ? DB_HOST.':'.DB_PORT : DB_HOST);
 
 		Connections::add('default',
 			[
