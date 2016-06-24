@@ -9,6 +9,7 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 2016-06-24 DariusIII
+	Fix: Triggers in schema as pointed out in issue #2184 (fixes issue #2184)
 	Chg: Move child forking settings inside if else loop
 2016-06-23 DariusIII
 	Fix: Headermenu on Default and themes that use it as their base (TV was linked to series not browse all TV releases).
