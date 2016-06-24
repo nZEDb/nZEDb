@@ -91,8 +91,16 @@ if (file_exists($config)) {
 	}
 
 	if (isset($adapter)) {
-		$host = DB_SOCKET ?: (DB_PORT ? DB_HOST.':'.DB_PORT : DB_HOST);
-
+		if (empty(DB_SOCKET)) {
+			if (empty(DB_PORT)) {
+				$host =  DB_HOST;
+			} else {
+				$host = DB_HOST.':'.DB_PORT;
+			}
+		} else {
+			$host = DB_SOCKET;
+		}
+		
 		Connections::add('default',
 			[
 				'type'       => 'database',
