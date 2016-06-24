@@ -92,10 +92,10 @@ class ReleaseComments
 	{
 		return $this->pdo->query(
 			sprintf("
-				SELECT release_comments.*, releases.guid
-				FROM release_comments
-				LEFT JOIN releases on releases.id = release_comments.releases_id
-				ORDER BY release_comments.createddate DESC %s",
+				SELECT rc.*, r.guid
+				FROM release_comments rc
+				LEFT JOIN releases r on r.id = rc.releases_id
+				ORDER BY rc.createddate DESC %s",
 				($start === false ? '' : " LIMIT " . $num . " OFFSET " . $start)
 			)
 		);
