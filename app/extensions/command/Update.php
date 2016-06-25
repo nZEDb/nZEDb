@@ -181,7 +181,7 @@ class Update extends \app\extensions\console\Command
 	protected function composer()
 	{
 		$this->initialiseGit();
-		$command = 'composer install';
+		$command = 'composer install --prefer-source';
 		if (in_array($this->gitBranch, $this->git->getBranchesStable())) {
 			$command .= ' --no-dev';
 		}
