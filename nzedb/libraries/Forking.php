@@ -42,20 +42,21 @@ class Forking extends \fork_daemon
 			(defined('nZEDb_MULTIPROCESSING_LOG_TYPE') ? nZEDb_MULTIPROCESSING_LOG_TYPE : \fork_daemon::LOG_LEVEL_INFO)
 		);
 
-		$this->max_work_per_child_set(1);
 		if (defined('nZEDb_MULTIPROCESSING_MAX_CHILD_WORK')) {
 			$this->max_work_per_child_set(nZEDb_MULTIPROCESSING_MAX_CHILD_WORK);
+		} else {
+			$this->max_work_per_child_set(1);
 		}
 
-		$this->child_max_run_time_set(1800);
 		if (defined('nZEDb_MULTIPROCESSING_MAX_CHILD_TIME')) {
 			$this->child_max_run_time_set(nZEDb_MULTIPROCESSING_MAX_CHILD_TIME);
+		} else {
+			$this->child_max_run_time_set(1800);
 		}
 
 		// Use a single exit method for all children, makes things easier.
 		$this->register_parent_child_exit([0 => $this, 1 => 'childExit']);
 
-		$this->outputType = self::OUTPUT_REALTIME;
 		if (defined('nZEDb_MULTIPROCESSING_CHILD_OUTPUT_TYPE')) {
 			switch (nZEDb_MULTIPROCESSING_CHILD_OUTPUT_TYPE) {
 				case 0:
@@ -70,6 +71,8 @@ class Forking extends \fork_daemon
 				default:
 					$this->outputType = self::OUTPUT_REALTIME;
 			}
+		} else {
+			$this->outputType = self::OUTPUT_REALTIME;
 		}
 
 		$this->dnr_path = PHP_BINARY . ' ' . nZEDb_MULTIPROCESSING . '.do_not_run' . DS . 'switch.php "php  ';
@@ -499,6 +502,25 @@ class Forking extends \fork_daemon
 		}
 
 		$leftguids = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'];
+
+		// Prevent PreDB FT from always running
+		if ($this->workTypeOptions[0] === 'predbft') {
+			$preCount = $this->pdo->queryOneRow(
+				sprintf("
+					SELECT COUNT(p.id) AS num
+					FROM predb p
+					WHERE LENGTH(p.title) >= 15
+					AND p.title NOT REGEXP '[\"\<\> ]'
+					AND p.searched = 0
+					AND p.predate < (NOW() - INTERVAL 1 DAY)"
+				)
+			);
+			if ($preCount['num'] > 0) {
+				$leftguids = array_slice($leftguids, 0, (int)ceil($preCount['num'] / $maxperrun));
+			} else {
+				$leftguids = array();
+			}
+		}
 
 		$count = 0;
 		$queue = [];

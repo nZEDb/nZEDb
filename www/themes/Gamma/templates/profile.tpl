@@ -166,13 +166,11 @@
 	<table style="margin-top:10px;" class="data Sortable table">
 		<tr>
 			<th>date</th>
-			<th>release</th>
 			<th>comment</th>
 		</tr>
 		{foreach $commentslist as $comment}
 		<tr>
 			<td width="80" title="{$comment.createddate}">{$comment.createddate|date_format}</td>
-			<td><a href="{$smarty.const.WWW_TOP}/details/{$comment.guid}/{$comment.searchname|escape:"seourl"}">{$comment.searchname}</a></td>
 			<td>{$comment.text|escape:"htmlall"|nl2br}</td>
 		</tr>
 		{/foreach}

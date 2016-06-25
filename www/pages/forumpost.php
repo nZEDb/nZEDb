@@ -6,7 +6,7 @@ if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
-$id = $_GET["id"] + 0;
+$id = $_GET["id"];
 
 $forum = new Forum(['Settings' => $page->settings]);
 if ($page->isPostBack()) {
