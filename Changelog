@@ -8,6 +8,9 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+2016-06-24 niel
+	Mrg: PR 2189, from 	josh4trunks - Fix Lithium Connections to send host:name in host field as
+		Lithium expects.
 2016-06-24 DariusIII
 	Chg: Remove release searchname from Gamma profile page (comments part)
 	Upd: Reformat getCommentsRange query in ReleaseComments class
