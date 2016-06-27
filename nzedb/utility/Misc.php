@@ -624,9 +624,9 @@ class Misc
 		$namespaces = $xml->getDocNamespaces();
 		$namespaces[''] = null; //add base (empty) namespace
 
-		//get attributes from all namespaces
-		$attributesArray = array();
+		$attributesArray = $tagsArray = array();
 		foreach ($namespaces as $prefix => $namespace) {
+			//get attributes from all namespaces
 			foreach ($xml->attributes($namespace) as $attributeName => $attribute) {
 				//replace characters in attribute name
 				if ($options['keySearch']) $attributeName =
@@ -636,11 +636,7 @@ class Misc
 					. $attributeName;
 				$attributesArray[$attributeKey] = (string)$attribute;
 			}
-		}
-
-		//get child nodes from all namespaces
-		$tagsArray = array();
-		foreach ($namespaces as $prefix => $namespace) {
+			//get child nodes from all namespaces
 			foreach ($xml->children($namespace) as $childXml) {
 				//recurse into child nodes
 				$childArray = self::xmlToArray($childXml, $options);
