@@ -23,6 +23,7 @@ namespace nzedb\http;
 use nzedb\Category;
 use nzedb\Utility\Misc;
 use nzedb\db\Settings;
+use nzedb\utility\Text;
 use nzedb\utility\Versions;
 
 /**
@@ -69,30 +70,28 @@ abstract class Capabilities
 	{
 		$this->type = $type;
 
+		$options = [
+			'Parameters' => $params,
+			'Data'       => $data,
+			'Server'     => $this->getForMenu(),
+			'Type'       => $type
+		];
+
+		$response = (new XML_Response($options))->returnXML();
+
 		if ($xml) {
-			$response =
-				(
-					new XML_Response(
-						[
-							'Parameters' => $params,
-							'Data'       => $data,
-							'Server'     => $this->getForMenu(),
-							'Type'       => $type
-						]
-					)
-				)->returnXML();
 			header('Content-type: text/xml');
 		} else {
-			$response =
-				(
-					new JSON_Response(
-						[
-							'Parameters' => $params,
-							'Data'       => $data,
-							'Type'       => $type
-						]
-					)
-				)->returnJSON();
+			$response = json_encode(
+				Text::xmlToArray(
+					@simplexml_load_string($response),
+					[
+						'attributePrefix' => '_',
+						'textContent'     => '_text',
+					]
+				)['rss']['channel'],
+				JSON_PRETTY_PRINT + JSON_UNESCAPED_SLASHES
+			);
 			header('Content-type: application/json');
 		}
 		if ($response === false) {
