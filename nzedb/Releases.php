@@ -719,7 +719,7 @@ class Releases
 		}
 
 		$update = [
-			'categoryid'     => (($category == '-1') ? 'categoryid' : $category),
+			'categories_id'     => (($category == '-1') ? 'categories_id' : $category),
 			'grabs'          => $grabs,
 			'videos_id'      => $videoId,
 			'tv_episodes_id' => $episodeId,
@@ -765,8 +765,8 @@ class Releases
 		$sql = '(1=2 ';
 		foreach ($userQuery as $query) {
 			$sql .= sprintf('OR (r.%s = %d', $type, $query[$type]);
-			if ($query['categoryid'] != '') {
-				$catsArr = explode('|', $query['categoryid']);
+			if ($query['categories_id'] != '') {
+				$catsArr = explode('|', $query['categories_id']);
 				if (count($catsArr) > 1) {
 					$sql .= sprintf(' AND r.categories_id IN (%s)', implode(',', $catsArr));
 				} else {
