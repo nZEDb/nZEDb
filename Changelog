@@ -10,6 +10,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 2016-06-27 ruhllatio
 	Mrg: PR Cleanup groups #2175
+	Mrg: PR Remove 10-tvrage_titles.tsv and scripts used to pupulate that table. #2183
 2016-06-27 DariusIII
 	Fix: Missed occurences of categoryid in UserMovies.php. Fixes issue #2191
 2016-06-27 niel
