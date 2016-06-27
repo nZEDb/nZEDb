@@ -23,7 +23,6 @@ namespace nzedb\http;
 use nzedb\Category;
 use nzedb\Utility\Misc;
 use nzedb\db\Settings;
-use nzedb\utility\Text;
 use nzedb\utility\Versions;
 
 /**
@@ -83,7 +82,7 @@ abstract class Capabilities
 			header('Content-type: text/xml');
 		} else {
 			$response = json_encode(
-				Text::xmlToArray(
+				Misc::xmlToArray(
 					@simplexml_load_string($response),
 					[
 						'attributePrefix' => '_',
