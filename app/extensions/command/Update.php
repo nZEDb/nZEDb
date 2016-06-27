@@ -99,7 +99,7 @@ class Update extends \app\extensions\console\Command
 		// also prevent web access.
 		$this->initialiseGit();
 		if (!in_array($this->git->getBranch(), $this->git->getBranchesMain())) {
-			$this->out("Not on the stable or dev branch! Refusing to update repository.", 'error');
+			$this->out("Not on the stable or dev branch! Refusing to update repository ;-)", 'error');
 			return;
 		}
 
@@ -109,26 +109,23 @@ class Update extends \app\extensions\console\Command
 	public function nzedb()
 	{
 		try {
-			/*
 			$output = $this->git();
 			if ($output === 'Already up-to-date.') {
 				$this->out($output, 'info');
-				return 0;
-			}
-			*/
-
-			$status = $this->composer();
-			if ($status) {
-				$this->out('Composer failed to update!!', 'error');
-
-				return false;
 			} else {
-				$fail = $this->db();
-				if ($fail) {
-					$this->out('Db updating failed!!', 'error');
+				$status = $this->composer();
+				if ($status) {
+					$this->out('Composer failed to update!!', 'error');
 
-					return 1;
-				}
+					return false;
+				} else {
+					$fail = $this->db();
+					if ($fail) {
+						$this->out('Db updating failed!!', 'error');
+
+						return 1;
+					}
+				};
 			}
 
 			$smarty = new Smarty();
