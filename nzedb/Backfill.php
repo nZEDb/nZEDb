@@ -142,11 +142,7 @@ class Backfill
 				$res = [$grp];
 			}
 		} else {
-			if ($type === 'normal' || $type === '') {
-				$res = $this->_groups->getActiveBackfill();
-			} else if ($type === 'date') {
-				$res = $this->_groups->getActiveByDateBackfill();
-			}
+			$res = $this->_groups->getActiveBackfill($type);
 		}
 
 		$groupCount = count($res);
@@ -286,13 +282,7 @@ class Backfill
 			}
 
 			if ($this->_disableBackfillGroup) {
-				$this->pdo->queryExec(
-					sprintf('
-					UPDATE groups
-					SET backfill = 0
-					WHERE id = %d',
-						$groupArr['id'])
-				);
+				$this->_groups->updateGroupStatus($groupArr['id'], 'backfill', 0);
 			}
 
 			if ($this->_echoCLI) {
@@ -320,9 +310,9 @@ class Backfill
 		}
 
 		// Set first and last, moving the window by max messages.
-		$last = (string)($groupArr['first_record'] - 1);
+		$last = ($groupArr['first_record'] - 1);
 		// Set the initial "chunk".
-		$first = (string)($last - $this->_binaries->messageBuffer + 1);
+		$first = ($last - $this->_binaries->messageBuffer + 1);
 
 		// Just in case this is the last chunk we needed.
 		if ($targetpost > $first) {
@@ -373,8 +363,8 @@ class Backfill
 				$done = true;
 			} else {
 				// Keep going: set new last, new first, check for last chunk.
-				$last = (string)($first - 1);
-				$first = (string)($last - $this->_binaries->messageBuffer + 1);
+				$last = ($first - 1);
+				$first = ($last - $this->_binaries->messageBuffer + 1);
 				if ($targetpost > $first) {
 					$first = $targetpost;
 				}
