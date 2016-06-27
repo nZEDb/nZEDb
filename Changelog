@@ -17,9 +17,9 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 		Lithium expects.
 2016-06-24 DariusIII
 	Chg: Remove release searchname from Gamma profile page (comments part)
-	Upd: Reformat getCommentsRange query in ReleaseComments class
+	Chg: Reformat getCommentsRange query in ReleaseComments class
 	Fix: Forums on Gamma (fixes issue #2174), Charisma, Gentele and Omicron themes.
-	Fix: Triggers in schema as pointed out in issue #2184 (fixes issue #2184)
+	Fix: Triggers in schema (fixes issue #2184)
 	Chg: Move child forking settings inside if else loop
 2016-06-23 DariusIII
 	Fix: Headermenu on Default and themes that use it as their base (TV was linked to series not browse all TV releases).
@@ -36,7 +36,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Mrg: Add new Gentele theme. #2156 @DariusIII
 	Mrg: Fixed SQL injection in Movie.php #2180
 2016-06-13 DariusIII
-	Upd: scrutinizer config
+	Chg: scrutinizer config
 2016-06-12 ruhllatio
 	Fix: Series View does quality selection missing value. #2170
 2016-06-12 bart39
@@ -51,9 +51,9 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Fix: Sneaky category_id not changed to categories_id in recategorize.php
 2016-06-08 DariusIII
 	Chg: Change qtip2 version used in Omicron theme
-	Fix: Fix check all icon behaviour in Omicron theme
+	Fix: Check all icon behaviour in Omicron theme
 	Chg: Switch Omicron to iCheck checkbox style and new Pnotify style.
-	Upd: Fix no background images in Charisma/Omicron themes, change type of iCheck used in Omicron.
+	Chg: Fix no background images in Charisma/Omicron themes, change type of iCheck used in Omicron.
 2016-06-08 niel
 	Chg: Update version of unionofrad/lithium in composer.lock
 2016-06-07 ruhllatio
@@ -81,11 +81,11 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Chg: Improve JSON Response class and refactor to make it like XML class
 	Chg: Change some dates in the output to not use RSS style as they are not RSS attributes
 2016-06-01 ruhllatio
-	Mrg: PR - Feature media #2153
+	Mrg: PR 2153 - Feature media
 	Fix: Regex error in SP from #2153
 	Chg: Make nzb-export comments reflect a more specific date format
 	Fix: nzb-import using filenames as searchname now strips .gz as well as .nzb
-	Mrg: PR - Feature apixmlwrite #2155
+	Mrg: PR 2155 - Feature apixmlwrite
 	Fix: Caps category issue caused by final class moves
 	Fix: Caps Multi to single call not sending data in the correct format
 	Fix: Caps subcategory listing sending subcatlist as element should be just subcat
