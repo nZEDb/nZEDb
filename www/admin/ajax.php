@@ -82,13 +82,15 @@ switch ($_GET['action']) {
 		break;
 
 	case 'toggle_group_active_status':
-		print (new Groups($settings))->updateGroupStatus((int)$_GET['group_id'],
-			(isset($_GET['group_status']) ? (int)$_GET['group_status'] : 0));
+		print (new Groups($settings))->updateGroupStatus((int)$_GET['group_id'], 'active', (isset($_GET['group_status']) ? (int)$_GET['group_status'] : 0));
 		break;
 
 	case 'toggle_group_backfill_status':
-		print (new Groups($settings))->updateBackfillStatus((int)$_GET['group_id'],
-			(isset($_GET['backfill_status']) ? (int)$_GET['backfill_status'] : 0));
+		print (new Groups($settings))->updateGroupStatus(
+			(int)$_GET['group_id'],
+			'backfill',
+			(isset($_GET['backfill_status']) ? (int)$_GET['backfill_status'] : 0)
+		);
 		break;
 
 	case 'sharing_toggle_status':

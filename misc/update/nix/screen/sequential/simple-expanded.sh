@@ -74,10 +74,7 @@ then
 	LASTOPTIMIZE1=`date +%s`
 	echo "Updating some stuff .. "
 	#$PHP ${NZEDB_PATH}/optimise_db.php space
-	#$PHP ${NZEDB_PATH}/update_tvschedule.php
 	$PHP ${NZEDB_PATH}/update_theaters.php
-	#$PHP ${CLI_PATH}/populate_tvrage.php true
-	#$PHP ${RAGE_PATH}/updateTvRage.php
 	#$PHP ${CLI_PATH}/populate_anidb.php true
 	$PHP ${CLI_PATH}/predb_import_daily_batch.php progress local true
 	$PHP ${TEST_PATH}/Release/fixReleaseNames.php 2 true other no
