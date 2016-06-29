@@ -22,7 +22,7 @@
 	{foreach $shows as $show}
 		<tr class="{cycle values=",alt"}">
 			<td>
-				<a title="View details" href="{$smarty.const.WWW_TOP}/series/{$show.videos_id}{if $show.categories_id != ''}?t={$show.categories_id|replace:"|":","}{/if}"><h5>{$show.title|escape:"htmlall"|wordwrap:75:"\n":true}</h5></a>
+				<a title="View details" href="{$smarty.const.WWW_TOP}/series/{$show.videos_id}{if $show.categories != ''}?t={$show.categories|replace:"|":","}{/if}"><h5>{$show.title|escape:"htmlall"|wordwrap:75:"\n":true}</h5></a>
 			</td>
 			<td class="less">{if $show.categoryNames != ''}{$show.categoryNames|escape:"htmlall"}{else}All{/if}</td>
 			<td class="less" style="width:100px;" title="Added on {$show.createddate}">{$show.createddate|date_format}</td>

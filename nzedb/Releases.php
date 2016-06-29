@@ -765,8 +765,8 @@ class Releases
 		$sql = '(1=2 ';
 		foreach ($userQuery as $query) {
 			$sql .= sprintf('OR (r.%s = %d', $type, $query[$type]);
-			if ($query['categories_id'] != '') {
-				$catsArr = explode('|', $query['categories_id']);
+			if ($query['categories'] != '') {
+				$catsArr = explode('|', $query['categories']);
 				if (count($catsArr) > 1) {
 					$sql .= sprintf(' AND r.categories_id IN (%s)', implode(',', $catsArr));
 				} else {

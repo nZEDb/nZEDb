@@ -105,7 +105,7 @@ switch ($action) {
 			$page->smarty->assign('type', 'edit');
 			$page->smarty->assign('cat_ids', array_keys($categories));
 			$page->smarty->assign('cat_names', $categories);
-			$page->smarty->assign('cat_selected', explode('|', $show['categories_id']));
+			$page->smarty->assign('cat_selected', explode('|', $show['categories']));
 			$page->smarty->assign('video', $videoId);
 			$page->smarty->assign('show', $show);
 			$page->content = $page->smarty->fetch('myshows-add.tpl');
@@ -171,7 +171,7 @@ switch ($action) {
 		$shows = $us->getShows($page->users->currentUserId());
 		$results = array();
 		foreach ($shows as $showk => $show) {
-			$showcats = explode('|', $show['categories_id']);
+			$showcats = explode('|', $show['categories']);
 			if (is_array($showcats) && sizeof($showcats) > 0) {
 				$catarr = array();
 				foreach ($showcats as $scat) {

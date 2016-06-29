@@ -21,7 +21,7 @@
 		{foreach $shows as $show}
 			<tr class="{cycle values=",alt"}">
 				<td>
-					<a title="View details" href="{$smarty.const.WWW_TOP}/series/{$show.videos_id}{if $show.categories_id != ''}?t={$show.categories_id|replace:"|":","}{/if}">{$show.title|stripslashes|escape:"htmlall"|wordwrap:75:"\n":true}</a>
+					<a title="View details" href="{$smarty.const.WWW_TOP}/series/{$show.videos_id}{if $show.categories != ''}?t={$show.categories|replace:"|":","}{/if}">{$show.title|stripslashes|escape:"htmlall"|wordwrap:75:"\n":true}</a>
 				</td>
 				<td><a href="{$smarty.const.WWW_TOP}/rss?show={$show.videos_id}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}" title="RSS Feed for {$show.title|stripslashes|escape:"htmlall"} (All Categories)"><i class="fa fa-rss" style="color:orange;"></i> RSS Feed</td>
 				<td class="less">{if $show.categoryNames != ''}{$show.categoryNames|escape:"htmlall"}{else}All{/if}</td>

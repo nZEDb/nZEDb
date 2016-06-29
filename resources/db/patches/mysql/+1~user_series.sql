@@ -1,4 +1,4 @@
-# Rename user_series categoryid column to categories_id
+# Rename user_series categoryid column to categories
 ALTER TABLE user_series
-CHANGE COLUMN categoryid categories_id INT NOT NULL,
-COMMENT 'FK to categories.id';
+CHANGE COLUMN categoryid categories INT NOT NULL,
+COMMENT 'Array of categories for user tv shows';
