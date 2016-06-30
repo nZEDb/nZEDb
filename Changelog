@@ -11,6 +11,8 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 2016-06-30 niel
 	Chg: Make screen simple-expanded script executable.
+2016-06-30 DariusIII
+	Fix: Wrong path to file extension icons in Gamma theme viewfilelist.tpl
 2016-06-27 b3rs3rk
 	Mrg: PR Cleanup groups #2175
 	Mrg: PR Remove 10-tvrage_titles.tsv and scripts used to pupulate that table. #2183
