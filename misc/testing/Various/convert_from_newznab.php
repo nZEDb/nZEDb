@@ -349,7 +349,7 @@ convertTable($pdo,
 			 $nZEDB_schema,
 			 "user_movies",
 			 "INSERT INTO " . $nZEDB_schema .
-			 ".user_movies (user_id, imdbid, categories_id, createddate) " .
+			 ".user_movies (user_id, imdbid, categories, createddate) " .
 			 "SELECT userID, imdbID, categoryID, createddate FROM " . $nn_schema . ".usermovies",
 			 $runQueries);
 
@@ -385,7 +385,7 @@ convertTable($pdo,
 			 $nZEDB_schema,
 			 "user_series",
 			 "INSERT INTO " . $nZEDB_schema .
-			 ".user_series (user_id, rageid, categories_id, createddate) " .
+			 ".user_series (user_id, rageid, categories, createddate) " .
 			 "SELECT userID, rageID, categoryID, createddate FROM " . $nn_schema . ".userseries",
 			 $runQueries);
 
