@@ -23,7 +23,7 @@
   "description": "A Usenet Indexer",
   "extra": {
     "branch-alias": {
-      "dev-master": "0.x-dev"
+      "dev-dev": "0.x-dev"
     },
     "asset-installer-paths": {
       "npm-asset-library": "www/themes/shared/libs",
