@@ -8,7 +8,10 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
-2016-06-27 ruhllatio
+
+2016-06-30 niel
+	Chg: Make screen simple-expanded script executable.
+2016-06-27 b3rs3rk
 	Mrg: PR Cleanup groups #2175
 	Mrg: PR Remove 10-tvrage_titles.tsv and scripts used to pupulate that table. #2183
 2016-06-27 DariusIII
@@ -25,29 +28,29 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Chg: Move child forking settings inside if else loop
 2016-06-23 DariusIII
 	Fix: Headermenu on Default and themes that use it as their base (TV was linked to series not browse all TV releases).
-2016-06-23 ruhllatio
+2016-06-23 b3rs3rk
 	Chg: Make fixReleaseNames predbft deterministic to prevent useless threads
 2016-06-23 DariusIII
 	Upd: composer.lock with version 1.0.9 of barracudanetworks/forkdaemon-php (adds unlimited child run support)
-2016-06-22 ruhllatio
+2016-06-22 b3rs3rk
 	Fix: New gFRN bad offset typo for NFO, Files
 2016-06-21 niel
 	Fix: Initial default theme not set to Alpha, because of lower case first letter.
 	Chg: Relaxed minimum PHP requirement to 5.6.10, so users on distros from around 14.04 have less problems.
-2016-06-18 ruhllatio
+2016-06-18 b3rs3rk
 	Mrg: Add new Gentele theme. #2156 @DariusIII
 	Mrg: Fixed SQL injection in Movie.php #2180
 2016-06-13 DariusIII
 	Chg: scrutinizer config
-2016-06-12 ruhllatio
+2016-06-12 b3rs3rk
 	Fix: Series View does quality selection missing value. #2170
 2016-06-12 bart39
 	Fix: category_id not changed to categories_id for category regexes. Fixes issue #2171.
-2016-06-10 ruhllatio
+2016-06-10 b3rs3rk
 	Mrg: Dev fixrelsinglerun #2169 (Note: Restart Tmux)
-2016-06-09 ruhllatio
+2016-06-09 b3rs3rk
 	Fix: AniDB client not respecting update times
-2016-06-08 ruhllatio
+2016-06-08 b3rs3rk
 	Fix: A few errors in Categorize class (duplicate XxxSD call)
 	Fix: Issues with categories TSV not being updated after numerous change commits
 	Fix: Sneaky category_id not changed to categories_id in recategorize.php
@@ -58,7 +61,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Chg: Fix no background images in Charisma/Omicron themes, change type of iCheck used in Omicron.
 2016-06-08 niel
 	Chg: Update version of unionofrad/lithium in composer.lock
-2016-06-07 ruhllatio
+2016-06-07 b3rs3rk
 	Chg: Change DATEDIFF constraints to constant comparisons to allow index scan
 	Chg: AniDB site query optimization and code cleanup (indentations)
 2016-06-07 DariusIII
@@ -68,21 +71,21 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Mrg: Update schema to use groups_id instead of group_id. Note this does note affect CBPM tables which will be done in a separate commit.
 2016-06-06 DariusIII
 	Chg: Enable third pre channel, remove bad sources from ircscraper_settings_example and IRCScraper class.
-2016-06-05 ruhllatio
+2016-06-05 b3rs3rk
 	Fix: Fallback TV search now returns only specific episodes / also fix Season pack lookups
-2016-06-03 ruhllatio
+2016-06-03 b3rs3rk
 	Fix: TV Processing returns alias for wrong show first instead of direct show title match
 	Fix: Local lookup not working for airdates because Sxx/Exx is still being set as junk data
 2016-06-03 DariusIII
 	Add: Add multiple channels support to IRCScraper
-2016-06-02 ruhllatio
+2016-06-02 b3rs3rk
 	Add: JSON Response formatting
 	Fix: Need additional enclosure in TV Search API post-query check
 	Fix: Additional issues with TV API search logic
 	Add: Support for Season only searches with fast TV query
 	Chg: Improve JSON Response class and refactor to make it like XML class
 	Chg: Change some dates in the output to not use RSS style as they are not RSS attributes
-2016-06-01 ruhllatio
+2016-06-01 b3rs3rk
 	Mrg: PR 2153 - Feature media
 	Fix: Regex error in SP from #2153
 	Chg: Make nzb-export comments reflect a more specific date format
@@ -96,7 +99,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Chg: Improve RSS query times by preserving JOIN orders
 2016-06-01 DariusIII
 	Chg: Composer.lock to match composer.json.
-2016-05-31 ruhllatio
+2016-05-31 b3rs3rk
 	Fix: Bug with TV API changes that causes unmatched Show/Sxx/Exx queries to return data
 2016-05-31 DariusIII
 	Fix: Remove doubled and wrong preinfo function ih Gamma theme utils.js
@@ -111,7 +114,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Fix: Remove doubled and wrong preinfo function ih Gamma theme utils.js
 	Fix: PreDB page layout in Gamma theme.
 	Fix: Links to colorbox images in Gamma theme.
-2016-05-28 ruhllatio
+2016-05-28 b3rs3rk
 	Fix: Greatly improve TV API search query when specifying ID/Season/Ep etc. Remove var_dump.
 	Fix: Wrong array offset
 2016-05-27 DariusIII
@@ -123,7 +126,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Fix: Update some bower-asset's version strings to better reflect the version specified.
 		Tightened versions for others to err on the side of caution. We can relax later if this
 		prooves to be too tight.
-2016-05-24 ruhllatio
+2016-05-24 b3rs3rk
 	Fix: Revert concat cat query to INNER and add WHERE constraint to exclude parentid being NULL
 	Chg: Convert browse to use queryCalc method for cached counts to improve performance
 	Fix: preid still in use in browse templates causing Pre'd tags to not show up in site view
@@ -131,14 +134,14 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 2016-05-24 niel
 	Fix: Typoes in Changelog.
 	Fix: Error checking for fetching SQL versions.
-2016-05-23 ruhllatio
+2016-05-23 b3rs3rk
 	Chg: Improve RequestID query times (and update_releases thread performance) on larger databases
 	Chg: Improve all Releases queries for larger databases by preserving join orders of smaller tables
 2016-05-19 bart39
 	Mrg: Proper CouchPotato implementation #2151 @DariusIII
 2016-05-17 niel
 	Chg: Remove autopatcher script functionality. Replace with message to use ./zed update nzedb.
-2016-05-17 ruhllatio
+2016-05-17 b3rs3rk
 	Mrg: Feature couchpotato #2148 @DariusIII
 	Fix: Feature couchpotato should send IMDB ID from page request not release guid
 2016-05-17 DariusIII
@@ -148,15 +151,15 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Fix: Buffer nzb creation fixes #2139.
 2016-05-16 niel
 	Fix: Profile edit included non theme names in its dropdown list.
-2016-05-16 ruhllatio
+2016-05-16 b3rs3rk
 	Mrg: PR 2125, from Meganomic, Req Feature: Search Movies (Closes 1581)
 	Chg: Clean up NZB class file indents and query strings
 	Fix: NZBImport now sets the nzb_guid during the import
-2016-05-13 ruhllatio
+2016-05-13 b3rs3rk
 	Fix: PostProcess Additional tmux query not accurate with PP add queue.
 2016-05-12 niel
 	Add: Reporting output for update git, db commands.
-2016-05-12 ruhllatio
+2016-05-12 b3rs3rk
 	Fix: Browse ordering wrong due to added minSize push
 	Mrg: PR Add leftguid column to releases to improve threading work queries #2144
 	Chg: Improve fixRelNames work queries
@@ -167,7 +170,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Chg: Added some logging to help diagnose issue #2139
 	Chg: detect broken nzbs in clean nzbs.
 	Chg: add method for rarinfo if missing.
-2016-05-11 ruhllatio
+2016-05-11 b3rs3rk
 	Chg: Make some var changes in PP Add
 	Fix: fix patch 438 missing trigger updates for release search table
 	Fix: Invalid index errors in NameFixer caused by bad find and replaces in feature-db (temp)
@@ -180,14 +183,14 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 2016-05-11 DariusIII
 	Chg: Split UPDATE and DELETE query after NZB is created for release
 	Fix: Remove argument from createGUID function call in createReleases function, as createGUID function does not use any argument.
-2016-05-10 ruhllatio
+2016-05-10 b3rs3rk
 	Fix: Category Parent->Child name return function after Misc move
 	Fix: WEB-DL shows as option in My TV shows when not used as a category #2110
 	Fix: 404 function had no parameter for reason even though it was being set and clean up BasePage
 	Mrg: Feature db #2136 @niel
 	Fix: Mulple issues in feature-db branch and some Gamma issues
 2016-05-10 DariusIII
-	Fix: Prevent deadlocks on binaries and releases update (fix @ruhllatio).
+	Fix: Prevent deadlocks on binaries and releases update (fix @b3rs3rk).
 	Chg: Add couchpotato icon to Gamma theme. Fix issue #2115
 2016-05-09 DariusIII
 	Fix: Partitioning in patch 0436.
@@ -438,7 +441,7 @@ stable code:
 		needed before PHP 5.3.6 as 'charset' was ignored.
 	Fix: Updated Ubuntu-14.04.2-Install to use mysqlnd library instead of the no longer
 		maintained version.
-2016-02-22 ruhllatio
+2016-02-22 b3rs3rk
 	Fix: Long running queries for RemoveCrap WMV
 2016-02-20 niel
 	Fix: Correct path for images on opening page of Install.
@@ -522,7 +525,7 @@ stable code:
 
 2015-12-30 niel
 	Mrg: PR 2010, from DariusIII - Fix missing table definition from queries in NameFixer.
-2015-12-27 ruhllatio
+2015-12-27 b3rs3rk
 	Fix: Issue #2001 - update_releases.php -> Call to undefined method finfo::close()
 2015-12-23 niel
 	Mrg: PR 2007, from Darius - Change grabs and group browse ordering in Gamma.
@@ -535,16 +538,16 @@ stable code:
 	Mrg: PR 2005, from Zeta - Adding noscript support to recaptcha.
 2015-12-22 niel
 	Mrg: PR 2006, from Darius - Fix wrong video sample extension in Gamma template.
-2015-12-15 ruhllatio
+2015-12-15 b3rs3rk
 	Mrg: PR #1987, from Darius - Add Gamma template made by RickDB (adapted by Darius)
 	Mrg: PR #1998, from Darius - Declare $client property in nzedb/processing/tv/TMDB.php
-2015-12-14 ruhllatio
+2015-12-14 b3rs3rk
 	Chg: DNZB failures shouldn't send an easily corrupted searchname.  Now retrieves it from the DB by sent guid instead.
 	Fix: Attempt to fix issue with releases that have parts counters in the searchname not being sent to Sab properly
-2015-12-13 ruhllatio
+2015-12-13 b3rs3rk
 	Fix: Too many arguments for sprintf and re-work Dnzb Failures a tiny bit as I'm getting strange results
 	Fix: Provide a DNZB response code when no alternate match is found in DNZB query instead of just showing 404
-2015-12-11 ruhllatio
+2015-12-11 b3rs3rk
 	Chg: Move video type check to JOIN instead of WHERE in API TVSearch
 	Fix: Spacing issues with AniDB and small update to parsing
 	Chg: Greatly improve CodecPoster accuracy and query speed
@@ -567,10 +570,10 @@ stable code:
 	Fix: Cleaned up space-before-tabs.
 2015-12-06 niel
 	Fix: Column genre_id in gamesinfo table, not patched when schema was updated around patch 278.
-2015-12-04 ruhllatio
+2015-12-04 b3rs3rk
 	Chg: TVDB and TVMaze scripts now support Airdate lookup testing.
 	Fix: RemoveCrap Executable with Sphinx finding too much for the limit
-2015-12-02 ruhllatio
+2015-12-02 b3rs3rk
 	Mrg: PR #1985 - Add Trakt Support to Dev
 2015-11-29 niel
 	Mrg: dev => next-master to prepare for updating master.
@@ -580,14 +583,14 @@ stable code:
 2015-11-28 bart39
 	Chg: update readme - postgres NOT supported.
 	Chg: Also remove tv schedule update from threaded script.
-2015-11-28 ruhllatio
+2015-11-28 b3rs3rk
 	Mrg: PR #1977, from darius - Fix the full movie view in omicron/charisma templates
 	Mrg: PR #1979, from Wally73 - Update simple.sh to remove tv schedule script default
 	Mrg: PR #1980, from kaibosh - Change default to PHP version of scripts rather than python ones in threaded screen script
-2015-11-24 ruhllatio
+2015-11-24 b3rs3rk
 	Mrg: PR #1973, from darius - Adjust omicron/charisma templates to failed releases count fix
 	Fix: Bad merge on my part which reverted some DDL in the schema.  Reverted to dev and then made the one branch change
-2015-11-23 ruhllatio
+2015-11-23 b3rs3rk
 	Fix: Failed counts for cover views being lumped together instead of group_concat
 	Chg: Speed up Music, Games, and XXX cover views
 	Fix: Forgot to fix movies cover view not returning a single dimension array when none are found
@@ -595,7 +598,7 @@ stable code:
 	Mrg: PR #1971, From darius - Update templates to font-awesome 4.5.0.
 	Mrg: PR #1970, From darius - Fix count of failed releases.
 	Mrg: PR #1964, From darius - Remove option to postprocess properly renamed releases from tmux.
-2015-11-23 ruhllatio
+2015-11-23 b3rs3rk
 	Mrg: PR #1969, From darius - Change dnzb_failures table layout, drop indexes, add new PK
 	Fix: Broken queries in DnzbFailures, change logic to reduce clutter and excess queries
 	Fix: Broken DF queries in Releases
@@ -607,13 +610,13 @@ stable code:
 2015-11-23 bart39
 	Mrg: PR #1968, From darius - Fix the dnzb failures part of search query in Releases.php.
 	Mrg: PR #1965, From darius - Add changes for api and pager to charisma and omicron templates.
-2015-11-20 ruhllatio
+2015-11-20 b3rs3rk
 	Chg: Move PK on release_nfos to releaseid.  Improves NFO joining operations and reduces overhead.
 	Fix: Update schema for release_nfos change
 	Fix: Don't cache failed TV lookups when the Episode didn't find a match but the show did
 2015-11-20 bart39
 	Mrg: PR #1960, From izolight - More tvmaze fixes.
-2015-11-18 ruhllatio
+2015-11-18 b3rs3rk
 	Chg: Make categorizeReleases query search for iscategorized in the correct partition
 	Add: include NFOURL (if NFO exists) in extended=1 API information #1962
 	Add: Make NFO file retrievable for a release via the API and update documentation
@@ -627,7 +630,7 @@ stable code:
 	Fix: Undefined offsets when accessing pre query for Books
 	Chg: Re-work consoles cover view queries
 	Chg: Pager template should not round, using ceil to always round up for the last page is a better choice
-2015-11-17 ruhllatio
+2015-11-17 b3rs3rk
 	Chg: Move PK on release_files to releaseid/name.  Drastically improves query performance with optimizations to follow.
 	Fix: Add DROP IF EXISTS for temp table in patch
 	Add: IMDB Icon to TV new poster wall
@@ -636,7 +639,7 @@ stable code:
 	Fix: tvmaze response status can return 404 which we want to exclude.
 	Fix: Tv name parsing regex.
 	Mrg: PR #1959, From izolight - Fixes for tvmaze lookup.
-2015-11-15 ruhllatio
+2015-11-15 b3rs3rk
 	Add: TV Failed Title Lookup Cache (Thread Persistent like Amazon)
 	Fix: Bad merge broke regex again
 	Chg: If TVDB cannot reach the API, catch the error and force local lookup
@@ -646,7 +649,7 @@ stable code:
 	Chg: Speed up books cover view
 	Chg: Speed up XXX cover view
 	Chg: Speed up Console cover view (fix discrepancy in count)
-2015-11-14 ruhllatio
+2015-11-14 b3rs3rk
 	Mrg: PR #1953, Add TVMaze and TMDB Scrapers
 	Fix: Duplicate Alias Errors and cache alias lookups
 	Fix: TraktTv abstract errors from missing functions
@@ -667,7 +670,7 @@ stable code:
 	Fix: Collection regex errors noted in #1954.
 2015-11-10 niel
 	Fix: Remerged Darius' original charisma/omicron themes into next-master. Hopefully this will fix the issues for master, but may need more work yet.
-2015-11-09 ruhllatio
+2015-11-09 b3rs3rk
 	Fix: Sonarr's "RSS" is just using the API with no parameters.  Left joining should 'fix' this until it can be addressed with the Sonarr team.
 	Fix: Wrong if condition for TVDB Test script return
 	Chg: Greatly improve movies cover view query time.  Depending upon others' findings it is easily adapted to the other views.
@@ -679,7 +682,7 @@ stable code:
 2015-11-06 bart39
 	Mrg: PR #1868, From izolight - Add regexes for korean newsgroups.
 	Add: ddl / tsv changes for izolight patch.
-2015-11-05 ruhllatio
+2015-11-05 b3rs3rk
 	Fix: Schema data for countries table using invalid column for private key
 2015-11-04 bart39
 	Fix: Attempt to fix AEBN / ADM lookups #1914.
@@ -689,20 +692,20 @@ stable code:
 2015-11-02 bart39
 	Fix: index name on user series.
 
-2015-10-30 ruhllatio
+2015-10-30 b3rs3rk
 	Fix: Attempt to fix Issue #1844 Pager counts not reflecting release availability
-2015-10-29 ruhllatio
+2015-10-29 b3rs3rk
 	Fix: Tmux counters not accurately reflecting TV work (still off until new scrapers are finished)
 	Fix: SCR in ReleaseRemover and improve query times for all release_files operations on larger databases
-2015-10-28 ruhllatio
+2015-10-28 b3rs3rk
 	Chg: Speed up series list view query by removing releases join
 	Mrg: PR #1930, From Darius - Remove totalrows count from functions, api and templates
 	Chg: Release Browse Queries not respecting table position on larger Databases with MariaDB
-2015-10-27 ruhllatio
+2015-10-27 b3rs3rk
 	Mrg: PR #1925, From Darius - Fix anime pages in omicron/charisma. Fix a typo in mysql-ddl.sql
 	Mrg: PR #1928, From Darius - Move My Shows to account menu, remove links to calendar and add Anime Series link to charisma template
 	Fix: Country not being extracted from release / Improve TVDB matching when country exists
-2015-10-26 ruhllatio
+2015-10-26 b3rs3rk
 	Fix: Some local lookups were passing with invalid information causing them to show up as season 0.
 	Fix: View TV Series query speedup caused incorrect join placement (2nd Attempt)
 	Fix: Trakt class instanciation not working to the API
@@ -712,14 +715,14 @@ stable code:
 	Fix: Massive non-cover view browse speedup due to query restructure.  Also helps some API/RSS functions.
 	Fix: Issue with last push breaking browse groups (Second fix -- second order by to preserve selected ordering)
 	Fix: Undefined offset in TV.php causing issues with season assignment for some airdate shows.
-2015-10-25 ruhllatio
+2015-10-25 b3rs3rk
 	Mrg: PR 1916 Replace TVRage Processing with TVDB
 	Note: We found a bug dating back to the beginning that caused bad titles to be inserted into the TvRage table
 		As such, we decided not to incorporate the title data by migrating it to the new videos schema.  We are not dropping the tables yet
 		As there is still promise in joining the tables at a later date to populate some fields.
 2015-10-18 bart39
 	Fix: No covers shown on XXX /details pages #1918.
-2015-10-13 ruhllatio
+2015-10-13 b3rs3rk
 	Mrg: PR 1912, Change the order of removal in Patch 385
 2015-10-12 niel
 	Mrg: PR 1904, from Darius - Update parseTraktTv function, as it was occasionally inserting covers with tt prefix.
@@ -728,21 +731,21 @@ stable code:
 	Mrg: PR 1907, from Darius - Update the search page in omicron/charisma templates.
 	Mrg: PR 1910, from Darius - Move all the TV related classes so nzedb/processing/tv folder. Move the processTvReleases function into main TV class.
 	Mrg: PR 1911, from Darius - Remove text_hash column, trigger and index from release_comments.
-2015-10-08 ruhllatio
+2015-10-08 b3rs3rk
 	Chg: Improve Codec Poster removal query times by incorporating Sphinx FT if enabled
 	Chg: Lots more love for Sphinx FT in ReleaseRemover.  Greatly improves query times on big databases.
 	Chg: Few more changes to RR
-2015-10-07 ruhllatio
+2015-10-07 b3rs3rk
 	Mrg: PR #1902 Make TraktTv class extend TV class, add box office support into class.
 	Mrg: PR #1901 Add deletion of dnzb_failures to deleteSingle
 	Fix: Issue #1900 Undefined index error in updateTvRage.php
-2015-10-06 ruhllatio
+2015-10-06 b3rs3rk
 	Mrg: PR #1898 Adjust templates for tvrage images change.
 	Mrg: PR #1899 Remove echooutput from TvRage class and move it to parent TV class
 	Fix: ReleaseRemover not honoring LIKE search types causing blacklist removal issues and not producing enough matches in SPHINX mode
 2015-10-05 niel
 	Mrg: PR 1895, from Darius - Add view release option to failed releases list. Do not post comment for user, if that user already posted the failure automated comment.
-2015-10-05 ruhllatio
+2015-10-05 b3rs3rk
 	Add: Script to extract TV covers from the database and save them to the tvrage directory in covers
 	Chg: Set TV cover images to pull from /covers/tvrage/ ***NOTE*** Run the extractTVCovers script in misc/testing/PostProcess/ ***
 	Fix: Error in extract script and a query error for new poster wall for TV
@@ -756,7 +759,7 @@ stable code:
 	Fix: Omicron poster wall typo, wrong script name in patch file 384
 	Add: updateTvRage.php in misc/testing/PostProc will now run in check mode to reconcile image files against the DB if you imported
 	Fix: Alpha TV New Poster Wall missing div tag
-2015-10-04 ruhllatio
+2015-10-04 b3rs3rk
 	Mrg: PR #1893 Integrate Moinax TVDB API
 2015-10-04 niel
 	Add: PSR-0 compliant autoloader for libs namespace.
@@ -788,7 +791,7 @@ stable code:
 	Fix: Adding failure test for JSON encoding, which returns an API error.
 2015-09-15 niel
 	Fix: Typo in variable name which causes a missing index warning.
-2015-09-14 ruhllatio
+2015-09-14 b3rs3rk
 	Add: Base TV Class to make the addition of a new TV scraper easier
 	Chg: Re-organize and trim some fat out of TvRage.php in preparation for its glorious return
 2015-09-11 niel
@@ -812,14 +815,14 @@ stable code:
 	Fix: collection regex edit page not showing the result.
 2015-08-29 rullatio
 	Mrg: PR #1849 Fix RSS Content Length Response
-2015-08-28 ruhllatio
+2015-08-28 b3rs3rk
 	Fix: Sphinx Search broken for MariaDB installs (re-run create_se_tables script)
-2015-08-27 ruhllatio
+2015-08-27 b3rs3rk
 	Fix: API Search function not including -1 for fileName parameter breaking API search
 2015-08-27 niel
 	Add: predb export script now has a default filename (predb_export_YYYYMMDDhhmmss.tsv) if only a path is specified.
 2015-08-26 bart39
-	Mrg: PR 1843, by ruhllatio - Sphinx Full-Text Search for Filenames.
+	Mrg: PR 1843, by b3rs3rk - Sphinx Full-Text Search for Filenames.
 	*** NOTE *** - you will need to do the following to update the sphinx index:
 		0) Minimum Sphinx v2.2.9
 		1) stop sphinxsearch - `sudo service sphinxsearch stop`
@@ -846,9 +849,9 @@ stable code:
 2015-08-23 bart39
 	Fix: Drop trigger from collections that got missed with recent changes.
 2015-08-22 bart39
-	Mrg: PR 1841, by ruhllatio - Refresh all releases indexes to align with new schema.
+	Mrg: PR 1841, by b3rs3rk - Refresh all releases indexes to align with new schema.
 	Fix: Invalid datetime format when updating consoleinfo if releasedate is blank.
-2015-08-21 ruhllatio
+2015-08-21 b3rs3rk
 	Fix: Issue #1819 - Console Processing failing to validate Amazon API Return
 	Chg: Console Processing Local will now require an exact platform match just like the Amazon lookups to prevent incorrect platform matches
 2015-08-21 niel
@@ -856,7 +859,7 @@ stable code:
 2015-08-20 bart39
 	Mrg: PR 1838, by terbonium - removed "AND" from SQL query which cause a syntax error.
 	Mrg: PR 1837, by terbonium - cbp delete fix.
-2015-08-20 ruhllatio
+2015-08-20 b3rs3rk
 	Fix: Anime covers not showing properly
 	Chg: Add Anime Series view to header menu->TV
 	Fix: Omicron Anime view not honoring $nodata when no releases match the AniDBID
@@ -864,7 +867,7 @@ stable code:
 	Add: TV to Omicron side bar menu
 2015-08-19 bart39
 	Fix: PHP error if rowCount() is null #1834.
-2015-08-19 ruhllatio
+2015-08-19 b3rs3rk
 	Chg: Re-work queries for faster CBP deletion and greatly improve page load times/dehash work queries
 	Fix: Another failing query in ProcessReleases which could almost certainly DB swell
 2015-08-18 niel
@@ -872,7 +875,7 @@ stable code:
 2015-08-18 bart39
 	Fix: Amend ab.moovee collection regex that was splitting subs out separately.
 	Mrg: PR 1827, by terbonium - moved releases update into foreach of matching releases.
-2015-08-17 ruhllatio
+2015-08-17 b3rs3rk
 	Add: Blacklist regex for 16 character hash floods in kenpsx and frogs (Remove +1 patch -- whoops)
 	Fix: Blacklist regex not matching properly
 2015-08-17 bart39
@@ -891,7 +894,7 @@ stable code:
 	Mrg: PR 1820, by darius - Add TraktTv cover support for movies.
 2015-08-15 niel
 	Fix: PreDb export script. Typo prevented executing prepared statement. Had to put ENCLOSED BY clause into prepared statement, instead of passing it as a parameter.
-2015-08-15 ruhllatio
+2015-08-15 b3rs3rk
 	Fix: DELETE Query missing collections alias
 2015-08-15 bart39
 	Fix: Fix movieinfo insert errors with long ratings (mainly from trakt).
@@ -907,7 +910,7 @@ stable code:
 	Mrg: PR 1813, by darius - Add back missing triggers into releases table.
 		***NOTE*** if using sphinxsearch then run 'php misc/sphinxsearch/toggle_search_type.php sphinx' to remove unnecessary release_search_data triggers.
 	Fix: Correct default value for tmdbid to '0'
-2015-08-14 ruhllatio
+2015-08-14 b3rs3rk
 	Chg: Make UPDATE queries in postproc use partitioning
 	Chg: Improve TV matching a bit
 	Fix: Issue 1814 Bad XXX processing query
@@ -918,7 +921,7 @@ stable code:
 2015-08-14 kevin
 	Chg: Add default values for movieinfo table.
 	Fix: Check if trakt data has a imdb ID.
-2015-08-13 ruhllatio
+2015-08-13 b3rs3rk
 	Chg: DB optimization: Change nzb_guid to BINARY(16)
 2015-08-12 DariusIII
 	Fix: Issues on Omicron/Charisma themes.
@@ -941,12 +944,12 @@ stable code:
 	Fix: Escape the "_" character in LIKE clause of query of patch 360. #1801 http://git.io/vOFcf
 2015-08-06 niel
 	Fix: Added default SSL values check for installation process.
-2015-08-06 ruhllatio
+2015-08-06 b3rs3rk
 	Fix: Delete query for stuck collections
 2015-08-06 kevin
 	Fix: nzedb\db\DbUpdate::splitSQL ; Properly parse delimiters for patches. ; Parse comments.
 	Mrg: PR 1796, by terbonium - SQL optimizations.
-	Mrg: PR 1793, by kevinlekiller/ruhllatio/DariusIII - Delete collections that are broken after a timeout period. Issue #1791
+	Mrg: PR 1793, by kevinlekiller/b3rs3rk/DariusIII - Delete collections that are broken after a timeout period. Issue #1791
 	Mrg: PR 1797, by DariusIII - Change buttons in viewseries.tpl to be in line with the other pages.
 2015-08-05 niel
 	Fix: Install process to use install.php instead of smarty.php
@@ -1285,7 +1288,7 @@ stable code:
 		***NOTE*** Nginx users need to manually change the rewrite rule for file extensions as described in the Ubuntu install guide.
 2014-12-28 niel
 	Fix: Query in dump_predb.php to add new groups had a typo. Thanks to makkbe on github for the fix.
-2014-12-24 ruhllatio
+2014-12-24 b3rs3rk
 	* Del: Deprecated AniDB cron script that won't work.  Use the populate_anidb script instead, then resume postproc.
 2014-12-23 niel
 	Fix: Adding work-around to prevent tmux throwing Server not found errors.
@@ -1308,7 +1311,7 @@ stable code:
 	Fix: NZBGet was being sent incorrect URLs for NZB files, which resulted in it being redirected to the login page.
 2014-12-12 niel
 	* Adding script to batch import predb daily dumps without repeatedly calling the dump_predb script, which drops and readds triggers.
-2014-12-01 ruhllatio
+2014-12-01 b3rs3rk
 	Fix: Contact us form erroring due to PHP Mailer class not found
 2014-11-20 niel
 	Mrg: PR 1545 from zetas/kingcat - Add PHPMailer Support.
@@ -1357,7 +1360,7 @@ stable code:
 2014-10-11 niel
 	Mrg: Merging PR 1528 from bfincher, Correct error in blacklist query by poster.
 	Chg: Cleaning tmux startup checks, so that no messages about checks not being an error is needed.
-2014-10-10 ruhllatio
+2014-10-10 b3rs3rk
 	Mrg: Merge dev-api into dev for nzb360 movie cover compatibility
 2014-10-10 bart39
 	Mrg: Merge pull request #1527 from kaibosh.
@@ -1365,13 +1368,13 @@ stable code:
 	* New: Added basic support for coverurl attribute in API output.
 2014-10-07 niel
 	Fix: Misnamed constant. Closes issue 1522.
-2014-10-06 ruhllatio
+2014-10-06 b3rs3rk
 	Chg: Use wordwrap instead of truncate to fix formatting issues with name/searchnames in browse, search, viewnzb
 	Fix: Table formatting for cover views when searchnames are too large for auto column settings
 	Fix: Movie covers not standard causing other formatting issues
 2014-10-02 bart39
 	Mrg: Merge pull request #1518 from tasky.
-2014-09-30 ruhllatio
+2014-09-30 b3rs3rk
 	Fix: Issue #1477 - MySQL Full-Text Search broken after implementation of Sphinx
 	Fix: Whitespace\New line EOF (second try weirdness) and change SQL patch file perms to 0755
 2014-09-30 niel
@@ -1412,7 +1415,7 @@ stable code:
 	Fix: fix potential cause of corrupt nzb's
 	Chg: reduce size of tv images on posterwall.
 	Add: More regex additions
-2014-09-15 ruhllatio
+2014-09-15 b3rs3rk
 	Fix: Force updated column in anidb_info to be populated on INSERT and updated on UPDATE scenarios to prevent API bans
 	Fix: Anime title view displays language type (main, official) instead of anime type (Movie, TV Show, etc.)
 	Fix: Bad copy/paste in reset_postprocessing for anime
@@ -1433,7 +1436,7 @@ stable code:
 	Fix: possible fix for boneless splitting scnzbefnet par2 releases.
 	Mrg: Merge PR 1499 from tasky.
 	Fix: XXX / TV Posterwall
-2014-09-12 ruhllatio
+2014-09-12 b3rs3rk
 	Mrg: dev-anime into dev for Anime Post processing support
 	Fix: SQL patch doesn't drop new anidb_titles table if it exists
 	Fix: File permissions for Desura/Greenlight and some SQL patches
@@ -1442,7 +1445,7 @@ stable code:
 	Fix: Missing column that didn't make it to branch / Fix file perm for patch
 	Fix: Regex constant errors in ReleaseCleaning due to shitty merge
 	Add: Anime SQL patch fix to SQL schema
-2014-09-11 ruhllatio
+2014-09-11 b3rs3rk
 	Chg: Re-work New Poster Wall queries - should improve response
 2014-09-11 Bart39
 	Add: Add TV to new release posterwall.
@@ -1465,11 +1468,11 @@ stable code:
 	Add: Added all multiprocessing examples / options to threaded.sh (copy to user_threaded.sh).
 2014-09-08 kevin
 	Add: Setting to limit max releases for pager count, can speed up the web pages, update settings.php with nZEDb_MAX_PAGER_RESULTS
-2014-09-08 ruhllatio
+2014-09-08 b3rs3rk
 	Fix: WEB-DL Movie categorization when WEB-DL categorization is disabled
 	Add: Movie override for a.b.warez byGroup categorization
 	Chg: Update Tmux to run new multiproc scripts for safe backfill/fixRelNames
-2014-09-07 ruhllatio
+2014-09-07 b3rs3rk
 	Add: WEB-DL category for Movies, they currently go into TV WEB-DL right now
 	Fix: WEB-DL Movie categorization overridden by TV opening regex
 2014-09-07 kevin
@@ -1484,7 +1487,7 @@ stable code:
 	Mrg: Merging in PR 1487 from tasky.
 2014-09-03 niel
 	Mrg: Merging in PR 1485 from tasky.
-2014-09-01 ruhllatio
+2014-09-01 b3rs3rk
 	Fix: Do not convert releases_se from SPHINX engine when converting mysql tables.
 2014-09-01 kevin
 	Chg: Force ignore cert checking on irc scraper, as all the synirc certs are either expired or self signed or invalid in some other way.
@@ -1493,7 +1496,7 @@ stable code:
 2014-09-01 niel
 	Mrg: Merging PR 1479 from tasky
 	Fix: More name spacing issues.
-2014-08-31 ruhllatio
+2014-08-31 b3rs3rk
 	Fix: NFO Proc Deletion SELECT not using guidChar/GroupID when threaded
 	Fix: Forgot table referencing in above fix
 2014-08-31 bart39
@@ -1501,7 +1504,7 @@ stable code:
 	Fix: Double escaping on Games release date / Scrutinizer fix.
 2014-08-27 bart39
 	Fix: Only save console/games cover if cover is found.
-2014-08-27 ruhllatio
+2014-08-27 b3rs3rk
 	Chg: Update collections/releases cleaning for Anime in a.b.anime and multimedia.anime.highspeed
 2014-08-26 bart39
 	Fix: Actor / Director / Language info from IMDB.
@@ -1509,7 +1512,7 @@ stable code:
 	Fix: Console error for null releasedate.
 2014-08-26 niel
 	Chg: Moved PostProcessing scripts into the new nzedb\processing namespace.
-2014-08-26 ruhllatio
+2014-08-26 b3rs3rk
 	Fix: Bad path issue in Tmux NNTP Proxy alternate NNTP
 	Fix: Issue #1472 Console Processing Errors
 	Chg: Rework queries for gfRn to support new indexing scheme (coming)
@@ -1529,9 +1532,9 @@ stable code:
 	Fix: Update XXX releases correctly for no match.
 2014-08-25 niel
 	Fix: Attempt to detect remote MySQL server during install and use LOCAL for table loading if so.
-2014-08-24 ruhllatio
+2014-08-24 b3rs3rk
 	Fix: Console SQL errors when review isn't set.
-2014-08-23 ruhllatio
+2014-08-23 b3rs3rk
 	Fix: Bug where memcached sockets will not work with nZEDb because the port was defaulting and it needed to be 0 in offset 1
 	Fix: browseby errors in Movie and XXX
 2014-08-23 kevin
@@ -1539,7 +1542,7 @@ stable code:
 	Fix: Add missing 'Maximum repair tries:' to settings.tsv and fix typo in site edit.
 2014-08-22 kevin
 	Fix: Double number format in Binaries echo.
-2014-08-22 ruhllatio
+2014-08-22 b3rs3rk
 	Chg: Move largely duplicated catSrch code to Category->getCategorySearch
 	Chg: Remove dead $pdo's and switch all to $this->pdo
 	Chg: Movies.php now uses getCategorySearch as well instead of its own function
@@ -1551,13 +1554,13 @@ stable code:
 	Fix: invalid GiantBomb link in alpha theme.
 	Fix: Error resetting games post processing.
 	Fix: NameFixer typo's.
-2014-08-21 ruhllatio
+2014-08-21 b3rs3rk
 	Chg: Re-work RottenTomato update function to remove duplication
 	Fix: Typo in RottenTomato function
 	Chg: Behavior of updateSingleColumn in NameFixer
 	Fix: A few bugs in various scripts
 	Chg: Revamp console post processing and improve matching
-2014-08-20 ruhllatio
+2014-08-20 b3rs3rk
 	Chg: More optimizations to MiscSorter
 	Fix: test_misc_sorter script errors due to removed functions
 	Fix: Tmux Query for Process Console diff using Games count
@@ -1571,7 +1574,7 @@ stable code:
 	Add: Script to verify the important folder permisions.
 	Chg: Make cover path checking optional, in case user has not run install yet in verify_permissions script.
 	Chg: Catch Logger exceptions, solves blank pages for those with improper permissions on resources/logs folder/files.
-2014-08-19 ruhllatio
+2014-08-19 b3rs3rk
 	Chg: Revamp MiscSorter
 	Add: Categorization support by group for a.b.cd.images.sega-saturn
 	Fix: Issues identified by Scrutinizer
@@ -1596,18 +1599,18 @@ stable code:
 2014-08-13 niel
 	Fix: Another missed userid to user_id.
 	Fix: Some more genreid to genre_id changes.
-2014-08-13 ruhllatio
+2014-08-13 b3rs3rk
 	Fix: a metric ton of genreid columns that weren't changed to genre_id (ahem archer})
 	Fix: More genreid's in Genres.php that didn't get changed
 	Chg: Optimize various TV Show and Movie RSS queries to leverage partitioning
 2014-08-12 niel
 	Chg: Converting usa of 'userid' to 'user_id'.
 	Chg: Converting use of 'genreid' to 'genre_id'.
-2014-08-12 ruhllatio
+2014-08-12 b3rs3rk
 	Fix: undefined index error in MiscSorter and SQL query syntax error
 	Add: script to optimize nZEDb moving to/from Sphinx (reclaims space from releasesearch that is unused with Sphinx).
 	Fix: Forgot to remove limit in insert for testing
-2014-08-11 ruhllatio
+2014-08-11 b3rs3rk
 	Chg: Standardize some of MiscSorter... remove needless NNTP, replace some preg with string ops
 	Fix: Typo onion in ReleaseRemover
 	Fix: API calls broken due to unconditional sphinxSE join (if you are using Sphinx) without an actual query
@@ -1618,18 +1621,18 @@ stable code:
 	Fix: Pager count issue.
 	Chg: YOU MUST SET max_matches TO 10000 IN sphinx.conf IF YOU ARE RUNNING SPHINX AND RESTART SPHINX.
 	Chg: Simplify pager count in releases by using SQL_CALC_FOUND_ROWS.
-2014-08-10 ruhllatio
+2014-08-10 b3rs3rk
 	Add: PreDB FT match will now use Sphinx if it is available (Ridiculously fast compared to MySQL FTS)
 	Fix: Codec query disjointed return in ReleaseRemover
 	Chg: Greatly improve Sphinx search results
 	Add: RemoveCrap no time limit can now use Sphinx instead of MySQL FTS (you will need to update your sphinx.conf).
 2014-08-10 niel
 	Fix: Change repository reference and remove unneeded command.
-2014-08-09 ruhllatio
+2014-08-09 b3rs3rk
 	Mrg: kevinlekiller's dev-sphinx into dev (RTFM -> misc/sphinxsearch/README.md) for info
-2014-08-08 ruhllatio
+2014-08-08 b3rs3rk
 	Chg: NFO Update query performance is poor with new Guid CHAR query addendum
-2014-08-07 ruhllatio
+2014-08-07 b3rs3rk
 	Chg: Tmux - make PreDB counter queries more compatible for bigger release databases
 	Chg: Re-work match_prefiles content in NameFixer to (hopefully) fix more scrutinizer issues
 2014-08-06 niel
@@ -1660,9 +1663,9 @@ stable code:
 	Chg: Remove obsolete stuff in Logger and simplify the set folder method.
 2014-08-04 bart39
 	Mrg: tasky's GiantBomb search changes PR #1449
-2014-08-04 ruhllatio
+2014-08-04 b3rs3rk
 	Chg: Re-work Match prefiles functions per scrutinizer recommendations
-2014-08-03 ruhllatio
+2014-08-03 b3rs3rk
 	Fix: Bombing releaseRemover query for SCR
 	Fix: Bugs according to scrutinizer
 	Chg: Rework USP connection count gathering to have less paths...
@@ -1674,7 +1677,7 @@ stable code:
 	Fix: Fix for set_backfill_start.php if user resets but does not run update_binaries.php
 	Fix: Convert unixtime to date in set_backfill_start.php
 	Fix: Few more issues in set_backfill_start.php
-2014-08-02 ruhllatio
+2014-08-02 b3rs3rk
 	Fix: RequestIDLocal Single Alt was looking for the groupname from the groupname, not the groupname from the usenet name
 	Fix: RequestIDLocal not showing renaming results when specifying true to show renames
 	Fix: typo for binaries_run should be 'settings' not 'scripts'
@@ -1713,7 +1716,7 @@ stable code:
 	Fix: Wrong var types.
 	Fix: Type/doc issues.
 	Chg: Initiate non-initiated arrays, add comments to empty catch blocks.
-2014-08-01 ruhllatio
+2014-08-01 b3rs3rk
 	Mrg: tasky's XXX changes PR #1440
 	Mrg: dev-tmuxrevamp into dev (please make sure tmux is restarted)
 	Fix: Fix typo in tmux monitor output for USP connections
@@ -1723,7 +1726,7 @@ stable code:
 		group still runs a more worthless python script, Safe still runs the most worthless python script
 	Fix: Same fix for basicsequential (tell tmux not to kill the pane every loop and respawn)
 	Fix: backfill and partrepair counts in tmux
-2014-07-31 ruhllatio
+2014-07-31 b3rs3rk
 	Mrg: tasky's XXX changes PR #1436
 2014-07-31 kevin
 	Chg: Update pynntp to 0.8.4, fix bugs in nnptp proxy (body was never returning anything, exceptions were not catched when server would return errors, nntp errors were not returned, causing weird behavior in net_nntp).
@@ -1762,7 +1765,7 @@ stable code:
 	Chg: Don't display Releases that have not been processed by PP Additional (passwordstatus -1 to -6) if show passwords is set to not display potentially passworded. #1302
 2014-07-27 tasky
 	Fix: Popporn kept returning false #1425
-2014-07-27 ruhllatio
+2014-07-27 b3rs3rk
 	Fix: local lookup query WHEREs were backwards sprintf'd
 	Fix: forgot a LIKE
 	Fix: Monitor not reflecting newestpre time despite having plenty of new Pres
@@ -1780,7 +1783,7 @@ stable code:
 	Add: Max NFO download retries setting.
 	Add: Query limiters to Forking to prevent spawning of processes needlessly.
 	Add: password_compat library recommended by php.net for php versions prior to 5.5 to replace our usage of crypt without a salt, which will make passwords more secure for our users still on php 5.4
-2014-07-26 ruhllatio
+2014-07-26 b3rs3rk
 	* Merge Tasky's PR #1424 - updating changelog to reflect
 2014-07-26 tasky
 	Add: Add Game/XXX Info to nzb details: First Stage.
@@ -1800,7 +1803,7 @@ stable code:
 	Add: Renamed option to multiprocess/postprocess.php movie/tv
 	Add: PHP multi-processing import script.
 	Chg: Do not use timeout for ffmpeg, it stalls, avconv however does not stall with timeout, change the time command for avcong/ffmpeg's changes.
-2014-07-25 ruhllatio
+2014-07-25 b3rs3rk
 	Fix: match_prefiles not honoring CLI arg limit
 	Chg: Monitor now using proper PDO for work queries
 	Chg: Removed tons of nasty if/then/else statements that weren't needed
@@ -1824,7 +1827,7 @@ stable code:
 	Chg: BasePage, save a DB call by re-using the Settings instance for smarty, speeds up execution of all web-pages.
 	Chg: Store and re-use the Users instance in BasePage instead of destroying it and later recreating another instance in index.php
 	Add: Setting to settings.php for opening preinfo to the public.
-2014-07-24 ruhllatio
+2014-07-24 b3rs3rk
 	Chg: Case a few if/elseif run ons in NameFixer -- more to do
 	Fix: #1408 Issue with HDTS not being categorized properly
 2014-07-24 bart39
@@ -1844,7 +1847,7 @@ stable code:
 	Add: Echo if no xxx releases to process
 	Fix: constants style
 	Fix: SQL -- xxxinfo_id
-2014-07-23 ruhllatio
+2014-07-23 b3rs3rk
 	Chg: Move ReqIDLocal class to controllers, begin to add options to thread by Guid
 	Chg: Remove needless concats from TMUX sql queries.
 	Chg: match_prefiles revamp and class script
@@ -1867,7 +1870,7 @@ stable code:
 	Fix: MultiProcessing nfo fix
 	Chg: ProcessAdditional - only rename audio from mediainfo if not already predb matched.
 	Fix: typo in /update/postprocess.php
-2014-07-22 ruhllatio
+2014-07-22 b3rs3rk
 	Fix: Attempt to fix strange PreDBFT name matching... also fix issue with preid being blanked out after match
 	Chg: Monitor.php now uses PHP forking for threaded operations (if you're using safe scripts, these will still be python)
 	Chg: Switched majority of if/then/else logic to switch/case.
@@ -1883,7 +1886,7 @@ stable code:
 	Chg: Re-use more class instances, save memory and process time.
 	Fix: Use update_db.php on autopatcher/tmux optimize/patchDB
 	Chg: Move postprocess_new.php into switch.php
-2014-07-21 ruhllatio
+2014-07-21 b3rs3rk
 	Fix: NNTP being called in update_releases threaded removed -- much faster per thread
 2014-07-21 kevin
 	Chg: Add options to multiprocessing postprocess.
@@ -1899,12 +1902,12 @@ stable code:
 	Fix: Reverse like string %.
 2014-07-20 kevin
 	Add: Multi processing scripts for binaries/backfill/postprocess/releases, written in PHP.
-2014-07-20 ruhllatio
+2014-07-20 b3rs3rk
 	Fix: PreDB join timer logic in Tmux now runs full once and last week thereafter properly
 	Add: ishashed to gfRn md5 work queries
 	Chg: Revert decrypt_hashes all script to look outside category 7020 (Misc->Hashed)
 	Chg: Improve NFO Proc count query and output
-2014-07-19 ruhllatio
+2014-07-19 b3rs3rk
 	Chg: groupfixreleasenames var fixes and change to use categoryid instead of group_id
 	Fix: groupID placement for PAR2 in gfrn / refactor pieces / fix whitespace
 	Chg: add slower count logic to gfRn to be more exact on which categories to attempt
@@ -1928,7 +1931,7 @@ stable code:
 2014-07-19 taskym
 	Fix: Better Matching (gamesorter)
 	Add: Maximum Requests (Games)
-2014-07-18 ruhllatio
+2014-07-18 b3rs3rk
 	Fix: MySQL memory leaks from cache limit errors in PreDB FT
 	Chg: Remove NNTP from Tmux PreDB / set checkPre tmux to run full once then for past week with large DB supported query
 	Add: fixReleaseNames by Group that beats the pants off the old one (testing mode)
@@ -1943,7 +1946,7 @@ stable code:
 	Chg: Plot to Blob, Compress plot, Fix: Selecting title
 2014-07-17 niel
 	Chg: Modifying DB::queryArray() to make it more efficient.
-2014-07-17 ruhllatio
+2014-07-17 b3rs3rk
 	Chg: Move Tmux functions in monitor.php to Tmux class
 	Chg: Move Tmux proc queries to Tmux class (will not require a restart of monitor.php to tweak queries)
 	Chg: Greatly improve processing times for fixReleaseNames MD5 and remove needless loop.
@@ -1960,7 +1963,7 @@ stable code:
 	Chg: Refactored CLI code out of DbUpdate and Versions classes and into their own scripts in .../cli
 	NOTE: This means "php nzedb/db/DbUpdate.php true", now needs to be "php cli/update_db.php true"
 	Fix: Processing tasky's SQL patch file.
-2014-07-16 ruhllatio
+2014-07-16 b3rs3rk
 	Fix: TPG/Threaded for ProcessReleases move
 2014-07-16 kevin
 	Chg: Link to ubuntu guide.
@@ -1969,7 +1972,7 @@ stable code:
 	Chg: Move ProcessReleases out of Releases.
 	Chg: Speed up release creation.
 	* ---: Merge PR by tasky.
-2014-07-15 ruhllatio
+2014-07-15 b3rs3rk
 	Chg: Improve TV series listing site response
 	Chg: Remove likes from predbft search query
 	Chg: match_prefiles will find a few more audio matches
@@ -1984,7 +1987,7 @@ stable code:
 	Add: CollectionsCleaning regex additions.
 2014-07-14 niel
 	Chg: Modified install step 2, to set sqlpatch setting using the value of the highest patch file found.
-2014-07-14 ruhllatio
+2014-07-14 b3rs3rk
 	Chg: RequestID.php multi lookup (last chance match) much more accurate
 	Fix: test-rottentomato not working
 	Chg: Some categorization improvements.
@@ -2051,7 +2054,7 @@ stable code:
 	Chg: Remove message array object, not used anywhere else. Binaries.
 	Chg: Merge the usenet index post ignore regex into the subject/part count regex. Binaries.
 	Chg: Move TPG functions out of DB into Groups.
-2014-7-08 ruhllatio
+2014-7-08 b3rs3rk
 	Fix: blank screen for users not logged in.  Index.php calling $page->$pdo instead of $page->$settings to get settings from DB
 	Fix: Login redirect function for home_path
 2014-07-07 kevin
@@ -2060,7 +2063,7 @@ stable code:
 	Chg: Refactored code to remove use of DB and Site classes in favour of combined Settings class. Should improve memory use and small performance boost.
 2014-07-06 bart39
 	Fix: Monitor.php showing negative misc count
-2014-07-06 ruhllatio
+2014-07-06 b3rs3rk
 	Chg: Monitor.php now shows PC work counts for unprocessed PC Game lookups
 	Chg: Moved a few count queries in Monitor.php to the JOIN ON format instead of in where clause
 	Add: More categorization improvements
@@ -2077,7 +2080,7 @@ stable code:
 	Chg: 4x+ speed-up of header processing by not sorting them (the benefits of sorting them is tiny vs the gain in performance).
 2014-07-03 bart39
 	Fix: Fix RottenTomatoes covers due to api changes.
-2014-07-03 ruhllatio
+2014-07-03 b3rs3rk
 	Fix: undefined offset 0 error for real in Games.php.
 2014-07-03 kevin
 	Fix: Issue where first_record could get wrongly changed, rename more variables in Binaries.
@@ -2087,7 +2090,7 @@ stable code:
 	Add: Script for setting the backfill start article based on the group's oldest release.
 2014-07-02 taskym
 	Add: Add profile preference for Games cover view
-2014-07-02 ruhllatio
+2014-07-02 b3rs3rk
 	Fix: undefined offset 0 error in Games.php lookup
 	Chg: fastDelete releases query to remove concats
 	Chg: New Poster Wall games sizing is now non-mongoloid
@@ -2113,7 +2116,7 @@ stable code:
 	Add: Option for removing white space from queries, helps with slow-query log.
 	* Rem: Remove reverting of automated.config.php changes from commit for devs.
 	Add: Extra options to settings.php.example for renaming releases using PAR2 or audio tags from media info. Copy them to your settings.php file.
-2014-07-01 ruhllatio
+2014-07-01 b3rs3rk
 	Chg: Regex for IRCScraper now supports spaces in between parsing fields
 	Fix: Deletion of old C, B, and P will now occur if parts are missing
 	Chg: Begin to standardize queries for Releases.php
@@ -2135,7 +2138,7 @@ stable code:
 	Fix: Remove var_dump / fix query in ReleaseRemover.
 2014-06-27 kevin
 	Chg: Various changes/fixes to ProcessAdditional.
-2014-06-27 ruhllatio
+2014-06-27 b3rs3rk
 	Chg: removeCrapReleases can now be run in false mode with a Blacklist ID that isn't set to active for testing
 	Fix: Remove trailing whitespace
 	Fix: typo in requestid.php that prevented 'full' from running properly
@@ -2146,7 +2149,7 @@ stable code:
 	Chg: Buffer some NZB string data, increasing NZB write speed by almost 2x.
 	Add: Setting for minimum release size to post process additional (to ignore NZB files and shit like that).
 	Fix: Fix issue where passwordstatus might not be set.
-2014-06-25 ruhllatio
+2014-06-25 b3rs3rk
 	Chg: Overhaul and class requestid.php
 	Add: Title matching in multiple return requestIDs
 	Fix: Trailing whitespaces in requestid.php
@@ -2158,14 +2161,14 @@ stable code:
 	Fix: Prevent tmux statistics from being queried/displayed if monitor_delay set to 0.
 	Chg: Default tmux monitor delay is now 300 seconds instead of 30. If you have changed this it will be unaffected.
 	* Rvt: Reverted above fix, as it causes too many missing variable notices. Looking for a better way.
-2014-06-23 ruhllatio
+2014-06-23 b3rs3rk
 	Fix: RequestID Local setting -3 releases back to -1 reqidstatus
 	Fix: Second try at fixing the PP hang -- add strlen check
 2014-06-23 kevin
 	Add: Patch to fix broken triggers causing search/api/other stuff not to work.
 	Add: Fix by JRouleau for fixing triggers on new installs (needs a patch for existing sites). #1360
 	Fix: Missing single quotes on config.php.tpl causing install to fail on step 5.
-2014-06-22 ruhllatio
+2014-06-22 b3rs3rk
 	Fix: requestID incorrectly matching requestID of zero
 2014-06-22 bart39
 	Fix: requestID not set for web lookup causing insert errors
@@ -2175,7 +2178,7 @@ stable code:
 	Fix: IRCClient, servers with numbers in their names stay on the initial sequence.
 	Fix: Extra "LIKE" on preinfo.
 	Add: Category search on preinfo.
-2014-06-20 ruhllatio
+2014-06-20 b3rs3rk
 	Chg: A few more categorization changes
 	Fix: trailing whitespace
 2014-06-20 niel
@@ -2184,7 +2187,7 @@ stable code:
 	Add: Documentation for POST method of preinfo request ID lookup to preinfo.php
 	Add: The POST method for request ID to preinfo.php (you can send a POST method to preinfo with a serialized array of requests for request ID's).
 	Chg: Change requestID web to send multiple requests at once giving a big speed improvement.
-2014-06-19 ruhllatio
+2014-06-19 b3rs3rk
 	Chg: Adopt switch/caseing for Categorize.php
 	Fix: TV Categorization issue with recent changes
 2014-06-18 kevin
@@ -2199,7 +2202,7 @@ stable code:
 	Chg: Slight speedup to body fetching by removing useless empty check.
 	Chg: Change various scripts to use new NameFixer echo method.
 	Add: Static method for echo'ing renamed releases.
-2014-06-18 ruhllatio
+2014-06-18 b3rs3rk
 	Fix: PP additional hang due to filenames that start with a period and match_prefiles bug
 	Chg: Properly categorize PS4 and PS4 in a.b.console.ps3
 	Fix: PS4 not post-processing correctly
@@ -2220,7 +2223,7 @@ stable code:
 2014-06-14 bart39
 	Fix: #1352 predb filename 'readme' causing incorrect matches
 2014-06-13 niel
-	Add: .../nzedb/build/_runonce/tpg_groupid_fix.php. Thanks to ruhllatio for testing.
+	Add: .../nzedb/build/_runonce/tpg_groupid_fix.php. Thanks to b3rs3rk for testing.
 	  NOTE TPG users need to run this once to fix the groupid field in the extra tables. Alternative re-creating your TPG setup will do it too.
 2014-06-13 kevin
 	Fix: Make up file name for zip / rar files, prevents errors when files are named like this : "/47291_Disk Space Pro.app/Contents/_CodeSignature/CodeResources"
@@ -2234,7 +2237,7 @@ stable code:
 	Chg: Update u4e script, works now.
 	Chg: Update the u4e script, untested.
 	* Remake ProcessAdditional. Clean up NameFixer class a bit.
-2014-06-13 ruhllatio
+2014-06-13 b3rs3rk
 	Add: Non-operational rough rename script
 	Chg: Categorization improvements for other usenet groups
 	Chg: Change 1 to renameu4e
@@ -2242,7 +2245,7 @@ stable code:
 	Chg: Converting groupid to group_id in tables and code to follow Li3 conventions.
 2014-06-11 kevin
 	Add: Add the reconnect on MySQL has gone away to exec/queryexec.
-2014-06-10 ruhllatio
+2014-06-10 b3rs3rk
 	Fix: RemoveCrap gibberish deleting hashed releases due to category switch
 	Chg: AnimeTV check now runs before HDTV Check as it is much more specific
 	Chg: Moving mutliple ifs to cleaner switches in Categorize (first test)
@@ -2250,7 +2253,7 @@ stable code:
 	Fix: removeCrap Size removing legitimate cracks, trainers, keygens, etc
 	Fix: PreDB File match on file insertion matching strange binary strings to invalid Pres
 	Fix: Categorize Amazon web format books to Ebooks and strip the azw tags from Amazon lookups
-2014-06-09 ruhllatio
+2014-06-09 b3rs3rk
 	Fix: Potential fix for hanging tmux monitor.php query (restart tmux session after pull)
 	Chg: More categorization improvements
 	Chg: Remove additional blank line in monitor.php
@@ -2266,7 +2269,7 @@ stable code:
 	Chg: Improvement to DB::queryOneRow for LIMIT clause checking.
 	Add: New DB methods for checking/showing indexes.
 	Chg: Made .../misc/testing/Dev/check_unique_indexes.php to use new methods.
-2014-06-05 ruhllatio
+2014-06-05 b3rs3rk
 	Fix: misc/testing/dev/test-memcache.php not loading Mcached class properly
 2014-06-05 kevin
 	Chg: Modify nzb-import to be recursive and use less RAM.
@@ -2285,7 +2288,7 @@ stable code:
 	Chg: Change queryOneRow to check if LIMIT is in the query, tack on LIMIT 1 if not to prevent queryArray from running out of RAM on large data sets.
 	Chg: Make stage 4 easier to read.
 	Chg: Minor changes to stage 4.
-2014-06-03 ruhllatio
+2014-06-03 b3rs3rk
 	Add: PreDB Filename match check now runs after filename insert
 	Chg: More categorization improvements for Console/Anime
 	Chg: Local RequestID Lookup now runs regardless of setting in update_releases
@@ -2303,17 +2306,17 @@ stable code:
 2014-05-31 kevin
 	Chg: Remove all web sources from Predb, please run IrcScraper from now on to get PRE's.
 	Chg: Split up the console dropdown list by manufacturer to shorten it.
-2014-05-31 ruhllatio
+2014-05-31 b3rs3rk
 	Chg: Category Improvements
 	Fix: Issue #1307 -- Movies with MP3 in searchname get improperly categorized as Music->MP3
 	Add: New categories for next gen consoles
 	Add: Regex categorization for next gen consoles
 	Fix: 3DS categorization
 	Add: Post Proc support for WiiU\Ps4\PSVITA.
-2014-05-30 ruhllatio
+2014-05-30 b3rs3rk
 	Add: Misc Category for Hashed releases (run Dev/recategorize.php misc)
 	Add: More categorization improvement for PC Games
-2014-05-29 ruhllatio
+2014-05-29 b3rs3rk
 	Chg: Categorization improvements for Console, PC, and Anime TV
 	Chg: Console post processing improvements
 2014-05-29 kevin
@@ -2324,7 +2327,7 @@ stable code:
 	Chg: Comment out SRRDB from Web PreDB, will be added to IRC PreDB.
 2014-05-28 bart39
 	Chg: Don't display movie info if imdbid = 0000000.
-2014-05-28 ruhllatio
+2014-05-28 b3rs3rk
 	Fix: 3DS categorization (now in NDS cat) and Amazon post processing
 	Chg: Better Amazon lookup support for Console releases
 	Add: Console categorization for PSX/PS2 titles to Other
@@ -2332,7 +2335,7 @@ stable code:
 	Add: Account for Amazon Console titles that have the platform name at the end of the title
 2014-05-27 bart39
 	Chg: Add unique index for predb title to avoid dupes.
-2014-05-27 ruhllatio
+2014-05-27 b3rs3rk
 	Add: Categorization for GameCube titles that aren't WiiWare (Console->Other instead of Misc->Other)
 	Fix: Add Gamecube Amazon lookup platform fix
 	Chg: NGC platform prep for lookup
@@ -2343,7 +2346,7 @@ stable code:
 	Fix: fix issue with trigger causing duplicates
 2014-05-26 NZBmets
 	Chg: TMUX Powerline uspsetting segment to handle IPv6 and proper IPv4 parsing
-2014-05-25 ruhllatio
+2014-05-25 b3rs3rk
 	Fix: Remove no longer existing foreign check from Movie PP
 2014-05-25 bart39
 	Chg: Only reset release details if the category changes (requestid.php)
@@ -2380,7 +2383,7 @@ stable code:
 	Add: Loop in NNTP decompression to wait for the server to return data on possible terminator (should help with "msgs is not array").
 	Chg: Use stream_socket_shutdown instead of fclose when closing the stream socket client on NNTP (faster).
 	Chg: Don't use feof on _isConnected in NNTP for certain uses (feof can return false even if the socket is still open).
-2014-05-21 ruhllatio
+2014-05-21 b3rs3rk
 	Chg: Class RequestID part one
 	Fix: FTS result sizes in PreDB FT exceeding limits
 2014-05-21 bart39
@@ -2390,14 +2393,14 @@ stable code:
 	Chg: Update rarinfo to newest (*Improves handling of corrupt RAR 5.0 archives*).
 2014-05-20 Bart39
 	Fix: Releases stage 5b/5c requestid lookups
-2014-05-20 ruhllatio
+2014-05-20 b3rs3rk
 	Fix:  PreDB FT Match in fixReleaseNames should actually update searched now
 2014-05-20 Bart39
 	Fix: Fixed the TMDB covers lookup path in Movie.php #1329
 2014-05-19 Bart39
 	Chg: Use predbhash fulltext search for hash lookups
 	Chg: Make RequestID lookups consistant between releases stage 5b/c and requestid_threaded
-2014-05-19 ruhllatio
+2014-05-19 b3rs3rk
 	Chg: RequestID lookups split into two stages for local and web lookup (and actually seems to work now)
 	Chg: PreDB FT count in fixreleaseNames no longer divides by 10 as it is faster than par2
 2014-05-19 niel
@@ -2407,10 +2410,10 @@ stable code:
 	Chg: Refactored scripts using git to use new Git class.
 2014-05-18 kevin
 	Add: Script to test hashes/encodings (~270k possibilities).
-2014-05-18 ruhllatio
+2014-05-18 b3rs3rk
 	* Re-work counting query in tmux monitor to reduce loop times
 	* Change fixReleaseNames query for proper standards
-2014-05-17 ruhllatio
+2014-05-17 b3rs3rk
 	* Various query optimizations in preparation for index overhaul
 2014-05-17 bart39
 	Fix: page counts for books, console and music
@@ -2423,7 +2426,7 @@ stable code:
 	Fix: Pass backup settings from newPatches to processPatches.
 	Chg: Renaming patches with 'schema' for table name.
 	Fix: Uncapitalised settings table name in patch 226.
-2014-05-16 ruhllatio
+2014-05-16 b3rs3rk
 	Add: PreDB FT Match to fixReleaseNames and tmux
 2014-05-16 bart39
 	Chg: Refactor predb stage 1 NB: new table will be created as MYISAM due to fulltext search,
@@ -2436,7 +2439,7 @@ stable code:
 	Chg: Improvements to Settings/Site detection for upgrading from older installs.
 	Chg: Using separate settings value in DbUpdate only if needed (Improves memory use).
 	Chg: Updated doc for creating patches.
-2014-05-15 ruhllatio
+2014-05-15 b3rs3rk
 	Add: New category matching and refined filtering to match_predbfiles (no longer console only)
 	Add: Full database (no category restriction with a separate method) filename matching for match_predbfiles
 	Fix: Blank line in Utility EOF
@@ -2454,7 +2457,7 @@ stable code:
 	Fix: set filesize to 0 if sum of parts returns NULL
 	Fix: Verify tmpunrarpath is not null before removing dead folders
 	Chg: Only reset collections / nzbs that are older then delay time check in site settings
-2014-05-13 ruhllatio
+2014-05-13 b3rs3rk
 	Fix: $res variables in NameFixer predb match functions now check for false before rowCount()
 	Chg: PreDB FT Match function query to rule out impossible matches / hanging matches
 	Chg: Optimize FT Match query for speed
@@ -2476,12 +2479,12 @@ stable code:
 	Add: Strip new lines / carriage returns from web predb titles before inserting.
 2014-05-11 bubblun
 	Add: New setting to delete releases with a size of over 200MB and just a single file/part. Those are very likely spam releases.
-2014-05-11 ruhllatio
+2014-05-11 b3rs3rk
 	Add: PreDB FT Match Function to NameFixer
 2014-05-10 kevin/niel
 	Fix: Fix for UC changing predb output on html.
 	Chg: Change a regex in predb.
-2014-05-09 ruhllatio
+2014-05-09 b3rs3rk
 	Add: PreDB filename matching function and test script (use at own risk for now)
 	Fix: decrypt_hashes show logic was backwards (showing the results of rename when show wasn't specified) Ahem - Bart39
 2014-05-08 niel
@@ -2503,14 +2506,14 @@ stable code:
 	Add: Filename parsing to IRCScraper.
 2014-05-07 niel
 	Fix: Covers constant wasn't being set after recent update.
-2014-05-07 ruhllatio
+2014-05-07 b3rs3rk
 	Fix: Syntax error in dump_predb (For real this time)
 	Fix: dump_predb number of columns error
 2014-05-06 bart39
 	Fix: echoing '.' causing screen errors.
 	Fix: undefined index / offset in decrypt_hashes
 	Chg: use NameFixer->matchPreDbHash for decrypt_hashes
-2014-05-06 ruhllatio
+2014-05-06 b3rs3rk
 	Fix: fixreleasenames MD5 never exceeding dehashstatus 0
 	Chg: fixreleasenames.php in tmux now honors hashes with uppercase letters
 	Chg: matchPredbHash will lowercase the hash before checking against predb table hashes
@@ -2537,7 +2540,7 @@ stable code:
 	Chg: Regex additions / fixes for release / collection cleaning.
 	Chg: Add count of releases recategorized in recategorize.php
 	Add: Display predb nuked / reason in nzb details
-2014-05-04 ruhllatio
+2014-05-04 b3rs3rk
 	Chg:  dump_predb now only removes titles that have <= 8 chars as opposed to 15 (older valid pres were being deleted).
 2014-05-04 kevin
 	Add: Ability to ignore corrupt-net and categories to IRCScraper. Update your settings.php    #1300
@@ -2549,7 +2552,7 @@ stable code:
 	Chg: Renamed remaining patch files to new format.
 	Chg: Alter regexes to use the full format now.
 	Add: Basic method for processing new patches into Db and correct filename format. Needs more work to be useful.
-2014-05-03 ruhllatio
+2014-05-03 b3rs3rk
 	Chg: Modify query for decrypt hashes to check MD5 or SHA depending upon hashlength
 2014-05-02 bart39
 	Fix: insert error on patch 209
@@ -2563,7 +2566,7 @@ stable code:
 2014-05-01 niel
 	Chg: Changed the forum address in the READDME for the new location.
 	Chg: Merged traid's updated convert_from_newznab script. Many thanks.
-2014-05-01 ruhllatio
+2014-05-01 b3rs3rk
 	Chg: Force decrypt_hashes to do lower case letters only in the DB call to match hashes
 	Add: decrypt_hashes when run in show mode will now specify the hash match type: MD5 or SHA1 instead of just MD5
 2014-05-01 bart39
@@ -2590,7 +2593,7 @@ stable code:
 	Fix: Changed patch 208 to be simpler.
 	Chg: Adding regex for DbUpdate's path matching, as Utility::PATH_REGEX.
 	Fix: Added full stop ('.') character to path regex constant.
-2014-04-28 ruhllatio
+2014-04-28 b3rs3rk
 	Fix: sprintf error Line 625 predb, too many arguments and not enough inputs
 2014-04-28 kevin
 	Chg: IRCClient, only reply to pings from the server to prevent abusers from making us flood.
@@ -2607,7 +2610,7 @@ stable code:
 2014-04-26 niel
 	Fix: Changing badly quoted entry in menu.tsv
 	Fix: Typo in quoting for query in dump_predb.php.
-2014-04-26 ruhllatio
+2014-04-26 b3rs3rk
 	Fix: Remap PreDB.php functions to PredbHash instead of MD5
 	Fix: SxxExx namefixer regex no longer matches resolutions that harmfully renamed Anime releases
 2014-04-26 bart39
@@ -2625,7 +2628,7 @@ stable code:
 	Add: Even faster yEnc decoding by using a PHP extension, see : https://github.com/kevinlekiller/simple_php_yenc_decode for instructions.
 	Chg: If the user does not have the extension loaded, use the built in PHP method for yEnc.
 	Add: DB pings to IRCClient when pinging or ponging IRC to prevent DB timeouts.
-2014-04-25 ruhllatio
+2014-04-25 b3rs3rk
 	Add: Phase 2 of SHA matching implemented for fixReleaseNames and decrypt_hashes
 2014-04-25 niel
 	Fix: Reverting accidentally changed default settings.
@@ -2643,7 +2646,7 @@ stable code:
 2014-04-21 kevin
 	Fix: Typo in requestid.
 	Fix: IRCClient. The example code on php.net for fwrite is wrong and can create an infinite loop if the remote server closes the connection which causes fwrite to return 0 and not false - php.net only states false as a return value on error.
-2014-04-21 ruhllatio
+2014-04-21 b3rs3rk
 	* Modify requestid local match script to ignore matches already PreDB matched and change script commenting
 2014-04-21 niel
 	Chg: Adding removal of bad rows in predb to patch 213.
@@ -2659,7 +2662,7 @@ stable code:
 2014-04-19 kevin
 	Chg: Ping changes in IRC client.
 	Add: Custom IRC Client to replace PEAR SmartIRC, encrypted IRC connections are now supported.
-2014-04-19 ruhllatio
+2014-04-19 b3rs3rk
 	Add: Framework for SHA1 release PreDB matching
 2014-04-18 niel
 	Chg: Major change to Db schema. site table is now settings, and expanded for more granularity.
@@ -2713,7 +2716,7 @@ stable code:
 	Fix: Notice in removecrap.
 	Chg: More refactoring of NNTP, add Yenc functions in NNTP, remove Yenc class.
 	Fix: #1267 Use https for youtube videos to not cause issues on http sites.
-2014-04-14 ruhllatio
+2014-04-14 b3rs3rk
 	Add: Option for removeCrap to specify a fourth argument for Blacklist ID (great for testing full time delete with new regex)
 2014-04-13 kevin
 	Add: Massive speed improvement to yEnc decoding (~400 times faster) by using yydecode binary
@@ -2723,7 +2726,7 @@ stable code:
 	Chg: Change to get more NFO files.
 	Chg: Change yydecoder to use random files to help with threaded scripts.
 	Chg: Refactor nzbcontents.php making fetching NFO files faster (only scanning the NZB once for hidden/non hidden NFO's).
-2014-04-13 ruhllatio
+2014-04-13 b3rs3rk
 	Add: Roelski's AniDB population changes -- needs a lot of work still
 	Fix: Errant variable in populate_anidb
 	Fix: Working AniDB full dat update
@@ -2740,7 +2743,7 @@ stable code:
 	Fix: typo in movie processing
 	* New: added /misc/testing/Dev/recategorize.php - will attempt to recategorize releases (useful if there are
 	updates to category regex)
-2014-04-12 ruhllatio
+2014-04-12 b3rs3rk
 	Fix: Issue #1264 - ReleaserRemover (removecrap blacklist) not actually deleting
 	Chg: removecrap output to fit better within lines
 	Add: Egandt's codec poster removal method to removecrap wmv check (now called codec)
@@ -2755,9 +2758,9 @@ stable code:
 	In the process discovered a few patches were badly sequenced so that patches would be ignored. This may be the cause of some problems with (much) older installs.
 	NOTE: For some patches to work, the MySQL user must have FILE privileges, and the location of files must be accessible to ALL users. This means that all directories must be traversible, not just have read permissions on the files set for all.
 	Chg: Switch patching preference to use new filename format, falling back to old method if needed.
-	Fix: Bring kevin's and ruhllatio's changes above back into the right timeline.
+	Fix: Bring kevin's and b3rs3rk's changes above back into the right timeline.
 	* New: Script to allow bash scripts to get settings from the Db.
-2014-04-11 ruhllatio
+2014-04-11 b3rs3rk
 	Add: Additional FT Match operations for removecrap remaining subject field Blacklist entries
 	Add: Additional blacklist removecrap outputs
 2014-04-11 niel
@@ -2774,7 +2777,7 @@ stable code:
 	Add: More support for X-DNZB HTTP headers, Content-Length on HTTP headers (gets rid of warnings in NZBGet).
 	Add: Option for admins to hide themes from user profile edit.
 	Chg: Use NZBGet's appendurl instead of append which will speed up javascript execution on send to queue. (thanks to hugbug @ nzbget.net for support)
-2014-04-09 ruhllatio
+2014-04-09 b3rs3rk
 	Chg: Split removecrap blacklist into two functions (one for release names and searchnames and one for files)
 	Add: Release names/searchnames blacklist function now uses FT Match filters for speed
 2014-04-09 Bart39
@@ -2878,7 +2881,7 @@ stable code:
 	Chg: Move Ircscraper function into monitor loop (credits DariusIII)
 	Chg: Added note to threaded.sh about modifying $tmux_session for nntpproxy if using tmux colors.
 	NB would suggest editing and re-saving user_threaded.sh for the new changes
-2014-04-03 ruhllatio
+2014-04-03 b3rs3rk
 	Chg: Modify newposterwall queries to leverage partitioning -- considerable speed improvement (5.5+ safe)
 	Fix: Bad query in Genre section of admin site for showing only genres with releases
 2014-04-03 niel
@@ -2923,7 +2926,7 @@ stable code:
 2014-04-01 bart39
 	Fix: remove addate from predb update
 	Fix: typo in schema
-2014-04-01 ruhllatio
+2014-04-01 b3rs3rk
 	Chg: populate_tvrage and updateTvRage for tmux usage
 	Add: duplicate checks for populate_tvrage so it can be run at interval without error
 	Fix: trailing whitespace
@@ -2947,7 +2950,7 @@ stable code:
 2014-03-31 bart39
 	Fix: Fix tmux pane for IRCscraper if nntpproxy not used
 	* New: Add IRCScraper window to tmux - enable corrupt/zenet and/or efnet.
-2014-03-31 ruhllatio
+2014-03-31 b3rs3rk
 	* Add Full-text stopword table for InnoDB 5.6+ users -- this will make InnoDB FT search perform nearly identicallly
 	to MyISAM in BOOLEAN MODE.  As this table is only for InnoDB 5.6+, it is not going in schema or as a patch.  See
 	resources/db/README.txt and the referenced .sql file for more information.
@@ -3005,7 +3008,7 @@ stable code:
 	Add: Script for scraping pre/reqid data from IRC (look in /misc/testing/IRCScraper/ change settings to your liking in settings.php, run with php scrape.php)
 	Chg: Rename above script to scrapEfnet.php (so we can add scraping of other servers).
 	Chg: Rename it again, but have argument : efnet or corrupt , add individual username/password per server.
-2014-03-28 ruhllatio
+2014-03-28 b3rs3rk
 	* Fix small bug in monitor.php that prevents Theater/TV update from running in basic sequential tmux mode
 	* Fix filesize constraint violation bug in Releases.php Stage 2
 2014-03-28 bart39
@@ -3069,14 +3072,14 @@ stable code:
 	* Removing casting to int (for 32 bit php compat) on some vars has caused issues since some of them were float, I rounded them, but this might cause issues again with 32 bit PHP's.
 	* Add running time to debugging.
 	* Redo daytopost function making it faster. Remove windows check from colorcli.
-2014-03-25 ruhllatio
+2014-03-25 b3rs3rk
 	* Add FT Search table schema update and clean up a few schema issues in releases
 	* Fixed typo in FT search schema pre-git commit
 	* Remove DELIMITER from patch is it appears PatchDB accounts for this
 	* Add index to fix slow trigger updates for FT search
 2014-03-24 niel
 	Fix: Prevent loading XML in Versions from causing an exception directly.
-2014-03-24 ruhllatio
+2014-03-24 b3rs3rk
 	* Partially optimize queries for Site Stats being painfully slow with large number of releases
 2014-03-24 kevin
 	* Improve postdate function.
@@ -3088,7 +3091,7 @@ stable code:
 	* Temp solution for those with unusable sites because of nZEDb.xml
 	* Change echo's in backfill/binaries to be similar.
 	* Binaries/backfill get rid of some microtime's and reuse some.
-2014-03-23 ruhllatio
+2014-03-23 b3rs3rk
 	* Change work release queries for movie/tv to leverage partitioning (5.5+ safe)
 2014-03-23 kevin
 	* Use NZBExport class for web export.
@@ -3107,7 +3110,7 @@ stable code:
 	* Fix removeCrapReleases.php to work with poster and multiple groups.
 	* Fix bug in category.php #1230
 	* Removecrapreleases blacklist - search through searchnames too.
-2014-03-31 ruhllatio
+2014-03-31 b3rs3rk
 	* Change monitor.php query that runs for 10 seconds needlessly and an additional index is a waste for nzbstatus
 2014-03-21 bart39
 	* Regex fixes / additions
@@ -3121,7 +3124,7 @@ stable code:
 	* Changes to make Backfill.php and Binaries.php faster.
 	* Fix warnings and other stuff in binaries.php
 	* Fix bug where groups deactivate on save. #1226
-2014-03-20 ruhllatio
+2014-03-20 b3rs3rk
 	* Change DISTINCT preid count in monitor.php to reflect preid > 0 as matched - drastic speed improvement
 2014-03-20 niel
 	* Modifying Changelog format for (hopefully) easier reading and better layout in text editors.
@@ -3164,11 +3167,11 @@ stable code:
 	* Fix queries in predb to work in both pgsql and mysql.
 	* Remove double dupe checks in predb.
 	* Change on duplicate to updates in predb to work with MySQL and PgSQL.
-2014-03-18 ruhllatio
+2014-03-18 b3rs3rk
 	* Fix PG triggers for hash/requestid.
 	* Fix pg schema triggers again - fix Releases for PG and whitespaces
 	* Change TvRage lookup querying for PP in PgSQL
-2014-03-17 ruhllatio
+2014-03-17 b3rs3rk
 	* Fix Releases Stage1 for PG / change b.partcheck type in schema.
 	* Remove pgsql patches until PG is actually ready and useable
 2014-03-17 kevin
@@ -3178,7 +3181,7 @@ stable code:
 2014-03-16 bart39
 	* fixed issue with dehashstatus being set lower than -7
 	* manually update patch version
-2014-03-16 ruhllatio
+2014-03-16 b3rs3rk
 	* Fix PG schema errors proc_pp
 	* More PG schema fixes and rearrange primary key alters
 	* Update patch readme.
@@ -3200,9 +3203,9 @@ stable code:
 	* New: Adding server version checking code to DB class.
 2014-03-15 bart39
 	* fix send to couchpotato on new releases / movies
-2014-03-15 ruhllatio
+2014-03-15 b3rs3rk
 	* Modify category selections in postproc scripts
-2014-03-15 ruhllatio
+2014-03-15 b3rs3rk
 	* Fix one more slow console query
 2014-03-15 kevin
 	* Revamp music page on alpha theme.
@@ -3226,7 +3229,7 @@ stable code:
 	* revert monitor.php changes as only compatible with mysql 5.6+
 2014-03-13 niel
 	Fix: Variable name typoes in utility/Versions.php
-2014-03-13 ruhllatio
+2014-03-13 b3rs3rk
 	* Optimize Monitor.php work queries to use partitions...
 2014-03-13 kevin
 	* Fix bad path to schema in check unique indexex.
@@ -3247,7 +3250,7 @@ stable code:
 	* Deprecate debuginfo DB setting in favor of nZEDb_DEBUG constant.
 2014-03-13 niel
 	Chg: Seperating data and definition from Db schema files.
-2014-03-12 ruhllatio
+2014-03-12 b3rs3rk
 	* Change mysql schema partition releases table by categoryid -- Many ALTERs
 2014-03-12 bart39
 	Fix: only do requestid web lookup if predb_irc.nzedb.com is up
@@ -3275,7 +3278,7 @@ stable code:
 	* Add more category links to predb and add link to usenet-crawler predb.
 2014-03-10 bart39
 	* fixed some echo CLI formatting
-2014-03-10 ruhllatio
+2014-03-10 b3rs3rk
 	* Remove unnecessary join from fixreleasenames_threaded.py
 2014-03-10 bart39
 	* reverted previous change to releases->stage7a as one big delete is quicker than looping in php
