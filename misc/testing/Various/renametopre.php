@@ -103,7 +103,7 @@ function preName($argv, $argc)
 	if ($total > 0) {
 		$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 		foreach ($res as $row) {
-			$groupname = $groups->getByNameByID($row['groups_id']);
+			$groupname = $groups->getNameByID($row['groups_id']);
 			$cleanerName = releaseCleaner($row['name'], $row['fromname'], $row['size'], $groupname, $usepre);
 			$preid = 0;
 			$predb = $predbfile = $increment = false;

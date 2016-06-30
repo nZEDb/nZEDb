@@ -348,7 +348,7 @@ class PostProcess
 		}
 
 		// Get the PAR2 file.
-		$par2 = $nntp->getMessages($this->groups->getByNameByID($groupID), $messageID, $this->alternateNNTP);
+		$par2 = $nntp->getMessages($this->groups->getNameByID($groupID), $messageID, $this->alternateNNTP);
 		if ($nntp->isError($par2)) {
 			return false;
 		}

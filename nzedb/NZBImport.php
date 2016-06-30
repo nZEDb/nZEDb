@@ -303,18 +303,21 @@ class NZBImport
 							$groupName = $group;
 						}
 					} else {
-						$groupID = $this->groups->add([
-							'name' => $group,
-							'description' => 'Added by NZBimport script.',
-							'backfill_target' => 0,
-							'first_record' => 0,
-							'last_record' => 0,
-							'active' => 0,
-							'backfill' => 0
-						]);
-						$this->allGroups[$group] = $groupID;
+						$group = $this->groups->isValidGroup($group);
+						if ($group !== false) {
+							$groupID = $this->groups->add([
+								'name' => $group,
+								'description' => 'Added by NZBimport script.',
+								'backfill_target' => 1,
+								'first_record' => 0,
+								'last_record' => 0,
+								'active' => 0,
+								'backfill' => 0
+							]);
+							$this->allGroups[$group] = $groupID;
 
-						$this->echoOut("Adding missing group: ($group)");
+							$this->echoOut("Adding missing group: ($group)");
+						}
 					}
 				}
 				// Add all the found groups to an array.
