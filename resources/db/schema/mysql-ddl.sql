@@ -1085,9 +1085,9 @@ CREATE TABLE user_excluded_categories (
 DROP TABLE IF EXISTS user_movies;
 CREATE TABLE user_movies (
   id          INT(16) UNSIGNED               NOT NULL AUTO_INCREMENT,
-  user_id INT(16)                            NOT NULL,
+  user_id     INT(16)                        NOT NULL,
   imdbid      MEDIUMINT(7) UNSIGNED ZEROFILL NULL,
-  categories  INT                            NOT NULL COMMENT 'Array of user movies categories',
+  categories  VARCHAR(64)                    NULL DEFAULT NULL COMMENT 'Array of categories for user movies',
   createddate DATETIME                       NOT NULL,
   PRIMARY KEY (id),
   INDEX ix_usermovies_userid (user_id, imdbid)
@@ -1136,7 +1136,7 @@ CREATE TABLE user_series (
   id          INT(16) UNSIGNED NOT NULL AUTO_INCREMENT,
   user_id     INT(16)          NOT NULL,
   videos_id   INT(16)          NOT NULL COMMENT 'FK to videos.id',
-  categories  INT              NOT NULL COMMENT 'Array of tv shows categories',
+  categories  VARCHAR(64)      NULL DEFAULT NULL COMMENT 'Array of categories for user tv shows',
   createddate DATETIME         NOT NULL,
   PRIMARY KEY (id),
   INDEX ix_userseries_videos_id (user_id, videos_id)
