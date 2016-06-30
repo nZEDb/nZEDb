@@ -1,28 +1,22 @@
 <h2>{$page->title}</h2>
-
 <div class="alert-info">
 	<p>
 		Use this page to manage movies added to your personal list. If the movie becomes available it will be added to an <a href="{$smarty.const.WWW_TOP}/rss?t=-4&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">Rss Feed</a> you can use to automatically download. <br>
 		To add more movies use the <a href="{$smarty.const.WWW_TOP}/mymovies">My Movies</a> search feature.
 	</p>
 </div>
-
 {if $movies|@count > 0}
 	<table class="data highlight Sortable table" id="browsetable">
 		<tr>
-
 			<th style="padding-top:0px; padding-bottom:0px;"></th>
 			<th style="padding-top:0px; padding-bottom:0px;">name</th>
 			<th style="padding-top:0px; padding-bottom:0px;">category</th>
 			<th style="padding-top:0px; padding-bottom:0px;">added</th>
 			<th class="mid" style="padding-top:0px; padding-bottom:0px;">options</th>
 		</tr>
-
 		{foreach $movies as $movie}
 			<tr class="{cycle values=",alt"}">
-
 				<td class="mid" style="width:140px">
-
 					<div class="movcover">
 						<img class="shadow img img-polaroid" src="{$smarty.const.WWW_TOP}/covers/movies/{if $movie.cover == 1}{$movie.imdbid}-cover.jpg{else}no-cover.jpg{/if}" width="120" border="0" alt="{$movie.title|escape:"htmlall"}" />
 						<div class="movextra">
@@ -32,8 +26,6 @@
 						</div>
 					</div>
 				</td>
-
-
 				<td>
 					<h4>{$movie.title|escape:"htmlall"} ({$movie.year})</h4>
 					{if isset($movie.tagline) && $movie.tagline != ''}<b>{$movie.tagline}</b><br />{/if}
@@ -47,9 +39,11 @@
 				<td class="mid" style="padding-top:20px;"><a class="btn btn-mini btn-danger" href="{$smarty.const.WWW_TOP}/mymoviesedit?del={$movie.imdbid}" rel="remove" title="Remove from my movies">Remove</a></td>
 			</tr>
 		{/foreach}
-
 	</table>
-
 {else}
-
+	<div class="alert">
+		<button type="button" class="close" data-dismiss="alert">&times;</button>
+		<strong>Sorry!</strong>
+		No results found.
+	</div>
 {/if}
