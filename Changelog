@@ -8,6 +8,8 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+2016-06-30 DariusIII
+	Fix: Wrong path to file extension icons in Gamma theme viewfilelist.tpl
 2016-06-27 ruhllatio
 	Mrg: PR Cleanup groups #2175
 	Mrg: PR Remove 10-tvrage_titles.tsv and scripts used to pupulate that table. #2183
