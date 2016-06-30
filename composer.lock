@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "02a9f76f1422d80910fd0a0e3e80f301",
-    "content-hash": "a6bef9c98a5211882e6d484fa1fcdfdd",
+    "hash": "e165057c3355b690e063ec6f54e6ad21",
+    "content-hash": "4b4122cd268ef067db66f5d6f3974042",
     "packages": [
         {
             "name": "barracudanetworks/forkdaemon-php",
@@ -1400,7 +1400,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/UnionOfRAD/lithium/zipball/ab51c2ba498d22d2d4ca261018c046d716902419",
+                "url": "https://api.github.com/repos/UnionOfRAD/lithium/zipball/4f69135ab66ffe7681b93c099febbe4174842909",
                 "reference": "ce1d4d44d1e5b6c4a8cf6dc273025a8638e78b8e",
                 "shasum": ""
             },
