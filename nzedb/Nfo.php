@@ -361,7 +361,7 @@ class Nfo
 			$movie = new Movie(['Echo' => $this->echo, 'Settings' => $this->pdo]);
 
 			foreach ($res as $arr) {
-				$fetchedBinary = $nzbContents->getNfoFromNZB($arr['guid'], $arr['id'], $arr['groups_id'], $groups->getByNameByID($arr['groups_id']));
+				$fetchedBinary = $nzbContents->getNfoFromNZB($arr['guid'], $arr['id'], $arr['groups_id'], $groups->getNameByID($arr['groups_id']));
 				if ($fetchedBinary !== false) {
 					// Insert nfo into database.
 					$cp = 'COMPRESS(%s)';

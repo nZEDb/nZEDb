@@ -90,7 +90,8 @@ class XML_Response
 	 *
 	 * @param array $options
 	 */
-	public function __construct($options = array()) {
+	public function __construct($options = array())
+	{
 		$defaults = [
 			'Parameters' => null,
 			'Data'       => null,
