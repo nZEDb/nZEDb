@@ -491,19 +491,19 @@ class XML_Response
 
 		$this->cdata = "\n\t<div>\n";
 		switch(1) {
-			case $r['cover']:
+			case !empty($r['cover']):
 				$dir = 'movies';
 				$column = 'imdbid';
 				break;
-			case $r['mu_cover']:
+			case !empty($r['mu_cover']):
 				$dir = 'music';
 				$column = 'musicinfo_id';
 				break;
-			case $r['co_cover']:
+			case !empty($r['co_cover']):
 				$dir = 'console';
 				$column = 'consoleinfo_id';
 				break;
-			case $r['bo_cover']:
+			case !empty($r['bo_cover']):
 				$dir = 'books';
 				$column = 'bookinfo_id';
 				break;
@@ -655,7 +655,7 @@ class XML_Response
 		$cData = '';
 
 		foreach ($columns AS $info) {
-			if ($r[$info] != '') {
+			if (!empty($r[$info])) {
 				if ($info == 'mu_releasedate') {
 					$ucInfo = 'Released';
 					$rDate = date('Y-m-d', strtotime($r[$info]));
