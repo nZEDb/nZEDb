@@ -9,17 +9,23 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-07-03 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.2.
+
+
 2016-06-30 niel
 	Chg: Make screen simple-expanded script executable.
 2016-06-30 DariusIII
 	Fix: Wrong path to file extension icons in Gamma theme viewfilelist.tpl
 2016-06-27 b3rs3rk
-	Mrg: PR Cleanup groups #2175
-	Mrg: PR Remove 10-tvrage_titles.tsv and scripts used to pupulate that table. #2183
+	Mrg: PR 2175 - Cleanup groups
+	Mrg: PR 2183 - Remove 10-tvrage_titles.tsv and scripts used to pupulate that table.
 2016-06-27 DariusIII
 	Fix: Missed occurences of categoryid in UserMovies.php. Fixes issue #2191
 2016-06-27 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x.
+
+
 2016-06-24 niel
 	Mrg: PR 2189, from josh4trunks - Fix Lithium Connections to send host:name in host field as Lithium expects.
 2016-06-24 DariusIII
@@ -60,7 +66,8 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Chg: Change qtip2 version used in Omicron theme
 	Fix: Check all icon behaviour in Omicron theme
 	Chg: Switch Omicron to iCheck checkbox style and new Pnotify style.
-	Chg: Fix no background images in Charisma/Omicron themes, change type of iCheck used in Omicron.
+	Fix: No background images in Charisma/Omicron themes.
+	Chg: Change type of iCheck used in Omicron.
 2016-06-08 niel
 	Chg: Update version of unionofrad/lithium in composer.lock
 2016-06-07 b3rs3rk
@@ -104,7 +111,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 2016-05-31 b3rs3rk
 	Fix: Bug with TV API changes that causes unmatched Show/Sxx/Exx queries to return data
 2016-05-31 DariusIII
-	Fix: Remove doubled and wrong preinfo function ih Gamma theme utils.js
+	Fix: Remove doubled and wrong preinfo function in Gamma theme's utils.js
 	Fix: PreDB page layout in Gamma theme.
 	Fix: Links to colorbox images in Gamma theme.
 2016-05-30 niel
