@@ -42,6 +42,13 @@ class Versions extends \lithium\core\Object
 		parent::__construct($config += $defaults);
 	}
 
+	public function getGitBranch()
+	{
+		$this->initialiseGit();
+
+		return $this->git->getBranch();
+	}
+
 	public function getGitHeadHash()
 	{
 		$this->initialiseGit();
@@ -52,12 +59,6 @@ class Versions extends \lithium\core\Object
 	{
 		$this->loadXMLFile();
 		return ($this->xml === null) ? null : $this->_vers->git->tag->__toString();
-	}
-
-	public function getGitBranch()
-	{
-		$this->initialiseGit();
-		return $this->git->getBranch();
 	}
 
 	public function getGitTagFromRepo()
