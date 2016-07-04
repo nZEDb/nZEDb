@@ -2,7 +2,7 @@
 namespace nzedb;
 
 use nzedb\db\Settings;
-use nzedb\utility\Versions;
+use app\extensions\util\Versions;
 
 class Sites
 {
@@ -45,7 +45,7 @@ class Sites
 
 		if (defined('nZEDb_VERSIONS')) {
 			try {
-				$this->_versions = new Versions(nZEDb_VERSIONS);
+				$this->_versions = new Versions(['path' => nZEDb_VERSIONS]);
 			} catch (\Exception $e) {
 				$this->_versions = false;
 			}
