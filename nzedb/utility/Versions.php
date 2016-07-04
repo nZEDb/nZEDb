@@ -153,6 +153,7 @@ class Versions
 			}
 			return $this->_vers->git->tag;
 		}
+
 		// Check if version file's entry is the same as current branch's tag
 		if (version_compare($this->_vers->git->tag, $latest, '!=')) {
 			if ($update) {
