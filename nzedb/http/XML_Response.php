@@ -490,7 +490,7 @@ class XML_Response
 		$p = $this->parameters;
 
 		$this->cdata = "\n\t<div>\n";
-		switch(1) {
+		switch(true) {
 			case !empty($r['cover']):
 				$dir = 'movies';
 				$column = 'imdbid';
