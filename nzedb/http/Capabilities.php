@@ -20,10 +20,10 @@
  */
 namespace nzedb\http;
 
+use app\extensions\util\Versions;
 use nzedb\Category;
 use nzedb\Utility\Misc;
 use nzedb\db\Settings;
-use nzedb\utility\Versions;
 
 /**
  * Class Output -- abstract class for printing web requests outside of Smarty
