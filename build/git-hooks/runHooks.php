@@ -22,9 +22,8 @@ define('GIT_PRE_COMMIT', true);
 
 require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'indexer.php');
 
-use nzedb\db\DbUpdate;
 use nzedb\utility\Git;
-use nzedb\utility\Versions;
+use app\extensions\util\Versions;
 
 echo "Running pre-commit hooks\n";
 
