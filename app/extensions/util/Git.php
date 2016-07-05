@@ -27,6 +27,8 @@ class Git extends \lithium\core\Object
 	 */
 	protected $repo;
 
+	protected $gitTagLatest = null;
+
 	private $branch;
 
 	public function __construct(array $config = [])
@@ -176,9 +178,12 @@ class Git extends \lithium\core\Object
 	 *
 	 * @return string
 	 */
-	public function tagLatest()
+	public function tagLatest($cached = true)
 	{
-		return $this->describe("--tags --abbrev=0 HEAD");
+		if (empty($this->gitTagLatest) || $cached === false) {
+			$this->gitTagLatest = $this->describe("--tags --abbrev=0 HEAD");
+		}
+		return $this->git->tagLatest();
 	}
 
 	protected function _init()
