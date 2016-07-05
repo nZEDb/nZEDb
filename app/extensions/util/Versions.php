@@ -60,20 +60,37 @@ class Versions extends \lithium\core\Object
 		parent::__construct($config += $defaults);
 	}
 
+	public function checkGitTag($update = true)
+	{
+		$this->checkGitTagInFile();
+		return $this->checkGitTagsAreEqual(false);
+	}
+
+	/**
+	 * Checks the git's latest version tag against the XML's stored value. Version should be
+	 * Major.Minor.Revision[.fix][-dev|-RCx]
+	 *
+	 * @return string|false version string if matched or false.
+	 */
 	public function checkGitTagInFile()
 	{
 		$this->initialiseGit();
 		$ver = preg_match('#v(\d+\.\d+\.\d+(?:\.\d+)?).*#', $this->git->tagLatest(), $matches) ?
-			$matches[1] :
-			$this->git->tagLatest();
-		if (!in_array($this->git->getBranch, $this->git->getBranchesStable)) {
-			if (version_compare($this->versions->git->tag, '0.0.0', '!=')) {
-				$this->versions->git->tag = '0.0.0-dev';
-				$this->changes |= self::UPDATED_GIT_TAG;
-			}
+			$matches[1] : $this->git->tagLatest();
+		$ver = ($ver == false) ? false : $ver; // Convert '0' to false.
 
-			return $this->versions->git->tag;
+		if ($ver !== false) {
+			if (!in_array($this->git->getBranch, $this->git->getBranchesStable)) {
+				if (version_compare($this->versions->git->tag, '0.0.0', '!=')) {
+					$this->versions->git->tag = '0.0.0-dev';
+					$this->changes |= self::UPDATED_GIT_TAG;
+				}
+
+				$ver = $this->versions->git->tag;
+			}
 		}
+
+		return $ver;
 	}
 
 	public function checkGitTagsAreEqual($update = true)
@@ -137,6 +154,18 @@ class Versions extends \lithium\core\Object
 		return ($this->versions === null) ? null : $this->versions->sql->file->__toString();
 	}
 
+	public function getTagVersion()
+	{
+		$this->deprecated(__METHOD__, 'getGitTagInRepo');
+		return $this->getGitTagInRepo();
+	}
+
+	public function getValidVersionsFile()
+	{
+		$this->loadXMLFile();
+		return $this->xml;
+	}
+
 	/**
 	 * Check whether the XML has been changed by one of the methods here.
 	 *
@@ -198,5 +227,11 @@ class Versions extends \lithium\core\Object
 		if ($this->_config['git'] instanceof \app\extensions\util\Git) {
 			$this->git =& $this->_config['git'];
 		}
+	}
+
+	private function deprecated($methodOld, $methodUse)
+	{
+		trigger_error("This method ($methodOld) is deprecated. Please use '$methodUse' instead.",
+			E_USER_NOTICE);
 	}
 }
