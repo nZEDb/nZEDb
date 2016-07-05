@@ -31,6 +31,11 @@ class Versions extends \lithium\core\Object
 	const UPDATED_SQL_FILE_LAST	= 8;
 
 	/**
+	 * @var integer Bitwise mask of elements that have been changed.
+	 */
+	protected $changes = 0;
+
+	/**
 	 * @var \app\extensions\util\Git object.
 	 */
 	protected $git;
@@ -39,6 +44,11 @@ class Versions extends \lithium\core\Object
 	 * @var \simpleXMLElement object.
 	 */
 	protected $versions = null;
+
+	/**
+	 * @var \simpleXMLElement object
+	 */
+	protected $xml = null;
 
 	public function __construct(array $config = [])
 	{
@@ -50,38 +60,40 @@ class Versions extends \lithium\core\Object
 		parent::__construct($config += $defaults);
 	}
 
-	public function checkGitTag($update = true)
+	public function checkGitTagInFile()
 	{
 		$this->initialiseGit();
-		$ver = preg_match('#v(\d+\.\d+\.\d+(?:\.\d+)?).*#', $this->git->tagLatest(), $matches) ? $matches[1] :
+		$ver = preg_match('#v(\d+\.\d+\.\d+(?:\.\d+)?).*#', $this->git->tagLatest(), $matches) ?
+			$matches[1] :
 			$this->git->tagLatest();
 		if (!in_array($this->git->getBranch, $this->git->getBranchesStable)) {
 			if (version_compare($this->versions->git->tag, '0.0.0', '!=')) {
-				$this->versions->git->tag = '0.0.0';
+				$this->versions->git->tag = '0.0.0-dev';
 				$this->changes |= self::UPDATED_GIT_TAG;
 			}
 
 			return $this->versions->git->tag;
 		}
+	}
 
-		// Check if version file's entry is the same as current branch's tag
-		if (version_compare($this->versions->git->tag, $latest, '!=')) {
-			if ($update) {
-				echo $this->out->primaryOver("Updating tag version to ") .
-					$this->out->header($latest);
-				$this->versions->git->tag = $ver;
-				$this->_changes |= self::UPDATED_GIT_TAG;
-			} else {
-				echo $this->out->primaryOver("Leaving tag version at ") .
-					$this->out->headerOver($this->versions->git->tag);
+	public function checkGitTagsAreEqual($update = true)
+	{
+		// Check if file's entry is the same as current branch's tag
+		if (version_compare($this->versions->git->tag, $this->git->tagLatest(), '!=')) {
+			if ($update === true) {
+				//$this->out->primaryOver("Updating tag version to ") . $this->out->header($this->git->tagLatest());
+
+				$this->versions->git->tag = $this->git->tagLatest();
+				$this->changes |= self::UPDATED_GIT_TAG;
+
+				return $this->versions->git->tag;
+			} else { // They're NOT the same but we were told not to update.
+				return false;
 			}
 
-			return $this->versions->git->tag;
-		} else {
-			echo $this->out->primaryOver("Tag version is ") . $this->out->header($latest);
+		} else { // They're the same so return true
+			return true;
 		}
-
-		return false;
 	}
 
 	public function getGitBranch()
@@ -125,6 +137,24 @@ class Versions extends \lithium\core\Object
 		return ($this->versions === null) ? null : $this->versions->sql->file->__toString();
 	}
 
+	/**
+	 * Check whether the XML has been changed by one of the methods here.
+	 *
+	 * @return boolean True if the XML has been changed.
+	 */
+	public function hasChanged()
+	{
+		return $this->changes != 0;
+	}
+
+	public function save()
+	{
+		if ($this->hasChanged()) {
+			$this->xml->asXML($this->_config['path']);
+			$this->changes = 0;
+		}
+	}
+
 	protected function initialiseGit()
 	{
 		if (!($this->git instanceof \app\extensions\util\Git)) {
@@ -138,22 +168,22 @@ class Versions extends \lithium\core\Object
 			$versions = $this->_config['path'];
 
 			$temp = libxml_use_internal_errors(true);
-			$this->versions = simplexml_load_file($versions);
+			$this->xml = simplexml_load_file($versions);
 			libxml_use_internal_errors($temp);
 
-			if ($this->versions === false) {
+			if ($this->xml === false) {
 				$this->error("Your versions XML file ($versions) is broken, try updating from git.");
 				throw new \Exception("Failed to open versions XML file '$versions'");
 			}
 
-			if ($this->versions->count() > 0) {
+			if ($this->xml->count() > 0) {
 				$vers = $this->versions->xpath('/nzedb/versions');
 
 				if ($vers[0]->count() == 0) {
 					$this->error("Your versions XML file ($versions) does not contain version info, try updating from git.");
 					throw new \Exception("Failed to find versions node in XML file '$versions'");
 				} else {
-					$this->versions = &$this->versions->versions;
+					$this->versions = &$this->xml->versions;
 				}
 			} else {
 				throw new \RuntimeException("No elements in file!\n");
