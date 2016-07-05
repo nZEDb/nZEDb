@@ -54,7 +54,7 @@ class Sites
 
 	public function version()
 	{
-		return ($this->_versions === false ? '0.0.0' : $this->_versions->getGitTagFromRepo());
+		return ($this->_versions === false ? '0.0.0' : $this->_versions->getGitTagInRepo());
 	}
 
 	public function update($form)

@@ -229,7 +229,7 @@ class Settings extends DB
 	public function version()
 	{
 		try {
-			$ver = (new Versions())->getGitTagFromRepo();
+			$ver = (new Versions())->getGitTagInRepo();
 		} catch (\Exception $e) {
 			$ver = '0.0.0';
 		}
