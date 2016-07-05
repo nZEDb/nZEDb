@@ -23,7 +23,7 @@ class Versions
 	public $git;
 
 	/**
-	 * @var object ColorCLI
+	 * @var object nzedb\ColorCLI
 	 */
 	public $out;
 
