@@ -23,6 +23,14 @@ use \app\models\Settings;
 class Versions extends \lithium\core\Object
 {
 	/**
+	 * These constants are bitwise for checking what was changed.
+	 */
+	const UPDATED_GIT_COMMIT	= 1;
+	const UPDATED_GIT_TAG		= 2;
+	const UPDATED_SQL_DB_PATCH	= 4;
+	const UPDATED_SQL_FILE_LAST	= 8;
+
+	/**
 	 * @var \app\extensions\util\Git object.
 	 */
 	protected $git;
@@ -30,7 +38,7 @@ class Versions extends \lithium\core\Object
 	/**
 	 * @var \simpleXMLElement object.
 	 */
-	protected $xml = null;
+	protected $versions = null;
 
 	public function __construct(array $config = [])
 	{
@@ -42,10 +50,43 @@ class Versions extends \lithium\core\Object
 		parent::__construct($config += $defaults);
 	}
 
+	public function checkGitTag($update = true)
+	{
+		$this->initialiseGit();
+		$ver = preg_match('#v(\d+\.\d+\.\d+(?:\.\d+)?).*#', $this->git->tagLatest(), $matches) ? $matches[1] :
+			$this->git->tagLatest();
+		if (!in_array($this->git->getBranch, $this->git->getBranchesStable)) {
+			if (version_compare($this->versions->git->tag, '0.0.0', '!=')) {
+				$this->versions->git->tag = '0.0.0';
+				$this->changes |= self::UPDATED_GIT_TAG;
+			}
+
+			return $this->versions->git->tag;
+		}
+
+		// Check if version file's entry is the same as current branch's tag
+		if (version_compare($this->versions->git->tag, $latest, '!=')) {
+			if ($update) {
+				echo $this->out->primaryOver("Updating tag version to ") .
+					$this->out->header($latest);
+				$this->versions->git->tag = $ver;
+				$this->_changes |= self::UPDATED_GIT_TAG;
+			} else {
+				echo $this->out->primaryOver("Leaving tag version at ") .
+					$this->out->headerOver($this->versions->git->tag);
+			}
+
+			return $this->versions->git->tag;
+		} else {
+			echo $this->out->primaryOver("Tag version is ") . $this->out->header($latest);
+		}
+
+		return false;
+	}
+
 	public function getGitBranch()
 	{
 		$this->initialiseGit();
-
 		return $this->git->getBranch();
 	}
 
@@ -55,13 +96,13 @@ class Versions extends \lithium\core\Object
 		return $this->git->getHeadHash();
 	}
 
-	public function getGitTagFromFile()
+	public function getGitTagInFile()
 	{
 		$this->loadXMLFile();
-		return ($this->xml === null) ? null : $this->_vers->git->tag->__toString();
+		return ($this->versions === null) ? null : $this->versions->git->tag->__toString();
 	}
 
-	public function getGitTagFromRepo()
+	public function getGitTagInRepo()
 	{
 		$this->initialiseGit();
 		return $this->git->tagLatest();
@@ -81,39 +122,38 @@ class Versions extends \lithium\core\Object
 	public function getSQLPatchFromFile()
 	{
 		$this->loadXMLFile();
-		return ($this->xml === null) ? null : $this->_vers->sql->file->__toString();
+		return ($this->versions === null) ? null : $this->versions->sql->file->__toString();
 	}
 
 	protected function initialiseGit()
 	{
-		if (!($this->git instanceof Git)) {
-			$this->git = new Git();
+		if (!($this->git instanceof \app\extensions\util\Git)) {
+			$this->git = new \app\extensions\util\Git();
 		}
 	}
 
 	protected function loadXMLFile()
 	{
-		if ($this->xml === null) {
+		if (empty($this->versions)) {
 			$versions = $this->_config['path'];
 
 			$temp = libxml_use_internal_errors(true);
-			$this->xml = simplexml_load_file($versions);
+			$this->versions = simplexml_load_file($versions);
 			libxml_use_internal_errors($temp);
 
-			if ($this->xml === false) {
+			if ($this->versions === false) {
 				$this->error("Your versions XML file ($versions) is broken, try updating from git.");
 				throw new \Exception("Failed to open versions XML file '$versions'");
 			}
 
-			if ($this->xml->count() > 0) {
-				$vers = $this->xml->xpath('/nzedb/versions');
+			if ($this->versions->count() > 0) {
+				$vers = $this->versions->xpath('/nzedb/versions');
 
 				if ($vers[0]->count() == 0) {
 					$this->error("Your versions XML file ($versions) does not contain version info, try updating from git.");
 					throw new \Exception("Failed to find versions node in XML file '$versions'");
 				} else {
-					//$this->primary("Your versions XML file ($versions) looks okay, continuing.");
-					$this->_vers = &$this->xml->versions;
+					$this->versions = &$this->versions->versions;
 				}
 			} else {
 				throw new \RuntimeException("No elements in file!\n");
@@ -125,7 +165,7 @@ class Versions extends \lithium\core\Object
 	{
 		parent::_init();
 
-		if ($this->_config['git'] instanceof Git) {
+		if ($this->_config['git'] instanceof \app\extensions\util\Git) {
 			$this->git =& $this->_config['git'];
 		}
 	}
