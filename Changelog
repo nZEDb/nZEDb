@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-07-06 niel
+	Fix: Other category not available on new installs, due to insert query still using 'category' table.
 2016-07-03 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.2.
 
