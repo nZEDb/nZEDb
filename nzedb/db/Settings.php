@@ -20,9 +20,9 @@
  */
 namespace nzedb\db;
 
+use app\extensions\util\Versions;
 use nzedb\utility\Misc;
 use nzedb\utility\Text;
-use app\extensions\util\Versions;
 
 class Settings extends DB
 {
