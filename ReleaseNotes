@@ -6,7 +6,8 @@ Changes:
 	* Updated fxp/composer-asset-plugin dependency to v1.2.0
 
 Fixes:
-	* Create new bootstrap file (.../bootstrap.php) to enable nzedb and lithium's app libraries to load together.
+	* Create new bootstrap file (.../bootstrap.php) to enable nzedb and lithium's app libraries
+	 to load together. This fixes #2205.
 	  New files should use it as the base require_once instead of indexer.php. Old files will be
 	 converted over when it is convenient.
 
