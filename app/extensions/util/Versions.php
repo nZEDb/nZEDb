@@ -194,25 +194,23 @@ class Versions extends \lithium\core\Object
 	protected function loadXMLFile()
 	{
 		if (empty($this->versions)) {
-			$versions = $this->_config['path'];
-
 			$temp = libxml_use_internal_errors(true);
-			$this->xml = simplexml_load_file($versions);
+			$this->xml = simplexml_load_file($this->_config['path']);
 			libxml_use_internal_errors($temp);
 
 			if ($this->xml === false) {
-				$this->error("Your versions XML file ($versions) is broken, try updating from git.");
-				throw new \Exception("Failed to open versions XML file '$versions'");
+				$this->error("Your versions XML file ($this->_config['path']) is broken, try updating from git.");
+				throw new \Exception("Failed to open versions XML file '{$this->_config['path']}'");
 			}
 
 			if ($this->xml->count() > 0) {
-				$vers = $this->versions->xpath('/nzedb/versions');
+				$vers = $this->xml->xpath('/nzedb/versions');
 
 				if ($vers[0]->count() == 0) {
-					$this->error("Your versions XML file ($versions) does not contain version info, try updating from git.");
-					throw new \Exception("Failed to find versions node in XML file '$versions'");
+					$this->error("Your versions XML file ({$this->_config['path']}) does not contain version info, try updating from git.");
+					throw new \Exception("Failed to find versions node in XML file '{$this->_config['path']}'");
 				} else {
-					$this->versions = &$this->xml->versions;
+					$this->versions = &$this->xml->versions; // Create a convenience shortcut
 				}
 			} else {
 				throw new \RuntimeException("No elements in file!\n");
