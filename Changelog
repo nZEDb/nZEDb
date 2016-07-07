@@ -13,6 +13,8 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.2.3.
 	Mrg: Versions-Refactor branch. Changes all scripts to use the app/extensions/util/Versions
 		class instead of the older nzedb\utility\Versions.
+	Add: Updates to app\extensions\utils\Versions to add the xml file updates required by runHooks.php script.
+	Chg: Updates to runHooks script to use app\extensions\util\Versions class.
 
 
 2016-07-07 niel
