@@ -10,6 +10,10 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 
 2016-07-07 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.2.3.
+
+
+2016-07-07 niel
 	Add: Create new bootstrap file (.../bootstrap.php) to enable nzedb and lithium's app
 		libraries to load together.
 		 New files should use it as the base require_once instead of indexer.php. Old file will be
