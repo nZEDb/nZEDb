@@ -18,17 +18,17 @@
  */
 namespace app\extensions\util;
 
-use \app\models\Settings;
+use app\models\Settings;
+use nzedb\utility\Misc;
 
 class Versions extends \lithium\core\Object
 {
 	/**
-	 * These constants are bitwise for checking what was changed.
+	 * These constants are bitwise for checking what has changed.
 	 */
-	const UPDATED_GIT_COMMIT	= 1;
-	const UPDATED_GIT_TAG		= 2;
-	const UPDATED_SQL_DB_PATCH	= 4;
-	const UPDATED_SQL_FILE_LAST	= 8;
+	const UPDATED_GIT_TAG		= 1;
+	const UPDATED_SQL_DB_PATCH	= 2;
+	const UPDATED_SQL_FILE_LAST	= 4;
 
 	/**
 	 * @var integer Bitwise mask of elements that have been changed.
@@ -60,10 +60,10 @@ class Versions extends \lithium\core\Object
 		parent::__construct($config += $defaults);
 	}
 
-	public function checkGitTag($update = true)
+	public function checkGitTag($update = false)
 	{
 		$this->checkGitTagInFile();
-		return $this->checkGitTagsAreEqual(false);
+		return $this->checkGitTagsAreEqual($update);
 	}
 
 	/**
@@ -80,7 +80,8 @@ class Versions extends \lithium\core\Object
 		$ver = ($ver == false) ? false : $ver; // Convert '0' to false.
 
 		if ($ver !== false) {
-			if (!in_array($this->git->getBranch, $this->git->getBranchesStable)) {
+			if (!in_array($this->git->getBranch(), $this->git->getBranchesStable())) {
+				$this->loadXMLFile();
 				if (version_compare($this->versions->git->tag, '0.0.0', '!=')) {
 					$this->versions->git->tag = '0.0.0-dev';
 					$this->changes |= self::UPDATED_GIT_TAG;
@@ -110,6 +111,21 @@ class Versions extends \lithium\core\Object
 
 		} else { // They're the same so return true
 			return true;
+		}
+	}
+
+	public function checkSQLFileLatest()
+	{
+		$last = $this->getSQLPatchLast();
+
+		if ($last !== false && $this->versions->sql->file->__toString() != $last) {
+			$this->versions->sql->file = $last;
+			$this->changes |= self::UPDATED_SQL_FILE_LAST;
+		}
+
+		if ($this->versions->sql->file->__toString() != $last) {
+			$this->versions->sql->file = $last;
+			$this->changes |= self::UPDATED_SQL_DB_PATCH;
 		}
 	}
 
@@ -154,6 +170,21 @@ class Versions extends \lithium\core\Object
 		return ($this->versions === null) ? null : $this->versions->sql->file->__toString();
 	}
 
+	public function getSQLPatchLast()
+	{
+		$options = [
+			'data'  => nZEDb_RES . 'db' . DS . 'schema' . DS . 'data' . DS,
+			'ext'   => 'sql',
+			'path'  => nZEDb_RES . 'db' . DS . 'patches' . DS . 'mysql',
+			'regex' => '#^' . Misc::PATH_REGEX . '(?P<patch>\d{4})~(?P<table>\w+)\.sql$#',
+			'safe'  => true,
+		];
+		$files = Misc::getDirFiles($options);
+		natsort($files);
+
+		return (preg_match($options['regex'], end($files), $matches)) ? (int)$matches['patch'] : false;
+	}
+
 	public function getTagVersion()
 	{
 		$this->deprecated(__METHOD__, 'getGitTagInRepo');
@@ -176,9 +207,19 @@ class Versions extends \lithium\core\Object
 		return $this->changes != 0;
 	}
 
-	public function save()
+	public function save($verbose = true)
 	{
 		if ($this->hasChanged()) {
+			if ($verbose === true) {
+				switch (true) {
+					case $this->changes && self::UPDATED_GIT_TAG;
+						echo "Updated git tag version to " . $this->getGitTagInRepo() . PHP_EOL;
+					case $this->changes && self::UPDATED_SQL_DB_PATCH;
+						echo "Updated Db SQL revision to " . $this->versions->sql->file . PHP_EOL;
+					case $this->changes && self::UPDATED_SQL_FILE_LAST;
+						echo "Updated latest patch file to " . $this->getSQLPatchLast() . PHP_EOL;
+				}
+			}
 			$this->xml->asXML($this->_config['path']);
 			$this->changes = 0;
 		}
