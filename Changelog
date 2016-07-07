@@ -8,6 +8,7 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+
 2016-07-07 niel
 	Add: Create new bootstrap file (.../bootstrap.php) to enable nzedb and lithium's app
 		libraries to load together.
@@ -15,6 +16,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 		converted over when it is convenient.
 	Fix: Switch tmux start script to use new bootstrap file (Fixes issue #2205).
 	Fix: Actually commit the new bootstrap file ;-)
+	Chg: Updated fxp/composer-asset-plugin dependency to v1.2.0
 2016-07-06 niel
 	Fix: Other category not available on new installs, due to insert query still using 'category' table.
 	Add: Included lithium app into the autoload process. All of its classes should now be
