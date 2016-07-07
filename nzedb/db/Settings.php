@@ -20,7 +20,7 @@
  */
 namespace nzedb\db;
 
-use app\extensions\util\Versions;
+use nzedb\utility\Versions;
 use nzedb\utility\Misc;
 use nzedb\utility\Text;
 
@@ -229,7 +229,7 @@ class Settings extends DB
 	public function version()
 	{
 		try {
-			$ver = (new Versions())->getGitTagFromRepo();
+			$ver = (new Versions())->getTagVersion();
 		} catch (\Exception $e) {
 			$ver = '0.0.0';
 		}

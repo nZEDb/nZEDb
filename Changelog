@@ -8,6 +8,9 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+2016-07-07 DariusIII
+	Chg: Fix path problem in start.php, class loading in new bootstrap.php,
+		use Versions class from nzedb/utility namespace as temporary measure for issue #2205
 2016-07-07 niel
 	Add: Create new bootstrap file ).../bootstrap.php) to enable nzedb and lithium's app libraries to load together.
 		 New files should use it as the base require_once instead of indexer.php. Old file will be
