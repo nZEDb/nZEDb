@@ -22,7 +22,7 @@ require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'constants.php');
 require_once nZEDb_ROOT . 'app/libraries/autoload.php';
 //require_once 'config' . DS . 'Configure.php';
 
-use nzedb\config\Configure;
+use \nzedb\config\Configure;
 use nzedb\utility\Misc;
 
 
