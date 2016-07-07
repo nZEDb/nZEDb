@@ -131,7 +131,7 @@ Libraries::add('app', array('default' => true));
 Libraries::add('nzedb',
 	[
 		'bootstrap'	=> 'bootstrap.php',
-		'path'	=> 'nzedb',
+		'path'	=> nZEDb_ROOT . 'nzedb',
 	]);
 
 require_once nZEDb_ROOT . 'constants.php';
