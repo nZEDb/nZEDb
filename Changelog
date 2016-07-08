@@ -10,6 +10,10 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 
 2016-07-08 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.2.4
+
+
+2016-07-08 niel
 	Chg: Clean up checking of version string from XML file.
 	Chg: Put 'v' in front of XML files version in ./zed version output.
 2016-07-07 niel
