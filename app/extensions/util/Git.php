@@ -181,7 +181,7 @@ class Git extends \lithium\core\Object
 	public function tagLatest($cached = true)
 	{
 		if (empty($this->gitTagLatest) || $cached === false) {
-			$this->gitTagLatest = $this->describe("--tags --abbrev=0 HEAD");
+			$this->gitTagLatest = trim($this->describe("--tags --abbrev=0 HEAD"));
 		}
 		return $this->gitTagLatest;
 	}
