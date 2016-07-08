@@ -18,10 +18,23 @@
  */
 namespace app\extensions\util;
 
-use \app\models\Settings;
+use app\models\Settings;
+use nzedb\utility\Misc;
 
 class Versions extends \lithium\core\Object
 {
+	/**
+	 * These constants are bitwise for checking what has changed.
+	 */
+	const UPDATED_GIT_TAG		= 1;
+	const UPDATED_SQL_DB_PATCH	= 2;
+	const UPDATED_SQL_FILE_LAST	= 4;
+
+	/**
+	 * @var integer Bitwise mask of elements that have been changed.
+	 */
+	protected $changes = 0;
+
 	/**
 	 * @var \app\extensions\util\Git object.
 	 */
@@ -29,6 +42,11 @@ class Versions extends \lithium\core\Object
 
 	/**
 	 * @var \simpleXMLElement object.
+	 */
+	protected $versions = null;
+
+	/**
+	 * @var \simpleXMLElement object
 	 */
 	protected $xml = null;
 
@@ -42,16 +60,73 @@ class Versions extends \lithium\core\Object
 		parent::__construct($config += $defaults);
 	}
 
-	public function getGitHeadHash()
+	public function checkGitTag($update = false)
 	{
-		$this->initialiseGit();
-		return $this->git->getHeadHash();
+		$this->checkGitTagInFile();
+		return $this->checkGitTagsAreEqual($update);
 	}
 
-	public function getGitTagFromFile()
+	/**
+	 * Checks the git's latest version tag against the XML's stored value. Version should be
+	 * Major.Minor.Revision[.fix][-dev|-RCx]
+	 *
+	 * @return string|false version string if matched or false.
+	 */
+	public function checkGitTagInFile()
 	{
-		$this->loadXMLFile();
-		return ($this->xml === null) ? null : $this->_vers->git->tag->__toString();
+		$this->initialiseGit();
+		$ver = preg_match('#v(\d+\.\d+\.\d+(?:\.\d+)?).*#', $this->git->tagLatest(), $matches) ?
+			$matches[1] : $this->git->tagLatest();
+		$ver = ($ver == false) ? false : $ver; // Convert '0' to false.
+
+		if ($ver !== false) {
+			if (!in_array($this->git->getBranch(), $this->git->getBranchesStable())) {
+				$this->loadXMLFile();
+				if (version_compare($this->versions->git->tag, '0.0.0', '!=')) {
+					$this->versions->git->tag = '0.0.0-dev';
+					$this->changes |= self::UPDATED_GIT_TAG;
+				}
+
+				$ver = $this->versions->git->tag;
+			}
+		}
+
+		return $ver;
+	}
+
+	public function checkGitTagsAreEqual($update = true)
+	{
+		// Check if file's entry is the same as current branch's tag
+		if (version_compare($this->versions->git->tag, $this->git->tagLatest(), '!=')) {
+			if ($update === true) {
+				//$this->out->primaryOver("Updating tag version to ") . $this->out->header($this->git->tagLatest());
+
+				$this->versions->git->tag = $this->git->tagLatest();
+				$this->changes |= self::UPDATED_GIT_TAG;
+
+				return $this->versions->git->tag;
+			} else { // They're NOT the same but we were told not to update.
+				return false;
+			}
+
+		} else { // They're the same so return true
+			return true;
+		}
+	}
+
+	public function checkSQLFileLatest()
+	{
+		$last = $this->getSQLPatchLast();
+
+		if ($last !== false && $this->versions->sql->file->__toString() != $last) {
+			$this->versions->sql->file = $last;
+			$this->changes |= self::UPDATED_SQL_FILE_LAST;
+		}
+
+		if ($this->versions->sql->file->__toString() != $last) {
+			$this->versions->sql->file = $last;
+			$this->changes |= self::UPDATED_SQL_DB_PATCH;
+		}
 	}
 
 	public function getGitBranch()
@@ -60,7 +135,19 @@ class Versions extends \lithium\core\Object
 		return $this->git->getBranch();
 	}
 
-	public function getGitTagFromRepo()
+	public function getGitHeadHash()
+	{
+		$this->initialiseGit();
+		return $this->git->getHeadHash();
+	}
+
+	public function getGitTagInFile()
+	{
+		$this->loadXMLFile();
+		return ($this->versions === null) ? null : $this->versions->git->tag->__toString();
+	}
+
+	public function getGitTagInRepo()
 	{
 		$this->initialiseGit();
 		return $this->git->tagLatest();
@@ -80,39 +167,91 @@ class Versions extends \lithium\core\Object
 	public function getSQLPatchFromFile()
 	{
 		$this->loadXMLFile();
-		return ($this->xml === null) ? null : $this->_vers->sql->file->__toString();
+		return ($this->versions === null) ? null : $this->versions->sql->file->__toString();
+	}
+
+	public function getSQLPatchLast()
+	{
+		$options = [
+			'data'  => nZEDb_RES . 'db' . DS . 'schema' . DS . 'data' . DS,
+			'ext'   => 'sql',
+			'path'  => nZEDb_RES . 'db' . DS . 'patches' . DS . 'mysql',
+			'regex' => '#^' . Misc::PATH_REGEX . '(?P<patch>\d{4})~(?P<table>\w+)\.sql$#',
+			'safe'  => true,
+		];
+		$files = Misc::getDirFiles($options);
+		natsort($files);
+
+		return (preg_match($options['regex'], end($files), $matches)) ? (int)$matches['patch'] : false;
+	}
+
+	public function getTagVersion()
+	{
+		$this->deprecated(__METHOD__, 'getGitTagInRepo');
+		return $this->getGitTagInRepo();
+	}
+
+	public function getValidVersionsFile()
+	{
+		$this->loadXMLFile();
+		return $this->xml;
+	}
+
+	/**
+	 * Check whether the XML has been changed by one of the methods here.
+	 *
+	 * @return boolean True if the XML has been changed.
+	 */
+	public function hasChanged()
+	{
+		return $this->changes != 0;
+	}
+
+	public function save($verbose = true)
+	{
+		if ($this->hasChanged()) {
+			if ($verbose === true) {
+				switch (true) {
+					case $this->changes && self::UPDATED_GIT_TAG;
+						echo "Updated git tag version to " . $this->getGitTagInRepo() . PHP_EOL;
+					case $this->changes && self::UPDATED_SQL_DB_PATCH;
+						echo "Updated Db SQL revision to " . $this->versions->sql->file . PHP_EOL;
+					case $this->changes && self::UPDATED_SQL_FILE_LAST;
+						echo "Updated latest patch file to " . $this->getSQLPatchLast() . PHP_EOL;
+				}
+			}
+			$this->xml->asXML($this->_config['path']);
+			$this->changes = 0;
+		}
 	}
 
 	protected function initialiseGit()
 	{
-		if (!($this->git instanceof Git)) {
-			$this->git = new Git();
+		if (!($this->git instanceof \app\extensions\util\Git)) {
+			$this->git = new \app\extensions\util\Git();
 		}
 	}
 
 	protected function loadXMLFile()
 	{
-		if ($this->xml === null) {
-			$versions = $this->_config['path'];
-
+		if (empty($this->versions)) {
 			$temp = libxml_use_internal_errors(true);
-			$this->xml = simplexml_load_file($versions);
+			$this->xml = simplexml_load_file($this->_config['path']);
 			libxml_use_internal_errors($temp);
 
 			if ($this->xml === false) {
-				$this->error("Your versions XML file ($versions) is broken, try updating from git.");
-				throw new \Exception("Failed to open versions XML file '$versions'");
+				$this->error("Your versions XML file ($this->_config['path']) is broken, try updating from git.");
+				throw new \Exception("Failed to open versions XML file '{$this->_config['path']}'");
 			}
 
 			if ($this->xml->count() > 0) {
 				$vers = $this->xml->xpath('/nzedb/versions');
 
 				if ($vers[0]->count() == 0) {
-					$this->error("Your versions XML file ($versions) does not contain version info, try updating from git.");
-					throw new \Exception("Failed to find versions node in XML file '$versions'");
+					$this->error("Your versions XML file ({$this->_config['path']}) does not contain version info, try updating from git.");
+					throw new \Exception("Failed to find versions node in XML file '{$this->_config['path']}'");
 				} else {
-					//$this->primary("Your versions XML file ($versions) looks okay, continuing.");
-					$this->_vers = &$this->xml->versions;
+					$this->versions = &$this->xml->versions; // Create a convenience shortcut
 				}
 			} else {
 				throw new \RuntimeException("No elements in file!\n");
@@ -124,8 +263,14 @@ class Versions extends \lithium\core\Object
 	{
 		parent::_init();
 
-		if ($this->_config['git'] instanceof Git) {
+		if ($this->_config['git'] instanceof \app\extensions\util\Git) {
 			$this->git =& $this->_config['git'];
 		}
+	}
+
+	private function deprecated($methodOld, $methodUse)
+	{
+		trigger_error("This method ($methodOld) is deprecated. Please use '$methodUse' instead.",
+			E_USER_NOTICE);
 	}
 }

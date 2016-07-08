@@ -2,7 +2,7 @@
 namespace nzedb;
 
 use nzedb\db\Settings;
-use nzedb\utility\Versions;
+use app\extensions\util\Versions;
 
 class Sites
 {
@@ -27,7 +27,7 @@ class Sites
 	protected $_db;
 
 	/**
-	 * @var \nzedb\utility\Versions|bool
+	 * @var \app\extensions\util\Versions|bool
 	 */
 	protected $_versions = false;
 
@@ -45,7 +45,7 @@ class Sites
 
 		if (defined('nZEDb_VERSIONS')) {
 			try {
-				$this->_versions = new Versions(nZEDb_VERSIONS);
+				$this->_versions = new Versions();
 			} catch (\Exception $e) {
 				$this->_versions = false;
 			}
@@ -54,7 +54,7 @@ class Sites
 
 	public function version()
 	{
-		return ($this->_versions === false ? '0.0.0' : $this->_versions->getTagVersion());
+		return ($this->_versions === false ? '0.0.0' : $this->_versions->getGitTagInRepo());
 	}
 
 	public function update($form)

@@ -9,4 +9,4 @@ INSERT INTO user_roles (id, name, apirequests, downloadrequests, defaultinvites,
 
 UPDATE user_roles SET id =  id - 1;
 
-INSERT INTO category (id, title, parentid) VALUES (0,  'Other', NULL);
+INSERT INTO categories (id, title, parentid) VALUES (0,  'Other', NULL);

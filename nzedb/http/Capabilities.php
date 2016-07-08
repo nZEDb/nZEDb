@@ -20,10 +20,10 @@
  */
 namespace nzedb\http;
 
+use app\extensions\util\Versions;
 use nzedb\Category;
 use nzedb\Utility\Misc;
 use nzedb\db\Settings;
-use nzedb\utility\Versions;
 
 /**
  * Class Output -- abstract class for printing web requests outside of Smarty
@@ -123,7 +123,7 @@ abstract class Capabilities
 
 		return [
 			'server' => [
-				'appversion' => (new Versions())->getTagVersion(),
+				'appversion' => (new Versions())->getGitTagInRepo(),
 				'version'    => '0.1',
 				'title'      => $this->pdo->getSetting('title'),
 				'strapline'  => $this->pdo->getSetting('strapline'),

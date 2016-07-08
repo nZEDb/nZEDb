@@ -86,8 +86,8 @@ class Version extends \app\extensions\console\Command
 			$this->primary('Looking up Git tag version(s)');
 		}
 		$this->out('Hash: ' . $this->versions->getGitHeadHash(), 0);
-		$this->out('XML version: ' . $this->versions->getGitTagFromFile());
-		$this->out('Git version: ' . $this->versions->getGitTagFromRepo());
+		$this->out('XML version: ' . $this->versions->getGitTagInFile());
+		$this->out('Git version: ' . $this->versions->getGitTagInRepo());
 	}
 
 	/**

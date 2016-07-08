@@ -28,6 +28,8 @@ use nzedb\utility\Misc;
 
 $config = new Configure('indexer');
 
-define('HAS_WHICH', Misc::hasWhich() ? true : false);
+if (!defined('HAS_WHICH')) {
+	define('HAS_WHICH', Misc::hasWhich() ? true : false);
+}
 
 ?>

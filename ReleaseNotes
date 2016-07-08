@@ -1,6 +1,26 @@
 This file details which changes to the code are in which release version. It is a complement to the ChangeLog file which list *when* changes are made to the dev branch.
 
 
+0.6.2.3 2016-07-07
+Changes:
+	* Updated fxp/composer-asset-plugin dependency to v1.2.0
+
+Fixes:
+	* Create new bootstrap file (.../bootstrap.php) to enable nzedb and lithium's app libraries
+	 to load together. This fixes #2205.
+	  New files should use it as the base require_once instead of indexer.php. Old files will be
+	 converted over when it is convenient.
+
+
+0.6.2.2 2016-07-06
+Fixes:
+	* Other category not available on new installs, due to insert query still using 'category' table.
+	* Malformed RSS for my movies and my shows RSS.
+
+
+0.6.2.1 2016-07-04
+Fixes: Updated nzedb.xml file.
+
 0.6.2 2016-07-04
 **NOTE** we now only support PHP 5.6 and later versions.
 Added:
@@ -8,6 +28,7 @@ Added:
 	* Support for Season only searches with fast TV query.
 	* Multiple channel support for IRCScraper.
 	* Gentele theme (PR 2156).
+	* Unique mediainfo ID matching (PR 2153).
 
 Changed:
 	* Update minimum PHP requirements to 5.6.10+
@@ -20,6 +41,9 @@ Changed:
 	* Updated version of barracudanetworks/forkdaemon-php library (adds unlimited child run support).
 	* Make fixReleaseNames predbft deterministic to prevent useless threads.
 	* Remove release searchname from Gamma profile page (comments part).
+	* Improve RSS query times.
+	* Change some dates in the output to not use RSS style as they are not RSS attributes.
+	* Make screen simple-expanded script executable.
 
 Fixed:
 	* Bug with TV API changes that causes unmatched Show/Sxx/Exx queries to return data.
@@ -39,6 +63,15 @@ Fixed:
 	* Triggers in schema (Closes issue 2184).
 	* Forums on Charisma, Gamma, Gentele, and Omicron themes (Closes issue 2174).
 	* Fix Lithium Connections to send host:name in host field as Lithium expects (PR 2189).
+	* Links to colorbox images in Gamma theme.
+	* PreDB page layout in Gamma theme.
+	* Clean up duplicated and bad functions in Gamma theme's utils.js
+	* Problem introduced with TV API changes, that causes unmatched Show/Sxx/Exx queries to
+	 return data.
+	* Several issues with Capabilities.
+	* Importing NZB, using filename as searchname, now strips .gz as well as .nzb.
+	* Missed occurences of categoryid in UserMovies.php (Closes issue 2191).
+	* Wrong path to file extension icons in Gamma theme viewfilelist.tpl.
 
 
 0.6.1.3 2016-06-23

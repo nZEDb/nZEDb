@@ -12,7 +12,7 @@ use nzedb\utility\Misc;
 class TmuxOutput extends Tmux
 {
 	/**
-	 * @var \nzedb\utility\Versions
+	 * @var \simpleXMLElement object
 	 */
 	protected $_vers;
 

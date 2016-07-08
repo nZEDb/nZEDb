@@ -1,6 +1,8 @@
 <?php
 namespace nzedb\utility;
 
+
+use app\extensions\util\Versions;
 use nzedb\ColorCLI;
 use nzedb\db\Settings;
 
@@ -280,9 +282,7 @@ class Misc
 
 	public static function getValidVersionsFile()
 	{
-		$versions = new Versions();
-
-		return $versions->getValidVersionsFile();
+		return (new Versions())->getValidVersionsFile();
 	}
 
 	/**
