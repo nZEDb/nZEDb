@@ -75,9 +75,7 @@ class Versions extends \lithium\core\Object
 	public function checkGitTagInFile()
 	{
 		$this->initialiseGit();
-		$ver = preg_match('#v(\d+\.\d+\.\d+(?:\.\d+)?).*#', $this->git->tagLatest(), $matches) ?
-			$matches[1] : $this->git->tagLatest();
-		$ver = ($ver == false) ? false : $ver; // Convert '0' to false.
+		$ver = preg_match(Misc::VERSION_REGEX, $this->git->tagLatest(), $matches) ? $matches['all'] : false;
 
 		if ($ver !== false) {
 			if (!in_array($this->git->getBranch(), $this->git->getBranchesStable())) {
