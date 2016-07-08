@@ -60,7 +60,8 @@ if ($error === false) {
 			}
 		}
 	} else {
-		echo "'$branch' is not 'dev', 'next-master', or a stable branch, skipping version/patch updates\n";
+		echo "'$branch' is not 'dev', 'Latest-testing', or a stable branch, skipping version/patch
+		updates\n";
 	}
 } else {
 	echo "Error in pre-commit hooks!!\n";
