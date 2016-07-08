@@ -9,6 +9,9 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-07-08 niel
+	Chg: Clean up checking of version string from XML file.
+	Chg: Put 'v' in front of XML files version in ./zed version output.
 2016-07-07 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.2.3.
 	Mrg: Versions-Refactor branch. Changes all scripts to use the app/extensions/util/Versions
