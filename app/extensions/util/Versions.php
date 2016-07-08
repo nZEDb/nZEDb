@@ -92,13 +92,17 @@ class Versions extends \lithium\core\Object
 		return $ver;
 	}
 
-	public function checkGitTagsAreEqual($update = true)
+	public function checkGitTagsAreEqual($update = true, $verbose = true)
 	{
+		$this->loadXMLFile();
 		// Check if file's entry is the same as current branch's tag
 		if (version_compare($this->versions->git->tag, $this->git->tagLatest(), '!=')) {
 			if ($update === true) {
 				//$this->out->primaryOver("Updating tag version to ") . $this->out->header($this->git->tagLatest());
 
+				if ($verbose === true) {
+					echo "Updating tag version to {$this->git->tagLatest()}" . PHP_EOL;
+				}
 				$this->versions->git->tag = $this->git->tagLatest();
 				$this->changes |= self::UPDATED_GIT_TAG;
 
@@ -112,11 +116,15 @@ class Versions extends \lithium\core\Object
 		}
 	}
 
-	public function checkSQLFileLatest()
+	public function checkSQLFileLatest($verbose = true)
 	{
+		$this->loadXMLFile();
 		$last = $this->getSQLPatchLast();
 
 		if ($last !== false && $this->versions->sql->file->__toString() != $last) {
+			if ($verbose === true) {
+				echo "Updating latest patch file to $last" . PHP_EOL;
+			}
 			$this->versions->sql->file = $last;
 			$this->changes |= self::UPDATED_SQL_FILE_LAST;
 		}
