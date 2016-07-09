@@ -2,7 +2,7 @@
 // --------------------------------------------------------------
 //                  Manage sabnzbd via API
 // --------------------------------------------------------------
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\db\Settings;
 
