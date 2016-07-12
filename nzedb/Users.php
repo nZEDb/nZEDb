@@ -1006,6 +1006,16 @@ class Users
 		$this->pdo->queryExec(sprintf("DELETE FROM users_releases WHERE releases_id = %d", $releaseID));
 	}
 
+	public function delDownloadRequests($userID)
+	{
+		return $this->pdo->queryExec(sprintf("DELETE FROM user_downloads WHERE user_id = %d", $userID));
+	}
+
+	public function delApiRequests($userID)
+	{
+		return $this->pdo->queryExec(sprintf("DELETE FROM user_requests WHERE user_id = %d", $userID));
+	}
+
 	/**
 	 * Add category exclusions for a user.
 	 *
