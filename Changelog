@@ -10,6 +10,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 
 2016-07-12 DariusIII
+	Chg: Update profile edit pages in Charisma/Gentele/Omicron themes
 	Fix: Reset user grabs and api requests in Charisma/Gamma/Gentele/Omicron themes (fix issue #2206)
 2016-07-11 DariusIII
 	Chg: Update Omicron css/js to AdminLTE 2.3.5
