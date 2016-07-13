@@ -90,7 +90,7 @@
 															 type="checkbox" class="square"
 															 value="{$result.guid}"/></td>
 									<td>
-										<a href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}"
+										<a href="{$smarty.const.WWW_TOP}/details/{$result.guid}"
 										   class="title">{$result.searchname|escape:"htmlall"|replace:".":" "}</a>{if !empty($result.failed)} <i class="fa fa-exclamation-circle" style="color: red" title="This release has failed to download for some users"></i>{/if}
 										<br/>
 													<span class="label label-default">{$result.grabs}

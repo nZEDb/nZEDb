@@ -114,7 +114,7 @@
 			{if $sabintegrated}
 				<input type="button" class="nzb_multi_operations_sab" value="Send to my Queue">
 			{/if}
-			{if $isadmin}
+			{if isset($isadmin)}
 				&nbsp;&nbsp;
 				<input type="button" class="nzb_multi_operations_edit" value="Edit">
 				<input type="button" class="nzb_multi_operations_delete" value="Del">
@@ -296,7 +296,7 @@
 				<input type="button" class="nzb_multi_operations_sab" value="Send to my Queue" />
 			{/if}
 			<input type="button" class="nzb_multi_operations_cart" value="Add to Cart" />
-			{if $isadmin}
+			{if isset($isadmin)}
 				&nbsp;&nbsp;
 				<input type="button" class="nzb_multi_operations_edit" value="Edit" />
 				<input type="button" class="nzb_multi_operations_delete" value="Del" />

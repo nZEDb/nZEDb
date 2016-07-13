@@ -137,6 +137,18 @@
 													</tr>
 													</tbody>
 												</table>
+												<table class="data table table-striped responsive-utilities jambo-table">
+													<tbody>
+													<tr class="bg-aqua-active">
+														<td colspan="2" style="padding-left: 8px;"><strong>Site theme</strong></td>
+													</tr>
+													<tr>
+														<td>
+															{html_options id="style" name='style' values=$themelist output=$themelist selected=$user.style}
+														</td>
+													</tr>
+													</tbody>
+												</table>
 											</td>
 										</tr>
 										</tbody>
@@ -147,11 +159,14 @@
 										<tbody>
 										<tr valign="top">
 											<td>
-												These settings are only needed if you want to be able to push NZB's
-												to your downloader straight from the website. You don't need this
-												for automation software like Sonarr, Sickbeard and Couchpotato to
-												function.
-												<br/>
+												<br>
+												<div class="alert alert-info">
+													These settings are only needed if you want to be able to push NZB's
+													to your downloader straight from the website. You don't need this
+													for automation software like Sonarr, Sickbeard, SickRage, SickGear or Couchpotato to
+													function.
+												</div>
+												<br>
 												{if $page->settings->getSetting('sabintegrationtype') != 1}
 													<table class="data table table-striped responsive-utilities jambo-table">
 														<tbody>
@@ -244,50 +259,13 @@
 													</table>
 												{/if}
 												<br/>
+												site
 											</td>
 										</tr>
 										</tbody>
 									</table>
 								</div>
 							</div>
-							<table class="data table table-striped responsive-utilities jambo-table">
-								<tbody>
-								<tr class="bg-aqua-active">
-									<td colspan="2" style="padding-left: 8px;"><strong>Couchpotato</strong>
-									</td>
-								</tr>
-								<tr>
-									<th width="200">API / URL</th>
-									<td>
-										<div class="form-inline">
-											<input id="cp_api"
-												   placeholder="Couchpotato API key"
-												   class="form-control"
-												   name="cp_api" type="text"
-												   value="{$cp_api_selected}"/>
-											/
-											<input id="cp_url"
-												   placeholder="Couchpotato URL"
-												   class="form-control"
-												   name="cp_url" type="text"
-												   value="{$cp_url_selected}"/>
-										</div>
-									</td>
-								</tr>
-								</tbody>
-							</table>
-							<table class="data table table-striped responsive-utilities jambo-table">
-								<tbody>
-								<tr class="bg-aqua-active">
-									<td colspan="2" style="padding-left: 8px;"><strong>Site theme</strong></td>
-								</tr>
-								<tr>
-									<td>
-										{html_options id="style" name='style' values=$themelist output=$themelist selected=$user.style}
-									</td>
-								</tr>
-								</tbody>
-							</table>
 							<input type="submit" value="Save" class="btn btn-primary"/>
 						</form>
 					</div>

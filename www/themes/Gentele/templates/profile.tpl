@@ -213,7 +213,7 @@
 																	<td width="80"
 																		title="{$download.timestamp}">{$download.timestamp|date_format}</td>
 																	<td>{if $download.guid == ""}n/a{else}<a
-																			href="{$smarty.const.WWW_TOP}/details/{$download.guid}/{$download.searchname|escape:"htmlall"}">{$download.searchname}</a>{/if}
+																			href="{$smarty.const.WWW_TOP}/details/{$download.guid}">{$download.searchname}</a>{/if}
 																	</td>
 																</tr>
 															{/foreach}
