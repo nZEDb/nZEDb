@@ -10,7 +10,7 @@
 		</div>
 	</div>
 	<h4>
-		<a href="{$smarty.const.WWW_TOP}/details/{$rel.guid}/{$rel.searchname|escape:'seourl'}">{$rel.searchname|escape:'htmlall'}</a>
+		<a href="{$smarty.const.WWW_TOP}/details/{$rel.guid}">{$rel.searchname|escape:'htmlall'}</a>
 	</h4>
 {/if}
 

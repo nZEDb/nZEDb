@@ -10,6 +10,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 
 2016-07-13 DariusIII
+	Chg: Remove searchname after the guid when calling release details page in Charisma/Gamma/Gentele/Omicron themes
 	Chg: Fix adding movies to my movies list from in theatre page in Charisma/Gentele/Omicron
 	Chg: Fix marking of new releases in Gamma theme browse page
 	Chg: Add check if isadmin is set in themes

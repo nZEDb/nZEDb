@@ -232,7 +232,7 @@
 								{if $result.videostatus > 0}
 									<a
 											class="model_prev label label-default"
-											href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}"
+											href="{$smarty.const.WWW_TOP}/details/{$result.guid}"
 											title="This release has a video preview."
 											rel="preview"
 											><i class="icon-youtube-play"></i>
