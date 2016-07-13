@@ -1,6 +1,6 @@
 <?php
 // This script updates all releases with the guid from the nzb file.
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\ColorCLI;
 use nzedb\ConsoleTools;
