@@ -10,6 +10,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 
 2016-07-13 DariusIII
+	Chg: Fix marking of new releases in Gamma theme browse page
 	Chg: Add check if isadmin is set in themes
 2016-07-12 DariusIII
 	Chg: Update profile edit pages in Charisma/Gentele/Omicron themes
