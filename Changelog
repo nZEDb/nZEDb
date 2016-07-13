@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-07-13 niel
+	Fix: Add work around for duplicate constants warning.
 2016-07-13 DariusIII
 	Fix: Remove searchname after the guid when calling release details page in Charisma/Gamma/Gentele/Omicron themes
 	Fix: Adding movies to my movies list from in theatre page in Charisma/Gentele/Omicron
