@@ -5,7 +5,7 @@
 	</div>
 {else}
 	<h1>
-		{if $isadmin}
+		{if isset($isadmin)}
 			<a title="Edit AniDB data" href="{$smarty.const.WWW_TOP}/admin/anidb-edit.php?id={$animeAnidbid}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}">{$animeTitle} </a>
 		{else}
 			{$animeTitle}
@@ -35,7 +35,7 @@
 			<input type="button" class="nzb_multi_operations_download btn btn-small btn-success" value="Download NZBs" />
 			<input type="button" class="nzb_multi_operations_cart btn btn-small btn-info" value="Send to my Download Basket" />
 			{if $sabintegrated}<input type="button" class="nzb_multi_operations_sab btn btn-small btn-primary" value="Send to queue" />{/if}
-			{if $isadmin}
+			{if isset($isadmin)}
 				&nbsp;&nbsp;
 				<input type="button" class="nzb_multi_operations_edit btn btn-small btn-warning" value="Edit" />
 				<input type="button" class="nzb_multi_operations_delete btn btn-small btn-danger" value="Delete" />

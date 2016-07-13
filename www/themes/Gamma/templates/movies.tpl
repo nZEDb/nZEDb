@@ -32,7 +32,7 @@
 					</td>
 					<td width="20%">
 						<div class="pull-right">
-							{if $isadmin}
+							{if isset($isadmin)}
 								Admin:
 								<div class="btn-group">
 									<input type="button" class="nzb_multi_operations_edit btn btn-small btn-warning" value="Edit" />
@@ -219,7 +219,7 @@
 					</td>
 					<td width="20%">
 						<div class="pull-right">
-							{if $isadmin}
+							{if isset($isadmin)}
 								Admin:
 								<div class="btn-group">
 									<input type="button" class="nzb_multi_operations_edit btn btn-small btn-warning" value="Edit" />

@@ -82,7 +82,7 @@
 		        <button data-quality="720p" class="btn">720p</button>
 		        <button data-quality="1080p" class="btn">1080p</button>
 		    </div>
-			{if $isadmin}
+			{if isset($isadmin)}
 			<div class="pull-right">
 				Admin:
 				<div class="btn-group">

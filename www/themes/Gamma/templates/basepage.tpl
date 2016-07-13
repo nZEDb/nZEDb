@@ -87,7 +87,7 @@
 										<li><a href="{$smarty.const.WWW_TOP}/queue"><i class="icon-tasks icon-white"></i> Queue</a></li>
 										<li><a href="{$smarty.const.WWW_TOP}/cart"><i class="icon-shopping-cart icon-white"></i> Download Basket</a></li>
 										<li><a href="{$smarty.const.WWW_TOP}/mymoviesedit"><i class="icon-hdd icon-white"></i> Movies</a></li>
-									{if $isadmin}
+									{if isset($isadmin)}
 											<li class="divider"></li>
 											<li>
 													<li><a href="{$smarty.const.WWW_TOP}/admin"><i class="icon-cog icon-white"></i> Admin</a></li>

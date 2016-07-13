@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-07-13 DariusIII
+	Chg: Add check if isadmin is set in themes
 2016-07-12 DariusIII
 	Chg: Update profile edit pages in Charisma/Gentele/Omicron themes
 	Fix: Reset user grabs and api requests in Charisma/Gamma/Gentele/Omicron themes (fix issue #2206)

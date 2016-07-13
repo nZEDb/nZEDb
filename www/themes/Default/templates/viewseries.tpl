@@ -4,7 +4,7 @@
 {else}
 <h1>
 {foreach $show as $s}
-	{if $isadmin}
+	{if isset($isadmin)}
 		<a title="Edit rage data" href="{$smarty.const.WWW_TOP}/admin/show-edit.php?id={$s.id}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}">{$s.title} </a>
 	{else}
 		{$s.title}
@@ -45,7 +45,7 @@
 	<input type="button" class="nzb_multi_operations_download" value="Download NZBs" />
 	<input type="button" class="nzb_multi_operations_cart" value="Add to Cart" />
 	{if $sabintegrated}<input type="button" class="nzb_multi_operations_sab" value="Send to my Queue" />{/if}
-	{if $isadmin}
+	{if isset($isadmin)}
 	&nbsp;&nbsp;
 	<input type="button" class="nzb_multi_operations_edit" value="Edit" />
 	<input type="button" class="nzb_multi_operations_delete" value="Del" />
@@ -88,7 +88,7 @@
 								{if $result.reid > 0}<span class="mediainfo rndbtn" title="{$result.guid}">Media</span>{/if}
 							</div>
 
-							{if $isadmin}
+							{if isset($isadmin)}
 							<div class="admin">
 								<a class="rndbtn" href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$result.id}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Edit Release">Edit</a> <a class="rndbtn confirm_action" href="{$smarty.const.WWW_TOP}/admin/release-delete.php?id={$result.id}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Delete Release">Del</a>
 							</div>

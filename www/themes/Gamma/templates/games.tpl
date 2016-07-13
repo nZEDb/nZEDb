@@ -28,7 +28,7 @@
 						</td>
 						<td width="20%">
 							<div class="pull-right">
-								{if $isadmin}
+								{if isset($isadmin)}
 									Admin:
 									<div class="btn-group">
 										<input type="button" class="nzb_multi_operations_edit btn btn-small btn-warning" value="Edit" />
@@ -191,7 +191,7 @@
 										</div>
 									{/if}
 								</li>
-								{if $isadmin}
+								{if isset($isadmin)}
 									<a class="rndbtn confirm_action btn btn-mini btn-danger pull-right" href="{$smarty.const.WWW_TOP}/admin/release-delete.php?id={$result.releases_id}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Delete Release">Delete</a>
 									<a class="rndbtn btn btn-mini btn-warning pull-right" href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$result.releases_id}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Edit Release">Edit</a>
 								{/if}
@@ -261,7 +261,7 @@
 							<td width="20%">
 								{if isset($section) && $section != ''}
 									<div class="pull-right">
-										{if $isadmin}
+										{if isset($isadmin)}
 											Admin:
 											<div class="btn-group">
 												<input type="button" class="nzb_multi_operations_edit btn btn-small btn-warning" value="Edit" />
