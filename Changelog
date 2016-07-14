@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-07-14 DariusIII
+	Fix: Typo in api.php
 2016-07-13 niel
 	Fix: Add work around for duplicate constants warning.
 2016-07-13 DariusIII

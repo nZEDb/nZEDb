@@ -289,7 +289,7 @@ switch ($function) {
 
 		$params['username'] = $username;
 		$params['password'] = $password;
-		$params['token'] = $userdata['rsstoken'];
+		$params['token'] = $userData['rsstoken'];
 
 		$api->output('', $params, true, 'reg');
 		break;
