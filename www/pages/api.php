@@ -210,6 +210,29 @@ switch ($function) {
 		$api->addLanguage($relData);
 		$api->output($relData, $params, $outputXML, 'api');
 		break;
+
+	// Get NZB.
+	case 'g':
+		$api->verifyEmptyParameter('g');
+		$page->users->addApiRequest($uid, $_SERVER['REQUEST_URI']);
+		$relData = $releases->getByGuid($_GET['id']);
+		if ($relData) {
+			header(
+				'Location:' .
+				WWW_TOP .
+				'/getnzb?i=' .
+				$uid .
+				'&r=' .
+				$apiKey .
+				'&id=' .
+				$relData['guid'] .
+				((isset($_GET['del']) && $_GET['del'] == '1') ? '&del=1' : '')
+			);
+		} else {
+			Misc::showApiError(300, 'No such item (the guid you provided has no release in our database)');
+		}
+		break;
+
 	// Get individual NZB details.
 	case 'd':
 		if (!isset($_GET['id'])) {
