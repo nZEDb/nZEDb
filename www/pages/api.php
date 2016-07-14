@@ -156,12 +156,12 @@ switch ($function) {
 		];
 
 		// Process season only queries or Season and Episode/Airdate queries
-		if (isset($_GET['season']) || (isset($_GET['season']) && isset($_GET['ep']))) {
+		if (!empty($_GET['season']) || (!empty($_GET['season']) && !empty($_GET['ep']))) {
 			if (preg_match('#^(19|20)\d{2}$#', $_GET['season'], $year) && stripos($_GET['ep'], '/') !== false) {
 				$airdate = str_replace('/', '-', $year[0] . '-' . $_GET['ep']);
 			} else {
 				$series = $_GET['season'];
-				$episode = $_GET['ep'];
+				$episode = (!empty($_GET['ep']) ? $_GET['ep'] : '');
 			}
 		}
 

@@ -10,6 +10,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 
 2016-07-14 DariusIII
+	Chg: Add empty data check for season and episode queries in api
 	Fix: Add back missing nzb download to api.php(fixes issue #2212)
 	Fix: Typo in api.php
 2016-07-13 niel
