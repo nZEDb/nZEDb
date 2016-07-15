@@ -77,7 +77,7 @@ class Configure
 						}
 						unset($current_settings_file_version);
 					}
-				} else {
+				} else if (!defined('ITEMS_PER_PAGE')) {
 					define('ITEMS_PER_PAGE', '50');
 					define('ITEMS_PER_COVER_PAGE', '20');
 					define('nZEDb_ECHOCLI', true);

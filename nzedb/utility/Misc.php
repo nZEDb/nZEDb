@@ -18,6 +18,8 @@ class Misc
 	 */
 	const PATH_REGEX = '(?P<drive>[A-Za-z]:|)(?P<path>[\\/\w .-]+|)';
 
+	const VERSION_REGEX = '#(?P<all>v(?P<digits>(?P<major>\d+)\.(?P<minor>\d+)\.(?P<revision>[0-9]+)(?:\.(?P<fix>\d+))?))(?:-(?P<suffix>(?:RC\d+|dev)))?#';
+
 	/**
 	 * Checks all levels of the supplied path are readable and executable by current user.
 	 *

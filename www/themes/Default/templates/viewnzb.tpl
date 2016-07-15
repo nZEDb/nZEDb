@@ -444,7 +444,7 @@
 		</td>
 	</tr>
 	{/if}
-	{if $isadmin}
+	{if isset($isadmin)}
 	{/if}
 </table>
 

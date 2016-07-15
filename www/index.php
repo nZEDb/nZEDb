@@ -11,6 +11,7 @@ switch ($page->page) {
 	case 'ajax_preinfo':
 	case 'ajax_profile':
 	case 'ajax_release-admin':
+	case 'ajax_resetusergrabs-admin':
 	case 'ajax_rarfilelist':
 	case 'ajax_titleinfo':
 	case 'ajax_tvinfo':

@@ -20,7 +20,7 @@
  */
 define('GIT_PRE_COMMIT', true);
 
-require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\utility\Git;
 use app\extensions\util\Versions;
@@ -48,8 +48,8 @@ if ($error === false) {
 			echo "Checking versions!\n";
 			try {
 				$vers = new Versions();
-				$vers->checkGitTag();
-				$vers->checkSQLFileLatest();
+				$vers->checkGitTag(true, true);
+				$vers->checkSQLFileLatest(true);
 				$vers->save();
 
 				$git->add(nZEDb_VERSIONS);
@@ -60,7 +60,8 @@ if ($error === false) {
 			}
 		}
 	} else {
-		echo "'$branch' is not 'dev', 'next-master', or a stable branch, skipping version/patch updates\n";
+		echo "'$branch' is not 'dev', 'Latest-testing', or a stable branch, skipping version/patch
+		updates\n";
 	}
 } else {
 	echo "Error in pre-commit hooks!!\n";

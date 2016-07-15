@@ -9,6 +9,31 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-07-15 DariusIII
+	Fix: Leftover r.group_id in requestid_threaded.py(Fixes issue #2213)
+2016-07-14 DariusIII
+	Chg: Add empty data check for season and episode queries in api
+	Fix: Add back missing nzb download to api.php(fixes issue #2212)
+	Fix: Typo in api.php
+2016-07-13 niel
+	Fix: Add work around for duplicate constants warning.
+2016-07-13 DariusIII
+	Fix: Remove searchname after the guid when calling release details page in Charisma/Gamma/Gentele/Omicron themes
+	Fix: Adding movies to my movies list from in theatre page in Charisma/Gentele/Omicron
+	Fix: Marking of new releases in Gamma theme browse page
+	Chg: Add check if isadmin is set in themes
+2016-07-12 DariusIII
+	Chg: Update profile edit pages in Charisma/Gentele/Omicron themes
+	Fix: Reset user grabs and api requests in Charisma/Gamma/Gentele/Omicron themes (fix issue #2206)
+2016-07-11 DariusIII
+	Chg: Update Omicron css/js to AdminLTE 2.3.5
+2016-07-08 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.2.4
+
+
+2016-07-08 niel
+	Chg: Clean up checking of version string from XML file.
+	Chg: Put 'v' in front of XML files version in ./zed version output.
 2016-07-07 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.2.3.
 	Mrg: Versions-Refactor branch. Changes all scripts to use the app/extensions/util/Versions

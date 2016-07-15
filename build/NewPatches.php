@@ -19,7 +19,7 @@
  * @copyright 2015 nZEDb
  */
 
-require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'indexer.php';
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'bootstrap.php';
 
 use nzedb\db\DbUpdate;
 use nzedb\utility\Git;
