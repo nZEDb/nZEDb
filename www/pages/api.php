@@ -156,13 +156,16 @@ switch ($function) {
 		];
 
 		// Process season only queries or Season and Episode/Airdate queries
-		if (!empty($_GET['season']) || (!empty($_GET['season']) && !empty($_GET['ep']))) {
+		if (!empty($_GET['season']) && !empty($_GET['ep'])) {
 			if (preg_match('#^(19|20)\d{2}$#', $_GET['season'], $year) && stripos($_GET['ep'], '/') !== false) {
 				$airdate = str_replace('/', '-', $year[0] . '-' . $_GET['ep']);
 			} else {
 				$series = $_GET['season'];
-				$episode = (!empty($_GET['ep']) ? $_GET['ep'] : '');
+				$episode = $_GET['ep'];
 			}
+		} elseif (!empty($_GET['season'])) {
+			$series = $_GET['season'];
+			$episode = (!empty($_GET['ep']) ? $_GET['ep'] : '');
 		}
 
 		$relData = $releases->searchShows(

@@ -10,6 +10,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 
 2016-07-15 DariusIII
+	Chg: Split season and season and episode queries to prevent undefined index notices in api.php
 	Mrg: PR #2193 @DariusIII
 	Fix: Leftover r.group_id in requestid_threaded.py(Fixes issue #2213)
 2016-07-14 DariusIII
