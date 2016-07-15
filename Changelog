@@ -68,6 +68,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Mrg: PR 2175 - Cleanup groups
 	Mrg: PR 2183 - Remove 10-tvrage_titles.tsv and scripts used to pupulate that table.
 2016-06-27 DariusIII
+	Fix: Replace usage of categoryid with categories in user_series and user_movies table, related classes and in themes.
 	Fix: Missed occurences of categoryid in UserMovies.php. Fixes issue #2191
 2016-06-27 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x.

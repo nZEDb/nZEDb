@@ -19,7 +19,7 @@ conf = info.readConfig()
 cur = info.connect()
 
 if len(sys.argv) == 1:
-	print(bcolors.ERROR + "\nWrong set of arguments.\nThe first argument [additional, nfo, movie, clean] determines the postprocessing to do.\nThe optional second argument for [additional, nfo] [group_id, categoryid] allows to process only that group or category.\nThe optional second argument for [movies, tv] [clean] allows processing only properly renamed releases.\n\npython postprocess_threaded.py [additional, nfo] (optional [group_id, categoryid])\npython postprocess_threaded.py [movie, tv] (optional [clean])\n" + bcolors.ENDC)
+	print(bcolors.ERROR + "\nWrong set of arguments.\nThe first argument [additional, nfo, movie, clean] determines the postprocessing to do.\nThe optional second argument for [additional, nfo] [group_id, categories_id] allows to process only that group or category.\nThe optional second argument for [movies, tv] [clean] allows processing only properly renamed releases.\n\npython postprocess_threaded.py [additional, nfo] (optional [group_id, categories_id])\npython postprocess_threaded.py [movie, tv] (optional [clean])\n" + bcolors.ENDC)
 	sys.exit()
 if len(sys.argv) == 3 and sys.argv[2] == "clean":
 	print(bcolors.HEADER + "\nPostProcess {} Clean Threaded Started at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
@@ -33,38 +33,38 @@ if sys.argv[1] == "additional":
 elif sys.argv[1] == "nfo":
 	print(bcolors.HEADER + "* = hidden NFO, + = NFO, - = no NFO, f = download failed." + bcolors.ENDC)
 
-# You can limit postprocessing for additional and nfo by group_id or categoryid
+# You can limit postprocessing for additional and nfo by group_id or categories_id
 if len(sys.argv) == 3 and sys.argv[2].isdigit() and len(sys.argv[2]) < 4:
 	group_id = 'AND group_id = '+sys.argv[2]
 	print(bcolors.HEADER + "Using group_id "+sys.argv[2] + bcolors.ENDC)
 elif len(sys.argv) == 3 and sys.argv[2].isdigit() and len(sys.argv[2]) == 4:
 	if sys.argv[2] == '1000':
-		group_id = 'AND categoryid BETWEEN 1000 AND 1999'
+		group_id = 'AND categories_id BETWEEN 1000 AND 1999'
 		print(bcolors.HEADER + "Using categoryids 1000-1999" + bcolors.ENDC)
 	elif sys.argv[2] == '2000':
-		group_id = 'AND categoryid BETWEEN 2000 AND 2999'
+		group_id = 'AND categories_id BETWEEN 2000 AND 2999'
 		print(bcolors.HEADER + "Using categoryids 2000-2999" + bcolors.ENDC)
 	elif sys.argv[2] == '3000':
-		group_id = 'AND categoryid BETWEEN 3000 AND 3999'
+		group_id = 'AND categories_id BETWEEN 3000 AND 3999'
 		print(bcolors.HEADER + "Using categoryids 3000-3999" + bcolors.ENDC)
 	elif sys.argv[2] == '4000':
-		group_id = 'AND categoryid BETWEEN 4000 AND 4999'
+		group_id = 'AND categories_id BETWEEN 4000 AND 4999'
 		print(bcolors.HEADER + "Using categoryids 4000-4999" + bcolors.ENDC)
 	elif sys.argv[2] == '5000':
-		group_id = 'AND categoryid BETWEEN 5000 AND 5999'
+		group_id = 'AND categories_id BETWEEN 5000 AND 5999'
 		print(bcolors.HEADER + "Using categoryids 5000-5999" + bcolors.ENDC)
 	elif sys.argv[2] == '6000':
-		group_id = 'AND categoryid BETWEEN 6000 AND 6999'
+		group_id = 'AND categories_id BETWEEN 6000 AND 6999'
 		print(bcolors.HEADER + "Using categoryids 6000-6999" + bcolors.ENDC)
 	elif sys.argv[2] == '7000':
-		group_id = 'AND categoryid BETWEEN 7000 AND 7999'
+		group_id = 'AND categories_id BETWEEN 7000 AND 7999'
 		print(bcolors.HEADER + "Using categoryids 7000-7999" + bcolors.ENDC)
 	elif sys.argv[2] == '7000':
-		group_id = 'AND categoryid BETWEEN 7000 AND 7999'
+		group_id = 'AND categories_id BETWEEN 7000 AND 7999'
 		print(bcolors.HEADER + "Using categoryids 7000-7999" + bcolors.ENDC)
 	else:
-		group_id = 'AND categoryid = '+sys.argv[2]
-		print(bcolors.HEADER + "Using categoryid "+sys.argv[2] + bcolors.ENDC)
+		group_id = 'AND categories_id = '+sys.argv[2]
+		print(bcolors.HEADER + "Using categories_id "+sys.argv[2] + bcolors.ENDC)
 else:
 	group_id = ''
 
@@ -130,22 +130,22 @@ process_additional = run_threads * ppperrun
 process_nfo = run_threads * nfoperrun
 
 if sys.argv[1] == "additional":
-	cur[0].execute("SELECT leftguid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.nzbstatus = 1 "+maxsize+" AND (r.haspreview = -1 AND c.disablepreview = 0) AND r.passwordstatus BETWEEN -6 AND -1 GROUP BY leftguid LIMIT 16")
+	cur[0].execute("SELECT leftguid FROM releases r LEFT JOIN category c ON c.id = r.categories_id WHERE r.nzbstatus = 1 "+maxsize+" AND (r.haspreview = -1 AND c.disablepreview = 0) AND r.passwordstatus BETWEEN -6 AND -1 GROUP BY leftguid LIMIT 16")
 	datas = cur[0].fetchall()
 elif sys.argv[1] == "nfo":
 	cur[0].execute("SELECT leftguid FROM releases WHERE nzbstatus = 1 AND nfostatus BETWEEN -8 AND -1 GROUP BY leftguid LIMIT 16")
 	datas = cur[0].fetchall()
 elif sys.argv[1] == "movie" and len(sys.argv) == 3 and sys.argv[2] == "clean":
-	cur[0].execute("SELECT leftguid FROM releases WHERE nzbstatus = 1 AND isrenamed = 1 AND searchname IS NOT NULL AND imdbid IS NULL AND categoryid BETWEEN 2000 AND 2999 GROUP BY leftguid "+orderBY+" LIMIT 16")
+	cur[0].execute("SELECT leftguid FROM releases WHERE nzbstatus = 1 AND isrenamed = 1 AND searchname IS NOT NULL AND imdbid IS NULL AND categories_id BETWEEN 2000 AND 2999 GROUP BY leftguid "+orderBY+" LIMIT 16")
 	datas = cur[0].fetchall()
 elif sys.argv[1] == "movie":
-	cur[0].execute("SELECT leftguid FROM releases WHERE nzbstatus = 1 AND searchname IS NOT NULL AND imdbid IS NULL AND categoryid BETWEEN 2000 AND 2999 GROUP BY leftguid "+orderBY+" LIMIT 16")
+	cur[0].execute("SELECT leftguid FROM releases WHERE nzbstatus = 1 AND searchname IS NOT NULL AND imdbid IS NULL AND categories_id BETWEEN 2000 AND 2999 GROUP BY leftguid "+orderBY+" LIMIT 16")
 	datas = cur[0].fetchall()
 elif sys.argv[1] == "tv" and len(sys.argv) == 3 and sys.argv[2] == "clean":
-	cur[0].execute("SELECT leftguid FROM releases WHERE nzbstatus = 1 AND isrenamed = 1 AND searchname IS NOT NULL AND videos_id = 0 AND categoryid BETWEEN 5000 AND 5999 GROUP BY leftguid "+orderBY+" LIMIT 16")
+	cur[0].execute("SELECT leftguid FROM releases WHERE nzbstatus = 1 AND isrenamed = 1 AND searchname IS NOT NULL AND videos_id = 0 AND categories_id BETWEEN 5000 AND 5999 GROUP BY leftguid "+orderBY+" LIMIT 16")
 	datas = cur[0].fetchall()
 elif sys.argv[1] == "tv":
-	cur[0].execute("SELECT leftguid FROM releases WHERE nzbstatus = 1 AND searchname IS NOT NULL AND videos_id = 0 AND categoryid BETWEEN 5000 AND 5999 GROUP BY leftguid "+orderBY+" LIMIT 16")
+	cur[0].execute("SELECT leftguid FROM releases WHERE nzbstatus = 1 AND searchname IS NOT NULL AND videos_id = 0 AND categories_id BETWEEN 5000 AND 5999 GROUP BY leftguid "+orderBY+" LIMIT 16")
 	datas = cur[0].fetchall()
 
 #close connection to mysql
