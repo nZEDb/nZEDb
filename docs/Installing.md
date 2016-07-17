@@ -13,7 +13,7 @@ Either:
 	1) If you will *not* be working on the code (most people), DO the git clone then run these commands:
 
 	cd nZEDb
-	composer install
+	composer install --prefer-source --no-dev
 
 This will install the latest stable version of the code.
 
