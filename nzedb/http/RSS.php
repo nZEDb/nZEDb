@@ -148,7 +148,7 @@ Class RSS extends Capabilities
 				$this->releases->uSQL(
 					$this->pdo->query(
 						sprintf('
-							SELECT videos_id, categoryid
+							SELECT videos_id, categories
 							FROM user_series
 							WHERE user_id = %d',
 							$userID
@@ -199,7 +199,7 @@ Class RSS extends Capabilities
 				$this->releases->uSQL(
 					$this->pdo->query(
 						sprintf('
-							SELECT imdbid, categories_id
+							SELECT imdbid, categories
 							FROM user_movies
 							WHERE user_id = %d',
 							$userID

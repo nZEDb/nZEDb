@@ -156,13 +156,16 @@ switch ($function) {
 		];
 
 		// Process season only queries or Season and Episode/Airdate queries
-		if (isset($_GET['season']) || (isset($_GET['season']) && isset($_GET['ep']))) {
+		if (!empty($_GET['season']) && !empty($_GET['ep'])) {
 			if (preg_match('#^(19|20)\d{2}$#', $_GET['season'], $year) && stripos($_GET['ep'], '/') !== false) {
 				$airdate = str_replace('/', '-', $year[0] . '-' . $_GET['ep']);
 			} else {
 				$series = $_GET['season'];
 				$episode = $_GET['ep'];
 			}
+		} elseif (!empty($_GET['season'])) {
+			$series = $_GET['season'];
+			$episode = (!empty($_GET['ep']) ? $_GET['ep'] : '');
 		}
 
 		$relData = $releases->searchShows(
@@ -210,6 +213,29 @@ switch ($function) {
 		$api->addLanguage($relData);
 		$api->output($relData, $params, $outputXML, 'api');
 		break;
+
+	// Get NZB.
+	case 'g':
+		$api->verifyEmptyParameter('g');
+		$page->users->addApiRequest($uid, $_SERVER['REQUEST_URI']);
+		$relData = $releases->getByGuid($_GET['id']);
+		if ($relData) {
+			header(
+				'Location:' .
+				WWW_TOP .
+				'/getnzb?i=' .
+				$uid .
+				'&r=' .
+				$apiKey .
+				'&id=' .
+				$relData['guid'] .
+				((isset($_GET['del']) && $_GET['del'] == '1') ? '&del=1' : '')
+			);
+		} else {
+			Misc::showApiError(300, 'No such item (the guid you provided has no release in our database)');
+		}
+		break;
+
 	// Get individual NZB details.
 	case 'd':
 		if (!isset($_GET['id'])) {
@@ -289,7 +315,7 @@ switch ($function) {
 
 		$params['username'] = $username;
 		$params['password'] = $password;
-		$params['token'] = $userdata['rsstoken'];
+		$params['token'] = $userData['rsstoken'];
 
 		$api->output('', $params, true, 'reg');
 		break;
