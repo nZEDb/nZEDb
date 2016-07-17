@@ -10,8 +10,9 @@ global method, as we do not provide the composer.phar file in our repo.
  	composer.phar to composer.
 
 Either:
-	1) If you will *not* be working on the code (most people), DO the git clone then run this command:
+	1) If you will *not* be working on the code (most people), DO the git clone then run these commands:
 
+	cd nZEDb
 	composer install
 
 This will install the latest stable version of the code.
