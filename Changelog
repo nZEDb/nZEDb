@@ -8,7 +8,9 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
-
+2016-07-17 niel
+	Chg: Tidy up the bootstrapping process.
+	Fix: Blank screen on fresh deployment (Issue 2214)
 2016-07-13 niel
 	Fix: Add work around for duplicate constants warning.
 2016-07-13 DariusIII
