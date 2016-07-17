@@ -18,7 +18,6 @@
  * @author    niel
  * @copyright 2016 nZEDb
  */
-require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'constants.php');
 require_once nZEDb_ROOT . 'app/libraries/autoload.php';
 
 use \nzedb\config\Configure;
