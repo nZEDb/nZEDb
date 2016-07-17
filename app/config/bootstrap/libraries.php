@@ -134,8 +134,6 @@ Libraries::add('nzedb',
 		'path'	=> nZEDb_ROOT . 'nzedb',
 	]);
 
-require_once nZEDb_ROOT . 'constants.php';
-
 require_once LITHIUM_APP_PATH . DS . 'libraries' . DS . 'autoload.php';
 
 /**
