@@ -8,6 +8,8 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+2016-07-18 DariusIII
+	Fix: Path to constants.php in postinstall.php
 2016-07-17 niel
 	Chg: Tidy up the bootstrapping process.
 	Fix: Blank screen on fresh deployment (Issue 2214)
