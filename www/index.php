@@ -1,5 +1,6 @@
 <?php
 require_once 'smarty.php';
+require_once nZEDb_ROOT . 'app' . DS . 'config' . DS . 'bootstrap' . DS . 'libraries.php';
 
 use nzedb\db\Settings;
 
