@@ -31,7 +31,6 @@ class Command extends \lithium\console\Command
 	{
 		$defaults = ['request' => null, 'response' => [], 'classes' => $this->_classes];
 		parent::__construct($config + $defaults);
-		require_once nZEDb_ROOT . 'constants.php';
 	}
 
 	public function info($text)
