@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-07-18 DariusIII
+	Chg: Add group parameter support to api search function (fixes issue #2195)
 2016-07-18 niel
 	Fix: Two leftover references to constants.php
 2016-07-17 niel

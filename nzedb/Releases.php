@@ -197,7 +197,7 @@ class Releases
 	 *
 	 * @return array
 	 */
-	public function getBrowseRange($cat, $start, $num, $orderBy, $maxAge = -1, $excludedCats = [], $groupName = '', $minSize = 0)
+	public function getBrowseRange($cat, $start, $num, $orderBy, $maxAge = -1, $excludedCats = [], $groupName, $minSize = 0)
 	{
 		$orderBy = $this->getBrowseOrder($orderBy);
 
@@ -216,7 +216,7 @@ class Releases
 				$this->categorySQL($cat),
 				($maxAge > 0 ? (" AND postdate > NOW() - INTERVAL " . $maxAge . ' DAY ') : ''),
 				(count($excludedCats) ? (' AND r.categories_id NOT IN (' . implode(',', $excludedCats) . ')') : ''),
-				($groupName != '' ? sprintf(' AND g.name = %s ', $this->pdo->escapeString($groupName)) : ''),
+				($groupName != -1 ? sprintf(' AND g.name = %s ', $this->pdo->escapeString($groupName)) : ''),
 				($minSize > 0 ? sprintf('AND r.size >= %d', $minSize) : ''),
 				$orderBy[0],
 				$orderBy[1],

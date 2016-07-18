@@ -114,18 +114,19 @@ switch ($function) {
 	case 's':
 		$api->verifyEmptyParameter('q');
 		$maxAge = $api->maxAge();
+		$groupName = $api->group();
 		$page->users->addApiRequest($uid, $_SERVER['REQUEST_URI']);
 		$categoryID = $api->categoryID();
 		$limit = $api->limit();
 
 		if (isset($_GET['q'])) {
 			$relData = $releases->search(
-				$_GET['q'], -1, -1, -1, -1, -1, -1, 0, 0, -1, -1, $offset, $limit, '', $maxAge, $catExclusions,
+				$_GET['q'], -1, -1, -1, $groupName, -1, -1, 0, 0, -1, -1, $offset, $limit, '', $maxAge, $catExclusions,
 				"basic", $categoryID, $minSize
 			);
 		} else {
 			$relData = $releases->getBrowseRange(
-				$categoryID, $offset, $limit, '', $maxAge, $catExclusions, '', $minSize
+				$categoryID, $offset, $limit, '', $maxAge, $catExclusions, $groupName, $minSize
 			);
 		}
 		$api->output($relData, $params, $outputXML, 'api');
