@@ -192,8 +192,8 @@ class Releases
 	 * @param string $orderBy
 	 * @param int    $maxAge
 	 * @param array  $excludedCats
-	 * @param string $groupName
-	 * @param string $minSize
+	 * @param mixed  $groupName
+	 * @param int    $minSize
 	 *
 	 * @return array
 	 */
