@@ -197,7 +197,7 @@ class Releases
 	 *
 	 * @return array
 	 */
-	public function getBrowseRange($cat, $start, $num, $orderBy, $maxAge = -1, $excludedCats = [], $groupName, $minSize = 0)
+	public function getBrowseRange($cat, $start, $num, $orderBy, $maxAge = -1, $excludedCats = [], $groupName = -1, $minSize = 0)
 	{
 		$orderBy = $this->getBrowseOrder($orderBy);
 
