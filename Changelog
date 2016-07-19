@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-07-19 DariusIII
+	Fix: Display of browsing categories on browse pages of every theme.
 2016-07-18 DariusIII
 	Fix: RSS/API usenetdate format to conform with newznab api specification
 	Chg: Set default value for groupName to -1 in getBrowseRange function
