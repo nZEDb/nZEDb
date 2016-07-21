@@ -296,8 +296,8 @@ class Groups
 				last_updated = NOW(), active = %s, backfill = %s, %s %s
 				WHERE id = %d",
 				$this->pdo->escapeString(trim($group["name"])),
-				$this->formatNumberString($group["backfill_target"]),
 				$this->pdo->escapeString(trim($group["description"])),
+				$this->formatNumberString($group["backfill_target"]),
 				$this->formatNumberString($group["first_record"]),
 				$this->formatNumberString($group["last_record"]),
 				$this->formatNumberString($group["active"]),

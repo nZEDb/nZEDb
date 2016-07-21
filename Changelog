@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-07-21 DariusIII
+	Fix: Wrong order of inserted values in Groups update function (issue #2217)
 2016-07-20 DariusIII
 	Chg: Add UHD subcats to Movies, TV and XXX categories. Note: run recategorize script to populate the new cats (php misc/testing/Release/recategorize.php all)
 2016-07-19 niel
