@@ -9,6 +9,11 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-07-24 bart39
+	Chg: Use max headers iteration site setting if set (or max of 1000000 if not set) during multiprocessing safe binaries
+		This will ensure we don't queue too many jobs in one loop if you are behind on updating and is consistant
+		with other update binaries methods
+	Fix: Categorization of XXX releases posted in mp3 groups
 2016-07-21 DariusIII
 	Fix: Wrong order of inserted values in Groups update function (issue #2217)
 2016-07-20 DariusIII

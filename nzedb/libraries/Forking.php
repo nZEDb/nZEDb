@@ -426,6 +426,7 @@ class Forking extends \fork_daemon
 	{
 		$this->register_child_run([0 => $this, 1 => 'safeBinariesChildWorker']);
 
+		$maxheaders = $this->pdo->getSetting('max.headers.iteration') ?: 1000000;
 		$maxmssgs = $this->pdo->getSetting('maxmssgs');
 		$threads = $this->pdo->getSetting('binarythreads');
 
@@ -454,8 +455,8 @@ class Forking extends \fork_daemon
 					} else {
 						$queue[$i] = sprintf("part_repair  %s", $group['groupname']);
 						$i++;
-						$geteach = floor($count / $maxmssgs);
-						$remaining = $count - $geteach * $maxmssgs;
+						$geteach = floor(min($count, $maxheaders) / $maxmssgs);
+						$remaining = min($count, $maxheaders) - $geteach * $maxmssgs;
 						//echo "maxmssgs: " . $maxmssgs . " geteach: " . $geteach . " remaining: " . $remaining . PHP_EOL;
 						for ($j = 0; $j < $geteach; $j++) {
 							$queue[$i] = sprintf("get_range  binaries  %s  %s  %s  %s", $group['groupname'], $group['our_last'] + $j * $maxmssgs + 1, $group['our_last'] + $j * $maxmssgs + $maxmssgs, $i);
