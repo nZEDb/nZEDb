@@ -74,23 +74,27 @@ class Versions extends \lithium\core\Object
 	public function checkGitTagInFile($update = false)
 	{
 		$this->initialiseGit();
-		$ver = preg_match(Misc::VERSION_REGEX, $this->git->tagLatest(), $matches) ? $matches['all'] : false;
+		$result = preg_match(Misc::VERSION_REGEX, $this->git->tagLatest(), $matches) ? $matches['all'] : false;
 
-		if ($ver !== false) {
+		if ($result !== false) {
 			if (!in_array($this->git->getBranch(), $this->git->getBranchesStable())) {
 				$this->loadXMLFile();
-				if (version_compare($this->versions->git->tag->__toString(), '0.0.0', '!=')) {
-					$this->versions->git->tag = '0.0.0-dev';
-					$this->changes |= self::UPDATED_GIT_TAG;
+				$result = preg_match(Misc::VERSION_REGEX, $this->versions->git->tag->__toString(),
+					$matches) ? $matches['digits'] : false;
+				if ($result !== false) {
+					if (version_compare($matches['digits'], '0.0.0', '!=')) {
+						$this->versions->git->tag = '0.0.0-dev';
+						$this->changes |= self::UPDATED_GIT_TAG;
+					}
 				}
 
-				$ver = $this->versions->git->tag;
+				$result = $this->versions->git->tag;
 			} else {
-				$ver = $this->checkGitTagsAreEqual($update);
+				$result = $this->checkGitTagsAreEqual($update);
 			}
 		}
 
-		return $ver;
+		return $result;
 	}
 
 	public function checkGitTagsAreEqual($update = true, $verbose = true)
@@ -99,8 +103,6 @@ class Versions extends \lithium\core\Object
 		// Check if file's entry is the same as current branch's tag
 		if (version_compare($this->versions->git->tag, $this->git->tagLatest(), '!=')) {
 			if ($update === true) {
-				//$this->out->primaryOver("Updating tag version to ") . $this->out->header($this->git->tagLatest());
-
 				if ($verbose === true) {
 					echo "Updating tag version to {$this->git->tagLatest()}" . PHP_EOL;
 				}
@@ -111,7 +113,6 @@ class Versions extends \lithium\core\Object
 			} else { // They're NOT the same but we were told not to update.
 				return false;
 			}
-
 		} else { // They're the same so return true
 			return true;
 		}
@@ -242,16 +243,16 @@ class Versions extends \lithium\core\Object
 		if ($this->hasChanged()) {
 			if ($verbose === true) {
 				switch (true) {
-					case ($this->changes & self::UPDATED_GIT_TAG);
+					case ($this->changes & self::UPDATED_GIT_TAG) == self::UPDATED_GIT_TAG;
 						echo "Updated git tag version to " . $this->versions->git->tag . PHP_EOL;
-					case ($this->changes & self::UPDATED_SQL_DB_PATCH);
-						echo "Updated Db SQL revision to " . $this->versions->sql->file . PHP_EOL;
-					case ($this->changes & self::UPDATED_SQL_FILE_LAST);
-						echo "Updated latest patch file to " . $this->getSQLPatchLast() . PHP_EOL;
+					case ($this->changes & self::UPDATED_SQL_DB_PATCH) == self::UPDATED_SQL_DB_PATCH;
+						echo "Updated Db SQL revision to " . $this->versions->sql->db . PHP_EOL;
+					case ($this->changes & self::UPDATED_SQL_FILE_LAST) == self::UPDATED_SQL_FILE_LAST;
+						echo "Updated latest SQL file to " . $this->versions->sql->file . PHP_EOL;
 				}
 			}
 			$this->xml->asXML($this->_config['path']);
-			$this->changes = 0;
+			$this->changes = false;
 		}
 	}
 
