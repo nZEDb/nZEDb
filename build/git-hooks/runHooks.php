@@ -48,8 +48,9 @@ if ($error === false) {
 			echo "Checking versions!\n";
 			try {
 				$vers = new Versions();
-				$vers->checkGitTag(true, true);
-				$vers->checkSQLFileLatest(true);
+				$vers->checkGitTag(true);
+				$vers->checkSQLFileLatest(false);
+				$vers->checkSQLDb(false);
 				$vers->save();
 
 				$git->add(nZEDb_VERSIONS);
