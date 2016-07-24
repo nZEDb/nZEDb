@@ -117,6 +117,29 @@ class Versions extends \lithium\core\Object
 		}
 	}
 
+	/**
+	 * Checks the database sqlpatch setting against the XML's stored value.
+	 *
+	 * @param boolean $verbose
+	 *
+	 * @return boolean The new database sqlpatch version, or false.
+	 */
+	public function checkSQLDb($verbose = true)
+	{
+		$this->loadXMLFile();
+		$patch = Settings::find('..sqlpatch');
+		exit($patch . PHP_EOL);
+		if ($this->versions->sql->db->__toString() != $patch) {
+			if ($verbose) {
+				echo "Updating Db revision to $patch";
+			}
+			$this->versions->sql->db = $patch;
+			$this->_changes |= self::UPDATED_SQL_DB_PATCH;
+		}
+
+		return ($this->_changes & self::UPDATED_SQL_DB_PATCH) ? $patch : false;
+	}
+
 	public function checkSQLFileLatest($verbose = true)
 	{
 		$this->loadXMLFile();
