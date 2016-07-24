@@ -123,22 +123,22 @@ class Versions extends \lithium\core\Object
 	 *
 	 * @param boolean $verbose
 	 *
-	 * @return boolean The new database sqlpatch version, or false.
+	 * @return boolean|string The new database sqlpatch version, or false.
 	 */
 	public function checkSQLDb($verbose = true)
 	{
 		$this->loadXMLFile();
-		$patch = Settings::find('..sqlpatch');
-		exit($patch . PHP_EOL);
+		$patch = $this->getSQLPatchFromDB();
+
 		if ($this->versions->sql->db->__toString() != $patch) {
 			if ($verbose) {
-				echo "Updating Db revision to $patch";
+				echo "Updating Db revision to $patch" . PHP_EOL;
 			}
 			$this->versions->sql->db = $patch;
-			$this->_changes |= self::UPDATED_SQL_DB_PATCH;
+			$this->changes |= self::UPDATED_SQL_DB_PATCH;
 		}
 
-		return ($this->_changes & self::UPDATED_SQL_DB_PATCH) ? $patch : false;
+		return $this->isChanged(self::UPDATED_SQL_DB_PATCH) ? $patch : false;
 	}
 
 	public function checkSQLFileLatest($verbose = true)
@@ -241,15 +241,20 @@ class Versions extends \lithium\core\Object
 	public function save($verbose = true)
 	{
 		if ($this->hasChanged()) {
-			if ($verbose === true) {
-				switch (true) {
-					case ($this->changes & self::UPDATED_GIT_TAG) == self::UPDATED_GIT_TAG;
-						echo "Updated git tag version to " . $this->versions->git->tag . PHP_EOL;
-					case ($this->changes & self::UPDATED_SQL_DB_PATCH) == self::UPDATED_SQL_DB_PATCH;
-						echo "Updated Db SQL revision to " . $this->versions->sql->db . PHP_EOL;
-					case ($this->changes & self::UPDATED_SQL_FILE_LAST) == self::UPDATED_SQL_FILE_LAST;
-						echo "Updated latest SQL file to " . $this->versions->sql->file . PHP_EOL;
+			if ($verbose === true && $this->changes > 0) {
+				if ($this->isChanged(self::UPDATED_GIT_TAG)) {
+					echo "Updated git tag version to " . $this->versions->git->tag . PHP_EOL;
 				}
+
+				if ($this->isChanged(self::UPDATED_SQL_DB_PATCH)) {
+					echo "Updated Db SQL revision to " . $this->versions->sql->db . PHP_EOL;
+				}
+
+				if ($this->isChanged(self::UPDATED_SQL_FILE_LAST)) {
+					echo "Updated latest SQL file to " . $this->versions->sql->file . PHP_EOL;
+				}
+			} else if ($this->changes == 0) {
+				echo "Version file already up to date." . PHP_EOL;
 			}
 			$this->xml->asXML($this->_config['path']);
 			$this->changes = false;
@@ -261,6 +266,11 @@ class Versions extends \lithium\core\Object
 		if (!($this->git instanceof \app\extensions\util\Git)) {
 			$this->git = new \app\extensions\util\Git();
 		}
+	}
+
+	protected function isChanged($property)
+	{
+		return (($this->changes & $property) == $property);
 	}
 
 	protected function loadXMLFile()
