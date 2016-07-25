@@ -35,7 +35,7 @@ class Git extends \lithium\core\Object
 	{
 		$defaults = [
 			'branches'		=> [
-				'stable' => ['0.x', 'latest-testing'],
+				'stable' => ['0.x', 'Latest-testing'],
 				'development' => ['dev', 'dev-test']
 			],
 			'create'		=> false,
