@@ -1,9 +1,41 @@
 This file details which changes to the code are in which release version. It is a complement to the ChangeLog file which list *when* changes are made to the dev branch.
 
 
+0.6.3.0 2016-08-01
+Added:
+	* UHD subcategories to Movies, TV and XXX categories.
+	 ***Note*** run recategorize script to populate the new categories
+		php misc/testing/Release/recategorize.php all
+
+Changes:
+	* Update Omicron CSS/JS to AdminLTE 2.3.5
+	* Update profile edit pages in Charisma/Gentele/Omicron themes.
+	* Add group parameter support to api search function (Closes issue 2195).
+	* Use max headers iteration site setting if set (or max of 1,000,000 if not set) during
+	  multiprocessing safe binaries This will ensure we don't queue too many jobs in one loop if
+	  you are behind on updating and is consistant with other update binaries methods.
+
+Fixed:
+	* Reset user grabs and api requests in Charisma/Gamma/Gentele/Omicron themes (Fixes issue 2206).
+	* Remove searchname after the guid when calling release details page in
+	 Charisma/Gamma/Gentele/Omicron themes.
+	* Adding movies to my movies list from in theatre page in Charisma/Gentele/Omicron.
+	* Marking of new releases in Gamma theme browse page.
+	* Add work around for duplicate constants warning.
+	* Restore missing nzb download to api.php (Fixes issue 2212).
+	* Leftover r.group_id in requestid_threaded.py (Fixes issue 2213).
+	* Blank screen on fresh deployment (Issue 2214).
+	* RSS/API usenetdate format to conform with newznab api specification.
+	* Blank browse pages when browsing per category.
+	* Display of browsing categories on browse pages of every theme.
+	* Add lithium libraries bootstrap for Admin pages (Fixes issue 2215).
+	* Wrong order of inserted values in Groups update function (Closes issue 2217).
+
+
 0.6.2.4 2016-07-08
-Changes: Refactored all scripts to use the app/extensions/util/Versions class instead of the older
-		nzedb\utility\Versions.
+Changes:
+	* Refactored all scripts to use the app/extensions/util/Versions class instead of the older
+	 nzedb\utility\Versions.
 
 
 0.6.2.3 2016-07-07
