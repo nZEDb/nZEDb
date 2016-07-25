@@ -9,6 +9,10 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-07-25 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.3.0
+
+
 2016-07-24 niel
 	Fix: Improvements to versions updating for XML file.
 2016-07-24 bart39
