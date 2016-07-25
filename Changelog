@@ -11,6 +11,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 2016-07-25 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.3.0
+	Fix: Improvements to version checking to allow RC tags to be created in Latest-testing branch.
 
 
 2016-07-24 niel

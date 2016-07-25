@@ -62,7 +62,7 @@ class Versions extends \lithium\core\Object
 
 	public function checkGitTag($update = false)
 	{
-		$this->checkGitTagInFile();
+		$this->checkGitTagInFile($update);
 	}
 
 	/**
@@ -90,27 +90,37 @@ class Versions extends \lithium\core\Object
 
 				$result = $this->versions->git->tag;
 			} else {
-				$result = $this->checkGitTagsAreEqual($update);
+				$result = $this->checkGitTagsAreEqual(['update' => $update]);
 			}
 		}
 
 		return $result;
 	}
 
-	public function checkGitTagsAreEqual($update = true, $verbose = true)
+	public function checkGitTagsAreEqual(array $options = [])
 	{
+		$options += [
+			'update' => true,
+			'verbose' => true,
+		];
+
 		$this->loadXMLFile();
+		$latestTag = $this->git->tagLatest();
+
 		// Check if file's entry is the same as current branch's tag
-		if (version_compare($this->versions->git->tag, $this->git->tagLatest(), '!=')) {
-			if ($update === true) {
-				if ($verbose === true) {
-					echo "Updating tag version to {$this->git->tagLatest()}" . PHP_EOL;
+		if (version_compare($this->versions->git->tag, $latestTag, '!=')) {
+			if ($options['update'] === true) {
+				if ($options['verbose'] === true) {
+					echo "Updating tag version to $latestTag" . PHP_EOL;
 				}
 				$this->versions->git->tag = $this->git->tagLatest();
 				$this->changes |= self::UPDATED_GIT_TAG;
 
 				return $this->versions->git->tag;
 			} else { // They're NOT the same but we were told not to update.
+				if ($options['verbose'] === true) {
+					echo "Current tag version $latestTag, skipping update!" . PHP_EOL;
+				}
 				return false;
 			}
 		} else { // They're the same so return true
