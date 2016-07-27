@@ -190,6 +190,11 @@ class Php extends \lithium\core\Object
 
 		return $encoded . "\r\n";
 	}
+
+	protected function _init()
+	{
+		parent::_init();
+	}
 }
 
 ?>

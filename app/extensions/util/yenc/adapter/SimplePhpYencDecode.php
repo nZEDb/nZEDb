@@ -24,7 +24,7 @@ class Simple_php_yenc_decode extends \lithium\core\Object
 {
 	public static function decode($string, $ignore = false, array $options = [])
 	{
-		throw new \Exception('Method not defined yet!');
+		throw new \Exception('Method not implemented!');
 
 		return null;
 	}
@@ -41,9 +41,14 @@ class Simple_php_yenc_decode extends \lithium\core\Object
 
 	public static function encode($data, $filename, $lineLength, $crc32)
 	{
-		throw new \Exception('Method not defined yet!');
+		throw new \Exception('Method not implemented!');
 
 		return null;
+	}
+
+	protected function _init()
+	{
+		parent::_init();
 	}
 }
 
