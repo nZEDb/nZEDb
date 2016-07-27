@@ -22,23 +22,7 @@ namespace app\extensions\util\yenc\adapter;
 
 class Php extends \lithium\core\Object
 {
-	public static function decode($string, $ignore = false, array $options = [])
-	{
-		throw new \Exception('Method not defined yet!');
-
-		return null;
-	}
-
-	/**
-	 * yDecodes an encoded string and either writes the result to a file or returns it as a string.
-	 *
-	 * @param string $string yEncoded string to decode.
-	 *
-	 * @return mixed On success: (string) The decoded string.
-	 *               On failure: (object) PEAR_Error.
-	 * @access public
-	 */
-	public function decodeYEnc($string)
+	public static function decode(&$string, array $options = [])
 	{
 		$crc = '';
 		// Extract the yEnc string itself.
@@ -48,6 +32,7 @@ class Php extends \lithium\core\Object
 			if (preg_match('/crc32=([^ $\\r\\n]+)/ims', $encoded[4], $trailer)) {
 				$crc = trim($trailer[1]);
 			}
+
 			$headerSize = $encoded[1];
 			$trailerSize = $encoded[3];
 			$encoded = $encoded[2];
@@ -61,11 +46,12 @@ class Php extends \lithium\core\Object
 		// Make sure the header and trailer file sizes match up.
 		if ($headerSize != $trailerSize) {
 			$message = 'Header and trailer file sizes do not match. This is a violation of the yEnc specification.';
-			if ($this->_debugBool) {
-				$this->_debugging->log(get_class(), __FUNCTION__, $message, Logger::LOG_NOTICE);
+			if (nZEDb_LOGGING || nZEDb_DEBUG) {
+				//TODO replace with lithium logger.
+//				$this->_debugging->log(get_class(), __FUNCTION__, $message, Logger::LOG_NOTICE);
 			}
 
-			return $this->throwError($message);
+			throw new \RuntimeException($message);
 		}
 
 		// Decode.
@@ -79,21 +65,23 @@ class Php extends \lithium\core\Object
 		// Make sure the decoded file size is the same as the size specified in the header.
 		if (strlen($decoded) != $headerSize) {
 			$message = 'Header file size and actual file size do not match. The file is probably corrupt.';
-			if ($this->_debugBool) {
-				$this->_debugging->log(get_class(), __FUNCTION__, $message, Logger::LOG_NOTICE);
+			if (nZEDb_LOGGING || nZEDb_DEBUG) {
+				//TODO replace with lithium logger.
+//				$this->_debugging->log(get_class(), __FUNCTION__, $message, Logger::LOG_NOTICE);
 			}
 
-			return $this->throwError($message);
+			throw new \RuntimeException($message);
 		}
 
 		// Check the CRC value
 		if ($crc !== '' && (strtolower($crc) !== strtolower(sprintf("%04X", crc32($decoded))))) {
 			$message = 'CRC32 checksums do not match. The file is probably corrupt.';
-			if ($this->_debugBool) {
-				$this->_debugging->log(get_class(), __FUNCTION__, $message, Logger::LOG_NOTICE);
+			if (nZEDb_LOGGING || nZEDb_DEBUG) {
+				//TODO replace with lithium logger.
+//				$this->_debugging->log(get_class(), __FUNCTION__, $message, Logger::LOG_NOTICE);
 			}
 
-			return $this->throwError($message);
+			throw new \RuntimeException($message);
 		}
 
 		return $decoded;
@@ -101,69 +89,43 @@ class Php extends \lithium\core\Object
 
 	/**
 	 * Decode a string of text encoded with yEnc. Ignores all errors.
+
 	 *
-	 * @param  string $data The encoded text to decode.
+*@param  string $text The encoded text to decode.
+
 	 *
-	 * @return string The decoded yEnc string, or the input string, if it's not yEnc.
+*@return string The decoded yEnc string, or the input string, if it's not yEnc.
 	 * @access protected
 	 */
-	protected function _decodeIgnoreYEnc(&$data)
+	protected function _decodeIgnore(&$text)
 	{
-		if (preg_match('/^(=yBegin.*=yEnd[^$]*)$/ims', $data, $input)) {
-			// If there user has no yyDecode path set, use PHP to decode yEnc.
-			if ($this->_yyDecoderPath === false) {
-				$data = '';
-				$input =
-					trim(
+		if (preg_match('/^(=yBegin.*=yEnd[^$]*)$/ims', $text, $input)) {
+			$text = '';
+			$input =
+				trim(
+					preg_replace(
+						'/\r\n/im',
+						'',
 						preg_replace(
-							'/\r\n/im',
+							'/(^=yEnd.*)/im',
 							'',
 							preg_replace(
-								'/(^=yEnd.*)/im',
+								'/(^=yPart.*\\r\\n)/im',
 								'',
-								preg_replace(
-									'/(^=yPart.*\\r\\n)/im',
-									'',
-									preg_replace('/(^=yBegin.*\\r\\n)/im', '', $input[1], 1),
-									1),
-								1)
-						)
-					);
+								preg_replace('/(^=yBegin.*\\r\\n)/im', '', $input[1], 1),
+								1),
+							1)
+					)
+				);
 
-				$length = strlen($input);
-				for ($chr = 0; $chr < $length; $chr++) {
-					$data .= ($input[$chr] !== '=' ? chr(ord($input[$chr]) - 42) :
-						chr((ord($input[++$chr]) - 64) - 42));
-				}
-			} else {
-				if ($this->_yEncExtension) {
-					$data = \simple_yenc_decode($input[1]);
-				} else {
-					$inFile = $this->_yEncTempInput . mt_rand(0, 999999);
-					$ouFile = $this->_yEncTempOutput . mt_rand(0, 999999);
-					file_put_contents($inFile, $input[1]);
-					file_put_contents($ouFile, '');
-					Misc::runCmd(
-						"'" .
-						$this->_yyDecoderPath .
-						"' '" .
-						$inFile .
-						"' -o '" .
-						$ouFile .
-						"' -f -b" .
-						$this->_yEncSilence
-					);
-					$data = file_get_contents($ouFile);
-					if ($data === false) {
-						$data = $this->throwError('Error getting data from yydecode.');
-					}
-					unlink($inFile);
-					unlink($ouFile);
-				}
+			$length = strlen($input);
+			for ($chr = 0; $chr < $length; $chr++) {
+				$text .= ($input[$chr] !== '=' ? chr(ord($input[$chr]) - 42) :
+					chr((ord($input[++$chr]) - 64) - 42));
 			}
 		}
 
-		return $data;
+		return $text;
 	}
 
 	public static function enabled()
