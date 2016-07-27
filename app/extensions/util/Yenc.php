@@ -62,7 +62,7 @@ class Yenc extends \lithium\core\Adaptable
 	 * @param array $options    Options needed for method. Mainly the 'name' of the configuration
 	 *                          to use.
 	 *
-	 * @return string           The yEncoded version of $data.
+	 * @return string|\Exception The yEncoded version of $data.
 	 */
 	public static function encode(&$data, $filename, $line = 128, $crc32 = true, array $options = [])
 	{
