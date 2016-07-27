@@ -37,16 +37,37 @@ class Yenc extends \lithium\core\Adaptable
 	 */
 	protected static $_configurations = [];
 
-	public static function decode($string, $ignore = false, array $options = [])
+	/**
+	 * @param       $text	 yEncoded text to decode back to an 8 bit form.
+	 * @param array $options Options needed for method. Mainly:
+	 *						 - 'name' of the configuration to use.
+	 *                       * 'file' whether to create the file or just return the string.
+	 *
+	 * @return string		 8 bit decoded version of $text.
+	 */
+	public static function decode(&$text, array $options = [])
 	{
-		$options += ['name' => 'default'];
-		return static::adapter($options['name'])->decode($string);
+		$options += [
+			'name' => 'default',
+			'file' => true,
+		];
+		return static::adapter($options['name'])->decode($text);
 	}
 
-	public static function encode($data, $filename, $lineLength = 128, $crc32 = true, array $options = [])
+	/**
+	 * @param binary  $data     8 bit data to convert to yEncoded text.
+	 * @param string  $filename Name of file to recreate as.
+	 * @param int     $line     Maximum number of characters in each line.
+	 * @param boolean $crc32    Whether to add CRC checksum to yend line. This is recommended.
+	 * @param array $options    Options needed for method. Mainly the 'name' of the configuration
+	 *                          to use.
+	 *
+	 * @return string           The yEncoded version of $data.
+	 */
+	public static function encode(&$data, $filename, $line = 128, $crc32 = true, array $options = [])
 	{
 		$options += ['name' => 'default'];
 
-		return static::adapter($options['name'])->encode($data, $filename, $lineLength, $crc32);
+		return static::adapter($options['name'])->encode($data, $filename, $line, $crc32);
 	}
 }
