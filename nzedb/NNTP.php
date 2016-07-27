@@ -1,6 +1,7 @@
 <?php
 namespace nzedb;
 
+use app\extensions\util\Yenc;
 use nzedb\db\Settings;
 use nzedb\utility\Misc;
 
@@ -728,7 +729,7 @@ class NNTP extends \Net_NNTP_Client
 				}
 			}
 			// Finally we decode the message using yEnc.
-			$ret['Message'] = ($yEnc ? $this->_decodeIgnoreYEnc($body) : $body);
+			$ret['Message'] = ($yEnc ? Yenc::decodeIgnore($body) : $body);
 		}
 		return $ret;
 	}
@@ -856,7 +857,8 @@ class NNTP extends \Net_NNTP_Client
 
 		// Check if we should encode to yEnc.
 		if ($yEnc) {
-			$body = $this->encodeYEnc(($compress ? gzdeflate($body, 4) : $body), $subject);
+			$bin = $compress ? gzdeflate($body, 4) : $body;
+			$body = Yenc::encode($bin, $subject);
 		// If not yEnc, then check if the body is 510+ chars, split it at 510 chars and separate with \r\n
 		} else {
 			$body = $this->_splitLines($body, $compress);
@@ -916,6 +918,7 @@ class NNTP extends \Net_NNTP_Client
 	/**
 	 * yEncodes a string and returns it.
 	 *
+	 * @deprecated use app\extensions\util\Yenc::encode instead.
 	 * @param string $string     String to encode.
 	 * @param string $filename   Name to use as the filename in the yEnc header (this does not have to be an actual file).
 	 * @param int    $lineLength Line length to use (can be up to 254 characters).
@@ -928,6 +931,7 @@ class NNTP extends \Net_NNTP_Client
 	 */
 	public function encodeYEnc($string, $filename, $lineLength = 128, $crc32 = true)
 	{
+		trigger_error('Deprecated. Use app\extensions\util\Yenc::encode instead.' . PHP_EOL);
 		// yEnc 1.3 draft doesn't allow line lengths of more than 254 bytes.
 		if ($lineLength > 254) {
 			$lineLength = 254;
@@ -978,15 +982,17 @@ class NNTP extends \Net_NNTP_Client
 	/**
 	 * yDecodes an encoded string and either writes the result to a file or returns it as a string.
 	 *
+	 * @deprecated use app\extensions\util\Yenc::decode instead.
+	 *
 	 * @param string $string yEncoded string to decode.
 	 *
 	 * @return mixed On success: (string) The decoded string.
 	 *               On failure: (object) PEAR_Error.
-	 *
 	 * @access public
 	 */
 	public function decodeYEnc($string)
 	{
+		trigger_error('Deprecated. Use app\extensions\util\Yenc::decode instead.' . PHP_EOL);
 		$crc = '';
 		// Extract the yEnc string itself.
 		if (preg_match("/=ybegin.*size=([^ $]+).*\\r\\n(.*)\\r\\n=yend.*size=([^ $\\r\\n]+)(.*)/ims", $string, $encoded)) {
@@ -1044,14 +1050,16 @@ class NNTP extends \Net_NNTP_Client
 	/**
 	 * Decode a string of text encoded with yEnc. Ignores all errors.
 	 *
+	 * @deprecated use app\extensions\util\Yenc::decodeIgnore instead.
+	 *
 	 * @param  string $data The encoded text to decode.
 	 *
 	 * @return string The decoded yEnc string, or the input string, if it's not yEnc.
-	 *
 	 * @access protected
 	 */
 	protected function _decodeIgnoreYEnc(&$data)
 	{
+		trigger_error('Deprecated. Use app\extensions\util\Yenc::decodeIgnore instead.' . PHP_EOL);
 		if (preg_match('/^(=yBegin.*=yEnd[^$]*)$/ims', $data, $input)) {
 			// If there user has no yyDecode path set, use PHP to decode yEnc.
 			if ($this->_yyDecoderPath === false) {
@@ -1478,7 +1486,7 @@ class NNTP extends \Net_NNTP_Client
 							);
 						}
 						// Attempt to yEnc decode and return the body.
-						return $this->_decodeIgnoreYEnc($body);
+						return Yenc::decodeIgnore($body);
 					}
 
 					// Check for line that starts with double period, remove one.
