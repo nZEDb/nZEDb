@@ -28,7 +28,11 @@ class Yydecode extends \lithium\core\Object
 	 * @var bool|string
 	 * @access protected
 	 */
-	protected $yyDecoderPath;
+	protected static $pathBin;
+
+	protected static $pathSource;
+
+	protected static $pathTarget;
 
 	/**
 	 * If on unix, hide yydecode CLI output.
@@ -36,66 +40,65 @@ class Yydecode extends \lithium\core\Object
 	 * @var string
 	 * @access protected
 	 */
-	protected $yEncSilence;
+	protected static $silent;
 
-	/**
-	 * Path to temp yEnc input storage file.
-	 *
-	 * @var string
-	 * @access protected
-	 */
-	protected $yEncTempInput;
-
-	/**
-	 * Path to temp yEnc output storage file.
-	 *
-	 * @var string
-	 * @access protected
-	 */
-	protected $yEncTempOutput;
-
-	public static function decode($string, $ignore = false, array $options = [])
+	public static function decode($text, $ignore = false, array $options = [])
 	{
-		throw new \Exception('Method not defined yet!');
+		$source = tempnam(nZEDb_TMP . 'yEnc', 'yenc-source-');
+		$target = tempnam(nZEDb_TMP . 'yEnc', 'yenc-target-');
 
-		return null;
+		preg_match('/^(=yBegin.*=yEnd[^$]*)$/ims', $text, $input);
+		file_put_contents($source, $input[1]);
+		file_put_contents($target, '');
+		Misc::runCmd(
+			"'" . self::$pathBin . "' '" .	$source . "' -o '" . $target . "' -f -b" . self::$silent
+		);
+		$data = file_get_contents($target);
+		unlink($source);
+		unlink($target);
+		if ($data === false && $ignore === false) {
+			throw new \Exception('Error getting data from yydecode.');
+		}
+
+		return $data;
+	}
+
+	public static function decodeIgnore($text, array $options = [])
+	{
+		self::decode($text, true, $options);
 	}
 
 	/**
-	 * Determines if this adapter is enabled by checking if the `nzedb_yenc` extension is loaded.
+	 * Determines if this adapter is enabled by checking if the `yydecode` path is enabled.
 	 *
 	 * @return boolean Returns `true` if enabled, otherwise `false`.
 	 */
 	public static function enabled()
 	{
-		self::$adapter = 'yydecode';
-		self::$yyDecoderPath = Settings::getSetting('yydecoderpath');
-		self::$yEncSilence = (Misc::isWin() ? '' : ' > /dev/null 2>&1');
-		self::$yEncTempOutput = nZEDb_TMP . 'yEnc' . DS . 'output';
-		self::$yEncTempInput = nZEDb_TMP . 'yEnc' . DS . 'input';
-		self::$yyDecoderPath = true;
-
-		// Test if the user can read/write to the yEnc path.
-		if (!is_file(self::$yEncTempInput)) {
-			@file_put_contents(self::$yEncTempInput, 'x');
-		}
-		if (!is_file(self::$yEncTempInput) ||
-			!is_readable(self::$yEncTempInput) ||
-			!is_writable(self::$yEncTempInput)
-		) {
-			self::$yyDecoderPath = false;
-		}
-		if (is_file(self::$yEncTempInput)) {
-			@unlink(self::$yEncTempInput);
-		}
-
-		return self::$yyDecoderPath;
+		return self::$pathBin;
 	}
 
 	public static function encode($data, $filename, $lineLength, $crc32)
 	{
-		throw new \Exception('Method not defined yet!');
+		throw new \Exception('Method not implemented!');
 		return null;
+	}
+
+	protected function _init()
+	{
+		parent::_init();
+
+		$path = Settings::getSetting('yydecoderpath');
+		if (!empty($path) && strpos($path, 'simple_php_yenc_decode') === false) {
+			if (file_exists($path) && is_executable($path)) {
+				self::$silent = (Misc::isWin() ? '' : ' > /dev/null 2>&1');
+				self::$pathBin = $path;
+			} else {
+				self::$pathBin = false;
+			}
+		} else {
+			self::$pathBin = false;
+		}
 	}
 }
 
