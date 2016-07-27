@@ -17,11 +17,26 @@
  * @copyright 2016 nZEDb
  */
 
-// TODO add code to determine which extensions are available and configure default as appropriate.
+use app\models\Settings;
+
+switch (true) {
+	case extension_loaded('nzedb_yenc'):
+		$adapter = 'NzedbYenc';
+		break;
+	case extension_loaded('simple_php_yenc_decode'):
+		$adapter = 'SimplePhpYencDecode';
+		break;
+	case !empty(Settings::value('..yydecoderpath', true)) &&
+		(strpos(Settings::value('..yydecoderpath', true), 'simple_php_yenc_decode') === false):
+		$adapter = 'Yydecode';
+		break;
+	default:
+		$adapter = 'Php';
+}
 
 app\extensions\util\Yenc::config(
 	[
-		'default' => ['adapter' => 'Php'],
+		'default' => ['adapter' => $adapter],
 	]
 );
 
