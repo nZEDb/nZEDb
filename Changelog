@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-07-28 DariusIII
+	Fix: Undefined index genreid in Charisma/Gamma/Gentele/Omicron themes (fixes issue #2209)
 2016-07-28 bart39
 	Fix: add required rt_att directive for sphinx v2.2.11
 		Note: if using sphinx search the following is required to update the index
