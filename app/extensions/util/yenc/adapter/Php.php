@@ -20,6 +20,11 @@
 namespace app\extensions\util\yenc\adapter;
 
 
+/**
+ * Class Php
+ *
+ * @package app\extensions\util\yenc\adapter
+ */
 class Php extends \lithium\core\Object
 {
 	public static function decode(&$text, $ignore = false)
@@ -58,8 +63,9 @@ class Php extends \lithium\core\Object
 		$decoded = '';
 		$encodedLength = strlen($encoded);
 		for ($chr = 0; $chr < $encodedLength; $chr++) {
-			$decoded .= ($encoded[$chr] !== '=' ? chr(ord($encoded[$chr]) - 42) :
-				chr((ord($encoded[++$chr]) - 64) - 42));
+			$decoded .= ($encoded[$chr] !== '='
+				? chr(ord($encoded[$chr]) - 42)
+				: chr((ord($encoded[++$chr]) - 64) - 42));
 		}
 
 		// Make sure the decoded file size is the same as the size specified in the header.
@@ -131,7 +137,7 @@ class Php extends \lithium\core\Object
 		return true;
 	}
 
-	public static function encode($data, $filename, $lineLength, $crc32)
+	public static function encode($data, $filename, $lineLength = 128, $crc32 = true)
 	{
 		// yEnc 1.3 draft doesn't allow line lengths of more than 254 bytes.
 		if ($lineLength > 254) {
@@ -152,7 +158,7 @@ class Php extends \lithium\core\Object
 		$stringLength = strlen($data);
 		// Encode each character of the string one at a time.
 		for ($i = 0; $i < $stringLength; $i++) {
-			$value = ((ord($data{$i}) + 42) % 256);
+			$value = ((ord($data[$i]) + 42) % 256);
 
 			// Escape NULL, TAB, LF, CR, space, . and = characters.
 			if ($value == 0 ||
