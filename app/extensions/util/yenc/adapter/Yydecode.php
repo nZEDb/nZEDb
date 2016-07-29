@@ -75,7 +75,7 @@ class Yydecode extends \lithium\core\Object
 	 */
 	public static function enabled()
 	{
-		return self::$pathBin;
+		return !empty(self::$pathBin);
 	}
 
 	public static function encode($data, $filename, $lineLength, $crc32)
