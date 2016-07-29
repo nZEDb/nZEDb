@@ -19,6 +19,8 @@
 
 namespace app\extensions\util\yenc\adapter;
 
+use app\models\Settings;
+use nzedb\utility\Misc;
 
 class Yydecode extends \lithium\core\Object
 {
