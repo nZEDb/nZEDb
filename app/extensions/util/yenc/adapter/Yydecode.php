@@ -42,7 +42,7 @@ class Yydecode extends \lithium\core\Object
 	 */
 	protected static $silent;
 
-	public static function decode($text, $ignore = false, array $options = [])
+	public static function decode(&$text, $ignore = false)
 	{
 		$source = tempnam(nZEDb_TMP . 'yEnc', 'yenc-source-');
 		$target = tempnam(nZEDb_TMP . 'yEnc', 'yenc-target-');
@@ -63,9 +63,9 @@ class Yydecode extends \lithium\core\Object
 		return $data;
 	}
 
-	public static function decodeIgnore($text, array $options = [])
+	public static function decodeIgnore(&$text)
 	{
-		self::decode($text, true, $options);
+		self::decode($text, true);
 	}
 
 	/**

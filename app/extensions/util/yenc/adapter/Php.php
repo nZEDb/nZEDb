@@ -22,12 +22,12 @@ namespace app\extensions\util\yenc\adapter;
 
 class Php extends \lithium\core\Object
 {
-	public static function decode(&$string, array $options = [])
+	public static function decode(&$text, $ignore = false)
 	{
 		$crc = '';
 		// Extract the yEnc string itself.
 		if (preg_match("/=ybegin.*size=([^ $]+).*\\r\\n(.*)\\r\\n=yend.*size=([^ $\\r\\n]+)(.*)/ims",
-			$string,
+			$text,
 			$encoded)) {
 			if (preg_match('/crc32=([^ $\\r\\n]+)/ims', $encoded[4], $trailer)) {
 				$crc = trim($trailer[1]);
@@ -89,15 +89,13 @@ class Php extends \lithium\core\Object
 
 	/**
 	 * Decode a string of text encoded with yEnc. Ignores all errors.
-
 	 *
-*@param  string $text The encoded text to decode.
-
+	 * @param  string $text The encoded text to decode.
 	 *
-*@return string The decoded yEnc string, or the input string, if it's not yEnc.
+	 * @return string The decoded yEnc string, or the input string, if it's not yEnc.
 	 * @access protected
 	 */
-	protected function _decodeIgnore(&$text)
+	public static function decodeIgnore(&$text)
 	{
 		if (preg_match('/^(=yBegin.*=yEnd[^$]*)$/ims', $text, $input)) {
 			$text = '';
