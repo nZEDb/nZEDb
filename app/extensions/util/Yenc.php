@@ -54,6 +54,16 @@ class Yenc extends \lithium\core\Adaptable
 		return static::adapter($options['name'])->decode($text);
 	}
 
+	public static function decodeIgnore(&$text, array $options = [])
+	{
+		$options += [
+			'name' => 'default',
+			'file' => true,
+		];
+
+		return static::adapter($options['name'])->decodeIgnore($text);
+	}
+
 	/**
 	 * @param binary  $data     8 bit data to convert to yEncoded text.
 	 * @param string  $filename Name of file to recreate as.
