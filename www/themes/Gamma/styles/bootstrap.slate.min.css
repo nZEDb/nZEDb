@@ -2308,7 +2308,7 @@ table th[class*="span"],
 .dropdown-submenu:focus > a > [class^="icon-"],
 .dropdown-submenu:hover > a > [class*=" icon-"],
 .dropdown-submenu:focus > a > [class*=" icon-"] {
-  background-image: url("../../themes/Gamma/images/glyphicons-halflings-white.png");
+  background-image: url("../../shared/img/glyphicons-halflings-white.png");
 }
 
 .icon-glass {

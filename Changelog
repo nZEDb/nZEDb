@@ -10,6 +10,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 
 2016-08-01 DariusIII
+	Fix: Add missing glyphicons-halflings images to shared/img folder and adjust css of Gamma theme
 	Fix: Replace somehow reverted icon- with font-awesome versions in viewmoviefull and xxx tpl files in Alpha theme
 2016-07-28 DariusIII
 	Fix: Undefined index genreid in Charisma/Gamma/Gentele/Omicron themes (fixes issue #2209)
