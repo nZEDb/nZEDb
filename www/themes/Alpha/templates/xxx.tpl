@@ -158,21 +158,21 @@
 										<br>
 										<div class="resextra">
 											<div class="pull-left">
-												<i class="icon-calendar"></i> Posted {$mpostdate[$m@index]|timeago} |
-												<i class="icon-hdd"></i> {$msize[$m@index]|fsize_format:"MB"} |
-												<i class="icon-file"></i>
+												<i class="fa fa-calendar"></i> Posted {$mpostdate[$m@index]|timeago} |
+												<i class="fa fa-hdd-o"></i> {$msize[$m@index]|fsize_format:"MB"} |
+												<i class="fa fa-file"></i>
 												<a
 													title="View file list"
 													href="{$smarty.const.WWW_TOP}/filelist/{$mguid[$m@index]}">{$mtotalparts[$m@index]}
 													files
 												</a> |
-												<i class="icon-comments"></i>
+												<i class="fa fa-comments"></i>
 												<a
 													title="View comments for {$mname[$m@index]|escape:"htmlall"}"
 													href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}#comments">{$mcomments[$m@index]}
 													cmt{if $mcomments[$m@index] != 1}s{/if}
 												</a> |
-												<i class="icon-download"></i> {$mgrabs[$m@index]} grab{if $mgrabs[$m@index] != 1}s{/if}
+												<i class="fa fa-download"></i> {$mgrabs[$m@index]} grab{if $mgrabs[$m@index] != 1}s{/if}
 											</div>
 											<div class="pull-right">
 												{if $mnfo[$m@index] > 0}

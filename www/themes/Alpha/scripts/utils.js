@@ -61,7 +61,7 @@ jQuery(function ($) {
                 text: 'Its now in your Cart! ^_^',
                 type: 'success',
                 animate_speed: 'fast',
-                icon: 'icon-info-sign'
+                icon: 'fa fa-info'
             });
 
         });
@@ -82,12 +82,12 @@ jQuery(function ($) {
                 text: 'Its now in the queue!! ^_^',
                 type: 'info',
                 animate_speed: 'fast',
-                icon: 'icon-info-sign'
+                icon: 'fa fa-info'
             });
         });
         return false;
     });
-    
+
 
     $('.sendtocouch').click(function (e) {
         if ($(this).hasClass('icon_cp_clicked')) return false;
@@ -120,7 +120,7 @@ jQuery(function ($) {
                 text: 'Its now in your Cart! ^_^',
                 type: 'success',
                 animate_speed: 'fast',
-                icon: 'icon-info-sign'
+                icon: 'fa fa-info'
             });
         });
         return false;
@@ -140,7 +140,7 @@ jQuery(function ($) {
                 text: 'Its now in the queue!! ^_^',
                 type: 'info',
                 animate_speed: 'fast',
-                icon: 'icon-info-sign'
+                icon: 'fa fa-info'
             });
 
         });
@@ -217,7 +217,7 @@ jQuery(function ($) {
                     text: 'Its now in your Cart! ^_^',
                     type: 'success',
                     animate_speed: 'fast',
-                    icon: 'icon-info-sign'
+                    icon: 'fa fa-info'
                 });
             }
             $(this).prop('checked', false);
@@ -237,7 +237,7 @@ jQuery(function ($) {
                             text: 'Its now in the queue!! ^_^',
                             type: 'info',
                             animate_speed: 'fast',
-                            icon: 'icon-info-sign'
+                            icon: 'fa fa-info'
                         });
                 });
             }
