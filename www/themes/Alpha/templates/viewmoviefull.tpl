@@ -138,15 +138,15 @@
 					<td class="less mid" title="{$mpostdate[$m@index]}">{$mpostdate[$m@index]|timeago}</td>
 					<td class="less right">{$msize[$m@index]|fsize_format:"MB"}</td>
 					<td class="less mid">
-						<a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$mguid[$m@index]}">{$mtotalparts[$m@index]}</a>&nbsp;<i class="icon-th-list"></i>
+						<a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$mguid[$m@index]}">{$mtotalparts[$m@index]}</a>&nbsp;<i class="fa fa-th-list"></i>
 					</td>
 					<td class="icons" style='width:100px;'>
 						<ul class="inline">
 							<li>
-								<a class="icon icon_nzb icon-download" style="text-decoration: none; color: #7ab800;" title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}/{$mname[$m@index]|escape:"url"}"></a>
+								<a class="icon icon_nzb fa fa-download" style="text-decoration: none; color: #7ab800;" title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}/{$mname[$m@index]|escape:"url"}"></a>
 							</li>
 							<li>
-								<a  href="#" class="icon icon_cart icon-shopping-cart" style="text-decoration: none; color: #5c5c5c;" title="Send to my Cart">
+								<a  href="#" class="icon icon_cart fa fa-shopping-cart" style="text-decoration: none; color: #5c5c5c;" title="Send to my Cart">
 								</a>
 							</li>
 							{if $sabintegrated}

@@ -9,6 +9,19 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-08-01 DariusIII
+	Fix: Add missing glyphicons-halflings images to shared/img folder and adjust css of Gamma theme
+	Fix: Replace somehow reverted icon- with font-awesome versions in viewmoviefull and xxx tpl files in Alpha theme
+2016-07-28 DariusIII
+	Fix: Undefined index genreid in Charisma/Gamma/Gentele/Omicron themes (fixes issue #2209)
+2016-07-28 bart39
+	Fix: add required rt_att directive for sphinx v2.2.11
+		Note: if using sphinx search the following is required to update the index
+		sudo service sphinxsearch stop
+		sudo mv /etc/sphinxsearch/sphinx.conf /etc/sphinxsearch/sphinx.conf.1
+		sudo cp /var/www/nZEDb/misc/sphinxsearch/sphinx.conf /etc/sphinxsearch/sphinx.conf
+		sudo service sphinxsearch start
+		php misc/sphinxsearch/populate_rt_indexes.php releases_rt
 2016-07-25 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.3.0
 	Fix: Improvements to version checking to allow RC tags to be created in Latest-testing branch.

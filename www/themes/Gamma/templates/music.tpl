@@ -170,7 +170,7 @@
 						{/if}
 					</li>
 				</ul>
-				{if $result.genre != ""}<b>Genre:</b> <a href="{$smarty.const.WWW_TOP}/music/?genre={$result.genreid}">{$result.genre|escape:"htmlall"}</a><br />{/if}
+				{if $result.genre != ""}<b>Genre:</b> <a href="{$smarty.const.WWW_TOP}/music/?genre={$result.genre_id}">{$result.genre|escape:"htmlall"}</a><br />{/if}
 				{if $result.publisher != ""}<b>Publisher:</b> {$result.publisher|escape:"htmlall"}<br />{/if}
 				{if $result.releasedate != ""}<b>Released:</b> {$result.releasedate|date_format}<br />{/if}
 				{if isset($result.haspreview) && $result.haspreview == 2 && $userdata.canpreview == 1}<b>Preview:</b> <a href="#" name="audio{$mguid[$m@index]}" title="Listen to {$result.title|escape:"htmlall"}" class="audioprev rndbtn" rel="audio">Listen</a><audio id="audprev{$mguid[$m@index]}" src="{$smarty.const.WWW_TOP}/covers/audio/{$mguid[$m@index]}.mp3" preload="none"></audio>{/if}
