@@ -42,10 +42,8 @@
 								title="View page"
 								target="_blank"
 								href="{$site->dereferrer_link}{$result.url}"
-								width="130px"
-								height="180px"
 							><img
-									class="shadow"
+									class="shadow img-responsive"
 									 src="{$smarty.const.WWW_TOP}/covers/games/{if $result.cover == 1}{$result.gamesinfo_id}.jpg{else}no-cover.jpg{/if}"
 									 width="130px"
 									 border="0"
