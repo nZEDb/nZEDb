@@ -8,6 +8,9 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+
+2016-08-3 niel
+	Mrg: PR 2194, from b3s3rk - Improve JSON Response from API/RSS by basing it off of XML Response
 2016-08-02 DariusIII
 	Chg: Make themes more lower resolution/mobile devices friendly
 2016-08-01 DariusIII
