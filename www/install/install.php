@@ -19,7 +19,6 @@
  * @copyright 2015 nZEDb
  */
 require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'constants.php');
-require_once realpath(dirname(dirname(__DIR__)) . DS . 'autoloader.php');
 require_once realpath(dirname(__DIR__) . DS . 'autoloader.php');
 
 use nzedb\config\Configure;
