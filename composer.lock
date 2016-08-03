@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "373b4ec2bc0fd741cfb92af586962086",
-    "content-hash": "d7b12c3e0564a3ee8132a2a7b284e286",
+    "hash": "e937ef086199756b55245b1607941dcd",
+    "content-hash": "e402fa43c9d9c8542492b0cc0df3567d",
     "packages": [
         {
             "name": "barracudanetworks/forkdaemon-php",
@@ -994,16 +994,16 @@
         },
         {
             "name": "fxp/composer-asset-plugin",
-            "version": "v1.1.4",
+            "version": "v1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fxpio/composer-asset-plugin.git",
-                "reference": "c3d803cc890fad5a7fb61a4036c5d973faae34af"
+                "reference": "8d74bc7c714aadbda54622c216b2e7bf786595cb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fxpio/composer-asset-plugin/zipball/c3d803cc890fad5a7fb61a4036c5d973faae34af",
-                "reference": "c3d803cc890fad5a7fb61a4036c5d973faae34af",
+                "url": "https://api.github.com/repos/fxpio/composer-asset-plugin/zipball/8d74bc7c714aadbda54622c216b2e7bf786595cb",
+                "reference": "8d74bc7c714aadbda54622c216b2e7bf786595cb",
                 "shasum": ""
             },
             "require": {
@@ -1017,7 +1017,7 @@
             "extra": {
                 "class": "Fxp\\Composer\\AssetPlugin\\FxpAssetPlugin",
                 "branch-alias": {
-                    "dev-master": "1.1-dev"
+                    "dev-master": "1.2-dev"
                 }
             },
             "autoload": {
@@ -1036,7 +1036,7 @@
                 }
             ],
             "description": "NPM/Bower Dependency Manager for Composer",
-            "homepage": "https://github.com/francoispluchino/composer-asset-plugin",
+            "homepage": "https://github.com/fxpio/composer-asset-plugin",
             "keywords": [
                 "asset",
                 "bower",
@@ -1046,7 +1046,7 @@
                 "npm",
                 "package"
             ],
-            "time": "2016-04-22 08:48:58"
+            "time": "2016-07-01 12:04:16"
         },
         {
             "name": "giantbomb/giantbomb",
@@ -1058,7 +1058,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amalfra/GiantBomb/zipball/6e5c37fdaff69bc2af089acd39fbc00b1d4f5985",
+                "url": "https://api.github.com/repos/amalfra/GiantBomb/zipball/2f80210e54e8310380221759b26117c1351b8031",
                 "reference": "6e5c37fdaff69bc2af089acd39fbc00b1d4f5985",
                 "shasum": ""
             },
@@ -1400,7 +1400,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/UnionOfRAD/lithium/zipball/ce1d4d44d1e5b6c4a8cf6dc273025a8638e78b8e",
+                "url": "https://api.github.com/repos/UnionOfRAD/lithium/zipball/72adef6d0ba44031e93d8aefc708e1cda999c7b3",
                 "reference": "ce1d4d44d1e5b6c4a8cf6dc273025a8638e78b8e",
                 "shasum": ""
             },
@@ -1509,7 +1509,7 @@
         "ext-spl": "*",
         "ext-xmlwriter": "*",
         "ext-zlib": "*",
-        "php": ">=5.6.10"
+        "php": ">=5.6.9"
     },
     "platform-dev": []
 }

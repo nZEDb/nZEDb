@@ -1,5 +1,5 @@
 <?php
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\db\Settings;
 
@@ -349,7 +349,7 @@ convertTable($pdo,
 			 $nZEDB_schema,
 			 "user_movies",
 			 "INSERT INTO " . $nZEDB_schema .
-			 ".user_movies (user_id, imdbid, categoryid, createddate) " .
+			 ".user_movies (user_id, imdbid, categories, createddate) " .
 			 "SELECT userID, imdbID, categoryID, createddate FROM " . $nn_schema . ".usermovies",
 			 $runQueries);
 
@@ -385,7 +385,7 @@ convertTable($pdo,
 			 $nZEDB_schema,
 			 "user_series",
 			 "INSERT INTO " . $nZEDB_schema .
-			 ".user_series (user_id, rageid, categoryid, createddate) " .
+			 ".user_series (user_id, rageid, categories, createddate) " .
 			 "SELECT userID, rageID, categoryID, createddate FROM " . $nn_schema . ".userseries",
 			 $runQueries);
 

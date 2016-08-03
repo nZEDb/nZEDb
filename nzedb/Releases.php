@@ -192,12 +192,12 @@ class Releases
 	 * @param string $orderBy
 	 * @param int    $maxAge
 	 * @param array  $excludedCats
-	 * @param string $groupName
-	 * @param string $minSize
+	 * @param mixed  $groupName
+	 * @param int    $minSize
 	 *
 	 * @return array
 	 */
-	public function getBrowseRange($cat, $start, $num, $orderBy, $maxAge = -1, $excludedCats = [], $groupName = '', $minSize = 0)
+	public function getBrowseRange($cat, $start, $num, $orderBy, $maxAge = -1, $excludedCats = [], $groupName = -1, $minSize = 0)
 	{
 		$orderBy = $this->getBrowseOrder($orderBy);
 
@@ -216,7 +216,7 @@ class Releases
 				$this->categorySQL($cat),
 				($maxAge > 0 ? (" AND postdate > NOW() - INTERVAL " . $maxAge . ' DAY ') : ''),
 				(count($excludedCats) ? (' AND r.categories_id NOT IN (' . implode(',', $excludedCats) . ')') : ''),
-				($groupName != '' ? sprintf(' AND g.name = %s ', $this->pdo->escapeString($groupName)) : ''),
+				($groupName != -1 ? sprintf(' AND g.name = %s ', $this->pdo->escapeString($groupName)) : ''),
 				($minSize > 0 ? sprintf('AND r.size >= %d', $minSize) : ''),
 				$orderBy[0],
 				$orderBy[1],
@@ -719,7 +719,7 @@ class Releases
 		}
 
 		$update = [
-			'categoryid'     => (($category == '-1') ? 'categoryid' : $category),
+			'categories_id'     => (($category == '-1') ? 'categories_id' : $category),
 			'grabs'          => $grabs,
 			'videos_id'      => $videoId,
 			'tv_episodes_id' => $episodeId,
@@ -765,8 +765,8 @@ class Releases
 		$sql = '(1=2 ';
 		foreach ($userQuery as $query) {
 			$sql .= sprintf('OR (r.%s = %d', $type, $query[$type]);
-			if ($query['categoryid'] != '') {
-				$catsArr = explode('|', $query['categoryid']);
+			if ($query['categories'] != '') {
+				$catsArr = explode('|', $query['categories']);
 				if (count($catsArr) > 1) {
 					$sql .= sprintf(' AND r.categories_id IN (%s)', implode(',', $catsArr));
 				} else {

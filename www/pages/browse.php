@@ -14,7 +14,7 @@ if (isset($_REQUEST["t"]) && ctype_digit($_REQUEST["t"])) {
 	$category = $_REQUEST["t"];
 }
 
-$grp = "";
+$grp = -1;
 if (isset($_REQUEST["g"])) {
 	$grp = $_REQUEST["g"];
 }
@@ -43,9 +43,9 @@ $pager = $page->smarty->fetch("pager.tpl");
 $page->smarty->assign('pager', $pager);
 
 $covgroup = '';
-if ($category == -1 && $grp == "") {
+if ($category == -1 && $grp == -1) {
 	$page->smarty->assign("catname", "All");
-} elseif ($category != -1 && $grp == "") {
+} elseif ($category != -1 && $grp == -1) {
 	$cat = new Category(['Settings' => $releases->pdo]);
 	$cdata = $cat->getById($category);
 	if ($cdata) {
@@ -66,7 +66,7 @@ if ($category == -1 && $grp == "") {
 	} else {
 		$page->show404();
 	}
-} elseif ($grp != "") {
+} elseif ($grp != -1) {
 	$page->smarty->assign('catname', $grp);
 }
 

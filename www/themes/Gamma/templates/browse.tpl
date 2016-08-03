@@ -47,7 +47,7 @@
 					<td width="20%">
 						<div class="pull-right">
 						<a class="btn btn-small" title="All releases in your shows as an RSS feed" href="{$smarty.const.WWW_TOP}/rss?t={$category}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">Rss <i class="fa fa-rss"></i></a>
-						{if $isadmin}
+						{if isset($isadmin)}
 							Admin:
 							<div class="btn-group">
 								<input type="button" class="nzb_multi_operations_edit btn btn-small btn-warning" value="Edit" />
@@ -117,7 +117,7 @@
 			<th>action</th>
 		</tr>
 		{foreach $results as $result}
-		<tr class="{cycle values=",alt"}{if $lastvisit|strtotime<$result.adddate|strtotime} new{/if}" id="guid{$result.guid}">
+		<tr class="{cycle values=",alt"}" id="guid{$result.guid}">
 			{if (strpos($category, '60') !== false)}
 					<td class="check" width="25%"><input id="chk{$result.guid|substr:0:7}"
 					 type="checkbox" class="nzb_check"
@@ -137,7 +137,7 @@
 			{/if}
 			<td class="item">
 				<label for="chk{$result.guid|substr:0:7}">
-					<a class="title" title="View details"  href="{$smarty.const.WWW_TOP}/details/{$result.guid}"><h5>{$result.searchname|escape:"htmlall"|replace:".":" "}</h5></a>
+					<a class="title" title="View details"  href="{$smarty.const.WWW_TOP}/details/{$result.guid}"><h5>{$result.searchname|escape:"htmlall"|replace:".":" "} {if $lastvisit|strtotime < $result.adddate|strtotime} <a href="#" class="badge badge-success">New</a>{/if}</h5></a>
 				</label>
 				{if $result.passwordstatus == 2}
 				<i class="fa fa-lock"></i>
@@ -274,7 +274,7 @@
 					</td>
 					<td width="20%">
 						<div class="pull-right">
-						{if $isadmin}
+						{if isset($isadmin)}
 							Admin:
 							<div class="btn-group">
 								<input type="button" class="nzb_multi_operations_edit btn btn-small btn-warning" value="Edit" />

@@ -1,7 +1,7 @@
 {if not $modal}
 	<h1>{$page->title}</h1>
 	<h3>For
-		<a href="{$smarty.const.WWW_TOP}/details/{$rel.guid}/{$rel.searchname|escape:'htmlall'}">{$rel.searchname|escape:'htmlall'}</a>
+		<a href="{$smarty.const.WWW_TOP}/details/{$rel.guid}">{$rel.searchname|escape:'htmlall'}</a>
 	</h3>
 {/if}
 

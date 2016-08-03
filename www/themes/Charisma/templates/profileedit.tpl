@@ -18,8 +18,7 @@
 								<div class="alert alert-danger">{$error}</div>
 							{/if}
 							<ul class="nav nav-tabs nav-primary">
-								<li class="active"><a href="#tab2_1" data-toggle="tab"><i
-												class="fa fa-cogs fa-spin"></i>
+								<li class="active"><a href="#tab2_1" data-toggle="tab"><i class="fa fa-cogs fa-spin"></i>
 										Settings</a></li>
 								<li><a href="#tab2_3" data-toggle="tab"><i class="fa fa-cloud-download"></i> Downloaders</a>
 								</li>
@@ -36,18 +35,6 @@
 														<tr class="bg-aqua-active">
 															<td colspan="2" style="padding-left: 8px;">
 																<strong>Profile</strong></td>
-														</tr>
-														<tr>
-															<th width="200">First Name</th>
-															<td><input id="firstname" class="form-control" name="firstname"
-																	   type="text"
-																	   value="{$user.firstname|escape:"htmlall"}"></td>
-														</tr>
-														<tr>
-															<th width="200">Last Name</th>
-															<td><input id="lastname" class="form-control" name="lastname"
-																	   type="text"
-																	   value="{$user.lastname|escape:"htmlall"}"></td>
 														</tr>
 														<tr>
 															<th width="200">E-Mail</th>
@@ -151,6 +138,18 @@
 														</tr>
 														</tbody>
 													</table>
+													<table class="data table table-condensed table-striped table-responsive">
+														<tbody>
+														<tr class="bg-aqua-active">
+															<td colspan="2" style="padding-left: 8px;"><strong>Site theme</strong></td>
+														</tr>
+														<tr>
+															<td>
+																{html_options id="style" name='style' values=$themelist output=$themelist selected=$user.style}
+															</td>
+														</tr>
+														</tbody>
+													</table>
 												</td>
 											</tr>
 											</tbody>
@@ -161,11 +160,14 @@
 											<tbody>
 											<tr valign="top">
 												<td>
-													These settings are only needed if you want to be able to push NZB's
-													to your downloader straight from the website. You don't need this
-													for automation software like Sonarr, Sickbeard and Couchpotato to
-													function.
-													<br/>
+													<br>
+													<div class="alert alert-info">
+														These settings are only needed if you want to be able to push NZB's
+														to your downloader straight from the website. You don't need this
+														for automation software like Sonarr, Sickbeard, SickRage, SickGear or Couchpotato to
+														function.
+													</div>
+													<br>
 													{if $page->settings->getSetting('sabintegrationtype') != 1}
 														<table class="data table table-condensed table-striped table-responsive table-hover">
 															<tbody>
@@ -256,50 +258,38 @@
 														</table>
 													{/if}
 													<br/>
+													<table class="data table table-condensed table-striped table-responsive table-hover">
+														<tbody>
+														<tr class="bg-aqua-active">
+															<td colspan="2" style="padding-left: 8px;"><strong>Couchpotato</strong>
+															</td>
+														</tr>
+														<tr>
+															<th width="200">API / URL</th>
+															<td>
+																<div class="form-inline">
+																	<input id="cp_api"
+																		   placeholder="Couchpotato API key"
+																		   class="form-control"
+																		   name="cp_api" type="text"
+																		   value="{$cp_api_selected}"/>
+																	/
+																	<input id="cp_url"
+																		   placeholder="Couchpotato URL"
+																		   class="form-control"
+																		   name="cp_url" type="text"
+																		   value="{$cp_url_selected}"/>
+																</div>
+															</td>
+														</tr>
+														</tbody>
+													</table>
 												</td>
 											</tr>
 											</tbody>
 										</table>
 									</div>
 								</div>
-								<table class="data table table-condensed table-striped table-responsive table-hover">
-									<tbody>
-									<tr class="bg-aqua-active">
-										<td colspan="2" style="padding-left: 8px;"><strong>Couchpotato</strong>
-										</td>
-									</tr>
-									<tr>
-										<th width="200">API / URL</th>
-										<td>
-											<div class="form-inline">
-												<input id="cp_api"
-													   placeholder="Couchpotato API key"
-													   class="form-control"
-													   name="cp_api" type="text"
-													   value="{$cp_api_selected}"/>
-												/
-												<input id="cp_url"
-													   placeholder="Couchpotato URL"
-													   class="form-control"
-													   name="cp_url" type="text"
-													   value="{$cp_url_selected}"/>
-											</div>
-										</td>
-									</tr>
-									</tbody>
-								</table>
-								<table class="data table table-condensed table-striped table-responsive">
-									<tbody>
-									<tr class="bg-aqua-active">
-										<td colspan="2" style="padding-left: 8px;"><strong>Site theme</strong></td>
-									</tr>
-									<tr>
-										<td>
-											{html_options id="style" name='style' values=$themelist output=$themelist selected=$user.style}
-										</td>
-									</tr>
-									</tbody>
-								</table>
 								<input type="submit" value="Save" class="btn btn-primary"/>
 							</form>
 						</div>

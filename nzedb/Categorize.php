@@ -161,6 +161,7 @@ class Categorize extends Category
 					break;
 				case $group === 'alt.binaries.british.drama':
 					switch (true) {
+						case $this->isUHDTV():
 						case $this->isHDTV():
 						case $this->isSDTV():
 						case $this->isPC():
@@ -215,10 +216,14 @@ class Categorize extends Category
 
 					return false;
 				case preg_match('/alt\.binaries(\.(19\d0s|country|sounds?(\.country|\.19\d0s)?))?\.mp3(\.[a-z]+)?/i', $group):
-					if ($this->isMusic()) {
-						break;
+					switch (true) {
+						case $this->isMusic():
+						case $this->isXxx():
+							break;
+						default:
+							$this->tmpCat = Category::MUSIC_MP3;
+							break;
 					}
-					$this->tmpCat = Category::MUSIC_MP3;
 					break;
 				case preg_match('/alt\.binaries\.dvd(\-?r)?(\.(movies|))?$/i', $group):
 					if ($this->isMovie()) {
@@ -397,6 +402,8 @@ class Categorize extends Category
 							break;
 						case $this->isMovieSD(): // Need to check this BEFORE the HD check
 							break;
+						case $this->isMovieUHD():  // Check the movie isn't an UHD release before blindly assigning SD
+							break;
 						case $this->isMovieHD():  // Check the movie isn't an HD release before blindly assigning SD
 							break;
 						default:
@@ -547,6 +554,7 @@ class Categorize extends Category
 				case $this->isDocumentaryTV():
 				case $this->catWebDL && $this->isWEBDL():
 				case $this->isAnimeTV():
+				case $this->isUHDTV():
 				case $this->isHDTV():
 				case $this->isSDTV():
 				case $this->isOtherTV2():
@@ -670,6 +678,15 @@ class Categorize extends Category
 		return false;
 	}
 
+	public function isUHDTV()
+	{
+		if (preg_match('/2160p/i', $this->releaseName)) {
+			$this->tmpCat = Category::TV_UHD;
+			return true;
+		}
+		return false;
+	}
+
 	public function isSDTV()
 	{
 		switch (true) {
@@ -706,6 +723,7 @@ class Categorize extends Category
 				case $this->isMovieSD():
 				case $this->isMovie3D():
 				case $this->isMovieBluRay():
+				case $this->isMovieUHD():
 				case $this->isMovieHD():
 				case $this->isMovieOther():
 					return true;
@@ -794,6 +812,15 @@ class Categorize extends Category
 			}
 		}
 
+		return false;
+	}
+
+	public function isMovieUHD()
+	{
+		if (preg_match('/2160p/i', $this->releaseName)) {
+			$this->tmpCat = Category::MOVIE_UHD;
+			return true;
+		}
 		return false;
 	}
 
@@ -909,6 +936,7 @@ class Categorize extends Category
 			case $this->isXxxPack():
 			case $this->isXxxSD():
 			case $this->catWebDL && $this->isXxxWEBDL():
+			case $this->isXxxUHD():
 			case $this->isXxx264():
 			case $this->isXxxXvid():
 			case $this->isXxxImageset():
@@ -934,6 +962,15 @@ class Categorize extends Category
 				$this->tmpCat = Category::XXX_X264;
 				return true;
 			}
+		}
+		return false;
+	}
+
+	public function isXxxUHD()
+	{
+		if (preg_match('/^[\w-.]+(\d{2}\.\d{2}\.\d{2}).+(2160p)+[\w-.]+(M[PO][V4]-(KTR|GUSH|FaiLED|SEXORS|hUSHhUSH|YAPG))/i', $this->releaseName)) {
+			$this->tmpCat = Category::XXX_UHD;
+			return true;
 		}
 		return false;
 	}

@@ -6,9 +6,7 @@
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
-if (!defined('DS')) {
-	define('DS', DIRECTORY_SEPARATOR);
-}
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'nzedb' . DIRECTORY_SEPARATOR . 'constants.php';
 
 /**
  * This is the primary bootstrap file of your application, and is loaded immediately after the front

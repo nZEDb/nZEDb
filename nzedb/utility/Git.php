@@ -27,7 +27,7 @@ namespace nzedb\utility;
 class Git extends \GitRepo
 {
 	private $branch;
-	private $mainBranches = ['0.x', 'dev', 'latest-testing', 'dev-test'];
+	private $mainBranches = ['0.x', 'dev', 'Latest-testing', 'dev-test'];
 
 	public function __construct(array $options = [])
 	{

@@ -7,7 +7,7 @@
  * there is another script called resetRelnameStatus.php
  */
 
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\NameFixer;
 use nzedb\NNTP;

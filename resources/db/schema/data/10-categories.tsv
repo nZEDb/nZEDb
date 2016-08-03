@@ -25,6 +25,7 @@ id, title, parentid
 2010	Foreign	2000
 2030	SD	2000
 2040	HD	2000
+2045	UHD	2000
 2050	3D	2000
 2060	BluRay	2000
 2070	DVD	2000
@@ -47,6 +48,7 @@ id, title, parentid
 5020	Foreign	5000
 5030	SD	5000
 5040	HD	5000
+5045	UHD	5000
 5060	Sport	5000
 5070	Anime	5000
 5080	Documentary	5000
@@ -55,6 +57,7 @@ id, title, parentid
 6020	WMV	6000
 6030	XviD	6000
 6040	x264	6000
+6045	UHD		6000
 6060	Imageset	6000
 6070	Packs	6000
 6080	SD	6000

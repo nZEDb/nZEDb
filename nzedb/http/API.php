@@ -23,6 +23,7 @@ namespace nzedb\http;
 use nzedb\db\Settings;
 use nzedb\utility\Misc;
 use nzedb\Category;
+use nzedb\Groups;
 
 /**
  * Class API
@@ -116,6 +117,22 @@ class API extends Capabilities {
 			$categoryID = explode(',', $categoryIDs);
 		}
 		return $categoryID;
+	}
+
+	/**
+	 * Verify groupName parameter.
+	 * @return mixed
+	 */
+	public function group()
+	{
+		$groupName = -1;
+		if (isset($this->getRequest['group'])) {
+			$group = (new Groups())->isValidGroup($this->getRequest['group']);
+			if ($group !== false){
+				$groupName = $group;
+			}
+		}
+		return $groupName;
 	}
 
 	/**

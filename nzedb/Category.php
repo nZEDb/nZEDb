@@ -36,6 +36,7 @@ class Category
 	const MOVIE_DVD = '2070';
 	const MOVIE_FOREIGN = '2010';
 	const MOVIE_HD = '2040';
+	const MOVIE_UHD = '2045';
 	const MOVIE_OTHER = '2999';
 	const MOVIE_ROOT = '2000';
 	const MOVIE_SD = '2030';
@@ -62,6 +63,7 @@ class Category
 	const TV_DOCUMENTARY = '5080';
 	const TV_FOREIGN = '5020';
 	const TV_HD = '5040';
+	const TV_UHD = '5045';
 	const TV_OTHER = '5999';
 	const TV_ROOT = '5000';
 	const TV_SD = '5030';
@@ -76,6 +78,7 @@ class Category
 	const XXX_WEBDL = '6090';
 	const XXX_WMV = '6020';
 	const XXX_X264 = '6040';
+	const XXX_UHD = '6045';
 	const XXX_XVID = '6030';
 
 	const STATUS_INACTIVE = 0;

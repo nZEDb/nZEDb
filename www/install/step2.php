@@ -1,6 +1,8 @@
 <?php
 require_once realpath(__DIR__ . DIRECTORY_SEPARATOR . 'install.php');
 
+
+use app\extensions\util\Versions;
 use nzedb\db\Settings;
 use nzedb\Install;
 
@@ -181,13 +183,11 @@ if ($page->isPostBack()) {
 				}
 			}
 
-			$ver = new \nzedb\utility\Versions();
-			$patch = $ver->getSQLPatchFromFiles();
+			$ver = new Versions();
+			$patch = $ver->getSQLPatchFromFile();
 			$pdo->setSetting(['..sqlpatch' => $patch]);
 
 			if ($dbInstallWorked) {
-				$ver   = new \nzedb\utility\Versions();
-				$patch = $ver->getSQLPatchFromFiles();
 				if ($patch > 0) {
 					$updateSettings = $pdo->setSetting(
 										[

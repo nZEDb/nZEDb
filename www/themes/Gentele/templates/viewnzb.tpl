@@ -581,7 +581,7 @@
 										{foreach $similars as $similar}
 											<li>
 												<a title="View similar NZB details"
-												   href="{$smarty.const.WWW_TOP}/details/{$similar.guid}/{$similar.searchname|escape:"htmlall"}">{$similar.searchname|escape:"htmlall"}</a>
+												   href="{$smarty.const.WWW_TOP}/details/{$similar.guid}">{$similar.searchname|escape:"htmlall"}</a>
 												<br/>
 											</li>
 										{/foreach}

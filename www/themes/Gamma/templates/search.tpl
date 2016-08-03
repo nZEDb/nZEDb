@@ -134,7 +134,7 @@
 						<td width="33%">
 							<div class="pull-right">
 							<a class="btn btn-small" title="All releases in your shows as an RSS feed" href="{$smarty.const.WWW_TOP}/rss?t={$category[0]}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}&amp;uFilter={$search|escape:'html'}">Rss <i class="fa fa-rss"></i></a>
-							{if $isadmin}
+							{if isset($isadmin)}
 									Admin:
 									<div class="btn-group">
 										<input type="button" class="nzb_multi_operations_edit btn btn-small btn-warning" value="Edit" />
@@ -346,7 +346,7 @@
 					</div>
 				</td>
 				<td width="33%">
-					{if $isadmin}
+					{if isset($isadmin)}
 						<div class="pull-right">
 							Admin:
 							<div class="btn-group">

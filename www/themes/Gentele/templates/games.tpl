@@ -82,6 +82,7 @@
 												<a title="View details"
 												   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">
 													<img src="{$smarty.const.WWW_TOP}/covers/games/{if $result.cover == 1}{$result.gamesinfo_id}.jpg{else}{$smarty.const.WWW_THEMES}/shared/img/no-cover.png{/if}"
+														 class="cover img-responsive"
 														 width="200" border="0"
 														 alt="{$result.title|escape:"htmlall"}"/>{if !empty($mfailed[$m@index])}
 													<i class="fa fa-exclamation-circle" style="color: red"

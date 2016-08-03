@@ -1,17 +1,14 @@
 <?php
-// YOU SHOULD NOT EDIT ANYTHING IN THIS FILE, COPY .../nzedb/config/settings.example.php TO .../nzedb/config/settings.php AND EDIT THAT FILE!
+// YOU SHOULD NOT EDIT ANYTHING IN THIS FILE,
+// COPY .../nzedb/config/settings.example.php TO .../nzedb/config/settings.php AND EDIT THAT FILE!
 
-define('nZEDb_MINIMUM_PHP_VERSION', '5.5.20');
+define('nZEDb_MINIMUM_PHP_VERSION', '5.6.9');
 define('nZEDb_MINIMUM_MYSQL_VERSION', '5.5');
 
-if (!defined('DS')) {
-	define('DS', DIRECTORY_SEPARATOR);
-}
+define('DS', DIRECTORY_SEPARATOR);
 
 // These are file path constants
-if (!defined('nZEDb_ROOT')) {
-	define('nZEDb_ROOT', realpath(__DIR__) . DS);
-}
+define('nZEDb_ROOT', realpath(dirname(__DIR__)) . DS);
 
 // Used to refer to the main lib class files.
 define('nZEDb_LIB', nZEDb_ROOT . 'nzedb' . DS);

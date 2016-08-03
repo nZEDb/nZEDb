@@ -32,7 +32,7 @@
 					</td>
 					<td width="20%">
 						<div class="pull-right">
-							{if $isadmin}
+							{if isset($isadmin)}
 								Admin:
 								<div class="btn-group">
 									<input type="button" class="nzb_multi_operations_edit btn btn-small btn-warning" value="Edit" />
@@ -154,7 +154,7 @@
 								<div class="icon"><input type="checkbox" class="nzb_check" value="{$mguid[$m@index]}" /></div>
 							</td>
 							<td>
-								<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"seourl"}">&nbsp;{$mname[$m@index]|escape:"htmlall"}</a>
+								<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">&nbsp;{$mname[$m@index]|escape:"htmlall"}</a>
 								<ul class="inline">
 									<li width="100px">Posted {$mpostdate[$m@index]|timeago}</li>
 									<li width="80px">{$msize[$m@index]|fsize_format:"MB"}</li>
@@ -219,7 +219,7 @@
 					</td>
 					<td width="20%">
 						<div class="pull-right">
-							{if $isadmin}
+							{if isset($isadmin)}
 								Admin:
 								<div class="btn-group">
 									<input type="button" class="nzb_multi_operations_edit btn btn-small btn-warning" value="Edit" />

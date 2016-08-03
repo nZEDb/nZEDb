@@ -30,8 +30,12 @@
 			</tr>
 			{foreach $series as $s}
 				<tr class="{cycle values=",alt"}">
-					<td><a class="title" title="View series" href="{$smarty.const.WWW_TOP}/series/{$s.videos_id}">{$s.title|escape:"htmlall"}</a>Last: {$s.previnfo|escape:"htmlall"} aired {$s.prevdate|date_format}{/if}</td>
+					<td>
+						<a class="title" title="View series" href="{$smarty.const.WWW_TOP}/series/{$s.id}">{$s.title|escape:"htmlall"}</a>
+						{if $s.prevdate != ''}<br />Last: {$s.previnfo|escape:"htmlall"} aired {$s.prevdate|date_format}{/if}
+					</td>
 					<td>{$s.country|escape:"htmlall"}</td>
+					<td>{$s.genre|escape:"htmlall"|replace:'|':', '}</td>
 					<td class="mid">
 						{if $s.userseriesid != ''}
 							<a href="{$smarty.const.WWW_TOP}/myshows/edit/{$s.videos_id}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows" rel="edit" name="series{$s.videos_id}" title="Edit">Edit</a>&nbsp;&nbsp;<a href="{$smarty.const.WWW_TOP}/myshows/delete/{$s.videos_id}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows" rel="remove" name="series{$s.videos_id}" title="Remove from My Shows">Remove</a>
@@ -39,7 +43,11 @@
 							<a href="{$smarty.const.WWW_TOP}/myshows/add/{$s.videos_id}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows" rel="add" name="series{$s.videos_id}" title="Add to My Shows">Add</a>
 						{/if}
 					</td>
-					<td class="mid"><a title="View series" href="{$smarty.const.WWW_TOP}/series/{$s.videos_id}">Series</a>&nbsp;&nbsp;{if $s.videos_id > 0}<a title="View at TVRage" target="_blank" href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$s.videos_id}">TVRage</a>&nbsp;&nbsp;<a title="RSS Feed for {$s.title|escape:"htmlall"}" href="{$smarty.const.WWW_TOP}/rss?show={$s.videos_id}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">Rss</a>{/if}</td>
+					<td class="mid">
+						<a title="View series" href="{$smarty.const.WWW_TOP}/series/{$s.videos_id}">Series</a>&nbsp;&nbsp;
+						{if $s.videos_id > 0}<a title="View at TVRage" target="_blank" href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$s.videos_id}">TVRage</a>&nbsp;&nbsp;
+						<a title="RSS Feed for {$s.title|escape:"htmlall"}" href="{$smarty.const.WWW_TOP}/rss?show={$s.videos_id}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">RSS</a>{/if}
+					</td>
 				</tr>
 			{/foreach}
 		{/foreach}

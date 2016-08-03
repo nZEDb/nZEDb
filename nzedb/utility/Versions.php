@@ -23,7 +23,7 @@ class Versions
 	public $git;
 
 	/**
-	 * @var object ColorCLI
+	 * @var object nzedb\ColorCLI
 	 */
 	public $out;
 
@@ -136,7 +136,8 @@ class Versions
 
 	/**
 	 * Checks the git's latest version tag against the XML's stored value. Version should be
-	 * Major.Minor.Revision (**commit number is NOT revision**)
+	 * Major.Minor.Revision[.fix] (**commit number is NOT revision**)
+	 *
 	 * @param boolean $update Whether the XML should be updated by the check.
 	 * @return boolean The new git's latest version tag, or false.
 	 */
@@ -153,10 +154,12 @@ class Versions
 			}
 			return $this->_vers->git->tag;
 		}
+
 		// Check if version file's entry is the same as current branch's tag
 		if (version_compare($this->_vers->git->tag, $latest, '!=')) {
 			if ($update) {
-				echo $this->out->primaryOver("Updating tag version to ") . $this->out->headerOver($latest);
+				echo $this->out->primaryOver("Updating tag version to ") .
+					$this->out->header($latest);
 				$this->_vers->git->tag = $ver;
 				$this->_changes |= self::UPDATED_GIT_TAG;
 			} else {

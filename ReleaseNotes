@@ -1,6 +1,63 @@
 This file details which changes to the code are in which release version. It is a complement to the ChangeLog file which list *when* changes are made to the dev branch.
 
 
+0.6.3.0 2016-08-01
+Added:
+	* UHD subcategories to Movies, TV and XXX categories.
+	 ***Note*** run recategorize script to populate the new categories
+		php misc/testing/Release/recategorize.php all
+
+Changes:
+	* Update Omicron CSS/JS to AdminLTE 2.3.5
+	* Update profile edit pages in Charisma/Gentele/Omicron themes.
+	* Add group parameter support to api search function (Closes issue 2195).
+	* Use max headers iteration site setting if set (or max of 1,000,000 if not set) during
+	  multiprocessing safe binaries This will ensure we don't queue too many jobs in one loop if
+	  you are behind on updating and is consistant with other update binaries methods.
+
+Fixed:
+	* Reset user grabs and api requests in Charisma/Gamma/Gentele/Omicron themes (Fixes issue 2206).
+	* Remove searchname after the guid when calling release details page in
+	 Charisma/Gamma/Gentele/Omicron themes.
+	* Adding movies to my movies list from in theatre page in Charisma/Gentele/Omicron.
+	* Marking of new releases in Gamma theme browse page.
+	* Add work around for duplicate constants warning.
+	* Restore missing nzb download to api.php (Fixes issue 2212).
+	* Leftover r.group_id in requestid_threaded.py (Fixes issue 2213).
+	* Blank screen on fresh deployment (Issue 2214).
+	* RSS/API usenetdate format to conform with newznab api specification.
+	* Blank browse pages when browsing per category.
+	* Display of browsing categories on browse pages of every theme.
+	* Add lithium libraries bootstrap for Admin pages (Fixes issue 2215).
+	* Wrong order of inserted values in Groups update function (Closes issue 2217).
+
+
+0.6.2.4 2016-07-08
+Changes:
+	* Refactored all scripts to use the app/extensions/util/Versions class instead of the older
+	 nzedb\utility\Versions.
+
+
+0.6.2.3 2016-07-07
+Changes:
+	* Updated fxp/composer-asset-plugin dependency to v1.2.0
+
+Fixes:
+	* Create new bootstrap file (.../bootstrap.php) to enable nzedb and lithium's app libraries
+	 to load together. This fixes #2205.
+	  New files should use it as the base require_once instead of indexer.php. Old files will be
+	 converted over when it is convenient.
+
+
+0.6.2.2 2016-07-06
+Fixes:
+	* Other category not available on new installs, due to insert query still using 'category' table.
+	* Malformed RSS for my movies and my shows RSS.
+
+
+0.6.2.1 2016-07-04
+Fixes: Updated nzedb.xml file.
+
 0.6.2 2016-07-04
 **NOTE** we now only support PHP 5.6 and later versions.
 Added:
@@ -8,6 +65,7 @@ Added:
 	* Support for Season only searches with fast TV query.
 	* Multiple channel support for IRCScraper.
 	* Gentele theme (PR 2156).
+	* Unique mediainfo ID matching (PR 2153).
 
 Changed:
 	* Update minimum PHP requirements to 5.6.10+
@@ -20,6 +78,9 @@ Changed:
 	* Updated version of barracudanetworks/forkdaemon-php library (adds unlimited child run support).
 	* Make fixReleaseNames predbft deterministic to prevent useless threads.
 	* Remove release searchname from Gamma profile page (comments part).
+	* Improve RSS query times.
+	* Change some dates in the output to not use RSS style as they are not RSS attributes.
+	* Make screen simple-expanded script executable.
 
 Fixed:
 	* Bug with TV API changes that causes unmatched Show/Sxx/Exx queries to return data.
@@ -39,6 +100,15 @@ Fixed:
 	* Triggers in schema (Closes issue 2184).
 	* Forums on Charisma, Gamma, Gentele, and Omicron themes (Closes issue 2174).
 	* Fix Lithium Connections to send host:name in host field as Lithium expects (PR 2189).
+	* Links to colorbox images in Gamma theme.
+	* PreDB page layout in Gamma theme.
+	* Clean up duplicated and bad functions in Gamma theme's utils.js
+	* Problem introduced with TV API changes, that causes unmatched Show/Sxx/Exx queries to
+	 return data.
+	* Several issues with Capabilities.
+	* Importing NZB, using filename as searchname, now strips .gz as well as .nzb.
+	* Missed occurences of categoryid in UserMovies.php (Closes issue 2191).
+	* Wrong path to file extension icons in Gamma theme viewfilelist.tpl.
 
 
 0.6.1.3 2016-06-23

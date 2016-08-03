@@ -1,6 +1,8 @@
 <?php
 namespace nzedb\utility;
 
+
+use app\extensions\util\Versions;
 use nzedb\ColorCLI;
 use nzedb\db\Settings;
 
@@ -15,6 +17,8 @@ class Misc
 	 *  Regex for detecting multi-platform path. Use it where needed so it can be updated in one location as required characters get added.
 	 */
 	const PATH_REGEX = '(?P<drive>[A-Za-z]:|)(?P<path>[\\/\w .-]+|)';
+
+	const VERSION_REGEX = '#(?P<all>v(?P<digits>(?P<major>\d+)\.(?P<minor>\d+)\.(?P<revision>\d+)(?:\.(?P<fix>\d+))?)(?:-(?P<suffix>(?:RC\d+|dev)))?)#';
 
 	/**
 	 * Checks all levels of the supplied path are readable and executable by current user.
@@ -280,9 +284,7 @@ class Misc
 
 	public static function getValidVersionsFile()
 	{
-		$versions = new Versions();
-
-		return $versions->getValidVersionsFile();
+		return (new Versions())->getValidVersionsFile();
 	}
 
 	/**

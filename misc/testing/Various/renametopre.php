@@ -1,6 +1,6 @@
 <?php
 // TODO: bunch of if/elses need converting to switches
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\Categorize;
 use nzedb\Category;

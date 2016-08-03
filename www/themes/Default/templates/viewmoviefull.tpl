@@ -42,7 +42,7 @@
 						<input class="span2"  id="filter-text" type="text" placeholder="Filter">
 					</div>
 				</div>
-				{if $isadmin}
+				{if isset($isadmin)}
 					<div class="pull-right">
 						Admin:
 						<div class="btn-group">
@@ -179,7 +179,7 @@
 							<span class="add-on"><i class="icon-search"></i></span>
 						</div>
 					</div>
-					{if $isadmin}
+					{if isset($isadmin)}
 						<div class="pull-right">
 							Admin:
 							<div class="btn-group">

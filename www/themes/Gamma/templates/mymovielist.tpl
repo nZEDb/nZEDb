@@ -1,16 +1,13 @@
 {if $data|@count > 0}
-
 	<table style="width:100%;" class="data highlight icons table" id="coverstable">
 		<tr>
 			<th style="padding-top:0px; padding-bottom:0px;"></th>
 			<th style="padding-top:0px; padding-bottom:0px;">Name</th>
 		</tr>
-
 		{foreach $data as $result}
 			{if $result['imdb_id'] != ""}
 				<tr class="{cycle values=",alt"}">
 					<td class="mid" style="width:140px;">
-
 						<div class="movcover">
 							<div style="text-align: center;">
 								<img class="shadow img img-polaroid" src="{if $result['cover'] ==""}{$smarty.const.WWW_TOP}/covers/movies/no-cover.jpg{else}{$result['cover']}{/if}" width="120" border="0" alt="{$result['title']|escape:"htmlall"}" />
@@ -42,7 +39,6 @@
 			{/if}
 		{/foreach}
 	</table>
-
 {else}
 	<div class="alert">
 		<button type="button" class="close" data-dismiss="alert">&times;</button>
