@@ -20,8 +20,11 @@
  */
 
 namespace nzedb\http;
-use nzedb\Utility\Misc;
+
+
 use nzedb\Category;
+use nzedb\utility\Misc;
+
 
 /**
  * Class XMLReturn
