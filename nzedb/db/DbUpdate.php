@@ -73,9 +73,11 @@ class DbUpdate
 		unset($defaults);
 
 		$this->backup = $options['backup'];
-		$this->pdo    = (($options['db'] instanceof Settings) ? $options['db'] : new Settings());
 		$this->git    = $options['git'];
 		$this->log    = $options['logger'];
+
+		// Must be DB as settings table may not exist yet.
+		$this->pdo = (($options['db'] instanceof DB) ? $options['db'] : new Settings());
 
 		// If $pdo is an instance of Settings, reuse it to save resources.
 		// This is for unconverted scripts that still use $db->settings instead of the $db->pdo property.
