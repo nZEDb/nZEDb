@@ -22,6 +22,7 @@ use \app\extensions\util\Git;
 use \app\extensions\util\Versions;
 use \lithium\console\command\Help;
 use \nzedb\db\DbUpdate;
+use \nzedb\db\Settings;
 use \Smarty;
 
 
@@ -90,9 +91,11 @@ class Update extends \app\extensions\console\Command
 			$this->out('Error fetching patch versions!', 'error');
 			return 1;
 		}
+
 		$this->out("Db: $currentDb,\tFile: $currentXML");
+
 		if ($currentDb < $currentXML) {
-			$db = new DbUpdate(['backup' => false]);
+			$db = new DbUpdate(['backup' => false, 'db' => new Settings()]);
 			$db->processPatches(['safe' => false]);
 		} else {
 			$this->out("Up to date.", 'info');
