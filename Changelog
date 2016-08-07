@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-08-07 niel
+	Fix: Adjustments to DbUpdate class to be sure Settings instance is there when needed.
 2016-08-05 niel
 	Fix: Changes to Install's bootstrap process that prevent use of Settings table before it is
 		created.
