@@ -122,7 +122,7 @@ jQuery(function($){
         });
         return false;
     });
-    
+
     $('.vortexsend').click(function(event)
     {
         if ($(this).hasClass('icon_nzbvortex_clicked')) return false;
@@ -499,6 +499,17 @@ jQuery(function($){
 
 
     $('button.nzb_multi_operations_download').on('click', (function(){
+        var ids = "";
+        $("table.data INPUT[type='checkbox']:checked").each( function (i, row) {
+            if ($(row).val()!="on")
+                ids += $(row).val()+',';
+        });
+        ids = ids.substring(0,ids.length-1);
+        if (ids)
+            window.location = SERVERROOT + "getnzb?zip=1&id="+ids;
+    }));
+
+    $('input.nzb_multi_operations_download_cart').on('click', (function(){
         var ids = "";
         $("table.data INPUT[type='checkbox']:checked").each( function (i, row) {
             if ($(row).val()!="on")
