@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-08-08 DariusIII
+	Fix: Add checks for tv attributes in XML_Response.php(fixes issue #2225)
 2016-08-07 niel
 	Fix: Adjustments to DbUpdate class to be sure Settings instance is there when needed.
 2016-08-05 DariusIII
