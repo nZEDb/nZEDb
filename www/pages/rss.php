@@ -93,6 +93,8 @@ if (!isset($_GET["t"]) && !isset($_GET["show"]) && !isset($_GET["anidb"])) {
 		$userAnidb = ($_GET["anidb"] == 0 ? -1 : $_GET["anidb"] + 0);
 	}
 
+	$outputXML = (isset($_GET['o']) && $_GET['o'] == 'json' ? false : true);
+
 	$userCat = (isset($_GET['t']) ? ($_GET['t'] == 0 ? -1 : $_GET['t']) : -1);
 	$userNum = (isset($_GET["num"]) && is_numeric($_GET['num']) ? abs($_GET['num']) : 100);
 	$userAirDate = (isset($_GET["airdate"]) && is_numeric($_GET['airdate']) ? abs($_GET["airdate"]) : -1);
@@ -113,5 +115,5 @@ if (!isset($_GET["t"]) && !isset($_GET["show"]) && !isset($_GET["anidb"])) {
 	} else {
 		$relData = $rss->getRss(explode(',', $userCat), $userNum, $userShow, $userAnidb, $uid, $userAirDate);
 	}
-	$rss->output($relData, $params, true, 'rss');
+	$rss->output($relData, $params, $outputXML, 'rss');
 }

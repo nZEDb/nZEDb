@@ -35,7 +35,7 @@ class Git extends \lithium\core\Object
 	{
 		$defaults = [
 			'branches'		=> [
-				'stable' => ['0.x', 'Latest-testing'],
+				'stable' => ['0.x', 'Latest-testing', '\d+\.\d+\.\d+(\.\d+)?'],
 				'development' => ['dev', 'dev-test']
 			],
 			'create'		=> false,
@@ -119,6 +119,19 @@ class Git extends \lithium\core\Object
 		}
 
 		return ($result === '');
+	}
+
+	public function isStable($branch)
+	{
+		foreach ($this->getBranchesStable() as $pattern) {
+			if (!preg_match("#$pattern#", $branch)) {
+				continue;
+			} else {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**

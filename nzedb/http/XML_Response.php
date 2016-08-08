@@ -20,8 +20,11 @@
  */
 
 namespace nzedb\http;
-use nzedb\Utility\Misc;
+
+
 use nzedb\Category;
+use nzedb\utility\Misc;
+
 
 /**
  * Class XMLReturn
@@ -440,24 +443,24 @@ class XML_Response
 		switch(true) {
 			case !empty($this->release['title']):
 				$this->writeZedAttr('title', $this->release['title']);
-			case $this->release['series'] > 0:
+			case isset($this->release['series']) && $this->release['series'] > 0:
 				$this->writeZedAttr('season', $this->release['series']);
-			case $this->release['episode'] > 0:
+			case isset($this->release['episode']) && $this->release['episode'] > 0:
 				$this->writeZedAttr('episode', $this->release['episode']);
 			case !empty($this->release['firstaired']):
 				$this->writeZedAttr('tvairdate', $this->release['firstaired']);
-			case $this->release['tvdb'] > 0:
+			case isset($this->release['tvdb']) && $this->release['tvdb'] > 0:
 				$this->writeZedAttr('tvdbid', $this->release['tvdb']);
-			case $this->release['trakt'] > 0:
+			case isset($this->release['trakt']) && $this->release['trakt'] > 0:
 				$this->writeZedAttr('traktid', $this->release['trakt']);
-			case $this->release['tvrage'] > 0:
+			case isset($this->release['tvrage']) && $this->release['tvrage'] > 0:
 				$this->writeZedAttr('tvrageid', $this->release['tvrage']);
 				$this->writeZedAttr('rageid', $this->release['tvrage']);
-			case $this->release['tvmaze'] > 0:
+			case isset($this->release['tvmaze']) && $this->release['tvmaze'] > 0:
 				$this->writeZedAttr('tvmazeid', $this->release['tvmaze']);
-			case $this->release['imdb'] > 0:
+			case isset($this->release['imdb']) && $this->release['imdb'] > 0:
 				$this->writeZedAttr('imdbid', str_pad($this->release['imdb'], 7, '0', STR_PAD_LEFT));
-			case $this->release['tmdb'] > 0:
+			case isset($this->release['tmdb']) && $this->release['tmdb'] > 0:
 				$this->writeZedAttr('tmdbid', $this->release['tmdb']);
 		}
 	}

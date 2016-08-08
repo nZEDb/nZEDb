@@ -66,6 +66,7 @@ class Configure
 				if (is_file($settings_file)) {
 					require_once($settings_file);
 					if (php_sapi_name() == 'cli') {
+						// TODO put this version in the nzedb.xml file and load it. Hard coding is bad.
 						$current_settings_file_version = 4; // Update this when updating settings.example.php
 						if (!defined('nZEDb_SETTINGS_FILE_VERSION') ||
 							nZEDb_SETTINGS_FILE_VERSION != $current_settings_file_version

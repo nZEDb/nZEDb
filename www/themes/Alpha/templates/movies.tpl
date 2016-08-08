@@ -44,7 +44,7 @@
 							title="View movie info"
 							class="modal_imdb thumbnail" rel="movie"
 						><img
-								class="shadow" style="margin: 3px 0;"
+								class="shadow img-responsive" style="margin: 3px 0;"
 								src="{$smarty.const.WWW_TOP}/covers/movies/{if $result.cover == 1}{$result.imdbid}-cover.jpg{else}no-cover.jpg{/if}"
 								width="160" border="0" alt="{$result.title|escape:"htmlall"}"
 						></a>

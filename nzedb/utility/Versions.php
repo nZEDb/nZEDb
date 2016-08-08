@@ -143,6 +143,9 @@ class Versions
 	 */
 	public function checkGitTag($update = true)
 	{
+		trigger_error(
+			"This method is deprecated. Use app/extensions/utils/Versions::checkGitTag() instead.");
+
 		$branch = $this->git->getBranch();
 		$this->_gitHighestTag = $latest = trim($this->git->tagLatest());
 		$ver = preg_match('#v(\d+\.\d+\.\d+).*#', $latest, $matches) ? $matches[1] : $latest;

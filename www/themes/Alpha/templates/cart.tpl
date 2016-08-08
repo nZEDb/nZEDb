@@ -26,7 +26,7 @@
 						<a title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}">{$result.searchname|escape:"htmlall"|wordwrap:75:"\n":true}</a>
 					</td>
 					<td style="text-align:center;" class="less" title="Added on {$result.createddate}">{$result.createddate|date_format}</td>
-					<td style="text-align:center;"><a class="label label-danger" title="Delete from your cart" href="?delete={$result.id}">delete</a></td>
+					<td style="text-align:center;"><a class="label label-danger" title="Delete from your cart" href="?delete={$result.guid}">delete</a></td>
 				</tr>
 			{/foreach}
 			</tbody>

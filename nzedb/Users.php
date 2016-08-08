@@ -941,27 +941,28 @@ class Users
 	/**
 	 * Delete items from the users cart.
 	 *
-	 * @param array $ids    List of items to delete.
+	 * @param array $guids    List of items to delete.
 	 * @param int   $userID ID of the user.
 	 *
 	 * @return bool
 	 */
-	public function delCart($ids, $userID)
+	public function delCart($guids, $userID)
 	{
-		if (!is_array($ids)) {
+		if (!is_array($guids)) {
 			return false;
 		}
 
 		$del = [];
-		foreach ($ids as $id) {
-			if (is_numeric($id)) {
-				$del[] = $id;
+		foreach ($guids as $guid) {
+			$rel = $this->pdo->queryOneRow(sprintf("SELECT id FROM releases WHERE guid = %s", $this->pdo->escapeString($guid)));
+			if ($rel) {
+				$del[] = $rel['id'];
 			}
 		}
 
 		return (bool)$this->pdo->queryExec(
 			sprintf(
-				"DELETE FROM users_releases WHERE id IN (%s) AND user_id = %d", implode(',', $del), $userID
+				"DELETE FROM users_releases WHERE releases_id IN (%s) AND user_id = %d", implode(',', $del), $userID
 			)
 		);
 	}

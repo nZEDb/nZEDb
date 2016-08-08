@@ -21,6 +21,7 @@
 namespace nzedb\db;
 
 use nzedb\ColorCLI;
+use nzedb\db\Settings;
 use nzedb\utility\Git;
 use nzedb\utility\Misc;
 use nzedb\utility\Text;
@@ -28,6 +29,8 @@ use nzedb\utility\Text;
 
 class DbUpdate
 {
+	public $backedup;
+
 	/**
 	 * @var \nzedb\db\Settings    Instance variable for DB object.
 	 */
@@ -63,23 +66,21 @@ class DbUpdate
 
 	public function __construct(array $options = [])
 	{
-		$defaults = [
+		$options += [
 			'backup' => true,
 			'db'     => null,
 			'git'    => new Git(),
 			'logger' => new ColorCLI(),
 		];
-		$options += $defaults;
-		unset($defaults);
 
 		$this->backup = $options['backup'];
-		$this->pdo    = (($options['db'] instanceof Settings) ? $options['db'] : new Settings());
 		$this->git    = $options['git'];
 		$this->log    = $options['logger'];
-
-		// If $pdo is an instance of Settings, reuse it to save resources.
-		// This is for unconverted scripts that still use $db->settings instead of the $db->pdo property.
-		$this->settings =& $this->pdo;
+		// Must be DB not Settings because the Settings table may not exist yet.
+		$this->pdo = (($options['db'] instanceof DB) ? $options['db'] : new DB());
+		if ($this->pdo instanceof  Settings) {
+			$this->settings &= $this->pdo;
+		}
 
 		$this->_DbSystem = strtolower($this->pdo->dbSystem());
 	}
@@ -161,6 +162,8 @@ class DbUpdate
 		];
 		$options += $defaults;
 
+		$this->initSettings();
+
 		$this->processPatches(['safe' => $options['safe']]); // Make sure we are completely up to date!
 
 		echo $this->log->primaryOver('Looking for new patches...');
@@ -206,6 +209,8 @@ class DbUpdate
 			'safe'	=> true,
 		];
 		$options += $defaults;
+
+		$this->initSettings();
 
 		$currentVersion = $this->settings->getSetting(['setting' => 'sqlpatch']);
 		if (!is_numeric($currentVersion)) {
@@ -438,8 +443,6 @@ class DbUpdate
 		}
 	}
 
-	public $backedup;
-
 	protected function _backupDb()
 	{
 		if (Misc::hasCommand("php5")) {
@@ -451,6 +454,13 @@ class DbUpdate
 		system("$PHP " . nZEDb_MISC . 'testing' . DS . 'DB' . DS . $this->_DbSystem .
 			   'dump_tables.php db dump');
 		$this->backedup = true;
+	}
+
+	protected function initSettings()
+	{
+		if (!($this->settings instanceof Settings)) {
+			$this->settings = new Settings();
+		}
 	}
 }
 

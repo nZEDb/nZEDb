@@ -91,7 +91,7 @@
 													{foreach $msplits as $loop=>$m name="loop"}
 													{if $smarty.foreach.loop.first}
 													<a href="{$smarty.const.WWW_TOP}/movies/?imdb={$result.imdbid}"><img
-																class="cover"
+																class="cover img-responsive"
 																src="{if isset($result.cover) && $result.cover == 1}{$smarty.const.WWW_TOP}/covers/movies/{$result.imdbid}-cover.jpg{else}{$smarty.const.WWW_THEMES}/shared/img/no-cover.png{/if}"
 																width="140" border="0"
 																alt="{$result.title|escape:"htmlall"}"/> {if !empty($mfailed[$m@index])}
@@ -114,7 +114,7 @@
 													   href="{$smarty.const.WWW_TOP}/browse?g={$result.grp_release_grpname}"
 													   title="Browse releases in {$result.grp_release_grpname|replace:"alt.binaries":"a.b"}">Group</a>
 												</div>
-												<div class="col-md-9 small-gutter-left">
+												<div class="col-md-9 small-gutter-left table-responsive">
 																<span class="release-title"><a class="text-muted"
 																							   href="{$smarty.const.WWW_TOP}/movies/?imdb={$result.imdbid}">{$result.title|escape:"htmlall"}</a></span>
 													<div class="release-subtitle">{if $result.genre != ''}
@@ -227,7 +227,7 @@
 													{foreach $msplits as $loop=>$m name="loop"}
 													{if $smarty.foreach.loop.first}
 													<a href="{$smarty.const.WWW_TOP}/movies/?imdb={$result.imdbid}"><img
-																class="cover"
+																class="cover img-responsive"
 																src="{if isset($result.cover) && $result.cover == 1}{$smarty.const.WWW_TOP}/covers/movies/{$result.imdbid}-cover.jpg{else}{$smarty.const.WWW_THEMES}/shared/img/no-cover.png{/if}"
 																width="140" border="0"
 																alt="{$result.title|escape:"htmlall"}"/> {if !empty($mfailed[$m@index])}
@@ -250,7 +250,7 @@
 													   href="{$smarty.const.WWW_TOP}/browse?g={$result.grp_release_grpname}"
 													   title="Browse releases in {$result.grp_release_grpname|replace:"alt.binaries":"a.b"}">Group</a>
 												</div>
-												<div class="col-md-9 small-gutter-left">
+												<div class="col-md-9 small-gutter-left table-responsive">
 																<span class="release-title"><a class="text-muted"
 																							   href="{$smarty.const.WWW_TOP}/movies/?imdb={$result.imdbid}">{$result.title|escape:"htmlall"}</a></span>
 													<div class="release-subtitle">{if $result.genre != ''}

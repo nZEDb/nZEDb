@@ -1,6 +1,5 @@
 <?php
 
-define('nZEDb_INSTALLER', true);
 
 class InstallPage
 {

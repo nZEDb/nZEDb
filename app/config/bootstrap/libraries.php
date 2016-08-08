@@ -128,11 +128,13 @@ Libraries::add('app', array('default' => true));
 // 	Libraries::add(basename($path), array('path' => $path));
 // }
 
-Libraries::add('nzedb',
+if (!defined('nZEDb_INSTALLER') || nZEDb_INSTALLER !== true) {
+	Libraries::add('nzedb',
 	[
 		'bootstrap'	=> 'bootstrap.php',
 		'path'	=> nZEDb_ROOT . 'nzedb',
 	]);
+}
 
 require_once LITHIUM_APP_PATH . DS . 'libraries' . DS . 'autoload.php';
 

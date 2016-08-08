@@ -80,6 +80,7 @@
 												<a title="View details"
 												   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">
 													<img src="{$smarty.const.WWW_TOP}/covers/music/{if $result.cover == 1}{$result.musicinfo_id}.jpg{else}{$smarty.const.WWW_THEMES}/shared/img/no-cover.png{/if}"
+														 class="cover img-responsive"
 														 width="140" border="0"
 														 alt="{$result.artist|escape:"htmlall"} - {$result.title|escape:"htmlall"}"/>{if !empty($mfailed[$m@index])}
 													<i class="fa fa-exclamation-circle" style="color: red"
@@ -132,7 +133,7 @@
 															<br/>
 															{if $result.genre != ""}
 																<b>Genre:</b>
-																<a href="{$smarty.const.WWW_TOP}/music/?genre={$result.genreid}">{$result.genre|escape:"htmlall"}</a>
+																<a href="{$smarty.const.WWW_TOP}/music/?genre={$result.genre_id}">{$result.genre|escape:"htmlall"}</a>
 																<br/>
 															{/if}
 															{if $result.publisher != ""}
