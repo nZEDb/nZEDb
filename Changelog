@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-08-08 DariusIII
+	Chg: Remove rss button from search page in Gamma theme.
 2016-08-08 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.3.1
 
