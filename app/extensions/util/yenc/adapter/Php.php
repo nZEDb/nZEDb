@@ -64,13 +64,14 @@ class Php extends \lithium\core\Object
 		$encodedLength = strlen($encoded);
 		for ($chr = 0; $chr < $encodedLength; $chr++) {
 			$decoded .= ($encoded[$chr] !== '='
-				? chr(ord($encoded[$chr]) - 42)
-				: chr((ord($encoded[++$chr]) - 64) - 42));
+				? chr((ord($encoded[$chr]) - 42) % 256)
+				: chr((((ord($encoded[++$chr]) - 64) % 256) - 42) % 256));
 		}
 
 		// Make sure the decoded file size is the same as the size specified in the header.
 		if (strlen($decoded) != $headerSize) {
-			$message = 'Header file size and actual file size do not match. The file is probably corrupt.';
+			$message = "Header file size ($headerSize) and actual file size (" . strlen($decoded) .
+			") do not match. The file is probably corrupt.";
 			if (nZEDb_LOGGING || nZEDb_DEBUG) {
 				//TODO replace with lithium logger.
 //				$this->_debugging->log(get_class(), __FUNCTION__, $message, Logger::LOG_NOTICE);
@@ -161,17 +162,16 @@ class Php extends \lithium\core\Object
 			$value = ((ord($data[$i]) + 42) % 256);
 
 			// Escape NULL, TAB, LF, CR, space, . and = characters.
-			if ($value == 0 ||
-				$value == 9 ||
-				$value == 10 ||
-				$value == 13 ||
-				$value == 32 ||
-				$value == 46 ||
-				$value == 61
-			) {
-				$encoded .= ('=' . chr(($value + 64) % 256));
-			} else {
-				$encoded .= chr($value);
+			switch ($value) {
+				case 0:
+				case 10:
+				case 13:
+				case 61:
+					$encoded .= ('=' . chr(($value + 64) % 256));
+					break;
+				default:
+					$encoded .= chr($value);
+					break;
 			}
 		}
 
@@ -189,10 +189,10 @@ class Php extends \lithium\core\Object
 
 		// Add a CRC32 checksum if desired.
 		if ($crc32 === true) {
-			$encoded .= ' crc32=' . strtolower(sprintf("%04X", crc32($data)));
+			$encoded .= ' crc32=' . strtolower(sprintf("%X", crc32($data)));
 		}
 
-		return $encoded . "\r\n";
+		return $encoded;
 	}
 
 	protected function _init()
