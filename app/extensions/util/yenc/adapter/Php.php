@@ -63,9 +63,11 @@ class Php extends \lithium\core\Object
 		$decoded = '';
 		$encodedLength = strlen($encoded);
 		for ($chr = 0; $chr < $encodedLength; $chr++) {
-			$decoded .= ($encoded[$chr] !== '='
-				? chr((ord($encoded[$chr]) - 42) % 256)
-				: chr((((ord($encoded[++$chr]) - 64) % 256) - 42) % 256));
+			$decoded .= (
+				$encoded[$chr] == '=' ?
+					chr((ord($encoded[$chr]) - 42) % 256) :
+					chr((((ord($encoded[++$chr]) - 64) % 256) - 42) % 256)
+			);
 		}
 
 		// Make sure the decoded file size is the same as the size specified in the header.
@@ -125,8 +127,11 @@ class Php extends \lithium\core\Object
 
 			$length = strlen($input);
 			for ($chr = 0; $chr < $length; $chr++) {
-				$text .= ($input[$chr] !== '=' ? chr(ord($input[$chr]) - 42) :
-					chr((ord($input[++$chr]) - 64) - 42));
+				$text .= (
+					$input[$chr] == '=' ?
+						chr((((ord($input[++$chr]) - 64) % 256) - 42) % 256) :
+						chr((ord($input[$chr]) - 42) % 256)
+				);
 			}
 		}
 
