@@ -1755,11 +1755,10 @@ class NameFixer
 					FROM releases rel
 					INNER JOIN release_files rf ON (rf.releases_id = rel.id)
 					WHERE (rel.isrenamed = %d OR rel.categories_id IN(%d, %d))
-					AND rf.name %s",
+					AND rf.name {$this->pdo->likeString('SDPORN', true, true)}",
 				self::IS_RENAMED_NONE,
 				Category::OTHER_MISC,
-				Category::OTHER_HASHED,
-				$this->pdo->likeString('SDPORN', true, true)
+				Category::OTHER_HASHED
 				)
 			);
 
