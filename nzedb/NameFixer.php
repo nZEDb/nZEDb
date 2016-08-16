@@ -356,6 +356,7 @@ class NameFixer
 				foreach ($releases as $release) {
 					$this->done = $this->matched = false;
 					$this->xxxNameCheck($release, $echo, $type, $nameStatus, $show);
+					$this->checked++;
 					$this->_echoRenamed($show);
 				}
 				$this->_echoFoundCount($echo, ' files');
