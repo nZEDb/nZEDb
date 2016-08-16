@@ -1749,7 +1749,7 @@ class NameFixer
 	public function xxxNameCheck($release, $echo, $type, $namestatus, $show)
 	{
 		if ($this->done === false && $this->relid !== $release["releases_id"]) {
-			$query = sprintf("
+			$result = $this->pdo->queryDirect(sprintf("
 				SELECT rf.name AS textstring, rel.categories_id, rel.name, rel.searchname, rel.fromname, rel.groups_id,
 						rf.releases_id AS fileid, rel.id AS releases_id
 					FROM releases rel
@@ -1760,9 +1760,8 @@ class NameFixer
 				Category::OTHER_MISC,
 				Category::OTHER_HASHED,
 				$this->pdo->likeString('SDPORN', true, true)
+				)
 			);
-
-			$result = $this->pdo->queryDirect($query);
 
 			if ($result instanceof \Traversable) {
 				foreach ($result AS $res) {
