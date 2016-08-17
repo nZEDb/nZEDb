@@ -20,7 +20,7 @@
 namespace app\extensions\util\yenc\adapter;
 
 
-class Simple_php_yenc_decode extends \lithium\core\Object
+class SimplePhpYencDecode extends \lithium\core\Object
 {
 	public static function decode(&$text, $ignore = false)
 	{
