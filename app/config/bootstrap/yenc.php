@@ -36,12 +36,25 @@ switch (true) {
 
 app\extensions\util\Yenc::config(
 	[
-		'default' => ['adapter' => $adapter],
-	]
-);
+		'default' => [
+			'adapter' => $adapter
+		],
 
-app\extensions\util\Yenc::config([
-		'Php' => ['adapter' => 'Php'],
+		'nzedb' => [
+			'adapter' => 'NzedbYenc'
+		],
+
+		'php' => [
+			'adapter' => 'Php'
+		],
+
+		'simple' => [
+			'adapter' => 'SimplePhpYencDecode'
+		],
+
+		'ydecode' => [
+			'adapter' => 'Ydecode'
+		],
 	]
 );
 

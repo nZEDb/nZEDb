@@ -46,7 +46,7 @@ class SimplePhpYencDecode extends \lithium\core\Object
 
 	public static function encode($data, $filename, $lineLength, $crc32)
 	{
-		return Yenc::encode($data, $filename, $lineLength, $crc32, ['name' => 'Php']);
+		return Yenc::encode($data, $filename, $lineLength, $crc32, ['name' => 'php']);
 	}
 
 	protected function _init()
