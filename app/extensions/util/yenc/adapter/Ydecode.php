@@ -22,7 +22,7 @@ namespace app\extensions\util\yenc\adapter;
 use app\models\Settings;
 use nzedb\utility\Misc;
 
-class Yydecode extends \lithium\core\Object
+class Ydecode extends \lithium\core\Object
 {
 	/**
 	 * Path to yyDecoder binary.

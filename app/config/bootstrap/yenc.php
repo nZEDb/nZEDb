@@ -28,7 +28,7 @@ switch (true) {
 		break;
 	case !empty(Settings::value('..yydecoderpath', true)) &&
 		(strpos(Settings::value('..yydecoderpath', true), 'simple_php_yenc_decode') === false):
-		$adapter = 'Yydecode';
+		$adapter = 'Ydecode';
 		break;
 	default:
 		$adapter = 'Php';
