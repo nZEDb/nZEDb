@@ -19,6 +19,8 @@
 
 namespace app\extensions\util\yenc\adapter;
 
+use app\extensions\util\Yenc;
+
 
 class SimplePhpYencDecode extends \lithium\core\Object
 {
@@ -44,7 +46,7 @@ class SimplePhpYencDecode extends \lithium\core\Object
 
 	public static function encode($data, $filename, $lineLength, $crc32)
 	{
-		throw new \Exception('Method not implemented!');
+		return Yenc::encode($data, $filename, $lineLength, $crc32, ['name' => 'Php']);
 	}
 
 	protected function _init()

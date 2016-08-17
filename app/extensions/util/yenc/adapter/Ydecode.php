@@ -82,8 +82,7 @@ class Ydecode extends \lithium\core\Object
 
 	public static function encode($data, $filename, $lineLength, $crc32)
 	{
-		throw new \Exception('Method not implemented!');
-		return null;
+		return Yenc::encode($data, $filename, $lineLength, $crc32, ['name' => 'Php']);
 	}
 
 	protected function _init()

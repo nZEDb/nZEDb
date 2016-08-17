@@ -40,4 +40,9 @@ app\extensions\util\Yenc::config(
 	]
 );
 
+app\extensions\util\Yenc::config([
+		'Php' => ['adapter' => 'Php'],
+	]
+);
+
 ?>
