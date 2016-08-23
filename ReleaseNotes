@@ -1,4 +1,19 @@
-This file details which changes to the code are in which release version. It is a complement to the ChangeLog file which list *when* changes are made to the dev branch.
+This file details which changes to the code are in which release version. It is a complement to the
+ChangeLog file which list *when* changes are made to the dev branches.
+
+
+0.6.3.3 2016-08-24
+Fixed:
+	* Change rt_attr_string to rt_attr_uint as a dummy field. As attributes are pre-cached, strings
+	 could cause out of memory issues.
+     ***Note*** If using sphinx search the following is required to update the index:
+		sudo service sphinxsearch stop
+	  Edit /etc/sphinxsearch/sphinx.conf if you made any changes from the default
+		sudo mv /etc/sphinxsearch/sphinx.conf /etc/sphinxsearch/sphinx.conf.1
+		sudo cp /var/www/nZEDb/misc/sphinxsearch/sphinx.conf /etc/sphinxsearch/sphinx.conf
+		sudo service sphinxsearch start
+		php misc/sphinxsearch/populate_rt_indexes.php releases_rt
+
 
 0.6.3.2 2016-08-15
 Fixed:
@@ -25,6 +40,7 @@ Fixed:
 	* User cart operations in themes.
 	* Adjustments to DbUpdate class to be sure Settings instance is there when needed.
 	* Add checks for tv attributes in XML_Response.php (Fixes issue 2225).
+
 
 0.6.3.0 2016-08-01
 Added:
