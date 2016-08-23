@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-08-23 niel
+	Fix: Refactor use of PEAR::throwError() to avoid PHP notice on PHP 7.0.
 2016-08-01 DariusIII
 	Fix: Add missing glyphicons-halflings images to shared/img folder and adjust css of Gamma theme
 	Fix: Replace somehow reverted icon- with font-awesome versions in viewmoviefull and xxx tpl files in Alpha theme
