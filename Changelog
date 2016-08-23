@@ -11,6 +11,30 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 2016-08-23 niel
 	Fix: Refactor use of PEAR::throwError() to avoid PHP notice on PHP 7.0.
+2016-08-19 DariusIII
+	Fix: Links to other cats in Alpha/Gamma headermenu.tpl (Fixes issue #2237)
+2016-08-15 DariusIII
+	Fix: Move tv and movies UHD category checks before web-dl check.(fixes issue #2234)
+		note: run misc/testing/Release/recategorize.php all
+2016-08-08 DariusIII
+	Chg: Remove rss button from search page in Gamma theme.
+2016-08-08 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.3.1
+
+
+2016-08-08 DariusIII
+	Fix: Add checks for tv attributes in XML_Response.php(fixes issue #2225)
+2016-08-07 niel
+	Fix: Adjustments to DbUpdate class to be sure Settings instance is there when needed.
+2016-08-05 DariusIII
+	Fix: User cart operations in themes
+2016-08-05 niel
+	Fix: Changes to Install's bootstrap process that prevent use of Settings table before it is
+		created.
+2016-08-03 niel
+	Mrg: PR 2194, from b3s3rk - Improve JSON Response from API/RSS by basing it off of XML Response
+2016-08-02 DariusIII
+	Chg: Make themes more lower resolution/mobile devices friendly
 2016-08-01 DariusIII
 	Fix: Add missing glyphicons-halflings images to shared/img folder and adjust css of Gamma theme
 	Fix: Replace somehow reverted icon- with font-awesome versions in viewmoviefull and xxx tpl files in Alpha theme

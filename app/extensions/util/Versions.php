@@ -77,7 +77,7 @@ class Versions extends \lithium\core\Object
 		$result = preg_match(Misc::VERSION_REGEX, $this->git->tagLatest(), $matches) ? $matches['all'] : false;
 
 		if ($result !== false) {
-			if (!in_array($this->git->getBranch(), $this->git->getBranchesStable())) {
+			if (!$this->git->isStable($this->git->getBranch())) {
 				$this->loadXMLFile();
 				$result = preg_match(Misc::VERSION_REGEX, $this->versions->git->tag->__toString(),
 					$matches) ? $matches['digits'] : false;

@@ -23,7 +23,7 @@
 					<input type="button" class="nzb_multi_operations_cartsab btn btn-sm btn-info"
 						   value="Send to queue"/>
 				{/if}
-				<input type="button" class="nzb_multi_operations_download btn btn-sm btn-success" value="Download"/>
+				<input type="button" class="nzb_multi_operations_download_cart btn btn-sm btn-success" value="Download"/>
 			</div>
 		</div>
 		<div class="row">
@@ -44,7 +44,7 @@
 								<tr class="{cycle values=",alt"}">
 									<td class="a-center ">
 										<input id="chk{$result.guid|substr:0:7}" type="checkbox" class="flat"
-											   value="{$result.id}"/>
+											   value="{$result.guid}"/>
 									</td>
 									<td>
 										<a title="View details"
@@ -52,7 +52,7 @@
 									</td>
 									<td class="less"
 										title="Added on {$result.createddate}">{$result.createddate|date_format}</td>
-									<td><a title="Delete from your cart" href="?delete={$result.id}"
+									<td><a title="Delete from your cart" href="?delete={$result.guid}"
 										   class="btn btn-danger btn-sm" style="padding-bottom:2px;">Delete</a></td>
 								</tr>
 							{/foreach}

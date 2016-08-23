@@ -43,7 +43,7 @@
 									title="View amazon page"
 									href="{$site->dereferrer_link}{$result.url}"
 								><img
-										class="shadow"
+										class="shadow img-responsive"
 										src="{$smarty.const.WWW_TOP}/covers/book/{if $result.cover == 1}{$result.bookinfo_id}.jpg{else}no-cover.jpg{/if}"
 										width="120"
 										border="0"

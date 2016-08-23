@@ -11,7 +11,7 @@
 		<meta name="keywords" content="{$page->meta_keywords}{if $site->metakeywords != ""},{$site->metakeywords}{/if}">
 		<meta name="description" content="{$page->meta_description}{if $site->metadescription != ""} - {$site->metadescription}{/if}">
 		<meta name="application-name" content="nZEDb-v{$site->version}">
-		<!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+		<meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
 		<title>{$page->meta_title}{if $site->metatitle != ""} - {$site->metatitle}{/if}</title>
 		{if $loggedin=="true"}
 			<link rel="alternate"

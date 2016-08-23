@@ -40,7 +40,7 @@
 							title="View XXX info"
 							class="modal_xxx thumbnail" rel="viewxxx"
 						><img
-								class="shadow" style="margin: 3px 0;"
+								class="shadow img-responsive" style="margin: 3px 0;"
 								src="{$smarty.const.WWW_TOP}/covers/xxx/{if $result.cover == 1}{$result.id}-cover.jpg{else}no-cover.jpg{/if}"
 								width="160" border="0" alt="{$result.title|escape:"htmlall"}"
 						></a>

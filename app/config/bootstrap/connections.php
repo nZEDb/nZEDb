@@ -77,7 +77,7 @@ $config1 = LITHIUM_APP_PATH . DS . 'config' . DS . 'db-config.php';
 $config2 = nZEDb_ROOT . 'nzedb' . DS . 'config' . DS . 'config.php';
 $config = file_exists($config1) ? $config1 : $config2;
 
-if (file_exists($config)) {
+if (file_exists($config) && !defined('nZEDb_INSTALLER')) {
 	require_once $config;
 	switch (DB_SYSTEM) {
 		case 'mysql':
@@ -96,7 +96,7 @@ if (file_exists($config)) {
 		} else {
 			$host = DB_SOCKET;
 		}
-		
+
 		Connections::add('default',
 			[
 				'type'       => 'database',

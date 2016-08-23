@@ -52,7 +52,7 @@
 						><img
 							height="130px"
 							width="130px"
-							class="shadow"
+							class="shadow img-responsive"
 							src="{$smarty.const.WWW_TOP}/covers/music/{if $result.cover == 1}{$result.musicinfo_id}.jpg{else}no-cover.jpg{/if}"
 							alt="{$result.artist|escape:"htmlall"} - {$result.title|escape:"htmlall"}"
 						></a>
