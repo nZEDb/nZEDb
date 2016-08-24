@@ -35,7 +35,7 @@ print(bcolors.HEADER + "\n\nRequestID Threaded Started at {}".format(datetime.da
 cur[0].execute("SELECT value FROM settings WHERE setting = 'request_hours'")
 dbgrab = cur[0].fetchone()
 request_hours = str(dbgrab[0])
-cur[0].execute("SELECT DISTINCT(g.id) FROM releases r INNER JOIN groups g ON r.groups_id = g.id WHERE r.nzbstatus = 1 AND r.preid = 0 AND r.isrequestid = 1 AND r.reqidstatus in (0, -1) OR (r.reqidstatus = -3 AND r.adddate > NOW() - INTERVAL " + request_hours + " HOUR)")
+cur[0].execute("SELECT DISTINCT(g.id) FROM releases r INNER JOIN groups g ON r.groups_id = g.id WHERE r.nzbstatus = 1 AND r.predb_id = 0 AND r.isrequestid = 1 AND r.reqidstatus in (0, -1) OR (r.reqidstatus = -3 AND r.adddate > NOW() - INTERVAL " + request_hours + " HOUR)")
 datas = cur[0].fetchall()
 
 #close connection to mysql
