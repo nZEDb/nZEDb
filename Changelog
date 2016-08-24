@@ -17,7 +17,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Fix: change rt_attr_string to rt_attr_uint as a dummy field. As attributes are pre-cached strings could cause out of memory issues.
 		Note: if using sphinx search the following is required to update the index
 		sudo service sphinxsearch stop
-		edit /etc/sphinxsearch/sphinx.conf if you made any changes from the default
+		edit /var/www/nZEDb/misc/sphinxsearch/sphinx.conf if you made any changes from the default
 		sudo mv /etc/sphinxsearch/sphinx.conf /etc/sphinxsearch/sphinx.conf.1
 		sudo cp /var/www/nZEDb/misc/sphinxsearch/sphinx.conf /etc/sphinxsearch/sphinx.conf
 		sudo service sphinxsearch start
