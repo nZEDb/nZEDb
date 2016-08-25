@@ -163,6 +163,15 @@ class AniDB
 			$matches)
 		) {
 			$matches['epno'] = 1;
+		} else if (preg_match('/^(?P<title>[\w\s_.+!?\'-\(\)]+)E(?P<epno>\d{1,3}|Movie|OVA|Complete Series)(v\d|-\d+)?/i',
+			$cleanName,
+			$matches)
+		) {
+			$matches['epno'] = (int)$matches['epno'];
+			$matches['title'] = preg_replace('/S\d{2}/i', '', $matches['title']);
+			if (in_array($matches['epno'], ['Movie', 'OVA'])) {
+				$matches['epno'] = 1;
+			}
 		} else {
 			if (nZEDb_DEBUG) {
 				$this->pdo->log->doEcho(
@@ -232,9 +241,9 @@ class AniDB
 			if (!empty($anidbId) && is_numeric($anidbId['anidbid']) && $anidbId['anidbid'] > 0) {
 
 				$updatedAni = $this->checkAniDBInfo($anidbId['anidbid'], $cleanArr['epno']);
-
+				//TODO: fix this! currently we load all info the first time we see an anime
 				if ($updatedAni === false) {
-					if ($this->updateTimeCheck($anidbId['anidbid']) !== false) {
+					if ($this->updateTimeCheck($anidbId['anidbid']) == false) {
 						$this->padb->populateTable('info', $anidbId['anidbid']);
 						$this->doRandomSleep();
 						$updatedAni = $this->checkAniDBInfo($anidbId['anidbid']);
@@ -300,12 +309,12 @@ class AniDB
 	 */
 	private function updateTimeCheck($anidbId)
 	{
+		//TODO: restore this! we want update functionality as well
 		return $this->pdo->queryOneRow(
 			sprintf("
 				SELECT anidbid
 				FROM anidb_info ai
-				WHERE ai.updated < (NOW() - INTERVAL 7 DAY)
-				AND ai.anidbid = %d",
+				WHERE ai.anidbid = %d",
 				$anidbId
 			)
 		);
