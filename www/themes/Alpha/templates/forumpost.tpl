@@ -7,12 +7,14 @@
 	<div class="text-right" style="margin-bottom:5px;"><a class="btn btn-info btn-sm" href="#reply">Reply</a></div>
 
 	<a id="top"></a>
+	<div class="table-responsive">
 
-	<table class="table table-highlight data" id="forumtable">
+
+	<table class="table table-striped" id="forumtable" style="table-layout: fixed; word-wrap: break-word;">
 		<thead>
 		<tr>
-			<th>By</th>
-			<th>Message</th>
+			<th class="col-md-2">By</th>
+			<th class="col-md-8">Message</th>
 		</tr>
 		</thead>
 		<tbody>
@@ -38,7 +40,7 @@
 		{/foreach}
 		</tbody>
 	</table>
-
+		</div>
 	<div class="text-right" style="margin-bottom:5px;"><a class="btn btn-info btn-sm" href="#">Top</a></div>
 
 	<a id="reply"></a>

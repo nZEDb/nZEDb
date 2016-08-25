@@ -7,6 +7,8 @@
 	<div class="text-right" style="margin-bottom:5px;"><a class="btn btn-success" href="#new">New Post</a></div>
 
 	<a id="top"></a>
+	<div class="table-responsive">
+
 
 	<table class="data table table-condensed table-striped table-highlight" id="forumtable">
 		<thead>
@@ -22,7 +24,7 @@
 			<tr id="guid{$result.id}">
 				<td style="cursor:pointer;" class="item" onclick="document.location='{$smarty.const.WWW_TOP}/forumpost/{$result.id}';">
 					<a title="View post" class="title" href="{$smarty.const.WWW_TOP}/forumpost/{$result.id}">{$result.subject|escape:"htmlall"|truncate:100:'...':true:true}</a>
-					<div class="hint">
+					<div class="hint" style="max-width: 100%; word-break: break-word;">
 						{$result.message|escape:"htmlall"|truncate:200:'...':false:false}
 					</div>
 				</td>
@@ -42,7 +44,7 @@
 		{/foreach}
 		</tbody>
 	</table>
-
+	</div>
 	<div class="text-right" style="margin-top:5px;"><a class="btn btn-info btn-sm" href="#top">Top</a></div>
 
 	<br>
@@ -52,7 +54,8 @@
 {/if}
 
 <a id="new"></a>
-<form action="" method="post" style="margin-top:10px;">
+<div class="clearfix"></div>
+<form action="" method="post" style="margin-top:30px;">
 	<fieldset>
 		<legend>Add New Post</legend>
 		<div class="form-group">

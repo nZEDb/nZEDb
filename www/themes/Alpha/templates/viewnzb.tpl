@@ -243,8 +243,7 @@
 		{if $show && $release.videos_id > 0 && $show.image != "0"}
 			<img src="{$smarty.const.WWW_TOP}/covers/tvshows/{$release.videos_id}.jpg" alt="{$show.title|escape:"htmlall"}">
 		{/if}
-
-		{if $movie && $release.videos_id < 0 && $movie.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/movies/{$movie.imdbid}-cover.jpg" alt="{$movie.title|escape:"htmlall"}">{/if}
+		{if $movie && $release.videos_id <= 0 && $movie.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/movies/{$movie.imdbid}-cover.jpg" alt="{$movie.title|escape:"htmlall"}">{/if}
 		{*{$smarty.const.WWW_TOP}/covers/movies/{$movie.imdbid}-cover.jpg" alt="{$movie.title|escape:"htmlall"}"*}
 
 		{if $xxx && $xxx.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/xxx/{$xxx.id}-cover.jpg" alt="{$xxx.title|escape:"htmlall"}">{/if}
