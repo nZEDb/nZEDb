@@ -116,6 +116,7 @@
 			{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
 			{assign var="mcatname" value=","|explode:$result.grp_release_catname}
 			{foreach $msplits as $m}
+				{if $m@index < $mname|@count}
 				<tr class="{cycle values=",alt"} filter"data-name="{$mname[$m@index]|escape:"htmlall"|replace:".":" "|lower}" id="guid{$mguid[$m@index]}">
 					<td class="check"><input id="chk{$mguid[$m@index]|substr:0:7}" type="checkbox" class="nzb_check" value="{$mguid[$m@index]}" /></td>
 					<td class="item">
@@ -141,23 +142,16 @@
 						<a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$mguid[$m@index]}">{$mtotalparts[$m@index]}</a>&nbsp;<i class="fa fa-th-list"></i>
 					</td>
 					<td class="icons" style='width:100px;'>
-						<ul class="inline">
-							<li>
-								<a class="icon icon_nzb fa fa-download" style="text-decoration: none; color: #7ab800;" title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}/{$mname[$m@index]|escape:"url"}"></a>
-							</li>
-							<li>
-								<a  href="#" class="icon icon_cart fa fa-shopping-cart" style="text-decoration: none; color: #5c5c5c;" title="Send to my Cart">
-								</a>
-							</li>
-							{if $sabintegrated}
-								<li>
-									<a class="icon icon_sab" style="text-decoration: none; color: #008ab8;"  href="#" title="Send to queue">
-									</a>
-								</li>
-							{/if}
-						</ul>
+						<div class="icon icon_nzb">
+							<a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}"></a>
+						</div>
+						{if $sabintegrated}
+							<div class="icon icon_sab" title="Send to my Queue"></div>
+						{/if}
+						<div class="icon icon_cart" title="Add to Cart"></div>
 					</td>
 				</tr>
+				{/if}
 			{/foreach}
 		</table>
 		</div>
