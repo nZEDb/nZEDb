@@ -579,6 +579,11 @@ class NameFixer
 
 				$this->fixed++;
 
+				//Rename releases posted by ozelot from KTR to SDCLiP
+				if(!empty($release['fromname']) && preg_match('/oz@lot[.]com/i', $release['fromname'])) {
+					$newName = preg_replace('/KTR$/', 'SDCLiP', $newName);
+				}
+
 				$newName = explode("\\", $newName);
 				$newName = preg_replace(['/^[-=_\.:\s]+/', '/[-=_\.:\s]+$/'], '', $newName[0]);
 
