@@ -1999,10 +1999,11 @@ class Net_NNTP_Protocol_Client extends PEAR
 				break;
 
 			default:
-				$text = $this->_currentStatusResponse();
 				$message = "Unexpected response: '$text'";
 				break;
 		}
+		$text = $this->_currentStatusResponse();
+
 		return $this->throwError($message, $response, $text);
 	}
 }
