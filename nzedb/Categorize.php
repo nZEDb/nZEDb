@@ -33,6 +33,12 @@ class Categorize extends Category
 	public $releaseName;
 
 	/**
+	 * Release poster to sort through.
+	 * @var string
+	 */
+	public $poster;
+
+	/**
 	 * Group ID of the releasename we are sorting through.
 	 *
 	 * @var int|string
@@ -63,15 +69,17 @@ class Categorize extends Category
 	 * Returns Category::OTHER_MISC if no category is appropriate.
 	 *
 	 * @param string     $releaseName The name to parse.
+	 * @param string     $poster Name of the release poster to parse
 	 * @param int|string $groupID     The groupID.
 	 *
 	 * @return int The categoryID.
 	 */
-	public function determineCategory($groupID, $releaseName = '')
+	public function determineCategory($groupID, $releaseName = '', $poster = '')
 	{
 		$this->releaseName = $releaseName;
 		$this->groupID = $groupID;
 		$this->tmpCat = Category::OTHER_MISC;
+		$this->poster      = $poster;
 
 		switch (true) {
 			case $this->isMisc():
@@ -1033,6 +1041,9 @@ class Categorize extends Category
 
 	public function isXxxSD()
 	{
+		if ($this->checkPoster( '/oz@lot[.]com/i', $this->poster, Category::XXX_SD) === true) {
+			return true;
+		}
 		if (preg_match('/SDX264XXX|XXX\.HR\./i', $this->releaseName)) {
 			$this->tmpCat = Category::XXX_SD;
 			return true;
@@ -1548,5 +1559,21 @@ class Categorize extends Category
 		}
 
 		return true;
+	}
+
+	/**
+	 * @param string $regex     Regex to use for match
+	 * @param string $fromName  Poster that needs to be matched by regex
+	 * @param string $category  Category to set if there is a match
+	 *
+	 * @return bool
+	 */
+	public function checkPoster($regex, $fromName, $category)
+	{
+		if (preg_match($regex, $fromName)) {
+			$this->tmpCat = $category;
+			return true;
+		}
+		return false;
 	}
 }

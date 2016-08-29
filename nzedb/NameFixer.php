@@ -259,7 +259,7 @@ class NameFixer
 		$preId = false;
 		if ($cats === 3) {
 			$query = sprintf('
-					SELECT rf.name AS textstring, rel.categories_id, rel.name, rel.searchname, rel.groups_id,
+					SELECT rf.name AS textstring, rel.categories_id, rel.name, rel.searchname, rel.fromname, rel.groups_id,
 						rf.releases_id AS fileid, rel.id AS releases_id
 					FROM releases rel
 					INNER JOIN release_files rf ON (rf.releases_id = rel.id)
@@ -271,7 +271,7 @@ class NameFixer
 			$preId = true;
 		} else {
 			$query = sprintf('
-					SELECT rf.name AS textstring, rel.categories_id, rel.name, rel.searchname, rel.groups_id,
+					SELECT rf.name AS textstring, rel.categories_id, rel.name, rel.searchname, rel.fromname, rel.groups_id,
 						rf.releases_id AS fileid, rel.id AS releases_id
 					FROM releases rel
 					INNER JOIN release_files rf ON (rf.releases_id = rel.id)
@@ -321,7 +321,7 @@ class NameFixer
 
 		if ($cats === 3) {
 			$query = sprintf('
-					SELECT rel.id AS releases_id, rel.guid, rel.groups_id
+					SELECT rel.id AS releases_id, rel.guid, rel.groups_id, rel.fromname
 					FROM releases rel
 					WHERE nzbstatus = %d
 					AND predb_id = 0',
@@ -330,7 +330,7 @@ class NameFixer
 			$cats = 2;
 		} else {
 			$query = sprintf('
-					SELECT rel.id AS releases_id, rel.guid, rel.groups_id
+					SELECT rel.id AS releases_id, rel.guid, rel.groups_id, rel.fromname
 					FROM releases rel
 					WHERE (rel.isrenamed = %d OR rel.categories_id = %d)
 					AND proc_par2 = %d',
@@ -394,7 +394,7 @@ class NameFixer
 		if ($cats === 3) {
 			$query = sprintf('
 				SELECT
-					rel.id AS releases_id, rel.size AS relsize, rel.groups_id, rel.categories_id,
+					rel.id AS releases_id, rel.size AS relsize, rel.groups_id, rel.fromname, rel.categories_id,
 					rel.name, rel.name AS textstring, rel.predb_id, rel.searchname,
 					HEX(ru.uniqueid) AS uid
 				FROM releases rel
@@ -409,7 +409,7 @@ class NameFixer
 		} else {
 			$query = sprintf('
 				SELECT
-					rel.id AS releases_id, rel.size AS relsize, rel.groups_id, rel.categories_id,
+					rel.id AS releases_id, rel.size AS relsize, rel.groups_id, rel.fromname, rel.categories_id,
 					rel.name, rel.name AS textstring, rel.predb_id, rel.searchname,
 					HEX(ru.uniqueid) AS uid
 				FROM releases rel
@@ -568,7 +568,7 @@ class NameFixer
 				$this->matched = true;
 				$this->relid = $release['releases_id'];
 
-				$determinedCategory = $this->category->determineCategory($release['groups_id'], $newName);
+				$determinedCategory = $this->category->determineCategory($release['groups_id'], $newName, !empty($release['fromname']) ? $release['fromname'] : '');
 
 				if ($type === "PAR2, ") {
 					$newName = ucwords($newName);
@@ -578,6 +578,11 @@ class NameFixer
 				}
 
 				$this->fixed++;
+
+				//Rename releases posted by ozelot from KTR to SDCLiP
+				if(!empty($release['fromname']) && preg_match('/oz@lot[.]com/i', $release['fromname'])) {
+					$newName = preg_replace('/KTR$/', 'SDCLiP', $newName);
+				}
 
 				$newName = explode("\\", $newName);
 				$newName = preg_replace(['/^[-=_\.:\s]+/', '/[-=_\.:\s]+$/'], '', $newName[0]);
@@ -743,7 +748,7 @@ class NameFixer
 		$res = $this->pdo->queryDirect(
 			sprintf("
 				SELECT r.id AS releases_id, r.name, r.searchname,
-					r.groups_id, r.categories_id
+					r.fromname, r.groups_id, r.categories_id
 				FROM releases r
 				%1\$s
 				AND (r.name %2\$s OR r.searchname %2\$s)
@@ -827,7 +832,7 @@ class NameFixer
 
 		$query = $this->pdo->queryDirect(
 						sprintf('
-							SELECT r.id AS releases_id, r.name, r.searchname,
+							SELECT r.id AS releases_id, r.name, r.searchname, r.fromname
 								r.groups_id, r.categories_id,
 								rf.name AS filename
 							FROM releases r
@@ -1617,7 +1622,7 @@ class NameFixer
 	{
 		if ($this->done === false && $this->relid !== $release["releases_id"]) {
 			$result = $this->pdo->queryDirect("
-				SELECT r.id AS releases_id, r.size AS relsize, r.name AS textstring, r.searchname, r.predb_id
+				SELECT r.id AS releases_id, r.size AS relsize, r.name AS textstring, r.searchname, r.fromname, r.predb_id
 				FROM release_unique ru
 				STRAIGHT_JOIN releases r ON ru.releases_id = r.id
 				WHERE ru.uniqueid = UNHEX({$this->pdo->escapeString($release['uid'])})

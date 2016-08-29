@@ -10,11 +10,10 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 
 2016-08-29 DariusIII
+	Chg: Add categorization by poster
 	Mrg: PR #2244 from cytek
 2016-08-24 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.3.2
-
-
 2016-08-23 bart39
 	Fix: change rt_attr_string to rt_attr_uint as a dummy field. As attributes are pre-cached strings could cause out of memory issues.
 		Note: if using sphinx search the following is required to update the index

@@ -42,7 +42,7 @@ class RequestIDWeb extends RequestID
 	{
 		$this->_releases = $this->pdo->queryDirect(
 			sprintf('
-				SELECT r.id, r.name, r.searchname, g.name AS groupname, r.groups_id, r.categories_id
+				SELECT r.id, r.name, r.fromname, r.searchname, g.name AS groupname, r.groups_id, r.categories_id
 				FROM releases r
 				LEFT JOIN groups g ON r.groups_id = g.id
 				WHERE r.nzbstatus = 1
@@ -136,7 +136,8 @@ class RequestIDWeb extends RequestID
 					'reqid' => $requestId,
 					'ident' => $release['id'],
 					'group' => $release['groupname'],
-					'sname' => $release['searchname']
+					'sname' => $release['searchname'],
+					'fromname' => $release['fromname']
 				];
 			}
 		}
@@ -284,7 +285,7 @@ class RequestIDWeb extends RequestID
 	 */
 	protected function _updateRelease()
 	{
-		$determinedCategory = $this->category->determineCategory($this->_release['groups_id'], $this->_newTitle['title']);
+		$determinedCategory = $this->category->determineCategory($this->_release['groups_id'], $this->_newTitle['title'], $this->_release['fromname']);
 		$newTitle = $this->pdo->escapeString($this->_newTitle['title']);
 		$this->pdo->queryExec(
 			sprintf('
