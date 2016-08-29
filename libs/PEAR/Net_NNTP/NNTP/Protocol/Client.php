@@ -1895,92 +1895,114 @@ class Net_NNTP_Protocol_Client extends PEAR
 
 			// 381, RFC2980: 'More authentication information required'
 			case NET_NNTP_PROTOCOL_RESPONSECODE_AUTHENTICATION_CONTINUE:
-				return $this->throwError('More authentication information required', $response, $this->_currentStatusResponse());
+				$message = 'More authentication information required';
+				break;
 
 			// 400, RFC977: 'Service discontinued'
 			case NET_NNTP_PROTOCOL_RESPONSECODE_DISCONNECTING_FORCED:
-				return $this->throwError('Server refused connection', $response, $this->_currentStatusResponse());
+				$message = 'Server refused connection';
+				break;
 
 			// 411, RFC977: 'no such news group'
 			case NET_NNTP_PROTOCOL_RESPONSECODE_NO_SUCH_GROUP:
-				return $this->throwError('No such news group on server', $response, $this->_currentStatusResponse());
+				$message = 'No such news group on server';
+				break;
 
 			// 412, RFC2980: 'No news group current selected'
 			case NET_NNTP_PROTOCOL_RESPONSECODE_NO_GROUP_SELECTED:
-				return $this->throwError('No news group current selected', $response, $this->_currentStatusResponse());
+				$message = 'No news group current selected';
+				break;
 
 			// 420, RFC2980: 'Current article number is invalid'
 			case NET_NNTP_PROTOCOL_RESPONSECODE_NO_ARTICLE_SELECTED:
-				return $this->throwError('Current article number is invalid', $response, $this->_currentStatusResponse());
+				$message = 'Current article number is invalid';
+				break;
 
 			// 421, RFC977: 'no next article in this group'
 			case NET_NNTP_PROTOCOL_RESPONSECODE_NO_NEXT_ARTICLE:
-				return $this->throwError('No next article in this group', $response, $this->_currentStatusResponse());
+				$message = 'No next article in this group';
+				break;
 
 			// 422, RFC977: 'no previous article in this group'
 			case NET_NNTP_PROTOCOL_RESPONSECODE_NO_PREVIOUS_ARTICLE:
-				return $this->throwError('No previous article in this group', $response, $this->_currentStatusResponse());
+				$message = 'No previous article in this group';
+				break;
 
 			// 423, RFC977: 'No such article number in this group'
 			case NET_NNTP_PROTOCOL_RESPONSECODE_NO_SUCH_ARTICLE_NUMBER:
-				return $this->throwError('No such article number in this group', $response, $this->_currentStatusResponse());
+				$message = 'No such article number in this group';
+				break;
 
 			// 430, RFC977: 'No such article found'
 			case NET_NNTP_PROTOCOL_RESPONSECODE_NO_SUCH_ARTICLE_ID:
-				return $this->throwError('No such article found', $response, $this->_currentStatusResponse());
+				$message = 'No such article found';
+				break;
 
 			// 435, RFC977: 'Article not wanted'
 			case NET_NNTP_PROTOCOL_RESPONSECODE_TRANSFER_UNWANTED:
-				return $this->throwError('Article not wanted', $response, $this->_currentStatusResponse());
+				$message = 'Article not wanted';
+				break;
 
 			// 436, RFC977: 'Transfer failed - try again later'
 			case NET_NNTP_PROTOCOL_RESPONSECODE_TRANSFER_FAILURE:
-				return $this->throwError('Transfer failed - try again later', $response, $this->_currentStatusResponse());
+				$message = 'Transfer failed - try again later';
+				break;
 
 			// 437, RFC977: 'Article rejected - do not try again'
 			case NET_NNTP_PROTOCOL_RESPONSECODE_TRANSFER_REJECTED:
-				return $this->throwError('Article rejected - do not try again', $response, $this->_currentStatusResponse());
+				$message = 'Article rejected - do not try again';
+				break;
 
 			// 440, RFC977: 'posting not allowed'
 			case NET_NNTP_PROTOCOL_RESPONSECODE_POSTING_PROHIBITED:
-				return $this->throwError('Posting not allowed', $response, $this->_currentStatusResponse());
+				$message = 'Posting not allowed';
+				break;
 
 			// 441, RFC977: 'posting failed'
 			case NET_NNTP_PROTOCOL_RESPONSECODE_POSTING_FAILURE:
-				return $this->throwError('Posting failed', $response, $this->_currentStatusResponse());
+				$message = 'Posting failed';
+				break;
 
 			// 481, RFC2980: 'Groups and descriptions unavailable'
 			case NET_NNTP_PROTOCOL_RESPONSECODE_XGTITLE_GROUPS_UNAVAILABLE:
-				return $this->throwError('Groups and descriptions unavailable', $response, $this->_currentStatusResponse());
+				$message = 'Groups and descriptions unavailable';
+				break;
 
 			// 482, RFC2980: 'Authentication rejected'
 			case NET_NNTP_PROTOCOL_RESPONSECODE_AUTHENTICATION_REJECTED:
-				return $this->throwError('Authentication rejected', $response, $this->_currentStatusResponse());
+				$message = 'Authentication rejected';
+				break;
 
 			// 500, RFC977: 'Command not recognized'
 			case NET_NNTP_PROTOCOL_RESPONSECODE_UNKNOWN_COMMAND:
-				return $this->throwError('Command not recognized', $response, $this->_currentStatusResponse());
+				$message = 'Command not recognized';
+				break;
 
 			// 501, RFC977: 'Command syntax error'
 			case NET_NNTP_PROTOCOL_RESPONSECODE_SYNTAX_ERROR:
-				return $this->throwError('Command syntax error', $response, $this->_currentStatusResponse());
+				$message = 'Command syntax error';
+				break;
 
 			// 502, RFC2980: 'No permission'
 			case NET_NNTP_PROTOCOL_RESPONSECODE_NOT_PERMITTED:
-				return $this->throwError('No permission', $response, $this->_currentStatusResponse());
+				$message = 'No permission';
+				break;
 
 			// 503, RFC2980: 'Program fault - command not performed'
 			case NET_NNTP_PROTOCOL_RESPONSECODE_NOT_SUPPORTED:
-				return $this->throwError('Internal server error, function not performed', $response, $this->_currentStatusResponse());
+				$message = 'Internal server error, function not performed';
+				break;
 
 			// 580, RFC4642: 'Can not initiate TLS negotiation'
 			case NET_NNTP_PROTOCOL_RESPONSECODE_TLS_FAILED_NEGOTIATION:
-				return $this->throwError('Can not initiate TLS negotiation', $response, $this->_currentStatusResponse());
+				$message = 'Can not initiate TLS negotiation';
+				break;
 
 			default:
 				$text = $this->_currentStatusResponse();
-				return $this->throwError("Unexpected response: '$text'", $response, $text);
+				$message = "Unexpected response: '$text'";
+				break;
 		}
+		return $this->throwError($message, $response, $text);
 	}
-
 }

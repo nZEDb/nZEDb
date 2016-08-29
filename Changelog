@@ -15,6 +15,8 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.3.2
 
 
+2016-08-23 niel
+	Fix: Refactor use of PEAR::throwError() to avoid PHP notice on PHP 7.0.
 2016-08-23 bart39
 	Fix: change rt_attr_string to rt_attr_uint as a dummy field. As attributes are pre-cached strings could cause out of memory issues.
 		Note: if using sphinx search the following is required to update the index
@@ -31,8 +33,6 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 		note: run misc/testing/Release/recategorize.php all
 2016-08-08 DariusIII
 	Chg: Remove rss button from search page in Gamma theme.
-
-
 2016-08-08 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.3.1
 
