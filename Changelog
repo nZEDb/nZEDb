@@ -9,6 +9,15 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-08-29 niel
+	Mrg: dev-yenc-abstraction branch. This branch unifies our yenc code to use a single class.
+		Lithium adapters are used for the available methods, the best available is
+		automatically configured as the default.
+		No user configuration should be needed, except for the path to ydecode in the settings as
+		before. simple_php_yen_decode can be removed from that setting for those using it, as the
+		extension is automatically detected if available.
+		For PHP 7 users, a new extension will be available shortly to replace simple_php_yenc_decode
+		which cannot be compiled for PHP 7+.
 2016-08-29 DariusIII
 	Mrg: PR #2244 from cytek
 2016-08-24 niel
