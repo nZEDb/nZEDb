@@ -18,6 +18,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 		extension is automatically detected if available.
 		For PHP 7 users, a new extension will be available shortly to replace simple_php_yenc_decode
 		which cannot be compiled for PHP 7+.
+	Chg: Update hint for yydecode setting in site-edit.
 2016-08-29 DariusIII
 	Mrg: PR #2244 from cytek
 2016-08-24 niel
