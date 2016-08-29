@@ -73,12 +73,12 @@ function categorizeRelease($where, $update = true, $echooutput = false)
 	$pdo->log = new ColorCLI();
 	$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 	$relcount = $chgcount = 0;
-	echo $pdo->log->primary("SELECT id, searchname, groups_id, categories_id FROM releases " . $where);
-	$resrel = $pdo->queryDirect("SELECT id, searchname, groups_id, categories_id FROM releases " . $where);
+	echo $pdo->log->primary("SELECT id, searchname, fromname, groups_id, categories_id FROM releases " . $where);
+	$resrel = $pdo->queryDirect("SELECT id, searchname, fromname, groups_id, categories_id FROM releases " . $where);
 	$total = $resrel->rowCount();
 	if ($total > 0) {
 		foreach ($resrel as $rowrel) {
-			$catId = $cat->determineCategory($rowrel['groups_id'], $rowrel['searchname']);
+			$catId = $cat->determineCategory($rowrel['groups_id'], $rowrel['searchname'], $rowrel['fromname']);
 			if ($rowrel['categories_id'] != $catId) {
 				if ($update === true) {
 					$pdo->queryExec(

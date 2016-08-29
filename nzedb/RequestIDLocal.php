@@ -23,7 +23,7 @@ class RequestIDLocal extends RequestID
 	protected function _getReleases()
 	{
 		$query = (
-			'SELECT r.id, r.name, r.categories_id, r.reqidstatus, g.name AS groupname, g.id as gid
+			'SELECT r.id, r.name, r.fromname, r.categories_id, r.reqidstatus, g.name AS groupname, g.id as gid
 			FROM releases r
 			LEFT JOIN groups g ON r.groups_id = g.id
 			WHERE r.nzbstatus = 1
@@ -253,7 +253,7 @@ class RequestIDLocal extends RequestID
 	 */
 	protected function _updateRelease()
 	{
-		$determinedCat = $this->category->determineCategory($this->_release['gid'], $this->_newTitle['title']);
+		$determinedCat = $this->category->determineCategory($this->_release['gid'], $this->_newTitle['title'], $this->_release['fromname']);
 		if ($determinedCat == $this->_release['categories_id']) {
 			$newTitle = $this->pdo->escapeString($this->_newTitle['title']);
 			$this->pdo->queryExec(

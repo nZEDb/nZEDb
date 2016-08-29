@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-08-29 DariusIII
+	Chg: Add categorization by poster
 2016-08-19 DariusIII
 	Fix: Links to other cats in Alpha/Gamma headermenu.tpl (Fixes issue #2237)
 2016-08-15 DariusIII

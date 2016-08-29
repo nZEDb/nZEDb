@@ -614,7 +614,7 @@ class ProcessAdditional
 		$this->_releases = $this->pdo->query(
 			sprintf('
 				SELECT r.id, r.id AS releases_id, r.guid, r.name, r.size, r.groups_id, r.nfostatus,
-					r.completion, r.categories_id, r.searchname, r.predb_id,
+					r.fromname, r.completion, r.categories_id, r.searchname, r.predb_id,
 					c.disablepreview
 				FROM releases r
 				LEFT JOIN categories c ON c.id = r.categories_id
@@ -1745,7 +1745,7 @@ class ProcessAdditional
 		// Make sure the category is music or other.
 		$rQuery = $this->pdo->queryOneRow(
 			sprintf(
-				'SELECT searchname, categories_id AS id, groups_id FROM releases WHERE proc_pp = 0 AND id = %d',
+				'SELECT searchname, fromname, categories_id AS id, groups_id FROM releases WHERE proc_pp = 0 AND id = %d',
 				$this->_release['id']
 			)
 		);
@@ -1802,7 +1802,7 @@ class ProcessAdditional
 									} else if ($ext === 'FLAC') {
 										$newCat = Category::MUSIC_LOSSLESS;
 									} else {
-										$newCat = $this->_categorize->determineCategory($rQuery['groups_id'], $newName);
+										$newCat = $this->_categorize->determineCategory($rQuery['groups_id'], $newName, $rQuery['fromname']);
 									}
 
 									$newTitle = $this->pdo->escapeString(substr($newName, 0, 255));
@@ -2390,7 +2390,7 @@ class ProcessAdditional
 					}
 
 					// Get a new category ID.
-					$newCategory = $this->_categorize->determineCategory($this->_release['groups_id'], $newName);
+					$newCategory = $this->_categorize->determineCategory($this->_release['groups_id'], $newName, $this->_release['fromname']);
 
 					$newTitle = $this->pdo->escapeString(substr($newName, 0, 255));
 					// Update the release with the data.
