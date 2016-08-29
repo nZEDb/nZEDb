@@ -11,6 +11,17 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 2016-08-29 DariusIII
 	Chg: Add categorization by poster
+2016-08-24 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.3.2
+2016-08-23 bart39
+	Fix: change rt_attr_string to rt_attr_uint as a dummy field. As attributes are pre-cached strings could cause out of memory issues.
+		Note: if using sphinx search the following is required to update the index
+		sudo service sphinxsearch stop
+		edit /var/www/nZEDb/misc/sphinxsearch/sphinx.conf if you made any changes from the default
+		sudo mv /etc/sphinxsearch/sphinx.conf /etc/sphinxsearch/sphinx.conf.1
+		sudo cp /var/www/nZEDb/misc/sphinxsearch/sphinx.conf /etc/sphinxsearch/sphinx.conf
+		sudo service sphinxsearch start
+		php misc/sphinxsearch/populate_rt_indexes.php releases_rt
 2016-08-19 DariusIII
 	Fix: Links to other cats in Alpha/Gamma headermenu.tpl (Fixes issue #2237)
 2016-08-15 DariusIII
@@ -18,6 +29,8 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 		note: run misc/testing/Release/recategorize.php all
 2016-08-08 DariusIII
 	Chg: Remove rss button from search page in Gamma theme.
+
+
 2016-08-08 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.3.1
 
