@@ -16,8 +16,15 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 		No user configuration should be needed, except for the path to ydecode in the settings as
 		before. simple_php_yen_decode can be removed from that setting for those using it, as the
 		extension is automatically detected if available.
-		For PHP 7 users, a new extension will be available shortly to replace simple_php_yenc_decode
-		which cannot be compiled for PHP 7+.
+		 For PHP 7 users, a new extension is available to replace simple_php_yenc_decode (which
+		cannot be compiled for PHP 7+).
+		 Those familiar with Zephir and able to compile the extension themselves from this
+		repository: https://github.com/niel/php-yenc
+		 If you can not compile, and are a trusting soul, a precompiled version in a .deb file can
+		be downloaded from https://github.com/niel/php-yenc/releases/download/v1.0.0/php7.0-yenc_1.0.0_amd64.deb
+		The deb package assumes that PHP 7 is installed with the php7.0-* format of packaging it
+		will not work correctly with the php7-* style (extension should install, but the ini
+		files to load it will be in the wrong locations).
 	Chg: Update hint for yydecode setting in site-edit.
 2016-08-29 DariusIII
 	Mrg: PR #2244 from cytek

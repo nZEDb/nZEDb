@@ -20,7 +20,7 @@
 use app\models\Settings;
 
 switch (true) {
-	case extension_loaded('nzedb_yenc'):
+	case extension_loaded('yenc'):
 		$adapter = 'NzedbYenc';
 		break;
 	case extension_loaded('simple_php_yenc_decode'):

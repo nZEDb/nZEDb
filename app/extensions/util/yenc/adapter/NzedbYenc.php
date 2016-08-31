@@ -37,7 +37,7 @@ class NzedbYenc extends \lithium\core\Object
 	 */
 	public static function enabled()
 	{
-		return extension_loaded('nzedb_yenc');
+		return extension_loaded('yenc');
 	}
 
 	public static function encode($data, $filename, $lineLength = 128, $crc32 = true)
