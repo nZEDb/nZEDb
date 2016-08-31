@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-08-31 DariusIII
+	Fix: Sorting arrows on admin->user-list page
 2016-08-29 niel
 	Mrg: dev-yenc-abstraction branch. This branch unifies our yenc code to use a single class.
 		Lithium adapters are used for the available methods, the best available is
