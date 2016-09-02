@@ -19,13 +19,14 @@
 
 namespace app\extensions\util\yenc\adapter;
 
-use yenc;
+use yenc\yenc;
+
 
 class NzedbYenc extends \lithium\core\Object
 {
 	public static function decode($string, $ignore = false, array $options = [])
 	{
-		return (new yenc)->decode($string);
+		return (new yenc())->decode($string);
 	}
 
 	public static function decodeIgnore($string, array $options = [])
@@ -43,9 +44,9 @@ class NzedbYenc extends \lithium\core\Object
 		return extension_loaded('yenc');
 	}
 
-	public static function encode($data, $filename, $lineLength = 128, $crc32 = true)
+	public static function encode($data, $filename, $lineLength = 128)
 	{
-		return (new yenc)->encode($data, $filename, $lineLength, $crc32);
+		return (new yenc())->encode($data, $filename, $lineLength);
 	}
 
 	protected function _init()
