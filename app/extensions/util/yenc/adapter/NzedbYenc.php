@@ -19,19 +19,22 @@
 
 namespace app\extensions\util\yenc\adapter;
 
-use nzedb\yenc;
+use yenc as nzedb_yenc;
 
 class NzedbYenc extends \lithium\core\Object
 {
 	public static function decode($string, $ignore = false, array $options = [])
 	{
-		throw new \Exception('Method not implemented!');
+		return (new nzedb_yenc)->decode($string);
+	}
 
-		return null;
+	public static function decodeIgnore($string, array $options = [])
+	{
+		return self::decode($string, $options);
 	}
 
 	/**
-	 * Determines if this adapter is enabled by checking if the `nzedb_yenc` extension is loaded.
+	 * Determines if this adapter is enabled by checking if the `yenc` extension is loaded.
 	 *
 	 * @return boolean Returns `true` if enabled, otherwise `false`.
 	 */
