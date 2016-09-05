@@ -15,7 +15,7 @@ Changes:
 	 repository: https://github.com/niel/php-yenc
 	  If you can not compile, and are a trusting soul, precompiled versions, in a .deb file, can be
 	 downloaded from:
-	    https://github.com/niel/php-yenc/releases/download/v1.0.0/php5.6-yenc_1.0.0-4_amd64.deb
+	    https://github.com/niel/php-yenc/releases/download/v1.0.0/php5.6-yenc_1.0.0-5_amd64.deb
 	    https://github.com/niel/php-yenc/releases/download/v1.0.0/php7.0-yenc_1.0.0-4_amd64.deb
 	  The deb package assumes that PHP 5/7 is installed with the php5.6-*/php7.0-* style of
 	 packaging it will not work correctly with the php5-*/php7-* style (extension should install,
