@@ -2,6 +2,31 @@ This file details which changes to the code are in which release version. It is 
 ChangeLog file which list *when* changes are made to the dev branches.
 
 
+0.6.4.0 2016-09-05
+Changes:
+	* Refactored our yEnc code to use a single class. Lithium adapters are used for the available
+	 methods, the best available adapter is automatically configured as the default.
+	  No user configuration should be needed, except for the path to ydecode in the settings as
+	 before. simple_php_yen_decode can be removed from that setting for those using it, as the
+	 extension is automatically detected if available.
+	  For PHP 7.0 users, a new extension is available to replace simple_php_yenc_decode (which
+	 cannot be compiled for PHP 7+). This extension is also available for PHP 5.6.
+	  Those familiar with Zephir and able to compile the extension themselves, can do so from this
+	 repository: https://github.com/niel/php-yenc
+	  If you can not compile, and are a trusting soul, precompiled versions, in a .deb file, can be
+	 downloaded from:
+	    https://github.com/niel/php-yenc/releases/download/v1.0.0/php5.6-yenc_1.0.0-4_amd64.deb
+	    https://github.com/niel/php-yenc/releases/download/v1.0.0/php7.0-yenc_1.0.0-4_amd64.deb
+	  The deb package assumes that PHP 5/7 is installed with the php5.6-*/php7.0-* style of
+	 packaging it will not work correctly with the php5-*/php7-* style (extension should install,
+	 but the ini files to load it will be in the wrong locations, so you'll have to correct them).
+	* Update hint for yydecode setting in site-edit.
+
+Fixed:
+	* Sorting arrows on admin->user-list page.
+	* Update isTV regex to match full season releases (PR 2244).
+
+
 0.6.3.3 2016-08-24
 Fixed:
 	* Change rt_attr_string to rt_attr_uint as a dummy field. As attributes are pre-cached, strings
