@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-09-05 DariusIII
+	Fix: Content display for not logged in users in Charisma/Gamma/Gentele/Omicron themes.
 2016-09-05 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.4.0
 

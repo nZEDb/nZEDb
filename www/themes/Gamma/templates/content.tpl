@@ -1,6 +1,6 @@
-{if ($loggedin)=="true"}
+{if $loggedin == "true"}
 	{if $smarty.server.REQUEST_URI == "/"}
-		{foreach $content as $c}
+		{foreach from=$content item=c}
 			<div class="header">
 				<h2><strong>{$c->title}</strong></h2>
 				</br>
@@ -8,7 +8,7 @@
 			{$c->body}
 		{/foreach}
 	{else}
-		{foreach $content as $c}
+		{foreach from=$content item=c}
 			<div class="header">
 				<h2>Help > <strong>{$c->title}</strong></h2>
 				<div class="breadcrumb-wrapper">
@@ -21,4 +21,17 @@
 		{/foreach}
 	{/if}
 {else}
+	{foreach from=$content item=c}
+		{if $c->role == 0}
+			<div class="header">
+				<h2>Help > <strong>{$c->title}</strong></h2>
+				<div class="breadcrumb-wrapper">
+					<ol class="breadcrumb">
+						/ {$c->title}
+					</ol>
+				</div>
+			</div>
+			{$c->body}
+		{/if}
+	{/foreach}
 {/if}
