@@ -9,6 +9,10 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-09-05 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.4.0
+
+
 2016-09-01 niel
 	Fix: Update new yenc extension's adapter class.
 2016-08-31 DariusIII
