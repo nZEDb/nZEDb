@@ -31,7 +31,7 @@ class SimplePhpYencDecode extends \lithium\core\Object
 
 	public static function decodeIgnore(&$text)
 	{
-		self::decode($text, true);
+		return Yenc::decodeIgnore($text, ['name' => 'php']);
 	}
 
 	/**
@@ -44,7 +44,7 @@ class SimplePhpYencDecode extends \lithium\core\Object
 		return extension_loaded('simple_php_yenc_decode');
 	}
 
-	public static function encode($data, $filename, $lineLength, $crc32)
+	public static function encode(&$data, $filename, $lineLength, $crc32)
 	{
 		return Yenc::encode($data, $filename, $lineLength, $crc32, ['name' => 'php']);
 	}
