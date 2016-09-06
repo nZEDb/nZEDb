@@ -19,6 +19,10 @@
 
 use app\models\Settings;
 
+if (defined('nZEDb_INSTALLER') && nZEDb_INSTALLER !== false) {
+	exit;
+}
+
 switch (true) {
 	case extension_loaded('yenc'):
 		$adapter = 'NzedbYenc';
