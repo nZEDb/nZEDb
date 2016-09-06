@@ -80,7 +80,7 @@ class Settings extends \lithium\data\Model {
 	{
 		$result = Settings::find('setting', ['conditions' => $setting, 'fields' => ['value']]);
 
-		if ($result->count()) {
+		if ($result !== false && $result->count() > 0) {
 			$value = $result->data()[0]['value'];
 		} else if ($returnAlways === false) {
 			throw new \Exception("Unable to fetch setting from Db!");
