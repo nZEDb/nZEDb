@@ -19,11 +19,8 @@
 
 use app\models\Settings;
 
-if (defined('nZEDb_INSTALLER')) {
-	// When PHP 7.0 becomes minimum version these can be returned to a single condition
-	if (nZEDb_INSTALLER !== false) {
-		exit;
-	}
+if (defined('nZEDb_INSTALLER') && nZEDb_INSTALLER === true) {
+	exit;
 }
 
 switch (true) {
