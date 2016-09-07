@@ -29,9 +29,9 @@ class NzedbYenc extends \lithium\core\Object
 		return (new yenc())->decode($string);
 	}
 
-	public static function decodeIgnore($string, array $options = [])
+	public static function decodeIgnore(&$text, array $options = [])
 	{
-		return self::decode($string, $options);
+		return Yenc::decodeIgnore($text, ['name' => 'php']);
 	}
 
 	/**

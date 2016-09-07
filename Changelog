@@ -12,6 +12,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 2016-09-06 niel
 	Fix: Prevent yEnc from configuring all adapters during install process, as that would require
 		Db access which isn't available yet. Closes issue #2257.
+	Fix: Have the yEnc adapters use the PHP adapter for decodeIgnore(). Slow but it what happened before.
 2016-09-05 DariusIII
 	Fix: Content display for not logged in users in Charisma/Gamma/Gentele/Omicron themes.
 2016-09-05 niel
