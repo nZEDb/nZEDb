@@ -19,19 +19,20 @@
 
 namespace app\extensions\util\yenc\adapter;
 
+use app\extensions\util\Yenc as nYenc;
 use yenc\yenc;
 
 
 class NzedbYenc extends \lithium\core\Object
 {
-	public static function decode($string, $ignore = false, array $options = [])
+	public static function decode(&$text, $ignore = false, array $options = [])
 	{
-		return (new yenc())->decode($string);
+		return (new yenc())->decode($text);
 	}
 
 	public static function decodeIgnore(&$text, array $options = [])
 	{
-		return Yenc::decodeIgnore($text, ['name' => 'php']);
+		return nYenc::decodeIgnore($text, ['name' => 'php']);
 	}
 
 	/**
