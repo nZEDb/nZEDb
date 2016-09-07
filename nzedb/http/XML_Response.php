@@ -431,7 +431,8 @@ class XML_Response
 			$this->writeZedAttr('comments', $this->release['comments']);
 			$this->writeZedAttr('password', $this->release['passwordstatus']);
 			$this->writeZedAttr('usenetdate', date_format(date_create($this->release['postdate']), 'D, d M Y H:i:s O'));
-			$this->writeZedAttr('group', $this->release['group_name']);
+			$this->writeZedAttr('group',
+				(isset($this->release['group_name']) ? $this->release['group_name'] : ''));
 		}
 	}
 
