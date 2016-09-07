@@ -6,7 +6,7 @@ group: edge
 branches:
   only:
     - 0.x
-    * Latest-testing
+    - Latest-testing
     - dev
 
 #TODO PHP 7
