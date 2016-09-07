@@ -1,0 +1,87 @@
+language: php
+sudo: required
+dist: trusty
+group: edge
+
+branches:
+  only:
+    - 0.x
+    * Latest-testing
+    - dev
+
+#TODO PHP 7
+php:
+  - '5.6'
+
+services:
+  - mysql
+
+addons:
+  apt:
+    packages:
+    - mysql-server-5.6
+    - mysql-client-core-5.6
+    - mysql-client-5.6
+    - apache2
+    - libapache2-mod-fastcgi
+    - curl
+
+# Ignore for now (by putting true)
+before_install: true
+
+install:
+  # Install composer packages.
+  - composer install
+
+before_script:
+  # Disable apparmor.
+  - if service apparmor status; then service apparmor stop; update-rc.d -f apparmor remove; service apparmor teardown; fi
+  # Change MySQL settings.
+  - sudo sed -i "s/\[mysqld\]/\[mysqld\]\ngroup_concat_max_len = 8192/" /etc/mysql/my.cnf
+  # Change PHP settings.
+  - echo 'max_execution_time = 120' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+  - echo 'memory_limit = 1024M' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+  # Enable php-fpm
+  - sudo cp ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf.default ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf
+  - sudo a2enmod rewrite actions fastcgi alias
+  - echo "cgi.fix_pathinfo = 1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - ~/.phpenv/versions/$(phpenv version-name)/sbin/php-fpm
+  # Configure apache virtual hosts
+  - sudo a2dissite 000-default
+  - curl -O https://raw.githubusercontent.com/nZEDb/travis-ci-files/master/apache.conf
+  - sudo mv apache.conf /etc/apache2/sites-available/default.conf
+  - sudo sed -e "s?%TRAVIS_BUILD_DIR%?$(pwd)?g" --in-place /etc/apache2/sites-available/default.conf
+  - sudo a2ensite default.conf
+  - sudo sed -i "s/AllowOverride None/AllowOverride All/g" /etc/apache2/apache2.conf
+  - sudo sed -i "s/Require all denied/Require all granted/g" /etc/apache2/apache2.conf
+  - sudo service apache2 restart
+  - sudo usermod -a -G www-data $USER
+  # Apache needs permissions to home folder to check for .htaccess file, lazy fix.
+  - sudo chmod -R 777 /home/travis/
+  # Download/configure nZEDb installer test script.
+  - curl -O https://raw.githubusercontent.com/nZEDb/travis-ci-files/master/test_nzedb_installer.sh
+  - sed -i 's/DBUSER=".*"/DBUSER="root"/' test_nzedb_installer.sh
+  - sed -i 's/DBPASS=".*"/DBPASS=""/' test_nzedb_installer.sh
+  - sed -i 's/DBSOCKET=".*"/DBSOCKET=""/' test_nzedb_installer.sh
+  - sed -i "s?NZEDBPATH=\".*\"?NZEDBPATH=\"$(pwd)\"?" test_nzedb_installer.sh
+  - sed -i 's/HOST=".*"/HOST="127.0.0.1"/' test_nzedb_installer.sh
+  # Configure nZEDb settings.
+  - cp nzedb/config/settings.example.php nzedb/config/settings.php
+  - sed -i "s/'nZEDb_DEBUG', false/'nZEDb_DEBUG', true/" nzedb/config/settings.php
+  - sed -i "s/'nZEDb_LOGGING', false/'nZEDb_LOGGING', true/" nzedb/config/settings.php
+  - sed -i "s/'nZEDb_LOGINFO', false/'nZEDb_LOGINFO', true/" nzedb/config/settings.php
+  - sed -i "s/'nZEDb_LOGNOTICE', false/'nZEDb_LOGNOTICE', true/" nzedb/config/settings.php
+  - sed -i "s/'nZEDb_LOGWARNING', false/'nZEDb_LOGWARNING', true/" nzedb/config/settings.php
+  - sed -i "s/'nZEDb_LOGERROR', false/'nZEDb_LOGERROR', true/" nzedb/config/settings.php
+  - sed -i "s/'nZEDb_LOGFATAL', false/'nZEDb_LOGFATAL', true/" nzedb/config/settings.php
+  - sed -i "s/'nZEDb_LOGQUERIES', false/'nZEDb_LOGQUERIES', true/" nzedb/config/settings.php
+
+script:
+  # Run nZEDb installer test script.
+  - bash test_nzedb_installer.sh
+
+after_failure:
+  # Get contents of logs
+  - cat /tmp/apache.log
+  - if [[ -f resources/logs/php_errors.log ]]; then cat resources/logs/php_errors.log; fi
+  - if [[ -f resources/logs/nzedb.log ]]; then cat resources/logs/nzedb.log; fi
