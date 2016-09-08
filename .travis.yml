@@ -9,31 +9,41 @@ branches:
     - Latest-testing
     - dev
 
+notifications:
+  irc:
+    channels:
+      - "irc.synirc.net#testkevin"
+    on_success: always
+    on_failure: always
+    use_notice: true
+    skip_join: true
+    template:
+      - "\x030[\x0310Travis-ci\x030]\x03 Commit \x0314{%{commit}}\x03 by \x0315(%{author})\x03@\x0313%{repository_name}/%{branch}\x03 has \x037%{result}\x03: \x032%{build_url}\x03"
+
 #TODO PHP 7
 php:
   - '5.6'
 
-services:
-  - mysql
-
 addons:
+  mariadb: '10.0'
   apt:
     packages:
-    - mysql-server-5.6
-    - mysql-client-core-5.6
-    - mysql-client-5.6
     - apache2
     - libapache2-mod-fastcgi
     - curl
 
-# Ignore for now (by putting true)
-before_install: true
+before_install:
+  - composer validate
 
 install:
   # Install composer packages.
-  - composer install
+  - composer install --prefer-dist
 
 before_script:
+  - curl -O https://raw.githubusercontent.com/nZEDb/travis-ci-files/master/cat_logs.sh
+  # Create mysql user.
+  - mysql -u root -e "GRANT ALL ON nzedb.* TO 'nzedb'@'localhost' IDENTIFIED BY 'nzedb';"
+  - mysql -u root -e "GRANT FILE ON *.* TO 'nzedb'@'localhost';"
   # Disable apparmor.
   - if service apparmor status; then service apparmor stop; update-rc.d -f apparmor remove; service apparmor teardown; fi
   # Change MySQL settings.
@@ -49,19 +59,18 @@ before_script:
   # Configure apache virtual hosts
   - sudo a2dissite 000-default
   - curl -O https://raw.githubusercontent.com/nZEDb/travis-ci-files/master/apache.conf
+  - sed -e "s?%TRAVIS_BUILD_DIR%?$(pwd)?g" --in-place apache.conf
   - sudo mv apache.conf /etc/apache2/sites-available/default.conf
-  - sudo sed -e "s?%TRAVIS_BUILD_DIR%?$(pwd)?g" --in-place /etc/apache2/sites-available/default.conf
   - sudo a2ensite default.conf
   - sudo sed -i "s/AllowOverride None/AllowOverride All/g" /etc/apache2/apache2.conf
   - sudo sed -i "s/Require all denied/Require all granted/g" /etc/apache2/apache2.conf
   - sudo service apache2 restart
-  - sudo usermod -a -G www-data $USER
-  # Apache needs permissions to home folder to check for .htaccess file, lazy fix.
+  # Set permissions, can't use newgrp with travis so we need to do it this way.
   - sudo chmod -R 777 /home/travis/
   # Download/configure nZEDb installer test script.
   - curl -O https://raw.githubusercontent.com/nZEDb/travis-ci-files/master/test_nzedb_installer.sh
-  - sed -i 's/DBUSER=".*"/DBUSER="root"/' test_nzedb_installer.sh
-  - sed -i 's/DBPASS=".*"/DBPASS=""/' test_nzedb_installer.sh
+  - sed -i 's/DBUSER=".*"/DBUSER="nzedb"/' test_nzedb_installer.sh
+  - sed -i 's/DBPASS=".*"/DBPASS="nzedb"/' test_nzedb_installer.sh
   - sed -i 's/DBSOCKET=".*"/DBSOCKET=""/' test_nzedb_installer.sh
   - sed -i "s?NZEDBPATH=\".*\"?NZEDBPATH=\"$(pwd)\"?" test_nzedb_installer.sh
   - sed -i 's/HOST=".*"/HOST="127.0.0.1"/' test_nzedb_installer.sh
@@ -80,8 +89,8 @@ script:
   # Run nZEDb installer test script.
   - bash test_nzedb_installer.sh
 
+# Get contents of logs regardless of success / failure, this will help us fix potential minor issues.
+after_success:
+  - bash cat_logs.sh
 after_failure:
-  # Get contents of logs
-  - cat /tmp/apache.log
-  - if [[ -f resources/logs/php_errors.log ]]; then cat resources/logs/php_errors.log; fi
-  - if [[ -f resources/logs/nzedb.log ]]; then cat resources/logs/nzedb.log; fi
+  - bash cat_logs.sh
