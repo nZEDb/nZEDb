@@ -19,23 +19,24 @@
 
 use app\models\Settings;
 
-if (defined('nZEDb_INSTALLER') && nZEDb_INSTALLER === true) {
-	exit;
-}
 
-switch (true) {
-	case extension_loaded('yenc'):
-		$adapter = 'NzedbYenc';
-		break;
-	case extension_loaded('simple_php_yenc_decode'):
-		$adapter = 'SimplePhpYencDecode';
-		break;
-	case !empty(Settings::value('..yydecoderpath', true)) &&
-		(strpos(Settings::value('..yydecoderpath', true), 'simple_php_yenc_decode') === false):
-		$adapter = 'Ydecode';
-		break;
-	default:
-		$adapter = 'Php';
+if (defined('nZEDb_INSTALLER') && nZEDb_INSTALLER !== false) {
+	$adapter = 'Php';
+} else {
+	switch (true) {
+		case extension_loaded('yenc'):
+			$adapter = 'NzedbYenc';
+			break;
+		case extension_loaded('simple_php_yenc_decode'):
+			$adapter = 'SimplePhpYencDecode';
+			break;
+		case !empty(Settings::value('..yydecoderpath', true)) &&
+			(strpos(Settings::value('..yydecoderpath', true), 'simple_php_yenc_decode') === false):
+			$adapter = 'Ydecode';
+			break;
+		default:
+			$adapter = 'Php';
+	}
 }
 
 app\extensions\util\Yenc::config(
