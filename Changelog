@@ -9,6 +9,10 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-09-08 niel
+	Add: Travis icons for Latest-testing and dev branches.
+2016-09-08 kevin123
+	Add: Travis build icon for stable branch on README.md
 2016-09-07 niel
 	Fix: Wrap $this->release['group_name'] in an isset check before assignment to avoid missing
 		index error reported in issue #2259.
