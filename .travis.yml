@@ -1,0 +1,98 @@
+language: php
+sudo: required
+dist: trusty
+group: edge
+
+branches:
+  only:
+    - 0.x
+    - Latest-testing
+    - dev
+
+notifications:
+  irc:
+    channels:
+      - "irc.synirc.net#nZEDbAnnounce"
+    on_success: always
+    on_failure: always
+    use_notice: true
+    skip_join: true
+    template:
+      - "\x030[\x0310Travis-ci\x030]\x03 Commit \x0314{%{commit}}\x03 by \x0315(%{author})\x03@\x0313%{repository_name}/%{branch}\x03 has \x037%{result}\x03: \x032%{build_url}\x03"
+
+php:
+  - '5.6'
+  - '7.0'
+
+addons:
+  mariadb: '10.0'
+  apt:
+    packages:
+    - apache2
+    - libapache2-mod-fastcgi
+    - curl
+
+before_install:
+  - composer validate
+
+install:
+  # Install composer packages.
+  - composer install --prefer-dist
+
+before_script:
+  - curl -O https://raw.githubusercontent.com/nZEDb/travis-ci-files/master/cat_logs.sh
+  # Create mysql user.
+  - mysql -u root -e "GRANT ALL ON nzedb.* TO 'nzedb'@'localhost' IDENTIFIED BY 'nzedb';"
+  - mysql -u root -e "GRANT FILE ON *.* TO 'nzedb'@'localhost';"
+  # Disable apparmor.
+  - if service apparmor status; then service apparmor stop; update-rc.d -f apparmor remove; service apparmor teardown; fi
+  # Change MySQL settings.
+  - sudo sed -i "s/\[mysqld\]/\[mysqld\]\ngroup_concat_max_len = 8192/" /etc/mysql/my.cnf
+  # Change PHP settings.
+  - echo 'max_execution_time = 120' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+  - echo 'memory_limit = 1024M' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+  # Enable php-fpm
+  - sudo cp ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf.default ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf
+  # Required for PHP 7
+  - if [[ -f ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.d/www.conf.default ]]; then sudo cp ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.d/www.conf.default ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.d/www.conf; fi
+  - sudo a2enmod rewrite actions fastcgi alias
+  - echo "cgi.fix_pathinfo = 1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - ~/.phpenv/versions/$(phpenv version-name)/sbin/php-fpm
+  # Configure apache virtual hosts
+  - sudo a2dissite 000-default
+  - curl -O https://raw.githubusercontent.com/nZEDb/travis-ci-files/master/apache.conf
+  - sed -e "s?%TRAVIS_BUILD_DIR%?$(pwd)?g" --in-place apache.conf
+  - sudo mv apache.conf /etc/apache2/sites-available/default.conf
+  - sudo a2ensite default.conf
+  - sudo sed -i "s/AllowOverride None/AllowOverride All/g" /etc/apache2/apache2.conf
+  - sudo sed -i "s/Require all denied/Require all granted/g" /etc/apache2/apache2.conf
+  - sudo service apache2 restart
+  # Set permissions, can't use newgrp with travis so we need to do it this way.
+  - sudo chmod -R 777 /home/travis/
+  # Download/configure nZEDb installer test script.
+  - curl -O https://raw.githubusercontent.com/nZEDb/travis-ci-files/master/test_nzedb_installer.sh
+  - sed -i 's/DBUSER=".*"/DBUSER="nzedb"/' test_nzedb_installer.sh
+  - sed -i 's/DBPASS=".*"/DBPASS="nzedb"/' test_nzedb_installer.sh
+  - sed -i 's/DBSOCKET=".*"/DBSOCKET=""/' test_nzedb_installer.sh
+  - sed -i "s?NZEDBPATH=\".*\"?NZEDBPATH=\"$(pwd)\"?" test_nzedb_installer.sh
+  - sed -i 's/HOST=".*"/HOST="127.0.0.1"/' test_nzedb_installer.sh
+  # Configure nZEDb settings.
+  - cp nzedb/config/settings.example.php nzedb/config/settings.php
+  - sed -i "s/'nZEDb_DEBUG', false/'nZEDb_DEBUG', true/" nzedb/config/settings.php
+  - sed -i "s/'nZEDb_LOGGING', false/'nZEDb_LOGGING', true/" nzedb/config/settings.php
+  - sed -i "s/'nZEDb_LOGINFO', false/'nZEDb_LOGINFO', true/" nzedb/config/settings.php
+  - sed -i "s/'nZEDb_LOGNOTICE', false/'nZEDb_LOGNOTICE', true/" nzedb/config/settings.php
+  - sed -i "s/'nZEDb_LOGWARNING', false/'nZEDb_LOGWARNING', true/" nzedb/config/settings.php
+  - sed -i "s/'nZEDb_LOGERROR', false/'nZEDb_LOGERROR', true/" nzedb/config/settings.php
+  - sed -i "s/'nZEDb_LOGFATAL', false/'nZEDb_LOGFATAL', true/" nzedb/config/settings.php
+  - sed -i "s/'nZEDb_LOGQUERIES', false/'nZEDb_LOGQUERIES', true/" nzedb/config/settings.php
+
+script:
+  # Run nZEDb installer test script.
+  - bash test_nzedb_installer.sh
+
+# Get contents of logs regardless of success / failure, this will help us fix potential minor issues.
+after_success:
+  - bash cat_logs.sh
+after_failure:
+  - bash cat_logs.sh

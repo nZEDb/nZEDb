@@ -1891,6 +1891,7 @@ class Net_NNTP_Protocol_Client extends PEAR
 	 */
 	protected function _handleErrorResponse(&$response)
 	{
+		$text = $this->_currentStatusResponse();
 		switch ($response) {
 
 			// 381, RFC2980: 'More authentication information required'
@@ -2002,7 +2003,6 @@ class Net_NNTP_Protocol_Client extends PEAR
 				$message = "Unexpected response: '$text'";
 				break;
 		}
-		$text = $this->_currentStatusResponse();
 
 		return $this->throwError($message, $response, $text);
 	}
