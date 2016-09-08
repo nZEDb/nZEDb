@@ -1,6 +1,19 @@
 This file details which changes to the code are in which release version. It is a complement to the
 ChangeLog file which list *when* changes are made to the dev branches.
 
+0.6.4.1 2016-09-08
+Added:
+	* Travis build icons on README for main three branches. Currently only the Installer are
+	 tested but we will expand the test suite to include more.
+
+Fixed:
+	* Content display for not logged in users in Charisma/Gamma/Gentele/Omicron themes.
+	* Prevent yEnc from configuring all adapters during install process, as that would require Db
+	 access which isn't available yet. Closes issue #2257.
+	* Have the yEnc adapters use the PHP adapter for decodeIgnore(). Slow but it what happened before.
+	* Wrap $this->release['group_name'] in an isset check before assignment to avoid missing index
+	 error reported in issue #2259.
+
 
 0.6.4.0 2016-09-05
 Changes:
