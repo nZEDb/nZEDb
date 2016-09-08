@@ -10,6 +10,10 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 
 2016-09-08 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.4.1
+
+
+2016-09-08 niel
 	Add: Travis icons for Latest-testing and dev branches.
 2016-09-08 kevin123
 	Add: Travis build icon for stable branch on README.md
