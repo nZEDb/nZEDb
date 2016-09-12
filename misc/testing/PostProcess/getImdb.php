@@ -4,9 +4,9 @@ require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR .
 
 use nzedb\ColorCLI;
 use nzedb\Movie;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
-$pdo = new Settings();
+$pdo = new DB();
 $c = new ColorCLI();
 $movie = new Movie(['Echo' => true, 'Settings' => $pdo]);
 

@@ -2,10 +2,10 @@
 
 namespace nzedb\http;
 
-use nzedb\db\Settings;
 use nzedb\Releases;
 use nzedb\Category;
 use nzedb\NZB;
+use nzedb\db\DB;
 
 /**
  * Class RSS -- contains specific functions for RSS
@@ -36,7 +36,7 @@ Class RSS extends Capabilities
 		];
 		$options += $defaults;
 
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 		$this->releases = (
 			$options['Releases'] instanceof Releases ? $options['Releases'] : new Releases(['Settings' => $this->pdo])
 		);

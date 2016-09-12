@@ -3,9 +3,9 @@ require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'bootstr
 
 use nzedb\Backfill;
 use nzedb\NNTP;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
-$pdo = new Settings();
+$pdo = new DB();
 
 // Create the connection here and pass
 $nntp = new NNTP(['Settings' => $pdo]);

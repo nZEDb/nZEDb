@@ -10,7 +10,7 @@ use nzedb\Groups;
 use nzedb\NameFixer;
 use nzedb\ReleaseCleaning;
 use nzedb\ReleaseFiles;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 /*
  *
@@ -23,7 +23,7 @@ use nzedb\db\Settings;
  * release has been created
  *
  */
-$pdo = new Settings();
+$pdo = new DB();
 
 if (!(isset($argv[1]) && ($argv[1] == "all" || $argv[1] == "full" || $argv[1] == "preid" || is_numeric($argv[1])))) {
 	exit($pdo->log->error(

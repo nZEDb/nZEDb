@@ -9,7 +9,7 @@ use nzedb\Nfo;
 use nzedb\NNTP;
 use nzedb\NZB;
 use nzedb\RequestID;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 use nzedb\processing\PostProcess;
 
 /**
@@ -97,7 +97,7 @@ class Forking extends \fork_daemon
 		$this->work = [];
 
 		// Init Settings here, as forking causes errors when it's destroyed.
-		$this->pdo = new Settings();
+		$this->pdo = new DB();
 
 		// Process extra work that should not be forked and done before forking.
 		$this->processStartWork();

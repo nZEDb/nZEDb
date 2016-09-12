@@ -8,9 +8,9 @@ use nzedb\NameFixer;
 use nzedb\processing\ProcessReleases;
 use nzedb\ReleaseCleaning;
 use nzedb\SphinxSearch;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
-$pdo = new Settings();
+$pdo = new DB();
 $sphinx = new SphinxSearch();
 
 $show = 2;
@@ -56,7 +56,7 @@ if (isset($argv[1]) && $argv[1] == "full") {
 		exit($pdo->log->info("You have no releases in the DB."));
 	}
 } else if (isset($argv[1]) && $argv[1] == "limited") {
-	$pdo = new Settings();
+	$pdo = new DB();
 	$res = $pdo->query("SELECT releases.id, releases.name, releases.fromname, releases.size, groups.name AS gname FROM releases INNER JOIN groups ON releases.groups_id = groups.id WHERE isrenamed = 0");
 
 	if (count($res) > 0) {
@@ -94,7 +94,7 @@ if (isset($argv[1]) && $argv[1] == "full") {
 		exit($pdo->log->info("You have no releases in the DB."));
 	}
 } else if (isset($argv[1]) && $argv[1] == "reset") {
-	$pdo = new Settings();
+	$pdo = new DB();
 	$res = $pdo->query("SELECT releases.id, releases.name, releases.fromname, releases.size, groups.name AS gname FROM releases INNER JOIN groups ON releases.groups_id = groups.id");
 
 	if (count($res) > 0) {

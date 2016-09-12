@@ -8,7 +8,11 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
-
+2016-09-12 niel
+	Chg: Refactor scripts using nzedb\db\Settings class without actually using any of the class'
+		additional features, to use the parent nzedb\db\DB class. This is to let me work on
+		moving the scripts that DO need the additional features over to using app\models\Settings
+		instead and properly separating business logic from the way models get used.
 2016-09-08 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.4.1
 

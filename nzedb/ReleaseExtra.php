@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use nzedb\db\DB;
 use nzedb\utility\Misc;
 
 class ReleaseExtra
@@ -16,7 +16,7 @@ class ReleaseExtra
 	 */
 	public function __construct($settings = null)
 	{
-		$this->pdo = ($settings instanceof Settings ? $settings : new Settings());
+		$this->pdo = ($settings instanceof DB ? $settings : new DB());
 	}
 
 	public function makeCodecPretty($codec)

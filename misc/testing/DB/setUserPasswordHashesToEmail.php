@@ -19,7 +19,7 @@ require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR .
 
 use nzedb\ColorCLI;
 use nzedb\Users;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 $colorCLI = new ColorCLI();
 
@@ -39,7 +39,7 @@ if ($argc != 2) {
 	exit($colorCLI->error("\nInvalid parameter(s)$usage"));
 }
 
-$pdo = new Settings();
+$pdo = new DB();
 
 $users = $pdo->query("SELECT id, username, email, password FROM users");
 $update = $pdo->Prepare('UPDATE users SET password = :password WHERE id = :id');

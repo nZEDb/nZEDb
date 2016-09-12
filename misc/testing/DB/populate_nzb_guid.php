@@ -7,7 +7,7 @@ use nzedb\ConsoleTools;
 use nzedb\NZB;
 use nzedb\ReleaseImage;
 use nzedb\Releases;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 use nzedb\utility\Misc;
 
 $cli = new ColorCLI();
@@ -25,7 +25,7 @@ if (isset($argv[1])) {
 
 function create_guids($live, $delete = false)
 {
-	$pdo = new Settings();
+	$pdo = new DB();
 	$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 	$timestart = TIME();
 	$relcount = $deleted = $total = 0;

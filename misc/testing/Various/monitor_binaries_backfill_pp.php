@@ -1,9 +1,9 @@
 <?php
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
-$pdo = new Settings();
+$pdo = new DB();
 
 if ($argc !== 3 || !is_numeric($argv[1]) || !is_numeric($argv[2])) {
 	exit($pdo->log->error("\nThis script monirtors both the threaded and unthreaded update_binaries and backfill scripts.\n"

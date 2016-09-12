@@ -6,9 +6,9 @@ use nzedb\Category;
 use nzedb\NZB;
 use nzedb\ReleaseImage;
 use nzedb\Releases;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
-$pdo = new Settings();
+$pdo = new DB();
 
 if (isset($argv[1]) && $argv[1] == "true") {
 
