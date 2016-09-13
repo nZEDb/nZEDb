@@ -29,8 +29,6 @@ class Forking extends \fork_daemon
 	const OUTPUT_REALTIME = 1; // Display child output in real time.
 	const OUTPUT_SERIALLY = 2; // Display child output when child is done.
 
-	protected $_colorCLI;
-
 	/**
 	 * Setup required parent / self vars.
 	 */
