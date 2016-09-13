@@ -85,6 +85,8 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 		  https://github.com/niel/php-yenc/releases
 2016-09-14 DariusIII
 	Add: TinyMCE editor support to forum and admin->content
+2016-09-13 niel
+	Add: Validation rules for Settings model.
 2016-09-12 niel
 	Chg: Refactor scripts using nzedb\db\Settings class without actually using any of the class'
 		additional features, to use the parent nzedb\db\DB class. This is to let me work on

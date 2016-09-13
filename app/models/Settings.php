@@ -29,7 +29,50 @@ namespace app\models;
  */
 class Settings extends \lithium\data\Model {
 
-	public $validates = [];
+	public $validates = [
+		'section' => [
+			[
+				'required'	=> false
+			]
+		],
+		'subsection' => [
+			[
+				'required' => false
+			]
+		],
+		'name' => [
+			[
+				'required' => true
+			],
+			[
+				'notEmpty',
+				'message' => 'You must supply a name for this setting.'
+			]
+		],
+		'value' => [
+			[
+				'required' => true
+			]
+		],
+		'hint' => [
+			[
+				'required' => true
+			],
+			[
+				'notEmpty',
+				'message' => 'You must supply a hint/description for this setting.'
+			]
+		],
+		'setting' => [
+			[
+				'required' => true
+			],
+			[
+				'notEmpty',
+				'message' => 'You must supply a name for this setting.'
+			]
+		],
+	];
 
 	protected $_meta = [
 		'key' => ['section', 'subsection', 'name']
