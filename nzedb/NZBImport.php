@@ -1,7 +1,8 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use app\models\Settings;
+use nzedb\db\DB;
 use nzedb\utility\Misc;
 use nzedb\Groups;
 
@@ -114,14 +115,14 @@ class NZBImport
 		$options += $defaults;
 
 		$this->echoCLI = (!$this->browser && nZEDb_ECHOCLI && $options['Echo']);
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 		$this->binaries = ($options['Binaries'] instanceof Binaries ? $options['Binaries'] : new Binaries(['Settings' => $this->pdo, 'Echo' => $this->echoCLI]));
 		$this->category = ($options['Categorize'] instanceof Categorize ? $options['Categorize'] : new Categorize(['Settings' => $this->pdo]));
 		$this->nzb = ($options['NZB'] instanceof NZB ? $options['NZB'] : new NZB($this->pdo));
 		$this->releaseCleaner = ($options['ReleaseCleaning'] instanceof ReleaseCleaning ? $options['ReleaseCleaning'] : new ReleaseCleaning($this->pdo));
 		$this->releases = ($options['Releases'] instanceof Releases ? $options['Releases'] : new Releases(['settings' => $this->pdo]));
 
-		$this->crossPostt = ($this->pdo->getSetting('crossposttime') != '') ? $this->pdo->getSetting('crossposttime') : 2;
+		$this->crossPostt = (Settings::value('crossposttime') != '') ? Settings::value('crossposttime') : 2;
 		$this->browser = $options['Browser'];
 		$this->retVal = '';
 		$this->groups = new Groups(['Settings' => $this->pdo]);

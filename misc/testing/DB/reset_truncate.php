@@ -2,9 +2,10 @@
 // This script removes releases with no NZBs, resets all groups, truncates article tables. All other releases are left alone.
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
-use nzedb\db\Settings;
+use app\models\Settings;
+use nzedb\db\DB;
 
-$pdo = new Settings();
+$pdo = new DB();
 
 if (isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "drop")) {
 	$pdo->queryExec("UPDATE groups SET first_record = 0, first_record_postdate = NULL, last_record = 0, last_record_postdate = NULL, last_updated = NULL");
@@ -19,7 +20,7 @@ if (isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "drop")) {
 	}
 	unset($value);
 
-	$tpg = $pdo->getSetting('tablepergroup');
+	$tpg = Settings::value('tablepergroup');
 	$tablepergroup = (!empty($tpg)) ? $tpg : 0;
 
 	if ($tablepergroup == 1) {

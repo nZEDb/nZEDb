@@ -1,15 +1,16 @@
 <?php
 require_once dirname(__FILE__) . '/../../../config.php';
 
+use app\models\Settings;
 use nzedb\MiscSorter;
 use nzedb\NameFixer;
 use nzedb\Nfo;
 use nzedb\NZBContents;
 use nzedb\NNTP;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 use nzedb\processing\PostProcess;
 
-$pdo = new Settings();
+$pdo = new DB();
 
 if (!isset($argv[1])) {
 	exit($pdo->log->error("This script is not intended to be run manually, it is called from fixreleasenames_threaded.py."));
@@ -60,7 +61,7 @@ if (!isset($argv[1])) {
 	} else if (isset($pieces[1]) && $pieces[0] == 'par2') {
 		//echo PHP_EOL . microtime();
 		$nntp = new NNTP(['Settings' => $pdo]);
-		if (($pdo->getSetting('alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
+		if ((Settings::value('alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
 			exit($pdo->log->error("Unable to connect to usenet."));
 		}
 
@@ -83,7 +84,7 @@ if (!isset($argv[1])) {
 
 	} else if (isset($pieces[1]) && $pieces[0] == 'miscsorter') {
 		$nntp = new NNTP(['Settings' => $pdo]);
-		if (($pdo->getSetting('alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
+		if ((Settings::value('alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
 			exit($pdo->log->error("Unable to connect to usenet."));
 		}
 

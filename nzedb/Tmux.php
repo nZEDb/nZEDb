@@ -1,7 +1,9 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use app\models\Settings;
+use app\extensions\util\Versions;
+use nzedb\db\DB;
 
 /**
  * Class Tmux
@@ -23,11 +25,11 @@ class Tmux
 	/**
 	 * Tmux constructor.
 	 *
-	 * @param Settings|null $pdo
+	 * @param \nzedb\db\DB|null $pdo
 	 */
-	function __construct(Settings $pdo = null)
+	function __construct(DB $pdo = null)
 	{
-		$this->pdo = (empty($pdo) ? new Settings() : $pdo);
+		$this->pdo = (empty($pdo) ? new DB() : $pdo);
 	}
 
 	/**
@@ -35,7 +37,7 @@ class Tmux
 	 */
 	public function version()
 	{
-		return $this->pdo->version();
+		return (new Versions())->getGitTagInRepo();
 	}
 
 	/**
@@ -45,7 +47,6 @@ class Tmux
 	 */
 	public function update($form)
 	{
-		$pdo = $this->pdo;
 		$tmux = $this->row2Object($form);
 
 		$sql = $sqlKeys = [];
@@ -53,11 +54,11 @@ class Tmux
 			if (is_array($settingV)) {
 				$settingV = implode(', ', $settingV);
 			}
-			$sql[] = sprintf("WHEN %s THEN %s", $pdo->escapeString($settingK), $pdo->escapeString($settingV));
-			$sqlKeys[] = $pdo->escapeString($settingK);
+			$sql[] = sprintf("WHEN %s THEN %s", $this->pdo->escapeString($settingK), $this->pdo->escapeString($settingV));
+			$sqlKeys[] = $this->pdo->escapeString($settingK);
 		}
 
-		$pdo->queryExec(sprintf("UPDATE tmux SET value = CASE setting %s END WHERE setting IN (%s)", implode(' ', $sql), implode(', ', $sqlKeys)));
+		$this->pdo->queryExec(sprintf("UPDATE tmux SET value = CASE setting %s END WHERE setting IN (%s)", implode(' ', $sql), implode(', ', $sqlKeys)));
 
 		return $tmux;
 	}
@@ -69,10 +70,9 @@ class Tmux
 	 */
 	public function get($setting = '')
 	{
-		$pdo = $this->pdo;
-		$where = ($setting !== '' ? sprintf('WHERE setting = %s', $pdo->escapeString($setting)) : '');
+		$where = ($setting !== '' ? sprintf('WHERE setting = %s', $this->pdo->escapeString($setting)) : '');
 
-		$rows = $pdo->query(sprintf("SELECT * FROM tmux %s", $where));
+		$rows = $this->pdo->query(sprintf("SELECT * FROM tmux %s", $where));
 
 		if ($rows === false) {
 			return false;
@@ -349,9 +349,8 @@ class Tmux
 	 */
 	public function updateItem($setting, $value)
 	{
-		$pdo = $this->pdo;
-		$sql = sprintf("UPDATE tmux SET value = %s WHERE setting = %s", $pdo->escapeString($value), $pdo->escapeString($setting));
-		return $pdo->queryExec($sql);
+		$sql = sprintf("UPDATE tmux SET value = %s WHERE setting = %s", $this->pdo->escapeString($value), $this->pdo->escapeString($setting));
+		return $this->pdo->queryExec($sql);
 	}
 
 	//get microtime

@@ -2,9 +2,9 @@
 
 namespace nzedb\db\populate;
 
+use app\models\Settings;
 use nzedb\ReleaseImage;
-use nzedb\db\Settings;
-use nzedb\utility\Misc;
+use nzedb\db\DB;
 
 class AniDB
 {
@@ -69,13 +69,13 @@ class AniDB
 		$options += $defaults;
 
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 
-		$anidbupdint = $this->pdo->getSetting('intanidbupdate');
-		$lastupdated = $this->pdo->getSetting('lastanidbupdate');
+		$anidbupdint = Settings::value('intanidbupdate');
+		$lastupdated = Settings::value('lastanidbupdate');
 
 		$this->imgSavePath = nZEDb_COVERS . 'anime' . DS;
-		$this->apiKey      = $this->pdo->getSetting('anidbkey');
+		$this->apiKey      = Settings::value('anidbkey');
 
 		$this->updateInterval = (isset($anidbupdint) ? $anidbupdint : '7');
 		$this->lastUpdate     = (isset($lastupdated) ? $lastupdated : '0');
@@ -136,7 +136,7 @@ class AniDB
 	 */
 	private function getAniDbAPI()
 	{
-		$timestamp = $this->pdo->getSetting('APIs.AniDB.banned') + 90000;
+		$timestamp = Settings::value('APIs.AniDB.banned') + 90000;
 		if ($timestamp > time()) {
 			echo "Banned from AniDB lookups until " . date('Y-m-d H:i:s', $timestamp) . "\n";
 			return false;
@@ -149,7 +149,10 @@ class AniDB
 			echo "AniDB: Error getting response." . PHP_EOL;
 		} elseif (preg_match("/\<error\>Banned\<\/error\>/", $apiresponse)) {
 			$this->banned = true;
-			$this->pdo->setSetting(['APIs.AniDB.banned' => time()]);
+			Settings::update(
+				['value' => time()],
+				['section' => 'APIs', 'subsection' => 'AniDB', 'name' => 'banned']
+			);
 		} elseif (preg_match("/\<error\>Anime not found\<\/error\>/", $apiresponse)) {
 			echo "AniDB   : Anime not yet on site. Remove until next update.\n";
 		} elseif ($AniDBAPIXML = new \SimpleXMLElement($apiresponse)) {
@@ -451,7 +454,10 @@ class AniDB
 	 */
 	private function setLastUpdated()
 	{
-		$this->pdo->setSetting(['APIs.anidb.last_full_update' => time()]);
+		Settings::update(
+			['value' => time()],
+			['section' => 'APIs', 'anidb' => 'AniDB', 'name' => 'last_full_update']
+		);
 	}
 
 	/**

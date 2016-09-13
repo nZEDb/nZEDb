@@ -1,7 +1,8 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use app\models\Settings;
+use nzedb\db\DB;
 use nzedb\utility\Misc;
 
 /**
@@ -56,10 +57,10 @@ class Releases
 		];
 		$options += $defaults;
 
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 		$this->groups = ($options['Groups'] instanceof Groups ? $options['Groups'] : new Groups(['Settings' => $this->pdo]));
-		$this->updategrabs = ($this->pdo->getSetting('grabstatus') == '0' ? false : true);
-		$this->passwordStatus = ($this->pdo->getSetting('checkpasswordedrar') == 1 ? -1 : 0);
+		$this->updategrabs = (Settings::value('grabstatus') == '0' ? false : true);
+		$this->passwordStatus = (Settings::value('checkpasswordedrar') == 1 ? -1 : 0);
 		$this->sphinxSearch = new SphinxSearch();
 		$this->releaseSearch = new ReleaseSearch($this->pdo, $this->sphinxSearch);
 		$this->showPasswords = self::showPasswords($this->pdo);

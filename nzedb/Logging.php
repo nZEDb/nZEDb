@@ -1,7 +1,8 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use app\models\Settings;
+use nzedb\db\DB;
 
 /**
  * Logs/Reports stuff
@@ -38,7 +39,7 @@ class Logging
 		];
 		$options += $defaults;
 
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 
 		$this->newLine = PHP_EOL;
 	}
@@ -68,8 +69,8 @@ class Logging
 	public function LogBadPasswd($username = '', $host = '')
 	{
 		// If logggingopt is = 0, then we do nothing, 0 = logging off.
-		$loggingOpt = $this->pdo->getSetting('loggingopt');
-		$logFile = $this->pdo->getSetting('logfile');
+		$loggingOpt = Settings::value('loggingopt');
+		$logFile = Settings::value('logfile');
 		if ($loggingOpt == '1') {
 			$this->pdo->queryInsert(sprintf('INSERT INTO logging (time, username, host) VALUES (NOW(), %s, %s)',
 				$this->pdo->escapeString($username), $this->pdo->escapeString($host)));

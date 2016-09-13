@@ -1,9 +1,9 @@
 <?php
 namespace nzedb;
 
-use nzedb\Category;
-use nzedb\db\Settings;
+use app\models\Settings;
 use libs\AmazonProductAPI;
+use nzedb\db\DB;
 
 /*
  * Class for processing book info.
@@ -78,17 +78,17 @@ class Books
 		$options += $defaults;
 
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 
-		$this->pubkey = $this->pdo->getSetting('amazonpubkey');
-		$this->privkey = $this->pdo->getSetting('amazonprivkey');
-		$this->asstag = $this->pdo->getSetting('amazonassociatetag');
-		$this->bookqty = ($this->pdo->getSetting('maxbooksprocessed') != '') ? $this->pdo->getSetting('maxbooksprocessed') : 300;
-		$this->sleeptime = ($this->pdo->getSetting('amazonsleep') != '') ? $this->pdo->getSetting('amazonsleep') : 1000;
+		$this->pubkey = Settings::value('amazonpubkey');
+		$this->privkey = Settings::value('amazonprivkey');
+		$this->asstag = Settings::value('amazonassociatetag');
+		$this->bookqty = (Settings::value('maxbooksprocessed') != '') ? Settings::value('maxbooksprocessed') : 300;
+		$this->sleeptime = (Settings::value('amazonsleep') != '') ? Settings::value('amazonsleep') : 1000;
 		$this->imgSavePath = nZEDb_COVERS . 'book' . DS;
-		$this->bookreqids = ($this->pdo->getSetting('book_reqids') == null || $this->pdo->getSetting('book_reqids') == "") ? Category::BOOKS_EBOOK : $this->pdo->getSetting('book_reqids');
+		$this->bookreqids = (Settings::value('book_reqids') == null || Settings::value('book_reqids') == "") ? Category::BOOKS_EBOOK : Settings::value('book_reqids');
 		$this->renamed = '';
-		if ($this->pdo->getSetting('lookupbooks') == 2) {
+		if (Settings::value('lookupbooks') == 2) {
 			$this->renamed = 'AND isrenamed = 1';
 		}
 

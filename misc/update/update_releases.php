@@ -4,11 +4,11 @@ require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'bootstr
 use nzedb\Category;
 use nzedb\ConsoleTools;
 use nzedb\NNTP;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 use nzedb\processing\ProcessReleases;
 
 $category = new Category();
-$pdo = new Settings();
+$pdo = new DB();
 
 if (isset($argv[2]) && $argv[2] === 'true') {
 	// Create the connection here and pass
@@ -17,7 +17,8 @@ if (isset($argv[2]) && $argv[2] === 'true') {
 		exit($pdo->log->error("Unable to connect to usenet."));
 	}
 }
-if ($pdo->getSetting('tablepergroup') === 1) {
+
+if (Settings::value('tablepergroup') === 1) {
 	exit($pdo->log->error("You are using 'tablepergroup', you must use .../misc/update/nix/multiprocessing/releases.php"));
 }
 

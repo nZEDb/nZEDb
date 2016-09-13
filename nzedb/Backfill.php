@@ -1,7 +1,8 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use app\models\Settings;
+use nzedb\db\DB;
 
 class Backfill
 {
@@ -102,7 +103,7 @@ class Backfill
 
 		$this->_echoCLI = ($options['Echo'] && nZEDb_ECHOCLI);
 
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 		$this->_groups = ($options['Groups'] instanceof Groups ? $options['Groups'] : new Groups(['Settings' => $this->pdo]));
 		$this->_nntp = ($options['NNTP'] instanceof NNTP
 			? $options['NNTP'] : new NNTP(['Settings' => $this->pdo])
@@ -117,11 +118,11 @@ class Backfill
 			}
 		}
 
-		$this->_compressedHeaders = ($this->pdo->getSetting('compressedheaders') == 1 ? true : false);
-		$this->_safeBackFillDate = ($this->pdo->getSetting('safebackfilldate') != '') ? (string)$this->pdo->getSetting('safebackfilldate') : '2008-08-14';
-		$this->_safePartRepair = ($this->pdo->getSetting('safepartrepair') == 1 ? 'update' : 'backfill');
-		$this->_tablePerGroup = ($this->pdo->getSetting('tablepergroup') == 1 ? true : false);
-		$this->_disableBackfillGroup = ($this->pdo->getSetting('disablebackfillgroup') == 1 ? true : false);
+		$this->_compressedHeaders = (Settings::value('compressedheaders') == 1 ? true : false);
+		$this->_safeBackFillDate = (Settings::value('safebackfilldate') != '') ? (string)Settings::value('safebackfilldate') : '2008-08-14';
+		$this->_safePartRepair = (Settings::value('safepartrepair') == 1 ? 'update' : 'backfill');
+		$this->_tablePerGroup = (Settings::value('tablepergroup') == 1 ? true : false);
+		$this->_disableBackfillGroup = (Settings::value('disablebackfillgroup') == 1 ? true : false);
 	}
 
 	/**

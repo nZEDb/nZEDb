@@ -1,6 +1,7 @@
 <?php
 namespace nzedb;
 
+use app\models\Settings;
 use nzedb\utility\Misc;
 
 /**
@@ -95,7 +96,7 @@ class SABnzbd
 		$this->serverurl = $page->serverurl;
 
 		// Set up properties.
-		switch ($page->settings->getSetting('sabintegrationtype')) {
+		switch (Settings::value('sabintegrationtype')) {
 			case self::INTEGRATION_TYPE_USER:
 				if (!empty($_COOKIE['sabnzbd_' . $this->uid . '__apikey']) && !empty($_COOKIE['sabnzbd_' . $this->uid . '__host'])) {
 					$this->url = $_COOKIE['sabnzbd_' . $this->uid . '__host'];
@@ -121,11 +122,11 @@ class SABnzbd
 				break;
 
 			case self::INTEGRATION_TYPE_SITEWIDE:
-				if (($page->settings->getSetting('sabapikey') != '') && ($page->settings->getSetting('saburl') != '')) {
-					$this->url = $page->settings->getSetting('saburl');
-					$this->apikey = $page->settings->getSetting('sabapikey');
-					$this->priority = $page->settings->getSetting('sabpriority');
-					$this->apikeytype = $page->settings->getSetting('sabapikeytype');
+				if ((Settings::value('sabapikey') != '') && (Settings::value('saburl') != '')) {
+					$this->url = Settings::value('saburl');
+					$this->apikey = Settings::value('sabapikey');
+					$this->priority = Settings::value('sabpriority');
+					$this->apikeytype = Settings::value('sabapikeytype');
 				}
 				$this->integrated = self::INTEGRATION_TYPE_SITEWIDE;
 				$this->integratedBool = true;

@@ -21,9 +21,10 @@
 namespace nzedb\http;
 
 use app\extensions\util\Versions;
+use app\models\Settings;
 use nzedb\Category;
 use nzedb\Utility\Misc;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 /**
  * Class Output -- abstract class for printing web requests outside of Smarty
@@ -54,7 +55,7 @@ abstract class Capabilities
 			'Settings' => null,
 		];
 		$options += $defaults;
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 	}
 
 	/**
@@ -132,10 +133,10 @@ abstract class Capabilities
 			'server' => [
 				'appversion' => (new Versions())->getGitTagInRepo(),
 				'version'    => '0.1',
-				'title'      => $this->pdo->getSetting('title'),
-				'strapline'  => $this->pdo->getSetting('strapline'),
-				'email'      => $this->pdo->getSetting('email'),
-				'meta'       => $this->pdo->getSetting('metakeywords'),
+				'title'      => Settings::value('title'),
+				'strapline'  => Settings::value('strapline'),
+				'email'      => Settings::value('email'),
+				'meta'       => Settings::value('metakeywords'),
 				'url'        => $serverroot,
 				'image'      => $serverroot . 'themes/shared/images/logo.png'
 			],
@@ -145,7 +146,7 @@ abstract class Capabilities
 			],
 			'registration' => [
 				'available' => 'yes',
-				'open'      => $this->pdo->getSetting('registerstatus') == 0 ? 'yes' : 'no'
+				'open'      => Settings::value('registerstatus') == 0 ? 'yes' : 'no'
 			],
 			'searching' => [
 				'search'       => ['available' => 'yes', 'supportedParams' => 'q'],

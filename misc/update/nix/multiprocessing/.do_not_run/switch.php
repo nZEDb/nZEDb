@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Settings;
 use nzedb\Backfill;
 use nzedb\Binaries;
 use nzedb\Groups;
@@ -9,7 +10,7 @@ use nzedb\RequestIDLocal;
 use nzedb\processing\ProcessReleases;
 use nzedb\processing\PostProcess;
 use nzedb\processing\post\ProcessAdditional;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 if (!isset($argv[1])) {
 	exit("This script is not intended to be run manually." . PHP_EOL);
@@ -21,6 +22,7 @@ require_once realpath(dirname(dirname(dirname(dirname(dirname(__DIR__))))) . DIR
 // The type of process we want to do: $options[1] => (string): releases
 $options = explode('  ', $argv[1]);
 
+$pdo = new DB();
 switch ($options[1]) {
 
 	// Runs backFill interval or all.
@@ -43,7 +45,7 @@ switch ($options[1]) {
 	 * $options[3] => (int)    Quantity of articles to download.
 	 */
 	case 'backfill_all_quantity':
-		$pdo = new Settings();
+		$pdo = new DB();
 		$nntp = nntp($pdo);
 		(new Backfill(['NNTP' => $nntp, 'Settings' => $pdo]))->backfillAllGroups($options[2], $options[3]);
 		break;
@@ -51,7 +53,7 @@ switch ($options[1]) {
 	// BackFill a single group, 10000 parts.
 	// $options[2] => (string)group name, Name of group to work on.
 	case 'backfill_all_quick':
-		$pdo = new Settings();
+		$pdo = new DB();
 		$nntp = nntp($pdo);
 		(new Backfill(['NNTP' => $nntp, 'Settings' => $pdo], true))->backfillAllGroups($options[2], 10000, 'normal');
 		break;
@@ -65,7 +67,7 @@ switch ($options[1]) {
 	 * $options[6] => (int)    Number of threads.
 	 */
 	case 'get_range':
-		$pdo = new Settings();
+		$pdo = new DB();
 		$nntp = nntp($pdo);
 		$groups = new Groups(['Settings' => $pdo]);
 		$groupMySQL = $groups->getByName($options[3]);
@@ -75,7 +77,7 @@ switch ($options[1]) {
 			}
 		}
 		$binaries = new Binaries(['NNTP' => $nntp, 'Settings' => $pdo, 'Groups' => $groups]);
-		$return = $binaries->scan($groupMySQL, $options[4], $options[5], ($pdo->getSetting('safepartrepair') == 1 ? 'update' : 'backfill'));
+		$return = $binaries->scan($groupMySQL, $options[4], $options[5], (Settings::value('safepartrepair') == 1 ? 'update' : 'backfill'));
 		if (empty($return)) {
 			exit();
 		}
@@ -130,7 +132,7 @@ switch ($options[1]) {
 	 * $options[2] => (string) Group name.
 	 */
 	case 'part_repair':
-		$pdo = new Settings();
+		$pdo = new DB();
 		$groups = new Groups(['Settings' => $pdo]);
 		$groupMySQL = $groups->getByName($options[2]);
 		$nntp = nntp($pdo);
@@ -147,7 +149,7 @@ switch ($options[1]) {
 	// Process releases.
 	// $options[2] => (string)groupCount, number of groups terminated by _ | (int)groupID, group to work on
 	case 'releases':
-		$pdo = new Settings();
+		$pdo = new DB();
 		$releases = new ProcessReleases(['Settings' => $pdo]);
 
 		//Runs function that are per group
@@ -187,7 +189,7 @@ switch ($options[1]) {
 	 * $options[2] => (string) Group name.
 	 */
 	case 'update_group_headers':
-		$pdo = new Settings();
+		$pdo = new DB();
 		$nntp = nntp($pdo);
 		$groups = new Groups(['Settings' => $pdo]);
 		$groupMySQL = $groups->getByName($options[2]);
@@ -200,7 +202,7 @@ switch ($options[1]) {
 	case 'update_per_group':
 		if (is_numeric($options[2])) {
 
-			$pdo = new Settings();
+			$pdo = new DB();
 
 			// Get the group info from MySQL.
 			$groupMySQL = $pdo->queryOneRow(sprintf('SELECT * FROM groups WHERE id = %d', $options[2]));
@@ -237,7 +239,7 @@ switch ($options[1]) {
 	case 'pp_additional':
 	case 'pp_nfo':
 		if (charCheck($options[2])) {
-			$pdo = new Settings();
+			$pdo = new DB();
 
 			// Create the connection here and pass, this is for post processing, so check for alternate.
 			$nntp = nntp($pdo, true);
@@ -257,7 +259,7 @@ switch ($options[1]) {
 	 */
 	case 'pp_movie':
 		if (charCheck($options[2])) {
-			$pdo = new Settings();
+			$pdo = new DB();
 			(new PostProcess(['Settings' => $pdo]))->processMovies('', $options[2], (isset($options[3]) ? $options[3] : ''));
 		}
 		break;
@@ -269,7 +271,7 @@ switch ($options[1]) {
 	 */
 	case 'pp_tv':
 		if (charCheck($options[2])) {
-			$pdo = new Settings();
+			$pdo = new DB();
 			(new PostProcess(['Settings' => $pdo]))->processTv('', $options[2], (isset($options[3]) ? $options[3] : ''));
 		}
 		break;
@@ -284,7 +286,7 @@ switch ($options[1]) {
  */
 function processReleases($pdo, $releases, $groupID)
 {
-	$releaseCreationLimit = ($pdo->getSetting('maxnzbsprocessed') != '' ? (int)$pdo->getSetting('maxnzbsprocessed') : 1000);
+	$releaseCreationLimit = (Settings::value('maxnzbsprocessed') != '' ? (int)Settings::value('maxnzbsprocessed') : 1000);
 	$releases->processIncompleteCollections($groupID);
 	$releases->processCollectionSizes($groupID);
 	$releases->deleteUnwantedCollections($groupID);
@@ -337,7 +339,7 @@ function collectionCheck(&$pdo, $groupID)
 function &nntp(&$pdo, $alternate = false)
 {
 	$nntp = new NNTP(['Settings' => $pdo]);
-	if (($alternate && $pdo->getSetting('alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
+	if (($alternate && Settings::value('alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
 		exit("ERROR: Unable to connect to usenet." . PHP_EOL);
 	}
 

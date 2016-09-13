@@ -1,6 +1,7 @@
 <?php
 require_once realpath(dirname(dirname(dirname(dirname(dirname(__DIR__))))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
+use app\models\Settings;
 use nzedb\Category;
 use nzedb\MiscSorter;
 use nzedb\NameFixer;
@@ -8,10 +9,10 @@ use nzedb\Nfo;
 use nzedb\NNTP;
 use nzedb\NZB;
 use nzedb\NZBContents;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 use nzedb\processing\PostProcess;
 
-$pdo = new Settings();
+$pdo = new DB();
 
 if (!isset($argv[1])) {
 	exit($pdo->log->error("This script is not intended to be run manually, it is called from Multiprocessing."));
@@ -173,7 +174,7 @@ if (!isset($argv[1])) {
 						echo $pdo->log->primaryOver('p');
 						if (!isset($nzbcontents)) {
 							$nntp = new NNTP(['Settings' => $pdo]);
-							if (($pdo->getSetting('alternate_nntp') == '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
+							if ((Settings::value('alternate_nntp') == '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
 								$pdo->log->error("Unable to connect to usenet.");
 							}
 							$Nfo = new Nfo(['Settings' => $pdo, 'Echo' => true]);

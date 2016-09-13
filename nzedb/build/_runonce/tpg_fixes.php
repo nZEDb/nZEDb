@@ -20,11 +20,11 @@
  */
 require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php';
 
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
-$pdo = new Settings();
+$pdo = new DB();
 
-if (!$pdo->getSetting('tablepergroup')) {
+if (!Settings::value('tablepergroup')) {
 	exit("Tables per groups is not enabled, quitting!");
 }
 
