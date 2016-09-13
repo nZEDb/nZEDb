@@ -2,14 +2,15 @@
 
 require_once nZEDb_LIB . 'utility' . DS . 'SmartyUtils.php';
 
+use app\models\Settings;
 use nzedb\SABnzbd;
 use nzedb\Users;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 class BasePage
 {
 	/**
-	 * @var \nzedb\db\Settings
+	 * @var \nzedb\db\DB
 	 */
 	public $settings = null;
 
@@ -103,7 +104,7 @@ class BasePage
 		}
 
 		// Buffer settings/DB connection.
-		$this->settings = new Settings();
+		$this->settings = new DB();
 
 		$this->smarty = new Smarty();
 
@@ -132,7 +133,7 @@ class BasePage
 		if ($this->users->isLoggedIn()) {
 			$this->setUserPreferences();
 		} else {
-			$this->theme = $this->settings->getSetting('site.main.style');
+			$this->theme = Settings::value('site.main.style');
 
 			$this->smarty->assign('isadmin', 'false');
 			$this->smarty->assign('ismod', 'false');
@@ -180,6 +181,11 @@ class BasePage
 				}
 			}
 		}
+	}
+
+	public function getSetting($setting)
+	{
+		return Settings::value($setting);
 	}
 
 	/**
@@ -314,7 +320,7 @@ class BasePage
 		$this->theme = isset($this->userdata['style']) ? $this->userdata['style'] : 'None';
 
 		if ($this->theme == 'None') {
-			$this->theme = $this->settings->getSetting('site.main.style');
+			$this->theme = Settings::value('site.main.style');
 		}
 
 		if (lcfirst($this->theme) === $this->theme) {

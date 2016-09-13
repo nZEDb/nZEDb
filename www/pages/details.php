@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Settings;
 use nzedb\AniDB;
 use nzedb\Books;
 use nzedb\Console;
@@ -46,13 +47,13 @@ if (isset($_GET['id'])) {
 			$mov['actors']   = $movie->makeFieldLinks($mov, 'actors');
 			$mov['genre']    = $movie->makeFieldLinks($mov, 'genre');
 			$mov['director'] = $movie->makeFieldLinks($mov, 'director');
-			if ($page->settings->getSetting('trailers_display')) {
+			if (Settings::value('trailers_display')) {
 				$trailer = (!isset($mov['trailer']) || empty($mov['trailer']) || $mov['trailer'] == '' ? $movie->getTrailer($data['imdbid']) : $mov['trailer']);
 				if ($trailer) {
 					$mov['trailer'] = sprintf(
 						"<iframe width=\"%d\" height=\"%d\" src=\"%s\"></iframe>",
-						$page->settings->getSetting('trailers_size_x'),
-						$page->settings->getSetting('trailers_size_y'),
+						Settings::value('trailers_size_x'),
+						Settings::value('trailers_size_y'),
 						$trailer
 					);
 				}
@@ -98,7 +99,7 @@ if (isset($_GET['id'])) {
 		'reSubs'   => $re->getSubs($data['id']),
 		'reVideo'  => $re->getVideo($data['id']),
 		'similars' => $releases->searchSimilar($data['id'], $data['searchname'], 6, $page->userdata['categoryexclusions']),
-		'privateprofiles' => ($page->settings->getSetting('privateprofiles') == 1 ? true : false),
+		'privateprofiles' => (Settings::value('privateprofiles') == 1 ? true : false),
 		'releasefiles'    => (new ReleaseFiles($page->settings))->get($data['id']),
 		'searchname'      => $releases->getSimilarName($data['searchname']),
 		'failed'          => $fail->getFailedCount($data['id']),

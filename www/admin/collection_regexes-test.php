@@ -1,13 +1,14 @@
 <?php
 require_once './config.php';
 
+use app\models\Settings;
 use nzedb\Regexes;
 
 $page = new AdminPage();
 
 $page->title = "Collections Regex Test";
 
-$tpg = $page->settings->getSetting('tablepergroup');
+$tpg = Settings::value('tablepergroup');
 $page->smarty->assign('tpg', $tpg);
 
 if ($tpg) {

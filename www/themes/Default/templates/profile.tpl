@@ -53,7 +53,7 @@
 		</td>
 	</tr>
 	{if !$publicview || $isadmin}<tr><th title="Not public">Excluded Categories:</th><td>{$exccats|replace:",":"<br/>"}</td></tr>{/if}
-	{if $page->settings->getSetting('sabintegrationtype') == 2 && (!$publicview || $isadmin)}
+	{if $page->getSetting('sabintegrationtype') == 2 && (!$publicview || $isadmin)}
 		<tr><th>SABnzbd Integration:</th>
 		<td>
 			Url: {if $saburl == ''}N/A{else}{$saburl}{/if}<br/>

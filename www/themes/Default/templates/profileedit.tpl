@@ -79,7 +79,7 @@
 		</tr>
 	</table>
 	</fieldset>
-	{if $page->settings->getSetting('sabintegrationtype') != 1}
+	{if $page->getSetting('sabintegrationtype') != 1}
 		<fieldset>
 			<nZEDblegend>Queue Type</nZEDblegend>
 			<table class="table table-condensed input">
@@ -96,7 +96,7 @@
 			</table>
 		</fieldset>
 	{/if}
-	{if $user.queuetype == 2 && ($page->settings->getSetting('sabintegrationtype') == 0 || $page->settings->getSetting('sabintegrationtype') == 2)}
+	{if $user.queuetype == 2 && ($page->getSetting('sabintegrationtype') == 0 || $page->getSetting('sabintegrationtype') == 2)}
 		<fieldset>
 			<nZEDblegend>NZBGet Integration</nZEDblegend>
 			<table class="table table-condensed input">
@@ -130,7 +130,7 @@
 			</table>
 		</fieldset>
 	{/if}
-	{if $user.queuetype == 1 && $page->settings->getSetting('sabintegrationtype') == 2}
+	{if $user.queuetype == 1 && $page->getSetting('sabintegrationtype') == 2}
 	<fieldset>
 	<nZEDblegend>SABnzbd Integration</nZEDblegend>
 	<table class="input">

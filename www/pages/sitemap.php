@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Settings;
 use nzedb\Contents;
 use nzedb\SiteMap;
 
@@ -61,10 +62,10 @@ $page->smarty->assign([
 if (isset($_GET["type"]) && $_GET["type"] == "xml") {
 	echo $page->smarty->fetch('sitemap-xml.tpl');
 } else {
-	$page->title = $page->settings->getSetting('title') . " site map";
-	$page->meta_title = $page->settings->getSetting('title') . " site map";
+	$page->title = Settings::value('title') . " site map";
+	$page->meta_title = Settings::value('title') . " site map";
 	$page->meta_keywords = "sitemap,site,map";
-	$page->meta_description = $page->settings->getSetting('title') . " site map shows all our pages.";
+	$page->meta_description = Settings::value('title') . " site map shows all our pages.";
 	$page->content = $page->smarty->fetch('sitemap.tpl');
 	$page->render();
 }

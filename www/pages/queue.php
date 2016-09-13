@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Settings;
 use nzedb\NZBGet;
 use nzedb\SABnzbd;
 
@@ -15,7 +16,7 @@ $page->smarty->assign('user', $userData);
 
 $queueType = $error = '';
 $queue     = null;
-switch ($page->settings->getSetting('sabintegrationtype')) {
+switch (Settings::value('sabintegrationtype')) {
 	case SABnzbd::INTEGRATION_TYPE_NONE:
 		if ($userData['queuetype'] == 2) {
 			$queueType = 'NZBGet';

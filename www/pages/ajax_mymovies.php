@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Settings;
 use nzedb\Category;
 use nzedb\Movie;
 use nzedb\UserMovies;
@@ -30,7 +31,7 @@ if (isset($_REQUEST['del'])) {
 		$page->show404();
 	}
 
-	$tmdb = new TMDb($page->settings->getSetting('tmdbkey'), $page->settings->getSetting('imdblanguage'));
+	$tmdb = new TMDb(Settings::value('tmdbkey'), Settings::value('imdblanguage'));
 	$m = new Movie(['Settings' => $page->settings, 'TMDb' => $tmdb]);
 
 	if (is_numeric($_REQUEST['id'])) {
