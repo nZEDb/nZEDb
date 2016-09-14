@@ -20,7 +20,7 @@ if (isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "drop")) {
 	}
 	unset($value);
 
-	$tpg = Settings::value('tablepergroup');
+	$tpg = Settings::value('..tablepergroup');
 	$tablepergroup = (!empty($tpg)) ? $tpg : 0;
 
 	if ($tablepergroup == 1) {

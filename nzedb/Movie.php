@@ -157,13 +157,16 @@ class Movie
 		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 		$this->releaseImage = ($options['ReleaseImage'] instanceof ReleaseImage ? $options['ReleaseImage'] : new ReleaseImage($this->pdo));
 
-		$this->imdbLanguage = (Settings::value('imdblanguage') != '') ? (string)Settings::value('imdblanguage') : 'en';
+		$result = Settings::value('indexer.categorise.imdblanguage');
+		$this->imdbLanguage = empty($result) ? (string)$result : 'en';
 
-		$this->tmdb = ($options['TMDb'] instanceof \TMDb ? $options['TMDb'] : new \TMDb(Settings::value('tmdbkey'), $this->imdbLanguage));
+		$this->tmdb = ($options['TMDb'] instanceof \TMDb ? $options['TMDb'] :
+			new \TMDb(Settings::value('APIs..tmdbkey'), $this->imdbLanguage));
 
-		$this->fanartapikey = Settings::value('fanarttvkey');
-		$this->imdburl = (Settings::value('imdburl') == 0 ? false : true);
-		$this->movieqty = (Settings::value('maximdbprocessed') != '') ? Settings::value('maximdbprocessed') : 100;
+		$this->fanartapikey = Settings::value('APIs..fanarttvkey');
+		$this->imdburl = (Settings::value('indexer.categorise.imdburl') == 0 ? false : true);
+		$result = Settings::value('..maximdbprocessed');
+		$this->movieqty = empty($result) ? $result : 100;
 		$this->searchEngines = true;
 		$this->showPasswords = Releases::showPasswords($this->pdo);
 
@@ -923,7 +926,8 @@ class Movie
 				Misc::getUrl(
 					[
 						'url' => 'http://' . ($this->imdburl === false ? 'www' : 'akas') . '.imdb.com/title/tt' . $imdbId . '/',
-						'language' => ((Settings::value('imdblanguage') != '') ? Settings::value('imdblanguage') : 'en'),
+						'language' => ((Settings::value('indexer.categorise.imdblanguage') != '') ?
+							Settings::value('indexer.categorise.imdblanguage') : 'en'),
 						'useragent' => 'Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) ' .
 							'Version/4.0.4 Mobile/7B334b Safari/531.21.102011-10-16 20:23:10', 'foo=bar'
 					]
@@ -1476,7 +1480,7 @@ class Movie
 			$this->pdo->log->doEcho($this->pdo->log->header('Updating movie schedule using rotten tomatoes.'));
 		}
 
-		$rt = new RottenTomato(Settings::value('rottentomatokey'));
+		$rt = new RottenTomato(Settings::value('APIs..rottentomatokey'));
 
 		if ($rt instanceof RottenTomato) {
 

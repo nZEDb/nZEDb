@@ -20,7 +20,7 @@ function python_module_exist($module)
 	return ($returnCode == 0 ? true : false);
 }
 
-$nntpproxy = Settings::value('nntpproxy');
+$nntpproxy = Settings::value('..nntpproxy');
 if ($nntpproxy === '0') {
 	exit();
 } else {
@@ -41,7 +41,7 @@ function window_proxy($tmux_session, $powerline)
 		$tmuxconfig = $DIR . "update/nix/tmux/tmux.conf";
 	}
 
-	$nntpproxy = Settings::value('nntpproxy');
+	$nntpproxy = Settings::value('..nntpproxy');
 	if ($nntpproxy === '1') {
 		$DIR = nZEDb_MISC;
 		$nntpproxypy = $DIR . "update/python/nntpproxy.py";
@@ -51,7 +51,7 @@ function window_proxy($tmux_session, $powerline)
 		}
 	}
 
-	if ($nntpproxy == '1' && (Settings::value('alternate_nntp') == '1')) {
+	if ($nntpproxy == '1' && (Settings::value('..alternate_nntp') == '1')) {
 		$DIR = nZEDb_MISC;
 		$nntpproxypy = $DIR . "update/python/nntpproxy.py";
 		if (file_exists($DIR . "update/python/lib/nntpproxy_a.conf")) {

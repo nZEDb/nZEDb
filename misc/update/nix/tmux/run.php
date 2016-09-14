@@ -15,11 +15,11 @@ Misc::isPatched();
 
 Misc::clearScreen();
 
-$patch = Settings::value('sqlpatch');
+$patch = Settings::value('..sqlpatch');
 $patch = ($patch != '') ? $patch : 0;
-$delaytimet = Settings::value('delaytime');
+$delaytimet = Settings::value('..delaytime');
 $delaytimet = ($delaytimet) ? (int)$delaytimet : 2;
-$nntpproxy = Settings::value('nntpproxy');
+$nntpproxy = Settings::value('..nntpproxy');
 
 echo "Starting Tmux...\n";
 // Create a placeholder session so tmux commands do not throw server not found errors.
@@ -39,7 +39,7 @@ $tmux_session = (isset($tmux->tmux_session)) ? $tmux->tmux_session : 0;
 $seq = (isset($tmux->sequential)) ? $tmux->sequential : 0;
 $powerline = (isset($tmux->powerline)) ? $tmux->powerline : 0;
 $import = (isset($tmux->import)) ? $tmux->import : 0;
-$tablepergroup = Settings::value('tablepergroup');
+$tablepergroup = Settings::value('..tablepergroup');
 $tablepergroup = ($tablepergroup != '') ? $tablepergroup : 0;
 
 //check if session exists
@@ -50,7 +50,7 @@ if (count($session) !== 0) {
 	exit($pdo->log->error("tmux session: '" . $tmux_session . "' is already running, aborting.\n"));
 }
 
-$nntpproxy = Settings::value('nntpproxy');
+$nntpproxy = Settings::value('..nntpproxy');
 if ($nntpproxy == '1') {
 	$modules = ["nntp", "socketpool"];
 	foreach ($modules as &$value) {
@@ -271,7 +271,7 @@ function start_apps($tmux_session)
  */
 function window_proxy($tmux_session, $window)
 {
-	$nntpproxy = Settings::value('nntpproxy');
+	$nntpproxy = Settings::value('..nntpproxy');
 	if ($nntpproxy === '1') {
 		$DIR = nZEDb_MISC;
 		$nntpproxypy = $DIR . "update/python/nntpproxy.py";
@@ -281,7 +281,7 @@ function window_proxy($tmux_session, $window)
 		}
 	}
 
-	if ($nntpproxy === '1' && (Settings::value('alternate_nntp') == '1')) {
+	if ($nntpproxy === '1' && (Settings::value('..alternate_nntp') == '1')) {
 		$DIR = nZEDb_MISC;
 		$nntpproxypy = $DIR . "update/python/nntpproxy.py";
 		if (file_exists($DIR . "update/python/lib/nntpproxy_a.conf")) {

@@ -18,7 +18,7 @@ if (isset($argv[2]) && $argv[2] === 'true') {
 	}
 }
 
-if (Settings::value('tablepergroup') === 1) {
+if (Settings::value('..tablepergroup') === 1) {
 	exit($pdo->log->error("You are using 'tablepergroup', you must use .../misc/update/nix/multiprocessing/releases.php"));
 }
 

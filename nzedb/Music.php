@@ -74,14 +74,16 @@ class Music
 
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
 		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
-		$this->pubkey = Settings::value('amazonpubkey');
-		$this->privkey = Settings::value('amazonprivkey');
-		$this->asstag = Settings::value('amazonassociatetag');
-		$this->musicqty = (Settings::value('maxmusicprocessed') != '') ? Settings::value('maxmusicprocessed') : 150;
-		$this->sleeptime = (Settings::value('amazonsleep') != '') ? Settings::value('amazonsleep') : 1000;
+		$this->pubkey = Settings::value('APIs..amazonpubkey');
+		$this->privkey = Settings::value('APIs..amazonprivkey');
+		$this->asstag = Settings::value('APIs..amazonassociatetag');
+		$result = Settings::value('..maxmusicprocessed';
+		$this->musicqty = empty($result) ? $result : 150;
+		$result = Settings::value('..amazonsleep');
+		$this->sleeptime = empty($result) ? $result : 1000;
 		$this->imgSavePath = nZEDb_COVERS . 'music' . DS;
 		$this->renamed = '';
-		if (Settings::value('lookupmusic') == 2) {
+		if (Settings::value('..lookupmusic') == 2) {
 			$this->renamed = 'AND isrenamed = 1';
 		}
 

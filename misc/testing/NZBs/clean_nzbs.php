@@ -34,7 +34,7 @@ $couldbe = ($argv[1] === "true") ? "could be " : "";
 echo $pdo->log->header('Getting List of nzbs to check against db.');
 echo $pdo->log->header("Checked / {$couldbe}moved\n");
 
-$dirItr = new \RecursiveDirectoryIterator(Settings::value('nzbpath'));
+$dirItr = new \RecursiveDirectoryIterator(Settings::value('..nzbpath'));
 $itr = new \RecursiveIteratorIterator($dirItr, \RecursiveIteratorIterator::LEAVES_ONLY);
 
 foreach ($itr as $filePath) {

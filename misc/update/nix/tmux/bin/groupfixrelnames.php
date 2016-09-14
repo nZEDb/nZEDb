@@ -174,9 +174,16 @@ if (!isset($argv[1])) {
 						echo $pdo->log->primaryOver('p');
 						if (!isset($nzbcontents)) {
 							$nntp = new NNTP(['Settings' => $pdo]);
-							if ((Settings::value('alternate_nntp') == '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
+							if (Settings::value('..alternate_nntp') == '1') {
+								$connected = $nntp->doConnect(true, true);
+							} else {
+								$connected = $nntp->doConnect();
+							}
+
+							if ($connected !== true) {
 								$pdo->log->error("Unable to connect to usenet.");
 							}
+
 							$Nfo = new Nfo(['Settings' => $pdo, 'Echo' => true]);
 							$nzbcontents = new NZBContents(
 								[

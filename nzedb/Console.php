@@ -76,14 +76,16 @@ class Console
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
 		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 
-		$this->pubkey = Settings::value('amazonpubkey');
-		$this->privkey = Settings::value('amazonprivkey');
-		$this->asstag = Settings::value('amazonassociatetag');
-		$this->gameqty = (Settings::value('maxgamesprocessed') != '') ? Settings::value('maxgamesprocessed') : 150;
-		$this->sleeptime = (Settings::value('amazonsleep') != '') ? Settings::value('amazonsleep') : 1000;
+		$this->pubkey = Settings::value('APIs..amazonpubkey');
+		$this->privkey = Settings::value('APIs..amazonprivkey');
+		$this->asstag = Settings::value('APIs..amazonassociatetag');
+		$result = Settings::value('..maxgamesprocessed');
+		$this->gameqty = ($result != '') ? $result : 150;
+		$result = Settings::value('..amazonsleep');
+		$this->sleeptime = ($result != '') ? $result : 1000;
 		$this->imgSavePath = nZEDb_COVERS . 'console' . DS;
 		$this->renamed = '';
-		if (Settings::value('lookupgames') == 2) {
+		if (Settings::value('..lookupgames') == 2) {
 			$this->renamed = 'AND isrenamed = 1';
 		}
 		//$this->cleanconsole = (Settings::value('lookupgames') == 2) ? 'AND isrenamed = 1' : '';

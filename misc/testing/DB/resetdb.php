@@ -75,7 +75,7 @@ echo $pdo->log->header("Deleting nzbfiles subfolders.");
 try {
 	$files = new \RecursiveIteratorIterator(
 				new \RecursiveDirectoryIterator(
-					Settings::value('nzbpath'),
+					Settings::value('..nzbpath'),
 					\RecursiveDirectoryIterator::SKIP_DOTS),
 				\RecursiveIteratorIterator::CHILD_FIRST);
 	foreach ($files as $file) {

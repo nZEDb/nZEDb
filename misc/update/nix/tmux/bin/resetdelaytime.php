@@ -5,7 +5,7 @@ use app\models\Settings;
 use nzedb\db\DB;
 
 $pdo = new DB();
-$tablepergroup = Settings::value('tablepergroup');
+$tablepergroup = Settings::value('..tablepergroup');
 $tablepergroup = (isset($tablepergroup)) ? $tablepergroup : 0;
 
 //reset collections dateadded to now

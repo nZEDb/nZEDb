@@ -7,7 +7,7 @@ use nzedb\RottenTomato;
 
 $cli = new ColorCLI();
 
-$rtkey = Settings::value('rottentomatokey');
+$rtkey = Settings::value('APIs..rottentomatokey');
 if (isset($rtkey)) {
 	$rt = new RottenTomato($rtkey);
 	print_r(json_decode($rt->searchMovie("inception")));

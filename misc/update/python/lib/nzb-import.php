@@ -21,7 +21,7 @@ if (!isset($argv[1])) {
 
 $consoleTools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 $binaries = new Binaries(['Settings' => $pdo]);
-$crosspostt = Settings::value('crossposttime');
+$crosspostt = Settings::value('..crossposttime');
 $crosspostt = (!empty($crosspostt)) ? $crosspostt : 2;
 $releasecleaning = new ReleaseCleaning($pdo);
 $categorize = new Categorize(['Settings' => $pdo]);

@@ -80,15 +80,18 @@ class Books
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
 		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 
-		$this->pubkey = Settings::value('amazonpubkey');
-		$this->privkey = Settings::value('amazonprivkey');
-		$this->asstag = Settings::value('amazonassociatetag');
-		$this->bookqty = (Settings::value('maxbooksprocessed') != '') ? Settings::value('maxbooksprocessed') : 300;
-		$this->sleeptime = (Settings::value('amazonsleep') != '') ? Settings::value('amazonsleep') : 1000;
+		$this->pubkey = Settings::value('APIs..amazonpubkey');
+		$this->privkey = Settings::value('APIs..amazonprivkey');
+		$this->asstag = Settings::value('APIs..amazonassociatetag');
+		$result = Settings::value('..maxbooksprocessed');
+		$this->bookqty = ($result != '') ? $result : 300;
+		$result = Settings::value('..amazonsleep');
+		$this->sleeptime = ($result != '') ? $result : 1000;
 		$this->imgSavePath = nZEDb_COVERS . 'book' . DS;
-		$this->bookreqids = (Settings::value('book_reqids') == null || Settings::value('book_reqids') == "") ? Category::BOOKS_EBOOK : Settings::value('book_reqids');
+		$result = Settings::value('..book_reqids');
+		$this->bookreqids = empty($bookreqids) ? Category::BOOKS_EBOOK : $result;
 		$this->renamed = '';
-		if (Settings::value('lookupbooks') == 2) {
+		if (Settings::value('..lookupbooks') == 2) {
 			$this->renamed = 'AND isrenamed = 1';
 		}
 

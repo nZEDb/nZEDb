@@ -8,9 +8,9 @@ use nzedb\db\DB;
 // Test if your amazon keys are working.
 
 $pdo = new DB();
-$pubkey =	Settings::value('amazonpubkey');
-$privkey =	Settings::value('amazonprivkey');
-$asstag =	Settings::value('amazonassociatetag');
+$pubkey =	Settings::value('APIs..amazonpubkey');
+$privkey =	Settings::value('APIs..amazonprivkey');
+$asstag =	Settings::value('APIs..amazonassociatetag');
 $obj = new AmazonProductAPI($pubkey, $privkey, $asstag);
 
 $e = null;

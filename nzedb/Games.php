@@ -103,15 +103,17 @@ class Games
 
 		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 
-		$this->publicKey = Settings::value('giantbombkey');
-		$this->gameQty = (Settings::value('maxgamesprocessed') != '') ? Settings::value('maxgamesprocessed') : 150;
-		$this->sleepTime = (Settings::value('amazonsleep') != '') ? Settings::value('amazonsleep') : 1000;
+		$this->publicKey = Settings::value('APIs..giantbombkey');
+		$result = Settings::value('..maxgamesprocessed');
+		$this->gameQty = ($result != '') ? $result : 150;
+		$result = Settings::value('..amazonsleep');
+		$this->sleepTime = ($result != '') ? $result : 1000;
 		$this->imgSavePath = nZEDb_COVERS . 'games' . DS;
 		$this->renamed = '';
 		$this->matchPercentage = 60;
 		$this->maxHitRequest = false;
 		$this->cookie = nZEDb_TMP . 'xxx.cookie';
-		if (Settings::value('lookupgames') == 2) {
+		if (Settings::value('..lookupgames') == 2) {
 			$this->renamed = 'AND isrenamed = 1';
 		}
 		$this->catWhere = 'AND categories_id = ' . Category::PC_GAMES;
