@@ -10,7 +10,7 @@ $id = $_GET["id"];
 
 $forum = new Forum(['Settings' => $page->settings]);
 if ($page->isPostBack()) {
-	$forum->add($id, $page->users->currentUserId(), "", $_POST["addReply"]);
+	$forum->add($id, $page->users->currentUserId(), "", $_POST["addMessage"]);
 	header("Location:" . WWW_TOP . "/forumpost/" . $id . "#last");
 	exit();
 }

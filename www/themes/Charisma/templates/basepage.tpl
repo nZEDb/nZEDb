@@ -286,6 +286,8 @@
 	<!-- library for making tables responsive -->
 	<script type="text/javascript"
 		src="{$smarty.const.WWW_THEMES}/{$theme}/shared/libs/responsive-tables-js-1.0.x/dist/responsivetables.js"></script>
+	<!-- tinymce editor -->
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/tinymce-builded/js/tinymce/tinymce.min.js"></script>
 	<!-- Charisma functions -->
 	<script type="text/javascript"
 			src="{$smarty.const.WWW_THEMES}/{$theme}/js/charisma.js"></script>
@@ -325,5 +327,22 @@
 	<script type="text/javascript"
 		src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
 	<![endif]-->
+
+	<script type="text/javascript">
+		tinyMCE.init({
+			selector: 'textarea#addMessage',
+			theme : "modern",
+			plugins: [
+				'advlist autolink link image lists charmap print preview hr anchor pagebreak spellchecker',
+				'searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking',
+				'save table contextmenu directionality emoticons template paste textcolor code'
+			],
+			theme_advanced_toolbar_location : "top",
+			theme_advanced_toolbar_align : "left",
+			toolbar: 'insertfile undo redo | styleselect | fontselect |sizeselect | fontsizeselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | print preview media fullpage | forecolor backcolor emoticons | code',
+			fontsize_formats: "8pt 9pt 10pt 11pt 12pt 13pt 14pt 15pt 16pt 17pt 18pt 24pt 36pt",
+			mode : "exact"
+		});
+	</script>
 	</body>
 </html>
