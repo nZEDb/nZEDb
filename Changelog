@@ -85,6 +85,9 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 		  https://github.com/niel/php-yenc/releases
 2016-09-14 DariusIII
 	Add: TinyMCE editor support to forum and admin->content
+2016-09-14 niel
+	Chg: Audited every call to fetch an entry from settings table, in order to make sure the
+		setting is correctly using the full section, subsection, name or dotted format.
 2016-09-13 niel
 	Add: Validation rules for Settings model.
 2016-09-12 niel
