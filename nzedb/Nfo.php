@@ -266,11 +266,14 @@ class Nfo
 		if ($pdo instanceof Settings) {
 			$maxSize = $pdo->getSetting('maxsizetoprocessnfo');
 			$minSize = $pdo->getSetting('minsizetoprocessnfo');
+			$maxRetries = (int)($pdo->getSetting('maxnforetries') >= 0 ?
+				-((int)$pdo->getSetting('maxnforetries') + 1) : self::NFO_UNPROC);
 		} else {
 			$maxSize = \app\models\Settings::value('maxsizetoprocessnfo');
 			$minSize = \app\models\Settings::value('minsizetoprocessnfo');
+			$maxRetries = (int)(Settings::value('maxnforetries') >= 0 ?
+				-((int)Settings::value('maxnforetries') + 1) : self::NFO_UNPROC);
 		}
-
 		return (
 			sprintf(
 				'AND r.nzbstatus = %d AND r.nfostatus BETWEEN %d AND %d %s %s',
