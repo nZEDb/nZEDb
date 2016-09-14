@@ -23,7 +23,7 @@
 				<td style="cursor:pointer;" class="item" onclick="document.location='{$smarty.const.WWW_TOP}/forumpost/{$result.id}';">
 					<a title="View post" class="title" href="{$smarty.const.WWW_TOP}/forumpost/{$result.id}">{$result.subject|escape:"htmlall"|truncate:100:'...':true:true}</a>
 					<div class="hint">
-						{$result.message|escape:"htmlall"|truncate:200:'...':false:false}
+						{$result.message|truncate:200:'...':false:false}
 					</div>
 				</td>
 				<td style="width:auto;text-align:center;white-space:nowrap;">
@@ -63,6 +63,7 @@
 			<label for="addMessage">Message:</label>
 			<textarea class="form-control" maxlength="5000" id="addMessage" name="addMessage" rows="3" placeholder=""></textarea>
 		</div>
-		<button class="btn btn-default forumpostsubmit" type="submit" value="submit">Submit</button>
+		<button class="btn btn-default" type="submit" value="submit">Submit</button>
+		<input class="btn btn-warning" value="Cancel" onclick="if(confirm('Are you SURE you wish to cancel?')) history.back();" />
 	</fieldset>
 </form>
