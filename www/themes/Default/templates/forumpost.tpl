@@ -45,7 +45,7 @@
 <a id="reply"></a>
 <form action="" method="post">
 	<label for="addMessage">Message:</label><br/>
-	<textarea maxlength="5000" id="addMessage" name="addMessage" rows="6" cols="60"></textarea>
+	<textarea id="addMessage" name="addMessage"></textarea>
 	<br/>
 	<input type="submit" value="Submit"/>
 	<input value="Cancel" onclick="if(confirm('Are you SURE you wish to cancel?')) history.back();" />

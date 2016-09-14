@@ -47,7 +47,7 @@
 			<h3>Add Reply</h3>
 			<div class="form-group">
 				<label for="addMessage">Message:</label>
-				<textarea class="form-control" maxlength="5000" id="addMessage" name="addMessage" rows="6"></textarea>
+				<textarea id="addMessage" name="addMessage" ></textarea>
 			</div>
 			<button class="btn btn-success" type="submit" value="submit">Submit</button>
 			<input class="btn btn-warning" value="Cancel" onclick="if(confirm('Are you SURE you wish to cancel?')) history.back();" />
