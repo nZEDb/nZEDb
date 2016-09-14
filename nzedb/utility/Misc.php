@@ -342,13 +342,10 @@ class Misc
 		return ($gzipped);
 	}
 
-	public static function isPatched(Settings $pdo = null)
+	public static function isPatched()
 	{
 		$versions = self::getValidVersionsFile();
 
-		if (!($pdo instanceof Settings)) {
-			$pdo = new Settings();
-		}
 		$patch = Settings::value(['section' => '', 'subsection' => '', 'name' => 'sqlpatch']);
 		$ver = $versions->versions->sql->file;
 
@@ -768,8 +765,8 @@ class Misc
 			}
 		}
 
-		$fromEmail = (PHPMAILER_FROM_EMAIL == '') ? Settings::value('email') : PHPMAILER_FROM_EMAIL;
-		$fromName  = (PHPMAILER_FROM_NAME == '') ? Settings::value('title') : PHPMAILER_FROM_NAME;
+		$fromEmail = (PHPMAILER_FROM_EMAIL == '') ? Settings::value('site.main.email') : PHPMAILER_FROM_EMAIL;
+		$fromName  = (PHPMAILER_FROM_NAME == '') ? Settings::value('site.main.title') : PHPMAILER_FROM_NAME;
 		$replyTo   = (PHPMAILER_REPLYTO == '') ? $from : PHPMAILER_REPLYTO;
 
 		if (PHPMAILER_BCC != '') {

@@ -187,7 +187,7 @@ class Versions
 	{
 		$this->checkSQLFileLatest($update);
 
-		//$setting  = Settings::value('sqlpatch');
+		//$setting  = Settings::value('..sqlpatch');
 
 		if ($this->_vers->sql->db->__toString() != $this->_vers->sql->file->__toString()) {
 			if ($update) {

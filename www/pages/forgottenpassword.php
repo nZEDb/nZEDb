@@ -26,8 +26,8 @@ switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
 			$page->users->updatePassResetGuid($ret["id"], '');
 			$newPassword = $page->users->generatePassword();
 			$page->users->updatePassword($ret["id"], $newPassword);
-			Misc::sendEmail($ret["email"], (Settings::value('title') . " Password Reset"),
-				"Your password has been reset to $newPassword", Settings::value('email')
+			Misc::sendEmail($ret["email"], (Settings::value('site.main.title') . " Password Reset"),
+				"Your password has been reset to $newPassword", Settings::value('site.main.email')
 			);
 
 			/** Provide the password in a message to so the user does not have to check their e-mail.
@@ -65,10 +65,10 @@ switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
 					// Send the email
 					Misc::sendEmail(
 						$ret["email"],
-						(Settings::value('title') . " Forgotten Password Request"),
+						(Settings::value('site.main.title') . " Forgotten Password Request"),
 						("Someone has requested a password reset for this email address.<br>To reset the password use <a href=\"" .
 							$page->serverurl . "forgottenpassword?action=reset&guid=$guid\">this link</a>\n"),
-						Settings::value('email')
+						Settings::value('site.main.email')
 					);
 					$sent = "true";
 					break;

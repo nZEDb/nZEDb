@@ -8,7 +8,8 @@ if (!$page->users->isLoggedIn()) {
 
 if (isset($_GET['action']) && $_GET['action'] == "1" && isset($_GET['emailto'])) {
 	$emailto = $_GET['emailto'];
-	$ret = $page->users->sendInvite(Settings::value('title'), Settings::value('email'), $page->serverurl, $page->users->currentUserId(), $emailto);
+	$ret = $page->users->sendInvite(Settings::value('site.main.title'), Settings::value('site.main.email'),
+		$page->serverurl, $page->users->currentUserId(), $emailto);
 	if (!$ret) {
 		print "Invite not sent.";
 	} else {

@@ -8,7 +8,7 @@ use nzedb\Releases;
 $page     = new AdminPage();
 $releases = new Releases(['Settings' => $page->settings]);
 $logging  = new Logging(['Settings' => $page->settings]);
-if (Settings::value('loggingopt') == '0') {
+if (Settings::value('site.main.loggingopt') == '0') {
 	$loggingon = '0';
 } else {
 	$loggingon = '1';

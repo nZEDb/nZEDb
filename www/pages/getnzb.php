@@ -17,7 +17,7 @@ if ($page->users->isLoggedIn()) {
 		Misc::showApiError(101);
 	}
 } else {
-	if (Settings::value('registerstatus') == Settings::REGISTER_STATUS_API_ONLY) {
+	if (Settings::value('..registerstatus') == Settings::REGISTER_STATUS_API_ONLY) {
 		$res = $page->users->getById(0);
 	} else {
 		if ((!isset($_GET["i"]) || !isset($_GET["r"]))) {

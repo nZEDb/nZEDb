@@ -88,7 +88,7 @@ class Console
 		if (Settings::value('..lookupgames') == 2) {
 			$this->renamed = 'AND isrenamed = 1';
 		}
-		//$this->cleanconsole = (Settings::value('lookupgames') == 2) ? 'AND isrenamed = 1' : '';
+		//$this->cleanconsole = (Settings::value('..lookupgames') == 2) ? 'AND isrenamed = 1' : '';
 		$this->catWhere = "AND categories_id BETWEEN " . Category::GAME_ROOT . " AND " . Category::GAME_OTHER;
 		$this->failCache = array();
 	}

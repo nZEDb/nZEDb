@@ -31,7 +31,7 @@ if (isset($_REQUEST['del'])) {
 		$page->show404();
 	}
 
-	$tmdb = new TMDb(Settings::value('tmdbkey'), Settings::value('imdblanguage'));
+	$tmdb = new TMDb(Settings::value('APIs..tmdbkey'), Settings::value('indexer.categorise.imdblanguage'));
 	$m = new Movie(['Settings' => $page->settings, 'TMDb' => $tmdb]);
 
 	if (is_numeric($_REQUEST['id'])) {

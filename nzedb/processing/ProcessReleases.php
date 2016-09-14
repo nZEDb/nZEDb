@@ -409,9 +409,9 @@ class ProcessReleases
 
 		$minSizeDeleted = $maxSizeDeleted = $minFilesDeleted = 0;
 
-		$maxSizeSetting = Settings::value('maxsizetoformrelease');
-		$minSizeSetting = Settings::value('minsizetoformrelease');
-		$minFilesSetting = Settings::value('minfilestoformrelease');
+		$maxSizeSetting = Settings::value('..maxsizetoformrelease');
+		$minSizeSetting = Settings::value('..minsizetoformrelease');
+		$minFilesSetting = Settings::value('.release.minfilestoformrelease');
 
 		foreach ($groupIDs as $groupID) {
 			if ($this->pdo->queryOneRow(
@@ -748,7 +748,7 @@ class ProcessReleases
 	 */
 	public function processRequestIDs($groupID = '', $limit = 5000, $local = true)
 	{
-		if ($local === false && Settings::value('lookup_reqids') == 0) {
+		if ($local === false && Settings::value('..lookup_reqids') == 0) {
 			return;
 		}
 
@@ -874,7 +874,7 @@ class ProcessReleases
 				$this->pdo->log->header("Process Releases -> Delete finished collections." . PHP_EOL) .
 				$this->pdo->log->primary(sprintf(
 					'Deleting collections/binaries/parts older than %d hours.',
-					Settings::value('partretentionhours')
+					Settings::value('..partretentionhours')
 				))
 			);
 		}
@@ -889,7 +889,7 @@ class ProcessReleases
 				$group['cname'],
 				$group['bname'],
 				$group['pname'],
-				Settings::value('partretentionhours'),
+				Settings::value('..partretentionhours'),
 				(!empty($groupID) && $this->tablePerGroup === false ? ' AND c.group_id = ' . $groupID : '')
 			)
 		);
@@ -1081,9 +1081,9 @@ class ProcessReleases
 			$groupIDs = [['id' => $groupID]];
 		}
 
-		$maxSizeSetting = Settings::value('maxsizetoformrelease');
-		$minSizeSetting = Settings::value('minsizetoformrelease');
-		$minFilesSetting = Settings::value('minfilestoformrelease');
+		$maxSizeSetting = Settings::value('..maxsizetoformrelease');
+		$minSizeSetting = Settings::value('..minsizetoformrelease');
+		$minFilesSetting = Settings::value('.release.minfilestoformrelease');
 
 		foreach ($groupIDs as $groupID) {
 			$releases = $this->pdo->queryDirect(
@@ -1180,11 +1180,11 @@ class ProcessReleases
 		}
 
 		// Releases past retention.
-		if (Settings::value('releaseretentiondays') != 0) {
+		if (Settings::value('..releaseretentiondays') != 0) {
 			$releases = $this->pdo->queryDirect(
 				sprintf(
 					'SELECT SQL_NO_CACHE id, guid FROM releases WHERE postdate < (NOW() - INTERVAL %d DAY)',
-					Settings::value('releaseretentiondays')
+					Settings::value('..releaseretentiondays')
 				)
 			);
 			if ($releases instanceof \Traversable) {
@@ -1196,7 +1196,7 @@ class ProcessReleases
 		}
 
 		// Passworded releases.
-		if (Settings::value('deletepasswordedrelease') == 1) {
+		if (Settings::value('..deletepasswordedrelease') == 1) {
 			$releases = $this->pdo->queryDirect(
 				sprintf(
 					'SELECT SQL_NO_CACHE id, guid FROM releases WHERE passwordstatus = %d',
@@ -1212,7 +1212,7 @@ class ProcessReleases
 		}
 
 		// Possibly passworded releases.
-		if (Settings::value('deletepossiblerelease') == 1) {
+		if (Settings::value('..deletepossiblerelease') == 1) {
 			$releases = $this->pdo->queryDirect(
 				sprintf(
 					'SELECT SQL_NO_CACHE id, guid FROM releases WHERE passwordstatus = %d',
@@ -1330,7 +1330,7 @@ class ProcessReleases
 		}
 
 		// Misc other.
-		if (Settings::value('miscotherretentionhours') > 0) {
+		if (Settings::value('..miscotherretentionhours') > 0) {
 			$releases = $this->pdo->queryDirect(
 				sprintf('
 					SELECT SQL_NO_CACHE id, guid
@@ -1338,7 +1338,7 @@ class ProcessReleases
 					WHERE categories_id = %d
 					AND adddate <= NOW() - INTERVAL %d HOUR',
 					Category::OTHER_MISC,
-					Settings::value('miscotherretentionhours')
+					Settings::value('..miscotherretentionhours')
 				)
 			);
 			if ($releases instanceof \Traversable) {
@@ -1350,7 +1350,7 @@ class ProcessReleases
 		}
 
 		// Misc hashed.
-		if (Settings::value('mischashedretentionhours') > 0) {
+		if (Settings::value('..mischashedretentionhours') > 0) {
 			$releases = $this->pdo->queryDirect(
 				sprintf('
 					SELECT SQL_NO_CACHE id, guid
@@ -1358,7 +1358,7 @@ class ProcessReleases
 					WHERE categories_id = %d
 					AND adddate <= NOW() - INTERVAL %d HOUR',
 					Category::OTHER_HASHED,
-					Settings::value('mischashedretentionhours')
+					Settings::value('..mischashedretentionhours')
 				)
 			);
 			if ($releases instanceof \Traversable) {
@@ -1639,7 +1639,7 @@ class ProcessReleases
 	 */
 	private function processStuckCollections(array $group, $where)
 	{
-		$lastRun = Settings::value('last_run_time');
+		$lastRun = Settings::value('indexer.processing.last_run_time');
 		$obj = $this->pdo->queryExec(
 			sprintf("
 				DELETE c, b, p FROM %s c

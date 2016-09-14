@@ -117,7 +117,7 @@ class Games
 			$this->renamed = 'AND isrenamed = 1';
 		}
 		$this->catWhere = 'AND categories_id = ' . Category::PC_GAMES;
-		//$this->cleangames = (Settings::value('lookupgames') == 2) ? 'AND isrenamed = 1' : '';
+		//$this->cleangames = (Settings::value('..lookupgames') == 2) ? 'AND isrenamed = 1' : '';
 	}
 
 	/**

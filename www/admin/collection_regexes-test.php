@@ -8,7 +8,7 @@ $page = new AdminPage();
 
 $page->title = "Collections Regex Test";
 
-$tpg = Settings::value('tablepergroup');
+$tpg = Settings::value('..tablepergroup');
 $page->smarty->assign('tpg', $tpg);
 
 if ($tpg) {

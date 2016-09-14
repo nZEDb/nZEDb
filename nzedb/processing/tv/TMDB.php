@@ -29,7 +29,7 @@ class TMDB extends TV
 	public function __construct(array $options = [])
 	{
 		parent::__construct($options);
-		$this->client = new TmdbAPI(Settings::value('tmdbkey'));
+		$this->client = new TmdbAPI(Settings::value('APIs..tmdbkey'));
 	}
 
 	/**
