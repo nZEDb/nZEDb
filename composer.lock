@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "e937ef086199756b55245b1607941dcd",
-    "content-hash": "e402fa43c9d9c8542492b0cc0df3567d",
+    "hash": "6dcf3a49db9b2f49c849cb7e151d46c1",
+    "content-hash": "ac4a1784962046b2f8bb5ac7d7117bb8",
     "packages": [
         {
             "name": "barracudanetworks/forkdaemon-php",
@@ -893,6 +893,33 @@
             "type": "bower-asset-library"
         },
         {
+            "name": "bower-asset/tinymce-builded",
+            "version": "4.4.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/artursmirnov/tinymce_builded.git",
+                "reference": "b6c9e915a1f0e415725c7cad901165f016eb58f0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/artursmirnov/tinymce_builded/zipball/b6c9e915a1f0e415725c7cad901165f016eb58f0",
+                "reference": "b6c9e915a1f0e415725c7cad901165f016eb58f0",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "license": [
+                "GNU / Lesser GPL"
+            ],
+            "description": "Builded version of TinyMCE rich editor",
+            "keywords": [
+                "builded",
+                "editor",
+                "rich",
+                "tinymce",
+                "wysiwyg"
+            ]
+        },
+        {
             "name": "composer/installers",
             "version": "v1.0.25",
             "source": {
@@ -1058,7 +1085,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amalfra/GiantBomb/zipball/2f80210e54e8310380221759b26117c1351b8031",
+                "url": "https://api.github.com/repos/amalfra/GiantBomb/zipball/6e5c37fdaff69bc2af089acd39fbc00b1d4f5985",
                 "reference": "6e5c37fdaff69bc2af089acd39fbc00b1d4f5985",
                 "shasum": ""
             },
@@ -1400,7 +1427,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/UnionOfRAD/lithium/zipball/72adef6d0ba44031e93d8aefc708e1cda999c7b3",
+                "url": "https://api.github.com/repos/UnionOfRAD/lithium/zipball/ce1d4d44d1e5b6c4a8cf6dc273025a8638e78b8e",
                 "reference": "ce1d4d44d1e5b6c4a8cf6dc273025a8638e78b8e",
                 "shasum": ""
             },

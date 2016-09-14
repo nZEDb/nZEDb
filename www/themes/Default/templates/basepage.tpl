@@ -105,6 +105,8 @@
 	<script src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap-2.3.x/docs/assets/bootstrap.min.js"></script>
 	<!-- <script src="{$smarty.const.WWW_THEMES}/shared/js/subnav.js"></script> -->
 	<script src="{$smarty.const.WWW_THEMES}/shared/libs/colorbox-1.6.x/jquery.colorbox-min.js" type="text/javascript" ></script>
+	<!-- tinymce editor -->
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/tinymce-builded/js/tinymce/tinymce.min.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/js/jquery.qtip.min.js" type="text/javascript" ></script>
 	<script src="{$smarty.const.WWW_THEMES}/{$theme}/scripts/utils.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/js/sorttable.js"></script>
@@ -131,6 +133,23 @@
 	{if $loggedin=="true"}
 		<input type="hidden" name="UID" value="{$userdata.id}">
 		<input type="hidden" name="RSSTOKEN" value="{$userdata.rsstoken}">{/if}
+
+		<script type="text/javascript">
+			tinyMCE.init({
+				selector: 'textarea#addMessage',
+				theme : "modern",
+				plugins: [
+					'advlist autolink link image lists charmap print preview hr anchor pagebreak spellchecker',
+					'searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking',
+					'save table contextmenu directionality emoticons template paste textcolor code'
+				],
+				theme_advanced_toolbar_location : "top",
+				theme_advanced_toolbar_align : "left",
+				toolbar: 'insertfile undo redo | styleselect | fontselect |sizeselect | fontsizeselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | print preview media fullpage | forecolor backcolor emoticons | code',
+				fontsize_formats: "8pt 9pt 10pt 11pt 12pt 13pt 14pt 15pt 16pt 17pt 18pt 24pt 36pt",
+				mode : "exact"
+			});
+		</script>
 
 	</body>
 </html>

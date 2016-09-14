@@ -13,7 +13,7 @@
 					<td width="15%;">
 						{if isset($isadmin) && $isadmin == 1}<strong>{/if}
 							<a {if $smarty.foreach.result.last}id="last"{/if}
-							   title="{if $isadmin == 1}Admin{else}View profile{/if}"
+							   title="{if isset($isadmin) && $isadmin == 1}Admin{else}View profile{/if}"
 							   href="{$smarty.const.WWW_TOP}/profile/?name={$result.username}">{$result.username}</a>
 							{if isset($isadmin) && $isadmin == 1}</strong>{/if}
 						<br/>
@@ -28,23 +28,23 @@
 							</div>
 						{/if}
 					</td>
-					<td>{$result.message|escape:"htmlall"|nl2br|magicurl}</td>
+					<td>{$result.message}</td>
 				</tr>
 			{/foreach}
 		</table>
 		<div id="new" tabindex="-1" role="dialog" aria-labelledby="myLabel" aria-hidden="true">
 			<div class="header">
-				<h3 id="myLabel">Add New Post</h3>
+				<h3 id="myLabel">Reply</h3>
 			</div>
 			<div class="body">
 				<form id="forum-post-reply" class="form-horizontal" action="" method="post">
 					<div class="control-group">
-						<label class="control-label" for="addReply">Message</label>
+						<label class="control-label" for="addMessage">Message</label>
 						<div class="controls">
-							<textarea class="input input-xlarge" maxlength="5000" id="addReply" name="addReply" rows="6"
-									  cols="100"></textarea>
+							<textarea id="addMessage" name="addMessage"></textarea>
 						</div>
-						<input class="forumreplysubmit btn btn-success" type="submit" value="submit"/>
+						<input class="btn btn-success" type="submit" value="Submit"/>
+						<input class="btn btn-warning" value="Cancel" onclick="if(confirm('Are you SURE you wish to cancel?')) history.back();" />
 					</div>
 				</form>
 			</div>
