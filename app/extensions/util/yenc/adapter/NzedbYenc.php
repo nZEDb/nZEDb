@@ -19,7 +19,6 @@
 
 namespace app\extensions\util\yenc\adapter;
 
-use app\extensions\util\Yenc as lYenc;
 use yenc\yenc;
 
 
@@ -32,7 +31,7 @@ class NzedbYenc extends \lithium\core\Object
 
 	public static function decodeIgnore(&$text, array $options = [])
 	{
-		return lYenc::decodeIgnore($text, ['name' => 'php']);
+		return self::decode($text, true);
 	}
 
 	/**
