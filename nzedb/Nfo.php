@@ -271,8 +271,8 @@ class Nfo
 		} else {
 			$maxSize = \app\models\Settings::value('maxsizetoprocessnfo');
 			$minSize = \app\models\Settings::value('minsizetoprocessnfo');
-			$maxRetries = (int)(\app\models\Settings::value('maxnforetries') >= 0 ?
-				-((int)Settings::value('maxnforetries') + 1) : self::NFO_UNPROC);
+			$value = \app\models\Settings::value('maxnforetries');
+			$maxRetries = (int)$value >= 0 ? -((int)$value + 1) : self::NFO_UNPROC;
 		}
 		return (
 			sprintf(
