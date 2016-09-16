@@ -25,7 +25,12 @@ if (defined('nZEDb_INSTALLER') && nZEDb_INSTALLER !== false) {
 } else {
 	switch (true) {
 		case extension_loaded('yenc'):
-			if (method_exists('yenc\yEnc', 'version') && version_compare(yenc\yEnc::version() >= '1.1.0')
+			if (method_exists('yenc\yEnc', 'version') &&
+				version_compare(
+					yenc\yEnc::version(),
+					'1.1.0',
+					'>='
+				)
 			) {
 				$adapter = 'NzedbYenc';
 				break;
