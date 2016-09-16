@@ -8,6 +8,12 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+
+2016-09-16 niel
+	Chg: Alter NzedbYenc adapter test to also check for version > 1.0.0 as that version is no longer
+		compatible with the adapter's implementation.
+	Mrg: PR 2266, from kevin123 - Refactor yydecode to use std I/O instead of files, improves
+		performance.
 2016-09-14 DariusIII
 	Chg: Add TinyMCE editor support to forum and admin->content
 2016-09-12 niel
