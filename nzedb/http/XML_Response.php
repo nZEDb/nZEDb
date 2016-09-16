@@ -99,6 +99,7 @@ class XML_Response
 			'Parameters' => null,
 			'Data'       => null,
 			'Server'     => null,
+			'Offset'     => null,
 			'Type'       => null,
 		];
 		$options += $defaults;
@@ -106,6 +107,7 @@ class XML_Response
 		$this->parameters = $options['Parameters'];
 		$this->releases = $options['Data'];
 		$this->server = $options['Server'];
+		$this->offset = $options['Offset'];
 		$this->type = $options['Type'];
 
 		$this->xml = new \XMLWriter();
@@ -176,6 +178,7 @@ class XML_Response
 		$this->includeRssAtomLink();
 		$this->includeMetaInfo();
 		$this->includeImage();
+		$this->includeTotalRows();
 		$this->includeReleases();
 		$w->endElement(); // End channel
 		$w->endElement(); // End RSS
@@ -336,6 +339,17 @@ class XML_Response
 			'description',
 			'Visit ' . $this->server['server']['title'] . ' - ' . $this->server['server']['strapline']
 		);
+		$this->xml->endElement();
+	}
+
+	/**
+	 * Adds total count of releases to the XML
+	 */
+	public function includeTotalRows()
+	{
+		$this->xml->startElement($this->namespace.":response");
+		$this->xml->writeAttribute('offset', $this->offset);
+		$this->xml->writeAttribute('total', isset($this->releases[0]['_totalrows']) ? $this->releases[0]['_totalrows'] : 0);
 		$this->xml->endElement();
 	}
 
