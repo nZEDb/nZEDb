@@ -32,10 +32,6 @@ class Ydecode extends \lithium\core\Object
 	 */
 	protected static $pathBin;
 
-	protected static $pathSource;
-
-	protected static $pathTarget;
-
 	/**
 	 * If on unix, hide yydecode CLI output.
 	 *
@@ -46,19 +42,13 @@ class Ydecode extends \lithium\core\Object
 
 	public static function decode(&$text, $ignore = false)
 	{
-		$source = tempnam(nZEDb_TMP . 'yEnc', 'yenc-source-');
-		$target = tempnam(nZEDb_TMP . 'yEnc', 'yenc-target-');
-
-		preg_match('/^(=yBegin.*=yEnd[^$]*)$/ims', $text, $input);
-		file_put_contents($source, $input[1]);
-		file_put_contents($target, '');
-		Misc::runCmd(
-			"'" . self::$pathBin . "' '" .	$source . "' -o '" . $target . "' -f -b" . self::$silent
+		if (!preg_match('/^(=yBegin.*=yEnd[^$]*)$/ims', $text, $input)) {
+			throw new \Exception('Text does not look like yEnc.');
+		}
+		$data = shell_exec(
+			"echo '{$input[1]}' | '" . self::$pathBin . "' -o - " . ($ignore ? "-b " : " ") . self::$silent
 		);
-		$data = file_get_contents($target);
-		unlink($source);
-		unlink($target);
-		if ($data === false && $ignore === false) {
+		if ($data === null) {
 			throw new \Exception('Error getting data from yydecode.');
 		}
 
