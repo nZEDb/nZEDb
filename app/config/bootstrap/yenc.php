@@ -25,8 +25,13 @@ if (defined('nZEDb_INSTALLER') && nZEDb_INSTALLER !== false) {
 } else {
 	switch (true) {
 		case extension_loaded('yenc'):
-			$adapter = 'NzedbYenc';
-			break;
+			if (method_exists('yEnc', 'version') && version_compare(yEnc::version() >= '1.1.0') ) {
+				$adapter = 'NzedbYenc';
+				break;
+			} else {
+				trigger_error('Your version of the php-yenc extension is out of date and will be
+				ignored. Please update it to use the extension.', E_USER_WARNING);
+			}
 		case extension_loaded('simple_php_yenc_decode'):
 			$adapter = 'SimplePhpYencDecode';
 			break;
