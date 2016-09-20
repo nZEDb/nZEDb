@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-09-20 DariusIII
+	Fix: Wrongly named autosize script in Alpha and Charisma themes (fixes issue #2268)
 2016-09-20 niel
 	Chg: Force php-yenc to use v1.2.2 or later, which fixes some issues with multi-part.
 2016-09-16 niel

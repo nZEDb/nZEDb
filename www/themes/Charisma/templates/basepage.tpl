@@ -293,7 +293,7 @@
 			src="{$smarty.const.WWW_THEMES}/{$theme}/js/charisma.js"></script>
 	<!-- nZEDb default scripts, needed for stuff to work -->
 	<script type="text/javascript"
-			src="{$smarty.const.WWW_THEMES}/shared/libs/autosize-3.0.x/dist/autosize-min.js"></script>
+			src="{$smarty.const.WWW_THEMES}/shared/libs/autosize-3.0.x/dist/autosize.min.js"></script>
 	<script type="text/javascript"
 			src="{$smarty.const.WWW_THEMES}/shared/js/jquery.qtip.min.js"></script>
 	<script type="text/javascript"
@@ -316,8 +316,6 @@
 	<!-- nZEDb default scripts, needed for stuff to work -->
 	<script type="text/javascript"
 		src="{$smarty.const.WWW_THEMES}/shared/js/jquery.colorbox-min.js"></script>
-	<script type="text/javascript"
-		src="{$smarty.const.WWW_THEMES}/shared/js/jquery.autosize-min.js"></script>
 	<script type="text/javascript"
 		src="{$smarty.const.WWW_THEMES}/shared/js/jquery.qtip2.js"></script>
 	<script type="text/javascript"
