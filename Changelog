@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-09-20 niel
+	Chg: Force php-yenc to use v1.2.2 or later, which fixes some issues with multi-part.
 2016-09-16 niel
 	Chg: Alter NzedbYenc adapter test to also check for version > 1.0.0 as that version is no longer
 		compatible with the adapter's implementation.
