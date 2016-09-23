@@ -189,6 +189,17 @@ class Settings extends \lithium\data\Model
 		return $result;
 
 	}
+
+	protected static function settingToArray($setting)
+	{
+		if (!is_array($setting)) {
+			$setting = self::dottedToArray($setting);
+		} elseif (count($setting) == 1) {
+			$setting = self::dottedToArray($setting[0]);
+		}
+
+		return $setting;
+	}
 }
 
 Settings::init();
