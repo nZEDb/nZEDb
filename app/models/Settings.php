@@ -129,6 +129,29 @@ class Settings extends \lithium\data\Model
 		);
 	}
 
+	public static function settingsAsTree(array $options = [])
+	{
+		$results = empty($options) ?
+			Settings::find('all') :
+			Settings::find('all', ['options' => $options]);
+
+		$tree = [];
+		if (is_array($results)) {
+			foreach ($results as $result) {
+				if (!empty($result['section']) || !$excludeUnsectioned) {
+					$tree[$result['section']][$result['subsection']][$result['name']] =
+						['value' => $result['value'], 'hint' => $result['hint']];
+				}
+			}
+		} else {
+			throw new \RuntimeException(
+				"NO results from Settings table! Check your table has been created and populated."
+			);
+		}
+
+		return $tree;
+	}
+
 	/**
 	 * Checks the supplied parameter is either a string or an array with single element. If
 	 * either the value is passed to Settings::dottedToArray() for conversion. Otherwise the
