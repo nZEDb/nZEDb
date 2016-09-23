@@ -129,11 +129,20 @@ class Settings extends \lithium\data\Model
 		);
 	}
 
-	public static function settingsAsTree(array $options = [])
+	/**
+	 * Return a tree-like array of all or selected settings.
+	 *
+	 *	@param array $options	Options array for Settings::find() i.e. ['conditions' => ...].
+	 * @param bool $excludeUnsectioned If rows with empty 'section' field should be excluded.
+	 *		Note this doesn't prevent empty 'subsection' fields.
+	 * @return array
+	 * @throws \RuntimeException
+	 */
+	public static function settingsAsTree(array $options = [], $excludeUnsectioned = true)
 	{
 		$results = empty($options) ?
 			Settings::find('all') :
-			Settings::find('all', ['options' => $options]);
+			Settings::find('all', $options);
 
 		$tree = [];
 		if (is_array($results)) {
