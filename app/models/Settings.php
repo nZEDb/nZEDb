@@ -184,12 +184,20 @@ class Settings extends \lithium\data\Model
 		} else {
 			return false;
 		}
-		//var_dump($result);
 
 		return $result;
 
 	}
 
+	/**
+	 * Checks the supplied parameter is either a string or an array with single element. If
+	 * either the value is passed to Settings::dottedToArray() for conversion. Otherwise the
+	 * value is returned unchanged.
+	 *
+	 * @param $setting	Setting array/string to check.
+	 *
+	 * @return array|boolean
+	 */
 	protected static function settingToArray($setting)
 	{
 		if (!is_array($setting)) {
