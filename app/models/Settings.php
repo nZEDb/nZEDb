@@ -131,8 +131,9 @@ class Settings extends \lithium\data\Model
 
 	/**
 	 * Return the value of supplied setting.
-	 * The setting can be either a a normal condition array for the custom 'setting' finder or a
-	 * dotted string notation setting.
+	 * The setting can be either a normal condition array for the custom 'setting' finder or a
+	 * dotted string notation setting. Note that dotted notation will be converted to an array,
+	 * so it will be slower: Explicitly use the array format if speed it paramount.
 	 * Be aware that this method only returns the first of any values found, so make sure your
 	 * $setting produces a unique result.
 	 *
