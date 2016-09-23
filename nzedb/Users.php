@@ -1040,6 +1040,50 @@ class Users
 	}
 
 	/**
+	 * Get a list of categories excluded for role
+	 *
+	 * @param $role
+	 *
+	 * @return array
+	 */
+	public function getRoleCategoryExclusion($role)
+	{
+		$ret = [];
+		$data = $this->pdo->query(sprintf("SELECT categories_id FROM role_excluded_categories WHERE role = %d", $role));
+		foreach ($data as $d)
+			$ret[] = $d["categories_id"];
+
+		return $ret;
+	}
+
+	/**
+	 * Add category exclusion for role
+	 *
+	 * @param $role
+	 *
+	 * @param $categoryIDs
+	 */
+	public function addRoleCategoryExclusions($role, $categoryIDs)
+	{
+		$this->delRoleCategoryExclusions($role);
+		if (count($categoryIDs) > 0) {
+			foreach ($categoryIDs as $categoryID) {
+				$this->pdo->queryInsert(sprintf("INSERT INTO role_excluded_categories (role, categories_id, createddate) VALUES (%d, %d, now())", $role, $categoryID));
+			}
+		}
+	}
+
+	/**
+	 * Delete role category exclusion
+	 *
+	 * @param $role
+	 */
+	public function delRoleCategoryExclusions($role)
+	{
+		$this->pdo->queryExec(sprintf("DELETE FROM role_excluded_categories WHERE role = %d", $role));
+	}
+
+	/**
 	 * Get the list of categories the user has excluded.
 	 *
 	 * @param int $userID ID of the user.
