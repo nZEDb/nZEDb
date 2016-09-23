@@ -111,11 +111,7 @@ class Settings extends \lithium\data\Model
 		static::finder('setting',
 			function ($params, $next) {
 
-				if (!is_array($params['options']['conditions'])) {
-					$params['options']['conditions'] = self::dottedToArray($params['options']['conditions']);
-				} elseif (count($params) == 1) {
-					$params['options']['conditions'] = self::dottedToArray($params['options']['conditions'][0]);
-				}
+				$params['options']['conditions'] = self::settingToArray($params['options']['conditions']);
 				$params['type'] = 'first';
 
 				$array = array_diff_key(
