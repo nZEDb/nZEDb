@@ -181,6 +181,13 @@ class DB extends \PDO
 		$this->pdo = null;
 	}
 
+	public function __get($name)
+	{
+		$result = $this->queryOneRow("SELECT value FROM settings WHERE setting = '$name' LIMIT 1");
+
+		return is_array($result) ? $result['value'] : $result;
+	}
+
 	public function checkDbExists($name = null)
 	{
 		if (empty($name)) {
