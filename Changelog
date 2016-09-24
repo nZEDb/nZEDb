@@ -63,6 +63,12 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 2016-09-26 niel
 	Fix: Prevent TmdbAPI constructor from exiting hard. Instead it now returns null on failure
 		(Fixes issue 2271).
+2016-09-24 niel
+	Chg: Replace Page::getSetting() with method to trigger a warning for old style settings fetch. A
+		new method called getSettingValue() will use the app\models\Settings model and is the
+		prefered method from now on. the getSetting() method is deprecated and will be removed in
+		the near future.
+	Chg: Update templates to use newer Page::getSettingVale() to fetch from the settings table.
 2016-09-23 DariusIII
 	Add: Support for per role category exclusions to admin->role edit page(Closes issue #1639).
 2016-09-23 niel
