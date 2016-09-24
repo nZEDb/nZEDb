@@ -91,9 +91,9 @@ class Nfo
 		$this->maxsize = ($dummy != '') ? (int)$dummy : 100;
 		$this->maxsize = ($this->maxsize > 0 ? ('AND size < ' . ($this->maxsize * 1073741824)) : '');
 		$dummy = Settings::value('..minsizetoprocessnfo');
-		$this->minsize = ( != '') ? (int)$dummy : 100;
+		$this->minsize = ($dummy != '') ? (int)$dummy : 100;
 		$this->minsize = ($this->minsize > 0 ? ('AND size > ' . ($this->minsize * 1048576)) : '');
-		$dummy = (Settings::value('..maxnforetries');
+		$dummy = Settings::value('..maxnforetries');
 		$this->maxRetries = ((int)$dummy >= 0 ? -((int)$dummy + 1) : self::NFO_UNPROC);
 		$this->maxRetries = ($this->maxRetries < -8 ? -8 : $this->maxRetries);
 		$this->tmpPath = (string)Settings::value('..tmpunrarpath');

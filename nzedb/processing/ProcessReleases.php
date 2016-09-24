@@ -138,7 +138,7 @@ class ProcessReleases
 		$dummy = Settings::value('..crossposttime');
 		$this->crossPostTime = ($dummy != '' ? (int)$dummy : 2);
 		$dummy = Settings::value('..maxnzbsprocessed');
-		$this->releaseCreationLimit = ( != '' ? (int)$dummy : 1000);
+		$this->releaseCreationLimit = ($dummy != '' ? (int)$dummy : 1000);
 		$dummy = Settings::value('..releasecompletion');
 		$this->completion = ($dummy != '' ? (int)$dummy : 0);
 		$this->processRequestIDs = (int)Settings::value('lookup_reqids');
@@ -179,8 +179,7 @@ class ProcessReleases
 			if ($this->echoCLI) {
 				$this->pdo->log->doEcho(
 					$this->pdo->log->error('Bad or missing nzb directory - ' . Settings::value('..nzbpath')),
-					true)
-				;
+					true);
 			}
 
 			return 0;
