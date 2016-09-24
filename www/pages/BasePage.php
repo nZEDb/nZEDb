@@ -183,7 +183,31 @@ class BasePage
 		}
 	}
 
+	/**
+	 * Allows to fetch a value from the settings table.
+	 *
+	 * This method is deprecated, as the column it uses to select the data is due to be removed
+	 * from the table *soon*.
+	 *
+	 * @param $setting
+	 *
+	 * @return array|bool|mixed|null|string
+	 */
 	public function getSetting($setting)
+	{
+		if (strpos($setting, '.') === false) {
+			trigger_error(
+				'You should update your template to use the newer method "$page->getSettingValue()"" of fetching values from the "settings" table! This method *will* be removed in a future version.',
+				E_USER_WARNING);
+		} else {
+			return $this->getSettingValue($setting);
+		}
+
+		return $this->settings->$setting;
+
+	}
+
+	public function getSettingValue($setting)
 	{
 		return Settings::value($setting);
 	}
