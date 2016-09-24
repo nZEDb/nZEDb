@@ -25,7 +25,7 @@ use nzedb\db\DB;
 
 $pdo = new DB();
 
-if (!Settings::value('tablepergroup')) {
+if (!Settings::value('..tablepergroup')) {
 	exit("Tables per groups is not enabled, quitting!");
 }
 

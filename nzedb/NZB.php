@@ -111,7 +111,7 @@ class NZB
 	{
 		$this->pdo = ($pdo instanceof DB ? $pdo : new DB());
 
-		$this->tablePerGroup = (Settings::value('tablepergroup') == 0 ? false : true);
+		$this->tablePerGroup = (Settings::value('..tablepergroup') == 0 ? false : true);
 		$nzbSplitLevel = Settings::value('nzbsplitlevel');
 		$this->nzbSplitLevel = (empty($nzbSplitLevel) ? 1 : $nzbSplitLevel);
 		$this->siteNzbPath = (string)Settings::value('nzbpath');

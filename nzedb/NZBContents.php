@@ -105,8 +105,8 @@ class NZBContents
 		);
 		$this->nzb = ($options['NZB'] instanceof NZB ? $options['NZB'] : new NZB($this->pdo));
 
-		$this->lookuppar2 = (Settings::value('lookuppar2') == 1 ? true : false);
-		$this->alternateNNTP = (Settings::value('alternate_nntp') == 1 ? true : false);
+		$this->lookuppar2 = (Settings::value('..lookuppar2') == 1 ? true : false);
+		$this->alternateNNTP = (Settings::value('..alternate_nntp') == 1 ? true : false);
 	}
 
 	/**

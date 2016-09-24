@@ -178,7 +178,7 @@ class DbUpdate
 				} else {
 					echo $this->log->header('Processing patch file: ' . $file);
 					$this->splitSQL($file, ['local' => $local, 'data' => $options['data']]);
-					$current = (integer)Settings::value('sqlpatch');
+					$current = (integer)Settings::value('..sqlpatch');
 					$current++;
 					$this->pdo->queryExec("UPDATE settings SET value = '$current' WHERE setting = 'sqlpatch';");
 					$newName = $matches['drive'] . $matches['path'] .
@@ -208,7 +208,7 @@ class DbUpdate
 
 		$this->initSettings();
 
-		$currentVersion = Settings::value('sqlpatch');
+		$currentVersion = Settings::value('..sqlpatch');
 		if (!is_numeric($currentVersion)) {
 			exit("Bad sqlpatch value: '$currentVersion'\n");
 		}

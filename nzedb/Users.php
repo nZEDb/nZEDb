@@ -242,7 +242,7 @@ class Users
 				$this->pdo->escapeString((string)$password),
 				$this->pdo->escapeString($email),
 				$role,
-				$this->pdo->escapeString((Settings::value('storeuserips') == 1 ? $host : '')),
+				(Settings::value('..storeuserips') == 1 ? $host : ''),
 				$this->pdo->escapeString(uniqid()),
 				$invites,
 				($invitedBy == 0 ? 'NULL' : $invitedBy),
@@ -708,7 +708,7 @@ class Users
 
 		// Make sure this is the last check, as if a further validation check failed, the invite would still have been used up.
 		$invitedBy = 0;
-		if ((Settings::value('registerstatus') == Settings::REGISTER_STATUS_INVITE) && !$forceInviteMode) {
+		if ((Settings::value('..registerstatus') == Settings::REGISTER_STATUS_INVITE) && !$forceInviteMode) {
 			if ($inviteCode == '') {
 				return self::ERR_SIGNUP_BADINVITECODE;
 			}
@@ -850,7 +850,7 @@ class Users
 	{
 		$_SESSION['uid'] = $userID;
 
-		if (Settings::value('storeuserips') != 1) {
+		if (Settings::value('..storeuserips') != 1) {
 			$host = '';
 		}
 

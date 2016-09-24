@@ -191,7 +191,7 @@ class Binaries
 		$this->_partRepair = (Settings::value('..partrepair') == 0 ? false : true);
 		$this->_newGroupScanByDays = (Settings::value('..newgroupscanmethod') == 1 ? true : false);
 		$this->_newGroupMessagesToScan = (Settings::value('..newgroupmsgstoscan') != '') ?
-			Settings::value(',,newgroupmsgstoscan') : 50000;
+			Settings::value('..newgroupmsgstoscan') : 50000;
 		$this->_newGroupDaysToScan = (Settings::value('..newgroupdaystoscan') != '') ?
 			(int)Settings::value('..newgroupdaystoscan') : 3;
 		$this->_partRepairLimit = (Settings::value('..maxpartrepair') != '') ?

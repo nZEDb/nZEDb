@@ -71,11 +71,11 @@ class AniDB
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
 		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 
-		$anidbupdint = Settings::value('intanidbupdate');
-		$lastupdated = Settings::value('lastanidbupdate');
+		$anidbupdint = Settings::value('..intanidbupdate');
+		$lastupdated = Settings::value('..lastanidbupdate');
 
 		$this->imgSavePath = nZEDb_COVERS . 'anime' . DS;
-		$this->apiKey      = Settings::value('anidbkey');
+		$this->apiKey      = Settings::value('APIs..anidbkey');
 
 		$this->updateInterval = (isset($anidbupdint) ? $anidbupdint : '7');
 		$this->lastUpdate     = (isset($lastupdated) ? $lastupdated : '0');

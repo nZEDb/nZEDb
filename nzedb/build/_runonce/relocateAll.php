@@ -121,7 +121,7 @@ foreach ($dirs as $path) {
 }
 
 //$pdo = new DB();
-if ($dirs['nzb']['source'] == Settings::value('nzbpath')) {
+if ($dirs['nzb']['source'] == Settings::value('..nzbpathnzbpath')) {
 	// Update the nzbpath setting if it is the one in use.
 	Settings::update(['value' => $dirs['nzb']['target']], ['setting' => 'nzbpath']);
 //	$pdo->queryDirect(sprintf('UPDATE settings SET value = %s WHERE setting = %s LIMIT 1',

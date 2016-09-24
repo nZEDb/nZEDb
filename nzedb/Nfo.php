@@ -85,14 +85,18 @@ class Nfo
 
 		$this->echo = ($options['Echo'] && nZEDb_ECHOCLI);
 		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
-		$this->nzbs = (Settings::value('maxnfoprocessed') != '') ? (int)Settings::value('maxnfoprocessed') : 100;
-		$this->maxsize = (Settings::value('maxsizetoprocessnfo') != '') ? (int)Settings::value('maxsizetoprocessnfo') : 100;
+		$dummy = Settings::value('..maxnfoprocessed');
+		$this->nzbs = ($dummy != '') ? (int)$dummy : 100;
+		$dummy = Settings::value('..maxsizetoprocessnfo');
+		$this->maxsize = ($dummy != '') ? (int)$dummy : 100;
 		$this->maxsize = ($this->maxsize > 0 ? ('AND size < ' . ($this->maxsize * 1073741824)) : '');
-		$this->minsize = (Settings::value('minsizetoprocessnfo') != '') ? (int)Settings::value('minsizetoprocessnfo') : 100;
+		$dummy = Settings::value('..minsizetoprocessnfo');
+		$this->minsize = ( != '') ? (int)$dummy : 100;
 		$this->minsize = ($this->minsize > 0 ? ('AND size > ' . ($this->minsize * 1048576)) : '');
-		$this->maxRetries = (int)(Settings::value('maxnforetries') >= 0 ? -((int)Settings::value('maxnforetries') + 1) : self::NFO_UNPROC);
+		$dummy = (Settings::value('..maxnforetries');
+		$this->maxRetries = ((int)$dummy >= 0 ? -((int)$dummy + 1) : self::NFO_UNPROC);
 		$this->maxRetries = ($this->maxRetries < -8 ? -8 : $this->maxRetries);
-		$this->tmpPath = (string)Settings::value('tmpunrarpath');
+		$this->tmpPath = (string)Settings::value('..tmpunrarpath');
 		if (!preg_match('/[\/\\\\]$/', $this->tmpPath)) {
 			$this->tmpPath .= DS;
 		}
@@ -262,9 +266,10 @@ class Nfo
 	 */
 	public static function NfoQueryString()
 	{
-		$maxSize = Settings::value('maxsizetoprocessnfo');
-		$minSize = Settings::value('minsizetoprocessnfo');
-		$maxRetries = (int)(Settings::value('maxnforetries') >= 0 ? -((int)Settings::value('maxnforetries') + 1) : self::NFO_UNPROC);
+		$maxSize = Settings::value('..maxsizetoprocessnfo');
+		$minSize = Settings::value('..minsizetoprocessnfo');
+		$dummy = Settings::value('..maxnforetries');
+		$maxRetries = (int)($dummy >= 0 ? -((int)$dummy + 1) : self::NFO_UNPROC);
 		return (
 			sprintf(
 				'AND r.nzbstatus = %d AND r.nfostatus BETWEEN %d AND %d %s %s',

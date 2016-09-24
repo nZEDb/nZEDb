@@ -68,7 +68,8 @@ class XXX
 		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 		$this->releaseImage = ($options['ReleaseImage'] instanceof ReleaseImage ? $options['ReleaseImage'] : new ReleaseImage($this->pdo));
 
-		$this->movieqty = (Settings::value('maxxxxprocessed') != '') ? Settings::value('maxxxxprocessed') : 100;
+		$dummy = Settings::value('..maxxxxprocessed');
+		$this->movieqty = ($dummy != '') ? $dummy : 100;
 		$this->showPasswords = Releases::showPasswords($this->pdo);
 		$this->debug = nZEDb_DEBUG;
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);

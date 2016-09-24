@@ -132,17 +132,21 @@ class ProcessReleases
 		$this->releases = ($options['Releases'] instanceof Releases ? $options['Releases'] : new Releases(['Settings' => $this->pdo, 'Groups' => $this->groups]));
 		$this->releaseImage = ($options['ReleaseImage'] instanceof ReleaseImage ? $options['ReleaseImage'] : new ReleaseImage($this->pdo));
 
-		$this->tablePerGroup = (Settings::value('tablepergroup') == 0 ? false : true);
-		$this->collectionDelayTime = (Settings::value('delaytime') != '' ? (int)Settings::value('delaytime') : 2);
-		$this->crossPostTime = (Settings::value('crossposttime') != '' ? (int)Settings::value('crossposttime') : 2);
-		$this->releaseCreationLimit = (Settings::value('maxnzbsprocessed') != '' ? (int)Settings::value('maxnzbsprocessed') : 1000);
-		$this->completion = (Settings::value('releasecompletion') != '' ? (int)Settings::value('releasecompletion') : 0);
+		$this->tablePerGroup = (Settings::value('..tablepergroup') == 0 ? false : true);
+		$dummy = Settings::value('..delaytime');
+		$this->collectionDelayTime = ($dummy != '' ? (int)$dummy : 2);
+		$dummy = Settings::value('..crossposttime');
+		$this->crossPostTime = ($dummy != '' ? (int)$dummy : 2);
+		$dummy = Settings::value('..maxnzbsprocessed');
+		$this->releaseCreationLimit = ( != '' ? (int)$dummy : 1000);
+		$dummy = Settings::value('..releasecompletion');
+		$this->completion = ($dummy != '' ? (int)$dummy : 0);
 		$this->processRequestIDs = (int)Settings::value('lookup_reqids');
 		if ($this->completion > 100) {
 			$this->completion = 100;
 			echo $this->pdo->log->error(PHP_EOL . 'You have an invalid setting for completion. It cannot be higher than 100.');
 		}
-		$this->collectionTimeout = intval(Settings::value('collection_timeout'));
+		$this->collectionTimeout = intval(Settings::value('indexer.processing.collection_timeout'));
 	}
 
 	/**
@@ -171,9 +175,12 @@ class ProcessReleases
 			$this->pdo->log->doEcho($this->pdo->log->header("Starting release update process (" . date('Y-m-d H:i:s') . ")"), true);
 		}
 
-		if (!file_exists(Settings::value('nzbpath'))) {
+		if (!file_exists(Settings::value('..nzbpath'))) {
 			if ($this->echoCLI) {
-				$this->pdo->log->doEcho($this->pdo->log->error('Bad or missing nzb directory - ' . Settings::value('nzbpath')), true);
+				$this->pdo->log->doEcho(
+					$this->pdo->log->error('Bad or missing nzb directory - ' . Settings::value('..nzbpath')),
+					true)
+				;
 			}
 
 			return 0;

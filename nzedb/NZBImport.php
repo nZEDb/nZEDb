@@ -122,7 +122,8 @@ class NZBImport
 		$this->releaseCleaner = ($options['ReleaseCleaning'] instanceof ReleaseCleaning ? $options['ReleaseCleaning'] : new ReleaseCleaning($this->pdo));
 		$this->releases = ($options['Releases'] instanceof Releases ? $options['Releases'] : new Releases(['settings' => $this->pdo]));
 
-		$this->crossPostt = (Settings::value('crossposttime') != '') ? Settings::value('crossposttime') : 2;
+		$dummy = Settings::value('..crossposttime');
+		$this->crossPostt = ($dummy != '') ? $dummy : 2;
 		$this->browser = $options['Browser'];
 		$this->retVal = '';
 		$this->groups = new Groups(['Settings' => $this->pdo]);

@@ -122,11 +122,11 @@ class SABnzbd
 				break;
 
 			case self::INTEGRATION_TYPE_SITEWIDE:
-				if ((Settings::value('sabapikey') != '') && (Settings::value('saburl') != '')) {
+				if ((Settings::value('apps.sabnzbplus.apikey') != '') && (Settings::value('saburl') != '')) {
 					$this->url = Settings::value('saburl');
-					$this->apikey = Settings::value('sabapikey');
-					$this->priority = Settings::value('sabpriority');
-					$this->apikeytype = Settings::value('sabapikeytype');
+					$this->apikey = Settings::value('apps.sabnzbplus.apikey');
+					$this->priority = Settings::value('apps.sabnzbplus.priority');
+					$this->apikeytype = Settings::value('apps.sabnzbplus.apikeytype');
 				}
 				$this->integrated = self::INTEGRATION_TYPE_SITEWIDE;
 				$this->integratedBool = true;
