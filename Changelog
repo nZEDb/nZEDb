@@ -12,6 +12,8 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 2016-09-26 niel
 	Fix: Prevent TmdbAPI constructor from exiting hard. Instead it now returns null on failure
 		(Fixes issue 2271).
+2016-09-23 DariusIII
+	Chg: Add support for per role category exclusions to admin->role edit page(Closes issue #1639)
 2016-09-20 DariusIII
 	Fix: Wrongly named autosize script in Alpha and Charisma themes (fixes issue #2268)
 2016-09-20 niel
