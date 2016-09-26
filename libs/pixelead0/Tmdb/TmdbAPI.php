@@ -119,8 +119,8 @@ class TmdbAPI {
 
 		// Load the configuration
 		if (! $this->_loadConfig()){
-			echo "Unable to read configuration, verify that the API key is valid";
-			exit;
+			echo "Unable to read TMDbAPI configuration, verify that the API key is valid";
+			return null;
 		}
 	}
 
