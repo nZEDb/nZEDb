@@ -2,11 +2,11 @@
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\ColorCLI;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 $cli = new ColorCLI();
 
-$pdo = new Settings(['checkVersion' => true]);
+$pdo = new DB(['checkVersion' => true]);
 $ftinnodb = $pdo->isDbVersionAtLeast('5.6');
 
 if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {

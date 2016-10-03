@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 class Forum
 {
@@ -20,7 +20,7 @@ class Forum
 		];
 		$options += $defaults;
 
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 	}
 
 	public function add($parentid, $userid, $subject, $message, $locked = 0, $sticky = 0, $replies = 0)

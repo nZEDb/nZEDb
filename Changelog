@@ -9,6 +9,40 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-10-03 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.5.0
+
+
+2016-09-26 niel
+	Fix: Prevent TmdbAPI constructor from exiting hard. Instead it now returns null on failure
+		(Fixes issue 2271).
+2016-09-23 DariusIII
+	Add: Support for per role category exclusions to admin->role edit page(Closes issue #1639).
+2016-09-20 DariusIII
+	Fix: Wrongly named autosize script in Alpha and Charisma themes (fixes issue #2268)
+2016-09-20 niel
+	Chg: Force php-yenc to use v1.2.2 or later, which fixes some issues with multi-part.
+2016-09-16 niel
+	Chg: Alter NzedbYenc adapter test to also check for version > 1.0.0 as that version is no longer
+		compatible with the adapter's implementation.
+	Mrg: PR 2266, from kevin123 - Refactor yydecode to use std I/O instead of files, improves
+		performance.
+2016-09-16 DariusIII
+	Chg: Add back reporting of total rows to API response
+	Chg: Group audio releases by album (fixes issue #2239)
+2016-09-15 niel
+	Chg: Updated NzedbYenc adapter to support decodeIgnore in the extension, instead of falling
+		back to the Php adapter.
+		 ***NOTE*** This changes the API for the function so all users of the extension will have to
+		upgrade to at least v1.1.0, or the code will generate errors.
+		  https://github.com/niel/php-yenc/releases
+2016-09-14 DariusIII
+	Add: TinyMCE editor support to forum and admin->content
+2016-09-12 niel
+	Chg: Refactor scripts using nzedb\db\Settings class without actually using any of the class'
+		additional features, to use the parent nzedb\db\DB class. This is to let me work on
+		moving the scripts that DO need the additional features over to using app\models\Settings
+		instead and properly separating business logic from the way models get used.
 2016-09-08 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.4.1
 

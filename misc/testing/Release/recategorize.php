@@ -5,9 +5,9 @@ use nzedb\Categorize;
 use nzedb\Category;
 use nzedb\ColorCLI;
 use nzedb\ConsoleTools;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
-$pdo = new Settings();
+$pdo = new DB();
 
 if (!(isset($argv[1]) && ($argv[1] == "all" || $argv[1] == "misc" || preg_match('/\([\d, ]+\)/', $argv[1]) || is_numeric($argv[1])))) {
 	exit($pdo->log->error(

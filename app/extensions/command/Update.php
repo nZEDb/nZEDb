@@ -18,12 +18,11 @@
  */
 namespace app\extensions\command;
 
-use \app\extensions\util\Git;
-use \app\extensions\util\Versions;
-use \lithium\console\command\Help;
-use \nzedb\db\DbUpdate;
-use \nzedb\db\Settings;
-use \Smarty;
+use app\extensions\util\Git;
+use app\extensions\util\Versions;
+use lithium\console\command\Help;
+use nzedb\db\DbUpdate;
+use Smarty;
 
 
 /**
@@ -95,7 +94,7 @@ class Update extends \app\extensions\console\Command
 		$this->out("Db: $currentDb,\tFile: $currentXML");
 
 		if ($currentDb < $currentXML) {
-			$db = new DbUpdate(['backup' => false, 'db' => new Settings()]);
+			$db = new DbUpdate(['backup' => false]);
 			$db->processPatches(['safe' => false]);
 		} else {
 			$this->out("Up to date.", 'info');

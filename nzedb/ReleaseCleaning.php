@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 /*
  * Cleans names for releases/imports/namefixer.
@@ -64,7 +64,7 @@ class ReleaseCleaning
 		$this->e1  = CollectionsCleaning::REGEX_FILE_EXTENSIONS . CollectionsCleaning::REGEX_END;
 		$this->e2  = CollectionsCleaning::REGEX_FILE_EXTENSIONS .
 					 CollectionsCleaning::REGEX_SUBJECT_SIZE . CollectionsCleaning::REGEX_END;
-		$this->pdo = ($settings instanceof Settings ? $settings : new Settings());
+		$this->pdo = ($settings instanceof DB ? $settings : new DB());
 		$this->_regexes = new Regexes(['Settings' => $this->pdo, 'Table_Name' => 'release_naming_regexes']);
 	}
 

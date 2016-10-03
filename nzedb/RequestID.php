@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 abstract class RequestID
 {
@@ -113,8 +113,7 @@ abstract class RequestID
 		$options += $defaults;
 
 		$this->echoOutput = ($options['Echo'] && nZEDb_ECHOCLI);
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] :
-			new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 		$this->category = ($options['Categorize'] instanceof Categorize ?
 			$options['Categorize'] : new Categorize(['Settings' => $this->pdo]));
 		$this->groups = ($options['Groups'] instanceof Groups ? $options['Groups'] :

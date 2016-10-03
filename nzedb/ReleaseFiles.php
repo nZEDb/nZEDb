@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 /**
  * Adds/fetches rar/zip/etc files for a release.
@@ -25,7 +25,7 @@ class ReleaseFiles
 	 */
 	public function __construct($settings = null)
 	{
-		$this->pdo = ($settings instanceof Settings ? $settings : new Settings());
+		$this->pdo = ($settings instanceof DB ? $settings : new DB());
 		$this->sphinxSearch = new SphinxSearch();
 	}
 

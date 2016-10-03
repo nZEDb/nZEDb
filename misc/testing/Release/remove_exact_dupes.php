@@ -5,9 +5,9 @@ use nzedb\ConsoleTools;
 use nzedb\NZB;
 use nzedb\ReleaseImage;
 use nzedb\Releases;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
-$pdo = new Settings();
+$pdo = new DB();
 
 if ($argc < 3 || !isset($argv[1]) || (isset($argv[1]) && !is_numeric($argv[1]))) {
 	exit($pdo->log->error("\nIncorrect argument suppplied. This script will delete all duplicate releases matching on name, fromname, groups_id and size.\n"

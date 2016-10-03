@@ -8,10 +8,10 @@ use nzedb\ConsoleTools;
 use nzedb\NZB;
 use nzedb\ReleaseImage;
 use nzedb\Releases;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 use nzedb\utility\Misc;
 
-$pdo = new Settings();
+$pdo = new DB();
 
 $row = $pdo->queryOneRow("SELECT value FROM settings WHERE setting = 'coverspath'");
 if ($row !== false) {

@@ -3,9 +3,9 @@ require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR .
 
 use nzedb\Category;
 use nzedb\Games;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
-$pdo = new Settings();
+$pdo = new DB();
 
 if (isset($argv[1]) && $argv[1] === "true") {
 	getOddGames($pdo->log);

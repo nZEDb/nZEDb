@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 /**
  * @note Does not currently work with NntpProxy because it does not implement all of NNTP's command.
@@ -85,7 +85,7 @@ class Sharing
 		];
 		$options += $defaults;
 
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 
 		// Get all sharing info from DB.
 		$check = $this->pdo->queryOneRow('SELECT * FROM sharing');

@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 class ReleaseSearch
 {
@@ -27,9 +27,9 @@ class ReleaseSearch
 	private $fullTextJoinString;
 
 	/**
-	 * @param \nzedb\db\Settings $settings
+	 * @param \nzedb\db\DB $pdo
 	 */
-	public function __construct(Settings $settings)
+	public function __construct(DB $pdo)
 	{
 		switch (nZEDb_RELEASE_SEARCH_TYPE) {
 			case self::LIKE:
@@ -45,7 +45,7 @@ class ReleaseSearch
 		}
 
 		$this->sphinxQueryOpt = ";limit=10000;maxmatches=10000;sort=relevance;mode=extended";
-		$this->pdo = ($settings instanceof Settings ? $settings : new Settings());
+		$this->pdo = ($pdo instanceof DB ? $pdo : new DB());
 	}
 
 	/**

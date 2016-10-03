@@ -33,7 +33,7 @@
 					{/if}
 
 				</td>
-				<td>{$result.message|escape:"htmlall"|nl2br|magicurl}</td>
+				<td>{$result.message}</td>
 			</tr>
 		{/foreach}
 		</tbody>
@@ -46,10 +46,11 @@
 		<fieldset>
 			<h3>Add Reply</h3>
 			<div class="form-group">
-				<label for="addReply">Message:</label>
-				<textarea class="form-control" maxlength="5000" id="addReply" name="addReply" rows="6"></textarea>
+				<label for="addMessage">Message:</label>
+				<textarea id="addMessage" name="addMessage" ></textarea>
 			</div>
-			<button class="btn btn-success forumreplysubmit" type="submit" value="submit">Submit</button>
+			<button class="btn btn-success" type="submit" value="submit">Submit</button>
+			<input class="btn btn-warning" value="Cancel" onclick="if(confirm('Are you SURE you wish to cancel?')) history.back();" />
 		</fieldset>
 	</form>
 

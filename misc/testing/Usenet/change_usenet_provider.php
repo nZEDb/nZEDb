@@ -3,14 +3,14 @@ require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR .
 
 use nzedb\Binaries;
 use nzedb\NNTP;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 /* This script will update the groups table to get the new article numbers for each group you have activated.
   It will also truncate the parts, binaries, collections, and missed_parts tables.
  */
 // TODO: Make this threaded so it goes faster.
 
-$pdo = new Settings();
+$pdo = new DB();
 
 if (!isset($argv[1]) || $argv[1] != 'true') {
 	printf($pdo->log->setColor('Yellow') .

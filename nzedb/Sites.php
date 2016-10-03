@@ -41,7 +41,7 @@ class Sites
 		];
 		$options += $defaults;
 
-		$this->_db = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->_db = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 
 		if (defined('nZEDb_VERSIONS')) {
 			try {

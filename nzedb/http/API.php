@@ -20,10 +20,10 @@
  */
 namespace nzedb\http;
 
-use nzedb\db\Settings;
-use nzedb\utility\Misc;
 use nzedb\Category;
 use nzedb\Groups;
+use nzedb\db\DB;
+use nzedb\utility\Misc;
 
 /**
  * Class API
@@ -54,7 +54,7 @@ class API extends Capabilities {
 		];
 		$options += $defaults;
 
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 		$this->getRequest = $options['Request'];
 	}
 

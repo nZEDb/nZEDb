@@ -7,6 +7,7 @@ use nzedb\utility\Misc;
 
 $category = new Category(['Settings' => $page->settings]);
 $rss = new RSS(['Settings' => $page->settings]);
+$offset = 0;
 
 // If no content id provided then show user the rss selection page.
 if (!isset($_GET["t"]) && !isset($_GET["show"]) && !isset($_GET["anidb"])) {
@@ -115,5 +116,5 @@ if (!isset($_GET["t"]) && !isset($_GET["show"]) && !isset($_GET["anidb"])) {
 	} else {
 		$relData = $rss->getRss(explode(',', $userCat), $userNum, $userShow, $userAnidb, $uid, $userAirDate);
 	}
-	$rss->output($relData, $params, $outputXML, 'rss');
+	$rss->output($relData, $params, $outputXML, $offset, 'rss');
 }
