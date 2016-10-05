@@ -1233,7 +1233,7 @@ class Releases
 				'SELECT COUNT(z.id) AS count FROM (%s LIMIT %s) z',
 				preg_replace('/SELECT.+?FROM\s+releases/is', 'SELECT r.id FROM releases', $query),
 				nZEDb_MAX_PAGER_RESULTS
-			)
+			), true, nZEDb_CACHE_EXPIRY_SHORT
 		);
 		return (isset($count[0]['count']) ? $count[0]['count'] : 0);
 	}
