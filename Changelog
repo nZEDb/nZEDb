@@ -10,6 +10,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 2016-10-07 niel
 	Fix: Issue 2263 - Out of memory issue checking RAR files.
+	Fix: Add missing setting for settings table.
 2016-10-05 DariusIII
 	Chg: Add caching to getPagerCount function to reduce load on indexers with many API calls
 2016-10-03 niel
