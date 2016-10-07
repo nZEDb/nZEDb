@@ -1246,7 +1246,7 @@ class RarInfo extends ArchiveReader
 	 */
 	protected function processQuickOpenRecords(&$block)
 	{
-		$end = $this->offset + $block['data_size'];
+		$end = ($this->offset < $this->length) ? $this->offset + $block['data_size'] : $this->length;
 		while ($this->offset < $end) {
 
 			// Start the cache record
@@ -1279,7 +1279,7 @@ class RarInfo extends ArchiveReader
 	 */
 	protected function processExtraRecords(&$block)
 	{
-		$end = $this->offset + $block['extra_size'];
+		$end = ($this->offset < $this->length) ? $this->offset + $block['extra_size'] : $this->length;
 		while ($this->offset < $end) {
 
 			// Start with the record size and type
