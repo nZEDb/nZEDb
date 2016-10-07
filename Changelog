@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-10-05 DariusIII
+	Chg: Add caching to getPagerCount function to reduce load on indexers with many API calls
 2016-10-03 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.5.0
 
