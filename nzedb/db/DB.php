@@ -254,6 +254,12 @@ class DB extends \PDO
 		}
 	}
 
+	public function getSetting($name)
+	{
+		$result = $this->queryOneRow("SELECT value FROM settings WHERE setting = '$name' LIMIT 1");
+		return is_array($result) ? $result['value'] : $result;
+	}
+
 	public function getTableList()
 	{
 		$query  = ($this->opts['dbtype'] === 'mysql' ? 'SHOW DATABASES' : 'SELECT datname AS Database FROM pg_database');
