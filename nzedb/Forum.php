@@ -153,7 +153,7 @@ class Forum
 		$post = $this->getPost($id);
 		if ($post) {
 			$this->pdo->queryExec(sprintf('
-									UPDATE forumpost
+									UPDATE forum_posts
 									SET message = %s
 									WHERE id = %d
 									AND user_id = %d',
