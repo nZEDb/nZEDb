@@ -3,7 +3,14 @@ ChangeLog file which list *when* changes are made to the dev branches.
 
 
 0.6.5.1 2016-10-12
+Added:
+	* Add caching to getPagerCount function to reduce load on indexers with many API calls.
 
+Changed:
+	* Issue 2263 - Out of memory issue checking RAR files. Add limit checkings to the extra options.
+
+Fixed:
+	* Add missing setting for settings table.
 
 
 0.6.5.0 2016-10-03
