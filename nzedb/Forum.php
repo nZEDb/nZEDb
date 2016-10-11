@@ -140,4 +140,28 @@ class Forum
 			)
 		);
 	}
+
+	/**
+	 * Edit forum post for user
+	 *
+	 * @param $id
+	 * @param $message
+	 * @param $uid
+	 */
+	public function editPost($id, $message, $uid)
+	{
+		$post = $this->getPost($id);
+		if ($post) {
+			$this->pdo->queryExec(sprintf('
+									UPDATE forumpost
+									SET message = %s
+									WHERE id = %d
+									AND user_id = %d',
+				$this->pdo->escapeString($message),
+				$post['id'],
+				$uid
+			)
+			);
+		}
+	}
 }

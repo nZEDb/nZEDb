@@ -8,6 +8,8 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+2016-10-11 DariusIII
+	Chg: Add edit function to forumposts
 2016-10-10 DariusIII
 	Chg: Add release_naming_regex for a.b.movies to properly name DJ releases
 2016-10-07 niel
