@@ -1,10 +1,14 @@
 <h2>Search</h2>
-<div class="btn btn-info pull-right"  style="text-decoration: none; font-family: Droid Sans,sans-serif;" onclick="if (jQuery(this).text() == 'Basic Search')
-				jQuery(this).text('Advanced Search');
-			else
-				jQuery(this).text('Basic Search');
-			jQuery('#sbasic,#sadvanced').toggle();
-		return false;">{if $sadvanced}Basic{else}Click For Advanced{/if} Search
+<div>
+	<div style="text-align: right;">
+		<a href="#" onclick="if (jQuery(this).text() == 'Advanced Search')
+					jQuery(this).text('Basic Search');
+				else
+					jQuery(this).text('Advanced Search');
+				jQuery('#sbasic,#sadvanced').toggle();
+				return false;">{if $sadvanced}Basic{else}Click For Advanced{/if} Search
+		</a>
+	</div>
 </div>
 <div class="navbar">
 	<div class="navbar-inner">
