@@ -12,6 +12,11 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.5.1
 
 
+2016-10-11 DariusIII
+	Fix: TinyMCE URL handling
+	Chg: Add edit function to forumposts
+2016-10-10 DariusIII
+	Chg: Add release_naming_regex for a.b.movies to properly name DJ releases
 2016-10-07 niel
 	Chg: Issue 2263 - Out of memory issue checking RAR files. Add limit checkings to the extra
 		options.

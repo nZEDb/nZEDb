@@ -45,6 +45,7 @@ switch ($page->page) {
 	case 'newposterwall':
 	case 'nfo':
 	case 'nzbgetqueuedata':
+	case 'post_edit':
 	case 'predb':
 	case 'profile':
 	case 'profileedit':
