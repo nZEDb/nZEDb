@@ -2,6 +2,12 @@ This file details which changes to the code are in which release version. It is 
 ChangeLog file which list *when* changes are made to the dev branches.
 
 
+0.6.5.2 2016-10-13
+Changed:
+	* Switch Smarty to bootstrap through lithium instead of just the libraries. Hopefully this will
+	 not cause more problems than it fixes.
+
+
 0.6.5.1 2016-10-12
 Added:
 	* Add caching to getPagerCount function to reduce load on indexers with many API calls.

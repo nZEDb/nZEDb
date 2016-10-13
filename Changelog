@@ -10,6 +10,10 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 
 2016-10-13 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.5.2
+
+
+2016-10-13 niel
 	Chg: Switch Smarty to bootstrap through lithium instead of just the libraries. Hopefully this
 		will not cause more problems than it fixes.
 2016-10-13 DariusIII
