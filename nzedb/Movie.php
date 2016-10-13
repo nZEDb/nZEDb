@@ -456,7 +456,7 @@ class Movie
 			$this->traktTv = new TraktTv(['Settings' => $this->pdo]);
 		}
 
-		$data = $this->traktTv->client->movieSummary('tt' . $imdbID, 'full,images');
+		$data = $this->traktTv->client->movieSummary('tt' . $imdbID, 'full');
 		if ($data) {
 			$this->parseTraktTv($data);
 			if (isset($data['trailer']) && !empty($data['trailer'])) {
@@ -498,12 +498,8 @@ class Movie
 		$cover = 0;
 		if (is_file($this->imgSavePath . $imdbid) . '-cover.jpg') {
 			$cover = 1;
-		} else {
-			$link = $this->checkTraktValue($data['images']['poster']['thumb']);
-			if ($link) {
-				$cover = $this->releaseImage->saveImage($imdbid . '-cover', $link, $this->imgSavePath);
-			}
 		}
+
 		$this->update([
 				'genres'   => $this->checkTraktValue($data['genres']),
 				'imdbid'   => $this->checkTraktValue($imdbid),
@@ -696,11 +692,9 @@ class Movie
 		$mov['imdb_id'] = $imdbId;
 		$mov['tmdb_id'] = (!isset($tmdb['tmdb_id']) || $tmdb['tmdb_id'] == '') ? 0 : $tmdb['tmdb_id'];
 
-		// Prefer Fanart.tv cover over TRAKT, TRAKT over TMDB and TMDB over IMDB.
+		// Prefer Fanart.tv cover over TMDB and TMDB over IMDB.
 		if ($this->checkVariable($fanart['cover'])) {
 			$mov['cover'] = $this->releaseImage->saveImage($imdbId . '-cover', $fanart['cover'], $this->imgSavePath);
-		} else if ($this->checkVariable($trakt['cover'])) {
-			$mov['cover'] = $this->releaseImage->saveImage($imdbId . '-cover', $trakt['cover'], $this->imgSavePath);
 		} else if ($this->checkVariable($tmdb['cover'])) {
 			$mov['cover'] = $this->releaseImage->saveImage($imdbId . '-cover', $tmdb['cover'], $this->imgSavePath);
 		} else if ($this->checkVariable($imdb['cover'])) {
@@ -1014,15 +1008,9 @@ class Movie
 		if (is_null($this->traktTv)) {
 			$this->traktTv = new TraktTv(['Settings' => $this->pdo]);
 		}
-		$resp = $this->traktTv->client->movieSummary('tt' . $imdbId, 'full,images');
+		$resp = $this->traktTv->client->movieSummary('tt' . $imdbId, 'full');
 		if ($resp !== false) {
 			$ret = [];
-			if (isset($resp['images']['poster']['thumb'])) {
-				$ret['cover'] = $resp['images']['poster']['thumb'];
-			}
-			if (isset($resp['images']['banner']['full'])) {
-				$ret['banner'] = $resp['images']['banner']['full'];
-			}
 
 			if (isset($resp['title'])) {
 				$ret['title'] = $resp['title'];
@@ -1165,7 +1153,7 @@ class Movie
 					}
 
 					// Check on trakt.
-					$data = $this->traktTv->client->movieSummary($movieName, 'full,images');
+					$data = $this->traktTv->client->movieSummary($movieName, 'full');
 					if ($data !== false) {
 						$this->parseTraktTv($data);
 						if (isset($data['ids']['imdb'])) {
