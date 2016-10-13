@@ -19,7 +19,7 @@
  * @copyright 2015 nZEDb
  */
 require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'nzedb' . DIRECTORY_SEPARATOR . 'constants.php');
-require_once nZEDb_ROOT . 'app/libraries/autoload.php';
+require_once nZEDb_ROOT . 'app' . DS . 'config' . DS . 'bootstrap.php';
 
 use nzedb\config\Configure;
 

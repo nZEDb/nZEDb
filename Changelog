@@ -8,6 +8,10 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+
+2016-10-13 niel
+	Chg: Switch Smarty to bootstrap through lithium instead of just the libraries. Hopefully this
+		will not cause more problems than it fixes.
 2016-10-13 DariusIII
 	Chg: Remove images/covers support from Trakt (they will no longer serve images after october 31)
 	Fix: getBrowseRange query was missing group_name used in API extended parameter
@@ -15,6 +19,8 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Fix: Advanced search link in Gamma theme
 2016-10-12 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.5.1
+
+
 2016-10-11 DariusIII
 	Fix: TinyMCE URL handling
 	Chg: Add edit function to forumposts
