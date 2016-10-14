@@ -48,9 +48,9 @@ require_once dirname(__FILE__) . '/pipereader.php';
  * error messages and allow a forced search for valid File Header blocks.
  *
  * @author     Hecks
- * @copyright  (c) 2010-2014 Hecks
+ * @copyright  (c) 2010-2016 Hecks
  * @license    Modified BSD
- * @version    5.6
+ * @version    5.7
  */
 class RarInfo extends ArchiveReader
 {
@@ -1246,7 +1246,7 @@ class RarInfo extends ArchiveReader
 	 */
 	protected function processQuickOpenRecords(&$block)
 	{
-		$end = ($this->offset < $this->length) ? $this->offset + $block['data_size'] : $this->length;
+		$end = min($this->offset + $block['data_size'], $this->length);
 		while ($this->offset < $end) {
 
 			// Start the cache record
@@ -1279,7 +1279,7 @@ class RarInfo extends ArchiveReader
 	 */
 	protected function processExtraRecords(&$block)
 	{
-		$end = ($this->offset < $this->length) ? $this->offset + $block['extra_size'] : $this->length;
+		$end = min($this->offset + $block['data_size'], $this->length);
 		while ($this->offset < $end) {
 
 			// Start with the record size and type
