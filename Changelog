@@ -10,6 +10,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 
 2016-10-14 DariusIII
+	Fix: Remove semicolon in mysql-ddl.sql where it should not be in role_excluded_categories unique index row (fixes issue #2287)
 	Fix: Port fix for rarinfo exceeding memory limits from upstream (https://github.com/zeebinz/rarinfo/commit/719979f117db1bed667e1fc9a51ce92df37d6850) (should fix issue #2263)
 2016-10-13 niel
 	Chg: Switch Smarty to bootstrap through lithium instead of just the libraries. Hopefully this
