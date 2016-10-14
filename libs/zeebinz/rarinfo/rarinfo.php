@@ -1279,7 +1279,7 @@ class RarInfo extends ArchiveReader
 	 */
 	protected function processExtraRecords(&$block)
 	{
-		$end = min($this->offset + $block['data_size'], $this->length);
+		$end = min($this->offset + $block['extra_size'], $this->length);
 		while ($this->offset < $end) {
 
 			// Start with the record size and type
