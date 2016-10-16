@@ -8,7 +8,17 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
-
+2016-10-16 niel
+	Fix: Added creation of nZEDb_INSTALLER constant to the .../www/install/index.php tp prevent
+		problems caused by prematurely loading .../nzedb/bootstrap.php. Fixes issue 2291.
+2016-10-15 niel
+	Chg: Removed zeebinz/rarinfo library from our code (.../libs/zeebinz/rarinfo) to use the
+		upstream version now it includes a composer configuration.
+	Fix: Revert over-zealous changes that would break functionality of delete_releases.php script
+		(Fixes issue 2277).
+2016-10-14 DariusIII
+	Fix: Remove semicolon in mysql-ddl.sql where it should not be in role_excluded_categories unique index row (fixes issue #2287)
+	Fix: Port fix for rarinfo exceeding memory limits from upstream (https://github.com/zeebinz/rarinfo/commit/719979f117db1bed667e1fc9a51ce92df37d6850) (should fix issue #2263)
 2016-10-13 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.5.2
 
