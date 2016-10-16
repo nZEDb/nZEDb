@@ -22,6 +22,13 @@
 if (!defined('nZEDb_INSTALLER')) {
 	define('nZEDb_INSTALLER', true);
 }
+require_once realpath(dirname(dirname(__DIR__)) .
+	DIRECTORY_SEPARATOR .
+	'app' .
+	DIRECTORY_SEPARATOR .
+	'config' .
+	DIRECTORY_SEPARATOR .
+	'bootstrap.php');
 
 use nzedb\config\Configure;
 
