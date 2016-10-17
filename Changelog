@@ -17,8 +17,9 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Chg: Switch Smarty to bootstrap through lithium instead of just the libraries. Hopefully this
 		will not cause more problems than it fixes.
 2016-10-13 DariusIII
-	Chg: Remove images/covers support from Trakt (they will no longer serve images after october 31)
-	Fix: getBrowseRange query was missing group_name used in API extended parameter
+	Chg: Remove images/covers support from Trakt (they will no longer serve images after 31st.
+		October).
+	Fix: getBrowseRange query was missing group_name used in API extended parameter.
 2016-10-12 DariusIII
 	Fix: Advanced search link in Gamma theme
 2016-10-12 niel
