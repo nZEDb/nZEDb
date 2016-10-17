@@ -148,6 +148,6 @@ Zip file creation class => No license specified.
 
 simple_html_dom.php => MIT
 
-All external libraries will have their full licenses in their respectful folders.
+All external libraries will have their full licenses in their respective folders.
 
 Some licenses might have been missed in this document for various external software, they will be included in their respectful folders.
