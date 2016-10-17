@@ -64,7 +64,7 @@
     },
     {
       "type": "vcs",
-      "url": "https://github.com/niel/rarinfo"
+      "url": "https://github.com/zeebinz/rarinfo"
     }
   ],
   "require": {
@@ -126,7 +126,7 @@
     "bower-asset/select2-4.0.x": "~4.0.2",
     "bower-asset/slimScroll-1.3.x": "~1.3.7",
     "bower-asset/tinymce-builded": "^4.4",
-    "zeebinz/rarinfo": "dev-master"
+    "zeebinz/rarinfo": "~2.5.0"
   },
   "require-dev": {
     "unionofrad/manual": "1.1.x-dev"

@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "19613a5a761e58378cc6c28ef4abdc2e",
-    "content-hash": "aada1edac95fd65722225dbc55811799",
+    "hash": "c57530a0940befe26dea7e4b9907ba3b",
+    "content-hash": "e90c66475d8831b794e7b4b0cf9a0f1f",
     "packages": [
         {
             "name": "barracudanetworks/forkdaemon-php",
@@ -1465,16 +1465,16 @@
         },
         {
             "name": "zeebinz/rarinfo",
-            "version": "dev-master",
+            "version": "v2.5.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/niel/rarinfo.git",
-                "reference": "a07cb9670c91a2c1f4454597cd40a08081475829"
+                "url": "https://github.com/zeebinz/rarinfo.git",
+                "reference": "0ee81ff312bf29257ff82420a8d1b1e02ad42c9d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/niel/rarinfo/zipball/a07cb9670c91a2c1f4454597cd40a08081475829",
-                "reference": "a07cb9670c91a2c1f4454597cd40a08081475829",
+                "url": "https://api.github.com/repos/zeebinz/rarinfo/zipball/0ee81ff312bf29257ff82420a8d1b1e02ad42c9d",
+                "reference": "0ee81ff312bf29257ff82420a8d1b1e02ad42c9d",
                 "shasum": ""
             },
             "require": {
@@ -1501,9 +1501,10 @@
             ],
             "description": "PHP archive reader helper class",
             "support": {
-                "source": "https://github.com/niel/rarinfo/tree/master"
+                "source": "https://github.com/zeebinz/rarinfo/tree/v2.5.0",
+                "issues": "https://github.com/zeebinz/rarinfo/issues"
             },
-            "time": "2016-10-15 09:08:50"
+            "time": "2016-10-15 16:33:21"
         }
     ],
     "packages-dev": [
@@ -1552,7 +1553,6 @@
         "joshpinkney/tv-maze-php-api": 20,
         "kbjr/git.php": 20,
         "unionofrad/lithium": 20,
-        "zeebinz/rarinfo": 20,
         "unionofrad/manual": 20
     },
     "prefer-stable": false,
