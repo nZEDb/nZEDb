@@ -31,7 +31,7 @@ require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'nzedb' . DIRECTO
  * instructions include library names, paths to files, and any applicable class-loading rules. This
  * file also statically loads common classes to improve bootstrap performance.
  */
-require __DIR__ . '/bootstrap/libraries.php';
+require_once __DIR__ . '/bootstrap/libraries.php';
 
 /**
  * The error configuration allows you to use the filter system along with the advanced matching
@@ -45,18 +45,18 @@ require __DIR__ . '/bootstrap/libraries.php';
  * allow the framework to automatically configure its environmental settings. You can add your own
  * behavior and modify the dispatch cycle to suit your needs.
  */
-require __DIR__ . '/bootstrap/action.php';
+require_once __DIR__ . '/bootstrap/action.php';
 
 /**
  * This file contains configurations for connecting to external caching resources, as well as
  * default caching rules for various systems within your application
  */
-require __DIR__ . '/bootstrap/cache.php';
+require_once __DIR__ . '/bootstrap/cache.php';
 
 /**
  * Include this file if your application uses one or more database connections.
  */
-require __DIR__ . '/bootstrap/connections.php';
+require_once __DIR__ . '/bootstrap/connections.php';
 
 /**
  * This file contains configuration for session (and/or cookie) storage, and user or web service

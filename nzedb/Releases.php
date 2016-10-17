@@ -236,6 +236,7 @@ class Releases
 			"SELECT r.*,
 				CONCAT(cp.title, ' > ', c.title) AS category_name,
 				CONCAT(cp.id, ',', c.id) AS category_ids,
+				groups.name as group_name,
 				df.failed AS failed,
 				rn.releases_id AS nfoid,
 				re.releases_id AS reid,
@@ -244,6 +245,7 @@ class Releases
 			FROM releases r
 			LEFT JOIN categories c ON c.id = r.categories_id
 			LEFT JOIN categories cp ON cp.id = c.parentid
+			LEFT JOIN groups ON groups.id = r.groups_id
 			LEFT OUTER JOIN videos v ON r.videos_id = v.id
 			LEFT OUTER JOIN tv_episodes tve ON r.tv_episodes_id = tve.id
 			LEFT OUTER JOIN video_data re ON re.releases_id = r.id

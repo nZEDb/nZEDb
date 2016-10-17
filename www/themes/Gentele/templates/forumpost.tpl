@@ -19,6 +19,13 @@
 						<br/>
 						on <span title="{$result.createddate}">{$result.createddate|date_format}</span>
 						<div class="hint">({$result.createddate|timeago})</div>
+						{if $userdata.id == $result.user_id || $isadmin || $ismod}
+							<div>
+								<a class="btn btn-mini btn-warning"
+								   href="{$smarty.const.WWW_TOP}/post_edit?id={$result.id}"
+								   title="Edit Post">Edit</a>
+							</div>
+						{/if}
 						{if $userdata.role == 2}
 							<br/>
 							<div>
