@@ -73,7 +73,7 @@ switch ($page->page) {
 	case 'login':
 	case 'preinfo':
 	case 'rss':
-		include(nZEDb_WWW . 'pages/' . $page->page . '.php');
+		require_once(nZEDb_WWW . 'pages/' . $page->page . '.php');
 		break;
 	default:
 		$page->show404();
