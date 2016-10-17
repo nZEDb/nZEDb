@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "6dcf3a49db9b2f49c849cb7e151d46c1",
-    "content-hash": "ac4a1784962046b2f8bb5ac7d7117bb8",
+    "hash": "c57530a0940befe26dea7e4b9907ba3b",
+    "content-hash": "e90c66475d8831b794e7b4b0cf9a0f1f",
     "packages": [
         {
             "name": "barracudanetworks/forkdaemon-php",
@@ -1085,7 +1085,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amalfra/GiantBomb/zipball/6e5c37fdaff69bc2af089acd39fbc00b1d4f5985",
+                "url": "https://api.github.com/repos/amalfra/GiantBomb/zipball/2f80210e54e8310380221759b26117c1351b8031",
                 "reference": "6e5c37fdaff69bc2af089acd39fbc00b1d4f5985",
                 "shasum": ""
             },
@@ -1427,7 +1427,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/UnionOfRAD/lithium/zipball/ce1d4d44d1e5b6c4a8cf6dc273025a8638e78b8e",
+                "url": "https://api.github.com/repos/UnionOfRAD/lithium/zipball/9b0f936b976b2c4456e33e725b981d53192413b4",
                 "reference": "ce1d4d44d1e5b6c4a8cf6dc273025a8638e78b8e",
                 "shasum": ""
             },
@@ -1462,6 +1462,49 @@
                 "lithium"
             ],
             "time": "2016-06-03 16:16:20"
+        },
+        {
+            "name": "zeebinz/rarinfo",
+            "version": "v2.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/zeebinz/rarinfo.git",
+                "reference": "0ee81ff312bf29257ff82420a8d1b1e02ad42c9d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/zeebinz/rarinfo/zipball/0ee81ff312bf29257ff82420a8d1b1e02ad42c9d",
+                "reference": "0ee81ff312bf29257ff82420a8d1b1e02ad42c9d",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.6.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "archiveinfo.php",
+                    "archivereader.php",
+                    "par2info.php",
+                    "pipereader.php",
+                    "rarinfo.php",
+                    "sfvinfo.php",
+                    "srrinfo.php",
+                    "szipinfo.php",
+                    "zipinfo.php"
+                ]
+            },
+            "authors": [
+                {
+                    "name": "zeebinz"
+                }
+            ],
+            "description": "PHP archive reader helper class",
+            "support": {
+                "source": "https://github.com/zeebinz/rarinfo/tree/v2.5.0",
+                "issues": "https://github.com/zeebinz/rarinfo/issues"
+            },
+            "time": "2016-10-15 16:33:21"
         }
     ],
     "packages-dev": [

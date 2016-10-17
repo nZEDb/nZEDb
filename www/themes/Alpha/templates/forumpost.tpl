@@ -26,6 +26,13 @@
 					{/if}
 					 on<br>
 					<span title="{$result.createddate}">{$result.createddate|date_format}</span> ({$result.createddate|timeago})
+					{if $userdata.id == $result.user_id || $isadmin || $ismod}
+						<div>
+							<a class="label label-warning"
+							   href="{$smarty.const.WWW_TOP}/post_edit?id={$result.id}"
+							   title="Edit Post">Edit</a>
+						</div>
+					{/if}
 					{if $isadmin || $ismod}
 						<div>
 							<a class="label label-danger confirm_action" href="{$smarty.const.WWW_TOP}/admin/forum-delete.php?id={$result.id}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Delete Post">Delete</a>

@@ -147,7 +147,10 @@
 				theme_advanced_toolbar_align : "left",
 				toolbar: 'insertfile undo redo | styleselect | fontselect |sizeselect | fontsizeselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | print preview media fullpage | forecolor backcolor emoticons | code',
 				fontsize_formats: "8pt 9pt 10pt 11pt 12pt 13pt 14pt 15pt 16pt 17pt 18pt 24pt 36pt",
-				mode : "exact"
+				mode : "exact",
+				relative_urls : false,
+				remove_script_host : false,
+				convert_urls : true
 			});
 		</script>
 
