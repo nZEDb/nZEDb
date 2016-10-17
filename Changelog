@@ -8,6 +8,11 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+
+2016-10-17 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.5.3
+
+
 2016-10-16 niel
 	Fix: Added creation of nZEDb_INSTALLER constant to the .../www/install/index.php tp prevent
 		problems caused by prematurely loading .../nzedb/bootstrap.php. Fixes issue 2291.
