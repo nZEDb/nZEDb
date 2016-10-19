@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-10-18 DariusIII
+	Fix: Segfaults in PPA caused by broken sample images (fixes issue #2278)
 2016-10-17 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.5.3
 
