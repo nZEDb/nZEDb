@@ -119,8 +119,6 @@ class NNTP extends \Net_NNTP_Client
 		}
 
 		$this->_nntpRetries = ($this->pdo->getSetting('nntpretries') != '') ? (int)$this->pdo->getSetting('nntpretries') : 0 + 1;
-
-		$this->_initiateYEncSettings();
 	}
 
 	/**
@@ -1144,43 +1142,6 @@ class NNTP extends \Net_NNTP_Client
 	 * @var bool
 	 */
 	protected $_yEncExtension = false;
-
-	/**
-	 * Check the Admin settings for yEnc and process them accordingly.
-	 *
-	 * @void
-	 *
-	 * @access protected
-	 */
-	protected function _initiateYEncSettings()
-	{
-		// Check if the user wants to use yyDecode or the simple_php_yenc_decode extension.
-		$this->_yyDecoderPath = ($this->pdo->getSetting('yydecoderpath') != '') ? (string)$this->pdo->getSetting('yydecoderpath') : false;
-		if (strpos((string)$this->_yyDecoderPath, 'simple_php_yenc_decode') !== false) {
-			if (extension_loaded('simple_php_yenc_decode')) {
-				$this->_yEncExtension = true;
-			} else {
-				$this->_yyDecoderPath = false;
-			}
-		} else if ($this->_yyDecoderPath !== false) {
-
-			$this->_yEncSilence    = (Misc::isWin() ? '' : ' > /dev/null 2>&1');
-			$this->_yEncTempInput  = nZEDb_TMP . 'yEnc' . DS;
-			$this->_yEncTempOutput = $this->_yEncTempInput . 'output';
-			$this->_yEncTempInput .= 'input';
-
-			// Test if the user can read/write to the yEnc path.
-			if (!is_file($this->_yEncTempInput)) {
-				@file_put_contents($this->_yEncTempInput, 'x');
-			}
-			if (!is_file($this->_yEncTempInput) || !is_readable($this->_yEncTempInput) || !is_writable($this->_yEncTempInput)) {
-				$this->_yyDecoderPath = false;
-			}
-			if (is_file($this->_yEncTempInput)) {
-				@unlink($this->_yEncTempInput);
-			}
-		}
-	}
 
 	/**
 	 * Split a string into lines of 510 chars ending with \r\n.

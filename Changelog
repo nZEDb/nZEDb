@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-10-19 niel
+	Chg: Remove the yEnc initialising code as it is not needed any longer.
 2016-10-17 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.5.3
 
