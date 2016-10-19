@@ -11,6 +11,8 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 2016-10-19 niel
 	Chg: Remove the yEnc initialising code as it is not needed any longer.
+2016-10-18 DariusIII
+	Fix: Segfaults in PPA caused by broken sample images (fixes issue #2278)
 2016-10-17 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.5.3
 
