@@ -845,7 +845,7 @@ class Users
 	 * @param string $host
 	 * @param string $remember Save the user in cookies to keep them logged in.
 	 */
-	public function login($userID, $host = '', $remember = '')
+	public function login($userID, $host = '', $remember = false)
 	{
 		$_SESSION['uid'] = $userID;
 
@@ -855,7 +855,7 @@ class Users
 
 		$this->updateSiteAccessed($userID, $host);
 
-		if ($remember == 1) {
+		if ($remember == true) {
 			$this->setCookies($userID);
 		}
 	}
