@@ -242,7 +242,7 @@ class Users
 				$this->pdo->escapeString((string)$password),
 				$this->pdo->escapeString($email),
 				$role,
-				(Settings::value('..storeuserips') == 1 ? $host : ''),
+				$this->pdo->escapeString((Settings::value('..storeuserips') == 1 ? $host : "''")),
 				$this->pdo->escapeString(uniqid()),
 				$invites,
 				($invitedBy == 0 ? 'NULL' : $invitedBy),
