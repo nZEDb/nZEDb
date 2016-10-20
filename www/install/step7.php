@@ -77,7 +77,7 @@ if ($page->isPostBack()) {
 
 	if (!$cfg->error) {
 		if (!file_exists($cfg->UNRAR_PATH)) {
-			mkdir($cfg->UNRAR_PATH);
+			mkdir(basename($cfg->UNRAR_PATH), true);
 		}
 
 		$pdo = new Settings();
