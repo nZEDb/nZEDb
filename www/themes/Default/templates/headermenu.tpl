@@ -153,15 +153,17 @@
 							</ul>
 						</li>
 					{/if}
+					{if $parentcat.id === "0"}
+						<li>
+							<a title="Miscellaneous" href="/browse?t={$catClass::OTHER_ROOT}">Other</a>
+							<ul>
+								<hr>
+								<li><a href="/browse?t={$catClass::OTHER_MISC}">Misc</a></li>
+								<li><a href="/browse?t={$catClass::OTHER_HASHED}">Hashed</a></li>
+							</ul>
+						</li>
+					{/if}
 				{/foreach}
-				<li>
-					<a title="Miscellaneous" href="/browse?t={$catClass::OTHER_ROOT}">Other</a>
-					<ul>
-						<hr>
-						<li><a href="/browse?t={$catClass::OTHER_MISC}">Misc</a></li>
-						<li><a href="/browse?t={$catClass::OTHER_HASHED}">Hashed</a></li>
-					</ul>
-				</li>
 			{/if}
 			<li><a title="Browse All" href="{$smarty.const.WWW_TOP}/browse">All</a>
 				<ul>
