@@ -134,6 +134,8 @@ if (!defined('nZEDb_INSTALLER') || nZEDb_INSTALLER !== true) {
 		'bootstrap'	=> 'bootstrap.php',
 		'path'	=> nZEDb_ROOT . 'nzedb',
 	]);
+
+	\nzedb\utility\Misc::setCoversConstant();
 }
 
 require_once LITHIUM_APP_PATH . DS . 'libraries' . DS . 'autoload.php';
