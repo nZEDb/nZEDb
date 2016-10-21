@@ -495,7 +495,7 @@ class ProcessAdditional
 		$this->_processAudioInfo = $this->_processMediaInfo;
 
 		$value1 = (Settings::value('..checkpasswordedrar') == 0) ? false : true;
-		$value2 = (Settings::value('..unrarpath') == '') ? false : true;
+		$value2 = (Settings::value('apps..unrarpath') == '') ? false : true;
 		$this->_processPasswords = ($value1 && $value2);
 
 		$this->_audioSavePath = nZEDb_COVERS . 'audiosample' . DS;
