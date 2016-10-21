@@ -1,7 +1,8 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use app\models\Settings;
+use nzedb\db\DB;
 use nzedb\utility\Misc;
 
 /**
@@ -57,7 +58,7 @@ class Users
 		];
 		$options += $defaults;
 
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 
 		$this->password_hash_cost = (defined('nZEDb_PASSWORD_HASH_COST') ? nZEDb_PASSWORD_HASH_COST : 11);
 	}
@@ -241,7 +242,7 @@ class Users
 				$this->pdo->escapeString((string)$password),
 				$this->pdo->escapeString($email),
 				$role,
-				$this->pdo->escapeString(($this->pdo->getSetting('storeuserips') == 1 ? $host : '')),
+				$this->pdo->escapeString((Settings::value('..storeuserips') == 1 ? $host : "''")),
 				$this->pdo->escapeString(uniqid()),
 				$invites,
 				($invitedBy == 0 ? 'NULL' : $invitedBy),
@@ -707,7 +708,7 @@ class Users
 
 		// Make sure this is the last check, as if a further validation check failed, the invite would still have been used up.
 		$invitedBy = 0;
-		if (($this->pdo->getSetting('registerstatus') == Settings::REGISTER_STATUS_INVITE) && !$forceInviteMode) {
+		if ((Settings::value('..registerstatus') == Settings::REGISTER_STATUS_INVITE) && !$forceInviteMode) {
 			if ($inviteCode == '') {
 				return self::ERR_SIGNUP_BADINVITECODE;
 			}
@@ -849,7 +850,7 @@ class Users
 	{
 		$_SESSION['uid'] = $userID;
 
-		if ($this->pdo->getSetting('storeuserips') != 1) {
+		if (Settings::value('..storeuserips') != 1) {
 			$host = '';
 		}
 

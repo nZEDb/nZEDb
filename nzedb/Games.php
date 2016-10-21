@@ -1,7 +1,8 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use app\models\Settings;
+use nzedb\db\DB;
 
 class Games
 {
@@ -100,21 +101,23 @@ class Games
 
 		$this->echoOutput = ($options['Echo'] && nZEDb_ECHOCLI);
 
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 
-		$this->publicKey = $this->pdo->getSetting('giantbombkey');
-		$this->gameQty = ($this->pdo->getSetting('maxgamesprocessed') != '') ? $this->pdo->getSetting('maxgamesprocessed') : 150;
-		$this->sleepTime = ($this->pdo->getSetting('amazonsleep') != '') ? $this->pdo->getSetting('amazonsleep') : 1000;
+		$this->publicKey = Settings::value('APIs..giantbombkey');
+		$result = Settings::value('..maxgamesprocessed');
+		$this->gameQty = ($result != '') ? $result : 150;
+		$result = Settings::value('..amazonsleep');
+		$this->sleepTime = ($result != '') ? $result : 1000;
 		$this->imgSavePath = nZEDb_COVERS . 'games' . DS;
 		$this->renamed = '';
 		$this->matchPercentage = 60;
 		$this->maxHitRequest = false;
 		$this->cookie = nZEDb_TMP . 'xxx.cookie';
-		if ($this->pdo->getSetting('lookupgames') == 2) {
+		if (Settings::value('..lookupgames') == 2) {
 			$this->renamed = 'AND isrenamed = 1';
 		}
 		$this->catWhere = 'AND categories_id = ' . Category::PC_GAMES;
-		//$this->cleangames = ($this->pdo->getSetting('lookupgames') == 2) ? 'AND isrenamed = 1' : '';
+		//$this->cleangames = (Settings::value('..lookupgames') == 2) ? 'AND isrenamed = 1' : '';
 	}
 
 	/**

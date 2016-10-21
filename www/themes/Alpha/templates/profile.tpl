@@ -89,7 +89,7 @@
 		<td>{$exccats|replace:",":"<br/>"}</td>
 	</tr>
 	{/if}
-	{if $page->settings->getSetting('sabintegrationtype') == 2 && (!$publicview || $isadmin)}
+	{if $page->getSettingValue('apps.sabnzbplus.integrationtype') == 2 && (!$publicview || $isadmin)}
 		<tr>
 		<th>SABnzbd Integration:</th>
 		<td>

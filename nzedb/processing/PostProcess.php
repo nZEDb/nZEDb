@@ -1,6 +1,7 @@
 <?php
 namespace nzedb\processing;
 
+use app\models\Settings;
 use nzedb\Books;
 use nzedb\Category;
 use nzedb\Console;
@@ -12,14 +13,13 @@ use nzedb\Music;
 use nzedb\NameFixer;
 use nzedb\Nfo;
 use nzedb\Sharing;
-//use nzedb\processing\tv\TvRage;
 use nzedb\processing\tv\TVDB;
 use nzedb\processing\tv\TVMaze;
 use nzedb\processing\tv\TMDB;
 use nzedb\processing\tv\TraktTv;
 use nzedb\XXX;
 use nzedb\ReleaseFiles;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 use nzedb\processing\post\AniDB;
 use nzedb\processing\post\ProcessAdditional;
 use nzedb\utility;
@@ -104,7 +104,7 @@ class PostProcess
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
 
 		// Class instances.
-		$this->pdo = (($options['Settings'] instanceof Settings) ? $options['Settings'] : new Settings());
+		$this->pdo = (($options['Settings'] instanceof DB) ? $options['Settings'] : new DB());
 		$this->groups = (($options['Groups'] instanceof Groups) ? $options['Groups'] : new Groups(['Settings' => $this->pdo]));
 		$this->_par2Info = new \Par2Info();
 		$this->debugging = ($options['Logger'] instanceof Logger ? $options['Logger'] : new Logger(['ColorCLI' => $this->pdo->log]));
@@ -113,8 +113,8 @@ class PostProcess
 		$this->releaseFiles = (($options['ReleaseFiles'] instanceof ReleaseFiles) ? $options['ReleaseFiles'] : new ReleaseFiles($this->pdo));
 
 		// Site settings.
-		$this->addpar2 = ($this->pdo->getSetting('addpar2') == 0) ? false : true;
-		$this->alternateNNTP = ($this->pdo->getSetting('alternate_nntp') == 1 ? true : false);
+		$this->addpar2 = (Settings::value('..addpar2') == 0) ? false : true;
+		$this->alternateNNTP = (Settings::value('..alternate_nntp') == 1 ? true : false);
 	}
 
 	/**
@@ -146,7 +146,7 @@ class PostProcess
 	 */
 	public function processAnime()
 	{
-		if ($this->pdo->getSetting('lookupanidb') != 0) {
+		if (Settings::value('..lookupanidb') != 0) {
 			(new AniDB(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->processAnimeReleases();
 		}
 	}
@@ -158,7 +158,7 @@ class PostProcess
 	 */
 	public function processBooks()
 	{
-		if ($this->pdo->getSetting('lookupbooks') != 0) {
+		if (Settings::value('..lookupbooks') != 0) {
 			(new Books(['Echo' => $this->echooutput, 'Settings' => $this->pdo, ]))->processBookReleases();
 		}
 	}
@@ -170,7 +170,7 @@ class PostProcess
 	 */
 	public function processConsoles()
 	{
-		if ($this->pdo->getSetting('lookupgames') != 0) {
+		if (Settings::value('..lookupgames') != 0) {
 			(new Console(['Settings' => $this->pdo, 'Echo' => $this->echooutput]))->processConsoleReleases();
 		}
 	}
@@ -182,7 +182,7 @@ class PostProcess
 	 */
 	public function processGames()
 	{
-		if ($this->pdo->getSetting('lookupgames') != 0) {
+		if (Settings::value('..lookupgames') != 0) {
 			(new Games(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->processGamesReleases();
 		}
 	}
@@ -199,7 +199,7 @@ class PostProcess
 	 */
 	public function processMovies($groupID = '', $guidChar = '', $processMovies = '')
 	{
-		$processMovies = (is_numeric($processMovies) ? $processMovies : $this->pdo->getSetting('lookupimdb'));
+		$processMovies = (is_numeric($processMovies) ? $processMovies : Settings::value('..lookupimdb'));
 		if ($processMovies > 0) {
 			(new Movie(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->processMovieReleases($groupID, $guidChar, $processMovies);
 		}
@@ -212,7 +212,7 @@ class PostProcess
 	 */
 	public function processMusic()
 	{
-		if ($this->pdo->getSetting('lookupmusic') != 0) {
+		if (Settings::value('..lookupmusic') != 0) {
 			(new Music(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->processMusicReleases();
 		}
 	}
@@ -228,8 +228,8 @@ class PostProcess
 	 */
 	public function processNfos(&$nntp, $groupID = '', $guidChar = '')
 	{
-		if ($this->pdo->getSetting('lookupnfo') == 1) {
-			$this->Nfo->processNfoFiles($nntp, $groupID, $guidChar, (int)$this->pdo->getSetting('lookupimdb'), (int)$this->pdo->getSetting('lookuptvrage'));
+		if (Settings::value('..lookupnfo') == 1) {
+			$this->Nfo->processNfoFiles($nntp, $groupID, $guidChar, (int)Settings::value('lookupimdb'), (int)Settings::value('lookuptvrage'));
 		}
 	}
 
@@ -258,7 +258,7 @@ class PostProcess
 	 */
 	public function processTv($groupID = '', $guidChar = '', $processTV = '')
 	{
-		$processTV = (is_numeric($processTV) ? $processTV : $this->pdo->getSetting('lookuptvrage'));
+		$processTV = (is_numeric($processTV) ? $processTV : Settings::value('..lookuptvrage'));
 		if ($processTV > 0) {
 			(new TVDB(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->processSite($groupID, $guidChar, $processTV);
 			(new TVMaze(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->processSite($groupID, $guidChar, $processTV);
@@ -273,7 +273,7 @@ class PostProcess
 	 */
 	public function processXXX()
 	{
-		if ($this->pdo->getSetting('lookupxxx') == 1) {
+		if (Settings::value('..lookupxxx') == 1) {
 			(new XXX(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->processXXXReleases();
 		}
 	}

@@ -2,12 +2,13 @@
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 require_once nZEDb_LIB . 'utility' . DS . 'CopyFileTree.php';
 
-use nzedb\db\Settings;
+use app\models\Settings;
+use nzedb\db\DB;
 
 $reorg = nZEDb_MISC . 'testing' . DS . 'NZBs' . DS . 'nzb-reorg.php';
-$pdo = new Settings();
-$level = $pdo->getSetting('nzbsplitlevel');
-$nzbpath = $pdo->getSetting('nzbpath');
+$pdo = new DB();
+$level = Settings::value('..nzbsplitlevel');
+$nzbpath = Settings::value('..nzbpath');
 
 if (!isset($argv[1])) {
 	exit("WARNING: Run convert_from_newznab.php BEFORE running this script.\nUsage php copy_from_newznab.php path_to_newznab_base\n");

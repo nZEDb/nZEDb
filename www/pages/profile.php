@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Settings;
 use nzedb\ReleaseComments;
 use nzedb\SABnzbd;
 
@@ -12,7 +13,7 @@ $sab = new SABnzbd($page);
 
 $userID = $page->users->currentUserId();
 $privileged = (($page->users->isAdmin($userID) || $page->users->isModerator($userID)) ? true : false);
-$privateProfiles = ($page->settings->getSetting('privateprofiles') == 1 ? true : false);
+$privateProfiles = (Settings::value('..privateprofiles') == 1 ? true : false);
 $publicView = false;
 
 if (!$privateProfiles || $privileged) {

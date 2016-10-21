@@ -1,10 +1,11 @@
 <?php
 require_once realpath(dirname(dirname(dirname(dirname(dirname(__DIR__))))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
-use nzedb\db\Settings;
+use app\models\Settings;
+use nzedb\db\DB;
 
-$pdo = new Settings();
-$tablepergroup = $pdo->getSetting('tablepergroup');
+$pdo = new DB();
+$tablepergroup = Settings::value('..tablepergroup');
 $tablepergroup = (isset($tablepergroup)) ? $tablepergroup : 0;
 
 //reset collections dateadded to now

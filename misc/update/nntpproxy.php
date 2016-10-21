@@ -1,12 +1,13 @@
 <?php
 require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
+use app\models\Settings;
 use nzedb\Tmux;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 passthru("clear");
 
-$pdo = new Settings();
+$log = new ColorCLI();
 $t = new Tmux();
 $tmux = $t->get();
 $powerline = (isset($tmux->powerline)) ? $tmux->powerline : 0;
@@ -19,22 +20,20 @@ function python_module_exist($module)
 	return ($returnCode == 0 ? true : false);
 }
 
-$nntpproxy = $pdo->getSetting('nntpproxy');
+$nntpproxy = Settings::value('..nntpproxy');
 if ($nntpproxy === '0') {
 	exit();
 } else {
 	$modules = array("socketpool");
 	foreach ($modules as &$value) {
 		if (!python_module_exist($value)) {
-			exit($pdo->log->error("NNTP Proxy requires " . $value . " python module but it's not installed. Aborting."));
+			exit($log->error("NNTP Proxy requires " . $value . " python module but it's not installed. Aborting."));
 		}
 	}
 }
 
 function window_proxy($tmux_session, $powerline)
 {
-	global $pdo;
-
 	$DIR = nZEDb_MISC;
 	if ($powerline === '1') {
 		$tmuxconfig = $DIR . "update/nix/tmux/powerline/tmux.conf";
@@ -42,7 +41,7 @@ function window_proxy($tmux_session, $powerline)
 		$tmuxconfig = $DIR . "update/nix/tmux/tmux.conf";
 	}
 
-	$nntpproxy = $pdo->getSetting('nntpproxy');
+	$nntpproxy = Settings::value('..nntpproxy');
 	if ($nntpproxy === '1') {
 		$DIR = nZEDb_MISC;
 		$nntpproxypy = $DIR . "update/python/nntpproxy.py";
@@ -52,7 +51,7 @@ function window_proxy($tmux_session, $powerline)
 		}
 	}
 
-	if ($nntpproxy == '1' && ($pdo->getSetting('alternate_nntp') == '1')) {
+	if ($nntpproxy == '1' && (Settings::value('..alternate_nntp') == '1')) {
 		$DIR = nZEDb_MISC;
 		$nntpproxypy = $DIR . "update/python/nntpproxy.py";
 		if (file_exists($DIR . "update/python/lib/nntpproxy_a.conf")) {

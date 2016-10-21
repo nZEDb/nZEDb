@@ -168,7 +168,7 @@
 														function.
 													</div>
 													<br>
-													{if $page->settings->getSetting('sabintegrationtype') != 1}
+													{if $page->getSettingValue('apps.sabnzbplus.integrationtype') != 1}
 														<table class="data table table-condensed table-striped table-responsive">
 															<tbody>
 															<tr class="bg-aqua-active">
@@ -187,7 +187,7 @@
 															</tbody>
 														</table>
 													{/if}
-													{if $user.queuetype == 1 && $page->settings->getSetting('sabintegrationtype') == 2}
+													{if $user.queuetype == 1 && $page->getSettingValue('apps.sabnzbplus.integrationtype') == 2}
 														<table class="data table table-condensed table-striped table-responsive">
 															<tbody>
 															<tr class="bg-aqua-active">
@@ -223,7 +223,7 @@
 															</tbody>
 														</table>
 													{/if}
-													{if $user.queuetype == 2 && ($page->settings->getSetting('sabintegrationtype') == 0 || $page->settings->getSetting('sabintegrationtype') == 2)}
+													{if $user.queuetype == 2 && ($page->getSettingValue('apps.sabnzbplus.integrationtype') == 0 || $page->getSettingValue('apps.sabnzbplus.integrationtype') == 2)}
 														<table class="data table table-condensed table-striped table-responsive">
 															<tbody>
 															<tr class="bg-aqua-active">

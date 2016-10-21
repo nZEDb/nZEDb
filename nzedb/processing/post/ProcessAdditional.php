@@ -1,6 +1,7 @@
 <?php
 namespace nzedb\processing\post;
 
+use app\models\Settings;
 use nzedb\Categorize;
 use nzedb\Category;
 use nzedb\Groups;
@@ -13,7 +14,7 @@ use nzedb\ReleaseFiles;
 use nzedb\ReleaseImage;
 use nzedb\Releases;
 use nzedb\SphinxSearch;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 use nzedb\utility\Misc;
 
 class ProcessAdditional
@@ -397,7 +398,7 @@ class ProcessAdditional
 		$this->_echoCLI = ($options['Echo'] && nZEDb_ECHOCLI && (strtolower(PHP_SAPI) === 'cli'));
 		$this->_echoDebug = nZEDb_DEBUG;
 
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 		$this->_nntp = ($options['NNTP'] instanceof NNTP ? $options['NNTP'] : new NNTP(['Echo' => $this->_echoCLI, 'Settings' => $this->pdo]));
 
 		$this->_nzb = ($options['NZB'] instanceof NZB ? $options['NZB'] : new NZB($this->pdo));
@@ -412,86 +413,90 @@ class ProcessAdditional
 		$this->_nfo = ($options['Nfo'] instanceof Nfo ? $options['Nfo'] : new Nfo(['Echo' => $this->_echoCLI, 'Settings' => $this->pdo]));
 		$this->sphinx = ($options['SphinxSearch'] instanceof SphinxSearch ? $options['SphinxSearch'] : new SphinxSearch());
 
-		$this->_innerFileBlacklist = ($this->pdo->getSetting('innerfileblacklist') == '' ? false : $this->pdo->getSetting('innerfileblacklist'));
-		$this->_maxNestedLevels = ($this->pdo->getSetting('maxnestedlevels') == 0 ? 3 : $this->pdo->getSetting('maxnestedlevels'));
-		$this->_extractUsingRarInfo = ($this->pdo->getSetting('extractusingrarinfo') == 0 ? false : true);
-		$this->_fetchLastFiles = ($this->pdo->getSetting('fetchlastcompressedfiles') == 0 ? false : true);
+		$value = Settings::value('indexer.ppa.innerfileblacklist');
+		$this->_innerFileBlacklist = ($value == '' ? false : $value);
+
+		$value = Settings::value('..maxnestedlevels');
+		$this->_maxNestedLevels = ($value == 0 ? 3 : $value);
+		$this->_extractUsingRarInfo = (Settings::value('..extractusingrarinfo') == 0 ? false : true);
+		$this->_fetchLastFiles = (Settings::value('archive.fetch.end') == 0 ? false : true);
 
 		$this->_7zipPath = false;
 		$this->_unrarPath = false;
 
 		// Pass the binary extractors to ArchiveInfo.
 		$clients = [];
-		if ($this->pdo->getSetting('unrarpath') != '') {
-			$clients += [\ArchiveInfo::TYPE_RAR => $this->pdo->getSetting('unrarpath')];
-			$this->_unrarPath = $this->pdo->getSetting('unrarpath');
+		if (Settings::value('apps..unrarpath') != '') {
+			$clients += [\ArchiveInfo::TYPE_RAR => Settings::value('apps..unrarpath')];
+			$this->_unrarPath = Settings::value('apps..unrarpath');
 		}
-		if ($this->pdo->getSetting('zippath') != '') {
-			$clients += [\ArchiveInfo::TYPE_ZIP => $this->pdo->getSetting('zippath')];
-			$this->_7zipPath = $this->pdo->getSetting('zippath');
+		if (Settings::value('apps..7zippath') != '') {
+			$clients += [\ArchiveInfo::TYPE_ZIP => Settings::value('apps..7zippath')];
+			$this->_7zipPath = Settings::value('apps..7zippath');
 		}
 		$this->_archiveInfo->setExternalClients($clients);
 
 		$this->_killString = '"';
-		if ($this->pdo->getSetting('timeoutpath') != '' && $this->pdo->getSetting('timeoutseconds') > 0) {
+		if (Settings::value('apps..timeoutpath') != '' && Settings::value('apps..timeoutpath') > 0) {
 			$this->_killString = (
-				'"' . $this->pdo->getSetting('timeoutpath') .
+				'"' . Settings::value('apps..timeoutpath') .
 				'" --foreground --signal=KILL ' .
-				$this->pdo->getSetting('timeoutseconds') . ' "'
+				Settings::value('..timeoutseconds') . ' "'
 			);
 		}
 
 		$this->_showCLIReleaseID = (PHP_BINARY . ' ' . __DIR__ . DS . 'ProcessAdditional.php ReleaseID: ');
 
 		// Maximum amount of releases to fetch per run.
-		$this->_queryLimit =
-			($this->pdo->getSetting('maxaddprocessed') != '') ? (int)$this->pdo->getSetting('maxaddprocessed') : 25;
+		$value = Settings::value('..maxaddprocessed');
+		$this->_queryLimit = ($value != '') ? (int)$value : 25;
 
 		// Maximum message ID's to download per file type in the NZB (video, jpg, etc).
-		$this->_segmentsToDownload =
-			($this->pdo->getSetting('segmentstodownload') != '') ? (int)$this->pdo->getSetting('segmentstodownload') : 2;
+		$value = Settings::value('..segmentstodownload');
+		$this->_segmentsToDownload = ($value != '') ? (int)$value : 2;
 
 		// Maximum message ID's to download for a RAR file.
-		$this->_maximumRarSegments =
-			($this->pdo->getSetting('maxpartsprocessed') != '') ? (int)$this->pdo->getSetting('maxpartsprocessed') : 3;
+		$value = Settings::value('..maxpartsprocessed');
+		$this->_maximumRarSegments = ($value != '') ? (int)$value : 3;
 
 		// Maximum RAR files to check for a password before stopping.
-		$this->_maximumRarPasswordChecks =
-			($this->pdo->getSetting('passchkattempts') != '') ? (int)$this->pdo->getSetting('passchkattempts') : 1;
+		$value = Settings::value('..passchkattempts');
+		$this->_maximumRarPasswordChecks = ($value != '') ? (int)$value : 1;
 
 		$this->_maximumRarPasswordChecks = ($this->_maximumRarPasswordChecks < 1 ? 1 : $this->_maximumRarPasswordChecks);
 
 		// Maximum size of releases in GB.
-		$this->_maxSize =
-			($this->pdo->getSetting('maxsizetopostprocess') != '') ? (int)$this->pdo->getSetting('maxsizetopostprocess') : 100;
+		$value = Settings::value('..maxsizetopostprocess');
+		$this->_maxSize = ($value != '') ? (int)$value : 100;
 		$this->_maxSize = ($this->_maxSize > 0 ? ('AND r.size < ' . ($this->_maxSize * 1073741824)) : '');
 		// Minimum size of releases in MB.
-		$this->_minSize =
-			($this->pdo->getSetting('minsizetopostprocess') != '') ? (int)$this->pdo->getSetting('minsizetopostprocess') : 100;
+		$value = Settings::value('..minsizetopostprocess');
+		$this->_minSize = ($value != '') ? (int)$value : 100;
 		$this->_minSize = ($this->_minSize > 0 ? ('AND r.size > ' . ($this->_minSize * 1048576)) : '');
 
 		// Use the alternate NNTP provider for downloading Message-ID's ?
-		$this->_alternateNNTP = ($this->pdo->getSetting('alternate_nntp') == 1 ? true : false);
+		$this->_alternateNNTP = (Settings::value('..alternate_nntp') == 1 ? true : false);
 
-		$this->_ffMPEGDuration = ($this->pdo->getSetting('ffmpeg_duration') != '') ? (int)$this->pdo->getSetting('ffmpeg_duration') : 5;
+		$value = Settings::value('..ffmpeg_duration');
+		$this->_ffMPEGDuration = ($value != '') ? (int)$value : 5;
 
-		$this->_addPAR2Files = ($this->pdo->getSetting('addpar2') === '0') ? false : true;
+		$this->_addPAR2Files = (Settings::value('..addpar2') === '0') ? false : true;
 
-		if (!$this->pdo->getSetting('ffmpegpath')) {
+		if (!Settings::value('apps..ffmpegpath')) {
 			$this->_processAudioSample = $this->_processThumbnails = $this->_processVideo = false;
 		} else {
-			$this->_processAudioSample = ($this->pdo->getSetting('processaudiosample') == 0) ? false : true;
-			$this->_processThumbnails = ($this->pdo->getSetting('processthumbnails') == 0 ? false : true);
-			$this->_processVideo = ($this->pdo->getSetting('processvideos') == 0) ? false : true;
+			$this->_processAudioSample = (Settings::value('..processaudiosample') == 0) ? false : true;
+			$this->_processThumbnails = (Settings::value('..processthumbnails') == 0 ? false : true);
+			$this->_processVideo = (Settings::value('..processvideos') == 0) ? false : true;
 		}
 
-		$this->_processJPGSample = ($this->pdo->getSetting('processjpg') == 0) ? false : true;
-		$this->_processMediaInfo = ($this->pdo->getSetting('mediainfopath') == '') ? false : true;
+		$this->_processJPGSample = (Settings::value('..processjpg') == 0) ? false : true;
+		$this->_processMediaInfo = (Settings::value('apps..mediainfopath') == '') ? false : true;
 		$this->_processAudioInfo = $this->_processMediaInfo;
-		$this->_processPasswords = (
-			((($this->pdo->getSetting('checkpasswordedrar') == 0) ? false : true)) &&
-			(($this->pdo->getSetting('unrarpath') == '') ? false : true)
-		);
+
+		$value1 = (Settings::value('..checkpasswordedrar') == 0) ? false : true;
+		$value2 = (Settings::value('..unrarpath') == '') ? false : true;
+		$this->_processPasswords = ($value1 && $value2);
 
 		$this->_audioSavePath = nZEDb_COVERS . 'audiosample' . DS;
 
@@ -554,7 +559,7 @@ class ProcessAdditional
 	protected function _setMainTempPath(&$guidChar, &$groupID = '')
 	{
 		// Set up the temporary files folder location.
-		$this->_mainTmpPath = (string)$this->pdo->getSetting('tmpunrarpath');
+		$this->_mainTmpPath = (string)Settings::value('..tmpunrarpath');
 
 		// Check if it ends with a dir separator.
 		if (!preg_match('/[\/\\\\]$/', $this->_mainTmpPath)) {
@@ -1772,7 +1777,7 @@ class ProcessAdditional
 
 				// Get the media info for the file.
 				$xmlArray = Misc::runCmd(
-					$this->_killString . $this->pdo->getSetting('mediainfopath') . '" --Output=XML "' . $fileLocation . '"'
+					$this->_killString . Settings::value('apps..mediainfopath') . '" --Output=XML "' . $fileLocation . '"'
 				);
 				if (is_array($xmlArray)) {
 
@@ -1860,7 +1865,7 @@ class ProcessAdditional
 				// Create an audio sample.
 				Misc::runCmd(
 					$this->_killString .
-					$this->pdo->getSetting('ffmpegpath') .
+					Settings::value('apps..ffmpegpath') .
 					'" -t 30 -i "' .
 					$fileLocation .
 					'" -acodec libvorbis -loglevel quiet -y "' .
@@ -1963,7 +1968,7 @@ class ProcessAdditional
 		// Get the real duration of the file.
 		$time = Misc::runCmd(
 			$this->_killString .
-			$this->pdo->getSetting('ffmpegpath') .
+			Settings::value('apps..ffmpegpath') .
 			'" -i "' . $videoLocation .
 			'" -vcodec copy -y 2>&1 "' .
 			$tmpVideo . '"',
@@ -2009,7 +2014,7 @@ class ProcessAdditional
 			// Create the image.
 			Misc::runCmd(
 				$this->_killString .
-				$this->pdo->getSetting('ffmpegpath') .
+				Settings::value('apps..ffmpegpath') .
 				'" -i "' .
 				$fileLocation .
 				'" -ss ' . ($time === '' ? '00:00:03.00' : $time) .
@@ -2102,7 +2107,7 @@ class ProcessAdditional
 					// Try to get the sample (from the end instead of the start).
 					Misc::runCmd(
 						$this->_killString .
-						$this->pdo->getSetting('ffmpegpath') .
+						Settings::value('apps..ffmpegpath') .
 						'" -i "' .
 						$fileLocation .
 						'" -ss ' . $lowestLength .
@@ -2119,7 +2124,7 @@ class ProcessAdditional
 				// If longer than 60 or we could not get the video length, run the old way.
 				Misc::runCmd(
 					$this->_killString .
-					$this->pdo->getSetting('ffmpegpath') .
+					Settings::value('apps..ffmpegpath') .
 					'" -i "' .
 					$fileLocation .
 					'" -vcodec libtheora -filter:v scale=320:-1 -t ' .
@@ -2193,7 +2198,7 @@ class ProcessAdditional
 
 			// Run media info on it.
 			$xmlArray = Misc::runCmd(
-				$this->_killString . $this->pdo->getSetting('mediainfopath') . '" --Output=XML "' . $fileLocation . '"'
+				$this->_killString . Settings::value('apps..mediainfopath') . '" --Output=XML "' . $fileLocation . '"'
 			);
 
 			// Check if we got it.

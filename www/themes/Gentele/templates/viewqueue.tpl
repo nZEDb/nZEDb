@@ -8,12 +8,12 @@
 	</div>
 </div>
 {if $error == ''}
-{if $page->settings->getSetting('sabintegrationtype') > 0 || $user.queuetype == 2}
+{if $page->getSettingValue('apps.sabnzbplus.integrationtype') > 0 || $user.queuetype == 2}
 <p style="text-align:center;">
 	The following queue is pulled from
 	<a href="{$serverURL|escape:"htmlall"}">{$serverURL|escape:"htmlall"}</a>.
 	<br/>
-	{if $page->settings->getSetting('sabintegrationtype') == 2 || $user.queuetype == 2}Edit your queue settings in
+	{if $page->getSettingValue('apps.sabnzbplus.integrationtype') == 2 || $user.queuetype == 2}Edit your queue settings in
 		<a href="{$smarty.const.WWW_TOP}/profileedit">your profile</a>
 		.{/if}
 </p>

@@ -67,8 +67,19 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 2016-09-26 niel
 	Fix: Prevent TmdbAPI constructor from exiting hard. Instead it now returns null on failure
 		(Fixes issue 2271).
+2016-09-24 niel
+	Chg: Replace Page::getSetting() with method to trigger a warning for old style settings fetch. A
+		new method called getSettingValue() will use the app\models\Settings model and is the
+		prefered method from now on. the getSetting() method is deprecated and will be removed in
+		the near future.
+	Chg: Update templates to use newer Page::getSettingVale() to fetch from the settings table.
 2016-09-23 DariusIII
 	Add: Support for per role category exclusions to admin->role edit page(Closes issue #1639).
+2016-09-23 niel
+	Chg: Refactor checking of 'setting' for single element or dotted format, into its own method so
+		the to be created update override can access it also.
+	Chg: Dropped idea of overriding 'update' and made method public instead, so that calling code
+	    can create the array for update.
 2016-09-20 DariusIII
 	Fix: Wrongly named autosize script in Alpha and Charisma themes (fixes issue #2268)
 2016-09-20 niel
@@ -89,6 +100,11 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 		  https://github.com/niel/php-yenc/releases
 2016-09-14 DariusIII
 	Add: TinyMCE editor support to forum and admin->content
+2016-09-14 niel
+	Chg: Audited every call to fetch an entry from settings table, in order to make sure the
+		setting is correctly using the full section, subsection, name or dotted format.
+2016-09-13 niel
+	Add: Validation rules for Settings model.
 2016-09-12 niel
 	Chg: Refactor scripts using nzedb\db\Settings class without actually using any of the class'
 		additional features, to use the parent nzedb\db\DB class. This is to let me work on

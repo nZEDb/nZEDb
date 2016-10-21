@@ -1,13 +1,14 @@
 <?php
 require_once realpath(dirname(dirname(dirname(dirname(__DIR__)))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
+use app\models\Settings;
 use nzedb\Category;
 use nzedb\TmuxOutput;
 use nzedb\TmuxRun;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 use nzedb\utility\Misc;
 
-$pdo = new Settings();
+$pdo = new DB();
 $tRun = new TmuxRun($pdo);
 $tOut = new TmuxOutput($pdo);
 
@@ -372,7 +373,7 @@ while ($runVar['counts']['iterations'] > 0) {
 		$tRun->runPane('notrunning', $runVar);
 	}
 
-	$exit = $pdo->getSetting('tmux.run.exit');
+	$exit = Settings::value('tmux.run.exit');
 	if ($exit == 0) {
 		$runVar['counts']['iterations']++;
 		sleep(10);

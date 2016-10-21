@@ -2,9 +2,10 @@
 
 namespace nzedb\processing\post;
 
+use app\models\Settings;
 use nzedb\Category;
 use nzedb\NZB;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 class AniDB
 {
@@ -50,9 +51,9 @@ class AniDB
 		$options += $defaults;
 
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 
-		$qty = $this->pdo->getSetting('maxanidbprocessed');
+		$qty = Settings::value('..maxanidbprocessed');
 		$this->aniqty = !empty($qty) ? $qty : 100;
 
 		$this->status = 'NULL';

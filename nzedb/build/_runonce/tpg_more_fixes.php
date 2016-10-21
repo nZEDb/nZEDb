@@ -32,7 +32,7 @@ use nzedb\db\Settings;
 
 $pdo = new Settings();
 
-if (!$pdo->getSetting('tablepergroup')) {
+if (! Settings::value('..tablepergroup')) {
 	exit("Tables per groups is not enabled, quitting!");
 }
 

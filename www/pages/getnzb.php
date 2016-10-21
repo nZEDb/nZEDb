@@ -1,11 +1,12 @@
 <?php
 
+use app\models\Settings;
 use nzedb\Releases;
 use nzedb\NZB;
+use nzedb\db\DB;
 use nzedb\utility\Misc;
-$uid = 0;
 
-use nzedb\db\Settings;
+$uid = 0;
 
 // Page is accessible only by the rss token, or logged in users.
 if ($page->users->isLoggedIn()) {
@@ -16,7 +17,7 @@ if ($page->users->isLoggedIn()) {
 		Misc::showApiError(101);
 	}
 } else {
-	if ($page->settings->getSetting('registerstatus') == Settings::REGISTER_STATUS_API_ONLY) {
+	if (Settings::value('..registerstatus') == Settings::REGISTER_STATUS_API_ONLY) {
 		$res = $page->users->getById(0);
 	} else {
 		if ((!isset($_GET["i"]) || !isset($_GET["r"]))) {
