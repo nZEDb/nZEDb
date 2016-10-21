@@ -267,6 +267,39 @@ class DB extends \PDO
 		return is_array($result) ? $result['value'] : $result;
 	}
 
+	/**
+	 * Return a tree-like array of all or selected settings.
+	 *
+	 * @param array $options            Options array for Settings::find() i.e. ['conditions' => ...].
+	 * @param bool  $excludeUnsectioned If rows with empty 'section' field should be excluded.
+	 *                                  Note this doesn't prevent empty 'subsection' fields.
+	 *
+	 * @return array
+	 * @throws \RuntimeException
+	 */
+	public function getSettingsAsTree($excludeUnsectioned = true)
+	{
+		$where = $excludeUnsectioned ? "WHERE section != ''" : '';
+
+		$sql = sprintf("SELECT section, subsection, name, value, hint FROM settings %s ORDER BY section, subsection, name",
+			$where);
+		$results = $this->queryArray($sql);
+
+		$tree = [];
+		if (is_array($results)) {
+			foreach ($results as $result) {
+				if (!empty($result['section']) || !$excludeUnsectioned) {
+					$tree[$result['section']][$result['subsection']][$result['name']] =
+						['value' => $result['value'], 'hint' => $result['hint']];
+				}
+			}
+		} else {
+			echo "NO results!!\n";
+		}
+
+		return $tree;
+	}
+
 	public function getTableList()
 	{
 		$query  = ($this->opts['dbtype'] === 'mysql' ? 'SHOW DATABASES' : 'SELECT datname AS Database FROM pg_database');
@@ -1012,6 +1045,17 @@ class DB extends \PDO
 			return $this->pdo->rollBack();
 		}
 		return true;
+	}
+
+	public function setCovers()
+	{
+		$path = app\models\Settings::value([
+			'section'    => 'site',
+			'subsection' => 'main',
+			'name'       => 'coverspath',
+			'setting'    => 'coverspath',
+		]);
+		Misc::setCoversConstant($path);
 	}
 
 	/**

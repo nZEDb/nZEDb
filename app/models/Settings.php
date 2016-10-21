@@ -138,7 +138,7 @@ class Settings extends \lithium\data\Model
 	 * @return array
 	 * @throws \RuntimeException
 	 */
-	public static function settingsAsTree(array $options = [], $excludeUnsectioned = true)
+	public static function toTree(array $options = [], $excludeUnsectioned = true)
 	{
 		$results = empty($options) ?
 			Settings::find('all') :
