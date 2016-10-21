@@ -11,6 +11,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 2016-1021 niel
 	Fix: Correct typo causing maxmusicprocessed setting lookup to fail.
+	Fix: Add sql patch to ensure the indexer, ppa, innerfileblacklist setting exists.
 2016-10-21 DariusIII
 	Chg: Add option for admins to delete topics in forum
 2016-10-20 DariusIII
