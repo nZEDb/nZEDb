@@ -1,6 +1,7 @@
 <?php
 namespace nzedb;
 
+use app\models\Settings;
 use nzedb\db\DB;
 
 /**
