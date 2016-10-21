@@ -53,7 +53,6 @@ indexer	ppa	innerfileblacklist	/setup\.exe|password\.url/i	You can add a regex h
 		maxsizetoformrelease	0	The maximum total size in bytes to make a release. If set to 0, then ignored. Only deletes during release creation.	maxsizetoformrelease
 		maxsizetopostprocess	100	The maximum size in gigabytes to post process (additional) a release. If set to 0, then ignored.	maxsizetopostprocess
 		maxsizetoprocessnfo	100	The maximum size in gigabytes of a release to process it for NFOs. If set to 0, then ignored.	maxsizetoprocessnfo
-		minsizetoformrelease	0	The minimum total size in bytes to make a release. If set to 0, then ignored. Only deletes during release creation.	minsizetoformrelease
 		minsizetopostprocess	1	The minimum size in megabytes to post process (additional) a release. If set to 0, then ignored.	minsizetopostprocess
 		minsizetoprocessnfo	1	The minimum size in megabytes of a release to process it for NFOs. If set to 0, then ignored.	minsizetoprocessnfo
 		miscotherretentionhours	0	The number of hours releases categorized as Misc->Other will be retained. Set to 0 to disable.	miscotherretentionhours
