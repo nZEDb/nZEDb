@@ -343,7 +343,7 @@ function window_optimize($tmux_session)
  */
 function window_sharing($tmux_session)
 {
-	$pdo = new Settings();
+	$pdo = new DB();
 	$sharing = $pdo->queryOneRow('SELECT enabled, posting, fetching FROM sharing');
 	$t = new Tmux();
 	$tmux = $t->get();
