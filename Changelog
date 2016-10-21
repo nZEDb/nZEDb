@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-1021 niel
+	Fix: Correct typo causing maxmusicprocessed setting lookup to fail.
 2016-10-21 DariusIII
 	Chg: Add option for admins to delete topics in forum
 2016-10-20 DariusIII

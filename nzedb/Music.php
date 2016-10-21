@@ -77,7 +77,7 @@ class Music
 		$this->pubkey = Settings::value('APIs..amazonpubkey');
 		$this->privkey = Settings::value('APIs..amazonprivkey');
 		$this->asstag = Settings::value('APIs..amazonassociatetag');
-		$result = Settings::value('..maxmusicprocessed';
+		$result = Settings::value('..maxmusicprocessed');
 		$this->musicqty = empty($result) ? $result : 150;
 		$result = Settings::value('..amazonsleep');
 		$this->sleeptime = empty($result) ? $result : 1000;
