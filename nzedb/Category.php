@@ -326,21 +326,35 @@ class Category
 	 *
 	 * @return array
 	 */
-	public function getForMenu($excludedcats = [])
+	public function getForMenu($excludedcats = [], $roleexcludedcats = [])
 	{
 		$ret = [];
 
 		$exccatlist = '';
-		if (count($excludedcats) > 0) {
+		if (count($excludedcats) > 0 && count($roleexcludedcats) == 0) {
 			$exccatlist = ' AND id NOT IN (' . implode(',', $excludedcats) . ')';
+		} elseif (count($excludedcats) > 0 && count($roleexcludedcats) > 0) {
+			$exccatlist = ' AND id NOT IN (' . implode(',', $excludedcats) . ',' . implode(',', $roleexcludedcats) . ')';
+		} elseif (count($excludedcats) == 0 && count($roleexcludedcats) > 0) {
+			$exccatlist = ' AND id NOT IN (' . implode(',', $roleexcludedcats) . ')';
 		}
 
 		$arr = $this->pdo->query(
 			sprintf('SELECT * FROM categories WHERE status = %d %s', Category::STATUS_ACTIVE, $exccatlist),
 			true, nZEDb_CACHE_EXPIRY_LONG
 		);
+
+		foreach($arr as $key => $val) {
+			if($val['id'] == '0') {
+				$item = $arr[$key];
+				unset($arr[$key]);
+				array_push($arr, $item);
+				break;
+			}
+		}
+
 		foreach ($arr as $a) {
-			if ($a['parentid'] == '') {
+			if (empty($a['parentid'])) {
 				$ret[] = $a;
 			}
 		}

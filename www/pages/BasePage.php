@@ -309,6 +309,7 @@ class BasePage
 	{
 		$this->userdata = $this->users->getById($this->users->currentUserId());
 		$this->userdata['categoryexclusions'] = $this->users->getCategoryExclusion($this->users->currentUserId());
+		$this->userdata['rolecategoryexclusions'] = $this->users->getRoleCategoryExclusion($this->userdata['role']);
 
 		// Change to the user's selected theme, if they selected one, else use the admin set one.
 		$this->theme = isset($this->userdata['style']) ? $this->userdata['style'] : 'None';
