@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 /**
  * Tmux pane shell exec functions for pane respawning
@@ -15,7 +15,7 @@ class TmuxRun extends Tmux
 	/**
 	 * @param Settings $pdo
 	 */
-	public function __construct(Settings $pdo = null)
+	public function __construct(DB $pdo = null)
 	{
 		parent::__construct($pdo);
 		$dateFormat = Settings::value(
