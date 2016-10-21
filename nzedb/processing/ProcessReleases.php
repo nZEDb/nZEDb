@@ -1088,7 +1088,7 @@ class ProcessReleases
 		}
 
 		$maxSizeSetting = Settings::value('..maxsizetoformrelease');
-		$minSizeSetting = Settings::value('..minsizetoformrelease');
+		$minSizeSetting = Settings::value('.release.minsizetoformrelease');
 		$minFilesSetting = Settings::value('.release.minfilestoformrelease');
 
 		foreach ($groupIDs as $groupID) {
