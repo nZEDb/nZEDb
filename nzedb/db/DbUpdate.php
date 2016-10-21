@@ -20,8 +20,9 @@
  */
 namespace nzedb\db;
 
+use app\models\Settings;
 use nzedb\ColorCLI;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 use nzedb\utility\Git;
 use nzedb\utility\Misc;
 use nzedb\utility\Text;
@@ -158,8 +159,6 @@ class DbUpdate
 		];
 		$options += $defaults;
 
-		$this->initSettings();
-
 		$this->processPatches(['safe' => $options['safe']]); // Make sure we are completely up to date!
 
 		echo $this->log->primaryOver('Looking for new patches...');
@@ -205,8 +204,6 @@ class DbUpdate
 			'safe'	=> true,
 		];
 		$options += $defaults;
-
-		$this->initSettings();
 
 		$currentVersion = Settings::value('..sqlpatch');
 		if (!is_numeric($currentVersion)) {
