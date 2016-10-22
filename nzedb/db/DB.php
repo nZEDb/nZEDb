@@ -1058,6 +1058,98 @@ class DB extends \PDO
 		Misc::setCoversConstant($path);
 	}
 
+	public function rowToArray(array $row)
+	{
+		$this->settings[$row['setting']] = $row['value'];
+	}
+
+	public function rowsToArray(array $rows)
+	{
+		foreach ($rows as $row) {
+			if (is_array($row)) {
+				$this->rowToArray($row);
+			}
+		}
+
+		return $this->settings;
+	}
+
+	public function settingsUpdate($form)
+	{
+		$error = $this->settingsValidate($form);
+
+		if ($error === null) {
+			$sql = $sqlKeys = [];
+			foreach ($form as $settingK => $settingV) {
+				$sql[] = sprintf("WHEN %s THEN %s",
+					$this->escapeString($settingK),
+					$this->escapeString($settingV));
+				$sqlKeys[] = $this->escapeString($settingK);
+			}
+
+			$this->queryExec(
+				sprintf("UPDATE settings SET value = CASE setting %s END WHERE setting IN (%s)",
+					implode(' ', $sql),
+					implode(', ', $sqlKeys)
+				)
+			);
+		} else {
+			$form = $error;
+		}
+
+		return $form;
+	}
+
+	protected function settingsValidate(array $fields)
+	{
+		$defaults = [
+			'checkpasswordedrar' => false,
+			'ffmpegpath'         => '',
+			'mediainfopath'      => '',
+			'nzbpath'            => '',
+			'tmpunrarpath'       => '',
+			'unrarpath'          => '',
+			'yydecoderpath'      => '',
+		];
+		$fields += $defaults;    // Make sure keys exist to avoid error notices.
+		ksort($fields);
+		// Validate settings
+		$fields['nzbpath'] = Text::trailingSlash($fields['nzbpath']);
+		$error = null;
+		switch (true) {
+			case ($fields['mediainfopath'] != '' && !is_file($fields['mediainfopath'])):
+				$error = Settings::ERR_BADMEDIAINFOPATH;
+				break;
+			case ($fields['ffmpegpath'] != '' && !is_file($fields['ffmpegpath'])):
+				$error = Settings::ERR_BADFFMPEGPATH;
+				break;
+			case ($fields['unrarpath'] != '' && !is_file($fields['unrarpath'])):
+				$error = Settings::ERR_BADUNRARPATH;
+				break;
+			case (empty($fields['nzbpath'])):
+				$error = Settings::ERR_BADNZBPATH_UNSET;
+				break;
+			case (!file_exists($fields['nzbpath']) || !is_dir($fields['nzbpath'])):
+				$error = Settings::ERR_BADNZBPATH;
+				break;
+			case (!is_readable($fields['nzbpath'])):
+				$error = Settings::ERR_BADNZBPATH_UNREADABLE;
+				break;
+			case ($fields['checkpasswordedrar'] == 1 && !is_file($fields['unrarpath'])):
+				$error = Settings::ERR_DEEPNOUNRAR;
+				break;
+			case ($fields['tmpunrarpath'] != '' && !file_exists($fields['tmpunrarpath'])):
+				$error = Settings::ERR_BADTMPUNRARPATH;
+				break;
+			case ($fields['yydecoderpath'] != '' &&
+				$fields['yydecoderpath'] !== 'simple_php_yenc_decode' &&
+				!file_exists($fields['yydecoderpath'])):
+				$error = Settings::ERR_BAD_YYDECODER_PATH;
+		}
+
+		return $error;
+	}
+
 	/**
 	 * PHP interpretation of MySQL's from_unixtime method.
 	 * @param int  $utime UnixTime

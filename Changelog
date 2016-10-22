@@ -11,6 +11,8 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 2016-10-22 niel
 	Fix: Amazon settings not having full section included.
+	Fix: Validating site-edit updates now uses the DB class until such time as the template can
+		be rewritten to make use of Settings class (Partially fixes issue #2300).
 2016-10-21 niel
 	Mrg: Brought in dev-move-to-settings-model branch. This is expected to cause problems as we
 		iron out the final wrinkles. Indexing side should mostly be fine as it was previously

@@ -27,7 +27,7 @@ switch ($action) {
 				implode(', ', $_POST['book_reqids']) : $_POST['book_reqids'];
 		}
 		// update site table as always
-		$ret = $page->settings->update($_POST);
+		$ret = $page->settings->settingsUpdate($_POST);
 
 		if (is_int($ret)) {
 			// TODO convert to switch
