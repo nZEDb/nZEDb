@@ -327,9 +327,9 @@ class MiscSorter
 	private function doAmazon($q, $name = '', $id = 0, $nfo = '', $region = 'com', $case = false, $row = '')
 	{
 		$amazon = new AmazonProductAPI(
-			Settings::value('..amazonpubkey'),
-			Settings::value('..amazonprivkey'),
-			Settings::value('..amazonassociatetag')
+			Settings::value('APIs..amazonpubkey'),
+			Settings::value('APIs..amazonprivkey'),
+			Settings::value('APIs..amazonassociatetag')
 		);
 		$ok = false;
 

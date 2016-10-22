@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-10-22 niel
+	Fix: Amazon settings not having full section included.
 2016-10-21 niel
 	Mrg: Brought in dev-move-to-settings-model branch. This is expected to cause problems as we
 		iron out the final wrinkles. Indexing side should mostly be fine as it was previously
