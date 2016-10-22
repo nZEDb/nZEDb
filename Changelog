@@ -9,7 +9,11 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
-2016-1021 niel
+2016-10-21 niel
+	Mrg: Brought in dev-move-to-settings-model branch. This is expected to cause problems as we
+		iron out the final wrinkles. Indexing side should mostly be fine as it was previously
+		merged some time ago. The web side is where we expect most problems to occur. Please keep
+		an eye on your logs and let us know of *any* problems showing up.
 	Fix: Correct typo causing maxmusicprocessed setting lookup to fail.
 	Fix: Add sql patch to ensure the indexer, ppa, innerfileblacklist setting exists.
 2016-10-21 DariusIII
