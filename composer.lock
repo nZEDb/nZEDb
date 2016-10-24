@@ -1085,7 +1085,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amalfra/GiantBomb/zipball/2f80210e54e8310380221759b26117c1351b8031",
+                "url": "https://api.github.com/repos/amalfra/GiantBomb/zipball/6e5c37fdaff69bc2af089acd39fbc00b1d4f5985",
                 "reference": "6e5c37fdaff69bc2af089acd39fbc00b1d4f5985",
                 "shasum": ""
             },
@@ -1364,16 +1364,16 @@
         },
         {
             "name": "smarty/smarty",
-            "version": "v3.1.29",
+            "version": "v3.1.30",
             "source": {
                 "type": "git",
                 "url": "https://github.com/smarty-php/smarty.git",
-                "reference": "35480f10e7ce9b0fdaf23d3799d7b79463919b1e"
+                "reference": "ed2b7f1146cfda13df1eea8a5f707a1b771b6e7e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/35480f10e7ce9b0fdaf23d3799d7b79463919b1e",
-                "reference": "35480f10e7ce9b0fdaf23d3799d7b79463919b1e",
+                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/ed2b7f1146cfda13df1eea8a5f707a1b771b6e7e",
+                "reference": "ed2b7f1146cfda13df1eea8a5f707a1b771b6e7e",
                 "shasum": ""
             },
             "require": {
@@ -1415,7 +1415,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2015-12-21 01:57:06"
+            "time": "2016-08-07 18:46:49"
         },
         {
             "name": "unionofrad/lithium",
@@ -1427,7 +1427,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/UnionOfRAD/lithium/zipball/9b0f936b976b2c4456e33e725b981d53192413b4",
+                "url": "https://api.github.com/repos/UnionOfRAD/lithium/zipball/ce1d4d44d1e5b6c4a8cf6dc273025a8638e78b8e",
                 "reference": "ce1d4d44d1e5b6c4a8cf6dc273025a8638e78b8e",
                 "shasum": ""
             },
