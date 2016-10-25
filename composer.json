@@ -76,6 +76,7 @@
     "ext-gd": "*",
     "ext-hash": "*",
     "ext-iconv": "*",
+    "ext-imagick": "*",
     "ext-json": "*",
     "ext-mbstring": "*",
     "ext-mcrypt": "*",
