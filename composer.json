@@ -101,7 +101,7 @@
     "php": ">=5.6.9",
     "phpmailer/phpmailer": "^5.2.14",
     "smarty/smarty": "~3.1.29",
-    "unionofrad/lithium": "^1.1-dev",
+    "unionofrad/lithium": "^1.2-dev",
     "bower-asset/animate.css": "~3.5.1",
     "bower-asset/autosize-3.0.x": "~3.0.15",
     "bower-asset/bootstrap-3.3.x": "~3.3.6",
