@@ -36,6 +36,7 @@ before_install:
   - composer validate
 
 install:
+  - yes '' | pecl install imagick
   # Install composer packages.
   - composer install --prefer-dist
 
