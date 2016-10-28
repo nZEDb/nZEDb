@@ -173,10 +173,10 @@ class Releases
 				WHERE r.nzbstatus = %d
 				AND r.passwordstatus %s
 				%s %s %s %s',
-				($groupName != '' ? 'LEFT JOIN groups g ON g.id = r.groups_id' : ''),
+				($groupName != -1 ? 'LEFT JOIN groups g ON g.id = r.groups_id' : ''),
 				NZB::NZB_ADDED,
 				$this->showPasswords,
-				($groupName != '' ? sprintf(' AND g.name = %s', $this->pdo->escapeString($groupName)) : ''),
+				($groupName != -1 ? sprintf(' AND g.name = %s', $this->pdo->escapeString($groupName)) : ''),
 				$this->categorySQL($cat),
 				($maxAge > 0 ? (' AND r.postdate > NOW() - INTERVAL ' . $maxAge . ' DAY ') : ''),
 				(count($excludedCats) ? (' AND r.categories_id NOT IN (' . implode(',', $excludedCats) . ')') : '')
@@ -202,71 +202,55 @@ class Releases
 	{
 		$orderBy = $this->getBrowseOrder($orderBy);
 
-		$releases = $this->pdo->queryCalc(
-			sprintf("
-				SELECT SQL_CALC_FOUND_ROWS
-					r.id
-				FROM releases r
-				LEFT JOIN groups g ON g.id = r.groups_id
-				WHERE r.nzbstatus = %d
-				AND r.passwordstatus %s
-				%s %s %s %s %s
-				ORDER BY %s %s %s",
-				NZB::NZB_ADDED,
-				$this->showPasswords,
-				$this->categorySQL($cat),
-				($maxAge > 0 ? (" AND postdate > NOW() - INTERVAL " . $maxAge . ' DAY ') : ''),
-				(count($excludedCats) ? (' AND r.categories_id NOT IN (' . implode(',', $excludedCats) . ')') : ''),
-				($groupName != -1 ? sprintf(' AND g.name = %s ', $this->pdo->escapeString($groupName)) : ''),
-				($minSize > 0 ? sprintf('AND r.size >= %d', $minSize) : ''),
-				$orderBy[0],
-				$orderBy[1],
-				($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
-			),
-			true,
-			nZEDb_CACHE_EXPIRY_MEDIUM
-		);
-
-		if (is_array($releases['result'])) {
-			foreach ($releases['result'] as $release => $id) {
-				$releaseIDs[] = $id['id'];
-			}
-		}
-
 		$qry = sprintf(
 			"SELECT r.*,
 				CONCAT(cp.title, ' > ', c.title) AS category_name,
 				CONCAT(cp.id, ',', c.id) AS category_ids,
-				groups.name as group_name,
 				df.failed AS failed,
 				rn.releases_id AS nfoid,
 				re.releases_id AS reid,
 				v.tvdb, v.trakt, v.tvrage, v.tvmaze, v.imdb, v.tmdb,
 				tve.title, tve.firstaired
-			FROM releases r
+			FROM
+			(
+				SELECT r.*, g.name AS group_name
+				FROM releases r
+				LEFT JOIN groups g ON g.id = r.groups_id
+				WHERE r.nzbstatus = %d
+				AND r.passwordstatus %s
+				%s %s %s %s %s
+				ORDER BY %s %s %s
+			) r
 			LEFT JOIN categories c ON c.id = r.categories_id
 			LEFT JOIN categories cp ON cp.id = c.parentid
-			LEFT JOIN groups ON groups.id = r.groups_id
 			LEFT OUTER JOIN videos v ON r.videos_id = v.id
 			LEFT OUTER JOIN tv_episodes tve ON r.tv_episodes_id = tve.id
 			LEFT OUTER JOIN video_data re ON re.releases_id = r.id
 			LEFT OUTER JOIN release_nfos rn ON rn.releases_id = r.id
 			LEFT OUTER JOIN dnzb_failures df ON df.release_id = r.id
-			WHERE r.id IN (%s)
-			ORDER BY %s %s",
-			(isset($releaseIDs) ? implode(',', $releaseIDs) : -1),
+			GROUP BY r.id
+			ORDER BY %8\$s %9\$s",
+			NZB::NZB_ADDED,
+			$this->showPasswords,
+			$this->categorySQL($cat),
+			($maxAge > 0 ? (" AND postdate > NOW() - INTERVAL " . $maxAge . ' DAY ') : ''),
+			(count($excludedCats) ? (' AND r.categories_id NOT IN (' . implode(',', $excludedCats) . ')') : ''),
+			($groupName != -1 ? sprintf(' AND g.name = %s ', $this->pdo->escapeString($groupName)) : ''),
+			($minSize > 0 ? sprintf('AND r.size >= %d', $minSize) : ''),
 			$orderBy[0],
-			$orderBy[1]
+			$orderBy[1],
+			($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
 		);
 
 		$sql = $this->pdo->query($qry, true, nZEDb_CACHE_EXPIRY_MEDIUM);
 
-		if (!empty($sql)) {
-			$sql[0]['_totalcount'] = (isset($releases['total']) ? $releases['total'] : 0);
+		if (count($sql) > 0) {
+			$possibleRows = $this->getBrowseCount($cat, $maxAge, $excludedCats, $groupName);
+			$sql[0]['_totalcount'] = $sql[0]['_totalrows'] = $possibleRows;
 		}
 
 		return $sql;
-	}
+}
 
 	/**
 	 * Return site setting for hiding/showing passworded releases.

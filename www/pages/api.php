@@ -126,13 +126,9 @@ switch ($function) {
 				"basic", $categoryID, $minSize
 			);
 		} else {
-			$totalRows = $releases->getBrowseCount($categoryID, $maxAge, $catExclusions);
 			$relData = $releases->getBrowseRange(
 				$categoryID, $offset, $limit, '', $maxAge, $catExclusions, $groupName, $minSize
 			);
-			if ($totalRows > 0 && count($relData) > 0) {
-				$relData[0]['_totalrows'] = $totalRows;
-			}
 		}
 		$api->output($relData, $params, $outputXML, $offset, 'api');
 		break;
