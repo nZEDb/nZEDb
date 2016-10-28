@@ -8,6 +8,8 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+2016-10-28 DariusIII
+	Mrg: Fix speed and count accuracy issues with API/Browse functions PR #2303
 2016-10-25 niel
 	Mrg: Bring in b3s3rk's Imagick changes that fix segfaults during PostProcessingAdditional.
 	Chg: Add the Imagick PHP extension as a required dependency.
