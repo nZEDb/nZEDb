@@ -84,7 +84,7 @@ class ReleaseImage
 	{
 		$img = false;
 		if (strpos(strtolower($imgLoc), 'http:') === 0 || strpos(strtolower($imgLoc), 'https:') === 0) {
-			$img = Utility::getUrl(['url' => $imgLoc]);
+			$img = Misc::getUrl(['url' => $imgLoc]);
 		} else if (is_file($imgLoc)) {
 			$img = @file_get_contents($imgLoc);
 		}
