@@ -1,7 +1,7 @@
 build:
     dependencies:
         before:
-            - pecl install imagick
+            - yes '' | pecl install imagick
         # Overwrites inferred commands
         override:
             - 'composer install --no-interaction --no-dev --prefer-source --no-scripts'
