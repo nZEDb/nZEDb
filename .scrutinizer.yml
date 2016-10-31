@@ -1,7 +1,7 @@
 build:
     dependencies:
         before:
-            - yes '' | apt-get install imagemagick
+            - yes '' | sudo apt-get install imagemagick
             - yes '' | pecl install imagick
         # Overwrites inferred commands
         override:
