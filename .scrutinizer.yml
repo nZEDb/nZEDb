@@ -10,7 +10,7 @@ build:
     environment:
         memcached:            true
         php:
-            version: 7.0
+            version: 7.0.8
             ini:
                  memory_limit:     "4096M"
 checks:
