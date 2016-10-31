@@ -1,7 +1,6 @@
 build:
     dependencies:
         before:
-            - yes '' | sudo apt-get install imagemagick
             - yes '' | pecl install imagick
         # Overwrites inferred commands
         override:
@@ -10,6 +9,7 @@ build:
     environment:
         php:
             version: 5.6.10
+        sudo apt-get install imagemagick
 checks:
     php:
         avoid_closing_tag: false
