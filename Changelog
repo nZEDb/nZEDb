@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-10-30 b3rs3rk
+	Chg: Replace duplicate categorySearch function in releases and exclude leading -99 improving query speed
 2016-10-30 niel
 	Mrg: DariusIII's branch to switch ReleaseImages class to using Imigemagick instead of GD, to
 		reduce (hopefully remove) segfaults during image creation.

@@ -63,6 +63,7 @@ class Releases
 		$this->passwordStatus = (Settings::value('..checkpasswordedrar') == 1 ? -1 : 0);
 		$this->sphinxSearch = new SphinxSearch();
 		$this->releaseSearch = new ReleaseSearch($this->pdo, $this->sphinxSearch);
+		$this->category = new Category(['Settings' => $this->pdo]);
 		$this->showPasswords = self::showPasswords($this->pdo);
 	}
 
@@ -172,12 +173,12 @@ class Releases
 				%s
 				WHERE r.nzbstatus = %d
 				AND r.passwordstatus %s
-				%s %s %s %s',
+				%s AND %s %s %s',
 				($groupName != -1 ? 'LEFT JOIN groups g ON g.id = r.groups_id' : ''),
 				NZB::NZB_ADDED,
 				$this->showPasswords,
 				($groupName != -1 ? sprintf(' AND g.name = %s', $this->pdo->escapeString($groupName)) : ''),
-				$this->categorySQL($cat),
+				$this->category->getCategorySearch($cat),
 				($maxAge > 0 ? (' AND r.postdate > NOW() - INTERVAL ' . $maxAge . ' DAY ') : ''),
 				(count($excludedCats) ? (' AND r.categories_id NOT IN (' . implode(',', $excludedCats) . ')') : '')
 			)
@@ -218,7 +219,7 @@ class Releases
 				LEFT JOIN groups g ON g.id = r.groups_id
 				WHERE r.nzbstatus = %d
 				AND r.passwordstatus %s
-				%s %s %s %s %s
+				AND %s %s %s %s %s
 				ORDER BY %s %s %s
 			) r
 			LEFT JOIN categories c ON c.id = r.categories_id
@@ -232,7 +233,7 @@ class Releases
 			ORDER BY %8\$s %9\$s",
 			NZB::NZB_ADDED,
 			$this->showPasswords,
-			$this->categorySQL($cat),
+			$this->category->getCategorySearch($cat),
 			($maxAge > 0 ? (" AND postdate > NOW() - INTERVAL " . $maxAge . ' DAY ') : ''),
 			(count($excludedCats) ? (' AND r.categories_id NOT IN (' . implode(',', $excludedCats) . ')') : ''),
 			($groupName != -1 ? sprintf(' AND g.name = %s ', $this->pdo->escapeString($groupName)) : ''),
@@ -765,42 +766,6 @@ class Releases
 	}
 
 	/**
-	 * Creates part of a query for searches requiring the categoryID's.
-	 *
-	 * @param array $categories
-	 *
-	 * @return string
-	 */
-	public function categorySQL($categories)
-	{
-		$sql = '';
-		if (is_array($categories) && $categories[0] != -1) {
-			$Category = new Category(['Settings' => $this->pdo]);
-			$sql = ' AND (';
-			foreach ($categories as $category) {
-				if ($category != -1) {
-					if ($Category->isParent($category)) {
-						$children = $Category->getChildren($category);
-						$childList = '-99';
-						foreach ($children as $child) {
-							$childList .= ', ' . $child['id'];
-						}
-
-						if ($childList != '-99') {
-							$sql .= ' r.categories_id IN (' . $childList . ') OR ';
-						}
-					} else {
-						$sql .= sprintf(' r.categories_id = %d OR ', $category);
-					}
-				}
-			}
-			$sql .= '1=2 )';
-		}
-
-		return $sql;
-	}
-
-	/**
 	 * Function for searching on the site (by subject, searchname or advanced).
 	 *
 	 * @param string $searchName
@@ -883,7 +848,7 @@ class Releases
 		}
 
 		$whereSql = sprintf(
-			"%s WHERE r.passwordstatus %s AND r.nzbstatus = %d %s %s %s %s %s %s %s %s %s %s %s %s",
+			"%s WHERE r.passwordstatus %s AND r.nzbstatus = %d %s %s %s %s %s %s AND %s %s %s %s %s %s",
 			$this->releaseSearch->getFullTextJoinString(),
 			$this->showPasswords,
 			NZB::NZB_ADDED,
@@ -893,7 +858,7 @@ class Releases
 			(array_key_exists($sizeTo, $sizeRange) ? ' AND r.size < ' . (string)(104857600 * (int)$sizeRange[$sizeTo]) . ' ' : ''),
 			($hasNfo != 0 ? ' AND r.nfostatus = 1 ' : ''),
 			($hasComments != 0 ? ' AND r.comments > 0 ' : ''),
-			($type !== 'advanced' ? $this->categorySQL($cat) : ($cat[0] != '-1' ? sprintf(' AND (r.categories_id = %d) ', $cat[0]) : '')),
+			($type !== 'advanced' ? $this->category->getCategorySearch($cat) : ($cat[0] != '-1' ? sprintf(' AND (r.categories_id = %d) ', $cat[0]) : '')),
 			($daysNew != -1 ? sprintf(' AND r.postdate < (NOW() - INTERVAL %d DAY) ', $daysNew) : ''),
 			($daysOld != -1 ? sprintf(' AND r.postdate > (NOW() - INTERVAL %d DAY) ', $daysOld) : ''),
 			(count($excludedCats) > 0 ? ' AND r.categories_id NOT IN (' . implode(',', $excludedCats) . ')' : ''),
@@ -1029,7 +994,7 @@ class Releases
 			WHERE r.categories_id BETWEEN %d AND %d
 			AND r.nzbstatus = %d
 			AND r.passwordstatus %s
-			%s %s %s %s %s",
+			%s %s AND %s %s %s",
 			($name !== '' ? $this->releaseSearch->getFullTextJoinString() : ''),
 			Category::TV_ROOT,
 			Category::TV_OTHER,
@@ -1037,7 +1002,7 @@ class Releases
 			$this->showPasswords,
 			$showSql,
 			($name !== '' ? $this->releaseSearch->getSearchSQL(['searchname' => $name]) : ''),
-			$this->categorySQL($cat),
+			$this->category->getCategorySearch($cat),
 			($maxAge > 0 ? sprintf('AND r.postdate > NOW() - INTERVAL %d DAY', $maxAge) : ''),
 			($minSize > 0 ? sprintf('AND r.size >= %d', $minSize) : '')
 		);
@@ -1099,13 +1064,13 @@ class Releases
 			"%s
 			WHERE r.passwordstatus %s
 			AND r.nzbstatus = %d
-			%s %s %s %s",
+			%s %s AND %s %s",
 			($name !== '' ? $this->releaseSearch->getFullTextJoinString() : ''),
 			$this->showPasswords,
 			NZB::NZB_ADDED,
 			($aniDbID > -1 ? sprintf(' AND anidbid = %d ', $aniDbID) : ''),
 			($name !== '' ? $this->releaseSearch->getSearchSQL(['searchname' => $name]) : ''),
-			$this->categorySQL($cat),
+			$this->category->getCategorySearch($cat),
 			($maxAge > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxAge) : '')
 		);
 
@@ -1160,13 +1125,13 @@ class Releases
 			WHERE r.categories_id BETWEEN " . Category::MOVIE_ROOT . " AND " . Category::MOVIE_OTHER . "
 			AND r.nzbstatus = %d
 			AND r.passwordstatus %s
-			%s %s %s %s %s",
+			%s %s AND %s %s %s",
 			($name !== '' ? $this->releaseSearch->getFullTextJoinString() : ''),
 			NZB::NZB_ADDED,
 			$this->showPasswords,
 			($name !== '' ? $this->releaseSearch->getSearchSQL(['searchname' => $name]) : ''),
 			(($imDbId != '-1' && is_numeric($imDbId)) ? sprintf(' AND imdbid = %d ', str_pad($imDbId, 7, '0', STR_PAD_LEFT)) : ''),
-			$this->categorySQL($cat),
+			$this->category->getCategorySearch($cat),
 			($maxAge > 0 ? sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxAge) : ''),
 			($minSize > 0 ? sprintf('AND r.size >= %d', $minSize) : '')
 		);
