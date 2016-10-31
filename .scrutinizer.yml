@@ -1,8 +1,7 @@
 build:
     dependencies:
         before:
-           - sudo apt-get install -y imagemagick
-           - yes '' | pecl install imagick
+           - sudo apt-get install -y php-imagick
         # Overwrites inferred commands
         override:
             - 'composer install --no-interaction --no-dev --prefer-source --no-scripts'
