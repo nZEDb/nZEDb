@@ -12,7 +12,7 @@ build:
         php:
             version: 5.6.10
             ini:
-                 memory_limit:     "4096"
+                 memory_limit:     "4096M"
 checks:
     php:
         avoid_closing_tag: false
