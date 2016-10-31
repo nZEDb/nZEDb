@@ -1,15 +1,18 @@
 build:
     dependencies:
         before:
-            - yes '' | pecl install imagick
+           - sudo apt-get install imagemagick
+           - yes '' | pecl install imagick
         # Overwrites inferred commands
         override:
             - 'composer install --no-interaction --no-dev --prefer-source --no-scripts'
 
     environment:
+        memcached:            true
         php:
             version: 5.6.10
-        sudo apt-get install imagemagick
+            ini:
+                 memory_limit:     "4096"
 checks:
     php:
         avoid_closing_tag: false
