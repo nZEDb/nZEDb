@@ -1,7 +1,7 @@
 build:
     dependencies:
         before:
-           - sudo apt-get install -y php-imagick
+           - sudo apt-get install -y php5-imagick
         # Overwrites inferred commands
         override:
             - 'composer install --no-interaction --no-dev --prefer-source --no-scripts'
