@@ -1,8 +1,7 @@
 build:
     dependencies:
         before:
-           - sudo apt-get install -y imagemagick
-           - yes '' | pecl install imagick
+           - sudo apt-get install -y php7.0-imagick
          # Overwrites inferred commands
         override:
             - 'composer install --no-interaction --no-dev --prefer-source --no-scripts'
@@ -13,7 +12,7 @@ build:
             version: 7.0.8
             ini:
                  'memory_limit':     '4096M'
-                 'extension':        'imagick.so'
+                 'extension=imagick.so'
 checks:
     php:
         avoid_closing_tag: false
