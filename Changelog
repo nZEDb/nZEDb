@@ -16,7 +16,8 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 
 2016-10-31 b3rs3rk
-	Chg: Replace duplicate categorySearch function in releases and exclude leading -99 improving query speed
+	Chg: Replace duplicate categorySearch function in releases and exclude leading -99 improving
+		query speed.
 2016-10-30 niel
 	Mrg: DariusIII's branch to switch ReleaseImages class to using Imigemagick instead of GD, to
 		reduce (hopefully remove) segfaults during image creation.
@@ -26,7 +27,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Mrg: Bring in b3s3rk's Imagick changes that fix segfaults during PostProcessingAdditional.
 	Chg: Add the Imagick PHP extension as a required dependency.
 2016-10-24 DariusIII
-	Chg: Search for releases by poster by clicking on poster name in releases details page
+	Add: Search for releases by poster by clicking on poster name in releases details page.
 2016-10-22 niel
 	Fix: Amazon settings not having full section included.
 	Fix: Validating site-edit updates now uses the DB class until such time as the template can
@@ -39,7 +40,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Fix: Correct typo causing maxmusicprocessed setting lookup to fail.
 	Fix: Add sql patch to ensure the indexer, ppa, innerfileblacklist setting exists.
 2016-10-21 DariusIII
-	Chg: Add option for admins to delete topics in forum
+	Add: Option for admins to delete topics in forum.
 2016-10-20 DariusIII
 	Fix: User and role category exclusions (fixes issue #2290)
 2016-10-19 niel

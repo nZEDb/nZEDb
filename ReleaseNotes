@@ -1,6 +1,31 @@
 This file details which changes to the code are in which release version. It is a complement to the
 ChangeLog file which list *when* changes are made to the dev branches.
 
+0.6.6.0
+Added:
+	* Option for admins to delete topics in forum.
+	* Search for releases by poster, by clicking on poster name in releases details page.
+
+Changed:
+	* Brought in dev-move-to-settings-model branch. This is expected to cause problems as we
+	 iron out the final wrinkles. Indexing side should mostly be fine as it was previously
+	 merged some time ago. The web side is where we expect most problems to occur. Please keep
+	 an eye on your logs and let us know of *any* problems showing up.
+	* Add the Imagick PHP extension as a required dependency.
+	 ***NOTE*** If you do not already have this extension you *must* install it or PPA will
+	 cause errors. Do:
+		sudo apt-get install php5.6-imagick (or php7.0-imagick, depending on your PHP version).
+	* Switched to using ImageMagick (from GD) for handling image thumbnails, etc. during PPA.
+	* Replace duplicate categorySearch function in releases and exclude leading -99 improving query
+	 speed
+
+Fixed:
+	* Segfaults during PPA caused by broken sample images (fixes issue 2278).
+	* User and role category exclusions (fixes issue 2290).
+	* SQL patch to ensure the indexer, ppa, innerfileblacklist setting exists.
+	* Correct typo causing maxmusicprocessed setting lookup to fail.
+	* Fix speed and count accuracy issues with API/Browse functions (PR 2303).
+
 
 0.6.5.3 2016-10-17
 Changed:
