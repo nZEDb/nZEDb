@@ -139,28 +139,46 @@ class Category
 	 */
 	public function getCategorySearch(array $cat = [])
 	{
-		$catsrch = ' (';
+		$categories = [];
+
+		// If multiple categories were sent in a single array position, slice and add them
+		if (strpos($cat[0], ',') !== false) {
+			$tmpcats = explode(',', $cat[0]);
+			// Reset the category to the first comma separated value in the string
+			$cat[0] = $tmpcats[0];
+			// Add the remaining categories in the string to the original array
+			foreach (array_slice($tmpcats, 1) AS $tmpcat) {
+				$cat[] = $tmpcat;
+			}
+		}
 
 		foreach ($cat as $category) {
-
-			$chlist = '';
-
 			if ($category != -1 && $this->isParent($category)) {
-				$children = $this->getChildren($category);
-
-				foreach ($children as $child) {
-					$chlist .= "{$child['id']}, ";
+				foreach ($this->getChildren($category) as $child) {
+					$categories[] = $child['id'];
 				}
-				$chlist = rtrim($chlist, ", ");
+			} else if ($category > 0) {
+				$categories[] = $category;
 			}
-
-			if ($chlist != '') {
-				$catsrch .= " r.categories_id IN ({$chlist}) OR ";
-			} else {
-				$catsrch .= sprintf(' r.categories_id = %d OR ', $category);
-			}
-			$catsrch .= '1=2 )';
 		}
+
+		$catCount = count($categories);
+
+		switch ($catCount) {
+			//No category constraint
+			case 0:
+				$catsrch = ' 1=1 ';
+				break;
+			// One category constraint
+			case 1:
+				$catsrch = " r.categories_id = {$categories[0]}";
+				break;
+			// Multiple category constraints
+			default:
+				$catsrch = " r.categories_id IN (" . implode(", ", $categories) . ") ";
+				break;
+		}
+
 		return $catsrch;
 	}
 
