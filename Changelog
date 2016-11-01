@@ -9,6 +9,10 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-10-31 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.6.0
+
+
 2016-10-30 b3rs3rk
 	Chg: Replace duplicate categorySearch function in releases and exclude leading -99 improving query speed
 2016-10-30 niel
