@@ -88,7 +88,7 @@ indexer	ppa	innerfileblacklist	/setup\.exe|password\.url/i	You can add a regex h
 		replacenzbs	0	NZBs that are crossposted, instead of deleting, replace with the nzb grabbed.(This is not necessary, was added before I understood how crossposted nzbs work).	replacenzbs
 		reqidthreads	1	The number of threads for local request id processing.	reqidthreads
 		request_hours	1	The maximum hours after a release is added to recheck for a Request ID match.	request_hours
-		request_url	http://reqid.nzedb.com/index.php	Optional URL to lookup Request IDs.	request_url
+		request_url	http://reqid.newznab-tmux.pw/index.php	Optional URL to lookup Request IDs.	request_url
 		safebackfilldate	2012-06-24	The target date for safe backfill. Format: YYYY-MM-DD	safebackfilldate
 		safepartrepair	0	Whether to put unreceived parts into partrepair table when running binaries(safe) or backfill scripts.	safepartrepair
 		segmentstodownload	2	The maximum number of segments to download to generate the sample video file. (Default 2)	segmentstodownload
