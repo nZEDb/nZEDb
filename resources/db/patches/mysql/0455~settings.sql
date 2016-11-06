@@ -1,3 +1,3 @@
 # Change reqid server used
 
-UPDATE settings SET value = 'http://reqid.newznab-tmux.pw/index.php' WHERE setting = 'request_url';
+UPDATE settings SET value = 'http://reqid.newznab-tmux.pw/index.php' WHERE name = 'request_url';
