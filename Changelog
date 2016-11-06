@@ -8,6 +8,8 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+2016-11-06 DariusIII
+	Fix: Advanced search not working after latest changes in Releases class.
 2016-11-05 ruhllatio
 	Upd: nZEDb.xml file with new DB patch number
 2016-11-04 DariusIII
