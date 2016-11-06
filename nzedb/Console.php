@@ -202,7 +202,7 @@ class Console
 					AND con.title != ''
 					AND con.cover = 1
 					AND r.passwordstatus %s
-					AND %s %s %s
+					%s %s %s
 					GROUP BY con.id
 					ORDER BY %s %s %s",
 					Releases::showPasswords($this->pdo),
@@ -254,7 +254,7 @@ class Console
 				INNER JOIN genres ON con.genre_id = genres.id
 				WHERE con.id IN (%s)
 				AND r.id IN (%s)
-				AND %s
+				%s
 				GROUP BY con.id
 				ORDER BY %s %s",
 				(is_array($consoleIDs) ? implode(',', $consoleIDs) : -1),
@@ -337,7 +337,7 @@ class Console
 		foreach ($browsebyArr as $bbk => $bbv) {
 			if (isset($_REQUEST[$bbk]) && !empty($_REQUEST[$bbk])) {
 				$bbs = stripslashes($_REQUEST[$bbk]);
-				$browseby .= 'con.' . $bbv . ' ' . $like . ' (' . $this->pdo->escapeString('%' . $bbs . '%') . ') AND ';
+				$browseby .= 'AND con.' . $bbv . ' ' . $like . ' (' . $this->pdo->escapeString('%' . $bbs . '%') . ') AND ';
 			}
 		}
 		return $browseby;

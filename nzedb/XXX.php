@@ -169,7 +169,7 @@ class XXX
 				WHERE r.nzbstatus = 1
 				AND xxx.title != ''
 				AND r.passwordstatus %s
-				AND %s %s %s %s
+				%s %s %s %s
 				GROUP BY xxx.id
 				ORDER BY %s %s %s",
 				$this->showPasswords,
@@ -221,7 +221,7 @@ class XXX
 			AND xxx.id IN (%s)
 			AND xxx.title != ''
 			AND r.passwordstatus %s
-			AND %s %s %s %s
+			%s %s %s %s
 			GROUP BY xxx.id
 			ORDER BY %s %s",
 			(is_array($xxxIDs) ? implode(',', $xxxIDs) : -1),
@@ -290,9 +290,9 @@ class XXX
 					$bbv = $this->getgenreid($bbv);
 				}
 				if ($bb == 'id') {
-					$browseBy .= 'xxx.' . $bb . '=' . $bbv . ' AND ';
+					$browseBy .= 'AND xxx.' . $bb . '=' . $bbv;
 				} else {
-					$browseBy .= 'xxx.' . $bb . ' ' . $this->pdo->likeString($bbv, true, true) . ' AND ';
+					$browseBy .= 'AND xxx.' . $bb . ' ' . $this->pdo->likeString($bbv, true, true);
 				}
 			}
 		}

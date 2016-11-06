@@ -309,7 +309,7 @@ class Movie
 					ORDER BY %s %s %s",
 					$this->showPasswords,
 					$this->getBrowseBy(),
-					(!empty($catsrch) ? 'AND ' . $catsrch : ''),
+					(!empty($catsrch) ? $catsrch : ''),
 					($maxAge > 0
 							? 'AND r.postdate > NOW() - INTERVAL ' . $maxAge . 'DAY '
 							: ''
