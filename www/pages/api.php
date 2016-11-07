@@ -1,8 +1,9 @@
 <?php
 
+use app\models\Settings;
 use nzedb\Releases;
 use nzedb\http\API;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 use nzedb\utility\Misc;
 use nzedb\utility\Text;
 
@@ -125,13 +126,9 @@ switch ($function) {
 				"basic", $categoryID, $minSize
 			);
 		} else {
-			$totalRows = $releases->getBrowseCount($categoryID, $maxAge, $catExclusions);
 			$relData = $releases->getBrowseRange(
 				$categoryID, $offset, $limit, '', $maxAge, $catExclusions, $groupName, $minSize
 			);
-			if ($totalRows > 0 && count($relData) > 0) {
-				$relData[0]['_totalrows'] = $totalRows;
-			}
 		}
 		$api->output($relData, $params, $outputXML, $offset, 'api');
 		break;
@@ -292,7 +289,8 @@ switch ($function) {
 	case 'r':
 		$api->verifyEmptyParameter('email');
 
-		if (!in_array((int)$page->settings->getSetting('registerstatus'), [Settings::REGISTER_STATUS_OPEN, Settings::REGISTER_STATUS_API_ONLY])) {
+		if (!in_array((int)Settings::value('..registerstatus'), [Settings::REGISTER_STATUS_OPEN,
+			Settings::REGISTER_STATUS_API_ONLY])) {
 			Misc::showApiError(104);
 		}
 		// Check email is valid format.

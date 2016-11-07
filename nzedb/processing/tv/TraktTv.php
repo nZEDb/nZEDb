@@ -1,6 +1,7 @@
 <?php
 namespace nzedb\processing\tv;
 
+use app\models\Settings;
 use nzedb\libraries\TraktAPI;
 use nzedb\ReleaseImage;
 use nzedb\utility\Time;
@@ -68,7 +69,7 @@ class TraktTv extends TV
 	public function __construct(array $options = [])
 	{
 		parent::__construct($options);
-		$this->clientId = $this->pdo->getSetting('trakttvclientkey');
+		$this->clientId = Settings::value('APIs..trakttvclientkey');
 		$this->requestHeaders = [
 			'Content-Type: application/json',
 			'trakt-api-version: 2',

@@ -113,12 +113,12 @@ class DB extends \PDO
 			'createDb'		=> false, // create dbname if it does not exist?
 			'ct'			=> new ConsoleTools(),
 			'dbhost'		=> defined('DB_HOST') ? DB_HOST : '',
-			'dbname' => defined('DB_NAME') ? DB_NAME : '',
-			'dbpass' => defined('DB_PASSWORD') ? DB_PASSWORD : '',
+			'dbname'		=> defined('DB_NAME') ? DB_NAME : '',
+			'dbpass'		=> defined('DB_PASSWORD') ? DB_PASSWORD : '',
 			'dbport'		=> defined('DB_PORT') ? DB_PORT : '',
 			'dbsock'		=> defined('DB_SOCKET') ? DB_SOCKET : '',
 			'dbtype'		=> defined('DB_SYSTEM') ? DB_SYSTEM : '',
-			'dbuser' => defined('DB_USER') ? DB_USER : '',
+			'dbuser'		=> defined('DB_USER') ? DB_USER : '',
 			'log'			=> new ColorCLI(),
 			'persist'		=> false,
 		];
@@ -179,6 +179,13 @@ class DB extends \PDO
 	public function __destruct()
 	{
 		$this->pdo = null;
+	}
+
+	public function __get($name)
+	{
+		$result = $this->queryOneRow("SELECT value FROM settings WHERE setting = '$name' LIMIT 1");
+
+		return is_array($result) ? $result['value'] : $result;
 	}
 
 	public function checkDbExists($name = null)
@@ -258,6 +265,39 @@ class DB extends \PDO
 	{
 		$result = $this->queryOneRow("SELECT value FROM settings WHERE setting = '$name' LIMIT 1");
 		return is_array($result) ? $result['value'] : $result;
+	}
+
+	/**
+	 * Return a tree-like array of all or selected settings.
+	 *
+	 * @param array $options            Options array for Settings::find() i.e. ['conditions' => ...].
+	 * @param bool  $excludeUnsectioned If rows with empty 'section' field should be excluded.
+	 *                                  Note this doesn't prevent empty 'subsection' fields.
+	 *
+	 * @return array
+	 * @throws \RuntimeException
+	 */
+	public function getSettingsAsTree($excludeUnsectioned = true)
+	{
+		$where = $excludeUnsectioned ? "WHERE section != ''" : '';
+
+		$sql = sprintf("SELECT section, subsection, name, value, hint FROM settings %s ORDER BY section, subsection, name",
+			$where);
+		$results = $this->queryArray($sql);
+
+		$tree = [];
+		if (is_array($results)) {
+			foreach ($results as $result) {
+				if (!empty($result['section']) || !$excludeUnsectioned) {
+					$tree[$result['section']][$result['subsection']][$result['name']] =
+						['value' => $result['value'], 'hint' => $result['hint']];
+				}
+			}
+		} else {
+			echo "NO results!!\n";
+		}
+
+		return $tree;
 	}
 
 	public function getTableList()
@@ -1005,6 +1045,109 @@ class DB extends \PDO
 			return $this->pdo->rollBack();
 		}
 		return true;
+	}
+
+	public function setCovers()
+	{
+		$path = app\models\Settings::value([
+			'section'    => 'site',
+			'subsection' => 'main',
+			'name'       => 'coverspath',
+			'setting'    => 'coverspath',
+		]);
+		Misc::setCoversConstant($path);
+	}
+
+	public function rowToArray(array $row)
+	{
+		$this->settings[$row['setting']] = $row['value'];
+	}
+
+	public function rowsToArray(array $rows)
+	{
+		foreach ($rows as $row) {
+			if (is_array($row)) {
+				$this->rowToArray($row);
+			}
+		}
+
+		return $this->settings;
+	}
+
+	public function settingsUpdate($form)
+	{
+		$error = $this->settingsValidate($form);
+
+		if ($error === null) {
+			$sql = $sqlKeys = [];
+			foreach ($form as $settingK => $settingV) {
+				$sql[] = sprintf("WHEN %s THEN %s",
+					$this->escapeString($settingK),
+					$this->escapeString($settingV));
+				$sqlKeys[] = $this->escapeString($settingK);
+			}
+
+			$this->queryExec(
+				sprintf("UPDATE settings SET value = CASE setting %s END WHERE setting IN (%s)",
+					implode(' ', $sql),
+					implode(', ', $sqlKeys)
+				)
+			);
+		} else {
+			$form = $error;
+		}
+
+		return $form;
+	}
+
+	protected function settingsValidate(array $fields)
+	{
+		$defaults = [
+			'checkpasswordedrar' => false,
+			'ffmpegpath'         => '',
+			'mediainfopath'      => '',
+			'nzbpath'            => '',
+			'tmpunrarpath'       => '',
+			'unrarpath'          => '',
+			'yydecoderpath'      => '',
+		];
+		$fields += $defaults;    // Make sure keys exist to avoid error notices.
+		ksort($fields);
+		// Validate settings
+		$fields['nzbpath'] = Text::trailingSlash($fields['nzbpath']);
+		$error = null;
+		switch (true) {
+			case ($fields['mediainfopath'] != '' && !is_file($fields['mediainfopath'])):
+				$error = Settings::ERR_BADMEDIAINFOPATH;
+				break;
+			case ($fields['ffmpegpath'] != '' && !is_file($fields['ffmpegpath'])):
+				$error = Settings::ERR_BADFFMPEGPATH;
+				break;
+			case ($fields['unrarpath'] != '' && !is_file($fields['unrarpath'])):
+				$error = Settings::ERR_BADUNRARPATH;
+				break;
+			case (empty($fields['nzbpath'])):
+				$error = Settings::ERR_BADNZBPATH_UNSET;
+				break;
+			case (!file_exists($fields['nzbpath']) || !is_dir($fields['nzbpath'])):
+				$error = Settings::ERR_BADNZBPATH;
+				break;
+			case (!is_readable($fields['nzbpath'])):
+				$error = Settings::ERR_BADNZBPATH_UNREADABLE;
+				break;
+			case ($fields['checkpasswordedrar'] == 1 && !is_file($fields['unrarpath'])):
+				$error = Settings::ERR_DEEPNOUNRAR;
+				break;
+			case ($fields['tmpunrarpath'] != '' && !file_exists($fields['tmpunrarpath'])):
+				$error = Settings::ERR_BADTMPUNRARPATH;
+				break;
+			case ($fields['yydecoderpath'] != '' &&
+				$fields['yydecoderpath'] !== 'simple_php_yenc_decode' &&
+				!file_exists($fields['yydecoderpath'])):
+				$error = Settings::ERR_BAD_YYDECODER_PATH;
+		}
+
+		return $error;
 	}
 
 	/**

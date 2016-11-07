@@ -346,7 +346,7 @@
 					<dd>{if $release.passwordstatus == 0}None{elseif $release.passwordstatus == 2}Passworded Rar Archive{elseif $release.passwordstatus == 1}Contains Cab/Ace/Rar Inside Archive{else}Unknown{/if}</dd>
 				{/if}
 				<dt>Poster</dt>
-				<dd>{$release.fromname|escape:"htmlall"}</dd>
+				<dd><a title="Find releases by this poster" href="{$smarty.const.WWW_TOP}/search?searchadvr=&searchadvsubject=&searchadvposter={$release.fromname|escape:"htmlall"}&searchadvfilename=&searchadvdaysnew=&searchadvdaysold=&searchadvgroups=-1&searchadvcat=-1&searchadvsizefrom=-1&searchadvsizeto=-1&searchadvhasnfo=0&searchadvhascomments=0&search_type=adv">{$release.fromname|escape:"htmlall"}</a></dd>
 				<dt>Posted</dt>
 				<dd>{$release.postdate|date_format} ({$release.postdate|daysago} )</dd>
 				<dt>Added</dt>

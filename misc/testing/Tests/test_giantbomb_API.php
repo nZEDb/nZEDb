@@ -3,10 +3,10 @@ require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR .
 
 // Test if your giantbomb key is working.
 
+use app\models\Settings;
 use nzedb\ColorCLI;
-use nzedb\db\Settings;
 
-$giantbombkey = (new Settings())->getSetting('giantbombkey');
+$giantbombkey = Settings::value('APIs..giantbombkey');
 $cli = new ColorCLI();
 $obj = new GiantBomb($giantbombkey, $resp = "json");
 

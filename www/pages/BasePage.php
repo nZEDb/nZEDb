@@ -2,14 +2,15 @@
 
 require_once nZEDb_LIB . 'utility' . DS . 'SmartyUtils.php';
 
+use app\models\Settings;
 use nzedb\SABnzbd;
 use nzedb\Users;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 class BasePage
 {
 	/**
-	 * @var \nzedb\db\Settings
+	 * @var \nzedb\db\DB
 	 */
 	public $settings = null;
 
@@ -103,7 +104,7 @@ class BasePage
 		}
 
 		// Buffer settings/DB connection.
-		$this->settings = new Settings();
+		$this->settings = new DB();
 
 		$this->smarty = new Smarty();
 
@@ -132,7 +133,7 @@ class BasePage
 		if ($this->users->isLoggedIn()) {
 			$this->setUserPreferences();
 		} else {
-			$this->theme = $this->settings->getSetting('site.main.style');
+			$this->theme = Settings::value('site.main.style');
 
 			$this->smarty->assign('isadmin', 'false');
 			$this->smarty->assign('ismod', 'false');
@@ -180,6 +181,35 @@ class BasePage
 				}
 			}
 		}
+	}
+
+	/**
+	 * Allows to fetch a value from the settings table.
+	 *
+	 * This method is deprecated, as the column it uses to select the data is due to be removed
+	 * from the table *soon*.
+	 *
+	 * @param $setting
+	 *
+	 * @return array|bool|mixed|null|string
+	 */
+	public function getSetting($setting)
+	{
+		if (strpos($setting, '.') === false) {
+			trigger_error(
+				'You should update your template to use the newer method "$page->getSettingValue()"" of fetching values from the "settings" table! This method *will* be removed in a future version.',
+				E_USER_WARNING);
+		} else {
+			return $this->getSettingValue($setting);
+		}
+
+		return $this->settings->$setting;
+
+	}
+
+	public function getSettingValue($setting)
+	{
+		return Settings::value($setting);
 	}
 
 	/**
@@ -309,12 +339,13 @@ class BasePage
 	{
 		$this->userdata = $this->users->getById($this->users->currentUserId());
 		$this->userdata['categoryexclusions'] = $this->users->getCategoryExclusion($this->users->currentUserId());
+		$this->userdata['rolecategoryexclusions'] = $this->users->getRoleCategoryExclusion($this->userdata['role']);
 
 		// Change to the user's selected theme, if they selected one, else use the admin set one.
 		$this->theme = isset($this->userdata['style']) ? $this->userdata['style'] : 'None';
 
 		if ($this->theme == 'None') {
-			$this->theme = $this->settings->getSetting('site.main.style');
+			$this->theme = Settings::value('site.main.style');
 		}
 
 		if (lcfirst($this->theme) === $this->theme) {

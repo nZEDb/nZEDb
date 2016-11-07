@@ -1,6 +1,7 @@
 <?php
 namespace nzedb\processing\tv;
 
+use app\models\Settings;
 use libs\Tmdb\TmdbAPI;
 use nzedb\ReleaseImage;
 
@@ -28,7 +29,7 @@ class TMDB extends TV
 	public function __construct(array $options = [])
 	{
 		parent::__construct($options);
-		$this->client = new TmdbAPI($this->pdo->getSetting('tmdbkey'));
+		$this->client = new TmdbAPI(Settings::value('APIs..tmdbkey'));
 	}
 
 	/**

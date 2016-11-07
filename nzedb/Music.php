@@ -1,9 +1,9 @@
 <?php
 namespace nzedb;
 
+use app\models\Settings;
 use libs\AmazonProductAPI;
-
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 /**
  * Class Music
@@ -73,16 +73,17 @@ class Music
 		$options += $defaults;
 
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
-
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
-		$this->pubkey = $this->pdo->getSetting('amazonpubkey');
-		$this->privkey = $this->pdo->getSetting('amazonprivkey');
-		$this->asstag = $this->pdo->getSetting('amazonassociatetag');
-		$this->musicqty = ($this->pdo->getSetting('maxmusicprocessed') != '') ? $this->pdo->getSetting('maxmusicprocessed') : 150;
-		$this->sleeptime = ($this->pdo->getSetting('amazonsleep') != '') ? $this->pdo->getSetting('amazonsleep') : 1000;
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
+		$this->pubkey = Settings::value('APIs..amazonpubkey');
+		$this->privkey = Settings::value('APIs..amazonprivkey');
+		$this->asstag = Settings::value('APIs..amazonassociatetag');
+		$result = Settings::value('..maxmusicprocessed');
+		$this->musicqty = empty($result) ? $result : 150;
+		$result = Settings::value('..amazonsleep');
+		$this->sleeptime = empty($result) ? $result : 1000;
 		$this->imgSavePath = nZEDb_COVERS . 'music' . DS;
 		$this->renamed = '';
-		if ($this->pdo->getSetting('lookupmusic') == 2) {
+		if (Settings::value('..lookupmusic') == 2) {
 			$this->renamed = 'AND isrenamed = 1';
 		}
 

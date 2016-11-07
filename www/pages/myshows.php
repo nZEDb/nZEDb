@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Settings;
 use nzedb\Category;
 use nzedb\Releases;
 use nzedb\UserSeries;
@@ -62,7 +63,7 @@ switch ($action) {
 			$categories = array();
 			foreach ($tmpcats as $c) {
 				// If TV WEB-DL categorization is disabled, don't include it as an option
-				if ($page->settings->getSetting('catwebdl') == 0 && $c['id'] == Category::TV_WEBDL) {
+				if (Settings::value('indexer.categorise.catwebdl') == 0 && $c['id'] == Category::TV_WEBDL) {
 					continue;
 				}
 				$categories[$c['id']] = $c['title'];

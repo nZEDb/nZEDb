@@ -15,6 +15,9 @@
 		<th>Posted By</th>
 		<th>Last Update</th>
 		<th width="5%" class="mid">Replies</th>
+		{if isset($isadmin)}
+			<th style="padding-top:0px; padding-bottom:0px;">Action</th>
+		{/if}
 	</tr>
 
 	{foreach $results as $result}
@@ -38,6 +41,15 @@
 				<a href="{$smarty.const.WWW_TOP}/forumpost/{$result.id}#last" title="{$result.updateddate}">{$result.updateddate|date_format}</a> <div class="hint">({$result.updateddate|timeago})</div>
 			</td>
 			<td class="mid">{$result.replies}</td>
+			<td>
+				{if isset($isadmin)}
+					<div>
+						<a class="confirm_action btn btn-sm btn-danger"
+						   href="{$smarty.const.WWW_TOP}/topic_delete?id={$result.id}"
+						   title="Delete Topic">Delete Topic</a>
+					</div>
+				{/if}
+			</td>
 		</tr>
 	{/foreach}
 

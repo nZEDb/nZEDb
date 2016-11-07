@@ -1,10 +1,10 @@
 <?php
 namespace nzedb\utility;
 
-
 use app\extensions\util\Versions;
+use app\models\Settings;
 use nzedb\ColorCLI;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 
 /*
@@ -342,14 +342,11 @@ class Misc
 		return ($gzipped);
 	}
 
-	public static function isPatched(Settings $pdo = null)
+	public static function isPatched()
 	{
 		$versions = self::getValidVersionsFile();
 
-		if (!($pdo instanceof Settings)) {
-			$pdo = new Settings();
-		}
-		$patch = $pdo->getSetting(['section' => '', 'subsection' => '', 'name' => 'sqlpatch']);
+		$patch = Settings::value(['section' => '', 'subsection' => '', 'name' => 'sqlpatch']);
 		$ver = $versions->versions->sql->file;
 
 		// Check database patch version
@@ -470,7 +467,7 @@ class Misc
 	 */
 	public static function fileInfo($path)
 	{
-		$magicPath = (new Settings())->getSetting('apps.indexer.magic_file_path');
+		$magicPath = Settings::value('apps.indexer.magic_file_path');
 		if (self::hasCommand('file') && (!self::isWin() || !empty($magicPath))) {
 			$magicSwitch = empty($magicPath) ? '' : " -m $magicPath";
 			$output = self::runCmd('file' . $magicSwitch . ' -b "' . $path . '"');
@@ -768,10 +765,8 @@ class Misc
 			}
 		}
 
-		$settings = new Settings();
-
-		$fromEmail = (PHPMAILER_FROM_EMAIL == '') ? $settings->getSetting('email') : PHPMAILER_FROM_EMAIL;
-		$fromName  = (PHPMAILER_FROM_NAME == '') ? $settings->getSetting('title') : PHPMAILER_FROM_NAME;
+		$fromEmail = (PHPMAILER_FROM_EMAIL == '') ? Settings::value('site.main.email') : PHPMAILER_FROM_EMAIL;
+		$fromName  = (PHPMAILER_FROM_NAME == '') ? Settings::value('site.main.title') : PHPMAILER_FROM_NAME;
 		$replyTo   = (PHPMAILER_REPLYTO == '') ? $from : PHPMAILER_REPLYTO;
 
 		if (PHPMAILER_BCC != '') {

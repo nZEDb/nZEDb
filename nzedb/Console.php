@@ -1,8 +1,8 @@
 <?php
 namespace nzedb;
 
-use nzedb\Category;
-use nzedb\db\Settings;
+use app\models\Settings;
+use nzedb\db\DB;
 use libs\AmazonProductAPI;
 
 class Console
@@ -74,19 +74,21 @@ class Console
 		$category = new Category();
 
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 
-		$this->pubkey = $this->pdo->getSetting('amazonpubkey');
-		$this->privkey = $this->pdo->getSetting('amazonprivkey');
-		$this->asstag = $this->pdo->getSetting('amazonassociatetag');
-		$this->gameqty = ($this->pdo->getSetting('maxgamesprocessed') != '') ? $this->pdo->getSetting('maxgamesprocessed') : 150;
-		$this->sleeptime = ($this->pdo->getSetting('amazonsleep') != '') ? $this->pdo->getSetting('amazonsleep') : 1000;
+		$this->pubkey = Settings::value('APIs..amazonpubkey');
+		$this->privkey = Settings::value('APIs..amazonprivkey');
+		$this->asstag = Settings::value('APIs..amazonassociatetag');
+		$result = Settings::value('..maxgamesprocessed');
+		$this->gameqty = ($result != '') ? $result : 150;
+		$result = Settings::value('..amazonsleep');
+		$this->sleeptime = ($result != '') ? $result : 1000;
 		$this->imgSavePath = nZEDb_COVERS . 'console' . DS;
 		$this->renamed = '';
-		if ($this->pdo->getSetting('lookupgames') == 2) {
+		if (Settings::value('..lookupgames') == 2) {
 			$this->renamed = 'AND isrenamed = 1';
 		}
-		//$this->cleanconsole = ($this->pdo->getSetting('lookupgames') == 2) ? 'AND isrenamed = 1' : '';
+		//$this->cleanconsole = (Settings::value('..lookupgames') == 2) ? 'AND isrenamed = 1' : '';
 		$this->catWhere = "AND categories_id BETWEEN " . Category::GAME_ROOT . " AND " . Category::GAME_OTHER;
 		$this->failCache = array();
 	}

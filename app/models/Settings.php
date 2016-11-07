@@ -27,9 +27,80 @@ namespace app\models;
  *
 *@package app\models
  */
-class Settings extends \lithium\data\Model {
+class Settings extends \lithium\data\Model
+{
+	const REGISTER_STATUS_OPEN = 0;
 
-	public $validates = [];
+	const REGISTER_STATUS_INVITE = 1;
+
+	const REGISTER_STATUS_CLOSED = 2;
+
+	const REGISTER_STATUS_API_ONLY = 3;
+
+	const ERR_BADUNRARPATH = -1;
+
+	const ERR_BADFFMPEGPATH = -2;
+
+	const ERR_BADMEDIAINFOPATH = -3;
+
+	const ERR_BADNZBPATH = -4;
+
+	const ERR_DEEPNOUNRAR = -5;
+
+	const ERR_BADTMPUNRARPATH = -6;
+
+	const ERR_BADNZBPATH_UNREADABLE = -7;
+
+	const ERR_BADNZBPATH_UNSET = -8;
+
+	const ERR_BAD_COVERS_PATH = -9;
+
+	const ERR_BAD_YYDECODER_PATH = -10;
+
+	public $validates = [
+		'section' => [
+			[
+				'required'	=> false
+			]
+		],
+		'subsection' => [
+			[
+				'required' => false
+			]
+		],
+		'name' => [
+			[
+				'required' => true
+			],
+			[
+				'notEmpty',
+				'message' => 'You must supply a name for this setting.'
+			]
+		],
+		'value' => [
+			[
+				'required' => true
+			]
+		],
+		'hint' => [
+			[
+				'required' => true
+			],
+			[
+				'notEmpty',
+				'message' => 'You must supply a hint/description for this setting.'
+			]
+		],
+		'setting' => [
+			[
+				'required' => true
+			],
+			[
+				'notEmpty',
+				'message' => 'You must supply a name for this setting.'
+			]
+		],
+	];
 
 	protected $_meta = [
 		'key' => ['section', 'subsection', 'name']
@@ -40,11 +111,7 @@ class Settings extends \lithium\data\Model {
 		static::finder('setting',
 			function ($params, $next) {
 
-				if (!is_array($params['options']['conditions'])) {
-					$params['options']['conditions'] = self::dottedToArray($params['options']['conditions']);
-				} elseif (count($params) == 1) {
-					$params['options']['conditions'] = self::dottedToArray($params['options']['conditions'][0]);
-				}
+				$params['options']['conditions'] = self::settingToArray($params['options']['conditions']);
 				$params['type'] = 'first';
 
 				$array = array_diff_key(
@@ -63,12 +130,64 @@ class Settings extends \lithium\data\Model {
 	}
 
 	/**
+	 * Return a tree-like array of all or selected settings.
+	 *
+	 *	@param array $options	Options array for Settings::find() i.e. ['conditions' => ...].
+	 * @param bool $excludeUnsectioned If rows with empty 'section' field should be excluded.
+	 *		Note this doesn't prevent empty 'subsection' fields.
+	 * @return array
+	 * @throws \RuntimeException
+	 */
+	public static function toTree(array $options = [], $excludeUnsectioned = true)
+	{
+		$results = empty($options) ?
+			Settings::find('all') :
+			Settings::find('all', $options);
+
+		$tree = [];
+		if (is_array($results)) {
+			foreach ($results as $result) {
+				if (!empty($result['section']) || !$excludeUnsectioned) {
+					$tree[$result['section']][$result['subsection']][$result['name']] =
+						['value' => $result['value'], 'hint' => $result['hint']];
+				}
+			}
+		} else {
+			throw new \RuntimeException(
+				"NO results from Settings table! Check your table has been created and populated."
+			);
+		}
+
+		return $tree;
+	}
+
+	/**
+	 * Checks the supplied parameter is either a string or an array with single element. If
+	 * either the value is passed to Settings::dottedToArray() for conversion. Otherwise the
+	 * value is returned unchanged.
+	 *
+	 * @param $setting    Setting array/string to check.
+	 *
+	 * @return array|boolean
+	 */
+	public static function settingToArray($setting)
+	{
+		if (!is_array($setting)) {
+			$setting = self::dottedToArray($setting);
+		} elseif (count($setting) == 1) {
+			$setting = self::dottedToArray($setting[0]);
+		}
+
+		return $setting;
+	}
+
+	/**
 	 * Return the value of supplied setting.
-	 * The setting can be either a a normal condition array for the custom 'setting' finder or a
-	 * dotted string notation setting.
+	 * The setting can be either a normal condition array for the custom 'setting' finder or a
+	 * dotted string notation setting. Note that dotted notation will be converted to an array,
+	 * so it will be slower: Explicitly use the array format if speed it paramount.
 	 * Be aware that this method only returns the first of any values found, so make sure your
 	 * $setting produces a unique result.
-	 *
 	 * @param      $setting
 	 * @param bool $returnAlways Indicates if the method should throw an exception (false) or return
 	 *                           null on failure. Defaults to throwing an exception.
@@ -113,7 +232,6 @@ class Settings extends \lithium\data\Model {
 		} else {
 			return false;
 		}
-		//var_dump($result);
 
 		return $result;
 

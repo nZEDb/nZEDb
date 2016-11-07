@@ -1,9 +1,10 @@
 <?php
 require_once './config.php';
 
+use app\models\Settings;
 use nzedb\Category;
 use nzedb\SABnzbd;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 use nzedb\utility\Misc;
 
 // new to get information on books groups
@@ -26,7 +27,7 @@ switch ($action) {
 				implode(', ', $_POST['book_reqids']) : $_POST['book_reqids'];
 		}
 		// update site table as always
-		$ret = $page->settings->update($_POST);
+		$ret = $page->settings->settingsUpdate($_POST);
 
 		if (is_int($ret)) {
 			// TODO convert to switch
@@ -207,7 +208,7 @@ $page->smarty->assign('book_reqids_ids', $book_reqids_ids);
 $page->smarty->assign('book_reqids_names', $book_reqids_names);
 
 // convert from a list to an array as we need to use an array, but teh sites table only saves strings
-$books_selected = explode(",", $page->settings->getSetting('book_reqids'));
+$books_selected = explode(",", Settings::value('..book_reqids'));
 
 // convert from a string array to an int array
 $books_selected = array_map(

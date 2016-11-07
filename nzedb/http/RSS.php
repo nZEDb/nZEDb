@@ -67,7 +67,7 @@ Class RSS extends Capabilities
 					$userID
 				);
 			} else if ($cat[0] != -1) {
-				$catSearch = $this->releases->categorySQL($cat);
+				$catSearch = "AND " . (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
 			}
 		}
 

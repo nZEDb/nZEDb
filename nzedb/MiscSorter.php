@@ -1,7 +1,8 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use app\models\Settings;
+use nzedb\db\DB;
 use libs\AmazonProductAPI;
 
 /**
@@ -29,7 +30,7 @@ class MiscSorter
 		$this->qty = 100;
 		$this->DEBUGGING = nZEDb_DEBUG;
 
-		$this->pdo = ($pdo instanceof Settings ? $pdo : new Settings());
+		$this->pdo = ($pdo instanceof DB ? $pdo : new DB());
 
 		$this->category = new Categorize(['Settings' => $this->pdo]);
 		$this->movie = new Movie(['Echo' => $this->echooutput, 'Settings' => $this->pdo]);
@@ -325,7 +326,11 @@ class MiscSorter
 
 	private function doAmazon($q, $name = '', $id = 0, $nfo = '', $region = 'com', $case = false, $row = '')
 	{
-		$amazon = new AmazonProductAPI($this->pdo->getSetting('amazonpubkey'), $this->pdo->getSetting('amazonprivkey'), $this->pdo->getSetting('amazonassociatetag'));
+		$amazon = new AmazonProductAPI(
+			Settings::value('APIs..amazonpubkey'),
+			Settings::value('APIs..amazonprivkey'),
+			Settings::value('APIs..amazonassociatetag')
+		);
 		$ok = false;
 
 		try {

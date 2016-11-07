@@ -20,8 +20,9 @@
  */
 namespace nzedb\db;
 
+use app\models\Settings;
 use nzedb\ColorCLI;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 use nzedb\utility\Git;
 use nzedb\utility\Misc;
 use nzedb\utility\Text;
@@ -78,10 +79,6 @@ class DbUpdate
 		$this->log    = $options['logger'];
 		// Must be DB not Settings because the Settings table may not exist yet.
 		$this->pdo = (($options['db'] instanceof DB) ? $options['db'] : new DB());
-		if ($this->pdo instanceof  Settings) {
-			$this->settings &= $this->pdo;
-		}
-
 		$this->_DbSystem = strtolower($this->pdo->dbSystem());
 	}
 
@@ -162,8 +159,6 @@ class DbUpdate
 		];
 		$options += $defaults;
 
-		$this->initSettings();
-
 		$this->processPatches(['safe' => $options['safe']]); // Make sure we are completely up to date!
 
 		echo $this->log->primaryOver('Looking for new patches...');
@@ -182,7 +177,7 @@ class DbUpdate
 				} else {
 					echo $this->log->header('Processing patch file: ' . $file);
 					$this->splitSQL($file, ['local' => $local, 'data' => $options['data']]);
-					$current = (integer)$this->settings->getSetting('sqlpatch');
+					$current = (integer)Settings::value('..sqlpatch');
 					$current++;
 					$this->pdo->queryExec("UPDATE settings SET value = '$current' WHERE setting = 'sqlpatch';");
 					$newName = $matches['drive'] . $matches['path'] .
@@ -210,9 +205,7 @@ class DbUpdate
 		];
 		$options += $defaults;
 
-		$this->initSettings();
-
-		$currentVersion = $this->settings->getSetting(['setting' => 'sqlpatch']);
+		$currentVersion = Settings::value('..sqlpatch');
 		if (!is_numeric($currentVersion)) {
 			exit("Bad sqlpatch value: '$currentVersion'\n");
 		}
@@ -454,13 +447,6 @@ class DbUpdate
 		system("$PHP " . nZEDb_MISC . 'testing' . DS . 'DB' . DS . $this->_DbSystem .
 			   'dump_tables.php db dump');
 		$this->backedup = true;
-	}
-
-	protected function initSettings()
-	{
-		if (!($this->settings instanceof Settings)) {
-			$this->settings = new Settings();
-		}
 	}
 }
 

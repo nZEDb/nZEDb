@@ -109,6 +109,10 @@ if (file_exists($config) && !defined('nZEDb_INSTALLER')) {
 				'persistent' => false,
 			]
 		);
+
+		\nzedb\utility\Misc::setCoversConstant(
+			\app\models\Settings::value('site.main.coverspath')
+		);
 	}
 } else {
 	/** throw new ErrorException("Couldn't open nZEDb's configuration file!"); */

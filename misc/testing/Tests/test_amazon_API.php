@@ -1,15 +1,16 @@
 <?php
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
-use nzedb\db\Settings;
+use app\models\Settings;
 use libs\AmazonProductAPI;
+use nzedb\db\DB;
 
 // Test if your amazon keys are working.
 
-$pdo = new Settings();
-$pubkey = $pdo->getSetting('amazonpubkey');
-$privkey = $pdo->getSetting('amazonprivkey');
-$asstag = $pdo->getSetting('amazonassociatetag');
+$pdo = new DB();
+$pubkey =	Settings::value('APIs..amazonpubkey');
+$privkey =	Settings::value('APIs..amazonprivkey');
+$asstag =	Settings::value('APIs..amazonassociatetag');
 $obj = new AmazonProductAPI($pubkey, $privkey, $asstag);
 
 $e = null;

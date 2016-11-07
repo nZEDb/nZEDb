@@ -1,8 +1,7 @@
 <?php
 require_once 'smarty.php';
-require_once nZEDb_ROOT . 'app' . DS . 'config' . DS . 'bootstrap' . DS . 'libraries.php';
 
-use nzedb\db\Settings;
+use app\models\Settings;
 
 $page = new Page();
 
@@ -59,12 +58,13 @@ switch ($page->page) {
 	case 'sitemap':
 	case 'sysinfo':
 	case 'terms-and-conditions':
+	case 'topic_delete':
 	case 'upcoming':
 	case 'xxx':
 	case 'xxxmodal':
 		// Don't show these pages if it's an API-only site.
-		if (!$page->users->isLoggedIn() && $page->settings->getSetting('registerstatus') == Settings::REGISTER_STATUS_API_ONLY) {
-			header("Location: " . $page->settings->getSetting('code'));
+		if (!$page->users->isLoggedIn() && Settings::value('..registerstatus') == Settings::REGISTER_STATUS_API_ONLY) {
+			header("Location: " . Settings::value('site.main.code'));
 			break;
 		}
 	case 'api':
@@ -73,7 +73,7 @@ switch ($page->page) {
 	case 'login':
 	case 'preinfo':
 	case 'rss':
-		include(nZEDb_WWW . 'pages/' . $page->page . '.php');
+		require_once(nZEDb_WWW . 'pages/' . $page->page . '.php');
 		break;
 	default:
 		$page->show404();
