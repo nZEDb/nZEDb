@@ -563,8 +563,11 @@ class Releases
 	 */
 	public function getCount()
 	{
-		$res = $this->pdo->queryOneRow('SELECT COUNT(id) AS num FROM releases');
-		return ($res === false ? 0 : $res['num']);
+		$res = $this->pdo->query(
+			'SELECT COUNT(id) AS num FROM releases',
+			true, nZEDb_CACHE_EXPIRY_MEDIUM
+		);
+		return (empty($res) ? 0 : $res[0]['num']);
 	}
 
 	/**
@@ -1043,7 +1046,10 @@ class Releases
 
 		$releases = $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
 		if (!empty($releases) && count($releases)) {
-			$releases[0]['_totalrows'] = $this->getPagerCount($baseSql);
+
+			$releases[0]['_totalrows'] = $this->getPagerCount(
+				preg_replace('#LEFT(\s+OUTER)?\s+JOIN\s+(?!tv_episodes)\s+.*ON.*=.*\n#i', ' ', $baseSql)
+			);
 		}
 		return $releases;
 	}
