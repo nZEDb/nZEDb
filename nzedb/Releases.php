@@ -64,7 +64,7 @@ class Releases
 		$this->sphinxSearch = new SphinxSearch();
 		$this->releaseSearch = new ReleaseSearch($this->pdo, $this->sphinxSearch);
 		$this->category = new Category(['Settings' => $this->pdo]);
-		$this->showPasswords = self::showPasswords($this->pdo);
+		$this->showPasswords = self::showPasswords();
 	}
 
 	/**

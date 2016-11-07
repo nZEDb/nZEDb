@@ -212,7 +212,7 @@ class Books
 				%s %s %s %s
 				GROUP BY boo.id
 				ORDER BY %s %s %s",
-				Releases::showPasswords($this->pdo),
+				Releases::showPasswords(),
 				$browseby,
 				$catsrch,
 				$maxage,

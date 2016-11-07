@@ -70,7 +70,7 @@ class XXX
 
 		$dummy = Settings::value('..maxxxxprocessed');
 		$this->movieqty = ($dummy != '') ? $dummy : 100;
-		$this->showPasswords = Releases::showPasswords($this->pdo);
+		$this->showPasswords = Releases::showPasswords();
 		$this->debug = nZEDb_DEBUG;
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
 		$this->imgSavePath = nZEDb_COVERS . 'xxx' . DS;
