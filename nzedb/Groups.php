@@ -203,7 +203,7 @@ class Groups
 	 */
 	public function getCount($groupname = "", $active = -1)
 	{
-		$res = $this->pdo->queryOneRow(
+		$res = $this->pdo->query(
 			sprintf("
 				SELECT COUNT(g.id) AS num
 				FROM groups g
@@ -217,10 +217,10 @@ class Groups
 					: ''
 				),
 				($active > -1 ? "AND g.active = {$active}" : '')
-			)
+			), true, nZEDb_CACHE_EXPIRY_MEDIUM
 		);
 
-		return ($res === false ? 0 : $res["num"]);
+		return (empty($res) ? 0 : $res[0]["num"]);
 	}
 
 	/**

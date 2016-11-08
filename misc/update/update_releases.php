@@ -1,6 +1,7 @@
 <?php
 require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
+use app\models\Settings;
 use nzedb\Category;
 use nzedb\ConsoleTools;
 use nzedb\NNTP;
