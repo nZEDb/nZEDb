@@ -1,7 +1,16 @@
 This file details which changes to the code are in which release version. It is a complement to the
 ChangeLog file which list *when* changes are made to the dev branches.
 
-0.6.6.0
+
+0.6.6.2 2016-11-08
+Fixed:
+	* Incorrect SABnzb URL setting fetch.
+
+0.6.6.1 2016-11-08
+Fixed:
+	* Fix update_releases script not using app\models\Settings class.
+
+0.6.6.0 2016-11-07
 Added:
 	* Option for admins to delete topics in forum.
 	* Search for releases by poster, by clicking on poster name in releases details page.

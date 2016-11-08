@@ -122,7 +122,7 @@ class SABnzbd
 				break;
 
 			case self::INTEGRATION_TYPE_SITEWIDE:
-				if ((Settings::value('apps.sabnzbplus.apikey') != '') && (Settings::value('saburl') != '')) {
+				if ((Settings::value('apps.sabnzbplus.apikey') != '') && (Settings::value('apps.sabnzbplus.url') != '')) {
 					$this->url = Settings::value('saburl');
 					$this->apikey = Settings::value('apps.sabnzbplus.apikey');
 					$this->priority = Settings::value('apps.sabnzbplus.priority');
