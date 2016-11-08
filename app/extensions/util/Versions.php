@@ -271,6 +271,11 @@ class Versions extends \lithium\core\Object
 		}
 	}
 
+	protected function error($message)
+	{
+		// TODO handle console error message.
+	}
+
 	protected function initialiseGit()
 	{
 		if (!($this->git instanceof \app\extensions\util\Git)) {
