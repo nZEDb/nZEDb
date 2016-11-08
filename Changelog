@@ -9,8 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
-2016-11-01 b3rs3rk
-	Chg: Revamp categorySearch for cleanliness and make category determination more reliable and extensible
+2016-11-08 niel
+	Fix: Add missing use statement for Settings class.
 2016-11-01 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.6.0
 

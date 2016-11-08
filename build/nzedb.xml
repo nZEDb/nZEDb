@@ -2,7 +2,7 @@
 <nzedb>
 	<versions>
 		<git>
-			<tag>0.0.0-dev</tag>
+			<tag>v0.6.6.0-RC</tag>
 			<!-- commit count removed Dec 2014 -->
 			<hooks>
 				<precommit>9</precommit>
@@ -16,7 +16,7 @@
 			</last>
 		</scripts>
 		<sql>
-			<db>454</db>
+			<db>455</db>
 			<file>454</file>
 		</sql>
 	</versions>
