@@ -220,10 +220,10 @@ class Games
 				AND con.title != ''
 				AND con.cover = 1
 				AND r.passwordstatus %s
-				AND %s %s %s %s
+				%s %s %s %s
 				GROUP BY con.id
 				ORDER BY %s %s %s",
-				Releases::showPasswords($this->pdo),
+				Releases::showPasswords(),
 				$browseby,
 				$catsrch,
 				$maxage,
@@ -269,7 +269,7 @@ class Games
 				INNER JOIN gamesinfo con ON con.id = r.gamesinfo_id
 				WHERE con.id IN (%s)
 				AND r.id IN (%s)
-				AND %s
+				%s
 				GROUP BY con.id
 				ORDER BY %s %s",
 				(is_array($gameIDs) ? implode(',', $gameIDs) : -1),
@@ -367,9 +367,9 @@ class Games
 			if (isset($_REQUEST[$bbk]) && !empty($_REQUEST[$bbk])) {
 				$bbs = stripslashes($_REQUEST[$bbk]);
 				if ($bbk === 'year') {
-					$browseby .= 'YEAR (con.releasedate) ' . $like . ' (' . $this->pdo->escapeString('%' . $bbs . '%') . ') AND ';
+					$browseby .= 'AND YEAR (con.releasedate) ' . $like . ' (' . $this->pdo->escapeString('%' . $bbs . '%') . ')';
 				} else {
-					$browseby .= 'con.' . $bbv . ' ' . $like . ' (' . $this->pdo->escapeString('%' . $bbs . '%') . ') AND ';
+					$browseby .= 'AND con.' . $bbv . ' ' . $like . ' (' . $this->pdo->escapeString('%' . $bbs . '%') . ')';
 				}
 			}
 		}
