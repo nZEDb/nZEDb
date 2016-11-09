@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-11-09 DariusIII
+	Mrg: PR #2308 - Fix advanced search and update related queries.
 2016-11-08 niel
 	Fix: Add missing use statement for Settings class.
 2016-11-07 b3rs3rk
